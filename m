@@ -1,228 +1,122 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76DF4213120
-	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 15:15:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46F741F131F
+	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 15:23:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730301318; cv=none; b=ZvnFjnYM5E7CYrjMB/bwR7U2tet9eQ3uRR2svtJCi4MBQPHMLyF86Abm57jLZO+C6GX1oojBI5eyXDKdThEVkiwy2MGdGmfCU10fSdukz2YjCYEfyIctwlwI8KtB0Okk3f1gLE0s8HnOli4x4g2OVxXi2WyZib2DkXbFs93vQwg=
+	t=1730301815; cv=none; b=DN04teeh1Bm71aHcbC1rQA2aPLFZJnYYN3El8pRiZUw+RrFyXVBW0IAK/eEjZmQahgf4iXXRHHgSqQ+EixMOzYM7IZUSzMcKUSslDeHr0HgHOwYdgHBpWE4kOj3qFH3AchN8gIyS8hWuhBNdnGGQX4qDnQdJMhWuF+OHa7t+tkg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730301318; c=relaxed/simple;
-	bh=1Qcbtem6RebZ8tK/Oxq83LqkYXZ6i4n26uUG3NI9CnU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=C+WtmiLpng5kEih7/q31/Vspw+OxeP5GznIJYtv8uC1RzLt+YDF8TD+s6+LhRs8jutQUGWVoSaGoNgR/0YBBFdKJgORUJcttjG9AWXw/3ZXb8oi1j0OOt4q7dTL/FMryLsXpjQ75fYuelYwSzap44HOHXhSGm8H/bKuXT34oTfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=yDimhGkE; arc=none smtp.client-ip=209.85.167.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yDimhGkE"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-539e3f35268so8139720e87.3
-        for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 08:15:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1730301313; x=1730906113; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=FCDfP5Rc5QN6lk4Dr+4nDAnrC+iGyk3dht91NbLmbYw=;
-        b=yDimhGkEHenpWyoG+qjEhzJWTYxMtI9T6CVw+p8oA06XbVFApLl208KCFMlUr2aUQc
-         iX7bS7fIu4sfmFlVMbtClASz9kGTrRggyDSdHpImpApuPYjMUjF9buHxb4Ox+rUyoVPU
-         2YpA9Ug4/EFEk/3TmyMpXtmz3KengMHf4ev5Xni+4tp9miw6PxOb8dSiSqnLQ8FNU6E/
-         rS67NNamF0opbVCDEvH9p2WiVtZo1Foo2gV/Ei8J3YXSJ2XRGsgG/0lKjc8Xy6ZTLW4K
-         N7k/fWaL7CK9C+CuQfiAzxAedWZe6uVVi25sW5ZdW3z3M+/bg6dNchWqmt7tqDf/Ui9c
-         ZWxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730301313; x=1730906113;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FCDfP5Rc5QN6lk4Dr+4nDAnrC+iGyk3dht91NbLmbYw=;
-        b=AtPzQ7UfRvm2d114sDZVXbnx1UhWVTRM4kysJrsV6TlCzVC1krysYnTWjXHn/QbSqy
-         YzZ11NHys53asR93hpiLAp7oFCBgukAG6lmZi6a2l0KGfnUxUxb6w6LMB+rIKRUbSyio
-         E6u1vBD9QUdGjsXkdhYXP3Ucy7HEotV2V1zPrrU11aCns5U1zLf+G77b84JD9qehKVJc
-         ZL4fS8XMkh6iGWjSQR6RIJDwVOYY/QmyV67omxlRzc/JWtjY3ga9V/YxvzolN1Gd23HD
-         GPjImsba9j7+TjjbMt5mlwY4UXewWbhYXu1O4aNagltjCgUOaUbyQ7TJx8nJFikEgkfZ
-         Besw==
-X-Gm-Message-State: AOJu0YyEr8eJXizrjv38QlmW1wBt/sghpuUzSdS9kbZRMEjpjXijbJj7
-	ZogNz8thx8uhUTIqo9GA1i5V1jd6XwEg5q2MexduiWcJGph0JPzBQM4KhALuTGXTbVmI4GxiVak
-	W0DP3zAl0lv6Zky6HcgGax9fNR6/vSJz/bKfDwg==
-X-Google-Smtp-Source: AGHT+IGBomFi77Vw30twRK755ZCz/lufWTwezhtM0NbjSrSTjmDisaVlUCqUOtQONWWcnR6SVjpHt69FFKWCTboxvhY=
-X-Received: by 2002:ac2:4e0c:0:b0:539:f74b:62a5 with SMTP id
- 2adb3069b0e04-53b348dd3dcmr7427181e87.25.1730301313455; Wed, 30 Oct 2024
- 08:15:13 -0700 (PDT)
+	s=arc-20240116; t=1730301815; c=relaxed/simple;
+	bh=Lt5lykLZu5JpDLmh3d+RP262Rq70yT3ETGu1ebMmL6g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=mPWYgCiB0eiI9C9hModbUYPIC59Ry8QOeQA1PQ2kmlb9vGAi8WIrxYHa574ExAU5xKImrAarilzD1SpO3d2mwaVU5bqUlVzKsQVD+diEphDTp7Q3hFargZGrBZTTOkr9iOidouLk+6AUKSvdpgVyAiwFmIB/N4Zkdv3VVAuqMoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 63E83113E;
+	Wed, 30 Oct 2024 08:24:01 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B80763F66E;
+	Wed, 30 Oct 2024 08:23:29 -0700 (PDT)
+Message-ID: <65132b36-49f6-4b08-8e7d-6d6cb8da5960@arm.com>
+Date: Wed, 30 Oct 2024 15:23:28 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231024135109.73787-1-joao.m.martins@oracle.com>
-In-Reply-To: <20231024135109.73787-1-joao.m.martins@oracle.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Wed, 30 Oct 2024 23:15:02 +0800
-Message-ID: <CABQgh9HRq8oXgm04XhY2ajvGrg-jJO_KirXvfZxRsn9WiZi7Dg@mail.gmail.com>
-Subject: Re: [PATCH v6 00/18] IOMMUFD Dirty Tracking
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: iommu@lists.linux.dev, Jason Gunthorpe <jgg@nvidia.com>, 
-	Kevin Tian <kevin.tian@intel.com>, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Zhenzhong Duan <zhenzhong.duan@intel.com>, 
-	Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org, 
-	Shameer Kolothum <shamiali2008@gmail.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v16 3/5] iommu/arm-smmu: add support for PRR bit setup
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, robdclark@gmail.com,
+ will@kernel.org, joro@8bytes.org, jgg@ziepe.ca, jsnitsel@redhat.com,
+ robh@kernel.org, krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
+ dmitry.baryshkov@linaro.org
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
+ <20241008125410.3422512-4-quic_bibekkum@quicinc.com>
+ <2d651f1b-4f51-4984-903f-7f5a14151f84@arm.com>
+ <531d0144-e027-4589-b4ef-79f02583df8b@quicinc.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <531d0144-e027-4589-b4ef-79f02583df8b@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, 24 Oct 2023 at 21:51, Joao Martins <joao.m.martins@oracle.com> wrote:
->
-> v6 is a replacement of what's in iommufd next:
-> https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/log/?h=for-next
->
-> base-commit: b5f9e63278d6f32789478acf1ed41d21d92b36cf
->
-> (from the iommufd tree)
->
-> =========>8=========
->
-> Presented herewith is a series that extends IOMMUFD to have IOMMU
-> hardware support for dirty bit in the IOPTEs.
->
-> Today, AMD Milan (or more recent) supports it while ARM SMMUv3.2
-> alongside VT-D rev3.x also do support.  One intended use-case (but not
-> restricted!) is to support Live Migration with SR-IOV, specially useful
-> for live migrateable PCI devices that can't supply its own dirty
-> tracking hardware blocks amongst others.
->
-> At a quick glance, IOMMUFD lets the userspace create the IOAS with a
-> set of a IOVA ranges mapped to some physical memory composing an IO
-> pagetable. This is then created via HWPT_ALLOC or attached to a
-> particular device/hwpt, consequently creating the IOMMU domain and share
-> a common IO page table representing the endporint DMA-addressable guest
-> address space. In IOMMUFD Dirty tracking (since v2 of the series) it
-> will require via the HWPT_ALLOC model only, as opposed to simpler
-> autodomains model.
->
-> The result is an hw_pagetable which represents the
-> iommu_domain which will be directly manipulated. The IOMMUFD UAPI,
-> and the iommu/iommufd kAPI are then extended to provide:
->
-> 1) Enforcement that only devices with dirty tracking support are attached
-> to an IOMMU domain, to cover the case where this isn't all homogenous in
-> the platform. While initially this is more aimed at possible heterogenous nature
-> of ARM while x86 gets future proofed, should any such ocasion occur.
->
-> The device dirty tracking enforcement on attach_dev is made whether the
-> dirty_ops are set or not. Given that attach always checks for dirty
-> ops and IOMMU_CAP_DIRTY, while writing this it almost wanted this to
-> move to upper layer but semantically iommu driver should do the
-> checking.
->
-> 2) Toggling of Dirty Tracking on the iommu_domain. We model as the most
-> common case of changing hardware translation control structures dynamically
-> (x86) while making it easier to have an always-enabled mode. In the
-> RFCv1, the ARM specific case is suggested to be always enabled instead of
-> having to enable the per-PTE DBM control bit (what I previously called
-> "range tracking"). Here, setting/clearing tracking means just clearing the
-> dirty bits at start. The 'real' tracking of whether dirty
-> tracking is enabled is stored in the IOMMU driver, hence no new
-> fields are added to iommufd pagetable structures, except for the
-> iommu_domain dirty ops part via adding a dirty_ops field to
-> iommu_domain. We use that too for IOMMUFD to know if dirty tracking
-> is supported and toggleable without having iommu drivers replicate said
-> checks.
->
-> 3) Add a capability probing for dirty tracking, leveraging the
-> per-device iommu_capable() and adding a IOMMU_CAP_DIRTY. It extends
-> the GET_HW_INFO ioctl which takes a device ID to return some generic
-> capabilities *in addition*. Possible values enumarated by `enum
-> iommufd_hw_capabilities`.
->
-> 4) Read the I/O PTEs and marshal its dirtyiness into a bitmap. The bitmap
-> indexes on a page_size basis the IOVAs that got written by the device.
-> While performing the marshalling also drivers need to clear the dirty bits
-> from IOPTE and allow the kAPI caller to batch the much needed IOTLB flush.
-> There's no copy of bitmaps to userspace backed memory, all is zerocopy
-> based to not add more cost to the iommu driver IOPT walker. This shares
-> functionality with VFIO device dirty tracking via the IOVA bitmap APIs. So
-> far this is a test-and-clear kind of interface given that the IOPT walk is
-> going to be expensive. In addition this also adds the ability to read dirty
-> bit info without clearing the PTE info. This is meant to cover the
-> unmap-and-read-dirty use-case, and avoid the second IOTLB flush.
->
-> The only dependency is:
-> * Have domain_alloc_user() API with flags [2] already queued (iommufd/for-next).
->
-> The series is organized as follows:
->
-> * Patches 1-4: Takes care of the iommu domain operations to be added.
-> The idea is to abstract iommu drivers from any idea of how bitmaps are
-> stored or propagated back to the caller, as well as allowing
-> control/batching over IOTLB flush. So there's a data structure and an
-> helper that only tells the upper layer that an IOVA range got dirty.
-> This logic is shared with VFIO and it's meant to walking the bitmap
-> user memory, and kmap-ing plus setting bits as needed. IOMMU driver
-> just has an idea of a 'dirty bitmap state' and recording an IOVA as
-> dirty.
->
-> * Patches 5-9, 13-18: Adds the UAPIs for IOMMUFD, and selftests. The
-> selftests cover some corner cases on boundaries handling of the bitmap
-> and various bitmap sizes that exercise. I haven't included huge IOVA
-> ranges to avoid risking the selftests failing to execute due to OOM
-> issues of mmaping big buffers.
->
-> * Patches 10-11: AMD IOMMU implementation, particularly on those having
-> HDSup support. Tested with a Qemu amd-iommu with HDSUp emulated[0]. And
-> tested with live migration with VFs (but with IOMMU dirty tracking).
->
-> * Patches 12: Intel IOMMU rev3.x+ implementation. Tested with a Qemu
-> based intel-iommu vIOMMU with SSADS emulation support[0].
->
-> On AMD/Intel I have tested this with emulation and then live migration in
-> AMD hardware;
->
-> The qemu iommu emulation bits are to increase coverage of this code and
-> hopefully make this more broadly available for fellow contributors/devs,
-> old version[1]; it uses Yi's 2 commits to have hw_info() supported (still
-> needs a bit of cleanup) on top of a recent Zhenzhong series of IOMMUFD
-> QEMU bringup work: see here[0]. It includes IOMMUFD dirty tracking for
-> Live migration and with live migration tested. I won't be exactly
-> following up a v2 of QEMU patches until IOMMUFD tracking lands.
->
-> Feedback or any comments are very much appreciated.
->
-> Thanks!
->         Joao
+On 30/10/2024 1:14 pm, Bibek Kumar Patro wrote:
+> 
+> 
+> On 10/29/2024 6:59 PM, Robin Murphy wrote:
+>> On 2024-10-08 1:54 pm, Bibek Kumar Patro wrote:
+>>> Add an adreno-smmu-priv interface for drm/msm to call
+>>> into arm-smmu-qcom and initiate the PRR bit setup or reset
+>>> sequence as per request.
+>>>
+>>> This will be used by GPU to setup the PRR bit and related
+>>> configuration registers through adreno-smmu private
+>>> interface instead of directly poking the smmu hardware.
+>>>
+>>> Suggested-by: Rob Clark <robdclark@gmail.com>
+>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>> ---
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 37 ++++++++++++++++++++++
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
+>>>   include/linux/adreno-smmu-priv.h           | 10 +++++-
+>>>   3 files changed, 48 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/ 
+>>> iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>> index 6e0a2a43e45a..38ac9cab763b 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>> @@ -25,6 +25,7 @@
+>>>
+>>>   #define CPRE            (1 << 1)
+>>>   #define CMTLB            (1 << 0)
+>>> +#define GFX_ACTLR_PRR        (1 << 5)
+>>>
+>>>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>>   {
+>>> @@ -109,6 +110,40 @@ static void 
+>>> qcom_adreno_smmu_resume_translation(const void *cookie, bool termina
+>>>       arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
+>>>   }
+>>>
+>>> +static void qcom_adreno_smmu_set_prr_bit(const void *cookie, bool set)
+>>> +{
+>>> +    struct arm_smmu_domain *smmu_domain = (void *)cookie;
+>>> +    struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>> +    const struct device_node *np = smmu->dev->of_node;
+>>> +    struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>>> +    u32 reg = 0;
+>>> +
+>>> +    if (of_device_is_compatible(np, "qcom,smmu-500") &&
+>>> +            of_device_is_compatible(np, "qcom,adreno-smmu")) {
+>>
+>> These conditions aren't going to change between calls - wouldn't it 
+>> make more sense to conditionally assign the callbacks in the first 
+>> place? Not the biggest deal if this is a one-off context-setup type 
+>> thing, just that it looks a little funky.
+>>
+> 
+> Let me know if you want to pursue this still.
+>  From the current PRR implementation in the graphics
+> vendor layer, this seems to be just setup kind-of thing.
+> Also if we keep this conditional check before assigning callbacks,
+> and vendor layer caller won't be having any such check,
+> wouldn't it be an issue in unsupported platforms (!qcom,smmu-500 or 
+> !qcom,adreno-smmu)
+> as the callbacks won't be assigned?
+> So as per my understanding I think it would be safe to keep the 
+> condition check here?
 
-Hi, Joao and Yi
+Like I say, it makes more sense to me personally if SMMUs which don't 
+have a PRR don't offer a callback for setting the PRR which they don't 
+have, and for it to be the caller's responsibility not to call a NULL 
+callback where they wouldn't need to call one anyway. But the 
+adreno_priv interface is kind of Rob's thing, so I'll leave it to his 
+preference.
 
-I just tried this on aarch64, live migration with "iommu=nested-smmuv3"
-It does not work.
-
-vbasedev->dirty_pages_supported=0
-
-qemu-system-aarch64: -device
-vfio-pci-nohotplug,host=0000:75:00.1,iommufd=iommufd0,enable-migration=on,x-pre-copy-dirty-page-tracking=off:
-warning: 0000:75:00.1: VFIO device doesn't support device and IOMMU
-dirty tracking
-
-qemu-system-aarch64: -device
-vfio-pci-nohotplug,host=0000:75:00.1,iommufd=iommufd0,enable-migration=on,x-pre-copy-dirty-page-tracking=off:
-vfio 0000:75:00.1: 0000:75:00.1: Migration is currently not supported
-with vIOMMU enabled
-
-hw/vfio/migration.c
-    if (vfio_viommu_preset(vbasedev)) {
-        error_setg(&err, "%s: Migration is currently not supported "
-                   "with vIOMMU enabled", vbasedev->name);
-        goto add_blocker;
-    }
-
-Is this mean live migration with vIOMMU is still not ready,
-It is not an error. It is how they are blocking migration till all
-other related feature support is added for vIOMMU.
-And still need more work to enable  migration with vIOMMU?
-
-By the way, live migration works if removing "iommu=nested-smmuv3".
-
-Any suggestions?
-
-Thanks
+Thanks,
+Robin.
