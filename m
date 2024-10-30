@@ -1,50 +1,48 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03BC014F90
-	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 08:32:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56D4E1990C5;
+	Wed, 30 Oct 2024 08:42:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730277180; cv=none; b=tUUlJ5Ifa9DAHwqGgVX5JKGF11x5j2Iga3SO9T+mFMj5BVAlxLBjSqbyGeWHkJ/b5gpt61Fb5wPv0LMopd/WALWKqS6ztYKHNQyqrCjJevfFgi8O2VbuwXbl4NnNBhehwzRjkgaliF7JluU0cCHpRio3ndsKfZv3uHnq4+DA4Gc=
+	t=1730277758; cv=none; b=fbwgrf2xy4HA3NLY67IacMHTNFfJpFfFXzeXPH3JbLt27JLXxkSneLbFqWD76bOrK51EzQkEN8OVrWzT1zwckTxbI5M8yjJcpsAIhTxjXIN4lE3NO9vvaLiJ6ru9jjYTIxThFGJc0f/IdEhPJzfQvjcQlLqN/BDgCv9HvpzKqMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730277180; c=relaxed/simple;
-	bh=QQ+pxASCsT2NB2DayXgXGRpcgDcPcXAGaZi+vCJo4CI=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=YV+L9NPyFtR2OSWla31S19HQ0/g5YJy1pEhNVm/1HsDFwen7bRVAFYo8Bg0GfDioP0rnoJwHeKjwSqkKl04/Y6FvbULysjupVTEVwo6V7+7Wx6K20mbzyD9YaxtpBeq9BHAeGTBwMhRjiCXUh4NPRhMMLj85cz5HPys/VR75HRc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bQO58ozg; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1730277758; c=relaxed/simple;
+	bh=rD045AXbDGXk5YlOnxuclO0/yqk4Mc2QaasO79S+fW8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=qzO42cJ4u9pOpDcNSBlIVaJl6nfyLRhcnQAri5Wi0heBB3uGWNJ6saxXtFvmvWn/2BedpoJtD5CkZMjHDCMzzBJTOec7OdHvNVbpanA4jwn6wXzBKRybeWizodPsRiJiWrpAbwWX3AZ5k8aiml5WJeaEL9/lQXk+qtxJfZ/VkHs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=LQqqRtlH; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bQO58ozg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730277177; x=1761813177;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=QQ+pxASCsT2NB2DayXgXGRpcgDcPcXAGaZi+vCJo4CI=;
-  b=bQO58ozggA+r+9rgf/Bfu9udXxlBiwUuebIJBXcyICVPPmk3sPn3jq4I
-   DdJevs6LXaDxak9OFzX/JWIJVfOQGRCnwuUHpjnazMM41HP10Wb2m8yB3
-   2Dh4yS746noYY0B7LY9eX9TOQJJtDmqLx6Hk7ucTYpVQ1Q3UW9PR6JKs2
-   AmQQ/PXw1nKQI4inMyuGuVYyLvSgPsQSP+CGzcGzfxRYCnU6LVqtb63T8
-   jLFUwUrjlJkcuIR9bMiZ4RCYQZAb5MYoiXSNZPbSxOkblA1XF3+xbk7mn
-   DYQTRijZG74CNqRGgO6uDZfSIGiBr7r4BF6RRHQWxjcFunyMeYrNE1Nyn
-   Q==;
-X-CSE-ConnectionGUID: 992dOXoaRMmu0Sk5ArgtPA==
-X-CSE-MsgGUID: Ys6VuAI3SjKwAiA5z+mxfA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="30112036"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="30112036"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2024 01:32:56 -0700
-X-CSE-ConnectionGUID: nlRvCMxRRa+F69QRCkTKfw==
-X-CSE-MsgGUID: 6GXUWZ5XQbedtVmBquCWYQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,244,1725346800"; 
-   d="scan'208";a="82406864"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.228]) ([10.124.240.228])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2024 01:32:49 -0700
-Message-ID: <36ce098c-4862-4490-a3ed-3226c08aa6d1@linux.intel.com>
-Date: Wed, 30 Oct 2024 16:32:46 +0800
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="LQqqRtlH"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49TKgrSQ025601;
+	Wed, 30 Oct 2024 08:42:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	MSvP7/3RNM+CGuEImEY5eY8ngBdgWS6T4On0LyxkaKI=; b=LQqqRtlHGlHypp5b
+	ybJK5HRvmQWDoLjBnmpPe9Myu8F8Uov9BmpVPBzJoM/ZAvpcWwTSCSZNz7jGa46U
+	ehY08g2OeQkxz7IuC8N3iV90ut5f814W9vjC2MIt3pT2VGvY84imZ0GeyL+0fBBY
+	yaEyVoNR8C3T9cXFliquLH6JpDgT+kOAYpnlnMqdWDK688bg2WDLLjEOWIzaMEXy
+	teyODgZgyQjjZq/Ki1p4IKkxE1gy2pOwmOPLKKXklu5USEFphycJg510hyRkhH6g
+	mHu+e/M80u+6F3Ec2VVN3kqdBsx3PW++SuTr0U5Cdoj4Wkbwm3aYczAud/oLLNou
+	LVaOZQ==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42grgukbjy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 30 Oct 2024 08:42:27 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49U8gQ9R031549
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 30 Oct 2024 08:42:26 GMT
+Received: from [10.239.132.41] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 30 Oct
+ 2024 01:42:22 -0700
+Message-ID: <645c9887-4df2-4ab2-a048-ba79a97b8d2f@quicinc.com>
+Date: Wed, 30 Oct 2024 16:42:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,187 +50,71 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Klaus Jensen <its@irrelevant.dk>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- Klaus Jensen <k.jensen@samsung.com>
-Subject: Re: [PATCH v4 2/5] iommu/vt-d: Remove the pasid present check in
- prq_event_thread
-To: Yi Liu <yi.l.liu@intel.com>, Joel Granados <joel.granados@kernel.org>
-References: <20241015-jag-iopfv8-v4-0-b696ca89ba29@kernel.org>
- <20241015-jag-iopfv8-v4-2-b696ca89ba29@kernel.org>
- <90c772ce-6d2d-4a1d-bfec-5a7813be43e4@intel.com>
- <ujexsgcpvcjux2ugfes6mzjxl53j3icarfbu25imhzliqskyv6@l7f42nv4fhmy>
- <bbd95589-f4c9-4dcf-939b-c3c407eeed21@linux.intel.com>
- <91d59b7d-58b0-4da2-af59-18a980273bb4@intel.com>
- <acd5c4a6-040c-48ff-9e6b-1a33e5ff118d@linux.intel.com>
- <ccd8352c-16e7-4845-a94e-b22bdb3ec5c7@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ccd8352c-16e7-4845-a94e-b22bdb3ec5c7@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH v3 3/4] arm64: dts: qcom: qcs615: add the SCM node
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <robimarko@gmail.com>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+References: <20241025030732.29743-1-quic_qqzhou@quicinc.com>
+ <20241025030732.29743-4-quic_qqzhou@quicinc.com>
+ <flk7n534gfqyivlbl72qco4k5d3c6ravevumjfoh6464pe3qg4@r7ns6zr2i3bv>
+From: Qingqing Zhou <quic_qqzhou@quicinc.com>
+In-Reply-To: <flk7n534gfqyivlbl72qco4k5d3c6ravevumjfoh6464pe3qg4@r7ns6zr2i3bv>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: rDhdqv0yAmW8i4-a-bXxV1gUrAbklpUy
+X-Proofpoint-GUID: rDhdqv0yAmW8i4-a-bXxV1gUrAbklpUy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ lowpriorityscore=0 adultscore=0 mlxscore=0 bulkscore=0 suspectscore=0
+ phishscore=0 spamscore=0 malwarescore=0 mlxlogscore=999 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2409260000
+ definitions=main-2410300067
 
-On 2024/10/30 13:51, Yi Liu wrote:
-> On 2024/10/29 13:39, Baolu Lu wrote:
->> On 2024/10/29 13:13, Yi Liu wrote:
->>> On 2024/10/29 11:12, Baolu Lu wrote:
->>>> On 2024/10/28 18:24, Joel Granados wrote:
->>>>> On Mon, Oct 28, 2024 at 03:50:46PM +0800, Yi Liu wrote:
->>>>>> On 2024/10/16 05:08, Joel Granados wrote:
->>>>>>> From: Klaus Jensen<k.jensen@samsung.com>
->>>>>>>
->>>>>>> PASID is not strictly needed when handling a PRQ event; remove 
->>>>>>> the check
->>>>>>> for the pasid present bit in the request. This change was not 
->>>>>>> included
->>>>>>> in the creation of prq.c to emphasize the change in capability 
->>>>>>> checks
->>>>>>> when handing PRQ events.
->>>>>>>
->>>>>>> Signed-off-by: Klaus Jensen<k.jensen@samsung.com>
->>>>>>> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
->>>>>>> Signed-off-by: Joel Granados<joel.granados@kernel.org>
->>>>>> looks like the PRQ draining is missed for the PRI usage. When a pasid
->>>>>> entry is destroyed, it might need to add helper similar to the
->>>>>> intel_drain_pasid_prq() to drain PRQ for the non-pasid usage.
->>>>> These types of user space PRIs (non-pasid, non-svm) are created by
->>>>> making use of iommufd_hwpt_replace_device. Which adds an entry to the
->>>>> pasid_array indexed on IOMMU_NO_PASID (0U) via the following path:
->>>>>
->>>>> iommufd_hwpt_replace_device
->>>>>    -> iommufd_fault_domain_repalce_dev
->>>>>      -> __fault_domain_replace_dev
->>>>>        -> iommu_replace_group_handle
->>>>             -> __iommu_group_set_domain
->>>>               -> intel_iommu_attach_device
->>>>                  -> device_block_translation
->>>>                    -> intel_pasid_tear_down_entry(IOMMU_NO_PASID)
->>>>
->>>> Here a domain is removed from the pasid entry, hence we need to flush
->>>> all page requests that are pending in the IOMMU page request queue or
->>>> the PCI fabric.
->>>>
->>>>>          -> xa_reserve(&group->pasid_array, IOMMU_NO_PASID, 
->>>>> GFP_KERNEL);
->>>>>
->>>>> It is my understanding that this will provide the needed relation
->>>>> between the device and the prq in such a way that when  
->>>>> remove_dev_pasid
->>>>> is called, intel_iommu_drain_pasid_prq will be called with the
->>>>> appropriate pasid value set to IOMMU_NO_PASID. Please correct me if 
->>>>> I'm
->>>>> mistaken.
->>>>
->>>> Removing a domain from a RID and a PASID are different paths.
->>>> Previously, this IOMMU driver only supported page requests on PASID
->>>> (non-IOMMU_NO_PASID). It is acceptable that it does not flush the 
->>>> PRQ in
->>>> the domain-removing RID path.
->>>>
->>>> With the changes made in this series, the driver now supports page
->>>> requests for RID. It should also flush the PRQ when removing a domain
->>>> from a PASID entry for IOMMU_NO_PASID.
->>>>
->>>>>
->>>>> Does this answer your question? Do you have a specific path that 
->>>>> you are
->>>>> looking at where a specific non-pasid drain is needed?
->>>>
->>>> Perhaps we can simply add below change.
->>>>
->>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>>> index e860bc9439a2..a24a42649621 100644
->>>> --- a/drivers/iommu/intel/iommu.c
->>>> +++ b/drivers/iommu/intel/iommu.c
->>>> @@ -4283,7 +4283,6 @@ static void 
->>>> intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
->>>>          intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
->>>>          kfree(dev_pasid);
->>>>          intel_pasid_tear_down_entry(iommu, dev, pasid, false);
->>>> -       intel_drain_pasid_prq(dev, pasid);
->>>>   }
->>>>
->>>>   static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
->>>> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->>>> index 2e5fa0a23299..8639f3eb4264 100644
->>>> --- a/drivers/iommu/intel/pasid.c
->>>> +++ b/drivers/iommu/intel/pasid.c
->>>> @@ -265,6 +265,7 @@ void intel_pasid_tear_down_entry(struct 
->>>> intel_iommu *iommu, struct device *dev,
->>>>                  iommu->flush.flush_iotlb(iommu, did, 0, 0, 
->>>> DMA_TLB_DSI_FLUSH);
->>>>
->>>>          devtlb_invalidation_with_pasid(iommu, dev, pasid);
->>>> +       intel_drain_pasid_prq(dev, pasid);
->>>>   }
->>>>
->>>>   /*
->>>> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->>>> index 078d1e32a24e..ff88f31053d1 100644
->>>> --- a/drivers/iommu/intel/svm.c
->>>> +++ b/drivers/iommu/intel/svm.c
->>>> @@ -304,9 +304,6 @@ void intel_drain_pasid_prq(struct device *dev, 
->>>> u32 pasid)
->>>>          int qdep;
->>>>
->>>>          info = dev_iommu_priv_get(dev);
->>>> -       if (WARN_ON(!info || !dev_is_pci(dev)))
->>>> -               return;
->>>> -
->>>>          if (!info->pri_enabled)
->>>>                  return;
->>>>
->>>> Generally, intel_drain_pasid_prq() should be called if
->>>>
->>>> - a translation is removed from a pasid entry; and
->>>> - PRI on this device is enabled.
->>>
->>> If the @pasid==IOMMU_NO_PASID, PRQ drain should use the iotlb 
->>> invalidation
->>> and dev-tlb invalidation descriptors. So extra code change is needed in
->>> intel_drain_pasid_prq(). Or perhaps it's better to have a separate 
->>> helper
->>> for draining prq for non-pasid case.
+
+
+在 10/25/2024 2:02 PM, Dmitry Baryshkov 写道:
+> On Fri, Oct 25, 2024 at 08:37:31AM +0530, Qingqing Zhou wrote:
+>> Add the SCM node for QCS615 platform. It is an interface to
+>> communicate to the secure firmware.
 >>
->> According to VT-d spec, section 7.10, "Software Steps to Drain Page
->> Requests & Responses", we can simply replace p_iotlb_inv_dsc and
->> p_dev_tlb_inv_dsc with iotlb_inv_dsc and dev_tlb_inv_dsc. Any
->> significant negative performance impact?
+>> Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
+>> ---
+>>  arch/arm64/boot/dts/qcom/qcs615.dtsi | 7 +++++++
+>>  1 file changed, 7 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/qcs615.dtsi b/arch/arm64/boot/dts/qcom/qcs615.dtsi
+>> index ac4c4c751da1..027c5125f36b 100644
+>> --- a/arch/arm64/boot/dts/qcom/qcs615.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/qcs615.dtsi
+>> @@ -278,6 +278,13 @@
+>>  		reg = <0 0x80000000 0 0>;
+>>  	};
+>>  
+>> +	firmware {
+>> +		scm {
+>> +			compatible = "qcom,scm-qcs615", "qcom,scm";
+>> +			qcom,dload-mode = <&tcsr 0x13000>;
 > 
-> It's not about performance impact. My point is to use iotlb_inv_dsc and
-> dev_tlb_inv_dsc for the @pasid==IOMMU_NO_PASID case. The existing
-> intel_drain_pasid_prq() only uses p_iotlb_inv_dsc and p_dev_tlb_inv_dsc.
-> The way you described in above reply works. But it needs to add if/else
-> to use the correct invalidation descriptor. Since the descriptor
-> composition has several lines, so just an ask if it's better to have a
-> separate helper. :)
+> No CRYPTO clock?
+NO, response from Qualcomm clock team is "the current QCS615 RPMH code does not have the clock support for CE clock", so we don't configure clocks here.
+> 
+>> +		};
+>> +	};
+>> +
+>>  	camnoc_virt: interconnect-0 {
+>>  		compatible = "qcom,qcs615-camnoc-virt";
+>>  		#interconnect-cells = <2>;
+>> -- 
+>> 2.17.1
+>>
+> 
 
-The spec says (7.10 Software Steps to Drain Page Requests & Responses):
-
-"
-Submit an IOTLB invalidate descriptor (iotlb_inv_dsc or p_iotlb_inv_dsc)
-followed by DeviceTLB invalidation descriptor (dev_tlb_inv_dsc or
-p_dev_tlb_inv_dsc) targeting the endpoint device. These invalidation
-requests can be of any granularity. Per the ordering requirements
-described in Section 7.8, older page group responses issued by software
-to the endpoint device before step (a) are guaranteed to be received by
-the endpoint before the endpoint receives this Device-TLB invalidation
-request.
-"
-
-The purpose of the cache invalidation requests sent to the device is to
-leverage PCI ordering requirements to ensure that all page group
-responses are received by the device before it processes the TLB
-invalidation request. Therefore, the specification doesn't mandate the
-type and granularity of invalidation requests, as long as they are
-valid.
-
-Given that the Page Request Interface (PRI) is only supported when the
-IOMMU operates in scalable mode, I don't believe we need to make any
-changes to the invalidation types at this time.
-
---
-baolu
