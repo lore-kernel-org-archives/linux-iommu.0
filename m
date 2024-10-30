@@ -1,160 +1,285 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2084.outbound.protection.outlook.com [40.107.92.84])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73E8EBE46
-	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 00:11:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.84
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730247070; cv=fail; b=qRX8Ys7PWLnPoFpAxjXJwwrjFXiuNWR/vrFZLcMreyDdv+dznjH60QRR7Gci1/Bhv/A16kNWLg1KI3jQlqZEcyYYZ2Eh09V9qC0HOZJNbIgZEEt9G/5Rub4js5hJqUWn58EqOwHn2PwWED8Cc+sG8SqCIBfcS3flu9x6l9pvVvM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730247070; c=relaxed/simple;
-	bh=uUuPEqyt4sJKCqI/8wr60rxhP7vu0VRASCsN+xwwbWY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=siRbgjuOATjdUhw6X7Y4imn/oUAIEBNnC7Fv/HArbtoJMjArYRxb/KwSgWG9aHd7MqPEkVBVJPninIxXYFFSmHCbMMIyzCEuAGBn73Ajtwc3c4K9ivY7sknucbbMXiqJ/WVkL9G46iKAYlszhc8JwVwBcypxqdbgvgSKLBEsUKk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=bF5xIuw4; arc=fail smtp.client-ip=40.107.92.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98BB6CA64;
+	Wed, 30 Oct 2024 00:15:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730247327; cv=none; b=kXpZnFyuN9lbwJgd85Xqi+urpGCyAUnkMjOQYLFosOzqPL0uIoTTQx+y4jxipCRVmKJWADuDQjQQJRFo5n/824gKpWMDV6R3JE0hQmkwbfIkWwBTt6IqEsUznoJmPIA+9A4kABtD16GD7coS6qPH5QLrKknwcSBz+4bBUtnTEhI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730247327; c=relaxed/simple;
+	bh=Yy0P1IZcy1h8RABTeivAl3JLt4m0j1R0j+/CQtYFOtI=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=Tg6Yq83H5RLqrM6Td3KPFvSPZHtdFnV/LlJ8hMrkGeHqVXdTLj5XusTPm+/UpzRA88CcWYoFFE1+lZpoxmGNyWvwTVTwEh/TbXTatT5luwQu/iXvsNEfvXLybDdFV1SChd4FqejqddpUaAMYYiHGxwo2mOCc0w995k6OhiJM/Ak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qr0tu9WW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="bF5xIuw4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=aet0ACVNdY1iQ2QscmMz0A7wQp5JH63q0pWyAJzr0A20srfr94d897eCxUSCkiH6NfM30PeBjPZ12BTOcVfTaQ0xIRy9qMMW9beQ6zILzCzA1+vYlHZ1//lRwmghx4to/Ajx8ajxEpTGTqM7UmmO/+76sUazwuTlrd1rcDVd4htaEzfYzMww4SEJ9tcW9PJx/dAX45phWRjKmos4uELYeKl+ZFMZPppj3/mIIG+8/jb+9Qz98mCLeDGAUfXu7Z81qEd6jPjxtl37dUFy6ruOnQ98vTbDqcC8cgLGKfI9Z90R7QG3qRE0cR/rmPCEfx/08gSVtuRwuqe4qFs/g5xC2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Jx5FrhcTkJmHfrvl3SHomYuyzIhvRIFhASR15KziuNc=;
- b=vNl44C1noy4JFLcRIFB/IMUg7HjuN4hUJkM27m2Pmh8efhU+ZaArx2e9AijF9qyaZbFw0dVvDc9+OYLS5jfOetNkE71Mhuf+ZIX9dHGxs8FEU2douyBU+UZ9FDMn6JjSEStJFFvMBjfDuVsZsMkAE5Rmqy8kth+beYeMKzkgovHREGiRqskLw3KYWS8eE9TA13RaipDyKzJOPG47JJI0W6iMoh2ZYzNCKIG1FBuPDB7PRCu0ykl5XW0rlt6lMUZfRjvivl4Xl+Zu0eKDIG7ZS73ijX44G+fB6UpVO7Nvv+2XEezShPGehDvbtwT43tN7ywQfp8v0ylk/RS3jLm5wuw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Jx5FrhcTkJmHfrvl3SHomYuyzIhvRIFhASR15KziuNc=;
- b=bF5xIuw4AOVtnzeuDbPjjiYcsIA5l/DMY60VX0eadlvTzqd8r15Z0EaatGzO72bE9k+O7G7WyiZTTMBIJzKvNjOb20pqJOTkhuPRlwlq74U1z48EUukYWkXNkN3JfUY505u/7ogu/lnzFuNHssK3GQh39Fh5ibeNftBvjWnFfS+Xrj9t6nLP+0bXX0lOVeJI9WhKNcA30vR8EyyNpUmNDtPhiSww0LboyFwAGQPRsSJbqMWLjIbXqgbB/fuYGHL80UAtQAwJlKPgb9Z2cStafFZ/q8QmoBBlhvMriYMr4EkTwgFU0xkcaLSwiWxC8d24lZBJH5HxlW+n5cWketEdQg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by SJ2PR12MB8883.namprd12.prod.outlook.com (2603:10b6:a03:538::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.27; Wed, 30 Oct
- 2024 00:11:04 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8093.018; Wed, 30 Oct 2024
- 00:11:04 +0000
-Date: Tue, 29 Oct 2024 21:11:02 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Steve Sistare <steven.sistare@oracle.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH V7 0/9] iommu_ioas_map_file
-Message-ID: <20241030001102.GA251312@nvidia.com>
-References: <1729861919-234514-1-git-send-email-steven.sistare@oracle.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1729861919-234514-1-git-send-email-steven.sistare@oracle.com>
-X-ClientProxiedBy: BLAPR05CA0039.namprd05.prod.outlook.com
- (2603:10b6:208:335::20) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qr0tu9WW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD844C4CECD;
+	Wed, 30 Oct 2024 00:15:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1730247326;
+	bh=Yy0P1IZcy1h8RABTeivAl3JLt4m0j1R0j+/CQtYFOtI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=Qr0tu9WW263FT7aKu8DDn7gNNkLN9QYTa5IJ17LGFxWySaiag+FvWBJ48f/Tx5PGj
+	 Zr0i/b8b7NOoSbM9Kj50HddFjSPQ6EsJ+wVcxbuw0mfhXFdo9UFlFn8QC87f3UJCAv
+	 Klk6SfPXguJbA2eaZHd2R9MxtoN3xRCZQkt7uvYXLij9+BdlOGidO6Lj64JwZ1nza8
+	 jwEDkrXdm9t/dBNNExTPrTMkw4v0KWKhTMe9xePxLIJG1jQ6hBalrwFJm17rFU42MW
+	 K7Hgbg1G+xU36nHoq14NN4+IOsS9QilBniVty6UjgBCqj9IYXMfFm/uMoIVaXZ1JHo
+	 lV32HqYdhgpRQ==
+Date: Tue, 29 Oct 2024 19:15:24 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Esther Shimanovich <eshimanovich@chromium.org>,
+	Lukas Wunner <lukas@wunner.de>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Rajat Jain <rajatja@google.com>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Mario Limonciello <mario.limonciello@amd.com>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	iommu@lists.linux.dev,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5] PCI: Detect and trust built-in Thunderbolt chips
+Message-ID: <20241030001524.GA1180712@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|SJ2PR12MB8883:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2eadf1a1-f68a-4542-2c58-08dcf87757ed
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?U0Jnx9zPrBTv+nhFd2XMKIooAjSHd/9Rj00DREpnMxwJnVQas0VuSLuk0Ttt?=
- =?us-ascii?Q?KmCr/z2Kfw3rImL2Zfl9dOZZ5vQ98B1uFcT/wPvPmvJesRcd3vQ0TlXDIvoQ?=
- =?us-ascii?Q?F+8YG2vWz6WEbFbF1+QErv/Sp3C80MeiDCZkaSHa7hNcqeriJ83ghDOROsnX?=
- =?us-ascii?Q?ZT9zmIuMSvgFI/5iqXd3+SurwzM3Akz0BNwQ6zqPec6c9Zkw4nfIKjU9Mnwa?=
- =?us-ascii?Q?9W0EHaZ7M26ciT9jL20BHO1cJe92hGx6OHoH4XpiDvumyi6TvBsycwrFX7RF?=
- =?us-ascii?Q?j8YoClA3tSvSzCCIWPxesoEKPAx2CZnhIW5iTKMvhnARjVGwswp4pyh8GG4P?=
- =?us-ascii?Q?mo08wT4U727z+2gyKmp0gG37ITcD3VKvoU5+oqGjR5wHq7zg/A/qW/722Sjy?=
- =?us-ascii?Q?VxIciUNmp8tqEfRGAsK+JNCEFxhTGcS22XZmlix/Kr4KIk/2+RsbQjSIR8TW?=
- =?us-ascii?Q?055ftBH9+x1tO3hO12dzoSQ4vLFj/GD/omzfY50Gk6Cv3jT8D5L1W7iyvtic?=
- =?us-ascii?Q?lbGIe2sv8FzWb6nc4On1s5Pq1VlDkI7WRI2IDTMXasdIX6sPMkOoNq7A47Gs?=
- =?us-ascii?Q?wR3iJ1brvcWyXrGP/ESSNhdtfCzClbFwGbUKJJ7pNCe4zq9i4w1cpXIS2xVH?=
- =?us-ascii?Q?KCVKlGPUs56LZpGo483aPuApJIs3/57AW/tEI9CNu5XawYqKsr6J4QOo6phM?=
- =?us-ascii?Q?QVpicugq7tK7VL9OaYVOT8VhTp+NkLdPb+FzL8kGh8QhiONFMA8k0YReTCet?=
- =?us-ascii?Q?q44U56d2Ip8UoALsNHgvlkV/vEEH/nXJkiifA8CXy532bx1/b9MsSSrfeg2e?=
- =?us-ascii?Q?0tBT/d2lw44E5H5MbzHW+Mc/pMe4UbVb+vIfvZCtR7cEdTxDOYAaPfXBYMEZ?=
- =?us-ascii?Q?UtuYXsUONsZ0+xAi+A7XIngpSZKa+eZW5czN+mY6vlGYuI02YjFj8B+cEg/c?=
- =?us-ascii?Q?JRLe4oxG5WNvlWAGAhp3RffctmsUPBHUmsdYCPUl/QXNr8yYuI02Y9FJXFKz?=
- =?us-ascii?Q?IXOVrGhgZ/1kCF+Fq065Gqr0aGpzbdh9kIMGSHr9eMPZoHihC9C965eysGD/?=
- =?us-ascii?Q?8h8NjYfVtNRX76nFBNOlowQk2TDtvVPppfRq7A/jwW+kXGaE++Win+f1hdKO?=
- =?us-ascii?Q?CtD5ypC++jcwsOke8hfyWnR5MUqq7eIvfxyWguYHPPFXeb5c25lffAOZmSah?=
- =?us-ascii?Q?JLZHk1yXeJDNlJ1Z+IZl5pxac9KzWzLuoVpPxuKTiq+570idxEG4C5bUD3Jm?=
- =?us-ascii?Q?s1NbBviZGrmV+mF7Lq1FGDghSz2sUnOL1JhfRGnKtJ4Id5Ia7WduhCEnv358?=
- =?us-ascii?Q?065712BVwNtjq186R/ENApzr?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?dLg8+WOMi4qXAFJRrDEu8M4Q0ApiPcFg8t9HgEP9NAk3bTFJc1pMkfzM2w73?=
- =?us-ascii?Q?YteTfxDtp7XSIQ64nwdr2+hiJj7f7WRH68v17r2c4Ug6TWm3p10FGj6cxler?=
- =?us-ascii?Q?vlknx0TUjIfZ0icqftiy6N87dVVPsTjslh0RHRtVlQkMB1zN2Zn3+hQU4AyG?=
- =?us-ascii?Q?QojvoMrXt7hn9fNBrkaPtyVT0B+v/6b7ywr5lZ7yR8ERkYHbmd5XhKFaHohM?=
- =?us-ascii?Q?tSoZHKxDuZ4m/E7rkTgGyzEquW6p7accBMuhhG3PXYvQnICTVO+rN+kax8D7?=
- =?us-ascii?Q?lBw0Xazok5kEnaCKRyD0AwwrQ7qY8M4v5D7uEotLWdAhj0uhTF1oazT9D0j2?=
- =?us-ascii?Q?gApWkfpfksBP0FRGMBHG6MvKBln/OvpOyJVceW7jzWIooerMIZ5kwg6pWJkP?=
- =?us-ascii?Q?fOz6brW9jvEFfpLm+ctQRdIbrLk2D3HFFmnakITIKXNf+uFhUlPly2WQF1Hc?=
- =?us-ascii?Q?knFVR/lah7490ZUOMMToBChREhIovzV07QOkzqkC3KFfjKVzZRBKX6v6GOK0?=
- =?us-ascii?Q?oO4PsL3k0Aro9COpULSn/brnYJrEg5WFiS8mgRD1lOeWcXAYAjacb+8tTdD3?=
- =?us-ascii?Q?LWUFpd4Eg9bbprOBWySwOcjlhu+jFOzgyJlgt927kIOj9uWROubUwkICvAof?=
- =?us-ascii?Q?5jGkriRr7T2hPSbNn+ZMJXxTyQmZLMzzALZZOlrqxj7qozy5h/oPF6nOC6ne?=
- =?us-ascii?Q?XuWD3EH2Pk8o3uN9Cr8qXYMarm2BeFpjSWtmW181sphger5bA9FTrXp+cnu/?=
- =?us-ascii?Q?l2//EWmFEoaVMhb5hyN8kRoeqh74iPiC6v/fGYm7c9gUBdcsmtOjznZ2/5Mf?=
- =?us-ascii?Q?rpyYcg9rh4GD8bhEqqhXrNbqUBiKQD5fLNXcR/xW2v2J75+ytlSpv1k+kZr2?=
- =?us-ascii?Q?GLpb6rtjUtDVApTLLdD2tYaLveWurZ/uL4R+XsCyS8gX4gHgbu7nv1dyeTzF?=
- =?us-ascii?Q?ZnOMCqBIRci4b7zAqn4BGQiLpAqiXPO3g5WGMGRm0a7RAoWRqUId+tAi6vc0?=
- =?us-ascii?Q?Fp42TibLrPhQclw6iZGqew7TBHJvcmeVy97NudwLctgxbyUHJY08in/tjcsJ?=
- =?us-ascii?Q?VaOckdOHXHAfwJGss0RFRA1YjrR8VGGV3t46czXYj/g2P30iKRMtKxQR42jl?=
- =?us-ascii?Q?ubHmD/g02HRZAZje2Vh+QR/ybZLrIfGkIJo3O4gYuh9uZiP6JitW/8AbNb0H?=
- =?us-ascii?Q?iYDPD+2jqn49dYYj/6Xir3FdE1OXba9vAnKvdsYEbbLfgGFgDubUcup4iDEd?=
- =?us-ascii?Q?XaXehbeHl1GCeVlB7I5KvhUCytt0Z7YLEXO9Nsd/kONg4WWlNcS5gZrQFgwK?=
- =?us-ascii?Q?8NlW1wec8T3m7CTtzjGM6EKRYD2mlKpZ7Xf4cfXKzYI6GanKSJFsEWvSf5RQ?=
- =?us-ascii?Q?6N/VpQbRvqKJ0WWttku9QjqbGXqi1Rr6oefRMWzsnj+ksB01rKgkF+fMqMZn?=
- =?us-ascii?Q?C6sRXY70ikAgOMUCV8H65xwO7E7KjFZMHEAafr9BkHBgwAArInZs2SQ0+rpA?=
- =?us-ascii?Q?Bhb28uj5NeLfiTWo/XmwbKEEGGE7N1BU6+k82JhV9Qz3X7MGZpUJjvRzKZ5/?=
- =?us-ascii?Q?gO3l0f5SDvZQtanF6Lw=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2eadf1a1-f68a-4542-2c58-08dcf87757ed
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2024 00:11:04.1616
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nuZ+IU2kn3KNOqkWlfPf4xQEFbVr87ZhbeUZ+BhBsLCA8mt6xrE64vqmCH5Tr9pX
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8883
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240910-trust-tbt-fix-v5-1-7a7a42a5f496@chromium.org>
 
-On Fri, Oct 25, 2024 at 06:11:50AM -0700, Steve Sistare wrote:
-> Provide the IOMMU_IOAS_MAP_FILE ioctl, which allows a user to register
-> memory by passing a memfd plus offset and length.  Implement it using
-> the memfd_map_folios KAPI, and the proposed folio_add_pins KAPI.
-> See the individual patches for details.
+On Tue, Sep 10, 2024 at 05:57:45PM +0000, Esther Shimanovich wrote:
+> Some computers with CPUs that lack Thunderbolt features use discrete
+> Thunderbolt chips to add Thunderbolt functionality. These Thunderbolt
+> chips are located within the chassis; between the root port labeled
+> ExternalFacingPort and the USB-C port.
 > 
-> Steve Sistare (9):
->   mm/gup: folio_add_pins
->   iommufd: rename uptr in iopt_alloc_iova
->   iommufd: generalize iopt_pages address
->   iommufd: pfn reader local variables
->   iommufd: folio subroutines
->   iommufd: pfn reader for file mappings
->   iommufd: IOMMU_IOAS_MAP_FILE
->   iommufd: file mappings for mdev
->   iommufd: map file selftest
+> These Thunderbolt PCIe devices should be labeled as fixed and trusted,
+> as they are built into the computer. Otherwise, security policies that
+> rely on those flags may have unintended results, such as preventing
+> USB-C ports from enumerating.
+> 
+> Detect the above scenario through the process of elimination.
+> 
+> 1) Integrated Thunderbolt host controllers already have Thunderbolt
+>    implemented, so anything outside their external facing root port is
+>    removable and untrusted.
+> 
+>    Detect them using the following properties:
+> 
+>      - Most integrated host controllers have the usb4-host-interface
+>        ACPI property, as described here:
+> Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#mapping-native-protocols-pcie-displayport-tunneled-through-usb4-to-usb4-host-routers
+> 
+>      - Integrated Thunderbolt PCIe root ports before Alder Lake do not
+>        have the usb4-host-interface ACPI property. Identify those with
+>        their PCI IDs instead.
+> 
+> 2) If a root port does not have integrated Thunderbolt capabilities, but
+>    has the ExternalFacingPort ACPI property, that means the manufacturer
+>    has opted to use a discrete Thunderbolt host controller that is
+>    built into the computer.
+> 
+>    This host controller can be identified by virtue of being located
+>    directly below an external-facing root port that lacks integrated
+>    Thunderbolt. Label it as trusted and fixed.
+> 
+>    Everything downstream from it is untrusted and removable.
+> 
+> The ExternalFacingPort ACPI property is described here:
+> Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-externally-exposed-pcie-root-ports
+> 
+> Suggested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Signed-off-by: Esther Shimanovich <eshimanovich@chromium.org>
+> Tested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Tested-by: Mario Limonciello <mario.limonciello@amd.com>
+> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+> While working with devices that have discrete Thunderbolt chips, I
+> noticed that their internal TBT chips are inaccurately labeled as
+> untrusted and removable.
+> 
+> I've observed that this issue impacts all computers with internal,
+> discrete Intel JHL Thunderbolt chips, such as JHL6240, JHL6340, JHL6540,
+> and JHL7540, across multiple device manufacturers such as Lenovo, Dell,
+> and HP.
+> 
+> This affects the execution of any downstream security policy that
+> relies on the "untrusted" or "removable" flags.
+> 
+> I initially submitted a quirk to resolve this, which was too small in
+> scope, and after some discussion, Mika proposed a more thorough fix:
+> https://lore.kernel.org/lkml/20240510052616.GC4162345@black.fi.intel.com
+> I refactored it and am submitting as a new patch.
+> ---
+> Changes in v5:
+> - Applied the following edits suggested by Lukas Wunner:
+>   - Applied ifdefs edits to ensure code is only compiled on x86 systems
+>   with ACPI
+>   - Added returns to avoid unecessary checks
+>   - Renamed pcie_is_tunneled to arch_pci_dev_is_removable
+> - Link to v4: https://lore.kernel.org/r/20240823-trust-tbt-fix-v4-1-c6f1e3bdd9be@chromium.org
+> 
+> Changes in v4:
+> - Applied edits on logic-flow clarity and formatting suggested by Ilpo
+>   Järvinen
+> - Mario Limonciello tested patch and confirmed works as intended.
+> - Link to v3: https://lore.kernel.org/r/20240815-trust-tbt-fix-v3-1-6ba01865d54c@chromium.org
+> 
+> Changes in v3:
+> - Incorporated minor edits suggested by Mika Westerberg.
+> - Mika Westerberg tested patch (more details in v2 link)
+> - Added "reviewed-by" and "tested-by" lines
+> - Link to v2: https://lore.kernel.org/r/20240808-trust-tbt-fix-v2-1-2e34a05a9186@chromium.org
+> 
+> Changes in v2:
+> - I clarified some comments, and made minor fixins
+> - I also added a more detailed description of implementation into the
+>   commit message
+> - Added Cc recipients Mike recommended
+> - Link to v1: https://lore.kernel.org/r/20240806-trust-tbt-fix-v1-1-73ae5f446d5a@chromium.org
+> ---
+>  arch/x86/pci/acpi.c | 119 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  drivers/pci/probe.c |  30 +++++++++----
+>  include/linux/pci.h |   6 +++
+>  3 files changed, 148 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
+> index 55c4b07ec1f6..62271668c3b1 100644
+> --- a/arch/x86/pci/acpi.c
+> +++ b/arch/x86/pci/acpi.c
+> @@ -250,6 +250,125 @@ void __init pci_acpi_crs_quirks(void)
+>  		pr_info("Please notify linux-pci@vger.kernel.org so future kernels can do this automatically\n");
+>  }
+>  
+> +/*
+> + * Checks if pdev is part of a PCIe switch that is directly below the
+> + * specified bridge.
+> + */
+> +static bool pcie_switch_directly_under(struct pci_dev *bridge,
+> +				       struct pci_dev *pdev)
+> +{
+> +	struct pci_dev *parent = pci_upstream_bridge(pdev);
+> +
+> +	/* If the device doesn't have a parent, it's not under anything. */
+> +	if (!parent)
+> +		return false;
+> +
+> +	/*
+> +	 * If the device has a PCIe type, check if it is below the
+> +	 * corresponding PCIe switch components (if applicable). Then check
+> +	 * if its upstream port is directly beneath the specified bridge.
+> +	 */
+> +	switch (pci_pcie_type(pdev)) {
+> +	case PCI_EXP_TYPE_UPSTREAM:
+> +		return parent == bridge;
+> +
+> +	case PCI_EXP_TYPE_DOWNSTREAM:
+> +		if (pci_pcie_type(parent) != PCI_EXP_TYPE_UPSTREAM)
+> +			return false;
+> +		parent = pci_upstream_bridge(parent);
+> +		return parent == bridge;
+> +
+> +	case PCI_EXP_TYPE_ENDPOINT:
+> +		if (pci_pcie_type(parent) != PCI_EXP_TYPE_DOWNSTREAM)
+> +			return false;
+> +		parent = pci_upstream_bridge(parent);
+> +		if (!parent || pci_pcie_type(parent) != PCI_EXP_TYPE_UPSTREAM)
+> +			return false;
+> +		parent = pci_upstream_bridge(parent);
+> +		return parent == bridge;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static bool pcie_has_usb4_host_interface(struct pci_dev *pdev)
+> +{
+> +	struct fwnode_handle *fwnode;
+> +
+> +	/*
+> +	 * For USB4, the tunneled PCIe root or downstream ports are marked
+> +	 * with the "usb4-host-interface" ACPI property, so we look for
+> +	 * that first. This should cover most cases.
+> +	 */
+> +	fwnode = fwnode_find_reference(dev_fwnode(&pdev->dev),
+> +				       "usb4-host-interface", 0);
+> +	if (!IS_ERR(fwnode)) {
+> +		fwnode_handle_put(fwnode);
+> +		return true;
+> +	}
 
-Applied to iommufd for-next
+The Intel devices below look like they're obviously x86-specific, but
+what about the "usb4-host-interface" above?  Is there any reason that
+should be x86-specific?
 
-Is v3 still the latest for "iommufd live update"?
+> +	/*
+> +	 * Any integrated Thunderbolt 3/4 PCIe root ports from Intel
+> +	 * before Alder Lake do not have the "usb4-host-interface"
+> +	 * property so we use their PCI IDs instead. All these are
+> +	 * tunneled. This list is not expected to grow.
+> +	 */
+> +	if (pdev->vendor == PCI_VENDOR_ID_INTEL) {
+> +		switch (pdev->device) {
+> +		/* Ice Lake Thunderbolt 3 PCIe Root Ports */
+> +		case 0x8a1d:
+> +		case 0x8a1f:
+> +		case 0x8a21:
+> +		case 0x8a23:
+> +		/* Tiger Lake-LP Thunderbolt 4 PCIe Root Ports */
+> +		case 0x9a23:
+> +		case 0x9a25:
+> +		case 0x9a27:
+> +		case 0x9a29:
+> +		/* Tiger Lake-H Thunderbolt 4 PCIe Root Ports */
+> +		case 0x9a2b:
+> +		case 0x9a2d:
+> +		case 0x9a2f:
+> +		case 0x9a31:
+> +			return true;
+> +		}
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +bool arch_pci_dev_is_removable(struct pci_dev *pdev)
+> +{
+> +	struct pci_dev *parent, *root;
+> +
+> +	/* pdev without a parent or Root Port is never tunneled. */
+> +	parent = pci_upstream_bridge(pdev);
+> +	if (!parent)
+> +		return false;
+> +	root = pcie_find_root_port(pdev);
+> +	if (!root)
+> +		return false;
+> +
+> +	/* Internal PCIe devices are not tunneled. */
+> +	if (!root->external_facing)
+> +		return false;
+> +
+> +	/* Anything directly behind a "usb4-host-interface" is tunneled. */
+> +	if (pcie_has_usb4_host_interface(parent))
+> +		return true;
+> +
+> +	/*
+> +	 * Check if this is a discrete Thunderbolt/USB4 controller that is
+> +	 * directly behind the non-USB4 PCIe Root Port marked as
+> +	 * "ExternalFacingPort". Those are not behind a PCIe tunnel.
+> +	 */
+> +	if (pcie_switch_directly_under(root, pdev))
+> +		return false;
+> +
+> +	/* PCIe devices after the discrete chip are tunneled. */
+> +	return true;
+> +}
 
-Thanks,
-Jason
+I asked on the v4 patch whether we really need to make all this
+ACPI specific, and I'm still curious about that, since we don't
+actually use any ACPI interfaces directly.
+
+Bjorn
