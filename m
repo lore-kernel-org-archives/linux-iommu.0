@@ -1,121 +1,312 @@
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B4B282899;
-	Wed, 30 Oct 2024 04:56:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8707E1D27B9
+	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 05:37:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730264177; cv=none; b=QuejtaPxAmI/j0Yt+4mMn3X+25TgjBTa9gNEsBWRbsqW6xaqXQYf/hU/WJeLfIlEetG1MmwoG/skWTjBCbfuCKhCubCui/T9xvDIS7UoviR+j2w1j4oI1kHfhSEpsAgDwCpedCtdFd/3oXznvdu1VpXl1hupDBi7lq7pxklrGSE=
+	t=1730266676; cv=none; b=qaGOIZPwbTl79sG4hMIUI9ZCoPkMouSmj2omJjkaXsZ55R2X/ntK1l9wjETtDV4dgY7AKR1Rbr8OpPX6LGI1oaAE19JAF3ECNVoY5C43dVarxffT2thizIIqbyD5R3YAPYPozZRsM/Ax4LfnuLZU33GYjJ1bQEF0lA8EYzSeriE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730264177; c=relaxed/simple;
-	bh=zwX2RBzU4tpfWfPhSOVdn6ISdGQ1Qt5sl+TvX2kcWHU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=k435sKI5+T1Ym//4cb5+l4sZncMMyC1GVQ4zHMMBLTVlGCFYbEERw2upjccJG1Otvt+4yvDrsJZKBoAh78PDtfBFcKYxG+F2nRFcfrWL659khmdwyeA7BFif68L9FmsPK3AV4vVM88X48eko27LROfAZTS71eTkyR5SMyn/Ft78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=gWeb7b70; arc=none smtp.client-ip=198.47.23.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1730266676; c=relaxed/simple;
+	bh=1/DGcU7Zlltk1x7fuVYT81Nir1EKwHzZ5qc1TwzwZyY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sthF0OKp6dMat0/mdbZkUFwz3/SeWtPeKRCzIEkWH1pNkqxkO7tgFdIv+w6sM1qTR0uoU4ym7GwhlLvBolYJqG1k/dGjKHtlBXStYHa8fTdQcKp6g/vUh9MSVd12Z7ZuSEz0BqvqWRrIPgChosj+1UxAtlhOwOiqU3QP0dP/Kvs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X5Zsyulc; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="gWeb7b70"
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 49U4tiSW033939;
-	Tue, 29 Oct 2024 23:55:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1730264144;
-	bh=4EA9CUgTC4Juvta7B91Kq5htCC2uTanYEkMECpDwaTM=;
-	h=Date:Subject:To:CC:References:From:In-Reply-To;
-	b=gWeb7b70TvlWYB2Wm+rPIixoPrV0rgfprDynbM6p/P8JaVsyOXyq5+vbguNzr03pQ
-	 FkDJYTUA6IVujGAJn/CSDN4lP+YeCuG4/LdLlPnX7OFfqbSh6M+5iph40OQyc226ZR
-	 o9XxXcPNFFVrd4cCuRm3Dn3tmSAjyadyNgfhvwf4=
-Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
-	by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 49U4thc1119737
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 29 Oct 2024 23:55:44 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 29
- Oct 2024 23:55:43 -0500
-Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Tue, 29 Oct 2024 23:55:43 -0500
-Received: from [172.24.227.151] (uda0510294.dhcp.ti.com [172.24.227.151])
-	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 49U4tcHH066220;
-	Tue, 29 Oct 2024 23:55:39 -0500
-Message-ID: <25c5c744-2e4d-4df6-a080-8f5705a47884@ti.com>
-Date: Wed, 30 Oct 2024 10:25:37 +0530
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X5Zsyulc"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1730266674; x=1761802674;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=1/DGcU7Zlltk1x7fuVYT81Nir1EKwHzZ5qc1TwzwZyY=;
+  b=X5ZsyulcegDm14EXqQD800R9bmzewtqRR5Jv6SsM+DnTup4FThPxCpaa
+   ub5KPoHy61W6rar38KB19+cg2ILeJKCckZHGXPS708qrUMU0lk7sSK03+
+   A0RpTPxgUWHNmIcuJCfMKuI+5Hf07g1YcPrglMXmE5JwyHNVcvlFt4aVm
+   cZx4yCkby6Hz4Ki1UYo2t1sgd11VvC2n/lpR46/NunECm6jNBTEgfSUrg
+   9fSJoxjlWzUkbWVJjfkHK+OiLaYdU0WXzwSNC/Pn6U/eEbBF06gLleCgy
+   l59YHQk8ZTSMPJjW1cR3nWFhh3qFQ9E9F/o4EVyP+Hxcp8Ly3453sXPw/
+   A==;
+X-CSE-ConnectionGUID: cmGd3ilMRdeUvr0xVwWy4A==
+X-CSE-MsgGUID: MF+0NKVfQRO6+iz/IcAF9w==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="41046312"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="41046312"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2024 22:37:53 -0700
+X-CSE-ConnectionGUID: g18aei1wQqCGHuxv8Bd44Q==
+X-CSE-MsgGUID: Sm7rTaCeQuaHrdIemhehog==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,244,1725346800"; 
+   d="scan'208";a="82521628"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmviesa010.fm.intel.com with ESMTP; 29 Oct 2024 22:37:50 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1001)
+	id 4F4BD275; Wed, 30 Oct 2024 07:37:49 +0200 (EET)
+Date: Wed, 30 Oct 2024 07:37:49 +0200
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Esther Shimanovich <eshimanovich@chromium.org>,
+	Lukas Wunner <lukas@wunner.de>, Bjorn Helgaas <bhelgaas@google.com>,
+	Rajat Jain <rajatja@google.com>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Mario Limonciello <mario.limonciello@amd.com>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5] PCI: Detect and trust built-in Thunderbolt chips
+Message-ID: <20241030053749.GR275077@black.fi.intel.com>
+References: <20240910-trust-tbt-fix-v5-1-7a7a42a5f496@chromium.org>
+ <20241030001524.GA1180712@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/4] Fix omap-iommu bitrot
-To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>,
-        <laurent.pinchart@ideasonboard.com>, <mchehab@kernel.org>,
-        <andersson@kernel.org>, <mathieu.poirier@linaro.org>
-CC: <hns@goldelico.com>, <andreas@kemnade.info>, <iommu@lists.linux.dev>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-omap@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>,
-        Andrew
- Davis <afd@ti.com>, Udit Kumar <u-kumar1@ti.com>,
-        "Nagalla, Hari"
-	<hnagalla@ti.com>
-References: <cover.1730136799.git.robin.murphy@arm.com>
-Content-Language: en-US
-From: Beleswar Prasad Padhi <b-padhi@ti.com>
-In-Reply-To: <cover.1730136799.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20241030001524.GA1180712@bhelgaas>
 
-Hi Robin,
+On Tue, Oct 29, 2024 at 07:15:24PM -0500, Bjorn Helgaas wrote:
+> On Tue, Sep 10, 2024 at 05:57:45PM +0000, Esther Shimanovich wrote:
+> > Some computers with CPUs that lack Thunderbolt features use discrete
+> > Thunderbolt chips to add Thunderbolt functionality. These Thunderbolt
+> > chips are located within the chassis; between the root port labeled
+> > ExternalFacingPort and the USB-C port.
+> > 
+> > These Thunderbolt PCIe devices should be labeled as fixed and trusted,
+> > as they are built into the computer. Otherwise, security policies that
+> > rely on those flags may have unintended results, such as preventing
+> > USB-C ports from enumerating.
+> > 
+> > Detect the above scenario through the process of elimination.
+> > 
+> > 1) Integrated Thunderbolt host controllers already have Thunderbolt
+> >    implemented, so anything outside their external facing root port is
+> >    removable and untrusted.
+> > 
+> >    Detect them using the following properties:
+> > 
+> >      - Most integrated host controllers have the usb4-host-interface
+> >        ACPI property, as described here:
+> > Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#mapping-native-protocols-pcie-displayport-tunneled-through-usb4-to-usb4-host-routers
+> > 
+> >      - Integrated Thunderbolt PCIe root ports before Alder Lake do not
+> >        have the usb4-host-interface ACPI property. Identify those with
+> >        their PCI IDs instead.
+> > 
+> > 2) If a root port does not have integrated Thunderbolt capabilities, but
+> >    has the ExternalFacingPort ACPI property, that means the manufacturer
+> >    has opted to use a discrete Thunderbolt host controller that is
+> >    built into the computer.
+> > 
+> >    This host controller can be identified by virtue of being located
+> >    directly below an external-facing root port that lacks integrated
+> >    Thunderbolt. Label it as trusted and fixed.
+> > 
+> >    Everything downstream from it is untrusted and removable.
+> > 
+> > The ExternalFacingPort ACPI property is described here:
+> > Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-externally-exposed-pcie-root-ports
+> > 
+> > Suggested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > Signed-off-by: Esther Shimanovich <eshimanovich@chromium.org>
+> > Tested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > Tested-by: Mario Limonciello <mario.limonciello@amd.com>
+> > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
+> > ---
+> > While working with devices that have discrete Thunderbolt chips, I
+> > noticed that their internal TBT chips are inaccurately labeled as
+> > untrusted and removable.
+> > 
+> > I've observed that this issue impacts all computers with internal,
+> > discrete Intel JHL Thunderbolt chips, such as JHL6240, JHL6340, JHL6540,
+> > and JHL7540, across multiple device manufacturers such as Lenovo, Dell,
+> > and HP.
+> > 
+> > This affects the execution of any downstream security policy that
+> > relies on the "untrusted" or "removable" flags.
+> > 
+> > I initially submitted a quirk to resolve this, which was too small in
+> > scope, and after some discussion, Mika proposed a more thorough fix:
+> > https://lore.kernel.org/lkml/20240510052616.GC4162345@black.fi.intel.com
+> > I refactored it and am submitting as a new patch.
+> > ---
+> > Changes in v5:
+> > - Applied the following edits suggested by Lukas Wunner:
+> >   - Applied ifdefs edits to ensure code is only compiled on x86 systems
+> >   with ACPI
+> >   - Added returns to avoid unecessary checks
+> >   - Renamed pcie_is_tunneled to arch_pci_dev_is_removable
+> > - Link to v4: https://lore.kernel.org/r/20240823-trust-tbt-fix-v4-1-c6f1e3bdd9be@chromium.org
+> > 
+> > Changes in v4:
+> > - Applied edits on logic-flow clarity and formatting suggested by Ilpo
+> >   Järvinen
+> > - Mario Limonciello tested patch and confirmed works as intended.
+> > - Link to v3: https://lore.kernel.org/r/20240815-trust-tbt-fix-v3-1-6ba01865d54c@chromium.org
+> > 
+> > Changes in v3:
+> > - Incorporated minor edits suggested by Mika Westerberg.
+> > - Mika Westerberg tested patch (more details in v2 link)
+> > - Added "reviewed-by" and "tested-by" lines
+> > - Link to v2: https://lore.kernel.org/r/20240808-trust-tbt-fix-v2-1-2e34a05a9186@chromium.org
+> > 
+> > Changes in v2:
+> > - I clarified some comments, and made minor fixins
+> > - I also added a more detailed description of implementation into the
+> >   commit message
+> > - Added Cc recipients Mike recommended
+> > - Link to v1: https://lore.kernel.org/r/20240806-trust-tbt-fix-v1-1-73ae5f446d5a@chromium.org
+> > ---
+> >  arch/x86/pci/acpi.c | 119 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+> >  drivers/pci/probe.c |  30 +++++++++----
+> >  include/linux/pci.h |   6 +++
+> >  3 files changed, 148 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
+> > index 55c4b07ec1f6..62271668c3b1 100644
+> > --- a/arch/x86/pci/acpi.c
+> > +++ b/arch/x86/pci/acpi.c
+> > @@ -250,6 +250,125 @@ void __init pci_acpi_crs_quirks(void)
+> >  		pr_info("Please notify linux-pci@vger.kernel.org so future kernels can do this automatically\n");
+> >  }
+> >  
+> > +/*
+> > + * Checks if pdev is part of a PCIe switch that is directly below the
+> > + * specified bridge.
+> > + */
+> > +static bool pcie_switch_directly_under(struct pci_dev *bridge,
+> > +				       struct pci_dev *pdev)
+> > +{
+> > +	struct pci_dev *parent = pci_upstream_bridge(pdev);
+> > +
+> > +	/* If the device doesn't have a parent, it's not under anything. */
+> > +	if (!parent)
+> > +		return false;
+> > +
+> > +	/*
+> > +	 * If the device has a PCIe type, check if it is below the
+> > +	 * corresponding PCIe switch components (if applicable). Then check
+> > +	 * if its upstream port is directly beneath the specified bridge.
+> > +	 */
+> > +	switch (pci_pcie_type(pdev)) {
+> > +	case PCI_EXP_TYPE_UPSTREAM:
+> > +		return parent == bridge;
+> > +
+> > +	case PCI_EXP_TYPE_DOWNSTREAM:
+> > +		if (pci_pcie_type(parent) != PCI_EXP_TYPE_UPSTREAM)
+> > +			return false;
+> > +		parent = pci_upstream_bridge(parent);
+> > +		return parent == bridge;
+> > +
+> > +	case PCI_EXP_TYPE_ENDPOINT:
+> > +		if (pci_pcie_type(parent) != PCI_EXP_TYPE_DOWNSTREAM)
+> > +			return false;
+> > +		parent = pci_upstream_bridge(parent);
+> > +		if (!parent || pci_pcie_type(parent) != PCI_EXP_TYPE_UPSTREAM)
+> > +			return false;
+> > +		parent = pci_upstream_bridge(parent);
+> > +		return parent == bridge;
+> > +	}
+> > +
+> > +	return false;
+> > +}
+> > +
+> > +static bool pcie_has_usb4_host_interface(struct pci_dev *pdev)
+> > +{
+> > +	struct fwnode_handle *fwnode;
+> > +
+> > +	/*
+> > +	 * For USB4, the tunneled PCIe root or downstream ports are marked
+> > +	 * with the "usb4-host-interface" ACPI property, so we look for
+> > +	 * that first. This should cover most cases.
+> > +	 */
+> > +	fwnode = fwnode_find_reference(dev_fwnode(&pdev->dev),
+> > +				       "usb4-host-interface", 0);
+> > +	if (!IS_ERR(fwnode)) {
+> > +		fwnode_handle_put(fwnode);
+> > +		return true;
+> > +	}
+> 
+> The Intel devices below look like they're obviously x86-specific, but
+> what about the "usb4-host-interface" above?  Is there any reason that
+> should be x86-specific?
 
-On 28/10/24 23:28, Robin Murphy wrote:
-> Hi all,
->
-> It seems omap-iommu hasn't had enough mainline users to avoid bitrotting
-> through the more recent evolution of the IOMMU API internals. These
-> patches attempt to bring it and its consumers sufficiently up-to-date
-> to work again, in a manner that's hopefully backportable. This is
-> largely all written by inspection, but I have managed to lightly boot
-> test patch #3 on an OMAP4 Pandaboard to confirm iommu_probe_device()
-> working again.
->
-> This supersedes my previous patch[1]. Patches #1 and #2 are functionally
-> independent, and can be applied directly to their respective trees if
-> preferred.
->
-> Thanks,
-> Robin.
->
-> [1] https://lore.kernel.org/linux-iommu/c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com/
->
->
-> Robin Murphy (4):
->    remoteproc/omap: Handle ARM dma_iommu_mapping
->    media: omap3isp: Handle ARM dma_iommu_mapping
->    iommu/omap: Add minimal fwnode support
->    iommu: Make bus_iommu_probe() static
+It is generic to any USB4 host, not just x86 although currently we know
+of only Intel and AMD using it.
 
+> > +	/*
+> > +	 * Any integrated Thunderbolt 3/4 PCIe root ports from Intel
+> > +	 * before Alder Lake do not have the "usb4-host-interface"
+> > +	 * property so we use their PCI IDs instead. All these are
+> > +	 * tunneled. This list is not expected to grow.
+> > +	 */
+> > +	if (pdev->vendor == PCI_VENDOR_ID_INTEL) {
+> > +		switch (pdev->device) {
+> > +		/* Ice Lake Thunderbolt 3 PCIe Root Ports */
+> > +		case 0x8a1d:
+> > +		case 0x8a1f:
+> > +		case 0x8a21:
+> > +		case 0x8a23:
+> > +		/* Tiger Lake-LP Thunderbolt 4 PCIe Root Ports */
+> > +		case 0x9a23:
+> > +		case 0x9a25:
+> > +		case 0x9a27:
+> > +		case 0x9a29:
+> > +		/* Tiger Lake-H Thunderbolt 4 PCIe Root Ports */
+> > +		case 0x9a2b:
+> > +		case 0x9a2d:
+> > +		case 0x9a2f:
+> > +		case 0x9a31:
+> > +			return true;
+> > +		}
+> > +	}
+> > +
+> > +	return false;
+> > +}
+> > +
+> > +bool arch_pci_dev_is_removable(struct pci_dev *pdev)
+> > +{
+> > +	struct pci_dev *parent, *root;
+> > +
+> > +	/* pdev without a parent or Root Port is never tunneled. */
+> > +	parent = pci_upstream_bridge(pdev);
+> > +	if (!parent)
+> > +		return false;
+> > +	root = pcie_find_root_port(pdev);
+> > +	if (!root)
+> > +		return false;
+> > +
+> > +	/* Internal PCIe devices are not tunneled. */
+> > +	if (!root->external_facing)
+> > +		return false;
+> > +
+> > +	/* Anything directly behind a "usb4-host-interface" is tunneled. */
+> > +	if (pcie_has_usb4_host_interface(parent))
+> > +		return true;
+> > +
+> > +	/*
+> > +	 * Check if this is a discrete Thunderbolt/USB4 controller that is
+> > +	 * directly behind the non-USB4 PCIe Root Port marked as
+> > +	 * "ExternalFacingPort". Those are not behind a PCIe tunnel.
+> > +	 */
+> > +	if (pcie_switch_directly_under(root, pdev))
+> > +		return false;
+> > +
+> > +	/* PCIe devices after the discrete chip are tunneled. */
+> > +	return true;
+> > +}
+> 
+> I asked on the v4 patch whether we really need to make all this
+> ACPI specific, and I'm still curious about that, since we don't
+> actually use any ACPI interfaces directly.
 
-Tested this series on omap4 w.r.t. remoteproc subsystem on v6.12-rc5, it 
-works fine; attached logs[2]. Therefore, for series please use:
-
-Tested-by: Beleswar Padhi <b-padhi@ti.com>
-
-Many thanks for working on the fix.
-
-Best,
-Beleswar
-
-[2]: https://gist.github.com/3V3RYONE/f9244a0aa0e3514b7c62f7965cbb0bae
-
->
->   drivers/iommu/iommu.c                    |  3 ++-
->   drivers/iommu/omap-iommu.c               | 26 +++++++++++++++---------
->   drivers/media/platform/ti/omap3isp/isp.c |  7 +++++++
->   drivers/remoteproc/omap_remoteproc.c     | 17 ++++++++++++++++
->   include/linux/iommu.h                    |  1 -
->   5 files changed, 42 insertions(+), 12 deletions(-)
->
+We definitely don't want this to be ACPI specific, there can be ARM
+based systems with USB4 host controller too and those can also use
+DeviceTree instead of ACPI.
