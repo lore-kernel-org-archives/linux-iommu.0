@@ -1,44 +1,44 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A8A4D1E2313
-	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 10:24:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730283849; cv=none; b=Y6Zib7RLpJGI00nd5oYuU+8vt5qGsan9vdMkgc5aeQujyAHZYJ4emqthd61Sbw8YYefWDlgg5T/aAHbfCJydEefSfEIKIC2sJxp5kyJOAPVbrGHilCBPInj9059xr3kHrmLyBEoDgcZIQy/QrOPOgjNByM8KTUuvMYiokvcLt3Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730283849; c=relaxed/simple;
-	bh=LlF+sOJg66O+VtZNap9ROamreGp1SwzJISQDJwL4QG4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=h4URlioELa9y2aZ9NdVzacuIAzjiKtITVwXjdM5Q6yWxa/jDoZwV6dy+CSGBfoLQHtvn83c0ZfRsp7YS2UXQW72Mkr6F20bTFq6WhAaGN+gycumeGceeuCAnAqhageNOXk09yDSO+tt7QfGUp/pYgsL4f918IIdZIq6nJPgmtTk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=lGMUh2Dk; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="lGMUh2Dk"
-Received: from 8bytes.org (p549219d2.dip0.t-ipconnect.de [84.146.25.210])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [83.223.95.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 7DD392A8F74;
-	Wed, 30 Oct 2024 11:24:05 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1730283845;
-	bh=LlF+sOJg66O+VtZNap9ROamreGp1SwzJISQDJwL4QG4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lGMUh2DkZDe6phpbDO7hFopiO2rKxmjfRwq4IVZSZ0KPpecnAsVtSUFtYcSKIW7nW
-	 DwMGBuijRiCJ+2hMWDY9f+SCMfzKEKWtO/bZ8LcnVaBNB9sdUsN7pIIOqKqAG1b502
-	 AwNlDnfKe4LsVRyJMclNWGzWqcf/VptvgzPP0GxlqM/ApZalqHKQv+ap4DLXpLKNI8
-	 wYQKysOl1Pi1zSVA8qMKQaTxxZPgPaUnD0xd26+Z7wDGkEsLJ8ai3L+0kqzkTcZEHU
-	 c5KPvKVl2enbT2fr+TA6jgO7Q5dcxkIKCsR/V18TP/K3rAB2VFEZNIYZF0EDYy2qwL
-	 vLzSjArIb2oVA==
-Date: Wed, 30 Oct 2024 11:24:04 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com,
-	suravee.suthikulpanit@amd.com, jgg@ziepe.ca
-Subject: Re: [PATCH v5 00/12] iommu/amd: Improve domain allocator and device
- attach code path
-Message-ID: <ZyIJRHZW7-oIp_fp@8bytes.org>
-References: <20241030063556.6104-1-vasant.hegde@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79A771E47BF
+	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 11:17:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.223.95.100
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730287059; cv=none; b=TYjnBDjLBNuTkQhRV/Qj9pG0yNLfVe3f1mTERSPob/kmkFwJpSOedH28iNIETiej/Nh9kpHzif/2kXlFfzdIC4r5fFtkPbz4wzosyaW+swVIwmVBIZ9ccihMdyOFnHVISOXbGCSSZGgkC50kgr905lJkRtgKue7Cc2KaVyc26rY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730287059; c=relaxed/simple;
+	bh=przTDjQYYTgJs6OmbMeksLnt9utBBFTAptOHzRDnJrM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=s0RPT/mpFotgWIaUZUiV4LefSjnXknFO6b80hwfboM99woWZ3NA1lZcrWdua5u0/qHqk/IkANcswsh1yms35w4XL0mHHFPJWeXiwW9BtTGATeCT8oWJAUdHu9x/TL+kbYn4sbKxUco+LR3zyTBB5ECuBTQuSvji96kTSU8W7CoY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=none smtp.mailfrom=h08.hostsharing.net; arc=none smtp.client-ip=83.223.95.100
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
+	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
+	by bmailout1.hostsharing.net (Postfix) with ESMTPS id 4F0E130008206;
+	Wed, 30 Oct 2024 12:11:33 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+	id 36BFF22CE34; Wed, 30 Oct 2024 12:11:33 +0100 (CET)
+Date: Wed, 30 Oct 2024 12:11:33 +0100
+From: Lukas Wunner <lukas@wunner.de>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Esther Shimanovich <eshimanovich@chromium.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Rajat Jain <rajatja@google.com>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Mario Limonciello <mario.limonciello@amd.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	iommu@lists.linux.dev,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5] PCI: Detect and trust built-in Thunderbolt chips
+Message-ID: <ZyIUZfFuUdAbVf25@wunner.de>
+References: <20240910-trust-tbt-fix-v5-1-7a7a42a5f496@chromium.org>
+ <20241030001524.GA1180712@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,28 +47,55 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241030063556.6104-1-vasant.hegde@amd.com>
+In-Reply-To: <20241030001524.GA1180712@bhelgaas>
 
-On Wed, Oct 30, 2024 at 06:35:44AM +0000, Vasant Hegde wrote:
-> Vasant Hegde (12):
->   iommu/amd/pgtbl_v2: Take protection domain lock before invalidating
->     TLB
->   iommu/amd: Use ida interface to manage protection domain ID
->   iommu/amd: Remove protection_domain.dev_cnt variable
->   iommu/amd: xarray to track protection_domain->iommu list
->   iommu/amd: Remove unused amd_iommus variable
->   iommu/amd: Do not detach devices in domain free path
->   iommu/amd: Reduce domain lock scope in attach device path
->   iommu/amd: Rearrange attach device code
->   iommu/amd: Convert dev_data lock from spinlock to mutex
->   iommu/amd: Reorder attach device code
->   iommu/amd: Add ops->release_domain
->   iommu/amd: Improve amd_iommu_release_device()
-> 
->  drivers/iommu/amd/amd_iommu_types.h |  23 +-
->  drivers/iommu/amd/init.c            |  37 +--
->  drivers/iommu/amd/io_pgtable_v2.c   |   3 +
->  drivers/iommu/amd/iommu.c           | 360 +++++++++++++---------------
->  4 files changed, 194 insertions(+), 229 deletions(-)
+On Tue, Oct 29, 2024 at 07:15:24PM -0500, Bjorn Helgaas wrote:
+> I asked on the v4 patch whether we really need to make all this
+> ACPI specific, and I'm still curious about that, since we don't
+> actually use any ACPI interfaces directly.
 
-Applied, thanks.
+The patch works around a deficiency in a Microsoft spec which is
+specifically for ACPI-based systems, not devicetree-based systems:
+
+   "ACPI Interface: Device Specific Data (_DSD) for PCIe Root Ports
+    In Windows 10 (Version 1803), new ACPI _DSD methods have been added
+    to support Modern Standby and PCI hot plug scenarios."
+
+    https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
+
+The deficiency is that Microsoft says the ExternalFacingPort property
+must be below the Root Port...
+
+   "This ACPI object enables the operating system to identify externally
+    exposed PCIe hierarchies, such as Thunderbolt. This object must be
+    implemented in the Root Port ACPI device scope."
+
+...but on the systems in question, external-facing ports do not
+originate from the Root Port, but from Downstream Ports.
+So there's the Root Port (with the external facing property),
+below that an Upstream Port and below that a Downstream Port
+(which is the actual external facing port).
+
+I'm not sure if Windows on ARM systems use ACPI or devicetree.
+I'm also not sure whether the Qualcomm SnapDragon SoCs they use
+have Thunderbolt built-in, in which case they won't need a
+discrete Thunderbolt controller.  If they don't use discrete
+Thunderbolt controllers or if they don't use ACPI, they can't
+exhibit the problem.
+
+In any case I haven't heard of any Windows on ARM systems being
+affected by the issue.
+
+So it boils down to:  Should we compile the quirk in just in case
+ARM-based ACPI systems with discrete Thunderbolt controllers and
+problematic ACPI tables show up, or should we constrain it to x86,
+which is the only known architecture that actually needs it right now.
+
+My recommendation would be the latter because it's easy to move
+code around in the tree, should other arches become affected,
+but in the meantime we save memory and compile time on anything
+not x86.
+
+Thanks,
+
+Lukas
