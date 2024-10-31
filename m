@@ -1,113 +1,113 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D31B13C8FF;
-	Thu, 31 Oct 2024 19:05:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B519319D089
+	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 19:12:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730401545; cv=none; b=LjOrmqC0REUjSjO4A1gTie8ycFgxdg7UGLGggguo/9a284NaDX7oCJ60Idarxp8zeKH3fKlDh5kDNzBXp/rg74vsR8tJGRK0FMi7VUzkutJVacMSRR531A6ijuyHmIKnMIoC+iZWlqeB6Qdw4Ke0G/y4A/ULlmwqlQ3Z6H+DRUk=
+	t=1730401972; cv=none; b=mtT51NscpmtMQYZTsjsnWwJ3K1xekylc7JPrjWBWTra2R6dyHTsndd5Lwv/VPSoCoXNJBAOcG7E70+fJmHQOTGH1VvIXnF1oSrWE8BmHrSgm/7BoCu9LzEIc84QaiZ+ppd/FRvE4f/wccYAfMmO8P4wZRbf2B0R1P7FJfYjVLHE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730401545; c=relaxed/simple;
-	bh=zUCcq0xYQ2KKg0AT6UPYv9J6GsZf4ooeo11L3JZIdKE=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=YfP+ljcxhLuvua4huVktbSU5AKeiZnYNbOj5CgDRQs2jNS7ij0qfyh48a034BbeBBy/efMaYOinWrtPHIcjXqtf5X3KIOR9aqtn65ec8Uz7gwEDsWm7i1Pno5CG1qBVZIzBzwGNFemY/fuUJeONFXRXhSU+Q1oTt+arPwA1rGPA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=hpo6SU0a; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1730401972; c=relaxed/simple;
+	bh=TYW55Jhp7t0Vd1HnF8KrL/jWsJe3Zk30JNz8WAh27Rw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OzDLipSAxjeFFMaaijBeXyLBt5s/GHxcuKjQ3V6IDdoxDiDT3fqZ2h4xd/85Nj8vBlYfGI8POzGoZGGxssXtZcufQyLkBy39E8aarSM6MwCdRH1njd/fGbVNR186MTqcfV2exoJ0AOn4LnZVJy/q2QzH8EVRSTUKgBLdSmdXzCI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Pyo9or9I; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="hpo6SU0a"
-Received: from [192.168.35.166] (c-73-118-245-227.hsd1.wa.comcast.net [73.118.245.227])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 88002206941B;
-	Thu, 31 Oct 2024 12:05:41 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 88002206941B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1730401542;
-	bh=cN8Xg10U0hJwzdbYn0VLyyefwmZ46aiJ79KkG/dl5eA=;
-	h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-	b=hpo6SU0afc10BLlq+7xOtaqNTlNryyZQ1hVTr2+F0JZkMwx6tqTL8xrReF0N6K2rS
-	 vHSMJHOSxp9ExDGq/GZb95dKbKIUW276jmEdymGvMLyCodqFAUiZhHl17EitlPUL5+
-	 XN7PgRReK+aW6PF7Bcp7ugC2kCaxM5XtYbtJB7r4=
-Message-ID: <fc47d535-ed52-4ca5-80cc-30003efdd464@linux.microsoft.com>
-Date: Thu, 31 Oct 2024 12:05:39 -0700
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Pyo9or9I"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-539f72c913aso2067743e87.1
+        for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 12:12:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1730401969; x=1731006769; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rD/pY/i638YKtWjS7I89D6wpk5BweHDNRe5Pjk8A2Hc=;
+        b=Pyo9or9IdxbX9cz0YzMSgYjUzlOACcgcDhhUHX/VnKGEBwDw3HTBMLHoqitmRhCaOJ
+         XkpdWWF7zGnk/EoCBlBjAKbPvmwhMuOcmkBs60jq6ah+eYDouES0P8WOHmAOnag5OBG6
+         JArDf/bOJ2K98YA+FV4sDR0RQJ7tTd4KjW21fVxV8qJC9KoR5VoOQDiQHeWH1DUBe4C7
+         YLEVT/Byj8PAdddDGGamjSDfkur8Tiue7294wsim2CgO6++ippg7WNsbGwzxzTyY3XB2
+         euTfVZkLm2VRoUfcJCcUIVuak8L7gda7A937M5BHi02tidzW73HCYm1yFkam6uAXhz2I
+         jrUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730401969; x=1731006769;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rD/pY/i638YKtWjS7I89D6wpk5BweHDNRe5Pjk8A2Hc=;
+        b=apTY9leb2WuLs+MLq1MBGDfTtXZuQdeH2Ek2R2VcGZxjCRC2VSWFNRDYh9BorncgAG
+         Msw9xsArmgKmqvzHXq3bLPiI4u8HMDwhLoEBLq/mw/Hy956tRVw29XKmzBi2DvBVI5Lt
+         rI/vJEguHYiXzOkKR6DkZvdI9dohKq8ohDjvZIA8g/dZ4ExH3r3aH3lPx+1Nf2ZJ5dcN
+         e1i7X1M+ActUOLPCn8MQQFuw9z3kwrJ2SOYoMTBpsGTwZhJDDP/oMhOnFHQhO5tdT8gq
+         dlDMCfZPVmChLdY9DGv9AK/slzw+N2jFFNLmcRFpmL0CGAiLyDZv5iNbz6/vsWnnPtcA
+         E3Fg==
+X-Forwarded-Encrypted: i=1; AJvYcCX+WwTbikEY5xc4mQ+1kuua3QF6ZRbFGsrq6qgILp0GEjhBnKw0M3wixNaKRMuvoQnFvtZVHg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyqeOQpdFxmAnuMXWp3OGJxmg+tunAlTlz1ZDQFsUCbXdqbi/t6
+	sCXEZyFNTtqPOxO5HBOAJilRffDKjJiBrfdvyjKP91BBcr1xn26mmBV/rbK/M3k=
+X-Google-Smtp-Source: AGHT+IEHlgrOOPldK5P7S57DuVyfV2iyV8RJOHXDbZ5tbr/99nLsMq1Jtiuo0Qol8RifwvNdY1Zhjg==
+X-Received: by 2002:a05:6512:3b25:b0:539:e9b4:7ff6 with SMTP id 2adb3069b0e04-53b34a18f2fmr10168609e87.45.1730401968815;
+        Thu, 31 Oct 2024 12:12:48 -0700 (PDT)
+Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53c7bc957aasm302503e87.42.2024.10.31.12.12.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Oct 2024 12:12:47 -0700 (PDT)
+Date: Thu, 31 Oct 2024 21:12:44 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Richard Acayan <mailingradian@gmail.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Rob Clark <robdclark@gmail.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 0/2] iommu/arm-smmu-qcom: Add SDM670 SMMU v2
+Message-ID: <jivvekptfdr5zh6xnzvzgye7oaana6q3dpyge65m4uklfo6ubv@rq5uar3avkdg>
+References: <20240730013820.41702-4-mailingradian@gmail.com>
+ <ZyFSJjO2fkqCwzWm@radian>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Subject: Re: [PATCH 0/5] Add new headers for Hyper-V Dom0
-To: Nuno Das Neves <nunodasneves@linux.microsoft.com>,
- linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, kvm@vger.kernel.org, iommu@lists.linux.dev,
- netdev@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-arch@vger.kernel.org, virtualization@lists.linux.dev
-Cc: eahariha@linux.microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
- wei.liu@kernel.org, decui@microsoft.com, catalin.marinas@arm.com,
- will@kernel.org, luto@kernel.org, tglx@linutronix.de, mingo@redhat.com,
- bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
- seanjc@google.com, pbonzini@redhat.com, peterz@infradead.org,
- daniel.lezcano@linaro.org, joro@8bytes.org, robin.murphy@arm.com,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, lpieralisi@kernel.org, kw@linux.com, robh@kernel.org,
- bhelgaas@google.com, arnd@arndb.de, sgarzare@redhat.com,
- jinankjain@linux.microsoft.com, muminulrussell@gmail.com,
- skinsburskii@linux.microsoft.com, mukeshrathor@microsoft.com,
- tyhicks@linux.microsoft.com
-References: <1727985064-18362-1-git-send-email-nunodasneves@linux.microsoft.com>
-Content-Language: en-US
-In-Reply-To: <1727985064-18362-1-git-send-email-nunodasneves@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZyFSJjO2fkqCwzWm@radian>
 
-On 10/3/2024 12:50 PM, Nuno Das Neves wrote:
-> To support Hyper-V Dom0 (aka Linux as root partition), many new
-> definitions are required.
+On Tue, Oct 29, 2024 at 05:22:46PM -0400, Richard Acayan wrote:
+> On Mon, Jul 29, 2024 at 09:38:21PM -0400, Richard Acayan wrote:
+> > This adds the SMMU v2 for the Snapdragon 670, used for the Adreno GPU.
+> > 
+> > Richard Acayan (2):
+> >   dt-bindings: iommu: arm,smmu: add sdm670 adreno iommu compatible
+> >   iommu/arm-smmu-qcom: add sdm670 adreno iommu compatible
+> > 
+> >  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c            | 1 +
+> >  2 files changed, 2 insertions(+)
 > 
-> The plan going forward is to directly import headers from
-> Hyper-V. This is a more maintainable way to import definitions
-> rather than via the TLFS doc. This patch series introduces
-> new headers (hvhdk.h, hvgdk.h, etc, see patch #3) directly
-> derived from Hyper-V code.
+> Hi, I'm wondering if this is still being considered.
 > 
-> This patch series replaces hyperv-tlfs.h with hvhdk.h, but only
-> in Microsoft-maintained Hyper-V code where they are needed. This
-> leaves the existing hyperv-tlfs.h in use elsewhere - notably for
-> Hyper-V enlightenments on KVM guests.
-> 
-> An intermediary header "hv_defs.h" is introduced to conditionally
-> include either hyperv-tlfs.h or hvhdk.h. This is required because
-> several headers which today include hyperv-tlfs.h, are shared
-> between Hyper-V and KVM code (e.g. mshyperv.h).
-> 
-> Summary:
-> Patch 1-2: Cleanup patches
-> Patch 3: Add the new headers (hvhdk.h, etc..) in include/hyperv/
-> Patch 4: Add hv_defs.h and use it in mshyperv.h, svm.h,
->          hyperv_timer.h
-> Patch 5: Switch to the new headers, only in Hyper-V code
-> 
-> Nuno Das Neves (5):
->   hyperv: Move hv_connection_id to hyperv-tlfs.h
->   hyperv: Remove unnecessary #includes
->   hyperv: Add new Hyper-V headers
->   hyperv: Add hv_defs.h to conditionally include hyperv-tlfs.h or
->     hvhdk.h
->   hyperv: Use hvhdk.h instead of hyperv-tlfs.h in Hyper-V code
->
+> The NAK doesn't really make sense here, as there's a warning/BUG at the
+> bottom of the qcom SMMU driver that occurs when the compatible isn't
+> added:
 
-What is the model for Hyper-V code that has both guest and host roles
-where the corresponding hypercalls are available for both? As I
-understand it, those are supposed to be in hvgdk*.h.
+Please resend it, adding an explicit note about having no generic
+-v2 fallback and that being a correct way. I don't think Krzysztof
+reacts to old patches.
 
-For a specific example, IOMMU hypercalls can operate on stage 2 or stage
-1 translations depending on the role of the (hyper) caller and the input
-values provided. Should a driver using these hypercalls import both
-hvhdk* and hvgdk*? What about hyperv-tlfs?
+> 
+> 	/*
+> 	 * If you hit this WARN_ON() you are missing an entry in the
+> 	 * qcom_smmu_impl_of_match[] table, and GPU per-process page-
+> 	 * tables will be broken.
+> 	 */
+> 	WARN(of_device_is_compatible(np, "qcom,adreno-smmu"),
+> 	     "Missing qcom_smmu_impl_of_match entry for: %s",
+> 	     dev_name(smmu->dev));
+> 
+> DTS change for context (pending):
+> https://lore.kernel.org/linux-arm-msm/20240806214452.16406-10-mailingradian@gmail.com
 
-Patches 4 and 5 seem to draw a bright line between host and guest roles
-while the reality is more gray. Please do correct me if I'm wrong here,
-perhaps the picture would be clearer if Stas' suggestion of a new header
-file is implemented.
-
-Thanks,
-Easwar
+-- 
+With best wishes
+Dmitry
