@@ -1,157 +1,109 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDF031CBEAE
-	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 20:26:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4484149C55;
+	Thu, 31 Oct 2024 20:43:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730406365; cv=none; b=RbqNZ5VLM/zfPrRHMnrwnhfgB3hqMrA61Gn1qvPlNLB8/G9fkXgLMYqsamzLK/GsvNifIfio+17cZCVzIuvHCjI/0wgRL28PR/s25HH5n8QYQltLbTYwgmMuTh7m/Ism67vYftUmQ6S7f1ggaCgK3OJfEnVx1HeMuHJkogMsycg=
+	t=1730407391; cv=none; b=NKI2eZTcXD4gGnQ966LEFxyxOQQE1uOmDpmih0aXhFnqDXs0qXpT/tqnr1ja1sYM9NqKu6O64NDv4bjvrq8Y/VGpEjABgGODWS1RZZxideCeTM4372rZLGT22XLmIEMQQ3h7ssAThUqauzBbEO3+lbw1i/PKmLI5grqyAKF8K8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730406365; c=relaxed/simple;
-	bh=VnQY7chdabpp2UuXBku1gHWVi4hfJe2jZk0NeS2f6Gw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FQo4quKHDkZ3vCqnVbOz2zr/YZQ4uiMwOuymjxYAOacdbnnQwCnoDDf7CYyt88gABiSoK1B2aqdlsS+Y9HvhQdr9FjVFGnj1km3oYZz3cj+0/OLKe1k6GTtupkecs4Xfnt8fNvJG0dcvAJOPTgVUDF0fxeJOFDJXLv6p52V7tC4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=fail smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=lHez54Mu; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1730407391; c=relaxed/simple;
+	bh=H9TYKTBvHoQ5rvWOlZrf5R8cp5gm744S0WtiOVj2YhM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dQ6vyye8Y2R4V3qRUCATesG+f7RmUzE2M+Is2l+G1NUeK/6fHM7Qd/ZKl2NlNiRAbO8XyZNvOTYFegqzhiXJPT8kXgN87d7JSrcOjY6tw7PvylqA2DSCMULKkfWZnjov8kxP7DF5OGoAadJoji7wnuGIXVUbKiC3I+Kh7wTH9sU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lr7kPUgI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="lHez54Mu"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49VC7R5N020861
-	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 20:26:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	HsntP3C2GJI1EZuB1B2CgIDf2X97b82f6C7hdl6Yr+k=; b=lHez54Mut6sd5vtH
-	CBW8vYha99KN3hnlEpIWc4HUR5xPQ4GVNGu31M/KGKZm58W78S4ZrGr6Wj5o6b00
-	bbKs7z+aGZzFv2PU/SEwiY0l83Zrfuwlajy7EbkBRsLMOzp8hUtckuCUhVrTXwIg
-	x+s0bC7Uz35HQ/slLhFZN2B5QMM52GxEO7XTYGBCDEdMKrCI/P3SaFysIlp4eH2x
-	DFOhkmiuJ/NIiGJkd23sLlcj2WBVaCPOaSEfGuic8f+KgIwBrr019ODm32QtF4Mm
-	O714+OKbejPUR29BpFe2YIZfpSjo6CapEaNkPUPGkH+IK+XUntgBAyEnoFzsHGRn
-	SkMSGw==
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42m1rpjsad-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 20:26:02 +0000 (GMT)
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-5eb9dd2d3daso154069eaf.1
-        for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 13:26:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730406362; x=1731011162;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HsntP3C2GJI1EZuB1B2CgIDf2X97b82f6C7hdl6Yr+k=;
-        b=qCSR1k4GwCAV67ftJ6gGy+nXdEWNK+dN28+9MMU9WbrFN9jjcwMr1463Ie+8SlXLAu
-         cNCnXG73bjW+ZncuHM1eMSLSuK3DZze4iEXLrFnWM01/fQPTAwuVfarjGREDrjRPEMBb
-         /64Ye9oi1E9tZMqujWgYcAwlHimIByVfi1okHJ7hMPnHOXtf14dwvZnz2eAYkR3sZ9fc
-         X2sfbXUysQzd08NUwtDw47LJ4A5nf88pLXx9xc/4nqN8pyZU8FUvu+dYmtfqidibefu1
-         /vj/cRcdsWNUVZ032lAvJ1FrUqSL6W3PH7/L6E5cQQ+Yeh5OvuEWYy51EEY1aaohGeOL
-         kXIg==
-X-Forwarded-Encrypted: i=1; AJvYcCV64GU87VoBBJ/p3Yro80ncuxHfzjtFbpPNWTNGcw67zZayJ8xdh+TSWq6JB+PtyVelAucYrA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzGGh5pQumazZ4GLZ0hq5xlrCHH+BGYShBuAgeweofaEVo4FSQ4
-	HDKakzfnnJzca0ECIDbOeBi1QJRIhtR1btGDFSOE2W4EI5uuchUZq2xxSsM4BO4rFeL+sK+jPd6
-	Kt7g9slN4CdfgogOpC0xR9vGU+PWEi1uUUigit4vS2qCJScRNqZmyzQ==
-X-Received: by 2002:a05:6871:593:b0:269:1020:a8a0 with SMTP id 586e51a60fabf-29051b4d694mr5456341fac.4.1730406361935;
-        Thu, 31 Oct 2024 13:26:01 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGWoGAeaCy5azeIH/5FqRyk7J5FBFP8MQZw2ucFj8VqfTTkWtFqd9+U9IWzWpD4RmcROOR3qQ==
-X-Received: by 2002:a05:6871:593:b0:269:1020:a8a0 with SMTP id 586e51a60fabf-29051b4d694mr5456324fac.4.1730406361650;
-        Thu, 31 Oct 2024 13:26:01 -0700 (PDT)
-Received: from [192.168.212.120] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a9e565f9b63sm100100266b.110.2024.10.31.13.25.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Oct 2024 13:26:01 -0700 (PDT)
-Message-ID: <796b470f-7646-41d8-817e-03d93a90a1fa@oss.qualcomm.com>
-Date: Thu, 31 Oct 2024 21:25:58 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lr7kPUgI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7011FC4CEC3;
+	Thu, 31 Oct 2024 20:43:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1730407391;
+	bh=H9TYKTBvHoQ5rvWOlZrf5R8cp5gm744S0WtiOVj2YhM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=lr7kPUgI/7iVNgICJResGJ30FaV5ODcyHJ9WGRkVobW4I+2qmOuISPyR7TgVvtOL0
+	 SmzSJOoShZhbOMucGyUH2uuWA6uV+MEqkVpWqucL5pewOQIRjkLlpdRuvDl1QVDfWX
+	 j1897yIh4R6d4BkCIdg8zDSKqwvM5/ucAQVUt6ez1WZ9F859wkA3oJfZDIz3/BvZ9Q
+	 CFmDxviw5iM6FMEQKmQ/YcUbuNijZ7G5KlXaJgFBJfCLtyj90f3jtiAtedA93PWWwn
+	 Aojx0RCSHe5LU/8+xXjxLd+N9OOoZAjQdgre/g+5QavM+S81ng8FOAv7tC01+C4SFj
+	 e0eXzNVUyHdgQ==
+Date: Thu, 31 Oct 2024 22:43:06 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Jens Axboe <axboe@kernel.dk>
+Cc: Christoph Hellwig <hch@lst.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v1 00/17] Provide a new two step DMA mapping API
+Message-ID: <20241031204306.GB88858@unreal>
+References: <cover.1730298502.git.leon@kernel.org>
+ <3144b6e7-5c80-46d2-8ddc-a71af3c23072@kernel.dk>
+ <20241031083450.GA30625@lst.de>
+ <20241031090530.GC7473@unreal>
+ <20241031092113.GA1791@lst.de>
+ <20241031093746.GA88858@unreal>
+ <8b4500da-4ed8-4cd2-ba3b-0c2d0b5b4551@kernel.dk>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 15/15] arm64: dts: qcom: Add Xiaomi Redmi 5A
-To: =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, iommu@lists.linux.dev
-References: <20241031-msm8917-v2-0-8a075faa89b1@mainlining.org>
- <20241031-msm8917-v2-15-8a075faa89b1@mainlining.org>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20241031-msm8917-v2-15-8a075faa89b1@mainlining.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: zhYrpN6OV-F939tugsR47w4TcbBGqMlP
-X-Proofpoint-ORIG-GUID: zhYrpN6OV-F939tugsR47w4TcbBGqMlP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 mlxlogscore=695 clxscore=1015 suspectscore=0 spamscore=0
- adultscore=0 malwarescore=0 priorityscore=1501 impostorscore=0
- phishscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2410310155
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8b4500da-4ed8-4cd2-ba3b-0c2d0b5b4551@kernel.dk>
 
-On 31.10.2024 2:19 AM, Barnabás Czémán wrote:
-> Add initial support for Xiaomi Redmi 5A (riva).
+On Thu, Oct 31, 2024 at 11:43:50AM -0600, Jens Axboe wrote:
+> On 10/31/24 3:37 AM, Leon Romanovsky wrote:
+> > On Thu, Oct 31, 2024 at 10:21:13AM +0100, Christoph Hellwig wrote:
+> >> On Thu, Oct 31, 2024 at 11:05:30AM +0200, Leon Romanovsky wrote:
+> >>> This series is a subset of the series you tested and doesn't include the
+> >>> block layer changes which most likely were the cause of the performance
+> >>> regression.
+> >>>
+> >>> This is why I separated the block layer changes from the rest of the series
+> >>> and marked them as RFC.
+> >>>
+> >>> The current patch set is viable for HMM and VFIO. Can you please retest
+> >>> only this series and leave the block layer changes for later till Christoph
+> >>> finds the answer for the performance regression?
+> >>
+> >> As the subset doesn't touch block code or code called by block I don't
+> >> think we need Jens to benchmark it, unless he really wants to.
+> > 
+> > He wrote this sentence in his email, while responding on subset which
+> > doesn't change anything in block layer: "just want to make sure
+> > something like this doesn't get merged until that is both fully
+> > understood and sorted out."
+> > 
+> > This series works like a charm for RDMA (HMM) and VFIO.
 > 
-> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
-> ---
+> I don't care about rdma/vfio, nor do I test it, so you guys can do
+> whatever you want there, as long as it doesn't regress the iommu side.
+> The block series is separate, so we'll deal with that when we get there.
+> 
+> I don't know why you CC'ed linux-block on the series.
 
-[...]
+Because of the second part, which is marked as RFC and based on this
+one. I think that it is better to present whole picture to everyone
+interested in the discussion.
 
-> +	reserved-memory {
-> +		/delete-node/ reserved@85b00000;
+Thanks
 
-Deleting nodes is preferred via a &label (like in sm8550-samsung-q5q.dts)
-
-> +		qseecom_mem: reserved@84a00000 {
-> +			reg = <0x0 0x84a00000 0x0 0x1900000>;
-> +			no-map;
-> +		};
-> +
-> +		framebuffer_mem: memory@90001000 {
-> +			reg = <0x0 0x90001000 0x0 (720 * 1280 * 3)>;
-> +			no-map;
-> +		};
-> +	};
-> +};
-> +
-> +&blsp_i2c3 {
-> +	status = "okay";
-> +
-> +	touchscreen@38 {
-> +		compatible = "edt,edt-ft5306";
-> +		reg = <0x38>;
-> +		interrupt-parent = <&tlmm>;
-> +		interrupts = <65 0x2008>;
-
-interrupts-extended = <&tlmm 65 IRQ_TYPE_LEVEL_LOW>;
-
-[...]
-
-> +&sdhc_1 {
-> +	vmmc-supply = <&pm8937_l8>;
-> +	vqmmc-supply = <&pm8937_l5>;
-> +	status = "okay";
-
-A newline before 'status' would be welcome
-
-Looks nice otherwise!
-
-Konrad
+> 
+> -- 
+> Jens Axboe
+> 
