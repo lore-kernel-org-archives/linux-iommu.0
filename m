@@ -1,46 +1,46 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2085.outbound.protection.outlook.com [40.107.237.85])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2078.outbound.protection.outlook.com [40.107.237.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17B6E1C9ECC
-	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 18:43:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.85
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 295381CB31F
+	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 18:43:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.78
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730400193; cv=fail; b=LVu798rVQaA2X79W2RaPbiP45aUs23+euh0ixvEcEXB2cjrLnt919is9oGXjFswcOpeF+A1zELTdKhvIbLDaE2Hx0BOOfGiiXgxH0+o7gOBUtDnmGJV0e7ZlVMvOt9jqhr2jToJSgxV3dqrjEGnTCwxsWupaQRXP5geQKEWKepM=
+	t=1730400195; cv=fail; b=beshEszX9xLiR+Md5RhTU/8TSvRoAFPhZgDdkISEFqkghaq8TzR1mdQUF3DIsL2C6Gb66QlHFgKgWnrq7Vvy42wha3LW+kjwqm4RW3AqJhxQQ2ZyG2loF+mrkxSZb5cShyeYfSJ/R0tqiw9xJuAweBKgRq5uq9tKS1OEbpoZLb4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730400193; c=relaxed/simple;
-	bh=Vq81mRBYJcs3juIMPOi2BohITasMJmFEoGwurSlLkk0=;
+	s=arc-20240116; t=1730400195; c=relaxed/simple;
+	bh=/B9ONeJZvFX/uLGZdTC73vVJnB4rukuiJQn0V67ePkk=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JF8/4Iy7/RFJbqodAnnfVATzWXZj60szNNl3Hc87iHU2DzZv7d4K+jhTsxNiKx2k/P9P1R16qblOT/aApgu7FBzYVj5nERxmoLkny2weMv37OQ+txF4ImFWs+CyLrRchLZoMRSipFAGTCuovHq8wacS0VwqvX1civCI3nGHN3gg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Jf7GIPeN; arc=fail smtp.client-ip=40.107.237.85
+	 MIME-Version:Content-Type; b=poxu43M+pwaJOVR2Bp89HiI/nWc38KS1oZACZFzS5L1z5s4JVh+7AC5OQwy/bRnTiuN8jCOYVqGOgVgpZGbs5brPnhTULUM6ylA1MTri9AsBb66Kpga4uD1B1gnDVFFdWm9syKqlWFQxf0QOZgUhBqWRnzN6slT933356Ozjx6Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=RVAmyxoO; arc=fail smtp.client-ip=40.107.237.78
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Jf7GIPeN"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="RVAmyxoO"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=g8hYGq1pmgksSdiWg1NdImGDZjlhstxQsF86tVN0NurbgBFmNNdSYd/qVGTJss52OgjEnoFIHeHD351gG03ZRdYQiiU+Z1cXfl3vU+Pmi62KfnnRckxeQAEgpQV5vPtcgxzRmZD10Fl5owhtCowPMmiZwakVWFJIcyw320b3ouAqlsu/NYCyH7b5Zg4sjX6Kluw8AJGufOlBsyZEzE2uwAxItQTP9ZKELh0W0yY1YLjnE9UTIg6KD1CL/5Kk+bP2N5ZVhPEoTuf12vHq2zXBzeOUV6xhKkpOL8t6Zu2GRZpcR9k+jgyYIUghfUruUbzojeTVc0PeFT/nSEor+RzMYg==
+ b=t0Y9yimds6wbhxRNqo/v9yDrbRAoZhP+O+1tmG0D7Ft0BCacLu8qf2/wBr/iwvTvnZfHYPha61fTSPkjMtBVSJjsC8bV0WoS5Yo9tdYrS9qY7cSgzmi2iiSSAm9jmedIXg193KinZIfOAUC7dNp36pcuOSAXfAOj6fJwfRBdf2Rb7uOxgI/ZJj4iSzct1T5mvCfFOM8b6haOu+XjMZKJ3j28Fmcl78gWypNhmj/gBMhc5IWTL6DN6/Qn0RIqfKHQ43J6aBQyMacdZPkkmGS9XezgWXaUavrCbOIRdD25kH2ChvZUslmR0g7NlaU29OSbHGwC2oAO1JjiFdwUMWa4Jw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CEPp+Qb5jbzvUJp0ewDSsOcaVFtsC7Ozi7jNsnnyDIQ=;
- b=QzKFRAakS9MEATRbYw1f48nhI2bziHpazzNHKQ4bYXgQUfU3SM6BEps7fbgadYc0PCEKeXPe9F6JPgMIlfx4ek47t2a9ByUamrGEzE//9cO2XDu/7u1KM/gHPe1Q1u4+fTrXz1P08MRT3Psm50zlOD1hsgrdohaaybgUigv1rlE7ybAFsOvbBrDchIVxsA+njzyo5m05Etyz0yiH5kLCR5c8GYaT2cbnZzqf6Tz6vfTQG29RBAf/S6MH10P78+uUwj/HFeCV5PQT+uMavyLT2JBvSHJIgs0vcp8wyQ//e9Cjx2bYUZGfTNyowHZscCsyjilB6+BmgUr5+nJSVkQ8IQ==
+ bh=iclqgk50i33J5FbXKPZlqFmeW7ZTFcvXwbAE9Vt4Xes=;
+ b=ioJMiVZ6g9dUHf+JlXm61YMHbSvO4mUiDxAV/0h1olBYe2hM4RAML8VbaE4RoBO3Pc4oERFheqlt0OeKUHnXwbYZaMlWeaSptCHq6J65a7Qm7FpLo9FpmH172SUMutzSB0EoEVcnyyVS4+cw/DCfsHzXOwQJhMZLrvWPkrbPRekMkfro+bFh4rRlg+vobO1cVjRGfEgphGFLHrzMi+wgpfW8LwexGTNNTL7cfzOD7OBCf9jJtcFCOQ+aUXY8Mh7GmuJ3bm+Pg3eQRgtPEUbMMqhs5iLGy4G7kty8TEHpG8IC1xsM2Ms5Y/3kQbFMnIpcqjwy7yi4wLNb21sccpq3ag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CEPp+Qb5jbzvUJp0ewDSsOcaVFtsC7Ozi7jNsnnyDIQ=;
- b=Jf7GIPeNmPYmr3nnbrPIMkHItIhaPF0dC+OJINXJ3uHLZUayjicS7JP67Qno7yT2oVEjP+t/wzOAUJ2fdPlZtp/lyOjVjIp6n1ZmvC56ss14WaehsSrHaFSf5FWTojPKVAVKqs2zhyNFbFoQfFk89CjV2njrSxFDi60FKCVILFk=
-Received: from CH0PR07CA0017.namprd07.prod.outlook.com (2603:10b6:610:32::22)
- by SA3PR12MB8802.namprd12.prod.outlook.com (2603:10b6:806:314::18) with
+ bh=iclqgk50i33J5FbXKPZlqFmeW7ZTFcvXwbAE9Vt4Xes=;
+ b=RVAmyxoOPdbWX3+DbVvqK6Pj+PflQwSQL2y1kMIYHBjjwYK29KkbU2WIyZW9zEdSgDD81djy10fN35aQJzOS/jAjzltBXWJSperjU5lHwmD4BU587DjcIIIcqrMeWm6nHjzABvfSBUYl0p76wt3+bcinCV3ik+sVj2HwFujp/4U=
+Received: from CH0PR03CA0222.namprd03.prod.outlook.com (2603:10b6:610:e7::17)
+ by SA3PR12MB8803.namprd12.prod.outlook.com (2603:10b6:806:317::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.27; Thu, 31 Oct
- 2024 18:43:05 +0000
-Received: from CH2PEPF00000141.namprd02.prod.outlook.com
- (2603:10b6:610:32:cafe::9d) by CH0PR07CA0017.outlook.office365.com
- (2603:10b6:610:32::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.23 via Frontend
- Transport; Thu, 31 Oct 2024 18:43:05 +0000
+ 2024 18:43:09 +0000
+Received: from CH2PEPF00000140.namprd02.prod.outlook.com
+ (2603:10b6:610:e7:cafe::e4) by CH0PR03CA0222.outlook.office365.com
+ (2603:10b6:610:e7::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.22 via Frontend
+ Transport; Thu, 31 Oct 2024 18:43:09 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,22 +48,22 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CH2PEPF00000141.mail.protection.outlook.com (10.167.244.74) with Microsoft
+ CH2PEPF00000140.mail.protection.outlook.com (10.167.244.72) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8114.16 via Frontend Transport; Thu, 31 Oct 2024 18:43:05 +0000
+ 15.20.8114.16 via Frontend Transport; Thu, 31 Oct 2024 18:43:09 +0000
 Received: from purico-ed03host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Thu, 31 Oct
- 2024 13:43:01 -0500
+ 2024 13:43:05 -0500
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
 CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <vasant.hegde@amd.com>,
 	<jgg@nvidia.com>, <kevin.tian@intel.com>, <jon.grimm@amd.com>,
 	<santosh.shukla@amd.com>, <pandoh@google.com>, <kumaranand@google.com>,
 	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v8 01/10] iommu/amd: Misc ACPI IVRS debug info clean up
-Date: Thu, 31 Oct 2024 18:42:34 +0000
-Message-ID: <20241031184243.4184-2-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v8 02/10] iommu/amd: Disable AMD IOMMU if CMPXCHG16B feature is not supported
+Date: Thu, 31 Oct 2024 18:42:35 +0000
+Message-ID: <20241031184243.4184-3-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20241031184243.4184-1-suravee.suthikulpanit@amd.com>
 References: <20241031184243.4184-1-suravee.suthikulpanit@amd.com>
@@ -79,195 +79,123 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF00000141:EE_|SA3PR12MB8802:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0461d469-a35c-4ee0-9369-08dcf9dbdb88
+X-MS-TrafficTypeDiagnostic: CH2PEPF00000140:EE_|SA3PR12MB8803:EE_
+X-MS-Office365-Filtering-Correlation-Id: a7d87f5d-5d0d-4256-c036-08dcf9dbddb1
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700013|1800799024|376014;
+	BCL:0;ARA:13230040|1800799024|82310400026|36860700013|376014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?g1tgqlM8ob9K/h4ZkjWl5Xp1ls+eABlBW2cpShDqySA+KUjQg0OFvLgh42Jx?=
- =?us-ascii?Q?c2NZ2xu6yW8keuF4EKj/i+0/wM280ElRZ21dVkqqv4daSlOnLSE/ERJLjbAe?=
- =?us-ascii?Q?PqpIyghKNNqVg4DtTSZe964eOedV7ddszh3HN9d7fvw7qff+LKpiLiB6l5O+?=
- =?us-ascii?Q?GwOlaiQ9QYcYcFrkb8f/jSCjm/wpA/gUgt3ffmpbAi56BQUnVf/KB0pTnILB?=
- =?us-ascii?Q?QEpELjWwmJeHfb+szuVehb3/LBRCPLeGQED1m7HHbnqeMHfzRbRE0ezaP+jW?=
- =?us-ascii?Q?McZznENxTtPU/ogoRyCFq8cn1cxzhgAOJNclK67Ozr97ddrkWfhjjPgRcTsU?=
- =?us-ascii?Q?96CjV7iKL/hcG6i5L7auQc+XZST02wNlplMz1xiTNtJVlYzU/O4SOkS6KaTX?=
- =?us-ascii?Q?E5dTS3lkP6UDDgsmieHg1QSvxF9GMt5qi1sCcDdCQo08OhempEKT+Vpc5+gI?=
- =?us-ascii?Q?MoHAiUZlzMY5t59IXX73UVNJcXISchnoxB9093qGjrAJ/ty1/JZkmGAsUaDV?=
- =?us-ascii?Q?RMHWnXZbVQOOhwwC7NtUuEMhlm7NfwIVVfW0zLW6xD2lO08/fm4KSWlHO5rt?=
- =?us-ascii?Q?gPrDaAPwCa94oOk4n1DgKikVrNVPDLpGYJ0I8r58HLW4BSrhlste6hG1BCD6?=
- =?us-ascii?Q?RyK4lwEPacG21CGXJ/7X2edrO562giYMsUMfH8KrgMfpnvN4tuqCOljjkrAp?=
- =?us-ascii?Q?TqSKY2m0EPOUn7nRQliiLC0uEkzWANeFbU/GwdxBpwkY5u7R1EQOtugRkGOb?=
- =?us-ascii?Q?owrtZem88WM9yguMYYMTdHcuTcoL6BmnKL4Zf0HL2r88VBfy1xl6WRM6EE/7?=
- =?us-ascii?Q?anNVakwlxw8e2K/8S8tcLU/PFyVrTuUy5lJCBZyuW5HzRqYuUtVYfjAmpfo7?=
- =?us-ascii?Q?shSwV2S9A5hQ7YpKlJHBU2Hg/RJW1xL4SsULtzh1ea9hsJMYx5oiB+oI9wvw?=
- =?us-ascii?Q?fuG3MMsWJ8hc0xLnhIbHIjJsQgsES1q4THAQ2LR4EnX9pjxhKgIzMHYVIelV?=
- =?us-ascii?Q?xLgOqTA7qie3X6Ln9vh0cEieL7RnzN/nZVFNGoBRR/nAKs8NRPainYlxFUDR?=
- =?us-ascii?Q?GO3zG2VJ14Q8sa/5GjFko59wWnDIyAWQb9KGxG8h+CHA4gSIuerlCAcY3KWe?=
- =?us-ascii?Q?tXotvtmbDQr+XXf69AixVXyPX59nbuv9PmOFC4gJxG5c6ZVXuzmNpd0YCYGe?=
- =?us-ascii?Q?/Jz84kh2gWdA7aAuuTJrT4fSBqxxPMRKEA2ED648SkVsx7hFm6v0jYNxPIzY?=
- =?us-ascii?Q?naerkb+rmrjE1EftM1JDOb+/P/muNgPeKKcuG81gGLwnP3rSGxfJWg6avZbn?=
- =?us-ascii?Q?+KwWxgfeUliJMUF2kIdz/f9o4FEEhz5zuliR6yM+ONNlxyM8OJklLRlZR11q?=
- =?us-ascii?Q?UWAFaiTyFkhnfesf8iqFPidOpF1LUIcv3vel5yOoZU36viaSQg=3D=3D?=
+	=?us-ascii?Q?e9gyneDDCbmQAGCUNhmyK+5LJjezFfLkGdeBbOdB8tSFn/cZlOc3Howq8g3Q?=
+ =?us-ascii?Q?B5tP6rpxLp60c9NEKluy1PHEbfRVhHnaqsF/F/Au/NTkWJT0wn83/bn+xXPO?=
+ =?us-ascii?Q?U9q3LvnF1dYC0g6ICRMJ5pm/p6WSrgJwDY+u61mDu0p2JKg0q6KiBwee/+iC?=
+ =?us-ascii?Q?VBSxT6dV/m1N15bh04oYbwQKYgBmy98EKoYczmJO1GB524J7X3rsO+nMHpxH?=
+ =?us-ascii?Q?1t9flvDWCFSOw7Q3FC7BTX1Jcti+NW3KjF1CQJKyqjuYUHjfUYNtVcqDPwAh?=
+ =?us-ascii?Q?kMi4bWD1u90W4fFY/1b9MCZW03EtYRapXRKxbO6CSUFFzimyWYnny0Tml+xJ?=
+ =?us-ascii?Q?aCsjfjwCVmZgbFCOn41PsmFv4vgVY44IPsAahXT0V6r5qikUExV5QiSXAWPA?=
+ =?us-ascii?Q?qxbzNe0AFhsi1QDnA+Aei/mO+tcqTS/TRuYn5j9+/zLc2AfIrYD5fkjLN/uk?=
+ =?us-ascii?Q?euNRh4KZ8i/k8RfjOrnhx6AD9CZ3QKYR3AcEZSPv2LJQXQt/f7QBHD3xvnaG?=
+ =?us-ascii?Q?LSrFc3JkdeZ/UtFppnQIhRckutkOevr/5tpmTxGtocvBrCBkZYDjfQgXpgiQ?=
+ =?us-ascii?Q?lYfThDu8VoXsDFWiAfPtaG+aaKbEDtx1Z4hLmzZmHtu2cYYL9eCSA4xHRQyx?=
+ =?us-ascii?Q?cfgHXld+AttYA4J+6+dlTfx0++pCNOmqDGCXYxr2VVDF2XZJTv34DTI9YCH2?=
+ =?us-ascii?Q?bjBtFZK5qEFPRPH+Knwk/3OmeA8hHXY7v+2DY7kK1c/nPAg/OOW55CM7SV5t?=
+ =?us-ascii?Q?9HU4fy7O6OyDX+dPMkGK4bre1HWE9MdneTk94FHc4jHraFWZQrhlrB5xMGno?=
+ =?us-ascii?Q?Uz8HyFPz8GHXlbJeXmee5OS35rQ9jHX5t82r7LCqPSPnr3iDidMS8l5LvIPg?=
+ =?us-ascii?Q?UBH+ei+T+zCyu0wysJThhmih2gY05QMleAICC2qFz7DCfx5SOKhsI463C0Zl?=
+ =?us-ascii?Q?lgaGJ5QiXxBOJ3mgss88lxcNj5kagVcNiu8WU/68/kVuetJH3fpNnVf68SFD?=
+ =?us-ascii?Q?msbbC5QjXfp2YWVpcUufBMJC7fjAsqMwhKWfMGVdIdVPrLmHOXXln8GqLVLm?=
+ =?us-ascii?Q?kCZq7u6YqmTtZB3CYZmik1T2/WVC1l2c2leoWL1asnuGxB5MIlOrezhTuEvN?=
+ =?us-ascii?Q?E2SMiHyp3D4CPWRItMCWiKHHwrTGvNjoTSIAH8FzfJOPSKYcTCmDx+8hrUco?=
+ =?us-ascii?Q?j64iG6qiaWwaz1kERQ8KcBEbZwCSYx0FcRDGFUEr8SVyd0Eb7Sgcrv1LiwFl?=
+ =?us-ascii?Q?a6CLcxKIWav0VowwNFVDPZF0kxvb45ITO2AtSfQoxw6cGvckg/Y5tFHTJYZQ?=
+ =?us-ascii?Q?hAJhtZVtXR/an6d7nAY7Men2LijRqVPb2+eW4NFP5wfuGqNcV+TjFWLuZfY2?=
+ =?us-ascii?Q?06dA9VEoCMTIoiuOIwRGhQOI/ZGmtUkkquFMR17BPqHRoNmg9w=3D=3D?=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(1800799024)(376014);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700013)(376014);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2024 18:43:05.5301
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2024 18:43:09.1398
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0461d469-a35c-4ee0-9369-08dcf9dbdb88
+X-MS-Exchange-CrossTenant-Network-Message-Id: a7d87f5d-5d0d-4256-c036-08dcf9dbddb1
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF00000141.namprd02.prod.outlook.com
+	CH2PEPF00000140.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8802
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8803
 
-* Remove redundant AMD-Vi prefix.
-* Print IVHD device entry settings field using hex value.
-* Print root device of IVHD ACPI device entry using hex value.
+According to the AMD IOMMU spec, IOMMU hardware reads the entire DTE
+in a single 256-bit transaction. It is recommended to update DTE using
+128-bit operation followed by an INVALIDATE_DEVTAB_ENTYRY command when
+the IV=1b or V=1b before the change.
 
+According to the AMD BIOS and Kernel Developer's Guide (BDKG) dated back
+to family 10h Processor [1], which is the first introduction of AMD IOMMU,
+AMD processor always has CPUID Fn0000_0001_ECX[CMPXCHG16B]=1.
+Therefore, it is safe to assume cmpxchg128 is available with all AMD
+processor w/ IOMMU.
+
+In addition, the CMPXCHG16B feature has already been checked separately
+before enabling the GA, XT, and GAM modes. Consolidate the detection logic,
+and fail the IOMMU initialization if the feature is not supported.
+
+[1] https://www.amd.com/content/dam/amd/en/documents/archived-tech-docs/programmer-references/31116.pdf
+
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h |  2 +-
- drivers/iommu/amd/init.c            | 35 +++++++++++++----------------
- 2 files changed, 16 insertions(+), 21 deletions(-)
+ drivers/iommu/amd/init.c | 23 +++++++++--------------
+ 1 file changed, 9 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 601fb4ee6900..dadc65808951 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -468,7 +468,7 @@ extern bool amd_iommu_dump;
- #define DUMP_printk(format, arg...)				\
- 	do {							\
- 		if (amd_iommu_dump)				\
--			pr_info("AMD-Vi: " format, ## arg);	\
-+			pr_info(format, ## arg);	\
- 	} while(0);
- 
- /* global flag if IOMMUs cache non-present entries */
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 43131c3a2172..aa9bf81a6ec9 100644
+index aa9bf81a6ec9..8868838139df 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -1243,7 +1243,7 @@ static int __init add_acpi_hid_device(u8 *hid, u8 *uid, u32 *devid,
- 	entry->cmd_line	= cmd_line;
- 	entry->root_devid = (entry->devid & (~0x7));
+@@ -1759,13 +1759,8 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
+ 		else
+ 			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
  
--	pr_info("%s, add hid:%s, uid:%s, rdevid:%d\n",
-+	pr_info("%s, add hid:%s, uid:%s, rdevid:%#x\n",
- 		entry->cmd_line ? "cmd" : "ivrs",
- 		entry->hid, entry->uid, entry->root_devid);
+-		/*
+-		 * Note: GA (128-bit IRTE) mode requires cmpxchg16b supports.
+-		 * GAM also requires GA mode. Therefore, we need to
+-		 * check cmpxchg16b support before enabling it.
+-		 */
+-		if (!boot_cpu_has(X86_FEATURE_CX16) ||
+-		    ((h->efr_attr & (0x1 << IOMMU_FEAT_GASUP_SHIFT)) == 0))
++		/* GAM requires GA mode. */
++		if ((h->efr_attr & (0x1 << IOMMU_FEAT_GASUP_SHIFT)) == 0)
+ 			amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
+ 		break;
+ 	case 0x11:
+@@ -1775,13 +1770,8 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
+ 		else
+ 			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
  
-@@ -1335,15 +1335,14 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 		switch (e->type) {
- 		case IVHD_DEV_ALL:
- 
--			DUMP_printk("  DEV_ALL\t\t\tflags: %02x\n", e->flags);
-+			DUMP_printk("  DEV_ALL\t\t\tsetting: %#02x\n", e->flags);
- 
- 			for (dev_i = 0; dev_i <= pci_seg->last_bdf; ++dev_i)
- 				set_dev_entry_from_acpi(iommu, dev_i, e->flags, 0);
+-		/*
+-		 * Note: GA (128-bit IRTE) mode requires cmpxchg16b supports.
+-		 * XT, GAM also requires GA mode. Therefore, we need to
+-		 * check cmpxchg16b support before enabling them.
+-		 */
+-		if (!boot_cpu_has(X86_FEATURE_CX16) ||
+-		    ((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0)) {
++		/* XT and GAM require GA mode. */
++		if ((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0) {
+ 			amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
  			break;
- 		case IVHD_DEV_SELECT:
+ 		}
+@@ -3046,6 +3036,11 @@ static int __init early_amd_iommu_init(void)
+ 		return -EINVAL;
+ 	}
  
--			DUMP_printk("  DEV_SELECT\t\t\t devid: %04x:%02x:%02x.%x "
--				    "flags: %02x\n",
-+			DUMP_printk("  DEV_SELECT\t\t\tdevid: %04x:%02x:%02x.%x flags: %#02x\n",
- 				    seg_id, PCI_BUS_NUM(e->devid),
- 				    PCI_SLOT(e->devid),
- 				    PCI_FUNC(e->devid),
-@@ -1354,8 +1353,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 			break;
- 		case IVHD_DEV_SELECT_RANGE_START:
- 
--			DUMP_printk("  DEV_SELECT_RANGE_START\t "
--				    "devid: %04x:%02x:%02x.%x flags: %02x\n",
-+			DUMP_printk("  DEV_SELECT_RANGE_START\tdevid: %04x:%02x:%02x.%x flags: %#02x\n",
- 				    seg_id, PCI_BUS_NUM(e->devid),
- 				    PCI_SLOT(e->devid),
- 				    PCI_FUNC(e->devid),
-@@ -1368,8 +1366,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 			break;
- 		case IVHD_DEV_ALIAS:
- 
--			DUMP_printk("  DEV_ALIAS\t\t\t devid: %04x:%02x:%02x.%x "
--				    "flags: %02x devid_to: %02x:%02x.%x\n",
-+			DUMP_printk("  DEV_ALIAS\t\t\tdevid: %04x:%02x:%02x.%x flags: %#02x devid_to: %02x:%02x.%x\n",
- 				    seg_id, PCI_BUS_NUM(e->devid),
- 				    PCI_SLOT(e->devid),
- 				    PCI_FUNC(e->devid),
-@@ -1386,9 +1383,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 			break;
- 		case IVHD_DEV_ALIAS_RANGE:
- 
--			DUMP_printk("  DEV_ALIAS_RANGE\t\t "
--				    "devid: %04x:%02x:%02x.%x flags: %02x "
--				    "devid_to: %04x:%02x:%02x.%x\n",
-+			DUMP_printk("  DEV_ALIAS_RANGE\t\tdevid: %04x:%02x:%02x.%x flags: %#02x devid_to: %04x:%02x:%02x.%x\n",
- 				    seg_id, PCI_BUS_NUM(e->devid),
- 				    PCI_SLOT(e->devid),
- 				    PCI_FUNC(e->devid),
-@@ -1405,8 +1400,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 			break;
- 		case IVHD_DEV_EXT_SELECT:
- 
--			DUMP_printk("  DEV_EXT_SELECT\t\t devid: %04x:%02x:%02x.%x "
--				    "flags: %02x ext: %08x\n",
-+			DUMP_printk("  DEV_EXT_SELECT\t\tdevid: %04x:%02x:%02x.%x flags: %#02x ext: %08x\n",
- 				    seg_id, PCI_BUS_NUM(e->devid),
- 				    PCI_SLOT(e->devid),
- 				    PCI_FUNC(e->devid),
-@@ -1418,8 +1412,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 			break;
- 		case IVHD_DEV_EXT_SELECT_RANGE:
- 
--			DUMP_printk("  DEV_EXT_SELECT_RANGE\t devid: "
--				    "%04x:%02x:%02x.%x flags: %02x ext: %08x\n",
-+			DUMP_printk("  DEV_EXT_SELECT_RANGE\tdevid: %04x:%02x:%02x.%x flags: %#02x ext: %08x\n",
- 				    seg_id, PCI_BUS_NUM(e->devid),
- 				    PCI_SLOT(e->devid),
- 				    PCI_FUNC(e->devid),
-@@ -1432,7 +1425,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 			break;
- 		case IVHD_DEV_RANGE_END:
- 
--			DUMP_printk("  DEV_RANGE_END\t\t devid: %04x:%02x:%02x.%x\n",
-+			DUMP_printk("  DEV_RANGE_END\t\tdevid: %04x:%02x:%02x.%x\n",
- 				    seg_id, PCI_BUS_NUM(e->devid),
- 				    PCI_SLOT(e->devid),
- 				    PCI_FUNC(e->devid));
-@@ -1465,11 +1458,12 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 			else
- 				var = "UNKNOWN";
- 
--			DUMP_printk("  DEV_SPECIAL(%s[%d])\t\tdevid: %04x:%02x:%02x.%x\n",
-+			DUMP_printk("  DEV_SPECIAL(%s[%d])\t\tdevid: %04x:%02x:%02x.%x, flags: %#02x\n",
- 				    var, (int)handle,
- 				    seg_id, PCI_BUS_NUM(devid),
- 				    PCI_SLOT(devid),
--				    PCI_FUNC(devid));
-+				    PCI_FUNC(devid),
-+				    e->flags);
- 
- 			ret = add_special_device(type, handle, &devid, false);
- 			if (ret)
-@@ -1529,11 +1523,12 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 			}
- 
- 			devid = PCI_SEG_DEVID_TO_SBDF(seg_id, e->devid);
--			DUMP_printk("  DEV_ACPI_HID(%s[%s])\t\tdevid: %04x:%02x:%02x.%x\n",
-+			DUMP_printk("  DEV_ACPI_HID(%s[%s])\t\tdevid: %04x:%02x:%02x.%x, flags: %#02x\n",
- 				    hid, uid, seg_id,
- 				    PCI_BUS_NUM(devid),
- 				    PCI_SLOT(devid),
--				    PCI_FUNC(devid));
-+				    PCI_FUNC(devid),
-+				    e->flags);
- 
- 			flags = e->flags;
- 
++	if (!boot_cpu_has(X86_FEATURE_CX16)) {
++		pr_err("Failed to initialize. The CMPXCHG16B feature is required.\n");
++		return -EINVAL;
++	}
++
+ 	/*
+ 	 * Validate checksum here so we don't need to do it when
+ 	 * we actually parse the table
 -- 
 2.34.1
 
