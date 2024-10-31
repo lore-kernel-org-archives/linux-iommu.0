@@ -1,95 +1,170 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8ED249638
-	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 01:29:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFE0417557;
+	Thu, 31 Oct 2024 01:42:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730338187; cv=none; b=GIECzuyuskU8He9hTrhKHy6Z8WsuSWo/p6ITNGQ4k6j3mcup+B3wGYli/bxWb8wRolsShG1JGWNwhIJ86UmHji2YhPTTplnKJV4uOxKB6+0HE4o3+XUWTidABiRVjCiwq5QI3oGsFhF6lqkcITrkUWnLFliCuLD4ckoOWIkQdzU=
+	t=1730338928; cv=none; b=sR90fS5myBszyjLVx3+BIOcXWvS7uNffyqBW53g6IBsGyZxlnj0R9LVFD2GJxwcleNXfBZGVhiOBPQ8uiBTkjzQvILInnhuSveQqAbriuh5XqXjbVYRK1LPGLGxm0e5ly8Gw8FWG2GZZhiWGsLz6on+NRa6EVdnKruPUOWWTlnU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730338187; c=relaxed/simple;
-	bh=lD7Z5J16+ZW7jj0xA29KakGtzo/Qo18WuBFRIMXCgUw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=mXHQVKRiU0NTFrFINk1ECv97H/0Hr4F2wAee2qrfu6lN8YAv17+IfalWflIwpq1K9381qL7aCeSaYazUxHjkLK2YAOZvew4kA1dSJLKw/aIfbAja2td1vqUNe7fdwpTQQXqRRKlrrOy70lQV2F/UNHv3B4nsCk3mq0y+y5/gVf4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=pNyxnkIS; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	s=arc-20240116; t=1730338928; c=relaxed/simple;
+	bh=uiuGDGOOsQVFk2/pTqh06oxqVDJv0u7YalXmTsxrZn8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jyvuSrXG6x1IKL/jltrB/QhxWzrmbvfw6gUd4fnzF4VGhanJ8OrmBqcxd9aF8KiV1WAY4I3Y45ypRtsml78qzYzV1u8CO+Qr4MNej8SyRUoUm95aS9D44YH8hQO9qpQF6g4uHoMlXBXPmlCoZOCUCflJjXYK0NnvuZTeSXkvsJo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=S6EPMqUn; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="pNyxnkIS"
-Received: from [192.168.0.162] (BC24936A.dsl.pool.telekom.hu [188.36.147.106])
-	by mail.mainlining.org (Postfix) with ESMTPSA id F0919E45B5;
-	Thu, 31 Oct 2024 01:19:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1730337588;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=84UkJxh0Dni49KkElyBD9QL3bGo5S0yZi1HX4sLA6Es=;
-	b=pNyxnkIST9GiLJNl0WWsADBcHNQGyDDLff4oTGo+sAjloXbRFvLFjKNi4OfM9uCZOelu+R
-	OslcgFwYBDF4dfQxOae596JphZBY78+p884YDrCrTso2KqOt6oGvHDH3W+hLsNB0D1OLcJ
-	jgUERCVJbzZL13V989dziMMxUv21ASWRXqbBoK/dCf4Iidfbf3nHT4KKyiIAJm0ixv6nAh
-	kqholuc3ZSwT+Z36Okcac0I4LNHfTCCgkbgQn4HzKLXMWZww5WaITLRkzG9Da7KM+pr0bP
-	dT2dbNigCGVbqomT4esP6H9K9qCWhISc7bZI3Hy9OoEoHQWt2Pa2a8bDt7rAaA==
-From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Thu, 31 Oct 2024 02:19:43 +0100
-Subject: [PATCH v2 02/15] pinctrl: qcom-pmic-gpio: add support for PM8937
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="S6EPMqUn"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description;
+	bh=fq4kJNH2CAE848TPhhysdxKjBpD694h5FnzeuEmb1qg=; b=S6EPMqUnjSMOY2vNcllwd8p6Ox
+	BPtRyDbTyKdeu8zN7/wLUeNEzO4yOt1VTpHholffpA3y2fXCRmfGBwbaq+MhS7i6uXvZPqK8EWMf1
+	vdnR+ykKcs42+hETXuNdH86QIsFdTsFb5DdA2bI/GBKPhibpWGo8LZ3PBdnL6MNt66IGi5rIDxwfh
+	Nm4PIrdldIDwzVjNZc3a6VarZ5m10jD/+0k0wQ6vaP/5ECeWPGuh0sdOuXzd7qA+HFGDz97uZOAV8
+	aVCodx/6OFerCofoyBUjDKwTi3nqK7mNz0BN5W9cwhuz4xTFN0XerCsGsF3834u0w+0svVHPsvvbO
+	Jz1tZyPw==;
+Received: from [50.53.2.24] (helo=[192.168.254.17])
+	by casper.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
+	id 1t6KBm-0000000E8Yj-17R7;
+	Thu, 31 Oct 2024 01:41:31 +0000
+Message-ID: <19cf7d58-4a28-4ce8-9524-8c99fdc79062@infradead.org>
+Date: Wed, 30 Oct 2024 18:41:21 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20241031-msm8917-v2-2-8a075faa89b1@mainlining.org>
-References: <20241031-msm8917-v2-0-8a075faa89b1@mainlining.org>
-In-Reply-To: <20241031-msm8917-v2-0-8a075faa89b1@mainlining.org>
-To: Bjorn Andersson <andersson@kernel.org>, 
- Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
- Lee Jones <lee@kernel.org>, Amit Kucheria <amitk@kernel.org>, 
- Thara Gopinath <thara.gopinath@gmail.com>, 
- "Rafael J. Wysocki" <rafael@kernel.org>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, 
- Lukasz Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
- =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1730337585; l=1075;
- i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=lD7Z5J16+ZW7jj0xA29KakGtzo/Qo18WuBFRIMXCgUw=;
- b=iPW3Pm00ycnl2mgV5VG/JoBdcA5sT6QxJicFb/pQFJnn3uk6h5O+juQt3ZrlphaihmRzxSD6F
- DlSdjiFrmz6CE+YqMIsDp6kdfvgSgCdbpNSo3qYBZXU26Aibn4LzfOm
-X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
- pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 09/17] docs: core-api: document the IOVA-based API
+To: Leon Romanovsky <leon@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>
+Cc: Keith Busch <kbusch@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Logan Gunthorpe <logang@deltatee.com>, Yishai Hadas <yishaih@nvidia.com>,
+ Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+ iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+ linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org
+References: <cover.1730298502.git.leon@kernel.org>
+ <881ef0bcf9aa971e995fbdd00776c5140a7b5b3d.1730298502.git.leon@kernel.org>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <881ef0bcf9aa971e995fbdd00776c5140a7b5b3d.1730298502.git.leon@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-PM8937 has 8 GPIO-s with holes on GPIO3, GPIO4 and GPIO6.
+(nits)
 
-Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
----
- drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 2 ++
- 1 file changed, 2 insertions(+)
+On 10/30/24 8:12 AM, Leon Romanovsky wrote:
+> From: Christoph Hellwig <hch@lst.de>
+> 
+> Add an explanation of the newly added IOVA-based mapping API.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  Documentation/core-api/dma-api.rst | 70 ++++++++++++++++++++++++++++++
+>  1 file changed, 70 insertions(+)
+> 
+> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
+> index 8e3cce3d0a23..6095696a65a7 100644
+> --- a/Documentation/core-api/dma-api.rst
+> +++ b/Documentation/core-api/dma-api.rst
+> @@ -530,6 +530,76 @@ routines, e.g.:::
+>  		....
+>  	}
+>  
+> +Part Ie - IOVA-based DMA mappings
+> +---------------------------------
+> +
+> +These APIs allow a very efficient mapping when using an IOMMU.  They are an
+> +optional path that requires extra code and are only recommended for drivers
+> +where DMA mapping performance, or the space usage for storing the DMA addresses
+> +matter.  All the consideration from the previous section apply here as well.
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-index c33af2d6677846a4c43fc817e7b01621ab220890..b1140eaecd32de90e4ae2eafb1d0e0ec939e24bf 100644
---- a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-+++ b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-@@ -1226,6 +1226,8 @@ static const struct of_device_id pmic_gpio_of_match[] = {
- 	{ .compatible = "qcom,pm8550ve-gpio", .data = (void *) 8 },
- 	{ .compatible = "qcom,pm8550vs-gpio", .data = (void *) 6 },
- 	{ .compatible = "qcom,pm8916-gpio", .data = (void *) 4 },
-+	/* pm8937 has 8 GPIOs with holes on 3, 4 and 6 */
-+	{ .compatible = "qcom,pm8937-gpio", .data = (void *) 8 },
- 	{ .compatible = "qcom,pm8941-gpio", .data = (void *) 36 },
- 	/* pm8950 has 8 GPIOs with holes on 3 */
- 	{ .compatible = "qcom,pm8950-gpio", .data = (void *) 8 },
+                    considerations
+
+> +
+> +::
+> +
+> +    bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state,
+> +		phys_addr_t phys, size_t size);
+> +
+> +Is used to try to allocate IOVA space for mapping operation.  If it returns
+> +false this API can't be used for the given device and the normal streaming
+> +DMA mapping API should be used.  The ``struct dma_iova_state`` is allocated
+> +by the driver and must be kept around until unmap time.
+> +
+> +::
+> +
+> +    static inline bool dma_use_iova(struct dma_iova_state *state)
+> +
+> +Can be used by the driver to check if the IOVA-based API is used after a
+> +call to dma_iova_try_alloc.  This can be useful in the unmap path.
+> +
+> +::
+> +
+> +    int dma_iova_link(struct device *dev, struct dma_iova_state *state,
+> +		phys_addr_t phys, size_t offset, size_t size,
+> +		enum dma_data_direction dir, unsigned long attrs);
+> +
+> +Is used to link ranges to the IOVA previously allocated.  The start of all
+> +but the first call to dma_iova_link for a given state must be aligned
+> +to the DMA merge boundary returned by ``dma_get_merge_boundary())``, and
+> +the size of all but the last range must be aligned to the DMA merge boundary
+> +as well.
+> +
+> +::
+> +
+> +    int dma_iova_sync(struct device *dev, struct dma_iova_state *state,
+> +		size_t offset, size_t size);
+> +
+> +Must be called to sync the IOMMU page tables for IOVA-range mapped by one or
+> +more calls to ``dma_iova_link()``.
+> +
+> +For drivers that use a one-shot mapping, all ranges can be unmapped and the
+> +IOVA freed by calling:
+> +
+> +::
+> +
+> +   void dma_iova_destroy(struct device *dev, struct dma_iova_state *state,
+> +		enum dma_data_direction dir, unsigned long attrs);
+> +
+> +Alternatively drivers can dynamically manage the IOVA space by unmapping
+> +and mapping individual regions.  In that case
+> +
+> +::
+> +
+> +    void dma_iova_unlink(struct device *dev, struct dma_iova_state *state,
+> +		size_t offset, size_t size, enum dma_data_direction dir,
+> +		unsigned long attrs);
+> +
+> +is used to unmap a range previous mapped, and
+
+                            previously
+
+> +
+> +::
+> +
+> +   void dma_iova_free(struct device *dev, struct dma_iova_state *state);
+> +
+> +is used to free the IOVA space.  All regions must have been unmapped using
+> +``dma_iova_unlink()`` before calling ``dma_iova_free()``.
+>  
+>  Part II - Non-coherent DMA allocations
+>  --------------------------------------
 
 -- 
-2.47.0
+~Randy
 
