@@ -1,25 +1,32 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA28A16DEBD
-	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 21:18:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 479D61E1A37;
+	Thu, 31 Oct 2024 22:59:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730409528; cv=none; b=NFzTcV9F8JtUAMyejjgJnVyis8MGbAv07gH9stZPnqWWgFNG0wOAh5m4POhSlLJWQPBnIMRmzdOenzeLBCqqb4xcvy54/N8YVW+46jG+YUu0Y/3BgMmyKJRUQ4mpeEVpPirQuxcpMXb7eKPSj5xpk4BQ2/pS5bEjYlMKVma4NkA=
+	t=1730415561; cv=none; b=Sa7rUBj/pkolj19GqIiTg3l0rTC7aEvex+Pmvg2YfLCqiGpSkP3uapjep8JDh6oJeUQKKmnW8zV0znhmhNRnobwypUe2CMG7cKIrMnjKDN/jurFmPOS7w8cYsJLvTwT+pNJEnyfS0LY7DcyvTHuJtjoPcq69Uzsjc75486ZfHx8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730409528; c=relaxed/simple;
-	bh=cpF4AAIzOXZkhcxxrsLBIFg7A1MuiEGbI4VYVNmRk2I=;
+	s=arc-20240116; t=1730415561; c=relaxed/simple;
+	bh=YhlhvI2YQgj/7M+uXnhLz4j5eWdRPCwjq4xSWx40Aro=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ux038FZ7v0bJbb6BKnE2JUr9/vBxS7yH2xnvuHATy79NUJzWxO7gTO3UfjcwacbDSqPh7C782+3YVtiItGUU/tTlguUuQ1awwKoIatUd7fG5W/0MrfnggYQZABCxB5SblrFFgAnl0aZiSDUCN5kg6c9iFAg7ErqfsrRBA8vLR48=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C6EFD153B;
-	Thu, 31 Oct 2024 14:19:11 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 334AF3F73B;
-	Thu, 31 Oct 2024 14:18:30 -0700 (PDT)
-Message-ID: <7e362d8b-c02a-4327-9c5d-af1c4725ddc7@arm.com>
-Date: Thu, 31 Oct 2024 21:18:11 +0000
+	 In-Reply-To:Content-Type; b=u19QSlVf25N/xXNb4pNtuCKfz9vLUfopF/mtPgG01czmV/uGjc1o9NVSraUv0cHSEDxbPYrve/wF9LWGpZRy26cJhHAQhxLQzJ4Vk1Fed82cOvHQ5+S/6HLYPhpLA8CL5YTNu1LrSKyQ+pOlfcovUS49G/CQ2TNVmu9ED4D6RtY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=CA42Pkd8; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="CA42Pkd8"
+Received: from [10.0.0.114] (c-67-182-156-199.hsd1.wa.comcast.net [67.182.156.199])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 0DC1F20C08A6;
+	Thu, 31 Oct 2024 15:59:15 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0DC1F20C08A6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1730415555;
+	bh=Igl9G1C4hOVKzBEFno2MrS2ZBovfo3EzzSumDWDVDac=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=CA42Pkd8gk+aW8coxUfcz9FnbFPOm4DNzDPCYaaqMeDNXZyjHbYFoVBqFM2ra2QA0
+	 gQ3Ywty+9jx/fcSph8pm89kL2on5UwnczZAJca3EIIJcEGpMxIV/b5GDAGfOiBWB5W
+	 0uF5JXHULaaK+8SPYeqwgllQxC7n/jWbNL2sYcio=
+Message-ID: <aecdc98c-1f12-4f17-b145-9f02aebc01c2@linux.microsoft.com>
+Date: Thu, 31 Oct 2024 15:59:14 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,106 +34,111 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 08/17] dma-mapping: add a dma_need_unmap helper
-To: Leon Romanovsky <leon@kernel.org>, Jens Axboe <axboe@kernel.dk>,
- Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
- Sagi Grimberg <sagi@grimberg.me>
-Cc: Keith Busch <kbusch@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Logan Gunthorpe <logang@deltatee.com>, Yishai Hadas <yishaih@nvidia.com>,
- Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
- Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
- iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
- linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org
-References: <cover.1730298502.git.leon@kernel.org>
- <00385b3557fa074865d37b0ac613d2cb28bcb741.1730298502.git.leon@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <00385b3557fa074865d37b0ac613d2cb28bcb741.1730298502.git.leon@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH 0/5] Add new headers for Hyper-V Dom0
+To: Easwar Hariharan <eahariha@linux.microsoft.com>,
+ linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, kvm@vger.kernel.org, iommu@lists.linux.dev,
+ netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, virtualization@lists.linux.dev
+Cc: kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, catalin.marinas@arm.com, will@kernel.org,
+ luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ seanjc@google.com, pbonzini@redhat.com, peterz@infradead.org,
+ daniel.lezcano@linaro.org, joro@8bytes.org, robin.murphy@arm.com,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, lpieralisi@kernel.org, kw@linux.com, robh@kernel.org,
+ bhelgaas@google.com, arnd@arndb.de, sgarzare@redhat.com,
+ jinankjain@linux.microsoft.com, muminulrussell@gmail.com,
+ skinsburskii@linux.microsoft.com, mukeshrathor@microsoft.com,
+ tyhicks@linux.microsoft.com
+References: <1727985064-18362-1-git-send-email-nunodasneves@linux.microsoft.com>
+ <fc47d535-ed52-4ca5-80cc-30003efdd464@linux.microsoft.com>
+Content-Language: en-US
+From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+In-Reply-To: <fc47d535-ed52-4ca5-80cc-30003efdd464@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 30/10/2024 3:12 pm, Leon Romanovsky wrote:
-> From: Christoph Hellwig <hch@lst.de>
-> 
-> Add helper that allows a driver to skip calling dma_unmap_*
-> if the DMA layer can guarantee that they are no-nops.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->   include/linux/dma-mapping.h |  5 +++++
->   kernel/dma/mapping.c        | 20 ++++++++++++++++++++
->   2 files changed, 25 insertions(+)
-> 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 8074a3b5c807..6906edde505d 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -410,6 +410,7 @@ static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
->   {
->   	return dma_dev_need_sync(dev) ? __dma_need_sync(dev, dma_addr) : false;
->   }
-> +bool dma_need_unmap(struct device *dev);
->   #else /* !CONFIG_HAS_DMA || !CONFIG_DMA_NEED_SYNC */
->   static inline bool dma_dev_need_sync(const struct device *dev)
->   {
-> @@ -435,6 +436,10 @@ static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
->   {
->   	return false;
->   }
-> +static inline bool dma_need_unmap(struct device *dev)
-> +{
-> +	return false;
-> +}
->   #endif /* !CONFIG_HAS_DMA || !CONFIG_DMA_NEED_SYNC */
->   
->   struct page *dma_alloc_pages(struct device *dev, size_t size,
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 864a1121bf08..daa97a650778 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -442,6 +442,26 @@ bool __dma_need_sync(struct device *dev, dma_addr_t dma_addr)
->   }
->   EXPORT_SYMBOL_GPL(__dma_need_sync);
->   
-> +/**
-> + * dma_need_unmap - does this device need dma_unmap_* operations
-> + * @dev: device to check
-> + *
-> + * If this function returns %false, drivers can skip calling dma_unmap_* after
-> + * finishing an I/O.  This function must be called after all mappings that might
-> + * need to be unmapped have been performed.
+On 10/31/2024 12:05 PM, Easwar Hariharan wrote:
+> On 10/3/2024 12:50 PM, Nuno Das Neves wrote:
+>> To support Hyper-V Dom0 (aka Linux as root partition), many new
+>> definitions are required.
+>>
+>> The plan going forward is to directly import headers from
+>> Hyper-V. This is a more maintainable way to import definitions
+>> rather than via the TLFS doc. This patch series introduces
+>> new headers (hvhdk.h, hvgdk.h, etc, see patch #3) directly
+>> derived from Hyper-V code.
+>>
+>> This patch series replaces hyperv-tlfs.h with hvhdk.h, but only
+>> in Microsoft-maintained Hyper-V code where they are needed. This
+>> leaves the existing hyperv-tlfs.h in use elsewhere - notably for
+>> Hyper-V enlightenments on KVM guests.
+>>
+>> An intermediary header "hv_defs.h" is introduced to conditionally
+>> include either hyperv-tlfs.h or hvhdk.h. This is required because
+>> several headers which today include hyperv-tlfs.h, are shared
+>> between Hyper-V and KVM code (e.g. mshyperv.h).
+>>
+>> Summary:
+>> Patch 1-2: Cleanup patches
+>> Patch 3: Add the new headers (hvhdk.h, etc..) in include/hyperv/
+>> Patch 4: Add hv_defs.h and use it in mshyperv.h, svm.h,
+>>          hyperv_timer.h
+>> Patch 5: Switch to the new headers, only in Hyper-V code
+>>
+>> Nuno Das Neves (5):
+>>   hyperv: Move hv_connection_id to hyperv-tlfs.h
+>>   hyperv: Remove unnecessary #includes
+>>   hyperv: Add new Hyper-V headers
+>>   hyperv: Add hv_defs.h to conditionally include hyperv-tlfs.h or
+>>     hvhdk.h
+>>   hyperv: Use hvhdk.h instead of hyperv-tlfs.h in Hyper-V code
+>>
 
-In terms of the unmap call itself, why don't we just use dma_skip_sync 
-to short-cut dma_direct_unmap_*() and make sure it's as cheap as possible?
+Hi Easwar, thanks for the questions. I will attempt to clarify.
+> 
+> What is the model for Hyper-V code that has both guest and host roles
+> where the corresponding hypercalls are available for both? As I
+> understand it, those are supposed to be in hvgdk*.h.
+>
 
-In terms of not having to unmap implying not having to store addresses 
-at all, it doesn't seem super-useful when you still have to store them 
-for long enough to find out that you don't :/
+It's true that the naming of the files implies hvgdk*.h is for guests,
+and hvhdk*.h (which includes hvgdk*.h), is for hosts/dom0. But I would
+only take that as a rough guide.
+
+The real reason for keeping these names is to make it a easier to copy
+and maintain the definitions from the Windows code into Linux, by
+keeping the provenance of exactly where they came from.
+
+> For a specific example, IOMMU hypercalls can operate on stage 2 or stage
+> 1 translations depending on the role of the (hyper) caller and the input
+> values provided. Should a driver using these hypercalls import both
+> hvhdk* and hvgdk*? What about hyperv-tlfs?
+>
+
+I'd recommend importing hvhdk.h since it contains everything you need
+(including hvgdk*.h).
+
+The goal of this patchset is to move away from hyperv-tlfs.h, because by
+definition it should only contain definitions from the TLFS document.
+
+> Patches 4 and 5 seem to draw a bright line between host and guest roles
+> while the reality is more gray. Please do correct me if I'm wrong here,
+> perhaps the picture would be clearer if Stas' suggestion of a new header
+> file is implemented.
+> 
+
+Patches 4 and 5 introduce the new headers in a way that avoids any
+potential impact on KVM and other non-Microsoft-maintained code.
+
+The 'line' is not between guest and host, but between Microsoft-maintained
+and non-Microsoft-maintained code.
 
 Thanks,
-Robin.
+Nuno
 
-> + */
-> +bool dma_need_unmap(struct device *dev)
-> +{
-> +	if (!dma_map_direct(dev, get_dma_ops(dev)))
-> +		return true;
-> +#ifdef CONFIG_DMA_NEED_SYNC
-> +	if (!dev->dma_skip_sync)
-> +		return true;
-> +#endif
-> +	return IS_ENABLED(CONFIG_DMA_API_DEBUG);
-> +}
-> +EXPORT_SYMBOL_GPL(dma_need_unmap);
-> +
->   static void dma_setup_need_sync(struct device *dev)
->   {
->   	const struct dma_map_ops *ops = get_dma_ops(dev);
+> Thanks,
+> Easwar
+
