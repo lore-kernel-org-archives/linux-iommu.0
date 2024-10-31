@@ -1,118 +1,167 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2083.outbound.protection.outlook.com [40.107.94.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBA1E1A0BF8;
-	Thu, 31 Oct 2024 14:56:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730386617; cv=none; b=a/Y5izKX/swXqJdB1Yo4ucJTLJ2YiFj6qyHQY72o8mBnplAcP/PVGtTIwJSJ4pYq/8L53wj4ehA/yUnpdRXACCro+QFyCq8mZG5AS17tNkJRqmikTruut1tF129KU4qz2GG/qMj4v5d9T2dCCeYLXe18BheGDUYT0GCqeexLC7Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730386617; c=relaxed/simple;
-	bh=RYQD2k4t+eyKClYERlXtusVj0Pc67h5VYy59QS4+vVA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KbERkVTB/wZAf6zyz2wmXBzZn1w3/ZeV6KZ8V58GVOumA8tVm5b4f7RVgF/khreCWy2qPQ23eQYerd7DD+iWTiyHF6rw8mmhoesTcFQzy+OeC/YT55rSxIB+VKMNgvuZ/goTMH5vLUnEbUR9EMYTgXxMUyElfcAvpSxEVX389oY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lypHGX20; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3353213342F;
+	Thu, 31 Oct 2024 15:33:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.83
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730388812; cv=fail; b=ZCs40zb0TVnMe1i5VCMjKoACr8Et05lXClX3hcXa9KsTuLxIDy984sSHQ+ZtjmrN64M8Uu5ndWMw/9x0Q72eiFQXYK4uXbNEf6mgXEPaFjByoZBd8RmHPfGkSfjVtls1It9Co/4LhwHjEqnfBDlt3Zubj2TADpMh4UEIrAmURQg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730388812; c=relaxed/simple;
+	bh=yv7L8mfZmMI000JHzMcKOS8xu80p4doJ7y3N+ZkXcGI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=eHyGMibwvwXkD2bc14HWsvCiSnFlq1qHdJzx38LK4BmpvHvqhqCVztajh/X6XbZbyGiJbnmTzqrmsHB/UfhojwScLRQHRkruEnI1wvNTdekj6/7IKVRFUhcSMqfUYVcQOKVG+mkj/lVYIoXVQQVaAhC70qPSv8vxeWsx+2lV+DA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=AHhp5dZP; arc=fail smtp.client-ip=40.107.94.83
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lypHGX20"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8630C4FE14;
-	Thu, 31 Oct 2024 14:56:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730386616;
-	bh=RYQD2k4t+eyKClYERlXtusVj0Pc67h5VYy59QS4+vVA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lypHGX20DvAPT4T4VePAdclHYWUYpdJ1hHA/RkIyIWCVbLgIfkcLBwBzCr9PAGbnb
-	 t5+nY9QFF/4G/2ArDljN26hKU3+hSc22AaxvahJjVndjBD3xKtRYpgfa1iMYfLwby0
-	 su3vtOePY7tdPQLIIYwCbeC3HSHndsrIjSUmVEUUgCmUN6YnrOwD4zmtsCLZ8ibGAp
-	 wOTmQ1JUJbG3Zq9EZObYdgGGshf8FvhLwBaRhgAOUDzeeYNkJYf8juK96OOeqXqACz
-	 4vGj+7eBG6oVOM4B3fngswws4Oidq7NlUwk2fpTERrS6QRtZGeurJjHMTyTpz6tvHg
-	 kM2d/10rTPQ1Q==
-Date: Thu, 31 Oct 2024 15:56:48 +0100
-From: Joel Granados <joel.granados@kernel.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Drain PRQs when domain removed from RID
-Message-ID: <oaho6355qyb7mjs7taturs6dkvtqhv2xlhoc6wgike7uodjbia@k5k6qltfhigi>
-References: <20241031095139.44220-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="AHhp5dZP"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=fFCbn1RVua+80hvyJwPH6tQUzQgeN6wIfKmPWgssTkgj9v7j0TW7zT31z+4akFRs0u9V5vNyk/8ePg+pQ/sWmU8P5BXJSy6sdsTuPBfDAJpXs/Yvwr30M1tfxPHlmM4/g5FoXjpUSdvi08aeqECVdLDm03hHwNjIMYrQvPTjErbYluTUtGRqxwJsCBc9AzQRO0l/zeZYthrOj/EpDB7kAo9nPb5SAN0pTAcaT4PfnT1Li8ZM+DL+Cb1azqxaFVgxSth2uhjNkavaYtlNqnCCgo6Ika7B0CCck0+aQzsGiP55rhTdKN7HfHcjDQvKXEcLclYf+VzmLQ67I+W7JY+ynw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6bAmi21m3MUT7cKp3zLercyJ4S8S+ejoQH39sh7iD2I=;
+ b=On6aNDyg7FdXApdPycDx8gZng5LQZMDEM3r15XUETpCH/Wl5gN2sNKcglkfBEJucdBMQWPPAsQSA3gFA2O57imiULVbJEwNbg9OqJVIP2CFPIfuYQQZBxEJAQ2zF81VkVT0U+LXM6wgRpxDNH9/qt9+39h6I2IG+45ACr0GygrXcy7ZlJhlH6lVkGUxQRYy3YW53+YUGrz6jrnxWN7a4G7Ff9zao5kvGnIpvH4pKYsi4B1Ve88PL7/n57S9j+JDQFGLiNfupjBGQ3Aw00rPcTqW2VDiD2ajxiktx7ESTeJwVPB6g6wgylewAMLK6+uCIekIxvtYYRl7wuDzFIUKihg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6bAmi21m3MUT7cKp3zLercyJ4S8S+ejoQH39sh7iD2I=;
+ b=AHhp5dZPjCW5dDL+0NtDhDezWeJxnv92xidWt7g4Kt4u5n+fjTLTfz+AyXzD8RAbwI5a0GTKtF42PPEIIIjxrOQvBVjzq81xhH2ajewy2M3BpYQiYC+ob4xJfmXrmlVPcIFfur67fUclZRyYMaVKNgSBpjEfegWy2EbhcsFbW7zxOmR2CB2IsuamRrEaXlDLkOKGhUNRIHpQaHyHRlWypvMCVHrVFzjjm/G0g/w9G6/ZaK1Lb1gOSSR7XBwYXxlvsFPCZnc6KhAQbnMBjhEx0aCDNPBE6Bs+VHzvI3DNLrAcaxkOR1/tKCbo51UvBFKPccg9bZXt1mHyItVbqIm3bw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by IA0PR12MB7773.namprd12.prod.outlook.com (2603:10b6:208:431::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.20; Thu, 31 Oct
+ 2024 15:33:21 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8093.018; Thu, 31 Oct 2024
+ 15:33:20 +0000
+Date: Thu, 31 Oct 2024 12:33:19 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, corbet@lwn.net, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, will@kernel.org,
+	robin.murphy@arm.com, dwmw2@infradead.org, shuah@kernel.org,
+	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	baolu.lu@linux.intel.com, eric.auger@redhat.com,
+	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
+	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
+	yi.l.liu@intel.com, aik@amd.com, zhangfei.gao@linaro.org,
+	patches@lists.linux.dev
+Subject: Re: [PATCH v6 05/10] iommu: Add
+ iommu_copy_struct_from_full_user_array helper
+Message-ID: <20241031153319.GN10193@nvidia.com>
+References: <cover.1730313494.git.nicolinc@nvidia.com>
+ <1d7f468ff51f3cfb32e90cb29f5b8d4bb2cd2232.1730313494.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1d7f468ff51f3cfb32e90cb29f5b8d4bb2cd2232.1730313494.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: BN9P221CA0015.NAMP221.PROD.OUTLOOK.COM
+ (2603:10b6:408:10a::20) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241031095139.44220-1-baolu.lu@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|IA0PR12MB7773:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0a25f070-2789-47fc-1fb3-08dcf9c1597c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?tTtKKfrYA8WSQjN4x0NnbhxyweedvwZj0xy0Nq92NTcn3R3jnHw2Ift9qiZv?=
+ =?us-ascii?Q?RtOrWrF+Y8/oX/nu/81Let08U7Oh9TQuXDErhWkKwcqXW7YwdWnAshM2+qWt?=
+ =?us-ascii?Q?82Vl6ppiKlAnzf2xuK6hW6WLxpMo2K3YMMH1EQaKir4r7OCL/RTBFfD7ErGL?=
+ =?us-ascii?Q?JBVcCuqk68NmqGzGgKJA6kXbDDQN5xX9ohTkzbiu7+rxT6Vr/o6Rg2CZhcIt?=
+ =?us-ascii?Q?7lrATHZVyn/cso2EdFGlPg+XkNHKa7j/Tp02ng9Fv1WLJJQYFnzlehnPfwub?=
+ =?us-ascii?Q?y61VRyoLR+k5XNbBwKXi0Vs1ztr6+CuDuTDHaB2W2PvNr9FW5QViBCBnbl3r?=
+ =?us-ascii?Q?mAKSXEkyEe36NKdUE7BoG/Z5W8gLyx+F832vFJLdUdpihPtfWPEkFCrvox1L?=
+ =?us-ascii?Q?EGKFWZPfMHqOm+I/tLyvsFiGobLmFUyTFZ4LD7U87wx2ImBxx6kWBIhJS9K6?=
+ =?us-ascii?Q?qaK5OUsUFRFrPP2zH6TEEzog3c9g8YdYpevjiUZSDosFJVN0mMe8CnxLcZ8N?=
+ =?us-ascii?Q?aEJaEgaRm5ZAhQOPnFxh854hlz5OrbbD4+alrVLJ/5Ebzjd1tqTL6c1FqiQ4?=
+ =?us-ascii?Q?iTkOGh68ZTQ3dZqt1CD8w6RwQJ3AujpSg+FjPFEC6tQiCNtNxFGAOeLWHyID?=
+ =?us-ascii?Q?x9YOWzAr5x/hSzLwOHaKV2G3z8gynSMzIX5k+S8dPyyMmIU8WtVovT25p17u?=
+ =?us-ascii?Q?rHkhom0f/0ee92NURCezDHiKaeNh+Snchl2uqZln/6gWnnHeA0AjiAp0jtYL?=
+ =?us-ascii?Q?1MQlRi1FR/l5uGWOidU4RFTFfHkuQiZrlZIk99ycSwGuNYnQxJDJz8WSxp+T?=
+ =?us-ascii?Q?inqgP8Kiq0O93+LPx/1dRvM16lVurC7amvPeSO2OuBm3VjnCh0D+sjSUwID7?=
+ =?us-ascii?Q?4uKkln2IOVt+kpAiIGXytn1gF5AbCn7rR4zY/UBe+m6jwz0RE0Y/vebpS827?=
+ =?us-ascii?Q?xVA2IE7irn5endA4S5knEJxoIk34flDXtlEMABZIhewd2FnSksVHHXcoNQYa?=
+ =?us-ascii?Q?TO+lqTKlV13URPyV9tCffvweM+hN5CTgIAHmsyY+yOtT38MwG0dBPsbQnYkt?=
+ =?us-ascii?Q?NYKIHzi+Sz27BEL23xdnklQPLzUtX9BhubHB6wBmXKCeg4KVQez6nSC4pSqx?=
+ =?us-ascii?Q?GB3VU/H8bQiAkFMTrKVuGx5MtV1EbEUEsleU24PvSflQVr2JOobaXhEB6PAl?=
+ =?us-ascii?Q?NMgJKqqGvl1i/xfkiP2l69Mazxr/rwwqqiUinh0VF/3CVSnGEwz+am8SNxsL?=
+ =?us-ascii?Q?RapEI0uezhNfvPH5ojOwxQpD/XxtFPHqfLhqD/yTb0H6MFcI3pTZbffNFwx1?=
+ =?us-ascii?Q?dL9aTxOWs9A/v1sRPJIOtLdy?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?7daRPPieiiq73Pf3USHI8rpNOar4KxTS09J/0131J2DVqVMM+KtCt1OWfP8S?=
+ =?us-ascii?Q?Sx4lmTBtuFagA+t7O1SaesfkCjHWuHRS6QGdTYKhXzWXDSMAMauBuJWSk+tK?=
+ =?us-ascii?Q?PAV+ISRQeNwh22w4WkgUVSFOFMNz2s9iiS1FiBEXRwWmpXORpjG2juGFbrCg?=
+ =?us-ascii?Q?65J4JlShy9BXxJWl4jI38EZpTNokEeebdEiIpOy5OaaD3tbr9UheMUDM/afW?=
+ =?us-ascii?Q?9vGBXxPOFVr9FIr2Ue1oOmZPLsaFKxc7DoFMBIQAu0gVEB9IZbIjIiz+8CYi?=
+ =?us-ascii?Q?y2oHptQGBNtdAwn9yS1zXkRAONxOlE8g1gq8gpekskFFZjiVdIMR71O32pEZ?=
+ =?us-ascii?Q?xTYaeSa3oqSATSI7nZRMotLfEApgNdClvDS5vlxpsWXo1ja41FW+sozu0jLr?=
+ =?us-ascii?Q?zCzlZSu3IBXo0mBH9baUdi/gupjuTCee+pLb9ayuoJhS5n/ez/OVkYnFMzRO?=
+ =?us-ascii?Q?P1ydt/XO0p5yQDRY7ig/E8vtaFeRw4TdPZ8g+zPdobSm1lDBw7z9RyoeDZJ6?=
+ =?us-ascii?Q?46iA/ltFCCQP2GKmFGabG+N9KqyQF/2FAh+tJXLSGwz4oX2mmiQLXTtFPeeQ?=
+ =?us-ascii?Q?/qkq0m6sulD9rDe0cDCa6EbWNEZpxsJBi8F8Asai9DtlIIWTaoMPdt5/4hp+?=
+ =?us-ascii?Q?eaEgbxAFH+H7cUg8/ZH9hslyFG241v4TrUUFvnblAytC66Gr2zhMXF0xpGeW?=
+ =?us-ascii?Q?XPaoZ9zaY+xToMspXvF2lYdKfh0+PkS8VD9KdV7HcCkB8xDa/rPjEoGi0vYj?=
+ =?us-ascii?Q?rRgVERdLaFp4PwuSEj5jC21YMG0ODHUnga9LXdreE+sxz6/OtR8JLloEhuqr?=
+ =?us-ascii?Q?bh4kMU9BLZjfe3cgkMWWSp5khPDUHtcPcUYn2XESXwbRRTBMU+dHsUkCK4MR?=
+ =?us-ascii?Q?sqfVX/jhULcPpweTcjXTAZd6UWHWUiUvKSuI6DIo9Yumz8NGNcsVRE/tuznU?=
+ =?us-ascii?Q?InwE0TfdBGBkBDR7IgfTe0+SX5/Qd8pVNwcF3VsYrfuBTFF32HVRsxcQ17dR?=
+ =?us-ascii?Q?rIEWUXnzXf9FJEh2tDHLVHdNcudfrqwDHdb/bEd7tY8vqfm+HO4XOnncn3sO?=
+ =?us-ascii?Q?ZxKLG+lOckZogLi97/QuBiQmpeNziBZ7WO1u5BxcYQ8qWcpMmbuMTvexNlt3?=
+ =?us-ascii?Q?b3HZpV5+WgaWsoD8m+wpcwAYztNWyiluYJzaEdHtUU4bXW+tHNBMmqFc5kw0?=
+ =?us-ascii?Q?TpoJ9ks1xqhzfCabDMHthljiMVpzEi0l0of2Lrwj5fVqhUWulUcKwtYYSi7f?=
+ =?us-ascii?Q?W7adz/wg9kw4lAXVRu+zB8tYZsx9wL+M+FXFUQ37fPjiRSJsvfUjrGZfac0/?=
+ =?us-ascii?Q?6nqlryGVAEySB23t6XTyhBzPOPq8utrFW5j7euwOeUOPPRoZCtG3gxLZKd7l?=
+ =?us-ascii?Q?It+4nrMUNcD1Xgt61DbSQtfxdHSwv8KQU4uYmXDQc09YeAA3mWkVvURFDZGq?=
+ =?us-ascii?Q?ZX3CqrdEC3BWSW2Fn6IPSyH7SnmKdSvgRI/ibWxp/6GhQeo6GjcU/B5YvNDO?=
+ =?us-ascii?Q?YV5rvbJEQar25q0Gsa4BOZBH9SLDuifax2FWh32EkfkyLvteu6Bng3nB6p9L?=
+ =?us-ascii?Q?CmC2KkOe7/Nu8mO5Bww=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a25f070-2789-47fc-1fb3-08dcf9c1597c
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2024 15:33:20.7407
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7nkfnzZvvbi3dAAeqU1VOnDoHtRifq7qeH3yZW5QsZs4ydfe830a9Wqzu+bQBmfY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7773
 
-On Thu, Oct 31, 2024 at 05:51:39PM +0800, Lu Baolu wrote:
-> As this iommu driver now supports page faults for requests without
-> PASID, page requests should be drained when a domain is removed from
-> the RID2PASID entry.
+On Wed, Oct 30, 2024 at 02:35:31PM -0700, Nicolin Chen wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> This results in the intel_iommu_drain_pasid_prq() call being moved to
-> intel_pasid_tear_down_entry(). This indicates that when a translation
-> is removed from any PASID entry and the PRI has been enabled on the
-> device, page requests are flushed in the domain detachment path.
+> The iommu_copy_struct_from_user_array helper can be used to copy a single
+> entry from a user array which might not be efficient if the array is big.
 > 
-> The intel_iommu_drain_pasid_prq() helper has been modified to support
-> sending device TLB invalidation requests for both PASID and non-PASID
-> cases.
+> Add a new iommu_copy_struct_from_full_user_array to copy the entire user
+> array at once. Update the existing iommu_copy_struct_from_user_array kdoc
+> accordingly.
 > 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->  drivers/iommu/intel/iommu.c |  1 -
->  drivers/iommu/intel/pasid.c |  1 +
->  drivers/iommu/intel/prq.c   | 22 +++++++---------------
->  3 files changed, 8 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 87a3563dfe54..3878f35be09d 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -4069,7 +4069,6 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
->  	intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
->  	kfree(dev_pasid);
->  	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-> -	intel_iommu_drain_pasid_prq(dev, pasid);
->  }
->  
->  static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
-> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index 7e76062a7ad2..31665fb62e1c 100644
-> --- a/drivers/iommu/intel/pasid.c
-> +++ b/drivers/iommu/intel/pasid.c
-> @@ -265,6 +265,7 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
->  		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
->  
->  	devtlb_invalidation_with_pasid(iommu, dev, pasid);
-> +	intel_iommu_drain_pasid_prq(dev, pasid);
->  }
->  
->  /*
-> diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
-> index 3c50c848893f..ae7f6f34462f 100644
-> --- a/drivers/iommu/intel/prq.c
-> +++ b/drivers/iommu/intel/prq.c
-> @@ -66,12 +66,8 @@ void intel_iommu_drain_pasid_prq(struct device *dev, u32 pasid)
->  	struct pci_dev *pdev;
->  	int head, tail;
->  	u16 sid, did;
-> -	int qdep;
->  
->  	info = dev_iommu_priv_get(dev);
-> -	if (WARN_ON(!info || !dev_is_pci(dev)))
-You do this on purpose because
-1. It is not possible to go through this path without an iommu set in
-   the device
-2. PRI within the intel driver is only relevant for PCI
-3. There will always be a struct device_domain_info related to the
-   device iommu when doing PRI.
-right?
+>  include/linux/iommu.h | 48 ++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 47 insertions(+), 1 deletion(-)
 
-Best
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
--- 
-
-Joel Granados
+Jason
