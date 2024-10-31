@@ -1,39 +1,39 @@
 Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8F1C4D8CF
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8ED249638
 	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 01:29:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730338187; cv=none; b=AMMRRYXgO2b2TLq8CZd/D9wfr0I0Q+xaOzyPzJ7ripB9VjgKlTUQU/O2Uydu8HfwfQ/sB0u9dHIA3OZ2BL/46g7TLrqAMgTARUS5OTnV8w0QTY2ggBUZgazPxWeqyjg2l/jJAHLNyi406t6x6paE7nxubJXrjeO0oICzdCHoJ8U=
+	t=1730338187; cv=none; b=GIECzuyuskU8He9hTrhKHy6Z8WsuSWo/p6ITNGQ4k6j3mcup+B3wGYli/bxWb8wRolsShG1JGWNwhIJ86UmHji2YhPTTplnKJV4uOxKB6+0HE4o3+XUWTidABiRVjCiwq5QI3oGsFhF6lqkcITrkUWnLFliCuLD4ckoOWIkQdzU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1730338187; c=relaxed/simple;
-	bh=ZUgeto9/E87fDiZJrXBC+X56+By41ZSfPN7XvT0Ux6Y=;
+	bh=lD7Z5J16+ZW7jj0xA29KakGtzo/Qo18WuBFRIMXCgUw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=HgKBsACgL5T63/KyhrR8mo7XktEX14I1/JviP0ZRTCf5ULEFbE7WiwG5OOMDyVBhZX36bIHBlOuuJ0Seu48ha06gmvI5cjxF2psQWFTeEid/f5XJ+ulcewS53RI/tTUciUmz5nGQaqeK9QzV91XG+8m/BlcKwW1VyT5Iioa52fc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=RyykSOyO; arc=none smtp.client-ip=5.75.144.95
+	 In-Reply-To:To:Cc; b=mXHQVKRiU0NTFrFINk1ECv97H/0Hr4F2wAee2qrfu6lN8YAv17+IfalWflIwpq1K9381qL7aCeSaYazUxHjkLK2YAOZvew4kA1dSJLKw/aIfbAja2td1vqUNe7fdwpTQQXqRRKlrrOy70lQV2F/UNHv3B4nsCk3mq0y+y5/gVf4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=pNyxnkIS; arc=none smtp.client-ip=5.75.144.95
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="RyykSOyO"
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="pNyxnkIS"
 Received: from [192.168.0.162] (BC24936A.dsl.pool.telekom.hu [188.36.147.106])
-	by mail.mainlining.org (Postfix) with ESMTPSA id E2E03E45B7;
-	Thu, 31 Oct 2024 01:19:49 +0000 (UTC)
+	by mail.mainlining.org (Postfix) with ESMTPSA id F0919E45B5;
+	Thu, 31 Oct 2024 01:19:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1730337590;
+	s=psm; t=1730337588;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=UZFwbFxl+fO/yfXuNk3d5tUxPWCdUEMpagrp1Rl+Vgc=;
-	b=RyykSOyOnNbxr6bxjOBA+uKUfQ36B2TjKHl6ou2nQXeYdclntgmUdTay30w+R9JkZWj8IT
-	fY5dj8Iivl4KFU2mCsezssEAdVjiii1OP1eKA2B4HXJKL6jP2sDiEcUizsnsl0t2tkq+H+
-	daEho5MX4Mx4j3fjf44yH7nDR+iIwm35iLuUGZIO/uyAFUvRjnoUsCMT2820BCBx577DAI
-	c1+XcfJH3L7tJPcZ6Xs6G4F3uAxNdeRTsIMJ3GF9sflqn2bfeb1koxtnD4AZnG5TduD716
-	7ZXnMwTZ9TRD7Tb7E4yKcGiG2p5VQ7Y01rrO3OfMOHAB2gwsqaDG2XIWYw0sFA==
+	bh=84UkJxh0Dni49KkElyBD9QL3bGo5S0yZi1HX4sLA6Es=;
+	b=pNyxnkIST9GiLJNl0WWsADBcHNQGyDDLff4oTGo+sAjloXbRFvLFjKNi4OfM9uCZOelu+R
+	OslcgFwYBDF4dfQxOae596JphZBY78+p884YDrCrTso2KqOt6oGvHDH3W+hLsNB0D1OLcJ
+	jgUERCVJbzZL13V989dziMMxUv21ASWRXqbBoK/dCf4Iidfbf3nHT4KKyiIAJm0ixv6nAh
+	kqholuc3ZSwT+Z36Okcac0I4LNHfTCCgkbgQn4HzKLXMWZww5WaITLRkzG9Da7KM+pr0bP
+	dT2dbNigCGVbqomT4esP6H9K9qCWhISc7bZI3Hy9OoEoHQWt2Pa2a8bDt7rAaA==
 From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Thu, 31 Oct 2024 02:19:45 +0100
-Subject: [PATCH v2 04/15] pinctrl: qcom: spmi-mpp: Add PM8937 compatible
+Date: Thu, 31 Oct 2024 02:19:43 +0100
+Subject: [PATCH v2 02/15] pinctrl: qcom-pmic-gpio: add support for PM8937
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,7 +42,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20241031-msm8917-v2-4-8a075faa89b1@mainlining.org>
+Message-Id: <20241031-msm8917-v2-2-8a075faa89b1@mainlining.org>
 References: <20241031-msm8917-v2-0-8a075faa89b1@mainlining.org>
 In-Reply-To: <20241031-msm8917-v2-0-8a075faa89b1@mainlining.org>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -59,38 +59,36 @@ To: Bjorn Andersson <andersson@kernel.org>,
 Cc: linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
- =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1730337585; l=1084;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1730337585; l=1075;
  i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=ZUgeto9/E87fDiZJrXBC+X56+By41ZSfPN7XvT0Ux6Y=;
- b=v4vO5jjM/feuo4e5WW6PCScmP38DzktLQyYtMHnwCmS6WXWyJX5kadeHa1o8kPxgFaUuf9/Px
- pQw07dNpD79DW4H5zmDAGx+BopNCZpiRvMQD9NEWIz2mIvtI+SuEH/u
+ bh=lD7Z5J16+ZW7jj0xA29KakGtzo/Qo18WuBFRIMXCgUw=;
+ b=iPW3Pm00ycnl2mgV5VG/JoBdcA5sT6QxJicFb/pQFJnn3uk6h5O+juQt3ZrlphaihmRzxSD6F
+ DlSdjiFrmz6CE+YqMIsDp6kdfvgSgCdbpNSo3qYBZXU26Aibn4LzfOm
 X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
  pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-The PM8937 provides 4 MPPs.
-Add a compatible to support them.
+PM8937 has 8 GPIO-s with holes on GPIO3, GPIO4 and GPIO6.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 ---
- drivers/pinctrl/qcom/pinctrl-spmi-mpp.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-spmi-mpp.c b/drivers/pinctrl/qcom/pinctrl-spmi-mpp.c
-index b5b3ac82f030b55f9e199bb4265c770cfde4a81a..84de584cf7ebbd35dd3e7aa89d4b971645b02f82 100644
---- a/drivers/pinctrl/qcom/pinctrl-spmi-mpp.c
-+++ b/drivers/pinctrl/qcom/pinctrl-spmi-mpp.c
-@@ -983,6 +983,7 @@ static const struct of_device_id pmic_mpp_of_match[] = {
- 	{ .compatible = "qcom,pm8226-mpp", .data = (void *) 8 },
- 	{ .compatible = "qcom,pm8841-mpp", .data = (void *) 4 },
- 	{ .compatible = "qcom,pm8916-mpp", .data = (void *) 4 },
-+	{ .compatible = "qcom,pm8937-mpp", .data = (void *) 4 },
- 	{ .compatible = "qcom,pm8941-mpp", .data = (void *) 8 },
- 	{ .compatible = "qcom,pm8950-mpp", .data = (void *) 4 },
- 	{ .compatible = "qcom,pmi8950-mpp", .data = (void *) 4 },
+diff --git a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
+index c33af2d6677846a4c43fc817e7b01621ab220890..b1140eaecd32de90e4ae2eafb1d0e0ec939e24bf 100644
+--- a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
++++ b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
+@@ -1226,6 +1226,8 @@ static const struct of_device_id pmic_gpio_of_match[] = {
+ 	{ .compatible = "qcom,pm8550ve-gpio", .data = (void *) 8 },
+ 	{ .compatible = "qcom,pm8550vs-gpio", .data = (void *) 6 },
+ 	{ .compatible = "qcom,pm8916-gpio", .data = (void *) 4 },
++	/* pm8937 has 8 GPIOs with holes on 3, 4 and 6 */
++	{ .compatible = "qcom,pm8937-gpio", .data = (void *) 8 },
+ 	{ .compatible = "qcom,pm8941-gpio", .data = (void *) 36 },
+ 	/* pm8950 has 8 GPIOs with holes on 3 */
+ 	{ .compatible = "qcom,pm8950-gpio", .data = (void *) 8 },
 
 -- 
 2.47.0
