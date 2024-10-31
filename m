@@ -1,124 +1,265 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0D2F26AD0
-	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 03:43:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4741913DDAE
+	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 06:21:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730346189; cv=none; b=VyyMGnip8QAQTQpEpwEaJDGyApc7NItg6uGTZA1d4plIDbYR8dHF2RXqfHDOmAweM1btBWS3Vyn/IhEoiZiSOoSV96Xl1rt7V90akSQhybXwtoiQ9HBOpHq6fOeZLiaRI3ImS+83qJRAOA3+P5Q6Fin9FFqX/5tUJ+hpGPpa0zs=
+	t=1730355688; cv=none; b=XYzalqdmsLd8w/WLNYovFGkwDeAa3n3DUFl8VfkuKgOArKBzlxMqt2XAeqJht09oN8svn4tbYqXfD4BuT6xOWIqcRVfxdH8LwxAU11ZDqRPPePPNj2qatb9RTZ8AitrcfscpGpGuFE2jVCWNDdqlyN/YGGVw795ZiFihbo/Z1bo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730346189; c=relaxed/simple;
-	bh=9NF32TNj4ZYmr4oveqUOvSWtxMqVol++8yROTpzjYA4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cAMnCo+plYRgi2wM+uAR69Z3SD6EXE8mIy+MQpTkpNGsKf3Wn8e98bVTrnmKsDFBcT+xw6L0nTfMdDxFH/ezUjpM5TARfvwPixTsSRp028co/d8sNdfC76ZtDgT2a/UdzWoZtQpq4hrJys5iExS7XDxX+SKTrWp09fkPLik0b74=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WS3UNF9W; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1730355688; c=relaxed/simple;
+	bh=XSZ6Hy52turl3LfxnjEUv5hVzdAx9oOcIHfaeoqhMiU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FPnasxBd1NFQI9OXK6o6j5HtGwThOtV2rnO+FADuCxxVm1MxdtLHQgJf5jH5UBYRg8bPIupQ8Wdhi6lWsJO0z12SIM2HFvnGiGvscsr1T2E8AVIrGjVdL2OfUsQKCUwo0eP/wSGPLjGWka8rN/uScZ+RU6pYWq1nZbQuXFEaJN4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=CsQgmdcZ; arc=none smtp.client-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WS3UNF9W"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730346186; x=1761882186;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9NF32TNj4ZYmr4oveqUOvSWtxMqVol++8yROTpzjYA4=;
-  b=WS3UNF9WzCQbN7NWdK9WzIx4Jw9d14Hj7HkGTlCed0N6DcONSHE/3Lc2
-   d3v3kwNu3wt2WKlVuAAsW8S4mj657HygyCHROIX6TJOFI3dWtz6jma5r7
-   VfzY3THG8B5GjO3xHacJFet0lbeM5CC8Bkc06+AMPC3ISd4HlQ+lx9wYO
-   ClVFbCIv+eAkGgMzaD8hRbmMasJw6XflQvpY8682RXmW/akQeb2v2f+3A
-   sw9xSqH8fKbqq29LoOk0vV/NPQ0M3CihSwRl7UBgsSTenlKvrSZrXeula
-   CYS4Ylvr3OGuZmBo+GYTkvGFQShc4J7lTREdSPvVsnYqbTnSdJm8P7QP3
-   Q==;
-X-CSE-ConnectionGUID: 2ny14P+gSxiysRndAfHb+w==
-X-CSE-MsgGUID: l+JJdeX0STm9tp2hNntjIg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11241"; a="29514045"
-X-IronPort-AV: E=Sophos;i="6.11,246,1725346800"; 
-   d="scan'208";a="29514045"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2024 20:43:05 -0700
-X-CSE-ConnectionGUID: daw9IZ7ITHaqHf9TrL7mbw==
-X-CSE-MsgGUID: g9mamfELTcG7K2r/u1X2/w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,246,1725346800"; 
-   d="scan'208";a="82159153"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2024 20:43:03 -0700
-Message-ID: <e4460731-a13f-479d-b092-649123fe079f@linux.intel.com>
-Date: Thu, 31 Oct 2024 11:42:24 +0800
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="CsQgmdcZ"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-539f2b95775so587736e87.1
+        for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 23:21:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1730355683; x=1730960483; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=uCUVXtHK/IiMB+Oe4BWESMJU8Ob4rgGM97ZCX/sNfKI=;
+        b=CsQgmdcZeLh5MzI29uvJbR5QohXaD5b1Ggym0vj5LEw1cZaO7wavaRVNxZK9JFNzLj
+         UrsxTibKItB5l5cJ3KKvMFsbuOAOpaWxK4V21Yp23kbicqYM8ZGFs8ynkLyEwKy49gmR
+         24qumDlqAkHN59BIQZlirEUhdkz0p4IYTbdL521pgOUFNkoWOJaFL9UvVE276fQN5DHS
+         CeYgYAYj+t4hAAXlmKqJH867QWY0rKS2GVxaaFsH3pUu9vozwXtIZhxNNWbgzH1KLQok
+         YDwz2zZpeMsROGoM2wcO07t6+wYxcU2xa/B45lW7rEtjTZ5RYzA9gKTtnDfgkffLqcrW
+         EwEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730355683; x=1730960483;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=uCUVXtHK/IiMB+Oe4BWESMJU8Ob4rgGM97ZCX/sNfKI=;
+        b=cYQq2RR436y81jk4ctwv3D1O4cM610KVWblh1iB3HncKcB9CmIEGCq8dW3tYswDVzS
+         +UUvUgAE5FfJgyFQ5HuZ1RyhBfl7KKa4D2h7J0P9dQo3OKJ9Va8n5gbdOH7DMBfJyqoD
+         I7RPNGpnhq5o7EB3Of86Y+NprDLm3kXtXOuPRUK2Y4MPjBR3scYspm0eLpYJa9NHVokk
+         3imkUVirWcDyl2KnjAx3rLGCPwGnAJb7veib2yecb66xVsVkUVlQ6MVKO8qCqGLGm3Gl
+         t1W9+9NibqF181yGAnnuioZnF0blKjJEp3KHnf1iQuxniCM6UN5d03nqSQn6P0Y96bci
+         6etQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVhouTzefa/q5X69rkAfyUFTsGiJBq0bXC8wpuZWhQarcTfxyoEcMMnHgZAt/UHpQwPdWyj+Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyKlvGwzlXRX3KrMzaB4s/z3cwWloqk6WlC4medJL/762D/1pUr
+	H4pVppFcFCYbtm2he0R1pKYE3oCWdG1zBwETXkhyMhsl8eJuMWXzdXIRKPpz3FP9GZFI8U23YDq
+	s3Xw9gLHdJO6UqA1PKF6Dj3UAk0WMtMz4nd6mKA==
+X-Google-Smtp-Source: AGHT+IH0g8oJXVs7VSlsOX60RHCa1G3irMHjbxsPtlD9vjSUFpsj7VgciJ4cq7Us8zzxRnsUwBQyyU+Qscm+a7G3kBw=
+X-Received: by 2002:a05:6512:3053:b0:539:a4ef:6765 with SMTP id
+ 2adb3069b0e04-53b348ba142mr14459958e87.7.1730355683052; Wed, 30 Oct 2024
+ 23:21:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/5] iommu/vt-d: Remove the pasid present check in
- prq_event_thread
-To: Joel Granados <joel.granados@kernel.org>
-Cc: Yi Liu <yi.l.liu@intel.com>, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Klaus Jensen <its@irrelevant.dk>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- Klaus Jensen <k.jensen@samsung.com>
-References: <20241015-jag-iopfv8-v4-0-b696ca89ba29@kernel.org>
- <20241015-jag-iopfv8-v4-2-b696ca89ba29@kernel.org>
- <90c772ce-6d2d-4a1d-bfec-5a7813be43e4@intel.com>
- <ujexsgcpvcjux2ugfes6mzjxl53j3icarfbu25imhzliqskyv6@l7f42nv4fhmy>
- <bbd95589-f4c9-4dcf-939b-c3c407eeed21@linux.intel.com>
- <pdslu36mhfxbzs254tlte2wavfkmecm53xhdtdelm4nfnemt3f@m5ed4hn6zmbl>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <pdslu36mhfxbzs254tlte2wavfkmecm53xhdtdelm4nfnemt3f@m5ed4hn6zmbl>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com> <9-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+In-Reply-To: <9-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Thu, 31 Oct 2024 14:21:11 +0800
+Message-ID: <CABQgh9HoGFGDTEqziQt6WrJ7Bm9d-0c259PYsms3nOVEidn5BA@mail.gmail.com>
+Subject: Re: [PATCH v4 09/12] iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, iommu@lists.linux.dev, 
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org, 
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Robert Moore <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>, 
+	Alex Williamson <alex.williamson@redhat.com>, Donald Dutile <ddutile@redhat.com>, 
+	Eric Auger <eric.auger@redhat.com>, Hanjun Guo <guohanjun@huawei.com>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jerry Snitselaar <jsnitsel@redhat.com>, 
+	Moritz Fischer <mdf@kernel.org>, Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+	patches@lists.linux.dev, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, 
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 10/30/24 22:28, Joel Granados wrote:
->>    /*
->> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->> index 078d1e32a24e..ff88f31053d1 100644
->> --- a/drivers/iommu/intel/svm.c
->> +++ b/drivers/iommu/intel/svm.c
->> @@ -304,9 +304,6 @@ void intel_drain_pasid_prq(struct device *dev, u32
->> pasid)
->>           int qdep;
->>
->>           info = dev_iommu_priv_get(dev);
->> -       if (WARN_ON(!info || !dev_is_pci(dev)))
->> -               return;
-> Did you mean to take out both checks?:
->    1. The info pointer check
->    2. the dev_is_pci check
-> 
-> I can understand the dev_is_pci check, but we should definitely take
-> action if info is NULL. Right?
+On Thu, 31 Oct 2024 at 08:21, Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+> For SMMUv3 a IOMMU_DOMAIN_NESTED is composed of a S2 iommu_domain acting
+> as the parent and a user provided STE fragment that defines the CD table
+> and related data with addresses translated by the S2 iommu_domain.
+>
+> The kernel only permits userspace to control certain allowed bits of the
+> STE that are safe for user/guest control.
+>
+> IOTLB maintenance is a bit subtle here, the S1 implicitly includes the S2
+> translation, but there is no way of knowing which S1 entries refer to a
+> range of S2.
+>
+> For the IOTLB we follow ARM's guidance and issue a CMDQ_OP_TLBI_NH_ALL to
+> flush all ASIDs from the VMID after flushing the S2 on any change to the
+> S2.
+>
+> The IOMMU_DOMAIN_NESTED can only be created from inside a VIOMMU as the
+> invalidation path relies on the VIOMMU to translate virtual stream ID used
+> in the invalidation commands for the CD table and ATS.
+>
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+> Reviewed-by: Donald Dutile <ddutile@redhat.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 157 ++++++++++++++++++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  17 +-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  26 +++
+>  include/uapi/linux/iommufd.h                  |  20 +++
+>  4 files changed, 219 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> index 60dd9e90759571..0b9fffc5b2f09b 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> @@ -30,7 +30,164 @@ void *arm_smmu_hw_info(struct device *dev, u32 *length, u32 *type)
+>         return info;
+>  }
+>
+> +static void arm_smmu_make_nested_cd_table_ste(
+> +       struct arm_smmu_ste *target, struct arm_smmu_master *master,
+> +       struct arm_smmu_nested_domain *nested_domain, bool ats_enabled)
+> +{
+> +       arm_smmu_make_s2_domain_ste(
+> +               target, master, nested_domain->vsmmu->s2_parent, ats_enabled);
+> +
+> +       target->data[0] = cpu_to_le64(STRTAB_STE_0_V |
+> +                                     FIELD_PREP(STRTAB_STE_0_CFG,
+> +                                                STRTAB_STE_0_CFG_NESTED));
+> +       target->data[0] |= nested_domain->ste[0] &
+> +                          ~cpu_to_le64(STRTAB_STE_0_CFG);
+> +       target->data[1] |= nested_domain->ste[1];
+> +}
+> +
+> +/*
+> + * Create a physical STE from the virtual STE that userspace provided when it
+> + * created the nested domain. Using the vSTE userspace can request:
+> + * - Non-valid STE
+> + * - Abort STE
+> + * - Bypass STE (install the S2, no CD table)
+> + * - CD table STE (install the S2 and the userspace CD table)
+> + */
+> +static void arm_smmu_make_nested_domain_ste(
+> +       struct arm_smmu_ste *target, struct arm_smmu_master *master,
+> +       struct arm_smmu_nested_domain *nested_domain, bool ats_enabled)
+> +{
+> +       unsigned int cfg =
+> +               FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(nested_domain->ste[0]));
+> +
+> +       /*
+> +        * Userspace can request a non-valid STE through the nesting interface.
+> +        * We relay that into an abort physical STE with the intention that
+> +        * C_BAD_STE for this SID can be generated to userspace.
+> +        */
+> +       if (!(nested_domain->ste[0] & cpu_to_le64(STRTAB_STE_0_V)))
+> +               cfg = STRTAB_STE_0_CFG_ABORT;
+> +
+> +       switch (cfg) {
+> +       case STRTAB_STE_0_CFG_S1_TRANS:
+> +               arm_smmu_make_nested_cd_table_ste(target, master, nested_domain,
+> +                                                 ats_enabled);
+> +               break;
+> +       case STRTAB_STE_0_CFG_BYPASS:
+> +               arm_smmu_make_s2_domain_ste(target, master,
+> +                                           nested_domain->vsmmu->s2_parent,
+> +                                           ats_enabled);
+> +               break;
+> +       case STRTAB_STE_0_CFG_ABORT:
+> +       default:
+> +               arm_smmu_make_abort_ste(target);
+> +               break;
+> +       }
+> +}
+> +
+> +static int arm_smmu_attach_dev_nested(struct iommu_domain *domain,
+> +                                     struct device *dev)
+> +{
+> +       struct arm_smmu_nested_domain *nested_domain =
+> +               to_smmu_nested_domain(domain);
+> +       struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+> +       struct arm_smmu_attach_state state = {
+> +               .master = master,
+> +               .old_domain = iommu_get_domain_for_dev(dev),
+> +               .ssid = IOMMU_NO_PASID,
+> +               /* Currently invalidation of ATC is not supported */
+> +               .disable_ats = true,
+> +       };
+> +       struct arm_smmu_ste ste;
+> +       int ret;
+> +
+> +       if (nested_domain->vsmmu->smmu != master->smmu)
+> +               return -EINVAL;
+> +       if (arm_smmu_ssids_in_use(&master->cd_table))
+> +               return -EBUSY;
+> +
+> +       mutex_lock(&arm_smmu_asid_lock);
+> +       ret = arm_smmu_attach_prepare(&state, domain);
+> +       if (ret) {
+> +               mutex_unlock(&arm_smmu_asid_lock);
+> +               return ret;
+> +       }
+> +
+> +       arm_smmu_make_nested_domain_ste(&ste, master, nested_domain,
+> +                                       state.ats_enabled);
+> +       arm_smmu_install_ste_for_dev(master, &ste);
+> +       arm_smmu_attach_commit(&state);
+> +       mutex_unlock(&arm_smmu_asid_lock);
+> +       return 0;
+> +}
+> +
+> +static void arm_smmu_domain_nested_free(struct iommu_domain *domain)
+> +{
+> +       kfree(to_smmu_nested_domain(domain));
+> +}
+> +
+> +static const struct iommu_domain_ops arm_smmu_nested_ops = {
+> +       .attach_dev = arm_smmu_attach_dev_nested,
+> +       .free = arm_smmu_domain_nested_free,
+> +};
+> +
+> +static int arm_smmu_validate_vste(struct iommu_hwpt_arm_smmuv3 *arg)
+> +{
+> +       unsigned int cfg;
+> +
+> +       if (!(arg->ste[0] & cpu_to_le64(STRTAB_STE_0_V))) {
+> +               memset(arg->ste, 0, sizeof(arg->ste));
+> +               return 0;
+> +       }
+> +
+> +       /* EIO is reserved for invalid STE data. */
+> +       if ((arg->ste[0] & ~STRTAB_STE_0_NESTING_ALLOWED) ||
+> +           (arg->ste[1] & ~STRTAB_STE_1_NESTING_ALLOWED))
+> +               return -EIO;
+> +
+> +       cfg = FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(arg->ste[0]));
+> +       if (cfg != STRTAB_STE_0_CFG_ABORT && cfg != STRTAB_STE_0_CFG_BYPASS &&
+> +           cfg != STRTAB_STE_0_CFG_S1_TRANS)
+> +               return -EIO;
+> +       return 0;
+> +}
+> +
+> +static struct iommu_domain *
+> +arm_vsmmu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
+> +                             const struct iommu_user_data *user_data)
+> +{
+> +       struct arm_vsmmu *vsmmu = container_of(viommu, struct arm_vsmmu, core);
+> +       struct arm_smmu_nested_domain *nested_domain;
+> +       struct iommu_hwpt_arm_smmuv3 arg;
+> +       int ret;
+> +
+> +       if (flags)
+> +               return ERR_PTR(-EOPNOTSUPP);
 
-WARN_ON(!info) is duplicate as far as I can see. Accessing
-info->pri_enable when info is NULL will cause a null pointer dereference
-warning. This appears irrelevant to this patch though.
+This check fails when using user page fault, with flags =
+IOMMU_HWPT_FAULT_ID_VALID (4)
+Strange, the check is not exist in last version?
 
-> 
->> -
->>           if (!info->pri_enabled)
->>                   return;
->>
->> Generally, intel_drain_pasid_prq() should be called if
->>
->> - a translation is removed from a pasid entry; and
-> This is the path that is already mentiond
-> 
->> - PRI on this device is enabled.
-> And this path is:
->    -> intel_iommu_enable_iopf
->      -> context_flip_pri
->        -> intel_context_flush_present
->          -> qi_flush_pasid_cache
-> 
-> Right?
+iommufd_viommu_alloc_hwpt_nested ->
+viommu->ops->alloc_domain_nested(viommu, flags, user_data) ->
+arm_vsmmu_alloc_domain_nested
 
-Sorry that I didn't make it clear. It should be "PRI on this device was
-enabled", a.k.a. info->pri_enabled is true. I didn't meant to say in the
-PRI enabling path.
 
---
-baolu
+Thanks
