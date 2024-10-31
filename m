@@ -1,187 +1,398 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2072.outbound.protection.outlook.com [40.107.93.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EED0360;
-	Thu, 31 Oct 2024 18:46:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.72
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730400414; cv=fail; b=A4JE1QkGHj3G4d7ZBCwV3ZCupNWr7LklnAjI+e4X6xljOvx6a3b6zeHUoCb9tiM7cELqBPP9USgidKL+SEJuKgqszzsZPGvYYJc9ZP3tMI0Y9587xcyrZK5xxSJS1hwdDWUtf4rYZnK6MbuY6bFqilED5agNLHC83GJ2+D+ZzLQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730400414; c=relaxed/simple;
-	bh=mzi7hc8Rzq4K/ymIX8ujDz8E1hxJ5gDthDwyAmmT17A=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=vALOCTRE3SuhGDVk2W7fPwoiIUZetmL8Ac9Zl77j6t1iY2zB5WzGP16H0GznXWkAsdmhXOoFO2o+TojLO7hmrFSn1obURz97pMHFLAU+lfBXudwkuTZtQS1eg8YRit1DS+3mCI6xE+ci8svvysAUFWPzM3cVjvoaizpx5I7D2Rg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=dBZN2DlG; arc=fail smtp.client-ip=40.107.93.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D8F313AD3F;
+	Thu, 31 Oct 2024 18:47:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730400461; cv=none; b=KkdaeV6xN8LoZhyeQBwcVPfYVm7+5Ym4xoYR1PIQZ+EVsE54hQ54mus6WQf2+i8IIuqsZ0mS7E1lVN5jDvCXZZebXug3fAWPwHEwQIdH3Qy9Mi0Q3q7q+h8ITUq7I1rIwt+I6BB9CsTGGTD3Bsfigfu3CdSgS9QF6amPbC1M2kc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730400461; c=relaxed/simple;
+	bh=PgnJ+gOr59jRF+AEVpZTxGfNhtTZ7ShoVuDk8To3/mA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IFxN2frz2wLoCxWpo0MdWSgsMf9L7d8u0VAYxJVOnJPKXDs+QgCjZQeWZy4aZ2JVrWeqDrMSlDQv3zqvFjhFIxXBIRw6JCLp1+Bg3dMoa5emXjW+h2iiGt8VmoonNDBcSazx8mOAb7UT0h71mAQdcJfLd6aJKKYK6PPQZNNq81Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=eC1OCMqT; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="dBZN2DlG"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=odPRWT7+T/4QR75Crcd5lxbuwZhri8mEPy6CZHZM39ORJVlpWHGcVWqMDiBiKu81sJ3CYkb0KX3lUx5Zm+pkL57DhpuXrx65GzxRr+/DA/lz3z2BbNJ9oeLcBqM3nt+zvuZqnvNy9Axt2mJVZbDq0XDJBYUl6u6+LgbJ3oZrg3Vc28XI6bzT/XQBePFgwHCk+VnIZMeEf3D/OTb1b8IIHbGvi875AV3hQ/jrNbRqpS76AkOuA4rk0ATlbnjWJc2zAQ+ISmI7irT9leSiMzRc1sXMECQ2it/ZpzM+57kj4RtNyCPRIBdYbjlO8ERyE4ylcOpyu4e2YG6fZnszFjFhxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/S+/8u+WetCcfsd5nbj6p9sHaenJtcdeSP3oR7ZRs/I=;
- b=AiVS5+53vksncpdVPwMPwe/6YYYg1E4Sqm3/eSgfs1scm/U+AtgzamD4CaBSyaQhj/Q+mtq0qqfjFufarhf+utqGo1GQiYSpVBj/R3EsxhOZEYVb32Q0jZjV8yTHBGcWkOeb5Pb9aeFFb8mtVKo1J1S4s5stmsVQoBva4sW3JAjy8ce/qWJUgTjFF9XpNibUzlS8Wx192/k+VIpifHs8fBSjkwVzVs+5WppqgzN4gMkTcP+l6bPOjBOq9/US/FOG5cFpsub8RVV9FS5QOnU0hUP02r7Oe8c5J9tAY56gmhp/4cS6ile7xqcCqilVMLW/X2s0z07AuctInXtPmSr6jw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/S+/8u+WetCcfsd5nbj6p9sHaenJtcdeSP3oR7ZRs/I=;
- b=dBZN2DlG2S6bp8O7uTq9I0d8J3PGeBotXYUIkCreLjABhJAPC8BGyzuZCptx3klNTG1RipX4iLTkSufoolYtANkAuZrcqSHmOk6POvzwT3Isv7BVO2XE00pyeoXeFHLRwKMW/TpecPzo3v0cNmQY0sKQ47OXWwc1Z+eCFOgDn+RVTFQmStcRBmekV1CZa5svapQPGLJJq1m0jjeAxdGF1EuiSOWvS6iJNAM1RxrAFc59RKN/Wj8uPb6qvbuFjy36r8fEb9qomT9hWZ5NgGRz5TebZ4m0cQYZBShfxQE3g95pO5yYfZWEDwqVmh38fy3jE6c9q62cx+lhlLwOP7KwgQ==
-Received: from DS7P222CA0019.NAMP222.PROD.OUTLOOK.COM (2603:10b6:8:2e::12) by
- DM4PR12MB6447.namprd12.prod.outlook.com (2603:10b6:8:bf::16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8093.25; Thu, 31 Oct 2024 18:46:49 +0000
-Received: from CY4PEPF0000E9D3.namprd03.prod.outlook.com
- (2603:10b6:8:2e:cafe::1f) by DS7P222CA0019.outlook.office365.com
- (2603:10b6:8:2e::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.23 via Frontend
- Transport; Thu, 31 Oct 2024 18:46:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CY4PEPF0000E9D3.mail.protection.outlook.com (10.167.241.138) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8114.16 via Frontend Transport; Thu, 31 Oct 2024 18:46:49 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 31 Oct
- 2024 11:46:33 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 31 Oct
- 2024 11:46:33 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Thu, 31 Oct 2024 11:46:31 -0700
-Date: Thu, 31 Oct 2024 11:46:30 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <kevin.tian@intel.com>, <corbet@lwn.net>, <joro@8bytes.org>,
-	<suravee.suthikulpanit@amd.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<dwmw2@infradead.org>, <shuah@kernel.org>, <iommu@lists.linux.dev>,
-	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <baolu.lu@linux.intel.com>,
-	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
-	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
-	<smostafa@google.com>, <yi.l.liu@intel.com>, <aik@amd.com>,
-	<zhangfei.gao@linaro.org>, <patches@lists.linux.dev>
-Subject: Re: [PATCH v6 01/10] iommufd/viommu: Add IOMMUFD_OBJ_VDEVICE and
- IOMMU_VDEVICE_ALLOC ioctl
-Message-ID: <ZyPQhn+DlT4Zy3Qq@Asurada-Nvidia>
-References: <cover.1730313494.git.nicolinc@nvidia.com>
- <19e20e54d41a0c1ab7403264e1016c4b19293135.1730313494.git.nicolinc@nvidia.com>
- <20241031132941.GL10193@nvidia.com>
- <ZyO2xfe95Y1TCaqG@Asurada-Nvidia>
- <20241031170446.GQ10193@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="eC1OCMqT"
+Received: from [10.0.0.114] (c-67-182-156-199.hsd1.wa.comcast.net [67.182.156.199])
+	by linux.microsoft.com (Postfix) with ESMTPSA id B32BE20C5D6F;
+	Thu, 31 Oct 2024 11:47:30 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B32BE20C5D6F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1730400451;
+	bh=nff/hc36DIoTlMOGJ09z8nvWVNZRYH5gfv3Ti6i/dfw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=eC1OCMqT39nv4qeMrmizrUxVULbAWTY3YorJekiK1jSbbjQdno99pAOLs96SQ5QX4
+	 KUeN6CwYJHVOkiCVev37eGfclzakwJpvbR/7WUMc2+5sLmJpwU7b5N8wnYgzwyfk1v
+	 425UI9/AN5eE4TYcNONqfQr5yQ9dYLkgir2QvEYE=
+Message-ID: <90364f44-98e7-4a9a-af57-881cae8e81a7@linux.microsoft.com>
+Date: Thu, 31 Oct 2024 11:47:30 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20241031170446.GQ10193@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D3:EE_|DM4PR12MB6447:EE_
-X-MS-Office365-Filtering-Correlation-Id: 79045e1b-f3a0-4855-ea23-08dcf9dc60d3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|7416014|376014|1800799024|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?1yyWaIv466aDIbajOy635k+din/Jp33ZyyO8cQ92u1b94gkUMRNcP+HUJUTr?=
- =?us-ascii?Q?D1mqufRRVfJw7ty6Yz/cUzskeu2Z1FRVwrUzdqeJrQTf3wIjtSYUPrVUGCo4?=
- =?us-ascii?Q?q3FtoGdziIVGW8+ZzxEHKYjUS4QE3WtIhaPiCcqgAsJ0kfx3NBVViN+gwEYH?=
- =?us-ascii?Q?nHBBQNVclcHghK8viGdTDTqo+qnF7CedIhLOmoLQsT4FDEYVDtklNIAUNYIc?=
- =?us-ascii?Q?uHlMEIgJCq/NKiSWLtxmOhNibJ70dxpGztF1TJjXZT/JW2XF7SjDkbgEgQu+?=
- =?us-ascii?Q?hwFc2QDsT920R15l40867V67UatN50mohlXA9v+gB4Rjs7d1Fdroqd5TJKdU?=
- =?us-ascii?Q?TtSvZgx/zgWD4sTCAd1ovaPbgAnZbNNrLCi1PnYaS861p4GHO6HCNGSLHF/2?=
- =?us-ascii?Q?i2AyBmvBFeg5rd0k2SuPDVNC4tBx1EeEr4wTOFlyASJyVlcDXLVE6jMq3izg?=
- =?us-ascii?Q?EjlycUUFWFbLXgckC/qwzuPYiwf+ogutCrLI353HKswmXD+gvar/FzloFcjf?=
- =?us-ascii?Q?kcXM+CnStCz4xtXHK3T2catgOWmW7dLNHqc6S2K0lBjIncxA0gXsIt02ePh6?=
- =?us-ascii?Q?TvIO+Qh3uTx7A9x9rJe1uocaYwCNfR336HwhMImVMKDTAXK4cGoPnhXX9E5T?=
- =?us-ascii?Q?OAHQTo6SEoZpjo0n44eXPlXOOyzM1KJ6vwDWoevQzqHIwRl6EGu9qzd2Vn6M?=
- =?us-ascii?Q?g2rKAbUxIJvaBw5pbfWCGjtHgr4TWgaXuDGwGdwAhl7fk5o6r5sPrFH1pWus?=
- =?us-ascii?Q?6SLhJ+hbQN0dA0gQMdwza9jA4bMZrsW9Kjkqz6LTotzttzE6HPegKik9NmMk?=
- =?us-ascii?Q?MJ9dnessrp4LtV1ZzQ4GwS/Y5DOU5ypGlV+d83sO5Q+td0TWJaKBvfBcTaNK?=
- =?us-ascii?Q?MowFe9tQGgmzycQkkPunnnBW5x1J5Sgx7N1tmaE/5jag2iFk06ZqCKSYKDa7?=
- =?us-ascii?Q?rr/gqPiOHUjKMh7VusbPUMpweC6b4tEeiZriteRw1l71okL3Pjq8ljMYOvLK?=
- =?us-ascii?Q?/NDRxEio1Adp+C9VO4U5UBsl8ltzJANpSZonooKQP5yd5pFs13HYKaud0g9Q?=
- =?us-ascii?Q?91goZCbSa7vnQrp0Yps8XCPIhnsAvJyY/TbjwsUgFdCy/whSk1izz5305QLP?=
- =?us-ascii?Q?zil84SWDGHuNydHAYIgzeQT9MZ/P8VBgmI0icGHkjYYl4z8zMOPYQDpBfgu9?=
- =?us-ascii?Q?zaaL8JMbg3RsAqncJCTOxmadAYI40zegbGaeSK3jOWvxuZPHJbrO8p9xOnGv?=
- =?us-ascii?Q?O3Y0XGLcNx63Y5ImfGk3BFAFfB0rDHi03nJ+A5st/okZxwzdxlAvngGYZPxN?=
- =?us-ascii?Q?ANV0lJ9rEBYEOns2Di8VSqInzpR6iPjEjhZXkT5vHHTRh3C/YMKC0syRQA7K?=
- =?us-ascii?Q?mdqZxUF7U6t0ExKRJh9h8YnvkVp5Lh/JCPV0CDz9B3f7WbMhdQ=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(7416014)(376014)(1800799024)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2024 18:46:49.1296
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 79045e1b-f3a0-4855-ea23-08dcf9dc60d3
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D3.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6447
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/5] hyperv: Remove unnecessary #includes
+To: Michael Kelley <mhklinux@outlook.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "virtualization@lists.linux.dev" <virtualization@lists.linux.dev>
+Cc: "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+ "wei.liu@kernel.org" <wei.liu@kernel.org>,
+ "decui@microsoft.com" <decui@microsoft.com>,
+ "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+ "will@kernel.org" <will@kernel.org>, "luto@kernel.org" <luto@kernel.org>,
+ "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+ "seanjc@google.com" <seanjc@google.com>,
+ "pbonzini@redhat.com" <pbonzini@redhat.com>,
+ "peterz@infradead.org" <peterz@infradead.org>,
+ "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+ "joro@8bytes.org" <joro@8bytes.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "edumazet@google.com" <edumazet@google.com>,
+ "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
+ <pabeni@redhat.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+ "kw@linux.com" <kw@linux.com>, "robh@kernel.org" <robh@kernel.org>,
+ "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
+ <arnd@arndb.de>, "sgarzare@redhat.com" <sgarzare@redhat.com>,
+ "jinankjain@linux.microsoft.com" <jinankjain@linux.microsoft.com>,
+ "muminulrussell@gmail.com" <muminulrussell@gmail.com>,
+ "skinsburskii@linux.microsoft.com" <skinsburskii@linux.microsoft.com>,
+ "mukeshrathor@microsoft.com" <mukeshrathor@microsoft.com>
+References: <1727985064-18362-1-git-send-email-nunodasneves@linux.microsoft.com>
+ <1727985064-18362-3-git-send-email-nunodasneves@linux.microsoft.com>
+ <SN6PR02MB41576686E491F8EEA9FDB5F3D4782@SN6PR02MB4157.namprd02.prod.outlook.com>
+Content-Language: en-US
+From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+In-Reply-To: <SN6PR02MB41576686E491F8EEA9FDB5F3D4782@SN6PR02MB4157.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 31, 2024 at 02:04:46PM -0300, Jason Gunthorpe wrote:
-> On Thu, Oct 31, 2024 at 09:56:37AM -0700, Nicolin Chen wrote:
-> > On Thu, Oct 31, 2024 at 10:29:41AM -0300, Jason Gunthorpe wrote:
-> > > On Wed, Oct 30, 2024 at 02:35:27PM -0700, Nicolin Chen wrote:
-> > > > +void iommufd_vdevice_destroy(struct iommufd_object *obj)
-> > > > +{
-> > > > +	struct iommufd_vdevice *vdev =
-> > > > +		container_of(obj, struct iommufd_vdevice, obj);
-> > > > +	struct iommufd_viommu *viommu = vdev->viommu;
-> > > > +
-> > > > +	/* xa_cmpxchg is okay to fail if alloc returned -EEXIST previously */
-> > > > +	xa_cmpxchg(&viommu->vdevs, vdev->id, vdev, NULL, GFP_KERNEL);
-> > > 
-> > > There are crazy races that would cause this not to work. Another
-> > > thread could have successfully destroyed whatever caused EEXIST and
-> > > the successfully registered this same vdev to the same id. Then this
-> > > will wrongly erase the other threads entry.
-> > >
-> > > It would be better to skip the erase directly if the EEXIST unwind is
-> > > being taken.
-> >
-> > Hmm, is the "another thread" an alloc() or a destroy()? 
+On 10/10/2024 11:21 AM, Michael Kelley wrote:
+> From: Nuno Das Neves <nunodasneves@linux.microsoft.com> Sent: Thursday, October 3, 2024 12:51 PM
+>>
+>> asm/hyperv-tlfs.h is already included implicitly wherever mshyperv.h
+>> or linux/hyperv.h is included. Remove those redundancies.
 > 
-> I was thinking both
-> 
-> > It doesn't seem to me that there could be another destroy() on the
-> > same object since this current destroy() is the abort to an
-> > unfinalized object.  And it doesn't seem that another alloc() will
-> > get the same vdev ptr since every vdev allocation in the alloc()
-> > will be different?
-> 
-> Ah so you are saying that since the vdev 'old' is local to this thread
-> it can't possibly by aliased by another?
-> 
-> I was worried the id could be aliased, but yes, that seems right that
-> the vdev cmpxchg would reject that.
-> 
-> So lets leave it
+> I've been under the impression that it is preferable to directly include
+> .h files for all definitions that a source code file uses, even if the
+> needed .h file is indirectly included by some other .h file. I looked through
 
-Ack. I'll still update this since xa_cmpxchg can give other errno:
-+	/* xa_cmpxchg is okay to fail if alloc returned -EEXIST previously */
--	/* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
+I've also heard this idea, and generally try to stick to it. I myself
+haven't yet encountered a situation where doing this or not has greatly
+impacted the readability of the code.
 
-Thanks
-Nicolin
+> the coding style documentation, and didn't find anything addressing
+> this topic, so maybe I'm wrong. But I know I've seen patches to other
+> parts of the kernel that were changes to follow the direct inclusion
+> approach.  Direct inclusion is less fragile if the #include file nesting
+> structure changes (and perhaps removes the indirect inclusion).
+> 
+> The mshyperv.h and linux/hyperv.h dependency on hyperv-tlfs.h is
+> highly unlikely to change, so the chance of breakage is minimal. But
+
+You probably already understood this after seeing the later patches, but
+it's worth pointing out that the goal of this series is to change that
+dependency (situationally), which is exactly why I created this precursor
+patch.
+
+> I wonder if your approach is going the wrong direction vs. preferred
+> kernel practices.
+> 
+
+I could replace <asm/hyperv-tlfs.h> with <hyperv/hvhdk.h> in most of these
+cases (in v2), to preserve the explicit include of the definitions before
+mshyperv.h or linux/hyperv.h. I will give it a try in v2.
+
+Thanks,
+Nuno
+
+> Michael
+> 
+>>
+>> Remove includes of linux/hyperv.h and mshyperv.h where they are not
+>> needed.
+>>
+>> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+>> ---
+>>  arch/arm64/hyperv/hv_core.c        | 2 --
+>>  arch/x86/hyperv/hv_apic.c          | 1 -
+>>  arch/x86/hyperv/hv_init.c          | 2 --
+>>  arch/x86/hyperv/hv_proc.c          | 1 -
+>>  arch/x86/hyperv/ivm.c              | 1 -
+>>  arch/x86/hyperv/mmu.c              | 1 -
+>>  arch/x86/hyperv/nested.c           | 1 -
+>>  arch/x86/include/asm/kvm_host.h    | 1 -
+>>  arch/x86/include/asm/mshyperv.h    | 1 -
+>>  arch/x86/kernel/cpu/mshyperv.c     | 1 -
+>>  arch/x86/kvm/vmx/vmx_onhyperv.h    | 1 -
+>>  arch/x86/mm/pat/set_memory.c       | 2 --
+>>  drivers/clocksource/hyperv_timer.c | 1 -
+>>  drivers/hv/hv_balloon.c            | 2 --
+>>  drivers/hv/hv_common.c             | 1 -
+>>  drivers/hv/hv_kvp.c                | 1 -
+>>  drivers/hv/hv_snapshot.c           | 1 -
+>>  drivers/hv/hyperv_vmbus.h          | 1 -
+>>  net/vmw_vsock/hyperv_transport.c   | 1 -
+>>  19 files changed, 23 deletions(-)
+>>
+>> diff --git a/arch/arm64/hyperv/hv_core.c b/arch/arm64/hyperv/hv_core.c
+>> index f1ebc025e1df..9d1969b875e9 100644
+>> --- a/arch/arm64/hyperv/hv_core.c
+>> +++ b/arch/arm64/hyperv/hv_core.c
+>> @@ -11,11 +11,9 @@
+>>  #include <linux/types.h>
+>>  #include <linux/export.h>
+>>  #include <linux/mm.h>
+>> -#include <linux/hyperv.h>
+>>  #include <linux/arm-smccc.h>
+>>  #include <linux/module.h>
+>>  #include <asm-generic/bug.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>  #include <asm/mshyperv.h>
+>>
+>>  /*
+>> diff --git a/arch/x86/hyperv/hv_apic.c b/arch/x86/hyperv/hv_apic.c
+>> index 0569f579338b..f022d5f64fb6 100644
+>> --- a/arch/x86/hyperv/hv_apic.c
+>> +++ b/arch/x86/hyperv/hv_apic.c
+>> @@ -23,7 +23,6 @@
+>>  #include <linux/vmalloc.h>
+>>  #include <linux/mm.h>
+>>  #include <linux/clockchips.h>
+>> -#include <linux/hyperv.h>
+>>  #include <linux/slab.h>
+>>  #include <linux/cpuhotplug.h>
+>>  #include <asm/hypervisor.h>
+>> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+>> index 17a71e92a343..fc3c3d76c181 100644
+>> --- a/arch/x86/hyperv/hv_init.c
+>> +++ b/arch/x86/hyperv/hv_init.c
+>> @@ -19,7 +19,6 @@
+>>  #include <asm/sev.h>
+>>  #include <asm/ibt.h>
+>>  #include <asm/hypervisor.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>  #include <asm/mshyperv.h>
+>>  #include <asm/idtentry.h>
+>>  #include <asm/set_memory.h>
+>> @@ -27,7 +26,6 @@
+>>  #include <linux/version.h>
+>>  #include <linux/vmalloc.h>
+>>  #include <linux/mm.h>
+>> -#include <linux/hyperv.h>
+>>  #include <linux/slab.h>
+>>  #include <linux/kernel.h>
+>>  #include <linux/cpuhotplug.h>
+>> diff --git a/arch/x86/hyperv/hv_proc.c b/arch/x86/hyperv/hv_proc.c
+>> index 3fa1f2ee7b0d..b74c06c04ff1 100644
+>> --- a/arch/x86/hyperv/hv_proc.c
+>> +++ b/arch/x86/hyperv/hv_proc.c
+>> @@ -3,7 +3,6 @@
+>>  #include <linux/vmalloc.h>
+>>  #include <linux/mm.h>
+>>  #include <linux/clockchips.h>
+>> -#include <linux/hyperv.h>
+>>  #include <linux/slab.h>
+>>  #include <linux/cpuhotplug.h>
+>>  #include <linux/minmax.h>
+>> diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+>> index 60fc3ed72830..b56d70612734 100644
+>> --- a/arch/x86/hyperv/ivm.c
+>> +++ b/arch/x86/hyperv/ivm.c
+>> @@ -7,7 +7,6 @@
+>>   */
+>>
+>>  #include <linux/bitfield.h>
+>> -#include <linux/hyperv.h>
+>>  #include <linux/types.h>
+>>  #include <linux/slab.h>
+>>  #include <asm/svm.h>
+>> diff --git a/arch/x86/hyperv/mmu.c b/arch/x86/hyperv/mmu.c
+>> index 1cc113200ff5..cc8c3bd0e7c2 100644
+>> --- a/arch/x86/hyperv/mmu.c
+>> +++ b/arch/x86/hyperv/mmu.c
+>> @@ -1,6 +1,5 @@
+>>  #define pr_fmt(fmt)  "Hyper-V: " fmt
+>>
+>> -#include <linux/hyperv.h>
+>>  #include <linux/log2.h>
+>>  #include <linux/slab.h>
+>>  #include <linux/types.h>
+>> diff --git a/arch/x86/hyperv/nested.c b/arch/x86/hyperv/nested.c
+>> index 9dc259fa322e..ee06d0315c24 100644
+>> --- a/arch/x86/hyperv/nested.c
+>> +++ b/arch/x86/hyperv/nested.c
+>> @@ -11,7 +11,6 @@
+>>
+>>
+>>  #include <linux/types.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>  #include <asm/mshyperv.h>
+>>  #include <asm/tlbflush.h>
+>>
+>> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+>> index 4a68cb3eba78..3627eab994a3 100644
+>> --- a/arch/x86/include/asm/kvm_host.h
+>> +++ b/arch/x86/include/asm/kvm_host.h
+>> @@ -24,7 +24,6 @@
+>>  #include <linux/pvclock_gtod.h>
+>>  #include <linux/clocksource.h>
+>>  #include <linux/irqbypass.h>
+>> -#include <linux/hyperv.h>
+>>  #include <linux/kfifo.h>
+>>
+>>  #include <asm/apic.h>
+>> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+>> index 390c4d13956d..47ca48062547 100644
+>> --- a/arch/x86/include/asm/mshyperv.h
+>> +++ b/arch/x86/include/asm/mshyperv.h
+>> @@ -9,7 +9,6 @@
+>>  #include <asm/hyperv-tlfs.h>
+>>  #include <asm/nospec-branch.h>
+>>  #include <asm/paravirt.h>
+>> -#include <asm/mshyperv.h>
+>>
+>>  /*
+>>   * Hyper-V always provides a single IO-APIC at this MMIO address.
+>> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+>> index e0fd57a8ba84..8e8fd23b1439 100644
+>> --- a/arch/x86/kernel/cpu/mshyperv.c
+>> +++ b/arch/x86/kernel/cpu/mshyperv.c
+>> @@ -20,7 +20,6 @@
+>>  #include <linux/random.h>
+>>  #include <asm/processor.h>
+>>  #include <asm/hypervisor.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>  #include <asm/mshyperv.h>
+>>  #include <asm/desc.h>
+>>  #include <asm/idtentry.h>
+>> diff --git a/arch/x86/kvm/vmx/vmx_onhyperv.h
+>> b/arch/x86/kvm/vmx/vmx_onhyperv.h
+>> index eb48153bfd73..f4b081eb6521 100644
+>> --- a/arch/x86/kvm/vmx/vmx_onhyperv.h
+>> +++ b/arch/x86/kvm/vmx/vmx_onhyperv.h
+>> @@ -3,7 +3,6 @@
+>>  #ifndef __ARCH_X86_KVM_VMX_ONHYPERV_H__
+>>  #define __ARCH_X86_KVM_VMX_ONHYPERV_H__
+>>
+>> -#include <asm/hyperv-tlfs.h>
+>>  #include <asm/mshyperv.h>
+>>
+>>  #include <linux/jump_label.h>
+>> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+>> index 44f7b2ea6a07..85fa0d4509f0 100644
+>> --- a/arch/x86/mm/pat/set_memory.c
+>> +++ b/arch/x86/mm/pat/set_memory.c
+>> @@ -32,8 +32,6 @@
+>>  #include <asm/pgalloc.h>
+>>  #include <asm/proto.h>
+>>  #include <asm/memtype.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> -#include <asm/mshyperv.h>
+>>
+>>  #include "../mm_internal.h"
+>>
+>> diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
+>> index b2a080647e41..1b7de45a7185 100644
+>> --- a/drivers/clocksource/hyperv_timer.c
+>> +++ b/drivers/clocksource/hyperv_timer.c
+>> @@ -23,7 +23,6 @@
+>>  #include <linux/acpi.h>
+>>  #include <linux/hyperv.h>
+>>  #include <clocksource/hyperv_timer.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>  #include <asm/mshyperv.h>
+>>
+>>  static struct clock_event_device __percpu *hv_clock_event;
+>> diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
+>> index c38dcdfcb914..a120e9b80ded 100644
+>> --- a/drivers/hv/hv_balloon.c
+>> +++ b/drivers/hv/hv_balloon.c
+>> @@ -28,8 +28,6 @@
+>>  #include <linux/sizes.h>
+>>
+>>  #include <linux/hyperv.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> -
+>>  #include <asm/mshyperv.h>
+>>
+>>  #define CREATE_TRACE_POINTS
+>> diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+>> index 9c452bfbd571..a5217f837237 100644
+>> --- a/drivers/hv/hv_common.c
+>> +++ b/drivers/hv/hv_common.c
+>> @@ -28,7 +28,6 @@
+>>  #include <linux/slab.h>
+>>  #include <linux/dma-map-ops.h>
+>>  #include <linux/set_memory.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>  #include <asm/mshyperv.h>
+>>
+>>  /*
+>> diff --git a/drivers/hv/hv_kvp.c b/drivers/hv/hv_kvp.c
+>> index d35b60c06114..68e73ec7ab28 100644
+>> --- a/drivers/hv/hv_kvp.c
+>> +++ b/drivers/hv/hv_kvp.c
+>> @@ -27,7 +27,6 @@
+>>  #include <linux/connector.h>
+>>  #include <linux/workqueue.h>
+>>  #include <linux/hyperv.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>
+>>  #include "hyperv_vmbus.h"
+>>  #include "hv_utils_transport.h"
+>> diff --git a/drivers/hv/hv_snapshot.c b/drivers/hv/hv_snapshot.c
+>> index 0d2184be1691..90fc935e89bd 100644
+>> --- a/drivers/hv/hv_snapshot.c
+>> +++ b/drivers/hv/hv_snapshot.c
+>> @@ -12,7 +12,6 @@
+>>  #include <linux/connector.h>
+>>  #include <linux/workqueue.h>
+>>  #include <linux/hyperv.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>
+>>  #include "hyperv_vmbus.h"
+>>  #include "hv_utils_transport.h"
+>> diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
+>> index 76ac5185a01a..321770d7ce25 100644
+>> --- a/drivers/hv/hyperv_vmbus.h
+>> +++ b/drivers/hv/hyperv_vmbus.h
+>> @@ -15,7 +15,6 @@
+>>  #include <linux/list.h>
+>>  #include <linux/bitops.h>
+>>  #include <asm/sync_bitops.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>  #include <linux/atomic.h>
+>>  #include <linux/hyperv.h>
+>>  #include <linux/interrupt.h>
+>> diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
+>> index e2157e387217..f77f0ea1ddad 100644
+>> --- a/net/vmw_vsock/hyperv_transport.c
+>> +++ b/net/vmw_vsock/hyperv_transport.c
+>> @@ -13,7 +13,6 @@
+>>  #include <linux/hyperv.h>
+>>  #include <net/sock.h>
+>>  #include <net/af_vsock.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>
+>>  /* Older (VMBUS version 'VERSION_WIN10' or before) Windows hosts have some
+>>   * stricter requirements on the hv_sock ring buffer size of six 4K pages.
+>> --
+>> 2.34.1
+>>
+
