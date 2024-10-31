@@ -1,113 +1,157 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B519319D089
-	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 19:12:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDF031CBEAE
+	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 20:26:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730401972; cv=none; b=mtT51NscpmtMQYZTsjsnWwJ3K1xekylc7JPrjWBWTra2R6dyHTsndd5Lwv/VPSoCoXNJBAOcG7E70+fJmHQOTGH1VvIXnF1oSrWE8BmHrSgm/7BoCu9LzEIc84QaiZ+ppd/FRvE4f/wccYAfMmO8P4wZRbf2B0R1P7FJfYjVLHE=
+	t=1730406365; cv=none; b=RbqNZ5VLM/zfPrRHMnrwnhfgB3hqMrA61Gn1qvPlNLB8/G9fkXgLMYqsamzLK/GsvNifIfio+17cZCVzIuvHCjI/0wgRL28PR/s25HH5n8QYQltLbTYwgmMuTh7m/Ism67vYftUmQ6S7f1ggaCgK3OJfEnVx1HeMuHJkogMsycg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730401972; c=relaxed/simple;
-	bh=TYW55Jhp7t0Vd1HnF8KrL/jWsJe3Zk30JNz8WAh27Rw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OzDLipSAxjeFFMaaijBeXyLBt5s/GHxcuKjQ3V6IDdoxDiDT3fqZ2h4xd/85Nj8vBlYfGI8POzGoZGGxssXtZcufQyLkBy39E8aarSM6MwCdRH1njd/fGbVNR186MTqcfV2exoJ0AOn4LnZVJy/q2QzH8EVRSTUKgBLdSmdXzCI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Pyo9or9I; arc=none smtp.client-ip=209.85.167.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1730406365; c=relaxed/simple;
+	bh=VnQY7chdabpp2UuXBku1gHWVi4hfJe2jZk0NeS2f6Gw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FQo4quKHDkZ3vCqnVbOz2zr/YZQ4uiMwOuymjxYAOacdbnnQwCnoDDf7CYyt88gABiSoK1B2aqdlsS+Y9HvhQdr9FjVFGnj1km3oYZz3cj+0/OLKe1k6GTtupkecs4Xfnt8fNvJG0dcvAJOPTgVUDF0fxeJOFDJXLv6p52V7tC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=fail smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=lHez54Mu; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Pyo9or9I"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-539f72c913aso2067743e87.1
-        for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 12:12:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1730401969; x=1731006769; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rD/pY/i638YKtWjS7I89D6wpk5BweHDNRe5Pjk8A2Hc=;
-        b=Pyo9or9IdxbX9cz0YzMSgYjUzlOACcgcDhhUHX/VnKGEBwDw3HTBMLHoqitmRhCaOJ
-         XkpdWWF7zGnk/EoCBlBjAKbPvmwhMuOcmkBs60jq6ah+eYDouES0P8WOHmAOnag5OBG6
-         JArDf/bOJ2K98YA+FV4sDR0RQJ7tTd4KjW21fVxV8qJC9KoR5VoOQDiQHeWH1DUBe4C7
-         YLEVT/Byj8PAdddDGGamjSDfkur8Tiue7294wsim2CgO6++ippg7WNsbGwzxzTyY3XB2
-         euTfVZkLm2VRoUfcJCcUIVuak8L7gda7A937M5BHi02tidzW73HCYm1yFkam6uAXhz2I
-         jrUA==
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="lHez54Mu"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49VC7R5N020861
+	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 20:26:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	HsntP3C2GJI1EZuB1B2CgIDf2X97b82f6C7hdl6Yr+k=; b=lHez54Mut6sd5vtH
+	CBW8vYha99KN3hnlEpIWc4HUR5xPQ4GVNGu31M/KGKZm58W78S4ZrGr6Wj5o6b00
+	bbKs7z+aGZzFv2PU/SEwiY0l83Zrfuwlajy7EbkBRsLMOzp8hUtckuCUhVrTXwIg
+	x+s0bC7Uz35HQ/slLhFZN2B5QMM52GxEO7XTYGBCDEdMKrCI/P3SaFysIlp4eH2x
+	DFOhkmiuJ/NIiGJkd23sLlcj2WBVaCPOaSEfGuic8f+KgIwBrr019ODm32QtF4Mm
+	O714+OKbejPUR29BpFe2YIZfpSjo6CapEaNkPUPGkH+IK+XUntgBAyEnoFzsHGRn
+	SkMSGw==
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42m1rpjsad-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 20:26:02 +0000 (GMT)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-5eb9dd2d3daso154069eaf.1
+        for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 13:26:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730401969; x=1731006769;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rD/pY/i638YKtWjS7I89D6wpk5BweHDNRe5Pjk8A2Hc=;
-        b=apTY9leb2WuLs+MLq1MBGDfTtXZuQdeH2Ek2R2VcGZxjCRC2VSWFNRDYh9BorncgAG
-         Msw9xsArmgKmqvzHXq3bLPiI4u8HMDwhLoEBLq/mw/Hy956tRVw29XKmzBi2DvBVI5Lt
-         rI/vJEguHYiXzOkKR6DkZvdI9dohKq8ohDjvZIA8g/dZ4ExH3r3aH3lPx+1Nf2ZJ5dcN
-         e1i7X1M+ActUOLPCn8MQQFuw9z3kwrJ2SOYoMTBpsGTwZhJDDP/oMhOnFHQhO5tdT8gq
-         dlDMCfZPVmChLdY9DGv9AK/slzw+N2jFFNLmcRFpmL0CGAiLyDZv5iNbz6/vsWnnPtcA
-         E3Fg==
-X-Forwarded-Encrypted: i=1; AJvYcCX+WwTbikEY5xc4mQ+1kuua3QF6ZRbFGsrq6qgILp0GEjhBnKw0M3wixNaKRMuvoQnFvtZVHg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyqeOQpdFxmAnuMXWp3OGJxmg+tunAlTlz1ZDQFsUCbXdqbi/t6
-	sCXEZyFNTtqPOxO5HBOAJilRffDKjJiBrfdvyjKP91BBcr1xn26mmBV/rbK/M3k=
-X-Google-Smtp-Source: AGHT+IEHlgrOOPldK5P7S57DuVyfV2iyV8RJOHXDbZ5tbr/99nLsMq1Jtiuo0Qol8RifwvNdY1Zhjg==
-X-Received: by 2002:a05:6512:3b25:b0:539:e9b4:7ff6 with SMTP id 2adb3069b0e04-53b34a18f2fmr10168609e87.45.1730401968815;
-        Thu, 31 Oct 2024 12:12:48 -0700 (PDT)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53c7bc957aasm302503e87.42.2024.10.31.12.12.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Oct 2024 12:12:47 -0700 (PDT)
-Date: Thu, 31 Oct 2024 21:12:44 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Richard Acayan <mailingradian@gmail.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Rob Clark <robdclark@gmail.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH 0/2] iommu/arm-smmu-qcom: Add SDM670 SMMU v2
-Message-ID: <jivvekptfdr5zh6xnzvzgye7oaana6q3dpyge65m4uklfo6ubv@rq5uar3avkdg>
-References: <20240730013820.41702-4-mailingradian@gmail.com>
- <ZyFSJjO2fkqCwzWm@radian>
+        d=1e100.net; s=20230601; t=1730406362; x=1731011162;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HsntP3C2GJI1EZuB1B2CgIDf2X97b82f6C7hdl6Yr+k=;
+        b=qCSR1k4GwCAV67ftJ6gGy+nXdEWNK+dN28+9MMU9WbrFN9jjcwMr1463Ie+8SlXLAu
+         cNCnXG73bjW+ZncuHM1eMSLSuK3DZze4iEXLrFnWM01/fQPTAwuVfarjGREDrjRPEMBb
+         /64Ye9oi1E9tZMqujWgYcAwlHimIByVfi1okHJ7hMPnHOXtf14dwvZnz2eAYkR3sZ9fc
+         X2sfbXUysQzd08NUwtDw47LJ4A5nf88pLXx9xc/4nqN8pyZU8FUvu+dYmtfqidibefu1
+         /vj/cRcdsWNUVZ032lAvJ1FrUqSL6W3PH7/L6E5cQQ+Yeh5OvuEWYy51EEY1aaohGeOL
+         kXIg==
+X-Forwarded-Encrypted: i=1; AJvYcCV64GU87VoBBJ/p3Yro80ncuxHfzjtFbpPNWTNGcw67zZayJ8xdh+TSWq6JB+PtyVelAucYrA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzGGh5pQumazZ4GLZ0hq5xlrCHH+BGYShBuAgeweofaEVo4FSQ4
+	HDKakzfnnJzca0ECIDbOeBi1QJRIhtR1btGDFSOE2W4EI5uuchUZq2xxSsM4BO4rFeL+sK+jPd6
+	Kt7g9slN4CdfgogOpC0xR9vGU+PWEi1uUUigit4vS2qCJScRNqZmyzQ==
+X-Received: by 2002:a05:6871:593:b0:269:1020:a8a0 with SMTP id 586e51a60fabf-29051b4d694mr5456341fac.4.1730406361935;
+        Thu, 31 Oct 2024 13:26:01 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGWoGAeaCy5azeIH/5FqRyk7J5FBFP8MQZw2ucFj8VqfTTkWtFqd9+U9IWzWpD4RmcROOR3qQ==
+X-Received: by 2002:a05:6871:593:b0:269:1020:a8a0 with SMTP id 586e51a60fabf-29051b4d694mr5456324fac.4.1730406361650;
+        Thu, 31 Oct 2024 13:26:01 -0700 (PDT)
+Received: from [192.168.212.120] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a9e565f9b63sm100100266b.110.2024.10.31.13.25.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Oct 2024 13:26:01 -0700 (PDT)
+Message-ID: <796b470f-7646-41d8-817e-03d93a90a1fa@oss.qualcomm.com>
+Date: Thu, 31 Oct 2024 21:25:58 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZyFSJjO2fkqCwzWm@radian>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 15/15] arm64: dts: qcom: Add Xiaomi Redmi 5A
+To: =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, iommu@lists.linux.dev
+References: <20241031-msm8917-v2-0-8a075faa89b1@mainlining.org>
+ <20241031-msm8917-v2-15-8a075faa89b1@mainlining.org>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <20241031-msm8917-v2-15-8a075faa89b1@mainlining.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: zhYrpN6OV-F939tugsR47w4TcbBGqMlP
+X-Proofpoint-ORIG-GUID: zhYrpN6OV-F939tugsR47w4TcbBGqMlP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 mlxlogscore=695 clxscore=1015 suspectscore=0 spamscore=0
+ adultscore=0 malwarescore=0 priorityscore=1501 impostorscore=0
+ phishscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410310155
 
-On Tue, Oct 29, 2024 at 05:22:46PM -0400, Richard Acayan wrote:
-> On Mon, Jul 29, 2024 at 09:38:21PM -0400, Richard Acayan wrote:
-> > This adds the SMMU v2 for the Snapdragon 670, used for the Adreno GPU.
-> > 
-> > Richard Acayan (2):
-> >   dt-bindings: iommu: arm,smmu: add sdm670 adreno iommu compatible
-> >   iommu/arm-smmu-qcom: add sdm670 adreno iommu compatible
-> > 
-> >  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c            | 1 +
-> >  2 files changed, 2 insertions(+)
+On 31.10.2024 2:19 AM, Barnabás Czémán wrote:
+> Add initial support for Xiaomi Redmi 5A (riva).
 > 
-> Hi, I'm wondering if this is still being considered.
-> 
-> The NAK doesn't really make sense here, as there's a warning/BUG at the
-> bottom of the qcom SMMU driver that occurs when the compatible isn't
-> added:
+> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+> ---
 
-Please resend it, adding an explicit note about having no generic
--v2 fallback and that being a correct way. I don't think Krzysztof
-reacts to old patches.
+[...]
 
-> 
-> 	/*
-> 	 * If you hit this WARN_ON() you are missing an entry in the
-> 	 * qcom_smmu_impl_of_match[] table, and GPU per-process page-
-> 	 * tables will be broken.
-> 	 */
-> 	WARN(of_device_is_compatible(np, "qcom,adreno-smmu"),
-> 	     "Missing qcom_smmu_impl_of_match entry for: %s",
-> 	     dev_name(smmu->dev));
-> 
-> DTS change for context (pending):
-> https://lore.kernel.org/linux-arm-msm/20240806214452.16406-10-mailingradian@gmail.com
+> +	reserved-memory {
+> +		/delete-node/ reserved@85b00000;
 
--- 
-With best wishes
-Dmitry
+Deleting nodes is preferred via a &label (like in sm8550-samsung-q5q.dts)
+
+> +		qseecom_mem: reserved@84a00000 {
+> +			reg = <0x0 0x84a00000 0x0 0x1900000>;
+> +			no-map;
+> +		};
+> +
+> +		framebuffer_mem: memory@90001000 {
+> +			reg = <0x0 0x90001000 0x0 (720 * 1280 * 3)>;
+> +			no-map;
+> +		};
+> +	};
+> +};
+> +
+> +&blsp_i2c3 {
+> +	status = "okay";
+> +
+> +	touchscreen@38 {
+> +		compatible = "edt,edt-ft5306";
+> +		reg = <0x38>;
+> +		interrupt-parent = <&tlmm>;
+> +		interrupts = <65 0x2008>;
+
+interrupts-extended = <&tlmm 65 IRQ_TYPE_LEVEL_LOW>;
+
+[...]
+
+> +&sdhc_1 {
+> +	vmmc-supply = <&pm8937_l8>;
+> +	vqmmc-supply = <&pm8937_l5>;
+> +	status = "okay";
+
+A newline before 'status' would be welcome
+
+Looks nice otherwise!
+
+Konrad
