@@ -1,122 +1,96 @@
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A9E1BF328
-	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 17:43:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A302A12D1EA
+	for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 17:46:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730396636; cv=none; b=oVBhUhtpOCcOPYzNd0dCgqKqOrzb1OfZHRnXYX7lqipF3czhIJXWmbQhnm+hinGl6PI2GS48uFCUQ9DC9Mg6dMz2H7e5wnyguCNvDklx0SGsXXi7RdL3bIpnx9V45cHIycVzdcXf1at+XPNYwy3llUzj6PJMPEetshra/22PTVw=
+	t=1730396822; cv=none; b=qMsvWzpbADQKKieWOjR0zncmOzB2uYvYayokjy4AKEuFLm/lFUA3Zp0eLHgGg5pz1XEtW+jTiKFh05u6v0Mo80sjszLM90TdG6KfBe+kY7n0wNzVcJgdizbdz5wVwYEJnuoIzyLE4Hrba2+d5AkXvk2RA5j+ONt9+JVDq4TYcn4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730396636; c=relaxed/simple;
-	bh=mhTsv1ygiWFnjDiVQe/E1G0vEfNsEKPKJTElZp6SXYc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JwIJZqjY86TR/GfuHVWINlERooNKGzENwl7T0RD2DfJgDO63lz7NutnFjW372cxH4nKDAkkKRrxCdn5rMcJwEZu1spFJtPKIJ0vBprmoNhYmfE0ezyKulWL4kF6BFhJPf0nKdvpt9xxOllxHjR/7BFTCjzW2uc9KGA+fHXxVFoA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk; spf=pass smtp.mailfrom=kernel.dk; dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b=PyuZ80NJ; arc=none smtp.client-ip=209.85.166.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.dk
+	s=arc-20240116; t=1730396822; c=relaxed/simple;
+	bh=kNW5YJKFKEbItLM4uYNbuJvwCmMv78DkIkndczxT8eo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NvGDJMmtRW8qow44w8KKy+deLtljeeuVVpsuvX/p41dFllNu8HqaMNMpLZYbS9hbg5dgfJVQO3PPWxAUF7o6n3RQ/YT3stbW3Fo2iQIWORWPsRxHTkY0xnZkv0W6epYAtbpmpkCrDLOf4TkXhj2pv30DJPzpP8eBNeZwrj03QOg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=qHa54wwE; arc=none smtp.client-ip=209.85.167.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b="PyuZ80NJ"
-Received: by mail-io1-f50.google.com with SMTP id ca18e2360f4ac-83abdaf8a26so48030739f.1
-        for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 10:43:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qHa54wwE"
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-539e8607c2aso1332465e87.3
+        for <iommu@lists.linux.dev>; Thu, 31 Oct 2024 10:46:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20230601.gappssmtp.com; s=20230601; t=1730396633; x=1731001433; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cJN1S3OA8zjlhqH9iA1Z8bsg9GoFf4IOEEdKUROgci0=;
-        b=PyuZ80NJUWKPi3i2DU6WIvumYyez+Qhsb8fewlIhaDJImM7pUSu43yHdBLQ0PGEZSG
-         P4mnAJur2wBcGnWMbrw3dOCIUge0KMphVig8D5yZ1qjZRmhLV48iLn9nknKv5WjaKcg0
-         g8ZApHI8f0dVEXc/GbzHlRuyMAib7J9fMTN+3QT0HJ2bH62MNckgRN2ed97SawqgumS6
-         nSLn32WNluW2LOgFRF4V+xpz0oArhTYXqd3pXOGKb8R+rPaS7KJKAKTpAzZs2CDSM+4Z
-         AblaYXlMmDK88UxiNHC8TxKHUGaYp4qM9vTg6m2iPfWzUm1pzPfBhLh8XFgzQ8mPlBGN
-         LTPg==
+        d=linaro.org; s=google; t=1730396817; x=1731001617; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=JYVW0G4jKWF/vesRuHI0K2kAx4zvmynSz5/bDZbMrwU=;
+        b=qHa54wwEO5mXgf+DIfZK8vrbc9e2UU/IYJCSrxsNTSrtwcO7h5udzsMcyqvlkiY8WL
+         EtoDDkh3hmYfDIkSruVtlTlcu2EDuMWCiF+zaUHt7/NMgQSdbl19t5ENycNIZbHPSHep
+         7VoUsNwFlj5O7VaB2a0M3doYckfMiKU0AOIb1Avk9gCx2nWJvSu3KvahCnKSq06Pvn3T
+         7YjN3aeCMSHJ9W1KRJKfzCQnr6FBwPGacvVaK0OXagAv2x2k2qOWG+XWSocB+1xdcjvH
+         UVRdH5nFnOC0GfB09QmmDE5vaRlbO1jXZjqtnTSPNDLt4rWVpAaBXl8jADikTsRArk08
+         HNGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730396633; x=1731001433;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1730396817; x=1731001617;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cJN1S3OA8zjlhqH9iA1Z8bsg9GoFf4IOEEdKUROgci0=;
-        b=k2V2KicIxV2xWqolSsvEwExVMb4ZXNXl4TXzp2cvV5ay/1upLvrvaUVP0OJrumqbCT
-         Pi/ZuCJUqY1Jmaw4gc3Clc1UkLST1ceDm4Z9gouhyP4rP9JlSNVBUVzuBWzr4bcFeMQd
-         h47xqG7fkZC5aaMnm5cjqS9eSWt7ndXDYJZwM/I36krZMSiaXDaZm4DdGL8J/VIwgjSh
-         63/ZGbcRiyQ+bbMXBstjMe1xRM9z+1SSUhKcXy28wqlL4ksq17GEGbuf2KPF7dCRCNuN
-         /izriPokpNuS699xqjlc9DnlAd4leVIf2s5riJYlpjPNHues6BWNBac5CGzhrqUNFQ18
-         HKIw==
-X-Forwarded-Encrypted: i=1; AJvYcCVGFLVsMnYbQ00sPnhWwh7tR45e+gTDq/EddCbx3prJbbhJaGkBzouETHjXYCp3ria8OEL1mQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz0tsxtjV3smYw0O7F2QZm67nCnTztdD+os2dGxlhfH/3hnZlDe
-	3ube2+2d6BnSxpm+P10ukHUVYXjhLB2OfHxH/JCImw64T2l6PLyKezrGa9qUmNw=
-X-Google-Smtp-Source: AGHT+IGqvDPac4jMToI9PP3ppL4bi2ob+amIyOKddZ0fGQ56qF7607m8ktK4Ur1sfUjByGfZ1fMmYA==
-X-Received: by 2002:a05:6602:6d0b:b0:83a:a9e9:6dc9 with SMTP id ca18e2360f4ac-83b1c4c27eemr2156317139f.12.1730396633080;
-        Thu, 31 Oct 2024 10:43:53 -0700 (PDT)
-Received: from [192.168.1.116] ([96.43.243.2])
-        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4de048e3736sm379375173.81.2024.10.31.10.43.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Oct 2024 10:43:52 -0700 (PDT)
-Message-ID: <8b4500da-4ed8-4cd2-ba3b-0c2d0b5b4551@kernel.dk>
-Date: Thu, 31 Oct 2024 11:43:50 -0600
+        bh=JYVW0G4jKWF/vesRuHI0K2kAx4zvmynSz5/bDZbMrwU=;
+        b=BB7DPrlyqsoM5O8g//5lHKRgOUAUcJZcu0fqOkhXTaeBM3Mb71k8ay1M1S/YdWOHDQ
+         YL9pWhRBe4HUqqEBvqe5lnSlViGJFZ2sOd8TGSFBMIYKDmeaTIiEQ1O6n6TQC0QMMw7U
+         KGMm8UIh7X3+15yLNvyfUKWTcoyTSD0MViItgXglpEyeBVONadm1ztJ9NVMmnewNWQYN
+         1Dg+//UhrFzDP1ayUj6VfixW+8llUCplCMEhzJIWt9DD+rlbTCXUG9dEZeaNXdPrNkGj
+         dc4LMbOb4WuGeqUkOsqcnKGAJTFqeGPXgzUy9mpRsGskdUkp11u//ec1+08dEEjlJwTy
+         vhLA==
+X-Forwarded-Encrypted: i=1; AJvYcCWEqdyIQNbaFqh4h/vnjnH5uU5VppgtPtZIZEqaxRCRPhjW9SOYsqG/svHxyz05oOJA3WGeFQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwYj+Ws7zDGfagmb1w+/rNALhuoC/Vl93pYf1MRfQc2NWZhmHEO
+	P20qHKFnIfYybnbKSjY9CwTQJqcpvXiztLCGvLy7CFS5zhpQFQy5e0GL3v3q9uY=
+X-Google-Smtp-Source: AGHT+IGyTeyeKwDRjDrsk0Wsj/rqtfm7DMEl1ilUZ4Hdph3NUKV99MLV9W0IhpqFsz6uKU4pSSuJcg==
+X-Received: by 2002:a05:6512:33d1:b0:539:f705:dbb3 with SMTP id 2adb3069b0e04-53b348cf8f2mr10764252e87.23.1730396816837;
+        Thu, 31 Oct 2024 10:46:56 -0700 (PDT)
+Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53c7bdccb0asm272005e87.226.2024.10.31.10.46.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Oct 2024 10:46:55 -0700 (PDT)
+Date: Thu, 31 Oct 2024 19:46:52 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: =?utf-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, 
+	Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>, Amit Kucheria <amitk@kernel.org>, 
+	Thara Gopinath <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, 
+	Lukasz Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
+	linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v2 02/15] pinctrl: qcom-pmic-gpio: add support for PM8937
+Message-ID: <qavxo7hx6zl77vzyfv7tht6gsayijredceaelh5qbb7rqjk7z6@6hghlu3bxg4u>
+References: <20241031-msm8917-v2-0-8a075faa89b1@mainlining.org>
+ <20241031-msm8917-v2-2-8a075faa89b1@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 00/17] Provide a new two step DMA mapping API
-To: Leon Romanovsky <leon@kernel.org>, Christoph Hellwig <hch@lst.de>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe <logang@deltatee.com>,
- Yishai Hadas <yishaih@nvidia.com>,
- Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
- Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
- iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
- linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org
-References: <cover.1730298502.git.leon@kernel.org>
- <3144b6e7-5c80-46d2-8ddc-a71af3c23072@kernel.dk>
- <20241031083450.GA30625@lst.de> <20241031090530.GC7473@unreal>
- <20241031092113.GA1791@lst.de> <20241031093746.GA88858@unreal>
-Content-Language: en-US
-From: Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20241031093746.GA88858@unreal>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20241031-msm8917-v2-2-8a075faa89b1@mainlining.org>
 
-On 10/31/24 3:37 AM, Leon Romanovsky wrote:
-> On Thu, Oct 31, 2024 at 10:21:13AM +0100, Christoph Hellwig wrote:
->> On Thu, Oct 31, 2024 at 11:05:30AM +0200, Leon Romanovsky wrote:
->>> This series is a subset of the series you tested and doesn't include the
->>> block layer changes which most likely were the cause of the performance
->>> regression.
->>>
->>> This is why I separated the block layer changes from the rest of the series
->>> and marked them as RFC.
->>>
->>> The current patch set is viable for HMM and VFIO. Can you please retest
->>> only this series and leave the block layer changes for later till Christoph
->>> finds the answer for the performance regression?
->>
->> As the subset doesn't touch block code or code called by block I don't
->> think we need Jens to benchmark it, unless he really wants to.
+On Thu, Oct 31, 2024 at 02:19:43AM +0100, Barnabás Czémán wrote:
+> PM8937 has 8 GPIO-s with holes on GPIO3, GPIO4 and GPIO6.
 > 
-> He wrote this sentence in his email, while responding on subset which
-> doesn't change anything in block layer: "just want to make sure
-> something like this doesn't get merged until that is both fully
-> understood and sorted out."
+> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+> ---
+>  drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> This series works like a charm for RDMA (HMM) and VFIO.
 
-I don't care about rdma/vfio, nor do I test it, so you guys can do
-whatever you want there, as long as it doesn't regress the iommu side.
-The block series is separate, so we'll deal with that when we get there.
-
-I don't know why you CC'ed linux-block on the series.
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
 -- 
-Jens Axboe
+With best wishes
+Dmitry
