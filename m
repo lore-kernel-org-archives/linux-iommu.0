@@ -1,207 +1,244 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2055.outbound.protection.outlook.com [40.107.243.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C55E168DA;
-	Fri,  1 Nov 2024 13:40:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.55
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730468413; cv=fail; b=PRYEHAY0XSbdD4hPGEk5R3ACs7gp+MBuVbJ9S+4FpPU+8eOIfQrjh7uT8w0P2uUPdQ0buPp+Bv83UUaQi5VwhXu0c8Nh8PBmlN96LuRp2DYeo+GMFV8f/tssfcXucQQH0Km0JmrEPGd5EmR5D1t2eqN/8m1JP2JnF4g5Mb9lFgw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730468413; c=relaxed/simple;
-	bh=niFUY1X+tVdMddEDyAibng3jf1BHrizQMnO0FAuwu+Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=BUhTYYtiiAamF/r3M+t81NY++OQIssQzJzyDguzcnRjX9xrL2V1GWZAzIfui9ihWn0fYr7ut3o+hjDxJOaCNPIC1/K18cYuVFV52it2dXdnCLcRiEQSuSX4+Yrga0LdBt1N16657JEDo+vnXGUgtBEX+9OEC+FrFj0JYLPZHeCY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=JbBiIhfy; arc=fail smtp.client-ip=40.107.243.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="JbBiIhfy"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JCk04U1dN/AMsIn0sYHHgpiScHb7rdayPuPA6qo1wC/likW9uObFXsqpaffqS8Dlinn/K2sRHo/ol8FRgXLm+HDdfsEjlVLR9CSIF06wa60eMH2chGXPTJcU+Q/w+wYkPYEC31rWHHdyBUkjxvmdVLs25bbDmtweuWES2seWOloTxtPgvow03OzeIZ3FRspiC0wgMhLEv1KW3uuN5JuH13TrXn91y8EseU+zOblLGKMng2JgepR/F5l82ooKvMb/VK+J2bGJXlyfIAx6oiJH5UlOjRzHNHXUbybyz3kIddRwpSjvjw+X7gflZee5WkqOCIRVGWJdiLEFhn1Hc2w8ug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sbJldVtD0UTzSyeSORjqKJs5VMu/WuEyrg6iefWHtGA=;
- b=D0bPlioV+BWJWN0ysFJAvrZeuuh23/l8blTRbyFm9c7c7WhzMsHSe5ahNkPNympGSoj4a0xwyuFAzVq+wDjRKQgpvzacznkBA5mC+3vzoW9tp0N6qDBOlhY0g+/XlCFVmOBVE68v4cmIRhG/G3M4E3maHU+5LhRtYu25pdnStz/25neDMDQhjW0NKuF2OM9b0JnLspHfJLMfUPzOafbwNE/BQpJ/j8xpffZ4//UxRjgoTTPLnWxh3o1Ou36OmZ+fD/zRXVEG/2dFEmp3UvC3Vk7OwAUCZIuzuz2n5u9SYZSS7r34F8+XHD9XseEccGiTzhharLK3fEJ5Ga4Z97/HMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sbJldVtD0UTzSyeSORjqKJs5VMu/WuEyrg6iefWHtGA=;
- b=JbBiIhfyAgrKLb5/0WFgmPzRF/beRlJUXM43/HFe6wWWBdMarQatAXeOmywPClwuRdvqJvubJKyuZfx5dy/M2YG4yQsgkd/hqKcMi9n1bhRMBh+yrO17E+icc6Ijuf6JH6/jaNejSXDywZF3vmeQ7/Fwt22Ibli5JxH+iyvq83EAiWc8sfV4Zrd2Y9vFbP6moUhGXrJTAF3eWnLd5L8Yt99Qmdr/Ofhd5gaDu2WEfJvhaaOnvBEEL2xA9K3dBcOS3YoDR0ZeS1qgw7TYgIev57DzS/WuAI8/sHl44GGHXWP6bfv3+tq7DDQFybM6upgG0TSFERnrpf8xOes64iiAdA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by SA1PR12MB8966.namprd12.prod.outlook.com (2603:10b6:806:385::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.34; Fri, 1 Nov
- 2024 13:40:07 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8093.018; Fri, 1 Nov 2024
- 13:40:06 +0000
-Date: Fri, 1 Nov 2024 10:40:05 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Cc: Boris Brezillon <boris.brezillon@collabora.com>,
-	dri-devel@lists.freedesktop.org, Liviu Dudau <liviu.dudau@arm.com>,
-	patches@lists.linux.dev, Steven Price <steven.price@arm.com>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Remove split on unmap behavior
-Message-ID: <20241101134005.GA109739@nvidia.com>
-References: <0-v1-8c5f369ec2e5+75-arm_no_split_jgg@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0-v1-8c5f369ec2e5+75-arm_no_split_jgg@nvidia.com>
-X-ClientProxiedBy: BL1PR13CA0328.namprd13.prod.outlook.com
- (2603:10b6:208:2c1::33) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E323C49620
+	for <iommu@lists.linux.dev>; Fri,  1 Nov 2024 14:41:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730472083; cv=none; b=k/4dOMIyD0Rsu1KxFYjjmnp4LojHq1sxllwfEuYbIBlOmVKKRaf7QJsXN0jtFVj5wUKY6Z2PHhw+cPJX6MMghET8y2eEeOw9G0vo073iffLZND6yRVzaPHTUSkHKkaUD16i1W4Jrs/HbZ++5WVo7L3dpqK2uWaCYzl1tC54XHZI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730472083; c=relaxed/simple;
+	bh=5YxsTx4fivecQwTZRhV4CuJO68e/Ktr9mSJlO3tSSDU=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=N/eFmMsiFCRUvhHYmzamkAkmjaVTEghMHKAygc6PSeCLCFZHil8mOdHxQnn+crdLDkwSzWYrGoaFzTAdWCLKHNt38JVGjL4veE3JrTlnCsch79WDkqAHFbxltKWq58gy2mjzdtsg+Dzr1YnHsT7ED8lDlGkntBSMitL8ALtelpc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 470B41007;
+	Fri,  1 Nov 2024 07:41:42 -0700 (PDT)
+Received: from [10.57.90.209] (unknown [10.57.90.209])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 51A263F528;
+	Fri,  1 Nov 2024 07:41:10 -0700 (PDT)
+Message-ID: <7c7b905c-ee00-4333-987e-0d0f0e45753f@arm.com>
+Date: Fri, 1 Nov 2024 14:41:07 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|SA1PR12MB8966:EE_
-X-MS-Office365-Filtering-Correlation-Id: ddd6f1c8-1e8e-47f7-57bb-08dcfa7ab272
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?0m4XCnAEM/N+uOP8lHPjlwMHEMTqiRKZrAnv/4zOlKgqL+aMqevcfO0/i5Fi?=
- =?us-ascii?Q?uEer524X4mr3kHOKy5ZnJWaXE4jQDRA0hmYwPPJ56JTdiL1vwgCLrkjXZ0bT?=
- =?us-ascii?Q?QW41Qu5KCMfUgHYtRVB3nQOKKX51Kfj82RJXUI4Dl6RuBfUePX2XBjsoSLoP?=
- =?us-ascii?Q?n9HowyQih7Q+l6TecFM27z7ddKndEeVDxe4xsYQTM8GcLHlMQUOx9u2ldFMd?=
- =?us-ascii?Q?w9WKrEiFbKCjVOJCSRlwHpD4X1Pky7xTn8FNpW+OGjYTBbrD17Ow7+q2YvS7?=
- =?us-ascii?Q?ocwHOOrS490y9awueEaibI+uuswbKVBbdMtokoiBlps7+A/TpMk92mZ0cfE8?=
- =?us-ascii?Q?T35FLCl70s7RjUEHYvkAzDajEUuYUqvzOlHhC120r/JAuzogzUur0elgV4sr?=
- =?us-ascii?Q?DPj+LPUXhFyAp3jBPBeMbzHhrHpqu//Amh3ZZ5HZ7hT9a/y3hXg3sCB+QnhX?=
- =?us-ascii?Q?5DNPryDQMSOfdidzjSP4JTeO7xHgHpVowh0fRkVS5vHWyZQ2YERhxAhfUawx?=
- =?us-ascii?Q?a8P+OT44WnfCP8bq72Q/VBsiQqylW8PAuyIeY3xOlxnZnZLnFpU0EGCxz4kx?=
- =?us-ascii?Q?cIADYAfhTfq+M5NLYcDHxPIaqLrLRaKaKSFIvm5VWYEWUPXhtYPi4VOdtUJE?=
- =?us-ascii?Q?44oh6+q9ZI3TxFJnrZKT0vbKQ3iRzawEFtdRC6Fw63Uo1MYNl9UFek+Xz7lU?=
- =?us-ascii?Q?VWNLljAAXOirkw4HVIsAmVqC8hnC8IleMtZzVY/L8F3MZ3ja8HUlwmkANssk?=
- =?us-ascii?Q?elR34BAi4sPwP7gXpLiqJvb3oxDi+HwsCVFAO0oQtzOpTKqa8K1jVNoyx/QV?=
- =?us-ascii?Q?F4jXU8ZHg7m1dxzHRZ7iKz5uDNzygwb4RLsvR9c902KXuyto4TIKl798YuR2?=
- =?us-ascii?Q?SLkHfKYc7KdJG5e3IeAGbNhE4+pYtDrbZMw7AsEE4RnpnNtZJZK7XkBV+Uhw?=
- =?us-ascii?Q?Po26OQBoFSiH2izj14vPFi1SCJUVBXSkffynbKHwJAXnF0PknBzCyzlFc7w8?=
- =?us-ascii?Q?Yvb9zqOOmLou8QC3F1Qs60GKcoBvoOHbJTAD5q5dFKgmLHTHshgyAQO1+cw6?=
- =?us-ascii?Q?oz97eNSDiL0DPuOSq+CFDFKvzCUnNvKHBkcf8M6/Wu1Zc1naQB/ITSCR3OC9?=
- =?us-ascii?Q?8X4EVWdHG7F8QlPpY/C7QJaIQYv32xaMcBtEhi3Z91IGhnv4t+DNFDPpZFxs?=
- =?us-ascii?Q?zaYGxgcWqajzfBVjqFyBn2qsOo5LNYIgvZxGoukMwAjqS7ZXYXuOlxXB/y0j?=
- =?us-ascii?Q?P1mDOLiKLSk6gqGa2lFTra+hWr2uPvw8EI1FCJL+izPyB34vBLU6uXRLhEcp?=
- =?us-ascii?Q?5vbMPqHkB5b3HGPKKke6ARXS?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?B9/DZtcTEDxRabtA683QF/PiXPSSyxIyMRGtwNCPHGT/ds65s5Cmw7xFHbd9?=
- =?us-ascii?Q?n5v+MDlOZXWxgU7rYOFtr3IXo0VhnwbKdNVt/pdOMTggSSWqDIgLV7m2wl5o?=
- =?us-ascii?Q?V+IryL51/0PTYOM5gu5u3BZBwRwa/1EcUYnzUl60L6EGn32MuV8KqvnjRduF?=
- =?us-ascii?Q?hPQ0a3GPKUj6NxdFZ7xdKLd8JXLU2iSml9ZFoWhwFoeqZ1kkfkzQBITGqwwR?=
- =?us-ascii?Q?bbzTy4L7ixTNrvf4+yvQuG9KBTuEODijQsS36xbEnXQA2Kc9Qj7I/Qx9rSKo?=
- =?us-ascii?Q?MtuQv/+hzRheMy9+9tbQfA4T1hRrA8IyEBtVgG+JcasxK5dIySAt2IvIYHU0?=
- =?us-ascii?Q?eLiSl7Rq9lh0C8sj/ikAorfGKUcsnhK99z7srJD058thv13PKIArgwMSS0ms?=
- =?us-ascii?Q?n7iMw/8q+8i4NL+pGwNDkNaKu08Ts9zw+Nb05GRSWsoD66n/BcI41XNwrB/z?=
- =?us-ascii?Q?hiImd15wRl9dt61ZxB237hXNykQV5ohldqGfTtyEv7sF7ZvNxm7cZK/zl19a?=
- =?us-ascii?Q?zbGsOb+tWkSsl4pwYbMn5vqkGM/N2XX6KZ3XVUEbhbBUsMHVvxSYQiTNVAdG?=
- =?us-ascii?Q?n/9hibkdzDmZc5J6zajz/oIscft0rvsZ7e/mmZW8DhE0TJm0wfM4tnvezQpD?=
- =?us-ascii?Q?RYL98QxfoGClbjltKsjzF1pph50G/0nIaM0iHUg87Wvm1WaFwE8A6kW5o1tU?=
- =?us-ascii?Q?xDr2py9aWtD09DrOyHC8WrCUeumJXiOo9FAmFgBbq+9MLRhi0STmkTxLvEHX?=
- =?us-ascii?Q?3VymoXEryfrcmEIN6gfwL59tu88IPDHpttXDoGGkUPH3Sgtb1MtG3pzeapoQ?=
- =?us-ascii?Q?Zin1eVnfjsv3O/xZt6Dto5YFHxvq0qBdP6NObZE4hC0nWnP0h4iUJGhyFt6E?=
- =?us-ascii?Q?OLABRCir48HpJLUgXG7/VKEqp1ol/mzXsahkoqmU+fPCrTRHoYQQDzBbef2b?=
- =?us-ascii?Q?+GgmHLtEXpfUSytvRoIrc0vmwpkRUGmwqpLGoRTDUGzxOGJBBqf+Cos9k19l?=
- =?us-ascii?Q?iR2xNXkMzTwQo2p+qqFxB85mpf2nIg36XK4vb6+jrP9JUcHes4zcE3ISqt54?=
- =?us-ascii?Q?8wjF6qDv8addgcY6REbHdHWdvcQpdHVCo5Z1DCtPuKxLdtB/fk26Fkll7vWc?=
- =?us-ascii?Q?VHvkB+NTTMuGo9ELVucqpeu3fXCG7yBJZ3ZvuMY+/G1cd3Rpc7WYhvg7xiDA?=
- =?us-ascii?Q?I1yimU+BN/W44tCAr64eer2hu5HZYN65cNKybsg9g2K89LoLtebmcYTeg09P?=
- =?us-ascii?Q?2WMKfh0R9yCtr4i+1D3VtA5EMnSC933FqCefl94nCrUmytzajD51797qzRq8?=
- =?us-ascii?Q?J8OvJJEsSyyVxHhtg+RZS5+CXBFsQ+1cH79uQaJu6lnM0aA9nIXesS84PR3g?=
- =?us-ascii?Q?9a1N9HNSMFRth8d/Jw+LBzcLVs2kcEVwZaCnMuTxdj4zeZtfUMvCa8Y5wBMP?=
- =?us-ascii?Q?Fj1tz0wS062sxt+d6yvqIEkp5Vowv7/Dr0xF3fevMmKVB5jtTqSSLS0rSgeh?=
- =?us-ascii?Q?vowN9IJlWIBEBBqdN1+OmurdrZuNlUBSc+XK+h6sZsntOkHedcd3zhPtIYWk?=
- =?us-ascii?Q?Mlj9K3Q28hXbrAHnnrI7/7FTMyRtYuLgeSwemgqJ?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ddd6f1c8-1e8e-47f7-57bb-08dcfa7ab272
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2024 13:40:06.8271
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FBg4gAtWIwdV0rWRJ8aqJ9V/OztHRpBjVvrlIt0LbD/RS3sMw69WYnEQmaP6LoEx
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8966
+User-Agent: Mozilla Thunderbird
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v4 1/3] iommu/arm-smmu-v3: Introduce struct arm_smmu_event
+To: Pranjal Shrivastava <praan@google.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: Mostafa Saleh <smostafa@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ iommu@lists.linux.dev, Jason Gunthorpe <jgg@nvidia.com>,
+ Daniel Mentz <danielmentz@google.com>
+References: <20241018180022.807928-1-praan@google.com>
+ <20241018180022.807928-2-praan@google.com>
+Content-Language: en-GB
+In-Reply-To: <20241018180022.807928-2-praan@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 18, 2024 at 02:19:26PM -0300, Jason Gunthorpe wrote:
-> Of the page table implementations (AMD v1/2, VT-D SS, ARM32, DART)
-> arm_lpae is unique in how it handles partial unmap of large IOPTEs.
+On 2024-10-18 7:00 pm, Pranjal Shrivastava wrote:
+> Introduce `struct arm_smmu_event` to represent event records.
+> Parse out relevant fields from raw event records for ease and
+> use the new `struct arm_smmu_event` instead.
 > 
-> All other drivers will unmap the large IOPTE and return it's length.  For
-> example if a 2M IOPTE is present and the first 4K is requested to be
-> unmapped then unmap will remove the whole 2M and report 2M as the result.
-> 
-> arm_lpae instead replaces the IOPTE with a table of smaller IOPTEs, unmaps
-> the 4K and returns 4k. This is actually an illegal/non-hitless operation
-> on at least SMMUv3 because of the BBM level 0 rules.
-> 
-> Long ago VFIO could trigger a path like this, today I know of no user of
-> this functionality.
-> 
-> Given it doesn't work fully correctly on SMMUv3 and would create
-> portability problems if any user depends on it, remove the unique support
-> in arm_lpae and align with the expected iommu interface.
-> 
-> Outside the iommu users, this will potentially effect io_pgtable users of
-> ARM_32_LPAE_S1, ARM_32_LPAE_S2, ARM_64_LPAE_S1, ARM_64_LPAE_S2, and
-> ARM_MALI_LPAE formats.
-> 
-> Cc: Boris Brezillon <boris.brezillon@collabora.com>
-> Cc: Steven Price <steven.price@arm.com>
-> Cc: Liviu Dudau <liviu.dudau@arm.com>
-> Cc: dri-devel@lists.freedesktop.org
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Daniel Mentz <danielmentz@google.com>
+> Signed-off-by: Pranjal Shrivastava <praan@google.com>
 > ---
->  drivers/iommu/io-pgtable-arm.c | 72 +++-------------------------------
->  1 file changed, 6 insertions(+), 66 deletions(-)
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 59 ++++++++++++++-------
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 20 +++++++
+>   2 files changed, 59 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 737c5b882355..2f1108e5de51 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1757,17 +1757,16 @@ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
+>   }
+>   
+>   /* IRQ and event handlers */
+> -static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
+> +static int arm_smmu_handle_evt(struct arm_smmu_event *event)
+>   {
+>   	int ret = 0;
+>   	u32 perm = 0;
+>   	struct arm_smmu_master *master;
+> -	bool ssid_valid = evt[0] & EVTQ_0_SSV;
+> -	u32 sid = FIELD_GET(EVTQ_0_SID, evt[0]);
+>   	struct iopf_fault fault_evt = { };
+> +	struct arm_smmu_device *smmu = event->smmu;
+>   	struct iommu_fault *flt = &fault_evt.fault;
+>   
+> -	switch (FIELD_GET(EVTQ_0_ID, evt[0])) {
+> +	switch (event->id) {
+>   	case EVT_ID_TRANSLATION_FAULT:
+>   	case EVT_ID_ADDR_SIZE_FAULT:
+>   	case EVT_ID_ACCESS_FAULT:
+> @@ -1777,35 +1776,35 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
+>   		return -EOPNOTSUPP;
+>   	}
+>   
+> -	if (!(evt[1] & EVTQ_1_STALL))
+> +	if (!event->stall)
+>   		return -EOPNOTSUPP;
+>   
+> -	if (evt[1] & EVTQ_1_RnW)
+> +	if (event->read)
+>   		perm |= IOMMU_FAULT_PERM_READ;
+>   	else
+>   		perm |= IOMMU_FAULT_PERM_WRITE;
+>   
+> -	if (evt[1] & EVTQ_1_InD)
+> +	if (event->instruction)
+>   		perm |= IOMMU_FAULT_PERM_EXEC;
+>   
+> -	if (evt[1] & EVTQ_1_PnU)
+> +	if (event->privileged)
+>   		perm |= IOMMU_FAULT_PERM_PRIV;
+>   
+>   	flt->type = IOMMU_FAULT_PAGE_REQ;
+>   	flt->prm = (struct iommu_fault_page_request) {
+>   		.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
+> -		.grpid = FIELD_GET(EVTQ_1_STAG, evt[1]),
+> +		.grpid = event->stag,
+>   		.perm = perm,
+> -		.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
+> +		.addr = event->iova,
+>   	};
+>   
+> -	if (ssid_valid) {
+> +	if (event->ssid_valid) {
+>   		flt->prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
+> -		flt->prm.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
+> +		flt->prm.pasid = event->ssid;
+>   	}
+>   
+>   	mutex_lock(&smmu->streams_mutex);
+> -	master = arm_smmu_find_master(smmu, sid);
+> +	master = arm_smmu_find_master(smmu, event->sid);
+>   	if (!master) {
+>   		ret = -EINVAL;
+>   		goto out_unlock;
+> @@ -1817,28 +1816,48 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
+>   	return ret;
+>   }
+>   
+> +static void arm_smmu_get_event_from_raw(struct arm_smmu_device *smmu,
+> +					struct arm_smmu_event *event)
 
-Updated commit message - Will let me know if you want me to resend
-with this, or any changes:
+One would kind of expect "get event from raw" to take a raw thing and 
+return an event... personally I'd still just inline this in 
+arm_smmu_handle_evt() itself, but otherwise something like 
+arm_smmu_decode_evt() would seem a more logical and obvious name at this 
+point.
 
-iommu/io-pgtable-arm: Remove split on unmap behavior
+> +{
+> +	/* Pick out the good stuff */
+> +	event->id = FIELD_GET(EVTQ_0_ID, event->raw[0]);
+> +	event->sid = FIELD_GET(EVTQ_0_SID, event->raw[0]);
+> +	event->ssid_valid = event->raw[0] & EVTQ_0_SSV;
+> +	event->ssid = event->ssid_valid ? FIELD_GET(EVTQ_0_SSID, event->raw[0]) : IOMMU_NO_PASID;
+> +	event->privileged = FIELD_GET(EVTQ_1_PnU, event->raw[1]);
+> +	event->instruction = FIELD_GET(EVTQ_1_InD, event->raw[1]);
+> +	event->s2 = FIELD_GET(EVTQ_1_S2, event->raw[1]);
+> +	event->read = FIELD_GET(EVTQ_1_RnW, event->raw[1]);
+> +	event->stag = FIELD_GET(EVTQ_1_STAG, event->raw[1]);
+> +	event->stall = event->raw[1] & EVTQ_1_STALL;
+> +	event->class = FIELD_GET(EVTQ_1_CLASS, event->raw[1]);
+> +	event->iova = FIELD_GET(EVTQ_2_ADDR, event->raw[2]);
+> +	event->ipa = FIELD_GET(EVTQ_3_IPA, event->raw[3]);
+> +	event->smmu = smmu;
 
-A minority of page table implementations (arm_lpae, armv7) are unique in
-how they handle partial unmap of large IOPTEs.
+The SMMU pointer isn't part of the raw event record... TBH I'd be 
+inclined to leave it entirely separate, but if you really do want to 
+hide it in the arm_smmu_event, at least keep things simple and 
+initialise it outside the loop - it's not like it's ever going to change 
+between events.
 
-Other implementations will unmap the large IOPTE and return it's
-length. For example if a 2M IOPTE is present and the first 4K is requested
-to be unmapped then unmap will remove the whole 2M and report 2M as the
-result.
+Thanks,
+Robin.
 
-arm_lpae instead replaces the IOPTE with a table of smaller IOPTEs, unmaps
-the 4K and returns 4k. This is actually an illegal/non-hitless operation
-on at least SMMUv3 because of the BBM level 0 rules.
+> +}
+> +
+>   static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+>   {
+>   	int i, ret;
+> +	struct arm_smmu_event evt;
+>   	struct arm_smmu_device *smmu = dev;
+>   	struct arm_smmu_queue *q = &smmu->evtq.q;
+>   	struct arm_smmu_ll_queue *llq = &q->llq;
+>   	static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
+>   				      DEFAULT_RATELIMIT_BURST);
+> -	u64 evt[EVTQ_ENT_DWORDS];
+>   
+>   	do {
+> -		while (!queue_remove_raw(q, evt)) {
+> -			u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
+> +		while (!queue_remove_raw(q, evt.raw)) {
+>   
+> -			ret = arm_smmu_handle_evt(smmu, evt);
+> +			arm_smmu_get_event_from_raw(smmu, &evt);
+> +			ret = arm_smmu_handle_evt(&evt);
+>   			if (!ret || !__ratelimit(&rs))
+>   				continue;
+>   
+> -			dev_info(smmu->dev, "event 0x%02x received:\n", id);
+> -			for (i = 0; i < ARRAY_SIZE(evt); ++i)
+> +			dev_info(smmu->dev, "event 0x%02x received:\n", evt.id);
+> +			for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
+>   				dev_info(smmu->dev, "\t0x%016llx\n",
+> -					 (unsigned long long)evt[i]);
+> +					(unsigned long long)evt.raw[i]);
+>   
+>   			cond_resched();
+>   		}
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 1e9952ca989f..8a42d7b701fb 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -437,6 +437,7 @@ static inline unsigned int arm_smmu_cdtab_l2_idx(unsigned int ssid)
+>   
+>   #define EVTQ_0_ID			GENMASK_ULL(7, 0)
+>   
+> +/* Events */
+>   #define EVT_ID_TRANSLATION_FAULT	0x10
+>   #define EVT_ID_ADDR_SIZE_FAULT		0x11
+>   #define EVT_ID_ACCESS_FAULT		0x12
+> @@ -452,6 +453,7 @@ static inline unsigned int arm_smmu_cdtab_l2_idx(unsigned int ssid)
+>   #define EVTQ_1_RnW			(1UL << 35)
+>   #define EVTQ_1_S2			(1UL << 39)
+>   #define EVTQ_1_CLASS			GENMASK_ULL(41, 40)
+> +#define EVTQ_1_CLASS_TT			0x1
+>   #define EVTQ_1_TT_READ			(1UL << 44)
+>   #define EVTQ_2_ADDR			GENMASK_ULL(63, 0)
+>   #define EVTQ_3_IPA			GENMASK_ULL(51, 12)
+> @@ -771,6 +773,24 @@ struct arm_smmu_stream {
+>   	struct rb_node			node;
+>   };
+>   
+> +struct arm_smmu_event {
+> +	struct arm_smmu_device		*smmu;
+> +	u8				id;
+> +	u8				class;
+> +	u16				stag;
+> +	u32				sid;
+> +	u32				ssid;
+> +	u64				iova;
+> +	u64				ipa;
+> +	u64				raw[EVTQ_ENT_DWORDS];
+> +	bool				stall;
+> +	bool				ssid_valid;
+> +	bool				privileged;
+> +	bool				instruction;
+> +	bool				s2;
+> +	bool				read;
+> +};
+> +
+>   /* SMMU private data for each master */
+>   struct arm_smmu_master {
+>   	struct arm_smmu_device		*smmu;
 
-Will says this was done to support VFIO, but upon deeper analysis this was
-never strictly necessary:
-
- https://lore.kernel.org/all/20241024134411.GA6956@nvidia.com/
-
-In summary, historical VFIO supported the AMD behavior of unmapping the
-whole large IOPTE and returning the size, even if asked to unmap a
-portion. The driver would see this as a request to split a large IOPTE.
-Modern VFIO always unmaps entire large IOPTEs (except on AMD) and drivers
-don't see an IOPTE split.
-
-Given it doesn't work fully correctly on SMMUv3 and relying on ARM unique
-behavior would create portability problems across IOMMU drivers, retire
-this functionality.
-
-Outside the iommu users, this will potentially effect io_pgtable users of
-ARM_32_LPAE_S1, ARM_32_LPAE_S2, ARM_64_LPAE_S1, ARM_64_LPAE_S2, and
-ARM_MALI_LPAE formats.
