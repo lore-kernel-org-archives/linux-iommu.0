@@ -1,183 +1,155 @@
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B802315F330
-	for <iommu@lists.linux.dev>; Fri,  1 Nov 2024 11:11:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.189
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A77D15820C;
+	Fri,  1 Nov 2024 11:54:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730459510; cv=none; b=gFY4db7KBLqrmwplqUVNafVaccEVF9hRTLXY9COWcUtxWzRwhr96Socw7tbH9CIR/3Mo/rVlefR5QLIaVNcTSy+hgFdZmjvaG2KNuOtPWHP/4tY0Id8PqL0lV4BZE2ecMRtsFMp+BJL4vz8+uTTdNBPSkKP6QIBG9qfEYcP7kEk=
+	t=1730462087; cv=none; b=LRGwBqznDq9JtJL1zS6KdXo2WfVRMNZv1V5IoFdVjAcQDedOZMNuZs0PGFbxniyJBeREzWrM0oHMhxveBOBSYseHgmHkN5oVMH83+ftJyjpjtbCpGArsCgWVbnzqmyc6THWmx5uPX8H8yILXrMwU5ndUJiXADjYxri/Z7sl4a4A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730459510; c=relaxed/simple;
-	bh=jzzj7rC//JLmXktNJ9n2mbVqfz461nEmBaKK0rjPMls=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=rZivIG0q61lLm9nLm1S8gmj6lpCfDa+6PMBGoLduWY8/ChKw4H+l+KnmeedpoxXrnPxz2mGwuHHBskLqnG3i5rx1ApUDzKmCsvVP5adMzlkRtlgxvnJAYV215UAKOwsus7YHB2xZHSpCwPCIaQtAea60zfGL1pVF6I6QHAElVFQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.189
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.174])
-	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4XfypB0z8QzQsQH;
-	Fri,  1 Nov 2024 19:10:42 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id DC89E140337;
-	Fri,  1 Nov 2024 19:11:43 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Fri, 1 Nov 2024 19:11:43 +0800
-Message-ID: <a50250bf-fe76-4324-96d7-b3acf087a18c@huawei.com>
-Date: Fri, 1 Nov 2024 19:11:43 +0800
+	s=arc-20240116; t=1730462087; c=relaxed/simple;
+	bh=RKKjaRT+TZqTjTNYJpQRRQla0KpA6rUkiKLNa5Za6jM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dqm9yyH92jotfSMTsqbz6KAibF1yxEkBerI600v27t/W0/qB/ssg0GiRwTJc8gX9J6cAgVk9P3txur/pcoIrZ7V9/rI8mcvrqencs1zR1RSTo80P+i0c17c/HeAT4TygaFQGc+q4n5WbEPyjPfn3KLh2CqsUrFGsY5RnDKiPLpo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fyl3yIsK; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fyl3yIsK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA1A3C4CECD;
+	Fri,  1 Nov 2024 11:54:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1730462086;
+	bh=RKKjaRT+TZqTjTNYJpQRRQla0KpA6rUkiKLNa5Za6jM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Fyl3yIsKzmdaDBfHqMByrFzmiPgh/aFJwAuRsQGSy7+4zPF3jWywWPOAxG0nus5CB
+	 LJxMNeegqqs7xYA5fi8NkJh+eO9g2yTw2USFMDhF/PYJSAgxGDkmhPkPNZLu5ZDLDa
+	 t7AdNvdn2Jg9M5XUZbR04fsBdsxxPVqdQ7Byw+GjK+UKM2oizoL3Zu9qpxRQp1BzR3
+	 CgksJaAM7nKj8PzfhRNlqu/PEgFsKgHpPcUPlxFtp1RIbUJWXq1sbKE0rXdYnzcvQ1
+	 uDWVH53Vi/4mSKlryP9ogtRQgTzsBEjGy+JEJIpEWuZ1WEm6ZGUrK/GvsqjIFuSz8t
+	 TKmg0tPAHlLjA==
+Date: Fri, 1 Nov 2024 11:54:40 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Boris Brezillon <boris.brezillon@collabora.com>,
+	dri-devel@lists.freedesktop.org, Liviu Dudau <liviu.dudau@arm.com>,
+	patches@lists.linux.dev, Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Remove split on unmap behavior
+Message-ID: <20241101115439.GA8518@willie-the-truck>
+References: <0-v1-8c5f369ec2e5+75-arm_no_split_jgg@nvidia.com>
+ <20241024130550.GE30704@willie-the-truck>
+ <20241024134411.GA6956@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-To: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>, Jesper
- Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-	<pabeni@redhat.com>
-CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
-	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
- Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
- Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
-	<kernel-team@cloudflare.com>
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com>
- <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
- <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
- <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
- <cf1911c5-622f-484c-9ee5-11e1ac83da24@huawei.com> <878qu7c8om.fsf@toke.dk>
- <1eac33ae-e8e1-4437-9403-57291ba4ced6@huawei.com> <87o731by64.fsf@toke.dk>
- <023fdee7-dbd4-4e78-b911-a7136ff81343@huawei.com> <874j4sb60w.fsf@toke.dk>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <874j4sb60w.fsf@toke.dk>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241024134411.GA6956@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2024/11/1 0:18, Toke Høiland-Jørgensen wrote:
+Hi Jason,
 
-...
-
->>>
->>> Eliding the details above, but yeah, you're right, there are probably
->>> some pernicious details to get right if we want to flush all caches. S
->>> I wouldn't do that to start with. Instead, just add the waiting to start
->>> with, then wait and see if this actually turns out to be a problem in
->>> practice. And if it is, identify the source of that problem, deal with
->>> it, rinse and repeat :)
->>
->> I am not sure if I have mentioned to you that jakub had a RFC for the waiting,
->> see [1]. And Yonglong Cc'ed had tested it, the waiting caused the driver unload
->> stalling forever and some task hung, see [2].
->>
->> The root cause for the above case is skb_defer_free_flush() not being called
->> as mentioned before.
+On Thu, Oct 24, 2024 at 10:44:11AM -0300, Jason Gunthorpe wrote:
+> On Thu, Oct 24, 2024 at 02:05:53PM +0100, Will Deacon wrote:
 > 
-> Well, let's fix that, then! We already logic to flush backlogs when a
-> netdevice is going away, so AFAICT all that's needed is to add the
-
-Is there a possiblity that the page_pool owned page might be still handled/cached
-in somewhere of networking if netif_rx_internal() is already called for the
-corresponding skb and skb_attempt_defer_free() is called after skb_defer_free_flush()
-added in below patch is called?
-
-Maybe add a timeout thing like timer to call kick_defer_list_purge() if you treat
-'outstanding forever' as leaked? I actually thought about this, but had not found
-out an elegant way to add the timeout.
-
-> skb_defer_free_flush() to that logic. Totally untested patch below, that
-> we should maybe consider applying in any case.
-
-I am not sure about that as the above mentioned timing window, but it does seem we
-might need to do something similar in dev_cpu_dead().
-
+> > My recollection is hazy, but I seem to remember VFIO using the largest
+> > page sizes in the IOMMU 'pgsize_bitmap' for map() requests but then
+> > using the smallest page size for unmap() requests, so you'd end up
+> > cracking block mappings when tearing down a VM with assigne devices.
+> >
+> > Is this what you're referring to when you say?
 > 
->> I am not sure if I understand the reasoning behind the above suggestion to 'wait
->> and see if this actually turns out to be a problem' when we already know that there
->> are some cases which need cache kicking/flushing for the waiting to work and those
->> kicking/flushing may not be easy and may take indefinite time too, not to mention
->> there might be other cases that need kicking/flushing that we don't know yet.
->>
->> Is there any reason not to consider recording the inflight pages so that unmapping
->> can be done for inflight pages before driver unbound supposing dynamic number of
->> inflight pages can be supported?
->>
->> IOW, Is there any reason you and jesper taking it as axiomatic that recording the
->> inflight pages is bad supposing the inflight pages can be unlimited and recording
->> can be done with least performance overhead?
+> Sounds like it, but I'm really hazy on the long ago history here.
 > 
-> Well, page pool is a memory allocator, and it already has a mechanism to
-> handle returning of memory to it. You're proposing to add a second,
-> orthogonal, mechanism to do this, one that adds both overhead and
-
-I would call it as a replacement/improvement for the old one instead of
-'a second, orthogonal' as the old one doesn't really exist after this patch.
-
-> complexity, yet doesn't handle all cases (cf your comment about devmem).
-
-I am not sure if unmapping only need to be done using its own version DMA API
-for devmem yet, but it seems waiting might also need to use its own version
-of kicking/flushing for devmem as devmem might be held from the user space?
-
+> >   > Long ago VFIO could trigger a path like this, today I know of no user of
+> >   > this functionality.
+> > 
+> > If so, please can you provide a reference to the patch that moved VFIO
+> > off that problematic behaviour?
 > 
-> And even if it did handle all cases, force-releasing pages in this way
-> really feels like it's just papering over the issue. If there are pages
-> being leaked (or that are outstanding forever, which basically amounts
-> to the same thing), that is something we should be fixing the root cause
-> of, not just working around it like this series does.
-
-If there is a definite time for waiting, I am probably agreed with the above.
-From the previous discussion, it seems the time to do the kicking/flushing
-would be indefinite depending how much cache to be scaned/flushed.
-
-For the 'papering over' part, it seems it is about if we want to paper over
-different kicking/flushing or paper over unmapping using different DMA API.
-
-Also page_pool is not really a allocator, instead it is more like a pool
-based on different allocator, such as buddy allocator or devmem allocator.
-I am not sure it makes much to do the flushing when page_pool_destroy() is
-called if the buddy allocator behind the page_pool is not under memory
-pressure yet.
-
-For the 'leaked' part mentioned above, I am agreed that it should be fixed
-if we have a clear and unified definition of 'leaked'， for example, is it
-allowed to keep the cache outstanding forever if the allocator is not under
-memory pressure and not ask for the releasing of its memory?
-
-Doesn't it make more sense to use something like shrinker_register() mechanism
-to decide whether to do the flushing?
-
-IOW, maybe it makes more sense that the allocator behind the page_pool should
-be deciding whether to do the kicking/flushing, and maybe page_pool should also
-use the shrinker_register() mechanism to empty its cache when necessary instead
-of deciding whether to do the kicking/flushing.
-
-So I am not even sure if it is appropriate to do the cache kicking/flushing
-during waiting, not to mention the indefinite time to do the kicking/flushing.
-
+> Looking more deeply, I'm not really sure VFIO ever required this.
 > 
-> -Toke
+> vfio commit 166fd7d94afd ("vfio: hugepage support for
+> vfio_iommu_type1") is the thing that added the huge page support, and
+> it called map like:
 > 
+> +               ret = iommu_map(iommu->domain, iova,
+> +                               (phys_addr_t)pfn << PAGE_SHIFT,
+> +                               npage << PAGE_SHIFT, prot);
 > 
-> Patch to flush the deferred free list when taking down a netdevice;
-> compile-tested only:
+> But then the unmap path still looked like:
+> 
+> +               unmapped = iommu_unmap(iommu->domain, iova, PAGE_SIZE);
+> +               unlocked += vfio_unpin_pages(phys >> PAGE_SHIFT,
+> +                                            unmapped >> PAGE_SHIFT,
+> +                                            dma->prot, false);
+> 
+> So at that time it was relying on the "unmap smaller gives the larger
+> size" trick that we see Intel and AMD implementing today. No
+> requirement for split, but the ARM split code could be triggered.
 
-As mentioned above, doesn't it have the time window below?
+Urgh, I'm not sure I was ever fully aware of that "trick". That's really
+horrible!
 
-            CPU 0                           CPU1
-      unregister_netdev()                    .
-             .                               .
-     flush_all_backlogs()                    .
-             .                               .
-             .                     skb_attempt_defer_free()
-             .                               .
-             .                               .
-             .                               .
-             .                               .
+> Next came the introduction of VFIO_TYPE1v2_IOMMU which eliminated the
+> ability for userspace to request splitting a mapping. Userspace can
+> only unmap what userspace maps. commit 1ef3e2bc0422
+> ("vfio/iommu_type1: Multi-IOMMU domain support")
+> 
+>     To do this, our DMA tracking needs to change.  We currently try to
+>     coalesce user mappings into as few tracking entries as possible.  The
+>     problem then becomes that we lose granularity of user mappings.  We've
+>     never guaranteed that a user is able to unmap at a finer granularity
+>     than the original mapping, but we must honor the granularity of the
+>     original mapping.  This coalescing code is therefore removed, allowing
+>     only unmaps covering complete maps.  The change in accounting is
+>     fairly small here, a typical QEMU VM will start out with roughly a
+>     dozen entries, so it's arguable if this coalescing was ever needed.
+> 
+> That blocked any requirement for splitting driven by the uAPI. Noting
+> uAPI based splitting never worked right and AFAICT AMD didn't
+> implement split at the time.
+> 
+> Finally, commit 6fe1010d6d9c ("vfio/type1: DMA unmap chunking")
+> changed the unmap loop to this:
+> 
+> -               unmapped = iommu_unmap(domain->domain, iova, PAGE_SIZE);
+> +               /*
+> +                * To optimize for fewer iommu_unmap() calls, each of which
+> +                * may require hardware cache flushing, try to find the
+> +                * largest contiguous physical memory chunk to unmap.
+> +                */
+> +               for (len = PAGE_SIZE;
+> +                    !domain->fgsp && iova + len < end; len += PAGE_SIZE) {
+> +                       next = iommu_iova_to_phys(domain->domain, iova + len);
+> +                       if (next != phys + len)
+> +                               break;
+> +               }
+> +
+> +               unmapped = iommu_unmap(domain->domain, iova, len);
+> 
+> fgsp=true is only possible on AMD, and this loop effectively
+> guarantees that the iommu driver will never see a partial huge page
+> unmap as the size is discovered via iommu_iova_to_phys() before
+> calling unmap.
+
+Talking to Robin, he reminded me of:
+
+7c6d90e2bb1a ("iommu/io-pgtable-arm: Fix iova_to_phys for block entries")
+
+which looks like it fixes a bug which would've defeated the VFIO chunking
+in your snippet above.
+
+But we're all good now, so I'm in favour of dropping this. Let's just
+cram some of this history into the commit message so we know why we're
+happy to do so.
+
+Lemme go look at the actual diff now...
+
+Cheers,
+
+Will
