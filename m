@@ -1,154 +1,183 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA7F115A84E;
-	Fri,  1 Nov 2024 11:06:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B802315F330
+	for <iommu@lists.linux.dev>; Fri,  1 Nov 2024 11:11:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.189
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730459188; cv=none; b=TJL1dCvv5mkQcVDVU/Ow/OAd0tupPSR7lBhD9BpEHAHbv5QFFUyVguv0JrcHLUfLbnfa6q+YCb9LwkcbxkRsx+em3OgG2L8wIFgeHECdHs/hL0ljrW8qGDd57oaOsHKL2h+3ZWr1zkUZfdVitaUpsgTI2sQ7PI09JlncflS8c1M=
+	t=1730459510; cv=none; b=gFY4db7KBLqrmwplqUVNafVaccEVF9hRTLXY9COWcUtxWzRwhr96Socw7tbH9CIR/3Mo/rVlefR5QLIaVNcTSy+hgFdZmjvaG2KNuOtPWHP/4tY0Id8PqL0lV4BZE2ecMRtsFMp+BJL4vz8+uTTdNBPSkKP6QIBG9qfEYcP7kEk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730459188; c=relaxed/simple;
-	bh=4cdN8oppOPWY/v1yFlCvkKvAwOHnBpBM0oBxJMPVYLk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Bd1upij3ZOVN/YpuqY1CHtCZs1lx2H0ISbiSPaUPS+zpR0eh/vsqe8Bz+Jf+uinhjqCaq7tbk4UFWRD5wrrRiQwQuvGqzcj4Vh+G3uYInw6oY6ZGCVFY7b++Jh9f+DAjRKKHNFOMOYfxVqDPwYZHDI/jSZFzG9j454vCdn/APdU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CTwdqT2l; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CTwdqT2l"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71C58C4CECD;
-	Fri,  1 Nov 2024 11:06:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730459188;
-	bh=4cdN8oppOPWY/v1yFlCvkKvAwOHnBpBM0oBxJMPVYLk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CTwdqT2l5uk5gwpVRS10I7uPpizsb/hBcBKWekYNb0/1/xyMQmvvfagsufSNIp0+H
-	 St+9WxVL8pwKleCrfHfZOuVkWSULd6MySOeEWfvsCSV0bHUjeaV4Ap2L+3O8raqwIS
-	 p8YZpzpRR2xY/A6EMSIL/RHlUwRsD/PxD5D4If7Zj2eoCfoQV5qXib+WWg4KhvHw2Z
-	 saicJOq/ogsv1rxc7raI5JADLpXusjkRSrgZdWf1j6772wyPuX/i0FTrFjRY3w286B
-	 PjBi7Ma3lUD9gnl/JBiWlvccuEDx1UcX9zpXWH1OJeH3wNcgUidQmhlFlXz687wucc
-	 p44pH3kVnbTcg==
-Date: Fri, 1 Nov 2024 13:06:22 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
-	Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v1 08/17] dma-mapping: add a dma_need_unmap helper
-Message-ID: <20241101110622.GD88858@unreal>
-References: <cover.1730298502.git.leon@kernel.org>
- <00385b3557fa074865d37b0ac613d2cb28bcb741.1730298502.git.leon@kernel.org>
- <7e362d8b-c02a-4327-9c5d-af1c4725ddc7@arm.com>
+	s=arc-20240116; t=1730459510; c=relaxed/simple;
+	bh=jzzj7rC//JLmXktNJ9n2mbVqfz461nEmBaKK0rjPMls=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=rZivIG0q61lLm9nLm1S8gmj6lpCfDa+6PMBGoLduWY8/ChKw4H+l+KnmeedpoxXrnPxz2mGwuHHBskLqnG3i5rx1ApUDzKmCsvVP5adMzlkRtlgxvnJAYV215UAKOwsus7YHB2xZHSpCwPCIaQtAea60zfGL1pVF6I6QHAElVFQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.189
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.174])
+	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4XfypB0z8QzQsQH;
+	Fri,  1 Nov 2024 19:10:42 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id DC89E140337;
+	Fri,  1 Nov 2024 19:11:43 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Fri, 1 Nov 2024 19:11:43 +0800
+Message-ID: <a50250bf-fe76-4324-96d7-b3acf087a18c@huawei.com>
+Date: Fri, 1 Nov 2024 19:11:43 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7e362d8b-c02a-4327-9c5d-af1c4725ddc7@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
+ has already unbound
+To: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>, Jesper
+ Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+	<pabeni@redhat.com>
+CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
+	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
+ Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
+ Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
+ Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
+	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
+	<kernel-team@cloudflare.com>
+References: <20241022032214.3915232-1-linyunsheng@huawei.com>
+ <20241022032214.3915232-4-linyunsheng@huawei.com>
+ <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
+ <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
+ <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
+ <cf1911c5-622f-484c-9ee5-11e1ac83da24@huawei.com> <878qu7c8om.fsf@toke.dk>
+ <1eac33ae-e8e1-4437-9403-57291ba4ced6@huawei.com> <87o731by64.fsf@toke.dk>
+ <023fdee7-dbd4-4e78-b911-a7136ff81343@huawei.com> <874j4sb60w.fsf@toke.dk>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <874j4sb60w.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On Thu, Oct 31, 2024 at 09:18:11PM +0000, Robin Murphy wrote:
-> On 30/10/2024 3:12 pm, Leon Romanovsky wrote:
-> > From: Christoph Hellwig <hch@lst.de>
-> > 
-> > Add helper that allows a driver to skip calling dma_unmap_*
-> > if the DMA layer can guarantee that they are no-nops.
-> > 
-> > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >   include/linux/dma-mapping.h |  5 +++++
-> >   kernel/dma/mapping.c        | 20 ++++++++++++++++++++
-> >   2 files changed, 25 insertions(+)
-> > 
-> > diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> > index 8074a3b5c807..6906edde505d 100644
-> > --- a/include/linux/dma-mapping.h
-> > +++ b/include/linux/dma-mapping.h
-> > @@ -410,6 +410,7 @@ static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
-> >   {
-> >   	return dma_dev_need_sync(dev) ? __dma_need_sync(dev, dma_addr) : false;
-> >   }
-> > +bool dma_need_unmap(struct device *dev);
-> >   #else /* !CONFIG_HAS_DMA || !CONFIG_DMA_NEED_SYNC */
-> >   static inline bool dma_dev_need_sync(const struct device *dev)
-> >   {
-> > @@ -435,6 +436,10 @@ static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
-> >   {
-> >   	return false;
-> >   }
-> > +static inline bool dma_need_unmap(struct device *dev)
-> > +{
-> > +	return false;
-> > +}
-> >   #endif /* !CONFIG_HAS_DMA || !CONFIG_DMA_NEED_SYNC */
-> >   struct page *dma_alloc_pages(struct device *dev, size_t size,
-> > diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> > index 864a1121bf08..daa97a650778 100644
-> > --- a/kernel/dma/mapping.c
-> > +++ b/kernel/dma/mapping.c
-> > @@ -442,6 +442,26 @@ bool __dma_need_sync(struct device *dev, dma_addr_t dma_addr)
-> >   }
-> >   EXPORT_SYMBOL_GPL(__dma_need_sync);
-> > +/**
-> > + * dma_need_unmap - does this device need dma_unmap_* operations
-> > + * @dev: device to check
-> > + *
-> > + * If this function returns %false, drivers can skip calling dma_unmap_* after
-> > + * finishing an I/O.  This function must be called after all mappings that might
-> > + * need to be unmapped have been performed.
+On 2024/11/1 0:18, Toke Høiland-Jørgensen wrote:
+
+...
+
+>>>
+>>> Eliding the details above, but yeah, you're right, there are probably
+>>> some pernicious details to get right if we want to flush all caches. S
+>>> I wouldn't do that to start with. Instead, just add the waiting to start
+>>> with, then wait and see if this actually turns out to be a problem in
+>>> practice. And if it is, identify the source of that problem, deal with
+>>> it, rinse and repeat :)
+>>
+>> I am not sure if I have mentioned to you that jakub had a RFC for the waiting,
+>> see [1]. And Yonglong Cc'ed had tested it, the waiting caused the driver unload
+>> stalling forever and some task hung, see [2].
+>>
+>> The root cause for the above case is skb_defer_free_flush() not being called
+>> as mentioned before.
 > 
-> In terms of the unmap call itself, why don't we just use dma_skip_sync to
-> short-cut dma_direct_unmap_*() and make sure it's as cheap as possible?
+> Well, let's fix that, then! We already logic to flush backlogs when a
+> netdevice is going away, so AFAICT all that's needed is to add the
 
-From what I see dma_skip_sync is not available when kernel is built
-without CONFIG_DMA_NEED_SYNC.
+Is there a possiblity that the page_pool owned page might be still handled/cached
+in somewhere of networking if netif_rx_internal() is already called for the
+corresponding skb and skb_attempt_defer_free() is called after skb_defer_free_flush()
+added in below patch is called?
 
-> 
-> In terms of not having to unmap implying not having to store addresses at
-> all, it doesn't seem super-useful when you still have to store them for long
-> enough to find out that you don't :/
+Maybe add a timeout thing like timer to call kick_defer_list_purge() if you treat
+'outstanding forever' as leaked? I actually thought about this, but had not found
+out an elegant way to add the timeout.
 
-Why? The decision if DMA addresses are needed is taken when allocating
-relevant arrays, before we have any DMA address to store. If we know
-that we don't need to unmap, we can skip allocation of the array for
-free. So what and when "you still have to store them"?
+> skb_defer_free_flush() to that logic. Totally untested patch below, that
+> we should maybe consider applying in any case.
 
-Thanks
+I am not sure about that as the above mentioned timing window, but it does seem we
+might need to do something similar in dev_cpu_dead().
 
 > 
-> Thanks,
-> Robin.
+>> I am not sure if I understand the reasoning behind the above suggestion to 'wait
+>> and see if this actually turns out to be a problem' when we already know that there
+>> are some cases which need cache kicking/flushing for the waiting to work and those
+>> kicking/flushing may not be easy and may take indefinite time too, not to mention
+>> there might be other cases that need kicking/flushing that we don't know yet.
+>>
+>> Is there any reason not to consider recording the inflight pages so that unmapping
+>> can be done for inflight pages before driver unbound supposing dynamic number of
+>> inflight pages can be supported?
+>>
+>> IOW, Is there any reason you and jesper taking it as axiomatic that recording the
+>> inflight pages is bad supposing the inflight pages can be unlimited and recording
+>> can be done with least performance overhead?
 > 
-> > + */
-> > +bool dma_need_unmap(struct device *dev)
-> > +{
-> > +	if (!dma_map_direct(dev, get_dma_ops(dev)))
-> > +		return true;
-> > +#ifdef CONFIG_DMA_NEED_SYNC
-> > +	if (!dev->dma_skip_sync)
-> > +		return true;
-> > +#endif
-> > +	return IS_ENABLED(CONFIG_DMA_API_DEBUG);
-> > +}
-> > +EXPORT_SYMBOL_GPL(dma_need_unmap);
-> > +
-> >   static void dma_setup_need_sync(struct device *dev)
-> >   {
-> >   	const struct dma_map_ops *ops = get_dma_ops(dev);
+> Well, page pool is a memory allocator, and it already has a mechanism to
+> handle returning of memory to it. You're proposing to add a second,
+> orthogonal, mechanism to do this, one that adds both overhead and
+
+I would call it as a replacement/improvement for the old one instead of
+'a second, orthogonal' as the old one doesn't really exist after this patch.
+
+> complexity, yet doesn't handle all cases (cf your comment about devmem).
+
+I am not sure if unmapping only need to be done using its own version DMA API
+for devmem yet, but it seems waiting might also need to use its own version
+of kicking/flushing for devmem as devmem might be held from the user space?
+
 > 
+> And even if it did handle all cases, force-releasing pages in this way
+> really feels like it's just papering over the issue. If there are pages
+> being leaked (or that are outstanding forever, which basically amounts
+> to the same thing), that is something we should be fixing the root cause
+> of, not just working around it like this series does.
+
+If there is a definite time for waiting, I am probably agreed with the above.
+From the previous discussion, it seems the time to do the kicking/flushing
+would be indefinite depending how much cache to be scaned/flushed.
+
+For the 'papering over' part, it seems it is about if we want to paper over
+different kicking/flushing or paper over unmapping using different DMA API.
+
+Also page_pool is not really a allocator, instead it is more like a pool
+based on different allocator, such as buddy allocator or devmem allocator.
+I am not sure it makes much to do the flushing when page_pool_destroy() is
+called if the buddy allocator behind the page_pool is not under memory
+pressure yet.
+
+For the 'leaked' part mentioned above, I am agreed that it should be fixed
+if we have a clear and unified definition of 'leaked'， for example, is it
+allowed to keep the cache outstanding forever if the allocator is not under
+memory pressure and not ask for the releasing of its memory?
+
+Doesn't it make more sense to use something like shrinker_register() mechanism
+to decide whether to do the flushing?
+
+IOW, maybe it makes more sense that the allocator behind the page_pool should
+be deciding whether to do the kicking/flushing, and maybe page_pool should also
+use the shrinker_register() mechanism to empty its cache when necessary instead
+of deciding whether to do the kicking/flushing.
+
+So I am not even sure if it is appropriate to do the cache kicking/flushing
+during waiting, not to mention the indefinite time to do the kicking/flushing.
+
+> 
+> -Toke
+> 
+> 
+> Patch to flush the deferred free list when taking down a netdevice;
+> compile-tested only:
+
+As mentioned above, doesn't it have the time window below?
+
+            CPU 0                           CPU1
+      unregister_netdev()                    .
+             .                               .
+     flush_all_backlogs()                    .
+             .                               .
+             .                     skb_attempt_defer_free()
+             .                               .
+             .                               .
+             .                               .
+             .                               .
