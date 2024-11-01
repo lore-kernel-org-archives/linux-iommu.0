@@ -1,74 +1,332 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA65AC13C;
-	Fri,  1 Nov 2024 12:18:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4CDFC2C9
+	for <iommu@lists.linux.dev>; Fri,  1 Nov 2024 12:45:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730463539; cv=none; b=UJmUOXmKJYhUMtY/lR5P39HCvv3ppCjp2OzGVdVSuZW0XbgwAfo0bNsZLfxhPUuZONyhv9ojjrNvACyRESoEAqK4u5/WRz7YfEQHlW99KAMsZf5PuujbfdCxGksNuyilyo7VI8gA1KDuSm2ZrN0/LV+cf4fTnl6FUOPPvo/jrMQ=
+	t=1730465140; cv=none; b=cglPrMe4nGi0mdwp91M3nebme9nDY1H247VHpYS8AEwFh/PQn0zDMes7n2XhtoB51V2V02Ftsm8iQEdZxamWJwh4XFRSC0kiOrMkIh/RYBJ9+PdRt9G4MNVPcwEG43/C0k1/qmD0LzoBgDnflLADTXeV10xnoairAv0nDI+Jnj8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730463539; c=relaxed/simple;
-	bh=+HDgzWKsUKx97E2mppbNA0tlv52sTXzgPdKbp7JsyHc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EH2rRfi0EVqj+A25Al8Cs4RadLaY5Mwo+rAtJk0k7yCbJibz+5efhSdUp+sm4EIlz9iFL6EKrg7ePdZzcVxYPRiAHy3ubbGJQfxakjUF/x0zSlratMsvqdmDAINZ9WztHTaP9zWGYK1lOI2P3N3geBXw/q+QUJfG71BB4acM2D0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NBHuxN/p; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NBHuxN/p"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C80BC4CECD;
-	Fri,  1 Nov 2024 12:18:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730463539;
-	bh=+HDgzWKsUKx97E2mppbNA0tlv52sTXzgPdKbp7JsyHc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NBHuxN/pAPf8IHixhryTxZ/futb2LvKpXXCyR/SW5uqdlFGHVLyrlBC+FoDgxJK/8
-	 BXZ1Fn1ywsP56K2duT3rd3UI+AOCVdZmtR/HykfvCUXf3jv+5ZNKavkqEnCI4LKVwF
-	 LRMnqS48aXxmJsDs31Z4xPwsC+bm4UTb7nLroxbppw7andSl//KM3oM0Tk4BPncaBZ
-	 w1Qs2YqwVqIpnwUXRzbOyRf6LMKWgSiY+Z1kSvOokZF2WryjywWEbsMTi0AdGzTtx3
-	 DxocfHC4sNGzai1qJLidnKNIKvKXS5sFlWCK6RoNSgw6FiIuVJ2TXQJsams+pxngiG
-	 /RIoyXXF0y6rQ==
-Date: Fri, 1 Nov 2024 12:18:50 +0000
-From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: acpica-devel@lists.linux.dev, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	kvm@vger.kernel.org, Len Brown <lenb@kernel.org>,
-	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Donald Dutile <ddutile@redhat.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Jerry Snitselaar <jsnitsel@redhat.com>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v4 00/12] Initial support for SMMUv3 nested translation
-Message-ID: <20241101121849.GD8518@willie-the-truck>
-References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+	s=arc-20240116; t=1730465140; c=relaxed/simple;
+	bh=kEjIhb3tbqRNoW6L6UTNS9w3FYCS3aVB2MN6ZaCBnMA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=a6MoMEbGwAXdPQ30xSanEo5TQYOjmoffnfoZRVxI4NJ6VwjdYn6sV/t8a6YA20Q7Fv8OPQ6njNtcP5ulvzJMjvUVazzWTTm0n/Mla9ZwkTGWH9WPhf0wvIpLyDn6oDklwjbKVYDhiFhfWYvNsLOsQ94yt2IG+P07hcQftn9JuxA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-6ea656c60a4so9277617b3.3
+        for <iommu@lists.linux.dev>; Fri, 01 Nov 2024 05:45:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730465135; x=1731069935;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=LQQlY8mlkuydo2nMoxWgxP1dDvcaUCqu6xgh/ET5fr8=;
+        b=cZiOZDeI0VrKun52QO29L9kEnc55tNDkQQDMKNFt51i5OW6ur/Sn8a0sGIH3YaX1HS
+         ocDpswlsedv+oR6TUKseldhW6nj8bNTatpiOAsWvdy4OkpzeMHcBx2Bt49O8f+iksYVK
+         I9tF5b4DJQlDzRoX0/m32zAWiyvwHX0fxpm+ubFdjtzOgGNJGHmFTq9sGSEFpKBI3QPH
+         6OL4MLCJpeMq3E3uTiJpPspxdt9E3c8yVQgrdWUxFJsiCbIkCXdFwnmob6kY+2/r2x5p
+         v7fEWO5iOJv03nrC9ajPh+6y79siWrvhnqxCxMDjnJa929S2MoT5EnaymAK1/NjUxuJV
+         NlqQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU4XSvllr7YSdOkLnwtoxEW0MizSI0BKfmZ9kQfApqgHzCq572orGsXuTSullUamqQ0fgB4sg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw+ljFKbJVpqcugsprGpATTNMWxcSlkl/tfnttSUeNQVPPpDfSz
+	rpWnFmQH1BSPUFROINDCVltSBe/rBzeSL/8cHP94kRNc1LQ9P6Dppxe8DaG1
+X-Google-Smtp-Source: AGHT+IHjPcqq5OTyedzBNPQGnvERRpNE650MWI6XXltkXiE8aOnksFOYUbjV6zRd2czEEPP+nLIEqQ==
+X-Received: by 2002:a05:690c:660c:b0:6b0:70fc:f6e4 with SMTP id 00721157ae682-6ea3b897484mr101191397b3.15.1730465134879;
+        Fri, 01 Nov 2024 05:45:34 -0700 (PDT)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-6ea55b5c44dsm6466367b3.67.2024.11.01.05.45.33
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Nov 2024 05:45:34 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-6e9ba45d67fso19266407b3.1
+        for <iommu@lists.linux.dev>; Fri, 01 Nov 2024 05:45:33 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWRDQ0vE/r6QVhRdTpM1MGxWoRebQ3tHh1aZJrjY028UXmSdOygFvHr7QL2+RqFAX3He/KYtw==@lists.linux.dev
+X-Received: by 2002:a05:690c:d8e:b0:6e3:6467:f46c with SMTP id
+ 00721157ae682-6ea3b895ec3mr120309497b3.14.1730465133456; Fri, 01 Nov 2024
+ 05:45:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20241008220624.551309-1-quic_obabatun@quicinc.com>
+ <20241008220624.551309-2-quic_obabatun@quicinc.com> <CAMuHMdUXj4QiSKdhf61xdDeu94=Hv0BXuCxykDpQwdY81_h2vw@mail.gmail.com>
+ <8c987a26-d499-4ceb-905e-750bb24fcb08@quicinc.com>
+In-Reply-To: <8c987a26-d499-4ceb-905e-750bb24fcb08@quicinc.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 1 Nov 2024 13:45:21 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdW050DuwkLuosiiz2Yt7d0Lq+C8jFO0+O0qbwsjmyf3hA@mail.gmail.com>
+Message-ID: <CAMuHMdW050DuwkLuosiiz2Yt7d0Lq+C8jFO0+O0qbwsjmyf3hA@mail.gmail.com>
+Subject: Re: [PATCH v10 1/2] of: reserved_mem: Restruture how the reserved
+ memory regions are processed
+To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+Cc: robh@kernel.org, aisheng.dong@nxp.com, andy@black.fi.intel.com, 
+	catalin.marinas@arm.com, devicetree@vger.kernel.org, hch@lst.de, 
+	iommu@lists.linux.dev, kernel@quicinc.com, klarasmodin@gmail.com, 
+	linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, 
+	quic_ninanaik@quicinc.com, robin.murphy@arm.com, saravanak@google.com, 
+	will@kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 30, 2024 at 09:20:44PM -0300, Jason Gunthorpe wrote:
-> [This is now based on Nicolin's iommufd patches for vIOMMU and will need
-> to go through the iommufd tree, please ack]
+Hi Oreoluwa,
 
-Can't we separate out the SMMUv3 driver changes? They shouldn't depend on
-Nicolin's work afaict.
+On Thu, Oct 31, 2024 at 10:06=E2=80=AFPM Oreoluwa Babatunde
+<quic_obabatun@quicinc.com> wrote:
+> On 10/29/2024 5:41 AM, Geert Uytterhoeven wrote:
+> > On Wed, Oct 9, 2024 at 12:08=E2=80=AFAM Oreoluwa Babatunde
+> > <quic_obabatun@quicinc.com> wrote:
+> >> Reserved memory regions defined in the devicetree can be broken up int=
+o
+> >> two groups:
+> >> i) Statically-placed reserved memory regions
+> >> i.e. regions defined with a static start address and size using the
+> >>      "reg" property.
+> >> ii) Dynamically-placed reserved memory regions.
+> >> i.e. regions defined by specifying an address range where they can be
+> >>      placed in memory using the "alloc_ranges" and "size" properties.
+> >>
+> >> These regions are processed and set aside at boot time.
+> >> This is done in two stages as seen below:
+> >>
+> >> Stage 1:
+> >> At this stage, fdt_scan_reserved_mem() scans through the child nodes o=
+f
+> >> the reserved_memory node using the flattened devicetree and does the
+> >> following:
+> >>
+> >> 1) If the node represents a statically-placed reserved memory region,
+> >>    i.e. if it is defined using the "reg" property:
+> >>    - Call memblock_reserve() or memblock_mark_nomap() as needed.
+> >>    - Add the information for that region into the reserved_mem array
+> >>      using fdt_reserved_mem_save_node().
+> >>      i.e. fdt_reserved_mem_save_node(node, name, base, size).
+> >>
+> >> 2) If the node represents a dynamically-placed reserved memory region,
+> >>    i.e. if it is defined using "alloc-ranges" and "size" properties:
+> >>    - Add the information for that region to the reserved_mem array wit=
+h
+> >>      the starting address and size set to 0.
+> >>      i.e. fdt_reserved_mem_save_node(node, name, 0, 0).
+> >>    Note: This region is saved to the array with a starting address of =
+0
+> >>    because a starting address is not yet allocated for it.
+> >>
+> >> Stage 2:
+> >> After iterating through all the reserved memory nodes and storing thei=
+r
+> >> relevant information in the reserved_mem array,fdt_init_reserved_mem()=
+ is
+> >> called and does the following:
+> >>
+> >> 1) For statically-placed reserved memory regions:
+> >>    - Call the region specific init function using
+> >>      __reserved_mem_init_node().
+> >> 2) For dynamically-placed reserved memory regions:
+> >>    - Call __reserved_mem_alloc_size() which is used to allocate memory
+> >>      for each of these regions, and mark them as nomap if they have th=
+e
+> >>      nomap property specified in the DT.
+> >>    - Call the region specific init function.
+> >>
+> >> The current size of the resvered_mem array is 64 as is defined by
+> >> MAX_RESERVED_REGIONS. This means that there is a limitation of 64 for
+> >> how many reserved memory regions can be specified on a system.
+> >> As systems continue to grow more and more complex, the number of
+> >> reserved memory regions needed are also growing and are starting to hi=
+t
+> >> this 64 count limit, hence the need to make the reserved_mem array
+> >> dynamically sized (i.e. dynamically allocating memory for the
+> >> reserved_mem array using membock_alloc_*).
+> >>
+> >> On architectures such as arm64, memory allocated using memblock is
+> >> writable only after the page tables have been setup. This means that i=
+f
+> >> the reserved_mem array is going to be dynamically allocated, it needs =
+to
+> >> happen after the page tables have been setup, not before.
+> >>
+> >> Since the reserved memory regions are currently being processed and
+> >> added to the array before the page tables are setup, there is a need t=
+o
+> >> change the order in which some of the processing is done to allow for
+> >> the reserved_mem array to be dynamically sized.
+> >>
+> >> It is possible to process the statically-placed reserved memory region=
+s
+> >> without needing to store them in the reserved_mem array until after th=
+e
+> >> page tables have been setup because all the information stored in the
+> >> array is readily available in the devicetree and can be referenced at
+> >> any time.
+> >> Dynamically-placed reserved memory regions on the other hand get
+> >> assigned a start address only at runtime, and hence need a place to be
+> >> stored once they are allocated since there is no other referrence to t=
+he
+> >> start address for these regions.
+> >>
+> >> Hence this patch changes the processing order of the reserved memory
+> >> regions in the following ways:
+> >>
+> >> Step 1:
+> >> fdt_scan_reserved_mem() scans through the child nodes of
+> >> the reserved_memory node using the flattened devicetree and does the
+> >> following:
+> >>
+> >> 1) If the node represents a statically-placed reserved memory region,
+> >>    i.e. if it is defined using the "reg" property:
+> >>    - Call memblock_reserve() or memblock_mark_nomap() as needed.
+> >>
+> >> 2) If the node represents a dynamically-placed reserved memory region,
+> >>    i.e. if it is defined using "alloc-ranges" and "size" properties:
+> >>    - Call __reserved_mem_alloc_size() which will:
+> >>      i) Allocate memory for the reserved region and call
+> >>      memblock_mark_nomap() as needed.
+> >>      ii) Call the region specific initialization function using
+> >>      fdt_init_reserved_mem_node().
+> >>      iii) Save the region information in the reserved_mem array using
+> >>      fdt_reserved_mem_save_node().
+> >>
+> >> Step 2:
+> >> 1) This stage of the reserved memory processing is now only used to ad=
+d
+> >>    the statically-placed reserved memory regions into the reserved_mem
+> >>    array using fdt_scan_reserved_mem_reg_nodes(), as well as call thei=
+r
+> >>    region specific initialization functions.
+> >>
+> >> 2) This step has also been moved to be after the page tables are
+> >>    setup. Moving this will allow us to replace the reserved_mem
+> >>    array with a dynamically sized array before storing the rest of
+> >>    these regions.
+> >>
+> >> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+> > Thanks for your patch, which is now commit 8a6e02d0c00e7b62
+> > ("of: reserved_mem: Restructure how the reserved memory regions
+> > are processed") in dt-rh/for-next.
+> >
+> > I have bisected a boot issue on RZ/Five to this commit.
+> > With "earlycon keep_bootcon" (else there is no output):
+> >
+> >     Oops - store (or AMO) access fault [#1]
+> >     CPU: 0 UID: 0 PID: 1 Comm: swapper Not tainted
+> > 6.12.0-rc1-00015-g8a6e02d0c00e #201
+> >     Hardware name: Renesas SMARC EVK based on r9a07g043f01 (DT)
+> >     epc : __memset+0x60/0x100
+> >      ra : __dma_alloc_from_coherent+0x150/0x17a
+> >     epc : ffffffff8062d2bc ra : ffffffff80053a94 sp : ffffffc60000ba20
+> >      gp : ffffffff812e9938 tp : ffffffd601920000 t0 : ffffffc6000d0000
+> >      t1 : 0000000000000000 t2 : ffffffffe9600000 s0 : ffffffc60000baa0
+> >      s1 : ffffffc6000d0000 a0 : ffffffc6000d0000 a1 : 0000000000000000
+> >      a2 : 0000000000001000 a3 : ffffffc6000d1000 a4 : 0000000000000000
+> >      a5 : 0000000000000000 a6 : ffffffd601adacc0 a7 : ffffffd601a841a8
+> >      s2 : ffffffd6018573c0 s3 : 0000000000001000 s4 : ffffffd6019541e0
+> >      s5 : 0000000200000022 s6 : ffffffd6018f8410 s7 : ffffffd6018573e8
+> >      s8 : 0000000000000001 s9 : 0000000000000001 s10: 0000000000000010
+> >      s11: 0000000000000000 t3 : 0000000000000000 t4 : ffffffffdefe62d1
+> >      t5 : 000000001cd6a3a9 t6 : ffffffd601b2aad6
+> >     status: 0000000200000120 badaddr: ffffffc6000d0000 cause: 000000000=
+0000007
+> >     [<ffffffff8062d2bc>] __memset+0x60/0x100
+> >     [<ffffffff80053e1a>] dma_alloc_from_global_coherent+0x1c/0x28
+> >     [<ffffffff80053056>] dma_direct_alloc+0x98/0x112
+> >     [<ffffffff8005238c>] dma_alloc_attrs+0x78/0x86
+> >     [<ffffffff8035fdb4>] rz_dmac_probe+0x3f6/0x50a
+> >     [<ffffffff803a0694>] platform_probe+0x4c/0x8a
+> >     [<ffffffff8039ea16>] really_probe+0xe4/0x1c8
+> >     [<ffffffff8039ebc4>] __driver_probe_device+0xca/0xce
+> >     [<ffffffff8039ec48>] driver_probe_device+0x34/0x92
+> >     [<ffffffff8039ede8>] __driver_attach+0xb4/0xbe
+> >     [<ffffffff8039ce58>] bus_for_each_dev+0x60/0xa0
+> >     [<ffffffff8039e26a>] driver_attach+0x1a/0x22
+> >     [<ffffffff8039dc20>] bus_add_driver+0xa4/0x184
+> >     [<ffffffff8039f65c>] driver_register+0x8a/0xb4
+> >     [<ffffffff803a051c>] __platform_driver_register+0x1c/0x24
+> >     [<ffffffff808202f6>] rz_dmac_driver_init+0x1a/0x22
+> >     [<ffffffff80800ef6>] do_one_initcall+0x64/0x134
+> >     [<ffffffff8080122e>] kernel_init_freeable+0x200/0x202
+> >     [<ffffffff80638126>] kernel_init+0x1e/0x10a
+> >     [<ffffffff8063d58e>] ret_from_fork+0xe/0x18
+> >     Code: 1007 82b3 40e2 0797 0000 8793 00e7 8305 97ba 8782 (b023) 00b2
+> >     ---[ end trace 0000000000000000 ]---
+> >     Kernel panic - not syncing: Fatal exception in interrupt
+> >     ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]=
+---
+> >
+> > Nothing really stands out in the kernel log, except for a delayed
+> > initialization of the reserved mem nodes (they are the same
+> > before/after):
+> >
+> >  printk: debug: ignoring loglevel setting.
+> > -OF: reserved mem: 0x0000000000030000..0x000000000003ffff (64 KiB)
+> > nomap non-reusable mmode_resv0@30000
+> > -OF: reserved mem: 0x0000000000040000..0x000000000004ffff (64 KiB)
+> > nomap non-reusable mmode_resv1@40000
+> > -OF: reserved mem: 0x0000000044000000..0x000000004403ffff (256 KiB)
+> > nomap non-reusable mmode_resv3@44000000
+> > -OF: reserved mem: 0x0000000044040000..0x000000004405ffff (128 KiB)
+> > nomap non-reusable mmode_resv2@44040000
+> > +earlycon: scif0 at MMIO 0x000000001004b800 (options '115200n8')
+> > +printk: legacy bootconsole [scif0] enabled
+> > +printk: debug: skip boot console de-registration.
+> >  Reserved memory: created DMA memory pool at 0x0000000058000000, size 1=
+28 MiB
+> >  OF: reserved mem: initialized node pma_resv0@58000000, compatible id
+> > shared-dma-pool
+> >  OF: reserved mem: 0x0000000058000000..0x000000005fffffff (131072 KiB)
+> > nomap non-reusable pma_resv0@58000000
+> > +OF: reserved mem: 0x0000000000030000..0x000000000003ffff (64 KiB)
+> > nomap non-reusable mmode_resv0@30000
+> > +OF: reserved mem: 0x0000000000040000..0x000000000004ffff (64 KiB)
+> > nomap non-reusable mmode_resv1@40000
+> > +OF: reserved mem: 0x0000000044040000..0x000000004405ffff (128 KiB)
+> > nomap non-reusable mmode_resv2@44040000
+> > +OF: reserved mem: 0x0000000044000000..0x000000004403ffff (256 KiB)
+> > nomap non-reusable mmode_resv3@44000000
+> >  Zone ranges:
+> >    DMA32    [mem 0x0000000048000000-0x000000007fffffff]
+> >    Normal   empty
+> >
+> > Reverting commits 00c9a452a235c61f ("of: reserved_mem: Add code to
+> > dynamically allocate reserved_mem array") and 8a6e02d0c00e7b62 fixes
+> > the issue.
+> >
+> > root@smarc-rzfive:/sys/firmware/devicetree/base/reserved-memory# ls -l
+> > total 0
+> > -r--r--r-- 1 root root  4 Oct 29 12:37 #address-cells
+> > -r--r--r-- 1 root root  4 Oct 29 12:37 #size-cells
+> > drwxr-xr-x 2 root root  0 Oct 29 12:37 mmode_resv0@30000
+> > drwxr-xr-x 2 root root  0 Oct 29 12:37 mmode_resv1@40000
+> > drwxr-xr-x 2 root root  0 Oct 29 12:37 mmode_resv2@44040000
+> > drwxr-xr-x 2 root root  0 Oct 29 12:37 mmode_resv3@44000000
+> > -r--r--r-- 1 root root 16 Oct 29 12:37 name
+> > drwxr-xr-x 2 root root  0 Oct 29 12:37 pma_resv0@58000000
+> > -r--r--r-- 1 root root  0 Oct 29 12:37 ranges
 
-Will
+> Thanks for reaching out and sorry you're seeing this issue.
+>
+> Please can you provide reproduction steps? I tried booting up
+> risc-v arch with qemu but did not run into the issue you are
+> seeing.
+
+It indeed doesn't happen on other RISC-V platforms (tried MPFS/Icicle).
+RZ/Five is special in that it is DMA non-coherent, and the crash
+happens in dma_alloc_from_global_coherent().
+According to the logs, the DMA pool at 0x58000000 is still being created.
+I'll try to debug this further next week...
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
