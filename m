@@ -1,32 +1,50 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 479D61E1A37;
-	Thu, 31 Oct 2024 22:59:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B0011A28C
+	for <iommu@lists.linux.dev>; Fri,  1 Nov 2024 01:52:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730415561; cv=none; b=Sa7rUBj/pkolj19GqIiTg3l0rTC7aEvex+Pmvg2YfLCqiGpSkP3uapjep8JDh6oJeUQKKmnW8zV0znhmhNRnobwypUe2CMG7cKIrMnjKDN/jurFmPOS7w8cYsJLvTwT+pNJEnyfS0LY7DcyvTHuJtjoPcq69Uzsjc75486ZfHx8=
+	t=1730425967; cv=none; b=Zgq+s/bP4SkdvPltTdo0IzV/COc8GICrCjYdCvjOcqLDkxZirVyX6HxkbktB0qrpbNEgd+El5IhYneu6u/G6ueu0C4r6/wfII79PpO5+3s9Cx2+/Fu/a5gG3nbxn+kiRw8E6eKeDpNCevOWb3SNhUsFuTiOFPeY5E1yGhBLO/A4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730415561; c=relaxed/simple;
-	bh=YhlhvI2YQgj/7M+uXnhLz4j5eWdRPCwjq4xSWx40Aro=;
+	s=arc-20240116; t=1730425967; c=relaxed/simple;
+	bh=MR5coTTBS81+55XGLMbJDMP4Kkx+HEO23KDK9m6tUwk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=u19QSlVf25N/xXNb4pNtuCKfz9vLUfopF/mtPgG01czmV/uGjc1o9NVSraUv0cHSEDxbPYrve/wF9LWGpZRy26cJhHAQhxLQzJ4Vk1Fed82cOvHQ5+S/6HLYPhpLA8CL5YTNu1LrSKyQ+pOlfcovUS49G/CQ2TNVmu9ED4D6RtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=CA42Pkd8; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	 In-Reply-To:Content-Type; b=DIvl0dIrVS/ipTmFK4rGYcjeKXl/D/LSFUZWC/eDv+81MPs7l8aWZfWR5MZZmvAlsfR4bs/5SEhTz7+4v9Ih03ZnKuyF/wrs6qtpFBdlE0vdhUbPWE5mkYvxmyOVnxCaMgUP0UqGDyeVSDxaqhgsjvfBYlWq80JaCcplLatzXKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PuFkmTSX; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="CA42Pkd8"
-Received: from [10.0.0.114] (c-67-182-156-199.hsd1.wa.comcast.net [67.182.156.199])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 0DC1F20C08A6;
-	Thu, 31 Oct 2024 15:59:15 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0DC1F20C08A6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1730415555;
-	bh=Igl9G1C4hOVKzBEFno2MrS2ZBovfo3EzzSumDWDVDac=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=CA42Pkd8gk+aW8coxUfcz9FnbFPOm4DNzDPCYaaqMeDNXZyjHbYFoVBqFM2ra2QA0
-	 gQ3Ywty+9jx/fcSph8pm89kL2on5UwnczZAJca3EIIJcEGpMxIV/b5GDAGfOiBWB5W
-	 0uF5JXHULaaK+8SPYeqwgllQxC7n/jWbNL2sYcio=
-Message-ID: <aecdc98c-1f12-4f17-b145-9f02aebc01c2@linux.microsoft.com>
-Date: Thu, 31 Oct 2024 15:59:14 -0700
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PuFkmTSX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1730425961; x=1761961961;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=MR5coTTBS81+55XGLMbJDMP4Kkx+HEO23KDK9m6tUwk=;
+  b=PuFkmTSXeV6jfH0eqhB8/NXgxMuwk3Yi+aJlU9hzkRbuQGs00cyfS3NA
+   J66J875m6SOfTqd4AzHes86cLtzhhRzbtzn+g1FeHvC93dFRfaBQqUzEz
+   HvlsHfZrQeCV05q/nSaZMPnYSHG6fpUr2QzCtJR+0fvMS3Zf2HNS/EB1e
+   Zx5WGN362BYjM9UxGF110XAcLro2tlefh51Gd82KdYvkqtmi5DRi/UzkV
+   kr5xgFJ/r3qdhEPJy2rOMJ6WQZz7RGb0Np+ilpuZ88ih0gcllZaCowOEx
+   emF4QRuLjYSctUzvS9HuL2BD5kdnX0efaGbV7w90xOn6dZAdD/zeBIwN9
+   w==;
+X-CSE-ConnectionGUID: whcfwSRtRAqhCx32CY8SVA==
+X-CSE-MsgGUID: Hv107O6sSfe9bNYLBuurOQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11242"; a="40767988"
+X-IronPort-AV: E=Sophos;i="6.11,248,1725346800"; 
+   d="scan'208";a="40767988"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2024 18:52:40 -0700
+X-CSE-ConnectionGUID: v+wwihtsSRSYIOlC8lz/+Q==
+X-CSE-MsgGUID: 75S53kfgT4mWvJ2NwHMH/w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,248,1725346800"; 
+   d="scan'208";a="113605723"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2024 18:52:38 -0700
+Message-ID: <b9867c71-921a-4c31-9433-31e7efe4cb35@linux.intel.com>
+Date: Fri, 1 Nov 2024 09:51:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,111 +52,87 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/5] Add new headers for Hyper-V Dom0
-To: Easwar Hariharan <eahariha@linux.microsoft.com>,
- linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, kvm@vger.kernel.org, iommu@lists.linux.dev,
- netdev@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-arch@vger.kernel.org, virtualization@lists.linux.dev
-Cc: kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
- decui@microsoft.com, catalin.marinas@arm.com, will@kernel.org,
- luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
- seanjc@google.com, pbonzini@redhat.com, peterz@infradead.org,
- daniel.lezcano@linaro.org, joro@8bytes.org, robin.murphy@arm.com,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, lpieralisi@kernel.org, kw@linux.com, robh@kernel.org,
- bhelgaas@google.com, arnd@arndb.de, sgarzare@redhat.com,
- jinankjain@linux.microsoft.com, muminulrussell@gmail.com,
- skinsburskii@linux.microsoft.com, mukeshrathor@microsoft.com,
- tyhicks@linux.microsoft.com
-References: <1727985064-18362-1-git-send-email-nunodasneves@linux.microsoft.com>
- <fc47d535-ed52-4ca5-80cc-30003efdd464@linux.microsoft.com>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Drain PRQs when domain removed from RID
+To: Joel Granados <joel.granados@kernel.org>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Yi Liu <yi.l.liu@intel.com>, linux-kernel@vger.kernel.org
+References: <20241031095139.44220-1-baolu.lu@linux.intel.com>
+ <oaho6355qyb7mjs7taturs6dkvtqhv2xlhoc6wgike7uodjbia@k5k6qltfhigi>
 Content-Language: en-US
-From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-In-Reply-To: <fc47d535-ed52-4ca5-80cc-30003efdd464@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <oaho6355qyb7mjs7taturs6dkvtqhv2xlhoc6wgike7uodjbia@k5k6qltfhigi>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 10/31/2024 12:05 PM, Easwar Hariharan wrote:
-> On 10/3/2024 12:50 PM, Nuno Das Neves wrote:
->> To support Hyper-V Dom0 (aka Linux as root partition), many new
->> definitions are required.
+On 10/31/24 22:56, Joel Granados wrote:
+> On Thu, Oct 31, 2024 at 05:51:39PM +0800, Lu Baolu wrote:
+>> As this iommu driver now supports page faults for requests without
+>> PASID, page requests should be drained when a domain is removed from
+>> the RID2PASID entry.
 >>
->> The plan going forward is to directly import headers from
->> Hyper-V. This is a more maintainable way to import definitions
->> rather than via the TLFS doc. This patch series introduces
->> new headers (hvhdk.h, hvgdk.h, etc, see patch #3) directly
->> derived from Hyper-V code.
+>> This results in the intel_iommu_drain_pasid_prq() call being moved to
+>> intel_pasid_tear_down_entry(). This indicates that when a translation
+>> is removed from any PASID entry and the PRI has been enabled on the
+>> device, page requests are flushed in the domain detachment path.
 >>
->> This patch series replaces hyperv-tlfs.h with hvhdk.h, but only
->> in Microsoft-maintained Hyper-V code where they are needed. This
->> leaves the existing hyperv-tlfs.h in use elsewhere - notably for
->> Hyper-V enlightenments on KVM guests.
+>> The intel_iommu_drain_pasid_prq() helper has been modified to support
+>> sending device TLB invalidation requests for both PASID and non-PASID
+>> cases.
 >>
->> An intermediary header "hv_defs.h" is introduced to conditionally
->> include either hyperv-tlfs.h or hvhdk.h. This is required because
->> several headers which today include hyperv-tlfs.h, are shared
->> between Hyper-V and KVM code (e.g. mshyperv.h).
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.c |  1 -
+>>   drivers/iommu/intel/pasid.c |  1 +
+>>   drivers/iommu/intel/prq.c   | 22 +++++++---------------
+>>   3 files changed, 8 insertions(+), 16 deletions(-)
 >>
->> Summary:
->> Patch 1-2: Cleanup patches
->> Patch 3: Add the new headers (hvhdk.h, etc..) in include/hyperv/
->> Patch 4: Add hv_defs.h and use it in mshyperv.h, svm.h,
->>          hyperv_timer.h
->> Patch 5: Switch to the new headers, only in Hyper-V code
->>
->> Nuno Das Neves (5):
->>   hyperv: Move hv_connection_id to hyperv-tlfs.h
->>   hyperv: Remove unnecessary #includes
->>   hyperv: Add new Hyper-V headers
->>   hyperv: Add hv_defs.h to conditionally include hyperv-tlfs.h or
->>     hvhdk.h
->>   hyperv: Use hvhdk.h instead of hyperv-tlfs.h in Hyper-V code
->>
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 87a3563dfe54..3878f35be09d 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -4069,7 +4069,6 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
+>>   	intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
+>>   	kfree(dev_pasid);
+>>   	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
+>> -	intel_iommu_drain_pasid_prq(dev, pasid);
+>>   }
+>>   
+>>   static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+>> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+>> index 7e76062a7ad2..31665fb62e1c 100644
+>> --- a/drivers/iommu/intel/pasid.c
+>> +++ b/drivers/iommu/intel/pasid.c
+>> @@ -265,6 +265,7 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
+>>   		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
+>>   
+>>   	devtlb_invalidation_with_pasid(iommu, dev, pasid);
+>> +	intel_iommu_drain_pasid_prq(dev, pasid);
+>>   }
+>>   
+>>   /*
+>> diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
+>> index 3c50c848893f..ae7f6f34462f 100644
+>> --- a/drivers/iommu/intel/prq.c
+>> +++ b/drivers/iommu/intel/prq.c
+>> @@ -66,12 +66,8 @@ void intel_iommu_drain_pasid_prq(struct device *dev, u32 pasid)
+>>   	struct pci_dev *pdev;
+>>   	int head, tail;
+>>   	u16 sid, did;
+>> -	int qdep;
+>>   
+>>   	info = dev_iommu_priv_get(dev);
+>> -	if (WARN_ON(!info || !dev_is_pci(dev)))
+> You do this on purpose because
+> 1. It is not possible to go through this path without an iommu set in
+>     the device
+> 2. PRI within the intel driver is only relevant for PCI
+> 3. There will always be a struct device_domain_info related to the
+>     device iommu when doing PRI.
+> right?
 
-Hi Easwar, thanks for the questions. I will attempt to clarify.
-> 
-> What is the model for Hyper-V code that has both guest and host roles
-> where the corresponding hypercalls are available for both? As I
-> understand it, those are supposed to be in hvgdk*.h.
->
+Yes.
 
-It's true that the naming of the files implies hvgdk*.h is for guests,
-and hvhdk*.h (which includes hvgdk*.h), is for hosts/dom0. But I would
-only take that as a rough guide.
-
-The real reason for keeping these names is to make it a easier to copy
-and maintain the definitions from the Windows code into Linux, by
-keeping the provenance of exactly where they came from.
-
-> For a specific example, IOMMU hypercalls can operate on stage 2 or stage
-> 1 translations depending on the role of the (hyper) caller and the input
-> values provided. Should a driver using these hypercalls import both
-> hvhdk* and hvgdk*? What about hyperv-tlfs?
->
-
-I'd recommend importing hvhdk.h since it contains everything you need
-(including hvgdk*.h).
-
-The goal of this patchset is to move away from hyperv-tlfs.h, because by
-definition it should only contain definitions from the TLFS document.
-
-> Patches 4 and 5 seem to draw a bright line between host and guest roles
-> while the reality is more gray. Please do correct me if I'm wrong here,
-> perhaps the picture would be clearer if Stas' suggestion of a new header
-> file is implemented.
-> 
-
-Patches 4 and 5 introduce the new headers in a way that avoids any
-potential impact on KVM and other non-Microsoft-maintained code.
-
-The 'line' is not between guest and host, but between Microsoft-maintained
-and non-Microsoft-maintained code.
-
-Thanks,
-Nuno
-
-> Thanks,
-> Easwar
-
+--
+baolu
