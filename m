@@ -1,177 +1,91 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5772A139B
-	for <iommu@lists.linux.dev>; Fri,  1 Nov 2024 04:56:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ED17142623;
+	Fri,  1 Nov 2024 06:11:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730436989; cv=none; b=EyAy1eSVi3hb8+IWpX4D4k01jqH9ltwy/MAThWZ66e1viRusevEoEOGxbXKnb7u+uEHdj8k0+E8OLmX+A09dNqD9+c457AXDPzyPmHRSOSREajsexRVpNGAgBjdY8TxA5JXemDAC+ocxxjANa4NKu93dEq2Jat5z5BGTQ41lvNc=
+	t=1730441482; cv=none; b=cbd4V0zc8L1fDA2CeWvlXPunbwN0yueQDoPhvcPjpeyoG4ZS2YyRsYBEgC1NaJQS1HPFnZrrFXymF68HGErdbNUv88cwpjVWXa480m1YE/lCG5ITwSzidJR/AuBmcWN/P9wswJ81R0f/7PngfeH268TPk/zNkqz8YYt8rA0XNxs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730436989; c=relaxed/simple;
-	bh=BGJN0bROOUOoi7Ov1dgXc4Q/UN885FzYMkOaLqMypT4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Y2DEuQuB040j4SCwP0dmIr3I7Bzk8xpwMUG1Y+2bGwvFTxl+WWe0g0Kopd7RyUIvPaISgT7Exn42MvkfOdnH6YfPqtG8VAZh30GtXGGHOVAUPYW43xcEwhQ+VQT3IDxZYnifU/kmdnT0iTOOnIm4P4/uK7G8X3iD4qqlaDu4KEg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I/gYCeAp; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1730441482; c=relaxed/simple;
+	bh=xuvDhMPsSnRBldbb9zqlIWoH9RpyHnNr2U6kz9Sckdc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tHF/LwrVqE8V7BRl88UC8sZTPdWa+lVlIuo/pGI7Wjb9JoSyM0hlLydOwTPwqRST3m+AebfyQZWCsNA5U0rPGk7PFAuhxpuyH90SywNkqAvl3aMo52PjoF8hPJxrg7VvZk6PmvZYWpqbcFMTvYs+Z83NJqH0kpt2oOn0Ozlu7dE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GxotyBrg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I/gYCeAp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730436986; x=1761972986;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=BGJN0bROOUOoi7Ov1dgXc4Q/UN885FzYMkOaLqMypT4=;
-  b=I/gYCeApM8kpTSDCkVOOkczVMINwP+/g2NELO230ESlh5jbQCMkdFCNY
-   1crSEjZlXoNN6x+uyV/c3VMcbKAAwrLuioUhfAmm3179W4Icm1kySHUzg
-   kRhd8Vv2Da2jGoA570E1yeL3tRx1P+3Wvu5IdWbUYueezQmcJGomnKRhf
-   XqzeWNwpz7KPMniEjXzvnkI9GkipZ9BRtfDbnt5Ta90elRI0Or1Aivyjj
-   iGXEgTGf+oLWKcuR3mn1KMlVoGum0q/dX4GEHHBOKvDzozAER9o0qGxwN
-   gUy067BJtR6wHXbHBG58hENsxOneIxvyrppDB522H1Um8pOscMT3Cxx0Q
-   g==;
-X-CSE-ConnectionGUID: bwhEX4wlRvaZgETbbpWc/g==
-X-CSE-MsgGUID: gAhVENl7TXyYkAtdrM/fjQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="41299907"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="41299907"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2024 21:56:25 -0700
-X-CSE-ConnectionGUID: Xe25Z1/uRVqCURTiMSDgqw==
-X-CSE-MsgGUID: oq/KlJrrT5CGiN/ii98DHg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,248,1725346800"; 
-   d="scan'208";a="113649092"
-Received: from allen-sbox.sh.intel.com ([10.239.159.30])
-  by orviesa002.jf.intel.com with ESMTP; 31 Oct 2024 21:56:23 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joel Granados <joel.granados@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GxotyBrg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C71BBC4CECD;
+	Fri,  1 Nov 2024 06:11:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1730441481;
+	bh=xuvDhMPsSnRBldbb9zqlIWoH9RpyHnNr2U6kz9Sckdc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GxotyBrgjRANc5p7HrsCLBXgaj4HLa5WC8j/hwfVk4KJAdkHmExC7kSQTYNp89ILA
+	 Yx2fbg2gbC1Wjyn01FDcCrk577MzfB5np9DJobJUCMYKqeBjjKbyJl4ye3AMAvF9/M
+	 eWLWv6oFnkXuCdVlONIFHy4LNALMfsWKyHZrQE/pe6g5rPZdzyyrOB4cB2hoNjYS79
+	 lqHPB1G+uBa5evs4A6a/506EDsJ0Nq/l3fddVEF8YAVmp1SK1vnA6Z0/l70YE3mAJc
+	 C3wKq7ppvuxcUZM3NDVqxKZW+swjVBkdxdhk2qeZWESspprkV0FeKW4hemHsE21yeg
+	 a8+9J8MNFi77A==
+Date: Fri, 1 Nov 2024 08:11:16 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Bart Van Assche <bvanassche@acm.org>
+Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
 	Kevin Tian <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 1/1] iommu/vt-d: Drain PRQs when domain removed from RID
-Date: Fri,  1 Nov 2024 12:55:43 +0800
-Message-ID: <20241101045543.70086-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH 2/7] block: don't merge different kinds of P2P
+ transfers in a single bio
+Message-ID: <20241101061116.GC88858@unreal>
+References: <cover.1730037261.git.leon@kernel.org>
+ <34d44537a65aba6ede215a8ad882aeee028b423a.1730037261.git.leon@kernel.org>
+ <d4378502-6bc2-4064-8c35-191738105406@acm.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d4378502-6bc2-4064-8c35-191738105406@acm.org>
 
-As this iommu driver now supports page faults for requests without
-PASID, page requests should be drained when a domain is removed from
-the RID2PASID entry.
+On Thu, Oct 31, 2024 at 01:58:37PM -0700, Bart Van Assche wrote:
+> On 10/27/24 7:21 AM, Leon Romanovsky wrote:
+> > +		/*
+> > +		 * When doing ZONE_DEVICE-based P2P transfers, all pages in a
+> > +		 * bio must be P2P pages from the same device.
+> > +		 */
+> > +		if ((bio->bi_opf & REQ_P2PDMA) &&
+> > +		    !zone_device_pages_have_same_pgmap(bv->bv_page, page))
+> > +			return 0;
+> 
+> It's probably too late to change the "zone_device_" prefix into
+> something that cannot be confused with a reference to zoned block
+> devices?
 
-This results in the intel_iommu_drain_pasid_prq() call being moved to
-intel_pasid_tear_down_entry(). This indicates that when a translation
-is removed from any PASID entry and the PRI has been enabled on the
-device, page requests are drained in the domain detachment path.
+It is never too late to send a patch which renames the names, but it needs
+to be worth it. However it is hard to see global benefit from zone_device_* rename.
+ZONE_DEVICE is a well known term in the kernel and it is used all other places
+in the kernel.
 
-The intel_iommu_drain_pasid_prq() helper has been modified to support
-sending device TLB invalidation requests for both PASID and non-PASID
-cases.
+Thanks
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c |  1 -
- drivers/iommu/intel/pasid.c |  1 +
- drivers/iommu/intel/prq.c   | 26 +++++++++-----------------
- 3 files changed, 10 insertions(+), 18 deletions(-)
-
-Change log:
-v2:
- - Use iotlb_inv_dsc for prq draining of RID2PASID.
- - Fix a 0day compiling warning.
-v1:
- - https://lore.kernel.org/linux-iommu/20241031095139.44220-1-baolu.lu@linux.intel.com/
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 87a3563dfe54..3878f35be09d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4069,7 +4069,6 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
- 	intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
- 	kfree(dev_pasid);
- 	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
--	intel_iommu_drain_pasid_prq(dev, pasid);
- }
- 
- static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 7e76062a7ad2..31665fb62e1c 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -265,6 +265,7 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
- 		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
- 
- 	devtlb_invalidation_with_pasid(iommu, dev, pasid);
-+	intel_iommu_drain_pasid_prq(dev, pasid);
- }
- 
- /*
-diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
-index b9f2d9400efe..9796556901d9 100644
---- a/drivers/iommu/intel/prq.c
-+++ b/drivers/iommu/intel/prq.c
-@@ -63,26 +63,18 @@ void intel_iommu_drain_pasid_prq(struct device *dev, u32 pasid)
- 	struct dmar_domain *domain;
- 	struct intel_iommu *iommu;
- 	struct qi_desc desc[3];
--	struct pci_dev *pdev;
- 	int head, tail;
- 	u16 sid, did;
--	int qdep;
- 
- 	info = dev_iommu_priv_get(dev);
--	if (WARN_ON(!info || !dev_is_pci(dev)))
--		return;
--
- 	if (!info->pri_enabled)
- 		return;
- 
- 	iommu = info->iommu;
- 	domain = info->domain;
--	pdev = to_pci_dev(dev);
- 	sid = PCI_DEVID(info->bus, info->devfn);
- 	did = domain ? domain_id_iommu(domain, iommu) : FLPT_DEFAULT_DID;
- 
--	qdep = pci_ats_queue_depth(pdev);
--
- 	/*
- 	 * Check and wait until all pending page requests in the queue are
- 	 * handled by the prq handling thread.
-@@ -114,15 +106,15 @@ void intel_iommu_drain_pasid_prq(struct device *dev, u32 pasid)
- 	desc[0].qw0 = QI_IWD_STATUS_DATA(QI_DONE) |
- 			QI_IWD_FENCE |
- 			QI_IWD_TYPE;
--	desc[1].qw0 = QI_EIOTLB_PASID(pasid) |
--			QI_EIOTLB_DID(did) |
--			QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) |
--			QI_EIOTLB_TYPE;
--	desc[2].qw0 = QI_DEV_EIOTLB_PASID(pasid) |
--			QI_DEV_EIOTLB_SID(sid) |
--			QI_DEV_EIOTLB_QDEP(qdep) |
--			QI_DEIOTLB_TYPE |
--			QI_DEV_IOTLB_PFSID(info->pfsid);
-+	if (pasid == IOMMU_NO_PASID) {
-+		qi_desc_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH, &desc[1]);
-+		qi_desc_dev_iotlb(sid, info->pfsid, info->ats_qdep, 0,
-+				  MAX_AGAW_PFN_WIDTH, &desc[2]);
-+	} else {
-+		qi_desc_piotlb(did, pasid, 0, -1, 0, &desc[1]);
-+		qi_desc_dev_iotlb_pasid(sid, info->pfsid, pasid, info->ats_qdep,
-+					0, MAX_AGAW_PFN_WIDTH, &desc[2]);
-+	}
- qi_retry:
- 	reinit_completion(&iommu->prq_complete);
- 	qi_submit_sync(iommu, desc, 3, QI_OPT_WAIT_DRAIN);
--- 
-2.43.0
-
+> 
+> Thanks,
+> 
+> Bart.
+> 
