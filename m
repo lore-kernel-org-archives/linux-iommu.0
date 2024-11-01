@@ -1,50 +1,58 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8AAD19CC32;
-	Fri,  1 Nov 2024 12:10:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA65AC13C;
+	Fri,  1 Nov 2024 12:18:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730463032; cv=none; b=pcidPYYh+ORpx3d/jKg4asWwocjYa1o9DFyh1/aLD0uuNuAgQPvl4iRhenaBLzlNi8J1Gi977ClkMKzJy0Je4IxWX2WBGaB4/3JaOvPT4EFGeQFEWcbdtb6JPP0regZSM7c3nRO96RKGTqKr5fUMtl+islCZt17dVlW+IES+FQw=
+	t=1730463539; cv=none; b=UJmUOXmKJYhUMtY/lR5P39HCvv3ppCjp2OzGVdVSuZW0XbgwAfo0bNsZLfxhPUuZONyhv9ojjrNvACyRESoEAqK4u5/WRz7YfEQHlW99KAMsZf5PuujbfdCxGksNuyilyo7VI8gA1KDuSm2ZrN0/LV+cf4fTnl6FUOPPvo/jrMQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730463032; c=relaxed/simple;
-	bh=ySUK7o6teyrYbnl0BIFkuIKX0AiOQDli2AQwIAKrHfI=;
+	s=arc-20240116; t=1730463539; c=relaxed/simple;
+	bh=+HDgzWKsUKx97E2mppbNA0tlv52sTXzgPdKbp7JsyHc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lt+jIvsSA+DzVOBWDNjlHs3EHwf5sWYElqfYJSm1Sj5+KtjMhEUQVFdC9qlsGq7X9ZB02LdQ8zEyUXd8ctorBUERAs405ImeyQK6D+z24cjkgGTA7X8ZB3PxPQydKd2SmFGGOs3ERXHH2/JjXa9HT/uXYGK1o0XXSh235DF7iuM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kBbWahXK; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=EH2rRfi0EVqj+A25Al8Cs4RadLaY5Mwo+rAtJk0k7yCbJibz+5efhSdUp+sm4EIlz9iFL6EKrg7ePdZzcVxYPRiAHy3ubbGJQfxakjUF/x0zSlratMsvqdmDAINZ9WztHTaP9zWGYK1lOI2P3N3geBXw/q+QUJfG71BB4acM2D0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NBHuxN/p; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kBbWahXK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC898C4CECD;
-	Fri,  1 Nov 2024 12:10:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NBHuxN/p"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C80BC4CECD;
+	Fri,  1 Nov 2024 12:18:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730463032;
-	bh=ySUK7o6teyrYbnl0BIFkuIKX0AiOQDli2AQwIAKrHfI=;
+	s=k20201202; t=1730463539;
+	bh=+HDgzWKsUKx97E2mppbNA0tlv52sTXzgPdKbp7JsyHc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kBbWahXKaEhqbxmFmpER4pQdWKXJ27x6/HOTTa58y/NPcim3IMqLlZgMsSiqbDa08
-	 RIgswhOwZr7BmOjGB/5uZbyOTEjLAskpsHmhSIl6GovL/g2dpYf6u7VPCVWNYvAcOU
-	 7FRQmwsg4p7jEKkpOlOdd8oxqfgPCeacOIp1VZwV3iyP4PzFuVDmhbb3ItU1eNFRa9
-	 jwZE2dPH51oAz5qR8ukw4E8kY5XFKoihnxHUAbCPcySlVG+ejMDG8UFG6G8T6MwVht
-	 Wo5caq/vDRMqLWrQ2T2M50cOaUmqQLYiKA5u2xsVQyFm/ilWtmpRTiRhg8eb9en3x6
-	 PzyePC+0xvo7A==
-Date: Fri, 1 Nov 2024 12:10:25 +0000
+	b=NBHuxN/pAPf8IHixhryTxZ/futb2LvKpXXCyR/SW5uqdlFGHVLyrlBC+FoDgxJK/8
+	 BXZ1Fn1ywsP56K2duT3rd3UI+AOCVdZmtR/HykfvCUXf3jv+5ZNKavkqEnCI4LKVwF
+	 LRMnqS48aXxmJsDs31Z4xPwsC+bm4UTb7nLroxbppw7andSl//KM3oM0Tk4BPncaBZ
+	 w1Qs2YqwVqIpnwUXRzbOyRf6LMKWgSiY+Z1kSvOokZF2WryjywWEbsMTi0AdGzTtx3
+	 DxocfHC4sNGzai1qJLidnKNIKvKXS5sFlWCK6RoNSgw6FiIuVJ2TXQJsams+pxngiG
+	 /RIoyXXF0y6rQ==
+Date: Fri, 1 Nov 2024 12:18:50 +0000
 From: Will Deacon <will@kernel.org>
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: robdclark@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
-	jgg@ziepe.ca, jsnitsel@redhat.com, robh@kernel.org,
-	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
-	dmitry.baryshkov@linaro.org, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Konrad Dybcio <konrad.dybcio@linaro.org>
-Subject: Re: [PATCH v16 1/5] iommu/arm-smmu: re-enable context caching in
- smmu reset operation
-Message-ID: <20241101121024.GC8518@willie-the-truck>
-References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
- <20241008125410.3422512-2-quic_bibekkum@quicinc.com>
- <20241024125241.GD30704@willie-the-truck>
- <092db44e-f254-4abd-abea-e9a64e70df12@quicinc.com>
- <20241029124708.GA4241@willie-the-truck>
- <e7a8e786-d67d-4ee7-a4d1-d9d02fd08bda@quicinc.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Donald Dutile <ddutile@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v4 00/12] Initial support for SMMUv3 nested translation
+Message-ID: <20241101121849.GD8518@willie-the-truck>
+References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,43 +61,14 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e7a8e786-d67d-4ee7-a4d1-d9d02fd08bda@quicinc.com>
+In-Reply-To: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Wed, Oct 30, 2024 at 05:00:13PM +0530, Bibek Kumar Patro wrote:
-> On 10/29/2024 6:17 PM, Will Deacon wrote:
-> > On Fri, Oct 25, 2024 at 07:51:22PM +0530, Bibek Kumar Patro wrote:
-> > > On 10/24/2024 6:22 PM, Will Deacon wrote:
-> > > > On Tue, Oct 08, 2024 at 06:24:06PM +0530, Bibek Kumar Patro wrote:
-> > If you want to gate the errata workarounds on policy, then please follow
-> > what we do for the CPU: add a Kconfig option (e.g.
-> > ARM_SMMU_WORKAROUND_BROKEN_CPRE) which defaults to "on" (assuming that
-> > the relevant errata aren't all "rare") and update silicon-errata.rst
-> > accordingly.
-> > 
-> > Then you can choose to disable them in your .config if you're happy to
-> > pick up the pieces.
-> 
-> This seems to be a good idea to me . I am thinking of this approach based on
-> your suggestion,
-> i.e. we can bind the original workaround in
-> arm_mmu500_reset implementation within ARM_SMMU_WORKAROUND_BROKEN_CPRE
-> config (defualts to on, CPRE would be disabled) and in QCOM SoCs default it
-> to off
-> (when ARM_SMMU_QCOM=Y -> switch ARM_SMMU_WORKAROUND_BROKEN_CPRE=N).
+On Wed, Oct 30, 2024 at 09:20:44PM -0300, Jason Gunthorpe wrote:
+> [This is now based on Nicolin's iommufd patches for vIOMMU and will need
+> to go through the iommufd tree, please ack]
 
-ARM_SMMU_QCOM is enabled by default, so please don't do that. People who
-want to disable errata workarounds based on a hunch can do that themselves.
-There's no need to try to do that automatically in Kconfig.
-
-> In silicon-errata.rst would updating ARM_SMMU_WORKAROUND_BROKEN_CPRE be okay
-> , as the config names are based on erratum number.
-
-In this case, the Kconfig option covers a variety of errata so how about
-we go with:
-
-	ARM_SMMU_MMU_500_CPRE_ERRATA
-
-and then you can list all of the numbers in the "Erratum ID" column?
+Can't we separate out the SMMUv3 driver changes? They shouldn't depend on
+Nicolin's work afaict.
 
 Will
