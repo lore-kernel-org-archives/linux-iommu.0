@@ -1,332 +1,199 @@
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2064.outbound.protection.outlook.com [40.107.101.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4CDFC2C9
-	for <iommu@lists.linux.dev>; Fri,  1 Nov 2024 12:45:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730465140; cv=none; b=cglPrMe4nGi0mdwp91M3nebme9nDY1H247VHpYS8AEwFh/PQn0zDMes7n2XhtoB51V2V02Ftsm8iQEdZxamWJwh4XFRSC0kiOrMkIh/RYBJ9+PdRt9G4MNVPcwEG43/C0k1/qmD0LzoBgDnflLADTXeV10xnoairAv0nDI+Jnj8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730465140; c=relaxed/simple;
-	bh=kEjIhb3tbqRNoW6L6UTNS9w3FYCS3aVB2MN6ZaCBnMA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=a6MoMEbGwAXdPQ30xSanEo5TQYOjmoffnfoZRVxI4NJ6VwjdYn6sV/t8a6YA20Q7Fv8OPQ6njNtcP5ulvzJMjvUVazzWTTm0n/Mla9ZwkTGWH9WPhf0wvIpLyDn6oDklwjbKVYDhiFhfWYvNsLOsQ94yt2IG+P07hcQftn9JuxA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-6ea656c60a4so9277617b3.3
-        for <iommu@lists.linux.dev>; Fri, 01 Nov 2024 05:45:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730465135; x=1731069935;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LQQlY8mlkuydo2nMoxWgxP1dDvcaUCqu6xgh/ET5fr8=;
-        b=cZiOZDeI0VrKun52QO29L9kEnc55tNDkQQDMKNFt51i5OW6ur/Sn8a0sGIH3YaX1HS
-         ocDpswlsedv+oR6TUKseldhW6nj8bNTatpiOAsWvdy4OkpzeMHcBx2Bt49O8f+iksYVK
-         I9tF5b4DJQlDzRoX0/m32zAWiyvwHX0fxpm+ubFdjtzOgGNJGHmFTq9sGSEFpKBI3QPH
-         6OL4MLCJpeMq3E3uTiJpPspxdt9E3c8yVQgrdWUxFJsiCbIkCXdFwnmob6kY+2/r2x5p
-         v7fEWO5iOJv03nrC9ajPh+6y79siWrvhnqxCxMDjnJa929S2MoT5EnaymAK1/NjUxuJV
-         NlqQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU4XSvllr7YSdOkLnwtoxEW0MizSI0BKfmZ9kQfApqgHzCq572orGsXuTSullUamqQ0fgB4sg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw+ljFKbJVpqcugsprGpATTNMWxcSlkl/tfnttSUeNQVPPpDfSz
-	rpWnFmQH1BSPUFROINDCVltSBe/rBzeSL/8cHP94kRNc1LQ9P6Dppxe8DaG1
-X-Google-Smtp-Source: AGHT+IHjPcqq5OTyedzBNPQGnvERRpNE650MWI6XXltkXiE8aOnksFOYUbjV6zRd2czEEPP+nLIEqQ==
-X-Received: by 2002:a05:690c:660c:b0:6b0:70fc:f6e4 with SMTP id 00721157ae682-6ea3b897484mr101191397b3.15.1730465134879;
-        Fri, 01 Nov 2024 05:45:34 -0700 (PDT)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-6ea55b5c44dsm6466367b3.67.2024.11.01.05.45.33
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Nov 2024 05:45:34 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-6e9ba45d67fso19266407b3.1
-        for <iommu@lists.linux.dev>; Fri, 01 Nov 2024 05:45:33 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWRDQ0vE/r6QVhRdTpM1MGxWoRebQ3tHh1aZJrjY028UXmSdOygFvHr7QL2+RqFAX3He/KYtw==@lists.linux.dev
-X-Received: by 2002:a05:690c:d8e:b0:6e3:6467:f46c with SMTP id
- 00721157ae682-6ea3b895ec3mr120309497b3.14.1730465133456; Fri, 01 Nov 2024
- 05:45:33 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AFDB1A0BCA;
+	Fri,  1 Nov 2024 13:25:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.64
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730467512; cv=fail; b=TUQ/mwQgiS4fRQ2oRlx7y7/az9gc3UP9SOqMhB9cQFsPUmMPD2JWGBoLLTc8jH3HV4c/a6UA2z3b++/FcOtvcN6fS1b7yXrvQXjW6nkYVIA6IMgLVbkSFVMmdLWsKoWv3XN2cCI+1f6lD4XoNLLBqxpD8zRfPx1IST32xLecUqI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730467512; c=relaxed/simple;
+	bh=BWI7iVOxtLXqHK15ldcNnS2TwV/xea3of7oXhsoA9Nk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=iXKhJMaZhXNNYWzzjQS3oF6g4Zw0A1ZkSsWZFVkA/9be85vD4T2QQnAAZ5iN8OP+lP6//+/7FytD+OZaXLbqodR6IbC9BlmmXcr3gfIjqNtXDJautlG7Lwp/KKvYdJyzxexJ6Cv7EyaICtNfvZMKM8piMCq5v9pjJ66SYHSj21E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Nbd8GLFw; arc=fail smtp.client-ip=40.107.101.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Nbd8GLFw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=hqUrDKYThbRQs5v1dcW1GzrhVa3Pp+QAEasaLz/lOx8THzQCmGVTfbbs9JLYpBLRqSsRsAAYCpoqeVr6+eAn3QE4ezL7v2JRxcf9gHbsFIJYaR4RBYaaTF7BL6cGxX51cOu4QE5TCf7ox+Cz405DSV5jVE6vsBN22RUh6sIFmsbSPtZ+wnWQYJmL3OUve+XAIsdQGOdU8yf75Ffsnzn5tlZ8DXJ+Q4QFhiGjW34xh/SEs7ymijta0eTdKY3z0aaL20XGj6TPcgHKebAqu30ttkBubuOtiLFb7105THarGjueH43FBWCbCXLg4QobpoZ9JwsIPCnZGr42st04YDCsXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nDalwpw141im1g5ua+wAL9t7v528fwlzrJ32D50VFQI=;
+ b=TpG5SAP/Ne6cv5SlhoAKOtvorKkdDrMYoo6FEMQLN7xn56PYbqQkKLXxux0hvbsB70iozAzpz8VuZfnczefASCLmuBzAe3VaA65QubihYkARe0cPTmLyHi3tZlxtGaFBmarn3Cs1c/hyR+ZEV1lg21sCdYR6v/syjrtUaa1SPPlqpLZwAs80p0bNhDG2XvOFg0yxHdc+vei1ZZsY2bPHyVau8rg5tv+/tep0Y4vgahXcpTLZePZZe9aNixjLu5QGD4jT8sINZGsNx35I5oBOh6gjh2VJGlA3x2RaU6xbwkqTRqxtyJk2ossPNX+ZhnnNROHvgj+RzAlXJvuIIs8iyA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nDalwpw141im1g5ua+wAL9t7v528fwlzrJ32D50VFQI=;
+ b=Nbd8GLFw3rIC6cg4iWr2CK3e/6DFm0Nz05Q/0zhkv8mHUIdjwK8xvG2p9+4Z4DOct6pdx2LAulKk2Wy8bFWGcyi4qXUOdU/CiZVFrLyTyEQLIsAixCOowqzcB5y9E6651B5/P8pwiimlMpeyLw8Bz+RZWF22Jvg1NHjfxbCKS0zk/r0gEziFrC5+EgxFQhO/DWtH3X7Wsg2hKygtw0PBV9hVNEjtlHsOWNh/EAWK24I1EmZXCAdjmQn2btISrh1Mae48D4b8zMucNWVy0lUBTL0VVqv1yi6JNwiiwNcTy134t+X4akndRN9zMuo9pTr29z5Tlpi8HI6KRCljn/ypLw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by CY8PR12MB8194.namprd12.prod.outlook.com (2603:10b6:930:76::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.20; Fri, 1 Nov
+ 2024 13:25:06 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8093.018; Fri, 1 Nov 2024
+ 13:25:04 +0000
+Date: Fri, 1 Nov 2024 10:25:03 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Will Deacon <will@kernel.org>
+Cc: acpica-devel@lists.linux.dev, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Donald Dutile <ddutile@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v4 00/12] Initial support for SMMUv3 nested translation
+Message-ID: <20241101132503.GU10193@nvidia.com>
+References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+ <20241101121849.GD8518@willie-the-truck>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241101121849.GD8518@willie-the-truck>
+X-ClientProxiedBy: BN7PR02CA0033.namprd02.prod.outlook.com
+ (2603:10b6:408:20::46) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241008220624.551309-1-quic_obabatun@quicinc.com>
- <20241008220624.551309-2-quic_obabatun@quicinc.com> <CAMuHMdUXj4QiSKdhf61xdDeu94=Hv0BXuCxykDpQwdY81_h2vw@mail.gmail.com>
- <8c987a26-d499-4ceb-905e-750bb24fcb08@quicinc.com>
-In-Reply-To: <8c987a26-d499-4ceb-905e-750bb24fcb08@quicinc.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 1 Nov 2024 13:45:21 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdW050DuwkLuosiiz2Yt7d0Lq+C8jFO0+O0qbwsjmyf3hA@mail.gmail.com>
-Message-ID: <CAMuHMdW050DuwkLuosiiz2Yt7d0Lq+C8jFO0+O0qbwsjmyf3hA@mail.gmail.com>
-Subject: Re: [PATCH v10 1/2] of: reserved_mem: Restruture how the reserved
- memory regions are processed
-To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-Cc: robh@kernel.org, aisheng.dong@nxp.com, andy@black.fi.intel.com, 
-	catalin.marinas@arm.com, devicetree@vger.kernel.org, hch@lst.de, 
-	iommu@lists.linux.dev, kernel@quicinc.com, klarasmodin@gmail.com, 
-	linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, 
-	quic_ninanaik@quicinc.com, robin.murphy@arm.com, saravanak@google.com, 
-	will@kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CY8PR12MB8194:EE_
+X-MS-Office365-Filtering-Correlation-Id: ed31feef-f259-479e-c20a-08dcfa7898ae
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?e0nhQf1lOBrhFtMBNpmIj0KPp5ywpOHS/TQBEBiAOae1Am/0tT257hxp8jO6?=
+ =?us-ascii?Q?5ZqdaXFDk8I25TNUUj6jkjTWGO0/rq1DrHrj3tkLiU+G4VqKxkHrjFhlLGZo?=
+ =?us-ascii?Q?ubR/9a/c4dAZ8WJjtF/Ut9/632Lfu+E6qEOAuVg5Wi/yU9km53PowQkwYbhF?=
+ =?us-ascii?Q?FQyBYumiWtXCSyMUdXIOfqSYnZvfT1uQDYPoGxla2J4ms10Ldv50eH4sOTuh?=
+ =?us-ascii?Q?KW9zPAtEcHooWZyPHpB4GdISLX3yzX9+lOMB8Vl+CylwQH6dlVAwv3kvTBHj?=
+ =?us-ascii?Q?CVoPpvGNh1g+YqEEgWhUshDHy38or7aa5tiD/26whiO8M0rBWd8EDdpuLUoa?=
+ =?us-ascii?Q?s3TV7Rcy80szhYo+D+c2IGgLf/AIT9zSfNNcQj2lv3KGzhTmaBxGbEGEGspx?=
+ =?us-ascii?Q?MhqwV8DfoPv19GFtEJTmTb1xi4XxrwvFB8oYKnRXa4v4smIAokP/kxtyo7Yw?=
+ =?us-ascii?Q?rUlOvbrmDJSCGeo8fNn8Vbgda54gKsCYB3/wN7SjNTrLYVhPRRYEX1KmT3xm?=
+ =?us-ascii?Q?CxCPkgjKvWzPurGsFGFs66t7ePDhaon2XcomiW2nPg2rYwJdvb4m98uFLojJ?=
+ =?us-ascii?Q?3gbUjDTZ3p/aSa+ZKEwvrA42XPdL81l/+f9IgqBmRT6eWOxub/e6TY+UScQz?=
+ =?us-ascii?Q?KG6qYERcQIya2TLPq1dB4FfMK20DIeAfEYzejRguVjD6aD0ZRZH501zMdSrB?=
+ =?us-ascii?Q?dREfkFpTFFOqR41XtnEokgXppJEthzzrwIB4I0SRIm5jPPDg/tWid3iEyYVc?=
+ =?us-ascii?Q?PGbfmIXtFrUsOYJiLUvDocuOcHmncjdyF3v7M9fjvB+klkKtgoPWyGTyOJTK?=
+ =?us-ascii?Q?GYUr61ltmA6jwpuiCp/PmqHVsdgqC5YUF5W0re4wYoCrODLvOEHARcW4jfUL?=
+ =?us-ascii?Q?P0izC+Hq3+nACzPkzDPu4r1APCB3MTza5JRlvQhJu5TVBJx14vurwYxg+2JU?=
+ =?us-ascii?Q?VM2VPxIjC/wjf70dTtp4OoQy0xoaYoN6LVXymUbZqczP+mQk/jMrZBN9R5l4?=
+ =?us-ascii?Q?Md65st2g+przAb3dM1uSDp6uN6DTltsOZZOzydfmmDLSRJL0/gwyUDaYeqRL?=
+ =?us-ascii?Q?wbhyjZx+WN0+t7HLRB3+3YSLQtAPwJdX8q3TnLtTVFo8Dx7NPUi6XbkEc5gl?=
+ =?us-ascii?Q?IxQ05bdl9gwCoORDOdEd+JgaDgCTTS8cDfxWMcRJgI2AYOwnJvehVeJgePYM?=
+ =?us-ascii?Q?g/dpKQlxGmcOM4gMd3GukyiM0XarE5KJ0q9dpL2/u24+vqIQI7spGbtsJfoN?=
+ =?us-ascii?Q?q5944IPeqaLjrK6Xdv/sjTT3TKU6bj4XvOlbqDs5CARbkjL1sdee3JtHczo9?=
+ =?us-ascii?Q?QhbCwKlS8mBZocVI2o4x8VwA?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Jh071/xHVWV/5VorazXt25qlujlhcdmb0w7Skcv4XihPGFa4cB/wv4/Xepwd?=
+ =?us-ascii?Q?97oL/EcOrjPrid/v/7GoxN3TMhLv3a9d9HywY7/rjWT3eAhOXtvnDBccrmxT?=
+ =?us-ascii?Q?rAnhU8V4skWxTh/utjQce9zBIxTzno8w8Z+gYxtWo587Nu2vNRGyv5TepFZL?=
+ =?us-ascii?Q?KdJSGOrFI1+yMSoulHhNOdYhxE7vz+6h+QtgKXHJwd60Bkaver2Pi47mPJ8i?=
+ =?us-ascii?Q?HyMZWZESaoG4l1sRXAV6F4Y4yJLTlomcmZe8YXJ2njd/z5ruBf6lTisqRFDg?=
+ =?us-ascii?Q?gMRhwvRW8IgHtiLFRXvBVdEs4pMYX3U+62GaWcamyfz4uXyIg4ycxAGHdQ76?=
+ =?us-ascii?Q?bP/oN7zB9dN9wC9kRpnqjtqHXfCwcMvMgHsk7gAl3D0UHhFRAcDLPSPuO96g?=
+ =?us-ascii?Q?le4WogqMMbHVDnG86O4muQYkXXbAFwgsYA1sjfV21hyk5+3Voz5CnqcOUksb?=
+ =?us-ascii?Q?NqfMJdRSsaTJ/SROF+9Y0TE6oDSBz2l3nC2EOdO/KZIoPZHzkvWZQacpvifc?=
+ =?us-ascii?Q?9LcLUH1n7vBKiYhNFMjjO/9N2oEsZHZxhk9XUpPna6JnHfdzPexxUOZiMVF/?=
+ =?us-ascii?Q?Gk/VuaQjc4HjvGRvkwksdIkgaGt+vJEcwt1Xsy3s9v/F7ek07rki2bzB/T6j?=
+ =?us-ascii?Q?G2l/OtWyWu6+xznTed1ARqUBLaKBDCL+efmtyEqnKzPKKfC4uo70dDnOusmu?=
+ =?us-ascii?Q?3rWS7WO2UdSygL5IfLF1ns1GyjXpH0zVTR5sVwFi/9I6vGqqCH9B4YynuNLX?=
+ =?us-ascii?Q?HXOiP2ShuN8h1Y9D3rVRjcVZw9JRg4/X4Jqhd7HdXp6fF77RauZry3mSpcwi?=
+ =?us-ascii?Q?4eKIu/rdWzIrVREW4Q07rQem9d59bp0AE17T1eKVHd5KfAC9hKO8ZVd7m4fW?=
+ =?us-ascii?Q?EA/zo0BUO6vs/56RJnYuGaOOzcWSwZ9/5vu9a/O6qJYUTBET1YrQ5syWlyWl?=
+ =?us-ascii?Q?Us4GpQ5yi7Vx4g0SwK24LmJH/jiE/6bGnxlGg42sMrGyOC8cB11FpxOmaOtI?=
+ =?us-ascii?Q?JMm0RM1aJAKgpWU3w8gouJxwU29pzKkgqJ7v/E20ViI8ZD7lE5pG6ECQeBx3?=
+ =?us-ascii?Q?heRJqchbJ6svgfoOEFp10autZ8N1LC8ZbRLFSXLLomcvhOZCeE7ERrXlFVOZ?=
+ =?us-ascii?Q?ZsmGtWLUrA562/Ud/vOv9/gb5beGyrn7KmEXk9ce5UzwVKMGFt5+au9iQWGO?=
+ =?us-ascii?Q?q8BZLFFyyJDL6p/R9Afsz4CpEUy1wV5vKvcqt/v/6TSkAVZ3bHspx2woMFwR?=
+ =?us-ascii?Q?lpOcESsX/+wX8kJPtMRJCDDnXiR5x7dkC+OP93j0WF+XpyUk3foC2prBm72s?=
+ =?us-ascii?Q?Emk2Qr20+ajdL/bT1Mteipv1HfsJ2S3X5gdLhz1zoZD3iXJEwrdx44qEAuBw?=
+ =?us-ascii?Q?zGEVLeIDSyYOGHIwPJWw3L+q/VXUbCBWpETeKlu1GIFAWWvRUv2dOjZPOn3f?=
+ =?us-ascii?Q?W7sPIvUueIkIgee6U1R7tMsHoNRwg0VGpOhboV8DjXy491o0FqWMcGprz/qS?=
+ =?us-ascii?Q?HWAmcdHdi+pun+sC9iyseb4f9VZdpRMFb6WrLM7Sspiq0C3XtoEGMemcHXBJ?=
+ =?us-ascii?Q?bXDoGI6zvX98MjvNmUA=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed31feef-f259-479e-c20a-08dcfa7898ae
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2024 13:25:04.6475
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pGeHYI6m1/YUhjtJAXTgqQPhVPoAcwRcBhdoVuwO6npbI2SiDBTSNsCqkfuKX4pM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8194
 
-Hi Oreoluwa,
+On Fri, Nov 01, 2024 at 12:18:50PM +0000, Will Deacon wrote:
+> On Wed, Oct 30, 2024 at 09:20:44PM -0300, Jason Gunthorpe wrote:
+> > [This is now based on Nicolin's iommufd patches for vIOMMU and will need
+> > to go through the iommufd tree, please ack]
+> 
+> Can't we separate out the SMMUv3 driver changes? They shouldn't depend on
+> Nicolin's work afaict.
 
-On Thu, Oct 31, 2024 at 10:06=E2=80=AFPM Oreoluwa Babatunde
-<quic_obabatun@quicinc.com> wrote:
-> On 10/29/2024 5:41 AM, Geert Uytterhoeven wrote:
-> > On Wed, Oct 9, 2024 at 12:08=E2=80=AFAM Oreoluwa Babatunde
-> > <quic_obabatun@quicinc.com> wrote:
-> >> Reserved memory regions defined in the devicetree can be broken up int=
-o
-> >> two groups:
-> >> i) Statically-placed reserved memory regions
-> >> i.e. regions defined with a static start address and size using the
-> >>      "reg" property.
-> >> ii) Dynamically-placed reserved memory regions.
-> >> i.e. regions defined by specifying an address range where they can be
-> >>      placed in memory using the "alloc_ranges" and "size" properties.
-> >>
-> >> These regions are processed and set aside at boot time.
-> >> This is done in two stages as seen below:
-> >>
-> >> Stage 1:
-> >> At this stage, fdt_scan_reserved_mem() scans through the child nodes o=
-f
-> >> the reserved_memory node using the flattened devicetree and does the
-> >> following:
-> >>
-> >> 1) If the node represents a statically-placed reserved memory region,
-> >>    i.e. if it is defined using the "reg" property:
-> >>    - Call memblock_reserve() or memblock_mark_nomap() as needed.
-> >>    - Add the information for that region into the reserved_mem array
-> >>      using fdt_reserved_mem_save_node().
-> >>      i.e. fdt_reserved_mem_save_node(node, name, base, size).
-> >>
-> >> 2) If the node represents a dynamically-placed reserved memory region,
-> >>    i.e. if it is defined using "alloc-ranges" and "size" properties:
-> >>    - Add the information for that region to the reserved_mem array wit=
-h
-> >>      the starting address and size set to 0.
-> >>      i.e. fdt_reserved_mem_save_node(node, name, 0, 0).
-> >>    Note: This region is saved to the array with a starting address of =
-0
-> >>    because a starting address is not yet allocated for it.
-> >>
-> >> Stage 2:
-> >> After iterating through all the reserved memory nodes and storing thei=
-r
-> >> relevant information in the reserved_mem array,fdt_init_reserved_mem()=
- is
-> >> called and does the following:
-> >>
-> >> 1) For statically-placed reserved memory regions:
-> >>    - Call the region specific init function using
-> >>      __reserved_mem_init_node().
-> >> 2) For dynamically-placed reserved memory regions:
-> >>    - Call __reserved_mem_alloc_size() which is used to allocate memory
-> >>      for each of these regions, and mark them as nomap if they have th=
-e
-> >>      nomap property specified in the DT.
-> >>    - Call the region specific init function.
-> >>
-> >> The current size of the resvered_mem array is 64 as is defined by
-> >> MAX_RESERVED_REGIONS. This means that there is a limitation of 64 for
-> >> how many reserved memory regions can be specified on a system.
-> >> As systems continue to grow more and more complex, the number of
-> >> reserved memory regions needed are also growing and are starting to hi=
-t
-> >> this 64 count limit, hence the need to make the reserved_mem array
-> >> dynamically sized (i.e. dynamically allocating memory for the
-> >> reserved_mem array using membock_alloc_*).
-> >>
-> >> On architectures such as arm64, memory allocated using memblock is
-> >> writable only after the page tables have been setup. This means that i=
-f
-> >> the reserved_mem array is going to be dynamically allocated, it needs =
-to
-> >> happen after the page tables have been setup, not before.
-> >>
-> >> Since the reserved memory regions are currently being processed and
-> >> added to the array before the page tables are setup, there is a need t=
-o
-> >> change the order in which some of the processing is done to allow for
-> >> the reserved_mem array to be dynamically sized.
-> >>
-> >> It is possible to process the statically-placed reserved memory region=
-s
-> >> without needing to store them in the reserved_mem array until after th=
-e
-> >> page tables have been setup because all the information stored in the
-> >> array is readily available in the devicetree and can be referenced at
-> >> any time.
-> >> Dynamically-placed reserved memory regions on the other hand get
-> >> assigned a start address only at runtime, and hence need a place to be
-> >> stored once they are allocated since there is no other referrence to t=
-he
-> >> start address for these regions.
-> >>
-> >> Hence this patch changes the processing order of the reserved memory
-> >> regions in the following ways:
-> >>
-> >> Step 1:
-> >> fdt_scan_reserved_mem() scans through the child nodes of
-> >> the reserved_memory node using the flattened devicetree and does the
-> >> following:
-> >>
-> >> 1) If the node represents a statically-placed reserved memory region,
-> >>    i.e. if it is defined using the "reg" property:
-> >>    - Call memblock_reserve() or memblock_mark_nomap() as needed.
-> >>
-> >> 2) If the node represents a dynamically-placed reserved memory region,
-> >>    i.e. if it is defined using "alloc-ranges" and "size" properties:
-> >>    - Call __reserved_mem_alloc_size() which will:
-> >>      i) Allocate memory for the reserved region and call
-> >>      memblock_mark_nomap() as needed.
-> >>      ii) Call the region specific initialization function using
-> >>      fdt_init_reserved_mem_node().
-> >>      iii) Save the region information in the reserved_mem array using
-> >>      fdt_reserved_mem_save_node().
-> >>
-> >> Step 2:
-> >> 1) This stage of the reserved memory processing is now only used to ad=
-d
-> >>    the statically-placed reserved memory regions into the reserved_mem
-> >>    array using fdt_scan_reserved_mem_reg_nodes(), as well as call thei=
-r
-> >>    region specific initialization functions.
-> >>
-> >> 2) This step has also been moved to be after the page tables are
-> >>    setup. Moving this will allow us to replace the reserved_mem
-> >>    array with a dynamically sized array before storing the rest of
-> >>    these regions.
-> >>
-> >> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-> > Thanks for your patch, which is now commit 8a6e02d0c00e7b62
-> > ("of: reserved_mem: Restructure how the reserved memory regions
-> > are processed") in dt-rh/for-next.
-> >
-> > I have bisected a boot issue on RZ/Five to this commit.
-> > With "earlycon keep_bootcon" (else there is no output):
-> >
-> >     Oops - store (or AMO) access fault [#1]
-> >     CPU: 0 UID: 0 PID: 1 Comm: swapper Not tainted
-> > 6.12.0-rc1-00015-g8a6e02d0c00e #201
-> >     Hardware name: Renesas SMARC EVK based on r9a07g043f01 (DT)
-> >     epc : __memset+0x60/0x100
-> >      ra : __dma_alloc_from_coherent+0x150/0x17a
-> >     epc : ffffffff8062d2bc ra : ffffffff80053a94 sp : ffffffc60000ba20
-> >      gp : ffffffff812e9938 tp : ffffffd601920000 t0 : ffffffc6000d0000
-> >      t1 : 0000000000000000 t2 : ffffffffe9600000 s0 : ffffffc60000baa0
-> >      s1 : ffffffc6000d0000 a0 : ffffffc6000d0000 a1 : 0000000000000000
-> >      a2 : 0000000000001000 a3 : ffffffc6000d1000 a4 : 0000000000000000
-> >      a5 : 0000000000000000 a6 : ffffffd601adacc0 a7 : ffffffd601a841a8
-> >      s2 : ffffffd6018573c0 s3 : 0000000000001000 s4 : ffffffd6019541e0
-> >      s5 : 0000000200000022 s6 : ffffffd6018f8410 s7 : ffffffd6018573e8
-> >      s8 : 0000000000000001 s9 : 0000000000000001 s10: 0000000000000010
-> >      s11: 0000000000000000 t3 : 0000000000000000 t4 : ffffffffdefe62d1
-> >      t5 : 000000001cd6a3a9 t6 : ffffffd601b2aad6
-> >     status: 0000000200000120 badaddr: ffffffc6000d0000 cause: 000000000=
-0000007
-> >     [<ffffffff8062d2bc>] __memset+0x60/0x100
-> >     [<ffffffff80053e1a>] dma_alloc_from_global_coherent+0x1c/0x28
-> >     [<ffffffff80053056>] dma_direct_alloc+0x98/0x112
-> >     [<ffffffff8005238c>] dma_alloc_attrs+0x78/0x86
-> >     [<ffffffff8035fdb4>] rz_dmac_probe+0x3f6/0x50a
-> >     [<ffffffff803a0694>] platform_probe+0x4c/0x8a
-> >     [<ffffffff8039ea16>] really_probe+0xe4/0x1c8
-> >     [<ffffffff8039ebc4>] __driver_probe_device+0xca/0xce
-> >     [<ffffffff8039ec48>] driver_probe_device+0x34/0x92
-> >     [<ffffffff8039ede8>] __driver_attach+0xb4/0xbe
-> >     [<ffffffff8039ce58>] bus_for_each_dev+0x60/0xa0
-> >     [<ffffffff8039e26a>] driver_attach+0x1a/0x22
-> >     [<ffffffff8039dc20>] bus_add_driver+0xa4/0x184
-> >     [<ffffffff8039f65c>] driver_register+0x8a/0xb4
-> >     [<ffffffff803a051c>] __platform_driver_register+0x1c/0x24
-> >     [<ffffffff808202f6>] rz_dmac_driver_init+0x1a/0x22
-> >     [<ffffffff80800ef6>] do_one_initcall+0x64/0x134
-> >     [<ffffffff8080122e>] kernel_init_freeable+0x200/0x202
-> >     [<ffffffff80638126>] kernel_init+0x1e/0x10a
-> >     [<ffffffff8063d58e>] ret_from_fork+0xe/0x18
-> >     Code: 1007 82b3 40e2 0797 0000 8793 00e7 8305 97ba 8782 (b023) 00b2
-> >     ---[ end trace 0000000000000000 ]---
-> >     Kernel panic - not syncing: Fatal exception in interrupt
-> >     ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]=
----
-> >
-> > Nothing really stands out in the kernel log, except for a delayed
-> > initialization of the reserved mem nodes (they are the same
-> > before/after):
-> >
-> >  printk: debug: ignoring loglevel setting.
-> > -OF: reserved mem: 0x0000000000030000..0x000000000003ffff (64 KiB)
-> > nomap non-reusable mmode_resv0@30000
-> > -OF: reserved mem: 0x0000000000040000..0x000000000004ffff (64 KiB)
-> > nomap non-reusable mmode_resv1@40000
-> > -OF: reserved mem: 0x0000000044000000..0x000000004403ffff (256 KiB)
-> > nomap non-reusable mmode_resv3@44000000
-> > -OF: reserved mem: 0x0000000044040000..0x000000004405ffff (128 KiB)
-> > nomap non-reusable mmode_resv2@44040000
-> > +earlycon: scif0 at MMIO 0x000000001004b800 (options '115200n8')
-> > +printk: legacy bootconsole [scif0] enabled
-> > +printk: debug: skip boot console de-registration.
-> >  Reserved memory: created DMA memory pool at 0x0000000058000000, size 1=
-28 MiB
-> >  OF: reserved mem: initialized node pma_resv0@58000000, compatible id
-> > shared-dma-pool
-> >  OF: reserved mem: 0x0000000058000000..0x000000005fffffff (131072 KiB)
-> > nomap non-reusable pma_resv0@58000000
-> > +OF: reserved mem: 0x0000000000030000..0x000000000003ffff (64 KiB)
-> > nomap non-reusable mmode_resv0@30000
-> > +OF: reserved mem: 0x0000000000040000..0x000000000004ffff (64 KiB)
-> > nomap non-reusable mmode_resv1@40000
-> > +OF: reserved mem: 0x0000000044040000..0x000000004405ffff (128 KiB)
-> > nomap non-reusable mmode_resv2@44040000
-> > +OF: reserved mem: 0x0000000044000000..0x000000004403ffff (256 KiB)
-> > nomap non-reusable mmode_resv3@44000000
-> >  Zone ranges:
-> >    DMA32    [mem 0x0000000048000000-0x000000007fffffff]
-> >    Normal   empty
-> >
-> > Reverting commits 00c9a452a235c61f ("of: reserved_mem: Add code to
-> > dynamically allocate reserved_mem array") and 8a6e02d0c00e7b62 fixes
-> > the issue.
-> >
-> > root@smarc-rzfive:/sys/firmware/devicetree/base/reserved-memory# ls -l
-> > total 0
-> > -r--r--r-- 1 root root  4 Oct 29 12:37 #address-cells
-> > -r--r--r-- 1 root root  4 Oct 29 12:37 #size-cells
-> > drwxr-xr-x 2 root root  0 Oct 29 12:37 mmode_resv0@30000
-> > drwxr-xr-x 2 root root  0 Oct 29 12:37 mmode_resv1@40000
-> > drwxr-xr-x 2 root root  0 Oct 29 12:37 mmode_resv2@44040000
-> > drwxr-xr-x 2 root root  0 Oct 29 12:37 mmode_resv3@44000000
-> > -r--r--r-- 1 root root 16 Oct 29 12:37 name
-> > drwxr-xr-x 2 root root  0 Oct 29 12:37 pma_resv0@58000000
-> > -r--r--r-- 1 root root  0 Oct 29 12:37 ranges
+We can put everything before "iommu/arm-smmu-v3: Support
+IOMMU_VIOMMU_ALLOC" directly on a rc and share a branch with your tree.
 
-> Thanks for reaching out and sorry you're seeing this issue.
->
-> Please can you provide reproduction steps? I tried booting up
-> risc-v arch with qemu but did not run into the issue you are
-> seeing.
+That patch and following all depend on Nicolin's work, as they rely on
+the VIOMMU due to how different ARM is from Intel.
 
-It indeed doesn't happen on other RISC-V platforms (tried MPFS/Icicle).
-RZ/Five is special in that it is DMA non-coherent, and the crash
-happens in dma_alloc_from_global_coherent().
-According to the logs, the DMA pool at 0x58000000 is still being created.
-I'll try to debug this further next week...
+How about you take these patches:
 
-Gr{oetje,eeting}s,
+ [PATCH v4 01/12] vfio: Remove VFIO_TYPE1_NESTING_IOMMU
+ [PATCH v4 02/12] ACPICA: IORT: Update for revision E.f
+ [PATCH v4 03/12] ACPI/IORT: Support CANWBS memory access flag
+ [PATCH v4 04/12] iommu/arm-smmu-v3: Report IOMMU_CAP_ENFORCE_CACHE_COHERENCY for CANWBS
+ [PATCH v4 05/12] iommu/arm-smmu-v3: Support IOMMU_GET_HW_INFO via struct arm_smmu_hw_info
+ [PATCH v4 06/12] iommu/arm-smmu-v3: Implement IOMMU_HWPT_ALLOC_NEST_PARENT
+ [PATCH v4 07/12] iommu/arm-smmu-v3: Expose the arm_smmu_attach interface
 
-                        Geert
+Onto a branch.
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
+I'll take these patches after merging your branch and Nicolin's:
 
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+ [PATCH v4 08/12] iommu/arm-smmu-v3: Support IOMMU_VIOMMU_ALLOC
+ [PATCH v4 09/12] iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED
+ [PATCH v4 10/12] iommu/arm-smmu-v3: Use S2FWB for NESTED domains
+ [PATCH v4 11/12] iommu/arm-smmu-v3: Allow ATS for IOMMU_DOMAIN_NESTED
+ [PATCH v4 12/12] iommu/arm-smmu-v3: Support IOMMU_HWPT_INVALIDATE using a VIOMMU object
+
+?
+
+I can also probably push most of S2FWB and ATS into the first batch.
+
+Please let me know, I would like this to be done this cycle, Nicolin's
+vIOMMU series are all reviewed now.
+
+Jason
