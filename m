@@ -1,238 +1,161 @@
-Received: from out-173.mta0.migadu.com (out-173.mta0.migadu.com [91.218.175.173])
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D17245016
-	for <iommu@lists.linux.dev>; Sat,  2 Nov 2024 07:39:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C003242A93
+	for <iommu@lists.linux.dev>; Sat,  2 Nov 2024 10:23:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.95.49.90
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730533186; cv=none; b=vDCKLpTGE9BhQndY+qpZrxxrYvX23Yv1YXi4+VhRU7cw9uf/eVD+n3K/Q7Nbdc0wiag+7chEWB9O+DxN2FJqb2l8LmD1OF1lIFhAK3O/X4KwCVXwQwQozDX3c2eRdED8JVbYSjFOkT3QTbBfpEY6Jh3OKD/DI23kiRJF9IQZPjI=
+	t=1730542983; cv=none; b=KhplhWhbaiieDf1nMM3tzCHKo1sJ00YSCD6uvgYf8mKboowD6h9xvkdMOYNcwIZs45Dy075IN6sHqKE+ahsIbFWjMwDu1BWAV9j0eXsf3FRJTonrzCCxz92hvo39lhRt/rkKFb4kICI9HIVz9qeUhO/NKvlglLDvKS5UfQVnI3Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730533186; c=relaxed/simple;
-	bh=PEb7dEPLpsiEUBwEV+omdt0TcIQ9CKXJLt8jWJGdcI8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=b3IJgndS2Kga1Fkik6BJ6tfOkZ2fDKA96s6myoTn1Mm6gKWObpPPX8OmT9Hqq87PtB/qxa3SJ+B3+YvRuoyH0EzfCh8E0NEHM5zAAt4NucDup5ZXRDQ9LwSS/YA9PFYOQkkl993QabRTR9A/nGznqP8AKd719iIl2SUZtevn7Cw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=Vo9PwtDe; arc=none smtp.client-ip=91.218.175.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1730542983; c=relaxed/simple;
+	bh=Hui5t1gehMTdty4pXjzuyHcceV0JNyhjLbGDeQM1nTY=;
+	h=Subject:From:To:CC:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=Ztd9Dcr7ARgDW7GQqHaiDvUFfsSWGY1S2YKo3lVYCJrNCp9ql/++cbjtgiiDAEm5K93mG5nuxlc7ie4bbNdAVcrOw8QBGECqPsawOAbgkhKl9pBB8bwUciCS021t4wdjpIBmn7AFJOPyzCJGAnTVDkjq75hgDOYvciz3Sbn5p7U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.com; dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b=Ch5AjQx1; arc=none smtp.client-ip=52.95.49.90
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="Vo9PwtDe"
-Message-ID: <f80e7b54-b897-4df2-a49d-bc6012640a8a@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1730533181;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Zkq8x4dmz9yfUFHPf0EELUUQUn7E8nglf4dRQUS+EMY=;
-	b=Vo9PwtDerSGdplleUNX0Y/p+JDHIf70BdVvazCyN6y7vBeSmJN/2zQyKwdwVLMDJ75gcUi
-	p2dyDGNKJmn61rctVMXgRmkGSEuGDVdgsPLZmNxceQZmMQrgLWD8jMvyZRZxdxYdGOxMmE
-	AmgT0wss4pgZ2ZNAb8fYVAZQLqSC69g=
-Date: Sat, 2 Nov 2024 08:39:35 +0100
+	dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b="Ch5AjQx1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1730542982; x=1762078982;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-id:content-transfer-encoding:mime-version:subject;
+  bh=Hui5t1gehMTdty4pXjzuyHcceV0JNyhjLbGDeQM1nTY=;
+  b=Ch5AjQx1NURMQgHf6CK38UOrDZmXG7m8Sz4qmQ/ozza42GJlfTw0Ccy9
+   byWl6rKUOQRUUx4j5T5Pqp1cQV9aTIh/QttvfhOwjkJUWaoCzGn5GvRFO
+   GNy37mQf1erIEIrxAuTCWGDaBOKpihCrKcwdMaplNcexTcs9kaCd9fD9t
+   Y=;
+X-IronPort-AV: E=Sophos;i="6.11,252,1725321600"; 
+   d="scan'208";a="445826218"
+Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
+Thread-Topic: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO smtpout.prod.us-west-2.prod.farcaster.email.amazon.dev) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2024 10:22:58 +0000
+Received: from EX19MTAEUA001.ant.amazon.com [10.0.10.100:23491]
+ by smtpin.naws.eu-west-1.prod.farcaster.email.amazon.dev [10.0.45.52:2525] with esmtp (Farcaster)
+ id e7310b3f-1e45-4905-85dc-9b1ecd70ac2a; Sat, 2 Nov 2024 10:22:56 +0000 (UTC)
+X-Farcaster-Flow-ID: e7310b3f-1e45-4905-85dc-9b1ecd70ac2a
+Received: from EX19D004EUC001.ant.amazon.com (10.252.51.190) by
+ EX19MTAEUA001.ant.amazon.com (10.252.50.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.34;
+ Sat, 2 Nov 2024 10:22:55 +0000
+Received: from EX19D014EUC004.ant.amazon.com (10.252.51.182) by
+ EX19D004EUC001.ant.amazon.com (10.252.51.190) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.34;
+ Sat, 2 Nov 2024 10:22:54 +0000
+Received: from EX19D014EUC004.ant.amazon.com ([fe80::76dd:4020:4ff2:1e41]) by
+ EX19D014EUC004.ant.amazon.com ([fe80::76dd:4020:4ff2:1e41%3]) with mapi id
+ 15.02.1258.034; Sat, 2 Nov 2024 10:22:54 +0000
+From: "Gowans, James" <jgowans@amazon.com>
+To: "jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>,
+	"yi.l.liu@intel.com" <yi.l.liu@intel.com>, "jinankjain@linux.microsoft.com"
+	<jinankjain@linux.microsoft.com>
+CC: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "rppt@kernel.org"
+	<rppt@kernel.org>, "kw@linux.com" <kw@linux.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "madvenka@linux.microsoft.com"
+	<madvenka@linux.microsoft.com>, "anthony.yznaga@oracle.com"
+	<anthony.yznaga@oracle.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"nh-open-source@amazon.com" <nh-open-source@amazon.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"seanjc@google.com" <seanjc@google.com>, "Saenz Julienne, Nicolas"
+	<nsaenz@amazon.es>, "pbonzini@redhat.com" <pbonzini@redhat.com>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>, "dwmw2@infradead.org"
+	<dwmw2@infradead.org>, "ssengar@linux.microsoft.com"
+	<ssengar@linux.microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>, "Graf (AWS), Alexander"
+	<graf@amazon.de>, "steven.sistare@oracle.com" <steven.sistare@oracle.com>,
+	"jgg@ziepe.ca" <jgg@ziepe.ca>
+Thread-Index: AQHbCCwuWjwUDEQNSEmjPqzUeT3bK7KKIvOAgBJyeoCAB3yRAA==
+Date: Sat, 2 Nov 2024 10:22:54 +0000
+Message-ID: <1f50020d9bd74ab8315cec473d3e6285d0fc8259.camel@amazon.com>
+References: <20240916113102.710522-1-jgowans@amazon.com>
+	 <20240916113102.710522-6-jgowans@amazon.com>
+	 <20241016152047.2a604f08@DESKTOP-0403QTC.>
+	 <20241028090311.54bc537f@DESKTOP-0403QTC.>
+In-Reply-To: <20241028090311.54bc537f@DESKTOP-0403QTC.>
+Accept-Language: en-ZA, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E287AEB17CC88C4A8C68D6AC15942C94@amazon.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [RFC PATCH 2/7] block: don't merge different kinds of P2P
- transfers in a single bio
-To: Leon Romanovsky <leon@kernel.org>, Jens Axboe <axboe@kernel.dk>,
- Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>
-Cc: Keith Busch <kbusch@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Logan Gunthorpe <logang@deltatee.com>, Yishai Hadas <yishaih@nvidia.com>,
- Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
- Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
- iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
- linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org
-References: <cover.1730037261.git.leon@kernel.org>
- <34d44537a65aba6ede215a8ad882aeee028b423a.1730037261.git.leon@kernel.org>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Zhu Yanjun <yanjun.zhu@linux.dev>
-In-Reply-To: <34d44537a65aba6ede215a8ad882aeee028b423a.1730037261.git.leon@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
 
-在 2024/10/27 15:21, Leon Romanovsky 写道:
-> From: Christoph Hellwig <hch@lst.de>
-> 
-> To get out of the dma mapping helpers having to check every segment for
-> it's P2P status, ensure that bios either contain P2P transfers or non-P2P
-> transfers, and that a P2P bio only contains ranges from a single device.
-> 
-> This means we do the page zone access in the bio add path where it should
-> be still page hot, and will only have do the fairly expensive P2P topology
-> lookup once per bio down in the dma mapping path, and only for already
-> marked bios.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->   block/bio.c               | 36 +++++++++++++++++++++++++++++-------
->   block/blk-map.c           | 32 ++++++++++++++++++++++++--------
->   include/linux/blk_types.h |  2 ++
->   3 files changed, 55 insertions(+), 15 deletions(-)
-> 
-> diff --git a/block/bio.c b/block/bio.c
-> index 2d3bc8bfb071..943a6d78cb3e 100644
-> --- a/block/bio.c
-> +++ b/block/bio.c
-> @@ -928,8 +928,6 @@ static bool bvec_try_merge_page(struct bio_vec *bv, struct page *page,
->   		return false;
->   	if (xen_domain() && !xen_biovec_phys_mergeable(bv, page))
->   		return false;
-> -	if (!zone_device_pages_have_same_pgmap(bv->bv_page, page))
-> -		return false;
->   
->   	*same_page = ((vec_end_addr & PAGE_MASK) == ((page_addr + off) &
->   		     PAGE_MASK));
-> @@ -993,6 +991,14 @@ int bio_add_hw_page(struct request_queue *q, struct bio *bio,
->   	if (bio->bi_vcnt > 0) {
->   		struct bio_vec *bv = &bio->bi_io_vec[bio->bi_vcnt - 1];
->   
-> +		/*
-> +		 * When doing ZONE_DEVICE-based P2P transfers, all pages in a
-> +		 * bio must be P2P pages from the same device.
-> +		 */
-> +		if ((bio->bi_opf & REQ_P2PDMA) &&
-> +		    !zone_device_pages_have_same_pgmap(bv->bv_page, page))
-> +			return 0;
-> +
->   		if (bvec_try_merge_hw_page(q, bv, page, len, offset,
->   				same_page)) {
->   			bio->bi_iter.bi_size += len;
-> @@ -1009,6 +1015,9 @@ int bio_add_hw_page(struct request_queue *q, struct bio *bio,
->   		 */
->   		if (bvec_gap_to_prev(&q->limits, bv, offset))
->   			return 0;
-> +	} else {
-> +		if (is_pci_p2pdma_page(page))
-> +			bio->bi_opf |= REQ_P2PDMA | REQ_NOMERGE;
->   	}
->   
->   	bvec_set_page(&bio->bi_io_vec[bio->bi_vcnt], page, len, offset);
-> @@ -1133,11 +1142,24 @@ static int bio_add_page_int(struct bio *bio, struct page *page,
->   	if (bio->bi_iter.bi_size > UINT_MAX - len)
->   		return 0;
->   
-> -	if (bio->bi_vcnt > 0 &&
-> -	    bvec_try_merge_page(&bio->bi_io_vec[bio->bi_vcnt - 1],
-> -				page, len, offset, same_page)) {
-> -		bio->bi_iter.bi_size += len;
-> -		return len;
-> +	if (bio->bi_vcnt > 0) {
-> +		struct bio_vec *bv = &bio->bi_io_vec[bio->bi_vcnt - 1];
-> +
-> +		/*
-> +		 * When doing ZONE_DEVICE-based P2P transfers, all pages in a
-> +		 * bio must be P2P pages from the same device.
-> +		 */
-> +		if ((bio->bi_opf & REQ_P2PDMA) &&
-> +		    !zone_device_pages_have_same_pgmap(bv->bv_page, page))
-> +			return 0;
-> +
-> +		if (bvec_try_merge_page(bv, page, len, offset, same_page)) {
-> +			bio->bi_iter.bi_size += len;
-> +			return len;
-> +		}
-> +	} else {
-> +		if (is_pci_p2pdma_page(page))
-> +			bio->bi_opf |= REQ_P2PDMA | REQ_NOMERGE;
->   	}
->   
->   	if (bio->bi_vcnt >= bio->bi_max_vecs)
-> diff --git a/block/blk-map.c b/block/blk-map.c
-> index 0e1167b23934..03192b1ca6ea 100644
-> --- a/block/blk-map.c
-> +++ b/block/blk-map.c
-> @@ -568,6 +568,7 @@ static int blk_rq_map_user_bvec(struct request *rq, const struct iov_iter *iter)
->   	const struct queue_limits *lim = &q->limits;
->   	unsigned int nsegs = 0, bytes = 0;
->   	struct bio *bio;
-> +	int error;
->   	size_t i;
->   
->   	if (!nr_iter || (nr_iter >> SECTOR_SHIFT) > queue_max_hw_sectors(q))
-> @@ -588,15 +589,30 @@ static int blk_rq_map_user_bvec(struct request *rq, const struct iov_iter *iter)
->   	for (i = 0; i < nr_segs; i++) {
->   		struct bio_vec *bv = &bvecs[i];
->   
-> -		/*
-> -		 * If the queue doesn't support SG gaps and adding this
-> -		 * offset would create a gap, fallback to copy.
-> -		 */
-> -		if (bvprvp && bvec_gap_to_prev(lim, bvprvp, bv->bv_offset)) {
-> -			blk_mq_map_bio_put(bio);
-> -			return -EREMOTEIO;
-> +		error = -EREMOTEIO;
-> +		if (bvprvp) {
-> +			/*
-> +			 * If the queue doesn't support SG gaps and adding this
-> +			 * offset would create a gap, fallback to copy.
-> +			 */
-> +			if (bvec_gap_to_prev(lim, bvprvp, bv->bv_offset))
-> +				goto put_bio;
-> +
-> +			/*
-> +			 * When doing ZONE_DEVICE-based P2P transfers, all pages
-> +			 * in a bio must be P2P pages, and from the same device.
-> +			 */
-> +			if ((bio->bi_opf & REQ_P2PDMA) &&
-> +			    zone_device_pages_have_same_pgmap(bvprvp->bv_page,
-> +					bv->bv_page))
-> +				goto put_bio;
-> +		} else {
-> +			if (is_pci_p2pdma_page(bv->bv_page))
-> +				bio->bi_opf |= REQ_P2PDMA | REQ_NOMERGE;
->   		}
-> +
->   		/* check full condition */
-> +		error = -EINVAL;
->   		if (nsegs >= nr_segs || bytes > UINT_MAX - bv->bv_len)
->   			goto put_bio;
->   		if (bytes + bv->bv_len > nr_iter)
-> @@ -611,7 +627,7 @@ static int blk_rq_map_user_bvec(struct request *rq, const struct iov_iter *iter)
->   	return 0;
->   put_bio:
->   	blk_mq_map_bio_put(bio);
-> -	return -EINVAL;
-> +	return error;
->   }
->   
->   /**
-> diff --git a/include/linux/blk_types.h b/include/linux/blk_types.h
-> index dce7615c35e7..94cf146e8ce6 100644
-> --- a/include/linux/blk_types.h
-> +++ b/include/linux/blk_types.h
-> @@ -378,6 +378,7 @@ enum req_flag_bits {
->   	__REQ_DRV,		/* for driver use */
->   	__REQ_FS_PRIVATE,	/* for file system (submitter) use */
->   	__REQ_ATOMIC,		/* for atomic write operations */
-> +	__REQ_P2PDMA,		/* contains P2P DMA pages */
->   	/*
->   	 * Command specific flags, keep last:
->   	 */
-> @@ -410,6 +411,7 @@ enum req_flag_bits {
->   #define REQ_DRV		(__force blk_opf_t)(1ULL << __REQ_DRV)
->   #define REQ_FS_PRIVATE	(__force blk_opf_t)(1ULL << __REQ_FS_PRIVATE)
->   #define REQ_ATOMIC	(__force blk_opf_t)(1ULL << __REQ_ATOMIC)
-> +#define REQ_P2PDMA	(__force blk_opf_t)(1ULL << __REQ_P2PDMA)
-
-#define REQ_P2PDMA	(__force blk_opf_t)BIT_ULL(__REQ_P2PDMA)
-
-Use BIT_ULL instead of direct left shit.
-
-Zhu Yanjun
-
->   
->   #define REQ_NOUNMAP	(__force blk_opf_t)(1ULL << __REQ_NOUNMAP)
->   
-
+SGkgSmFjb2IsIGFwb2xvZ2llcyBmb3IgdGhlIGxhdGUgcmVwbHkuDQoNCk9uIE1vbiwgMjAyNC0x
+MC0yOCBhdCAwOTowMyAtMDcwMCwgSmFjb2IgUGFuIHdyb3RlOg0KPiBIaSBKYW1lcywNCj4gDQo+
+IEp1c3QgYSBnZW50bGUgcmVtaW5kZXIuIExldCBtZSBhbHNvIGV4cGxhaW4gdGhlIHByb2JsZW0g
+d2UgYXJlIHRyeWluZw0KPiB0byBzb2x2ZSBmb3IgdGhlIGxpdmUgdXBkYXRlIG9mIE9wZW5IQ0wg
+cGFyYXZpc29yWzFdLiBPcGVuSENMIGhhcyB1c2VyDQo+IHNwYWNlIGRyaXZlcnMgYmFzZWQgb24g
+VkZJTyBub2lvbW11IG1vZGUsIHdlIGFyZSBpbiB0aGUgcHJvY2VzcyBvZg0KPiBjb252ZXJ0aW5n
+IHRvIGlvbW11ZmQgY2Rldi4NCj4gDQo+IFNpbWlsYXJseSwgcnVubmluZyBETUEgY29udGludW91
+c2x5IGFjcm9zcyB1cGRhdGVzIGlzIHJlcXVpcmVkLCBidXQNCj4gdW5saWtlIHlvdXIgY2FzZSwg
+T3BlbkhDTCB1cGRhdGVzIGRvIG5vdCBpbnZvbHZlIHByZXNlcnZpbmcgdGhlIElPIHBhZ2UNCj4g
+dGFibGVzIGluIHRoYXQgaXQgaXMgbWFuYWdlZCBieSB0aGUgaHlwZXJ2aXNvciB3aGljaCBpcyBu
+b3QgcGFydCBvZiB0aGUNCj4gdXBkYXRlLg0KPiANCj4gSXQgc2VlbXMgcmVhc29uYWJsZSB0byBz
+aGFyZSB0aGUgZGV2aWNlIHBlcnNpc3RlbmNlIGNvZGUgcGF0aA0KPiB3aXRoIHRoZSBwbGFuIGxh
+aWQgb3V0IGluIHlvdXIgY292ZXIgbGV0dGVyLiBJT0FTIGNvZGUgcGF0aCB3aWxsIGJlDQo+IGRp
+ZmZlcmVudCBzaW5jZSBub2lvbW11IG9wdGlvbiBkb2VzIG5vdCBoYXZlIElPQVMuDQo+IA0KPiBJ
+ZiB3ZSB3ZXJlIHRvIHJldml2ZSBub2lvbW11IHN1cHBvcnQgZm9yIGlvbW11ZmQgY2RldlsyXSwg
+Y2FuIHdlIHVzZQ0KPiB0aGUgcGVyc2lzdGVudCBpb21tdWZkIGNvbnRleHQgdG8gYWxsb3cgZGV2
+aWNlIHBlcnNpc3RlbmNlPyBQZXJoYXBzDQo+IHRocm91Z2ggSU9NTVVGRF9PQkpfREVWSUNFIGFu
+ZCBJT01NVUZEX09CSl9BQ0NFU1ModXNlZCBpbiBbMl0pPw0KPiANCj4gQERhdmlkLCBASmFzb24s
+IEBBbGV4LCBAWWksIGFueSBjb21tZW50cyBvciBzdWdnZXN0aW9ucz8NCg0KSUlSQyB3ZSBkaWQg
+ZGlzY3VzcyB0aGlzIGRldmljZSBwZXJzaXN0ZW5jZSB1c2UgY2FzZSB3aXRoIHNvbWUgb2YgeW91
+cg0KY29sbGVhZ3VlcyBhdCBMaW51eCBQbHVtYmVycy4gQWRkaW5nIEppbmFuayB0byB0aGlzIHRo
+cmVhZCBhcyBoZSB3YXMNCnBhcnQgb2YgdGhlIGNvbnZlcnNhdGlvbiB0b28uDQoNClllcywgSSB0
+aGluayB0aGUgZ3VpZGFuY2Ugd2FzIHRvIGJpbmQgYSBkZXZpY2UgdG8gaW9tbXVmZCBpbiBub2lv
+bW11DQptb2RlLiBJdCBkb2VzIHNlZW0gYSBiaXQgd2VpcmQgdG8gdXNlIGlvbW11ZmQgd2l0aCBu
+b2lvbW11LCBidXQgd2UNCmFncmVlZCBpdCdzIHRoZSBiZXN0L3NpbXBsZXN0IHdheSB0byBnZXQg
+dGhlIGZ1bmN0aW9uYWxpdHkuIFRoZW4gYXMgeW91DQpzdWdnZXN0IGJlbG93IHRoZSBJT01NVUZE
+X09CSl9ERVZJQ0Ugd291bGQgYmUgc2VyaWFsaXNlZCB0b28gaW4gc29tZQ0Kd2F5LCBwcm9iYWJs
+eSBieSBpb21tdWZkIHRlbGxpbmcgdGhlIFBDSSBsYXllciB0aGF0IHRoaXMgZGV2aWNlIG11c3Qg
+YmUNCnBlcnNpc3RlbnQgYW5kIGhlbmNlIG5vdCB0byByZS1wcm9iZSBpdCBvbiBrZXhlYy4gSSB0
+aGluayB0aGlzIHdvdWxkIGdldA0KeW91IHdoYXQgeW91IHdhbnQ/IFNwZWNpZmljYWxseSB5b3Ug
+d2FudCB0byBtYWtlIHN1cmUgdGhhdCB0aGUgZGV2aWNlIGlzDQpub3QgcmVzZXQgZHVyaW5nIGtl
+eGVjIHNvIGl0IGNhbiBrZWVwIHJ1bm5pbmc/IEFuZCBzb21lIGhhbmRsZSBmb3INCnVzZXJzcGFj
+ZSB0byBwaWNrIGl0IHVwIGFnYWluIGFuZCBjb250aW51ZSBpbnRlcmFjdGluZyB3aXRoIGl0IGFm
+dGVyDQprZXhlYy4NCg0KSXQncyBhbGwgYSBiaXQgaGFuZCB3YXZ5IGF0IHRoZSBtb21lbnQsIGJ1
+dCBzb21ldGhpbmcgYWxvbmcgdGhvc2UgbGluZXMNCnByb2JhYmx5IG1ha2VzIHNlbnNlLiBJIG5l
+ZWQgdG8gd29yayBvbiByZXYyIG9mIHRoaXMgUkZDIGFzIHBlciBKYXNvbidzDQpmZWVkYmFjayBp
+biB0aGUgb3RoZXIgdGhyZWFkLiBSZXYyIHdpbGwgbWFrZSB0aGUgcmVzdG9yZSBwYXRoIG1vcmUN
+CnVzZXJzcGFjZSBkcml2ZW4sIHdpdGggZnJlc2ggaW9tbXVmZCBhbmQgcGd0YWJsZXMgb2JqZWN0
+cyBiZWluZyBjcmVhdGVkDQphbmQgdGhlbiBhdG9taWNhbGx5IHN3YXBwZWQgb3ZlciB0b28uIEkn
+bGwgYWxzbyBnZXQgdGhlIFBDSSBsYXllcg0KaW52b2x2ZWQgd2l0aCByZXYyLiBPbmNlIHRoYXQn
+cyBvdXQgKGl0J2xsIGJlIGEgZmV3IHdlZWtzIGFzIEknbSBvbg0KbGVhdmUpIHRoZW4gbGV0J3Mg
+dGFrZSBhIGxvb2sgYXQgaG93IHRoZSBub2lvbW11IGRldmljZSBwZXJzaXN0ZW5jZSBjYXNlDQp3
+b3VsZCBmaXQgaW4uDQoNCkpHDQoNCj4gDQo+IA0KPiBUaGFua3MsDQo+IA0KPiBKYWNvYg0KPiAN
+Cj4gMS4gKG9wZW52bW0vR3VpZGUvc3JjL3JlZmVyZW5jZS9hcmNoaXRlY3R1cmUvb3BlbmhjbC5t
+ZCBhdCBtYWluIMK3DQo+IG1pY3Jvc29mdC9vcGVudm1tLg0KPiAyLiBbUEFUQ0ggdjExIDAwLzIz
+XSBBZGQgdmZpb19kZXZpY2UgY2RldiBmb3INCj4gaW9tbXVmZCBzdXBwb3J0IC0gWWkgTGl1DQo+
+IA0KPiBPbiBXZWQsIDE2IE9jdCAyMDI0IDE1OjIwOjQ3IC0wNzAwIEphY29iIFBhbg0KPiA8amFj
+b2IucGFuQGxpbnV4Lm1pY3Jvc29mdC5jb20+IHdyb3RlOg0KPiANCj4gPiBIaSBKYW1lcywNCj4g
+PiANCj4gPiBPbiBNb24sIDE2IFNlcCAyMDI0IDEzOjMwOjU0ICswMjAwDQo+ID4gSmFtZXMgR293
+YW5zIDxqZ293YW5zQGFtYXpvbi5jb20+IHdyb3RlOg0KPiA+IA0KPiA+ID4gK3N0YXRpYyBpbnQg
+c2VyaWFsaXNlX2lvbW11ZmQodm9pZCAqZmR0LCBzdHJ1Y3QgaW9tbXVmZF9jdHggKmljdHgpDQo+
+ID4gPiArew0KPiA+ID4gKyAgIGludCBlcnIgPSAwOw0KPiA+ID4gKyAgIGNoYXIgbmFtZVsyNF07
+DQo+ID4gPiArICAgc3RydWN0IGlvbW11ZmRfb2JqZWN0ICpvYmo7DQo+ID4gPiArICAgdW5zaWdu
+ZWQgbG9uZyBvYmpfaWR4Ow0KPiA+ID4gKw0KPiA+ID4gKyAgIHNucHJpbnRmKG5hbWUsIHNpemVv
+ZihuYW1lKSwgIiVsdSIsIGljdHgtPnBlcnNpc3RlbnRfaWQpOw0KPiA+ID4gKyAgIGVyciB8PSBm
+ZHRfYmVnaW5fbm9kZShmZHQsIG5hbWUpOw0KPiA+ID4gKyAgIGVyciB8PSBmZHRfYmVnaW5fbm9k
+ZShmZHQsICJpb2FzZXMiKTsNCj4gPiA+ICsgICB4YV9mb3JfZWFjaCgmaWN0eC0+b2JqZWN0cywg
+b2JqX2lkeCwgb2JqKSB7DQo+ID4gPiArICAgICAgICAgICBzdHJ1Y3QgaW9tbXVmZF9pb2FzICpp
+b2FzOw0KPiA+ID4gKyAgICAgICAgICAgc3RydWN0IGlvcHRfYXJlYSAqYXJlYTsNCj4gPiA+ICsg
+ICAgICAgICAgIGludCBhcmVhX2lkeCA9IDA7DQo+ID4gPiArDQo+ID4gPiArICAgICAgICAgICBp
+ZiAob2JqLT50eXBlICE9IElPTU1VRkRfT0JKX0lPQVMpDQo+ID4gPiArICAgICAgICAgICAgICAg
+ICAgIGNvbnRpbnVlOw0KPiA+IEkgd2FzIHdvbmRlcmluZyBob3cgZGV2aWNlIHN0YXRlIHBlcnNp
+c3RlbmN5IGlzIG1hbmFnZWQgaGVyZS4gSXMgaXQNCj4gPiBjb3JyZWN0IHRvIGFzc3VtZSB0aGF0
+IGFsbCBkZXZpY2VzIGJvdW5kIHRvIGFuIGlvbW11ZmQgY29udGV4dCBzaG91bGQNCj4gPiBiZSBw
+ZXJzaXN0ZW50PyBJZiBzbywgc2hvdWxkIHdlIGJlIHNlcmlhbGl6aW5nIElPTU1VRkRfT0JKX0RF
+VklDRSBhcw0KPiA+IHdlbGw/DQo+ID4gDQo+ID4gSSdtIGNvbnNpZGVyaW5nIHRoaXMgZnJvbSB0
+aGUgcGVyc3BlY3RpdmUgb2YgdXNlciBtb2RlIGRyaXZlcnMsDQo+ID4gaW5jbHVkaW5nIHRob3Nl
+IHRoYXQgdXNlIG5vaW9tbXUgbW9kZSAobmVlZCB0byBiZSBhZGRlZCB0byBpb21tdWZkDQo+ID4g
+Y2RldikuIEluIHRoaXMgc2NlbmFyaW8sIHdlIG9ubHkgbmVlZCB0byBtYWludGFpbiB0aGUgZGV2
+aWNlIHN0YXRlcw0KPiA+IHBlcnNpc3RlbnRseSB3aXRob3V0IElPQVMuDQo+IA0KDQo=
