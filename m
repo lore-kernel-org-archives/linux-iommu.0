@@ -1,136 +1,100 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 559291ABEDC
-	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 09:58:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B17411AF4C1
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 10:29:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730714320; cv=none; b=Xr2sgUtNom58yGsm7voJ/xLz3QhaMWHTDhhlzHnspRa/QnSdaW7xLg7ZarPTDWTLLh4JR/Wdx1/DdCPHg2IpmyYHaMk5JAe4pE09y6hp4NuQrNIr8jB85XWBg8kXEh5vX99EpWV+kW2v3vglUbZ+7pL+mxdXZI/YYm0KY3QUPKQ=
+	t=1730716179; cv=none; b=UmAEbMKwrXpdk9948kQMzzPnHrcjTYq+eKUC3MsQTBWbngkMneB7eTmN/LrO7yNtIkmAr9v7j5ojQhlERAWfcSeD7HNBroE1XviAM9QoE4W/OeRwq/gufW8luYsWVN/QWtR1sn/W1mwNa8u6smBpGzZY1XHt4KT3tbbTtjaGR18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730714320; c=relaxed/simple;
-	bh=cGc3p1RFcABDoSgLbkrGYjJv7Mesj0EoAuHiRfKkhAs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GllNQPfFZMkEnHt/s7kaVR92xqwlbNZ3ozkNgWzH2ZSqN58nXI7PGFqV8p/mIhv8/H6OiByXId+Bd6P8O2NkuUaszOzhllCWdCg70wZfwc4imYNP0noWt1NG4BlAGBQj/82QjbcgafMQUUOHBpx46m2htjDd5j1LCKgbH1G38Xs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id EF664227AAD; Mon,  4 Nov 2024 10:58:31 +0100 (CET)
-Date: Mon, 4 Nov 2024 10:58:31 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Leon Romanovsky <leon@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
-	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v1 00/17] Provide a new two step DMA mapping API
-Message-ID: <20241104095831.GA28751@lst.de>
-References: <cover.1730298502.git.leon@kernel.org> <3567312e-5942-4037-93dc-587f25f0778c@arm.com>
+	s=arc-20240116; t=1730716179; c=relaxed/simple;
+	bh=LtIwrcWSstP0WmM8VkgYPMRFr/2et7hXkOEQDULPM8Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=kOa+p8uGZfiNtpojZUUcitPlho91dXVAm+DYpSFM5Ucpys5zMxdMMGYCdSYbH6RA8yT1EI0l73O+8VNwBgicakD/G3jSGJ3pTfHvWk84vBqaBKhXB1aHw2WVt3I4dPmuUvZObVy23OQwhVukZPen915OdQRkAQ4IzQFZshEau/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A8808FEC;
+	Mon,  4 Nov 2024 02:30:04 -0800 (PST)
+Received: from [10.57.88.110] (unknown [10.57.88.110])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 155133F66E;
+	Mon,  4 Nov 2024 02:29:31 -0800 (PST)
+Message-ID: <069c9838-b781-4012-934a-d2626fa78212@arm.com>
+Date: Mon, 4 Nov 2024 10:29:28 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3567312e-5942-4037-93dc-587f25f0778c@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] [net-next] net: hns3: add IOMMU_SUPPORT dependency
+To: Arnd Bergmann <arnd@kernel.org>, Jian Shen <shenjian15@huawei.com>,
+ Salil Mehta <salil.mehta@huawei.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Will Deacon <will@kernel.org>,
+ Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev,
+ Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Jijie Shao <shaojijie@huawei.com>, Peiyang Wang <wangpeiyang1@huawei.com>,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20241104082129.3142694-1-arnd@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20241104082129.3142694-1-arnd@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 31, 2024 at 09:17:45PM +0000, Robin Murphy wrote:
-> The hilarious amount of work that iommu_dma_map_sg() does is pretty much 
-> entirely for the benefit of v4l2 and dma-buf importers who *depend* on 
-> being able to linearise a scatterlist in DMA address space. TBH I doubt 
-> there are many actual scatter-gather-capable devices with significant 
-> enough limitations to meaningfully benefit from DMA segment combining these 
-> days - I've often thought that by now it might be a good idea to turn that 
-> behaviour off by default and add an attribute for callers to explicitly 
-> request it.
+On 2024-11-04 8:21 am, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The hns3 driver started filling iommu_iotlb_gather structures itself,
+> which requires CONFIG_IOMMU_SUPPORT is enabled:
+> 
+> drivers/net/ethernet/hisilicon/hns3/hns3_enet.c: In function 'hns3_dma_map_sync':
+> drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:395:14: error: 'struct iommu_iotlb_gather' has no member named 'start'
+>    395 |  iotlb_gather.start = iova;
+>        |              ^
+> drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:396:14: error: 'struct iommu_iotlb_gather' has no member named 'end'
+>    396 |  iotlb_gather.end = iova + granule - 1;
+>        |              ^
+> drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:397:14: error: 'struct iommu_iotlb_gather' has no member named 'pgsize'
+>    397 |  iotlb_gather.pgsize = granule;
+>        |              ^
+> 
+> Add a Kconfig dependency to make it build in random configurations.
+> 
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Joerg Roedel <jroedel@suse.de>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: iommu@lists.linux.dev
+> Fixes: f2c14899caba ("net: hns3: add sync command to sync io-pgtable")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> I noticed that no other driver does this, so it would be good to
+> have a confirmation from the iommu maintainers that this is how
+> the interface and the dependency is intended to be used.
 
-Even when devices are not limited they often perform significantly better
-when IOVA space is not completely fragmented.  While the dma_map_sg code
-is a bit gross due to the fact that it has to deal with unaligned segments,
-the coalescing itself often is a big win.
+WTF is that patch doing!? No, random device drivers should absolutely 
+not be poking into IOMMU driver internals, this is egregiously wrong and 
+the correct action is to drop it entirely.
 
-Note that dma_map_sg also has two other very useful features:  batching
-of the iotlb flushing, and support for P2P, which to be efficient also
-requires batching the lookups.
+Thanks,
+Robin.
 
->> This uniqueness has been a long standing pain point as the scatterlist API
->> is mandatory, but expensive to use.
->
-> Huh? When and where has anything ever called it mandatory? Nobody's getting 
-> sent to DMA jail for open-coding:
-
-You don't get sent to jail.  But you do not get batched iotlb sync, you
-don't get properly working P2P, and you don't get IOVA coalescing.
-
->> Several approaches have been explored to expand the DMA API with additional
->> scatterlist-like structures (BIO, rlist), instead split up the DMA API
->> to allow callers to bring their own data structure.
->
-> And this line of reasoning is still "2 + 2 = Thursday" - what is to say 
-> those two notions in any way related? We literally already have one generic 
-> DMA operation which doesn't operate on struct page, yet needed nothing 
-> "split up" to be possible.
-
-Yeah, I don't really get the struct page argument.  In fact if we look
-at the nitty-gritty details of dma_map_page it doesn't really need a
-page at all.  I've been looking at cleaning some of this up and providing
-a dma_map_phys/paddr which would be quite handy in a few places.  Note
-because we don't have a struct page for the memory, but because converting
-to/from it all the time is not very efficient.
-
->>   2. VFIO PCI live migration code is building a very large "page list"
->>      for the device. Instead of allocating a scatter list entry per allocated
->>      page it can just allocate an array of 'struct page *', saving a large
->>      amount of memory.
->
-> VFIO already assumes a coherent device with (realistically) an IOMMU which 
-> it explicitly manages - why is it even pretending to need a generic DMA 
-> API?
-
-AFAIK that does isn't really vfio as we know it but the control device
-for live migration.  But Leon or Jason might fill in more.
-
-The point is that quite a few devices have these page list based APIs
-(RDMA where mlx5 comes from, NVMe with PRPs, AHCI, GPUs).
-
->
->>   3. NVMe PCI demonstrates how a BIO can be converted to a HW scatter
->>      list without having to allocate then populate an intermediate SG table.
->
-> As above, given that a bio_vec still deals in struct pages, that could 
-> seemingly already be done by just mapping the pages, so how is it proving 
-> any benefit of a fragile new interface?
-
-Because we only need to preallocate the tiny constant sized dma_iova_state
-as part of the request instead of an additional scatterlist that requires
-sizeof(struct page *) + sizeof(dma_addr_t) + 3 * sizeof(unsigned int)
-per segment, including a memory allocation per I/O for that.
-
-> My big concern here is that a thin and vaguely-defined wrapper around the 
-> IOMMU API is itself a step which smells strongly of "abuse and design 
-> mistake", given that the basic notion of allocating DMA addresses in 
-> advance clearly cannot generalise. Thus it really demands some considered 
-> justification beyond "We must do something; This is something; Therefore we 
-> must do this." to be convincing.
-
-At least for the block code we have a nice little core wrapper that is
-very easy to use, and provides a great reduction of memory use and
-allocations.  The HMM use case I'll let others talk about.
+> ---
+>   drivers/net/ethernet/hisilicon/Kconfig | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/hisilicon/Kconfig b/drivers/net/ethernet/hisilicon/Kconfig
+> index 65302c41bfb1..790efc8d2de6 100644
+> --- a/drivers/net/ethernet/hisilicon/Kconfig
+> +++ b/drivers/net/ethernet/hisilicon/Kconfig
+> @@ -91,6 +91,7 @@ config HNS_ENET
+>   config HNS3
+>   	tristate "Hisilicon Network Subsystem Support HNS3 (Framework)"
+>   	depends on PCI
+> +	depends on IOMMU_SUPPORT
+>   	select NET_DEVLINK
+>   	select PAGE_POOL
+>   	help
 
