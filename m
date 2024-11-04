@@ -1,214 +1,120 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D8221B3936
-	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 11:35:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC3C185B4D;
+	Mon,  4 Nov 2024 11:39:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730720138; cv=none; b=ZZEK6JpdYs/DT6FvhEQ9wqW/f35PtftXDJXNPquKteQwLXQfJPj+G0kCjxwaOvB5IDCpTr1oT/y6TzaxSMjW0qZQNud6NKOfGRhsjGX3kYiDkV/WA9ckCjr6KbBdzHWe+oNe/Ov5FU608syAtY27Ge6zY1+BOwlXho30xNEaOww=
+	t=1730720369; cv=none; b=IfXP4NHpuW3B2eJ8lYZxrEY/8SzRa3zN2jfDv3NV5EdzB52FMbbfKFGNZpEaRqTIpG5Y3BpEL+q0GUrFDjGjSwAF8xxhC1Z8wayKx2J7akm4FRT1EJ6ljZ3kk05q0b2Z9nSGrWkjrB7cL/QoOlVXMIPGp3NryKVAO1tY2qkSiRo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730720138; c=relaxed/simple;
-	bh=Fw3Ths9vDwnK8u5nmacNwwahWbw6A4tR5lr9+d5obaU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pImP1WeXYU3Y/G3YRxmfqT+0nWGfiCgVL9JppYewLinH7Rz5bEhjJ/WKE+ZtgNE+mDeZZ7ZW422mIbtuPJFaSqxs+fl7qkZd0tTS8WhbVisO3JIbwcIYuoAGGIz+MlI6z1RHoL/z88vDHJZxJbJY+nYmmBrAuMhlhSUIXM3EoIU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1DC0FFEC;
-	Mon,  4 Nov 2024 03:36:03 -0800 (PST)
-Received: from [10.57.88.110] (unknown [10.57.88.110])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B01A03F66E;
-	Mon,  4 Nov 2024 03:35:31 -0800 (PST)
-Message-ID: <8c2b95e0-ff3b-4b9b-b9de-76df933ffd88@arm.com>
-Date: Mon, 4 Nov 2024 11:35:29 +0000
+	s=arc-20240116; t=1730720369; c=relaxed/simple;
+	bh=NEDVbMitndD/iK6JWHs2o1S6pn7h57zEQ83wRjOGbwM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=T4X21Z2//bEFcE/Mnm7SRAEbSe2Hv30g+1ieVBA2BegoCMvZRAoZOdSYFpbC4l5dWo/3l6/XioIhCYr0byPK6IIo/c0GUEkwnb/QtZ52vhrykbqbJ639Y5Z0Py3PptiFz59LSlKcCL2rXk+pa2DGBNiLTqUUqvjENG+VpJVB3hU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FCNZl80y; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FCNZl80y"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E43EC4CECE;
+	Mon,  4 Nov 2024 11:39:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1730720366;
+	bh=NEDVbMitndD/iK6JWHs2o1S6pn7h57zEQ83wRjOGbwM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FCNZl80yEk5l8SaYaoCBd/ngvAnMVCC2ZjSDbwZfQ8mrGoQAQHq0KZ0YySad2w6iD
+	 bhKUdk2VJPuLxk2n0zNkeYqVTjWimCe0KY+EoWT4fqvV1+YLhQUvABpjnzxQEgdqFM
+	 2BpPxg0LwBCTYbhkxkUYZgp3KkOsOZRDo+BKC3lH3JeAsOEk2fzj8ARLQQ14RhFnrX
+	 uXWBkNGPfoaMl6N4kDz6OiMk0Mf/BwrYcYvvPP+t71xWn1ZjQA3Q6lgcGNVObYG5Gq
+	 GbS2qup3wwHfcN9yIP+AIN4pioJI5Luew6aYTY7gCJ1DnGQC9xzlf55e02PVxyG0ae
+	 QwBznLzmgrROQ==
+Date: Mon, 4 Nov 2024 13:39:20 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, Jens Axboe <axboe@kernel.dk>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v1 00/17] Provide a new two step DMA mapping API
+Message-ID: <20241104113920.GD99170@unreal>
+References: <cover.1730298502.git.leon@kernel.org>
+ <3567312e-5942-4037-93dc-587f25f0778c@arm.com>
+ <20241104095831.GA28751@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] kmemleak: iommu/iova: Fix transient kmemleak false
- positive
-To: Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
- linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org, Ido Schimmel <idosch@idosch.org>,
- Ido Schimmel <idosch@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
-References: <20241104111944.2207155-1-catalin.marinas@arm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20241104111944.2207155-1-catalin.marinas@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241104095831.GA28751@lst.de>
 
-On 2024-11-04 11:19 am, Catalin Marinas wrote:
-> The introduction of iova_depot_pop() in 911aa1245da8 ("iommu/iova: Make
-> the rcache depot scale better") confused kmemleak by moving a struct
-> iova_magazine object from a singly linked list to rcache->depot and
-> resetting the 'next' pointer referencing it. Unlike doubly linked lists,
-> the content of the object being referred is never changed on removal
-> from a singly linked list and the kmemleak checksum heuristics do not
-> detect such scenario. This leads to false positives like:
-> 
-> unreferenced object 0xffff8881a5301000 (size 1024):
->    comm "softirq", pid 0, jiffies 4306297099 (age 462.991s)
->    hex dump (first 32 bytes):
->      00 00 00 00 00 00 00 00 e7 7d 05 00 00 00 00 00  .........}......
->      0f b4 05 00 00 00 00 00 b4 96 05 00 00 00 00 00  ................
->    backtrace:
->      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
-> 
-> Introduce kmemleak_transient_leak() which resets the object checksum
-> requiring another scan pass before it is reported (if still
-> unreferenced). Call this new API in iova_depot_pop().
+On Mon, Nov 04, 2024 at 10:58:31AM +0100, Christoph Hellwig wrote:
+> On Thu, Oct 31, 2024 at 09:17:45PM +0000, Robin Murphy wrote:
 
-Acked-by: Robin Murphy <robin.murphy@arm.com>
+<...>
 
-> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> Reported-by: Ido Schimmel <idosch@idosch.org>
-> Tested-by: Ido Schimmel <idosch@nvidia.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Link: https://lore.kernel.org/r/ZY1osaGLyT-sdKE8@shredder/
-> ---
+> >>   2. VFIO PCI live migration code is building a very large "page list"
+> >>      for the device. Instead of allocating a scatter list entry per allocated
+> >>      page it can just allocate an array of 'struct page *', saving a large
+> >>      amount of memory.
+> >
+> > VFIO already assumes a coherent device with (realistically) an IOMMU which 
+> > it explicitly manages - why is it even pretending to need a generic DMA 
+> > API?
 > 
-> This could be two patches but I thought the rationale for a new kmemleak
-> API goes better with its use in the iova code. Happy to move the 6 lines
-> iova change to a separate patch but they should still go in together.
-> Given that there are more line under mm/, I'd say it better goes in via
-> the mm tree with the relevant acks from the iommu folk.
-> 
-> Thanks.
-> 
->   Documentation/dev-tools/kmemleak.rst |  1 +
->   drivers/iommu/iova.c                 |  6 +++++
->   include/linux/kmemleak.h             |  4 +++
->   mm/kmemleak.c                        | 39 ++++++++++++++++++++++++++++
->   4 files changed, 50 insertions(+)
-> 
-> diff --git a/Documentation/dev-tools/kmemleak.rst b/Documentation/dev-tools/kmemleak.rst
-> index 2cb00b53339f..7d784e03f3f9 100644
-> --- a/Documentation/dev-tools/kmemleak.rst
-> +++ b/Documentation/dev-tools/kmemleak.rst
-> @@ -161,6 +161,7 @@ See the include/linux/kmemleak.h header for the functions prototype.
->   - ``kmemleak_free_percpu``	 - notify of a percpu memory block freeing
->   - ``kmemleak_update_trace``	 - update object allocation stack trace
->   - ``kmemleak_not_leak``	 - mark an object as not a leak
-> +- ``kmemleak_transient_leak``	 - mark an object as a transient leak
->   - ``kmemleak_ignore``		 - do not scan or report an object as leak
->   - ``kmemleak_scan_area``	 - add scan areas inside a memory block
->   - ``kmemleak_no_scan``	 - do not scan a memory block
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 16c6adff3eb7..5b5400efb657 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -6,6 +6,7 @@
->    */
->   
->   #include <linux/iova.h>
-> +#include <linux/kmemleak.h>
->   #include <linux/module.h>
->   #include <linux/slab.h>
->   #include <linux/smp.h>
-> @@ -673,6 +674,11 @@ static struct iova_magazine *iova_depot_pop(struct iova_rcache *rcache)
->   {
->   	struct iova_magazine *mag = rcache->depot;
->   
-> +	/*
-> +	 * As the mag->next pointer is moved to rcache->depot and reset via
-> +	 * the mag->size assignment, mark it as a transient false positive.
-> +	 */
-> +	kmemleak_transient_leak(mag->next);
->   	rcache->depot = mag->next;
->   	mag->size = IOVA_MAG_SIZE;
->   	rcache->depot_size--;
-> diff --git a/include/linux/kmemleak.h b/include/linux/kmemleak.h
-> index 6a3cd1bf4680..93a73c076d16 100644
-> --- a/include/linux/kmemleak.h
-> +++ b/include/linux/kmemleak.h
-> @@ -26,6 +26,7 @@ extern void kmemleak_free_part(const void *ptr, size_t size) __ref;
->   extern void kmemleak_free_percpu(const void __percpu *ptr) __ref;
->   extern void kmemleak_update_trace(const void *ptr) __ref;
->   extern void kmemleak_not_leak(const void *ptr) __ref;
-> +extern void kmemleak_transient_leak(const void *ptr) __ref;
->   extern void kmemleak_ignore(const void *ptr) __ref;
->   extern void kmemleak_scan_area(const void *ptr, size_t size, gfp_t gfp) __ref;
->   extern void kmemleak_no_scan(const void *ptr) __ref;
-> @@ -93,6 +94,9 @@ static inline void kmemleak_update_trace(const void *ptr)
->   static inline void kmemleak_not_leak(const void *ptr)
->   {
->   }
-> +static inline void kmemleak_transient_leak(const void *ptr)
-> +{
-> +}
->   static inline void kmemleak_ignore(const void *ptr)
->   {
->   }
-> diff --git a/mm/kmemleak.c b/mm/kmemleak.c
-> index 0400f5e8ac60..72e09ac9140b 100644
-> --- a/mm/kmemleak.c
-> +++ b/mm/kmemleak.c
-> @@ -934,6 +934,28 @@ static void make_black_object(unsigned long ptr, unsigned int objflags)
->   	paint_ptr(ptr, KMEMLEAK_BLACK, objflags);
->   }
->   
-> +/*
-> + * Reset the checksum of an object. The immediate effect is that it will not
-> + * be reported as a leak during the next scan until its checksum is updated.
-> + */
-> +static void reset_checksum(unsigned long ptr)
-> +{
-> +	unsigned long flags;
-> +	struct kmemleak_object *object;
-> +
-> +	object = find_and_get_object(ptr, 0);
-> +	if (!object) {
-> +		kmemleak_warn("Not resetting the checksum of an unknown object at 0x%08lx\n",
-> +			      ptr);
-> +		return;
-> +	}
-> +
-> +	raw_spin_lock_irqsave(&object->lock, flags);
-> +	object->checksum = 0;
-> +	raw_spin_unlock_irqrestore(&object->lock, flags);
-> +	put_object(object);
-> +}
-> +
->   /*
->    * Add a scanning area to the object. If at least one such area is added,
->    * kmemleak will only scan these ranges rather than the whole memory block.
-> @@ -1202,6 +1224,23 @@ void __ref kmemleak_not_leak(const void *ptr)
->   }
->   EXPORT_SYMBOL(kmemleak_not_leak);
->   
-> +/**
-> + * kmemleak_transient_leak - mark an allocated object as transient false positive
-> + * @ptr:	pointer to beginning of the object
-> + *
-> + * Calling this function on an object will cause the memory block to not be
-> + * reported as a leak temporarily. This may happen, for example, if the object
-> + * is part of a singly linked list and the ->next reference to it is changed.
-> + */
-> +void __ref kmemleak_transient_leak(const void *ptr)
-> +{
-> +	pr_debug("%s(0x%px)\n", __func__, ptr);
-> +
-> +	if (kmemleak_enabled && ptr && !IS_ERR(ptr))
-> +		reset_checksum((unsigned long)ptr);
-> +}
-> +EXPORT_SYMBOL(kmemleak_transient_leak);
-> +
->   /**
->    * kmemleak_ignore - ignore an allocated object
->    * @ptr:	pointer to beginning of the object
+> AFAIK that does isn't really vfio as we know it but the control device
+> for live migration.  But Leon or Jason might fill in more.
 
+Yes, you are right, as it is written above "VFIO PCI live migration ...".
+That piece of code directly connected to the underlying real HW device
+and uses DMA API to provide live migration functionality to/from that
+device.
+
+> 
+> The point is that quite a few devices have these page list based APIs
+> (RDMA where mlx5 comes from, NVMe with PRPs, AHCI, GPUs).
+> 
+> >
+> >>   3. NVMe PCI demonstrates how a BIO can be converted to a HW scatter
+> >>      list without having to allocate then populate an intermediate SG table.
+> >
+> > As above, given that a bio_vec still deals in struct pages, that could 
+> > seemingly already be done by just mapping the pages, so how is it proving 
+> > any benefit of a fragile new interface?
+> 
+> Because we only need to preallocate the tiny constant sized dma_iova_state
+> as part of the request instead of an additional scatterlist that requires
+> sizeof(struct page *) + sizeof(dma_addr_t) + 3 * sizeof(unsigned int)
+> per segment, including a memory allocation per I/O for that.
+> 
+> > My big concern here is that a thin and vaguely-defined wrapper around the 
+> > IOMMU API is itself a step which smells strongly of "abuse and design 
+> > mistake", given that the basic notion of allocating DMA addresses in 
+> > advance clearly cannot generalise. Thus it really demands some considered 
+> > justification beyond "We must do something; This is something; Therefore we 
+> > must do this." to be convincing.
+> 
+> At least for the block code we have a nice little core wrapper that is
+> very easy to use, and provides a great reduction of memory use and
+> allocations.  The HMM use case I'll let others talk about.
+
+I'm not sure about which wrappers Robin talks, but if we are talking
+about HMM wrappers, they gave us perfect combination of usability,
+performance and maintenance. All HMM users use same pattern, same
+structures and don't need to worry about internal DMA/IOMMU details.
+
+Thanks
