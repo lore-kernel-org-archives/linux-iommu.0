@@ -1,273 +1,186 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2074.outbound.protection.outlook.com [40.107.236.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEBD41CD02;
-	Mon,  4 Nov 2024 17:43:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.74
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730742189; cv=fail; b=NE4kvFBTBwvUIHqifhxc46AR29hUwno8CE3whZbjNd+Ep54IPccW/MU67eB/O3QWKekxg2QKVHvJToMxdhseROMd+bxHGiAOPtljpjmpEwja8s+ukvLbV8vlDAr6TrttB7X7KbRY14XvEq0iVExps/bNr/eMnLMQxioYNsMNZRo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730742189; c=relaxed/simple;
-	bh=GwkaUQjJGPNEOER9MvKy63630401Jz26lOmW9bzfI34=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=JPv8TRcdx9DfDbDZLAu98UH4Ff/AKOvvJdDaLIFcZXYYaZxr1YMhgOXRSPQhZMJXPAlNDu/wllQd7EIgAUiptWucMtzHZ8GkNNByr30q9Ocl7Ldm6qtOUq84uJSl/nlcqtoDrIxZgATq94il135He7VKFENwCCUthJ9Q1HDbbjA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Xq8tv1tB; arc=fail smtp.client-ip=40.107.236.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E436C1C8773
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 18:16:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730744219; cv=none; b=QYF9P0v7P5S6ryBxt6eKZMPXEM8FIsdnRRrzqBpJCooWge+gWi3aTTyJWO+mIa1UbwaRV7/3yAndpmmkTb9zVrs92UqkueD3Whr4vsgc26rw9qu0Q7kXCVoFXs5/jZYWwTArWHqpfDpARR9J6LS6faMXvv/7RZZYLhXCEbo0PTk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730744219; c=relaxed/simple;
+	bh=aEX9Iu2DdJjiZmq983HwIwVg7yEpc/Ypoy2TwUzFRDM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QDI0QqomNr3oRnVkmSVT+TGhT81M/OKq+g/bvRzjDoPVMngQu9ZEQA8MWTkqUsflRSQm3W6o8/y4/vvVxb1AEWNUpDUf8GF9SUeifi5S4chFBOrX5do2VSdCvTWdlDwz3MjmwfORXK9pVs5FUPd0pBPvUXWzpXzAhetJT1sUFcM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cynxltyV; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Xq8tv1tB"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=zRkf32p6YQIi9Vq1cjDbQZMtZNUT+myoXUry1dVlx7Zd7aNr/4JkCk42tjQZqYUHzHteTl0kgSUDhvbf2V2ilzlv7uUK+47TGJz/D3Jk7NCYsJ5QxvUCudYabNtJ+OuXByct0RGBsuPy5F1dBJx3KO+cYEvt/i5EQA6n5rQOLcC7VJnFKtZ4e8ovUtcbZWQGyNK9t5yHHMXaWuzsn6c/H74O2JjAO3VjRxVoFyBCqspVPKzQE3lEZW5GNuGKunddNSvwHDrfa2RNxD95oDJkCojozvrDpKE0WDdJkpy6vwDznlqADqJvaGy+S8cpREFXZSH5jBYmodSMdy8CpxINKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N4lP75VHOZXzY4aLyenhJUvf9MzNwBiTzNXMKjL0i7Q=;
- b=YLEXmPQ++xEIHHfVwB/AtMIVHykqpZ9l5xPmetZs6QV0z23R8TVoaUIlXy1q7u0eTGJiOyFXxvZQ49B4Ujiupd6/juGm1+AMxg6m2+Bp2o59bB3R2clPIsX//SKlXqtbT7Vw+N8cMh5aaGA6f1s5n0et7vbJ5Ht9eEUEaoxI+86GRLEfLPOa4RlvWi03qI5lA3JXKwnimLquWktR1f9CDPWBLD8xCFl/dXBRChHYLXls6+boYBUs9frQ8z/fRKUD1IXCNjXhga3bFnW0sXFzpK7R++0tIeAexyFKmPGTanFRsWWnPFVHQIJPbfuok3etqAkHiSL1+laJfW17uBEF0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N4lP75VHOZXzY4aLyenhJUvf9MzNwBiTzNXMKjL0i7Q=;
- b=Xq8tv1tBRt8ylch8HmhhHGlXVZgC4GlsTZV8jN2dmCvLCkUmrju/we1o7IHPikeAPti/17GeLq4rrmwN7G3Vzj1K8x+ljllefRa2xs7BzQ4FKWAJITFpl7bnIC5cDZ+3HYhoYMFIJcW6zHJl8yKXsJFBSaWIA/jiWRfw9UJwqc4ArhDtKzSmSwZLkMMOWdt18Psr5d+RpJuD8ye8cR3WQNEI4zgLcTPVRDdwhkdZmU7ujQqcH4IoC/JvV75wu/Tr0PQkHqE5vv6iWPWjBGrWWhlsnEh1teFyiUweZovIX7DZCmrYvwi/1CuRiUQnjFDxbwl3jrF07GeehF/Ec2AKig==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by IA1PR12MB6578.namprd12.prod.outlook.com (2603:10b6:208:3a2::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.30; Mon, 4 Nov
- 2024 17:42:05 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8114.015; Mon, 4 Nov 2024
- 17:42:05 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cynxltyV"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-20c8ac50b79so38265ad.0
+        for <iommu@lists.linux.dev>; Mon, 04 Nov 2024 10:16:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1730744217; x=1731349017; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=znyLSus/k5Aefu/8ocVhsdcXS5KYGUjWWkyPgFuNIDs=;
+        b=cynxltyVEXXmcQ8feR6H8x2XEV/C8rVOEZFf1AfBs8n3ByL9xK8wbZPgg/vI7owZjq
+         r8WHssmEyU0/YV0QiT/UuktwhLrWOg510BN6WhKJvkvRdc+wQ4JjF7JF1KnFetInBI8h
+         ckeB6f6Kizvln9iE89MBrFyXmjsTZD85q0uL3VGApheG7ll3WL3xkVGRE79q2RMOj1XA
+         uhaf97dFdw4zNlMdN3LIaASfnKa7Bd7BTYudUmKo1qNnUwOloIXV/Te/hoaIi3pH9DRO
+         /IGw9Udd3n5OQYo1OkQ2yeH4ciT3vRTt70/GtMSQBkDDiWKvvFijXzFXZvEXax5UUhtB
+         hmbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730744217; x=1731349017;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=znyLSus/k5Aefu/8ocVhsdcXS5KYGUjWWkyPgFuNIDs=;
+        b=WWl9m4OMCY7XsMbWRqps7q9N6fnoOmhhd57FozU7MuTF1HsjdZajjrTFMCDrsHJGJC
+         /xnX5iJV1tDL8JtgIbLjxJeVtb1g5fbxZFelhljMKQT48I80J8fZzUivNiHmBzgPBzYj
+         jJVyZEZvXQwUbxrylgP0azUtDT2yN4m7b5Hp8JIKC1YaejaAsrxwCB8J81N4ljumwjC6
+         wjBDD1JMIFkfZhM+KEtH7dwdcD7srTbohMSTVCnLM0gWWBxnpeQyqlVsVGZp4eZ3uzQY
+         SurTEzuNwmdnwFJZIJriIGaivYKbCUrm6bLeCNGvZ/k04neClJ8fxvh/NEUfKZ+L/+JU
+         Wu2g==
+X-Forwarded-Encrypted: i=1; AJvYcCXo5RH1LMz3rYESewtwSnTpya4tOW6yNbS5W5cbfDHzqsL+DsnwObTimaKJ7O316zF25f59+Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz8v+8+1L53cu94aFf7cGh/hgphrGr570IRt+NZJ3j/6tJTXTGz
+	4r1Wr3ajudYZcpWp6oecXD4D9EoQsdLeDgAEs/UneZPyLgRiX/hbeHagpaQ2ag==
+X-Gm-Gg: ASbGncu9ou0QSeq11wbI0cvAmSdhelFFaqeMS0sfQ/SV4EScvL6DnII+d09UQfg6VbY
+	erchPHf93JXvx6um6TQdAABbz0MYedeXcBHUr52Mu8OCEz0WGxcDmqw6OQTEBkc2497tBcytQGY
+	Q2yilkS3fvLt+pxHEvYOx8SxJl0Q6yCQuIkXNRorE0wvq3XuZ6FlvL7578JCyWwGP0hTpAOmefJ
+	TeyO/tQ3cdqOYGIDuHy60Yqg19rDUg2uwaTbS7BkDMh9vcvbzp0UN5DwQbQkNWKvI/1VEqo4PYz
+	Zl/CwzU3qpc=
+X-Google-Smtp-Source: AGHT+IG3lvxhqeU5NQoIV693sptWY17DuxmthBKtpR0/yKhINIVjMqgDwkt9ti/ajyBkBH1laU/v8A==
+X-Received: by 2002:a17:902:c40c:b0:206:b7b2:4876 with SMTP id d9443c01a7336-211327ab5d1mr5717115ad.20.1730744216850;
+        Mon, 04 Nov 2024 10:16:56 -0800 (PST)
+Received: from google.com (146.254.240.35.bc.googleusercontent.com. [35.240.254.146])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-211057cf273sm63173085ad.239.2024.11.04.10.16.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Nov 2024 10:16:56 -0800 (PST)
+Date: Mon, 4 Nov 2024 18:16:48 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Daniel Mentz <danielmentz@google.com>
+Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>
-Cc: Boris Brezillon <boris.brezillon@collabora.com>,
-	dri-devel@lists.freedesktop.org,
-	Liviu Dudau <liviu.dudau@arm.com>,
-	patches@lists.linux.dev,
-	Steven Price <steven.price@arm.com>
-Subject: [PATCH v2 1/3] iommu/io-pgtable-arm: Remove split on unmap behavior
-Date: Mon,  4 Nov 2024 13:41:29 -0400
-Message-ID: <1-v2-fd55d00a60b2+c69-arm_no_split_jgg@nvidia.com>
-In-Reply-To: <0-v2-fd55d00a60b2+c69-arm_no_split_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0421.namprd13.prod.outlook.com
- (2603:10b6:208:2c3::6) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	Mostafa Saleh <smostafa@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v4 1/3] iommu/arm-smmu-v3: Introduce struct arm_smmu_event
+Message-ID: <ZykPkEuv70SXKiT-@google.com>
+References: <20241018180022.807928-1-praan@google.com>
+ <20241018180022.807928-2-praan@google.com>
+ <20241024131147.GG30704@willie-the-truck>
+ <Zxp9kHerb-ln4ioO@google.com>
+ <CAE2F3rAtg_dE2NpFM-xB8fs3W+_7tANnBdA00SVfKgk-y6X5Gg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|IA1PR12MB6578:EE_
-X-MS-Office365-Filtering-Correlation-Id: bfe5103c-2591-4b95-ba13-08dcfcf7ebdd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?SftlwhmoIMuEnxWlCfXTUSeVn+Fw9TYoScnZysJ0IZix5cpHIras7WjLkdKj?=
- =?us-ascii?Q?7nV7WX9RXMvbTtkXC2wJkEFFwKkNxqYFfuWG25kJRqFxYegYtXL696SFxiMN?=
- =?us-ascii?Q?YJAsu1C2ypb3b+XvSSSlXO1Cl3rCbObUW/Ooo+w8EYH4XnLcJC+HtuZmGehG?=
- =?us-ascii?Q?YuPqGovpwjjBz8HX5jMzzAgE/uBBgnBvMGrNSMMyaKNruIMgQVPCB12zCzzJ?=
- =?us-ascii?Q?UUcLpVA4sXnwGngXKFMR5mg2nwOr49Esq2x6zjRngwkly1TM1wEO0oakZlGS?=
- =?us-ascii?Q?Ygi2CJdTabFYNC16q8kfnRaSbTyIVJx7t1endXnYQ2kgGVffd2JPG4XrXOXc?=
- =?us-ascii?Q?FsUn2vswPdZgW01FfXViI0OUpdp+M7sBrw1ZIgT7XxMSQ3nLB1GRstKYOviU?=
- =?us-ascii?Q?PG4MxfGRPzatb5N7l5qfm23UnBB+qfB6RfjEyw9Wb4hqmJJBTxoyrvDe+6u9?=
- =?us-ascii?Q?wZOhwBCv7PD7lOcg69awkYMgQoncA8NPEywK8Xw0sk9cLmDYZ4k3f8Q3w8H2?=
- =?us-ascii?Q?63S5F6Zyw3xzdbNnnfVPriSZeGUAEvZLhRXqvrSIDsXb41jsLH7tLOE6edUi?=
- =?us-ascii?Q?rLwY0UAJInZSilZi45hpUNf3FECxbQ30wKVUcYlgCC0AUe6VwHdnKjSBtLn7?=
- =?us-ascii?Q?Sfo42SJ+YgrhV7XPPR+Wsiif9g+WYQN+wej1fHif2ARFuKh9x2IP9Ql2d1AE?=
- =?us-ascii?Q?jPjwSUuXs6sSshkWVHoz3I0edBTxngyNR8FjHoUT7u5h+lnjEcV1zeZUq974?=
- =?us-ascii?Q?gniLmDJOtf1fjJFHQ4kxGcfTcerRrCpLpLQabqzV89Em/1yT/HOxxe5Zcgwc?=
- =?us-ascii?Q?T8hqdj4bxn9nryOFGEzui3c/da9n/O1bJW1F+Umm9e8oQTGUb7C8lGBK/JR9?=
- =?us-ascii?Q?92Yqh9IMln1H2XrYWRI31TLqQN3C4deJAD2zOFM0C1RZLkkMMycym8JEGJ/1?=
- =?us-ascii?Q?hrC5xA5hCckG4G3lgFWgNWbTKed3Y1fZ5y9ccxpSJMK/mpf0BDSari19r+ql?=
- =?us-ascii?Q?jU7JlYeoDbyzxt3QS5W1vD81459N9qCAYCoP2vG2X6+H5a9swY3zY2nBW1jU?=
- =?us-ascii?Q?qYT4inBLQ+PRDUidiOS5Cib07KnNigX+/CFnmV+ZWKmTxca7dDoxOuwfRu+0?=
- =?us-ascii?Q?f8slQHobr5qDLCZ+ZHAJJ8U1ikWA0GwDBtIJgF3QQhCUZBygHHf+N/VhpUHg?=
- =?us-ascii?Q?pG0HFPeDOfRj3c4YUOI+Chl8u1uKHIiDFvMdGgaut5QAFRJHhVydjhjOHVNk?=
- =?us-ascii?Q?w55jpdEHDnjufvIz4sQkPnt5L894YOQVsg08cb6vfpEdA02t8xzunt9mG87D?=
- =?us-ascii?Q?tL1ZQVq7f9UkfMZnXPfYNiVu?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?2/nGNQMMi5ES6gZgYHyS8QysWF5rwEe7CyNBPgtHtECQLos6tWhJcpb/xoYC?=
- =?us-ascii?Q?fves81txyYBYVaGE3OqUUsFO6rXK4AALpr0x5NLARN/3X3sdn8gzUesWl4I0?=
- =?us-ascii?Q?hPT2IjRoQoXxRdGmab6WK+1cj/zSc47islZalM5yeDUTnwcotB7IW1F07nlK?=
- =?us-ascii?Q?O4343QjR4p8yAYED0/dpetadZFBxSKg6Eoi3hIqGXGeSZkOWZT1yiozpz+ov?=
- =?us-ascii?Q?PLer8hcsHb08bPFCFGBMgcHqCptnCpinCMOEMvq0tix4WD7Zm4oEMYvS/9+9?=
- =?us-ascii?Q?SOZCJZg6qtLZQhru2SRKAv19gW0x+CRT0mGLBV2hNijeHCYgHQkasoE1L9WN?=
- =?us-ascii?Q?3jpX9PN55SkoQLhNbVDlt9bmdLzW4Xm/jXkkOWOMwlnxxTuH9cmdJMOG39Y/?=
- =?us-ascii?Q?589ezQuQMsWDZ7fy4GILOYKveQTeWJ9v2XT1R7W9IRrOG1CnB1u7ox6P38Ec?=
- =?us-ascii?Q?trcHThvjUUvxjmKMKTtkiLEDM2Jyl1rjWrSRiUt/X+bWJVsn9j7tGC/jWhUD?=
- =?us-ascii?Q?vYcbFU52TTPgaqEVEVQ+v/vTb0LvsFAnsdkULwoaL6rPxInk1+jErXZ+ra9+?=
- =?us-ascii?Q?Ckd2h/R0ZVSIAn1M+j0eHkTCGbzixYAYETDOHPubiJxBYSQDYrlM3X4B4XO1?=
- =?us-ascii?Q?kAjT3WyuuY+hKnceWt3z+SDcMegr266OIPaOhR4rrYyCEbSr8mWXDwmbVDQK?=
- =?us-ascii?Q?/9nWUpjUys1w0DOrynGuH7gWA/ad/PMEVHEHU7vEj4iQosxWsyW3cDGmj1Wc?=
- =?us-ascii?Q?8wrSkGXQo6zqyJ89rzdlL6NXF9+R2cqqmVI7XYc+3F44aqs5tAl6hu4/XdLR?=
- =?us-ascii?Q?esg/kxrQEarkD8J9udDLWd+Dz1v/SZXNvJVjSx7pAXm6OX7g60D9fOIWlob/?=
- =?us-ascii?Q?gnMLzs8lGiyaOBQ41lJK9d8m6g6nCt5JKG/zuHleWRKgvUSA0tYCRl3K0nvs?=
- =?us-ascii?Q?a/XDf/RfbBsTaKxNrKCnIIZdO3DW8FzI7VURY3aL26S1ek6adK7fPOR1P5yI?=
- =?us-ascii?Q?pHFA+W2JMOM93tktCy46nro3tX3NRVf5uRAAnfoAQXdto5GS90r7b7lBovWy?=
- =?us-ascii?Q?aDqaYcStVg5fYqgySs9Js3ddbkKosKu/S6O2hGssd+DMg2W0Fq2OT6ODGaFM?=
- =?us-ascii?Q?UBLFvwyC3RABTGh+N+cVUjV1GbFcK+L36/I4H4FFcNAUXdZXeMXfTtzoJvlK?=
- =?us-ascii?Q?GSKev+B7cg6CuNCmMwW4cqsYDJoyDxnUiRAPIovPJx44ySI7jBNjTyQCVjVD?=
- =?us-ascii?Q?B4W2ObXzXMNUQLUX24gdBYWkJnNOkvhCb5Nrw0f8CasIJZAFaZzKyRYgB/cB?=
- =?us-ascii?Q?s/oCJvd2eF0XXIyYJdwODOIUKmEF4q+3NJh1ErOKOPW+hkyJ1KN62HO5cko5?=
- =?us-ascii?Q?uWiKhlk57JSt4WIH7u2IQfdqaHR+NmX5qlaalAQQlO/rKNQ9/W2hfNrVNejX?=
- =?us-ascii?Q?SDmhAegCPdnIXV4spkO/UtQlqAhEiqHL6Mq6PmxVjUex73m2eXj+wcln1QOJ?=
- =?us-ascii?Q?lboq8jJzSul+mr7xAgL+vquU7UgYISoOAcw0y8KOBgIaXMjtRSC6IjiHY/4N?=
- =?us-ascii?Q?GYYeMvcEBCSQ6IOXOKE=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bfe5103c-2591-4b95-ba13-08dcfcf7ebdd
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Nov 2024 17:41:32.7086
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0fXtXv2oomVvB7GxYQYB2lcoK2cDDJSrUCXlY2xFvPYIvsHJyvbs//wIuaxUdeGf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6578
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE2F3rAtg_dE2NpFM-xB8fs3W+_7tANnBdA00SVfKgk-y6X5Gg@mail.gmail.com>
 
-A minority of page table implementations (arm_lpae, armv7) are unique in
-how they handle partial unmap of large IOPTEs.
+On Mon, Nov 04, 2024 at 09:23:31AM -0800, Daniel Mentz wrote:
+> On Thu, Oct 24, 2024 at 10:02 AM Pranjal Shrivastava <praan@google.com> wrote:
+> >
+> > On Thu, Oct 24, 2024 at 02:11:48PM +0100, Will Deacon wrote:
+> > > On Fri, Oct 18, 2024 at 06:00:20PM +0000, Pranjal Shrivastava wrote:
+> > > > +struct arm_smmu_event {
+> > > > +   struct arm_smmu_device          *smmu;
+> > > > +   u8                              id;
+> > > > +   u8                              class;
+> > > > +   u16                             stag;
+> > > > +   u32                             sid;
+> > > > +   u32                             ssid;
+> > > > +   u64                             iova;
+> > > > +   u64                             ipa;
+> > > > +   u64                             raw[EVTQ_ENT_DWORDS];
+> > > > +   bool                            stall;
+> > > > +   bool                            ssid_valid;
+> > > > +   bool                            privileged;
+> > > > +   bool                            instruction;
+> > > > +   bool                            s2;
+> > > > +   bool                            read;
+> > > > +};
+> > >
+> > > minor nit, but it might be worth seeing what pahole says about the
+> > > layout of this structure in case you've got a bunch of wasted padding
+> > > thanks to the mixed-size fields.
+> >
+> > I ran pahole with this, looks like there's only one 4-byte hole but the
+> > cacheline aligment is bad (for a 64-byte cacheline):
+> >
+> > struct arm_smmu_event {
+> >         const char  *              master_name;          /*     0     8 */
+> >         struct arm_smmu_device *   smmu;                 /*     8     8 */
+> >         struct device *            dev;                  /*    16     8 */
+> >         u8                         id;                   /*    24     1 */
+> >         u8                         class;                /*    25     1 */
+> >         u16                        stag;                 /*    26     2 */
+> >         u32                        sid;                  /*    28     4 */
+> >         u32                        ssid;                 /*    32     4 */
+> >
+> >         /* XXX 4 bytes hole, try to pack */
+> >
+> >         u64                        iova;                 /*    40     8 */
+> >         u64                        ipa;                  /*    48     8 */
+> >         u64                        raw[4];               /*    56    32 */
+> >         /* --- cacheline 1 boundary (64 bytes) was 24 bytes ago --- */
+> >         bool                       stall;                /*    88     1 */
+> >         bool                       ssid_valid;           /*    89     1 */
+> >         bool                       privileged;           /*    90     1 */
+> >         bool                       instruction;          /*    91     1 */
+> >         bool                       s2;                   /*    92     1 */
+> >         bool                       read;                 /*    93     1 */
+> >         bool                       ttrnw;                /*    94     1 */
+> >         bool                       ttrnw_valid;          /*    95     1 */
+> >
+> >         /* size: 96, cachelines: 2, members: 19 */
+> >         /* sum members: 92, holes: 1, sum holes: 4 */
+> >         /* last cacheline: 32 bytes */
+> > };
+> >
+> > I don't think we can do much about the 4-byte hole as the members occupy
+> > 92 bytes only. I assume a single 4-byte hole shall be fine?
+> >
+> > However, for cacheline aligment we can move the 3 top pointer-members,
+> > `master_name`,`smmu` & `dev` which improves the cacheline aligment:
+> 
+> Can you be more explicit about what is a good cacheline alignment? I'm
+> wondering if you're trying to ensure that raw[4] is contained within a
+> single cacheline as opposed to spanning two adjacent cachelines. I
 
-Other implementations will unmap the large IOPTE and return it's
-length. For example if a 2M IOPTE is present and the first 4K is requested
-to be unmapped then unmap will remove the whole 2M and report 2M as the
-result.
+I'm using a tool `pahole` [1] as suggested by Will earlier.
+The tool prints information about the layout of structures, checking for
+memory wastage due to padding and if the struct layout causes
+mis-alignment with the caches.
 
-arm_lpae instead replaces the IOPTE with a table of smaller IOPTEs, unmaps
-the 4K and returns 4k. This is actually an illegal/non-hitless operation
-on at least SMMUv3 because of the BBM level 0 rules.
+The tool printed, "cacheline 1 boundary (64 bytes) was 24 bytes ago"
+hinting that with the current layout, we are wasting 24-bytes of a
+cacheline.
 
-Will says this was done to support VFIO, but upon deeper analysis this was
-never strictly necessary:
+> doubt that this is worth optimizing for. Also, I'm wondering if this
+> analysis assumes that the base address of a struct arm_smmu_event
+> instance is cacheline aligned, which I am not sure is the case. I
+> would solely optimize for size.
 
- https://lore.kernel.org/all/20241024134411.GA6956@nvidia.com/
+You're right, the tool does assume that the struct begins at a cacheline
+I'm just sharing the analysis done by the tool to be able to finalize
+the layout of `struct arm_smmu_event`.
 
-In summary, historical VFIO supported the AMD behavior of unmapping the
-whole large IOPTE and returning the size, even if asked to unmap a
-portion. The driver would see this as a request to split a large IOPTE.
-Modern VFIO always unmaps entire large IOPTEs (except on AMD) and drivers
-don't see an IOPTE split.
+IMO, if we don't have a strong opinion about this, there's no harm in
+trying to layout the struct better even if it is a micro-optimization.
 
-Given it doesn't work fully correctly on SMMUv3 and relying on ARM unique
-behavior would create portability problems across IOMMU drivers, retire
-this functionality.
+Although, I agree that size was the main concern here but if we have a
+92-byte structure with 64-bit fields, we'll always have a 4-byte hole.
 
-Outside the iommu users, this will potentially effect io_pgtable users of
-ARM_32_LPAE_S1, ARM_32_LPAE_S2, ARM_64_LPAE_S1, ARM_64_LPAE_S2, and
-ARM_MALI_LPAE formats.
+If we remove the `smmu` & `master_name` fields and pack all bools in
+bitfields as discussed earlier, we'll have a size of 69 bytes,
+(92 - 16 - 8 + 1), thus, we'd need a padding of 3 more bytes. Hence, the
+size would be reduced to 72-bytes from 92-bytes. I guess, that's fine?
 
-Cc: Boris Brezillon <boris.brezillon@collabora.com>
-Cc: Steven Price <steven.price@arm.com>
-Cc: Liviu Dudau <liviu.dudau@arm.com>
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/io-pgtable-arm.c | 68 +---------------------------------
- 1 file changed, 2 insertions(+), 66 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 0e67f1721a3d98..9a16815b3f3434 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -569,66 +569,6 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
- 	kfree(data);
- }
- 
--static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
--				       struct iommu_iotlb_gather *gather,
--				       unsigned long iova, size_t size,
--				       arm_lpae_iopte blk_pte, int lvl,
--				       arm_lpae_iopte *ptep, size_t pgcount)
--{
--	struct io_pgtable_cfg *cfg = &data->iop.cfg;
--	arm_lpae_iopte pte, *tablep;
--	phys_addr_t blk_paddr;
--	size_t tablesz = ARM_LPAE_GRANULE(data);
--	size_t split_sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
--	int ptes_per_table = ARM_LPAE_PTES_PER_TABLE(data);
--	int i, unmap_idx_start = -1, num_entries = 0, max_entries;
--
--	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
--		return 0;
--
--	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg, data->iop.cookie);
--	if (!tablep)
--		return 0; /* Bytes unmapped */
--
--	if (size == split_sz) {
--		unmap_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
--		max_entries = ptes_per_table - unmap_idx_start;
--		num_entries = min_t(int, pgcount, max_entries);
--	}
--
--	blk_paddr = iopte_to_paddr(blk_pte, data);
--	pte = iopte_prot(blk_pte);
--
--	for (i = 0; i < ptes_per_table; i++, blk_paddr += split_sz) {
--		/* Unmap! */
--		if (i >= unmap_idx_start && i < (unmap_idx_start + num_entries))
--			continue;
--
--		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, 1, &tablep[i]);
--	}
--
--	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
--	if (pte != blk_pte) {
--		__arm_lpae_free_pages(tablep, tablesz, cfg, data->iop.cookie);
--		/*
--		 * We may race against someone unmapping another part of this
--		 * block, but anything else is invalid. We can't misinterpret
--		 * a page entry here since we're never at the last level.
--		 */
--		if (iopte_type(pte) != ARM_LPAE_PTE_TYPE_TABLE)
--			return 0;
--
--		tablep = iopte_deref(pte, data);
--	} else if (unmap_idx_start >= 0) {
--		for (i = 0; i < num_entries; i++)
--			io_pgtable_tlb_add_page(&data->iop, gather, iova + i * size, size);
--
--		return num_entries * size;
--	}
--
--	return __arm_lpae_unmap(data, gather, iova, size, pgcount, lvl, tablep);
--}
--
- static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 			       struct iommu_iotlb_gather *gather,
- 			       unsigned long iova, size_t size, size_t pgcount,
-@@ -678,12 +618,8 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 
- 		return i * size;
- 	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
--		/*
--		 * Insert a table at the next level to map the old region,
--		 * minus the part we want to unmap
--		 */
--		return arm_lpae_split_blk_unmap(data, gather, iova, size, pte,
--						lvl + 1, ptep, pgcount);
-+		WARN_ONCE(true, "Unmap of a partial large IOPTE is not allowed");
-+		return 0;
- 	}
- 
- 	/* Keep on walkin' */
--- 
-2.43.0
-
+Thanks,
+Praan
