@@ -1,147 +1,330 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7985E38F97
-	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 06:32:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1740D38F97
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 06:36:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730701938; cv=none; b=rPrJcppKI2VouwXv9pi1xW80L4pKIWJP4hiBEeNy66Xtyzlz5AgFwpMVSXY8b9NII+AI1Axet672lLH56ZSzdvWzgTTLqNgGPT37VnEXcuI8jb+oYbZqmL6s2/YfUWxmlcKtxYzaGEXqXpw5Y2j48QcoYlyuqXSVTbQZsqSTmgY=
+	t=1730702213; cv=none; b=kAetoL8sbL/NhJ2+ReKyWZRoA+iQ3HMZdNPAuqzVW617rz/mi3pr7lOgvwAH2PZiX9cjP5tBz4NmopXgWLgN/FxXnpduA5tMNUWtkBwQAjQeXWh8Xo54HtHduVjxh4B/A9WT3Jrmuh7Y1NOh//kf7jPcKvAEiNUD+1WAoB5++2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730701938; c=relaxed/simple;
-	bh=jt6D/RJFKc7AM1YU+Ja4wspUKaPCqANx/Qh3XD7Nbiw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=W35rWxVzVaI0SxrOVVsBDnEqEMAt/wdUXYNXKS41a2427ncazmQrA9RzYinbuUYr8KT0Iif7P+njiBKfOb0OZvDLqPkcj2wsfuXzo3xV8LkansCNNjLQEFRvtyfYlwwQN7KCmsWUDJQvy0jzP6Ysd5YUtqEGVLRj3HA0ojaT1jg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=CgqmiCFp; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1730702213; c=relaxed/simple;
+	bh=3Qq49t4TaZEcp/YV3Kib2InH4wO0Ca8dvzQPQEUWuqM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VKC9W3pE719+6YCheZ7G8I8jiODSMXqjsxlzYvUM15wDXvyfIcN0MVQ5KERamImRdLXTrVVEh8lxNj3D/Ov7MVqr0Q41VzkBlZUUW3I4HO4ET4oHBFvgT/yWH6nhVM7yCis/RGNl6mo1Uhx3chlkfgQftdAa5uIMN8ZG7l2k0T0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=d7XwUPOf; arc=none smtp.client-ip=209.85.208.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="CgqmiCFp"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4A3Ncr3r000823;
-	Mon, 4 Nov 2024 06:32:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	QUpH2o8X6GigZu9EPuj6nQ1MxnxlgPhhO0+ITgXL5Mk=; b=CgqmiCFpwvOA439q
-	5wopFaWkw1rFp/5wP0IWCJS2sW10hM9uXjjBGLRID4yFNMB9dUEosovnLec4pvp/
-	T2Ena5vEBd6qVSA1hOT+RdHGrRQKR5GyhUCVNEOgM6C/L3Zejc05AUKXOEwDFHIP
-	te6zFbbpW3KVgE5GoXHCMmhKJVYY5+hoWwYcA8xAvP9y6rTocSnuJJXjtouZuJvG
-	LRtFcC+VYIoG9MaWtgfWgXWcmSfIIt9e+jKcmON1fBc0wyNJtH0GAtXNHAyFOEAf
-	5qV5vxrrggM4FHcXXn3+tBFYGBpi5UpXO1Wq8NA6TYJx8QStgeac1TvgU8atA8SK
-	jjJIbw==
-Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42nd4uk93j-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 04 Nov 2024 06:32:03 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4A46W22b019789
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 4 Nov 2024 06:32:02 GMT
-Received: from [10.214.227.50] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Sun, 3 Nov 2024
- 22:31:57 -0800
-Message-ID: <9ab96e76-533e-4163-aef5-71a0ca5e82d3@quicinc.com>
-Date: Mon, 4 Nov 2024 12:01:12 +0530
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="d7XwUPOf"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-5c93e9e701fso4892a12.1
+        for <iommu@lists.linux.dev>; Sun, 03 Nov 2024 22:36:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1730702209; x=1731307009; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=K/kNg7tw7q3Nfvi7hDitjLdJUEXtnMf+rJvUjtNMSTM=;
+        b=d7XwUPOfeXQY7Rm++QYVPAQbt6wgf3IaqgB35y/KHA8nMCiOFvOqmn3uuLVRNpmlnS
+         u00BNAkwP77uZcBKPEQMiTL1O1FVchFHPn78BnmymXXhx4y3+Yq2CYypryNDA4zQoJl7
+         xRJshdYEhCqiQvsHABssY2aSpQXNQqhW4zeTVo0mPqGxeXQxAO1jf0CFVw2JfL7UgQym
+         +PIloPqBWzbV8kosylKy89mkzTJZdz80jXfNcnPfwdeT6d9Vjo0sT5mIb0uDO6xqm0lS
+         6moH2SzuTLlACsealcyBL9H3TEoE0fsAWvl0Evclt9VrBVEl7zhJ67PAj3TtTZPy7UfN
+         srwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730702209; x=1731307009;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=K/kNg7tw7q3Nfvi7hDitjLdJUEXtnMf+rJvUjtNMSTM=;
+        b=KxSJtBoWQvkkdX0Xey9GiNik4cfNTFrjKGT6wTSUnu7y7cN9EyijK5ZywqktDXf9FZ
+         gV2PROXZCHxMool7m/LAHJ6d52NatKMjL8uPfV+8pYV/jLP6bf7q+pm07GtqbN/WG2gv
+         MNx+h/MEC5WZCFypuGevM9ZyHuULMJJeThgK79cl5WEUIk3o/mLh/YalVHLkI1iQK3ww
+         3qOMR/KgsY9m45RruzIDtm+X1o2uw0MDXmWLhW5tBhxhG2TEZdshJia1PdoII2sjkgtT
+         2MRvhCJC7mnpM0gu8KFgp5JTbgsKSa6Zs1WVEwg0R9VWOT1+WbPX1pVmL9kE4130nf4M
+         H4tg==
+X-Forwarded-Encrypted: i=1; AJvYcCXjAFY3y9wjqI+yOm+zbk4zIaaiObMzuR2Xe+wUzuc/84KNwUY/G84A4EqW+oLcBcUBc/IqLA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxmszkXVFHKSflJLPeA5xXlKcLGbdestMJDmVBrEQPQ6XcjxLaM
+	3eiH6q872esq9HdiUczbaU1Eslgv9qU7JnintaVBtzWG0ziEdq7Vlc83Q5mDmEcMWTsLhs8By9y
+	FsFdejT1IoIS1fkTfB90xilHspVEpXA07f2ZE
+X-Gm-Gg: ASbGnct8U/XsZkKCDUGmcH/ucxhAQa4jV9Mg1aZq9S/yi/6tlOcTOO02l7rWswE9MJy
+	2+A6UjQAZVYA2++wEQ1+CPpAuWZiRU3QdqzEBHcT9bdDkI1P68sAXtgNXLJVvF2doyw==
+X-Google-Smtp-Source: AGHT+IHVMSYVw798RVJNpH4ubMY3KIeMDrkulIdZNqnNLvGIHeYGnLdLxx+INrTHk0e/j4I/AcW9sF8PGXs8pcs+fiI=
+X-Received: by 2002:a05:6402:1a44:b0:5cb:6694:a291 with SMTP id
+ 4fb4d7f45d1cf-5ceca05272emr87352a12.1.1730702209171; Sun, 03 Nov 2024
+ 22:36:49 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v16 1/5] iommu/arm-smmu: re-enable context caching in smmu
- reset operation
-To: Will Deacon <will@kernel.org>
-CC: <robdclark@gmail.com>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <jgg@ziepe.ca>, <jsnitsel@redhat.com>, <robh@kernel.org>,
-        <krzysztof.kozlowski@linaro.org>, <quic_c_gdjako@quicinc.com>,
-        <dmitry.baryshkov@linaro.org>, <iommu@lists.linux.dev>,
-        <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>
-References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
- <20241008125410.3422512-2-quic_bibekkum@quicinc.com>
- <20241024125241.GD30704@willie-the-truck>
- <092db44e-f254-4abd-abea-e9a64e70df12@quicinc.com>
- <20241029124708.GA4241@willie-the-truck>
- <e7a8e786-d67d-4ee7-a4d1-d9d02fd08bda@quicinc.com>
- <20241101121024.GC8518@willie-the-truck>
-Content-Language: en-US
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <20241101121024.GC8518@willie-the-truck>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: Qt4_iYirzjSLkU7KnyZu9WJDVfsTu0OC
-X-Proofpoint-ORIG-GUID: Qt4_iYirzjSLkU7KnyZu9WJDVfsTu0OC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- lowpriorityscore=0 bulkscore=0 phishscore=0 priorityscore=1501
- mlxlogscore=999 impostorscore=0 suspectscore=0 spamscore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2411040057
+References: <20241018180022.807928-1-praan@google.com> <20241018180022.807928-3-praan@google.com>
+In-Reply-To: <20241018180022.807928-3-praan@google.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Sun, 3 Nov 2024 22:36:36 -0800
+Message-ID: <CAE2F3rBkHX=at0a5MN2XGSpxo02ithb=23Tn9rczrbquo6fzwA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] iommu/arm-smmu-v3: Log better event records
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Mostafa Saleh <smostafa@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev, 
+	Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Fri, Oct 18, 2024 at 11:01=E2=80=AFAM Pranjal Shrivastava <praan@google.=
+com> wrote:
+>
+> Currently, the driver dumps the raw hex for a received event record.
+> Improve this by leveraging `struct arm_smmu_event` for event fields
+> and log human-readable event records with meaningful information.
+>
+> Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 109 ++++++++++++++++++--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  13 +++
+>  2 files changed, 113 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index 2f1108e5de51..4477cf86cb8e 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -83,6 +83,34 @@ static struct arm_smmu_option_prop arm_smmu_options[] =
+=3D {
+>         { 0, NULL},
+>  };
+>
+> +static const char * const event_str[] =3D {
 
+I'd prefer the order in which they are specified in the Arm SMMUv3 arch spe=
+c.
 
-On 11/1/2024 5:40 PM, Will Deacon wrote:
-> On Wed, Oct 30, 2024 at 05:00:13PM +0530, Bibek Kumar Patro wrote:
->> On 10/29/2024 6:17 PM, Will Deacon wrote:
->>> On Fri, Oct 25, 2024 at 07:51:22PM +0530, Bibek Kumar Patro wrote:
->>>> On 10/24/2024 6:22 PM, Will Deacon wrote:
->>>>> On Tue, Oct 08, 2024 at 06:24:06PM +0530, Bibek Kumar Patro wrote:
->>> If you want to gate the errata workarounds on policy, then please follow
->>> what we do for the CPU: add a Kconfig option (e.g.
->>> ARM_SMMU_WORKAROUND_BROKEN_CPRE) which defaults to "on" (assuming that
->>> the relevant errata aren't all "rare") and update silicon-errata.rst
->>> accordingly.
->>>
->>> Then you can choose to disable them in your .config if you're happy to
->>> pick up the pieces.
->>
->> This seems to be a good idea to me . I am thinking of this approach based on
->> your suggestion,
->> i.e. we can bind the original workaround in
->> arm_mmu500_reset implementation within ARM_SMMU_WORKAROUND_BROKEN_CPRE
->> config (defualts to on, CPRE would be disabled) and in QCOM SoCs default it
->> to off
->> (when ARM_SMMU_QCOM=Y -> switch ARM_SMMU_WORKAROUND_BROKEN_CPRE=N).
-> 
-> ARM_SMMU_QCOM is enabled by default, so please don't do that. People who
-> want to disable errata workarounds based on a hunch can do that themselves.
-> There's no need to try to do that automatically in Kconfig.
-> 
+> +       /* Bad config events */
+> +       [EVT_ID_BAD_SID_CONFIG] =3D "C_BAD_STREAMID",
+> +       [EVT_ID_BAD_STE_CONFIG] =3D "C_BAD_STE",
+> +       [EVT_ID_BAD_CD_CONFIG] =3D "C_BAD_CD",
+> +       [EVT_ID_BAD_SSID_CONFIG] =3D "C_BAD_SUBSTREAMID",
+> +       [EVT_ID_STREAM_DISABLED] =3D "F_STREAM_DISABLED",
+> +
+> +       /* Bad translation events */
+> +       [EVT_ID_TRANSLATION_FAULT] =3D "F_TRANSLATION",
+> +       [EVT_ID_ADDR_SIZE_FAULT] =3D "F_ADDR_SIZE",
+> +       [EVT_ID_ACCESS_FAULT] =3D "F_ACCESS",
+> +       [EVT_ID_PERMISSION_FAULT] =3D "F_PERMISSION",
+> +
+> +       /* Bad fetch events */
+> +       [EVT_ID_STE_FETCH_FAULT] =3D "F_STE_FETCH",
+> +       [EVT_ID_CD_FETCH_FAULT] =3D "F_CD_FETCH",
+> +       [EVT_ID_VMS_FETCH_FAULT] =3D "F_VMS_FAULT",
 
-Okay I see, that seems better. To allow users to manually toggle the 
-config switch for
-disabling errata workarounds based on their specific needs,
-rather than having it enabled by default.
+F_VMS_FETCH not F_VMS_FAULT
 
->> In silicon-errata.rst would updating ARM_SMMU_WORKAROUND_BROKEN_CPRE be okay
->> , as the config names are based on erratum number.
-> 
-> In this case, the Kconfig option covers a variety of errata so how about
-> we go with:
-> 
-> 	ARM_SMMU_MMU_500_CPRE_ERRATA
-> 
-> and then you can list all of the numbers in the "Erratum ID" column?
-> 
+> +       [EVT_ID_MAX] =3D NULL,
 
-Ack, this name sounds self-explanatory to me. Thanks for the suggestion,
-I'll proceed with this name and ensure documenting the known numbers in 
-Erratum ID column
-<#826419, #841119, #562869, #1047329>
+Have you considered checking if evt->id is smaller than
+ARRAY_SIZE(event_str) rather than inflating even_str[] to contain 256
+entries?
 
-Thanks & regards,
-Bibek
+> +};
+> +
+> +static const char * const event_class_str[] =3D {
+> +       [0] =3D "CD fetch",
+> +       [1] =3D "Stage 1 translation table fetch",
+> +       [2] =3D "Input address caused fault ",
+> +       [3] =3D "Reserved",
+> +};
+> +
+>  static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+>                                     struct arm_smmu_device *smmu, u32 fla=
+gs);
+>  static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master);
+> @@ -1756,6 +1784,60 @@ arm_smmu_find_master(struct arm_smmu_device *smmu,=
+ u32 sid)
+>         return rb_entry(node, struct arm_smmu_stream, node)->master;
+>  }
+>
+> +static void arm_smmu_dump_raw_event(struct arm_smmu_event *event)
+> +{
+> +       int i;
+> +       struct arm_smmu_device *smmu =3D event->smmu;
+> +
+> +       dev_err(smmu->dev, "event 0x%02x received: master %s:\n",
+> +               event->id, event->master_name);
+> +
+> +       for (i =3D 0; i < EVTQ_ENT_DWORDS; ++i)
+> +               dev_err(smmu->dev, "\t0x%016llx\n", event->raw[i]);
+> +}
+> +
+> +static void arm_smmu_dump_event(struct arm_smmu_event *evt, struct ratel=
+imit_state *rs)
+> +{
+> +       struct arm_smmu_device *smmu =3D evt->smmu;
+> +       char title[100] =3D {0};
+> +       char mastr[100] =3D {0};
+> +       char addrs[100] =3D {0};
+> +       char flags[100] =3D {0};
+> +       char other[50] =3D {0};
+> +
+> +       if (!__ratelimit(rs))
+> +               return;
+> +
+> +       snprintf(title, 100, "Unexpected event received: %s\n", event_str=
+[evt->id]);
+> +       snprintf(mastr, 100, "\tmaster: %s sid: 0x%08x.0x%05x\n",
+> +                evt->master_name, evt->sid, evt->ssid);
+> +
+> +       switch (evt->id) {
+> +       case EVT_ID_TRANSLATION_FAULT:
+> +       case EVT_ID_ADDR_SIZE_FAULT:
+> +       case EVT_ID_ACCESS_FAULT:
+> +       case EVT_ID_PERMISSION_FAULT:
+> +               snprintf(addrs, 100, "\tiova =3D %#llx ipa =3D %#llx\n", =
+evt->iova, evt->ipa);
+> +               snprintf(other, 50, "\tSTAG =3D %#x Stall =3D %#x\n", evt=
+->stag, evt->stall);
+> +               snprintf(flags, 100, "\t%s%s%s%s%s%s\n",
+> +                        evt->privileged ? "Priv | " : "Unpriv | ",
+> +                        evt->instruction ? "Inst | " : "Data | ",
+> +                        evt->read ? "Read | " : "Write | ",
+> +                        evt->s2 ? "S2 | " : "S1 | ", event_class_str[evt=
+->class],
+> +                        evt->ttrnw_valid ? (evt->ttrnw ? "| TTD Read" : =
+"| TTD Write") : "");
+> +               break;
+> +
+> +       case EVT_ID_STE_FETCH_FAULT:
+> +       case EVT_ID_CD_FETCH_FAULT:
+> +       case EVT_ID_VMS_FETCH_FAULT:
+> +               snprintf(addrs, 100, "\tFetch address: %#llx\n", evt->ipa=
+);
+> +               break;
+> +       }
+> +
+> +       dev_err(smmu->dev, "%s%s%s%s%s", title, mastr, addrs, flags, othe=
+r);
+> +       arm_smmu_dump_raw_event(evt);
+> +}
+> +
+>  /* IRQ and event handlers */
+>  static int arm_smmu_handle_evt(struct arm_smmu_event *event)
+>  {
+> @@ -1819,6 +1901,8 @@ static int arm_smmu_handle_evt(struct arm_smmu_even=
+t *event)
+>  static void arm_smmu_get_event_from_raw(struct arm_smmu_device *smmu,
+>                                         struct arm_smmu_event *event)
+>  {
+> +       struct arm_smmu_master *master;
+> +
+>         /* Pick out the good stuff */
+>         event->id =3D FIELD_GET(EVTQ_0_ID, event->raw[0]);
+>         event->sid =3D FIELD_GET(EVTQ_0_SID, event->raw[0]);
+> @@ -1833,12 +1917,24 @@ static void arm_smmu_get_event_from_raw(struct ar=
+m_smmu_device *smmu,
+>         event->class =3D FIELD_GET(EVTQ_1_CLASS, event->raw[1]);
+>         event->iova =3D FIELD_GET(EVTQ_2_ADDR, event->raw[2]);
+>         event->ipa =3D FIELD_GET(EVTQ_3_IPA, event->raw[3]);
+> +       event->ttrnw =3D FIELD_GET(EVTQ_1_TT_READ, event->raw[1]);
+> +       event->ttrnw_valid =3D false;
+>         event->smmu =3D smmu;
+> +       event->dev =3D NULL;
+> +
+> +       if (event->id =3D=3D EVT_ID_PERMISSION_FAULT)
+> +               event->ttrnw_valid =3D (event->class =3D=3D EVTQ_1_CLASS_=
+TT);
+> +
+> +       mutex_lock(&smmu->streams_mutex);
+> +       master =3D arm_smmu_find_master(smmu, event->sid);
+> +       if (master)
+> +               event->dev =3D get_device(master->dev);
+> +       mutex_unlock(&smmu->streams_mutex);
+> +       event->master_name =3D event->dev ? dev_name(event->dev) : "(unas=
+signed sid)";
+>  }
+>
+>  static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+>  {
+> -       int i, ret;
+>         struct arm_smmu_event evt;
+>         struct arm_smmu_device *smmu =3D dev;
+>         struct arm_smmu_queue *q =3D &smmu->evtq.q;
+> @@ -1850,15 +1946,10 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, =
+void *dev)
+>                 while (!queue_remove_raw(q, evt.raw)) {
+>
+>                         arm_smmu_get_event_from_raw(smmu, &evt);
+> -                       ret =3D arm_smmu_handle_evt(&evt);
+> -                       if (!ret || !__ratelimit(&rs))
+> -                               continue;
+> -
+> -                       dev_info(smmu->dev, "event 0x%02x received:\n", e=
+vt.id);
+> -                       for (i =3D 0; i < EVTQ_ENT_DWORDS; ++i)
+> -                               dev_info(smmu->dev, "\t0x%016llx\n",
+> -                                       (unsigned long long)evt.raw[i]);
+> +                       if (arm_smmu_handle_evt(&evt))
+> +                               arm_smmu_dump_event(&evt, &rs);
+>
+> +                       put_device(evt.dev);
+>                         cond_resched();
+>                 }
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.h
+> index 8a42d7b701fb..820b08f872af 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -438,10 +438,19 @@ static inline unsigned int arm_smmu_cdtab_l2_idx(un=
+signed int ssid)
+>  #define EVTQ_0_ID                      GENMASK_ULL(7, 0)
+>
+>  /* Events */
+> +#define EVT_ID_BAD_SID_CONFIG          0x02
 
+I find that EVT_ID_BAD_STREAMID_CONFIG would be more consistent with
+the spec and what's already in this header file.
 
-> Will
-> 
+> +#define EVT_ID_STE_FETCH_FAULT         0x03
+> +#define EVT_ID_BAD_STE_CONFIG          0x04
+> +#define EVT_ID_STREAM_DISABLED         0x06
 
+EVT_ID_STREAM_DISABLED_FAULT
+
+> +#define EVT_ID_BAD_SSID_CONFIG         0x08
+
+EVT_ID_BAD_SUBSTREAMID_CONFIG
+
+> +#define EVT_ID_CD_FETCH_FAULT          0x09
+> +#define EVT_ID_BAD_CD_CONFIG           0x0a
+>  #define EVT_ID_TRANSLATION_FAULT       0x10
+>  #define EVT_ID_ADDR_SIZE_FAULT         0x11
+>  #define EVT_ID_ACCESS_FAULT            0x12
+>  #define EVT_ID_PERMISSION_FAULT                0x13
+> +#define EVT_ID_VMS_FETCH_FAULT         0x25
+> +#define EVT_ID_MAX                     0xff
+>
+>  #define EVTQ_0_SSV                     (1UL << 11)
+>  #define EVTQ_0_SSID                    GENMASK_ULL(31, 12)
+> @@ -774,7 +783,9 @@ struct arm_smmu_stream {
+>  };
+>
+>  struct arm_smmu_event {
+> +       const char                      *master_name;
+>         struct arm_smmu_device          *smmu;
+> +       struct device                   *dev;
+>         u8                              id;
+>         u8                              class;
+>         u16                             stag;
+> @@ -789,6 +800,8 @@ struct arm_smmu_event {
+>         bool                            instruction;
+>         bool                            s2;
+>         bool                            read;
+> +       bool                            ttrnw;
+> +       bool                            ttrnw_valid;
+>  };
+>
+>  /* SMMU private data for each master */
+> --
+> 2.47.0.rc1.288.g06298d1525-goog
+>
+>
