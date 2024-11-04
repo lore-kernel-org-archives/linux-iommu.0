@@ -1,78 +1,37 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 767A61C1AA9
-	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 18:19:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C4001CF8B
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 18:38:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730744377; cv=none; b=MEA5J1pA/XGRPnUts26xFVygQbiNan7891eSUKoZdngrkHdJtB32mhyWLQBjD8H2zHK6jb53kK9GhrQuUg84yKilXpKBKCKpEjT6U1Xj85cciyluKq1wVeDh2mqARcUviT/dgUDquSwd8g5z5Msk35c+0M6qyCyV/GrVzmzoPM4=
+	t=1730745532; cv=none; b=Bggzo9E9mpCklHc1RQWhgCooqGstVDKQMQrODcGrSE/z71qwHrubG01Mj4VfT5AxDcrXTHJhmGUbmpDbxuB2hqWCU8aLKWNwrjNDGwgf4aDkL1yjEt9hX0DMn7En8QQpVd9c6U59jDALBy2TLwyw092mGTx3+4/ralYofNG0dl8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730744377; c=relaxed/simple;
-	bh=RWYMJkpc9cP9JfdHOUEjM+pKbCLLTI5ylnAJl98Oc+Q=;
+	s=arc-20240116; t=1730745532; c=relaxed/simple;
+	bh=5gxManamvmTr+Ho9y3TBbl/cCKhoF0QR6Hbu7ULivxE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IcUXzg3aImpDzChjsuYozK7hOgJra45Enj5Ijt0pAWH4maCbnpdEYipfkymQ/11l07RPPOh46aDHfmttnLzzDlHHqgwt+Wik8/bwbX7XTJesFsbw/6lYt4HOuM11gR5FKQDZykbpVGvKa9kB+xkGSnIlMGBD3Bi1LisFwmbGJjo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ue5wK31X; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ue5wK31X"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-20c8ac50b79so40235ad.0
-        for <iommu@lists.linux.dev>; Mon, 04 Nov 2024 10:19:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1730744376; x=1731349176; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=UzHu3EDKwL9G3eShr7GzE1bIwk8FD641+Nb/rkSMvPU=;
-        b=Ue5wK31X9vpDbcF0+8wqk6wTOYrUmELPdAMW3N4K+gvklHCVzBiGO458cuh+OWB6xe
-         ROla4qTJwQ6VFuhX+EjxiudTUDRxAS8ZRzcey4qaQq3DBsUrE3CU2OA0lby5xx3CjhOs
-         wIGyZpkMwgUwShVkVDJgXJ1kVSzQRTKfRBiB24lRnEHhkIAuYKni8xGB2bPvhONZvzej
-         4FJpimpFJnJENLOWUDtvZMo9pvILY+Mk92guENuxykuXHY3eguzhwyNKper76e8KjJxR
-         +SxfJbmbRy09JEdSQeFBF/92CRP8eVmjJv5cSG3K9Oh88gaUiwMy6Bn3csf6n4wSgDm1
-         6tEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730744376; x=1731349176;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UzHu3EDKwL9G3eShr7GzE1bIwk8FD641+Nb/rkSMvPU=;
-        b=nTsVR5wl1xYMtPD7rPr0hcz5/LkMkQVS4q4c0g9+IVxpYfIaDcDM21CC20O8mdVbFB
-         QnYe/NGME56A1xW+2HFuuNic+MGAkiJ9fxJ7ZLiQE70ZkziFO5uCA/00RroIuFME57i4
-         Y/jOhgO68fcFU/tDLnGJVomHFUwMuxj30ePTsuW9+/HOhP8D0UasnlsbpgTlLPd/iyY9
-         5cSpuZtBCQS9tEdoCMKnhJypBAApbMjpxvXWGC1JyD6T98FBWhcqEsl+EtkoPkW43dIl
-         ZMPdL0QJLHq/5YKD5Y5iDXXyT/g9/Wqcg0oSoadsrPlV2fW8U0pGLLEg2Ezfu0seOdYV
-         Bwsg==
-X-Forwarded-Encrypted: i=1; AJvYcCWGe6VV3YgDDbwnNlXr3RBNmBnTLa8kFiMbX8UTNdj+lwJlXt9ftStgkVjPcphLoR0tG2XKLA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxhDJlNTZB9wyWR//xU2ufFRId5x3Kuw+5d9X7rsH0NikPWGoNy
-	bJ/3bXQMA99s/AYTRDRKTbmyXs4tCaHTYaYicjcqeBVzqLy4z4r8eijQ6T1Wrg==
-X-Gm-Gg: ASbGncsJvgTyVVgNltZzv1BDQ854JoSWVvDLM1QsMgCVwzjpxvlpP+ZW1kQ6Lxv8wAC
-	3/xUtt/YTH/FbyzGaZ09y0GmiyS9ewJT90Xpp30JWjv1kV/xP1kLmj60ONFq7AO6YYqg+TErYn4
-	rIvBLizmsz3dlmE7hHHIGnb5qjnnG8k93xAqsE0GhvqrdMF0zIvOqMl79TonAMxr7NrZf0aK1F3
-	PDGH+VbPgVXrsRvFdYtX2sICg2satvg/DOzA5O6C7sfSw26sJWdP3hQCzKCKsjH8ohkcG7LRgqp
-	2oxkUX6vASw=
-X-Google-Smtp-Source: AGHT+IHlMI6vlMrlb3IKS8wwnU+FxXh6K2WPYCj24YeBpnTcayFM0QoWf0VDepwK9jwI7CCP4vbjWQ==
-X-Received: by 2002:a17:902:c40c:b0:206:b7b2:4876 with SMTP id d9443c01a7336-211327ab5d1mr5747775ad.20.1730744375368;
-        Mon, 04 Nov 2024 10:19:35 -0800 (PST)
-Received: from google.com (146.254.240.35.bc.googleusercontent.com. [35.240.254.146])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-211056eda5fsm64623795ad.7.2024.11.04.10.19.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Nov 2024 10:19:34 -0800 (PST)
-Date: Mon, 4 Nov 2024 18:19:27 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v4 1/3] iommu/arm-smmu-v3: Introduce struct arm_smmu_event
-Message-ID: <ZykQL1UAxtWmC0P3@google.com>
-References: <20241018180022.807928-1-praan@google.com>
- <20241018180022.807928-2-praan@google.com>
- <20241024131147.GG30704@willie-the-truck>
- <Zxp9kHerb-ln4ioO@google.com>
- <CAE2F3rAtg_dE2NpFM-xB8fs3W+_7tANnBdA00SVfKgk-y6X5Gg@mail.gmail.com>
- <ZykPkEuv70SXKiT-@google.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=HFW4TM4SB6wyhx8EDbclDJuum7E6JtjaZljcv9fr1Cl5fyVzgtcgHZ/st22hlABquUXfEgK0qWCG0At1MJJh6BRWjCZ0Rq6S0DQnDZzYMHDtJwjSMVuOzgpJtNIMlTMb+CYfVjM9/Plz0fsz/cIYtSDkKHRxgY2RkEd6fcF6qMQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6CDBA1063
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 10:39:18 -0800 (PST)
+Received: from e110455-lin.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5E1AE3F528
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 10:38:48 -0800 (PST)
+Date: Mon, 4 Nov 2024 18:38:46 +0000
+From: Liviu Dudau <liviu.dudau@arm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Boris Brezillon <boris.brezillon@collabora.com>,
+	dri-devel@lists.freedesktop.org, patches@lists.linux.dev,
+	Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v2 1/3] iommu/io-pgtable-arm: Remove split on unmap
+ behavior
+Message-ID: <ZykUtvMaIrwWn_2l@e110455-lin.cambridge.arm.com>
+References: <0-v2-fd55d00a60b2+c69-arm_no_split_jgg@nvidia.com>
+ <1-v2-fd55d00a60b2+c69-arm_no_split_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,111 +41,151 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZykPkEuv70SXKiT-@google.com>
+In-Reply-To: <1-v2-fd55d00a60b2+c69-arm_no_split_jgg@nvidia.com>
 
-On Mon, Nov 04, 2024 at 06:16:48PM +0000, Pranjal Shrivastava wrote:
-> On Mon, Nov 04, 2024 at 09:23:31AM -0800, Daniel Mentz wrote:
-> > On Thu, Oct 24, 2024 at 10:02 AM Pranjal Shrivastava <praan@google.com> wrote:
-> > >
-> > > On Thu, Oct 24, 2024 at 02:11:48PM +0100, Will Deacon wrote:
-> > > > On Fri, Oct 18, 2024 at 06:00:20PM +0000, Pranjal Shrivastava wrote:
-> > > > > +struct arm_smmu_event {
-> > > > > +   struct arm_smmu_device          *smmu;
-> > > > > +   u8                              id;
-> > > > > +   u8                              class;
-> > > > > +   u16                             stag;
-> > > > > +   u32                             sid;
-> > > > > +   u32                             ssid;
-> > > > > +   u64                             iova;
-> > > > > +   u64                             ipa;
-> > > > > +   u64                             raw[EVTQ_ENT_DWORDS];
-> > > > > +   bool                            stall;
-> > > > > +   bool                            ssid_valid;
-> > > > > +   bool                            privileged;
-> > > > > +   bool                            instruction;
-> > > > > +   bool                            s2;
-> > > > > +   bool                            read;
-> > > > > +};
-> > > >
-> > > > minor nit, but it might be worth seeing what pahole says about the
-> > > > layout of this structure in case you've got a bunch of wasted padding
-> > > > thanks to the mixed-size fields.
-> > >
-> > > I ran pahole with this, looks like there's only one 4-byte hole but the
-> > > cacheline aligment is bad (for a 64-byte cacheline):
-> > >
-> > > struct arm_smmu_event {
-> > >         const char  *              master_name;          /*     0     8 */
-> > >         struct arm_smmu_device *   smmu;                 /*     8     8 */
-> > >         struct device *            dev;                  /*    16     8 */
-> > >         u8                         id;                   /*    24     1 */
-> > >         u8                         class;                /*    25     1 */
-> > >         u16                        stag;                 /*    26     2 */
-> > >         u32                        sid;                  /*    28     4 */
-> > >         u32                        ssid;                 /*    32     4 */
-> > >
-> > >         /* XXX 4 bytes hole, try to pack */
-> > >
-> > >         u64                        iova;                 /*    40     8 */
-> > >         u64                        ipa;                  /*    48     8 */
-> > >         u64                        raw[4];               /*    56    32 */
-> > >         /* --- cacheline 1 boundary (64 bytes) was 24 bytes ago --- */
-> > >         bool                       stall;                /*    88     1 */
-> > >         bool                       ssid_valid;           /*    89     1 */
-> > >         bool                       privileged;           /*    90     1 */
-> > >         bool                       instruction;          /*    91     1 */
-> > >         bool                       s2;                   /*    92     1 */
-> > >         bool                       read;                 /*    93     1 */
-> > >         bool                       ttrnw;                /*    94     1 */
-> > >         bool                       ttrnw_valid;          /*    95     1 */
-> > >
-> > >         /* size: 96, cachelines: 2, members: 19 */
-> > >         /* sum members: 92, holes: 1, sum holes: 4 */
-> > >         /* last cacheline: 32 bytes */
-> > > };
-> > >
-> > > I don't think we can do much about the 4-byte hole as the members occupy
-> > > 92 bytes only. I assume a single 4-byte hole shall be fine?
-> > >
-> > > However, for cacheline aligment we can move the 3 top pointer-members,
-> > > `master_name`,`smmu` & `dev` which improves the cacheline aligment:
-> > 
-> > Can you be more explicit about what is a good cacheline alignment? I'm
-> > wondering if you're trying to ensure that raw[4] is contained within a
-> > single cacheline as opposed to spanning two adjacent cachelines. I
+On Mon, Nov 04, 2024 at 01:41:29PM -0400, Jason Gunthorpe wrote:
+> A minority of page table implementations (arm_lpae, armv7) are unique in
+> how they handle partial unmap of large IOPTEs.
 > 
-> I'm using a tool `pahole` [1] as suggested by Will earlier.
-> The tool prints information about the layout of structures, checking for
-> memory wastage due to padding and if the struct layout causes
-> mis-alignment with the caches.
+> Other implementations will unmap the large IOPTE and return it's
+> length. For example if a 2M IOPTE is present and the first 4K is requested
+> to be unmapped then unmap will remove the whole 2M and report 2M as the
+> result.
 > 
-> The tool printed, "cacheline 1 boundary (64 bytes) was 24 bytes ago"
-> hinting that with the current layout, we are wasting 24-bytes of a
-> cacheline.
+> arm_lpae instead replaces the IOPTE with a table of smaller IOPTEs, unmaps
+> the 4K and returns 4k. This is actually an illegal/non-hitless operation
+> on at least SMMUv3 because of the BBM level 0 rules.
 > 
-> > doubt that this is worth optimizing for. Also, I'm wondering if this
-> > analysis assumes that the base address of a struct arm_smmu_event
-> > instance is cacheline aligned, which I am not sure is the case. I
-> > would solely optimize for size.
+> Will says this was done to support VFIO, but upon deeper analysis this was
+> never strictly necessary:
 > 
-> You're right, the tool does assume that the struct begins at a cacheline
-> I'm just sharing the analysis done by the tool to be able to finalize
-> the layout of `struct arm_smmu_event`.
+>  https://lore.kernel.org/all/20241024134411.GA6956@nvidia.com/
 > 
-> IMO, if we don't have a strong opinion about this, there's no harm in
-> trying to layout the struct better even if it is a micro-optimization.
+> In summary, historical VFIO supported the AMD behavior of unmapping the
+> whole large IOPTE and returning the size, even if asked to unmap a
+> portion. The driver would see this as a request to split a large IOPTE.
+> Modern VFIO always unmaps entire large IOPTEs (except on AMD) and drivers
+> don't see an IOPTE split.
 > 
-> Although, I agree that size was the main concern here but if we have a
-> 92-byte structure with 64-bit fields, we'll always have a 4-byte hole.
+> Given it doesn't work fully correctly on SMMUv3 and relying on ARM unique
+> behavior would create portability problems across IOMMU drivers, retire
+> this functionality.
 > 
-> If we remove the `smmu` & `master_name` fields and pack all bools in
-> bitfields as discussed earlier, we'll have a size of 69 bytes,
-> (92 - 16 - 8 + 1), thus, we'd need a padding of 3 more bytes. Hence, the
-> size would be reduced to 72-bytes from 92-bytes. I guess, that's fine?
+> Outside the iommu users, this will potentially effect io_pgtable users of
+> ARM_32_LPAE_S1, ARM_32_LPAE_S2, ARM_64_LPAE_S1, ARM_64_LPAE_S2, and
+> ARM_MALI_LPAE formats.
 > 
-> Thanks,
-> Praan
+> Cc: Boris Brezillon <boris.brezillon@collabora.com>
+> Cc: Steven Price <steven.price@arm.com>
+> Cc: Liviu Dudau <liviu.dudau@arm.com>
 
-Missed the link tag! Apologies.
+Reviewed-by: Liviu Dudau <liviu.dudau@arm.com>
 
-[1] https://linux.die.net/man/1/pahole
+Best regards,
+Liviu
+
+> Cc: dri-devel@lists.freedesktop.org
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 68 +---------------------------------
+>  1 file changed, 2 insertions(+), 66 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 0e67f1721a3d98..9a16815b3f3434 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -569,66 +569,6 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
+>  	kfree(data);
+>  }
+>  
+> -static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+> -				       struct iommu_iotlb_gather *gather,
+> -				       unsigned long iova, size_t size,
+> -				       arm_lpae_iopte blk_pte, int lvl,
+> -				       arm_lpae_iopte *ptep, size_t pgcount)
+> -{
+> -	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> -	arm_lpae_iopte pte, *tablep;
+> -	phys_addr_t blk_paddr;
+> -	size_t tablesz = ARM_LPAE_GRANULE(data);
+> -	size_t split_sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> -	int ptes_per_table = ARM_LPAE_PTES_PER_TABLE(data);
+> -	int i, unmap_idx_start = -1, num_entries = 0, max_entries;
+> -
+> -	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
+> -		return 0;
+> -
+> -	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg, data->iop.cookie);
+> -	if (!tablep)
+> -		return 0; /* Bytes unmapped */
+> -
+> -	if (size == split_sz) {
+> -		unmap_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
+> -		max_entries = ptes_per_table - unmap_idx_start;
+> -		num_entries = min_t(int, pgcount, max_entries);
+> -	}
+> -
+> -	blk_paddr = iopte_to_paddr(blk_pte, data);
+> -	pte = iopte_prot(blk_pte);
+> -
+> -	for (i = 0; i < ptes_per_table; i++, blk_paddr += split_sz) {
+> -		/* Unmap! */
+> -		if (i >= unmap_idx_start && i < (unmap_idx_start + num_entries))
+> -			continue;
+> -
+> -		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, 1, &tablep[i]);
+> -	}
+> -
+> -	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
+> -	if (pte != blk_pte) {
+> -		__arm_lpae_free_pages(tablep, tablesz, cfg, data->iop.cookie);
+> -		/*
+> -		 * We may race against someone unmapping another part of this
+> -		 * block, but anything else is invalid. We can't misinterpret
+> -		 * a page entry here since we're never at the last level.
+> -		 */
+> -		if (iopte_type(pte) != ARM_LPAE_PTE_TYPE_TABLE)
+> -			return 0;
+> -
+> -		tablep = iopte_deref(pte, data);
+> -	} else if (unmap_idx_start >= 0) {
+> -		for (i = 0; i < num_entries; i++)
+> -			io_pgtable_tlb_add_page(&data->iop, gather, iova + i * size, size);
+> -
+> -		return num_entries * size;
+> -	}
+> -
+> -	return __arm_lpae_unmap(data, gather, iova, size, pgcount, lvl, tablep);
+> -}
+> -
+>  static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>  			       struct iommu_iotlb_gather *gather,
+>  			       unsigned long iova, size_t size, size_t pgcount,
+> @@ -678,12 +618,8 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>  
+>  		return i * size;
+>  	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
+> -		/*
+> -		 * Insert a table at the next level to map the old region,
+> -		 * minus the part we want to unmap
+> -		 */
+> -		return arm_lpae_split_blk_unmap(data, gather, iova, size, pte,
+> -						lvl + 1, ptep, pgcount);
+> +		WARN_ONCE(true, "Unmap of a partial large IOPTE is not allowed");
+> +		return 0;
+>  	}
+>  
+>  	/* Keep on walkin' */
+> -- 
+> 2.43.0
+> 
+
+-- 
+====================
+| I would like to |
+| fix the world,  |
+| but they're not |
+| giving me the   |
+ \ source code!  /
+  ---------------
+    ¯\_(ツ)_/¯
