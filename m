@@ -1,210 +1,1440 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from mail133-1.atl131.mandrillapp.com (mail133-1.atl131.mandrillapp.com [198.2.133.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FBB31442F2
-	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 14:24:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730730298; cv=fail; b=N4u9ursW8gPA404Q0QR9Iz/P+s1/nQu3Ym29B3KJNWzRe9vpdZqtTeTlU5Mgfe/zb/CQYynL5FBuj3pBAjTtR7rrQ8KpJ8mxLmqfxXGksFSlvrRzsg1SH33P4dLbvQxhbMIHDamjKlcNQULVnZvguk2a0yY1Xg8+BlRRMVH+0eo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730730298; c=relaxed/simple;
-	bh=uFBir/hjmw2PDsE4lB68yKyfn/hQbs+VahsyeTfmhPc=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=rlC9tpru9py6yhSr7VWcHBs3THBlhluOoYSzYaBSQWmwpHgtYU3fwJncSyqvFSnOaVoMTyFQ1KbQiM3nLMV2qsYxgvd8n4Hg2Ov8ugTs30SnUOvqkLuyweT2X1SeoekAEm0CY6kYhU0T131Y8StHw5JtFbmKiLd47V33BXpDocI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=LUtLXKKf; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=ZDxcy+KH; arc=fail smtp.client-ip=205.220.165.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DFE22AE93
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 14:41:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.2.133.1
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730731280; cv=none; b=squlyXn7xndIifMmvI8+MXpxVlrXVDj5DezG5P4DikvOTWEd27GrCh2tvnsWQ4Jdb7sHNvlopyZrRIiAhfVO+Kw9O/SA2kt31rJDOLuZbAuSrM/NFKcSa4U3ZE/kV351ZXE59biykhFbHJJdCVLkPLypcP6Qe+8+BtKoK9rq4Kc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730731280; c=relaxed/simple;
+	bh=tRT2adTGDgintunRH41vpV6L/jEJ6aOLY3WjYmDar3o=;
+	h=From:Subject:To:Cc:Message-Id:Date:MIME-Version:Content-Type; b=DqzB49waX6ZSWDqU5kgLgbXt3c8+9af4iWt48m5LVyLyZiG0OKuQGrcvaC+SGYDDa2utN8jX/8c3+NKsyI6RuTeoKeGv7btFXNbRxBqlSA3PFD9tNcFFIQgxJ6KFIiH4x5mbYP62Jeyc5Zdt19egJIueOIyRTGEt9sQ9BHzDYvA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech; spf=pass smtp.mailfrom=bounce.vates.tech; dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b=U5ubBPIQ; dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b=1EARiS1F; arc=none smtp.client-ip=198.2.133.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bounce.vates.tech
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="LUtLXKKf";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="ZDxcy+KH"
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4A4DNsxn003190;
-	Mon, 4 Nov 2024 14:24:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2023-11-20; bh=9OGpfbRt4XwtjK8Xq66kif1DPexFZKBdG9etthagRXE=; b=
-	LUtLXKKf1aA1evt0AnalCB+7qpj7PNnPLc+svcaWjsFNg+rn3B+peOItEVWxiXOB
-	NWEYGUYBJfN22JhOIhmhLsZzrtwYg8IwtJxBj4fHwyoB1MJQohxJpb2uekpvcy4h
-	A1smyGw8/nJiZkgZLjiIv275Yj6F4FZmRjTcC9rsI2nRGaompu1GPO/bRlpnhm3T
-	X5S7cV6JU9h+ck4Nn7s+Lns/1edJLwkotXbt9kEmraAQn5KFhu1Us61ckGtl8dVT
-	oDvHwKsmNBTjPE08OL4b9BA26/i2OhPAGM1DSHa9py3h7QXVYvsiWqJdfv2Ko/je
-	nwPChhU88deeq1M9ERixdg==
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42nby8tt44-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 04 Nov 2024 14:24:54 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 4A4DxZbB010012;
-	Mon, 4 Nov 2024 14:24:53 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2170.outbound.protection.outlook.com [104.47.56.170])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 42nahc2xsk-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 04 Nov 2024 14:24:53 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AANWxrtZK9jX0gENThb7xI/jIkQn3K4wIP0BhNdWjuChvdcqQVr8bVzbtN+zpWtIfy95OtrVAkxF6AOcd5tIUg8PSx6cZEKchJwTT4FPBD7bHVHNTcjtQVaOAfA65ROgxyPfFFRrezl/mStxttB3y2R+h6eC4JztTWe9MPuX9ZxvTJ1b6L6FpNEbGX2tQ+UQltB9SBO5IALKCa/urbeHczaLTI6jTwVVzp/ffMDGEqsliuaenPBd1Ts12JyVH/euGn5kRdirCGhmXVRH7R36H8VDf/t8DIdgJ2Gq+NBCi/a1BquI1+JgZY1wtD5nmhntJlWNUkFPYBYeqc7dUX1fTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9OGpfbRt4XwtjK8Xq66kif1DPexFZKBdG9etthagRXE=;
- b=rtYfOkbTyh5DgGjiR6fD9gTRV9YbqjXhmIbVZnManFXMMwkztywhfkIdxytGN1CUfqa1OGrHtDLJ0/JaI0Px9D9C4BKMXcF+S6wUKcW4rAnTLRVe0uFc0bFS2rhJzV/nDLhcBgJspWUISxrKSIX9hDGPKSIbkAyNxVThtwGFDwVW2sFacUPqdIwHmHNXUzLD3qpCKCevfgp5yMrF1IMKDFNypOhEom7aQP7qQNuhtyMAQ87W5qp/GRK1yLzZC+ZyCwn6GjA31jMfa6ms06AESko967YNk9EEYsoMiIAfaooA1MjZL6MyCShWGFInXnmDTx5Gq0s/SPVZCObl1hN+Pw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9OGpfbRt4XwtjK8Xq66kif1DPexFZKBdG9etthagRXE=;
- b=ZDxcy+KH2/llhx/1fnQ/gkwo6AlkD/wbnkgQ6ESsHj1btG+YbFFUGQ+ozKTT7mPY4Fb1qS0qZQOAB2uLcVoIjuziklJLB/MjQpr5hkboZLfXorH9cWsneQ02L5/JuB8CGl7e0FFRrEAqQSdq1/IZiyDmNWCpiKBsU8cEdmIl8u4=
-Received: from IA1PR10MB7447.namprd10.prod.outlook.com (2603:10b6:208:44c::10)
- by DM4PR10MB5918.namprd10.prod.outlook.com (2603:10b6:8:ab::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8114.30; Mon, 4 Nov 2024 14:24:49 +0000
-Received: from IA1PR10MB7447.namprd10.prod.outlook.com
- ([fe80::f2fe:d6c6:70c4:4572]) by IA1PR10MB7447.namprd10.prod.outlook.com
- ([fe80::f2fe:d6c6:70c4:4572%4]) with mapi id 15.20.8114.028; Mon, 4 Nov 2024
- 14:24:49 +0000
-Message-ID: <17468bfb-3955-468e-8b17-308cafb4cb8f@oracle.com>
-Date: Mon, 4 Nov 2024 09:24:46 -0500
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V7 0/9] iommu_ioas_map_file
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-        Nicolin Chen <nicolinc@nvidia.com>
-References: <1729861919-234514-1-git-send-email-steven.sistare@oracle.com>
- <20241030001102.GA251312@nvidia.com>
- <1bde901c-980a-44e0-8f6f-8e1985683349@oracle.com>
- <b4fa2db8-192f-4cfd-880a-5e29bad58f52@oracle.com>
- <20241104141817.GY10193@nvidia.com>
-Content-Language: en-US
-From: Steven Sistare <steven.sistare@oracle.com>
-Organization: Oracle Corporation
-In-Reply-To: <20241104141817.GY10193@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BL1PR13CA0067.namprd13.prod.outlook.com
- (2603:10b6:208:2b8::12) To IA1PR10MB7447.namprd10.prod.outlook.com
- (2603:10b6:208:44c::10)
+	dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b="U5ubBPIQ";
+	dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b="1EARiS1F"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com;
+	s=mte1; t=1730731275; x=1730991775;
+	bh=vcI+dluGaD5M6iZjJ+mno1wyRmsrm6WijK79LN4oTjE=;
+	h=From:Subject:To:Cc:Message-Id:Feedback-ID:Date:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:CC:Date:Subject:From;
+	b=U5ubBPIQ2odlCLjj9YTOUSyfZ8jmeAZgGiZs/KvQznhBvHubU5YbDe81CV3PuADT2
+	 nf96RlEbck/v1WS77VXypaQVFibpfV/ZQdet+IJbvfHY21pgdnvidXMaRFyAhRLgpc
+	 vVWbKvVyW3hOAXBXu1SneeOqtWAfXxmRTx4M3xgW/YOEB3ZyNzWSEZxM9xohMMcPR5
+	 y0OtS8SruHdFZ/R0iN7PTpH/AczCe2VxbHvR25BYS+30f3kbcghaQSNg4z3OzAyQ4Y
+	 /lgkAoiT9iHHXVDWDRl+Q6iMcLbsk5Qr/pCGyroaY+Wtt+efZMqVUjHEWEOjAcWzbY
+	 uEnyER3t1Dz9A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vates.tech; s=mte1;
+	t=1730731275; x=1730991775; i=teddy.astie@vates.tech;
+	bh=vcI+dluGaD5M6iZjJ+mno1wyRmsrm6WijK79LN4oTjE=;
+	h=From:Subject:To:Cc:Message-Id:Feedback-ID:Date:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:CC:Date:Subject:From;
+	b=1EARiS1FtbVnphUSi5LuJfIJlSgZfXXE7d3OEKlwCBIVuAdAWeED8p4ezeI0WBpRG
+	 Lq5BvyxgVouKm+YFaNmLIxtuMxMz7ruJ/0pq468oAEGU9ZtN+H4xkWk9jP+F8x5PoF
+	 gddksuOdAK2smlvX1U4xT4hbpMKjzh2kb5TzMwEWcqhnDwqU5H/xuqJkN4MwjSU/3y
+	 MG7g0mQbtEfLs/Flzt7KdALTCxum4Ek+U/G9u806DxlQRcvpcrR0RQtQEVK6isswEJ
+	 ucf+Ry6d6Ng4zqMPGpruGGJQpg2pgcGLyB33Zex3i2Qs+7NShrKllcfVxFYz88aEI5
+	 AoqPgthu59neQ==
+Received: from pmta13.mandrill.prod.atl01.rsglab.com (localhost [127.0.0.1])
+	by mail133-1.atl131.mandrillapp.com (Mailchimp) with ESMTP id 4XhvKl1V5HzBsV8b2
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 14:41:15 +0000 (GMT)
+From: "Teddy Astie" <teddy.astie@vates.tech>
+Subject: =?utf-8?Q?[RFC=20PATCH=20v3]=20iommu/xen:=20Add=20Xen=20PV-IOMMU=20driver?=
+Received: from [37.26.189.201] by mandrillapp.com id 638481d87dd543b59a6411efe332e8dd; Mon, 04 Nov 2024 14:41:15 +0000
+X-Mailer: git-send-email 2.45.2
+X-Bm-Disclaimer: Yes
+X-Bm-Milter-Handled: 4ffbd6c1-ee69-4e1b-aabd-f977039bd3e2
+X-Bm-Transport-Timestamp: 1730731272271
+To: xen-devel@lists.xenproject.org, iommu@lists.linux.dev
+Cc: "Teddy Astie" <teddy.astie@vates.tech>, "Juergen Gross" <jgross@suse.com>, "Stefano Stabellini" <sstabellini@kernel.org>, "Oleksandr Tyshchenko" <oleksandr_tyshchenko@epam.com>, "Joerg Roedel" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>, =?utf-8?Q?Marek=20Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
+Message-Id: <b2c58854cba26cc2ca1a4d28700b833510fe2def.1730729812.git.teddy.astie@vates.tech>
+X-Native-Encoded: 1
+X-Report-Abuse: =?UTF-8?Q?Please=20forward=20a=20copy=20of=20this=20message,=20including=20all=20headers,=20to=20abuse@mandrill.com.=20You=20can=20also=20report=20abuse=20here:=20https://mandrillapp.com/contact/abuse=3Fid=3D30504962.638481d87dd543b59a6411efe332e8dd?=
+X-Mandrill-User: md_30504962
+Feedback-ID: 30504962:30504962.20241104:md
+Date: Mon, 04 Nov 2024 14:41:15 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR10MB7447:EE_|DM4PR10MB5918:EE_
-X-MS-Office365-Filtering-Correlation-Id: b65c9d16-246c-4c2f-83d7-08dcfcdc7085
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?d2tLZUpuNXAxZENkT0FDaS8zVTBrK3lBL0dJYk5lUXZtZFFqZmJOYlRxb0xl?=
- =?utf-8?B?L0RiWXBRN1lCenhGWmhZc2tDdGk2akg0cXU0ZzIxTzJvS3d5WEN6VGNya1BM?=
- =?utf-8?B?T3dKeWhlS21nNjFOczd5YkF4aE5WdEs3TlFheXIzYjRLd1BkWlNOYkpMaW9l?=
- =?utf-8?B?clpFbkpPWExXeW5PVlZrZ2trV3NiUytnOXlrL1dteTQwWDR3ajNURE9ZT1I1?=
- =?utf-8?B?NFExaFZZTzlIMW80YmQ4L0M4d0FJbUVzZi9zTm1HTWZ1Q21lM0IwY2dJc3hJ?=
- =?utf-8?B?c2Z3RjNqUGZ4VGF0MmRlY01GNG11UGZhU2tybGd1b1lTRXZsZndLOXZlTlBV?=
- =?utf-8?B?cFl2UTNhL2NieXYwOWZPZDRlcVRSVEZmT013ZUpWSlQ4RTJwS0E0bjZuRElJ?=
- =?utf-8?B?RHEvRUFvN1NKVllqaE9oY3NZdjVwTEdCdWVvSk1OWGJrYkMrRGJ6MUVuMUhL?=
- =?utf-8?B?cktpdGdDTjhzNC9wSEJSRld0VmIwa0FQVU5nUzFEdXRmWU8wTmRGNmVIc1pP?=
- =?utf-8?B?Um9jdUIxbWNzV2lUbitxelRmN0d0a1BJRllQdEZjRzgyeWNkSzZTOTlSNmdt?=
- =?utf-8?B?R2FKcEZLUnJ0MlFTenZOem5FckF4SnhJT0VZUW9GaFFJTkhrU2toSGhKdEFo?=
- =?utf-8?B?dFJ2c2h0WlppbFJDYTU5NTd2d2JtQURQcFJMQ0ZrazRoOHNVR28xdExVL1pp?=
- =?utf-8?B?MWxrK1kva2NLSjJIQ1FYMTEwb0lVSTk5SmpQSCtUZnZlWTVoeW0xaHlnRmtE?=
- =?utf-8?B?ZUlCRmpGcVRpNnJCLyt3KzZsVFdoZXcwV3BVb2U3M0lLVHFpbXZ4T0hCRU1Z?=
- =?utf-8?B?WndWTy9GNElaV0VhS3ZJMk0wM3hGVCsydTJVRFk4akV6NUY0bk1hTlZFYUlJ?=
- =?utf-8?B?ZWtLVFlCWmU2eDczdERkZlAwelVHTzZDTVJxL2FwYVFyTlhQR3djUlJyZHVN?=
- =?utf-8?B?dVFDbXh6UWFTR3JST2tzUWFYYWxqUDQ1VnFmSmE1TmVxOHpEUXkzTGFpYnJu?=
- =?utf-8?B?eCtTcVkyUmdkSzlLQkpNbFhZa09ZeER0aWd4MEZpZksrODMyRHN5eFZ6QS9E?=
- =?utf-8?B?VDBBQk9RekovbEprUm96RVNpTXBQczRoUGIzWndSdkJlbk1LTHNBdWdDekZP?=
- =?utf-8?B?ZitmcmpiR1hjYU51MElBMm1ua0hZVXAzYnptZ2NnM3ZtQkxmaEtsVS8xYzJq?=
- =?utf-8?B?TzB5Zk5BZTJPZ0pzVkhMNGkyalhNclpIWTBLNWxUaGE1dFNhR25xVUZyd2Rr?=
- =?utf-8?B?bjB4c3N0VnZTeTMzNXViZWdEelFtUEg5ei8wc1ZSQlAvY2ZqWmRzYjVkQURJ?=
- =?utf-8?B?ZE5vK3RVR3JDZU5KOWlCUmRlZW00ak42ZUVXREVuSnVkZGZweStxY1AwSE5m?=
- =?utf-8?B?ZTlrcFJEL0o5VzNTeG4xb2FZeklHWTFwakIrTFA0aE1ZMko1OXYzaURLci9R?=
- =?utf-8?B?QTBPcEMwaUN4SWZWZGh3bzRvZDdvejJheUswMFoybnpTSnJKT1FubTQ0Yll1?=
- =?utf-8?B?bVdYcG91K00vYnpna2pDUDZ3S2plUDA3bVlzOFdQeEZPUGttOWhEekgxc3NR?=
- =?utf-8?B?eVMwNVY2bEJ4bHc0NVVva1lLS0VmRFZZa2VCMzlsckFsSHVlVHZhQmZNSitI?=
- =?utf-8?B?anZRNEJMc2Zyb2dRNktYUFBwMGRkZU44bVIzTUxCSkk0Z05uVU14K0d0Q1hG?=
- =?utf-8?B?cXRRMzdndjFJeXh1c0Z5K2JFNHVmc2NhNnQ3NUppWTYwbGFyUkFGSUw5MXZ2?=
- =?utf-8?Q?X58E0hfq5ro9qu7x1o=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR10MB7447.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Vmx5dXdyMXNuNGExdEh1ZHYxUHo3UXVER0p4REYzb2ZxU3lCQXJzV1hHcE9O?=
- =?utf-8?B?MXFEOG05NU1FRTM1TnVwNkRkSm5raG1ITFV4azdSL25uTjlRT05HUlFjamJy?=
- =?utf-8?B?VjRiNHZsQ2ZUNktBVm5UVzZ3K0d5QWxyMFA2dWt6THVxM1pMVW5seTQ1alMz?=
- =?utf-8?B?MlJSbk5ucnhQWTJFZXVybk9xWkRwbXdEUElKSkpyREErNHlpaGFUTUtSRDVG?=
- =?utf-8?B?aVc4OTJzUGhHWEJ3bnQzZGhhUi9jb01JcXh3Q01nVW5xQW4yY1MwMG1tVjQ3?=
- =?utf-8?B?K21tazNDMnlyWk0zd1hteVF5dC9pM2pTZTh0RW1ia3hKMFVjaW55eUdMU3RS?=
- =?utf-8?B?SHByOW54UHVMckRWUkFZbEFOTUxTNGRkNFdPekhzYXkyT3BTUGlLNXo3ZGh3?=
- =?utf-8?B?K094ZFJwSEZ3SEZCVG1hM2ErNzJON2tnemNaSCttVU1yS3c5VkQ2aUdRYkJV?=
- =?utf-8?B?bTl0bjQwNzBDNk9tRXprL0VpTEk3eE8rRHl5bHd5MUZ0Zlc3VTZGRlJ3dE53?=
- =?utf-8?B?TXRTaVNtczBhWVdmQ1RrT2N5dG9ObHlhR0pRK25EN1ZxSWdtdVByMkdtbVVH?=
- =?utf-8?B?MHc4Y3NpbG1uMk5VM2x1OEh2MmRQU21NOVQ0MHp3NmVhZllhUzB0NTIxd3dp?=
- =?utf-8?B?dnVNMDRsVE4yWTJHQVBLalBpRExwL0dWbE5Uc1hhWUxqZTFNTnRXV09VKzY1?=
- =?utf-8?B?WTRPei9pWmQrZi9zN25qMUROK3NKM3lseS91Z1N0WXQ3RWRlT2VCajhPNmpZ?=
- =?utf-8?B?Y21CVHhESHhpQUNSRDhLRGFXc2kwaE9GYkgyaC9wQmRLMEFQOUxRQVFISUN2?=
- =?utf-8?B?MVlIYldmUkdXc2MwWGswaFZaUUIwc2kxSnk2aFgxVlZSM3dnajYwcHZZNmRK?=
- =?utf-8?B?SExUWE1Rc2s2b2JLY3F2dmc3bVl5VSsrQ2lmN1paNWU5L0tGYWFYSGYvQTVY?=
- =?utf-8?B?OEtKWGV3VWJaOWFnUmVWQklCMnphSWtRM3JGM04rTUVlYTlPOHc2ZC9yMHJX?=
- =?utf-8?B?UnllR0RNb3RJbEpCNUlXOXJtRnBkTkFIMjJIUnBoN0VTV3RLRGh0c0ZaenZH?=
- =?utf-8?B?MVk3NVphaGlyUzlCbGk5NThRQnJ4NEkxcUwxeG1Zc0JUWXBHaG90QTN5YXV4?=
- =?utf-8?B?Tmw1UTJXZ0ZpZWN2djNLdXpWS1N3ZEk3cmZRQjVIMjFWVmdBRm40a3M5TGg1?=
- =?utf-8?B?Z00xMXQ2RVFWWllER1ZOanovaFNWbGNLcWd2ZU9UakFSZFFIank5RGVQWGVk?=
- =?utf-8?B?WGI0ejluNjdFQ3kvbzhoeHZNd0xoNkM5WXA1Z2RNaFJMd2tKa3NCVHdXZGcw?=
- =?utf-8?B?dXl3K0t2eWhzVVppQm5POE1CejdaYmt2ejg2MkVFdXlvQ1dZcHpSRFZRTFg3?=
- =?utf-8?B?SkxBZU9LTVBWNkdDVWQvV0tVSXdqUEpYRENMYmNZWnU4ZTNxNGlRejJMNDlK?=
- =?utf-8?B?NEh1T1dPWisrUHJjbElLZDlsZVVJMEQzbzNmZUxPUGtic0Z2bEtqb2lDNHFT?=
- =?utf-8?B?OWxBRVQ3UzJyc043dGpXMFMwUmV0QmJzSVBDUWIxYURtcHlleDc1eU9JQitr?=
- =?utf-8?B?cXQ5VU53RW1vK1V6SEZ4dkRKN3pnYmZNUVJQYmFhSWw1UUwrYjU1Y2dQL2xZ?=
- =?utf-8?B?WmJ6WkpUdVJ2QlUxK2VsVXB2L1U4c3FubElNc3BlRmg0NXRzMGQ5a016dlhz?=
- =?utf-8?B?SEI3Vk5IRE42QjgwaDREdll2VXMvMHRBTDEzNWZBUVNlZTd2WEZLRXY1bnhu?=
- =?utf-8?B?cGphTWgrcnV6NXlEY0JsSGdxRGFnY2F1MjdLdnJJaTE1QnFGY0drWFJsNlFm?=
- =?utf-8?B?SkVJcWduSFFmTVNzY01hcmx1cUMzaURKd1VqT0QzMEFBYlZRTG9NWEk2a1hh?=
- =?utf-8?B?cUxBOFJPcWdCSmFuN0I1eUZkQnd5L2tRUjdYMHg0U0MzREdaWktRdXFsMSsw?=
- =?utf-8?B?dG9vTVNxaGJITDlUNFpIR24xclNrMlZuOXBYelRrWG15b01rWTJWWXdLOVpx?=
- =?utf-8?B?b3k5TXJ0OUVGNTRFMlh6VXN2NmNsaVdaT1lhNEFlS1Z5NVB6dHZrL1dLM0Ry?=
- =?utf-8?B?SENxL1lzTStQbjVDSjRjcGswNjBiNHNIMmxBQnpvQkZuT04wc21FbUs3bXZV?=
- =?utf-8?B?SmtrcEh1TU8yTWpkQnNxeXlscFpWaUNqY1llRFJseXRiSzlJbjhGdyswTkxT?=
- =?utf-8?B?Rmc9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	R0ztKiK77YwM5DIqSRF8dyUcd7P/UkIdKPz92gBuZoQMsOLuyJCkGPYb/xrGysqJ14oG8KUeNL0oVa2PeY8WoDaFvvzU5tOWI1yWjT4KZtuIkrgSUuQH5b3yUzusTjJNpKtotVfoV0VWVDU2PhaOJ9p8d/C0qqn2XD0MFxLGpIP7vR7rFP2HFh1iNlNghjxmkJot2u6WlpBw9FK3aoGT+7ZMufTFipJqdUNXtTCq3Baiku3MAC3IPBuWsClcShotVDgKXkw38R144DJ7STDX658ibKEYP3dyJjoTC87+fDJ9w3qaNBDeV87HXBsvS3X9E04DhIRtIanB7N7knIPVHkS9A0CiIhXQOcyocDp2f0GJJSAAPB2NX8gUricm0XY3eAB24/p4bbHdDqUBTy3TcIGfo7oaeyaur76WIctMeLn2ioKvGFEVEZZnVHzj5iNFcun9PD4bxARdA3l1m/MfV7bbF2hvXbUi56jtXWFP56fqRWklgCQhxG99/ITG6XMm4C4BQ3qMG+y+owRZAxwmVGLesxz3sgcHDrgTSOHW1XbGyeGM9uXjs6UOLo6z1+8h9L9ZHVKRsEOOmGLHMJ2bb7BiphcM8S/1av8zG3px3F4=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b65c9d16-246c-4c2f-83d7-08dcfcdc7085
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR10MB7447.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Nov 2024 14:24:49.2447
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Z6D53Xo8JV3tDvS9qfL2FPTObuHMzAxtGsG3Zk98yKS14fyZR20AtrSWxnsRuJvMRXXre94WP0/o3lyxYa4izpb+yEei2iiRWO/w6W5CyEo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR10MB5918
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-11-04_11,2024-11-04_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
- mlxlogscore=999 mlxscore=0 suspectscore=0 bulkscore=0 malwarescore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2409260000 definitions=main-2411040125
-X-Proofpoint-ORIG-GUID: VKcUqSxUH693NM9_GcoVlLKzVq84ehZ6
-X-Proofpoint-GUID: VKcUqSxUH693NM9_GcoVlLKzVq84ehZ6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-On 11/4/2024 9:18 AM, Jason Gunthorpe wrote:
-> On Mon, Nov 04, 2024 at 08:58:29AM -0500, Steven Sistare wrote:
-> 
->>> It's selftest patch no longer applies cleanly, but I'll fix that in V4
->>> after you review the other patches.  Thanks!
->>
->> Just checking -- are you waiting for me to post V4 before reviewing any
->> further?
-> 
-> No, just busy with other patches :|
+In the context of Xen, Linux runs as Dom0 and doesn't have access to the
+machine IOMMU. Although, a IOMMU is mandatory to use some kernel features
+such as VFIO or DMA protection.
 
-No problem, I understand, thanks.  Just making sure we were not deadlocked
-waiting for each other.
+In Xen, we added a paravirtualized IOMMU with iommu_op hypercall in order to
+allow Dom0 to implement such feature. This commit introduces a new IOMMU driver
+that uses this new hypercall interface.
 
-- Steve
+Introduce io-pgtable-xen as a shadow pagetable to track mappings for lookup.
+
+Signed-off-by Teddy Astie <teddy.astie@vates.tech>
+---
+Changed in v2 :
+* formatting changes
+* applied Jan Beulich proposed changes : removed vim notes at end of pv-iommu.h
+* applied Jason Gunthorpe proposed changes : use new ops and remove redundant
+checks
+
+Changed in v3 :
+* Introduced io-pgtable-xen in order to track entries to implement lookup (as
+	it has been removed from hypercall interface)
+* use redesigned hypercall interface
+
+Depends on https://lore.kernel.org/xen-devel/cover.1730718102.git.teddy.astie@vates.tech
+---
+ arch/x86/include/asm/xen/hypercall.h |   6 +
+ drivers/iommu/Kconfig                |   9 +
+ drivers/iommu/Makefile               |   2 +
+ drivers/iommu/io-pgtable-xen.c       | 368 ++++++++++++++++++++++
+ drivers/iommu/io-pgtable.c           |   3 +
+ drivers/iommu/xen-iommu.c            | 444 +++++++++++++++++++++++++++
+ include/linux/io-pgtable.h           |   2 +
+ include/xen/interface/memory.h       |  33 ++
+ include/xen/interface/pv-iommu.h     | 341 ++++++++++++++++++++
+ include/xen/interface/xen.h          |   1 +
+ 10 files changed, 1209 insertions(+)
+ create mode 100644 drivers/iommu/io-pgtable-xen.c
+ create mode 100644 drivers/iommu/xen-iommu.c
+ create mode 100644 include/xen/interface/pv-iommu.h
+
+diff --git a/arch/x86/include/asm/xen/hypercall.h b/arch/x86/include/asm/xen/hypercall.h
+index a2dd24947eb8..d8b2876c2df4 100644
+--- a/arch/x86/include/asm/xen/hypercall.h
++++ b/arch/x86/include/asm/xen/hypercall.h
+@@ -490,6 +490,12 @@ HYPERVISOR_xenpmu_op(unsigned int op, void *arg)
+ 	return _hypercall2(int, xenpmu_op, op, arg);
+ }
+ 
++static inline long
++HYPERVISOR_iommu_op(unsigned int subop, void *arg)
++{
++	return _hypercall2(int, iommu_op, subop, arg);
++}
++
+ static inline int
+ HYPERVISOR_dm_op(
+ 	domid_t dom, unsigned int nr_bufs, struct xen_dm_op_buf *bufs)
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index b3aa1f5d5321..9d8fab4090cc 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -507,6 +507,15 @@ config VIRTIO_IOMMU
+ 
+ 	  Say Y here if you intend to run this kernel as a guest.
+ 
++config XEN_IOMMU
++	bool "Xen IOMMU driver"
++	depends on XEN_DOM0
++	select IOMMU_API
++	help
++		Xen PV-IOMMU driver for Dom0.
++
++		Say Y here if you intend to run this guest as Xen Dom0.
++
+ config SPRD_IOMMU
+ 	tristate "Unisoc IOMMU Support"
+ 	depends on ARCH_SPRD || COMPILE_TEST
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 542760d963ec..0adbcb167c0b 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o
++obj-$(CONFIG_XEN_IOMMU) += io-pgtable-xen.o
+ obj-$(CONFIG_IOMMU_IOVA) += iova.o
+ obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+ obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
+@@ -30,3 +31,4 @@ obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
+ obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
+ obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
+ obj-$(CONFIG_APPLE_DART) += apple-dart.o
++obj-$(CONFIG_XEN_IOMMU) += xen-iommu.o
+\ No newline at end of file
+diff --git a/drivers/iommu/io-pgtable-xen.c b/drivers/iommu/io-pgtable-xen.c
+new file mode 100644
+index 000000000000..974941fff80d
+--- /dev/null
++++ b/drivers/iommu/io-pgtable-xen.c
+@@ -0,0 +1,368 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Generic page table allocator for tracking purposes.
++ * Based on AMD IO pagetable allocator v2.
++ *
++ * Copyright (C) 2024 Vates SAS
++ * Author: Teddy Astie <teddy.astie@vates.tech>
++ */
++
++#define pr_fmt(fmt)	"xen-iommu pg-table: " fmt
++#define dev_fmt(fmt)	pr_fmt(fmt)
++
++#include <linux/bitops.h>
++#include <linux/io-pgtable.h>
++#include <linux/kernel.h>
++
++#include <asm/barrier.h>
++
++#include "iommu-pages.h"
++
++#include "xen/page.h"
++
++#define IOMMU_PAGE_PRESENT	BIT_ULL(0)	/* Is present */
++#define IOMMU_PAGE_HUGE		BIT_ULL(1)	/* Is hugepage */
++#define MAX_PTRS_PER_PAGE	512
++
++#define IOMMU_PAGE_SIZE_2M	BIT_ULL(21)
++#define IOMMU_PAGE_SIZE_1G	BIT_ULL(30)
++
++#define PM_ADDR_MASK		0x000ffffffffff000ULL
++#define XEN_IOMMU_PGSIZES	(XEN_PAGE_SIZE | (1ULL << 21) | (1ULL << 30))
++
++#define PAGE_MODE_NONE    0x00
++#define PAGE_MODE_1_LEVEL 0x01
++#define PAGE_MODE_2_LEVEL 0x02
++#define PAGE_MODE_3_LEVEL 0x03
++#define PAGE_MODE_4_LEVEL 0x04
++#define PAGE_MODE_5_LEVEL 0x05
++
++#define IOMMU_PTE_PR BIT(0)
++#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_PR)
++
++#define PM_LEVEL_SHIFT(x)	(12 + ((x) * 9))
++#define PM_LEVEL_INDEX(x, a)	(((a) >> PM_LEVEL_SHIFT((x))) & 0x1ffULL)
++
++#define IOMMU_IN_ADDR_BIT_SIZE  52
++#define IOMMU_OUT_ADDR_BIT_SIZE 52
++
++#define PAGE_SIZE_ALIGN(address, pagesize) \
++		((address) & ~((pagesize) - 1))
++
++#define io_pgtable_to_data(x) \
++	container_of((x), struct xen_io_pgtable, iop)
++
++#define io_pgtable_ops_to_data(x) \
++	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
++
++
++struct xen_io_pgtable {
++	struct io_pgtable_cfg	pgtbl_cfg;
++	struct io_pgtable	iop;
++	u64			*pgd;	/* pgtable pgd pointer */
++};
++
++static inline bool is_large_pte(u64 pte)
++{
++	return (pte & IOMMU_PAGE_HUGE);
++}
++
++static inline u64 set_pgtable_attr(u64 *page)
++{
++	return (virt_to_phys(page) | IOMMU_PAGE_PRESENT);
++}
++
++static inline void *get_pgtable_pte(u64 pte)
++{
++	return phys_to_virt(pte & PM_ADDR_MASK);
++}
++
++static u64 set_pte_attr(u64 paddr, u64 pg_size)
++{
++	u64 pte;
++
++	pte = paddr & PM_ADDR_MASK;
++	pte |= IOMMU_PAGE_PRESENT;
++
++	/* Large page */
++	if (pg_size == IOMMU_PAGE_SIZE_1G || pg_size == IOMMU_PAGE_SIZE_2M)
++		pte |= IOMMU_PAGE_HUGE;
++
++	return pte;
++}
++
++static inline u64 get_alloc_page_size(u64 size)
++{
++	if (size >= IOMMU_PAGE_SIZE_1G)
++		return IOMMU_PAGE_SIZE_1G;
++
++	if (size >= IOMMU_PAGE_SIZE_2M)
++		return IOMMU_PAGE_SIZE_2M;
++
++	return XEN_PAGE_SIZE;
++}
++
++static inline int page_size_to_level(u64 pg_size)
++{
++	if (pg_size == IOMMU_PAGE_SIZE_1G)
++		return PAGE_MODE_3_LEVEL;
++	if (pg_size == IOMMU_PAGE_SIZE_2M)
++		return PAGE_MODE_2_LEVEL;
++
++	return PAGE_MODE_1_LEVEL;
++}
++
++static void free_pgtable(u64 *pt, int level)
++{
++	u64 *p;
++	int i;
++
++	for (i = 0; i < MAX_PTRS_PER_PAGE; i++) {
++		/* PTE present? */
++		if (!IOMMU_PTE_PRESENT(pt[i]))
++			continue;
++
++		if (is_large_pte(pt[i]))
++			continue;
++
++		/*
++		 * Free the next level. No need to look at l1 tables here since
++		 * they can only contain leaf PTEs; just free them directly.
++		 */
++		p = get_pgtable_pte(pt[i]);
++		if (level > 2)
++			free_pgtable(p, level - 1);
++		else
++			iommu_free_page(p);
++	}
++
++	iommu_free_page(pt);
++}
++
++/* Allocate page table */
++static u64 *xen_alloc_pte(u64 *pgd, unsigned long iova, gfp_t gfp,
++			  unsigned long pg_size, bool *updated)
++{
++	u64 *pte, *page;
++	int level, end_level;
++
++	level = PAGE_MODE_5_LEVEL - 1;
++	end_level = page_size_to_level(pg_size);
++	pte = &pgd[PM_LEVEL_INDEX(level, iova)];
++	iova = PAGE_SIZE_ALIGN(iova, XEN_PAGE_SIZE);
++
++	while (level >= end_level) {
++		u64 __pte, __npte;
++
++		__pte = *pte;
++
++		if (IOMMU_PTE_PRESENT(__pte) && is_large_pte(__pte)) {
++			/* Unmap large pte */
++			cmpxchg64(pte, *pte, 0ULL);
++			*updated = true;
++			continue;
++		}
++
++		if (!IOMMU_PTE_PRESENT(__pte)) {
++			page = iommu_alloc_page(gfp);
++			if (!page)
++				return NULL;
++
++			__npte = set_pgtable_attr(page);
++			/* pte could have been changed somewhere. */
++			if (cmpxchg64(pte, __pte, __npte) != __pte)
++				iommu_free_page(page);
++			else if (IOMMU_PTE_PRESENT(__pte))
++				*updated = true;
++
++			continue;
++		}
++
++		level -= 1;
++		pte = get_pgtable_pte(__pte);
++		pte = &pte[PM_LEVEL_INDEX(level, iova)];
++	}
++
++	/* Tear down existing pte entries */
++	if (IOMMU_PTE_PRESENT(*pte)) {
++		u64 *__pte;
++
++		*updated = true;
++		__pte = get_pgtable_pte(*pte);
++		cmpxchg64(pte, *pte, 0ULL);
++		if (pg_size == IOMMU_PAGE_SIZE_1G)
++			free_pgtable(__pte, end_level - 1);
++		else if (pg_size == IOMMU_PAGE_SIZE_2M)
++			iommu_free_page(__pte);
++	}
++
++	return pte;
++}
++
++/*
++ * This function checks if there is a PTE for a given dma address.
++ * If there is one, it returns the pointer to it.
++ */
++static u64 *fetch_pte(struct xen_io_pgtable *pgtable, unsigned long iova,
++		      unsigned long *page_size)
++{
++	u64 *pte;
++	int level;
++
++	level = PAGE_MODE_5_LEVEL - 1;
++	pte = &pgtable->pgd[PM_LEVEL_INDEX(level, iova)];
++	/* Default page size is 4K */
++	*page_size = XEN_PAGE_SIZE;
++
++	while (level) {
++		/* Not present */
++		if (!IOMMU_PTE_PRESENT(*pte))
++			return NULL;
++
++		/* Walk to the next level */
++		pte = get_pgtable_pte(*pte);
++		pte = &pte[PM_LEVEL_INDEX(level - 1, iova)];
++
++		/* Large page */
++		if (is_large_pte(*pte)) {
++			if (level == PAGE_MODE_3_LEVEL)
++				*page_size = IOMMU_PAGE_SIZE_1G;
++			else if (level == PAGE_MODE_2_LEVEL)
++				*page_size = IOMMU_PAGE_SIZE_2M;
++			else
++				return NULL;	/* Wrongly set PSE bit in PTE */
++
++			break;
++		}
++
++		level -= 1;
++	}
++
++	return pte;
++}
++
++static int iommu_xen_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
++			       phys_addr_t paddr, size_t pgsize, size_t pgcount,
++			       int prot, gfp_t gfp, size_t *mapped)
++{
++	struct xen_io_pgtable *pgtable = io_pgtable_ops_to_data(ops);	
++	struct io_pgtable_cfg *cfg = &pgtable->pgtbl_cfg;
++	u64 *pte;
++	unsigned long map_size;
++	unsigned long mapped_size = 0;
++	size_t size = pgcount << __ffs(pgsize);
++	int ret = 0;
++	bool updated = false;
++
++	if (WARN_ON(!pgsize || (pgsize & cfg->pgsize_bitmap) != pgsize) || !pgcount)
++		return -EINVAL;
++
++	while (mapped_size < size) {
++		map_size = get_alloc_page_size(pgsize);
++		pte = xen_alloc_pte(pgtable->pgd, iova, gfp, map_size, &updated);
++		if (!pte) {
++			ret = -ENOMEM;
++			goto out;
++		}
++
++		*pte = set_pte_attr(paddr, map_size);
++
++		iova += map_size;
++		paddr += map_size;
++		mapped_size += map_size;
++	}
++
++out:
++	if (mapped)
++		*mapped += mapped_size;
++
++	return ret;
++}
++
++static unsigned long iommu_xen_unmap_pages(struct io_pgtable_ops *ops,
++					   unsigned long iova,
++					   size_t pgsize, size_t pgcount,
++					   struct iommu_iotlb_gather *gather)
++{
++	struct xen_io_pgtable *pgtable = io_pgtable_ops_to_data(ops);
++	struct io_pgtable_cfg *cfg = &pgtable->iop.cfg;
++	unsigned long unmap_size;
++	unsigned long unmapped = 0;
++	size_t size = pgcount << __ffs(pgsize);
++	u64 *pte;
++
++	if (WARN_ON(!pgsize || (pgsize & cfg->pgsize_bitmap) != pgsize || !pgcount))
++		return 0;
++
++	while (unmapped < size) {
++		pte = fetch_pte(pgtable, iova, &unmap_size);
++		if (!pte)
++			return unmapped;
++
++		*pte = 0ULL;
++
++		iova = (iova & ~(unmap_size - 1)) + unmap_size;
++		unmapped += unmap_size;
++	}
++
++	return unmapped;
++}
++
++static phys_addr_t iommu_xen_iova_to_phys(struct io_pgtable_ops *ops, unsigned long iova)
++{
++	struct xen_io_pgtable *pgtable = io_pgtable_ops_to_data(ops);
++	unsigned long offset_mask, pte_pgsize;
++	u64 *pte, __pte;
++
++	pte = fetch_pte(pgtable, iova, &pte_pgsize);
++	if (!pte || !IOMMU_PTE_PRESENT(*pte))
++		return 0;
++
++	offset_mask = pte_pgsize - 1;
++	__pte = *pte & PM_ADDR_MASK;
++
++	return (__pte & ~offset_mask) | (iova & offset_mask);
++}
++
++static void xen_free_pgtable(struct io_pgtable *iop)
++{
++	struct xen_io_pgtable *pgtable = container_of(iop, struct xen_io_pgtable, iop);
++
++	if (!pgtable || !pgtable->pgd)
++		return;
++
++	/* Free page table */
++	free_pgtable(pgtable->pgd, PAGE_MODE_5_LEVEL);
++	kfree(pgtable);
++}
++
++static struct io_pgtable *xen_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
++{
++	struct xen_io_pgtable *pgtable = kmalloc(sizeof(struct xen_io_pgtable),
++						 GFP_KERNEL);
++	if (!pgtable)
++		return NULL;
++
++	pgtable->pgd = iommu_alloc_page(GFP_KERNEL);
++	if (!pgtable->pgd) {
++		kfree(pgtable);
++		return NULL;
++	}
++
++	pgtable->iop.ops.map_pages    = iommu_xen_map_pages;
++	pgtable->iop.ops.unmap_pages  = iommu_xen_unmap_pages;
++	pgtable->iop.ops.iova_to_phys = iommu_xen_iova_to_phys;
++
++	cfg->pgsize_bitmap = XEN_IOMMU_PGSIZES;
++	cfg->ias           = IOMMU_IN_ADDR_BIT_SIZE;
++	cfg->oas           = IOMMU_OUT_ADDR_BIT_SIZE;
++
++	pgtable->pgtbl_cfg = *cfg;
++
++	return &pgtable->iop;
++}
++
++struct io_pgtable_init_fns io_pgtable_xen_init_fns = {
++	.alloc	= xen_alloc_pgtable,
++	.free	= xen_free_pgtable,
++};
+diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+index 8841c1487f00..763f6c34db73 100644
+--- a/drivers/iommu/io-pgtable.c
++++ b/drivers/iommu/io-pgtable.c
+@@ -32,6 +32,9 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
+ 	[AMD_IOMMU_V1] = &io_pgtable_amd_iommu_v1_init_fns,
+ 	[AMD_IOMMU_V2] = &io_pgtable_amd_iommu_v2_init_fns,
+ #endif
++#ifdef CONFIG_XEN_IOMMU
++	[XEN_IOMMU_GENERIC] = &io_pgtable_xen_init_fns,
++#endif
+ };
+ 
+ static int check_custom_allocator(enum io_pgtable_fmt fmt,
+diff --git a/drivers/iommu/xen-iommu.c b/drivers/iommu/xen-iommu.c
+new file mode 100644
+index 000000000000..01a4cc27f3c9
+--- /dev/null
++++ b/drivers/iommu/xen-iommu.c
+@@ -0,0 +1,444 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Xen PV-IOMMU driver.
++ *
++ * Copyright (C) 2024 Vates SAS
++ *
++ * Author: Teddy Astie <teddy.astie@vates.tech>
++ *
++ */
++
++#define pr_fmt(fmt)	"xen-iommu: " fmt
++
++#include <linux/err.h>
++#include <linux/module.h>
++#include <linux/iommu.h>
++#include <linux/pci.h>
++#include <linux/printk.h>
++#include <linux/stddef.h>
++#include <linux/minmax.h>
++#include <linux/io-pgtable.h>
++
++#include <xen/xen.h>
++#include <xen/page.h>
++#include <xen/interface/memory.h>
++#include <xen/interface/pv-iommu.h>
++#include <asm/xen/hypercall.h>
++#include <asm/xen/page.h>
++
++MODULE_DESCRIPTION("Xen IOMMU driver");
++MODULE_AUTHOR("Teddy Astie <teddy.astie@vates.tech>");
++MODULE_LICENSE("GPL");
++
++#define MSI_RANGE_START		(0xfee00000)
++#define MSI_RANGE_END		(0xfeefffff)
++
++struct xen_iommu_domain {
++	struct iommu_domain domain;
++
++	u16 ctx_no;			/* Xen PV-IOMMU context number */
++	struct io_pgtable_ops *pgtable;	/* Parralel page table for iova_to_phys */
++};
++
++static struct iommu_device xen_iommu_device;
++static struct pv_iommu_capabilities caps;
++
++static struct xen_iommu_domain xen_iommu_identity_domain;
++static bool map_single_pages = false;
++
++static inline struct xen_iommu_domain *to_xen_iommu_domain(struct iommu_domain *dom)
++{
++	return container_of(dom, struct xen_iommu_domain, domain);
++}
++
++static inline u64 addr_to_pfn(u64 addr)
++{
++	return addr >> 12;
++}
++
++static inline u64 pfn_to_addr(u64 pfn)
++{
++	return pfn << 12;
++}
++
++static bool xen_iommu_capable(struct device *dev, enum iommu_cap cap)
++{
++	switch (cap) {
++	case IOMMU_CAP_CACHE_COHERENCY:
++		return true;
++
++	default:
++		return false;
++	}
++}
++
++static struct iommu_domain *xen_iommu_domain_alloc_paging(struct device *dev)
++{
++	struct xen_iommu_domain *domain;
++	struct io_pgtable_cfg cfg = { .alloc = NULL, .free = NULL };
++	struct io_pgtable_ops *pgtable;
++	int ret;
++
++	struct pv_iommu_alloc alloc = { .alloc_flags = 0 };
++
++	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
++	if (!domain)
++		return ERR_PTR(-ENOMEM);
++
++	pgtable = alloc_io_pgtable_ops(XEN_IOMMU_GENERIC, &cfg, NULL);
++	if (!pgtable) {
++		kfree(domain);
++		return ERR_PTR(-ENOMEM);
++	}
++
++	ret = HYPERVISOR_iommu_op(IOMMU_alloc_context, &alloc);
++
++	if (ret) {
++		pr_err("Unable to create Xen IOMMU context (%d)", ret);
++		kfree(domain);
++		free_io_pgtable_ops(pgtable);
++		return ERR_PTR(ret);
++	}
++
++	domain->ctx_no = alloc.ctx_no;
++	domain->pgtable = pgtable;
++
++	domain->domain.geometry = (struct iommu_domain_geometry){
++		.aperture_start = 0,
++		.aperture_end = caps.max_iova_addr,
++		.force_aperture = true,
++	};
++
++	return &domain->domain;
++}
++
++static struct iommu_device *xen_iommu_probe_device(struct device *dev)
++{
++	if (!dev_is_pci(dev))
++		return ERR_PTR(-ENODEV);
++
++	return &xen_iommu_device;
++}
++
++static int xen_iommu_map_pages(struct iommu_domain *domain, unsigned long iova,
++			       phys_addr_t paddr, size_t pgsize, size_t pgcount,
++			       int prot, gfp_t gfp, size_t *mapped)
++{
++	int ret = 0;
++	size_t _mapped; /* for pgtable callback */
++	struct xen_iommu_domain *dom = to_xen_iommu_domain(domain);
++	struct pv_iommu_map_pages map = {
++		.ctx_no = dom->ctx_no,
++		.pgsize = pgsize,
++		.map_flags = 0,
++		.mapped = 0,
++	};
++
++	/* NOTE: paddr is actually bound to pfn, not gfn */
++	uint64_t pfn0 = addr_to_pfn(paddr);
++	uint64_t dfn0 = addr_to_pfn(iova);
++
++	if (prot & IOMMU_READ)
++		map.map_flags |= IOMMU_MAP_readable;
++
++	if (prot & IOMMU_WRITE)
++		map.map_flags |= IOMMU_MAP_writeable;
++
++	if (prot & IOMMU_CACHE)
++		map.map_flags |= IOMMU_MAP_cache;
++
++	if (map_single_pages) {
++		size_t i = 0;
++		map.nr_pages = 1;
++
++		for (; i < pgcount; i++) {
++			map.gfn = pfn_to_gfn(pfn0 + i);
++			map.dfn = dfn0 + i;
++			map.nr_pages = 1;
++
++			ret = HYPERVISOR_iommu_op(IOMMU_map_pages, &map);
++
++			if (ret)
++				break;
++		}
++	} else {
++		map.nr_pages = pgcount;
++		map.gfn = pfn_to_gfn(pfn0);
++		map.dfn = dfn0;
++
++		ret = HYPERVISOR_iommu_op(IOMMU_map_pages, &map);
++	}
++
++	if (mapped)
++		*mapped = pgsize * map.mapped;
++
++	dom->pgtable->map_pages(dom->pgtable, iova, paddr, pgsize, pgcount,
++				prot, gfp, &_mapped);
++
++	return ret;
++}
++
++static size_t xen_iommu_unmap_pages(struct iommu_domain *domain, unsigned long iova,
++				    size_t pgsize, size_t pgcount,
++				    struct iommu_iotlb_gather *iotlb_gather)
++{
++	struct xen_iommu_domain *dom = to_xen_iommu_domain(domain);
++	struct pv_iommu_unmap_pages unmap = {
++		.ctx_no = dom->ctx_no,
++		.pgsize = pgsize,
++		.unmapped = 0,
++		.nr_pages = pgcount,
++		.dfn = addr_to_pfn(iova),
++	};
++
++	WARN_ON(HYPERVISOR_iommu_op(IOMMU_unmap_pages, &unmap));
++	dom->pgtable->unmap_pages(dom->pgtable, iova, pgsize, pgcount,
++				  iotlb_gather);
++
++	return unmap.unmapped * pgsize;
++}
++
++static int xen_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
++{
++	struct pci_dev *pdev;
++	struct xen_iommu_domain *dom = to_xen_iommu_domain(domain);
++	struct pv_iommu_reattach_device reattach = {
++		.ctx_no = dom->ctx_no,
++		.pasid = 0,
++	};
++
++	pdev = to_pci_dev(dev);
++
++	reattach.dev.seg = pci_domain_nr(pdev->bus);
++	reattach.dev.bus = pdev->bus->number;
++	reattach.dev.devfn = pdev->devfn;
++
++	return HYPERVISOR_iommu_op(IOMMU_reattach_device, &reattach);
++}
++
++static void xen_iommu_free(struct iommu_domain *domain)
++{
++	int ret;
++	struct xen_iommu_domain *dom = to_xen_iommu_domain(domain);
++	struct pv_iommu_free op = {
++		.ctx_no = dom->ctx_no,
++		.free_flags = 0,
++	};
++
++	ret = HYPERVISOR_iommu_op(IOMMU_free_context, &op);
++
++	if (ret)
++		pr_err("Context %hu destruction failure\n", dom->ctx_no);
++
++	free_io_pgtable_ops(dom->pgtable);
++
++	kfree(domain);
++}
++
++static phys_addr_t xen_iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
++{
++	struct xen_iommu_domain *dom = to_xen_iommu_domain(domain);
++
++	if (!dom->ctx_no)
++		/* If default domain is identity, phys_addr is iova. */
++		return (caps.cap_flags & IOMMUCAP_default_identity) ? iova : 0;
++	
++	return dom->pgtable->iova_to_phys(dom->pgtable, iova);
++}
++
++static void xen_iommu_get_resv_regions(struct device *dev, struct list_head *head)
++{
++	struct iommu_resv_region *reg;
++	struct xen_reserved_device_memory *entries;
++	struct xen_reserved_device_memory_map map;
++	struct pci_dev *pdev;
++	int ret, i;
++
++	pdev = to_pci_dev(dev);
++
++	reg = iommu_alloc_resv_region(MSI_RANGE_START,
++				      MSI_RANGE_END - MSI_RANGE_START + 1,
++				      0, IOMMU_RESV_MSI, GFP_KERNEL);
++
++	if (!reg)
++		return;
++
++	list_add_tail(&reg->list, head);
++
++	/* Map xen-specific entries */
++
++	/* First, get number of entries to map */
++	map.buffer = NULL;
++	map.nr_entries = 0;
++	map.flags = 0;
++
++	map.dev.pci.seg = pci_domain_nr(pdev->bus);
++	map.dev.pci.bus = pdev->bus->number;
++	map.dev.pci.devfn = pdev->devfn;
++
++	ret = HYPERVISOR_memory_op(XENMEM_reserved_device_memory_map, &map);
++
++	if (ret == 0)
++		/* No reserved region, nothing to do */
++		return;
++
++	if (ret != -ENOBUFS) {
++		pr_err("Unable to get reserved region count (%d)\n", ret);
++		return;
++	}
++
++	/* Assume a reasonable number of entries, otherwise, something is probably wrong */
++	if (WARN_ON(map.nr_entries > 256))
++		pr_warn("Xen reporting many reserved regions (%u)\n", map.nr_entries);
++
++	/* And finally get actual mappings */
++	entries = kcalloc(map.nr_entries, sizeof(struct xen_reserved_device_memory),
++					  GFP_KERNEL);
++
++	if (!entries) {
++		pr_err("No memory for map entries\n");
++		return;
++	}
++
++	map.buffer = entries;
++
++	ret = HYPERVISOR_memory_op(XENMEM_reserved_device_memory_map, &map);
++
++	if (ret != 0) {
++		pr_err("Unable to get reserved regions (%d)\n", ret);
++		kfree(entries);
++		return;
++	}
++
++	for (i = 0; i < map.nr_entries; i++) {
++		struct xen_reserved_device_memory entry = entries[i];
++
++		reg = iommu_alloc_resv_region(pfn_to_addr(entry.start_pfn),
++					      pfn_to_addr(entry.nr_pages),
++					      0, IOMMU_RESV_RESERVED, GFP_KERNEL);
++
++		if (!reg)
++			break;
++
++		list_add_tail(&reg->list, head);
++	}
++
++	kfree(entries);
++}
++
++static struct iommu_ops xen_iommu_ops = {
++	.identity_domain = &xen_iommu_identity_domain.domain,
++	.release_domain = &xen_iommu_identity_domain.domain,
++	.capable = xen_iommu_capable,
++	.domain_alloc_paging = xen_iommu_domain_alloc_paging,
++	.probe_device = xen_iommu_probe_device,
++	.device_group = pci_device_group,
++	.get_resv_regions = xen_iommu_get_resv_regions,
++	.pgsize_bitmap = XEN_PAGE_SIZE,
++	.default_domain_ops = &(const struct iommu_domain_ops) {
++		.map_pages = xen_iommu_map_pages,
++		.unmap_pages = xen_iommu_unmap_pages,
++		.attach_dev = xen_iommu_attach_dev,
++		.iova_to_phys = xen_iommu_iova_to_phys,
++		.free = xen_iommu_free,
++	},
++};
++
++static int __init xen_iommu_init(void)
++{
++	long ret;
++
++	if (!xen_domain())
++		return -ENODEV;
++
++	/* Check if iommu_op is supported */
++	if ((ret = HYPERVISOR_iommu_op(IOMMU_query_capabilities, &caps)))
++	{
++		pr_err("Unable to query capabilities (%ld)", ret);
++		return -ENODEV; /* No Xen IOMMU hardware */
++	}
++
++	/* If ctx_no is zero, it may be due to PV-IOMMU not being initialized. */
++	if (!caps.max_ctx_no)
++	{
++		/* Try to initialize PV-IOMMU */
++		struct pv_iommu_init init;
++
++		pr_info("Got no usable context, try initializing PV-IOMMU\n");
++
++		/* FIXME: Don't hardcode this */
++		init.max_ctx_no = 128;
++		init.arena_order = 12;
++
++		pr_info("init.max_ctx_no=%hu\n", init.max_ctx_no);
++		pr_info("init.arena_order=%hu\n", init.arena_order);
++
++		/* Try to initialize PV-IOMMU */
++		ret = HYPERVISOR_iommu_op(IOMMU_init, &init);
++
++		if (ret == -EACCES) {
++			/* PV-IOMMU being already initialized often means not allowed. */
++			pr_warn("PV-IOMMU is already initialized, guest may not be allowed to use PV-IOMMU\n");
++			return -EACCES;
++		} else if (ret) {
++			pr_err("PV-IOMMU initialization failure (%ld)", ret);
++			return ret;
++		}
++
++		WARN_ON(HYPERVISOR_iommu_op(IOMMU_query_capabilities, &caps));
++	}
++
++	pr_info("Initialising Xen IOMMU driver\n");
++	pr_info("max_ctx_no=%hu\n", caps.max_ctx_no);
++	pr_info("max_iova_addr=%llx\n", caps.max_iova_addr);
++	pr_info("pgsize_mask=%d\n", caps.pgsize_mask);
++	pr_info("default_identity=%c\n", (caps.cap_flags & IOMMUCAP_default_identity) ? 'y' : 'n');
++	pr_info("cache=%c\n", (caps.cap_flags & IOMMUCAP_cache) ? 'y' : 'n');
++
++	if (caps.max_ctx_no == 0) {
++		pr_err("Unable to use IOMMU PV driver (no context available ?)\n");
++		return -ENOTSUPP; /* Unable to use IOMMU PV ? */
++	}
++
++	xen_iommu_ops.pgsize_bitmap = caps.pgsize_mask;
++
++	if (xen_domain_type == XEN_PV_DOMAIN)
++		/* TODO: In PV domain, due to the existing pfn-gfn mapping we need to
++		 * consider that under certains circonstances, we have :
++		 *   pfn_to_gfn(x + 1) != pfn_to_gfn(x) + 1
++		 *
++		 * In these cases, we would want to separate the subop into several calls.
++		 * (only doing the grouped operation when the mapping is actually contigous)
++		 * Only map operation would be affected, as unmap actually uses dfn which
++		 * doesn't have this kind of mapping.
++		 *
++		 * Force single-page operations to work arround this issue for now.
++		 */
++		map_single_pages = true;
++
++	/* Initialize identity domain */
++	xen_iommu_identity_domain.ctx_no = 0;
++
++	xen_iommu_identity_domain.domain.geometry = (struct iommu_domain_geometry){
++		.aperture_start = 0,
++		.aperture_end = caps.max_iova_addr,
++		.force_aperture = true,
++	};
++
++	ret = iommu_device_sysfs_add(&xen_iommu_device, NULL, NULL, "xen-iommu");
++	if (ret) {
++		pr_err("Unable to add Xen IOMMU sysfs\n");
++		return ret;
++	}
++
++	ret = iommu_device_register(&xen_iommu_device, &xen_iommu_ops, NULL);
++	if (ret) {
++		pr_err("Unable to register Xen IOMMU device %ld\n", ret);
++		iommu_device_sysfs_remove(&xen_iommu_device);
++		return ret;
++	}
++
++	return 0;
++}
++
++module_init(xen_iommu_init);
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index b1ecfc3cd5bc..8b1cd995d6f3 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -19,6 +19,7 @@ enum io_pgtable_fmt {
+ 	AMD_IOMMU_V2,
+ 	APPLE_DART,
+ 	APPLE_DART2,
++	XEN_IOMMU_GENERIC,
+ 	IO_PGTABLE_NUM_FMTS,
+ };
+ 
+@@ -303,5 +304,6 @@ extern struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns;
+ extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v1_init_fns;
+ extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v2_init_fns;
+ extern struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns;
++extern struct io_pgtable_init_fns io_pgtable_xen_init_fns;
+ 
+ #endif /* __IO_PGTABLE_H */
+diff --git a/include/xen/interface/memory.h b/include/xen/interface/memory.h
+index 1a371a825c55..c860acaf4b0e 100644
+--- a/include/xen/interface/memory.h
++++ b/include/xen/interface/memory.h
+@@ -10,6 +10,7 @@
+ #ifndef __XEN_PUBLIC_MEMORY_H__
+ #define __XEN_PUBLIC_MEMORY_H__
+ 
++#include <xen/interface/physdev.h>
+ #include <linux/spinlock.h>
+ 
+ /*
+@@ -214,6 +215,38 @@ struct xen_add_to_physmap_range {
+ };
+ DEFINE_GUEST_HANDLE_STRUCT(xen_add_to_physmap_range);
+ 
++/*
++ * With some legacy devices, certain guest-physical addresses cannot safely
++ * be used for other purposes, e.g. to map guest RAM.  This hypercall
++ * enumerates those regions so the toolstack can avoid using them.
++ */
++#define XENMEM_reserved_device_memory_map   27
++struct xen_reserved_device_memory {
++    xen_pfn_t start_pfn;
++    xen_ulong_t nr_pages;
++};
++DEFINE_GUEST_HANDLE_STRUCT(xen_reserved_device_memory);
++
++struct xen_reserved_device_memory_map {
++#define XENMEM_RDM_ALL 1 /* Request all regions (ignore dev union). */
++    /* IN */
++    uint32_t flags;
++    /*
++     * IN/OUT
++     *
++     * Gets set to the required number of entries when too low,
++     * signaled by error code -ERANGE.
++     */
++    unsigned int nr_entries;
++    /* OUT */
++    GUEST_HANDLE(xen_reserved_device_memory) buffer;
++    /* IN */
++    union {
++        struct physdev_pci_device pci;
++    } dev;
++};
++DEFINE_GUEST_HANDLE_STRUCT(xen_reserved_device_memory_map);
++
+ /*
+  * Returns the pseudo-physical memory map as it was when the domain
+  * was started (specified by XENMEM_set_memory_map).
+diff --git a/include/xen/interface/pv-iommu.h b/include/xen/interface/pv-iommu.h
+new file mode 100644
+index 000000000000..a4a470319486
+--- /dev/null
++++ b/include/xen/interface/pv-iommu.h
+@@ -0,0 +1,341 @@
++/* SPDX-License-Identifier: MIT */
++/**
++ * pv-iommu.h
++ *
++ * Paravirtualized IOMMU driver interface.
++ *
++ * Copyright (c) 2024 Teddy Astie <teddy.astie@vates.tech>
++ */
++
++#ifndef __XEN_PUBLIC_PV_IOMMU_H__
++#define __XEN_PUBLIC_PV_IOMMU_H__
++
++#include "xen.h"
++#include "physdev.h"
++
++#ifndef uint64_aligned_t
++#define uint64_aligned_t uint64_t
++#endif
++
++#define IOMMU_DEFAULT_CONTEXT (0)
++
++enum {
++    /* Basic cmd */
++    IOMMU_noop = 0,
++    IOMMU_query_capabilities,
++    IOMMU_init,
++    IOMMU_alloc_context,
++    IOMMU_free_context,
++    IOMMU_reattach_device,
++    IOMMU_map_pages,
++    IOMMU_unmap_pages,
++    IOMMU_remote_cmd,
++
++    /* Extended cmd */
++    IOMMU_alloc_nested,     /* if IOMMUCAP_nested */
++    IOMMU_flush_nested,     /* if IOMMUCAP_nested */
++    IOMMU_attach_pasid,     /* if IOMMUCAP_pasid */
++    IOMMU_detach_pasid,     /* if IOMMUCAP_pasid */
++};
++
++/**
++ * Indicate if the default context is a identity mapping to domain memory.
++ * If not defined, default context blocks all DMA to domain memory.
++ */
++#define IOMMUCAP_default_identity  (1 << 0)
++
++/**
++ * IOMMU_MAP_cache support.
++ */
++#define IOMMUCAP_cache     (1 << 1)
++
++/**
++ * Support for IOMMU_alloc_nested.
++ */
++#define IOMMUCAP_nested    (1 << 2)
++
++/**
++ * Support for IOMMU_attach_pasid and IOMMU_detach_pasid and pasid parameter in
++ * reattach_context.
++ */
++#define IOMMUCAP_pasid     (1 << 3)
++
++/**
++ * Support for IOMMU_ALLOC_identity
++ */
++#define IOMMUCAP_identity (1 << 4)
++
++/**
++ * IOMMU_query_capabilities
++ * Query PV-IOMMU capabilities for this domain.
++ */
++struct pv_iommu_capabilities {
++    /*
++     * OUT: Maximum device address (iova) that the guest can use for mappings.
++     */
++    uint64_aligned_t max_iova_addr;
++
++    /* OUT: IOMMU capabilities flags */
++    uint32_t cap_flags;
++
++    /* OUT: Mask of all supported page sizes. */
++    uint32_t pgsize_mask;
++
++    /* OUT: Maximum pasid (if IOMMUCAP_pasid) */
++    uint32_t max_pasid;
++
++    /* OUT: Maximum number of IOMMU context this domain can use. */
++    uint16_t max_ctx_no;
++};
++typedef struct pv_iommu_capabilities pv_iommu_capabilities_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_capabilities_t);
++
++/**
++ * IOMMU_init
++ * Initialize PV-IOMMU for this domain.
++ *
++ * Fails with -EACCESS if PV-IOMMU is already initialized.
++ */
++struct pv_iommu_init {
++    /* IN: Maximum number of IOMMU context this domain can use. */
++    uint32_t max_ctx_no;
++
++    /* IN: Arena size in pages (in power of two) */
++    uint32_t arena_order;
++};
++typedef struct pv_iommu_init pv_iommu_init_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_init_t);
++
++/**
++ * Create a 1:1 identity mapped context to domain memory
++ * (needs IOMMUCAP_identity).
++ */
++#define IOMMU_ALLOC_identity (1 << 0)
++
++/**
++ * IOMMU_alloc_context
++ * Allocate an IOMMU context.
++ * Fails with -ENOSPC if no context number is available.
++ */
++struct pv_iommu_alloc {
++    /* OUT: allocated IOMMU context number */
++    uint16_t ctx_no;
++
++    /* IN: allocation flags */
++    uint32_t alloc_flags;
++};
++typedef struct pv_iommu_alloc pv_iommu_alloc_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_alloc_t);
++
++/**
++ * Move all devices to default context before freeing the context.
++ */
++#define IOMMU_FREE_reattach_default (1 << 0)
++
++/**
++ * IOMMU_free_context
++ * Destroy a IOMMU context.
++ *
++ * If IOMMU_FREE_reattach_default is specified, move all context devices to
++ * default context before destroying this context.
++ *
++ * If there are devices in the context and IOMMU_FREE_reattach_default is not
++ * specified, fail with -EBUSY.
++ *
++ * The default context can't be destroyed.
++ */
++struct pv_iommu_free {
++    /* IN: IOMMU context number to free */
++    uint16_t ctx_no;
++
++    /* IN: Free operation specific flags */
++    uint32_t free_flags;
++};
++typedef struct pv_iommu_free pv_iommu_free_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_free_t);
++
++/* Device has read access */
++#define IOMMU_MAP_readable (1 << 0)
++
++/* Device has write access */
++#define IOMMU_MAP_writeable (1 << 1)
++
++/* Enforce DMA coherency */
++#define IOMMU_MAP_cache (1 << 2)
++
++/**
++ * IOMMU_map_pages
++ * Map pages on a IOMMU context.
++ *
++ * pgsize must be supported by pgsize_mask.
++ * Fails with -EINVAL if mapping on top of another mapping.
++ * Report actually mapped page count in mapped field (regardless of failure).
++ */
++struct pv_iommu_map_pages {
++    /* IN: IOMMU context number */
++    uint16_t ctx_no;
++
++    /* IN: Guest frame number */
++    uint64_aligned_t gfn;
++
++    /* IN: Device frame number */
++    uint64_aligned_t dfn;
++
++    /* IN: Map flags */
++    uint32_t map_flags;
++
++    /* IN: Size of pages to map */
++    uint32_t pgsize;
++
++    /* IN: Number of pages to map */
++    uint32_t nr_pages;
++
++    /* OUT: Number of pages actually mapped */
++    uint32_t mapped;
++};
++typedef struct pv_iommu_map_pages pv_iommu_map_pages_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_map_pages_t);
++
++/**
++ * IOMMU_unmap_pages
++ * Unmap pages on a IOMMU context.
++ *
++ * pgsize must be supported by pgsize_mask.
++ * Report actually unmapped page count in mapped field (regardless of failure).
++ * Fails with -ENOENT when attempting to unmap a page without any mapping
++ */
++struct pv_iommu_unmap_pages {
++    /* IN: IOMMU context number */
++    uint16_t ctx_no;
++
++    /* IN: Device frame number */
++    uint64_aligned_t dfn;
++
++    /* IN: Size of pages to unmap */
++    uint32_t pgsize;
++
++    /* IN: Number of pages to unmap */
++    uint32_t nr_pages;
++
++    /* OUT: Number of pages actually unmapped */
++    uint32_t unmapped;
++};
++typedef struct pv_iommu_unmap_pages pv_iommu_unmap_pages_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_unmap_pages_t);
++
++/**
++ * IOMMU_reattach_device
++ * Reattach a device to another IOMMU context.
++ * Fails with -ENODEV if no such device exist.
++ */
++struct pv_iommu_reattach_device {
++    /* IN: Target IOMMU context number */
++    uint16_t ctx_no;
++
++    /* IN: Physical device to move */
++    struct physdev_pci_device dev;
++
++    /* IN: PASID of the device (if IOMMUCAP_pasid) */
++    uint32_t pasid;
++};
++typedef struct pv_iommu_reattach_device pv_iommu_reattach_device_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_reattach_device_t);
++
++
++/**
++ * IOMMU_remote_cmd
++ * Do a PV-IOMMU operation on another domain.
++ * Current domain needs to be allowed to act on the target domain, otherwise
++ * fails with -EPERM.
++ */
++struct pv_iommu_remote_cmd {
++    /* IN: Target domain to do the subop on */
++    uint16_t domid;
++
++    /* IN: Command to do on target domain. */
++    uint16_t subop;
++
++    /* INOUT: Command argument from current domain memory */
++    GUEST_HANDLE(void) arg;
++};
++typedef struct pv_iommu_remote_cmd pv_iommu_remote_cmd_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_remote_cmd_t);
++
++/**
++ * IOMMU_alloc_nested
++ * Create a nested IOMMU context (needs IOMMUCAP_nested).
++ *
++ * This context uses a platform-specific page table from domain address space
++ * specified in pgtable_gfn and use it for nested translations.
++ *
++ * Explicit flushes needs to be submited with IOMMU_flush_nested on
++ * modification of the nested pagetable to ensure coherency between IOTLB and
++ * nested page table.
++ *
++ * This context can be destroyed using IOMMU_free_context.
++ * This context cannot be modified using map_pages, unmap_pages.
++ */
++struct pv_iommu_alloc_nested {
++    /* OUT: allocated IOMMU context number */
++    uint16_t ctx_no;
++
++    /* IN: guest frame number of the nested page table */
++    uint64_aligned_t pgtable_gfn;
++
++    /* IN: nested mode flags */
++    uint64_aligned_t nested_flags;
++};
++typedef struct pv_iommu_alloc_nested pv_iommu_alloc_nested_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_alloc_nested_t);
++
++/**
++ * IOMMU_flush_nested (needs IOMMUCAP_nested)
++ * Flush the IOTLB for nested translation.
++ */
++struct pv_iommu_flush_nested {
++    /* TODO */
++};
++typedef struct pv_iommu_flush_nested pv_iommu_flush_nested_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_flush_nested_t);
++
++/**
++ * IOMMU_attach_pasid (needs IOMMUCAP_pasid)
++ * Attach a new device-with-pasid to a IOMMU context.
++ * If a matching device-with-pasid already exists (globally),
++ * fail with -EEXIST.
++ * If pasid is 0, fails with -EINVAL.
++ * If physical device doesn't exist in domain, fail with -ENOENT.
++ */
++struct pv_iommu_attach_pasid {
++    /* IN: IOMMU context to add the device-with-pasid in */
++    uint16_t ctx_no;
++
++    /* IN: Physical device */
++    struct physdev_pci_device dev;
++
++    /* IN: pasid of the device to attach */
++    uint32_t pasid;
++};
++typedef struct pv_iommu_attach_pasid pv_iommu_attach_pasid_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_attach_pasid_t);
++
++/**
++ * IOMMU_detach_pasid (needs IOMMUCAP_pasid)
++ * detach a device-with-pasid.
++ * If the device-with-pasid doesn't exist or belong to the domain,
++ * fail with -ENOENT.
++ * If pasid is 0, fails with -EINVAL.
++ */
++struct pv_iommu_detach_pasid {
++    /* IN: Physical device */
++    struct physdev_pci_device dev;
++
++    /* pasid of the device to detach */
++    uint32_t pasid;
++};
++typedef struct pv_iommu_detach_pasid pv_iommu_detach_pasid_t;
++DEFINE_GUEST_HANDLE_STRUCT(pv_iommu_detach_pasid_t);
++
++/* long do_iommu_op(int subop, XEN_GUEST_HANDLE_PARAM(void) arg) */
++
++#endif
+\ No newline at end of file
+diff --git a/include/xen/interface/xen.h b/include/xen/interface/xen.h
+index 0ca23eca2a9c..8b1daf3fecc6 100644
+--- a/include/xen/interface/xen.h
++++ b/include/xen/interface/xen.h
+@@ -65,6 +65,7 @@
+ #define __HYPERVISOR_xc_reserved_op       39 /* reserved for XenClient */
+ #define __HYPERVISOR_xenpmu_op            40
+ #define __HYPERVISOR_dm_op                41
++#define __HYPERVISOR_iommu_op 					  43
+ 
+ /* Architecture-specific hypercall definitions. */
+ #define __HYPERVISOR_arch_0               48
+-- 
+2.45.2
+
+
+
+Teddy Astie | Vates XCP-ng Developer
+
+XCP-ng & Xen Orchestra - Vates solutions
+
+web: https://vates.tech
