@@ -1,103 +1,85 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 123C4165F04;
-	Mon,  4 Nov 2024 08:21:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34A903214;
+	Mon,  4 Nov 2024 08:30:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730708496; cv=none; b=gYOQPk05vYcjxYQfWuAh2C55CVR4KPg4VMqXTLQSaVzO7t6riwDtxqgJlKwJK/kl7PzqCbR2gxd0uyl+BGmxdfBtpeLYXgkJqoVu5HGpgUNlxvJO02aeLkGZ+6g32AsrObdTudbvbuib1GX14TnGK+BwJdIT5mlxR3HJPNnA2BA=
+	t=1730709035; cv=none; b=TKWkXEE4qrYvQObm1Nwy7gO2djztvazM97CZVymnAr0tHvAEJEpw1B1m+nuiWAkY9aBEgXzvDZUw4I0S0rfpz2ie9tGutM6t5b5+DeG60A+njVZWDe/+hbzVCG5MxyoOsMGPeLF7k3ZI3tNDrvRvD0o41Jj/qDPM6dWQeXCcr6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730708496; c=relaxed/simple;
-	bh=Uo6h7Rc21fEod+/+f108Uoio6Mmq+r3xbgnntl6Rrz0=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Wr6jF593968DmpRHONn/7yqmoUyN24PIpMirkyOdCt1WG1e+YA9vaADjVYWyrTvTJHn9sKTr81GQ0qt3m/wWHtXz8Apg7y+2DXOZp8rJZH3acbltYLUqsrqg/F0BkCj2GH6mOD/Zn8nA6/HySKAmLuI6PiUf1anCGJsnhUSMueQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jRJXQAXX; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1730709035; c=relaxed/simple;
+	bh=eXqRUGtrr2u2I5863H2MZn/pO3+hewmyqncVcvXNheY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=exiAkkqhzQ1/vd4ZTNEp/JkZ7egup0wo249AlB2rsU46hxsi95s6fHPVXw8PAmFjul2OHVd8lDx+/6zQx1ztbF3QiMFN6JwrM9yeBRIQERW7ae6LiZf4gJ4N2XKXtoqm8/eaNkOw1Zb824pK3G7l5eWzU2EotfkYuh6fzdEWex0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qQAgvipi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jRJXQAXX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B584C4CECE;
-	Mon,  4 Nov 2024 08:21:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qQAgvipi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6231FC4CECE;
+	Mon,  4 Nov 2024 08:30:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730708494;
-	bh=Uo6h7Rc21fEod+/+f108Uoio6Mmq+r3xbgnntl6Rrz0=;
-	h=From:To:Cc:Subject:Date:From;
-	b=jRJXQAXX1XKUiToBETTNS2k7JcMMk2yFiG2PVdgKsiXPy1yZQWXAxhWvHj94JUrHR
-	 LMj6P8+4Ky/9nL/aXLUqRE5FDJoOY0SlfPKWf3io50m4eg8E+3BMokCrfLKmlQgwob
-	 47MbHKApiUSYLlxfE56blPt7cx9EB84eMHtFRSsLCjp8/U4Ppl/0GtMFoQXvCLKLYg
-	 rLzZ/lRDnALZu4/4fP5ZYDh+bP33b08lUPKoJkV9/BpjK2lPJ1/60axykwUVbkMXXM
-	 2K/Wjda1SnbAj7EYu2U36rC7moJJrOvAyrBwiASXQzz/zidK1MV99Rz9R0t0UxeVLU
-	 wIr1lFyvDoIYQ==
-From: Arnd Bergmann <arnd@kernel.org>
-To: Jian Shen <shenjian15@huawei.com>,
-	Salil Mehta <salil.mehta@huawei.com>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-	Will Deacon <will@kernel.org>,
-	Joerg Roedel <jroedel@suse.de>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Jijie Shao <shaojijie@huawei.com>,
-	Peiyang Wang <wangpeiyang1@huawei.com>,
-	netdev@vger.kernel.org,
+	s=k20201202; t=1730709034;
+	bh=eXqRUGtrr2u2I5863H2MZn/pO3+hewmyqncVcvXNheY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qQAgvipizo2Gattng9GJqRBJOn2+Dyq7/rxpJramkhcWG3qBYkavT7OHiUeNSV2PG
+	 j+HKoUy7WgbDak1/6sWlhdQJMRlaFsHZsCRez09I2jyRFmPRi2Qn6Ve2maHtGm61gs
+	 vtxBWNbSfv2FKqJT1/cNJ0hVCYf+FRYpagwXE4v4sriawgvEsJbWYvrLaJ2EsivV9q
+	 qaBcBR9XYWlcDOUgj1IEFOkEiEyLm940Z7+ljiv/jhzfHpTm1oiNmNqHWohCi+cE4a
+	 v1hvFhmjFmNjBG8yOa3NrHhEYINbCRINZTVxjDYPy7/2zJGGkk4X1gtBOXYUeRJbwx
+	 ZF1h3c+fzFqCw==
+Date: Mon, 4 Nov 2024 09:30:17 +0100
+From: Joel Granados <joel.granados@kernel.org>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, 
 	linux-kernel@vger.kernel.org
-Subject: [PATCH] [net-next] net: hns3: add IOMMU_SUPPORT dependency
-Date: Mon,  4 Nov 2024 09:21:21 +0100
-Message-Id: <20241104082129.3142694-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.5
+Subject: Re: Re: [PATCH v2 1/1] iommu/vt-d: Drain PRQs when domain removed
+ from RID
+Message-ID: <emkjq4n4mzqegosmidht25qsveuoqxx6bg3r6npikwovomk5gw@ofbvlyrqkxqh>
+References: <20241101045543.70086-1-baolu.lu@linux.intel.com>
+ <76d4ab22-c3b9-47d8-9bb8-0430be05fee0@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <76d4ab22-c3b9-47d8-9bb8-0430be05fee0@linux.intel.com>
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Sat, Nov 02, 2024 at 11:16:31AM +0800, Baolu Lu wrote:
+> On 2024/11/1 12:55, Lu Baolu wrote:
+> > As this iommu driver now supports page faults for requests without
+> > PASID, page requests should be drained when a domain is removed from
+> > the RID2PASID entry.
+> > 
+> > This results in the intel_iommu_drain_pasid_prq() call being moved to
+> > intel_pasid_tear_down_entry(). This indicates that when a translation
+> > is removed from any PASID entry and the PRI has been enabled on the
+> > device, page requests are drained in the domain detachment path.
+> > 
+> > The intel_iommu_drain_pasid_prq() helper has been modified to support
+> > sending device TLB invalidation requests for both PASID and non-PASID
+> > cases.
+> > 
+> > Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+> > ---
+> >   drivers/iommu/intel/iommu.c |  1 -
+> >   drivers/iommu/intel/pasid.c |  1 +
+> >   drivers/iommu/intel/prq.c   | 26 +++++++++-----------------
+> >   3 files changed, 10 insertions(+), 18 deletions(-)
+> 
+> Queued for v6.13.
+Does this mean that "iommu: Enable user space IOPFs in non-PASID and
+non-svm cases" is also queued for 6.13?
 
-The hns3 driver started filling iommu_iotlb_gather structures itself,
-which requires CONFIG_IOMMU_SUPPORT is enabled:
+Best
 
-drivers/net/ethernet/hisilicon/hns3/hns3_enet.c: In function 'hns3_dma_map_sync':
-drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:395:14: error: 'struct iommu_iotlb_gather' has no member named 'start'
-  395 |  iotlb_gather.start = iova;
-      |              ^
-drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:396:14: error: 'struct iommu_iotlb_gather' has no member named 'end'
-  396 |  iotlb_gather.end = iova + granule - 1;
-      |              ^
-drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:397:14: error: 'struct iommu_iotlb_gather' has no member named 'pgsize'
-  397 |  iotlb_gather.pgsize = granule;
-      |              ^
+> 
+> --
+> baolu
 
-Add a Kconfig dependency to make it build in random configurations.
-
-Cc: Will Deacon <will@kernel.org>
-Cc: Joerg Roedel <jroedel@suse.de>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev
-Fixes: f2c14899caba ("net: hns3: add sync command to sync io-pgtable")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-I noticed that no other driver does this, so it would be good to
-have a confirmation from the iommu maintainers that this is how
-the interface and the dependency is intended to be used.
----
- drivers/net/ethernet/hisilicon/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/hisilicon/Kconfig b/drivers/net/ethernet/hisilicon/Kconfig
-index 65302c41bfb1..790efc8d2de6 100644
---- a/drivers/net/ethernet/hisilicon/Kconfig
-+++ b/drivers/net/ethernet/hisilicon/Kconfig
-@@ -91,6 +91,7 @@ config HNS_ENET
- config HNS3
- 	tristate "Hisilicon Network Subsystem Support HNS3 (Framework)"
- 	depends on PCI
-+	depends on IOMMU_SUPPORT
- 	select NET_DEVLINK
- 	select PAGE_POOL
- 	help
 -- 
-2.39.5
 
+Joel Granados
