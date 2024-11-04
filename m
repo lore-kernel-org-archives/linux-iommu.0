@@ -1,48 +1,47 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1FC584A35
-	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 13:19:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28AB2208A7
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 13:20:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730726342; cv=none; b=tVkFWJeuJRl1OAstNH78wzhrnhyGIaQaqGVlCx6K/L2NwOm0QpdWP5BL99sIiZNFRh3a3CObzw0M4Dac4VKgKmE/jEIBz9qjQfclg+SY+29rscmjnFLAHOtS7pptKJ/lCoXZXYYSfOt9951sD41IuUWeVYL3XQ+e8Ny+1Qbj1zw=
+	t=1730726438; cv=none; b=iSm+SKuFghPK+gzTsXTfoFg2FtNvlRcOYgq0Lu+Cmf2aWwjUOR3XkL3//edkR42q8f++ny+IdtxM+SAFUUqYEywHw0QU3vcCnub1TOMZHFPiPslSyXAVWM7steBepJw6J1bAj0PtFYhMnXUhaKLAKd5MDTLQe/NFvJL7TCG8EVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730726342; c=relaxed/simple;
-	bh=MROwMDqu2Sa+gM1LE0UPUlJ4Sjp/3p7HJPGD7Dw3RTM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ltXKpNB56r083K2u0wfMs1khteQfk+9ByW0vXQBxHmWbBD6PSuzQGqkRgYJWWpN6dnIl6FmvnX/pfDvo2pXz3mDpO2wTED2GRHfBp1mxEbbL5Fd35FFF8slNabdsApdDbkWvTFH3rpUnjnhgfDAaH0vHxNa4V6kKPdYoEbBYcqg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DzwYtfA5; arc=none smtp.client-ip=192.198.163.11
+	s=arc-20240116; t=1730726438; c=relaxed/simple;
+	bh=A2IuYzkoJgmiWWlDW7wZHf6bWUe+DxehJQp/4ahD86g=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=VAPWHZorf7WNe4vPA+cYMFhbxYcZPTtf9heRZrrbL3aiF4OoaPCDW1Z64s6m2MtNCZxV/67DexKrNQr/P9F34MLld9yGi6sIgqCCmDxaX+i7RphXZSCphRXOvZYile4csRjXWE+ccL39b/JtSbsYh53xhhN2K+l9gmwvR3ueXTc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IfMsuubG; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DzwYtfA5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IfMsuubG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730726341; x=1762262341;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MROwMDqu2Sa+gM1LE0UPUlJ4Sjp/3p7HJPGD7Dw3RTM=;
-  b=DzwYtfA5c1UzgltX1lLp79nNPwJtFTgXXyGfi5ocMQnyFsPKir/XfC5L
-   4qQvAN7lOLwY4V7I8EWhfHZVREtH/pfEyErL9NGjz4VImKtiWt9kJKkQG
-   iw2MTo9xo2O71HH+bvdagtILcNQi3AD97of9nfSvcLIsfXTI+la4SlgvW
-   tegywnUorztlZujsUUehsoqpr0TgLxSw7gCC5qeISZXGBElw8mfq9enzK
-   wgKwLZ0FePfA1vKfb3zrl2pYdjYzwlM9/7bKEiMkR89Cvz8COLsmXYOX7
-   HUYtCGzeSvCXNfWEN7AKecBBFRqANMVrCXF+aT+eZG8o9xq1wCz7zHwxV
-   w==;
-X-CSE-ConnectionGUID: pDjouwcsQiKARPAxifl/+A==
-X-CSE-MsgGUID: qnBejne/TFayhWG3flB1ig==
-X-IronPort-AV: E=McAfee;i="6700,10204,11246"; a="41003804"
-X-IronPort-AV: E=Sophos;i="6.11,257,1725346800"; 
-   d="scan'208";a="41003804"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2024 05:19:00 -0800
-X-CSE-ConnectionGUID: w4Ymx3kTRIecxqSyzuShtQ==
-X-CSE-MsgGUID: /SxzB56GSx2gRNKDALkAYg==
+  t=1730726437; x=1762262437;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=A2IuYzkoJgmiWWlDW7wZHf6bWUe+DxehJQp/4ahD86g=;
+  b=IfMsuubGkMC1NcLsekPH7J7ufJkrWzx+h38+oFozyalaz9aus7awSXtQ
+   N3m43VPNob+D/EtIx+toRge1zPcx6ERTLTD0BeAFg3VHGEPvwG9AABSEn
+   zW20Y46up4QY+fgZpeDXLOuuQeHZf2o5uXklSFMdifTgJvF3ko/NbpxDT
+   zmvrpP5TJijW9oMwey6frLRDjHN+QvtGmqUxTYOBjUggHtPKU3+gS7d++
+   pc7Bz2KLXD/PcR8sQdqDR4U1AeS7fnLQ8CDfqEkUm905SjnZIoczYUGNG
+   5QfIjL/ckOdBtPaK5dbrRWp+lIf23b4yBhLUbu0VDxhNNr5zET66aNlQg
+   g==;
+X-CSE-ConnectionGUID: ahBIBbVyRzafcTFr0y0qng==
+X-CSE-MsgGUID: ETTmeTkFRc6+0WhViDrW+g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="47883253"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="47883253"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2024 05:20:36 -0800
+X-CSE-ConnectionGUID: ZDilgAoBT4qMBP0ecyNMBw==
+X-CSE-MsgGUID: qC+N2/17SBqtce6qghSmwA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,257,1725346800"; 
-   d="scan'208";a="83999561"
+   d="scan'208";a="84099706"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmviesa010.fm.intel.com with ESMTP; 04 Nov 2024 05:18:59 -0800
+  by orviesa007.jf.intel.com with ESMTP; 04 Nov 2024 05:20:36 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	jgg@nvidia.com,
@@ -58,12 +57,10 @@ Cc: alex.williamson@redhat.com,
 	zhenzhong.duan@intel.com,
 	vasant.hegde@amd.com,
 	will@kernel.org
-Subject: [PATCH v4 13/13] iommu: Make set_dev_pasid op support domain replacement
-Date: Mon,  4 Nov 2024 05:18:42 -0800
-Message-Id: <20241104131842.13303-14-yi.l.liu@intel.com>
+Subject: [PATCH v3 0/7] Support attaching PASID to the blocked_domain
+Date: Mon,  4 Nov 2024 05:20:26 -0800
+Message-Id: <20241104132033.14027-1-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20241104131842.13303-1-yi.l.liu@intel.com>
-References: <20241104131842.13303-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,52 +69,55 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The iommu core is going to support domain replacement for pasid, it needs
-to make the set_dev_pasid op support replacing domain and keep the old
-domain config in the failure case.
+During the review of iommufd pasid series, Kevin and Jason suggested
+attaching PASID to the blocked domain hence replacing the usage of
+remove_dev_pasid() op [1]. This makes sense as it makes the PASID path
+aligned with the RID path which attaches the RID to the blocked_domain
+when it is to be blocked. To do it, it requires passing the old domain
+to the iommu driver. This has been done in [2].
 
-AMD iommu driver does not support domain replacement for pasid yet, so it
-would fail the set_dev_pasid op to keep the old config if the input @old
-is non-NULL.
+This series makes the Intel iommu driver, ARM SMMUv3 driver and AMD iommu
+driver support attaching PASID to the blocked domain. And in the end remove
+the remove_dev_pasid op from iommu_ops.
 
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/amd/pasid.c | 3 +++
- include/linux/iommu.h     | 3 ++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
+[1] https://lore.kernel.org/linux-iommu/20240816130202.GB2032816@nvidia.com/
+[2] https://lore.kernel.org/linux-iommu/20241104131842.13303-1-yi.l.liu@intel.com/
 
-diff --git a/drivers/iommu/amd/pasid.c b/drivers/iommu/amd/pasid.c
-index d1dfc745f55e..8c73a30c2800 100644
---- a/drivers/iommu/amd/pasid.c
-+++ b/drivers/iommu/amd/pasid.c
-@@ -109,6 +109,9 @@ int iommu_sva_set_dev_pasid(struct iommu_domain *domain,
- 	unsigned long flags;
- 	int ret = -EINVAL;
- 
-+	if (old)
-+		return -EOPNOTSUPP;
-+
- 	/* PASID zero is used for requests from the I/O device without PASID */
- 	if (!is_pasid_valid(dev_data, pasid))
- 		return ret;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index e1c8e92170e9..2ec0c9915aa5 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -614,7 +614,8 @@ struct iommu_ops {
-  * * EBUSY	- device is attached to a domain and cannot be changed
-  * * ENODEV	- device specific errors, not able to be attached
-  * * <others>	- treated as ENODEV by the caller. Use is discouraged
-- * @set_dev_pasid: set an iommu domain to a pasid of device
-+ * @set_dev_pasid: set or replace an iommu domain to a pasid of device. The pasid of
-+ *                 the device should be left in the old config in error case.
-  * @map_pages: map a physically contiguous set of pages of the same size to
-  *             an iommu domain.
-  * @unmap_pages: unmap a number of pages of the same size from an iommu domain
+v3:
+ - Add a patch to check remove_dev_pasid() in iommu_attach_device_pasid()
+ - Split patch 01 of v2 into two patches, drop the r-b of this patch due the
+   split.
+ - Add AMD iommu blocked domain pasid support (Jason)
+ - Remove the remove_dev_pasid op as all the iommu drivers that support pasid
+   attach have supported attaching pasid to blocked domain.
+
+v2: https://lore.kernel.org/linux-iommu/20241018055824.24880-1-yi.l.liu@intel.com/#t
+ - Add Kevin's r-b
+ - Adjust the order of patch 03 of v1, it should be the first patch (Baolu)
+
+v1: https://lore.kernel.org/linux-iommu/20240912130653.11028-1-yi.l.liu@intel.com/
+
+Regards,
+	Yi Liu
+
+Jason Gunthorpe (1):
+  iommu/arm-smmu-v3: Make the blocked domain support PASID
+
+Yi Liu (6):
+  iommu: Prevent pasid attach if no ops->remove_dev_pasid
+  iommu: Consolidate the ops->remove_dev_pasid usage into a helper
+  iommu: Detaching pasid by attaching to the blocked_domain
+  iommu/vt-d: Make the blocked domain support PASID
+  iommu/amd: Make the blocked domain support PASID
+  iommu: Remove the remove_dev_pasid op
+
+ drivers/iommu/amd/iommu.c                   | 10 ++++++++-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++++------
+ drivers/iommu/intel/iommu.c                 | 15 ++++++++++----
+ drivers/iommu/iommu.c                       | 23 ++++++++++++++-------
+ include/linux/iommu.h                       |  5 -----
+ 5 files changed, 42 insertions(+), 23 deletions(-)
+
 -- 
 2.34.1
 
