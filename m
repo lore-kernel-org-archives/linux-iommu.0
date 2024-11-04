@@ -1,109 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE70D2628C;
-	Sun,  3 Nov 2024 15:19:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE54A1632D0
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 01:41:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730647196; cv=none; b=rcbtKQaV/6iv/P5TABUG7MOFuim+8DbFEk6VSB8KpqQyLkRAbg+nBVAlNUOAP+h1/PNEyCSpoujolKXfn+JL+LMxyjiMdNHCFAFVy9N8Su1qyPYG4TUloRdDeWw/jbvCAAvgKDJM1/jyKLbA/nxEqbev7UGgue9HgVBjMSodU0s=
+	t=1730684486; cv=none; b=E0XCgS+UxWP2PqatLpdTW6pg9TLT8ohcb5wTRcOl/t2KigRjCt6PIXgP6zGk5AWDr+AX6qvHFf0S1kkdcj98e83osGXfC73Y34Dgb0Ew6MdRk+43WyNN4F5k335UIMsqfMdfBeCFeVTx7NdMK6TyLyCzezxzXWy/lAHjdZa+vC0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730647196; c=relaxed/simple;
-	bh=SfCXMZbNHN7ZBHtRMXT8dYyPlDizsgfBlczM/Izb1OA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IeYkaGo2GHw/aPhPye38XuY3lCcRm80pT4R75Ul6PR0Qir1oJ5eTqenLCUjxzfh1qRv7Xlpaiwg3Mny1/MlLSQVCVv0xuOtz/jDJs9iJHh8pu97KHenXtpCcRCy0YLRw1jqABdLE78DyX0a5ACycRansuMIbUiiQ3dGsfXzZyA8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j5cWNoE8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1730684486; c=relaxed/simple;
+	bh=bSn3aIq3rz3LgoOGOEtpxQT0RZDOVsctXmdMeTPqMs4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=L8BEGNBqAOCPxMq8KsCIa9dyLzfYGEWFkQCHCkY3/Tp0lA26KIMdOUhniQE6DYNhbgRnFNrpxwbFjYhbBu4oEQIqYerPIWSyEZcUsFalXc7DmPQ/35YlRDfsZMFSd8djpUJdlH14K28WvttlXa9qgNglDKRZt1F9R0aVMtNC+po=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ag5HP5Ye; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j5cWNoE8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D95DC4CECD;
-	Sun,  3 Nov 2024 15:19:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730647195;
-	bh=SfCXMZbNHN7ZBHtRMXT8dYyPlDizsgfBlczM/Izb1OA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=j5cWNoE8etENxU7IbfrBszJT10f6EWlfJqpPGvOpaZLTiWI1AidHTPWSL24msep+k
-	 At1fyHSehamOum/Kpf4tDMLVsWjyCbFVB1L3+uJPROcdL+JtfpRWtGbmTmmXws4+mU
-	 6Tax5d+Pem6waJZPuDXZsKSMbCUFxwDHGiatqmjanHAiNyMOnFy3GO/14wUoY9qDlK
-	 mafUcrdLGbf/qNYnEXemxmwc/kgO13ERQSBD0Q59NhZKcEgGCMs/Jsfq3Fei7V6xWc
-	 KS0Si/iP8Vl1pnx/fUh5aIOdBMiN7U2MYN4bxu2bUCfSI0yrbv2ocwZ0+G5O8IPgHi
-	 San3mdWHVOs/A==
-Date: Sun, 3 Nov 2024 17:19:46 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Zhu Yanjun <yanjun.zhu@linux.dev>
-Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
-	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH 2/7] block: don't merge different kinds of P2P
- transfers in a single bio
-Message-ID: <20241103151946.GA99170@unreal>
-References: <cover.1730037261.git.leon@kernel.org>
- <34d44537a65aba6ede215a8ad882aeee028b423a.1730037261.git.leon@kernel.org>
- <f80e7b54-b897-4df2-a49d-bc6012640a8a@linux.dev>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ag5HP5Ye"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1730684485; x=1762220485;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bSn3aIq3rz3LgoOGOEtpxQT0RZDOVsctXmdMeTPqMs4=;
+  b=Ag5HP5YeXTp++Ui/uvrtHb2D4VaUAn9pipvXmuwtuITtckWMp2eDNWXH
+   FReZ9q6OIzUdCUemlY9aP6etF2YxLKcb86Vf7BITungjxi8k6MqkaolWI
+   Av+MA4JhvrOR6n0uvHAyQLCFe0++eUEus9TM7sTwNzP7Xi17gV2KC4Ea/
+   mHvynBF2Z2bDySrqCws73hoPOzkhXpnhunEDAo51G+6p1P7PjMM6BEZ0Y
+   iyNnFDiB3ufiqF9WdFwIuuPSAc351t32sUpI++jWavNtQPvy1dS73MEm2
+   ZoCfJzbH5eXnw9bmZ7AG8YBxb2/1fKB6swVOyTuY7fWCAT5O+EXPw2WU+
+   w==;
+X-CSE-ConnectionGUID: oRl9IXINQXSsANoiFftx0w==
+X-CSE-MsgGUID: e7YshyahSQOkyOg6/7zAXQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="30221908"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="30221908"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2024 17:41:24 -0800
+X-CSE-ConnectionGUID: 7/y1Gui9Rm2ARZzP3bCjew==
+X-CSE-MsgGUID: Ug4VVJ3LSl+sNXVfddrRCQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,256,1725346800"; 
+   d="scan'208";a="88020867"
+Received: from allen-sbox.sh.intel.com ([10.239.159.30])
+  by fmviesa005.fm.intel.com with ESMTP; 03 Nov 2024 17:41:23 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 00/19] [PULL REQUEST] Intel IOMMU updates for v6.13
+Date: Mon,  4 Nov 2024 09:40:20 +0800
+Message-ID: <20241104014040.106100-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <f80e7b54-b897-4df2-a49d-bc6012640a8a@linux.dev>
 
-On Sat, Nov 02, 2024 at 08:39:35AM +0100, Zhu Yanjun wrote:
-> 在 2024/10/27 15:21, Leon Romanovsky 写道:
-> > From: Christoph Hellwig <hch@lst.de>
-> > 
-> > To get out of the dma mapping helpers having to check every segment for
-> > it's P2P status, ensure that bios either contain P2P transfers or non-P2P
-> > transfers, and that a P2P bio only contains ranges from a single device.
-> > 
-> > This means we do the page zone access in the bio add path where it should
-> > be still page hot, and will only have do the fairly expensive P2P topology
-> > lookup once per bio down in the dma mapping path, and only for already
-> > marked bios.
-> > 
-> > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >   block/bio.c               | 36 +++++++++++++++++++++++++++++-------
-> >   block/blk-map.c           | 32 ++++++++++++++++++++++++--------
-> >   include/linux/blk_types.h |  2 ++
-> >   3 files changed, 55 insertions(+), 15 deletions(-)
+Hi Joerg,
 
-<...>
+The following changes have been queued for v6.13-rc1. They are about new
+features and code refactoring, including:
 
-> > @@ -410,6 +411,7 @@ enum req_flag_bits {
-> >   #define REQ_DRV		(__force blk_opf_t)(1ULL << __REQ_DRV)
-> >   #define REQ_FS_PRIVATE	(__force blk_opf_t)(1ULL << __REQ_FS_PRIVATE)
-> >   #define REQ_ATOMIC	(__force blk_opf_t)(1ULL << __REQ_ATOMIC)
-> > +#define REQ_P2PDMA	(__force blk_opf_t)(1ULL << __REQ_P2PDMA)
-> 
-> #define REQ_P2PDMA	(__force blk_opf_t)BIT_ULL(__REQ_P2PDMA)
-> 
-> Use BIT_ULL instead of direct left shit.
+ - Add domain_alloc_paging support
+ - Enable user space IOPFs in non-PASID and non-svm cases
+ - Small code refactoring and cleanups
 
-We keep coding style consistent and all defines above aren't implemented
-with BIT_ULL().
+These patches are based on v6.12-rc6. The complete patches are also
+available at:
 
-Thanks
+https://github.com/LuBaolu/intel-iommu/commits/vtd-update-for-v6.13
 
-> 
-> Zhu Yanjun
-> 
-> >   #define REQ_NOUNMAP	(__force blk_opf_t)(1ULL << __REQ_NOUNMAP)
-> 
+Please consider them for iommu next.
+
+Best regards,
+baolu
+
+Andy Shevchenko (1):
+  iommu/vt-d: Increase buffer size for device name
+
+Dr. David Alan Gilbert (1):
+  iommu/vt-d: Remove unused dmar_msi_read
+
+Jinjie Ruan (1):
+  iommu/vt-d: Use PCI_DEVID() macro
+
+Joel Granados (3):
+  iommu/vt-d: Separate page request queue from SVM
+  iommu/vt-d: Move IOMMU_IOPF into INTEL_IOMMU
+  iommufd: Enable PRI when doing the iommufd_hwpt_alloc
+
+Klaus Jensen (2):
+  iommu/vt-d: Remove the pasid present check in prq_event_thread
+  iommu/vt-d: Drop pasid requirement for prq initialization
+
+Lu Baolu (8):
+  iommu/vt-d: Add domain_alloc_paging support
+  iommu/vt-d: Remove unused domain_alloc callback
+  iommu/vt-d: Enhance compatibility check for paging domain attach
+  iommu/vt-d: Remove domain_update_iommu_cap()
+  iommu/vt-d: Remove domain_update_iommu_superpage()
+  iommu/vt-d: Refactor first_level_by_default()
+  iommu/vt-d: Refine intel_iommu_domain_alloc_user()
+  iommu/vt-d: Drain PRQs when domain removed from RID
+
+Yi Liu (1):
+  iommu/vt-d: Drop s1_pgtbl from dmar_domain
+
+Zhenzhong Duan (2):
+  iommu/vt-d: Fix checks and print in dmar_fault_dump_ptes()
+  iommu/vt-d: Fix checks and print in pgtable_walk()
+
+ drivers/iommu/intel/Kconfig          |   2 +-
+ drivers/iommu/intel/Makefile         |   2 +-
+ drivers/iommu/intel/dmar.c           |  15 +-
+ drivers/iommu/intel/iommu.c          | 404 +++++++--------------------
+ drivers/iommu/intel/iommu.h          |  22 +-
+ drivers/iommu/intel/irq_remapping.c  |   4 +-
+ drivers/iommu/intel/nested.c         |   3 +-
+ drivers/iommu/intel/pasid.c          |  34 +--
+ drivers/iommu/intel/prq.c            | 396 ++++++++++++++++++++++++++
+ drivers/iommu/intel/svm.c            | 397 --------------------------
+ drivers/iommu/iommufd/hw_pagetable.c |   3 +-
+ include/linux/dmar.h                 |   1 -
+ 12 files changed, 517 insertions(+), 766 deletions(-)
+ create mode 100644 drivers/iommu/intel/prq.c
+
+-- 
+2.43.0
+
