@@ -1,94 +1,214 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E18BF1AF0B3;
-	Mon,  4 Nov 2024 11:32:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D8221B3936
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 11:35:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730719965; cv=none; b=fp5nWnf1fsHQkC+Jl7lFuR0ykj6FHwTTuxlnkL/HdUrx2KJU/U1FBYJKg9TH8kWyR00P17h+tbhUtuhwaPEpchuZXP/1SQZHzqxpLkkFreUbi5+AzCNsvHFj9lVjvzSIsbexXmafA+hMCzPm3Bb+38ZpgGSbVUKMb6MksiwMkBQ=
+	t=1730720138; cv=none; b=ZZEK6JpdYs/DT6FvhEQ9wqW/f35PtftXDJXNPquKteQwLXQfJPj+G0kCjxwaOvB5IDCpTr1oT/y6TzaxSMjW0qZQNud6NKOfGRhsjGX3kYiDkV/WA9ckCjr6KbBdzHWe+oNe/Ov5FU608syAtY27Ge6zY1+BOwlXho30xNEaOww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730719965; c=relaxed/simple;
-	bh=8ZO8QMi8eDQyeTvFBdXQdNHTOJOfrtdUJdubuiwZ26E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gK2iAC6eLBCrS8RsqoPYvaeWTW8H0T+KFF90nVhCbXRSHjtbP1k+NaH0Wzv/p1b5Lx5NNN/4i2eAmlfPS23mpPnIvO777Z5JNdFn4h7kWJARBwzB43QrlJCnSBjotVPWtU3e3GFIdiMvsor5LrC4TuHfwXgpe1zEhGWyDL9c2k8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eMIpvvSl; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eMIpvvSl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 891D9C4CED1;
-	Mon,  4 Nov 2024 11:32:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730719964;
-	bh=8ZO8QMi8eDQyeTvFBdXQdNHTOJOfrtdUJdubuiwZ26E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=eMIpvvSlZ8E4uxwZ7RDJG/WK491fOg5D1/i7OF8DAZMparvrwh25tgA94GY1Kvi0a
-	 t8TVXxZfxukkgbQszt9zut5dFN6DkJA3yGO0A9NYJIVCH7nogxxgEpEyMNHGhFY3VR
-	 0co6qii2nN7EhEGZcSGisc+1zvNrlLGAnoTr+SVonFeO7N5Uo5g885gGZg6wy+ezQg
-	 BLsGOKpWXVSR8wS2wTG6Sdh4Js7Hrh3eDOF/51e3083RdUBcZQPbTHhgoHrum0M1wW
-	 g+V+XsUY+35ZgGm6tZvBFewKdmu/BspsFIy9/BTHHEUxATypIUSYqmu3VZc8R8jpRc
-	 lSRPC1aMRuYnQ==
-Date: Mon, 4 Nov 2024 11:32:39 +0000
-From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Boris Brezillon <boris.brezillon@collabora.com>,
-	dri-devel@lists.freedesktop.org, Liviu Dudau <liviu.dudau@arm.com>,
-	patches@lists.linux.dev, Steven Price <steven.price@arm.com>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Remove split on unmap behavior
-Message-ID: <20241104113237.GA11481@willie-the-truck>
-References: <0-v1-8c5f369ec2e5+75-arm_no_split_jgg@nvidia.com>
- <20241101134005.GA109739@nvidia.com>
+	s=arc-20240116; t=1730720138; c=relaxed/simple;
+	bh=Fw3Ths9vDwnK8u5nmacNwwahWbw6A4tR5lr9+d5obaU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=pImP1WeXYU3Y/G3YRxmfqT+0nWGfiCgVL9JppYewLinH7Rz5bEhjJ/WKE+ZtgNE+mDeZZ7ZW422mIbtuPJFaSqxs+fl7qkZd0tTS8WhbVisO3JIbwcIYuoAGGIz+MlI6z1RHoL/z88vDHJZxJbJY+nYmmBrAuMhlhSUIXM3EoIU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1DC0FFEC;
+	Mon,  4 Nov 2024 03:36:03 -0800 (PST)
+Received: from [10.57.88.110] (unknown [10.57.88.110])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B01A03F66E;
+	Mon,  4 Nov 2024 03:35:31 -0800 (PST)
+Message-ID: <8c2b95e0-ff3b-4b9b-b9de-76df933ffd88@arm.com>
+Date: Mon, 4 Nov 2024 11:35:29 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241101134005.GA109739@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] kmemleak: iommu/iova: Fix transient kmemleak false
+ positive
+To: Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
+ linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org, Ido Schimmel <idosch@idosch.org>,
+ Ido Schimmel <idosch@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
+References: <20241104111944.2207155-1-catalin.marinas@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20241104111944.2207155-1-catalin.marinas@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Nov 01, 2024 at 10:40:05AM -0300, Jason Gunthorpe wrote:
-> On Fri, Oct 18, 2024 at 02:19:26PM -0300, Jason Gunthorpe wrote:
-> > Of the page table implementations (AMD v1/2, VT-D SS, ARM32, DART)
-> > arm_lpae is unique in how it handles partial unmap of large IOPTEs.
-> > 
-> > All other drivers will unmap the large IOPTE and return it's length.  For
-> > example if a 2M IOPTE is present and the first 4K is requested to be
-> > unmapped then unmap will remove the whole 2M and report 2M as the result.
-> > 
-> > arm_lpae instead replaces the IOPTE with a table of smaller IOPTEs, unmaps
-> > the 4K and returns 4k. This is actually an illegal/non-hitless operation
-> > on at least SMMUv3 because of the BBM level 0 rules.
-> > 
-> > Long ago VFIO could trigger a path like this, today I know of no user of
-> > this functionality.
-> > 
-> > Given it doesn't work fully correctly on SMMUv3 and would create
-> > portability problems if any user depends on it, remove the unique support
-> > in arm_lpae and align with the expected iommu interface.
-> > 
-> > Outside the iommu users, this will potentially effect io_pgtable users of
-> > ARM_32_LPAE_S1, ARM_32_LPAE_S2, ARM_64_LPAE_S1, ARM_64_LPAE_S2, and
-> > ARM_MALI_LPAE formats.
-> > 
-> > Cc: Boris Brezillon <boris.brezillon@collabora.com>
-> > Cc: Steven Price <steven.price@arm.com>
-> > Cc: Liviu Dudau <liviu.dudau@arm.com>
-> > Cc: dri-devel@lists.freedesktop.org
-> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > ---
-> >  drivers/iommu/io-pgtable-arm.c | 72 +++-------------------------------
-> >  1 file changed, 6 insertions(+), 66 deletions(-)
+On 2024-11-04 11:19 am, Catalin Marinas wrote:
+> The introduction of iova_depot_pop() in 911aa1245da8 ("iommu/iova: Make
+> the rcache depot scale better") confused kmemleak by moving a struct
+> iova_magazine object from a singly linked list to rcache->depot and
+> resetting the 'next' pointer referencing it. Unlike doubly linked lists,
+> the content of the object being referred is never changed on removal
+> from a singly linked list and the kmemleak checksum heuristics do not
+> detect such scenario. This leads to false positives like:
 > 
-> Updated commit message - Will let me know if you want me to resend
-> with this, or any changes:
+> unreferenced object 0xffff8881a5301000 (size 1024):
+>    comm "softirq", pid 0, jiffies 4306297099 (age 462.991s)
+>    hex dump (first 32 bytes):
+>      00 00 00 00 00 00 00 00 e7 7d 05 00 00 00 00 00  .........}......
+>      0f b4 05 00 00 00 00 00 b4 96 05 00 00 00 00 00  ................
+>    backtrace:
+>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
+>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
+>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
+>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
+>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
+>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
+>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
+>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
+>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
+> 
+> Introduce kmemleak_transient_leak() which resets the object checksum
+> requiring another scan pass before it is reported (if still
+> unreferenced). Call this new API in iova_depot_pop().
 
-Thanks! Please send a new version with this text, the WARN we discussed
-in the other part of the thread and also attacking the v7s code.
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 
-Cheers,
+> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> Reported-by: Ido Schimmel <idosch@idosch.org>
+> Tested-by: Ido Schimmel <idosch@nvidia.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Link: https://lore.kernel.org/r/ZY1osaGLyT-sdKE8@shredder/
+> ---
+> 
+> This could be two patches but I thought the rationale for a new kmemleak
+> API goes better with its use in the iova code. Happy to move the 6 lines
+> iova change to a separate patch but they should still go in together.
+> Given that there are more line under mm/, I'd say it better goes in via
+> the mm tree with the relevant acks from the iommu folk.
+> 
+> Thanks.
+> 
+>   Documentation/dev-tools/kmemleak.rst |  1 +
+>   drivers/iommu/iova.c                 |  6 +++++
+>   include/linux/kmemleak.h             |  4 +++
+>   mm/kmemleak.c                        | 39 ++++++++++++++++++++++++++++
+>   4 files changed, 50 insertions(+)
+> 
+> diff --git a/Documentation/dev-tools/kmemleak.rst b/Documentation/dev-tools/kmemleak.rst
+> index 2cb00b53339f..7d784e03f3f9 100644
+> --- a/Documentation/dev-tools/kmemleak.rst
+> +++ b/Documentation/dev-tools/kmemleak.rst
+> @@ -161,6 +161,7 @@ See the include/linux/kmemleak.h header for the functions prototype.
+>   - ``kmemleak_free_percpu``	 - notify of a percpu memory block freeing
+>   - ``kmemleak_update_trace``	 - update object allocation stack trace
+>   - ``kmemleak_not_leak``	 - mark an object as not a leak
+> +- ``kmemleak_transient_leak``	 - mark an object as a transient leak
+>   - ``kmemleak_ignore``		 - do not scan or report an object as leak
+>   - ``kmemleak_scan_area``	 - add scan areas inside a memory block
+>   - ``kmemleak_no_scan``	 - do not scan a memory block
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 16c6adff3eb7..5b5400efb657 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -6,6 +6,7 @@
+>    */
+>   
+>   #include <linux/iova.h>
+> +#include <linux/kmemleak.h>
+>   #include <linux/module.h>
+>   #include <linux/slab.h>
+>   #include <linux/smp.h>
+> @@ -673,6 +674,11 @@ static struct iova_magazine *iova_depot_pop(struct iova_rcache *rcache)
+>   {
+>   	struct iova_magazine *mag = rcache->depot;
+>   
+> +	/*
+> +	 * As the mag->next pointer is moved to rcache->depot and reset via
+> +	 * the mag->size assignment, mark it as a transient false positive.
+> +	 */
+> +	kmemleak_transient_leak(mag->next);
+>   	rcache->depot = mag->next;
+>   	mag->size = IOVA_MAG_SIZE;
+>   	rcache->depot_size--;
+> diff --git a/include/linux/kmemleak.h b/include/linux/kmemleak.h
+> index 6a3cd1bf4680..93a73c076d16 100644
+> --- a/include/linux/kmemleak.h
+> +++ b/include/linux/kmemleak.h
+> @@ -26,6 +26,7 @@ extern void kmemleak_free_part(const void *ptr, size_t size) __ref;
+>   extern void kmemleak_free_percpu(const void __percpu *ptr) __ref;
+>   extern void kmemleak_update_trace(const void *ptr) __ref;
+>   extern void kmemleak_not_leak(const void *ptr) __ref;
+> +extern void kmemleak_transient_leak(const void *ptr) __ref;
+>   extern void kmemleak_ignore(const void *ptr) __ref;
+>   extern void kmemleak_scan_area(const void *ptr, size_t size, gfp_t gfp) __ref;
+>   extern void kmemleak_no_scan(const void *ptr) __ref;
+> @@ -93,6 +94,9 @@ static inline void kmemleak_update_trace(const void *ptr)
+>   static inline void kmemleak_not_leak(const void *ptr)
+>   {
+>   }
+> +static inline void kmemleak_transient_leak(const void *ptr)
+> +{
+> +}
+>   static inline void kmemleak_ignore(const void *ptr)
+>   {
+>   }
+> diff --git a/mm/kmemleak.c b/mm/kmemleak.c
+> index 0400f5e8ac60..72e09ac9140b 100644
+> --- a/mm/kmemleak.c
+> +++ b/mm/kmemleak.c
+> @@ -934,6 +934,28 @@ static void make_black_object(unsigned long ptr, unsigned int objflags)
+>   	paint_ptr(ptr, KMEMLEAK_BLACK, objflags);
+>   }
+>   
+> +/*
+> + * Reset the checksum of an object. The immediate effect is that it will not
+> + * be reported as a leak during the next scan until its checksum is updated.
+> + */
+> +static void reset_checksum(unsigned long ptr)
+> +{
+> +	unsigned long flags;
+> +	struct kmemleak_object *object;
+> +
+> +	object = find_and_get_object(ptr, 0);
+> +	if (!object) {
+> +		kmemleak_warn("Not resetting the checksum of an unknown object at 0x%08lx\n",
+> +			      ptr);
+> +		return;
+> +	}
+> +
+> +	raw_spin_lock_irqsave(&object->lock, flags);
+> +	object->checksum = 0;
+> +	raw_spin_unlock_irqrestore(&object->lock, flags);
+> +	put_object(object);
+> +}
+> +
+>   /*
+>    * Add a scanning area to the object. If at least one such area is added,
+>    * kmemleak will only scan these ranges rather than the whole memory block.
+> @@ -1202,6 +1224,23 @@ void __ref kmemleak_not_leak(const void *ptr)
+>   }
+>   EXPORT_SYMBOL(kmemleak_not_leak);
+>   
+> +/**
+> + * kmemleak_transient_leak - mark an allocated object as transient false positive
+> + * @ptr:	pointer to beginning of the object
+> + *
+> + * Calling this function on an object will cause the memory block to not be
+> + * reported as a leak temporarily. This may happen, for example, if the object
+> + * is part of a singly linked list and the ->next reference to it is changed.
+> + */
+> +void __ref kmemleak_transient_leak(const void *ptr)
+> +{
+> +	pr_debug("%s(0x%px)\n", __func__, ptr);
+> +
+> +	if (kmemleak_enabled && ptr && !IS_ERR(ptr))
+> +		reset_checksum((unsigned long)ptr);
+> +}
+> +EXPORT_SYMBOL(kmemleak_transient_leak);
+> +
+>   /**
+>    * kmemleak_ignore - ignore an allocated object
+>    * @ptr:	pointer to beginning of the object
 
-Will
