@@ -1,256 +1,119 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5DA2F1AB6F1;
-	Mon,  4 Nov 2024 10:32:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB6281B2181
+	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 10:40:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730716341; cv=none; b=mlCP+REZUHm8TYqC5EZYXS5qxqkCPJ3D6f2+JK5SeAJQYv3bd7whcm+RNuC4YKYPBNt0wPZHouYDhFS8N5AN6EIfD5iFkZozF6iZaLOgaZ+j/vGQuuoQ3cE3tDuqAjBJ4FcBxPv2fh+/YGXQ2MJUBpfMO7eK9XdQdSZDGBwu0j0=
+	t=1730716857; cv=none; b=DaU63hjkTkxcb2hlvlRDkhRjcRP6SOcPyw2Z5+/N3BfArKoUSSn/n5osr4Auyd6BkZJaT5T7sl5bhbehsVdv5ewlRZ8t23U7iVivAV3mwzpPXvStQ7iiusrrUr0JAx7WPHiX7JO4LqJ2wOraAFHjNoLOUSFVW8GkW2uzXla6NKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730716341; c=relaxed/simple;
-	bh=0g6fsbrfbKoeB1+lLzNSUUJqImvH5HnzCsnnVU3FqHY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sfHqQhZjKaYnx5MVb5txkavFfQiTzT54lbtUp1DKGg2SUmHYx5cbq3FTKFWATI0NCkiEjMXVF8/MM1uTpE4EL9nRljyskjuj4rWNWeKMlhfph2OAShT3KUzxiiP4H/SphjtLp128q6qJRjHrfA4GeV6zkC1w1hxUJ4uvdXGidFY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 583E4FEC;
-	Mon,  4 Nov 2024 02:32:47 -0800 (PST)
-Received: from [10.57.88.110] (unknown [10.57.88.110])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7FB933F66E;
-	Mon,  4 Nov 2024 02:32:12 -0800 (PST)
-Message-ID: <6b5b4f25-0f42-4f83-b6b5-82c1adbefe83@arm.com>
-Date: Mon, 4 Nov 2024 10:32:10 +0000
+	s=arc-20240116; t=1730716857; c=relaxed/simple;
+	bh=m6opQSBcWWbuVEdYYZk/8Nf7W4rLK+/ozTtoizYvE0w=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=VYaevml7CMmmWjk3j0XVd4E1j/Na4Ecuni/nMTqvrEFE7iHQ6XTeZpieXvnyr0QVocyrKYxWfFLCJYAtjoHcIhI5J+e5MYr5l0oRKRnhL0rJJt/XjOyWLaCUB5Yj1SLwBA8w5IBmrQ7Sk9KfCkvG8fZMwBN+rnENbQp4U67DwBU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.17])
+	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Xhnv62zP0z1JB6K;
+	Mon,  4 Nov 2024 18:36:18 +0800 (CST)
+Received: from kwepemk500014.china.huawei.com (unknown [7.202.194.99])
+	by mail.maildlp.com (Postfix) with ESMTPS id 5A50F1A0188;
+	Mon,  4 Nov 2024 18:40:52 +0800 (CST)
+Received: from frapeml500007.china.huawei.com (7.182.85.172) by
+ kwepemk500014.china.huawei.com (7.202.194.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Mon, 4 Nov 2024 18:40:51 +0800
+Received: from frapeml500007.china.huawei.com ([7.182.85.172]) by
+ frapeml500007.china.huawei.com ([7.182.85.172]) with mapi id 15.01.2507.039;
+ Mon, 4 Nov 2024 11:40:49 +0100
+From: Salil Mehta <salil.mehta@huawei.com>
+To: Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@kernel.org>,
+	"shenjian (K)" <shenjian15@huawei.com>
+CC: Arnd Bergmann <arnd@arndb.de>, Will Deacon <will@kernel.org>, Joerg Roedel
+	<jroedel@suse.de>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Andrew
+ Lunn" <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, "Eric
+ Dumazet" <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, shaojijie <shaojijie@huawei.com>, wangpeiyang
+	<wangpeiyang1@huawei.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] [net-next] net: hns3: add IOMMU_SUPPORT dependency
+Thread-Topic: [PATCH] [net-next] net: hns3: add IOMMU_SUPPORT dependency
+Thread-Index: AQHbLpKYY9Lsz1VxeUenvFuoDgyBFLKm2vEAgAASuSA=
+Date: Mon, 4 Nov 2024 10:40:49 +0000
+Message-ID: <96df804b6d9d467391fda27d90b5227c@huawei.com>
+References: <20241104082129.3142694-1-arnd@kernel.org>
+ <069c9838-b781-4012-934a-d2626fa78212@arm.com>
+In-Reply-To: <069c9838-b781-4012-934a-d2626fa78212@arm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu: Switch back to struct platform_driver::remove()
-To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, Rob Clark <robdclark@gmail.com>,
- Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>,
- Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
- <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
- Michael Shavit <mshavit@google.com>, Mostafa Saleh <smostafa@google.com>,
- Lu Baolu <baolu.lu@linux.intel.com>,
- Georgi Djakov <quic_c_gdjako@quicinc.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, asahi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-riscv@lists.infradead.org
-References: <20241104064650.799122-2-u.kleine-koenig@baylibre.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20241104064650.799122-2-u.kleine-koenig@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
-On 2024-11-04 6:46 am, Uwe Kleine-König wrote:
-> After commit 0edb555a65d1 ("platform: Make platform_driver::remove()
-> return void") .remove() is (again) the right callback to implement for
-> platform drivers.
-> 
-> Convert all platform drivers below drivers/iommu to use .remove(), with
-> the eventual goal to drop struct platform_driver::remove_new(). As
-> .remove() and .remove_new() have the same prototypes, conversion is done
-> by just changing the structure member name in the driver initializer.
-
-I dont see any major concern with doing it this way. FWIW,
-
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
-> ---
-> Hello,
-> 
-> I did a single patch for all of drivers/iommu. While I usually prefer to
-> do one logical change per patch, this seems to be overengineering here
-> as the individual changes are really trivial and shouldn't be much in
-> the way for stable backports. But I'll happily split the patch if you
-> prefer it split.
-> 
-> This is based on today's next, if conflicts arise when you apply it at
-> some later time and don't want to resolve them, feel free to just drop
-> the changes to the conflicting files. I'll notice and followup at a
-> later time then. Or ask me for a fixed resend. (Having said that, I
-> recommend b4 am -3 + git am -3 which should resolve most conflicts just
-> fine.)
-> 
-> Best regards
-> Uwe
-> 
->   drivers/iommu/apple-dart.c                  | 2 +-
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
->   drivers/iommu/arm/arm-smmu/arm-smmu.c       | 2 +-
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 4 ++--
->   drivers/iommu/ipmmu-vmsa.c                  | 2 +-
->   drivers/iommu/msm_iommu.c                   | 2 +-
->   drivers/iommu/mtk_iommu.c                   | 2 +-
->   drivers/iommu/mtk_iommu_v1.c                | 2 +-
->   drivers/iommu/omap-iommu.c                  | 2 +-
->   drivers/iommu/riscv/iommu-platform.c        | 2 +-
->   drivers/iommu/sprd-iommu.c                  | 2 +-
->   11 files changed, 12 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index eb1e62cd499a..c5bde50d1c42 100644
-> --- a/drivers/iommu/apple-dart.c
-> +++ b/drivers/iommu/apple-dart.c
-> @@ -1352,7 +1352,7 @@ static struct platform_driver apple_dart_driver = {
->   		.pm			= pm_sleep_ptr(&apple_dart_pm_ops),
->   	},
->   	.probe	= apple_dart_probe,
-> -	.remove_new = apple_dart_remove,
-> +	.remove	= apple_dart_remove,
->   };
->   
->   module_platform_driver(apple_dart_driver);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 826db8894fb7..efbc78bffd33 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -4679,7 +4679,7 @@ static struct platform_driver arm_smmu_driver = {
->   		.suppress_bind_attrs	= true,
->   	},
->   	.probe	= arm_smmu_device_probe,
-> -	.remove_new = arm_smmu_device_remove,
-> +	.remove	= arm_smmu_device_remove,
->   	.shutdown = arm_smmu_device_shutdown,
->   };
->   module_driver(arm_smmu_driver, platform_driver_register,
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index 8321962b3714..4e9bb9f4c4bd 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -2372,7 +2372,7 @@ static struct platform_driver arm_smmu_driver = {
->   		.suppress_bind_attrs    = true,
->   	},
->   	.probe	= arm_smmu_device_probe,
-> -	.remove_new = arm_smmu_device_remove,
-> +	.remove = arm_smmu_device_remove,
->   	.shutdown = arm_smmu_device_shutdown,
->   };
->   module_platform_driver(arm_smmu_driver);
-> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> index b98a7a598b89..9ce2fe50b22c 100644
-> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> @@ -759,7 +759,7 @@ static struct platform_driver qcom_iommu_ctx_driver = {
->   		.of_match_table	= ctx_of_match,
->   	},
->   	.probe	= qcom_iommu_ctx_probe,
-> -	.remove_new = qcom_iommu_ctx_remove,
-> +	.remove	= qcom_iommu_ctx_remove,
->   };
->   
->   static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
-> @@ -931,7 +931,7 @@ static struct platform_driver qcom_iommu_driver = {
->   		.pm		= &qcom_iommu_pm_ops,
->   	},
->   	.probe	= qcom_iommu_device_probe,
-> -	.remove_new = qcom_iommu_device_remove,
-> +	.remove	= qcom_iommu_device_remove,
->   };
->   
->   static int __init qcom_iommu_init(void)
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index ff55b8c30712..074daf1aac4e 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -1159,6 +1159,6 @@ static struct platform_driver ipmmu_driver = {
->   		.pm = pm_sleep_ptr(&ipmmu_pm),
->   	},
->   	.probe = ipmmu_probe,
-> -	.remove_new = ipmmu_remove,
-> +	.remove = ipmmu_remove,
->   };
->   builtin_platform_driver(ipmmu_driver);
-> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-> index 989e0869d805..ce40f0a419ea 100644
-> --- a/drivers/iommu/msm_iommu.c
-> +++ b/drivers/iommu/msm_iommu.c
-> @@ -838,6 +838,6 @@ static struct platform_driver msm_iommu_driver = {
->   		.of_match_table = msm_iommu_dt_match,
->   	},
->   	.probe		= msm_iommu_probe,
-> -	.remove_new	= msm_iommu_remove,
-> +	.remove		= msm_iommu_remove,
->   };
->   builtin_platform_driver(msm_iommu_driver);
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index c45313c43b9e..72b68d037b95 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -1794,7 +1794,7 @@ MODULE_DEVICE_TABLE(of, mtk_iommu_of_ids);
->   
->   static struct platform_driver mtk_iommu_driver = {
->   	.probe	= mtk_iommu_probe,
-> -	.remove_new = mtk_iommu_remove,
-> +	.remove	= mtk_iommu_remove,
->   	.driver	= {
->   		.name = "mtk-iommu",
->   		.of_match_table = mtk_iommu_of_ids,
-> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> index ee4e55b6b190..480e57ea6635 100644
-> --- a/drivers/iommu/mtk_iommu_v1.c
-> +++ b/drivers/iommu/mtk_iommu_v1.c
-> @@ -745,7 +745,7 @@ static const struct dev_pm_ops mtk_iommu_v1_pm_ops = {
->   
->   static struct platform_driver mtk_iommu_v1_driver = {
->   	.probe	= mtk_iommu_v1_probe,
-> -	.remove_new = mtk_iommu_v1_remove,
-> +	.remove	= mtk_iommu_v1_remove,
->   	.driver	= {
->   		.name = "mtk-iommu-v1",
->   		.of_match_table = mtk_iommu_v1_of_ids,
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 3f72aef8bd5b..b8ced5d0581c 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1285,7 +1285,7 @@ static const struct of_device_id omap_iommu_of_match[] = {
->   
->   static struct platform_driver omap_iommu_driver = {
->   	.probe	= omap_iommu_probe,
-> -	.remove_new = omap_iommu_remove,
-> +	.remove	= omap_iommu_remove,
->   	.driver	= {
->   		.name	= "omap-iommu",
->   		.pm	= &omap_iommu_pm_ops,
-> diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
-> index da336863f152..382ba2841849 100644
-> --- a/drivers/iommu/riscv/iommu-platform.c
-> +++ b/drivers/iommu/riscv/iommu-platform.c
-> @@ -81,7 +81,7 @@ static const struct of_device_id riscv_iommu_of_match[] = {
->   
->   static struct platform_driver riscv_iommu_platform_driver = {
->   	.probe = riscv_iommu_platform_probe,
-> -	.remove_new = riscv_iommu_platform_remove,
-> +	.remove = riscv_iommu_platform_remove,
->   	.driver = {
->   		.name = "riscv,iommu",
->   		.of_match_table = riscv_iommu_of_match,
-> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-> index a2f4ffe6d949..e84806eee281 100644
-> --- a/drivers/iommu/sprd-iommu.c
-> +++ b/drivers/iommu/sprd-iommu.c
-> @@ -531,7 +531,7 @@ static struct platform_driver sprd_iommu_driver = {
->   		.suppress_bind_attrs = true,
->   	},
->   	.probe	= sprd_iommu_probe,
-> -	.remove_new = sprd_iommu_remove,
-> +	.remove	= sprd_iommu_remove,
->   };
->   module_platform_driver(sprd_iommu_driver);
->   
-> base-commit: c88416ba074a8913cf6d61b789dd834bbca6681c
-
+SEkgUm9iaW4sDQoNCj4gIEZyb206IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+
+DQo+ICBTZW50OiBNb25kYXksIE5vdmVtYmVyIDQsIDIwMjQgMTA6MjkgQU0NCj4gIFRvOiBBcm5k
+IEJlcmdtYW5uIDxhcm5kQGtlcm5lbC5vcmc+OyBzaGVuamlhbiAoSykNCj4gIDxzaGVuamlhbjE1
+QGh1YXdlaS5jb20+OyBTYWxpbCBNZWh0YSA8c2FsaWwubWVodGFAaHVhd2VpLmNvbT4NCj4gIENj
+OiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPjsgV2lsbCBEZWFjb24gPHdpbGxAa2VybmVs
+Lm9yZz47DQo+ICBKb2VyZyBSb2VkZWwgPGpyb2VkZWxAc3VzZS5kZT47IGlvbW11QGxpc3RzLmxp
+bnV4LmRldjsgQW5kcmV3IEx1bm4NCj4gIDxhbmRyZXcrbmV0ZGV2QGx1bm4uY2g+OyBEYXZpZCBT
+LiBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyBFcmljDQo+ICBEdW1hemV0IDxlZHVtYXpl
+dEBnb29nbGUuY29tPjsgSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47DQo+ICBQYW9s
+byBBYmVuaSA8cGFiZW5pQHJlZGhhdC5jb20+OyBzaGFvamlqaWUgPHNoYW9qaWppZUBodWF3ZWku
+Y29tPjsNCj4gIHdhbmdwZWl5YW5nIDx3YW5ncGVpeWFuZzFAaHVhd2VpLmNvbT47IG5ldGRldkB2
+Z2VyLmtlcm5lbC5vcmc7DQo+ICBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+ICBTdWJq
+ZWN0OiBSZTogW1BBVENIXSBbbmV0LW5leHRdIG5ldDogaG5zMzogYWRkIElPTU1VX1NVUFBPUlQN
+Cj4gIGRlcGVuZGVuY3kNCj4gIA0KPiAgT24gMjAyNC0xMS0wNCA4OjIxIGFtLCBBcm5kIEJlcmdt
+YW5uIHdyb3RlOg0KPiAgPiBGcm9tOiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPg0KPiAg
+Pg0KPiAgPiBUaGUgaG5zMyBkcml2ZXIgc3RhcnRlZCBmaWxsaW5nIGlvbW11X2lvdGxiX2dhdGhl
+ciBzdHJ1Y3R1cmVzIGl0c2VsZiwNCj4gID4gd2hpY2ggcmVxdWlyZXMgQ09ORklHX0lPTU1VX1NV
+UFBPUlQgaXMgZW5hYmxlZDoNCj4gID4NCj4gID4gZHJpdmVycy9uZXQvZXRoZXJuZXQvaGlzaWxp
+Y29uL2huczMvaG5zM19lbmV0LmM6IEluIGZ1bmN0aW9uDQo+ICAnaG5zM19kbWFfbWFwX3N5bmMn
+Og0KPiAgPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9oaXNpbGljb24vaG5zMy9obnMzX2VuZXQuYzoz
+OTU6MTQ6IGVycm9yOiAnc3RydWN0DQo+ICBpb21tdV9pb3RsYl9nYXRoZXInIGhhcyBubyBtZW1i
+ZXIgbmFtZWQgJ3N0YXJ0Jw0KPiAgPiAgICAzOTUgfCAgaW90bGJfZ2F0aGVyLnN0YXJ0ID0gaW92
+YTsNCj4gID4gICAgICAgIHwgICAgICAgICAgICAgIF4NCj4gID4gZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvaGlzaWxpY29uL2huczMvaG5zM19lbmV0LmM6Mzk2OjE0OiBlcnJvcjogJ3N0cnVjdA0KPiAg
+aW9tbXVfaW90bGJfZ2F0aGVyJyBoYXMgbm8gbWVtYmVyIG5hbWVkICdlbmQnDQo+ICA+ICAgIDM5
+NiB8ICBpb3RsYl9nYXRoZXIuZW5kID0gaW92YSArIGdyYW51bGUgLSAxOw0KPiAgPiAgICAgICAg
+fCAgICAgICAgICAgICAgXg0KPiAgPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9oaXNpbGljb24vaG5z
+My9obnMzX2VuZXQuYzozOTc6MTQ6IGVycm9yOiAnc3RydWN0DQo+ICBpb21tdV9pb3RsYl9nYXRo
+ZXInIGhhcyBubyBtZW1iZXIgbmFtZWQgJ3Bnc2l6ZScNCj4gID4gICAgMzk3IHwgIGlvdGxiX2dh
+dGhlci5wZ3NpemUgPSBncmFudWxlOw0KPiAgPiAgICAgICAgfCAgICAgICAgICAgICAgXg0KPiAg
+Pg0KPiAgPiBBZGQgYSBLY29uZmlnIGRlcGVuZGVuY3kgdG8gbWFrZSBpdCBidWlsZCBpbiByYW5k
+b20gY29uZmlndXJhdGlvbnMuDQo+ICA+DQo+ICA+IENjOiBXaWxsIERlYWNvbiA8d2lsbEBrZXJu
+ZWwub3JnPg0KPiAgPiBDYzogSm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+DQo+ICA+IENj
+OiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPg0KPiAgPiBDYzogaW9tbXVAbGlz
+dHMubGludXguZGV2DQo+ICA+IEZpeGVzOiBmMmMxNDg5OWNhYmEgKCJuZXQ6IGhuczM6IGFkZCBz
+eW5jIGNvbW1hbmQgdG8gc3luYyBpby1wZ3RhYmxlIikNCj4gID4gU2lnbmVkLW9mZi1ieTogQXJu
+ZCBCZXJnbWFubiA8YXJuZEBhcm5kYi5kZT4NCj4gID4gLS0tDQo+ICA+IEkgbm90aWNlZCB0aGF0
+IG5vIG90aGVyIGRyaXZlciBkb2VzIHRoaXMsIHNvIGl0IHdvdWxkIGJlIGdvb2QgdG8gaGF2ZQ0K
+PiAgPiBhIGNvbmZpcm1hdGlvbiBmcm9tIHRoZSBpb21tdSBtYWludGFpbmVycyB0aGF0IHRoaXMg
+aXMgaG93IHRoZQ0KPiAgPiBpbnRlcmZhY2UgYW5kIHRoZSBkZXBlbmRlbmN5IGlzIGludGVuZGVk
+IHRvIGJlIHVzZWQuDQo+ICANCj4gIFdURiBpcyB0aGF0IHBhdGNoIGRvaW5nIT8gTm8sIHJhbmRv
+bSBkZXZpY2UgZHJpdmVycyBzaG91bGQgYWJzb2x1dGVseSBub3QNCj4gIGJlIHBva2luZyBpbnRv
+IElPTU1VIGRyaXZlciBpbnRlcm5hbHMsIHRoaXMgaXMgZWdyZWdpb3VzbHkgd3JvbmcgYW5kIHRo
+ZQ0KPiAgY29ycmVjdCBhY3Rpb24gaXMgdG8gZHJvcCBpdCBlbnRpcmVseS4NCg0KDQpBYnNvbHV0
+ZWx5IGFncmVlIHdpdGggaXQuIFNvcnJ5IEkgaGF2ZW4ndCBiZWVuIGluIHRvdWNoIGZvciBxdWl0
+ZSBzb21lIHRpbWUuIExldA0KbWUgY2F0Y2ggdGhlIHdob2xlIHN0b3J5LiAgRmVlbCBmcmVlIHRv
+IGRyb3AgdGhpcyBwYXRjaC4NCg0KVGhhbmtzDQpTYWxpbC4NCg0KPiAgDQo+ICBUaGFua3MsDQo+
+ICBSb2Jpbi4NCj4gIA0KPiAgPiAtLS0NCj4gID4gICBkcml2ZXJzL25ldC9ldGhlcm5ldC9oaXNp
+bGljb24vS2NvbmZpZyB8IDEgKw0KPiAgPiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigr
+KQ0KPiAgPg0KPiAgPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaGlzaWxpY29u
+L0tjb25maWcNCj4gID4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9oaXNpbGljb24vS2NvbmZpZw0K
+PiAgPiBpbmRleCA2NTMwMmM0MWJmYjEuLjc5MGVmYzhkMmRlNiAxMDA2NDQNCj4gID4gLS0tIGEv
+ZHJpdmVycy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL0tjb25maWcNCj4gID4gKysrIGIvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL0tjb25maWcNCj4gID4gQEAgLTkxLDYgKzkxLDcgQEAg
+Y29uZmlnIEhOU19FTkVUDQo+ICA+ICAgY29uZmlnIEhOUzMNCj4gID4gICAJdHJpc3RhdGUgIkhp
+c2lsaWNvbiBOZXR3b3JrIFN1YnN5c3RlbSBTdXBwb3J0IEhOUzMgKEZyYW1ld29yaykiDQo+ICA+
+ICAgCWRlcGVuZHMgb24gUENJDQo+ICA+ICsJZGVwZW5kcyBvbiBJT01NVV9TVVBQT1JUDQo+ICA+
+ICAgCXNlbGVjdCBORVRfREVWTElOSw0KPiAgPiAgIAlzZWxlY3QgUEFHRV9QT09MDQo+ICA+ICAg
+CWhlbHANCj4gIA0KDQo=
