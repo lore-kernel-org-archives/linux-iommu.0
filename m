@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1F402AE90
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B890D7DA8C
 	for <iommu@lists.linux.dev>; Mon,  4 Nov 2024 13:25:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730726725; cv=none; b=OUnH6cX8KVuC/W2KqiFGaQzLmpaFVFbzUiTwR60Gl6nIDAyqU25ahhYRNGC6FwqokVRq5iWUfJfc7/ryqcGr5K1trzIspP0AgQtdx2udB35wDkgiY0xXNSl54x2vQtamxCMd8Zds3RJWe5E54m74eFt9Sq+TPDAFCBPciUrK7zY=
+	t=1730726725; cv=none; b=f6MoUzNhgOZl75HHn6hpVCHuinwMdyueGbouOXfai5TF71N+HFj+hVHXA/X3PCiD0p5ntWyk+1f18QdBbbtEwXZdKTohHDUjg0ZQU8qeCrMFcGJ8Zh24D+knynGYhjg5lCFp2qBtY8Fr6q4j5KhHnYyJumuX+6OIZn5wD06uiHc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1730726725; c=relaxed/simple;
-	bh=rs1CcauSmGuHvUc+fH12I6MZ81SfrRk2kEoiRuQlhZQ=;
+	bh=g0Ysgn1nswOGdstgIKKcp7xxlCOmmcJ+2WoWciak9uw=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=U+rI7/86pPbbei9DWNyHDlqt3astnyYxuMoICNgawHmIh5zMusMTJ9MT+i2VerICc8qBfDtbFghmEmQc+yFFtjH/cWsrdqbA1VZJL6D09hYav2rwHIZuW5reVLfpcQ1T0lT85Qk0iOEoQtQJxoW9O+nsGTndEmZmFOney7MZ0fo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XKjzXHd2; arc=none smtp.client-ip=198.175.65.10
+	 MIME-Version; b=FCewavwORNnbe3VpfuJyEoOuriIaCe4diAEYq9VfgLC5nmABj8S7hJU/rYbluZ06vJfIc+A5wb+CLWtPsbcVHKm+qsBWsr3behfulv4UrQbXcx9wGqP9GdbFPCyQgFfiU2duGI5EV5QZ/oedAXsK0cmCf+1X8xZydSV7DKkJo2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d+olCJhZ; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XKjzXHd2"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d+olCJhZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1730726724; x=1762262724;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=rs1CcauSmGuHvUc+fH12I6MZ81SfrRk2kEoiRuQlhZQ=;
-  b=XKjzXHd25sMkD3hiLt+5IY4fhi1jV5BIPhJnp7OH4TFvAtvIwh02BVwn
-   G5tijem+KojTNFhYp4kdcvbv1KZlkKyAKUE7CYnC5eViDXwwTupkh3OWD
-   ERQglbT4o0xfVcgxxjhh4av0l+Dh6CSedonttCnytGRW017cwGUQMT1Pm
-   YgvmE1WvGZ6JS1EbDtgNBh9yNFxO2pxF4Snuy7+8D6W4MnKopWK+lXlpT
-   kdc9ZA4Awc+gf9SnlzM/OwiAqaCybeAfUFs7oUuKuqKcJi3BNMHtkqVZY
-   MVIM1A4kLr09/GTTul7gmTsxsJ7YUAUgvcfweHK21DTy7zbeP2OJ4y9j4
-   Q==;
-X-CSE-ConnectionGUID: Z+2NIBpDRPWqS1sz4bv0qw==
-X-CSE-MsgGUID: IaNu9djuQuikVPwRIEVRxQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="47884085"
+  bh=g0Ysgn1nswOGdstgIKKcp7xxlCOmmcJ+2WoWciak9uw=;
+  b=d+olCJhZqoaeg9OS6I+VPh7yJJ+DmJr42923H7/UwxVZ0C1GPQvbTe1I
+   /wQbFP+pkxlxn7HO6244LZ4TKqF9qI/I5dzbKqxgsFpDYMGJzOZsoxvrt
+   LXOeuaUiEgRvS9LNeZ5MdS9Z0A6WPqgx3T0gJq80pdyIV2pBTNvMo9lyH
+   gggJCUmrRRVeGF2M32rS0Wts+Kb72HSTtwJsr1Y9nDsqjG8zesnQhmLV4
+   yGHGJI6/d2UZllE9XprEhUCv//lW8SazpssFzVxS8gQc8QNTxWp2EAODt
+   Moyvx2fHVF54rNYFMzDi4eJZi4bBieTuWDNz05NvC6nRR/s+R0cqTjaFr
+   g==;
+X-CSE-ConnectionGUID: oicCV3/CR7iWaCDNfYiP0g==
+X-CSE-MsgGUID: V68wJzdcSFeVqZUtncVruw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="47884077"
 X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="47884085"
+   d="scan'208";a="47884077"
 Received: from orviesa007.jf.intel.com ([10.64.159.147])
   by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2024 05:25:22 -0800
-X-CSE-ConnectionGUID: 6QWO4SvcTDCLrNa0j1PE5Q==
-X-CSE-MsgGUID: uT/oSIgRRy6rpyIQLM5ZzA==
+X-CSE-ConnectionGUID: EfufEWCpShKLgI1aBH4eMQ==
+X-CSE-MsgGUID: T1ZxzTKLTtG1iYX7K6DAjw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,257,1725346800"; 
-   d="scan'208";a="84100484"
+   d="scan'208";a="84100469"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa007.jf.intel.com with ESMTP; 04 Nov 2024 05:25:21 -0800
+  by orviesa007.jf.intel.com with ESMTP; 04 Nov 2024 05:25:20 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	jgg@nvidia.com,
@@ -57,9 +57,9 @@ Cc: alex.williamson@redhat.com,
 	iommu@lists.linux.dev,
 	zhenzhong.duan@intel.com,
 	vasant.hegde@amd.com
-Subject: [PATCH v5 10/12] iommufd/selftest: Add a helper to get test device
-Date: Mon,  4 Nov 2024 05:25:11 -0800
-Message-Id: <20241104132513.15890-11-yi.l.liu@intel.com>
+Subject: [PATCH v5 09/12] iommufd/selftest: Add set_dev_pasid in mock iommu
+Date: Mon,  4 Nov 2024 05:25:10 -0800
+Message-Id: <20241104132513.15890-10-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20241104132513.15890-1-yi.l.liu@intel.com>
 References: <20241104132513.15890-1-yi.l.liu@intel.com>
@@ -71,76 +71,146 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-There is need to get the selftest device (sobj->type == TYPE_IDEV) in
-multiple places, so have a helper to for it.
+The callback is needed to make pasid_attach/detach path complete for mock
+device. A nop is enough for set_dev_pasid.
+
+A MOCK_FLAGS_DEVICE_PASID is added to indicate a pasid-capable mock device
+for the pasid test cases. Other test cases will still create a non-pasid
+mock device. While the mock iommu always pretends to be pasid-capable.
 
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/selftest.c | 32 +++++++++++++++++++++-----------
- 1 file changed, 21 insertions(+), 11 deletions(-)
+ drivers/iommu/iommufd/iommufd_test.h |  1 +
+ drivers/iommu/iommufd/selftest.c     | 39 +++++++++++++++++++++++++---
+ 2 files changed, 36 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
+index f4bc23a92f9a..6d532e25b78e 100644
+--- a/drivers/iommu/iommufd/iommufd_test.h
++++ b/drivers/iommu/iommufd/iommufd_test.h
+@@ -47,6 +47,7 @@ enum {
+ enum {
+ 	MOCK_FLAGS_DEVICE_NO_DIRTY = 1 << 0,
+ 	MOCK_FLAGS_DEVICE_HUGE_IOVA = 1 << 1,
++	MOCK_FLAGS_DEVICE_PASID = 1 << 2,
+ };
+ 
+ enum {
 diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 635d8246691d..bfd2c50f64ec 100644
+index 540437be168a..635d8246691d 100644
 --- a/drivers/iommu/iommufd/selftest.c
 +++ b/drivers/iommu/iommufd/selftest.c
-@@ -825,29 +825,39 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
- 	return rc;
+@@ -166,8 +166,16 @@ static int mock_domain_nop_attach(struct iommu_domain *domain,
+ 	return 0;
  }
  
--/* Replace the mock domain with a manually allocated hw_pagetable */
--static int iommufd_test_mock_domain_replace(struct iommufd_ucmd *ucmd,
--					    unsigned int device_id, u32 pt_id,
--					    struct iommu_test_cmd *cmd)
-+static struct selftest_obj *
-+iommufd_test_get_self_test_device(struct iommufd_ctx *ictx, u32 id)
- {
- 	struct iommufd_object *dev_obj;
- 	struct selftest_obj *sobj;
--	int rc;
- 
- 	/*
- 	 * Prefer to use the OBJ_SELFTEST because the destroy_rwsem will ensure
- 	 * it doesn't race with detach, which is not allowed.
- 	 */
--	dev_obj =
--		iommufd_get_object(ucmd->ictx, device_id, IOMMUFD_OBJ_SELFTEST);
-+	dev_obj = iommufd_get_object(ictx, id, IOMMUFD_OBJ_SELFTEST);
- 	if (IS_ERR(dev_obj))
--		return PTR_ERR(dev_obj);
-+		return ERR_CAST(dev_obj);
- 
- 	sobj = container_of(dev_obj, struct selftest_obj, obj);
- 	if (sobj->type != TYPE_IDEV) {
--		rc = -EINVAL;
--		goto out_dev_obj;
-+		iommufd_put_object(ictx, dev_obj);
-+		return ERR_PTR(-EINVAL);
- 	}
-+	return sobj;
++static int mock_domain_set_dev_pasid_nop(struct iommu_domain *domain,
++					 struct device *dev, ioasid_t pasid,
++					 struct iommu_domain *old)
++{
++	return 0;
 +}
 +
-+/* Replace the mock domain with a manually allocated hw_pagetable */
-+static int iommufd_test_mock_domain_replace(struct iommufd_ucmd *ucmd,
-+					    unsigned int device_id, u32 pt_id,
-+					    struct iommu_test_cmd *cmd)
-+{
-+	struct selftest_obj *sobj;
-+	int rc;
+ static const struct iommu_domain_ops mock_blocking_ops = {
+ 	.attach_dev = mock_domain_nop_attach,
++	.set_dev_pasid = mock_domain_set_dev_pasid_nop
+ };
+ 
+ static struct iommu_domain mock_blocking_domain = {
+@@ -321,19 +329,25 @@ mock_domain_alloc_user(struct device *dev, u32 flags,
+ 		       struct iommu_domain *parent,
+ 		       const struct iommu_user_data *user_data)
+ {
++	struct mock_dev *mdev = container_of(dev, struct mock_dev, dev);
+ 	struct mock_iommu_domain *mock_parent;
+ 	struct iommu_hwpt_selftest user_cfg;
+ 	int rc;
+ 
++	if ((flags & IOMMU_HWPT_ALLOC_PASID) &&
++	    (!(mdev->flags & MOCK_FLAGS_DEVICE_PASID) ||
++	     !dev->iommu->iommu_dev->max_pasids))
++		return ERR_PTR(-EOPNOTSUPP);
 +
-+	sobj = iommufd_test_get_self_test_device(ucmd->ictx, device_id);
-+	if (IS_ERR(sobj))
-+		return PTR_ERR(sobj);
+ 	/* must be mock_domain */
+ 	if (!parent) {
+-		struct mock_dev *mdev = container_of(dev, struct mock_dev, dev);
+ 		bool has_dirty_flag = flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
+ 		bool no_dirty_ops = mdev->flags & MOCK_FLAGS_DEVICE_NO_DIRTY;
+ 		struct iommu_domain *domain;
  
- 	rc = iommufd_device_replace(sobj->idev.idev, &pt_id);
+ 		if (flags & (~(IOMMU_HWPT_ALLOC_NEST_PARENT |
+-			       IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
++			       IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
++			       IOMMU_HWPT_ALLOC_PASID)))
+ 			return ERR_PTR(-EOPNOTSUPP);
+ 		if (user_data || (has_dirty_flag && no_dirty_ops))
+ 			return ERR_PTR(-EOPNOTSUPP);
+@@ -347,7 +361,8 @@ mock_domain_alloc_user(struct device *dev, u32 flags,
+ 	}
+ 
+ 	/* must be mock_domain_nested */
+-	if (user_data->type != IOMMU_HWPT_DATA_SELFTEST || flags)
++	if (user_data->type != IOMMU_HWPT_DATA_SELFTEST ||
++	    flags & ~IOMMU_HWPT_ALLOC_PASID)
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 	if (!parent || parent->ops != mock_ops.default_domain_ops)
+ 		return ERR_PTR(-EINVAL);
+@@ -566,6 +581,7 @@ static const struct iommu_ops mock_ops = {
+ 			.map_pages = mock_domain_map_pages,
+ 			.unmap_pages = mock_domain_unmap_pages,
+ 			.iova_to_phys = mock_domain_iova_to_phys,
++			.set_dev_pasid = mock_domain_set_dev_pasid_nop,
+ 		},
+ };
+ 
+@@ -630,6 +646,7 @@ static struct iommu_domain_ops domain_nested_ops = {
+ 	.free = mock_domain_free_nested,
+ 	.attach_dev = mock_domain_nop_attach,
+ 	.cache_invalidate_user = mock_domain_cache_invalidate_user,
++	.set_dev_pasid = mock_domain_set_dev_pasid_nop,
+ };
+ 
+ static inline struct iommufd_hw_pagetable *
+@@ -690,11 +707,16 @@ static void mock_dev_release(struct device *dev)
+ 
+ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
+ {
++	struct property_entry prop[] = {
++		PROPERTY_ENTRY_U32("pasid-num-bits", 20),
++		{},
++	};
+ 	struct mock_dev *mdev;
+ 	int rc;
+ 
+ 	if (dev_flags &
+-	    ~(MOCK_FLAGS_DEVICE_NO_DIRTY | MOCK_FLAGS_DEVICE_HUGE_IOVA))
++	    ~(MOCK_FLAGS_DEVICE_NO_DIRTY |
++		    MOCK_FLAGS_DEVICE_HUGE_IOVA | MOCK_FLAGS_DEVICE_PASID))
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
+@@ -715,6 +737,14 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
  	if (rc)
-@@ -857,7 +867,7 @@ static int iommufd_test_mock_domain_replace(struct iommufd_ucmd *ucmd,
- 	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+ 		goto err_put;
  
- out_dev_obj:
--	iommufd_put_object(ucmd->ictx, dev_obj);
-+	iommufd_put_object(ucmd->ictx, &sobj->obj);
- 	return rc;
- }
++	if (dev_flags & MOCK_FLAGS_DEVICE_PASID) {
++		rc = device_create_managed_software_node(&mdev->dev, prop, NULL);
++		if (rc) {
++			dev_err(&mdev->dev, "add pasid-num-bits property failed, rc: %d", rc);
++			goto err_put;
++		}
++	}
++
+ 	rc = device_add(&mdev->dev);
+ 	if (rc)
+ 		goto err_put;
+@@ -1549,6 +1579,7 @@ int __init iommufd_test_init(void)
+ 		goto err_sysfs;
+ 
+ 	mock_iommu_iopf_queue = iopf_queue_alloc("mock-iopfq");
++	mock_iommu_device.max_pasids = (1 << 20);
+ 
+ 	return 0;
  
 -- 
 2.34.1
