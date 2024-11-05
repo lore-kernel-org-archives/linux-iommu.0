@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A24727082C
-	for <iommu@lists.linux.dev>; Tue,  5 Nov 2024 03:02:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD5A22EAE5
+	for <iommu@lists.linux.dev>; Tue,  5 Nov 2024 03:04:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730775753; cv=none; b=I4DQcI7mBBqBBZCbK5Tc6OX/nsw1GQM4NlIEwtYmAxbTGo2BgacdkKagi/6Q0Ho8quxQFD6+eYlDKO4zjeVEKfIf/40UOk/nkJoHEOln39LxEdCX8i+SLeUnXNNjkEaCGurfGxvVd+kPj+pkWK6OomIadKE5a8C/VOaw/ZT14eY=
+	t=1730775874; cv=none; b=c4iLA3FxtLJfNZRVjdySJaq8ZetUPbAGOHoUvhrjdbJQiOpHcOA5f7qaXPwaDHvVZGi+3vkn7oiLTmVnyHHt3bMUunqddN9N+4mtnELfXLRsym75aECY7vPROJnXLCHyiJ/NTwsp1oXpw4u52GfIyk6OcL5h8zmi0KkiKGu2TcA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730775753; c=relaxed/simple;
-	bh=YkxnAQ77eagaLVzTjHyyd7r/VPoIyXDoCYEIrQFvYac=;
+	s=arc-20240116; t=1730775874; c=relaxed/simple;
+	bh=KQaVU1DFeJXqajbB+TQ4REuBA2JmUEPEox2dqJrUDw4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BF8JvxhNFZNfRJdldeEcJPrlQMxJaNbyqzksA/D8TpsstAE4SBK07qPcBteXZGIxVQv390uIJJXkyLJ+ZcGbtp7bQ9Chuky89n/4/+XP5OSk83Rw1Q5AJC93DXj1yD6G2Pvux+ql4ikT5BDzh7k17vTzkBcmfUXsbLrrKmbjM7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SxNZmk8/; arc=none smtp.client-ip=192.198.163.13
+	 In-Reply-To:Content-Type; b=Z2Nb39vyEuF/k5CTwZ4HfiYViqcdudk91kd3l2nF8WX0oEgkZuPUMlUQfcRteiZ6x2/2551EAYh0TUsickspSijS1AVWbYWe3rWRV9vref9SzB++GDzV8QP6UjHRssrEUs2pA7TzpW9otk7+CisB4EAg4NIgpxiaZb1kjAy1ewg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SDPNlMdv; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SxNZmk8/"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SDPNlMdv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730775752; x=1762311752;
+  t=1730775872; x=1762311872;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=YkxnAQ77eagaLVzTjHyyd7r/VPoIyXDoCYEIrQFvYac=;
-  b=SxNZmk8/sQGzBXT12HLL9Lc73NFLTlqJyxVDZStLYxrjgC/2Q7KmSCsQ
-   0+vmGK42GssVN5mf2dkHbGCahnWgCao7A1/jUUip8nKE154pB3SFOd9L0
-   JuHutp59wuWcD6Mp9+ed4j3m7md7HozfJtbuGWlPLWk/WQySvWjMyfHA7
-   BqisBsUWcKElPhCZq6WVBV8Ro0i6OPAgXqcDf/2dLUniyTbW3ed9PFeEO
-   wrUaa0qVoR2EW5tDZ89ezOTXxIEHdo//iXpfnfIa0ZkUfnzdO1o1Vz7aA
-   WCU8zRyXYGaXBpPULswwXxW1+5rxiS+h3J5wu5T1QRNTg35KtGClswRlZ
-   A==;
-X-CSE-ConnectionGUID: 7IkWWCBMTTOInvSnmoXsQg==
-X-CSE-MsgGUID: GLxm96rZQtiTXnVWvxj9kw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11246"; a="33340512"
+  bh=KQaVU1DFeJXqajbB+TQ4REuBA2JmUEPEox2dqJrUDw4=;
+  b=SDPNlMdvM0/ORWSmAGTB7dEI3NCVCAAwMXch+Ko+j+T8Aynjwbq3cCoH
+   r6NCSfqLXiSVaxCVaqdf2VdGm0Em7M9dPilXBdVxjIYE4RBOe4n8B9WNX
+   U6cKF9AJVjBEh6aktzaHKeBA51OgZOiNDD+0GYZou0zrySJbPxL71BoTD
+   NIuz7th7KXntB4Ia1F/65kuPXcFaz46E/fiEOrhTluEDf3iLwW24hRiDo
+   nZqB3pp6A6Tpfw0cfM+w/hUAMTEuS45PlQ/h0w+N4ejW0nLOLmrnXV3qg
+   DHhTtOzmv2QJ5wa0r2Uus2ogeediG3E9097TM1IS41sEuKWapopS9zpMb
+   g==;
+X-CSE-ConnectionGUID: /5EfY3OHQmywEjf89gPnGw==
+X-CSE-MsgGUID: 810Bp/IzTjy++IqOWxwUHA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11246"; a="41877829"
 X-IronPort-AV: E=Sophos;i="6.11,258,1725346800"; 
-   d="scan'208";a="33340512"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2024 19:02:31 -0800
-X-CSE-ConnectionGUID: jGjvI/vbQuySe39NZUeMrQ==
-X-CSE-MsgGUID: eZLGDiXGT1mp16pai/LU6w==
+   d="scan'208";a="41877829"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2024 19:04:32 -0800
+X-CSE-ConnectionGUID: 4eQABItqTJqD5SMjYgEIxw==
+X-CSE-MsgGUID: Ggyga+hnSGKdCwsrVEOBLw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,258,1725346800"; 
-   d="scan'208";a="88997312"
+   d="scan'208";a="114638199"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2024 19:02:28 -0800
-Message-ID: <7f1d145f-f3f1-413f-b2ca-d2d89c903c26@linux.intel.com>
-Date: Tue, 5 Nov 2024 11:01:41 +0800
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2024 19:04:30 -0800
+Message-ID: <4a2848f5-0b3d-48dc-9e12-6179083cf9f5@linux.intel.com>
+Date: Tue, 5 Nov 2024 11:03:43 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,28 +52,29 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 07/13] iommu/vt-d: Limit intel_iommu_set_dev_pasid()
- for paging domain
+Subject: Re: [PATCH v4 08/13] iommu/vt-d: Make identity_domain_set_dev_pasid()
+ to handle domain replacement
 To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
  kevin.tian@intel.com
 Cc: alex.williamson@redhat.com, eric.auger@redhat.com, nicolinc@nvidia.com,
  kvm@vger.kernel.org, chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
  zhenzhong.duan@intel.com, vasant.hegde@amd.com, will@kernel.org
 References: <20241104131842.13303-1-yi.l.liu@intel.com>
- <20241104131842.13303-8-yi.l.liu@intel.com>
+ <20241104131842.13303-9-yi.l.liu@intel.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20241104131842.13303-8-yi.l.liu@intel.com>
+In-Reply-To: <20241104131842.13303-9-yi.l.liu@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 11/4/24 21:18, Yi Liu wrote:
-> intel_iommu_set_dev_pasid() is only supposed to be used by paging domain,
-> so limit it.
+> Let identity_domain_set_dev_pasid() call the pasid replace helpers hence
+> be able to do domain replacement.
 > 
 > Signed-off-by: Yi Liu<yi.l.liu@intel.com>
 > ---
->   drivers/iommu/intel/iommu.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
+>   drivers/iommu/intel/iommu.c | 8 +++++++-
+>   drivers/iommu/intel/pasid.h | 9 +++++++++
+>   2 files changed, 16 insertions(+), 1 deletion(-)
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
