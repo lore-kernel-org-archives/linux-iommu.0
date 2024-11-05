@@ -1,50 +1,49 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75D8B1CC893;
-	Tue,  5 Nov 2024 11:37:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EAC9E1D0BAA
+	for <iommu@lists.linux.dev>; Tue,  5 Nov 2024 12:30:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730806651; cv=none; b=EHEgJXaZDHLkRCpvPLKzbzdmQvSNOTo2dZK4KHk8iBzQIJzUySSMR4fbdkpyO7ji+4wKl52eH5flNwqR9ZRuyuT/p+aIIz4Av1Z2F+AwK1po4kK5gSEpbbriTuRLsIpefKaGQGUlGMzj++EGX4sQ5MJEE3pEDj6RuWtomjUV2Uw=
+	t=1730809813; cv=none; b=LftFAZy989H8jZo1Jj2TEN3p1UqiZdL83TKjqw3D7qCqHoZ0VzmQyn1UTx3yrHM70fldIIMqFmaJfHYfiuGXjcG8NH1f30D4AYRp2yuc7xc0NDV0sl7hsDDBHLe7/j1sgFrI2S4o67xkK/61KQld//xdV4IHlrfwuIVRp9aHxhw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730806651; c=relaxed/simple;
-	bh=C2eoHqLMgXl3OLemzSCLahR5X6G6WSWO5QNpUC3yNFw=;
+	s=arc-20240116; t=1730809813; c=relaxed/simple;
+	bh=Qm3b4MpO1Fe8e/Ld3u4VhVsn8ejPDFe9CniAc0VZjro=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BPWO6cLTkDc+Ik9Wu9b65NS04RXIHMKy0LvyviQNafghHih5VJ+x8GJy4eeOW60j7+IzTk+sDlMsKaef8uiQ/zvPOjOQxC7xC74yleeAuq+3hDjIOjMXMTa2AsbWmLFWHJUIneUJ/nAlSLAs5IOCDoeR1JfeR7C3TbfF4r7g6Zg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aY7407j1; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=OmDV+cHnIkULSKHC5p/aMGWwO32PWjFJaQk0Cm0LqXjoL6+kiTN+a44Rx8pDN2SjI5TRn73vMHc8HGUVc8430cNrONahm++LYaMTL6ehLVtmXsYyoojFcTYtyLxF3p4aNTDTqRDPquUSDQ7UPDYvNX25HaWdF7Lh5hgMf5Q8cpg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=lhnflyte; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aY7407j1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 464F6C4CECF;
-	Tue,  5 Nov 2024 11:37:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730806650;
-	bh=C2eoHqLMgXl3OLemzSCLahR5X6G6WSWO5QNpUC3yNFw=;
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="lhnflyte"
+Received: from 8bytes.org (p549219d2.dip0.t-ipconnect.de [84.146.25.210])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 828342A8B28;
+	Tue,  5 Nov 2024 13:30:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1730809809;
+	bh=Qm3b4MpO1Fe8e/Ld3u4VhVsn8ejPDFe9CniAc0VZjro=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=aY7407j14pV53S6TwrTyDQRphP1jj3E1Exn7IZMG49gWH5p6O4VSqqrBcwjnP541n
-	 bhhgOCrap0cUEKx0gwbIxG67ltJzeuRceG5MwjrfBQWR+3m4eSI+r2ql5emA7GV7HX
-	 bolJqeWdSE9azgDScgDVBOlvzk2WPzTuVpc19/fuEsZ1B82WKGofvt0/z7TEdLQr8J
-	 6qN6MAlveMAtPNDWWTQcWnXj/k0nx4KuwXmglHbjmbUbf/z47gbcv7gUX4xYO/7qOh
-	 AQDV7pOz7k/r5qDjmQvghyA6VOFbuA0df78Kr8x/d1SbVnURCxGxiVMrAD9DHZpZQE
-	 YQyYgcBctfFPQ==
-Date: Tue, 5 Nov 2024 11:37:24 +0000
-From: Will Deacon <will@kernel.org>
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, robdclark@gmail.com,
-	robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca,
-	jsnitsel@redhat.com, robh@kernel.org,
-	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
-	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Konrad Dybcio <konrad.dybcio@linaro.org>
-Subject: Re: [PATCH v16 1/5] iommu/arm-smmu: re-enable context caching in
- smmu reset operation
-Message-ID: <20241105113723.GA12600@willie-the-truck>
-References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
- <20241008125410.3422512-2-quic_bibekkum@quicinc.com>
- <20241024125241.GD30704@willie-the-truck>
- <092db44e-f254-4abd-abea-e9a64e70df12@quicinc.com>
- <20241029124708.GA4241@willie-the-truck>
- <ygd6bryp73jgsm5zggy2jz4uc42dehht2e6ht5f6yowf74c6ns@u6dul4rnybt6>
+	b=lhnflyteDCFgrl7hoScfNJdXzKoh8q1nT7KsLVnYL2t47AM3vEXud7R+r/GG/4nTb
+	 5/GGnUglaeNF1/IlEi2PU1csYiBH7oWD8d63lkcfiFV9HHZSw3f398mwT+SShVtp4F
+	 S29LC9FmADRrAiFaaxm+33MP0D1+olJvL+Ix39kNH7rApvBMDTbC2I+Iz0+LR/jM7K
+	 KHzi4l5ovisi/OTxFUJGVUdQV1bQYK0W0r1xfQRYCXrNcY+1M85rvmm6Gx+hxxpJPz
+	 jGrENVIDBx09vfZaf+FIm0EdCwkkbesfh7HOMj2AuT9ySAPvIRpFuDi+OXUYFqo9AE
+	 gFj5Q6hcAN3FA==
+Date: Tue, 5 Nov 2024 13:30:08 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	robin.murphy@arm.com, vasant.hegde@amd.com, jgg@nvidia.com,
+	kevin.tian@intel.com, jon.grimm@amd.com, santosh.shukla@amd.com,
+	pandoh@google.com, kumaranand@google.com,
+	Uros Bizjak <ubizjak@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+	linux-arch@vger.kernel.org
+Subject: Re: [PATCH v9 03/10] asm/rwonce: Introduce [READ|WRITE]_ONCE()
+ support for __int128
+Message-ID: <ZyoP0IKVmxfesRU8@8bytes.org>
+References: <20241101162304.4688-1-suravee.suthikulpanit@amd.com>
+ <20241101162304.4688-4-suravee.suthikulpanit@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,122 +52,58 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ygd6bryp73jgsm5zggy2jz4uc42dehht2e6ht5f6yowf74c6ns@u6dul4rnybt6>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20241101162304.4688-4-suravee.suthikulpanit@amd.com>
 
-On Mon, Nov 04, 2024 at 01:10:12PM +0200, Dmitry Baryshkov wrote:
-> On Tue, Oct 29, 2024 at 12:47:09PM +0000, Will Deacon wrote:
-> > On Fri, Oct 25, 2024 at 07:51:22PM +0530, Bibek Kumar Patro wrote:
-> > > 
-> > > 
-> > > On 10/24/2024 6:22 PM, Will Deacon wrote:
-> > > > On Tue, Oct 08, 2024 at 06:24:06PM +0530, Bibek Kumar Patro wrote:
-> > > > > Default MMU-500 reset operation disables context caching in
-> > > > > prefetch buffer. It is however expected for context banks using
-> > > > > the ACTLR register to retain their prefetch value during reset
-> > > > > and runtime suspend.
-> > > > > 
-> > > > > Replace default MMU-500 reset operation with Qualcomm specific reset
-> > > > > operation which envelope the default reset operation and re-enables
-> > > > > context caching in prefetch buffer for Qualcomm SoCs.
-> > > > > 
-> > > > > Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> > > > > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> > > > > ---
-> > > > >   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 45 ++++++++++++++++++++--
-> > > > >   1 file changed, 42 insertions(+), 3 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > > > index 087fb4f6f4d3..0cb10b354802 100644
-> > > > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > > > @@ -16,6 +16,16 @@
-> > > > > 
-> > > > >   #define QCOM_DUMMY_VAL	-1
-> > > > > 
-> > > > > +/*
-> > > > > + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
-> > > > > + * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
-> > > > > + * buffer). The remaining bits are implementation defined and vary across
-> > > > > + * SoCs.
-> > > > > + */
-> > > > > +
-> > > > > +#define CPRE			(1 << 1)
-> > > > > +#define CMTLB			(1 << 0)
-> > > > > +
-> > > > >   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
-> > > > >   {
-> > > > >   	return container_of(smmu, struct qcom_smmu, smmu);
-> > > > > @@ -396,11 +406,40 @@ static int qcom_smmu_def_domain_type(struct device *dev)
-> > > > >   	return match ? IOMMU_DOMAIN_IDENTITY : 0;
-> > > > >   }
-> > > > > 
-> > > > > +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
-> > > > > +{
-> > > > > +	int ret;
-> > > > > +	u32 val;
-> > > > > +	int i;
-> > > > > +
-> > > > > +	ret = arm_mmu500_reset(smmu);
-> > > > > +	if (ret)
-> > > > > +		return ret;
-> > > > > +
-> > > > > +	/*
-> > > > > +	 * arm_mmu500_reset() disables CPRE which is re-enabled here.
-> > > > > +	 * The errata for MMU-500 before the r2p2 revision requires CPRE to be
-> > > > > +	 * disabled. The arm_mmu500_reset function disables CPRE to accommodate all
-> > > > > +	 * RTL revisions. Since all Qualcomm SoCs are on the r2p4 revision, where
-> > > > > +	 * the CPRE bit can be enabled, the qcom_smmu500_reset function re-enables
-> > > > > +	 * the CPRE bit for the next-page prefetcher to retain the prefetch value
-> > > > > +	 * during reset and runtime suspend operations.
-> > > > > +	 */
-> > > > > +
-> > > > > +	for (i = 0; i < smmu->num_context_banks; ++i) {
-> > > > > +		val = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
-> > > > > +		val |= CPRE;
-> > > > > +		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, val);
-> > > > > +	}
-> > > > 
-> > > > If CPRE only needs to be disabled prior to r2p2, then please teach the
-> > > > MMU-500 code about that instead of adding qualcomm-specific logic here.
-> > > > 
-> > > 
-> > > Doing this on MMU-500 code would make it generic and reflect for SoC of all
-> > > the vendors on this platform.
-> > > We can make sure that it won't cause any problems in Qualcomm SoCs as we
-> > > have been enabling this since for some years now and could not
-> > > observe/reproduce any issues around these errata.
-> > 
-> > Unless you can explain definitively hy that's the case, I still don't
-> > think we should be second-guessing the core SMMU driver code in the
-> > Qualcomm backend.
-> > 
-> > > But we won't be able to guarantee the same behavior in SoC for other vendors
-> > > where these errata might still be applicable as per [1] and [2].
-> > > So as per my understanding it's safe to include in Qualcomm specific
-> > > implementation and not changing the default behavior in all other vendors'
-> > > SoC even if they are not prior to r2p2 revision [3].
-> > 
-> > If you want to gate the errata workarounds on policy, then please follow
-> > what we do for the CPU: add a Kconfig option (e.g.
-> > ARM_SMMU_WORKAROUND_BROKEN_CPRE) which defaults to "on" (assuming that
-> > the relevant errata aren't all "rare") and update silicon-errata.rst
-> > accordingly.
-> > 
-> > Then you can choose to disable them in your .config if you're happy to
-> > pick up the pieces.
+On Fri, Nov 01, 2024 at 04:22:57PM +0000, Suravee Suthikulpanit wrote:
+>  include/asm-generic/rwonce.h   | 2 +-
+>  include/linux/compiler_types.h | 8 +++++++-
+>  2 files changed, 8 insertions(+), 2 deletions(-)
+
+This patch needs Cc:
+
+	Arnd Bergmann <arnd@arndb.de>
+	linux-arch@vger.kernel.org
+
 > 
-> Is it actually going to work? For most of the CPU errata we can detect
-> and limit the workarounds to some class of CPUs. For SMMU, if I'm not
-> misunderstanding something, the errata will be enabled by default for
-> all SMMU-500 implementation, so only very few kernels, targeting only
-> the Qualcomm hardware, can get that disabled.
-
-We can add checks based on rXpY per the erratum documentation, but Robin
-was saying elsewhere in the thread that some of them are still open (i.e.
-unfixed).
-
-So ultimately, the decision to disable workarounds for known errata on
-broken hardware is going to be a niche sport, yes.
-
-Will
+> diff --git a/include/asm-generic/rwonce.h b/include/asm-generic/rwonce.h
+> index 8d0a6280e982..8bf942ad5ef3 100644
+> --- a/include/asm-generic/rwonce.h
+> +++ b/include/asm-generic/rwonce.h
+> @@ -33,7 +33,7 @@
+>   * (e.g. a virtual address) and a strong prevailing wind.
+>   */
+>  #define compiletime_assert_rwonce_type(t)					\
+> -	compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),	\
+> +	compiletime_assert(__native_word(t) || sizeof(t) == sizeof(__dword_type), \
+>  		"Unsupported access size for {READ,WRITE}_ONCE().")
+>  
+>  /*
+> diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+> index 1a957ea2f4fe..54b56ae25db7 100644
+> --- a/include/linux/compiler_types.h
+> +++ b/include/linux/compiler_types.h
+> @@ -469,6 +469,12 @@ struct ftrace_likely_data {
+>  		unsigned type:	(unsigned type)0,			\
+>  		signed type:	(signed type)0
+>  
+> +#ifdef __SIZEOF_INT128__
+> +#define __dword_type __int128
+> +#else
+> +#define __dword_type long long
+> +#endif
+> +
+>  #define __unqual_scalar_typeof(x) typeof(				\
+>  		_Generic((x),						\
+>  			 char:	(char)0,				\
+> @@ -476,7 +482,7 @@ struct ftrace_likely_data {
+>  			 __scalar_type_to_expr_cases(short),		\
+>  			 __scalar_type_to_expr_cases(int),		\
+>  			 __scalar_type_to_expr_cases(long),		\
+> -			 __scalar_type_to_expr_cases(long long),	\
+> +			 __scalar_type_to_expr_cases(__dword_type),	\
+>  			 default: (x)))
+>  
+>  /* Is this type a native word size -- useful for atomic operations */
+> -- 
+> 2.34.1
+> 
