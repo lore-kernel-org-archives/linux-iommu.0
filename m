@@ -1,183 +1,87 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 734651925A0;
-	Tue,  5 Nov 2024 03:21:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 901AB3D9E
+	for <iommu@lists.linux.dev>; Tue,  5 Nov 2024 03:31:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730776910; cv=none; b=OJbNtkZbcBG/eklZGIHFf/THyG2j6AdTHA4y/cqZ+DVuj2J3qN0yQvTExVkEeg7l5Q9BGmSYasLPjWKRpzJ/PMSb2EA7j2xk6Cs7Os7V6wUR7fuQJ/Xwt+MbX5qKMozK89c25rzFrscbjs1diF7l679CC7RVlPW8OU2vgQUktPY=
+	t=1730777481; cv=none; b=NfsWIN9J4TpsIR68rvleNuR+cN3imvKEIJ+DK0uyvtG58FYOngSje+EhvbUpv1b3FhkJdIwfTUwQC1TNleIDyrPHqYrWXiW12+7WbYPiH9MNWxy8NnUc7vIdp4SiHgqDkG70PZ3VjymbMoYdWhKYRrfYOp+elwbZRjSRzJ1gDSw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730776910; c=relaxed/simple;
-	bh=cYyprO+pTTC1gw9yRcCwPn+pz/JNaWVflaxgZtG2TLc=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ifqCIQHSX3lVcS+7LV0VIpnGq5FTyJVdqei3v/ptLhzk4wHLaqZHuaWcJC6LYWvP65pNs5JOu98eqtYk0NhN+1ZXBNWhW/onwJSGa+wubBvNpMLh8bCmzSG5qvBgW7TpPzZ5NhDz3Xzr8RpMcTUuAcuZsdLWtIkmHGW0UwHZBwg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=OInYfhkT; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1730777481; c=relaxed/simple;
+	bh=ah0+KjvBu5gMrCO86eq00paT8C917hvU8zxlTRQhfOI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Y/hHptedBIXPIDHGznPr9EjYkaGb/0OhS0ZLb9whfsbenbuYZuNTXCo30ltH/zqEmrVZLwTTAgvN0wYNh3k8nqQvl0L0NbOhKI0rNVrz6S6ArzpvLEOQ9PzTutZeSnOwf61NnaPkExgy6M1KBPEVneq84fYN3gBFN63eMTBFiIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gH5pzvLY; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="OInYfhkT"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4A4LImUC023671;
-	Tue, 5 Nov 2024 03:21:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=FV5uwRiE/DTS648RIQOfZGbW
-	Uc3Eyg6wIryenZkcXY0=; b=OInYfhkToBbaKCxAA4t8PCJYczw6my4FvIvoLhOg
-	QJZM1Zcf7qCstLfXrZddpZIu+HPr5G2Z9PEueo/ACN+/alXfAzbXBDP1o6OLR0NA
-	JHrM/Yu6ALMD/QfJ+6+vR5RbFkdaPyGU0+1nO4XgtQ7ggVvaM69o+1djaP9fgWSQ
-	vKTZ55YZnLREqzcPu0zTUvS2ggRfufuhBE33U2AIpAj3XsKXLvNgp8TjgDqJVOoA
-	alSrVYPoB+hdPnSST4QgEIAJwZmdVnjbCubvSKt+z7AyjkAFOp8/sKt6AO/w90X4
-	J0th4CYiOa4Gznmlpn1vId0Rrs5sd0MF9diXaUYjyc3Fww==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42nd1fp743-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 05 Nov 2024 03:21:40 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4A53Ldom032399
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 5 Nov 2024 03:21:39 GMT
-Received: from hu-qqzhou-sha.qualcomm.com (10.80.80.8) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Mon, 4 Nov 2024 19:21:36 -0800
-From: Qingqing Zhou <quic_qqzhou@quicinc.com>
-To: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <robimarko@gmail.com>,
-        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
-CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-        Qingqing Zhou
-	<quic_qqzhou@quicinc.com>
-Subject: [PATCH v4 3/3] arm64: dts: qcom: qcs615: add the APPS SMMU node
-Date: Tue, 5 Nov 2024 08:51:07 +0530
-Message-ID: <20241105032107.9552-4-quic_qqzhou@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20241105032107.9552-1-quic_qqzhou@quicinc.com>
-References: <20241105032107.9552-1-quic_qqzhou@quicinc.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gH5pzvLY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1730777480; x=1762313480;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ah0+KjvBu5gMrCO86eq00paT8C917hvU8zxlTRQhfOI=;
+  b=gH5pzvLYW8T71JwbUy9fSiFdES03IQJMoFDVAIvoc6Zolq8rIUrpOjVg
+   2HH2lv7xYU4ZZRbX5c5fjeEN7mruGXN0XYzoEwanggFRa1/2REo3cBKOn
+   WtPmZ3H0hdjVzU95qGFWny2IaF20bs8bOlX9w43UJ5NJUOddCrT+ye4sU
+   wiVRcWdBrF6LSXGqvr+XLtfNt3LerHFjPxkB0xvk0wL5tHe4H40rENw9m
+   lu1sNeKQfkzG4z4M+8X84OMZ8RO0IHCpPqOS6yu2dRQZhCrQbSYwDOtEv
+   SwUHlWorbKsFlBE4NUykG6X//25xy3D0Asa4bbawwzlzv2OVpZkIw6dTD
+   g==;
+X-CSE-ConnectionGUID: MOdZSrXmRM+htWqiwC5zBg==
+X-CSE-MsgGUID: f+GZ0270R86UCxpEmM4YzQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="41610394"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="41610394"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2024 19:31:19 -0800
+X-CSE-ConnectionGUID: 20DO5kIUSUqGp/IDlT8yBA==
+X-CSE-MsgGUID: SbAvkq6uQdm7JUKe7YsoKg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,259,1725346800"; 
+   d="scan'208";a="114653043"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2024 19:31:11 -0800
+Message-ID: <0781f329-49a5-4652-ae94-d0bbefa8dbb0@linux.intel.com>
+Date: Tue, 5 Nov 2024 11:30:25 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: QsYDBQM_VVc3X3_Y8CPHaN4KkUGDbJGK
-X-Proofpoint-ORIG-GUID: QsYDBQM_VVc3X3_Y8CPHaN4KkUGDbJGK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
- impostorscore=0 bulkscore=0 mlxlogscore=752 spamscore=0 phishscore=0
- malwarescore=0 mlxscore=0 clxscore=1015 lowpriorityscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2411050025
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 10/13] iommu/vt-d: Fail SVA domain replacement
+To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
+ kevin.tian@intel.com
+Cc: alex.williamson@redhat.com, eric.auger@redhat.com, nicolinc@nvidia.com,
+ kvm@vger.kernel.org, chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
+ zhenzhong.duan@intel.com, vasant.hegde@amd.com, will@kernel.org
+References: <20241104131842.13303-1-yi.l.liu@intel.com>
+ <20241104131842.13303-11-yi.l.liu@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20241104131842.13303-11-yi.l.liu@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Add the APPS SMMU node for QCS615 platform. Add the dma-ranges
-to limit DMA address range to 36bit width to align with system
-architecture.
+On 11/4/24 21:18, Yi Liu wrote:
+> There is no known usage that will attach SVA domain or detach SVA domain
+> by replacing PASID to or from SVA domain. It is supposed to use the
+> iommu_sva_{un}bind_device() which invoke the  iommu_{at|de}tach_device_pasid().
+> So Intel iommu driver decides to fail the domain replacement if the old
+> domain or new domain is SVA type.
 
-Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
----
- arch/arm64/boot/dts/qcom/qcs615.dtsi | 75 ++++++++++++++++++++++++++++
- 1 file changed, 75 insertions(+)
+I would suggest dropping this patch.
 
-diff --git a/arch/arm64/boot/dts/qcom/qcs615.dtsi b/arch/arm64/boot/dts/qcom/qcs615.dtsi
-index 027c5125f36b..e35fd4059073 100644
---- a/arch/arm64/boot/dts/qcom/qcs615.dtsi
-+++ b/arch/arm64/boot/dts/qcom/qcs615.dtsi
-@@ -379,6 +379,7 @@
- 	soc: soc@0 {
- 		compatible = "simple-bus";
- 		ranges = <0 0 0 0 0x10 0>;
-+		dma-ranges = <0 0 0 0 0x10 0>;
- 		#address-cells = <2>;
- 		#size-cells = <2>;
- 
-@@ -524,6 +525,80 @@
- 			reg = <0x0 0x0c3f0000 0x0 0x400>;
- 		};
- 
-+		apps_smmu: iommu@15000000 {
-+			compatible = "qcom,qcs615-smmu-500", "qcom,smmu-500", "arm,mmu-500";
-+			reg = <0x0 0x15000000 0x0 0x80000>;
-+			#iommu-cells = <2>;
-+			#global-interrupts = <1>;
-+			dma-coherent;
-+
-+			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 181 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 182 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 183 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 191 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 315 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 316 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 317 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 318 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 319 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 322 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 323 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 324 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 325 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 326 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 327 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 328 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 329 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 330 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 331 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 332 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 333 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 339 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 340 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH>;
-+		};
-+
- 		intc: interrupt-controller@17a00000 {
- 			compatible = "arm,gic-v3";
- 			reg = <0x0 0x17a00000 0x0 0x10000>,     /* GICD */
--- 
-2.17.1
+The iommu driver now supports switching SVA domains to and from other
+types of domains. The current limitation comes from the iommu core,
+where the SVA interface doesn't use replace.
 
+Looking forward, iommu_detach_device_pasid() will be converted to switch
+an SVA domain to a blocking domain. Once this is implemented, perhaps
+the check and failure scenario will no longer be relevant.
+
+--
+baolu
