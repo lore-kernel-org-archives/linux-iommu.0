@@ -1,225 +1,207 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2054.outbound.protection.outlook.com [40.107.92.54])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28B03217F30;
-	Tue,  5 Nov 2024 20:06:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730837173; cv=fail; b=ZfVbGd++iOeb98OQySQo8PsJBZow9Icmu+18ckMeq57zMm9sOjgbXgD4ATCKQbYBd4kSgOIXXB8zABUk0mK1JesxKOvKZZ2uSVSYkhB4t/QcuuE/XQlt31aRlhsjx5vWdLf0/cPxmHNF6YWf+WNRVy2DV7BtFz6Tlhjntz+RP+I=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730837173; c=relaxed/simple;
-	bh=GocVtaFMHsaoochqOKuLkKKhvjxtmjEjd6YfhwyRl7M=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ptUlZygUhBbGIh0kYwZOEa3NMiQDbmYUAyTJFrv3XFkEH8eow9iUW8a07U5T1Q72HQ7wZkG9UDg+vSTmEhWgAstn6JH6rDNja4eQURu4guF8QJBopXINIlDMx3Bhu/DMtcIOW7tRozgMyVSeJZ+ul2JyQaAO/YxgILIjkTX4a2s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pKklU0Kq; arc=fail smtp.client-ip=40.107.92.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A21042077;
+	Tue,  5 Nov 2024 20:12:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730837524; cv=none; b=fT/jDEvc+Ts7SjB3OutL9g6wuTCIWsteRgdRExTlphiqqD7G334I6/pYc8BZN6N9BYODNklp/Jet0J6JB5wq2C1WjCVVziprGNe+H8oL66icNbVHzse3QBuPZ32DduRyN68pRR8/qwZyWQAc4aUZbe3YhJRnib1LJLZ8IX2FnHA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730837524; c=relaxed/simple;
+	bh=6LwYiAB6meT+zkZegA4NYsStaK6/T8Pagdvmw42EAWk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YGiDOHStLDSB5IOWUDw5W5NYTWC3f1P5H2hcxhUS1WMAayzsQC/yRet+XAdTckhpFt3yaDrIDDrrmlw3FyRBHDKUHGjHjgZEPj3bGa/oPA8tjwlc2BTrPb8PEBxSicliFkxV7IGDd66vcBuEmhduiT8NtjUfNy81Vi7jLbO0PJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VBe0hJcO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pKklU0Kq"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=uhzbz7jQhdN2mY99NpJ3QuYLLKc7r/rAsHFrm+X/Z/LLFP0b61U8Z8XPfs5z8954r3V3grs4XJJN3VO8jcWRS8SIhAnvDY08WcxVWTc58DXCpb0qR8Cyt0pF7plD8gfhpIKlfGfMG0TzzUdytYk8yQDT7ndJap7vPyMMqbQ+6KilinDKfPdMHUlmrgKOZhBzBJ17SgvXWhz9Q5TyUTh87dDnB9iU/zSsnxG2DUY4786EVLTetzfAPmKj3Akr1Z7a4DnQDQeCrjBvrG2JkV/MrtrRxMiloYN/WY03Kwbr3Sb+uCSFosLiJSseIFW4X8j7vfdnipux/g3g+REJCMcLSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aN+F4pjDlqW2Vnng4x77irAKK+1SAUAlq3S+25YamwI=;
- b=tv5Zk+Ztljg6V6rsM3e6JjRyKpA5WM4ErAhkaD0a8ngOsaWcKOTTmIYRRFcKkgZiu1/kkyXx38ILf6hwRjwakO5Rd2tRbCpuRwfISuExlStX7kVCBRnaEUn4unFqlxcdkAGnmxAGA0wSPANoaB/bXJeIhq0uhQfPHKwy9UIyjm3ixiXPWvC1IHdFWka/UcPEHtOT4yGHIekhcphdEV4J62n9VEuVOfESaa2dAUKvyDeIwTZrpMOhlp4seI+YlrrCoULKx/DYHHeeRRRWL/1qo0SfWaNCkvARAEVJYxUM+UHcMT1J/dMHcw+DUff9XTlbTWsmyzPdi7LYCbF0ZcZkmA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aN+F4pjDlqW2Vnng4x77irAKK+1SAUAlq3S+25YamwI=;
- b=pKklU0KqUqK4JmkmCtTWXkTzL5U0VC+4qUpqwt5CPHq+RS501pPrAo9SwyVv1Jta9jXdfAFdjhq4f9p0wJ4iX632wj3BZAbdCz5cWCRO47eozTcM57/FqfsH4Heh5nJZNWLO2hbY4KvrM18a0dcRnLhAp0tYsxByKhXKK6aZCstjZfmZjTYfIdpp0AediBdaVAHGfvbhziuvDG/mlQjzjobx0KPfLIVmj4C5oeZQq7/6fgRYGQueLk6nCeCIF47MtZmGAcZ+pAPTZiA4mDYdqNfKyVWUfPuGnrNQIbE7DqU6z8wBp8xMu6/jCfHF9vBhIKigWMW4l7UQx1tk5Ew6Yw==
-Received: from BN8PR15CA0056.namprd15.prod.outlook.com (2603:10b6:408:80::33)
- by SA3PR12MB8810.namprd12.prod.outlook.com (2603:10b6:806:31f::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.31; Tue, 5 Nov
- 2024 20:06:08 +0000
-Received: from BL02EPF00021F6A.namprd02.prod.outlook.com
- (2603:10b6:408:80:cafe::7c) by BN8PR15CA0056.outlook.office365.com
- (2603:10b6:408:80::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.18 via Frontend
- Transport; Tue, 5 Nov 2024 20:06:08 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BL02EPF00021F6A.mail.protection.outlook.com (10.167.249.6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8137.17 via Frontend Transport; Tue, 5 Nov 2024 20:06:07 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 5 Nov 2024
- 12:05:45 -0800
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 5 Nov 2024
- 12:05:44 -0800
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
- Transport; Tue, 5 Nov 2024 12:05:43 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <kevin.tian@intel.com>, <corbet@lwn.net>
-CC: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <dwmw2@infradead.org>, <shuah@kernel.org>,
-	<iommu@lists.linux.dev>, <linux-doc@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<baolu.lu@linux.intel.com>, <eric.auger@redhat.com>,
-	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>,
-	<yi.l.liu@intel.com>, <aik@amd.com>, <zhangfei.gao@linaro.org>,
-	<patches@lists.linux.dev>
-Subject: [PATCH v7 10/10] Documentation: userspace-api: iommufd: Update vDEVICE
-Date: Tue, 5 Nov 2024 12:05:18 -0800
-Message-ID: <e1ff278b7163909b2641ae04ff364bb41d2a2a2e.1730836308.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1730836308.git.nicolinc@nvidia.com>
-References: <cover.1730836308.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VBe0hJcO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B170FC4CECF;
+	Tue,  5 Nov 2024 20:11:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1730837524;
+	bh=6LwYiAB6meT+zkZegA4NYsStaK6/T8Pagdvmw42EAWk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=VBe0hJcOMVNXSHfz3dnWDwKUWfk/hwHQWlXOXQer9zhCeMaGY5LqdEC/d4ROryBWb
+	 GXZ1Fq7+MmLwv6Gd6t4Sq/yMVn1JcgaHTwl9AVJqJY0qCyhlsDt0msoiWtc0oa+B3t
+	 A1GS3Vy1qXthtzRMdLEl5jL1QXD2FhGx0O3kMBn40f6nAWDTfMde0HPzimcUalw4lz
+	 dRTJz4JSoGw02X2aAXJHp+GaVhPhC4BvbjsPTzfsKyOhTzNVQvPIQyU7w3qJWOWCuy
+	 p1AjmJQ/tW04yHHB6cFnjKmUfklBFHk38ppHWSFewpFGquNRlPQ+OjOuKTLqSAGUxB
+	 VVN+RFaYBxbSQ==
+Message-ID: <a6cfba96-9164-4497-b075-9359c18a5eef@kernel.org>
+Date: Tue, 5 Nov 2024 21:11:57 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
+ has already unbound
+To: Yunsheng Lin <linyunsheng@huawei.com>,
+ =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+ davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc: zhangkun09@huawei.com, fanghaiqing@huawei.com, liuyonglong@huawei.com,
+ Robin Murphy <robin.murphy@arm.com>,
+ Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
+ Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet
+ <edumazet@google.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+ kernel-team <kernel-team@cloudflare.com>
+References: <20241022032214.3915232-1-linyunsheng@huawei.com>
+ <20241022032214.3915232-4-linyunsheng@huawei.com>
+ <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
+ <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
+ <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
+ <cf1911c5-622f-484c-9ee5-11e1ac83da24@huawei.com> <878qu7c8om.fsf@toke.dk>
+ <1eac33ae-e8e1-4437-9403-57291ba4ced6@huawei.com> <87o731by64.fsf@toke.dk>
+ <023fdee7-dbd4-4e78-b911-a7136ff81343@huawei.com> <874j4sb60w.fsf@toke.dk>
+ <a50250bf-fe76-4324-96d7-b3acf087a18c@huawei.com>
+Content-Language: en-US
+From: Jesper Dangaard Brouer <hawk@kernel.org>
+In-Reply-To: <a50250bf-fe76-4324-96d7-b3acf087a18c@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF00021F6A:EE_|SA3PR12MB8810:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0b9f576c-d0e5-40d2-5317-08dcfdd54973
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|36860700013|1800799024|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?HkdShU9yP+XOW8ZwhFbv70cy+7I9YzRDQSnGE8qNPsgHrGxnSk5JzRNKeFes?=
- =?us-ascii?Q?f8ibYfTxMFuMiRFn2kXHU0Q+kFoefGfannzinnP3XCsq3GmATfRzukR505Kg?=
- =?us-ascii?Q?bbsnobVPUR1coC81oNs86BM5IlbGoNnM0tRA/lxzAXwQyw1CaNzOTZ3dCBuu?=
- =?us-ascii?Q?cbxQzPPRcDHXs/9+rt+nSyHKcwMHJ49OYqF4/xDNr8ycIEgnhOY126JxNY7P?=
- =?us-ascii?Q?pSUnhd3AMSgSAq2xHjweKiQSM/RUI1Kps1YhZMU1zHdg2D9wpRCOT8tep6Rf?=
- =?us-ascii?Q?tDqyaQamYPjcHLd1HN/XtzQT9ONmB/sLVWEQUBcEiGryZ5kx9mH+oAXret4v?=
- =?us-ascii?Q?Rf1WVEreR/4daoAAl+JE3RdL9hl+k3ZO2l6WysiEVb7wXj2SGOw8g3XaRGeB?=
- =?us-ascii?Q?kbZnhZbN1zpvRcRd8ApizuzhdjOiR6SORMFvCvb8Rsy6I8QTbC3uZ8hrqNBH?=
- =?us-ascii?Q?wdgjjF6ZRvDUs78gCPTiwCjKTZXIsLDZgPyVvKv/3JGooWSMEOBU7xh96Ti9?=
- =?us-ascii?Q?V48LUm5Hz1iCbcGUGMpvB/cjcgIaLvu9VL6Icbli9V7snfazeHDFJPSl1e9F?=
- =?us-ascii?Q?V9rojqUmGPtbcGuUrOPY3YHYsG0gbCK+yGK1TsrMelTlnbK7qz+I58lWNDFh?=
- =?us-ascii?Q?JL+yEHu+Lg6WIaywvwoeC14qK/Z3/pTzpZlGIqcph8OTwIrga1qhBPITY11F?=
- =?us-ascii?Q?IfJ0hM3tP+V6xOqc1B4NbTqwtdf3qSLdbMFNZfqxwWg32ghxYN5nm3zlbGat?=
- =?us-ascii?Q?fhzvDlArzZhVIn6Qe5p+I/StULgK3NWE2tmqxc2IFnicRk3OUHqOOHKELLPX?=
- =?us-ascii?Q?VhZ2zP0DKLW/wNFY10YOaZW5zN+/BbJoZKixW1c4Px/fT1SFqd8Mj+O50LJs?=
- =?us-ascii?Q?Yj13ktjXOsmMux7zdLnqjyLODltl2+VX1w07jEOrqog7UH2LfQclHrrfUct1?=
- =?us-ascii?Q?6FNMNGDWKaDbOY50Tiyzxme705Anbxq/UfQlgkHhJR7QoccJwjqWXJzIR3gt?=
- =?us-ascii?Q?672DWA0LKjpal39WDmhTkqvgdAzTmdes+Q7psO9DqnlpuTl3U3BmtR0im0oU?=
- =?us-ascii?Q?iJM4zmeBu19zvLgC0stoYa8mUiPxISj9rNVjpBto40Hy8ce5CD5M4egYNO1P?=
- =?us-ascii?Q?AMMS4OPgpaVidYpZJ8lBTB8yy/zAj4k4qfRUcXczp/kQ6iYMMq9FTxe2UYK/?=
- =?us-ascii?Q?JPHzqHZ6WFkrpJND4RR4LKLsjC6G/XR1SIMr3U0SAgu1CtGZOOjK7wSlAv+N?=
- =?us-ascii?Q?CyECCQ5vj3Q/plm65t7E5U6gwE2wLifkQNwXBxom+QyU6YflLNf9BLyy7nmc?=
- =?us-ascii?Q?QdHDUEuYIyE+9Ngxj4YbTg/1Yp2INdFd8OAh/+2OyV5jBHor+O0u6cL0pyKU?=
- =?us-ascii?Q?a3KKWUx6K6uJDyn+4mVBCmP2iNRPPx0wisEn7QFHCnx9cUdg+w=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(36860700013)(1800799024)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2024 20:06:07.9736
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b9f576c-d0e5-40d2-5317-08dcfdd54973
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF00021F6A.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8810
 
-With the introduction of the new object and its infrastructure, update the
-doc and the vIOMMU graph to reflect that.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- Documentation/userspace-api/iommufd.rst | 41 +++++++++++++++++++------
- 1 file changed, 32 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/userspace-api/iommufd.rst b/Documentation/userspace-api/iommufd.rst
-index a8b7766c2849..8ba868ce7960 100644
---- a/Documentation/userspace-api/iommufd.rst
-+++ b/Documentation/userspace-api/iommufd.rst
-@@ -94,6 +94,19 @@ Following IOMMUFD objects are exposed to userspace:
-      backed by corresponding vIOMMU objects, in which case a guest OS would do
-      the "dispatch" naturally instead of VMM trappings.
- 
-+- IOMMUFD_OBJ_VDEVICE, representing a virtual device for an IOMMUFD_OBJ_DEVICE
-+  against an IOMMUFD_OBJ_VIOMMU. This virtual device holds the device's virtual
-+  information or attributes (related to the vIOMMU) in a VM. An immediate vDATA
-+  example can be the virtual ID of the device on a vIOMMU, which is a unique ID
-+  that VMM assigns to the device for a translation channel/port of the vIOMMU,
-+  e.g. vSID of ARM SMMUv3, vDeviceID of AMD IOMMU, and vRID of Intel VT-d to a
-+  Context Table. Potential use cases of some advanced security information can
-+  be forwarded via this object too, such as security level or realm information
-+  in a Confidential Compute Architecture. A VMM should create a vDEVICE object
-+  to forward all the device information in a VM, when it connects a device to a
-+  vIOMMU, which is a separate ioctl call from attaching the same device to an
-+  HWPT_PAGING that the vIOMMU holds.
-+
- All user-visible objects are destroyed via the IOMMU_DESTROY uAPI.
- 
- The diagrams below show relationships between user-visible objects and kernel
-@@ -133,16 +146,16 @@ creating the objects and links::
-                          |____________|     |____________|     |______|
- 
-   _______________________________________________________________________
-- |                      iommufd (with vIOMMU)                            |
-+ |                      iommufd (with vIOMMU/vDEVICE)                    |
-  |                                                                       |
-- |                             [5]                                       |
-- |                        _____________                                  |
-- |                       |             |                                 |
-- |      |----------------|    vIOMMU   |                                 |
-- |      |                |             |                                 |
-- |      |                |             |                                 |
-- |      |      [1]       |             |          [4]             [2]    |
-- |      |     ______     |             |     _____________     ________  |
-+ |                             [5]                [6]                    |
-+ |                        _____________      _____________               |
-+ |                       |             |    |             |              |
-+ |      |----------------|    vIOMMU   |<---|   vDEVICE   |<----|        |
-+ |      |                |             |    |_____________|     |        |
-+ |      |                |             |                        |        |
-+ |      |      [1]       |             |          [4]           | [2]    |
-+ |      |     ______     |             |     _____________     _|______  |
-  |      |    |      |    |     [3]     |    |             |   |        | |
-  |      |    | IOAS |<---|(HWPT_PAGING)|<---| HWPT_NESTED |<--| DEVICE | |
-  |      |    |______|    |_____________|    |_____________|   |________| |
-@@ -215,6 +228,15 @@ creating the objects and links::
-    the vIOMMU object and the HWPT_PAGING, then this vIOMMU object can be used
-    as a nesting parent object to allocate an HWPT_NESTED object described above.
- 
-+6. IOMMUFD_OBJ_VDEVICE can be only manually created via the IOMMU_VDEVICE_ALLOC
-+   uAPI, provided a viommu_id for an iommufd_viommu object and a dev_id for an
-+   iommufd_device object. The vDEVICE object will be the binding between these
-+   two parent objects. Another @virt_id will be also set via the uAPI providing
-+   the iommufd core an index to store the vDEVICE object to a vDEVICE array per
-+   vIOMMU. If necessary, the IOMMU driver may choose to implement a vdevce_alloc
-+   op to init its HW for virtualization feature related to a vDEVICE. Successful
-+   completion of this operation sets up the linkages between vIOMMU and device.
-+
- A device can only bind to an iommufd due to DMA ownership claim and attach to at
- most one IOAS object (no support of PASID yet).
- 
-@@ -228,6 +250,7 @@ User visible objects are backed by following datastructures:
- - iommufd_hwpt_paging for IOMMUFD_OBJ_HWPT_PAGING.
- - iommufd_hwpt_nested for IOMMUFD_OBJ_HWPT_NESTED.
- - iommufd_viommu for IOMMUFD_OBJ_VIOMMU.
-+- iommufd_vdevice for IOMMUFD_OBJ_VDEVICE.
- 
- Several terminologies when looking at these datastructures:
- 
--- 
-2.43.0
+On 01/11/2024 12.11, Yunsheng Lin wrote:
+> On 2024/11/1 0:18, Toke Høiland-Jørgensen wrote:
+> 
+> ...
+> 
+>>>>
+>>>> Eliding the details above, but yeah, you're right, there are probably
+>>>> some pernicious details to get right if we want to flush all caches. S
+>>>> I wouldn't do that to start with. Instead, just add the waiting to start
+>>>> with, then wait and see if this actually turns out to be a problem in
+>>>> practice. And if it is, identify the source of that problem, deal with
+>>>> it, rinse and repeat :)
+>>>
+>>> I am not sure if I have mentioned to you that jakub had a RFC for the waiting,
+>>> see [1]. And Yonglong Cc'ed had tested it, the waiting caused the driver unload
+>>> stalling forever and some task hung, see [2].
+>>>
+>>> The root cause for the above case is skb_defer_free_flush() not being called
+>>> as mentioned before.
+>>
+>> Well, let's fix that, then! We already logic to flush backlogs when a
+>> netdevice is going away, so AFAICT all that's needed is to add the
+> 
+> Is there a possiblity that the page_pool owned page might be still handled/cached
+> in somewhere of networking if netif_rx_internal() is already called for the
+> corresponding skb and skb_attempt_defer_free() is called after skb_defer_free_flush()
+> added in below patch is called?
+> 
+> Maybe add a timeout thing like timer to call kick_defer_list_purge() if you treat
+> 'outstanding forever' as leaked? I actually thought about this, but had not found
+> out an elegant way to add the timeout.
+> 
+>> skb_defer_free_flush() to that logic. Totally untested patch below, that
+>> we should maybe consider applying in any case.
+> 
+> I am not sure about that as the above mentioned timing window, but it does seem we
+> might need to do something similar in dev_cpu_dead().
+> 
+>>
+>>> I am not sure if I understand the reasoning behind the above suggestion to 'wait
+>>> and see if this actually turns out to be a problem' when we already know that there
+>>> are some cases which need cache kicking/flushing for the waiting to work and those
+>>> kicking/flushing may not be easy and may take indefinite time too, not to mention
+>>> there might be other cases that need kicking/flushing that we don't know yet.
+>>>
+>>> Is there any reason not to consider recording the inflight pages so that unmapping
+>>> can be done for inflight pages before driver unbound supposing dynamic number of
+>>> inflight pages can be supported?
+>>>
+>>> IOW, Is there any reason you and jesper taking it as axiomatic that recording the
+>>> inflight pages is bad supposing the inflight pages can be unlimited and recording
+>>> can be done with least performance overhead?
+>>
+>> Well, page pool is a memory allocator, and it already has a mechanism to
+>> handle returning of memory to it. You're proposing to add a second,
+>> orthogonal, mechanism to do this, one that adds both overhead and
+> 
+> I would call it as a replacement/improvement for the old one instead of
+> 'a second, orthogonal' as the old one doesn't really exist after this patch.
+> 
 
+Yes, are proposing doing a very radical change to the page_pool design.
+And this is getting proposed as a fix patch for IOMMU.
+
+It is a very radical change that page_pool needs to keep track of *ALL* 
+in-flight pages.
+
+The DMA issue is a life-time issue of DMA object associated with the
+struct device.  Then, why are you not looking at extending the life-time
+of the DMA object, or at least detect when DMA object goes away, such
+that we can change a setting in page_pool to stop calling DMA unmap for
+the pages in-flight once they get returned (which we have en existing
+mechanism for).
+
+
+>> complexity, yet doesn't handle all cases (cf your comment about devmem).
+> 
+> I am not sure if unmapping only need to be done using its own version DMA API
+> for devmem yet, but it seems waiting might also need to use its own version
+> of kicking/flushing for devmem as devmem might be held from the user space?
+> 
+>>
+>> And even if it did handle all cases, force-releasing pages in this way
+>> really feels like it's just papering over the issue. If there are pages
+>> being leaked (or that are outstanding forever, which basically amounts
+>> to the same thing), that is something we should be fixing the root cause
+>> of, not just working around it like this series does.
+> 
+> If there is a definite time for waiting, I am probably agreed with the above.
+>  From the previous discussion, it seems the time to do the kicking/flushing
+> would be indefinite depending how much cache to be scaned/flushed.
+> 
+> For the 'papering over' part, it seems it is about if we want to paper over
+> different kicking/flushing or paper over unmapping using different DMA API.
+> 
+> Also page_pool is not really a allocator, instead it is more like a pool
+> based on different allocator, such as buddy allocator or devmem allocator.
+> I am not sure it makes much to do the flushing when page_pool_destroy() is
+> called if the buddy allocator behind the page_pool is not under memory
+> pressure yet.
+> 
+
+I still see page_pool as an allocator like the SLUB/SLAB allocators,
+where slab allocators are created (and can be destroyed again), which we
+can allocate slab objects from.  SLAB allocators also use buddy
+allocator as their backing allocator.
+
+The page_pool is of-cause evolving with the addition of the devmem
+allocator as a different "backing" allocator type.
+
+
+> For the 'leaked' part mentioned above, I am agreed that it should be fixed
+> if we have a clear and unified definition of 'leaked'， for example, is it
+> allowed to keep the cache outstanding forever if the allocator is not under
+> memory pressure and not ask for the releasing of its memory?
+> 
+
+It seems wrong to me if page_pool need to dictate how long the API users
+is allowed to hold the page.
+
+> Doesn't it make more sense to use something like shrinker_register() mechanism
+> to decide whether to do the flushing?
+> 
+> IOW, maybe it makes more sense that the allocator behind the page_pool should
+> be deciding whether to do the kicking/flushing, and maybe page_pool should also
+> use the shrinker_register() mechanism to empty its cache when necessary instead
+> of deciding whether to do the kicking/flushing.
+> 
+
+Sure, I've argued before that page_pool should use shrinker_register()
+but only when used with the normal buddy allocator.
+BUT you need to realize that bad things can happen when network stack
+fails to allocate memory for packets, because it can block connections
+from making forward progress and those connections can be holding on to
+memory (that is part of the memory pressure problem).
+
+
+> So I am not even sure if it is appropriate to do the cache kicking/flushing
+> during waiting, not to mention the indefinite time to do the kicking/flushing.
+
+--Jesper
