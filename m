@@ -1,207 +1,329 @@
-Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2046.outbound.protection.outlook.com [40.107.244.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 042432139B2
-	for <iommu@lists.linux.dev>; Tue,  5 Nov 2024 19:53:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730836441; cv=none; b=HOc+gGHiyXqdVFJFxDmctdrW2zZ9svvpNGTyPyGHy0nRm266u15M9NMfCjFwTba9UfUgaQyDE/t/n9kZAc2FLRCY2m5fJakOUN+Ru5ycHy7o1d8vjm77ZAEjmvlp3ngRVnjpAr2vtny0LFd5U0lWW9Ca2s5eVF0W8VODrBariYc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730836441; c=relaxed/simple;
-	bh=q3kRFS0aC9llW2hXigplm+6X6nuxwR5TAuU7KtMvtNw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bKzFUw45xfaniQjVcf0MC9brp0PWgxosYJZavfnvOHgYJJicffL2nc5I9Wi3p053kqGWEVfWANHIsZlgHMnsnRPOaLvRueg6HzCY1q+CFfkzxWOwQuksS99c1hCtpamI+TtJOV2zi+YHtZ7iOkHNSr+4OqfpmNNLMu9cGx8pLPY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hzRPBnWm; arc=none smtp.client-ip=209.85.219.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 714D3215C50;
+	Tue,  5 Nov 2024 20:04:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730837097; cv=fail; b=U75TI+EOejhqmJqvd3HOfYYNrLY0hHkc7DksqhZU8cd7W1UMxmhwt3ThbQnK8Y9ny6QRAt7yzz/G4bmT1SwFZ3ZhQPmK9SKcl2JEZ9MqeYlOobmG8N4LD+hlBtw3WXLNc1+hgFMsItx1pMWZA7DkywmGrDsx6gzc0b/J77xnZsI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730837097; c=relaxed/simple;
+	bh=aozNjopQdAVKVZBSQwYElUPgBSgD+kAXfb5Gj/h4KUE=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=hLVeOFV+g97pK4FnOQGNmLb61wjEzYQVECep+LKNndDd9PQ+UvHZpNUhs0EPFHlHuVvPJ9Oi9Zw/B9Qixg9GnctTTaO/Oomr4NDOH3fEn7Il1jrZsgml7AJ5YOkB7f/8qItSq8uVpHp1UxDDslQQ8BLlPxk25xxr1auQPDei5A0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PVJOwfWH; arc=fail smtp.client-ip=40.107.244.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hzRPBnWm"
-Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-6cbf340fccaso1316426d6.1
-        for <iommu@lists.linux.dev>; Tue, 05 Nov 2024 11:53:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1730836439; x=1731441239; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+fX00798BJ3ATWBHAwavTUTImd2ssZMf/WzAfMHnat0=;
-        b=hzRPBnWmd1pJOdtnIOeNg3u1zE/LPxSBUouJC8xIxKMVRXEjTV6WzNz1H7PDWGTgN/
-         AIXyclyyjRX05nyf+9YkxYbMcKI/HJs6L64wRYUsfD+XuZaNM+ybeotPGSwb+kqV9uoK
-         kle4IxoTkdsr0ytOVRlmd3H0pAQn5EHLbUFJ/eJlJf6IpncVAA4A28LSj5tAmRFhW+8h
-         DfjA+WKw3f+AZTkw7hxNB4KRwHlEB5V6UnvEmzjPDsQeud4yI+sX/5aWI4Q9rLKwJZzL
-         ShtPw9YQByoAS1TyBFwRIiQSzS6ZAraOi47dJ0YegWZfaQs5qKCQssPyLkeuin0H+Z0n
-         Kr2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730836439; x=1731441239;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+fX00798BJ3ATWBHAwavTUTImd2ssZMf/WzAfMHnat0=;
-        b=E9QiJRMDPkwe1d5CGwadbnmhfJCP6a9zMpXfGJa14sYpnNyl5IEWj1UvauqxEchKRz
-         huQuPTM3ZuHReYw3zh9ftXbO8ZR1SzMpCEXLHcE0q3QrUw1D5Oxr38+0+UKZDJd5RLCh
-         paBNFtfsbAKAuygN8G8X1XlpHeZAN205eEJorM9+en3DFQkn0z9sZb7rhciWit375cMk
-         p8rfRu98y6OxS4TeTCnLq99Zv50GB22EyY7eCx0ZTqo4M42UQAfnnv8axqEzjrYqlhwY
-         3YgoFNdKaTL2ze7A9BKSDBf1cTnNcDFuWeJh9oVpTIG8w9G2xLgNAP6AMGXHEhLFxK2z
-         cRYQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXru5PHQe5BT8UJPdqdKCJ3tkGzWZAh5O/b2++slMFCDVMCgnpcB1mP7OAtqAgXMfir845mtw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyat2BkE7gftE7cag+RpizzmSWEbjvRvo32xTNjWnencf8a+wGL
-	XTo5X3SIw2hknjNN+ywBE2k03YqnZeS25MCnnCCvSlo0t1tDogrYGobwRvZzXDE=
-X-Google-Smtp-Source: AGHT+IEaav3D7n+muLVYjXAvVqOfQiyB3KvOcn2o5SW6dcKTwKh96GbO3Tfnssa4/aNZfrPdV+MQVQ==
-X-Received: by 2002:ad4:4eeb:0:b0:6cb:ed27:145c with SMTP id 6a1803df08f44-6d35b9510a3mr302739006d6.19.1730836438787;
-        Tue, 05 Nov 2024 11:53:58 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6d35415a62asm63870536d6.80.2024.11.05.11.53.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Nov 2024 11:53:58 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1t8Pcj-000000023mq-1vDZ;
-	Tue, 05 Nov 2024 15:53:57 -0400
-Date: Tue, 5 Nov 2024 15:53:57 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, Leon Romanovsky <leon@kernel.org>,
-	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v1 00/17] Provide a new two step DMA mapping API
-Message-ID: <20241105195357.GI35848@ziepe.ca>
-References: <cover.1730298502.git.leon@kernel.org>
- <3567312e-5942-4037-93dc-587f25f0778c@arm.com>
- <20241104095831.GA28751@lst.de>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PVJOwfWH"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=efcOt1Z8Cev7CrTDCHuHLazBf3EtReG/UPINzWhq8LJbxuOIXmkfbbiIB1kB8Pl3bkWzngf1EqU2HyAAG0dtRcYsecW9p5zhLxczHG2gN+Em/kiNqEOyKYxEq1bZYXN3IX3tM9qX2dfaD8NZhnIVDWyDEOvSoSfl4HuZ0IH6yhh9HXDANJ2bl8uSdIqjGYZbRQx75IC3h0p1zSPMDl1sZVqpT5/SfCFhg2K+J5kurAmjM3Zd540k8aJe4vOOrHpmYFjjy5zGv05zIOIO4CF6LIL5og/GoV6zyXvGE5u0DkvPOJT20JcslIUzqNPODjynfUMI80fNW5nKHxmHdknEnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=B5g8NE0lp38+tyIg9NVVhn5vE1FBYPVmV6ble4GRXo4=;
+ b=KQ0Hk78QvyqP0hu3P0Lg1mHbyUnkyy3yspHGoTvLPVqMs7PgARn0CghUjobKE1UxH1bqGw2Fax+bVTkMXMHaouqHrIebY8PmNSRZGt78ZawJgfsSOBxubgragQsKr9gyzqONtPV9AECvZ8awZcSiZW9qwEUUAmPs8FXT5Z9oaKxFd883xabbSQTx19XvNfmLgB5Wv7aGrSc2ipAsPwy6CagHlcOGRYSJ7nzbX9RO3nIzjQhyQbLY5V4hzPukRI6Hwn/A+pti6q4krkotAkGow0Hk+dPZF2J5yt90f3L1RbgJL7NIN9UlbwiJ2LoI2zDIJKJ2UwtnzeB1rreuPYMBAA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B5g8NE0lp38+tyIg9NVVhn5vE1FBYPVmV6ble4GRXo4=;
+ b=PVJOwfWHnCdo3/YfggzKirXlC9ZH3ZOEfmrT55bvh6XeTWgBrBR4ojcjG9SGG8vheZGt/iymCyq+TP7OtYMFi3G+bVhrz4p0tKbp+uls6tD+2VwPNlB5G+knNKsK0LXgH0XI5sDugOBBDtcjlwIrDj13V5V67j9Al2XYWOQJtkb12pP7E+Z+rcgW8YwW2H35ocGvoW1y9t79mP0RNAiYwEoBb5dUCBBkymMOz2LYDfgLaZYo6mtL8KPMdUTdt6CPxd4BVJS1AH6zKLVQ3Ll6GQRGtQ+f6CyK4xaQMvwSJh5tBI39UFu84rlLdao4xtRPfxhu6EEYcLDTAlSLMiuBHw==
+Received: from MN2PR07CA0003.namprd07.prod.outlook.com (2603:10b6:208:1a0::13)
+ by SA1PR12MB9001.namprd12.prod.outlook.com (2603:10b6:806:387::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.30; Tue, 5 Nov
+ 2024 20:04:51 +0000
+Received: from BL02EPF00029927.namprd02.prod.outlook.com
+ (2603:10b6:208:1a0:cafe::3) by MN2PR07CA0003.outlook.office365.com
+ (2603:10b6:208:1a0::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.18 via Frontend
+ Transport; Tue, 5 Nov 2024 20:04:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BL02EPF00029927.mail.protection.outlook.com (10.167.249.52) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8137.17 via Frontend Transport; Tue, 5 Nov 2024 20:04:51 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 5 Nov 2024
+ 12:04:37 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 5 Nov 2024
+ 12:04:37 -0800
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
+ Transport; Tue, 5 Nov 2024 12:04:35 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@nvidia.com>, <kevin.tian@intel.com>, <corbet@lwn.net>
+CC: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <dwmw2@infradead.org>, <shuah@kernel.org>,
+	<iommu@lists.linux.dev>, <linux-doc@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+	<baolu.lu@linux.intel.com>, <eric.auger@redhat.com>,
+	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
+	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>,
+	<yi.l.liu@intel.com>, <aik@amd.com>, <zhangfei.gao@linaro.org>,
+	<patches@lists.linux.dev>
+Subject: [PATCH v7 00/13] iommufd: Add vIOMMU infrastructure (Part-1)
+Date: Tue, 5 Nov 2024 12:04:16 -0800
+Message-ID: <cover.1730836219.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241104095831.GA28751@lst.de>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF00029927:EE_|SA1PR12MB9001:EE_
+X-MS-Office365-Filtering-Correlation-Id: cba53aa5-16f3-41ea-02e4-08dcfdd51bc0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|82310400026|36860700013|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?XBevg043Wbk6BoTqe+xt8R45MHvZJh1pIUo2XaFgmMPVHnsVRUvVGKbOcFW5?=
+ =?us-ascii?Q?2Dk7noG/DXNjhmmagOjEF5VPX+iieQaYWAvsWKl7JCG/aDu3de9W85XZ8IKi?=
+ =?us-ascii?Q?4+OtEvyo5ewS0iPJh3L0QCpicljZxAdq8iKG+P5S+pAR0xQ7Dlq/dvLvSnia?=
+ =?us-ascii?Q?oEP3bEVreh5xEmC6R6AhgITnEGrW+qSlTy0aB34hn/xG0oEklPL97wlLY/b8?=
+ =?us-ascii?Q?ktl60SRger5C8S2JJAgIFXr8R765tFhHHXPTWYT8af+ZLyPqaEeJ2DTDssHv?=
+ =?us-ascii?Q?/EbSfHr5eX2zsu4B8VCyTlQ5kaFVGBXuf7DhVw4gihcqPQcjf6KSGacT2e7v?=
+ =?us-ascii?Q?WAIAfKUfX5r68zYDTDUhbGq7F4BkfFUwrDarIgMGc/cJG2G1hfmozI66L2Jt?=
+ =?us-ascii?Q?KwWYzicchVtOnFE2T9/XN4QRO1SJN+ETeogX8VqYzJAwbSCzPaSDFLNQ/4Yh?=
+ =?us-ascii?Q?i5QoBzANzG/6v1POuUZGoc171FsBQbX6H8+kEfwOan9Ey6NDpeQ8YZXup712?=
+ =?us-ascii?Q?8gPGf8Pz/fueC/+yvYqV2TOg8UfarIQvrY4W9ZdEOJo2HKw71Vq26rivB8tn?=
+ =?us-ascii?Q?+QDd/RuGdRbm0mgMe7Q23Y5SR70ICIKM9KFfA4Ga+7IU6AyTdFC2ni1p3Mwn?=
+ =?us-ascii?Q?v+86v+2sUb3rRUBqbMN/tPjzIANDpPOheniIG6YwC2Y6kWmLhsXJJPVbcn5+?=
+ =?us-ascii?Q?7lnUpsuYl/O30dYuk3cTf+uv5yXROAjqBY4bvdiJ/ITPSaIMA1iwymTLJCef?=
+ =?us-ascii?Q?UaKax5gq4g/pFeY1f4/m4H0ccUJw2aUsrNrqny5g1AHVrqN7RHicUYiOMto9?=
+ =?us-ascii?Q?sLdrOkJPIkmHycBjQte+KkzvDO0Sg26r60dy1smuPXx9HnG+pabie4qQG4Xw?=
+ =?us-ascii?Q?7G3nluftxNAJW+5WQtoJ2t9nlgrFq4mG0oj/wSDSn2Sd8NSHKcSjE0KqrzhS?=
+ =?us-ascii?Q?mR7X/YU0v340HQMedh6wA/ywj7d25q3LTm1iO4c/Sj2IcZZ+7Du6mmvhQkul?=
+ =?us-ascii?Q?tG1R6Mj58bNLWc+Rb3TnvZTFl9M7uzgrsC0Vd7QdzSSA6mcXb/GhlgOm8eaB?=
+ =?us-ascii?Q?UFbDEyiceFzK8/62slXmbR7Jdf/EZqNJpJ3EeXfuAaBJba9QCSxQpQbK7bcH?=
+ =?us-ascii?Q?V77GHkHKOPLfe3FP4WXMOVPFQDUivl1fvvt96dWiOf2AarLckSDxIRrPd1AR?=
+ =?us-ascii?Q?+5FIAiyha1YiosiucculraPwkLShOuWi2g2f7I484oTaWuMcheTjbXW2bpUu?=
+ =?us-ascii?Q?LfnZ/ck23jKSHW/rFnDt5ogl5oWX9fN9tLxuImTvCMsX0GzJ5y3y1gZ9kvHo?=
+ =?us-ascii?Q?c9kmQxU7y5APuhJZNp3KieexrQokCNvzc/IzQ23ca/CUPSPYKqVkYqDo0Aig?=
+ =?us-ascii?Q?duvt++ZFy9F4B8Iz1B8/ctWCC5inG8QID/1yxa96tL8jROfGAg=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(82310400026)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2024 20:04:51.2228
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: cba53aa5-16f3-41ea-02e4-08dcfdd51bc0
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF00029927.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB9001
 
-On Mon, Nov 04, 2024 at 10:58:31AM +0100, Christoph Hellwig wrote:
-> On Thu, Oct 31, 2024 at 09:17:45PM +0000, Robin Murphy wrote:
-> > The hilarious amount of work that iommu_dma_map_sg() does is pretty much 
-> > entirely for the benefit of v4l2 and dma-buf importers who *depend* on 
-> > being able to linearise a scatterlist in DMA address space. TBH I doubt 
-> > there are many actual scatter-gather-capable devices with significant 
-> > enough limitations to meaningfully benefit from DMA segment combining these 
-> > days - I've often thought that by now it might be a good idea to turn that 
-> > behaviour off by default and add an attribute for callers to explicitly 
-> > request it.
-> 
-> Even when devices are not limited they often perform significantly better
-> when IOVA space is not completely fragmented.  While the dma_map_sg code
-> is a bit gross due to the fact that it has to deal with unaligned segments,
-> the coalescing itself often is a big win.
+This series introduces a new vIOMMU infrastructure and related ioctls.
 
-RDMA is like this too, Almost all the MR HW gets big wins if the
-entire scatter list is IOVA contiguous. One of the future steps I'd
-like to see on top of this is to fine tune the IOVA allocation backing
-MRs to exactly match the HW needs. Having proper alignment and
-contiguity can be huge reduction in device overhead, like a 100MB MR
-may need to store 200K of mapping information on-device, but with a
-properly aligned IOVA this can be reduced to only 16 bytes.
+IOMMUFD has been using the HWPT infrastructure for all cases, including a
+nested IO page table support. Yet, there're limitations for an HWPT-based
+structure to support some advanced HW-accelerated features, such as CMDQV
+on NVIDIA Grace, and HW-accelerated vIOMMU on AMD. Even for a multi-IOMMU
+environment, it is not straightforward for nested HWPTs to share the same
+parent HWPT (stage-2 IO pagetable), with the HWPT infrastructure alone: a
+parent HWPT typically hold one stage-2 IO pagetable and tag it with only
+one ID in the cache entries. When sharing one large stage-2 IO pagetable
+across physical IOMMU instances, that one ID may not always be available
+across all the IOMMU instances. In other word, it's ideal for SW to have
+a different container for the stage-2 IO pagetable so it can hold another
+ID that's available. And this container will be able to hold some advanced
+feature too.
 
-Avoiding a double translation tax when the iommu HW is enabled is
-potentially significant. We have some RDMA workloads with VMs where
-the NIC is holding ~1GB of memory just for translations, but the iommu
-is active as the S2. ie we are paying a double tax on translation.
+For this "different container", add vIOMMU, an additional layer to hold
+extra virtualization information:
+  _______________________________________________________________________
+ |                      iommufd (with vIOMMU)                            |
+ |                        _____________                                  |
+ |                       |             |                                 |
+ |      |----------------|    vIOMMU   |                                 |
+ |      |     ______     |             |     _____________     ________  |
+ |      |    |      |    |             |    |             |   |        | |
+ |      |    | IOAS |<---|(HWPT_PAGING)|<---| HWPT_NESTED |<--| DEVICE | |
+ |      |    |______|    |_____________|    |_____________|   |________| |
+ |      |        |              |                  |               |     |
+ |______|________|______________|__________________|_______________|_____|
+        |        |              |                  |               |
+  ______v_____   |        ______v_____       ______v_____       ___v__
+ |   struct   |  |  PFN  |  (paging)  |     |  (nested)  |     |struct|
+ |iommu_device|  |------>|iommu_domain|<----|iommu_domain|<----|device|
+ |____________|   storage|____________|     |____________|     |______|
 
-It could be a very interesting trade off to reduce the NIC side to
-nothing and rely on the CPU IOMMU with nested translation instead.
+The vIOMMU object should be seen as a slice of a physical IOMMU instance
+that is passed to or shared with a VM. That can be some HW/SW resources:
+ - Security namespace for guest owned ID, e.g. guest-controlled cache tags
+ - Non-device-affiliated event reporting, e.g. invalidation queue errors
+ - Access to a sharable nesting parent pagetable across physical IOMMUs
+ - Virtualization of various platforms IDs, e.g. RIDs and others
+ - Delivery of paravirtualized invalidation
+ - Direct assigned invalidation queues
+ - Direct assigned interrupts
 
-> Note that dma_map_sg also has two other very useful features:  batching
-> of the iotlb flushing, and support for P2P, which to be efficient also
-> requires batching the lookups.
+On a multi-IOMMU system, the vIOMMU object must be instanced to the number
+of the physical IOMMUs that have a slice passed to (via device) a guest VM,
+while being able to hold the shareable parent HWPT. Each vIOMMU then just
+needs to allocate its own individual ID to tag its own cache:
+                     ----------------------------
+ ----------------    |         |  paging_hwpt0  |
+ | hwpt_nested0 |--->| viommu0 ------------------
+ ----------------    |         |      IDx       |
+                     ----------------------------
+                     ----------------------------
+ ----------------    |         |  paging_hwpt0  |
+ | hwpt_nested1 |--->| viommu1 ------------------
+ ----------------    |         |      IDy       |
+                     ----------------------------
 
-This is the main point, and I think, is the uniqueness Leon is talking
-about. We don't get those properties through any other API and this
-one series preserves them.
+As an initial part-1, add IOMMUFD_CMD_VIOMMU_ALLOC ioctl for an allocation
+only.
 
-In fact I would say that is the entire point of this series: preserve
-everything special about dma_map_sg() compared to dma_map_page() but
-don't require a scatterlist.
+More vIOMMU-based structs and ioctls will be introduced in the follow-up
+series to support vDEVICE, vIRQ (vEVENT) and vQUEUE objects. Although we
+repurposed the vIOMMU object from an earlier RFC, just for a referece:
+https://lore.kernel.org/all/cover.1712978212.git.nicolinc@nvidia.com/
 
-> >> Several approaches have been explored to expand the DMA API with additional
-> >> scatterlist-like structures (BIO, rlist), instead split up the DMA API
-> >> to allow callers to bring their own data structure.
-> >
-> > And this line of reasoning is still "2 + 2 = Thursday" - what is to say 
-> > those two notions in any way related? We literally already have one generic 
-> > DMA operation which doesn't operate on struct page, yet needed nothing 
-> > "split up" to be possible.
-> 
-> Yeah, I don't really get the struct page argument.  In fact if we look
-> at the nitty-gritty details of dma_map_page it doesn't really need a
-> page at all. 
+This series is on Github:
+https://github.com/nicolinc/iommufd/commits/iommufd_viommu_p1-v7
+(QEMU branch for testing will be provided in Jason's nesting series)
 
-Today, if you want to map a P2P address you must have a struct page,
-because page->pgmap is the only source of information on the P2P
-topology.
+Changelog
+v7
+ * Added "Reviewed-by" from Jason
+ * Dropped "select IOMMUFD_DRIVER_CORE" in Kconfig
+ * Decoupled IOMMUFD_DRIVER from IOMMUFD_DRIVER_CORE
+ * Moved vIOMMU negative tests out of FIXTURE_SETUP to a TEST_F
+ * Dropped the "flags" check in iommufd_viommu_alloc_hwpt_nested
+ * Added the kdoc for "flags" in iommufd_viommu_alloc_hwpt_nested
+v6
+ https://lore.kernel.org/all/cover.1730313237.git.nicolinc@nvidia.com/
+ * Improved comment lines
+ * Added a TEST_F for IO page fault
+ * Fixed indentations in iommufd.rst
+ * Revised kdoc of the viommu_alloc op
+ * Added "Reviewed-by" from Kevin and Jason
+ * Passed in "flags" to ->alloc_domain_nested
+ * Renamed "free" op to "destroy" in viommu_ops
+ * Skipped SMMUv3 driver changes (to post in a separate series)
+ * Fixed "flags" validation in iommufd_viommu_alloc_hwpt_nested
+ * Added CONFIG_IOMMUFD_DRIVER_CORE for sharing between iommufd
+   core and IOMMU dirvers
+ * Replaced iommufd_verify_unfinalized_object with xa_cmpxchg in
+   iommufd_object_finalize/abort functions
+v5
+ https://lore.kernel.org/all/cover.1729897352.git.nicolinc@nvidia.com/
+ * Added "Reviewed-by" from Kevin
+ * Reworked iommufd_viommu_alloc helper
+ * Revised the uAPI kdoc for vIOMMU object
+ * Revised comments for pluggable iommu_dev
+ * Added a couple of cleanup patches for selftest
+ * Renamed domain_alloc_nested op to alloc_domain_nested
+ * Updated a few commit messages to reflect the latest series
+ * Renamed iommufd_hwpt_nested_alloc_for_viommu to
+   iommufd_viommu_alloc_hwpt_nested, and added flag validation
+v4
+ https://lore.kernel.org/all/cover.1729553811.git.nicolinc@nvidia.com/
+ * Added "Reviewed-by" from Jason
+ * Dropped IOMMU_VIOMMU_TYPE_DEFAULT support
+ * Dropped iommufd_object_alloc_elm renamings
+ * Renamed iommufd's viommu_api.c to driver.c
+ * Reworked iommufd_viommu_alloc helper
+ * Added a separate iommufd_hwpt_nested_alloc_for_viommu function for
+   hwpt_nested allocations on a vIOMMU, and added comparison between
+   viommu->iommu_dev->ops and dev_iommu_ops(idev->dev)
+ * Replaced s2_parent with vsmmu in arm_smmu_nested_domain
+ * Replaced domain_alloc_user in iommu_ops with domain_alloc_nested in
+   viommu_ops
+ * Replaced wait_queue_head_t with a completion, to delay the unplug of
+   mock_iommu_dev
+ * Corrected documentation graph that was missing struct iommu_device
+ * Added an iommufd_verify_unfinalized_object helper to verify driver-
+   allocated vIOMMU/vDEVICE objects
+ * Added missing test cases for TEST_LENGTH and fail_nth
+v3
+ https://lore.kernel.org/all/cover.1728491453.git.nicolinc@nvidia.com/
+ * Rebased on top of Jason's nesting v3 series
+   https://lore.kernel.org/all/0-v3-e2e16cd7467f+2a6a1-smmuv3_nesting_jgg@nvidia.com/
+ * Split the series into smaller parts
+ * Added Jason's Reviewed-by
+ * Added back viommu->iommu_dev
+ * Added support for driver-allocated vIOMMU v.s. core-allocated
+ * Dropped arm_smmu_cache_invalidate_user
+ * Added an iommufd_test_wait_for_users() in selftest
+ * Reworked test code to make viommu an individual FIXTURE
+ * Added missing TEST_LENGTH case for the new ioctl command
+v2
+ https://lore.kernel.org/all/cover.1724776335.git.nicolinc@nvidia.com/
+ * Limited vdev_id to one per idev
+ * Added a rw_sem to protect the vdev_id list
+ * Reworked driver-level APIs with proper lockings
+ * Added a new viommu_api file for IOMMUFD_DRIVER config
+ * Dropped useless iommu_dev point from the viommu structure
+ * Added missing index numnbers to new types in the uAPI header
+ * Dropped IOMMU_VIOMMU_INVALIDATE uAPI; Instead, reuse the HWPT one
+ * Reworked mock_viommu_cache_invalidate() using the new iommu helper
+ * Reordered details of set/unset_vdev_id handlers for proper lockings
+v1
+ https://lore.kernel.org/all/cover.1723061377.git.nicolinc@nvidia.com/
 
-So the logic is, to get P2P without struct page we need a way to have
-all the features of dma_map_sg() but without a mandatory scatterlist
-because we cannot remove struct page from scatterlist.
+Thanks!
+Nicolin
 
-This series gets to the first step - no scatterlist. There will need
-to be another series to provide an alternative to page->pgmap to get
-the P2P information. Then we really won't have struct page dependence
-in the DMA API.
+Nicolin Chen (13):
+  iommufd: Move struct iommufd_object to public iommufd header
+  iommufd: Move _iommufd_object_alloc helper to a sharable file
+  iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its related struct
+  iommufd: Verify object in iommufd_object_finalize/abort()
+  iommufd/viommu: Add IOMMU_VIOMMU_ALLOC ioctl
+  iommufd: Add alloc_domain_nested op to iommufd_viommu_ops
+  iommufd: Allow pt_id to carry viommu_id for IOMMU_HWPT_ALLOC
+  iommufd/selftest: Add container_of helpers
+  iommufd/selftest: Prepare for mock_viommu_alloc_domain_nested()
+  iommufd/selftest: Add refcount to mock_iommu_device
+  iommufd/selftest: Add IOMMU_VIOMMU_TYPE_SELFTEST
+  iommufd/selftest: Add IOMMU_VIOMMU_ALLOC test coverage
+  Documentation: userspace-api: iommufd: Update vIOMMU
 
-I actually once looked at how to enhance dma_map_resource() to support
-P2P and it was not very nice, the unmap side became quite complex. I
-think this is a more elgant solution than what I was sketching.
+ drivers/iommu/iommufd/Kconfig                 |   4 +
+ drivers/iommu/iommufd/Makefile                |   4 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  33 +--
+ drivers/iommu/iommufd/iommufd_test.h          |   2 +
+ include/linux/iommu.h                         |  14 +
+ include/linux/iommufd.h                       |  86 ++++++
+ include/uapi/linux/iommufd.h                  |  54 +++-
+ tools/testing/selftests/iommu/iommufd_utils.h |  28 ++
+ drivers/iommu/iommufd/driver.c                |  40 +++
+ drivers/iommu/iommufd/hw_pagetable.c          |  73 ++++-
+ drivers/iommu/iommufd/main.c                  |  54 ++--
+ drivers/iommu/iommufd/selftest.c              | 266 +++++++++++++-----
+ drivers/iommu/iommufd/viommu.c                |  81 ++++++
+ tools/testing/selftests/iommu/iommufd.c       | 137 +++++++++
+ .../selftests/iommu/iommufd_fail_nth.c        |  11 +
+ Documentation/userspace-api/iommufd.rst       |  69 ++++-
+ 16 files changed, 804 insertions(+), 152 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/driver.c
+ create mode 100644 drivers/iommu/iommufd/viommu.c
 
-> >>      for the device. Instead of allocating a scatter list entry per allocated
-> >>      page it can just allocate an array of 'struct page *', saving a large
-> >>      amount of memory.
-> >
-> > VFIO already assumes a coherent device with (realistically) an IOMMU which 
-> > it explicitly manages - why is it even pretending to need a generic DMA 
-> > API?
-> 
-> AFAIK that does isn't really vfio as we know it but the control device
-> for live migration.  But Leon or Jason might fill in more.
 
-Yes, this is the control side of the VFIO live migration driver that
-needs rather a lot of memory to store the migration blob. There is
-definitely an iommu, and the VF function is definitely translating,
-but it doesn't mean the PF function is using dma-iommu.c, it is often
-in iommu passthrough/identity and using DMA direct.
+base-commit: 0bcceb1f51c77f6b98a7aab00847ed340bf36e35
+-- 
+2.43.0
 
-It was done as an alternative example on how to use the API. Again
-there are more improvements possible there, the driver does not take
-advantage of contiguity or alignment when programming the HW.
-
-> Because we only need to preallocate the tiny constant sized dma_iova_state
-> as part of the request instead of an additional scatterlist that requires
-> sizeof(struct page *) + sizeof(dma_addr_t) + 3 * sizeof(unsigned int)
-> per segment, including a memory allocation per I/O for that.
-
-Right, eliminating scatterlist entirely on fast paths is a big
-point. I recall Chuck was keen on the same thing for NFSoRDMA as well.
-
-> At least for the block code we have a nice little core wrapper that is
-> very easy to use, and provides a great reduction of memory use and
-> allocations.  The HMM use case I'll let others talk about.
-
-I saw the Intel XE team make a complicated integration with the DMA
-API that wasn't so good. They were looking at an earlier version of
-this and I think the feedback was positive. It should make a big
-difference, but we will need to see what they come up and possibly
-tweak things.
-
-Jason
