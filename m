@@ -1,236 +1,260 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2077.outbound.protection.outlook.com [40.107.94.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F12F82036E2
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 17:51:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730915471; cv=none; b=DVTZNfHcdPFvuvMLppvtIW0iHa//mPwGo6JD6ro0tjzn9mkCze29XfdDbewZr2jHfaeA3wW8jTLd5gn4gZvH4aW5ri6Caj0vEKOKwpkzit3SwwubLj4LXfN9vGl9ZoscOOhx/hHsi0SHhOLQR6kjTQc3ztkDnjXcKkvyhgEPDMU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730915471; c=relaxed/simple;
-	bh=dIWVb2g9QRqcXTaV1s47gMyEVtB2onyQwlrAJa4Jj1E=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=JlLGBVL3pywXfAtBTVkI51eGYEy9JXezD8hmLAYWHGvZc3u/RNvQ5C8YRwTDCLy06u7BmmyTvnVDbKWQYcnRZK5dJr52CU8kzThhMM6uUQ10GQUuy3/5HSajxSq93gJ7kyIkbevcuYScewmPrmgx8uyzxOQiNJuvmwXfEIVyRko=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=PLtIhmqD; arc=none smtp.client-ip=209.85.218.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B0F88C11;
+	Wed,  6 Nov 2024 18:05:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.77
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730916342; cv=fail; b=cy5ZlA8cZvEHhg96uFCEgzVlgcfHCrqZDSfylp3Ce8L/q3JPY4gxQBguNRFzaVRRz3p7vX/bs2EndtXm8VZ2wvPkyKjjKoX50iksPLbZwwoUhO9633J4cmetCXdfm0obKjP6YbdAuZLTJ8BH0dZJhe//YbSDhL45IclQ/lj+lN0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730916342; c=relaxed/simple;
+	bh=qBAKpKVnCmr3hqyqx60DCxz4QxfS+TaxUR6T3jZwYGs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=Y5Rn1OXfdb3fPDgLwW3xkQzIJUc+jcLHkTJNFbDPR+PlMBQMq5D4tQtDlEx46c3qo8pVNFk0Ps88EBBYzUbDSbQAld9MXQaHJGMDrI+JBB5tq+A+HEnUueLQQVPQTL5VT9TPf8xBBhh+15VeHpV24pV9oAmWyIAkNp2Yl1YLBrA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ddl5SN7S; arc=fail smtp.client-ip=40.107.94.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="PLtIhmqD"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a9ec86a67feso2664866b.1
-        for <iommu@lists.linux.dev>; Wed, 06 Nov 2024 09:51:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1730915467; x=1731520267; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=49hG3lsHGrJySpAEzyxRduAfSvP7r1BXPqy63OvAnoQ=;
-        b=PLtIhmqDoG205Qx9mofkiut3ZHr2od6hH+w2j4Y0ZDY+NmXwX2BWYU07CK4FJs6CXX
-         f4ZozEQmoLKn6jKirczxCEb2xGhlrDdODR4zkozaIZL5pVIR83aerVVR6AT+aN1m5eeo
-         0V/f+5EH0TbmVsoJXOQ+bCwr7Kk2O3Ggdr4DZCey2ADhrNNTMa5H72X9llj5rGKI5GO4
-         GuBb7MWMQVnk02BpVn/ndHAuKF2OuFKJPZKoI+qwVqdRRmadWx2gcMG52YQUSkGYXsew
-         welEw1qMjsM18E68ip67ZABMuF0ttQfJ+YYdC2UPedhV9HvbJmMXAt+H4LA0fnAtC5Sw
-         prvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730915467; x=1731520267;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=49hG3lsHGrJySpAEzyxRduAfSvP7r1BXPqy63OvAnoQ=;
-        b=WXG5orzKOmQFRoYqLu8oFFF7xJVzV+dFsrXsx2vHpOp0pFfhvUw6B1uHA4nC+pe39N
-         i8j+77zvQaxZBXaWqgEdaNcS0EH4dYgHptI3L/qIcD5VeBOHJsIwwBytKu/7ZYGTaonM
-         R3yqxOJr6FuHM4Pi0TOxk+AKit3nMDLcLS42IjrEcaBdruG5jZe1tJkbJdHkvEdT4HYf
-         ruWmctv0qt/IvvpvZV/iIIN7GYv+h6i/bH4XSo6BNfFL2HE8pUxD1Ag7ic5nFKdSMPoE
-         6xhSOw6Nyymtw8ExoknkH/wGRNz2rzar+dXyuzIbKumt8OXmP7XlNrjFq7vsXawAM2kL
-         /YOw==
-X-Gm-Message-State: AOJu0YwmSEGcuzmgjq3f9ZErzTMZESpV++K7dYIBcBqbI3dzsG4vq0op
-	wE4FmxOtZHbBlGa/lMsGI3k/roQDTf9jV4rrKCV6T5XOkRIkwT1cIT/cMfWLage9wp40BrpxWJZ
-	N
-X-Google-Smtp-Source: AGHT+IFfCwyaClKnReIWxUZd0iEfNRrNS6oO6x2m/KaQtRbS25PxoEe6F/CuTCRBg5p3XO9EVv7f2A==
-X-Received: by 2002:a17:907:7d93:b0:a9a:8a4:e079 with SMTP id a640c23a62f3a-a9de5edea84mr4205271366b.31.1730915467354;
-        Wed, 06 Nov 2024 09:51:07 -0800 (PST)
-Received: from localhost (2001-1ae9-1c2-4c00-20f-c6b4-1e57-7965.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:20f:c6b4:1e57:7965])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a9eb17d7328sm312443566b.129.2024.11.06.09.51.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Nov 2024 09:51:06 -0800 (PST)
-From: Andrew Jones <ajones@ventanamicro.com>
-To: iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Cc: tjeznach@rivosinc.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	paul.walmsley@sifive.com,
-	palmer@dabbelt.com,
-	aou@eecs.berkeley.edu
-Subject: [PATCH 2/2] iommu/riscv: Add support for platform msi
-Date: Wed,  6 Nov 2024 18:51:05 +0100
-Message-ID: <20241106175102.219923-6-ajones@ventanamicro.com>
-X-Mailer: git-send-email 2.47.0
-In-Reply-To: <20241106175102.219923-4-ajones@ventanamicro.com>
-References: <20241106175102.219923-4-ajones@ventanamicro.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ddl5SN7S"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=aFY9JefMzD4h77CL3NbN45A48qd3Gh4hv6XCkv2nUOTOC7QWFiCkTnlao56dF/K9x88fOyBQUVx7NtOoOuKUXt+heWDLGs7ivi/oVgZ6VhIZCKiV80EWfzV6HtBHpyihUIkraf6DVh5P1uFKPKXmlcrRLK48ROt/nKFaeXf34b70l40Hc9xwmYkMjHV1UBktlUJX4zTlz5lzuuP8uj3mfs2WKsvBFCgY6sbBt6UsLdHWPPFmPo5UALU+DvAnlG1oiZfLn2UJiZ7uLHZt5jPhwgxCuwg2Be+pBrwdApREfoy8B6WwmtDfpo92JkdasoDTKTDOXr9RyrSF4xLc13yTMg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pBZKIZP+5/YrTlJyIHEBPZBPcKW+qV+eHVwcK53TyEw=;
+ b=BGhggAnCNE4vhEkU7GMJyJjC2EyaQP8WZqVL6ZBR0zghxJ2vfx3iVUMoP0qVKEVu9v/ZHwSuYEhs2jg7fIaAAzfTE6vYE2sswxZLhGVMnnCwfmIpAJW4UP2fRE7GPMZCUPF8f/VejbTsMaBqWZ7YvntmLW5ZsI3ZwzRvTlIjDLvKP72JwRm6iaNUl20/bMs8rAt6R4axkcrUPsSWxrntONGqaYXNBcs4Pi9DE91ZpVb5hB0KPFHgPb6AU+HOzlZ2QtcZCBnlTHtQatfd8Bc8s9cWIwQDc62BE+U6E+f8jT/4uSelHoohJIcIeM3SDiZU5rMXmysxW93aV2sxofWXQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pBZKIZP+5/YrTlJyIHEBPZBPcKW+qV+eHVwcK53TyEw=;
+ b=ddl5SN7SmDoi7DxQGRIbVdXoDRBuwcgIrKOtobv+MOUo4V1IujwEuDe/M/k7xx2yOcz+SIJYJjV7WYwjsXF2P/Y6j930ydOFmk72wVMohKzOUzXAiUkUp+T92H6GsLJkpZhdT8eWCkxqRmBTeMdMikWfrijdVxcl+pYExFIiC/YG5A7z0YQPNmg7VYK/opetN4aUJYMcGLivi4Cc/mmSfK5gr9N++wXjb82DmOpDwZ6RQWXGfnOeKxhnuifC8T3DjaqZRGrMydl9Ax2GmqIFJueVeqXAXnxIKWNUrrG7CRjhCf50oywiwyr4z28fwX/+V1OzxuC7Ulhl3HUSrr0dCg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by CH3PR12MB8332.namprd12.prod.outlook.com (2603:10b6:610:131::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.19; Wed, 6 Nov
+ 2024 18:05:32 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8137.018; Wed, 6 Nov 2024
+ 18:05:32 +0000
+Date: Wed, 6 Nov 2024 14:05:31 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will@kernel.org>, acpica-devel@lists.linux.dev,
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Donald Dutile <ddutile@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v4 05/12] iommu/arm-smmu-v3: Support IOMMU_GET_HW_INFO
+ via struct arm_smmu_hw_info
+Message-ID: <20241106180531.GA520535@nvidia.com>
+References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+ <5-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+ <20241104114723.GA11511@willie-the-truck>
+ <20241104124102.GX10193@nvidia.com>
+ <8a5940b0-08f3-48b1-9498-f09f0527a964@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8a5940b0-08f3-48b1-9498-f09f0527a964@arm.com>
+X-ClientProxiedBy: MN2PR13CA0002.namprd13.prod.outlook.com
+ (2603:10b6:208:160::15) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CH3PR12MB8332:EE_
+X-MS-Office365-Filtering-Correlation-Id: ac595f24-0ce0-44fe-d879-08dcfe8d9b14
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?NMWmcR9qrt5Ke7qSUfHyoo81MLf9n7254kDYu3ljXZgfQm4Z6Ds0QcaUXC4d?=
+ =?us-ascii?Q?B2ijPNSCOyVId1wsjNu3FMLAsHYZwOcPOGccbB78WYAzxUCPpe302GrWVqgX?=
+ =?us-ascii?Q?IZmJqkGRFKk1+nJA148jyEnsHu2Y6zVQZP+MkT6f4Un9AdAr2KJsmTOpczyi?=
+ =?us-ascii?Q?3M2nWxp5Ji5OkBw/UPeWzh21urahsmCb1HbC5Y9zHwj7u5G8pXOw1IDMmApI?=
+ =?us-ascii?Q?r3qoLjwnKJhSLoAVqUxEd2VPhe2aZ/OrlH2x1pHBL7rZfKSKHUwvWfo6VEQ6?=
+ =?us-ascii?Q?dFtlFgA8EOQvBizXzkVzhfHjldIcgrf56Kt12btf/SWUQFYThAvlLVmFa2C3?=
+ =?us-ascii?Q?X3ruQKc4kYMFYVxpaxcCI3mqFmmcx+j3SeTskGae0rVtXxTfgmszruvocm7q?=
+ =?us-ascii?Q?mAdli1cZh3i8QJZem0RGNV7UDxTiFFlY8vWUSgR3p6ofs6kqT1xO8MF1KFfN?=
+ =?us-ascii?Q?12TU4S381GmITirLUEo/VoX71wg5XIa1eDsPHviwYA5AwK6uNf8WcaDLvxUG?=
+ =?us-ascii?Q?xW2euEt94prL7OzF6oTXHJKedco4bMxJrU8XvIQgHQHV//sJw4LZdmD/oSr3?=
+ =?us-ascii?Q?w1dqltSYMJFRu3Ekdldo/5W66ecSBUwnHeV6/c5uO15k3TfeLfNZcIuD3oht?=
+ =?us-ascii?Q?35HIfSMCkdvE/nuuo+DjyIeMPdy6K+VGk6PwoC2X8vYrJyJxpZdvQAHpQnX2?=
+ =?us-ascii?Q?9V3/2e7bo/TUKxRI7AtnHS6mJmGbanmlqgZBaO5bL+K+KjOyzwbFZzVHzkhg?=
+ =?us-ascii?Q?cVEyNBRYIgwpneEm1S51bnOKY57JP2QKSiJjSPFqETx1Hzod9n4xIHFNgG+w?=
+ =?us-ascii?Q?9QsQIKuIaMSQrJIi+8PeH9BtNSRdrN8tuXoF8t3/YfMWq7Ge7ofgwpRShL6O?=
+ =?us-ascii?Q?kaPtqc/tD3H59Jm3AafkomLv/6zQZsAPnQ+8J4F0ZtizqJrLHspD/ilvVm0r?=
+ =?us-ascii?Q?C7/stRYxYdOvCctepCK7yeaewG4Qstiv5aaUiKdJGQoBGI4dBTGNULitDiiw?=
+ =?us-ascii?Q?Cl3+id9BiKeXnCDwhsiKgmG/ILCi+qMKUkjtic0ppYBFjTxJLH0UZHTljt8a?=
+ =?us-ascii?Q?7hm8NRWp364wFyYOVtIAOMMrpFgqX1DEpYlDg86tC97Vzv0mGgLNiq7Kz8Nu?=
+ =?us-ascii?Q?VkMJlmzwvDaqZuW4PHmRCrL9F5+7oJ9Vh4909yeHEe5yAqXOjh2o9zWIXzJf?=
+ =?us-ascii?Q?cDG8v7ZpzXBZJc8mZSY5Dr5gojQ6gRyJEVlblsAPCXr5bt9vhMZp/Gs3zX1r?=
+ =?us-ascii?Q?LGk9QzSIi7hRpjaBKI7ylvA2zxG6Txfhpa++NvRuDczsu1KelAME+4DerImW?=
+ =?us-ascii?Q?2l+t5er65954jXZXxdvu7NrH?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?z6brRClIiTvPeSIPpomh8AZ4HJD92XOsX3dYjzhrW856Hr8AzJDvCF+2q62U?=
+ =?us-ascii?Q?Wzy1LbSW2n4k14NL2drmLCWi4B5JgMAnaaLjj+Z4LUvzcGBLHP29nMw6x8M4?=
+ =?us-ascii?Q?rg1rD9r0rO4ED9gfox4uor5NkTJDjOi4lYfOBZCcGgUseOjRtK6ax6hIvYJL?=
+ =?us-ascii?Q?qXCrzNt+rGpEzgV2++y+8iO3GqV7QMSFpFID2Siu8Bxm1yHt36ObEqJZ7zBb?=
+ =?us-ascii?Q?JyQHMtwD34WtrHgDEHnHQqiZL6+8DsqxG7hhsHpMFff5bqMszDD9GBA9VBev?=
+ =?us-ascii?Q?E6MsBO3vc2RY2aw0PGs2J7RqkAXeD0ttIh0WVNkIQ2efzpKWK59kqLMUqPGH?=
+ =?us-ascii?Q?yZC6dF8qEHM81s59ibb4nCAisDM5iotg4K2DX3A83G4P/h+bdjA1eQywmSu6?=
+ =?us-ascii?Q?8+VlrRehsxAEF6uLjSkhkWSiOLbkkTzLBOnA4cnf+51cDVP6Ux1alOrYNjHh?=
+ =?us-ascii?Q?JUXdr07Bnj3PBQw58qC2oL/Vwl7EqWlVBvj74oGDDcHQVqMsxfk12Rtm7K/K?=
+ =?us-ascii?Q?BzCjTBjypG46NPOHLZv93WUiVJBPKlu1nDgqFOg6GNezC0E19A/rofV1M3EA?=
+ =?us-ascii?Q?3Bk1TZ4Rg35M8XZlYHpXd2IdfMHFkcsDh+bhHERyxOh+kl1wocdbv7QU39nX?=
+ =?us-ascii?Q?GDCrY78W1mnRgGnzA2qHGDY4I1wp7XKsk4MWLyYrPv9wFNYPpq6WzoA0Cx0K?=
+ =?us-ascii?Q?znOuzyUm8IMzS4H0+6BlAlfNKIy+Pc6DVxpO9KmNzX9AI6nJARnRA9QKAH4K?=
+ =?us-ascii?Q?3sPE7TrzAsdIuvD0ybKQEvggqqxiNGtRO72zlSL9S3lbPTx3QSBC+AIx0yRW?=
+ =?us-ascii?Q?JAxK/IYJK9MpbNXCGmlkt665RH5XjhXbsx47F72pBk1xKHtFz/oRuzfJeh3t?=
+ =?us-ascii?Q?5ZUyKK39LiVjdY/ECImlWu4Gz7oTtsCmyU0UQidaqpK23+K41BQWsYdzgnNc?=
+ =?us-ascii?Q?rbA0x8JgrWbBzQKlj53uHV1WDY+/RddpgmdovM5xkUnzYPRHaknhYeEcx/R7?=
+ =?us-ascii?Q?31MdyNggk83Yi00yf5rs/+bRqKnlnNTIHuVzEK1izt4BVKT7Te3/Tffs5T4t?=
+ =?us-ascii?Q?zpbEAzEzEb2WljMefP1AJpeLCv5nXbRNzD/ClwSfl/JifT1Nx586lTD8bwPB?=
+ =?us-ascii?Q?2mEiZtqE6u12iriYHz2vrA9Wlb7vLu1yctx5XW5YAfaVFATeN2UT0+p3h8cl?=
+ =?us-ascii?Q?rHSqFzImMT7ZzWTWu+dMt1DlbzlWd7LxbIMcoALrUptXUqCv2RXSMJH04WfY?=
+ =?us-ascii?Q?VOAI1xCQMyuFWjJnzXdET23XbcXSKBKEQ/pstGnYNbuUS/6OK/HyPcOaA1ZA?=
+ =?us-ascii?Q?+Y/xPLQ9g1az2HJ/CoWsPjNr/FC/qvmGT2WPVoOOw4rT4O6uAUUmdVRLRhdy?=
+ =?us-ascii?Q?HuI39sAiIc1nmHXwvA3hvQs0EYGQU2bkTq4+hkBMha72u+OazWUbwr5boDC7?=
+ =?us-ascii?Q?RGxtRrlBAOrbA3ZJPuvlfWT/7arXN4P7lvEk+BHX8rZ9kaPVtE/1Xw3KAzup?=
+ =?us-ascii?Q?vlm5KHQkDpyWajm8t1tKALv6wvE+63zW/hzmv995Uo4AAHn4D4Upz4Smk2E6?=
+ =?us-ascii?Q?8tCTmzWtxY6mV/Z0cq1pE0cMybgI1D4J1dVOAsEs?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ac595f24-0ce0-44fe-d879-08dcfe8d9b14
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2024 18:05:32.7402
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yf227Xs1ltjVrYdksvjk75Z+FsdyYXyvpyYnadgEHqzqIEeEBM53rj58wDTY+e1I
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8332
 
-Apply platform_device_msi_init_and_alloc_irqs() to add support for
-MSIs when the IOMMU is a platform device.
+On Wed, Nov 06, 2024 at 04:37:53PM +0000, Robin Murphy wrote:
+> On 2024-11-04 12:41 pm, Jason Gunthorpe wrote:
+> > On Mon, Nov 04, 2024 at 11:47:24AM +0000, Will Deacon wrote:
+> > > > +/**
+> > > > + * struct iommu_hw_info_arm_smmuv3 - ARM SMMUv3 hardware information
+> > > > + *                                   (IOMMU_HW_INFO_TYPE_ARM_SMMUV3)
+> > > > + *
+> > > > + * @flags: Must be set to 0
+> > > > + * @__reserved: Must be 0
+> > > > + * @idr: Implemented features for ARM SMMU Non-secure programming interface
+> > > > + * @iidr: Information about the implementation and implementer of ARM SMMU,
+> > > > + *        and architecture version supported
+> > > > + * @aidr: ARM SMMU architecture version
+> > > > + *
+> > > > + * For the details of @idr, @iidr and @aidr, please refer to the chapters
+> > > > + * from 6.3.1 to 6.3.6 in the SMMUv3 Spec.
+> > > > + *
+> > > > + * User space should read the underlying ARM SMMUv3 hardware information for
+> > > > + * the list of supported features.
+> > > > + *
+> > > > + * Note that these values reflect the raw HW capability, without any insight if
+> > > > + * any required kernel driver support is present. Bits may be set indicating the
+> > > > + * HW has functionality that is lacking kernel software support, such as BTM. If
+> > > > + * a VMM is using this information to construct emulated copies of these
+> > > > + * registers it should only forward bits that it knows it can support.
+> 
+> But how *is* a VMM supposed to know what it can support?
 
-Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
----
- drivers/iommu/riscv/iommu-platform.c | 102 ++++++++++++++++++++++-----
- 1 file changed, 84 insertions(+), 18 deletions(-)
+I answered a related question to Mostafa with an example:
 
-diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
-index da336863f152..89aa622bcbde 100644
---- a/drivers/iommu/riscv/iommu-platform.c
-+++ b/drivers/iommu/riscv/iommu-platform.c
-@@ -11,18 +11,41 @@
-  */
- 
- #include <linux/kernel.h>
-+#include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-+#include <linux/msi.h>
- 
- #include "iommu-bits.h"
- #include "iommu.h"
- 
-+static void riscv_iommu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
-+{
-+	struct device *dev = msi_desc_to_dev(desc);
-+	struct riscv_iommu_device *iommu = dev_get_drvdata(dev);
-+	u16 idx = desc->msi_index;
-+	u64 addr;
-+
-+	addr = ((u64)msg->address_hi << 32) | msg->address_lo;
-+
-+	if (addr != (addr & RISCV_IOMMU_MSI_CFG_TBL_ADDR))
-+		pr_warn_once("uh oh, the IOMMU can't send MSIs to 0x%llx, sending to 0x%llx instead\n",
-+			     addr, addr & RISCV_IOMMU_MSI_CFG_TBL_ADDR);
-+
-+	addr &= RISCV_IOMMU_MSI_CFG_TBL_ADDR;
-+
-+	riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_ADDR(idx), addr);
-+	riscv_iommu_writel(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_DATA(idx), msg->data);
-+	riscv_iommu_writel(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_CTRL(idx), 0);
-+}
-+
- static int riscv_iommu_platform_probe(struct platform_device *pdev)
- {
-+	enum riscv_iommu_igs_settings igs;
- 	struct device *dev = &pdev->dev;
- 	struct riscv_iommu_device *iommu = NULL;
- 	struct resource *res = NULL;
--	int vec;
-+	int vec, ret;
- 
- 	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
- 	if (!iommu)
-@@ -40,16 +63,6 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
- 	iommu->caps = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAPABILITIES);
- 	iommu->fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
- 
--	/* For now we only support WSI */
--	switch (FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps)) {
--	case RISCV_IOMMU_CAPABILITIES_IGS_WSI:
--	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
--		break;
--	default:
--		return dev_err_probe(dev, -ENODEV,
--				     "unable to use wire-signaled interrupts\n");
--	}
--
- 	iommu->irqs_count = platform_irq_count(pdev);
- 	if (iommu->irqs_count <= 0)
- 		return dev_err_probe(dev, -ENODEV,
-@@ -57,13 +70,60 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
- 	if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT)
- 		iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
- 
--	for (vec = 0; vec < iommu->irqs_count; vec++)
--		iommu->irqs[vec] = platform_get_irq(pdev, vec);
-+	igs = FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps);
-+	switch (igs) {
-+	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
-+	case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
-+		if (is_of_node(dev->fwnode))
-+			of_msi_configure(dev, to_of_node(dev->fwnode));
-+
-+		if (!dev_get_msi_domain(dev)) {
-+			dev_warn(dev, "failed to find an MSI domain");
-+			goto msi_fail;
-+		}
-+
-+		ret = platform_device_msi_init_and_alloc_irqs(dev, iommu->irqs_count,
-+							      riscv_iommu_write_msi_msg);
-+		if (ret) {
-+			dev_warn(dev, "failed to allocate MSIs");
-+			goto msi_fail;
-+		}
-+
-+		for (vec = 0; vec < iommu->irqs_count; vec++)
-+			iommu->irqs[vec] = msi_get_virq(dev, vec);
-+
-+		/* Enable message-signaled interrupts, fctl.WSI */
-+		if (iommu->fctl & RISCV_IOMMU_FCTL_WSI) {
-+			iommu->fctl ^= RISCV_IOMMU_FCTL_WSI;
-+			riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
-+		}
-+
-+		dev_info(dev, "using MSIs\n");
-+		break;
-+
-+msi_fail:
-+		if (igs != RISCV_IOMMU_CAPABILITIES_IGS_BOTH) {
-+			dev_warn(dev, "\n");
-+			return dev_err_probe(dev, -ENODEV,
-+					     "unable to use wire-signaled interrupts\n");
-+		}
-+
-+		dev_warn(dev, " - falling back to wired irqs\n");
-+		fallthrough;
- 
--	/* Enable wire-signaled interrupts, fctl.WSI */
--	if (!(iommu->fctl & RISCV_IOMMU_FCTL_WSI)) {
--		iommu->fctl |= RISCV_IOMMU_FCTL_WSI;
--		riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
-+	case RISCV_IOMMU_CAPABILITIES_IGS_WSI:
-+		for (vec = 0; vec < iommu->irqs_count; vec++)
-+			iommu->irqs[vec] = platform_get_irq(pdev, vec);
-+
-+		/* Enable wire-signaled interrupts, fctl.WSI */
-+		if (!(iommu->fctl & RISCV_IOMMU_FCTL_WSI)) {
-+			iommu->fctl |= RISCV_IOMMU_FCTL_WSI;
-+			riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
-+		}
-+		dev_info(dev, "using wire-signaled interrupts\n");
-+		break;
-+	default:
-+		return dev_err_probe(dev, -ENODEV, "invalid IGS\n");
- 	}
- 
- 	return riscv_iommu_init(iommu);
-@@ -71,7 +131,13 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
- 
- static void riscv_iommu_platform_remove(struct platform_device *pdev)
- {
--	riscv_iommu_remove(dev_get_drvdata(&pdev->dev));
-+	struct riscv_iommu_device *iommu = dev_get_drvdata(&pdev->dev);
-+	bool msi = !(iommu->fctl & RISCV_IOMMU_FCTL_WSI);
-+
-+	riscv_iommu_remove(iommu);
-+
-+	if (msi)
-+		platform_device_msi_free_irqs_all(&pdev->dev);
- };
- 
- static const struct of_device_id riscv_iommu_of_match[] = {
--- 
-2.47.0
+https://lore.kernel.org/linux-iommu/20240903235532.GJ3773488@nvidia.com/
 
+"global" capabilities that are enabled directly from the CD entry
+would follow the pattern.
+
+> Are they all expected to grovel the host devicetree/ACPI tables and
+> maintain their own knowledge of implementation errata to understand
+> what's actually usable?
+
+No, VMMs are expected to only implement base line features we have
+working today and not blindly add new features based only HW registers
+reported here.
+
+Each future capability we want to enable at the VMM needs an analysis:
+
+ 1) Does it require kernel SW changes, ie like BTM? Then it needs a
+    kernel_capabilities bit to say the kernel SW exists
+ 2) Does it require data from ACPI/DT/etc? Then it needs a
+    kernel_capabilities bit
+ 3) Does it need to be "turned on" per VM, ie with a VMS enablement?
+    Then it needs a new request flag in ALLOC_VIOMMU
+ 4) Otherwise it can be read directly from the idr[] array
+
+This is why the comment above is so stern that the VMM "should only
+forward bits that it knows it can support".
+
+> S2 tables it its own business. AFAICS, unless the VMM wants to do some
+> fiddly CD shadowing, it's going to be kinda hard to prevent the SMMU seeing
+> a guest CD with CD.HA and/or CD.HD set if the guest expects S1 HTTU to work.
+
+If the VMM wrongly indicates HTTU support to the VM, because it
+wrongly inspected those bits in the idr report, then it is just
+broken.
+
+> I would say it does. Advertising a feature when we already know it's not
+> usable at all puts a non-trivial and unnecessary burden on the VMM and VM to
+> then have to somehow derive that information from other sources, at the risk
+> of being confused by unexpected behaviour if they don't.
+
+That is not the purpose here, the register report is not to be used as
+"advertising features". It describes details of the raw HW that the
+VMM may need to use *some* of the fields.
+
+There are quite a few fields that fit #4 today: OAS, VAX, GRAN, BBML,
+CD2L, etc.
+
+Basically we will pass most of the bits and mask a few. If we get the
+masking wrong and pass something we shouldn't, then we've improved
+nothing compared to this proposal. I think we are likely to get the
+masking wrong :)
+
+> We sanitise CPU ID registers for userspace and KVM, so I see no compelling
+> reason for SMMU ID registers to be different.
+
+We discussed this already:
+
+https://lore.kernel.org/linux-iommu/20240904120103.GB3915968@nvidia.com
+
+It is a false comparison, for KVM the kernel is responsible to control
+the CPU ID registers. Reporting the registers the VM sees to the VMM
+makes alot of sense. For SMMU the VMM exclusively controls the VM's ID
+registers.
+
+If you still feel strongly about this please let me know by Friday and
+I will drop the idr[] array from this cycle. We can continue to
+discuss a solution for the next cycle.
+
+Regards,
+Jason
