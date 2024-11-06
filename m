@@ -1,31 +1,50 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B3DC1DE2DE
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 10:56:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 310CD1D2F42
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 11:08:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730890600; cv=none; b=Y7AJfa+c8payBfPSQEZnpMkCnOvJqDM/s2MoANrkPPVxhetYlRs694JQMknzCAApDdlAH4LMYCw0KCzrcoMuAo+Lt9TMhEpQCJ5rBYyBHg8kzTpIyoWU2pyypgYJJvo4pHdRHtyFMFXuxaM0I+lzg/m8RygvFvH3J8vulgIGSq0=
+	t=1730891293; cv=none; b=HHkPEND9DnNoGCsq4qIU3T8LWuQk71DUUwOdlSkeeem+Gxf2T82vX/28y1i0ml7aHhRmdi1l9nBgLcGAWjOcSWH6wiFVEHjE6dJfVt2g7QsJhNZyvvWCgXlURkUtM09FZ0Ay1h8KH48wTuzvPYcW3vReAA6oqCDHFwV56joMv8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730890600; c=relaxed/simple;
-	bh=LQG9eqDPNmwxwvZfvSWSmROcayIPhbmGXD5bEneyqGQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=CQ8Gwy3svAVjP81DEy5tI6u7DFU3Hr5aIIq5vwcGcvyTARF6qC5l679ePFNYSSLgw1mUy0e4e3WfO/+/NOp5uuo2KnxYyThMz0E0WDhasdp4OV9hak8ZnPq4ezeSquKonKADmPoaFJqDQhKJ2wFFPS0JChMfsIF406t1LXLBGrc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.105])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Xk2BZ0KDMzNpR6;
-	Wed,  6 Nov 2024 18:53:58 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id E382C140361;
-	Wed,  6 Nov 2024 18:56:34 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Wed, 6 Nov 2024 18:56:34 +0800
-Message-ID: <2f256bce-0c37-4940-9218-9545daa46169@huawei.com>
-Date: Wed, 6 Nov 2024 18:56:34 +0800
+	s=arc-20240116; t=1730891293; c=relaxed/simple;
+	bh=VOcBw+3dHsIAseOara37nydQhrD0Hei+YAPZTmBJqHk=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=s8bmIwki4xN+/WbH0mCHs82PIrG5F0Pw6vdJlzAeq2PE1bIQhT+VmZV6Q5dg58sy6SQgzSELiLZ3PjGIE8KR/L+AjZPHauIL2gHPv+0vZARYy+snH3TSLEgyjls7FVeVtWXljwEWOK4iamcMVC1KWtmA8aO1OR1+SAnFNjXA6+A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Wx86QA4e; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Wx86QA4e"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1730891292; x=1762427292;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=VOcBw+3dHsIAseOara37nydQhrD0Hei+YAPZTmBJqHk=;
+  b=Wx86QA4eSB0CpiWzHGLi7EMGk5RA0IS+cShBFWjjaKKluZDnuRZa6cjX
+   51+A+ndt7fiX8iNyeWrmVCQlz2jtl7FNd1MuGPuzhu87o+AgtRru5wd5d
+   h+Fr9OyVWTmf9TnhoyeEZ1t54cD2DeBwzqxzcy7cdLDg9BYtCygLA5KtT
+   Uz9D0Rpcz1a1yJyLMk1qdtcQpHa+ltu/SZKVJjo94/GHxLfYnvCvXaP+H
+   c9cKICQl2wG92C5z5xPoZDbOCiozRNIGjprvRttMr6GtMB6qXo69d7+VE
+   jSBIP4LKaY7dETlUryKVYqp8TuQeMP5XftEZtb6QhG+w8hMcq1/N0mfo9
+   A==;
+X-CSE-ConnectionGUID: oZuap7EvTdaFRNrRrxwoyA==
+X-CSE-MsgGUID: 7D7Xkx2UTveN68i3GqeDhg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="41230238"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="41230238"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 03:08:12 -0800
+X-CSE-ConnectionGUID: SFZtp3WITWGSlN2HGXqtwQ==
+X-CSE-MsgGUID: C4aoCO7RS6CUg1ol5MbrAg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
+   d="scan'208";a="115306148"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.228]) ([10.124.240.228])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 03:08:09 -0800
+Message-ID: <b25df119-5bd9-4e72-8c5a-75bb073f1b8a@linux.intel.com>
+Date: Wed, 6 Nov 2024 19:08:06 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,157 +52,69 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Jesper Dangaard Brouer <hawk@kernel.org>,
-	=?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-	<davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
-	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
- Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
- Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
-	<kernel-team@cloudflare.com>, Christoph Hellwig <hch@lst.de>,
-	<m.szyprowski@samsung.com>
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com>
- <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
- <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
- <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
- <cf1911c5-622f-484c-9ee5-11e1ac83da24@huawei.com> <878qu7c8om.fsf@toke.dk>
- <1eac33ae-e8e1-4437-9403-57291ba4ced6@huawei.com> <87o731by64.fsf@toke.dk>
- <023fdee7-dbd4-4e78-b911-a7136ff81343@huawei.com> <874j4sb60w.fsf@toke.dk>
- <a50250bf-fe76-4324-96d7-b3acf087a18c@huawei.com>
- <a6cfba96-9164-4497-b075-9359c18a5eef@kernel.org>
+Cc: baolu.lu@linux.intel.com,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+ "vasant.hegde@amd.com" <vasant.hegde@amd.com>,
+ "will@kernel.org" <will@kernel.org>
+Subject: Re: [PATCH v4 11/13] iommu/vt-d: Add set_dev_pasid callback for
+ nested domain
+To: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>
+References: <20241104131842.13303-1-yi.l.liu@intel.com>
+ <20241104131842.13303-12-yi.l.liu@intel.com>
+ <BN9PR11MB5276F52B50577B8963A20BEB8C532@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <778d4e7b-cb4f-48d6-9b5d-de5e18c1a367@linux.intel.com>
+ <982f10e2-5fc7-4b13-9877-77042ce20a11@intel.com>
+ <ae559732-1586-4099-a753-092fc7a698cf@linux.intel.com>
+ <348f3139-1ca7-4893-b93a-90c7834ce30b@intel.com>
 Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <a6cfba96-9164-4497-b075-9359c18a5eef@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <348f3139-1ca7-4893-b93a-90c7834ce30b@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemf200006.china.huawei.com (7.185.36.61)
 
-+cc Christoph & Marek
-
-On 2024/11/6 4:11, Jesper Dangaard Brouer wrote:
-
-...
-
->>>
->>>> I am not sure if I understand the reasoning behind the above suggestion to 'wait
->>>> and see if this actually turns out to be a problem' when we already know that there
->>>> are some cases which need cache kicking/flushing for the waiting to work and those
->>>> kicking/flushing may not be easy and may take indefinite time too, not to mention
->>>> there might be other cases that need kicking/flushing that we don't know yet.
+On 2024/11/6 19:00, Yi Liu wrote:
+> On 2024/11/6 18:45, Baolu Lu wrote:
+>> On 2024/11/6 17:14, Yi Liu wrote:
+>>> On 2024/11/6 16:41, Baolu Lu wrote:
+>>>> On 2024/11/6 16:17, Tian, Kevin wrote:
+>>>>>> From: Liu, Yi L <yi.l.liu@intel.com>
+>>>>>> Sent: Monday, November 4, 2024 9:19 PM
+>>>>>>
+>>>>>> +
+>>>>>> +    dev_pasid = domain_add_dev_pasid(domain, dev, pasid);
+>>>>>> +    if (IS_ERR(dev_pasid))
+>>>>>> +        return PTR_ERR(dev_pasid);
+>>>>>> +
+>>>>>> +    ret = domain_setup_nested(iommu, dmar_domain, dev, pasid, old);
+>>>>>> +    if (ret)
+>>>>>> +        goto out_remove_dev_pasid;
+>>>>>> +
+>>>>>> +    domain_remove_dev_pasid(old, dev, pasid);
+>>>>>> +
+>>>>>
+>>>>> forgot one thing. Why not required to create a debugfs entry for
+>>>>> nested dev_pasid?
 >>>>
->>>> Is there any reason not to consider recording the inflight pages so that unmapping
->>>> can be done for inflight pages before driver unbound supposing dynamic number of
->>>> inflight pages can be supported?
->>>>
->>>> IOW, Is there any reason you and jesper taking it as axiomatic that recording the
->>>> inflight pages is bad supposing the inflight pages can be unlimited and recording
->>>> can be done with least performance overhead?
+>>>> This debugfs node is only created for paging domain.
 >>>
->>> Well, page pool is a memory allocator, and it already has a mechanism to
->>> handle returning of memory to it. You're proposing to add a second,
->>> orthogonal, mechanism to do this, one that adds both overhead and
+>>> I think Kevin got one point. The debugfs is added when paging domain
+>>> is attached. How about the paging domains that is only used as nested
+>>> parent domain. We seem to lack a debugfs node for such paging domains.
 >>
->> I would call it as a replacement/improvement for the old one instead of
->> 'a second, orthogonal' as the old one doesn't really exist after this patch.
->>
+>> Are you talking about the nested parent domain? It's also a paging
+>> domain, hence a debugfs node will be created.
 > 
-> Yes, are proposing doing a very radical change to the page_pool design.
-> And this is getting proposed as a fix patch for IOMMU.
-> 
-> It is a very radical change that page_pool needs to keep track of *ALL* in-flight pages.
+> yes, nested parent domains. But as I mentioned, the debugfs node is created
+> only in the attach point so far. While the nested attach does not attach
+> the nested parent, it is subjected to the paging_domain_compatible()
+> check and contributes its pgd to act as SS page table in the pasid entry.
+> So it's missed though it should be in another patch to add it.
 
-I am agreed that it is a radical change, that is why it is targetting net-next
-tree instead of net tree even when there is a Fixes tag for it.
-
-If there is a proper and non-radical way to fix that, I would prefer the
-non-radical way too.
-
-> 
-> The DMA issue is a life-time issue of DMA object associated with the
-> struct device.  Then, why are you not looking at extending the life-time
-
-It seems it is not really about the life-time of DMA object associated with the
-life-time of 'struct device', it seems to be the life-time of DMA API associated
-with the life-time of the driver for the 'struct device' from the the opinion of
-experts from IOMMU/DMA subsystem in [1] & [2].
-
-I am not sure what is reasoning behind the above, but the implementation seems
-to be the case as mentioned in [3]:
-__device_release_driver -> device_unbind_cleanup -> arch_teardown_dma_ops
-
-1. https://lkml.org/lkml/2024/8/6/632
-2. https://lore.kernel.org/all/20240923175226.GC9634@ziepe.ca/
-3. https://lkml.org/lkml/2024/10/15/686
-
-> of the DMA object, or at least detect when DMA object goes away, such
-> that we can change a setting in page_pool to stop calling DMA unmap for
-> the pages in-flight once they get returned (which we have en existing
-> mechanism for).
-
-To be honest, I was mostly depending on the opinion of the experts from
-IOMMU/DMA subsystem for the correct DMA API usage as mentioned above.
-So I am not sure if skipping DMA unmapping for the inflight pages is the
-correct DMA API usage?
-If it is the correct DMA API usage, how to detect that if DMA unmapping
-can be skipped?
-
-From previous discussion, skipping DMA unmapping may casue some resource
-leaking, like the iova resoure behind the IOMMU and bounce buffer memory
-behind the swiotlb.
-
-Anyway, I may be wrong, CC'ing more experts to see if we can have some
-clarifying from them.
-
-> 
-> 
->>> complexity, yet doesn't handle all cases (cf your comment about devmem).
->>
->> I am not sure if unmapping only need to be done using its own version DMA API
->> for devmem yet, but it seems waiting might also need to use its own version
->> of kicking/flushing for devmem as devmem might be held from the user space?
->>
->>>
->>> And even if it did handle all cases, force-releasing pages in this way
->>> really feels like it's just papering over the issue. If there are pages
->>> being leaked (or that are outstanding forever, which basically amounts
->>> to the same thing), that is something we should be fixing the root cause
->>> of, not just working around it like this series does.
->>
->> If there is a definite time for waiting, I am probably agreed with the above.
->>  From the previous discussion, it seems the time to do the kicking/flushing
->> would be indefinite depending how much cache to be scaned/flushed.
->>
->> For the 'papering over' part, it seems it is about if we want to paper over
->> different kicking/flushing or paper over unmapping using different DMA API.
->>
->> Also page_pool is not really a allocator, instead it is more like a pool
->> based on different allocator, such as buddy allocator or devmem allocator.
->> I am not sure it makes much to do the flushing when page_pool_destroy() is
->> called if the buddy allocator behind the page_pool is not under memory
->> pressure yet.
->>
-> 
-> I still see page_pool as an allocator like the SLUB/SLAB allocators,
-> where slab allocators are created (and can be destroyed again), which we
-> can allocate slab objects from.  SLAB allocators also use buddy
-> allocator as their backing allocator.
-
-I am not sure if SLUB/SLAB is that similar to page_pool for the specific
-problem here, at least SLUB/SLAB doesn't seems to support dma mapping in
-its core and doesn't seem to allow inflight cache when kmem_cache_destroy()
-is called as its alloc API doesn't seems to take reference to s->refcount
-and doesn't have the inflight cache calculating as page_pool does?
-https://elixir.bootlin.com/linux/v6.12-rc6/source/mm/slab_common.c#L512
-
-
-> 
-> The page_pool is of-cause evolving with the addition of the devmem
-> allocator as a different "backing" allocator type.
-
-
+I see. Thanks!
