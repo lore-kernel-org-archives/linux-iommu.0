@@ -1,144 +1,146 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8D35201106
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:13:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A435A13A26F
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:18:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730920433; cv=none; b=AgChe2BUvnIAzeskRGfmm2u1mkODDyFeJrjYYqONqG/Xt5N05aUj5QcxLlmOmdaL3qK3muTIlDKyFnSENOB7Oc+LzV0arobL+jR1nquqmAdnlAraQZ4Mayyfln0oNDgOui5Y4bPAUDn8Qj3yRT/W4B3d+zyHl01drxm8QoELRfM=
+	t=1730920735; cv=none; b=ZDMYnA9SKWlPmrhgpINoYmxC87S7qUGP0C0DXlgGBx3EoD91vG9niuo9RfI3vPE7E6hN5ADRrCPk//0xpF4PrXkVHv/QiN+GqDcElCiISkhlGH0I+17nwloIzNqww1h8ZTOn1AYF9VagO1mEuE/yfiAHUPTasznM4JQtdoEwQdI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730920433; c=relaxed/simple;
-	bh=V3WOdQDunnGssZvP2vElRHU+Jjz3dxyDOM+Bff9E36M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=iJ9MiTbWSpi7d4otLN1WHy/zv0XyRbqLRXGpB2UjShQVz2DObz9zA2SpjUd4m1tZ9NkUZ0fzwXfuG0gvoFBRlDW9Io92rQniFzqw8rwZdSK70eLgPVWEnSDA1u6yXNoSSCbSx8iJrMEUZ9JwYoTvfMA3CKdPhXr1pV+cpU2pQzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=O53Rgx/h; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1730920735; c=relaxed/simple;
+	bh=Ou+l3fSVssEMDncUOhgrcUyoeAk2ugDKrrGAONa/AiE=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ml19wg2rxOE7Rdk6GiXbwxrFL3qYc+Dza1/m0WWT0if0n5V+fyHu+lolPs0jK45GUgknCTDiNbYpWuJgufM07ssRgqlbXEh4MDcXFuIZR8w8Wt0l3gtOLJCXpvyYLkDgUxBoE1l3MyD5zfGngOOrLgzDN0U1FX2J4cDmz7YWrHA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=mTE9yHU5; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="O53Rgx/h"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1730920429;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3WokkPwMK4/QtOwYlc4n1kISM22eOS86REe3kHYM/3c=;
-	b=O53Rgx/hnaEgC/InePmJCwFUO36CZFILnOCYcbAFs5AkzYrdvjDsyUJ5+nKqbzKvUID1GD
-	QX3UzNijJea5ERdLJQv2UOuqZJlrkHMEcUauIiISFPWWOA/cUDLpm4gjhuC6i76aOA1p3W
-	VurqgtzZjUM3d6t27OlB0ItoHSN0Kyc=
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
- [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-261-alDHASUNND6tIOwS6zlQIw-1; Wed, 06 Nov 2024 14:13:48 -0500
-X-MC-Unique: alDHASUNND6tIOwS6zlQIw-1
-X-Mimecast-MFC-AGG-ID: alDHASUNND6tIOwS6zlQIw
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7181c3a0119so1042877a34.1
-        for <iommu@lists.linux.dev>; Wed, 06 Nov 2024 11:13:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730920427; x=1731525227;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3WokkPwMK4/QtOwYlc4n1kISM22eOS86REe3kHYM/3c=;
-        b=hYYGVMl9qSkjxC/EBuOELogEuYSNZiwFVAnIHlk+HDX6375wUYu2EvF5zDrUUrZf+c
-         7OQRLYjUM0GFWOg9qydJuQGdSC/RZ8W5KxgA3fjYuH7/O336T9CnHuYR8OBRx256Fj9u
-         ScZgRkK8+FT4xargcRs7negh+wvy2Uqj8LeGqVXoBsMQgljtFr/cOxVR6iaXY4DINp4G
-         wEY3gvoXR0vJTGermrkLp1AkDchEFk+aEONH2YIOFoTaHzunmuBgoC7k6ObHvKjv49MP
-         YGvbADg8hqOfCi+ACXtDo4xJo/nwo5xM5tinu3Qs7sD0vMY4pD/YLghnoashbDbV9w1k
-         s1uA==
-X-Gm-Message-State: AOJu0YwxHYM4ElwWCwlihSzo4Gnfk3hjipNb4k1yGrmxHDyiRn8P1Bnz
-	QC5aq4eQ8DZoXqD+TN2gAROh9HrFylrYym2RxV2pY9PePxahUqiuvm7Fm0vbA49gSlcphHbzI+6
-	ODjDaGTM+R9ZN18Vknf+S/zqjpcI6yChbnt2mjpSJKomh7BJ4VL5DIywpZuK0MMDlgMV2B7WkBh
-	EOpWtRyBqXf1VX6JJM2HpDKFRIET7a5FKnvHa8
-X-Received: by 2002:a9d:6b82:0:b0:716:a99b:8f0a with SMTP id 46e09a7af769-71a0ee6ee40mr274811a34.1.1730920427609;
-        Wed, 06 Nov 2024 11:13:47 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IG/gon6zRkOlaDedChecm4iprBQV15ZZVZ/MPHiCJKeuNBXkYHTN1ZbTWFZUZXsiCPjMLVfYQ==
-X-Received: by 2002:a9d:6b82:0:b0:716:a99b:8f0a with SMTP id 46e09a7af769-71a0ee6ee40mr274793a34.1.1730920427233;
-        Wed, 06 Nov 2024 11:13:47 -0800 (PST)
-Received: from localhost (ip98-179-76-110.ph.ph.cox.net. [98.179.76.110])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7189ccb125dsm2945140a34.56.2024.11.06.11.13.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Nov 2024 11:13:46 -0800 (PST)
-Date: Wed, 6 Nov 2024 12:13:45 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: iommu@lists.linux.dev
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] iommu/dma: Reserve iova ranges for reserved regions of
- all devices
-Message-ID: <vup5ms2p5o4ao3t57kfgqtnnna7e4jcvkvup2vmyf6o4qrb3qu@3aanawjzggyh>
-References: <20241024153412.141765-1-jsnitsel@redhat.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="mTE9yHU5"
+Received: from DESKTOP-0403QTC. (unknown [20.236.10.206])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 0FF42212C7E0;
+	Wed,  6 Nov 2024 11:18:51 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0FF42212C7E0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1730920733;
+	bh=rNzyWYfJCQD0LlT8+3XSt1D8NFOZPMLR98XqPQWHzu4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
+	b=mTE9yHU5q4Ruwye8M/cyRhNjma7hAI6z5ESzssq2CTARZW97XNwavPqMmywM0Rgud
+	 Nbvp81iJ4pfllV1MO9CVwdwC42QkkN+kMssGEqhfXm/IQgZJgvTj+hOhjowpV/qTGe
+	 +9qvARFfnHla6Dv3nAFyM8gKT0y2At3zUJN2BP/I=
+Date: Wed, 6 Nov 2024 11:18:50 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: "Gowans, James" <jgowans@amazon.com>, "yi.l.liu@intel.com"
+ <yi.l.liu@intel.com>, "jinankjain@linux.microsoft.com"
+ <jinankjain@linux.microsoft.com>, "kvm@vger.kernel.org"
+ <kvm@vger.kernel.org>, "rppt@kernel.org" <rppt@kernel.org>, "kw@linux.com"
+ <kw@linux.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "madvenka@linux.microsoft.com" <madvenka@linux.microsoft.com>,
+ "anthony.yznaga@oracle.com" <anthony.yznaga@oracle.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "nh-open-source@amazon.com"
+ <nh-open-source@amazon.com>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "seanjc@google.com" <seanjc@google.com>,
+ "Saenz Julienne, Nicolas" <nsaenz@amazon.es>, "pbonzini@redhat.com"
+ <pbonzini@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>, "ssengar@linux.microsoft.com"
+ <ssengar@linux.microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>,
+ "will@kernel.org" <will@kernel.org>, "Graf (AWS), Alexander"
+ <graf@amazon.de>, "steven.sistare@oracle.com" <steven.sistare@oracle.com>,
+ jacob.pan@linux.microsoft.com, "zhangyu1@microsoft.com"
+ <zhangyu1@microsoft.com>
+Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and
+ ioas
+Message-ID: <20241106111850.69904346@DESKTOP-0403QTC.>
+In-Reply-To: <20241104130011.GD35848@ziepe.ca>
+References: <20240916113102.710522-1-jgowans@amazon.com>
+	<20240916113102.710522-6-jgowans@amazon.com>
+	<20241016152047.2a604f08@DESKTOP-0403QTC.>
+	<20241028090311.54bc537f@DESKTOP-0403QTC.>
+	<1f50020d9bd74ab8315cec473d3e6285d0fc8259.camel@amazon.com>
+	<20241104130011.GD35848@ziepe.ca>
+Reply-To: jacob.pan@linux.microsoft.com
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20241024153412.141765-1-jsnitsel@redhat.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: Gn1xczfBAVCVd05TN2WzQdLnRxHG1NUyVrACTjui7TA_1730920428
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 24, 2024 at 08:34:12AM -0700, Jerry Snitselaar wrote:
-> Only the first device that is passed when the domain is set up will
-> have its reserved regions reserved in the iova address space.  So if
-> there are other devices in the group with unique reserved regions,
-> those regions will not get reserved in the iova address space.  All of
-> the ranges do get set up in the iopagetables via calls to
-> iommu_create_device_direct_mappings for all devices in a group.
-> 
-> In the case of vt-d system this resulted in messages like the following:
-> 
-> [ 1632.693264] DMAR: ERROR: DMA PTE for vPFN 0xf1f7e already set (to f1f7e003 not 173025001)
-> 
-> To make sure iova ranges are reserved for the reserved regions all of
-> the devices, call iova_reserve_iommu_regions in iommu_dma_init_domain
-> prior to exiting in the case where the domain is already initialized.
-> 
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: stable@vger.kernel.org
-> Fixes: 7c1b058c8b5a ("iommu/dma: Handle IOMMU API reserved regions")
-> Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
-> ---
-> Robin: I wasn't positive if this is the correct solution, or if it should be
->        done for the entire group at once.
-> 
->  drivers/iommu/dma-iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 2a9fa0c8cc00..5fd3cccbb233 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -707,7 +707,7 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, struct device *dev
->  			goto done_unlock;
->  		}
->  
-> -		ret = 0;
-> +		ret = iova_reserve_iommu_regions(dev, domain);
->  		goto done_unlock;
->  	}
->  
-> -- 
-> 2.44.0
-> 
+Hi Jason,
 
-Robin,
+On Mon, 4 Nov 2024 09:00:11 -0400
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
 
-Any thoughts on this patch? In the case where this originally popped
-up it was likely a crap DMAR table in an HPE system with an ilo, as
-the RMRR in question had a device in the list that as far as I could
-tell didn't actually exist. The 2nd function of the sata controller
-was in the list, but not the first, and the first function was the
-device where the group/domain was initialized. With some debugging
-code I could see it set up the ioptes for the 2nd function, but it
-wasn't reserving the range of iovas.
+> On Sat, Nov 02, 2024 at 10:22:54AM +0000, Gowans, James wrote:
+> 
+> > Yes, I think the guidance was to bind a device to iommufd in noiommu
+> > mode. It does seem a bit weird to use iommufd with noiommu, but we
+> > agreed it's the best/simplest way to get the functionality.   
+> 
+> noiommu should still have an ioas and still have kernel managed page
+> pinning.
+> 
+> My remark to bring it to iommufd was to also make it a fully
+> architected feature and stop relying on mprotect and /proc/ tricks.
+> 
+Just to clarify my tentative understanding with more details(please
+correct):
+
+1. create an iommufd access object for noiommu device when
+binding to an iommufd ctx.
+
+2. all user memory used by the device under noiommu mode should be
+pinned by iommufd, i.e. iommufd_access_pin_pages().
+I guess you meant stop doing mlock instead of mprotect trick? I think
+openHCL is using /dev/mem trick.
+
+3. ioas can be attched to the noiommu iommufd_access object, similar to
+emulated device, mdev.
+
+What kind/source of memory should be supported here?
+e.g. device meory regions exposed by PCI BARs.
 
 
-Regards,
-Jerry
+> > Then as you suggest below the IOMMUFD_OBJ_DEVICE would be serialised
+> > too in some way, probably by iommufd telling the PCI layer that this
+> > device must be persistent and hence not to re-probe it on kexec.  
+> 
+> Presumably VFIO would be doing some/most of this part since it is the
+> driver that will be binding?
+> 
+Yes, it is the user mode driver that initiates the binding. I was
+thinking since the granularity for persistency is per iommufd ctx, the
+VFIO device flag to mark keep_alive can come from iommufd ctx.
 
+> > It's all a bit hand wavy at the moment, but something along those
+> > lines probably makes sense. I need to work on rev2 of this RFC as
+> > per Jason's feedback in the other thread. Rev2 will make the
+> > restore path more userspace driven, with fresh iommufd and pgtables
+> > objects being created and then atomically swapped over too. I'll
+> > also get the PCI layer involved with rev2. Once that's out (it'll
+> > be a few weeks as I'm on leave) then let's take a look at how the
+> > noiommu device persistence case would fit in.  
+> 
+> In a certain sense it would be nice to see the noiommu flow as it
+> breaks apart the problem into the first dependency:
+> 
+>  How to get the device handed across the kexec and safely land back in
+>  VFIO, and only VFIO's hands.
+> 
+> Preserving the iommu HW configuration is an incremental step built on
+> that base line.
+Makes sense, I need to catch up on the KHO series and hook up noiommu
+at the first step.
+
+> Also, FWIW, this needs to follow good open source practices - we need
+> an open userspace for the feature and the kernel stuff should be
+> merged in a logical order.
+> 
+Yes, we will have matching userspace in openHCL
+https://github.com/microsoft/openvmm
+
+Thanks,
+
+Jacob
