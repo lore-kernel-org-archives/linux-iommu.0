@@ -1,167 +1,227 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2068.outbound.protection.outlook.com [40.107.94.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F55A646;
-	Wed,  6 Nov 2024 13:25:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730899507; cv=none; b=XDDZof6xvzVlfsDvv9m9AgyYE39uN9UB9uSCt6tvElmLfBDxUK3KSa7kxqkPXEm1/FhyRqd3gAEWMN9RQi5JKhRw9AuTLnJpON5kF1vlu0cgxcyebIFi0SK/cIBIvUXe2pB/R0lP5PU2M8IFCQg3LY8LfG79sraDpcP0TwYdOss=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730899507; c=relaxed/simple;
-	bh=116sGymRPGxitIATLh63Hu4bt7vFtHZYdaTU44MGasg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Yug4kI16puH31boI/uUhUd5YeYNkx0HZQnmbFiryZd17AojrDA0Y479aIFyVfiIPWwjJmTFmtev7Fi+f6yr0zuAQ1GgpQ9vKeDh43hGltNch5gE7SvsiVuhBQvfxd3Qd1M5rj5RR/cqYyXfDgr8bTJdkTUl6gY9Ef8MAK+4Y86U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YUrGuBIJ; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB8731DFE39
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 13:40:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.68
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730900440; cv=fail; b=a46QyrnBpXKQh8mK2WtOSHKBnjf812JJPdywRr+ppfUxg8PtQQiL8K3lcbUC95TOV/jGmQNnckVX50D1/HSMncfwEJXtFaZBTZNTwbIrAkfoKwOuxZpOeqQr5m/v4j7LQqHfDJt8vceFq0wL56KOss6bchSz02SyVP2I4V6+dNg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730900440; c=relaxed/simple;
+	bh=sGtqxflkmtAodDk+k/2a4ooOuLoA8CV74V0WIJPx+14=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=Hfc3ulCUuTemGYK1+mKaEwv3CD1ZxnhoHW2iFETfsj7Hhu4iffEHfqrIwU7VzUQwxeCH88wmzFVrJT4O/Lu2bUi/3apA79LNyn1TRBkqzoJlm3U5f8ivv7Q3iv7ODuOxWUCK8dixLM9kg8hIS4dx7qSTUBa20xCPK3yOtc0lwOQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hKqznDMK; arc=fail smtp.client-ip=40.107.94.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YUrGuBIJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A80FC4CED3;
-	Wed,  6 Nov 2024 13:25:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730899507;
-	bh=116sGymRPGxitIATLh63Hu4bt7vFtHZYdaTU44MGasg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=YUrGuBIJv1qi8hzM0QUpV/DuyXkCd2ksGSx6fggOz070whoF7aDf3hk4NyKamwJya
-	 DgoLj27XHpgNGbwBk+PV8DRnLSAy5btBnSSBvDD65Oi3IYhJvwIL0axKwBS7ui4iNR
-	 yE5r8ZDlsTGGRary7720MS/x7WG0P4Bw3SEKLWfHEOblNyXtN9O6Wy7nVW7BYyH/Kf
-	 6MUtKypDaBNjUoeOL9FdEniDj6xB1HiJSGqbZ2IzwXBSZ3W8ucCd0noTi3QH1cVu6i
-	 4Qe8Xd1k65bwKMvXXHVhN8IzWdJE2OwCii+u8KG1fmPGvrc2R7ms4rH3SbXIIJb1On
-	 lk12pztt8QeSw==
-Message-ID: <18ba4489-ad30-423e-9c54-d4025f74c193@kernel.org>
-Date: Wed, 6 Nov 2024 14:25:00 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hKqznDMK"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=d6TMTvZYY4pDfuTH6ktdfdoKlVBXs+J59AMdpI+lFvvOmPeUlChPM2bAO1cx2Ly+YY9p53HeMAdYtzGpg+g58o6mfyBoxuHRVVW7rcolrPLbBBrj/3+Y1uk0k0NKdstCrDxXU49fGeP9peLa9I4A/6zSN+VSsy7yDGfmIrdZthguU78mAVfXwalna1lHYYYj1c7yR5TF9BWM1jfe4phg9OQAw5NvvjM+oVAh9Cm9j0jdvcm3v6QZZJi544wN97o6/GhF4eQ81ug/shgnBb3Do07D+5dLDBBD7/GPyP3Gzel9yzCCyQJDUstGDPFnQCuX67rJ1ZByoI8idafUBWbX0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=G/ecE0SC4iJj/H9jKRFF/DU2SwgiHBcMZC/pBHob6m8=;
+ b=H0e4Elcnus4ostbc7PoHU+aKF7ETr+qt/109t3HWr0NwRhAGXzQcUa3fyasJToO4pKD7nUU79CVxDJGRxPHANEF1oWaPivMDySFdagXy3hY3leOTgzfMNJISIT3QCjmk8pmrxVzCdp4hbBzBXrxHkOal1kebmrqc2dhctq7k6YDKUQNPRzgcllsL5mDCinOEXzbcFl0p1AYn/IZls4JOj1a9+X+jvQrT+VYYrxoLpF1+u3vU1XTzqtWf/kGv9ozyxYnwp12VtVnEY7nJ4b/W2vV8zRSmmio1YEwIjgXfuqHO50d6TGqaG0oMF0ztvnCTmN/9g3ocAHLPF2dYNtOicQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G/ecE0SC4iJj/H9jKRFF/DU2SwgiHBcMZC/pBHob6m8=;
+ b=hKqznDMKlf2h1m1ia+3dRSF5Qif7v6vojqj6d6K1aebqWq9UNKSiulGPIpVigfYpYfNwW7W4Suk1j4tyEcaf+UfljeQIZtBhqUvIkB7PzpWtH6bOD1x1Xb4FlUAP2zYYe3Q3/NaHgWWB1UOHfZ67JKAyPd5apPjtaShqelR6UNwgZ+fl63NmbtgemaDa7/w4fPu4qG0YeufTVtY9fdVydNNwS0HULDZ+8wjMpqsThZAuztUdonqvtIgFcMFxxuoWtagQal2PuuVCy8klEiWJ3efJOcYtryzk4U6gJldOYiwAxAXcv9htyIOjbmn41+X06Wgbx5WN4VFViSHezTLFww==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by CY5PR12MB6645.namprd12.prod.outlook.com (2603:10b6:930:42::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.19; Wed, 6 Nov
+ 2024 13:40:35 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8137.018; Wed, 6 Nov 2024
+ 13:40:35 +0000
+Date: Wed, 6 Nov 2024 09:40:34 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Uros Bizjak <ubizjak@gmail.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>, vasant.hegde@amd.com,
+	Kevin Tian <kevin.tian@intel.com>, jon.grimm@amd.com,
+	santosh.shukla@amd.com, pandoh@google.com, kumaranand@google.com,
+	Linux-Arch <linux-arch@vger.kernel.org>
+Subject: Re: [PATCH v9 03/10] asm/rwonce: Introduce [READ|WRITE]_ONCE()
+ support for __int128
+Message-ID: <20241106134034.GN458827@nvidia.com>
+References: <20241101162304.4688-1-suravee.suthikulpanit@amd.com>
+ <20241101162304.4688-4-suravee.suthikulpanit@amd.com>
+ <ZyoP0IKVmxfesRU8@8bytes.org>
+ <323dcff2-6135-4b8a-85db-bccc315ddfdf@app.fastmail.com>
+ <CAFULd4Za4BQL+h9Xmra1TjB2oGGzPwru_y1xOrrAFSg==bfvgg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAFULd4Za4BQL+h9Xmra1TjB2oGGzPwru_y1xOrrAFSg==bfvgg@mail.gmail.com>
+X-ClientProxiedBy: BN9PR03CA0886.namprd03.prod.outlook.com
+ (2603:10b6:408:13c::21) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>,
- =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
- davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc: zhangkun09@huawei.com, fanghaiqing@huawei.com, liuyonglong@huawei.com,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
- Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet
- <edumazet@google.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
- kernel-team <kernel-team@cloudflare.com>, Viktor Malik <vmalik@redhat.com>
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com>
- <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
- <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
- <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
- <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org>
- <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
-Content-Language: en-US
-From: Jesper Dangaard Brouer <hawk@kernel.org>
-In-Reply-To: <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CY5PR12MB6645:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6108b97f-c446-4141-09d7-08dcfe6897a8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|366016|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?K01UMGtqdWJpZHpvTUJGZkRVbU1RTGNXd09ZMzN0alJHV1M3U1IydjNITkZz?=
+ =?utf-8?B?RHRQcDJpeE5xV1Q2WTdWelYrNUxuV1pyeGxDYjJURE9zUUE1T0NQSnNVYlZj?=
+ =?utf-8?B?OU12SzN6ZGtVYTRLVC8xRlI1RjJyWjdoL3VNOXY0d2pvVk8vNndKTU5Gb0RZ?=
+ =?utf-8?B?VHU0K0NDYXRiYlpDU0ZvS1hkZ21GTTdEcGRIRmlUSXIwMVNia2ZGbWx0cGxj?=
+ =?utf-8?B?cDRxc25wY1hOU3l5MWZNczQzS3Z5NTlDLzNQbFlMbFN4cUpsYThxL1BKdXVJ?=
+ =?utf-8?B?ajczd25jOHc1a05HQkVMcTFabVVYd0VEMFpBeWVsSHRmYjdndkQ1S2JpeUVH?=
+ =?utf-8?B?ZUxkakYzb0E4UDA1SVFUSGlOcEYyYWVTalZPTkErejREYzVROCtLeE1FTDEw?=
+ =?utf-8?B?RjdrM1JKSGhWRWtmTm9qemlsSElVK0pva2V0dUZoUDY4bWFRNWdEMG9HT3h3?=
+ =?utf-8?B?c1VOdWZFaVhjQ1RxQXluOXFIMEd6UnU1QlR2b2pNT0hGQ1kzbGdYNDFFL3ds?=
+ =?utf-8?B?Vk5ONklZNC93bFl2WFAzSHExMldiM2xmdExKdDZWN2tNeHVYWXk0QlVqWUJV?=
+ =?utf-8?B?QjhMR0tLeEliancxcGFnYUw2NVlsb2RHb2FodWpHZGdDTHFjcnJMQ0VtRHlM?=
+ =?utf-8?B?dWNsdUhuNUFQQ2VXeUw5M3JZRE5XMU45c2VUVzBUZWdiNmMwbXJhd1d1ZEJy?=
+ =?utf-8?B?QVUvKzZFSDFJcUFDY1RVUUU3N0tqNGtsM3VXZGZDeVVaejVRRDJJeHYxT1Zo?=
+ =?utf-8?B?WkhkdHpEUmpQeG9hZ09MSTRFMnF2SGZod0pGR0dqeTVqOHBHdkFjVGtVV2d6?=
+ =?utf-8?B?b3U1bVVPenJpcUVnR2JPZEFGQ2VaUzhkQjJXVmJwbUpmQVhrOGVWR0VtWVBr?=
+ =?utf-8?B?NUhKWFhzTTQvWWRFVUpkclNmYk9aMzhtbWVWaElnT0s1UnlXMnRjOTk0SEZx?=
+ =?utf-8?B?eWxkaFNPSUkwUUNQazk3RHVkbVBzbEREV1hPcGtSTThXMGM0cmt5ZEEzQ0lD?=
+ =?utf-8?B?eTFoNUJ0K0RieSsxR25Wa25sMng2akdpZ0k3MXo0NGc5WGc5ZjZHL3lPZTZW?=
+ =?utf-8?B?N0N2cUlsdFBaNEt1SndtL3RDWVY3UTV3OWZOMHkxT0hOSWs0VCsxV2xjU1NU?=
+ =?utf-8?B?THVJRWNMdjJMcHd3TXEzVkJla2tvaTJhU2RYSjVsdS9IYzFtSS9DTXZVeEhH?=
+ =?utf-8?B?VVhUNzYvcGRydmJNbmVjMjJCMHVaWmlJVUJFTTBtYURkQ1Z3L25paW0raXor?=
+ =?utf-8?B?VUN4ZlEvYWI3WWw3VkFmVHNhT2NvVFlqb3hOaWt6SDRuYm4vSkljZTlhMzhT?=
+ =?utf-8?B?dDNmZjhKVGlINlVOOU10T0hwSVNjTXpZaTZkKzVhV0x0MmxhRkRlTFVjR2Nj?=
+ =?utf-8?B?SkFVaFpBN0xSL3pRUVpiai9BcFNRSzY2WUhsVWkyN2t2T08wZGMzeDdpTnJs?=
+ =?utf-8?B?YWhkT0MvMG9XNHh0d3ZWdmN6dXk1NmxFWEYzQ3ptcWdJNDRwTzZUSkN2NkRQ?=
+ =?utf-8?B?ckUwaXo0bkpFSE5rVkN3dXc5NU1MSU9kRHlzTTZ0djYyUlRkb2JTTVJFVHpx?=
+ =?utf-8?B?a0txSjdjT240UUNkdmo1MmJiT0JxUXFHU2lRbE13N1BmVGZpbmtQQUFNaldi?=
+ =?utf-8?B?S0RJTmNlNmtzYW9DQU13aGxndGVLWnlwOU4wMzlUQUc3Yjk4QmNEdXE2WlVU?=
+ =?utf-8?B?L2RlWmhlNG9nOENuTEFxRUE1bWx4VEZ1OW9YMUI3VC9KTjV0Z0RmK09naE5X?=
+ =?utf-8?Q?38iJAZNSeJxzk6HLcb4QUAQf+4PfvmZIKsUj4t4?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ekZxWnNLM04waTJpYTB0clBYNnNoMnkxZ2lyTTZEVnhDOUc1WjU0N0szMHNs?=
+ =?utf-8?B?bis5OEtKMldlRmVUR2Mzd2U3MGpmZ2xucFZUdEhMVWp5YmI0SUtJWVhLU2xK?=
+ =?utf-8?B?QVNaeit3TkJhVTFwMGtCYVd4VHhia2lsV0FEYmpwVjVNWkVDRWh4Y01TbUk3?=
+ =?utf-8?B?V0RBN3VyL0E0UERWZEpXL3djV2RXWVpuQ2lmam9jNEpTcldETDlMYVNkN2tn?=
+ =?utf-8?B?WWxocklSRzRNVjNWUEdQdC9scEYwQTNoQ1lhakpNbktPZFZGS0U2d1hnalhH?=
+ =?utf-8?B?cGNheGhnUkhjOHZWTGNHUG9nR0d6SjZXZGszeXYvMnI0b1VZQjdaNkkwd3Bi?=
+ =?utf-8?B?Z0FUU3VJenFsME1Dak5tUXVRUUN6eE9zdWgzSUx1TG40Y0xhWHFPTjgrcXpa?=
+ =?utf-8?B?ZjFZSWZZMkhvTnRlT1pUbDBYRXNaS1FqaHMyVGtMSVdvLzlMQUc2ZlRzNVV6?=
+ =?utf-8?B?bVdtUHdMVnZoYk9IODUvdmwzdm9rZlRqTStPQ3BiZm9JcHZWOXo4SStEOGY4?=
+ =?utf-8?B?UTViOVZjdVUzWVVNQnVJb2swRFR6MlJpUk1rbHh2b0l6ay9GN1VVNlc0cnBL?=
+ =?utf-8?B?a1dKZEZBbUdtVHY0YVZEdjYvb09NNEFuVk94eEVJTVdRYzJUOEYwdStmVzJm?=
+ =?utf-8?B?WnRUWmNhd1ZkamQwK1A2elVtSXp4N2ZqbkE1cUNZcXdmVHJjcGpHQmpVUWE5?=
+ =?utf-8?B?Q2YxOVZRN2RqRlB3ZHZvaDYvd0Q0cnVDQldjRjhoV3p1YldxclluK0ZoOFF2?=
+ =?utf-8?B?U0NkaXZzTnpUY2NobHNSam92dHZEczlBaGF2N29ldUIwZWo5dFYyaFY3eE1D?=
+ =?utf-8?B?elE5d2ZPaE1GcTQ2eDZFbWJndVBUbndtK1drUDJPQ0FvWjRQUG9JUXppT0J2?=
+ =?utf-8?B?TlZ3UWdWQkpXWDMxd0dYRjFHYzd0M1ozNFVRRlRvU1R0ZDdFRWVBSlVsKzZm?=
+ =?utf-8?B?SFRvUlhNbDJLNmthd0hsS3VFeVIxTWNkWkxmS1dRRHFEQ1dHbjY4QVdISFRW?=
+ =?utf-8?B?NkZqajYyaEtyNnNmK1pDQllaNER1S1VjVTg2VjhwdFVXdm5WM2tPT2ZPN0xq?=
+ =?utf-8?B?TC91Q0JjWHhMUXpMaDdSYnpOMTlLQzM4RlpNRElLQmt4N2M3M2xWTWw4bldZ?=
+ =?utf-8?B?QmVud1lZNldSZUpMRCsrWnAvV3dhTWxSLzdTWXg4VDRUWk1kN0pxNE5yTjYv?=
+ =?utf-8?B?NGZWUGp5bzR4K0xZWitMTFFjVHpyZlpESDB4RkhIemhDRnA5cGQvU0FqWjRz?=
+ =?utf-8?B?ZzMwaGxPZTBmdmJiM1RjMVlQU2VQZElUUHRCSmpIVytjOEZkS0NDR216L2dF?=
+ =?utf-8?B?eWFraEVLdFZ3aVNvOHV0VEhxWlVYWFNQUS9uY3pNWkw3UXJ6QzRqZnQyOWRr?=
+ =?utf-8?B?K3A5QzB1ekE1LytWWjkrZ0JZN2Z5NUlGUFN2dEZOaUxQazU1bmdQSkltcXpF?=
+ =?utf-8?B?VHNMQTJNNlovWHVlVStBb3lTVHEwdGFPL1NUSEFZZ3B2KytkcG5ENHU2cVk5?=
+ =?utf-8?B?dVZaUnFLWWpndHBzVVVWVUJaVDBVaEFvckFrcDN6RVlKeGNJK3VhanZMQmFl?=
+ =?utf-8?B?QXpCUlRMTHZUZmtoSW5VazZxckxDcm1KdlQxemlGTUhIT01lTEZZdkNuVVQz?=
+ =?utf-8?B?TFlCVXZ2NkFRcVRlWStyZFpUY0Y0Z3FtTEpJSy9uZ1RIeXdEeWJGMTAyWmRU?=
+ =?utf-8?B?WjNXdEFZaFNCSGxjbGV2Qjh4SFV4dEpuK1VIYWFTYmdBQTE3Z0ZTaVJ2UUpn?=
+ =?utf-8?B?WTJaa0FrVVB3eVlWZUJvY0pkeWhSOU9kZnlqRm9YeCtXMlFPbTQ0enlMSll4?=
+ =?utf-8?B?NURYSDBOYlFxQ1VFbkYra0JodmRiTEZoZVRxajlwZTRJaUQ5Z3FXTmJEd3VU?=
+ =?utf-8?B?djI4T3ZpNHV6ZkhYb054NlBrZWdON0FhUmFrR0xXOERhZ3ozbDVTUjkxVnRC?=
+ =?utf-8?B?S2RIVnZtRWgxU2lBMnhVN2Y5Si9WOXkraUdTNnBWUGkzTGVDaGhYdjRPQzF6?=
+ =?utf-8?B?dGp0YzIzZ0YrVFJwYnRYVnNkUFY2R2s0dmdjM1Zlb2FGSUZFR25HQkdYNm55?=
+ =?utf-8?B?dFBtMkhhSXVXcEFLUXdER3VTbEdCY0lERSs0eVFBMFhNV1ZrRURhZVZwaXZW?=
+ =?utf-8?Q?k0tPyNy450KnAYHzJQznbtSKm?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6108b97f-c446-4141-09d7-08dcfe6897a8
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2024 13:40:35.5561
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FUT90im2PDt9nHoxvgMCCzxLTG9/Oc01Iu70Y9mQZb5v/S10uWhdHG287+OJRZ8l
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6645
 
-
-On 26/10/2024 09.33, Yunsheng Lin wrote:
-> On 2024/10/25 22:07, Jesper Dangaard Brouer wrote:
+On Wed, Nov 06, 2024 at 11:01:20AM +0100, Uros Bizjak wrote:
+> On Wed, Nov 6, 2024 at 9:55 AM Arnd Bergmann <arnd@arndb.de> wrote:
+> >
+> > On Tue, Nov 5, 2024, at 13:30, Joerg Roedel wrote:
+> > > On Fri, Nov 01, 2024 at 04:22:57PM +0000, Suravee Suthikulpanit wrote:
+> > >>  include/asm-generic/rwonce.h   | 2 +-
+> > >>  include/linux/compiler_types.h | 8 +++++++-
+> > >>  2 files changed, 8 insertions(+), 2 deletions(-)
+> > >
+> > > This patch needs Cc:
+> > >
+> > >       Arnd Bergmann <arnd@arndb.de>
+> > >       linux-arch@vger.kernel.org
+> > >
+> >
+> > It also needs an update to the comment about why this is safe:
+> >
+> > >> +++ b/include/asm-generic/rwonce.h
+> > >> @@ -33,7 +33,7 @@
+> > >>   * (e.g. a virtual address) and a strong prevailing wind.
+> > >>   */
+> > >>  #define compiletime_assert_rwonce_type(t)                                   \
+> > >> -    compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
+> > >> +    compiletime_assert(__native_word(t) || sizeof(t) == sizeof(__dword_type), \
+> > >>              "Unsupported access size for {READ,WRITE}_ONCE().")
+> >
+> > As far as I can tell, 128-but words don't get stored atomically on
+> > any architecture, so this seems wrong, because it would remove
+> > the assertion on someone incorrectly using WRITE_ONCE() on a
+> > 128-bit variable.
 > 
-> ...
+> READ_ONCE() and WRITE_ONCE() do not guarantee atomicity for double
+> word types. They only guarantee (c.f. include/asm/generic/rwonce.h):
 > 
->>
->>>> You and Jesper seems to be mentioning a possible fact that there might
->>>> be 'hundreds of gigs of memory' needed for inflight pages, it would be nice
->>>> to provide more info or reasoning above why 'hundreds of gigs of memory' is
->>>> needed here so that we don't do a over-designed thing to support recording
->>>> unlimited in-flight pages if the driver unbound stalling turns out impossible
->>>> and the inflight pages do need to be recorded.
->>>
->>> I don't have a concrete example of a use that will blow the limit you
->>> are setting (but maybe Jesper does), I am simply objecting to the
->>> arbitrary imposing of any limit at all. It smells a lot of "640k ought
->>> to be enough for anyone".
->>>
->>
->> As I wrote before. In *production* I'm seeing TCP memory reach 24 GiB
->> (on machines with 384GiB memory). I have attached a grafana screenshot
->> to prove what I'm saying.
->>
->> As my co-worker Mike Freemon, have explain to me (and more details in
->> blogposts[1]). It is no coincident that graph have a strange "sealing"
->> close to 24 GiB (on machines with 384GiB total memory).  This is because
->> TCP network stack goes into a memory "under pressure" state when 6.25%
->> of total memory is used by TCP-stack. (Detail: The system will stay in
->> that mode until allocated TCP memory falls below 4.68% of total memory).
->>
->>   [1] https://blog.cloudflare.com/unbounded-memory-usage-by-tcp-for-receive-buffers-and-how-we-fixed-it/
+>  * Prevent the compiler from merging or refetching reads or writes. The
+>  * compiler is also forbidden from reordering successive instances of
+>  * READ_ONCE and WRITE_ONCE, but only when the compiler is aware of some
+>  * particular ordering. ...
 > 
-> Thanks for the info.
+> and later:
+> 
+>  * Yes, this permits 64-bit accesses on 32-bit architectures. These will
+>  * actually be atomic in some cases (namely Armv7 + LPAE), but for others we
+>  * rely on the access being split into 2x32-bit accesses for a 32-bit quantity
+>  * (e.g. a virtual address) and a strong prevailing wind.
+> 
+> This is the "strong prevailing wind", mentioned in the patch review at [1].
+> 
+> [1] https://lore.kernel.org/lkml/20241016130819.GJ3559746@nvidia.com/
 
-Some more info from production servers.
+Yes, there are two common uses for READ_ONCE, actually "read once" and
+prevent compiler double read "optimizations". It doesn't matter if
+things tear in this case because it would be used with cmpxchg or
+something like that.
 
-(I'm amazed what we can do with a simple bpftrace script, Cc Viktor)
+The other is an atomic relaxed memory order read, which would
+have to guarentee non-tearing.
 
-In below bpftrace script/oneliner I'm extracting the inflight count, for
-all page_pool's in the system, and storing that in a histogram hash.
+It is unfortunate the kernel has combined these two things, and we
+probably have exciting bugs on 32 bit from places using the atomic
+read variation on a u64..
 
-sudo bpftrace -e '
-  rawtracepoint:page_pool_state_release { @cnt[probe]=count();
-   @cnt_total[probe]=count();
-   $pool=(struct page_pool*)arg0;
-   $release_cnt=(uint32)arg2;
-   $hold_cnt=$pool->pages_state_hold_cnt;
-   $inflight_cnt=(int32)($hold_cnt - $release_cnt);
-   @inflight=hist($inflight_cnt);
-  }
-  interval:s:1 {time("\n%H:%M:%S\n");
-   print(@cnt); clear(@cnt);
-   print(@inflight);
-   print(@cnt_total);
-  }'
-
-The page_pool behavior depend on how NIC driver use it, so I've run this 
-on two prod servers with drivers bnxt and mlx5, on a 6.6.51 kernel.
-
-Driver: bnxt_en
-- kernel 6.6.51
-
-@cnt[rawtracepoint:page_pool_state_release]: 8447
-@inflight:
-[0]             507 |                                        |
-[1]             275 |                                        |
-[2, 4)          261 |                                        |
-[4, 8)          215 |                                        |
-[8, 16)         259 |                                        |
-[16, 32)        361 |                                        |
-[32, 64)        933 |                                        |
-[64, 128)      1966 |                                        |
-[128, 256)   937052 |@@@@@@@@@                               |
-[256, 512)  5178744 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-[512, 1K)     73908 |                                        |
-[1K, 2K)    1220128 |@@@@@@@@@@@@                            |
-[2K, 4K)    1532724 |@@@@@@@@@@@@@@@                         |
-[4K, 8K)    1849062 |@@@@@@@@@@@@@@@@@@                      |
-[8K, 16K)   1466424 |@@@@@@@@@@@@@@                          |
-[16K, 32K)   858585 |@@@@@@@@                                |
-[32K, 64K)   693893 |@@@@@@                                  |
-[64K, 128K)  170625 |@                                       |
-
-Driver: mlx5_core
-  - Kernel: 6.6.51
-
-@cnt[rawtracepoint:page_pool_state_release]: 1975
-@inflight:
-[128, 256)         28293 |@@@@                               |
-[256, 512)        184312 |@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
-[512, 1K)              0 |                                   |
-[1K, 2K)            4671 |                                   |
-[2K, 4K)          342571 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-[4K, 8K)          180520 |@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
-[8K, 16K)          96483 |@@@@@@@@@@@@@@                     |
-[16K, 32K)         25133 |@@@                                |
-[32K, 64K)          8274 |@                                  |
-
-
-The key thing to notice that we have up-to 128,000 pages in flight on
-these random production servers. The NIC have 64 RX queue configured,
-thus also 64 page_pool objects.
-
---Jesper
+Jason
