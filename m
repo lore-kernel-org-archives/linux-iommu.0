@@ -1,175 +1,171 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D80B9202F95;
-	Wed,  6 Nov 2024 15:12:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C189C1E04BF
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 15:46:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730905976; cv=none; b=cQi0YT986WmI/FDdcnJZXwT97jw0SFR7iPELZi5LxCn/UJ99oi4lc2TpD8v1SxFK20iFApl1NcfohpzkyP57yokoziouTKgqXH8AemZ6tFoki5PJ/63iL9vW7UIde1kjll+WsBdrp4R5iMN82teTqdTLygx7lx5K3TEbiOnpEsw=
+	t=1730907971; cv=none; b=fqmQ3Wa0dexCjpXcjJ3Buf1mgldaGPd/jmZNy/zgBlJoW1SRsto+6OT+KDQ9vWhvJKpU4LMMeSGJfP43do5wr1+Imo7wjt1aughDNBfK7RE6MWDy3FobcNCMvGOh2ANwnUmNgeIoOiOFLedtIsTnaIZT2QVPjkz9yx36Ve+vop8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730905976; c=relaxed/simple;
-	bh=NtWPaIkKC8r1cfM6lS0CoFAf6144okQV0U14dbywN1o=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EBXTL+PMOFflO04nbR/1DZXLDbIbkehCH35bBs+HI4n45t1dwvvG8yeshIW8nvH5KE0Cm/xHy7sJkJDBIJtxVK/rct/7ZAHp1Sh6MueZILW/ogjjGm1p8EnYouBLQ1LNCmt4E6UQqD+YToy8wokt1EFkD0qkkM+FYovlEd72SAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F91A497;
-	Wed,  6 Nov 2024 07:13:23 -0800 (PST)
-Received: from [10.57.91.71] (unknown [10.57.91.71])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A051B3F528;
-	Wed,  6 Nov 2024 07:12:50 -0800 (PST)
-Message-ID: <f0d98255-8050-4d79-998b-df805bb8f150@arm.com>
-Date: Wed, 6 Nov 2024 15:12:48 +0000
+	s=arc-20240116; t=1730907971; c=relaxed/simple;
+	bh=ok1bm6oJEXsjE5A1pKLAnqVemj1Frxd8q1RIPh1PQMQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tvg194xv6lDJWsMuQuDceUNWmYJESS1fEiCFD9ZyD9CeyR145igP5GCUI33qoXwQKZQ4yAbKvdRPfybwmWlzikb6ICysMBjMrDTP1Me7zv8pxtOYS9yts3HqXZcUU5x9yHLO5vKncs8PU4S0AKZOb8290Yx1xkCOfz5IRJqKwlg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N7LQf49L; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N7LQf49L"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1730907970; x=1762443970;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ok1bm6oJEXsjE5A1pKLAnqVemj1Frxd8q1RIPh1PQMQ=;
+  b=N7LQf49L7qfNJnXi3rkuNF2O7S1/oKawD7qLSYHkT2oFJ5uTXLYPUhkF
+   CQ8Y60cF/dARkvmzWh/OtkMirmsHfBUBb7LGLt2S67Tfbl36QJ8a/mSq9
+   1rSaDKNRVOqUck+hBtTVW1B8nbtt9/S1w7+5b73oURLIMMtGz4YSxDEY4
+   RdlySlRLRyKpwLbUGt3bUEQ7QBm/0D9eixi1SiXFcEM+UyaA6sCxwcPHK
+   XmHPcdri4AF7mBe9GhFnhqVQK1kfMhwr25MSZM0hqdmpU6WXBJoRCfCQs
+   YEpb4hmo0iawg4rcbiE+t57tyhsq/mU4Di0tbEvFZY0LvgKS8oYhsPYCP
+   A==;
+X-CSE-ConnectionGUID: QhcIvZuUTYW/M/ClOuotag==
+X-CSE-MsgGUID: nJtnoap4SH2xkV5e2gjZuw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="48174204"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="48174204"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 07:46:08 -0800
+X-CSE-ConnectionGUID: cYGEY023RCSKPzn8x1L/uA==
+X-CSE-MsgGUID: ZBTrgxtLSA+YuN2W7eNH1A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,263,1725346800"; 
+   d="scan'208";a="89468110"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orviesa005.jf.intel.com with ESMTP; 06 Nov 2024 07:46:07 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	baolu.lu@linux.intel.com
+Cc: alex.williamson@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	zhenzhong.duan@intel.com,
+	vasant.hegde@amd.com,
+	willy@infradead.org
+Subject: [PATCH v5 00/13] Make set_dev_pasid op supporting domain replacement
+Date: Wed,  6 Nov 2024 07:45:53 -0800
+Message-Id: <20241106154606.9564-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/3] iommu/io-pgtable-arm: Remove split on unmap
- behavior
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Cc: Boris Brezillon <boris.brezillon@collabora.com>,
- dri-devel@lists.freedesktop.org, Liviu Dudau <liviu.dudau@arm.com>,
- patches@lists.linux.dev
-References: <1-v2-fd55d00a60b2+c69-arm_no_split_jgg@nvidia.com>
-From: Steven Price <steven.price@arm.com>
-Content-Language: en-GB
-In-Reply-To: <1-v2-fd55d00a60b2+c69-arm_no_split_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 04/11/2024 17:41, Jason Gunthorpe wrote:
-> A minority of page table implementations (arm_lpae, armv7) are unique in
-> how they handle partial unmap of large IOPTEs.
-> 
-> Other implementations will unmap the large IOPTE and return it's
-> length. For example if a 2M IOPTE is present and the first 4K is requested
-> to be unmapped then unmap will remove the whole 2M and report 2M as the
-> result.
-> 
-> arm_lpae instead replaces the IOPTE with a table of smaller IOPTEs, unmaps
-> the 4K and returns 4k. This is actually an illegal/non-hitless operation
-> on at least SMMUv3 because of the BBM level 0 rules.
-> 
-> Will says this was done to support VFIO, but upon deeper analysis this was
-> never strictly necessary:
-> 
->  https://lore.kernel.org/all/20241024134411.GA6956@nvidia.com/
-> 
-> In summary, historical VFIO supported the AMD behavior of unmapping the
-> whole large IOPTE and returning the size, even if asked to unmap a
-> portion. The driver would see this as a request to split a large IOPTE.
-> Modern VFIO always unmaps entire large IOPTEs (except on AMD) and drivers
-> don't see an IOPTE split.
-> 
-> Given it doesn't work fully correctly on SMMUv3 and relying on ARM unique
-> behavior would create portability problems across IOMMU drivers, retire
-> this functionality.
-> 
-> Outside the iommu users, this will potentially effect io_pgtable users of
-> ARM_32_LPAE_S1, ARM_32_LPAE_S2, ARM_64_LPAE_S1, ARM_64_LPAE_S2, and
-> ARM_MALI_LPAE formats.
-> 
-> Cc: Boris Brezillon <boris.brezillon@collabora.com>
-> Cc: Steven Price <steven.price@arm.com>
-> Cc: Liviu Dudau <liviu.dudau@arm.com>
-> Cc: dri-devel@lists.freedesktop.org
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+This splits the preparation works of the iommu and the Intel iommu driver
+out from the iommufd pasid attach/replace series. [1]
 
-Reviewed-by: Steven Price <steven.price@arm.com>
+To support domain replacement, the definition of the set_dev_pasid op
+needs to be enhanced. Meanwhile, the existing set_dev_pasid callbacks
+should be extended as well to suit the new definition.
 
-> ---
->  drivers/iommu/io-pgtable-arm.c | 68 +---------------------------------
->  1 file changed, 2 insertions(+), 66 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 0e67f1721a3d98..9a16815b3f3434 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -569,66 +569,6 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
->  	kfree(data);
->  }
->  
-> -static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
-> -				       struct iommu_iotlb_gather *gather,
-> -				       unsigned long iova, size_t size,
-> -				       arm_lpae_iopte blk_pte, int lvl,
-> -				       arm_lpae_iopte *ptep, size_t pgcount)
-> -{
-> -	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> -	arm_lpae_iopte pte, *tablep;
-> -	phys_addr_t blk_paddr;
-> -	size_t tablesz = ARM_LPAE_GRANULE(data);
-> -	size_t split_sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
-> -	int ptes_per_table = ARM_LPAE_PTES_PER_TABLE(data);
-> -	int i, unmap_idx_start = -1, num_entries = 0, max_entries;
-> -
-> -	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-> -		return 0;
-> -
-> -	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg, data->iop.cookie);
-> -	if (!tablep)
-> -		return 0; /* Bytes unmapped */
-> -
-> -	if (size == split_sz) {
-> -		unmap_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
-> -		max_entries = ptes_per_table - unmap_idx_start;
-> -		num_entries = min_t(int, pgcount, max_entries);
-> -	}
-> -
-> -	blk_paddr = iopte_to_paddr(blk_pte, data);
-> -	pte = iopte_prot(blk_pte);
-> -
-> -	for (i = 0; i < ptes_per_table; i++, blk_paddr += split_sz) {
-> -		/* Unmap! */
-> -		if (i >= unmap_idx_start && i < (unmap_idx_start + num_entries))
-> -			continue;
-> -
-> -		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, 1, &tablep[i]);
-> -	}
-> -
-> -	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
-> -	if (pte != blk_pte) {
-> -		__arm_lpae_free_pages(tablep, tablesz, cfg, data->iop.cookie);
-> -		/*
-> -		 * We may race against someone unmapping another part of this
-> -		 * block, but anything else is invalid. We can't misinterpret
-> -		 * a page entry here since we're never at the last level.
-> -		 */
-> -		if (iopte_type(pte) != ARM_LPAE_PTE_TYPE_TABLE)
-> -			return 0;
-> -
-> -		tablep = iopte_deref(pte, data);
-> -	} else if (unmap_idx_start >= 0) {
-> -		for (i = 0; i < num_entries; i++)
-> -			io_pgtable_tlb_add_page(&data->iop, gather, iova + i * size, size);
-> -
-> -		return num_entries * size;
-> -	}
-> -
-> -	return __arm_lpae_unmap(data, gather, iova, size, pgcount, lvl, tablep);
-> -}
-> -
->  static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->  			       struct iommu_iotlb_gather *gather,
->  			       unsigned long iova, size_t size, size_t pgcount,
-> @@ -678,12 +618,8 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->  
->  		return i * size;
->  	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
-> -		/*
-> -		 * Insert a table at the next level to map the old region,
-> -		 * minus the part we want to unmap
-> -		 */
-> -		return arm_lpae_split_blk_unmap(data, gather, iova, size, pte,
-> -						lvl + 1, ptep, pgcount);
-> +		WARN_ONCE(true, "Unmap of a partial large IOPTE is not allowed");
-> +		return 0;
->  	}
->  
->  	/* Keep on walkin' */
+This series first passes the old domain to the set_dev_pasid op, and prepares
+the Intel iommu set_dev_pasid callbacks (paging domain, identity domain, and
+sva domain) for the new definition, add the missing set_dev_pasid callback
+for the nested domain, makes ARM SMMUv3 set_dev_pasid op to suit the new
+set_dev_pasid op definition, and in the end, claims the set_dev_pasid op support
+domain replacement. The AMD set_dev_pasid callback is extended to fail if the
+caller tries to do the domain replacement to meet the new definition of
+set_dev_pasid op. AMD iommu driver would support it later per Vasant [2].
+
+[1] https://lore.kernel.org/linux-iommu/20240412081516.31168-1-yi.l.liu@intel.com/
+[2] https://lore.kernel.org/linux-iommu/fa9c4fc3-9365-465e-8926-b4d2d6361b9c@amd.com/
+
+v5:
+ - Drop the nonsense function description in patch 02 of v4 (Kevin, Baulu)
+ - Add the error message as the setup helpers in replace helpers (Kevin)
+ - Check old domain id with the domain id in pasid entry within the replace helpers.
+   Along with it, iommu_domain_did() is added (Kevin, Baolu)
+ - Merge patch 05 and 09 of v4 and name the patch as consolidating the dev_pasid_info
+   add/remove (Baolu)
+ - Drop patch 10 of v4, hence patch 09 of v5 (Baolu, Kevin, Jason)
+ - Add r-b tags from Baolu, Kevin, Vasant
+ - Rebase on top of Joerg's next tree (75bc266cd1a6)
+ 
+v4: https://lore.kernel.org/linux-iommu/20241104131842.13303-1-yi.l.liu@intel.com/
+ - Fix a missing input argument modification in patch 01 (Nicolin)
+ - Per Baolu's suggestion, this series does not extend the pasid setup helpers to
+   handle domain replacement, instead it adds pasid replace helpers, hence
+   drop patch 02 of v3 as it is no longer required in this series.
+ - Add a new helper to consolidate the cache flush for the modifications to a
+   present pasid entry (the fields other than P and SSADE)   (Baolu)
+ - Update the set_dev_pasid op of intel identity domain to handle replacement
+ - Consolidate the dev_pasid_info code of intel_svm_set_dev_pasid()
+ - Add a separate set_dev_pasid callback for nested domain instead of sharing
+   intel_iommu_set_dev_pasid()  (Baolu)
+ - Drop patch 05 of v3 as Baolu has another patch that touches it.
+
+v3: https://lore.kernel.org/linux-iommu/20241018055402.23277-1-yi.l.liu@intel.com/
+ - Add Kevin and Jason's r-b to patch 01, 02, 04, 05 and 06 of v2
+ - Add back the patch 03 of v1 to make the pasid setup helpers do all the pasid entry
+   modification, hence the set_dev_pasid path is really rollback-less, which is spotted
+   by Baolu.
+ - Rename prepare_domain_attach_device() (Baolu)
+ - Use unsigned int instead of u32 for flags (Baolu)
+ - Remove a stale comment in arm_smmu_set_pasid (Will)
+
+v2: https://lore.kernel.org/linux-iommu/20240912130427.10119-1-yi.l.liu@intel.com/
+ - Make ARM SMMUv3 set_dev_pasid op support domain replacement (Jason)
+ - Drop patch 03 of v1 (Kevin)
+ - Multiple tweaks in VT-d driver (Kevin)
+
+v1: https://lore.kernel.org/linux-iommu/20240628085538.47049-1-yi.l.liu@intel.com/
+
+Regards,
+	Yi Liu
+
+Jason Gunthorpe (1):
+  iommu/arm-smmu-v3: Make set_dev_pasid() op support replace
+
+Yi Liu (12):
+  iommu: Pass old domain to set_dev_pasid op
+  iommu/vt-d: Add a helper to flush cache for updating present pasid
+    entry
+  iommu/vt-d: Refactor the pasid setup helpers
+  iommu/vt-d: Add pasid replace helpers
+  iommu/vt-d: Consolidate the struct dev_pasid_info add/remove
+  iommu/vt-d: Add iommu_domain_did() to get did
+  iommu/vt-d: Make intel_iommu_set_dev_pasid() to handle domain
+    replacement
+  iommu/vt-d: Limit intel_iommu_set_dev_pasid() for paging domain
+  iommu/vt-d: Make intel_svm_set_dev_pasid() support domain replacement
+  iommu/vt-d: Make identity_domain_set_dev_pasid() to handle domain
+    replacement
+  iommu/vt-d: Add set_dev_pasid callback for nested domain
+  iommu: Make set_dev_pasid op support domain replacement
+
+ drivers/iommu/amd/amd_iommu.h                 |   3 +-
+ drivers/iommu/amd/pasid.c                     |   6 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   5 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  12 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   2 +-
+ drivers/iommu/intel/iommu.c                   | 174 +++++---
+ drivers/iommu/intel/iommu.h                   |  34 ++
+ drivers/iommu/intel/nested.c                  |  50 +++
+ drivers/iommu/intel/pasid.c                   | 381 ++++++++++++++----
+ drivers/iommu/intel/pasid.h                   |  22 +-
+ drivers/iommu/intel/svm.c                     |  36 +-
+ drivers/iommu/iommu.c                         |   3 +-
+ include/linux/iommu.h                         |   5 +-
+ 13 files changed, 566 insertions(+), 167 deletions(-)
+
+-- 
+2.34.1
 
