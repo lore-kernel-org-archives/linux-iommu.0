@@ -1,247 +1,206 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CD9A1917CD
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 07:38:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730878727; cv=fail; b=fpMDKRSVQ1IlDSwakdjSiRVH/DPuaG5aZEnOklTSR/HhWv6h4WeN6o2E453wNStC+H1411hXcMGxRPg22Bc0g5JCdMhbkT8yAMSSumdCusxIF5Aa3aZIGdH4j3n41oTEOD5L/XJUtGpJsZ5cWctKMd6uiF4/ErAVUtEJ/GyI654=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730878727; c=relaxed/simple;
-	bh=vIuJQI+GaDwB9dEV5Ctyt+cL5jtALvL2zj6ivBET61o=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=s9/n0qjjzCqSmZl2juPIsoxDHYJ4CiYdHBJlcgToVs7abSvPTenlgatgoqO50cSiIbEXepS8/dE7TANJtqJOse1MbesICceiY5Hx/VGuKjFht/t9glV/N7XTvOAwwtFQTMyRKqXHtQMyzwzEaP9VNfKVW2GPhI2uofAVS8KXEKQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LXQwlaWq; arc=fail smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 081EC1D1305
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 07:40:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730878862; cv=none; b=u4ktPJhsLAdhGByKQsbvtPi2hk2VC4WowvLgqWyA9awiOoGfcUXIawss6u+VRISLkSnmrNzc193oT4rDRd9L/gFcEHCJuLxHTZsduMjDtSepF+piU0FSWWhG8z2jkXJvarIbL0yukLHdEkf4fJfMVlnt3jLLnwVM/xW5SyWe5xM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730878862; c=relaxed/simple;
+	bh=HQqOgF25zZrRJJrEPpwoe06g0XjJyk/IFMS5AN9Z/eg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sG3c3kQ9VD4dwk/6QvEh/m2dASjS03yiOp8Ot4EwR7MvbtWzVAW4Q2FxGg5KMYnPnLmiS/hsAqCu1N4ETEs2ZOgiTjyAMcrRMSIkYSjj42xwsmB7GVKvajj6wIMz9MHWTb5VdUuoEgwoFKVOr749qP42buYM20ZIwsd/58TlCik=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=OwX6D/GD; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LXQwlaWq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730878726; x=1762414726;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=vIuJQI+GaDwB9dEV5Ctyt+cL5jtALvL2zj6ivBET61o=;
-  b=LXQwlaWq5/q877e3Gqr5Jz1f5dy779af5TCp8cujkcVEtV4/2PQ7/Ttl
-   dWanM1aYrGivxlBsXdgEyVzSXjycUvydRZjGWPySWe7RHAZq8ImZO6Qmj
-   KlIcsPofqZdH4EqEGDGHHUU0N5CyrVJSyWJ71pVzKZtAuPg5ZhmTxB5L5
-   /3FoBux7LvauQmKQWhhP5xTJaj2ktQy8cRA2rbPHF/3Gc+W0sweNUdXoV
-   onjhjeNjWjTa3USiOTKtYesn/iBJQc5+i2R1YqDxlDf8DuxLlgo8zqFRw
-   Qkj+7VgRrUf4GmeMev/DuDR5t4eK79f6f+36RoWPFGGdBwjftTKdtO6+6
-   w==;
-X-CSE-ConnectionGUID: EQviIKp+QpOkmKX6UzV88Q==
-X-CSE-MsgGUID: DnskvrYdT4630PgFg1QjsA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11247"; a="30769558"
-X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
-   d="scan'208";a="30769558"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2024 23:38:46 -0800
-X-CSE-ConnectionGUID: 5gIBQSZySIuFxdZzZrK3Ng==
-X-CSE-MsgGUID: uS11bEQcQ86/I40OpkPMIQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
-   d="scan'208";a="83927893"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 05 Nov 2024 23:31:35 -0800
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 5 Nov 2024 23:31:34 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Tue, 5 Nov 2024 23:31:34 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.173)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Tue, 5 Nov 2024 23:31:34 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UtiUyZhRgy7uevxjL4pgzTnJBJC8dYpZSdqhGuc+zR2jkAeKWg22nbMcO6OOCcfhlre2a3/uLeG04jEJoPYtuaQP+ZCTY8QZuc1pm49DYZ4jbeiYP9e3QT74JtDR+bYnUNYw0NOCV0wZtjVt7hVChvnKiTYGmEJCnSXZx9P4cnvr7iiZUcfjrS67wVM9YEDrgLUodCPfV9de/9WE8DzUy1RAK1u0I3/4+OHBQDpJmTvTBUPMhAUR/cjk6w09fVI4cOqkKgHbN7ymLpPLq3KgSn4RHlVzzeCCsujliB0g7qk9CxDcvS5C5J0HqHC/rze7V5h2Qn/JFou4vJCO8J8b1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+rvOT7/wPFcC9Z/ICM29WIsAK1BmZVFxwyxsh5/73tw=;
- b=VHMZRPbtt3z5QIcQGFDUDa3gCrNgw7qkyl4ax29QtZOfzCMjzO/VOtRHaAbpxgKkslDqrBfYaqo/fSld/i8md4xzbmPCD0EVW6LcgveTfIAZ1cGT1vYIwbUjbPcGOHGWUX4gUM+5kju9/93PHh5r1KA9N5ucxD1Ir6qCtdWnw6RUuOiqpyjYy+qC3CIVgAPqex0mJAyMCUqvpwfRz2IxhQW+WN74GuAeJ/XGGvo7ahLmSFpQ+1e2KHd+abfZ89rECPtjuc25SdEPKIZsBKisk5hA3BIohMNI7cTY9PCyI4DyVpa1VGmgn0zfcUlP0SgqdrhOqHVt6njrWa02Q7mxkg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by IA1PR11MB6442.namprd11.prod.outlook.com (2603:10b6:208:3a9::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.18; Wed, 6 Nov
- 2024 07:31:32 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1%5]) with mapi id 15.20.8137.018; Wed, 6 Nov 2024
- 07:31:31 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"jgg@nvidia.com" <jgg@nvidia.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>
-CC: "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "nicolinc@nvidia.com"
-	<nicolinc@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Duan, Zhenzhong"
-	<zhenzhong.duan@intel.com>, "vasant.hegde@amd.com" <vasant.hegde@amd.com>,
-	"will@kernel.org" <will@kernel.org>
-Subject: RE: [PATCH v4 04/13] iommu/vt-d: Add pasid replace helpers
-Thread-Topic: [PATCH v4 04/13] iommu/vt-d: Add pasid replace helpers
-Thread-Index: AQHbLrwadjuhsNo8NEGmUJt6qlMg6LKp2axQ
-Date: Wed, 6 Nov 2024 07:31:31 +0000
-Message-ID: <BN9PR11MB5276B9F6A5D42D30579E05E28C532@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20241104131842.13303-1-yi.l.liu@intel.com>
- <20241104131842.13303-5-yi.l.liu@intel.com>
-In-Reply-To: <20241104131842.13303-5-yi.l.liu@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|IA1PR11MB6442:EE_
-x-ms-office365-filtering-correlation-id: 1f547ddd-98b7-41bd-ee40-08dcfe350911
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014|38070700018;
-x-microsoft-antispam-message-info: =?us-ascii?Q?8Eb8fEQwmOsghyAxmqMW4vyTyyzKwJlEGGuPU3Ust+xRI55xeveB474JHgLU?=
- =?us-ascii?Q?rQl759HaW9GzsKeNRIWVsSipqTSRe19GjoMCxzgPRrk2bIixoG74KV6M7oHd?=
- =?us-ascii?Q?X5/G3p8Vvhx12MJmBcFdlkZwst02UBpBa5ScLY6/71nMiLkzVpe/43rBXMp6?=
- =?us-ascii?Q?9R2schLpcOf3Zuy6DA75dj0P8zjzZ5qx1o5lHp9N4Ns7ZqTyu9LY4Gaqb5Jd?=
- =?us-ascii?Q?A9r6iypOb5JP521AfBg3TMceLcU3XoFmkE5CcSY4fYEgEKYEUS8CNxHiioRe?=
- =?us-ascii?Q?lk0V8byZ5yx6qMVz+wUECE8QO5EVvu+ziNZQGPigRy7pHcFuaeMsaleBe/cL?=
- =?us-ascii?Q?VfUMbYTTvneYl1SxUN87zhsbOjyE9RAq2hvNRP5kl9yqOtH82M0sHGRCl4m9?=
- =?us-ascii?Q?qETygukcLvEBQSIl2ZYe/ijTHl0gKxKblQ7DJApy0QhgilC3vOAqUrl/JH4x?=
- =?us-ascii?Q?YM/91uokAJXhzQANHLDpLmBh+RIxwcAGvcDG1nf6hDytDBS8n//MkBJshQIy?=
- =?us-ascii?Q?wwpzNjMynQvN2vSWwmRscDY8W16GkvsCh3k+zNTvMB9Er31RQzqDskwdbb/W?=
- =?us-ascii?Q?HfVvDllDx/S2H2oDKcuBk86i4bZw/YFheMeZG+grEpEurkOVG7crho02qyV2?=
- =?us-ascii?Q?0KJL0/BFtCRqOk7u8oWeLUDLCWQvPNYJaaQm0Nyc05ZX8ivbCMbWHD0n6eSV?=
- =?us-ascii?Q?ricZcHhAlxox06FRwc+Hi3UGyI8ux3NB2PpQeYQi47ct+KRBweyGd9nc178m?=
- =?us-ascii?Q?JjyPPlgnleBs/llR6LLEuH98SXc8Si++XVd8AygUGQ7v4HMefcxnZd+GBz8i?=
- =?us-ascii?Q?pw4ig1cs1rViNJ/4JtvQXjFGrwpHBEB6xiyf32TYdl8geXCkclfhP1l+Dn46?=
- =?us-ascii?Q?fPJkLqgcVSU5B5QWRb3fhKxXq6t8i1VTVcHUpz+TdpLGXt8ht0A4fysez4EG?=
- =?us-ascii?Q?JWVteu+opLG8ZPitnl7/tTj4jp+FlHTHfZiXpJNI3hKVhqXKtBFOjqcDiXHa?=
- =?us-ascii?Q?MXGDePUjCeaJYC0p3SVCPIJvJruETVjCgCKHYc7LiABMhWKyqYfs3bWEawTM?=
- =?us-ascii?Q?Xgnd9N+p8X0gNX1N6WJOaXURlwj0TyA5YPxnpmZ48QXjpAhHkPk2k18Xd25f?=
- =?us-ascii?Q?FPlDV/egkBujlLUswhg/GMLX0ytC6jIDwp/byTGXSshNTCae4F4TsRaVHY72?=
- =?us-ascii?Q?U6vq9ARAnhE2WBk0yamVSCAopjQ8o9kcRBTmdCx/DUC9G4fRnmAToZM40ldv?=
- =?us-ascii?Q?DYJhK7yoTem7Meuw/fotbJHirVti5ncaqRGULB648AxXv7ElQDmQh3/XgXzX?=
- =?us-ascii?Q?S5moEgxKGU2sb7v8Qlm/KAkrpGm5ZOj4msjOjRPozQaXJknQNsXxylldMaFn?=
- =?us-ascii?Q?RCEv9jc=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?61710M8cLFkqbC4Bes1qahbmsrHA2av0mxX1aIE1rFYkT4WdzB9xxtxt9Aqm?=
- =?us-ascii?Q?PcTXsaVsSktgXBVOrCTJ9PtunJOMuYjaseOjBkRaqVinT/2xfQTEiMsYY25R?=
- =?us-ascii?Q?MFDJRCsHwDlGmYXmSGkW9/Wtq9tXWpYu9tCIZEYxqRimU9yqEL90dFDv8b80?=
- =?us-ascii?Q?U7/II94RjCDNYToWXEqDr9bDJPGdqUGgrl7ZaXv3wMPYBWWDQwwCmELvCSTd?=
- =?us-ascii?Q?knwRv/wNzrX2j8369BVJubbbu07skx/n6GdzMdvSz277mAFkPebJLEIxaKnV?=
- =?us-ascii?Q?Wd9PFfq9+pALIQhBHULE2g2aX9/VrLij2Gk3z+xcdo/kgpKz03otju9e7MhV?=
- =?us-ascii?Q?7p//GtJr7Jo8LpA3ZjuBsfvzUGUSAbiCXALpiwh9c+FwEW5Q3nIYCGr7ZKXo?=
- =?us-ascii?Q?fHudw/NIp8N+Q/ybz+o/uNsbYtGReUOquonkXliXTUexdXZMQDclxE+EBN+V?=
- =?us-ascii?Q?jYVeEDRIOyOehV+qrq2TYih+UNp12Xdkd2p+wIj1LtRQboygYi4z3H4et/2S?=
- =?us-ascii?Q?kMKtzPzi3/ADfSjgBjXvkcnorBROdHCYWt91ZsejGcuo0sRT94gusp4VUbkr?=
- =?us-ascii?Q?9OK9Karj3BNBBzWf8dXcv9Wl9PvbPRk0kzFBd2MbLMKZZSyI0zfwUW4uH5RY?=
- =?us-ascii?Q?HFRTADqgDOadbInXPD5vxegB4bEqOOOmVxPuNmuFZT3tSQGXPLOotZGnOyn7?=
- =?us-ascii?Q?QcrVG8Qq3IsVcmO7IvL8HmoPWMgM7vzMdzaVWuKGq6lQKjeTF80Wl/Rp7WIw?=
- =?us-ascii?Q?COGkRlDBAjHM9IATeFF6ZYMuJ4VXCMHaVJqqOsd0dzVi1Rz0UGb+48hS3FMR?=
- =?us-ascii?Q?Pgc6NwTTqG4zpEKFOTcThHbEhozaozon1HudLTyGq6F29TokYBRMJH/UvWG5?=
- =?us-ascii?Q?fOTOakVGNBfRFBm0Gp0KPdAh8sdAPZ8wz78ubcOhWI6+0gxQHgVZWY2A2mwK?=
- =?us-ascii?Q?KIH+KKgBiuoNCuHBGF7ieqpeEw0OBTaV0YtmslsUyXQbOsZrG/9WDtGADmoI?=
- =?us-ascii?Q?r5MtC7YBu2r3glmb8vpdd2pdRe67MKAQu6a3/qZROsGo+LVcDgy9trhsIiGJ?=
- =?us-ascii?Q?mqZ5zdIg67PyIJrX3AWoCHEMrAWeCPLw7s64E02TI+4hJ1luB46vJk+n6Hzj?=
- =?us-ascii?Q?IjQ2ODJYE8b+f/620ceAyG2RiDgyt+fqvmIcCpIanTrv6oY44dBix2jx8W+f?=
- =?us-ascii?Q?gcV8kaKqBlIg4qaG8IITJonzAJOy+FsMGlasfGf9SCFlYB85U9vItsvIepRz?=
- =?us-ascii?Q?C8XFOvTTPgZ25G/kWD61YeiqnSL6+HGyuQd8B1k8vuPtVwBsBNHCcZM6j5c1?=
- =?us-ascii?Q?spjxgTB8YVxz73aMKE5B8G6CPMRvG7Wm9YMl/QxjdizDXysYYR0MNk8WScg2?=
- =?us-ascii?Q?GGuxZFtY7yN3XkRdU03BPej643Jqz/+JCRxqyspKBV4nv+c9kpg31G1Gah8N?=
- =?us-ascii?Q?1V+sMIqv0OK5kvJtSISWluUZYKQt66acht45gA63m6ZYMztJ8oWNFu50xmGb?=
- =?us-ascii?Q?hG3nfTfcgrH2zpMMfbg5ymP8n9Y+lv7/qArSpCMjeIgIPVcays2rZz/DcMYQ?=
- =?us-ascii?Q?R7GkbvFwAiC03FQOIBx+shXiqvlUvvcEf1bhXMfO?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OwX6D/GD"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-53c779ef19cso66398e87.3
+        for <iommu@lists.linux.dev>; Tue, 05 Nov 2024 23:40:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1730878857; x=1731483657; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=tXO9RRbs3HveLlIZZM8HN1XONyaSb0qVhG5bV+yNI6E=;
+        b=OwX6D/GDmJwFB71U+2FCNTsGtDBhaQhczVoCLOINeParkrq1aDkBLEx8ykmKSiXtKU
+         JTgmRXsAR6qqJZjAm/TEkS0xv9dX8HjSobcnAb2GFTVn1t8IAERfmgynlOCSQeksTuU3
+         iVPQlFUC80iu2IbPbXre3pnRYHiosbnxf9SfDxsUrAvfRUx3oyMabHNmzYDx28xDFA2g
+         reD7TmfiQzaqAMzOPwx08FGv3mvR3B7FvLvl0thVTMFpCN60GXV3iEJJbC+u+CxSzIOs
+         F0Rlmnn6VoYOVwxcjAqzdmdbymnKKOP2WL5w00QwnXjMwBiEL0x2qms6egyjckSuNGBs
+         r4RQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730878857; x=1731483657;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tXO9RRbs3HveLlIZZM8HN1XONyaSb0qVhG5bV+yNI6E=;
+        b=d6vlx/5FpvwL2ymNMTdB4uyxkjiMJcbMqxZcuCEIJMG4LNnY2ZvtLqeFAapPFCUJMo
+         ok1wpKFsuOqxhyOL7ofY0Y92V3YhKzjfq2NmY7ububUBWfM4BFaIMuhERvy/Rb5eY6Zp
+         v/c6fdiD3ue+xiEiviBGOG5TQKxbzENXtIk7IyBBvKEaVYrzSeTmPeFt9keMOpZyDv/1
+         CUjgjWNdm6eO7goI6aTeiqgAUou32jSk2qcurAkYyj+5aIOV7V0L9jm2QvgjZxIrggvo
+         9KjZdzim2/gauZ9jyik+j3EFChXKZAKNm6lEz0bSDOhG/iqo5CQaror1Cb1/twPKPcMU
+         YlZA==
+X-Forwarded-Encrypted: i=1; AJvYcCW/dCs0Trska0xyiIxagZ1IIQsEd0lD8HM5a0MU1BsM6RgmXCG4eEYheOZ24Sde1Fh9z9DEQA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwyckjWlfq1CVw1YQnFhzJJ3MNKPlkV9tpiluziDj0NTesa8pd3
+	5/xf1Uc2FA4GGUdrc1cGO9aOOqhupYRc3sIZNWjVu10Bkm4Z9pVvr9DfpAOoS5w=
+X-Google-Smtp-Source: AGHT+IF0FcdGuJ0vO+niOKjEmLBEPpJB40aDmUzjOkTIqMnmTG4s9w+mRinnl+QEkzIM6X2Ng1KY4A==
+X-Received: by 2002:a05:6512:3c88:b0:539:e9f8:d45d with SMTP id 2adb3069b0e04-53c79ea6c5dmr10858734e87.52.1730878857022;
+        Tue, 05 Nov 2024 23:40:57 -0800 (PST)
+Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53c7bc9c043sm2398395e87.102.2024.11.05.23.40.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Nov 2024 23:40:55 -0800 (PST)
+Date: Wed, 6 Nov 2024 09:40:53 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Will Deacon <will@kernel.org>
+Cc: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, robdclark@gmail.com, 
+	robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca, jsnitsel@redhat.com, 
+	robh@kernel.org, krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com, 
+	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	Konrad Dybcio <konrad.dybcio@linaro.org>
+Subject: Re: [PATCH v16 1/5] iommu/arm-smmu: re-enable context caching in
+ smmu reset operation
+Message-ID: <uroldzsi6n7b6hyiutanqfqyqsny65zr4fzyggsmvqsmyfayrp@u5c27k3yi5cf>
+References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
+ <20241008125410.3422512-2-quic_bibekkum@quicinc.com>
+ <20241024125241.GD30704@willie-the-truck>
+ <092db44e-f254-4abd-abea-e9a64e70df12@quicinc.com>
+ <20241029124708.GA4241@willie-the-truck>
+ <ygd6bryp73jgsm5zggy2jz4uc42dehht2e6ht5f6yowf74c6ns@u6dul4rnybt6>
+ <20241105113723.GA12600@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f547ddd-98b7-41bd-ee40-08dcfe350911
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2024 07:31:31.8123
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wDjowr3I3ceIZlWfohrUAVlujg8zoG+d5+39V8lnVhBhxI0RZUTtemnwkCWt6c93CALi6pqH3nmlH1jvYgNUaw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6442
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241105113723.GA12600@willie-the-truck>
 
-> From: Liu, Yi L <yi.l.liu@intel.com>
-> Sent: Monday, November 4, 2024 9:19 PM
->=20
-> pasid replacement allows converting a present pasid entry to be FS, SS,
-> PT or nested, hence add helpers for such operations. This simplifies the
-> callers as well since the caller can switch the pasid to the new domain
-> by one-shot.
+On Tue, Nov 05, 2024 at 11:37:24AM +0000, Will Deacon wrote:
+> On Mon, Nov 04, 2024 at 01:10:12PM +0200, Dmitry Baryshkov wrote:
+> > On Tue, Oct 29, 2024 at 12:47:09PM +0000, Will Deacon wrote:
+> > > On Fri, Oct 25, 2024 at 07:51:22PM +0530, Bibek Kumar Patro wrote:
+> > > > 
+> > > > 
+> > > > On 10/24/2024 6:22 PM, Will Deacon wrote:
+> > > > > On Tue, Oct 08, 2024 at 06:24:06PM +0530, Bibek Kumar Patro wrote:
+> > > > > > Default MMU-500 reset operation disables context caching in
+> > > > > > prefetch buffer. It is however expected for context banks using
+> > > > > > the ACTLR register to retain their prefetch value during reset
+> > > > > > and runtime suspend.
+> > > > > > 
+> > > > > > Replace default MMU-500 reset operation with Qualcomm specific reset
+> > > > > > operation which envelope the default reset operation and re-enables
+> > > > > > context caching in prefetch buffer for Qualcomm SoCs.
+> > > > > > 
+> > > > > > Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> > > > > > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> > > > > > ---
+> > > > > >   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 45 ++++++++++++++++++++--
+> > > > > >   1 file changed, 42 insertions(+), 3 deletions(-)
+> > > > > > 
+> > > > > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > > > > > index 087fb4f6f4d3..0cb10b354802 100644
+> > > > > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > > > > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > > > > > @@ -16,6 +16,16 @@
+> > > > > > 
+> > > > > >   #define QCOM_DUMMY_VAL	-1
+> > > > > > 
+> > > > > > +/*
+> > > > > > + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
+> > > > > > + * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
+> > > > > > + * buffer). The remaining bits are implementation defined and vary across
+> > > > > > + * SoCs.
+> > > > > > + */
+> > > > > > +
+> > > > > > +#define CPRE			(1 << 1)
+> > > > > > +#define CMTLB			(1 << 0)
+> > > > > > +
+> > > > > >   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+> > > > > >   {
+> > > > > >   	return container_of(smmu, struct qcom_smmu, smmu);
+> > > > > > @@ -396,11 +406,40 @@ static int qcom_smmu_def_domain_type(struct device *dev)
+> > > > > >   	return match ? IOMMU_DOMAIN_IDENTITY : 0;
+> > > > > >   }
+> > > > > > 
+> > > > > > +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+> > > > > > +{
+> > > > > > +	int ret;
+> > > > > > +	u32 val;
+> > > > > > +	int i;
+> > > > > > +
+> > > > > > +	ret = arm_mmu500_reset(smmu);
+> > > > > > +	if (ret)
+> > > > > > +		return ret;
+> > > > > > +
+> > > > > > +	/*
+> > > > > > +	 * arm_mmu500_reset() disables CPRE which is re-enabled here.
+> > > > > > +	 * The errata for MMU-500 before the r2p2 revision requires CPRE to be
+> > > > > > +	 * disabled. The arm_mmu500_reset function disables CPRE to accommodate all
+> > > > > > +	 * RTL revisions. Since all Qualcomm SoCs are on the r2p4 revision, where
+> > > > > > +	 * the CPRE bit can be enabled, the qcom_smmu500_reset function re-enables
+> > > > > > +	 * the CPRE bit for the next-page prefetcher to retain the prefetch value
+> > > > > > +	 * during reset and runtime suspend operations.
+> > > > > > +	 */
+> > > > > > +
+> > > > > > +	for (i = 0; i < smmu->num_context_banks; ++i) {
+> > > > > > +		val = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+> > > > > > +		val |= CPRE;
+> > > > > > +		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, val);
+> > > > > > +	}
+> > > > > 
+> > > > > If CPRE only needs to be disabled prior to r2p2, then please teach the
+> > > > > MMU-500 code about that instead of adding qualcomm-specific logic here.
+> > > > > 
+> > > > 
+> > > > Doing this on MMU-500 code would make it generic and reflect for SoC of all
+> > > > the vendors on this platform.
+> > > > We can make sure that it won't cause any problems in Qualcomm SoCs as we
+> > > > have been enabling this since for some years now and could not
+> > > > observe/reproduce any issues around these errata.
+> > > 
+> > > Unless you can explain definitively hy that's the case, I still don't
+> > > think we should be second-guessing the core SMMU driver code in the
+> > > Qualcomm backend.
+> > > 
+> > > > But we won't be able to guarantee the same behavior in SoC for other vendors
+> > > > where these errata might still be applicable as per [1] and [2].
+> > > > So as per my understanding it's safe to include in Qualcomm specific
+> > > > implementation and not changing the default behavior in all other vendors'
+> > > > SoC even if they are not prior to r2p2 revision [3].
+> > > 
+> > > If you want to gate the errata workarounds on policy, then please follow
+> > > what we do for the CPU: add a Kconfig option (e.g.
+> > > ARM_SMMU_WORKAROUND_BROKEN_CPRE) which defaults to "on" (assuming that
+> > > the relevant errata aren't all "rare") and update silicon-errata.rst
+> > > accordingly.
+> > > 
+> > > Then you can choose to disable them in your .config if you're happy to
+> > > pick up the pieces.
+> > 
+> > Is it actually going to work? For most of the CPU errata we can detect
+> > and limit the workarounds to some class of CPUs. For SMMU, if I'm not
+> > misunderstanding something, the errata will be enabled by default for
+> > all SMMU-500 implementation, so only very few kernels, targeting only
+> > the Qualcomm hardware, can get that disabled.
+> 
+> We can add checks based on rXpY per the erratum documentation, but Robin
+> was saying elsewhere in the thread that some of them are still open (i.e.
+> unfixed).
+> 
+> So ultimately, the decision to disable workarounds for known errata on
+> broken hardware is going to be a niche sport, yes.
 
-'simplify' compared to what? if it's an obvious result from creating
-the helpers then no need to talk about it.
+Yes, I understand that. I'm just trying to understand if we can have a
+better solution than having errata workarounds enabled on a majority of
+the kernels (which means less testing for the non-workaround-enabled
+setup on Qualcomm devices).
 
->=20
-> Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-> ---
->  drivers/iommu/intel/pasid.c | 173
-> ++++++++++++++++++++++++++++++++++++
->  drivers/iommu/intel/pasid.h |  12 +++
->  2 files changed, 185 insertions(+)
->=20
-> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index 65fd2fee01b7..b7c2d65b8726 100644
-> --- a/drivers/iommu/intel/pasid.c
-> +++ b/drivers/iommu/intel/pasid.c
-> @@ -390,6 +390,40 @@ int intel_pasid_setup_first_level(struct intel_iommu
-> *iommu,
->  	return 0;
->  }
->=20
-> +int intel_pasid_replace_first_level(struct intel_iommu *iommu,
-> +				    struct device *dev, pgd_t *pgd,
-> +				    u32 pasid, u16 did, int flags)
-> +{
-> +	struct pasid_entry *pte;
-> +	u16 old_did;
-> +
-> +	if (!ecap_flts(iommu->ecap) ||
-> +	    ((flags & PASID_FLAG_FL5LP) && !cap_fl5lp_support(iommu->cap)))
-> +		return -EINVAL;
-
-better copy the error messages from the setup part.
-
-there may be further chance to consolidate them later but no clear
-reason why different error warning schemes should be used
-between them.
-
-same for other helpers.
-
-> +
-> +	spin_lock(&iommu->lock);
-> +	pte =3D intel_pasid_get_entry(dev, pasid);
-> +	if (!pte) {
-> +		spin_unlock(&iommu->lock);
-> +		return -ENODEV;
-> +	}
-> +
-> +	if (!pasid_pte_is_present(pte)) {
-> +		spin_unlock(&iommu->lock);
-> +		return -EINVAL;
-> +	}
-> +
-> +	old_did =3D pasid_get_domain_id(pte);
-
-probably should pass the old domain in and check whether the
-domain->did is same as the one in the pasid entry and warn otherwise.
-
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+-- 
+With best wishes
+Dmitry
