@@ -1,120 +1,144 @@
-Received: from mail-il1-f174.google.com (mail-il1-f174.google.com [209.85.166.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08997201106
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:01:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8D35201106
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:13:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730919668; cv=none; b=o42HvwYaHepov/bORCTDrYvLdZh389xuLH3LGEJ8U+sxia0Is+Xy6VxXFR0tuopAGJWe8k7TTl9R6GElPo9j2UQhaZJmGrSOugFTLzFrX4ozkWI9Em0Tq+VTbJg0Ii41ZqgxDRU4cEb90QL2SbfR5YMFhTHni6gZfLWToKAOSoI=
+	t=1730920433; cv=none; b=AgChe2BUvnIAzeskRGfmm2u1mkODDyFeJrjYYqONqG/Xt5N05aUj5QcxLlmOmdaL3qK3muTIlDKyFnSENOB7Oc+LzV0arobL+jR1nquqmAdnlAraQZ4Mayyfln0oNDgOui5Y4bPAUDn8Qj3yRT/W4B3d+zyHl01drxm8QoELRfM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730919668; c=relaxed/simple;
-	bh=5hdQupgsH4RLCWd2NxZg727/NPUBjS2vG2y9B6bJEKE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iB4griklqP/kLi93yBjvNiqJDS04FTQDGn63lF0mfPgsp5jIyxiFCUmdtjP/ZoiyhCIZvq8W7VFAzJ++XdFt+34Kgu+v+KBM3ZguaARqwmtFFe76i/6OUztcC7fwoKnzCnQgMH4lkRgsS7VpPPU+gtBMAdq+POmOwsBfgbYELDc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=um9GYzWV; arc=none smtp.client-ip=209.85.166.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+	s=arc-20240116; t=1730920433; c=relaxed/simple;
+	bh=V3WOdQDunnGssZvP2vElRHU+Jjz3dxyDOM+Bff9E36M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=iJ9MiTbWSpi7d4otLN1WHy/zv0XyRbqLRXGpB2UjShQVz2DObz9zA2SpjUd4m1tZ9NkUZ0fzwXfuG0gvoFBRlDW9Io92rQniFzqw8rwZdSK70eLgPVWEnSDA1u6yXNoSSCbSx8iJrMEUZ9JwYoTvfMA3CKdPhXr1pV+cpU2pQzg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=O53Rgx/h; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="um9GYzWV"
-Received: by mail-il1-f174.google.com with SMTP id e9e14a558f8ab-3a3a5cd2a3bso705045ab.3
-        for <iommu@lists.linux.dev>; Wed, 06 Nov 2024 11:01:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1730919666; x=1731524466; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nokwy9FNt4uthy8MIjfBTH5T/UpMOLuozVjuYdrWGao=;
-        b=um9GYzWVDZ23j/NCV1IhWPloRqWfX0YfossKyKytGo20GnWWdOggfynFeG17i9TGCa
-         FrpTKD+/aDD4hank6q5HU64PzLo5LvYQnAFrhyMoJY4hmhBoWKplglgNIWwb5kvkG1e/
-         Ofr3szpFxuNrE+jv0wmym/UQyHyiE93+q0TqDo+OexNy0Yo4G9NIIUMMIrbzmQBoOWpz
-         VOev5NrfcTmgoEfgnez5ZUeKf2bkuw6kWVZnIUSrbW2rh4RL9OZZFY1LrAtpDfSkrsVs
-         fMO8zyALA7batrK3ILdMQCZUHjxIPcKpseB9iZHk1drTSXosHYS8U6rsN3vGl2Gx8bXg
-         woOA==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="O53Rgx/h"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1730920429;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3WokkPwMK4/QtOwYlc4n1kISM22eOS86REe3kHYM/3c=;
+	b=O53Rgx/hnaEgC/InePmJCwFUO36CZFILnOCYcbAFs5AkzYrdvjDsyUJ5+nKqbzKvUID1GD
+	QX3UzNijJea5ERdLJQv2UOuqZJlrkHMEcUauIiISFPWWOA/cUDLpm4gjhuC6i76aOA1p3W
+	VurqgtzZjUM3d6t27OlB0ItoHSN0Kyc=
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
+ [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-261-alDHASUNND6tIOwS6zlQIw-1; Wed, 06 Nov 2024 14:13:48 -0500
+X-MC-Unique: alDHASUNND6tIOwS6zlQIw-1
+X-Mimecast-MFC-AGG-ID: alDHASUNND6tIOwS6zlQIw
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7181c3a0119so1042877a34.1
+        for <iommu@lists.linux.dev>; Wed, 06 Nov 2024 11:13:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730919666; x=1731524466;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nokwy9FNt4uthy8MIjfBTH5T/UpMOLuozVjuYdrWGao=;
-        b=R6RNpBGm7QnVQreF9du5hEiOC4sWOxHW06uQfu1gSs+gv0DLnTsfGuMcVncUgSTh+1
-         2zrKjeRNAy2sRBk4JgbOswik+qdz34nJmbLooiHpQeeUsEO8gfG3fwjI/axfz5z2ocKg
-         HFKGrm4ky5Z6tjXivbFUEYeIOTtEkRctsMN6gpVCezbf7yvUaRvjyFS5xOK5G+ZMvQPU
-         15qsX10PvaxwF9r3pFG4rYXSMmWI0O5RDZKQOtuydoniowlDauPQfDxqgZ7Mpudeuef/
-         z+RKCG8koOtVAUzrMooyxemtIIqydrl0aAlvcgbpWWzKu21VCQ9+SkU8/ZaeopK39Rqj
-         +lXw==
-X-Gm-Message-State: AOJu0Yy9ewmHoPuEjeZnUKxReM5bn47L1xvj172+6ttT4WclKfWKV761
-	BhamjI97C70OvTzZZc3LPd4WHw2IN5S0R9SE6G6kApRfT3joBJiulh43oIHkXRrLWXxsp6MXlvx
-	wUwcmuUVqpWso36RxGp2mMvuC4ztftw7Qt8GkGQ==
-X-Google-Smtp-Source: AGHT+IGKLw+vtB22wIL6ge+rYJfG2yKicRc2L7oxp3S9z+BUnDn7CDGeMTTQTITBq0NYmM5cY0+xV814s8EnnG1ZsZw=
-X-Received: by 2002:a05:6e02:1568:b0:3a6:b258:fcf with SMTP id
- e9e14a558f8ab-3a6b25813e9mr226176725ab.2.1730919666151; Wed, 06 Nov 2024
- 11:01:06 -0800 (PST)
+        d=1e100.net; s=20230601; t=1730920427; x=1731525227;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3WokkPwMK4/QtOwYlc4n1kISM22eOS86REe3kHYM/3c=;
+        b=hYYGVMl9qSkjxC/EBuOELogEuYSNZiwFVAnIHlk+HDX6375wUYu2EvF5zDrUUrZf+c
+         7OQRLYjUM0GFWOg9qydJuQGdSC/RZ8W5KxgA3fjYuH7/O336T9CnHuYR8OBRx256Fj9u
+         ScZgRkK8+FT4xargcRs7negh+wvy2Uqj8LeGqVXoBsMQgljtFr/cOxVR6iaXY4DINp4G
+         wEY3gvoXR0vJTGermrkLp1AkDchEFk+aEONH2YIOFoTaHzunmuBgoC7k6ObHvKjv49MP
+         YGvbADg8hqOfCi+ACXtDo4xJo/nwo5xM5tinu3Qs7sD0vMY4pD/YLghnoashbDbV9w1k
+         s1uA==
+X-Gm-Message-State: AOJu0YwxHYM4ElwWCwlihSzo4Gnfk3hjipNb4k1yGrmxHDyiRn8P1Bnz
+	QC5aq4eQ8DZoXqD+TN2gAROh9HrFylrYym2RxV2pY9PePxahUqiuvm7Fm0vbA49gSlcphHbzI+6
+	ODjDaGTM+R9ZN18Vknf+S/zqjpcI6yChbnt2mjpSJKomh7BJ4VL5DIywpZuK0MMDlgMV2B7WkBh
+	EOpWtRyBqXf1VX6JJM2HpDKFRIET7a5FKnvHa8
+X-Received: by 2002:a9d:6b82:0:b0:716:a99b:8f0a with SMTP id 46e09a7af769-71a0ee6ee40mr274811a34.1.1730920427609;
+        Wed, 06 Nov 2024 11:13:47 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IG/gon6zRkOlaDedChecm4iprBQV15ZZVZ/MPHiCJKeuNBXkYHTN1ZbTWFZUZXsiCPjMLVfYQ==
+X-Received: by 2002:a9d:6b82:0:b0:716:a99b:8f0a with SMTP id 46e09a7af769-71a0ee6ee40mr274793a34.1.1730920427233;
+        Wed, 06 Nov 2024 11:13:47 -0800 (PST)
+Received: from localhost (ip98-179-76-110.ph.ph.cox.net. [98.179.76.110])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7189ccb125dsm2945140a34.56.2024.11.06.11.13.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2024 11:13:46 -0800 (PST)
+Date: Wed, 6 Nov 2024 12:13:45 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: iommu@lists.linux.dev
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iommu/dma: Reserve iova ranges for reserved regions of
+ all devices
+Message-ID: <vup5ms2p5o4ao3t57kfgqtnnna7e4jcvkvup2vmyf6o4qrb3qu@3aanawjzggyh>
+References: <20241024153412.141765-1-jsnitsel@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241106175102.219923-4-ajones@ventanamicro.com> <20241106175102.219923-5-ajones@ventanamicro.com>
-In-Reply-To: <20241106175102.219923-5-ajones@ventanamicro.com>
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Wed, 6 Nov 2024 11:00:55 -0800
-Message-ID: <CAH2o1u5ttY+0d4v8U=H-PwLUHZo5uMxxCQ5NAXudOQvUUMcpfA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iommu/riscv: Free irq vectors on pci remove
-To: Andrew Jones <ajones@ventanamicro.com>
-Cc: iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, paul.walmsley@sifive.com, palmer@dabbelt.com, 
-	aou@eecs.berkeley.edu
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20241024153412.141765-1-jsnitsel@redhat.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: Gn1xczfBAVCVd05TN2WzQdLnRxHG1NUyVrACTjui7TA_1730920428
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Wed, Nov 6, 2024 at 9:51=E2=80=AFAM Andrew Jones <ajones@ventanamicro.co=
-m> wrote:
->
-> riscv_iommu_pci_probe() calls pci_alloc_irq_vectors() which
-> states pci_free_irq_vectors() must be called on cleanup.
->
-> Fixes: 68682e9578fb ("iommu/riscv: Add RISC-V IOMMU PCIe device driver")
-> Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+On Thu, Oct 24, 2024 at 08:34:12AM -0700, Jerry Snitselaar wrote:
+> Only the first device that is passed when the domain is set up will
+> have its reserved regions reserved in the iova address space.  So if
+> there are other devices in the group with unique reserved regions,
+> those regions will not get reserved in the iova address space.  All of
+> the ranges do get set up in the iopagetables via calls to
+> iommu_create_device_direct_mappings for all devices in a group.
+> 
+> In the case of vt-d system this resulted in messages like the following:
+> 
+> [ 1632.693264] DMAR: ERROR: DMA PTE for vPFN 0xf1f7e already set (to f1f7e003 not 173025001)
+> 
+> To make sure iova ranges are reserved for the reserved regions all of
+> the devices, call iova_reserve_iommu_regions in iommu_dma_init_domain
+> prior to exiting in the case where the domain is already initialized.
+> 
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: stable@vger.kernel.org
+> Fixes: 7c1b058c8b5a ("iommu/dma: Handle IOMMU API reserved regions")
+> Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
 > ---
->  drivers/iommu/riscv/iommu-pci.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/iommu/riscv/iommu-pci.c b/drivers/iommu/riscv/iommu-=
-pci.c
-> index c7a89143014c..25a27e627a0e 100644
-> --- a/drivers/iommu/riscv/iommu-pci.c
-> +++ b/drivers/iommu/riscv/iommu-pci.c
-> @@ -99,6 +99,7 @@ static void riscv_iommu_pci_remove(struct pci_dev *pdev=
-)
->         struct riscv_iommu_device *iommu =3D dev_get_drvdata(&pdev->dev);
->
->         riscv_iommu_remove(iommu);
-> +       pci_free_irq_vectors(pdev);
->  }
->
->  static const struct pci_device_id riscv_iommu_pci_tbl[] =3D {
-> --
-> 2.47.0
->
+> Robin: I wasn't positive if this is the correct solution, or if it should be
+>        done for the entire group at once.
+> 
+>  drivers/iommu/dma-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 2a9fa0c8cc00..5fd3cccbb233 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -707,7 +707,7 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, struct device *dev
+>  			goto done_unlock;
+>  		}
+>  
+> -		ret = 0;
+> +		ret = iova_reserve_iommu_regions(dev, domain);
+>  		goto done_unlock;
+>  	}
+>  
+> -- 
+> 2.44.0
+> 
 
-Andrew, interrupt release call pci_free_irq_vectors() should already
-be called by device
-managed resources framework, with unwind action callback pcim_msi_release()=
-.
+Robin,
 
-Callback is registered during vectors allocation:
- pci_alloc_irq_vectors_affinity()
-  __pci_enable_msix_range()
-   pci_setup_msi_context()
-    pcim_setup_msi_release()
+Any thoughts on this patch? In the case where this originally popped
+up it was likely a crap DMAR table in an HPE system with an ilo, as
+the RMRR in question had a device in the list that as far as I could
+tell didn't actually exist. The 2nd function of the sata controller
+was in the list, but not the first, and the first function was the
+device where the group/domain was initialized. With some debugging
+code I could see it set up the ioptes for the 2nd function, but it
+wasn't reserving the range of iovas.
 
-This driver enables device resources management with initial call to
-pcim_enable_device().
 
-Are there any conditions / testing sequence the release function is not cal=
-led?
+Regards,
+Jerry
 
-Thanks,
-- Tomasz
