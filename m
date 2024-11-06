@@ -1,146 +1,147 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A435A13A26F
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:18:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0ED6209F4B
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:39:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730920735; cv=none; b=ZDMYnA9SKWlPmrhgpINoYmxC87S7qUGP0C0DXlgGBx3EoD91vG9niuo9RfI3vPE7E6hN5ADRrCPk//0xpF4PrXkVHv/QiN+GqDcElCiISkhlGH0I+17nwloIzNqww1h8ZTOn1AYF9VagO1mEuE/yfiAHUPTasznM4JQtdoEwQdI=
+	t=1730921970; cv=none; b=mIDnW8f42C2vO7L9WfeE1m2ZQpxphQYQuhxKYp4wE/wWfXiJPsPKVsdNVLuzf/GwLilyFYXYEmiWME/ejng3rTyPltFDUTzYwTkpY1Lci4Sl/54roIbBwYDHomVH+EBTjOb8Jj9H75W30XuPJW4+rEwcKYXq9A4bKgElRjdB8gs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730920735; c=relaxed/simple;
-	bh=Ou+l3fSVssEMDncUOhgrcUyoeAk2ugDKrrGAONa/AiE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ml19wg2rxOE7Rdk6GiXbwxrFL3qYc+Dza1/m0WWT0if0n5V+fyHu+lolPs0jK45GUgknCTDiNbYpWuJgufM07ssRgqlbXEh4MDcXFuIZR8w8Wt0l3gtOLJCXpvyYLkDgUxBoE1l3MyD5zfGngOOrLgzDN0U1FX2J4cDmz7YWrHA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=mTE9yHU5; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="mTE9yHU5"
-Received: from DESKTOP-0403QTC. (unknown [20.236.10.206])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 0FF42212C7E0;
-	Wed,  6 Nov 2024 11:18:51 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0FF42212C7E0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1730920733;
-	bh=rNzyWYfJCQD0LlT8+3XSt1D8NFOZPMLR98XqPQWHzu4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
-	b=mTE9yHU5q4Ruwye8M/cyRhNjma7hAI6z5ESzssq2CTARZW97XNwavPqMmywM0Rgud
-	 Nbvp81iJ4pfllV1MO9CVwdwC42QkkN+kMssGEqhfXm/IQgZJgvTj+hOhjowpV/qTGe
-	 +9qvARFfnHla6Dv3nAFyM8gKT0y2At3zUJN2BP/I=
-Date: Wed, 6 Nov 2024 11:18:50 -0800
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: "Gowans, James" <jgowans@amazon.com>, "yi.l.liu@intel.com"
- <yi.l.liu@intel.com>, "jinankjain@linux.microsoft.com"
- <jinankjain@linux.microsoft.com>, "kvm@vger.kernel.org"
- <kvm@vger.kernel.org>, "rppt@kernel.org" <rppt@kernel.org>, "kw@linux.com"
- <kw@linux.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "madvenka@linux.microsoft.com" <madvenka@linux.microsoft.com>,
- "anthony.yznaga@oracle.com" <anthony.yznaga@oracle.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
- <baolu.lu@linux.intel.com>, "nh-open-source@amazon.com"
- <nh-open-source@amazon.com>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "seanjc@google.com" <seanjc@google.com>,
- "Saenz Julienne, Nicolas" <nsaenz@amazon.es>, "pbonzini@redhat.com"
- <pbonzini@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>, "ssengar@linux.microsoft.com"
- <ssengar@linux.microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>,
- "will@kernel.org" <will@kernel.org>, "Graf (AWS), Alexander"
- <graf@amazon.de>, "steven.sistare@oracle.com" <steven.sistare@oracle.com>,
- jacob.pan@linux.microsoft.com, "zhangyu1@microsoft.com"
- <zhangyu1@microsoft.com>
-Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and
- ioas
-Message-ID: <20241106111850.69904346@DESKTOP-0403QTC.>
-In-Reply-To: <20241104130011.GD35848@ziepe.ca>
-References: <20240916113102.710522-1-jgowans@amazon.com>
-	<20240916113102.710522-6-jgowans@amazon.com>
-	<20241016152047.2a604f08@DESKTOP-0403QTC.>
-	<20241028090311.54bc537f@DESKTOP-0403QTC.>
-	<1f50020d9bd74ab8315cec473d3e6285d0fc8259.camel@amazon.com>
-	<20241104130011.GD35848@ziepe.ca>
-Reply-To: jacob.pan@linux.microsoft.com
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1730921970; c=relaxed/simple;
+	bh=tQJFIIVAr7zhlGtYPHWkAgTf9vswLcNuwpL3LPfc+i0=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=beb1i7jXiN4QUzjy8wlLR2iOrl51jCwbYrqdBfcAfWKI83p9tWHXMWMwlO+ZD1uFzccr5hw789jSyi/yMTbe4Oyt+TiPOB7KxEDsWh2nAwKzDfb5patVcW8rZvTnwE250HElyLz1tyLuTXHn3LNGk3XrWzqEjhYUpq8K1TCbLHs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.163])
+	by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4XkFpr5Vkhz1SG94;
+	Thu,  7 Nov 2024 03:37:40 +0800 (CST)
+Received: from dggpeml100021.china.huawei.com (unknown [7.185.36.148])
+	by mail.maildlp.com (Postfix) with ESMTPS id DDB50180019;
+	Thu,  7 Nov 2024 03:39:22 +0800 (CST)
+Received: from frapeml500007.china.huawei.com (7.182.85.172) by
+ dggpeml100021.china.huawei.com (7.185.36.148) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Thu, 7 Nov 2024 03:39:21 +0800
+Received: from frapeml500007.china.huawei.com ([7.182.85.172]) by
+ frapeml500007.china.huawei.com ([7.182.85.172]) with mapi id 15.01.2507.039;
+ Wed, 6 Nov 2024 20:39:19 +0100
+From: Salil Mehta <salil.mehta@huawei.com>
+To: Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@kernel.org>,
+	"shenjian (K)" <shenjian15@huawei.com>
+CC: Arnd Bergmann <arnd@arndb.de>, Will Deacon <will@kernel.org>, Joerg Roedel
+	<jroedel@suse.de>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Andrew
+ Lunn" <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, "Eric
+ Dumazet" <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, shaojijie <shaojijie@huawei.com>, wangpeiyang
+	<wangpeiyang1@huawei.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] [net-next] net: hns3: add IOMMU_SUPPORT dependency
+Thread-Topic: [PATCH] [net-next] net: hns3: add IOMMU_SUPPORT dependency
+Thread-Index: AQHbLpKYY9Lsz1VxeUenvFuoDgyBFLKm2vEAgAASuSCAAANu4IAAT+oAgANnArA=
+Date: Wed, 6 Nov 2024 19:39:19 +0000
+Message-ID: <515b8ae869b94c849d02421d8d8767fd@huawei.com>
+References: <20241104082129.3142694-1-arnd@kernel.org>
+ <069c9838-b781-4012-934a-d2626fa78212@arm.com>
+ <96df804b6d9d467391fda27d90b5227c@huawei.com>
+ <a94f95bd661c4978bb843c8a1af73818@huawei.com>
+ <29d5918e-cfe2-4b36-b0f1-a1379075dd05@arm.com>
+In-Reply-To: <29d5918e-cfe2-4b36-b0f1-a1379075dd05@arm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-Hi Jason,
-
-On Mon, 4 Nov 2024 09:00:11 -0400
-Jason Gunthorpe <jgg@ziepe.ca> wrote:
-
-> On Sat, Nov 02, 2024 at 10:22:54AM +0000, Gowans, James wrote:
-> 
-> > Yes, I think the guidance was to bind a device to iommufd in noiommu
-> > mode. It does seem a bit weird to use iommufd with noiommu, but we
-> > agreed it's the best/simplest way to get the functionality.   
-> 
-> noiommu should still have an ioas and still have kernel managed page
-> pinning.
-> 
-> My remark to bring it to iommufd was to also make it a fully
-> architected feature and stop relying on mprotect and /proc/ tricks.
-> 
-Just to clarify my tentative understanding with more details(please
-correct):
-
-1. create an iommufd access object for noiommu device when
-binding to an iommufd ctx.
-
-2. all user memory used by the device under noiommu mode should be
-pinned by iommufd, i.e. iommufd_access_pin_pages().
-I guess you meant stop doing mlock instead of mprotect trick? I think
-openHCL is using /dev/mem trick.
-
-3. ioas can be attched to the noiommu iommufd_access object, similar to
-emulated device, mdev.
-
-What kind/source of memory should be supported here?
-e.g. device meory regions exposed by PCI BARs.
-
-
-> > Then as you suggest below the IOMMUFD_OBJ_DEVICE would be serialised
-> > too in some way, probably by iommufd telling the PCI layer that this
-> > device must be persistent and hence not to re-probe it on kexec.  
-> 
-> Presumably VFIO would be doing some/most of this part since it is the
-> driver that will be binding?
-> 
-Yes, it is the user mode driver that initiates the binding. I was
-thinking since the granularity for persistency is per iommufd ctx, the
-VFIO device flag to mark keep_alive can come from iommufd ctx.
-
-> > It's all a bit hand wavy at the moment, but something along those
-> > lines probably makes sense. I need to work on rev2 of this RFC as
-> > per Jason's feedback in the other thread. Rev2 will make the
-> > restore path more userspace driven, with fresh iommufd and pgtables
-> > objects being created and then atomically swapped over too. I'll
-> > also get the PCI layer involved with rev2. Once that's out (it'll
-> > be a few weeks as I'm on leave) then let's take a look at how the
-> > noiommu device persistence case would fit in.  
-> 
-> In a certain sense it would be nice to see the noiommu flow as it
-> breaks apart the problem into the first dependency:
-> 
->  How to get the device handed across the kexec and safely land back in
->  VFIO, and only VFIO's hands.
-> 
-> Preserving the iommu HW configuration is an incremental step built on
-> that base line.
-Makes sense, I need to catch up on the KHO series and hook up noiommu
-at the first step.
-
-> Also, FWIW, this needs to follow good open source practices - we need
-> an open userspace for the feature and the kernel stuff should be
-> merged in a logical order.
-> 
-Yes, we will have matching userspace in openHCL
-https://github.com/microsoft/openvmm
-
-Thanks,
-
-Jacob
+SGkgUm9iaW4sDQoNClNvcnJ5IGZvciB0aGUgbGF0ZSByZXBseS4gSSB3YXMgb24gYSBsZWF2ZSB5
+ZXN0ZXJkYXkuDQoNCj4gIEZyb206IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+
+DQo+ICBTZW50OiBNb25kYXksIE5vdmVtYmVyIDQsIDIwMjQgNDozNSBQTQ0KPiAgVG86IFNhbGls
+IE1laHRhIDxzYWxpbC5tZWh0YUBodWF3ZWkuY29tPjsgQXJuZCBCZXJnbWFubg0KPiAgPGFybmRA
+a2VybmVsLm9yZz47IHNoZW5qaWFuIChLKSA8c2hlbmppYW4xNUBodWF3ZWkuY29tPg0KPiAgDQo+
+ICBPbiAyMDI0LTExLTA0IDEwOjUwIGFtLCBTYWxpbCBNZWh0YSB3cm90ZToNCj4gID4+ICAgRnJv
+bTogU2FsaWwgTWVodGEgPHNhbGlsLm1laHRhQGh1YXdlaS5jb20+DQo+ICA+PiAgIFNlbnQ6IE1v
+bmRheSwgTm92ZW1iZXIgNCwgMjAyNCAxMDo0MSBBTQ0KPiAgPj4gICBUbzogUm9iaW4gTXVycGh5
+IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT47IEFybmQgQmVyZ21hbm4NCj4gID4+ICAgPGFybmRAa2Vy
+bmVsLm9yZz47IHNoZW5qaWFuIChLKSA8c2hlbmppYW4xNUBodWF3ZWkuY29tPg0KPiAgPj4NCj4g
+ID4+ICAgSEkgUm9iaW4sDQo+ICA+Pg0KPiAgPj4gICA+ICBGcm9tOiBSb2JpbiBNdXJwaHkgPHJv
+YmluLm11cnBoeUBhcm0uY29tPg0KPiAgPj4gICA+ICBTZW50OiBNb25kYXksIE5vdmVtYmVyIDQs
+IDIwMjQgMTA6MjkgQU0NCj4gID4+ICAgPiAgVG86IEFybmQgQmVyZ21hbm4gPGFybmRAa2VybmVs
+Lm9yZz47IHNoZW5qaWFuIChLKQ0KPiAgPj4gICA+IDxzaGVuamlhbjE1QGh1YXdlaS5jb20+OyBT
+YWxpbCBNZWh0YSA8c2FsaWwubWVodGFAaHVhd2VpLmNvbT4NCj4gID4+ICAgPiAgQ2M6IEFybmQg
+QmVyZ21hbm4gPGFybmRAYXJuZGIuZGU+OyBXaWxsIERlYWNvbg0KPiAgPHdpbGxAa2VybmVsLm9y
+Zz47DQo+ICA+PiAgID4gSm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+OyBpb21tdUBsaXN0
+cy5saW51eC5kZXY7IEFuZHJldw0KPiAgTHVubg0KPiAgPj4gICA+IDxhbmRyZXcrbmV0ZGV2QGx1
+bm4uY2g+OyBEYXZpZCBTLiBNaWxsZXINCj4gIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsNCj4gID4+
+ICAgRXJpYw0KPiAgPj4gICA+IER1bWF6ZXQgPGVkdW1hemV0QGdvb2dsZS5jb20+OyBKYWt1YiBL
+aWNpbnNraQ0KPiAgPGt1YmFAa2VybmVsLm9yZz47DQo+ICA+PiAgID4gUGFvbG8gQWJlbmkgPHBh
+YmVuaUByZWRoYXQuY29tPjsgc2hhb2ppamllDQo+ICA8c2hhb2ppamllQGh1YXdlaS5jb20+Ow0K
+PiAgPj4gICA+IHdhbmdwZWl5YW5nIDx3YW5ncGVpeWFuZzFAaHVhd2VpLmNvbT47DQo+ICBuZXRk
+ZXZAdmdlci5rZXJuZWwub3JnOw0KPiAgPj4gICA+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
+cmcNCj4gID4+ICAgPiAgU3ViamVjdDogUmU6IFtQQVRDSF0gW25ldC1uZXh0XSBuZXQ6IGhuczM6
+IGFkZCBJT01NVV9TVVBQT1JUDQo+ICA+PiAgID4gZGVwZW5kZW5jeQ0KPiAgPj4gICA+DQo+ICA+
+PiAgID4gIE9uIDIwMjQtMTEtMDQgODoyMSBhbSwgQXJuZCBCZXJnbWFubiB3cm90ZToNCj4gID4+
+ICAgPiAgPiBGcm9tOiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPiAgPiAgPiBUaGUgaG5z
+MyBkcml2ZXINCj4gIHN0YXJ0ZWQNCj4gID4+ICAgPiBmaWxsaW5nIGlvbW11X2lvdGxiX2dhdGhl
+ciBzdHJ1Y3R1cmVzIGl0c2VsZiwgID4gd2hpY2ggcmVxdWlyZXMNCj4gID4+ICAgPiBDT05GSUdf
+SU9NTVVfU1VQUE9SVCBpcyBlbmFibGVkOg0KPiAgPj4gICA+ICA+DQo+ICA+PiAgID4gID4gZHJp
+dmVycy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL2huczMvaG5zM19lbmV0LmM6IEluIGZ1bmN0aW9u
+DQo+ICA+PiAgID4gICdobnMzX2RtYV9tYXBfc3luYyc6DQo+ICA+PiAgID4gID4gZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvaGlzaWxpY29uL2huczMvaG5zM19lbmV0LmM6Mzk1OjE0OiBlcnJvcjoNCj4g
+ID4+ICAgPiAnc3RydWN0ICBpb21tdV9pb3RsYl9nYXRoZXInIGhhcyBubyBtZW1iZXIgbmFtZWQg
+J3N0YXJ0Jw0KPiAgPj4gICA+ICA+ICAgIDM5NSB8ICBpb3RsYl9nYXRoZXIuc3RhcnQgPSBpb3Zh
+Ow0KPiAgPj4gICA+ICA+ICAgICAgICB8ICAgICAgICAgICAgICBeDQo+ICA+PiAgID4gID4gZHJp
+dmVycy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL2huczMvaG5zM19lbmV0LmM6Mzk2OjE0OiBlcnJv
+cjoNCj4gID4+ICAgPiAnc3RydWN0ICBpb21tdV9pb3RsYl9nYXRoZXInIGhhcyBubyBtZW1iZXIg
+bmFtZWQgJ2VuZCcNCj4gID4+ICAgPiAgPiAgICAzOTYgfCAgaW90bGJfZ2F0aGVyLmVuZCA9IGlv
+dmEgKyBncmFudWxlIC0gMTsNCj4gID4+ICAgPiAgPiAgICAgICAgfCAgICAgICAgICAgICAgXg0K
+PiAgPj4gICA+ICA+IGRyaXZlcnMvbmV0L2V0aGVybmV0L2hpc2lsaWNvbi9obnMzL2huczNfZW5l
+dC5jOjM5NzoxNDogZXJyb3I6DQo+ICA+PiAgID4gJ3N0cnVjdCAgaW9tbXVfaW90bGJfZ2F0aGVy
+JyBoYXMgbm8gbWVtYmVyIG5hbWVkICdwZ3NpemUnDQo+ICA+PiAgID4gID4gICAgMzk3IHwgIGlv
+dGxiX2dhdGhlci5wZ3NpemUgPSBncmFudWxlOw0KPiAgPj4gICA+ICA+ICAgICAgICB8ICAgICAg
+ICAgICAgICBeDQo+ICA+PiAgID4gID4NCj4gID4+ICAgPiAgPiBBZGQgYSBLY29uZmlnIGRlcGVu
+ZGVuY3kgdG8gbWFrZSBpdCBidWlsZCBpbiByYW5kb20NCj4gIGNvbmZpZ3VyYXRpb25zLg0KPiAg
+Pj4gICA+ICA+DQo+ICA+PiAgID4gID4gQ2M6IFdpbGwgRGVhY29uIDx3aWxsQGtlcm5lbC5vcmc+
+DQo+ICA+PiAgID4gID4gQ2M6IEpvZXJnIFJvZWRlbCA8anJvZWRlbEBzdXNlLmRlPg0KPiAgPj4g
+ICA+ICA+IENjOiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPiAgPiBDYzoNCj4g
+ID4+ICAgPiBpb21tdUBsaXN0cy5saW51eC5kZXYgID4gRml4ZXM6IGYyYzE0ODk5Y2FiYSAoIm5l
+dDogaG5zMzogYWRkIHN5bmMNCj4gID4+ICAgPiBjb21tYW5kIHRvIHN5bmMgaW8tcGd0YWJsZSIp
+ICA+IFNpZ25lZC1vZmYtYnk6IEFybmQgQmVyZ21hbm4NCj4gID4+ICAgPiA8YXJuZEBhcm5kYi5k
+ZT4gID4gLS0tICA+IEkgbm90aWNlZCB0aGF0IG5vIG90aGVyIGRyaXZlciBkb2VzIHRoaXMsIHNv
+DQo+ICA+PiAgID4gaXQgd291bGQgYmUgZ29vZCB0byBoYXZlICA+IGEgY29uZmlybWF0aW9uIGZy
+b20gdGhlIGlvbW11DQo+ICBtYWludGFpbmVycw0KPiAgPj4gICA+IHRoYXQgdGhpcyBpcyBob3cg
+dGhlICA+IGludGVyZmFjZSBhbmQgdGhlIGRlcGVuZGVuY3kgaXMgaW50ZW5kZWQgdG8gYmUNCj4g
+ID4+ICAgPiB1c2VkLg0KPiAgPj4gICA+DQo+ICA+PiAgID4gIFdURiBpcyB0aGF0IHBhdGNoIGRv
+aW5nIT8gTm8sIHJhbmRvbSBkZXZpY2UgZHJpdmVycyBzaG91bGQNCj4gIGFic29sdXRlbHkNCj4g
+ID4+ICAgPiBub3QgIGJlIHBva2luZyBpbnRvIElPTU1VIGRyaXZlciBpbnRlcm5hbHMsIHRoaXMg
+aXMgZWdyZWdpb3VzbHkgd3JvbmcNCj4gID4+ICAgPiBhbmQgdGhlICBjb3JyZWN0IGFjdGlvbiBp
+cyB0byBkcm9wIGl0IGVudGlyZWx5Lg0KPiAgPj4NCj4gID4+DQo+ICA+PiAgIEFic29sdXRlbHkg
+YWdyZWUgd2l0aCBpdC4gU29ycnkgSSBoYXZlbid0IGJlZW4gaW4gdG91Y2ggZm9yIHF1aXRlIHNv
+bWUNCj4gIHRpbWUuDQo+ICA+PiAgIExldCBtZSBjYXRjaCB0aGUgd2hvbGUgc3RvcnkuICBGZWVs
+IGZyZWUgdG8gZHJvcCB0aGlzIHBhdGNoLg0KPiAgPg0KPiAgPg0KPiAgPiBKdXN0IHRvIG1ha2Ug
+aXQgY2xlYXIgSSBtZWFudCB0aGUgY3VscHJpdCBwYXRjaDoNCj4gID4gaHR0cHM6Ly9sb3JlLmtl
+cm5lbC5vcmcvbmV0ZGV2LzIwMjQxMDI1MDkyOTM4LjI5MTI5NTgtMy0NCj4gIHNoYW9qaWppZUBo
+dWF3DQo+ICA+IGVpLmNvbS8NCj4gIA0KPiAgUmlnaHQsIGlmIHRoZSBISVAwOSBTTU1VIGhhcyBh
+IGJ1ZyB3aGljaCByZXF1aXJlcyBhbg0KPiAgaW9tbXVfZG9tYWluX29wczo6aW90bGJfc3luY19t
+YXAgd29ya2Fyb3VuZCwgdGhlbiB0aGUgU01NVSBkcml2ZXINCj4gIHNob3VsZCBkZXRlY3QgdGhl
+IEhJUDA5IFNNTVUgYW5kIGltcGxlbWVudCB0aGF0IHdvcmthcm91bmQgZm9yIGl0Lg0KPiAgSE5T
+MyB0cnlpbmcgdG8gcmVhY2ggaW4gdG8gdGhlIFNNTVUgZHJpdmVyJ3MgZGF0YSBhbmQgb3Blbi1j
+b2RlDQo+ICBpb3RsYl9zeW5jX21hcCBvbiBpdHMgYmVoYWxmIGlzIGp1c3QgYXMgcGxhaW4gaWxs
+b2dpY2FsIGFzIGl0IGlzIHVuYWNjZXB0YWJsZS4NCg0KDQpUb3RhbGx5IGFncmVlIHdpdGggdGhh
+dC4gIEl0IGJyZWFrcyB0aGUgZGVzaWduIG9mIHRoZSBrZXJuZWwgZnVuZGFtZW50YWxseS4NClRo
+aXMgd2FzIGEgbWlzdGFrZSBhbmQgb24gTW9uZGF5IEkndmUgcmVxdWVzdGVkIHRoZSBzdGFrZWhv
+bGRlcnMgdG8NCmFkZHJlc3MgaXQgZXhhY3RseSBpbiB0aGUgcmVhbG1zIG9mIHdoYXQgeW91IGhh
+dmUgc3VnZ2VzdGVkIGFib3ZlLiANCg0KUmVzdCBhc3N1cmVkLCB3ZSB3aWxsIGFkZHJlc3MgdGhh
+dCBpbiB0aGUgY29ycmVjdCB3YXkuIFNvcnJ5LCBpZiB0aGlzIGNhdXNlZA0KYW55IGluY29udmVu
+aWVuY2UgdG8gYW55bW9yZSBpbmNsdWRpbmcgdGhlIE1BSU5UQUlORVIgb2YgYG5ldGRldmANCkkg
+d291bGQgaGF2ZSBjYXVnaHQgdGhpcyBtdWNoIGVhcmxpZXIgaGFkIEkgYmVlbiBmb2xsb3dpbmcg
+dGhlIE1MIGNsb3NlbHkNCmJ1dCB1bmZvcnR1bmF0ZWx5IEkndmUgbm90IGJlZW4gaW4gdG91Y2gg
+Zm9yIGxvbmcuDQoNClRoYW5rcyBmb3IgdGhlIGBudWRnZWAgdGhvdWdoIPCfmIoNCg0KQ2hlZXJz
+DQpTYWxpbC4NCg0KDQo+ICANCj4gIFRoYW5rcywNCj4gIFJvYmluLg0KDQo=
