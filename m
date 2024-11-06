@@ -1,266 +1,126 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0EED199243
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 08:42:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730882534; cv=fail; b=hQUgkCCXcRRP4PMKLLRaJtk48DQra+v8OxEAK/deErghA4zHM7B9Q5sGN5SAqPEcL8V3vmiXvgzC3R44pCfbBAAJPqnn6M7iMEvEuNssCUI/E41ju4rlx4aVTmLPviGaev02plArftvg4J0ddRGlXb1gRV09H6jfH7xq4WXHP8g=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730882534; c=relaxed/simple;
-	bh=vkWMMI3KshBdrJLkuBad5RWibLHBsbk1T2zpmilACTM=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=dS7SLRaDEpkab0CVl3kckN6yj1CXlhBwnCHbOWH4JA+F/9oeiYvSct/NiK0ceSGibLZSABMPYZO96OyvR+0kVEv5Tf/OkwCiMIX11vIEZ0zCV+9IdcvQzC+4DO9W6S/5gV7+AU38ssgpQJj9zPmRRmRvmVUudICVkARt5Wh7XXg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Sc5D2YYX; arc=fail smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D5411922D8;
+	Wed,  6 Nov 2024 08:43:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730882603; cv=none; b=oIYlraElaSjfimk7uB4cbRWXpig5H1Rcch0Nuh1w0ozlc35RfX60KDGF+XCBkpc2CLcxt4REC/WO21iAJoXCYpzObF/TPyxgtC4O1J8C52RQqOUJuuzF/x5+khfA+miiCRnEUKwIp3hrwfVy9M1s8868dDehOHZAMLFZlHgWB8E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730882603; c=relaxed/simple;
+	bh=2FaB9DZ+5bt0vHcem3FiA70mddNIj2sFcK506ZwMn/Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=N5zlgTat+QL6S18EoUJBpbicTfyJV67uiJnUrl2YufZFFmt7PnG8ta422vI+cJjSVES3DW/uiVggo3J+23Nc2k4Nd0H8ckee3r9cL7nn9mL7eSdxYEbeNY7CIR3jAHC9qBxkq8kzY11IizGGZkazNgmYhZJkOEbMqLPPLyOsj3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hLmnbg+x; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Sc5D2YYX"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hLmnbg+x"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730882533; x=1762418533;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=vkWMMI3KshBdrJLkuBad5RWibLHBsbk1T2zpmilACTM=;
-  b=Sc5D2YYXORd6ATkmourWcfnhlKuTsEN22bKXNdZRon72N2rWRNcBgAVg
-   tjbBVBbOihm6TOsT6LacHERQIZWE7lJGn+GhaXPuDtDcaYXpz+gNC+Y/4
-   a/RQ1ojdVXcvofbdP1QSPvpTSz6Wn1v/hJJkqS2Bjj6HNp75asZT5+5kj
-   wfqZ8r+3W/zCGlhmwAQUlg9anM0juH1oCo7K6wgxf61Nl8K7YgXc7SNn0
-   RlO3B5429YSh7Aaa8OtoaqMvhi+llWpHsjcLfJh2TnhFMT7w4b0SaG84B
-   HzRlPRAvFHu1OGZpDNpb2DlPDwXu48zC9pmj1QRmmchyUxTQad8pld/mW
+  t=1730882602; x=1762418602;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2FaB9DZ+5bt0vHcem3FiA70mddNIj2sFcK506ZwMn/Q=;
+  b=hLmnbg+xuE+p5i4UrDdaXcesY6QdwzJEabK+GcFnmVwYMM+V0C7TW+0F
+   EyHTSIsmglWlRxM/EQH2SIjR3KN2HP3iZm0IntdVONmA6wsrSPgkMPiKg
+   bOzt94u98n6YhaF3aZJV9jFkVO2WRu3xJTGxirxn+PuKesa8Ga+zVAUk9
+   FVFIBS8MYW5JE76epZCt3ftYb2Aq7TbJ6dPGSzMD0OpHiWEbwy+iRPE6I
+   lTD6kjNVOS5Soj4n876N6V3PhFEyEH4yA+MMOgfHgSHLqY8F7qcN1fzRX
+   o/nNRBcutN8hOeMMV3HNLUwjBv47IRgGNnlt1H7bgMO9scryl0uIXxVvy
    A==;
-X-CSE-ConnectionGUID: lK56Xmw1TdmG4lNDVQu2aQ==
-X-CSE-MsgGUID: Dz9U6/QXTee0K08xbb1YGg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11247"; a="42049613"
+X-CSE-ConnectionGUID: NGcJJ8Z+SharKQGdp4TkMA==
+X-CSE-MsgGUID: /RXjRShLQLyhL3IQjQ1xsA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11247"; a="30889103"
 X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
-   d="scan'208";a="42049613"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 00:42:12 -0800
-X-CSE-ConnectionGUID: 8tyeHI+8T3ih2G9wkWn8uw==
-X-CSE-MsgGUID: +YHXYV3PSA2vVGgx+a69ow==
+   d="scan'208";a="30889103"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 00:43:21 -0800
+X-CSE-ConnectionGUID: FQSFjxl3TY2wyKbOXhKltw==
+X-CSE-MsgGUID: IM4k9HfgRNW2rIV3li9lkA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
-   d="scan'208";a="89263837"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orviesa005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 06 Nov 2024 00:41:15 -0800
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Wed, 6 Nov 2024 00:41:14 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Wed, 6 Nov 2024 00:41:14 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.177)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Wed, 6 Nov 2024 00:41:14 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=L6zX+zbPUlZhoDb+mpfvC07Wl1vgq2MxyouXYkNzz0ADlZvfGT3riFjMbo2yIs8lhCytM6GDOLnTTQVyJUSH8lgSJprJCgyPtWwXKWEdTCss+rXfwX9/0pumw6vjd1csZZ7sG9L1EZjcS+pXAvgDPSir5VDxnAeTEH2WwG1jktTnxOMFp9q9unMb3v5CRxVnMQ94d5+4yGnMGkkLpGf5tIrS6jkIU9HBQWSfJ4jzrjqGtclL9h2b2rfPVP0z24dbHxqVKqSLXxW0+90wSANLRpfmfMM6RY2RE0m0kigpTqzdBM7H0kwchcxL4vMX3AlakNZUtujDJB4xYXJgZP/DKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ggx7vbqFMpIjo5zsX+JPiDwtbq2nZe0C+m12IqvChJc=;
- b=ohP5u5O2jbo6GVn254j6Q9Pt0xXzqCuDpLiCVaSaUmHvAfKc0XhY7kSrArq3mw+GdQuJJYw68ikarIJquVB+fvRogiIqaM0d5b/Xt+d9gKTBsFYE0C+MvmSucyHePTIVx1mnwbrew12Anvtthrr22ItuvfwIZUV7NXMEti8QzVtp/9A3qyqZQ1E7f4+7jg5rNazW9876qAar96YbMLcozv/F5B4Z0Yokd/pgIScBoDnAYtonYXU2f0aMF50Om+neAsmJRicXan7LQbYUfeMDIOfG0+50IAYKekCrZRka9mQvnBS56kmVmhoFYqP6qNN1D8iwD1woDfUW0VXxkDrI0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by SJ0PR11MB5792.namprd11.prod.outlook.com (2603:10b6:a03:425::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.18; Wed, 6 Nov
- 2024 08:41:12 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%4]) with mapi id 15.20.8137.018; Wed, 6 Nov 2024
- 08:41:11 +0000
-Message-ID: <b6442ba7-7979-4619-8b47-87ee90792517@intel.com>
-Date: Wed, 6 Nov 2024 16:45:47 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 02/13] iommu/vt-d: Add a helper to flush cache for
- updating present pasid entry
-To: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"jgg@nvidia.com" <jgg@nvidia.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>
-CC: "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "nicolinc@nvidia.com"
-	<nicolinc@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Duan, Zhenzhong"
-	<zhenzhong.duan@intel.com>, "vasant.hegde@amd.com" <vasant.hegde@amd.com>,
-	"will@kernel.org" <will@kernel.org>
-References: <20241104131842.13303-1-yi.l.liu@intel.com>
- <20241104131842.13303-3-yi.l.liu@intel.com>
- <BN9PR11MB5276D12FF07A6066CEAAF4308C532@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <BN9PR11MB5276D12FF07A6066CEAAF4308C532@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SG2PR06CA0188.apcprd06.prod.outlook.com (2603:1096:4:1::20)
- To DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+   d="scan'208";a="115233886"
+Received: from lkp-server01.sh.intel.com (HELO a48cf1aa22e8) ([10.239.97.150])
+  by orviesa002.jf.intel.com with ESMTP; 06 Nov 2024 00:43:18 -0800
+Received: from kbuild by a48cf1aa22e8 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1t8bdD-000n6B-37;
+	Wed, 06 Nov 2024 08:43:15 +0000
+Date: Wed, 6 Nov 2024 16:43:10 +0800
+From: kernel test robot <lkp@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	Boris Brezillon <bbrezillon@kernel.org>,
+	dri-devel@lists.freedesktop.org, Liviu Dudau <liviu.dudau@arm.com>,
+	patches@lists.linux.dev, Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v3 2/3] iommu/io-pgtable-arm-v7s: Remove split on unmap
+ behavior
+Message-ID: <202411061634.3EtgZij8-lkp@intel.com>
+References: <2-v3-b3a5b5937f56+7bb-arm_no_split_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|SJ0PR11MB5792:EE_
-X-MS-Office365-Filtering-Correlation-Id: 616d615e-c7a7-4508-ab5d-08dcfe3ec45e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016|7416014;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?VWdDL0RVYjVjTnlhMUlQZW9hQ1NCMG1jTjlzeWRQNFc4NzhhdWtGeHI5MC9T?=
- =?utf-8?B?QkhoUDRrdmh5K1pMQmhQY2hVOWFxTUhndWFzQTJicUZ0SW1OV3o0dkVLQStw?=
- =?utf-8?B?VnFKYzZhejZ1STk4SUo2c3pOMkszZitVMWJTbTV3SGZ2d0RYcTZPSENJZ3hk?=
- =?utf-8?B?dWdzN1VTdXJOMDF3QmJSTTg1a1l2b3pMM1ZpNHRTQTlxekx1amZneUpmbHo2?=
- =?utf-8?B?ME1Ec21XTGUwRTB3UitPblhNd09uc21ZOEczL0dNOTliYmJSaWJUUGNydHo4?=
- =?utf-8?B?dnR4NjVWZENwOWNtTG1DTWJXNUkwWU1NWXR0ZzR0emNJMDNtOGJHbThPdFJa?=
- =?utf-8?B?SDh5R3ZBK1o3bXhkUTh1bW8xbVZFRWVrSUZYK1VZM2VPTWFHWHJhVTZpbGdS?=
- =?utf-8?B?c3hyR3hvUmp2aTlMalpNWWQrMjYvMWtNUGFIbURYRkVrMitLMjYrdC9jczYx?=
- =?utf-8?B?YTRSek9wcU5JaGF3VUM0TkJxYjZLNFJvSTlSaUw0eHVlNzdsR2NRRFlFb3B4?=
- =?utf-8?B?eW9kVEtaUWVocmNlNDE5NVdVQ21PRUdWRjFYQ0s2VHpKQ1hsd2d1TlloMEls?=
- =?utf-8?B?Wmc3VWFzME5QcS9ySFBFWjk1T1RqZ25QUHZEdURVWHB3S25UYnhHbnpTeWZ2?=
- =?utf-8?B?Yy9NY1hrVXkvZTQ1L1ZkZWtkYnNxakFsdXpIWjlkSXBRMUhkdWJZeEVQRmhT?=
- =?utf-8?B?UWt5TFJQNjlCcVNyTXdzVWg0VHJOZ0ZxaXhLREVOUnpoU0R2bllIbkcvZ0dC?=
- =?utf-8?B?SzYvS2hOQmtTV3BFakN2R2RoUFRTRFVaZTIxRGJVdGgrMDFtTjBPSS9scXdV?=
- =?utf-8?B?YU84M0JyNnpPbzA4d1J5YTA4OXRXUldoSThFTFl1dGVTRFRaaXFIK1N3SGZm?=
- =?utf-8?B?K2dlSW54RFNBMXhBa0N6K2VTenp2QXYxTDVaQnJ1NGlYLzhNSjZQRkdWcWJF?=
- =?utf-8?B?Zyt0Z2JnWkVhY2ZEQWh1TEhXZWVtbWRUVHE0VEp1cUNzVWpXZ2FCZDZINzMv?=
- =?utf-8?B?N0I4cDRQcXkwY1lRa0FoRVVnSXNzSC9zVkt3TW95ak80RjRYa2ZuS2lZYWk1?=
- =?utf-8?B?R0JNalpXWXZjWVA4c0QxOFo2Q0FQdGx3Y1VYYUIvN3VaK2RsTTlteUgrS0xG?=
- =?utf-8?B?c29LQ2xqZXlsbGtjeVRta2xDVFI4cUpWdktJUXV5dmhLd0FWQ3diRGRwcUh4?=
- =?utf-8?B?enk4NUNCNS9OKzBuWCtwd1hnVG9janlUZUxJQ3hRdmUwVU94WWV0cjFSRUww?=
- =?utf-8?B?Z0VkelhleU81MDNkdVFSZTlTajBKN3UyL2xFQnNFQUEyc2pUd0NQbGVlZmdh?=
- =?utf-8?B?Mzk1YTFJY2VFYm5jZ1l1aVF3NFVVcFZlWnkzcFlBNjdENFZLZ3ZZb3hqUkFm?=
- =?utf-8?B?ZitRUVdPM0ZSaGhaK3BmZGRVVElneDNmQ3c1R3pzaXlWV0owSEIveC9LRVcw?=
- =?utf-8?B?TnNwNkFqQ1FlbjRyRlNvYU1zTTEzNkpxeG1SRjNRUnIxKzVFVGlJQzNTdDJI?=
- =?utf-8?B?dWxrRXViQ3BCeVRyVU9ORVdRaTJOaExnMmhhNnRvcGJpWWNrSlUyN1VKMjYw?=
- =?utf-8?B?SzJ6VDl2NTN4bVN2YTZjaUh3SzVsSytacE5YZnVLU2lFcDU5c09BaHhkNFhX?=
- =?utf-8?B?TVVseUZDcnlWRmN0RkMzYWpSaUk2d2VnQnNtdXlxUUYwbTl5SEZ2QzNOdUVZ?=
- =?utf-8?B?V0VnbDBMQ213RlMyMEdxdGhrZHdWQ0twVWp6a09JWC9sYzl6bzE0OWcrQmJv?=
- =?utf-8?Q?Nw5MB0SHJPzMBN8grs2qe4g2iSjEFO2zQHf5xIZ?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RzVXQzE0WDBtNU9KUmp6Vy96dG1KOS9oTE13cUw5V1R5empHd3RCNmcwVDJL?=
- =?utf-8?B?R0ZiM3VwT3Q2VFg5RitEa0V5SnVuMXJkMTlFcUJCMEI2YzNUaW1lbGxTbHk3?=
- =?utf-8?B?QVdQMTJCbGlDcllpdnM4UW45Wmc0NzJqaEFkTitLUWZlUGp2Q2dkTkNteFF5?=
- =?utf-8?B?bDd0TmtuWTRJSjR2MzRKZFFmTHloRmtZcUxSTDN2dm5CK2lUdWg3aTVyeStF?=
- =?utf-8?B?Zk10ZWY4THNLMW00U0dOalp2azdRc2VJYk9YdkNuSnVuWmxXN045dGEvQTcw?=
- =?utf-8?B?YUZBYjFsMjFwbHhjNkJHREZBYVpHZ2l2SDBtRlJSaVdkb3hGWVQ3MUtTZGp3?=
- =?utf-8?B?K21SOHEvS01rdVNvSXRGU3BwTGxRbVVGUXcrdGp2N2V6eDVVanNGRTJ3Tjl6?=
- =?utf-8?B?Q2FTQ3RVbmMzUDlRR3paSmZONkFqS1psT3F3d3llUG0zOVFlMlV3c0dGOW1K?=
- =?utf-8?B?NklzMmltbzA3SFk3VHNRcGEweXQwK0QvVkg1RGRjb1E4aUFZRU1RWDMveFBF?=
- =?utf-8?B?Yk5GZUM2bWVKTXZLV24zY3U2bkEvVnZmMk9jQXduU2VUOTY5UkpQaE00aTdW?=
- =?utf-8?B?clFqU1FEZ2U0OVcvZnlYaDk0a0xnYmpzaXpYb2VrSGsyT3dkMU1ZU21CdkdJ?=
- =?utf-8?B?a0xicDFaUFBWbkZPZERyeGluVUt1cUlnaFdDUFhFOTdiWEdZeUV4R1JDWTV5?=
- =?utf-8?B?bE8xQU5MdHZURHNiZDBQZFJTMkl6b08xV0VBR0JjdDZoUUJxc3VaNXRld0VG?=
- =?utf-8?B?ZS90KzlGSjRYRUxPOWJiVjVaNTVrbkZkOXNwWnM4bGpQTHlNTytYZGNqNUR1?=
- =?utf-8?B?eVNtOU9zTjdMQVR2Wlc5U0FuNlVEQUsxbW1xYTNHTWcrSVYwQWw1YUdMVHJY?=
- =?utf-8?B?ZU1vcUVjdmpEMTJ2cWJ1VjlkZmh5WWFkQmRhMW12Tm91QitQK1lCa3B3WURE?=
- =?utf-8?B?Ym1zSUVDc2ducVlkdnVGelJWMzM5L01heFFMVmhSbXpKditLb2diV295V2Mv?=
- =?utf-8?B?c1JUbVR5Y2Y1Y1d3ZDlETlRxZ292TnFyOVdCaVdYOWtSU0ZwRlc0bm12T3lT?=
- =?utf-8?B?Tm1SYWZISmZYdGRtdTQ5WmtkV001aWx1elZGSVFEbmFsTzB4M2tSZ29vSVVV?=
- =?utf-8?B?Nk1aVHR3TkI2NE9tejlIRFBoTUtPMU9SbWJsb3dEc0tLMzlTM3R2QnU3ZGN6?=
- =?utf-8?B?Z2JkWDJjaUtPNUoyeHA0aHRxbTJneW9qaFZveHMvR2ZkZ05uaDJSUmp4RE03?=
- =?utf-8?B?alV4K3pVWHE1ZUNDbXJHT1haWlJBalJnZE51eEpQNmxmMnBOZnJucWhoNjRQ?=
- =?utf-8?B?LzZzQ2FkSzNGUkRVZnpSUVRSNGdRUEFobTBpeTNpRU5DMFlhRDVrUUNEZFhk?=
- =?utf-8?B?dThJMGRJSHpqeUJydFFWcURMNjlUQy8xYVROTHd1UlorZUxiR1Q0WURha3Jy?=
- =?utf-8?B?T1g5OXR5K2w1d3RoVjA1QU5YNTdtMTIzTlpDTitDQk5RdHFabFEyQVAzRnF1?=
- =?utf-8?B?RFpyNHVsMXlDb29CaTArdjc5WUVGWVJPYzk4NHNxZFFhWDNjNHpNQ1VJTEw2?=
- =?utf-8?B?djJSRmIxM3Mway9LRFB0SjdDb0RqczhrQ3UrNHJOOFhYTnJweldEeDJHdmxW?=
- =?utf-8?B?OG1CcDdhY3BBa1MxNnBRem4yRXhRNmc5WWNIVWEyUDUzN2JDeTREMnB6bTdN?=
- =?utf-8?B?cWFRZENZa3RHMk5xSnBuRmtyWXBZMFl3T2FaNWoyWXVsRndENDJsQkc3Q3h2?=
- =?utf-8?B?MHYvRVN0WlUvLzVIOVh6OFpYaHJ6dm5RWVNPcHVPVllXcTZvR29LRFRUWTBO?=
- =?utf-8?B?bk5BZDFsL2U4dlhRQzRzOTdSNXVmZFI5ZFlvZXVTWVpPeFYrUUdxWVN3NnNt?=
- =?utf-8?B?Z3hwOVYyZTFSRDV0K0FJOUNHMTF0VmczZWZRQTJLTEoveldGRkdwVXRSZ3Bx?=
- =?utf-8?B?YVJEbG1nN005ZWRua2VwZExOZ3J1MHdDMXR0c0trZXVWblZONXU2dzRRVWt4?=
- =?utf-8?B?N1hERmhGRjFuSzFId0VGYkRKekc1NkVTd1lLd21SelBSSUZCMFlCY1picE1q?=
- =?utf-8?B?a1hGZU42QW02bzh2alBqQzZJbG9pL2VwbVpLeEZOOGFvdGJOTEhnZnZwbW0v?=
- =?utf-8?Q?Oj8wPUoNCcBquUvpzt1FPtx5O?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 616d615e-c7a7-4508-ab5d-08dcfe3ec45e
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2024 08:41:11.8853
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GEbbwtN2OFLiFlln2iJumUneXZ7CveiRW9OuEpoTIhwhNHMftxpS4g/iSiLliLXgC0dGFcGO4gyIl5RdlCUFxA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5792
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2-v3-b3a5b5937f56+7bb-arm_no_split_jgg@nvidia.com>
 
-On 2024/11/6 15:11, Tian, Kevin wrote:
->> From: Liu, Yi L <yi.l.liu@intel.com>
->> Sent: Monday, November 4, 2024 9:19 PM
->>
->> There are more paths that need to flush cache for present pasid entry
->> after adding pasid replacement. Hence, add a helper for it. Per the
->> VT-d spec, the changes to the fields other than SSADE and P bit can
->> share the same code. So intel_pasid_setup_page_snoop_control() is the
->> first user of this helper.
-> 
-> No hw spec would ever talk about coding sharing in sw implementation.
+Hi Jason,
 
-yes, it's just sw choice.
+kernel test robot noticed the following build warnings:
 
-> and according to the following context the fact is just that two flows
-> between RID and PASID are similar so you decide to create a common
-> helper for both.
+[auto build test WARNING on 8e929cb546ee42c9a61d24fae60605e9e3192354]
 
-I'm not quite getting why RID is related. This is only about the cache
-flush per pasid entry updating.
+url:    https://github.com/intel-lab-lkp/linux/commits/Jason-Gunthorpe/iommu-io-pgtable-arm-Remove-split-on-unmap-behavior/20241106-021511
+base:   8e929cb546ee42c9a61d24fae60605e9e3192354
+patch link:    https://lore.kernel.org/r/2-v3-b3a5b5937f56%2B7bb-arm_no_split_jgg%40nvidia.com
+patch subject: [PATCH v3 2/3] iommu/io-pgtable-arm-v7s: Remove split on unmap behavior
+config: arm-randconfig-004-20241106 (https://download.01.org/0day-ci/archive/20241106/202411061634.3EtgZij8-lkp@intel.com/config)
+compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241106/202411061634.3EtgZij8-lkp@intel.com/reproduce)
 
->>
->> No functional change is intended.
->>
->> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
->> ---
->>   drivers/iommu/intel/pasid.c | 54 ++++++++++++++++++++++++-------------
->>   1 file changed, 36 insertions(+), 18 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->> index 977c4ac00c4c..81d038222414 100644
->> --- a/drivers/iommu/intel/pasid.c
->> +++ b/drivers/iommu/intel/pasid.c
->> @@ -286,6 +286,41 @@ static void pasid_flush_caches(struct intel_iommu
->> *iommu,
->>   	}
->>   }
->>
->> +/*
->> + * This function is supposed to be used after caller updates the fields
->> + * except for the SSADE and P bit of a pasid table entry. It does the
->> + * below:
->> + * - Flush cacheline if needed
->> + * - Flush the caches per the guidance of VT-d spec 5.0 Table 28.
-> 
-> while at it please add the name for the table.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202411061634.3EtgZij8-lkp@intel.com/
 
-sure.
+All warnings (new ones prefixed by >>):
 
-> 
->> + *   ”Guidance to Software for Invalidations“
->> + *
->> + * Caller of it should not modify the in-use pasid table entries.
-> 
-> I'm not sure about this statement. As long as the change doesn't
-> impact in-fly DMAs it's always the caller's right for whether to do it.
-> 
-> actually based on the main intention of supporting replace it's
-> quite possible.
+>> drivers/iommu/io-pgtable-arm-v7s.c:823:18: warning: variable 'loopnr' set but not used [-Wunused-but-set-variable]
+     823 |         unsigned int i, loopnr = 0;
+         |                         ^
+   1 warning generated.
 
-This comment is mainly due to the clflush_cache_range() within this
-helper. If caller modifies the pte content, it will need to call
-this again.
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for GET_FREE_REGION
+   Depends on [n]: SPARSEMEM [=n]
+   Selected by [y]:
+   - RESOURCE_KUNIT_TEST [=y] && RUNTIME_TESTING_MENU [=y] && KUNIT [=y]
 
-> otherwise this looks good,
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+
+vim +/loopnr +823 drivers/iommu/io-pgtable-arm-v7s.c
+
+e5fc9753b1a831 Robin Murphy    2016-01-26  810  
+e5fc9753b1a831 Robin Murphy    2016-01-26  811  static int __init arm_v7s_do_selftests(void)
+e5fc9753b1a831 Robin Murphy    2016-01-26  812  {
+e5fc9753b1a831 Robin Murphy    2016-01-26  813  	struct io_pgtable_ops *ops;
+e5fc9753b1a831 Robin Murphy    2016-01-26  814  	struct io_pgtable_cfg cfg = {
+e5fc9753b1a831 Robin Murphy    2016-01-26  815  		.tlb = &dummy_tlb_ops,
+e5fc9753b1a831 Robin Murphy    2016-01-26  816  		.oas = 32,
+e5fc9753b1a831 Robin Murphy    2016-01-26  817  		.ias = 32,
+4f41845b340783 Will Deacon     2019-06-25  818  		.coherent_walk = true,
+4f41845b340783 Will Deacon     2019-06-25  819  		.quirks = IO_PGTABLE_QUIRK_ARM_NS,
+e5fc9753b1a831 Robin Murphy    2016-01-26  820  		.pgsize_bitmap = SZ_4K | SZ_64K | SZ_1M | SZ_16M,
+e5fc9753b1a831 Robin Murphy    2016-01-26  821  	};
+76b8c2705cdd26 Jason Gunthorpe 2024-11-05  822  	unsigned int iova, size;
+e5fc9753b1a831 Robin Murphy    2016-01-26 @823  	unsigned int i, loopnr = 0;
 
 -- 
-Regards,
-Yi Liu
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
