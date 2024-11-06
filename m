@@ -1,254 +1,285 @@
-Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 520EB212D3C
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:45:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 836C3199247
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:55:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730922330; cv=none; b=GP+Jl32Hpy+7Z9aGy541qBeQKZdCWhkrbhNz/BGaxS+vXfcAb7Odu4uFYlNL0QrKmtZUnuXyYDm9/rkYiBCzimHofGuT6RhFXjEz70B7ZDIboJeW8wnoQOFqyOCPoolyglTRJHATVb4/9M3nYVcmGMVknF93fYXnxnPLJnNBh7g=
+	t=1730922948; cv=none; b=hiSFZ7mfkPVuBvS/WYNihPM39Dq1T48ywhI1X2+TEB32FCjWkz/xE+shn70DE75wjBnHzP/Cm6WFZzMMLtsOxqQ5U8oNqW9XXMNRhP6No9BzsijGISAKwF7+ywxZgVXeprYZ1NfUh5JZWTEgI/66aLbfcI1e7juC9GoqybTCmsc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730922330; c=relaxed/simple;
-	bh=RgdYcgCBQAaQ1bP3d0JPDapEPac8uo3Pcaz65neb70A=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ohTaFFkkpO0/e9ncXuEB94kPTDlDi6HWLjynSLB7e3X2mYZYgLW0Es5FPEX/5kWw1PKm3DsjzHSdzizv0MZxUMy6swCwexWl+5Nb8+XXKQDcFCOjltWo1DaleE2beYhxKPRLqXgZpKmi6ZukTA5w80djK7IeAYGNIdzYGybK/DA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=QkLhYefW; arc=none smtp.client-ip=209.85.166.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+	s=arc-20240116; t=1730922948; c=relaxed/simple;
+	bh=YtJF6qhvib+xrJJljfZ0Ni7jfLYA0Jur/MNeDlgIMVI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Pyg0auxwnNRILL29keEBaNHLrjbRV5d1Vu8qexSv1QCcK8Yh4AAm3YrHPN9XmFwvnQxXRipuWOQ7x4PqPhG/VXYjWaCD1ygshR0Rr4wYQQKSQGWpgAu6T3EDOl1ruD12OHNM4iMDJGbhBBvrqj5z3iWEFADBwf5KEH1Bl0FhogI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kN19uLRj; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="QkLhYefW"
-Received: by mail-io1-f52.google.com with SMTP id ca18e2360f4ac-8323b555a6aso8058739f.3
-        for <iommu@lists.linux.dev>; Wed, 06 Nov 2024 11:45:27 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kN19uLRj"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-37d43a9bc03so86069f8f.2
+        for <iommu@lists.linux.dev>; Wed, 06 Nov 2024 11:55:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1730922326; x=1731527126; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=l+a2o7Ai/OLZodimKUqsQYFRlYX3rzr6bNlDYl2/9c4=;
-        b=QkLhYefW9GYWIPplEc3Ld66wuZscRj83lB7JfbHexsa9DQA5Kl/E7H6ntBGZTx6TNI
-         yVchF6kzu1sM5ftvVqJRTlOqDjXM3ncgtgQlcv/T2DY+tVQC1e98PdAtpyeUDmboiT6X
-         nKgcaVBC1/w8uHncH2doF3OnWInzaRpaLaSSbIDs2OWPvUCzIkbDFdMq7Sp7LcXoYVLK
-         imiNUZvR/48fTNMzwr4EYUTZ0j2C0yowD4GPQBpZCmamuhJNgyHCefhYDSVHkIgTv+kf
-         f3MkwVh9k6L9CaC1loxaTZJMGwUhQ4hXXp35OBgLbrXGvPL2tnqqVjYMsLcLw6BuejG6
-         29VA==
+        d=gmail.com; s=20230601; t=1730922945; x=1731527745; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sz8jpFca6SqfJ60+obKhkJJRmDB3H7XKSoVY6XiXXVw=;
+        b=kN19uLRjFOAtLIb2CttROGRgqGRLOAFy/sXmBm/F2b5dpGqVlsqKNVY/5B0paapTih
+         rClaP9Mb9MoWhiUHuzjH+vBhnadYpj9bsi37zwnxcH/1JflfDjxzqldwetMmVSAJYK2x
+         vMeEwG9DVdk239kmKUqpX9T3QHG1xYq7eWx7y5X40sphq5On3IAOpGVUwQ0NP7oVk4v/
+         X2ELHWyjBtf+JSFvqZRVvXpRvCfKWe+R6o3B8MlxRr/zHYFDF32BhRVWEZtZxfEOv6Ob
+         Wr5m06E8lY+ND6QYIKLB2SjbLHMTuXVHLXmdrtntCR2Henc4cO6AoeBfxHQvXFQi0Uzd
+         EfhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730922326; x=1731527126;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=l+a2o7Ai/OLZodimKUqsQYFRlYX3rzr6bNlDYl2/9c4=;
-        b=sW49q7pX0p14LWf1YZojjbXz5qAtK0boMaYX+9nu+PX4qGMj969MaVt8xMotNWBRod
-         sgIqMi0keIStgW7mXof6VK8+ccUU1e+20x2eDpz6GIGLmkDF96poF98cApWGNkIjK8q3
-         4tCykdSZ+mSZgtzaXPV3zVV3jGlaGfkjDU30Nv+ZTncZovUCoSOBNURRZzbejktlDo36
-         zICDvsO9HwLefF478s6kjY9aPU++J+lmBv6s0G+g8rqn1W9XI3Tnk4L/yCHuo4u13QYv
-         1NtOwL5Q9QtVu1r2iaX3gi45DlryYz3Tf+Wm666WtE4GF87HEIKzZyAggoLjXgiRJ3AW
-         aKOA==
-X-Forwarded-Encrypted: i=1; AJvYcCW3kDWre5zv72+03Rzi4z6MRHQM9y2TqSznTHL1SfEABREYdRg99IldaGDSi5jdSbmf0yVy4A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzzGe9J0qIJLX5XNMJoTjynr97jprKk1Mp4EK6WzVv4X3GeruSs
-	mrjZVxrbq4wkrJhAVwgQ2yCiT2/giyH4/QIO2IoN0aYox3PBA5/4gu8UN2TVuqM=
-X-Google-Smtp-Source: AGHT+IFFkPdTuW3O6B5Kfs6P93ZzsRHCf7tesqNJ7oxewkCWmsZQaCiwBqj8i0a19PKZV/2UTcPUCQ==
-X-Received: by 2002:a05:6602:6c17:b0:83b:4c:5f70 with SMTP id ca18e2360f4ac-83b650372a9mr2467672639f.12.1730922325433;
-        Wed, 06 Nov 2024 11:45:25 -0800 (PST)
-Received: from [100.64.0.1] ([147.124.94.167])
-        by smtp.gmail.com with ESMTPSA id ca18e2360f4ac-83b67ba907esm329811139f.25.2024.11.06.11.45.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Nov 2024 11:45:24 -0800 (PST)
-Message-ID: <d92ab280-bd1f-4145-8164-cebab1980f20@sifive.com>
-Date: Wed, 6 Nov 2024 13:45:23 -0600
+        d=1e100.net; s=20230601; t=1730922945; x=1731527745;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=sz8jpFca6SqfJ60+obKhkJJRmDB3H7XKSoVY6XiXXVw=;
+        b=UnPqY0o3DsWzO/SussyrRfckSuoaN205Zzvv3aKmXvHLwZhnylaMkXnenBtCkvpW6e
+         vbLHFVa8IpmzK2iazCdtypnNsPGSBRN1wz86nKG7zSj4obcjyYiinhSJ0voICWRdy5FZ
+         ZM6gScXMt3dByq8Qzfz4Rtft/OXOBldnWZTKFP7HTX7opNEaTJq7EMcgIISozO49a9eC
+         IcewU80tuAh+XQaBLMF6LfMKEI2BEDaV2au883EpTqSN562ybRI5XHSrAe+nefiiy16h
+         m71t7hL4Q/babZVzANlhZoLTKzwlJYSf7Ok91P25Z72WvvZBy/7px+o+1xAziY4myGZz
+         IYPQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX7I4zUe9Q6tFoDKWKsB5p+TwjTI9fjxeNj4/IOg/FgAZHsmWUyNNP5Lar1HJY/ZBRnpPOh8A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw+OHYKuPp8iJuY71kSw4POUxAk+6LhrKWOWY+0T/lAKj5cCV04
+	XZwpY17lcCIKFTh/frNU05jjnZ2Lklbe8FIbx2y/a2EGG7vUtq1neCKFYqLzNz0lGR+dUfulKPV
+	K8cekzXl7Go6nDT/gi6AZVxflNqy0wg==
+X-Google-Smtp-Source: AGHT+IF2udQRzmHpiQvlWHqISilnXK7IsefQOlaY9vSnZF5qmLudxSk4K2ExJY2MYgmJugH+Y57WGNpI1w2K1sv76WY=
+X-Received: by 2002:a5d:6d0b:0:b0:37d:509e:8742 with SMTP id
+ ffacd0b85a97d-381c7a480f3mr17102742f8f.1.1730922943951; Wed, 06 Nov 2024
+ 11:55:43 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iommu/riscv: Add support for platform msi
-To: Andrew Jones <ajones@ventanamicro.com>, iommu@lists.linux.dev,
- linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, paul.walmsley@sifive.com, palmer@dabbelt.com,
- aou@eecs.berkeley.edu
-References: <20241106175102.219923-4-ajones@ventanamicro.com>
- <20241106175102.219923-6-ajones@ventanamicro.com>
-From: Samuel Holland <samuel.holland@sifive.com>
-Content-Language: en-US
-In-Reply-To: <20241106175102.219923-6-ajones@ventanamicro.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20241022032214.3915232-1-linyunsheng@huawei.com>
+ <20241022032214.3915232-4-linyunsheng@huawei.com> <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
+ <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
+ <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
+ <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org> <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
+ <18ba4489-ad30-423e-9c54-d4025f74c193@kernel.org> <b8b7818a-e44b-45f5-91c2-d5eceaa5dd5b@kernel.org>
+In-Reply-To: <b8b7818a-e44b-45f5-91c2-d5eceaa5dd5b@kernel.org>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Wed, 6 Nov 2024 11:55:07 -0800
+Message-ID: <CAKgT0UfkyLsfZGm0+T0Jyv=jO=tvS11vtD8MSR7s-EdZ4nGM+g@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
+ has already unbound
+To: Jesper Dangaard Brouer <hawk@kernel.org>
+Cc: Yunsheng Lin <linyunsheng@huawei.com>, =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>, 
+	davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, 
+	zhangkun09@huawei.com, fanghaiqing@huawei.com, liuyonglong@huawei.com, 
+	Robin Murphy <robin.murphy@arm.com>, IOMMU <iommu@lists.linux.dev>, 
+	Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, 
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, linux-mm@kvack.org, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	kernel-team <kernel-team@cloudflare.com>, Viktor Malik <vmalik@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Drew,
+On Wed, Nov 6, 2024 at 7:57=E2=80=AFAM Jesper Dangaard Brouer <hawk@kernel.=
+org> wrote:
+>
+>
+>
+> On 06/11/2024 14.25, Jesper Dangaard Brouer wrote:
+> >
+> > On 26/10/2024 09.33, Yunsheng Lin wrote:
+> >> On 2024/10/25 22:07, Jesper Dangaard Brouer wrote:
+> >>
+> >> ...
+> >>
+> >>>
+> >>>>> You and Jesper seems to be mentioning a possible fact that there mi=
+ght
+> >>>>> be 'hundreds of gigs of memory' needed for inflight pages, it would
+> >>>>> be nice
+> >>>>> to provide more info or reasoning above why 'hundreds of gigs of
+> >>>>> memory' is
+> >>>>> needed here so that we don't do a over-designed thing to support
+> >>>>> recording
+> >>>>> unlimited in-flight pages if the driver unbound stalling turns out
+> >>>>> impossible
+> >>>>> and the inflight pages do need to be recorded.
+> >>>>
+> >>>> I don't have a concrete example of a use that will blow the limit yo=
+u
+> >>>> are setting (but maybe Jesper does), I am simply objecting to the
+> >>>> arbitrary imposing of any limit at all. It smells a lot of "640k oug=
+ht
+> >>>> to be enough for anyone".
+> >>>>
+> >>>
+> >>> As I wrote before. In *production* I'm seeing TCP memory reach 24 GiB
+> >>> (on machines with 384GiB memory). I have attached a grafana screensho=
+t
+> >>> to prove what I'm saying.
+> >>>
+> >>> As my co-worker Mike Freemon, have explain to me (and more details in
+> >>> blogposts[1]). It is no coincident that graph have a strange "sealing=
+"
+> >>> close to 24 GiB (on machines with 384GiB total memory).  This is beca=
+use
+> >>> TCP network stack goes into a memory "under pressure" state when 6.25=
+%
+> >>> of total memory is used by TCP-stack. (Detail: The system will stay i=
+n
+> >>> that mode until allocated TCP memory falls below 4.68% of total memor=
+y).
+> >>>
+> >>>   [1]
+> >>> https://blog.cloudflare.com/unbounded-memory-usage-by-tcp-for-receive=
+-buffers-and-how-we-fixed-it/
+> >>
+> >> Thanks for the info.
+> >
+> > Some more info from production servers.
+> >
+> > (I'm amazed what we can do with a simple bpftrace script, Cc Viktor)
+> >
+> > In below bpftrace script/oneliner I'm extracting the inflight count, fo=
+r
+> > all page_pool's in the system, and storing that in a histogram hash.
+> >
+> > sudo bpftrace -e '
+> >   rawtracepoint:page_pool_state_release { @cnt[probe]=3Dcount();
+> >    @cnt_total[probe]=3Dcount();
+> >    $pool=3D(struct page_pool*)arg0;
+> >    $release_cnt=3D(uint32)arg2;
+> >    $hold_cnt=3D$pool->pages_state_hold_cnt;
+> >    $inflight_cnt=3D(int32)($hold_cnt - $release_cnt);
+> >    @inflight=3Dhist($inflight_cnt);
+> >   }
+> >   interval:s:1 {time("\n%H:%M:%S\n");
+> >    print(@cnt); clear(@cnt);
+> >    print(@inflight);
+> >    print(@cnt_total);
+> >   }'
+> >
+> > The page_pool behavior depend on how NIC driver use it, so I've run thi=
+s
+> > on two prod servers with drivers bnxt and mlx5, on a 6.6.51 kernel.
+> >
+> > Driver: bnxt_en
+> > - kernel 6.6.51
+> >
+> > @cnt[rawtracepoint:page_pool_state_release]: 8447
+> > @inflight:
+> > [0]             507 |                                        |
+> > [1]             275 |                                        |
+> > [2, 4)          261 |                                        |
+> > [4, 8)          215 |                                        |
+> > [8, 16)         259 |                                        |
+> > [16, 32)        361 |                                        |
+> > [32, 64)        933 |                                        |
+> > [64, 128)      1966 |                                        |
+> > [128, 256)   937052 |@@@@@@@@@                               |
+> > [256, 512)  5178744 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+> > [512, 1K)     73908 |                                        |
+> > [1K, 2K)    1220128 |@@@@@@@@@@@@                            |
+> > [2K, 4K)    1532724 |@@@@@@@@@@@@@@@                         |
+> > [4K, 8K)    1849062 |@@@@@@@@@@@@@@@@@@                      |
+> > [8K, 16K)   1466424 |@@@@@@@@@@@@@@                          |
+> > [16K, 32K)   858585 |@@@@@@@@                                |
+> > [32K, 64K)   693893 |@@@@@@                                  |
+> > [64K, 128K)  170625 |@                                       |
+> >
+> > Driver: mlx5_core
+> >   - Kernel: 6.6.51
+> >
+> > @cnt[rawtracepoint:page_pool_state_release]: 1975
+> > @inflight:
+> > [128, 256)         28293 |@@@@                               |
+> > [256, 512)        184312 |@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
+> > [512, 1K)              0 |                                   |
+> > [1K, 2K)            4671 |                                   |
+> > [2K, 4K)          342571 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+> > [4K, 8K)          180520 |@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
+> > [8K, 16K)          96483 |@@@@@@@@@@@@@@                     |
+> > [16K, 32K)         25133 |@@@                                |
+> > [32K, 64K)          8274 |@                                  |
+> >
+> >
+> > The key thing to notice that we have up-to 128,000 pages in flight on
+> > these random production servers. The NIC have 64 RX queue configured,
+> > thus also 64 page_pool objects.
+> >
+>
+> I realized that we primarily want to know the maximum in-flight pages.
+>
+> So, I modified the bpftrace oneliner to track the max for each page_pool
+> in the system.
+>
+> sudo bpftrace -e '
+>   rawtracepoint:page_pool_state_release { @cnt[probe]=3Dcount();
+>    @cnt_total[probe]=3Dcount();
+>    $pool=3D(struct page_pool*)arg0;
+>    $release_cnt=3D(uint32)arg2;
+>    $hold_cnt=3D$pool->pages_state_hold_cnt;
+>    $inflight_cnt=3D(int32)($hold_cnt - $release_cnt);
+>    $cur=3D@inflight_max[$pool];
+>    if ($inflight_cnt > $cur) {
+>      @inflight_max[$pool]=3D$inflight_cnt;}
+>   }
+>   interval:s:1 {time("\n%H:%M:%S\n");
+>    print(@cnt); clear(@cnt);
+>    print(@inflight_max);
+>    print(@cnt_total);
+>   }'
+>
+> I've attached the output from the script.
+> For unknown reason this system had 199 page_pool objects.
+>
+> The 20 top users:
+>
+> $ cat out02.inflight-max | grep inflight_max | tail -n 20
+> @inflight_max[0xffff88829133d800]: 26473
+> @inflight_max[0xffff888293c3e000]: 27042
+> @inflight_max[0xffff888293c3b000]: 27709
+> @inflight_max[0xffff8881076f2800]: 29400
+> @inflight_max[0xffff88818386e000]: 29690
+> @inflight_max[0xffff8882190b1800]: 29813
+> @inflight_max[0xffff88819ee83800]: 30067
+> @inflight_max[0xffff8881076f4800]: 30086
+> @inflight_max[0xffff88818386b000]: 31116
+> @inflight_max[0xffff88816598f800]: 36970
+> @inflight_max[0xffff8882190b7800]: 37336
+> @inflight_max[0xffff888293c38800]: 39265
+> @inflight_max[0xffff888293c3c800]: 39632
+> @inflight_max[0xffff888293c3b800]: 43461
+> @inflight_max[0xffff888293c3f000]: 43787
+> @inflight_max[0xffff88816598f000]: 44557
+> @inflight_max[0xffff888132ce9000]: 45037
+> @inflight_max[0xffff888293c3f800]: 51843
+> @inflight_max[0xffff888183869800]: 62612
+> @inflight_max[0xffff888113d08000]: 73203
+>
+> Adding all values together:
+>
+>   grep inflight_max out02.inflight-max | awk 'BEGIN {tot=3D0} {tot+=3D$2;
+> printf "total:" tot "\n"}' | tail -n 1
+>
+> total:1707129
+>
+> Worst case we need a data structure holding 1,707,129 pages.
+> Fortunately, we don't need a single data structure as this will be split
+> between 199 page_pool's.
+>
+> --Jesper
 
-On 2024-11-06 11:51 AM, Andrew Jones wrote:
-> Apply platform_device_msi_init_and_alloc_irqs() to add support for
-> MSIs when the IOMMU is a platform device.
-> 
-> Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
-> ---
->  drivers/iommu/riscv/iommu-platform.c | 102 ++++++++++++++++++++++-----
->  1 file changed, 84 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
-> index da336863f152..89aa622bcbde 100644
-> --- a/drivers/iommu/riscv/iommu-platform.c
-> +++ b/drivers/iommu/riscv/iommu-platform.c
-> @@ -11,18 +11,41 @@
->   */
->  
->  #include <linux/kernel.h>
-> +#include <linux/of_irq.h>
->  #include <linux/of_platform.h>
->  #include <linux/platform_device.h>
-> +#include <linux/msi.h>
+Is there any specific reason for why we need to store the pages
+instead of just scanning the page tables to look for them? We should
+already know how many we need to look for and free. If we were to just
+scan the page structs and identify the page pool pages that are
+pointing to our pool we should be able to go through and clean them
+up. It won't be the fastest approach, but this should be an
+exceptional case to handle things like a hot plug removal of a device
+where we can essentially run this in the background before we free the
+device.
 
-If you respin, please keep these sorted.
-
->  
->  #include "iommu-bits.h"
->  #include "iommu.h"
->  
-> +static void riscv_iommu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
-> +{
-> +	struct device *dev = msi_desc_to_dev(desc);
-> +	struct riscv_iommu_device *iommu = dev_get_drvdata(dev);
-> +	u16 idx = desc->msi_index;
-> +	u64 addr;
-> +
-> +	addr = ((u64)msg->address_hi << 32) | msg->address_lo;
-> +
-> +	if (addr != (addr & RISCV_IOMMU_MSI_CFG_TBL_ADDR))
-> +		pr_warn_once("uh oh, the IOMMU can't send MSIs to 0x%llx, sending to 0x%llx instead\n",
-> +			     addr, addr & RISCV_IOMMU_MSI_CFG_TBL_ADDR);
-
-Can this use dev_warn_once()? And should it really be only a warning?
-Configuring the IOMMU to write to some other address seems dangerous. I guess
-there's no clean way to handle this error, since this function cannot fail, and
-irq_chip_compose_msi_msg() isn't supposed to fail either.
-
-> +
-> +	addr &= RISCV_IOMMU_MSI_CFG_TBL_ADDR;
-> +
-> +	riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_ADDR(idx), addr);
-> +	riscv_iommu_writel(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_DATA(idx), msg->data);
-> +	riscv_iommu_writel(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_CTRL(idx), 0);
-> +}
-> +
->  static int riscv_iommu_platform_probe(struct platform_device *pdev)
->  {
-> +	enum riscv_iommu_igs_settings igs;
->  	struct device *dev = &pdev->dev;
->  	struct riscv_iommu_device *iommu = NULL;
->  	struct resource *res = NULL;
-> -	int vec;
-> +	int vec, ret;
->  
->  	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
->  	if (!iommu)
-> @@ -40,16 +63,6 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
->  	iommu->caps = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAPABILITIES);
->  	iommu->fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
->  
-> -	/* For now we only support WSI */
-> -	switch (FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps)) {
-> -	case RISCV_IOMMU_CAPABILITIES_IGS_WSI:
-> -	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
-> -		break;
-> -	default:
-> -		return dev_err_probe(dev, -ENODEV,
-> -				     "unable to use wire-signaled interrupts\n");
-> -	}
-> -
->  	iommu->irqs_count = platform_irq_count(pdev);
->  	if (iommu->irqs_count <= 0)
->  		return dev_err_probe(dev, -ENODEV,
-> @@ -57,13 +70,60 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
->  	if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT)
->  		iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
->  
-> -	for (vec = 0; vec < iommu->irqs_count; vec++)
-> -		iommu->irqs[vec] = platform_get_irq(pdev, vec);
-> +	igs = FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps);
-> +	switch (igs) {
-> +	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
-> +	case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
-> +		if (is_of_node(dev->fwnode))
-> +			of_msi_configure(dev, to_of_node(dev->fwnode));
-> +
-> +		if (!dev_get_msi_domain(dev)) {
-> +			dev_warn(dev, "failed to find an MSI domain");
-> +			goto msi_fail;
-> +		}
-> +
-> +		ret = platform_device_msi_init_and_alloc_irqs(dev, iommu->irqs_count,
-> +							      riscv_iommu_write_msi_msg);
-> +		if (ret) {
-> +			dev_warn(dev, "failed to allocate MSIs");
-> +			goto msi_fail;
-> +		}
-> +
-> +		for (vec = 0; vec < iommu->irqs_count; vec++)
-> +			iommu->irqs[vec] = msi_get_virq(dev, vec);
-> +
-> +		/* Enable message-signaled interrupts, fctl.WSI */
-> +		if (iommu->fctl & RISCV_IOMMU_FCTL_WSI) {
-> +			iommu->fctl ^= RISCV_IOMMU_FCTL_WSI;
-> +			riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
-> +		}
-> +
-> +		dev_info(dev, "using MSIs\n");
-> +		break;
-> +
-> +msi_fail:
-> +		if (igs != RISCV_IOMMU_CAPABILITIES_IGS_BOTH) {
-> +			dev_warn(dev, "\n");
-> +			return dev_err_probe(dev, -ENODEV,
-> +					     "unable to use wire-signaled interrupts\n");
-
-Is the dev_warn() just to call attention to the following error? There's no
-guarantee that these two messages will be printed adjacently.
-
-> +		}
-> +
-> +		dev_warn(dev, " - falling back to wired irqs\n");
-
-No need for the extra hyphen here.
-
-Regards,
-Samuel
-
-> +		fallthrough;
->  
-> -	/* Enable wire-signaled interrupts, fctl.WSI */
-> -	if (!(iommu->fctl & RISCV_IOMMU_FCTL_WSI)) {
-> -		iommu->fctl |= RISCV_IOMMU_FCTL_WSI;
-> -		riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
-> +	case RISCV_IOMMU_CAPABILITIES_IGS_WSI:
-> +		for (vec = 0; vec < iommu->irqs_count; vec++)
-> +			iommu->irqs[vec] = platform_get_irq(pdev, vec);
-> +
-> +		/* Enable wire-signaled interrupts, fctl.WSI */
-> +		if (!(iommu->fctl & RISCV_IOMMU_FCTL_WSI)) {
-> +			iommu->fctl |= RISCV_IOMMU_FCTL_WSI;
-> +			riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
-> +		}
-> +		dev_info(dev, "using wire-signaled interrupts\n");
-> +		break;
-> +	default:
-> +		return dev_err_probe(dev, -ENODEV, "invalid IGS\n");
->  	}
->  
->  	return riscv_iommu_init(iommu);
-> @@ -71,7 +131,13 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
->  
->  static void riscv_iommu_platform_remove(struct platform_device *pdev)
->  {
-> -	riscv_iommu_remove(dev_get_drvdata(&pdev->dev));
-> +	struct riscv_iommu_device *iommu = dev_get_drvdata(&pdev->dev);
-> +	bool msi = !(iommu->fctl & RISCV_IOMMU_FCTL_WSI);
-> +
-> +	riscv_iommu_remove(iommu);
-> +
-> +	if (msi)
-> +		platform_device_msi_free_irqs_all(&pdev->dev);
->  };
->  
->  static const struct of_device_id riscv_iommu_of_match[] = {
-
+Then it would just be a matter of modifying the pool so that it will
+drop support for doing DMA unmapping and essentially just become a
+place for the freed pages to go to die.
