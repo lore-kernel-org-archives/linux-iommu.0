@@ -1,114 +1,131 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from fout-b2-smtp.messagingengine.com (fout-b2-smtp.messagingengine.com [202.12.124.145])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 100991D0DF7
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 08:52:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 091951D79B8
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 08:55:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730883146; cv=none; b=XM5PQgpnw391aYjSRQ76fEAOR+46LEMdGrDnNm0W2CPvMGwUO+US+Ps2DDaAayoUVpY63FYFgOKvw2OmBN5iwldO70lZccVOAC7iMXhK8m1Cy7YQkWWueEfYHM4r8qmkYt29WdOTQ/uyMaCFMmo4SSXTSLx95Q95M9fzLVNKzN0=
+	t=1730883341; cv=none; b=EikgKgnNnbkxOWxZzb2/yLlleAbp6ahQKKN0/bQUR+DRxYlLdAebYo6ldxkjVhT0fvsh71XT/yEr4lNz3+YtRozTbXNSGuwZg767xlty9Ei1FlwO58PGoOuBBlGItzoSRNTZpHGsKkpuGCoQ3ThCsoHIEfSlXiLHLnMNmlS2+m8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730883146; c=relaxed/simple;
-	bh=SAgahWnG2DeFpF6l8Do2xzl9AhovY4+m0h44ByCgbd8=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=tQb1ZTqNd/d+RllocE616N1DThjh+SjZCsK+8OxBuwwCDTK4p8fladEcAnMiGGK4cNwo5gWtIp2qe8aDaWXAAY4Ht+zTCwGaLUJf4Ud9A+UiB7sWMdEleykU0Wwyscwn5shPqs2Ds6D/lTW0Rz3rzho7RswMwTs7+KnKzjHeMjQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PxmF/GTE; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1730883341; c=relaxed/simple;
+	bh=uoc4Nta1Ok0mhsU7WW3fUW4xjpp+b/2K0X+NjHyC1oo=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=FFKNT+yWh4+GMK1EhhapInQqv4IlP3YIV52aWiDO4Zl8XQB4zFIrJDDbDaEvTSC9D6CV7BFLdHELfwvg/lsrWDGhmF/PKrB/4k4bPLWrzsZTl4DludkoCe8n13fLBoZGJpL+qeFdLzK+IMdLxP3Xe69hHhInjheOhcaJrAffq4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=KYpNkjVE; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=TctsgkwO; arc=none smtp.client-ip=202.12.124.145
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PxmF/GTE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730883145; x=1762419145;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=SAgahWnG2DeFpF6l8Do2xzl9AhovY4+m0h44ByCgbd8=;
-  b=PxmF/GTEvFfBrP6+ZO7/ZV92J5PKgVuGpG95MPANSxC00mwzPVOaISKW
-   fNW5k1UgbYg0tk6Q/AbSLWcPZQvNWjsq4rw1ER+JPN6qckBTwVUM3XSOF
-   zTqVyWjrhev7zyrqM4sINfg+5+Qu/nc82hOuvSTfiRZpWYKdVgwXS0onp
-   4ZpzDSObtXGEulC40SdLFU4mFolfTwgpf0/gMNCy2N17wGBDjbhvxptHz
-   L1nOoXnu5gYqzeY/ZjOVBl64FH/+xz36J3JFu5wqe/JiMiKZufFlkSnBv
-   alP4aOedzindYKXu0BGynabTziYZMk2nZhnYuHsfykx8BdOObBGCxgJ/v
-   Q==;
-X-CSE-ConnectionGUID: /3nYVVpvSkyONr3UTyyaYw==
-X-CSE-MsgGUID: PzmrjMvXQviub/9RLxgqGw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11247"; a="30553921"
-X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
-   d="scan'208";a="30553921"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 00:52:24 -0800
-X-CSE-ConnectionGUID: zVemqJI8SXK3F3FHGKp/Kw==
-X-CSE-MsgGUID: OW0B5Ob+SDS7hqqX6pSzxA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
-   d="scan'208";a="89554212"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.228]) ([10.124.240.228])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 00:52:21 -0800
-Message-ID: <42e0a0ad-e653-4007-b38e-66db452cea33@linux.intel.com>
-Date: Wed, 6 Nov 2024 16:52:18 +0800
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="KYpNkjVE";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="TctsgkwO"
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfout.stl.internal (Postfix) with ESMTP id B48421140175;
+	Wed,  6 Nov 2024 03:55:37 -0500 (EST)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Wed, 06 Nov 2024 03:55:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1730883337;
+	 x=1730969737; bh=rmf9ivMSLIWqrguJz/3/wM9+xDOvZJ7XRQipjjgHJlQ=; b=
+	KYpNkjVEU2Swxa0H/qawlYh9y51+gW/hxSAzXIMAnNlVtEMaGenFucQQpjq8X5dF
+	MVIxEtVbWhZEMwBOXFcqm8mGYCeNE5nB/kYzi1F5bH4H7wNCymZU/FYu+cDB8N7y
+	9ZGbEGzRJo2WWo8J4G4R89XLi/1kOLi962N0DIQGQqP5G12Rk+9hGtWkptJQ9Io7
+	icIuk0qcsZCAwkILlUF5FKuVKs3M6ZHf+eU87GWEbSnfOMoYjUa9Q/56b/6W2fiK
+	vrKegjNjp9/Ikp3EmGLJ5ohJzwpKx0xrszf7OFvqak/Y1qyqBjHsCTfkeiaOCNvF
+	N1NxKCN66sBf+X42/ZGX7A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1730883337; x=
+	1730969737; bh=rmf9ivMSLIWqrguJz/3/wM9+xDOvZJ7XRQipjjgHJlQ=; b=T
+	ctsgkwOLwI5QHgW6IaRpJyzPuhUo9MdShTs5bx6d+S5gCSTknZgSkENDHBYKJSMQ
+	MqbL1gDp0IE9cXvH2ap8vBeEziY98hgJh0So1QhDq3tmk1EeMYpbWjc90dRq6kOY
+	r1oZ91P7VRNoriWvRrhrfzv3Uhn8Nas3sNBbe7c3ArvFYWfxq9qzUKIhh1hzdPol
+	vs+kV/xYsp7QUxYAWd9/p6iKvZHXtE1nm9P36Q3ANAGeVfDgfXH/iSg5p3uu0zF2
+	bEcHHqDyXOLT0t9A0e5XkQVXPL+lKyWhL+2Y9/Tq16hbnGPf9nwKLQ+RMkBDcT4s
+	8x5yohCaextVjWyDlDWvA==
+X-ME-Sender: <xms:CS8rZ4mBx3PlWvm82La7NX3d2-nkdMljv0FmuakDQWv6G1o27DZIgA>
+    <xme:CS8rZ31ZlQrNOjsCvrZXjhGXNFLZ2SmWuaCXeJenuPRhX0yy0l3pW4D_4mzrFGsXT
+    ERUh5R5QiD4ir5CIaI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrtddugdduvdeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
+    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrd
+    guvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefg
+    gfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepudeg
+    pdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehjohhroheskegshihtvghsrdhorh
+    hgpdhrtghpthhtohepjhhonhdrghhrihhmmhesrghmugdrtghomhdprhgtphhtthhopehs
+    rghnthhoshhhrdhshhhukhhlrgesrghmugdrtghomhdprhgtphhtthhopehsuhhrrghvvg
+    gvrdhsuhhthhhikhhulhhprghnihhtsegrmhgurdgtohhmpdhrtghpthhtohepvhgrshgr
+    nhhtrdhhvghguggvsegrmhgurdgtohhmpdhrtghpthhtoheprhhosghinhdrmhhurhhphh
+    ihsegrrhhmrdgtohhmpdhrtghpthhtohepuhgsihiijhgrkhesghhmrghilhdrtghomhdp
+    rhgtphhtthhopehkuhhmrghrrghnrghnugesghhoohhglhgvrdgtohhmpdhrtghpthhtoh
+    epphgrnhguohhhsehgohhoghhlvgdrtghomh
+X-ME-Proxy: <xmx:CS8rZ2rAmYyph3aphEBuoxopRl9o6CG8tQ6R_LhEsvibdYMp01gq8w>
+    <xmx:CS8rZ0mV8ZKLtngf0fyH6dU68PQzinQk1onUaAvUOgvzVzNp8REgDw>
+    <xmx:CS8rZ23qi8bUwU51EzFJD2z_g-JVy1SP8zaBK7m_M_qHzbnOavatOQ>
+    <xmx:CS8rZ7tak2EL9fG-drc4A5meUzZyq2aVjh0iNSnALMxxyx1HedVkXg>
+    <xmx:CS8rZ50ofKZjEBYcH_pa0x8kyjrYGoBtj4rjb8yxLpXxTK_lqYoCLv6f>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 243F22220071; Wed,  6 Nov 2024 03:55:37 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, joro@8bytes.org, kevin.tian@intel.com,
- alex.williamson@redhat.com, eric.auger@redhat.com, nicolinc@nvidia.com,
- kvm@vger.kernel.org, chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
- zhenzhong.duan@intel.com, vasant.hegde@amd.com
-Subject: Re: [PATCH v5 01/12] iommu: Introduce a replace API for device pasid
-To: Jason Gunthorpe <jgg@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-References: <20241104132513.15890-1-yi.l.liu@intel.com>
- <20241104132513.15890-2-yi.l.liu@intel.com>
- <9846d58f-c6c8-41e8-b9fc-aa782ea8b585@linux.intel.com>
- <4f33b93c-6e86-428d-a942-09cd959a2f08@intel.com>
- <6e395258-96a1-44a5-a98f-41667e4ef715@linux.intel.com>
- <64f4e0ea-fb0f-41d1-84a1-353d18d5d516@intel.com>
- <20241105151042.GC458827@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20241105151042.GC458827@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Date: Wed, 06 Nov 2024 09:55:06 +0100
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Joerg Roedel" <joro@8bytes.org>,
+ "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ "Robin Murphy" <robin.murphy@arm.com>, vasant.hegde@amd.com,
+ "Jason Gunthorpe" <jgg@nvidia.com>, "Kevin Tian" <kevin.tian@intel.com>,
+ jon.grimm@amd.com, santosh.shukla@amd.com, pandoh@google.com,
+ kumaranand@google.com, "Uros Bizjak" <ubizjak@gmail.com>,
+ Linux-Arch <linux-arch@vger.kernel.org>
+Message-Id: <323dcff2-6135-4b8a-85db-bccc315ddfdf@app.fastmail.com>
+In-Reply-To: <ZyoP0IKVmxfesRU8@8bytes.org>
+References: <20241101162304.4688-1-suravee.suthikulpanit@amd.com>
+ <20241101162304.4688-4-suravee.suthikulpanit@amd.com>
+ <ZyoP0IKVmxfesRU8@8bytes.org>
+Subject: Re: [PATCH v9 03/10] asm/rwonce: Introduce [READ|WRITE]_ONCE() support for
+ __int128
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 
-On 2024/11/5 23:10, Jason Gunthorpe wrote:
-> On Tue, Nov 05, 2024 at 04:10:59PM +0800, Yi Liu wrote:
-> 
->>>> not quite get why this handle is related to iommu driver flushing PRs.
->>>> Before __iommu_set_group_pasid(), the pasid is still attached with the
->>>> old domain, so is the hw configuration.
->>> I meant that in the path of __iommu_set_group_pasid(), the iommu drivers
->>> have the opportunity to flush the PRs pending in the hardware queue. If
->>> the attach_handle is switched (by calling xa_store()) before
->>> __iommu_set_group_pasid(), the pending PRs will be routed to iopf
->>> handler of the new domain, which is not desirable.
->> I see. You mean the handling of PRQs. I was interpreting you are talking
->> about PRQ draining.
-> I don't think we need to worry about this race, and certainly you
-> shouldn't be making the domain replacement path non-hitless just to
-> fence the page requests.
-> 
-> If a page request comes in during the race window of domain change
-> there are only three outcomes:
-> 
->    1) The old domain handles it and it translates on the old domain
->    2) The new domain handles it and it translates on the new domain
->    3) The old domain handles it and it translates on the new domain.
->       a) The page request is ack'd and the device retries and loads the
->         new domain - OK - at best it will use the new translation, at
->         worst it will retry.
->       b) the page request fails and the device sees the failure. This
->          is the same as #1 - OK
-> 
-> All are correct. We don't need to do more here than just let the race
-> resolve itself.
-> 
-> Once the domains are switched in HW we do have to flush everything
-> queued due to the fault path locking scheme on the domain.
+On Tue, Nov 5, 2024, at 13:30, Joerg Roedel wrote:
+> On Fri, Nov 01, 2024 at 04:22:57PM +0000, Suravee Suthikulpanit wrote:
+>>  include/asm-generic/rwonce.h   | 2 +-
+>>  include/linux/compiler_types.h | 8 +++++++-
+>>  2 files changed, 8 insertions(+), 2 deletions(-)
+>
+> This patch needs Cc:
+>
+> 	Arnd Bergmann <arnd@arndb.de>
+> 	linux-arch@vger.kernel.org
+>
 
-Agreed. To my understanding, the worst case is that the device retries
-the transaction which might result in another page fault, which will set
-up the translation in the new domain.
+It also needs an update to the comment about why this is safe:
 
---
-baolu
+>> +++ b/include/asm-generic/rwonce.h
+>> @@ -33,7 +33,7 @@
+>>   * (e.g. a virtual address) and a strong prevailing wind.
+>>   */
+>>  #define compiletime_assert_rwonce_type(t)					\
+>> -	compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),	\
+>> +	compiletime_assert(__native_word(t) || sizeof(t) == sizeof(__dword_type), \
+>>  		"Unsupported access size for {READ,WRITE}_ONCE().")
+
+As far as I can tell, 128-but words don't get stored atomically on
+any architecture, so this seems wrong, because it would remove
+the assertion on someone incorrectly using WRITE_ONCE() on a
+128-bit variable.
+
+       Arnd
