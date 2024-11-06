@@ -1,238 +1,189 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 448041DE3C2
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 10:56:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730890597; cv=fail; b=FJsD45q1KMewGFmQb6woLMOnvuIF/eMLZ10uaDSE5bIza2GJo8Rdo8JZ5n/80Gorecj7FrDOy8I31kOAdcWh1Q7O2As1Sj8jmBY3tIIRhPIRWiSDjg8mb1W1LMVPCq6UHMQEzSqq4Ux2GBUNCYiSribD7jdjCMok9f1DVw25+Sc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730890597; c=relaxed/simple;
-	bh=BAFRSX7er+CJpd+IEOrb0cPtxiAMIg00rKnIcXrT0iE=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=AVRIz9O3KeXe8Gqy2oCqEbyynEJBFimyEwd2qJNu0rh0AQS1O7mFF4MftZPY3ZaVCkX+0FwQmE/ZZo/l0lstw35vLl6NMG8U7PaVDGlEBRRtxDkdAsMEahI1hWBwaNPrOmk75xbtgkSQiXou7laP90PekAl3LYPQldiodLD8mME=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BFKEtW1m; arc=fail smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BFKEtW1m"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730890596; x=1762426596;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=BAFRSX7er+CJpd+IEOrb0cPtxiAMIg00rKnIcXrT0iE=;
-  b=BFKEtW1mpieRJbD/2aU32BCdoNUYzW3eUN8pv0B/RNi96rU/2fGvk1bQ
-   jjD4QhJX96mS6LLyEnxa6pAgZglxdq05Z/nxeTKMujoMebnc3SGlp7zRF
-   QqMfqtlgTS+9gAFSBn+e4cN3R2JiMfqYi7FsqnrXLw5qwD1nflC4sVyq2
-   /7f4hwGDN3Qpb4hx95ORYg0+tT+JyCTCiqMrAGrtbRITpTWsJ/SDQJQCr
-   V8sZYNOwS52vltVbzJSSZgCFBxum9L8uKgr+5oyDDXNOez4+vutDb0Xzy
-   mwJNj7+EGshc1WQ1GHwqo/p4OXtBWopYak1mPg/zzAPd6tG9A2rhQL2BI
-   Q==;
-X-CSE-ConnectionGUID: 9UmmpFJcTOCK2vaRP2F4Pg==
-X-CSE-MsgGUID: A/cfU6fxTK6sXoizUSMT+g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11247"; a="30110142"
-X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
-   d="scan'208";a="30110142"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 02:56:35 -0800
-X-CSE-ConnectionGUID: hEzlnGpRT8OkFST5QZyTng==
-X-CSE-MsgGUID: GjLvmTs9ShSssLDBYZWwSw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
-   d="scan'208";a="84828860"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 06 Nov 2024 02:56:07 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Wed, 6 Nov 2024 02:56:07 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Wed, 6 Nov 2024 02:56:07 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.48) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B3DC1DE2DE
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 10:56:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730890600; cv=none; b=Y7AJfa+c8payBfPSQEZnpMkCnOvJqDM/s2MoANrkPPVxhetYlRs694JQMknzCAApDdlAH4LMYCw0KCzrcoMuAo+Lt9TMhEpQCJ5rBYyBHg8kzTpIyoWU2pyypgYJJvo4pHdRHtyFMFXuxaM0I+lzg/m8RygvFvH3J8vulgIGSq0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730890600; c=relaxed/simple;
+	bh=LQG9eqDPNmwxwvZfvSWSmROcayIPhbmGXD5bEneyqGQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=CQ8Gwy3svAVjP81DEy5tI6u7DFU3Hr5aIIq5vwcGcvyTARF6qC5l679ePFNYSSLgw1mUy0e4e3WfO/+/NOp5uuo2KnxYyThMz0E0WDhasdp4OV9hak8ZnPq4ezeSquKonKADmPoaFJqDQhKJ2wFFPS0JChMfsIF406t1LXLBGrc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.105])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Xk2BZ0KDMzNpR6;
+	Wed,  6 Nov 2024 18:53:58 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id E382C140361;
+	Wed,  6 Nov 2024 18:56:34 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Wed, 6 Nov 2024 02:56:06 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=g3XW2dOUZAIClY22qAanHlAEXT9AKfJIMrezS+CMO929v1cCTWNSCWl5nSsHnqr+n4+gcu57nlJ4RxnwpxabVGgSKlqs3KvK5U+Hm5bF5B2zaxk9lgeipYrVjmAR7jTnT7VEnJZb3g7/H5MjB0h8oihil9VttR9mQnalLOPIgn7CkQYwsUsK9G2aEaugksev0EHv/VBjs+J3eBVjm4dDQDXKrDqffmZpHm11e0tP3O/lY2NdU28yLm1jCMCMrQEZtZQOg9Sydm4ohQncVjBDYHxkej5yYDmrPoZfYxG5nq2qYVWxN4zzuuljPoGOQDDOvffmpGOuullOPADe4vrITg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OcQp/RJkZDNoLNoHNYZ9n5ibaD1DqOJcusal/J3qats=;
- b=E66cKMkY8hTnVRdeuZeboD5GRNYFaPoU1yP4291EAleiOzGdHnAnWAIVOD+MIYCYwDXjnirgEi9sX0wDBt0BftbGWP9KL/W3nwTimis+262mRAhU0ZR4TcfpywQMd+x58R3Bzqh+BWjypmmmHGvk33fQ83L2ExN9DoFq59eDjrp3beXGA2/3+hc4vISzD/bSct6wBvmdzchoB493xaHrklHPaFGxS/ocKUIpC30NGlEylT1PxbXifEHLwVqJfuCrtH84XvBx1nzNwtU7qMUe91pyUgaC7p/qNZWv2CTeP82GdNqSA3dhN8NeCGJ6pXrSWi7gi4fsTv+7XDlg/VQqcQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by IA1PR11MB6489.namprd11.prod.outlook.com (2603:10b6:208:3a7::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.30; Wed, 6 Nov
- 2024 10:55:59 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%4]) with mapi id 15.20.8137.018; Wed, 6 Nov 2024
- 10:55:59 +0000
-Message-ID: <348f3139-1ca7-4893-b93a-90c7834ce30b@intel.com>
-Date: Wed, 6 Nov 2024 19:00:35 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 11/13] iommu/vt-d: Add set_dev_pasid callback for
- nested domain
-To: Baolu Lu <baolu.lu@linux.intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>
-CC: "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "nicolinc@nvidia.com"
-	<nicolinc@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Duan, Zhenzhong"
-	<zhenzhong.duan@intel.com>, "vasant.hegde@amd.com" <vasant.hegde@amd.com>,
-	"will@kernel.org" <will@kernel.org>
-References: <20241104131842.13303-1-yi.l.liu@intel.com>
- <20241104131842.13303-12-yi.l.liu@intel.com>
- <BN9PR11MB5276F52B50577B8963A20BEB8C532@BN9PR11MB5276.namprd11.prod.outlook.com>
- <778d4e7b-cb4f-48d6-9b5d-de5e18c1a367@linux.intel.com>
- <982f10e2-5fc7-4b13-9877-77042ce20a11@intel.com>
- <ae559732-1586-4099-a753-092fc7a698cf@linux.intel.com>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <ae559732-1586-4099-a753-092fc7a698cf@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SI1PR02CA0056.apcprd02.prod.outlook.com
- (2603:1096:4:1f5::7) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+ 15.2.1544.11; Wed, 6 Nov 2024 18:56:34 +0800
+Message-ID: <2f256bce-0c37-4940-9218-9545daa46169@huawei.com>
+Date: Wed, 6 Nov 2024 18:56:34 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|IA1PR11MB6489:EE_
-X-MS-Office365-Filtering-Correlation-Id: a9a59d7b-c34c-4238-55ea-08dcfe5198be
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?emI1c29PZ0pkbk42eXBnVVNkdXYwUWNmTXpYelFJbTVrc2hVaWVsWmcvK3E5?=
- =?utf-8?B?T1d2VlNub2lyNnhxeTFoc2FjZWJkTk84eDc1VnZZMGcyWnd2alZLQTc4dC9U?=
- =?utf-8?B?Q0s1SGpSc3FqOUI0UHF5WEZlaGhjeG91WVJ2MEcwZkFBL1NNSzlqanVNMU8y?=
- =?utf-8?B?REhjbVlxcmNRQzVqeWtzS3dyRVdDWFJ5QTJ2aWhjUTJlck04THEySUJDZ2du?=
- =?utf-8?B?bmE3YWhmRjZSNE9sem85MWdPT1dRZ1plcjI0ME1WVkRPblRJTXkxRU03SllU?=
- =?utf-8?B?bjVEWDZCNDlFOVIxUGpueXZOTUs3cFJDL0pJYnhmT1JHK1FJUElNU0xaQXNv?=
- =?utf-8?B?ZS9KS2FUajBjTXkxWXRoUThSUjVDUEtraDFXcktEV3RoaFZlSGZsZkh3MUFx?=
- =?utf-8?B?ZjRnTE1ScUF1K21COG44aHVEV1Nkc1ZaVGhEK1hKRFlJOHc1dkRYUWNyLzNj?=
- =?utf-8?B?Z2dKUmt3VlFrWG1hT2hyVTJTc3oxSUphcjI5Yk51R1MrcXdDL2JiWXBlbDFM?=
- =?utf-8?B?aEo3TFNQUnY2VDA5U1lPVURiYUsyVERUOXIxMzhMMlNhNzVsVlVMQWw2QS9E?=
- =?utf-8?B?UFJLV2VMdm1XaVJmdTdTaXpUa2Q0SU91QnlFbmQ5elAyVFJ5MmtaWWtIczZP?=
- =?utf-8?B?M0dqRHpzL1ZsMy9uaXBSTHpYbFNBNXNTUWZLcTRiR3UwTGx0Qkw5WktCWnA2?=
- =?utf-8?B?bzZuZG9IaDRoUnZ0ZjhvUU5SVExLTDVmMEJibTBSQXgydDZtM0d5UW95N2pF?=
- =?utf-8?B?cWF3MEUvWnl1OHpyV1puUi9WZzJNWnVqdVY5NitIL0VOTmhzYzVQSXRia2Rx?=
- =?utf-8?B?ZW1uaDYvbEZxNkVLK21GZkxhbjR1K3dEMjVVT294dmxtVDZWeWthbU9GTEdS?=
- =?utf-8?B?TWlna1RVTmlQd2UrQ01XbWJqMzVmR3UyQWNuWnY3SnpabUJ4Rmw0bDRPTVF5?=
- =?utf-8?B?MS9pVzU1ZE1rZlV0MDlPQk9DL3gxK3pMTDdGVy9QMm92SUkvS2VTRXprejVk?=
- =?utf-8?B?cjZVQUljdUV6R1EyWVpoUXhqbzVvWjZuc3FpTDN5L2xhaldBa0g4WjlzYUt5?=
- =?utf-8?B?c3J5dHV6aEJVOVdHMzh0bkFCbnp0bmFOUnM1eE9ZRG13TjVBcVBZNUZyeVhm?=
- =?utf-8?B?M3FmdHhrSC95WlRNL09lR25aSnRQZWFrNVhnbGZiLzdUUkYzOEJ4Ung1bWVh?=
- =?utf-8?B?aVJwaDJWdnFUMlNObUVjd1FYaS9QQVpYcmZjTzNRQUkyUzdCbEMvK05iNDRn?=
- =?utf-8?B?L0pZekVaNGUwL0YvUG0rNFAxVHRaeW84azFpVXlRV2szaWhxT2o5L1k4K2tM?=
- =?utf-8?B?QWpaOFd1ZjJHVlhYVzdOV2phNWFoY1JhR05ldWlMN082alUvVHd5M1RkdzUz?=
- =?utf-8?B?WGxyVTVWOHBsREhUbXZFT1hORWp2ZlUwanNLUzVVUUpyNGo1NWptM2xVd2VI?=
- =?utf-8?B?RG1Jd3QrdDdjc3ZFUjgvMzllNW5jSEFHRTE2cWZrV09aTllwY1lUNWwyYUJT?=
- =?utf-8?B?ZS95VVVVQXRGRG83K1JzbnQ4MHNBSE1LVnU0R2o5eHhhNlJCWE1kS2Z5Nm5q?=
- =?utf-8?B?ZFpsRzY5N3ZxUHZROGpkZDZlVHRKSGxMK2IxRHU0UWtGNE5hSURLbWtVbkhx?=
- =?utf-8?B?a0lsbkJaUkVKNUNpbVkzWW1Qd1FBVy80dnZDbDRqTVFXcHBNR2FLb3hRanU2?=
- =?utf-8?B?b0thdnZFbzRmOFVBa0lPS0cvazRFdkVjenp2bnZGY28rcHZsa2Q0MVhMVnZY?=
- =?utf-8?Q?W3PAyb++KFBE4ykN9vXmosjj9HLq4RymFOzOmp7?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dk14TThKV2dkWklLUHNkUm5ubHlMSzVibk8xL2p6bkVXWUdPUXlrbzZ0UWxw?=
- =?utf-8?B?VGFsTGpkc1VNa0pWc0VsOUhIM3NncHErNHVoWlRkeXBvTHRtMG0vc0p4U3Ir?=
- =?utf-8?B?c05ZVVM4V2EwaExRMnVlc0ZlUnNNVGs5N2tPdkhrRHdOOTliMlVMYlFvRWdI?=
- =?utf-8?B?SFNxcDRVTW9ZV3dxNkNKdEJqN0FocGNDcmlvcjErV00xZS9TdGR4dUdhb1Mw?=
- =?utf-8?B?SUs0Yk1zTGFBU2s1anpobmw2cjRmZ3Z4SFlZSWtwcW5GRWpGRldrR3RISVhl?=
- =?utf-8?B?RDlhUHZGY0NubHAvYUhmNWt1S2k4ak1JZ0J0b2pITWZoZzlUV0FVd29XVTJn?=
- =?utf-8?B?NGdXMnZVZTZVMVpOdlc0VlREQnVKc2dOdVdwTGhNL1pGdWN5Z3FRZXRDQkp3?=
- =?utf-8?B?UmNVTVFzSUxIUUZUTDRjSkZSTlMwWVhVendWWmR1b29Hc2dDMVllVHIzWHpK?=
- =?utf-8?B?SXFTbUFUckFvN1VsdFBzek5ua0ZUcHNMSTJXVnVVZkdkQjRsWklxUXhVWkxo?=
- =?utf-8?B?UFZEY2w5NUwzMUhvMWxMc2JvVDBaeE5hbzZKU2xjZjJSdFBXZVQ4cy9iTWRu?=
- =?utf-8?B?RHhjaURvWVBmdjBMSUVFU2dSVEVPZ0xOUlB5WHRMTjNZSVhRZ21rYm1LUWwx?=
- =?utf-8?B?UEFQSG9xUWVXTk1NWlQyeXFPVTM0MmhOL1Byc1VFRUZ1TXBkYjkrWHJFLzd5?=
- =?utf-8?B?dlhOWTVRalpTZkwxeFZ3V29XZXg4d2E1MVR2bURUUGl2ZTZULzJFWmNKWHd4?=
- =?utf-8?B?TU1hSmZPSjJlcSthTzBicmpVN0l4bHBPY2VPWElTbnRKK3Y2VzFodWsvTVU4?=
- =?utf-8?B?dFBaQmlKR2NyRjgySXJYNzBuQlZjQlNkZ3NhbmZJOXJwUUMyaDlpaHk3cmh0?=
- =?utf-8?B?bU1GaHNOSlBVMnB1Z3Y1b3lvVVJla0dock5lY1Z6RXFTMXBuZkFNbU10YVFP?=
- =?utf-8?B?RVZUVE81NlIrRktNT3d6M0ZTS1FuQkJHQkQrU2FYNmdxbXQ3TzZocGQ0cDd5?=
- =?utf-8?B?VEs3QlpzRUd5TU1jVys3WTNsSWUzSVFRQmREU2xtMnpYdzZ4aTd5WE9YZGEx?=
- =?utf-8?B?RWc4OGNZQzRQOWgrSTRVYlZnUmpTY0RRb2ppMS9sUnFJMmlTR2F5dzk1ZlNV?=
- =?utf-8?B?RFFKdlBleW9jcDBPWW8vQWc1eFhFeWhkaHVvOTNiMERyRlhZKzZwN3grbnIv?=
- =?utf-8?B?WnpTTFNTZUFzRzJ0VmN0b21yNmJYL014cjdqNHB3ZDNUdU4rL2ErQXlBZ0ky?=
- =?utf-8?B?cTZ6ald1dHp3L2pqNHR5ekY4MGM2dkFlblRML2VqQUFSQkdMTXlTTlRsdjQ0?=
- =?utf-8?B?cWtrM3c4TEcyWllQd3BDbWxmSHkvTWVFQlFlZ0lWY0hFaURwZTZqUFZHNXZa?=
- =?utf-8?B?Qjd3R21WNWI0aWlLZUlkNEg4dStBckw5TkNMWkJGVDhqdFBnNkt3TjFvTlFu?=
- =?utf-8?B?N0ZBTWFQM3hRNjZpRVRnYVdrTHhkWHY0bVovVU1hRzFZRGswa29sT3lZSDBN?=
- =?utf-8?B?ek1Cb2ZXUUJvb0xubUkwRUZqbjRXSFg2Q1FYWFN0MTd4RHJTcGNibUJKWmU2?=
- =?utf-8?B?eFJyRkoyV0w1YjhmbmFFODdZeUdOSFAyUzFCazIySmhvSHVwT2ljSDRoMS8z?=
- =?utf-8?B?ajg0TmxKVlc5aXFJU0UrbitRdG9nMklNT3dMZTJmTGlIOXczWCt5cXhHTkxO?=
- =?utf-8?B?ZDdwYy9WWHZURWNpNy9BdDAyVVVmdzVwNmNnbktRenVTS0RYV2wrbSt2dDEv?=
- =?utf-8?B?QWZxQUxJWGZReHVQN2xJT09OSHZFNWl5blc1d1hOS0RSNDgwNFUvSkYzWmFF?=
- =?utf-8?B?V0hkZ1dXQzdNVnJSbzd0MTVVbDBtdkZ1b25EU3pHeThuRm9yZ1k4ejlqT3J6?=
- =?utf-8?B?WWRFV3ZlMjcycnh5dXRQbGU4MVdoSCtzRDB2WFpnRjREYllxdTROa2pKcVBJ?=
- =?utf-8?B?aUFlVUZZYTVYQjJhRHI3bU5KdjhlQ0hHR3FhenUzY05wUXl2WGZZanZFZFUz?=
- =?utf-8?B?Um9pQjlMWUl1VlVEdDdjQUIvdWQyc3ZWSmcxZzgxODZGMW4xVkt2Ui92aXVy?=
- =?utf-8?B?MUlEMUxqS2ZienhaczRjL1N4YnlBZmpGS1pHTExodFlPVzRabHFYalVwTkNK?=
- =?utf-8?Q?/sVkfQ1kkW1jJCXIMLMzUFWMQ?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a9a59d7b-c34c-4238-55ea-08dcfe5198be
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2024 10:55:59.1258
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5RZtQVeyiFusgYQZEH14FOPwMPZCF7JmALu1D6obpMLoKTkWg+FHxBbotF7xzGoeokNZFBtSUHWDDAbUPthCVg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6489
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
+ has already unbound
+To: Jesper Dangaard Brouer <hawk@kernel.org>,
+	=?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+	<davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
+	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
+ Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
+ Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
+ Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
+	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
+	<kernel-team@cloudflare.com>, Christoph Hellwig <hch@lst.de>,
+	<m.szyprowski@samsung.com>
+References: <20241022032214.3915232-1-linyunsheng@huawei.com>
+ <20241022032214.3915232-4-linyunsheng@huawei.com>
+ <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
+ <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
+ <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
+ <cf1911c5-622f-484c-9ee5-11e1ac83da24@huawei.com> <878qu7c8om.fsf@toke.dk>
+ <1eac33ae-e8e1-4437-9403-57291ba4ced6@huawei.com> <87o731by64.fsf@toke.dk>
+ <023fdee7-dbd4-4e78-b911-a7136ff81343@huawei.com> <874j4sb60w.fsf@toke.dk>
+ <a50250bf-fe76-4324-96d7-b3acf087a18c@huawei.com>
+ <a6cfba96-9164-4497-b075-9359c18a5eef@kernel.org>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <a6cfba96-9164-4497-b075-9359c18a5eef@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On 2024/11/6 18:45, Baolu Lu wrote:
-> On 2024/11/6 17:14, Yi Liu wrote:
->> On 2024/11/6 16:41, Baolu Lu wrote:
->>> On 2024/11/6 16:17, Tian, Kevin wrote:
->>>>> From: Liu, Yi L <yi.l.liu@intel.com>
->>>>> Sent: Monday, November 4, 2024 9:19 PM
->>>>>
->>>>> +
->>>>> +    dev_pasid = domain_add_dev_pasid(domain, dev, pasid);
->>>>> +    if (IS_ERR(dev_pasid))
->>>>> +        return PTR_ERR(dev_pasid);
->>>>> +
->>>>> +    ret = domain_setup_nested(iommu, dmar_domain, dev, pasid, old);
->>>>> +    if (ret)
->>>>> +        goto out_remove_dev_pasid;
->>>>> +
->>>>> +    domain_remove_dev_pasid(old, dev, pasid);
->>>>> +
->>>>
->>>> forgot one thing. Why not required to create a debugfs entry for
->>>> nested dev_pasid?
++cc Christoph & Marek
+
+On 2024/11/6 4:11, Jesper Dangaard Brouer wrote:
+
+...
+
 >>>
->>> This debugfs node is only created for paging domain.
+>>>> I am not sure if I understand the reasoning behind the above suggestion to 'wait
+>>>> and see if this actually turns out to be a problem' when we already know that there
+>>>> are some cases which need cache kicking/flushing for the waiting to work and those
+>>>> kicking/flushing may not be easy and may take indefinite time too, not to mention
+>>>> there might be other cases that need kicking/flushing that we don't know yet.
+>>>>
+>>>> Is there any reason not to consider recording the inflight pages so that unmapping
+>>>> can be done for inflight pages before driver unbound supposing dynamic number of
+>>>> inflight pages can be supported?
+>>>>
+>>>> IOW, Is there any reason you and jesper taking it as axiomatic that recording the
+>>>> inflight pages is bad supposing the inflight pages can be unlimited and recording
+>>>> can be done with least performance overhead?
+>>>
+>>> Well, page pool is a memory allocator, and it already has a mechanism to
+>>> handle returning of memory to it. You're proposing to add a second,
+>>> orthogonal, mechanism to do this, one that adds both overhead and
 >>
->> I think Kevin got one point. The debugfs is added when paging domain
->> is attached. How about the paging domains that is only used as nested
->> parent domain. We seem to lack a debugfs node for such paging domains.
+>> I would call it as a replacement/improvement for the old one instead of
+>> 'a second, orthogonal' as the old one doesn't really exist after this patch.
+>>
 > 
-> Are you talking about the nested parent domain? It's also a paging
-> domain, hence a debugfs node will be created.
+> Yes, are proposing doing a very radical change to the page_pool design.
+> And this is getting proposed as a fix patch for IOMMU.
+> 
+> It is a very radical change that page_pool needs to keep track of *ALL* in-flight pages.
 
-yes, nested parent domains. But as I mentioned, the debugfs node is created
-only in the attach point so far. While the nested attach does not attach
-the nested parent, it is subjected to the paging_domain_compatible()
-check and contributes its pgd to act as SS page table in the pasid entry.
-So it's missed though it should be in another patch to add it.
+I am agreed that it is a radical change, that is why it is targetting net-next
+tree instead of net tree even when there is a Fixes tag for it.
 
--- 
-Regards,
-Yi Liu
+If there is a proper and non-radical way to fix that, I would prefer the
+non-radical way too.
+
+> 
+> The DMA issue is a life-time issue of DMA object associated with the
+> struct device.  Then, why are you not looking at extending the life-time
+
+It seems it is not really about the life-time of DMA object associated with the
+life-time of 'struct device', it seems to be the life-time of DMA API associated
+with the life-time of the driver for the 'struct device' from the the opinion of
+experts from IOMMU/DMA subsystem in [1] & [2].
+
+I am not sure what is reasoning behind the above, but the implementation seems
+to be the case as mentioned in [3]:
+__device_release_driver -> device_unbind_cleanup -> arch_teardown_dma_ops
+
+1. https://lkml.org/lkml/2024/8/6/632
+2. https://lore.kernel.org/all/20240923175226.GC9634@ziepe.ca/
+3. https://lkml.org/lkml/2024/10/15/686
+
+> of the DMA object, or at least detect when DMA object goes away, such
+> that we can change a setting in page_pool to stop calling DMA unmap for
+> the pages in-flight once they get returned (which we have en existing
+> mechanism for).
+
+To be honest, I was mostly depending on the opinion of the experts from
+IOMMU/DMA subsystem for the correct DMA API usage as mentioned above.
+So I am not sure if skipping DMA unmapping for the inflight pages is the
+correct DMA API usage?
+If it is the correct DMA API usage, how to detect that if DMA unmapping
+can be skipped?
+
+From previous discussion, skipping DMA unmapping may casue some resource
+leaking, like the iova resoure behind the IOMMU and bounce buffer memory
+behind the swiotlb.
+
+Anyway, I may be wrong, CC'ing more experts to see if we can have some
+clarifying from them.
+
+> 
+> 
+>>> complexity, yet doesn't handle all cases (cf your comment about devmem).
+>>
+>> I am not sure if unmapping only need to be done using its own version DMA API
+>> for devmem yet, but it seems waiting might also need to use its own version
+>> of kicking/flushing for devmem as devmem might be held from the user space?
+>>
+>>>
+>>> And even if it did handle all cases, force-releasing pages in this way
+>>> really feels like it's just papering over the issue. If there are pages
+>>> being leaked (or that are outstanding forever, which basically amounts
+>>> to the same thing), that is something we should be fixing the root cause
+>>> of, not just working around it like this series does.
+>>
+>> If there is a definite time for waiting, I am probably agreed with the above.
+>>  From the previous discussion, it seems the time to do the kicking/flushing
+>> would be indefinite depending how much cache to be scaned/flushed.
+>>
+>> For the 'papering over' part, it seems it is about if we want to paper over
+>> different kicking/flushing or paper over unmapping using different DMA API.
+>>
+>> Also page_pool is not really a allocator, instead it is more like a pool
+>> based on different allocator, such as buddy allocator or devmem allocator.
+>> I am not sure it makes much to do the flushing when page_pool_destroy() is
+>> called if the buddy allocator behind the page_pool is not under memory
+>> pressure yet.
+>>
+> 
+> I still see page_pool as an allocator like the SLUB/SLAB allocators,
+> where slab allocators are created (and can be destroyed again), which we
+> can allocate slab objects from.  SLAB allocators also use buddy
+> allocator as their backing allocator.
+
+I am not sure if SLUB/SLAB is that similar to page_pool for the specific
+problem here, at least SLUB/SLAB doesn't seems to support dma mapping in
+its core and doesn't seem to allow inflight cache when kmem_cache_destroy()
+is called as its alloc API doesn't seems to take reference to s->refcount
+and doesn't have the inflight cache calculating as page_pool does?
+https://elixir.bootlin.com/linux/v6.12-rc6/source/mm/slab_common.c#L512
+
+
+> 
+> The page_pool is of-cause evolving with the addition of the devmem
+> allocator as a different "backing" allocator type.
+
+
