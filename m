@@ -1,285 +1,224 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 836C3199247
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:55:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E38791D63D5;
+	Wed,  6 Nov 2024 21:05:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730922948; cv=none; b=hiSFZ7mfkPVuBvS/WYNihPM39Dq1T48ywhI1X2+TEB32FCjWkz/xE+shn70DE75wjBnHzP/Cm6WFZzMMLtsOxqQ5U8oNqW9XXMNRhP6No9BzsijGISAKwF7+ywxZgVXeprYZ1NfUh5JZWTEgI/66aLbfcI1e7juC9GoqybTCmsc=
+	t=1730927135; cv=none; b=D26NCiTnBPZdTnOK6IYJQIwu1QMNi7YUiQs2/rRDR+tMXLauLhav3/LZdXXKTr5VpmYdu7dPCC0xSuwV7eceRvYJzSq5njue8c5dPtosKst3eGihHex9OmtcKhMxTNVVBnSyXRneG5DTvzOD6sIf1Yoyzqajj964lDtIGaCbnJc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730922948; c=relaxed/simple;
-	bh=YtJF6qhvib+xrJJljfZ0Ni7jfLYA0Jur/MNeDlgIMVI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Pyg0auxwnNRILL29keEBaNHLrjbRV5d1Vu8qexSv1QCcK8Yh4AAm3YrHPN9XmFwvnQxXRipuWOQ7x4PqPhG/VXYjWaCD1ygshR0Rr4wYQQKSQGWpgAu6T3EDOl1ruD12OHNM4iMDJGbhBBvrqj5z3iWEFADBwf5KEH1Bl0FhogI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kN19uLRj; arc=none smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kN19uLRj"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-37d43a9bc03so86069f8f.2
-        for <iommu@lists.linux.dev>; Wed, 06 Nov 2024 11:55:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1730922945; x=1731527745; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sz8jpFca6SqfJ60+obKhkJJRmDB3H7XKSoVY6XiXXVw=;
-        b=kN19uLRjFOAtLIb2CttROGRgqGRLOAFy/sXmBm/F2b5dpGqVlsqKNVY/5B0paapTih
-         rClaP9Mb9MoWhiUHuzjH+vBhnadYpj9bsi37zwnxcH/1JflfDjxzqldwetMmVSAJYK2x
-         vMeEwG9DVdk239kmKUqpX9T3QHG1xYq7eWx7y5X40sphq5On3IAOpGVUwQ0NP7oVk4v/
-         X2ELHWyjBtf+JSFvqZRVvXpRvCfKWe+R6o3B8MlxRr/zHYFDF32BhRVWEZtZxfEOv6Ob
-         Wr5m06E8lY+ND6QYIKLB2SjbLHMTuXVHLXmdrtntCR2Henc4cO6AoeBfxHQvXFQi0Uzd
-         EfhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730922945; x=1731527745;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=sz8jpFca6SqfJ60+obKhkJJRmDB3H7XKSoVY6XiXXVw=;
-        b=UnPqY0o3DsWzO/SussyrRfckSuoaN205Zzvv3aKmXvHLwZhnylaMkXnenBtCkvpW6e
-         vbLHFVa8IpmzK2iazCdtypnNsPGSBRN1wz86nKG7zSj4obcjyYiinhSJ0voICWRdy5FZ
-         ZM6gScXMt3dByq8Qzfz4Rtft/OXOBldnWZTKFP7HTX7opNEaTJq7EMcgIISozO49a9eC
-         IcewU80tuAh+XQaBLMF6LfMKEI2BEDaV2au883EpTqSN562ybRI5XHSrAe+nefiiy16h
-         m71t7hL4Q/babZVzANlhZoLTKzwlJYSf7Ok91P25Z72WvvZBy/7px+o+1xAziY4myGZz
-         IYPQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX7I4zUe9Q6tFoDKWKsB5p+TwjTI9fjxeNj4/IOg/FgAZHsmWUyNNP5Lar1HJY/ZBRnpPOh8A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw+OHYKuPp8iJuY71kSw4POUxAk+6LhrKWOWY+0T/lAKj5cCV04
-	XZwpY17lcCIKFTh/frNU05jjnZ2Lklbe8FIbx2y/a2EGG7vUtq1neCKFYqLzNz0lGR+dUfulKPV
-	K8cekzXl7Go6nDT/gi6AZVxflNqy0wg==
-X-Google-Smtp-Source: AGHT+IF2udQRzmHpiQvlWHqISilnXK7IsefQOlaY9vSnZF5qmLudxSk4K2ExJY2MYgmJugH+Y57WGNpI1w2K1sv76WY=
-X-Received: by 2002:a5d:6d0b:0:b0:37d:509e:8742 with SMTP id
- ffacd0b85a97d-381c7a480f3mr17102742f8f.1.1730922943951; Wed, 06 Nov 2024
- 11:55:43 -0800 (PST)
+	s=arc-20240116; t=1730927135; c=relaxed/simple;
+	bh=V5zGA+7TTCtQX65iL5fAXX3VQZwwLwuD0wSMEpDbyLo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QbZ5sYhnTk7WL3Hum6h7sGSpdAI1iD1zxvecBlIxArfhzhAAnvoP4fd66hgPZqPCe4tyVWwzgBas5A85g5YqkMpCq6o8x1QuYevZ5zr+oGkK9c4DkXPbnJxyg36V4YIDBM62NkNsRBxQ4nVfnyWjTrbrdyzrFYGyCje/NFNuYLM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C19D7497;
+	Wed,  6 Nov 2024 13:06:01 -0800 (PST)
+Received: from [10.57.90.5] (unknown [10.57.90.5])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 920813F66E;
+	Wed,  6 Nov 2024 13:05:27 -0800 (PST)
+Message-ID: <2a0e69e3-63ba-475b-a5a9-0863ad0f2bf8@arm.com>
+Date: Wed, 6 Nov 2024 21:05:26 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com> <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
- <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
- <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
- <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org> <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
- <18ba4489-ad30-423e-9c54-d4025f74c193@kernel.org> <b8b7818a-e44b-45f5-91c2-d5eceaa5dd5b@kernel.org>
-In-Reply-To: <b8b7818a-e44b-45f5-91c2-d5eceaa5dd5b@kernel.org>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Wed, 6 Nov 2024 11:55:07 -0800
-Message-ID: <CAKgT0UfkyLsfZGm0+T0Jyv=jO=tvS11vtD8MSR7s-EdZ4nGM+g@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Jesper Dangaard Brouer <hawk@kernel.org>
-Cc: Yunsheng Lin <linyunsheng@huawei.com>, =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>, 
-	davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, 
-	zhangkun09@huawei.com, fanghaiqing@huawei.com, liuyonglong@huawei.com, 
-	Robin Murphy <robin.murphy@arm.com>, IOMMU <iommu@lists.linux.dev>, 
-	Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	kernel-team <kernel-team@cloudflare.com>, Viktor Malik <vmalik@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 05/12] iommu/arm-smmu-v3: Support IOMMU_GET_HW_INFO via
+ struct arm_smmu_hw_info
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, acpica-devel@lists.linux.dev,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+ Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Robert Moore <robert.moore@intel.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Donald Dutile <ddutile@redhat.com>, Eric Auger <eric.auger@redhat.com>,
+ Hanjun Guo <guohanjun@huawei.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jerry Snitselaar <jsnitsel@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+ Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ patches@lists.linux.dev, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Mostafa Saleh <smostafa@google.com>
+References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+ <5-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+ <20241104114723.GA11511@willie-the-truck> <20241104124102.GX10193@nvidia.com>
+ <8a5940b0-08f3-48b1-9498-f09f0527a964@arm.com>
+ <20241106180531.GA520535@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20241106180531.GA520535@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 6, 2024 at 7:57=E2=80=AFAM Jesper Dangaard Brouer <hawk@kernel.=
-org> wrote:
->
->
->
-> On 06/11/2024 14.25, Jesper Dangaard Brouer wrote:
-> >
-> > On 26/10/2024 09.33, Yunsheng Lin wrote:
-> >> On 2024/10/25 22:07, Jesper Dangaard Brouer wrote:
-> >>
-> >> ...
-> >>
-> >>>
-> >>>>> You and Jesper seems to be mentioning a possible fact that there mi=
-ght
-> >>>>> be 'hundreds of gigs of memory' needed for inflight pages, it would
-> >>>>> be nice
-> >>>>> to provide more info or reasoning above why 'hundreds of gigs of
-> >>>>> memory' is
-> >>>>> needed here so that we don't do a over-designed thing to support
-> >>>>> recording
-> >>>>> unlimited in-flight pages if the driver unbound stalling turns out
-> >>>>> impossible
-> >>>>> and the inflight pages do need to be recorded.
-> >>>>
-> >>>> I don't have a concrete example of a use that will blow the limit yo=
-u
-> >>>> are setting (but maybe Jesper does), I am simply objecting to the
-> >>>> arbitrary imposing of any limit at all. It smells a lot of "640k oug=
-ht
-> >>>> to be enough for anyone".
-> >>>>
-> >>>
-> >>> As I wrote before. In *production* I'm seeing TCP memory reach 24 GiB
-> >>> (on machines with 384GiB memory). I have attached a grafana screensho=
-t
-> >>> to prove what I'm saying.
-> >>>
-> >>> As my co-worker Mike Freemon, have explain to me (and more details in
-> >>> blogposts[1]). It is no coincident that graph have a strange "sealing=
-"
-> >>> close to 24 GiB (on machines with 384GiB total memory).  This is beca=
-use
-> >>> TCP network stack goes into a memory "under pressure" state when 6.25=
-%
-> >>> of total memory is used by TCP-stack. (Detail: The system will stay i=
-n
-> >>> that mode until allocated TCP memory falls below 4.68% of total memor=
-y).
-> >>>
-> >>>   [1]
-> >>> https://blog.cloudflare.com/unbounded-memory-usage-by-tcp-for-receive=
--buffers-and-how-we-fixed-it/
-> >>
-> >> Thanks for the info.
-> >
-> > Some more info from production servers.
-> >
-> > (I'm amazed what we can do with a simple bpftrace script, Cc Viktor)
-> >
-> > In below bpftrace script/oneliner I'm extracting the inflight count, fo=
-r
-> > all page_pool's in the system, and storing that in a histogram hash.
-> >
-> > sudo bpftrace -e '
-> >   rawtracepoint:page_pool_state_release { @cnt[probe]=3Dcount();
-> >    @cnt_total[probe]=3Dcount();
-> >    $pool=3D(struct page_pool*)arg0;
-> >    $release_cnt=3D(uint32)arg2;
-> >    $hold_cnt=3D$pool->pages_state_hold_cnt;
-> >    $inflight_cnt=3D(int32)($hold_cnt - $release_cnt);
-> >    @inflight=3Dhist($inflight_cnt);
-> >   }
-> >   interval:s:1 {time("\n%H:%M:%S\n");
-> >    print(@cnt); clear(@cnt);
-> >    print(@inflight);
-> >    print(@cnt_total);
-> >   }'
-> >
-> > The page_pool behavior depend on how NIC driver use it, so I've run thi=
-s
-> > on two prod servers with drivers bnxt and mlx5, on a 6.6.51 kernel.
-> >
-> > Driver: bnxt_en
-> > - kernel 6.6.51
-> >
-> > @cnt[rawtracepoint:page_pool_state_release]: 8447
-> > @inflight:
-> > [0]             507 |                                        |
-> > [1]             275 |                                        |
-> > [2, 4)          261 |                                        |
-> > [4, 8)          215 |                                        |
-> > [8, 16)         259 |                                        |
-> > [16, 32)        361 |                                        |
-> > [32, 64)        933 |                                        |
-> > [64, 128)      1966 |                                        |
-> > [128, 256)   937052 |@@@@@@@@@                               |
-> > [256, 512)  5178744 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-> > [512, 1K)     73908 |                                        |
-> > [1K, 2K)    1220128 |@@@@@@@@@@@@                            |
-> > [2K, 4K)    1532724 |@@@@@@@@@@@@@@@                         |
-> > [4K, 8K)    1849062 |@@@@@@@@@@@@@@@@@@                      |
-> > [8K, 16K)   1466424 |@@@@@@@@@@@@@@                          |
-> > [16K, 32K)   858585 |@@@@@@@@                                |
-> > [32K, 64K)   693893 |@@@@@@                                  |
-> > [64K, 128K)  170625 |@                                       |
-> >
-> > Driver: mlx5_core
-> >   - Kernel: 6.6.51
-> >
-> > @cnt[rawtracepoint:page_pool_state_release]: 1975
-> > @inflight:
-> > [128, 256)         28293 |@@@@                               |
-> > [256, 512)        184312 |@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
-> > [512, 1K)              0 |                                   |
-> > [1K, 2K)            4671 |                                   |
-> > [2K, 4K)          342571 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-> > [4K, 8K)          180520 |@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
-> > [8K, 16K)          96483 |@@@@@@@@@@@@@@                     |
-> > [16K, 32K)         25133 |@@@                                |
-> > [32K, 64K)          8274 |@                                  |
-> >
-> >
-> > The key thing to notice that we have up-to 128,000 pages in flight on
-> > these random production servers. The NIC have 64 RX queue configured,
-> > thus also 64 page_pool objects.
-> >
->
-> I realized that we primarily want to know the maximum in-flight pages.
->
-> So, I modified the bpftrace oneliner to track the max for each page_pool
-> in the system.
->
-> sudo bpftrace -e '
->   rawtracepoint:page_pool_state_release { @cnt[probe]=3Dcount();
->    @cnt_total[probe]=3Dcount();
->    $pool=3D(struct page_pool*)arg0;
->    $release_cnt=3D(uint32)arg2;
->    $hold_cnt=3D$pool->pages_state_hold_cnt;
->    $inflight_cnt=3D(int32)($hold_cnt - $release_cnt);
->    $cur=3D@inflight_max[$pool];
->    if ($inflight_cnt > $cur) {
->      @inflight_max[$pool]=3D$inflight_cnt;}
->   }
->   interval:s:1 {time("\n%H:%M:%S\n");
->    print(@cnt); clear(@cnt);
->    print(@inflight_max);
->    print(@cnt_total);
->   }'
->
-> I've attached the output from the script.
-> For unknown reason this system had 199 page_pool objects.
->
-> The 20 top users:
->
-> $ cat out02.inflight-max | grep inflight_max | tail -n 20
-> @inflight_max[0xffff88829133d800]: 26473
-> @inflight_max[0xffff888293c3e000]: 27042
-> @inflight_max[0xffff888293c3b000]: 27709
-> @inflight_max[0xffff8881076f2800]: 29400
-> @inflight_max[0xffff88818386e000]: 29690
-> @inflight_max[0xffff8882190b1800]: 29813
-> @inflight_max[0xffff88819ee83800]: 30067
-> @inflight_max[0xffff8881076f4800]: 30086
-> @inflight_max[0xffff88818386b000]: 31116
-> @inflight_max[0xffff88816598f800]: 36970
-> @inflight_max[0xffff8882190b7800]: 37336
-> @inflight_max[0xffff888293c38800]: 39265
-> @inflight_max[0xffff888293c3c800]: 39632
-> @inflight_max[0xffff888293c3b800]: 43461
-> @inflight_max[0xffff888293c3f000]: 43787
-> @inflight_max[0xffff88816598f000]: 44557
-> @inflight_max[0xffff888132ce9000]: 45037
-> @inflight_max[0xffff888293c3f800]: 51843
-> @inflight_max[0xffff888183869800]: 62612
-> @inflight_max[0xffff888113d08000]: 73203
->
-> Adding all values together:
->
->   grep inflight_max out02.inflight-max | awk 'BEGIN {tot=3D0} {tot+=3D$2;
-> printf "total:" tot "\n"}' | tail -n 1
->
-> total:1707129
->
-> Worst case we need a data structure holding 1,707,129 pages.
-> Fortunately, we don't need a single data structure as this will be split
-> between 199 page_pool's.
->
-> --Jesper
+On 2024-11-06 6:05 pm, Jason Gunthorpe wrote:
+> On Wed, Nov 06, 2024 at 04:37:53PM +0000, Robin Murphy wrote:
+>> On 2024-11-04 12:41 pm, Jason Gunthorpe wrote:
+>>> On Mon, Nov 04, 2024 at 11:47:24AM +0000, Will Deacon wrote:
+>>>>> +/**
+>>>>> + * struct iommu_hw_info_arm_smmuv3 - ARM SMMUv3 hardware information
+>>>>> + *                                   (IOMMU_HW_INFO_TYPE_ARM_SMMUV3)
+>>>>> + *
+>>>>> + * @flags: Must be set to 0
+>>>>> + * @__reserved: Must be 0
+>>>>> + * @idr: Implemented features for ARM SMMU Non-secure programming interface
+>>>>> + * @iidr: Information about the implementation and implementer of ARM SMMU,
+>>>>> + *        and architecture version supported
+>>>>> + * @aidr: ARM SMMU architecture version
+>>>>> + *
+>>>>> + * For the details of @idr, @iidr and @aidr, please refer to the chapters
+>>>>> + * from 6.3.1 to 6.3.6 in the SMMUv3 Spec.
+>>>>> + *
+>>>>> + * User space should read the underlying ARM SMMUv3 hardware information for
+>>>>> + * the list of supported features.
+>>>>> + *
+>>>>> + * Note that these values reflect the raw HW capability, without any insight if
+>>>>> + * any required kernel driver support is present. Bits may be set indicating the
+>>>>> + * HW has functionality that is lacking kernel software support, such as BTM. If
+>>>>> + * a VMM is using this information to construct emulated copies of these
+>>>>> + * registers it should only forward bits that it knows it can support.
+>>
+>> But how *is* a VMM supposed to know what it can support?
+> 
+> I answered a related question to Mostafa with an example:
+> 
+> https://lore.kernel.org/linux-iommu/20240903235532.GJ3773488@nvidia.com/
+> 
+> "global" capabilities that are enabled directly from the CD entry
+> would follow the pattern.
+> 
+>> Are they all expected to grovel the host devicetree/ACPI tables and
+>> maintain their own knowledge of implementation errata to understand
+>> what's actually usable?
+> 
+> No, VMMs are expected to only implement base line features we have
+> working today and not blindly add new features based only HW registers
+> reported here.
+> 
+> Each future capability we want to enable at the VMM needs an analysis:
+> 
+>   1) Does it require kernel SW changes, ie like BTM? Then it needs a
+>      kernel_capabilities bit to say the kernel SW exists
+>   2) Does it require data from ACPI/DT/etc? Then it needs a
+>      kernel_capabilities bit
+>   3) Does it need to be "turned on" per VM, ie with a VMS enablement?
+>      Then it needs a new request flag in ALLOC_VIOMMU
+>   4) Otherwise it can be read directly from the idr[] array
+> 
+> This is why the comment above is so stern that the VMM "should only
+> forward bits that it knows it can support".
 
-Is there any specific reason for why we need to store the pages
-instead of just scanning the page tables to look for them? We should
-already know how many we need to look for and free. If we were to just
-scan the page structs and identify the page pool pages that are
-pointing to our pool we should be able to go through and clean them
-up. It won't be the fastest approach, but this should be an
-exceptional case to handle things like a hot plug removal of a device
-where we can essentially run this in the background before we free the
-device.
+So... you're saying this patch is in fact broken, or at least uselessly 
+incomplete, since VMMs aren't allowed to emulate a vSMMU at all without 
+first consulting some other interface which does not exist? Great.
 
-Then it would just be a matter of modifying the pool so that it will
-drop support for doing DMA unmapping and essentially just become a
-place for the freed pages to go to die.
+>> S2 tables it its own business. AFAICS, unless the VMM wants to do some
+>> fiddly CD shadowing, it's going to be kinda hard to prevent the SMMU seeing
+>> a guest CD with CD.HA and/or CD.HD set if the guest expects S1 HTTU to work.
+> 
+> If the VMM wrongly indicates HTTU support to the VM, because it
+> wrongly inspected those bits in the idr report, then it is just
+> broken.
+
+What do you mean? We could have a system right now where the hardware is 
+configured with SMMU_IDR0.HTTU=2, but it turned out that atomics were 
+broken in the interconnect so firmware sets the IORT "HTTU override" 
+field is set to 0. We know about that in the kernel, but all a VMM sees 
+is iommu_hw_info_arm_smmuv3.idr[0] indicating HTTU=2. If it is "broken" 
+to take the only information available at face value, assume HTTU is 
+available, and reflect that in a vSMMU interface, then what is the 
+correct thing to do, other than to not dare emulate a vSMMU at all, in 
+fear of a sternly worded comment?
+
+>> I would say it does. Advertising a feature when we already know it's not
+>> usable at all puts a non-trivial and unnecessary burden on the VMM and VM to
+>> then have to somehow derive that information from other sources, at the risk
+>> of being confused by unexpected behaviour if they don't.
+> 
+> That is not the purpose here, the register report is not to be used as
+> "advertising features". It describes details of the raw HW that the
+> VMM may need to use *some* of the fields.
+> 
+> There are quite a few fields that fit #4 today: OAS, VAX, GRAN, BBML,
+> CD2L, etc.
+> 
+> Basically we will pass most of the bits and mask a few. If we get the
+> masking wrong and pass something we shouldn't, then we've improved
+> nothing compared to this proposal. I think we are likely to get the
+> masking wrong :)
+
+Seriously? A simple inverse of the feature detection the kernel driver 
+already does for its own needs, implemented once in the same place, is hard?
+
+Compared to maintaining the exact same information within the driver but 
+in some new different form, and also maintaining it in the UAPI, and 
+having every VMM ever all do the same work to put the two together, and 
+always be up to date with the right UAPI, and never ever let any field 
+slip through as-is, especially not all the ones which were RES0 at time 
+of writing, enforced by a sternly worded comment? Why yes, of course I 
+can see how that's trivially easy and carries no risk whatsoever.
+
+>> We sanitise CPU ID registers for userspace and KVM, so I see no compelling
+>> reason for SMMU ID registers to be different.
+> 
+> We discussed this already:
+> 
+> https://lore.kernel.org/linux-iommu/20240904120103.GB3915968@nvidia.com
+> 
+> It is a false comparison, for KVM the kernel is responsible to control
+> the CPU ID registers. Reporting the registers the VM sees to the VMM
+> makes alot of sense. For SMMU the VMM exclusively controls the VM's ID
+> registers.
+
+Pointing out that two things are different is a false comparison because 
+they are different, by virtue of your choice to make them different? 
+Please try making sense.
+
+Your tautology still does not offer any reasoning against doing the 
+logical thing and following the same basic pattern: the kernel uses the 
+ID register mechanism itself to advertise the set of features it's 
+able/willing to support, by sanitising the values it offers to the VMM, 
+combining the notions of hardware and kernel support where the 
+distinction is irrelevant anyway. The VMM is then still free to take 
+those values and hide more features, or potentially add any that it is 
+capable of emulating without the kernel's help, and advertise that final 
+set to the VM. Obviously there are significant *implementation* 
+differences, most notably that the latter VMM->VM part doesn't need to 
+involve IOMMUFD at all since MMIO register emulation can stay entirely 
+in userspace, whereas for CPU system registers the final VM-visible 
+values need to be plugged back in to KVM for it to handle the traps.
+
+We are all asking you to explain why you think doing the kernel->VMM 
+advertisement naturally and intuitively is somehow bad, and forcing VMMs 
+to instead rely on a more complex, fragile, and crucially non-existent 
+additional interface is better. You should take "We discussed this 
+already" as more of a clue to yourself than to me - if 4 different 
+people have all said the exact same thing in so many words, perhaps 
+there's something in it...
+
+And in case I need to spell it out with less sarcasm, "we'll get masking 
+wrong in the kernel" only implies "we'll get kernel_capabilities wrong 
+in the kernel (and elsewhere)", so it's clearly not a useful argument to 
+keep repeating. Besides, as KVM + sysfs + MRS emulation shows, we're 
+pretty experienced at masking ID registers in the kernel. It's not hard 
+to do it right in a robust manner, where particularly with the nature of 
+SMMU features, the only real risk might be forgetting to expose 
+something new once we do actually support it.
+
+> If you still feel strongly about this please let me know by Friday and
+> I will drop the idr[] array from this cycle. We can continue to
+> discuss a solution for the next cycle.
+
+It already can't work as-is, I don't see how making it even more broken 
+would help. IMO it doesn't seem like a good idea to be merging UAPI at 
+all while it's still clearly incomplete and by its own definition unusable.
+
+Thanks,
+Robin.
