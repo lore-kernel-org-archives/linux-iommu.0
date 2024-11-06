@@ -1,147 +1,254 @@
-Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0ED6209F4B
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:39:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.35
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 520EB212D3C
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 19:45:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730921970; cv=none; b=mIDnW8f42C2vO7L9WfeE1m2ZQpxphQYQuhxKYp4wE/wWfXiJPsPKVsdNVLuzf/GwLilyFYXYEmiWME/ejng3rTyPltFDUTzYwTkpY1Lci4Sl/54roIbBwYDHomVH+EBTjOb8Jj9H75W30XuPJW4+rEwcKYXq9A4bKgElRjdB8gs=
+	t=1730922330; cv=none; b=GP+Jl32Hpy+7Z9aGy541qBeQKZdCWhkrbhNz/BGaxS+vXfcAb7Odu4uFYlNL0QrKmtZUnuXyYDm9/rkYiBCzimHofGuT6RhFXjEz70B7ZDIboJeW8wnoQOFqyOCPoolyglTRJHATVb4/9M3nYVcmGMVknF93fYXnxnPLJnNBh7g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730921970; c=relaxed/simple;
-	bh=tQJFIIVAr7zhlGtYPHWkAgTf9vswLcNuwpL3LPfc+i0=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=beb1i7jXiN4QUzjy8wlLR2iOrl51jCwbYrqdBfcAfWKI83p9tWHXMWMwlO+ZD1uFzccr5hw789jSyi/yMTbe4Oyt+TiPOB7KxEDsWh2nAwKzDfb5patVcW8rZvTnwE250HElyLz1tyLuTXHn3LNGk3XrWzqEjhYUpq8K1TCbLHs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.35
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.163])
-	by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4XkFpr5Vkhz1SG94;
-	Thu,  7 Nov 2024 03:37:40 +0800 (CST)
-Received: from dggpeml100021.china.huawei.com (unknown [7.185.36.148])
-	by mail.maildlp.com (Postfix) with ESMTPS id DDB50180019;
-	Thu,  7 Nov 2024 03:39:22 +0800 (CST)
-Received: from frapeml500007.china.huawei.com (7.182.85.172) by
- dggpeml100021.china.huawei.com (7.185.36.148) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 7 Nov 2024 03:39:21 +0800
-Received: from frapeml500007.china.huawei.com ([7.182.85.172]) by
- frapeml500007.china.huawei.com ([7.182.85.172]) with mapi id 15.01.2507.039;
- Wed, 6 Nov 2024 20:39:19 +0100
-From: Salil Mehta <salil.mehta@huawei.com>
-To: Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@kernel.org>,
-	"shenjian (K)" <shenjian15@huawei.com>
-CC: Arnd Bergmann <arnd@arndb.de>, Will Deacon <will@kernel.org>, Joerg Roedel
-	<jroedel@suse.de>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Andrew
- Lunn" <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, "Eric
- Dumazet" <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, shaojijie <shaojijie@huawei.com>, wangpeiyang
-	<wangpeiyang1@huawei.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] [net-next] net: hns3: add IOMMU_SUPPORT dependency
-Thread-Topic: [PATCH] [net-next] net: hns3: add IOMMU_SUPPORT dependency
-Thread-Index: AQHbLpKYY9Lsz1VxeUenvFuoDgyBFLKm2vEAgAASuSCAAANu4IAAT+oAgANnArA=
-Date: Wed, 6 Nov 2024 19:39:19 +0000
-Message-ID: <515b8ae869b94c849d02421d8d8767fd@huawei.com>
-References: <20241104082129.3142694-1-arnd@kernel.org>
- <069c9838-b781-4012-934a-d2626fa78212@arm.com>
- <96df804b6d9d467391fda27d90b5227c@huawei.com>
- <a94f95bd661c4978bb843c8a1af73818@huawei.com>
- <29d5918e-cfe2-4b36-b0f1-a1379075dd05@arm.com>
-In-Reply-To: <29d5918e-cfe2-4b36-b0f1-a1379075dd05@arm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1730922330; c=relaxed/simple;
+	bh=RgdYcgCBQAaQ1bP3d0JPDapEPac8uo3Pcaz65neb70A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ohTaFFkkpO0/e9ncXuEB94kPTDlDi6HWLjynSLB7e3X2mYZYgLW0Es5FPEX/5kWw1PKm3DsjzHSdzizv0MZxUMy6swCwexWl+5Nb8+XXKQDcFCOjltWo1DaleE2beYhxKPRLqXgZpKmi6ZukTA5w80djK7IeAYGNIdzYGybK/DA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=QkLhYefW; arc=none smtp.client-ip=209.85.166.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="QkLhYefW"
+Received: by mail-io1-f52.google.com with SMTP id ca18e2360f4ac-8323b555a6aso8058739f.3
+        for <iommu@lists.linux.dev>; Wed, 06 Nov 2024 11:45:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1730922326; x=1731527126; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=l+a2o7Ai/OLZodimKUqsQYFRlYX3rzr6bNlDYl2/9c4=;
+        b=QkLhYefW9GYWIPplEc3Ld66wuZscRj83lB7JfbHexsa9DQA5Kl/E7H6ntBGZTx6TNI
+         yVchF6kzu1sM5ftvVqJRTlOqDjXM3ncgtgQlcv/T2DY+tVQC1e98PdAtpyeUDmboiT6X
+         nKgcaVBC1/w8uHncH2doF3OnWInzaRpaLaSSbIDs2OWPvUCzIkbDFdMq7Sp7LcXoYVLK
+         imiNUZvR/48fTNMzwr4EYUTZ0j2C0yowD4GPQBpZCmamuhJNgyHCefhYDSVHkIgTv+kf
+         f3MkwVh9k6L9CaC1loxaTZJMGwUhQ4hXXp35OBgLbrXGvPL2tnqqVjYMsLcLw6BuejG6
+         29VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730922326; x=1731527126;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=l+a2o7Ai/OLZodimKUqsQYFRlYX3rzr6bNlDYl2/9c4=;
+        b=sW49q7pX0p14LWf1YZojjbXz5qAtK0boMaYX+9nu+PX4qGMj969MaVt8xMotNWBRod
+         sgIqMi0keIStgW7mXof6VK8+ccUU1e+20x2eDpz6GIGLmkDF96poF98cApWGNkIjK8q3
+         4tCykdSZ+mSZgtzaXPV3zVV3jGlaGfkjDU30Nv+ZTncZovUCoSOBNURRZzbejktlDo36
+         zICDvsO9HwLefF478s6kjY9aPU++J+lmBv6s0G+g8rqn1W9XI3Tnk4L/yCHuo4u13QYv
+         1NtOwL5Q9QtVu1r2iaX3gi45DlryYz3Tf+Wm666WtE4GF87HEIKzZyAggoLjXgiRJ3AW
+         aKOA==
+X-Forwarded-Encrypted: i=1; AJvYcCW3kDWre5zv72+03Rzi4z6MRHQM9y2TqSznTHL1SfEABREYdRg99IldaGDSi5jdSbmf0yVy4A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzzGe9J0qIJLX5XNMJoTjynr97jprKk1Mp4EK6WzVv4X3GeruSs
+	mrjZVxrbq4wkrJhAVwgQ2yCiT2/giyH4/QIO2IoN0aYox3PBA5/4gu8UN2TVuqM=
+X-Google-Smtp-Source: AGHT+IFFkPdTuW3O6B5Kfs6P93ZzsRHCf7tesqNJ7oxewkCWmsZQaCiwBqj8i0a19PKZV/2UTcPUCQ==
+X-Received: by 2002:a05:6602:6c17:b0:83b:4c:5f70 with SMTP id ca18e2360f4ac-83b650372a9mr2467672639f.12.1730922325433;
+        Wed, 06 Nov 2024 11:45:25 -0800 (PST)
+Received: from [100.64.0.1] ([147.124.94.167])
+        by smtp.gmail.com with ESMTPSA id ca18e2360f4ac-83b67ba907esm329811139f.25.2024.11.06.11.45.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Nov 2024 11:45:24 -0800 (PST)
+Message-ID: <d92ab280-bd1f-4145-8164-cebab1980f20@sifive.com>
+Date: Wed, 6 Nov 2024 13:45:23 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iommu/riscv: Add support for platform msi
+To: Andrew Jones <ajones@ventanamicro.com>, iommu@lists.linux.dev,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, paul.walmsley@sifive.com, palmer@dabbelt.com,
+ aou@eecs.berkeley.edu
+References: <20241106175102.219923-4-ajones@ventanamicro.com>
+ <20241106175102.219923-6-ajones@ventanamicro.com>
+From: Samuel Holland <samuel.holland@sifive.com>
+Content-Language: en-US
+In-Reply-To: <20241106175102.219923-6-ajones@ventanamicro.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-SGkgUm9iaW4sDQoNClNvcnJ5IGZvciB0aGUgbGF0ZSByZXBseS4gSSB3YXMgb24gYSBsZWF2ZSB5
-ZXN0ZXJkYXkuDQoNCj4gIEZyb206IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+
-DQo+ICBTZW50OiBNb25kYXksIE5vdmVtYmVyIDQsIDIwMjQgNDozNSBQTQ0KPiAgVG86IFNhbGls
-IE1laHRhIDxzYWxpbC5tZWh0YUBodWF3ZWkuY29tPjsgQXJuZCBCZXJnbWFubg0KPiAgPGFybmRA
-a2VybmVsLm9yZz47IHNoZW5qaWFuIChLKSA8c2hlbmppYW4xNUBodWF3ZWkuY29tPg0KPiAgDQo+
-ICBPbiAyMDI0LTExLTA0IDEwOjUwIGFtLCBTYWxpbCBNZWh0YSB3cm90ZToNCj4gID4+ICAgRnJv
-bTogU2FsaWwgTWVodGEgPHNhbGlsLm1laHRhQGh1YXdlaS5jb20+DQo+ICA+PiAgIFNlbnQ6IE1v
-bmRheSwgTm92ZW1iZXIgNCwgMjAyNCAxMDo0MSBBTQ0KPiAgPj4gICBUbzogUm9iaW4gTXVycGh5
-IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT47IEFybmQgQmVyZ21hbm4NCj4gID4+ICAgPGFybmRAa2Vy
-bmVsLm9yZz47IHNoZW5qaWFuIChLKSA8c2hlbmppYW4xNUBodWF3ZWkuY29tPg0KPiAgPj4NCj4g
-ID4+ICAgSEkgUm9iaW4sDQo+ICA+Pg0KPiAgPj4gICA+ICBGcm9tOiBSb2JpbiBNdXJwaHkgPHJv
-YmluLm11cnBoeUBhcm0uY29tPg0KPiAgPj4gICA+ICBTZW50OiBNb25kYXksIE5vdmVtYmVyIDQs
-IDIwMjQgMTA6MjkgQU0NCj4gID4+ICAgPiAgVG86IEFybmQgQmVyZ21hbm4gPGFybmRAa2VybmVs
-Lm9yZz47IHNoZW5qaWFuIChLKQ0KPiAgPj4gICA+IDxzaGVuamlhbjE1QGh1YXdlaS5jb20+OyBT
-YWxpbCBNZWh0YSA8c2FsaWwubWVodGFAaHVhd2VpLmNvbT4NCj4gID4+ICAgPiAgQ2M6IEFybmQg
-QmVyZ21hbm4gPGFybmRAYXJuZGIuZGU+OyBXaWxsIERlYWNvbg0KPiAgPHdpbGxAa2VybmVsLm9y
-Zz47DQo+ICA+PiAgID4gSm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+OyBpb21tdUBsaXN0
-cy5saW51eC5kZXY7IEFuZHJldw0KPiAgTHVubg0KPiAgPj4gICA+IDxhbmRyZXcrbmV0ZGV2QGx1
-bm4uY2g+OyBEYXZpZCBTLiBNaWxsZXINCj4gIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsNCj4gID4+
-ICAgRXJpYw0KPiAgPj4gICA+IER1bWF6ZXQgPGVkdW1hemV0QGdvb2dsZS5jb20+OyBKYWt1YiBL
-aWNpbnNraQ0KPiAgPGt1YmFAa2VybmVsLm9yZz47DQo+ICA+PiAgID4gUGFvbG8gQWJlbmkgPHBh
-YmVuaUByZWRoYXQuY29tPjsgc2hhb2ppamllDQo+ICA8c2hhb2ppamllQGh1YXdlaS5jb20+Ow0K
-PiAgPj4gICA+IHdhbmdwZWl5YW5nIDx3YW5ncGVpeWFuZzFAaHVhd2VpLmNvbT47DQo+ICBuZXRk
-ZXZAdmdlci5rZXJuZWwub3JnOw0KPiAgPj4gICA+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
-cmcNCj4gID4+ICAgPiAgU3ViamVjdDogUmU6IFtQQVRDSF0gW25ldC1uZXh0XSBuZXQ6IGhuczM6
-IGFkZCBJT01NVV9TVVBQT1JUDQo+ICA+PiAgID4gZGVwZW5kZW5jeQ0KPiAgPj4gICA+DQo+ICA+
-PiAgID4gIE9uIDIwMjQtMTEtMDQgODoyMSBhbSwgQXJuZCBCZXJnbWFubiB3cm90ZToNCj4gID4+
-ICAgPiAgPiBGcm9tOiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPiAgPiAgPiBUaGUgaG5z
-MyBkcml2ZXINCj4gIHN0YXJ0ZWQNCj4gID4+ICAgPiBmaWxsaW5nIGlvbW11X2lvdGxiX2dhdGhl
-ciBzdHJ1Y3R1cmVzIGl0c2VsZiwgID4gd2hpY2ggcmVxdWlyZXMNCj4gID4+ICAgPiBDT05GSUdf
-SU9NTVVfU1VQUE9SVCBpcyBlbmFibGVkOg0KPiAgPj4gICA+ICA+DQo+ICA+PiAgID4gID4gZHJp
-dmVycy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL2huczMvaG5zM19lbmV0LmM6IEluIGZ1bmN0aW9u
-DQo+ICA+PiAgID4gICdobnMzX2RtYV9tYXBfc3luYyc6DQo+ICA+PiAgID4gID4gZHJpdmVycy9u
-ZXQvZXRoZXJuZXQvaGlzaWxpY29uL2huczMvaG5zM19lbmV0LmM6Mzk1OjE0OiBlcnJvcjoNCj4g
-ID4+ICAgPiAnc3RydWN0ICBpb21tdV9pb3RsYl9nYXRoZXInIGhhcyBubyBtZW1iZXIgbmFtZWQg
-J3N0YXJ0Jw0KPiAgPj4gICA+ICA+ICAgIDM5NSB8ICBpb3RsYl9nYXRoZXIuc3RhcnQgPSBpb3Zh
-Ow0KPiAgPj4gICA+ICA+ICAgICAgICB8ICAgICAgICAgICAgICBeDQo+ICA+PiAgID4gID4gZHJp
-dmVycy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL2huczMvaG5zM19lbmV0LmM6Mzk2OjE0OiBlcnJv
-cjoNCj4gID4+ICAgPiAnc3RydWN0ICBpb21tdV9pb3RsYl9nYXRoZXInIGhhcyBubyBtZW1iZXIg
-bmFtZWQgJ2VuZCcNCj4gID4+ICAgPiAgPiAgICAzOTYgfCAgaW90bGJfZ2F0aGVyLmVuZCA9IGlv
-dmEgKyBncmFudWxlIC0gMTsNCj4gID4+ICAgPiAgPiAgICAgICAgfCAgICAgICAgICAgICAgXg0K
-PiAgPj4gICA+ICA+IGRyaXZlcnMvbmV0L2V0aGVybmV0L2hpc2lsaWNvbi9obnMzL2huczNfZW5l
-dC5jOjM5NzoxNDogZXJyb3I6DQo+ICA+PiAgID4gJ3N0cnVjdCAgaW9tbXVfaW90bGJfZ2F0aGVy
-JyBoYXMgbm8gbWVtYmVyIG5hbWVkICdwZ3NpemUnDQo+ICA+PiAgID4gID4gICAgMzk3IHwgIGlv
-dGxiX2dhdGhlci5wZ3NpemUgPSBncmFudWxlOw0KPiAgPj4gICA+ICA+ICAgICAgICB8ICAgICAg
-ICAgICAgICBeDQo+ICA+PiAgID4gID4NCj4gID4+ICAgPiAgPiBBZGQgYSBLY29uZmlnIGRlcGVu
-ZGVuY3kgdG8gbWFrZSBpdCBidWlsZCBpbiByYW5kb20NCj4gIGNvbmZpZ3VyYXRpb25zLg0KPiAg
-Pj4gICA+ICA+DQo+ICA+PiAgID4gID4gQ2M6IFdpbGwgRGVhY29uIDx3aWxsQGtlcm5lbC5vcmc+
-DQo+ICA+PiAgID4gID4gQ2M6IEpvZXJnIFJvZWRlbCA8anJvZWRlbEBzdXNlLmRlPg0KPiAgPj4g
-ICA+ICA+IENjOiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPiAgPiBDYzoNCj4g
-ID4+ICAgPiBpb21tdUBsaXN0cy5saW51eC5kZXYgID4gRml4ZXM6IGYyYzE0ODk5Y2FiYSAoIm5l
-dDogaG5zMzogYWRkIHN5bmMNCj4gID4+ICAgPiBjb21tYW5kIHRvIHN5bmMgaW8tcGd0YWJsZSIp
-ICA+IFNpZ25lZC1vZmYtYnk6IEFybmQgQmVyZ21hbm4NCj4gID4+ICAgPiA8YXJuZEBhcm5kYi5k
-ZT4gID4gLS0tICA+IEkgbm90aWNlZCB0aGF0IG5vIG90aGVyIGRyaXZlciBkb2VzIHRoaXMsIHNv
-DQo+ICA+PiAgID4gaXQgd291bGQgYmUgZ29vZCB0byBoYXZlICA+IGEgY29uZmlybWF0aW9uIGZy
-b20gdGhlIGlvbW11DQo+ICBtYWludGFpbmVycw0KPiAgPj4gICA+IHRoYXQgdGhpcyBpcyBob3cg
-dGhlICA+IGludGVyZmFjZSBhbmQgdGhlIGRlcGVuZGVuY3kgaXMgaW50ZW5kZWQgdG8gYmUNCj4g
-ID4+ICAgPiB1c2VkLg0KPiAgPj4gICA+DQo+ICA+PiAgID4gIFdURiBpcyB0aGF0IHBhdGNoIGRv
-aW5nIT8gTm8sIHJhbmRvbSBkZXZpY2UgZHJpdmVycyBzaG91bGQNCj4gIGFic29sdXRlbHkNCj4g
-ID4+ICAgPiBub3QgIGJlIHBva2luZyBpbnRvIElPTU1VIGRyaXZlciBpbnRlcm5hbHMsIHRoaXMg
-aXMgZWdyZWdpb3VzbHkgd3JvbmcNCj4gID4+ICAgPiBhbmQgdGhlICBjb3JyZWN0IGFjdGlvbiBp
-cyB0byBkcm9wIGl0IGVudGlyZWx5Lg0KPiAgPj4NCj4gID4+DQo+ICA+PiAgIEFic29sdXRlbHkg
-YWdyZWUgd2l0aCBpdC4gU29ycnkgSSBoYXZlbid0IGJlZW4gaW4gdG91Y2ggZm9yIHF1aXRlIHNv
-bWUNCj4gIHRpbWUuDQo+ICA+PiAgIExldCBtZSBjYXRjaCB0aGUgd2hvbGUgc3RvcnkuICBGZWVs
-IGZyZWUgdG8gZHJvcCB0aGlzIHBhdGNoLg0KPiAgPg0KPiAgPg0KPiAgPiBKdXN0IHRvIG1ha2Ug
-aXQgY2xlYXIgSSBtZWFudCB0aGUgY3VscHJpdCBwYXRjaDoNCj4gID4gaHR0cHM6Ly9sb3JlLmtl
-cm5lbC5vcmcvbmV0ZGV2LzIwMjQxMDI1MDkyOTM4LjI5MTI5NTgtMy0NCj4gIHNoYW9qaWppZUBo
-dWF3DQo+ICA+IGVpLmNvbS8NCj4gIA0KPiAgUmlnaHQsIGlmIHRoZSBISVAwOSBTTU1VIGhhcyBh
-IGJ1ZyB3aGljaCByZXF1aXJlcyBhbg0KPiAgaW9tbXVfZG9tYWluX29wczo6aW90bGJfc3luY19t
-YXAgd29ya2Fyb3VuZCwgdGhlbiB0aGUgU01NVSBkcml2ZXINCj4gIHNob3VsZCBkZXRlY3QgdGhl
-IEhJUDA5IFNNTVUgYW5kIGltcGxlbWVudCB0aGF0IHdvcmthcm91bmQgZm9yIGl0Lg0KPiAgSE5T
-MyB0cnlpbmcgdG8gcmVhY2ggaW4gdG8gdGhlIFNNTVUgZHJpdmVyJ3MgZGF0YSBhbmQgb3Blbi1j
-b2RlDQo+ICBpb3RsYl9zeW5jX21hcCBvbiBpdHMgYmVoYWxmIGlzIGp1c3QgYXMgcGxhaW4gaWxs
-b2dpY2FsIGFzIGl0IGlzIHVuYWNjZXB0YWJsZS4NCg0KDQpUb3RhbGx5IGFncmVlIHdpdGggdGhh
-dC4gIEl0IGJyZWFrcyB0aGUgZGVzaWduIG9mIHRoZSBrZXJuZWwgZnVuZGFtZW50YWxseS4NClRo
-aXMgd2FzIGEgbWlzdGFrZSBhbmQgb24gTW9uZGF5IEkndmUgcmVxdWVzdGVkIHRoZSBzdGFrZWhv
-bGRlcnMgdG8NCmFkZHJlc3MgaXQgZXhhY3RseSBpbiB0aGUgcmVhbG1zIG9mIHdoYXQgeW91IGhh
-dmUgc3VnZ2VzdGVkIGFib3ZlLiANCg0KUmVzdCBhc3N1cmVkLCB3ZSB3aWxsIGFkZHJlc3MgdGhh
-dCBpbiB0aGUgY29ycmVjdCB3YXkuIFNvcnJ5LCBpZiB0aGlzIGNhdXNlZA0KYW55IGluY29udmVu
-aWVuY2UgdG8gYW55bW9yZSBpbmNsdWRpbmcgdGhlIE1BSU5UQUlORVIgb2YgYG5ldGRldmANCkkg
-d291bGQgaGF2ZSBjYXVnaHQgdGhpcyBtdWNoIGVhcmxpZXIgaGFkIEkgYmVlbiBmb2xsb3dpbmcg
-dGhlIE1MIGNsb3NlbHkNCmJ1dCB1bmZvcnR1bmF0ZWx5IEkndmUgbm90IGJlZW4gaW4gdG91Y2gg
-Zm9yIGxvbmcuDQoNClRoYW5rcyBmb3IgdGhlIGBudWRnZWAgdGhvdWdoIPCfmIoNCg0KQ2hlZXJz
-DQpTYWxpbC4NCg0KDQo+ICANCj4gIFRoYW5rcywNCj4gIFJvYmluLg0KDQo=
+Hi Drew,
+
+On 2024-11-06 11:51 AM, Andrew Jones wrote:
+> Apply platform_device_msi_init_and_alloc_irqs() to add support for
+> MSIs when the IOMMU is a platform device.
+> 
+> Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+> ---
+>  drivers/iommu/riscv/iommu-platform.c | 102 ++++++++++++++++++++++-----
+>  1 file changed, 84 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
+> index da336863f152..89aa622bcbde 100644
+> --- a/drivers/iommu/riscv/iommu-platform.c
+> +++ b/drivers/iommu/riscv/iommu-platform.c
+> @@ -11,18 +11,41 @@
+>   */
+>  
+>  #include <linux/kernel.h>
+> +#include <linux/of_irq.h>
+>  #include <linux/of_platform.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/msi.h>
+
+If you respin, please keep these sorted.
+
+>  
+>  #include "iommu-bits.h"
+>  #include "iommu.h"
+>  
+> +static void riscv_iommu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+> +{
+> +	struct device *dev = msi_desc_to_dev(desc);
+> +	struct riscv_iommu_device *iommu = dev_get_drvdata(dev);
+> +	u16 idx = desc->msi_index;
+> +	u64 addr;
+> +
+> +	addr = ((u64)msg->address_hi << 32) | msg->address_lo;
+> +
+> +	if (addr != (addr & RISCV_IOMMU_MSI_CFG_TBL_ADDR))
+> +		pr_warn_once("uh oh, the IOMMU can't send MSIs to 0x%llx, sending to 0x%llx instead\n",
+> +			     addr, addr & RISCV_IOMMU_MSI_CFG_TBL_ADDR);
+
+Can this use dev_warn_once()? And should it really be only a warning?
+Configuring the IOMMU to write to some other address seems dangerous. I guess
+there's no clean way to handle this error, since this function cannot fail, and
+irq_chip_compose_msi_msg() isn't supposed to fail either.
+
+> +
+> +	addr &= RISCV_IOMMU_MSI_CFG_TBL_ADDR;
+> +
+> +	riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_ADDR(idx), addr);
+> +	riscv_iommu_writel(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_DATA(idx), msg->data);
+> +	riscv_iommu_writel(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_CTRL(idx), 0);
+> +}
+> +
+>  static int riscv_iommu_platform_probe(struct platform_device *pdev)
+>  {
+> +	enum riscv_iommu_igs_settings igs;
+>  	struct device *dev = &pdev->dev;
+>  	struct riscv_iommu_device *iommu = NULL;
+>  	struct resource *res = NULL;
+> -	int vec;
+> +	int vec, ret;
+>  
+>  	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+>  	if (!iommu)
+> @@ -40,16 +63,6 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
+>  	iommu->caps = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAPABILITIES);
+>  	iommu->fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
+>  
+> -	/* For now we only support WSI */
+> -	switch (FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps)) {
+> -	case RISCV_IOMMU_CAPABILITIES_IGS_WSI:
+> -	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
+> -		break;
+> -	default:
+> -		return dev_err_probe(dev, -ENODEV,
+> -				     "unable to use wire-signaled interrupts\n");
+> -	}
+> -
+>  	iommu->irqs_count = platform_irq_count(pdev);
+>  	if (iommu->irqs_count <= 0)
+>  		return dev_err_probe(dev, -ENODEV,
+> @@ -57,13 +70,60 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
+>  	if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT)
+>  		iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
+>  
+> -	for (vec = 0; vec < iommu->irqs_count; vec++)
+> -		iommu->irqs[vec] = platform_get_irq(pdev, vec);
+> +	igs = FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps);
+> +	switch (igs) {
+> +	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
+> +	case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
+> +		if (is_of_node(dev->fwnode))
+> +			of_msi_configure(dev, to_of_node(dev->fwnode));
+> +
+> +		if (!dev_get_msi_domain(dev)) {
+> +			dev_warn(dev, "failed to find an MSI domain");
+> +			goto msi_fail;
+> +		}
+> +
+> +		ret = platform_device_msi_init_and_alloc_irqs(dev, iommu->irqs_count,
+> +							      riscv_iommu_write_msi_msg);
+> +		if (ret) {
+> +			dev_warn(dev, "failed to allocate MSIs");
+> +			goto msi_fail;
+> +		}
+> +
+> +		for (vec = 0; vec < iommu->irqs_count; vec++)
+> +			iommu->irqs[vec] = msi_get_virq(dev, vec);
+> +
+> +		/* Enable message-signaled interrupts, fctl.WSI */
+> +		if (iommu->fctl & RISCV_IOMMU_FCTL_WSI) {
+> +			iommu->fctl ^= RISCV_IOMMU_FCTL_WSI;
+> +			riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
+> +		}
+> +
+> +		dev_info(dev, "using MSIs\n");
+> +		break;
+> +
+> +msi_fail:
+> +		if (igs != RISCV_IOMMU_CAPABILITIES_IGS_BOTH) {
+> +			dev_warn(dev, "\n");
+> +			return dev_err_probe(dev, -ENODEV,
+> +					     "unable to use wire-signaled interrupts\n");
+
+Is the dev_warn() just to call attention to the following error? There's no
+guarantee that these two messages will be printed adjacently.
+
+> +		}
+> +
+> +		dev_warn(dev, " - falling back to wired irqs\n");
+
+No need for the extra hyphen here.
+
+Regards,
+Samuel
+
+> +		fallthrough;
+>  
+> -	/* Enable wire-signaled interrupts, fctl.WSI */
+> -	if (!(iommu->fctl & RISCV_IOMMU_FCTL_WSI)) {
+> -		iommu->fctl |= RISCV_IOMMU_FCTL_WSI;
+> -		riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
+> +	case RISCV_IOMMU_CAPABILITIES_IGS_WSI:
+> +		for (vec = 0; vec < iommu->irqs_count; vec++)
+> +			iommu->irqs[vec] = platform_get_irq(pdev, vec);
+> +
+> +		/* Enable wire-signaled interrupts, fctl.WSI */
+> +		if (!(iommu->fctl & RISCV_IOMMU_FCTL_WSI)) {
+> +			iommu->fctl |= RISCV_IOMMU_FCTL_WSI;
+> +			riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
+> +		}
+> +		dev_info(dev, "using wire-signaled interrupts\n");
+> +		break;
+> +	default:
+> +		return dev_err_probe(dev, -ENODEV, "invalid IGS\n");
+>  	}
+>  
+>  	return riscv_iommu_init(iommu);
+> @@ -71,7 +131,13 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
+>  
+>  static void riscv_iommu_platform_remove(struct platform_device *pdev)
+>  {
+> -	riscv_iommu_remove(dev_get_drvdata(&pdev->dev));
+> +	struct riscv_iommu_device *iommu = dev_get_drvdata(&pdev->dev);
+> +	bool msi = !(iommu->fctl & RISCV_IOMMU_FCTL_WSI);
+> +
+> +	riscv_iommu_remove(iommu);
+> +
+> +	if (msi)
+> +		platform_device_msi_free_irqs_all(&pdev->dev);
+>  };
+>  
+>  static const struct of_device_id riscv_iommu_of_match[] = {
+
