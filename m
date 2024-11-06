@@ -1,143 +1,95 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 317C613C67C;
-	Wed,  6 Nov 2024 16:37:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BB012036E2
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 17:51:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730911081; cv=none; b=XQx2vwb8sPMK2XiXgn5OgOTVc5JH8pzXepKhyo1NOVQvvsVyEpEkfzIDedb6IfpruxOSUFdrRES9GTeWvJbOQQW7Mn0ggbUO/2Bdd2O7YgOvDcIOOwCm1jR5Mpg7efEc/rdntQUGIbdPoT/91HmPwwLSoaiUrYFSMDTUu05Mhec=
+	t=1730915467; cv=none; b=QYeNVTQO0BYig7E1Q3h1nRl9H0KdY1gByl/ceTZcW6wSfPDdKY9AYXh3eifHp8yeEKBylILxOHSIW14m0oEZ/wcvq9uqZm4uY5U4Bom0Hy6/WAIhlD1x+utZKUPobKD7NwltWI5ZEC/pI589ua1CDULByeHedaxUpT16Q/kbwfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730911081; c=relaxed/simple;
-	bh=NoUPWQGZ3FMIWDA+UGAU977oicgCj2D+ncc6vpw6caU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WNaHgcETXkzfeWBCmb5aQYYblnVrC7qwdtLlQW0Oc9EEgxYc+xSpwxdZqi4BdRcKxIBL0OYiLfHGuvYLWLeV4Ln4K4V8jZvcc4yrLZw6OXqVy4xFs5JAXFNHhXl8sf8RPpjJEzlvnDgdIhwMOuH0IXTdI8lRAwOH9c9p68IDkB0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 118FC497;
-	Wed,  6 Nov 2024 08:38:28 -0800 (PST)
-Received: from [10.57.90.5] (unknown [10.57.90.5])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6850B3F528;
-	Wed,  6 Nov 2024 08:37:54 -0800 (PST)
-Message-ID: <8a5940b0-08f3-48b1-9498-f09f0527a964@arm.com>
-Date: Wed, 6 Nov 2024 16:37:53 +0000
+	s=arc-20240116; t=1730915467; c=relaxed/simple;
+	bh=AmNubWSFsMbGUCbqMjD6qzHq7thjNbyHZT8pPh3Hg6M=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AbmZWt9hIJmKfC/JvqlZonTPkNN14Ke3XCfWgvdhHFhvDJNCniFFnsm6e1bIuVClftAhERL7+WkGQOEg8ujKwuacHyPPSUFivUFKIJ+rJI8AtXfjMp6MtThjeOmF7vjyVPoN9Nj20rAyFGzLWsmde6fsJKv0F4NcMpMVbtNkrQw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=a3Ed/VsU; arc=none smtp.client-ip=209.85.208.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="a3Ed/VsU"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-5cb6ca2a776so22099a12.0
+        for <iommu@lists.linux.dev>; Wed, 06 Nov 2024 09:51:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1730915464; x=1731520264; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=XVcjUYi+p2tO+HyWvtxM4cA353hNsNdE371FkKVPyL4=;
+        b=a3Ed/VsURBfkPKljMhnszAiZiTb27z53M0sat8yjA6GxWbDWbVGdmZz4A4iVw5gJDf
+         z5lVTfInHlOc4VnfcLJe2gYFdJxDv8p0cjZ4MZgRFdqpmMwaGpIII0GLMHPeZ4G2L70c
+         vwrrtwT0HUn0pkJFazN7SqmJGYB4GPWSugC+Ecyacsxji/y0b1ft3zT76T7DoCwswvH/
+         Away4ucq44RIXIUhRoCxDPr1R4LSrlYKodoAw63LIXv/c9m6iErVnKRL/5vJxy8QKBIF
+         MNkG/n47DT7sjVu5acRIUWNe9ocRh3+CvFlfA9tUDwTp7SEEwre6xa5HzgASYu6V+MBG
+         +/aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730915464; x=1731520264;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=XVcjUYi+p2tO+HyWvtxM4cA353hNsNdE371FkKVPyL4=;
+        b=ZOo9uZpCu8osdjGJqP5wznzsE77MAe4MUa8Esq4l8hSeBySJRiMYJ5OZamIv+IWaKm
+         1H9Qxw+Ze6F6nI6N0Ve98Yoo4i7SEWroQCNTU9/MszwfYXPhihkeR14N9UJfW2UxONUn
+         Xptv8ah/xiiYj14Fk+JitTy9PcwrelaGeJnSGjfhlxv8tQLuSBqGzPlIXgn0INYZYMAo
+         xZNzl05z2nD26BgX1OpQ98JNF0KcWi4VGv+vYUTWzjYLwxwH1xiHHgTyzSsHB5QpxpuO
+         3x00V/X9y3xPCVdyjTSZ+HbnCxEtMvivYjjbTnLYbPBvOE+BT4hmtTAwJLQ8kD1z/fy2
+         XTNA==
+X-Gm-Message-State: AOJu0YwNjnBCS0hpSJ7S1dCQZK6PtqnDg0tRugaz/l3A7ErDMMxV6vAX
+	Us53UUycCkncJOxpgPwnWD/yL3zJ18SZt+A9a50sqxrfbsjPV3OhZNMO1uhz9T3B9TLAR7+6w2h
+	B
+X-Google-Smtp-Source: AGHT+IHXfsJQTYy5HHptGM/9osFkvYFJQ5HtzeFTl1ShVaweHG9C+gB1ii3r1lKuqPbvrPZMSrlCpQ==
+X-Received: by 2002:a05:6402:510e:b0:5c2:439d:90d4 with SMTP id 4fb4d7f45d1cf-5cd54af9db7mr20651491a12.30.1730915464436;
+        Wed, 06 Nov 2024 09:51:04 -0800 (PST)
+Received: from localhost (2001-1ae9-1c2-4c00-20f-c6b4-1e57-7965.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:20f:c6b4:1e57:7965])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5cee6b0fc63sm3075873a12.83.2024.11.06.09.51.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2024 09:51:03 -0800 (PST)
+From: Andrew Jones <ajones@ventanamicro.com>
+To: iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Cc: tjeznach@rivosinc.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	paul.walmsley@sifive.com,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu
+Subject: [PATCH 0/2] iommu/riscv: Add platform msi support
+Date: Wed,  6 Nov 2024 18:51:03 +0100
+Message-ID: <20241106175102.219923-4-ajones@ventanamicro.com>
+X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 05/12] iommu/arm-smmu-v3: Support IOMMU_GET_HW_INFO via
- struct arm_smmu_hw_info
-To: Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
-Cc: acpica-devel@lists.linux.dev, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
- kvm@vger.kernel.org, Len Brown <lenb@kernel.org>,
- linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- Lorenzo Pieralisi <lpieralisi@kernel.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Robert Moore <robert.moore@intel.com>, Sudeep Holla <sudeep.holla@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Donald Dutile <ddutile@redhat.com>, Eric Auger <eric.auger@redhat.com>,
- Hanjun Guo <guohanjun@huawei.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Jerry Snitselaar <jsnitsel@redhat.com>, Moritz Fischer <mdf@kernel.org>,
- Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
- patches@lists.linux.dev, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Mostafa Saleh <smostafa@google.com>
-References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
- <5-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
- <20241104114723.GA11511@willie-the-truck> <20241104124102.GX10193@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20241104124102.GX10193@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2024-11-04 12:41 pm, Jason Gunthorpe wrote:
-> On Mon, Nov 04, 2024 at 11:47:24AM +0000, Will Deacon wrote:
->>> +/**
->>> + * struct iommu_hw_info_arm_smmuv3 - ARM SMMUv3 hardware information
->>> + *                                   (IOMMU_HW_INFO_TYPE_ARM_SMMUV3)
->>> + *
->>> + * @flags: Must be set to 0
->>> + * @__reserved: Must be 0
->>> + * @idr: Implemented features for ARM SMMU Non-secure programming interface
->>> + * @iidr: Information about the implementation and implementer of ARM SMMU,
->>> + *        and architecture version supported
->>> + * @aidr: ARM SMMU architecture version
->>> + *
->>> + * For the details of @idr, @iidr and @aidr, please refer to the chapters
->>> + * from 6.3.1 to 6.3.6 in the SMMUv3 Spec.
->>> + *
->>> + * User space should read the underlying ARM SMMUv3 hardware information for
->>> + * the list of supported features.
->>> + *
->>> + * Note that these values reflect the raw HW capability, without any insight if
->>> + * any required kernel driver support is present. Bits may be set indicating the
->>> + * HW has functionality that is lacking kernel software support, such as BTM. If
->>> + * a VMM is using this information to construct emulated copies of these
->>> + * registers it should only forward bits that it knows it can support.
+The first patch is fix for an issue found while preparing the second.
+The second patch adds MSI support for a platform IOMMU. The patches
+may be tested with QEMU when including [1].
 
-But how *is* a VMM supposed to know what it can support? Are they all 
-expected to grovel the host devicetree/ACPI tables and maintain their 
-own knowledge of implementation errata to understand what's actually usable?
+Based on linux-next commit 5b913f5d7d7f ("Add linux-next specific files for 20241106")
 
->>> + *
->>> + * In future, presence of required kernel support will be indicated in flags.
->>
->> What about the case where we _know_ that some functionality is broken in
->> the hardware? For example, we nobble BTM support on MMU 700 thanks to
->> erratum #2812531 yet we'll still cheerfully advertise it in IDR0 here.
->> Similarly, HTTU can be overridden by IORT, so should we update the view
->> that we advertise for that as well?
-> 
-> My knee jerk answer is no, these struct fields should just report the
-> raw HW register. A VMM should not copy these fields directly into a
-> VM. The principle purpose is to give the VMM the same details about the
-> HW as the kernel so it can apply erratas/etc.
-> 
-> For instance, if we hide these fields how will the VMM/VM know to
-> apply the various flushing errata? With vCMDQ/etc the VM is directly
-> pushing flushes to HW, it must know the errata.
+[1] https://lore.kernel.org/all/20241106133407.604587-1-dbarboza@ventanamicro.com/
 
-That doesn't seem like a valid argument. We obviously can't abstract 
-SMMU_IIDR, that would indeed be an invitation for trouble, but 
-otherwise, if an erratum affects S1 operation under conditions dependent 
-on an optional feature, then not advertising that feature would make the 
-workaround irrelevant anyway, since as far as the VM is concerned it 
-would be wrong to expect a non-existent feature to work in the first place.
 
-> For BTM/HTTU/etc - those all require kernel SW support and per-device
-> permission in the kernel to turn on. For instance requesting a nested
-> vSTE that needs BTM will fail today during attach. Turning on HTTU on
-> the S2 already has an API that will fail if the IORT blocks it.
+Andrew Jones (2):
+  iommu/riscv: Free irq vectors on pci remove
+  iommu/riscv: Add support for platform msi
 
-What does S2 HTTU have to do with the VM? How the host wants to maintain 
-its S2 tables it its own business. AFAICS, unless the VMM wants to do 
-some fiddly CD shadowing, it's going to be kinda hard to prevent the 
-SMMU seeing a guest CD with CD.HA and/or CD.HD set if the guest expects 
-S1 HTTU to work.
+ drivers/iommu/riscv/iommu-pci.c      |   1 +
+ drivers/iommu/riscv/iommu-platform.c | 102 ++++++++++++++++++++++-----
+ 2 files changed, 85 insertions(+), 18 deletions(-)
 
-I'm not sure what "vSTE that needs BTM" means. Even if the system does 
-support BTM, the only control is the global SMMU_CR2.PTM, and a vSMMU 
-can't usefully emulate changing that either way. Either the host set 
-PTM=0 before enabling the SMMU, so BTM can be advertised and expected to 
-work, or it didn't, in which case there can be no BTM, full stop.
+-- 
+2.47.0
 
-> Incrementally dealing with expanding the support is part of the
-> "required kernel support will be indicated in flags."
-> 
-> Basically, exposing the information as-is doesn't do any harm.
-
-I would say it does. Advertising a feature when we already know it's not 
-usable at all puts a non-trivial and unnecessary burden on the VMM and 
-VM to then have to somehow derive that information from other sources, 
-at the risk of being confused by unexpected behaviour if they don't.
-
-We sanitise CPU ID registers for userspace and KVM, so I see no 
-compelling reason for SMMU ID registers to be different.
-
-Thanks,
-Robin.
