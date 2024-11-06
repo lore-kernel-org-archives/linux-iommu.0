@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DD0101DEFC7
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 14:17:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D80B9202F95;
+	Wed,  6 Nov 2024 15:12:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730902660; cv=none; b=rJxhrOnA5x2nr/8r5jSr2lE7PXpP0L2zOzN51hWn9B1fKiDvBS8+5GOkshwSU1EGlqkdHT5O5usIrHXg9L89UMmZmStqa/M0dMsKxYTWm3ZW2bQqWeiu4edKxjHalRTiviSqJ0r052GWeRA1lGExh2VEYhXbNqxsxUbu57FTjBs=
+	t=1730905976; cv=none; b=cQi0YT986WmI/FDdcnJZXwT97jw0SFR7iPELZi5LxCn/UJ99oi4lc2TpD8v1SxFK20iFApl1NcfohpzkyP57yokoziouTKgqXH8AemZ6tFoki5PJ/63iL9vW7UIde1kjll+WsBdrp4R5iMN82teTqdTLygx7lx5K3TEbiOnpEsw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730902660; c=relaxed/simple;
-	bh=h4cDEFZpluB0+iXtoSReBWWQxWLWC+hpea7ZJ0tuiZM=;
+	s=arc-20240116; t=1730905976; c=relaxed/simple;
+	bh=NtWPaIkKC8r1cfM6lS0CoFAf6144okQV0U14dbywN1o=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OGTCkSLcI4/Z5r5pOmvuV5e9bKoNpYzGdwjFHcGVr5KiiQyb3b1llIPrUxJ2z+vpbL7myqbZPbMeAH5CdFStMD/iIKea8lT0AZTUCR3c+RM3TFWFsyROHqvJ1Ct2YgpBUPdKeVjL8X2XaNpPViE/7CznOXKiGabE24QrmgzW1Zc=
+	 In-Reply-To:Content-Type; b=EBXTL+PMOFflO04nbR/1DZXLDbIbkehCH35bBs+HI4n45t1dwvvG8yeshIW8nvH5KE0Cm/xHy7sJkJDBIJtxVK/rct/7ZAHp1Sh6MueZILW/ogjjGm1p8EnYouBLQ1LNCmt4E6UQqD+YToy8wokt1EFkD0qkkM+FYovlEd72SAE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9B508497;
-	Wed,  6 Nov 2024 06:18:06 -0800 (PST)
-Received: from [10.57.90.5] (unknown [10.57.90.5])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 875783F66E;
-	Wed,  6 Nov 2024 06:17:33 -0800 (PST)
-Message-ID: <caf31b5e-0e8f-4844-b7ba-ef59ed13b74e@arm.com>
-Date: Wed, 6 Nov 2024 14:17:31 +0000
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F91A497;
+	Wed,  6 Nov 2024 07:13:23 -0800 (PST)
+Received: from [10.57.91.71] (unknown [10.57.91.71])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A051B3F528;
+	Wed,  6 Nov 2024 07:12:50 -0800 (PST)
+Message-ID: <f0d98255-8050-4d79-998b-df805bb8f150@arm.com>
+Date: Wed, 6 Nov 2024 15:12:48 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,143 +27,149 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>,
- Jesper Dangaard Brouer <hawk@kernel.org>,
- =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
- davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc: zhangkun09@huawei.com, fanghaiqing@huawei.com, liuyonglong@huawei.com,
- Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
- Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet
- <edumazet@google.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
- kernel-team <kernel-team@cloudflare.com>, Christoph Hellwig <hch@lst.de>,
- m.szyprowski@samsung.com
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com>
- <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
- <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
- <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
- <cf1911c5-622f-484c-9ee5-11e1ac83da24@huawei.com> <878qu7c8om.fsf@toke.dk>
- <1eac33ae-e8e1-4437-9403-57291ba4ced6@huawei.com> <87o731by64.fsf@toke.dk>
- <023fdee7-dbd4-4e78-b911-a7136ff81343@huawei.com> <874j4sb60w.fsf@toke.dk>
- <a50250bf-fe76-4324-96d7-b3acf087a18c@huawei.com>
- <a6cfba96-9164-4497-b075-9359c18a5eef@kernel.org>
- <2f256bce-0c37-4940-9218-9545daa46169@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2 1/3] iommu/io-pgtable-arm: Remove split on unmap
+ behavior
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Cc: Boris Brezillon <boris.brezillon@collabora.com>,
+ dri-devel@lists.freedesktop.org, Liviu Dudau <liviu.dudau@arm.com>,
+ patches@lists.linux.dev
+References: <1-v2-fd55d00a60b2+c69-arm_no_split_jgg@nvidia.com>
+From: Steven Price <steven.price@arm.com>
 Content-Language: en-GB
-In-Reply-To: <2f256bce-0c37-4940-9218-9545daa46169@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1-v2-fd55d00a60b2+c69-arm_no_split_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 2024-11-06 10:56 am, Yunsheng Lin wrote:
-> +cc Christoph & Marek
+On 04/11/2024 17:41, Jason Gunthorpe wrote:
+> A minority of page table implementations (arm_lpae, armv7) are unique in
+> how they handle partial unmap of large IOPTEs.
 > 
-> On 2024/11/6 4:11, Jesper Dangaard Brouer wrote:
+> Other implementations will unmap the large IOPTE and return it's
+> length. For example if a 2M IOPTE is present and the first 4K is requested
+> to be unmapped then unmap will remove the whole 2M and report 2M as the
+> result.
 > 
-> ...
+> arm_lpae instead replaces the IOPTE with a table of smaller IOPTEs, unmaps
+> the 4K and returns 4k. This is actually an illegal/non-hitless operation
+> on at least SMMUv3 because of the BBM level 0 rules.
 > 
->>>>
->>>>> I am not sure if I understand the reasoning behind the above suggestion to 'wait
->>>>> and see if this actually turns out to be a problem' when we already know that there
->>>>> are some cases which need cache kicking/flushing for the waiting to work and those
->>>>> kicking/flushing may not be easy and may take indefinite time too, not to mention
->>>>> there might be other cases that need kicking/flushing that we don't know yet.
->>>>>
->>>>> Is there any reason not to consider recording the inflight pages so that unmapping
->>>>> can be done for inflight pages before driver unbound supposing dynamic number of
->>>>> inflight pages can be supported?
->>>>>
->>>>> IOW, Is there any reason you and jesper taking it as axiomatic that recording the
->>>>> inflight pages is bad supposing the inflight pages can be unlimited and recording
->>>>> can be done with least performance overhead?
->>>>
->>>> Well, page pool is a memory allocator, and it already has a mechanism to
->>>> handle returning of memory to it. You're proposing to add a second,
->>>> orthogonal, mechanism to do this, one that adds both overhead and
->>>
->>> I would call it as a replacement/improvement for the old one instead of
->>> 'a second, orthogonal' as the old one doesn't really exist after this patch.
->>>
->>
->> Yes, are proposing doing a very radical change to the page_pool design.
->> And this is getting proposed as a fix patch for IOMMU.
->>
->> It is a very radical change that page_pool needs to keep track of *ALL* in-flight pages.
+> Will says this was done to support VFIO, but upon deeper analysis this was
+> never strictly necessary:
 > 
-> I am agreed that it is a radical change, that is why it is targetting net-next
-> tree instead of net tree even when there is a Fixes tag for it.
+>  https://lore.kernel.org/all/20241024134411.GA6956@nvidia.com/
 > 
-> If there is a proper and non-radical way to fix that, I would prefer the
-> non-radical way too.
+> In summary, historical VFIO supported the AMD behavior of unmapping the
+> whole large IOPTE and returning the size, even if asked to unmap a
+> portion. The driver would see this as a request to split a large IOPTE.
+> Modern VFIO always unmaps entire large IOPTEs (except on AMD) and drivers
+> don't see an IOPTE split.
 > 
->>
->> The DMA issue is a life-time issue of DMA object associated with the
->> struct device.  Then, why are you not looking at extending the life-time
+> Given it doesn't work fully correctly on SMMUv3 and relying on ARM unique
+> behavior would create portability problems across IOMMU drivers, retire
+> this functionality.
 > 
-> It seems it is not really about the life-time of DMA object associated with the
-> life-time of 'struct device', it seems to be the life-time of DMA API associated
-> with the life-time of the driver for the 'struct device' from the the opinion of
-> experts from IOMMU/DMA subsystem in [1] & [2].
+> Outside the iommu users, this will potentially effect io_pgtable users of
+> ARM_32_LPAE_S1, ARM_32_LPAE_S2, ARM_64_LPAE_S1, ARM_64_LPAE_S2, and
+> ARM_MALI_LPAE formats.
+> 
+> Cc: Boris Brezillon <boris.brezillon@collabora.com>
+> Cc: Steven Price <steven.price@arm.com>
+> Cc: Liviu Dudau <liviu.dudau@arm.com>
+> Cc: dri-devel@lists.freedesktop.org
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-There is no "DMA object". The DMA API expects to be called with a valid 
-device bound to a driver. There are parts in many different places all 
-built around that expectation to varying degrees. Looking again, it 
-seems dma_debug_device_change() has existed for way longer than the 
-page_pool code, so frankly I'm a little surprised that this case is only 
-coming up now in this context...
+Reviewed-by: Steven Price <steven.price@arm.com>
 
-Even if one tries to handwave past that with a bogus argument that 
-technically these DMA mappings belong to the subsystem rather than the 
-driver itself, it is clearly unrealistic to imagine that once a device 
-is torn down by device_del() it's still valid for anything. In fact, 
-before even that point, it is explicitly documented that a device which 
-is merely offlined prior to potential removal "cannot be used for any 
-purpose", per Documentation/ABI/testing/sysfs-devices-online.
-
-Holding a refcount so that the memory backing the struct device can 
-still be accessed without a literal use-after-free does not represent 
-the device being conceptually valid in any API-level sense. Even if the 
-device isn't removed, as soon as its driver is unbound its DMA ops can 
-change; the driver could then be re-bound, and the device valid for 
-*new* DMA mappings again, but it's still bogus to attempt to unmap 
-outstanding old mappings through the new ops (which is just as likely to 
-throw an error/crash/corrupt memory/whatever). The page pool DMA mapping 
-design is just fundamentally incorrect with respect to the device/driver 
-model lifecycle.
-
-> I am not sure what is reasoning behind the above, but the implementation seems
-> to be the case as mentioned in [3]:
-> __device_release_driver -> device_unbind_cleanup -> arch_teardown_dma_ops
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 68 +---------------------------------
+>  1 file changed, 2 insertions(+), 66 deletions(-)
 > 
-> 1. https://lkml.org/lkml/2024/8/6/632
-> 2. https://lore.kernel.org/all/20240923175226.GC9634@ziepe.ca/
-> 3. https://lkml.org/lkml/2024/10/15/686
-> 
->> of the DMA object, or at least detect when DMA object goes away, such
->> that we can change a setting in page_pool to stop calling DMA unmap for
->> the pages in-flight once they get returned (which we have en existing
->> mechanism for).
-> 
-> To be honest, I was mostly depending on the opinion of the experts from
-> IOMMU/DMA subsystem for the correct DMA API usage as mentioned above.
-> So I am not sure if skipping DMA unmapping for the inflight pages is the
-> correct DMA API usage?
-> If it is the correct DMA API usage, how to detect that if DMA unmapping
-> can be skipped?
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 0e67f1721a3d98..9a16815b3f3434 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -569,66 +569,6 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
+>  	kfree(data);
+>  }
+>  
+> -static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+> -				       struct iommu_iotlb_gather *gather,
+> -				       unsigned long iova, size_t size,
+> -				       arm_lpae_iopte blk_pte, int lvl,
+> -				       arm_lpae_iopte *ptep, size_t pgcount)
+> -{
+> -	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> -	arm_lpae_iopte pte, *tablep;
+> -	phys_addr_t blk_paddr;
+> -	size_t tablesz = ARM_LPAE_GRANULE(data);
+> -	size_t split_sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> -	int ptes_per_table = ARM_LPAE_PTES_PER_TABLE(data);
+> -	int i, unmap_idx_start = -1, num_entries = 0, max_entries;
+> -
+> -	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
+> -		return 0;
+> -
+> -	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg, data->iop.cookie);
+> -	if (!tablep)
+> -		return 0; /* Bytes unmapped */
+> -
+> -	if (size == split_sz) {
+> -		unmap_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
+> -		max_entries = ptes_per_table - unmap_idx_start;
+> -		num_entries = min_t(int, pgcount, max_entries);
+> -	}
+> -
+> -	blk_paddr = iopte_to_paddr(blk_pte, data);
+> -	pte = iopte_prot(blk_pte);
+> -
+> -	for (i = 0; i < ptes_per_table; i++, blk_paddr += split_sz) {
+> -		/* Unmap! */
+> -		if (i >= unmap_idx_start && i < (unmap_idx_start + num_entries))
+> -			continue;
+> -
+> -		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, 1, &tablep[i]);
+> -	}
+> -
+> -	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
+> -	if (pte != blk_pte) {
+> -		__arm_lpae_free_pages(tablep, tablesz, cfg, data->iop.cookie);
+> -		/*
+> -		 * We may race against someone unmapping another part of this
+> -		 * block, but anything else is invalid. We can't misinterpret
+> -		 * a page entry here since we're never at the last level.
+> -		 */
+> -		if (iopte_type(pte) != ARM_LPAE_PTE_TYPE_TABLE)
+> -			return 0;
+> -
+> -		tablep = iopte_deref(pte, data);
+> -	} else if (unmap_idx_start >= 0) {
+> -		for (i = 0; i < num_entries; i++)
+> -			io_pgtable_tlb_add_page(&data->iop, gather, iova + i * size, size);
+> -
+> -		return num_entries * size;
+> -	}
+> -
+> -	return __arm_lpae_unmap(data, gather, iova, size, pgcount, lvl, tablep);
+> -}
+> -
+>  static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>  			       struct iommu_iotlb_gather *gather,
+>  			       unsigned long iova, size_t size, size_t pgcount,
+> @@ -678,12 +618,8 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>  
+>  		return i * size;
+>  	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
+> -		/*
+> -		 * Insert a table at the next level to map the old region,
+> -		 * minus the part we want to unmap
+> -		 */
+> -		return arm_lpae_split_blk_unmap(data, gather, iova, size, pte,
+> -						lvl + 1, ptep, pgcount);
+> +		WARN_ONCE(true, "Unmap of a partial large IOPTE is not allowed");
+> +		return 0;
+>  	}
+>  
+>  	/* Keep on walkin' */
 
-Once page_pool has allowed a driver to unbind from a device without 
-cleaning up all outstanding DMA mappings made via that device, then it 
-has already leaked those mappings and the damage is done, regardless of 
-whether the effects are visible yet. If you'd really rather play 
-whack-a-mole trying to paper over secondary symptoms of that issue than 
-actually fix it, then fine, but don't expect any driver core/DMA API 
-changes to be acceptable for that purpose. However, if people are 
-hitting those symptoms now, then I'd imagine they're eventually going to 
-come back asking about the ones which can't be papered over, like 
-dma-debug reporting the leaks, or just why their system ends up burning 
-gigabytes on IOMMU pagetables and IOVA kmem_caches.
-
-Thanks,
-Robin.
