@@ -1,206 +1,199 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 081EC1D1305
-	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 07:40:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730878862; cv=none; b=u4ktPJhsLAdhGByKQsbvtPi2hk2VC4WowvLgqWyA9awiOoGfcUXIawss6u+VRISLkSnmrNzc193oT4rDRd9L/gFcEHCJuLxHTZsduMjDtSepF+piU0FSWWhG8z2jkXJvarIbL0yukLHdEkf4fJfMVlnt3jLLnwVM/xW5SyWe5xM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730878862; c=relaxed/simple;
-	bh=HQqOgF25zZrRJJrEPpwoe06g0XjJyk/IFMS5AN9Z/eg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sG3c3kQ9VD4dwk/6QvEh/m2dASjS03yiOp8Ot4EwR7MvbtWzVAW4Q2FxGg5KMYnPnLmiS/hsAqCu1N4ETEs2ZOgiTjyAMcrRMSIkYSjj42xwsmB7GVKvajj6wIMz9MHWTb5VdUuoEgwoFKVOr749qP42buYM20ZIwsd/58TlCik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=OwX6D/GD; arc=none smtp.client-ip=209.85.167.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9968E1922ED
+	for <iommu@lists.linux.dev>; Wed,  6 Nov 2024 07:44:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.17
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730879044; cv=fail; b=lCgnakTBc5ZrbL6lbQmN5hyTCtjnedRPcmLwEbpFqUiJQRbT865xSwAHUpAwPCXYHOpW4RdA4i3rZ/A/HiPnOABZxxlzq7WN6oBebMn8mjMXescm0G5uibhYc/I7UNk5L+EXaIMFxSN8xfBJJWhAatNpr4enA3hOpBlGtHWR7iE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730879044; c=relaxed/simple;
+	bh=qWtFLREmX9oevUiC/qk9tg1JRd65rlrzlJMF9dpHt/Q=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=EOKC8bUXeCVUALa7wpG860Ep3fePjvGvrIz+nzeTnbULvWqAmIZhPN+BIL7i/UsfMfQbRr0+v6DB4BJUFU8JCvfA2IvVMph3P66eAPo4+gDQeIpG9dW6ZtuXZkKLGQh50w5uUUlW6iUqcr5esSnLffNn0Z567/Qv47zjKSqozog=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OxOiyE9y; arc=fail smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OwX6D/GD"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-53c779ef19cso66398e87.3
-        for <iommu@lists.linux.dev>; Tue, 05 Nov 2024 23:40:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1730878857; x=1731483657; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tXO9RRbs3HveLlIZZM8HN1XONyaSb0qVhG5bV+yNI6E=;
-        b=OwX6D/GDmJwFB71U+2FCNTsGtDBhaQhczVoCLOINeParkrq1aDkBLEx8ykmKSiXtKU
-         JTgmRXsAR6qqJZjAm/TEkS0xv9dX8HjSobcnAb2GFTVn1t8IAERfmgynlOCSQeksTuU3
-         iVPQlFUC80iu2IbPbXre3pnRYHiosbnxf9SfDxsUrAvfRUx3oyMabHNmzYDx28xDFA2g
-         reD7TmfiQzaqAMzOPwx08FGv3mvR3B7FvLvl0thVTMFpCN60GXV3iEJJbC+u+CxSzIOs
-         F0Rlmnn6VoYOVwxcjAqzdmdbymnKKOP2WL5w00QwnXjMwBiEL0x2qms6egyjckSuNGBs
-         r4RQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730878857; x=1731483657;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tXO9RRbs3HveLlIZZM8HN1XONyaSb0qVhG5bV+yNI6E=;
-        b=d6vlx/5FpvwL2ymNMTdB4uyxkjiMJcbMqxZcuCEIJMG4LNnY2ZvtLqeFAapPFCUJMo
-         ok1wpKFsuOqxhyOL7ofY0Y92V3YhKzjfq2NmY7ububUBWfM4BFaIMuhERvy/Rb5eY6Zp
-         v/c6fdiD3ue+xiEiviBGOG5TQKxbzENXtIk7IyBBvKEaVYrzSeTmPeFt9keMOpZyDv/1
-         CUjgjWNdm6eO7goI6aTeiqgAUou32jSk2qcurAkYyj+5aIOV7V0L9jm2QvgjZxIrggvo
-         9KjZdzim2/gauZ9jyik+j3EFChXKZAKNm6lEz0bSDOhG/iqo5CQaror1Cb1/twPKPcMU
-         YlZA==
-X-Forwarded-Encrypted: i=1; AJvYcCW/dCs0Trska0xyiIxagZ1IIQsEd0lD8HM5a0MU1BsM6RgmXCG4eEYheOZ24Sde1Fh9z9DEQA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwyckjWlfq1CVw1YQnFhzJJ3MNKPlkV9tpiluziDj0NTesa8pd3
-	5/xf1Uc2FA4GGUdrc1cGO9aOOqhupYRc3sIZNWjVu10Bkm4Z9pVvr9DfpAOoS5w=
-X-Google-Smtp-Source: AGHT+IF0FcdGuJ0vO+niOKjEmLBEPpJB40aDmUzjOkTIqMnmTG4s9w+mRinnl+QEkzIM6X2Ng1KY4A==
-X-Received: by 2002:a05:6512:3c88:b0:539:e9f8:d45d with SMTP id 2adb3069b0e04-53c79ea6c5dmr10858734e87.52.1730878857022;
-        Tue, 05 Nov 2024 23:40:57 -0800 (PST)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53c7bc9c043sm2398395e87.102.2024.11.05.23.40.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Nov 2024 23:40:55 -0800 (PST)
-Date: Wed, 6 Nov 2024 09:40:53 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Will Deacon <will@kernel.org>
-Cc: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, robdclark@gmail.com, 
-	robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca, jsnitsel@redhat.com, 
-	robh@kernel.org, krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com, 
-	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	Konrad Dybcio <konrad.dybcio@linaro.org>
-Subject: Re: [PATCH v16 1/5] iommu/arm-smmu: re-enable context caching in
- smmu reset operation
-Message-ID: <uroldzsi6n7b6hyiutanqfqyqsny65zr4fzyggsmvqsmyfayrp@u5c27k3yi5cf>
-References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
- <20241008125410.3422512-2-quic_bibekkum@quicinc.com>
- <20241024125241.GD30704@willie-the-truck>
- <092db44e-f254-4abd-abea-e9a64e70df12@quicinc.com>
- <20241029124708.GA4241@willie-the-truck>
- <ygd6bryp73jgsm5zggy2jz4uc42dehht2e6ht5f6yowf74c6ns@u6dul4rnybt6>
- <20241105113723.GA12600@willie-the-truck>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OxOiyE9y"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1730879042; x=1762415042;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=qWtFLREmX9oevUiC/qk9tg1JRd65rlrzlJMF9dpHt/Q=;
+  b=OxOiyE9ySN0fNRbF7l3zf+rxhcnHuVn18D8w9z9nhri6JpBobbOU2Nv7
+   bSm1qYbtrIIX3ygNlEo4ueMz/ZJMXZ4tvsRlGOhejIqCacTr6UbVe9emM
+   UgGl41XRzQhf4U0SSGpOTfwaYDp6As9aULI+nlb32uoP6Z9FOrMoVUKdb
+   8/LCQRyIMj27tyTl4t54eHGPc8+HCgJRsk6QGPUAvbhFYYlbjlSgpJhQ4
+   ob/8LeCZWzcUXtAU0PoClfJGTEc3Gk2MBbD1gyc/xEKVEbpZxJn3Vfrn7
+   KjtNGCwkn/xWq7d1w7EkEeM/6Oa89wP/fBt0dL9BPjZUkpUUBJ/QaUO7j
+   g==;
+X-CSE-ConnectionGUID: 5eTSYl4SQ/qkwQqDvkrQNg==
+X-CSE-MsgGUID: bdOm0tF5TVWyZ5B0Vgvi3Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11247"; a="30543462"
+X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
+   d="scan'208";a="30543462"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2024 23:44:02 -0800
+X-CSE-ConnectionGUID: ZNxe9hfZTXKI5J/Vn2V7Vg==
+X-CSE-MsgGUID: pvHxwdrbQ5ivDgBJjMYpXg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,262,1725346800"; 
+   d="scan'208";a="84524408"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmviesa009.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 05 Nov 2024 23:44:02 -0800
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Tue, 5 Nov 2024 23:44:01 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Tue, 5 Nov 2024 23:44:01 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Tue, 5 Nov 2024 23:44:01 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Q9YsgxTxUHG/tF4IaMCWOuwRGCJQ46nX/JApOBhSVTcAkfVMhlM9n7dnSQYqkIix8qpvj+G7bfBi15itI8ihE8+VVrc2zqpmhNabJVTuXgbVRWN6+3gvNuM2zZuNRoWQW9JIWzXSdsZzdW/KYCj6LeXxvoTvZiveg5zDNGPX0O84tccOzHz5SJNmM/1RUZyRjBKTtqW3RjeOvHV9GUHRVPsX4xriU6xDCIVnzL89xtWULQBR2yOOCDKKP+h09G329fRmBWE5AzUCLMzzoQPYpR5AQF8Wk14Tfsg2vRNPM0tpUVwPtesLxjZXuezlC/9iJbjzc5ZKBHTJKedBXDW8oA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1PzMwDCxOMD+FB++YiKMV1xLFkCkpE80a0sbYNlQVso=;
+ b=psUBjH0nFR1DLEniXyl3zSj5yW3mOZEdI4/UNToAezTq+8dwUBCiBoMPHOTrqFhjAw7RbFNDVz3rzLw/roOYObo7D3vohJAwF4gPNI2t9bTo+zcu1n952jtpjHRzfY8e83dsQS0Fkbne3gCV9XXkiiEnoaWiO5IJ3wskMtlcc1eV6Tb5+4CMLi+VEbWGx8o+4j2YX5ckRaLyyIVIqbvXLmT/nV1dO0WO8SXnWjo9dTvFjrGddSh0s+cIZQzzAcTlIVTuX/wAnW041SM6UM9YrtMEIJieG/+hUlGYx22bTMWUfbfl5E3WmUA3CrTyvRqFgewr+BgpHFG96NZMdERSkQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by PH0PR11MB4998.namprd11.prod.outlook.com (2603:10b6:510:32::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.31; Wed, 6 Nov
+ 2024 07:43:58 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%5]) with mapi id 15.20.8137.018; Wed, 6 Nov 2024
+ 07:43:58 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"jgg@nvidia.com" <jgg@nvidia.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>
+CC: "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>, "nicolinc@nvidia.com"
+	<nicolinc@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Duan, Zhenzhong"
+	<zhenzhong.duan@intel.com>, "vasant.hegde@amd.com" <vasant.hegde@amd.com>,
+	"will@kernel.org" <will@kernel.org>
+Subject: RE: [PATCH v4 06/13] iommu/vt-d: Make intel_iommu_set_dev_pasid() to
+ handle domain replacement
+Thread-Topic: [PATCH v4 06/13] iommu/vt-d: Make intel_iommu_set_dev_pasid() to
+ handle domain replacement
+Thread-Index: AQHbLrwb6yA5+Txn1U6CRFaWuvNtKrKp4ZDA
+Date: Wed, 6 Nov 2024 07:43:58 +0000
+Message-ID: <BN9PR11MB5276AB2D5E8E4B3E77476BA38C532@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20241104131842.13303-1-yi.l.liu@intel.com>
+ <20241104131842.13303-7-yi.l.liu@intel.com>
+In-Reply-To: <20241104131842.13303-7-yi.l.liu@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH0PR11MB4998:EE_
+x-ms-office365-filtering-correlation-id: 6a0bcf46-5dcc-4e56-14a3-08dcfe36c642
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016|38070700018;
+x-microsoft-antispam-message-info: =?us-ascii?Q?wy1Jt2yrWAUu4nAzhiiToay2sV2StEskssWInCHTOhNS2R9J/EqHmYiPfcfr?=
+ =?us-ascii?Q?dBuutb97iwZpy1vVCFBePKGfQD+2cKj0Id5yDCIIuz6aIEQr9INUbpec3MtC?=
+ =?us-ascii?Q?7KG1UMrvyCX8tQTkyjbRnkDwdzLuguRkn9hN1T9I/DGHgG4JfopfGxY6pMmz?=
+ =?us-ascii?Q?iHhC8bdX8uFoWA4hZm6NgI6GUdCCVcPsaUuCPMzrFVOVE++J4+Nua4glTr7I?=
+ =?us-ascii?Q?ePc91LsXthUcaOEOAaHx6nqwDl6+1nTtFD9iVrorCvnp++7JgyueOLVcc/ig?=
+ =?us-ascii?Q?0uWdgYMyyxq4ROxjhImdRnkuaAeRgH6EoXNfDj3K5Oo24dImtWw0fjkges2T?=
+ =?us-ascii?Q?0taN2w+9IqJMsYATo2Wb9tjyIe1cwS4Xym7mlxiiGMksRRpHT7osRg0wrxlz?=
+ =?us-ascii?Q?iFYjqKKyYJNQmWyhX7xeHrddVnUN47fVf5JTyDx37UGsIyVR+heTh4D9nIcY?=
+ =?us-ascii?Q?7EfPjYHY9L+T09VmsD29VEa2sEzrmB2nlyONQCtLcrKfvD9JNwPxrRBocPyG?=
+ =?us-ascii?Q?WkfvFoJwrAm8wH1DuspxiQSqHlzr5AYrOun6UhUIspqdT8DSp4+k9kRTF2Nt?=
+ =?us-ascii?Q?c3gUHxFgQsLsRif//fg8nJYH11Q1Nqa65CdapKa67Z0TjmwzZmwscnUQM4BI?=
+ =?us-ascii?Q?3OuPfLUWkkwB09xbXFTO994Q7TI8N9dAnFuGdSMqNQShMRN6G9RHwxwG3r60?=
+ =?us-ascii?Q?8A4vDMvjso8ZbHoW4UF7JGQRYni+vdnQsVhWEYUngNO1LKet5xVf1nXvK1xe?=
+ =?us-ascii?Q?Mb/eTXiGBNeUnRijw1kzN1jkmtyHrV0dMk8LwgUq+ji5ima1/fceKtInmTfi?=
+ =?us-ascii?Q?lkNPT0TQ8sFVWUkFnNdVmbiHW9HCBQ/soT6UG7BmahZM9EKwc9+llqS6bUgp?=
+ =?us-ascii?Q?EmGal0XzFdxnGEmbDfIJZCI5hNwVrdobMcw7v/mCcdVXZvMalSWVSMzcRqQ2?=
+ =?us-ascii?Q?2RGT3/lCNDfjyjA7OMjYxzkVWQzCVKJ2gKiBSgvtZL2jLUXtsk0MgVmJtSk0?=
+ =?us-ascii?Q?EzLitBK4qC8xV+lBFnNBF56aaBIxyZ2x3I4qQq/XZr25+DMox78m1mduIDM4?=
+ =?us-ascii?Q?ioM2jDdGFdtytwrJ2xMP3PWTDcTkn8O0GjI7x0RsvWGNi68PT6mJyhMcjKYT?=
+ =?us-ascii?Q?FkUXfoyj9aZZEkRYJuoQnkY9aUXkqzZkDPM9uixdOX5zdSWea4kEy3dmPcjb?=
+ =?us-ascii?Q?HeV4ikgbgzwyHHlPzQx2NhXerg1tbnIgoLaSBZR5ybOeJHVmh+QOqx8Woed2?=
+ =?us-ascii?Q?53CEUpp6jSpgFX+zexlsqj7X1vbD/7T9mzrKqXcb5MJMO4vGMYfeKYjMMYdr?=
+ =?us-ascii?Q?VDFzaRhzReXJUY5c4/8DL6QKS6fQa1lRkcQJXn8Er0A9Asp+oQwpx2K2HzTu?=
+ =?us-ascii?Q?bZQFApE=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?cSSIJPwJ1JxhrevymzZx8BHFplW580ihJ3mJvTGgnRw16ycpXSkd1TWxslPi?=
+ =?us-ascii?Q?tNWipd0tYJBpGpCgL4QCKs+YdoXCEyVmFDtuCdjcHq12BrJKzzn5AFoPEDTL?=
+ =?us-ascii?Q?JN09ovVpK1ENVAaxL4oortDA0aFHwnU0iubEnlzV9nWNuc336RrXcNk2WQ8B?=
+ =?us-ascii?Q?X8ryPsom8SSb4CAjWISjYG3DZVROKL8VhPC3zaK0XYKk6BkpUQmeGuL7w+dn?=
+ =?us-ascii?Q?MRLUSHDeO5pzNtubI16SgvdM9qIkXjCvSXTW050aKNxELfSp5MmazJ3XqmdD?=
+ =?us-ascii?Q?vqUO4X5uJySRaGSYBRID7p8snYxZ6Cl/PabvaiRgBDYhyveSFCi3Z9WufBnp?=
+ =?us-ascii?Q?p9XltqORDPBoowsPXjgzW/NlTB+mIOsQe7QGiP4M+AgQD6oJQXRqfVUgTpr4?=
+ =?us-ascii?Q?++6wl6VSw0QWqZ8nzMSNxeNNZ1GVw5Y0FaZeofxbIFxBgrs3pq1whxSsiCzd?=
+ =?us-ascii?Q?1nUHJb9MiAiZeiZK13438KKWlWSzIwnz367ulQb1PNaZHc+qBU6VFaGzNoq5?=
+ =?us-ascii?Q?TgodKrp2D/vJIs0YVgO30JXoL2Xmy1muWyCj+c2PtrRGNZxByaUHAJ/Hv+Wc?=
+ =?us-ascii?Q?JwNriQm7DrSYNkkMpuvKNeot4XravN8EhcXJQr+3CUa66KYUouUNN9pPEmM5?=
+ =?us-ascii?Q?+x43DtCyj2ODMny7WpctN5kp/o5ZpyQ/VXHhY4f3NB3YVorDGso+O5JJ964w?=
+ =?us-ascii?Q?gdReoFjHyRCqBED2FgWYOkRG4diatG089f1beL3ss2XDmKPNYe+T6YY6Bfm2?=
+ =?us-ascii?Q?yvuDuSr4WoVe7Wcc4aREOb02H9lV3CrBt//fMT3VBMYZurXPW05C2OnDr64c?=
+ =?us-ascii?Q?XBnPKbgnZLGbwoitmalby7U4ievbsQOB6rjNB65h3N0q8WQTac6bIAWRG22w?=
+ =?us-ascii?Q?GgnWMEBQ+hLVtFxTvBdqEGWpspZKdkH3K7zAqxCfe7kBW7azWouQA02koDH9?=
+ =?us-ascii?Q?7BFYx151/xCqpooHz6zQxjlMLTJ+F8RGqjzQ58gMJxLQrCUbwJ2Cj65kxtP3?=
+ =?us-ascii?Q?vhb9UQSlO4+JJHXoIQiAG6gAxRRW1O1C2b46R/xOuocmcHPPBOdg5TyrOK5n?=
+ =?us-ascii?Q?vmf+MPK++TynEjnhhEoo5z18FNAEDixH86YvzKjr5+nTNPTFeea+XQhAfUiE?=
+ =?us-ascii?Q?D+gnnZ93FjCd7wJLgQjb+YFp+U9hGNT/wPpz+ZWQ+XHZxlDnmmhQQ7zRrs6E?=
+ =?us-ascii?Q?BKrEaxLtqDaV81v2zjcAAg7rAG6w5nvAtdtdoO2RJftsYrMt72Yp89XyMiYc?=
+ =?us-ascii?Q?pM66JY/a8pzekMr1PvUWgtK5KmGjgAnQujA66wnB1dHoZ0a4w0s4dEQeoAgI?=
+ =?us-ascii?Q?ltk3fM6ClKbIosl5Pia/iJB2WFLi9BTSpQa9I02KXCcrmEag+KtUCHI4KZVW?=
+ =?us-ascii?Q?kc82Kk+MYtfYBycMlU3VfhN0GwbmrV+MBTgP7xZwfl2U5mZDcdMZq3Etrq3P?=
+ =?us-ascii?Q?nu1/yoUIzxxfWfp2zGEwBohzdVjbRa2GP+hy5Q08WswzSrMsPVhD1B3hRE6s?=
+ =?us-ascii?Q?1DfgfahB5VFk+VH57pRnjpyaH+aIHCRzU1CZK9aczqzs4vfEsMTSyr0iZuRz?=
+ =?us-ascii?Q?kpLR0TF5mjlUddj4NQhjUQChTh2yrWWQNnenzIOu?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241105113723.GA12600@willie-the-truck>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a0bcf46-5dcc-4e56-14a3-08dcfe36c642
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2024 07:43:58.7488
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 32Lijv+ASrx9CQuj6NB5Ha48AKy5HJRqp8BsA+oDZVdZfBVPoYuM7sSXOT0Ei74aoYV+EgL71C37//B5TpaSHA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4998
+X-OriginatorOrg: intel.com
 
-On Tue, Nov 05, 2024 at 11:37:24AM +0000, Will Deacon wrote:
-> On Mon, Nov 04, 2024 at 01:10:12PM +0200, Dmitry Baryshkov wrote:
-> > On Tue, Oct 29, 2024 at 12:47:09PM +0000, Will Deacon wrote:
-> > > On Fri, Oct 25, 2024 at 07:51:22PM +0530, Bibek Kumar Patro wrote:
-> > > > 
-> > > > 
-> > > > On 10/24/2024 6:22 PM, Will Deacon wrote:
-> > > > > On Tue, Oct 08, 2024 at 06:24:06PM +0530, Bibek Kumar Patro wrote:
-> > > > > > Default MMU-500 reset operation disables context caching in
-> > > > > > prefetch buffer. It is however expected for context banks using
-> > > > > > the ACTLR register to retain their prefetch value during reset
-> > > > > > and runtime suspend.
-> > > > > > 
-> > > > > > Replace default MMU-500 reset operation with Qualcomm specific reset
-> > > > > > operation which envelope the default reset operation and re-enables
-> > > > > > context caching in prefetch buffer for Qualcomm SoCs.
-> > > > > > 
-> > > > > > Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> > > > > > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> > > > > > ---
-> > > > > >   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 45 ++++++++++++++++++++--
-> > > > > >   1 file changed, 42 insertions(+), 3 deletions(-)
-> > > > > > 
-> > > > > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > > > > index 087fb4f6f4d3..0cb10b354802 100644
-> > > > > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > > > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > > > > @@ -16,6 +16,16 @@
-> > > > > > 
-> > > > > >   #define QCOM_DUMMY_VAL	-1
-> > > > > > 
-> > > > > > +/*
-> > > > > > + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
-> > > > > > + * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
-> > > > > > + * buffer). The remaining bits are implementation defined and vary across
-> > > > > > + * SoCs.
-> > > > > > + */
-> > > > > > +
-> > > > > > +#define CPRE			(1 << 1)
-> > > > > > +#define CMTLB			(1 << 0)
-> > > > > > +
-> > > > > >   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
-> > > > > >   {
-> > > > > >   	return container_of(smmu, struct qcom_smmu, smmu);
-> > > > > > @@ -396,11 +406,40 @@ static int qcom_smmu_def_domain_type(struct device *dev)
-> > > > > >   	return match ? IOMMU_DOMAIN_IDENTITY : 0;
-> > > > > >   }
-> > > > > > 
-> > > > > > +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
-> > > > > > +{
-> > > > > > +	int ret;
-> > > > > > +	u32 val;
-> > > > > > +	int i;
-> > > > > > +
-> > > > > > +	ret = arm_mmu500_reset(smmu);
-> > > > > > +	if (ret)
-> > > > > > +		return ret;
-> > > > > > +
-> > > > > > +	/*
-> > > > > > +	 * arm_mmu500_reset() disables CPRE which is re-enabled here.
-> > > > > > +	 * The errata for MMU-500 before the r2p2 revision requires CPRE to be
-> > > > > > +	 * disabled. The arm_mmu500_reset function disables CPRE to accommodate all
-> > > > > > +	 * RTL revisions. Since all Qualcomm SoCs are on the r2p4 revision, where
-> > > > > > +	 * the CPRE bit can be enabled, the qcom_smmu500_reset function re-enables
-> > > > > > +	 * the CPRE bit for the next-page prefetcher to retain the prefetch value
-> > > > > > +	 * during reset and runtime suspend operations.
-> > > > > > +	 */
-> > > > > > +
-> > > > > > +	for (i = 0; i < smmu->num_context_banks; ++i) {
-> > > > > > +		val = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
-> > > > > > +		val |= CPRE;
-> > > > > > +		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, val);
-> > > > > > +	}
-> > > > > 
-> > > > > If CPRE only needs to be disabled prior to r2p2, then please teach the
-> > > > > MMU-500 code about that instead of adding qualcomm-specific logic here.
-> > > > > 
-> > > > 
-> > > > Doing this on MMU-500 code would make it generic and reflect for SoC of all
-> > > > the vendors on this platform.
-> > > > We can make sure that it won't cause any problems in Qualcomm SoCs as we
-> > > > have been enabling this since for some years now and could not
-> > > > observe/reproduce any issues around these errata.
-> > > 
-> > > Unless you can explain definitively hy that's the case, I still don't
-> > > think we should be second-guessing the core SMMU driver code in the
-> > > Qualcomm backend.
-> > > 
-> > > > But we won't be able to guarantee the same behavior in SoC for other vendors
-> > > > where these errata might still be applicable as per [1] and [2].
-> > > > So as per my understanding it's safe to include in Qualcomm specific
-> > > > implementation and not changing the default behavior in all other vendors'
-> > > > SoC even if they are not prior to r2p2 revision [3].
-> > > 
-> > > If you want to gate the errata workarounds on policy, then please follow
-> > > what we do for the CPU: add a Kconfig option (e.g.
-> > > ARM_SMMU_WORKAROUND_BROKEN_CPRE) which defaults to "on" (assuming that
-> > > the relevant errata aren't all "rare") and update silicon-errata.rst
-> > > accordingly.
-> > > 
-> > > Then you can choose to disable them in your .config if you're happy to
-> > > pick up the pieces.
-> > 
-> > Is it actually going to work? For most of the CPU errata we can detect
-> > and limit the workarounds to some class of CPUs. For SMMU, if I'm not
-> > misunderstanding something, the errata will be enabled by default for
-> > all SMMU-500 implementation, so only very few kernels, targeting only
-> > the Qualcomm hardware, can get that disabled.
-> 
-> We can add checks based on rXpY per the erratum documentation, but Robin
-> was saying elsewhere in the thread that some of them are still open (i.e.
-> unfixed).
-> 
-> So ultimately, the decision to disable workarounds for known errata on
-> broken hardware is going to be a niche sport, yes.
+> From: Liu, Yi L <yi.l.liu@intel.com>
+> Sent: Monday, November 4, 2024 9:19 PM
+>=20
+>=20
+> +static inline int domain_setup_second_level(struct intel_iommu *iommu,
+> +					    struct dmar_domain *domain,
+> +					    struct device *dev, ioasid_t pasid,
+> +					    struct iommu_domain *old)
+> +{
+> +	if (old)
+> +		return intel_pasid_replace_second_level(iommu, domain,
+> +							dev, pasid);
 
-Yes, I understand that. I'm just trying to understand if we can have a
-better solution than having errata workarounds enabled on a majority of
-the kernels (which means less testing for the non-workaround-enabled
-setup on Qualcomm devices).
+As commented let's pass the old domain pointer into the replace
+variants.
 
--- 
-With best wishes
-Dmitry
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
