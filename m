@@ -1,270 +1,144 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D8F18BEC
-	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 16:41:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97C691854
+	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 17:02:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730997704; cv=none; b=KaR2VmtpMb3gTHPxSg5hmdv8cmfu5m02jtB75aAnNGTCAX+pb+vKf1ysuyvKra45TFZwOwh0j7km0I4EAllsfHmBqHztWmMR409e/tTyNTtHkHNnegyrIXOeEwOIOlmGUGlhJlql79ST2g/zqIvmo0fKY+Yp/6p8OZ9RBjkt4fw=
+	t=1730998981; cv=none; b=Cpg58O/GZAvRurXSYgV+/DDh3i8db1dfHS4d83/cFxigRn41BgBzapgvKWDzP+wjUBKeXxoDLRHsfpaK+Gf/2j4VrHb7i78K9sUPtZTQiHRnOz2uEvQXiUqcXnLWqV9O3xGc11oqXTo2l56Owtq1cavqVSPYj1M/dA4WUs5bvEU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730997704; c=relaxed/simple;
-	bh=44Fb6+UKl09hKKqbvpTOMeKUXcDtZgboEtHo3NLmzGU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Uwt6KIshdoaztQD9VZLGLy6hH+I5CosGpvtO2VpI31EIhzq5T5IN9MCQiHgqzXEB6GvNuBz/YsqQATRwDo9KeESvsA4lp8ntI6o7QdBixvWcCk1oJSSZomxKA8u/qYkpchU2smRSlCywFjq2RxUp5MlMem8cxxj97w3ha+5OSoE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=aQKRTKVM; arc=none smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
+	s=arc-20240116; t=1730998981; c=relaxed/simple;
+	bh=sWowJxNGrnVM2AVICTZnLfr261T7nk89aqIuCGrDuOE=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=klUmxGB/oR9OeU/ziYFyqPqPOwVvKlPT0M4ZqRPMQA5M03s1hBY3cDxK1yc0YDp+tM+hBp0eUEUp1na9PFqmevFkzJcmcxXh0aJOWtnVANEmd/0nkbJ4owabQbHxXyxqop6J6yVLuFALr40Ced+S0VI60f6Q4jVba7RVK52DRWE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=q/tns1f+; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="aQKRTKVM"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a99f1fd20c4so165624466b.0
-        for <iommu@lists.linux.dev>; Thu, 07 Nov 2024 08:41:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1730997701; x=1731602501; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Y9XrMMh3/6jKfxgBvb9B39K7/szH3g2Df3ueLyIXWGk=;
-        b=aQKRTKVMqQmnDDcCg5R3fT1XqU9RQ5PtkjXElusATIrWjf9s5m/BrJxbNjHN6pezh7
-         wKrsR7FUZBsYYOQpmpAn04hCcZ3zyq4unxLpe0hX1ihP2V/pTYqBQ6vURy9x1QbObzYv
-         vACD2a5ccPE/da7SiA1KYQoS9A86yugPN7DUP45FT8APMpa+zlUWqlfk1Zz1xYKZ5wgm
-         GnXtveSQ5EpwnApGqwXXbUCYP0pcuy8S6qmBp0NvUL3jhCoRGrncVN2vyqUkYrogE0df
-         9RmNj28H+kGfWM/GMCKfpytKyNi7vlOse+49g49vvvPyw1741bPlVKZxs06CbK2sgvms
-         MIww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730997701; x=1731602501;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Y9XrMMh3/6jKfxgBvb9B39K7/szH3g2Df3ueLyIXWGk=;
-        b=AKAgUP+0AnL5anusNaqbdCfla+asiWJgeqrM6S/MraZ7WBbVH4K816NN7kNKiF8TU/
-         JvhE8zFHhfK9WVoLEzzvQ/5cKaX0lQtnlTv0Ui358MI8goIPJYsmc4e54HrIUzFDYIOI
-         hakttqXDY2UQ/L1zqLMqmenv1+z52EMSEg6GdumpfR2G/7syjh0P3vsYDIIS9il1UsBQ
-         rWD+hrpdFEB8PKyUuZVsDCqQmg1OjwuFTNvWoA09Pg42igYtjU5z8MMu+97OwgGZMC7E
-         nDs1Am2jz7Qv1vfiDp3EKGEbigqYvHC6G+VY1Im2+VGBrouWIQE5FL2bzwyxfrXm4AMY
-         P2fA==
-X-Gm-Message-State: AOJu0YzJPg5vfd850L+mz01rc3TSQug4jybbxLIRrrYfiZhCTxxzvhcy
-	A83CxuPTbQQbv27UNqGD5Qhrg6/Tx3cfa17ij7KNvo9XN8wzoMTKGUoBrqWXMlI=
-X-Google-Smtp-Source: AGHT+IGoYjUPTOzrAY5e5EufOknt6N62gHZK+veE80C7chcu3um68ZWUrZfZEthLlSgMmBUVcmxInQ==
-X-Received: by 2002:a17:907:9604:b0:a9a:7f84:940b with SMTP id a640c23a62f3a-a9eeae9b3eemr80229166b.10.1730997700859;
-        Thu, 07 Nov 2024 08:41:40 -0800 (PST)
-Received: from localhost (2001-1ae9-1c2-4c00-20f-c6b4-1e57-7965.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:20f:c6b4:1e57:7965])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a9ee0a17635sm113837466b.17.2024.11.07.08.41.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2024 08:41:40 -0800 (PST)
-Date: Thu, 7 Nov 2024 17:41:39 +0100
-From: Andrew Jones <ajones@ventanamicro.com>
-To: Samuel Holland <samuel.holland@sifive.com>
-Cc: iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, paul.walmsley@sifive.com, palmer@dabbelt.com, 
-	aou@eecs.berkeley.edu
-Subject: Re: [PATCH 2/2] iommu/riscv: Add support for platform msi
-Message-ID: <20241107-dcdcb332d980a7120e9518ac@orel>
-References: <20241106175102.219923-4-ajones@ventanamicro.com>
- <20241106175102.219923-6-ajones@ventanamicro.com>
- <d92ab280-bd1f-4145-8164-cebab1980f20@sifive.com>
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="q/tns1f+"
+Received: from [192.168.118.162] (254C2715.nat.pool.telekom.hu [37.76.39.21])
+	by mail.mainlining.org (Postfix) with ESMTPSA id 50F47E45BA;
+	Thu,  7 Nov 2024 17:02:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1730998971;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=Z8L0WOA8oUOrV1RaIivpMP+QvLSVaus+xjKsdJ38WrE=;
+	b=q/tns1f+0ZOZq3TQkNTThU+YACL1GeXJvEAOmyMoetebQCVf1cwBWEQmiXxpx6apLgM5YE
+	Fur6Jpg/zEOe3MF69WCHkPUO+jP26QDisGWeRKOGe8vd0Jw14fQh19GHyUTvMWzIK/Jr7B
+	bnWTZhjkJFwxfWL6wJuIkcXMf53c3F4Rm9EYiYRrbhIRNDOKXpOY8RFTqcSlDeE9Bu5ntx
+	BOZD771mVC8TYB9Z2hnsZu+xuiYQ7jgB/++OxCT1P+Bdtx2Yeq3XavKyj1yv0a2+2F4fBi
+	cbgAqsqfjd/dKis7F2nC+3oG9DOpviP7rR9Yn3hbia+4RmOLsg3ePUxphexTdg==
+From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+Subject: [PATCH v3 00/14] Add MSM8917/PM8937/Redmi 5A
+Date: Thu, 07 Nov 2024 18:02:41 +0100
+Message-Id: <20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d92ab280-bd1f-4145-8164-cebab1980f20@sifive.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIALHyLGcC/2WMQQ6CMBBFr0JmbU2nhVBceQ/jYoQWJpFCWtNoC
+ He3sNGE5fv57y0QbWAb4VIsEGziyJPPoE8FtAP53gruMoOSqkSJjRjjaBqsBdat7qRzJVUK8ns
+ O1vF7L93umQeOryl89nDCbT02EgopHDrdEnbG2Oo6Evsne/b9eQo9bKGk/mSNP1ll2ZCsK0dkm
+ gce5HVdv8ggGCzgAAAA
+X-Change-ID: 20241019-msm8917-17c3d0ff4a52
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+ Lee Jones <lee@kernel.org>, Amit Kucheria <amitk@kernel.org>, 
+ Thara Gopinath <thara.gopinath@gmail.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, 
+ Lukasz Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+ Dang Huynh <danct12@riseup.net>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1730998969; l=3029;
+ i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
+ bh=sWowJxNGrnVM2AVICTZnLfr261T7nk89aqIuCGrDuOE=;
+ b=lrq/NpJWxQngDNkabbUmfryvThLywtOn6/VUppCCwfShY5BK40F0UxYqIKvW6czXrhPE58fUv
+ 7awH/2+qr2sDIteGWPNiQGnpPC4tqi03RhvVDYR1CUWrB2Nx9UWtdFD
+X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
+ pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-On Wed, Nov 06, 2024 at 01:45:23PM -0600, Samuel Holland wrote:
-> Hi Drew,
-> 
-> On 2024-11-06 11:51 AM, Andrew Jones wrote:
-> > Apply platform_device_msi_init_and_alloc_irqs() to add support for
-> > MSIs when the IOMMU is a platform device.
-> > 
-> > Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
-> > ---
-> >  drivers/iommu/riscv/iommu-platform.c | 102 ++++++++++++++++++++++-----
-> >  1 file changed, 84 insertions(+), 18 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
-> > index da336863f152..89aa622bcbde 100644
-> > --- a/drivers/iommu/riscv/iommu-platform.c
-> > +++ b/drivers/iommu/riscv/iommu-platform.c
-> > @@ -11,18 +11,41 @@
-> >   */
-> >  
-> >  #include <linux/kernel.h>
-> > +#include <linux/of_irq.h>
-> >  #include <linux/of_platform.h>
-> >  #include <linux/platform_device.h>
-> > +#include <linux/msi.h>
-> 
-> If you respin, please keep these sorted.
+This patch series add support for MSM8917 soc with PM8937 and
+Xiaomi Redmi 5A (riva).
 
-Sure
+Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+---
+Changes in v3:
+- msm8917-xiaomi-riva: Fix issues addressed by Konrad.
+- msm8917: Fix node addresses, orders of some properties.
+- pm8937: simplify vadc channels.
+- msm8917 pinctrl: Fix schema issues addressed by Krzysztof. 
+- Remove applied tcsr patch from this series.
+- Reword some commit title.
+- Link to v2: https://lore.kernel.org/r/20241031-msm8917-v2-0-8a075faa89b1@mainlining.org
 
-> 
-> >  
-> >  #include "iommu-bits.h"
-> >  #include "iommu.h"
-> >  
-> > +static void riscv_iommu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
-> > +{
-> > +	struct device *dev = msi_desc_to_dev(desc);
-> > +	struct riscv_iommu_device *iommu = dev_get_drvdata(dev);
-> > +	u16 idx = desc->msi_index;
-> > +	u64 addr;
-> > +
-> > +	addr = ((u64)msg->address_hi << 32) | msg->address_lo;
-> > +
-> > +	if (addr != (addr & RISCV_IOMMU_MSI_CFG_TBL_ADDR))
-> > +		pr_warn_once("uh oh, the IOMMU can't send MSIs to 0x%llx, sending to 0x%llx instead\n",
-> > +			     addr, addr & RISCV_IOMMU_MSI_CFG_TBL_ADDR);
-> 
-> Can this use dev_warn_once()? And should it really be only a warning?
-> Configuring the IOMMU to write to some other address seems dangerous. I guess
-> there's no clean way to handle this error, since this function cannot fail, and
-> irq_chip_compose_msi_msg() isn't supposed to fail either.
+Changes in v2:
+- Add msm8937 tsens support.
+- Fix issues addressed by reviews.
+- Link to v1: https://lore.kernel.org/r/20241019-msm8917-v1-0-f1f3ca1d88e5@mainlining.org
 
-I'll change it to a dev_err_once().
+---
+Barnabás Czémán (11):
+      dt-bindings: pinctrl: qcom,pmic-gpio: Add PM8937
+      pinctrl: qcom-pmic-gpio: Add support for PM8937
+      dt-bindings: pinctrl: qcom,pmic-mpp: Add PM8937
+      pinctrl: qcom: spmi-mpp: Add PM8937 compatible
+      dt-bindings: pinctrl: qcom: Add MSM8917 pinctrl
+      dt-bindings: thermal: tsens: Add MSM8937
+      thermal/drivers/qcom/tsens-v1: Add support for MSM8937 tsens
+      dt-bindings: iommu: qcom,iommu: Add MSM8917 IOMMU to SMMUv1 compatibles
+      dt-bindings: nvmem: Add compatible for MS8917
+      dt-bindings: arm: qcom: Add Xiaomi Redmi 5A
+      arm64: dts: qcom: Add Xiaomi Redmi 5A
 
-> 
-> > +
-> > +	addr &= RISCV_IOMMU_MSI_CFG_TBL_ADDR;
-> > +
-> > +	riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_ADDR(idx), addr);
-> > +	riscv_iommu_writel(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_DATA(idx), msg->data);
-> > +	riscv_iommu_writel(iommu, RISCV_IOMMU_REG_MSI_CFG_TBL_CTRL(idx), 0);
-> > +}
-> > +
-> >  static int riscv_iommu_platform_probe(struct platform_device *pdev)
-> >  {
-> > +	enum riscv_iommu_igs_settings igs;
-> >  	struct device *dev = &pdev->dev;
-> >  	struct riscv_iommu_device *iommu = NULL;
-> >  	struct resource *res = NULL;
-> > -	int vec;
-> > +	int vec, ret;
-> >  
-> >  	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
-> >  	if (!iommu)
-> > @@ -40,16 +63,6 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
-> >  	iommu->caps = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAPABILITIES);
-> >  	iommu->fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
-> >  
-> > -	/* For now we only support WSI */
-> > -	switch (FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps)) {
-> > -	case RISCV_IOMMU_CAPABILITIES_IGS_WSI:
-> > -	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
-> > -		break;
-> > -	default:
-> > -		return dev_err_probe(dev, -ENODEV,
-> > -				     "unable to use wire-signaled interrupts\n");
-> > -	}
-> > -
-> >  	iommu->irqs_count = platform_irq_count(pdev);
-> >  	if (iommu->irqs_count <= 0)
-> >  		return dev_err_probe(dev, -ENODEV,
-> > @@ -57,13 +70,60 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
-> >  	if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT)
-> >  		iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
-> >  
-> > -	for (vec = 0; vec < iommu->irqs_count; vec++)
-> > -		iommu->irqs[vec] = platform_get_irq(pdev, vec);
-> > +	igs = FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps);
-> > +	switch (igs) {
-> > +	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
-> > +	case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
-> > +		if (is_of_node(dev->fwnode))
-> > +			of_msi_configure(dev, to_of_node(dev->fwnode));
-> > +
-> > +		if (!dev_get_msi_domain(dev)) {
-> > +			dev_warn(dev, "failed to find an MSI domain");
-> > +			goto msi_fail;
-> > +		}
-> > +
-> > +		ret = platform_device_msi_init_and_alloc_irqs(dev, iommu->irqs_count,
-> > +							      riscv_iommu_write_msi_msg);
-> > +		if (ret) {
-> > +			dev_warn(dev, "failed to allocate MSIs");
-> > +			goto msi_fail;
-> > +		}
-> > +
-> > +		for (vec = 0; vec < iommu->irqs_count; vec++)
-> > +			iommu->irqs[vec] = msi_get_virq(dev, vec);
-> > +
-> > +		/* Enable message-signaled interrupts, fctl.WSI */
-> > +		if (iommu->fctl & RISCV_IOMMU_FCTL_WSI) {
-> > +			iommu->fctl ^= RISCV_IOMMU_FCTL_WSI;
-> > +			riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
-> > +		}
-> > +
-> > +		dev_info(dev, "using MSIs\n");
-> > +		break;
-> > +
-> > +msi_fail:
-> > +		if (igs != RISCV_IOMMU_CAPABILITIES_IGS_BOTH) {
-> > +			dev_warn(dev, "\n");
-> > +			return dev_err_probe(dev, -ENODEV,
-> > +					     "unable to use wire-signaled interrupts\n");
-> 
-> Is the dev_warn() just to call attention to the following error? There's no
-> guarantee that these two messages will be printed adjacently.
+Dang Huynh (1):
+      arm64: dts: qcom: Add PM8937 PMIC
 
-I'll drop the dev_warn since it was supposed to tie in with the dev_warn
-above which was missing its endline on purpose, but your statement about
-avoiding split logs means I should probably just do a complete log above
-and complete logs here and...
+Otto Pflüger (2):
+      pinctrl: qcom: Add MSM8917 tlmm pinctrl driver
+      arm64: dts: qcom: Add initial support for MSM8917
 
-> 
-> > +		}
-> > +
-> > +		dev_warn(dev, " - falling back to wired irqs\n");
-> 
-> No need for the extra hyphen here.
+ Documentation/devicetree/bindings/arm/qcom.yaml    |    7 +
+ .../devicetree/bindings/iommu/qcom,iommu.yaml      |    1 +
+ .../devicetree/bindings/nvmem/qcom,qfprom.yaml     |    1 +
+ .../bindings/pinctrl/qcom,msm8917-pinctrl.yaml     |  160 ++
+ .../bindings/pinctrl/qcom,pmic-gpio.yaml           |    3 +
+ .../devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml |    2 +
+ .../devicetree/bindings/thermal/qcom-tsens.yaml    |    1 +
+ arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+ arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts   |  297 +++
+ arch/arm64/boot/dts/qcom/msm8917.dtsi              | 2007 ++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/pm8937.dtsi               |  152 ++
+ drivers/pinctrl/qcom/Kconfig.msm                   |    6 +
+ drivers/pinctrl/qcom/Makefile                      |    1 +
+ drivers/pinctrl/qcom/pinctrl-msm8917.c             | 1620 ++++++++++++++++
+ drivers/pinctrl/qcom/pinctrl-spmi-gpio.c           |    2 +
+ drivers/pinctrl/qcom/pinctrl-spmi-mpp.c            |    1 +
+ drivers/thermal/qcom/tsens-v1.c                    |   13 +
+ drivers/thermal/qcom/tsens.c                       |    3 +
+ drivers/thermal/qcom/tsens.h                       |    2 +-
+ 19 files changed, 4279 insertions(+), 1 deletion(-)
+---
+base-commit: 74741a050b79d31d8d2eeee12c77736596d0a6b2
+change-id: 20241019-msm8917-17c3d0ff4a52
 
-...here, which also means the hyphen should be dropped.
-> 
-> Regards,
-> Samuel
+Best regards,
+-- 
+Barnabás Czémán <barnabas.czeman@mainlining.org>
 
-Thanks,
-drew
-
-> 
-> > +		fallthrough;
-> >  
-> > -	/* Enable wire-signaled interrupts, fctl.WSI */
-> > -	if (!(iommu->fctl & RISCV_IOMMU_FCTL_WSI)) {
-> > -		iommu->fctl |= RISCV_IOMMU_FCTL_WSI;
-> > -		riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
-> > +	case RISCV_IOMMU_CAPABILITIES_IGS_WSI:
-> > +		for (vec = 0; vec < iommu->irqs_count; vec++)
-> > +			iommu->irqs[vec] = platform_get_irq(pdev, vec);
-> > +
-> > +		/* Enable wire-signaled interrupts, fctl.WSI */
-> > +		if (!(iommu->fctl & RISCV_IOMMU_FCTL_WSI)) {
-> > +			iommu->fctl |= RISCV_IOMMU_FCTL_WSI;
-> > +			riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
-> > +		}
-> > +		dev_info(dev, "using wire-signaled interrupts\n");
-> > +		break;
-> > +	default:
-> > +		return dev_err_probe(dev, -ENODEV, "invalid IGS\n");
-> >  	}
-> >  
-> >  	return riscv_iommu_init(iommu);
-> > @@ -71,7 +131,13 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
-> >  
-> >  static void riscv_iommu_platform_remove(struct platform_device *pdev)
-> >  {
-> > -	riscv_iommu_remove(dev_get_drvdata(&pdev->dev));
-> > +	struct riscv_iommu_device *iommu = dev_get_drvdata(&pdev->dev);
-> > +	bool msi = !(iommu->fctl & RISCV_IOMMU_FCTL_WSI);
-> > +
-> > +	riscv_iommu_remove(iommu);
-> > +
-> > +	if (msi)
-> > +		platform_device_msi_free_irqs_all(&pdev->dev);
-> >  };
-> >  
-> >  static const struct of_device_id riscv_iommu_of_match[] = {
-> 
