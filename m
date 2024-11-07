@@ -1,157 +1,178 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B89B928689
-	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 02:58:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5C2917C61;
+	Thu,  7 Nov 2024 03:20:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730948290; cv=none; b=kscjUm23jvyyORlF+qBf5Nupi9UttL0RF9Oq1ojIO33ogokMcl+QgoYXucQNYGO4vbWy2KgHOWtszOBxCqS6BtjwjXfzjOqjhkyykgu4M1KirL+vC3E/yPF4mNmHZLLuLEMWY6ArgqfclurR+R3w8hs1htaXIjSKjmonHJ1VvIc=
+	t=1730949656; cv=none; b=RhuF8EPAqq2ZxcTQm/fN/tbQ0GGi2YvRJNym0F1b0TS1LWZrSDwnbSKSxJX0MZqNsLqKikG9E/y0vTeJw2wPcvrd3mwV0pJW+4pci0DzhI9UOG9Dsivw538iQljkzD5iK2Evfdz//3Ac0q5Xq5fpNPNMxJIfedUfTV2SZVFD678=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730948290; c=relaxed/simple;
-	bh=94PKgaKfWOHAXdSd2MtMBjDFznqUJObjfasieQkDFdU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cuDPdkNdzbU2uOWiNrzgC4tprrz765GN+n7ISYkYwWCcIzdYNyoIbN1i46iV/Yx4gItVjQAEcpxlpdaI7IsKMGBWqwXWMLookOvtrAzExIqmagHyyH9/xKIpL/lUbRUmxZr736HsXL62fEhxwlPmP9gODoo2ie4Y29EeL0D/WrU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GsyYexAQ; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1730949656; c=relaxed/simple;
+	bh=MfgIsmThhu9LXOQDEMR7hFNs+rsV9Z5JVos+Z0mGxsw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=u2yNn2CbDrOPk8+d5SEIFVh1Q/oaM1wpLT9w9/oUsOTlx2KZQwTfeFv6MIqnApSNjeRbS3K4HdZhC06rsKd+VIsjzZhSvaIggnnyBME3aWRTt/zv+jB5B5wypY2pWj216byAHu6zwfTbbGw+5cPylhHXCjNOLYYoRZjPKq6Ln08=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UF0bjJum; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GsyYexAQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730948288; x=1762484288;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=94PKgaKfWOHAXdSd2MtMBjDFznqUJObjfasieQkDFdU=;
-  b=GsyYexAQc5mvAja4rl09L8b1N9iY2541gV/o8EznL+rtUbUjgrPZPQNs
-   bTxwrOi59l1TR3C0nTCFlPLSHQx8X7PX8IjzqzVrBLi8aMN436bS3J9lq
-   5WDGpXw+vafndoJvpf/+xkSZk4gtS1T+To+RmtsIZr/1sYAfpj+AoUR3C
-   z+DiCmshq9EQxHphRafWw4PAYPX84vCwlVNV5kVJ+0f+f+3qw58rpv47v
-   1j3nvRq1yipYp7g9P5jM969TR2Vzr1+iBxVOP/GpaK+rJDcHuvzcJ0Nla
-   zvYdN7cIZl39C82zuP1rx3wG1RYf1CFJ51YMamZCKgtYSiP0g3JINr1Kw
-   Q==;
-X-CSE-ConnectionGUID: 7+GkrpUwS/Kpq1J8r9SQIQ==
-X-CSE-MsgGUID: D1ZvvgV9Rk6ZLYkmaEzruQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11248"; a="42177848"
-X-IronPort-AV: E=Sophos;i="6.11,264,1725346800"; 
-   d="scan'208";a="42177848"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 18:58:08 -0800
-X-CSE-ConnectionGUID: XEByOHGSTkihLFelApb1HA==
-X-CSE-MsgGUID: 33576pdsRqSYpOrS32QyBw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,264,1725346800"; 
-   d="scan'208";a="84518924"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 18:58:05 -0800
-Message-ID: <0ab4e27c-0ebc-4062-bf5a-121e4e95a16a@linux.intel.com>
-Date: Thu, 7 Nov 2024 10:57:15 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UF0bjJum"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-20ca1b6a80aso5835355ad.2;
+        Wed, 06 Nov 2024 19:20:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1730949654; x=1731554454; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=R8jNzrElX9RmiBjTI8h4pv70akApgYg9F+hG3zefMUQ=;
+        b=UF0bjJum8dq2QCOEZSWNOabqVkt6dVt/25YIZDbYZJUI1CxSAVmvRv6YPITgwf/yu3
+         /i1+1BeiDewManGe4qmiI5axq28GDE8KvUycRrthIhefyI9/uX6+l0XZ9ecVyvQPQD5S
+         pWMgYFy6fvk5nTSY5jOHvXHUXB8RsTC9Hn53JOVj610N95N+z466DIGGHEeETlZ1iTwC
+         dUADyWIEFkuXnPhQXH5SURj88DfxIBbNXbvsP7rgKzU4MhwqPflfJ8J0zLa62Q0qRoGr
+         NvCuvzqDvfg/agBgUp425QnRcdRQF3rO9wOFesGMotseR24LM3zf1bvPW12GstAYJWgz
+         N7Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730949654; x=1731554454;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=R8jNzrElX9RmiBjTI8h4pv70akApgYg9F+hG3zefMUQ=;
+        b=jErO2f0XshD0vueKNtQ0iZvZQjq52SgKFp4/Htvg3IT/QN49JioeOz2TQrOCbZ0WAB
+         dEBLC/1wrA4CdbxoDpV5xrZhPMI9YA6D/6Y5NiyHH2USTsNMN7mNte90pgvsP57ZxcNB
+         V3ojoRR08LMi384TF5mnJ+bgPrcrvjk17Hhm4HUSFHsQElUJyNF04qcFtFcliO/cftiL
+         NYbq38xuzsEqyh07jpfz604xjR6sKNlUuJ/OCZwYF2DE3YMREUw7/AFQ1ZOKNIJkCLi+
+         KU3y+ewd06TAyOxvmLaBVjv6RQjjhav/ZlClWwbRNlC8akBerqOjQOTh53PcS64egxKz
+         A0VA==
+X-Forwarded-Encrypted: i=1; AJvYcCVS7cO/S/GtBcs9XLTBxTaZdy5Dw3/dGDj5DJ4o8DfWywgh4WdKd79gzwKkfjcyrZw8CwXAp6fv/Q==@lists.linux.dev, AJvYcCXaxFxXV1KQdWtH7+4i/dMAXeBdTaIJbFhkJoMpKkqu8I8xz7ln8mkp1rXDPNl5/X2dAwYJKg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy6lMkjQrveMmwjbwdXq3xxAT24Lxm1ZBkN1suFjbJbugPtmPUO
+	+V4KW8WJJpH5h3MGSEPtm2yq8oApPTgzObZngPy108V6nBnG9Oy2
+X-Google-Smtp-Source: AGHT+IFP7jI8N7MZAQEh3fKVwbjpLCzLZAOp+2qk1ae0Rl9Avg2cfhgX+kUyGo3POLdRxL4zyEhtHA==
+X-Received: by 2002:a17:903:985:b0:210:f07d:b3d9 with SMTP id d9443c01a7336-2111af1757amr325782555ad.6.1730949653768;
+        Wed, 06 Nov 2024 19:20:53 -0800 (PST)
+Received: from archie.me ([103.124.138.155])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21177dc803dsm2208695ad.12.2024.11.06.19.20.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2024 19:20:52 -0800 (PST)
+Received: by archie.me (Postfix, from userid 1000)
+	id A156F41F52FB; Thu, 07 Nov 2024 10:20:49 +0700 (WIB)
+Date: Thu, 7 Nov 2024 10:20:49 +0700
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, will@kernel.org,
+	robin.murphy@arm.com, dwmw2@infradead.org, shuah@kernel.org,
+	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	baolu.lu@linux.intel.com, eric.auger@redhat.com,
+	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
+	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
+	yi.l.liu@intel.com, aik@amd.com, zhangfei.gao@linaro.org,
+	patches@lists.linux.dev
+Subject: Re: [PATCH v7 13/13] Documentation: userspace-api: iommufd: Update
+ vIOMMU
+Message-ID: <ZywyEUmL4HvM8B9v@archie.me>
+References: <cover.1730836219.git.nicolinc@nvidia.com>
+ <7e4302064e0d02137c1b1e139342affc0485ed3f.1730836219.git.nicolinc@nvidia.com>
+ <ZywQP3_TpdttuCy8@archie.me>
+ <ZywZcSidYCWkJgrw@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 04/13] iommu/vt-d: Add pasid replace helpers
-To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
- kevin.tian@intel.com
-Cc: alex.williamson@redhat.com, eric.auger@redhat.com, nicolinc@nvidia.com,
- kvm@vger.kernel.org, chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
- zhenzhong.duan@intel.com, vasant.hegde@amd.com, willy@infradead.org
-References: <20241106154606.9564-1-yi.l.liu@intel.com>
- <20241106154606.9564-5-yi.l.liu@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20241106154606.9564-5-yi.l.liu@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="fVTjkEpn9ekAW5rv"
+Content-Disposition: inline
+In-Reply-To: <ZywZcSidYCWkJgrw@Asurada-Nvidia>
 
-On 11/6/24 23:45, Yi Liu wrote:
-> +int intel_pasid_replace_second_level(struct intel_iommu *iommu,
-> +				     struct dmar_domain *domain,
-> +				     struct device *dev, u16 old_did,
-> +				     u32 pasid)
-> +{
-> +	struct pasid_entry *pte;
-> +	struct dma_pte *pgd;
-> +	u64 pgd_val;
-> +	int agaw;
-> +	u16 did;
+
+--fVTjkEpn9ekAW5rv
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Nov 06, 2024 at 05:35:45PM -0800, Nicolin Chen wrote:
+> On Thu, Nov 07, 2024 at 07:56:31AM +0700, Bagas Sanjaya wrote:
+> > On Tue, Nov 05, 2024 at 12:04:29PM -0800, Nicolin Chen wrote:
+> > > With the introduction of the new object and its infrastructure, updat=
+e the
+> > > doc to reflect that and add a new graph.
+> > >=20
+> > > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> > > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> > > ---
+> > >  Documentation/userspace-api/iommufd.rst | 69 +++++++++++++++++++++++=
++-
+> > >  1 file changed, 68 insertions(+), 1 deletion(-)
+> > >=20
+> > > diff --git a/Documentation/userspace-api/iommufd.rst b/Documentation/=
+userspace-api/iommufd.rst
+> > > index 2deba93bf159..a8b7766c2849 100644
+> > > --- a/Documentation/userspace-api/iommufd.rst
+> > > +++ b/Documentation/userspace-api/iommufd.rst
+> > > @@ -63,6 +63,37 @@ Following IOMMUFD objects are exposed to userspace:
+> > >    space usually has mappings from guest-level I/O virtual addresses =
+to guest-
+> > >    level physical addresses.
+> > > =20
+> > > +- IOMMUFD_OBJ_VIOMMU, representing a slice of the physical IOMMU ins=
+tance,
+> > > +  passed to or shared with a VM. It may be some HW-accelerated virtu=
+alization
+> > > +  features and some SW resources used by the VM. For examples:
+> > > +  * Security namespace for guest owned ID, e.g. guest-controlled cac=
+he tags
+> > > +  * Non-device-affiliated event reporting, e.g. invalidation queue e=
+rrors
+> > > +  * Access to a sharable nesting parent pagetable across physical IO=
+MMUs
+> > > +  * Virtualization of various platforms IDs, e.g. RIDs and others
+> > > +  * Delivery of paravirtualized invalidation
+> > > +  * Direct assigned invalidation queues
+> > > +  * Direct assigned interrupts
+> >=20
+> > The bullet list above is outputted in htmldocs build as long-running pa=
+ragraph
+> > instead.
+>=20
+> Oh, I overlooked this list.
+>=20
+> Would the following change be okay?
+>=20
+> -------------------------------------------------
+> diff --git a/Documentation/userspace-api/iommufd.rst b/Documentation/user=
+space-api/iommufd.rst
+> index 0ef22b3ca30b..011cbc71b6f5 100644
+> --- a/Documentation/userspace-api/iommufd.rst
+> +++ b/Documentation/userspace-api/iommufd.rst
+> @@ -68,2 +68,3 @@ Following IOMMUFD objects are exposed to userspace:
+>    features and some SW resources used by the VM. For examples:
 > +
-> +	/*
-> +	 * If hardware advertises no support for second level
-> +	 * translation, return directly.
-> +	 */
-> +	if (!ecap_slts(iommu->ecap)) {
-> +		pr_err("No second level translation support on %s\n",
-> +		       iommu->name);
-> +		return -EINVAL;
-> +	}
+>    * Security namespace for guest owned ID, e.g. guest-controlled cache t=
+ags
+> @@ -75,2 +76,3 @@ Following IOMMUFD objects are exposed to userspace:
+>    * Direct assigned interrupts
 > +
-> +	pgd = domain->pgd;
-> +	pgd_val = virt_to_phys(pgd);
-> +	did = domain_id_iommu(domain, iommu);
-> +
-> +	spin_lock(&iommu->lock);
-> +	pte = intel_pasid_get_entry(dev, pasid);
-> +	if (!pte) {
-> +		spin_unlock(&iommu->lock);
-> +		return -ENODEV;
-> +	}
-> +
-> +	if (!pasid_pte_is_present(pte)) {
-> +		spin_unlock(&iommu->lock);
-> +		return -EINVAL;
-> +	}
-> +
-> +	WARN_ON(old_did != pasid_get_domain_id(pte));
-> +
-> +	pasid_pte_config_second_level(iommu, pte, pgd_val, agaw,
-> +				      did, domain->dirty_tracking);
-> +	spin_unlock(&iommu->lock);
-> +
-> +	intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
-> +	intel_iommu_drain_pasid_prq(dev, pasid);
-> +
-> +	return 0;
-> +}
+>    Such a vIOMMU object generally has the access to a nesting parent page=
+table
+> -------------------------------------------------
+>=20
+> The outputted html is showing a list with this.
 
-0day robot complains:
+Yup, that's right!
 
- >> drivers/iommu/intel/pasid.c:540:53: warning: variable 'agaw' is 
-uninitialized when used here [-Wuninitialized]
-      540 |         pasid_pte_config_second_level(iommu, pte, pgd_val, agaw,
-          |                                                            ^~~~
-    drivers/iommu/intel/pasid.c:509:10: note: initialize the variable 
-'agaw' to silence this warning
-      509 |         int agaw;
-          |                 ^
-          |                  = 0
+--=20
+An old man doll... just what I always wanted! - Clara
 
-The right fix could be like this:
+--fVTjkEpn9ekAW5rv
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 777e70b539b1..69f12b1b8a2b 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -506,7 +506,6 @@ int intel_pasid_replace_second_level(struct 
-intel_iommu *iommu,
-         struct pasid_entry *pte;
-         struct dma_pte *pgd;
-         u64 pgd_val;
--       int agaw;
-         u16 did;
+-----BEGIN PGP SIGNATURE-----
 
-         /*
-@@ -537,7 +536,7 @@ int intel_pasid_replace_second_level(struct 
-intel_iommu *iommu,
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZywyBQAKCRD2uYlJVVFO
+o05dAPoCkLQClFT+zDGmYdVx68XDBEfdBl1CCmp2FZ3jz4uFtAEAqVIZoqERkKzk
+iTAIm9NwYZC9ESLhO1HMIWvngDLktgw=
+=Xpoe
+-----END PGP SIGNATURE-----
 
-         WARN_ON(old_did != pasid_get_domain_id(pte));
-
--       pasid_pte_config_second_level(iommu, pte, pgd_val, agaw,
-+       pasid_pte_config_second_level(iommu, pte, pgd_val, domain->agaw,
-                                       did, domain->dirty_tracking);
-         spin_unlock(&iommu->lock);
-
---
-baolu
+--fVTjkEpn9ekAW5rv--
