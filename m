@@ -1,108 +1,157 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB410624
-	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 00:16:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42034539A;
+	Thu,  7 Nov 2024 00:56:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730938594; cv=none; b=iia8OfAgiNDZ03X3bhTxjucJduMRgXqseIsTEcmEJnivxeyB7un/fkw5C9m/bbPhseNsqygk86gDCWoYADw3UMH7Ynw8ymHedS5WfsvnjGSlC+xQwvnzM0DfrztXT11JORsfuFHPMGONkCllSBb7d3IOZEYw1ysojDSnt7I9uuE=
+	t=1730940999; cv=none; b=HKYl5nkbJ2wsCNcP8ipwXJCujBnVUxF8PzQEjrewdeoRN7u5BXxWIq4zpwh+c++8cLPDeWONEnhLG7Tv/fdZw7pOUWhBYdEQAYajaR+jcqQY8P0lcW1Mgv4ruc3dO130cKheGRhy6BPbNmsiV/bTu8i3jmjgm0rYGswIYilTgSY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730938594; c=relaxed/simple;
-	bh=LBgH/f0GCpmR3RWNjxNdDJ39gH9kDpYN3cqGdAWC2IA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cMSbOUejEe6JgkRTUmTDi3pKDeEAXl5QArYCIi6TzCD5YW6npDgQH2Wu5cge+7VtacAWExffvTWOpYhSgI+E21GO1d5pcTdNlRZGnukxBJkzWd9recVh1c93oAcfUNjVj9OqJtHBlYBmZyqNKLgzaUSyjXS0F9cGUTghORNZi3w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=G7V9QDIQ; arc=none smtp.client-ip=209.85.208.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1730940999; c=relaxed/simple;
+	bh=PLaojtRXC7+p9v3nWjKHwHm1S8O3lMOgiSI9DIAjLKA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OtSsnFP8KgTUYiZcxYJDrjmQRiCZyvxa4Z912qgDJc/XJquyg77vtFj5alvjrmR0GuT8KkGf+MbhEGgwdHyIomkB1RCPWdUWSvafP8UHfnmyfSkKxdgDfY6Oekc/NTfryP+XZyGuniwpj+Ijm8tMXwDqnn+nM7ojhP702CQ2Wsc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L7ppfESk; arc=none smtp.client-ip=209.85.210.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="G7V9QDIQ"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-5c947c00f26so4230a12.1
-        for <iommu@lists.linux.dev>; Wed, 06 Nov 2024 16:16:32 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L7ppfESk"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-72041ff06a0so294652b3a.2;
+        Wed, 06 Nov 2024 16:56:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1730938591; x=1731543391; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2GTG+Ign50UZHXnut+zxQ2gmqnSMDzLGeRF5nsPA2cA=;
-        b=G7V9QDIQbn+cVtZFA+8yoE61NVivUlp8BJNjNRbbZcaxcEckuK14HmiP6VcYPMKVd5
-         6E5Km/2EYpr6dVsjtZ4j7do/cYxf0Wh4HBQDQb+tY14+Ulxrxm+tF183hF/tImRuJj0U
-         bxLxJSv5Qe0eFwwtyGIe/D+Mcfx/t50jnppciCmd0IIdeaWAT1Q5TI43FxriiW6pABln
-         7I1oPPvAv63NyrhUIX1wgNakBl59lvFxPqeAerzwQSwaVLhkUr3hQeBKA511kcIbbCbu
-         E1kjn4YZfDNbBvQ0QEPfw+nmGSmp6wsdzil91a0zNPoqL5qX10iWwLAkIGetZiqjdsWv
-         iGIg==
+        d=gmail.com; s=20230601; t=1730940997; x=1731545797; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Kb6nMRvMwSxA+8+ha5/4tfagx7bwoqrFwcZIkWkVlTI=;
+        b=L7ppfESk4c0fIqGRNgsBaOIjXWFiRtsoGKj2J4/5J1CYvVhEA1P3ANfrHDZX7f3F14
+         dDaXbdUFtHo8azcDe1h5yngYBmGPje6OHya+oxIoTzzs+I8sga4cfNBod94lyQInP+Pr
+         VXDSw3D4i7CRUxUoFJMPsCoHpH6+AjYXmGfNfr6EAjq7E6Rc0kz1mLdTaKDvWYc1nB6C
+         J9F5VOtWfQ7DHm8yvQbSV/hI9K1HG+TXcWEC+oiQ2vfsy2TDN6LTb7rm4E9+7vuwc/Ph
+         tWvU7NkKKEs7RkkWQIuL/y6Be5rIE5W2Bd/bYH6EGHEZrdALX06Eciis4WlUnaCI1Pwd
+         23xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730938591; x=1731543391;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2GTG+Ign50UZHXnut+zxQ2gmqnSMDzLGeRF5nsPA2cA=;
-        b=KnL40OI+9gtTU7hcKvaUDqN941I5FsiU53SqX8TZpqHQAvcTuPot7n2+8VFQkKZ/u4
-         XinbcCXR6s/fiCFk7PyZK8qwwvt8gH9TUBblSV5ubC4jqrzLJWta9LfslVUdB2BV238y
-         Vc2dtckPyg+ejPYHP+D1v5BwNMVvic6hfPtmvCZ0SFdzHZsG2mdj9H3Ks33h/AjdHYsg
-         jCRbrgZ2f3TlK/wccJ0MBuSuKNMOXa6uAY3V1cT0qVmWjm4IMAkd9PN0FOXmRYLCnGeG
-         6jAWlMKoHV67TuDsjZ06kDpwl0OGUclawE13O+05YtZlsoxBGcQGQlkB8iYAUpoWQbU4
-         HeEQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUTbY09whqTaF27jSb+34Ji/ubpyEFADvyi8cK51n44iEGoJv5FA1AKEKOp9dGTWc025oho2w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwrolvWvuXbRmrAjwnlMZwSa/93QTKwZ/x8555d9VqpJgWnf5C3
-	wlqMxtsbXZ/wkH+ccisDEWTIAFQ2I1MqDUIAtC6NtspZGtt8ZnPmH+KMMU7aZgfuy4XZZaaJP6W
-	BEGh4ERj6JbwOfKLy8m7KbW1k6dBrjLhsRgNZ
-X-Gm-Gg: ASbGnctV0aiMoLirfWGFD/TrmRpGPEYb1fMFJnElXBBVVPKrbJJlmB4P8+NsQZtqc3n
-	AKtuDwGxpVoJlCjBvLGtlPYgpxvVH93n/M7tR5vXTe+CCvvANODXI0hf9dI46mA==
-X-Google-Smtp-Source: AGHT+IGUu2m/2cY4hgbWj4Msq+kdzpbDU7WfNrPnQt6/oLHQmr5ONZzvhOsjwWnhRUTDbkJiuRmk6rxt3uvN3fps/Kk=
-X-Received: by 2002:a05:6402:6c1:b0:5c9:85dc:5ae2 with SMTP id
- 4fb4d7f45d1cf-5cefbcd6d8bmr299473a12.7.1730938590849; Wed, 06 Nov 2024
- 16:16:30 -0800 (PST)
+        d=1e100.net; s=20230601; t=1730940997; x=1731545797;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Kb6nMRvMwSxA+8+ha5/4tfagx7bwoqrFwcZIkWkVlTI=;
+        b=mJDa+dxGNmyaFSVdGgfpYwpjJdL7wZ2tOaMJjn2ql7nqaUmoiCg5bvlTU+qSkgicnp
+         5k2kMx8Gz0eA/gF9seZd1/+3PHyVdm8ubFRBcXXT6I9Ki4i6ZvXZMWFybYl/eHdchCoT
+         npvWuUqwMgwIzC5EFtnywg489puMicKk/XQYq8+LR8ZkuriW4PD5eoCjiYz9LheZDeHm
+         EUHP9X7YI21oDfjT7jlRTNDIqipAScgLEVs84eWXhO+KWJDC3KhKeH1dIEY8gkijAFa5
+         e7vXrcXneoZCIOkr2qrwf+cO7x3fbaazUsDQJidPz1veRbNY8vkpVkX3mDeI8EwdzZ20
+         oh4Q==
+X-Forwarded-Encrypted: i=1; AJvYcCULM7zds+LLylPlYuKa4BV/EfdE/9UUjItkBIaK6VW7RydWk6KesarqC5DJkP55AyfQ2Q+OeJeHAA==@lists.linux.dev, AJvYcCXGm8fzUhfUjuFHrOwLnzP3IC/2UYSSM6mwkUWWLMlv+fXMZ0fBJtHm4n8Jl61JHUoYFKLt2Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx9/BCKUSzXqVcarW0g0mzyOWzkrqP+N1ypo+fdxZ0ObjO/R8jX
+	+SsYw0dwlcMD6O+U1AWiiLsP/LHQCGMjrxpLXCAr4Y/KbUFyN7wd
+X-Google-Smtp-Source: AGHT+IEYiPOYXNXocP1QxbgwprQfTHsIgODY98a2lMIztatnt7OohZLGlw/YHFai1ZjQ5Pw50bk/qw==
+X-Received: by 2002:a05:6a21:328c:b0:1db:e1ce:8eaf with SMTP id adf61e73a8af0-1dbe1ce9763mr14975018637.6.1730940997311;
+        Wed, 06 Nov 2024 16:56:37 -0800 (PST)
+Received: from archie.me ([103.124.138.155])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7240799bb8fsm180679b3a.116.2024.11.06.16.56.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2024 16:56:36 -0800 (PST)
+Received: by archie.me (Postfix, from userid 1000)
+	id AF82B41F52FB; Thu, 07 Nov 2024 07:56:31 +0700 (WIB)
+Date: Thu, 7 Nov 2024 07:56:31 +0700
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com,
+	kevin.tian@intel.com, corbet@lwn.net
+Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
+	robin.murphy@arm.com, dwmw2@infradead.org, shuah@kernel.org,
+	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	baolu.lu@linux.intel.com, eric.auger@redhat.com,
+	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
+	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
+	yi.l.liu@intel.com, aik@amd.com, zhangfei.gao@linaro.org,
+	patches@lists.linux.dev
+Subject: Re: [PATCH v7 13/13] Documentation: userspace-api: iommufd: Update
+ vIOMMU
+Message-ID: <ZywQP3_TpdttuCy8@archie.me>
+References: <cover.1730836219.git.nicolinc@nvidia.com>
+ <7e4302064e0d02137c1b1e139342affc0485ed3f.1730836219.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241018180022.807928-1-praan@google.com> <20241018180022.807928-2-praan@google.com>
-In-Reply-To: <20241018180022.807928-2-praan@google.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Wed, 6 Nov 2024 16:16:19 -0800
-Message-ID: <CAE2F3rCZALbQQUNeaAqShgXz6UNnSQAagqE7RA9kAewBFJNenw@mail.gmail.com>
-Subject: Re: [PATCH v4 1/3] iommu/arm-smmu-v3: Introduce struct arm_smmu_event
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Mostafa Saleh <smostafa@google.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev, 
-	Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="R8eh+sitfrxXSbCw"
+Content-Disposition: inline
+In-Reply-To: <7e4302064e0d02137c1b1e139342affc0485ed3f.1730836219.git.nicolinc@nvidia.com>
+
+
+--R8eh+sitfrxXSbCw
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 18, 2024 at 11:00=E2=80=AFAM Pranjal Shrivastava <praan@google.=
-com> wrote:
->
-> Introduce `struct arm_smmu_event` to represent event records.
-> Parse out relevant fields from raw event records for ease and
-> use the new `struct arm_smmu_event` instead.
->
-> Signed-off-by: Daniel Mentz <danielmentz@google.com>
-> Signed-off-by: Pranjal Shrivastava <praan@google.com>
+On Tue, Nov 05, 2024 at 12:04:29PM -0800, Nicolin Chen wrote:
+> With the introduction of the new object and its infrastructure, update the
+> doc to reflect that and add a new graph.
+>=20
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
+>  Documentation/userspace-api/iommufd.rst | 69 ++++++++++++++++++++++++-
+>  1 file changed, 68 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/Documentation/userspace-api/iommufd.rst b/Documentation/user=
+space-api/iommufd.rst
+> index 2deba93bf159..a8b7766c2849 100644
+> --- a/Documentation/userspace-api/iommufd.rst
+> +++ b/Documentation/userspace-api/iommufd.rst
+> @@ -63,6 +63,37 @@ Following IOMMUFD objects are exposed to userspace:
+>    space usually has mappings from guest-level I/O virtual addresses to g=
+uest-
+>    level physical addresses.
+> =20
+> +- IOMMUFD_OBJ_VIOMMU, representing a slice of the physical IOMMU instanc=
+e,
+> +  passed to or shared with a VM. It may be some HW-accelerated virtualiz=
+ation
+> +  features and some SW resources used by the VM. For examples:
+> +  * Security namespace for guest owned ID, e.g. guest-controlled cache t=
+ags
+> +  * Non-device-affiliated event reporting, e.g. invalidation queue errors
+> +  * Access to a sharable nesting parent pagetable across physical IOMMUs
+> +  * Virtualization of various platforms IDs, e.g. RIDs and others
+> +  * Delivery of paravirtualized invalidation
+> +  * Direct assigned invalidation queues
+> +  * Direct assigned interrupts
 
-> +struct arm_smmu_event {
-> +       struct arm_smmu_device          *smmu;
-> +       u8                              id;
-> +       u8                              class;
-> +       u16                             stag;
-> +       u32                             sid;
-> +       u32                             ssid;
-> +       u64                             iova;
-> +       u64                             ipa;
-> +       u64                             raw[EVTQ_ENT_DWORDS];
+The bullet list above is outputted in htmldocs build as long-running paragr=
+aph
+instead.
 
-Consider removing the member named raw from struct arm_smmu_event.
-Compare this with struct arm_smmu_cmdq_ent and
-arm_smmu_cmdq_build_cmd() which keep the encoded and decoded versions
-separate.
+> +  Such a vIOMMU object generally has the access to a nesting parent page=
+table
+> +  to support some HW-accelerated virtualization features. So, a vIOMMU o=
+bject
+> +  must be created given a nesting parent HWPT_PAGING object, and then it=
+ would
+> +  encapsulate that HWPT_PAGING object. Therefore, a vIOMMU object can be=
+ used
+> +  to allocate an HWPT_NESTED object in place of the encapsulated HWPT_PA=
+GING.
 
-> +       bool                            stall;
-> +       bool                            ssid_valid;
-> +       bool                            privileged;
-> +       bool                            instruction;
-> +       bool                            s2;
-> +       bool                            read;
-> +};
+Thanks.
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--R8eh+sitfrxXSbCw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZywQOwAKCRD2uYlJVVFO
+o7pRAQC/P/MtxGJEcuBrLt3vgwQrT0pU3bttl3Z7gq5Y4j09ngEA5fvElByqOXWd
+ra3GriB9y/vGMX6/gPtQqt/qByO1IwE=
+=OgKS
+-----END PGP SIGNATURE-----
+
+--R8eh+sitfrxXSbCw--
