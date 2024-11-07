@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 352DADDA9
-	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 02:53:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B89B928689
+	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 02:58:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730947991; cv=none; b=USRFH60Mf35HGWTOpktkh8WAJxP/ItS/+Qt5+IuJAeGQgybpZzNWxKc5nMnQzi+dCn9hglocB7PUp817yT0Ksvw0Q2OPgT7XjeRfXqnCeoeifQKfIqhIquM3RYokDUjYT8qXPkOT/We8+APnJEZ7u+2UF1+7tNrHxP+b8QmuJLU=
+	t=1730948290; cv=none; b=kscjUm23jvyyORlF+qBf5Nupi9UttL0RF9Oq1ojIO33ogokMcl+QgoYXucQNYGO4vbWy2KgHOWtszOBxCqS6BtjwjXfzjOqjhkyykgu4M1KirL+vC3E/yPF4mNmHZLLuLEMWY6ArgqfclurR+R3w8hs1htaXIjSKjmonHJ1VvIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730947991; c=relaxed/simple;
-	bh=9Cnj/C8vZ2+3PVgYBk0wKAhkXB96hGEEmPN+X5v9GYc=;
+	s=arc-20240116; t=1730948290; c=relaxed/simple;
+	bh=94PKgaKfWOHAXdSd2MtMBjDFznqUJObjfasieQkDFdU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ovTjQUSEMx+36yLOS+LKKOyQNQn4JQunqLtHMobdQpKV49Go5i83EDs17/5yq2/HQuU7USRBGrfLmeoDmWjTlu95/y3B5ln/7SnmmEyQhTeShldAgqMOFLRQ42YJ9YHUcma/+F8O7l6s8dvs8Vrw0YvUXSxc/zmElmoOhTBUWXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X6fv/Xve; arc=none smtp.client-ip=198.175.65.12
+	 In-Reply-To:Content-Type; b=cuDPdkNdzbU2uOWiNrzgC4tprrz765GN+n7ISYkYwWCcIzdYNyoIbN1i46iV/Yx4gItVjQAEcpxlpdaI7IsKMGBWqwXWMLookOvtrAzExIqmagHyyH9/xKIpL/lUbRUmxZr736HsXL62fEhxwlPmP9gODoo2ie4Y29EeL0D/WrU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GsyYexAQ; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X6fv/Xve"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GsyYexAQ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730947990; x=1762483990;
+  t=1730948288; x=1762484288;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=9Cnj/C8vZ2+3PVgYBk0wKAhkXB96hGEEmPN+X5v9GYc=;
-  b=X6fv/Xve6eJWlhiVxC9dNOoZy6e/o1MK2nkJiJ/mBuG933VRtgTedwPi
-   oXtMpL+E7maqVp3BTTgXrgyBSkjSDXZkIhChPH7UzQ7FZkzT5JZ+AlAgr
-   JdXdi+JaXQyL/O/xfIzD0yNEaI2N2FAFylATpm4nFp65ZdBmk/om+isr8
-   9t7lxvX3Yg6RtkWjYelYjNxScse60Rl4rU6bw0wQC8+eLn6WOzTKQJxI8
-   fJoB1MglDLBKw0/hWz6wcO2GCgipGia7CeMuz5KZGO9Tx3PZBitsRD4eD
-   alfwzYVwPENj3rTZSiCQhA9LZ6eNzH320kI1eOTatG5tR684q9sBew/sH
-   w==;
-X-CSE-ConnectionGUID: FSUmjjhKRSC41TXvlsHbWQ==
-X-CSE-MsgGUID: kuPvOpUiTOqTS6F1gJTibw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11248"; a="42177397"
+  bh=94PKgaKfWOHAXdSd2MtMBjDFznqUJObjfasieQkDFdU=;
+  b=GsyYexAQc5mvAja4rl09L8b1N9iY2541gV/o8EznL+rtUbUjgrPZPQNs
+   bTxwrOi59l1TR3C0nTCFlPLSHQx8X7PX8IjzqzVrBLi8aMN436bS3J9lq
+   5WDGpXw+vafndoJvpf/+xkSZk4gtS1T+To+RmtsIZr/1sYAfpj+AoUR3C
+   z+DiCmshq9EQxHphRafWw4PAYPX84vCwlVNV5kVJ+0f+f+3qw58rpv47v
+   1j3nvRq1yipYp7g9P5jM969TR2Vzr1+iBxVOP/GpaK+rJDcHuvzcJ0Nla
+   zvYdN7cIZl39C82zuP1rx3wG1RYf1CFJ51YMamZCKgtYSiP0g3JINr1Kw
+   Q==;
+X-CSE-ConnectionGUID: 7+GkrpUwS/Kpq1J8r9SQIQ==
+X-CSE-MsgGUID: D1ZvvgV9Rk6ZLYkmaEzruQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11248"; a="42177848"
 X-IronPort-AV: E=Sophos;i="6.11,264,1725346800"; 
-   d="scan'208";a="42177397"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 18:53:09 -0800
-X-CSE-ConnectionGUID: PDGZenlmReOmKFoSM7Gkeg==
-X-CSE-MsgGUID: xUUiR8s6QCWfysyKu3H/vw==
+   d="scan'208";a="42177848"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 18:58:08 -0800
+X-CSE-ConnectionGUID: XEByOHGSTkihLFelApb1HA==
+X-CSE-MsgGUID: 33576pdsRqSYpOrS32QyBw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,264,1725346800"; 
-   d="scan'208";a="88852257"
+   d="scan'208";a="84518924"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 18:53:07 -0800
-Message-ID: <268b3ac1-2ccf-4489-9358-889f01216b59@linux.intel.com>
-Date: Thu, 7 Nov 2024 10:52:17 +0800
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Nov 2024 18:58:05 -0800
+Message-ID: <0ab4e27c-0ebc-4062-bf5a-121e4e95a16a@linux.intel.com>
+Date: Thu, 7 Nov 2024 10:57:15 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,24 +67,30 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 11/6/24 23:45, Yi Liu wrote:
-> +int intel_pasid_replace_first_level(struct intel_iommu *iommu,
-> +				    struct device *dev, pgd_t *pgd,
-> +				    u32 pasid, u16 did, u16 old_did,
-> +				    int flags)
+> +int intel_pasid_replace_second_level(struct intel_iommu *iommu,
+> +				     struct dmar_domain *domain,
+> +				     struct device *dev, u16 old_did,
+> +				     u32 pasid)
 > +{
 > +	struct pasid_entry *pte;
+> +	struct dma_pte *pgd;
+> +	u64 pgd_val;
+> +	int agaw;
+> +	u16 did;
 > +
-> +	if (!ecap_flts(iommu->ecap)) {
-> +		pr_err("No first level translation support on %s\n",
+> +	/*
+> +	 * If hardware advertises no support for second level
+> +	 * translation, return directly.
+> +	 */
+> +	if (!ecap_slts(iommu->ecap)) {
+> +		pr_err("No second level translation support on %s\n",
 > +		       iommu->name);
 > +		return -EINVAL;
 > +	}
 > +
-> +	if ((flags & PASID_FLAG_FL5LP) && !cap_fl5lp_support(iommu->cap)) {
-> +		pr_err("No 5-level paging support for first-level on %s\n",
-> +		       iommu->name);
-> +		return -EINVAL;
-> +	}
+> +	pgd = domain->pgd;
+> +	pgd_val = virt_to_phys(pgd);
+> +	did = domain_id_iommu(domain, iommu);
 > +
 > +	spin_lock(&iommu->lock);
 > +	pte = intel_pasid_get_entry(dev, pasid);
@@ -100,7 +106,8 @@ On 11/6/24 23:45, Yi Liu wrote:
 > +
 > +	WARN_ON(old_did != pasid_get_domain_id(pte));
 > +
-> +	pasid_pte_config_first_level(iommu, pte, pgd, did, flags);
+> +	pasid_pte_config_second_level(iommu, pte, pgd_val, agaw,
+> +				      did, domain->dirty_tracking);
 > +	spin_unlock(&iommu->lock);
 > +
 > +	intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
@@ -109,28 +116,42 @@ On 11/6/24 23:45, Yi Liu wrote:
 > +	return 0;
 > +}
 
-pasid_pte_config_first_level() causes the pasid entry to transition from
-present to non-present and then to present. In this case, calling
-intel_pasid_flush_present() is not accurate, as it is only intended for
-pasid entries transitioning from present to present, according to the
-specification.
+0day robot complains:
 
-It's recommended to move pasid_clear_entry(pte) and
-pasid_set_present(pte) out to the caller, so ...
+ >> drivers/iommu/intel/pasid.c:540:53: warning: variable 'agaw' is 
+uninitialized when used here [-Wuninitialized]
+      540 |         pasid_pte_config_second_level(iommu, pte, pgd_val, agaw,
+          |                                                            ^~~~
+    drivers/iommu/intel/pasid.c:509:10: note: initialize the variable 
+'agaw' to silence this warning
+      509 |         int agaw;
+          |                 ^
+          |                  = 0
 
-For setup case (pasid from non-present to present):
+The right fix could be like this:
 
-- pasid_clear_entry(pte)
-- pasid_pte_config_first_level(pte)
-- pasid_set_present(pte)
-- cache invalidations
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 777e70b539b1..69f12b1b8a2b 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -506,7 +506,6 @@ int intel_pasid_replace_second_level(struct 
+intel_iommu *iommu,
+         struct pasid_entry *pte;
+         struct dma_pte *pgd;
+         u64 pgd_val;
+-       int agaw;
+         u16 did;
 
-For replace case (pasid from present to present)
+         /*
+@@ -537,7 +536,7 @@ int intel_pasid_replace_second_level(struct 
+intel_iommu *iommu,
 
-- pasid_pte_config_first_level(pte)
-- cache invalidations
+         WARN_ON(old_did != pasid_get_domain_id(pte));
 
-The same applies to other types of setup and replace.
+-       pasid_pte_config_second_level(iommu, pte, pgd_val, agaw,
++       pasid_pte_config_second_level(iommu, pte, pgd_val, domain->agaw,
+                                       did, domain->dirty_tracking);
+         spin_unlock(&iommu->lock);
 
 --
 baolu
