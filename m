@@ -1,196 +1,215 @@
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA9E980603
-	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 10:30:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4745E1DFE2F
+	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 11:10:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730975437; cv=none; b=u4pmQPbETKzVlnWcHGbc5cgHqzEX8/sSWjKS1ukRepsRuoIUAj6ZZ4bhAQ+bTMBiUjLKdpXZqJDebiccn7qyfg5nYAALk4rqOT2YzUaHZp5P8vCA+Qwb8WdvTpd5LSul3VjwTNAQ99SOigW8LkwyqWlSannN3xNEtkHw5uOfNp4=
+	t=1730977810; cv=none; b=cq8VQ+wmoRpumSZdNNkGe9R54ie8K9OTpVDuga3l0Ye8GB+Z0kr/1a/WJzgZrqkJVI/8/lvV4kjJ7+6628knW2FQ9NBDNCM6W4n3l9JzBO0EdgQwyIPZnhZYkWv9yysZctXChhQ1cARrULs0DkLrfpFXx+xs1uzkMk7AGLWwhog=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730975437; c=relaxed/simple;
-	bh=ybAPtiskKz4DcrhGmZixymNGGFMFiO8a1KfZLtABtY4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jemvYVZWT36DI/xZWzCssQ5qhAG7ogzDwSmV/tQEEq70uRc3saNv5LYYj1JB5uqnMhJjgXCt3tV5qDJVzJRejOjaP0HyJGjBLRPQ0J82UMXmD0alBVhqirpk2kg2z0WqTPJWwRRCdJUYA5jB17UgQxcOPpw2NoPbvIAv5Av2EZc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b+2mMFOT; arc=none smtp.client-ip=209.85.208.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b+2mMFOT"
-Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2fb5638dd57so7427181fa.0
-        for <iommu@lists.linux.dev>; Thu, 07 Nov 2024 02:30:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1730975433; x=1731580233; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=7adgg6V1UpnypInZqfzwGSsryFp6mWpcT19KyQhxWsQ=;
-        b=b+2mMFOT+J2OdDuL99Oo9/1SJbHNlJ+1c5ElLR76P+lOcQausDQxyKTythp3sQ+i5h
-         YgD60VXnk71lr4UN7B/s9WdfW8+U6DHwc2X0Q4J9ygJiAg90VVUSm/FwC7xdvaAcR1ds
-         GKeLTeiZZYJZVv85hjqzNvtnLMNwm7H0YPpvBhlgKtUiDMNkb/MZsASxJB1LqIORQMVf
-         uIf7Srxmvm5tBs4I+vqp4HYM8GD2cSoKmGQX50IzTgbq1xh8+p6nljGdqPUcsl5YCiXA
-         iPyQcWwzvAgdameMhiT1ZbCtZG9jD/UkOg5Ev5s5aXbgLqwz4YTEbv13fvjdkmMCKEBK
-         RVlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730975433; x=1731580233;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7adgg6V1UpnypInZqfzwGSsryFp6mWpcT19KyQhxWsQ=;
-        b=MqYYkt4j76L0Z3W0ZrlpspPH0DoYvK51wgwp3ehKB0vu6sUaDF19+jtZyyul9GxVf1
-         XxOTw001RYBg0e1QDyvCJQABKmRO7GKzyZj4naKRzUQMRstxzGYx1FqaZTYZwWTHHS92
-         +ZdSeEXb+HtGwX2dS6hFhVcTjzD3lKRQmZCTjJoCYJtpnHKyiGXcTFdl4Nf/jzwzBVwC
-         2JNXTRWHSBVjrtn7LKGhaj3m0x/D3L2i5FpbngHnzjn+4Vyfw+Y3ETZhspIY2cahxbrJ
-         X2lIlhyeMXtL1o0uqWjKt6br3itEIEvfhb6zMDq5z1hVtfO1WW5w9kJ2olqrnfj5/GTC
-         CW9A==
-X-Forwarded-Encrypted: i=1; AJvYcCWRHy8UQY8HSSzqKHBHLAfgQdPzIR3vGvtfpqt+DZh2DmOWYhhuA8Oov4TddRnmigCwa9RGug==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwIbCdMDTJUOoBwtfGplF1Y22bnuaTL5wdmwSwnPTKrbuNFXhfP
-	NufmxkAD15WeCr4UC2d8nPCq1Nz5XN5+NyOg3NTE1X1gxzJCw1HZlsMg5bkmJbm5faxtTEIathA
-	dj5EqOJYt8Ms7fp/cjHqSn3w+WSk=
-X-Google-Smtp-Source: AGHT+IFc7eRXv1Z2roQsB71dAwxnkCOD6ZA3RMBoo3SlhllR1cKDJMbCeG4Z6pG6xJjbW8fu1nUZP13mCuSgJPwx0qU=
-X-Received: by 2002:a2e:bc15:0:b0:2fb:6181:8ca1 with SMTP id
- 38308e7fff4ca-2fcbdf5f91emr241525281fa.6.1730975432784; Thu, 07 Nov 2024
- 02:30:32 -0800 (PST)
+	s=arc-20240116; t=1730977810; c=relaxed/simple;
+	bh=kKb7R5SC4UDIPDX6X16du9DvvNtKnjNrWcLF0p25FMU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=Z4YM1wP0z8uKT6+/cYKPRUSUpcPX7W82jiS9V8ZkhypJ9ySJE0FzOzCe26EVS4d4f3+20O51QU9Fw0jRlD7QEkGkTVlE1EVxohxZf5JY+DBVsvi12b42eLaYDJBayB5LWYsNcrjMXL2ecWSW9VgoZ9jU2Q2a935mdn6Uz6prHZ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.252])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4XkfSP4P1WzpZDy;
+	Thu,  7 Nov 2024 19:08:05 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 8A293180AEA;
+	Thu,  7 Nov 2024 19:09:59 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Thu, 7 Nov 2024 19:09:59 +0800
+Message-ID: <30ab6359-2ad6-4be0-bf73-59ae454811a9@huawei.com>
+Date: Thu, 7 Nov 2024 19:09:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241101162304.4688-1-suravee.suthikulpanit@amd.com>
- <20241101162304.4688-4-suravee.suthikulpanit@amd.com> <ZyoP0IKVmxfesRU8@8bytes.org>
- <323dcff2-6135-4b8a-85db-bccc315ddfdf@app.fastmail.com> <CAFULd4Za4BQL+h9Xmra1TjB2oGGzPwru_y1xOrrAFSg==bfvgg@mail.gmail.com>
- <20241106134034.GN458827@nvidia.com> <4c9fd886-3305-4797-9091-3f9b0b9ee0b6@app.fastmail.com>
-In-Reply-To: <4c9fd886-3305-4797-9091-3f9b0b9ee0b6@app.fastmail.com>
-From: Uros Bizjak <ubizjak@gmail.com>
-Date: Thu, 7 Nov 2024 11:30:20 +0100
-Message-ID: <CAFULd4Z86uiH+w+1N36kOuhYZ5_ZkQkaEN6nyPh8VNJth3WNhg@mail.gmail.com>
-Subject: Re: [PATCH v9 03/10] asm/rwonce: Introduce [READ|WRITE]_ONCE()
- support for __int128
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>, vasant.hegde@amd.com, 
-	Kevin Tian <kevin.tian@intel.com>, jon.grimm@amd.com, santosh.shukla@amd.com, 
-	pandoh@google.com, kumaranand@google.com, 
-	Linux-Arch <linux-arch@vger.kernel.org>
-Content-Type: multipart/mixed; boundary="000000000000c95d6a0626501f02"
-
---000000000000c95d6a0626501f02
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
+ has already unbound
+To: Jesper Dangaard Brouer <hawk@kernel.org>,
+	=?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+	<davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
+	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
+ Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
+ Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
+ Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
+	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
+	<kernel-team@cloudflare.com>, Viktor Malik <vmalik@redhat.com>
+References: <20241022032214.3915232-1-linyunsheng@huawei.com>
+ <20241022032214.3915232-4-linyunsheng@huawei.com>
+ <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
+ <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
+ <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
+ <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org>
+ <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
+ <18ba4489-ad30-423e-9c54-d4025f74c193@kernel.org>
+ <b8b7818a-e44b-45f5-91c2-d5eceaa5dd5b@kernel.org>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <b8b7818a-e44b-45f5-91c2-d5eceaa5dd5b@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On Thu, Nov 7, 2024 at 11:02=E2=80=AFAM Arnd Bergmann <arnd@arndb.de> wrote=
-:
->
->
->
-> On Wed, Nov 6, 2024, at 14:40, Jason Gunthorpe wrote:
-> > On Wed, Nov 06, 2024 at 11:01:20AM +0100, Uros Bizjak wrote:
-> >> On Wed, Nov 6, 2024 at 9:55=E2=80=AFAM Arnd Bergmann <arnd@arndb.de> w=
-rote:
-> >> >
-> >> > On Tue, Nov 5, 2024, at 13:30, Joerg Roedel wrote:
-> >> > > On Fri, Nov 01, 2024 at 04:22:57PM +0000, Suravee Suthikulpanit wr=
-ote:
-> >> > >>  include/asm-generic/rwonce.h   | 2 +-
-> >> > >>  include/linux/compiler_types.h | 8 +++++++-
-> >> > >>  2 files changed, 8 insertions(+), 2 deletions(-)
-> >> > >
-> >> > > This patch needs Cc:
-> >> > >
-> >> > >       Arnd Bergmann <arnd@arndb.de>
-> >> > >       linux-arch@vger.kernel.org
-> >> > >
-> >> >
-> >> > It also needs an update to the comment about why this is safe:
-> >> >
-> >> > >> +++ b/include/asm-generic/rwonce.h
-> >> > >> @@ -33,7 +33,7 @@
-> >> > >>   * (e.g. a virtual address) and a strong prevailing wind.
-> >> > >>   */
-> >> > >>  #define compiletime_assert_rwonce_type(t)                       =
-            \
-> >> > >> -    compiletime_assert(__native_word(t) || sizeof(t) =3D=3D size=
-of(long long),  \
-> >> > >> +    compiletime_assert(__native_word(t) || sizeof(t) =3D=3D size=
-of(__dword_type), \
-> >> > >>              "Unsupported access size for {READ,WRITE}_ONCE().")
-> >> >
-> >> > As far as I can tell, 128-but words don't get stored atomically on
-> >> > any architecture, so this seems wrong, because it would remove
-> >> > the assertion on someone incorrectly using WRITE_ONCE() on a
-> >> > 128-bit variable.
-> >>
-> >> READ_ONCE() and WRITE_ONCE() do not guarantee atomicity for double
-> >> word types. They only guarantee (c.f. include/asm/generic/rwonce.h):
-> >>
-> >>  * Prevent the compiler from merging or refetching reads or writes. Th=
-e
-> >>  * compiler is also forbidden from reordering successive instances of
-> >>  * READ_ONCE and WRITE_ONCE, but only when the compiler is aware of so=
-me
-> >>  * particular ordering. ...
-> >>
-> >> and later:
-> >>
-> >>  * Yes, this permits 64-bit accesses on 32-bit architectures. These wi=
-ll
-> >>  * actually be atomic in some cases (namely Armv7 + LPAE), but for oth=
-ers we
-> >>  * rely on the access being split into 2x32-bit accesses for a 32-bit =
-quantity
-> >>  * (e.g. a virtual address) and a strong prevailing wind.
-> >>
-> >> This is the "strong prevailing wind", mentioned in the patch review at=
- [1].
-> >>
-> >> [1] https://lore.kernel.org/lkml/20241016130819.GJ3559746@nvidia.com/
->
-> I understand the special case for ARMv7VE. I think the more important
-> comment in that file is
->
->   * Use __READ_ONCE() instead of READ_ONCE() if you do not require any
->   * atomicity. Note that this may result in tears!
->
-> The entire point of compiletime_assert_rwonce_type() is to ensure
-> that these are accesses fit the stricter definition, and I would
-> prefer to not extend that to 64-bit architecture. If there are users
-> that need the "once" behavior but not require atomicity of the
-> access, can't that just use __READ_ONCE() instead?
+On 2024/11/6 23:57, Jesper Dangaard Brouer wrote:
 
-If this is the case, then the patch could be simply something like the
-attached (untested) patch.
+...
 
-Thanks,
-Uros.
+>>
+>> Some more info from production servers.
+>>
+>> (I'm amazed what we can do with a simple bpftrace script, Cc Viktor)
+>>
+>> In below bpftrace script/oneliner I'm extracting the inflight count, for
+>> all page_pool's in the system, and storing that in a histogram hash.
+>>
+>> sudo bpftrace -e '
+>>   rawtracepoint:page_pool_state_release { @cnt[probe]=count();
+>>    @cnt_total[probe]=count();
+>>    $pool=(struct page_pool*)arg0;
+>>    $release_cnt=(uint32)arg2;
+>>    $hold_cnt=$pool->pages_state_hold_cnt;
+>>    $inflight_cnt=(int32)($hold_cnt - $release_cnt);
+>>    @inflight=hist($inflight_cnt);
+>>   }
+>>   interval:s:1 {time("\n%H:%M:%S\n");
+>>    print(@cnt); clear(@cnt);
+>>    print(@inflight);
+>>    print(@cnt_total);
+>>   }'
+>>
+>> The page_pool behavior depend on how NIC driver use it, so I've run this on two prod servers with drivers bnxt and mlx5, on a 6.6.51 kernel.
+>>
+>> Driver: bnxt_en
+>> - kernel 6.6.51
+>>
+>> @cnt[rawtracepoint:page_pool_state_release]: 8447
+>> @inflight:
+>> [0]             507 |                                        |
+>> [1]             275 |                                        |
+>> [2, 4)          261 |                                        |
+>> [4, 8)          215 |                                        |
+>> [8, 16)         259 |                                        |
+>> [16, 32)        361 |                                        |
+>> [32, 64)        933 |                                        |
+>> [64, 128)      1966 |                                        |
+>> [128, 256)   937052 |@@@@@@@@@                               |
+>> [256, 512)  5178744 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+>> [512, 1K)     73908 |                                        |
+>> [1K, 2K)    1220128 |@@@@@@@@@@@@                            |
+>> [2K, 4K)    1532724 |@@@@@@@@@@@@@@@                         |
+>> [4K, 8K)    1849062 |@@@@@@@@@@@@@@@@@@                      |
+>> [8K, 16K)   1466424 |@@@@@@@@@@@@@@                          |
+>> [16K, 32K)   858585 |@@@@@@@@                                |
+>> [32K, 64K)   693893 |@@@@@@                                  |
+>> [64K, 128K)  170625 |@                                       |
+>>
+>> Driver: mlx5_core
+>>   - Kernel: 6.6.51
+>>
+>> @cnt[rawtracepoint:page_pool_state_release]: 1975
+>> @inflight:
+>> [128, 256)         28293 |@@@@                               |
+>> [256, 512)        184312 |@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
+>> [512, 1K)              0 |                                   |
+>> [1K, 2K)            4671 |                                   |
+>> [2K, 4K)          342571 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+>> [4K, 8K)          180520 |@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
+>> [8K, 16K)          96483 |@@@@@@@@@@@@@@                     |
+>> [16K, 32K)         25133 |@@@                                |
+>> [32K, 64K)          8274 |@                                  |
+>>
+>>
+>> The key thing to notice that we have up-to 128,000 pages in flight on
+>> these random production servers. The NIC have 64 RX queue configured,
+>> thus also 64 page_pool objects.
+>>
+> 
+> I realized that we primarily want to know the maximum in-flight pages.
+> 
+> So, I modified the bpftrace oneliner to track the max for each page_pool in the system.
+> 
+> sudo bpftrace -e '
+>  rawtracepoint:page_pool_state_release { @cnt[probe]=count();
+>   @cnt_total[probe]=count();
+>   $pool=(struct page_pool*)arg0;
+>   $release_cnt=(uint32)arg2;
+>   $hold_cnt=$pool->pages_state_hold_cnt;
+>   $inflight_cnt=(int32)($hold_cnt - $release_cnt);
+>   $cur=@inflight_max[$pool];
+>   if ($inflight_cnt > $cur) {
+>     @inflight_max[$pool]=$inflight_cnt;}
+>  }
+>  interval:s:1 {time("\n%H:%M:%S\n");
+>   print(@cnt); clear(@cnt);
+>   print(@inflight_max);
+>   print(@cnt_total);
+>  }'
+> 
+> I've attached the output from the script.
+> For unknown reason this system had 199 page_pool objects.
 
---000000000000c95d6a0626501f02
-Content-Type: text/plain; charset="US-ASCII"; name="p.diff.txt"
-Content-Disposition: attachment; filename="p.diff.txt"
-Content-Transfer-Encoding: base64
-Content-ID: <f_m3761jhw0>
-X-Attachment-Id: f_m3761jhw0
+Perhaps some of those page_pool objects are per_cpu page_pool
+objects from net_page_pool_create()?
 
-ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvY29tcGlsZXJfdHlwZXMuaCBiL2luY2x1ZGUvbGlu
-dXgvY29tcGlsZXJfdHlwZXMuaAppbmRleCAxYTk1N2VhMmY0ZmUuLjk0YTE4ZThjY2Y3ZSAxMDA2
-NDQKLS0tIGEvaW5jbHVkZS9saW51eC9jb21waWxlcl90eXBlcy5oCisrKyBiL2luY2x1ZGUvbGlu
-dXgvY29tcGlsZXJfdHlwZXMuaApAQCAtNDY5LDcgKzQ2OSw4IEBAIHN0cnVjdCBmdHJhY2VfbGlr
-ZWx5X2RhdGEgewogCQl1bnNpZ25lZCB0eXBlOgkodW5zaWduZWQgdHlwZSkwLAkJCVwKIAkJc2ln
-bmVkIHR5cGU6CShzaWduZWQgdHlwZSkwCiAKLSNkZWZpbmUgX191bnF1YWxfc2NhbGFyX3R5cGVv
-Zih4KSB0eXBlb2YoCQkJCVwKKyNpZiBkZWZpbmVkKENPTkZJR19BUkNIX1NVUFBPUlRTX0lOVDEy
-OCkgJiYgZGVmaW5lZChfX1NJWkVPRl9JTlQxMjhfXykKKyAjZGVmaW5lIF9fdW5xdWFsX3NjYWxh
-cl90eXBlb2YoeCkgdHlwZW9mKAkJCQlcCiAJCV9HZW5lcmljKCh4KSwJCQkJCQlcCiAJCQkgY2hh
-cjoJKGNoYXIpMCwJCQkJXAogCQkJIF9fc2NhbGFyX3R5cGVfdG9fZXhwcl9jYXNlcyhjaGFyKSwJ
-CVwKQEAgLTQ3Nyw3ICs0NzgsMTkgQEAgc3RydWN0IGZ0cmFjZV9saWtlbHlfZGF0YSB7CiAJCQkg
-X19zY2FsYXJfdHlwZV90b19leHByX2Nhc2VzKGludCksCQlcCiAJCQkgX19zY2FsYXJfdHlwZV90
-b19leHByX2Nhc2VzKGxvbmcpLAkJXAogCQkJIF9fc2NhbGFyX3R5cGVfdG9fZXhwcl9jYXNlcyhs
-b25nIGxvbmcpLAlcCisJCQkgX19zY2FsYXJfdHlwZV90b19leHByX2Nhc2VzKF9faW50MTI4KSwJ
-CVwKIAkJCSBkZWZhdWx0OiAoeCkpKQorI2Vsc2UKKyAjZGVmaW5lIF9fdW5xdWFsX3NjYWxhcl90
-eXBlb2YoeCkgdHlwZW9mKAkJCQlcCisJCV9HZW5lcmljKCh4KSwJCQkJCQlcCisJCQkgY2hhcjoJ
-KGNoYXIpMCwJCQkJXAorCQkJIF9fc2NhbGFyX3R5cGVfdG9fZXhwcl9jYXNlcyhjaGFyKSwJCVwK
-KwkJCSBfX3NjYWxhcl90eXBlX3RvX2V4cHJfY2FzZXMoc2hvcnQpLAkJXAorCQkJIF9fc2NhbGFy
-X3R5cGVfdG9fZXhwcl9jYXNlcyhpbnQpLAkJXAorCQkJIF9fc2NhbGFyX3R5cGVfdG9fZXhwcl9j
-YXNlcyhsb25nKSwJCVwKKwkJCSBfX3NjYWxhcl90eXBlX3RvX2V4cHJfY2FzZXMobG9uZyBsb25n
-KSwJXAorCQkJIGRlZmF1bHQ6ICh4KSkpCisjZW5kaWYKIAogLyogSXMgdGhpcyB0eXBlIGEgbmF0
-aXZlIHdvcmQgc2l6ZSAtLSB1c2VmdWwgZm9yIGF0b21pYyBvcGVyYXRpb25zICovCiAjZGVmaW5l
-IF9fbmF0aXZlX3dvcmQodCkgXAo=
---000000000000c95d6a0626501f02--
+It would be good if the pool_size for those page_pool objects
+is printed too.
+
+> 
+> The 20 top users:
+> 
+> $ cat out02.inflight-max | grep inflight_max | tail -n 20
+> @inflight_max[0xffff88829133d800]: 26473
+> @inflight_max[0xffff888293c3e000]: 27042
+> @inflight_max[0xffff888293c3b000]: 27709
+> @inflight_max[0xffff8881076f2800]: 29400
+> @inflight_max[0xffff88818386e000]: 29690
+> @inflight_max[0xffff8882190b1800]: 29813
+> @inflight_max[0xffff88819ee83800]: 30067
+> @inflight_max[0xffff8881076f4800]: 30086
+> @inflight_max[0xffff88818386b000]: 31116
+> @inflight_max[0xffff88816598f800]: 36970
+> @inflight_max[0xffff8882190b7800]: 37336
+> @inflight_max[0xffff888293c38800]: 39265
+> @inflight_max[0xffff888293c3c800]: 39632
+> @inflight_max[0xffff888293c3b800]: 43461
+> @inflight_max[0xffff888293c3f000]: 43787
+> @inflight_max[0xffff88816598f000]: 44557
+> @inflight_max[0xffff888132ce9000]: 45037
+> @inflight_max[0xffff888293c3f800]: 51843
+> @inflight_max[0xffff888183869800]: 62612
+> @inflight_max[0xffff888113d08000]: 73203
+> 
+> Adding all values together:
+> 
+>  grep inflight_max out02.inflight-max | awk 'BEGIN {tot=0} {tot+=$2; printf "total:" tot "\n"}' | tail -n 1
+> 
+> total:1707129
+> 
+> Worst case we need a data structure holding 1,707,129 pages.
+
+For 64 bit system, that means about 54MB memory overhead for tracking those
+inflight pages if 16 byte memory of metadata needed for each page, I guess
+that is ok for those large systems.
+
+> Fortunately, we don't need a single data structure as this will be split
+> between 199 page_pool's.
+
+It would be good to have an average value for the number of inflight pages,
+so that we might be able to have a statically allocated memory to satisfy
+the mostly used case, and use the dynamically allocated memory if/when
+necessary.
+
+> 
+> --Jesper
