@@ -1,229 +1,123 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A74E1DC1B7
-	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 08:41:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4928F195B18
+	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 08:48:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730968909; cv=none; b=k9u4njeRrmMavrqRRLfc6hgKq2gJ+NZTFmzSiRJj8blB0n/5SaFNcHm+dIJGBunqBSfqvAbhrlmY8dmwodEqB68HJWfbsJ3ATacoikyNR0YNoNguBSp9kkeySWjY1sQYs7+muNX9DzFqbsYSexvVsSlaeYZmaNlUhRVVOe7KRPM=
+	t=1730969294; cv=none; b=hqOmNq++uIuKx/ybAxAV9884thGQ3bibXF6J44TAmJY05dTrza0fIxB9TjhvHIXkI3lrfKmP/D8S7g8v61z2dz15iMuyPcwPEVde6M/ghPXL1IuLiOohNc3klrDWg4TTMVhYvT9uQpDzwU2KFTJ6Rv+BdjX+b1UO7sSO+mQMB24=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730968909; c=relaxed/simple;
-	bh=pJ1VmzI/3WMEvExcYr9JjYKy52pmsKPnASWJVzWEgz4=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=OslZW0Aq8qbxSEqFyqCCD8BOm0496k0mK9qkOmfdH6D2Wv+UJJBUHG20m7+/Y2n6nzYsjWZ8smBVTJZUkgxf4e500fb6ObP4R0KxVS7GJfRCUz9rJfEdMA5afWwEKV+QvtrOWi4DbLLP6Wf4jV0FTfc594B4RBXsPQ9fXPyN5rc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m8rsiAg3; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1730969294; c=relaxed/simple;
+	bh=tjQVX49rIGbkZMDW7witKhW1+czUPeFSqpo1iq8CLcA=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JDdS6SnD8Ua4iLRpUV2TFsVO1/1PVF/PTItZtXQ0NbkYo0/ayDZDbcFBq66fF64Bp0XWz3WhmnVdKfZd0tOq3N2D0t4BsH+Lzr2mfSphMeTIlXL52Q+8IlgueuhAPfCOoV5uaFaCEXUV+EIy500cnlUP+zke4CDuGNSwFsdlTCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=SPuRDLu1; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m8rsiAg3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730968908; x=1762504908;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=pJ1VmzI/3WMEvExcYr9JjYKy52pmsKPnASWJVzWEgz4=;
-  b=m8rsiAg3FwMEqrlPBaaU3ZFBcRyD4+mrUNiveqh5cK2rbBskKJHEmrf4
-   X5nZ8BBH8wNVwyTnSkNUcNEAfKsnsdwMX8NgaWE24ipod4Cg+2iZJDp2g
-   ep2TSx8b1PtrvLF32fW/0Rdu6uNzBp3ANvIEGNEPju0gFSNCBaMqo7Kf4
-   7o/yEnUT8PRUvKKQF85uTPyqdYCQ8op/AaezbvONvh9DUdA4i5w9UwEk5
-   BFQktndgl32nXgfb8OiU+YSc227NUXQqoX/g9CiB7q4cFQwjgOOexE7OD
-   twETCP2u/BRxAbkTB9G9B5hOm3qZ5IOml1NK1w1NMk0tKTuo68vNFPO5D
-   Q==;
-X-CSE-ConnectionGUID: mAdvda3wScmRp349xL5qBg==
-X-CSE-MsgGUID: f7YLKMj0Quay28pamnIDhg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11248"; a="33641112"
-X-IronPort-AV: E=Sophos;i="6.11,265,1725346800"; 
-   d="scan'208";a="33641112"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2024 00:41:47 -0800
-X-CSE-ConnectionGUID: gpa/wdoGRjy/DlvYpthQhQ==
-X-CSE-MsgGUID: hASZHu38R9Smlg9Gy6T2Gg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,265,1725346800"; 
-   d="scan'208";a="85405887"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.228]) ([10.124.240.228])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2024 00:41:43 -0800
-Message-ID: <d7d1d655-2ddd-4867-a5c6-af50e280ec57@linux.intel.com>
-Date: Thu, 7 Nov 2024 16:41:41 +0800
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="SPuRDLu1"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4A71m6fc009985;
+	Thu, 7 Nov 2024 08:42:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=JseuV4HHIbMW59kRHiYqixKv
+	JQm6Wv+8Q+A/BIy8NN8=; b=SPuRDLu1O5rtnaxfJDP3LEkxJ4nRdPTclAcL8Inm
+	Uv7ahN/RWqhHQaE7yEiEeZESV+KJI/hEDylTOKJRnoC5s3lXLLh1JWXt0Qm3Jtp6
+	bbuztBIWHhb6DkrLeVhAh2smfuAd8C1Xq/ZM9TpaHqwRSJA+JN+1b589nb+QNRCh
+	gKLg+WHgmH6JEDg/YPorZwdGzYX3gW11I7BucsJS0ZGy3FpqGfNkJ6Ra+MhR6RXZ
+	j56EPaY39F4RctI/Xv1PpqIsvV61vvkaWKN0WsUQcFWZZqFBQez4zTVvRcvJ0Uuf
+	aGc93INe3Yz5wcw+zCu7j4zz8SVamm4ArRf+as1MS0JCEA==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42rm6vrwm1-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 07 Nov 2024 08:42:54 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4A78gr6W003818
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 7 Nov 2024 08:42:53 GMT
+Received: from hu-pkondeti-hyd (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 7 Nov 2024
+ 00:42:49 -0800
+Date: Thu, 7 Nov 2024 14:12:46 +0530
+From: Pavan Kondeti <quic_pkondeti@quicinc.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Joerg Roedel
+	<joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy
+	<robin.murphy@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel
+	<jroedel@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        Marek Szyprowski
+	<m.szyprowski@samsung.com>,
+        Anders Roxell <anders.roxell@linaro.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+        Xingang Wang <wangxingang5@huawei.com>
+Subject: Re: [PATCH RESEND] iommu/of: Fix pci_request_acs() before
+ enumerating PCI devices
+Message-ID: <be01d3e0-3c3a-46ec-ae68-df1cf88415de@quicinc.com>
+References: <20241107-pci_acs_fix-v1-1-185a2462a571@quicinc.com>
+ <2024110759-refusal-mayflower-2522@gregkh>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "vasant.hegde@amd.com" <vasant.hegde@amd.com>,
- "willy@infradead.org" <willy@infradead.org>
-Subject: Re: [PATCH v5 04/13] iommu/vt-d: Add pasid replace helpers
-To: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>
-References: <20241106154606.9564-1-yi.l.liu@intel.com>
- <20241106154606.9564-5-yi.l.liu@intel.com>
- <268b3ac1-2ccf-4489-9358-889f01216b59@linux.intel.com>
- <8de3aafe-af94-493f-ab62-ef3e086c54da@intel.com>
- <BN9PR11MB5276EEA35FBEB68E4172F1958C5C2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <7d4cfaef-0b3e-449b-bda3-31e3eb8ab300@intel.com>
- <8d015a7d-fa64-4034-8bdb-fffb957c0025@linux.intel.com>
- <9cc98d30-6257-4d9c-8735-f1147bd1d966@intel.com>
- <27c2acfb-a428-486a-bd10-7d34a8cae4ed@linux.intel.com>
- <f73869de-38b1-41cf-bd20-d91523e4fd08@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <f73869de-38b1-41cf-bd20-d91523e4fd08@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <2024110759-refusal-mayflower-2522@gregkh>
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: TxpIqLvJ1IWW3BbTEbSecWp0sda1TDy0
+X-Proofpoint-GUID: TxpIqLvJ1IWW3BbTEbSecWp0sda1TDy0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
+ clxscore=1015 phishscore=0 malwarescore=0 lowpriorityscore=0
+ priorityscore=1501 mlxscore=0 adultscore=0 mlxlogscore=769 impostorscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2411070066
 
-On 2024/11/7 16:39, Yi Liu wrote:
-> On 2024/11/7 16:04, Baolu Lu wrote:
->> On 2024/11/7 15:57, Yi Liu wrote:
->>> On 2024/11/7 14:53, Baolu Lu wrote:
->>>> On 2024/11/7 14:46, Yi Liu wrote:
->>>>> On 2024/11/7 13:46, Tian, Kevin wrote:
->>>>>>> From: Liu, Yi L <yi.l.liu@intel.com>
->>>>>>> Sent: Thursday, November 7, 2024 12:21 PM
->>>>>>>
->>>>>>> On 2024/11/7 10:52, Baolu Lu wrote:
->>>>>>>> On 11/6/24 23:45, Yi Liu wrote:
->>>>>>>>> +int intel_pasid_replace_first_level(struct intel_iommu *iommu,
->>>>>>>>> +                    struct device *dev, pgd_t *pgd,
->>>>>>>>> +                    u32 pasid, u16 did, u16 old_did,
->>>>>>>>> +                    int flags)
->>>>>>>>> +{
->>>>>>>>> +    struct pasid_entry *pte;
->>>>>>>>> +
->>>>>>>>> +    if (!ecap_flts(iommu->ecap)) {
->>>>>>>>> +        pr_err("No first level translation support on %s\n",
->>>>>>>>> +               iommu->name);
->>>>>>>>> +        return -EINVAL;
->>>>>>>>> +    }
->>>>>>>>> +
->>>>>>>>> +    if ((flags & PASID_FLAG_FL5LP) && ! 
->>>>>>>>> cap_fl5lp_support(iommu- >cap)) {
->>>>>>>>> +        pr_err("No 5-level paging support for first-level on 
->>>>>>>>> %s\n",
->>>>>>>>> +               iommu->name);
->>>>>>>>> +        return -EINVAL;
->>>>>>>>> +    }
->>>>>>>>> +
->>>>>>>>> +    spin_lock(&iommu->lock);
->>>>>>>>> +    pte = intel_pasid_get_entry(dev, pasid);
->>>>>>>>> +    if (!pte) {
->>>>>>>>> +        spin_unlock(&iommu->lock);
->>>>>>>>> +        return -ENODEV;
->>>>>>>>> +    }
->>>>>>>>> +
->>>>>>>>> +    if (!pasid_pte_is_present(pte)) {
->>>>>>>>> +        spin_unlock(&iommu->lock);
->>>>>>>>> +        return -EINVAL;
->>>>>>>>> +    }
->>>>>>>>> +
->>>>>>>>> +    WARN_ON(old_did != pasid_get_domain_id(pte));
->>>>>>>>> +
->>>>>>>>> +    pasid_pte_config_first_level(iommu, pte, pgd, did, flags);
->>>>>>>>> +    spin_unlock(&iommu->lock);
->>>>>>>>> +
->>>>>>>>> +    intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
->>>>>>>>> +    intel_iommu_drain_pasid_prq(dev, pasid);
->>>>>>>>> +
->>>>>>>>> +    return 0;
->>>>>>>>> +}
->>>>>>>>
->>>>>>>> pasid_pte_config_first_level() causes the pasid entry to 
->>>>>>>> transition from
->>>>>>>> present to non-present and then to present. In this case, calling
->>>>>>>> intel_pasid_flush_present() is not accurate, as it is only 
->>>>>>>> intended for
->>>>>>>> pasid entries transitioning from present to present, according 
->>>>>>>> to the
->>>>>>>> specification.
->>>>>>>>
->>>>>>>> It's recommended to move pasid_clear_entry(pte) and
->>>>>>>> pasid_set_present(pte) out to the caller, so ...
->>>>>>>>
->>>>>>>> For setup case (pasid from non-present to present):
->>>>>>>>
->>>>>>>> - pasid_clear_entry(pte)
->>>>>>>> - pasid_pte_config_first_level(pte)
->>>>>>>> - pasid_set_present(pte)
->>>>>>>> - cache invalidations
->>>>>>>>
->>>>>>>> For replace case (pasid from present to present)
->>>>>>>>
->>>>>>>> - pasid_pte_config_first_level(pte)
->>>>>>>> - cache invalidations
->>>>>>>>
->>>>>>>> The same applies to other types of setup and replace.
->>>>>>>
->>>>>>> hmmm. Here is the reason I did it in the way of this patch:
->>>>>>> 1) pasid_clear_entry() can clear all the fields that are not 
->>>>>>> supposed to
->>>>>>>      be used by the new domain. For example, converting a nested 
->>>>>>> domain to
->>>>>>> SS
->>>>>>>      only domain, if no pasid_clear_entry() then the FSPTR would 
->>>>>>> be there.
->>>>>>>      Although spec seems not enforce it, it might be good to 
->>>>>>> clear it.
->>>>>>> 2) We don't support atomic replace yet, so the whole pasid entry 
->>>>>>> transition
->>>>>>>      is not done in one shot, so it looks to be ok to do this 
->>>>>>> stepping
->>>>>>>      transition.
->>>>>>> 3) It seems to be even worse if keep the Present bit during the 
->>>>>>> transition.
->>>>>>>      The pasid entry might be broken while the Present bit 
->>>>>>> indicates this is
->>>>>>>      a valid pasid entry. Say if there is in-flight DMA, the 
->>>>>>> result may be
->>>>>>>      unpredictable.
->>>>>>>
->>>>>>> Based on the above, I chose the current way. But I admit if we 
->>>>>>> are going to
->>>>>>> support atomic replace, then we should refactor a bit. I believe 
->>>>>>> at that
->>>>>>> time we need to construct the new pasid entry first and try to 
->>>>>>> exchange it
->>>>>>> to the pasid table. I can see some transition can be done in that 
->>>>>>> way as we
->>>>>>> can do atomic exchange with 128bits. thoughts? 🙂
->>>>>>>
->>>>>>
->>>>>> yes 128bit cmpxchg is necessary to support atomic replacement.
->>>>>>
->>>>>> Actually vt-d spec clearly says so e.g. SSPTPTR/DID must be updated
->>>>>> together in a present entry to not break in-flight DMA.
->>>>>>
->>>>>> but... your current way (clear entry then update it) also break 
->>>>>> in- flight
->>>>>> DMA. So let's admit that as the 1st step it's not aimed to support
->>>>>> atomic replacement. With that Baolu's suggestion makes more sense
->>>>>> toward future extension with less refactoring required (otherwise
->>>>>> you should not use intel_pasid_flush_present() then the earlier
->>>>>> refactoring for that helper is also meaningless).
->>>>>
->>>>> I see. The pasid entry might have some filed that is not supposed 
->>>>> to be
->>>>> used after replacement. Should we have a comment about it?
->>>>
->>>> I guess all fields except SSADE and P of a pasid table entry should be
->>>> cleared in pasid_pte_config_first_level()?
->>>
->>> perhaps we can take one more step forward. We can construct the new 
->>> pte in a local variable first and then push it to the pte in the 
->>> pasid table. 🙂
->>>
->>
->> That sounds better! The entry is composed on the stack and then copied
->> over to the pasid table as a whole.
+On Thu, Nov 07, 2024 at 09:17:44AM +0100, Greg Kroah-Hartman wrote:
+> On Thu, Nov 07, 2024 at 01:29:15PM +0530, Pavankumar Kondeti wrote:
+> > From: Xingang Wang <wangxingang5@huawei.com>
+> > 
+> > When booting with devicetree, the pci_request_acs() is called after the
+> > enumeration and initialization of PCI devices, thus the ACS is not
+> > enabled. And ACS should be enabled when IOMMU is detected for the
+> > PCI host bridge, so add check for IOMMU before probe of PCI host and call
+> > pci_request_acs() to make sure ACS will be enabled when enumerating PCI
+> > devices.
+> > 
+> > Fixes: 6bf6c24720d33 ("iommu/of: Request ACS from the PCI core when configuring IOMMU linkage")
+> > Signed-off-by: Xingang Wang <wangxingang5@huawei.com>
+> > Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+> > ---
+> > Earlier this patch made it to linux-next but got dropped later as it
+> > broke PCI on ARM Juno R1 board. AFAICT, this issue is never root caused,
+> > so resending this patch to get attention again.
+> > 
+> > https://lore.kernel.org/all/1621566204-37456-1-git-send-email-wangxingang5@huawei.com/
 > 
-> that's it. Like the below.
+> Please don't resend known-broken patches.  Please fix them up before
+> resending, otherwise we will just ignore this one as well as obviously
+> we can not take such a thing (nor should you want us to.)
+> 
 
-Looks good to me now.
+Thanks Greg for taking a look.
+
+AFAICT, there is nothing wrong with the patch (It was Ackd before). The
+root cause of the breakage on Juno ARM board is not identified. I resent
+the patch to get the attention from people who reported this problem few
+years back. I am *hoping* that they might have fixed the issue on their
+side.
+
+Thanks,
+Pavan
