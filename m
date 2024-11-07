@@ -1,39 +1,39 @@
 Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E830217334
-	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 17:03:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 540BC217334
+	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 17:03:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730998986; cv=none; b=MZsymv6usbVp1RWcRvUZgjHIlhmIpQARpu9vx61EEgT2++suS2/xsFExCdDhPuUIMa1JFDJmoHOzi7eyiDDubnB6naJZOOQ9W1SBolRr9szvzbC5HtHlYo9jdl3mr6D7qjt0G7AUmJ4xjSQr3e25mZ2muMhLPn3BpmwYkUgOU/A=
+	t=1730998988; cv=none; b=cyEGGTa6GEdg1PdmABdf+K6pDZX8V4kvUBJCLI2JWHWFSNFuM3jroefblgXlUArZuKmkz2SJ6khUrnJtRZHU9nVoTtv1a1kTAEjG9+hghFf6VNKNb9VDIO3K3XG/s05QlwFAAsB7/wN5HR2rkJi4u1JU6YKW9128Ftae2e7OhIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730998986; c=relaxed/simple;
-	bh=A0fmQDK8m7oxJnEMI+GXPI0MVrZif3Z38lQBRjITpDA=;
+	s=arc-20240116; t=1730998988; c=relaxed/simple;
+	bh=HpsJRRqcEB7ubb20AIGzwyE59bS3PSN7BTK6n02gdPE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=NXY15Yiurc8VK4gDPWXBbWSrfU+QN0IWIsPAvMXcSRzfq95rjUKU540k5BlKYa6tlOrqOgdKDy51Ohk3YZh44/8+y+P5qU53Bz4bpWTfg79y/t0FCGjQtysfanTXbsbv1bT47KNIUX8p/arnoNRXCzCxAArHwuuwIBkRpbIC7+w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=fr4rBFPJ; arc=none smtp.client-ip=5.75.144.95
+	 In-Reply-To:To:Cc; b=BT/xyHhy3ywVGpqbx9Q/Uh9eElBk5laiU0A2rMIIbuUH+sibam3OQGwqDC1lWJpXPkHpPnN1kwhfeSF6/lA+P3k1zF894eMG/izNj8yq7Q4fPX1K1NwezML6TtXLhCblwFx+AP/fydC4qIWtRIv86/HHi6TEPMnGDrp4LPA+M+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=kEDdVhZX; arc=none smtp.client-ip=5.75.144.95
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="fr4rBFPJ"
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="kEDdVhZX"
 Received: from [192.168.118.162] (254C2715.nat.pool.telekom.hu [37.76.39.21])
-	by mail.mainlining.org (Postfix) with ESMTPSA id 5A980E45C6;
-	Thu,  7 Nov 2024 17:02:55 +0000 (UTC)
+	by mail.mainlining.org (Postfix) with ESMTPSA id 7F515E45BA;
+	Thu,  7 Nov 2024 17:03:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1730998976;
+	s=psm; t=1730998984;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=Ze6/FwJGlwoZIH5QX0UZSFz6K9jP+T7IzTY3dKemhXQ=;
-	b=fr4rBFPJyaJ39C6eKeHzqJYWQZcg1QcvIwIIJ+xPoRLXwsPk4wqbq6uYBZnadM50yyzvSA
-	PebDREFNaKPp/T7Fw0aQBqJin30nnE2lwcNF58eA4ICXk0/Vsp95cNolPRPTTveLO3foZm
-	oKgprRA1xqjhQ8amfrXZkEc7L7r8jYM8oMC0e1NRGIPVC/s8GiJzIYiTohpH0473pF0SYm
-	6m8mn7P20jD4nny4dnjcPK9spuU6X0ZGfMx9ufht/i3v07F1VjSbYMZibg1mEhrmBkEjBG
-	dz3XFVoIsdKwcqY9lyJ9EzrGh4RnbHJdzIH/uwTtzuaCbUEcdKqv2s3ibjn9Xg==
+	bh=pJVsYRZf77zXzY1oz4aX5qV6KoAi5dZCp6QEtJjBO5E=;
+	b=kEDdVhZXNK78WFQugHEvzi38i6K1hfYYZ5AdcV9j+M1iz6xGKGobgS7XIGs2SUi39dXWqk
+	ZM1bu2VtQZ3QLEZYSWHhKyXPQjCfKxDLHYGB3U4NpbbZW48SOrvnBrnYzCLQWEDK6e6gIy
+	WwhMWAxH8mX5jdbOCaAH9mgmNUN1loArrESxIe+rHCcNyMz/eN9F6EI9DV5qNU45RISNSm
+	TnbeOkC6Um8hzdkISRM3US9LweFRkoDlIzX3D9sAfVTjW4knX5SS5fdIZOzv0HBsNeADQh
+	gBnLIFGGfV8j4+YrEAce8n+4r9CLlsogxBOUYfC4fKZ2eiW/6KtC7szJWx8aqA==
 From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Thu, 07 Nov 2024 18:02:44 +0100
-Subject: [PATCH v3 03/14] dt-bindings: pinctrl: qcom,pmic-mpp: Add PM8937
+Date: Thu, 07 Nov 2024 18:02:49 +0100
+Subject: [PATCH v3 08/14] dt-bindings: thermal: tsens: Add MSM8937
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,7 +42,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20241107-msm8917-v3-3-6ddc5acd978b@mainlining.org>
+Message-Id: <20241107-msm8917-v3-8-6ddc5acd978b@mainlining.org>
 References: <20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org>
 In-Reply-To: <20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -62,42 +62,34 @@ Cc: linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
  =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
  Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1730998970; l=1273;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1730998970; l=935;
  i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=A0fmQDK8m7oxJnEMI+GXPI0MVrZif3Z38lQBRjITpDA=;
- b=hhnjY8odk06rK1S61Z5megT38z31/ktCL9JcthBjdVSCIwiwWoJN6K/+R59Z5o8wOslRgsYp6
- se+VChFqUY2AOV4i+2DeRZrIqjV3o85b0lr7jln2J63M5LLJxAHATNz
+ bh=HpsJRRqcEB7ubb20AIGzwyE59bS3PSN7BTK6n02gdPE=;
+ b=cGwGyNO8XN/GQLArpKASfGZHiyWTyIaZIA9bC6H45VQ+wd4cQHvoxBAWGmxbKjQI31v4j5AXu
+ cmLOT5488zlBVLWP4B6GTFpqYlaixsNUS8PTl9Ako2h9s45FHMAnEFn
 X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
  pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-Document the Device Tree binding for PM8937 MPPs.
+Document the compatible string for tsens v1.4 block found in MSM8937.
 
 Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 ---
- Documentation/devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/thermal/qcom-tsens.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml
-index 43146709e2044d9dead08a6786b98672ef766629..9364ae05f3e68f3a2f4dd78ba3c0f94b3ccc3c51 100644
---- a/Documentation/devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml
-@@ -22,6 +22,7 @@ properties:
-               - qcom,pm8226-mpp
-               - qcom,pm8841-mpp
-               - qcom,pm8916-mpp
-+              - qcom,pm8937-mpp
-               - qcom,pm8941-mpp
-               - qcom,pm8950-mpp
-               - qcom,pmi8950-mpp
-@@ -92,6 +93,7 @@ $defs:
-           this subnode.  Valid pins are
-                  - mpp1-mpp4 for pm8841
-                  - mpp1-mpp4 for pm8916
-+                 - mpp1-mpp4 for pm8937
-                  - mpp1-mpp8 for pm8941
-                  - mpp1-mpp4 for pm8950
-                  - mpp1-mpp4 for pmi8950
+diff --git a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+index a12fddc8195500a0e7bdd51952a558890b35935c..f51656b672030b12ea0405fd392af11056093be7 100644
+--- a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
++++ b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+@@ -39,6 +39,7 @@ properties:
+       - description: v1 of TSENS
+         items:
+           - enum:
++              - qcom,msm8937-tsens
+               - qcom,msm8956-tsens
+               - qcom,msm8976-tsens
+               - qcom,qcs404-tsens
 
 -- 
 2.47.0
