@@ -1,39 +1,39 @@
 Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B5F72170D2
-	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 17:03:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E830217334
+	for <iommu@lists.linux.dev>; Thu,  7 Nov 2024 17:03:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730998985; cv=none; b=AewMwhctwWTk0sJuFTltbHpn3tL/0sOpFX/Eui94BiZ+/ikPU1lcjhtS8U+jRVeSV0zQGEw8wqUGuEa3JfXKorCZST1ppQyAKbu7GSWT/5eAxkEcFU9kZ+HoK1B6Xch/JEqB65s0vZlaM37lxotgdTK9z/mHfu4uweD+Gens+Kg=
+	t=1730998986; cv=none; b=MZsymv6usbVp1RWcRvUZgjHIlhmIpQARpu9vx61EEgT2++suS2/xsFExCdDhPuUIMa1JFDJmoHOzi7eyiDDubnB6naJZOOQ9W1SBolRr9szvzbC5HtHlYo9jdl3mr6D7qjt0G7AUmJ4xjSQr3e25mZ2muMhLPn3BpmwYkUgOU/A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730998985; c=relaxed/simple;
-	bh=JHx/mJNY/VmzW58rPorCah4CdAs5u7Kb/7+X5nbaHLI=;
+	s=arc-20240116; t=1730998986; c=relaxed/simple;
+	bh=A0fmQDK8m7oxJnEMI+GXPI0MVrZif3Z38lQBRjITpDA=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=AxAEGvc5UQG4NoEs3F/GfaIIq/IC1oTPTsBOrxDeXH7+5MKrvf4PqiH/P7SqoNT1ZHMSbKDgaWHSIBkJy3lIlufSkeMAunETwPFUBJQuWBxQQQuIvGhlryZJsyjYwacCtUvcbmNM1C1RQA4gpuGOiiM7MQ1CJnOz2tJiMHvA/jc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=nhg9o851; arc=none smtp.client-ip=5.75.144.95
+	 In-Reply-To:To:Cc; b=NXY15Yiurc8VK4gDPWXBbWSrfU+QN0IWIsPAvMXcSRzfq95rjUKU540k5BlKYa6tlOrqOgdKDy51Ohk3YZh44/8+y+P5qU53Bz4bpWTfg79y/t0FCGjQtysfanTXbsbv1bT47KNIUX8p/arnoNRXCzCxAArHwuuwIBkRpbIC7+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=fr4rBFPJ; arc=none smtp.client-ip=5.75.144.95
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="nhg9o851"
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="fr4rBFPJ"
 Received: from [192.168.118.162] (254C2715.nat.pool.telekom.hu [37.76.39.21])
-	by mail.mainlining.org (Postfix) with ESMTPSA id 36201E45C9;
-	Thu,  7 Nov 2024 17:03:00 +0000 (UTC)
+	by mail.mainlining.org (Postfix) with ESMTPSA id 5A980E45C6;
+	Thu,  7 Nov 2024 17:02:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1730998981;
+	s=psm; t=1730998976;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=KRS7V3ZOvu7gFf33oE9QkvuDo5RSW5nvjApdzZbQQmc=;
-	b=nhg9o851vlBFSki/d+uLkFtAkduGKmJgu2TaJ03qE9kXLlSlbnifNEtjs3vhGyPrfed/qX
-	GVstyVszC5YA38au25ZWvPJi3WBe/2wE93//p9NIp9yXFueWwOZiLMxQUl/MKMFVjzglSS
-	0FAPtvWMBUVL9Wru9M9E3Rrehc6ZNsNRkKBvcuQLBxsSJuqQISbJSBN4zDln7DbfNY506K
-	6T61Roicox7AzC0GFnahKMwgWMYy535MKr+LeceY/gFD4do6Xq4YA75pJqwwFmML0+KLo0
-	q+0zCJCKOFTA0QKYvrVOln8t1punt1cQ61D4nSGDnE5iQ+nGFYqka+e9FL2aQA==
+	bh=Ze6/FwJGlwoZIH5QX0UZSFz6K9jP+T7IzTY3dKemhXQ=;
+	b=fr4rBFPJyaJ39C6eKeHzqJYWQZcg1QcvIwIIJ+xPoRLXwsPk4wqbq6uYBZnadM50yyzvSA
+	PebDREFNaKPp/T7Fw0aQBqJin30nnE2lwcNF58eA4ICXk0/Vsp95cNolPRPTTveLO3foZm
+	oKgprRA1xqjhQ8amfrXZkEc7L7r8jYM8oMC0e1NRGIPVC/s8GiJzIYiTohpH0473pF0SYm
+	6m8mn7P20jD4nny4dnjcPK9spuU6X0ZGfMx9ufht/i3v07F1VjSbYMZibg1mEhrmBkEjBG
+	dz3XFVoIsdKwcqY9lyJ9EzrGh4RnbHJdzIH/uwTtzuaCbUEcdKqv2s3ibjn9Xg==
 From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Thu, 07 Nov 2024 18:02:47 +0100
-Subject: [PATCH v3 06/14] dt-bindings: pinctrl: qcom: Add MSM8917 pinctrl
+Date: Thu, 07 Nov 2024 18:02:44 +0100
+Subject: [PATCH v3 03/14] dt-bindings: pinctrl: qcom,pmic-mpp: Add PM8937
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,7 +42,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20241107-msm8917-v3-6-6ddc5acd978b@mainlining.org>
+Message-Id: <20241107-msm8917-v3-3-6ddc5acd978b@mainlining.org>
 References: <20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org>
 In-Reply-To: <20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -59,190 +59,45 @@ To: Bjorn Andersson <andersson@kernel.org>,
 Cc: linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
- =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1730998970; l=6583;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1730998970; l=1273;
  i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=JHx/mJNY/VmzW58rPorCah4CdAs5u7Kb/7+X5nbaHLI=;
- b=2fP0JVam1p3fctuLzyEqJRJsZfpfyn23m9Kc/XnDS5z+sepPjga5hTETEd3XW9xa1prBPW4uM
- xjNmOYcGIOMCcrWOPMmMqXOfvqOqvqKtme3cLPFGUfMBwGtChAmtLTP
+ bh=A0fmQDK8m7oxJnEMI+GXPI0MVrZif3Z38lQBRjITpDA=;
+ b=hhnjY8odk06rK1S61Z5megT38z31/ktCL9JcthBjdVSCIwiwWoJN6K/+R59Z5o8wOslRgsYp6
+ se+VChFqUY2AOV4i+2DeRZrIqjV3o85b0lr7jln2J63M5LLJxAHATNz
 X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
  pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-Add device tree bindings documentation for Qualcomm MSM8917
-pinctrl driver.
+Document the Device Tree binding for PM8937 MPPs.
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 ---
- .../bindings/pinctrl/qcom,msm8917-pinctrl.yaml     | 160 +++++++++++++++++++++
- 1 file changed, 160 insertions(+)
+ Documentation/devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,msm8917-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,msm8917-pinctrl.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..48bfb1fda4938d5a0fb33335695db0fd56152c42
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pinctrl/qcom,msm8917-pinctrl.yaml
-@@ -0,0 +1,160 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pinctrl/qcom,msm8917-pinctrl.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm MSM8917 TLMM pin controller
-+
-+maintainers:
-+  - Barnabas Czeman <barnabas.czeman@mainlining.org>
-+
-+description:
-+  Top Level Mode Multiplexer pin controller in Qualcomm MSM8917 SoC.
-+
-+properties:
-+  compatible:
-+    const: qcom,msm8917-pinctrl
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  gpio-reserved-ranges:
-+    minItems: 1
-+    maxItems: 66
-+
-+  gpio-line-names:
-+    maxItems: 134
-+
-+patternProperties:
-+  "-state$":
-+    oneOf:
-+      - $ref: "#/$defs/qcom-msm8917-tlmm-state"
-+      - patternProperties:
-+          "-pins$":
-+            $ref: "#/$defs/qcom-msm8917-tlmm-state"
-+        additionalProperties: false
-+
-+$defs:
-+  qcom-msm8917-tlmm-state:
-+    type: object
-+    description:
-+      Pinctrl node's client devices use subnodes for desired pin configuration.
-+      Client device subnodes use below standard properties.
-+    $ref: qcom,tlmm-common.yaml#/$defs/qcom-tlmm-state
-+    unevaluatedProperties: false
-+
-+    properties:
-+      pins:
-+        description:
-+          List of gpio pins affected by the properties specified in this
-+          subnode.
-+        items:
-+          oneOf:
-+            - pattern: "^gpio([0-9]|[1-9][0-9]|1[0-3][0-3])$"
-+            - enum: [ sdc1_clk, sdc1_cmd, sdc1_data, sdc1_rclk, sdc2_clk,
-+                      sdc2_cmd, sdc2_data, qdsd_clk, qdsd_cmd, qdsd_data0,
-+                      qdsd_data1, qdsd_data2, qdsd_data3 ]
-+        minItems: 1
-+        maxItems: 16
-+
-+      function:
-+        description:
-+          Specify the alternative function to be configured for the specified
-+          pins.
-+
-+        enum: [ accel_int, adsp_ext, alsp_int, atest_bbrx0, atest_bbrx1,
-+                atest_char, atest_char0, atest_char1, atest_char2,
-+                atest_char3, atest_combodac_to_gpio_native,
-+                atest_gpsadc_dtest0_native, atest_gpsadc_dtest1_native,
-+                atest_tsens, atest_wlan0, atest_wlan1, audio_ref,
-+                audio_reset, bimc_dte0, bimc_dte1, blsp6_spi, blsp8_spi,
-+                blsp_i2c1, blsp_i2c2, blsp_i2c3, blsp_i2c4, blsp_i2c5,
-+                blsp_i2c6, blsp_i2c7, blsp_i2c8, blsp_spi1, blsp_spi2,
-+                blsp_spi3, blsp_spi4, blsp_spi5, blsp_spi6, blsp_spi7,
-+                blsp_spi8, blsp_uart1, blsp_uart2, blsp_uart3, blsp_uart4,
-+                blsp_uart5, blsp_uart6, blsp_uart7, blsp_uart8, cam0_ldo,
-+                cam1_rst, cam1_standby, cam2_rst, cam2_standby, cam_mclk,
-+                cci_async, cci_i2c, cci_timer0, cci_timer1, cdc_pdm0,
-+                codec_int1, codec_int2, codec_mad, coex_uart, cri_trng,
-+                cri_trng0, cri_trng1, dbg_out, dmic0_clk, dmic0_data,
-+                ebi_cdc, ebi_ch0, ext_lpass, forced_usb, fp_gpio, fp_int,
-+                gcc_gp1_clk_a, gcc_gp1_clk_b, gcc_gp2_clk_a, gcc_gp2_clk_b,
-+                gcc_gp3_clk_a, gcc_gp3_clk_b, gcc_plltest, gcc_tlmm, gpio,
-+                gsm0_tx, key_focus, key_snapshot, key_volp, ldo_en,
-+                ldo_update, lpass_slimbus, lpass_slimbus0, lpass_slimbus1,
-+                m_voc, mag_int, mdp_vsync, mipi_dsi0, modem_tsync, nav_pps,
-+                nav_pps_in_a, nav_pps_in_b, nav_tsync, nfc_pwr, ov_ldo,
-+                pa_indicator, pbs0, pbs1, pbs2, pri_mi2s, pri_mi2s_mclk_a,
-+                pri_mi2s_mclk_b, pri_mi2s_ws, prng_rosc,
-+                pwr_crypto_enabled_a, pwr_crypto_enabled_b,
-+                pwr_modem_enabled_a, pwr_modem_enabled_b, pwr_nav_enabled_a,
-+                pwr_nav_enabled_b, qdss_cti_trig_in_a0, qdss_cti_trig_in_a1,
-+                qdss_cti_trig_in_b0, qdss_cti_trig_in_b1,
-+                qdss_cti_trig_out_a0, qdss_cti_trig_out_a1,
-+                qdss_cti_trig_out_b0, qdss_cti_trig_out_b1, qdss_traceclk_a,
-+                qdss_traceclk_b, qdss_tracectl_a, qdss_tracectl_b,
-+                qdss_tracedata_a, qdss_tracedata_b, sd_write, sdcard_det,
-+                sec_mi2s, sec_mi2s_mclk_a, sec_mi2s_mclk_b, sensor_rst,
-+                smb_int, ssbi_wtr1, ts_resout, ts_sample, uim1_clk,
-+                uim1_data, uim1_present, uim1_reset, uim2_clk, uim2_data,
-+                uim2_present, uim2_reset, uim_batt, us_emitter, us_euro,
-+                wcss_bt, wcss_fm, wcss_wlan, wcss_wlan0, wcss_wlan1,
-+                wcss_wlan2, webcam_rst, webcam_standby, wsa_io, wsa_irq ]
-+
-+    required:
-+      - pins
-+
-+allOf:
-+  - $ref: /schemas/pinctrl/qcom,tlmm-common.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    tlmm: pinctrl@1000000 {
-+        compatible = "qcom,msm8917-pinctrl";
-+        reg = <0x01000000 0x300000>;
-+        interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
-+        gpio-controller;
-+        gpio-ranges = <&tlmm 0 0 134>;
-+        #gpio-cells = <2>;
-+        interrupt-controller;
-+        #interrupt-cells = <2>;
-+
-+        blsp1-uart2-sleep-state {
-+            pins = "gpio4", "gpio5";
-+            function = "gpio";
-+
-+            drive-strength = <2>;
-+            bias-pull-down;
-+        };
-+
-+        spi1-default-state {
-+            spi-pins {
-+                pins = "gpio0", "gpio1", "gpio3";
-+                function = "blsp_spi1";
-+
-+                drive-strength = <12>;
-+                bias-disable;
-+            };
-+
-+            cs-pins {
-+                pins = "gpio2";
-+                function = "gpio";
-+
-+                drive-strength = <16>;
-+                bias-disable;
-+                output-high;
-+            };
-+        };
-+    };
+diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml
+index 43146709e2044d9dead08a6786b98672ef766629..9364ae05f3e68f3a2f4dd78ba3c0f94b3ccc3c51 100644
+--- a/Documentation/devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/qcom,pmic-mpp.yaml
+@@ -22,6 +22,7 @@ properties:
+               - qcom,pm8226-mpp
+               - qcom,pm8841-mpp
+               - qcom,pm8916-mpp
++              - qcom,pm8937-mpp
+               - qcom,pm8941-mpp
+               - qcom,pm8950-mpp
+               - qcom,pmi8950-mpp
+@@ -92,6 +93,7 @@ $defs:
+           this subnode.  Valid pins are
+                  - mpp1-mpp4 for pm8841
+                  - mpp1-mpp4 for pm8916
++                 - mpp1-mpp4 for pm8937
+                  - mpp1-mpp8 for pm8941
+                  - mpp1-mpp4 for pm8950
+                  - mpp1-mpp4 for pmi8950
 
 -- 
 2.47.0
