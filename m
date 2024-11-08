@@ -1,113 +1,129 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FC591EABA9
-	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 13:11:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5CFD1803A;
+	Fri,  8 Nov 2024 14:53:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731071485; cv=none; b=F/IhNhsZNS5Enhwaa/vDkoqKf78+qKfi9RJLfvyAZHWl0y022N9+/CRtEbKUrR5uIItLHucQfU2xVGCPf+fJiRs11KF1IHl/RVGBFuN04hrBQAZBPLFo7cwy2VNa7OGRhqSi4qFNGKi2LdMpaYwA3nKxJIaH3WXGAIXYuxQKXag=
+	t=1731077611; cv=none; b=jRcplzXzObUN9sMHzAFf6I1+STtiICq46rfn3mZjCLDfO/j7ag7v+2UrtASkDt07igXcPEcodHGMVK3d7L6WUXpv0CuVL6rboE6/N52Gsr8h0tIn+Qgh2fSrqP1BO+9miertVdBOzFfMhl+T/MadCAtKUx109Et13EINfnvhb3A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731071485; c=relaxed/simple;
-	bh=QjA5EMYFJ6xfhGH9fzDGKSBNyr2o8zURlscSe7enCB4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IaUYXT3/E3vSZlliJ7y36AFJ/DMgmyu6gxrGunvv5iOui4nqWDzqiResHsE+HBPRJ55oZXKMSmaFdDrqdfY/08dA6uJ+ZRyELJrgpwEXWvmhiJ/Ln59cRjYGeaTzBaYcNpLKrra6ZWYz/+cqCDKMZ8Phge3GNDKmghvPzyyY5Z8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C173A497;
-	Fri,  8 Nov 2024 05:11:51 -0800 (PST)
-Received: from [10.57.90.136] (unknown [10.57.90.136])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C940B3F528;
-	Fri,  8 Nov 2024 05:11:20 -0800 (PST)
-Message-ID: <74e82b40-ecf9-4f20-9a33-c5369e04ea85@arm.com>
-Date: Fri, 8 Nov 2024 13:11:19 +0000
+	s=arc-20240116; t=1731077611; c=relaxed/simple;
+	bh=kZbPfuZ0ikYZXriOFOyM/wtjpbX2/SuwojvsPEaqSLA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oPcNgYSDeZg/EglCRPD406jjMej4FNk5RUDZIJN2rNoRCTw+bXUkF1Mo9Y/Batxxg0LgbRV7GLJhAipjFY71AgH8u4ac2l6ci+8xnUZlayq0Xl2Iqm992mkHRD/5xopsHj/rDvUdjq/ZhsdBGHTN2NRn6AVU684VFFB1PwUajTw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rZh606o7; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rZh606o7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F1CCC4CED5;
+	Fri,  8 Nov 2024 14:53:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731077611;
+	bh=kZbPfuZ0ikYZXriOFOyM/wtjpbX2/SuwojvsPEaqSLA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=rZh606o7uJMo6Rkf6Lz4RxQEyMr7vA756y0kFoEQhrTmohzr9Rp23gAVJj0gPMiLJ
+	 fiXqcWwVsoZGUl2E1KYIZdbZGgQgoAxcy2j0yAULt+/HhwCWGPl7QQ10YIxm/N7GGE
+	 7HwCs+UTOIW82PdunYNwSqmiCw/688dnKn1I9smPqqH4dK5e4pkg6bUKnLWUeFXz1D
+	 jmlU9f6QgL0uLbtdWuN195GnRy/Q3rTRqlJHzsOyTbQUklcr9SF0nNwXgiyMyMbdaM
+	 uXxVGrW0J8Um2aCgd+5douR6vdS7u6p21BHrCfHKPj2T6ojdtMqDWvKmv2J3OKSwTA
+	 uQV4/Bd+cHtMA==
+Date: Fri, 8 Nov 2024 14:53:22 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, acpica-devel@lists.linux.dev,
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Donald Dutile <ddutile@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v4 05/12] iommu/arm-smmu-v3: Support IOMMU_GET_HW_INFO
+ via struct arm_smmu_hw_info
+Message-ID: <20241108145320.GA17325@willie-the-truck>
+References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+ <5-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+ <20241104114723.GA11511@willie-the-truck>
+ <20241104124102.GX10193@nvidia.com>
+ <8a5940b0-08f3-48b1-9498-f09f0527a964@arm.com>
+ <20241106180531.GA520535@nvidia.com>
+ <2a0e69e3-63ba-475b-a5a9-0863ad0f2bf8@arm.com>
+ <20241107023506.GC520535@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/dma: Reserve iova ranges for reserved regions of
- all devices
-To: Jerry Snitselaar <jsnitsel@redhat.com>, iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20241024153412.141765-1-jsnitsel@redhat.com>
- <vup5ms2p5o4ao3t57kfgqtnnna7e4jcvkvup2vmyf6o4qrb3qu@3aanawjzggyh>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <vup5ms2p5o4ao3t57kfgqtnnna7e4jcvkvup2vmyf6o4qrb3qu@3aanawjzggyh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241107023506.GC520535@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2024-11-06 7:13 pm, Jerry Snitselaar wrote:
-> On Thu, Oct 24, 2024 at 08:34:12AM -0700, Jerry Snitselaar wrote:
->> Only the first device that is passed when the domain is set up will
->> have its reserved regions reserved in the iova address space.  So if
->> there are other devices in the group with unique reserved regions,
->> those regions will not get reserved in the iova address space.  All of
->> the ranges do get set up in the iopagetables via calls to
->> iommu_create_device_direct_mappings for all devices in a group.
->>
->> In the case of vt-d system this resulted in messages like the following:
->>
->> [ 1632.693264] DMAR: ERROR: DMA PTE for vPFN 0xf1f7e already set (to f1f7e003 not 173025001)
->>
->> To make sure iova ranges are reserved for the reserved regions all of
->> the devices, call iova_reserve_iommu_regions in iommu_dma_init_domain
->> prior to exiting in the case where the domain is already initialized.
->>
->> Cc: Robin Murphy <robin.murphy@arm.com>
->> Cc: Joerg Roedel <joro@8bytes.org>
->> Cc: Will Deacon <will@kernel.org>
->> Cc: linux-kernel@vger.kernel.org
->> Cc: stable@vger.kernel.org
->> Fixes: 7c1b058c8b5a ("iommu/dma: Handle IOMMU API reserved regions")
->> Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
->> ---
->> Robin: I wasn't positive if this is the correct solution, or if it should be
->>         done for the entire group at once.
->>
->>   drivers/iommu/dma-iommu.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 2a9fa0c8cc00..5fd3cccbb233 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -707,7 +707,7 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, struct device *dev
->>   			goto done_unlock;
->>   		}
->>   
->> -		ret = 0;
->> +		ret = iova_reserve_iommu_regions(dev, domain);
->>   		goto done_unlock;
->>   	}
->>   
->> -- 
->> 2.44.0
->>
+Hi guys,
+
+On Wed, Nov 06, 2024 at 10:35:06PM -0400, Jason Gunthorpe wrote:
+> On Wed, Nov 06, 2024 at 09:05:26PM +0000, Robin Murphy wrote:
+> > You should take "We discussed this already"
+> > as more of a clue to yourself than to me - if 4 different people have all
+> > said the exact same thing in so many words, perhaps there's something in
+> > it...
 > 
-> Robin,
+> And all seemed to agree it was not a big deal after the discussion.
 > 
-> Any thoughts on this patch? In the case where this originally popped
-> up it was likely a crap DMAR table in an HPE system with an ilo, as
-> the RMRR in question had a device in the list that as far as I could
-> tell didn't actually exist. The 2nd function of the sata controller
-> was in the list, but not the first, and the first function was the
-> device where the group/domain was initialized. With some debugging
-> code I could see it set up the ioptes for the 2nd function, but it
-> wasn't reserving the range of iovas.
+> I think Mostafa was driving in a direction that we break up the IDR
+> into explicit fields and thus be explicit about what information the
+> VMM is able to access. This would effectively document and enforce
+> what the baseline is.
 
-Yeah, this one's tricky - the current behaviour is not entirely 
-unintentional since there's not really a right answer. It's also 
-possible for the second device to get here after the first device has 
-already started using the domain, so at that point it's no longer safe 
-to use reserve_iova() due to how it merges overlapping and adjacent 
-rbtree nodes, which could really screw things up once there are normal 
-allocations in the tree as well. So in truth it was rather a case of 
-crossing my fingers and quietly hoping this particular set of 
-circumstances was unlikely enough to never come up... :/
+As one of the four people mentioned above, I figured I'd chime in with
+my rationale for queuing this in case it's of any help or interest.
 
-Thanks,
-Robin.
+Initially, I was reasonably sure that we should be sanitising the ID
+registers and being selective about what we advertise to userspace.
+However, after Jason's reply to my comments, mulling it over in my head
+and having lively conversations with Mostafa at lunchtime, I've come
+full circle. Is it a great interface? Not at all. It's 8 register values
+copied from the hardware to userspace. But is it good enough? I think it
+is. It's also extremely simple (i.e. easy to explain what it does and
+trivial to implement), which I think is a huge benefit given that the
+IOMMUFD work around it is still evolving.
+
+I'm firmly of the opinion that the VMM is going to need a tonne of help
+from other sources to expose a virtual IOMMU successfully. For example,
+anything relating to policy or configuration choices should be driven
+from userspace rather than the kernel. If we start to expose policy in
+the id registers for the cases where it happens to fit nicely, I fear
+that this will backfire and the VMM will end up second-guessing the
+kernel in cases where it decides it knows best. I'm not sold on the
+analogy with CPU ID registers as (a) we don't have big/little idiocy to
+deal with in the SMMU and (b) I don't think SMMU features always need
+support code in the host, which is quite unlike many CPU features that
+cannot be exposed safely without hypervisor context-switching support.
+
+On top of all that, this interface can be extended if we change our
+minds. If we decide we need to mask out fields, I think we could add
+that after the fact. Hell, if we all decide that it's a disaster in a
+few releases time, we can try something else. Ultimately, Jason is the
+one maintaining IOMMUFD and he gets to deal with the problems if his
+UAPI doesn't work out :)
+
+So, given where we are in the cycle, I think the pragmatic thing to do
+is to land this change now and enable the ongoing IOMMUFD work to
+continue. We still have over two months to resolve any major problems
+with the interface (and even unplug it entirely from the driver if we
+really get stuck) but for now I think it's "fine".
+
+Will
