@@ -1,61 +1,93 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0494A1D0400;
-	Fri,  8 Nov 2024 14:56:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E896C1EABA2
+	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 15:02:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731077783; cv=none; b=OX4BaZqt5kaoiJ7Pt1bq9SGPQZ1o0fGPzxYZK6Llu3H4NoTsRI3OZC4vJ0I8wKlXF/FWGEhRueZRTXZKspJcA/uyn7N959GCetHhvAOqt1SucIWBRFYcCkwIzR4escosbDrRjhPI4g1lEnfYDQocV4JPVr98KWNtzPM0V7/DXV0=
+	t=1731078152; cv=none; b=eXoinIz/mG0r+4SQpEsr4UOaVXFQ/7CiBXEwFHLbtDjEThek/gbTq34jeYtT9ijn3v7pQDkluaFLhZ2OFatp9i28+s3iltLkx6i6m8/tSB6yqGstA0gOqaWNhsdLfA8feGK12PfmKepk2D2Sm2tXCU6BB9geDE0Dw2+9FJnHioY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731077783; c=relaxed/simple;
-	bh=6FAwEz1aNs6pjulAvH3wCg9nOjDsVb0l9FuLjHXGFtI=;
+	s=arc-20240116; t=1731078152; c=relaxed/simple;
+	bh=IxhOLucIOyD3NJcUrGUU7C5jfdypTBHb2lCNw7COT0Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AFT8T8n/qxI2wegeuxpqGc8aE9s50Bgt7U5dDtHycLK/nX9ddxyBGASzP+xe0wvPdbWfE/1hY9bGVZkeaNL0fz9r5ps15yFYTqEgvC7L5kl1pNejPDqpR6eMG2NiFXi3j2tVR71aHeTYtFpjWr1WCPb04V3ECLScgHf1T1/Uxis=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b9hZFeNV; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=aD0BBVMkvFH4cCxdCHv7uZ9dwxP0zV0ifULusM61fLB4lR3JLcMijNJo5Q0FnYji5gDKAcREEb8brtqvLHSiMdTjJa05QqNh+1lT1mlypkULfxNTG3Mjb0E7A2NvstbQr+IxAYc1PRdbMyYhpcrEobJP1FcKdtzSB835UGLLNuk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=e+nm/t8L; arc=none smtp.client-ip=209.85.160.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b9hZFeNV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16CD3C4CECD;
-	Fri,  8 Nov 2024 14:56:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731077782;
-	bh=6FAwEz1aNs6pjulAvH3wCg9nOjDsVb0l9FuLjHXGFtI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=b9hZFeNVj8VpGUF0f27FLcnlwN8hRdEybVmw28VptgICFG1V13MnGp3yEMYfBMgLF
-	 qX/rFwNSfcv6bGXMcrHN8aqlcZJLH8/ebuueRx4DuApb7umf0a73hsVDq9dTwb3u5+
-	 6sLvOCk4DKWF4jlO7DvWI9Agl3/36SYxws1x7QNr/FKjeAnR21CHXWHKToEKVvIyTN
-	 IDVZ+ob4t2u0QPax7OJ8MG5Wr8LNPlnwXdoAKe4KRH6mWxcge8Ftmj7JhkBp7kbI86
-	 C6EM6SEYAebI18+wacEEL8/H9ag8KIaqO8kbE/S3KvBuIE/bSahpBE4+XVgADcl5FV
-	 yBC9lwPvpCnwg==
-Date: Fri, 8 Nov 2024 14:56:14 +0000
-From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: acpica-devel@lists.linux.dev, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	kvm@vger.kernel.org, Len Brown <lenb@kernel.org>,
-	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="e+nm/t8L"
+Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-460ad0440ddso12495211cf.3
+        for <iommu@lists.linux.dev>; Fri, 08 Nov 2024 07:02:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1731078150; x=1731682950; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hubkZwx3K6QSYt4MPDN5HJUCdcIscdXdSF4J6blze28=;
+        b=e+nm/t8LLO9WYo2Jd/egkADlJXH2thR66SQAMWfvnSZsy4HXIWSfZFBshbwv8SiTHl
+         e8lt0hMhJp/F6NZ6nfv1dXFA4rgQyhBf/6nhdMtWCxGO18vXncz8vvDcgxL3Eex5YL3I
+         YixBTyYIGNrJYY7GaigAy/SkjXVFWpXYwXHF3kTlFoca+UEf81o6+uQOK8ceaWAiDrC1
+         ChNV/8HQjTAE9rJijFkxvR/60wLrLUL26u+jhfY117C3efDScvQ24xr0rvUPseQBOEgR
+         pYZ3t2Omr5/Tud94c7xNHUj9MDDeieHAHq9jVW8j85tuKs0v5+MEMWQ4iyaiYQo+b9YB
+         REig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731078150; x=1731682950;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hubkZwx3K6QSYt4MPDN5HJUCdcIscdXdSF4J6blze28=;
+        b=DlaUemMuRgV8/qWCVddbjNvtZh7o0j+s5PsR27Dt7HEnBMIHyTwOcfSOXki9/Dbspr
+         CDFv/FAH/dsHxupfCDi/NTvlHkY96BCuyOtMLxEfpv4FPcxpDBumCq4VQZEEtKjle0On
+         L+X6xAOrKYZMIAgJPF7zwofQFCv+qtBgfkll34vOOIPk7Eder+/BH8zN+w3/zFX+GPTk
+         8W7kxF2dgCYdUmKcAPUkYkD0n69Hb6tj/jDA1p1cfllI7XUbBN+V/ES3JVksArIPX5o5
+         sscPviZPw2ddUFOpO3BlJEOfRR/UDZ5xOzsuMBOD9iUqJXgiQox03pizLPDHCS1n+x0P
+         Uwbw==
+X-Forwarded-Encrypted: i=1; AJvYcCUzicv2iyh+fQye4ZuFidLPQxjGMGI/gNthI8l5Q006SwuKkoigC5JoqOGSPG/LQebBEjszDw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzbnGZkYX26BWozFNP4zX1kCCgMXa3DI82eloZ7bwzHYizklCmN
+	Klk+vURL7YlMUGM+LwxG5xzyrzdI/dtp559xMeLNP3HFc6ANfKNQc5L57gVnwcs=
+X-Google-Smtp-Source: AGHT+IHrKrTFhKn6qkYBk/Mpkl+n+kU6F5VUVqIGxdFUtkBdvXhYcgcHiG/stLr7VzGEyxS593kC3g==
+X-Received: by 2002:a05:622a:1a92:b0:461:17e6:27af with SMTP id d75a77b69052e-463093698f2mr35032151cf.28.1731078149644;
+        Fri, 08 Nov 2024 07:02:29 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-462ff3df53fsm21177001cf.8.2024.11.08.07.02.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Nov 2024 07:02:28 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1t9QVG-00000002ZlF-2kIP;
+	Fri, 08 Nov 2024 11:02:26 -0400
+Date: Fri, 8 Nov 2024 11:02:26 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, Leon Romanovsky <leon@kernel.org>,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
 	Alex Williamson <alex.williamson@redhat.com>,
-	Donald Dutile <ddutile@redhat.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Jerry Snitselaar <jsnitsel@redhat.com>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v4 00/12] Initial support for SMMUv3 nested translation
-Message-ID: <20241108145611.GB17325@willie-the-truck>
-References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
- <20241101121849.GD8518@willie-the-truck>
- <20241101132503.GU10193@nvidia.com>
- <20241105164829.GA12923@willie-the-truck>
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org, matthew.brost@intel.com,
+	Thomas.Hellstrom@linux.intel.com, brian.welty@intel.com,
+	himal.prasad.ghimiray@intel.com, krishnaiah.bommu@intel.com,
+	niranjana.vishwanathapura@intel.com
+Subject: Re: [PATCH v1 00/17] Provide a new two step DMA mapping API
+Message-ID: <20241108150226.GM35848@ziepe.ca>
+References: <cover.1730298502.git.leon@kernel.org>
+ <3567312e-5942-4037-93dc-587f25f0778c@arm.com>
+ <20241104095831.GA28751@lst.de>
+ <20241105195357.GI35848@ziepe.ca>
+ <20241107083256.GA9071@lst.de>
+ <20241107132808.GK35848@ziepe.ca>
+ <20241107135025.GA14996@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,46 +96,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241105164829.GA12923@willie-the-truck>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20241107135025.GA14996@lst.de>
 
-On Tue, Nov 05, 2024 at 04:48:29PM +0000, Will Deacon wrote:
-> On Fri, Nov 01, 2024 at 10:25:03AM -0300, Jason Gunthorpe wrote:
-> > On Fri, Nov 01, 2024 at 12:18:50PM +0000, Will Deacon wrote:
-> > > On Wed, Oct 30, 2024 at 09:20:44PM -0300, Jason Gunthorpe wrote:
-> > > > [This is now based on Nicolin's iommufd patches for vIOMMU and will need
-> > > > to go through the iommufd tree, please ack]
-> > > 
-> > > Can't we separate out the SMMUv3 driver changes? They shouldn't depend on
-> > > Nicolin's work afaict.
+On Thu, Nov 07, 2024 at 02:50:25PM +0100, Christoph Hellwig wrote:
+> On Thu, Nov 07, 2024 at 09:28:08AM -0400, Jason Gunthorpe wrote:
+> > Once we are freed from scatterlist we can explore a design that would
+> > pass the P2P routing information directly. For instance imagine
+> > something like:
 > > 
-> > We can put everything before "iommu/arm-smmu-v3: Support
-> > IOMMU_VIOMMU_ALLOC" directly on a rc and share a branch with your tree.
+> >    dma_map_p2p(dev, phys, p2p_provider);
 > > 
-> > That patch and following all depend on Nicolin's work, as they rely on
-> > the VIOMMU due to how different ARM is from Intel.
+> > Then dma_map_page(dev, page) could be something like
 > > 
-> > How about you take these patches:
-> > 
-> >  [PATCH v4 01/12] vfio: Remove VFIO_TYPE1_NESTING_IOMMU
-> >  [PATCH v4 02/12] ACPICA: IORT: Update for revision E.f
-> >  [PATCH v4 03/12] ACPI/IORT: Support CANWBS memory access flag
-> >  [PATCH v4 04/12] iommu/arm-smmu-v3: Report IOMMU_CAP_ENFORCE_CACHE_COHERENCY for CANWBS
-> >  [PATCH v4 05/12] iommu/arm-smmu-v3: Support IOMMU_GET_HW_INFO via struct arm_smmu_hw_info
-> >  [PATCH v4 06/12] iommu/arm-smmu-v3: Implement IOMMU_HWPT_ALLOC_NEST_PARENT
-> >  [PATCH v4 07/12] iommu/arm-smmu-v3: Expose the arm_smmu_attach interface
-> > 
-> > Onto a branch.
+> >    if (is_pci_p2pdma_page(page))
+> >       dev_map_p2p(dev, page_to_phys(page), page->pgmap->p2p_provider)
 > 
-> I've pushed these onto a new branch in the IOMMU tree:
+> One thing that this series does is to move the P2P mapping decisions out
+> of the low-level dma mapping helpers and into the caller (again) for
+> the non-sg callers and moves the special switch based bus mapping into
+> a routine that can be called directly.
 > 
-> 	iommufd/arm-smmuv3-nested
-> 
-> However, please can you give it a day or two to get some exposure in
-> -next before you merge that into iommufd? I'll ping back here later in
-> the week.
+> Take a look at blk_rq_dma_map_iter_start, which now literally uses
+> dma_map_page for the no-iommu, no-switch P2P case.  It also is a good
+> use case for the proposed dma_map_phys.
 
-Not seen anything go bang in -next, so I think we can consider this
-branch stable now.
+It is fully OK? Can't dma_map_page() trigger swiotlb? It must not do
+that for P2P. How does it know the difference if it just gets a phys?
 
-Will
+Jason
