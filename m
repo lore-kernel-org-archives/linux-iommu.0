@@ -1,248 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EC3E1E9074
-	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 12:17:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBC511E47CE;
+	Fri,  8 Nov 2024 12:24:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731068274; cv=none; b=o8Oaza2zBz0xZPvcNU/9Xyxk7IuGa/FDPNW6qIHX4pOyA2Ss+MK3cX8Ur9VwkpJ0ppCflVx5O3a0QC94UvdOpYfhCk8pGGGVm+v0puwIJzPV5kuv/2zFoF+hm+c9yXRLMGb/XJDJxm8A1RG0zJjdcUioMphlf1l3wKxPFXfeduY=
+	t=1731068655; cv=none; b=J1X3AEoyfdV66oCCe2HAUiEYCq0k7/fra2IKOG81dnurLuFE8m35lFJU0/hI2zhd7CauuRatXdXa5q/fEQ/nl7HhA7ClgS2D3+QPJMDA8+3MZopiLYmnMIfbtya4SgRkkoMw7lLK8jlETfzgD7p4Os4kUQzDodVprnuNX3wRC78=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731068274; c=relaxed/simple;
-	bh=eg6PD3CuAltZOvrslb8O1BllOcumlzSeflErh+2dj4U=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=oKr2yb8urAqzG1E1oW1qAXu0ciqw5dRAuaSO1yk9ePcAsz02zeTacaQGk5/vqNKs1CLNxYyxZetJJWU+Uq32yakWh5QkRVaWUyqRXrV1SJURST/VKg6+/eI6/tWVAoRu9y5t8pZTKUwyCQDqVAQ/57NRjo/EWqmrmGj3Wawjl/U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=irUaPNfM; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1731068655; c=relaxed/simple;
+	bh=ysuLhuMYEEC7oX4y0iwjBEgPL1C/5lpgDLTDYdB0KFs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=W07JqtE7jol6PHptWAQmdrferfjMTiOA7UtB5P18R42c2KurGwr+I9c0lHYfkiMDcQ+bJ8ugVrTxmjzdT3GG9AhrB7SaFTXhDxADJ0p9gZS/Iae9qZROVRZAFEUws8QLMXgPcxmYdLhIjW5imvW/XBUlQ08poC8aOTPV84QKDQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZI2Pr8n3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="irUaPNfM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1731068273; x=1762604273;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=eg6PD3CuAltZOvrslb8O1BllOcumlzSeflErh+2dj4U=;
-  b=irUaPNfM0Nzyzrx19dFiNoTHn0poc5Hx0KSBoBhtV5VM9UbZRBW9oeni
-   MVr9lbGoNW5zAnZyceYRCKkIPl61YsaR8QY67l3YLkI9+WltoFC0T3Hkl
-   fygJz3dTn8BtcNnvXB5XX7q+2sRmo1tnJy4quXpYFRDKS1F0wfcmApAxp
-   crhn7PJpOWbRJBVeuLkaXBrUUEKIo98AeNJYkOFfqX+jiss+vzt8Ahsue
-   wzLRtWsbl283RtIdmu7pRkAUjdKeB69W10/ZPliI5LodJLBaLvgWCNWYJ
-   8m1f/SqCUfnkZlJtL+bqTgzMVdiBPhIbpTqKkGbTJpKrAoFIUUfBJJnVQ
-   w==;
-X-CSE-ConnectionGUID: qUU25l/2RIisjK1qg1ejcw==
-X-CSE-MsgGUID: hWI2R+DUT1CfQd2Sa0ojuw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11249"; a="41560842"
-X-IronPort-AV: E=Sophos;i="6.12,137,1728975600"; 
-   d="scan'208";a="41560842"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2024 04:17:50 -0800
-X-CSE-ConnectionGUID: UOskUehgQ7ShGTgC2rwYQg==
-X-CSE-MsgGUID: su3n60svQCWS/BodfBcoVg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,137,1728975600"; 
-   d="scan'208";a="85865460"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmviesa010.fm.intel.com with ESMTP; 08 Nov 2024 04:17:49 -0800
-From: Yi Liu <yi.l.liu@intel.com>
-To: alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	baolu.lu@linux.intel.com
-Cc: joro@8bytes.org,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	iommu@lists.linux.dev,
-	zhenzhong.duan@intel.com,
-	vasant.hegde@amd.com,
-	will@kernel.org,
-	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: [PATCH v5 5/5] iommufd: Extend IOMMU_GET_HW_INFO to report PASID capability
-Date: Fri,  8 Nov 2024 04:17:42 -0800
-Message-Id: <20241108121742.18889-6-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20241108121742.18889-1-yi.l.liu@intel.com>
-References: <20241108121742.18889-1-yi.l.liu@intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZI2Pr8n3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08A0EC4CECD;
+	Fri,  8 Nov 2024 12:24:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731068654;
+	bh=ysuLhuMYEEC7oX4y0iwjBEgPL1C/5lpgDLTDYdB0KFs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ZI2Pr8n3D33cVl/heubKCb1AtALRbMn0WDX2jXxKZvqNOBSAr3+XQKZPF9yNCFWrZ
+	 Wf1wLykw0HBLbfov4EzKLHUQhk4XEdKt02QUbFNxvCbA+mZvTFybivzwlPM668X4PU
+	 1bd9DSyVEYXsTHUazZinuQ3i5j7DXLfR3H/3GC5f14Fu02esA6XLSJhCH5aAS5h/Vr
+	 NUXSBwWbCjBob32hiPpy3Nb/j627PV1BP/U4adaBUaTdKHHR7FVCdEUmg4DqihjvRn
+	 ntTXDLYVW5mQOddiSLgh3hIOUlcJI36fwRfzNOUXOj/HepNR2VEByg33eFfiOmtc8r
+	 2/wyK8i0RTl1g==
+Date: Fri, 8 Nov 2024 13:24:09 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: =?utf-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, 
+	Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>, Amit Kucheria <amitk@kernel.org>, 
+	Thara Gopinath <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, 
+	Lukasz Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
+	linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v3 06/14] dt-bindings: pinctrl: qcom: Add MSM8917 pinctrl
+Message-ID: <ufamoryw2k3oquvusqzs2e7ixu6iptfbpmdevqthbps5w7szw3@6c7enohqv537>
+References: <20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org>
+ <20241107-msm8917-v3-6-6ddc5acd978b@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20241107-msm8917-v3-6-6ddc5acd978b@mainlining.org>
 
-PASID usage requires PASID support in both device and IOMMU. Since the
-iommu drivers always enable the PASID capability for the device if it
-is supported, so it is reasonable to extend the IOMMU_GET_HW_INFO to
-report the PASID capability to userspace.
+On Thu, Nov 07, 2024 at 06:02:47PM +0100, Barnab=C3=A1s Cz=C3=A9m=C3=A1n wr=
+ote:
+> +$defs:
+> +  qcom-msm8917-tlmm-state:
+> +    type: object
+> +    description:
+> +      Pinctrl node's client devices use subnodes for desired pin configu=
+ration.
+> +      Client device subnodes use below standard properties.
+> +    $ref: qcom,tlmm-common.yaml#/$defs/qcom-tlmm-state
+> +    unevaluatedProperties: false
+> +
+> +    properties:
+> +      pins:
+> +        description:
+> +          List of gpio pins affected by the properties specified in this
+> +          subnode.
+> +        items:
+> +          oneOf:
+> +            - pattern: "^gpio([0-9]|[1-9][0-9]|1[0-3][0-3])$"
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org> #aarch64 platform
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/iommufd/device.c | 24 +++++++++++++++++++++++-
- drivers/pci/ats.c              | 33 +++++++++++++++++++++++++++++++++
- include/linux/pci-ats.h        |  3 +++
- include/uapi/linux/iommufd.h   | 14 +++++++++++++-
- 4 files changed, 72 insertions(+), 2 deletions(-)
+That's not a good pattern, unless really gpio129 is not existing?
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index a52937fba366..3620a039d3fa 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -3,6 +3,8 @@
-  */
- #include <linux/iommu.h>
- #include <linux/iommufd.h>
-+#include <linux/pci.h>
-+#include <linux/pci-ats.h>
- #include <linux/slab.h>
- #include <uapi/linux/iommufd.h>
- 
-@@ -1248,7 +1250,8 @@ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
- 	void *data;
- 	int rc;
- 
--	if (cmd->flags || cmd->__reserved)
-+	if (cmd->flags || cmd->__reserved[0] || cmd->__reserved[1] ||
-+	    cmd->__reserved[2])
- 		return -EOPNOTSUPP;
- 
- 	idev = iommufd_get_device(ucmd, cmd->dev_id);
-@@ -1305,6 +1308,25 @@ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
- 	if (device_iommu_capable(idev->dev, IOMMU_CAP_DIRTY_TRACKING))
- 		cmd->out_capabilities |= IOMMU_HW_CAP_DIRTY_TRACKING;
- 
-+	cmd->out_max_pasid_log2 = 0;
-+
-+	if (dev_is_pci(idev->dev)) {
-+		struct pci_dev *pdev = to_pci_dev(idev->dev);
-+		int ctrl;
-+
-+		ctrl = pci_pasid_ctrl_status(pdev);
-+		if (ctrl >= 0 && (ctrl & PCI_PASID_CTRL_ENABLE)) {
-+			cmd->out_max_pasid_log2 =
-+					ilog2(idev->dev->iommu->max_pasids);
-+			if (ctrl & PCI_PASID_CTRL_EXEC)
-+				cmd->out_capabilities |=
-+						IOMMU_HW_CAP_PCI_PASID_EXEC;
-+			if (ctrl & PCI_PASID_CTRL_PRIV)
-+				cmd->out_capabilities |=
-+						IOMMU_HW_CAP_PCI_PASID_PRIV;
-+		}
-+	}
-+
- 	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
- out_free:
- 	kfree(data);
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index 6afff1f1b143..c35465120329 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -538,4 +538,37 @@ int pci_max_pasids(struct pci_dev *pdev)
- 	return (1 << FIELD_GET(PCI_PASID_CAP_WIDTH, supported));
- }
- EXPORT_SYMBOL_GPL(pci_max_pasids);
-+
-+/**
-+ * pci_pasid_ctrl_status - Check the PASID status
-+ * @pdev: PCI device structure
-+ *
-+ * Returns a negative value when no PASID capability is present.
-+ * Otherwise the value of the control register is returned.
-+ * Status reported are:
-+ *
-+ * PCI_PASID_CTRL_ENABLE - PASID enabled
-+ * PCI_PASID_CTRL_EXEC - Execute permission enabled
-+ * PCI_PASID_CTRL_PRIV - Privileged mode enabled
-+ */
-+int pci_pasid_ctrl_status(struct pci_dev *pdev)
-+{
-+	int pasid;
-+	u16 ctrl;
-+
-+	if (pdev->is_virtfn)
-+		pdev = pci_physfn(pdev);
-+
-+	pasid = pdev->pasid_cap;
-+	if (!pasid)
-+		return -EINVAL;
-+
-+	pci_read_config_word(pdev, pasid + PCI_PASID_CTRL, &ctrl);
-+
-+	ctrl &= PCI_PASID_CTRL_ENABLE | PCI_PASID_CTRL_EXEC |
-+		PCI_PASID_CTRL_PRIV;
-+
-+	return ctrl;
-+}
-+EXPORT_SYMBOL_GPL(pci_pasid_ctrl_status);
- #endif /* CONFIG_PCI_PASID */
-diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-index 0e8b74e63767..f4e1d2010287 100644
---- a/include/linux/pci-ats.h
-+++ b/include/linux/pci-ats.h
-@@ -42,6 +42,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features);
- void pci_disable_pasid(struct pci_dev *pdev);
- int pci_pasid_features(struct pci_dev *pdev);
- int pci_max_pasids(struct pci_dev *pdev);
-+int pci_pasid_ctrl_status(struct pci_dev *pdev);
- #else /* CONFIG_PCI_PASID */
- static inline int pci_enable_pasid(struct pci_dev *pdev, int features)
- { return -EINVAL; }
-@@ -50,6 +51,8 @@ static inline int pci_pasid_features(struct pci_dev *pdev)
- { return -EINVAL; }
- static inline int pci_max_pasids(struct pci_dev *pdev)
- { return -EINVAL; }
-+static inline int pci_pasid_ctrl_status(struct pci_dev *pdev)
-+{ return -EINVAL; }
- #endif /* CONFIG_PCI_PASID */
- 
- #endif /* LINUX_PCI_ATS_H */
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index cc1b94f43538..e5709502d8e4 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -547,9 +547,17 @@ enum iommu_hw_info_type {
-  *                                   IOMMU_HWPT_GET_DIRTY_BITMAP
-  *                                   IOMMU_HWPT_SET_DIRTY_TRACKING
-  *
-+ * @IOMMU_HW_CAP_PASID_EXEC: Execute Permission Supported, user ignores it
-+ *                           when the struct iommu_hw_info::out_max_pasid_log2
-+ *                           is zero.
-+ * @IOMMU_HW_CAP_PASID_PRIV: Privileged Mode Supported, user ignores it
-+ *                           when the struct iommu_hw_info::out_max_pasid_log2
-+ *                           is zero.
-  */
- enum iommufd_hw_capabilities {
- 	IOMMU_HW_CAP_DIRTY_TRACKING = 1 << 0,
-+	IOMMU_HW_CAP_PCI_PASID_EXEC = 1 << 1,
-+	IOMMU_HW_CAP_PCI_PASID_PRIV = 1 << 2,
- };
- 
- /**
-@@ -565,6 +573,9 @@ enum iommufd_hw_capabilities {
-  *                 iommu_hw_info_type.
-  * @out_capabilities: Output the generic iommu capability info type as defined
-  *                    in the enum iommu_hw_capabilities.
-+ * @out_max_pasid_log2: Output the width of PASIDs. 0 means no PASID support.
-+ *                      PCI devices turn to out_capabilities to check if the
-+ *                      specific capabilities is supported or not.
-  * @__reserved: Must be 0
-  *
-  * Query an iommu type specific hardware information data from an iommu behind
-@@ -588,7 +599,8 @@ struct iommu_hw_info {
- 	__u32 data_len;
- 	__aligned_u64 data_uptr;
- 	__u32 out_data_type;
--	__u32 __reserved;
-+	__u8 out_max_pasid_log2;
-+	__u8 __reserved[3];
- 	__aligned_u64 out_capabilities;
- };
- #define IOMMU_GET_HW_INFO _IO(IOMMUFD_TYPE, IOMMUFD_CMD_GET_HW_INFO)
--- 
-2.34.1
+> +            - enum: [ sdc1_clk, sdc1_cmd, sdc1_data, sdc1_rclk, sdc2_clk,
+> +                      sdc2_cmd, sdc2_data, qdsd_clk, qdsd_cmd, qdsd_data=
+0,
+> +                      qdsd_data1, qdsd_data2, qdsd_data3 ]
+> +        minItems: 1
+> +        maxItems: 16
+
+Best regards,
+Krzysztof
 
