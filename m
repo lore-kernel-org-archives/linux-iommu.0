@@ -1,190 +1,95 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FF391D0164;
-	Fri,  8 Nov 2024 09:01:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9739B1E0B82
+	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 09:03:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731056475; cv=none; b=sp6zQL85dihizFpolwzolJQ6EeqH8Che8hVPWdLBeIvp8xj0mgxKJNO8UNBfNCN9SLGUmL9NvdMD2EgzOjurEnWN9qz78zlRQOrBIEBhHII0dAdGpSDlQ6RC1szbwueThXxbvbTskYoKtaIxspOv/Mo6cDIPIb6OrRzzxvb0Gaw=
+	t=1731056596; cv=none; b=MDhlMoOXehjPQyXQS7n3unPZTv7QNi4OP6xrumWnke/VAe8plKtj41TMvBp8rzpuFnAUgiivn8asVtAZGGq77YDOp9/1A1Iwl4IHKamb5sFyiXgsxlIkjFNSxJV9zpp0YLXPzRWKo/XAldBvFCezR3zHh7dOL/zBe2CQ1gufVpY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731056475; c=relaxed/simple;
-	bh=r7dhSFhEQTew+9UGW/kckZn/abgjeJ3S6PdMpu3oaMQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lX8Fd6nkACaq1myDaMjze7HKa9iZ7g6QAld68W4D+o2DWBUy3cHQhtaWp2YkQPw83yXtNFOmLFaelwfRpPx2ONEjJZ7wrzcL58Jvkh6aFVlLH+gbNziKSr/5R3C4Sy8xz+lwd+yqpAj8yKqdbavyWLRokoOJzPhfdXZmR/MnHT4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mVpN3xsA; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1731056596; c=relaxed/simple;
+	bh=mM1q+PpNsdlYYSy0+MS7uMGw3FOxO3A/2cgbrpd+lLQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=BIcuXRziNP2u0d0RW+Z7TLDoEQIXBikRb3yij3DAh3zztruAYM+/IaGGrFHycE/+6zMg4NE1aEnVkap0AZkklyaAtQr7QF4td0y8Sutxu+SFeIYvWHdFkLk68/aszfkgAsTXkWVhd1C4cYbLYiWhDVABOaqP4WmF0905wbwaMSg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=o4rIq3pa; arc=none smtp.client-ip=209.85.208.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mVpN3xsA"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-20bb39d97d1so18787415ad.2;
-        Fri, 08 Nov 2024 01:01:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="o4rIq3pa"
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2fb3da341c9so18563841fa.2
+        for <iommu@lists.linux.dev>; Fri, 08 Nov 2024 01:03:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1731056473; x=1731661273; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=B6cfQLZyY3ukfMaKhn8AcRbL5Ti2ytAzkKnIriORiIs=;
-        b=mVpN3xsA3LkF8S49fRytWTT3BhCTiGbEazYpn86q6ar+oo/YZDH1IZ1I4QwU1WSixz
-         cldum+gOiE7Jmx4ffTmVpjzokHCEqiehBzRcIdsxRrjIzECDElZJ3yjY3cBmJig/inkD
-         9dGD+mQBKd7A7IfhQQ51fP5FtnjG4yNgaZ4BxRRhPgrPdfsoKsO/tRQymayV1Ttfs1k8
-         1m0gJQuhy7VhJEfg0+s3ca1OmpwCh69VqSUa9WAVBTJM1H+7HIRdcvZR7HtjckdnKPgq
-         HkGQnGbD7DBFKZIk4GoiZCD4OmCgWMahbOjjVAwXAm3JBzxeQ81VysabnK1ZJZIQl63x
-         +I8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731056473; x=1731661273;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=linaro.org; s=google; t=1731056592; x=1731661392; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=B6cfQLZyY3ukfMaKhn8AcRbL5Ti2ytAzkKnIriORiIs=;
-        b=XKpWVfCRlJiEDBUrfrFe8aNz+sUQIRghBEA0jH6WrK3L2e8K6t/DcWjXG8LwPB/+BH
-         tqz7i5C+fBFShsQMBOilhTSRaAdr34SJMI3WEt76LrWU/oqn41iulU9Ehf158CXRVPNr
-         YSo33EQlkq4LXF1/GftDnz9zqeauQoqtmqOU98fAtv9/YfifahOaznu6fciLS0n/tvnR
-         aheicNUffRDKgTJd6YbweJYchzHGQWQsbqzS/JdDb/3EXjeJXfrj/ue1v1PejO9ANi5Q
-         FTPZsJ7YvT8AjwquuV4YkkpWX75zqKOwp3TwYUBZUXf+KJe8pqUyB2Altx1KMnjVzA9t
-         PozQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUX3c6v188WHsnmbGIvm7IYyuD26ORm2djXTK4I/lhn3dRShfG+NI4rEzJRmqSWL960PSzy73QVBA==@lists.linux.dev, AJvYcCXWYW/iSrT1Krdo6c8eMOYJFURb0tcLhW/R+orWuE54JayDoC+U32XVbULMJ8jRrVqhU6J61Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YweChxc+no5Wy5THiro8JNZamurS+C1VZZ0hDBDAEQsvAyNzfGR
-	BwHCr894NyGwZYk5F5FS00ZyRKJFKwpq7lTGNh7jmxbqWNEIoB3a
-X-Google-Smtp-Source: AGHT+IFAKsAR11eiAB06tJVCWRmKkiTYy+qwV59/n1Yu3J0B6yv38u/J2j1MdEsTHqkgJx1Aehln/A==
-X-Received: by 2002:a17:903:298c:b0:20c:ee32:759f with SMTP id d9443c01a7336-211835d8bc0mr26836995ad.39.1731056473362;
-        Fri, 08 Nov 2024 01:01:13 -0800 (PST)
-Received: from archie.me ([103.124.138.82])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21177ddf0f5sm25712355ad.79.2024.11.08.01.01.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2024 01:01:12 -0800 (PST)
-Received: by archie.me (Postfix, from userid 1000)
-	id 63F6841E4B82; Fri, 08 Nov 2024 16:01:10 +0700 (WIB)
-Date: Fri, 8 Nov 2024 16:01:10 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, will@kernel.org,
-	robin.murphy@arm.com, dwmw2@infradead.org, shuah@kernel.org,
-	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	baolu.lu@linux.intel.com, eric.auger@redhat.com,
-	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
-	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
-	yi.l.liu@intel.com, aik@amd.com, zhangfei.gao@linaro.org,
-	patches@lists.linux.dev
-Subject: Re: [PATCH v7 13/13] Documentation: userspace-api: iommufd: Update
- vIOMMU
-Message-ID: <Zy3TVlLKAg8QM9yP@archie.me>
-References: <cover.1730836219.git.nicolinc@nvidia.com>
- <7e4302064e0d02137c1b1e139342affc0485ed3f.1730836219.git.nicolinc@nvidia.com>
- <ZywQP3_TpdttuCy8@archie.me>
- <ZywZcSidYCWkJgrw@Asurada-Nvidia>
- <ZywyEUmL4HvM8B9v@archie.me>
- <Zyw8OUTLrG3Yx+Yx@Asurada-Nvidia>
+        bh=mM1q+PpNsdlYYSy0+MS7uMGw3FOxO3A/2cgbrpd+lLQ=;
+        b=o4rIq3pahrpiEeUUjdWvqJxw2pnJLRY8ih04LJQ7hqR0eC2m6VJK0APib9lxnnpMkZ
+         nRz6XYQC1Qjtsm1MhsnGQoexC0uHGGdXs7DADC4DsIAweSEXuNtoG/Tx3lzRaUt/i9kI
+         2uXrGS83wRHSvdsF8MzwETBCbdKSIRlOpK178VcNN5bN5rBUjhe0IHO50D6sSB+C55w0
+         ViBJUY2fRE10dhu6uFIYt0TqdM4fKTL3qfVjrnDp2H+F+gjk8B2jX1SDYEXtXOjc6azY
+         W5ccYCxWtEIK4MZHdBSJZRt15IknInSLczecU7P8UjqYpocUBAV68cDF//ySItx/2LpK
+         Mr7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731056592; x=1731661392;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=mM1q+PpNsdlYYSy0+MS7uMGw3FOxO3A/2cgbrpd+lLQ=;
+        b=mtJgmgzQpuLwSGbniHAzpRgS8KT3WXRWRwvkRGhf1P69E9hVwUaCDoSwa1dKM1VCi1
+         xkvNsWHdbN3hEGa5gFElu6Em9domorNl0p1P6jp5KuvM9ZPnFZ8Eyc5ohxtcqBhDZxds
+         IPe9QIiKuEGSWjcpUmHLxFYiDgN1M7ALu0WXF4iUBvOMu7ssCmRemykrhLHpseFC8zPF
+         UT15XlLgFMQ2S7RPTZnwHLFhcReXJnN+hU5NGCWXsZibe1soXWtbr62W9DrGYPh8vdVC
+         vVq7tC1Yio95j6Eh4J0Bw80qxahaJv05ZuU/OnrykBNZas88kelBQVh5+KRiZrTloint
+         0Mlw==
+X-Forwarded-Encrypted: i=1; AJvYcCVxRp38h1H7ZnzHcKhKUpkYQHD8y6UYhTmkXm8ssMBMTqz0ybb8VCuOCklaTjxklL64BJqNQQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzT9jKHDXW43hhnTnwRffTWf3MIfDBN9SuTXGxCZKitllxKl/2o
+	ON7AqgfdwoXN+f70ER9x2M67pL54OiGkXtw7xzgMN8Vkl2nS5UkuzFQcXbv4rISEW6jrSQCm57H
+	HpTGWHmacIU1BbhuEhWB02dWyMjzgXgnABG/RIA==
+X-Google-Smtp-Source: AGHT+IE8znKU2mORtpqCkmsGs3P+cyt3qFPqf5rFKSs3v09PAE6qN06MrjzRnmT+Va62FCJoM1OHaIoEnk1727lsx7Y=
+X-Received: by 2002:a05:651c:554:b0:2fb:4ca9:8f4 with SMTP id
+ 38308e7fff4ca-2ff20209f08mr9538661fa.23.1731056591608; Fri, 08 Nov 2024
+ 01:03:11 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="1FskY10utNP/LXKg"
-Content-Disposition: inline
-In-Reply-To: <Zyw8OUTLrG3Yx+Yx@Asurada-Nvidia>
-
-
---1FskY10utNP/LXKg
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+References: <20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org>
+In-Reply-To: <20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Fri, 8 Nov 2024 10:03:00 +0100
+Message-ID: <CACRpkdamugexe6y24Tk2fDYPP_t7QLynibdGQrUMFMwF4y90cw@mail.gmail.com>
+Subject: Re: [PATCH v3 00/14] Add MSM8917/PM8937/Redmi 5A
+To: =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>, 
+	Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, linux-arm-msm@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Dang Huynh <danct12@riseup.net>, 
+	=?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Nov 06, 2024 at 08:04:09PM -0800, Nicolin Chen wrote:
-> On Thu, Nov 07, 2024 at 10:20:49AM +0700, Bagas Sanjaya wrote:
-> > On Wed, Nov 06, 2024 at 05:35:45PM -0800, Nicolin Chen wrote:
-> > > On Thu, Nov 07, 2024 at 07:56:31AM +0700, Bagas Sanjaya wrote:
-> > > > On Tue, Nov 05, 2024 at 12:04:29PM -0800, Nicolin Chen wrote:
-> > > > > With the introduction of the new object and its infrastructure, u=
-pdate the
-> > > > > doc to reflect that and add a new graph.
-> > > > >=20
-> > > > > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> > > > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > > > > ---
-> > > > >  Documentation/userspace-api/iommufd.rst | 69 +++++++++++++++++++=
-+++++-
-> > > > >  1 file changed, 68 insertions(+), 1 deletion(-)
-> > > > >=20
-> > > > > diff --git a/Documentation/userspace-api/iommufd.rst b/Documentat=
-ion/userspace-api/iommufd.rst
-> > > > > index 2deba93bf159..a8b7766c2849 100644
-> > > > > --- a/Documentation/userspace-api/iommufd.rst
-> > > > > +++ b/Documentation/userspace-api/iommufd.rst
-> > > > > @@ -63,6 +63,37 @@ Following IOMMUFD objects are exposed to users=
-pace:
-> > > > >    space usually has mappings from guest-level I/O virtual addres=
-ses to guest-
-> > > > >    level physical addresses.
-> > > > > =20
-> > > > > +- IOMMUFD_OBJ_VIOMMU, representing a slice of the physical IOMMU=
- instance,
-> > > > > +  passed to or shared with a VM. It may be some HW-accelerated v=
-irtualization
-> > > > > +  features and some SW resources used by the VM. For examples:
-> > > > > +  * Security namespace for guest owned ID, e.g. guest-controlled=
- cache tags
-> > > > > +  * Non-device-affiliated event reporting, e.g. invalidation que=
-ue errors
-> > > > > +  * Access to a sharable nesting parent pagetable across physica=
-l IOMMUs
-> > > > > +  * Virtualization of various platforms IDs, e.g. RIDs and others
-> > > > > +  * Delivery of paravirtualized invalidation
-> > > > > +  * Direct assigned invalidation queues
-> > > > > +  * Direct assigned interrupts
-> > > >=20
-> > > > The bullet list above is outputted in htmldocs build as long-runnin=
-g paragraph
-> > > > instead.
-> > >=20
-> > > Oh, I overlooked this list.
-> > >=20
-> > > Would the following change be okay?
-> > >=20
-> > > -------------------------------------------------
-> > > diff --git a/Documentation/userspace-api/iommufd.rst b/Documentation/=
-userspace-api/iommufd.rst
-> > > index 0ef22b3ca30b..011cbc71b6f5 100644
-> > > --- a/Documentation/userspace-api/iommufd.rst
-> > > +++ b/Documentation/userspace-api/iommufd.rst
-> > > @@ -68,2 +68,3 @@ Following IOMMUFD objects are exposed to userspace:
-> > >    features and some SW resources used by the VM. For examples:
-> > > +
-> > >    * Security namespace for guest owned ID, e.g. guest-controlled cac=
-he tags
-> > > @@ -75,2 +76,3 @@ Following IOMMUFD objects are exposed to userspace:
-> > >    * Direct assigned interrupts
-> > > +
-> > >    Such a vIOMMU object generally has the access to a nesting parent =
-pagetable
-> > > -------------------------------------------------
-> > >=20
-> > > The outputted html is showing a list with this.
-> >=20
-> > Yup, that's right!
->=20
-> Thank you! Would it be possible for you to give a Reviewed-by,
-> given the condition of squashing this diff?
+On Thu, Nov 7, 2024 at 6:02=E2=80=AFPM Barnab=C3=A1s Cz=C3=A9m=C3=A1n
+<barnabas.czeman@mainlining.org> wrote:
 
-Alright, here it goes...
+> This patch series add support for MSM8917 soc with PM8937 and
+> Xiaomi Redmi 5A (riva).
+>
+> Signed-off-by: Barnab=C3=A1s Cz=C3=A9m=C3=A1n <barnabas.czeman@mainlining=
+.org>
 
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+I merged patch 1-4 from the v2 series, don't think the have any differences
+in v3.
 
---=20
-An old man doll... just what I always wanted! - Clara
-
---1FskY10utNP/LXKg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZy3TVgAKCRD2uYlJVVFO
-owxHAQDaL5k6OGmeg6OIUkQWv58q/7TdrLW4R+pXT2qiFeOTVgEAxgUGl1Wm834W
-z966YlZs2fScS9LRewetFnpFHRzY7gU=
-=wjrM
------END PGP SIGNATURE-----
-
---1FskY10utNP/LXKg--
+Yours,
+Linus Walleij
