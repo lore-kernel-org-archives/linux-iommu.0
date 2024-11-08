@@ -1,69 +1,56 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from relay5.mymailcheap.com (relay5.mymailcheap.com [159.100.248.207])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C90D01E7C3E
-	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 12:04:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76BB31E5721
+	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 12:09:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.100.248.207
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731067487; cv=none; b=j2UN5SorEJq0nuKFuaIj/ZtOXu8rAZnGTQbzxLIxpA3pb+jMkfn6E82X1UMkB8Ws2uwdiYAZ4kfTSfZUMljkYbPkEnF4WCRavTWFobrKemDYyZiMQNwwOCKPtMBCepIUme37lMJ/CBip/4f0nODb2WW2driwxHPFD6ovo0Tx/Kw=
+	t=1731067749; cv=none; b=PqjBcDbTpjUVEmrdTCcAoVNQdMaB2tnEmmXu8HIRaAlY47kBseOJB2i+TkN6yIQRTlfODINpXh8b0S+sP+SNsBRdcAzFdnYDpXxikHqqfS5awmWNogwN44rJP1MWbqGLnMx2v1QzZlckgD8cLwkjpXeBVaGIGwvuDOvLdxqaje4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731067487; c=relaxed/simple;
-	bh=2s1wQPEzFpmggA2jawJvQiccvDr/ayphBD/48j9DeAE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=PK5obpvnGw06KlclavoFPzBzhaRm15jWwQT+KA5jPrRYWQ6Qc0N2ZGzmTDOgRfbv3WmsaXeYGAnrKH/HAEgskqpTaqlTrbAHRmXCSZPlnvn8sZOjX/sEGBnoRaCVmG/w1BqwgGTvQPYQ4J91qbeoik9AiZrjCRlLnR/8FJQrgzw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MubENC/l; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1731067749; c=relaxed/simple;
+	bh=EYV1tnRpjTsIOU6yPXGuIMkh+G91GY/ziHqLtllBcWw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=oN25bSDQqdoQw+0Kkr5Xd1QC7tErmdyW5NufPaOFMT5D07ZqSfbZZQmH6xjZJZiWf/+rAbBJu9eGdvw8kafWKlpr3eESCkNoSovEdTEX/iDqVAv9UcW8OVvNPVysd4ILVqoZjBMPn1kZvHumpNs9s5MlfS2LwTv9pgmrNDEYSHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=aosc.io; spf=pass smtp.mailfrom=aosc.io; dkim=pass (1024-bit key) header.d=aosc.io header.i=@aosc.io header.b=uKvu1lsd; arc=none smtp.client-ip=159.100.248.207
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=aosc.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aosc.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MubENC/l"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1731067486; x=1762603486;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2s1wQPEzFpmggA2jawJvQiccvDr/ayphBD/48j9DeAE=;
-  b=MubENC/lllq42Te6S1voIcijcgRl01msL1B5T+LX5zpY71ABsorFL0Go
-   7xzaWIncT9BZKooSgi0Sj8rb5JFkM8kNLWYGJUMbQ9LCv++psWmPEjBlg
-   Wbgmgyedv4Y9xI2LzhcvujHi64D79KR6b+NBT6oqL61e6y+y8vEFEECfA
-   5GE767IUtLQHQR9KgIorg/Ful4pcBWIU1e21s6Tknu0wftJY9gSclpfLD
-   +5zRznqWAN4ZJuu50wFFBENLlVWFA8TlRpJOvUAPaMHJybG+y0qIi3TJ6
-   Emtg5j9iO19ydPXNEuVRPNMQXpsKC7Scrxe3cuBAg2pt4oSMCJMFmWEU8
-   Q==;
-X-CSE-ConnectionGUID: N0FtkN3wRoS8PhOXnLx0LA==
-X-CSE-MsgGUID: xa1hIuYtTz6ezMIDa5X/Qg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="31116456"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="31116456"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2024 04:04:35 -0800
-X-CSE-ConnectionGUID: x/xJPLzuR/OL30nH6Ryz0g==
-X-CSE-MsgGUID: LFS4smFFRXO+0Ncx01WDww==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,137,1728975600"; 
-   d="scan'208";a="85679056"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmviesa008.fm.intel.com with ESMTP; 08 Nov 2024 04:04:34 -0800
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	baolu.lu@linux.intel.com
-Cc: alex.williamson@redhat.com,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
+	dkim=pass (1024-bit key) header.d=aosc.io header.i=@aosc.io header.b="uKvu1lsd"
+Received: from relay1.mymailcheap.com (relay1.mymailcheap.com [149.56.97.132])
+	by relay5.mymailcheap.com (Postfix) with ESMTPS id B460E26760
+	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 12:08:59 +0000 (UTC)
+Received: from nf1.mymailcheap.com (nf1.mymailcheap.com [51.75.14.91])
+	by relay1.mymailcheap.com (Postfix) with ESMTPS id 600DF3E955;
+	Fri,  8 Nov 2024 12:08:51 +0000 (UTC)
+Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
+	by nf1.mymailcheap.com (Postfix) with ESMTPSA id 32E2440078;
+	Fri,  8 Nov 2024 12:08:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
+	t=1731067730; bh=EYV1tnRpjTsIOU6yPXGuIMkh+G91GY/ziHqLtllBcWw=;
+	h=From:To:Cc:Subject:Date:From;
+	b=uKvu1lsd/WuBSUXjl/93iSz57GA0lqMS4NHmZgIhIVbRRGBAEhdkKTwBWkMvrLNyT
+	 E95wfzlJfO8YVlr0muXSXfjP4O83JATmAITmGynJ3xpS2fjErW8C0OFh9/HjHRi3gP
+	 xBEt5wFExCQ4aKRWY4qV1AC8DsO+3DleLur17cTU=
+Received: from JellyNote.localdomain (unknown [38.179.66.19])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail20.mymailcheap.com (Postfix) with ESMTPSA id 6451A40493;
+	Fri,  8 Nov 2024 12:08:46 +0000 (UTC)
+From: Mingcong Bai <jeffbai@aosc.io>
+To: baolu.lu@linux.intel.com
+Cc: kexybiscuit@aosc.io,
+	weiguangtwk@outlook.com,
+	Mingcong Bai <jeffbai@aosc.io>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
 	iommu@lists.linux.dev,
-	zhenzhong.duan@intel.com,
-	vasant.hegde@amd.com,
-	willy@infradead.org
-Subject: [PATCH v4 7/7] iommu: Remove the remove_dev_pasid op
-Date: Fri,  8 Nov 2024 04:04:27 -0800
-Message-Id: <20241108120427.13562-8-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20241108120427.13562-1-yi.l.liu@intel.com>
-References: <20241108120427.13562-1-yi.l.liu@intel.com>
+	linux-kernel@vger.kernel.org
+Subject: [RFC PATCH] iommu: intel: apply quirk_iommu_igfx for 8086:0044 (QM57/QS57)
+Date: Fri,  8 Nov 2024 20:08:21 +0800
+Message-ID: <20241108120838.495931-1-jeffbai@aosc.io>
+X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,78 +58,121 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [1.40 / 10.00];
+	MID_CONTAINS_FROM(1.00)[];
+	R_MISSING_CHARSET(0.50)[];
+	MIME_GOOD(-0.10)[text/plain];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCVD_COUNT_ONE(0.00)[1];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	ASN(0.00)[asn:16276, ipnet:51.83.0.0/16, country:FR];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	RCPT_COUNT_SEVEN(0.00)[10];
+	SPFBL_URIBL_EMAIL_FAIL(0.00)[weiguangtwk.outlook.com:server fail,jeffbai.aosc.io:server fail];
+	FREEMAIL_CC(0.00)[aosc.io,outlook.com,infradead.org,8bytes.org,kernel.org,arm.com,lists.linux.dev,vger.kernel.org];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[outlook.com];
+	RCVD_TLS_ALL(0.00)[]
+X-Rspamd-Server: nf1.mymailcheap.com
+X-Rspamd-Action: no action
+X-Rspamd-Queue-Id: 32E2440078
 
-The iommu drivers that supports PASID have supported attaching pasid to the
-blocked_domain, hence remove the remove_dev_pasid op from the iommu_ops.
+(I'm not very confident about the approach of this patch but I failed to
+find a better way to address the issue I have on hand, so please consider
+this patch as an RFC...)
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+On the Lenovo ThinkPad X201, when Intel VT-d is enabled in the BIOS, the
+kernel boots with errors related to DMAR, the graphical interface appeared
+quite choppy, and the system resets erratically within a minute after it
+booted:
+
+DMAR: DRHD: handling fault status reg 3
+DMAR: [DMA Write NO_PASID] Request device [00:02.0] fault addr 0xb97ff000
+[fault reason 0x05] PTE Write access is not set
+
+Upon comparing boot logs with VT-d on/off, I found that the Intel Calpella
+quirk (`quirk_calpella_no_shadow_gtt()') correctly applied the igfx IOMMU
+disable/quirk correctly:
+
+pci 0000:00:00.0: DMAR: BIOS has allocated no shadow GTT; disabling IOMMU
+for graphics
+
+Whereas with VT-d on, it went into the "else" branch, which then
+triggered the DMAR handling fault above:
+
+... else if (!disable_igfx_iommu) {
+	/* we have to ensure the gfx device is idle before we flush */
+	pci_info(dev, "Disabling batched IOTLB flush on Ironlake\n");
+	iommu_set_dma_strict();
+}
+
+Now, this is not exactly scientific, but moving 0x0044 to quirk_iommu_igfx
+seems to have fixed the aforementioned issue. Running a few `git blame'
+runs on the function, I have found that the quirk was originally
+introduced as a fix specific to ThinkPad X201:
+
+commit 9eecabcb9a92 ("intel-iommu: Abort IOMMU setup for igfx if BIOS gave
+no shadow GTT space")
+
+Which was later revised twice to the "else" branch we saw above:
+
+- 2011: commit 6fbcfb3e467a ("intel-iommu: Workaround IOTLB hang on
+  Ironlake GPU")
+- 2024: commit ba00196ca41c ("iommu/vt-d: Decouple igfx_off from graphic
+  identity mapping")
+
+I'm uncertain whether further testings on this particular laptops were
+done in 2011 and (honestly I'm not sure) 2024, but I would be happy to do
+some distro-specific testing if that's what would be required to verify
+this patch.
+
+P.S., I also see IDs 0x0040, 0x0062, and 0x006a listed under the same
+`quirk_calpella_no_shadow_gtt()' quirk, but I'm not sure how similar these
+chipsets are (if they share the same issue with VT-d or even, indeed, if
+this issue is specific to a bug in the Lenovo BIOS). With regards to
+0x0062, it seems to be a Centrino wireless card, but not a chipset?
+
+I have also listed a couple (distro and kernel) bug reports below as
+references (some of them are from 7-8 years ago!), as they seem to be
+similar issue found on different Westmere/Ironlake, Haswell, and Broadwell
+hardware setups.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=197029
+Link: https://groups.google.com/g/qubes-users/c/4NP4goUds2c?pli=1
+Link: https://bugs.archlinux.org/task/65362
+Link: https://bbs.archlinux.org/viewtopic.php?id=230323
+Reported-by: Wenhao Sun <weiguangtwk@outlook.com>
+Signed-off-by: Mingcong Bai <jeffbai@aosc.io>
 ---
- drivers/iommu/iommu.c | 17 ++++-------------
- include/linux/iommu.h |  5 -----
- 2 files changed, 4 insertions(+), 18 deletions(-)
+ drivers/iommu/intel/iommu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 6fd4b904f270..e970893168d8 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3303,17 +3303,9 @@ static void iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
- {
- 	const struct iommu_ops *ops = dev_iommu_ops(dev);
- 	struct iommu_domain *blocked_domain = ops->blocked_domain;
--	int ret = 1;
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index e860bc9439a2..1ccea83c2c95 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4646,6 +4646,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e30, quirk_iommu_igfx);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e40, quirk_iommu_igfx);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e90, quirk_iommu_igfx);
  
--	if (blocked_domain && blocked_domain->ops->set_dev_pasid) {
--		ret = blocked_domain->ops->set_dev_pasid(blocked_domain,
--							 dev, pasid, domain);
--	} else {
--		ops->remove_dev_pasid(dev, pasid, domain);
--		ret = 0;
--	}
--
--	WARN_ON(ret);
-+	WARN_ON(blocked_domain->ops->set_dev_pasid(blocked_domain,
-+						   dev, pasid, domain));
++/* QM57/QS57 integrated gfx malfunctions with dmar */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0044, quirk_iommu_igfx);
++
+ /* Broadwell igfx malfunctions with dmar */
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1606, quirk_iommu_igfx);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x160B, quirk_iommu_igfx);
+@@ -4723,7 +4726,6 @@ static void quirk_calpella_no_shadow_gtt(struct pci_dev *dev)
+ 	}
  }
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0040, quirk_calpella_no_shadow_gtt);
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0044, quirk_calpella_no_shadow_gtt);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0062, quirk_calpella_no_shadow_gtt);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x006a, quirk_calpella_no_shadow_gtt);
  
- static int __iommu_set_group_pasid(struct iommu_domain *domain,
-@@ -3371,9 +3363,8 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
- 	int ret;
- 
- 	if (!domain->ops->set_dev_pasid ||
--	    (!ops->remove_dev_pasid &&
--	     (!ops->blocked_domain ||
--	      !ops->blocked_domain->ops->set_dev_pasid)))
-+	    !ops->blocked_domain ||
-+	    !ops->blocked_domain->ops->set_dev_pasid)
- 		return -EOPNOTSUPP;
- 
- 	if (!group)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 0c3bfb66dc7c..1d033121bf00 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -537,9 +537,6 @@ static inline int __iommu_copy_struct_from_user_array(
-  *		- IOMMU_DOMAIN_DMA: must use a dma domain
-  *		- 0: use the default setting
-  * @default_domain_ops: the default ops for domains
-- * @remove_dev_pasid: Remove any translation configurations of a specific
-- *                    pasid, so that any DMA transactions with this pasid
-- *                    will be blocked by the hardware.
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-  * @owner: Driver module providing these ops
-  * @identity_domain: An always available, always attachable identity
-@@ -586,8 +583,6 @@ struct iommu_ops {
- 			      struct iommu_page_response *msg);
- 
- 	int (*def_domain_type)(struct device *dev);
--	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid,
--				 struct iommu_domain *domain);
- 
- 	const struct iommu_domain_ops *default_domain_ops;
- 	unsigned long pgsize_bitmap;
 -- 
-2.34.1
+2.47.0
 
