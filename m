@@ -1,87 +1,137 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6820C1E1022
-	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 10:11:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDC691E47BB
+	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 12:04:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731060712; cv=none; b=J5nueqxfbqEkBiO7QlcQUoJPhcEqH/6qUNTcmdHPuCDP9SLGQ2CktXzChasd1ihbMFCnlBYEo6EqMbtKOhwdkWEh2nTCguiZQALSoCBIUojDJUhIegEreBgJNzv3Whoa1uU+CBu9/Ds+UKybcOkTlx32Y2mBSiz49pAYsdu0m7E=
+	t=1731067474; cv=none; b=D0wXx1qS/WfHuR77ZtInJSN+lkz4yVL6RQncxoW9BtoHYdyB2Rgfq8N6X148iUiUIMJqw+6/MoejhdVA/H0dBsvwJefnrC4owjQsgmRsfQH4cIxvEG1B0U6QanK+dB8uZR+gw7qMIeS6BrTjfecBpuHYyuH085C17nVenSp6RfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731060712; c=relaxed/simple;
-	bh=l/rUYTtLBoZdyLaTZknHT/dDTcsmBbHTevO92xNdKD4=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=EmZmVGmHeY32943fwZha2G4J8Eoy1VdUi2HtPso5IZnlNEs8gfx5BO4IQnJgaIJ0S8Q+2OUQXa4PdxnyYtS6QXLauQDDH4HOLIHVJ1cz/TGYhVhF6Chh6pPdn5+b/KWZa+SqnBL0Fgkw0D6n1gmRF/sZ7hjfe5qYN4nVmRHUJeE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=r5JSBQFv; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	s=arc-20240116; t=1731067474; c=relaxed/simple;
+	bh=h/iir5bbQI/sdAE4QJiveeaniAldZP8K2NkM9vUjrYI=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=baVxyFLdcX0+1NvG6KBMQhmT5cIGcNO+OgLkTZ0b+ze6qjAR+d+f/DsrFpg7B72V7oWkAzNs2lozJqNR/+4OxJZGl9T1zuYHYwXXCrNnAgfU8pEbG/4Y6sX7OJ/m1qCpzgEsqB+ZWIeEzU193Clz0zgPBrFLkaxQfmz5fghXfZA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iZa2mdQt; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="r5JSBQFv"
-Received: from [127.0.0.1] (254C262E.nat.pool.telekom.hu [37.76.38.46])
-	by mail.mainlining.org (Postfix) with ESMTPSA id B2ED3E45BA;
-	Fri,  8 Nov 2024 10:11:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1731060707;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=l/rUYTtLBoZdyLaTZknHT/dDTcsmBbHTevO92xNdKD4=;
-	b=r5JSBQFvrXn68+6+DaTg3bewx71mLwK1M9p4Z9Yy0zL4f+JLUcontlSns9CG0wIY0Y71hs
-	IQZtysEWobt/PgYn5eubVunNvcdiptorp93W5Aw3QKruKNp2xb14Y0+v48wRyDI23vuqaA
-	hZrFGYWvFtyE2VconJxJsR6Tf4DS4o2N53912gPUidmbXALU4eDiG8hdgwknRSSJluo7Wb
-	jCQMKZAJ8gJ4phJkthoq5wlhGZDaQXeLU+iMGV5qlxwqC3ZyEVc+8PIhGJ2Y1mD6UdYVqa
-	7mgaw25TyJfOJUWgpp91CnSpvp2IkYHDmMCBOxXRV1/spsmD67JINl+vX+Ecqw==
-Date: Fri, 08 Nov 2024 11:11:46 +0100
-From: =?ISO-8859-1?Q?Barnab=E1s_Cz=E9m=E1n?= <barnabas.czeman@mainlining.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-CC: Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>,
- Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>,
- Lukasz Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
- linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pm@vger.kernel.org, iommu@lists.linux.dev,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Dang Huynh <danct12@riseup.net>,
- =?ISO-8859-1?Q?Otto_Pfl=FCger?= <otto.pflueger@abscue.de>
-Subject: Re: [PATCH v3 00/14] Add MSM8917/PM8937/Redmi 5A
-User-Agent: K-9 Mail for Android
-In-Reply-To: <CACRpkdamugexe6y24Tk2fDYPP_t7QLynibdGQrUMFMwF4y90cw@mail.gmail.com>
-References: <20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org> <CACRpkdamugexe6y24Tk2fDYPP_t7QLynibdGQrUMFMwF4y90cw@mail.gmail.com>
-Message-ID: <43C3A05C-2D28-428B-AEB4-7BC92C55B66B@mainlining.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iZa2mdQt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1731067473; x=1762603473;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=h/iir5bbQI/sdAE4QJiveeaniAldZP8K2NkM9vUjrYI=;
+  b=iZa2mdQtG7xZ7aaU6zUg2oZ4HNjs8yNrwscB6BHbTZfV15n4ITP7uyPX
+   IRbap4bW5lky8lVg7Q3oHo9sV4E2Fa8w9POlwCYHHUyqWnSI1wseS9jo8
+   nYba4oWVazsN0uy3EzVAzssxXlSEKi7wAce5KkDyOV8ZTC0nr3gXrYR3z
+   yHpSzFTxOkjty0P7iLtoS9Uuu6l4L+NfM5LUBIakJAslg/vMmXcERbMZL
+   ZcbKGRBVx4CDGuD1OCZMNVm1uoHQykY1/WfhUGRkJi4eolIFH8qTsFnZu
+   krgzGE6EKmleF/dpiV40wO4Ecqy9h1pGBioEbq9eZObOEIsORPJDnEbBm
+   w==;
+X-CSE-ConnectionGUID: g/S3gNRrQAe9nOqinEhMvg==
+X-CSE-MsgGUID: WuM/1NXxSPyvsLimj0T3YA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="31116416"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="31116416"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2024 04:04:31 -0800
+X-CSE-ConnectionGUID: OvajEX1eTXONS94RaD+Hrw==
+X-CSE-MsgGUID: FVcmXU9BSm6nsdqtjefGtQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,137,1728975600"; 
+   d="scan'208";a="85679024"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by fmviesa008.fm.intel.com with ESMTP; 08 Nov 2024 04:04:30 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	baolu.lu@linux.intel.com
+Cc: alex.williamson@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	zhenzhong.duan@intel.com,
+	vasant.hegde@amd.com,
+	willy@infradead.org
+Subject: [PATCH v4 2/7] iommu: Consolidate the ops->remove_dev_pasid usage into a helper
+Date: Fri,  8 Nov 2024 04:04:22 -0800
+Message-Id: <20241108120427.13562-3-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20241108120427.13562-1-yi.l.liu@intel.com>
+References: <20241108120427.13562-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
+Add a wrapper for the ops->remove_dev_pasid, this consolidates the iommu_ops
+fetching and callback invoking. It is also a preparation for starting the
+transition from using remove_dev_pasid op to detach pasid to the way using
+blocked_domain to detach pasid.
 
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+ drivers/iommu/iommu.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-On November 8, 2024 10:03:00 AM GMT+01:00, Linus Walleij <linus=2Ewalleij@=
-linaro=2Eorg> wrote:
->On Thu, Nov 7, 2024 at 6:02=E2=80=AFPM Barnab=C3=A1s Cz=C3=A9m=C3=A1n
-><barnabas=2Eczeman@mainlining=2Eorg> wrote:
->
->> This patch series add support for MSM8917 soc with PM8937 and
->> Xiaomi Redmi 5A (riva)=2E
->>
->> Signed-off-by: Barnab=C3=A1s Cz=C3=A9m=C3=A1n <barnabas=2Eczeman@mainli=
-ning=2Eorg>
->
->I merged patch 1-4 from the v2 series, don't think the have any differenc=
-es
->in v3=2E
-They are same I will remove them if there will be more iteration=2E
->
->Yours,
->Linus Walleij
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 1c689e57928e..819c6e0188d5 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3298,6 +3298,14 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
+ 
++static void iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
++				   struct iommu_domain *domain)
++{
++	const struct iommu_ops *ops = dev_iommu_ops(dev);
++
++	ops->remove_dev_pasid(dev, pasid, domain);
++}
++
+ static int __iommu_set_group_pasid(struct iommu_domain *domain,
+ 				   struct iommu_group *group, ioasid_t pasid)
+ {
+@@ -3316,11 +3324,9 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
+ err_revert:
+ 	last_gdev = device;
+ 	for_each_group_device(group, device) {
+-		const struct iommu_ops *ops = dev_iommu_ops(device->dev);
+-
+ 		if (device == last_gdev)
+ 			break;
+-		ops->remove_dev_pasid(device->dev, pasid, domain);
++		iommu_remove_dev_pasid(device->dev, pasid, domain);
+ 	}
+ 	return ret;
+ }
+@@ -3330,12 +3336,9 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
+ 				       struct iommu_domain *domain)
+ {
+ 	struct group_device *device;
+-	const struct iommu_ops *ops;
+ 
+-	for_each_group_device(group, device) {
+-		ops = dev_iommu_ops(device->dev);
+-		ops->remove_dev_pasid(device->dev, pasid, domain);
+-	}
++	for_each_group_device(group, device)
++		iommu_remove_dev_pasid(device->dev, pasid, domain);
+ }
+ 
+ /*
+-- 
+2.34.1
+
