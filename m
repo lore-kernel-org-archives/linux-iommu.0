@@ -1,80 +1,109 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA89215C0
-	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 18:30:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A7D91898FC
+	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 19:34:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.79.88.28
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731090629; cv=none; b=fki5gXUOGOtmwF87UiBvov62P7yZ424jedysHoCCrtyTBFIoxBDn7ErG9LGGod/Y2DzxhFBvQSVvK5UQv2yovBrV1t3nwQiD8KFpBDj0/KutYnISFabcmbuOVAWVcINL3kMYba8OBZCHxs5W9iwDhYHI/PyFf3oHov2gdpcNXfo=
+	t=1731094464; cv=none; b=i/+n+UOmpYgHvq0ZprUE369CeVOoxJiLHPFhlSIWN5CHcalR7Vj2RgIgKh1KZ8qxBEWwYUFE08fLKJMCEG2ktsELhOEsHsNVbLMGMwNiC1ZSmAutjAx+WfOvzbIl+0wDnKfz8oI8G2MciDZPr5v/dIsxOyODGu8bhVxbFw2robM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731090629; c=relaxed/simple;
-	bh=OpyD2OZVfEjrkK1uu2GbX1d0BcXGqF1vj/xV7O0n3Ss=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=nxSwKnJ3PO2t6vIPUPP9pUlPZR7YoUoVklM0dwx4oBFDWot3PLzjh+82l+7Uv30DvRzyP4B27L7ptXLW8UnCxNmP1rUwvkaXEAdY2nUwcaDwkFUQQ6cALypMGWpCQOk4w7AXRTp7PBdlcmGHxCUz11YJuIYECReekm1ZjrQnRh8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D95091691;
-	Fri,  8 Nov 2024 10:30:56 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 443B93F6A8;
-	Fri,  8 Nov 2024 10:30:26 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: will@kernel.org,
-	joro@8bytes.org
-Cc: iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 3/3] iommu: Manage driver probe deferral better
-Date: Fri,  8 Nov 2024 18:30:17 +0000
-Message-Id: <2da0ae7f76c7466176e906fa5d7a0ae5210e8650.1731088789.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
-In-Reply-To: <cover.1731088789.git.robin.murphy@arm.com>
-References: <cover.1731088789.git.robin.murphy@arm.com>
+	s=arc-20240116; t=1731094464; c=relaxed/simple;
+	bh=C3uvS5ZTq0aLuBTlnvNbPqplUhDEa0uq5Q6Z92WD/yE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=h8nLlObSDSThwHelbvAKc0PmG72n10fPLiscQ2eIik98h9NVF9YplOpjleGb1XLq/desXZVGIuab4ri2KFjmftdiL2ynsIJ/Xy++W2+dIJqqhh1m3065pTvIyotaCf0I6H8ufVCOmeYyxsaGROQJIVwzq64bMP0QzdgBU3LYzy8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net; spf=pass smtp.mailfrom=lwn.net; dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b=dnsz5YfG; arc=none smtp.client-ip=45.79.88.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lwn.net
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b="dnsz5YfG"
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 443C842C17
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+	t=1731094462; bh=2mf7KL6RauZLJCGVMslddkfvUkwUMRQBSzo8JS8PbOo=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=dnsz5YfGWANp6sFnIUKjORH9aQENZDGixeRFgCKU+EHYtfew50seKAGvAytaFY9oj
+	 05nxCVWbEfcD++04BAkjYS67T71ZQKhzyu6q3WZ8JM+Nq5axZuGUldvxslQ6IDBgXj
+	 4TWkgRvZmPQDP4+rVCptcrXwBOfBXoMDeUZRH8Wp3ugkYqZvGKmWHOgN92MEiBDxr5
+	 9u5STRUt+O2euSBwkgcMhfsaH0RnwMEO/iN2P0oM2sZd22f5AUcPoAVVdjXDvknK/o
+	 T3zwqzKkVrYA3KBU7u+ycHZvQ7dYicPF4vGfmge7fq9Ntn0IbVNJL2+Ng+Nux9U4bj
+	 j2d2WZj3WBcbQ==
+Received: from localhost (unknown [IPv6:2601:280:5e00:625::1fe])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by ms.lwn.net (Postfix) with ESMTPSA id 443C842C17;
+	Fri,  8 Nov 2024 19:34:22 +0000 (UTC)
+From: Jonathan Corbet <corbet@lwn.net>
+To: Leon Romanovsky <leon@kernel.org>, Jens Axboe <axboe@kernel.dk>, Jason
+ Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, Joerg
+ Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Christoph Hellwig
+ <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>
+Cc: Keith Busch <kbusch@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Logan Gunthorpe <logang@deltatee.com>, Yishai Hadas <yishaih@nvidia.com>,
+ Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, Kevin Tian
+ <kevin.tian@intel.com>, Alex Williamson <alex.williamson@redhat.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, =?utf-8?B?SsOpcsO0bWU=?=
+ Glisse
+ <jglisse@redhat.com>, Andrew Morton <akpm@linux-foundation.org>,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+ iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+ linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v1 09/17] docs: core-api: document the IOVA-based API
+In-Reply-To: <881ef0bcf9aa971e995fbdd00776c5140a7b5b3d.1730298502.git.leon@kernel.org>
+References: <cover.1730298502.git.leon@kernel.org>
+ <881ef0bcf9aa971e995fbdd00776c5140a7b5b3d.1730298502.git.leon@kernel.org>
+Date: Fri, 08 Nov 2024 12:34:21 -0700
+Message-ID: <87ttchwmde.fsf@trenco.lwn.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-Since iommu_fwspec_init() absorbed the basic driver probe deferral
-check to wait for an IOMMU to register, we may as well handle the probe
-deferral timeout there as well. The current inconsistency of callers
-results in client devices deferring forever on an arm64 ACPI system
-where an SMMU has failed its own driver probe.
+Leon Romanovsky <leon@kernel.org> writes:
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/iommu.c    | 2 +-
- drivers/iommu/of_iommu.c | 2 --
- 2 files changed, 1 insertion(+), 3 deletions(-)
+> From: Christoph Hellwig <hch@lst.de>
+>
+> Add an explanation of the newly added IOVA-based mapping API.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  Documentation/core-api/dma-api.rst | 70 ++++++++++++++++++++++++++++++
+>  1 file changed, 70 insertions(+)
+>
+> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
+> index 8e3cce3d0a23..6095696a65a7 100644
+> --- a/Documentation/core-api/dma-api.rst
+> +++ b/Documentation/core-api/dma-api.rst
+> @@ -530,6 +530,76 @@ routines, e.g.:::
+>  		....
+>  	}
+>  
+> +Part Ie - IOVA-based DMA mappings
+> +---------------------------------
+> +
+> +These APIs allow a very efficient mapping when using an IOMMU.  They are an
+> +optional path that requires extra code and are only recommended for drivers
+> +where DMA mapping performance, or the space usage for storing the DMA addresses
+> +matter.  All the consideration from the previous section apply here as well.
+> +
+> +::
+> +
+> +    bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state,
+> +		phys_addr_t phys, size_t size);
+> +
+> +Is used to try to allocate IOVA space for mapping operation.  If it returns
+> +false this API can't be used for the given device and the normal streaming
+> +DMA mapping API should be used.  The ``struct dma_iova_state`` is allocated
+> +by the driver and must be kept around until unmap time.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 83c8e617a2c5..dc8d11b585cd 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2842,7 +2842,7 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode)
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 
- 	if (!ops)
--		return -EPROBE_DEFER;
-+		return driver_deferred_probe_check_state(dev);
- 
- 	if (fwspec)
- 		return ops == iommu_fwspec_ops(fwspec) ? 0 : -EINVAL;
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index e7a6a1611d19..97987cd78da9 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -29,8 +29,6 @@ static int of_iommu_xlate(struct device *dev,
- 		return -ENODEV;
- 
- 	ret = iommu_fwspec_init(dev, of_fwnode_handle(iommu_spec->np));
--	if (ret == -EPROBE_DEFER)
--		return driver_deferred_probe_check_state(dev);
- 	if (ret)
- 		return ret;
- 
--- 
-2.39.2.101.g768bb238c484.dirty
+So, I see that you have nice kernel-doc comments for these; why not just
+pull them in here with a kernel-doc directive rather than duplicating
+the information?
 
+Thanks,
+
+jon
