@@ -1,121 +1,75 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A17F288D1
-	for <iommu@lists.linux.dev>; Fri,  8 Nov 2024 02:15:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D25A2126BE1;
+	Fri,  8 Nov 2024 04:23:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731032137; cv=none; b=lzLiGo2m06CZHq4GLsybCj5YW2Mt39H6tew/oNsKZPtCpH4br+6Q+Xy+7bZsZp0d73UY3lHTTKm+3+VpZ2CMSiQkCXnkZnSXR8XxGMuIqJho1tjQ3taJxPamBxvJkeDlDWMNij2mtZB37sPnu9FUuHmxguIc52xYy4l3//+wPmA=
+	t=1731039834; cv=none; b=PIus5hrSAXWugpv2fGNUumiyWhdOSvM9eaasDh408LjWyWihn8fDiWTNG1lqg9v6TbppZHAQQzYd86g+/KByMiYL3QQVAsovLnhOTBOxU50PXNpeqbVPF1h1WHxPxoRrLacX9Gy1L1w5aHH1sfbz7xTCnvR58EwF+duIE5lGEI0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731032137; c=relaxed/simple;
-	bh=vLIIkzIeeRGQ2f+7KVZkFTMmDLAJzpo0wxcN3DAX7KU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Ir3qqmgH1B+oI5vBCCeL+F3c1ku4C6gEWd6w1HvuOajMzts8uIY+PbpJX7+IZwXiD2jML/enXZZcLTb089kwJ+oPuqklW5Ld37gPnnKWlisFoKE4rDfts+02WoTlTA69jVMrDsemXr/WSTzbJf9wzQ8T9ecljUG0zEJFuxmysY4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Zks1Fy1P; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1731039834; c=relaxed/simple;
+	bh=IL+Z1A+RYJKXWgVRSM/zbnEhSrswwv/z7vE6GX/X4C4=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=PcbqG/vXYkO/XhKgV2QFy44Fb02XU5FrPuOZBfKMlCrLCNP9imtBJ+s75EtbIwHVrDCDDUBfse/zL5CmxlRsBgJeNFgFbQo8m5tjkZ+byjQidG/j7S79xa5rCI118s6lUY29FwoeFjdxYPb9K6zCX4mRfGziIvO9bkNKRjTluMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Q5wLvscP; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Zks1Fy1P"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1731032136; x=1762568136;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=vLIIkzIeeRGQ2f+7KVZkFTMmDLAJzpo0wxcN3DAX7KU=;
-  b=Zks1Fy1PSjlt7BxM4EMVyNKrrWgp9y28t3p0Z/w3Q1J1c04LDHHBcqZr
-   a+suQo87Hpd8E8sGFNUJma+D0m5AfHTzzTar2gm7g99yEJhVK0gS9bTRM
-   nRBgHaSbfcSEvxSTwcpkKc4dBjlNraEcKDzp0d0TdU4EkJ/hIEAxCLJC/
-   veupvXPQtPlGCxhUv5EFwCM3P1+MoYi9qaZxVNo18tAsSiZuOT28AFdlC
-   GhSCiOblBjvbjRXhRMyHsU0ARm1fo4rfWKVK8YeThqeO2T2vuTu0emFyy
-   KozJNolJytKf/QiWVAJIhK6ogsV09giVNwgkArs6I40xEt1ivy7KLvEQT
-   g==;
-X-CSE-ConnectionGUID: E6GpnAaxT/qWQ95Ng36RzQ==
-X-CSE-MsgGUID: PrMmPwJ9TgOSJ+cuQ4QDsQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11249"; a="31007877"
-X-IronPort-AV: E=Sophos;i="6.12,136,1728975600"; 
-   d="scan'208";a="31007877"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2024 18:15:24 -0800
-X-CSE-ConnectionGUID: v7/dZZN8S12eEBKcucLQLw==
-X-CSE-MsgGUID: fYToPKFuRmW65tzcONP0tA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,136,1728975600"; 
-   d="scan'208";a="116213852"
-Received: from allen-sbox.sh.intel.com ([10.239.159.30])
-  by fmviesa001.fm.intel.com with ESMTP; 07 Nov 2024 18:15:22 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 13/13] iommu: Make set_dev_pasid op support domain replacement
-Date: Fri,  8 Nov 2024 10:14:04 +0800
-Message-ID: <20241108021406.173972-14-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241108021406.173972-1-baolu.lu@linux.intel.com>
-References: <20241108021406.173972-1-baolu.lu@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Q5wLvscP"
+Received: from [192.168.35.166] (c-73-118-245-227.hsd1.wa.comcast.net [73.118.245.227])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 3146E212D516;
+	Thu,  7 Nov 2024 20:23:51 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3146E212D516
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1731039832;
+	bh=A0vEUFyfwb+AHUDrN438og+hVkohgSw0iUoCdoRA1Ko=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=Q5wLvscPYwSE2Gv2RNViaS+MQCJVhbLsRYc+QH7A59zAaVXAzXr/CNHosZHtn9oIq
+	 ItpyTxzuVdw1CtCC0hgVWJRvWivgrK8UAAjT83gKTtJwz4K7phvj69liK8jbr9hC/M
+	 tba1rtqTZHWTlxyISa5uv33pRbr+1jMCNc2u1wGk=
+Message-ID: <ff6ac9b5-0903-498c-be2a-2949e9bee8d5@linux.microsoft.com>
+Date: Thu, 7 Nov 2024 20:23:51 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: eahariha@linux.microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
+ wei.liu@kernel.org, mhklinux@outlook.com, decui@microsoft.com,
+ catalin.marinas@arm.com, will@kernel.org, luto@kernel.org,
+ tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ seanjc@google.com, pbonzini@redhat.com, peterz@infradead.org,
+ daniel.lezcano@linaro.org, joro@8bytes.org, robin.murphy@arm.com,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, lpieralisi@kernel.org, kw@linux.com, robh@kernel.org,
+ bhelgaas@google.com, arnd@arndb.de, sgarzare@redhat.com,
+ jinankjain@linux.microsoft.com, muminulrussell@gmail.com,
+ skinsburskii@linux.microsoft.com, mukeshrathor@microsoft.com,
+ vkuznets@redhat.com, ssengar@linux.microsoft.com, apais@linux.microsoft.com
+Subject: Re: [PATCH v2 1/4] hyperv: Move hv_connection_id to hyperv-tlfs.h
+To: Nuno Das Neves <nunodasneves@linux.microsoft.com>,
+ linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, kvm@vger.kernel.org, iommu@lists.linux.dev,
+ netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, virtualization@lists.linux.dev
+References: <1731018746-25914-1-git-send-email-nunodasneves@linux.microsoft.com>
+ <1731018746-25914-2-git-send-email-nunodasneves@linux.microsoft.com>
+Content-Language: en-US
+From: Easwar Hariharan <eahariha@linux.microsoft.com>
+In-Reply-To: <1731018746-25914-2-git-send-email-nunodasneves@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Yi Liu <yi.l.liu@intel.com>
+On 11/7/2024 2:32 PM, Nuno Das Neves wrote:
+> This definition is in the wrong file; it is part of the TLFS doc.
+> 
+> Acked-by: Wei Liu <wei.liu@kernel.org>
+> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+> ---
+>  include/asm-generic/hyperv-tlfs.h | 9 +++++++++
+>  include/linux/hyperv.h            | 9 ---------
+>  2 files changed, 9 insertions(+), 9 deletions(-)
+> 
 
-The iommu core is going to support domain replacement for pasid, it needs
-to make the set_dev_pasid op support replacing domain and keep the old
-domain config in the failure case.
-
-AMD iommu driver does not support domain replacement for pasid yet, so it
-would fail the set_dev_pasid op to keep the old config if the input @old
-is non-NULL. Till now, all the set_dev_pasid callbacks can handle the old
-parameter and can keep the old config when failed, so update the kdoc of
-set_dev_pasid op.
-
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-Link: https://lore.kernel.org/r/20241107122234.7424-14-yi.l.liu@intel.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/amd/pasid.c | 3 +++
- include/linux/iommu.h     | 3 ++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd/pasid.c b/drivers/iommu/amd/pasid.c
-index d1dfc745f55e..8c73a30c2800 100644
---- a/drivers/iommu/amd/pasid.c
-+++ b/drivers/iommu/amd/pasid.c
-@@ -109,6 +109,9 @@ int iommu_sva_set_dev_pasid(struct iommu_domain *domain,
- 	unsigned long flags;
- 	int ret = -EINVAL;
- 
-+	if (old)
-+		return -EOPNOTSUPP;
-+
- 	/* PASID zero is used for requests from the I/O device without PASID */
- 	if (!is_pasid_valid(dev_data, pasid))
- 		return ret;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 32dce80aa7fd..27f923450a7c 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -616,7 +616,8 @@ struct iommu_ops {
-  * * EBUSY	- device is attached to a domain and cannot be changed
-  * * ENODEV	- device specific errors, not able to be attached
-  * * <others>	- treated as ENODEV by the caller. Use is discouraged
-- * @set_dev_pasid: set an iommu domain to a pasid of device
-+ * @set_dev_pasid: set or replace an iommu domain to a pasid of device. The pasid of
-+ *                 the device should be left in the old config in error case.
-  * @map_pages: map a physically contiguous set of pages of the same size to
-  *             an iommu domain.
-  * @unmap_pages: unmap a number of pages of the same size from an iommu domain
--- 
-2.43.0
-
+Reviewed-by: Easwar Hariharan <eahariha@linux.microsoft.com>
