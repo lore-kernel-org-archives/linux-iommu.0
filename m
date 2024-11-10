@@ -1,33 +1,50 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4FFEC8FF;
-	Sat,  9 Nov 2024 14:21:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D77D4233D62
+	for <iommu@lists.linux.dev>; Sun, 10 Nov 2024 04:00:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731162067; cv=none; b=fxZsKuq5/BlVh/ePbbiQQwNr8SHKwMDGjqnGmlTmLfiCcRgp7O7x3iLWlpy6IcXRNMLzq5UL4Ojkb4wRz+nruP1RxjCAHsGaiJmdbHUjfylvOqsGd8LRBWpkV0rtQuiWKgLL7Z/ObB4gb8CKWNKJ+dvLZX+CGDjpa9zUuTbAexs=
+	t=1731211237; cv=none; b=cDifOliFHDVz8RsQE5C896TDNLtTnawe/Ty2Waq+lyUfAG/pI5U6OzmJQKhDqJYR0hQk8N/sTR1zZk4c8Kyn9b4bxrSNDrEYvHavWy4vWt1Qm1A3AJb/KUmIlzill2lrDyh+DqnUiOkRPr9ZTdYhs8irQRX/61DKz+kZE4XUNFw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731162067; c=relaxed/simple;
-	bh=29ebZSgGQAXMCN05ieHggt4yO6nnlrHI5VPqh6adRtM=;
+	s=arc-20240116; t=1731211237; c=relaxed/simple;
+	bh=vMHtsZfDOuGXmmKCUjiSnoMbByeEwwcFbVjYpsFnV8E=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jV0iMlkC0HYQ/OQGncnpCHJf/fDbC/7E12OOnr4MgEESuav9qpIEzvR40NCr9Wg8Gc8aOh+a2LIQ3b/qK7Qx5t/N5XkutB/7YtoM9/j6jghNhyPbQTRtoCEVdN3zf8uP7Sl+Ukj90eQJURWdAqJAozgthnmfUlgFAV+wyCxROYI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UlyXi6pk; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=l4vVdolLMFbbqFPJfCmSvpsu8YQQYOSjwtZRyaqbmgJfvO8a7NB/BGBFl7zz/c2MzuPbsl+/7PY6q9s67/MosqOgaCjM2kMVNVgWMP3DXHR1Jvo2F1so5iwZSWb4pFHFwCv1t3T87aZbolCLdV8uO38fBt0cpRlZkCO33Z/awJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PuaS6vMm; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UlyXi6pk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49D05C4CECE;
-	Sat,  9 Nov 2024 14:20:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731162066;
-	bh=29ebZSgGQAXMCN05ieHggt4yO6nnlrHI5VPqh6adRtM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=UlyXi6pktj9tANpn3QQ4G5imtEj9FWnuL1EeYMIPRIZf8xsdtLYBPJsuIj0KuqYAw
-	 7JrVAN86d0SBP1dBdlhlGql5tUamqjHpdJ7aSEh3Hlw/ULtoINNLkO50pvtQZGTI+L
-	 qCfEtmEFZw3SvDDnnASe5JqYZd6HFBm+84A7DC8UxG8Yu0e0aqFFEQdeifGqFQR3K2
-	 P1B3OXVMeBZ++0H7jN7N1o7sII75FwMchvMvAgt8/V8HErEpjE6FkSU9RlXcLqOChp
-	 VKFM9ectd1qhXIfKDcbkU6anl45zhYtYJbdoA1/P11F+rNRQxRr1fq0R48frodvqVE
-	 754/awgUJKaiw==
-Message-ID: <d14ab872-c66b-496b-8769-7a6df30c8253@kernel.org>
-Date: Sat, 9 Nov 2024 15:20:56 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PuaS6vMm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1731211235; x=1762747235;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vMHtsZfDOuGXmmKCUjiSnoMbByeEwwcFbVjYpsFnV8E=;
+  b=PuaS6vMmMfyL/RUi9RCNL7mjrLbrIfodgcZ0zSNbBkqvsMsxli9Vuxao
+   MW7+EvEQwey8/bpej63OlUycMHcIOb1uEvXzPuzclluX/nD75ttHEpu/l
+   oDst+yJ0MvTMDxRpV294Xx6D5z+pn+ljWkXfbv+HqlNnRoP7NekPzam3d
+   yKIUujNVjVKZXmiTbUkCSvKoHpHuY68lGE+pTzVHy7r0uP7yMIDC15496
+   fq6CKDpQ7dpsolujB6JU+pb1fc6rK8zvTtdqhsvwS6jeGOa2n0Z7y96mj
+   lWrHJ6E+gBaS/vEbYwFwdltIl7sCfeA4Clf2etI/oFl4qorDTrKSebKJ4
+   g==;
+X-CSE-ConnectionGUID: iKvnAQkaRA+wVjLuDf9DdA==
+X-CSE-MsgGUID: i76xxArqSrKb2SgvG50CSQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11251"; a="48567429"
+X-IronPort-AV: E=Sophos;i="6.12,142,1728975600"; 
+   d="scan'208";a="48567429"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2024 20:00:34 -0800
+X-CSE-ConnectionGUID: 4bWCHZ/hSB+dSOwJhNcppg==
+X-CSE-MsgGUID: L9ExBUUsSDahdg1wT3Cktg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,142,1728975600"; 
+   d="scan'208";a="87091534"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2024 20:00:31 -0800
+Message-ID: <facfee81-1b25-4b3e-aecd-38930ee41f7a@linux.intel.com>
+Date: Sun, 10 Nov 2024 11:59:36 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,81 +52,65 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 02/10] dt-bindings: pinctrl: qcom: Add MSM8917 pinctrl
-To: =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>,
- Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
- Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>,
- Lukasz Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-pm@vger.kernel.org, iommu@lists.linux.dev
-References: <20241109-msm8917-v4-0-8be9904792ab@mainlining.org>
- <20241109-msm8917-v4-2-8be9904792ab@mainlining.org>
-From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH v4 1/7] iommu: Prevent pasid attach if no
+ ops->remove_dev_pasid
+To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
+ kevin.tian@intel.com
+Cc: alex.williamson@redhat.com, eric.auger@redhat.com, nicolinc@nvidia.com,
+ kvm@vger.kernel.org, chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
+ zhenzhong.duan@intel.com, vasant.hegde@amd.com, willy@infradead.org
+References: <20241108120427.13562-1-yi.l.liu@intel.com>
+ <20241108120427.13562-2-yi.l.liu@intel.com>
 Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20241109-msm8917-v4-2-8be9904792ab@mainlining.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20241108120427.13562-2-yi.l.liu@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 09/11/2024 13:08, Barnabás Czémán wrote:
-> Add device tree bindings documentation for Qualcomm MSM8917
-> pinctrl driver.
+On 11/8/24 20:04, Yi Liu wrote:
+> driver should implement both set_dev_pasid and remove_dev_pasid op, otherwise
+> it is a problem how to detach pasid. In reality, it is impossible that an
+> iommu driver implements set_dev_pasid() but no remove_dev_pasid() op. However,
+> it is better to check it.
 > 
-> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 > ---
+>   drivers/iommu/iommu.c | 6 ++++--
+>   1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 13fcd9d8f2df..1c689e57928e 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -3352,17 +3352,19 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+>   			      struct iommu_attach_handle *handle)
+>   {
+>   	/* Caller must be a probed driver on dev */
+> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>   	struct iommu_group *group = dev->iommu_group;
+>   	struct group_device *device;
+>   	int ret;
+>   
+> -	if (!domain->ops->set_dev_pasid)
+> +	if (!domain->ops->set_dev_pasid ||
+> +	    !ops->remove_dev_pasid)
+>   		return -EOPNOTSUPP;
+>   
+>   	if (!group)
+>   		return -ENODEV;
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+If group is NULL, calling dev_iommu_ops() will trigger a kernel NULL
+pointer reference warning, which is unintended. If you need to check
+ops->remove_dev_pasid, it should be done after the group check.
 
-Best regards,
-Krzysztof
+>   
+> -	if (!dev_has_iommu(dev) || dev_iommu_ops(dev) != domain->owner ||
+> +	if (!dev_has_iommu(dev) || ops != domain->owner ||
+>   	    pasid == IOMMU_NO_PASID)
+>   		return -EINVAL;
+>   
 
+--
+baolu
