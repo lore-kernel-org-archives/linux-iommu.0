@@ -1,395 +1,93 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0DAD13C81B
-	for <iommu@lists.linux.dev>; Mon, 11 Nov 2024 10:44:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 298EB18B466
+	for <iommu@lists.linux.dev>; Mon, 11 Nov 2024 11:31:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731321853; cv=none; b=D/alVium9E17REpdOI6KoUX1gbgEQN6997MjQu0NGBwUAI8QtyWqUMy0hQP3NEfA9FPf4mQzlfOJZ2HUefxG1sJ5Ry6JcAyPL+Nmt4gYOVzkj/LTC4uQnWkubnIGYpHyjY+qMh5tV3o4uMuL9n1T4DaYVwoJUGqgu4OuxKg3a08=
+	t=1731324687; cv=none; b=PwulqcqO9eYnNWMVHDKbXQSSYqO9VVuk7/NbRtbap0i5HuxxAP2Z3RYvXBlGbj9QBRWtDHN0kzfW6DvqrbdF9apbOwOnBwwHdkhiEPScZmIbwSIbZc1gKMQjAH1iM1+utrykfWW8lsYWTvaTT2M9JzjmHf8mO7YYYHXYYzVs8JY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731321853; c=relaxed/simple;
-	bh=viI1zXUB7rgBr9BKaHg9ecokLINqTsbbL1vWFmyx5sA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FNCVa7u5HJ15fLC7jOrOR8WT3zBGCTe4LfQFB8WQ6hjn+JgeeyFHehVFXCTSElK+uaPs7cH8vKxPLd5wdUDbhkj/we67DAvGTdGrgkZyfyUGSXys4jK0DNZbmAsnFQOIF50EO5tFz8p0ws3YnilnvDOQxMggJ1Ry5G1Ve25igWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=tTPME4oB; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tTPME4oB"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-43167ff0f91so38210455e9.1
-        for <iommu@lists.linux.dev>; Mon, 11 Nov 2024 02:44:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1731321850; x=1731926650; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=uzxzm9xXLTbZgUXHxeJ9mNLyYRjtxj0f3W1XXKiT9+0=;
-        b=tTPME4oBn46X2rGOcKLXxbBvtE3YPdIR8uXhdq3wNTFAJnI8pzFiiJx7hWoFjji4Wj
-         KmChQ+P8YI4fkuw8HSea4VhQUkKA7p3j8ClSL45sGXHrYerao9oTAKuqDva4l/cNUzJG
-         Y6EaWmqmoeq+JBSOWPwTCHQA4dnUXQcrXeImaUq229txxv7tPChQDjWQ4OrG56+NiwZU
-         S8Xk97uPrTcLMpFB/3hC+/vX2PJ1vQqj+4wrzpyMZvpNhPD04s4MPJHW8exJZy2weYXe
-         tfHsTrRXPnAqfWRagyewQz2CbiP3kblOkRJPihI1Vt8Nklox7nUkZjyRdKtaX5mFoBnk
-         2Y3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731321850; x=1731926650;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uzxzm9xXLTbZgUXHxeJ9mNLyYRjtxj0f3W1XXKiT9+0=;
-        b=tBr+9snptzKFuM+HIOYP/rUdRc3KTatKRkaCAgEx3D1J6dVQnh4cKRxzK47eD4p7Tr
-         bY7kNmhul7JXqnmGoQRHU47HlTDkEBLzEM/1Xd2uo4i3cLjw15DPXTTDi1TghZL5HuQv
-         Pjll6f+0nPv+Rc3WHNTTPwt9naagZDcS8y1oAsYJvcW+kJAQJQVmwlp4GLdvP5soaR2G
-         SquWKity4xpNm28VbfN09yVhSwht6vqqpZUHGGupC5aTBjJs/MMn67lVK5qPFJl5XW1U
-         btd3Tm1t3Bl59ATcthFwhO0SAiB+2JBMSjNhF2FpIobcojBLxKV3BVtudWRtPYd82QMc
-         v5WA==
-X-Forwarded-Encrypted: i=1; AJvYcCVEYtIrM8KdaN3e1NN91DWMPAsvSw7st2btSY2wjqNSLynRG0CTrmz8dDlYeXjmFNaFK+NxYA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx/Lnt3L6LbWRFf8UP9PseiFcwbnL9i0ZT1hVw2lw123CsOfrCt
-	60u0yJNU7IGS5ZKfFymqeGJLsf5TprgUK8U5SdE10KLirQoxP7tLfBVi6eXgJlM=
-X-Google-Smtp-Source: AGHT+IFWbm5G98XNys1mSFOeg/rULU9TcIwIPAzzQ5wDgRA27UVUt+JopDpTX1ttncoYAk1OkBdKHA==
-X-Received: by 2002:a05:600c:4f04:b0:431:5f1c:8359 with SMTP id 5b1f17b1804b1-432b75091cdmr85229145e9.15.1731321849412;
-        Mon, 11 Nov 2024 02:44:09 -0800 (PST)
-Received: from linaro.org ([2a02:2454:ff21:ef80:11f:3141:b8c5:27b4])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432aa6bee9asm213622655e9.19.2024.11.11.02.44.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Nov 2024 02:44:09 -0800 (PST)
-Date: Mon, 11 Nov 2024 11:44:04 +0100
-From: Stephan Gerhold <stephan.gerhold@linaro.org>
-To: =?iso-8859-1?B?QmFybmFi4XMgQ3rpbeFu?= <barnabas.czeman@mainlining.org>
-Cc: Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Amit Kucheria <amitk@kernel.org>,
-	Thara Gopinath <thara.gopinath@gmail.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-pm@vger.kernel.org, iommu@lists.linux.dev,
-	Otto =?iso-8859-1?Q?Pfl=FCger?= <otto.pflueger@abscue.de>
-Subject: Re: [PATCH v4 08/10] arm64: dts: qcom: Add initial support for
- MSM8917
-Message-ID: <ZzHf9J0Y2uB7_vy4@linaro.org>
-References: <20241109-msm8917-v4-0-8be9904792ab@mainlining.org>
- <20241109-msm8917-v4-8-8be9904792ab@mainlining.org>
+	s=arc-20240116; t=1731324687; c=relaxed/simple;
+	bh=byO06VlftwJVrxXzWWMMcmptQKF3tyHFGekyDgcW5LY=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:CC:References:
+	 In-Reply-To:Content-Type; b=FK25pDdnGYiAbT0RZ33bdpkflTF0U3YaVffS2ETSAfNFmsVjstLXu3bLnlb2l5zGl26gl2/+DeVJoiPgGy9lrS/ikoFllaCpPFODcI57CuXiiKxayaTdHs030yYyr3sqk4XG/1KkmEqZpDqtZi+Yf1aVh2roTWxecoqJZgBx6+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.17])
+	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Xn6h05zhdz28fSh;
+	Mon, 11 Nov 2024 19:26:40 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 6929B1A0188;
+	Mon, 11 Nov 2024 19:31:22 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Mon, 11 Nov 2024 19:31:22 +0800
+Message-ID: <4564c77b-a54d-4307-b043-d08e314c4c5f@huawei.com>
+Date: Mon, 11 Nov 2024 19:31:21 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20241109-msm8917-v4-8-8be9904792ab@mainlining.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
+ has already unbound
+From: Yunsheng Lin <linyunsheng@huawei.com>
+To: Jesper Dangaard Brouer <hawk@kernel.org>,
+	=?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+	<davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
+	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
+ Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
+ Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
+ Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
+	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
+	<kernel-team@cloudflare.com>
+References: <20241022032214.3915232-1-linyunsheng@huawei.com>
+ <20241022032214.3915232-4-linyunsheng@huawei.com>
+ <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
+ <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
+ <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
+ <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org>
+ <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
+Content-Language: en-US
+In-Reply-To: <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On Sat, Nov 09, 2024 at 01:08:10PM +0100, Barnabás Czémán wrote:
-> From: Otto Pflüger <otto.pflueger@abscue.de>
+On 2024/10/26 15:33, Yunsheng Lin wrote:
+
+...
+
+>>>
+>>> AFAIU Jakub's comment on his RFC patch for waiting, he was suggesting
+>>> exactly this: Add the wait, and see if the cases where it can stall turn
+>>> out to be problems in practice.
+>>
+>> +1
+>>
+>> I like Jakub's approach.
 > 
-> Add initial support for MSM8917 SoC.
+> As mentioned in Toke's comment, I am still not convinced that there is some
+> easy way of waiting here, doing the kick in the kernel space is hard enough,
+> I am not even sure if kick need to be done or how it can be done in the user
+> space if some page_pool owned page is held from user space for the cases of zero
+> rx copy, io_uring and devmem tcp? killing the userspace app?
 > 
-> Signed-off-by: Otto Pflüger <otto.pflueger@abscue.de>
-> [reword commit, rebase, fix schema errors]
-> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
-> ---
->  arch/arm64/boot/dts/qcom/msm8917.dtsi | 1997 +++++++++++++++++++++++++++++++++
->  1 file changed, 1997 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/msm8917.dtsi b/arch/arm64/boot/dts/qcom/msm8917.dtsi
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..f866843772684c695069debfc764f7a0a58843bb
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/msm8917.dtsi
-> @@ -0,0 +1,1997 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +
-> +#include <dt-bindings/clock/qcom,gcc-msm8917.h>
-> +#include <dt-bindings/clock/qcom,rpmcc.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/power/qcom-rpmpd.h>
-> +#include <dt-bindings/soc/qcom,apr.h>
-> +#include <dt-bindings/sound/qcom,q6dsp-lpass-ports.h>
-> +#include <dt-bindings/thermal/thermal.h>
-> +
-> +/ {
-> +	interrupt-parent = <&intc>;
-> +
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +
-> +	aliases {
-> +		mmc0 = &sdhc_1; /* SDC1 eMMC slot */
-> +		mmc1 = &sdhc_2; /* SDC2 SD card slot */
-> +	};
+> If you and Toke still think the waiting is the way out for the problem here, maybe
+> we should wait for jakub's opinion and let him decide if he want to proceed with
+> his waiting patch.
 
-I think we put aliases in each board separately nowadays, see e.g.
-commit 154f23a8d70c ("arm64: dts: qcom: msm8916: Move aliases to
-boards").
+Is there any other suggestion/concern about how to fix the problem here?
 
-> [...]
-> +		domain-idle-states {
-> +			cluster_sleep_0: cluster-sleep-0 {
-> +				compatible = "domain-idle-state";
-> +				arm,psci-suspend-param = <0x41000023>;
-> +				entry-latency-us = <700>;
-> +				exit-latency-us = <650>;
-> +				min-residency-us = <1972>;
-> +			};
-> +
-> +			cluster_sleep_1: cluster-sleep-1 {
-> +				compatible = "domain-idle-state";
-> +				arm,psci-suspend-param = <0x41000043>;
-> +				entry-latency-us = <240>;
-> +				exit-latency-us = <280>;
-> +				min-residency-us = <806>;
-> +			};
+From the previous discussion, it seems the main concern about tracking the
+inflight pages is about how many inflight pages it is needed.
 
-This is strange, the deeper sleep state has lower timings than the
-previous one?
-
-> +
-> +			cluster_sleep_2: cluster-sleep-2 {
-> +				compatible = "domain-idle-state";
-> +				arm,psci-suspend-param = <0x41000053>;
-> +				entry-latency-us = <700>;
-> +				exit-latency-us = <1000>;
-> +				min-residency-us = <6500>;
-> +			};
-> +		};
-> [...]
-> +
-> +	rpm: remoteproc {
-> +		compatible = "qcom,msm8917-rpm-proc", "qcom,rpm-proc";
-> +
-> +		smd-edge {
-> +			interrupts = <GIC_SPI 168 IRQ_TYPE_EDGE_RISING>;
-> +			qcom,ipc = <&apcs 8 0>;
-
-Can you use mboxes here?
-
-> +			qcom,smd-edge = <15>;
-> +
-> [...]
-> +
-> +		mpss_mem: mpss@86800000 {
-> +			/*
-> +			 * The memory region for the mpss firmware is generally
-> +			 * relocatable and could be allocated dynamically.
-> +			 * However, many firmware versions tend to fail when
-> +			 * loaded to some special addresses, so it is hard to
-> +			 * define reliable alloc-ranges.
-> +			 *
-> +			 * alignment = <0x0 0x400000>;
-> +			 * alloc-ranges = <0x0 0x86800000 0x0 0x8000000>;
-> +			 */
-
-Not sure how many devices you have access to, but have you tried if this
-is actually still the case? I'd have hoped they fixed those issues in
-the firmware.
-
-Thanks for using alloc-ranges instead of fixed addresses BTW :)
-
-> +			reg = <0x0 0x86800000 0x0 0>; /* size is device-specific */
-> +			no-map;
-> +			status = "disabled";
-> +		};
-> +
-> [...]
-> +	smp2p-adsp {
-> +		compatible = "qcom,smp2p";
-> +		qcom,smem = <443>, <429>;
-> +
-> +		interrupts = <GIC_SPI 291 IRQ_TYPE_EDGE_RISING>;
-> +
-> +		mboxes = <&apcs 10>;
-> +
-> +		qcom,local-pid = <0>;
-> +		qcom,remote-pid = <2>;
-> +
-> +		adsp_smp2p_out: master-kernel {
-> +			qcom,entry-name = "master-kernel";
-> +
-> +			#qcom,smem-state-cells = <1>;
-> +		};
-> +
-> +		adsp_smp2p_in: slave-kernel {
-> +			qcom,entry-name = "slave-kernel";
-> +
-> +			interrupt-controller;
-> +			#interrupt-cells = <2>;
-> +		};
-> +	};
-> +
-> +	smp2p-modem {
-> +		compatible = "qcom,smp2p";
-> +		qcom,smem = <435>, <428>;
-> +
-> +		interrupts = <GIC_SPI 27 IRQ_TYPE_EDGE_RISING>;
-> +
-> +		qcom,ipc = <&apcs 8 14>;
-
-You have mboxes for adsp above, what about modem and
-
-> +
-> +		qcom,local-pid = <0>;
-> +		qcom,remote-pid = <1>;
-> +
-> +		modem_smp2p_out: master-kernel {
-> +			qcom,entry-name = "master-kernel";
-> +
-> +			#qcom,smem-state-cells = <1>;
-> +		};
-> +
-> +		modem_smp2p_in: slave-kernel {
-> +			qcom,entry-name = "slave-kernel";
-> +
-> +			interrupt-controller;
-> +			#interrupt-cells = <2>;
-> +		};
-> +	};
-> +
-> +	smp2p-wcnss {
-> +		compatible = "qcom,smp2p";
-> +		qcom,smem = <451>, <431>;
-> +
-> +		interrupts = <GIC_SPI 143 IRQ_TYPE_EDGE_RISING>;
-> +
-> +		qcom,ipc = <&apcs 8 18>;
-
-... wcnss?
-
-> +
-> +		qcom,local-pid = <0>;
-> +		qcom,remote-pid = <4>;
-> +
-> +		wcnss_smp2p_out: master-kernel {
-> +			qcom,entry-name = "master-kernel";
-> +
-> +			#qcom,smem-state-cells = <1>;
-> +		};
-> +
-> +		wcnss_smp2p_in: slave-kernel {
-> +			qcom,entry-name = "slave-kernel";
-> +
-> +			interrupt-controller;
-> +			#interrupt-cells = <2>;
-> +		};
-> +	};
-> +
-> [...]
-> +
-> +		restart@4ab000 {
-> +			compatible = "qcom,pshold";
-> +			reg = <0x004ab000 0x4>;
-> +		};
-
-You have PSCI for shutting down, do you actually need this?
-
-> [...]
-> +		blsp_i2c4: i2c@78b8000 {
-> +			compatible = "qcom,i2c-qup-v2.2.1";
-> +			reg = <0x078b8000 0x500>;
-> +			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>,
-> +				 <&gcc GCC_BLSP1_AHB_CLK>;
-> +			clock-names = "core", "iface";
-> +			dmas = <&blsp1_dma 10>, <&blsp1_dma 11>;
-> +			dma-names = "tx", "rx";
-> +			pinctrl-0 = <&i2c4_default>;
-> +			pinctrl-1 = <&i2c4_sleep>;
-> +			pinctrl-names = "default", "sleep";
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			status = "disabled";
-> +		};
-> +
-> +		blsp_i2c5: i2c@7af5000 {
-
-Please use a full label here with the BLSP number and QUP instance
-(&blspX_i2cY). This corresponds to the name of the clock, so this node
-is actually
-
-> +			compatible = "qcom,i2c-qup-v2.2.1";
-> +			reg = <0x07af5000 0x600>;
-> +			interrupts = <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>,
-
-... &blsp2_i2c1.
-
-I guess the current naming is taken from downstream, but I think they
-just assigned consecutive numbers to all the QUP instances they needed.
-This will cause headaches in the future if someone wants to add an
-instance that wasn't used by QC in the reference designs.
-
-> +				 <&gcc GCC_BLSP2_AHB_CLK>;
-> +			clock-names = "core", "iface";
-> +			dmas = <&blsp2_dma 4>, <&blsp2_dma 5>;
-> +			dma-names = "tx", "rx";
-> +			pinctrl-0 = <&i2c5_default>;
-> +			pinctrl-1 = <&i2c5_sleep>;
-
-&blsp2_i2c1_default/sleep for clarity
-
-> +			pinctrl-names = "default", "sleep";
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			status = "disabled";
-> +		};
-> +
-> +		blsp_spi6: spi@7af6000 {
-
-&blsp2_spi2
-
-> +			compatible = "qcom,spi-qup-v2.2.1";
-> +			reg = <0x07af6000 0x600>;
-> +			interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&gcc GCC_BLSP2_QUP2_SPI_APPS_CLK>,
-> +				 <&gcc GCC_BLSP2_AHB_CLK>;
-> +			clock-names = "core", "iface";
-> +			dmas = <&blsp2_dma 6>, <&blsp2_dma 7>;
-> +			dma-names = "tx", "rx";
-> +			pinctrl-0 = <&spi6_default>;
-> +			pinctrl-1 = <&spi6_sleep>;
-
-&blsp2_spi2_default/sleep
-
-> +			pinctrl-names = "default", "sleep";
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			status = "disabled";
-> +		};
-> +
-> [...]
-> +		timer@b120000 {
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			ranges;
-> +			compatible = "arm,armv7-timer-mem";
-> +			reg = <0x0b120000 0x1000>;
-> +			clock-frequency = <19200000>;
-
-Should be unneeded unless the firmware is broken. Can you try dropping
-it and see if you get a warning in dmesg?
-
-> [...]
-> +		};
-> +	};
-> +
-> +	timer {
-> +		compatible = "arm,armv8-timer";
-> +		interrupts = <GIC_PPI 2 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 3 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 4 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 1 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
-> +		clock-frequency = <19200000>;
-
-Same here.
-
-Thanks,
-Stephan
+If there is no other suggestion/concern , it seems the above concern might be
+addressed by using pre-allocated memory to satisfy the mostly used case, and
+use the dynamically allocated memory if/when necessary.
