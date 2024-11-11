@@ -1,71 +1,93 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA1919CD0E;
-	Mon, 11 Nov 2024 12:49:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E99419F101
+	for <iommu@lists.linux.dev>; Mon, 11 Nov 2024 14:59:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.79.88.28
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731329358; cv=none; b=jQtne7Tu7tN9y8TcN0QkeAw3ki+BFWjccj2e/FYo+N0FzKD3d1RkISdEFyRe4ZuEA9HlFYFsGMNKZC9a8kCSgOBmgWUjCaCLnDm1YUcPUNi5LQo611bRZwcx7MiWuvEnGNet09eebZhVph1l4BFi1fTY6sDgLJyocvGgPLd3d6Y=
+	t=1731337169; cv=none; b=MtwU2kB5x4wUnF5zREa89UWPM4AlGiKzSef9HxYRmj/9wdAJ6Z/KOGLEO0TSMO68UoqDOISjUqFyxZMEkl6iJqB3BYBmWPoHZ2/wDsJyyR8vMHn+nDfyXpCvOtImR419J1TSw1vujD9hhTd7vgQkCLF6nz40gVMfVT0bemjpwaI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731329358; c=relaxed/simple;
-	bh=DdPm7AxEHQ6dfU3WfACtcr6a+uPBdfir/vELQ7rFD7w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tOkncf/stXgmSE1hbLOIW5gl08t5CkXsweMbPAOOuWVNtHh104dhvugcQZpWKGQJGbYNSvZuJjY1J15iVMWOJglSm2Tro2qnzW9itO40N1qzp3SelDLbYKdiNTX6CePyXTZuod7JQEt25TS3u1Ngwz1jfmzYJ4c6ZV5KPRSoj44=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZkJuLSHy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1731337169; c=relaxed/simple;
+	bh=gg3nV1iKgs4bbxPK/uru5pPDw51yAhWHVenuhfd8RSY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=E1hbJAEALqlb5yL56DaF3Qdv35CRbOZUjo41njnTAapQEJ0PfjTeAMJlktQn6zFocYAD5AcntSDzEzxG0egw/joVNiqqGP+s2PtjzedHUpp4kPCeNPoPiPCIlkzq6cGu7gK+PF8oeOV3JldOMHb+qdPl62rL7Yt8XyMFS58xoNw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net; spf=pass smtp.mailfrom=lwn.net; dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b=U7Qof0wu; arc=none smtp.client-ip=45.79.88.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lwn.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZkJuLSHy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34373C4CECF;
-	Mon, 11 Nov 2024 12:49:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731329356;
-	bh=DdPm7AxEHQ6dfU3WfACtcr6a+uPBdfir/vELQ7rFD7w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZkJuLSHyS/aHzlOCXxnaOpUXaWquX1G07IRS99kYT1iruTbuUN4eP1ju0z7JYlthe
-	 PYpm4s1j5hg5E9bOrlJsxc8S7El5dZr+R0s/EEDK0i4XS5UTdUjnGNyqt7/Snz56sd
-	 rrQQKEKhtQhgt58wl9C81Wpfa3Gf1cpO06FdupPxnFuub8WQF2qxb5PV7+LuVIW0sm
-	 iuvTZfwR5uw8xmx6nOJKT9HQ1Y4DYCR5uROQ6Qk/AoT7Htnnlz7dZae0Ty44yL9N7g
-	 d6Yilcxco7tS8Z3xmjdwb35tnqBu4du87IRR2lrmka0sDb8PIq1LW+XlcQqdWAqtSE
-	 mXbKUXEI3DNUQ==
-Date: Mon, 11 Nov 2024 12:49:10 +0000
-From: Will Deacon <will@kernel.org>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: joro@8bytes.org, jgg@nvidia.com, kevin.tian@intel.com,
-	baolu.lu@linux.intel.com, alex.williamson@redhat.com,
-	eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
-	chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
-	zhenzhong.duan@intel.com, vasant.hegde@amd.com
-Subject: Re: [PATCH v4 12/13] iommu/arm-smmu-v3: Make set_dev_pasid() op
- support replace
-Message-ID: <20241111124909.GB19874@willie-the-truck>
-References: <20241104131842.13303-1-yi.l.liu@intel.com>
- <20241104131842.13303-13-yi.l.liu@intel.com>
+	dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b="U7Qof0wu"
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 45E36403F1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+	t=1731337167; bh=GwVTmx4eIglWLWGHYmk31OoK5pzNvXaKVe73vYEWSTk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=U7Qof0wuVnJGcnP06ChHK+MJPNdREQXE7RLUzC2W70ULBaY9a9VnJ9vQEtqDAf9Ah
+	 A3HwpVCu8PJVyEMghvrqu/hNDOC8sGYBt3mN173rM33gAFqU2dKpLTqp9ac4bjnapP
+	 A1UN+AgpzI588tU7KIuantdLBUeWBgXdiFu11n7kGDH4ZxFGW1T97qYFC9t3FAzyYo
+	 fgA7YQdK+SYmrHtsukzfx/wT5vFef/DoXSOK38XKAVdsxtI+fq2uPWuv8CV5NUKrxx
+	 iQj4S70o2yK54j7jT8p8fewkBThJBXMBi2CZoLIkGaK5OJDLnfOOJSXDckk3X1rExZ
+	 HhL9BYc+PyPqw==
+Received: from localhost (unknown [IPv6:2601:280:5e00:625::1fe])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by ms.lwn.net (Postfix) with ESMTPSA id 45E36403F1;
+	Mon, 11 Nov 2024 14:59:27 +0000 (UTC)
+From: Jonathan Corbet <corbet@lwn.net>
+To: anish kumar <yesanishhere@gmail.com>, Christoph Hellwig <hch@lst.de>
+Cc: Leon Romanovsky <leon@kernel.org>, Jens Axboe <axboe@kernel.dk>, Jason
+ Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, Joerg
+ Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Sagi Grimberg
+ <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>, Bjorn Helgaas
+ <bhelgaas@google.com>, Logan Gunthorpe <logang@deltatee.com>, Yishai Hadas
+ <yishaih@nvidia.com>, Shameer Kolothum
+ <shameerali.kolothum.thodi@huawei.com>, Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, =?utf-8?B?SsOpcsO0bWU=?= Glisse
+ <jglisse@redhat.com>, Andrew
+ Morton <akpm@linux-foundation.org>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+ linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+ linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+ kvm@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v1 09/17] docs: core-api: document the IOVA-based API
+In-Reply-To: <CABCoZhBVWY=aUQtQ5b=mF8hXqpgJw21_jAPf9YvEvdgPf_GALA@mail.gmail.com>
+References: <cover.1730298502.git.leon@kernel.org>
+ <881ef0bcf9aa971e995fbdd00776c5140a7b5b3d.1730298502.git.leon@kernel.org>
+ <87ttchwmde.fsf@trenco.lwn.net> <20241108200355.GC189042@unreal>
+ <87h68hwkk8.fsf@trenco.lwn.net> <20241108202736.GD189042@unreal>
+ <20241110104130.GA19265@unreal> <20241111063847.GB23992@lst.de>
+ <CABCoZhBVWY=aUQtQ5b=mF8hXqpgJw21_jAPf9YvEvdgPf_GALA@mail.gmail.com>
+Date: Mon, 11 Nov 2024 07:59:26 -0700
+Message-ID: <87o72lu88h.fsf@trenco.lwn.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241104131842.13303-13-yi.l.liu@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 04, 2024 at 05:18:41AM -0800, Yi Liu wrote:
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> set_dev_pasid() op is going to be enhanced to support domain replacement
-> of a pasid. This prepares for this op definition.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 9 +++------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 2 +-
->  3 files changed, 5 insertions(+), 8 deletions(-)
+anish kumar <yesanishhere@gmail.com> writes:
 
-Acked-by: Will Deacon <will@kernel.org>
+> On Sun, Nov 10, 2024 at 10:39=E2=80=AFPM Christoph Hellwig <hch@lst.de> w=
+rote:
+>>
+>> On Sun, Nov 10, 2024 at 12:41:30PM +0200, Leon Romanovsky wrote:
+>> > I tried this today and the output (HTML) in the new section looks
+>> > so different from the rest of dma-api.rst that I lean to leave
+>> > the current doc implementation as is.
+>>
+>> Yeah.  The whole DMA API documentation shows it's age and could use
+>> a major revamp, but for now I'd prefer to stick to the way it is done.
+>>
+>> If we have any volunteers for bringing it up to standards I'd be glad
+>> to help with input and review.
+>
+> Jonathan, if you agree, I can take this up?
 
-Will
+I am happy to see help with the documentation, but agreement from the
+authors and maintainers of the DMA-mapping documentation is rather more
+important than agreement from me.
+
+jon
