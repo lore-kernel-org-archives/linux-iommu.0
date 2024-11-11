@@ -1,105 +1,167 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B447A923;
-	Sun, 10 Nov 2024 15:19:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C9A8A29
+	for <iommu@lists.linux.dev>; Mon, 11 Nov 2024 01:18:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731251986; cv=none; b=JlJHOQZzPaqz97k/7G16iE6e3DEHlBTIC5rykeXi2+VvAaLMY3jlCSwM7EioBFkoXRl8ydKVPPwf0pqSqmBhXtM3zYubpD6PLC51GxawBgTL8WacDTKhcr6fRS9e0ES5cfk2ALAkCnyvbfacSUxNSqG8BsswV1F4gIOL+MM2oRw=
+	t=1731287923; cv=none; b=PAHVOBwR785H7iryl9hEP2DA5dRCHwsKgt/MENHDraOgNsEc5QnhQJNdcu+8awYmftZCSq7zFoj17i0rDD8SVxd2kZ/2RE0uuJdliQhJ3iJClgeKkMuBfT17qWRWPA6ldsJp5W7EhWSesUFgokLUrpU86dyGt0FotBzOwH1+FQc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731251986; c=relaxed/simple;
-	bh=+nLpqVqlmI0rwfYB+x9XOLb4b4JCkJV7DCNS7yvGo5Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Qiu88qptzU25hzLt53cHTVpw29eHSU7qMsHB2NhPUbBwx4ou3k1arH5Yv0zmrgxvXgAjZ9IS/UiJpRGtjhb0X/GDmojNbbckWoDDjt7MjzrrNz+ryI/NwDl/4ZjiPo/Pf/YtVapXxkmWjcILhBxvP10DjL6HhWEPqM9FPcZYw/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OEubWIUH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1731287923; c=relaxed/simple;
+	bh=k+zYKvZtccWCCR7nyPdyVzSewpU58C/nG5kCkTh4o4k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IAJy/7cvYv2uVGBw/XZIGmy/39Sw5KQpOvaJ7LBbeoBraNUlP7Gl9hsTS7Ksuy5iVEgoMXvc74bG0Hihoa/M57fzJXZ3NPWFVDo/5jDQJ2PH/FcL+W6DTUTlbnEcWJKP3TICfYS1L+Qv6X+1uHats2JlAePvV+nFLPi2CIA3qZ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EGUU+gPt; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OEubWIUH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 533D2C4CECD;
-	Sun, 10 Nov 2024 15:19:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731251985;
-	bh=+nLpqVqlmI0rwfYB+x9XOLb4b4JCkJV7DCNS7yvGo5Y=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OEubWIUHaUCtjGJxYJ5nWYcTl4O7jXvmZxRC78OdoHXOSPdpN7Yve6E8unqrE3xw7
-	 noGkSTSEj5WPLytJfdaJwps42VXBFU7yRdOMwjAgfBjhgBg0Dd/EC2D8tewNsUak80
-	 h12aWQlWql/HCLFHYJOCSy2Bgc3Sbx2TdUGdPaz5txbu3gg84O+qg0yKH/aU32e81v
-	 7eKJu7lxrjbuPwLHgJwoib4PK0Ffn2owR8TwOlpUaUruiqAVwpjo6Q1dbyJlxpXA3X
-	 03rsXv5Mmeha22biNs41oOfjNv3RZB8IxRhyqfLwzMScjSb64oiAJc2mVMc/sMWUE8
-	 X3YK8Swfv+C7Q==
-Date: Sun, 10 Nov 2024 17:19:38 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Zhu Yanjun <yanjun.zhu@linux.dev>
-Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
-	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v1 04/17] dma-mapping: Add check if IOVA can be used
-Message-ID: <20241110151938.GA71181@unreal>
-References: <cover.1730298502.git.leon@kernel.org>
- <9515f330b9615de92a1864ab46acbd95e32634b6.1730298502.git.leon@kernel.org>
- <5ea594b3-7451-4553-92c1-2590c8baef20@linux.dev>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EGUU+gPt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1731287922; x=1762823922;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=k+zYKvZtccWCCR7nyPdyVzSewpU58C/nG5kCkTh4o4k=;
+  b=EGUU+gPtfBp0rwtyIaUH6Mnfnsy8TsH8n5UnDx90f1cvO/RKpmi6dHY8
+   4zHS4LH3VLre+R3e/rUXZ41chlzeFNleHLpuK5btvQlNPD7oeS5nUFUqg
+   1Bu5qhxTEIz7fNM5B8J+asO2q4jQXfQ32l/qdxxBczXpPLxwwNzupNPXB
+   +uEoMD6T6wnNlNl3oPLUkFNV9wBWPq+DTaGjrvyxVvwKs4Q6HrEdgDq/1
+   P+gQIe+sXN/dE8S/l/NqiK2x19ViqfQcdkF9EGSkilVnBEoxGN6hB46fn
+   xPem4XAfrPKtFaxs4JtoGed6i3afVuB+7poRpLUFcQ5LXIehFpPGnl2P7
+   w==;
+X-CSE-ConnectionGUID: g3CtEKR4SsinopWlEBOEkw==
+X-CSE-MsgGUID: U9Cwvbj5SzOTiRqaXvjT5A==
+X-IronPort-AV: E=McAfee;i="6700,10204,11252"; a="41713915"
+X-IronPort-AV: E=Sophos;i="6.12,144,1728975600"; 
+   d="scan'208";a="41713915"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2024 17:18:41 -0800
+X-CSE-ConnectionGUID: 6eW+UiEnSSCtCAi537p7WQ==
+X-CSE-MsgGUID: 4D64gkvNSRqcIizxj4oMKw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,144,1728975600"; 
+   d="scan'208";a="86761864"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2024 17:18:39 -0800
+Message-ID: <05969b08-6c84-46b8-b795-85980ef15269@linux.intel.com>
+Date: Mon, 11 Nov 2024 09:17:43 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5ea594b3-7451-4553-92c1-2590c8baef20@linux.dev>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH] iommu: intel: apply quirk_iommu_igfx for 8086:0044
+ (QM57/QS57)
+To: Mingcong Bai <jeffbai@aosc.io>
+Cc: kexybiscuit@aosc.io, weiguangtwk@outlook.com,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ intel-gfx@lists.freedesktop.org
+References: <20241108120838.495931-1-jeffbai@aosc.io>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20241108120838.495931-1-jeffbai@aosc.io>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sun, Nov 10, 2024 at 04:09:11PM +0100, Zhu Yanjun wrote:
-> 在 2024/10/30 16:12, Leon Romanovsky 写道:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > This patch adds a check if IOVA can be used for the specific
-> > transaction.
-> > 
-> > In the new API a DMA mapping transaction is identified by a
-> > struct dma_iova_state, which holds some recomputed information
-> > for the transaction which does not change for each page being
-> > mapped.
-> > 
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >   include/linux/dma-mapping.h | 33 +++++++++++++++++++++++++++++++++
-> >   1 file changed, 33 insertions(+)
-> > 
-> > diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> > index 1524da363734..6075e0708deb 100644
-> > --- a/include/linux/dma-mapping.h
-> > +++ b/include/linux/dma-mapping.h
-> > @@ -76,6 +76,20 @@
-> >   #define DMA_BIT_MASK(n)	(((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-> > +struct dma_iova_state {
-> > +	size_t __size;
-> > +};
-> > +
-> > +/*
-> > + * Use the high bit to mark if we used swiotlb for one or more ranges.
-> > + */
-> > +#define DMA_IOVA_USE_SWIOTLB		(1ULL << 63)
+On 11/8/24 20:08, Mingcong Bai wrote:
+> (I'm not very confident about the approach of this patch but I failed to
+> find a better way to address the issue I have on hand, so please consider
+> this patch as an RFC...)
 > 
-> A trivial problem.
-> In the above macro, using BIT_ULL(63) is better?
-
-You already asked same question and the answer is also the same.
-https://lore.kernel.org/all/20241103151946.GA99170@unreal/
-
+> On the Lenovo ThinkPad X201, when Intel VT-d is enabled in the BIOS, the
+> kernel boots with errors related to DMAR, the graphical interface appeared
+> quite choppy, and the system resets erratically within a minute after it
+> booted:
 > 
-> Zhu Yanjun
+> DMAR: DRHD: handling fault status reg 3
+> DMAR: [DMA Write NO_PASID] Request device [00:02.0] fault addr 0xb97ff000
+> [fault reason 0x05] PTE Write access is not set
+> 
+> Upon comparing boot logs with VT-d on/off, I found that the Intel Calpella
+> quirk (`quirk_calpella_no_shadow_gtt()') correctly applied the igfx IOMMU
+> disable/quirk correctly:
+> 
+> pci 0000:00:00.0: DMAR: BIOS has allocated no shadow GTT; disabling IOMMU
+> for graphics
+> 
+> Whereas with VT-d on, it went into the "else" branch, which then
+> triggered the DMAR handling fault above:
+> 
+> ... else if (!disable_igfx_iommu) {
+> 	/* we have to ensure the gfx device is idle before we flush */
+> 	pci_info(dev, "Disabling batched IOTLB flush on Ironlake\n");
+> 	iommu_set_dma_strict();
+> }
+> 
+> Now, this is not exactly scientific, but moving 0x0044 to quirk_iommu_igfx
+> seems to have fixed the aforementioned issue. Running a few `git blame'
+> runs on the function, I have found that the quirk was originally
+> introduced as a fix specific to ThinkPad X201:
+> 
+> commit 9eecabcb9a92 ("intel-iommu: Abort IOMMU setup for igfx if BIOS gave
+> no shadow GTT space")
+> 
+> Which was later revised twice to the "else" branch we saw above:
+> 
+> - 2011: commit 6fbcfb3e467a ("intel-iommu: Workaround IOTLB hang on
+>    Ironlake GPU")
+> - 2024: commit ba00196ca41c ("iommu/vt-d: Decouple igfx_off from graphic
+>    identity mapping")
+> 
+> I'm uncertain whether further testings on this particular laptops were
+> done in 2011 and (honestly I'm not sure) 2024, but I would be happy to do
+> some distro-specific testing if that's what would be required to verify
+> this patch.
+> 
+> P.S., I also see IDs 0x0040, 0x0062, and 0x006a listed under the same
+> `quirk_calpella_no_shadow_gtt()' quirk, but I'm not sure how similar these
+> chipsets are (if they share the same issue with VT-d or even, indeed, if
+> this issue is specific to a bug in the Lenovo BIOS). With regards to
+> 0x0062, it seems to be a Centrino wireless card, but not a chipset?
+> 
+> I have also listed a couple (distro and kernel) bug reports below as
+> references (some of them are from 7-8 years ago!), as they seem to be
+> similar issue found on different Westmere/Ironlake, Haswell, and Broadwell
+> hardware setups.
+> 
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=197029
+> Link: https://groups.google.com/g/qubes-users/c/4NP4goUds2c?pli=1
+> Link: https://bugs.archlinux.org/task/65362
+> Link: https://bbs.archlinux.org/viewtopic.php?id=230323
+> Reported-by: Wenhao Sun <weiguangtwk@outlook.com>
+> Signed-off-by: Mingcong Bai <jeffbai@aosc.io>
+> ---
+>   drivers/iommu/intel/iommu.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index e860bc9439a2..1ccea83c2c95 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4646,6 +4646,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e30, quirk_iommu_igfx);
+>   DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e40, quirk_iommu_igfx);
+>   DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e90, quirk_iommu_igfx);
+>   
+> +/* QM57/QS57 integrated gfx malfunctions with dmar */
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0044, quirk_iommu_igfx);
+> +
+>   /* Broadwell igfx malfunctions with dmar */
+>   DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1606, quirk_iommu_igfx);
+>   DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x160B, quirk_iommu_igfx);
+> @@ -4723,7 +4726,6 @@ static void quirk_calpella_no_shadow_gtt(struct pci_dev *dev)
+>   	}
+>   }
+>   DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0040, quirk_calpella_no_shadow_gtt);
+> -DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0044, quirk_calpella_no_shadow_gtt);
+>   DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0062, quirk_calpella_no_shadow_gtt);
+>   DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x006a, quirk_calpella_no_shadow_gtt);
+>   
+
+Cc: intel-gfx@lists.freedesktop.org
+
+--
+baolu
