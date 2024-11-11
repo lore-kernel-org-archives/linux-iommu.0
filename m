@@ -1,93 +1,379 @@
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E99419F101
-	for <iommu@lists.linux.dev>; Mon, 11 Nov 2024 14:59:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.79.88.28
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C687339A0
+	for <iommu@lists.linux.dev>; Mon, 11 Nov 2024 15:34:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731337169; cv=none; b=MtwU2kB5x4wUnF5zREa89UWPM4AlGiKzSef9HxYRmj/9wdAJ6Z/KOGLEO0TSMO68UoqDOISjUqFyxZMEkl6iJqB3BYBmWPoHZ2/wDsJyyR8vMHn+nDfyXpCvOtImR419J1TSw1vujD9hhTd7vgQkCLF6nz40gVMfVT0bemjpwaI=
+	t=1731339276; cv=none; b=PzxSihjU1p3bzjMQuU9u+681XnGRhRpdR5HaHHz0L25WG3HWPQAsANtayUO5rHE/mVLwBzP+Nbr5Lx6sifyBe4w2Jl5Jw7CzJpNIWeYz+cwX8LsI9A/PKabWJyj5pk0EDGsIbQWpKr7WJYWVBQQCYHKrWcVDabKMShlEFgQ2AY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731337169; c=relaxed/simple;
-	bh=gg3nV1iKgs4bbxPK/uru5pPDw51yAhWHVenuhfd8RSY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=E1hbJAEALqlb5yL56DaF3Qdv35CRbOZUjo41njnTAapQEJ0PfjTeAMJlktQn6zFocYAD5AcntSDzEzxG0egw/joVNiqqGP+s2PtjzedHUpp4kPCeNPoPiPCIlkzq6cGu7gK+PF8oeOV3JldOMHb+qdPl62rL7Yt8XyMFS58xoNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net; spf=pass smtp.mailfrom=lwn.net; dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b=U7Qof0wu; arc=none smtp.client-ip=45.79.88.28
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lwn.net
+	s=arc-20240116; t=1731339276; c=relaxed/simple;
+	bh=s+r8MKSfjOUgsLlcKit7gbhB1uOR+p7/d0nO74Q29mc=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=HvDugNOjR1xpXj2izGAA3pbr3MFRBAycc8GKBAXF7TiRHjuoRfZtRUH28JAcoaPnVAqAnpxxPDwdh7580IHVhOKSziBfMxiWE/NJfwfLBEuwYmMrGOxuJ82/rYefu4KfaNVHAco8TeNwil9/fHlvg7tfn8UJkF6AKzFIvbpQp0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=E7jzRMNy; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b="U7Qof0wu"
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 45E36403F1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-	t=1731337167; bh=GwVTmx4eIglWLWGHYmk31OoK5pzNvXaKVe73vYEWSTk=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=U7Qof0wuVnJGcnP06ChHK+MJPNdREQXE7RLUzC2W70ULBaY9a9VnJ9vQEtqDAf9Ah
-	 A3HwpVCu8PJVyEMghvrqu/hNDOC8sGYBt3mN173rM33gAFqU2dKpLTqp9ac4bjnapP
-	 A1UN+AgpzI588tU7KIuantdLBUeWBgXdiFu11n7kGDH4ZxFGW1T97qYFC9t3FAzyYo
-	 fgA7YQdK+SYmrHtsukzfx/wT5vFef/DoXSOK38XKAVdsxtI+fq2uPWuv8CV5NUKrxx
-	 iQj4S70o2yK54j7jT8p8fewkBThJBXMBi2CZoLIkGaK5OJDLnfOOJSXDckk3X1rExZ
-	 HhL9BYc+PyPqw==
-Received: from localhost (unknown [IPv6:2601:280:5e00:625::1fe])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by ms.lwn.net (Postfix) with ESMTPSA id 45E36403F1;
-	Mon, 11 Nov 2024 14:59:27 +0000 (UTC)
-From: Jonathan Corbet <corbet@lwn.net>
-To: anish kumar <yesanishhere@gmail.com>, Christoph Hellwig <hch@lst.de>
-Cc: Leon Romanovsky <leon@kernel.org>, Jens Axboe <axboe@kernel.dk>, Jason
- Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, Joerg
- Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Sagi Grimberg
- <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>, Bjorn Helgaas
- <bhelgaas@google.com>, Logan Gunthorpe <logang@deltatee.com>, Yishai Hadas
- <yishaih@nvidia.com>, Shameer Kolothum
- <shameerali.kolothum.thodi@huawei.com>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>, =?utf-8?B?SsOpcsO0bWU=?= Glisse
- <jglisse@redhat.com>, Andrew
- Morton <akpm@linux-foundation.org>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
- linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
- kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v1 09/17] docs: core-api: document the IOVA-based API
-In-Reply-To: <CABCoZhBVWY=aUQtQ5b=mF8hXqpgJw21_jAPf9YvEvdgPf_GALA@mail.gmail.com>
-References: <cover.1730298502.git.leon@kernel.org>
- <881ef0bcf9aa971e995fbdd00776c5140a7b5b3d.1730298502.git.leon@kernel.org>
- <87ttchwmde.fsf@trenco.lwn.net> <20241108200355.GC189042@unreal>
- <87h68hwkk8.fsf@trenco.lwn.net> <20241108202736.GD189042@unreal>
- <20241110104130.GA19265@unreal> <20241111063847.GB23992@lst.de>
- <CABCoZhBVWY=aUQtQ5b=mF8hXqpgJw21_jAPf9YvEvdgPf_GALA@mail.gmail.com>
-Date: Mon, 11 Nov 2024 07:59:26 -0700
-Message-ID: <87o72lu88h.fsf@trenco.lwn.net>
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="E7jzRMNy"
+Received: from localhost (docker-mailserver-web-1.docker-mailserver_default [172.22.0.5])
+	by mail.mainlining.org (Postfix) with ESMTPSA id 5D313E45C8;
+	Mon, 11 Nov 2024 15:34:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1731339266;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=FgH5SDBs70jQ4C2U/avkzi9hwI1VhBBZzHkW8+ms7HI=;
+	b=E7jzRMNyOIGQuTY31m7mi34wUHcZCy490mwQaIZ39ylLaTQY+lQQMeJpV++pCjfOD3RU+4
+	LW17xHcNtAQwBcn8AMv8LxRNDWwX/vB62KczSVQbaeNJmMRJk8Ha8iuh2gyjembaYD3Q/y
+	bCPQW41NUthuIjrGkXhPMMX9pbgDBsZj359KX+flJh0rqEI8sEDdj5xldYwa7LvKdvyV69
+	+5KJTeDlpZfOA+kDr+/VnVsEmSivcSGGliCMjHZMqHGQfKb0rjqe3pNMdHNOkMwxpPRNon
+	vLK17MEdir+Qr37ta3v3iXhXjiZh9AJhv7u1QH4zrQWIl53o+9oyeP++QKC1fw==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Date: Mon, 11 Nov 2024 16:34:26 +0100
+From: barnabas.czeman@mainlining.org
+To: Stephan Gerhold <stephan.gerhold@linaro.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio
+ <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Linus Walleij
+ <linus.walleij@linaro.org>, Amit Kucheria <amitk@kernel.org>, Thara Gopinath
+ <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
+ Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz
+ Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Srinivas Kandagatla
+ <srinivas.kandagatla@linaro.org>, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev,
+ =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>
+Subject: Re: [PATCH v4 08/10] arm64: dts: qcom: Add initial support for
+ MSM8917
+In-Reply-To: <ZzHf9J0Y2uB7_vy4@linaro.org>
+References: <20241109-msm8917-v4-0-8be9904792ab@mainlining.org>
+ <20241109-msm8917-v4-8-8be9904792ab@mainlining.org>
+ <ZzHf9J0Y2uB7_vy4@linaro.org>
+Message-ID: <84ae6914700eff1ad66dd1048efeff97@mainlining.org>
+X-Sender: barnabas.czeman@mainlining.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
 
-anish kumar <yesanishhere@gmail.com> writes:
-
-> On Sun, Nov 10, 2024 at 10:39=E2=80=AFPM Christoph Hellwig <hch@lst.de> w=
-rote:
->>
->> On Sun, Nov 10, 2024 at 12:41:30PM +0200, Leon Romanovsky wrote:
->> > I tried this today and the output (HTML) in the new section looks
->> > so different from the rest of dma-api.rst that I lean to leave
->> > the current doc implementation as is.
->>
->> Yeah.  The whole DMA API documentation shows it's age and could use
->> a major revamp, but for now I'd prefer to stick to the way it is done.
->>
->> If we have any volunteers for bringing it up to standards I'd be glad
->> to help with input and review.
->
-> Jonathan, if you agree, I can take this up?
-
-I am happy to see help with the documentation, but agreement from the
-authors and maintainers of the DMA-mapping documentation is rather more
-important than agreement from me.
-
-jon
+On 2024-11-11 11:44, Stephan Gerhold wrote:
+> On Sat, Nov 09, 2024 at 01:08:10PM +0100, Barnabás Czémán wrote:
+>> From: Otto Pflüger <otto.pflueger@abscue.de>
+>> 
+>> Add initial support for MSM8917 SoC.
+>> 
+>> Signed-off-by: Otto Pflüger <otto.pflueger@abscue.de>
+>> [reword commit, rebase, fix schema errors]
+>> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>> ---
+>>  arch/arm64/boot/dts/qcom/msm8917.dtsi | 1997 
+>> +++++++++++++++++++++++++++++++++
+>>  1 file changed, 1997 insertions(+)
+>> 
+>> diff --git a/arch/arm64/boot/dts/qcom/msm8917.dtsi 
+>> b/arch/arm64/boot/dts/qcom/msm8917.dtsi
+>> new file mode 100644
+>> index 
+>> 0000000000000000000000000000000000000000..f866843772684c695069debfc764f7a0a58843bb
+>> --- /dev/null
+>> +++ b/arch/arm64/boot/dts/qcom/msm8917.dtsi
+>> @@ -0,0 +1,1997 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +
+>> +#include <dt-bindings/clock/qcom,gcc-msm8917.h>
+>> +#include <dt-bindings/clock/qcom,rpmcc.h>
+>> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+>> +#include <dt-bindings/power/qcom-rpmpd.h>
+>> +#include <dt-bindings/soc/qcom,apr.h>
+>> +#include <dt-bindings/sound/qcom,q6dsp-lpass-ports.h>
+>> +#include <dt-bindings/thermal/thermal.h>
+>> +
+>> +/ {
+>> +	interrupt-parent = <&intc>;
+>> +
+>> +	#address-cells = <2>;
+>> +	#size-cells = <2>;
+>> +
+>> +	aliases {
+>> +		mmc0 = &sdhc_1; /* SDC1 eMMC slot */
+>> +		mmc1 = &sdhc_2; /* SDC2 SD card slot */
+>> +	};
+> 
+> I think we put aliases in each board separately nowadays, see e.g.
+> commit 154f23a8d70c ("arm64: dts: qcom: msm8916: Move aliases to
+> boards").
+> 
+>> [...]
+>> +		domain-idle-states {
+>> +			cluster_sleep_0: cluster-sleep-0 {
+>> +				compatible = "domain-idle-state";
+>> +				arm,psci-suspend-param = <0x41000023>;
+>> +				entry-latency-us = <700>;
+>> +				exit-latency-us = <650>;
+>> +				min-residency-us = <1972>;
+>> +			};
+>> +
+>> +			cluster_sleep_1: cluster-sleep-1 {
+>> +				compatible = "domain-idle-state";
+>> +				arm,psci-suspend-param = <0x41000043>;
+>> +				entry-latency-us = <240>;
+>> +				exit-latency-us = <280>;
+>> +				min-residency-us = <806>;
+>> +			};
+> 
+> This is strange, the deeper sleep state has lower timings than the
+> previous one?
+> 
+>> +
+>> +			cluster_sleep_2: cluster-sleep-2 {
+>> +				compatible = "domain-idle-state";
+>> +				arm,psci-suspend-param = <0x41000053>;
+>> +				entry-latency-us = <700>;
+>> +				exit-latency-us = <1000>;
+>> +				min-residency-us = <6500>;
+>> +			};
+>> +		};
+>> [...]
+>> +
+>> +	rpm: remoteproc {
+>> +		compatible = "qcom,msm8917-rpm-proc", "qcom,rpm-proc";
+>> +
+>> +		smd-edge {
+>> +			interrupts = <GIC_SPI 168 IRQ_TYPE_EDGE_RISING>;
+>> +			qcom,ipc = <&apcs 8 0>;
+> 
+> Can you use mboxes here?
+No, it cause deferred probe because of dependency cycle like at other 
+SoCs where it was reverted.
+> 
+>> +			qcom,smd-edge = <15>;
+>> +
+>> [...]
+>> +
+>> +		mpss_mem: mpss@86800000 {
+>> +			/*
+>> +			 * The memory region for the mpss firmware is generally
+>> +			 * relocatable and could be allocated dynamically.
+>> +			 * However, many firmware versions tend to fail when
+>> +			 * loaded to some special addresses, so it is hard to
+>> +			 * define reliable alloc-ranges.
+>> +			 *
+>> +			 * alignment = <0x0 0x400000>;
+>> +			 * alloc-ranges = <0x0 0x86800000 0x0 0x8000000>;
+>> +			 */
+> 
+> Not sure how many devices you have access to, but have you tried if 
+> this
+> is actually still the case? I'd have hoped they fixed those issues in
+> the firmware.
+> 
+> Thanks for using alloc-ranges instead of fixed addresses BTW :)
+> 
+>> +			reg = <0x0 0x86800000 0x0 0>; /* size is device-specific */
+>> +			no-map;
+>> +			status = "disabled";
+>> +		};
+>> +
+>> [...]
+>> +	smp2p-adsp {
+>> +		compatible = "qcom,smp2p";
+>> +		qcom,smem = <443>, <429>;
+>> +
+>> +		interrupts = <GIC_SPI 291 IRQ_TYPE_EDGE_RISING>;
+>> +
+>> +		mboxes = <&apcs 10>;
+>> +
+>> +		qcom,local-pid = <0>;
+>> +		qcom,remote-pid = <2>;
+>> +
+>> +		adsp_smp2p_out: master-kernel {
+>> +			qcom,entry-name = "master-kernel";
+>> +
+>> +			#qcom,smem-state-cells = <1>;
+>> +		};
+>> +
+>> +		adsp_smp2p_in: slave-kernel {
+>> +			qcom,entry-name = "slave-kernel";
+>> +
+>> +			interrupt-controller;
+>> +			#interrupt-cells = <2>;
+>> +		};
+>> +	};
+>> +
+>> +	smp2p-modem {
+>> +		compatible = "qcom,smp2p";
+>> +		qcom,smem = <435>, <428>;
+>> +
+>> +		interrupts = <GIC_SPI 27 IRQ_TYPE_EDGE_RISING>;
+>> +
+>> +		qcom,ipc = <&apcs 8 14>;
+> 
+> You have mboxes for adsp above, what about modem and
+Maybe i should set back qcom,ipc there.
+> 
+>> +
+>> +		qcom,local-pid = <0>;
+>> +		qcom,remote-pid = <1>;
+>> +
+>> +		modem_smp2p_out: master-kernel {
+>> +			qcom,entry-name = "master-kernel";
+>> +
+>> +			#qcom,smem-state-cells = <1>;
+>> +		};
+>> +
+>> +		modem_smp2p_in: slave-kernel {
+>> +			qcom,entry-name = "slave-kernel";
+>> +
+>> +			interrupt-controller;
+>> +			#interrupt-cells = <2>;
+>> +		};
+>> +	};
+>> +
+>> +	smp2p-wcnss {
+>> +		compatible = "qcom,smp2p";
+>> +		qcom,smem = <451>, <431>;
+>> +
+>> +		interrupts = <GIC_SPI 143 IRQ_TYPE_EDGE_RISING>;
+>> +
+>> +		qcom,ipc = <&apcs 8 18>;
+> 
+> ... wcnss?
+> 
+>> +
+>> +		qcom,local-pid = <0>;
+>> +		qcom,remote-pid = <4>;
+>> +
+>> +		wcnss_smp2p_out: master-kernel {
+>> +			qcom,entry-name = "master-kernel";
+>> +
+>> +			#qcom,smem-state-cells = <1>;
+>> +		};
+>> +
+>> +		wcnss_smp2p_in: slave-kernel {
+>> +			qcom,entry-name = "slave-kernel";
+>> +
+>> +			interrupt-controller;
+>> +			#interrupt-cells = <2>;
+>> +		};
+>> +	};
+>> +
+>> [...]
+>> +
+>> +		restart@4ab000 {
+>> +			compatible = "qcom,pshold";
+>> +			reg = <0x004ab000 0x4>;
+>> +		};
+> 
+> You have PSCI for shutting down, do you actually need this?
+> 
+>> [...]
+>> +		blsp_i2c4: i2c@78b8000 {
+>> +			compatible = "qcom,i2c-qup-v2.2.1";
+>> +			reg = <0x078b8000 0x500>;
+>> +			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+>> +			clocks = <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>,
+>> +				 <&gcc GCC_BLSP1_AHB_CLK>;
+>> +			clock-names = "core", "iface";
+>> +			dmas = <&blsp1_dma 10>, <&blsp1_dma 11>;
+>> +			dma-names = "tx", "rx";
+>> +			pinctrl-0 = <&i2c4_default>;
+>> +			pinctrl-1 = <&i2c4_sleep>;
+>> +			pinctrl-names = "default", "sleep";
+>> +			#address-cells = <1>;
+>> +			#size-cells = <0>;
+>> +			status = "disabled";
+>> +		};
+>> +
+>> +		blsp_i2c5: i2c@7af5000 {
+> 
+> Please use a full label here with the BLSP number and QUP instance
+> (&blspX_i2cY). This corresponds to the name of the clock, so this node
+> is actually
+> 
+>> +			compatible = "qcom,i2c-qup-v2.2.1";
+>> +			reg = <0x07af5000 0x600>;
+>> +			interrupts = <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>;
+>> +			clocks = <&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>,
+> 
+> ... &blsp2_i2c1.
+> 
+> I guess the current naming is taken from downstream, but I think they
+> just assigned consecutive numbers to all the QUP instances they needed.
+> This will cause headaches in the future if someone wants to add an
+> instance that wasn't used by QC in the reference designs.
+> 
+>> +				 <&gcc GCC_BLSP2_AHB_CLK>;
+>> +			clock-names = "core", "iface";
+>> +			dmas = <&blsp2_dma 4>, <&blsp2_dma 5>;
+>> +			dma-names = "tx", "rx";
+>> +			pinctrl-0 = <&i2c5_default>;
+>> +			pinctrl-1 = <&i2c5_sleep>;
+> 
+> &blsp2_i2c1_default/sleep for clarity
+> 
+>> +			pinctrl-names = "default", "sleep";
+>> +			#address-cells = <1>;
+>> +			#size-cells = <0>;
+>> +			status = "disabled";
+>> +		};
+>> +
+>> +		blsp_spi6: spi@7af6000 {
+> 
+> &blsp2_spi2
+> 
+>> +			compatible = "qcom,spi-qup-v2.2.1";
+>> +			reg = <0x07af6000 0x600>;
+>> +			interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>;
+>> +			clocks = <&gcc GCC_BLSP2_QUP2_SPI_APPS_CLK>,
+>> +				 <&gcc GCC_BLSP2_AHB_CLK>;
+>> +			clock-names = "core", "iface";
+>> +			dmas = <&blsp2_dma 6>, <&blsp2_dma 7>;
+>> +			dma-names = "tx", "rx";
+>> +			pinctrl-0 = <&spi6_default>;
+>> +			pinctrl-1 = <&spi6_sleep>;
+> 
+> &blsp2_spi2_default/sleep
+> 
+>> +			pinctrl-names = "default", "sleep";
+>> +			#address-cells = <1>;
+>> +			#size-cells = <0>;
+>> +			status = "disabled";
+>> +		};
+>> +
+>> [...]
+>> +		timer@b120000 {
+>> +			#address-cells = <1>;
+>> +			#size-cells = <1>;
+>> +			ranges;
+>> +			compatible = "arm,armv7-timer-mem";
+>> +			reg = <0x0b120000 0x1000>;
+>> +			clock-frequency = <19200000>;
+> 
+> Should be unneeded unless the firmware is broken. Can you try dropping
+> it and see if you get a warning in dmesg?
+> 
+>> [...]
+>> +		};
+>> +	};
+>> +
+>> +	timer {
+>> +		compatible = "arm,armv8-timer";
+>> +		interrupts = <GIC_PPI 2 (GIC_CPU_MASK_SIMPLE(4) | 
+>> IRQ_TYPE_LEVEL_LOW)>,
+>> +			     <GIC_PPI 3 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+>> +			     <GIC_PPI 4 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+>> +			     <GIC_PPI 1 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+>> +		clock-frequency = <19200000>;
+> 
+> Same here.
+> 
+> Thanks,
+> Stephan
