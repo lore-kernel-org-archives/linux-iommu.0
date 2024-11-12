@@ -1,82 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06B6B20651E;
-	Tue, 12 Nov 2024 16:56:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2EF752144C0
+	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 17:03:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731430617; cv=none; b=TyfF1NPgzzEy2MYENokeZ/ox+I9P8j+ADlfBc2hfmwwU4rt6zlDe1Pl/SqoqzxhNrUU29g1N3k/kdzpjmu+wAIshvxX6qjugpSiA/oxh+CGZmgaKGFZhpZDrxsrkthEezi+C6CSRUTXbkxL1Cwbr0QsXmFfJ5jLKrZ5q6hGsUxc=
+	t=1731431036; cv=none; b=EPcuSDiI52FWAj9HBPRPPFR3xkjt+ygjltXp/lO9+W+/3AazoNMNe86bL8hE8OsH9gp+ApBaV2If+6LrBW9i/hk5eGhat+8eLFR50OY1AI2JOmcbaD7w4BKn9s6ThroexleSrT8lHQ5f2Es1WNRHFzUapJ+9trZxtHRNJH5Ckus=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731430617; c=relaxed/simple;
-	bh=EQvwaUi2w45hQ0nesz6tI/0jRlGB8KnI5X1+VY1Emb4=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=apyIezI8Ir/Gvsb6r/YhJDln+XDeTt7N+/usow+5yjP/WI5SA0nvrmjDlOkIyLqOjJjGahqwfboIWPE8gMR80DneTm/m8S4hTiorLOsnd+7N97jTnEGlkASkSF/4WuqXwjjVeEInZKiYluK+5clKWhujCsLFEAzFNfEP49ZXPBs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gyDGHS8V; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gyDGHS8V"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09C3AC4CECD;
-	Tue, 12 Nov 2024 16:56:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731430616;
-	bh=EQvwaUi2w45hQ0nesz6tI/0jRlGB8KnI5X1+VY1Emb4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gyDGHS8VsFO8YiUHKzzdrGVONkbwC6XBKloCM7ImIfjtBGzSzNAUgp2U1WQRNik81
-	 Fsef0rzOtkP2gxPHhseqbSGQUo+F007cVaRRm44WCe98vAwzUKEsIImwT1EVlLXEEz
-	 0LPJez1/xObpd4tI+PXrrXb1OOwTry4zKTP8DK80gDMaU+/6dzq1hkBA8kBgDGuAIh
-	 InhNdo6bpFLAoS8m7e+5Nejf1cDjQeqc0stHuDrWH0xdL7jzaX5A21tmfk1g5qFhJ1
-	 EUacgxVFtwvt6r+/zqkKBBkvW0fRLCFGYz0b3KVM4AcH0I70MqjMdfXNiVT4hNrF9p
-	 aXeJjSEvP0IdQ==
-From: Will Deacon <will@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	thierry.reding@gmail.com,
-	vdumpa@nvidia.com,
-	jonathanh@nvidia.com,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-tegra@vger.kernel.org,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH rc] iommu/tegra241-cmdqv: Fix alignment failure at max_n_shift
-Date: Tue, 12 Nov 2024 16:56:50 +0000
-Message-Id: <173142418330.1973910.1191259071038387348.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20241111030226.1940737-1-nicolinc@nvidia.com>
-References: <20241111030226.1940737-1-nicolinc@nvidia.com>
+	s=arc-20240116; t=1731431036; c=relaxed/simple;
+	bh=KG9hCrrswnbwSh3ey83f9wGh+2/cSnvRs30Gg3krKZs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=iFHw2Tr9Q+ppKxjLO0V1Y33MV+tbXLkt8YIrNOcRROwjZ6rmd41rtv7fbMfRp1z5VVJn3aWRsX5KYRC68e+yoldpjxEhzcOvG9vHstmbSVbpZBGX5MXkDh43LVRQE9blpsVIvqMPiC1BrNQVIv7lCAIt0H7FrSHIehugnrd0cpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B1D025E0;
+	Tue, 12 Nov 2024 09:04:23 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D2C2A3F6A8;
+	Tue, 12 Nov 2024 09:03:52 -0800 (PST)
+Message-ID: <8cb6b8e2-3a01-49a1-b34a-67b4671356fe@arm.com>
+Date: Tue, 12 Nov 2024 17:03:51 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] iommu/arm-smmu-v3: Clean up iopf queue on probe
+ failure
+To: Will Deacon <will@kernel.org>
+Cc: joro@8bytes.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org
+References: <cover.1731088789.git.robin.murphy@arm.com>
+ <161cf3bfde2993cc29e82589df947ff23fb82845.1731088789.git.robin.murphy@arm.com>
+ <20241112155525.GB21479@willie-the-truck>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20241112155525.GB21479@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sun, 10 Nov 2024 19:02:26 -0800, Nicolin Chen wrote:
-> When configuring a kernel with PAGE_SIZE=4KB, depending on its setting of
-> CONFIG_CMA_ALIGNMENT, VCMDQ_LOG2SIZE_MAX=19 could fail the alignment test
-> and trigger a WARN_ON:
->     WARNING: at drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3646
->     Call trace:
->      arm_smmu_init_one_queue+0x15c/0x210
->      tegra241_cmdqv_init_structures+0x114/0x338
->      arm_smmu_device_probe+0xb48/0x1d90
+On 12/11/2024 3:55 pm, Will Deacon wrote:
+> On Fri, Nov 08, 2024 at 06:30:16PM +0000, Robin Murphy wrote:
+>> kmemleak noticed that the iopf queue allocated deep down within
+>> arm_smmu_init_structures() can be leaked by a subsequent error return
+>> from arm_smmu_device_probe(). Hardly a big deal when probe failure
+>> represents something much more seriously wrong in the first place,
+>> but on principle, adopt a dedicated cleanup path for those.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 ++++++++++-----
+>>   1 file changed, 10 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index b7dcb1494aa4..7908fca962fe 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -4609,7 +4609,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>   	/* Initialise in-memory data structures */
+>>   	ret = arm_smmu_init_structures(smmu);
+>>   	if (ret)
+>> -		return ret;
+>> +		goto free_iopf;
+>>   
+>>   	/* Record our private device structure */
+>>   	platform_set_drvdata(pdev, smmu);
+>> @@ -4620,22 +4620,27 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>   	/* Reset the device */
+>>   	ret = arm_smmu_device_reset(smmu);
+>>   	if (ret)
+>> -		return ret;
+>> +		goto free_iopf;
+>>   
+>>   	/* And we're up. Go go go! */
+>>   	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
+>>   				     "smmu3.%pa", &ioaddr);
+>>   	if (ret)
+>> -		return ret;
+>> +		goto free_iopf;
+>>   
+>>   	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
+>>   	if (ret) {
+>>   		dev_err(dev, "Failed to register iommu\n");
+>> -		iommu_device_sysfs_remove(&smmu->iommu);
+>> -		return ret;
+>> +		goto free_sysfs;
+>>   	}
+>>   
+>>   	return 0;
+>> +
+>> +free_sysfs:
+>> +	iommu_device_sysfs_remove(&smmu->iommu);
+>> +free_iopf:
+>> +	iopf_queue_free(smmu->evtq.iopf);
+>> +	return ret;
+>>   }
 > 
-> [...]
+> Thanks. I think this is correct (and iopf_queue_free() checks for NULL,
+> so we're good there) but I just wonder whether it would be more
+> consistent to use devm_add_action_or_reset(), like we do for the MSIs.
 
-Applied to iommu (arm/smmu), thanks!
+Yeah, I did consider it, but in the end I had a hunch that we were 
+liable to end up with more cleanup steps on this path anyway. Which then 
+conveniently came true this morning when I realised why the box still 
+wasn't seeing its disk even with the SATA probe un-deferred by patch #3.
 
-[1/1] iommu/tegra241-cmdqv: Fix alignment failure at max_n_shift
-      https://git.kernel.org/iommu/c/a3799717b881
+(For reference I'm provoking an error from arm_smmu_probe_device() 
+intentionally, by virtue of having a PCIe-to-PCI bridge aliasing two 
+devices to the same StreamID - adding group support to make that 
+actually work is still on the "maybe one day" list...)
 
 Cheers,
--- 
-Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+Robin.
