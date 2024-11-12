@@ -1,103 +1,167 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2042.outbound.protection.outlook.com [40.107.101.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30C6A20127A
-	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 15:44:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731426244; cv=none; b=uj/LqyMStFgn+4eT2xbnkBeThTlesdjllBfMjXve43GrpiJGhnt20oQ+oc1GmoGf0lNxn6XVyPInWYupI1TE8/Ri/2EKJycyRb594WSiqWo22l/65Ej5fKA3XtVPCz2oMdKXVZCfgV1bGub3SeHatnKsdzSl324+1PQsGnc8xdU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731426244; c=relaxed/simple;
-	bh=RWbFSkRwUfOAIWE/dWO3OuIoKs6Ba942vCIh+QcEl9s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CxnXu6/mFexVk2czNDIrS1BqOdvrD+WHJgaVvw7IrO1GtRxyrWY8jJQTVU620h9u7Uryyl8MvVthtJF3eTK9k7gon2E8jDKwM2xu1gpa91+7zzIU76GX3ROnKuF9xiiQNLRsZ7qh+fY3UOUb98hzya4GU+sEzmYhfC05lcIzK3s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W133iUhA; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A321524B4;
+	Tue, 12 Nov 2024 15:46:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1731426361; cv=fail; b=Pen0s3E0oPqqyNBXxAVUVe7/xYqzNmcbv00ypxfht3XDYsnIxVvEMmptqMWvYY9mYM9Yk5NiNDRuN4PsCdqSwbz73Nr+NfQuO7IwGpkLSwjdYEMnIwdzA8uYgbDQIois29iFYT6lSyWCsSSuONa2NcRM2EvGfEQgrnlQm8etL2g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1731426361; c=relaxed/simple;
+	bh=o5HiOfm88phVx0Qz8JS95rEKdf0pu8SN7tD1BxiB68U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=RZE2y/QW9fVzWE3mdbj8V2VXQv5oTro1KsC1vhnLXxHYukFL8Qf7E8GJOGfRBEZcfl5GrdusKQ1RCA0kKg3eCSWsIMWq0Y9AZd69yt36gVHsMCRNkx1e3CtHE0QgVTlrIaQ2avAo9hznj8gvjgsbOzhiOTFQfqGYXA+/aTpoEK4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ISu8rXWG; arc=fail smtp.client-ip=40.107.101.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W133iUhA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1C96C4CECD;
-	Tue, 12 Nov 2024 15:44:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731426243;
-	bh=RWbFSkRwUfOAIWE/dWO3OuIoKs6Ba942vCIh+QcEl9s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=W133iUhAXaQgeRjeCR+PpubsmgTOlhZSgfHnmjnT8hpu9zNSB81u2y1ykfLFaySrg
-	 y9EPBAt2b8wUHecg30ttVHBr1B6ofqAOpPNMVtDSXUIekKGpV5AOUKE+DzyIHoM22r
-	 gNSZIvDodxT05KkgceFEgjw9LwT1SZ02J2nlRWmVtK5BKtZMhigLYvK79NfLMFclnp
-	 4kp3SvfBtsa/c7RXQI+8PAa6m+L3odgZHfEai5GcrBWpMWDGLw5ekSuJVINmMXMLOC
-	 Q6xuSgIkzzoMddlLNBqvntq+xC9oSIhImRk3ShAgL++O2yDz1MMR5eMq6E7pqpBsws
-	 VZ4uoJjBbC4Og==
-Date: Tue, 12 Nov 2024 15:43:59 +0000
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/3] iommu/arm-smmu: Make instance lookup robust
-Message-ID: <20241112154358.GA21479@willie-the-truck>
-References: <cover.1731088789.git.robin.murphy@arm.com>
- <9d2ec624a640c421e97334deff537a2e899356c7.1731088789.git.robin.murphy@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ISu8rXWG"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=LFRawjATwbt8v4TkwynINihlItIf3ZI7U8xgaUxA1MwPv45x8OJidcpkrj0k6Rn2LfvcHTB7Ihi6HDg1OkScYwbx+kiu+BNAGIE+lWgR9qJMJIvF+Ae6s6u2nhwgEjmU1KOrmWA2DOYYsWzxe9YGLMIakXPmtCK0qkzaNFndf5eLxRpKAvDyZdWtbIyeJWrsTPgodH8vzHd7HjYBMCBKz1D4plzYAjUdDClVmWFv/VrC694yPacf7E5kCHtNGY+T3EMhlHhwTpLNzX0An8Cq7nplVBeVR2uJzTq68F8z9unhGhrgrEtWcDCkH0di0A0hxx92+6JOaCEVoVRDOiZOYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jaPGy7f7qwAkFHdXRZDR1TWf1Lu4RCFWWeJfEYpR3hc=;
+ b=sBZON5y2eJxVxUTui0Yq0htiw6SN7GLEpWTfELu120jovMfnLx3MpwajkQdNyNxLHBvFtIXoMrNoTEKX8NRjlm1tiP5vVZyNr44xc60hrlnz7QCA9QsUv0zJ7HnT5QMwX+09pzl+qrisr8jHEQQEsqvE/nZGUbYrCkQuOGnW+TRJtK70U9iVkUj33fb+U+Fg5zTwdRNBCItkZX93azb3ETZtHr8kGM1mA3LHYJQlMG73/Y53VCJVPhzNFKBRIgnZQQh+hFe4WdzSiLDvPW/23qlvIxMVuKriz+rwW8BSAG12PKJqiUKvs7chXhCPOrBHk/S8QI/Md0jFW3x1MyEOvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jaPGy7f7qwAkFHdXRZDR1TWf1Lu4RCFWWeJfEYpR3hc=;
+ b=ISu8rXWGIebSJADOmml3UzKTFn2Y4f1DsmgibrsELqtAwUmfYSG3YDh/yVjJcjSLM5W1MtgnocqoNF70KP9kpQ57WFD8A4f6LgQ3CYqRGyNFh0Oc6lGwsbKD6oHpR5asjAWMK8QOkxTXuqq/PnAivJrBYtr1DvzidIr7Fkf/qTm9bPtEciZ2JDjhdbE0KsZowzQ8yiztwjdKvbO2wMeEr1p7OLmUCIYav9cO4cfpoQTX9zcFgFsvl8OqcWriBc9lsSQJzCrG9YOJ4WIfI45ggkGp+drHlYgWZBierBqdrGdGlJr2xKRVsHgulR9L8JnNgUTjLYagl+n+HnY/MgWv7g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by CYYPR12MB8891.namprd12.prod.outlook.com (2603:10b6:930:c0::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.27; Tue, 12 Nov
+ 2024 15:45:54 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8137.027; Tue, 12 Nov 2024
+ 15:45:52 +0000
+Date: Tue, 12 Nov 2024 11:45:51 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, corbet@lwn.net, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, will@kernel.org,
+	robin.murphy@arm.com, dwmw2@infradead.org, shuah@kernel.org,
+	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	baolu.lu@linux.intel.com, eric.auger@redhat.com,
+	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
+	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
+	yi.l.liu@intel.com, aik@amd.com, zhangfei.gao@linaro.org,
+	patches@lists.linux.dev
+Subject: Re: [PATCH v7 02/13] iommufd: Move _iommufd_object_alloc helper to a
+ sharable file
+Message-ID: <20241112154551.GA50895@nvidia.com>
+References: <cover.1730836219.git.nicolinc@nvidia.com>
+ <2f4f6e116dc49ffb67ff6c5e8a7a8e789ab9e98e.1730836219.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2f4f6e116dc49ffb67ff6c5e8a7a8e789ab9e98e.1730836219.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: BLAPR03CA0030.namprd03.prod.outlook.com
+ (2603:10b6:208:32b::35) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9d2ec624a640c421e97334deff537a2e899356c7.1731088789.git.robin.murphy@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CYYPR12MB8891:EE_
+X-MS-Office365-Filtering-Correlation-Id: d85ae96e-3b16-4e03-d040-08dd033116a5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?qkIw4VvTrRWV03h9nf6xNNHWrswKYguDxxDvOULcjWu4FxQ4rUS2YpFhkPOG?=
+ =?us-ascii?Q?QCJJ/FTwwYbqQ7RbvSkYaB+COrDxiZGacQenzbuZzwGL/D69FOFUGJzyChb2?=
+ =?us-ascii?Q?F6QpPkc1QGIVUry23wlwxM8RXKCmW9KltRCAUVwxJk2DG/YfJHIqWEW5guw8?=
+ =?us-ascii?Q?lV0iLAOH2YZzUfuWFn16u3jvx4qx2KO3DlfZFIf6fzNT9im6X8Wh23FVPGgO?=
+ =?us-ascii?Q?Dxnxvcdq28qgAaQLllv2L24oTdmJyWDus94sQqYpQqFsVYLwKfUY2CLEuQqd?=
+ =?us-ascii?Q?qsDyg2RBk02p/lS8cVsu56GCTaipRsLEj5GWVcYArumfhjBNY7JTfvqxY8Gz?=
+ =?us-ascii?Q?85fADo37r1o5yxhvP7EOgr7YPW8P4Y1yh86uHBymQJJ4lkXxRW/TA0FNUM8H?=
+ =?us-ascii?Q?jz75RJW4Zp442ck1XBJ2xXstu//d4PvAFg7Go8eK3MdiAZxBaZqxOO7+vr3D?=
+ =?us-ascii?Q?oBLosyETHxm2dik4XqECbb/0IdjsddIzY7DVBCBkY14O0PnbUvJrmjF/LekR?=
+ =?us-ascii?Q?ZNdfUh2hgbkepmAiViTUPVErhsKhuT7mB7rbARXhh5sx9xCxnPFsW77ySPJU?=
+ =?us-ascii?Q?nyO+E3DYxF8FSJ7lDzS3vj68k/Iu1Lfz5AeFlOvBuCtpMjWGA9IkeojCYSA5?=
+ =?us-ascii?Q?eZmgKsVAnNHWpXasPud36psdOBxk8MF8Vp34Z/gpLMuA8+Qr6H9Ybbmd5mP/?=
+ =?us-ascii?Q?qi+vr3Z/HhSFxO8kLtAQGKmzmfqMNB+mEBFqcgn4KhGwl+/oKk0wjF1Bg8IH?=
+ =?us-ascii?Q?cdmSEMZ/lzSHJfIT6UCgHKc6D3QleIbCYHCWvexPWyWaoGU9N5gDYqIxWpm/?=
+ =?us-ascii?Q?+ogHRAh9cckrjcqGfsUGcWN7B9/HryuplzXHU1dvdeiIVhAyVo2CYi8JvBlT?=
+ =?us-ascii?Q?7l12Sjw6svSFxmXzaIGaPUxmsM5j6j3YE47Cz3jZRGzhWsh17cLa+rfCz0Na?=
+ =?us-ascii?Q?ec7ZtHvkfkupnGY6lxaat9FAlkwx+Sb3ybhJclvppqxxNH4Q3oIJJVj0rXpi?=
+ =?us-ascii?Q?6eaBgEIfue87wUCVUnW4GQIJhRye87uEED7RCwHxS+jOlby68K/2Ft+zrZvA?=
+ =?us-ascii?Q?r5qJjcZxMDY4qi+y89AUkdb5Qu2unepi+aTO7zr+q51xOatdmnWtsOQo2Z4v?=
+ =?us-ascii?Q?xZ8Nz5ywVPMNW3Jmfhn8EchVJxu53xWTgU4dG0p5X7H6af2msqfXCEC0XnKd?=
+ =?us-ascii?Q?kJSlYFDBAP3tIKgVflu04WG/RqqP6jf+01He7OZD87Ki3JApv4cfogtPUXve?=
+ =?us-ascii?Q?Qi1IuZPGY5ryyjz09cgBemUiFyX9oCy7L0CaiblGaH7OQLaj+UlchqrL2+35?=
+ =?us-ascii?Q?8wiJZ//K2P2rEtLjbHWsrxE2?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?yN4AIhOuXxeAXDoeE81wAjbRLZ/9TKpb93BCFswNP9isWdSy+O2NUndYQZ9J?=
+ =?us-ascii?Q?1GAvs7lRwQysapL5FomSTUzrr/wzVXVKFuMUIrtamOCEj0TNCtWxcarAaPZ2?=
+ =?us-ascii?Q?Ifb5iNiqNPexSDlft8Qz+nE6QihjpfSabWwxXRRQP33ERBzAhwfi+UEfOneY?=
+ =?us-ascii?Q?ku/kE3lao8IITtNMJHd3MOJw/Cxsdvx00aDAmJA0R46zwHo/GzfjfQVe2MGJ?=
+ =?us-ascii?Q?Kk/4h0nW1nwtkw/Ku9Uhtew1sh/1ng2+DX01eDwNjA4a90Hq1avuGoj2hPxi?=
+ =?us-ascii?Q?E4dDUFyDPVjWdW42QbZZRj9GeC0u8iivzqlLCKGUwliQ4Cu9SoqBr5RM7vv1?=
+ =?us-ascii?Q?eh8YKedlJGA5G4Hggd+6UhbsiQ9C/ZSWDZqstCXXTSNEkehs/Eon/f5OyvV+?=
+ =?us-ascii?Q?Dk5pYLVyvFf2ozXHrt8LW3OxwjpK+KTe6XQgY/2PziMW/0Mi0UNrs+u4Hr7h?=
+ =?us-ascii?Q?qLHKh4Jua4d4i0R6MBC4GSnFOmKX0wnfmTgTWByJyf2NPfiG2XFcUzE+M7p4?=
+ =?us-ascii?Q?WmzltLN+UlIZz8uhYl+S6gBLR7/dTtDi3NIPfiNtRJ2Q/UtXpfyY/77AwJhc?=
+ =?us-ascii?Q?JBZdfhWVLlj8DgNGngmttdqnnULhJfXU2+1wx0hsEji/hiZEE6D0RiGph12d?=
+ =?us-ascii?Q?bAiez5dMzr/EPzKy+WrCPrzUgu4Ag3IACQ8fUeFs3J0A2zUH8VZWkOGQre/s?=
+ =?us-ascii?Q?7+RWIPG5cYgCCqmokVKxGePfqdwKsyzQSlJ8baYTPr+RvBh4nYu9mQEyooGf?=
+ =?us-ascii?Q?Z0FSiEsnKZfgQMFe62vsntp1i3XQhZzs5XIlgktHC8MihhgVu59cWjd+YpQf?=
+ =?us-ascii?Q?zB8kTCQF55jf44mTxgbIuLfddEFYfy2w46Nl16hDP2Rv2Snke0bDeRCL8SFj?=
+ =?us-ascii?Q?o1xCk4fIEI7zXJLNad3yJ1nC6CG8mWEYQxN828GscxNxSb9MXBz3/QvdOmov?=
+ =?us-ascii?Q?Ya6gLMgRY4NMNx+Vnnx+Pry6cmlIKjCbCIYpoeqTueGX0Ivotfz43oAdh0yv?=
+ =?us-ascii?Q?ynGw50qQo7nfd5chEY2w1cK8GjcumUhfbrR03WysWr+veL/atTcpwbWDPpBF?=
+ =?us-ascii?Q?DxAeo3E/mzy9lQ7r7DR14hDncCfjnYNGf5ZqfpY3pam2gymuxnfHvkjL4lzE?=
+ =?us-ascii?Q?wYgjJMNloCuPAb1kPikl/ZAHM2dBEFL4N9LOyEX48xqdpyN0RBS6t28TsFJ6?=
+ =?us-ascii?Q?F2DXSSKu74pgSl26cmvj452f556G7ih7nkkVkTVxWPzcNxKxrtAF//Nl7uj0?=
+ =?us-ascii?Q?2exNTKxDZMQqwrEhX7tnNmxfPr4GCLFzwnyQLfbf7kkvsbfO3RPkksNqkhUv?=
+ =?us-ascii?Q?3+qh/6Xy0R8XixAttp5b4x/Vz3T4OmRfGUUlss+0e7WceOA3imFL2unTO36w?=
+ =?us-ascii?Q?aVRkM4iT2BGbMECvfiDMd1VjDonaQ/bfYP1x1UJzsqUrn1ylJtAN+UFZxuGR?=
+ =?us-ascii?Q?4lRVPnrkMDf7A2BOi54cBXOwFsOoMTZIbagIObUjnMcpTBnAVjkQsThfBJaL?=
+ =?us-ascii?Q?wZCknnTOdkrvk7mW+AtWhfrAWWukv0NAzvhDmdVVWPhwfC7nimNFp7ftqeIF?=
+ =?us-ascii?Q?62eHTcqvuAY81tFnFKc59jLgcolPjlkkauNzCFEh?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d85ae96e-3b16-4e03-d040-08dd033116a5
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2024 15:45:52.7006
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2lnAs15rRVIe/faQCGQEAaqXVGWUFegDk5zHz2ynWRIaJADWNB8EtIkOMhD0oKgE
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8891
 
-On Fri, Nov 08, 2024 at 06:30:15PM +0000, Robin Murphy wrote:
-> Relying on the driver list was a cute idea for minimising the scope of
-> our SMMU device lookups, however it turns out to have a subtle flaw. The
-> SMMU device only gets added to that list after arm_smmu_device_probe()
-> returns success, so there's actually no way the iommu_device_register()
-> call from there could ever work as intended, even if it wasn't already
-> hampered by the fwspec setup not happening early enough.
-> 
-> Switch both arm_smmu_get_by_fwnode() implementations to use a platform
-> bus lookup instead, which *will* reliably work. Also make sure that we
-> don't register SMMUv2 instances until we've fully initialised them, to
-> avoid similar consequences of the lookup now finding a device with no
-> drvdata. Moving that code is also a perfect excuse to give it a little
-> dev_err_probe() tidyup as well.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> 
-> This should in theory replace 229e6ee43d2a ("iommu/arm-smmu: Defer
-> probe of clients after smmu device bound"), or at least allow it to be
-> reverted going forward.
+On Tue, Nov 05, 2024 at 12:04:18PM -0800, Nicolin Chen wrote:
 
-Let's revert that as part of this series, then?
-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  4 +--
->  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 31 ++++++++++-----------
->  2 files changed, 16 insertions(+), 19 deletions(-)
-
-[...]
-
-> @@ -2255,6 +2240,18 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	arm_smmu_device_reset(smmu);
->  	arm_smmu_test_smr_masks(smmu);
+> --- a/drivers/iommu/iommufd/Makefile
+> +++ b/drivers/iommu/iommufd/Makefile
+> @@ -13,3 +13,4 @@ iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
 >  
-> +	err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
-> +				     "smmu.%pa", &smmu->ioaddr);
-> +	if (err)
-> +		return dev_err_probe(dev, err, "Failed to register iommu in sysfs\n");
-> +
-> +	err = iommu_device_register(&smmu->iommu, &arm_smmu_ops,
-> +				    using_legacy_binding ? NULL : dev);
-> +	if (err) {
-> +		iommu_device_sysfs_remove(&smmu->iommu);
-> +		return dev_err_probe(dev, err, "Failed to register iommu\n");
+>  obj-$(CONFIG_IOMMUFD) += iommufd.o
+>  obj-$(CONFIG_IOMMUFD_DRIVER) += iova_bitmap.o
+> +obj-$(CONFIG_IOMMUFD_DRIVER_CORE) += driver.o
 
-Why is dev_err_probe() better here? I've not seen it before, so I was
-trying to figure out what it does. It mainly looks to be handling
-the EPROBE_DEFER case, but after your other changes to use
-bus_find_device_by_fwnode() I'm wondering whether we actually hit that
-(particularly in iommu_device_sysfs_add())?
+This gives a wonky module name of "driver.ko", I'm going to adjust it
+to this:
 
-I'm not saying there's a problem, just that I'm not sure why
-dev_err_probe() is tidier than dev_err().
+-obj-$(CONFIG_IOMMUFD_DRIVER_CORE) += driver.o
++
++iommufd_driver-y := driver.o
++obj-$(CONFIG_IOMMUFD_DRIVER_CORE) += iommufd_driver.o
 
-Will
+Thanks,
+Jason
