@@ -1,27 +1,36 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 006351A00D2
-	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 06:01:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D81A83A14;
+	Tue, 12 Nov 2024 07:20:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731391275; cv=none; b=AQC7tEjFwmt82tn4wcTkhFsY1nzcLlYQH8ZhgMDZvdSEkL/V6Q/p5eUtFIbppGeF5OpZK9kpdwGPh5+5X5hLUgV6cpUeDG9wbsEzMPiHUIyIYfqJfsO5S5vavVISl/cpo2jLYzzSTh9RbMpqVuJkRm/BpQz2/WdAMEb72KaQDJk=
+	t=1731396047; cv=none; b=WMvQMHYDY+eko0GGrrCR9VcX3kl/M62cKGUTuLJt9E2vD541N+O3Lw9D4Vo65eGUlZylLaKGUy2gwfhiF+kybUbQ+idnZs8vyo4C5Kc4HPNInlpkLdRz/u9UJTiS/+CcvzCFDJQkN29eNOUg/3DZcdDB7hKfnv9UbZ/t+dyyllY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731391275; c=relaxed/simple;
-	bh=0PVIDi3JGo0JcgiypZig4noJVOHBWMpTvGUyYzU70NI=;
+	s=arc-20240116; t=1731396047; c=relaxed/simple;
+	bh=iebmt1JJ4nc2KqO33nu0BylpM0uwrbfzxJxK70i+S/0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CDwwsYktZjhMS1HeJgeeCfH9BSkDhCMNx/2lf89RixsyDbotf7Pq9dbCqnAjykILhaKRIgZVKTMDXuPqli59u81i1LyHuCm1ZVWCUDPGnqW4f82M63S5sV3JH+u5Y+8xLBVdPZhnkayuBB3FIe2M/Lqlp+ilO1Y6HtLCh+tkfg8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id A286768D09; Tue, 12 Nov 2024 07:01:08 +0100 (CET)
-Date: Tue, 12 Nov 2024 07:01:08 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
-	Leon Romanovsky <leon@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	 Content-Type:Content-Disposition:In-Reply-To; b=DpEsODAwdz8M2xm+mUqQhNdBY8eiomYMqwm3lZKBREcg34xcePz9aF2KHH7CvZfrBu+01bWj0tFsFeHExaH4chAPrstMoq1OzQqBaCaboM0mPXpa5OEB4mwci/inrBQ5zj8f+fMk0LCcqzByHxH/h8IqsgmIYLHm6LrIEM+lSXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dVmzKoMM; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dVmzKoMM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A7FFC4CED6;
+	Tue, 12 Nov 2024 07:20:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731396047;
+	bh=iebmt1JJ4nc2KqO33nu0BylpM0uwrbfzxJxK70i+S/0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=dVmzKoMMLI1p5lld2AzbKA0OKhkaVTgahMbznY+ch5wqmWfYCEBoHJ5ZIQ8i4OEW7
+	 y0SB4PSstnJw8hURXljSVh3nG8HHVe3dC7gqHVMQQXmgFoRfx3x8hsZ36yggo7YlVq
+	 2q0lrQ8rdvyycCXVFgnX8tvivhS3iXRbVyFR1p3rkwOgGKPIQ2kftduBV0NwjkeMS6
+	 +NoAmsvdHq/cRMRpCO7yQhqTp7kgXfnEETQD/OipD9b2Ni66FEyjDAneYRjzAw6sNL
+	 U2vmfYx6TwAoyvedmOw9NUrF5kwpsNBTikX0r/vBN3EeyzUVC53eAjFgH0BRIJSoUB
+	 HtyTui/+hEy9g==
+Date: Tue, 12 Nov 2024 09:20:40 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>, ill Deacon <will@kernel.org>,
 	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
 	Bjorn Helgaas <bhelgaas@google.com>,
 	Logan Gunthorpe <logang@deltatee.com>,
@@ -36,13 +45,11 @@ Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
 	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
 	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
 	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org, matthew.brost@intel.com,
-	Thomas.Hellstrom@linux.intel.com, brian.welty@intel.com,
-	himal.prasad.ghimiray@intel.com, krishnaiah.bommu@intel.com,
-	niranjana.vishwanathapura@intel.com
-Subject: Re: [PATCH v1 00/17] Provide a new two step DMA mapping API
-Message-ID: <20241112060108.GA10056@lst.de>
-References: <20241104095831.GA28751@lst.de> <20241105195357.GI35848@ziepe.ca> <20241107083256.GA9071@lst.de> <20241107132808.GK35848@ziepe.ca> <20241107135025.GA14996@lst.de> <20241108150226.GM35848@ziepe.ca> <20241108150500.GA10102@lst.de> <20241108152537.GN35848@ziepe.ca> <20241108152956.GA12130@lst.de> <20241108153846.GO35848@ziepe.ca>
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v3 00/17] Provide a new two step DMA mapping API
+Message-ID: <20241112072040.GG71181@unreal>
+References: <cover.1731244445.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,21 +58,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241108153846.GO35848@ziepe.ca>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <cover.1731244445.git.leon@kernel.org>
 
-On Fri, Nov 08, 2024 at 11:38:46AM -0400, Jason Gunthorpe wrote:
-> > > What I'm thinking about is replacing code like the above with something like:
-> > > 
-> > > 		if (p2p_provider)
-> > > 			return DMA_MAPPING_ERROR;
-> > > 
-> > > And the caller is the one that would have done is_pci_p2pdma_page()
-> > > and either passes p2p_provider=NULL or page->pgmap->p2p_provider.
-> > 
-> > And where do you get that one from?
+On Sun, Nov 10, 2024 at 03:46:47PM +0200, Leon Romanovsky wrote:
+
+<...>
+
+> ----------------------------------------------------------------------------
+> The code can be downloaded from:
+> https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git tag:dma-split-nov-09
+
+<...>
+
 > 
-> Which one?
+> Christoph Hellwig (6):
+>   PCI/P2PDMA: Refactor the p2pdma mapping helpers
+>   dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
+>   iommu: generalize the batched sync after map interface
+>   iommu/dma: Factor out a iommu_dma_map_swiotlb helper
+>   dma-mapping: add a dma_need_unmap helper
+>   docs: core-api: document the IOVA-based API
+> 
+> Leon Romanovsky (11):
+>   dma-mapping: Add check if IOVA can be used
+>   dma: Provide an interface to allow allocate IOVA
+>   dma-mapping: Implement link/unlink ranges API
+>   mm/hmm: let users to tag specific PFN with DMA mapped bit
+>   mm/hmm: provide generic DMA managing logic
+>   RDMA/umem: Store ODP access mask information in PFN
+>   RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page
+>     linkage
+>   RDMA/umem: Separate implicit ODP initialization from explicit ODP
+>   vfio/mlx5: Explicitly use number of pages instead of allocated length
+>   vfio/mlx5: Rewrite create mkey flow to allow better code reuse
+>   vfio/mlx5: Enable the DMA link API
 
-The p2p_provider thing (whatever that will actually be).
+Robin,
 
+All technical concerns were handled and this series is ready to be merged.
+
+Robin, can you please Ack the dma-iommu patches?
+
+Thanks
