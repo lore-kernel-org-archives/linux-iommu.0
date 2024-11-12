@@ -1,199 +1,192 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9480B154456
-	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 08:12:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F37FD20B7F6
+	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 08:30:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731399166; cv=none; b=BEOg0B6E8TB3GU4pw57IWkOi9aUhtGtlrzLvMyUx570LSG6MwrDTxU+D9u3ha8qSkIb+/dLrxhEj2tTFyTVCfzoh4VPyWEJj7B/5RfMOKIjjmhslbSYw6STCFHCYPNbzgrU9fTqEMCoXFH1vHkjGbGl+k5oItGrfoxHFSKKu8os=
+	t=1731400227; cv=none; b=lOtufS6sHX5Z8PUipUAoEPj9p0EwlJU4aHx45B9RC/J4P4Wv5d+IDZCGy9+s1lM9ENyc4VtHipIJJtkHwIZ5IjmQdiUk+Lspbtx8F4Az87hmhTJFnvc+/cBkFxshGeFY4PXX9vTMtHmMZZju1mJE1BFt1Yf7j7kDI3wsEk9NRZE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731399166; c=relaxed/simple;
-	bh=k40QqhZ5G97poaY216R7Kfd01nVpavpRkjUuQFp6t9Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T70eVFXwHqAdtwFM6L/1Xwz31z+ZSxYdn1ChIwSfO3BrON8P0MVIEii6QovOZh9Yb39aZln84fzzNjrJUD9RRtemeGX7n/R6t9ezAKbVBFAyKChRh+aFs3Bs/f+M5K6IxyZue41G8HhOFzkeAr0Sbzx7W+hrUOviunL4OyLs0XQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pF9zrL2v; arc=none smtp.client-ip=209.85.214.170
+	s=arc-20240116; t=1731400227; c=relaxed/simple;
+	bh=zziIPcODdYSe8pC4XgZk91xrKEkcIIhqE6vtqCu1xEE=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=O2s/JpolvDgiyLfljjFhOogAMeWlknZCfZmDPbxnpnFpgYOjLGU4JSTOD+wHXhNdgmsf4gJ+89C3TkIah4k7bAzfeVNarvNHNYVtNYlewPN32C+gbi0CMN+cwmwHCB++WrTr21uPke1NsfBINd+itXWX68h9alFXlmGufLHwIvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fGES4YGW; arc=none smtp.client-ip=209.85.219.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pF9zrL2v"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-20c87b0332cso97445ad.1
-        for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 00:12:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fGES4YGW"
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-e28fc8902e6so9705162276.0
+        for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 00:30:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1731399164; x=1732003964; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=gCRotphTz8QtelEb9RYKzAao9LuG4eKQ+fqKGxsOJ50=;
-        b=pF9zrL2vph91LT6xCN6otl86OWhS+ojL8Diy7bU27UqrZ+bA3VKgKf8SPSmhPbDCTG
-         lBXBA2VQ5YPzD3cn7jSvHhtZAJSYXvG284G95Pr0cJneXbGaN9OkV3TwJInBMDD/hwLs
-         5mCwstEgqhuVN5LZPafhFZuSQqnoGSF0iqoQQ4wYnDsFvyHNCZ59SszimJVWr6uucKPi
-         uOCElAgFhK7iTBjrI9erHQHJWJHCsHybCLs5/phq1/RtKk8YwozN0Vwvh1JdC2NFNm84
-         nzdQXV8NOXjTg6baM08mlliCsPJEcAEHXVzzZa1pp0s3814gh80iBrwFCOm09AVxgEy/
-         f5IQ==
+        d=google.com; s=20230601; t=1731400225; x=1732005025; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=kAgDKR09RvFjW9rLJwyEiLdA19SiaqSHsB15d/XyH7o=;
+        b=fGES4YGWQ6I7sGNXo8vBM+VotMf5+YpYcaeoEbJQ3eVM1VyJvNSpEKPsMhhsGU5WZy
+         Yq5uADMVRIu9NiS7lMLdboQRXq8RdsQFyf2tyyQKo9vFEYSQFSFrgzCZlnDYvmtNTzac
+         QFQkKr6NXClAbpbbe6CXte9n/HfQUINs4saqeZLjdDzEP0joA4D3DoDKETMO3WKmYxj2
+         IbIK5V8JtCwd7gJqfZlqZi/VkqBYAkABKUVXvjIaETZ4hnuv5YQaBqXncemGH75y+Bc/
+         k0FV89VuaSOHGdjyDIEV8qZVsMrKH1jAgpQgMEoJjF3EAVu97lFWwiL9Wbkp6wARxuRC
+         cWlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731399164; x=1732003964;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gCRotphTz8QtelEb9RYKzAao9LuG4eKQ+fqKGxsOJ50=;
-        b=rDi4q9wDEsJyhVmkg/+tutiRLizvtFibmyLZ5KcEZ17lAFFeseTsxTHeRlvn/wug7h
-         XYIw54MaKiPV6KCeIksB1FWzvSEoN6rHaKXTbYeU4c2Jj98cUiASeoTIMkpSgA55z4wp
-         17dj1qcR8/IBI0/C4FkJs31Ga7h9rB9PpfLq5vkOEcw8+vwMxjOFVnp2HL/TgdhxILWL
-         1Czs6ZaHAbLH2Vg99ECziOUDuCBCxpF1mwu0dEAm9ef/P3jIjyHJ8dznwKdcyeWB5Jf+
-         uDZ0d0C2ZdQeJ79H4SMW34hdBG9UjfS8ycmFtufFjgXzcqXW9Rh4KllOjNDFZSlHIfE0
-         YTqA==
-X-Forwarded-Encrypted: i=1; AJvYcCXKTtsf4EhcvOdioqvvITS0HZ3vWVgp4B9TONkWgBROHO+ocSn6/KEkkM397ixS3rEGXXhYYA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyLv4jsfsHekVuy6Gg8ateGllHN/jkV5E48w8zW46CxvqnIUxtu
-	8iV9rp6CWcxvpyGD4Uo/12nys49lEnPaD2937nmHQlZc2Brp4K9vD+ymDs8YRA==
-X-Gm-Gg: ASbGnctbvrX3FIGcRruiAoCk1zwSXM/g0eWEWD9pnfQrUgQygPE5fFbiUeD7eWLi003
-	TVd7mEpf5yBkrcBWqL8PMGTcmzw6bcNrcyujpBxpoI9fcrfGaAIKwbxBu34ACOyoFO4V8IopWXJ
-	MhAI+oyNerF8iIsT2rVgpn8fW/YYx4QnZ+WqzVplHWk6LXJQZ2gH3Gs6fJ4UOtF1xLHZeda2FHW
-	wwdaKA/yxnKIggNEjyBmB5uOtBynLbWQhDc/ohcsmvwPtwhDJFMWZfwSeupAFjopNgk8qmIieJl
-	L5fo7xE2erQ=
-X-Google-Smtp-Source: AGHT+IGVu1aBEIxDRszVTpE9GzSD3swgLnkFQhbNwCuNXPpylzu0LSgkeW3+NhM2lavv8tPG582Wzw==
-X-Received: by 2002:a17:902:f551:b0:20b:6c3c:d495 with SMTP id d9443c01a7336-211aceef58dmr1100545ad.25.1731399163622;
-        Tue, 12 Nov 2024 00:12:43 -0800 (PST)
-Received: from google.com (146.254.240.35.bc.googleusercontent.com. [35.240.254.146])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e9a5f948a9sm9909473a91.29.2024.11.12.00.12.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Nov 2024 00:12:43 -0800 (PST)
-Date: Tue, 12 Nov 2024 08:12:35 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v4 1/3] iommu/arm-smmu-v3: Introduce struct arm_smmu_event
-Message-ID: <ZzMN80bLTnJPAHfH@google.com>
-References: <20241018180022.807928-1-praan@google.com>
- <20241018180022.807928-2-praan@google.com>
- <CAE2F3rCZALbQQUNeaAqShgXz6UNnSQAagqE7RA9kAewBFJNenw@mail.gmail.com>
- <ZyzVTG8ffcFD8YFR@google.com>
- <CAE2F3rAL=a43NNK30omCyfKZR=_Gp2cNxHuUMcDd-xHN-Kvv=A@mail.gmail.com>
- <ZzKmth5__xVUme1P@google.com>
- <CAE2F3rDrdPz1daR-QQYQ7WmeXo9NSvkfHPKwyJ=Ln=yRJd4sEw@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1731400225; x=1732005025;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kAgDKR09RvFjW9rLJwyEiLdA19SiaqSHsB15d/XyH7o=;
+        b=t0XWb8HISDbPRwz0bbK3UIzVXlFz/QkExuom3dsMNbPcSznjzESnu1fS6YmP69TV0c
+         kVmtH1Fkvs5j1kQCiJdCHFb8T1jZxNSh6TmbNjBdPk1Jz3fZ4RE5eJs7I2g+1g0ls5VZ
+         CwGjBPLcwiTo5qAS3nDft63lys1rHWGwcPErWbNVMoK9MmECNozgHVVWcWqaal1QXlJE
+         8qqCt8mHwQtBZJ9OVKJtERw/hWuQTT3aITmB9+5wLeQts9z5MXT/hBIGnydqG80RrJvl
+         g8RpC+hazS4fL9WuftiEgs/pqokYZfJNDm3wZpBpeJyUXl3pMrzEYZuk9cT0m1XE5znB
+         D1bw==
+X-Forwarded-Encrypted: i=1; AJvYcCXDLYOxuaXmjGIkG+IV1F63sq0BnWW7q9FVPMTtTrdlkmbjfbaC2HO6oYEz1bkPuzx75FyyDQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yza/cy9OPLiZlIRggygEqgnyVU88kidgJZTjCjpbR9fAl240Me5
+	f/gdeGCHf7+ekB/ke9D1oPGeACRCSW8MnWUgdJPomHIzsrB1S/+DM3/y1aSYvVQb0S7EOJQNJQ=
+	=
+X-Google-Smtp-Source: AGHT+IGsswWhd1S6SL1vwbSo9QMmVPTFvKzP9McB35pqQQhntxmCn5TGw/926/BjicSN/zGC4iGoPefy4Q==
+X-Received: from praan.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:3e89])
+ (user=praan job=sendgmr) by 2002:a25:b78d:0:b0:e24:9f58:dd17 with SMTP id
+ 3f1490d57ef6-e337f84160dmr36369276.1.1731400224834; Tue, 12 Nov 2024 00:30:24
+ -0800 (PST)
+Date: Tue, 12 Nov 2024 08:30:15 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rDrdPz1daR-QQYQ7WmeXo9NSvkfHPKwyJ=Ln=yRJd4sEw@mail.gmail.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.47.0.277.g8800431eea-goog
+Message-ID: <20241112083018.1662104-1-praan@google.com>
+Subject: [PATCH v5 0/3] iommu/arm-smmu-v3: Parse out event records
+From: Pranjal Shrivastava <praan@google.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>
+Cc: Mostafa Saleh <smostafa@google.com>, Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev, 
+	Jason Gunthorpe <jgg@nvidia.com>, Daniel Mentz <danielmentz@google.com>, 
+	Pranjal Shrivastava <praan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Nov 11, 2024 at 08:01:58PM -0800, Daniel Mentz wrote:
-> On Mon, Nov 11, 2024 at 4:52 PM Pranjal Shrivastava <praan@google.com> wrote:
-> >
-> > On Mon, Nov 11, 2024 at 02:20:46PM -0800, Daniel Mentz wrote:
-> > > On Thu, Nov 7, 2024 at 6:57 AM Pranjal Shrivastava <praan@google.com> wrote:
-> > > >
-> > > > On Wed, Nov 06, 2024 at 04:16:19PM -0800, Daniel Mentz wrote:
-> > > > > On Fri, Oct 18, 2024 at 11:00 AM Pranjal Shrivastava <praan@google.com> wrote:
-> > > > > >
-> > > > > > Introduce `struct arm_smmu_event` to represent event records.
-> > > > > > Parse out relevant fields from raw event records for ease and
-> > > > > > use the new `struct arm_smmu_event` instead.
-> > > > > >
-> > > > > > Signed-off-by: Daniel Mentz <danielmentz@google.com>
-> > > > > > Signed-off-by: Pranjal Shrivastava <praan@google.com>
-> > > > > > ---
-> > > > >
-> > > > > > +struct arm_smmu_event {
-> > > > > > +       struct arm_smmu_device          *smmu;
-> > > > > > +       u8                              id;
-> > > > > > +       u8                              class;
-> > > > > > +       u16                             stag;
-> > > > > > +       u32                             sid;
-> > > > > > +       u32                             ssid;
-> > > > > > +       u64                             iova;
-> > > > > > +       u64                             ipa;
-> > > > > > +       u64                             raw[EVTQ_ENT_DWORDS];
-> > > > >
-> > > > > Consider removing the member named raw from struct arm_smmu_event.
-> > > > > Compare this with struct arm_smmu_cmdq_ent and
-> > > > > arm_smmu_cmdq_build_cmd() which keep the encoded and decoded versions
-> > > > > separate.
-> > > >
-> > > > I had a similar implemntation in v3 [1] but it was decided [2]
-> > > > to keep the "raw" event array within arm_smmu_event itself. Since
-> > > > otherwise we'd have two variables, one pointing to the other when they
-> > > > have the exact same scope and lifetime anyway.
-> > >
-> > > I understand that the concern in [2] was that "one [is] pointing to
-> > > the other". At the time, I think you had a pointer in struct
-> > > arm_smmu_event named raw, and the feedback was to embed the raw event
-> > > data in the structure instead of having a pointer. What I'm proposing
-> > > is to neither have a pointer nor embed it in the struct.
-> > >
-> > > >
-> > > > Do we have a strong preference here?
-> > >
-> > > Not a strong preference, but I'd prefer to have the raw event and the
-> > > decoded event separate.
-> > >
-> >
-> > I see. So, do you suggest that we should have the raw print as it is and
-> > then the pretty print separately like the following:
-> > ---------------------------------------->8------------------------------------
-> >
-> >         while (!queue_remove_raw(q, raw_evt)) {
-> >
-> >                 arm_smmu_decode_event(raw_evt, &evt);
-> >
-> >                 if (arm_smmu_handle_evt(smmu, &evt)) {
-> >                         dev_err(smmu->dev, "event 0x%02x received:\n", event->id);
-> >                         for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
-> >                                 dev_err(smmu->dev, "\t0x%016llx\n", raw_evt[i]);
-> >                         arm_smmu_dump_event(smmu, &evt, &rs);
-> >                 }
-> >
-> >                 put_device(evt.dev);
-> >                 cond_resched();
-> >         }
-> >
-> > ---------------------------------------->8------------------------------------
-> >
-> > OR should we pass the raw event to the dump_event function which, I
-> > believe, is a little duplicative:
-> >
-> > ---------------------------------->8-----------------------------
-> >
-> >         while (!queue_remove_raw(q, raw_evt)) {
-> >                 arm_smmu_decode_event(raw_evt, &evt);
-> >                 if (arm_smmu_handle_evt(smmu, &evt))
-> >                         arm_smmu_dump_event(smmu, &evt, raw_evt, &rs);
-> >                 put_device(evt.dev);
-> >                 cond_resched();
-> >         }
-> >
-> > ---------------------------------->8-----------------------------
-> 
-> Your second option would be my preference despite the fact that you
-> have to pass in an extra parameter. It makes it clear that
-> arm_smmu_dump_event prints both. I would make sure that the order of
-> &evt and raw_evt in the argument list matches the order in which
-> arm_smmu_dump_event is printing them.
-> 
+Enhance the arm-smmu-v3 driver to parse out useful information from
+event records into a structure for better event handling & logging.
 
-Ack. I'll post a v5 soon and accommodate this with it! Thanks!
+Some sample events, powered by QEMU:
 
-> >
-> > > >
-> > > > >
-> > > > > > +       bool                            stall;
-> > > > > > +       bool                            ssid_valid;
-> > > > > > +       bool                            privileged;
-> > > > > > +       bool                            instruction;
-> > > > > > +       bool                            s2;
-> > > > > > +       bool                            read;
-> > > > > > +};
-> > > >
-> > > > Thanks,
-> > > > Praan
-> > > >
-> > > > [1] https://lore.kernel.org/all/20240928005143.2378938-2-praan@google.com/
-> > > > [2] https://lore.kernel.org/all/5eda3ba6-c35a-432b-be87-48bd8a0a3bf1@arm.com/
+1. Bad StreamID:
+
+[    7.521940] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x02 received:
+[    7.522485] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000800000002
+[    7.523335] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+[    7.523814] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+[    7.524281] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+[    7.524759] arm-smmu-v3 arm-smmu-v3.0.auto: Event 0x2 received: C_BAD_STREAMID
+[    7.524759]  client: 0000:00:01.0 sid: 0x8 ssid: 0x0
+
+2. STE Fetch Fault:
+
+[    7.531332] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x03 received:
+[    7.531890] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000800000003
+[    7.532371] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+[    7.533189] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+[    7.533674] arm-smmu-v3 arm-smmu-v3.0.auto:  0x00000000000001e0
+[    7.534136] arm-smmu-v3 arm-smmu-v3.0.auto: Event 0x3 received: F_STE_FETCH
+[    7.534136]  client: 0000:00:01.0 sid: 0x8 ssid: 0x0
+[    7.534136]  Fetch Address: 0x1e0
+
+3. Permission Fault:
+
+[    7.547455] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x13 received:
+[    7.547997] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000800000013
+[    7.548476] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000020000000000
+[    7.548949] arm-smmu-v3 arm-smmu-v3.0.auto:  0x00000000fffff040
+[    7.549418] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+[    7.550168] arm-smmu-v3 arm-smmu-v3.0.auto: Event 0x13 received: F_PERMISSION
+[    7.550168]  client: 0000:00:01.0 sid: 0x8 ssid: 0x0
+[    7.550168]  iova 0xfffff040 ipa 0x0
+[    7.550168]  Unpriv | Data | Write | S1 | Input address caused fault
+[    7.550168]  STAG: 0x0
+
+4. Translation Fault:
+
+[    7.586428] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x10 received:
+[    7.587012] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000800000010
+[    7.587504] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000020000000000
+[    7.587986] arm-smmu-v3 arm-smmu-v3.0.auto:  0x00000000fffff040
+[    7.588745] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+[    7.589219] arm-smmu-v3 arm-smmu-v3.0.auto: Event 0x10 received: F_TRANSLATION
+[    7.589219]  client: 0000:00:01.0 sid: 0x8 ssid: 0x0
+[    7.589219]  iova 0xfffff040 ipa 0x0
+[    7.589219]  Unpriv | Data | Write | S1 | Input address caused fault
+[    7.589219]  STAG: 0x0
+
+5. Unknown / Implementation-defined Fault:
+
+[    7.152599] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x0b received:
+[    7.153064] arm-smmu-v3 arm-smmu-v3.0.auto:  0x000000080000000b
+[    7.153755] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000010000000000
+[    7.154239] arm-smmu-v3 arm-smmu-v3.0.auto:  0x00000000fffff040
+[    7.154702] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+[    7.155169] arm-smmu-v3 arm-smmu-v3.0.auto: Event 0xb received: UNKNOWN
+[    7.155169]  client: 0000:00:01.0 sid: 0x8 ssid: 0x0
+
+v5
+ * Replaced strings with used macros to conserve stack space
+ * Fixed IPA log truncation,(e.g. logged 0xfffff instead of 0xfffff040)
+ * Bounded evt->id by ARRAY_SIZE to avoid inflating event_str
+ * Restored the original raw dump format
+ * Decoupled "raw" event from `struct arm_smmu_event`
+ * Moved the raw event log before the decoded/pretty log
+ * Improved the sid.ssid format to be more readable
+ * Zero-initialized the `arm_smmu_event` var in `arm_smmu_handle_evt`
+ * Refactored struct arm_smmu_events to use bitfields instead of bools
+ * Removed `struct arm_smmu_device` field from `struct arm_smmu_event`
+ * Removed `master_name` field to use `dev_name(event->dev)` instead
+ * Pahole reports a total of 3-byte holes & struct size = 40 bytes
+ * Moved most constant parts of the log to the fmt string
+ * Moved the event decoding within `arm_smmu_handle_evt`
+ * Renamed `arm_smmu_get_event_from_raw` => `arm_smmu_decode_event`
+ * Renamed a few EVT_IDs for consistency as per Daniel's suggestions
+ * Renamed "master" to "client" in the logs as suggested in reviews
+ * Corrected "F_VMS_FAULT" => "F_VMS_FETCH"
+ * Re-ordered event strings in event_str as they appear in the spec
+ * Removed less useful comments
+
+v4
+ https://lore.kernel.org/all/20241018180022.807928-1-praan@google.com/
+ * Re-arranged the series to first introduce struct arm_smmu_event
+ * Improved the complex ternary expression that prints TTRnW info
+ * Added consistent spacing to the logs & resized log strings
+ * Moved ratelimiting within `arm_smmu_dump_event`
+ * Refactored master_name printing by getting a ref to the device
+ * Refactored `arm_smmu_handle_evt` to avoid redundant master lookup
+
+v3
+ https://lore.kernel.org/all/20240928005143.2378938-1-praan@google.com/
+ * Fixed a potential race and null pointer deref for arm_smmu_master
+ * Improved the logging approach by using multiple strings
+ * Added logs for STAG & STALL fields for relevant events
+ * Invoked the log function within `arm_smmu_handle_evt` routine
+ * Rebased the changes
+
+v2
+ https://lore.kernel.org/linux-iommu/20240827193026.3993039-1-praan@google.com/
+ * Addressed review comments
+ * Introduced `struct arm_smmu_event` to hold relevant event fields
+ * Broke out helper functions to populate & dump event info
+ * Modified the event handler routines to use `struct arm_smmu_event`
+
+v1
+ https://lore.kernel.org/linux-iommu/20240816211722.1404070-1-praan@google.com/
+
+
+Pranjal Shrivastava (3):
+  iommu/arm-smmu-v3: Introduce struct arm_smmu_event
+  iommu/arm-smmu-v3: Log better event records
+  iommu/arm-smmu-v3: Avoid redundant master lookup in events
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 173 ++++++++++++++++----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  28 ++++
+ 2 files changed, 165 insertions(+), 36 deletions(-)
+
+-- 
+2.47.0.277.g8800431eea-goog
+
