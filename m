@@ -1,41 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B36E020125F
-	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 15:57:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF1FF2309B7
+	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 16:00:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731427076; cv=none; b=W0D8ehAXx7o4DoYcyNAx3HCOp8YDeQMvhrKS//f4XT109TcgBeazjRNlPmh3i8XZvgHdrSE3DNj0SlQGQie1dk27bX5vfvyqLGVp/RA8QG6tZ1BPJM3mQemr3s/n4qx5whu2+xj2L25mGArG2J7rBaMjvnKDTjeA4KwTHGlEZ1A=
+	t=1731427239; cv=none; b=cVMWozV82GvOHcymHpYEuwNMKymmeLJhzemNoZ4pj/NKh4yc6X38HIRpuEowtMCS/w1iP3TihPpgo2LejF7LG/+sT1F5I3KH0+46JPIpwRao4XUjipTy0drCzc08wpDFw+XRzywsRYdZ3x+Vpo3X0OOIjcd4SlkdJHu12sC8CrM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731427076; c=relaxed/simple;
-	bh=xcV5aO8dDT6Bs99PMcY0mZnf3cBIhNXhkkKn6XfKDc0=;
+	s=arc-20240116; t=1731427239; c=relaxed/simple;
+	bh=jRptFKZ6EWwcd9gt1RnzMN4OZFAiMNrpYSjY4y96mqo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R2ypoh3NiI0GbacWfRoP9cyRYXiRFEAs70LmLyNtTVcWEM6ELTIKRF9Xs9/rcW7nkehUplRfNzEDNerH54VDCJHLiE/U8yr51XgtCZQrROAKUZZ/CzR+nFO4Q1xYwzK6krE938p3Uf+QsIldIuliso2Nj+IDjLWZ05ryynJzrFQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PJ3RTisR; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=JVfp/0K5MUiuCrFTNuCUTgsSCGcg4SQHXPEQzIAa4ERfzuteosbU/NpC9qtPjizz0n/CBcuP0dKnddTIadRNaOmu28nKyAfMf4t52vByJVVLnwxKXuF/PPrPBClYGBoTme0X7y2uJQ/DKsX6HJZmVmj5XTD6fjSDmtojq9RvWyI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fzLgJLi0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PJ3RTisR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57781C4CECD;
-	Tue, 12 Nov 2024 15:57:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fzLgJLi0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D1C3C4CECD;
+	Tue, 12 Nov 2024 16:00:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731427076;
-	bh=xcV5aO8dDT6Bs99PMcY0mZnf3cBIhNXhkkKn6XfKDc0=;
+	s=k20201202; t=1731427239;
+	bh=jRptFKZ6EWwcd9gt1RnzMN4OZFAiMNrpYSjY4y96mqo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=PJ3RTisRVF+zCRCxLTEWfl/lJB2uMheSYI7+nmqZvoAlREmIJwdEnm1P6wdwd0piC
-	 rMYmBDQSHPcES2A16wTw2fdWOcKwgJM+HHCfWuycyd0ufFKOlp17R3x9ZizXTd+LZe
-	 p7V7JJQkqnmSGfW/BXXsvEq5GFDoCDPLot0MdRHz/8R5sskqLvyE+RufH8C25asPq+
-	 Xk5hAqQ2BxHtESKXrVmh5Hy+k+R7XgzHTzn3G7I7nKyL3Nw0A+Afo0r3qLZ+BmJCMx
-	 PXVFFqjou7rKrPhC8I1iGqRQ1fnWqjbRHxM9xgItrW/JVENqrRAFa8vvLT71I9m2/9
-	 4BBAjNIYw+WMA==
-Date: Tue, 12 Nov 2024 15:57:52 +0000
+	b=fzLgJLi047fFA6CUYdWIWbsQwDTyAzZlZaSufd8HROXV5wqNtC2IVpEXtTEJIvp6X
+	 JwRbhxC0eVMwgY6PIXlVEdaDxG1aFBkQaTUYWI3ovv5DvINBFTJLU8JepMudnjdvy9
+	 Eatsx/2hTpEaLn8a+Od2X+slepsrXy7Qau6VY0WCH37fLbYRwYB3nnG/Qupix4dDyw
+	 5l6iZnFd7kDUvYLQrLFBWdibsJamkMg7WS0RfzlzLzgRCCtjbeLZkGMlbijuUL4JQd
+	 pYn/4vOKPCtcIepvnaA8xujmrTlaUl6gWlrfdrnPY0nCJ/iEkIPSPzUtBwE5jxKS7u
+	 fqYIyupLS1RGg==
+Date: Tue, 12 Nov 2024 16:00:35 +0000
 From: Will Deacon <will@kernel.org>
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: joro@8bytes.org, iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2.5/3] iommu/arm-smmu-v3: Undo SMMU enable on probe
- failure
-Message-ID: <20241112155750.GC21479@willie-the-truck>
+Subject: Re: [PATCH 3/3] iommu: Manage driver probe deferral better
+Message-ID: <20241112160032.GD21479@willie-the-truck>
 References: <cover.1731088789.git.robin.murphy@arm.com>
- <0812e9f61234cbcdc5cab7de307e1c9a8e3c9498.1731422868.git.robin.murphy@arm.com>
+ <2da0ae7f76c7466176e906fa5d7a0ae5210e8650.1731088789.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,33 +43,22 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0812e9f61234cbcdc5cab7de307e1c9a8e3c9498.1731422868.git.robin.murphy@arm.com>
+In-Reply-To: <2da0ae7f76c7466176e906fa5d7a0ae5210e8650.1731088789.git.robin.murphy@arm.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, Nov 12, 2024 at 02:49:59PM +0000, Robin Murphy wrote:
-> If SMMU probe fails afer arm_smmu_device_reset(), we leave the SMMU
-> enabled with an empty Stream Table, silently blocking all DMA. This
-> proves rather annoying for debugging said probe failure, so let's handle
-> it a bit better by putting the SMMU back into (more or less) the same
-> state as if it hadn't probed at all.
+On Fri, Nov 08, 2024 at 06:30:17PM +0000, Robin Murphy wrote:
+> Since iommu_fwspec_init() absorbed the basic driver probe deferral
+> check to wait for an IOMMU to register, we may as well handle the probe
+> deferral timeout there as well. The current inconsistency of callers
+> results in client devices deferring forever on an arm64 ACPI system
+> where an SMMU has failed its own driver probe.
 > 
 > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 7908fca962fe..566d66e9c91e 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -4640,6 +4640,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	iommu_device_sysfs_remove(&smmu->iommu);
->  free_iopf:
->  	iopf_queue_free(smmu->evtq.iopf);
-> +	arm_smmu_device_disable(smmu);
->  	return ret;
->  }
+>  drivers/iommu/iommu.c    | 2 +-
+>  drivers/iommu/of_iommu.c | 2 --
+>  2 files changed, 1 insertion(+), 3 deletions(-)
 
-Heh, this is starting to look an awful lot like arm_smmu_device_remove()...
+Acked-by: Will Deacon <will@kernel.org>
 
 Will
