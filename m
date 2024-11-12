@@ -1,133 +1,65 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F2B31FC7D1;
-	Tue, 12 Nov 2024 14:19:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4EB301FE10C
+	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 14:50:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731421201; cv=none; b=muIGz/EB+JToBlh0Dtlje4IoqFb9aDiO93+Bviuf35zYL0gAvrIM0HHfr98bo150x9lJqFguUFbTmAotnWU19ZGQ3UQ9/G3axWLKcL7V70V5A1tAZphafImzam3Ti1wJVkpm/6TGFzxNn8pIXjMr5FUCJFHOs8lZF90GSypTduo=
+	t=1731423008; cv=none; b=mWUFkbtbmTFyT54EoNbFKVVES+V2p5lOjHEgzxx/M+Rr8QaMcpr6m54epcMTCT5gV80nc96H3DL8i2LobC1rF3hHm+hevl5S5txr/JYC+XtROy0tW3OfOW6YRK4UGHiw6nIm/7lw2FzdQxA7PPl6+k88dUx5QqO39wdvPBHE/y0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731421201; c=relaxed/simple;
-	bh=pyCRt7WsO3Xx1qWQt6wDCYbx1z5ltqc3D58U2xm3SxI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pdJvmAgVK6QBVCfcmk7hqSwZoG0SOWbMNqUU0ciWf69Z6rvcHInJYv8BluNK3DqH5ik46aVfYHSJ86B8jR1fZVxKtAGM69fQdjX9yyLIDrv9FOfq1l6OqtydIdxY7nG61rBR+tFq8Ae1SQ6cN7ZIAup7b2ISqwYp5+8aZWfsylc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mH8IrupO; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mH8IrupO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8D22C4CED0;
-	Tue, 12 Nov 2024 14:19:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731421199;
-	bh=pyCRt7WsO3Xx1qWQt6wDCYbx1z5ltqc3D58U2xm3SxI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=mH8IrupOR8xDLzqnBWoXNh0OSoCs8trWxSM5z987hNW/Y/i1EhmNa28VebFQ0OIx5
-	 pTUaApI/oK8fFlMk8S0r/AxmcYAZ78iuJJNompwZuzlE+ek+zNrSxSx34XwySJ3VGg
-	 got8/Ra1SW4huMVdaEfvjuiSPUS41VSn97NvKP6HmVsGRc6NfxKOvrqAEgXK542RcI
-	 y7tzuGLv12YmAJQ7nN4TviSrYAn3vUU7a6t32OnHEUoFN2fmqdrbaTe9KFrx+u1d8E
-	 0HvX9ruCIaSWkbU6j/KnLJQFPxVt4H839dNYlPPsWZt+g1gG+oKVnZtTapRRhr8es5
-	 koq6gJQehkYrQ==
-Message-ID: <be049c33-936a-4c93-94ff-69cd51b5de8e@kernel.org>
-Date: Tue, 12 Nov 2024 15:19:53 +0100
+	s=arc-20240116; t=1731423008; c=relaxed/simple;
+	bh=D41hHMLFdGUJxe/VbLR9+pcP3QsA72MuzITTbh+PY6A=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=hc3VeNG+7XSpeqFDs2wZ0ipNrlvEhELyhjJ8pVqNGaYa9MUm5hQyvD1Ziw5D7EgFLGi6yx10omNc7ti2ppzB7RtTcUbZrGvbm/Au1IZT9f1K9zv2mRCw5zztMBlCQTIQo5PBxDu0XY1Ku/ap6iCMAid36XIAkPNvRtVwyRwB4jI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5937A25E3;
+	Tue, 12 Nov 2024 06:50:34 -0800 (PST)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 84F1F3F66E;
+	Tue, 12 Nov 2024 06:50:03 -0800 (PST)
+From: Robin Murphy <robin.murphy@arm.com>
+To: will@kernel.org,
+	joro@8bytes.org
+Cc: iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2.5/3] iommu/arm-smmu-v3: Undo SMMU enable on probe failure
+Date: Tue, 12 Nov 2024 14:49:59 +0000
+Message-Id: <0812e9f61234cbcdc5cab7de307e1c9a8e3c9498.1731422868.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+In-Reply-To: <cover.1731088789.git.robin.murphy@arm.com>
+References: <cover.1731088789.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>,
- =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
- davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc: zhangkun09@huawei.com, fanghaiqing@huawei.com, liuyonglong@huawei.com,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
- Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet
- <edumazet@google.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
- kernel-team <kernel-team@cloudflare.com>
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com>
- <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
- <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
- <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
- <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org>
- <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
- <4564c77b-a54d-4307-b043-d08e314c4c5f@huawei.com> <87ldxp4n9v.fsf@toke.dk>
- <eab44c89-5ada-48b6-b880-65967c0f3b49@huawei.com>
-Content-Language: en-US
-From: Jesper Dangaard Brouer <hawk@kernel.org>
-In-Reply-To: <eab44c89-5ada-48b6-b880-65967c0f3b49@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+If SMMU probe fails afer arm_smmu_device_reset(), we leave the SMMU
+enabled with an empty Stream Table, silently blocking all DMA. This
+proves rather annoying for debugging said probe failure, so let's handle
+it a bit better by putting the SMMU back into (more or less) the same
+state as if it hadn't probed at all.
 
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On 12/11/2024 13.22, Yunsheng Lin wrote:
-> On 2024/11/12 2:51, Toke Høiland-Jørgensen wrote:
-> 
-> ...
-> 
->>>
->>> Is there any other suggestion/concern about how to fix the problem here?
->>>
->>>  From the previous discussion, it seems the main concern about tracking the
->>> inflight pages is about how many inflight pages it is needed.
->>
->> Yeah, my hardest objection was against putting a hard limit on the
->> number of outstanding pages.
->>
->>> If there is no other suggestion/concern , it seems the above concern might be
->>> addressed by using pre-allocated memory to satisfy the mostly used case, and
->>> use the dynamically allocated memory if/when necessary.
->>
->> For this, my biggest concern would be performance.
->>
->> In general, doing extra work in rarely used code paths (such as device
->> teardown) is much preferred to adding extra tracking in the fast path.
->> Which would be an argument for Alexander's suggestion of just scanning
->> the entire system page table to find pages to unmap. Don't know enough
->> about mm system internals to have an opinion on whether this is
->> feasible, though.
-> 
-> Yes, there seems to be many MM system internals, like the CONFIG_SPARSEMEM*
-> config, memory offline/online and other MM specific optimization that it
-> is hard to tell it is feasible.
-> 
-> It would be good if MM experts can clarify on this.
->
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 7908fca962fe..566d66e9c91e 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4640,6 +4640,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&smmu->iommu);
+ free_iopf:
+ 	iopf_queue_free(smmu->evtq.iopf);
++	arm_smmu_device_disable(smmu);
+ 	return ret;
+ }
+ 
+-- 
+2.39.2.101.g768bb238c484.dirty
 
-Yes, please.  Can Alex Duyck or MM-experts point me at some code walking
-entire system page table?
-
-Then I'll write some kernel code (maybe module) that I can benchmark how
-long it takes on my machine with 384GiB. I do like Alex'es suggestion,
-but I want to assess the overhead of doing this on modern hardware.
-
->>
->> In any case, we'll need some numbers to really judge the overhead in
->> practice. So benchmarking would be the logical next step in any case :)
-> 
-> Using POC code show that using the dynamic memory allocation does not
-> seems to be adding much overhead than the pre-allocated memory allocation
-> in this patch, the overhead is about 10~20ns, which seems to be similar to
-> the overhead of added overhead in the patch.
-> 
-
-Overhead around 10~20ns is too large for page_pool, because XDP DDoS
-use-case have a very small time budget (which is what page_pool was
-designed for).
-
-[1] 
-https://github.com/xdp-project/xdp-project/blob/master/areas/hints/traits01_bench_kmod.org#benchmark-basics
-
-  | Link speed | Packet rate           | Time-budget   |
-  |            | at smallest pkts size | per packet    |
-  |------------+-----------------------+---------------|
-  |  10 Gbit/s |  14,880,952 pps       | 67.2 nanosec  |
-  |  25 Gbit/s |  37,202,381 pps       | 26.88 nanosec |
-  | 100 Gbit/s | 148,809,523 pps       |  6.72 nanosec |
-
-
---Jesper
