@@ -1,350 +1,194 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2081.outbound.protection.outlook.com [40.107.94.81])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FEEF208990
-	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 18:49:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731437365; cv=none; b=AE2Vp3azvuCDWeqC5k2He/pMvz7X5pojSD02xwEcoJgQX7dxmdB8kn+2d22+bEbiV3tyKhggpSuaEzIjnYmV/tGQPMoMky8o8dENbX3iDn30Jjn4UIBNllU/CV1eBHB8mvql5uQI1qq5QxqqHxPSK1F4h6dZGHqunwZEoZN91Ck=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731437365; c=relaxed/simple;
-	bh=mEQre+K2Jof7YSqhQzQZt0O46vsmuqIaW/XRDC6I1RI=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=MAZJo5A7Jmfi/7o0b5Kxwk1xt3PpSEhsLx8m5jhvjOEJrF/nPz37SGmEgAmDKEPjyTKIkxePV7n9O1zfauTjaXQwy2O2pArB07v/1maL/Fl9qjQLw7poUwyJSDIdOrU+nYPap4Kvo3YFDBJVg5wx4n45f4HD3jLi9iInS85ap5I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=Xjko5r3q; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 705522178EE;
+	Tue, 12 Nov 2024 18:51:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.81
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1731437508; cv=fail; b=bJgcOuTGDEySzM5s+XMAOLNiM6JbASKZZ8iRxi4nFX1sklGybA3klStVHIrqwG2t0m8n5sgcEjMwU3iTAQojnzCZHK6UM5yFhw+qElaFMn6xP8wEYICXwp24VfwQSgLX4bCzQaEz2lBwuHFYIw4FjMZ98iViumzwo9aOXvIOY64=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1731437508; c=relaxed/simple;
+	bh=YwLxXyONxT57nSKd5dUNSSmXLzAWs7YnKy3Y9w7PjTY=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=u252s4MR75rZZ5yk5vLTRfpSw9+mLCS8D/GxU6FiZrHn+FnptMa5JNcle9UxLhh1KhQijrCn+hKrAkuxKwcS6bfivHzg072q7v6zjxvjrVi3sjDMXeug5uBgei85LrInhAetwnecRm/boAlyIL17JZe/uts3rJuD1NHlYJvGjY0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Or6r5CnV; arc=fail smtp.client-ip=40.107.94.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="Xjko5r3q"
-Received: from localhost (docker-mailserver-web-1.docker-mailserver_default [172.22.0.5])
-	by mail.mainlining.org (Postfix) with ESMTPSA id C9B58E45C8;
-	Tue, 12 Nov 2024 18:49:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1731437358;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=x6fl+REPDaaxq1ljcrPGFk2JX/FX55Eh3bhEKDJ2hSM=;
-	b=Xjko5r3qntRxx+TWuY4S1pEkPQY8AzTMwxgfvNlOdKOx8ytnfgPttkCerD2I4mffnep577
-	anjd/MEqSlHSbb4oWVn79l6XbDIpVm9HqQ7l5jeIcFKecUeA1nW5jJHYSKkrktFXVR8+fT
-	23XEA02Ghw1quLUKJThVWxDplLXg+/72tli9RYBZXQJ4iGP+U68oWerJFZ0qghGwIhQN42
-	5FpGGdXLYFKjmNRQOp6aRnVsd6xhRKy7tUx9xFWoNrbD21aMY8wWx3kdLMTBYvi80YH5og
-	nlQw1BdDe4endHz/dYuDeHJIE96ToH3Z9sbO12YzJGiQFwAoJvYCbI1W+ih6LQ==
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Or6r5CnV"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=I7rYTqFLSBPgP94FZPgw9XsBm69Nyopv9Q7U+NSmWMAmQTCTYcPG0sh1dH/+Aw38gBLC2z82IkzjuKVgv1+yrRZC0i2b2oNh35BcuPHVj7n06TTMARfDE8Lpwp5XUWmUqL7dckQqJJjlmAVAELNRWC1RJPthWfKhSkV5N1G4P+KfN73TZmdtIiVPiwTnn4YB8tZOid93uQGvz+McDoo1wAXF1WLMmMf/B+LpbKOAWT674MJT0tMMztXJ7pbw3L/RqRw1NBWTZie9ZvWo+rOR4M3w4ZwPlo0KNaaYobM/oOGQLX1w8mPG3r7zBVVNfRNjgira0UTeEucb37Uoe/MwjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EGMUd8gDzf1tNAM8NDYrfFbVS4/2J94KgmvMGetROrs=;
+ b=vdUHuG1bLk9jqLPijUTKNi7Mxc0+AOVtlXKFasqpjeAPUw4ExLrC7GoWYyZ7AOSs4Mfk57l+3lU5OUMJVycRrQfMnmAudT/62ynQiNEdgMq9cHW7BqeQappJbc2RUC/NEu8i3z5I6qZYNIXfs3gS4YeIm2PddEzIvvihRe0NoG0rrnuwxFZhUo1c4RyySv9g9KffI/dqI877ZzydTh8+xxkSmqZVw1lUEfFUCW7EwF4aPZMhI9KgeWI/fB52jOSuJUueUtzIoTf+0eebi3LxzHOKA7k7uEvWKUcHaS9YfFWJ0eIN/QGJpekn7WdjBO66LttcnBC+kIAaf20ubkTcag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EGMUd8gDzf1tNAM8NDYrfFbVS4/2J94KgmvMGetROrs=;
+ b=Or6r5CnVs62PyGFz3ScJ6fGrADTSQ2yHkRmgtCGp8jnHYKpJzxQeNsxiNEJcZp5Oof0pvKWY3neBUpyvhE0xPeXB87+KWxJuzP1/OlFIPoxSENttMS6qWc5n1KuNWKhb8zsf5G5M6LJvk41azeYwpobTYu6PynQoDkXX2l+iFgzxiGyLKood81nbu3QoftZ2jp3j4HUT19Kr0Y0vWrLff6daem4o7J/nsrdhBP4s8Zxuq6ic3IJLdy6rme8gyHL9YrBPwG7ngIBCK7Tp8NGt7ENvkR0vi0zaefd7XiGI/9oWCj36IBV/reh7VnKP+ibYypYLPTxN06X5aiZN/snIOg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by IA0PR12MB8982.namprd12.prod.outlook.com (2603:10b6:208:481::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.28; Tue, 12 Nov
+ 2024 18:51:40 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8137.027; Tue, 12 Nov 2024
+ 18:51:37 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev,
+	Kevin Tian <kevin.tian@intel.com>,
+	Will Deacon <will@kernel.org>
+Cc: patches@lists.linux.dev
+Subject: [PATCH] iommu/arm-smmu-v3: Improve uAPI comment for IOMMU_HW_INFO_TYPE_ARM_SMMUV3
+Date: Tue, 12 Nov 2024 14:51:36 -0400
+Message-ID: <0-v1-191e5e24cec3+3b0-iommufd_smmuv3_hwinf_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MN0P223CA0006.NAMP223.PROD.OUTLOOK.COM
+ (2603:10b6:208:52b::6) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Tue, 12 Nov 2024 19:49:18 +0100
-From: barnabas.czeman@mainlining.org
-To: Stephan Gerhold <stephan.gerhold@linaro.org>
-Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio
- <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Linus Walleij
- <linus.walleij@linaro.org>, Amit Kucheria <amitk@kernel.org>, Thara Gopinath
- <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
- Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz
- Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Srinivas Kandagatla
- <srinivas.kandagatla@linaro.org>, linux-arm-msm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev,
- =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>
-Subject: Re: [PATCH v5 08/10] arm64: dts: qcom: Add initial support for
- MSM8917
-In-Reply-To: <ZzOQEgLLhkH-IymV@linaro.org>
-References: <20241112-msm8917-v5-0-3ca34d33191b@mainlining.org>
- <20241112-msm8917-v5-8-3ca34d33191b@mainlining.org>
- <ZzOQEgLLhkH-IymV@linaro.org>
-Message-ID: <0dae1cea420bd335be591e4b1be3d07c@mainlining.org>
-X-Sender: barnabas.czeman@mainlining.org
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|IA0PR12MB8982:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7561f41a-345c-44b6-c8e4-08dd034b094f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?EKhJcUDrgVumKlq3YXN9iyMwNU2JXOmOh1rEZBhSwnHiqWn5zBQnOqk2xWze?=
+ =?us-ascii?Q?Ktjz2JciPMXfb/saH9VVVg+XUyX524qZ8qdjtSaMsqETtuRmqNWMhw0UfZFc?=
+ =?us-ascii?Q?0RFZn4z9MjH+ufpmLc6PXh87ICd+QTGuCS1hte1XIRpP0jS8WaFCKVHNs0CQ?=
+ =?us-ascii?Q?6T1CT5Jb0g0BaGqIEOK/nMVdK7nhoyzJRkcRFj3MnrllraZOY0uVY8DtJtYG?=
+ =?us-ascii?Q?Jk97hrKqPNu111H2nerQHmhAHLi9uvYV431096go9g4YeP9hwNkuOega16XQ?=
+ =?us-ascii?Q?rX8egsK5PfNi7U8za3xzwiNCyR88/7cmfZxreIcOSPIbL+bOwsmnB869FcXI?=
+ =?us-ascii?Q?lzvf9qUFcOm2arpgWjZNEjSnDALEa7KY/av7dfJuGS+ksQopViwgHl/whc2y?=
+ =?us-ascii?Q?EeA+K43SQW7QFDbnovm7VDXZfJZlHz6QBE+m3yUAwGOFR43M/9LWPwPAhScZ?=
+ =?us-ascii?Q?UA7PlaVFzmdW55CKAtNbWDM05lwcHhvSIhq1djTbYumGzRyVwlYoGuKUcL+J?=
+ =?us-ascii?Q?vShtIvRlDzN50vRURyFaAnXDFEQ06XP5h8ylgKYm3J00y+q1mvsp1ugAn1E+?=
+ =?us-ascii?Q?dpo6uzebaXc0kJ84ykVKG41+Vyl9VwlU+GhfpZQpwBBW3+TYaEUPif8s2RuJ?=
+ =?us-ascii?Q?8D8z7fSX4QfryArj85xAdLGTCjC6ZidXjuDeJRumi7b9J5bIwajzfy25RQn9?=
+ =?us-ascii?Q?RH9MmUWQdRKlT1sJnr1nOnQ5rw1FQBSaT5mSY1vTNxjevlrQP+ZQIZchtlNN?=
+ =?us-ascii?Q?DXbY9aXGeT1wjraqmsl1xgyv9FnA3uRXAf2krqfRZv28NlXNd88NV6u9WmcH?=
+ =?us-ascii?Q?X7jEEmTVBIe+AC0i4DPN5hcEmLxvrSWG9SLPBjYaP3pst7P9MuH7M3gg+tJc?=
+ =?us-ascii?Q?hfRhiFrdxNEIILLBAKtSJ9jZZc0SUZvBiS8WWxR80kpRlimSPJ724iIMJS/L?=
+ =?us-ascii?Q?YBVqj+aMp7AbwfpYQWYjoNQ68eIRFQOeWdfNaWkA7jJCQa/OK0RYxR4BZb3z?=
+ =?us-ascii?Q?b/GKwC+f3alq5QhCq5PAlmWL3soPSN4lGNT5+tpzpRoJGvtyeRWrgTC7izxf?=
+ =?us-ascii?Q?/YCt98cpo/LX7wQpHep6X3ouMO4pbLRYaVsc8hndNglzjuBPbmSsBttTYkuI?=
+ =?us-ascii?Q?4qnhlDPKLk0mPvGaVlQVLbS9Nu+wjjsdt4nF8xJx4n+4UXfijyYVbGID4v8L?=
+ =?us-ascii?Q?fRJHSN0bSJaCr4ieby37KcYU60DXB+YMdIgdy1sxJt8s6EDBjja8JpM3oxiG?=
+ =?us-ascii?Q?RNKSlxHSeVdJcU8o5TOmhq85mX1B42xETpp+jyqk5mYaDb9gbemAIjFUBEk6?=
+ =?us-ascii?Q?DuTXlksT943k6/nWLt5PmAep?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?UQtV4aZCLR8iFDnrUEE0YGP0qRJVQLdxQg9W6NMzZ3pq1im9D3OYro0eN4H0?=
+ =?us-ascii?Q?34Q9nPDdd0+gEbmUBCp7B2TEaJdMmqT9RbeacjiA7lJvGmrb0xb5qLkT0+/8?=
+ =?us-ascii?Q?NdBjyBwkhXjhpZn+L8qirG4dwQp7GK4tKnNXPUZ6g13IT4HJPef9W5tuLxun?=
+ =?us-ascii?Q?lr2g8MRwS7MR+vercDRSBFGbsBN8xv5fB1PSeEUcZUin+TINq7xZSl5uZfIG?=
+ =?us-ascii?Q?4GZNZc2tvGopTMhmL5Mf7hE5sXk3b2dHo8OMZx6V9S3a5JLexjuqabv54QfF?=
+ =?us-ascii?Q?M1uLwe9xCOpu0XlzIPSnTQXbw2GQKenXJOHiyCjtLagGxAWXxxq/skT7L6gI?=
+ =?us-ascii?Q?8//dkTZ7X8p1KKDKrcwzDMiomSr4oD37+4BhcSzm4gSPsD4Dbl7jnuwBCxNs?=
+ =?us-ascii?Q?QQuT4RijGHWanPOkDOVwTiuxph9hlPzgMFpEqJTKN1jyIMMSlzqK5fEzfQRm?=
+ =?us-ascii?Q?VW2LHZA62RB3GcCdGdLYNtNdscBoik+v+tfl4MdAwNHujUV2BJAynb6Bb4lx?=
+ =?us-ascii?Q?NciUg3ej7+NwCc+7bdE+bAn991l7yS/QQSFS7teXKcru2tuklxlMegylgWRw?=
+ =?us-ascii?Q?KnjFgp9mJSWcO3e+w8aYsuz8TVhhIOxOHjL09JpSMuxsReEuMLlHIhZO4XVB?=
+ =?us-ascii?Q?HpuGVDd4GlM0BLbj8bZWsZNMEw887UyhxIzo/3x+ajioxgmGqn9rQnYXGz1R?=
+ =?us-ascii?Q?IymTqK76u9NxTy4b3hYKSdUPboyUpFvsi15sVyz039EjkUYAud7erpXMC8De?=
+ =?us-ascii?Q?zag1OR/OJGzlWo3CigrTEzuWiKh1HHLHXbaOQwIvN6vs0jZlde/EvQam3J0u?=
+ =?us-ascii?Q?o7ULNcNnez8Hjkr9jRdDNBesdaPuvkcxUqrB7mlhHGy1WHfVq26d+qX0Fu6O?=
+ =?us-ascii?Q?57A9KoXIUG2Q4v9pb3ODllIzvrJZDadEVnQOwEmxqJXgxDJYW05ZkgcCyzhl?=
+ =?us-ascii?Q?9hw/7VH2gxMXFjsqxwFExxsBxKLR4iyCrZu12bnPOcrMR9JVV3dCLG/sBWcm?=
+ =?us-ascii?Q?+VI6vzgucn44FyvFzly+lK3nIc2lzIqO8G1S3JWHm7V94/xTL9GPEGwRCQC1?=
+ =?us-ascii?Q?2fWY8/N/cIgfrl9v+8+eYrhpMPgnCJFzrj2MA5zCDcSuGmduDF33/blhsTkF?=
+ =?us-ascii?Q?HtL7Jn+rxiG7atln9XJUrd3Zn+H7X1s51saSZCanVqKTWts55K43YOhCuAYy?=
+ =?us-ascii?Q?jwXwZjpBoEGo9dfKpjakuB3jOkewue/Y2F/Toe89SbftKXrA2DeKDS0A+k/m?=
+ =?us-ascii?Q?eK9r40w1N1kEe2mTtyrC+WMilNDKRpm3dBPl9NAUOXEE0mkVu8Q1tyM90lBt?=
+ =?us-ascii?Q?spzcV44Gkj3dXASt93/G5dE446g2TZgrA7pSuLc6Y/SP3VVVEbrEJqnAmVn6?=
+ =?us-ascii?Q?AXVe2XJT0Lv1PTUZ/Jv6XaRsYUkTPpL+NVsyKWlseYWQtKqwhZcgu1xex9pq?=
+ =?us-ascii?Q?CznVFWalwkhOOKaGxhp0OZjCiqz52ULrwpTe0rhcYJdtHg5RQ5JwphmaGzO/?=
+ =?us-ascii?Q?MGGYIrl/CADA38ATVnYTHjDmP3SLHu1ZDsD5vAKShOydQPcDOCj5Y6YVmCkE?=
+ =?us-ascii?Q?D8sUH/iFHADDsVEHNg41Zxb6p+rR9YaOXMf6Y6nA?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7561f41a-345c-44b6-c8e4-08dd034b094f
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2024 18:51:37.2283
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: iRvwhQUHAc0g5RU3pWaQrbvQYeSutNcUylJ4DUfY5S54yzrQ20o1JbARLpjtoi5m
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8982
 
-On 2024-11-12 18:27, Stephan Gerhold wrote:
-> On Tue, Nov 12, 2024 at 04:49:38PM +0100, Barnabás Czémán wrote:
->> From: Otto Pflüger <otto.pflueger@abscue.de>
->> 
->> Add initial support for MSM8917 SoC.
->> 
->> Signed-off-by: Otto Pflüger <otto.pflueger@abscue.de>
->> [reword commit, rebase, fix schema errors]
->> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->> ---
->>  arch/arm64/boot/dts/qcom/msm8917.dtsi | 1974 
->> +++++++++++++++++++++++++++++++++
->>  1 file changed, 1974 insertions(+)
->> 
->> diff --git a/arch/arm64/boot/dts/qcom/msm8917.dtsi 
->> b/arch/arm64/boot/dts/qcom/msm8917.dtsi
->> new file mode 100644
->> index 
->> 0000000000000000000000000000000000000000..cf0a0eec1141e11faca0ee9705d6348ab32a0f50
->> --- /dev/null
->> +++ b/arch/arm64/boot/dts/qcom/msm8917.dtsi
->> @@ -0,0 +1,1974 @@
->> [...]
->> +		domain-idle-states {
->> +			cluster_sleep_0: cluster-sleep-0 {
->> +				compatible = "domain-idle-state";
->> +				arm,psci-suspend-param = <0x41000023>;
->> +				entry-latency-us = <700>;
->> +				exit-latency-us = <650>;
->> +				min-residency-us = <1972>;
->> +			};
->> +
->> +			cluster_sleep_1: cluster-sleep-1 {
->> +				compatible = "domain-idle-state";
->> +				arm,psci-suspend-param = <0x41000043>;
->> +				entry-latency-us = <240>;
->> +				exit-latency-us = <280>;
->> +				min-residency-us = <806>;
->> +			};
-> 
-> I think my comment here is still open:
-> 
-> This is strange, the deeper sleep state has lower timings than the
-> previous one?
-I was reordering based on Konrad comments when i have renamed the nodes 
-maybe it is not correct then.
-I am searching for how to validate these levels, i have find these
-https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.c26-01500-89xx.0/arch/arm64/boot/dts/qcom/msm8917-pm.dtsi#L45-91
-Do you know where can i find psci-suspend-param-s? Should I also add wfi 
-level?
-> 
->> +
->> +			cluster_sleep_2: cluster-sleep-2 {
->> +				compatible = "domain-idle-state";
->> +				arm,psci-suspend-param = <0x41000053>;
->> +				entry-latency-us = <700>;
->> +				exit-latency-us = <1000>;
->> +				min-residency-us = <6500>;
->> +			};
->> +		};
->> +
->> [...]
->> +		restart@4ab000 {
->> +			compatible = "qcom,pshold";
->> +			reg = <0x004ab000 0x4>;
->> +		};
-> 
-> This one too:
-> 
-> You have PSCI for shutting down, do you actually need this?
-> 
->> +
->> +		tlmm: pinctrl@1000000 {
->> +			compatible = "qcom,msm8917-pinctrl";
->> +			reg = <0x01000000 0x300000>;
->> +			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
->> +			gpio-controller;
->> +			gpio-ranges = <&tlmm 0 0 134>;
->> +			#gpio-cells = <2>;
->> +			interrupt-controller;
->> +			#interrupt-cells = <2>;
->> +
->> [...]
->> +			sdc1_clk_on: sdc1-clk-on-state {
->> +				pins = "sdc1_clk";
->> +				bias-disable;
->> +				drive-strength = <16>;
->> +			};
->> +
->> +			sdc1_clk_off: sdc1-clk-off-state {
->> +				pins = "sdc1_clk";
->> +				bias-disable;
->> +				drive-strength = <2>;
->> +			};
->> +
->> +			sdc1_cmd_on: sdc1-cmd-on-state {
->> +				pins = "sdc1_cmd";
->> +				bias-disable;
->> +				drive-strength = <10>;
->> +			};
->> +
->> +			sdc1_cmd_off: sdc1-cmd-off-state {
->> +				pins = "sdc1_cmd";
->> +				bias-disable;
->> +				drive-strength = <2>;
->> +			};
->> +
->> +			sdc1_data_on: sdc1-data-on-state {
->> +				pins = "sdc1_data";
->> +				bias-pull-up;
->> +				drive-strength = <10>;
->> +			};
->> +
->> +			sdc1_data_off: sdc1-data-off-state {
->> +				pins = "sdc1_data";
->> +				bias-pull-up;
->> +				drive-strength = <2>;
->> +			};
->> +
->> +			sdc1_rclk_on: sdc1-rclk-on-state {
->> +				pins = "sdc1_rclk";
->> +				bias-pull-down;
->> +			};
->> +
->> +			sdc1_rclk_off: sdc1-rclk-off-state {
->> +				pins = "sdc1_rclk";
->> +				bias-pull-down;
->> +			};
->> +
->> +			sdc2_clk_on: sdc2-clk-on-state {
->> +				pins = "sdc2_clk";
->> +				drive-strength = <16>;
->> +				bias-disable;
->> +			};
->> +
->> +			sdc2_clk_off: sdc2-clk-off-state {
->> +				pins = "sdc2_clk";
->> +				bias-disable;
->> +				drive-strength = <2>;
->> +			};
->> +
->> +			sdc2_cmd_on: sdc2-cmd-on-state {
->> +				pins = "sdc2_cmd";
->> +				bias-pull-up;
->> +				drive-strength = <10>;
->> +			};
->> +
->> +			sdc2_cmd_off: sdc2-cmd-off-state {
->> +				pins = "sdc2_cmd";
->> +				bias-pull-up;
->> +				drive-strength = <2>;
->> +			};
-> 
-> These are not referenced anywhere? Not here in the sdhc_X nodes, and
-> also not in your msm8917-xiaomi-riva.dts. Would also recommend
-> consolidating these to a single node like in msm8916.dtsi, see commit
-> c943e4c58b2f ("arm64: dts: qcom: msm8916/39: Consolidate SDC pinctrl").
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c943e4c58b2ffb0dcd497f8b12f284f5e8fc477e
-> 
->> +
->> +			sdc2_cd_on: cd-on-state {
->> +				pins = "gpio67";
->> +				function = "gpio";
->> +				drive-strength = <2>;
->> +				bias-pull-up;
->> +			};
->> +
->> +			sdc2_cd_off: cd-off-state {
->> +				pins = "gpio67";
->> +				function = "gpio";
->> +				drive-strength = <2>;
->> +				bias-disable;
->> +			};
-> 
-> It does not make sense to have different on/off states for the card
-> detect (CD) pin of the SD card. It needs to work even when the SD card
-> is suspended so we can detect insertions/removals. Also should be 
-> placed
-> in the board-specific DT part.
-> 
-> See commit dfbda20dabaa ("arm64: dts: qcom: msm8916/39: Fix SD card
-> detect pinctrl").
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dfbda20dabaa1f284abd550035db5887384c8e4c
-> 
-> 
->> +
->> +			sdc2_data_on: sdc2-data-on-state {
->> +				pins = "sdc2_data";
->> +				bias-pull-up;
->> +				drive-strength = <10>;
->> +			};
->> +
->> +			sdc2_data_off: sdc2-data-off-state {
->> +				pins = "sdc2_data";
->> +				bias-pull-up;
->> +				drive-strength = <2>;
->> +			};
->> +
->> [...]
->> +		blsp1_i2c4: i2c@78b8000 {
->> +			compatible = "qcom,i2c-qup-v2.2.1";
->> +			reg = <0x078b8000 0x500>;
->> +			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
->> +			clocks = <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>,
->> +				 <&gcc GCC_BLSP1_AHB_CLK>;
->> +			clock-names = "core", "iface";
->> +			dmas = <&blsp1_dma 10>, <&blsp1_dma 11>;
->> +			dma-names = "tx", "rx";
->> +			pinctrl-0 = <&blsp1_i2c4_default>;
->> +			pinctrl-1 = <&blsp1_i2c4_sleep>;
->> +			pinctrl-names = "default", "sleep";
->> +			#address-cells = <1>;
->> +			#size-cells = <0>;
->> +			status = "disabled";
->> +		};
->> +
->> +		blsp2_i2c5: i2c@7af5000 {
-> 
-> This is actually blsp2_i2c1 if you look at the clock name below:
-> 
->> +			compatible = "qcom,i2c-qup-v2.2.1";
->> +			reg = <0x07af5000 0x600>;
->> +			interrupts = <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>;
->> +			clocks = <&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>,
-> 
-> here ^
-> 
-> But I realize now that the pinctrl functions are consecutively numbered
-> without the BLSP number. Sorry for the confusion.
-> 
-> Basically:
->   - blsp1_i2c2 == blsp_i2c2
->   - blsp2_i2c1 == blsp_i2c5
-> 
-> Looking at some other examples upstream I guess you can choose between
-> one of the following options:
-> 
->  1. msm8974/msm8976/msm8996/msm8998: Use &blspX_i2cY labels for the 
-> i2c@
->     node and pinctrl and only have the slightly confusing pinctrl
->     function. E.g. this in msm8976.dtsi:
-> 
-> 			/* 4 (not 6!) interfaces per QUP, BLSP2 indexes are numbered (n)+4 
-> */
-> 			blsp2_i2c2_default: blsp2-i2c2-default-state {
-> 				pins = "gpio22", "gpio23";
-> 				function = "blsp_i2c6";
-> 				drive-strength = <2>;
-> 				bias-disable;
-> 			};
-> 
->     Note how blsp2_i2c2 == blsp_i2c6.
-> 
->  2. msm8994: Use &blspX_i2cY labels for the i2c@ node, but keep pinctrl
->     named &i2cN_default. E.g. this in msm8994.dtsi:
-> 
-> 		blsp2_i2c1: i2c@f9963000 {
-> 			/* ... */
-> 			pinctrl-names = "default", "sleep";
-> 			pinctrl-0 = <&i2c7_default>;
-> 			pinctrl-1 = <&i2c7_sleep>;
-> 			/* ... */
-> 		};
-> 
->     Note how blsp2_i2c1 == i2c7_default here.
-> 
->  3. msm8953: Use &i2c_N labels everywhere like on downstream. E.g. this
->     in msm8953.dtsi. This is pretty much what you had originally:
-> 
-> 		i2c_5: i2c@7af5000 {
-> 			/* ... */
-> 			pinctrl-names = "default", "sleep";
-> 			pinctrl-0 = <&i2c_5_default>;
-> 			pinctrl-1 = <&i2c_5_sleep>;
-> 			/* ... */
-> 		};
-> 
-> All of these are fine for me. Feel free to pick the one you prefer. But
-> let's not introduce a new confusing variant of this. :-)
-> 
-> Thanks,
-> Stephan
+Be specific about what fields should be accessed in the idr result and
+give other guidance to the VMM on how it should generate the
+vIDR. Discussion on the list, and review of the qmeu implementation
+understood this needs to be clearer and more detailed.
+
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ include/uapi/linux/iommufd.h | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
+
+As posted in the other thread, it is a enough of an improvement I'd like to
+pick it up for the iommufd PR.
+
+Thanks,
+Jason
+
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index 747d3d9baa3dda..1e0345a62a3ab8 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -549,16 +549,25 @@ struct iommu_hw_info_vtd {
+  * For the details of @idr, @iidr and @aidr, please refer to the chapters
+  * from 6.3.1 to 6.3.6 in the SMMUv3 Spec.
+  *
+- * User space should read the underlying ARM SMMUv3 hardware information for
+- * the list of supported features.
++ * This reports the raw HW capability, and not all bits are meaningful to be
++ * read by userspace. Only the following fields should be used:
+  *
+- * Note that these values reflect the raw HW capability, without any insight if
+- * any required kernel driver support is present. Bits may be set indicating the
+- * HW has functionality that is lacking kernel software support, such as BTM. If
+- * a VMM is using this information to construct emulated copies of these
+- * registers it should only forward bits that it knows it can support.
++ * idr[0]: ST_LEVEL, TERM_MODEL, STALL_MODEL, TTENDIAN , CD2L, ASID16, TTF
++ * idr[1]: SIDSIZE, SSIDSIZE
++ * idr[3]: BBML, RIL
++ * idr[5]: VAX, GRAN64K, GRAN16K, GRAN4K
+  *
+- * In future, presence of required kernel support will be indicated in flags.
++ * - S1P should be assumed to be true if a NESTED HWPT can be created
++ * - VFIO/iommufd only support platforms with COHACC, it should be assumed to be
++ *   true.
++ * - ATS is a per-device property. If the VMM describes any devices as ATS
++ *   capable in ACPI/DT it should set the corresponding idr.
++ *
++ * This list may expand in future (eg E0PD, AIE, PBHA, D128, DS etc). It is
++ * important that VMMs do not read bits outside the list to allow for
++ * compatibility with future kernels. Several features in the SMMUv3
++ * architecture are not currently supported by the kernel for nesting: HTTU,
++ * BTM, MPAM and others.
+  */
+ struct iommu_hw_info_arm_smmuv3 {
+ 	__u32 flags;
+
+base-commit: d68beb276ba26cec47350a6d468e967673ee0c56
+-- 
+2.43.0
+
