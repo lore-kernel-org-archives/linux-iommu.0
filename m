@@ -1,166 +1,350 @@
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7013221764F
-	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 18:41:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FEEF208990
+	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 18:49:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731436916; cv=none; b=tvReGIvw2H7d6rlCldigjXcJkUE4g8FphAZgV5mpD47IZ3ba+3ZDSfjaWty/f9xlEnm58+K88i9ipOZffkMGn0lleGdJ61sBed0lt8usICurZ1VGphRkfXq4RM8WvM2cpItNc8dh6mRsA3+t3CujFG7Z6Ga/IsvD4iA8WgwytmA=
+	t=1731437365; cv=none; b=AE2Vp3azvuCDWeqC5k2He/pMvz7X5pojSD02xwEcoJgQX7dxmdB8kn+2d22+bEbiV3tyKhggpSuaEzIjnYmV/tGQPMoMky8o8dENbX3iDn30Jjn4UIBNllU/CV1eBHB8mvql5uQI1qq5QxqqHxPSK1F4h6dZGHqunwZEoZN91Ck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731436916; c=relaxed/simple;
-	bh=41iyxx13QSoZL0ljBLNHJfFzk4RIgV1Y3g7Lpg/buaQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=P3BqsrP7Gm8Ov0wHRxxKMBMiYEd1kG3B30cExRlElJ5q7ZvKKgFINY/QpSolWop3cciX4yFtqutK85TGXOTSBg+5S4Z5NbwiVKzyl3utEAfXGyhnyM3dgHu8/SrQIO129oh9VcCmFP1oXmU4nY4fnud5x/p57fn+5VM3mbsHTT0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-6e34339d41bso52497287b3.0
-        for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 10:41:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731436912; x=1732041712;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ve2ZVPRXNdhaGzT7UXBp48t6+paKDDEaJf51GwqASjo=;
-        b=RczJA3NXChqMFjL7syBz0tjIoEW941N8bOzTSG8xtkzX0DvXU3qhOT1J8FGmLeq5qO
-         6n7GpbIy1jl3gG9o0o5KUBHT2bHATJJcHuIkkl5jxNJnX3Wq5VA2OHFKuNqcja3ltbb+
-         fPyKiDh3pzhgN4ymmeIK9CHwDpezXSfstQTOLmEdlHcV//UbyK4QXCmehqc6BjDFpMqD
-         Cqi+c2QKPmuTbS2mscnk4ibmGcyXFWh4byi9iGfGayLihnm9SKtgKFIy8GjnEeMKRSEE
-         T2Kc+JFt4/eE8XANR3Uop//3R0svs8Kxp3mEXpSC1M4OggRyvwjyl+pwbBWRXL54+MFs
-         7Kxw==
-X-Forwarded-Encrypted: i=1; AJvYcCXV+Nb+YTC6LJZMnegcoY3czfKGhl/i9COI/aFW4tTplF7cm6/Zc9621ErnLYDsFmuMlmfGwg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzMhJwF6bqK18la0Y7GPO8Dg0OVeqtiUacxLQ2sAmL7edIrBsG7
-	/kXl6zFvT6M8xSDJ5LDvghGHjHpsgakGuQxpnLOPD+UAbVIL9MJRV3PjiEmv
-X-Google-Smtp-Source: AGHT+IHYSH3R+Cf96C6/2PWDs9wDQmCBQOWAglmcL8/HzssOU+gsbktbdo4Ao5jNUvCffTTn6ELUMw==
-X-Received: by 2002:a05:690c:891:b0:6ea:408a:3aca with SMTP id 00721157ae682-6eaddd97022mr162121947b3.12.1731436911980;
-        Tue, 12 Nov 2024 10:41:51 -0800 (PST)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-6eaceb6563bsm26587077b3.77.2024.11.12.10.41.49
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Nov 2024 10:41:49 -0800 (PST)
-Received: by mail-yb1-f174.google.com with SMTP id 3f1490d57ef6-e30eca40c44so5608186276.2
-        for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 10:41:49 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUBOfOvGJiBsUrYkB5SltMMDGf6zdU3+X8yB1zUgNC99QBaVQXeRZPUD9eUCZPJSZU4lRCgOQ==@lists.linux.dev
-X-Received: by 2002:a05:6902:2482:b0:e30:e5b3:390a with SMTP id
- 3f1490d57ef6-e337f85a8e2mr16935363276.20.1731436909730; Tue, 12 Nov 2024
- 10:41:49 -0800 (PST)
+	s=arc-20240116; t=1731437365; c=relaxed/simple;
+	bh=mEQre+K2Jof7YSqhQzQZt0O46vsmuqIaW/XRDC6I1RI=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=MAZJo5A7Jmfi/7o0b5Kxwk1xt3PpSEhsLx8m5jhvjOEJrF/nPz37SGmEgAmDKEPjyTKIkxePV7n9O1zfauTjaXQwy2O2pArB07v/1maL/Fl9qjQLw7poUwyJSDIdOrU+nYPap4Kvo3YFDBJVg5wx4n45f4HD3jLi9iInS85ap5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=Xjko5r3q; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="Xjko5r3q"
+Received: from localhost (docker-mailserver-web-1.docker-mailserver_default [172.22.0.5])
+	by mail.mainlining.org (Postfix) with ESMTPSA id C9B58E45C8;
+	Tue, 12 Nov 2024 18:49:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1731437358;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=x6fl+REPDaaxq1ljcrPGFk2JX/FX55Eh3bhEKDJ2hSM=;
+	b=Xjko5r3qntRxx+TWuY4S1pEkPQY8AzTMwxgfvNlOdKOx8ytnfgPttkCerD2I4mffnep577
+	anjd/MEqSlHSbb4oWVn79l6XbDIpVm9HqQ7l5jeIcFKecUeA1nW5jJHYSKkrktFXVR8+fT
+	23XEA02Ghw1quLUKJThVWxDplLXg+/72tli9RYBZXQJ4iGP+U68oWerJFZ0qghGwIhQN42
+	5FpGGdXLYFKjmNRQOp6aRnVsd6xhRKy7tUx9xFWoNrbD21aMY8wWx3kdLMTBYvi80YH5og
+	nlQw1BdDe4endHz/dYuDeHJIE96ToH3Z9sbO12YzJGiQFwAoJvYCbI1W+ih6LQ==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241008220624.551309-1-quic_obabatun@quicinc.com>
- <20241008220624.551309-2-quic_obabatun@quicinc.com> <CAMuHMdUXj4QiSKdhf61xdDeu94=Hv0BXuCxykDpQwdY81_h2vw@mail.gmail.com>
- <8c987a26-d499-4ceb-905e-750bb24fcb08@quicinc.com> <CAMuHMdW050DuwkLuosiiz2Yt7d0Lq+C8jFO0+O0qbwsjmyf3hA@mail.gmail.com>
-In-Reply-To: <CAMuHMdW050DuwkLuosiiz2Yt7d0Lq+C8jFO0+O0qbwsjmyf3hA@mail.gmail.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 12 Nov 2024 19:41:38 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUjpyZEvwKpY1oQtqiqbXYcbZBh4-7pa3jacrFaCfKF=Q@mail.gmail.com>
-Message-ID: <CAMuHMdUjpyZEvwKpY1oQtqiqbXYcbZBh4-7pa3jacrFaCfKF=Q@mail.gmail.com>
-Subject: Re: [PATCH v10 1/2] of: reserved_mem: Restruture how the reserved
- memory regions are processed
-To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-Cc: robh@kernel.org, aisheng.dong@nxp.com, andy@black.fi.intel.com, 
-	catalin.marinas@arm.com, devicetree@vger.kernel.org, hch@lst.de, 
-	iommu@lists.linux.dev, kernel@quicinc.com, klarasmodin@gmail.com, 
-	linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, 
-	quic_ninanaik@quicinc.com, robin.murphy@arm.com, saravanak@google.com, 
-	will@kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Date: Tue, 12 Nov 2024 19:49:18 +0100
+From: barnabas.czeman@mainlining.org
+To: Stephan Gerhold <stephan.gerhold@linaro.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio
+ <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Linus Walleij
+ <linus.walleij@linaro.org>, Amit Kucheria <amitk@kernel.org>, Thara Gopinath
+ <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
+ Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz
+ Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Srinivas Kandagatla
+ <srinivas.kandagatla@linaro.org>, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev,
+ =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>
+Subject: Re: [PATCH v5 08/10] arm64: dts: qcom: Add initial support for
+ MSM8917
+In-Reply-To: <ZzOQEgLLhkH-IymV@linaro.org>
+References: <20241112-msm8917-v5-0-3ca34d33191b@mainlining.org>
+ <20241112-msm8917-v5-8-3ca34d33191b@mainlining.org>
+ <ZzOQEgLLhkH-IymV@linaro.org>
+Message-ID: <0dae1cea420bd335be591e4b1be3d07c@mainlining.org>
+X-Sender: barnabas.czeman@mainlining.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Oreoluwa,
-
-On Fri, Nov 1, 2024 at 1:45=E2=80=AFPM Geert Uytterhoeven <geert@linux-m68k=
-.org> wrote:
-> On Thu, Oct 31, 2024 at 10:06=E2=80=AFPM Oreoluwa Babatunde
-> <quic_obabatun@quicinc.com> wrote:
-> > On 10/29/2024 5:41 AM, Geert Uytterhoeven wrote:
-> > > On Wed, Oct 9, 2024 at 12:08=E2=80=AFAM Oreoluwa Babatunde
-> > > <quic_obabatun@quicinc.com> wrote:
-> > >> Reserved memory regions defined in the devicetree can be broken up i=
-nto
-> > >> two groups:
-> > >> i) Statically-placed reserved memory regions
-> > >> i.e. regions defined with a static start address and size using the
-> > >>      "reg" property.
-> > >> ii) Dynamically-placed reserved memory regions.
-> > >> i.e. regions defined by specifying an address range where they can b=
-e
-> > >>      placed in memory using the "alloc_ranges" and "size" properties=
-.
-
-[...]
-
-> > >> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-> > > Thanks for your patch, which is now commit 8a6e02d0c00e7b62
-> > > ("of: reserved_mem: Restructure how the reserved memory regions
-> > > are processed") in dt-rh/for-next.
-> > >
-> > > I have bisected a boot issue on RZ/Five to this commit.
-> > > With "earlycon keep_bootcon" (else there is no output):
-> > >
-> > >     Oops - store (or AMO) access fault [#1]
-> > >     CPU: 0 UID: 0 PID: 1 Comm: swapper Not tainted
-> > > 6.12.0-rc1-00015-g8a6e02d0c00e #201
-> > >     Hardware name: Renesas SMARC EVK based on r9a07g043f01 (DT)
-> > >     epc : __memset+0x60/0x100
-> > >      ra : __dma_alloc_from_coherent+0x150/0x17a
-> > >     epc : ffffffff8062d2bc ra : ffffffff80053a94 sp : ffffffc60000ba2=
-0
-> > >      gp : ffffffff812e9938 tp : ffffffd601920000 t0 : ffffffc6000d000=
-0
-> > >      t1 : 0000000000000000 t2 : ffffffffe9600000 s0 : ffffffc60000baa=
-0
-> > >      s1 : ffffffc6000d0000 a0 : ffffffc6000d0000 a1 : 000000000000000=
-0
-> > >      a2 : 0000000000001000 a3 : ffffffc6000d1000 a4 : 000000000000000=
-0
-> > >      a5 : 0000000000000000 a6 : ffffffd601adacc0 a7 : ffffffd601a841a=
-8
-> > >      s2 : ffffffd6018573c0 s3 : 0000000000001000 s4 : ffffffd6019541e=
-0
-> > >      s5 : 0000000200000022 s6 : ffffffd6018f8410 s7 : ffffffd6018573e=
-8
-> > >      s8 : 0000000000000001 s9 : 0000000000000001 s10: 000000000000001=
-0
-> > >      s11: 0000000000000000 t3 : 0000000000000000 t4 : ffffffffdefe62d=
-1
-> > >      t5 : 000000001cd6a3a9 t6 : ffffffd601b2aad6
-> > >     status: 0000000200000120 badaddr: ffffffc6000d0000 cause: 0000000=
-000000007
-> > >     [<ffffffff8062d2bc>] __memset+0x60/0x100
-> > >     [<ffffffff80053e1a>] dma_alloc_from_global_coherent+0x1c/0x28
-> > >     [<ffffffff80053056>] dma_direct_alloc+0x98/0x112
-> > >     [<ffffffff8005238c>] dma_alloc_attrs+0x78/0x86
-> > >     [<ffffffff8035fdb4>] rz_dmac_probe+0x3f6/0x50a
-
-> > Please can you provide reproduction steps? I tried booting up
-> > risc-v arch with qemu but did not run into the issue you are
-> > seeing.
->
-> It indeed doesn't happen on other RISC-V platforms (tried MPFS/Icicle).
-> RZ/Five is special in that it is DMA non-coherent, and the crash
-> happens in dma_alloc_from_global_coherent().
-> According to the logs, the DMA pool at 0x58000000 is still being created.
-> I'll try to debug this further next week...
-
-I found the issue, and have sent a fix
-https://lore.kernel.org/r/f8cef6845a6141f0277e31a71fe153612daae776.17314366=
-31.git.geert+renesas@glider.be
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+On 2024-11-12 18:27, Stephan Gerhold wrote:
+> On Tue, Nov 12, 2024 at 04:49:38PM +0100, Barnabás Czémán wrote:
+>> From: Otto Pflüger <otto.pflueger@abscue.de>
+>> 
+>> Add initial support for MSM8917 SoC.
+>> 
+>> Signed-off-by: Otto Pflüger <otto.pflueger@abscue.de>
+>> [reword commit, rebase, fix schema errors]
+>> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>> ---
+>>  arch/arm64/boot/dts/qcom/msm8917.dtsi | 1974 
+>> +++++++++++++++++++++++++++++++++
+>>  1 file changed, 1974 insertions(+)
+>> 
+>> diff --git a/arch/arm64/boot/dts/qcom/msm8917.dtsi 
+>> b/arch/arm64/boot/dts/qcom/msm8917.dtsi
+>> new file mode 100644
+>> index 
+>> 0000000000000000000000000000000000000000..cf0a0eec1141e11faca0ee9705d6348ab32a0f50
+>> --- /dev/null
+>> +++ b/arch/arm64/boot/dts/qcom/msm8917.dtsi
+>> @@ -0,0 +1,1974 @@
+>> [...]
+>> +		domain-idle-states {
+>> +			cluster_sleep_0: cluster-sleep-0 {
+>> +				compatible = "domain-idle-state";
+>> +				arm,psci-suspend-param = <0x41000023>;
+>> +				entry-latency-us = <700>;
+>> +				exit-latency-us = <650>;
+>> +				min-residency-us = <1972>;
+>> +			};
+>> +
+>> +			cluster_sleep_1: cluster-sleep-1 {
+>> +				compatible = "domain-idle-state";
+>> +				arm,psci-suspend-param = <0x41000043>;
+>> +				entry-latency-us = <240>;
+>> +				exit-latency-us = <280>;
+>> +				min-residency-us = <806>;
+>> +			};
+> 
+> I think my comment here is still open:
+> 
+> This is strange, the deeper sleep state has lower timings than the
+> previous one?
+I was reordering based on Konrad comments when i have renamed the nodes 
+maybe it is not correct then.
+I am searching for how to validate these levels, i have find these
+https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.c26-01500-89xx.0/arch/arm64/boot/dts/qcom/msm8917-pm.dtsi#L45-91
+Do you know where can i find psci-suspend-param-s? Should I also add wfi 
+level?
+> 
+>> +
+>> +			cluster_sleep_2: cluster-sleep-2 {
+>> +				compatible = "domain-idle-state";
+>> +				arm,psci-suspend-param = <0x41000053>;
+>> +				entry-latency-us = <700>;
+>> +				exit-latency-us = <1000>;
+>> +				min-residency-us = <6500>;
+>> +			};
+>> +		};
+>> +
+>> [...]
+>> +		restart@4ab000 {
+>> +			compatible = "qcom,pshold";
+>> +			reg = <0x004ab000 0x4>;
+>> +		};
+> 
+> This one too:
+> 
+> You have PSCI for shutting down, do you actually need this?
+> 
+>> +
+>> +		tlmm: pinctrl@1000000 {
+>> +			compatible = "qcom,msm8917-pinctrl";
+>> +			reg = <0x01000000 0x300000>;
+>> +			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
+>> +			gpio-controller;
+>> +			gpio-ranges = <&tlmm 0 0 134>;
+>> +			#gpio-cells = <2>;
+>> +			interrupt-controller;
+>> +			#interrupt-cells = <2>;
+>> +
+>> [...]
+>> +			sdc1_clk_on: sdc1-clk-on-state {
+>> +				pins = "sdc1_clk";
+>> +				bias-disable;
+>> +				drive-strength = <16>;
+>> +			};
+>> +
+>> +			sdc1_clk_off: sdc1-clk-off-state {
+>> +				pins = "sdc1_clk";
+>> +				bias-disable;
+>> +				drive-strength = <2>;
+>> +			};
+>> +
+>> +			sdc1_cmd_on: sdc1-cmd-on-state {
+>> +				pins = "sdc1_cmd";
+>> +				bias-disable;
+>> +				drive-strength = <10>;
+>> +			};
+>> +
+>> +			sdc1_cmd_off: sdc1-cmd-off-state {
+>> +				pins = "sdc1_cmd";
+>> +				bias-disable;
+>> +				drive-strength = <2>;
+>> +			};
+>> +
+>> +			sdc1_data_on: sdc1-data-on-state {
+>> +				pins = "sdc1_data";
+>> +				bias-pull-up;
+>> +				drive-strength = <10>;
+>> +			};
+>> +
+>> +			sdc1_data_off: sdc1-data-off-state {
+>> +				pins = "sdc1_data";
+>> +				bias-pull-up;
+>> +				drive-strength = <2>;
+>> +			};
+>> +
+>> +			sdc1_rclk_on: sdc1-rclk-on-state {
+>> +				pins = "sdc1_rclk";
+>> +				bias-pull-down;
+>> +			};
+>> +
+>> +			sdc1_rclk_off: sdc1-rclk-off-state {
+>> +				pins = "sdc1_rclk";
+>> +				bias-pull-down;
+>> +			};
+>> +
+>> +			sdc2_clk_on: sdc2-clk-on-state {
+>> +				pins = "sdc2_clk";
+>> +				drive-strength = <16>;
+>> +				bias-disable;
+>> +			};
+>> +
+>> +			sdc2_clk_off: sdc2-clk-off-state {
+>> +				pins = "sdc2_clk";
+>> +				bias-disable;
+>> +				drive-strength = <2>;
+>> +			};
+>> +
+>> +			sdc2_cmd_on: sdc2-cmd-on-state {
+>> +				pins = "sdc2_cmd";
+>> +				bias-pull-up;
+>> +				drive-strength = <10>;
+>> +			};
+>> +
+>> +			sdc2_cmd_off: sdc2-cmd-off-state {
+>> +				pins = "sdc2_cmd";
+>> +				bias-pull-up;
+>> +				drive-strength = <2>;
+>> +			};
+> 
+> These are not referenced anywhere? Not here in the sdhc_X nodes, and
+> also not in your msm8917-xiaomi-riva.dts. Would also recommend
+> consolidating these to a single node like in msm8916.dtsi, see commit
+> c943e4c58b2f ("arm64: dts: qcom: msm8916/39: Consolidate SDC pinctrl").
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c943e4c58b2ffb0dcd497f8b12f284f5e8fc477e
+> 
+>> +
+>> +			sdc2_cd_on: cd-on-state {
+>> +				pins = "gpio67";
+>> +				function = "gpio";
+>> +				drive-strength = <2>;
+>> +				bias-pull-up;
+>> +			};
+>> +
+>> +			sdc2_cd_off: cd-off-state {
+>> +				pins = "gpio67";
+>> +				function = "gpio";
+>> +				drive-strength = <2>;
+>> +				bias-disable;
+>> +			};
+> 
+> It does not make sense to have different on/off states for the card
+> detect (CD) pin of the SD card. It needs to work even when the SD card
+> is suspended so we can detect insertions/removals. Also should be 
+> placed
+> in the board-specific DT part.
+> 
+> See commit dfbda20dabaa ("arm64: dts: qcom: msm8916/39: Fix SD card
+> detect pinctrl").
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dfbda20dabaa1f284abd550035db5887384c8e4c
+> 
+> 
+>> +
+>> +			sdc2_data_on: sdc2-data-on-state {
+>> +				pins = "sdc2_data";
+>> +				bias-pull-up;
+>> +				drive-strength = <10>;
+>> +			};
+>> +
+>> +			sdc2_data_off: sdc2-data-off-state {
+>> +				pins = "sdc2_data";
+>> +				bias-pull-up;
+>> +				drive-strength = <2>;
+>> +			};
+>> +
+>> [...]
+>> +		blsp1_i2c4: i2c@78b8000 {
+>> +			compatible = "qcom,i2c-qup-v2.2.1";
+>> +			reg = <0x078b8000 0x500>;
+>> +			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+>> +			clocks = <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>,
+>> +				 <&gcc GCC_BLSP1_AHB_CLK>;
+>> +			clock-names = "core", "iface";
+>> +			dmas = <&blsp1_dma 10>, <&blsp1_dma 11>;
+>> +			dma-names = "tx", "rx";
+>> +			pinctrl-0 = <&blsp1_i2c4_default>;
+>> +			pinctrl-1 = <&blsp1_i2c4_sleep>;
+>> +			pinctrl-names = "default", "sleep";
+>> +			#address-cells = <1>;
+>> +			#size-cells = <0>;
+>> +			status = "disabled";
+>> +		};
+>> +
+>> +		blsp2_i2c5: i2c@7af5000 {
+> 
+> This is actually blsp2_i2c1 if you look at the clock name below:
+> 
+>> +			compatible = "qcom,i2c-qup-v2.2.1";
+>> +			reg = <0x07af5000 0x600>;
+>> +			interrupts = <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>;
+>> +			clocks = <&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>,
+> 
+> here ^
+> 
+> But I realize now that the pinctrl functions are consecutively numbered
+> without the BLSP number. Sorry for the confusion.
+> 
+> Basically:
+>   - blsp1_i2c2 == blsp_i2c2
+>   - blsp2_i2c1 == blsp_i2c5
+> 
+> Looking at some other examples upstream I guess you can choose between
+> one of the following options:
+> 
+>  1. msm8974/msm8976/msm8996/msm8998: Use &blspX_i2cY labels for the 
+> i2c@
+>     node and pinctrl and only have the slightly confusing pinctrl
+>     function. E.g. this in msm8976.dtsi:
+> 
+> 			/* 4 (not 6!) interfaces per QUP, BLSP2 indexes are numbered (n)+4 
+> */
+> 			blsp2_i2c2_default: blsp2-i2c2-default-state {
+> 				pins = "gpio22", "gpio23";
+> 				function = "blsp_i2c6";
+> 				drive-strength = <2>;
+> 				bias-disable;
+> 			};
+> 
+>     Note how blsp2_i2c2 == blsp_i2c6.
+> 
+>  2. msm8994: Use &blspX_i2cY labels for the i2c@ node, but keep pinctrl
+>     named &i2cN_default. E.g. this in msm8994.dtsi:
+> 
+> 		blsp2_i2c1: i2c@f9963000 {
+> 			/* ... */
+> 			pinctrl-names = "default", "sleep";
+> 			pinctrl-0 = <&i2c7_default>;
+> 			pinctrl-1 = <&i2c7_sleep>;
+> 			/* ... */
+> 		};
+> 
+>     Note how blsp2_i2c1 == i2c7_default here.
+> 
+>  3. msm8953: Use &i2c_N labels everywhere like on downstream. E.g. this
+>     in msm8953.dtsi. This is pretty much what you had originally:
+> 
+> 		i2c_5: i2c@7af5000 {
+> 			/* ... */
+> 			pinctrl-names = "default", "sleep";
+> 			pinctrl-0 = <&i2c_5_default>;
+> 			pinctrl-1 = <&i2c_5_sleep>;
+> 			/* ... */
+> 		};
+> 
+> All of these are fine for me. Feel free to pick the one you prefer. But
+> let's not introduce a new confusing variant of this. :-)
+> 
+> Thanks,
+> Stephan
