@@ -1,398 +1,110 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1AA1206518
-	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 15:49:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71D53202654
+	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 15:55:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731426600; cv=none; b=tsn3i0zUQ4xTo0W400l62V2lWAXDjdiSUh++NvVJkGKBHKy5ybQfGfCm9vETF1X3B3FzXM30TXYeIUysOwTEEK5dbS8pVkh6R5ryWdh65Jqewi6j87nrIWSE0oPEmKX1uBBwqQbguwH+lY9BiczFDY9Zti5dPSXpS6ux3aZBNBc=
+	t=1731426930; cv=none; b=I5WNu0TwzuvODuVsd8LJm87RR70iUXVv3ipZ7Ur2OZOez6T5+xIXFGdEBAvk6nVaBiK6R3NHn6OQwAO0w9j2wU6g6CrnI+rzaSnbW43O0scgOtUgxbkdwwH0IA/NqlPtP4Z+KfwMB2pjTSV4nFiTRy3FuSatm79Fx+HFEu4wzlg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731426600; c=relaxed/simple;
-	bh=ya1XiQWHIZgorv3msRGzrII3aZKFi88E8zmExbeTEuw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=GXEHx0fMm9M8JhOkaZxNs/hKbq0PUWG7fNYzqu/uP/XJPOKvqjCws09+Orj/jA0fBdUZ+Vc5uMJClEz+m2YSgDdkPBu3xP7YHp/f3MKXZ+qXRU5rEXJ50Ulp6loLIEa1PbSI7IWs26pfH6RG8zGxHudNE797QfLwR8eQgKlDCiM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=T52Jgn43; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	s=arc-20240116; t=1731426930; c=relaxed/simple;
+	bh=A5OSnOKgQ1/NZdqMpuahVt5qjI55hR/PC1GnAzNRwg0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=N6hPRbWs8eZjdiCMIwRQbpRibj26r7IlbAs5FDZlMTvTrSZij2EP1ta4EB/ln/fstrSCIV/sen1OvtGjA25rFDhhHW0uVkNmk2NbCL8+dUFDVUlFNoPKu2bhLVIL9b9Ullbl3TGSjqbjOcHtAUSj2zhAjQyF6zHW/zic95UL/sw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PAWIhXjD; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="T52Jgn43"
-Received: from [192.168.93.162] (254C22F6.nat.pool.telekom.hu [37.76.34.246])
-	by mail.mainlining.org (Postfix) with ESMTPSA id DCDF1E45CF;
-	Tue, 12 Nov 2024 15:49:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1731426596;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=38r3oBNuq9xasxNsO/ZDF6M3fNbjNpPiHscXegSYR+g=;
-	b=T52Jgn43bAS8HsXARYbdDyuPYv2SloVbeDBnDg1oINqA06au1CyPnAVoV35iiyjQ/xkvtJ
-	3TlcRPc+lVN/NEIOmcSc3Qfdxhkz63X71Qy4Qdr9G3tS/wFie4OJkvtycAXdND6eLIrSBf
-	dcD1LhSKSL0NeeC415OyOlACzV62Eq5IUnFr/AcXcS8MQcnfgxRXrxH/KclkYE25zNorBt
-	NvxPrp25Fgq/qu8tOM+vmkWPvuPAcuB/o9l948zzBSPgwjEvNtyd1EKsycJhFuhLRKhrlL
-	XhH/gGt7rscFEKNL4+7dHGsFX9pPJhBHBiI+xic32hgs6KOMiEi1I7+vmFs7kA==
-From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Tue, 12 Nov 2024 16:49:40 +0100
-Subject: [PATCH v5 10/10] arm64: dts: qcom: Add Xiaomi Redmi 5A
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PAWIhXjD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D80C4CECD;
+	Tue, 12 Nov 2024 15:55:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731426930;
+	bh=A5OSnOKgQ1/NZdqMpuahVt5qjI55hR/PC1GnAzNRwg0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=PAWIhXjDNSI58YrPLUOJqJGfoI4EDqMT4XT65E18FXvAr962bVO4vWDzbyYtHGWfi
+	 wfCWkBb0cDr9RzS8MPmPzfU/qLcquwJtUTZwVE/7AJBlwtwRfRWrwgKQlvoi3wMiBX
+	 MeSp2eFyOGh447VdPPkuynbyGym2wQwTLg5jYGJ7h6y5SUbZ31oIoNZkYSH/NCNuWW
+	 mqYWCTqeNOQxZMgvMGEmcdabTG3eU6Yb1Wlmvl8ADfF0996Nb4UaBWAP/TjOpYKqtX
+	 xz4F1ZvBJZG7llT3drrSHHQ74MZNORV/B1uU9heXqxVkwEqJ3+/XM6thEhVhVM66I8
+	 PBwdakLTcrEPQ==
+Date: Tue, 12 Nov 2024 15:55:26 +0000
+From: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/3] iommu/arm-smmu-v3: Clean up iopf queue on probe
+ failure
+Message-ID: <20241112155525.GB21479@willie-the-truck>
+References: <cover.1731088789.git.robin.murphy@arm.com>
+ <161cf3bfde2993cc29e82589df947ff23fb82845.1731088789.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20241112-msm8917-v5-10-3ca34d33191b@mainlining.org>
-References: <20241112-msm8917-v5-0-3ca34d33191b@mainlining.org>
-In-Reply-To: <20241112-msm8917-v5-0-3ca34d33191b@mainlining.org>
-To: Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Linus Walleij <linus.walleij@linaro.org>, Amit Kucheria <amitk@kernel.org>, 
- Thara Gopinath <thara.gopinath@gmail.com>, 
- "Rafael J. Wysocki" <rafael@kernel.org>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, 
- Lukasz Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
- linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
- =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1731426576; l=8026;
- i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=ya1XiQWHIZgorv3msRGzrII3aZKFi88E8zmExbeTEuw=;
- b=IcAB34hPb7u/EgDk2d3AWnmX+29/jDuiDS1zIq0pu/QxYc7P01Pe+wRNJxH4G7FYfgfLATEW5
- rUzhTDhiiNgAN6+CcavuHB6V6+qCKZbCkj+R2ZcFPCl7w9yJHF67duj
-X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
- pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <161cf3bfde2993cc29e82589df947ff23fb82845.1731088789.git.robin.murphy@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Add initial support for Xiaomi Redmi 5A (riva).
+On Fri, Nov 08, 2024 at 06:30:16PM +0000, Robin Murphy wrote:
+> kmemleak noticed that the iopf queue allocated deep down within
+> arm_smmu_init_structures() can be leaked by a subsequent error return
+> from arm_smmu_device_probe(). Hardly a big deal when probe failure
+> represents something much more seriously wrong in the first place,
+> but on principle, adopt a dedicated cleanup path for those.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 ++++++++++-----
+>  1 file changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index b7dcb1494aa4..7908fca962fe 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -4609,7 +4609,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  	/* Initialise in-memory data structures */
+>  	ret = arm_smmu_init_structures(smmu);
+>  	if (ret)
+> -		return ret;
+> +		goto free_iopf;
+>  
+>  	/* Record our private device structure */
+>  	platform_set_drvdata(pdev, smmu);
+> @@ -4620,22 +4620,27 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  	/* Reset the device */
+>  	ret = arm_smmu_device_reset(smmu);
+>  	if (ret)
+> -		return ret;
+> +		goto free_iopf;
+>  
+>  	/* And we're up. Go go go! */
+>  	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
+>  				     "smmu3.%pa", &ioaddr);
+>  	if (ret)
+> -		return ret;
+> +		goto free_iopf;
+>  
+>  	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
+>  	if (ret) {
+>  		dev_err(dev, "Failed to register iommu\n");
+> -		iommu_device_sysfs_remove(&smmu->iommu);
+> -		return ret;
+> +		goto free_sysfs;
+>  	}
+>  
+>  	return 0;
+> +
+> +free_sysfs:
+> +	iommu_device_sysfs_remove(&smmu->iommu);
+> +free_iopf:
+> +	iopf_queue_free(smmu->evtq.iopf);
+> +	return ret;
+>  }
 
-Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
----
- arch/arm64/boot/dts/qcom/Makefile                |   1 +
- arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts | 297 +++++++++++++++++++++++
- 2 files changed, 298 insertions(+)
+Thanks. I think this is correct (and iopf_queue_free() checks for NULL,
+so we're good there) but I just wonder whether it would be more
+consistent to use devm_add_action_or_reset(), like we do for the MSIs.
 
-diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index 9bb8b191aeb517e8f1e3a11bca98a3d0c39c5398..7562406843cfd82397c4844d14a22e8bcf4bba74 100644
---- a/arch/arm64/boot/dts/qcom/Makefile
-+++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -62,6 +62,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-wingtech-wt86518.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-wingtech-wt86528.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-wingtech-wt88047.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-yiming-uz801v3.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= msm8917-xiaomi-riva.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8929-wingtech-wt82918hd.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8939-huawei-kiwi.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8939-longcheer-l9100.dtb
-diff --git a/arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts b/arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts
-new file mode 100644
-index 0000000000000000000000000000000000000000..50bd399991c9bf30152c90088baaf5eee64fef08
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts
-@@ -0,0 +1,297 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2023, Barnabas Czeman
-+ */
-+
-+/dts-v1/;
-+
-+#include <dt-bindings/arm/qcom,ids.h>
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/linux-event-codes.h>
-+#include <dt-bindings/leds/common.h>
-+#include "msm8917.dtsi"
-+#include "pm8937.dtsi"
-+
-+/delete-node/ &qseecom_mem;
-+
-+/ {
-+	model = "Xiaomi Redmi 5A (riva)";
-+	compatible = "xiaomi,riva", "qcom,msm8917";
-+	chassis-type = "handset";
-+
-+	qcom,msm-id = <QCOM_ID_MSM8917 0>;
-+	qcom,board-id = <0x1000b 2>, <0x2000b 2>;
-+
-+	battery: battery {
-+		compatible = "simple-battery";
-+		charge-full-design-microamp-hours = <3000000>;
-+		energy-full-design-microwatt-hours = <11500000>;
-+		constant-charge-current-max-microamp = <1000000>;
-+		constant-charge-voltage-max-microvolt = <4400000>;
-+		precharge-current-microamp = <256000>;
-+		charge-term-current-microamp = <60000>;
-+		voltage-min-design-microvolt = <3400000>;
-+	};
-+
-+	chosen {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		stdout-path = "framebuffer0";
-+
-+		framebuffer0: framebuffer@90001000 {
-+			compatible = "simple-framebuffer";
-+			reg = <0x0 0x90001000 0x0 (720 * 1280 * 3)>;
-+			width = <720>;
-+			height = <1280>;
-+			stride = <(720 * 3)>;
-+			format = "r8g8b8";
-+
-+			clocks = <&gcc GCC_MDSS_AHB_CLK>,
-+				 <&gcc GCC_MDSS_AXI_CLK>,
-+				 <&gcc GCC_MDSS_VSYNC_CLK>,
-+				 <&gcc GCC_MDSS_MDP_CLK>,
-+				 <&gcc GCC_MDSS_BYTE0_CLK>,
-+				 <&gcc GCC_MDSS_PCLK0_CLK>,
-+				 <&gcc GCC_MDSS_ESC0_CLK>;
-+			power-domains = <&gcc MDSS_GDSC>;
-+		};
-+	};
-+
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+
-+		key-volup {
-+			label = "Volume Up";
-+			linux,code = <KEY_VOLUMEUP>;
-+			gpios = <&tlmm 91 GPIO_ACTIVE_LOW>;
-+			debounce-interval = <15>;
-+		};
-+	};
-+
-+	vph_pwr: regulator-vph-pwr {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vph_pwr";
-+		regulator-min-microvolt = <3700000>;
-+		regulator-max-microvolt = <3700000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+	};
-+
-+	reserved-memory {
-+		qseecom_mem: qseecom@84a00000 {
-+			reg = <0x0 0x84a00000 0x0 0x1900000>;
-+			no-map;
-+		};
-+
-+		framebuffer_mem: memory@90001000 {
-+			reg = <0x0 0x90001000 0x0 (720 * 1280 * 3)>;
-+			no-map;
-+		};
-+	};
-+};
-+
-+&blsp1_i2c3 {
-+	status = "okay";
-+
-+	touchscreen@38 {
-+		compatible = "edt,edt-ft5306";
-+		reg = <0x38>;
-+		interrupts-extended = <&tlmm 65 IRQ_TYPE_LEVEL_LOW>;
-+		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
-+		vcc-supply = <&pm8937_l10>;
-+		iovcc-supply = <&pm8937_l5>;
-+
-+		touchscreen-size-x = <720>;
-+		touchscreen-size-y = <1280>;
-+	};
-+};
-+
-+&blsp2_i2c5 {
-+	status = "okay";
-+
-+	bq27426@55 {
-+		compatible = "ti,bq27426";
-+		reg = <0x55>;
-+		monitored-battery = <&battery>;
-+	};
-+
-+	bq25601@6b{
-+		compatible = "ti,bq25601";
-+		reg = <0x6b>;
-+		monitored-battery = <&battery>;
-+
-+		interrupt-parent = <&tlmm>;
-+		interrupts = <61 IRQ_TYPE_EDGE_FALLING>;
-+
-+		input-voltage-limit-microvolt = <4400000>;
-+		input-current-limit-microamp = <1000000>;
-+	};
-+};
-+
-+&pm8937_resin {
-+	linux,code = <KEY_VOLUMEDOWN>;
-+
-+	status = "okay";
-+};
-+
-+&rpm_requests {
-+	regulators-0 {
-+		compatible = "qcom,rpm-pm8937-regulators";
-+
-+		vdd_s1-supply = <&vph_pwr>;
-+		vdd_s2-supply = <&vph_pwr>;
-+		vdd_s3-supply = <&vph_pwr>;
-+		vdd_s4-supply = <&vph_pwr>;
-+
-+		vdd_l1_l19-supply = <&pm8937_s3>;
-+		vdd_l2_l23-supply = <&pm8937_s3>;
-+		vdd_l3-supply = <&pm8937_s3>;
-+		vdd_l4_l5_l6_l7_l16-supply = <&pm8937_s4>;
-+		vdd_l8_l11_l12_l17_l22-supply = <&vph_pwr>;
-+		vdd_l9_l10_l13_l14_l15_l18-supply = <&vph_pwr>;
-+
-+		pm8937_s1: s1 {
-+			regulator-min-microvolt = <1000000>;
-+			regulator-max-microvolt = <1225000>;
-+		};
-+
-+		pm8937_s3: s3 {
-+			regulator-min-microvolt = <1300000>;
-+			regulator-max-microvolt = <1300000>;
-+		};
-+
-+		pm8937_s4: s4 {
-+			regulator-min-microvolt = <2050000>;
-+			regulator-max-microvolt = <2050000>;
-+		};
-+
-+		pm8937_l2: l2 {
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+		};
-+
-+		pm8937_l5: l5 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8937_l6: l6 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8937_l7: l7 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8937_l8: l8 {
-+			regulator-min-microvolt = <2850000>;
-+			regulator-max-microvolt = <2900000>;
-+		};
-+
-+		pm8937_l9: l9 {
-+			regulator-min-microvolt = <3000000>;
-+			regulator-max-microvolt = <3300000>;
-+		};
-+
-+		pm8937_l10: l10 {
-+			regulator-min-microvolt = <2800000>;
-+			regulator-max-microvolt = <3000000>;
-+		};
-+
-+		pm8937_l11: l11 {
-+			regulator-min-microvolt = <2950000>;
-+			regulator-max-microvolt = <2950000>;
-+		};
-+
-+		pm8937_l12: l12 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <2950000>;
-+		};
-+
-+		pm8937_l13: l13 {
-+			regulator-min-microvolt = <3075000>;
-+			regulator-max-microvolt = <3075000>;
-+		};
-+
-+		pm8937_l14: l14 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <3300000>;
-+		};
-+
-+		pm8937_l15: l15 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <3300000>;
-+		};
-+
-+		pm8937_l16: l16 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8937_l17: l17 {
-+			regulator-min-microvolt = <2800000>;
-+			regulator-max-microvolt = <2900000>;
-+		};
-+
-+		pm8937_l19: l19 {
-+			regulator-min-microvolt = <1225000>;
-+			regulator-max-microvolt = <1350000>;
-+		};
-+
-+		pm8937_l22: l22 {
-+			regulator-min-microvolt = <2800000>;
-+			regulator-max-microvolt = <2800000>;
-+		};
-+
-+		pm8937_l23: l23 {
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+		};
-+	};
-+
-+};
-+
-+&sdhc_1 {
-+	vmmc-supply = <&pm8937_l8>;
-+	vqmmc-supply = <&pm8937_l5>;
-+
-+	status = "okay";
-+};
-+
-+&sdhc_2 {
-+	cd-gpios = <&tlmm 67 GPIO_ACTIVE_LOW>;
-+	vmmc-supply = <&pm8937_l11>;
-+	vqmmc-supply = <&pm8937_l12>;
-+
-+	status = "okay";
-+};
-+
-+&sleep_clk {
-+	clock-frequency = <32768>;
-+};
-+
-+&wcnss {
-+	vddpx-supply = <&pm8937_l5>;
-+
-+	status = "okay";
-+};
-+
-+&wcnss_iris {
-+	compatible = "qcom,wcn3620";
-+	vddxo-supply = <&pm8937_l7>;
-+	vddrfa-supply = <&pm8937_l19>;
-+	vddpa-supply = <&pm8937_l9>;
-+	vdddig-supply = <&pm8937_l5>;
-+};
-+
-+&wcnss_mem {
-+	status = "okay";
-+};
-+
-+&xo_board {
-+	clock-frequency = <19200000>;
-+};
-
--- 
-2.47.0
-
+Will
