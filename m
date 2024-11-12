@@ -1,346 +1,165 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2063.outbound.protection.outlook.com [40.107.100.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7DA72123DF
-	for <iommu@lists.linux.dev>; Tue, 12 Nov 2024 17:38:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731433088; cv=none; b=ThU5JswJ3yt1zeC14Vig/R2BQ3LKQprpTaxc8c0fwbwIId1/fNwFuDEwYPGrtDH3I/hLkyOs1Z/WexxQgpy0GyyNZmrlXzr63qlHh8PAqYjOb47cEuF6EfoZdelyhC0DYza4v348fATKa1dhMqNLr9x8YTf+fhGAzB3TY7sSp60=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731433088; c=relaxed/simple;
-	bh=tBI/we5cobDpwZqrIAP8VPpPpJdJhS7JFNBxvv/QOZQ=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=ZttehIvATyYpwE6PCW/AyYRNZv8vSHA1al3kbrF2V5mvXJtOSItI1bxpTK1IUuWTUZjy1LmaZoVixTH/4UHcc8tAVI0HOXRfG18q00DNJ0+2vhgssqFOjRhfjYWatOhN4FhToUFHnK65RWUCFbcZvXkRklmITNGo1esoOkrAv28=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=iiXG4ezv; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4381D2139D2;
+	Tue, 12 Nov 2024 17:45:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.63
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1731433514; cv=fail; b=SUu181PQI1/9hftms0TFZGrKG4JS6I+ag47ZYA24kOoHnHWH0HXwFj3gX6NRTFJ1J0os//xbe1JCIO4UTMtgCmbp6f+VOenRgWQzG2RauMwyNpn77/03z50OPEu4q3uMt0beThWO3SezjCNrXXy3F60g/CfY0/SC/xtlwAAQti8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1731433514; c=relaxed/simple;
+	bh=gFEicbsR5X40RP2nXB5l6VfrbZgdtk3AEZyN33Sk4q4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=oK+e7a+/7iXeX25NZWbFpq8jYm74s9C4TSBp/6+p+oBdSij/fGMk20OYOf4KBWHHVTnlg+pvogqA/Hfd8hADmczXCEQkDsRuixxlD1F/e3La0ORAijIxy0SWq34SdaVCVRmnZvoqPIaHil9GJeYwNsIIrPePXbybqxYDNh7mXLQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=tAkda/BP; arc=fail smtp.client-ip=40.107.100.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="iiXG4ezv"
-Received: from localhost (docker-mailserver-web-1.docker-mailserver_default [172.22.0.5])
-	by mail.mainlining.org (Postfix) with ESMTPSA id 8DAA7E45C8;
-	Tue, 12 Nov 2024 17:38:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1731433084;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Y18+Q1ZqjLCjhEM42biXLX0RAZwh7JK0eycDZZ0O8A8=;
-	b=iiXG4ezvnSWLdzZxkuJpyJk3g1GUNERFObVHqGgW7Mcskho3dVcdy5dWF5LAm85MdYltAH
-	qETgqzHAN5ZLAj/wxveW1mPEsx169OwBfKgYdIp/gbHh9B64re5skPKwQPktTFjPEOTDD5
-	hd+f5CKfzb+GyZElVdhQbmlcW/DjAdj2Q3Gwi2Po6tEXcCrLm7Gu08qhgrXEiLsNO2qDrw
-	V12n4LOiu7c8Pr0I6X13k91xdtXSumzImcgtNwajxnoKluvFrEoIAS7Dy/hFog2907usoE
-	O/d3NalFo68tQDiEeC7tPYklc5TnvYyd36burvq7FLqv/Eu893C5OGsq/BKrUA==
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tAkda/BP"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ytivdE35HtfUV/VwoJG8N8CzmX5nXRRAc75fBIl2QJ2zNP2RD1YxJO1p5s3m/ObdLYpvNUVvcNzHg49rQYj3SDgXHfrH3jmw/sRRkqlEZkmgF3bjFlCT69iPBMH3Ph4YviTpW3bFX9hojI5rH/Opdzx9YD6lSmt3ZURKeB8NsHCtYdWDsClTV9wJ7smISZTBB9jStiO/7Aiab+A3iEIpwCB2tUdV66gwGuF92zkhtqNAcqsZ/T9NtvfnUiwNlSQBIeyKgcyecvBfw44O3XJbhofI19jQ9NtYQ8VctSFCM1kzGVa4mu+K2SxQOFJ5NiheLiAbzYba+svORIYMHGgI7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5IS5oxdS4Q1IC5qFsWhwUWYPoZXavEVYmTewAuPYXKA=;
+ b=B7Bzk2by4JRU8z7iiFadvCCG4wifCcnP52KuyYrU9l940lGZLzZLvuiwoSuYqFb/CAvc9DrF45da0vVmj4G/YTvJA9x00vSw9Jym6Qx9kmSjP7tHUK23T2Kyw5C/HXbm1JpWW33ohvV81ksIjkuMFZWKsWFndnqjap4+AXXxTTaEbFK5AQkzboMLndBIKzqH1tcodvj2I3lBVLMjrH27A64CT3Ljzd/aB//btRzfEpuQ8/CV/nEn8RDtXMFBmV/6l3xnw3RAPUThPfXxxtJZWL+wOy476QDeAv85INcfwdN57KQI0ciw8QQp7ObQNSu2F8jd1uqoIfvE4hQD5SGUNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5IS5oxdS4Q1IC5qFsWhwUWYPoZXavEVYmTewAuPYXKA=;
+ b=tAkda/BPAj8fO5Wq1eAxy+1v4jHGAm9ilwFOgZkH6qKdPNiBc0rQo6aJ+X8sB/JOecNLefpJmsj55Lm+xuzms2SLbaFe69g4bl+7J/bwo+tYP4ZvdNJEazw6nenWhISGiU/5NeIFR1tRqtxB6tp7rnXZ5OEtuM68arcwjUkDbzqBVU/bWu7aWvxT3pRXk8Zt5nOpTJNH9ANB/5FV37Bs+/2BrmGx0xJQlr5LcO17rKCS1lz+wQ+jc8XCzte1kHXuRo7Q3uOV2g9UBBR9BqVOtaakNSPUlNFtNOqMfU9SOrVYLMMk8XES5LX9jkr0GlMmhEkLmKFBErS0cTW9LW0EcQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by PH7PR12MB9222.namprd12.prod.outlook.com (2603:10b6:510:2ef::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.16; Tue, 12 Nov
+ 2024 17:45:08 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8137.027; Tue, 12 Nov 2024
+ 17:45:08 +0000
+Date: Tue, 12 Nov 2024 13:45:07 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, corbet@lwn.net, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, will@kernel.org,
+	robin.murphy@arm.com, dwmw2@infradead.org, shuah@kernel.org,
+	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	baolu.lu@linux.intel.com, eric.auger@redhat.com,
+	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
+	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
+	yi.l.liu@intel.com, aik@amd.com, zhangfei.gao@linaro.org,
+	patches@lists.linux.dev
+Subject: Re: [PATCH v7 00/10] iommufd: Add vIOMMU infrastructure (Part-2:
+ vDEVICE)
+Message-ID: <20241112174507.GA35230@nvidia.com>
+References: <cover.1730836308.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1730836308.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: MN0P221CA0023.NAMP221.PROD.OUTLOOK.COM
+ (2603:10b6:208:52a::9) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Tue, 12 Nov 2024 18:38:04 +0100
-From: barnabas.czeman@mainlining.org
-To: Stephan Gerhold <stephan.gerhold@linaro.org>
-Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio
- <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Linus Walleij
- <linus.walleij@linaro.org>, Amit Kucheria <amitk@kernel.org>, Thara Gopinath
- <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
- Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz
- Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Srinivas Kandagatla
- <srinivas.kandagatla@linaro.org>, linux-arm-msm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev,
- =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>
-Subject: Re: [PATCH v5 08/10] arm64: dts: qcom: Add initial support for
- MSM8917
-In-Reply-To: <ZzOQEgLLhkH-IymV@linaro.org>
-References: <20241112-msm8917-v5-0-3ca34d33191b@mainlining.org>
- <20241112-msm8917-v5-8-3ca34d33191b@mainlining.org>
- <ZzOQEgLLhkH-IymV@linaro.org>
-Message-ID: <4c34cb8eec5eab92501011e446b5362d@mainlining.org>
-X-Sender: barnabas.czeman@mainlining.org
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|PH7PR12MB9222:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0fe9062b-48f6-4576-9205-08dd0341bfef
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?ddtEEu3LvgqgjWdlb9T6ChFL6VaHVoo7HbpaBlleEimdT6aSa/V3Ir3TP+HT?=
+ =?us-ascii?Q?bJghFjy8Yrjz+ggdIyl16zVPeHUxyp/i9umJ8Qwha6sPcA5r72/99s7c9zBP?=
+ =?us-ascii?Q?wIm6lMB9JncqiHTKw3WhOkV8xRnl0OOVfBbhgToZGJEu6NRQUPslKuF22v0+?=
+ =?us-ascii?Q?WX5dos9tnZ4zcjwAQEBdERFah5owBc967kzdN2OR7UhN52h8otQelLcjSxaN?=
+ =?us-ascii?Q?N95aCjqpOTdTVg17d8D+Mi0gGcSwW46v8+0QLllLytPN8a6C7mqsOV6tcOzf?=
+ =?us-ascii?Q?y6OryJ9NQVYUDo9lBeNZBUrQCm+3TQsGGbgDychv8tyQjb5nzGqeKI4QUGY3?=
+ =?us-ascii?Q?bGZD4MmMxjgWfC4GnwTbL1ewPv665NVKXOZDshN/5tfDvAGv7VPquMF6gTkz?=
+ =?us-ascii?Q?5eCre/o014hQDhVA46qNB49o1eZz/VRBRzCbtrVDk8+UJR/IxRuX0e1lVsoT?=
+ =?us-ascii?Q?7begCkGSuHcPjjjJRU5/XQRWFfzqylHwuP0XyZSVz0Nzyp8tIVwFSmg3Gzar?=
+ =?us-ascii?Q?Ds+j4+Xn7xIBTOXpIVNpyluhZ6ZsNZ5tCDE1098Kgo1lubSKnkROM6Io1WyH?=
+ =?us-ascii?Q?ljsDvupjP27zFMgrM5Iq6CEKTqooNfiyTUI5D2NtVXKE0wfeW5ey9ZoIilEr?=
+ =?us-ascii?Q?TpYDyu8fjcL41LXZ4iZzTs1Cj51GxXEIVEFHQUdptD4WQ7v0B/wi85um15zL?=
+ =?us-ascii?Q?U3bBnBvSdVS/i3pyOrcfhxvju7Sxtds8zUSnGmIdbTAxV5N8NRriU9NG8Xcy?=
+ =?us-ascii?Q?okdj4H9f2YHyI5KTQUHINIwEduELaOz4lqsQGYKyYRMKTzjjWUWOo/EJwRtn?=
+ =?us-ascii?Q?17mWeYcsFZ2ZN6KYEHT5F086H4acZfJdXV6H20c676M2FBdcJb3t5y5w63vP?=
+ =?us-ascii?Q?lXGGrltEixjhmyRcDQaBE6aJXH09+Uc9LXaZ1R95BxID+3SgNMNTI3UkrLly?=
+ =?us-ascii?Q?w/NACige+VvK1ReCehwU3q6qTKa3tS8I6h8IZlJz4HpDrIOGXzjn1TFvchp1?=
+ =?us-ascii?Q?8kaZkVJnRkRpo+JSCmq4t+wsbHTKqGsrZtyE5YWuOBzyT4TUItcumJ8D994W?=
+ =?us-ascii?Q?HfhovdvM9aI8jOVw7RvfvcTAUAgZwWAbZ5AZicNywToiNHRNIxD4JEbQnP1o?=
+ =?us-ascii?Q?1YivofdsdrPwIg+VD3RDCAEE9LsdgST26igJ/G3jABj/+VdOcZoayx5F98HZ?=
+ =?us-ascii?Q?vvAd5bOMOq+F5HxCvXipU1F0drmD+6BvHuQEokTOgTRMlBKaZUaqRUudfcGv?=
+ =?us-ascii?Q?JYf/Ej8k0jRJ8Az4ymhBoexH4dYJWmVCFE+a0w6/oS1j6sLp2IVGMQRWwrOo?=
+ =?us-ascii?Q?nO1DHsNFDb9Y3mEo8RRSYsKu?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?avVzpodDf3uqljkcYOkJHAkT7qsFnw5idPEHcS8IocNzJ7h8VPyViSwanzcz?=
+ =?us-ascii?Q?NprXb8XKk3pBsd4kFoTbvg3WlWoDJyV9AprdQ4XpsMUikAoX/VF7RGCsS3F2?=
+ =?us-ascii?Q?JxcIP5up8YMgdpTbqwQEA8Wiw7rBgPZkAO6xUjAlNtgrJ+q9fiUtYn5X9Jr9?=
+ =?us-ascii?Q?9Uhbl7U0gyAfH3kIbrnJpfh6XMyhb+mY6PxnVmxPJvaEJ/dcV+95v9vOoWG0?=
+ =?us-ascii?Q?JhriSgrF6TAztMnlugRGxtVS9sz1xFs2zvXbYj/hSLKpKCdn21gGBkelkcW6?=
+ =?us-ascii?Q?HCZlMeF+in30esKiF7ECD7Ksh7nI8mKRdYotaByqETQC9SoB8ty6rZxqZoLv?=
+ =?us-ascii?Q?BpheVoyki8Z1qQlUjEbU/DSv7aGw7fSCicEB2VI5mAUBALUT+jjLlUWRdQOM?=
+ =?us-ascii?Q?RZKEUvypZBG5CE9q4JS96D5SQLQctLrieKbZF4kDgrG16MT1xxybx9Dp6qhZ?=
+ =?us-ascii?Q?I/gy56d84+Ur8WrrjcMmy4Qf5hS4qIiFs1C6qsOQ7NFYrxKpZj8ym41dS4C0?=
+ =?us-ascii?Q?77vIHf2pQUM8A95Jtkz4r28/3sSOQDgVlE6LrQ4Qc/WpFF68zPJgyV2bZif8?=
+ =?us-ascii?Q?jd7lV4bzDZBfkUHidP1vUn2ElHcHM/BTz7KXpQ8A+iBIq9YZaAbTa34Wkupw?=
+ =?us-ascii?Q?hFuQL0BqrdPbr5GKuYkKWkJ69x5YVO0q1fRQxvDfTOLH5vJSd2uYB8SOdVe3?=
+ =?us-ascii?Q?Jf8BxFVBjXvKoA23cmrParVO7dw2tjyuFz7uCuhODJxA+SfmSgEn4pcXQZmA?=
+ =?us-ascii?Q?RpuDSu4skAZJir9RHRuIp3zoAttXuYmRAbc3avERZjnWkZJR4DB0gVqH1DW6?=
+ =?us-ascii?Q?csvXvJOn0ZP/I4THcTlygfFqoHB++TzH2yXHy1BZ+sS84uy2oYBxJ5hXZ9y7?=
+ =?us-ascii?Q?eiu1PaP8yTFRPJasYW/hY5ujejTb+fxMOhEuwjIhRXJCXIRXoqub9Q+tHywe?=
+ =?us-ascii?Q?qiv6kag11nnM9XuxymsIDTyXcGGmDYls4OP4KR19hFXKTRt7hVbVDoHc824N?=
+ =?us-ascii?Q?5/SliEHh1TTi6gnobHYVibKxNMwhaX8leKd9p+MbFOJcVXs62v+ZqUna2U/6?=
+ =?us-ascii?Q?X+/8uSBVxlDWBOOwL4a1tYJ3ZeU6JPJvqvkVKBSzHIwtKusmglxiFY6u8J4/?=
+ =?us-ascii?Q?R7Irg7ZCPj9LqNr5uCniLX3eWM5sUXi7uKiujMfClv+6y7ShoQiRoFLPX8B3?=
+ =?us-ascii?Q?PHB0lqUWBgIo27NnNLfud1WRAEOW8moZ2xgK0AQjO8Jta5YoEaSAHULvcT2n?=
+ =?us-ascii?Q?EDMZHzwDik9wogPF5Uv6b+gN8XXNpfrnx3qrlZfsIAbmjGIscC89mm3c9QW6?=
+ =?us-ascii?Q?to2bO0N1L2dQULLT/qri9+zbEvDDe/BXpZzGDaJhckSz3PYSa0Pjs4DN4ISk?=
+ =?us-ascii?Q?Ufg12phd4LNm/HV/9zeVEKyN13jJ9xFHWUaCV27Ul+L+WHKz1jsYyJ8pHtsn?=
+ =?us-ascii?Q?p980Q0EYG/UB/+Ugbbdgu/UtP5N0Rx2Y6JNX31FwzuUexif/4iRHbQCrYGIp?=
+ =?us-ascii?Q?hUtx4qpxvj9DlSG/4z35UYGHkRdqTQk0nBWEe/qC9B6fDIDwzB4qkblrQldd?=
+ =?us-ascii?Q?8saYEjQcliGQIloqycOLcrRI1NCEQLG/iliS99jU?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0fe9062b-48f6-4576-9205-08dd0341bfef
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2024 17:45:08.6668
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: n3Qhx0cIu++HWc1w4pWBo/ucn14XasHD9TAHyd14fHhK9jyd4w1218qBKNk9yGGd
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9222
 
-On 2024-11-12 18:27, Stephan Gerhold wrote:
-> On Tue, Nov 12, 2024 at 04:49:38PM +0100, Barnabás Czémán wrote:
->> From: Otto Pflüger <otto.pflueger@abscue.de>
->> 
->> Add initial support for MSM8917 SoC.
->> 
->> Signed-off-by: Otto Pflüger <otto.pflueger@abscue.de>
->> [reword commit, rebase, fix schema errors]
->> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->> ---
->>  arch/arm64/boot/dts/qcom/msm8917.dtsi | 1974 
->> +++++++++++++++++++++++++++++++++
->>  1 file changed, 1974 insertions(+)
->> 
->> diff --git a/arch/arm64/boot/dts/qcom/msm8917.dtsi 
->> b/arch/arm64/boot/dts/qcom/msm8917.dtsi
->> new file mode 100644
->> index 
->> 0000000000000000000000000000000000000000..cf0a0eec1141e11faca0ee9705d6348ab32a0f50
->> --- /dev/null
->> +++ b/arch/arm64/boot/dts/qcom/msm8917.dtsi
->> @@ -0,0 +1,1974 @@
->> [...]
->> +		domain-idle-states {
->> +			cluster_sleep_0: cluster-sleep-0 {
->> +				compatible = "domain-idle-state";
->> +				arm,psci-suspend-param = <0x41000023>;
->> +				entry-latency-us = <700>;
->> +				exit-latency-us = <650>;
->> +				min-residency-us = <1972>;
->> +			};
->> +
->> +			cluster_sleep_1: cluster-sleep-1 {
->> +				compatible = "domain-idle-state";
->> +				arm,psci-suspend-param = <0x41000043>;
->> +				entry-latency-us = <240>;
->> +				exit-latency-us = <280>;
->> +				min-residency-us = <806>;
->> +			};
+On Tue, Nov 05, 2024 at 12:05:08PM -0800, Nicolin Chen wrote:
+> Jason Gunthorpe (1):
+>   iommu: Add iommu_copy_struct_from_full_user_array helper
 > 
-> I think my comment here is still open:
-> 
-> This is strange, the deeper sleep state has lower timings than the
-> previous one?
-> 
->> +
->> +			cluster_sleep_2: cluster-sleep-2 {
->> +				compatible = "domain-idle-state";
->> +				arm,psci-suspend-param = <0x41000053>;
->> +				entry-latency-us = <700>;
->> +				exit-latency-us = <1000>;
->> +				min-residency-us = <6500>;
->> +			};
->> +		};
->> +
->> [...]
->> +		restart@4ab000 {
->> +			compatible = "qcom,pshold";
->> +			reg = <0x004ab000 0x4>;
->> +		};
-> 
-> This one too:
-> 
-> You have PSCI for shutting down, do you actually need this?
-> 
->> +
->> +		tlmm: pinctrl@1000000 {
->> +			compatible = "qcom,msm8917-pinctrl";
->> +			reg = <0x01000000 0x300000>;
->> +			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
->> +			gpio-controller;
->> +			gpio-ranges = <&tlmm 0 0 134>;
->> +			#gpio-cells = <2>;
->> +			interrupt-controller;
->> +			#interrupt-cells = <2>;
->> +
->> [...]
->> +			sdc1_clk_on: sdc1-clk-on-state {
->> +				pins = "sdc1_clk";
->> +				bias-disable;
->> +				drive-strength = <16>;
->> +			};
->> +
->> +			sdc1_clk_off: sdc1-clk-off-state {
->> +				pins = "sdc1_clk";
->> +				bias-disable;
->> +				drive-strength = <2>;
->> +			};
->> +
->> +			sdc1_cmd_on: sdc1-cmd-on-state {
->> +				pins = "sdc1_cmd";
->> +				bias-disable;
->> +				drive-strength = <10>;
->> +			};
->> +
->> +			sdc1_cmd_off: sdc1-cmd-off-state {
->> +				pins = "sdc1_cmd";
->> +				bias-disable;
->> +				drive-strength = <2>;
->> +			};
->> +
->> +			sdc1_data_on: sdc1-data-on-state {
->> +				pins = "sdc1_data";
->> +				bias-pull-up;
->> +				drive-strength = <10>;
->> +			};
->> +
->> +			sdc1_data_off: sdc1-data-off-state {
->> +				pins = "sdc1_data";
->> +				bias-pull-up;
->> +				drive-strength = <2>;
->> +			};
->> +
->> +			sdc1_rclk_on: sdc1-rclk-on-state {
->> +				pins = "sdc1_rclk";
->> +				bias-pull-down;
->> +			};
->> +
->> +			sdc1_rclk_off: sdc1-rclk-off-state {
->> +				pins = "sdc1_rclk";
->> +				bias-pull-down;
->> +			};
->> +
->> +			sdc2_clk_on: sdc2-clk-on-state {
->> +				pins = "sdc2_clk";
->> +				drive-strength = <16>;
->> +				bias-disable;
->> +			};
->> +
->> +			sdc2_clk_off: sdc2-clk-off-state {
->> +				pins = "sdc2_clk";
->> +				bias-disable;
->> +				drive-strength = <2>;
->> +			};
->> +
->> +			sdc2_cmd_on: sdc2-cmd-on-state {
->> +				pins = "sdc2_cmd";
->> +				bias-pull-up;
->> +				drive-strength = <10>;
->> +			};
->> +
->> +			sdc2_cmd_off: sdc2-cmd-off-state {
->> +				pins = "sdc2_cmd";
->> +				bias-pull-up;
->> +				drive-strength = <2>;
->> +			};
-> 
-> These are not referenced anywhere? Not here in the sdhc_X nodes, and
-> also not in your msm8917-xiaomi-riva.dts. Would also recommend
-> consolidating these to a single node like in msm8916.dtsi, see commit
-> c943e4c58b2f ("arm64: dts: qcom: msm8916/39: Consolidate SDC pinctrl").
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c943e4c58b2ffb0dcd497f8b12f284f5e8fc477e
-> 
->> +
->> +			sdc2_cd_on: cd-on-state {
->> +				pins = "gpio67";
->> +				function = "gpio";
->> +				drive-strength = <2>;
->> +				bias-pull-up;
->> +			};
->> +
->> +			sdc2_cd_off: cd-off-state {
->> +				pins = "gpio67";
->> +				function = "gpio";
->> +				drive-strength = <2>;
->> +				bias-disable;
->> +			};
-> 
-> It does not make sense to have different on/off states for the card
-> detect (CD) pin of the SD card. It needs to work even when the SD card
-> is suspended so we can detect insertions/removals. Also should be 
-> placed
-> in the board-specific DT part.
-I have made these based on this 
-https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.9.6.2.r1-04800-89xx.0/arch/arm64/boot/dts/qcom/msm8917-pinctrl.dtsi
-> 
-> See commit dfbda20dabaa ("arm64: dts: qcom: msm8916/39: Fix SD card
-> detect pinctrl").
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dfbda20dabaa1f284abd550035db5887384c8e4c
-> 
-> 
->> +
->> +			sdc2_data_on: sdc2-data-on-state {
->> +				pins = "sdc2_data";
->> +				bias-pull-up;
->> +				drive-strength = <10>;
->> +			};
->> +
->> +			sdc2_data_off: sdc2-data-off-state {
->> +				pins = "sdc2_data";
->> +				bias-pull-up;
->> +				drive-strength = <2>;
->> +			};
->> +
->> [...]
->> +		blsp1_i2c4: i2c@78b8000 {
->> +			compatible = "qcom,i2c-qup-v2.2.1";
->> +			reg = <0x078b8000 0x500>;
->> +			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
->> +			clocks = <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>,
->> +				 <&gcc GCC_BLSP1_AHB_CLK>;
->> +			clock-names = "core", "iface";
->> +			dmas = <&blsp1_dma 10>, <&blsp1_dma 11>;
->> +			dma-names = "tx", "rx";
->> +			pinctrl-0 = <&blsp1_i2c4_default>;
->> +			pinctrl-1 = <&blsp1_i2c4_sleep>;
->> +			pinctrl-names = "default", "sleep";
->> +			#address-cells = <1>;
->> +			#size-cells = <0>;
->> +			status = "disabled";
->> +		};
->> +
->> +		blsp2_i2c5: i2c@7af5000 {
-> 
-> This is actually blsp2_i2c1 if you look at the clock name below:
-> 
->> +			compatible = "qcom,i2c-qup-v2.2.1";
->> +			reg = <0x07af5000 0x600>;
->> +			interrupts = <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>;
->> +			clocks = <&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>,
-> 
-> here ^
-> 
-> But I realize now that the pinctrl functions are consecutively numbered
-> without the BLSP number. Sorry for the confusion.
-> 
-> Basically:
->   - blsp1_i2c2 == blsp_i2c2
->   - blsp2_i2c1 == blsp_i2c5
-> 
-> Looking at some other examples upstream I guess you can choose between
-> one of the following options:
-> 
->  1. msm8974/msm8976/msm8996/msm8998: Use &blspX_i2cY labels for the 
-> i2c@
->     node and pinctrl and only have the slightly confusing pinctrl
->     function. E.g. this in msm8976.dtsi:
-> 
-> 			/* 4 (not 6!) interfaces per QUP, BLSP2 indexes are numbered (n)+4 
-> */
-> 			blsp2_i2c2_default: blsp2-i2c2-default-state {
-> 				pins = "gpio22", "gpio23";
-> 				function = "blsp_i2c6";
-> 				drive-strength = <2>;
-> 				bias-disable;
-> 			};
-> 
->     Note how blsp2_i2c2 == blsp_i2c6.
-> 
->  2. msm8994: Use &blspX_i2cY labels for the i2c@ node, but keep pinctrl
->     named &i2cN_default. E.g. this in msm8994.dtsi:
-> 
-> 		blsp2_i2c1: i2c@f9963000 {
-> 			/* ... */
-> 			pinctrl-names = "default", "sleep";
-> 			pinctrl-0 = <&i2c7_default>;
-> 			pinctrl-1 = <&i2c7_sleep>;
-> 			/* ... */
-> 		};
-> 
->     Note how blsp2_i2c1 == i2c7_default here.
-> 
->  3. msm8953: Use &i2c_N labels everywhere like on downstream. E.g. this
->     in msm8953.dtsi. This is pretty much what you had originally:
-> 
-> 		i2c_5: i2c@7af5000 {
-> 			/* ... */
-> 			pinctrl-names = "default", "sleep";
-> 			pinctrl-0 = <&i2c_5_default>;
-> 			pinctrl-1 = <&i2c_5_sleep>;
-> 			/* ... */
-> 		};
-> 
-> All of these are fine for me. Feel free to pick the one you prefer. But
-> let's not introduce a new confusing variant of this. :-)
-> 
-> Thanks,
-> Stephan
+> Nicolin Chen (9):
+>   iommufd/viommu: Add IOMMUFD_OBJ_VDEVICE and IOMMU_VDEVICE_ALLOC ioctl
+>   iommufd/selftest: Add IOMMU_VDEVICE_ALLOC test coverage
+>   iommu/viommu: Add cache_invalidate to iommufd_viommu_ops
+>   iommufd: Allow hwpt_id to carry viommu_id for IOMMU_HWPT_INVALIDATE
+>   iommufd/viommu: Add iommufd_viommu_find_dev helper
+>   iommufd/selftest: Add mock_viommu_cache_invalidate
+>   iommufd/selftest: Add IOMMU_TEST_OP_DEV_CHECK_CACHE test command
+>   iommufd/selftest: Add vIOMMU coverage for IOMMU_HWPT_INVALIDATE ioctl
+>   Documentation: userspace-api: iommufd: Update vDEVICE
+
+Applied to iommufd for-next
+
+Thanks,
+Jason
