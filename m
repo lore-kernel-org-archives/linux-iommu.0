@@ -1,148 +1,106 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A63552010F1
-	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 13:46:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29F7C111A8
+	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 14:06:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731505582; cv=none; b=CWt4cvDKkx5zTiJBBaeE7zol2dp/q9tGPezxg0nLQ0fIXXupDCATIC+T113ugLfjnI93kwDcdGUd7J9kcy49o7aL0koYNr74/WJitcbu36WLoQNCwJqErY/OCiey/4adZr96mUCJnMeQ6cNwPCn/iltOUj4uSG0EtCL7h6N+ws8=
+	t=1731506780; cv=none; b=KU2IBNx53ViSCN9K+0VgR5yTz/7iUfvQZePoX/Dr7NCJY/B9+VdPrxDKBhsoQEum9Y16bJ/i8QgSWY11Y7WEGHXiWGKlvhDp/1YnTK8PeTh3VqlNVMO3e9kupqCphdYB6OKeDNMn8adyF8dxkcs82gd0UXYE31VlPengCNxXmy8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731505582; c=relaxed/simple;
-	bh=RSZiUmG12bOfUY9cuPpOaVCOvpSre8G8I7IPBw8s4VA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=L6VnEpS0T6F7b6RjZfNaLHu4p+OOBIFgbmWvak6IP63N94IYbrW0dajYEWzzTwmEXXYNsgkYr/9enLWeE5FhkRfbmPQzQQ1DaeuTcrPVKub9iXcJmVRz9F5SXZvfE2l7TzPsvaTK9RPD+PeHdvqJzJYx5LytBmY+7LMju4Qb4nw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A7kCLu/6; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1731506780; c=relaxed/simple;
+	bh=ZKjs/sS6J+4Rn1KfgIsLXQ0nvZlO/kfOP0s+1aJUtHM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Yxxsddv6h7nmV26B2NwoJ8K6HWZx+3o/1I4EkC+5A0FuUThuCzC1QeJG05AldaI6aU2sN2RMN5x5y2gif+syBKboTyBQA3xG/dp9LIuLMxXapkEyMU2dXJCQ7Xj+7k/J7LpxMGsz+R0MOn70apHU9w4qxSH8918HTNGTM4OV5hI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WdCxtgYX; arc=none smtp.client-ip=209.85.208.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A7kCLu/6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1731505581; x=1763041581;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RSZiUmG12bOfUY9cuPpOaVCOvpSre8G8I7IPBw8s4VA=;
-  b=A7kCLu/630dGDoebwrkJ2jodUfK2T+JBAzm/JHoomXScrL42WWye2gr4
-   VMxHNI/uPWdtdZGkc9zmOcyJ1JdbsgUkqZTMJ4UMu0rm5UAL4xeSByiBJ
-   A0ZWvF3h8tFqzeBa45q4gOxzeDDNlf6R6NvNQsHPu3RTDOhHQ9sfc25qc
-   9AoCUSE43nnORW+XSsksoVICJGw4USz/IwoF+JeDutFLQZjYz9wy8rZdP
-   Mr6+/8JNvu9tIugQYuvJ0fugenh4BcgTavJOJ5/Fq/E+2OSOm0iI9K1Ua
-   vnQhC/Abf95UQkLy6BgjkpbGynkUMqp5OeclXpHefVpzLRwLcL+59bfTu
-   g==;
-X-CSE-ConnectionGUID: 6QI+DsmLTGq9voHa/tnb7Q==
-X-CSE-MsgGUID: 1gsQisKJTSusK4Zfyvilsg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11254"; a="42025736"
-X-IronPort-AV: E=Sophos;i="6.12,151,1728975600"; 
-   d="scan'208";a="42025736"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2024 05:46:18 -0800
-X-CSE-ConnectionGUID: sZTYEZIRQ4GTyTm6J0Hwcg==
-X-CSE-MsgGUID: QhaMjDBbSoGjOBH292t0cA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,151,1728975600"; 
-   d="scan'208";a="87445611"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmviesa006.fm.intel.com with ESMTP; 13 Nov 2024 05:46:17 -0800
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	baolu.lu@linux.intel.com
-Cc: eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	iommu@lists.linux.dev,
-	zhenzhong.duan@intel.com,
-	vasant.hegde@amd.com,
-	will@kernel.org
-Subject: [PATCH v5 7/7] iommu: Remove the remove_dev_pasid op
-Date: Wed, 13 Nov 2024 05:46:13 -0800
-Message-Id: <20241113134613.7173-8-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20241113134613.7173-1-yi.l.liu@intel.com>
-References: <20241113134613.7173-1-yi.l.liu@intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WdCxtgYX"
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2fb5fa911aaso94535231fa.2
+        for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 06:06:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1731506777; x=1732111577; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5FgbyqIYn4WEhSD+EDJWH53wmgZdzw5uXoaqskg60tQ=;
+        b=WdCxtgYXnaMbitJkXqsEm0eMqMdvwd1VMgP4X6QQljVIKXWAp2jokWyneJh7bwdDgS
+         ss4o7PD1QbkYWWwlgUHq8MNG6rwib3e+YrC2rHMjghFl+CV2x1hIx1YVZj7D6x5Nw3AC
+         xjscaCWNAJWEiaaFjZN7Yk/cT26rkBQbdzeztjBbJ91w+ZhGAwtOd4TAZmGZ1TcsPyVv
+         xek49Fwf4ajyfjzu8GmnZjYD3Ha47UyI5uhTB0HFZD9dyhPso8hYJ2BjRKoPnIy8ymv2
+         c9OugXlxUVEUpllqpAJWRxsj5UeqUgMRQHQI2wlgNigoXpd7zYUU/dPIu5vIyqOObggU
+         lHoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731506777; x=1732111577;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5FgbyqIYn4WEhSD+EDJWH53wmgZdzw5uXoaqskg60tQ=;
+        b=p8Hs80UA98Jmr5FB+nNlEaIPFQfYcezhRRkIavb35xsYr9wTe2nPwLM8K61e6s6pgN
+         pMN76I/soVAiAwM97daTFlwiV7kYXsQSd1fuizMLjDnjb0gQnztdS7zLBEVL5nbALtKW
+         Ff2U9KGE1IbzgoaFJP0v8BQj0gbAvY2NnzE7eYD6n/dKl/9NIRJ3NDDzdsTstPSWP0bZ
+         GVMbCdAf5GX8gmINhvFxvZFsb09+ktF9W2butqWX3XXjIgPDDf6yp4+2AnPge1rX3cHA
+         vKgrQF5Kiqduw2rrWypCARoHJxt261Po2VDi2mhQ4nmaKhpL4OGEhGiPYzaaNVfq3/49
+         jWnA==
+X-Forwarded-Encrypted: i=1; AJvYcCXp2LDfcmqSllFY6fC5lK/HTdJQ+SOpUvAQFyFerf9PxVGjc/bal9uF0TLx2qsjl6LkI0rp1w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxclNCvonR1kNduGxizASJcm94lzM7XDu+0X2Q6NZvApysTmgiI
+	+01wmHNO8BEe0JrZUzR29nlQ3PD6ThshHB8XPeCz9jUFBOAvz9Hauh0GRbvoOtpFmGF1EKzUHyC
+	bmvPPSxHA3ZXk2jiMwcgW8tjjW6k=
+X-Google-Smtp-Source: AGHT+IGyssDKQ92Cobn0CtFhQzBMVyaZc7uN5SwYajk5gaNkrdUasJ14YzSQg3PYYMNDKJIMwIt4QZtkBVizFZbwx74=
+X-Received: by 2002:a05:651c:554:b0:2fb:4f8e:efd with SMTP id
+ 38308e7fff4ca-2ff2028a97amr153898021fa.32.1731506776866; Wed, 13 Nov 2024
+ 06:06:16 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20241113120327.5239-1-suravee.suthikulpanit@amd.com>
+ <20241113120327.5239-6-suravee.suthikulpanit@amd.com> <cac1ccd3-4b81-4374-a49d-9afad755b19c@app.fastmail.com>
+ <20241113132031.GF35230@nvidia.com>
+In-Reply-To: <20241113132031.GF35230@nvidia.com>
+From: Uros Bizjak <ubizjak@gmail.com>
+Date: Wed, 13 Nov 2024 15:06:05 +0100
+Message-ID: <CAFULd4a1PHREX6ws9Gyu=TaaZvdgLfh6peoE5Tt010uGyY9Hgw@mail.gmail.com>
+Subject: Re: [PATCH v10 05/10] iommu/amd: Introduce helper function to update
+ 256-bit DTE
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, vasant.hegde@amd.com, 
+	Linux-Arch <linux-arch@vger.kernel.org>, Kevin Tian <kevin.tian@intel.com>, jon.grimm@amd.com, 
+	santosh.shukla@amd.com, pandoh@google.com, kumaranand@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The iommu drivers that supports PASID have supported attaching pasid to the
-blocked_domain, hence remove the remove_dev_pasid op from the iommu_ops.
+On Wed, Nov 13, 2024 at 2:20=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> On Wed, Nov 13, 2024 at 01:50:14PM +0100, Arnd Bergmann wrote:
+> > On Wed, Nov 13, 2024, at 13:03, Suravee Suthikulpanit wrote:
+> > >
+> > > +static void write_dte_upper128(struct dev_table_entry *ptr, struct
+> > > dev_table_entry *new)
+> > > +{
+> > > +   struct dev_table_entry old =3D {};
+> > > +
+> > > +   old.data128[1] =3D __READ_ONCE(ptr->data128[1]);
+> >
+> > The __READ_ONCE() in place of READ_ONCE() does make this a
+> > lot simpler. After seeing how it is used though, I wonder if
+> > this should just be an open-coded volatile pointer access
+> > to avoid complicating __unqual_scalar_typeof() further.
+>
+> I've been skeptical we even need the READ_ONCE. This is all under a
+> lock, what is READ_ONCE even protecting against? It is safe to double
+> read.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/iommu.c | 17 ++++-------------
- include/linux/iommu.h |  5 -----
- 2 files changed, 4 insertions(+), 18 deletions(-)
+Even without atomicity guarantee, __READ_ONCE() still prevents the
+compiler from performing unwanted optimizations (please see the first
+comment in include/asm-generic/rwonce.h) and unwanted reordering of
+reads and writes when this function is inlined. This macro does cast
+the read to volatile, but IMO it is much more readable to use
+__READ_ONCE() than volatile qualifier.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 25d170de76fe..8a3e3a753fd5 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3303,17 +3303,9 @@ static void iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
- {
- 	const struct iommu_ops *ops = dev_iommu_ops(dev);
- 	struct iommu_domain *blocked_domain = ops->blocked_domain;
--	int ret = 1;
- 
--	if (blocked_domain && blocked_domain->ops->set_dev_pasid) {
--		ret = blocked_domain->ops->set_dev_pasid(blocked_domain,
--							 dev, pasid, domain);
--	} else {
--		ops->remove_dev_pasid(dev, pasid, domain);
--		ret = 0;
--	}
--
--	WARN_ON(ret);
-+	WARN_ON(blocked_domain->ops->set_dev_pasid(blocked_domain,
-+						   dev, pasid, domain));
- }
- 
- static int __iommu_set_group_pasid(struct iommu_domain *domain,
-@@ -3376,9 +3368,8 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
- 	ops = dev_iommu_ops(dev);
- 
- 	if (!domain->ops->set_dev_pasid ||
--	    (!ops->remove_dev_pasid &&
--	     (!ops->blocked_domain ||
--	      !ops->blocked_domain->ops->set_dev_pasid)))
-+	    !ops->blocked_domain ||
-+	    !ops->blocked_domain->ops->set_dev_pasid)
- 		return -EOPNOTSUPP;
- 
- 	if (ops != domain->owner || pasid == IOMMU_NO_PASID)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 0c3bfb66dc7c..1d033121bf00 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -537,9 +537,6 @@ static inline int __iommu_copy_struct_from_user_array(
-  *		- IOMMU_DOMAIN_DMA: must use a dma domain
-  *		- 0: use the default setting
-  * @default_domain_ops: the default ops for domains
-- * @remove_dev_pasid: Remove any translation configurations of a specific
-- *                    pasid, so that any DMA transactions with this pasid
-- *                    will be blocked by the hardware.
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-  * @owner: Driver module providing these ops
-  * @identity_domain: An always available, always attachable identity
-@@ -586,8 +583,6 @@ struct iommu_ops {
- 			      struct iommu_page_response *msg);
- 
- 	int (*def_domain_type)(struct device *dev);
--	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid,
--				 struct iommu_domain *domain);
- 
- 	const struct iommu_domain_ops *default_domain_ops;
- 	unsigned long pgsize_bitmap;
--- 
-2.34.1
-
+Uros.
