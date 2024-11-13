@@ -1,204 +1,183 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2054.outbound.protection.outlook.com [40.107.92.54])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E624813B298;
-	Wed, 13 Nov 2024 16:43:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731516211; cv=fail; b=umVZmWGlasvh/pypI8jnbSmH9z6UtSyK4x7qKCt+t2bg5714AcYxXHUfusUbj8HS2dGGNnktMfNnzuqjrSmHE8JwN8by/bP7jtdjyAbbwxsB9tSVvc5FAa73F8ixGmKsvCJEJGkcOThDujg6Hc4QZvkWuU1lfexS5G7fIP9x658=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731516211; c=relaxed/simple;
-	bh=Rqx5jNVZtlCdCC50ZjoXchLojjHHEtEqZuwR7678u6c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=c+bRAla0A1PLU7I41NSryU37VNJR6Mr29QRwD9GMWAI/SviARJ8rCBHgkGLtfAQkw3ECvTybzZ743JPraRdM1pbsnGC8r6qWSpZQLT/fcvjqlxy68+twQmDf9kiZInllZmDKmG9Ehaqf1nBYEN084cbSAZRCIvAgVBlobANs0bc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=TX8frkOY; arc=fail smtp.client-ip=40.107.92.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A3B620127A
+	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 18:03:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1731520994; cv=none; b=lZ2sHeD4fr3bQggND5mhV/OXnEprba9RyAODJ4yxFtd97T3/WvgN4E3SIcW5EZU5mjnhaMV142XIDibOps7QBDwREwDVjhnMEvb8ZiFZwsEWXTp/TcjCmWNjaQSt+F568e+8L2uGxyP6NEuShvgAlpLhV92w1HokQCQeLkNrDc0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1731520994; c=relaxed/simple;
+	bh=0dYtlNaE02KMPwPbNkOEG7D0Ej3fMxzfA77E8dWng18=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=Sxc1gbBY/pWuMf9Se8bEYUm+kR5b3LYmlVIQeH/iFX/ZnfkUAqYDtdGX8dPksqp/G9VsevNY887VKXYzt/cs70woViQaCmt1loVgLn00cTkkUwwYNhuFheBvfIij20AwOWLp62a2X+7Y5Y9t0EN6VHt7f3OWc+3UkOLs9wzLuIE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=aLL26I2b; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="TX8frkOY"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=jLPQlNseW5/MLhlS5ZNbPdmaWSyUWLZ9pMpoMMvfrtoRFX5h9wA8vfcQAfDIzNC23CtisGuuxweBPqqUC3pckJnWmz2G1BYUkCNs+p2oUsy38tvY3d7MGdXtfkAOFhHJJeMtH+f+SQuDNHzfWNnvkQguGxNvwwAAo0o5D7NGgZHW4+TjA8lOz2F5MT1B/9FP2U1ALMd8zAI+d/pfmTgLCZjsqFLKhB8KQXDwh8pLMcELgY84yuCqzbaRMlHXL3lVHglJ4N55jhGWBLlGHAm61pKEz2VNlytWosClnDk/KzOmO8+vyboCqVEXO29TZzvxnpREYTktlXaE/6N4+Tr1kQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EyL9HiLOSw57xeufIcjoljyzhTHF2YgBF45CPZz4J+Q=;
- b=Z3wUKICt73r6HenHcG6+hbLjWzfnnCuR0rdrb/ZfXx655tFsdtYgMei9cghA/IpBlJ2QTS30hL6hnU9kMIoOZ0f2UdW07rULASB9Qy13MwzqfoNc3QXliWJ+80wuXRUiyt5pZC0T15kQ3ism5SCbX5YRfX27Yf4emVg3Mtdm8qxGYaAUWyX5XmNvfDyotzTfA94wEhnbTEyAbjOgZhMpION+9fU9nEYeGPfw4KCnwh3Wf20I20oRi+zTUFTSDWjHchmfZmodWyQdPFCXtd8vrN7oZUTYgoti8lLWrrIqXberyLxGLSAzUbTSHD/u5RHs1IcOQ4aeBriBn8UZk2UQTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EyL9HiLOSw57xeufIcjoljyzhTHF2YgBF45CPZz4J+Q=;
- b=TX8frkOYDiuSCvcVB/Jx3Zr9DfSTay1p38m7vSxpnQMXomBQsolI3XE739prXWeW8DeikGU7q5fhKpK9OzxHD8X6xMGaigmq4VERFJoVOwxn/0OkQeRhY/2h38Byb8WkWEIwBOYAUmMuT8Hc1RnlHaufYVJk7mY6P5HuBv4iR6ApdiiCfTyiub5YmU/2Trzw4b+RFnOBbWbDNlANUMFeZJYSft0y67UAzQobEQfcxj9ZkEEkwozcxfYAl6h5iggIau0CkxeHnd/c8cARmwaCfH0nP6UFAdddiGRrPylIhf9R8VWr3Dyhb+/gZv+ZP65hl5+L5ljxY+lK7l3XhAi3dA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by IA1PR12MB6652.namprd12.prod.outlook.com (2603:10b6:208:38a::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.17; Wed, 13 Nov
- 2024 16:43:17 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8137.027; Wed, 13 Nov 2024
- 16:43:17 +0000
-Date: Wed, 13 Nov 2024 12:43:16 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Zhangfei Gao <zhangfei.gao@linaro.org>, acpica-devel@lists.linux.dev,
-	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
-	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Donald Dutile <ddutile@redhat.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Jerry Snitselaar <jsnitsel@redhat.com>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v4 00/12] Initial support for SMMUv3 nested translation
-Message-ID: <20241113164316.GL35230@nvidia.com>
-References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
- <20241112182938.GA172989@nvidia.com>
- <CABQgh9HOHzeRF7JfrXrRAcGB53o29HkW9rnVTf4JefeVWDvzyQ@mail.gmail.com>
- <20241113012359.GB35230@nvidia.com>
- <9df3dd17-375a-4327-b2a8-e9f7690d81b1@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9df3dd17-375a-4327-b2a8-e9f7690d81b1@linux.intel.com>
-X-ClientProxiedBy: BN8PR04CA0058.namprd04.prod.outlook.com
- (2603:10b6:408:d4::32) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="aLL26I2b"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4ADH1ZEi025412;
+	Wed, 13 Nov 2024 18:03:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	bYtOOA3mW6Ph2dWGJf/8a1jSF1QmnYitbVPB+AORG4w=; b=aLL26I2bikDogtDH
+	fT2fQU1ZA8fAFhtHvZPGG6AeVPFCzKj9hL5xUnzqo0Bj0gqJHGYaHOUdHKmASg+4
+	DjHSV6tbbp7v8dyqqMvVtRqFtztapVjIBjC9PoHLB7B4HHhkF7zNX9x7U24Gdf0+
+	DvO6YZXxZ0DnFHx8FVOmp+78fmurjaOR4QDfPGhvahPmQnJo03MCQy2VBUOsuNQi
+	Sj2QYrZB6vMelIH8iq5X8jZet++FEYrDczdM6RLL0CyXPImAfJfQhM5vgupdjhq7
+	r7WJDUsCDp26+j3qm7ZcYJ3/zWcfMnMlIXyTEa+yfmf5PGc9dj466iE5hF2bB4aZ
+	ps7G7A==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42vgqqtqwr-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 13 Nov 2024 18:03:00 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4ADI2wk7004079
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 13 Nov 2024 18:02:58 GMT
+Received: from [10.71.109.85] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 13 Nov
+ 2024 10:02:58 -0800
+Message-ID: <6a8ba993-9413-40ad-8c91-0cf268798585@quicinc.com>
+Date: Wed, 13 Nov 2024 10:02:49 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|IA1PR12MB6652:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8535e3ba-bddf-4608-ff23-08dd04024633
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?hrjfU/7hk+D5jMSN4q/G24qTkQk071QqTqcSzEWr0Yf5F7oiz4p+r9yAgzG4?=
- =?us-ascii?Q?R+mu7PaiCRYEpVD77Fd47F4okx3U44e+JBXKxB3lYsEqp3WYdkkCuyQfP0sg?=
- =?us-ascii?Q?105v6uLZYuy22SKvQ6r3K7LsTqV3FFgNhpoAiAsxvB6JMzT6DaHQ7Rqt3ZXc?=
- =?us-ascii?Q?S3OoHMRE96YkM/U85QQrOD4RjY64dejFUk/VMJ+sCA+7ioVhdMJsNV3+pO/7?=
- =?us-ascii?Q?+IrWJggSLuWbKbJmmRYpUNImjn4RQXuEsm0Fqsk2nZZrDX78e6l69ffp+88O?=
- =?us-ascii?Q?5G/0u+YvDyfIfRiRlwYHLGnsIxeZzpMeV8KcibW0mLKI9rlW/fIoPicIpLQY?=
- =?us-ascii?Q?dI1dIW26X2JGt2FycaTkktijOiWonvQnsGgGzjBUCRvQujfvRcIxB9XXYygc?=
- =?us-ascii?Q?p3iVSu/75fQ0ithngQoNq2X3oHCfk4EVlJcGPP8D01aMqKsnTM/NNGU2+iBT?=
- =?us-ascii?Q?yhh6JbrlLo6krvKEUfNwYLzZMsDiyuTdgS0X8JFvfr9EBGgUsNhrrNpjm5hD?=
- =?us-ascii?Q?0HfszczWDZVCAVZWLmeUv4wBzsnFMl38vzLM9ZJHoRs9qkkgFC2Xm7gsAjpP?=
- =?us-ascii?Q?gsYcVZdUnRyG5cGgBB0hNDujrbSAyEzjn/TvqYUUV5gXCkyhUVTf75rm6MXO?=
- =?us-ascii?Q?pt6js7d9wAnAqCeZ+J1j5wjJkbNjUSSwA82B39OBDHS66SczSpH7Xk/GfnmL?=
- =?us-ascii?Q?TEYiUZcQwKpULToK7bLh43jVnNMWVdWSR+1F1FsBbDXgfuMYHcX3zapPOv3e?=
- =?us-ascii?Q?u2YJxro/h3UmpJdcyKY+cKxAaiMyKLjZvy2ByjKo/POuwt45ffk2VjjtlUKM?=
- =?us-ascii?Q?nvINSMi+9BE+hBv08+gkxy/OKn10WX6DycuIcWZI4NgABLLErbpvIT8J93xw?=
- =?us-ascii?Q?ZD3u4MZ6kWTcC9lz3qj52pZ2DvhlDSl0ympUY8u1nul1ntL0rQC7A36McLNq?=
- =?us-ascii?Q?XlBOEzL8dr1MVXqKpEyqF57VJo2nzWY3Z8GY9enYer/NIcHs+eUavJ3Ez2zh?=
- =?us-ascii?Q?oDYzSXxHy5xOqpn5juhWAt4DozDqhGmNf+8qJ9lepXsYde8LxhYuASBgKFRh?=
- =?us-ascii?Q?kbFuWK4gCPZDf9Xr+2JCseWzdFZZHGhzjd1zBQXjWVsSqZ5mOzawvXFdJQfb?=
- =?us-ascii?Q?unM9Lfq9s7FA6vipNsk0ehXRX5kDomiJfiBH3l63uJVBDcOSHqu7nlxPV1w2?=
- =?us-ascii?Q?NUSPwQSsM9XDJWjam+H9Quh6Z5ZdPyBELL4Q2doPMnbUk6U8NoMp/1zomKs5?=
- =?us-ascii?Q?S2OGxA45fpzivA9TaVL9otL0lgyeHeh8fIymES9KgktismpuTGmXdMRehzRm?=
- =?us-ascii?Q?XEhskCRlMdaTpuujhjEO7gi1?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Mgw2mKec6o8YSHeDHUhTNnKjj0kNIuq++XWgLlHrfj2M08WEc5i61GcQ68Q2?=
- =?us-ascii?Q?NTj3PlkY9uEdjjgYUBrkxnlGBm+BFyQfjNI39M18dMi6jjRIt1sgmLKOYN6B?=
- =?us-ascii?Q?vcMLAc7Xbj7Qa6oWNqzkreGQtGPMUApjCOleR1ZadW0gP0xZjgSH0sH9HLOr?=
- =?us-ascii?Q?q2ffoMWeWAsnk9jekEyblJVALAcoptwgcO0Zorbd0ASa0RN0UlsnB5w3wuKI?=
- =?us-ascii?Q?oQw9WPXoZXoLBW0FNBlCciMuCdYJCTZ8AKFnJ7Ftuzyd/tbV7lKPnwofb33+?=
- =?us-ascii?Q?LoQ4RemEyNoE67K4yboxzT1q2hu6fR9g3FSWXuinWPaMoeI1/7rNrb7rkCq+?=
- =?us-ascii?Q?hO0KPyrqDYaEr6GBJpbrlNUSTYekGBSltvFET8zaBGJpUv/afq5fHrFZgpEy?=
- =?us-ascii?Q?ur4A69X1b0h3h3yRvlxwmiP0vpJAX+W61Gi7wZopbCG8xUqsNJ6v6yhYyDIS?=
- =?us-ascii?Q?GRiFXPguqQFFMoxt9yRXjYU2PGsGEAGFymwvR0NvW5moNlkDa99UiMcpUtMZ?=
- =?us-ascii?Q?cVsUurePGwqvmtRgx6fKiD3/YyOqaaT0i1dPEvagxWDbI6LQWaxdNu1714es?=
- =?us-ascii?Q?zizIvtpdq7OApUVXHI0cAoj62ieseWkV2QmbCEd1DGmYSgIvJiKmEo93PhKO?=
- =?us-ascii?Q?oYAAgfzzxcjiT9RHya0JBQoF9cjHASoNOQgjXFBS1ami+ZLpunMRO53hRVZI?=
- =?us-ascii?Q?UtUlXvrF63RMkcEJbLNyGiynqhlAkKRmdYKPwUkLnlJ8A/153cMZlJ876DgD?=
- =?us-ascii?Q?4wKwWXIoh7N6hnu9ekLD+7o5XZmClhmZQjL3jy/IVfy7ev01O/EWDw/RADIB?=
- =?us-ascii?Q?CKKpigYz6ilx30ZsbSHHpjoB3nr7vGsdPdBryjTXC/Zcn2fQBOw3YCIAlNbb?=
- =?us-ascii?Q?NOWfJvKKYS+aGDU6nQMFWPHLb10PPcJQ2d/rI0r7bU9SScOfuIdXCAkHhE+0?=
- =?us-ascii?Q?1STpnExz/gNtPtOHrkBc+O8gjsuWay7QQVpqs//yip9z/nJpD5GiQjcDuu/T?=
- =?us-ascii?Q?8XDC7g8m6m0S7A7T4ZHuSzWQp12qujbepbWJHKKT4sPewy+9pzOMadpjCyj6?=
- =?us-ascii?Q?YhBwtiEwyxISJ+1u/o623IbOKLRqTnpX2FuEedm+Mr2ZmH5iSBv2NmlK6wwx?=
- =?us-ascii?Q?6+UApEr9iYLWdreXbDfl+y6dBL6fDwwmyMamspkCjdhDtz8/XDOd7UxB8qQ8?=
- =?us-ascii?Q?krAXCoa1ONERjNGHjXEZXkmkZRbk11jjliaAYM2Xs/q+b3SeiAKJ07bi4/ci?=
- =?us-ascii?Q?2mnqirUb29t4GJjY7Vo6eGCF87YsAQuUzMx1MdjRw2PAoAZjO3pnQc54EqMx?=
- =?us-ascii?Q?kqnjpUhLU69ui9+0iSTaabh4viz/iiuKMxNW8iHP1S6QY9cnLyXPMtcsONB8?=
- =?us-ascii?Q?p6BPXX/bmUm895MVBf1lZV74xoLCSL3SX8QFNz9L2H0Gabxb33qbeuFo2lXl?=
- =?us-ascii?Q?81XyvaMMSHuodTdkUCpqY6NIFVzhl3vlP1UT2PajzJ2ExYvdrcpOQ4Z+wVvf?=
- =?us-ascii?Q?MkftZPL+ZelZewGLtfpZ23cu3biAw6iwXPXLmftxvddLNyJPHEYHVtR0fYIs?=
- =?us-ascii?Q?tv8IpApjbymLR43R0dSlRX17vJ9+V+ABHZHVKkGw?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8535e3ba-bddf-4608-ff23-08dd04024633
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2024 16:43:17.2945
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LtYQkpQMzX3bL9E0mSpsQknO2nJ/2UI/LYVWFQ7kjjnH87GzpRRBX2AIuzr07LoC
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6652
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma-mapping: Save base/size instead of pointer to shared
+ DMA pool
+To: Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring
+	<robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski
+	<m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>
+CC: <iommu@lists.linux.dev>, <linux-renesas-soc@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+References: <f8cef6845a6141f0277e31a71fe153612daae776.1731436631.git.geert+renesas@glider.be>
+Content-Language: en-US
+From: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+In-Reply-To: <f8cef6845a6141f0277e31a71fe153612daae776.1731436631.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: eu28F4D7NQKeyjXetHBQsxyFMsnBtuw5
+X-Proofpoint-GUID: eu28F4D7NQKeyjXetHBQsxyFMsnBtuw5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1011
+ impostorscore=0 lowpriorityscore=0 suspectscore=0 spamscore=0
+ priorityscore=1501 phishscore=0 malwarescore=0 mlxlogscore=999
+ adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2411130149
 
-On Wed, Nov 13, 2024 at 10:55:41AM +0800, Baolu Lu wrote:
-> On 11/13/24 09:23, Jason Gunthorpe wrote:
-> > > https://github.com/Linaro/linux-kernel-uadk/tree/6.12-wip
-> > > https://github.com/Linaro/qemu/tree/6.12-wip
-> > > 
-> > > Still need this hack
-> > > https://github.com/Linaro/linux-kernel-uadk/commit/
-> > > eaa194d954112cad4da7852e29343e546baf8683
-> > > 
-> > > One is adding iommu_dev_enable/disable_feature IOMMU_DEV_FEAT_SVA,
-> > > which you have patchset before.
-> > Yes, I have a more complete version of that here someplace. Need some
-> > help on vt-d but hope to get that done next cycle.
-> 
-> Can you please elaborate this a bit more? Are you talking about below
-> change
 
-I need your help to remove IOMMU_DEV_FEAT_IOPF from the intel
-driver. I have a patch series that eliminates it from all the other
-drivers, and I wrote a patch to remove FEAT_SVA from intel..
+On 11/12/2024 10:39 AM, Geert Uytterhoeven wrote:
+> On RZ/Five, which is non-coherent, and uses CONFIG_DMA_GLOBAL_POOL=y:
+>
+>     Oops - store (or AMO) access fault [#1]
+>     CPU: 0 UID: 0 PID: 1 Comm: swapper Not tainted 6.12.0-rc1-00015-g8a6e02d0c00e #201
+>     Hardware name: Renesas SMARC EVK based on r9a07g043f01 (DT)
+>     epc : __memset+0x60/0x100
+>      ra : __dma_alloc_from_coherent+0x150/0x17a
+>     epc : ffffffff8062d2bc ra : ffffffff80053a94 sp : ffffffc60000ba20
+>      gp : ffffffff812e9938 tp : ffffffd601920000 t0 : ffffffc6000d0000
+>      t1 : 0000000000000000 t2 : ffffffffe9600000 s0 : ffffffc60000baa0
+>      s1 : ffffffc6000d0000 a0 : ffffffc6000d0000 a1 : 0000000000000000
+>      a2 : 0000000000001000 a3 : ffffffc6000d1000 a4 : 0000000000000000
+>      a5 : 0000000000000000 a6 : ffffffd601adacc0 a7 : ffffffd601a841a8
+>      s2 : ffffffd6018573c0 s3 : 0000000000001000 s4 : ffffffd6019541e0
+>      s5 : 0000000200000022 s6 : ffffffd6018f8410 s7 : ffffffd6018573e8
+>      s8 : 0000000000000001 s9 : 0000000000000001 s10: 0000000000000010
+>      s11: 0000000000000000 t3 : 0000000000000000 t4 : ffffffffdefe62d1
+>      t5 : 000000001cd6a3a9 t6 : ffffffd601b2aad6
+>     status: 0000000200000120 badaddr: ffffffc6000d0000 cause: 0000000000000007
+>     [<ffffffff8062d2bc>] __memset+0x60/0x100
+>     [<ffffffff80053e1a>] dma_alloc_from_global_coherent+0x1c/0x28
+>     [<ffffffff80053056>] dma_direct_alloc+0x98/0x112
+>     [<ffffffff8005238c>] dma_alloc_attrs+0x78/0x86
+>     [<ffffffff8035fdb4>] rz_dmac_probe+0x3f6/0x50a
+>     [<ffffffff803a0694>] platform_probe+0x4c/0x8a
+>
+> If CONFIG_DMA_GLOBAL_POOL=y, the reserved_mem structure passed to
+> rmem_dma_setup() is saved for later use, by saving the passed pointer.
+> However, when dma_init_reserved_memory() is called later, the pointer
+> has become stale, causing a crash.
+>
+> E.g. in the RZ/Five case, the referenced memory now contains the
+> reserved_mem structure for the "mmode_resv0@30000" node (with base
+> 0x30000 and size 0x10000), instead of the correct "pma_resv0@58000000"
+> node (with base 0x58000000 and size 0x8000000).
+>
+> Fix this by saving the needed reserved_mem structure's contents instead.
+>
+> Fixes: 8a6e02d0c00e7b62 ("of: reserved_mem: Restructure how the reserved memory regions are processed")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+> ---
+>  kernel/dma/coherent.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+>
+> diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
+> index ff5683a57f77126d..3b2bdca9f1d4b027 100644
+> --- a/kernel/dma/coherent.c
+> +++ b/kernel/dma/coherent.c
+> @@ -330,7 +330,8 @@ int dma_init_global_coherent(phys_addr_t phys_addr, size_t size)
+>  #include <linux/of_reserved_mem.h>
+>  
+>  #ifdef CONFIG_DMA_GLOBAL_POOL
+> -static struct reserved_mem *dma_reserved_default_memory __initdata;
+> +static phys_addr_t dma_reserved_default_memory_base __initdata;
+> +static phys_addr_t dma_reserved_default_memory_size __initdata;
+>  #endif
+>  
+>  static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
+> @@ -376,9 +377,10 @@ static int __init rmem_dma_setup(struct reserved_mem *rmem)
+>  
+>  #ifdef CONFIG_DMA_GLOBAL_POOL
+>  	if (of_get_flat_dt_prop(node, "linux,dma-default", NULL)) {
+> -		WARN(dma_reserved_default_memory,
+> +		WARN(dma_reserved_default_memory_size,
+>  		     "Reserved memory: region for default DMA coherent area is redefined\n");
+> -		dma_reserved_default_memory = rmem;
+> +		dma_reserved_default_memory_base = rmem->base;
+> +		dma_reserved_default_memory_size = rmem->size;
+>  	}
+>  #endif
+>  
+> @@ -391,10 +393,10 @@ static int __init rmem_dma_setup(struct reserved_mem *rmem)
+>  #ifdef CONFIG_DMA_GLOBAL_POOL
+>  static int __init dma_init_reserved_memory(void)
+>  {
+> -	if (!dma_reserved_default_memory)
+> +	if (!dma_reserved_default_memory_size)
+>  		return -ENOMEM;
+> -	return dma_init_global_coherent(dma_reserved_default_memory->base,
+> -					dma_reserved_default_memory->size);
+> +	return dma_init_global_coherent(dma_reserved_default_memory_base,
+> +					dma_reserved_default_memory_size);
+>  }
+>  core_initcall(dma_init_reserved_memory);
+>  #endif /* CONFIG_DMA_GLOBAL_POOL */
+Hi Geert,
 
-> +	ret = iommu_dev_enable_feature(idev->dev, IOMMU_DEV_FEAT_SVA);
-> +	if (ret)
-> +		return ret;
-> 
-> in iommufd_fault_iopf_enable()?
-> 
-> I have no idea about why SVA is affected when enabling iopf.
+Thanks for providing a fix!
 
-It is ARM not implementing the API correctly. Only SVA turns on the
-page fault reporting mechanism.
+I also looked around more to see if there are more places that
+could store a stale reference to rmem but I didn't see any others,
+so I think we are good!
 
-In the new world the page fault reporting should be managed during
-domain attachment. If the domain is fault capable then faults should
-be delivered to that domain. That is the correct time to setup the
-iopf mechanism as well.
+I have given my "reviewed-by" tag as well.
 
-So I fixed that and now ARM and AMD both have no-op implementations of
-IOMMU_DEV_FEAT_IOPF and IOMMU_DEV_FEAT_SVA. Thus I'd like to remove it
-entirely.
-
-Jason
-
+Thank you!
+Oreoluwa
