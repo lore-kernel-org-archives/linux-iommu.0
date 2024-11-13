@@ -1,281 +1,167 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34CC01FDF8D
-	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 19:51:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC224201253
+	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 20:08:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731527508; cv=none; b=BLlW7apNLyhnTi1Eeatmy0571/l0/sUhIAq2zJZfUWv4upTIPOoj48uLwSZgYweT4VNCqXU439A1tZbmmaz4p/vsKsk/CuwcHLYwfMLJO6B/xOuy5IuIaf/1XtVK3FPU39dIA+RDwDrUQ6qTfkiX7s5mu3gKUKYHy0uJyyx+XhM=
+	t=1731528529; cv=none; b=UlJoFyDEZaFBu3MfRkzTtF0uVJKTWHrLO3kDPADEtQd4MLHiSaKh1u+xNITZCLzW6vYyYRWluwQ5PhimJ8QOXJNaEsSPkkbZAiUsVutl3zbBRSyNkxXJGHj4R3mofqwvzOxLGZguzQZ1xwk3aqYrtlw4bLgpr6HelO+EEDKqsgw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731527508; c=relaxed/simple;
-	bh=Z+4CBuHmtMIaL7lhEHun/uPsXZRbTbHz3xWwyJ2TMOw=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=aGoCKkPjUH1GfU4iz9xFRyNmLeXmUsQvtFRUho2bXTZuF44ZaiQQH/ljTUbU/v9nzB8b7qDeww42K+vRjxqV7i1bqeijewxKDxwFUYwkJMEgQrezv5pitpqNs4OQ/cttiUhIYzKVA7ylBcCpJkH6FJvaKNZkFbp5J84civQgaqA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=DtNFXeRB; arc=none smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1731528529; c=relaxed/simple;
+	bh=jXefo8XudMMorxCLLuteQ0VmelS+jmaq9LUBvGT6Hvc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=tT3CNR4tyBTYlY6Fy+PwObw7BGqXOUgukrOnEUcGqTxEzOrYrGozQ9Hd5Un2DyXdDEGbhXDevJ/hwHpAwB6483gvQKQTo33rXh/HvXW/nacQKnxPN18OzQcgjs71yL6QcfSEDsBycsQX+xeK+n+QPjK415HfkfX5nmt+tTzJP0k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O46slcp1; arc=none smtp.client-ip=209.85.208.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="DtNFXeRB"
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4ADIBW29006362;
-	Wed, 13 Nov 2024 19:51:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:date:from:in-reply-to:message-id:references:subject:to; s=
-	corp-2023-11-20; bh=doCJgKgRNlbWRPdmIViCqvq0yv+c6ObW0I912gt/aIA=; b=
-	DtNFXeRB0Eh2ap+B0H1FAs+hweISuWJG6zVCuz7V1CqmCUw6f041QT7yAN3xGqnt
-	NMfTONKO4bOnvXLay7TcuPdQ6o0P1aWtzSoD0oU3kJlNMu68mzAKE/LC51jVOjLL
-	NuAnR8bSUlFilAiKBgo69+Guh7p8TDxBiKIw8v6coR7/H3HGj+bUh1bd4HK9Emit
-	9p3gdbhsYu5h8ANvUD2Mi1CTmIl5VEp3EBRyI3XSsOEDd6E3lLFyN8ndvsY1CrrC
-	LKwtv4mVU/m7OgJPlhoQvf/PZ0sJmU70C6Q/IFZdb4dx0pT8ip4OcGXvqM5ZX5z6
-	HIumPDihNxKJHVEIRySNgQ==
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42t0nwqpxe-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 13 Nov 2024 19:51:43 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 4ADIKcjh001125;
-	Wed, 13 Nov 2024 19:51:43 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 42sx6a4b89-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 13 Nov 2024 19:51:43 +0000
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 4ADJpdsp023287;
-	Wed, 13 Nov 2024 19:51:42 GMT
-Received: from ca-dev63.us.oracle.com (ca-dev63.us.oracle.com [10.211.8.221])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 42sx6a4b5c-5;
-	Wed, 13 Nov 2024 19:51:42 +0000
-From: Steve Sistare <steven.sistare@oracle.com>
-To: iommu@lists.linux.dev
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Steve Sistare <steven.sistare@oracle.com>
-Subject: [PATCH V5 4/4] iommufd: IOMMU_IOAS_CHANGE_PROCESS selftest
-Date: Wed, 13 Nov 2024 11:51:37 -0800
-Message-Id: <1731527497-16091-5-git-send-email-steven.sistare@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1731527497-16091-1-git-send-email-steven.sistare@oracle.com>
-References: <1731527497-16091-1-git-send-email-steven.sistare@oracle.com>
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-11-13_12,2024-11-13_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 malwarescore=0
- adultscore=0 phishscore=0 bulkscore=0 suspectscore=0 spamscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2409260000 definitions=main-2411130163
-X-Proofpoint-GUID: W-k9XU7mhkKhptvMb3ZRn9Hq2fagMvEu
-X-Proofpoint-ORIG-GUID: W-k9XU7mhkKhptvMb3ZRn9Hq2fagMvEu
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O46slcp1"
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2fb59652cb9so64369631fa.3
+        for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 12:08:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1731528526; x=1732133326; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OacZP/tiZAd9bxMgqXYn+YFBmAcj2qaR00TAZkdFGrc=;
+        b=O46slcp1NngprftPobt4JOPWolKPgiwMhbUEhP9w9aZAIfAWwf4gfa1ePSK4qSMM+H
+         qvtc7AfX6Y4NPNLFtlIzEBFwct7uHXqihRqH0iruV8DNrW7+ArjJ8YFPx5Fvyaa4r2OS
+         r/cAHptAOfkpZ9WlzBklDvghrrPpHlBC1G2khquOTsvtvgh+j/AMNxTjCenwU4ywbdW0
+         /saxuy3v4n5/ISquGVQfgNbP247e04q4XjmGf1RG6s3PWERznfIQbX992lKEu2DqaZ01
+         mCrom4WuU7K/IH6VyLgp0KAPw3u2CyzSBijGURJYBGNPNxiQPcjwv9GO/+RNR8/VWziI
+         6BLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731528526; x=1732133326;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=OacZP/tiZAd9bxMgqXYn+YFBmAcj2qaR00TAZkdFGrc=;
+        b=CrKOgn84DyIZ7tvpCrh3ZqZLT8VJEA18C8BBEWWtVd/jgxw/p+knBQAQV5NO6/aiRS
+         VbqTmO8N5IkcibDXF4NK6mD5lWRkYjLTFb0Q32s0sRhTlxyjhcsp8i/4LlJBqgIDR4z1
+         ODDX505cALTkKIXV6ybdnC6Vd7mqIs78GKaEXapamXIEsUcuq7jLkBwo2bFFKvOwm4Bq
+         +G1K1Czi9eVFM9bfAkNlcyrFQKgjfnTEopbQv3gSpHBBNXwDAfAopaHKOc0AE5ynNz76
+         Q9hlUGYbCvNxGaoReqnEoZG7fJJrDbkwFf2IXrOOHp/jFIXt2fnrWZYkkMg9/l5NFazd
+         yaRA==
+X-Forwarded-Encrypted: i=1; AJvYcCVYuD9oDc32/CStt3iOQTVmuNVsGDw2v9mHxnbu4afqbmDQepYVptC+FLu1ds/pzO8EQCJyEg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyNnc9GU9xkzYMYM76vQDXmQOpQWnqP5P+m8qHDI7rjBiyvRPdD
+	Fr5FADQSu8c/4zZ8i7maEMoK99J4qoMn1nXE2Wc13/37sVyzql8y7dcqwn75dAR5bqppFTQ0g8p
+	m/KSoPuNCC6AjwUgFSqrDcs6K5kg=
+X-Google-Smtp-Source: AGHT+IEJo8CGXetuwMFbv1W2aQKOun7/HjSLcAGLnb8agyhYJuKzN5jkatMrqHB1SqwQacuICSLD2qahbPJf14U4biM=
+X-Received: by 2002:a05:651c:212a:b0:2fb:5688:55c0 with SMTP id
+ 38308e7fff4ca-2ff4c633485mr21641851fa.38.1731528525823; Wed, 13 Nov 2024
+ 12:08:45 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+References: <20241113120327.5239-1-suravee.suthikulpanit@amd.com>
+ <20241113120327.5239-6-suravee.suthikulpanit@amd.com> <cac1ccd3-4b81-4374-a49d-9afad755b19c@app.fastmail.com>
+ <20241113132031.GF35230@nvidia.com> <CAFULd4a1PHREX6ws9Gyu=TaaZvdgLfh6peoE5Tt010uGyY9Hgw@mail.gmail.com>
+ <20241113140914.GI35230@nvidia.com> <CAFULd4aGDM5ySO-PeOH0+_U89mnqYqQ7v+U0ZsMode3bxs_X7w@mail.gmail.com>
+ <20241113142807.GJ35230@nvidia.com> <CAFULd4aFvGj=kz5Si9WpAr33KFtJDO5+sdNO=NBB+boS=E-E_Q@mail.gmail.com>
+ <20241113163451.GK35230@nvidia.com> <CAFULd4bvDhfSprPEyirvX9VmKK_fpxaVNRO02oqT_KQAdLFhfg@mail.gmail.com>
+In-Reply-To: <CAFULd4bvDhfSprPEyirvX9VmKK_fpxaVNRO02oqT_KQAdLFhfg@mail.gmail.com>
+From: Uros Bizjak <ubizjak@gmail.com>
+Date: Wed, 13 Nov 2024 21:08:34 +0100
+Message-ID: <CAFULd4bwyrsXFXJzZQnGyZsQo_RisQLR7qkjMdBBONQzp67xCg@mail.gmail.com>
+Subject: Re: [PATCH v10 05/10] iommu/amd: Introduce helper function to update
+ 256-bit DTE
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, vasant.hegde@amd.com, 
+	Linux-Arch <linux-arch@vger.kernel.org>, Kevin Tian <kevin.tian@intel.com>, jon.grimm@amd.com, 
+	santosh.shukla@amd.com, pandoh@google.com, kumaranand@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Add selftest cases for IOMMU_IOAS_CHANGE_PROCESS.
+On Wed, Nov 13, 2024 at 8:50=E2=80=AFPM Uros Bizjak <ubizjak@gmail.com> wro=
+te:
+>
+> On Wed, Nov 13, 2024 at 5:34=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> =
+wrote:
+> >
+> > On Wed, Nov 13, 2024 at 03:36:14PM +0100, Uros Bizjak wrote:
+> > > On Wed, Nov 13, 2024 at 3:28=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.c=
+om> wrote:
+> > > >
+> > > > On Wed, Nov 13, 2024 at 03:14:09PM +0100, Uros Bizjak wrote:
+> > > > > > > Even without atomicity guarantee, __READ_ONCE() still prevent=
+s the
+> > > > > > > compiler from performing unwanted optimizations (please see t=
+he first
+> > > > > > > comment in include/asm-generic/rwonce.h) and unwanted reorder=
+ing of
+> > > > > > > reads and writes when this function is inlined. This macro do=
+es cast
+> > > > > > > the read to volatile, but IMO it is much more readable to use
+> > > > > > > __READ_ONCE() than volatile qualifier.
+> > > > > >
+> > > > > > Yes it does, but please explain to me what "unwanted reordering=
+" is
+> > > > > > allowed here?
+> > > > >
+> > > > > It is a static function that will be inlined by the compiler
+> > > > > somewhere, so "unwanted reordering" depends on where it will be
+> > > > > inlined. *IF* it will be called from safe code, then this limitat=
+ion
+> > > > > for the compiler can be lifted.
+> > > >
+> > > > As long as the values are read within the spinlock the order does n=
+ot
+> > > > matter. READ_ONCE() is not required to contain reads within spinloc=
+ks.
+> > >
+> > > Indeed. But then why complicate things with cmpxchg, when we have
+> > > exclusive access to the shared memory? No other thread can access the
+> > > data, protected by spinlock; it won't change between invocations of
+> > > cmpxchg in the loop, and atomic access via cmpxchg is not needed.
+> >
+> > This is writing to memory shared by HW and HW is doing a 256 bit
+> > atomic load.
+> >
+> > It is important that the CPU do a 128 bit atomic write.
+> >
+> > cmpxchg is not required, but a 128 bit store is. cmpxchg128 is the
+> > only primitive Linux offers.
+>
+> If we want to exercise only the atomic property of cmpxchg16b, then we
+> can look at arch/x86/lib/atomic64_set_cx8.S how cmpxchg8b is used to
+> implement the core of arch_atomic64_set() for x86_32:
+>
+> SYM_FUNC_START(atomic64_set_cx8)
+> 1:
+> /* we don't need LOCK_PREFIX since aligned 64-bit writes
+>  * are atomic on 586 and newer */
+>     cmpxchg8b (%esi)
+>     jne 1b
+>
+>     RET
+> SYM_FUNC_END(atomic64_set_cx8)
+>
+> we *do* have arch_try_cmpxchg128_local() that declares cmpxchg16b
+> without lock prefix, and perhaps we can use it to create 128bit store,
+> something like:
+>
+> static __always_inline void iommu_atomic128_set(__int128 *ptr, __int128 v=
+al)
+> {
+>     __int128 old =3D *ptr;
+>
+>     do {
+>     } while (!arch_try_cmpxchg128_local(ptr, &old, val));
+> }
 
-Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
----
- tools/testing/selftests/iommu/Makefile        |   1 +
- tools/testing/selftests/iommu/iommufd.c       | 141 ++++++++++++++++++++++++++
- tools/testing/selftests/iommu/iommufd_utils.h |   6 ++
- 3 files changed, 148 insertions(+)
+Eh, I forgot that data does not change, so we don't need the cmpxchg loop.
 
-diff --git a/tools/testing/selftests/iommu/Makefile b/tools/testing/selftests/iommu/Makefile
-index fd64779..bd23ac9 100644
---- a/tools/testing/selftests/iommu/Makefile
-+++ b/tools/testing/selftests/iommu/Makefile
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- CFLAGS += -Wall -O2 -Wno-unused-function
- CFLAGS += $(KHDR_INCLUDES)
-+CFLAGS += -lcap
- 
- TEST_GEN_PROGS :=
- TEST_GEN_PROGS += iommufd
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 88b92bb..edc0f6c 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -2,6 +2,7 @@
- /* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES */
- #include <asm/unistd.h>
- #include <stdlib.h>
-+#include <sys/capability.h>
- #include <sys/mman.h>
- #include <sys/eventfd.h>
- 
-@@ -133,6 +134,8 @@ static __attribute__((constructor)) void setup_sizes(void)
- 	TEST_LENGTH(iommu_option, IOMMU_OPTION, val64);
- 	TEST_LENGTH(iommu_vfio_ioas, IOMMU_VFIO_IOAS, __reserved);
- 	TEST_LENGTH(iommu_ioas_map_file, IOMMU_IOAS_MAP_FILE, iova);
-+	TEST_LENGTH(iommu_ioas_change_process, IOMMU_IOAS_CHANGE_PROCESS,
-+		    __reserved);
- #undef TEST_LENGTH
- }
- 
-@@ -191,6 +194,144 @@ static __attribute__((constructor)) void setup_sizes(void)
- 	EXPECT_ERRNO(ENOENT, ioctl(self->fd, IOMMU_OPTION, &cmd));
- }
- 
-+static void drop_cap_ipc_lock(struct __test_metadata *_metadata)
-+{
-+	cap_t caps;
-+	cap_value_t cap_list[1] = { CAP_IPC_LOCK };
-+
-+	caps = cap_get_proc();
-+	ASSERT_NE(caps, NULL);
-+	ASSERT_NE(-1,
-+		  cap_set_flag(caps, CAP_EFFECTIVE, 1, cap_list, CAP_CLEAR));
-+	ASSERT_NE(-1, cap_set_proc(caps));
-+	cap_free(caps);
-+}
-+
-+static long get_proc_status_value(pid_t pid, const char *var)
-+{
-+	FILE *fp;
-+	char buf[80], tag[80];
-+	long val = -1;
-+
-+	snprintf(buf, sizeof(buf), "/proc/%d/status", pid);
-+	fp = fopen(buf, "r");
-+	if (!fp)
-+		return val;
-+
-+	while (fgets(buf, sizeof(buf), fp))
-+		if (fscanf(fp, "%s %ld\n", tag, &val) == 2 && !strcmp(tag, var))
-+			break;
-+
-+	fclose(fp);
-+	return val;
-+}
-+
-+static long get_vm_pinned(pid_t pid)
-+{
-+	return get_proc_status_value(pid, "VmPin:");
-+}
-+
-+static long get_vm_locked(pid_t pid)
-+{
-+	return get_proc_status_value(pid, "VmLck:");
-+}
-+
-+FIXTURE(change_process)
-+{
-+	int fd;
-+	uint32_t ioas_id;
-+};
-+
-+FIXTURE_VARIANT(change_process)
-+{
-+	int accounting;
-+};
-+
-+FIXTURE_SETUP(change_process)
-+{
-+	self->fd = open("/dev/iommu", O_RDWR);
-+	ASSERT_NE(-1, self->fd);
-+
-+	drop_cap_ipc_lock(_metadata);
-+	if (variant->accounting != IOPT_PAGES_ACCOUNT_NONE) {
-+		struct iommu_option set_limit_cmd = {
-+			.size = sizeof(set_limit_cmd),
-+			.option_id = IOMMU_OPTION_RLIMIT_MODE,
-+			.op = IOMMU_OPTION_OP_SET,
-+			.val64 = (variant->accounting == IOPT_PAGES_ACCOUNT_MM),
-+		};
-+		ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &set_limit_cmd));
-+	}
-+
-+	test_ioctl_ioas_alloc(&self->ioas_id);
-+	test_cmd_mock_domain(self->ioas_id, NULL, NULL, NULL);
-+}
-+
-+FIXTURE_TEARDOWN(change_process)
-+{
-+	teardown_iommufd(self->fd, _metadata);
-+}
-+
-+FIXTURE_VARIANT_ADD(change_process, account_none)
-+{
-+	.accounting = IOPT_PAGES_ACCOUNT_NONE,
-+};
-+
-+FIXTURE_VARIANT_ADD(change_process, account_user)
-+{
-+	.accounting = IOPT_PAGES_ACCOUNT_USER,
-+};
-+
-+FIXTURE_VARIANT_ADD(change_process, account_mm)
-+{
-+	.accounting = IOPT_PAGES_ACCOUNT_MM,
-+};
-+
-+TEST_F(change_process, basic)
-+{
-+	pid_t parent = getpid();
-+	pid_t child;
-+	__u64 iova;
-+	struct iommu_ioas_change_process cmd = {
-+		.size = sizeof(cmd),
-+	};
-+
-+	/* Expect failure if non-file maps exist */
-+	test_ioctl_ioas_map(buffer, PAGE_SIZE, &iova);
-+	EXPECT_ERRNO(EINVAL, ioctl(self->fd, IOMMU_IOAS_CHANGE_PROCESS, &cmd));
-+	test_ioctl_ioas_unmap(iova, PAGE_SIZE);
-+
-+	/* Change process works in current process. */
-+	test_ioctl_ioas_map_file(mfd, 0, PAGE_SIZE, &iova);
-+	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_CHANGE_PROCESS, &cmd));
-+
-+	/* Change process works in another process */
-+	child = fork();
-+	if (!child) {
-+		int nlock = PAGE_SIZE / 1024;
-+
-+		/* Parent accounts for locked memory before */
-+		ASSERT_EQ(nlock, get_vm_pinned(parent));
-+		if (variant->accounting == IOPT_PAGES_ACCOUNT_MM)
-+			ASSERT_EQ(nlock, get_vm_locked(parent));
-+		ASSERT_EQ(0, get_vm_pinned(getpid()));
-+		ASSERT_EQ(0, get_vm_locked(getpid()));
-+
-+		ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_CHANGE_PROCESS, &cmd));
-+
-+		/* Child accounts for locked memory after */
-+		ASSERT_EQ(0, get_vm_pinned(parent));
-+		ASSERT_EQ(0, get_vm_locked(parent));
-+		ASSERT_EQ(nlock, get_vm_pinned(getpid()));
-+		if (variant->accounting == IOPT_PAGES_ACCOUNT_MM)
-+			ASSERT_EQ(nlock, get_vm_locked(getpid()));
-+
-+		exit(0);
-+	}
-+	ASSERT_NE(-1, child);
-+	ASSERT_EQ(child, waitpid(child, NULL, 0));
-+}
-+
- FIXTURE(iommufd_ioas)
+static __always_inline void iommu_atomic128_set(__int128 *ptr, __int128 val=
+)
  {
- 	int fd;
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 2506914..cd8dd39 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -23,6 +23,12 @@
- #define BIT_MASK(nr) (1UL << ((nr) % __BITS_PER_LONG))
- #define BIT_WORD(nr) ((nr) / __BITS_PER_LONG)
- 
-+enum {
-+	IOPT_PAGES_ACCOUNT_NONE = 0,
-+	IOPT_PAGES_ACCOUNT_USER = 1,
-+	IOPT_PAGES_ACCOUNT_MM = 2,
-+};
-+
- #define DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
- 
- static inline void set_bit(unsigned int nr, unsigned long *addr)
--- 
-1.8.3.1
+     arch_cmpxchg128_local(ptr, *ptr, val);
+}
 
+should do the trick.
+
+Uros.
