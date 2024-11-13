@@ -1,179 +1,136 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4587D5FDA7
-	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 19:50:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D2A85FDA7
+	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 19:51:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731527424; cv=none; b=XmAhHh2bAn7SqcofK7fmEohxEi+EFx1sEwNAa2aPQ1AhljKHdYCo4cT5SOnjiqDu6zEJIDSQ+sdu9B2QXZUnLakcpYeqs1025SFz2X2Q0AERoFScrtVvhBDEHDXHDXg7el9ujZQwOMNI+imBjldCqR2KfHGRdh2ZtOaavYacGRU=
+	t=1731527505; cv=none; b=pk4dHr15vf5kbIa5gCXfbOvfIjNsM6I6J3H2wmAx1UsJmhcabZzqifZH2NPqS6C89Vrdby9wWg17AYueqPP2wqG5/ygDD9pIYNfraOAxkuDqjjVk5CtJhFk2mACv0nDeTcRMtql1TwQFnWAVV1B3BZ0rjLOExjX5yoDksFe+DqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731527424; c=relaxed/simple;
-	bh=Oc+LuTOdlevPxcwmiIdW93NWBNLrwRRkqST9yV7jHzk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=H/RU4vibuWPNaASW3fWdMz3tPTWReJTV3tLoGAdZ3Y344Xa5VQk39esrvViOXcZlRev26nZCPhjb3e/xOZUNChpv2AOqNsLGR6rMIjKLQc8RDfiiHMVsiGQ2IKF9ZpVFwcX/IaNyBC08ihHMvRQl8GniyB+aT425wrrBzyLCbU8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Gb/2u1zx; arc=none smtp.client-ip=209.85.208.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1731527505; c=relaxed/simple;
+	bh=QHamFQSIeFzdJint89DHowzPOZPfMd7eEjOFhNIAnEY=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=m6yA8bCl6DUdV+kcljr0iwyTJsbKkr+W8LvZ78uEsIr1kIFBB1TkzxVTfVVUAebuEQ9kmoWFdYe0w+nXZvEYbd7HKdyyL1WxyeiBc5xUucWQSSQURC0SZTyHXTJHstz/M2gO25DD6krS+MsVW4+NC5sR7yr2UU/BFYh9fZgAgYs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=IFSnpKW+; arc=none smtp.client-ip=205.220.177.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gb/2u1zx"
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2f7657f9f62so64215581fa.3
-        for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 11:50:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1731527420; x=1732132220; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6OuUklqc2/spqh6bD65znVHh3ypQAuDk9FVQdh8lmiQ=;
-        b=Gb/2u1zxPK0sHscS/ACUhsy1loSLYE7CaLH6t5McAO+TrGNQq/k++UYUF+LmKD517m
-         hOAOwLH5Qbyv4dZnN2lOTxYFjYab23EyQSgdxXJrzEWVBOk5gPjsthZ73gak++0Qazkh
-         MgIbWzoE6SUh1ssykWc+VvD9O5mwCkgyETBguXVFkDS7ik4HtSfpI43ByIth7OS5WyJ8
-         kjqwQs78D1+rIhwXbfB0CJ/4lzWgLO5MjV38BYwkWCWnMDDBwe/U+B8n3m0NNjOhKNrc
-         uoh1cKih6W4csLELUpRjJt6pt+awlbx9qd6tWVTmX1NmaaHbTizVjVe3pzhlTBS1qrk3
-         0Gdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731527420; x=1732132220;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6OuUklqc2/spqh6bD65znVHh3ypQAuDk9FVQdh8lmiQ=;
-        b=uXgGxzkq49kuAxmcFiS3UHpAtIDS4vtQoM4KLfefTD7XxfKtt4SaDGyHetrpYX4vJQ
-         oIHvuy2L0mLG3WofyN3wCzlARXSjxW38BWcAO91wOsYvPxvoQAs4/q1toOJICeANYKjv
-         E5qKPsq9RjxlmsdnAROJ+YR5sg8SgW95ReGJ99J6J7XeAF82p698CDmbiWXZVZUeb8R7
-         5u/coAmHHbNJVps5Z9CkTOVGCs4NERe7gT48b1vKtXoZGP9XDQOl79pvQL97sKiPU8YK
-         vKtNKAJa/Uy0ptAwNNC/NHoZAyiiS7LBToUsDx9Ny++/IrBVRMA3YKh39TrILxLmUwLL
-         JCbQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUF+igCmQ1YMJwPFoK0o6COkoQgE1pQ1ikvViwxgVPjmkemsOUHMT+lSENkutFQ+gOtpOsTyw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxrPSN41toaFOCrRJt82U0IH8OQDOWyC4aU0LmaDLCfGDYDb3Zo
-	IxJHutYgWA7c1HNEfCGy0h3NGwHV+k0COBRkbiPgPxeH+U/BrzwhkzFrDncox5Qs/5xtgUs66fr
-	wH/JejgwMoAW5md3TcswslV2JTs8=
-X-Google-Smtp-Source: AGHT+IEPKNz9D20Li+iExsg6R/ZQRB0io0za1Ty3bQ/hNr2mZDJKgUIzpNphRGleTsbog/5umI3YsX7yUAXjOJLvzjA=
-X-Received: by 2002:a05:651c:e0b:b0:2ff:559e:c94b with SMTP id
- 38308e7fff4ca-2ff559ed4e7mr4466281fa.17.1731527420081; Wed, 13 Nov 2024
- 11:50:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="IFSnpKW+"
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4ADIBXvq001195;
+	Wed, 13 Nov 2024 19:51:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:date:from:message-id:subject:to; s=corp-2023-11-20; bh=sDhio54a
+	csCgP9WiK5yckn/rJwGNJ12Tqg2pHneNnuk=; b=IFSnpKW+ebg+W0v0PTNxOVNK
+	oqG8sOGBRKoYCD9AiYXFnmURfjh6sou21qg4XVRxrOOMI7fEosU7Zcgcl3w8Fx7M
+	O421KKVC7af355H13oTDvpMQPTJZTcMYPsg3qf7zioFyaFWQUqHPZALOQtVMAxrC
+	ulRDVf3Tzg23D/Tqod6WDuSRpbptB0psRHzZsZ6zCpPLVrzc991sQ0jkq4yXmrk3
+	AZxPdRYsGc1TCbKiikuLqqb79nrZt7D5K1h/j02lfzBTrNLAvYC3hdGvJUCV77Dy
+	xP8g4MVkkpXm6/NRhwbR8NIcgQhdkrUDtVNW/KQxH8wydS7+uynfBtRubP+scg==
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42t0heqkr7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 13 Nov 2024 19:51:40 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 4ADIWh8E001217;
+	Wed, 13 Nov 2024 19:51:39 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 42sx6a4b5u-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 13 Nov 2024 19:51:39 +0000
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 4ADJpdsh023287;
+	Wed, 13 Nov 2024 19:51:39 GMT
+Received: from ca-dev63.us.oracle.com (ca-dev63.us.oracle.com [10.211.8.221])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 42sx6a4b5c-1;
+	Wed, 13 Nov 2024 19:51:38 +0000
+From: Steve Sistare <steven.sistare@oracle.com>
+To: iommu@lists.linux.dev
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Steve Sistare <steven.sistare@oracle.com>
+Subject: [PATCH V5 0/4] iommufd live update
+Date: Wed, 13 Nov 2024 11:51:33 -0800
+Message-Id: <1731527497-16091-1-git-send-email-steven.sistare@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.62.30
+ definitions=2024-11-13_12,2024-11-13_01,2024-09-30_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 malwarescore=0
+ adultscore=0 phishscore=0 bulkscore=0 suspectscore=0 spamscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2409260000 definitions=main-2411130163
+X-Proofpoint-ORIG-GUID: OtNguRK9D7FpMkYhmAWktvtW4Z80ejnE
+X-Proofpoint-GUID: OtNguRK9D7FpMkYhmAWktvtW4Z80ejnE
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20241113120327.5239-1-suravee.suthikulpanit@amd.com>
- <20241113120327.5239-6-suravee.suthikulpanit@amd.com> <cac1ccd3-4b81-4374-a49d-9afad755b19c@app.fastmail.com>
- <20241113132031.GF35230@nvidia.com> <CAFULd4a1PHREX6ws9Gyu=TaaZvdgLfh6peoE5Tt010uGyY9Hgw@mail.gmail.com>
- <20241113140914.GI35230@nvidia.com> <CAFULd4aGDM5ySO-PeOH0+_U89mnqYqQ7v+U0ZsMode3bxs_X7w@mail.gmail.com>
- <20241113142807.GJ35230@nvidia.com> <CAFULd4aFvGj=kz5Si9WpAr33KFtJDO5+sdNO=NBB+boS=E-E_Q@mail.gmail.com>
- <20241113163451.GK35230@nvidia.com>
-In-Reply-To: <20241113163451.GK35230@nvidia.com>
-From: Uros Bizjak <ubizjak@gmail.com>
-Date: Wed, 13 Nov 2024 20:50:08 +0100
-Message-ID: <CAFULd4bvDhfSprPEyirvX9VmKK_fpxaVNRO02oqT_KQAdLFhfg@mail.gmail.com>
-Subject: Re: [PATCH v10 05/10] iommu/amd: Introduce helper function to update
- 256-bit DTE
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, vasant.hegde@amd.com, 
-	Linux-Arch <linux-arch@vger.kernel.org>, Kevin Tian <kevin.tian@intel.com>, jon.grimm@amd.com, 
-	santosh.shukla@amd.com, pandoh@google.com, kumaranand@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, Nov 13, 2024 at 5:34=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> On Wed, Nov 13, 2024 at 03:36:14PM +0100, Uros Bizjak wrote:
-> > On Wed, Nov 13, 2024 at 3:28=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com=
-> wrote:
-> > >
-> > > On Wed, Nov 13, 2024 at 03:14:09PM +0100, Uros Bizjak wrote:
-> > > > > > Even without atomicity guarantee, __READ_ONCE() still prevents =
-the
-> > > > > > compiler from performing unwanted optimizations (please see the=
- first
-> > > > > > comment in include/asm-generic/rwonce.h) and unwanted reorderin=
-g of
-> > > > > > reads and writes when this function is inlined. This macro does=
- cast
-> > > > > > the read to volatile, but IMO it is much more readable to use
-> > > > > > __READ_ONCE() than volatile qualifier.
-> > > > >
-> > > > > Yes it does, but please explain to me what "unwanted reordering" =
-is
-> > > > > allowed here?
-> > > >
-> > > > It is a static function that will be inlined by the compiler
-> > > > somewhere, so "unwanted reordering" depends on where it will be
-> > > > inlined. *IF* it will be called from safe code, then this limitatio=
-n
-> > > > for the compiler can be lifted.
-> > >
-> > > As long as the values are read within the spinlock the order does not
-> > > matter. READ_ONCE() is not required to contain reads within spinlocks=
-.
-> >
-> > Indeed. But then why complicate things with cmpxchg, when we have
-> > exclusive access to the shared memory? No other thread can access the
-> > data, protected by spinlock; it won't change between invocations of
-> > cmpxchg in the loop, and atomic access via cmpxchg is not needed.
->
-> This is writing to memory shared by HW and HW is doing a 256 bit
-> atomic load.
->
-> It is important that the CPU do a 128 bit atomic write.
->
-> cmpxchg is not required, but a 128 bit store is. cmpxchg128 is the
-> only primitive Linux offers.
+Live update is a technique wherein an application saves its state, launches
+an updated version of itself, and restores its state.  Clients of the
+application experience a brief suspension of service, on the order of
+100's of milliseconds, but are otherwise unaffected.
 
-If we want to exercise only the atomic property of cmpxchg16b, then we
-can look at arch/x86/lib/atomic64_set_cx8.S how cmpxchg8b is used to
-implement the core of arch_atomic64_set() for x86_32:
+Define the IOMMU_IOAS_CHANGE_PROCESS ioctl to allow management and use
+of an iommufd device to be transferred from one process to another.  The
+application is responsible for transferring the device descriptor to the new
+process, eg either by preservation across fork and exec or via SCM_RIGHTS.
+It atomically updates everything to the current process, grabbing the new mm,
+and transferring pinned page counts.
 
-SYM_FUNC_START(atomic64_set_cx8)
-1:
-/* we don't need LOCK_PREFIX since aligned 64-bit writes
- * are atomic on 586 and newer */
-    cmpxchg8b (%esi)
-    jne 1b
+IOMMU_IOAS_CHANGE_PROCESS only supports DMA mappings created with
+IOMMU_IOAS_MAP_FILE, because the kernel metadata for such mappings does not
+depend on the userland VA of the pages (which is different in the new process).
+IOMMU_IOAS_CHANGE_PROCESS fails if other types of mappings are present.
 
-    RET
-SYM_FUNC_END(atomic64_set_cx8)
+Thanks to Jason Gunthorpe for code and ideas in this series.
 
-we *do* have arch_try_cmpxchg128_local() that declares cmpxchg16b
-without lock prefix, and perhaps we can use it to create 128bit store,
-something like:
+This series depends on the series:
+  [PATCH V3] iommu_ioas_map_file
 
-static __always_inline void iommu_atomic128_set(__int128 *ptr, __int128 val=
-)
-{
-    __int128 old =3D *ptr;
+This is implemented in QEMU by the series:
+   [PATCH] Live update: iommufd (V2 to be posted)
 
-    do {
-    } while (!arch_try_cmpxchg128_local(ptr, &old, val));
-}
+Changes in V2:
+  * deleted interface to update VA
+  * add selftest cases
 
-Then write_dte_upper128() would look like:
+Changes in V3:
+  * replaced lockdep_off with down_write_nest_lock
+  * cosmetic changes as requested
+  * check for zero length in iommufd_ioas_map_file
 
-static void write_dte_upper128(struct dev_table_entry *ptr, struct
-dev_table_entry *new)
-{
-    struct dev_table_entry old =3D {}; <--- do we need to initialize struct=
- here?
+Changes in V4:
+  * added TEST_LENGTH for iommu_ioas_change_process
+  * fixed context vs patch "Selftest coverage for IOMMU_IOAS_MAP_FILE"
+  * changed IOMMUFD_CMD_IOAS_CHANGE_PROCESS to 0x92
+  * added RB's
 
-    old.data128[1] =3D ptr->data128[1];
+Changes in V5:
+  * renamed iopt_update_pinned -> iopt_pages_update_pinned
+  * reworded lock all *IOAS* objects
+  * added WARN for iopt_pages_update_pinned failure
+  * added RB's
 
-    /*
-     * Preserve DTE_DATA2_INTR_MASK. This needs to be
-     * done here since it requires to be inside
-     * spin_lock(&dev_data->dte_lock) context.
-     */
-    new->data[2] &=3D ~DTE_DATA2_INTR_MASK;
-    new->data[2] |=3D old.data[2] & DTE_DATA2_INTR_MASK;
+Steve Sistare (4):
+  iommufd: Export do_update_pinned
+  iommufd: Lock all IOAS objects
+  iommufd: Add IOMMU_IOAS_CHANGE_PROCESS
+  iommufd: IOMMU_IOAS_CHANGE_PROCESS selftest
 
-    iommu_atomic128_set(&ptr->data128[1], new->data128[1]);
-}
+ drivers/iommu/iommufd/io_pagetable.h          |   6 +
+ drivers/iommu/iommufd/ioas.c                  | 212 ++++++++++++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h       |   2 +
+ drivers/iommu/iommufd/main.c                  |   3 +
+ drivers/iommu/iommufd/pages.c                 |  10 +-
+ include/uapi/linux/iommufd.h                  |  23 +++
+ tools/testing/selftests/iommu/Makefile        |   1 +
+ tools/testing/selftests/iommu/iommufd.c       | 141 +++++++++++++++++
+ tools/testing/selftests/iommu/iommufd_utils.h |   6 +
+ 9 files changed, 399 insertions(+), 5 deletions(-)
 
-and in a similar way implement write_dte_lower128().
+-- 
+1.8.3.1
 
-(I am away from the keyboard ATM, so the above is not tested, but you
-got the idea...)
-
-Uros.
