@@ -1,55 +1,55 @@
-Received: from fout-b3-smtp.messagingengine.com (fout-b3-smtp.messagingengine.com [202.12.124.146])
+Received: from fout-b4-smtp.messagingengine.com (fout-b4-smtp.messagingengine.com [202.12.124.147])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2118B17B401
-	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 12:35:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.146
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C5B82022EF
+	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 12:50:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731501335; cv=none; b=Jaswpe5fy2N5HuOHGSUIwQQWUZlmxByOkrAaIAw56kJjpwRSZ2A6nBE9sxrUfxUktqG0CKMeCvvh7SX1NeH/BD1mAhZs2gZws2dZ1V87PYkvzN8IiIG0tpAhitp0dE3jDlCAu07lnFrtwNuf/1NDczb9d34SBpSRPzp2APDiXb8=
+	t=1731502239; cv=none; b=PNfIZKBcFH5iNBhtA83q5ZhueGccOxgzmcHSvAhVlDv79EDlW8P11E0o7QMVRuB1xhAZselVYiBMqsNa9qGXRh3PyxZ8vHUy5uHsXnjiw3yDqUagO+rLZ6MycPvdE/qkBGVy2vczwoAUqtfOHGCEAfeN2hJk2u67uVskJaQIxL8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731501335; c=relaxed/simple;
-	bh=8mOXWjNAQeHQEuspChDGux1yTH5M5sBCW9lyH1jWrrE=;
+	s=arc-20240116; t=1731502239; c=relaxed/simple;
+	bh=svPzHepBWNbI3mRuffkhlsrEFHqUMU/W75hEZV3Wlck=;
 	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=mqVXGfmFRtlolJtr0iWczh9/BKcNVmAUGscIzoFQY6lCdXyYCEwnCe6FWjj1nGWyAAFbcejfd5kazcLIyX2WzvIeWTQhAR1XBRoV2WcDqTggkjhomtchFQb9x7vVpNksMT0p5Z7nScFIN9nMTUpgOCVFUaDrHwUe1YG3Y9csqAw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=GUSuTEqD; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=io+D/WvT; arc=none smtp.client-ip=202.12.124.146
+	 Subject:Content-Type; b=TYowF5l7nYJSPfAm7R7xdhvg5T/crYQ4nDeL7G0xKA25BYk+2EaEmspJfD9op1hl2eMqn5jBZVCnyqp4rCnKiXueNwfepTupbOMg/t1CVm5yQHM9zv/BGRT9m3cZxWw9PQWt/WX4OsEHISrXzqPwoPpzahKTi7DT9rbN1z2Yf9U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=Glu/V6uj; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=C0Q7M2CX; arc=none smtp.client-ip=202.12.124.147
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="GUSuTEqD";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="io+D/WvT"
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="Glu/V6uj";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="C0Q7M2CX"
 Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
-	by mailfout.stl.internal (Postfix) with ESMTP id 01B4C114016F;
-	Wed, 13 Nov 2024 07:35:31 -0500 (EST)
+	by mailfout.stl.internal (Postfix) with ESMTP id D24C711401B2;
+	Wed, 13 Nov 2024 07:50:36 -0500 (EST)
 Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-10.internal (MEProxy); Wed, 13 Nov 2024 07:35:32 -0500
+  by phl-compute-10.internal (MEProxy); Wed, 13 Nov 2024 07:50:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
 	:cc:content-transfer-encoding:content-type:content-type:date
 	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1731501331;
-	 x=1731587731; bh=7yQcPD6JKWI/AejdrgqAP/w+PsVFxDeTyBvHlplIogQ=; b=
-	GUSuTEqDi+mYAIPY+kGshJR7f7xQK54SEbz9tFeD/9UdAge5heTetCpzzmEAV4o9
-	ZzJg+jJt+nFU5c3lKVAOoIICjh+mS5ZdqjEVfNxkRyroZehLMrtAKR5uKXm07lYA
-	jzdvt47epDi7hEz4Tp5sK4fl01k53mkNrDgPBTnrZcswsX/r5kpIas+0yBvWWldj
-	mgWjU26E1ekEeJK7TpXv9BzrOit5P6sKJQe4n+f8xsYeAQfZYVjfsfYJQwgdwdct
-	8P0BX9y/6B0rQTyMQI2tVODc7suV3eD++uQeUyeiFS2LpRnrBr0NiBQGPRz4WpfX
-	O2JSIskkIZKV9CUO2LYosg==
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1731502236;
+	 x=1731588636; bh=Cc7h2TgpM/yAmaZ7kgR9Rv9Nu6LgBcKiBsF2lmwLAks=; b=
+	Glu/V6ujlJCNnB/wDFY8SlIgReWbcE/rkXQRuEJtQxyLKhZhforpIHb0vyPhI96g
+	OAk396tR3huiiW1H4e02rG4FGIJnQYY63LKgAhYnZfeXsF7JumVtN7OAwzFenfVK
+	1jR7/Bu1KQUBFnhZ2jY+7AhdR7A+bKlxeTQWX/tMpks+PnS2ptpAioENnlesNe9g
+	QnKJDfVKk5ofzKBDisM9CzzBdsCxpVj3a3olP9mIjSUG+InGzaUdGeL2il5vATgF
+	Re1q+n9+7kt8zIk2c+5CCibkDOueyw5DTLg8tb7U4y6ymVMsMcb+OmzO6mzd1DEQ
+	t3/qiHCJ1Jqn8C0otQXR+w==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:content-type:date:date:feedback-id:feedback-id
 	:from:from:in-reply-to:in-reply-to:message-id:mime-version
 	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1731501331; x=
-	1731587731; bh=7yQcPD6JKWI/AejdrgqAP/w+PsVFxDeTyBvHlplIogQ=; b=i
-	o+D/WvTHpAkM/VHWYwkuGKd7CqpAvpJ28TRsgj1qFFwQvflADdEUXkZzKbJDcSpZ
-	f3EZ3CFCEAym2y+Q2PEGqyK2FLGK/nmVkKTySENWJ2esu3fI9TyBeJTn1pPVke4h
-	odaBqNGCDPRHiQ0uu/RQoiaAsX3daEQ54cwtJsw+Via1AK56TmTSW6MH3QwB1rej
-	TmnxhmPBIg9zgFNI1J14Mnh31eND3VtWjaVIERh9cN+YY5p5/lv7jghpgqFVkXFB
-	KW2/QezENoq1XXpnK6tqIuUmFUgql9W12mzI7qn61erGR0GsmtoWieXazGIaStYC
-	a/HhHY00jSu92EeZyX+og==
-X-ME-Sender: <xms:E500Z4n1UrBCWK1iX-Sk_5o2ZkkTi_n0WtOdkgYnkxCjrBQJmLeJ3A>
-    <xme:E500Z329LQzPQkqIm-naFOkRXDY0gjnyuOLJd8Plxx2WVY3jmPuynqEMxmx1TYhfW
-    qommCDdU-mTxcm1LVM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrvddtgdegudcutefuodetggdotefrodftvf
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1731502236; x=
+	1731588636; bh=Cc7h2TgpM/yAmaZ7kgR9Rv9Nu6LgBcKiBsF2lmwLAks=; b=C
+	0Q7M2CXI8DMyrcKIU8oBC+t2LmO+5RB+Dy2q8FxnN688BdrURIJpB5N0rR5WqIzg
+	ef1zb+Zg1BmtJnKdvX/19qr70h2Jda82ybY8lAl2s+goz3/xKJG0a2QKnDMs7R+a
+	AriX246seK9PMFQ+PUlTaj1jjLgV+ZZuo7qShYRO+ofdiwa3uvvq+1rwe9Tmo9Rn
+	23BDjggPt1fqn2J54HyBFcEyppn5QVvAzQkNCgeHvI7nZ72vyZjeRUxynzQQAs3J
+	r2dUkl0xlUwjqS2BxqZSkuQTPSbOOBzNKQyeQREh1yyM25kO9NJtnKMBq3nyPYBO
+	XAiedXhBsCor55WgACaNQ==
+X-ME-Sender: <xms:nKA0Z3d2jjlA7yGqM109qu3EPgaFQW0DgDcb8AJwXOaJ3AB_pKlSZg>
+    <xme:nKA0Z9N2wS_TNzjRB-bWlAJkp6RXmSzAgoJ5TaNI-EuDubSkNMp7Nxp8_9III5u_a
+    eYm3-v4FzZSv3qn_Gc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrvddtgdeggecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdpuffr
     tefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnth
     hsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredttden
@@ -65,14 +65,14 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrvddtgdegudcutefuodetggdote
     esrghrmhdrtghomhdprhgtphhtthhopehusghiiihjrghksehgmhgrihhlrdgtohhmpdhr
     tghpthhtohepkhhumhgrrhgrnhgrnhgusehgohhoghhlvgdrtghomhdprhgtphhtthhope
     hprghnughohhesghhoohhglhgvrdgtohhm
-X-ME-Proxy: <xmx:E500Z2pUVFQeoBEq1DbiNr21iH6tAyhWwMFPWNeGyAftzeViTM2meg>
-    <xmx:E500Z0mZWq7QFt_LFv4UWt_Otf5N9NKj_DiDx0WLMr68yu26hk8IIg>
-    <xmx:E500Z22e2nv9JopT-9FA8pbJYQlp-v_acmDkTl_usY6nQTl6hw6QAQ>
-    <xmx:E500Z7v-zTnF4uGjBOjzrQ5ZdhDeKH9WKnYsoFXN8Uxe3QUg3lHlqA>
-    <xmx:E500Z51synjgB7CPleMo3dzeaHEk3gSPGsAzAsXmPrK2YK1B4UzftYEp>
+X-ME-Proxy: <xmx:nKA0ZwiCBaKo-s-skA9g7gdq4Ag_jW65UFVDN2GpFaBeeSYSfIWQ6A>
+    <xmx:nKA0Z4_5bgN3Th2AqLFt89PfQ9Pl0UUEK-yeQrVedCuEGVY4qpDvVg>
+    <xmx:nKA0ZzuAjnhmdSt_A_JmeNvbCDMkZUEDq_wQf2GXXq8XUy2eH-sFWg>
+    <xmx:nKA0Z3E3LD3HnArdu4LuFtsG1s9rLGcugt4rvrUuVy_re5Y6amVk6w>
+    <xmx:nKA0Z8PA8yekBZYK4MwQI5CMdKqtvv9a52SvDB0p3ySdJkFBkWYB77WP>
 Feedback-ID: i56a14606:Fastmail
 Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 5C11B2220071; Wed, 13 Nov 2024 07:35:31 -0500 (EST)
+	id 3A8772220071; Wed, 13 Nov 2024 07:50:36 -0500 (EST)
 X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -80,7 +80,7 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Wed, 13 Nov 2024 13:35:10 +0100
+Date: Wed, 13 Nov 2024 13:50:14 +0100
 From: "Arnd Bergmann" <arnd@arndb.de>
 To: "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>,
  linux-kernel@vger.kernel.org, iommu@lists.linux.dev
@@ -89,30 +89,45 @@ Cc: "Joerg Roedel" <joro@8bytes.org>, "Robin Murphy" <robin.murphy@arm.com>,
  Linux-Arch <linux-arch@vger.kernel.org>, "Jason Gunthorpe" <jgg@nvidia.com>,
  "Kevin Tian" <kevin.tian@intel.com>, jon.grimm@amd.com,
  santosh.shukla@amd.com, pandoh@google.com, kumaranand@google.com
-Message-Id: <558bf28e-6cf8-436d-b2ef-382ff421bb00@app.fastmail.com>
-In-Reply-To: <20241113120327.5239-3-suravee.suthikulpanit@amd.com>
+Message-Id: <cac1ccd3-4b81-4374-a49d-9afad755b19c@app.fastmail.com>
+In-Reply-To: <20241113120327.5239-6-suravee.suthikulpanit@amd.com>
 References: <20241113120327.5239-1-suravee.suthikulpanit@amd.com>
- <20241113120327.5239-3-suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH v10 02/10] iommu/amd: Disable AMD IOMMU if CMPXCHG16B feature is
- not supported
+ <20241113120327.5239-6-suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH v10 05/10] iommu/amd: Introduce helper function to update 256-bit
+ DTE
 Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 
 On Wed, Nov 13, 2024, at 13:03, Suravee Suthikulpanit wrote:
-> According to the AMD IOMMU spec, IOMMU hardware reads the entire DTE
-> in a single 256-bit transaction. It is recommended to update DTE using
-> 128-bit operation followed by an INVALIDATE_DEVTAB_ENTYRY command when
-> the IV=1b or V=1b before the change.
->
-> According to the AMD BIOS and Kernel Developer's Guide (BDKG) dated back
-> to family 10h Processor [1], which is the first introduction of AMD IOMMU,
-> AMD processor always has CPUID Fn0000_0001_ECX[CMPXCHG16B]=1.
-> Therefore, it is safe to assume cmpxchg128 is available with all AMD
-> processor w/ IOMMU.
+> 
+> +static void write_dte_upper128(struct dev_table_entry *ptr, struct 
+> dev_table_entry *new)
+> +{
+> +	struct dev_table_entry old = {};
+> +
+> +	old.data128[1] = __READ_ONCE(ptr->data128[1]);
 
-Makes sense. More specifically, I'm fairly sure the only x86-64
-CPUs without cmpxchg16b are very early NetBurst Xeons, while AMD
-had the instruction from the start, and dropping the runtime check
-entirely would work just as well.
+The __READ_ONCE() in place of READ_ONCE() does make this a
+lot simpler. After seeing how it is used though, I wonder if
+this should just be an open-coded volatile pointer access
+to avoid complicating __unqual_scalar_typeof() further.
 
-      Arnd
+> +	do {
+> +		/*
+> +		 * Preserve DTE_DATA2_INTR_MASK. This needs to be
+> +		 * done here since it requires to be inside
+> +		 * spin_lock(&dev_data->dte_lock) context.
+> +		 */
+> +		new->data[2] &= ~DTE_DATA2_INTR_MASK;
+> +		new->data[2] |= old.data[2] & DTE_DATA2_INTR_MASK;
+> +
+> +	/* Note: try_cmpxchg inherently update &old.data128[1] on failure */
+> +	} while (!try_cmpxchg128(&ptr->data128[1], &old.data128[1], 
+> new->data128[1]));
+
+Since this is always done under the lock, is there ever
+a chance that the try_cmpxchg128() fails? I see that the
+existing code doesn't have the loop, which makes sense
+if this is just meant to be an atomic store.
+
+       Arnd
