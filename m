@@ -1,144 +1,118 @@
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+Received: from fout-b3-smtp.messagingengine.com (fout-b3-smtp.messagingengine.com [202.12.124.146])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58995200C86
-	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 12:21:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2118B17B401
+	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 12:35:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731500491; cv=none; b=tpG2CSd5srywgpXsOWdYqssQ1MsvOvnny0HpIwv7Qag7bxqOoFfTKWn1MDEQ3U7QwEombzsbmzgBHJiJOTWRwjVBWtZVM+Yj/f873q6i2KEsEzBYL/2FbRfPAYhteJLaO/ARxNpTkv2l/S4q+sK8PpsRQXe2e3al6N2XNFDfcXs=
+	t=1731501335; cv=none; b=Jaswpe5fy2N5HuOHGSUIwQQWUZlmxByOkrAaIAw56kJjpwRSZ2A6nBE9sxrUfxUktqG0CKMeCvvh7SX1NeH/BD1mAhZs2gZws2dZ1V87PYkvzN8IiIG0tpAhitp0dE3jDlCAu07lnFrtwNuf/1NDczb9d34SBpSRPzp2APDiXb8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731500491; c=relaxed/simple;
-	bh=VbF/dsN12M7jjWNXzrN3hOzknHuriciZPRN8to0/gxw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=tsVIdd9EUEzg4zYmA2oPtivvUhUFzOMhIB7DMwHY++HnlcpxMl2mCq7U2tjNbjZlOm12CVEkJtGeu+UspbzounBNj1POOlzAxWIHeKWxoruh+N75zi0E1Ho9Hrc/491PjZaoTXOTPLIiBH2dcHSsE6KeHU1DS5vcaXQEIzQ2xgw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.44])
-	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4XpMmq0RqXz21kGy;
-	Wed, 13 Nov 2024 20:20:11 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id A4F681401F2;
-	Wed, 13 Nov 2024 20:21:25 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Wed, 13 Nov 2024 20:21:25 +0800
-Message-ID: <59675831-d52e-47c0-85ca-5d3bf4d44917@huawei.com>
-Date: Wed, 13 Nov 2024 20:21:25 +0800
+	s=arc-20240116; t=1731501335; c=relaxed/simple;
+	bh=8mOXWjNAQeHQEuspChDGux1yTH5M5sBCW9lyH1jWrrE=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=mqVXGfmFRtlolJtr0iWczh9/BKcNVmAUGscIzoFQY6lCdXyYCEwnCe6FWjj1nGWyAAFbcejfd5kazcLIyX2WzvIeWTQhAR1XBRoV2WcDqTggkjhomtchFQb9x7vVpNksMT0p5Z7nScFIN9nMTUpgOCVFUaDrHwUe1YG3Y9csqAw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=GUSuTEqD; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=io+D/WvT; arc=none smtp.client-ip=202.12.124.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="GUSuTEqD";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="io+D/WvT"
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfout.stl.internal (Postfix) with ESMTP id 01B4C114016F;
+	Wed, 13 Nov 2024 07:35:31 -0500 (EST)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Wed, 13 Nov 2024 07:35:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1731501331;
+	 x=1731587731; bh=7yQcPD6JKWI/AejdrgqAP/w+PsVFxDeTyBvHlplIogQ=; b=
+	GUSuTEqDi+mYAIPY+kGshJR7f7xQK54SEbz9tFeD/9UdAge5heTetCpzzmEAV4o9
+	ZzJg+jJt+nFU5c3lKVAOoIICjh+mS5ZdqjEVfNxkRyroZehLMrtAKR5uKXm07lYA
+	jzdvt47epDi7hEz4Tp5sK4fl01k53mkNrDgPBTnrZcswsX/r5kpIas+0yBvWWldj
+	mgWjU26E1ekEeJK7TpXv9BzrOit5P6sKJQe4n+f8xsYeAQfZYVjfsfYJQwgdwdct
+	8P0BX9y/6B0rQTyMQI2tVODc7suV3eD++uQeUyeiFS2LpRnrBr0NiBQGPRz4WpfX
+	O2JSIskkIZKV9CUO2LYosg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1731501331; x=
+	1731587731; bh=7yQcPD6JKWI/AejdrgqAP/w+PsVFxDeTyBvHlplIogQ=; b=i
+	o+D/WvTHpAkM/VHWYwkuGKd7CqpAvpJ28TRsgj1qFFwQvflADdEUXkZzKbJDcSpZ
+	f3EZ3CFCEAym2y+Q2PEGqyK2FLGK/nmVkKTySENWJ2esu3fI9TyBeJTn1pPVke4h
+	odaBqNGCDPRHiQ0uu/RQoiaAsX3daEQ54cwtJsw+Via1AK56TmTSW6MH3QwB1rej
+	TmnxhmPBIg9zgFNI1J14Mnh31eND3VtWjaVIERh9cN+YY5p5/lv7jghpgqFVkXFB
+	KW2/QezENoq1XXpnK6tqIuUmFUgql9W12mzI7qn61erGR0GsmtoWieXazGIaStYC
+	a/HhHY00jSu92EeZyX+og==
+X-ME-Sender: <xms:E500Z4n1UrBCWK1iX-Sk_5o2ZkkTi_n0WtOdkgYnkxCjrBQJmLeJ3A>
+    <xme:E500Z329LQzPQkqIm-naFOkRXDY0gjnyuOLJd8Plxx2WVY3jmPuynqEMxmx1TYhfW
+    qommCDdU-mTxcm1LVM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrvddtgdegudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdpuffr
+    tefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnth
+    hsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredttden
+    ucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdrug
+    gvqeenucggtffrrghtthgvrhhnpefhtdfhvddtfeehudekteeggffghfejgeegteefgffg
+    vedugeduveelvdekhfdvieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
+    grihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggvpdhnsggprhgtphhtthhopedugedp
+    mhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepjhhorhhoseeksgihthgvshdrohhrgh
+    dprhgtphhtthhopehjohhnrdhgrhhimhhmsegrmhgurdgtohhmpdhrtghpthhtohepshgr
+    nhhtohhshhdrshhhuhhklhgrsegrmhgurdgtohhmpdhrtghpthhtohepshhurhgrvhgvvg
+    drshhuthhhihhkuhhlphgrnhhithesrghmugdrtghomhdprhgtphhtthhopehvrghsrghn
+    thdrhhgvghguvgesrghmugdrtghomhdprhgtphhtthhopehrohgsihhnrdhmuhhrphhhhi
+    esrghrmhdrtghomhdprhgtphhtthhopehusghiiihjrghksehgmhgrihhlrdgtohhmpdhr
+    tghpthhtohepkhhumhgrrhgrnhgrnhgusehgohhoghhlvgdrtghomhdprhgtphhtthhope
+    hprghnughohhesghhoohhglhgvrdgtohhm
+X-ME-Proxy: <xmx:E500Z2pUVFQeoBEq1DbiNr21iH6tAyhWwMFPWNeGyAftzeViTM2meg>
+    <xmx:E500Z0mZWq7QFt_LFv4UWt_Otf5N9NKj_DiDx0WLMr68yu26hk8IIg>
+    <xmx:E500Z22e2nv9JopT-9FA8pbJYQlp-v_acmDkTl_usY6nQTl6hw6QAQ>
+    <xmx:E500Z7v-zTnF4uGjBOjzrQ5ZdhDeKH9WKnYsoFXN8Uxe3QUg3lHlqA>
+    <xmx:E500Z51synjgB7CPleMo3dzeaHEk3gSPGsAzAsXmPrK2YK1B4UzftYEp>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 5C11B2220071; Wed, 13 Nov 2024 07:35:31 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Jesper Dangaard Brouer <hawk@kernel.org>,
-	=?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-	<davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
-	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
- Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
- Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
-	<kernel-team@cloudflare.com>
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com>
- <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
- <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
- <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
- <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org>
- <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
- <4564c77b-a54d-4307-b043-d08e314c4c5f@huawei.com> <87ldxp4n9v.fsf@toke.dk>
- <eab44c89-5ada-48b6-b880-65967c0f3b49@huawei.com>
- <be049c33-936a-4c93-94ff-69cd51b5de8e@kernel.org>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <be049c33-936a-4c93-94ff-69cd51b5de8e@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+Date: Wed, 13 Nov 2024 13:35:10 +0100
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Cc: "Joerg Roedel" <joro@8bytes.org>, "Robin Murphy" <robin.murphy@arm.com>,
+ vasant.hegde@amd.com, "Uros Bizjak" <ubizjak@gmail.com>,
+ Linux-Arch <linux-arch@vger.kernel.org>, "Jason Gunthorpe" <jgg@nvidia.com>,
+ "Kevin Tian" <kevin.tian@intel.com>, jon.grimm@amd.com,
+ santosh.shukla@amd.com, pandoh@google.com, kumaranand@google.com
+Message-Id: <558bf28e-6cf8-436d-b2ef-382ff421bb00@app.fastmail.com>
+In-Reply-To: <20241113120327.5239-3-suravee.suthikulpanit@amd.com>
+References: <20241113120327.5239-1-suravee.suthikulpanit@amd.com>
+ <20241113120327.5239-3-suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH v10 02/10] iommu/amd: Disable AMD IOMMU if CMPXCHG16B feature is
+ not supported
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On 2024/11/12 22:19, Jesper Dangaard Brouer wrote:
+On Wed, Nov 13, 2024, at 13:03, Suravee Suthikulpanit wrote:
+> According to the AMD IOMMU spec, IOMMU hardware reads the entire DTE
+> in a single 256-bit transaction. It is recommended to update DTE using
+> 128-bit operation followed by an INVALIDATE_DEVTAB_ENTYRY command when
+> the IV=1b or V=1b before the change.
+>
+> According to the AMD BIOS and Kernel Developer's Guide (BDKG) dated back
+> to family 10h Processor [1], which is the first introduction of AMD IOMMU,
+> AMD processor always has CPUID Fn0000_0001_ECX[CMPXCHG16B]=1.
+> Therefore, it is safe to assume cmpxchg128 is available with all AMD
+> processor w/ IOMMU.
 
-...
+Makes sense. More specifically, I'm fairly sure the only x86-64
+CPUs without cmpxchg16b are very early NetBurst Xeons, while AMD
+had the instruction from the start, and dropping the runtime check
+entirely would work just as well.
 
->>>
->>> In any case, we'll need some numbers to really judge the overhead in
->>> practice. So benchmarking would be the logical next step in any case :)
->>
->> Using POC code show that using the dynamic memory allocation does not
->> seems to be adding much overhead than the pre-allocated memory allocation
->> in this patch, the overhead is about 10~20ns, which seems to be similar to
->> the overhead of added overhead in the patch.
->>
-> 
-> Overhead around 10~20ns is too large for page_pool, because XDP DDoS
-> use-case have a very small time budget (which is what page_pool was
-> designed for).
-
-I should have mentioned that the above 10~20ns overhead is from the
-test case of time_bench_page_pool03_slow() in bench_page_pool_simple.
-
-More detailed test result as below:
-
-After:
-root@(none)$ taskset -c 0 insmod bench_page_pool_simple.ko
-[   50.359865] bench_page_pool_simple: Loaded
-[   50.440982] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076980410 sec time_interval:76980410) - (invoke count:100000000 tsc_interval:7698030)
-[   52.497915] time_bench: Type:atomic_inc Per elem: 2 cycles(tsc) 20.396 ns (step:0) - (measurement period time:2.039650210 sec time_interval:2039650210) - (invoke count:100000000 tsc_interval:203965016)
-[   52.665872] time_bench: Type:lock Per elem: 1 cycles(tsc) 15.006 ns (step:0) - (measurement period time:0.150067780 sec time_interval:150067780) - (invoke count:10000000 tsc_interval:15006773)
-[   53.337133] time_bench: Type:rcu Per elem: 0 cycles(tsc) 6.541 ns (step:0) - (measurement period time:0.654153620 sec time_interval:654153620) - (invoke count:100000000 tsc_interval:65415355)
-[   53.354152] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
-[   53.647814] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 28.436 ns (step:0) - (measurement period time:0.284369800 sec time_interval:284369800) - (invoke count:10000000 tsc_interval:28436974)
-[   53.666482] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
-[   54.264789] time_bench: Type:no-softirq-page_pool02 Per elem: 5 cycles(tsc) 58.910 ns (step:0) - (measurement period time:0.589102240 sec time_interval:589102240) - (invoke count:10000000 tsc_interval:58910216)
-[   54.283459] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
-[   56.202440] time_bench: Type:no-softirq-page_pool03 Per elem: 19 cycles(tsc) 191.012 ns (step:0) - (measurement period time:1.910122260 sec time_interval:1910122260) - (invoke count:10000000 tsc_interval:191012216)
-[   56.221463] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
-[   56.229367] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
-[   56.521551] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 28.306 ns (step:0) - (measurement period time:0.283066000 sec time_interval:283066000) - (invoke count:10000000 tsc_interval:28306590)
-[   56.540827] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
-[   57.203988] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 6 cycles(tsc) 65.412 ns (step:0) - (measurement period time:0.654129240 sec time_interval:654129240) - (invoke count:10000000 tsc_interval:65412917)
-[   57.223177] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
-[   59.297677] time_bench: Type:tasklet_page_pool03_slow Per elem: 20 cycles(tsc) 206.581 ns (step:0) - (measurement period time:2.065816850 sec time_interval:2065816850) - (invoke count:10000000 tsc_interval:206581679)
-
-
-Before:
-root@(none)$ taskset -c 0 insmod bench_page_pool_simple.ko
-[  519.020980] bench_page_pool_simple: Loaded
-[  519.102080] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076979320 sec time_interval:76979320) - (invoke count:100000000 tsc_interval:7697917)
-[  520.466133] time_bench: Type:atomic_inc Per elem: 1 cycles(tsc) 13.467 ns (step:0) - (measurement period time:1.346763300 sec time_interval:1346763300) - (invoke count:100000000 tsc_interval:134676325)
-[  520.634079] time_bench: Type:lock Per elem: 1 cycles(tsc) 15.005 ns (step:0) - (measurement period time:0.150054340 sec time_interval:150054340) - (invoke count:10000000 tsc_interval:15005430)
-[  521.190881] time_bench: Type:rcu Per elem: 0 cycles(tsc) 5.396 ns (step:0) - (measurement period time:0.539696370 sec time_interval:539696370) - (invoke count:100000000 tsc_interval:53969632)
-[  521.207901] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
-[  521.514478] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 29.728 ns (step:0) - (measurement period time:0.297282500 sec time_interval:297282500) - (invoke count:10000000 tsc_interval:29728246)
-[  521.533148] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
-[  522.117048] time_bench: Type:no-softirq-page_pool02 Per elem: 5 cycles(tsc) 57.469 ns (step:0) - (measurement period time:0.574694970 sec time_interval:574694970) - (invoke count:10000000 tsc_interval:57469491)
-[  522.135717] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
-[  523.962813] time_bench: Type:no-softirq-page_pool03 Per elem: 18 cycles(tsc) 181.823 ns (step:0) - (measurement period time:1.818238850 sec time_interval:1818238850) - (invoke count:10000000 tsc_interval:181823878)
-[  523.981837] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
-[  523.989742] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
-[  524.296961] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 29.810 ns (step:0) - (measurement period time:0.298100890 sec time_interval:298100890) - (invoke count:10000000 tsc_interval:29810083)
-[  524.316236] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
-[  524.852783] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 5 cycles(tsc) 52.751 ns (step:0) - (measurement period time:0.527516430 sec time_interval:527516430) - (invoke count:10000000 tsc_interval:52751638)
-[  524.871972] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
-[  526.710040] time_bench: Type:tasklet_page_pool03_slow Per elem: 18 cycles(tsc) 182.938 ns (step:0) - (measurement period time:1.829384610 sec time_interval:1829384610) - (invoke count:10000000 tsc_interval:182938456)
-
-
-> 
-> [1] https://github.com/xdp-project/xdp-project/blob/master/areas/hints/traits01_bench_kmod.org#benchmark-basics
-> 
->  | Link speed | Packet rate           | Time-budget   |
->  |            | at smallest pkts size | per packet    |
->  |------------+-----------------------+---------------|
->  |  10 Gbit/s |  14,880,952 pps       | 67.2 nanosec  |
->  |  25 Gbit/s |  37,202,381 pps       | 26.88 nanosec |
->  | 100 Gbit/s | 148,809,523 pps       |  6.72 nanosec |
-> 
-> 
-> --Jesper
+      Arnd
