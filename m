@@ -1,108 +1,186 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA5BA1DFD8C
-	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 14:36:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6637635
+	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 15:07:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731508589; cv=none; b=XPuKNcvqN/KRwaLZjbGwGNlhqjrBFAmJ+CEh/0IFoWpFzte6lOj40K7b3wjORs1O9HCXDNkz8b9IEVb5VIN41hOsdQZpMir58BYoj4Dbyz+6A4NvRz5xi+ySMfAntiGQI1622Ai4PjJJNC6cH1FidFz/fbW4QNogaMZHmIy6fxE=
+	t=1731510467; cv=none; b=bi0GWxrSX1zQr/fWEuCN9xP2J714O7lJPWfF0ZgwjBloy9Pa1lsC/0081KruV2NFhBCBieGhUNkGl0NN527K7nnZS3LlqY6VHwTKJ4GqtADS3FNKoJrxu9nb9aDLny7lD3E+C8T7GxfsEWYormbqEQWD4O0leuvkEnv2gLplmm0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731508589; c=relaxed/simple;
-	bh=XwRDW7jTJnaLywO/huBDE03/EPCXyw05QNbK9s3IMWo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=frbiixpvFQU/izJA5YCyF0oD7nAzWOSOHLyN8gy34po1uefoXfvKXmzYlMK6R/YYSJPpjku+nBeKKSyF7N9EI1j4TVuGIRjoGy7gjhfUvAWdBFtcDJlIq48aEstAcyzj0IW3unHIyJA1dGQdzkpUgBY56goAM5ZX66vvErgbaBU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TECWaBjL; arc=none smtp.client-ip=209.85.208.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1731510467; c=relaxed/simple;
+	bh=H0yGji2iT1spJG+9g1OpFuNEiQisUHAdfC779LlT0VA=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=mHbkvvqUzat0aII8AnvmT8AcB9yqtK/cjqiUVcZN+zFM546sBEoDf3+1YnrVifE/fz1TzUX77Wk4Cc/EnZSzm9feHy3TD+eVctTxrzJOupJa7vEQTACKfRO5ZmnV79m5W0TPJ/zHJqJRrj1T1FHXNOivG6DXYOhW0vGhc2LX3js=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=e3NTgin0; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TECWaBjL"
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2fb51f39394so61634821fa.2
-        for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 06:36:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1731508586; x=1732113386; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XwRDW7jTJnaLywO/huBDE03/EPCXyw05QNbK9s3IMWo=;
-        b=TECWaBjLNvMJLtxilU5ms7i7kF/0WZU1Qgy27KaIZdGazbEyC8YnevcsQucSwZInyA
-         RPR/VuakrN5ylWpp1MM1wz6YhZpATdCMcDSK5lPRyhogDTqA34YrfrzhoWyCpKI4Ru7w
-         fyiwdU7W7aHnfpqmSDp01KDO5SMD0g8s7H0MF3VpJ+vusRE9oW/XezANLYEdUD0bHykD
-         BbZZhdJ/BHdpNjIbSRr3x+TTCsJAsiV803t93vRtMow+8WM/nrM3hLjleRuPlIkOYVEm
-         b7L4ltgrGuoJxXlXiUEyqic4JyivytS9rF+4iRUhQ8QhnXHKyKPq9sg3TWwqZQDVWtRN
-         I42g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731508586; x=1732113386;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XwRDW7jTJnaLywO/huBDE03/EPCXyw05QNbK9s3IMWo=;
-        b=rxmSgBpYhs7+Hlzw/Y26cqoO5N8rXw8wZDTkx1buB7vsV0+WmLDXPljeslZK2rF/MZ
-         CWUmfr02QRDASmMXEicw3SchJH8UP0MxlD0LbviR4xui0GX7ZzfxaYU6GQ6cXd/lXqkA
-         bFzzn/2K9ociudJyDodFgRvay8OXtwsh490qqTDIysEkLkP7GizJ76LgDkDNZLF2qP2J
-         dB41aQH6gZ/wRjnpK32QOSwFXQaNK40K2UTz3ibrIs5KnXaav+Lwf73B+poIWXgYBQMm
-         u+jvS+9BUr23zNw+5acqBMI9ysgPTXFP70jAi7uhHyEL2v+BIzl2jhrIPXosrjrrYDdO
-         KhJA==
-X-Forwarded-Encrypted: i=1; AJvYcCWAvInTSg4936Xfqf90GhMOROdd7jKTs0m9vrIhBFOM4L9cpmwql2NNfx3uhEawahtYdbV/Ag==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz1CJTuUpSg/lFnoCBgmqI4iV99IwHF9zH1JcaOgsyt0QDlXDeM
-	03QI4zduf27X87goW2gmX3G/dzrSV4ddAVU37PmW5LUodPFk2Yh3Fv0C7r7HVhWpEYBD/oCTI4y
-	OGe3beSQOehS7/Yp+Ef8LF5oppVM=
-X-Google-Smtp-Source: AGHT+IHL0uCSsyj7twvRVICsE2iNascjnWtDXWCLjSArZnwdWGQaJDvqGaAMHyNX1vtCfrj7Q5embfR9Vbkeb/9DEfI=
-X-Received: by 2002:a05:651c:160c:b0:2fa:d25e:39e4 with SMTP id
- 38308e7fff4ca-2ff20309255mr114185031fa.36.1731508585585; Wed, 13 Nov 2024
- 06:36:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="e3NTgin0"
+Received: from localhost (docker-mailserver-web-1.docker-mailserver_default [172.22.0.5])
+	by mail.mainlining.org (Postfix) with ESMTPSA id 3D162E44EA;
+	Wed, 13 Nov 2024 15:07:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1731510463;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=D8i3R/fzkAitpNlgR9VCp3wgJnOJj83cQ/N61OxxoCI=;
+	b=e3NTgin0MdZk+2iF9LFvZSTdFD+Cj6xa7NXhKQiHgDCUG+gFClvXqf6tNgWoA6bWegiIZz
+	bl0bMhUmLqKx0vKGd8nWviW2yWsJ366M8UL12hhzJ+AJICKmtWuCagVeclX1sAMU27+3L1
+	gSVmvLvyD2hHJW0vvZSfWzISHuAVmldIeoHG5Rd7H56+SdWmhUgBV7Kuw465eVNk+ERzTj
+	tDmBOseoinxGdVcpVHj8snBzfha4fZtVtWf90QsnShJxQflzla5xTCLotgmkM0T05iezcC
+	XNEZvQDV0YC3BAHSIbO0JxGO6gKiLhSwjVoGjVBKX1iV2e1ioARXqt69ZR0KYw==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241113120327.5239-1-suravee.suthikulpanit@amd.com>
- <20241113120327.5239-6-suravee.suthikulpanit@amd.com> <cac1ccd3-4b81-4374-a49d-9afad755b19c@app.fastmail.com>
- <20241113132031.GF35230@nvidia.com> <CAFULd4a1PHREX6ws9Gyu=TaaZvdgLfh6peoE5Tt010uGyY9Hgw@mail.gmail.com>
- <20241113140914.GI35230@nvidia.com> <CAFULd4aGDM5ySO-PeOH0+_U89mnqYqQ7v+U0ZsMode3bxs_X7w@mail.gmail.com>
- <20241113142807.GJ35230@nvidia.com>
-In-Reply-To: <20241113142807.GJ35230@nvidia.com>
-From: Uros Bizjak <ubizjak@gmail.com>
-Date: Wed, 13 Nov 2024 15:36:14 +0100
-Message-ID: <CAFULd4aFvGj=kz5Si9WpAr33KFtJDO5+sdNO=NBB+boS=E-E_Q@mail.gmail.com>
-Subject: Re: [PATCH v10 05/10] iommu/amd: Introduce helper function to update
- 256-bit DTE
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, vasant.hegde@amd.com, 
-	Linux-Arch <linux-arch@vger.kernel.org>, Kevin Tian <kevin.tian@intel.com>, jon.grimm@amd.com, 
-	santosh.shukla@amd.com, pandoh@google.com, kumaranand@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Date: Wed, 13 Nov 2024 16:07:43 +0100
+From: barnabas.czeman@mainlining.org
+To: Stephan Gerhold <stephan.gerhold@linaro.org>
+Cc: Konrad Dybcio <konradybcio@kernel.org>, Bjorn Andersson
+ <andersson@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Linus Walleij
+ <linus.walleij@linaro.org>, Amit Kucheria <amitk@kernel.org>, Thara Gopinath
+ <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
+ Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz
+ Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Srinivas Kandagatla
+ <srinivas.kandagatla@linaro.org>, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev,
+ =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>
+Subject: Re: [PATCH v5 08/10] arm64: dts: qcom: Add initial support for
+ MSM8917
+In-Reply-To: <ZzRtEHsC4MROxN3v@linaro.org>
+References: <20241112-msm8917-v5-0-3ca34d33191b@mainlining.org>
+ <20241112-msm8917-v5-8-3ca34d33191b@mainlining.org>
+ <ZzOQEgLLhkH-IymV@linaro.org>
+ <0dae1cea420bd335be591e4b1be3d07c@mainlining.org>
+ <ZzRtEHsC4MROxN3v@linaro.org>
+Message-ID: <4415406af1e9bc066a048b9729a0c592@mainlining.org>
+X-Sender: barnabas.czeman@mainlining.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Nov 13, 2024 at 3:28=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> On Wed, Nov 13, 2024 at 03:14:09PM +0100, Uros Bizjak wrote:
-> > > > Even without atomicity guarantee, __READ_ONCE() still prevents the
-> > > > compiler from performing unwanted optimizations (please see the fir=
-st
-> > > > comment in include/asm-generic/rwonce.h) and unwanted reordering of
-> > > > reads and writes when this function is inlined. This macro does cas=
-t
-> > > > the read to volatile, but IMO it is much more readable to use
-> > > > __READ_ONCE() than volatile qualifier.
-> > >
-> > > Yes it does, but please explain to me what "unwanted reordering" is
-> > > allowed here?
-> >
-> > It is a static function that will be inlined by the compiler
-> > somewhere, so "unwanted reordering" depends on where it will be
-> > inlined. *IF* it will be called from safe code, then this limitation
-> > for the compiler can be lifted.
->
-> As long as the values are read within the spinlock the order does not
-> matter. READ_ONCE() is not required to contain reads within spinlocks.
-
-Indeed. But then why complicate things with cmpxchg, when we have
-exclusive access to the shared memory? No other thread can access the
-data, protected by spinlock; it won't change between invocations of
-cmpxchg in the loop, and atomic access via cmpxchg is not needed.
-
-Uros.
+On 2024-11-13 10:10, Stephan Gerhold wrote:
+> On Tue, Nov 12, 2024 at 07:49:18PM +0100, 
+> barnabas.czeman@mainlining.org wrote:
+>> On 2024-11-12 18:27, Stephan Gerhold wrote:
+>> > On Tue, Nov 12, 2024 at 04:49:38PM +0100, Barnabás Czémán wrote:
+>> > > From: Otto Pflüger <otto.pflueger@abscue.de>
+>> > >
+>> > > Add initial support for MSM8917 SoC.
+>> > >
+>> > > Signed-off-by: Otto Pflüger <otto.pflueger@abscue.de>
+>> > > [reword commit, rebase, fix schema errors]
+>> > > Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>> > > ---
+>> > >  arch/arm64/boot/dts/qcom/msm8917.dtsi | 1974
+>> > > +++++++++++++++++++++++++++++++++
+>> > >  1 file changed, 1974 insertions(+)
+>> > >
+>> > > diff --git a/arch/arm64/boot/dts/qcom/msm8917.dtsi
+>> > > b/arch/arm64/boot/dts/qcom/msm8917.dtsi
+>> > > new file mode 100644
+>> > > index 0000000000000000000000000000000000000000..cf0a0eec1141e11faca0ee9705d6348ab32a0f50
+>> > > --- /dev/null
+>> > > +++ b/arch/arm64/boot/dts/qcom/msm8917.dtsi
+>> > > @@ -0,0 +1,1974 @@
+>> > > [...]
+>> > > +		domain-idle-states {
+>> > > +			cluster_sleep_0: cluster-sleep-0 {
+>> > > +				compatible = "domain-idle-state";
+>> > > +				arm,psci-suspend-param = <0x41000023>;
+>> > > +				entry-latency-us = <700>;
+>> > > +				exit-latency-us = <650>;
+>> > > +				min-residency-us = <1972>;
+>> > > +			};
+>> > > +
+>> > > +			cluster_sleep_1: cluster-sleep-1 {
+>> > > +				compatible = "domain-idle-state";
+>> > > +				arm,psci-suspend-param = <0x41000043>;
+>> > > +				entry-latency-us = <240>;
+>> > > +				exit-latency-us = <280>;
+>> > > +				min-residency-us = <806>;
+>> > > +			};
+>> >
+>> > I think my comment here is still open:
+>> >
+>> > This is strange, the deeper sleep state has lower timings than the
+>> > previous one?
+>> I was reordering based on Konrad comments when i have renamed the 
+>> nodes
+>> maybe it is not correct then.
+>> I am searching for how to validate these levels, i have find these
+>> https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.c26-01500-89xx.0/arch/arm64/boot/dts/qcom/msm8917-pm.dtsi#L45-91
+> 
+> I think you translated them correctly. It feels like downstream is 
+> weird
+> or even wrong here. Usually a higher psci-mode (retention = 2, gdhs = 
+> 4)
+> also implies a deeper idle state. But at some point the
+> perf-l2-retention and perf-l2-gdhs state were swapped downstream:
+> 
+> https://git.codelinaro.org/clo/la/kernel/msm-3.18/-/commit/dea262a17a9e80dacb86b7c2f269bcc7b4df3a13
+> 
+> I don't know if this is intended or just an oversight. If no one can
+> clarify why this change was done I guess we can just choose between the
+> following two options:
+> 
+>  1. Describe it exactly like it was done downstream. In that case I
+>     would suggest swapping the node order back to what you had in v1.
+>     Even if that means that a lower idle state has the higher psci-mode
+>     (arm,psci-suspend-param). That should match what downstream did.
+> 
+> OR
+> 
+>  2. Omit cluster-sleep-0 and cluster-sleep-1. I doubt anyone will 
+> notice
+>     the minor difference in power consumption. The most important idle
+>     state is the deepest "power collapse" (PC) state.
+> 
+> @Konrad: Do you have any opinion here?
+> 
+>> Do you know where can i find psci-suspend-param-s?
+> 
+> You need to translate it like in this code here:
+> https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.c26-01500-89xx.0/drivers/cpuidle/lpm-levels.c#L1337-1340
+> 
+> Roughly described:
+>  - Set BIT(30) if the CPU state has qcom,is-reset
+>  - Affinity level is the hierarchy level that goes idle.
+>    In your case: CPU = 0, L2 cache/cluster = 1.
+>    Shift that to bit 24 (1 << 24 for cache/cluster)
+>  - For the state itself you need to combine the qcom,psci-cpu-mode and
+>    qcom,psci-mode according to the qcom,psci-mode-shift.
+> 
+> E.g. for the "perf-l2-pc" state, combined with the deepest CPU state
+> ("pc"):
+> 
+>  - BIT(30) is set because of qcom,is-reset
+>  - (1 << 24) because it's a L2 cache/cluster idle state
+>  - (qcom,psci-cpu-mode = <3>) << (qcom,psci-mode-shift = <0>) = (3 << 
+> 0)
+>  - (qcom,psci-mode = <5>) << (qcom,psci-mode-shift = <4>) = (5 << 4)
+> 
+> All that combined: BIT(30) | (1 << 24) | (3 << 0) | (5 << 4)
+>   = 0x41000053
+> 
+Thanks a lot this is a very useful description.
+> Which is what you have for cluster-sleep-2. The ones you have look
+> correct to me. :-)
+> 
+>> Should I also add wfi level?
+> 
+> I think we usually omit those for the CPU at least. Not sure about the
+> cache/cluster one. As I mentioned, at the end the most important idle
+> state to have is the deepest ones. Those will get used during suspend
+> and when you don't use the device. The others are more minor
+> optimization for light usage, which will be less noticeable.
+> 
+> Thanks,
+> Stephan
