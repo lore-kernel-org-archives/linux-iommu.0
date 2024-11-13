@@ -1,183 +1,154 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A3B620127A
-	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 18:03:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 747A52038DD
+	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 18:41:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731520994; cv=none; b=lZ2sHeD4fr3bQggND5mhV/OXnEprba9RyAODJ4yxFtd97T3/WvgN4E3SIcW5EZU5mjnhaMV142XIDibOps7QBDwREwDVjhnMEvb8ZiFZwsEWXTp/TcjCmWNjaQSt+F568e+8L2uGxyP6NEuShvgAlpLhV92w1HokQCQeLkNrDc0=
+	t=1731523293; cv=none; b=pscGTCCf5x87gerCdl9jT0/Ex2TkzRwFiDSrjH5/74sH3zDC3entA+1YC8IlVadHprOZV0ZN8+NRLEj+US74mFEwYBpiQS5hyYEMBJ5A7LWyay/UYmINb/oztqz8+pfaJdgUXEkUbUMjdo1bftz9mlsdRGp6TPV30sAGvz9uJfk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731520994; c=relaxed/simple;
-	bh=0dYtlNaE02KMPwPbNkOEG7D0Ej3fMxzfA77E8dWng18=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Sxc1gbBY/pWuMf9Se8bEYUm+kR5b3LYmlVIQeH/iFX/ZnfkUAqYDtdGX8dPksqp/G9VsevNY887VKXYzt/cs70woViQaCmt1loVgLn00cTkkUwwYNhuFheBvfIij20AwOWLp62a2X+7Y5Y9t0EN6VHt7f3OWc+3UkOLs9wzLuIE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=aLL26I2b; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1731523293; c=relaxed/simple;
+	bh=/6cAFmMHE1TEpLz6LqHni1bfuBBiGvBf+Q9klO/pZOI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HqmmXgcYBYBCPSkuiGzRQvVhy1Tt1Vh5fwiWAfs5iuGpXWFcZW35Xy8ndWhlFVt6BEVpAUze+d+h58NkpIWgVQYzsH8XswCXHUzDyrdQ6QU0y7ZrBpAe56mwKpkNCYa6nJ7d7HWUhUvkzwxKmd1qkYlIM9xFe6bX7TQFdmkw/VE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VN8EeCJg; arc=none smtp.client-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="aLL26I2b"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4ADH1ZEi025412;
-	Wed, 13 Nov 2024 18:03:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	bYtOOA3mW6Ph2dWGJf/8a1jSF1QmnYitbVPB+AORG4w=; b=aLL26I2bikDogtDH
-	fT2fQU1ZA8fAFhtHvZPGG6AeVPFCzKj9hL5xUnzqo0Bj0gqJHGYaHOUdHKmASg+4
-	DjHSV6tbbp7v8dyqqMvVtRqFtztapVjIBjC9PoHLB7B4HHhkF7zNX9x7U24Gdf0+
-	DvO6YZXxZ0DnFHx8FVOmp+78fmurjaOR4QDfPGhvahPmQnJo03MCQy2VBUOsuNQi
-	Sj2QYrZB6vMelIH8iq5X8jZet++FEYrDczdM6RLL0CyXPImAfJfQhM5vgupdjhq7
-	r7WJDUsCDp26+j3qm7ZcYJ3/zWcfMnMlIXyTEa+yfmf5PGc9dj466iE5hF2bB4aZ
-	ps7G7A==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42vgqqtqwr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 13 Nov 2024 18:03:00 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4ADI2wk7004079
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 13 Nov 2024 18:02:58 GMT
-Received: from [10.71.109.85] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 13 Nov
- 2024 10:02:58 -0800
-Message-ID: <6a8ba993-9413-40ad-8c91-0cf268798585@quicinc.com>
-Date: Wed, 13 Nov 2024 10:02:49 -0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VN8EeCJg"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-7b15467f383so526884885a.3
+        for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 10:41:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1731523291; x=1732128091; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=G2y1TaKaV2g4XFVY3gJwH3zViZ7RCzLm1QmvK0MsuyE=;
+        b=VN8EeCJgSnttDy5t4q5QxAY2gm7fsD2nI0ly+HS8uknNW0iLBp0+MjtAwPAeehXqCF
+         NFzDKEfTtTlilHbGFWHLKREM2lzjze3pSgadOoMvjE+7//XVWM0aLyFFutnHRftDQr+v
+         mNGDUpslN1+kG1gQrVeMBIGC41jOQ+FTPq2ghzn0MYKu4z0nuGomt3I8YGPuGNJBVa1n
+         6rb0wmopSp09s2kf+KUcr+AQwOiuEpGPBQm2YjKERplbbOaNYMHP8eWvm+zuZZOrl1D/
+         p7abGKUlkRTi2WGoLWCNbEYfxpD2eJGqOEYS+A370X3ZeFXx6yVV+wteEfpC/taJGQ3g
+         DOkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731523291; x=1732128091;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=G2y1TaKaV2g4XFVY3gJwH3zViZ7RCzLm1QmvK0MsuyE=;
+        b=bNb7QMovZ9iAI8heE9DnfpVgs4MK3jDDePnk5Y9pkWwIcRixjXyVjj2UCAAnq9TP5D
+         YfNdNicsO1fRY0CC1fyiFAyPAsLLZYiflPgjQiw3QPQi7Il0f7hx/pyyseumci5beX+G
+         q2e2wS6MZZWqIjiZGna8pCIEoynvgqx++F6nNDO/mH+epTCZCl0WKXVOtoEZvZbg0RdH
+         +frsWP3JJIe1CwLGM/qY3UPpgETnXpIxsMjRYmz+2nQ91hr9qyOdMB31Gg+FpVIEnEFT
+         pjULUqpqxIMfKw5it5NwsTKZaae94Cr1/Jusz9DvAdTGyyfJUGx/X4ofcDlGG6KZOTB/
+         WKJA==
+X-Forwarded-Encrypted: i=1; AJvYcCUcOhgjPZ2Nw+2E/SA3wK9LMsEr2+rkV5i3u3GS7lnqDKtJG7qqRFZFDkmhA/EF3gRTi4bHjA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz8Tk1nmAjJvhAl8akmEbxP2ftg+sM9oGaEpcjtJRl0OaqXPYqp
+	NqdpsPygK7lilfiHzrJqnTsDhObKo4NpH/SjhgKgiET5XqtHssvznGKS5hZFZvM=
+X-Google-Smtp-Source: AGHT+IGHlQ3B6cgvg7LHp9B0an1V9l7W1otIHEU9XZtLf2twbE4ctDauWQrxx5wsqcBmnHpCgDTZBw==
+X-Received: by 2002:a05:620a:4150:b0:7a2:1db:e286 with SMTP id af79cd13be357-7b35293bd6emr455709785a.52.1731523291038;
+        Wed, 13 Nov 2024 10:41:31 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7b32acb0496sm718091885a.89.2024.11.13.10.41.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Nov 2024 10:41:30 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tBIIz-000000011lJ-0zht;
+	Wed, 13 Nov 2024 14:41:29 -0400
+Date: Wed, 13 Nov 2024 14:41:29 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, Leon Romanovsky <leon@kernel.org>,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org, matthew.brost@intel.com,
+	Thomas.Hellstrom@linux.intel.com, brian.welty@intel.com,
+	himal.prasad.ghimiray@intel.com, krishnaiah.bommu@intel.com,
+	niranjana.vishwanathapura@intel.com
+Subject: Re: [PATCH v1 00/17] Provide a new two step DMA mapping API
+Message-ID: <20241113184129.GA173265@ziepe.ca>
+References: <20241105195357.GI35848@ziepe.ca>
+ <20241107083256.GA9071@lst.de>
+ <20241107132808.GK35848@ziepe.ca>
+ <20241107135025.GA14996@lst.de>
+ <20241108150226.GM35848@ziepe.ca>
+ <20241108150500.GA10102@lst.de>
+ <20241108152537.GN35848@ziepe.ca>
+ <20241108152956.GA12130@lst.de>
+ <20241108153846.GO35848@ziepe.ca>
+ <20241112060108.GA10056@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dma-mapping: Save base/size instead of pointer to shared
- DMA pool
-To: Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring
-	<robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski
-	<m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>
-CC: <iommu@lists.linux.dev>, <linux-renesas-soc@lists.infradead.org>,
-        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-References: <f8cef6845a6141f0277e31a71fe153612daae776.1731436631.git.geert+renesas@glider.be>
-Content-Language: en-US
-From: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-In-Reply-To: <f8cef6845a6141f0277e31a71fe153612daae776.1731436631.git.geert+renesas@glider.be>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: eu28F4D7NQKeyjXetHBQsxyFMsnBtuw5
-X-Proofpoint-GUID: eu28F4D7NQKeyjXetHBQsxyFMsnBtuw5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1011
- impostorscore=0 lowpriorityscore=0 suspectscore=0 spamscore=0
- priorityscore=1501 phishscore=0 malwarescore=0 mlxlogscore=999
- adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2411130149
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241112060108.GA10056@lst.de>
 
+On Tue, Nov 12, 2024 at 07:01:08AM +0100, Christoph Hellwig wrote:
+> On Fri, Nov 08, 2024 at 11:38:46AM -0400, Jason Gunthorpe wrote:
+> > > > What I'm thinking about is replacing code like the above with something like:
+> > > > 
+> > > > 		if (p2p_provider)
+> > > > 			return DMA_MAPPING_ERROR;
+> > > > 
+> > > > And the caller is the one that would have done is_pci_p2pdma_page()
+> > > > and either passes p2p_provider=NULL or page->pgmap->p2p_provider.
+> > > 
+> > > And where do you get that one from?
+> > 
+> > Which one?
+> 
+> The p2p_provider thing (whatever that will actually be).
 
-On 11/12/2024 10:39 AM, Geert Uytterhoeven wrote:
-> On RZ/Five, which is non-coherent, and uses CONFIG_DMA_GLOBAL_POOL=y:
->
->     Oops - store (or AMO) access fault [#1]
->     CPU: 0 UID: 0 PID: 1 Comm: swapper Not tainted 6.12.0-rc1-00015-g8a6e02d0c00e #201
->     Hardware name: Renesas SMARC EVK based on r9a07g043f01 (DT)
->     epc : __memset+0x60/0x100
->      ra : __dma_alloc_from_coherent+0x150/0x17a
->     epc : ffffffff8062d2bc ra : ffffffff80053a94 sp : ffffffc60000ba20
->      gp : ffffffff812e9938 tp : ffffffd601920000 t0 : ffffffc6000d0000
->      t1 : 0000000000000000 t2 : ffffffffe9600000 s0 : ffffffc60000baa0
->      s1 : ffffffc6000d0000 a0 : ffffffc6000d0000 a1 : 0000000000000000
->      a2 : 0000000000001000 a3 : ffffffc6000d1000 a4 : 0000000000000000
->      a5 : 0000000000000000 a6 : ffffffd601adacc0 a7 : ffffffd601a841a8
->      s2 : ffffffd6018573c0 s3 : 0000000000001000 s4 : ffffffd6019541e0
->      s5 : 0000000200000022 s6 : ffffffd6018f8410 s7 : ffffffd6018573e8
->      s8 : 0000000000000001 s9 : 0000000000000001 s10: 0000000000000010
->      s11: 0000000000000000 t3 : 0000000000000000 t4 : ffffffffdefe62d1
->      t5 : 000000001cd6a3a9 t6 : ffffffd601b2aad6
->     status: 0000000200000120 badaddr: ffffffc6000d0000 cause: 0000000000000007
->     [<ffffffff8062d2bc>] __memset+0x60/0x100
->     [<ffffffff80053e1a>] dma_alloc_from_global_coherent+0x1c/0x28
->     [<ffffffff80053056>] dma_direct_alloc+0x98/0x112
->     [<ffffffff8005238c>] dma_alloc_attrs+0x78/0x86
->     [<ffffffff8035fdb4>] rz_dmac_probe+0x3f6/0x50a
->     [<ffffffff803a0694>] platform_probe+0x4c/0x8a
->
-> If CONFIG_DMA_GLOBAL_POOL=y, the reserved_mem structure passed to
-> rmem_dma_setup() is saved for later use, by saving the passed pointer.
-> However, when dma_init_reserved_memory() is called later, the pointer
-> has become stale, causing a crash.
->
-> E.g. in the RZ/Five case, the referenced memory now contains the
-> reserved_mem structure for the "mmode_resv0@30000" node (with base
-> 0x30000 and size 0x10000), instead of the correct "pma_resv0@58000000"
-> node (with base 0x58000000 and size 0x8000000).
->
-> Fix this by saving the needed reserved_mem structure's contents instead.
->
-> Fixes: 8a6e02d0c00e7b62 ("of: reserved_mem: Restructure how the reserved memory regions are processed")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-> ---
->  kernel/dma/coherent.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
->
-> diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-> index ff5683a57f77126d..3b2bdca9f1d4b027 100644
-> --- a/kernel/dma/coherent.c
-> +++ b/kernel/dma/coherent.c
-> @@ -330,7 +330,8 @@ int dma_init_global_coherent(phys_addr_t phys_addr, size_t size)
->  #include <linux/of_reserved_mem.h>
->  
->  #ifdef CONFIG_DMA_GLOBAL_POOL
-> -static struct reserved_mem *dma_reserved_default_memory __initdata;
-> +static phys_addr_t dma_reserved_default_memory_base __initdata;
-> +static phys_addr_t dma_reserved_default_memory_size __initdata;
->  #endif
->  
->  static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
-> @@ -376,9 +377,10 @@ static int __init rmem_dma_setup(struct reserved_mem *rmem)
->  
->  #ifdef CONFIG_DMA_GLOBAL_POOL
->  	if (of_get_flat_dt_prop(node, "linux,dma-default", NULL)) {
-> -		WARN(dma_reserved_default_memory,
-> +		WARN(dma_reserved_default_memory_size,
->  		     "Reserved memory: region for default DMA coherent area is redefined\n");
-> -		dma_reserved_default_memory = rmem;
-> +		dma_reserved_default_memory_base = rmem->base;
-> +		dma_reserved_default_memory_size = rmem->size;
->  	}
->  #endif
->  
-> @@ -391,10 +393,10 @@ static int __init rmem_dma_setup(struct reserved_mem *rmem)
->  #ifdef CONFIG_DMA_GLOBAL_POOL
->  static int __init dma_init_reserved_memory(void)
->  {
-> -	if (!dma_reserved_default_memory)
-> +	if (!dma_reserved_default_memory_size)
->  		return -ENOMEM;
-> -	return dma_init_global_coherent(dma_reserved_default_memory->base,
-> -					dma_reserved_default_memory->size);
-> +	return dma_init_global_coherent(dma_reserved_default_memory_base,
-> +					dma_reserved_default_memory_size);
->  }
->  core_initcall(dma_init_reserved_memory);
->  #endif /* CONFIG_DMA_GLOBAL_POOL */
-Hi Geert,
+p2p_provider would be splitting out the information in
+pci_p2pdma_pagemap to it's own type:
 
-Thanks for providing a fix!
+struct pci_p2pdma_pagemap {
+	struct pci_dev *provider;
+	u64 bus_offset;
 
-I also looked around more to see if there are more places that
-could store a stale reference to rmem but I didn't see any others,
-so I think we are good!
+That is the essential information to compute PCI_P2PDMA_MAP_*.
 
-I have given my "reviewed-by" tag as well.
+For example when blk_rq_dma_map_iter_start() calls pci_p2pdma_state(),
+it has this information from page->pgmap. It would still have the
+information via the pgmap when we split it out of the
+pci_p2pdma_pagemap.
 
-Thank you!
-Oreoluwa
+Since everything doing a dma map has to do the pci_p2pdma_state() to
+compute PCI_P2PDMA_MAP_* every dma mapping operation has already got
+the provider. Since everything is uniform within a mapping operation
+the provider is constant for the whole map.
+
+For future non-struct page cases the provider comes along with the
+address list from whatever created the address list in the first
+place.
+
+Looking at dmabuf for example, I expect dmabuf to provide a new data
+structure which is a list of lists:
+
+ [[provider GPU: [mmio_addr1,mmio_addr2,mmio_addr3],
+  [provider NULL: [cpu_addr1, cpu_addr2, ...],
+   ..
+ ]
+
+And each uniform group would be dma map'd on its own using the
+embedded provider instead of page->pgmap.
+
+Jason
