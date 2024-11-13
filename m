@@ -1,201 +1,177 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2057.outbound.protection.outlook.com [40.107.100.57])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C02D1BD9EB
-	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 09:10:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731489047; cv=none; b=ZsQq755DOdMR4CeMN/7sbIseNTCcIHQmX9P4Fx46ajuy+W8hvevALI4UtG+aMDDmiilVEr0niP6xWPrYCuFxukdTq8jwSHtJSOVJX0awdox6DAbRET0upPNIwZRRZM0REaj1mQ8B2pvki4rtyaWEJ/kBkY5N4yC9LLlXtyVGNBE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731489047; c=relaxed/simple;
-	bh=41ETKmIi3rZzSC+/rwGhQWVrmi2LCfX+MHv4EyZ+MWk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lj25Je67lsCDfGz9ZbD4BZG+md1OmoMnJAJPI7EL0K4cbFvPVNKN+OqVKFdAwA+O0YtNpklFSPuGadm7jeiYYngPyYRxWBdUCgLX8b7tI6t+OHz6tofus5rEG37aQURvxppZKquSGu16ZKeJEf3pqz1WmyEEaC1Vjgjiipp7Hfw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=T8VZzDpd; arc=none smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29FF8200CAE
+	for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 12:03:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.57
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1731499433; cv=fail; b=ZieXQxyikf+5aBdqlPoBRAAJq/+i9tORckfx2jyctAq6j2rl5052TZjBKGOr9vbvdzCRsz3DstCM9rGBHcLecnByQKtkoLWbZKHYz4AyJTXSdgsAr8Lou1IgO9LjHauKXV1klZHaPconq0K7Yn+WfJOVT35scs9dIixuIXzn6xo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1731499433; c=relaxed/simple;
+	bh=KZ1vjjhuuZlMT4PhoF5G+JMw1a4VDk+xmdCDz0FNeM8=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=qgKMTgNX6L77nSMnAFvqmQKxf1ufLYexNLyJr/1zaI9guONlIOiWMh1ulDLZQNAErzLdNl/nqJkCRMa9szJIhIyxDDeYZUAMn/eDHYr+S6Sryxnmuo15IKTyykDb1IsUnimqFynrDQBGk3tu8udNat7vvWwBXSJTeSACpEVRHgE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Po2msYv1; arc=fail smtp.client-ip=40.107.100.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="T8VZzDpd"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-381ee2e10dfso3968782f8f.0
-        for <iommu@lists.linux.dev>; Wed, 13 Nov 2024 01:10:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1731489042; x=1732093842; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=LwD4oymmVslGH4NrMAKmK7EULNIhFHBAlUKHIqQhDQk=;
-        b=T8VZzDpdp6VRENIBHFB7AsKSaAuyu7daWA0OuBA8t/qNm3QEIz4/F8WEeOMutVB56i
-         jeVeGOxwbZsStz0ygdNpJVq89DOwwpG2tQ0dyhHAbdKVs5r3rY0CpkpY9BLhRBcCnVyj
-         whuPe8eA1JTOdOqn8G2fNe3ERWWG126bisJa8wkDKtSiatQshXHI+k0AKMff0uCr5K6b
-         UJWAvg3gG98YBGgighp+4J3AKhklLiK4aclF8lkMZV8FOihDDoqlX7F+nXnJKEYdSiI1
-         /vzZCi79ezAbIvrC1EDq5eDzKSG8eSpCWVka3GHHxVnd98XzFLhuLZfdw7M+0Aj7BJqE
-         DjvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731489042; x=1732093842;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LwD4oymmVslGH4NrMAKmK7EULNIhFHBAlUKHIqQhDQk=;
-        b=vfkOx3Hstpm35qLcv111OVXTGcTbEH+ZfpRCRZ0aPxI5JQJLDHrjJpKIsReCuyce7T
-         aeI4vV6dk/9+/oVbDEv+usv07jkeCXp+9+oINQ7sU5lFvc/spV55Le2YMyxwrg7jTnkC
-         uTyDHGgGs+qudkPbvzg9SeTd/BplU7sPoYGs+4WGdjBvIT3uzY4DGbSxS2+hW6paOe4J
-         9HsW1c7X8OKBY3jG+a69Wn9S2XbNhmiNqhUntGQq48N7OqMT96xxmQiO3fAVWl/yxNxv
-         L91Gvi1MiEs7YaMf5cvjfpz5I9Rs3mhuAJyjf1L2hIlGnkunCM9UVdYPrBgBSK6pJTHV
-         xqZw==
-X-Forwarded-Encrypted: i=1; AJvYcCX/nxwcFgEBdVLyZRu8q/ASnHWoh4T1dAp4m3FakibSHaUghhViQuz65dUlVMbW+ae/dBBTAg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwL36sHDfCcw3Kz9uFt4zTuTnXqXpkks2kDKRt3ECL+kOcGd25j
-	gm26aydcpi8r0Kya1YD1FJ9IOR6c11xQEzMIVmDt7WIQtLQ7qg7d2ILW/X3+TSg=
-X-Google-Smtp-Source: AGHT+IH09IsTVfhj1/VaTY74Lw93grA6LiugP7EfB7Jnoz9jG2gTVU3pLPEe79lc7dnOhtIBMB/wiw==
-X-Received: by 2002:a5d:648f:0:b0:37d:46fa:d1d3 with SMTP id ffacd0b85a97d-381f186d11amr17375012f8f.34.1731489042505;
-        Wed, 13 Nov 2024 01:10:42 -0800 (PST)
-Received: from linaro.org ([2a02:2454:ff21:ef80:fca:835c:70ab:eebc])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-381ed97e206sm17553313f8f.25.2024.11.13.01.10.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Nov 2024 01:10:42 -0800 (PST)
-Date: Wed, 13 Nov 2024 10:10:40 +0100
-From: Stephan Gerhold <stephan.gerhold@linaro.org>
-To: barnabas.czeman@mainlining.org, Konrad Dybcio <konradybcio@kernel.org>
-Cc: Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Amit Kucheria <amitk@kernel.org>,
-	Thara Gopinath <thara.gopinath@gmail.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-pm@vger.kernel.org, iommu@lists.linux.dev,
-	Otto =?iso-8859-1?Q?Pfl=FCger?= <otto.pflueger@abscue.de>
-Subject: Re: [PATCH v5 08/10] arm64: dts: qcom: Add initial support for
- MSM8917
-Message-ID: <ZzRtEHsC4MROxN3v@linaro.org>
-References: <20241112-msm8917-v5-0-3ca34d33191b@mainlining.org>
- <20241112-msm8917-v5-8-3ca34d33191b@mainlining.org>
- <ZzOQEgLLhkH-IymV@linaro.org>
- <0dae1cea420bd335be591e4b1be3d07c@mainlining.org>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Po2msYv1"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=la6FBV9rrfk/sIvcggfVykfH6P/QuKc1Ueu84JI6IljfVdyW1khHt+bOpeDPQ0oW7f5lEP0iiiEe7Ab1IsTcQgRIQxW8QjXpfU6LYBphuBEy1U9Cv1FPzvOpvalZB3XgdwXguE0bgQNmtbUN13JMYwk5BXsJ2bgzm8iRtFwBQP6fxoos6rQBT0X80OTEUT+dreOdDjocDkRsGw2UFgJpqpPowzroeg8a6f2vSUGu/1YtnAVvuTYNsV7aPuxPmjpxco8CJpIyAcDCCNfgSxeIyt6d53u1GecxYxpUUJknZHQiWEPU20Pi3Or3nwJoIvkZv6hCuzb3m9ZqI3v3HCEYiw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=71yb5Zt8Yl2345mrvkA7PQOsvwSghRTspsQS5+c5nZ4=;
+ b=eO9bjhnRQojX4juvyi9iGZWf65PVvBs3luGHNWCBSaAIl+MU74LdhzoX1pck2RpfX7gHHcYQwkMgfSAZQvOhUJ8WiAblo5fZEPAq6QsqcSBYzILx0Iz5Xac8q+yCaggRIkeDlvdHF1BXyzv5+6GvgEy7KtfkxzbP95FINa6ZtvbWrlVVYiw5cxhuz9R3nVP7nI1fHrNxNfYJ82DfKX/bFEmO4YP6c6vKqaE223qS21lEoSwZbsYBmg7mYUmFuQTk01OiSEsr8OJ0TyXFF56RuP/es5Yytr4CZ5YD2Ugg7XWQ63lAzsovpPLzxdbbPZyrhaIQANAyBWYI9kVG/TEN6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=71yb5Zt8Yl2345mrvkA7PQOsvwSghRTspsQS5+c5nZ4=;
+ b=Po2msYv1gVZQnxLzLXcwW+fwmDvlC9qpAGpYRKnmokF4Lmi9v6ySuFvn9qHR1QQLC6CZRIZII8zQVmIu6jQNlfbN6KD0W69821lv+dFeFeYICziBXL0Eqt7U6DVK2+3TqGBXZewci/uNsvJbuD+xIQYgkAsKL0y62Gj5eCloTlE=
+Received: from MN2PR13CA0027.namprd13.prod.outlook.com (2603:10b6:208:160::40)
+ by SN7PR12MB7956.namprd12.prod.outlook.com (2603:10b6:806:328::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.17; Wed, 13 Nov
+ 2024 12:03:48 +0000
+Received: from BN3PEPF0000B077.namprd04.prod.outlook.com
+ (2603:10b6:208:160:cafe::9a) by MN2PR13CA0027.outlook.office365.com
+ (2603:10b6:208:160::40) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.15 via Frontend
+ Transport; Wed, 13 Nov 2024 12:03:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN3PEPF0000B077.mail.protection.outlook.com (10.167.243.122) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8158.14 via Frontend Transport; Wed, 13 Nov 2024 12:03:48 +0000
+Received: from purico-ed03host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 13 Nov
+ 2024 06:03:43 -0600
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <vasant.hegde@amd.com>,
+	<arnd@arndb.de>, <ubizjak@gmail.com>, <linux-arch@vger.kernel.org>,
+	<jgg@nvidia.com>, <kevin.tian@intel.com>, <jon.grimm@amd.com>,
+	<santosh.shukla@amd.com>, <pandoh@google.com>, <kumaranand@google.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH v10 00/10] iommu/amd: Use 128-bit cmpxchg operation to update DTE
+Date: Wed, 13 Nov 2024 12:03:17 +0000
+Message-ID: <20241113120327.5239-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <0dae1cea420bd335be591e4b1be3d07c@mainlining.org>
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN3PEPF0000B077:EE_|SN7PR12MB7956:EE_
+X-MS-Office365-Filtering-Correlation-Id: a8f66d4d-e213-4c4a-b188-08dd03db3b34
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|82310400026|36860700013|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?lJxhKpCT3afexDLnrHa9CmPXFlzfN0+X3er397vBXG6D5hcnxxHk7lgi1cFN?=
+ =?us-ascii?Q?DWWaAuwMmZaUFxW0WZQJ5WW0lojbgWVn5WHehcmDVaTJ1O06fCyWSTs4Ht/Y?=
+ =?us-ascii?Q?SbK/qcOwh+qIPC7QAKVofGAUueHOsgcHENCidkJPolJ4EgzZBC3hICbg5/u6?=
+ =?us-ascii?Q?ieEA1bRvOO3IYdThssUZRImcCXeVF9lDUdY7vybQSSNM8G4Nc2O1wkCBoXtd?=
+ =?us-ascii?Q?tHc9nPbga0XUFbn0AShp+oaURG9ewb1Rj7Iwc2XJvk7R5AL8n9JWngmYqaF7?=
+ =?us-ascii?Q?ghr4Q4oz0P5NV+zV4ZdtZkGJfLobhcKiV2gyVT5yK6TuSdcVr7Jp1FIlFSit?=
+ =?us-ascii?Q?OcdYuvSiyoJuv7sZS1WGP5+t1htyVg/L74U4/DFt9Nb6OmWsP+i0dCmpovNy?=
+ =?us-ascii?Q?OUKO021CODzleGav3HTYBX8I4LTcH7sManws3CzJUdOHA2OXMiSDJCSDH+8d?=
+ =?us-ascii?Q?FbPPo9Nuf75FVuzwZ/xqdEYK+SUag4h6sdLmi/Ej79xJvHjpKeUN6S1puNtX?=
+ =?us-ascii?Q?2fCH4pKC34FvfEMngrbWdcbZkTlwFRubgpNYRZ048EItzXrIxYSZDZw51NiR?=
+ =?us-ascii?Q?euuGCzKnzZOQMaJQnEqbkngWh+03bFhcIqezEChT2iKmfKTZE/wAfYYoUwxY?=
+ =?us-ascii?Q?fWM4j/kCmzCF692VZO1cDqjRIjvYCUOSFhikoHdVy4X2GJ6Lxk4uKefcqnqU?=
+ =?us-ascii?Q?1aaZQ5pX7Dpx7fn09gH92Q7/4jfYkdkRzMi5gfdDPPkDeJP3oq6iPFQ/1mOY?=
+ =?us-ascii?Q?kpW6Tw80g4dwvtkLWnwDxP73LLGLxnjTbDo+3DUihMpYVgf0Xv6Z/Hk47MJK?=
+ =?us-ascii?Q?LwRKeApBPY5scaxeiqpzqIDp8ORXWYQaFQ8L9ROgpAKTGWForDYs11Y+Ouub?=
+ =?us-ascii?Q?VlGfO4WOizkz3utEu98S6RXwfd8qOmv/VjL7MhBf0/LBHlPlT0kAK+J6ASSB?=
+ =?us-ascii?Q?OVCSHki/toQGp917W7AZzNXc8J9CWe9zgWuGYNpzhN55DfN+FVmBPbsNO7J6?=
+ =?us-ascii?Q?OhmB+uDTPbAq4LmnUh+biuIA+rPvHtFsikF+Y/u9rTIRtJid7vAwQ9epPDke?=
+ =?us-ascii?Q?GM01LQh60S5tN54vbNbogSj6co0Og2QXYhXn7+HqhLKXQxpWegKyC2C+CaOM?=
+ =?us-ascii?Q?fII/f5wrd2WZiKTL5/+jLGTryMAGZNFRSOP/PcdlVphP6pF4/K/kX966qDSs?=
+ =?us-ascii?Q?fZyJeL6OvAchdHe0n3aGGATzdCrwLQ4+eTxqiDpw8H3TJBY8wjG60JBcyZMZ?=
+ =?us-ascii?Q?6+yW6+nys0IKtNSuP9mOTO9w7M1pETDF2X7xW6c/zg7m8FEH+dUS6aSCq+G/?=
+ =?us-ascii?Q?MOZBHc8u8V1uWORcclHea2bR+j50UUmakR/v6uGRW9ZKGX0jXiVGVMK4RvhH?=
+ =?us-ascii?Q?nx7NVi84oIAhCxf3nj6Iu/3ge6r7PhibwC3HUB+zTvqKWJ0K2pUuVT2Te5Qh?=
+ =?us-ascii?Q?3ovl0hy3Uss=3D?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(82310400026)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2024 12:03:48.0321
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8f66d4d-e213-4c4a-b188-08dd03db3b34
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN3PEPF0000B077.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7956
 
-On Tue, Nov 12, 2024 at 07:49:18PM +0100, barnabas.czeman@mainlining.org wrote:
-> On 2024-11-12 18:27, Stephan Gerhold wrote:
-> > On Tue, Nov 12, 2024 at 04:49:38PM +0100, Barnabás Czémán wrote:
-> > > From: Otto Pflüger <otto.pflueger@abscue.de>
-> > > 
-> > > Add initial support for MSM8917 SoC.
-> > > 
-> > > Signed-off-by: Otto Pflüger <otto.pflueger@abscue.de>
-> > > [reword commit, rebase, fix schema errors]
-> > > Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
-> > > ---
-> > >  arch/arm64/boot/dts/qcom/msm8917.dtsi | 1974
-> > > +++++++++++++++++++++++++++++++++
-> > >  1 file changed, 1974 insertions(+)
-> > > 
-> > > diff --git a/arch/arm64/boot/dts/qcom/msm8917.dtsi
-> > > b/arch/arm64/boot/dts/qcom/msm8917.dtsi
-> > > new file mode 100644
-> > > index 0000000000000000000000000000000000000000..cf0a0eec1141e11faca0ee9705d6348ab32a0f50
-> > > --- /dev/null
-> > > +++ b/arch/arm64/boot/dts/qcom/msm8917.dtsi
-> > > @@ -0,0 +1,1974 @@
-> > > [...]
-> > > +		domain-idle-states {
-> > > +			cluster_sleep_0: cluster-sleep-0 {
-> > > +				compatible = "domain-idle-state";
-> > > +				arm,psci-suspend-param = <0x41000023>;
-> > > +				entry-latency-us = <700>;
-> > > +				exit-latency-us = <650>;
-> > > +				min-residency-us = <1972>;
-> > > +			};
-> > > +
-> > > +			cluster_sleep_1: cluster-sleep-1 {
-> > > +				compatible = "domain-idle-state";
-> > > +				arm,psci-suspend-param = <0x41000043>;
-> > > +				entry-latency-us = <240>;
-> > > +				exit-latency-us = <280>;
-> > > +				min-residency-us = <806>;
-> > > +			};
-> > 
-> > I think my comment here is still open:
-> > 
-> > This is strange, the deeper sleep state has lower timings than the
-> > previous one?
-> I was reordering based on Konrad comments when i have renamed the nodes
-> maybe it is not correct then.
-> I am searching for how to validate these levels, i have find these
-> https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.c26-01500-89xx.0/arch/arm64/boot/dts/qcom/msm8917-pm.dtsi#L45-91
+This series modifies current implementation to use 128-bit cmpxchg to
+update DTE when needed as specified in the AMD I/O Virtualization
+Techonology (IOMMU) Specification.
 
-I think you translated them correctly. It feels like downstream is weird
-or even wrong here. Usually a higher psci-mode (retention = 2, gdhs = 4)
-also implies a deeper idle state. But at some point the
-perf-l2-retention and perf-l2-gdhs state were swapped downstream:
+Please note that I have verified with the hardware designer, and they have
+confirmed that the IOMMU hardware has always been implemented with 256-bit
+read. The next revision of the IOMMU spec will be updated to correctly
+describe this part.  Therefore, I have updated the implementation to avoid
+unnecessary flushing.
 
-https://git.codelinaro.org/clo/la/kernel/msm-3.18/-/commit/dea262a17a9e80dacb86b7c2f269bcc7b4df3a13
+Changes in v10:
+* Patch 3: Update patch from Uros.
+* Patch 5,7: Change to use __READ_ONCE() with 128-bit data type.
 
-I don't know if this is intended or just an oversight. If no one can
-clarify why this change was done I guess we can just choose between the
-following two options:
-
- 1. Describe it exactly like it was done downstream. In that case I
-    would suggest swapping the node order back to what you had in v1.
-    Even if that means that a lower idle state has the higher psci-mode
-    (arm,psci-suspend-param). That should match what downstream did.
-
-OR
-
- 2. Omit cluster-sleep-0 and cluster-sleep-1. I doubt anyone will notice
-    the minor difference in power consumption. The most important idle
-    state is the deepest "power collapse" (PC) state.
-
-@Konrad: Do you have any opinion here?
-
-> Do you know where can i find psci-suspend-param-s?
-
-You need to translate it like in this code here:
-https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.c26-01500-89xx.0/drivers/cpuidle/lpm-levels.c#L1337-1340
-
-Roughly described:
- - Set BIT(30) if the CPU state has qcom,is-reset
- - Affinity level is the hierarchy level that goes idle.
-   In your case: CPU = 0, L2 cache/cluster = 1.
-   Shift that to bit 24 (1 << 24 for cache/cluster)
- - For the state itself you need to combine the qcom,psci-cpu-mode and
-   qcom,psci-mode according to the qcom,psci-mode-shift.
-
-E.g. for the "perf-l2-pc" state, combined with the deepest CPU state
-("pc"):
-
- - BIT(30) is set because of qcom,is-reset
- - (1 << 24) because it's a L2 cache/cluster idle state
- - (qcom,psci-cpu-mode = <3>) << (qcom,psci-mode-shift = <0>) = (3 << 0)
- - (qcom,psci-mode = <5>) << (qcom,psci-mode-shift = <4>) = (5 << 4)
-
-All that combined: BIT(30) | (1 << 24) | (3 << 0) | (5 << 4)
-  = 0x41000053
-
-Which is what you have for cluster-sleep-2. The ones you have look
-correct to me. :-)
-
-> Should I also add wfi level?
-
-I think we usually omit those for the CPU at least. Not sure about the
-cache/cluster one. As I mentioned, at the end the most important idle
-state to have is the deepest ones. Those will get used during suspend
-and when you don't use the device. The others are more minor
-optimization for light usage, which will be less noticeable.
+v9: https://lore.kernel.org/lkml/20241101162304.4688-1-suravee.suthikulpanit@amd.com/
+v8: https://lore.kernel.org/lkml/20241031184243.4184-1-suravee.suthikulpanit@amd.com/
+v7: https://lore.kernel.org/lkml/20241031091624.4895-1-suravee.suthikulpanit@amd.com/
+v6: https://lore.kernel.org/lkml/20241016051756.4317-1-suravee.suthikulpanit@amd.com/
+v5: https://lore.kernel.org/lkml/20241007041353.4756-1-suravee.suthikulpanit@amd.com/
+v4: https://lore.kernel.org/lkml/20240916171805.324292-1-suravee.suthikulpanit@amd.com/
+v3: https://lore.kernel.org/lkml/20240906121308.5013-1-suravee.suthikulpanit@amd.com/
+v2: https://lore.kernel.org/lkml/20240829180726.5022-1-suravee.suthikulpanit@amd.com/
+v1: https://lore.kernel.org/lkml/20240819161839.4657-1-suravee.suthikulpanit@amd.com/
 
 Thanks,
-Stephan
+Suravee
+
+Suravee Suthikulpanit (9):
+  iommu/amd: Misc ACPI IVRS debug info clean up
+  iommu/amd: Disable AMD IOMMU if CMPXCHG16B feature is not supported
+  iommu/amd: Introduce struct ivhd_dte_flags to store persistent DTE
+    flags
+  iommu/amd: Introduce helper function to update 256-bit DTE
+  iommu/amd: Modify set_dte_entry() to use 256-bit DTE helpers
+  iommu/amd: Introduce helper function get_dte256()
+  iommu/amd: Modify clear_dte_entry() to avoid in-place update
+  iommu/amd: Lock DTE before updating the entry with WRITE_ONCE()
+  iommu/amd: Remove amd_iommu_apply_erratum_63()
+
+Uros Bizjak (1):
+  compiler_types.h: Introduce 128-bit unqualified scalar type support
+
+ drivers/iommu/amd/amd_iommu.h       |   4 +-
+ drivers/iommu/amd/amd_iommu_types.h |  41 ++-
+ drivers/iommu/amd/init.c            | 229 +++++++++--------
+ drivers/iommu/amd/iommu.c           | 370 ++++++++++++++++++++--------
+ include/linux/compiler_types.h      |  13 +
+ 5 files changed, 445 insertions(+), 212 deletions(-)
+
+-- 
+2.34.1
+
