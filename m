@@ -1,57 +1,57 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 096D71AC882
-	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 16:19:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8B5A1AC43E
+	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 16:19:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731601153; cv=none; b=bBPkEIEBFuwMssmKQ3+KRBQ28BGjVdUyrYtcB6uGpmxjF0V/00q30huyX6YEaC3EkkAuYDSJN2RSx1i2LTPKE6eE80okBPAabph13c3kJVobDYIKpXUGKpiY2zrWnClz/1966dYNtckl7xuBVpuzfWIZv54RNFS9faJvPKJ2f6M=
+	t=1731601155; cv=none; b=KDdhLuvLWXlJQL5FOoRMFIPRLzFI04YrgghaEzlXHL9IF2RqrFJbOCSffr/10SKufNh67/mFHCbTujexVjlNJjNRtG13vX1KQDkMxKGXRpPkK8taXzeBkT5lOd5rAcXqbeR6RpNv+k6wemI2eEdxWDH8d0GT8//YZ1VYz04c3Ts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731601153; c=relaxed/simple;
-	bh=ES0TvAxz9/x2ptiDnzIz0eP+Ou6/i+zYJHVn+dCYtjM=;
+	s=arc-20240116; t=1731601155; c=relaxed/simple;
+	bh=nPnauxX7TiBvZUSelznoj4ZrHIzLIbMVHtA1EyH4RVI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=rOmOlweThrFJy6Tv+FcTlzpZ6b6Hpn5yHGtuWlTEgT46SKBYJaIVysVDWsAIUZ3j4wsx08gL4VJy/JjHoXLRCj5xbMthIWxdiAEWBEtygI36jI57OoR5lqv104hw+9Ue2k97IGm6hwitHxbT779RLjLWW8DJGeDbG938BWD0a3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=iXUKlseL; arc=none smtp.client-ip=209.85.128.43
+	 MIME-Version; b=bJm/ImB1izp2K2Bc5qBZVWAfB/pnBkNwYSG82aDSZUV81v1FBBFOQOTP6dHIs2nBTMXcAsfa46PVZVDIRrIQ4B0Dfz8+AnhsHsEY3eu1jhRwJslXlfXuSPKUTFVNg1AqFd1lOaV6tIk4QlAKlP8lsVUDFYqUxZzlQ8EtxoTD9gs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=K6fXpGAY; arc=none smtp.client-ip=209.85.128.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="iXUKlseL"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4319399a411so7615035e9.2
-        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 08:19:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="K6fXpGAY"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4314b316495so7194865e9.2
+        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 08:19:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1731601150; x=1732205950; darn=lists.linux.dev;
+        d=ventanamicro.com; s=google; t=1731601152; x=1732205952; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BmqNGe/T2iE9PlV9lB2/3K3MC1TQA7fI1NussKF1DE0=;
-        b=iXUKlseLP1YdZo+lIIebuJooslmyWNrk05emlz13gdA8hGCbhQ6yl3pB1nmVzPT0ye
-         4ml9ZjVjiIvtldZPXXZTWXM+8bR6KN/+EnNQw1YbC+KR5RwbFJj7NZC8I2cAMNGg91eI
-         J+AsJ9vtpic+0MBzVIlujxHp/qpODnMyhTvvPFG6xVJcgHjuRXIMGd15EY8D4K+oPy9x
-         iRfUd0XLf+rGSfIScLjBtHV7wgddw2VdGMMeTb/0e//JGAhfaDYE2NwdQf1LngbkhHQO
-         ojVQBZ0YQwu9uFd8fU0c4QmmGRYP0To4bxY8Y5psIAxegP40inF2UPCujjDXGlgBSpu+
-         rsrg==
+        bh=bLyjPEUjYy3GGHllbim/73zpVvmemz3R8H3vfZF+LqU=;
+        b=K6fXpGAY49fbgoHRnZFvp82bVfQkycMO/c0iG3IZxvvcB+ed00sTPqj8NBbuvKqgJj
+         20vHQ0CMpw+o3foiDkm3zTyCcmgrj7dJIWfb4DQZbuIOrwKzbLopWyVUw/vl2/RfuuO5
+         UEKreBg2BlBoWKx0GDEwfxGffms+nFEQH7JETSdn1k7FHAqrs/tGsQc10bgdQaK3wrpp
+         srBi+f7jFD1ZqsJF8NeSyMQVzLADr0Ejwmm3OmcnStvpu92jgaO9YYUnTjckVdGREmHI
+         Y2bqJPNBx/2v4btrMlbF1v68tXA5rQF6iUNpbXPqoXFsP3o+95vTYlNnbDN8ff940LLH
+         ZYLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731601150; x=1732205950;
+        d=1e100.net; s=20230601; t=1731601152; x=1732205952;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=BmqNGe/T2iE9PlV9lB2/3K3MC1TQA7fI1NussKF1DE0=;
-        b=tpVVmkSa07TyVoIokoONIVrFTaz6/T364LOLRgFuYefWGcWumPrJjxV8am/oQdhtzj
-         w0R5lo1bLymaN2Lj43wnQZdPu6QjVT2QWtvrJd4dmw6N2ZFjccRISxghTe3GwyCuViXi
-         egHv+02Dh1ElzNys3POzY5c5sBkbwgOjyOgpsApxy59SOLAutwDyQjDwTVtl6CHYcvYL
-         j+UPj+gWe6DH6mApyMVUGbskyTZDIyOWV2XsRCkct4yr2NU5ngGakjoJlNZauVfc1Fq1
-         qkAQMRpN+5I2DHvKIzIIjjiKE51Zqy0aqZxG+VvloJlOGE0/ELxSnKpRqe4BNbDTvmgG
-         RAIg==
-X-Gm-Message-State: AOJu0YyrlU2hUXLcfU/HMf/x6dKyGn04lW5ZHAL8ZIVDdh9dylmFUYFp
-	XbJmlgHLJSiE1a5lQu6+aSWaBI0Ts6fTCLLl+kz4h89MxAAS5X383GirdADeFIJMsM/DwGCky5B
-	WQA0=
-X-Google-Smtp-Source: AGHT+IGMbtDDWmvKWsj/Ybdc9TgUB55aFH3ajhr0ZnMlCbsRayCj2n5LaLaeoDlbaJzuEn6VOd9B/g==
-X-Received: by 2002:a05:600c:8715:b0:431:93d8:e1a1 with SMTP id 5b1f17b1804b1-432b751bcc2mr209410385e9.27.1731601150428;
-        Thu, 14 Nov 2024 08:19:10 -0800 (PST)
+        bh=bLyjPEUjYy3GGHllbim/73zpVvmemz3R8H3vfZF+LqU=;
+        b=s+BvM+q10a+y1nxuiBxjtS3Tj+YUjn6X9J3x2Kb6O0n5dZYc8ZYKgIZVn0oWee0hFA
+         +EzQrqTX10qYXdKXNhO5Ofkqoo+Jr2c0bPvPt2fHO/gnFT+QERLpkbhizoGzIpKqEriz
+         e39+O+OGdZSZHtPwKmA0Oi8CAac9c46DHYfefkRoeiEWVuTdXDgpac3cg1mTwG4t/Xcn
+         uduvA5P50FF/2Azn0uqRcNi0ML7iAd7su4Zgb5wUnkzcLn7iSVMB6RD1aY4gxvCA8hNg
+         PjtQLVCpSYCYJdhg91EMak+r33/Pa9oC5nhh0yY4TdTMfqkzWI/4juc8HHyg+PZo1oY9
+         0wFg==
+X-Gm-Message-State: AOJu0Yx/i6ScMZkzM8c0ouUqLI18pXh2WAo+RbjS+F4xeqcTrAGLt5Ht
+	+p2pyi855/9N9IS4EcjgMqs3QH0j8N0OEi2U/ibqOodkuAdAhdGq6vgygXnd6+t9TrqOt4GgXeL
+	AuDI=
+X-Google-Smtp-Source: AGHT+IHKQidNVhwcm1UkvoSFM0iFKvguMA4Koj+yRoQBZD+zU91sO767fbB1E85gsh6vbgzv0SLQ3g==
+X-Received: by 2002:a05:600c:c08:b0:42c:bd27:4c12 with SMTP id 5b1f17b1804b1-432d4aae6b7mr76573235e9.10.1731601152220;
+        Thu, 14 Nov 2024 08:19:12 -0800 (PST)
 Received: from localhost (2001-1ae9-1c2-4c00-20f-c6b4-1e57-7965.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:20f:c6b4:1e57:7965])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3821adbe779sm1834550f8f.60.2024.11.14.08.19.09
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432da298a41sm29066525e9.38.2024.11.14.08.19.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2024 08:19:09 -0800 (PST)
+        Thu, 14 Nov 2024 08:19:11 -0800 (PST)
 From: Andrew Jones <ajones@ventanamicro.com>
 To: iommu@lists.linux.dev,
 	kvm-riscv@lists.infradead.org,
@@ -70,9 +70,9 @@ Cc: tjeznach@rivosinc.com,
 	paul.walmsley@sifive.com,
 	palmer@dabbelt.com,
 	aou@eecs.berkeley.edu
-Subject: [RFC PATCH 14/15] vfio: enable IOMMU_TYPE1 for RISC-V
-Date: Thu, 14 Nov 2024 17:18:59 +0100
-Message-ID: <20241114161845.502027-31-ajones@ventanamicro.com>
+Subject: [RFC PATCH 15/15] RISC-V: defconfig: Add VFIO modules
+Date: Thu, 14 Nov 2024 17:19:00 +0100
+Message-ID: <20241114161845.502027-32-ajones@ventanamicro.com>
 X-Mailer: git-send-email 2.47.0
 In-Reply-To: <20241114161845.502027-17-ajones@ventanamicro.com>
 References: <20241114161845.502027-17-ajones@ventanamicro.com>
@@ -84,29 +84,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
+Add the VFIO modules to the defconfig to complement KVM now
+that there is IOMMU support.
 
-Enable VFIO support on RISC-V architecture.
-
-Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
 Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
 ---
- drivers/vfio/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/configs/defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-index ceae52fd7586..ad62205b4e45 100644
---- a/drivers/vfio/Kconfig
-+++ b/drivers/vfio/Kconfig
-@@ -39,7 +39,7 @@ config VFIO_GROUP
- 
- config VFIO_CONTAINER
- 	bool "Support for the VFIO container /dev/vfio/vfio"
--	select VFIO_IOMMU_TYPE1 if MMU && (X86 || S390 || ARM || ARM64)
-+	select VFIO_IOMMU_TYPE1 if MMU && (X86 || S390 || ARM || ARM64 || RISCV)
- 	depends on VFIO_GROUP
- 	default y
- 	help
+diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+index b4a37345703e..10fc9d84a28c 100644
+--- a/arch/riscv/configs/defconfig
++++ b/arch/riscv/configs/defconfig
+@@ -242,6 +242,8 @@ CONFIG_RTC_DRV_SUN6I=y
+ CONFIG_DMADEVICES=y
+ CONFIG_DMA_SUN6I=m
+ CONFIG_DW_AXI_DMAC=y
++CONFIG_VFIO=m
++CONFIG_VFIO_PCI=m
+ CONFIG_VIRTIO_PCI=y
+ CONFIG_VIRTIO_BALLOON=y
+ CONFIG_VIRTIO_INPUT=y
 -- 
 2.47.0
 
