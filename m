@@ -1,57 +1,57 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D924019CC0A
-	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 16:19:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5117E19E961
+	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 16:19:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731601146; cv=none; b=DzenOYMc5CgkEThxs/pZcw4LVbsgSwR52bB5geWoaOqt4Xi4jLj/PbNHr101ASDT2ucbfyCqheyzqB6fBtq727eQCPCzUzt+H+D9PyJlwtJz2eJnKnkHFSR6HKwRTzk55k+HdgyefMaDXT0DGzHyu9kmEAxS7DQ5rp98ok6uunI=
+	t=1731601148; cv=none; b=NQ85e3I/HlJA5wt74AoDausXCU+Jje7N9Dd1w8jQYumOhppMSwUWo9ccLu4uGQMzk5ApWSyhbfB/fJVt2nzXYPj99otmp7QURbj3Atj3ETQelO8Av070JkCHKyDJony8PxulxZ9BQM5HuzyD1bRTwpWFVfNAFwTlWLYsJ0VfCV8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731601146; c=relaxed/simple;
-	bh=zG8rAEuB5eoKnSaZdksATDcRCj9Xf9/S0fQz+A0rat0=;
+	s=arc-20240116; t=1731601148; c=relaxed/simple;
+	bh=UESyK8Uc8qhnyUFE7sWCeUfzwrVwuw9Qm2LYqZNp+fo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=c+cSpy/24AqbeR6r33o/qNi/N8wgQ7oyM8DoQ+cmpIU3Buw6mvN3pTGhGHk/fLjsFD3zdTX7vNxSAb3yENJcvZNxvakd30dyCSlOjTsYMP/Mw7R1K/2Phh/lffkJgybI4KP2L7yvq0e6R1JojaHIFIRhi6EmbvwDjYPEWgTePGg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=pobrmIxo; arc=none smtp.client-ip=209.85.128.47
+	 MIME-Version; b=Tk4cCE6KJKBvvCk3jrjNXccEERZF6NAtTMMRWyvUpy7FsciZpHg6YsLvbRmufeb//+5marDcssx8KcyfNPGIfNIJBwaiein21BdlJFmkNH7bRnf9IZqwJbVIMdiN3cOfuLvaCRuEp+2VfVddTf2GV3aW8e5KA2Mz/GU/xorPTV8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=I7gkSRdI; arc=none smtp.client-ip=209.85.221.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="pobrmIxo"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4315e9e9642so7299985e9.0
-        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 08:19:04 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="I7gkSRdI"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-37d50fad249so606912f8f.1
+        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 08:19:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1731601143; x=1732205943; darn=lists.linux.dev;
+        d=ventanamicro.com; s=google; t=1731601145; x=1732205945; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Ylj9cSUnN7lZBYMxGOa796BuugfVNbbIfct9OAjDsOY=;
-        b=pobrmIxohG91twGG9aDtUH13Ps0B0sH8ouUPQ9IaoIdEkDW0LBIMiElOYEAg65F1EK
-         MnHzKw1L73Aec6JpugILnH5oOtgdjeLwRCEnpfNcYwr9fVP+JWh26E+9yClQJIV77Jpf
-         D449yx6NEuMJXlo6xMHXpdTB079KhtsJdC3pnuuWyoSXVAhLjv8Z4TwXEPDX1nLzo8tJ
-         P/75kXvFO4HCZEmocLfFDwfEK5ewZzU3q9s1QOCGSqz2msbB0wOFUrG4ZSxKrmAhEX0f
-         rX88dDS60/rHdz65w7YpBnqdrhPvEv9yoxa2ePLlmxD9Cmb25iCIPr2gx2QKAzYHXIPV
-         mobQ==
+        bh=JmyAZwFmuLjn3p39hRK9ePQAJ1PSqwbQ6F/1nOHrEzM=;
+        b=I7gkSRdI6vuUmahwH+eHKTXdHYG3D1Z158lr9+z6hU/ZdSfMy+Hq+Ol4vB3vRcth3i
+         /esDQUTkist6GzuIsNDp3al5LniGDzlbn5FhyfAyzLZ+lVVw/S0Ug+LUQvOFIW54IPnR
+         uFc6i4Al0VYuJVkPSIJ0lfB4SUY2is7eedm9KJ9LXt+HJodFaHSkRwYtmLQV5qJ6vdg1
+         iDMDEH/oo/myop4iL7wWDB4Keji8fN80rRvduSBT9Aa3fqA3WfI9mKu39VrPqg2nIDXy
+         276VHHxH6lbIaEMDNqI5tjsxSnerRwT1KALoMD1dLlVR6gTPFZLd6zeYZGAKolPW0VMv
+         nJug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731601143; x=1732205943;
+        d=1e100.net; s=20230601; t=1731601145; x=1732205945;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Ylj9cSUnN7lZBYMxGOa796BuugfVNbbIfct9OAjDsOY=;
-        b=IQ9TqGnBHcC5cZz3R3VWDzyATutZWrFQtbl1QYPWTcYzJ/D56rw/lYnxHy+vdNyri5
-         JewVFV/udINr2ovRZo2+p71U+8YAn7w8JDBVaGRx9kOxzIZkEqo2eZ0M2dSrFPcoqbna
-         S8JY4A5V6NWtpYChYbSGaJHa3+8oHNgxjaT14xHTZ+brGAk+c/Joz5IVsOG79FuYE41g
-         VzI8ucLgOv+Zn8bgINUAkjqTa2UFEJso9F6YR2JF0P5W/+Cit0dNGxn1FTFGUOuBWW44
-         LW20ffdlKGAXK/joQxgahU0lJQi1CwrVTFxtu1fPnFwenFajxbkSXUJ4GO0R0RpKl7lg
-         UBFw==
-X-Gm-Message-State: AOJu0Yy7JmG/6701TBZV/dGZRGudpvdZaTEdv+GYT3d7eNek2gtJf7YP
-	t26w99qLM/Ctfg4HKsYqTfKU5O6nVllG8jOFeiN6kvjg4jcCC9N3fvjfB7jQSSNgfIQ8tEA9AeQ
-	aRYs=
-X-Google-Smtp-Source: AGHT+IGWufmtM+epbPX600D1VFEI9w8hjUWbvA+ZtsTOBkgX8kbCaXoJN+2t/PgDnUc4rlU+m8h9BA==
-X-Received: by 2002:a05:600c:3114:b0:42c:bd4d:e8ba with SMTP id 5b1f17b1804b1-432d4aae479mr69854575e9.8.1731601143362;
-        Thu, 14 Nov 2024 08:19:03 -0800 (PST)
+        bh=JmyAZwFmuLjn3p39hRK9ePQAJ1PSqwbQ6F/1nOHrEzM=;
+        b=vjhfm1Cs9JyxF0JtP3rubQ37XLMcOxmLISy1+qIvlYZpMWAJC2O8PuKrOKneVm5uuj
+         wncw3+3/HnpbMO98NmOXoJt1OwLAHPDJQHs4du2JIOtcLJV9HEKUPJrGyHUY/Z26j++S
+         aG81kmX8rgrHcCltPLsIddFNfCw5D2cRpUlAnyguWqClVEjVe6M4szSRGInsooHAORjZ
+         hzg3HDyndscLM6mjtA0NdjjTha6SvJsbKEXLzDN2jdf3Zl62hpboA6BzqzZ4f0wgjELF
+         /g6BmYuGSoX7wJXw/jcfgzBaY8neSSYPhpXy7iWLj3nSXs4K83VMI/9mD3qAQ6GxSvCK
+         WyjQ==
+X-Gm-Message-State: AOJu0YyFxfiRf0PmH9ah0qKaS5OEvPAycyET49MhhEHgAPfJUKbir8a6
+	KOEHlxOd2r1cpEYkn/3Ne18kg0NtnTEKEy7nb9b0eLCck6fJgNjkYsHolWMdF5Zs0pyOEslvbic
+	KyV0=
+X-Google-Smtp-Source: AGHT+IEn3qlHsw/D0PT2IEwLbgj1uEV7tnlyKBH8z2H1adqlOAImJaC/GmimW4BKxNwCPjE/Y1igiA==
+X-Received: by 2002:a05:6000:210e:b0:382:424:94fe with SMTP id ffacd0b85a97d-382042495edmr11613726f8f.36.1731601144686;
+        Thu, 14 Nov 2024 08:19:04 -0800 (PST)
 Received: from localhost (2001-1ae9-1c2-4c00-20f-c6b4-1e57-7965.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:20f:c6b4:1e57:7965])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432da265ca8sm28719625e9.14.2024.11.14.08.19.01
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3821ae161d8sm1901964f8f.78.2024.11.14.08.19.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2024 08:19:02 -0800 (PST)
+        Thu, 14 Nov 2024 08:19:04 -0800 (PST)
 From: Andrew Jones <ajones@ventanamicro.com>
 To: iommu@lists.linux.dev,
 	kvm-riscv@lists.infradead.org,
@@ -70,9 +70,9 @@ Cc: tjeznach@rivosinc.com,
 	paul.walmsley@sifive.com,
 	palmer@dabbelt.com,
 	aou@eecs.berkeley.edu
-Subject: [RFC PATCH 09/15] RISC-V: KVM: Enable KVM_VFIO interfaces on RISC-V arch
-Date: Thu, 14 Nov 2024 17:18:54 +0100
-Message-ID: <20241114161845.502027-26-ajones@ventanamicro.com>
+Subject: [RFC PATCH 10/15] RISC-V: KVM: Add irqbypass skeleton
+Date: Thu, 14 Nov 2024 17:18:55 +0100
+Message-ID: <20241114161845.502027-27-ajones@ventanamicro.com>
 X-Mailer: git-send-email 2.47.0
 In-Reply-To: <20241114161845.502027-17-ajones@ventanamicro.com>
 References: <20241114161845.502027-17-ajones@ventanamicro.com>
@@ -84,33 +84,139 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
+Add all the functions needed to wire up irqbypass support.
+kvm_arch_update_irqfd_routing() is left unimplemented, so return
+false from kvm_arch_has_irq_bypass().
 
-Enable KVM/VFIO support on RISC-V architecture.
-
-Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
 Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
 ---
- arch/riscv/kvm/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/riscv/include/asm/kvm_host.h |  3 ++
+ arch/riscv/kvm/Kconfig            |  1 +
+ arch/riscv/kvm/aia_imsic.c        |  6 ++++
+ arch/riscv/kvm/vm.c               | 60 +++++++++++++++++++++++++++++++
+ 4 files changed, 70 insertions(+)
 
+diff --git a/arch/riscv/include/asm/kvm_host.h b/arch/riscv/include/asm/kvm_host.h
+index 35eab6e0f4ae..fef7422939f6 100644
+--- a/arch/riscv/include/asm/kvm_host.h
++++ b/arch/riscv/include/asm/kvm_host.h
+@@ -114,6 +114,9 @@ struct kvm_arch {
+ 
+ 	/* AIA Guest/VM context */
+ 	struct kvm_aia aia;
++
++#define __KVM_HAVE_ARCH_ASSIGNED_DEVICE
++	atomic_t assigned_device_count;
+ };
+ 
+ struct kvm_cpu_trap {
 diff --git a/arch/riscv/kvm/Kconfig b/arch/riscv/kvm/Kconfig
-index 0c3cbb0915ff..333d95da8ebe 100644
+index 333d95da8ebe..9a4feb1e671d 100644
 --- a/arch/riscv/kvm/Kconfig
 +++ b/arch/riscv/kvm/Kconfig
-@@ -29,10 +29,12 @@ config KVM
- 	select KVM_GENERIC_DIRTYLOG_READ_PROTECT
- 	select KVM_GENERIC_HARDWARE_ENABLING
- 	select KVM_MMIO
-+	select KVM_VFIO
- 	select KVM_XFER_TO_GUEST_WORK
- 	select KVM_GENERIC_MMU_NOTIFIER
- 	select SCHED_INFO
- 	select GUEST_PERF_EVENTS if PERF_EVENTS
-+	select SRCU
- 	help
- 	  Support hosting virtualized guest machines.
+@@ -21,6 +21,7 @@ config KVM
+ 	tristate "Kernel-based Virtual Machine (KVM) support (EXPERIMENTAL)"
+ 	depends on RISCV_SBI && MMU
+ 	select HAVE_KVM_IRQCHIP
++	select HAVE_KVM_IRQ_BYPASS
+ 	select HAVE_KVM_IRQ_ROUTING
+ 	select HAVE_KVM_MSI
+ 	select HAVE_KVM_VCPU_ASYNC_IOCTL
+diff --git a/arch/riscv/kvm/aia_imsic.c b/arch/riscv/kvm/aia_imsic.c
+index a8085cd8215e..64b1f3713dd5 100644
+--- a/arch/riscv/kvm/aia_imsic.c
++++ b/arch/riscv/kvm/aia_imsic.c
+@@ -727,6 +727,12 @@ void kvm_riscv_vcpu_aia_imsic_release(struct kvm_vcpu *vcpu)
+ 	kvm_riscv_aia_free_hgei(old_vsfile_cpu, old_vsfile_hgei);
+ }
  
++int kvm_arch_update_irqfd_routing(struct kvm *kvm, unsigned int host_irq,
++				  uint32_t guest_irq, bool set)
++{
++	return -ENXIO;
++}
++
+ int kvm_riscv_vcpu_aia_imsic_update(struct kvm_vcpu *vcpu)
+ {
+ 	unsigned long flags;
+diff --git a/arch/riscv/kvm/vm.c b/arch/riscv/kvm/vm.c
+index 7396b8654f45..9c5837518c1a 100644
+--- a/arch/riscv/kvm/vm.c
++++ b/arch/riscv/kvm/vm.c
+@@ -11,6 +11,9 @@
+ #include <linux/module.h>
+ #include <linux/uaccess.h>
+ #include <linux/kvm_host.h>
++#include <linux/kvm_irqfd.h>
++
++#include <asm/kvm_aia.h>
+ 
+ const struct _kvm_stats_desc kvm_vm_stats_desc[] = {
+ 	KVM_GENERIC_VM_STATS()
+@@ -55,6 +58,63 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
+ 	kvm_riscv_aia_destroy_vm(kvm);
+ }
+ 
++void kvm_arch_start_assignment(struct kvm *kvm)
++{
++	atomic_inc(&kvm->arch.assigned_device_count);
++}
++EXPORT_SYMBOL_GPL(kvm_arch_start_assignment);
++
++void kvm_arch_end_assignment(struct kvm *kvm)
++{
++	atomic_dec(&kvm->arch.assigned_device_count);
++}
++EXPORT_SYMBOL_GPL(kvm_arch_end_assignment);
++
++bool noinstr kvm_arch_has_assigned_device(struct kvm *kvm)
++{
++	return arch_atomic_read(&kvm->arch.assigned_device_count);
++}
++EXPORT_SYMBOL_GPL(kvm_arch_has_assigned_device);
++
++bool kvm_arch_has_irq_bypass(void)
++{
++	return false;
++}
++
++int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
++				     struct irq_bypass_producer *prod)
++{
++	struct kvm_kernel_irqfd *irqfd =
++		container_of(cons, struct kvm_kernel_irqfd, consumer);
++	int ret;
++
++	irqfd->producer = prod;
++	kvm_arch_start_assignment(irqfd->kvm);
++	ret = kvm_arch_update_irqfd_routing(irqfd->kvm, prod->irq, irqfd->gsi, true);
++	if (ret)
++		kvm_arch_end_assignment(irqfd->kvm);
++
++	return ret;
++}
++
++void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
++				      struct irq_bypass_producer *prod)
++{
++	struct kvm_kernel_irqfd *irqfd =
++		container_of(cons, struct kvm_kernel_irqfd, consumer);
++	int ret;
++
++	WARN_ON(irqfd->producer != prod);
++	irqfd->producer = NULL;
++
++	ret = kvm_arch_update_irqfd_routing(irqfd->kvm, prod->irq, irqfd->gsi, false);
++	if (ret)
++		pr_info("irq bypass consumer (token %p) unregistration fails: %d\n",
++			irqfd->consumer.token, ret);
++
++	kvm_arch_end_assignment(irqfd->kvm);
++}
++
+ int kvm_vm_ioctl_irq_line(struct kvm *kvm, struct kvm_irq_level *irql,
+ 			  bool line_status)
+ {
 -- 
 2.47.0
 
