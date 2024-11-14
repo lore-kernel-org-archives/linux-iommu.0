@@ -1,57 +1,57 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60C57178CDE
-	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 16:18:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2074D185B78
+	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 16:18:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731601133; cv=none; b=bvtdVI/zQt8KaI7PLs4cGhRZ2LWS1bUcK7olHItXr6f3Op33HpMS5vqg89ygDMfqoTPydxbXHPy6KbiPMEHc79kKeBMWcpDhfbHL1IabQCvsvVt5AZzpUUCc+NFtB99tmAtpz6bjmeWSEBWfMW/3AL01dLdrJSN6EwN00XLupnA=
+	t=1731601135; cv=none; b=bn+4zOEfAJIXKeD2h/3SHDUH0TtTiXuGZjqtoKOMRoUIwp+EuvBUNz2waxsmTn+F6WrIw9MSl5n+HwC9owaLloHRlBA11TZA5/pD9fzgtIxNrm5KZygZbKJTUUzGGGxtl7kthr5zoZbmNo1iLCduJ+T2uiFHKXHIkMViMm4sL7c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731601133; c=relaxed/simple;
-	bh=Fk34GaC/hTLP6m0UNDLPdCaDiAz8BRxxGQykrmrUHjY=;
+	s=arc-20240116; t=1731601135; c=relaxed/simple;
+	bh=NzQJBoC/AMGjdcz5fUxYJHaJ2T5WgutxrlJ2H2gtLTs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AMZ78XKMUIr1Ijxsa+sSHj8a+H7OezIN3Q4PLJ3R6eH729uadV4YsoWgfqsQ+BTS3KaTwCCZZcF2bZ+QzCa1GTE5PiMt2qjrHbTCPxXjdXCd+cX6LQU8IRoZ+LqHRREV3LKk5VNdQNYGxG1liYstp6IWXUEQjD/u50MeSTO0xWU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=V2QBqcA3; arc=none smtp.client-ip=209.85.128.45
+	 MIME-Version; b=h2pdPjMBD/uAOiaN47XOwXNYsjfknx6k2+JtNglCU910d691w94sSHNxqpMJWvu7mUBXqLxTDDFXhrULBSUoDlufvcR5Enw9PKeQ0qcB2yb2txikUUyZf+pbiNVQj0jiDEWm+VFrsUn442H0XIq+OXWGDaojkU6SAHRzfI87xr8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=dJZdCAqc; arc=none smtp.client-ip=209.85.167.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="V2QBqcA3"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-432d9bb168cso6011975e9.1
-        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 08:18:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="dJZdCAqc"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-53b34ed38easo822048e87.0
+        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 08:18:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1731601130; x=1732205930; darn=lists.linux.dev;
+        d=ventanamicro.com; s=google; t=1731601131; x=1732205931; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4sV1q1LQk/q83S2J2BpeMk7gg4mJdAxo4Zufy5rZGAM=;
-        b=V2QBqcA35Aj0DB8DACUm+ruK4hm0N85oWOxjVxlChVa3Q7T/5DOdKvpdzX2nhwXMp+
-         14/FZK64y3OUpIZXuxkyCnFJJT2UVNJg4F1+MtJLTiFKjpOzZ3HlF+2YMN8XuDYVBDli
-         lNQXsGfMIKvl+E2nDuo1SrlsLiDVLVStE8/3RH8Ku0+otcbQTdocqCMVG5/w1Ydzh27V
-         +S6+252vbmcjUTvu0TSPcGm3BXODNH20c50PFNXkkAFEGjynYDVeUzh3UuVSe5keGddr
-         dSMzfN2Qe2VnAl+c28GmrSkkOAK1dICP479/k5eldaPBmJqg4DAgZhxHWNUuBk68qbF0
-         iezw==
+        bh=EgkdpOYsLIOn0iKAKl5fgt6eXL8Mzl+XIucJ8fWc9TA=;
+        b=dJZdCAqc+tvx2QzB/UVM9qRvBCX7tw7M7beGKu541Wssb3b9abbXq6MSXRV5IKfu1j
+         0OQRwmilvv8TleExjAScKhA1Q6/55aKRWCwkA7LrL48pwFAVmAGk42CfhGb6t6bi8Pu8
+         1NWTnAMATNIN3dd7eWiLCQyn+TEWhVBuAwuhMaVf4XDE2kPRZ4wQ6/zpYfxZOeHjjjgh
+         bsiiudQFiXK0fJFFJRRbQN5VceO/o9hh/BZAQVSRzOON3VhaQZcSKgr9wYqb9Y4Slsrz
+         KRi5OA7ol9GTTHFJAbyZG5ybMOHv5WylAo2l6uhl3BNJOB4Bdsc3s8wkgqXidjNEAYGA
+         ytVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731601130; x=1732205930;
+        d=1e100.net; s=20230601; t=1731601131; x=1732205931;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4sV1q1LQk/q83S2J2BpeMk7gg4mJdAxo4Zufy5rZGAM=;
-        b=Y/HlS4Lnm3H7eFGwxZscI2Q5eDE5WntwzkCI8p7p8etA5cDc8zG+Qy0riAxU+fndhj
-         OEz7zm9Zl9pRItAuRNC6P/vu2xktUECD9MxkUQniiIq+JoaQIiH7VWrwudHS/qnK2oQN
-         hVypoIOEnxeB+djf+x354xa8mPhWpdLeZEAsUNs8rTjAB+ymEWkgdP7PCrP4xlHxu1J6
-         PL4ozEstbTGAEGU2k4OrLYTWPEq7MOej4EwaG8Xh2EQ7sJFXAwFO/D+kAkGWLd6r956E
-         G15k1OMJqchWLfzvBFljPqJNlisjPGivzKMv0+PaanTnWOPl9zgja3VBkRwgRJ/+mu/K
-         9nJg==
-X-Gm-Message-State: AOJu0YxcLmNTSTyAQmJs85yV/cmFNyGxg+4qHyQY3uG5Hnzw2KDgUtjX
-	pthuZ5MkXB+TWLlOIzE6BWoBeYxqbvLypdyo1ql0D9w1msvvGylM8I4+cUNcAFOGITJ4+W5HLNh
-	nWgQ=
-X-Google-Smtp-Source: AGHT+IG+PIdlvaNPVTcrNev34iOeURvR6kwzzOllPVjWxdCbuE/GqDAX+WoRpo6pTqFd8njujj53Ow==
-X-Received: by 2002:a05:6000:2a10:b0:382:2084:19b3 with SMTP id ffacd0b85a97d-38220844ac9mr1324585f8f.22.1731601129621;
-        Thu, 14 Nov 2024 08:18:49 -0800 (PST)
+        bh=EgkdpOYsLIOn0iKAKl5fgt6eXL8Mzl+XIucJ8fWc9TA=;
+        b=Al/dTwCRRRlNedd9Ruy4n3NBrppaqyHPU74QYl5PTWrEf1zb0HuiMxbLv12rZXr+us
+         PXDGfoSthPIlyf3WFJpc7Y3tTxE2kS2/2pdD2j6ttg/L1MXkV+eqLhf6aDl6roYT7yiR
+         sayortCkTD5ozKaRmH16WbPsgxuUGOwzP2e/5/yLLoHr2n7/WSDk8xADSd6I6IfZBeI0
+         SWkxQxbU7vtBc1D1yyN9+NCZjx2/bamI0xz+9ITENQYyzgiov2tNPk3VJ+R8nPSZ04ow
+         7UJv06FIkyJvn/+ON0HSdXEVwSmZJyqMFsfpqHYwzvkWORzCZfauzIIAxqPGdrOcaxOG
+         gGdQ==
+X-Gm-Message-State: AOJu0Yze5BP0jR5+lBoBFcpVKjV0vwpuEh20bXAXHcoJ8ZsMkif2aCWp
+	W6O8lN9SH/ZaVPEoihw6dje6H7L19QVOJ2ba0NB9RVxEbown//8/R/LlczyKlH1dD30/k8eHvrO
+	ry0s=
+X-Google-Smtp-Source: AGHT+IFd0CnkIMN5l0Pz4D+G0QBgRZi3KYTDXcb5xA9gQJqvW8wTertCqu9+xj4IWnW1G55hIkNGVw==
+X-Received: by 2002:a05:6512:3ca5:b0:539:f607:1d2b with SMTP id 2adb3069b0e04-53d862b45e5mr14144215e87.7.1731601131046;
+        Thu, 14 Nov 2024 08:18:51 -0800 (PST)
 Received: from localhost (2001-1ae9-1c2-4c00-20f-c6b4-1e57-7965.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:20f:c6b4:1e57:7965])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432da265c45sm28633555e9.11.2024.11.14.08.18.48
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432dac1f409sm24906005e9.37.2024.11.14.08.18.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2024 08:18:49 -0800 (PST)
+        Thu, 14 Nov 2024 08:18:50 -0800 (PST)
 From: Andrew Jones <ajones@ventanamicro.com>
 To: iommu@lists.linux.dev,
 	kvm-riscv@lists.infradead.org,
@@ -70,9 +70,9 @@ Cc: tjeznach@rivosinc.com,
 	paul.walmsley@sifive.com,
 	palmer@dabbelt.com,
 	aou@eecs.berkeley.edu
-Subject: [RFC PATCH 02/15] genirq/msi: Provide DOMAIN_BUS_MSI_REMAP
-Date: Thu, 14 Nov 2024 17:18:47 +0100
-Message-ID: <20241114161845.502027-19-ajones@ventanamicro.com>
+Subject: [RFC PATCH 03/15] irqchip/riscv-imsic: Add support for DOMAIN_BUS_MSI_REMAP
+Date: Thu, 14 Nov 2024 17:18:48 +0100
+Message-ID: <20241114161845.502027-20-ajones@ventanamicro.com>
 X-Mailer: git-send-email 2.47.0
 In-Reply-To: <20241114161845.502027-17-ajones@ventanamicro.com>
 References: <20241114161845.502027-17-ajones@ventanamicro.com>
@@ -84,29 +84,34 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Provide a domain bus token for the upcoming support for the RISC-V
-IOMMU interrupt remapping domain, which needs to be distinguished
-from NEXUS domains. The new token name is generic, as the only
-information that needs to be conveyed is that the IRQ domain will
-remap MSIs, i.e. there's nothing RISC-V specific to convey.
+Unlike a child of an MSI NEXUS domain, a child of an MSI_REMAP domain
+will not invoke init_dev_msi_info() with 'domain' equal to
+'msi_parent_domain'. This is because the MSI_REMAP domain implements
+init_dev_msi_info() with msi_parent_init_dev_msi_info(), which makes
+'domain' point to the NEXUS (IMSIC) domain, while keeping
+'msi_parent_domain' pointing to itself. The rest of the IMSIC
+init_dev_msi_info() implementation works for MSI_REMAP domains,
+though, so there's nothing to do to add support except accept the
+token.
 
 Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
 ---
- include/linux/irqdomain_defs.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/irqchip/irq-riscv-imsic-platform.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/linux/irqdomain_defs.h b/include/linux/irqdomain_defs.h
-index 36653e2ee1c9..676eca8147ae 100644
---- a/include/linux/irqdomain_defs.h
-+++ b/include/linux/irqdomain_defs.h
-@@ -27,6 +27,7 @@ enum irq_domain_bus_token {
- 	DOMAIN_BUS_AMDVI,
- 	DOMAIN_BUS_DEVICE_MSI,
- 	DOMAIN_BUS_WIRED_TO_MSI,
-+	DOMAIN_BUS_MSI_REMAP,
- };
- 
- #endif /* _LINUX_IRQDOMAIN_DEFS_H */
+diff --git a/drivers/irqchip/irq-riscv-imsic-platform.c b/drivers/irqchip/irq-riscv-imsic-platform.c
+index 5d7c30ad8855..6a7d7fefda6a 100644
+--- a/drivers/irqchip/irq-riscv-imsic-platform.c
++++ b/drivers/irqchip/irq-riscv-imsic-platform.c
+@@ -246,6 +246,8 @@ static bool imsic_init_dev_msi_info(struct device *dev,
+ 	case DOMAIN_BUS_NEXUS:
+ 		if (WARN_ON_ONCE(domain != real_parent))
+ 			return false;
++		fallthrough;
++	case DOMAIN_BUS_MSI_REMAP:
+ #ifdef CONFIG_SMP
+ 		info->chip->irq_set_affinity = irq_chip_set_affinity_parent;
+ #endif
 -- 
 2.47.0
 
