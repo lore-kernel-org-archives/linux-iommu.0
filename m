@@ -1,46 +1,39 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 658A5A32
-	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 17:02:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E37D4262A3;
+	Thu, 14 Nov 2024 17:18:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731603774; cv=none; b=l4GlxCOB0X8dzK6SiBc+myppYKIp1VTn7jhuGDmAUBPbvZvvWMwh1OaYS/Ma0FrUQxk6EIxPA1vx4eRJN2BpEUSAE2wjhU8dLt2FQFOxhPrJluZrRA/eh+lxAeEBi358u5bYbhAvIUaMjd//0MSh/xiBF1gbugIGqPBhGfgC0ic=
+	t=1731604695; cv=none; b=Pq0Sn/0S1giPG9+G4DrxN7hxdee4gIRJTchPnCstgOE6JrVDpdOFs/Q2aNV2xg7tPrtLRkSlele58EzITYQDlJBDydluZ/uuxL+UI8zY0tWixA438D5Se9wG+O18IqYPjITbcBDqypdo/qIDWhHVZDHQTOHdvpH1B9sE5Qsgjws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731603774; c=relaxed/simple;
-	bh=36OSqPoAQyVIULHWPhuhVBJ+iSHV5/kk5o+So/6AzXs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jOEKx1njhCp0EuP66mEtEnZH17Wj2uaQEjaZDeITbB6fJjgO/3trOVgjb/mREhysx9tNIoVj+Ep0DvWnIvsEiyiPjWt0dsR4g5zabiEYmDrHTLgb7DQwpcApsoGWD8TWSYc/Q2CGWL0Dc+YZY6k/GfCddR1baEkSoxQ+aws9Hzc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 51BBB68C7B; Thu, 14 Nov 2024 18:02:47 +0100 (CET)
-Date: Thu, 14 Nov 2024 18:02:47 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
-	Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Joerg Roedel <joro@8bytes.org>, ill Deacon <will@kernel.org>,
-	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v3 00/17] Provide a new two step DMA mapping API
-Message-ID: <20241114170247.GA5813@lst.de>
-References: <cover.1731244445.git.leon@kernel.org> <20241112072040.GG71181@unreal> <20241114133011.GA606631@unreal> <20241114163622.GA3121@lst.de> <20241114164823.GB606631@unreal>
+	s=arc-20240116; t=1731604695; c=relaxed/simple;
+	bh=LEScVdE1MmRWG9RlagdTE4dJgZgN9CYYoi/c43WPRXw=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=N9bJpeRy9SQRF21fgdJE26I7h0UYuDkgzKNvZ6+L43UM44HXrQNTzaL+lKDbNuL7uHFKzm84mRaiwQNyhZdcsxJqY2QgRI0nY2cWGtPNSOH1xKoyRcW5PKEHI77uDBg4YhiNusSOOXmvXeB41dSG7cxLvX8HM7vFk80drDEQbes=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iu/9dD9T; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iu/9dD9T"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B69DC4CECD;
+	Thu, 14 Nov 2024 17:18:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731604694;
+	bh=LEScVdE1MmRWG9RlagdTE4dJgZgN9CYYoi/c43WPRXw=;
+	h=Date:From:To:Cc:Subject:From;
+	b=iu/9dD9T8apb8rpUwdvWz0nd1RHmoZ70W8mu51pn7loG9dSffXjV54idqmmpXU/Mw
+	 b3fzN2suCvLwEHauAKWP80nPgAlHWcY2Dd0lZZbZ/om5M8inY+pOG++/Ul7hcs7fuL
+	 L7guv/mr24X4Ke4RMEJ7+FDtxmzKBLJvxLazjedjeeXLdNuWiSFEDo90oxhkqqGeFr
+	 sPAFoOJe25aTnGvls8TM1JiMb5B/9MVEwiaOWimsmVEV5sx0uuasTlw2TGEfnYO+N7
+	 q69g/qxzRbpb1S2MRkCD5fnYYPJy8hpMU2ToMuZSTxXD8w8q0CcLHSV+QNT2PlpkLN
+	 hKKvxEq+SPiNQ==
+Date: Thu, 14 Nov 2024 17:18:09 +0000
+From: Will Deacon <will@kernel.org>
+To: joro@8bytes.org
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
+	kernel-team@android.com
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 6.13
+Message-ID: <20241114171808.GA24017@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,25 +42,82 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241114164823.GB606631@unreal>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Thu, Nov 14, 2024 at 06:48:23PM +0200, Leon Romanovsky wrote:
-> It is fine, but as a bare minimum, I would expect some sort of response,
-> so I won't sit and wait for unknown date when this API will be acknowledged/NACKed.
-> 
-> I would like to start to work on next step, e.g removing SG from RDMA,
-> and I need to know if this foundation is stable to do so.
-> 
-> > 
-> > No changs to dma-iommu.c are going to get merged without an explicit
-> > ACK from Robin, and while there is no 100% for the core dma-mapping
-> > code I will also not merge anything that hasn't been resolved with
-> > my most trusted reviewer first, not even code I wrote myself.
-> 
-> And do you know what is not resolved here? I don't.
-> All technical questions/issues were handled.
+Hi Joerg,
 
-Let's just wait a little bit, we're all overworked can't instantly
-context switch.
+Please pull these Arm SMMU updates for 6.13.
 
+The summary is in the tag, but the highlight is definitely the removal
+of the complicated block-splitting code from the Arm page-table
+implementations. It even means that we have a negative diffstat!
+
+As with 6.12, I've already pushed this lot to the arm/smmu branch in
+the iommu tree. Please can you merge that into 'next'?
+
+Cheers,
+
+Will
+
+--->8
+
+The following changes since commit 8e929cb546ee42c9a61d24fae60605e9e3192354:
+
+  Linux 6.12-rc3 (2024-10-13 14:33:32 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-updates
+
+for you to fetch changes up to a3799717b881aa0f4e722afb70e7b8ba84ae4f36:
+
+  iommu/tegra241-cmdqv: Fix alignment failure at max_n_shift (2024-11-12 15:09:42 +0000)
+
+----------------------------------------------------------------
+Arm SMMU updates for 6.13
+
+- SMMUv2:
+  * Return -EPROBE_DEFER for client devices probing before their SMMU.
+  * Devicetree binding updates for Qualcomm MMU-500 implementations.
+
+- SMMUv3:
+  * Minor fixes and cleanup for NVIDIA's virtual command queue driver.
+
+- IO-PGTable:
+  * Fix indexing of concatenated PGDs and extend selftest coverage.
+  * Remove unused block-splitting support.
+
+----------------------------------------------------------------
+Dmitry Baryshkov (1):
+      dt-bindings: iommu: arm,smmu: Add Qualcomm SAR2130P compatible
+
+Jason Gunthorpe (3):
+      iommu/io-pgtable-arm: Remove split on unmap behavior
+      iommu/io-pgtable-arm-v7s: Remove split on unmap behavior
+      iommu: Add a kdoc to iommu_unmap()
+
+Mostafa Saleh (2):
+      iommu/io-pgtable-arm: Fix stage-2 map/unmap for concatenated tables
+      iommu/io-pgtable-arm: Add self test for the last page in the IAS
+
+Nicolin Chen (2):
+      iommu/tegra241-cmdqv: Staticize cmdqv_debugfs_dir
+      iommu/tegra241-cmdqv: Fix alignment failure at max_n_shift
+
+Pratyush Brahma (1):
+      iommu/arm-smmu: Defer probe of clients after smmu device bound
+
+Qingqing Zhou (1):
+      dt-bindings: arm-smmu: document QCS615 APPS SMMU
+
+Will Deacon (2):
+      iommu/tegra241-cmdqv: Fix unused variable warning
+      Merge branch 'for-joerg/arm-smmu/bindings' into arm/smmu
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |   5 +
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     |   7 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c              |  11 ++
+ drivers/iommu/io-pgtable-arm-v7s.c                 | 149 +--------------------
+ drivers/iommu/io-pgtable-arm.c                     | 114 +++++-----------
+ drivers/iommu/iommu.c                              |  14 ++
+ 6 files changed, 74 insertions(+), 226 deletions(-)
