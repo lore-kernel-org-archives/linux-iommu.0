@@ -1,142 +1,165 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2085.outbound.protection.outlook.com [40.107.223.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5755817;
-	Thu, 14 Nov 2024 00:05:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731542759; cv=none; b=UqgmYgyb3evXYK+BQhtNf3OLevlm+c4IBH1eTpqcyHyUyE+lhqHUVq6NChHbkRdUJ/U+pcF60eJDc/0lHVWe0MKo8r/IlE0K7MEXjRpGd+7invQgLl5DgNkcXt+BCUdWZglokLHb2gx6J5CdFICoGWBmbnhg6b6Fjn54GaOvubQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731542759; c=relaxed/simple;
-	bh=QCU4sOzgkeIKbdmKlY+8wD3dNS2f394YpPWJGiZp+Bs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oOMgL6a1z75Lb/X9scfqZIQjE07KjGDTuqrTLdQ+GsiiNhSO/M7neXyU1YjcG2Z7RBjGhFSAf1Tm0Tb7dUuTM93C/FwtsSKePLpxKqhMdT5BYp3FdMF3AuvoJoBBr3q/Em3S6LeXWn/LM3YSE1Ztr3CEIa1ba66zPlOzNPcSejY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QUUcgK8L; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 562F6A94A;
+	Thu, 14 Nov 2024 00:19:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.85
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1731543555; cv=fail; b=eMpWhs3Puq+vr0fMAh+/He1672j+SaljMYwbNPOaYj7Xzk9lD7olAffAyWW34mVjJHNTwc2Gshqc+ZGk0PLYjML4EDTiwD6Rdi/9rQ1Gi0wuR/f0qoM/datb5I+MfQArTpeZZm5MtFRokP5r0LjsCqU0wNiZ9P9zaLfgfVKfrK0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1731543555; c=relaxed/simple;
+	bh=lgwc3P7HtsYYLOmU8NGXUH4ItZ8R2/Pf7maJpIPjxiM=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pywcq7VdN4TPX+bg81aeNJC7MoGuy6RpG53H199PBtJ//fIHakYjdW/VRi182sUskjBoasBTQbo8LtSBSUdgLGR0N6dlnxVnrVjC0G1Yxf25o+1ZHphIBSrW/Q1MGb8ZRvj8kQUyVdKiS4gc+xB7sdEViNldb4cznhIGA6tpLm8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=tyIKgADQ; arc=fail smtp.client-ip=40.107.223.85
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QUUcgK8L"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1731542758; x=1763078758;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QCU4sOzgkeIKbdmKlY+8wD3dNS2f394YpPWJGiZp+Bs=;
-  b=QUUcgK8LIG7NhljrT0/pJdd89kLe22wCJWDa2uS7Is40ePI2YS3dA9Z3
-   rkscJRW3mNI5SzShg3zyd83XRONIbZS6x4jBmc1IVnUyiRcnlWNnH6K3V
-   rbVKbkOENR/F8H4itk7oigXhwEAdWBb45Vuz3JnidSTqHOm5mfkwOnJfW
-   8TCsTE+w94zOCzTDVAljsm6flfbRw6DBfqnW7ZGK/CSEnWqTKg/Ldd2hi
-   SrYF/eFImK1R92oP7NAYf3efMi+kU2czGt8l/G92DNYjea3neACHcGfVc
-   etNlCh1xLOLzTzxNXxO6FgDiySloarJAuyT10BhgZXNO7yLKZgRFSg/+t
-   g==;
-X-CSE-ConnectionGUID: nvi4sU4ITV2pUchDlOZO1w==
-X-CSE-MsgGUID: JQee0QqmQl27E9WAIa35tg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11255"; a="42073489"
-X-IronPort-AV: E=Sophos;i="6.12,152,1728975600"; 
-   d="scan'208";a="42073489"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2024 16:05:57 -0800
-X-CSE-ConnectionGUID: KKYYy0w6RvCAL6KZ1+vJGA==
-X-CSE-MsgGUID: MXJRmlm9RzmXYn9RqXolmw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,152,1728975600"; 
-   d="scan'208";a="111341296"
-Received: from lkp-server01.sh.intel.com (HELO 80bd855f15b3) ([10.239.97.150])
-  by fmviesa002.fm.intel.com with ESMTP; 13 Nov 2024 16:05:54 -0800
-Received: from kbuild by 80bd855f15b3 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tBNMt-0000uR-20;
-	Thu, 14 Nov 2024 00:05:51 +0000
-Date: Thu, 14 Nov 2024 08:05:07 +0800
-From: kernel test robot <lkp@intel.com>
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, robdclark@gmail.com,
-	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	jgg@ziepe.ca, jsnitsel@redhat.com, robh@kernel.org,
-	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
-	dmitry.baryshkov@linaro.org
-Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, quic_bibekkum@quicinc.com
-Subject: Re: [PATCH v17 1/5] iommu/arm-smmu: re-enable context caching in
- smmu reset operation
-Message-ID: <202411140748.6mcFdJdO-lkp@intel.com>
-References: <20241112165454.2698269-2-quic_bibekkum@quicinc.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tyIKgADQ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=FQKVknVr3WrGIA+mlES2wD0XQI6bnJK0diqbd6areQvfS/qasudXdzvMSjVqS/nasTZEH/HLxzJsjzY0yq+BPDdhCSCKwJ7hsqn0FB655znk6am1r7oQGeNPW3+nDKK+EKbfOncl+iabc5J4MAp/+iYltYxE4m1iemmhEuE2fkSaejH95sUvcZXjhcDZhpHXwcsD5JsM/Pzhr7BF8ho7rEoY04ycweH94ObqK8HLqxzFUBnOGBROGNsvRSlDwwsSfirQGEbgeEoCCyJUTRIqBX6a7h+h5H/A3vguYE0ak2xwlcBaCXaZKBYhWz+yFYICI1ZVvm3/yxqMBgTt0pEPdw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dExGh8cOnMXtY8SKMGXZZfSo74w6NHsY15goafFjvB8=;
+ b=Es5nVLsA6A46GYMFXxujOFT0PQb0Uft0UHB5lj9yfHtQBJAF8IdNTAjS30Rph6hOoVmzzJiO0mYxwe+MA0RXLhvI3M496u62ii4WJc5sxrnnlj0RrgIvO7gkmQBPS1fqLbdS8sNBbzGKHzDUr4vzRzDvWYQq5H7cWbVDfW7LXwwzu8uZIGcRehDf631IqcNsWghROSipEhs2s4/uc4QCKhirRhIyENW7hCbSseQnFfXb/NIziq4WmiALFSs4geoqU7V+iAfitMU6xY0Da1iy3mve+mkLxgVyJo9YOVC9ACeRe1geumQKA2ZbzwsANBMYg0AthgVVS0W7O9HK/3kK1Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dExGh8cOnMXtY8SKMGXZZfSo74w6NHsY15goafFjvB8=;
+ b=tyIKgADQFRq0kw2Fj2DfpjV2hS9wghMRrizz1vFvcvJCeRq5fCzSQ1UcYShSc2HWlhNQFfHt3mq3XX3ybFy8QCoQv1m/L7eCTZwJDuleRDSwrWqNATSFVBiQCw+7Knw1ZZSnJINHFeF9iLaxsJZLmZTn768CmDfpKuHhiCVM7svr7qplbOkNbtGeXMUnoR3ej4Q3zoPYKM0niPPwVegyG5DyeAMx1uvGgnFI1rtPdim2LOREm9ShXVsucBJPLDhYOzlEjCwxtJPTlV58pM0sQ1kZnBEKAEpXnWeZ5kTpWCZkMMw6vEh6obdAcbOXCBBpX5eP0j9ID22ry8ioXZbbtw==
+Received: from SJ0PR13CA0106.namprd13.prod.outlook.com (2603:10b6:a03:2c5::21)
+ by CY5PR12MB6384.namprd12.prod.outlook.com (2603:10b6:930:3c::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.29; Thu, 14 Nov
+ 2024 00:19:08 +0000
+Received: from SJ5PEPF000001EF.namprd05.prod.outlook.com
+ (2603:10b6:a03:2c5:cafe::43) by SJ0PR13CA0106.outlook.office365.com
+ (2603:10b6:a03:2c5::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.15 via Frontend
+ Transport; Thu, 14 Nov 2024 00:19:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SJ5PEPF000001EF.mail.protection.outlook.com (10.167.242.203) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8158.14 via Frontend Transport; Thu, 14 Nov 2024 00:19:07 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 13 Nov
+ 2024 16:18:56 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 13 Nov
+ 2024 16:18:56 -0800
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Wed, 13 Nov 2024 16:18:54 -0800
+Date: Wed, 13 Nov 2024 16:18:52 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <corbet@lwn.net>,
+	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <dwmw2@infradead.org>, <shuah@kernel.org>,
+	<iommu@lists.linux.dev>, <linux-doc@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+	<baolu.lu@linux.intel.com>, <eric.auger@redhat.com>,
+	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
+	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>, <aik@amd.com>,
+	<zhangfei.gao@linaro.org>, <patches@lists.linux.dev>
+Subject: Re: [PATCH v7 13/13] Documentation: userspace-api: iommufd: Update
+ vIOMMU
+Message-ID: <ZzVB7Fun48rGztuV@Asurada-Nvidia>
+References: <cover.1730836219.git.nicolinc@nvidia.com>
+ <7e4302064e0d02137c1b1e139342affc0485ed3f.1730836219.git.nicolinc@nvidia.com>
+ <f0c45d5b-b8cd-4f75-a9d7-21808f18583d@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20241112165454.2698269-2-quic_bibekkum@quicinc.com>
+In-Reply-To: <f0c45d5b-b8cd-4f75-a9d7-21808f18583d@intel.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ5PEPF000001EF:EE_|CY5PR12MB6384:EE_
+X-MS-Office365-Filtering-Correlation-Id: 359a2546-aa95-4d21-9bad-08dd0441f480
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|1800799024|82310400026|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?7MvYgh4ek0g/Hn+//HNO8olkYKB6+BcNiMtwKHvVM9lep4RTX7qe8c+lZtAp?=
+ =?us-ascii?Q?LZWL1sXQQPW1GjXW8nBOm0hHmYVDniLPfihTMHFDwToFPYzkMxT/5ZlyXnjs?=
+ =?us-ascii?Q?cfLHI7OlE2j3gJAkPvyyA0mjMVMoEVpvGLmnQXTyhoMWasEeyArSta41zMLe?=
+ =?us-ascii?Q?e3r/uDUKM5l5uG05waGHixHLvOXexbXpDpkznQZomxGs4eq8cghXrgskOEO4?=
+ =?us-ascii?Q?GlFGuhLqKoiqpfh1o75HBgBfoWh4Rd2clRJ853uRsHhDzf4PlVugfB8TXuV6?=
+ =?us-ascii?Q?leHrTpikhFUfJXqyUSAqr+eaWKIGq+bMtqZjANywxlwPI2D8qOPy5hleI+Ct?=
+ =?us-ascii?Q?rNlWik/SDXNROU5I+qPbsZb+dOR50Xv34pnF7ZEzzfqn2iz8uMojR9lwThvu?=
+ =?us-ascii?Q?bHq/J1USrTiXCLMw+/Q+Q3uWagCHBQKQvWqhI7XkKLykNz9JbquZB1UQ9xHZ?=
+ =?us-ascii?Q?LCe/nzbAneGQYmeUv3Bv8VJV2rhYoh99ZAIx9GRLDBW+zgmJ8F1pl4RwaQSS?=
+ =?us-ascii?Q?DmzFv5/4nK2u1OrBdXOHqsk22126wlLqwQoB0Ri5yFL6IqSRk9g2ccpgGCIt?=
+ =?us-ascii?Q?jsQsP6uq9GczJXbjjg2cADwwz98+2Tzh3BYtOintXkIUlqzTJhQtz2zsQyrQ?=
+ =?us-ascii?Q?4WhMTbYWTYpvUaKq5xRfHYAvU6FYoKaJgW4UVJcZx6Xyh+2eGrdiQZcj9Ts9?=
+ =?us-ascii?Q?xSt0my3h0f0YfmvOfnDafcANGo9u7Xf2Kqk4uHwfJ4Xhx9OQ/foChURF1HAh?=
+ =?us-ascii?Q?6Rq0e5sPUyug9GxEgQuSjNJUFh7SxDLx0zWgGzUyNtkMJ2+G5PNag/bHd7PQ?=
+ =?us-ascii?Q?3wDylDvdOx2DFvMOzHdlAsdXZYPm07SdQCLPUzM5zsHh1q4RT8Ak/vyqH6Oj?=
+ =?us-ascii?Q?7K76oCHOrv4FXx0Atu0IOGvYblIOiGn8hXSOMs+T3U10sV4Ac/gB0XLWOB/l?=
+ =?us-ascii?Q?UEMxLHoLFaWi3zy9AdIMAmJ2vj1eAogW/dLU/rta6MHsvkLgFTg71OIJnq5I?=
+ =?us-ascii?Q?BMw4Kecc37/DoGmSooTRffl+AgoCptyJmEhXk2ZYRhW0zfgJ2RwpdkWQ4+Gc?=
+ =?us-ascii?Q?US16xey9cSQdC9MG0tUoSg3wzFL1P5nLrAObB4CvRvObmFMae689hWCKYiVk?=
+ =?us-ascii?Q?BoEuRBoNdG6RJc8VYThpSzIaKH/4eD5zgHnIG9pmQyTJrcjrhMzE8860dyIf?=
+ =?us-ascii?Q?NSh25wfRaI7fIfMxl4jQPJsynihg5AwSBSslN0OnCGZkKiAGsU9mFm/7shYc?=
+ =?us-ascii?Q?I/bEzq0qeHg0BPWvtq+EAIiO2Fuqzk3ZouCW66XqYINiB+grRcDugOUkhku/?=
+ =?us-ascii?Q?1bo5ypy8Llk25hty3e6j7JIJpx+9DBFLg/b83EvRazc6/8ymr8GlZCPhwQ9U?=
+ =?us-ascii?Q?usiLQqAwLSQSqxmElv22jaZicURfKxzYcEXbWb79RtU39Q/cuQ=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(82310400026)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Nov 2024 00:19:07.7620
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 359a2546-aa95-4d21-9bad-08dd0441f480
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ5PEPF000001EF.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6384
 
-Hi Bibek,
+On Tue, Nov 12, 2024 at 09:15:02PM +0800, Yi Liu wrote:
+> On 2024/11/6 04:04, Nicolin Chen wrote:
+> > +5. IOMMUFD_OBJ_VIOMMU can be only manually created via the IOMMU_VIOMMU_ALLOC
+> > +   uAPI, provided a dev_id (for the device's physical IOMMU to back the vIOMMU)
+> > +   and an hwpt_id (to associate the vIOMMU to a nesting parent HWPT_PAGING). The
+> > +   iommufd core will link the vIOMMU object to the struct iommu_device that the
+> > +   struct device is behind.
+> 
+> It looks to be reasonable to share the viommu_obj between devices behind
+> the same physical IOMMU. This design seems no enforcement for it. So it's
+> all up to userspace from what I got. :)
 
-kernel test robot noticed the following build warnings:
+It enforces at the vDEVICE allocation:
+	if (viommu->iommu_dev != __iommu_get_iommu_dev(idev->dev)) {
+		return -EINVAL;
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on joro-iommu/next v6.12-rc7 next-20241113]
-[cannot apply to arm64/for-next/core]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Yet, assuming you are referring to creating two vIOMMUs per VM for
+two devices behind the same IOMMU (?), there is no enforcement..
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Bibek-Kumar-Patro/iommu-arm-smmu-re-enable-context-caching-in-smmu-reset-operation/20241113-042646
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20241112165454.2698269-2-quic_bibekkum%40quicinc.com
-patch subject: [PATCH v17 1/5] iommu/arm-smmu: re-enable context caching in smmu reset operation
-config: powerpc64-randconfig-r064-20241114 (https://download.01.org/0day-ci/archive/20241114/202411140748.6mcFdJdO-lkp@intel.com/config)
-compiler: clang version 20.0.0git (https://github.com/llvm/llvm-project 592c0fe55f6d9a811028b5f3507be91458ab2713)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241114/202411140748.6mcFdJdO-lkp@intel.com/reproduce)
+The suggested way for VMM, just like two devices sharing the same
+s2 parent hwpt, is to share the vIOMMU object.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202411140748.6mcFdJdO-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/iommu/arm/arm-smmu/arm-smmu-impl.c:10:
-   In file included from drivers/iommu/arm/arm-smmu/arm-smmu.h:18:
-   In file included from include/linux/io-64-nonatomic-hi-lo.h:5:
-   In file included from include/linux/io.h:14:
-   In file included from arch/powerpc/include/asm/io.h:24:
-   In file included from include/linux/mm.h:2213:
-   include/linux/vmstat.h:518:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
-     518 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
-         |                               ~~~~~~~~~~~ ^ ~~~
->> drivers/iommu/arm/arm-smmu/arm-smmu-impl.c:113:6: warning: unused variable 'i' [-Wunused-variable]
-     113 |         int i;
-         |             ^
-   2 warnings generated.
-
-
-vim +/i +113 drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  109  
-759aaa10c76cba drivers/iommu/arm-smmu-impl.c Vivek Gautam 2019-09-20  110  int arm_mmu500_reset(struct arm_smmu_device *smmu)
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  111  {
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  112  	u32 reg, major;
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15 @113  	int i;
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  114  	/*
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  115  	 * On MMU-500 r2p0 onwards we need to clear ACR.CACHE_LOCK before
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  116  	 * writes to the context bank ACTLRs will stick. And we just hope that
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  117  	 * Secure has also cleared SACR.CACHE_LOCK for this to take effect...
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  118  	 */
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  119  	reg = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_ID7);
-fba6e960772b7b drivers/iommu/arm-smmu-impl.c Will Deacon  2020-01-10  120  	major = FIELD_GET(ARM_SMMU_ID7_MAJOR, reg);
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  121  	reg = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sACR);
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  122  	if (major >= 2)
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  123  		reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  124  	/*
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  125  	 * Allow unmatched Stream IDs to allocate bypass
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  126  	 * TLB entries for reduced latency.
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  127  	 */
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  128  	reg |= ARM_MMU500_ACR_SMTNMB_TLBEN | ARM_MMU500_ACR_S2CRB_TLBEN;
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  129  	arm_smmu_gr0_write(smmu, ARM_SMMU_GR0_sACR, reg);
-62b993a36e4c2d drivers/iommu/arm-smmu-impl.c Robin Murphy 2019-08-15  130  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks
+Nic
