@@ -1,128 +1,119 @@
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D5421E47A5
-	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 09:37:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50FB81F8F17
+	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 12:36:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731577069; cv=none; b=tYf0hdQPfbas85zAr1fNSD1AjzguweNANV9ahjG0NygUUCgTWhOS8zLv5hEums1R6TDjoy64hwh2OpsY5NHcRVh6zpjaC3U1pfrMNXsPTUemKz5WHD87limtyTUiHnhduTzB4yPeQvFF9u+K1KUbGu5hYXhvdpZ+EZZ03PomXXc=
+	t=1731587763; cv=none; b=kbZC/3qt+MDDnSGyEmMS0M/H2iPXFFLh7TBiWEgYVRuZL4pM2+Srs6ej0b5gAB5UpkPOZWw2ruaBSWLPJqep5ysky9RnZXrLQpuvMPFWn5RatapfvlYXEN8Flm7jKfGhKF+2b2Kgn2sYMjKWwspZTeZGVkkk+rd0PacK++UNZnQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731577069; c=relaxed/simple;
-	bh=cv0g3AgKJuElra233uFKtUzzTjTFK6obx5ix2SzvJQA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=lsasfHySGDDxQ4/RJEL6y82bWBt33bOM6XV5GZKo9G6KunWBB6Jk+MWqcg+YFFIJHgRu8fMCXCdXaIqtnB8rWiIf5/Qhncb4SyRUpPJtoBeL4iDORpvIL4ICZLvvkTOSBuPlsDKP9PwC4Q5w57NbXM7gksK4dns4Sl6sF2LqWuA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cNFmP45Y; arc=none smtp.client-ip=209.85.222.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1731587763; c=relaxed/simple;
+	bh=T+LDaEiPLaW2+KPSAG2c9PKXYlFwR3gPf0XLpn/LmK4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GOn4oMrLCOrrC6IFm5b69LJyGllFA92sTZx41rL4+JhW4yYgj1vVZfcCP8vgCn9BDn8xlINK+6E4H9o3I5XXKoelkC8NyvTMyxGQkFA+g54guZt+yyWHk3DsFXd9mdCvyosOpmcR7YbVsEPKmLJfZf0MB70bFCSlaiH5vpWXC6c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=XW0r3UNM; arc=none smtp.client-ip=209.85.167.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cNFmP45Y"
-Received: by mail-ua1-f54.google.com with SMTP id a1e0cc1a2514c-85019a60523so187417241.1
-        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 01:37:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="XW0r3UNM"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-53a097aa3daso522862e87.1
+        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 04:36:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1731577067; x=1732181867; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ehGB6dTMf4LXNmabx+6xsT2G4N4oRc0A26QJig4YDNQ=;
-        b=cNFmP45Yikjm+qG6Er+hSFFXOnYcROwbh4UV9/uwt6c0H36O+0kTFx33cWM2Gv2qla
-         d1qQTvEOQIhDiRb6hkdyYRPOMvv3GSuvD+l1nKvWEmQS62pMoqlJl9FGN5oO7Ru4REi9
-         PrOqrTehFNNyvEDiHROh0bzx3OpkYtFihDW5B698uCpgmyrTxfgFNwAbNEO3hYzd73bo
-         h/elKjdIIJHZe57NfiP+3AgeiMC0nlrbccv5PNTCvtRA7KTUugiNv3yzvVdKHW2KPPeV
-         0BOb50XhdW0Jyi5RvX/xBMRPk1RfQKORx3j500LqMm9dkaggd8xwav0xAcOgzB5Lvz0S
-         l/8A==
+        d=linaro.org; s=google; t=1731587760; x=1732192560; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=VolHPGwzyzWXHH7WDKvK/ITQahcEIxL1w6M06zCzGt8=;
+        b=XW0r3UNM76WkcGtKbcBmH79EtxKmeX2C2+5fiJI7LJ0GP9wIO3hKoVBtRKGPcfR+bn
+         ppIVdRXlQZCjQgECWXCR3WZv1LaaUZbG8DyEDGjY9lLOme3e4YdeVDrY/IuT3KbfgQMq
+         tniRCaeuvLiMv783zDsa9FRE/FpOADnLCsmDM2NrXQ81BgRw3WOM1lP0FTnKy5AXyT5h
+         jFwmxyPbSpYtkmEkkGaFTOlUzvxOQQ8ePH6Cs5LIoajmpYlZVeXxchQoUB65r+fWRLX3
+         N/YSAI0YIC/2rEYH9Z+AYd82jySMuy3M7qXwYlDSGeAcgOqFM4Gzn7fBIR3Rywna2Jq9
+         1Dsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731577067; x=1732181867;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ehGB6dTMf4LXNmabx+6xsT2G4N4oRc0A26QJig4YDNQ=;
-        b=s0zLsZwXxswv8ZsG3eB0GC7RHzyXFuyJtaBjtmEhPIUWn9n4GkxLCL/A8iSLHOqF4d
-         kfHs71QAntW+fYG/viNU1+cFW2r72kG5vU53XJ6npmy0Zl6YV1uC+g2THpgrz5tyc8c1
-         3HhB/afzJK5MtJlmKd0RbEnIp7+iDGjTNE1kbrS6DUKuObMr69bexJb6CDarah0WMiDW
-         O/rsabTLF2NnOxGQ8m9aFJGvJWSz1zmV8wNi3MrH2PmUBWv/ze+Jy40X4ZGGPEsT5MX1
-         b6govPkptEhYP8YXLpJXjfESqugqeaqhVStZ0L7YYHCIvJtdIF9sz10SxDAebqvlVsPB
-         haPA==
-X-Forwarded-Encrypted: i=1; AJvYcCVtOPXMl14M1a1LxOeMClcNEXePIQB7B/6lkH2+MWUNy4tGEGTKmr4XI+XjYewdZZTfYUBT0Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxvzQws0TW5KsWQO/B4XklTNQha4NQnxXTEtcDc+MjJ3Pvz3Q3h
-	QWekZxxvK715ypNv4b17qYYB3r6/0yY/SdvaB0VSi6N2OVigX+Hp3yu/vWbsryY2fOJOPwLZwcP
-	B/noAUYMJKvIctKkl/kDgSAoKXXY=
-X-Google-Smtp-Source: AGHT+IHI15hqHssAzfGGtyXPf31+1ZqoEAtir3h7D+FOXfOCfYcI4E+WZhvgG1S5uTZEAKfrOixmorXSlStST/rghQ8=
-X-Received: by 2002:a05:6102:32cf:b0:4a3:c6f3:89c9 with SMTP id
- ada2fe7eead31-4aae138dcccmr23911356137.11.1731577066793; Thu, 14 Nov 2024
- 01:37:46 -0800 (PST)
+        d=1e100.net; s=20230601; t=1731587760; x=1732192560;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VolHPGwzyzWXHH7WDKvK/ITQahcEIxL1w6M06zCzGt8=;
+        b=eo68MIEKJo3UMDQbdrNI5kk7rzrwURTiW5ZiVou1wn97SoOYZBBORNT6Pkn4I5TLOQ
+         m33an2mVeFulf2Q2IxLnCRuCAiId1AFMiG3KrRDCvps5Tok/ASm8KvXjxpO8c/gB0fZF
+         k8SmzNyhLySPa1zYFp1/nrsSbot65UTh/boLEzRN5TdPwVD6mzpu0xRO5dSb293iZ+a3
+         04XYQ8E7lPTebTgBrsZxfXEybDXA1HQzn2OSxuTGwf5EXM2LbDQJbWx36lzsX4Yo4k5+
+         gDr/e/4WxcagTKerwXsHLSH01eENiTnmjp2Jte/dgFMQZQYmyeOm7BGSlRdlessdF8z3
+         tzBg==
+X-Forwarded-Encrypted: i=1; AJvYcCXWGQP6v+v3Gj7qd+qazzTTweYnZ/4wqCIIsJrrqAWkD4rpWNUkeDxsGm7uwQKgE797G3qNNw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxkzzetlsbn+mtKRbZNMFbVUhoREjmGjAHxBL1dJxDBNf0HaRrN
+	XtsAKAlM0L/xnJaaqCB7AWPF1AAO9qxpkg4IOdlC+qvcb/Koo1XXUO+3pwFHUvE=
+X-Google-Smtp-Source: AGHT+IGi7UOzSfwh72ihUwOGEexWy2JMnijNfqGBkqGRHqPGSrFGRfh6xQPHDoXZUsDQNmf4oTaytg==
+X-Received: by 2002:ac2:4c23:0:b0:53d:a86e:4f19 with SMTP id 2adb3069b0e04-53da86e4f40mr648491e87.25.1731587760466;
+        Thu, 14 Nov 2024 04:36:00 -0800 (PST)
+Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53da6530f62sm170210e87.166.2024.11.14.04.35.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Nov 2024 04:35:59 -0800 (PST)
+Date: Thu, 14 Nov 2024 14:35:58 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Richard Acayan <mailingradian@gmail.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Rob Clark <robdclark@gmail.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-qcom: add sdm670 adreno iommu
+ compatible
+Message-ID: <4lpz2sx3ikvdpb5dv7qdovpsfm724kc6ibjtbmmxaajtwemr5l@xtiaork4hy6e>
+References: <20241114004713.42404-4-mailingradian@gmail.com>
+ <20241114004713.42404-6-mailingradian@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <f8cef6845a6141f0277e31a71fe153612daae776.1731436631.git.geert+renesas@glider.be>
-In-Reply-To: <f8cef6845a6141f0277e31a71fe153612daae776.1731436631.git.geert+renesas@glider.be>
-From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date: Thu, 14 Nov 2024 09:37:20 +0000
-Message-ID: <CA+V-a8sdSBFin=edpj+p5k4KZU4aen+k0acJVTD35YxTbE1qYQ@mail.gmail.com>
-Subject: Re: [PATCH] dma-mapping: Save base/size instead of pointer to shared
- DMA pool
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Oreoluwa Babatunde <quic_obabatun@quicinc.com>, Rob Herring <robh@kernel.org>, 
-	Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
-	linux-renesas-soc@lists.infradead.org, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241114004713.42404-6-mailingradian@gmail.com>
 
-On Tue, Nov 12, 2024 at 6:41=E2=80=AFPM Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
->
-> On RZ/Five, which is non-coherent, and uses CONFIG_DMA_GLOBAL_POOL=3Dy:
->
->     Oops - store (or AMO) access fault [#1]
->     CPU: 0 UID: 0 PID: 1 Comm: swapper Not tainted 6.12.0-rc1-00015-g8a6e=
-02d0c00e #201
->     Hardware name: Renesas SMARC EVK based on r9a07g043f01 (DT)
->     epc : __memset+0x60/0x100
->      ra : __dma_alloc_from_coherent+0x150/0x17a
->     epc : ffffffff8062d2bc ra : ffffffff80053a94 sp : ffffffc60000ba20
->      gp : ffffffff812e9938 tp : ffffffd601920000 t0 : ffffffc6000d0000
->      t1 : 0000000000000000 t2 : ffffffffe9600000 s0 : ffffffc60000baa0
->      s1 : ffffffc6000d0000 a0 : ffffffc6000d0000 a1 : 0000000000000000
->      a2 : 0000000000001000 a3 : ffffffc6000d1000 a4 : 0000000000000000
->      a5 : 0000000000000000 a6 : ffffffd601adacc0 a7 : ffffffd601a841a8
->      s2 : ffffffd6018573c0 s3 : 0000000000001000 s4 : ffffffd6019541e0
->      s5 : 0000000200000022 s6 : ffffffd6018f8410 s7 : ffffffd6018573e8
->      s8 : 0000000000000001 s9 : 0000000000000001 s10: 0000000000000010
->      s11: 0000000000000000 t3 : 0000000000000000 t4 : ffffffffdefe62d1
->      t5 : 000000001cd6a3a9 t6 : ffffffd601b2aad6
->     status: 0000000200000120 badaddr: ffffffc6000d0000 cause: 00000000000=
-00007
->     [<ffffffff8062d2bc>] __memset+0x60/0x100
->     [<ffffffff80053e1a>] dma_alloc_from_global_coherent+0x1c/0x28
->     [<ffffffff80053056>] dma_direct_alloc+0x98/0x112
->     [<ffffffff8005238c>] dma_alloc_attrs+0x78/0x86
->     [<ffffffff8035fdb4>] rz_dmac_probe+0x3f6/0x50a
->     [<ffffffff803a0694>] platform_probe+0x4c/0x8a
->
-> If CONFIG_DMA_GLOBAL_POOL=3Dy, the reserved_mem structure passed to
-> rmem_dma_setup() is saved for later use, by saving the passed pointer.
-> However, when dma_init_reserved_memory() is called later, the pointer
-> has become stale, causing a crash.
->
-> E.g. in the RZ/Five case, the referenced memory now contains the
-> reserved_mem structure for the "mmode_resv0@30000" node (with base
-> 0x30000 and size 0x10000), instead of the correct "pma_resv0@58000000"
-> node (with base 0x58000000 and size 0x8000000).
->
-> Fix this by saving the needed reserved_mem structure's contents instead.
->
-> Fixes: 8a6e02d0c00e7b62 ("of: reserved_mem: Restructure how the reserved =
-memory regions are processed")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Wed, Nov 13, 2024 at 07:47:16PM -0500, Richard Acayan wrote:
+> Add the compatible for the separate IOMMU on SDM670 for the Adreno GPU.
+> 
+> This IOMMU has the compatible strings:
+> 
+> 	"qcom,sdm670-smmu-v2", "qcom,adreno-smmu", "qcom,smmu-v2"
+> 
+> While the SMMU 500 doesn't need an entry for this specific SoC, the
+> SMMU v2 compatible should have its own entry, as the fallback entry in
+> arm-smmu.c handles "qcom,smmu-v2" without per-process page table support
+> unless there is an entry here. This entry can't be the
+> "qcom,adreno-smmu" compatible because dedicated GPU IOMMUs can also be
+> SMMU 500 with different handling.
+> 
+> Signed-off-by: Richard Acayan <mailingradian@gmail.com>
 > ---
->  kernel/dma/coherent.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
->
-Tested-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-Cheers,
-Prabhakar
+
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+
+
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 6372f3e25c4b..601fb878d0ef 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -567,6 +567,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+>  	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
+>  	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
+>  	{ .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_v2_data },
+> +	{ .compatible = "qcom,sdm670-smmu-v2", .data = &qcom_smmu_v2_data },
+>  	{ .compatible = "qcom,sdm845-smmu-v2", .data = &qcom_smmu_v2_data },
+>  	{ .compatible = "qcom,sdm845-smmu-500", .data = &sdm845_smmu_500_data },
+>  	{ .compatible = "qcom,sm6115-smmu-500", .data = &qcom_smmu_500_impl0_data},
+> -- 
+> 2.47.0
+> 
+
+-- 
+With best wishes
+Dmitry
