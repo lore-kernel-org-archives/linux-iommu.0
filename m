@@ -1,55 +1,57 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CB5714E2D6
-	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 16:18:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18B097DA6D
+	for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 16:18:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731601130; cv=none; b=pkuiAyVyNJZvv+bfza8GyJA69r6EK4XIfvv4IF4BYbnUskouANOfKV48aG3tG9jVzRqdOFsHmNYVNZBfUKatGZrY7um7klIXAJPlXIUJU/+Db5huKc0lacaabDXHRC0Y88fBZ3kTBbBwPaBwIIw9ipJa0Lbo4C+RLApkqD2Kb44=
+	t=1731601131; cv=none; b=o9aBvs6SvSOeJHMzwG/BiYSCNGY7gBU/Ow9zMcukle2IekdvkAcBLBZ+f5m/8IqdQTZ3gaa6KMj1qMb/MzSO57UGUcVU/X1r09wm2sET+N1x3OXciCRBiUsPTY+Eq/AwkjlVMqWcsyjeKKwyR3+YJHauYh3EH6vcICB8Gwj51CQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731601130; c=relaxed/simple;
-	bh=lyZC4By9Ar4lY6HLPHxQpNiCLgIv0jeWjlSxPE9suGg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ovfTAZGeOkuWHgxhkKoixlyW4Wfn8lM91jzbBi/Ezse1+nNU6FAwPagz3d9NtgAJ5RG9KWJPb/HrS5AP3qkJJ+3mwqW+zMhr5uoJRBfPn9miotveu+7g4RGE5NohvSmp0Lh8Eu0HlYgXx6P4248y/3b851qdin5yvUbGhbpW93o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=LNfKItJ6; arc=none smtp.client-ip=209.85.128.50
+	s=arc-20240116; t=1731601131; c=relaxed/simple;
+	bh=g+8C+bxaMal2sistKMy08AprWRr5v1lTzqnhoi4uxEc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=qLmLlwgjvJZUrbL0sOhLgGylggVnnTCm4U1NNBMPEl6q7H6B6fSIkF2pH5ZjGcOvbirjUCz3xKrWALrT1kNU9hre20ntg4CZ85wRr1SG9mh+NmiEcwbLZ1jgtMfkJ6m8Bz20hITUqNQsC+yr0VtDHYHoknjCKRUUvsr1KO/sRAw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=hjRMBxKA; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="LNfKItJ6"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4316a44d1bbso7179145e9.3
-        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 08:18:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="hjRMBxKA"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4315c1c7392so7765355e9.1
+        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 08:18:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1731601127; x=1732205927; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=c7BJqdeVq7UVKuF/HMX90zKjA2XSvBJJooO0qYOgVYo=;
-        b=LNfKItJ6B9t8tMwafdcBOdOiB64U/BJGbosZhdWfznDF8+i8F9WNP0+x2vQ73JGaVJ
-         ujqZ6qjjDfU5AEaWsrlC/4FJycFoLWF6Odadn0x+lz2onJ3zglFbvy6BpDrIkfCmn6+s
-         gqsBHDzITe+CSB+dmW817mrCvg4GxbpiCFntBHBcp/1sciIN5u+GxSWMsNR4waVkWqZT
-         HALjy81+ZmVRJEprNP87K0W9PN4n6XPo1LQr9k8Z26bDdDp16EPVFwlKI7GVjkEdRjcY
-         MfDXTAEaVZu5/J9efS70FsHwCoZ6+mv9YcHCdeuLU/SIJFiY5su/L3VXRt4BVJK5rJq2
-         lgCw==
+        d=ventanamicro.com; s=google; t=1731601128; x=1732205928; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=D3ezq2WAE13GAqwSlX07T0LyNCWtPpuH6EoHFe0wCHg=;
+        b=hjRMBxKAYFZY6vC8I0v+QoVunIQW2hw9ia8LhEfDAcUkRWXtoS1LTc0yYwM6vw5NSy
+         6ssbNCQ3B2CNHxCNYePUu1LqzaBuuY7OL9uuzbPAkIin83SchPoaLG6ncXERrn7frmtX
+         fPckTbZSsALbzClu/22L7IIk/gyUhZiAW0Tc/ESLZl3Wq/fpP2abmd0W+8YZj7xGTTxO
+         PJY82XzeHJbCGCbx8ZUbhnrh9m6Vl3iB+wzCaO9coSi0BL62iG+VHZztzbKoq+TEfteO
+         S5EhjaVQpEMylG7MgX91OoxslpwGaQlOVNqa4dMeH5aI+b52OUIDWpxgIp5WPtnuLn57
+         jhJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731601127; x=1732205927;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=c7BJqdeVq7UVKuF/HMX90zKjA2XSvBJJooO0qYOgVYo=;
-        b=tJcptXRy1oRwyxt9zRTvgB3TFLMD6eDh0hgT2ANyrKuuxkcCNc1zEzqoNYAB+UY0Es
-         /u0QFnRVa7CgowouKAbMMMZAdKJQiFiVYiVgMSLAIZRR9XqF+VIQJ5sAOYillt5xkyMv
-         THqDkhMAmEGcikPmpCNSmrrHZmZim342bYVwxWQLEh9TT9KVnnY1ATJV0EMgiqBIep9s
-         4dCVJ+S21hIVqpHomNZAJ5ZirDqA7+CjNNCnuH8818kM8XILJBDN6U32Ab353PK1f+WF
-         I4K0DHLbrTpRvKjKTZ6zTwfmOnwFKVC2gevtmIIJv0Jrta6nEkAdCMAKWm0zegYNRY/p
-         o+FQ==
-X-Gm-Message-State: AOJu0YzYPY8gTGL0/BNK0wZ3oAXc+lCwdugjnBlfEXpKEMeNfusyygIc
-	+klPY+FXGIoGHSycQDO5ZCXWB09idSf1v2RpFN53eIka0wmyF6E9rl98ZoDaKJWfGfgayi/X0sU
-	XTcM=
-X-Google-Smtp-Source: AGHT+IGmsJWy6Z+mGpYkwKc89nKAhzRkstEPPTX+iWcGxi/SAriHdno919nTAwdEP/fS42LcKsW+QA==
-X-Received: by 2002:a05:600c:1d88:b0:431:5a27:839c with SMTP id 5b1f17b1804b1-432d4a98364mr70171705e9.5.1731601126807;
-        Thu, 14 Nov 2024 08:18:46 -0800 (PST)
+        d=1e100.net; s=20230601; t=1731601128; x=1732205928;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=D3ezq2WAE13GAqwSlX07T0LyNCWtPpuH6EoHFe0wCHg=;
+        b=B450TRU6EFYrjQymjx2Ke6dMOlHo53CIovN41DJtYRyv5SKnxDHmqmBLMJaXVb8EeU
+         c/BYaoiTulWbExuz7FDUN/8qajZuR2qQBDtW6l/OMedDa438dP84J3XYMNj7BZPhM6+0
+         81KD1+RQd1r36igwRxNtW6ZCavyJ0vOz+ZT/k3OqjnUT7xjvrUSd0ue1Cigzl432pa3B
+         CX2ZMDEuzRed7x7hAussKH/rQEH4DNbpEUcDaVKoJNNVs5VgxZ6mAbMqEZrb65L5Wuo5
+         O92fYcty0ChjXOQu7bQtJAx77la+k+Lb90n/RJcaVdc3mGOPIxqI5WgOCbHQ9GYKsCDT
+         D2cQ==
+X-Gm-Message-State: AOJu0YwPwADyzf6PFUDkBDU28ozM0I6ttMmeSw3HJslHwdHmv3s58rnc
+	Oq+rzzXigzJYQMRoUc38kuNtvrRsEzJJjSgG0th5Lm0bmCX2IPCDu1e94BNSCc09k05UaUdUZiz
+	Qrrs=
+X-Google-Smtp-Source: AGHT+IGL/aKw/LZ1JTJ7uKMa5kImPbRP3wDn7MPyUSWssqMaT5McjPD8vLFqR2fLEptCKYdvhP3z0A==
+X-Received: by 2002:a05:600c:1d1c:b0:426:6308:e2f0 with SMTP id 5b1f17b1804b1-432da7cbcefmr23145865e9.26.1731601128138;
+        Thu, 14 Nov 2024 08:18:48 -0800 (PST)
 Received: from localhost (2001-1ae9-1c2-4c00-20f-c6b4-1e57-7965.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:20f:c6b4:1e57:7965])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432da265f28sm28998355e9.17.2024.11.14.08.18.45
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432da2800absm28573255e9.25.2024.11.14.08.18.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2024 08:18:46 -0800 (PST)
+        Thu, 14 Nov 2024 08:18:47 -0800 (PST)
 From: Andrew Jones <ajones@ventanamicro.com>
 To: iommu@lists.linux.dev,
 	kvm-riscv@lists.infradead.org,
@@ -68,10 +70,12 @@ Cc: tjeznach@rivosinc.com,
 	paul.walmsley@sifive.com,
 	palmer@dabbelt.com,
 	aou@eecs.berkeley.edu
-Subject: [RFC PATCH 00/15] iommu/riscv: Add irqbypass support
-Date: Thu, 14 Nov 2024 17:18:45 +0100
-Message-ID: <20241114161845.502027-17-ajones@ventanamicro.com>
+Subject: [RFC PATCH 01/15] irqchip/riscv-imsic: Use hierarchy to reach irq_set_affinity
+Date: Thu, 14 Nov 2024 17:18:46 +0100
+Message-ID: <20241114161845.502027-18-ajones@ventanamicro.com>
 X-Mailer: git-send-email 2.47.0
+In-Reply-To: <20241114161845.502027-17-ajones@ventanamicro.com>
+References: <20241114161845.502027-17-ajones@ventanamicro.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,72 +84,67 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Platforms with implementations of the RISC-V IOMMU and AIA support
-directly delivering MSIs of devices assigned to guests to the VCPUs.
-VFIO and KVM have a framework to enable such support, which is called
-irqbypass. This series enables irqbypass for devices assigned to KVM
-guests when all VCPUs are allocated guest interrupt files. The RISC-V
-IOMMU and AIA also support MRIFs (memory-resident interrupt files),
-but support for those will be posted as a follow-on to this series.
+In order to support IRQ domains which reside between the leaf domains
+and IMSIC, put the IMSIC implementation of irq_set_affinity into its
+chip.
 
-The patches are organized as follows:
-  1-3:  Prepare to create an MSI remapping irqdomain parented by the IMSIC
-  4-6:  Prepare the IOMMU driver for VFIO domains which will use a single
-        stage of translation, but G-stage instead of the first stage
-  7-8:  Add support to the IOMMU driver for creating irqdomains
-  9-10: Prepare KVM to enable irqbypass
- 11-13: Add irqbypass support to the IOMMU driver and KVM
- 14-15: Enable VFIO by default
+Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+---
+ drivers/irqchip/irq-riscv-imsic-platform.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-This series is also available here [1] and may be tested with QEMU recent
-enough to have the IOMMU model.
-
-Based on linux-next commit 28955f4fa282 ("Add linux-next specific files for 20241112")
-
-[1] https://github.com/jones-drew/linux/commits/riscv/iommu-irqbypass-rfc-v1/
-
-Thanks,
-drew
-
-
-Andrew Jones (10):
-  irqchip/riscv-imsic: Use hierarchy to reach irq_set_affinity
-  genirq/msi: Provide DOMAIN_BUS_MSI_REMAP
-  irqchip/riscv-imsic: Add support for DOMAIN_BUS_MSI_REMAP
-  iommu/riscv: Move definitions to iommu.h
-  iommu/riscv: Add IRQ domain for interrupt remapping
-  RISC-V: KVM: Add irqbypass skeleton
-  RISC-V: Define irqbypass vcpu_info
-  iommu/riscv: Add guest file irqbypass support
-  RISC-V: KVM: Add guest file irqbypass support
-  RISC-V: defconfig: Add VFIO modules
-
-Tomasz Jeznach (3):
-  iommu/riscv: report iommu capabilities
-  RISC-V: KVM: Enable KVM_VFIO interfaces on RISC-V arch
-  vfio: enable IOMMU_TYPE1 for RISC-V
-
-Zong Li (2):
-  iommu/riscv: use data structure instead of individual values
-  iommu/riscv: support GSCID and GVMA invalidation command
-
- arch/riscv/configs/defconfig               |   2 +
- arch/riscv/include/asm/irq.h               |   9 +
- arch/riscv/include/asm/kvm_host.h          |   3 +
- arch/riscv/kvm/Kconfig                     |   3 +
- arch/riscv/kvm/aia_imsic.c                 | 136 +++++++-
- arch/riscv/kvm/vm.c                        |  60 ++++
- drivers/iommu/riscv/Makefile               |   2 +-
- drivers/iommu/riscv/iommu-bits.h           |  11 +
- drivers/iommu/riscv/iommu-ir.c             | 360 +++++++++++++++++++++
- drivers/iommu/riscv/iommu.c                | 183 ++++++-----
- drivers/iommu/riscv/iommu.h                |  78 +++++
- drivers/irqchip/irq-riscv-imsic-platform.c |  18 +-
- drivers/vfio/Kconfig                       |   2 +-
- include/linux/irqdomain_defs.h             |   1 +
- 14 files changed, 776 insertions(+), 92 deletions(-)
- create mode 100644 drivers/iommu/riscv/iommu-ir.c
-
+diff --git a/drivers/irqchip/irq-riscv-imsic-platform.c b/drivers/irqchip/irq-riscv-imsic-platform.c
+index c708780e8760..5d7c30ad8855 100644
+--- a/drivers/irqchip/irq-riscv-imsic-platform.c
++++ b/drivers/irqchip/irq-riscv-imsic-platform.c
+@@ -96,9 +96,8 @@ static int imsic_irq_set_affinity(struct irq_data *d, const struct cpumask *mask
+ 				  bool force)
+ {
+ 	struct imsic_vector *old_vec, *new_vec;
+-	struct irq_data *pd = d->parent_data;
+ 
+-	old_vec = irq_data_get_irq_chip_data(pd);
++	old_vec = irq_data_get_irq_chip_data(d);
+ 	if (WARN_ON(!old_vec))
+ 		return -ENOENT;
+ 
+@@ -116,13 +115,13 @@ static int imsic_irq_set_affinity(struct irq_data *d, const struct cpumask *mask
+ 		return -ENOSPC;
+ 
+ 	/* Point device to the new vector */
+-	imsic_msi_update_msg(d, new_vec);
++	imsic_msi_update_msg(irq_get_irq_data(d->irq), new_vec);
+ 
+ 	/* Update irq descriptors with the new vector */
+-	pd->chip_data = new_vec;
++	d->chip_data = new_vec;
+ 
+-	/* Update effective affinity of parent irq data */
+-	irq_data_update_effective_affinity(pd, cpumask_of(new_vec->cpu));
++	/* Update effective affinity */
++	irq_data_update_effective_affinity(d, cpumask_of(new_vec->cpu));
+ 
+ 	/* Move state of the old vector to the new vector */
+ 	imsic_vector_move(old_vec, new_vec);
+@@ -135,6 +134,9 @@ static struct irq_chip imsic_irq_base_chip = {
+ 	.name			= "IMSIC",
+ 	.irq_mask		= imsic_irq_mask,
+ 	.irq_unmask		= imsic_irq_unmask,
++#ifdef CONFIG_SMP
++	.irq_set_affinity	= imsic_irq_set_affinity,
++#endif
+ 	.irq_retrigger		= imsic_irq_retrigger,
+ 	.irq_compose_msi_msg	= imsic_irq_compose_msg,
+ 	.flags			= IRQCHIP_SKIP_SET_WAKE |
+@@ -245,7 +247,7 @@ static bool imsic_init_dev_msi_info(struct device *dev,
+ 		if (WARN_ON_ONCE(domain != real_parent))
+ 			return false;
+ #ifdef CONFIG_SMP
+-		info->chip->irq_set_affinity = imsic_irq_set_affinity;
++		info->chip->irq_set_affinity = irq_chip_set_affinity_parent;
+ #endif
+ 		break;
+ 	default:
 -- 
 2.47.0
 
