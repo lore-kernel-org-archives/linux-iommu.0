@@ -1,103 +1,134 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2EED8F6C
-	for <iommu@lists.linux.dev>; Fri, 15 Nov 2024 01:07:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D2E514F9D9;
+	Fri, 15 Nov 2024 03:20:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731632881; cv=none; b=fmXfcnDqM7Twj0DVCSXaRtvKH89PGT8SV9VaOb1eYeOsMKXcBjr5Obtt43oxZShQn4Vat3/SWbVb8hjgXEaAmmBztlc2WTzvg2xMSMraldwxPTTTUkaw9BIHtGs6hBx00i9I5TYDCxQ4kn6bkC+nwxHVaAav9ircxxbDCFKKvwg=
+	t=1731640812; cv=none; b=tB2XaJP7s7DMmJXD1Rgln3tINfQLIwJbb5UJ5SgU68+48HmBQ+in5YcXUPhlkwgWNiXbgFKNkimeb2UMu31+jBrE4YD4dfTRFYU4TrUb0BMwX1x31sHW3wy+rrPqWc2t6XoGpGaQ3V7FO7Ehdp8kfbC8c1lakSAxJosgdOTkheA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731632881; c=relaxed/simple;
-	bh=EF+n0oMq+jkaOCVSeKijMw8NCSV9S6MQgJOLuMQdQSU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UGxhGPVNZfbf2FqFYfmAVB2ggc9XMPfLqiIs2E9910l2VfOoAZZy7eM5EQLg0AFUfRS/rxOeq0bWwfhiZqQnSe1OLu6AKduKp165+ZaIHTYzNCKdCuztOg7CG1R1KUqcx4qgbEPNlDUs/sxEX0FRI4z4p/wGuVFCgqiPZ0MoZ78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=SuPUWyGX; arc=none smtp.client-ip=209.85.128.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1731640812; c=relaxed/simple;
+	bh=EmmauIawg383LKUBt/6r/yNcNhvgcVIZnj39fkNbIv8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=aOT1O6woK1Iz/JSBPz7/fuKGvCbc3daCOeCi0MabUXNWrymwvU9pAtmZhng7iSjmCX0XTK0rnrNxcg2IO8974DfiUM0cOPr3cdjzRSCqpC9t3KGZitaXzWGQq9/jKEj1WEUZ2D8XiDVymWd0fNSSodoKPGw5dKVHrCkuzuiyU2Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KuxVc71l; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SuPUWyGX"
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-6e34339d41bso11897377b3.0
-        for <iommu@lists.linux.dev>; Thu, 14 Nov 2024 17:07:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1731632878; x=1732237678; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3aWXJDvKxrgbp/6ctsqOes9P0Tv5Ujk4CBOngYzj++k=;
-        b=SuPUWyGXE3hEYrduXHlQx5Hzcwe27UStXU/egYsss4w7A7NRsEuVmvJBGSqxqFIdvF
-         IWFwo38/FSaVhLdNQDkEfyPlZHFsm4pEW4+if1716GfA/FGQMCKdup5ZsttysBmY/KDk
-         07hdXMxz5JHrdqFhiYTrJJYkBbdZvqXyFX4t/8fiwuB7iVyiZSKcn05zNocMwKZgZlB3
-         hjjubggvdf1mrk8hTgzPbfzJxF2LBgzanzTkUg1WvU2F2cq/ZZKmXonUmMc+CceO1OI9
-         PUPAcPH2osMUvmU0zGEKDglFhNYvbs8JSnWa87141jv5R0hL6bVr2qLi0XtYFfUAtH+i
-         P/Dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731632878; x=1732237678;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3aWXJDvKxrgbp/6ctsqOes9P0Tv5Ujk4CBOngYzj++k=;
-        b=gZWTwUWCCJEcRp9ePTYR7hz4ZasjjauPEx6bVBdlC1CSzMQ/+s22g0qGdx1U79kHpM
-         5dMoEMY8AXQqzSldf3nJUrsiPsVq6i0yXQzgVP7MKf3eXxfcaAT9IrtSRmgR+YSygEa2
-         0RHWGr6V57cEG0/KhJ3dfaL0IeVuWs2fkfdfenLuPBMRINfou9sRlCkh7dbqSreTh+bl
-         6035aLcF3vOLxwn2tEY5xtlGEfVzl/9DrlLB6kM2MbGkbrBpyxXuB5QVAFMWoB01JEYb
-         SN4a6Qg528hVSLwQVwftyYAR/OqiJha0S/gGghWcQgkB2xw8WmuVhlUfPThmYvGCgVMa
-         TECw==
-X-Forwarded-Encrypted: i=1; AJvYcCVB7WWysK2nahziLYrpwdDdBx2XMJZK7zyNFgbaXuV4wBUkZkJDlOB7Re48+EAdMHMcVctb7w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyy2zy3QTWRMvRMFLSdRPiXMr5cFqmIgE7eX0nU+0TcMx91sBjj
-	MFkTksEbqU9G2PTweSyrdjJ93C2R48svXKqbQOgaxajEfQ7q1QSldgiE1YF8pV4=
-X-Google-Smtp-Source: AGHT+IFbzaNJ9yX/vZFqwFt8LqRMXX16nQ2JQuel0sEYgbV2jhBLReqJAN+HyqsCdlHeN/ugBBKRhw==
-X-Received: by 2002:a05:690c:604:b0:6ee:381b:eb74 with SMTP id 00721157ae682-6ee55c2bad7mr11848267b3.22.1731632878617;
-        Thu, 14 Nov 2024 17:07:58 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7b35ca2f72esm107056085a.78.2024.11.14.17.07.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2024 17:07:57 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tBkoW-00000002KO4-3Gj3;
-	Thu, 14 Nov 2024 21:07:56 -0400
-Date: Thu, 14 Nov 2024 21:07:56 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Nathan Chancellor <nathan@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Nicolin Chen <nicolinc@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	patches@lists.linux.dev
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Import IOMMUFD module namespace
-Message-ID: <20241115010756.GB173265@ziepe.ca>
-References: <20241114-arm-smmu-v3-import-iommufd-module-ns-v1-1-c551e7b972e9@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KuxVc71l"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1731640810; x=1763176810;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=EmmauIawg383LKUBt/6r/yNcNhvgcVIZnj39fkNbIv8=;
+  b=KuxVc71lgwa9ezoyad055MKb3YyGlWYEquLOLRgqGX1TEdUqbW6li4jo
+   9KgQjr1HuQNDapOyyaYGXe/zLaKNGpPhl5zM30NrgvuVCcp68/cky77R2
+   FiDboKBNdJ0t0NTJYAjHJwc1C7kc5vvKPJSrHDNztdduuFphGcbYkQxFE
+   HiZng8GHHN8jxEZQZ/RWDt0EsbteLCbDXWZVAzQaviMQvjF65uliGt9JU
+   60d+R9ua/SBppB688Xgog3Qw5G514h8r69BXPdP3IPAGOrRapX43Z0bIx
+   i5ZrZZLOU/kIlkovkyF+r9coYDOqAHowiI4dhdCxzYJ5fJ1eyaeUcchxv
+   A==;
+X-CSE-ConnectionGUID: u8qSZTZCSyufpL8TeZYZWg==
+X-CSE-MsgGUID: rEhCG+2RQdWNL+K0WQHLhg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11256"; a="43014889"
+X-IronPort-AV: E=Sophos;i="6.12,155,1728975600"; 
+   d="scan'208";a="43014889"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2024 19:20:09 -0800
+X-CSE-ConnectionGUID: AtpwSsV+RnaGl0XhBl2YSw==
+X-CSE-MsgGUID: J2He9sEdRqWy3hAuDWdm3Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,155,1728975600"; 
+   d="scan'208";a="89166020"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2024 19:20:07 -0800
+Message-ID: <9c065d9d-ec97-4d3c-a2af-0dd4fe40ad5a@linux.intel.com>
+Date: Fri, 15 Nov 2024 11:19:03 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241114-arm-smmu-v3-import-iommufd-module-ns-v1-1-c551e7b972e9@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] iommu: Add ops->domain_alloc_nested()
+To: Jason Gunthorpe <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, linux-arm-kernel@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>
+Cc: patches@lists.linux.dev
+References: <1-v1-c252ebdeb57b+329-iommu_paging_flags_jgg@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <1-v1-c252ebdeb57b+329-iommu_paging_flags_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Nov 14, 2024 at 10:42:29AM -0700, Nathan Chancellor wrote:
-> Commit 69d9b312f38a ("iommu/arm-smmu-v3: Support IOMMU_VIOMMU_ALLOC")
-> started using _iommufd_object_alloc() without importing the IOMMUFD
-> module namespace, resulting in a modpost warning:
+On 11/15/24 03:55, Jason Gunthorpe wrote:
+> It turns out all the drivers that are using this immediately call into
+> another function, so just make that function directly into the op. This
+> makes paging=NULL for domain_alloc_user and we can remove the argument in
+> the next patch.
 > 
->   WARNING: modpost: module arm_smmu_v3 uses symbol _iommufd_object_alloc from namespace IOMMUFD, but does not import it.
+> The function mirrors the similar op in the viommu that allocates a nested
+> domain on top of the viommu's nesting parent. This version supports cases
+> where a viommu is not being used.
 > 
-> Commit d68beb276ba2 ("iommu/arm-smmu-v3: Support IOMMU_HWPT_INVALIDATE
-> using a VIOMMU object") added another warning by using
-> iommufd_viommu_find_dev():
-> 
->   WARNING: modpost: module arm_smmu_v3 uses symbol iommufd_viommu_find_dev from namespace IOMMUFD, but does not import it.
-> 
-> Import the IOMMUFD module namespace to resolve the warnings.
-> 
-> Fixes: 69d9b312f38a ("iommu/arm-smmu-v3: Support IOMMU_VIOMMU_ALLOC")
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 2 ++
->  1 file changed, 2 insertions(+)
+>   drivers/iommu/intel/iommu.c          |  9 +++------
+>   drivers/iommu/intel/iommu.h          |  6 ++++--
+>   drivers/iommu/intel/nested.c         | 11 +++++++++--
+>   drivers/iommu/iommufd/hw_pagetable.c |  8 ++++----
+>   drivers/iommu/iommufd/selftest.c     |  7 ++++---
+>   include/linux/iommu.h                |  9 +++++----
+>   6 files changed, 29 insertions(+), 21 deletions(-)
+>
 
-I guess the build bots don't run ARM64 all mod config?
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Thanks, applied
+with below minor suggestion.
 
-Jason
+[...]
+
+> diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+> index 42c4533a6ea21d..aba92c00b42740 100644
+> --- a/drivers/iommu/intel/nested.c
+> +++ b/drivers/iommu/intel/nested.c
+> @@ -186,14 +186,21 @@ static const struct iommu_domain_ops intel_nested_domain_ops = {
+>   	.cache_invalidate_user	= intel_nested_cache_invalidate_user,
+>   };
+>   
+> -struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *parent,
+> -					       const struct iommu_user_data *user_data)
+> +struct iommu_domain *
+> +intel_iommu_domain_alloc_nested(struct device *dev, struct iommu_domain *parent,
+> +				u32 flags,
+> +				const struct iommu_user_data *user_data)
+>   {
+> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>   	struct dmar_domain *s2_domain = to_dmar_domain(parent);
+> +	struct intel_iommu *iommu = info->iommu;
+>   	struct iommu_hwpt_vtd_s1 vtd;
+>   	struct dmar_domain *domain;
+>   	int ret;
+>   
+> +	if (!nested_supported(iommu) || flags)
+> +		return ERR_PTR(-EOPNOTSUPP);
+
+How about making it like
+
+         if (!nested_supported(iommu) || (flags & 
+~IOMMU_HWPT_FAULT_ID_VALID))
+                 return ERR_PTR(-EOPNOTSUPP);
+
+         if ((flags & IOMMU_HWPT_FAULT_ID_VALID) && !info->pri_supported)
+                 return ERR_PTR(-EOPNOTSUPP);
+
+?
+
+--
+baolu
