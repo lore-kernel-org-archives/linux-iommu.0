@@ -1,62 +1,62 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DCACCA5B
-	for <iommu@lists.linux.dev>; Fri, 15 Nov 2024 13:13:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24F371B6CE0
+	for <iommu@lists.linux.dev>; Fri, 15 Nov 2024 13:26:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731676431; cv=none; b=FE+sOM+ReU7lFpDbKP22ZFaJzWBpOYKzviWkNdyWLqPb4nuZJzZhID5dCKQnplzYMbHP1QDkTzcE/UIAJMbpJIvcxguP5NAe7UbznDlJMT8L2rhE0N0leirLswVN76eKR6ZdxMtmHCT7OgD64JSdfBUeiIdHDsLRelt/euBlbFA=
+	t=1731677192; cv=none; b=eSjNp8aOMZyVZy7V99nzeOTg0xe9OOaJDsoPvI+wmSjqWl/mzEREtPFq0rYqCvNAP1Ww/mA7jBkrZ7N3A2SGWWAWxwJt2FrDLIgZ2lvQ8y2aKplAxeBG6HSxZJjjzq7a9gIDHKNWLZduNOWL8/7hW715PVauNq9kJOgMPhw9MFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731676431; c=relaxed/simple;
-	bh=A2vKp1nZSIega3Jq1rmw6c+bbsfPHIGL8vdFiHL/1qo=;
+	s=arc-20240116; t=1731677192; c=relaxed/simple;
+	bh=WvSZ9qIe0V6HBDKa04t36QgtqKCUiUZWx8BVuAqOMbM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mUp3t0QyoqQTUiBTZllfUdYLkZtvi2b9cQELR4Gb9pvopERZWlqQSF5Cewpb3kLFL3AmoJrQ4MEMB+kilXC+wVGHeO/VuQQMz3fMc2J+yypy/kINONdF9I+kmN+vfJrLaQ/2cEPoL7tgRzTRTpdGaXXZc9bODYq2ANgfqkfguHs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Uxxb+5Hm; arc=none smtp.client-ip=209.85.214.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=jECxzcMlrzVbgvEhxPCIZjrKZI9Y4xrn00nXpXN8r5nXD12SkxduozYB0isNj0LwopXf4rF8SA7q2wplTHoKZwoKqQzIg5aX1CngeVNYTz5GV7oO44lxUWtlNFgqBHi9SYgc6oQ3C5zftFQoNLa6ntF/6wBoSEc9dEmtqPIooZA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PFChyJoR; arc=none smtp.client-ip=209.85.214.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Uxxb+5Hm"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-20c87b0332cso123385ad.1
-        for <iommu@lists.linux.dev>; Fri, 15 Nov 2024 05:13:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PFChyJoR"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-20c8ac50b79so151805ad.0
+        for <iommu@lists.linux.dev>; Fri, 15 Nov 2024 05:26:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1731676429; x=1732281229; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1731677190; x=1732281990; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=dDcQZwaUuM184JVlQG6/OECnnb2N/MHVT2Ls7yiNc+A=;
-        b=Uxxb+5Hm4S/RQe0YYbb/xJwhqcH8+BeYEb5Yt/WELY4isyanFp0wQGdDKY39ej3bet
-         uYyt2L+9CxcBJIByJXJ/GvkTFYjA8BdDYPDJeFEnw8pG96vamMrrgrI9552hcetvdGhN
-         dMrvIqB2p0jtM2P0JxCDirUH+CaWeOuDDCr2NEUJFgc9lqW8joTKCaPll9ni7EhHXQar
-         K0+at45li9onnO493Mg2CjmpmaojYJCqh4IBdl6/Prtq+nG6hkscNEhyk1J0DK8eA4oC
-         ppd1uf240Ef6PUXJ4HqHmBbbaWSJHTfcG4LXkqVAsVozKh6R2PELl7HUgebsdMZ0n3B4
-         lBbg==
+        bh=Y+IpTRjoQKJ23nZWZNSiXAfo2Q2yAXDVEaJ87sSiE0c=;
+        b=PFChyJoRkqBPKug4T7pjyfHIaQ/QZ+fCeuk3f5IyhcN5FDJENpvDeucvjJin82Qw9Y
+         OgtUGWucJShd308kmUl4MBMtk5OT6CciudpxBdeHtzuhugHYOkSGLMWCY+dkd3N5U5/Y
+         fO3S7IHdJmT7ASZX2U3gfS2HwdgCSjmuVyy1oqQlQn49Mf7ig41I452/dogwnI0S0w/f
+         /6fWYWkDzEI2pfa6cXK6yl7db7KNel98AFmI8ODG6cwlhqXaNAtbXF1fhKGA/5hiFdvO
+         wvMgdubvhrRaXtKH4lc6XhYUB6sMXsyFlz4HxjOpmB+SZFax5aFvkJJ27JRv//oy6ar/
+         lLog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731676429; x=1732281229;
+        d=1e100.net; s=20230601; t=1731677190; x=1732281990;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dDcQZwaUuM184JVlQG6/OECnnb2N/MHVT2Ls7yiNc+A=;
-        b=np3ZETqCIacVAy5UTw+HXtuoOF9+Sl4M2Ock9AxjHODcKfF+x3TbL5hVMxvvgqI+0K
-         W1sIqz3Qf02B2ZKlrpvntxsvB7wmBL7Hgld1cVIFml+6PDPWjFYneMasSkS/9Ix3mz7S
-         DaoIIiqk0U9J7T2jXDasW1WF78NJhEgZoigDMneYSuv9TzKjQp29czkYeMdDXmt1XGqi
-         fU0kfm7Vlb0TN7YIMBdpR0IHlT5wojiiQXIxZzB6vmOwvLf0O3zjHnpmHVGiI8ySIxZ4
-         2yKjvNL+KKI6a5HhrMNa1qrVZj4UtLzEYs3eN7nob3Puk8JuJnStQPfi9BZGJNw9I/UM
-         pg0g==
-X-Forwarded-Encrypted: i=1; AJvYcCUCqdy9ZiJiWsEnvya6lWg3ngg38DrCJRGBIPKP65o/qkAPNFeOZ1HAQMrMKqVLpP+PJGZhFg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxK9HmiCwGFQ/eWK4ug13CJnHzL4rE+K4cfNFs2bPf9lvI7ATpS
-	Ehc73lZvI753whBmXKdUQSssvLbo3jOUrjCtxSvyUWi3h1PeHMCDdMv2FsKd0w==
-X-Gm-Gg: ASbGncuJDR5X0UIfP6mF2b97xQUrABy0Vgjq3m05y2A4/bky2xnJ4VldmCe3uUlpetH
-	C0P34rgzIbfQ+hgoCH9h3g2RGg1QNxCwmaUEwjNwGGlb3t4QiBU1ZrbhKe50l76VMNxk8/EAqoq
-	HDaNFdf0zQfx1NdJnH7PRHmu4QOhIvue1q9XZSEz9Hol7xmpWxcSWjaP06eZG0xs/9n8hKgUwg1
-	t8hglAwmn/XldivBw3Esk9RrAKHdOa+9ZRDEa1/PYumXZD0nI545qJzVi8D3LkS2tQOjXscTzZY
-	EC/tZaDQ3Mo=
-X-Google-Smtp-Source: AGHT+IGgr9pGsV3tOxwYY6pfmRqZgJ39D3ioRRoP4+EegvcufX4w+EwcRFExNws/54N4LuIuV5K3YA==
-X-Received: by 2002:a17:903:192:b0:20c:805a:22b with SMTP id d9443c01a7336-211d09bfc98mr2443485ad.24.1731676429379;
-        Fri, 15 Nov 2024 05:13:49 -0800 (PST)
+        bh=Y+IpTRjoQKJ23nZWZNSiXAfo2Q2yAXDVEaJ87sSiE0c=;
+        b=Dr2mz6V2N2XwzXfcCNN6XnbMYkn5ZsV7OU5CT57H6AlMral0wQMubZkEZeO4Z4SPvY
+         fgJr3w/VQy0gc1OjEE5FO5myw21HFvrKEO1evdJmscdmcFFo/nstel4wVCYyk3CW8ndx
+         DMSoCFhe6IZ0lOfy05MuNWSfDvSDH5ZcBgmF8pBVcdO3fNN3HMIXNEklaqE4oczi6ai6
+         rrA3oe24S4ipau8Cm2NRevxTC0giGLJ2LYKxA1FevXxXXBRUIT3JaOZtpli1PDaepIHa
+         tXJrY6M+M8tk5Io1qbFL7QNSlNCVZZgGAG6GNMnslo45jHhpXbYR3TLOQK1jPsLBwwr6
+         pJwQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV3rpAztDUEjzUQhInZByNdPIdcxWOWNFLMAGNSIXEizRqcX6HZr4YlpdyGWzU7A4EI4j+aHQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy8TbDO0FCFXyQnGxvCGSSJ72CajUn7KCzY6ParSYSOJenvZz4n
+	tMwbgLHwGIJ51fshyyogApCZ6Q95T8S5oYqkx51sifaz3qZf3CvSLDnTfRcWdQ==
+X-Gm-Gg: ASbGnctThejLAouBURajtI2rqQBxgEW1NsyzSJSrZusIkafnJ3JYCJSoduSCg5pKFPB
+	HfSG7VuUA6sGgLMtnPMQhal2KNlaaQgDE57l0KGmeDnRqLdH/9+BdxEEtKTUYYFCEZf0XkGtCaF
+	/KjnpoeU5hjQn+B8D+ij/aesnQF1KicCyjT0PA8oYgpA+Aoxscdfp/C63Q3cOoje/F1rs9RXj8z
+	INRQKdqhzUToHIrYl1F/lQiY8tXDUBDyQqm9m6xyInVrpJlQOy6wXo1d3uvZJ2WDRbjhsZnq0rR
+	1eLfHntHajk=
+X-Google-Smtp-Source: AGHT+IHsTCTbaAXLTo1ugg/sEbevBzLqfaBckxyqR6BfeELrmzx7dC2N8Hreamagd5F0hsBlArTW3A==
+X-Received: by 2002:a17:902:d2c3:b0:205:968b:31e9 with SMTP id d9443c01a7336-211d1d94a05mr1898545ad.1.1731677190105;
+        Fri, 15 Nov 2024 05:26:30 -0800 (PST)
 Received: from google.com (146.254.240.35.bc.googleusercontent.com. [35.240.254.146])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-724772001adsm1287021b3a.178.2024.11.15.05.13.47
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7f8c1dc03fbsm1242510a12.70.2024.11.15.05.26.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Nov 2024 05:13:48 -0800 (PST)
-Date: Fri, 15 Nov 2024 13:13:36 +0000
+        Fri, 15 Nov 2024 05:26:29 -0800 (PST)
+Date: Fri, 15 Nov 2024 13:26:22 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -64,11 +64,12 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
 	Jason Gunthorpe <jgg@nvidia.com>,
 	Daniel Mentz <danielmentz@google.com>
-Subject: Re: [PATCH v5 1/3] iommu/arm-smmu-v3: Introduce struct arm_smmu_event
-Message-ID: <ZzdJAFc_8h6LfVL7@google.com>
+Subject: Re: [PATCH v5 3/3] iommu/arm-smmu-v3: Avoid redundant master lookup
+ in events
+Message-ID: <ZzdL_mC7ZiWVjtoQ@google.com>
 References: <20241112083018.1662104-1-praan@google.com>
- <20241112083018.1662104-2-praan@google.com>
- <ZzPlMlE2gpH9DQQ4@Asurada-Nvidia>
+ <20241112083018.1662104-4-praan@google.com>
+ <ZzPqRH57RjNS+lJ8@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,108 +78,85 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZzPlMlE2gpH9DQQ4@Asurada-Nvidia>
+In-Reply-To: <ZzPqRH57RjNS+lJ8@Asurada-Nvidia>
 
-On Tue, Nov 12, 2024 at 03:30:58PM -0800, Nicolin Chen wrote:
-> On Tue, Nov 12, 2024 at 08:30:16AM +0000, Pranjal Shrivastava wrote:
-> > +static void arm_smmu_decode_event(u64 *raw, struct arm_smmu_event *event)
-> ..
-> > +static int arm_smmu_handle_evt(struct arm_smmu_device *smmu,
-> > +                              struct arm_smmu_event *event)
-> 
-> s/arm_smmu_handle_evt/arm_smmu_handle_event
-> 
-> Also, given that these two define "struct arm_smmu_event *event"
-> nicely, ...
-> 
-
-Ack.
-
-> > @@ -1820,25 +1836,26 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
-> >  static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
-> >  {
-> >         int i, ret;
-> > +       u64 raw_evt[EVTQ_ENT_DWORDS];
-> > +       struct arm_smmu_event evt = {0};
-> 
-> I think we can keep the existing "evt" for raw and simply add:
-> 	struct arm_smmu_event event = { };
-> 
-> So the patch could look cleaner, less the "s/evt/raw_evt" part.
-> 
-
-Ack. Makes sense. Will rename accordingly.
-
-> >         struct arm_smmu_device *smmu = dev;
-> >         struct arm_smmu_queue *q = &smmu->evtq.q;
-> >         struct arm_smmu_ll_queue *llq = &q->llq;
-> >         static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
-> >                                       DEFAULT_RATELIMIT_BURST);
-> > -       u64 evt[EVTQ_ENT_DWORDS];
+On Tue, Nov 12, 2024 at 03:52:36PM -0800, Nicolin Chen wrote:
+> On Tue, Nov 12, 2024 at 08:30:18AM +0000, Pranjal Shrivastava wrote:
+> > Remove the call to `arm_smmu_find_master` in `arm_smmu_handle_evt`.
 > > 
-> >         do {
-> > -               while (!queue_remove_raw(q, evt)) {
-> > -                       u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
-> > +               while (!queue_remove_raw(q, raw_evt)) {
-> > 
-> > -                       ret = arm_smmu_handle_evt(smmu, evt);
-> > +                       arm_smmu_decode_event(raw_evt, &evt);
+> > The call was primarily to retrieve `master->dev` ptr for reporting iommu
+> > device faults. Since this info is already available in the `event->dev`
+> > field, we no longer need to lookup the master to fetch the dev pointer.
 > 
-> Drop the empty line in-between please.
-
-Ack.
-
+> We only protected the "dev" for dev_name() while the streams_mutex
+> is still required against arm_smmu_remove_master?
 > 
-> > +                       ret = arm_smmu_handle_evt(smmu, &evt);
-> >                         if (!ret || !__ratelimit(&rs))
-> >                                 continue;
-> > 
-> > -                       dev_info(smmu->dev, "event 0x%02x received:\n", id);
-> > -                       for (i = 0; i < ARRAY_SIZE(evt); ++i)
-> > +                       dev_info(smmu->dev, "event 0x%02x received:\n", evt.id);
-> > +                       for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
-> >                                 dev_info(smmu->dev, "\t0x%016llx\n",
-> > -                                        (unsigned long long)evt[i]);
-> > +                                       (unsigned long long)raw_evt[i]);
-> 
-> Please keep the previous indentations.
 
-Ack
+Umm.. as per the code upstream, we were just finding master because we
+wanted to pass the master->dev in "iommu_report_device_fault", thus even
+if the master is free'd by arm_smmu_remove_master, the struct dev
+wouldn't be free'd as we still hold a reference to it here due to the
+call to get_device in arm_smmu_decode_event.
 
->
+> > @@ -1857,17 +1855,14 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu,
+> >                 flt->prm.pasid = event->ssid;
+> >         }
 > > 
-> >                         cond_resched();
-> >                 }
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > index 1e9952ca989f..abb543d987f6 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > @@ -771,6 +771,22 @@ struct arm_smmu_stream {
-> >         struct rb_node                  node;
-> >  };
+> > -       mutex_lock(&smmu->streams_mutex);
+> > -       master = arm_smmu_find_master(smmu, event->sid);
+> > -       if (!master) {
+> > -               ret = -EINVAL;
+> > -               goto out_unlock;
+> > -       }
+> > +       /*
+> > +        * If the master wasn't found while reading the event or
+> > +        * get_device() returned NULL, we shouldn't report a fault.
+> > +        */
+> > +       if (!event->dev)
+> > +               return -EINVAL;
 > > 
-> > +struct arm_smmu_event {
-> > +       u8                              stall           : 1,
-> > +                                       ssv             : 1,
-> > +                                       privileged      : 1,
-> > +                                       instruction     : 1,
-> > +                                       s2              : 1,
-> > +                                       read            : 1;
+> > -       ret = iommu_report_device_fault(master->dev, &fault_evt);
+> > -out_unlock:
+> > -       mutex_unlock(&smmu->streams_mutex);
+> > -       return ret;
+> > +       return iommu_report_device_fault(event->dev, &fault_evt);
 > 
-> Feels odd to do so...should all of them be:
-> 	u8			name : 1;
+> Apart from the question that I asked above, it'd be convenient for
+> my vIRQ series to add on top if we can keep the master here:
+> https://github.com/nicolinc/iommufd/blob/66b3f9cdb39920880fb052b53f11ceb16af007fe/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c#L1782
+> 
+> Given that your flow is:
+> 	arm_smmu_decode_event(...);		// get event->dev
+> 	if (arm_smmu_handle_evt(...))		// validate event->dev
+> 		arm_smmu_dump_event(...);	// use event->dev 
+> 
+> Could we just keep the driver as it is, so your flow will be:
+> 	arm_smmu_decode_event(...);		// no event->dev
+> 	if (arm_smmu_handle_evt(...))		// get event->dev 
+> 		arm_smmu_dump_event(...);	// use event->dev
 > ?
 
-Hmmm, do you mean something like the following?
+Hmm.. looking at the vIRQ series it seems like we'd anyways need to call
+arm_smmu_find_master here as you're adding more fields to that struct
+and plan to use them here. 
 
-struct arm_smmu_event {
-	u8				stall           : 1,
-	u8				ssv             : 1,
-	u8				privileged      : 1,
-	u8				instruction     : 1,
-	u8				s2              : 1,
-	u8				read            : 1;
-}
+In that case, I don't think we need this patch [Patch 3/3] ? 
+We can keep the code as is and simply populate the event->dev ptr in
+arm_smmu_handle_evt when we lock the streams_mutex as you suggested.
+
+> 
+> >  static void arm_smmu_dump_raw_event(struct arm_smmu_device *smmu, u64 *raw,
+> > @@ -1927,6 +1922,7 @@ static void arm_smmu_dump_event(struct arm_smmu_device *smmu, u64 *raw,
+> >         }
+> >  }
+> > 
+> > +
+> >  static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+> 
+> Should drop this.
+
+Ahh, my bad, will remove that.
+Interesting to note that checkpatch didn't crib about it!
 
 > 
 > Thanks
