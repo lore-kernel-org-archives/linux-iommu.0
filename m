@@ -1,159 +1,189 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2075.outbound.protection.outlook.com [40.107.92.75])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D14CD1D4352
-	for <iommu@lists.linux.dev>; Fri, 15 Nov 2024 14:58:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.75
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731682691; cv=fail; b=cXqGMicv6h5w+AY538kRo1gTIq55valPNOnHBVvFa3iibCGF7pWVICOjzMi1nRSkHV8jj0y/CinJ+1xz8FOC2AKrS4QIfnBTxFg6YOL2nWa6ijIsYG8j5vyKyQby59iG62ZQYDezEzEq/ZGtpwwoiLZmZkHX/oZP4Lx/BaWEfIM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731682691; c=relaxed/simple;
-	bh=w0pz7/WJ/DH876aKYn8gdbHy248+9SRp2Qc95na8nFY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=uVSLCtj7YZRChAZnckssnjD7ioeD/vxIdyQzEs51EYjRbvhyETnj4pNJqjr6ZRklfOrnoGOJCRd58AMnnKbxbHIzscJ+6+H3OiiSEOcd2AyHmV3ZZxNI979hFbtGgrkLViI3SqCKtIsIdTIpqKC2XXd75S+XM2fgYVv8ny89IBc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=OzOL4lVl; arc=fail smtp.client-ip=40.107.92.75
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CCF51D5AAE;
+	Fri, 15 Nov 2024 15:13:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1731683590; cv=none; b=VaAVSBfssyajUPLPHdc3pA34C4ebIIPlUPp5F7sEoYIwGVtLMPHIt5nPmHX7VcjO2nRzUC+d9N6F6jYbx3z8v+bKJ/25qoZQnYL27nc8b09nbf/WvC4MfTQvDvlkijmuxqoSpq6NZox3ALyea4EW7216XJ2sIPAhYA5t9aQxu2k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1731683590; c=relaxed/simple;
+	bh=klAyE4yJ7Pn0JVsn2LEXwcXJbbb9kRKwa/irKLMf2T4=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=Qwqk4NfIK64+HAregbVHSzbJbjOkrXNQYffuR03R7VpFWbUGpUFb48wxHythcf2C9EyShCsGiE9Jajp9+3hFkl7QuNJyvrqZsk6z72/fRPoaXovaGJuH+yHwIDOYJxcYkXKQ1RsEJjuGTuV4Nql1twuRIbsrwuuznHEU8TDh4B8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y2OuknJs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="OzOL4lVl"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=RfKPwL20SriN4bK8bzxfuL5zUVXZqgGttNXxGWdSmGeJ/pbn290zDE1KxKU0ZUaIHNFUD79f5IqK/r55A0hgR1YOPBJPW4N40ffnJyRzNmeNnv0gztcAPEWkdxJl/temucVzo8jIWjgIqBQKfgM1DN14vaSPxgFAeUqzNB1KJNwpZvS/OSfyReHDtFjxm48WXyKzQ2eesSQ9GHJb4gejozdJ4B7Rl6nLVlHcg4COvzTBHiHm6B8a/rXvGdVSdo8fKNug/gNIwOX3VOk/x7UQ+0ndT9t/8H9ECOgAIz4inB0VUz7h8clwxssnDuDgrwXm5F+aHjv/jbsSu2sBGExW/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kwG7H3G7RjWLh9+T9C+7CzhfJdgWpkRCpr9DiYIAlTk=;
- b=mLDVpkB8/MhaUkNlVqe3LmYkhvzz5pe/yfwDeU2WDIQF5jJiU0WrO4j0dphB3Gx+X/7ZyHvqln5bCzAGgKbeiAnruj8Kdf9hVnXLEhe8khhGBlcNhHf9PdbKovuYqBsiLYLFCiIbHnVA6y07/KjZk3cSwclzWhrUEKe2WQGyTS6uTg05nmzEvFMZrQNvQtwAw6q+Zd9lkbhejnyu5hgv6G/TC9NKdVlmkBoCHVHExaulpWdSgZBhYlvlPZuz7d/HxZYXUaaFnQbESQwOSRkEiET7Ka4aeKuhDVMrwgmaXgWUJA43aSPR3cFB/LprLTz+EVbcYC6R3CI9dLa+702z2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kwG7H3G7RjWLh9+T9C+7CzhfJdgWpkRCpr9DiYIAlTk=;
- b=OzOL4lVlInn2hODJUOmGzIukHz1QEwepgJH27FTUZ9zaT1hGsAROo+/H1EAm99MrxlCF+XGoRnyF/tOa35yASxm66U6kGfDeTWcinua2gfVJOB/sGm6/hSIJM0cqfA3wbBWlsBmC7NI3Nn7zE/boMMsLdUUXnwLm6JQGSYM0nf3yLYOoi8oQsrqh0bpFhePUvHYWdLI0ESiDp9ht3S02p9BzTTccNQK/uoOOKxI2d8cnKfL13neX3VTyBBVl9Vn73IQyDpuwqrQ3IHgQDuvxnnLcg0N5tayDzY2XLmNv18KE8Q5+LRkPIRNnJqVXf/NhXpIugZhlTT5LGWT8+iOumw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MW6PR12MB8663.namprd12.prod.outlook.com (2603:10b6:303:240::9)
- by MN6PR12MB8543.namprd12.prod.outlook.com (2603:10b6:208:47b::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.18; Fri, 15 Nov
- 2024 14:58:06 +0000
-Received: from MW6PR12MB8663.namprd12.prod.outlook.com
- ([fe80::594:5be3:34d:77f]) by MW6PR12MB8663.namprd12.prod.outlook.com
- ([fe80::594:5be3:34d:77f%6]) with mapi id 15.20.8158.019; Fri, 15 Nov 2024
- 14:58:05 +0000
-Date: Fri, 15 Nov 2024 10:58:04 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: joro@8bytes.org, kevin.tian@intel.com, baolu.lu@linux.intel.com,
-	eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
-	chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
-	zhenzhong.duan@intel.com, vasant.hegde@amd.com, will@kernel.org
-Subject: Re: [PATCH v5 1/7] iommu: Prevent pasid attach if no
- ops->remove_dev_pasid
-Message-ID: <20241115145804.GY35230@nvidia.com>
-References: <20241113134613.7173-1-yi.l.liu@intel.com>
- <20241113134613.7173-2-yi.l.liu@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241113134613.7173-2-yi.l.liu@intel.com>
-X-ClientProxiedBy: BN8PR12CA0012.namprd12.prod.outlook.com
- (2603:10b6:408:60::25) To MW6PR12MB8663.namprd12.prod.outlook.com
- (2603:10b6:303:240::9)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y2OuknJs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 711A0C4CECF;
+	Fri, 15 Nov 2024 15:13:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731683589;
+	bh=klAyE4yJ7Pn0JVsn2LEXwcXJbbb9kRKwa/irKLMf2T4=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
+	b=Y2OuknJsoQAQB5m7vthDedO97fOYrfqPfuhYnNLlKVzFW7tZk9IRd+A1mUc7AYKSJ
+	 PbyyduVPzN2oe+HqLk4I4d6Oe5V/AHzXht4DMRL0s99krwOsFnG7buZMdrloTcpeWj
+	 2P1u2t7iCC6o3us+6BQars4uiZo1ddxYYDq6KLslps0O26EgkkLwJ1PFNnUSLuHdT1
+	 H7jtP/DfTPZv0p+TEgJ/LISYJwjFrpD1TSPmFSu42OgVifnAhOGTlDIl9iqB4rqvgI
+	 taQSFHcUReld+K139G1fP8NQ/wovMoB1ZOLFOgXoSlRPM1xcGOjD7TnJrJrKu1vny9
+	 sOG8lk1AC/+Hw==
+Date: Fri, 15 Nov 2024 09:13:07 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW6PR12MB8663:EE_|MN6PR12MB8543:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4f6bc8ff-6786-4072-75fc-08dd0585e90f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?4+NbzHnlWUKaSyK9+3JHw4Iw1CcQCZQ7hQte7tC9C26haJeLfBTTnE1Lg86H?=
- =?us-ascii?Q?i82f7W5rdZ24vD5gTJLZQwVpEZfJQphG3pbUwZzoxCDMkrGeEmYxuExvKFUi?=
- =?us-ascii?Q?TxPKlxOwfDH4O3XTcq/PaQlDPODkB3jOrCNR32wlgAfR6RyNj6OICypPy19I?=
- =?us-ascii?Q?dh0UyYCrwTWhIGdC4MsfoIbohm5E7AbB9O4cadcwaygm5eNFY0rItcgwyrBA?=
- =?us-ascii?Q?LqV90yDTPrxePb3R8VZpvylZ/H95tN+vxx2NLjCddX/UgfGSbH7KhGcmA9qA?=
- =?us-ascii?Q?bw9M8a2XaLMzxfROzNm1zehcWhWiTBNsea0XVq+D2vkWiVuB6yKDDBaHtVaq?=
- =?us-ascii?Q?1Uea2RTEy5i6APAG90uDQFM6SZy0432rYcZ3CJSClqcX6cTy156OXCV2/z7+?=
- =?us-ascii?Q?p4JlS4WY3A3rdJ+t1qxU57iMtw0Zrn89DdiC/jJGphlN4hpdKLQdFJd4uq06?=
- =?us-ascii?Q?sNo/Dp/YJv9h8WlBwdkrg68kXJnqlY4GHpOSTyeITe74g27+Efd/g83thk0t?=
- =?us-ascii?Q?tlwYUQThkVC5CvyejRHw/vB2ht60Zn232CwYw8yHj7I0WJhUi7CRIRrDREBn?=
- =?us-ascii?Q?KUG5jBsbYfslwLYhvWHz/0cyn2qJjjx/cqYbgA/MjTsKQSChjvuRKE+snZrf?=
- =?us-ascii?Q?kJAwhSooZZ34Ytaaea8PUnW6+DJCiwmxQXcNWwZdg9ERjbDBhpjnvRr8MqKW?=
- =?us-ascii?Q?vRVAsjsRQ2Uc7MGtUP3J4fopV5ol2EiQnT5htigc0t8WwleB1K21UJGXD3vP?=
- =?us-ascii?Q?SRHBBpG2Q2zZBpSQTU4R9xJyMZZ3dZLjZ9OTKKb77FzyL4F7H9zU7vpUSV3N?=
- =?us-ascii?Q?ZQH7vSJXfhOb/TJgJ7TpYahXI3wpi2ymr/VjBejRmR0B6IdPjD7an0pnjyKg?=
- =?us-ascii?Q?FesVTevQU3eGHTiW9mkddvqK++Sjl+9oVX1oUYvMhvoHkasQ0ELfCdEbRo/B?=
- =?us-ascii?Q?kijgc7yrHTPTncqBD3KPx6Igxsv0LEXR9AEY6D9RevMcv7Lxueqv/yhJN+xc?=
- =?us-ascii?Q?3s4aZo83qU0t1ulguhYXpR4Jbfl8Bu1sbVmlARHghsepX/vzWZRWe0Hzt4Ad?=
- =?us-ascii?Q?yp0wAUQfZUXREg5Qxkvz5Mm4/qH/UVD6NFRfbY3WiTkguaFm5an8/2DnG8xv?=
- =?us-ascii?Q?PnHFSzp3JTnlZwL5qG0FmMWC6KBtN7bQlmq9jJ0CI7BG98vpI9NJJFFGejIg?=
- =?us-ascii?Q?3Y2MDXz0pfrvJTXrlZFgNKWIvsOh3drXolNos1jDVhYDGTCItS737q93/9PL?=
- =?us-ascii?Q?qnCFA5Sf2EoVj4LA6DsgalKS+2rmL1abWM0KU4o+Oa1Lz5iCmxwebgM1HtBI?=
- =?us-ascii?Q?HQuhsrO/FoKCHpbLcL/mOkdc?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW6PR12MB8663.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?EPSOqJULzZKA1+/4K7eECADcCeXyvr0rc7Wcu+JI+6Js/+HV7XDt5IcF48sK?=
- =?us-ascii?Q?RqO7dx1kW3q3rXNmDgVoZAfCF/+von+5cOQ1I+P6LVfMR2ScySIqVnK0QFE6?=
- =?us-ascii?Q?ccvq1Llqj7Cs4roTrKwax6LJacow3DPCQoj34wq5hB96A4lm/pxzvnCS/0tn?=
- =?us-ascii?Q?RSHJJ+J5ank+3jtZbFP299CV6iFAhPyafEagH84ZLB0QsmG35mcbzqMZVtk6?=
- =?us-ascii?Q?WWY6pBZshqclvHnxDQnULCycdIYsjBYfznZqbPtVEMPCPUCgMRasuD5/WUju?=
- =?us-ascii?Q?iy5C5x5XAWCeZI+gSJTY3UURynkF+u6rd4CSogmUdvyDZpOBtPBSq2IkowEr?=
- =?us-ascii?Q?h3pofMLc8ea6y46E+jXZ1ZGmijU5Qd54dtKpsToY2JskVhqAaR6ibryGWfiX?=
- =?us-ascii?Q?m2JN0T5k6+dstmAqEJshIv00my8XmdUszHok/wsjkBfZMOwhuIibcFoLTOk/?=
- =?us-ascii?Q?d0IRzpR//f/kVVBvnX6ICTZAwuMeiWMJhpsiNzSCesr/g73Zx9b+3vyfQAQY?=
- =?us-ascii?Q?SwGojPoPv9x/m69P0wQDMfhrqXg3U/H7DIKh8U+qOhNh7Zo+FpQFhQEoZFxa?=
- =?us-ascii?Q?nD/2FEJ6giOyqHVHdtXmOL0r6W8eamH4RMJ/zHu8wPzp3LXzpA/o7SKMkoqj?=
- =?us-ascii?Q?8Qb5jjfx5bQvsAgs9MuAHoDnb7+RymbWTR8LlKQjjyy+TEDVZuEDv9uQsasO?=
- =?us-ascii?Q?Tnit6x0/mnSJnwFPeGu5zguLfY6ewYU5W9d4zSCSiNuLfSu/Ym5Mbi1hBymP?=
- =?us-ascii?Q?Pfbconl0M/I1hB2kEl8InRhwXtXknVjyAR0s0s/6ONLhvDsf8yrHM8enU4CQ?=
- =?us-ascii?Q?xGqVhjsqGsE/WfBMqWJfg2RdLHDs9sv9fOoHQwmTDOQ+Uv+Db7crJLIFpC8s?=
- =?us-ascii?Q?K9FPWof0/3ifwPYmgg+DOUt+ChQhtGfUD0UAjFl8zPJZO2AErIMmFpnd8a9t?=
- =?us-ascii?Q?W+SEnb5NJ7z+TSby+/Ojvj+CWLFbAbaguflId13AuN8AM0l+z8aO3lImvUvQ?=
- =?us-ascii?Q?l6HJQxhc/CyJ4Rlo2r4G7pK16DIL/ASCutP6s4H03AQon+h+6rtkzmhVoE7Z?=
- =?us-ascii?Q?9LxERNne3U3ENc/VStfSfNODs9nabC13BogZ95RQuPP7J3WQMewNSyKGuIA/?=
- =?us-ascii?Q?MJL/c7ZDiq+7PEUFvO3+kk8TpPJJZR/XbPf55sxHwKTU+/Kxknv+Zj9+UV7/?=
- =?us-ascii?Q?FGUo4aRcYEjbAw3sNK6Nbs6raRORImONBd1Mkrr5kC6vQmAM6rMubWvaYKUJ?=
- =?us-ascii?Q?j8tNCC208uSjG8QAn/Cx5MvfbeNv0CkfuXq3bOCOvu+msnsSxQJ5nwc9ck7X?=
- =?us-ascii?Q?Ikq0LbOcn8lIz1egHtPmj5Rb0YQtQJZlUfZ9lKUaWgbBoIAzjP8K2GqmL5tl?=
- =?us-ascii?Q?itpugwSTZqdxfOO9BdIHG/WqvSLpcWbyLZmil2tPEbercEgfs450tQlX07jK?=
- =?us-ascii?Q?AcQyx+GNVOlEEPj0U59ICeOco+K2c83X2R5aprK7IH8CETDDXDp/eq5Nbi41?=
- =?us-ascii?Q?LFWerIY0F/DdBTx/4lvkuvjhAvFlAVo/HT5N0oBt6Qocrpkv51S8Wf7ZhsUZ?=
- =?us-ascii?Q?umXr0Wl8iqkR9P5Ba0k=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f6bc8ff-6786-4072-75fc-08dd0585e90f
-X-MS-Exchange-CrossTenant-AuthSource: MW6PR12MB8663.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2024 14:58:05.6508
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8Cxw6naXmEfPzN+p9b5HO66Hn5FIgb4wCrManxtXTcH6WlZW1ZE8Pqo4vtXMPyKT
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR12MB8543
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: iommu@lists.linux.dev, Zhang Rui <rui.zhang@intel.com>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Amit Kucheria <amitk@kernel.org>, 
+ Thara Gopinath <thara.gopinath@gmail.com>, Will Deacon <will@kernel.org>, 
+ linux-kernel@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, devicetree@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, Lukasz Luba <lukasz.luba@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Conor Dooley <conor+dt@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Bjorn Andersson <andersson@kernel.org>, Dang Huynh <danct12@riseup.net>, 
+ linux-gpio@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>, 
+ linux-pm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+In-Reply-To: <20241113-msm8917-v6-0-c348fb599fef@mainlining.org>
+References: <20241113-msm8917-v6-0-c348fb599fef@mainlining.org>
+Message-Id: <173168321268.2749739.14402170098343790318.robh@kernel.org>
+Subject: Re: [PATCH v6 00/10] Add MSM8917/PM8937/Redmi 5A
 
-On Wed, Nov 13, 2024 at 05:46:07AM -0800, Yi Liu wrote:
-> driver should implement both set_dev_pasid and remove_dev_pasid op, otherwise
-> it is a problem how to detach pasid. In reality, it is impossible that an
-> iommu driver implements set_dev_pasid() but no remove_dev_pasid() op. However,
-> it is better to check it.
+
+On Wed, 13 Nov 2024 16:11:41 +0100, Barnabás Czémán wrote:
+> This patch series add support for MSM8917 soc with PM8937 and
+> Xiaomi Redmi 5A (riva).
 > 
-> Move the group check to be the first as dev_iommu_ops() may fail when there
-> is no valid group. Also take the chance to remove the dev_has_iommu() check
-> as it is duplicated to the group check.
-> 
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 > ---
->  drivers/iommu/iommu.c | 13 ++++++++-----
->  1 file changed, 8 insertions(+), 5 deletions(-)
+> Changes in v6:
+> - msm8917:
+>   - Consolidate SDC pins, remove sdc2-cd-on/off pins.
+>   - Remove cluster-sleep-0 and cluster-sleep-1
+>   and rename cluster-sleep-2 to cluster-sleep-0.
+>   - Fix spi, i2c and related pinctrl namings.
+> - msm8917-xiaomi-riva: follow i2c name changes.
+> - Link to v5: https://lore.kernel.org/r/20241112-msm8917-v5-0-3ca34d33191b@mainlining.org
+> 
+> Changes in v5:
+> - msm8917:
+>   - Remove aliases.
+>   - Rename spi, i2c labels and pins.
+>   - Remove clock-frequency from timers
+>   - Remove unused mpss_mem region.
+>   - Use mboxes where it can be used, only smd-edge uses qcom,ipc.
+> - msm8917-xiaomi-riva: Follow i2c label changes.
+> - Link to v4: https://lore.kernel.org/r/20241109-msm8917-v4-0-8be9904792ab@mainlining.org
+> 
+> Changes in v4:
+> - msm8917 pinctrl: Fix gpio regexp in the schema.
+> - msm8937 tsens: Rename ops_msm8976 to ops_common and use it for msm8937.
+> - msm8917: fix address padding, naming and ordering, remove polling-delays.
+> - Remove applied patches from the series.
+> - Link to v3: https://lore.kernel.org/r/20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org
+> 
+> Changes in v3:
+> - msm8917-xiaomi-riva: Fix issues addressed by Konrad.
+> - msm8917: Fix node addresses, orders of some properties.
+> - pm8937: simplify vadc channels.
+> - msm8917 pinctrl: Fix schema issues addressed by Krzysztof.
+> - Remove applied tcsr patch from this series.
+> - Reword some commit title.
+> - Link to v2: https://lore.kernel.org/r/20241031-msm8917-v2-0-8a075faa89b1@mainlining.org
+> 
+> Changes in v2:
+> - Add msm8937 tsens support.
+> - Fix issues addressed by reviews.
+> - Link to v1: https://lore.kernel.org/r/20241019-msm8917-v1-0-f1f3ca1d88e5@mainlining.org
+> 
+> ---
+> Barnabás Czémán (7):
+>       dt-bindings: pinctrl: qcom: Add MSM8917 pinctrl
+>       dt-bindings: thermal: tsens: Add MSM8937
+>       thermal/drivers/qcom/tsens-v1: Add support for MSM8937 tsens
+>       dt-bindings: iommu: qcom,iommu: Add MSM8917 IOMMU to SMMUv1 compatibles
+>       dt-bindings: nvmem: Add compatible for MS8917
+>       dt-bindings: arm: qcom: Add Xiaomi Redmi 5A
+>       arm64: dts: qcom: Add Xiaomi Redmi 5A
+> 
+> Dang Huynh (1):
+>       arm64: dts: qcom: Add PM8937 PMIC
+> 
+> Otto Pflüger (2):
+>       pinctrl: qcom: Add MSM8917 tlmm pinctrl driver
+>       arm64: dts: qcom: Add initial support for MSM8917
+> 
+>  Documentation/devicetree/bindings/arm/qcom.yaml    |    7 +
+>  .../devicetree/bindings/iommu/qcom,iommu.yaml      |    1 +
+>  .../devicetree/bindings/nvmem/qcom,qfprom.yaml     |    1 +
+>  .../bindings/pinctrl/qcom,msm8917-pinctrl.yaml     |  160 ++
+>  .../devicetree/bindings/thermal/qcom-tsens.yaml    |    1 +
+>  arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+>  arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts   |  297 +++
+>  arch/arm64/boot/dts/qcom/msm8917.dtsi              | 1946 ++++++++++++++++++++
+>  arch/arm64/boot/dts/qcom/pm8937.dtsi               |  152 ++
+>  drivers/pinctrl/qcom/Kconfig.msm                   |    6 +
+>  drivers/pinctrl/qcom/Makefile                      |    1 +
+>  drivers/pinctrl/qcom/pinctrl-msm8917.c             | 1620 ++++++++++++++++
+>  drivers/thermal/qcom/tsens-v1.c                    |   21 +-
+>  drivers/thermal/qcom/tsens.c                       |    3 +
+>  drivers/thermal/qcom/tsens.h                       |    2 +-
+>  15 files changed, 4211 insertions(+), 8 deletions(-)
+> ---
+> base-commit: 6d59cab07b8d74d0f0422b750038123334f6ecc2
+> change-id: 20241019-msm8917-17c3d0ff4a52
+> 
+> Best regards,
+> --
+> Barnabás Czémán <barnabas.czeman@mainlining.org>
+> 
+> 
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Jason
+My bot found new DTB warnings on the .dts files added or changed in this
+series.
+
+Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
+are fixed by another series. Ultimately, it is up to the platform
+maintainer whether these warnings are acceptable or not. No need to reply
+unless the platform maintainer has comments.
+
+If you already ran DT checks and didn't see these error(s), then
+make sure dt-schema is up to date:
+
+  pip3 install dtschema --upgrade
+
+
+New warnings running 'make CHECK_DTBS=y qcom/msm8917-xiaomi-riva.dtb' for 20241113-msm8917-v6-0-c348fb599fef@mainlining.org:
+
+arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: /soc@0/syscon@1937000: failed to match any schema with compatible: ['qcom,tcsr-msm8917', 'syscon']
+arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: pmic@0: gpio@c000:compatible:0: 'qcom,pm8937-gpio' is not one of ['qcom,pm2250-gpio', 'qcom,pm660-gpio', 'qcom,pm660l-gpio', 'qcom,pm6125-gpio', 'qcom,pm6150-gpio', 'qcom,pm6150l-gpio', 'qcom,pm6350-gpio', 'qcom,pm6450-gpio', 'qcom,pm7250b-gpio', 'qcom,pm7325-gpio', 'qcom,pm7550ba-gpio', 'qcom,pm8005-gpio', 'qcom,pm8018-gpio', 'qcom,pm8019-gpio', 'qcom,pm8038-gpio', 'qcom,pm8058-gpio', 'qcom,pm8150-gpio', 'qcom,pm8150b-gpio', 'qcom,pm8150l-gpio', 'qcom,pm8226-gpio', 'qcom,pm8350-gpio', 'qcom,pm8350b-gpio', 'qcom,pm8350c-gpio', 'qcom,pm8450-gpio', 'qcom,pm8550-gpio', 'qcom,pm8550b-gpio', 'qcom,pm8550ve-gpio', 'qcom,pm8550vs-gpio', 'qcom,pm8916-gpio', 'qcom,pm8917-gpio', 'qcom,pm8921-gpio', 'qcom,pm8941-gpio', 'qcom,pm8950-gpio', 'qcom,pm8953-gpio', 'qcom,pm8994-gpio', 'qcom,pm8998-gpio', 'qcom,pma8084-gpio', 'qcom,pmc8180-gpio', 'qcom,pmc8180c-gpio', 'qcom,pmc8380-gpio', 'qcom,pmd8028-gpio', 'qcom,pmi632-gpio', 'qcom,pmi8950-gpio', 'qcom,pmi8994-gpio', 'qcom,pmi8998-gpio', 'qcom,pmih0108-gpio', 'qcom,pmk8350-gpio', 'qcom,pmk8550-gpio', 'qcom,pmm8155au-gpio', 'qcom,pmm8654au-gpio', 'qcom,pmp8074-gpio', 'qcom,pmr735a-gpio', 'qcom,pmr735b-gpio', 'qcom,pmr735d-gpio', 'qcom,pms405-gpio', 'qcom,pmx55-gpio', 'qcom,pmx65-gpio', 'qcom,pmx75-gpio', 'qcom,pmxr2230-gpio']
+	from schema $id: http://devicetree.org/schemas/mfd/qcom,spmi-pmic.yaml#
+arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: pmic@0: mpps@a000:compatible: 'oneOf' conditional failed, one must be fixed:
+	'qcom,pm8937-mpp' is not one of ['qcom,pm8019-mpp', 'qcom,pm8226-mpp', 'qcom,pm8841-mpp', 'qcom,pm8916-mpp', 'qcom,pm8941-mpp', 'qcom,pm8950-mpp', 'qcom,pmi8950-mpp', 'qcom,pm8994-mpp', 'qcom,pma8084-mpp', 'qcom,pmi8994-mpp']
+	'qcom,pm8937-mpp' is not one of ['qcom,pm8018-mpp', 'qcom,pm8038-mpp', 'qcom,pm8058-mpp', 'qcom,pm8821-mpp', 'qcom,pm8901-mpp', 'qcom,pm8917-mpp', 'qcom,pm8921-mpp']
+	'qcom,ssbi-mpp' was expected
+	from schema $id: http://devicetree.org/schemas/mfd/qcom,spmi-pmic.yaml#
+arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: gpio@c000: compatible:0: 'qcom,pm8937-gpio' is not one of ['qcom,pm2250-gpio', 'qcom,pm660-gpio', 'qcom,pm660l-gpio', 'qcom,pm6125-gpio', 'qcom,pm6150-gpio', 'qcom,pm6150l-gpio', 'qcom,pm6350-gpio', 'qcom,pm6450-gpio', 'qcom,pm7250b-gpio', 'qcom,pm7325-gpio', 'qcom,pm7550ba-gpio', 'qcom,pm8005-gpio', 'qcom,pm8018-gpio', 'qcom,pm8019-gpio', 'qcom,pm8038-gpio', 'qcom,pm8058-gpio', 'qcom,pm8150-gpio', 'qcom,pm8150b-gpio', 'qcom,pm8150l-gpio', 'qcom,pm8226-gpio', 'qcom,pm8350-gpio', 'qcom,pm8350b-gpio', 'qcom,pm8350c-gpio', 'qcom,pm8450-gpio', 'qcom,pm8550-gpio', 'qcom,pm8550b-gpio', 'qcom,pm8550ve-gpio', 'qcom,pm8550vs-gpio', 'qcom,pm8916-gpio', 'qcom,pm8917-gpio', 'qcom,pm8921-gpio', 'qcom,pm8941-gpio', 'qcom,pm8950-gpio', 'qcom,pm8953-gpio', 'qcom,pm8994-gpio', 'qcom,pm8998-gpio', 'qcom,pma8084-gpio', 'qcom,pmc8180-gpio', 'qcom,pmc8180c-gpio', 'qcom,pmc8380-gpio', 'qcom,pmd8028-gpio', 'qcom,pmi632-gpio', 'qcom,pmi8950-gpio', 'qcom,pmi8994-gpio', 'qcom,pmi8998-gpio', 'qcom,pmih0108-gpio', 'qcom,pmk8350-gpio', 'qcom,pmk8550-gpio', 'qcom,pmm8155au-gpio', 'qcom,pmm8654au-gpio', 'qcom,pmp8074-gpio', 'qcom,pmr735a-gpio', 'qcom,pmr735b-gpio', 'qcom,pmr735d-gpio', 'qcom,pms405-gpio', 'qcom,pmx55-gpio', 'qcom,pmx65-gpio', 'qcom,pmx75-gpio', 'qcom,pmxr2230-gpio']
+	from schema $id: http://devicetree.org/schemas/pinctrl/qcom,pmic-gpio.yaml#
+arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: /soc@0/spmi@200f000/pmic@0/gpio@c000: failed to match any schema with compatible: ['qcom,pm8937-gpio', 'qcom,spmi-gpio']
+arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: mpps@a000: compatible: 'oneOf' conditional failed, one must be fixed:
+	'qcom,pm8937-mpp' is not one of ['qcom,pm8019-mpp', 'qcom,pm8226-mpp', 'qcom,pm8841-mpp', 'qcom,pm8916-mpp', 'qcom,pm8941-mpp', 'qcom,pm8950-mpp', 'qcom,pmi8950-mpp', 'qcom,pm8994-mpp', 'qcom,pma8084-mpp', 'qcom,pmi8994-mpp']
+	'qcom,pm8937-mpp' is not one of ['qcom,pm8018-mpp', 'qcom,pm8038-mpp', 'qcom,pm8058-mpp', 'qcom,pm8821-mpp', 'qcom,pm8901-mpp', 'qcom,pm8917-mpp', 'qcom,pm8921-mpp']
+	'qcom,ssbi-mpp' was expected
+	from schema $id: http://devicetree.org/schemas/pinctrl/qcom,pmic-mpp.yaml#
+arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: /soc@0/spmi@200f000/pmic@0/mpps@a000: failed to match any schema with compatible: ['qcom,pm8937-mpp', 'qcom,spmi-mpp']
+
+
+
+
+
