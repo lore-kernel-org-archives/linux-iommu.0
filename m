@@ -1,151 +1,503 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B85716D4E6
-	for <iommu@lists.linux.dev>; Fri, 15 Nov 2024 19:18:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 309A61D5CD4;
+	Fri, 15 Nov 2024 21:15:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731698326; cv=none; b=ti8Qgm9pe6PufCHMERSze4hw5OdQCITnvuI7sXd3yXT+S0VM2ayZtUDOBbpzZ/TqzWxRuwmEWFKpyziOXj+s/uSjm213wi25dYAvYYVSJE1fdBk0UbA7E0t7Kkf3Co14p4nXf3SVNx+9URSdyOkUW66ixMsUXPqvhYPJ7w7qXdQ=
+	t=1731705302; cv=none; b=ERdEzuuh8I+PPKP0gWrLUxC5w0GmLzZZLcLOXlAEM0mKZPfx3iQ2IpTTwcclWQl8YSBWJiJey9zVSsiVRHIygViYn2I1r+g0cMYQlqVHQnJQ48dJf73gJUkN1hxQR6h5Cvt7xSU8s+KKuIBjk70rONgwLQQjafL/OAOt4D+/M6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731698326; c=relaxed/simple;
-	bh=t3HGFRzcc7qSh3ekvRAyGEjFsPeneuzZNWnlcjmaNIo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CTvs4hkG7BhUguUsWdDTvwAXm9Eb+jJD7ecgPtWCHa7Ch8k3xLW3RxXN5/YniANzLgs1B5gM4Y/4CTeSJyAQh7fs8yhJGJj6Jr4bsAGvKqoOFn66n9lFmoIs8Ob3JKQaq15KuJqudAXEkEnqZljTDJi0fHx+xBZbhfVWgAIi6y8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=L/lmsRLj; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1731705302; c=relaxed/simple;
+	bh=hmZyID0xTDejqUdHbnNnIfCcRfkvqbnrZ7rK8Oz9WJk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LzbFWSdGFv5mZy+j1Z+XhYXHIcM/R5j/AQ/WrS/l+MrDZhnrWkmpAxWs3GArWjndxieZgO7as7Tc4xIcyZR8ItTRrmKAePYdiDcKv183Xcs1awrve/8lz0r8QFcnZQtX9c7ssY0wiuyItF7kvtIme3PLeuD5msLF70Pr99QMhuI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Vx946PRA; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="L/lmsRLj"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4315ee633dcso3885e9.1
-        for <iommu@lists.linux.dev>; Fri, 15 Nov 2024 11:18:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1731698322; x=1732303122; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gb7hmFy/0l+JpT17zGKACyUketzLohMMo6Nszps9h8Q=;
-        b=L/lmsRLjEZ60YaeEJel6L4yVpHGxv7+0U3wOlwN3TuFao/D8pcUjkrCptg6ZvnX6lp
-         nQXnBBq7iqr2MagUwbuGx1ZsG1H87ti/sMm0RyzhaL4TVScJ1eR53VpOnQeN85AkDLxx
-         aewe1jBaunqaxo1AHSBkuUwURtaacGe0lJxcUINj05J1KiLZzTBzuOgR7R56tp2k88o6
-         5rYyzci1uPQ5CDPFeGEy1uR1jujJ1FS0XA/w957AOp6bv/FN2Vk9JcQFDFwU/i3AnQJd
-         V6D3vey5igxWlBOh+Kp8Axurv14JSxGBWu8W/8t205O3jgm1UQheHh0ODbtzKSqMdP2c
-         9h3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731698322; x=1732303122;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gb7hmFy/0l+JpT17zGKACyUketzLohMMo6Nszps9h8Q=;
-        b=CDIn4w3c09uJNGqb22ATiu6B65/zwdNmhmkRfNnnSzhOqoO2ZZ5otYpbAwuyGX0cdg
-         AHRWJXsLgsVnSd4VsPZdLQNDQWDxlPiBgz97jSv823CtZHqvujaNajS4fBk5VbsowYWz
-         pvTrDK7BBdd0c0BrJBu2qdWVPTas89ss0gw4vCxFZ1rvGmw0hfQpMSCoo/EZpk62boRZ
-         DBwNx42wXqHpKH05wHoFrp0JrqBAOaVazfnAVhT6XvwsWbfHIQIjab/JouGng60e4yOB
-         UP+6q0PVEndrs7elWMNw2R/8sVcj7CrCCD2SzIyuduOV3dTyBlg+i7rORwLhgw5lIE9S
-         nLFg==
-X-Forwarded-Encrypted: i=1; AJvYcCUBFpBrUILdHHDAntRPhOMgvyNSofSPHkjktx0B/3u0nLPTtqEcSJ176sW0/+65zzZmMsXG1w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy3PZMZVjNkkTdOtUN7ZmVE7fn5dWl/89UJHxSiQ89r1PKH/L5w
-	I0IUljJ35nAKwAUaUC9PDPSWsBOSE7HFJTFy/ItIIn+jL38aY/laP1IIt6AioA==
-X-Gm-Gg: ASbGncuGo9vxPOeRdgb9tezSqpuJxZ9auq5FTKL7b3JzFCx989vozoV2pqo0XgPvuf8
-	2nMFNJcn5zPyv2atbmqbH0wOXFnoR385Qooqh1MTzjRkL82IQtv9hLzTedsE8Urir2s+qscPKfI
-	2sGXfH0pFYWeeqhdaKAAQx39MvDaHruJLyuJHFUCgqwqW2PCct4YpijC6uHxg4ztxD+phYV0Q2E
-	Ypi0/rMFdhgoM86QXsSIMc/vcIDyUNcy5fpzX75JIiY3vq2RPuxGIEi9aJN5WjhNkHaGfyVVHal
-	BtG7zKwoH4bE
-X-Google-Smtp-Source: AGHT+IG+0JQ95//Ajrq0lgO/WvKJa6AW6bqohkm2IbIyY8g9NlthrnZKtmPcJ0NxaAiAhUmfbGf1Ng==
-X-Received: by 2002:a05:600c:3512:b0:426:66a0:6df6 with SMTP id 5b1f17b1804b1-432e609ec5dmr52285e9.0.1731698321726;
-        Fri, 15 Nov 2024 11:18:41 -0800 (PST)
-Received: from google.com (158.100.79.34.bc.googleusercontent.com. [34.79.100.158])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432dab78918sm61906695e9.17.2024.11.15.11.18.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Nov 2024 11:18:40 -0800 (PST)
-Date: Fri, 15 Nov 2024 19:18:36 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, will@kernel.org,
-	joro@8bytes.org, Daniel Mentz <danielmentz@google.com>
-Subject: Re: [PATCH] drivers/io-pgtable-arm: Fix stage concatenation with 16K
-Message-ID: <ZzeejJL3Tt4OlFdr@google.com>
-References: <20241115172235.1493328-1-smostafa@google.com>
- <888e6542-2aa4-43f1-b31e-79432c1ad199@arm.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Vx946PRA"
+Received: from [10.0.0.115] (c-67-182-156-199.hsd1.wa.comcast.net [67.182.156.199])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6AE7820BEBD0;
+	Fri, 15 Nov 2024 13:14:53 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6AE7820BEBD0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1731705294;
+	bh=IOtJqBKEB6hW5aqrE09EdKHehH+hQljR82pxvDiFOrU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Vx946PRAHZaunNzhrBN6r6Eunx0XJSwCvezU7p34uq8bmwkx0jTPCzMuPBGb2qBPT
+	 A8LE/xwEbQJ+NzGbNgrWZCTjrkQQVzzzg2vG5xZdBjRK88CM1qYOR49k0z4NdpInur
+	 6MRDszJnBx80i9qdoXbBprb9zFmFTUmTZOmbumlQ=
+Message-ID: <e832dd94-04f3-413a-a1a9-870849b4bc53@linux.microsoft.com>
+Date: Fri, 15 Nov 2024 13:14:52 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <888e6542-2aa4-43f1-b31e-79432c1ad199@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/4] hyperv: Switch from hyperv-tlfs.h to
+ hyperv/hvhdk.h
+To: Michael Kelley <mhklinux@outlook.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "virtualization@lists.linux.dev" <virtualization@lists.linux.dev>
+Cc: "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+ "wei.liu@kernel.org" <wei.liu@kernel.org>,
+ "decui@microsoft.com" <decui@microsoft.com>,
+ "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+ "will@kernel.org" <will@kernel.org>, "luto@kernel.org" <luto@kernel.org>,
+ "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+ "seanjc@google.com" <seanjc@google.com>,
+ "pbonzini@redhat.com" <pbonzini@redhat.com>,
+ "peterz@infradead.org" <peterz@infradead.org>,
+ "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+ "joro@8bytes.org" <joro@8bytes.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "edumazet@google.com" <edumazet@google.com>,
+ "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
+ <pabeni@redhat.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+ "kw@linux.com" <kw@linux.com>, "robh@kernel.org" <robh@kernel.org>,
+ "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
+ <arnd@arndb.de>, "sgarzare@redhat.com" <sgarzare@redhat.com>,
+ "jinankjain@linux.microsoft.com" <jinankjain@linux.microsoft.com>,
+ "muminulrussell@gmail.com" <muminulrussell@gmail.com>,
+ "skinsburskii@linux.microsoft.com" <skinsburskii@linux.microsoft.com>,
+ "mukeshrathor@microsoft.com" <mukeshrathor@microsoft.com>,
+ "vkuznets@redhat.com" <vkuznets@redhat.com>,
+ "ssengar@linux.microsoft.com" <ssengar@linux.microsoft.com>,
+ "apais@linux.microsoft.com" <apais@linux.microsoft.com>
+References: <1731018746-25914-1-git-send-email-nunodasneves@linux.microsoft.com>
+ <1731018746-25914-5-git-send-email-nunodasneves@linux.microsoft.com>
+ <BN7PR02MB4148513F8ABA50392E11C616D4582@BN7PR02MB4148.namprd02.prod.outlook.com>
+Content-Language: en-US
+From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+In-Reply-To: <BN7PR02MB4148513F8ABA50392E11C616D4582@BN7PR02MB4148.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Robin,
-
-On Fri, Nov 15, 2024 at 06:29:20PM +0000, Robin Murphy wrote:
-> On 2024-11-15 5:22 pm, Mostafa Saleh wrote:
-> > According to the Arm spec DDI0487 K.a, in:
-> > "Table D8-9 Implications of the effective minimum T0SZ value on the
-> > initial stage 2 lookup level"
-> > 
-> > Some combinations of granule and input size with stage-2 would
-> > require to use initial lookup levels that can only be achieved
-> > with concatenated PGDs.
-> > 
-> > There was one missing case in the current implementation for 16K,
-> > which is 40-bits.
-> > 
-> > Cc: Daniel Mentz <danielmentz@google.com>
-> > 
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > ---
-> >   drivers/iommu/io-pgtable-arm.c | 14 +++++++++++---
-> >   1 file changed, 11 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> > index 0e67f1721a3d..9a57874a5cb8 100644
-> > --- a/drivers/iommu/io-pgtable-arm.c
-> > +++ b/drivers/iommu/io-pgtable-arm.c
-> > @@ -1044,10 +1044,18 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
-> >   		return NULL;
-> >   	/*
-> > -	 * Concatenate PGDs at level 1 if possible in order to reduce
-> > -	 * the depth of the stage-2 walk.
-> > +	 * Some cases where concatenation is mandatory after de-ciphering RSRKBC
-> > +	 * in the Arm DDI0487 (K.a):
-> > +	 * - 40 bits with 4K: use 2 table at level 1 instead of level 0
-> > +	 * - 40 bits with 16K: use 16 tables at level 2 instead of level 1
-> > +	 * - 42 bits with 4K: use 8 tabels at level 1 instead of level 0
-> > +	 * - 48 bits with 16K: use 2 tabels at level 1 instead of level 0
+On 11/10/2024 8:13 PM, Michael Kelley wrote:
+> From: Nuno Das Neves <nunodasneves@linux.microsoft.com> Sent: Thursday, November 7, 2024 2:32 PM
+>>
+>> Switch to using hvhdk.h everywhere in the kernel. This header includes
+>> all the new Hyper-V headers in include/hyperv, which form a superset of
+>> the definitions found in hyperv-tlfs.h.
+>>
+>> This makes it easier to add new Hyper-V interfaces without being
+>> restricted to those in the TLFS doc (reflected in hyperv-tlfs.h).
+>>
+>> To be more consistent with the original Hyper-V code, the names of some
+>> definitions are changed slightly. Update those where needed.
+>>
+>> hyperv-tlfs.h is no longer included anywhere - hvhdk.h can serve
+>> the same role, but with an easier path for adding new definitions.
 > 
-> This confused me, since per R_DXBSH, that last one is the only one which is
-> actually mandatory in general; the others may be valid per R_PZFHQ and
-> R_FBHPY. The additional R_SRKBC constraints come from the PA size, not the
-> choice of T0SZ (and thus ultimately start_level) itself, so although I guess
-> this probably works out true in practice based on how the SMMU drivers
-> happen to behave today, it's none too obvious why.
-
-Ah, you are right, I got a bit confused, it's not actually about the
-input size, but the fact that the SMMUv3 driver uses IAS = OAS for
-stage-2.
-And constraint R_SRKBC is about the OAS size.
-
-So in case we change that IAS = OAS for stage-2, we could end up using
-concatenation when it's not mandatory.
-I don't think that's a bad thing (I was actually thinking of changing
-the code to always use concatenation if possible)
-But, I can re-write the code in terms of OAS + granule instead so it's
-more robust incase we change the stage-2 config in the future.
-
-Thanks,
-Mostafa
+> Is hyperv-tlfs.h and friends being deleted? If not, the risk is that
+> someone adds a new #include of it without realizing that it has been
+> superseded by hvhdk.h.
 > 
-> Thanks,
-> Robin.
+
+I was hesitant to delete it because I thought someone may still have
+a use for a header file that (mostly) reflects the TLFS document and
+nothing more.
+
+But in practical terms, this patchset makes it much more difficult to
+use because all the helper code (i.e. mshyperv.h) now uses hvhdk.h.
+So, maybe there is no point keeping it.
+
+> Note also that this patch does not apply cleanly to 6.12 rc's, or to
+> current linux-next trees. There's an unrelated #include added to
+> arch/x86/include/asm/kvm_host.h that causes a merge failure
+> in that file.
 > 
-> > +	 * Looking at the possible valid input size, that concludes to always
-> > +	 * use level 1 with concatentation if possible or at level 2 only
-> > +	 * with 16K.
-> >   	 */
-> > -	if (data->start_level == 0) {
-> > +	if ((data->start_level == 0) ||
-> > +	    ((data->start_level == 1) && (ARM_LPAE_GRANULE(data) == SZ_16K))) {
-> >   		unsigned long pgd_pages;
-> >   		pgd_pages = ARM_LPAE_PGD_SIZE(data) / sizeof(arm_lpae_iopte);
+
+I've been developing this series based on hyperv-next. Should I be
+basing it on linux-next?
+
+> Michael
 > 
+>>
+>> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+>> ---
+>>  arch/arm64/hyperv/hv_core.c        |  2 +-
+>>  arch/arm64/hyperv/mshyperv.c       |  4 ++--
+>>  arch/arm64/include/asm/mshyperv.h  |  2 +-
+>>  arch/x86/hyperv/hv_init.c          | 20 ++++++++++----------
+>>  arch/x86/hyperv/hv_proc.c          |  2 +-
+>>  arch/x86/hyperv/nested.c           |  2 +-
+>>  arch/x86/include/asm/kvm_host.h    |  2 +-
+>>  arch/x86/include/asm/mshyperv.h    |  2 +-
+>>  arch/x86/include/asm/svm.h         |  2 +-
+>>  arch/x86/kernel/cpu/mshyperv.c     |  2 +-
+>>  arch/x86/kvm/vmx/hyperv_evmcs.h    |  2 +-
+>>  arch/x86/kvm/vmx/vmx_onhyperv.h    |  2 +-
+>>  drivers/clocksource/hyperv_timer.c |  2 +-
+>>  drivers/hv/hv_balloon.c            |  4 ++--
+>>  drivers/hv/hv_common.c             |  2 +-
+>>  drivers/hv/hv_kvp.c                |  2 +-
+>>  drivers/hv/hv_snapshot.c           |  2 +-
+>>  drivers/hv/hyperv_vmbus.h          |  2 +-
+>>  include/asm-generic/mshyperv.h     |  2 +-
+>>  include/clocksource/hyperv_timer.h |  2 +-
+>>  include/linux/hyperv.h             |  2 +-
+>>  net/vmw_vsock/hyperv_transport.c   |  2 +-
+>>  22 files changed, 33 insertions(+), 33 deletions(-)
+>>
+>> diff --git a/arch/arm64/hyperv/hv_core.c b/arch/arm64/hyperv/hv_core.c
+>> index 7a746a5a6b42..69004f619c57 100644
+>> --- a/arch/arm64/hyperv/hv_core.c
+>> +++ b/arch/arm64/hyperv/hv_core.c
+>> @@ -14,7 +14,7 @@
+>>  #include <linux/arm-smccc.h>
+>>  #include <linux/module.h>
+>>  #include <asm-generic/bug.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>  #include <asm/mshyperv.h>
+>>
+>>  /*
+>> diff --git a/arch/arm64/hyperv/mshyperv.c b/arch/arm64/hyperv/mshyperv.c
+>> index b1a4de4eee29..fc49949b7df6 100644
+>> --- a/arch/arm64/hyperv/mshyperv.c
+>> +++ b/arch/arm64/hyperv/mshyperv.c
+>> @@ -49,12 +49,12 @@ static int __init hyperv_init(void)
+>>  	hv_set_vpreg(HV_REGISTER_GUEST_OS_ID, guest_id);
+>>
+>>  	/* Get the features and hints from Hyper-V */
+>> -	hv_get_vpreg_128(HV_REGISTER_FEATURES, &result);
+>> +	hv_get_vpreg_128(HV_REGISTER_PRIVILEGES_AND_FEATURES_INFO, &result);
+>>  	ms_hyperv.features = result.as32.a;
+>>  	ms_hyperv.priv_high = result.as32.b;
+>>  	ms_hyperv.misc_features = result.as32.c;
+>>
+>> -	hv_get_vpreg_128(HV_REGISTER_ENLIGHTENMENTS, &result);
+>> +	hv_get_vpreg_128(HV_REGISTER_FEATURES_INFO, &result);
+>>  	ms_hyperv.hints = result.as32.a;
+>>
+>>  	pr_info("Hyper-V: privilege flags low 0x%x, high 0x%x, hints 0x%x, misc
+>> 0x%x\n",
+>> diff --git a/arch/arm64/include/asm/mshyperv.h
+>> b/arch/arm64/include/asm/mshyperv.h
+>> index a975e1a689dd..7595fb35fae6 100644
+>> --- a/arch/arm64/include/asm/mshyperv.h
+>> +++ b/arch/arm64/include/asm/mshyperv.h
+>> @@ -20,7 +20,7 @@
+>>
+>>  #include <linux/types.h>
+>>  #include <linux/arm-smccc.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  /*
+>>   * Declare calls to get and set Hyper-V VP register values on ARM64, which
+>> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+>> index 1a6354b3e582..3f9aef157c88 100644
+>> --- a/arch/x86/hyperv/hv_init.c
+>> +++ b/arch/x86/hyperv/hv_init.c
+>> @@ -19,7 +19,7 @@
+>>  #include <asm/sev.h>
+>>  #include <asm/ibt.h>
+>>  #include <asm/hypervisor.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>  #include <asm/mshyperv.h>
+>>  #include <asm/idtentry.h>
+>>  #include <asm/set_memory.h>
+>> @@ -416,24 +416,24 @@ static void __init hv_get_partition_id(void)
+>>  static u8 __init get_vtl(void)
+>>  {
+>>  	u64 control = HV_HYPERCALL_REP_COMP_1 | HVCALL_GET_VP_REGISTERS;
+>> -	struct hv_get_vp_registers_input *input;
+>> -	struct hv_get_vp_registers_output *output;
+>> +	struct hv_input_get_vp_registers *input;
+>> +	struct hv_register_assoc *output;
+>>  	unsigned long flags;
+>>  	u64 ret;
+>>
+>>  	local_irq_save(flags);
+>>  	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+>> -	output = (struct hv_get_vp_registers_output *)input;
+>> +	output = (struct hv_register_assoc *)input;
+>>
+>> -	memset(input, 0, struct_size(input, element, 1));
+>> -	input->header.partitionid = HV_PARTITION_ID_SELF;
+>> -	input->header.vpindex = HV_VP_INDEX_SELF;
+>> -	input->header.inputvtl = 0;
+>> -	input->element[0].name0 = HV_X64_REGISTER_VSM_VP_STATUS;
+>> +	memset(input, 0, struct_size(input, names, 1));
+>> +	input->partition_id = HV_PARTITION_ID_SELF;
+>> +	input->vp_index = HV_VP_INDEX_SELF;
+>> +	input->input_vtl.as_uint8 = 0;
+>> +	input->names[0] = HV_X64_REGISTER_VSM_VP_STATUS;
+>>
+>>  	ret = hv_do_hypercall(control, input, output);
+>>  	if (hv_result_success(ret)) {
+>> -		ret = output->as64.low & HV_X64_VTL_MASK;
+>> +		ret = output->value.reg8 & HV_X64_VTL_MASK;
+>>  	} else {
+>>  		pr_err("Failed to get VTL(error: %lld) exiting...\n", ret);
+>>  		BUG();
+>> diff --git a/arch/x86/hyperv/hv_proc.c b/arch/x86/hyperv/hv_proc.c
+>> index b74c06c04ff1..ac4c834d4435 100644
+>> --- a/arch/x86/hyperv/hv_proc.c
+>> +++ b/arch/x86/hyperv/hv_proc.c
+>> @@ -176,7 +176,7 @@ int hv_call_create_vp(int node, u64 partition_id, u32 vp_index,
+>> u32 flags)
+>>  		input->partition_id = partition_id;
+>>  		input->vp_index = vp_index;
+>>  		input->flags = flags;
+>> -		input->subnode_type = HvSubnodeAny;
+>> +		input->subnode_type = HV_SUBNODE_ANY;
+>>  		input->proximity_domain_info = hv_numa_node_to_pxm_info(node);
+>>  		status = hv_do_hypercall(HVCALL_CREATE_VP, input, NULL);
+>>  		local_irq_restore(irq_flags);
+>> diff --git a/arch/x86/hyperv/nested.c b/arch/x86/hyperv/nested.c
+>> index 9dc259fa322e..1083dc8646f9 100644
+>> --- a/arch/x86/hyperv/nested.c
+>> +++ b/arch/x86/hyperv/nested.c
+>> @@ -11,7 +11,7 @@
+>>
+>>
+>>  #include <linux/types.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>  #include <asm/mshyperv.h>
+>>  #include <asm/tlbflush.h>
+>>
+>> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+>> index 3627eab994a3..38cd609f37c7 100644
+>> --- a/arch/x86/include/asm/kvm_host.h
+>> +++ b/arch/x86/include/asm/kvm_host.h
+>> @@ -34,7 +34,7 @@
+>>  #include <asm/asm.h>
+>>  #include <asm/kvm_page_track.h>
+>>  #include <asm/kvm_vcpu_regs.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  #define __KVM_HAVE_ARCH_VCPU_DEBUGFS
+>>
+>> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+>> index 47ca48062547..f0564e599b7f 100644
+>> --- a/arch/x86/include/asm/mshyperv.h
+>> +++ b/arch/x86/include/asm/mshyperv.h
+>> @@ -6,9 +6,9 @@
+>>  #include <linux/nmi.h>
+>>  #include <linux/msi.h>
+>>  #include <linux/io.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>  #include <asm/nospec-branch.h>
+>>  #include <asm/paravirt.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  /*
+>>   * Hyper-V always provides a single IO-APIC at this MMIO address.
+>> diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
+>> index f0dea3750ca9..913af68ad660 100644
+>> --- a/arch/x86/include/asm/svm.h
+>> +++ b/arch/x86/include/asm/svm.h
+>> @@ -5,7 +5,7 @@
+>>  #include <uapi/asm/svm.h>
+>>  #include <uapi/asm/kvm.h>
+>>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  /*
+>>   * 32-bit intercept words in the VMCB Control Area, starting
+>> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+>> index e0fd57a8ba84..be0d1f4491d9 100644
+>> --- a/arch/x86/kernel/cpu/mshyperv.c
+>> +++ b/arch/x86/kernel/cpu/mshyperv.c
+>> @@ -20,7 +20,7 @@
+>>  #include <linux/random.h>
+>>  #include <asm/processor.h>
+>>  #include <asm/hypervisor.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>  #include <asm/mshyperv.h>
+>>  #include <asm/desc.h>
+>>  #include <asm/idtentry.h>
+>> diff --git a/arch/x86/kvm/vmx/hyperv_evmcs.h b/arch/x86/kvm/vmx/hyperv_evmcs.h
+>> index a543fccfc574..6536290f4274 100644
+>> --- a/arch/x86/kvm/vmx/hyperv_evmcs.h
+>> +++ b/arch/x86/kvm/vmx/hyperv_evmcs.h
+>> @@ -6,7 +6,7 @@
+>>  #ifndef __KVM_X86_VMX_HYPERV_EVMCS_H
+>>  #define __KVM_X86_VMX_HYPERV_EVMCS_H
+>>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  #include "capabilities.h"
+>>  #include "vmcs12.h"
+>> diff --git a/arch/x86/kvm/vmx/vmx_onhyperv.h
+>> b/arch/x86/kvm/vmx/vmx_onhyperv.h
+>> index eb48153bfd73..2b94ff301712 100644
+>> --- a/arch/x86/kvm/vmx/vmx_onhyperv.h
+>> +++ b/arch/x86/kvm/vmx/vmx_onhyperv.h
+>> @@ -3,7 +3,7 @@
+>>  #ifndef __ARCH_X86_KVM_VMX_ONHYPERV_H__
+>>  #define __ARCH_X86_KVM_VMX_ONHYPERV_H__
+>>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>  #include <asm/mshyperv.h>
+>>
+>>  #include <linux/jump_label.h>
+>> diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
+>> index b2a080647e41..c1cc96a168c7 100644
+>> --- a/drivers/clocksource/hyperv_timer.c
+>> +++ b/drivers/clocksource/hyperv_timer.c
+>> @@ -23,7 +23,7 @@
+>>  #include <linux/acpi.h>
+>>  #include <linux/hyperv.h>
+>>  #include <clocksource/hyperv_timer.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>  #include <asm/mshyperv.h>
+>>
+>>  static struct clock_event_device __percpu *hv_clock_event;
+>> diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
+>> index c38dcdfcb914..d792df113962 100644
+>> --- a/drivers/hv/hv_balloon.c
+>> +++ b/drivers/hv/hv_balloon.c
+>> @@ -28,7 +28,7 @@
+>>  #include <linux/sizes.h>
+>>
+>>  #include <linux/hyperv.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  #include <asm/mshyperv.h>
+>>
+>> @@ -1585,7 +1585,7 @@ static int hv_free_page_report(struct
+>> page_reporting_dev_info *pr_dev_info,
+>>  		return -ENOSPC;
+>>  	}
+>>
+>> -	hint->type = HV_EXT_MEMORY_HEAT_HINT_TYPE_COLD_DISCARD;
+>> +	hint->heat_type = HV_EXTMEM_HEAT_HINT_COLD_DISCARD;
+>>  	hint->reserved = 0;
+>>  	for_each_sg(sgl, sg, nents, i) {
+>>  		union hv_gpa_page_range *range;
+>> diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+>> index 9c452bfbd571..9ea05cbbf50d 100644
+>> --- a/drivers/hv/hv_common.c
+>> +++ b/drivers/hv/hv_common.c
+>> @@ -28,7 +28,7 @@
+>>  #include <linux/slab.h>
+>>  #include <linux/dma-map-ops.h>
+>>  #include <linux/set_memory.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>  #include <asm/mshyperv.h>
+>>
+>>  /*
+>> diff --git a/drivers/hv/hv_kvp.c b/drivers/hv/hv_kvp.c
+>> index d35b60c06114..bfb7a518b4ed 100644
+>> --- a/drivers/hv/hv_kvp.c
+>> +++ b/drivers/hv/hv_kvp.c
+>> @@ -27,7 +27,7 @@
+>>  #include <linux/connector.h>
+>>  #include <linux/workqueue.h>
+>>  #include <linux/hyperv.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  #include "hyperv_vmbus.h"
+>>  #include "hv_utils_transport.h"
+>> diff --git a/drivers/hv/hv_snapshot.c b/drivers/hv/hv_snapshot.c
+>> index 0d2184be1691..097ebd58f14e 100644
+>> --- a/drivers/hv/hv_snapshot.c
+>> +++ b/drivers/hv/hv_snapshot.c
+>> @@ -12,7 +12,7 @@
+>>  #include <linux/connector.h>
+>>  #include <linux/workqueue.h>
+>>  #include <linux/hyperv.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  #include "hyperv_vmbus.h"
+>>  #include "hv_utils_transport.h"
+>> diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
+>> index 76ac5185a01a..2bea654858e3 100644
+>> --- a/drivers/hv/hyperv_vmbus.h
+>> +++ b/drivers/hv/hyperv_vmbus.h
+>> @@ -15,10 +15,10 @@
+>>  #include <linux/list.h>
+>>  #include <linux/bitops.h>
+>>  #include <asm/sync_bitops.h>
+>> -#include <asm/hyperv-tlfs.h>
+>>  #include <linux/atomic.h>
+>>  #include <linux/hyperv.h>
+>>  #include <linux/interrupt.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  #include "hv_trace.h"
+>>
+>> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+>> index 8fe7aaab2599..138e416a0f9c 100644
+>> --- a/include/asm-generic/mshyperv.h
+>> +++ b/include/asm-generic/mshyperv.h
+>> @@ -25,7 +25,7 @@
+>>  #include <linux/cpumask.h>
+>>  #include <linux/nmi.h>
+>>  #include <asm/ptrace.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  #define VTPM_BASE_ADDRESS 0xfed40000
+>>
+>> diff --git a/include/clocksource/hyperv_timer.h b/include/clocksource/hyperv_timer.h
+>> index 6cdc873ac907..a4c81a60f53d 100644
+>> --- a/include/clocksource/hyperv_timer.h
+>> +++ b/include/clocksource/hyperv_timer.h
+>> @@ -15,7 +15,7 @@
+>>
+>>  #include <linux/clocksource.h>
+>>  #include <linux/math64.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  #define HV_MAX_MAX_DELTA_TICKS 0xffffffff
+>>  #define HV_MIN_DELTA_TICKS 1
+>> diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+>> index d0893ec488ae..ed65b20defea 100644
+>> --- a/include/linux/hyperv.h
+>> +++ b/include/linux/hyperv.h
+>> @@ -24,7 +24,7 @@
+>>  #include <linux/mod_devicetable.h>
+>>  #include <linux/interrupt.h>
+>>  #include <linux/reciprocal_div.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  #define MAX_PAGE_BUFFER_COUNT				32
+>>  #define MAX_MULTIPAGE_BUFFER_COUNT			32 /* 128K */
+>> diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
+>> index e2157e387217..152b6ed8877d 100644
+>> --- a/net/vmw_vsock/hyperv_transport.c
+>> +++ b/net/vmw_vsock/hyperv_transport.c
+>> @@ -13,7 +13,7 @@
+>>  #include <linux/hyperv.h>
+>>  #include <net/sock.h>
+>>  #include <net/af_vsock.h>
+>> -#include <asm/hyperv-tlfs.h>
+>> +#include <hyperv/hvhdk.h>
+>>
+>>  /* Older (VMBUS version 'VERSION_WIN10' or before) Windows hosts have some
+>>   * stricter requirements on the hv_sock ring buffer size of six 4K pages.
+>> --
+>> 2.34.1
+
