@@ -1,186 +1,231 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF98149E0E;
-	Mon, 18 Nov 2024 10:04:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9E931946A1
+	for <iommu@lists.linux.dev>; Mon, 18 Nov 2024 10:21:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731924298; cv=none; b=uUg2gadxg59egUkWfZSpZZzktgRzTvWnUNZVAaXEdxU0hXOGEtx7vurpqEPQGm0PHCGcjhiSjljgDUO3CXuE37bzVT/DEQqB+3SaypNifq+GeC8OUTRaH/pMLNyPl/W2HsqYXZL/sXow/K/TnuztyuzSif7J1CiWUMWkSNirsNs=
+	t=1731925321; cv=none; b=YDDSmDImUqZUrU+2AYSn+iweoJsDZyRZB+Cdr5sDTWh5Aglgk2LPNUKtJlTQYEm9cBpaP/buJbAzQbBO7J9+u0RTXtzpVzAdQ4zOUla+XO9sdOXN+6jvDH3Zh4YgyqgX3YLmBPCdcLm4TMSEEnJ8LzHMZGZGexX0sp/VMyFK2t0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731924298; c=relaxed/simple;
-	bh=Svr6EunWysvQO3ijRLUsBDH75AvE5Rrg8A+PmW81pgk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=WTzbU6D1Yia3ccBWeprlpWdnbiYndl4Xl1bY2ND1DSEm3ehUwxE6SEkmPy6Tr3VGIu7SBw3o/tcHBLmi+SR+s95MF6EAsjjmO9v18RCY7Y+LnlmnVEdKprV3BSgdpxXNhkQY9qfjEbZ8uFlviBuAYmSp2/fHtynUgLsTcR2hfeQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=YAmhZYpz; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1731925321; c=relaxed/simple;
+	bh=Db4cp2BS1tOGXH1Epn3W22qyrM5yGAT815UoctHNo+w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Fu+XSmG66OOEbGkxWZHIkpuiAnq5BklmZaBbNE852m2TawWHsqWLeaDX/IRhQQZgI4NpZpUoddnz2RZFX5YUPrFViJeDMZM52SVdK4+5tIPs/fZApAo98DB7QZstIpCpgPKPECFcr/eO2M0IVucfJV7bFC5YFDebbp3TjvPiuQE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=KC1CatLY; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="YAmhZYpz"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4AI5RkC8009831;
-	Mon, 18 Nov 2024 10:04:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	gPiQ/AXs6OKwLqOErMd5RmqFtsPLKhoq2wS2AXM+WRA=; b=YAmhZYpz5smo8Bk3
-	fCT/EXa7/XPwk2nmOL45LDi8tqbgXO4K4R0r5kuAh2IUkZ4ZHiLfeAib7t7Ct7Ek
-	QAfQv8G5uiRI71ZKSN+b8GrOG8UAYg2h62bKrY1ECwm9zhvkXddCdgJt1V2DczFW
-	XeXAeFDcBDdScaToXp1iXjfBW30aC3qohLhMiezJ357KsYKPfjZog9E0IPqH6DPI
-	EjQ8IPLYoThByxEMR35dhHfsSUJyXvutuKuwvJhdo2DfR6AyQXcPOpdWAY3BqOLc
-	bmzbzFCAOMSJAOZzJHx1GndsxzARkUSakSDpy2kjMCmtPBiXJegy0Ch9wXX8gqr6
-	5qKukg==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42xkrm43qs-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 18 Nov 2024 10:04:45 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4AIA4ixo023701
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 18 Nov 2024 10:04:44 GMT
-Received: from [10.239.132.41] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 18 Nov
- 2024 02:04:41 -0800
-Message-ID: <f995938e-f56a-4b27-9a03-901c0077e88c@quicinc.com>
-Date: Mon, 18 Nov 2024 18:04:38 +0800
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KC1CatLY"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-43152b79d25so23589485e9.1
+        for <iommu@lists.linux.dev>; Mon, 18 Nov 2024 02:21:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1731925317; x=1732530117; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=phSqjmldBPWXRgFeffd/JWcPCOA4hJo3BiIhOYwH3MA=;
+        b=KC1CatLYa3M5nKivgyrPPVtraQnz1Vf6jL5kdKlZFQNP6YVp2n0fqghtbP7HW9T/0z
+         DeYLKi50wRTPkcaQB9bJXe2iHbnWf9WZ7C7mAGkeUpBDo0w3iW41MuCvyF9/MEjfD0jE
+         V/iI6v9TyQN6j2PVSX5b5owDWB+Lt6eLkTTtar0lPtoArM9CnEJGYXD91KIwgvD+4ZLG
+         XlsCT4OiKyq6kNnNPKHMImGHkSLTGPZ7LlmK3SA7XBXIXgasJ1szoh3sBX2PB0ojCiwZ
+         gd6g6w6fAvx5oCNesuZOQl8VoAZpste8ZOMfM3BIywC4XJzU9chbFFd8PvXRTW4ZOLpc
+         KpPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731925317; x=1732530117;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=phSqjmldBPWXRgFeffd/JWcPCOA4hJo3BiIhOYwH3MA=;
+        b=PtWpxbpoOEMPvntziZX93EXFv5vjTBJ2olSCHUtoJSk0GbjGqIweLcqtrBXxnkMBhD
+         /3CIpbuFeKrSmMBthZ56WmAmxdXJynFFLRLHzlOb6XOZzAOkh27atX2mENk7snrcKjve
+         /J6gX1UUZDbfZVcNCFsnFNSlRfgzjPMoACdBemDFRJQ/TfzjPH/hw/GWuhosJADhOMC1
+         pzdEP0X91lysQOiDf2UJG2qcgIN5speVaAxqE89GCrvGC9jhfKjRqicTQKMiFViyiDF9
+         OT4ulz+fTxePRawJEnn3SSZpOimtpGDe8UuMNw7vp+YElyzffXLkJee0y8ZP2N51GQzW
+         8sIQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVphADmUdzjuKSITkmBIYgk6QJBoOXsh2pQ122UEbtD+rrC2S2Fw/VjIZKL/W5EHznpBbeEvA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyAt/m/VcZOOT86X7nlgW3lMayIedxsZ3mQzuBfqGqJRuM7Jfkc
+	cOQ+R6LNGFVbRLdquLDsmqAnSWUSFPu5qU2ZjCT1y9Ke3CVv9IKN6U5aWsTwkMY=
+X-Google-Smtp-Source: AGHT+IEFeF0+Sdkb6b315Q3y1qMmmjCmnoawHXKh9ZeoveK/uoXwKwzlP7db+07+TyaV3vMlKWXWlQ==
+X-Received: by 2002:a05:6000:1f88:b0:37c:d276:f04 with SMTP id ffacd0b85a97d-38225a915fbmr8111178f8f.45.1731925317212;
+        Mon, 18 Nov 2024 02:21:57 -0800 (PST)
+Received: from linaro.org ([2a02:2454:ff21:ef80:8453:3d1e:f32c:d913])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-382485e2a89sm2301322f8f.17.2024.11.18.02.21.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Nov 2024 02:21:56 -0800 (PST)
+Date: Mon, 18 Nov 2024 11:21:45 +0100
+From: Stephan Gerhold <stephan.gerhold@linaro.org>
+To: =?iso-8859-1?B?QmFybmFi4XMgQ3rpbeFu?= <barnabas.czeman@mainlining.org>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Amit Kucheria <amitk@kernel.org>,
+	Thara Gopinath <thara.gopinath@gmail.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-pm@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v6 10/10] arm64: dts: qcom: Add Xiaomi Redmi 5A
+Message-ID: <ZzsVOV8GjCVtCi5Q@linaro.org>
+References: <20241113-msm8917-v6-0-c348fb599fef@mainlining.org>
+ <20241113-msm8917-v6-10-c348fb599fef@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 3/3] arm64: dts: qcom: qcs615: add the APPS SMMU node
-To: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <robimarko@gmail.com>,
-        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
-CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-References: <20241105032107.9552-1-quic_qqzhou@quicinc.com>
- <20241105032107.9552-4-quic_qqzhou@quicinc.com>
-From: Qingqing Zhou <quic_qqzhou@quicinc.com>
-In-Reply-To: <20241105032107.9552-4-quic_qqzhou@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 6-T7PxNPiyudALfBPsxbFoH0fVobzClh
-X-Proofpoint-ORIG-GUID: 6-T7PxNPiyudALfBPsxbFoH0fVobzClh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
- spamscore=0 adultscore=0 mlxlogscore=840 malwarescore=0 impostorscore=0
- clxscore=1015 bulkscore=0 priorityscore=1501 lowpriorityscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2409260000
- definitions=main-2411180083
+In-Reply-To: <20241113-msm8917-v6-10-c348fb599fef@mainlining.org>
 
-
-
-åœ¨ 11/5/2024 11:21 AM, Qingqing Zhou å†™é“:
-> Add the APPS SMMU node for QCS615 platform. Add the dma-ranges
-> to limit DMA address range to 36bit width to align with system
-> architecture.
+On Wed, Nov 13, 2024 at 04:11:51PM +0100, Barnabás Czémán wrote:
+> Add initial support for Xiaomi Redmi 5A (riva).
 > 
-Could anyone help review this? The patch changes not much. Thanks!
-> Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
+> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 > ---
->  arch/arm64/boot/dts/qcom/qcs615.dtsi | 75 ++++++++++++++++++++++++++++
->  1 file changed, 75 insertions(+)
+>  arch/arm64/boot/dts/qcom/Makefile                |   1 +
+>  arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts | 297 +++++++++++++++++++++++
+>  2 files changed, 298 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/qcs615.dtsi b/arch/arm64/boot/dts/qcom/qcs615.dtsi
-> index 027c5125f36b..e35fd4059073 100644
-> --- a/arch/arm64/boot/dts/qcom/qcs615.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/qcs615.dtsi
-> @@ -379,6 +379,7 @@
->  	soc: soc@0 {
->  		compatible = "simple-bus";
->  		ranges = <0 0 0 0 0x10 0>;
-> +		dma-ranges = <0 0 0 0 0x10 0>;
->  		#address-cells = <2>;
->  		#size-cells = <2>;
->  
-> @@ -524,6 +525,80 @@
->  			reg = <0x0 0x0c3f0000 0x0 0x400>;
->  		};
->  
-> +		apps_smmu: iommu@15000000 {
-> +			compatible = "qcom,qcs615-smmu-500", "qcom,smmu-500", "arm,mmu-500";
-> +			reg = <0x0 0x15000000 0x0 0x80000>;
-> +			#iommu-cells = <2>;
-> +			#global-interrupts = <1>;
-> +			dma-coherent;
+> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+> index 9bb8b191aeb517e8f1e3a11bca98a3d0c39c5398..7562406843cfd82397c4844d14a22e8bcf4bba74 100644
+> --- a/arch/arm64/boot/dts/qcom/Makefile
+> +++ b/arch/arm64/boot/dts/qcom/Makefile
+> @@ -62,6 +62,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-wingtech-wt86518.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-wingtech-wt86528.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-wingtech-wt88047.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-yiming-uz801v3.dtb
+> +dtb-$(CONFIG_ARCH_QCOM)	+= msm8917-xiaomi-riva.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= msm8929-wingtech-wt82918hd.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= msm8939-huawei-kiwi.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= msm8939-longcheer-l9100.dtb
+> diff --git a/arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts b/arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..81bb76f1773252be2f60777acf93d51d01981f86
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts
+> @@ -0,0 +1,297 @@
+> [...]
+> +	gpio-keys {
+> +		compatible = "gpio-keys";
 > +
-> +			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 181 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 182 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 183 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 191 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 315 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 316 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 317 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 318 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 319 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 322 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 323 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 324 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 325 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 326 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 327 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 328 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 329 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 330 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 331 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 332 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 333 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 339 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 340 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH>;
-> +		};
-> +
->  		intc: interrupt-controller@17a00000 {
->  			compatible = "arm,gic-v3";
->  			reg = <0x0 0x17a00000 0x0 0x10000>,     /* GICD */
+> +		key-volup {
+> +			label = "Volume Up";
+> +			linux,code = <KEY_VOLUMEUP>;
+> +			gpios = <&tlmm 91 GPIO_ACTIVE_LOW>;
 
+It's good practice to
+
+> +			debounce-interval = <15>;
+> +		};
+> +	};
+> [...]
+> +&blsp1_i2c3 {
+> +	status = "okay";
+> +
+> +	touchscreen@38 {
+> +		compatible = "edt,edt-ft5306";
+> +		reg = <0x38>;
+> +		interrupts-extended = <&tlmm 65 IRQ_TYPE_LEVEL_LOW>;
+
+add pinctrl
+
+> +		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
+
+for all
+
+> +		vcc-supply = <&pm8937_l10>;
+> +		iovcc-supply = <&pm8937_l5>;
+> +
+> +		touchscreen-size-x = <720>;
+> +		touchscreen-size-y = <1280>;
+> +	};
+> +};
+> +
+> +&blsp2_i2c1 {
+> +	status = "okay";
+> +
+> +	bq27426@55 {
+> +		compatible = "ti,bq27426";
+> +		reg = <0x55>;
+> +		monitored-battery = <&battery>;
+> +	};
+> +
+> +	bq25601@6b{
+> +		compatible = "ti,bq25601";
+> +		reg = <0x6b>;
+> +		monitored-battery = <&battery>;
+> +
+> +		interrupt-parent = <&tlmm>;
+> +		interrupts = <61 IRQ_TYPE_EDGE_FALLING>;
+
+GPIOs/pins
+
+> +
+> +		input-voltage-limit-microvolt = <4400000>;
+> +		input-current-limit-microamp = <1000000>;
+> +	};
+> +};
+> [...]
+
+> +&sdhc_2 {
+> +	cd-gpios = <&tlmm 67 GPIO_ACTIVE_LOW>;
+
+that you use. :-)
+
+Usually it can be something simple like function=gpio, bias-disable,
+drive-strength = <2>, etc, plenty of examples exist upstream. Check
+downstream or schematics (if you have them). Ideally you would check
+what the peripheral requires.
+
+E.g. for SD card the GPIO usually has external pull-up, so bias-pull-up
+would be redundant and one can just use bias-disable:
+
+	pinctrl-0 = <&sdc2_default &sdc2_cd_default>;
+	pinctrl-1 = <&sdc2_sleep &sdc2_cd_default>;
+	pinctrl-names = "default", "sleep";
+
+&tlmm {
+	sdc2_cd_default: sdc2-cd-default-state {
+		pins = "gpio67";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+};
+
+
+> +	vmmc-supply = <&pm8937_l11>;
+> +	vqmmc-supply = <&pm8937_l12>;
+> +
+> +	status = "okay";
+> +};
+> +
+> [...]
+> +&rpm_requests {
+> +	regulators-0 {
+> +		compatible = "qcom,rpm-pm8937-regulators";
+> +
+> [...]
+> +		pm8937_l11: l11 {
+> +			regulator-min-microvolt = <2950000>;
+> +			regulator-max-microvolt = <2950000>;
+> +		};
+
+You usually need/want regulator-allow-set-load and regulator-system-load
+for the SD card regulator to avoid issues with certain SD
+cards/operations, see
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=af61bef513ba179559e56908b8c465e587bc3890
+
+Thanks,
+Stephan
