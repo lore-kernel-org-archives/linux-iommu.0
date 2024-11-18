@@ -1,230 +1,105 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCCC113D518;
-	Mon, 18 Nov 2024 14:59:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 838701A08B6;
+	Mon, 18 Nov 2024 15:11:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731941979; cv=none; b=EuAyZcZ5COrNDoEhNt7hNIYs5PobeNgvmGhYRqLWtTqArK73dpcGwbvJ5pSL8gx9HKYQFY+Jj8AtT29D9cms6IH6TWDuoyLizyb0d8Ywj4I2uE/wypGjv/ok1XrBZmy6e3QEAx2u9oF5G9V3blh1GfopHMGDNeMFzUUWtmPweGg=
+	t=1731942712; cv=none; b=FqHsCWsQNtBxeH/D8sA7rwEQgcRIUd4aAoiW3tdR89TWkuL6uh9YSfDuH+705DoHHPEPGyF4VHs/mB0vn1kh6J0Zc12H1fL+8p/56l0aBTjRX2b/tkQaLy68tC0FhsAD1/8JELORylsu1kL67ioMbboU8Yiv/SRgFnYXvMd3YYo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731941979; c=relaxed/simple;
-	bh=B8pGggj3ynn83Ub48krJi7CHfczmBiFlV+ZzKagAU8c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C/d9wvR+6XtDC8PYFYizEURs90zApDyiYz26Im3mnMH3wSYtg71gf9TQyALRTpxQj3eaeyRS5U8dAIQggiuMXO8z6s8D1kbPAFs6sj1bssleTroQg3LqOT9Kj7Pz9J9lCvCkmVvZBoHp2t5ydTd8MF9Grbt030Lp4j1eF5hXbuE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G6Bg2k8C; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1731942712; c=relaxed/simple;
+	bh=TExeTFz1ilJ8Wj+pToJnI0x993GlFRsjNQUz/EXz1Rc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZTfggCvJdez+CzbHZboJYtjaI+w/J7nR9xfUeiELKxXvNbQiGQjAIWK3abOPY/U/jt3GUDSrJmdnoSPJk5hJ91SBPDCaLR5ayqzEsP9KXjKZhJZx9R+VUWxAfHzs5C/auLYOOX+bqiCsZFgurOuHlj694o+3zd6BioUNVUxa2XY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZxtknAct; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G6Bg2k8C"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD6BEC4CECC;
-	Mon, 18 Nov 2024 14:59:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZxtknAct"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A3C3C4CECC;
+	Mon, 18 Nov 2024 15:11:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731941978;
-	bh=B8pGggj3ynn83Ub48krJi7CHfczmBiFlV+ZzKagAU8c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=G6Bg2k8CB4cyv7GvpsoK3J+5RLs/2u5H29iEyh4i6ZqGoXct/Mu22+XNHflmRvT6s
-	 KZe6NXydVtOw41QSE4Mu0hI142rjcw2NGNoa3hORXv8QPudQ2LNbI7CL1PQllBv1zJ
-	 PVg5OIMdYI/sifgmlsljRU/Jxm7UY+Ka84poM2U08EXGlKgrcyVUOBN2rs8H4k42SQ
-	 UuahBUOxDy3vM9OoqFVolfL209f3W00Ro+weBEcZGMM2MXHHmc4mlPpCvaZhG6b4ib
-	 avxefeiazL/Eyx8Z0HkLX7S1VbKRCfbXLdz1veV0FzQoJ7m9izmVY5DPnmgs81YoQr
-	 LHwDUV8zWxLxA==
-Date: Mon, 18 Nov 2024 14:59:30 +0000
-From: Will Deacon <will@kernel.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
-	Leon Romanovsky <leonro@nvidia.com>,
-	Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v3 07/17] dma-mapping: Implement link/unlink ranges API
-Message-ID: <20241118145929.GB27795@willie-the-truck>
-References: <cover.1731244445.git.leon@kernel.org>
- <f8c7f160c9ae97fef4ccd355f9979727552c7374.1731244445.git.leon@kernel.org>
+	s=k20201202; t=1731942712;
+	bh=TExeTFz1ilJ8Wj+pToJnI0x993GlFRsjNQUz/EXz1Rc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=ZxtknAct4kAdFJ4YgK/gVZ8EBkvmlYRDhUlFtXfWsmvDYSluSC+6dBtR6BJoS/iXq
+	 jpE1jyK3ODuVm6GohUgVQYIxEawnJZk43u9b23IQeeu+weWsYdQHinofwo9xTmDy0d
+	 mVvnPeYG5sYec6tYDQgLDl0XPVkb3HjdcHwo3zfqoQpiVa9LNsZQmSY8F62AIQU8Dm
+	 2DWY1xhEtPsb8mw79ZMFMsfZ0dcNHt+Mmaedobd4isTwCbyLDXEIJAJZ8KJr9FKkWD
+	 Bk9SH2vvObBvN7Ga3p5BZr2ZknCfAQnLjzglDDInUUsyUryTYrOZLCaymvje+V0kJ3
+	 G+9fYSxKxqw7w==
+Message-ID: <17a24d69-7bf0-412c-a32a-b25d82bb4159@kernel.org>
+Date: Mon, 18 Nov 2024 16:11:46 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f8c7f160c9ae97fef4ccd355f9979727552c7374.1731244445.git.leon@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
+ has already unbound
+To: Yunsheng Lin <linyunsheng@huawei.com>,
+ =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+ davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc: zhangkun09@huawei.com, fanghaiqing@huawei.com, liuyonglong@huawei.com,
+ Robin Murphy <robin.murphy@arm.com>,
+ Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
+ Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet
+ <edumazet@google.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+ kernel-team <kernel-team@cloudflare.com>
+References: <20241022032214.3915232-1-linyunsheng@huawei.com>
+ <20241022032214.3915232-4-linyunsheng@huawei.com>
+ <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
+ <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
+ <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
+ <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org>
+ <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
+ <4564c77b-a54d-4307-b043-d08e314c4c5f@huawei.com> <87ldxp4n9v.fsf@toke.dk>
+ <eab44c89-5ada-48b6-b880-65967c0f3b49@huawei.com>
+ <be049c33-936a-4c93-94ff-69cd51b5de8e@kernel.org>
+ <40c9b515-1284-4c49-bdce-c9eeff5092f9@huawei.com>
+Content-Language: en-US
+From: Jesper Dangaard Brouer <hawk@kernel.org>
+In-Reply-To: <40c9b515-1284-4c49-bdce-c9eeff5092f9@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Sun, Nov 10, 2024 at 03:46:54PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+
+
+On 18/11/2024 10.08, Yunsheng Lin wrote:
+> On 2024/11/12 22:19, Jesper Dangaard Brouer wrote:
+>>>
+>>> Yes, there seems to be many MM system internals, like the CONFIG_SPARSEMEM*
+>>> config, memory offline/online and other MM specific optimization that it
+>>> is hard to tell it is feasible.
+>>>
+>>> It would be good if MM experts can clarify on this.
+>>>
+>>
+>> Yes, please.  Can Alex Duyck or MM-experts point me at some code walking
+>> entire system page table?
+>>
+>> Then I'll write some kernel code (maybe module) that I can benchmark how
+>> long it takes on my machine with 384GiB. I do like Alex'es suggestion,
+>> but I want to assess the overhead of doing this on modern hardware.
+>>
 > 
-> Introduce new DMA APIs to perform DMA linkage of buffers
-> in layers higher than DMA.
+> After looking more closely into MM subsystem, it seems there is some existing
+> pattern or API to walk the entire pages from the buddy allocator subsystem,
+> see the kmemleak_scan() in mm/kmemleak.c:
+> https://elixir.bootlin.com/linux/v6.12/source/mm/kmemleak.c#L1680
 > 
-> In proposed API, the callers will perform the following steps.
-> In map path:
-> 	if (dma_can_use_iova(...))
-> 	    dma_iova_alloc()
-> 	    for (page in range)
-> 	       dma_iova_link_next(...)
-> 	    dma_iova_sync(...)
-> 	else
-> 	     /* Fallback to legacy map pages */
->              for (all pages)
-> 	       dma_map_page(...)
-> 
-> In unmap path:
-> 	if (dma_can_use_iova(...))
-> 	     dma_iova_destroy()
-> 	else
-> 	     for (all pages)
-> 		dma_unmap_page(...)
-> 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  drivers/iommu/dma-iommu.c   | 259 ++++++++++++++++++++++++++++++++++++
->  include/linux/dma-mapping.h |  32 +++++
->  2 files changed, 291 insertions(+)
+> I used that to walk the pages in a arm64 system with over 300GB memory,
+> it took about 1.3 sec to do the walking, which seems acceptable?
 
-[...]
+Yes, that seems acceptable to me.
 
-> +/**
-> + * dma_iova_link - Link a range of IOVA space
-> + * @dev: DMA device
-> + * @state: IOVA state
-> + * @phys: physical address to link
-> + * @offset: offset into the IOVA state to map into
-> + * @size: size of the buffer
-> + * @dir: DMA direction
-> + * @attrs: attributes of mapping properties
-> + *
-> + * Link a range of IOVA space for the given IOVA state without IOTLB sync.
-> + * This function is used to link multiple physical addresses in contigueous
-> + * IOVA space without performing costly IOTLB sync.
-> + *
-> + * The caller is responsible to call to dma_iova_sync() to sync IOTLB at
-> + * the end of linkage.
-> + */
-> +int dma_iova_link(struct device *dev, struct dma_iova_state *state,
-> +		phys_addr_t phys, size_t offset, size_t size,
-> +		enum dma_data_direction dir, unsigned long attrs)
-> +{
-> +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> +	struct iova_domain *iovad = &cookie->iovad;
-> +	size_t iova_start_pad = iova_offset(iovad, phys);
-> +
-> +	if (WARN_ON_ONCE(iova_start_pad && offset > 0))
-> +		return -EIO;
-> +
-> +	if (dev_use_swiotlb(dev, size, dir) && iova_offset(iovad, phys | size))
-> +		return iommu_dma_iova_link_swiotlb(dev, state, phys, offset,
-> +				size, dir, attrs);
-> +
-> +	return __dma_iova_link(dev, state->addr + offset - iova_start_pad,
-> +			phys - iova_start_pad,
-> +			iova_align(iovad, size + iova_start_pad), dir, attrs);
-> +}
-> +EXPORT_SYMBOL_GPL(dma_iova_link);
-> +
-> +/**
-> + * dma_iova_sync - Sync IOTLB
-> + * @dev: DMA device
-> + * @state: IOVA state
-> + * @offset: offset into the IOVA state to sync
-> + * @size: size of the buffer
-> + *
-> + * Sync IOTLB for the given IOVA state. This function should be called on
-> + * the IOVA-contigous range created by one ore more dma_iova_link() calls
-> + * to sync the IOTLB.
-> + */
-> +int dma_iova_sync(struct device *dev, struct dma_iova_state *state,
-> +		size_t offset, size_t size)
-> +{
-> +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> +	struct iova_domain *iovad = &cookie->iovad;
-> +	dma_addr_t addr = state->addr + offset;
-> +	size_t iova_start_pad = iova_offset(iovad, addr);
-> +
-> +	return iommu_sync_map(domain, addr - iova_start_pad,
-> +		      iova_align(iovad, size + iova_start_pad));
-> +}
-> +EXPORT_SYMBOL_GPL(dma_iova_sync);
-> +
-> +static void iommu_dma_iova_unlink_range_slow(struct device *dev,
-> +		dma_addr_t addr, size_t size, enum dma_data_direction dir,
-> +		unsigned long attrs)
-> +{
-> +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> +	struct iova_domain *iovad = &cookie->iovad;
-> +	size_t iova_start_pad = iova_offset(iovad, addr);
-> +	dma_addr_t end = addr + size;
-> +
-> +	do {
-> +		phys_addr_t phys;
-> +		size_t len;
-> +
-> +		phys = iommu_iova_to_phys(domain, addr);
-> +		if (WARN_ON(!phys))
-> +			continue;
-> +		len = min_t(size_t,
-> +			end - addr, iovad->granule - iova_start_pad);
-> +
-> +		if (!dev_is_dma_coherent(dev) &&
-> +		    !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> +			arch_sync_dma_for_cpu(phys, len, dir);
-> +
-> +		swiotlb_tbl_unmap_single(dev, phys, len, dir, attrs);
-> +
-> +		addr += len;
-> +		iova_start_pad = 0;
-> +	} while (addr < end);
-> +}
-> +
-> +static void __iommu_dma_iova_unlink(struct device *dev,
-> +		struct dma_iova_state *state, size_t offset, size_t size,
-> +		enum dma_data_direction dir, unsigned long attrs,
-> +		bool free_iova)
-> +{
-> +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> +	struct iova_domain *iovad = &cookie->iovad;
-> +	dma_addr_t addr = state->addr + offset;
-> +	size_t iova_start_pad = iova_offset(iovad, addr);
-> +	struct iommu_iotlb_gather iotlb_gather;
-> +	size_t unmapped;
-> +
-> +	if ((state->__size & DMA_IOVA_USE_SWIOTLB) ||
-> +	    (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)))
-> +		iommu_dma_iova_unlink_range_slow(dev, addr, size, dir, attrs);
-> +
-> +	iommu_iotlb_gather_init(&iotlb_gather);
-> +	iotlb_gather.queued = free_iova && READ_ONCE(cookie->fq_domain);
-> +
-> +	size = iova_align(iovad, size + iova_start_pad);
-> +	addr -= iova_start_pad;
-> +	unmapped = iommu_unmap_fast(domain, addr, size, &iotlb_gather);
-> +	WARN_ON(unmapped != size);
+I'll also do a test on one of my 384 GB systems.
+  - It took approx 0.391661 seconds.
 
-Does the new API require that the 'size' passed to dma_iova_unlink()
-exactly match the 'size' passed to the corresponding call to
-dma_iova_link()? I ask because the IOMMU page-table code is built around
-the assumption that partial unmap() operations never occur (i.e.
-operations which could require splitting a huge mapping). We just
-removed [1] that code from the Arm IO page-table implementations, so it
-would be good to avoid adding it back for this.
+I just deref page->pp_magic and counted the pages, not many page were
+in-use (page_count(page) > 0) as machine has just been rebooted into
+this kernel:
+  - pages=100592572 in-use:2079607
 
-Will
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git/commit/?h=arm/smmu&id=33729a5fc0caf7a97d20507acbeee6b012e7e519
+--Jesper
