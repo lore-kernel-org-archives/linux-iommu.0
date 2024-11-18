@@ -1,31 +1,48 @@
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E598B188906
-	for <iommu@lists.linux.dev>; Mon, 18 Nov 2024 09:26:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.255
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF98149E0E;
+	Mon, 18 Nov 2024 10:04:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731921987; cv=none; b=Kzq03xJDNZkQUnbL4TGdZeXOqa7p4Oy7lM2G9AY3gIw29fqqOKi+Z/Gq2/bmLVl9/vBN4WZhiI3YdL6NrXGB69ZW4dzbo3cll5PwmKorfxIxmgYZ/rwSNfnTHNGOHSDnjMdSXSFP+Pu//s7wfvWMtNa+JXIlsn0R56C1S3z6cVE=
+	t=1731924298; cv=none; b=uUg2gadxg59egUkWfZSpZZzktgRzTvWnUNZVAaXEdxU0hXOGEtx7vurpqEPQGm0PHCGcjhiSjljgDUO3CXuE37bzVT/DEQqB+3SaypNifq+GeC8OUTRaH/pMLNyPl/W2HsqYXZL/sXow/K/TnuztyuzSif7J1CiWUMWkSNirsNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731921987; c=relaxed/simple;
-	bh=OVwFVUiY+VLSoK/903nT9owaFfGg3Q/SlJs3t3OeFbM=;
+	s=arc-20240116; t=1731924298; c=relaxed/simple;
+	bh=Svr6EunWysvQO3ijRLUsBDH75AvE5Rrg8A+PmW81pgk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=qzVAUVwwP4KSZ0VSvM133bRsGsgDA8+eBQHhM1lkjiE8/EyD7r5Kn8XE6Q164ePtzcaFxiLlWO/1V8J+ZI6hfK7dd0tlz9ivEbwTjptiAEFCIzmJoAVXqXK6I/mna8DgY3aHxSInO9Tq1SUXyEXsoA1iEBvSQH+gpavAZwo+DsQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.255
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.174])
-	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4XsMDG2sx9z1V4b0;
-	Mon, 18 Nov 2024 17:05:50 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id EE946140393;
-	Mon, 18 Nov 2024 17:08:25 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Mon, 18 Nov 2024 17:08:25 +0800
-Message-ID: <40c9b515-1284-4c49-bdce-c9eeff5092f9@huawei.com>
-Date: Mon, 18 Nov 2024 17:08:25 +0800
+	 In-Reply-To:Content-Type; b=WTzbU6D1Yia3ccBWeprlpWdnbiYndl4Xl1bY2ND1DSEm3ehUwxE6SEkmPy6Tr3VGIu7SBw3o/tcHBLmi+SR+s95MF6EAsjjmO9v18RCY7Y+LnlmnVEdKprV3BSgdpxXNhkQY9qfjEbZ8uFlviBuAYmSp2/fHtynUgLsTcR2hfeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=YAmhZYpz; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="YAmhZYpz"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4AI5RkC8009831;
+	Mon, 18 Nov 2024 10:04:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	gPiQ/AXs6OKwLqOErMd5RmqFtsPLKhoq2wS2AXM+WRA=; b=YAmhZYpz5smo8Bk3
+	fCT/EXa7/XPwk2nmOL45LDi8tqbgXO4K4R0r5kuAh2IUkZ4ZHiLfeAib7t7Ct7Ek
+	QAfQv8G5uiRI71ZKSN+b8GrOG8UAYg2h62bKrY1ECwm9zhvkXddCdgJt1V2DczFW
+	XeXAeFDcBDdScaToXp1iXjfBW30aC3qohLhMiezJ357KsYKPfjZog9E0IPqH6DPI
+	EjQ8IPLYoThByxEMR35dhHfsSUJyXvutuKuwvJhdo2DfR6AyQXcPOpdWAY3BqOLc
+	bmzbzFCAOMSJAOZzJHx1GndsxzARkUSakSDpy2kjMCmtPBiXJegy0Ch9wXX8gqr6
+	5qKukg==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42xkrm43qs-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 18 Nov 2024 10:04:45 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4AIA4ixo023701
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 18 Nov 2024 10:04:44 GMT
+Received: from [10.239.132.41] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 18 Nov
+ 2024 02:04:41 -0800
+Message-ID: <f995938e-f56a-4b27-9a03-901c0077e88c@quicinc.com>
+Date: Mon, 18 Nov 2024 18:04:38 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,57 +50,137 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Jesper Dangaard Brouer <hawk@kernel.org>,
-	=?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-	<davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
-	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
- Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
- Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
-	<kernel-team@cloudflare.com>
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com>
- <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
- <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
- <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
- <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org>
- <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
- <4564c77b-a54d-4307-b043-d08e314c4c5f@huawei.com> <87ldxp4n9v.fsf@toke.dk>
- <eab44c89-5ada-48b6-b880-65967c0f3b49@huawei.com>
- <be049c33-936a-4c93-94ff-69cd51b5de8e@kernel.org>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <be049c33-936a-4c93-94ff-69cd51b5de8e@kernel.org>
+Subject: Re: [PATCH v4 3/3] arm64: dts: qcom: qcs615: add the APPS SMMU node
+To: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <robimarko@gmail.com>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
+CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+References: <20241105032107.9552-1-quic_qqzhou@quicinc.com>
+ <20241105032107.9552-4-quic_qqzhou@quicinc.com>
+From: Qingqing Zhou <quic_qqzhou@quicinc.com>
+In-Reply-To: <20241105032107.9552-4-quic_qqzhou@quicinc.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 6-T7PxNPiyudALfBPsxbFoH0fVobzClh
+X-Proofpoint-ORIG-GUID: 6-T7PxNPiyudALfBPsxbFoH0fVobzClh
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ spamscore=0 adultscore=0 mlxlogscore=840 malwarescore=0 impostorscore=0
+ clxscore=1015 bulkscore=0 priorityscore=1501 lowpriorityscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2409260000
+ definitions=main-2411180083
 
-On 2024/11/12 22:19, Jesper Dangaard Brouer wrote:
->>
->> Yes, there seems to be many MM system internals, like the CONFIG_SPARSEMEM*
->> config, memory offline/online and other MM specific optimization that it
->> is hard to tell it is feasible.
->>
->> It would be good if MM experts can clarify on this.
->>
-> 
-> Yes, please.  Can Alex Duyck or MM-experts point me at some code walking
-> entire system page table?
-> 
-> Then I'll write some kernel code (maybe module) that I can benchmark how
-> long it takes on my machine with 384GiB. I do like Alex'es suggestion,
-> but I want to assess the overhead of doing this on modern hardware.
-> 
 
-After looking more closely into MM subsystem, it seems there is some existing
-pattern or API to walk the entire pages from the buddy allocator subsystem,
-see the kmemleak_scan() in mm/kmemleak.c:
-https://elixir.bootlin.com/linux/v6.12/source/mm/kmemleak.c#L1680
 
-I used that to walk the pages in a arm64 system with over 300GB memory,
-it took about 1.3 sec to do the walking, which seems acceptable?
+在 11/5/2024 11:21 AM, Qingqing Zhou 写道:
+> Add the APPS SMMU node for QCS615 platform. Add the dma-ranges
+> to limit DMA address range to 36bit width to align with system
+> architecture.
+> 
+Could anyone help review this? The patch changes not much. Thanks!
+> Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/qcs615.dtsi | 75 ++++++++++++++++++++++++++++
+>  1 file changed, 75 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/qcs615.dtsi b/arch/arm64/boot/dts/qcom/qcs615.dtsi
+> index 027c5125f36b..e35fd4059073 100644
+> --- a/arch/arm64/boot/dts/qcom/qcs615.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/qcs615.dtsi
+> @@ -379,6 +379,7 @@
+>  	soc: soc@0 {
+>  		compatible = "simple-bus";
+>  		ranges = <0 0 0 0 0x10 0>;
+> +		dma-ranges = <0 0 0 0 0x10 0>;
+>  		#address-cells = <2>;
+>  		#size-cells = <2>;
+>  
+> @@ -524,6 +525,80 @@
+>  			reg = <0x0 0x0c3f0000 0x0 0x400>;
+>  		};
+>  
+> +		apps_smmu: iommu@15000000 {
+> +			compatible = "qcom,qcs615-smmu-500", "qcom,smmu-500", "arm,mmu-500";
+> +			reg = <0x0 0x15000000 0x0 0x80000>;
+> +			#iommu-cells = <2>;
+> +			#global-interrupts = <1>;
+> +			dma-coherent;
+> +
+> +			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 181 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 182 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 183 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 191 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 315 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 316 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 317 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 318 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 319 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 322 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 323 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 324 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 325 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 326 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 327 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 328 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 329 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 330 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 331 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 332 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 333 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 339 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 340 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH>;
+> +		};
+> +
+>  		intc: interrupt-controller@17a00000 {
+>  			compatible = "arm,gic-v3";
+>  			reg = <0x0 0x17a00000 0x0 0x10000>,     /* GICD */
+
