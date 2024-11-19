@@ -1,41 +1,90 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD25F1CCB4E;
-	Tue, 19 Nov 2024 17:06:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A46B1D2239
+	for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 17:30:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732035990; cv=none; b=XZEDgl43BW8yEjELXTi5IfPbuVe+3tiVb6OLoht9ot4wM/JUTsSsDkgiDaohgFhiLiPqz6jD3vE/WntvsYYlM5ausJJgPkazGmGoMD8XT7gSTfh+iKClTKBl1DyqGh3F5mLQulZHfEC7IAvSio9rvFnU5H1oTrmr+qr41E+yT+c=
+	t=1732037409; cv=none; b=TajfHLbSpLaUmQu58E1BdE9GwYFM+MRy367eSG76MtjzKDbDSwPagmBIRDYIcAMGBVYozOvVJ8+lqwadD5RoFQ+Uq+ChzyMYVZZEvII2y9dH4BN3FIwvKOfH5dcrsEoQKj7cw4nSGWST0lHjluYVLCjVYcz4/p6pTFqMMdLJlXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732035990; c=relaxed/simple;
-	bh=kNFKP00vrl29RQkgzndsha0c5Kc84pQElYaDjacxbW0=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=qL5BwJhLEcDk3/vDfZXhDIGwEMxkASxCs11SkfwHn1nT3fcuLk+0/296lr2S/FW2liXpzvSEcCNaNRhJaKbP6HB2s+E7KxDd7RzJHaacIqdv341OeVD0szy3b2Aaf0eH8EfqxVN8yATs+dyGC7q4zGuRe1hHhagaRHzUpa/ymkA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=4YHL+uh1; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	s=arc-20240116; t=1732037409; c=relaxed/simple;
+	bh=iJAspBGFRcgVzY4bKp3lb6zrw26/GFw5AyKc0Z0Pg6Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LP93c4aTrYNf3WoVNQfk704fTF1Hn9zGPPU9Eisfwo7bzBGMprp0XYPa46YqsCFRZHk5kie0sM3kNYKSn1AbL88dh5Y7RnD62R4EQc67qDdW4gQ/i6WOxHuhk32OvhGcJqZvypI7X6qVt1EDB68K+rH8p2Rahwxu9NpkvA7Hym4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kgpbakJ5; arc=none smtp.client-ip=209.85.222.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="4YHL+uh1"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
-	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-	Content-Description:In-Reply-To:References;
-	bh=meMfgCL8e3mDNwnv+OdXGEo7YSmW3g/92lGJR0fMyB8=; b=4YHL+uh1FuMhMYmunDIeHQZNSW
-	I/2aBX32BYGP1e5fGvGzt9niflWntyjJ7YqfFU0zdg7Af1oQH3DhSVpjj7yncNZXgUJlTRLoI6GPP
-	yWWwmfe62gj+/piER5Z9kzYv4bPq1AMOY4i/wPiBaHO6I6CYH3AzNeYafWyVQ4S7bV4B35TtHNjBa
-	1RzRdYhsE2TcA7hhi9wWD7zUKtl9KYH4d3SyGY/OsJdTCBunmaJq+ZvhDwAkfPbTRBYnkKDvcRyqe
-	W+FpN0T7KmfvF6UF/qA7c5mV9JuAtcZHQ809xA1GlqKdgR+mQJlLsuS4PS1VYIdXvhX5sdzHYCmJt
-	p1bLr28w==;
-Received: from 2a02-8389-2341-5b80-1731-a089-d2b1-3edf.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:1731:a089:d2b1:3edf] helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
-	id 1tDRgK-0000000D9uj-0Bs1;
-	Tue, 19 Nov 2024 17:06:28 +0000
-Date: Tue, 19 Nov 2024 18:06:25 +0100
-From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [GIT PULL] dma-mapping updates for Linux 6.13
-Message-ID: <ZzzFkZHDxrgq2B9i@infradead.org>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kgpbakJ5"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-7b14443a71eso302474585a.1
+        for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 09:30:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1732037406; x=1732642206; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=P2RZbmw8j/hv2SNzaAYY1BO4WuVS0Sj8NBeQ9Pxkopo=;
+        b=kgpbakJ5JxizGErrFM+sGtT93y+pVw9LB6GVX2UNhcwBxUMhQnskvqihbK/lzckLeS
+         MNwaev3FvUTeY90lZjyTah3x7i180BKiqcDqawSZEbFbpzekGUTpKohSw/Ydkf0BVGFF
+         K05Itdv1IQ8doisaB8Y2eU9ngVPDiMyz9tCDZ2XvO8UNWTIBQdh0v9K+l75PJBZ50ZHu
+         KgxTZiYEv+xRR9niJ4UTaDSOspNQvuqIsm0uV440+Kry7sQ9VII99GfCRHQz19NlUR73
+         cyHYJaMmXg2YilFZdXYAklCmwEz6dxWeMuVcL3TmsS1IEnjGMUwCClsOyizkEcoZE7XD
+         7WdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732037406; x=1732642206;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=P2RZbmw8j/hv2SNzaAYY1BO4WuVS0Sj8NBeQ9Pxkopo=;
+        b=ttG4DVJYR+rpMqpntHAQab1olIQ9Zwd4GAQzLohTOCrsuQx4mBM2UegeHg15e2RwyW
+         I9dJUVpok7I2fj1nBoty4xOaBlJCyAPbykFk0FlJWi6411IVah92RgJ0SNB/H1BKIsaD
+         LcmTJXenNZNWr8recHto9Wdv9TGaxUAjqSvS2VmUjsS1+s4MpfGZurRx1GpJlYAtb25H
+         NzL8aM62zJTQhUFf9yx4rAwRrkJ6ml481Z5u8s6RD7EkhyaRbXok1xql/F4DMGLlt+Yu
+         GGRl0+C0IyyeLowf3f+JUuIgWZ8WuI5cuBZ4NKtKJCaspS/svZn7d/SjczesAi0arz5q
+         3JuA==
+X-Forwarded-Encrypted: i=1; AJvYcCUGuQM52SakipJ1ocMhFl1bPr/3L8SVzhZsehnKZwPCAKK6Ezp6D2Lcav6idcAHrbpGZvUU4w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzjsMzZu9UbUUaFghaoBZgqqcXWSRsdkG2quUZUWEpNByuVGeI3
+	ahXXdu0iOrdwslJASyIY8/1ed+9NCgGE2sNt+PrG5VOtkaqHdk82binKKncRE9M=
+X-Google-Smtp-Source: AGHT+IEw2hhta4tF97+ZTqDEn97k4/qPKPWIxcDYewixCIGPDLkcCaqZGpK5GII/9x88g1PJnE+WXg==
+X-Received: by 2002:a05:620a:1992:b0:7b1:4330:634f with SMTP id af79cd13be357-7b362384ee1mr2344165985a.61.1732037405973;
+        Tue, 19 Nov 2024 09:30:05 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7b37a866319sm113013385a.69.2024.11.19.09.30.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Nov 2024 09:30:04 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tDS3A-00000003GSP-14at;
+	Tue, 19 Nov 2024 13:30:04 -0400
+Date: Tue, 19 Nov 2024 13:30:04 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Will Deacon <will@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+	Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v3 07/17] dma-mapping: Implement link/unlink ranges API
+Message-ID: <20241119173004.GA773835@ziepe.ca>
+References: <cover.1731244445.git.leon@kernel.org>
+ <f8c7f160c9ae97fef4ccd355f9979727552c7374.1731244445.git.leon@kernel.org>
+ <20241118145929.GB27795@willie-the-truck>
+ <20241118185533.GA24154@unreal>
+ <20241119090507.GB28466@willie-the-truck>
+ <20241119135743.GB26101@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,56 +93,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20241119135743.GB26101@unreal>
 
-The following changes since commit e42b1a9a2557aa94fee47f078633677198386a52:
+On Tue, Nov 19, 2024 at 03:57:43PM +0200, Leon Romanovsky wrote:
 
-  Merge tag 'spi-fix-v6.12-rc5' of git://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi (2024-10-28 11:16:33 -1000)
+> > > dma_iova_link/dma_iova_unlink() don't have any assumptions in addition
+> > > to already existing for dma_map_sg/dma_unmap_sg(). In reality, it means
+> > > that all calls to unlink will have same size as for link.
+> > 
+> > Ok, great. Any chance you could call that out in the documentation patch,
+> > please?
+> 
+> Can you suggest what should I add there, as it is not specific to new
+> API, but general note applicable to all __iommu_unmap() callers?
 
-are available in the Git repository at:
+This is what I wrote:
 
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.13-2024-11-19
++/**
++ * iommu_unmap() - Remove mappings from a range of IOVA
++ * @domain: Domain to manipulate
++ * @iova: IO virtual address to start
++ * @size: Length of the range starting from @iova
++ *
++ * iommu_unmap() will remove a translation created by iommu_map(). It cannot
++ * subdivide a mapping created by iommu_map(), so it should be called with IOVA
++ * ranges that match what was passed to iommu_map(). The range can aggregate
++ * contiguous iommu_map() calls so long as no individual range is split.
++ *
++ * Returns: Number of bytes of IOVA unmapped. iova + res will be the point
++ * unmapping stopped.
++ */
 
-for you to fetch changes up to 22293c33738c14bb84b9d3e771bc37150e7cf8e7:
-
-  dma-mapping: save base/size instead of pointer to shared DMA pool (2024-11-14 10:45:09 +0100)
-
-----------------------------------------------------------------
-dma-mapping updates for Linux 6.13
-
- - improve the DMA API tracing code (Sean Anderson)
- - misc cleanups (Christoph Hellwig, Sui Jingfeng)
- - fix pointer abuse when finding the shared DMA pool (Geert Uytterhoeven)
- - fix a deadlock in dma-debug (Levi Yun)
-
-----------------------------------------------------------------
-Christoph Hellwig (3):
-      dma-debug: store a phys_addr_t in struct dma_debug_entry
-      dma-debug: remove DMA_API_DEBUG_SG
-      dma-mapping: drop unneeded includes from dma-mapping.h
-
-Geert Uytterhoeven (1):
-      dma-mapping: save base/size instead of pointer to shared DMA pool
-
-Levi Yun (1):
-      dma-debug: fix a possible deadlock on radix_lock
-
-Sean Anderson (5):
-      dma-mapping: use macros to define events in a class
-      dma-mapping: trace dma_alloc/free direction
-      dma-mapping: use trace_dma_alloc for dma_alloc* instead of using trace_dma_map
-      dma-mapping: trace more error paths
-      dma-mapping: fix swapped dir/flags arguments to trace_dma_alloc_sgt_err
-
-Sui Jingfeng (1):
-      dma-mapping: remove an outdated comment from dma-map-ops.h
-
- arch/powerpc/platforms/pseries/svm.c |   1 +
- include/linux/dma-map-ops.h          |   2 +-
- include/linux/dma-mapping.h          |   4 -
- include/trace/events/dma.h           | 213 ++++++++++++++++++++++++++++-------
- kernel/dma/Kconfig                   |  17 ---
- kernel/dma/coherent.c                |  14 ++-
- kernel/dma/debug.c                   |  89 ++++++---------
- kernel/dma/mapping.c                 |  37 ++++--
- 8 files changed, 242 insertions(+), 135 deletions(-)
+Jason
