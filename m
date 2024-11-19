@@ -1,70 +1,69 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 293A8149DFA
-	for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 07:49:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 407CD12CDAE
+	for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 08:28:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732002582; cv=none; b=asAp4moHEtLhNgAB73fv0vm+9Cg8evJA73Kpr68raLNpTm5o68nWO3NrE/G/0K6P9/N8yRwBb0YQPqHTqmb8j80wRuv7qO0Q34DWKvZUlEPdrloKI3Jqa2Q94MRhPjM6t0tM9jVgQFDkI+qJEDJn+VD7yCqF4vTfR0r3lUP3QeA=
+	t=1732004932; cv=none; b=FH2zm3OBQnLrCKExDZD5gAtNL+F5lh1ld46Gx2VXnj1BQfCsRh1xgROEaX0w9o0RjTGOpwNC412vOG3kyA5ruV42nsnKuvtQyUx37TvVolll+y5YHy9En+g4zLDDuvI75kU7JWisxwqRQx2d7w2Zm0xf8j0nv7CVzAkDOFsZmHU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732002582; c=relaxed/simple;
-	bh=IaOmPR/iyXz/gE2tIqhYLRtRkctqg6/SvtDytNmpBsg=;
+	s=arc-20240116; t=1732004932; c=relaxed/simple;
+	bh=0AqPpf7RNAcBW72RiT+BB+KFARadjaWyA6dvMRHwBFU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ha6PWRlBdM6AOB122Y0KHSUDF3yMQbXhUtg0Hqkp3NxAQ8ZwIw5PWo/YvjVHUxK3mIYwOL2xaDHadnyCZEEC8vWnQ7Bvfivt6N3dPNhsywa12I6+a9k3/fy0jczpD6CU85GOpQk0n/gHO95J+Z1bPHiUEfIkDq2vckdK4ZqojJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=Hpg7lW5e; arc=none smtp.client-ip=209.85.221.41
+	 Content-Type:Content-Disposition:In-Reply-To; b=s2KCkZ998A/ruziGWzxEwHeVyQY+q+QMydniAKTXdyDguZmJDLzWR7cTSkmjl0JsXfXJP7jt103eCXliH7spYzFF8tOPIoAjm3avof9waC2eu1PFiLObdpX+tAP2eXnlJJzSNbffnvGwDw0GLamkCCwVR+XwDp+5ZTsRcAQfgtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=CRBhh2/a; arc=none smtp.client-ip=209.85.221.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="Hpg7lW5e"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-382423f4082so437661f8f.3
-        for <iommu@lists.linux.dev>; Mon, 18 Nov 2024 23:49:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="CRBhh2/a"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3823194a879so2191782f8f.0
+        for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 00:28:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1732002578; x=1732607378; darn=lists.linux.dev;
+        d=ventanamicro.com; s=google; t=1732004928; x=1732609728; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NYBbT7qYRsGmfiJkt6bNI0oAoiQc6F6a4Czuh6tR0Qw=;
-        b=Hpg7lW5eDrzUwjmJuJtlnWt7/u5fZ8RKUKLpmAvcJrh7mnb3PPhMb8IR+fuTYYN1WI
-         7w877g8xXuaPdOwhzLzRGoJjoDWxtiV2roAIBQ8Ezxw3c58aLTWAFoinwgz/M7GTIvKT
-         lHvIRDLxx8hvCu0uXmocmg7831jxXN5h4QgoXPsralozG7yyOmk02oWeOH3Y87Ou1ub3
-         wICZtsitzkVvyP8WCTRsP18nXRfGxgKMT2oxtytx0VlygKtxUJXWDO39MN/ms0PV/tDW
-         ydjC2AJ/AoUEX1rJ+SuAHk1vuhwnQHYROhxrJ/a3kQ4oMNB2mkDJweIz6MsfSSzRfXjP
-         O6HA==
+        bh=cyUY32m7VUxlCTDLVt1b+JPHfOUSRIx7q0KXl7IQeQ4=;
+        b=CRBhh2/alsEMRjkV1yApZh1yx8vUZl+xHoAQXmyaoizqKDco5JrhKB8bfzzBOVgcWP
+         mRKpuZChKzK0zGYdq8NwNowH29nEFHXQ+alKjkoGB18QjhFu25xBaba8A/4Y/AfwZE/N
+         NICi3iqgPIVOP/ZqLF0pUXgX5Xre8ZhbkRPjQA2EOlq4Dd4gBfF/PlPGCFDJ+Yo5wiOf
+         I/5W/VYyftrWbjlAUUgicfOoDzNKOtRiKCVHYv6vfjRM6mTuo2F+WgUQsGSq2XWAZpXc
+         ER+T57R7GggO1AibOfLQRDtffjp1pRqbH+euEyv49ZZSS4s7tNgk/OmE6YbMB7Xv5E52
+         xFIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732002578; x=1732607378;
+        d=1e100.net; s=20230601; t=1732004928; x=1732609728;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NYBbT7qYRsGmfiJkt6bNI0oAoiQc6F6a4Czuh6tR0Qw=;
-        b=ciQ3FBJDviyrVd+qrcX0vVd7E8fzhpcekPxbitTUG8h4YNSrQz00I9SLNLM/SniBJB
-         Et/JmrIdd8pAdNbaA2BPElvtH18g22V/l4svdGn4EzyJlBya92p8BgGoQEcQoLAL5uTI
-         n/ThnjCNeQdy4Bktyd+lZ1LR/el84t4k+xwGCokXDyZA7+F8MEWkgRpw4UpY36kuDVmD
-         NdJncFcp01sCVx48YEkvcD8DaBNEHUdtMLf27gfZSrR3bAj0JhFO873ky/peifsIb7zC
-         28eJKrUgSIDG/fThH+gHDV+iXld/C4ixrwY9pXGEwILbb/HRjqB5AP6jV1Psb4nKGqQz
-         eJwg==
-X-Gm-Message-State: AOJu0Ywhu5flrPwbhRggtqmUgybgDiREGvQJbGO3E/44C+S2ZHFYpcIi
-	3tUtvM9ZRAEzMuNQtZEIEXB1MYCLCf4WN8loZ/DWIG91Q8/RpU8DkS0oXFzdKU4=
-X-Google-Smtp-Source: AGHT+IFe5ZmtjhLXYqttDHgdk3C4AFgFbxG7y2tLe4XO1qVtRECgKa8Bx3LhB6YxSZPNMfHR5Z6PNw==
-X-Received: by 2002:a05:6000:2d01:b0:382:5030:7b94 with SMTP id ffacd0b85a97d-38250307d48mr353908f8f.13.1732002578369;
-        Mon, 18 Nov 2024 23:49:38 -0800 (PST)
+        bh=cyUY32m7VUxlCTDLVt1b+JPHfOUSRIx7q0KXl7IQeQ4=;
+        b=xAG5U44ThGGTcz7beevttAmtWMfNM56WzKLsmU4XM7VBPwtfiUMZ3D8/58K2EJq5C4
+         n0ELz0J5pKjXmoD99xdyDgRvDVrA8SmT6yUmQvFV83Z+15bzcFcynI08AXtG6lzRcwRr
+         FSmiNr/MwyVpRJu2lkb3uNIkPF+vQx9Y09/u0cSnhPMQcx1fG2Ho9+nekxVHWyF/4GKo
+         JvXVq/XZq7MMhh++mxLIjOF5fcw8gT8XIxPO1QB3mFxqyp0KDc2eP6Fw4byIrA7VLJlj
+         5Ib7RLnxC8kijNjcSludHN935TVi7eOH2S6pdBdrS2IdZ4RmzPe2WBDq/g0+YHClSLAY
+         wniw==
+X-Gm-Message-State: AOJu0YwTTtdplrdGB+SS0CQZ66fnUo99TKcWJoHVRMiqCNUV3Nqw8VjB
+	uZ8AeognDPow3UyeV/KZKog9S5qt1z+V3me8klWzt4FcjSU+Q6HwlCidVJ9rD8I=
+X-Google-Smtp-Source: AGHT+IHpZMhXyydhQ7Idy4ENb5ObblYkccalbUBLPzNSlCP+c5FRHdBQ5a3DSr77U7024nHK4LI/fg==
+X-Received: by 2002:a05:6000:2904:b0:382:4aa0:e728 with SMTP id ffacd0b85a97d-3824aa0e803mr4138031f8f.1.1732004928543;
+        Tue, 19 Nov 2024 00:28:48 -0800 (PST)
 Received: from localhost (cst2-173-13.cust.vodafone.cz. [31.30.173.13])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-382462dbb5esm5733966f8f.52.2024.11.18.23.49.37
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432dac21a15sm183138595e9.38.2024.11.19.00.28.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2024 23:49:37 -0800 (PST)
-Date: Tue, 19 Nov 2024 08:49:37 +0100
+        Tue, 19 Nov 2024 00:28:48 -0800 (PST)
+Date: Tue, 19 Nov 2024 09:28:46 +0100
 From: Andrew Jones <ajones@ventanamicro.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
 Cc: iommu@lists.linux.dev, kvm-riscv@lists.infradead.org, 
 	kvm@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, 
 	tjeznach@rivosinc.com, zong.li@sifive.com, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, anup@brainfault.org, atishp@atishpatra.org, tglx@linutronix.de, 
+	anup@brainfault.org, atishp@atishpatra.org, tglx@linutronix.de, 
 	alex.williamson@redhat.com, paul.walmsley@sifive.com, palmer@dabbelt.com, 
 	aou@eecs.berkeley.edu
-Subject: Re: [RFC PATCH 08/15] iommu/riscv: Add IRQ domain for interrupt
- remapping
-Message-ID: <20241119-62ff49fc1eedba051838dba2@orel>
+Subject: Re: [RFC PATCH 04/15] iommu/riscv: report iommu capabilities
+Message-ID: <20241119-76c9ff71b8834ef886b3ca86@orel>
 References: <20241114161845.502027-17-ajones@ventanamicro.com>
- <20241114161845.502027-25-ajones@ventanamicro.com>
- <20241118184336.GB559636@ziepe.ca>
+ <20241114161845.502027-21-ajones@ventanamicro.com>
+ <ddd40bc3-7f2a-43c2-8918-a10c63bd05ba@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,64 +72,72 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241118184336.GB559636@ziepe.ca>
+In-Reply-To: <ddd40bc3-7f2a-43c2-8918-a10c63bd05ba@arm.com>
 
-On Mon, Nov 18, 2024 at 02:43:36PM -0400, Jason Gunthorpe wrote:
-> On Thu, Nov 14, 2024 at 05:18:53PM +0100, Andrew Jones wrote:
-> > @@ -1276,10 +1279,30 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
-> >  	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-> >  	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
-> >  	struct riscv_iommu_dc dc = {0};
-> > +	int ret;
-> >  
-> >  	if (!riscv_iommu_pt_supported(iommu, domain->pgd_mode))
-> >  		return -ENODEV;
-> >  
-> > +	if (riscv_iommu_bond_link(domain, dev))
-> > +		return -ENOMEM;
-> > +
-> > +	if (iommu_domain->type == IOMMU_DOMAIN_UNMANAGED) {
+On Fri, Nov 15, 2024 at 03:20:36PM +0000, Robin Murphy wrote:
+> On 14/11/2024 4:18 pm, Andrew Jones wrote:
+> > From: Tomasz Jeznach <tjeznach@rivosinc.com>
+> > 
+> > Report RISC-V IOMMU capabilities required by VFIO subsystem
+> > to enable PCIe device assignment.
 > 
-> Drivers should not be making tests like this.
-> 
-> > +		domain->gscid = ida_alloc_range(&riscv_iommu_gscids, 1,
-> > +						RISCV_IOMMU_MAX_GSCID, GFP_KERNEL);
-> > +		if (domain->gscid < 0) {
-> > +			riscv_iommu_bond_unlink(domain, dev);
-> > +			return -ENOMEM;
-> > +		}
-> > +
-> > +		ret = riscv_iommu_irq_domain_create(domain, dev);
-> > +		if (ret) {
-> > +			riscv_iommu_bond_unlink(domain, dev);
-> > +			ida_free(&riscv_iommu_gscids, domain->gscid);
-> > +			return ret;
-> > +		}
-> > +	}
-> 
-> What are you trying to do? Make something behave different for VFIO?
-> That isn't OK, we are trying to remove all the hacky VFIO special
-> cases in drivers.
-> 
-> What is the HW issue here? It is very very strange (and probably not
-> going to work right) that the irq domains change when domain
-> attachment changes.
-> 
-> The IRQ setup should really be fixed before any device drivers probe
-> onto the device.
+> IOMMU_CAP_DEFERRED_FLUSH has nothing at all to do with VFIO. As far as I can
+> tell from what's queued, riscv_iommu_unmap_pages() isn't really implementing
+> the full optimisation to get the most out of it either.
 
-I can't disagree with the statement that this looks hacky, but considering
-a VFIO domain needs to use the g-stage for its single-stage translation
-and a paging domain for the host would use s-stage, then it seems we need
-to identify the VFIO domains for their special treatment. Is there an
-example of converting VFIO special casing in other drivers to something
-cleaner that you can point me at?
+Thanks, Robin. I'll drop this cap for the next version.
 
-The IRQ domain will only be useful for device assignment, as that's when
-an MSI translation will be needed. I can't think of any problems that
-could arise from only creating the IRQ domain when probing assigned
-devices, but I could certainly be missing something. Do you have some
-potential problems in mind?
+> 
+> I guess IOMMU_CAP_CACHE_COHERENCY falls out of the assumption of a coherent
+> IOMMU and lack of PBMT support making everything implicitly IOMMU_CACHE all
+> the time whether you want it or not, but clarifying that might be nice
+> (especially since there's some chance that something will eventually come
+> along to break it...)
+
+Yes, riscv selects ARCH_DMA_DEFAULT_COHERENT and the riscv IOMMU hardware
+descriptions don't provide any way to say otherwise. I can put a comment
+above the IOMMU_CAP_CACHE_COHERENCY case which states "The RISC-V IOMMU is
+always DMA cache coherent", or did you have something else in mind?
 
 Thanks,
 drew
+
+> 
+> Thanks,
+> Robin.
+> 
+> > Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+> > Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+> > ---
+> >   drivers/iommu/riscv/iommu.c | 12 ++++++++++++
+> >   1 file changed, 12 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> > index 8a05def774bd..3fe4ceba8dd3 100644
+> > --- a/drivers/iommu/riscv/iommu.c
+> > +++ b/drivers/iommu/riscv/iommu.c
+> > @@ -1462,6 +1462,17 @@ static struct iommu_group *riscv_iommu_device_group(struct device *dev)
+> >   	return generic_device_group(dev);
+> >   }
+> > +static bool riscv_iommu_capable(struct device *dev, enum iommu_cap cap)
+> > +{
+> > +	switch (cap) {
+> > +	case IOMMU_CAP_CACHE_COHERENCY:
+> > +	case IOMMU_CAP_DEFERRED_FLUSH:
+> > +		return true;
+> > +	default:
+> > +		return false;
+> > +	}
+> > +}
+> > +
+> >   static int riscv_iommu_of_xlate(struct device *dev, const struct of_phandle_args *args)
+> >   {
+> >   	return iommu_fwspec_add_ids(dev, args->args, 1);
+> > @@ -1526,6 +1537,7 @@ static void riscv_iommu_release_device(struct device *dev)
+> >   static const struct iommu_ops riscv_iommu_ops = {
+> >   	.pgsize_bitmap = SZ_4K,
+> >   	.of_xlate = riscv_iommu_of_xlate,
+> > +	.capable = riscv_iommu_capable,
+> >   	.identity_domain = &riscv_iommu_identity_domain,
+> >   	.blocked_domain = &riscv_iommu_blocking_domain,
+> >   	.release_domain = &riscv_iommu_blocking_domain,
