@@ -1,58 +1,59 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 642CD3BBF2;
-	Mon, 18 Nov 2024 18:55:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6B3B9475
+	for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 00:19:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731956139; cv=none; b=Rt0hyiJsRkxLgocbJoJD14VQ08GhqPTBymMtZE4krnyvqJbXcq0pDHjwtvCCrXSxxANjePgPx2xpVMj+zA8cajIm/FwQ1UYwFQ+WIenusoGvkfqtQPTh6RxX9qmXHoQnmhGA2UXjMWZVjALw7Oqf6lPIfBi3Wi5ax19V3nngYSA=
+	t=1731975582; cv=none; b=BJqgV9QYtE4o6BeERr77WM9go8euK1JMkVgfWvpfN9InFgiwpdaCotAP/oCxMlmqV33MXpS9kKypMMwKWXPVw/XgS2mIBM+DnRJ8WE6nZCi1GefpEai4vM8ruY2mVmHPznVQRIicjvXjB2ktkCu8zoGmi7Cun56qTqrLlTgpze4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731956139; c=relaxed/simple;
-	bh=/gmHJa/TBxEDstIIvnX3KmYFWImvFtyFP0gjXaeuHFM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=os4d5qnBaJPvYWbQvRegf5IevZMGsSTIqJVhZ8Igx44DJK/yk7+/aHpM1+6sO5pJ8Scn6hpcRIRJ4wAgI5oiPmn6mtq9E8w4knq07m7W5aXf02WYzMDajYfZN5EX/PUywlLsGtLgIvbEmPtaqd52olRU2isnfsrJ6MfvuhjBK4E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P67NkgKp; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1731975582; c=relaxed/simple;
+	bh=Bitr1y2JR87Mi0MkN5uuN6orB7x8ndsHYtU9A62KhJs=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=iGl/nIlcfwfhBjj4yQM/RO0ZqIkg5Vj4D+Q/yn+xNYWSzMs2wFAjkZcFT1i/0oF0yMTZO7KKERipK6fz3mDRum0zoEYxdrQxNfaxh9Q5/ug1lzFLnqnm7jL2X1jewyA7t7RrxN+SWMgBqK4So0YMlsX+I+Cu0PVyn3xbF8iu/KQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ZRLgGX5u; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P67NkgKp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CA9C4CECC;
-	Mon, 18 Nov 2024 18:55:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731956138;
-	bh=/gmHJa/TBxEDstIIvnX3KmYFWImvFtyFP0gjXaeuHFM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=P67NkgKpagD5QPwkoLn48IDjtjZ7XiI7hB74ktXAOzTjzFx25SdPGIQTsJPn3c/+1
-	 7mKXhe/08HVsqBRSEOx0tOKdadCpjOBrUyOGIzap4a8CF3tcQQzVYOpA4KCKlbL9eG
-	 FZDNA127wqunzK1pyu+ixL9pn3cpHGQTiZ/HklwS4zlyqRfWpfZR7WpwvZo4s6XE1b
-	 33uAWW/5I0UcpudrKi/56u1/L85PdWYLjkcUUGZXni1xcq/PN0bKJ29dpyNBUK3NkQ
-	 hg7XGXtOx8q1P8cuRCDFQtSWlcXwLibDCDFZaRJ8t0FlQaoTBba1d1kPOW8eXaQxfI
-	 AghFYrjiJkifw==
-Date: Mon, 18 Nov 2024 20:55:33 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Will Deacon <will@kernel.org>
-Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ZRLgGX5u"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1731975578;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:mime-version:mime-version:content-type:content-type;
+	bh=nl8ywQLjASF9Zz0aBIQ1C3qovRQpxOk3WPW3oNZTibc=;
+	b=ZRLgGX5uSVsvrDN0JoQg9Zo9yvjVbpO3rJnOph31zs6FUnQ4Y/wJPpsVG7pDeZmCqKicMb
+	UDYEO+w9WngT/4fFD5e19k/gOkHd2U5qgjKtN6dcgNI+eObJePDZNOYdHdEC53DsDcLgui
+	jjRtMmcBOKhlyiiHHsSs4urSrK+Fe0k=
+Received: from mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-657-XFuaW9rPMoW9R673VHcpFA-1; Mon,
+ 18 Nov 2024 19:19:33 -0500
+X-MC-Unique: XFuaW9rPMoW9R673VHcpFA-1
+X-Mimecast-MFC-AGG-ID: XFuaW9rPMoW9R673VHcpFA
+Received: from mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.17])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id ECF111955F41;
+	Tue, 19 Nov 2024 00:19:30 +0000 (UTC)
+Received: from localhost (unknown [10.22.81.145])
+	by mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 5433E1955F43;
+	Tue, 19 Nov 2024 00:19:29 +0000 (UTC)
+Date: Mon, 18 Nov 2024 21:19:28 -0300
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
-	Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v3 07/17] dma-mapping: Implement link/unlink ranges API
-Message-ID: <20241118185533.GA24154@unreal>
-References: <cover.1731244445.git.leon@kernel.org>
- <f8c7f160c9ae97fef4ccd355f9979727552c7374.1731244445.git.leon@kernel.org>
- <20241118145929.GB27795@willie-the-truck>
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	linux-rt-devel@lists.linux.dev
+Subject: [PATCH] iommu/tegra241-cmdqv: do not call smp_processor_id in
+ preemptible context
+Message-ID: <ZzvZkMKhwmJESpdM@uudg.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,83 +62,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241118145929.GB27795@willie-the-truck>
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.17
 
-On Mon, Nov 18, 2024 at 02:59:30PM +0000, Will Deacon wrote:
-> On Sun, Nov 10, 2024 at 03:46:54PM +0200, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > Introduce new DMA APIs to perform DMA linkage of buffers
-> > in layers higher than DMA.
-> > 
-> > In proposed API, the callers will perform the following steps.
-> > In map path:
-> > 	if (dma_can_use_iova(...))
-> > 	    dma_iova_alloc()
-> > 	    for (page in range)
-> > 	       dma_iova_link_next(...)
-> > 	    dma_iova_sync(...)
-> > 	else
-> > 	     /* Fallback to legacy map pages */
-> >              for (all pages)
-> > 	       dma_map_page(...)
-> > 
-> > In unmap path:
-> > 	if (dma_can_use_iova(...))
-> > 	     dma_iova_destroy()
-> > 	else
-> > 	     for (all pages)
-> > 		dma_unmap_page(...)
-> > 
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  drivers/iommu/dma-iommu.c   | 259 ++++++++++++++++++++++++++++++++++++
-> >  include/linux/dma-mapping.h |  32 +++++
-> >  2 files changed, 291 insertions(+)
-> 
+With PREEMPT_RT enabled some of the calls to tegra241_cmdqv_get_cmdq()
+during boot will happen in preemptible context. As this function calls
+smp_processor_id(), these calls will trigger a "BUG: using smp_processor_id()
+in preemptible" backtrace if DEBUG_PREEMPT is enabled.
 
-<...>
+As tegra241_cmdqv_get_cmdq() only calls smp_processor_id() to use the
+CPU number as a factor to balance out traffic on cmdq usage, it is safe
+to use raw_smp_processor_id() here.
 
-> > +static void __iommu_dma_iova_unlink(struct device *dev,
-> > +		struct dma_iova_state *state, size_t offset, size_t size,
-> > +		enum dma_data_direction dir, unsigned long attrs,
-> > +		bool free_iova)
-> > +{
-> > +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> > +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> > +	struct iova_domain *iovad = &cookie->iovad;
-> > +	dma_addr_t addr = state->addr + offset;
-> > +	size_t iova_start_pad = iova_offset(iovad, addr);
-> > +	struct iommu_iotlb_gather iotlb_gather;
-> > +	size_t unmapped;
-> > +
-> > +	if ((state->__size & DMA_IOVA_USE_SWIOTLB) ||
-> > +	    (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)))
-> > +		iommu_dma_iova_unlink_range_slow(dev, addr, size, dir, attrs);
-> > +
-> > +	iommu_iotlb_gather_init(&iotlb_gather);
-> > +	iotlb_gather.queued = free_iova && READ_ONCE(cookie->fq_domain);
-> > +
-> > +	size = iova_align(iovad, size + iova_start_pad);
-> > +	addr -= iova_start_pad;
-> > +	unmapped = iommu_unmap_fast(domain, addr, size, &iotlb_gather);
-> > +	WARN_ON(unmapped != size);
-> 
-> Does the new API require that the 'size' passed to dma_iova_unlink()
-> exactly match the 'size' passed to the corresponding call to
-> dma_iova_link()? I ask because the IOMMU page-table code is built around
-> the assumption that partial unmap() operations never occur (i.e.
-> operations which could require splitting a huge mapping). We just
-> removed [1] that code from the Arm IO page-table implementations, so it
-> would be good to avoid adding it back for this.
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-dma_iova_link/dma_iova_unlink() don't have any assumptions in addition
-to already existing for dma_map_sg/dma_unmap_sg(). In reality, it means
-that all calls to unlink will have same size as for link.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+index fcd13d301fff6..3ea4369e838fe 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
++++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+@@ -339,7 +339,7 @@ tegra241_cmdqv_get_cmdq(struct arm_smmu_device *smmu,
+ 	 * one CPU at a time can enter the process, while the others
+ 	 * will be spinning at the same lock.
+ 	 */
+-	lidx = smp_processor_id() % cmdqv->num_lvcmdqs_per_vintf;
++	lidx = raw_smp_processor_id() % cmdqv->num_lvcmdqs_per_vintf;
+ 	vcmdq = vintf->lvcmdqs[lidx];
+ 	if (!vcmdq || !READ_ONCE(vcmdq->enabled))
+ 		return NULL;
+-- 
+2.47.0
 
-Thanks
-
-> 
-> Will
-> 
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git/commit/?h=arm/smmu&id=33729a5fc0caf7a97d20507acbeee6b012e7e519
