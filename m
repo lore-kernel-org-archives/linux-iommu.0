@@ -1,127 +1,213 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A46B1D2239
-	for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 17:30:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A61FB1448DC
+	for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 19:10:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732037409; cv=none; b=TajfHLbSpLaUmQu58E1BdE9GwYFM+MRy367eSG76MtjzKDbDSwPagmBIRDYIcAMGBVYozOvVJ8+lqwadD5RoFQ+Uq+ChzyMYVZZEvII2y9dH4BN3FIwvKOfH5dcrsEoQKj7cw4nSGWST0lHjluYVLCjVYcz4/p6pTFqMMdLJlXk=
+	t=1732043438; cv=none; b=sMcoggThZ+71UY8GczCBaHPXqEKdTk4dVAXXWQxivnifPv0G/iiYmG2v7ef/SvxOhQh8abiL0qFLxHxamxJuMZnkXWOHvBrIQW0msTDlT40EBaVBpaIxWDkltuVlZIhfuRfMvD7SvjcfU+LFXCFb9Lrkazfz6YqBxunt/djyDbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732037409; c=relaxed/simple;
-	bh=iJAspBGFRcgVzY4bKp3lb6zrw26/GFw5AyKc0Z0Pg6Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LP93c4aTrYNf3WoVNQfk704fTF1Hn9zGPPU9Eisfwo7bzBGMprp0XYPa46YqsCFRZHk5kie0sM3kNYKSn1AbL88dh5Y7RnD62R4EQc67qDdW4gQ/i6WOxHuhk32OvhGcJqZvypI7X6qVt1EDB68K+rH8p2Rahwxu9NpkvA7Hym4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kgpbakJ5; arc=none smtp.client-ip=209.85.222.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1732043438; c=relaxed/simple;
+	bh=L852CfSBTw2Tt+4Km1UApC1908+krgPugwOMx41FLag=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=UDDzkmjCua5PidrMhcw0SzCUqmZfALzgHf8PQE7tiX5SUOGY5gRxCuSnYCwl4k6J4pwcr1baZdMa8kGh5horHZU3IMjPAf9dt9q7UUGNYwkA635cm8eXhKf8rVj+15ZzVZQt4JsVfloHDMshMaini4HYRiZTXg5pqv6IPQVNKpY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=mPE3L15p; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kgpbakJ5"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-7b14443a71eso302474585a.1
-        for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 09:30:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1732037406; x=1732642206; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=P2RZbmw8j/hv2SNzaAYY1BO4WuVS0Sj8NBeQ9Pxkopo=;
-        b=kgpbakJ5JxizGErrFM+sGtT93y+pVw9LB6GVX2UNhcwBxUMhQnskvqihbK/lzckLeS
-         MNwaev3FvUTeY90lZjyTah3x7i180BKiqcDqawSZEbFbpzekGUTpKohSw/Ydkf0BVGFF
-         K05Itdv1IQ8doisaB8Y2eU9ngVPDiMyz9tCDZ2XvO8UNWTIBQdh0v9K+l75PJBZ50ZHu
-         KgxTZiYEv+xRR9niJ4UTaDSOspNQvuqIsm0uV440+Kry7sQ9VII99GfCRHQz19NlUR73
-         cyHYJaMmXg2YilFZdXYAklCmwEz6dxWeMuVcL3TmsS1IEnjGMUwCClsOyizkEcoZE7XD
-         7WdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732037406; x=1732642206;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=P2RZbmw8j/hv2SNzaAYY1BO4WuVS0Sj8NBeQ9Pxkopo=;
-        b=ttG4DVJYR+rpMqpntHAQab1olIQ9Zwd4GAQzLohTOCrsuQx4mBM2UegeHg15e2RwyW
-         I9dJUVpok7I2fj1nBoty4xOaBlJCyAPbykFk0FlJWi6411IVah92RgJ0SNB/H1BKIsaD
-         LcmTJXenNZNWr8recHto9Wdv9TGaxUAjqSvS2VmUjsS1+s4MpfGZurRx1GpJlYAtb25H
-         NzL8aM62zJTQhUFf9yx4rAwRrkJ6ml481Z5u8s6RD7EkhyaRbXok1xql/F4DMGLlt+Yu
-         GGRl0+C0IyyeLowf3f+JUuIgWZ8WuI5cuBZ4NKtKJCaspS/svZn7d/SjczesAi0arz5q
-         3JuA==
-X-Forwarded-Encrypted: i=1; AJvYcCUGuQM52SakipJ1ocMhFl1bPr/3L8SVzhZsehnKZwPCAKK6Ezp6D2Lcav6idcAHrbpGZvUU4w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzjsMzZu9UbUUaFghaoBZgqqcXWSRsdkG2quUZUWEpNByuVGeI3
-	ahXXdu0iOrdwslJASyIY8/1ed+9NCgGE2sNt+PrG5VOtkaqHdk82binKKncRE9M=
-X-Google-Smtp-Source: AGHT+IEw2hhta4tF97+ZTqDEn97k4/qPKPWIxcDYewixCIGPDLkcCaqZGpK5GII/9x88g1PJnE+WXg==
-X-Received: by 2002:a05:620a:1992:b0:7b1:4330:634f with SMTP id af79cd13be357-7b362384ee1mr2344165985a.61.1732037405973;
-        Tue, 19 Nov 2024 09:30:05 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7b37a866319sm113013385a.69.2024.11.19.09.30.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Nov 2024 09:30:04 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tDS3A-00000003GSP-14at;
-	Tue, 19 Nov 2024 13:30:04 -0400
-Date: Tue, 19 Nov 2024 13:30:04 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
-	Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v3 07/17] dma-mapping: Implement link/unlink ranges API
-Message-ID: <20241119173004.GA773835@ziepe.ca>
-References: <cover.1731244445.git.leon@kernel.org>
- <f8c7f160c9ae97fef4ccd355f9979727552c7374.1731244445.git.leon@kernel.org>
- <20241118145929.GB27795@willie-the-truck>
- <20241118185533.GA24154@unreal>
- <20241119090507.GB28466@willie-the-truck>
- <20241119135743.GB26101@unreal>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="mPE3L15p"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4AJIJl32006450;
+	Tue, 19 Nov 2024 19:10:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	qvJZJYlr4ofMU2eWu9kCWSUe/IBq5FvnROZrVKBAaMg=; b=mPE3L15psAH4iI5Z
+	jtVUrPRizNiY412xmrPLZuMDsvfr/phRVqnzI8kwrlKrxy91m4LgsDeMPVv6h9Me
+	9OEq6BGA4zzZ+hDBntsN3wIv+jBdC1ijmqKc8auW0yBAFcDDEYkitmtYr5XH/SBR
+	frzyxX/v7Xrz9IVLq92O95CymMRSVZ4tQQHVUE685dwf8KW28kFwK0tYqa5yRGk4
+	flZabYzEbrNCYxwFOTL3DvkuRE3HK9tPxnG4uQkR4KlVdD0P4KjJPL4rMN/C0fBQ
+	Jvo/2dXCaQot2/VkYwd7T+rAD7WRAO9dh6qDUiE7P5wd+ZLIoe1MIHXRQCiN+kKf
+	yNmlMA==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4308y8knrb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 19 Nov 2024 19:10:19 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4AJJAIlp009303
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 19 Nov 2024 19:10:18 GMT
+Received: from [10.216.1.253] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 19 Nov
+ 2024 11:10:13 -0800
+Message-ID: <1d3dcd91-d246-4db3-9717-9edfe405f431@quicinc.com>
+Date: Wed, 20 Nov 2024 00:40:10 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241119135743.GB26101@unreal>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu/arm-smmu: Defer probe of clients after smmu
+ device bound
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+CC: <catalin.marinas@arm.com>, <kernel-team@android.com>, <joro@8bytes.org>,
+        <jgg@ziepe.ca>, <jsnitsel@redhat.com>, <robdclark@chromium.org>,
+        <quic_c_gdjako@quicinc.com>, <dmitry.baryshkov@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <quic_charante@quicinc.com>,
+        <stable@vger.kernel.org>, Prakash Gupta <quic_guptap@quicinc.com>
+References: <20241004090428.2035-1-quic_pbrahma@quicinc.com>
+ <173021496151.4097715.14758035881649445798.b4-ty@kernel.org>
+ <0952ca36-c5d9-462a-ab7b-b97154c56919@arm.com>
+Content-Language: en-US
+From: Pratyush Brahma <quic_pbrahma@quicinc.com>
+In-Reply-To: <0952ca36-c5d9-462a-ab7b-b97154c56919@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 1n5i_xALx5GpD_AaKbafE5KeFkL-Ada7
+X-Proofpoint-GUID: 1n5i_xALx5GpD_AaKbafE5KeFkL-Ada7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ mlxlogscore=999 lowpriorityscore=0 clxscore=1011 malwarescore=0
+ adultscore=0 impostorscore=0 mlxscore=0 spamscore=0 phishscore=0
+ suspectscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2411190143
 
-On Tue, Nov 19, 2024 at 03:57:43PM +0200, Leon Romanovsky wrote:
 
-> > > dma_iova_link/dma_iova_unlink() don't have any assumptions in addition
-> > > to already existing for dma_map_sg/dma_unmap_sg(). In reality, it means
-> > > that all calls to unlink will have same size as for link.
-> > 
-> > Ok, great. Any chance you could call that out in the documentation patch,
-> > please?
-> 
-> Can you suggest what should I add there, as it is not specific to new
-> API, but general note applicable to all __iommu_unmap() callers?
+On 11/7/2024 8:31 PM, Robin Murphy wrote:
+> On 29/10/2024 4:15 pm, Will Deacon wrote:
+>> On Fri, 04 Oct 2024 14:34:28 +0530, Pratyush Brahma wrote:
+>>> Null pointer dereference occurs due to a race between smmu
+>>> driver probe and client driver probe, when of_dma_configure()
+>>> for client is called after the iommu_device_register() for smmu driver
+>>> probe has executed but before the driver_bound() for smmu driver
+>>> has been called.
+>>>
+>>> Following is how the race occurs:
+>>>
+>>> [...]
+>>
+>> Applied to will (for-joerg/arm-smmu/updates), thanks!
+>>
+>> [1/1] iommu/arm-smmu: Defer probe of clients after smmu device bound
+>>        https://git.kernel.org/will/c/229e6ee43d2a
+>
+> I've finally got to the point of proving to myself that this isn't the
+> right fix, since once we do get __iommu_probe_device() working properly
+> in the correct order, iommu_device_register() then runs into the same
+> condition itself. Diff below should make this issue go away - I'll write
+> up proper patches once I've tested it a little more.
+>
+> Thanks,
+> Robin.
+>
+> ----->8-----
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c 
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 737c5b882355..b7dcb1494aa4 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3171,8 +3171,8 @@ static struct platform_driver arm_smmu_driver;
+>  static
+>  struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle 
+> *fwnode)
+>  {
+> -    struct device *dev = 
+> driver_find_device_by_fwnode(&arm_smmu_driver.driver,
+> -                              fwnode);
+> +    struct device *dev = 
+> bus_find_device_by_fwnode(&platform_bus_type, fwnode);
+> +      put_device(dev);
+>      return dev ? dev_get_drvdata(dev) : NULL;
+>  }
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
+> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index 8321962b3714..aba315aa6848 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -1411,8 +1411,8 @@ static bool arm_smmu_capable(struct device *dev, 
+> enum iommu_cap cap)
+>  static
+>  struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle 
+> *fwnode)
+>  {
+> -    struct device *dev = 
+> driver_find_device_by_fwnode(&arm_smmu_driver.driver,
+> -                              fwnode);
+> +    struct device *dev = 
+> bus_find_device_by_fwnode(&platform_bus_type, fwnode);
+I think it would still follow this path:
 
-This is what I wrote:
+bus_find_device_by_fwnode() -> bus_find_device() -> next_device()
 
-+/**
-+ * iommu_unmap() - Remove mappings from a range of IOVA
-+ * @domain: Domain to manipulate
-+ * @iova: IO virtual address to start
-+ * @size: Length of the range starting from @iova
-+ *
-+ * iommu_unmap() will remove a translation created by iommu_map(). It cannot
-+ * subdivide a mapping created by iommu_map(), so it should be called with IOVA
-+ * ranges that match what was passed to iommu_map(). The range can aggregate
-+ * contiguous iommu_map() calls so long as no individual range is split.
-+ *
-+ * Returns: Number of bytes of IOVA unmapped. iova + res will be the point
-+ * unmapping stopped.
-+ */
+next_device() would always return null until the driver is bound to the 
+device which
+happens much later in really_probe() after the iommu_device_register() 
+would be called
+even as per this patch. That way the race would still occur, wouldn't it?
+Can you please help me understand what I may be missing here?
+Are you saying that these additional patches are required along with the 
+fix I've
+posted?
+> +
+>      put_device(dev);
+>      return dev ? dev_get_drvdata(dev) : NULL;
+>  }
+> @@ -2232,21 +2232,6 @@ static int arm_smmu_device_probe(struct 
+> platform_device *pdev)
+>                      i, irq);
+>      }
+>
+> -    err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
+> -                     "smmu.%pa", &smmu->ioaddr);
+> -    if (err) {
+> -        dev_err(dev, "Failed to register iommu in sysfs\n");
+> -        return err;
+> -    }
+> -
+> -    err = iommu_device_register(&smmu->iommu, &arm_smmu_ops,
+> -                    using_legacy_binding ? NULL : dev);
+> -    if (err) {
+> -        dev_err(dev, "Failed to register iommu\n");
+> -        iommu_device_sysfs_remove(&smmu->iommu);
+> -        return err;
+> -    }
+> -
+>      platform_set_drvdata(pdev, smmu);
+>
+>      /* Check for RMRs and install bypass SMRs if any */
+> @@ -2255,6 +2240,18 @@ static int arm_smmu_device_probe(struct 
+> platform_device *pdev)
+>      arm_smmu_device_reset(smmu);
+>      arm_smmu_test_smr_masks(smmu);
+>
+> +    err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
+> +                     "smmu.%pa", &smmu->ioaddr);
+> +    if (err)
+> +        return dev_err_probe(dev, err, "Failed to register iommu in 
+> sysfs\n");
+> +
+> +    err = iommu_device_register(&smmu->iommu, &arm_smmu_ops,
+> +                    using_legacy_binding ? NULL : dev);
+> +    if (err) {
+> +        iommu_device_sysfs_remove(&smmu->iommu);
+> +        return dev_err_probe(dev, err, "Failed to register iommu\n");
+> +    }
+> +
+>      /*
+>       * We want to avoid touching dev->power.lock in fastpaths unless
+>       * it's really going to do something useful - pm_runtime_enabled()
 
-Jason
+-- 
+Thanks and Regards
+Pratyush Brahma
+
