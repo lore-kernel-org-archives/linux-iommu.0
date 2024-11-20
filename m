@@ -1,33 +1,25 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72DB61AA1DC;
-	Wed, 20 Nov 2024 15:10:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4CE54132132
+	for <iommu@lists.linux.dev>; Wed, 20 Nov 2024 16:18:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732115410; cv=none; b=V944xBw3t7ASww0kvqDAOqpiyBcypH5WKYLy0BvnA/8CNCFJ5PGeBH3d2OAg7ESR8ck5hWO6RA55HsxyBVcjDW4dXuAUoMDIwVn8jYsntRXBt3jG895MMIPWXeA0vyJhdRHdRKwK8t6R/oOrkWybQkDSJrjcX1/+qS1na71iAM8=
+	t=1732119486; cv=none; b=cokb3oEM53wo3togiTL0OgZbL9fo0CQYo3gd3ITJzz1gjJh7fPfQZz9Mq2dTxX5IyiJvL4wt+zTsEIBYKg9mlKpob4OVP8sFN4bwnSCQ4QPHkzkuKGtZys27DnPPf3FT92h682rhWhnFHJWGOBRBvnNLDj2xa+w0/u+UX6SzkKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732115410; c=relaxed/simple;
-	bh=cee4bpVCHnOQMsJqKoSGXKnmx0DYKK3uELApQYQdZTI=;
+	s=arc-20240116; t=1732119486; c=relaxed/simple;
+	bh=steiTH9WgmEuOIfuCUhnix08ztBgjaw+7hd+ArWDPkw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ETGfhkl7LxiW8ga5t4QLr+XjzLDHrRsowZZRC0HE0lm1pINLjESvpSC8+Wo8dkt81OR1ChOGdsA3LB5qhuoj4uPdtsvlepGZdSJEUrcFKEMr86g+UpVF8HelIURUsKtXsuR5RZ4U+aRahDZrkFv2pBX0GPIlRxstcUCTXZH4TUk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gtlB5RdY; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gtlB5RdY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E4DAC4CECD;
-	Wed, 20 Nov 2024 15:10:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732115410;
-	bh=cee4bpVCHnOQMsJqKoSGXKnmx0DYKK3uELApQYQdZTI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=gtlB5RdYLkZbaDBqnPNAlIsTsj41sjCI4jtqrjL9fc3svoMh1MeCpjFQJFoysECQs
-	 Ymsbmw+EC4YNeoiSEVsZ8pKfao312FflWzf8y6TBgQv73kByn/UGYuzqR+vzDjK7us
-	 dndpAAZrSX4v6ILr9McFq4TDDpExoUzP3j+KhSfkMLRcvJ7kuG44rUAxAvK2FIZwEO
-	 lsw3F9XCofFWxm4R0EqZYhQJvdAqaP8PAJC/OQ8FwzV3daSfSzE1iCFqA+gnmj2a2u
-	 eo9qRB6HvAGfrqjMATsR3loQ8KgfaQH0OLEdiiA3RVOXZ6hh+R+BS2s0pVb/2/vApa
-	 qpRE7AAYHyTKQ==
-Message-ID: <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
-Date: Wed, 20 Nov 2024 16:10:04 +0100
+	 In-Reply-To:Content-Type; b=tntg9rzgHb+O+pNYK0EpHqbu0BvN7xDPZKzAIXBQpybCLln1PuAQG+mg34Q2eiTi46S7DKsgBJYURL1dF5QChxPwJEjpczQ7qA6nPrG2UuYF8qby3woxBw3vff/2/0n0uC37NAj4O61IbdkbQYY4MrjN6Iyis9VFfXO6LJeDPhg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 86D201480;
+	Wed, 20 Nov 2024 08:18:32 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 97A8A3F66E;
+	Wed, 20 Nov 2024 08:18:00 -0800 (PST)
+Message-ID: <15f937d7-7ac1-4a7f-abcd-abfede191b51@arm.com>
+Date: Wed, 20 Nov 2024 16:17:59 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,309 +27,150 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v4 2/3] page_pool: fix IOMMU crash when driver has
- already unbound
+Subject: Re: [PATCH RFC v4 3/3] page_pool: skip dma sync operation for
+ inflight pages
 To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
  kuba@kernel.org, pabeni@redhat.com
 Cc: liuyonglong@huawei.com, fanghaiqing@huawei.com, zhangkun09@huawei.com,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
+ Alexander Duyck <alexander.duyck@gmail.com>,
+ Andrew Morton <akpm@linux-foundation.org>, IOMMU <iommu@lists.linux.dev>,
+ MM <linux-mm@kvack.org>, Jesper Dangaard Brouer <hawk@kernel.org>,
  Ilias Apalodimas <ilias.apalodimas@linaro.org>,
  Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>,
  netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20241120103456.396577-1-linyunsheng@huawei.com>
- <20241120103456.396577-3-linyunsheng@huawei.com>
-Content-Language: en-US
-From: Jesper Dangaard Brouer <hawk@kernel.org>
-In-Reply-To: <20241120103456.396577-3-linyunsheng@huawei.com>
+ <20241120103456.396577-4-linyunsheng@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20241120103456.396577-4-linyunsheng@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
+On 20/11/2024 10:34 am, Yunsheng Lin wrote:
+> Skip dma sync operation for inflight pages before the
+> page_pool_destroy() returns to the driver as DMA API
+> expects to be called with a valid device bound to a
+> driver as mentioned in [1].
+> 
+> After page_pool_destroy() is called, the page is not
+> expected to be recycled back to pool->alloc cache and
+> dma sync operation is not needed when the page is not
+> recyclable or pool->ring is full, so only skip the dma
+> sync operation for the infilght pages by clearing the
+> pool->dma_sync under protection of rcu lock when page
+> is recycled to pool->ring to ensure that there is no
+> dma sync operation called after page_pool_destroy() is
+> returned.
 
+Something feels off here - either this is a micro-optimisation which I 
+wouldn't really expect to be meaningful, or it means patch #2 doesn't 
+actually do what it claims. If it really is possible to attempt to 
+dma_sync a page *after* page_pool_inflight_unmap() has already reclaimed 
+and unmapped it, that represents yet another DMA API lifecycle issue, 
+which as well as being even more obviously incorrect usage-wise, could 
+also still lead to the same crash (if the device is non-coherent).
 
-On 20/11/2024 11.34, Yunsheng Lin wrote:
-> Networking driver with page_pool support may hand over page
-> still with dma mapping to network stack and try to reuse that
-> page after network stack is done with it and passes it back
-> to page_pool to avoid the penalty of dma mapping/unmapping.
-> With all the caching in the network stack, some pages may be
-> held in the network stack without returning to the page_pool
-> soon enough, and with VF disable causing the driver unbound,
-> the page_pool does not stop the driver from doing it's
-> unbounding work, instead page_pool uses workqueue to check
-> if there is some pages coming back from the network stack
-> periodically, if there is any, it will do the dma unmmapping
-> related cleanup work.
-> 
-> As mentioned in [1], attempting DMA unmaps after the driver
-> has already unbound may leak resources or at worst corrupt
-> memory. Fundamentally, the page pool code cannot allow DMA
-> mappings to outlive the driver they belong to.
-> 
-> Currently it seems there are at least two cases that the page
-> is not released fast enough causing dma unmmapping done after
-> driver has already unbound:
-> 1. ipv4 packet defragmentation timeout: this seems to cause
->     delay up to 30 secs.
-> 2. skb_defer_free_flush(): this may cause infinite delay if
->     there is no triggering for net_rx_action().
-> 
-> In order not to call DMA APIs to do DMA unmmapping after driver
-> has already unbound and stall the unloading of the networking
-> driver, scan the inflight pages using some MM API to do the DMA
-> unmmapping for those pages when page_pool_destroy() is called.
-> 
-> The max time of scanning inflight pages is about 1.3 sec for
-> system with over 300GB memory as mentioned in [3], which seems
-> acceptable as the scanning is only done when there are indeed
-> some inflight pages and is done in the slow path.
-> 
-> Note, the devmem patchset seems to make the bug harder to fix,
-> and may make backporting harder too. As there is no actual user
-> for the devmem and the fixing for devmem is unclear for now,
-> this patch does not consider fixing the case for devmem yet.
-> 
-> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
-> 2. https://github.com/netoptimizer/prototype-kernel
-> 3. https://lore.kernel.org/all/17a24d69-7bf0-412c-a32a-b25d82bb4159@kernel.org/
+Otherwise, I don't imagine it's really worth worrying about optimising 
+out syncs for any pages which happen to get naturally returned after 
+page_pool_destroy() starts but before they're explicitly reclaimed. 
+Realistically, the kinds of big server systems where reclaim takes an 
+appreciable amount of time are going to be coherent and skipping syncs 
+anyway.
+
+Thanks,
+Robin.
+
+> 1. https://lore.kernel.org/all/caf31b5e-0e8f-4844-b7ba-ef59ed13b74e@arm.com/
 > CC: Robin Murphy <robin.murphy@arm.com>
 > CC: Alexander Duyck <alexander.duyck@gmail.com>
+> CC: Andrew Morton <akpm@linux-foundation.org>
 > CC: IOMMU <iommu@lists.linux.dev>
+> CC: MM <linux-mm@kvack.org>
 > Fixes: f71fec47c2df ("page_pool: make sure struct device is stable")
 > Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> Tested-by: Yonglong Liu <liuyonglong@huawei.com>
 > ---
->   include/net/page_pool/types.h |  6 ++-
->   net/core/page_pool.c          | 95 ++++++++++++++++++++++++++++++-----
->   2 files changed, 87 insertions(+), 14 deletions(-)
+>   net/core/page_pool.c | 25 ++++++++++++++++++-------
+>   1 file changed, 18 insertions(+), 7 deletions(-)
 > 
-> diff --git a/include/net/page_pool/types.h b/include/net/page_pool/types.h
-> index c022c410abe3..7393fd45bc47 100644
-> --- a/include/net/page_pool/types.h
-> +++ b/include/net/page_pool/types.h
-> @@ -228,7 +228,11 @@ struct page_pool {
->   	 */
->   	refcount_t user_cnt;
->   
-> -	u64 destroy_cnt;
-> +	/* Lock to avoid doing dma unmapping concurrently when
-> +	 * destroy_cnt > 0.
-> +	 */
-> +	spinlock_t destroy_lock;
-> +	unsigned int destroy_cnt;
->   
->   	/* Slow/Control-path information follows */
->   	struct page_pool_params_slow slow;
 > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index b3dae671eb26..33a314abbba4 100644
+> index 33a314abbba4..0bde7c6c781a 100644
 > --- a/net/core/page_pool.c
 > +++ b/net/core/page_pool.c
-> @@ -272,9 +272,6 @@ static int page_pool_init(struct page_pool *pool,
->   	/* Driver calling page_pool_create() also call page_pool_destroy() */
->   	refcount_set(&pool->user_cnt, 1);
->   
-> -	if (pool->dma_map)
-> -		get_device(pool->p.dev);
-> -
->   	if (pool->slow.flags & PP_FLAG_ALLOW_UNREADABLE_NETMEM) {
->   		/* We rely on rtnl_lock()ing to make sure netdev_rx_queue
->   		 * configuration doesn't change while we're initializing
-> @@ -312,9 +309,6 @@ static void page_pool_uninit(struct page_pool *pool)
->   {
->   	ptr_ring_cleanup(&pool->ring, NULL);
->   
-> -	if (pool->dma_map)
-> -		put_device(pool->p.dev);
-> -
->   #ifdef CONFIG_PAGE_POOL_STATS
->   	if (!pool->system)
->   		free_percpu(pool->recycle_stats);
-> @@ -365,7 +359,7 @@ struct page_pool *page_pool_create(const struct page_pool_params *params)
->   }
->   EXPORT_SYMBOL(page_pool_create);
->   
-> -static void page_pool_return_page(struct page_pool *pool, netmem_ref netmem);
-> +static void __page_pool_return_page(struct page_pool *pool, netmem_ref netmem);
->   
->   static noinline netmem_ref page_pool_refill_alloc_cache(struct page_pool *pool)
->   {
-> @@ -403,7 +397,7 @@ static noinline netmem_ref page_pool_refill_alloc_cache(struct page_pool *pool)
->   			 * (2) break out to fallthrough to alloc_pages_node.
->   			 * This limit stress on page buddy alloactor.
->   			 */
-> -			page_pool_return_page(pool, netmem);
-> +			__page_pool_return_page(pool, netmem);
->   			alloc_stat_inc(pool, waive);
->   			netmem = 0;
->   			break;
-> @@ -670,7 +664,7 @@ static __always_inline void __page_pool_release_page_dma(struct page_pool *pool,
->    * a regular page (that will eventually be returned to the normal
->    * page-allocator via put_page).
->    */
-> -void page_pool_return_page(struct page_pool *pool, netmem_ref netmem)
-> +void __page_pool_return_page(struct page_pool *pool, netmem_ref netmem)
->   {
->   	int count;
->   	bool put;
-> @@ -697,6 +691,27 @@ void page_pool_return_page(struct page_pool *pool, netmem_ref netmem)
->   	 */
+> @@ -712,7 +712,8 @@ static void page_pool_return_page(struct page_pool *pool, netmem_ref netmem)
+>   	rcu_read_unlock();
 >   }
 >   
-> +/* Called from page_pool_put_*() path, need to synchronizated with
-> + * page_pool_destory() path.
-> + */
-> +static void page_pool_return_page(struct page_pool *pool, netmem_ref netmem)
-> +{
-> +	unsigned int destroy_cnt;
-> +
-> +	rcu_read_lock();
-> +
-> +	destroy_cnt = READ_ONCE(pool->destroy_cnt);
-> +	if (unlikely(destroy_cnt)) {
-> +		spin_lock_bh(&pool->destroy_lock);
-> +		__page_pool_return_page(pool, netmem);
-> +		spin_unlock_bh(&pool->destroy_lock);
-> +	} else {
-> +		__page_pool_return_page(pool, netmem);
-> +	}
-> +
-> +	rcu_read_unlock();
-> +}
-> +
->   static bool page_pool_recycle_in_ring(struct page_pool *pool, netmem_ref netmem)
+> -static bool page_pool_recycle_in_ring(struct page_pool *pool, netmem_ref netmem)
+> +static bool page_pool_recycle_in_ring(struct page_pool *pool, netmem_ref netmem,
+> +				      unsigned int dma_sync_size)
 >   {
 >   	int ret;
-> @@ -924,7 +939,7 @@ static netmem_ref page_pool_drain_frag(struct page_pool *pool,
->   		return netmem;
+>   	/* BH protection not needed if current is softirq */
+> @@ -723,10 +724,13 @@ static bool page_pool_recycle_in_ring(struct page_pool *pool, netmem_ref netmem)
+>   
+>   	if (!ret) {
+>   		recycle_stat_inc(pool, ring);
+> -		return true;
+> +
+> +		rcu_read_lock();
+> +		page_pool_dma_sync_for_device(pool, netmem, dma_sync_size);
+> +		rcu_read_unlock();
 >   	}
 >   
-> -	page_pool_return_page(pool, netmem);
-> +	__page_pool_return_page(pool, netmem);
->   	return 0;
+> -	return false;
+> +	return !ret;
 >   }
 >   
-> @@ -938,7 +953,7 @@ static void page_pool_free_frag(struct page_pool *pool)
->   	if (!netmem || page_pool_unref_netmem(netmem, drain_count))
+>   /* Only allow direct recycling in special circumstances, into the
+> @@ -779,10 +783,11 @@ __page_pool_put_page(struct page_pool *pool, netmem_ref netmem,
+>   	if (likely(__page_pool_page_can_be_recycled(netmem))) {
+>   		/* Read barrier done in page_ref_count / READ_ONCE */
+>   
+> -		page_pool_dma_sync_for_device(pool, netmem, dma_sync_size);
+> -
+> -		if (allow_direct && page_pool_recycle_in_cache(netmem, pool))
+> +		if (allow_direct && page_pool_recycle_in_cache(netmem, pool)) {
+> +			page_pool_dma_sync_for_device(pool, netmem,
+> +						      dma_sync_size);
+>   			return 0;
+> +		}
+>   
+>   		/* Page found as candidate for recycling */
+>   		return netmem;
+> @@ -845,7 +850,7 @@ void page_pool_put_unrefed_netmem(struct page_pool *pool, netmem_ref netmem,
+>   
+>   	netmem =
+>   		__page_pool_put_page(pool, netmem, dma_sync_size, allow_direct);
+> -	if (netmem && !page_pool_recycle_in_ring(pool, netmem)) {
+> +	if (netmem && !page_pool_recycle_in_ring(pool, netmem, dma_sync_size)) {
+>   		/* Cache full, fallback to free pages */
+>   		recycle_stat_inc(pool, ring_full);
+>   		page_pool_return_page(pool, netmem);
+> @@ -903,14 +908,18 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+>   
+>   	/* Bulk producer into ptr_ring page_pool cache */
+>   	in_softirq = page_pool_producer_lock(pool);
+> +	rcu_read_lock();
+>   	for (i = 0; i < bulk_len; i++) {
+>   		if (__ptr_ring_produce(&pool->ring, data[i])) {
+>   			/* ring full */
+>   			recycle_stat_inc(pool, ring_full);
+>   			break;
+>   		}
+> +		page_pool_dma_sync_for_device(pool, (__force netmem_ref)data[i],
+> +					      -1);
+>   	}
+>   	recycle_stat_add(pool, ring, i);
+> +	rcu_read_unlock();
+>   	page_pool_producer_unlock(pool, in_softirq);
+>   
+>   	/* Hopefully all pages was return into ptr_ring */
+> @@ -1200,6 +1209,8 @@ void page_pool_destroy(struct page_pool *pool)
+>   	if (!page_pool_release(pool))
 >   		return;
 >   
-> -	page_pool_return_page(pool, netmem);
-> +	__page_pool_return_page(pool, netmem);
->   }
->   
->   netmem_ref page_pool_alloc_frag_netmem(struct page_pool *pool,
-> @@ -1045,7 +1060,7 @@ static void page_pool_empty_alloc_cache_once(struct page_pool *pool)
->   static void page_pool_scrub(struct page_pool *pool)
->   {
->   	page_pool_empty_alloc_cache_once(pool);
-> -	pool->destroy_cnt++;
-> +	WRITE_ONCE(pool->destroy_cnt, pool->destroy_cnt + 1);
->   
->   	/* No more consumers should exist, but producers could still
->   	 * be in-flight.
-> @@ -1119,6 +1134,58 @@ void page_pool_disable_direct_recycling(struct page_pool *pool)
->   }
->   EXPORT_SYMBOL(page_pool_disable_direct_recycling);
->   
-> +static void page_pool_inflight_unmap(struct page_pool *pool)
-> +{
-> +	unsigned int unmapped = 0;
-> +	struct zone *zone;
-> +	int inflight;
+> +	pool->dma_sync = false;
 > +
-> +	if (!pool->dma_map || pool->mp_priv)
-> +		return;
-> +
-> +	get_online_mems();
-> +	spin_lock_bh(&pool->destroy_lock);
-> +
-> +	inflight = page_pool_inflight(pool, false);
-> +	for_each_populated_zone(zone) {
-> +		unsigned long end_pfn = zone_end_pfn(zone);
-> +		unsigned long pfn;
-> +
-> +		for (pfn = zone->zone_start_pfn; pfn < end_pfn; pfn++) {
-> +			struct page *page = pfn_to_online_page(pfn);
-> +
-> +			if (!page || !page_count(page) ||
-> +			    (page->pp_magic & ~0x3UL) != PP_SIGNATURE ||
-> +			    page->pp != pool)
-> +				continue;
-> +
-> +			dma_unmap_page_attrs(pool->p.dev,
-> +					     page_pool_get_dma_addr(page),
-> +					     PAGE_SIZE << pool->p.order,
-> +					     pool->p.dma_dir,
-> +					     DMA_ATTR_SKIP_CPU_SYNC |
-> +					     DMA_ATTR_WEAK_ORDERING);
-> +			page_pool_set_dma_addr(page, 0);
-> +
-
-I feel this belongs in a helper function call.
-
-Previously we had a function called: page_pool_release_page().
-
-This was used to convert the page into a normal page again, releasing
-page_pool dependencies.  It was used when packet transitioned into the
-netstack, but it was removed when we decided it was safe to let netstack
-return pp pages.
-
-Removed in commits:
-  - 535b9c61bdef ("net: page_pool: hide page_pool_release_page()")
-  - 07e0c7d3179d ("net: page_pool: merge page_pool_release_page() with 
-page_pool_return_page()")
-
-
-> +			unmapped++;
-> +
-> +			/* Skip scanning all pages when debug is disabled */
-> +			if (!IS_ENABLED(CONFIG_DEBUG_NET) &&
-> +			    inflight == unmapped)
-> +				goto out;
-> +		}
-> +	}
-> +
-> +out:
-> +	WARN_ONCE(page_pool_inflight(pool, false) != unmapped,
-> +		  "page_pool(%u): unmapped(%u) != inflight pages(%d)\n",
-> +		  pool->user.id, unmapped, inflight);
-> +
-> +	pool->dma_map = false;
-> +	spin_unlock_bh(&pool->destroy_lock);
-> +	put_online_mems();
-> +}
-> +
->   void page_pool_destroy(struct page_pool *pool)
->   {
->   	if (!pool)
-> @@ -1139,6 +1206,8 @@ void page_pool_destroy(struct page_pool *pool)
->   	 */
->   	synchronize_rcu();
->   
-> +	page_pool_inflight_unmap(pool);
-> +
-
-Reaching here means we have detected in-flight packets/pages.
-
-In "page_pool_inflight_unmap" we scan and find those in-flight pages to
-DMA unmap them. Then below we wait for these in-flight pages again.
-Why don't we just "release" (page_pool_release_page) those in-flight
-pages from belonging to the page_pool, when we found them during scanning?
-
-If doing so, we can hopefully remove the periodic checking code below.
-
->   	page_pool_detached(pool);
->   	pool->defer_start = jiffies;
->   	pool->defer_warn  = jiffies + DEFER_WARN_INTERVAL;
-> @@ -1159,7 +1228,7 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
->   	/* Flush pool alloc cache, as refill will check NUMA node */
->   	while (pool->alloc.count) {
->   		netmem = pool->alloc.cache[--pool->alloc.count];
-> -		page_pool_return_page(pool, netmem);
-> +		__page_pool_return_page(pool, netmem);
->   	}
->   }
->   EXPORT_SYMBOL(page_pool_update_nid);
-
-Thanks for continuing to work on this :-)
-
---Jesper
+>   	/* Paired with rcu lock in page_pool_napi_local() to enable clearing
+>   	 * of pool->p.napi in page_pool_disable_direct_recycling() is seen
+>   	 * before returning to driver to free the napi instance.
