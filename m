@@ -1,165 +1,108 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D123342048
-	for <iommu@lists.linux.dev>; Wed, 20 Nov 2024 07:12:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C679717BB2E
+	for <iommu@lists.linux.dev>; Wed, 20 Nov 2024 09:56:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732086773; cv=none; b=WeFT6JovPr6qRsLwPPDivMVprhcwJT3F+ZA89yS7sDxGFJl0aI4ZwvGqQYa+jFfpEK/iudR7KvvOTPADPImEFZONkQ6ZaRtBG5cNFamfFBFjJfYCCJMQxqOXs399b0S5ATw+jIIkmwm18kSz2yUtSgPUyll1dHaR/laOnkRMF+4=
+	t=1732096573; cv=none; b=fQJSyeufDUMR9c5C2upKtb+fmOSXObiSA8NElFxS2wpZyZg3oFD8kC1mGcU/0Li58GF60KEeuesTH6aYHAPBv+35zv37Ur1wgaUXFxZb0lD8p9MEvsInLc/oJKnrtjzB7LR7p7sVmXeODmcyKq5irLBgpltN0dPiGKimXl6REdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732086773; c=relaxed/simple;
-	bh=sRMHmXD/QINkMK8H2zSISg9mvhJRMxfq5ka7zqLd1/U=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gDQ9pnedNpl0D+pqAR7Yo9j16LduE3KZnTYUEvOVjfHYeHsr2e80KgubW9Nsdw5vFJGdjMcW8kfWYhK5gcWyokP0j04Ptv25Zq42CshGgIVP/wDob9JgxYue0bEJ3yfMHA77rwI3lXaJjw1Ru0wVawLz0TS1ZDo1osA8vk3VjUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=i25EYPzf; arc=none smtp.client-ip=209.85.160.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1732096573; c=relaxed/simple;
+	bh=qz+scinseyG45iIVEu+XoWas+bToYNfEcBqwbFeC5Hk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qSmRoqc01P1Tmryd4zVcI0ZC1Wk6E519Tn5vcOEjzAso9YlOWJZQaTEF+IpHlX3pDc8+1FcV/CqgrXhUpyGGjKKc8OkHNC4DUq1zdTEsQQLe+L3q0e0kAv3PGespfusbdvVVDXXKGwnwphUunovYT/6N9enBxeUMLEV6hCoYWFQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rX0T1zlV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="i25EYPzf"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-460a8d1a9b7so528421cf.1
-        for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 23:12:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1732086771; x=1732691571; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=P0W3lFFMyiLxkNJ/1/ctxUq9W4dsXyHIMyotjES2Qk8=;
-        b=i25EYPzfGsbTZwqQfW58pL6chBtPMIGqPlrirC5tr1ASZQFIGXgo+nrW7h2EPOtHvs
-         jJcAKu3JpQ4LOFAzGRos7WOXhZ2EcaeqAiHFdqzviE5Ue2gE2G0DilJZ4HA4VjJWoo+x
-         AuPvsrvuY7yuqhTkUzyRZ1g68aCEHdyrTgHhnX1nXfYu5awLhcffmhvVivgeVRAlXeIE
-         rCqY6cxa4YSswLibbm15rfLoMkQJXMiGC78ignB4ov0VETd7WNJxMnBltrlvxxGnBpgI
-         ZlvQQ9VYr78lsNpIDHZuS/2aeKzfesi1ZaSAWkO3Ff3/yYqq06DisrjNb5xtaZAo5/vc
-         Y8ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732086771; x=1732691571;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=P0W3lFFMyiLxkNJ/1/ctxUq9W4dsXyHIMyotjES2Qk8=;
-        b=HIhj6JUXTJf5XSX7O29XfMFUJy5NSFZrVJMPAGSdW9roIvJG68q3dWeHS3tILe/vgc
-         Cf+5d4La87HO24goUfob/2yaYs2M6yooJ9GOoy0d7GntqnUJ7IweQYLyt/fu5RXzR61R
-         NjZ07WPqiik6uetuYmQdwYyFStWzbBpcpkL1N7Fzfwqp22W9WzNUtWr2ah9vv2XIn+TY
-         daPz2oyWHVFHWIyIIqaKQolG04sv+9M/0sDJf1hsgFW/KHtcvcxDW2AJJJIXMW1TbPfc
-         5zCYUH2Af7wy+/t+0yPFqBm5F5zz8PG+3JnTKZPE719gprfJ+Q3MXyaJcZfik+sy2/DH
-         VP+g==
-X-Forwarded-Encrypted: i=1; AJvYcCWw+AJJNA/VdW7w0HbVFvn611hvrJZn0GCSjHrz2M38j1AgkzhKFXI1yYPWxFKjh8mKtY+NEw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy63Cy+ue4eI/T17c8YhJB+f+uke5VZRUTvwq2S5OUK+KM2WTB4
-	pEZGgE75YJEw05hGm47o6AQNUoS7c9Bg9Z5xhEYbCKCXMWjSqPw31T9AkWkRstF8qqWxbXwNkEt
-	8cwHAa4IYHfe21bwfFFEAZprFnAt4f/5uue4dISngJt3UUbfOWxFWgh0=
-X-Gm-Gg: ASbGnctAzKnHnSOh9tIv+jx1Gz52jx+vvn8BrLojnxqJ7J5d9jqvU+aFg2LPqegbc9H
-	K+5imLv8HV4+3wSaXrDyyg53O/Fa+rviQ
-X-Google-Smtp-Source: AGHT+IFIi3A2s9VhgJCMMYL53sxA6R04s7e/3c4i4PWxxkJd/ggHXcDWqLxHIuubTgTff7z/ggkiQAug+mnDj3fexk0=
-X-Received: by 2002:ac8:5a47:0:b0:462:c8ad:dcbe with SMTP id
- d75a77b69052e-464d2e225f3mr1454391cf.7.1732086770477; Tue, 19 Nov 2024
- 23:12:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rX0T1zlV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 149D7C4CECD;
+	Wed, 20 Nov 2024 09:56:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1732096573;
+	bh=qz+scinseyG45iIVEu+XoWas+bToYNfEcBqwbFeC5Hk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=rX0T1zlV5R8taULdAwvZPLC1h3GC14cYEe+Id49x9v/3Jo8BD83vuFXMxU4Vly0+S
+	 d99HGWJ0x73mCpJPBe7gRuG1Kf+zNMKu5gL5j4kJGSXnvAfvyt3Xtabw4l4FYJHCgo
+	 maoShoh8fF2l9A3+Oq7jv3L8KrSCP25RugvxJvknQHedhucop87K3IswgdmEBC7+Lf
+	 M96VO0xjpeGB8auQ0VnCu7vPlc9NEgWUdlWXsudAgVisedkdF/+aSzogFh0CF0oWX2
+	 6Rrvmk48xIcq+xxst+VrneBR6wrqa1LYyMP2kPUvjBOYxKz0oJSCKWiBUicMvRvBBC
+	 5DJtYPcg7E2UQ==
+Date: Wed, 20 Nov 2024 09:56:08 +0000
+From: Will Deacon <will@kernel.org>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+	Daniel Mentz <danielmentz@google.com>
+Subject: Re: [PATCH v5 1/3] iommu/arm-smmu-v3: Introduce struct arm_smmu_event
+Message-ID: <20241120095607.GA29295@willie-the-truck>
+References: <20241112083018.1662104-1-praan@google.com>
+ <20241112083018.1662104-2-praan@google.com>
+ <ZzPlMlE2gpH9DQQ4@Asurada-Nvidia>
+ <ZzdJAFc_8h6LfVL7@google.com>
+ <Zze+VFpGNaXepFWC@Asurada-Nvidia>
+ <20241118162442.GD35230@nvidia.com>
+ <20241119090307.GA28466@willie-the-truck>
+ <ZzxaE6yTt1QpFJz6@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241112083018.1662104-1-praan@google.com> <CAE2F3rBqPF_POHSdeRahgd+ew9tD37iq6S8M=9Sj0Br6pe5e5Q@mail.gmail.com>
- <CAN6iL-SwmwgiyhvCkGV__Q4D_K4TRD+6ZD1O4YJS2qtamW1k_g@mail.gmail.com>
-In-Reply-To: <CAN6iL-SwmwgiyhvCkGV__Q4D_K4TRD+6ZD1O4YJS2qtamW1k_g@mail.gmail.com>
-From: Pranjal Shrivastava <praan@google.com>
-Date: Wed, 20 Nov 2024 12:42:39 +0530
-Message-ID: <CAN6iL-TUtnxogbiJyLcLejObiZdbiVbr_S2aBBKC4=seMiwA1A@mail.gmail.com>
-Subject: Re: [PATCH v5 0/3] iommu/arm-smmu-v3: Parse out event records
-To: Daniel Mentz <danielmentz@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Mostafa Saleh <smostafa@google.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev, 
-	Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZzxaE6yTt1QpFJz6@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Hello,
-On Wed, Nov 20, 2024 at 12:24=E2=80=AFPM Pranjal Shrivastava <praan@google.=
-com> wrote:
->
-> Hi Daniel,
->
-> On Wed, Nov 20, 2024 at 10:15=E2=80=AFAM Daniel Mentz <danielmentz@google=
-.com> wrote:
-> >
-> > On Tue, Nov 12, 2024 at 12:30=E2=80=AFAM Pranjal Shrivastava <praan@goo=
-gle.com> wrote:
-> > >
-> > > Enhance the arm-smmu-v3 driver to parse out useful information from
-> > > event records into a structure for better event handling & logging.
-> >
-> > Hi Pranjal,
-> >
-> > Thank you for putting this together.
-> >
-> > >
-> > > Some sample events, powered by QEMU:
-> >
-> > > 4. Translation Fault:
-> > >
-> > > [    7.586428] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x10 received:
-> > > [    7.587012] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000800000010
-> > > [    7.587504] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000020000000000
-> > > [    7.587986] arm-smmu-v3 arm-smmu-v3.0.auto:  0x00000000fffff040
-> > > [    7.588745] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
-> > > [    7.589219] arm-smmu-v3 arm-smmu-v3.0.auto: Event 0x10 received: F=
-_TRANSLATION
-> > > [    7.589219]  client: 0000:00:01.0 sid: 0x8 ssid: 0x0
-> > > [    7.589219]  iova 0xfffff040 ipa 0x0
-> > > [    7.589219]  Unpriv | Data | Write | S1 | Input address caused fau=
-lt
-> > > [    7.589219]  STAG: 0x0
-> >
-> > I find that "Event 0x10" is redundant and recommend removing it. Maybe
-> > print just "Event F_TRANSLATION"
->
-> I agree, however, in the past reviews [1] we've been asked to keep the
-> existing log
-> "as is" unless there's a particularly compelling reason to change them.
->
-> >
-> > Not printing the prefix "arm-smmu-v3 arm-smmu-v3.0.auto:" on
-> > subsequent lines appears to be inconsistent with how the raw event
-> > bits are dumped. Also, I typically run a command like "grep
-> > 'arm-smmu-v3 arm-smmu-v3.0.auto' uart.log" while I'm developing smmu
-> > driver code, and with the proposed change, the grep command wouldn't
-> > print most of the event details, because they are not prefixed by
-> > "arm-smmu-v3 arm-smmu-v3.0.auto"
->
-> I see. The prefix isn't getting picked up because I'm trying to print
-> all the lines in
-> a single `dev_err` in order to avoid other logs inter-mingling with
-> these ones. I can add
-> that if we are okay with using multiple `dev_err` calls (i.e.
-> potentially allowing other logs
-> to mix-in).  Otherwise, let me see how we can manually add the dev_fmt
-> string in the log.
->
-> >
-> > The words "client", "sid" and "ssid" are followed by a colon (":") but
-> > iova and ipa are not.
-> >
->
-> Ack. Will fix that.
->
-> > Can you put everything up to and including iova on the first line and
-> > the rest on the second line?
->
+On Tue, Nov 19, 2024 at 09:27:47AM +0000, Pranjal Shrivastava wrote:
+> On Tue, Nov 19, 2024 at 09:03:08AM +0000, Will Deacon wrote:
+> > On Mon, Nov 18, 2024 at 12:24:42PM -0400, Jason Gunthorpe wrote:
+> > > On Fri, Nov 15, 2024 at 01:34:12PM -0800, Nicolin Chen wrote:
+> > > > On Fri, Nov 15, 2024 at 01:13:36PM +0000, Pranjal Shrivastava wrote:
+> > > > > On Tue, Nov 12, 2024 at 03:30:58PM -0800, Nicolin Chen wrote:
+> > > > > > On Tue, Nov 12, 2024 at 08:30:16AM +0000, Pranjal Shrivastava wrote:
+> > > > > > > +struct arm_smmu_event {
+> > > > > > > +       u8                              stall           : 1,
+> > > > > > > +                                       ssv             : 1,
+> > > > > > > +                                       privileged      : 1,
+> > > > > > > +                                       instruction     : 1,
+> > > > > > > +                                       s2              : 1,
+> > > > > > > +                                       read            : 1;
+> > > > > > 
+> > > > > > Feels odd to do so...should all of them be:
+> > > > > > 	u8			name : 1;
+> > > > > > ?
+> > > > > 
+> > > > > Hmmm, do you mean something like the following?
+> > > > 
+> > > > Never mind. I see amd_iommu_types.h does something just like that.
+> > > 
+> > > I certainly expect to see the u8 repeated and not use , for members of
+> > > a structure. Also don't add excessive horizonal alignment.. C code is
+> > > not excel. :)
+> > 
+> > I think the comma syntax is fine (there's precedence for it and it works),
+> > but agreed on removing some of the tabs.
+> 
+> Ohh alright. I'm assuming both of you are referring to the tabs before
+> the colon ':' ? 
+> 
+> As in, is the following fine?
+> 
+> struct arm_smmu_event {
+>        u8		stall : 1,
+> 			ssv : 1,
+> 			privileged : 1,
+> 			instruction : 1,
+> 			s2 : 1,
+> 			read : 1;
+> 	.....
 
-Apologies, I'm not able to use my regular mail client due to corp mail issu=
-es.
-I'll try again. Do you mean something like the following:
+I was actually thinking of the whitespace between the 'u8' and the field
+names. But this is silly nit-picking. Please just follow something like
+the use of bitfields in 'struct perf_event_attr', as that's a readable
+example of recent-ish in-tree code.
 
-[    7.589219] arm-smmu-v3 arm-smmu-v3.0.auto: Event 0x10 received:
-F_TRANSLATION
-[    7.589219] arm-smmu-v3 arm-smmu-v3.0.auto: client: 0000:00:01.0
-sid: 0x8 ssid: 0x0 iova: 0xfffff040 ipa: 0x0
-[    7.589219] arm-smmu-v3 arm-smmu-v3.0.auto: Unpriv | Data | Write |
-S1 | Input address caused fault | STAG: 0x0
+Ta,
 
-
-> Thanks.
-> Praan
->
-> [1] https://lore.kernel.org/all/08498356-d892-4756-89e1-45b2654faa42@arm.=
-com/#:~:text=3Dsafest%20to%20leave%20any%20existing%20%0Amessages%20exactly
+Will
