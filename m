@@ -1,213 +1,117 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A61FB1448DC
-	for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 19:10:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6ADA33C5
+	for <iommu@lists.linux.dev>; Wed, 20 Nov 2024 04:45:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732043438; cv=none; b=sMcoggThZ+71UY8GczCBaHPXqEKdTk4dVAXXWQxivnifPv0G/iiYmG2v7ef/SvxOhQh8abiL0qFLxHxamxJuMZnkXWOHvBrIQW0msTDlT40EBaVBpaIxWDkltuVlZIhfuRfMvD7SvjcfU+LFXCFb9Lrkazfz6YqBxunt/djyDbI=
+	t=1732077959; cv=none; b=tce/o1R8kMJeL8iKSzeZUfUQrr3Nq917+yvMPYaP7nQwRSpV0a8jl+E1ztb7tqYKV8Du5HglNv6h7fMDl6jgSgdXI4npIF+pYhkBTcL4r5y38ENpMqBOdFmTjX5EObTLa8zbz++FbD1MHYHmBs79cJ36aoNBRixt3cBqtNMqZsk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732043438; c=relaxed/simple;
-	bh=L852CfSBTw2Tt+4Km1UApC1908+krgPugwOMx41FLag=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=UDDzkmjCua5PidrMhcw0SzCUqmZfALzgHf8PQE7tiX5SUOGY5gRxCuSnYCwl4k6J4pwcr1baZdMa8kGh5horHZU3IMjPAf9dt9q7UUGNYwkA635cm8eXhKf8rVj+15ZzVZQt4JsVfloHDMshMaini4HYRiZTXg5pqv6IPQVNKpY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=mPE3L15p; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1732077959; c=relaxed/simple;
+	bh=cUEYy6QxCe5hjSVK24Tv/W+zxVCuOv/5fGdZRlQpf9Q=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=BXpZvCCwrG0wZkGU1w8kinzkQotMwxK4JAPXYFnYGuacHO5kIIumAcu8ElD9lPOE3brVS9uQ4FSkFh70Pi8oP2D6kpUliJBBrlNrE3UReenRiOioqVOYqKYHSAEzuT6gEC2NTXwus+Cv3yNnXxl3xTXWjgrEDELuAEbfQt4Ji8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=F7YC1yiN; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="mPE3L15p"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4AJIJl32006450;
-	Tue, 19 Nov 2024 19:10:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	qvJZJYlr4ofMU2eWu9kCWSUe/IBq5FvnROZrVKBAaMg=; b=mPE3L15psAH4iI5Z
-	jtVUrPRizNiY412xmrPLZuMDsvfr/phRVqnzI8kwrlKrxy91m4LgsDeMPVv6h9Me
-	9OEq6BGA4zzZ+hDBntsN3wIv+jBdC1ijmqKc8auW0yBAFcDDEYkitmtYr5XH/SBR
-	frzyxX/v7Xrz9IVLq92O95CymMRSVZ4tQQHVUE685dwf8KW28kFwK0tYqa5yRGk4
-	flZabYzEbrNCYxwFOTL3DvkuRE3HK9tPxnG4uQkR4KlVdD0P4KjJPL4rMN/C0fBQ
-	Jvo/2dXCaQot2/VkYwd7T+rAD7WRAO9dh6qDUiE7P5wd+ZLIoe1MIHXRQCiN+kKf
-	yNmlMA==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4308y8knrb-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 19 Nov 2024 19:10:19 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4AJJAIlp009303
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 19 Nov 2024 19:10:18 GMT
-Received: from [10.216.1.253] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 19 Nov
- 2024 11:10:13 -0800
-Message-ID: <1d3dcd91-d246-4db3-9717-9edfe405f431@quicinc.com>
-Date: Wed, 20 Nov 2024 00:40:10 +0530
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="F7YC1yiN"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-5cfc264b8b6so20342a12.0
+        for <iommu@lists.linux.dev>; Tue, 19 Nov 2024 20:45:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1732077956; x=1732682756; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PGepnykSGpIv9+bsJZEohcfna6tjmt1LTZnrFhCTwPc=;
+        b=F7YC1yiN50/HAkdfiMLxNu03DzmgD8xgdhmVOy9payKh3+W7KgeFxr1RiFHeMI1ngs
+         x7VDtNQck48H0A2GCNvfej71sSospDXbUK5h3UTvTc0JtVWxFxaBX77n0fhEkgIbIpZq
+         8all1dlI91bV2WmXRonbwc5uYCWi/RuGYuPD1sWMa0uKsoVBL6HO7yenaxp1jxJM380k
+         aH6X06DTbYW1GoA6E7lIOuEm3t5iksxmfLqynJlrDh+EklHD901Y35nV1hqrTOVHsKKU
+         1vY3OfKtzykIzyHUQJT4OJb1dHc5Z9Tvcs/rxMVw7oP0Y5pXae8TH0AflYa0gmGwBMB8
+         CDXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732077956; x=1732682756;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PGepnykSGpIv9+bsJZEohcfna6tjmt1LTZnrFhCTwPc=;
+        b=QL4ivzjKKdyi+jAv+zxj4FsV+frmIJAkaW7SYKYZ30Sx2n83h6GSHfCPbVJqOHlaM+
+         BsY+V/zvQkwz8ROg3yxg/DHoGGUWxj1Ut6SlACuF1BYerthxc3uqANcYmPFOhmy5Oskz
+         EEp/2aQp9mXGzLrGlsxL3BRsE0yVKcQWakWHlg6ypqwlopFEGcKKnBqkAOIXSk6pC8vX
+         J32Wbp+VBqh9LkHyRfMoPWNZx3A+Zd0w9JSneRtEUKie5kK9c6fWSoXhIMLxScGfZj8V
+         xagL5Z7IBvmAOhr+zHHtczOgJtKS2QVKqcKuLtMrgDdmrTGJjAzi1ssFUYBXWRWhGMMB
+         Mdow==
+X-Forwarded-Encrypted: i=1; AJvYcCXNeaULDFT4bNj0B049v3QH996+D3BmuTkxy92P+DfyPuJI+K9Al087nhmLMxW9xXK7dju3CQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzoftZw82W/g/kfRG4p4qsg91po+m9JahnRt0alVqi66uIk51v+
+	eNHTwCMQvU3KvLAlgCJb01GGBmm2N6PYEytqfPZuqqls0cOV0Mfql0bZn308OROPY+JUuUWnp6n
+	J0zgdMz+o2nqrzbbY74XEvxxplhc9hrjTf4pY
+X-Gm-Gg: ASbGncvSDOxwM8nxsP49zwASjE+V6NlVJxwUMQunng8Tl5yGC0ADgY6oSagDP5yLp+9
+	PuZwajHjB4AWtPYUv6h9S2vgp9ksQb49bXrsNYMVqU2VLLJVq+lVRJd/qhMwjYVqnqQ==
+X-Google-Smtp-Source: AGHT+IHFJDwAT0Fpv/ZYl174V15i78ZNzLHsJzIwfVnwBs5kertezGrb/rcV1Acts9NxivL4O/3m0rHtIHRblSMI+Tg=
+X-Received: by 2002:aa7:c895:0:b0:5cf:f899:5490 with SMTP id
+ 4fb4d7f45d1cf-5cff89960admr11710a12.7.1732077955925; Tue, 19 Nov 2024
+ 20:45:55 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/arm-smmu: Defer probe of clients after smmu
- device bound
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-CC: <catalin.marinas@arm.com>, <kernel-team@android.com>, <joro@8bytes.org>,
-        <jgg@ziepe.ca>, <jsnitsel@redhat.com>, <robdclark@chromium.org>,
-        <quic_c_gdjako@quicinc.com>, <dmitry.baryshkov@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, <quic_charante@quicinc.com>,
-        <stable@vger.kernel.org>, Prakash Gupta <quic_guptap@quicinc.com>
-References: <20241004090428.2035-1-quic_pbrahma@quicinc.com>
- <173021496151.4097715.14758035881649445798.b4-ty@kernel.org>
- <0952ca36-c5d9-462a-ab7b-b97154c56919@arm.com>
-Content-Language: en-US
-From: Pratyush Brahma <quic_pbrahma@quicinc.com>
-In-Reply-To: <0952ca36-c5d9-462a-ab7b-b97154c56919@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 1n5i_xALx5GpD_AaKbafE5KeFkL-Ada7
-X-Proofpoint-GUID: 1n5i_xALx5GpD_AaKbafE5KeFkL-Ada7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- mlxlogscore=999 lowpriorityscore=0 clxscore=1011 malwarescore=0
- adultscore=0 impostorscore=0 mlxscore=0 spamscore=0 phishscore=0
- suspectscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2411190143
+References: <20241112083018.1662104-1-praan@google.com>
+In-Reply-To: <20241112083018.1662104-1-praan@google.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Tue, 19 Nov 2024 20:45:44 -0800
+Message-ID: <CAE2F3rBqPF_POHSdeRahgd+ew9tD37iq6S8M=9Sj0Br6pe5e5Q@mail.gmail.com>
+Subject: Re: [PATCH v5 0/3] iommu/arm-smmu-v3: Parse out event records
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Mostafa Saleh <smostafa@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev, 
+	Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Nov 12, 2024 at 12:30=E2=80=AFAM Pranjal Shrivastava <praan@google.=
+com> wrote:
+>
+> Enhance the arm-smmu-v3 driver to parse out useful information from
+> event records into a structure for better event handling & logging.
 
-On 11/7/2024 8:31 PM, Robin Murphy wrote:
-> On 29/10/2024 4:15 pm, Will Deacon wrote:
->> On Fri, 04 Oct 2024 14:34:28 +0530, Pratyush Brahma wrote:
->>> Null pointer dereference occurs due to a race between smmu
->>> driver probe and client driver probe, when of_dma_configure()
->>> for client is called after the iommu_device_register() for smmu driver
->>> probe has executed but before the driver_bound() for smmu driver
->>> has been called.
->>>
->>> Following is how the race occurs:
->>>
->>> [...]
->>
->> Applied to will (for-joerg/arm-smmu/updates), thanks!
->>
->> [1/1] iommu/arm-smmu: Defer probe of clients after smmu device bound
->>        https://git.kernel.org/will/c/229e6ee43d2a
->
-> I've finally got to the point of proving to myself that this isn't the
-> right fix, since once we do get __iommu_probe_device() working properly
-> in the correct order, iommu_device_register() then runs into the same
-> condition itself. Diff below should make this issue go away - I'll write
-> up proper patches once I've tested it a little more.
->
-> Thanks,
-> Robin.
->
-> ----->8-----
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c 
-> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 737c5b882355..b7dcb1494aa4 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -3171,8 +3171,8 @@ static struct platform_driver arm_smmu_driver;
->  static
->  struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle 
-> *fwnode)
->  {
-> -    struct device *dev = 
-> driver_find_device_by_fwnode(&arm_smmu_driver.driver,
-> -                              fwnode);
-> +    struct device *dev = 
-> bus_find_device_by_fwnode(&platform_bus_type, fwnode);
-> +      put_device(dev);
->      return dev ? dev_get_drvdata(dev) : NULL;
->  }
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
-> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index 8321962b3714..aba315aa6848 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -1411,8 +1411,8 @@ static bool arm_smmu_capable(struct device *dev, 
-> enum iommu_cap cap)
->  static
->  struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle 
-> *fwnode)
->  {
-> -    struct device *dev = 
-> driver_find_device_by_fwnode(&arm_smmu_driver.driver,
-> -                              fwnode);
-> +    struct device *dev = 
-> bus_find_device_by_fwnode(&platform_bus_type, fwnode);
-I think it would still follow this path:
+Hi Pranjal,
 
-bus_find_device_by_fwnode() -> bus_find_device() -> next_device()
+Thank you for putting this together.
 
-next_device() would always return null until the driver is bound to the 
-device which
-happens much later in really_probe() after the iommu_device_register() 
-would be called
-even as per this patch. That way the race would still occur, wouldn't it?
-Can you please help me understand what I may be missing here?
-Are you saying that these additional patches are required along with the 
-fix I've
-posted?
-> +
->      put_device(dev);
->      return dev ? dev_get_drvdata(dev) : NULL;
->  }
-> @@ -2232,21 +2232,6 @@ static int arm_smmu_device_probe(struct 
-> platform_device *pdev)
->                      i, irq);
->      }
 >
-> -    err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
-> -                     "smmu.%pa", &smmu->ioaddr);
-> -    if (err) {
-> -        dev_err(dev, "Failed to register iommu in sysfs\n");
-> -        return err;
-> -    }
-> -
-> -    err = iommu_device_register(&smmu->iommu, &arm_smmu_ops,
-> -                    using_legacy_binding ? NULL : dev);
-> -    if (err) {
-> -        dev_err(dev, "Failed to register iommu\n");
-> -        iommu_device_sysfs_remove(&smmu->iommu);
-> -        return err;
-> -    }
-> -
->      platform_set_drvdata(pdev, smmu);
->
->      /* Check for RMRs and install bypass SMRs if any */
-> @@ -2255,6 +2240,18 @@ static int arm_smmu_device_probe(struct 
-> platform_device *pdev)
->      arm_smmu_device_reset(smmu);
->      arm_smmu_test_smr_masks(smmu);
->
-> +    err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
-> +                     "smmu.%pa", &smmu->ioaddr);
-> +    if (err)
-> +        return dev_err_probe(dev, err, "Failed to register iommu in 
-> sysfs\n");
-> +
-> +    err = iommu_device_register(&smmu->iommu, &arm_smmu_ops,
-> +                    using_legacy_binding ? NULL : dev);
-> +    if (err) {
-> +        iommu_device_sysfs_remove(&smmu->iommu);
-> +        return dev_err_probe(dev, err, "Failed to register iommu\n");
-> +    }
-> +
->      /*
->       * We want to avoid touching dev->power.lock in fastpaths unless
->       * it's really going to do something useful - pm_runtime_enabled()
+> Some sample events, powered by QEMU:
 
--- 
-Thanks and Regards
-Pratyush Brahma
+> 4. Translation Fault:
+>
+> [    7.586428] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x10 received:
+> [    7.587012] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000800000010
+> [    7.587504] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000020000000000
+> [    7.587986] arm-smmu-v3 arm-smmu-v3.0.auto:  0x00000000fffff040
+> [    7.588745] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+> [    7.589219] arm-smmu-v3 arm-smmu-v3.0.auto: Event 0x10 received: F_TRA=
+NSLATION
+> [    7.589219]  client: 0000:00:01.0 sid: 0x8 ssid: 0x0
+> [    7.589219]  iova 0xfffff040 ipa 0x0
+> [    7.589219]  Unpriv | Data | Write | S1 | Input address caused fault
+> [    7.589219]  STAG: 0x0
 
+I find that "Event 0x10" is redundant and recommend removing it. Maybe
+print just "Event F_TRANSLATION"
+
+Not printing the prefix "arm-smmu-v3 arm-smmu-v3.0.auto:" on
+subsequent lines appears to be inconsistent with how the raw event
+bits are dumped. Also, I typically run a command like "grep
+'arm-smmu-v3 arm-smmu-v3.0.auto' uart.log" while I'm developing smmu
+driver code, and with the proposed change, the grep command wouldn't
+print most of the event details, because they are not prefixed by
+"arm-smmu-v3 arm-smmu-v3.0.auto"
+
+The words "client", "sid" and "ssid" are followed by a colon (":") but
+iova and ipa are not.
+
+Can you put everything up to and including iova on the first line and
+the rest on the second line?
