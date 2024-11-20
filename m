@@ -1,351 +1,343 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2064.outbound.protection.outlook.com [40.107.223.64])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 548531BE870
-	for <iommu@lists.linux.dev>; Wed, 20 Nov 2024 14:53:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732114434; cv=fail; b=osxGBTwk7R3sIEHXRKivjGx7U1qovdppHr/KOmeTjXwD082+kdRB2g0xhuYESO+fqgdxLu7T8EOyztHL2aa/monh9gcTUFskCh7Y0Kwp24gGXsHlf+oMgoNKNn06e/Hxbf9kMTid3Kc+3/E7duKl8NthCqhRxTsbuvKEGQ8SRb8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732114434; c=relaxed/simple;
-	bh=gbKeXGurhruIPkDYCOE7lb9sX83RNQvOGyDYhTryD5c=;
-	h=Date:From:To:Cc:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=Dg3qQEi2QtgTeN5KnsI3mrf94aTppebeXHAAHHgwgg8Oo80OUPTs0I8OFnFKVv707UmmEE7htABPIicCam7dND+HqWIDz93pXxR2cdWCz5K4vIrgykmnw8iDy8nAZNV2+MFg3KI17qHMieTVxwYIsFzfCCVSGrcw2Wv8acd/bok=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=qFYYkkzS; arc=fail smtp.client-ip=40.107.223.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72DB61AA1DC;
+	Wed, 20 Nov 2024 15:10:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1732115410; cv=none; b=V944xBw3t7ASww0kvqDAOqpiyBcypH5WKYLy0BvnA/8CNCFJ5PGeBH3d2OAg7ESR8ck5hWO6RA55HsxyBVcjDW4dXuAUoMDIwVn8jYsntRXBt3jG895MMIPWXeA0vyJhdRHdRKwK8t6R/oOrkWybQkDSJrjcX1/+qS1na71iAM8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1732115410; c=relaxed/simple;
+	bh=cee4bpVCHnOQMsJqKoSGXKnmx0DYKK3uELApQYQdZTI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ETGfhkl7LxiW8ga5t4QLr+XjzLDHrRsowZZRC0HE0lm1pINLjESvpSC8+Wo8dkt81OR1ChOGdsA3LB5qhuoj4uPdtsvlepGZdSJEUrcFKEMr86g+UpVF8HelIURUsKtXsuR5RZ4U+aRahDZrkFv2pBX0GPIlRxstcUCTXZH4TUk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gtlB5RdY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="qFYYkkzS"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hzM/b9WoZcS9cZq47OXnnIXZy0JAOhmk7wjl4CmlwfsvOmtKfWpjuJiPKEaEg7ViM+H/BzQ7rkeLDYYvgJbg7oqaLn5UW6y9yBorVuDJxm/0igFnCsZRpLN/KM9vk3NElHUv6xFKu4+Hj1iBUr793zzNAt5k5OJghcC1y4aQkSiSjaD+QTZ+PaZjEh4ggRLLT/7VpdKZHDA+WQXvlASyVNXttfAlUCwgFH4MVRiAMrrYnaxdy8ARjjiK36e55TDITz9NN8wQpGi6bFudpruNzJOs+OghhwJxj56MCfbdxkh2FomhMJACiPehLPe/bPkKbBXkkv2QWI/xfM2zGPU1cw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9H2dzSkXOYTnAJaY3RtEcS02BtKEDTusyAwjrMFQCRA=;
- b=INwnMoN9mIC5HxaE/uIEM5DkAboalAFaHfuICT7btjVEaY63Wz/o/HPw9Lg+VVQ1uu+DqXrmZ2s6yBjxRdkWEbWvoQ87QzjgArukjuRmwWfBXPG660rjqelwsxgZ/iTWUwsfuZ0B9UOjDUlGaB5cX4hdQZJhKuF1zOXll8ZPqCmxEc1W73dK4e1cdIFJk6WnPpxq8sqdGgz+omR56YGSvkVNFTl+c8rT56RatR1T4thhmLqnBVWJpvISNWua14VEm7dg4SwNAYq6Yv4hp2YbOrq5DgFCIvCAWuP+ryvMNmRpAIiBNqF4jdvQzdA4b32H4WMYjjhUt+RJWklD0zRRkg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9H2dzSkXOYTnAJaY3RtEcS02BtKEDTusyAwjrMFQCRA=;
- b=qFYYkkzSRJZAg48P3CH2CEayZJtN0lcMSMbOkIEum+JBBmxpa6kP17ejFLWTAMaO+eilDO5s6suMH1oTRLma2TyKNXXEnRf8Q5VxGEJfHHoCaIYVHeT7cor3EkqYVpQ6qPyCnoJjcmt7KBWoE1c/ziA9t/4sdROHrESlZsDwd1yoFJOFGy3P3Bf5M8PFOHFBrt0MlJ/icY+SeGoty8ygAwPXl2VfkxcVxUxCHgJnIIVggchmCg+X/RYgImcxxVaZ7FRXHcXUIWz/eoakNqOq38hehWtHY4trTPsPjATlZBLFfiU8VXs42/3mWXQ8HtFiD36TV64cyZwwBqmWAdI1xg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by CH3PR12MB9099.namprd12.prod.outlook.com (2603:10b6:610:1a5::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.24; Wed, 20 Nov
- 2024 14:53:48 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8158.019; Wed, 20 Nov 2024
- 14:53:48 +0000
-Date: Wed, 20 Nov 2024 10:53:45 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
-Subject: [GIT PULL] Please pull IOMMUFD subsystem changes
-Message-ID: <20241120145345.GA811296@nvidia.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="11c9dN1vCblxRVbY"
-Content-Disposition: inline
-X-ClientProxiedBy: BN1PR10CA0012.namprd10.prod.outlook.com
- (2603:10b6:408:e0::17) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gtlB5RdY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E4DAC4CECD;
+	Wed, 20 Nov 2024 15:10:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1732115410;
+	bh=cee4bpVCHnOQMsJqKoSGXKnmx0DYKK3uELApQYQdZTI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=gtlB5RdYLkZbaDBqnPNAlIsTsj41sjCI4jtqrjL9fc3svoMh1MeCpjFQJFoysECQs
+	 Ymsbmw+EC4YNeoiSEVsZ8pKfao312FflWzf8y6TBgQv73kByn/UGYuzqR+vzDjK7us
+	 dndpAAZrSX4v6ILr9McFq4TDDpExoUzP3j+KhSfkMLRcvJ7kuG44rUAxAvK2FIZwEO
+	 lsw3F9XCofFWxm4R0EqZYhQJvdAqaP8PAJC/OQ8FwzV3daSfSzE1iCFqA+gnmj2a2u
+	 eo9qRB6HvAGfrqjMATsR3loQ8KgfaQH0OLEdiiA3RVOXZ6hh+R+BS2s0pVb/2/vApa
+	 qpRE7AAYHyTKQ==
+Message-ID: <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
+Date: Wed, 20 Nov 2024 16:10:04 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CH3PR12MB9099:EE_
-X-MS-Office365-Filtering-Correlation-Id: 46579ed1-5d7e-4a9b-c0c1-08dd09732385
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?QwXwyzlCEAolkMrY+3zTs9Jz0h6EEbLFd/vA/yFUsEp4+50gtrQAClTeSWJi?=
- =?us-ascii?Q?oERb8Q7fJ4RNs1QUT2zuA5oiPGPr4AehdtSNOa4hDPtXvkTmWVEyHn0Qk6fQ?=
- =?us-ascii?Q?nDSC5RL8b22o9GPeC6qIqIUL0ZTFmgOTGHhvSwSfLDCwSNqafoLn2QKlSaLJ?=
- =?us-ascii?Q?jEfoWotqG+EmK4hgMqcY+vdbY9V38G2QmkjI2+kJt0727ysODoswOuMbe2Z5?=
- =?us-ascii?Q?vxDG+YuVbg/rKQ5YJzdpPfVcsTpQq/9EWIvOqa8nILM/EERbj/rqgVtmeYnz?=
- =?us-ascii?Q?1pdXuSX7qwVKqfqKv3+AgkJrF8grlr4xF5vAFC2cWwf9Nklblrr0TQ+yriUU?=
- =?us-ascii?Q?BJMgKehOQt5zfv11aqav2GL1pBK2hHndoMuJyTZHcSHF94/QJkZZICJBYpvv?=
- =?us-ascii?Q?feBys1vfpvamCRZbteTXVdjiehSwXybdy6mqdnfOOfMqIRJUnnYG2HRCsRBW?=
- =?us-ascii?Q?SGgZdDMrDNmLzxz4U015itDauytRK9yyj0YGELXkw7BZ0n8FARCC7ggeBYFh?=
- =?us-ascii?Q?vevw0BPkwlxEWi4PsuXzCgrYGOVOH9Izy1UPkcioErY4IO0h8jyamWhL8P+j?=
- =?us-ascii?Q?xeQ4f3gQoaG+VQ2ZVFkmMcPRNMUJxUxioSRa3kWNZOnj8T9DFwI1tyMVagoz?=
- =?us-ascii?Q?EWaM9DSWkBGFbEiJ4ShQnM/xoVwvq2Kj35dQtg15c4bdCrolSDGnSJYv3j5D?=
- =?us-ascii?Q?OpXVPyN8OwJHq6rekhMjC7W//OrTTI2FR5WEzbbD48N7MfqzlvqBk9O8Vg2H?=
- =?us-ascii?Q?xy77TdDPJsieEzYu2dZIJ+ejwxWYAi/FofIfmeLO1UCtE9RmD0cQFityTsEi?=
- =?us-ascii?Q?HkNuQuCqCcXPLm75iyh9Rz6iN3Q2bfShiAdDIUPySUxABevnnk4oDUynCQSS?=
- =?us-ascii?Q?SO3+9pZiq12tF96xnm5o/ElssftwcWu5KoJ7XCFzmoIaN+WlII3w5Jn7E39M?=
- =?us-ascii?Q?SOPl6gWRuZnGN23i5ziOMBR/MzRQVSqm+TLX9BWcpi5NJnZt6DCRh90obeNa?=
- =?us-ascii?Q?QmJ+Y0+AKcOwXk5brwngE/MQPGGzHlSazHGTCTsRE9Mw9pPGUHYEL6qxaok8?=
- =?us-ascii?Q?lBW5ETBWbdH9JrAF0Z5fZaYznEjZ28TZq89ILHx+rCcb0Uz19PrteQhUvtb3?=
- =?us-ascii?Q?/luFAad0Yq68SJKTw6BCUrD7UjEdQDHQQSDXf1MCR6Q/2NROaSX08T1/Osfb?=
- =?us-ascii?Q?rzuMG1Htkz/9vyz6zVTO+ZnqIHxRe8Wlr9oVBtwc9syy3KLyE9HvYFBWtb7G?=
- =?us-ascii?Q?raOg4EZ44dR5987XQsx6inoGnb6kRlIROL5gHXl/vliGR26GW5dR8asskUrx?=
- =?us-ascii?Q?wS4LDHqD82+GjnhWjqhkrY9w?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?eHrNMPcVOsxbbz94dyKmOtGVwPtGqrqr3zWj41EhVcHPuX2CADhv4JwlFYcU?=
- =?us-ascii?Q?dS23IAcxlTNd2pHkRpVvieY4B8BGIdjuNyTjc1BT0dlFC1ycCr2wogoKwtme?=
- =?us-ascii?Q?8iatIBQRz3YK+yLW90c8VwLCzXRpvcN8mdU9psDEv63/g8x87hu2L+nuVute?=
- =?us-ascii?Q?2HvAyFDUZ/tzDruXtrmCBNCbYvOgThaAwBG2TLjjZch2KihDJkKH3LR8yASe?=
- =?us-ascii?Q?bexx9O/WAleAk/mscWNo7FUBLl8XVDD1PVTYsxdvg1FGbmBFOeIkM2qfyt/A?=
- =?us-ascii?Q?SlwOLrTgEzu3BVo6k8zRcb7U0gnDwslcq53SsrBIrv7Oi+cs0utJCwzNX1G2?=
- =?us-ascii?Q?nE50lync0s0snHetZi7iZSHOkS1KXzJ5R+dCRMAc42YBjNm05jVVgCo/myjY?=
- =?us-ascii?Q?2VzaFQIjBjqmfDmcwQP/iJwUiVDloiB/oHbbfUmcQEX2AJE6ZId5yOD0Oyl4?=
- =?us-ascii?Q?xUadhx/9AoxokfhTMOSoVQbHixnT/Hs+aZphZnH+NUe24fpOhy+7Vz/8JsJ+?=
- =?us-ascii?Q?2KVFDEpMRGkqQC0nucwZ8D9P6R4GQPHOLL0YAgTdrGdIM9dPjIsAlmmBYp8u?=
- =?us-ascii?Q?WzkbwGd7gpJqTG7L7CYmLlyzwch4EK5LDfAMmRLLMmQlDV5SK2oclKf/17G/?=
- =?us-ascii?Q?KLk3i4AOLsr0X1/nuYsrvMfR2xNxFs1so+eGLPyGsASRTsT8fDxY/ST/Img3?=
- =?us-ascii?Q?4BecKvwDvmkRRM9K9Na//lW9uKufuEkAmq3/JzxvSSyHy6Y0VOiNVYnV+nck?=
- =?us-ascii?Q?2ifQI6Bbo1aAHlb0p2gonJ5VvmWVBikswaNOn00l9n1+9s4qD0DmwVnp1gYI?=
- =?us-ascii?Q?2R8+2w6y4/ncdxNSzFBzxPQlmXQEn1ltMyBvWdU2zNaTVrAZF+Kjt6Vd48tH?=
- =?us-ascii?Q?s83/SpGFICoIAUlrSqxt1gOxnKg2tiJNb5LzgJ0+GbxJHNj8geMpEY4F/IgI?=
- =?us-ascii?Q?xkcpA2zUdyiV9WhiJcdleWFMbjFey9fIFoYdNG9xHzpzgkpDM38wKW2n4LHn?=
- =?us-ascii?Q?maptohezFXyWR5k+zOzlXah/aG46+Fi0erMMaTF4ejrJ7X3HnHayam2j8rDo?=
- =?us-ascii?Q?JEWUw8V3CzbBjjxJtoph2qHppeYsQZ1BlWo//QEdBQinZCTBlOUzdcE5blQ4?=
- =?us-ascii?Q?5LbyxiwGyfKkqYKS7BqlQcBjnbcwUTHx3efZ2h+VkxjdbozuP4MpsF7SdttI?=
- =?us-ascii?Q?MDnd8Pt7IvIyZIvWLf1Mis32Ra4AO+ogjQoYcACG4AHjYqDRgUt88U2i1ofj?=
- =?us-ascii?Q?5o7Ft5yV3H7tBSB+FvrjFu2HVTqmwd6zxCLzG7Hy9GhHmV8hP5ZVKzzmBQqc?=
- =?us-ascii?Q?QPevYqARs+4LpaZ5h7RZMjBi7GHy5YwjB/dB7yQNyrmqrbBVcz4UnIZhEdDa?=
- =?us-ascii?Q?/P8W+df6Rm77/TQ2d1UlNLaYqBVfr+mBfjMe1z2HIXVtlRVR8rLmqnBUXGZV?=
- =?us-ascii?Q?MWtlDmBBDkjSiIdY4IJuZfhsIELvxy8eTU/g2jzYpIE85Y/BN8ab0pAcCERy?=
- =?us-ascii?Q?/qgNzGtswYXrYd8aw1vjOd3YRgy/oXRZHOg7KA9+CH17iQnyZhqtroWZJQpT?=
- =?us-ascii?Q?UjzyeXg2ufYD8K8yczU=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 46579ed1-5d7e-4a9b-c0c1-08dd09732385
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2024 14:53:48.0400
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: J51onkLci2vRHRgCyMzELu1xxIJg151pnf7nP4qvEKIk9TpJU0+D3Wq8jGIAR7NP
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9099
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v4 2/3] page_pool: fix IOMMU crash when driver has
+ already unbound
+To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+ kuba@kernel.org, pabeni@redhat.com
+Cc: liuyonglong@huawei.com, fanghaiqing@huawei.com, zhangkun09@huawei.com,
+ Robin Murphy <robin.murphy@arm.com>,
+ Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
+ Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20241120103456.396577-1-linyunsheng@huawei.com>
+ <20241120103456.396577-3-linyunsheng@huawei.com>
+Content-Language: en-US
+From: Jesper Dangaard Brouer <hawk@kernel.org>
+In-Reply-To: <20241120103456.396577-3-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
---11c9dN1vCblxRVbY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-Hi Linus,
 
-This is a bigger PR that principally includes ARM SMMUv3 support for
-nested translation. There are still additional series needed to solve
-problems with IRQs, but this is the iommufd side of the work.
+On 20/11/2024 11.34, Yunsheng Lin wrote:
+> Networking driver with page_pool support may hand over page
+> still with dma mapping to network stack and try to reuse that
+> page after network stack is done with it and passes it back
+> to page_pool to avoid the penalty of dma mapping/unmapping.
+> With all the caching in the network stack, some pages may be
+> held in the network stack without returning to the page_pool
+> soon enough, and with VF disable causing the driver unbound,
+> the page_pool does not stop the driver from doing it's
+> unbounding work, instead page_pool uses workqueue to check
+> if there is some pages coming back from the network stack
+> periodically, if there is any, it will do the dma unmmapping
+> related cleanup work.
+> 
+> As mentioned in [1], attempting DMA unmaps after the driver
+> has already unbound may leak resources or at worst corrupt
+> memory. Fundamentally, the page pool code cannot allow DMA
+> mappings to outlive the driver they belong to.
+> 
+> Currently it seems there are at least two cases that the page
+> is not released fast enough causing dma unmmapping done after
+> driver has already unbound:
+> 1. ipv4 packet defragmentation timeout: this seems to cause
+>     delay up to 30 secs.
+> 2. skb_defer_free_flush(): this may cause infinite delay if
+>     there is no triggering for net_rx_action().
+> 
+> In order not to call DMA APIs to do DMA unmmapping after driver
+> has already unbound and stall the unloading of the networking
+> driver, scan the inflight pages using some MM API to do the DMA
+> unmmapping for those pages when page_pool_destroy() is called.
+> 
+> The max time of scanning inflight pages is about 1.3 sec for
+> system with over 300GB memory as mentioned in [3], which seems
+> acceptable as the scanning is only done when there are indeed
+> some inflight pages and is done in the slow path.
+> 
+> Note, the devmem patchset seems to make the bug harder to fix,
+> and may make backporting harder too. As there is no actual user
+> for the devmem and the fixing for devmem is unclear for now,
+> this patch does not consider fixing the case for devmem yet.
+> 
+> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
+> 2. https://github.com/netoptimizer/prototype-kernel
+> 3. https://lore.kernel.org/all/17a24d69-7bf0-412c-a32a-b25d82bb4159@kernel.org/
+> CC: Robin Murphy <robin.murphy@arm.com>
+> CC: Alexander Duyck <alexander.duyck@gmail.com>
+> CC: IOMMU <iommu@lists.linux.dev>
+> Fixes: f71fec47c2df ("page_pool: make sure struct device is stable")
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> Tested-by: Yonglong Liu <liuyonglong@huawei.com>
+> ---
+>   include/net/page_pool/types.h |  6 ++-
+>   net/core/page_pool.c          | 95 ++++++++++++++++++++++++++++++-----
+>   2 files changed, 87 insertions(+), 14 deletions(-)
+> 
+> diff --git a/include/net/page_pool/types.h b/include/net/page_pool/types.h
+> index c022c410abe3..7393fd45bc47 100644
+> --- a/include/net/page_pool/types.h
+> +++ b/include/net/page_pool/types.h
+> @@ -228,7 +228,11 @@ struct page_pool {
+>   	 */
+>   	refcount_t user_cnt;
+>   
+> -	u64 destroy_cnt;
+> +	/* Lock to avoid doing dma unmapping concurrently when
+> +	 * destroy_cnt > 0.
+> +	 */
+> +	spinlock_t destroy_lock;
+> +	unsigned int destroy_cnt;
+>   
+>   	/* Slow/Control-path information follows */
+>   	struct page_pool_params_slow slow;
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index b3dae671eb26..33a314abbba4 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -272,9 +272,6 @@ static int page_pool_init(struct page_pool *pool,
+>   	/* Driver calling page_pool_create() also call page_pool_destroy() */
+>   	refcount_set(&pool->user_cnt, 1);
+>   
+> -	if (pool->dma_map)
+> -		get_device(pool->p.dev);
+> -
+>   	if (pool->slow.flags & PP_FLAG_ALLOW_UNREADABLE_NETMEM) {
+>   		/* We rely on rtnl_lock()ing to make sure netdev_rx_queue
+>   		 * configuration doesn't change while we're initializing
+> @@ -312,9 +309,6 @@ static void page_pool_uninit(struct page_pool *pool)
+>   {
+>   	ptr_ring_cleanup(&pool->ring, NULL);
+>   
+> -	if (pool->dma_map)
+> -		put_device(pool->p.dev);
+> -
+>   #ifdef CONFIG_PAGE_POOL_STATS
+>   	if (!pool->system)
+>   		free_percpu(pool->recycle_stats);
+> @@ -365,7 +359,7 @@ struct page_pool *page_pool_create(const struct page_pool_params *params)
+>   }
+>   EXPORT_SYMBOL(page_pool_create);
+>   
+> -static void page_pool_return_page(struct page_pool *pool, netmem_ref netmem);
+> +static void __page_pool_return_page(struct page_pool *pool, netmem_ref netmem);
+>   
+>   static noinline netmem_ref page_pool_refill_alloc_cache(struct page_pool *pool)
+>   {
+> @@ -403,7 +397,7 @@ static noinline netmem_ref page_pool_refill_alloc_cache(struct page_pool *pool)
+>   			 * (2) break out to fallthrough to alloc_pages_node.
+>   			 * This limit stress on page buddy alloactor.
+>   			 */
+> -			page_pool_return_page(pool, netmem);
+> +			__page_pool_return_page(pool, netmem);
+>   			alloc_stat_inc(pool, waive);
+>   			netmem = 0;
+>   			break;
+> @@ -670,7 +664,7 @@ static __always_inline void __page_pool_release_page_dma(struct page_pool *pool,
+>    * a regular page (that will eventually be returned to the normal
+>    * page-allocator via put_page).
+>    */
+> -void page_pool_return_page(struct page_pool *pool, netmem_ref netmem)
+> +void __page_pool_return_page(struct page_pool *pool, netmem_ref netmem)
+>   {
+>   	int count;
+>   	bool put;
+> @@ -697,6 +691,27 @@ void page_pool_return_page(struct page_pool *pool, netmem_ref netmem)
+>   	 */
+>   }
+>   
+> +/* Called from page_pool_put_*() path, need to synchronizated with
+> + * page_pool_destory() path.
+> + */
+> +static void page_pool_return_page(struct page_pool *pool, netmem_ref netmem)
+> +{
+> +	unsigned int destroy_cnt;
+> +
+> +	rcu_read_lock();
+> +
+> +	destroy_cnt = READ_ONCE(pool->destroy_cnt);
+> +	if (unlikely(destroy_cnt)) {
+> +		spin_lock_bh(&pool->destroy_lock);
+> +		__page_pool_return_page(pool, netmem);
+> +		spin_unlock_bh(&pool->destroy_lock);
+> +	} else {
+> +		__page_pool_return_page(pool, netmem);
+> +	}
+> +
+> +	rcu_read_unlock();
+> +}
+> +
+>   static bool page_pool_recycle_in_ring(struct page_pool *pool, netmem_ref netmem)
+>   {
+>   	int ret;
+> @@ -924,7 +939,7 @@ static netmem_ref page_pool_drain_frag(struct page_pool *pool,
+>   		return netmem;
+>   	}
+>   
+> -	page_pool_return_page(pool, netmem);
+> +	__page_pool_return_page(pool, netmem);
+>   	return 0;
+>   }
+>   
+> @@ -938,7 +953,7 @@ static void page_pool_free_frag(struct page_pool *pool)
+>   	if (!netmem || page_pool_unref_netmem(netmem, drain_count))
+>   		return;
+>   
+> -	page_pool_return_page(pool, netmem);
+> +	__page_pool_return_page(pool, netmem);
+>   }
+>   
+>   netmem_ref page_pool_alloc_frag_netmem(struct page_pool *pool,
+> @@ -1045,7 +1060,7 @@ static void page_pool_empty_alloc_cache_once(struct page_pool *pool)
+>   static void page_pool_scrub(struct page_pool *pool)
+>   {
+>   	page_pool_empty_alloc_cache_once(pool);
+> -	pool->destroy_cnt++;
+> +	WRITE_ONCE(pool->destroy_cnt, pool->destroy_cnt + 1);
+>   
+>   	/* No more consumers should exist, but producers could still
+>   	 * be in-flight.
+> @@ -1119,6 +1134,58 @@ void page_pool_disable_direct_recycling(struct page_pool *pool)
+>   }
+>   EXPORT_SYMBOL(page_pool_disable_direct_recycling);
+>   
+> +static void page_pool_inflight_unmap(struct page_pool *pool)
+> +{
+> +	unsigned int unmapped = 0;
+> +	struct zone *zone;
+> +	int inflight;
+> +
+> +	if (!pool->dma_map || pool->mp_priv)
+> +		return;
+> +
+> +	get_online_mems();
+> +	spin_lock_bh(&pool->destroy_lock);
+> +
+> +	inflight = page_pool_inflight(pool, false);
+> +	for_each_populated_zone(zone) {
+> +		unsigned long end_pfn = zone_end_pfn(zone);
+> +		unsigned long pfn;
+> +
+> +		for (pfn = zone->zone_start_pfn; pfn < end_pfn; pfn++) {
+> +			struct page *page = pfn_to_online_page(pfn);
+> +
+> +			if (!page || !page_count(page) ||
+> +			    (page->pp_magic & ~0x3UL) != PP_SIGNATURE ||
+> +			    page->pp != pool)
+> +				continue;
+> +
+> +			dma_unmap_page_attrs(pool->p.dev,
+> +					     page_pool_get_dma_addr(page),
+> +					     PAGE_SIZE << pool->p.order,
+> +					     pool->p.dma_dir,
+> +					     DMA_ATTR_SKIP_CPU_SYNC |
+> +					     DMA_ATTR_WEAK_ORDERING);
+> +			page_pool_set_dma_addr(page, 0);
+> +
 
-For those following, these series are still progressing:
+I feel this belongs in a helper function call.
 
-- Draft AMD IOMMU nested translation:
- https://lore.kernel.org/linux-iommu/20240112000646.98001-1-suravee.suthikulpanit@amd.com
- (and many other AMD patches to prepare for this)
+Previously we had a function called: page_pool_release_page().
 
-- Draft vBTM support for SMMUv3:
- https://lore.kernel.org/linux-iommu/20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com/
+This was used to convert the page into a normal page again, releasing
+page_pool dependencies.  It was used when packet transitioned into the
+netstack, but it was removed when we decided it was safe to let netstack
+return pp pages.
 
-- Draft RISCV nesting support:
- https://lore.kernel.org/all/20240507142600.23844-1-zong.li@sifive.com/
+Removed in commits:
+  - 535b9c61bdef ("net: page_pool: hide page_pool_release_page()")
+  - 07e0c7d3179d ("net: page_pool: merge page_pool_release_page() with 
+page_pool_return_page()")
 
-- Grace command queue passthrough iommufd support:
- https://lore.kernel.org/all/cover.1712978212.git.nicolinc@nvidia.com/
 
-Patches for PASID support in iommufd & vfio:
- https://lore.kernel.org/r/20241104132513.15890-1-yi.l.liu@intel.com
- https://lore.kernel.org/r/20241108121742.18889-1-yi.l.liu@intel.com
- (Several precursor series were merged this cycle so I hope this
-  to go next cycle)
+> +			unmapped++;
+> +
+> +			/* Skip scanning all pages when debug is disabled */
+> +			if (!IS_ENABLED(CONFIG_DEBUG_NET) &&
+> +			    inflight == unmapped)
+> +				goto out;
+> +		}
+> +	}
+> +
+> +out:
+> +	WARN_ONCE(page_pool_inflight(pool, false) != unmapped,
+> +		  "page_pool(%u): unmapped(%u) != inflight pages(%d)\n",
+> +		  pool->user.id, unmapped, inflight);
+> +
+> +	pool->dma_map = false;
+> +	spin_unlock_bh(&pool->destroy_lock);
+> +	put_online_mems();
+> +}
+> +
+>   void page_pool_destroy(struct page_pool *pool)
+>   {
+>   	if (!pool)
+> @@ -1139,6 +1206,8 @@ void page_pool_destroy(struct page_pool *pool)
+>   	 */
+>   	synchronize_rcu();
+>   
+> +	page_pool_inflight_unmap(pool);
+> +
 
-A lot of the iommufd support has now been merged to qemu, with more
-progressing.
+Reaching here means we have detected in-flight packets/pages.
 
-This has a shared branch Will created for some of the SMMUv3 code.
+In "page_pool_inflight_unmap" we scan and find those in-flight pages to
+DMA unmap them. Then below we wait for these in-flight pages again.
+Why don't we just "release" (page_pool_release_page) those in-flight
+pages from belonging to the page_pool, when we found them during scanning?
 
-I have two patches renaming a function that I would like to get merged
-in this window as well to simplify next cycle. They need both iommufd
-and iommu trees to be merged together so I think there will be another
-tiny pull request.
+If doing so, we can hopefully remove the periodic checking code below.
 
-Thanks,
-Jason
+>   	page_pool_detached(pool);
+>   	pool->defer_start = jiffies;
+>   	pool->defer_warn  = jiffies + DEFER_WARN_INTERVAL;
+> @@ -1159,7 +1228,7 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
+>   	/* Flush pool alloc cache, as refill will check NUMA node */
+>   	while (pool->alloc.count) {
+>   		netmem = pool->alloc.cache[--pool->alloc.count];
+> -		page_pool_return_page(pool, netmem);
+> +		__page_pool_return_page(pool, netmem);
+>   	}
+>   }
+>   EXPORT_SYMBOL(page_pool_update_nid);
 
-The following changes since commit 8e929cb546ee42c9a61d24fae60605e9e3192354:
+Thanks for continuing to work on this :-)
 
-  Linux 6.12-rc3 (2024-10-13 14:33:32 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
-
-for you to fetch changes up to 6d026e6d48cd2a95407c8fdd8d6187b871401c23:
-
-  iommu/arm-smmu-v3: Import IOMMUFD module namespace (2024-11-14 21:07:15 -0400)
-
-----------------------------------------------------------------
-iommufd 6.13 merge window pull
-
-Several new features and uAPI for iommufd:
-
-- IOMMU_IOAS_MAP_FILE allows passing in a file descriptor as the backing
-  memory for an iommu mapping. To date VFIO/iommufd have used VMA's and
-  pin_user_pages(), this now allows using memfds and memfd_pin_folios().
-  Notably this creates a pure folio path from the memfd to the iommu page
-  table where memory is never broken down to PAGE_SIZE.
-
-- IOMMU_IOAS_CHANGE_PROCESS moves the pinned page accounting between two
-  processes. Combined with the above this allows iommufd to support a VMM
-  re-start using exec() where something like qemu would exec() a new
-  version of itself and fd pass the memfds/iommufd/etc to the new
-  process. The memfd allows DMA access to the memory to continue while
-  the new process is getting setup, and the CHANGE_PROCESS updates all
-  the accounting.
-
-- Support for fault reporting to userspace on non-PRI HW, such as ARM
-  stall-mode embedded devices.
-
-- IOMMU_VIOMMU_ALLOC introduces the concept of a HW/driver backed virtual
-  iommu. This will be used by VMMs to access hardware features that are
-  contained with in a VM. The first use is to inform the kernel of the
-  virtual SID to physical SID mapping when issuing SID based invalidation
-  on ARM. Further uses will tie HW features that are directly accessed by
-  the VM, such as invalidation queue assignment and others.
-
-- IOMMU_VDEVICE_ALLOC informs the kernel about the mapping of virtual
-  device to physical device within a VIOMMU. Minimially this is used to
-  translate VM issued cache invalidation commands from virtual to physical
-  device IDs.
-
-- Enhancements to IOMMU_HWPT_INVALIDATE and IOMMU_HWPT_ALLOC to work with
-  the VIOMMU
-
-- ARM SMMuv3 support for nested translation. Using the VIOMMU and VDEVICE
-  the driver can model this HW's behavior for nested translation. This
-  includes a shared branch from Will.
-
-----------------------------------------------------------------
-Jason Gunthorpe (9):
-      vfio: Remove VFIO_TYPE1_NESTING_IOMMU
-      iommu/arm-smmu-v3: Report IOMMU_CAP_ENFORCE_CACHE_COHERENCY for CANWBS
-      iommu/arm-smmu-v3: Implement IOMMU_HWPT_ALLOC_NEST_PARENT
-      iommu/arm-smmu-v3: Expose the arm_smmu_attach interface
-      iommu: Add iommu_copy_struct_from_full_user_array helper
-      Merge branch 'iommufd/arm-smmuv3-nested' of iommu/linux into iommufd for-next
-      iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED
-      iommu/arm-smmu-v3: Use S2FWB for NESTED domains
-      iommu/arm-smmu-v3: Allow ATS for IOMMU_DOMAIN_NESTED
-
-Nathan Chancellor (1):
-      iommu/arm-smmu-v3: Import IOMMUFD module namespace
-
-Nicolin Chen (28):
-      Documentation: userspace-api: iommufd: Update HWPT_PAGING and HWPT_NESTED
-      ACPICA: IORT: Update for revision E.f
-      ACPI/IORT: Support CANWBS memory access flag
-      iommu/arm-smmu-v3: Support IOMMU_GET_HW_INFO via struct arm_smmu_hw_info
-      iommufd: Move struct iommufd_object to public iommufd header
-      iommufd: Move _iommufd_object_alloc helper to a sharable file
-      iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its related struct
-      iommufd: Verify object in iommufd_object_finalize/abort()
-      iommufd/viommu: Add IOMMU_VIOMMU_ALLOC ioctl
-      iommufd: Add alloc_domain_nested op to iommufd_viommu_ops
-      iommufd: Allow pt_id to carry viommu_id for IOMMU_HWPT_ALLOC
-      iommufd/selftest: Add container_of helpers
-      iommufd/selftest: Prepare for mock_viommu_alloc_domain_nested()
-      iommufd/selftest: Add refcount to mock_iommu_device
-      iommufd/selftest: Add IOMMU_VIOMMU_TYPE_SELFTEST
-      iommufd/selftest: Add IOMMU_VIOMMU_ALLOC test coverage
-      Documentation: userspace-api: iommufd: Update vIOMMU
-      iommufd/viommu: Add IOMMUFD_OBJ_VDEVICE and IOMMU_VDEVICE_ALLOC ioctl
-      iommufd/selftest: Add IOMMU_VDEVICE_ALLOC test coverage
-      iommu/viommu: Add cache_invalidate to iommufd_viommu_ops
-      iommufd: Allow hwpt_id to carry viommu_id for IOMMU_HWPT_INVALIDATE
-      iommufd/viommu: Add iommufd_viommu_find_dev helper
-      iommufd/selftest: Add mock_viommu_cache_invalidate
-      iommufd/selftest: Add IOMMU_TEST_OP_DEV_CHECK_CACHE test command
-      iommufd/selftest: Add vIOMMU coverage for IOMMU_HWPT_INVALIDATE ioctl
-      Documentation: userspace-api: iommufd: Update vDEVICE
-      iommu/arm-smmu-v3: Support IOMMU_VIOMMU_ALLOC
-      iommu/arm-smmu-v3: Support IOMMU_HWPT_INVALIDATE using a VIOMMU object
-
-Steve Sistare (13):
-      mm/gup: Add folio_add_pins()
-      iommufd: Rename uptr in iopt_alloc_iova()
-      iommufd: Generalize iopt_pages address
-      iommufd: pfn_reader local variables
-      iommufd: Folio subroutines
-      iommufd: pfn_reader for file mappings
-      iommufd: Add IOMMU_IOAS_MAP_FILE
-      iommufd: File mappings for mdev
-      iommufd: Selftest coverage for IOMMU_IOAS_MAP_FILE
-      iommufd: Export do_update_pinned
-      iommufd: Lock all IOAS objects
-      iommufd: Add IOMMU_IOAS_CHANGE_PROCESS
-      iommufd: IOMMU_IOAS_CHANGE_PROCESS selftest
-
-Zhangfei Gao (1):
-      iommufd: Allow fault reporting for non-PRI PCI devices
-
- Documentation/userspace-api/iommufd.rst            | 226 ++++++--
- drivers/acpi/arm64/iort.c                          |  13 +
- drivers/iommu/Kconfig                              |   9 +
- drivers/iommu/arm/arm-smmu-v3/Makefile             |   1 +
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    | 401 ++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 139 +++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  92 +++-
- drivers/iommu/arm/arm-smmu/arm-smmu.c              |  16 -
- drivers/iommu/io-pgtable-arm.c                     |  27 +-
- drivers/iommu/iommu.c                              |  10 -
- drivers/iommu/iommufd/Kconfig                      |   4 +
- drivers/iommu/iommufd/Makefile                     |   6 +-
- drivers/iommu/iommufd/driver.c                     |  53 ++
- drivers/iommu/iommufd/fault.c                      |   9 +-
- drivers/iommu/iommufd/hw_pagetable.c               | 113 +++-
- drivers/iommu/iommufd/io_pagetable.c               | 105 +++-
- drivers/iommu/iommufd/io_pagetable.h               |  26 +-
- drivers/iommu/iommufd/ioas.c                       | 259 +++++++++
- drivers/iommu/iommufd/iommufd_private.h            |  58 +-
- drivers/iommu/iommufd/iommufd_test.h               |  32 ++
- drivers/iommu/iommufd/main.c                       |  65 +--
- drivers/iommu/iommufd/pages.c                      | 319 ++++++++---
- drivers/iommu/iommufd/selftest.c                   | 364 ++++++++++---
- drivers/iommu/iommufd/vfio_compat.c                |   7 +-
- drivers/iommu/iommufd/viommu.c                     | 157 ++++++
- drivers/vfio/vfio_iommu_type1.c                    |  12 +-
- include/acpi/actbl2.h                              |   3 +-
- include/linux/io-pgtable.h                         |   2 +
- include/linux/iommu.h                              |  67 ++-
- include/linux/iommufd.h                            | 108 ++++
- include/linux/mm.h                                 |   1 +
- include/uapi/linux/iommufd.h                       | 216 +++++++-
- include/uapi/linux/vfio.h                          |   2 +-
- mm/gup.c                                           |  24 +
- tools/testing/selftests/iommu/Makefile             |   1 +
- tools/testing/selftests/iommu/iommufd.c            | 606 ++++++++++++++++++++-
- tools/testing/selftests/iommu/iommufd_fail_nth.c   |  54 ++
- tools/testing/selftests/iommu/iommufd_utils.h      | 174 ++++++
- 38 files changed, 3354 insertions(+), 427 deletions(-)
- create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
- create mode 100644 drivers/iommu/iommufd/driver.c
- create mode 100644 drivers/iommu/iommufd/viommu.c
-
---11c9dN1vCblxRVbY
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRRRCHOFoQz/8F5bUaFwuHvBreFYQUCZz339wAKCRCFwuHvBreF
-YZqJAPwMlQshHsuhWM0G0wH1hxd5EJvT7YN0cE6d5jocdNKlmwEAjMeI8jVCla33
-IcL1h3BlWFZI+Khb4+A65whk/I3z5gM=
-=EV0D
------END PGP SIGNATURE-----
-
---11c9dN1vCblxRVbY--
+--Jesper
