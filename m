@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99EBC1D6DA8
-	for <iommu@lists.linux.dev>; Thu, 21 Nov 2024 13:44:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D09751DC05D
+	for <iommu@lists.linux.dev>; Thu, 21 Nov 2024 14:49:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732196656; cv=none; b=YLlNbrn0qVqXlxGSPgAcKj2A7LIcOkFaFoEqtdOKoTp1f59brXXbP57Ks1mp29wiw+IOXhTTj40aaClXP8NGZiwxgT13yGV3znnUuIjBVbwHqqPIzlYEKkE1R3IEgfTGXoGgtG4J/BO9sfO0a2q+kt8SwcsFpNlFY0edW2nxYps=
+	t=1732200587; cv=none; b=lhUQxXCEp0X/Mywr9t6vrCVblue1Ib35hB9TzOrxmpapofoWW3lF+fsYmFaPvsWiKYpYd5yimHIEBakhIBww5hJZmysjLA7FFYog/RIEgAD5TVRJWdLJhnyVhWszJ6sqbEwQBNxtKam2GB/WmrNQNeIIM2QtuOY68/mZFlbMemU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732196656; c=relaxed/simple;
-	bh=PhZZoOaS3ryFyeN0JP/HtGmzeZqkb+zHGZhGnpkyDuM=;
+	s=arc-20240116; t=1732200587; c=relaxed/simple;
+	bh=HX6kL5Cp7xP9ixBQ+OnEw7ZCJCn5c6NB942vvpiUZnI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=R3tY7lTCNBQciXUfpwCMDY12tWKsYHhsADRJrwckbJFDSydxFSrUsO2XlDihIv5YagQG8Zx78fHkERNSHCcaRxV7MDtLxUL4FDP9YgEvD/NNPL7uPfYoG7oCRW8AHVMlhYDFG5nxBT01TVHgpJC1eqooFj3CQzDyLWCcpfcIRXY=
+	 In-Reply-To:Content-Type; b=hDw7dYPuQxRd3luR8XEzhnRp9a0Nk5Bq8jTOaoWOlEkw/lH8Bh65ckfzkw+7D2kDLqyULby0fW7HEFN9vfWIx1X2fK87zjnrJi7OHBv+Wp7WALMJv/Tcuvv1LLSoMWyFrC2JQMPqq6jskSlj+LsdH9hcRxWfibYUS8KgKPGA6zs=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 756261476;
-	Thu, 21 Nov 2024 05:44:37 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 302E33F66E;
-	Thu, 21 Nov 2024 05:44:05 -0800 (PST)
-Message-ID: <a02c5976-e288-404e-b725-66bd4c391384@arm.com>
-Date: Thu, 21 Nov 2024 13:44:03 +0000
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F191C12FC;
+	Thu, 21 Nov 2024 06:50:13 -0800 (PST)
+Received: from [10.1.26.55] (010265703453.arm.com [10.1.26.55])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CC0743F5A1;
+	Thu, 21 Nov 2024 06:49:40 -0800 (PST)
+Message-ID: <57477eba-ef6a-454b-85d1-d0244f6116d1@arm.com>
+Date: Thu, 21 Nov 2024 14:49:39 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,96 +27,162 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v4 3/3] page_pool: skip dma sync operation for
- inflight pages
-To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
- kuba@kernel.org, pabeni@redhat.com
-Cc: liuyonglong@huawei.com, fanghaiqing@huawei.com, zhangkun09@huawei.com,
- Alexander Duyck <alexander.duyck@gmail.com>,
- Andrew Morton <akpm@linux-foundation.org>, IOMMU <iommu@lists.linux.dev>,
- MM <linux-mm@kvack.org>, Jesper Dangaard Brouer <hawk@kernel.org>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20241120103456.396577-1-linyunsheng@huawei.com>
- <20241120103456.396577-4-linyunsheng@huawei.com>
- <15f937d7-7ac1-4a7f-abcd-abfede191b51@arm.com>
- <57dea3ef-6982-4946-bf96-8ebadf6f883c@huawei.com>
+Subject: Re: [PATCH v2] iommu/arm-smmu: Defer probe of clients after smmu
+ device bound
+To: Pratyush Brahma <quic_pbrahma@quicinc.com>, Will Deacon <will@kernel.org>
+Cc: catalin.marinas@arm.com, kernel-team@android.com, joro@8bytes.org,
+ jgg@ziepe.ca, jsnitsel@redhat.com, robdclark@chromium.org,
+ quic_c_gdjako@quicinc.com, dmitry.baryshkov@linaro.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, quic_charante@quicinc.com,
+ stable@vger.kernel.org, Prakash Gupta <quic_guptap@quicinc.com>
+References: <20241004090428.2035-1-quic_pbrahma@quicinc.com>
+ <173021496151.4097715.14758035881649445798.b4-ty@kernel.org>
+ <0952ca36-c5d9-462a-ab7b-b97154c56919@arm.com>
+ <1d3dcd91-d246-4db3-9717-9edfe405f431@quicinc.com>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <57dea3ef-6982-4946-bf96-8ebadf6f883c@huawei.com>
+In-Reply-To: <1d3dcd91-d246-4db3-9717-9edfe405f431@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 21/11/2024 8:04 am, Yunsheng Lin wrote:
-> On 2024/11/21 0:17, Robin Murphy wrote:
->> On 20/11/2024 10:34 am, Yunsheng Lin wrote:
->>> Skip dma sync operation for inflight pages before the
->>> page_pool_destroy() returns to the driver as DMA API
->>> expects to be called with a valid device bound to a
->>> driver as mentioned in [1].
+On 2024-11-19 7:10 pm, Pratyush Brahma wrote:
+> 
+> On 11/7/2024 8:31 PM, Robin Murphy wrote:
+>> On 29/10/2024 4:15 pm, Will Deacon wrote:
+>>> On Fri, 04 Oct 2024 14:34:28 +0530, Pratyush Brahma wrote:
+>>>> Null pointer dereference occurs due to a race between smmu
+>>>> driver probe and client driver probe, when of_dma_configure()
+>>>> for client is called after the iommu_device_register() for smmu driver
+>>>> probe has executed but before the driver_bound() for smmu driver
+>>>> has been called.
+>>>>
+>>>> Following is how the race occurs:
+>>>>
+>>>> [...]
 >>>
->>> After page_pool_destroy() is called, the page is not
->>> expected to be recycled back to pool->alloc cache and
->>> dma sync operation is not needed when the page is not
->>> recyclable or pool->ring is full, so only skip the dma
->>> sync operation for the infilght pages by clearing the
->>> pool->dma_sync under protection of rcu lock when page
->>> is recycled to pool->ring to ensure that there is no
->>> dma sync operation called after page_pool_destroy() is
->>> returned.
+>>> Applied to will (for-joerg/arm-smmu/updates), thanks!
+>>>
+>>> [1/1] iommu/arm-smmu: Defer probe of clients after smmu device bound
+>>>        https://git.kernel.org/will/c/229e6ee43d2a
 >>
->> Something feels off here - either this is a micro-optimisation which I wouldn't really expect to be meaningful, or it means patch #2 doesn't actually do what it claims. If it really is possible to attempt to dma_sync a page *after* page_pool_inflight_unmap() has already reclaimed and unmapped it, that represents yet another DMA API lifecycle issue, which as well as being even more obviously incorrect usage-wise, could also still lead to the same crash (if the device is non-coherent).
+>> I've finally got to the point of proving to myself that this isn't the
+>> right fix, since once we do get __iommu_probe_device() working properly
+>> in the correct order, iommu_device_register() then runs into the same
+>> condition itself. Diff below should make this issue go away - I'll write
+>> up proper patches once I've tested it a little more.
+>>
+>> Thanks,
+>> Robin.
+>>
+>> ----->8-----
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/ 
+>> iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index 737c5b882355..b7dcb1494aa4 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -3171,8 +3171,8 @@ static struct platform_driver arm_smmu_driver;
+>>  static
+>>  struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle 
+>> *fwnode)
+>>  {
+>> -    struct device *dev = 
+>> driver_find_device_by_fwnode(&arm_smmu_driver.driver,
+>> -                              fwnode);
+>> +    struct device *dev = 
+>> bus_find_device_by_fwnode(&platform_bus_type, fwnode);
+>> +      put_device(dev);
+>>      return dev ? dev_get_drvdata(dev) : NULL;
+>>  }
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/ 
+>> arm/arm-smmu/arm-smmu.c
+>> index 8321962b3714..aba315aa6848 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> @@ -1411,8 +1411,8 @@ static bool arm_smmu_capable(struct device *dev, 
+>> enum iommu_cap cap)
+>>  static
+>>  struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle 
+>> *fwnode)
+>>  {
+>> -    struct device *dev = 
+>> driver_find_device_by_fwnode(&arm_smmu_driver.driver,
+>> -                              fwnode);
+>> +    struct device *dev = 
+>> bus_find_device_by_fwnode(&platform_bus_type, fwnode);
+> I think it would still follow this path:
 > 
-> For a page_pool owned page, it mostly goes through the below steps:
-> 1. page_pool calls buddy allocator API to allocate a page, call DMA mapping
->     and sync_for_device API for it if its pool is empty. Or reuse the page in
->     pool.
+> bus_find_device_by_fwnode() -> bus_find_device() -> next_device()
 > 
-> 2. Driver calls the page_pool API to allocate the page, and pass the page
->     to network stack after packet is dma'ed into the page and the sync_for_cpu
->     API is called.
-> 
-> 3. Network stack is done with page and called page_pool API to free the page.
-> 
-> 4. page_pool releases the page back to buddy allocator if the page is not
->     recyclable before doing the dma unmaping. Or do the sync_for_device
->     and put the page in the its pool, the page might go through step 1
->     again if the driver calls the page_pool allocate API.
-> 
-> The calling of dma mapping and dma sync API is controlled by pool->dma_map
-> and pool->dma_sync respectively, the previous patch only clear pool->dma_map
-> after doing the dma unmapping. This patch ensures that there is no dma_sync
-> for recycle case of step 4 by clearing pool->dma_sync.
+> next_device() would always return null until the driver is bound to the 
+> device which
 
-But *why* does it want to ensure that? Is there some possible race where 
-one thread can attempt to sync and recycle a page while another thread 
-is attempting to unmap and free it, such that you can't guarantee the 
-correctness of dma_sync calls after page_pool_inflight_unmap() has 
-started, and skipping them is a workaround for that? If so, then frankly 
-I think that would want solving properly, but at the very least this 
-change would need to come before patch #2.
+No, this is traversing the bus list, *not* the driver list, that's the 
+whole point. The SMMU device must exist on the platform bus before the 
+driver can bind, since the bus is responsible for matching the driver in 
+the first place.
 
-If not, and this is just some attempt at performance micro-optimisation, 
-then I'd be keen to see the numbers to justify it, since I struggle to 
-imagine it being worth the bother while already in the process of 
-spending whole seconds scanning memory...
+> happens much later in really_probe() after the iommu_device_register() 
+> would be called
+> even as per this patch. That way the race would still occur, wouldn't it?
+> Can you please help me understand what I may be missing here?
+> Are you saying that these additional patches are required along with the 
+> fix I've
+> posted?
+
+I'm saying my change makes there be no race, i.e. the "if (!smmu)" case 
+can never be true, and so no longer needs working around.
 
 Thanks,
 Robin.
 
-> The dma_sync skipping should also happen before page_pool_inflight_unmap()
-> is called too because all the caller will see the clearing of pool->dma_sync
-> after synchronize_rcu() and page_pool_inflight_unmap() is called after
-> the same synchronize_rcu() in page_pool_destroy().
-> 
+>> +
+>>      put_device(dev);
+>>      return dev ? dev_get_drvdata(dev) : NULL;
+>>  }
+>> @@ -2232,21 +2232,6 @@ static int arm_smmu_device_probe(struct 
+>> platform_device *pdev)
+>>                      i, irq);
+>>      }
 >>
->> Otherwise, I don't imagine it's really worth worrying about optimising out syncs for any pages which happen to get naturally returned after page_pool_destroy() starts but before they're explicitly reclaimed. Realistically, the kinds of big server systems where reclaim takes an appreciable amount of time are going to be coherent and skipping syncs anyway.
-> 
-> The skipping is about skipping the dma sync for those inflight pages,
-> I should make it clearer that the skipping happens before the calling
-> of page_pool_inflight_unmap() instead of page_pool_destroy() in the
-> commit log.
-> 
+>> -    err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
+>> -                     "smmu.%pa", &smmu->ioaddr);
+>> -    if (err) {
+>> -        dev_err(dev, "Failed to register iommu in sysfs\n");
+>> -        return err;
+>> -    }
+>> -
+>> -    err = iommu_device_register(&smmu->iommu, &arm_smmu_ops,
+>> -                    using_legacy_binding ? NULL : dev);
+>> -    if (err) {
+>> -        dev_err(dev, "Failed to register iommu\n");
+>> -        iommu_device_sysfs_remove(&smmu->iommu);
+>> -        return err;
+>> -    }
+>> -
+>>      platform_set_drvdata(pdev, smmu);
 >>
+>>      /* Check for RMRs and install bypass SMRs if any */
+>> @@ -2255,6 +2240,18 @@ static int arm_smmu_device_probe(struct 
+>> platform_device *pdev)
+>>      arm_smmu_device_reset(smmu);
+>>      arm_smmu_test_smr_masks(smmu);
+>>
+>> +    err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
+>> +                     "smmu.%pa", &smmu->ioaddr);
+>> +    if (err)
+>> +        return dev_err_probe(dev, err, "Failed to register iommu in 
+>> sysfs\n");
+>> +
+>> +    err = iommu_device_register(&smmu->iommu, &arm_smmu_ops,
+>> +                    using_legacy_binding ? NULL : dev);
+>> +    if (err) {
+>> +        iommu_device_sysfs_remove(&smmu->iommu);
+>> +        return dev_err_probe(dev, err, "Failed to register iommu\n");
+>> +    }
+>> +
+>>      /*
+>>       * We want to avoid touching dev->power.lock in fastpaths unless
+>>       * it's really going to do something useful - pm_runtime_enabled()
 > 
+
