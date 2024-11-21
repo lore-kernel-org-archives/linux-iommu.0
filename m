@@ -1,565 +1,199 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2088.outbound.protection.outlook.com [40.107.244.88])
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEF2718A6B2
-	for <iommu@lists.linux.dev>; Wed, 20 Nov 2024 22:33:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.88
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732142024; cv=fail; b=Orr8VNWPFEjrSZdvs8Be44BCHSsGJkTU5r6tB2TPxusupAa1MDwCNQ0ETqFt8rBg0Ry0OyYKN5v63I/FNZ/YyC7It0zcIhhbhWf/1VcGxsN+QpwG4ls5cI8t/ivwVDUdpMRVHr/x/AZvmyYGd2n30WfrCch7rcQiu8RCmLtg8AY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732142024; c=relaxed/simple;
-	bh=JNDZSgNG/3HxwC+DlUgwqYaMto5iOkpWEtBKvCXrMUg=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=f8Rs1X8sGXHXFT5RQ5Cr7ObvJLORXbZRh68pabTS1AcNoX8Wsyz8B6mjB0Y+AcVqI9L3Cfp9mJNiznCRS9H5ebW/v+5nmGRnMVk93PzZOFp5dSaYUEMAK9w6KqL5WRzTyL4hcvaSOtKrTEHdW7EPkSJmLAYRolTzLkD4cBU53Go=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=amXjV9AP; arc=fail smtp.client-ip=40.107.244.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="amXjV9AP"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=DZlva3B8HI/m351aJonyoNNJ97ffs92h57pvHqDlfA+aKgnpCVLdNtEyhOnd+m9rLtN7WZ1xLlAiaqrupYUePwKAmdiWqjA+MVJh0ErQ3jqY+QojJXVHAvZDBHGqzkTtHLp31TrFiefxBdfSsXbboPGIUjAT6LxBXIQfb7sgDAzmQCYeVUJMZFX4+n4EdiuTFSJyX2pMnr+zJNDzkBimPA7vuShIjUD4w3SpRKUcncFsgfZ+0xZTNWwVDFzEwkO+TqG1q8K8bKgYmrfSf2+qhCchw02JOg5W4ncC9pfBSREtr5F28g/0MxCNCKstsS0CuVXqNKm01Ekix5WBxIswzg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jZoES8m+/C+Xq1/SDCT1XswmN1ZWNw2x8lIaN6cuYcE=;
- b=mGqtpu47DPIPGxhNJVXliDcwC5KEwHsony4iEmxmddtBuwrIc6tVSZLlCaDDVxkridi6nxfpZLjlBnBv2fxolYT+55RJBDNuM9ssksZKBcScCrSlhSxoAYKyN+x3S9hvJ6S6kdIjm9cDE3qSAhf90qrsJj4JeUI6ifpa35x4DbiICBThGNkY0uTClgLQpCgnwnkQTKFNmV2J0yc1OpLbNOK0GYAElAwQEXTR6HW3gSCifqH6JM57UDCx8NJDJoGgwCb7gxgafNb+HJkVOyv5XKwKfdPS3klJ+u2mg7aAfHU6iiIHZnZ42eer8gLAFOmQrISs99SZbEWZdw6HkUTkTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jZoES8m+/C+Xq1/SDCT1XswmN1ZWNw2x8lIaN6cuYcE=;
- b=amXjV9APtYU94AHfBHeKM5R8584ehtFg6lWQAVCN8oGC1idClLTpYJKtnHh7eBdYbCQcowsjGCJG6YOay/x8Ya+xfdHBVuDaBvr4VpuMPyKnWfHLJUcp5nfu+0fD/p6tsqpQFXCjDKyj400C1dcBrmFbFEGlOB2+0BJCs/zaE23t9IFypFRN7WHGy51ED0b/46CkQAbF+nvMk1cYDtlAAfbVE8zrg/eht2KmSJgKu5yxtFphSqpGvIms3eAXEBmwnR05gNLaplypz35QaxLBO5MLy9tI+AGvtkNlHzRA1acsIpg0gCcpYLgNoKwvd4Zwp8hrE6Q0Hmxta8AC3RJlhQ==
-Received: from SJ0PR13CA0166.namprd13.prod.outlook.com (2603:10b6:a03:2c7::21)
- by CH0PR12MB8531.namprd12.prod.outlook.com (2603:10b6:610:181::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.22; Wed, 20 Nov
- 2024 22:33:35 +0000
-Received: from SJ1PEPF000023CE.namprd02.prod.outlook.com
- (2603:10b6:a03:2c7:cafe::49) by SJ0PR13CA0166.outlook.office365.com
- (2603:10b6:a03:2c7::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8182.14 via Frontend
- Transport; Wed, 20 Nov 2024 22:33:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ1PEPF000023CE.mail.protection.outlook.com (10.167.244.10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8182.16 via Frontend Transport; Wed, 20 Nov 2024 22:33:34 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 20 Nov
- 2024 14:33:17 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 20 Nov
- 2024 14:33:17 -0800
-Received: from localhost (10.127.8.9) by mail.nvidia.com (10.129.68.8) with
- Microsoft SMTP Server id 15.2.1544.4 via Frontend Transport; Wed, 20 Nov 2024
- 14:33:16 -0800
-Date: Thu, 21 Nov 2024 00:33:16 +0200
-From: Zhi Wang <zhiw@nvidia.com>
-To: Alejandro Lucero Palau <alucerop@amd.com>
-CC: "linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>,
-	<iommu@lists.linux.dev>
-Subject: Re: RFC: Kernel CXL cache support (and IOMMU implications)
-Message-ID: <20241121003316.00001cd3@nvidia.com>
-In-Reply-To: <cc2525a6-0f6a-c1c8-83e1-6396661efc8a@amd.com>
-References: <cc2525a6-0f6a-c1c8-83e1-6396661efc8a@amd.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.38; x86_64-w64-mingw32)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E81B70815
+	for <iommu@lists.linux.dev>; Thu, 21 Nov 2024 08:03:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1732176210; cv=none; b=VPSPGRYC2HLiR5pZXLlNZJiblILtwOSyOF+KWXOMLNbtwHdl+TNdh+AkasONNwSBqlZrzCKdcF+dQTTNCxN632xb2VE13wm4t0mc2sGLiqRPZK0OZNktdZcU/P5tiEjNP61ef3wwmBbRwwyUNou9QiQDxvHfJkt+vCC3TYgTVgI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1732176210; c=relaxed/simple;
+	bh=QpQUzQdGqFnQeB4YaCZR9Di+RNpOjgc+Ht1vo+KoRZ8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=tev/QkG/td1MN6QBdA7yb7BcvZw/A6Ivi2E1atGaOBLeAB4XzeDhqezPgUEOcn4w1/2WxLiJEqBtgYgcUAxLeNDiVaKaMBeH6aIMnnEaIfO5q9gs+3wYUd18YEvr2JdT3ZSLIqKZvtprH9Axs3ZlB6dt+pnbBpVcktZUkV4oWWI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.163])
+	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Xv9gF0LHrz21lfD;
+	Thu, 21 Nov 2024 16:02:01 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 28AF918001B;
+	Thu, 21 Nov 2024 16:03:24 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Thu, 21 Nov 2024 16:03:23 +0800
+Message-ID: <27475b57-eda1-4d67-93f2-5ca443632f6b@huawei.com>
+Date: Thu, 21 Nov 2024 16:03:22 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v4 2/3] page_pool: fix IOMMU crash when driver has
+ already unbound
+To: Jesper Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>,
+	<kuba@kernel.org>, <pabeni@redhat.com>
+CC: <liuyonglong@huawei.com>, <fanghaiqing@huawei.com>,
+	<zhangkun09@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander Duyck
+	<alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Ilias Apalodimas
+	<ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>, Simon
+ Horman <horms@kernel.org>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+References: <20241120103456.396577-1-linyunsheng@huawei.com>
+ <20241120103456.396577-3-linyunsheng@huawei.com>
+ <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF000023CE:EE_|CH0PR12MB8531:EE_
-X-MS-Office365-Filtering-Correlation-Id: 63ededea-5a67-48bf-360f-08dd09b35eb5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|36860700013|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?empNTW9SblFjeWdyandLdXBTaWU3dkRBQkRiby9kT1dSdU1IczQvRm8xYktY?=
- =?utf-8?B?WFkrQS8walRtZkxRMDBvWUpLVjdRaVM1ZEhkZTd6VVUvUmsvNGVZQkdJamxB?=
- =?utf-8?B?TG1CdUl2R0F6c1dVZUN3bUVvSzIxYjVIc3AxcUJ5QkI4VC95NitKMEg5ZUJO?=
- =?utf-8?B?c2FlWGNsOTVnUTNVUWFpaTlDWDdkTU42K08yRGhMRVBsSG51akIwT1NaTVN0?=
- =?utf-8?B?d0hHTUJHSlVuWmVGUi9KaCt0MkF4VlpOcm11VUwvUFBHM2czV3pOWHJYSS9R?=
- =?utf-8?B?ZmFkbTBuQnpOc1RNOUpVTlZJWm1NaEttcExuQm43Qjlady9xcHEzOWgwenk3?=
- =?utf-8?B?T0VJZGFjWGZ0YUlCYmdjMUJ6bm5rUkc1VzVGVWVVMzd0dnA1eEY1UFh2MmxQ?=
- =?utf-8?B?eEs3OXpFN1JBZmtHanJpRHZJMDllYW9IT3RYelVuOFlZYnZ6Y053YkJKcnIr?=
- =?utf-8?B?MUptWG05NEZEcThoMlN4NUVpWlFTK0dqdkRnRGpQSTVQT0cyYlpmUjlKVkRx?=
- =?utf-8?B?RXhXN2RTeVI4Rk5rRmdBUnNrNERhdE5xb2NBdTM5WjBBZmZFSzlJZ1RmQzdk?=
- =?utf-8?B?VnM1b1E2MkZCUU1Vb2FkV3djNi84SVJvQU82RkhOMGdKMVpkeDlqci9YWGhL?=
- =?utf-8?B?bGRXVXFnQ3lQQXcvQUdtNHFWKzVaQjhWMVNzenVFbGRvVHM0dE9HenhhcHpQ?=
- =?utf-8?B?T0V0RFlmRFI2WXVCSTFqVmhoaEpVOVN4TTRlbGdaTjRGRUhTdVh5SWlodDcy?=
- =?utf-8?B?L0w5T282RTFxeW1QK0pOUmxSVUIwdUtPK25rMXFkbUdyL1hEamJVOEpGL09t?=
- =?utf-8?B?WHR6blJYT2RDVlplT3dyZVoyOHpzdE5Lam1QQzJ2L3dhQUFOMFJHTSs3dlc2?=
- =?utf-8?B?aWhCd1lnbzcrVmVDcmVFSTVCQVN1RGloYTBlWnJSQXYxb2lEV2h0NXRHVFJL?=
- =?utf-8?B?QXVrRkNlSDZMUXJkWWRHRnUvYkdvU21aMCt5Ym95bGFMYk1maDBaeUNmRFlh?=
- =?utf-8?B?SVNLNHlUVFpYVnJIdHR0eTN6VzcyOHV6dFdwa0JIZ2dqRXp1SXhCYmZOVnly?=
- =?utf-8?B?MmJ6TFoyWkJWUmNHQ3lVc01hbFdQR2FSS250elozeW1PcUZET2EvalhDbCtB?=
- =?utf-8?B?VFJsRmwrUkxmcFJiVVVwdjhXWjFWWitWR0V4NlNNQm9ybnR0WWliS1BQRk1N?=
- =?utf-8?B?VGJyalpwbHdZSjZQdmY4WjlsRmdLY3NFTjJ5RWpVYmJ2bEVVb2hjdkJ6TkpE?=
- =?utf-8?B?OUJremFGaHNXekFDaWowSG9vanpUMEdhMENzb0lPQ0NxZmlDVm9CNCt2QzRn?=
- =?utf-8?B?N09NUEI5Ni84WWxqWWg1VXVvS20yN3VpQzF0Vm5mWWJKTEh6L013bmxwbkE0?=
- =?utf-8?B?dFc5YncwUWpZYktxZEY1ZVV4Z1VmWktna05Ndys1NEdrVk1QRWpKSUNrMzdS?=
- =?utf-8?B?d0tCeGIvVlM0aXZPbVBGRVdsaG1XVzV6dFk0WFlHSWZwRktVUzlGbWN6clBa?=
- =?utf-8?B?OTJUK0pya1pZUEZlNlNXdHMyQ09zREdxSXhieE5kRFJKREtxem5ZWk1QMWh3?=
- =?utf-8?B?QXgxOGNBYndWZGljUlhFbHdWVytXaXZwbGFpNzNJYU10UFg5aGlEMyswUjlM?=
- =?utf-8?B?cmRMQTVZMGo1clBock84LzlxaWhtSGtUV0RRb3c4eG4zT0wyOCtNbk1XTE93?=
- =?utf-8?B?OXFJOTM5bzdrVmxVTnMrcnh2cHAyNXk3eUhGeGFoM1hFQ1lzNTF2WVZTV2xn?=
- =?utf-8?B?QUljTkkwb1JYOFJTQVNyRVd2MU9MZmtnNERtTkY3dVpQTlA3Wm8rK09Ib3Rx?=
- =?utf-8?B?QVNIaWVtWGFTV01MaWtrQVdaT0dIcE8wNTZMaHpCMXExK0ZVRjZRRXljTnda?=
- =?utf-8?B?bGRpeFh5VjFNa29XT21RTlh1SVYxMFN6YlJIdHVXT0lhVGc9PQ==?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(36860700013)(1800799024)(7053199007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2024 22:33:34.7958
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 63ededea-5a67-48bf-360f-08dd09b35eb5
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF000023CE.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB8531
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On Tue, 19 Nov 2024 16:52:15 +0000
-Alejandro Lucero Palau <alucerop@amd.com> wrote:
+On 2024/11/20 23:10, Jesper Dangaard Brouer wrote:
 
-Thanks so much for the doc. I just quickly went through the doc and here
-are my comments.
+...
 
-> November, 2024
->=20
-> Tittle: CXL Cache support by the kernel
-> Author: Alejandro Lucero (alucerop@amd.com)
->=20
-> Version 0.1
->=20
-> Introduction
-> =3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> After the LPC where I presented the current status of the Type2 CXL.mem=20
-> support
-> patchset, and some ideas about supporting CXL.cache, it is time to dig=20
-> deeper in
-> this second goal, and discussing the security/reliability aspect as well.
->=20
-> It is also important to try to describe how this is going to work and=20
-> what the
-> kernel needs to know and enforce. Reading the CXL specs when having in=20
-> mind some
-> specific use case can easily lead to assuming certains aspects with a=20
-> different
-> perspective from other readers/use cases. To start with, it is necessary =
-to
-> differentiate two "CXL cache" functionalities when a Type2 device is in=20
-> place:
->=20
-> 1) A Type2 device caching Host memory.
->=20
-> 2) The Host caching HDM memory, that is the memory inside the Type2 CXL=20
-> device.
->=20
-> The first option is also what a Type1 device can do, and the kernel suppo=
-rt
-> needs to manage all those Type1/2 per CXL Root Complex knowing the resour=
-ces
-> limitation, that is the snooping cache size.
->=20
-> A snoop cache allows the host to track which memory is being used/cached =
-by
-> those devices, enforcing the cache coherency. The specs are not clear=20
-> about some
-> important aspects regarding how the host can enforce the proper use of=20
-> this by
-> devices or even if the snoop cache needs to do so. At pages 786 and 787=20
-> of CXL
-> specs 3.1, how the system software should deal with CXL cache devices is=
-=20
-> given,
-> but this is inside a Hot-plug section. I think we can assume the Host
-> firmware/BIOS will follow same approach for enabling CXL cache, and the=20
-> kernel
-> needs to look at those devices with CXL cache enabled by the BIOS for=20
-> properly
-> handling the available space in the snoop cache.
->=20
-> It is also worth to mention the CXL.cache protocol can be used in the two
-> "CXL cache" functionalities listed above. However, the last CXL spec impl=
-ies
-> CXL.cache only used for the first case. Some comments about what the=20
-> specs say
->=20
-> regarding number of devices with a cache for host memory:
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - up to 16 Type1 and/or Type2=
- devices allowed per VH.
->=20
-> can be easily confused with the limitations of just one CXL Type2 device=
-=20
-> using
-> CXL.cache for enforcing coherency of its HDM. This limitation is=20
-> overcome with
-> forcing Type2 device using HDM-DB, which relies on CXL.mem instead of=20
-> CXL.cache
-> for HDM cache coherency.
->=20
-> While the Host is assumed to be able to access HDM in a Type2 device, and
-> keeping data in the host cpu caches, it is the Type2 device=20
-> responsibility to
-> properly manage cache coherency of its HDM. There is nothing the kernel c=
-an
-> control here.
->=20
-> Therefore the interesting part and what this documents tries to cover is =
-the
-> Host memory being cached by Type2 or Type1 devices. While the main goal is
-> discussing how the kernel needs to handle this, and to describe how it=20
-> should
-> work when CXL devices are used by the system/Host, some comments are made=
- to
-> cover the virtualization case where those CXL devices can potenetially=20
-> be used
-> (device passthrough) by guests/VMs. I try to expose the current security
-> problems where IOMMU is used for restricting what a guest controlled=20
-> CXL.cache
-> device can read/write in Host memory what I think needs to be clarified by
-> hardware vendors.
->=20
->=20
-> Understanding the memory accesses from CXL devices
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> For the sake of presenting the case about kernel CXL.cache support, I'll=
-=20
-> try to
-> explain how it works (I should say "how I think it works") and the main=20
-> points
-> to discuss regarding how to implement this support. So, do not take the n=
-ext
-> explanation as the definitive answer or guide, and if you think there=20
-> are errors
-> or maybe too much generalization at some points, please help fixing or=20
-> adding
-> further details. Also, consider some parts as just me thinking out loud,=
-=20
-> what
-> maybe help other people (or confuse them!).
->=20
-> The CXL.cache protocol allows devices to be part of the coherency ring=20
-> of the
-> system.
->=20
-> Let's start with a Type2 device reading from a specific host memory=20
-> address. The
-> final situation is 64bytes (cache line) from host memory copied to the=20
-> device
-> cache, supposedly for being used by the device/accelerator. If the data=20
-> changes,
-> because some host cpu modifies it, the device will be signalled by the=20
-> coherency
-> ring, so the device will know. The important point here is the device can=
- be
-> told because the Host knows the device has a copy or the only copy of that
-> data/memory. And that is thanks to the snoop cache implemented by the=20
-> CXL Root
-> Complex.
->=20
-> A device caching host memory can be used as well for writes to host memory
-> through the cache coherency ring. A device can not just read host memory =
-and
-> keep it, but it can modified it. The implications of writes versus reads=
-=20
-> are not
-> important for the goal of this document. It requires the device to=20
-> support more
-> protocol exchange cases, but regarding the snoop cache, it is irrelevant.
->=20
-> There arise obvious questions about how this snoop cache is going to work.
->=20
-> First, with the simple case of just one device caching Host memory. From =
-the
-> specs, the device CXL.cache should not be enabled by the Host if the devi=
-ce
-> cache is bigger than the snoop cache. However, what does preclude a=20
-> device to do
-> more memory accesses than what the snoop cache can cover? This can be par=
-tly
-> explained with some allocation control for CXL.cache what is discussed=20
-> in the
-> next section. But a "rogue" device could try things like this, what for=20
-> the case
-> of a single device using the snoop cache and without any other concern ab=
-out
-> security, is probably fine:
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - With a Type2, the snoop cac=
-he will tell the device to release=20
-> another
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 line, meaning any=
- modified line to be sent back to the Host.
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - Any performance problem wil=
-l only have an impact on the=20
-> device itself.
->=20
-> Then the case of multiple CXL devices caching Host memory in the same=20
-> CXL Root
-> Complex and therefore same CXL Snoop Cache:
->=20
-> * How can the snoop cache track reads from different devices without one=
-=20
-> device
->  =C2=A0 monopolizing the full space?
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - enforcing snoop cache slice=
-s by software?
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - allowing specific/limited h=
-ost ranges by the kernel?
->=20
+>>         /* No more consumers should exist, but producers could still
+>>        * be in-flight.
+>> @@ -1119,6 +1134,58 @@ void page_pool_disable_direct_recycling(struct page_pool *pool)
+>>   }
+>>   EXPORT_SYMBOL(page_pool_disable_direct_recycling);
+>>   +static void page_pool_inflight_unmap(struct page_pool *pool)
+>> +{
+>> +    unsigned int unmapped = 0;
+>> +    struct zone *zone;
+>> +    int inflight;
+>> +
+>> +    if (!pool->dma_map || pool->mp_priv)
+>> +        return;
+>> +
+>> +    get_online_mems();
+>> +    spin_lock_bh(&pool->destroy_lock);
+>> +
+>> +    inflight = page_pool_inflight(pool, false);
+>> +    for_each_populated_zone(zone) {
+>> +        unsigned long end_pfn = zone_end_pfn(zone);
+>> +        unsigned long pfn;
+>> +
+>> +        for (pfn = zone->zone_start_pfn; pfn < end_pfn; pfn++) {
+>> +            struct page *page = pfn_to_online_page(pfn);
+>> +
+>> +            if (!page || !page_count(page) ||
+>> +                (page->pp_magic & ~0x3UL) != PP_SIGNATURE ||
+>> +                page->pp != pool)
+>> +                continue;
+>> +
+>> +            dma_unmap_page_attrs(pool->p.dev,
+>> +                         page_pool_get_dma_addr(page),
+>> +                         PAGE_SIZE << pool->p.order,
+>> +                         pool->p.dma_dir,
+>> +                         DMA_ATTR_SKIP_CPU_SYNC |
+>> +                         DMA_ATTR_WEAK_ORDERING);
+>> +            page_pool_set_dma_addr(page, 0);
+>> +
+> 
+> I feel this belongs in a helper function call.
+> 
+> Previously we had a function called: page_pool_release_page().
 
-I would like to compare it with the approaches that solves the similar
-problem of the CPU cache since they might have similar essence.=20
+Previously I was going to reuse __page_pool_release_page_dma() for the above,
+but it seems __page_pool_release_page_dma() has the duplicated pool->dma_map
+checking for each page as page_pool_inflight_unmap() already check that before
+calling __page_pool_release_page_dma().
 
-CPU cache suffered from the similar problems that noisy and
-restless neighborhood keep poking the cache that might cause performance
-drop. Nowadays, it is solved by the HW mechanism, cache allocation. For
-Intel, it is called cache allocation technology(CAT) which is a subset of
-Resource Director Technology(RDT). They can be also used in the
-virtualization world.
+> 
+> This was used to convert the page into a normal page again, releasing
+> page_pool dependencies.  It was used when packet transitioned into the
+> netstack, but it was removed when we decided it was safe to let netstack
+> return pp pages.
+> 
+> Removed in commits:
+>  - 535b9c61bdef ("net: page_pool: hide page_pool_release_page()")
+>  - 07e0c7d3179d ("net: page_pool: merge page_pool_release_page() with page_pool_return_page()")
+> 
+> 
+>> +            unmapped++;
+>> +
+>> +            /* Skip scanning all pages when debug is disabled */
+>> +            if (!IS_ENABLED(CONFIG_DEBUG_NET) &&
+>> +                inflight == unmapped)
+>> +                goto out;
+>> +        }
+>> +    }
+>> +
+>> +out:
+>> +    WARN_ONCE(page_pool_inflight(pool, false) != unmapped,
+>> +          "page_pool(%u): unmapped(%u) != inflight pages(%d)\n",
+>> +          pool->user.id, unmapped, inflight);
+>> +
+>> +    pool->dma_map = false;
+>> +    spin_unlock_bh(&pool->destroy_lock);
+>> +    put_online_mems();
+>> +}
+>> +
+>>   void page_pool_destroy(struct page_pool *pool)
+>>   {
+>>       if (!pool)
+>> @@ -1139,6 +1206,8 @@ void page_pool_destroy(struct page_pool *pool)
+>>        */
+>>       synchronize_rcu();
+>>   +    page_pool_inflight_unmap(pool);
+>> +
+> 
+> Reaching here means we have detected in-flight packets/pages.
+> 
+> In "page_pool_inflight_unmap" we scan and find those in-flight pages to
+> DMA unmap them. Then below we wait for these in-flight pages again.
+> Why don't we just "release" (page_pool_release_page) those in-flight
+> pages from belonging to the page_pool, when we found them during scanning?
+> 
+> If doing so, we can hopefully remove the periodic checking code below.
 
-Before SW gets the support from the HW, many research papers were talking
-about solving it via page color. E.g. allocate the VM memory with page
-color awareness for different VMs. But I don't think those ideas eventually
-land in the mainline.
+I thought about that too, but it means more complicated work than just
+calling the page_pool_release_page() as page->pp_ref_count need to be
+converted into page->_refcount for the above to work, it seems hard to
+do that with least performance degradation as the racing against
+page_pool_put_page() being called concurrently.
 
-Back to this prob, I think probably SW is going to rely on a HW mechanism
-to solve this problem nicely and decently, the same as CPU side.=20
+> 
+>>       page_pool_detached(pool);
+>>       pool->defer_start = jiffies;
+>>       pool->defer_warn  = jiffies + DEFER_WARN_INTERVAL;
+>> @@ -1159,7 +1228,7 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
+>>       /* Flush pool alloc cache, as refill will check NUMA node */
+>>       while (pool->alloc.count) {
+>>           netmem = pool->alloc.cache[--pool->alloc.count];
+>> -        page_pool_return_page(pool, netmem);
+>> +        __page_pool_return_page(pool, netmem);
+>>       }
+>>   }
+>>   EXPORT_SYMBOL(page_pool_update_nid);
+> 
+> Thanks for continuing to work on this :-)
 
-> AFAIK, there is not any kind of hardware control for avoiding this=20
-> contention.
-> Note that with the proper checking by the BIOS and by the kernel (for=20
-> hotplug or
-> those not enabled devices yet during boot time), the size of total=20
-> device caches
-> allowed per CXL Root Complex should not be bigger than the snoop cache=20
-> size, and
-> therefore theoretically no contention at all ... if the devices do the ri=
-ght
-> thing. From software the only thing we can do is to ensure the CXL.cache
-> accesses from a device are within a range with same size than the enabled
-> CXL.cache.
->=20
+I am not sure how scalable the scanning is going to be if the memory size became
+bigger, which is one of the reason I was posting it as RFC for this version.
 
-What would be the consequence if we violate this rule?
+For some quick searching here, it seems there might be server with max ram capacity
+of 12.3TB, which means the scanning might take up to about 10 secs for those systems.
+The spin_lock is used to avoid concurrency as the page_pool_put_page() API might be
+called from the softirq context, which might mean there might be spinning of 12 secs
+in the softirq context.
 
-> Therefore, some memory allocation API is required for dealing with the=20
-> amount of
-> memory the snoop cache can track, and the host memory a device can=20
-> access to.
-> The device needs the physical address to work with, and it is in this=20
-> required
-> translation from virtual to physical addresses where we can enforce the
-> restriction. Of course, such an API does already exist, although not=20
-> with the
-> checking we need: the kernel DMA API.
->=20
->=20
-> (Secure) memory allocation=C2=A0 and CXL.cache
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D
->=20
-> DMAs allow devices to perform read/write operations to system memory=20
-> without any
-> cpu intervention after the (meta)data about how to perform the DMA is=20
-> given to
-> the device. CXL.cache is more than DMA because the system memory caches a=
-re
-> implicitly involved but for the sake of handling this by the operating=20
-> system,
-> not too much different. The important point here is there is no restricti=
-on
-> about the DMAble memory to be used by a device, but due to the snoop cache
-> limitations, this needs to change for CXL: code aware of the snoop cache=
-=20
-> state
-> and what a device requires needs to be consulted for properly handling the
-> available space.
->=20
+And it seems hard to call cond_resched() when the scanning and unmapping takes a lot
+of time as page_pool_put_page() might be called concurrently when pool->destroy_lock
+is released, which might means page_pool_get_dma_addr() need to be checked to decide
+if the mapping is already done or not for each page.
 
-As what I replied above, I think we probably need a HW mechanism to solve
-this problem nicely and decently. (Thinking sharing cache is
-also a pre-condition of side-channel attack, even here is a snoop state
-cahce.) With the HW mechanism, allocating the space of snoop state
-cache might imply a glue layer of snoop cache management for different
-CXL HB vendors to plug into the CXL core.
+Also, I am not sure it is appropriate to stall the driver unbound up to 10 secs here
+for those large memory systems.
 
-So when the CXL driver is initialized, the space of the snoop state cache
-is allocated. With that is solved, for restricting the device to access the
-memory (creating/mapping an IOVA for the DMA memory), SW can still leverage
-the current Linux IOMMU/DMA APIs.
+https://www.broadberry.com/12tb-ram-supermicro-servers?srsltid=AfmBOorCPCZQBSv91mOGH3WTg9Cq0MhksnVYL_eXxOHtHJyuYzjyvwgH
 
-> Should we use the kernel DMA API for CXL.cache allocations? This API=20
-> deals with
-> memory coherency what is not needed for the CXL.cache case. However, it is
-> connected with the IOMMU functionality what is required for CXL.cache if=
-=20
-> it is
-> enabled.
->=20
-> I think the solution should be to implement a CXL.cache allocation API=20
-> inside
-> the CXL core dealing with the snoop cache available space, and to=20
-> connect with
-> IOMMU kernel code when it is enabled.
->=20
-> A security aspect behind DMAs is a device has (usually) no restrictions f=
-or
-> memory access. This is true in a system with no IOMMU hardware, and=20
-> CXL.cache
-> is not different in this case. With IOMMU is a different game though.
->=20
-> First of all, IOMMU will be in place for CXL.io, what implies legacy TLP=
-=20
-> PCIe
-> packets. A CXL.cache operation can not be handled by the IOMMU hardware=20
-> and the
-> spec states ATS to be used beforehand, that is, the CXL device asking=20
-> the IOMMU
-> hardware about the physical address to work with, and keeping that=20
-> translation
-> internally. The CXL spec specifies ATS service extensions for CXL, and=20
-> some ATS
-> requests can tell the device some addresses only to be used through=20
-> CXL.io. This
-> implies some sort of knowledge about CXL is required by the IOMMU/ATS=20
-> hardware
-> which depends on how the per device tables are programmed by the Host.=20
-> However,
-> AFAIK, this is not supported yet by any Linux kernel IOMMU vendor=20
-> support. Note
-> the usual IOMMU device/domain tables will/can be used for normal DMA=20
-> transfers,
-> so IOMMU configuration, both in the Host and by the HW, needs to know=20
-> which parts
-> of the domain are for DMAs and which are for CXL.cache.
->=20
-> Assuming this support will be implemented at some point in the future, the
-> questions are, when?, and, how safe is it?
->=20
-> Can a device issue CXL.cache operations using arbitrary physical=20
-> addresses? It
-> seems there are some cases where the hardware can take control of PCIe TLP
-> packets with the ATS bit on. For example, if there is a PCIe bridge in=20
-> the path,
-> and with that bridge using a specific redirection table based on=20
-> configured ATS
-> per device ranges, any TLP with the ATS bit on will be redirected based=20
-> on such
-> a table, and implying no redirection if no table entry. However, that=20
-> does not
-> seem to be in place for PCIe Root Complex implementations. For example, A=
-MD
-> IOMMU documentation states ATS TLP packets are not handled at all, implyi=
-ng
-> trusting the device, and if more security is required, the IOMMU=20
-> hardware can
-
-Are you referring to the ATS translated request here? I think ATS itself
-doesn't consider the security in its mind.=20
-
-> check those TLP ATS packets as well, spoiling the ATS advantage. Note=20
-
-Yes, AMD IOMMU has the secure ATS support, but as you said, it is pretty
-straight-forward, basically just check every translated request when
-enabled.
-
-> this is
-> PCIe, so CXL.io will likely keep the functionality, but CXL.cache operati=
-ons
-> follow another path with apparently no further control to enforce the rig=
-ht
-> addresses within the allowed memory ranges per device are used.
->=20
-> Because this apparently lack of security for IOMMU and CXL.cache, this=20
-> implies a
-> CXL device should not be used by VMs or any other user space controlled=20
-> driver
-> with CXL.cache being enabled. This seems a really serious limitation, so=
-=20
-> maybe
-> I'm missing something here.
->=20
-
-I think at least for CXL path, IOMMU should have the similar mechanism like
-secure ATS, and let the user to choose if they want it to be enabled or
-not.
-
-In reality, many CSP design the HW by themselves and trust their HW won't
-do messy things, they may want to enable it only on the 3rd party HW.
-
-For confidential computing world, secure ATS is mandatory, and performance
-drop is the price of security.
-
-> Regarding virtualization, assuming the security problems do not exist or=
-=20
-> will be
-> solved, while CXL.mem can be supported with an ahead mapping by the=20
-> Host, with
-> CXL.cache this needs to be handled when the related driver asks for speci=
-fic
-> memory to access, and then to configure the IOMMU/ATS tables by the=20
-> Host. This
-> implies the emulation needs a backend, what an ahead mapping, as currently
-> proposed for CXL.mem can avoid.
->=20
-> Finally, if my concerns about the security of CXL.cache with IOMMU are
-> unfounded, at least this document should describe how is this solved and =
-the
-> security enforced by the hardware, and if the kernel requires to handle it
-> specifically (what I really think is the case, at least with IOMMU changes
-> managed by the CXL core).
->=20
->=20
-> Summary
-> =3D=3D=3D=3D=3D=3D
->=20
->=20
-> Next the proposed tasks to perform for supporting CXL.cache:
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - CXL core handling per devic=
-e CXL.cache enabling based on CXL Root
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Complex snoop cac=
-he state.
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - CXL core implementing a CXL=
-.cache host memory allocation=20
-> restricting
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 the physical memo=
-ry a a device can access to through CXL.cache.
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - IOMMU being CXL aware and d=
-ealing with CXL.cache vs CXL.io=20
-> requests.
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - Clarify CXL.cache and secur=
-ity with IOMMU.
->=20
->=20
->=20
-
+> 
+> --Jesper
