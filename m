@@ -1,150 +1,127 @@
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3612A16DEB3
-	for <iommu@lists.linux.dev>; Fri, 22 Nov 2024 07:20:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47CC016C695;
+	Fri, 22 Nov 2024 07:49:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732260042; cv=none; b=Nkk9UMDkqp3rhjeYhrFK6im6w1oGW91GkQ3uAAO/mSUVBbQCUWXR2P6iiyeLlj8w3AozMQ5GBwtgbUp29oy9/Rb/20UIqVy8idN4XeCl5acmgTzSIIlHdmw1ldHeNiiUiMK8fT3D9FrkxmgxBvt+kVDmLfFTA91eRwz2sdT824E=
+	t=1732261794; cv=none; b=NY69jTB2TvFsy6Xm6ou4uhYXWuVKD0Iiz2g0qKWbBuRE3qUlcoDhpoWNqKykkzQa6pJECZTCAXyvxfRLxI8duayOotpt2+2G7ZS0uPaGQP7XM7TXYwYmnlhJqVAcZ3yKN1XmfC9EIDwmbvO8jrar7426EsNSEdMX7Gw+xtZowi8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732260042; c=relaxed/simple;
-	bh=N160SUZkYD6JUX8pEDdwUH8ySm7ncw8qFmjrjOj7EHs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=h7PaXwfyJZVb+7QjQ3KO8fUoIjnU6mJ0tQdnYlbq+56uLTWj4LDjednlsVUdQFinToLJUpyGzBpp3DGzrjMBVZW/4Lr3mITNUM60KI9pbPQ+BCoA8/tvO/JbrgCXih3g/qTXybmwc+567PSp5+kKdHuRsZ3QNSzp7pwk8Oo1JZU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.17])
-	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4XvmbM1hcMz1JCW6;
-	Fri, 22 Nov 2024 15:15:43 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id 921CC1A0188;
-	Fri, 22 Nov 2024 15:20:36 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+	s=arc-20240116; t=1732261794; c=relaxed/simple;
+	bh=zuAg3jddV2JVzG9hjteBYSTqOYlve5FOthk55IOXXmk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fws8SDm5mcJJppTW5VAfoKa7tqAmUfVQtGhUaJ+6MaHZLTXfMQhLafWyzK7txo64flQ5cfDAmMvZQy9Nhm+3rm1qOGJWarYaB4fUdxk54hBoubCYyCMti0WcTVXAljgKdh2itKCrGNV8uOfnihMYFE9q0ddSSrXBugOoy62leUU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=BOwMXFkv; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="BOwMXFkv"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4ALKwoLC003946;
+	Fri, 22 Nov 2024 07:49:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-type:date:from:message-id:mime-version:subject:to; s=
+	qcppdkim1; bh=PAeWzpRZdiOM8oGZZzYhFjcJG/6nNhejF1UWG+tcHfY=; b=BO
+	wMXFkv6RcWBOgRMA9VnXKcW3vIccADNznHkNSyHUFMwX1JuUD5KV75ZciR24Nw/L
+	JlHyGZbYG9qd5JBpgzRMdym7loes5M9+pIh7M/pclpSUWI3gs+kv8H5YSchNir7U
+	wD+ntNPA0m/yKxdx5qO4bpUygFg0+9RKekU12oYCe4JeSnHChRwzIySr7CQoKcN2
+	FQy5NPcHqEwHBYI3wFAWYWqydWXoRUvUFL+nndF70FfvGXz0MGcZXjQdAO9jbPnH
+	p2Vfc8KzGpR5c0O9MJzQDjVk76N8Enm3lQKpvD4hmEaZ5MopbjcCcK+MWvp5TeJt
+	q/hHrKc0o7lnua/BG9IA==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 431ce3ek2x-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 22 Nov 2024 07:49:43 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4AM7nglY001587
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 22 Nov 2024 07:49:42 GMT
+Received: from hu-qqzhou-sha.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Fri, 22 Nov 2024 15:20:36 +0800
-Message-ID: <91964676-522f-44b5-87bc-27cfa5193813@huawei.com>
-Date: Fri, 22 Nov 2024 15:20:33 +0800
+ 15.2.1544.9; Thu, 21 Nov 2024 23:49:39 -0800
+From: Qingqing Zhou <quic_qqzhou@quicinc.com>
+To: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <robimarko@gmail.com>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
+CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+        Qingqing Zhou
+	<quic_qqzhou@quicinc.com>
+Subject: [PATCH 0/2] Add support for GPU SMMU on QCS615
+Date: Fri, 22 Nov 2024 13:19:20 +0530
+Message-ID: <20241122074922.28153-1-quic_qqzhou@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v4 3/3] page_pool: skip dma sync operation for
- inflight pages
-To: Robin Murphy <robin.murphy@arm.com>, <davem@davemloft.net>,
-	<kuba@kernel.org>, <pabeni@redhat.com>
-CC: <liuyonglong@huawei.com>, <fanghaiqing@huawei.com>,
-	<zhangkun09@huawei.com>, Alexander Duyck <alexander.duyck@gmail.com>, Andrew
- Morton <akpm@linux-foundation.org>, IOMMU <iommu@lists.linux.dev>, MM
-	<linux-mm@kvack.org>, Jesper Dangaard Brouer <hawk@kernel.org>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>,
-	Simon Horman <horms@kernel.org>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-References: <20241120103456.396577-1-linyunsheng@huawei.com>
- <20241120103456.396577-4-linyunsheng@huawei.com>
- <15f937d7-7ac1-4a7f-abcd-abfede191b51@arm.com>
- <57dea3ef-6982-4946-bf96-8ebadf6f883c@huawei.com>
- <a02c5976-e288-404e-b725-66bd4c391384@arm.com>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <a02c5976-e288-404e-b725-66bd4c391384@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: o7ibM_9_aV_4CknYjW-ulMzqgkVRLza5
+X-Proofpoint-ORIG-GUID: o7ibM_9_aV_4CknYjW-ulMzqgkVRLza5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 clxscore=1015 priorityscore=1501 impostorscore=0
+ bulkscore=0 mlxscore=0 adultscore=0 spamscore=0 mlxlogscore=891
+ suspectscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2409260000 definitions=main-2411220064
 
-On 2024/11/21 21:44, Robin Murphy wrote:
-> On 21/11/2024 8:04 am, Yunsheng Lin wrote:
->> On 2024/11/21 0:17, Robin Murphy wrote:
->>> On 20/11/2024 10:34 am, Yunsheng Lin wrote:
->>>> Skip dma sync operation for inflight pages before the
->>>> page_pool_destroy() returns to the driver as DMA API
->>>> expects to be called with a valid device bound to a
->>>> driver as mentioned in [1].
->>>>
->>>> After page_pool_destroy() is called, the page is not
->>>> expected to be recycled back to pool->alloc cache and
->>>> dma sync operation is not needed when the page is not
->>>> recyclable or pool->ring is full, so only skip the dma
->>>> sync operation for the infilght pages by clearing the
->>>> pool->dma_sync under protection of rcu lock when page
->>>> is recycled to pool->ring to ensure that there is no
->>>> dma sync operation called after page_pool_destroy() is
->>>> returned.
->>>
->>> Something feels off here - either this is a micro-optimisation which I wouldn't really expect to be meaningful, or it means patch #2 doesn't actually do what it claims. If it really is possible to attempt to dma_sync a page *after* page_pool_inflight_unmap() has already reclaimed and unmapped it, that represents yet another DMA API lifecycle issue, which as well as being even more obviously incorrect usage-wise, could also still lead to the same crash (if the device is non-coherent).
->>
->> For a page_pool owned page, it mostly goes through the below steps:
->> 1. page_pool calls buddy allocator API to allocate a page, call DMA mapping
->>     and sync_for_device API for it if its pool is empty. Or reuse the page in
->>     pool.
->>
->> 2. Driver calls the page_pool API to allocate the page, and pass the page
->>     to network stack after packet is dma'ed into the page and the sync_for_cpu
->>     API is called.
->>
->> 3. Network stack is done with page and called page_pool API to free the page.
->>
->> 4. page_pool releases the page back to buddy allocator if the page is not
->>     recyclable before doing the dma unmaping. Or do the sync_for_device
->>     and put the page in the its pool, the page might go through step 1
->>     again if the driver calls the page_pool allocate API.
->>
->> The calling of dma mapping and dma sync API is controlled by pool->dma_map
->> and pool->dma_sync respectively, the previous patch only clear pool->dma_map
->> after doing the dma unmapping. This patch ensures that there is no dma_sync
->> for recycle case of step 4 by clearing pool->dma_sync.
-> 
-> But *why* does it want to ensure that? Is there some possible race where one thread can attempt to sync and recycle a page while another thread is attempting to unmap and free it, such that you can't guarantee the correctness of dma_sync calls after page_pool_inflight_unmap() has started, and skipping them is a workaround for that? If so, then frankly I think that would want solving properly, but at the very least this change would need to come before patch #2.
+Enable GPU SMMU function on QCS615 platform. GPU SMMU is required
+for address translation in GPU device.
 
-The racing window is something like below. page_pool_destroy() and
-page_pool_put_page() can be called concurrently, patch 2 only use
-a spinlock to synchronise page_pool_inflight_unmap() with
-page_pool_return_page() called by page_pool_put_page() to avoid
-concurrent dma unmapping, there is no synchronization between
-page_pool_destroy() and page_pool_dma_sync_for_device() called
-by page_pool_put_page():
-            CPU0                           CPU1
-             .                               .
-     page_pool_destroy()          page_pool_put_page()
-             .                               .
-     synchronize_rcu()                       .
-             .                               .
-   page_pool_inflight_unmap()                .
-             .                               .
-             .                    __page_pool_put_page()
-             .                               .
-             .               page_pool_dma_sync_for_device()
-             .                               .
+device tree dependency:
+https://lore.kernel.org/all/20241104-add_initial_support_for_qcs615-v5-0-9dde8d7b80b0@quicinc.com/
 
-After this patch, page_pool_dma_sync_for_device() is protected by
-rcu lock and pool->dma_sync is cleared before synchronize_rcu and
-page_pool_inflight_unmap() is called after synchronize_rcu to ensure
-page_pool_dma_sync_for_device() will not call dma sync API after
-synchronize_rcu():
+gpucc dependency:
+https://lore.kernel.org/all/20241108-qcs615-mm-dt-nodes-v1-0-b2669cac0624@quicinc.com/
+https://lore.kernel.org/all/20241108-qcs615-mm-clockcontroller-v3-0-7d3b2d235fdf@quicinc.com/
 
-            CPU0                           CPU1
-             .                               .
-     page_pool_destroy() CPU       page_pool_put_page() CPU
-             .                               .
-    pool->dma_sync = false                   .
-             .                               .
-     synchronize_rcu()                       .
-             .                               .
-   page_pool_inflight_unmap()                .
-             .                               .
-             .                  page_pool_recycle_in_ring()
-             .                               .
-             .                        rcu_read_lock()
-             .               page_pool_dma_sync_for_device()
-             .                        rcu_read_unlock()
+SCM dependency:
+https://lore.kernel.org/all/20241105032107.9552-1-quic_qqzhou@quicinc.com/
 
-Previously patch 2&3 was combined as one patch, this version splits
-it out to make it more reviewable.
-I am not sure if it matters that much about the patch order as the
-fix doesn't seem to be completed unless both patches are included.
+Qingqing Zhou (2):
+  dt-bindings: arm-smmu: document QCS615 GPU SMMU
+  arm64: dts: qcom: qcs615: add the GPU SMMU node
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |  3 ++-
+ arch/arm64/boot/dts/qcom/qcs615.dtsi          | 27 +++++++++++++++++++
+ 2 files changed, 29 insertions(+), 1 deletion(-)
+
+
+base-commit: 414c97c966b69e4a6ea7b32970fa166b2f9b9ef0
+prerequisite-patch-id: 8a2454d5e07e56a6dd03f762f498051065635d85
+prerequisite-patch-id: 9ac14d92d33487fa1b8590df2bfc21aa6a07c47d
+prerequisite-patch-id: b06463a967744ad6a9e3ce9d8edeed676548ae7f
+prerequisite-patch-id: f9680e3c90d8f05babbcadd7b7f5174f484a8275
+prerequisite-patch-id: 6820b3043b3fd091dbf5823be999216b38f83f4e
+prerequisite-patch-id: 005f7e4772a8900d8b53067e80f04ca5199d7e6c
+prerequisite-patch-id: 04ca722967256efddc402b7bab94136a5174b0b9
+prerequisite-patch-id: 82481c82a20345548e2cb292d3098ed51843b809
+prerequisite-patch-id: 14c92e8198d2a4ba02bbaec069939c3fc742f6c6
+prerequisite-patch-id: fc1cfec4ecd56e669c161c4d2c3797fc0abff0ae
+prerequisite-patch-id: 748a4e51bbedae9c6ebdbd642b2fd1badf958788
+prerequisite-patch-id: 7a4200d4bbbfb97973af933b611c31c768181d7b
+prerequisite-patch-id: df2550174f20fc281930b7660c4d08b1cf03abe4
+prerequisite-patch-id: 6d52dd659917c7d2c24789a0874f6a964cb4fe36
+prerequisite-patch-id: 68e0ad0308fe6e1c4e8b71013b92223eeb1fd08b
+prerequisite-patch-id: a4f1010d6b115c921334de819563f431bfd53658
+prerequisite-patch-id: 90b9c37691ae5337863d9538cddddf3c15733a6f
+prerequisite-patch-id: 085c292085c8fe52c724e5a2b590907f94010aca
+prerequisite-patch-id: 4c0b32009ac43d6c46dbb72bfa62e44acd9b7187
+prerequisite-patch-id: b2fb240e25d48232e67f379d4ed1a170f3c3a067
+prerequisite-patch-id: df38b84507c9e62c724dca4ec0bc7c8442feaa3c
+prerequisite-patch-id: bcb1328b70868bb9c87c0e4c48e5c9d38853bc60
+prerequisite-patch-id: 8844a4661902eb44406639a3b7344416a0c88ed9
+prerequisite-patch-id: 8937b0848eb8b32dc21d044fa43a33a2efbe345d
+prerequisite-patch-id: 4db9f55207af45c6b64fff4f8929648a7fb44669
+prerequisite-patch-id: 89ce719a863bf5e909989877f15f82b51552e449
+-- 
+2.17.1
 
