@@ -1,383 +1,112 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D8614E1C4
-	for <iommu@lists.linux.dev>; Sat, 23 Nov 2024 17:07:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09DB91386B4
+	for <iommu@lists.linux.dev>; Sat, 23 Nov 2024 17:40:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732381627; cv=none; b=VKXW61NCIBnZHC4wC7DW8QnuI0sLUmbYBS+bGxngcDpX2Cm5WcmLBidBIUZIG4khZ7lkHV/Uab5hT7BNk8cbxhVgb+w4jqfkJ1S/mYMvAvknsNj9yFuAgfyGdjeLVCErzo3ak9FvCHtIcuzFDh/UT1FQm+zuwfKNEwv9R+L0RJI=
+	t=1732383605; cv=none; b=GWuDd7Nooh/40Ttx2orXGMsnDJcjeJwQ08hafmeV/oYaQK1rSkKmdahWGE49e2rkCuczPv93byRu5EmDiiLz0ftSjdUltXdFUFmy/Inil8eaE7cMq8NnXg5MshIkka901xR7pAoTiDlhrhvwwrFs348L+x7IFBjfP8xmHCNgRjU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732381627; c=relaxed/simple;
-	bh=YTr3twpywPfK5DImFZLtOkW8I9ZUyfy3JUYmHUgioMw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qaATfVNAGm3MLdUe4/ftDK5kZRWOlo/WblGh7jQy2F3NP2l2D5c5p11PQC24qUQeWs3XnpCqd44dCG/Ba5RzYMPQAcvNcy4Pp2e8U7z7ZX7SqABFXoTG6H0wHMj24Y80SV0TOL0iXe/YjNEYif0j2rKmXsqaRhUdUDC7H93mItQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UKtPBWBt; arc=none smtp.client-ip=209.85.208.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UKtPBWBt"
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5cec9609303so3572075a12.1
-        for <iommu@lists.linux.dev>; Sat, 23 Nov 2024 09:07:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1732381624; x=1732986424; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=D1FXaR+2MBGMvbgBe1TRkgGykNk1lxgsB6NnTKeQ0Nw=;
-        b=UKtPBWBtBEvataSlgHTMXLDKZU0TNSWG6MipegODe7nNjAXJhmCyIBcVLDp8UG5NP0
-         0Cj76CzLWtMfGslWX74rwz6WDwyCzz8CmcXOUCIusGEulbZOkb7pJYrJZXa7ORTBCQCT
-         VGk+efxRzg6aiQuoZY0dTQnxRSkyZiBECLrlLcvc6F2D+IWFG6xtDkgvZ5Hu5+imq8P5
-         m19ueHbLo48Zo9ZwWG1fLcdobcUfC8v7Plj0DHrKRsAKpYxnRE0nZi4QrsoGW/Mqchl9
-         g9F8DPmDJZ2of9ovFiN7cI1+nejJnw4/bz0dwgsRHrxk5QmQxu4gWkgsFrkqH6mvFMGO
-         BuOQ==
+	s=arc-20240116; t=1732383605; c=relaxed/simple;
+	bh=SUWlvFhZ88y9oCZQXzu4MqsvHI1dd4kzYeM4ZgL7wNk=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:
+	 Content-Type; b=cikyJmJkbYZ5ljiMV72etF+d9X71dh08Qr6KaSWiS+3kJyAEVCMhNIrtGWHl+yWm3C1mk+q7l/moVG5BNHPsXNwN0LE0KCKPm6SXPMpiwKM+6TuNjDeAhS6LJA4v3kxsPHxI366ZvKo8DemPI6iDlJbE3f1saGQPaik8G8sbvE4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-3a77085a3d7so30129905ab.1
+        for <iommu@lists.linux.dev>; Sat, 23 Nov 2024 09:40:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732381624; x=1732986424;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=D1FXaR+2MBGMvbgBe1TRkgGykNk1lxgsB6NnTKeQ0Nw=;
-        b=SmH4pTU+nf9E+BHOkynrEQo/feHtcX3Hm2byxY6h0ywy15jn/1bNmgfpc0UIhx5aLE
-         BV6xhxP23BlX6Wfh4oKffBhiG/4esf9RTzvVHufeMK1jlzVLZwQUopDpmFsj/xMPk0Y6
-         i7gzBsYW77yff3wjHF8UCLR2i280MR6eRxXXOtPwWVI7gFKWcgaNqSvVMhkePIi+9SW7
-         LzYIFyIW9f5ZPwPbCmsw69xkGuY5kZl3HnAfmCDzVKcmhlvhayjNjyGgjuJymLJVgCzZ
-         ploJLAAVZ6uC6PpLefuoRVzaOS4Ayb7n3gYv05T/l8+raCUQPsarHhO8rEpdn2FPVS+B
-         imGQ==
-X-Gm-Message-State: AOJu0YwIhxhqj3WqyL26gkDA1YthA6cXIuJteaou2BluJomnsLzHZbQF
-	RkKOo1H9Z9rd7abC4Ajh9ZXfQvU6fkW9SPiWrGPsk7GQQz6avalC11QsMwIc7kWhsDcgqtj+Uzp
-	myfl9tNJUMbPfk4t4ZJSrjuoZLZ4=
-X-Gm-Gg: ASbGnctcxOHu4NcNOkTQpcGlZoOA614RTaqGxM7Nys+m8t5yXUj90m3oTGOmt182kQl
-	oUY1CR0XTHjnle+fQFVGDIKfFXO8qrM8pOaaEfwycrD9daiiAIorF0K3EEQV8n69eNw==
-X-Google-Smtp-Source: AGHT+IFbOnxqUTt2cSHTRdWMzRkDp4XKwfG+z2Ly0g1mfHoDQxLPsK5NbQXHXtNveFYArJ/s2aSkNuKWTa10Vkr5v+s=
-X-Received: by 2002:a05:6402:43ca:b0:5cb:7295:49b with SMTP id
- 4fb4d7f45d1cf-5d0207c2fa3mr5845780a12.34.1732381623623; Sat, 23 Nov 2024
- 09:07:03 -0800 (PST)
+        d=1e100.net; s=20230601; t=1732383603; x=1732988403;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=qfFz15SpHCrVvxqnKaUyz4RN6DlSXKyVSnr96uHbHuE=;
+        b=okoF3NerCov/rZrRXUUcxBsUfslU/i2oqA3rE8CCvYbihMio8rGOWMtP7+qNW1IqyY
+         I2THEdcURcepKSkZRGldmGTNN6/ywxv4zsxLBYCMfEupVVnTsGK9TF68vjlVFXxvgTC0
+         ydEt8WaBiwAckXpAmVPahpj6We34obkvsdohb5zBpRSCzf7cFnXsV0eL4v1jB4IBZhhC
+         fJnulN5hMhHprvppErhX+CoElNd3Bv66WXKD5cID/TDxjFHS3eTSc9Etoj0DELLSp9t/
+         7YMMZDa2Af3jd+FqFMPR5KOUI103J3jAJqxyenCyG2BQEAYNjvyo1JEvwx5NFMQruAaX
+         rccQ==
+X-Gm-Message-State: AOJu0Ywa+fbXNtfoRKp1prEnDJQs4zgUL8+VKnZKeQEpjPAJVrijln7n
+	b20+1jJyllcuceW+eMWyZ+tRHiVNqN75U/TiJxvdiP+yuCHGX9PQ3OA2c+cWa8dGoooe/2uLiuh
+	KmvIZekVspQ+aOxBwp9lam1c3thtV205mySy8iBHJDnY1nQzgxivhXL8=
+X-Google-Smtp-Source: AGHT+IGrUdsyX24hBRvcijc+4cRnb2UfM0U26Tmg8RDJfAYSlDyRb85mNCtu83cuPptfyeZ4NTqxvkqkPrKMNZ0LdBAaD8bigAwq
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <67403e13.050a0220.3c9d61.018d.GAE@google.com>
-In-Reply-To: <67403e13.050a0220.3c9d61.018d.GAE@google.com>
-From: Suraj Sonawane <surajsonawane0215@gmail.com>
-Date: Sat, 23 Nov 2024 22:36:25 +0530
-Message-ID: <CAHiZj8iCJHepbifizgOXDdq5ztyjC9WPB8vXcWkfYZks2VNYtA@mail.gmail.com>
+X-Received: by 2002:a05:6e02:ca6:b0:3a7:933e:ed95 with SMTP id
+ e9e14a558f8ab-3a7933eee23mr84515875ab.2.1732383603213; Sat, 23 Nov 2024
+ 09:40:03 -0800 (PST)
+Date: Sat, 23 Nov 2024 09:40:03 -0800
+In-Reply-To: <CAHiZj8iCJHepbifizgOXDdq5ztyjC9WPB8vXcWkfYZks2VNYtA@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <67421373.050a0220.1cc393.001a.GAE@google.com>
 Subject: Re: [syzbot] [iommu?] WARNING in iommufd_device_unbind
-To: syzbot <syzbot+c92878e123785b1fa2db@syzkaller.appspotmail.com>
-Cc: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
+From: syzbot <syzbot+c92878e123785b1fa2db@syzkaller.appspotmail.com>
+To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
 	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
-Content-Type: multipart/mixed; boundary="0000000000004ac84c06279787a2"
-
---0000000000004ac84c06279787a2
-Content-Type: multipart/alternative; boundary="0000000000004ac84b06279787a0"
-
---0000000000004ac84b06279787a0
+	surajsonawane0215@gmail.com, syzkaller-bugs@googlegroups.com, will@kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-#syz test
+Hello,
 
-On Fri, Nov 22, 2024 at 1:47=E2=80=AFPM syzbot <
-syzbot+c92878e123785b1fa2db@syzkaller.appspotmail.com> wrote:
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+WARNING in iommufd_device_unbind
 
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    c6d64479d609 Merge tag 'pull-statx' of
-> git://git.kernel.or..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D129a0ae858000=
-0
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3Db3b3b2f3eaae5=
-1f9
-> dashboard link:
-> https://syzkaller.appspot.com/bug?extid=3Dc92878e123785b1fa2db
-> compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for
-> Debian) 2.40
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D17da1bf7980=
-000
->
-> Downloadable assets:
-> disk image:
-> https://storage.googleapis.com/syzbot-assets/9d212f6bb1af/disk-c6d64479.r=
-aw.xz
-> vmlinux:
-> https://storage.googleapis.com/syzbot-assets/21a14342211b/vmlinux-c6d6447=
-9.xz
-> kernel image:
-> https://storage.googleapis.com/syzbot-assets/f96c41f3e4a6/bzImage-c6d6447=
-9.xz
->
-> IMPORTANT: if you fix the issue, please add the following tag to the
-> commit:
-> Reported-by: syzbot+c92878e123785b1fa2db@syzkaller.appspotmail.com
->
-> iommufd: Time out waiting for iommufd object to become free
-> ------------[ cut here ]------------
-> WARNING: CPU: 1 PID: 6050 at drivers/iommu/iommufd/iommufd_private.h:208
-> iommufd_object_destroy_user drivers/iommu/iommufd/iommufd_private.h:208
-> [inline]
-> WARNING: CPU: 1 PID: 6050 at drivers/iommu/iommufd/iommufd_private.h:208
-> iommufd_device_unbind+0x81/0xa0 drivers/iommu/iommufd/device.c:280
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 6050 Comm: syz.3.18 Not tainted
-> 6.12.0-syzkaller-00239-gc6d64479d609 #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 10/30/2024
-> RIP: 0010:iommufd_object_destroy_user
-> drivers/iommu/iommufd/iommufd_private.h:208 [inline]
-> RIP: 0010:iommufd_device_unbind+0x81/0xa0
-> drivers/iommu/iommufd/device.c:280
-> Code: 00 e8 83 76 01 00 89 c3 31 ff 89 c6 e8 b8 85 43 fc 85 db 75 0f e8 6=
-f
-> 81 43 fc 5b 41 5e 41 5f c3 cc cc cc cc e8 60 81 43 fc 90 <0f> 0b 90 eb eb
-> 89 f9 80 e1 07 80 c1 03 38 c1 7c b8 e8 d9 44 aa fc
-> RSP: 0018:ffffc90003017c38 EFLAGS: 00010293
-> RAX: ffffffff85516f50 RBX: 00000000fffffff0 RCX: ffff88802c693c00
-> RDX: 0000000000000000 RSI: 00000000fffffff0 RDI: 0000000000000000
-> RBP: ffffc90003017d70 R08: ffffffff85516f38 R09: 1ffff11005b9b140
-> R10: dffffc0000000000 R11: ffffed1005b9b141 R12: ffff888034149718
-> R13: ffff888034149700 R14: ffff888028d2c400 R15: dffffc0000000000
-> FS:  00007f2573c136c0(0000) GS:ffff8880b8700000(0000)
-> knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 000000c001633e80 CR3: 0000000032fda000 CR4: 00000000003526f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  iommufd_selftest_destroy+0x95/0xe0 drivers/iommu/iommufd/selftest.c:1439
->  iommufd_object_remove+0x3b6/0x530 drivers/iommu/iommufd/main.c:211
->  iommufd_fops_ioctl+0x4d6/0x5a0 drivers/iommu/iommufd/main.c:424
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:906 [inline]
->  __se_sys_ioctl+0xf5/0x170 fs/ioctl.c:892
->  do_syscall_x64 arch/x86/entry/common.c:52 [inline]
->  do_syscall_64+0xf3/0x230 arch/x86/entry/common.c:83
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7f2572d7e759
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f=
-7
-> 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff
-> ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f2573c13038 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> RAX: ffffffffffffffda RBX: 00007f2572f36058 RCX: 00007f2572d7e759
-> RDX: 0000000020000400 RSI: 0000000000003b80 RDI: 0000000000000003
-> RBP: 00007f2572df175e R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 0000000000000001 R14: 00007f2572f36058 R15: 00007ffefd725ea8
->  </TASK>
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->
-> If the report is already addressed, let syzbot know by replying with:
-> #syz fix: exact-commit-title
->
-> If you want syzbot to run the reproducer, reply with:
-> #syz test: git://repo/address.git branch-or-commit-hash
-> If you attach or paste a git patch, syzbot will apply it before testing.
->
-> If you want to overwrite report's subsystems, reply with:
-> #syz set subsystems: new-subsystem
-> (See the list of subsystem names on the web dashboard)
->
-> If the report is a duplicate of another one, reply with:
-> #syz dup: exact-subject-of-another-report
->
-> If you want to undo deduplication, reply with:
-> #syz undup
->
-> --
-> You received this message because you are subscribed to the Google Groups
-> "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an
-> email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion visit
-> https://groups.google.com/d/msgid/syzkaller-bugs/67403e13.050a0220.3c9d61=
-.018d.GAE%40google.com
-> .
->
+iommufd: Time out waiting for iommufd object to become free
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 7718 at drivers/iommu/iommufd/iommufd_private.h:190 iommufd_object_destroy_user drivers/iommu/iommufd/iommufd_private.h:190 [inline]
+WARNING: CPU: 1 PID: 7718 at drivers/iommu/iommufd/iommufd_private.h:190 iommufd_device_unbind+0x81/0xa0 drivers/iommu/iommufd/device.c:280
+Modules linked in:
+CPU: 1 UID: 0 PID: 7718 Comm: syz.2.28 Not tainted 6.12.0-syzkaller-08446-g228a1157fb9f-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/13/2024
+RIP: 0010:iommufd_object_destroy_user drivers/iommu/iommufd/iommufd_private.h:190 [inline]
+RIP: 0010:iommufd_device_unbind+0x81/0xa0 drivers/iommu/iommufd/device.c:280
+Code: 00 e8 13 a6 01 00 89 c3 31 ff 89 c6 e8 78 61 4c fc 85 db 75 0f e8 2f 5d 4c fc 5b 41 5e 41 5f c3 cc cc cc cc e8 20 5d 4c fc 90 <0f> 0b 90 eb eb 89 f9 80 e1 07 80 c1 03 38 c1 7c b8 e8 a9 f1 b3 fc
+RSP: 0000:ffffc9000558fc38 EFLAGS: 00010293
+RAX: ffffffff8548efc0 RBX: 00000000fffffff0 RCX: ffff88802b943c00
+RDX: 0000000000000000 RSI: 00000000fffffff0 RDI: 0000000000000000
+RBP: ffffc9000558fd70 R08: ffffffff8548efa8 R09: 1ffff11004af9f00
+R10: dffffc0000000000 R11: ffffed1004af9f01 R12: ffff88803200d698
+R13: ffff88803200d680 R14: ffff88807d293c00 R15: dffffc0000000000
+FS:  00007f8c8c5a06c0(0000) GS:ffff8880b8700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020b04000 CR3: 000000006c9d0000 CR4: 00000000003526f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ iommufd_selftest_destroy+0x95/0xe0 drivers/iommu/iommufd/selftest.c:1621
+ iommufd_object_remove+0x3b6/0x530 drivers/iommu/iommufd/main.c:185
+ iommufd_fops_ioctl+0x4d6/0x5a0 drivers/iommu/iommufd/main.c:409
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:906 [inline]
+ __se_sys_ioctl+0xf5/0x170 fs/ioctl.c:892
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0xf3/0x230 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f8c8b77e759
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f8c8c5a0038 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f8c8b936058 RCX: 00007f8c8b77e759
+RDX: 0000000020000400 RSI: 0000000000003b80 RDI: 0000000000000003
+RBP: 00007f8c8b7f175e R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000000001 R14: 00007f8c8b936058 R15: 00007fffb80aeab8
+ </TASK>
 
---0000000000004ac84b06279787a0
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">#syz test<br></div><br><div class=3D"gmail_quote"><div dir=
-=3D"ltr" class=3D"gmail_attr">On Fri, Nov 22, 2024 at 1:47=E2=80=AFPM syzbo=
-t &lt;<a href=3D"mailto:syzbot%2Bc92878e123785b1fa2db@syzkaller.appspotmail=
-.com">syzbot+c92878e123785b1fa2db@syzkaller.appspotmail.com</a>&gt; wrote:<=
-br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
-x;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hello,<br>
-<br>
-syzbot found the following issue on:<br>
-<br>
-HEAD commit:=C2=A0 =C2=A0 c6d64479d609 Merge tag &#39;pull-statx&#39; of gi=
-t://git.kernel.or..<br>
-git tree:=C2=A0 =C2=A0 =C2=A0 =C2=A0upstream<br>
-console output: <a href=3D"https://syzkaller.appspot.com/x/log.txt?x=3D129a=
-0ae8580000" rel=3D"noreferrer" target=3D"_blank">https://syzkaller.appspot.=
-com/x/log.txt?x=3D129a0ae8580000</a><br>
-kernel config:=C2=A0 <a href=3D"https://syzkaller.appspot.com/x/.config?x=
-=3Db3b3b2f3eaae51f9" rel=3D"noreferrer" target=3D"_blank">https://syzkaller=
-.appspot.com/x/.config?x=3Db3b3b2f3eaae51f9</a><br>
-dashboard link: <a href=3D"https://syzkaller.appspot.com/bug?extid=3Dc92878=
-e123785b1fa2db" rel=3D"noreferrer" target=3D"_blank">https://syzkaller.apps=
-pot.com/bug?extid=3Dc92878e123785b1fa2db</a><br>
-compiler:=C2=A0 =C2=A0 =C2=A0 =C2=A0Debian clang version 15.0.6, GNU ld (GN=
-U Binutils for Debian) 2.40<br>
-syz repro:=C2=A0 =C2=A0 =C2=A0 <a href=3D"https://syzkaller.appspot.com/x/r=
-epro.syz?x=3D17da1bf7980000" rel=3D"noreferrer" target=3D"_blank">https://s=
-yzkaller.appspot.com/x/repro.syz?x=3D17da1bf7980000</a><br>
-<br>
-Downloadable assets:<br>
-disk image: <a href=3D"https://storage.googleapis.com/syzbot-assets/9d212f6=
-bb1af/disk-c6d64479.raw.xz" rel=3D"noreferrer" target=3D"_blank">https://st=
-orage.googleapis.com/syzbot-assets/9d212f6bb1af/disk-c6d64479.raw.xz</a><br=
->
-vmlinux: <a href=3D"https://storage.googleapis.com/syzbot-assets/21a1434221=
-1b/vmlinux-c6d64479.xz" rel=3D"noreferrer" target=3D"_blank">https://storag=
-e.googleapis.com/syzbot-assets/21a14342211b/vmlinux-c6d64479.xz</a><br>
-kernel image: <a href=3D"https://storage.googleapis.com/syzbot-assets/f96c4=
-1f3e4a6/bzImage-c6d64479.xz" rel=3D"noreferrer" target=3D"_blank">https://s=
-torage.googleapis.com/syzbot-assets/f96c41f3e4a6/bzImage-c6d64479.xz</a><br=
->
-<br>
-IMPORTANT: if you fix the issue, please add the following tag to the commit=
-:<br>
-Reported-by: <a href=3D"mailto:syzbot%2Bc92878e123785b1fa2db@syzkaller.apps=
-potmail.com" target=3D"_blank">syzbot+c92878e123785b1fa2db@syzkaller.appspo=
-tmail.com</a><br>
-<br>
-iommufd: Time out waiting for iommufd object to become free<br>
-------------[ cut here ]------------<br>
-WARNING: CPU: 1 PID: 6050 at drivers/iommu/iommufd/iommufd_private.h:208 io=
-mmufd_object_destroy_user drivers/iommu/iommufd/iommufd_private.h:208 [inli=
-ne]<br>
-WARNING: CPU: 1 PID: 6050 at drivers/iommu/iommufd/iommufd_private.h:208 io=
-mmufd_device_unbind+0x81/0xa0 drivers/iommu/iommufd/device.c:280<br>
-Modules linked in:<br>
-CPU: 1 UID: 0 PID: 6050 Comm: syz.3.18 Not tainted 6.12.0-syzkaller-00239-g=
-c6d64479d609 #0<br>
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Goo=
-gle 10/30/2024<br>
-RIP: 0010:iommufd_object_destroy_user drivers/iommu/iommufd/iommufd_private=
-.h:208 [inline]<br>
-RIP: 0010:iommufd_device_unbind+0x81/0xa0 drivers/iommu/iommufd/device.c:28=
-0<br>
-Code: 00 e8 83 76 01 00 89 c3 31 ff 89 c6 e8 b8 85 43 fc 85 db 75 0f e8 6f =
-81 43 fc 5b 41 5e 41 5f c3 cc cc cc cc e8 60 81 43 fc 90 &lt;0f&gt; 0b 90 e=
-b eb 89 f9 80 e1 07 80 c1 03 38 c1 7c b8 e8 d9 44 aa fc<br>
-RSP: 0018:ffffc90003017c38 EFLAGS: 00010293<br>
-RAX: ffffffff85516f50 RBX: 00000000fffffff0 RCX: ffff88802c693c00<br>
-RDX: 0000000000000000 RSI: 00000000fffffff0 RDI: 0000000000000000<br>
-RBP: ffffc90003017d70 R08: ffffffff85516f38 R09: 1ffff11005b9b140<br>
-R10: dffffc0000000000 R11: ffffed1005b9b141 R12: ffff888034149718<br>
-R13: ffff888034149700 R14: ffff888028d2c400 R15: dffffc0000000000<br>
-FS:=C2=A0 00007f2573c136c0(0000) GS:ffff8880b8700000(0000) knlGS:0000000000=
-000000<br>
-CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 0000000080050033<br>
-CR2: 000000c001633e80 CR3: 0000000032fda000 CR4: 00000000003526f0<br>
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000<br>
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400<br>
-Call Trace:<br>
-=C2=A0&lt;TASK&gt;<br>
-=C2=A0iommufd_selftest_destroy+0x95/0xe0 drivers/iommu/iommufd/selftest.c:1=
-439<br>
-=C2=A0iommufd_object_remove+0x3b6/0x530 drivers/iommu/iommufd/main.c:211<br=
->
-=C2=A0iommufd_fops_ioctl+0x4d6/0x5a0 drivers/iommu/iommufd/main.c:424<br>
-=C2=A0vfs_ioctl fs/ioctl.c:51 [inline]<br>
-=C2=A0__do_sys_ioctl fs/ioctl.c:906 [inline]<br>
-=C2=A0__se_sys_ioctl+0xf5/0x170 fs/ioctl.c:892<br>
-=C2=A0do_syscall_x64 arch/x86/entry/common.c:52 [inline]<br>
-=C2=A0do_syscall_64+0xf3/0x230 arch/x86/entry/common.c:83<br>
-=C2=A0entry_SYSCALL_64_after_hwframe+0x77/0x7f<br>
-RIP: 0033:0x7f2572d7e759<br>
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 =
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 &lt;48&gt; 3d 01 f=
-0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48<br>
-RSP: 002b:00007f2573c13038 EFLAGS: 00000246 ORIG_RAX: 0000000000000010<br>
-RAX: ffffffffffffffda RBX: 00007f2572f36058 RCX: 00007f2572d7e759<br>
-RDX: 0000000020000400 RSI: 0000000000003b80 RDI: 0000000000000003<br>
-RBP: 00007f2572df175e R08: 0000000000000000 R09: 0000000000000000<br>
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000<br>
-R13: 0000000000000001 R14: 00007f2572f36058 R15: 00007ffefd725ea8<br>
-=C2=A0&lt;/TASK&gt;<br>
-<br>
-<br>
----<br>
-This report is generated by a bot. It may contain errors.<br>
-See <a href=3D"https://goo.gl/tpsmEJ" rel=3D"noreferrer" target=3D"_blank">=
-https://goo.gl/tpsmEJ</a> for more information about syzbot.<br>
-syzbot engineers can be reached at <a href=3D"mailto:syzkaller@googlegroups=
-.com" target=3D"_blank">syzkaller@googlegroups.com</a>.<br>
-<br>
-syzbot will keep track of this issue. See:<br>
-<a href=3D"https://goo.gl/tpsmEJ#status" rel=3D"noreferrer" target=3D"_blan=
-k">https://goo.gl/tpsmEJ#status</a> for how to communicate with syzbot.<br>
-<br>
-If the report is already addressed, let syzbot know by replying with:<br>
-#syz fix: exact-commit-title<br>
-<br>
-If you want syzbot to run the reproducer, reply with:<br>
-#syz test: git://repo/address.git branch-or-commit-hash<br>
-If you attach or paste a git patch, syzbot will apply it before testing.<br=
->
-<br>
-If you want to overwrite report&#39;s subsystems, reply with:<br>
-#syz set subsystems: new-subsystem<br>
-(See the list of subsystem names on the web dashboard)<br>
-<br>
-If the report is a duplicate of another one, reply with:<br>
-#syz dup: exact-subject-of-another-report<br>
-<br>
-If you want to undo deduplication, reply with:<br>
-#syz undup<br>
-<br>
--- <br>
-You received this message because you are subscribed to the Google Groups &=
-quot;syzkaller-bugs&quot; group.<br>
-To unsubscribe from this group and stop receiving emails from it, send an e=
-mail to <a href=3D"mailto:syzkaller-bugs%2Bunsubscribe@googlegroups.com" ta=
-rget=3D"_blank">syzkaller-bugs+unsubscribe@googlegroups.com</a>.<br>
-To view this discussion visit <a href=3D"https://groups.google.com/d/msgid/=
-syzkaller-bugs/67403e13.050a0220.3c9d61.018d.GAE%40google.com" rel=3D"noref=
-errer" target=3D"_blank">https://groups.google.com/d/msgid/syzkaller-bugs/6=
-7403e13.050a0220.3c9d61.018d.GAE%40google.com</a>.<br>
-</blockquote></div>
+Tested on:
 
---0000000000004ac84b06279787a0--
---0000000000004ac84c06279787a2
-Content-Type: text/x-patch; charset="US-ASCII"; 
-	name="0001-fix2-WARNING-in-iommufd_device_unbind.patch"
-Content-Disposition: attachment; 
-	filename="0001-fix2-WARNING-in-iommufd_device_unbind.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_m3uf9fzu0>
-X-Attachment-Id: f_m3uf9fzu0
+commit:         228a1157 Merge tag '6.13-rc-part1-SMB3-client-fixes' o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=178f975f980000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=402159daa216c89d
+dashboard link: https://syzkaller.appspot.com/bug?extid=c92878e123785b1fa2db
+compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1585a9c0580000
 
-RnJvbSBhNTI1ZWVkMTRkNDJhOWViZjE2NDM5ZDgxZTg2MWZjMGJmY2JmOGE3IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBTdXJhaiBTb25hd2FuZSA8c3VyYWpzb25hd2FuZTAyMTVAZ21h
-aWwuY29tPgpEYXRlOiBTYXQsIDIzIE5vdiAyMDI0IDEyOjQ0OjU2ICswNTMwClN1YmplY3Q6IFtQ
-QVRDSF0gZml4MiBXQVJOSU5HIGluIGlvbW11ZmRfZGV2aWNlX3VuYmluZAoKc3l6IHRlc3QKClNp
-Z25lZC1vZmYtYnk6IFN1cmFqIFNvbmF3YW5lIDxzdXJhanNvbmF3YW5lMDIxNUBnbWFpbC5jb20+
-Ci0tLQogZHJpdmVycy9pb21tdS9pb21tdWZkL21haW4uYyB8IDIgKy0KIDEgZmlsZSBjaGFuZ2Vk
-LCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9t
-bXUvaW9tbXVmZC9tYWluLmMgYi9kcml2ZXJzL2lvbW11L2lvbW11ZmQvbWFpbi5jCmluZGV4IGQy
-NjgzYWQ4Mi4uOTU0YzAyMWU5IDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2lvbW11ZmQvbWFp
-bi5jCisrKyBiL2RyaXZlcnMvaW9tbXUvaW9tbXVmZC9tYWluLmMKQEAgLTEwNCw3ICsxMDQsNyBA
-QCBzdGF0aWMgaW50IGlvbW11ZmRfb2JqZWN0X2RlY193YWl0X3Nob3J0dGVybShzdHJ1Y3QgaW9t
-bXVmZF9jdHggKmljdHgsCiAJaWYgKHdhaXRfZXZlbnRfdGltZW91dChpY3R4LT5kZXN0cm95X3dh
-aXQsCiAJCQkJcmVmY291bnRfcmVhZCgmdG9fZGVzdHJveS0+c2hvcnR0ZXJtX3VzZXJzKSA9PQog
-CQkJCQkwLAotCQkJCW1zZWNzX3RvX2ppZmZpZXMoMTAwMDApKSkKKwkJCQltc2Vjc190b19qaWZm
-aWVzKDExMDAwKSkpCiAJCXJldHVybiAwOwogCiAJcHJfY3JpdCgiVGltZSBvdXQgd2FpdGluZyBm
-b3IgaW9tbXVmZCBvYmplY3QgdG8gYmVjb21lIGZyZWVcbiIpOwotLSAKMi4zNC4xCgo=
---0000000000004ac84c06279787a2--
