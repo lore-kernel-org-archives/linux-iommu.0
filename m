@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4942D1B0F36;
-	Sun, 24 Nov 2024 13:50:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12B241F7B40;
+	Sun, 24 Nov 2024 13:53:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732456255; cv=none; b=gRz3qrhvwUxMFFepm3WmOU7q9jyVel24yUi5wvX9mRGtWBAhxGyGXWuRyVzhMGpl/U7rYGgkXt4ObGx6s+AqyPM8MRMRMjUBcALUSAh4zkevZWF6CnmFMkZanHbxxuIpC2EPmejbc9KfQbjvH5JjVLURCB60edNxIV+9wRnRZ18=
+	t=1732456386; cv=none; b=ALVtLyPZYbjM6G5ZHVcLkwEGmFmCCmV+rqlvAKlWnYl2RLGoBgbkoG023w/l9W74vkKgWixxX3BsS8+27Q5Vcx2UtlRHPjxpLXtTjTH8pR2dHhfzba/caPpFAWZQGaND1ZmEFVrCLnlRK0Rl0vLOIvobfyr5u861YWLGbKtowXE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732456255; c=relaxed/simple;
-	bh=pBZ5xxcEVnsY4o6Auj6hl5iczWwwi3GoOZOpbG3j0+Q=;
+	s=arc-20240116; t=1732456386; c=relaxed/simple;
+	bh=bpNykeNycoZKTjEd5Ld2byQXCO4HJy/3xSAxpSOY60E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fr8FCj1Jqfr+mQXLH2NdNrLfHKp2qUICNKkmktOGO2iS45AmzqUQtjcNEHXeOCLhU9sdslD++a0O861NBiGbfHUZd0U4pFL1jO0af2LseEWHMQ41eULWnnogkpmzFZ4R0RNv/yXdKe5VVHUJbdMbBkIwS6mA35+rd9x6/T6wdLQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Uph4N7ck; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=n+HYpz3ZVoZYglZ5I0mkWkxmzxWCw6wdUp1gjSEcnk4BmpD0hWgdha1FcBmOKA0KEymfD/R8xrgMdm2X8JyPDFrP9mLYK+EOxuLzmpiEKpLcUwIrvGgPLb0qjoym4zASEKhOC9W7oTuAl32I2TNvZ/AGKjx+wR4lKxJN2fqK9QQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N1hXDpDW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Uph4N7ck"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33B70C4CECC;
-	Sun, 24 Nov 2024 13:50:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N1hXDpDW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C933EC4CED3;
+	Sun, 24 Nov 2024 13:53:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732456255;
-	bh=pBZ5xxcEVnsY4o6Auj6hl5iczWwwi3GoOZOpbG3j0+Q=;
+	s=k20201202; t=1732456385;
+	bh=bpNykeNycoZKTjEd5Ld2byQXCO4HJy/3xSAxpSOY60E=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Uph4N7ckwMlQtXpDCU6cfrO+/cNuHfVxTHzF+WGRA9OohpinEq9+pnn8ByPhiCuHE
-	 x874GGZhh/9XOLlUQBKoujojbwJB8sJ2KP+RNfLWcEUgzJuzIgbyPSs2G7ULOL3mNg
-	 SbDF0F0Vyst/YCt4ovnh/BKIn5Cbbw3SVb0PzWe5Bs7KlXMCZdo3XU0jQFJwIiMS1c
-	 VH60fkL2ZBOBS4mdv7OnSc3Ocp7fISv2qxORPYpwjIkPSOQ5ACN8DZ5NyKDlJjKZKW
-	 oX2HPdE6dAUXsBGYSKiY3PWuntH3OgAVo5IPeNvIE/RqLfwq44ttiCspVAuyCIlKjU
-	 dZ3tAkuFxUl4w==
+	b=N1hXDpDW95KnHhhAD5jAAt+NqV22I3KgHaX2PjAIVzCfE6ggciUH6GiUeGZQoI3IR
+	 FzBf/7lGGf/eCi/8mveXoIEFQX1PLcKCwRvmOIxrY4dJC92HXxE/vNwY5cW5/qau55
+	 BZfHSS5W9L4mus2ZSjbp+hq4lPn7kmWMgrZWpe007kpCzeGxLbM8ZujOw0VmJIDOHy
+	 Zfe/eqdvQGsAIZVBYGCLM875Pude9990ps3qdUgNY8dDK2KyfgbXbHJilrpwZ+LKDx
+	 gxZphJcAelgqj4GYiO+zwrhBm1xoYVst3WnlkALG+dTs+/iJ6NIeBtOCoT+87Pnn6C
+	 drNG+t4/WJfWg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -35,12 +35,12 @@ Cc: Levi Yun <yeoreum.yun@arm.com>,
 	Sasha Levin <sashal@kernel.org>,
 	m.szyprowski@samsung.com,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.1 30/48] dma-debug: fix a possible deadlock on radix_lock
-Date: Sun, 24 Nov 2024 08:48:53 -0500
-Message-ID: <20241124134950.3348099-30-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 22/36] dma-debug: fix a possible deadlock on radix_lock
+Date: Sun, 24 Nov 2024 08:51:36 -0500
+Message-ID: <20241124135219.3349183-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241124134950.3348099-1-sashal@kernel.org>
-References: <20241124134950.3348099-1-sashal@kernel.org>
+In-Reply-To: <20241124135219.3349183-1-sashal@kernel.org>
+References: <20241124135219.3349183-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,7 +49,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.119
+X-stable-base: Linux 5.15.173
 Content-Transfer-Encoding: 8bit
 
 From: Levi Yun <yeoreum.yun@arm.com>
@@ -93,10 +93,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index de02c0808fb83..3e6f2a39beb3b 100644
+index 09ccb4d6bc7b6..b3961b4ae1696 100644
 --- a/kernel/dma/debug.c
 +++ b/kernel/dma/debug.c
-@@ -1044,9 +1044,13 @@ static void check_unmap(struct dma_debug_entry *ref)
+@@ -1046,9 +1046,13 @@ static void check_unmap(struct dma_debug_entry *ref)
  	}
  
  	hash_bucket_del(entry);
