@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC08C1E1C24;
-	Sun, 24 Nov 2024 13:37:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2586919993E;
+	Sun, 24 Nov 2024 13:44:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732455436; cv=none; b=OvieCUPdR6E8IDhdA4uen2KjzzRYwrSamnsM6p8/G9TB8VikSuORQq0rFVoztNedVkCfqgvxhuhNZn3fb+Nic/3bPybu5DI77zuFXpet69sJVRfROzeXn/VbpGIo9FTckNRp6KhNYPac2jJR00E+W0zhQHVQDHTS9KoK34UATxU=
+	t=1732455843; cv=none; b=AO+J3TpCYzvSEa0HAwInfBIARh3x/WPtlkRuNFd8ukafXuh3R0jkReb0DkkHUbSwqwSo2c2UebNwdYM42sYWKZ9vJTKEgOGd2GlHFsWqX8MV31eWiAERERoldRXB+2rlpsU2VH/yrGW3BLNvTFRkcZqCB0K5DhFr8/+dcjZSNhQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732455436; c=relaxed/simple;
+	s=arc-20240116; t=1732455843; c=relaxed/simple;
 	bh=K+dy7J2P2DkGP/rIUHYAhXsBZisveBBB0abmNJ+0Erw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=JG9ePNbkzd1pkhU+rJCyewZvk3nU8hAKX/ElgthI+omcKJovYjbeNZIPj8w4tSwg1Uo/yDRUKnwiN0CT3Fdet+OjFDNPMoQ3OPgDDgvXjAMR0QAh+JaHcQ0gSqjh/GgieXTfl4OBbOi01hGbBIS697hUyk04z5ltpRII60SzZXU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AYfPJbhy; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=ZMgb8j+24mnflngcubANebJW2V6M5348dCrCb0cLmpJg0CFX0goF1jTFqIrB+RCAJ2ihnbYmyS24PkTzpw/qr/jEv/jmmvnkYDpy+Tn8sNYZAET3mOXwZM683IwtQh98C9T3JyOVyA/UCDi2hVulZMkFXUIue0kwfWByROO0AEc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aEDRqlUZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AYfPJbhy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E060AC4CED7;
-	Sun, 24 Nov 2024 13:37:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aEDRqlUZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20EB0C4CECC;
+	Sun, 24 Nov 2024 13:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732455435;
+	s=k20201202; t=1732455843;
 	bh=K+dy7J2P2DkGP/rIUHYAhXsBZisveBBB0abmNJ+0Erw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=AYfPJbhyAq0MncAEsL3onspjS5dpd6PszonRWUJxtPSjo7MnlXdzQoAJzR0yUWf7d
-	 JN13cuODAwqGeNeTM4O9wFNKEw4SEjkQKlJuEU5z9crmPlJC2nkC3PqBSbm4o4QWjX
-	 3hm/xPLMvcaOU7Nd/9E7q8J12WusGhWLKwMjqDTzk1qJkLCnxHoKxySh9392qHHJCL
-	 1AAFpWe6HSg8ufQWHZUYzFybLQnH6tJPMviXGUXzgC9Xn/wWNJErNZHn4jk4J4624G
-	 Vg1kiPP5EOvrpJ7zWyK7P18nag6dIFVq9amJvY64op20IzaGjBFFfRECyX4nn5JPTa
-	 /XSBvi0WDn73g==
+	b=aEDRqlUZrFQm19waIN/g2fgqO1y/CKgunyAzlk8Jau3C0c/awH5RM7012XLLqMUk6
+	 GIMve35Jq1tmCygVz2FOOR9Eej9K57L+icWH5usH1wKxyyfGkGMXRkgAOhiOKeqVHX
+	 jI7gukYJLyG0V6ul/u4JKn0DO9koh6tsLFiEXP/O1l8LcZjA8haHwPr7Ampg3KkorZ
+	 iHY6C/zBCQOaZIu9XwRcmtBIejCui5hq6w8YMCUYzg37D+02r9XXnAIgNd8+rdk9D1
+	 rI9ouLp4yDWht1yAZag6Ica/6/dXB69Zx+0qat9pd+3puQ2f1vF+YQj8JMzbkLwrkE
+	 JFCgZnEhv9zrQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -35,12 +35,12 @@ Cc: Levi Yun <yeoreum.yun@arm.com>,
 	Sasha Levin <sashal@kernel.org>,
 	m.szyprowski@samsung.com,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.12 069/107] dma-debug: fix a possible deadlock on radix_lock
-Date: Sun, 24 Nov 2024 08:29:29 -0500
-Message-ID: <20241124133301.3341829-69-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.11 54/87] dma-debug: fix a possible deadlock on radix_lock
+Date: Sun, 24 Nov 2024 08:38:32 -0500
+Message-ID: <20241124134102.3344326-54-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241124133301.3341829-1-sashal@kernel.org>
-References: <20241124133301.3341829-1-sashal@kernel.org>
+In-Reply-To: <20241124134102.3344326-1-sashal@kernel.org>
+References: <20241124134102.3344326-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,7 +49,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.12.1
+X-stable-base: Linux 6.11.10
 Content-Transfer-Encoding: 8bit
 
 From: Levi Yun <yeoreum.yun@arm.com>
