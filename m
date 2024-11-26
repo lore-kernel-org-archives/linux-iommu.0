@@ -1,31 +1,25 @@
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D039B1917E6
-	for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 11:46:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41CEB193064
+	for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 11:49:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732621599; cv=none; b=FxZxeHDcUPxxq+NjtclWYLJJJneEv91GqHMAKDFAqZ/qaj3WpOSBtk/DT70F6m2UlPOqbFxcDOgZDzk1ZmE+QYvE86AIMNHimu/NaB3XeuTGk3LmW/AI061BXtufeSL/jWiUQMk/dZix1jrEg3+RfnQjcSvywGwwD4qDz3VubJo=
+	t=1732621758; cv=none; b=g9ev6+yhasYcuMsdP4vsiSYwwTNE7L/gpzgGeeyt+fpKdxTEULKqHkhOcA8PR3ofCRZnFt0HvNik5b/+1hZ1hjWLXUAlKZMFvJV+Xg+Y6G8iwm4EkIjUGPAuq11LanLvVhP2hJQBRoZgLF7xlkwiSw37iUAsA5fADUxFxJoIBXc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732621599; c=relaxed/simple;
-	bh=PZlwZxdHF7frqU3MGDyp+2mGn8PBWwE2iXqb6SNufIM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=s8JEIzUNvzLlujtfrdb1vj+4UqfYrngkUALOXnkimL4GSPd4n4X/1JlnHSwyYqrQ06hjavWZPtbG3OVKuSaADqR3V5ekgXdjQt2XG6KOI6QTMxLF4d2fo//IxSKM1bNFgLlJ6LCynDivYmCa/TZEx/FJzL6fNbGUrS6noFp24Ws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.187
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.162.254])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4XyLLq74MwzxVZX;
-	Tue, 26 Nov 2024 19:43:47 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id 6CABD180105;
-	Tue, 26 Nov 2024 19:46:34 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Tue, 26 Nov 2024 19:46:34 +0800
-Message-ID: <caabd226-e80b-4cd7-acdf-0f1355e04b4f@huawei.com>
-Date: Tue, 26 Nov 2024 19:46:33 +0800
+	s=arc-20240116; t=1732621758; c=relaxed/simple;
+	bh=f58et2nyreK+xJUisiVXOOdinhTznscj3Lig6FTrUJ4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=tydfgI/aDWHyVqstlx5irGkUXXm9xwY4G9QwSRq9EdPkPb3X72mI5QW+8mh3GPEXTeY4kHOZpfb61q+dKFiVasUtMwHx1PzXpT31A/DwhHSc6F7c87jHxYJcCRLS7CTLF/azUCRFeRcXx3FPYKzvxlXvZK80i5+H7m7c/MS4pio=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 91D841682;
+	Tue, 26 Nov 2024 03:49:39 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D82D43F58B;
+	Tue, 26 Nov 2024 03:49:08 -0800 (PST)
+Message-ID: <84cb9155-4793-45f9-bb67-6926e103dc84@arm.com>
+Date: Tue, 26 Nov 2024 11:49:06 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,75 +27,50 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v4 2/3] page_pool: fix IOMMU crash when driver has
- already unbound
-To: Jesper Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>,
-	<kuba@kernel.org>, <pabeni@redhat.com>
-CC: <liuyonglong@huawei.com>, <fanghaiqing@huawei.com>,
-	<zhangkun09@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander Duyck
-	<alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Ilias Apalodimas
-	<ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>, Simon
- Horman <horms@kernel.org>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-References: <20241120103456.396577-1-linyunsheng@huawei.com>
- <20241120103456.396577-3-linyunsheng@huawei.com>
- <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
- <27475b57-eda1-4d67-93f2-5ca443632f6b@huawei.com>
- <ac728cc1-2ccb-4207-ae11-527a3ed8fbb6@kernel.org>
- <6233e2c3-3fea-4ed0-bdcc-9a625270da37@huawei.com>
- <554e768b-e990-49ff-bad4-805ee931597f@kernel.org>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <554e768b-e990-49ff-bad4-805ee931597f@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+Subject: Re: [PATCH] iommu: Downgrade print level for iommu group information
+To: Li RongQing <lirongqing@baidu.com>, joro@8bytes.org, will@kernel.org,
+ iommu@lists.linux.dev
+References: <20241126072339.25714-1-lirongqing@baidu.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20241126072339.25714-1-lirongqing@baidu.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 2024/11/26 18:22, Jesper Dangaard Brouer wrote:
-
-...
-
->>>
->>> Once the a page is release from a page pool it becomes a normal page,
->>> that adhere to normal page refcnt'ing. That is how it worked before with
->>> page_pool_release_page().
->>> The later extensions with page fragment support and devmem might have
->>> complicated this code path.
->>
->> As page_pool_return_page() and page_pool_destroy() both try to "release"
->> the page concurrently for a specific page, I am not sure how using some
->> simple *atomic* can avoid this kind of concurrency even before page
->> fragment and devmem are supported, it would be good to be more specific
->> about that by using some pseudocode.
->>
+On 26/11/2024 7:23 am, Li RongQing wrote:
+> This per device log is becoming longer with more and more PCI devices
+> in system, which slows down the boot process due to the serializing
+> nature of printk().
 > 
-> Okay, some my simple atomic idea will not work.
-> 
-> NEW IDEA:
-> 
-> So, the my concern in this patchset is that BH-disabling spin_lock pool->destroy_lock is held in the outer loop of page_pool_inflight_unmap() that scans all pages.  Disabling BH for this long have nasty side-effects.
-> 
-> Will it be enough to grab the pool->destroy_lock only when we detect a page that belongs to our page pool?  Of-cause after obtaining the lock. the code need to recheck if the page still belongs to the pool.
-> 
+> Downgrade dev_info() to dev_dbg() so it is still accessible for debug
+> purposes.
 
-That means there will be page_pool_return_page() called between the scanning,
-it seems like a lot like the idea of 'page_pool_get_dma_addr() need to be
-checked to decide if the mapping is already done or not for each page.' as
-there are two cases when page_pool_return_page() is called during scanning:
-1. page_pool_get_dma_addr() returns non-zero dma address, which means the dma
-   unmapping is not done by scanning yet, page_pool_return_page() need to do
-   the dma unmapping before calling put_page()
-2. page_pool_get_dma_addr() returns zero dma address, which means the dma
-   unmapping is done by scanning, page_pool_return_page() just skip the dma
-   unmapping and only call put_page().
+Previously discussed 4 and a half years ago:
 
-It seems there is only one case for scanning:
-1. page_pool_get_dma_addr() for a page_pool owned page returns non-zero dma
-   address, which means page_pool_return_page() is not called for that page yet,
-   scanning will the do the mapping for page_pool_return_page() and reset the
-   dma address of the page to indicate the dma unmapping is done for that page.
+https://lore.kernel.org/linux-iommu/20200302154426.GC6540@8bytes.org/
 
-It seems there is no case of page_pool owned page having zero dma address during
-scanning, as both page->pp_magic is cleared and dma unmapping is already done in
-page_pool_return_page().
+Also, given that the iommu_probe_device() path is inherently serialised 
+anyway, if logging a message from there significantly slows down your 
+boot process, how slow is your console device?
+
+Thanks,
+Robin.
+
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> ---
+>   drivers/iommu/iommu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 83c8e61..a16f944 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1193,7 +1193,7 @@ static struct group_device *iommu_group_alloc_device(struct iommu_group *group,
+>   
+>   	trace_add_device_to_group(group->id, dev);
+>   
+> -	dev_info(dev, "Adding to iommu group %d\n", group->id);
+> +	dev_dbg(dev, "Adding to iommu group %d\n", group->id);
+>   
+>   	return device;
+>   
