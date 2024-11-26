@@ -1,57 +1,57 @@
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1973197A93
-	for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 21:51:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F1161DF255
+	for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 23:54:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732657886; cv=none; b=GfUYI6PSXSCJNFrvzAVVILME6fi9puzo304rtI28Op6G+dDkOddzKFS0uhSL7XQzVS+rGeg+8qu+xqueb+7U3LEoBjtPU6hi4NNl2r+LpUEC800KAo6SIJAgbhKxGrvJ4m7BY7n4e+kQj6VYJp/xUxtJCJtIgSNNCmhXSQkEobo=
+	t=1732665273; cv=none; b=AMrN07bD104WwROQmuLLGG1E05zBaJjycSWqSccCRcYJ6x/qTtxqSKddF/Oe8mp5yZqPFvgJdAhkPeMruOe/kedlT/Ku/mrL97hzZhqFbwP9geY/iRCYkX2Kr8D+T+emYcVks/FZ53/ZK+UNbTimIuxFPgP4+ju7DVqsQcek0NA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732657886; c=relaxed/simple;
-	bh=845xXqnB33nlJjULLO/nrCqGOfiZyHwIgYSmqaNLCHU=;
+	s=arc-20240116; t=1732665273; c=relaxed/simple;
+	bh=x63pMP4OLfWRH+KuRzokRHFrfyWUaoWvW8veNR5AVMg=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ScYU4joY2OOi3iMsTtxKEf8T0neZA7UjRTj5kMzmP+nyd/Goz5921dJNAYoM6o1MbeE1TfuP+firQagUcv2Y9TurVGBVtCuE0wLvDx9Y30dvwNDPFePmfZdXXBu0M3xa1ZPfOohNkm8hGkPD1saBz6NckzyZmqUpMnl+9O/8mGw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=M4GXFCQr; arc=none smtp.client-ip=209.85.160.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 To:Cc:Content-Type; b=tNnzX+Iysp1AAW/tocqBIfWzlFBaTwZBUyrPmSGdchVNq7TBXfntbMhRYjg1By1IKkRv+SQ4RQOIp7v/PjM7lEyKi+Ig/1NqEHh0NLMJIM9Cgi41fYL6XbC0aY8oFitxQnNrkNqm2OfXbGqGVgpg9WsOJF8XIo7AfZ2EsLMndKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=diRiyShE; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="M4GXFCQr"
-Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-4668caacfb2so24931cf.0
-        for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 13:51:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="diRiyShE"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-434a7ee3d60so1387015e9.1
+        for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 15:54:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1732657883; x=1733262683; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1732665270; x=1733270070; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4n8OSPqRkLvx2KI0lecepo254y3Ft1HLiSCqdymG99Q=;
-        b=M4GXFCQrWDUDXPtWX2A2vRizpyh5VdXQlFyFc7OdnKXl81kulPySYSGjC5O4OJ9p67
-         i3O5UwGbcKkfYuqEyzWPTwYXVx6UJrMkXGpPvljzkOD7E/qB5ExxK67fPKqbzw7Mqwnv
-         /4TBSB9sW5jnSfOvia/k6NoqvnCjCypGEx7+O5t/IExGZOlIRQ1riop4aj4+/ojqxTKZ
-         NurtWuTTJuDZtHhp9jsWA+AipG0ES8ZGJrwpDYCLH0aUGNrJGnbtf6hMTjHVohvnIuCz
-         wY5Jvbo/2hWD5YPYIR2V+ARyA3mTszOXcmrQZPp5DT6ZhQX/zcEwth2+2DSXf41N5s5y
-         M1mQ==
+        bh=u2u5ocyAxhRtJ7w+0LT+WI0tq8J0AZWlWuu8DjpM/jI=;
+        b=diRiyShEahd62nosa7x/aawCwkT+rtgoSZG2RDHe9EBZPt3dt9lIz6nQStpJDd2bvY
+         Op6ax5+pphk2epKh9HYXzoDsB61X+8U9ke/uVhxs8HcuyCQk8J/XtFh4HvKTDE962KyZ
+         MbczZKpFT2LHeWHEYJcYF5YGRyUJrf30CJnky5g1kqB4zUVXZPPw//TMIRF1Lv0dEnnZ
+         3BjDzTjVu/ooHgv4Phb21o2Q3Dr+4qCD7x78mHboO4rn9svbaGw9NrcoVp7XeOvOGkB/
+         Ed1GV7Ufqa3FJbaL4AqPUg4keqkAB0F9nSYz7mBI+NWgY0PQ20d2D7Hh0OsD7BofM/Nb
+         N4vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732657883; x=1733262683;
+        d=1e100.net; s=20230601; t=1732665270; x=1733270070;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4n8OSPqRkLvx2KI0lecepo254y3Ft1HLiSCqdymG99Q=;
-        b=m6UVehxEXSbAoB+O4RAeIvNCzi9u3dgnAjo8hE/+WfRaLSrnBroNAUEMY454ziFkWu
-         hvibSNwb15eo7RCPXyz0ZeqqblGupR8E7x9kl4S0mos4zuDVmjDsuLrZdno3lWgtI362
-         S4OpY8oIdDijlRXqNWC3iQin1xxJXnhvfyYVkVHvfulLIuXoj5pqsH7wIg0EVAbHOA3E
-         Xm1aue65rBcvgeq2O51yfuEsVAgveyoKF9pUIJ0FIH9Maa72/XdV+REAW+n7z0bY3Pln
-         atXopY7FHMUd4XB9qi28rRQBMeHPmTyNdFxF+BEcRKRo6umykXgzunKl5NCRES1xiD2x
-         56Wg==
-X-Forwarded-Encrypted: i=1; AJvYcCUcZzXsQsONQkc+8mD5M4TzNnQAoYvCll00Q71+ekxUVK4JRKoOmxsrbUNdF69QW/Pgu2aZdg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz4ADtV8+xQkc2Yj+vuOuQ6w3EmD1G7vGCnJ+NL4xIZs23d74JD
-	HZtkRMAV/EBAiDcQAqX1MYUC2z7hmg2Zc+6Wxx2my09LG89LVMMnq0Ju7PlmYXC9NodV1EH+JDJ
-	zcIcih+hD9iFb+Pezs2LlFJOpu1xPryFZMgbS
-X-Gm-Gg: ASbGncv0QJMkAiEsmp6/mzFHtwH/2D+9+0JyBPcZ5x3If87r5k+bz/11XFt4IGDH9cg
-	TSkM9inFRzVpcjRtDy32iWw2MR5j+nvzj17dIWHmCFungN7bqKGr+5h+JVcX0+Q==
-X-Google-Smtp-Source: AGHT+IEEk5aN1eOwnEFKq2VpTSyQGdQBHpkfnICA0k0tDUjJ3oDS7OJn1bkFEhhsrwVy9UKRgNHio5nOyVpIPjmGRwc=
-X-Received: by 2002:a05:622a:5e83:b0:461:48f9:4852 with SMTP id
- d75a77b69052e-466b3dc63bcmr655761cf.28.1732657883030; Tue, 26 Nov 2024
- 13:51:23 -0800 (PST)
+        bh=u2u5ocyAxhRtJ7w+0LT+WI0tq8J0AZWlWuu8DjpM/jI=;
+        b=ZYGbuZBvFKSS0evsV0HuX+oFiO4E2+wVfjLvxzsKXyCdZZpg8KbSQmxJlKNE0vfY1M
+         XXMrTwq1iQeHwhSXGdRaUz1+5Gqj1gJU07EGee0M3LylRh54s0HKZe0iu7rCYmxOwLTc
+         A4U9dATcPxvPhRtn0nJdlJeF31QeLvdSnRwyeAiGOBgZ1gVJH8bWd23nKcUCGEBzCwvc
+         wcDxOCpeiiMmy6av9+cMtmXUUrt9msUFiYKtmeK6AAEIP7vnqFU731eyIjiD0/08fM+S
+         xUyJUSel17yWPayFg3Ur49kldzNSPuhT58C4qP+2Q8W/XtWPdXvK5Vlf0ggooevBXVSj
+         EHoQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVbeAw1IuNBs4L6G8r0Ed2rM5KAfGP+EyqhmxWMSVzRaOt58RMh7o/EcYc3EqoXoLjusPbUEg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yytjm+rx+MR0ChrQRHn8Yw9WHU+U5iZOjv26poZzWmuzHMguOWm
+	BYAPdBLHEuJFmdVAiD4Hbk8J5h4N3ytuJV3gXT9CwmX7SeLEXNYPk+oQ3CNVq7YsmoZTe6nSo1Q
+	1IMQPa+JDj1Kvqm9qTKD+2+50ggQ=
+X-Gm-Gg: ASbGncvojGIUcpYOQjWDVbfzmriNBfVvlE8BCWJ5wtTbjDYEjHk4WWNrFBR0cbw/+iH
+	gukmT0VNOr9zb7qdsxAtTFEJEuhOfCwpK2VBGmhEb7qUj/pKwtE/pVmlWYUWRHq/U
+X-Google-Smtp-Source: AGHT+IFtH1P3ItFz7u/rM/m1aucdE4ilOQvI4yoohlQC7SXR7UEilmGjmt5k6+4jadT8AZZ+mnnALhcPNWhrUveUGRI=
+X-Received: by 2002:a5d:5986:0:b0:382:2e9e:d695 with SMTP id
+ ffacd0b85a97d-385c6841615mr711578f8f.24.1732665269562; Tue, 26 Nov 2024
+ 15:54:29 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,103 +60,129 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20241120103456.396577-1-linyunsheng@huawei.com>
  <20241120103456.396577-3-linyunsheng@huawei.com> <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
- <27475b57-eda1-4d67-93f2-5ca443632f6b@huawei.com>
-In-Reply-To: <27475b57-eda1-4d67-93f2-5ca443632f6b@huawei.com>
-From: Mina Almasry <almasrymina@google.com>
-Date: Tue, 26 Nov 2024 13:51:11 -0800
-Message-ID: <CAHS8izM+sK=48gfa3gRNffu=T6t6-2vaS60QvH79zFA3gSDv9g@mail.gmail.com>
+ <27475b57-eda1-4d67-93f2-5ca443632f6b@huawei.com> <CAHS8izM+sK=48gfa3gRNffu=T6t6-2vaS60QvH79zFA3gSDv9g@mail.gmail.com>
+In-Reply-To: <CAHS8izM+sK=48gfa3gRNffu=T6t6-2vaS60QvH79zFA3gSDv9g@mail.gmail.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Tue, 26 Nov 2024 15:53:53 -0800
+Message-ID: <CAKgT0Uc-SDHsGkgmLeAuo5GLE0H43i3h7mmzG88BQojfCoQGGA@mail.gmail.com>
 Subject: Re: [PATCH RFC v4 2/3] page_pool: fix IOMMU crash when driver has
  already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: Jesper Dangaard Brouer <hawk@kernel.org>, davem@davemloft.net, kuba@kernel.org, 
-	pabeni@redhat.com, liuyonglong@huawei.com, fanghaiqing@huawei.com, 
-	zhangkun09@huawei.com, Robin Murphy <robin.murphy@arm.com>, 
-	Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, 
+To: Mina Almasry <almasrymina@google.com>
+Cc: Yunsheng Lin <linyunsheng@huawei.com>, Jesper Dangaard Brouer <hawk@kernel.org>, davem@davemloft.net, 
+	kuba@kernel.org, pabeni@redhat.com, liuyonglong@huawei.com, 
+	fanghaiqing@huawei.com, zhangkun09@huawei.com, 
+	Robin Murphy <robin.murphy@arm.com>, IOMMU <iommu@lists.linux.dev>, 
 	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>, 
 	Simon Horman <horms@kernel.org>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 21, 2024 at 12:03=E2=80=AFAM Yunsheng Lin <linyunsheng@huawei.c=
-om> wrote:
+On Tue, Nov 26, 2024 at 1:51=E2=80=AFPM Mina Almasry <almasrymina@google.co=
+m> wrote:
 >
-> On 2024/11/20 23:10, Jesper Dangaard Brouer wrote:
+> On Thu, Nov 21, 2024 at 12:03=E2=80=AFAM Yunsheng Lin <linyunsheng@huawei=
+.com> wrote:
 > >
-> >>       page_pool_detached(pool);
-> >>       pool->defer_start =3D jiffies;
-> >>       pool->defer_warn  =3D jiffies + DEFER_WARN_INTERVAL;
-> >> @@ -1159,7 +1228,7 @@ void page_pool_update_nid(struct page_pool *pool=
-, int new_nid)
-> >>       /* Flush pool alloc cache, as refill will check NUMA node */
-> >>       while (pool->alloc.count) {
-> >>           netmem =3D pool->alloc.cache[--pool->alloc.count];
-> >> -        page_pool_return_page(pool, netmem);
-> >> +        __page_pool_return_page(pool, netmem);
-> >>       }
-> >>   }
-> >>   EXPORT_SYMBOL(page_pool_update_nid);
+> > On 2024/11/20 23:10, Jesper Dangaard Brouer wrote:
+> > >
+> > >>       page_pool_detached(pool);
+> > >>       pool->defer_start =3D jiffies;
+> > >>       pool->defer_warn  =3D jiffies + DEFER_WARN_INTERVAL;
+> > >> @@ -1159,7 +1228,7 @@ void page_pool_update_nid(struct page_pool *po=
+ol, int new_nid)
+> > >>       /* Flush pool alloc cache, as refill will check NUMA node */
+> > >>       while (pool->alloc.count) {
+> > >>           netmem =3D pool->alloc.cache[--pool->alloc.count];
+> > >> -        page_pool_return_page(pool, netmem);
+> > >> +        __page_pool_return_page(pool, netmem);
+> > >>       }
+> > >>   }
+> > >>   EXPORT_SYMBOL(page_pool_update_nid);
+> > >
+> > > Thanks for continuing to work on this :-)
 > >
-> > Thanks for continuing to work on this :-)
+> > I am not sure how scalable the scanning is going to be if the memory si=
+ze became
+> > bigger, which is one of the reason I was posting it as RFC for this ver=
+sion.
+> >
+> > For some quick searching here, it seems there might be server with max =
+ram capacity
+> > of 12.3TB, which means the scanning might take up to about 10 secs for =
+those systems.
+> > The spin_lock is used to avoid concurrency as the page_pool_put_page() =
+API might be
+> > called from the softirq context, which might mean there might be spinni=
+ng of 12 secs
+> > in the softirq context.
+> >
+> > And it seems hard to call cond_resched() when the scanning and unmappin=
+g takes a lot
+> > of time as page_pool_put_page() might be called concurrently when pool-=
+>destroy_lock
+> > is released, which might means page_pool_get_dma_addr() need to be chec=
+ked to decide
+> > if the mapping is already done or not for each page.
+> >
+> > Also, I am not sure it is appropriate to stall the driver unbound up to=
+ 10 secs here
+> > for those large memory systems.
+> >
+> > https://www.broadberry.com/12tb-ram-supermicro-servers?srsltid=3DAfmBOo=
+rCPCZQBSv91mOGH3WTg9Cq0MhksnVYL_eXxOHtHJyuYzjyvwgH
+> >
 >
-> I am not sure how scalable the scanning is going to be if the memory size=
- became
-> bigger, which is one of the reason I was posting it as RFC for this versi=
-on.
+> FWIW I'm also concerned about the looping of all memory on the system.
+> In addition to the performance, I think (but not sure), that
+> CONFIG_MEMORY_HOTPLUG may mess such a loop as memory may appear or
+> disappear concurrently. Even if not, the CPU cost of this may be
+> significant. I'm imagining the possibility of having many page_pools
+> allocated on the system for many hardware queues, (and maybe multiple
+> pp's per queue for applications like devmem TCP), and each pp looping
+> over the entire xTB memory on page_pool_destroy()...
 >
-> For some quick searching here, it seems there might be server with max ra=
-m capacity
-> of 12.3TB, which means the scanning might take up to about 10 secs for th=
-ose systems.
-> The spin_lock is used to avoid concurrency as the page_pool_put_page() AP=
-I might be
-> called from the softirq context, which might mean there might be spinning=
- of 12 secs
-> in the softirq context.
+> My 2 cents here is that a more reasonable approach is to have the pp
+> track all pages it has dma-mapped, without the problems in the
+> previous iterations of this patch:
 >
-> And it seems hard to call cond_resched() when the scanning and unmapping =
-takes a lot
-> of time as page_pool_put_page() might be called concurrently when pool->d=
-estroy_lock
-> is released, which might means page_pool_get_dma_addr() need to be checke=
-d to decide
-> if the mapping is already done or not for each page.
+> 1. When we dma-map a page, we add it to some pp->dma_mapped data
+> structure (maybe xarray or rculist).
+> 2. When we dma-unmap a page, we remove it from pp->dma_mapped.
+> 3 When we destroy the pp, we traverse pp->dma_mapped and unmap all the
+> pages there.
+
+The thing is this should be a very rare event as it should apply only
+when a device is removed and still has pages outstanding shouldn't it?
+The problem is that maintaining a list of in-flight DMA pages will be
+very costly and will make the use of page pool expensive enough that I
+would worry it might be considered less than useful. Once we add too
+much overhead the caching of the DMA address doesn't gain us much on
+most systems in that case.
+
+> I haven't looked deeply, but with the right data structure we may be
+> able to synchronize 1, 2, and 3 without any additional locks. From a
+> quick skim it seems maybe rculist and xarray can do this without
+> additional locks, maybe.
 >
-> Also, I am not sure it is appropriate to stall the driver unbound up to 1=
-0 secs here
-> for those large memory systems.
->
-> https://www.broadberry.com/12tb-ram-supermicro-servers?srsltid=3DAfmBOorC=
-PCZQBSv91mOGH3WTg9Cq0MhksnVYL_eXxOHtHJyuYzjyvwgH
->
+> Like stated in the previous iterations of this approach, we should not
+> be putting any hard limit on the amount of memory the pp can allocate,
+> and we should not have to mess with the page->pp entry in struct page.
 
-FWIW I'm also concerned about the looping of all memory on the system.
-In addition to the performance, I think (but not sure), that
-CONFIG_MEMORY_HOTPLUG may mess such a loop as memory may appear or
-disappear concurrently. Even if not, the CPU cost of this may be
-significant. I'm imagining the possibility of having many page_pools
-allocated on the system for many hardware queues, (and maybe multiple
-pp's per queue for applications like devmem TCP), and each pp looping
-over the entire xTB memory on page_pool_destroy()...
+I agree with you on the fact that we shouldn't be setting any sort of
+limit. The current approach to doing the unmapping is more-or-less the
+brute force way of doing it working around the DMA api. I wonder if we
+couldn't look at working with it instead and see if there wouldn't be
+some way for us to reduce the overhead instead of having to do the
+full scan of the page table.
 
-My 2 cents here is that a more reasonable approach is to have the pp
-track all pages it has dma-mapped, without the problems in the
-previous iterations of this patch:
+One thought in that regard though would be to see if there were a way
+to have the DMA API itself provide some of that info. I know the DMA
+API should be storing some of that data for the mapping as we have to
+go through and invalidate it if it is stored.
 
-1. When we dma-map a page, we add it to some pp->dma_mapped data
-structure (maybe xarray or rculist).
-2. When we dma-unmap a page, we remove it from pp->dma_mapped.
-3 When we destroy the pp, we traverse pp->dma_mapped and unmap all the
-pages there.
-
-I haven't looked deeply, but with the right data structure we may be
-able to synchronize 1, 2, and 3 without any additional locks. From a
-quick skim it seems maybe rculist and xarray can do this without
-additional locks, maybe.
-
-Like stated in the previous iterations of this approach, we should not
-be putting any hard limit on the amount of memory the pp can allocate,
-and we should not have to mess with the page->pp entry in struct page.
-
---=20
-Thanks,
-Mina
+Another alternative would be to see if we have the option to just
+invalidate the DMA side of things entirely for the device. Essentially
+unregister the device from the IOMMU instead of the mappings. If that
+is an option then we could look at leaving the page pool in a state
+where it would essentially claim it no longer has to do the DMA unmap
+operations and is just freeing the remaining lingering pages.
