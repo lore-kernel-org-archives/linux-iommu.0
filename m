@@ -1,40 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A021769D31;
-	Tue, 26 Nov 2024 19:12:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C889C1DA631;
+	Tue, 26 Nov 2024 20:58:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732648350; cv=none; b=S2SuSBRJAF3TTE3ihJFw8xM6OFhuymFYdcDDBZGsp6HMwiH5fTxkuDVJdEHOEVagOTI/D4bBf8GZKUwS6Ft4QMNkbmKYwbAajmK7zVfHXyiEAb6pHREFSkLBGSGdcLyRUtPq8IofsumFNdcGE6MEuUSLglG4NiqTB8BUR6lu6Xs=
+	t=1732654716; cv=none; b=DPfp/xuTfALHE74koKOVzpsd/VsRMSVcg8T02S+LWgH7RmiweYEfjORmQiVCfz72qc16RqQ+9h9Tn7vAHG+KIGs+JaHZM5Bc73QipeXRUc/yysqoBhRacwrWg7HPqemTCTTss0Ri2WRXRKXXO0fMTGDvr+la+8NeYeub1BM3xVo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732648350; c=relaxed/simple;
-	bh=CIDjMGMQZh0qeeQIXLtEavbfZ9HGs/C/E+aH+I02UfU=;
+	s=arc-20240116; t=1732654716; c=relaxed/simple;
+	bh=8O2hKszepkS2sl+knMvKoTgyr2VnkgLcts+rvzU52Rs=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=G94ggbB0kBi5c8d65UnYjA/F4kgUg0vhbpvsCJS84qjxsPbavuUy6wX+XGfnUCRBy61usRFMWBs7BYIXa3d3ZIsE85Hy7JQw0PMJHG7xReUvEDh63dmChAgyNPWtEuGBTXoJM34uNfE3Mzbta9AYLnu6Oc0JWtADGj5JZ/x2Xdc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kUS0zvIR; arc=none smtp.client-ip=10.30.226.201
+	 Content-Disposition:In-Reply-To; b=OpLfJ9upRMS4qwhE1j5C0+IhorClRRU3ogt9ef9wKEN0olb3c6z7+mK7C7GVTbS07Ex+ep1K4TlCSMZKSh4JmaN92vNxkbnwHhWKW/dQu/mba2Bq0aFItvPwD3lNDSZ2Ue7BBPCDZNE5mn93ccPV9Ah/pHjfC3OQTMwD159hlZE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HjZseJfI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kUS0zvIR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 035ABC4CECF;
-	Tue, 26 Nov 2024 19:12:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HjZseJfI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C19FC4CECF;
+	Tue, 26 Nov 2024 20:58:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732648350;
-	bh=CIDjMGMQZh0qeeQIXLtEavbfZ9HGs/C/E+aH+I02UfU=;
+	s=k20201202; t=1732654716;
+	bh=8O2hKszepkS2sl+knMvKoTgyr2VnkgLcts+rvzU52Rs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=kUS0zvIRaucXT4nMtI+mChuO25GFSwQXuQfeeky5R/wQ8sd7b8pyWOzhTNG2mgZVr
-	 krHLn9orA4VYiUfr2r5Y2ARECtplJ8zwBzOZa6uxTnCpohNTHTY7rY8+lB5cvvGVGp
-	 TGmdPqk+EuC6Axy2BEuAqSaZdsddqHsg3sZkgPUQU3P+rcyxRuVXEcK4ddeVFHI6pQ
-	 5uGdq4/YcDu3qmhjMpUnSVNmX9JZ6cKOEiMZmn/mMyCG1Frt0x4ALkIzkm4QtBXGuF
-	 6B2ZZ0UNv7lTmd3k+ijtJ6E6De6eYbJWs8qD90F7fsSzPLMh+1YQHBKVRBPNfEM7/5
-	 wRmejzkWk7EYw==
-Date: Tue, 26 Nov 2024 13:12:28 -0600
+	b=HjZseJfIzeBtDxWVVRK7ZHG8kwcvQOfWqGZwoZCoaPzzFOgs5/fN//L43IbDuxukG
+	 6McSPPcI7fUCzq2Ha8Vt+RQU3tZ8BbHUa868hL+TlvBGaDsk5eTdK3LFPcXAZQ5fZo
+	 YxEg+9f+BgMrD5Zypom+1/mXH2KRgH3R+bDNIFlHIZfGgNIGmdQ1upaF1BGy4yVxSu
+	 dDT8yWxJ7Hu6eiidYndWJ9AeAPwYO+IZRPqkh8PhGF3vtKtYRDTsl+bx9Qd/+BCu8b
+	 Q0krkL77s+aVj7SVlatas/PvEa9j7+ALjkb+JUF9MphM/u2z7p+KtMNMSJxdWudnG5
+	 E3BeEaF+rwU/Q==
+Date: Tue, 26 Nov 2024 14:58:34 -0600
 From: Bjorn Helgaas <helgaas@kernel.org>
 To: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
 Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
 	robin.murphy@arm.com, linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev, vasant.hegde@amd.com
-Subject: Re: [PATCH v2 1/8] iommu/amd: Refactor AMD IOMMU debugfs initial
- setup
-Message-ID: <20241126191228.GA2650296@bhelgaas>
+Subject: Re: [PATCH v2 2/8] iommu/amd: Add debugfs support to dump IOMMU MMIO
+ registers
+Message-ID: <20241126205834.GA2651046@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,63 +43,109 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241106074639.2039-2-dheerajkumar.srivastava@amd.com>
+In-Reply-To: <20241106074639.2039-3-dheerajkumar.srivastava@amd.com>
 
-On Wed, Nov 06, 2024 at 01:16:32PM +0530, Dheeraj Kumar Srivastava wrote:
-> Rearrange initial setup of AMD IOMMU debugfs to segregate per IOMMU
-> setup and setup which is common for all IOMMUs. This ensures that common
-> debugfs paths (introduced in subsequent patches) are created only once
-> instead of being created for each IOMMU.
-> ...
+On Wed, Nov 06, 2024 at 01:16:33PM +0530, Dheeraj Kumar Srivastava wrote:
+> Analyzing IOMMU MMIO registers gives a view of what IOMMU is
+> configured with on the system and is helpful to debug issues
+> with IOMMU.
+> 
+> eg.
+> 1. To get mmio registers value for iommu<x>
 
-> -void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
-> +void amd_iommu_debugfs_setup(void)
->  {
-> +	struct amd_iommu *iommu;
->  	char name[MAX_NAME_LEN + 1];
+s/mmio/MMIO/ to match usage above.
+
+>    # echo "0x18" > /sys/kernel/debug/iommu/amd/iommu00/mmio
+>    # cat /sys/kernel/debug/iommu/amd/iommu00/mmio_dump
+> 
+> Signed-off-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
+> ---
+>  drivers/iommu/amd/debugfs.c | 58 +++++++++++++++++++++++++++++++++++++
+>  1 file changed, 58 insertions(+)
+> 
+> diff --git a/drivers/iommu/amd/debugfs.c b/drivers/iommu/amd/debugfs.c
+> index ff9520e002be..e56c050eb7c8 100644
+> --- a/drivers/iommu/amd/debugfs.c
+> +++ b/drivers/iommu/amd/debugfs.c
+> @@ -15,6 +15,59 @@
+>  static struct dentry *amd_iommu_debugfs;
 >  
-> -	mutex_lock(&amd_iommu_debugfs_lock);
-> -	if (!amd_iommu_debugfs)
-> -		amd_iommu_debugfs = debugfs_create_dir("amd",
-> -						       iommu_debugfs_dir);
-> -	mutex_unlock(&amd_iommu_debugfs_lock);
-> +	amd_iommu_debugfs = debugfs_create_dir("amd", iommu_debugfs_dir);
->  
-> -	snprintf(name, MAX_NAME_LEN, "iommu%02d", iommu->index);
-> -	iommu->debugfs = debugfs_create_dir(name, amd_iommu_debugfs);
-> +	for_each_iommu(iommu) {
-> +		snprintf(name, MAX_NAME_LEN, "iommu%02d", iommu->index);
-> +		iommu->debugfs = debugfs_create_dir(name, amd_iommu_debugfs);
+>  #define	MAX_NAME_LEN	20
+> +#define	OFS_IN_SZ	8
+> +
+> +static int mmio_offset = -1;
+> +
+> +static ssize_t iommu_mmio_write(struct file *filp, const char __user *ubuf,
+> +				size_t cnt, loff_t *ppos)
+> +{
+> +	struct seq_file *m = filp->private_data;
+> +	struct amd_iommu *iommu = m->private;
+> +	int ret;
+> +
+> +	if (cnt > OFS_IN_SZ)
+> +		return -EINVAL;
+> +
+> +	ret = kstrtou32_from_user(ubuf, cnt, 0, &mmio_offset);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (mmio_offset > iommu->mmio_phys_end - 4) {
+> +		mmio_offset = -1;
+> +		return  -EINVAL;
 > +	}
+> +
+> +	return cnt;
+> +}
+> +
+> +static int iommu_mmio_show(struct seq_file *m, void *unused)
+> +{
+> +	if (mmio_offset >= 0)
+> +		seq_printf(m, "0x%x\n", mmio_offset);
+> +	else
+> +		seq_puts(m, "No or invalid input provided\n");
+> +
+> +	return 0;
+> +}
+> +DEFINE_SHOW_STORE_ATTRIBUTE(iommu_mmio);
+> +
+> +static int iommu_mmio_dump_show(struct seq_file *m, void *unused)
+> +{
+> +	struct amd_iommu *iommu = m->private;
+> +	u32 value;
+> +
+> +	if (mmio_offset < 0) {
+> +		seq_puts(m, "Please provide mmio register's offset\n");
+> +		return 0;
+> +	}
+> +
+> +	value = readl(iommu->mmio_base + mmio_offset);
+> +	seq_printf(m, "0x%08x\n", value);
+> +
+> +	return 0;
+> +}
+> +DEFINE_SHOW_ATTRIBUTE(iommu_mmio_dump);
 
-Doing this setup with for_each_iommu() precludes any hot-add of
-IOMMUs, but I guess there's no indication of hotplug support anyway
-given all the uses of for_each_iommu() in init_iommu_all(),
-amd_iommu_init_pci(), amd_iommu_enable_interrupts(), etc.
+I think this would be much simpler and more user-friendly if you made
+this a single read-only file to dump all the registers, as
+/sys/kernel/debug/iommu/intel/iommu_regset does.  Having to write
+"mmio" and then read "mmio_dump" makes it hard to use, and it means
+that two users can race with each other and confuse things.
 
->  }
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 43131c3a2172..d78dc96bbec3 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -3377,7 +3377,6 @@ int amd_iommu_enable_faulting(unsigned int cpu)
->   */
->  static int __init amd_iommu_init(void)
+This is part of the AMD IOMMU driver, which should know what registers
+are of interest and how to dump and possibly even decode them.
+
+>  void amd_iommu_debugfs_setup(void)
 >  {
-> -	struct amd_iommu *iommu;
->  	int ret;
->  
->  	ret = iommu_go_to_state(IOMMU_INITIALIZED);
-> @@ -3391,8 +3390,8 @@ static int __init amd_iommu_init(void)
+> @@ -26,5 +79,10 @@ void amd_iommu_debugfs_setup(void)
+>  	for_each_iommu(iommu) {
+>  		snprintf(name, MAX_NAME_LEN, "iommu%02d", iommu->index);
+>  		iommu->debugfs = debugfs_create_dir(name, amd_iommu_debugfs);
+> +
+> +		debugfs_create_file("mmio", 0644, iommu->debugfs, iommu,
+> +				    &iommu_mmio_fops);
+> +		debugfs_create_file("mmio_dump", 0444, iommu->debugfs, iommu,
+> +				    &iommu_mmio_dump_fops);
 >  	}
->  #endif
->  
-> -	for_each_iommu(iommu)
-> -		amd_iommu_debugfs_setup(iommu);
-> +	if (!ret)
-> +		amd_iommu_debugfs_setup();
->  
->  	return ret;
 >  }
 > -- 
 > 2.25.1
