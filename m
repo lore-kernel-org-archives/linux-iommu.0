@@ -1,77 +1,86 @@
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CFC0391
-	for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 01:46:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7A05DF60
+	for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 01:51:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732585570; cv=none; b=WbR/eBiBowfNZOj6W8qV6FGlZcS+gmlkcXLpr8eyr696QX95YFSTT8FCYJkyEljkA6/3gxApDGv+81O0k4ogziHZ051qM7Nw/GXLVaifoPeD1/fnPUaO6yWG/dSUzxrBDAN0K/btpSXqIw2vxrAZXWy7mx6HWwuqhBekC3nL2Jw=
+	t=1732585888; cv=none; b=AUDzQOeYf4M5+4GLvJJ7E3qtkmjsV19okLkkL+6DM5Op0+4i3Wz2dmiHKBq2OevevRBqYWeL4glaiMIr+0pGbLEuVvXpQDxFKNDocRS9R2mI8KK/2tltIpbmP9ap4MccPjaJ1IGJbB78RpzjrRgAItm0+ZFhJtoZyfdis88+OJY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732585570; c=relaxed/simple;
-	bh=v2ZZeeqqoeqVVBwfwGHzwBc28rv9kX8O4U3pgllvZMU=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=AayxSewZyGetG6UZVy5wEcAlmHORto6958T8XPEciLSsaAW47+oVfBpXRzoFc2WIZ56CdoF6ys22L6aT45qDuPRs2Q6JbBV8zFojrFAlcIdBC0TFh8ZOC3drxpeF8UWiG8Ox9QYH5iXW5XeMSb63Rsh2nCXyq7jQkOsAwQPBDKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aiqb3om+; arc=none smtp.client-ip=209.85.216.54
+	s=arc-20240116; t=1732585888; c=relaxed/simple;
+	bh=H0mFerbMaGcm5YSo+5mHe3ECjJkRkraKwOcgif5R6ss=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=UfV0VYyaD+t4Uqiq+zfYH/ECkt0pMU1JpEDy0Wb3MAiU2T2V3VNcwPrJw5h4NjSKI7JffRrt0nRGKLc9knsYGKbfwaJCbdm5hDIvc5IzFX9M1t33eNLUHQ/PkCe+tsTbl30VIi1F4KNdui6i99lMN4aVB0JVhSdPrYo7E78sG/I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZtaoZzuR; arc=none smtp.client-ip=209.85.216.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aiqb3om+"
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-2ea568d8216so4311581a91.1
-        for <iommu@lists.linux.dev>; Mon, 25 Nov 2024 17:46:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZtaoZzuR"
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-2ea49a1b4c8so4010958a91.2
+        for <iommu@lists.linux.dev>; Mon, 25 Nov 2024 17:51:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1732585569; x=1733190369; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=FeXIRz+voy9oY0ahmpzmVjvKjLMTGNrTBZYjONA26RI=;
-        b=aiqb3om+cA5E20+MMGT5lDk5c8n+Jx2X0HCUusE6KuxXtJmJi9E4zwQPVWG8ZAbjHD
-         BDmGdu4A9vKm+V0SM6QRzIzlx6ExwVOtn45NwKRI90VuuBOWbercJoqwch8lrX3j8cJH
-         yti501sjCVaXby5+r0jgXPxb3Mt01p1fMuCKR/j/Muup4QWh4aBxpod5pS8ORcv2ahb1
-         yvOCDFJXUGE+7Vc2Urlvd9+LdUZ7G5mczw/MWp9ZaY8tqhnWPwxd5FeQuOZzHIf7Phy+
-         5mT3xTcXht8A66N8ADbSHICft+4G0TM5KBwnduONWlGUVDRB21INwhNYZvb556VGA6o7
-         feZA==
+        d=gmail.com; s=20230601; t=1732585886; x=1733190686; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=aJoYAYmeRsJLY19PSmXmZzQLTbquFpEYT2ck8bCoKAI=;
+        b=ZtaoZzuR1WWot19kqJQkDhYXFCcqgN/LbjW1Wc+J29Tv3l60nQEFEMIxIvjnQyS8M5
+         qxf+DpuSzzPCvdTrcaqEc+6beVabuwkQ/Sh1/Ak7RydgpPcofUH2ges7NbGBmNArzGCL
+         +jCzCVYIq7tDIkY6CBU1go+a0F23uH9rAGfvXeR1CkR6WgfirjglcQG1PCVV7gCC2KoR
+         dcTthpwtXRi01FCxx8yNjF+SvoTsgxevVy6Gex/lpuMnUtJ8ZJA9ri9aXeQIPVqdnR3Y
+         whD+zE5McQ7/c5kFSp9bDb7G8JP+YS6voTKuDxCc8qEG2Mjx+3ze7E+KHfuR35nAMqKe
+         jBWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732585569; x=1733190369;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FeXIRz+voy9oY0ahmpzmVjvKjLMTGNrTBZYjONA26RI=;
-        b=STXXtDC5r5wY1qAZHYEUWCN/fGFrKaYcFy8BFkZk7IBOlsj6FqOAjWVDH2nRYNlRxn
-         +FS0q1qR4LWCSnQSvrFwyC5SB0EzvP0FneeyTzbjUMf0v6+h4Jmp4zfhhKyyrWT3NNNU
-         bxogyfUcifCUVCPLnAoHf5yLGPeOwmGjLfTcrNsyuPVDZjTcYwXnuef0EdX6NMgojzKW
-         gRNT6gkmvNQXsPUUHLkjs7tAo627XlXqkSnO6nTY5xNFSjZbGq4LEZm4y1tq7tA9eeqy
-         59wDcKqFBPidr4E5uKvnwMitnGAaw3OoZOKw0+vinrhpbBSYvOYuDv16Cw59hib9jGh/
-         CKwQ==
-X-Gm-Message-State: AOJu0Ywe0VvedpFL6SPP2PpHVmwvHGWtOLz2KjAka5wo48l6PrWqwGFO
-	ke9SQFIk7jR7amMyDNNs+pNY62BUvK0Ygog4ip+e5Xiq8zZVuLVreZGJK8xzaAC9MJURF42mQKX
-	DKQ+gIys83/ffDBMHpd3zprywkww=
-X-Gm-Gg: ASbGncvY9+70ptqqCzWxiNYfXwtCV6voR+IGpt5dpEF1wAzI2/3NjIkmcQ70Y1ldMYq
-	sboLhXHzO95iiuTGg91K/xOMBIqJJKQ==
-X-Google-Smtp-Source: AGHT+IG8EzAshG5okGmZG0whAC5I9ZPfewmJR9vy3whIx2vYnEC0yhECfkL0T9p39NwZgLHb4d1+IfK3/+2wKMMPEMA=
-X-Received: by 2002:a17:90b:4c8c:b0:2ea:7755:a108 with SMTP id
- 98e67ed59e1d1-2eb0e12c9admr18324964a91.4.1732585568782; Mon, 25 Nov 2024
- 17:46:08 -0800 (PST)
+        d=1e100.net; s=20230601; t=1732585886; x=1733190686;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=aJoYAYmeRsJLY19PSmXmZzQLTbquFpEYT2ck8bCoKAI=;
+        b=NzuZJDo8/IoD+6Xhn4Rd5MadNmceRRMnI06qxPjSZywr/LHXYq2uqfRcLIgidT167J
+         /tdy2gHhQJ4UIQyZdoMrdHIGid+H9ubZoEijzaHw04/xPngjPZfjPfy+HFxIyvUNHGKQ
+         zbnF21o3o/4zWRmlIAizDgWWBCja6yKvl34vOwd5cmTNAGJghFT6IsG9FZ8JUg7ZawEi
+         ajyiWcKkfXiYQrOC8te47tRI8MvZWlsPr85M4hnFfuLJAGOpFcJi1ygCl6Rhz9UenV41
+         Fr9qzecj/HMxxUxHRjefWgdf3Z5eCvTiVxzzwXr9FTQW+7wA7rGGtTEI0Yby+j+/Yyks
+         O0aQ==
+X-Gm-Message-State: AOJu0Yz216ofJA0Q8dzwPZ7yrQyyXiQ52RfhGI6t49gpB3xPBYD4vnSJ
+	v+rZe3Jk83gF8XJrJAv2UcpT8hOQnyfx81Yr5SUBdmVJa07MvEwrEb1BqPiE8DcgZVw1p5NipmD
+	qK3Mi9OLP3Mm8aQ0gH4eg4b6ZOD1mcw==
+X-Gm-Gg: ASbGncv2kqBWs0pavcVGGO5hfL5lOCvoaSCyz4ql6MdXKYJU4TC2C6hlBBSRJ1o6CWZ
+	590u245kbg8vfbNvWnttZG8waplcqWQ==
+X-Google-Smtp-Source: AGHT+IECCVnij2z/+srsyPC3YUKSlek8iSKr3GS456+2J0fRCkz1dFnAzFpIUD+FnI6gkzr8aPDBr+QNAg5FE/vVq9A=
+X-Received: by 2002:a17:90b:3805:b0:2ea:aa30:5edf with SMTP id
+ 98e67ed59e1d1-2eb0e024afemr18190299a91.5.1732585885720; Mon, 25 Nov 2024
+ 17:51:25 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+References: <CAJwJo6bu3vfogmzxpfzFV_guf5GS_1TsqdB29NZoUr-_6fd8pg@mail.gmail.com>
+In-Reply-To: <CAJwJo6bu3vfogmzxpfzFV_guf5GS_1TsqdB29NZoUr-_6fd8pg@mail.gmail.com>
 From: Dmitry Safonov <0x7f454c46@gmail.com>
-Date: Tue, 26 Nov 2024 01:45:57 +0000
-Message-ID: <CAJwJo6bu3vfogmzxpfzFV_guf5GS_1TsqdB29NZoUr-_6fd8pg@mail.gmail.com>
+Date: Tue, 26 Nov 2024 01:51:14 +0000
+Message-ID: <CAJwJo6ZvS3B3b927zO1PpKX7p+7N75gE-44g2mVKkLXiaDBfPQ@mail.gmail.com>
 Subject: Re: [git pull] IOMMU Updates for Linux v6.13
 To: pr-tracker-bot@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>
 Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
 	open list <linux-kernel@vger.kernel.org>, Will Deacon <will@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 
-> The pull request you sent on Fri, 22 Nov 2024 09:17:47 +0100:
+On Tue, 26 Nov 2024 at 01:45, Dmitry Safonov <0x7f454c46@gmail.com> wrote:
 >
-> > git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v6.13
+> > The pull request you sent on Fri, 22 Nov 2024 09:17:47 +0100:
+> >
+> > > git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v6.13
+> >
+> > has been merged into torvalds/linux.git:
+> > https://git.kernel.org/torvalds/c/ceba6f6f33f29ab838b23a567621b847e527d085
 >
-> has been merged into torvalds/linux.git:
-> https://git.kernel.org/torvalds/c/ceba6f6f33f29ab838b23a567621b847e527d085
+> It seems to have a minor merge resolution artefact: iommu_present() now
+> has a header declaration with no definition.
 
-It seems to have a minor merge resolution artefact: iommu_present() now
-has a header declaration with no definition.
+[Apparently, when you choose gmail option in chromium from the mail-to link,
+ it erases In-Reply-To header, sorry about it, I'll avoid using it]
 
 Thanks,
              Dmitry
