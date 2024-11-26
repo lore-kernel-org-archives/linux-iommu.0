@@ -1,103 +1,106 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B9271AC8A6;
-	Tue, 26 Nov 2024 17:28:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A021769D31;
+	Tue, 26 Nov 2024 19:12:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732642135; cv=none; b=FlHlGmpLTsYImI7Hr59xNPpa/UreAzZx3MrPw4Pz0bSzrrOg4THZx0ZbyUVp3etJ6EDRWBYUbwCvBcsg3nm3KIjvX846xxk54Ruga/QOt7BYmgojNj8l0oUnf5VW6/oLnPJuETh0MiiIWmHHEsvQBTuU4JobJd2utJsUr8Tfchw=
+	t=1732648350; cv=none; b=S2SuSBRJAF3TTE3ihJFw8xM6OFhuymFYdcDDBZGsp6HMwiH5fTxkuDVJdEHOEVagOTI/D4bBf8GZKUwS6Ft4QMNkbmKYwbAajmK7zVfHXyiEAb6pHREFSkLBGSGdcLyRUtPq8IofsumFNdcGE6MEuUSLglG4NiqTB8BUR6lu6Xs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732642135; c=relaxed/simple;
-	bh=PlMMIc4AQSbkLcvBzrHB9wgiuJrm21ESzo2se5IDeG8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XVm/4ofvj/shJs2rtXNiU2EmrJUcZjRcZyhZYHqH/ddT/qq6Wh459sxxVwXkEpBK+T7u6CeXc9W1bi+Kbc/R3ly4OB3r3GVGxzomUuK/KjDb1eh4SWEb6XlNeYcQ9WIEGODqcoQ1Va7PqBOzVtKuSGYeUj1FtewHMDdz3SCxTp0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=sXLbEnkQ; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1732648350; c=relaxed/simple;
+	bh=CIDjMGMQZh0qeeQIXLtEavbfZ9HGs/C/E+aH+I02UfU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=G94ggbB0kBi5c8d65UnYjA/F4kgUg0vhbpvsCJS84qjxsPbavuUy6wX+XGfnUCRBy61usRFMWBs7BYIXa3d3ZIsE85Hy7JQw0PMJHG7xReUvEDh63dmChAgyNPWtEuGBTXoJM34uNfE3Mzbta9AYLnu6Oc0JWtADGj5JZ/x2Xdc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kUS0zvIR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="sXLbEnkQ"
-Received: from [10.0.0.115] (c-67-182-156-199.hsd1.wa.comcast.net [67.182.156.199])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 1A72420545AE;
-	Tue, 26 Nov 2024 09:28:53 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1A72420545AE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1732642133;
-	bh=H94+kE6a6Z3TCvsv5IQfa8koOq42a44wDuStW4E/6+8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=sXLbEnkQ61nv6hbtZZ2ZQwagIwQ3s57qp+UTpK189JiX/cAYSvAH5zo9QDJA5ey8k
-	 Dwt4CCS4FMIH15sSObKql/pyGsegy+eu+jPnazasSvIj/u/dhKQ5vboJ68gY5vxkaU
-	 Ik00OhGi1r1Ksyj94O5yXx79fuqOSlgwKrm8eO6s=
-Message-ID: <074bacbe-2823-4653-a6fb-a50b7785a027@linux.microsoft.com>
-Date: Tue, 26 Nov 2024 09:28:52 -0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kUS0zvIR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 035ABC4CECF;
+	Tue, 26 Nov 2024 19:12:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1732648350;
+	bh=CIDjMGMQZh0qeeQIXLtEavbfZ9HGs/C/E+aH+I02UfU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=kUS0zvIRaucXT4nMtI+mChuO25GFSwQXuQfeeky5R/wQ8sd7b8pyWOzhTNG2mgZVr
+	 krHLn9orA4VYiUfr2r5Y2ARECtplJ8zwBzOZa6uxTnCpohNTHTY7rY8+lB5cvvGVGp
+	 TGmdPqk+EuC6Axy2BEuAqSaZdsddqHsg3sZkgPUQU3P+rcyxRuVXEcK4ddeVFHI6pQ
+	 5uGdq4/YcDu3qmhjMpUnSVNmX9JZ6cKOEiMZmn/mMyCG1Frt0x4ALkIzkm4QtBXGuF
+	 6B2ZZ0UNv7lTmd3k+ijtJ6E6De6eYbJWs8qD90F7fsSzPLMh+1YQHBKVRBPNfEM7/5
+	 wRmejzkWk7EYw==
+Date: Tue, 26 Nov 2024 13:12:28 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
+Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
+	robin.murphy@arm.com, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, vasant.hegde@amd.com
+Subject: Re: [PATCH v2 1/8] iommu/amd: Refactor AMD IOMMU debugfs initial
+ setup
+Message-ID: <20241126191228.GA2650296@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 5/5] hyperv: Remove the now unused hyperv-tlfs.h files
-To: Michael Kelley <mhklinux@outlook.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "virtualization@lists.linux.dev" <virtualization@lists.linux.dev>
-Cc: "kys@microsoft.com" <kys@microsoft.com>,
- "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>,
- "decui@microsoft.com" <decui@microsoft.com>,
- "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
- "will@kernel.org" <will@kernel.org>, "luto@kernel.org" <luto@kernel.org>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
- "seanjc@google.com" <seanjc@google.com>,
- "pbonzini@redhat.com" <pbonzini@redhat.com>,
- "peterz@infradead.org" <peterz@infradead.org>,
- "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "davem@davemloft.net" <davem@davemloft.net>,
- "edumazet@google.com" <edumazet@google.com>,
- "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
- <pabeni@redhat.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
- "kw@linux.com" <kw@linux.com>, "robh@kernel.org" <robh@kernel.org>,
- "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
- <arnd@arndb.de>, "sgarzare@redhat.com" <sgarzare@redhat.com>,
- "jinankjain@linux.microsoft.com" <jinankjain@linux.microsoft.com>,
- "muminulrussell@gmail.com" <muminulrussell@gmail.com>,
- "skinsburskii@linux.microsoft.com" <skinsburskii@linux.microsoft.com>,
- "mukeshrathor@microsoft.com" <mukeshrathor@microsoft.com>,
- "vkuznets@redhat.com" <vkuznets@redhat.com>,
- "ssengar@linux.microsoft.com" <ssengar@linux.microsoft.com>,
- "apais@linux.microsoft.com" <apais@linux.microsoft.com>,
- "eahariha@linux.microsoft.com" <eahariha@linux.microsoft.com>,
- "horms@kernel.org" <horms@kernel.org>
-References: <1732577084-2122-1-git-send-email-nunodasneves@linux.microsoft.com>
- <1732577084-2122-6-git-send-email-nunodasneves@linux.microsoft.com>
- <SN6PR02MB41570E0108D4E3B45571EE9FD42F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-Content-Language: en-US
-From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-In-Reply-To: <SN6PR02MB41570E0108D4E3B45571EE9FD42F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241106074639.2039-2-dheerajkumar.srivastava@amd.com>
 
-On 11/25/2024 9:59 PM, Michael Kelley wrote:
-> From: Nuno Das Neves <nunodasneves@linux.microsoft.com> Sent: Monday, November 25, 2024 3:25 PM
->>
->> Remove all hyperv-tlfs.h files. These are no longer included
->> anywhere. hyperv/hvhdk.h serves the same role, but with an easier
->> path for adding new definitions.
->>
->> Remove the relevant lines in MAINTAINERS.
->>
->> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+On Wed, Nov 06, 2024 at 01:16:32PM +0530, Dheeraj Kumar Srivastava wrote:
+> Rearrange initial setup of AMD IOMMU debugfs to segregate per IOMMU
+> setup and setup which is common for all IOMMUs. This ensures that common
+> debugfs paths (introduced in subsequent patches) are created only once
+> instead of being created for each IOMMU.
+> ...
+
+> -void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
+> +void amd_iommu_debugfs_setup(void)
+>  {
+> +	struct amd_iommu *iommu;
+>  	char name[MAX_NAME_LEN + 1];
+>  
+> -	mutex_lock(&amd_iommu_debugfs_lock);
+> -	if (!amd_iommu_debugfs)
+> -		amd_iommu_debugfs = debugfs_create_dir("amd",
+> -						       iommu_debugfs_dir);
+> -	mutex_unlock(&amd_iommu_debugfs_lock);
+> +	amd_iommu_debugfs = debugfs_create_dir("amd", iommu_debugfs_dir);
+>  
+> -	snprintf(name, MAX_NAME_LEN, "iommu%02d", iommu->index);
+> -	iommu->debugfs = debugfs_create_dir(name, amd_iommu_debugfs);
+> +	for_each_iommu(iommu) {
+> +		snprintf(name, MAX_NAME_LEN, "iommu%02d", iommu->index);
+> +		iommu->debugfs = debugfs_create_dir(name, amd_iommu_debugfs);
+> +	}
+
+Doing this setup with for_each_iommu() precludes any hot-add of
+IOMMUs, but I guess there's no indication of hotplug support anyway
+given all the uses of for_each_iommu() in init_iommu_all(),
+amd_iommu_init_pci(), amd_iommu_enable_interrupts(), etc.
+
+>  }
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index 43131c3a2172..d78dc96bbec3 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -3377,7 +3377,6 @@ int amd_iommu_enable_faulting(unsigned int cpu)
+>   */
+>  static int __init amd_iommu_init(void)
+>  {
+> -	struct amd_iommu *iommu;
+>  	int ret;
+>  
+>  	ret = iommu_go_to_state(IOMMU_INITIALIZED);
+> @@ -3391,8 +3390,8 @@ static int __init amd_iommu_init(void)
+>  	}
+>  #endif
+>  
+> -	for_each_iommu(iommu)
+> -		amd_iommu_debugfs_setup(iommu);
+> +	if (!ret)
+> +		amd_iommu_debugfs_setup();
+>  
+>  	return ret;
+>  }
+> -- 
+> 2.25.1
 > 
-> Reviewed-by: Michael Kelley <mhklinux@outlook.com>
-
-Thanks for the reviews on this series Michael!
