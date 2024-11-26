@@ -1,182 +1,119 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95548195FEF;
-	Tue, 26 Nov 2024 10:22:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E05D1BD9E4
+	for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 10:25:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732616565; cv=none; b=myzR6X5hSoYbjbUQqbEUHrbzIPCWyRcC0rCFoZd/dt6S6vsyP4sO4azQPaLtnblQDJnagInsvmwTBsfa42BUQ6NhG3vI1k1tNmUUfau5i+wJ+LrT9+hPpQ6vhzdB5y/yeSoGxUPxLsBfDfMrFT5gg8vjQbxkM7sqrAkN36gmtbI=
+	t=1732616725; cv=none; b=dWXMHlBKy/bAVMCXKrgSEWo/3FAmNUdUqB1xMxnMtGiQWUx70g1nUX0fbaM8YqlbMyv5SjVZux3Ix7RX9xBkDlUg64qT4v1cdjMRn2QuwsxD3W9DyNt9xG1rOGjr7gWGOj39YxT1h9NUhaQVfMkorjDL/57jWjGLyTf235jcKpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732616565; c=relaxed/simple;
-	bh=Fk/PTflTbAr/9jycZ02Vdv38Z0hd7Vu1hxIPifBY4gM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cR3mwQYQVLUeicJaQnaT6VFGcHpaoDtE5TozxCics6QxKN/AsLvFINyi4eNIddQvv7qeBGDgAiqydSSP/uiappPooQXnwO+JRApdZt1id5KSPHeVa+uloZlnPw2wYZHSPYsZUbw9X/XSLPcOIryVB9DB+G3gNOqNB2CYpdX6r9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DaAVXfs+; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1732616725; c=relaxed/simple;
+	bh=c5WQGbXc09ojfJbmmBoM0eiNasmBvEdCsU9xwZ2cC08=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AyWptpFUe0ftExWPJj2/tnqCt6ocYQABMsBTD00/EcMhY6fqI90DjJV9featyEbKImLS0u5L4jlBvyKC2hfLI2Hn54rj3JQdlaHyGRfoYIGqECXRejTFCwROK1xJ44o5VHYGVcCcPZmEYMeaEd6du3Qjwhr8k6tTcwek/l6KuYg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vpZfTod6; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DaAVXfs+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31267C4CED0;
-	Tue, 26 Nov 2024 10:22:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732616565;
-	bh=Fk/PTflTbAr/9jycZ02Vdv38Z0hd7Vu1hxIPifBY4gM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=DaAVXfs+Iqh4zfXvT8lyskUt0jbaig1eQU+y41vxLnpS5Z533x5RHK896FfnH908J
-	 bRAMMpZn5xuxb9nV7ImC+60mU15o6sT1bq7C7HrvONmeSjZlws2J0VNGoHwROW4+E3
-	 plvUycQ7ws5ZrVLmkqIkCMA8hJNm1gIqySmT/6OlAEKjUSTqTVW3P0oQP3sPm7JRzJ
-	 4WbssJKAwvcAMa2r47cf5zDkfU7raW83+3XwM+pvpoTOvsfcG0gleRqpwh51FToUMr
-	 WTK/FBPZtf6WkOwwhduXUEs2xn0kdz2Qbmn0sTfb6M4GHel8uzJw+3gskohTFOe7ps
-	 VrN3glT5Pcz8w==
-Message-ID: <554e768b-e990-49ff-bad4-805ee931597f@kernel.org>
-Date: Tue, 26 Nov 2024 11:22:39 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vpZfTod6"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-211eb2be4a8so102065ad.1
+        for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 02:25:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1732616724; x=1733221524; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=qCKMARhQYWsKgGAkxhFzHf3guajJ7wgrpib56nIQMSg=;
+        b=vpZfTod6obCcFaT5bpi5u9Z5K9xVJa/myIzcIk3ZNekMpSiO/jvbwVyh9L8s2sPm5n
+         Ato6KaYBTOAfuN/wxIzMtyWVHV+z2pGOeYeHnlp7yWG87DncU8ZFv+GWp5+TFLHvkFrE
+         HWpWvKG8LxKNxnmYfCOy0mYlu+j7q1m6wmV9APXbzsssVFaMgEqqf7Qgbd6h8Cwu5tXL
+         xyi3oHRr8WRQffqoliaVNeWzh8mJcSU6mPyji2SrF04vhbsZBhGmR7iyINc2+Zp2PDKq
+         CiDw2y3j51MYtSEJQU+/B9e5VAc4ITB8/z7bj3EWDkCzGCpZser6Fcivce/ClwtD2m0W
+         Y1IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732616724; x=1733221524;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qCKMARhQYWsKgGAkxhFzHf3guajJ7wgrpib56nIQMSg=;
+        b=l82hBPOxXq7iWNE9aTv2wEJHwP6w+p5OuI0gj3SUlrXPs+oe5GX0+iEV2VBJ0Qq1Ol
+         nhiZOps4t/j5WiuY4UXxAVPJos+aalrKYV8zNpSISdjuQqNlcJF21kU27iao7g7BGsf5
+         CBYURxqCKyO/ukcTIMiClqmU8k9yO583L9zoaqJLwjnJ/6M03VSTaEf7okSwvsc6mCIo
+         xgsfbOZp078ut9Zq6Gb1BT8cnqt78YvD1SlazvV13EDH2r9Jcv4kQVxtuLrYVi1cuBa+
+         Atnsyy00vXPEEn4yJ+dacrRQTga9efqnxZHmdTgt/pJq/mC69Uq+xGp1WJvvtveRIzf8
+         uraA==
+X-Forwarded-Encrypted: i=1; AJvYcCVGO9PUi07fAkgx/sJrOlMW0HydAgAIUg+78PGrN5yBUNV40Yu8EtKJiNeDFh44qALoknZkhQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwdvaoPxNazwz4CD/gswTnK1wDsu8S12BvKYT2eMrePEXnA++1O
+	PNSSzMESehdXg5EixTXlSkyZ9vbx1PEqCpEFak7aQEZSxI54k/a9pT3w4+HIaA==
+X-Gm-Gg: ASbGncu2iJQcsVnbsqFJLkeTjQXxLkZ9sFBigQQo5SQTpWYK458wM2sK8/0xLHZpif+
+	vvPSbR3BRF5GiSFyTAwR9nXGuCrcYoT7/qlZ9Njy61V5GGGyZHxq2zM4IZwqcDHKeVKgiGK41S5
+	pLg81h/8Upg5jz6yY9H5+Nglh88fbib1ybAnUvgJh9l2ljDTkr/IOHdT5dDfuqTNHETjjXINoG3
+	UgXoR6KkYllqZqkx6qwmeXYVdJONMV005wKQJi7PymnTv95zDxcpRMPa3dDa1n82K1i7BHB558E
+	qzekeYbjyBM=
+X-Google-Smtp-Source: AGHT+IFdyNymOjH7IAVwDcoqCSzqas3/yeL6ssOPSpkWSgBVG3GV2R/8dBaQMQXYYpTWjd1cvm1vGA==
+X-Received: by 2002:a17:903:13c6:b0:1fc:548f:6533 with SMTP id d9443c01a7336-214ea7f3b0fmr1535985ad.3.1732616723561;
+        Tue, 26 Nov 2024 02:25:23 -0800 (PST)
+Received: from google.com (104.132.143.34.bc.googleusercontent.com. [34.143.132.104])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7fbcc40143esm8321660a12.80.2024.11.26.02.25.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Nov 2024 02:25:23 -0800 (PST)
+Date: Tue, 26 Nov 2024 10:25:15 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Li RongQing <lirongqing@baidu.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH] iommu: Downgrade print level for iommu group information
+Message-ID: <Z0WiC4lWxFdY-_JO@google.com>
+References: <20241126072339.25714-1-lirongqing@baidu.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v4 2/3] page_pool: fix IOMMU crash when driver has
- already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
- kuba@kernel.org, pabeni@redhat.com
-Cc: liuyonglong@huawei.com, fanghaiqing@huawei.com, zhangkun09@huawei.com,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20241120103456.396577-1-linyunsheng@huawei.com>
- <20241120103456.396577-3-linyunsheng@huawei.com>
- <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
- <27475b57-eda1-4d67-93f2-5ca443632f6b@huawei.com>
- <ac728cc1-2ccb-4207-ae11-527a3ed8fbb6@kernel.org>
- <6233e2c3-3fea-4ed0-bdcc-9a625270da37@huawei.com>
-Content-Language: en-US
-From: Jesper Dangaard Brouer <hawk@kernel.org>
-In-Reply-To: <6233e2c3-3fea-4ed0-bdcc-9a625270da37@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241126072339.25714-1-lirongqing@baidu.com>
 
-
-
-On 26/11/2024 09.22, Yunsheng Lin wrote:
-> On 2024/11/25 23:25, Jesper Dangaard Brouer wrote:
+Hello,
+On Tue, Nov 26, 2024 at 03:23:39PM +0800, Li RongQing wrote:
+> This per device log is becoming longer with more and more PCI devices
+> in system, which slows down the boot process due to the serializing
+> nature of printk().
 > 
-> ...
+> Downgrade dev_info() to dev_dbg() so it is still accessible for debug
+> purposes.
 > 
->>>>> +
->>>>>     void page_pool_destroy(struct page_pool *pool)
->>>>>     {
->>>>>         if (!pool)
->>>>> @@ -1139,6 +1206,8 @@ void page_pool_destroy(struct page_pool *pool)
->>>>>          */
->>>>>         synchronize_rcu();
->>>>>     +    page_pool_inflight_unmap(pool);
->>>>> +
->>>>
->>>> Reaching here means we have detected in-flight packets/pages.
->>>>
->>>> In "page_pool_inflight_unmap" we scan and find those in-flight pages to
->>>> DMA unmap them. Then below we wait for these in-flight pages again.
->>>> Why don't we just "release" (page_pool_release_page) those in-flight
->>>> pages from belonging to the page_pool, when we found them during scanning?
->>>>
->>>> If doing so, we can hopefully remove the periodic checking code below.
->>>
->>> I thought about that too, but it means more complicated work than just
->>> calling the page_pool_release_page() as page->pp_ref_count need to be
->>> converted into page->_refcount for the above to work, it seems hard to
->>> do that with least performance degradation as the racing against
->>> page_pool_put_page() being called concurrently.
->>>
->>
->> Maybe we can have a design that avoid/reduce concurrency.  Can we
->> convert the suggested pool->destroy_lock into an atomic?
->> (Doing an *atomic* READ in page_pool_return_page, should be fast if we
->> keep this cache in in (cache coherence) Shared state).
->>
->> In your new/proposed page_pool_return_page() when we see the
->> "destroy_cnt" (now atomic READ) bigger than zero, then we can do nothing
->> (or maybe we need decrement page-refcnt?), as we know the destroy code
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> ---
+>  drivers/iommu/iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Is it valid to have a page->_refcount of zero when page_pool still own
-> the page if we only decrement page->_refcount and not clear page->pp_magic?
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 83c8e61..a16f944 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1193,7 +1193,7 @@ static struct group_device *iommu_group_alloc_device(struct iommu_group *group,
+>  
+>  	trace_add_device_to_group(group->id, dev);
+>  
+> -	dev_info(dev, "Adding to iommu group %d\n", group->id);
+> +	dev_dbg(dev, "Adding to iommu group %d\n", group->id);
 
-No, page_pool keeps page->_refcount equal 1 (for "release") and also 
-clears page->pp_magic.
+I'm not sure the original reason behind this `dev_info` but of late I've
+seen people/scripts use this log to find the iommu_group for a device to
+later set the default domain via /sys/kernel/iommu_groups/<grp_id>/type
 
-> What happens if put_page() is called from other subsystem for a page_pool
-> owned page, isn't that mean the page might be returned to buddy page
-> allocator, causing use-after-free problem?
+That said with this change, those scripts should still be able to find
+the iommu_group via /sys/bus/<bus_type>/devices/<device>/iommu_group
+Maybe adding this info to the commit message will help them?
+
+>  
+>  	return device;
+>  
+> -- 
+> 2.9.4
+> 
 > 
 
-Notice that page_pool_release_page() didn't decrement page refcnt.
-It disconnects a page (from a page_pool). To allow it to be used as
-a regular page (that will eventually be returned to the normal
-page-allocator via put_page).
-
-
->> will be taking care of "releasing" the pages from the page pool.
-> 
-> If page->_refcount is not decremented in page_pool_return_page(), how
-> does page_pool_destroy() know if a specific page have been called with
-> page_pool_return_page()? Does an extra state is needed to indicate that?
-> 
-
-Good point. In page_pool_return_page(), we will need to handle the two 
-cases. (1) page still belongs to a page_pool, (2) page have been 
-released to look like a normal page. For (2) we do need to call 
-put_page().  For (1) yes we would either need some extra state, such 
-that page_pool_destroy() knows, or a lock like this patchset.
-
-
-> And there might still be concurrency between checking/handling of the extra
-> state in page_pool_destroy() and the setting of extra state in
-> page_pool_return_page(), something like lock might still be needed to avoid
-> the above concurrency.
-> 
-
-I agree, we (likely) cannot avoid this lock.
-
->>
->> Once the a page is release from a page pool it becomes a normal page,
->> that adhere to normal page refcnt'ing. That is how it worked before with
->> page_pool_release_page().
->> The later extensions with page fragment support and devmem might have
->> complicated this code path.
-> 
-> As page_pool_return_page() and page_pool_destroy() both try to "release"
-> the page concurrently for a specific page, I am not sure how using some
-> simple *atomic* can avoid this kind of concurrency even before page
-> fragment and devmem are supported, it would be good to be more specific
-> about that by using some pseudocode.
-> 
-
-Okay, some my simple atomic idea will not work.
-
-NEW IDEA:
-
-So, the my concern in this patchset is that BH-disabling spin_lock 
-pool->destroy_lock is held in the outer loop of 
-page_pool_inflight_unmap() that scans all pages.  Disabling BH for this 
-long have nasty side-effects.
-
-Will it be enough to grab the pool->destroy_lock only when we detect a 
-page that belongs to our page pool?  Of-cause after obtaining the lock. 
-the code need to recheck if the page still belongs to the pool.
-
-
-> I looked at it more closely, previously page_pool_put_page() seemed to
-> not be allowed to be called after page_pool_release_page() had been
-> called for a specific page mainly because of concurrently checking/handlig
-> and clearing of page->pp_magic if I understand it correctly:
-> https://elixir.bootlin.com/linux/v5.16.20/source/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c#L5316
-
-As I said above
-The page_pool_release_page() didn't decrement page refcnt.
-It disconnects a page (from a page_pool). To allow it to be used as
-a regular page (that will eventually be returned to the normal
-page-allocator via put_page).
-
---Jesper
-
+Thanks,
+Praan
