@@ -1,60 +1,132 @@
-Received: from njjs-sys-mailin01.njjs.baidu.com (mx310.baidu.com [180.101.52.44])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9582192D69
-	for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 07:40:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=180.101.52.44
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8379E13CF82
+	for <iommu@lists.linux.dev>; Tue, 26 Nov 2024 08:22:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732606860; cv=none; b=O4c4fumVDVU1aBt51xVKZegnDZ1ecuiL2X+AQziZppWtLR/EieSKywkHxAw3Jo989PkHl01ZDVnDL2z82G6GhIrs4GOTXu3hoXlpwpxTJKthRbA8ebDT8KmMuUPvF+6CA5ADoHeXq3fGMsmyDVJbBICACWH4dr3+FZ2GDkdIkXQ=
+	t=1732609371; cv=none; b=b6Rz6o2s4VrvLLhT44pAo5EVBTzIDgX+SHbDQIlV5/UrfNthZ8tZR4THllnrhFMTEmPcdStQNez5g0BnkcsYcsvCfrUEDE2w5d0bkZe5SpnsX/Vj7ojaGaXQK5wFOgrfycS1Fg/0OpJ8b9+Y1jiY/QpUsHcrqSSqNu2CpNTbvqY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732606860; c=relaxed/simple;
-	bh=KWdZR1m/yiosVQICP/CF989WTwFAR2oa++gXl9md0Eg=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=uhoIfeyNtrK2nHvmEtXK74+3LqtNia7x4RKdc3m63fpoH8rpLoTFO05HFMs5KClFoAO9V0ufJ/ql+mOQc9kLq9OUS12rIqC09eXUi2R7YHSpwuuB42MXwHVA60H5GPzCd8FnREFkY05yGba+LEbvBBwJQsycxtRcyxSkuuq/DFE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; arc=none smtp.client-ip=180.101.52.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
-Received: from localhost (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
-	by njjs-sys-mailin01.njjs.baidu.com (Postfix) with ESMTP id F177D7F0005E;
-	Tue, 26 Nov 2024 15:23:40 +0800 (CST)
-From: Li RongQing <lirongqing@baidu.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	iommu@lists.linux.dev
-Cc: Li RongQing <lirongqing@baidu.com>
-Subject: [PATCH] iommu: Downgrade print level for iommu group information
-Date: Tue, 26 Nov 2024 15:23:39 +0800
-Message-Id: <20241126072339.25714-1-lirongqing@baidu.com>
-X-Mailer: git-send-email 2.9.4
+	s=arc-20240116; t=1732609371; c=relaxed/simple;
+	bh=NZzFxGiqYDUqL29nURG2k2e9QAvCV2Jo0ezb0nUvxqA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=sYJYRzjhm5Qy4mmwKZmcnSG3eqFc3xfag1+kNwqgxDBarLupJ4h2YrciyKXjV+qFRVSSaKsT6Ony0qmMhwXk54HI8ZaTBibq4sJDrgLbX5tV5TFzb4/6iHHw9YSc9X/UddK39YiJi8tg4I5wmwzvONiXZuW/s79muGvdhYsSmdY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.187
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.48])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4XyFrH24FZz10WNr;
+	Tue, 26 Nov 2024 16:20:31 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 94B9718009B;
+	Tue, 26 Nov 2024 16:22:39 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Tue, 26 Nov 2024 16:22:39 +0800
+Message-ID: <6233e2c3-3fea-4ed0-bdcc-9a625270da37@huawei.com>
+Date: Tue, 26 Nov 2024 16:22:30 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v4 2/3] page_pool: fix IOMMU crash when driver has
+ already unbound
+To: Jesper Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>,
+	<kuba@kernel.org>, <pabeni@redhat.com>
+CC: <liuyonglong@huawei.com>, <fanghaiqing@huawei.com>,
+	<zhangkun09@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander Duyck
+	<alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Ilias Apalodimas
+	<ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>, Simon
+ Horman <horms@kernel.org>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+References: <20241120103456.396577-1-linyunsheng@huawei.com>
+ <20241120103456.396577-3-linyunsheng@huawei.com>
+ <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
+ <27475b57-eda1-4d67-93f2-5ca443632f6b@huawei.com>
+ <ac728cc1-2ccb-4207-ae11-527a3ed8fbb6@kernel.org>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <ac728cc1-2ccb-4207-ae11-527a3ed8fbb6@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-This per device log is becoming longer with more and more PCI devices
-in system, which slows down the boot process due to the serializing
-nature of printk().
+On 2024/11/25 23:25, Jesper Dangaard Brouer wrote:
 
-Downgrade dev_info() to dev_dbg() so it is still accessible for debug
-purposes.
+...
 
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
----
- drivers/iommu/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>>>> +
+>>>>    void page_pool_destroy(struct page_pool *pool)
+>>>>    {
+>>>>        if (!pool)
+>>>> @@ -1139,6 +1206,8 @@ void page_pool_destroy(struct page_pool *pool)
+>>>>         */
+>>>>        synchronize_rcu();
+>>>>    +    page_pool_inflight_unmap(pool);
+>>>> +
+>>>
+>>> Reaching here means we have detected in-flight packets/pages.
+>>>
+>>> In "page_pool_inflight_unmap" we scan and find those in-flight pages to
+>>> DMA unmap them. Then below we wait for these in-flight pages again.
+>>> Why don't we just "release" (page_pool_release_page) those in-flight
+>>> pages from belonging to the page_pool, when we found them during scanning?
+>>>
+>>> If doing so, we can hopefully remove the periodic checking code below.
+>>
+>> I thought about that too, but it means more complicated work than just
+>> calling the page_pool_release_page() as page->pp_ref_count need to be
+>> converted into page->_refcount for the above to work, it seems hard to
+>> do that with least performance degradation as the racing against
+>> page_pool_put_page() being called concurrently.
+>>
+> 
+> Maybe we can have a design that avoid/reduce concurrency.  Can we
+> convert the suggested pool->destroy_lock into an atomic?
+> (Doing an *atomic* READ in page_pool_return_page, should be fast if we
+> keep this cache in in (cache coherence) Shared state).
+> 
+> In your new/proposed page_pool_return_page() when we see the
+> "destroy_cnt" (now atomic READ) bigger than zero, then we can do nothing
+> (or maybe we need decrement page-refcnt?), as we know the destroy code
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 83c8e61..a16f944 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1193,7 +1193,7 @@ static struct group_device *iommu_group_alloc_device(struct iommu_group *group,
- 
- 	trace_add_device_to_group(group->id, dev);
- 
--	dev_info(dev, "Adding to iommu group %d\n", group->id);
-+	dev_dbg(dev, "Adding to iommu group %d\n", group->id);
- 
- 	return device;
- 
--- 
-2.9.4
+Is it valid to have a page->_refcount of zero when page_pool still own
+the page if we only decrement page->_refcount and not clear page->pp_magic?
+What happens if put_page() is called from other subsystem for a page_pool
+owned page, isn't that mean the page might be returned to buddy page
+allocator, causing use-after-free problem?
 
+> will be taking care of "releasing" the pages from the page pool.
+
+If page->_refcount is not decremented in page_pool_return_page(), how
+does page_pool_destroy() know if a specific page have been called with
+page_pool_return_page()? Does an extra state is needed to indicate that?
+
+And there might still be concurrency between checking/handling of the extra
+state in page_pool_destroy() and the setting of extra state in
+page_pool_return_page(), something like lock might still be needed to avoid
+the above concurrency.
+
+> 
+> Once the a page is release from a page pool it becomes a normal page,
+> that adhere to normal page refcnt'ing. That is how it worked before with
+> page_pool_release_page().
+> The later extensions with page fragment support and devmem might have
+> complicated this code path.
+
+As page_pool_return_page() and page_pool_destroy() both try to "release"
+the page concurrently for a specific page, I am not sure how using some
+simple *atomic* can avoid this kind of concurrency even before page
+fragment and devmem are supported, it would be good to be more specific
+about that by using some pseudocode.
+
+I looked at it more closely, previously page_pool_put_page() seemed to
+not be allowed to be called after page_pool_release_page() had been
+called for a specific page mainly because of concurrently checking/handlig
+and clearing of page->pp_magic if I understand it correctly:
+https://elixir.bootlin.com/linux/v5.16.20/source/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c#L5316
