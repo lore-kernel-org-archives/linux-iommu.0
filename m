@@ -1,112 +1,211 @@
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5EFE20125A
-	for <iommu@lists.linux.dev>; Wed, 27 Nov 2024 18:59:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.149.199.84
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69926201253
+	for <iommu@lists.linux.dev>; Wed, 27 Nov 2024 19:40:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732733998; cv=none; b=vCsESFaDXixp/H14cX5IzGjxqHk6OO0eDQkJZCEDUrLzgBHmQJknkDOJ7bmBcmKHzm68R1hx2NOKjqyOKZyjuIR+j75I0XmDilAHzYyRZpu0G0ZuSkZ7qhQgcQnIKq92iesHAyi61O84dfNSm4HdrpMz2qWfMMV96UaKEJzpPyA=
+	t=1732736408; cv=none; b=f2ZUker5BzbnB3TmEf9pJY3lat020Cbk5scAwaQWewdsflSbgSkLteOO8aqGZ64caQAkqm7jJpvjDk9JGKIpDkfxI1EnQ4E09fQWChHifP6mYkBO+/QixQH5agCxO4QNs5XXOvXj8cyMy9vdEF0faaPvugVjYK44r8NgL2ab+lg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732733998; c=relaxed/simple;
-	bh=Q9lD0FFdsE2KuX9EExX2wAlkFfqAIiMM16sS73q7On4=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=G4t6IGbhgIODYoqaCvb7GuJz9lq+lGeRW6Uq+jcIMUkoMUI+yp4eD2KPV9mAT/kUQEZ2T7qgmZFDt8M4jNbUKfIXFBxqauSXngrlJ5FUE7L8bysjKOSmKVncsFVyTnyFCRMHVFk52LQ9knHNQYBIpo0NStXvyyzyHhp6GMaYxGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru; spf=pass smtp.mailfrom=ispras.ru; dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b=Z6mYFFjA; arc=none smtp.client-ip=83.149.199.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ispras.ru
+	s=arc-20240116; t=1732736408; c=relaxed/simple;
+	bh=x9dS7oAYleHRajlJ27xlcRqC5Yg8HnsAAlu88HSzn04=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JQLQButWSa5XFQaJYjFMvKdYBPbidMEtCisgn3QQnX8INMltb6Yq3l9yfjRN7RwWkF6T9nrtHaxCLsXdWkgWG4jRUAIZ2y+7od4Qs3aSYyGNwuFP9gy83J2Rm9/NwAjuEj2LUxCyaAW83pJDE9G9+JBDlP+rjqJs2A2B9IzrTOQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sefgGfp3; arc=none smtp.client-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b="Z6mYFFjA"
-Received: from fpc.intra.ispras.ru (unknown [10.10.165.4])
-	by mail.ispras.ru (Postfix) with ESMTPSA id EDCD2518E76F;
-	Wed, 27 Nov 2024 18:59:51 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru EDCD2518E76F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-	s=default; t=1732733992;
-	bh=IbWtycDxvF+2Dy4hwBe4BTV3k5eyFHoRBLH861A4gOI=;
-	h=From:To:Cc:Subject:Date:From;
-	b=Z6mYFFjAn6JgbSPD5vF9Vm0kclH6Et4l/3KZmgaE7c7JVyqPY0YIPQtlTJn8wpS8D
-	 bukRG+IeNWgKspQ/zepNoe3iv7PR1vfotYqd/KG15qx7I0xBkRhcMllYWO2UQdF6jc
-	 2NiyBgbhYUPhbKBDy8WUdwdDSTue8A923iKGjZPs=
-From: Fedor Pchelkin <pchelkin@ispras.ru>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Fedor Pchelkin <pchelkin@ispras.ru>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	lvc-project@linuxtesting.org
-Subject: [PATCH] dma-debug: fix physical address calculation for struct dma_debug_entry
-Date: Wed, 27 Nov 2024 21:59:26 +0300
-Message-Id: <20241127185926.168102-1-pchelkin@ispras.ru>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sefgGfp3"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-4668194603cso10291cf.1
+        for <iommu@lists.linux.dev>; Wed, 27 Nov 2024 11:40:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1732736405; x=1733341205; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SJl9SLmf8+tDJzXXlxRiqoHwxpxlnvk1n/BWGDuOZZo=;
+        b=sefgGfp3BOeWshTWcLzj/yzzNZb6uLS3F0SdrXKxbL0mdcSmUa08pbfoJZ1jHOVR16
+         JwXwmhYmblSK36XqpdPW0yhVzeRDs4BJnsLUNkj/CwCGco0nr4rpuaFfMiHnqWkcW3j8
+         d9nun5A1S4mEI0TDrqkYANVylHH2A9cJjVEFxwKZ6r/Bxq566QV8Q+mc8aDA2rMjOqR/
+         xolOUrN/uGLupB4IeBTcHl7Bw9rSAN2gWp1dDs5/ZB5qUi44FTp/wvUp4HRtsLsweArg
+         F5NXI/NeioXe+BOLUEtSVL0FSxG8uMgRVMUbMc+JEHCnLK+TaHNOvfNHKgULtnJvI5Ub
+         1rPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732736405; x=1733341205;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SJl9SLmf8+tDJzXXlxRiqoHwxpxlnvk1n/BWGDuOZZo=;
+        b=dHeinGbNn499sY57pUYLgmycebOrLCXfpErXjBb+fyR2naH1E9eMx+g4T48BuehYKE
+         6irFjvLXsjWWQHjjVT4oxs0eFxuX/h54ggbcou+Q0rX8VktgwV9NDZewMwNNb1V/7VgH
+         yB0SAERz3Cu/tSuGfgwEBi2a3HepTggugzzFjqJrbapbQ2k08t7vpsMZkTYE/x9/F6Mj
+         9+x1geW0QYd+BztA8OK5r7zhaWZQcpsTeViDFLSrTwa1xt04cyVKm+7umi6FP6OMRFbc
+         O30vt1C1YRhGupamtR8XfWgGD05iqpcKf2Qe+/Fob0pLqrjTlL/5EIVrhdAu2MN0b//E
+         xrrQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWNFCp4KrOX6G7DZIte/UoSKVYvPNDi3nXvOlyy0C+EVJYQhMEjvuMrpyNplq7mUU9xrPu7Wg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw9giTTHdDb38/1+fdRRm41PLJ+Qg2f//xU6/8w2d0YjaUwxvae
+	cClXdOGd6J5WdBo/B+Q+u2naNukvNFdIVMA4OgMT4tu2kA9cMzsX/5Uot4cLgH0Fd7aGHrlu4UN
+	MKN5rv32D6Q+Ozg1z/xZZGWPFUwG/0L63szx2
+X-Gm-Gg: ASbGncsU71+gJ88/dxLl0hmEnUa1rrYuw+jxw5oNoizfyHyvnPZS1EfoUAkWhZN9L/l
+	W3Ugb/javvK6w2suBYRQcOTyR8KDy2J0=
+X-Google-Smtp-Source: AGHT+IFpU3rekOtcEw5rS4VDu/+FdfyXUn4njkcrc7z2/l5oaizj3tMziVrc1xraWFLbxEOWRGr6r/J9olDf9amauwU=
+X-Received: by 2002:a05:622a:5e83:b0:461:48f9:4852 with SMTP id
+ d75a77b69052e-466c2a6b1a2mr134761cf.28.1732736404883; Wed, 27 Nov 2024
+ 11:40:04 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20241120103456.396577-1-linyunsheng@huawei.com>
+ <20241120103456.396577-3-linyunsheng@huawei.com> <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
+ <27475b57-eda1-4d67-93f2-5ca443632f6b@huawei.com> <CAHS8izM+sK=48gfa3gRNffu=T6t6-2vaS60QvH79zFA3gSDv9g@mail.gmail.com>
+ <CAKgT0Uc-SDHsGkgmLeAuo5GLE0H43i3h7mmzG88BQojfCoQGGA@mail.gmail.com> <8f45cc4f-f5fc-4066-9ee1-ba59bf684b07@huawei.com>
+In-Reply-To: <8f45cc4f-f5fc-4066-9ee1-ba59bf684b07@huawei.com>
+From: Mina Almasry <almasrymina@google.com>
+Date: Wed, 27 Nov 2024 11:39:53 -0800
+Message-ID: <CAHS8izPg7B5DwKfSuzz-iOop_YRbk3Sd6Y4rX7KBG9DcVJcyWg@mail.gmail.com>
+Subject: Re: [PATCH RFC v4 2/3] page_pool: fix IOMMU crash when driver has
+ already unbound
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>, Jesper Dangaard Brouer <hawk@kernel.org>, davem@davemloft.net, 
+	kuba@kernel.org, pabeni@redhat.com, liuyonglong@huawei.com, 
+	fanghaiqing@huawei.com, zhangkun09@huawei.com, 
+	Robin Murphy <robin.murphy@arm.com>, IOMMU <iommu@lists.linux.dev>, 
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>, 
+	Simon Horman <horms@kernel.org>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Offset into the page should also be considered while calculating a physical
-address for struct dma_debug_entry. page_to_phys() just shifts the value
-PAGE_SHIFT bits to the left so offset part is zero-filled.
+On Wed, Nov 27, 2024 at 1:35=E2=80=AFAM Yunsheng Lin <linyunsheng@huawei.co=
+m> wrote:
+>
+> On 2024/11/27 7:53, Alexander Duyck wrote:
+> > On Tue, Nov 26, 2024 at 1:51=E2=80=AFPM Mina Almasry <almasrymina@googl=
+e.com> wrote:
+> >>
+> >> On Thu, Nov 21, 2024 at 12:03=E2=80=AFAM Yunsheng Lin <linyunsheng@hua=
+wei.com> wrote:
+> >>>
+> >>> On 2024/11/20 23:10, Jesper Dangaard Brouer wrote:
+> >>>>
+> >>>>>       page_pool_detached(pool);
+> >>>>>       pool->defer_start =3D jiffies;
+> >>>>>       pool->defer_warn  =3D jiffies + DEFER_WARN_INTERVAL;
+> >>>>> @@ -1159,7 +1228,7 @@ void page_pool_update_nid(struct page_pool *p=
+ool, int new_nid)
+> >>>>>       /* Flush pool alloc cache, as refill will check NUMA node */
+> >>>>>       while (pool->alloc.count) {
+> >>>>>           netmem =3D pool->alloc.cache[--pool->alloc.count];
+> >>>>> -        page_pool_return_page(pool, netmem);
+> >>>>> +        __page_pool_return_page(pool, netmem);
+> >>>>>       }
+> >>>>>   }
+> >>>>>   EXPORT_SYMBOL(page_pool_update_nid);
+> >>>>
+> >>>> Thanks for continuing to work on this :-)
+> >>>
+> >>> I am not sure how scalable the scanning is going to be if the memory =
+size became
+> >>> bigger, which is one of the reason I was posting it as RFC for this v=
+ersion.
+> >>>
+> >>> For some quick searching here, it seems there might be server with ma=
+x ram capacity
+> >>> of 12.3TB, which means the scanning might take up to about 10 secs fo=
+r those systems.
+> >>> The spin_lock is used to avoid concurrency as the page_pool_put_page(=
+) API might be
+> >>> called from the softirq context, which might mean there might be spin=
+ning of 12 secs
+> >>> in the softirq context.
+> >>>
+> >>> And it seems hard to call cond_resched() when the scanning and unmapp=
+ing takes a lot
+> >>> of time as page_pool_put_page() might be called concurrently when poo=
+l->destroy_lock
+> >>> is released, which might means page_pool_get_dma_addr() need to be ch=
+ecked to decide
+> >>> if the mapping is already done or not for each page.
+> >>>
+> >>> Also, I am not sure it is appropriate to stall the driver unbound up =
+to 10 secs here
+> >>> for those large memory systems.
+> >>>
+> >>> https://www.broadberry.com/12tb-ram-supermicro-servers?srsltid=3DAfmB=
+OorCPCZQBSv91mOGH3WTg9Cq0MhksnVYL_eXxOHtHJyuYzjyvwgH
+> >>>
+> >>
+> >> FWIW I'm also concerned about the looping of all memory on the system.
+> >> In addition to the performance, I think (but not sure), that
+> >> CONFIG_MEMORY_HOTPLUG may mess such a loop as memory may appear or
+> >> disappear concurrently. Even if not, the CPU cost of this may be
+> >> significant. I'm imagining the possibility of having many page_pools
+> >> allocated on the system for many hardware queues, (and maybe multiple
+> >> pp's per queue for applications like devmem TCP), and each pp looping
+> >> over the entire xTB memory on page_pool_destroy()...
+> >>
+> >> My 2 cents here is that a more reasonable approach is to have the pp
+> >> track all pages it has dma-mapped, without the problems in the
+> >> previous iterations of this patch:
+> >>
+> >> 1. When we dma-map a page, we add it to some pp->dma_mapped data
+> >> structure (maybe xarray or rculist).
+> >> 2. When we dma-unmap a page, we remove it from pp->dma_mapped.
+> >> 3 When we destroy the pp, we traverse pp->dma_mapped and unmap all the
+> >> pages there.
+> >
+> > The thing is this should be a very rare event as it should apply only
+> > when a device is removed and still has pages outstanding shouldn't it?
+> > The problem is that maintaining a list of in-flight DMA pages will be
+> > very costly and will make the use of page pool expensive enough that I
+> > would worry it might be considered less than useful. Once we add too
+> > much overhead the caching of the DMA address doesn't gain us much on
+> > most systems in that case.
+> >
+> >> I haven't looked deeply, but with the right data structure we may be
+> >> able to synchronize 1, 2, and 3 without any additional locks. From a
+> >> quick skim it seems maybe rculist and xarray can do this without
+> >> additional locks, maybe.
+>
+> I am not sure how the above right data structure without any additional
+> locks will work, but my feeling is that the issues mentioned in [1] will
+> likely apply to the above right data structure too.
+>
+> 1. https://lore.kernel.org/all/6233e2c3-3fea-4ed0-bdcc-9a625270da37@huawe=
+i.com/
+>
 
-An example (wrong) debug assertion failure with CONFIG_DMA_API_DEBUG
-enabled which is observed during systemd boot process after recent
-dma-debug changes:
+I don't see the issues called out in the above thread conflict with
+what I'm proposing. In fact, I think Jesper's suggestion works
+perfectly with what I'm proposing. Maybe I'm missing something.
 
-DMA-API: e1000 0000:00:03.0: cacheline tracking EEXIST, overlapping mappings aren't supported
-WARNING: CPU: 4 PID: 941 at kernel/dma/debug.c:596 add_dma_entry
-CPU: 4 UID: 0 PID: 941 Comm: ip Not tainted 6.12.0+ #288
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:add_dma_entry kernel/dma/debug.c:596 
-Call Trace:
- <TASK>
-debug_dma_map_page kernel/dma/debug.c:1236 
-dma_map_page_attrs kernel/dma/mapping.c:179
-e1000_alloc_rx_buffers drivers/net/ethernet/intel/e1000/e1000_main.c:4616
-...
+We can use an atomic pool->destroy_count to synchronize steps 2 and 3.
+I.e. If destroy_count > 0, we don't unmap the page in
+__page_pool_release_page(), and instead count on the page_pool_destroy
+unmapping all the pages in the pp->dma_mapped list.
 
-Found by Linux Verification Center (linuxtesting.org).
+> >>
+> >> Like stated in the previous iterations of this approach, we should not
+> >> be putting any hard limit on the amount of memory the pp can allocate,
+> >> and we should not have to mess with the page->pp entry in struct page.
+>
+> It would be good to be more specific about how it is done without 'messin=
+g'
+> with the page->pp entry in struct page using some pseudocode or RFC if yo=
+u
+> call the renaming as messing.
+>
 
-Fixes: 9d4f645a1fd4 ("dma-debug: store a phys_addr_t in struct dma_debug_entry")
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
----
- kernel/dma/debug.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+Yeah, I don't think touching the page->pp entry is needed if you use
+an xarray or rculist which hangs off the pp.
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 295396226f31..27ade2bab531 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -1219,7 +1219,7 @@ void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
- 
- 	entry->dev       = dev;
- 	entry->type      = dma_debug_single;
--	entry->paddr	 = page_to_phys(page);
-+	entry->paddr	 = page_to_phys(page) + offset;
- 	entry->dev_addr  = dma_addr;
- 	entry->size      = size;
- 	entry->direction = direction;
-@@ -1400,7 +1400,8 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
- 	entry->type      = dma_debug_coherent;
- 	entry->dev       = dev;
- 	entry->paddr	 = page_to_phys((is_vmalloc_addr(virt) ?
--				vmalloc_to_page(virt) : virt_to_page(virt)));
-+				vmalloc_to_page(virt) : virt_to_page(virt))) +
-+				offset_in_page(virt);
- 	entry->size      = size;
- 	entry->dev_addr  = dma_addr;
- 	entry->direction = DMA_BIDIRECTIONAL;
-@@ -1424,7 +1425,8 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
- 		return;
- 
- 	ref.paddr = page_to_phys((is_vmalloc_addr(virt) ?
--			vmalloc_to_page(virt) : virt_to_page(virt)));
-+			vmalloc_to_page(virt) : virt_to_page(virt))) +
-+			offset_in_page(virt);
- 
- 	if (unlikely(dma_debug_disabled()))
- 		return;
--- 
-2.39.5
+I'm currently working on a few bug fixes already and the devmem TCP TX
+which is waiting on by a few folks; I don't think I can look into this
+right now, but I'll try. If this issue hasn't been resolved by the
+time I get some bandwidth, sure, I'll take a stab at it.
 
+--=20
+Thanks,
+Mina
