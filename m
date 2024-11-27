@@ -1,125 +1,183 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2036A192597
-	for <iommu@lists.linux.dev>; Wed, 27 Nov 2024 09:25:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 111C318E373
+	for <iommu@lists.linux.dev>; Wed, 27 Nov 2024 09:35:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732699534; cv=none; b=MZ5dGCBflAYWwdKCEc8Dl/mV1l5RKS3BaoDD01KOQ3dPQADZVybbvaTikA3RXBdIarSG7QwZbea8dTvRe3xuBryf49P3//1O5UbVplD4Zy7roKj3BlLOj+Gi7hEQCc33J4pRD/DVnH2CPXt6DwEjntjYHckZBwHfAyrsWeFVzQQ=
+	t=1732700134; cv=none; b=GLDByJajPmvHrQYSJXsGUnBndtE0hamdQeRSxl4GttfgxhrGdJYk25L93nqrrZ893Y4MEKL1wxdD2BtYPt/o+Qo0KTJO7uiHAI4HlliLAp4oL+7E6HlANUSJtgLXspV1YYcmr3qtl18gLYyHgGK/HITBJu4EXCXypQC/s+PONSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732699534; c=relaxed/simple;
-	bh=seKZdXSX8Foz/8XmR1HR0JaLB900a7S8smhCoEJmj9o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NGgF9LeiRs6dbSWJ1vDc9H+r6zN5jxeR/S6dp6Fn2+4yt6jN95XA5B698R9EJ6fF2tmLDsufDg9XwUDIjDZzdhDcqJ0uXDd77FXx7jp6v1qSvIibd6mg5r90ZHlZLVfl5T4XnsHA3CRy0pMoLCWZQciZT0KRZSgt2oiZhOmqokg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=R5o78qxE; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="R5o78qxE"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-211f1b2bf2bso99305ad.1
-        for <iommu@lists.linux.dev>; Wed, 27 Nov 2024 01:25:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1732699532; x=1733304332; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=HLMAAdov+HGDC29SO3bwIsQ2RjggnUDbABkZmESg5/c=;
-        b=R5o78qxEOU3Zza/HZA6ZVe4sklkQZQW4QTgcwuJ6HAMVHBABKvoxFgJ1g9EODO1dD8
-         aDICC8yrAOnjhwd2J+68+WvfAVu1mlc22Kj6umJMscapfqSmiXYsT7HltCVAewLU2yGC
-         tbzK/lmU2Po6CFUxa2YfqL8Y4ueD0gkGdH5lsHyao/j7AvdqG+jdROsDe6tbr7l38BNg
-         zkLszIX1wF4XcJmV6DZ7vYOXtUxtm6UFy+IJyOgN3Ea9uo1klmy2pf6d6xMBPVlpTkg7
-         T2C/RbE9pSCTbOpSdhtBNxbmL7TJMOzR+HMV5d+3yUi6wnrXaO6SzywfsSjDVt7pjb4F
-         1Sug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732699532; x=1733304332;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HLMAAdov+HGDC29SO3bwIsQ2RjggnUDbABkZmESg5/c=;
-        b=nIcISvILcCopXVZXDyHunKqK934Gl0WHXtWW24PfVoVFawwwNYwu64+GUD/TPeqrbe
-         Os58mBrRQ769Zst4V53SOFLzul91JWFqI4reWwpgsa2T7WbLWz3L1CcWe/ySuhmeFtdB
-         4Ob6mab/EhlXMEFD6OADmDXi6MLMR7AZoAuyGHi67Z6AOw9cSBxvvsFXtwK5o31ikEMV
-         Z3TcAXVZ+x4EV3QIgoMX9Jo+A9AYAfDofOiLhtKtiKPELZq6lDD5kIEjSns9x7Apm8Hz
-         xo0N7abSLmFMJdgvncOhbYiOCWn0Ec4qrsqWQNFqIr96nE12kX8XvIPdxEVYdlOWxdwo
-         YXrw==
-X-Forwarded-Encrypted: i=1; AJvYcCVZBAzGCqkFqGzk7BL/oWsZy7hzVtNYCIBX9pNWSYV6bX2Z8T4ej0O9D22HiQNU/Rk6qrWc3Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzFLZr5O5SFDdU8sXLHhfyGAdBOPQQuvWs8QCOx/TZN/lPCicCH
-	u5HRrTEZ0MPkeGfck+efAozHoDEnT1J98O9ddrB4iKilzqET8QscuDiyYRS/qg==
-X-Gm-Gg: ASbGncvktBteWhaUvffnbrkdSWWc5cM4RP6shA4HlNJz0Me7u9mCyWaSmMWX+y3/vUT
-	VlhACq1hR2sARDe6zqbe7XYqQln/gHyq3imzqBKSc2KaMXed6Rcm8eIE+Wb1VH6kqg3JUR4yWHI
-	4gZl46hPJgFKcVYZJ3SIt9cvwFo7f2Wx7t/q4tM37Nkzq+46qLgr9ApgeFwdjEyhMS4jNPv4a24
-	EFhCxYzeoKsGThlGsP0DVh3yXdp6YbXhFBF5irjn1lasDEx8pVDL1oxnDaxeDKa2wPH8W9Uqw5A
-	IfxdWe2O2IE=
-X-Google-Smtp-Source: AGHT+IHhBwfE8lX/Ai7+LWC3x7UH49RUSH2b8UDwvDmK3Eh9S75DoDkr8g37LFJbMcbk/53kxCoZ1w==
-X-Received: by 2002:a17:903:1788:b0:212:26e:1b46 with SMTP id d9443c01a7336-2150641c57fmr1414065ad.23.1732699532175;
-        Wed, 27 Nov 2024 01:25:32 -0800 (PST)
-Received: from google.com (104.132.143.34.bc.googleusercontent.com. [34.143.132.104])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-724de454a96sm9780505b3a.40.2024.11.27.01.25.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2024 01:25:31 -0800 (PST)
-Date: Wed, 27 Nov 2024 09:25:23 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v5 1/3] iommu/arm-smmu-v3: Introduce struct arm_smmu_event
-Message-ID: <Z0blg7wbWr05qp3w@google.com>
-References: <20241112083018.1662104-1-praan@google.com>
- <20241112083018.1662104-2-praan@google.com>
- <CAE2F3rCO1PbzMEdJB1zRFK+FsbYa0w2TWrGL-XV6y9A9vrqytA@mail.gmail.com>
+	s=arc-20240116; t=1732700134; c=relaxed/simple;
+	bh=puswNEyYv7Tm4tIOnwIGej0m37Dd4RZxqTakLwN7Bdg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=GTr6Z9cPCGtqnGqlZgSqiGMr29QkQPFGteD8L3tJgNTzsD0ZYcQtd2BowGH52kiB8hjcG2hrEfSxModtJrqG0wHTBm1Bo6KfXO5vMF+GVT5U57aQpPNj1liHDWQTGtkbKGEuwuIJ0ibAm2rfaJx2QcQ1eH54tVhN7HAaEcFU/Aw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.48])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4XyvP000zJzPpsk;
+	Wed, 27 Nov 2024 17:32:35 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 97AAC180087;
+	Wed, 27 Nov 2024 17:35:22 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Wed, 27 Nov 2024 17:35:22 +0800
+Message-ID: <8f45cc4f-f5fc-4066-9ee1-ba59bf684b07@huawei.com>
+Date: Wed, 27 Nov 2024 17:35:22 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v4 2/3] page_pool: fix IOMMU crash when driver has
+ already unbound
+To: Alexander Duyck <alexander.duyck@gmail.com>, Mina Almasry
+	<almasrymina@google.com>
+CC: Jesper Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>,
+	<kuba@kernel.org>, <pabeni@redhat.com>, <liuyonglong@huawei.com>,
+	<fanghaiqing@huawei.com>, <zhangkun09@huawei.com>, Robin Murphy
+	<robin.murphy@arm.com>, IOMMU <iommu@lists.linux.dev>, Ilias Apalodimas
+	<ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>, Simon
+ Horman <horms@kernel.org>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+References: <20241120103456.396577-1-linyunsheng@huawei.com>
+ <20241120103456.396577-3-linyunsheng@huawei.com>
+ <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
+ <27475b57-eda1-4d67-93f2-5ca443632f6b@huawei.com>
+ <CAHS8izM+sK=48gfa3gRNffu=T6t6-2vaS60QvH79zFA3gSDv9g@mail.gmail.com>
+ <CAKgT0Uc-SDHsGkgmLeAuo5GLE0H43i3h7mmzG88BQojfCoQGGA@mail.gmail.com>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <CAKgT0Uc-SDHsGkgmLeAuo5GLE0H43i3h7mmzG88BQojfCoQGGA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rCO1PbzMEdJB1zRFK+FsbYa0w2TWrGL-XV6y9A9vrqytA@mail.gmail.com>
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On Tue, Nov 26, 2024 at 07:25:12PM -0800, Daniel Mentz wrote:
-> On Tue, Nov 12, 2024 at 12:30 AM Pranjal Shrivastava <praan@google.com> wrote:
-> > +       event->stag = FIELD_GET(EVTQ_1_STAG, raw[1]);
-> > +       event->stall = raw[1] & EVTQ_1_STALL;
+On 2024/11/27 7:53, Alexander Duyck wrote:
+> On Tue, Nov 26, 2024 at 1:51 PM Mina Almasry <almasrymina@google.com> wrote:
+>>
+>> On Thu, Nov 21, 2024 at 12:03 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>
+>>> On 2024/11/20 23:10, Jesper Dangaard Brouer wrote:
+>>>>
+>>>>>       page_pool_detached(pool);
+>>>>>       pool->defer_start = jiffies;
+>>>>>       pool->defer_warn  = jiffies + DEFER_WARN_INTERVAL;
+>>>>> @@ -1159,7 +1228,7 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
+>>>>>       /* Flush pool alloc cache, as refill will check NUMA node */
+>>>>>       while (pool->alloc.count) {
+>>>>>           netmem = pool->alloc.cache[--pool->alloc.count];
+>>>>> -        page_pool_return_page(pool, netmem);
+>>>>> +        __page_pool_return_page(pool, netmem);
+>>>>>       }
+>>>>>   }
+>>>>>   EXPORT_SYMBOL(page_pool_update_nid);
+>>>>
+>>>> Thanks for continuing to work on this :-)
+>>>
+>>> I am not sure how scalable the scanning is going to be if the memory size became
+>>> bigger, which is one of the reason I was posting it as RFC for this version.
+>>>
+>>> For some quick searching here, it seems there might be server with max ram capacity
+>>> of 12.3TB, which means the scanning might take up to about 10 secs for those systems.
+>>> The spin_lock is used to avoid concurrency as the page_pool_put_page() API might be
+>>> called from the softirq context, which might mean there might be spinning of 12 secs
+>>> in the softirq context.
+>>>
+>>> And it seems hard to call cond_resched() when the scanning and unmapping takes a lot
+>>> of time as page_pool_put_page() might be called concurrently when pool->destroy_lock
+>>> is released, which might means page_pool_get_dma_addr() need to be checked to decide
+>>> if the mapping is already done or not for each page.
+>>>
+>>> Also, I am not sure it is appropriate to stall the driver unbound up to 10 secs here
+>>> for those large memory systems.
+>>>
+>>> https://www.broadberry.com/12tb-ram-supermicro-servers?srsltid=AfmBOorCPCZQBSv91mOGH3WTg9Cq0MhksnVYL_eXxOHtHJyuYzjyvwgH
+>>>
+>>
+>> FWIW I'm also concerned about the looping of all memory on the system.
+>> In addition to the performance, I think (but not sure), that
+>> CONFIG_MEMORY_HOTPLUG may mess such a loop as memory may appear or
+>> disappear concurrently. Even if not, the CPU cost of this may be
+>> significant. I'm imagining the possibility of having many page_pools
+>> allocated on the system for many hardware queues, (and maybe multiple
+>> pp's per queue for applications like devmem TCP), and each pp looping
+>> over the entire xTB memory on page_pool_destroy()...
+>>
+>> My 2 cents here is that a more reasonable approach is to have the pp
+>> track all pages it has dma-mapped, without the problems in the
+>> previous iterations of this patch:
+>>
+>> 1. When we dma-map a page, we add it to some pp->dma_mapped data
+>> structure (maybe xarray or rculist).
+>> 2. When we dma-unmap a page, we remove it from pp->dma_mapped.
+>> 3 When we destroy the pp, we traverse pp->dma_mapped and unmap all the
+>> pages there.
 > 
-> Any particular reason you're not using FIELD_GET on EVTQ_1_STALL like
-> in FIELD_GET(EVTQ_1_STALL, raw[1]); ?
+> The thing is this should be a very rare event as it should apply only
+> when a device is removed and still has pages outstanding shouldn't it?
+> The problem is that maintaining a list of in-flight DMA pages will be
+> very costly and will make the use of page pool expensive enough that I
+> would worry it might be considered less than useful. Once we add too
+> much overhead the caching of the DMA address doesn't gain us much on
+> most systems in that case.
 > 
+>> I haven't looked deeply, but with the right data structure we may be
+>> able to synchronize 1, 2, and 3 without any additional locks. From a
+>> quick skim it seems maybe rculist and xarray can do this without
+>> additional locks, maybe.
 
-No particular reason as such, just wanted to ensure a bool value as the
-current usage in `arm_smmu_handle_evt` fetched the stall field similarly
+I am not sure how the above right data structure without any additional
+locks will work, but my feeling is that the issues mentioned in [1] will
+likely apply to the above right data structure too.
 
-I'll update this to use a FIELD_GET 
+1. https://lore.kernel.org/all/6233e2c3-3fea-4ed0-bdcc-9a625270da37@huawei.com/
 
-> > +       event->class = FIELD_GET(EVTQ_1_CLASS, raw[1]);
-> > +       event->iova = FIELD_GET(EVTQ_2_ADDR, raw[2]);
-> > +       event->ipa = raw[3];
+>>
+>> Like stated in the previous iterations of this approach, we should not
+>> be putting any hard limit on the amount of memory the pp can allocate,
+>> and we should not have to mess with the page->pp entry in struct page.
+
+It would be good to be more specific about how it is done without 'messing'
+with the page->pp entry in struct page using some pseudocode or RFC if you
+call the renaming as messing.
+
 > 
-> Shouldn't this be
+> I agree with you on the fact that we shouldn't be setting any sort of
+> limit. The current approach to doing the unmapping is more-or-less the
+> brute force way of doing it working around the DMA api. I wonder if we
+> couldn't look at working with it instead and see if there wouldn't be
+> some way for us to reduce the overhead instead of having to do the
+> full scan of the page table.
 > 
-> event->ipa =FIELD_GET(EVTQ_3_IPA, raw[3]);
+> One thought in that regard though would be to see if there were a way
+> to have the DMA API itself provide some of that info. I know the DMA
+> API should be storing some of that data for the mapping as we have to
+> go through and invalidate it if it is stored.
+> 
+> Another alternative would be to see if we have the option to just
+> invalidate the DMA side of things entirely for the device. Essentially
+> unregister the device from the IOMMU instead of the mappings. If that
+> is an option then we could look at leaving the page pool in a state
+> where it would essentially claim it no longer has to do the DMA unmap
+> operations and is just freeing the remaining lingering pages.
 
-No. For this, there's a reason for not using the 
-`FIELD_GET(EVTQ_3_IPA, raw[3]);`. As mentioned in the cover letter, this
-was the root cause of the IPA truncation bug, i.e. FIELD_GET only
-fetches the IPA field without trailing zeroes, truncating the address.
-For e.g. IPA = 0xfffff instead of 0xfffff000 which is faulting address.
+If we are going to 'invalidate the DMA side of things entirely for the
+device', synchronization from page_pool might just go to the DMA core as
+concurrent calling for dma unmapping API and 'invalidating' operation still
+exist. If the invalidating is a common feature, perhaps it makes sense to
+do that in the DMA core, otherwise it might just add unnecessary overhead
+for other callers of DMA API.
 
-Also, since the definition of the field is GENMASK_ULL(51,12) it doesn't
-work for events like `F_STE_FETCH` where the Fetch address field is:
-GENMASK_ULL(51,3).
+As mentioned by Robin in [2], the DMA core seems to make a great deal of
+effort to catch DMA API misuse in kernel/dma/debug.c, it seems doing the
+above might invalidate some of the dma debug checking.
 
-Since the SMMUv3 spec ensures that the bitfields NOT representing an
-address, i.e. fields other than GENMASK_ULL(51,12) or GENMASK_ULL(51,3),
-are zeros. It's safe to read the raw[3] dword directly.
+2. https://lore.kernel.org/all/caf31b5e-0e8f-4844-b7ba-ef59ed13b74e@arm.com/
 
-I think this wasn't discovered until now as we are NOT using the
-EVTQ_3_IPA mask anywhere in the `arm-smmu-v3*` source files.
-
-
-Thanks,
-Praan
+> 
