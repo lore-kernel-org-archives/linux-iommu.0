@@ -1,201 +1,206 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E84BF3C488
-	for <iommu@lists.linux.dev>; Wed, 27 Nov 2024 15:31:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732721479; cv=none; b=k5jjA066pTlw5uD26SlJz/3rJzj161nO1Tem6a1jFl6GzJxQMrrJCnUy0xo2q8ynG+yJIxV6OiI2+nBKPSAMUNdoqmnD9Ewf0s623Gp4p9xohy7evYHP/4zZGuEt3148fJRzRxefEgRcWl4vTiYPCba5DxKo402di7Wa2TzDZcM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732721479; c=relaxed/simple;
-	bh=pubFsu2duy/OPMVsYcsHApVWHA9DZRmxt9oXT1BKVEI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aj8HSjUjPh5VD7BIjB1lsBOOktuBvcF4N/rlA+mF0rTbb/TkeHJXUt5eI7MrtdZegBl86U8enX4pOpIFr8SiCb71GatWE7iSkf2vXjTvHGW618LVa4tCVGLBy8hrPAM7KKdAk9Z7BBr8ex3fL1klfRY/gGDk8O+AFHojbk8mcH8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5813C1477;
-	Wed, 27 Nov 2024 07:31:46 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8C7FA3F58B;
-	Wed, 27 Nov 2024 07:31:13 -0800 (PST)
-Message-ID: <41dfc444-1bab-4f9d-af11-4bbd93a9fe4b@arm.com>
-Date: Wed, 27 Nov 2024 15:31:05 +0000
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2052.outbound.protection.outlook.com [40.107.243.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85F5F200114
+	for <iommu@lists.linux.dev>; Wed, 27 Nov 2024 15:57:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1732723043; cv=fail; b=jBjHyq4c3HO7UBpdmUnWnqXLE8QDZ7HXrFbIzchk2UauWF0hlsv05znNT+EtQTtiPfhWez+In/MjvdVAfcJCWa+ufX/RGRoJrLJ7drd5n+TlTcCgv74x7+15H/xCZ4C5OKIHLrjYLVb7MaAJlHg5q+AA6ED/E+B/2pBpRND+SNQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1732723043; c=relaxed/simple;
+	bh=xj6vP0+/7cWb+Rk3UcySeIYpyo31n6rg1JhdX22h9RI=;
+	h=Date:From:To:Cc:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=OPGLEBpRZxAs9ojZf6PZezLy58eFkkie5NvwIYJwA1PRwesyaWvIogbI/EjbMG/pEDiE/+5XufM2Wn2EFHJfVUZEjbs5wo5K43N5HG7wb0GRXZcrh/WOJ7+4w3dq5odNktSmVhp1MkIA5lkYAlejakpGZYQeDndSfmAI6cQ+XFs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=tfdu3+wD; arc=fail smtp.client-ip=40.107.243.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tfdu3+wD"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=PFW6KN2Am+gcBjLl/TAuQL9xUA5QDfcRlW7Y3LQZ+77+QvFFGR8pS17q5CBhfvw1PBJ8xd86mhfE3zCw0RjUlrQF/fylB/iNRI8cV3DXIODgAbFNMQ/zx33pjGDiM9yPRcbzl6CGvPkt2yBZ9tY/9mcQA6b0KS/BMTHODoL9PFdmhZHIQAPQdb3Vqb2SGShKeimHJCHONnwkwLGzyYp/cRdaH8L0SkPAEoDR5+SPkzBY39743Q2sL2Leb78XMeCZUcqhWavRKAYML7CbDKWhF/hQdILbhyGYXKYThL8SeVWB9ipL0B08vwLs7qKg2QOExS9dySZKkavPLx4HD2kW9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EIBk15kSSVTKJIIhbnwj22TCGQSp2+3S6eHHaHHNKOg=;
+ b=tsTw51hJkO4yMCk3OcUQjauIz/OlaZnesz5oq7uH9UoliZkoXevM471hNmN/kkaLxYoq21KAyZuNhZAlf/SceJhsIidpzopMIc4Pwf2TNo5NvJWhb8Qq/bS6wmg0RFkqtluFCRqePH1jGB/pzn4dbJfTznUBR2xYdGVG3Bu88fqn3/HW1cgA+Wf5GJBp+ZEq162cjseAvsI3fYC34GqPvG20qRmluI96bNxTuVnkAV6oBcUM4d3sHGGA/sdNpCKNyhKD3kaGbq0FSuoARfVJ9OuEUnU1trBxRrLdiPAt58zkTCrYoOQ3iXJiD/WKzco3eVMKRjH30rbsED2TaeLW9A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EIBk15kSSVTKJIIhbnwj22TCGQSp2+3S6eHHaHHNKOg=;
+ b=tfdu3+wDLuRUp02DnE3gMywX5lY9tx6wwgB0lBmS589covwKigO54A6TXQJG2dUxqNMmIJU4xKWdDU0Br/eDHxh5U+DJv5CIXkt71cNob80/JMdFQrDOdOhLyI42ZlUu+APgCYEx54OiSVFMJawQIhL26n1l5NT8LcWDL/ZcixTlxnm2QMVEKHmQmD6378iTo0ctPv+9ZH0dR08vVxWMOsEun30MTazZCY9gjapceuzRBN7Q3xUkxXY0PXpTzJbP8fDvFSiDPZivP+zybG5WbFyWUrZXWJQR6VWNjSXCrhJGVqK/zhlLOinoK/G3cIJdq3PXnOPyO1+ASKXROsJV0g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by PH8PR12MB6793.namprd12.prod.outlook.com (2603:10b6:510:1c4::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8207.13; Wed, 27 Nov
+ 2024 15:57:14 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8207.010; Wed, 27 Nov 2024
+ 15:57:13 +0000
+Date: Wed, 27 Nov 2024 11:57:12 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: iommu@lists.linux.dev, kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
+Subject: [GIT PULL] Please pull IOMMUFD subsystem changes #2
+Message-ID: <20241127155712.GA1470954@nvidia.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="XpamI7JgGU+G7+Xz"
+Content-Disposition: inline
+X-ClientProxiedBy: BN0PR10CA0013.namprd10.prod.outlook.com
+ (2603:10b6:408:143::17) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v4 2/3] page_pool: fix IOMMU crash when driver has
- already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>,
- Alexander Duyck <alexander.duyck@gmail.com>,
- Mina Almasry <almasrymina@google.com>
-Cc: Jesper Dangaard Brouer <hawk@kernel.org>, davem@davemloft.net,
- kuba@kernel.org, pabeni@redhat.com, liuyonglong@huawei.com,
- fanghaiqing@huawei.com, zhangkun09@huawei.com, IOMMU
- <iommu@lists.linux.dev>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20241120103456.396577-1-linyunsheng@huawei.com>
- <20241120103456.396577-3-linyunsheng@huawei.com>
- <3366bf89-4544-4b82-83ec-fd89dd009228@kernel.org>
- <27475b57-eda1-4d67-93f2-5ca443632f6b@huawei.com>
- <CAHS8izM+sK=48gfa3gRNffu=T6t6-2vaS60QvH79zFA3gSDv9g@mail.gmail.com>
- <CAKgT0Uc-SDHsGkgmLeAuo5GLE0H43i3h7mmzG88BQojfCoQGGA@mail.gmail.com>
- <8f45cc4f-f5fc-4066-9ee1-ba59bf684b07@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <8f45cc4f-f5fc-4066-9ee1-ba59bf684b07@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|PH8PR12MB6793:EE_
+X-MS-Office365-Filtering-Correlation-Id: 92269b94-63c6-4b96-db1e-08dd0efc28da
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?GYzNYMYhD4imiPMlv5ZIA0EDkZ08AkykbqcyKdMtcxdcqKFni5QuajT/SUBL?=
+ =?us-ascii?Q?O6INmJ1U6Z/90KtukUQ+jbnoXksGYLXtgfICILh+oDl83GUhcFdYbY0xxBPm?=
+ =?us-ascii?Q?OUkaUJlQcCauRlLGaM724qftR/TmVTInlJyXZ1b2B0Khst+O7uB2p17vDavJ?=
+ =?us-ascii?Q?0hm15YHcw51L43HIm6aYlCQqIDCR7Gd4lJZz3NZJZqCy24cTQUGmzS1/YzdW?=
+ =?us-ascii?Q?zH9G/mA7RjBZY2R6Acqe6KeJ3em2pF8E2Pe/MGVUXV0TJidSrRXMXMIP5P08?=
+ =?us-ascii?Q?4LgaM0sM7xjzn2f7DOjSTIABLP2/CBToTRB+DF910vwOR2Dotwes74Gdw1d6?=
+ =?us-ascii?Q?Ud9vaE6vmQy3zzV832pgyu+erTzz04Edi9X1rkqnYwoEsZd4VLCJ2Xx4fJ/Q?=
+ =?us-ascii?Q?aszD0JvWKsy0bgEsp27hK6fSmHI6J9vwYp70nixtybarb9tsPbA3jWyOgbH/?=
+ =?us-ascii?Q?SrcYW415xzmim7mHRj0LQ248ljo4xvkiM0UNEVh5OwsuNICPqJSXkwsNN+zj?=
+ =?us-ascii?Q?frJRStJ+rvO5xHKh14GOWFb8mXrhoK+9jDuK2Rs3cTl+jB7MlNqLhcvBIB2C?=
+ =?us-ascii?Q?deDPWfK32UwSv1VbMuwMM0qfOOp5mJrog4WV09ntuA0mBSs3bkYflprUR9sS?=
+ =?us-ascii?Q?Oj/arNDYOt9BLaeR5xspyr6GQfmyjofwJrM6CCNBtzNEN+nJBMa8kZ3NXSkg?=
+ =?us-ascii?Q?zKaA58VSSRlW5om/kJzyBZHdlgXrIN4pDH6F23cBN9cCdTVaDh3XpEVgvu8W?=
+ =?us-ascii?Q?e8Kzj4i/7EDKorReTFRGBbXf7DfBmn86C4vF3dGQi/TlmW6pyTUdF5A69Qji?=
+ =?us-ascii?Q?c9rxTSnQQ4/PQwEYqLIKtf44EzxwXkEGuJT3ySAapdb40PEHaTieAOHDIAzt?=
+ =?us-ascii?Q?m37mG6DBTrRf4qBuB1JJIstk0qs6bFSUt4qUVU532gJIz7M14n9p6qTvMAim?=
+ =?us-ascii?Q?GPQMS2/8Yt4h9WJDnGKnNxAZ0y6ArfOH9Dy2E0SQ2v0Qc5TusoL3tUcH8vw7?=
+ =?us-ascii?Q?bM07+cov5ryNHbb/OXJkLdSSNitKXyYWpiCfXAx2X9gTu/x5Efm5a0ouxvS7?=
+ =?us-ascii?Q?1DNhW2Va9WkQE+gVZve9upyGDrF3PeLStp2IlSl5dBVs0fqdxjTmb1WVxXXw?=
+ =?us-ascii?Q?LMCAV28tSj9El+L16pghCK7y3ZXgQLIZ3ds0cZ6M3dbmVcGnHd4fMXnb4Abc?=
+ =?us-ascii?Q?pwjzFsUw+aaeM36fM1ud9I6zKUGXkuAeVEADDD4bsPwiuiLiLwgEsXodvxp5?=
+ =?us-ascii?Q?hmNETgS2YojFUF0Oa5fFaS9c3QXMYYzrj87c2JuzIsKBOtjIXOJ8BjStwK71?=
+ =?us-ascii?Q?NWgrfMHcik/ZYHmd/CF4tRjE2I8zZbxWgW5Km+mu1E8DHA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?FU3HR7VUP2P/FeEM7E4kK+7UMelV8xTvlysfbG+LjQ34TKPC0NIAD6vFDLCU?=
+ =?us-ascii?Q?5u0ImkBExnLXWUHw+G6/Dugm4b7Q3YeUoHwiu9hfAkf5Ek5+YsaFMw23H3yR?=
+ =?us-ascii?Q?sVx1PzHo9kMh1hjyFDcBaiSfIs0Sc4jnNeW3OTjlY67fcF+q4aKCfsh896P/?=
+ =?us-ascii?Q?LblTR8KUJwX++XXG0GJEKmohqf9big9PwMH6gkup9xI34S3wvoUYIv5lE4mD?=
+ =?us-ascii?Q?j4nACi74b3EfJGgg22hmBAfHiH6NAcpsru2sv26Mn52rWvD4VoB4PWelSphX?=
+ =?us-ascii?Q?ppEAbfQVxOhYsriAQn6Hj7TrzyU/UOUG0mRGZobmBW8refusOJ4glqRNn7wr?=
+ =?us-ascii?Q?rRe7JwLFWoJWPraX2hddCaiM1spPQ4I60MvmIPBe2LH2CLhFEGS0q4Ehzcb5?=
+ =?us-ascii?Q?R1MKCoGNaqqwGnOnoND85+rhIWEwFq6ocjBsQpMF44jkVhJSmOH1kTZepn3v?=
+ =?us-ascii?Q?GbFBLOt3zoT50mZrCPX6WJWAZPCXM/4Pk3OOYkhIXvyNfRQvorkc+mAZr72o?=
+ =?us-ascii?Q?zmvgGZVj9DWf6jI4jRYMSlXwcNNccqsQpZk2/1TR/yWUqjzMhUlC6tvpQycR?=
+ =?us-ascii?Q?MT1Iv2S43p8C3HrIiOINLJDebiStY+KItpafm/ZgqDXgve0Qnu+8viKbKn5p?=
+ =?us-ascii?Q?bggZ/Jo7dOaawULhh+LYZFS9xt5x6Nwu+fMgD7VwPwZGeajxozEzgcmr5On5?=
+ =?us-ascii?Q?wkQtaCt5nTF77fIbhhEvHrNa2mGBTWRwUjjPK0Rq221qXDOGgoiUBI/UI/vF?=
+ =?us-ascii?Q?iPTJLB5UwGirr70pkGmlHtXFxdU782AjgOwdB1gWAsBSMxuqEoydeVmW+W/F?=
+ =?us-ascii?Q?oY604k3p6mrrq+BMZCSppxOer7iU4MnrX/Lfjao8Otxqf6Hv0XgrQHoyq1dZ?=
+ =?us-ascii?Q?NIRlqHkGMLzKYtswBOU79kSVLeVJVQGUcsi1bkgw6lX5scW89OUpbxGY/aq+?=
+ =?us-ascii?Q?rIIYXbfqOTNtuNi1b/6j540YA2gZQjrPEELPn0LVTLh70xxBoKPS19YP8eX2?=
+ =?us-ascii?Q?58kxDO9h/7rkrOUuJ0e4EDmRqzN35EpfZtV5xOAEpYynbSyJhWof7BR8gKro?=
+ =?us-ascii?Q?ixNDUhlJDIJqGoMDWygIUXZvK+8Y89u4GhETAbnJVEJw6pHvoS6n9x72jBd8?=
+ =?us-ascii?Q?NWIWIuFqW7cXDFt3TpUByu6Q0zMvflzv9ZEYZA/sa62nfGwc+3OzCfaA7i8J?=
+ =?us-ascii?Q?f4ew+RU6+PiXMex/0osnvUxGQ8Np6e6GmlzFZgk8IDgupzSqoCg3hyJ7t7LK?=
+ =?us-ascii?Q?M8Skm9SSxqRQV7+GwaX/mrCJO3kLNnngXU2deQPLOeDB2Pz9DXzEgPsDKiWi?=
+ =?us-ascii?Q?2Iw5KZkNSPOKJWB+JN4vmO0XWdidqC9am8Vnvu+92nUSMf/CYzqROFCOLLnJ?=
+ =?us-ascii?Q?JCC1Y4HE0yyYYFEWHHnUsiKUKOdl0VG0EwzPxjCsZ1zvn4lL83BzbllKX5Kf?=
+ =?us-ascii?Q?SpehnLY0UedW7iYr47YWgO9v4pxOeQmSUuGYsYWG75CWfxLZmIZOgyjNMH9J?=
+ =?us-ascii?Q?s+P8meHc3gJUgjEmSrVXn1w9wA4LXvthECTi2PV9tzsLkErsa/4CkPcsfSM3?=
+ =?us-ascii?Q?0SurTB5DMqtpkq5IXy54cUqcrmE0/nTahcjntGfT?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92269b94-63c6-4b96-db1e-08dd0efc28da
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2024 15:57:13.8529
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZxoihAymJuiTNNKo12xk6L95A0TfOcIseeJlmVu37pWt0Xne5LUn1zGM5pZR1dFf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6793
 
-On 27/11/2024 9:35 am, Yunsheng Lin wrote:
-> On 2024/11/27 7:53, Alexander Duyck wrote:
->> On Tue, Nov 26, 2024 at 1:51 PM Mina Almasry <almasrymina@google.com> wrote:
->>>
->>> On Thu, Nov 21, 2024 at 12:03 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>>>
->>>> On 2024/11/20 23:10, Jesper Dangaard Brouer wrote:
->>>>>
->>>>>>        page_pool_detached(pool);
->>>>>>        pool->defer_start = jiffies;
->>>>>>        pool->defer_warn  = jiffies + DEFER_WARN_INTERVAL;
->>>>>> @@ -1159,7 +1228,7 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
->>>>>>        /* Flush pool alloc cache, as refill will check NUMA node */
->>>>>>        while (pool->alloc.count) {
->>>>>>            netmem = pool->alloc.cache[--pool->alloc.count];
->>>>>> -        page_pool_return_page(pool, netmem);
->>>>>> +        __page_pool_return_page(pool, netmem);
->>>>>>        }
->>>>>>    }
->>>>>>    EXPORT_SYMBOL(page_pool_update_nid);
->>>>>
->>>>> Thanks for continuing to work on this :-)
->>>>
->>>> I am not sure how scalable the scanning is going to be if the memory size became
->>>> bigger, which is one of the reason I was posting it as RFC for this version.
->>>>
->>>> For some quick searching here, it seems there might be server with max ram capacity
->>>> of 12.3TB, which means the scanning might take up to about 10 secs for those systems.
->>>> The spin_lock is used to avoid concurrency as the page_pool_put_page() API might be
->>>> called from the softirq context, which might mean there might be spinning of 12 secs
->>>> in the softirq context.
->>>>
->>>> And it seems hard to call cond_resched() when the scanning and unmapping takes a lot
->>>> of time as page_pool_put_page() might be called concurrently when pool->destroy_lock
->>>> is released, which might means page_pool_get_dma_addr() need to be checked to decide
->>>> if the mapping is already done or not for each page.
->>>>
->>>> Also, I am not sure it is appropriate to stall the driver unbound up to 10 secs here
->>>> for those large memory systems.
->>>>
->>>> https://www.broadberry.com/12tb-ram-supermicro-servers?srsltid=AfmBOorCPCZQBSv91mOGH3WTg9Cq0MhksnVYL_eXxOHtHJyuYzjyvwgH
->>>>
->>>
->>> FWIW I'm also concerned about the looping of all memory on the system.
->>> In addition to the performance, I think (but not sure), that
->>> CONFIG_MEMORY_HOTPLUG may mess such a loop as memory may appear or
->>> disappear concurrently. Even if not, the CPU cost of this may be
->>> significant. I'm imagining the possibility of having many page_pools
->>> allocated on the system for many hardware queues, (and maybe multiple
->>> pp's per queue for applications like devmem TCP), and each pp looping
->>> over the entire xTB memory on page_pool_destroy()...
->>>
->>> My 2 cents here is that a more reasonable approach is to have the pp
->>> track all pages it has dma-mapped, without the problems in the
->>> previous iterations of this patch:
->>>
->>> 1. When we dma-map a page, we add it to some pp->dma_mapped data
->>> structure (maybe xarray or rculist).
->>> 2. When we dma-unmap a page, we remove it from pp->dma_mapped.
->>> 3 When we destroy the pp, we traverse pp->dma_mapped and unmap all the
->>> pages there.
->>
->> The thing is this should be a very rare event as it should apply only
->> when a device is removed and still has pages outstanding shouldn't it?
->> The problem is that maintaining a list of in-flight DMA pages will be
->> very costly and will make the use of page pool expensive enough that I
->> would worry it might be considered less than useful. Once we add too
->> much overhead the caching of the DMA address doesn't gain us much on
->> most systems in that case.
->>
->>> I haven't looked deeply, but with the right data structure we may be
->>> able to synchronize 1, 2, and 3 without any additional locks. From a
->>> quick skim it seems maybe rculist and xarray can do this without
->>> additional locks, maybe.
-> 
-> I am not sure how the above right data structure without any additional
-> locks will work, but my feeling is that the issues mentioned in [1] will
-> likely apply to the above right data structure too.
-> 
-> 1. https://lore.kernel.org/all/6233e2c3-3fea-4ed0-bdcc-9a625270da37@huawei.com/
-> 
->>>
->>> Like stated in the previous iterations of this approach, we should not
->>> be putting any hard limit on the amount of memory the pp can allocate,
->>> and we should not have to mess with the page->pp entry in struct page.
-> 
-> It would be good to be more specific about how it is done without 'messing'
-> with the page->pp entry in struct page using some pseudocode or RFC if you
-> call the renaming as messing.
-> 
->>
->> I agree with you on the fact that we shouldn't be setting any sort of
->> limit. The current approach to doing the unmapping is more-or-less the
->> brute force way of doing it working around the DMA api. I wonder if we
->> couldn't look at working with it instead and see if there wouldn't be
->> some way for us to reduce the overhead instead of having to do the
->> full scan of the page table.
->>
->> One thought in that regard though would be to see if there were a way
->> to have the DMA API itself provide some of that info. I know the DMA
->> API should be storing some of that data for the mapping as we have to
->> go through and invalidate it if it is stored.
->>
->> Another alternative would be to see if we have the option to just
->> invalidate the DMA side of things entirely for the device. Essentially
->> unregister the device from the IOMMU instead of the mappings. If that
->> is an option then we could look at leaving the page pool in a state
->> where it would essentially claim it no longer has to do the DMA unmap
->> operations and is just freeing the remaining lingering pages.
-> 
-> If we are going to 'invalidate the DMA side of things entirely for the
-> device', synchronization from page_pool might just go to the DMA core as
-> concurrent calling for dma unmapping API and 'invalidating' operation still
-> exist. If the invalidating is a common feature, perhaps it makes sense to
-> do that in the DMA core, otherwise it might just add unnecessary overhead
-> for other callers of DMA API.
-> 
-> As mentioned by Robin in [2], the DMA core seems to make a great deal of
-> effort to catch DMA API misuse in kernel/dma/debug.c, it seems doing the
-> above might invalidate some of the dma debug checking.
+--XpamI7JgGU+G7+Xz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Has nobody paused to consider *why* dma-debug is an optional feature 
-with an explicit performance warning? If you're concerned about the 
-impact of keeping track of DMA mappings within the confines of the 
-page_pool usage model, do you really imagine it could somehow be cheaper 
-to keep track of them at the generic DMA API level without the benefit 
-of any assumptions at all?
+Hi Linus,
 
-Yes, in principle we could add a set of "robust" DMA APIs which make 
-sure racy sync calls are safe and offer a "clean up all my outstanding 
-mappings" op, and they would offer approximately as terrible performance 
-as the current streaming APIs with dma-debug enabled, because it would 
-be little different from what dma-debug already does. The checks 
-themselves aren't complicated; the generally-prohibitive cost lies in 
-keeping track of mappings and allocations so that they *can* be checked 
-internally.
+As I mentioned beore this is the two patches that needed both iommufd
+and iommu tree merged together. You have merged both so this is the
+remainder.
 
-Whatever you think is hard to do in the page_pool code to fix that 
-code's own behaviour, it's even harder to do from elsewhere with less 
-information.
+It has been in linux-next since before you pulled from Joerg. I left
+it based with my merge of Joerg's tree to iommufd rather than rebasing
+it to your merge of Joerg's tree.
+
+Due to the many different driver trees in iommu it is helpful if
+global changes like this make -rc1.
 
 Thanks,
-Robin.
+Jason
 
-> 
-> 2. https://lore.kernel.org/all/caf31b5e-0e8f-4844-b7ba-ef59ed13b74e@arm.com/
-> 
->>
+The following changes since commit 42f0cbb2a253bcd7d4f20e80462014622f19d88e:
+
+  Merge branches 'intel/vt-d', 'amd/amd-vi' and 'iommufd/arm-smmuv3-nested' into next (2024-11-15 09:27:43 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+
+for you to fetch changes up to d53764723ecd639a0cc0c5ad24146847fc09f78d:
+
+  iommu: Rename ops->domain_alloc_user() to domain_alloc_paging_flags() (2024-11-22 14:43:45 -0400)
+
+----------------------------------------------------------------
+iommufd 6.13 merge window pull #2
+
+Change the driver callback op domain_alloc_user() into two ops
+domain_alloc_paging_flags() and domain_alloc_nesting() that better
+describe what the ops are expected to do. There will be per-driver cleanup
+based on this going into the next cycle via the driver trees.
+
+----------------------------------------------------------------
+Jason Gunthorpe (3):
+      Merge tag 'iommu-updates-v6.13' of ssh://gitolite.kernel.org/pub/scm/linux/kernel/git/iommu/linux into iommufd.git
+      iommu: Add ops->domain_alloc_nested()
+      iommu: Rename ops->domain_alloc_user() to domain_alloc_paging_flags()
+
+ drivers/iommu/amd/iommu.c                   |  9 ++++-----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  9 ++++-----
+ drivers/iommu/intel/iommu.c                 | 15 ++++-----------
+ drivers/iommu/intel/iommu.h                 |  6 ++++--
+ drivers/iommu/intel/nested.c                | 11 +++++++++--
+ drivers/iommu/iommu.c                       |  4 ++--
+ drivers/iommu/iommufd/hw_pagetable.c        | 16 ++++++++--------
+ drivers/iommu/iommufd/selftest.c            | 15 ++++++---------
+ include/linux/iommu.h                       | 27 ++++++++++++++++-----------
+ 9 files changed, 57 insertions(+), 55 deletions(-)
+(diffstat from tag for-linus-iommufd-merged)
+
+--XpamI7JgGU+G7+Xz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRRRCHOFoQz/8F5bUaFwuHvBreFYQUCZ0dBVgAKCRCFwuHvBreF
+Ye0TAP9T2MWCVVVuRu0q2VKH6ESd4wU1KTwaJY04f4qWAl7DLgEAsD7IjrMCXyF2
+JNrfYXp+PRA1+J7Xa2fug9hoLSK6zAc=
+=E8NR
+-----END PGP SIGNATURE-----
+
+--XpamI7JgGU+G7+Xz--
