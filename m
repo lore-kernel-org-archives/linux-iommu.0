@@ -1,99 +1,99 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47DED4E1CA
-	for <iommu@lists.linux.dev>; Thu, 28 Nov 2024 03:50:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1A652563;
+	Thu, 28 Nov 2024 03:52:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732765818; cv=none; b=HcNZSRAGrQYr2MvX7BI4/vNHCa5g9sJUhU7SaOVpvzeyKrCzbxrtkgbiBy21OpFJNH2nqpjtOcufB8Cv3R09MKNihPjyM+TBiAOr4OU6WvjTtlZYcxVVwXE0DCyt8y0z9k5M5kAvW2wyEbNIlNN19tmq1Kh5zh2BdxTFeucUH7k=
+	t=1732765923; cv=none; b=WV5Zrc23kdFV36KyfdSRQLjUupNLRtlt+nrrjmb8fkO6AV7JKKbrNhmq4h0rkLtY8rp0Uxl8Brmy/EPpsgY2Wzwyy5/qd9ZzLu3pDgy4JJZgf/OSj/Ut6BpAnlE3m4zuvaGAlMsJYBDae2AgQFaruknEB4xiQqarj/ZJynhJhzQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732765818; c=relaxed/simple;
-	bh=ymCIO7ZdsttFHqVYR81uVpclJfLo47rUglE/eSEYCnM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=On/D+Rmk0HLua7PTr8msa8Vg38blOg7j4HbeoUu+sFDFyKP7omNrIERCXS2php/TKWlqzqIrilKT9nCZFYqZWWDUbbTbBLa8G/T62M2ytS4KoxC/2ZTSK7675hb56IEJX9cxG+KgNgh439331F2yV4fsE29fp2ddVE5Mir+tAHo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 3294668D05; Thu, 28 Nov 2024 04:50:11 +0100 (CET)
-Date: Thu, 28 Nov 2024 04:50:11 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Fedor Pchelkin <pchelkin@ispras.ru>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-Subject: Re: [PATCH] dma-debug: fix physical address calculation for struct
- dma_debug_entry
-Message-ID: <20241128035011.GA13047@lst.de>
-References: <20241127185926.168102-1-pchelkin@ispras.ru>
+	s=arc-20240116; t=1732765923; c=relaxed/simple;
+	bh=xB2G7h4IV/IFh/MZVy1ia3l1GQYnocTXi0O/lq8PUmM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=QVTkdDZ9csRGlgIvrLVcTQfNN424aoxD+Cx/BGhHG2XOnZW7vyRiTV6UAk6ejEJWv2iLWAzQaVDW/ikqBmigchxV0iGN7ao9fyJd4AFbJFGXiL0xt+Ey7j/6fQhPf8zCydWTcXAaUMaWQ/orfEd4nctVIhsirb99ZXjHhupa8jI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=b2tPVMNT; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="b2tPVMNT"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=MNTqIGD2GF80NWjX3zh1dlo1C8KR10PgrqiT8AEoCIE=; b=b2tPVMNThwtvVv0BTFSGVgqZuC
+	ludOX+1vl5cdjGMpi91EUcg7VUODpRNdX2sFxn+dag1B1GVQutSpRXrloHLHSN4HmxDhXAsn0iL4B
+	0Qr5jmnZw+TMYpDORMVa0o6TPgwuZFAS6+TVxuuVtEf6EZHQ/UcBGRV7HT5VEduzX6U/T9a87Dwdy
+	YiQUeAnKcsw32Y0E9mLVSt8jiuhmmZqGFgYFPVvB/rJiJXqxuFC0fn7whvEcQJavPT3Wv35iVqEKE
+	02H6OvMYaiKuOHPD7cpWZVGdZOUnu7zRSBzgCGYnEPLoqkDoYMAhriztEsMbh3BejsMLQkhbbNBfA
+	PhN4nOpA==;
+Received: from [50.53.2.24] (helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
+	id 1tGVZQ-0000000EdxG-0RCT;
+	Thu, 28 Nov 2024 03:52:00 +0000
+From: Randy Dunlap <rdunlap@infradead.org>
+To: linux-kernel@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>,
+	Eric Auger <eric.auger@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	iommu@lists.linux.dev
+Subject: [PATCH] iommufd: fix typos in kernel-doc comments
+Date: Wed, 27 Nov 2024 19:51:59 -0800
+Message-ID: <20241128035159.374624-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241127185926.168102-1-pchelkin@ispras.ru>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 
-On Wed, Nov 27, 2024 at 09:59:26PM +0300, Fedor Pchelkin wrote:
-> Offset into the page should also be considered while calculating a physical
-> address for struct dma_debug_entry. page_to_phys() just shifts the value
-> PAGE_SHIFT bits to the left so offset part is zero-filled.
-> 
-> An example (wrong) debug assertion failure with CONFIG_DMA_API_DEBUG
-> enabled which is observed during systemd boot process after recent
-> dma-debug changes:
+Fix typos/spellos in kernel-doc comments for readability.
 
-Thanks!
+Fixes: aad37e71d5c4 ("iommufd: IOCTLs for the io_pagetable")
+Fixes: b7a0855eb95f ("iommu: Add new flag to explictly request PASID capable domain")
+Fixes: d68beb276ba2 ("iommu/arm-smmu-v3: Support IOMMU_HWPT_INVALIDATE using a VIOMMU object")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Eric Auger <eric.auger@redhat.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev
+---
+ include/uapi/linux/iommufd.h |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Is it ok for you if I fold in the following cleanup to have a helper
-instead of the duplicate very dense expression?
-
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 27ade2bab531..e43c6de2bce4 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -1377,6 +1377,18 @@ void debug_dma_unmap_sg(struct device *dev, struct scatterlist *sglist,
- 	}
- }
+--- linux-next-20241125.orig/include/uapi/linux/iommufd.h
++++ linux-next-20241125/include/uapi/linux/iommufd.h
+@@ -297,7 +297,7 @@ struct iommu_ioas_unmap {
+  *                       ioctl(IOMMU_OPTION_HUGE_PAGES)
+  * @IOMMU_OPTION_RLIMIT_MODE:
+  *    Change how RLIMIT_MEMLOCK accounting works. The caller must have privilege
+- *    to invoke this. Value 0 (default) is user based accouting, 1 uses process
++ *    to invoke this. Value 0 (default) is user based accounting, 1 uses process
+  *    based accounting. Global option, object_id must be 0
+  * @IOMMU_OPTION_HUGE_PAGES:
+  *    Value 1 (default) allows contiguous pages to be combined when generating
+@@ -390,7 +390,7 @@ struct iommu_vfio_ioas {
+  * @IOMMU_HWPT_ALLOC_PASID: Requests a domain that can be used with PASID. The
+  *                          domain can be attached to any PASID on the device.
+  *                          Any domain attached to the non-PASID part of the
+- *                          device must also be flaged, otherwise attaching a
++ *                          device must also be flagged, otherwise attaching a
+  *                          PASID will blocked.
+  *                          If IOMMU does not support PASID it will return
+  *                          error (-EOPNOTSUPP).
+@@ -766,7 +766,7 @@ struct iommu_hwpt_vtd_s1_invalidate {
+ };
  
-+static phys_addr_t virt_to_paddr(void *virt)
-+{
-+	struct page *page;
-+
-+	if (is_vmalloc_addr(virt))
-+		page = vmalloc_to_page(virt);
-+	else
-+		page = virt_to_page(virt);
-+
-+	return page_to_phys(page) + offset_in_page(virt);
-+}
-+
- void debug_dma_alloc_coherent(struct device *dev, size_t size,
- 			      dma_addr_t dma_addr, void *virt,
- 			      unsigned long attrs)
-@@ -1399,9 +1411,7 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
- 
- 	entry->type      = dma_debug_coherent;
- 	entry->dev       = dev;
--	entry->paddr	 = page_to_phys((is_vmalloc_addr(virt) ?
--				vmalloc_to_page(virt) : virt_to_page(virt))) +
--				offset_in_page(virt);
-+	entry->paddr	 = virt_to_paddr(virt);
- 	entry->size      = size;
- 	entry->dev_addr  = dma_addr;
- 	entry->direction = DMA_BIDIRECTIONAL;
-@@ -1424,9 +1434,7 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
- 	if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
- 		return;
- 
--	ref.paddr = page_to_phys((is_vmalloc_addr(virt) ?
--			vmalloc_to_page(virt) : virt_to_page(virt))) +
--			offset_in_page(virt);
-+	ref.paddr = virt_to_paddr(virt);
- 
- 	if (unlikely(dma_debug_disabled()))
- 		return;
+ /**
+- * struct iommu_viommu_arm_smmuv3_invalidate - ARM SMMUv3 cahce invalidation
++ * struct iommu_viommu_arm_smmuv3_invalidate - ARM SMMUv3 cache invalidation
+  *         (IOMMU_VIOMMU_INVALIDATE_DATA_ARM_SMMUV3)
+  * @cmd: 128-bit cache invalidation command that runs in SMMU CMDQ.
+  *       Must be little-endian.
