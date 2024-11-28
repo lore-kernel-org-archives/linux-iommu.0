@@ -1,63 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01C26204090;
-	Wed, 27 Nov 2024 22:57:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47DED4E1CA
+	for <iommu@lists.linux.dev>; Thu, 28 Nov 2024 03:50:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732748273; cv=none; b=M1AO3OlGJ0EWo8mG7//cw2zahkstShjOmFlqcMhhMzMZX6qxdRJX44j3dqSgBxvjCvRk8nDjqqTNj6fe20IaLUr5tVKHkyzQNIweA3H1/oHi0xmGfNYEMBJ3DBXuiS0vGRteGed48k/LIYZfxKCMzKMnb4zLSGfDQUxnW5jD8Kg=
+	t=1732765818; cv=none; b=HcNZSRAGrQYr2MvX7BI4/vNHCa5g9sJUhU7SaOVpvzeyKrCzbxrtkgbiBy21OpFJNH2nqpjtOcufB8Cv3R09MKNihPjyM+TBiAOr4OU6WvjTtlZYcxVVwXE0DCyt8y0z9k5M5kAvW2wyEbNIlNN19tmq1Kh5zh2BdxTFeucUH7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732748273; c=relaxed/simple;
-	bh=LlFt15uiGSl7JW+VwFv+USSZfuV9mV2l7A8TpPmghRY=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=sZfr+6jZTYPfJiGyrK45AjuV6RyibNpHVjFnxidNtqlDyJjSKdwRJkcqtrU3DmYcdvI9nmhCJ5yCDjHAXJabwo56gftSu+LLycn/le0eXxV1mGkS2d11aui3WuKwnKEt+DJj+51BammB/FHo/9E9jEvhvabmNx97IEMbriPJw7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f0/VK68n; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f0/VK68n"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7666C4CECC;
-	Wed, 27 Nov 2024 22:57:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732748272;
-	bh=LlFt15uiGSl7JW+VwFv+USSZfuV9mV2l7A8TpPmghRY=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=f0/VK68neDapRacI33BUDaHH6eQ5NomQpE46lsYr4iEIa8HzW+LVQVGxJ3/kvU2eV
-	 BVQb88eH3LDxQt3cjeiURXpKXM1aLViE9fGz2hCZbfXX44NPyW9OCvR920czN5fdPz
-	 1eEKPkzHxtA69AmV8o0Um7qWcw99aoF/gfAQCpIb8WSsilbvpmtw3fVByAs7wgR7Dm
-	 +mgb6By5IFs4K3h5vmEbiTOHw7NGhS+KQov4io5z6FnX7q+XaxmikwdP/N2mtLRyIE
-	 4ltNLAuNnO3k5WOqobbLMsxVIKjJrGF/Tz8d3jp36Qo2RqK+SJ7cPKidzZHpaHGWiH
-	 J/0ONN/GB509A==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 34040380A944;
-	Wed, 27 Nov 2024 22:58:07 +0000 (UTC)
-Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes #2
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20241127155712.GA1470954@nvidia.com>
-References: <20241127155712.GA1470954@nvidia.com>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <20241127155712.GA1470954@nvidia.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
-X-PR-Tracked-Commit-Id: d53764723ecd639a0cc0c5ad24146847fc09f78d
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 64e6fc27d60f8b186bd4d071a6266f8c4d5aa2f7
-Message-Id: <173274828572.1238022.642442397167715599.pr-tracker-bot@kernel.org>
-Date: Wed, 27 Nov 2024 22:58:05 +0000
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
+	s=arc-20240116; t=1732765818; c=relaxed/simple;
+	bh=ymCIO7ZdsttFHqVYR81uVpclJfLo47rUglE/eSEYCnM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=On/D+Rmk0HLua7PTr8msa8Vg38blOg7j4HbeoUu+sFDFyKP7omNrIERCXS2php/TKWlqzqIrilKT9nCZFYqZWWDUbbTbBLa8G/T62M2ytS4KoxC/2ZTSK7675hb56IEJX9cxG+KgNgh439331F2yV4fsE29fp2ddVE5Mir+tAHo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 3294668D05; Thu, 28 Nov 2024 04:50:11 +0100 (CET)
+Date: Thu, 28 Nov 2024 04:50:11 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Fedor Pchelkin <pchelkin@ispras.ru>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: Re: [PATCH] dma-debug: fix physical address calculation for struct
+ dma_debug_entry
+Message-ID: <20241128035011.GA13047@lst.de>
+References: <20241127185926.168102-1-pchelkin@ispras.ru>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241127185926.168102-1-pchelkin@ispras.ru>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-The pull request you sent on Wed, 27 Nov 2024 11:57:12 -0400:
+On Wed, Nov 27, 2024 at 09:59:26PM +0300, Fedor Pchelkin wrote:
+> Offset into the page should also be considered while calculating a physical
+> address for struct dma_debug_entry. page_to_phys() just shifts the value
+> PAGE_SHIFT bits to the left so offset part is zero-filled.
+> 
+> An example (wrong) debug assertion failure with CONFIG_DMA_API_DEBUG
+> enabled which is observed during systemd boot process after recent
+> dma-debug changes:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+Thanks!
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/64e6fc27d60f8b186bd4d071a6266f8c4d5aa2f7
+Is it ok for you if I fold in the following cleanup to have a helper
+instead of the duplicate very dense expression?
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 27ade2bab531..e43c6de2bce4 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -1377,6 +1377,18 @@ void debug_dma_unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 	}
+ }
+ 
++static phys_addr_t virt_to_paddr(void *virt)
++{
++	struct page *page;
++
++	if (is_vmalloc_addr(virt))
++		page = vmalloc_to_page(virt);
++	else
++		page = virt_to_page(virt);
++
++	return page_to_phys(page) + offset_in_page(virt);
++}
++
+ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+ 			      dma_addr_t dma_addr, void *virt,
+ 			      unsigned long attrs)
+@@ -1399,9 +1411,7 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+ 
+ 	entry->type      = dma_debug_coherent;
+ 	entry->dev       = dev;
+-	entry->paddr	 = page_to_phys((is_vmalloc_addr(virt) ?
+-				vmalloc_to_page(virt) : virt_to_page(virt))) +
+-				offset_in_page(virt);
++	entry->paddr	 = virt_to_paddr(virt);
+ 	entry->size      = size;
+ 	entry->dev_addr  = dma_addr;
+ 	entry->direction = DMA_BIDIRECTIONAL;
+@@ -1424,9 +1434,7 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
+ 	if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
+ 		return;
+ 
+-	ref.paddr = page_to_phys((is_vmalloc_addr(virt) ?
+-			vmalloc_to_page(virt) : virt_to_page(virt))) +
+-			offset_in_page(virt);
++	ref.paddr = virt_to_paddr(virt);
+ 
+ 	if (unlikely(dma_debug_disabled()))
+ 		return;
