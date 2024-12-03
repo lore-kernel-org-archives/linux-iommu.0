@@ -1,60 +1,62 @@
-Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1351C1F8AD4
-	for <iommu@lists.linux.dev>; Tue,  3 Dec 2024 17:08:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BE4C1F8AD4
+	for <iommu@lists.linux.dev>; Tue,  3 Dec 2024 17:08:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733245738; cv=none; b=bVnPQWQJAfuG4l8biXKWSZ+9hJUq2vmVv4i+KCLMB+8t5F1X0c5E5W0P0kD0IQg+OW8nckLzW9my0Mpw/+wqLbwqaJ1GK61GcOZCFXRg4nyAGTWrNiFzZm7fW2b8mXT+vrLfQfi8D9rfJNFQOGUu8pM18S274HKcAXgOZfgMj8o=
+	t=1733245740; cv=none; b=LhNuIN8XbWUaFUsntDHc7X46LCSwRjZVml9DAU2TMgF4YH/P/n0CqCWSigVhn50Nz4fCuBzDtR7e+AMAAwkP8vj4pEzAJB0FBFdSNSsWwrma/Kf7TOsG8aT5ru2rnZM38T2LuvjypP8SLFERTPk/oogDJkHCesxwr/rRqlphWq4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733245738; c=relaxed/simple;
-	bh=llubugD33UtLbMNSAYPh4S0QVhXvEcS0Bxvt3lhri88=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Y+LYkjRW3pJc620GcbZo8GYDCYM+ob6sf+g58BHSiq3RzrQxXmM+TgvfwzwQgZENo9ciWTlFrKd2Sfrru6j4+LloUwglUGhrUeae3Bbpk+8/OQvrw1dLtS/+yYKqDy5HoMc2AQTT6JMjNfXiUsu91gwYDDe0dGV2n68kAKN9TO4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TLfrpWso; arc=none smtp.client-ip=209.85.208.170
+	s=arc-20240116; t=1733245740; c=relaxed/simple;
+	bh=7TF0D7iSdGT2magME+zHIHzqeRneKEyOSjHsh3ydk2A=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=KwHetaNe0MO7xoRdJF27m8BO6deLPTX654OOW3EVHkwVv11KeNQ60vN6ETAVkP0D5NeCIytxiPy+NElLalnDSZ2uKO6Ps9B+0kYYYXQU+evpFkn+28dmEtmJm33vcYYITOhEuGQRBxTCxMkfmNPmYXc7zJA4VegbUU80S9A0TH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZQL28Xbs; arc=none smtp.client-ip=209.85.167.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TLfrpWso"
-Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-3000b64fbe9so10177401fa.1
-        for <iommu@lists.linux.dev>; Tue, 03 Dec 2024 09:08:56 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZQL28Xbs"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-53dd0cb9ce3so5123549e87.3
+        for <iommu@lists.linux.dev>; Tue, 03 Dec 2024 09:08:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733245735; x=1733850535; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=j8xdO7uSAmdeXdaXhAt2LPxaiOQvWWPfYYTgLrEVF90=;
-        b=TLfrpWsoy4LH3peJvhdzQbtcq3a2m6Iju/JetTZACwYjHBeLpLd4IPO2c/4GgPyS4x
-         TcWTqeHlz/leizKHbqW5fTDFWDtrTNV06Nau0mOvW/oadCltlVv91wdK2WxJx+fhchYr
-         2X9S915alczD4Hki2f/0bONqa2sDab0SPj3180X4emGeODB7yi/UaKwGvVudnBNYHMfp
-         8N6ZU8OMXCQPzARyMUH9LFhpwfEF1IY2QPC0jBby655mCI9Obt+2empyZ4KzOiDMU4P4
-         j+Yc8KvQw2HcTDFIJ1bDWHKFZf7I1KlTYhZ99V9lDF2ecxZ2hcn0Yu9O1QgGueyLiadh
-         YFlQ==
+        d=gmail.com; s=20230601; t=1733245737; x=1733850537; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rtMK3W1LybcvR677zqhzHXJkDBdRMP3ngjp2gwl/Zfc=;
+        b=ZQL28XbsuExeOy5zVZz8GrUEN9yiZmxmXsgLVlUSgD3DZUfwf1X5eNtl0tgtz6JKg/
+         FXfrqeScjF7OtB4F7uCsXcRa6/EN45PrUP+86mCuQsD12hlPqArhuZCf1y2tVW1YOaYS
+         b0DJq2U4J4S1HvS6G3dOLCEdLiTw4EMzF5fC6H+hwTcPl0gGyB8slh/zI0Vv9MdsRthp
+         WOFGAduifcF3R5mUSxohXv1iT46IcRmmYcwhwUhsOmxOwwFRUZCVU079GjLSigSlFkaB
+         5Ypo3OC8GdhqTMRrPOnfFwAWcRFjgaHscoO+Mj+4VPhjNxIk6icbzKA4rtuApap5AWZ6
+         m20A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733245735; x=1733850535;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=j8xdO7uSAmdeXdaXhAt2LPxaiOQvWWPfYYTgLrEVF90=;
-        b=A3VmNuv8vUqlIZGZ2nxApvZ4Psr/jHJ83H65zYpY08Nn0t5EM4ZNyKSUkp2gWqcRDQ
-         498ZL/FyrX6wy0XUngtEhMgFKuo1Jv7j8KP2i/PqLNyFXDd77ik8t1kxoWmCDYKJ72kn
-         DuGKA+zHJbjZE2I50hmXw1EKnSAMJbe22Ay3vgLTVBuBrT/U7PXEoH2DhWeV8EQRKksk
-         KQajnkSamGvwRj+CjG98q4gQ+e2apBYLdM5LPjJNLGeteauOC4MiqIbWkM60lWLbGkOv
-         8Gm/jTapI3DR/2smSVq9I7DSX1aRXlUDOXuFcL3v+QJmdb3Mi+mVklE2IgnHhMkUqXnE
-         1d3w==
-X-Forwarded-Encrypted: i=1; AJvYcCXc8OtL2t35Q7elOU3STEk1eGvVoADKpyxx6RhFtSI0sVbhdp9B7FP6+B8unutBCvCosCPDNA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxYLAfBO5vnPU+SBOFsoWNYme/YI41pxh47DVUdcgovhMlFpbgz
-	KxCLBt8zSnklp7XKV7zk5vx2LWH3TNc2ARhfOR4MbpMoQ6GzGEoB
-X-Gm-Gg: ASbGncvGPMWnm4Q3k7vtlVlfxY/WbASd3wJLnDVnPhzkU89JwfE0oeUgq1/116Q8HqR
-	/bFRImugehulz2+tKRAO5WTIAk/7nMOz1dXQPT1TvjbXuUaRhLh3OK4tHftgtA76RluAKQ+p9fr
-	GYQLykFPfe0cAaGGdOvxrLKA8e0HsYTinapAB5X5wr/H7Rbe0gcba8CPjAZah3jlPkImtEGLMW3
-	p56PQIME8HwA+GqJa32vCyz9AtalRspnLO7sGT+fpDdB4v6eYWdlgw+i5EzWVSB/9XBZr3dFGq+
-	w06GXFhIy9nFu4myE/iK
-X-Google-Smtp-Source: AGHT+IHfeCJtMPc4CL71SUxwIM/hZO9OSoFqlkV+xBr19Tu6JMY210/2r+5GNGRO/pX+NA68F7N7wg==
-X-Received: by 2002:a05:6512:1589:b0:53d:e324:11c9 with SMTP id 2adb3069b0e04-53e12a39247mr2123837e87.54.1733245734836;
-        Tue, 03 Dec 2024 09:08:54 -0800 (PST)
+        d=1e100.net; s=20230601; t=1733245737; x=1733850537;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rtMK3W1LybcvR677zqhzHXJkDBdRMP3ngjp2gwl/Zfc=;
+        b=PnSR38S2KhF8R4WAkEduUpwcoGuYmbl8H6AGnt4BRTgFdotQuCEUmbk/jDioAb224K
+         X7GrTJl+Zfy4TJFQG18kuQUHLPiZr2/5tB2Cc6b3uqqoAswSEBXzX1xPlDSQmzJgRLeg
+         ZIfZRgy7cIjq+k6XUz/nCNDyRtllmfgdDmTeinMKGZZ/ShQjrUrH90NDUFWc/oiXmfrQ
+         5FPkXqrHaQfuDGBi9EbKFWUM3VaX+gHVajvc5i7CuVC6Pur1JecWkIW5z6kSHyhm9QXJ
+         ArVTRzdx1Rqh3Y0C9YgxzqH0OKZ+Uk8sNb1sAbW8yEmLvayKu3HZ48t54aaykyJVMoVx
+         YcFA==
+X-Forwarded-Encrypted: i=1; AJvYcCUzHSLsTJnD3JcIBqDU6LB58eI4YM+iSQ2wRMfLGlyDowkTbtghO5Q5j7fdg9wAtT/RpdwJDA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyu6xe8HuBFgo8IxSY6fvhRuLOXlahCQcZzX0kVahddHGfH3hON
+	T1n0NtjF97XKyoFtlTZ1kdDTBa/f3mtrpy1SVr4O7jbYKinMSkEU
+X-Gm-Gg: ASbGnct9At5HjP9nctb5laIWs5pu8NMF6fYJd+Z9bvaeLT5iG7I1cEBYesydNye1Jcz
+	rHQfDSLokqLT8l//xXGPqRvYIwtMtwBnQ08mFlh9JKeVRX6DuPUosw8fLaqcVQyc5SRsA6AFwKM
+	BjVs3VNsW//ppkl4Gc8zjXgJu/RF9fMRIsF1fzOZzKFVN4o76piBvghBiif3nU0PXnrPjklDCZ2
+	jlrbFsBUrmIc7kwVU8gVw/ej+zL5utmKWDfz6+rVcL536uXtWoBbr4c1T3ZroC6TxHi1nC49zMt
+	Pud2phqz3lvhaN6vIuaD
+X-Google-Smtp-Source: AGHT+IGKT8ncZs0BP4yUL9QW6s/N/Mve2dCBM9yZqZKLjTOm7noCdEwcNW5Zgom1ytAzSOeyIWx0Og==
+X-Received: by 2002:a05:6512:b9c:b0:53d:ed16:7a43 with SMTP id 2adb3069b0e04-53e1b882fb2mr581462e87.17.1733245736835;
+        Tue, 03 Dec 2024 09:08:56 -0800 (PST)
 Received: from abj-NUC9VXQNX.. (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53df644336fsm1893394e87.80.2024.12.03.09.08.52
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53df644336fsm1893394e87.80.2024.12.03.09.08.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2024 09:08:53 -0800 (PST)
+        Tue, 03 Dec 2024 09:08:55 -0800 (PST)
 From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 To: rust-for-linux@vger.kernel.org
 Cc: Miguel Ojeda <ojeda@kernel.org>,
@@ -76,10 +78,12 @@ Cc: Miguel Ojeda <ojeda@kernel.org>,
 	airlied@redhat.com,
 	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: [PATCH v5 0/2] Add dma coherent allocator abstraction
-Date: Tue,  3 Dec 2024 19:07:42 +0200
-Message-ID: <20241203170752.1834271-1-abdiel.janulgue@gmail.com>
+Subject: [PATCH v5 1/2] rust: error: Add EOVERFLOW
+Date: Tue,  3 Dec 2024 19:07:43 +0200
+Message-ID: <20241203170752.1834271-2-abdiel.janulgue@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20241203170752.1834271-1-abdiel.janulgue@gmail.com>
+References: <20241203170752.1834271-1-abdiel.janulgue@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,42 +92,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series adds support for a basic Rust abstraction for the dma coherent
-allocator API.
+Trivial addition for missing EOVERFLOW error. This is used by a
+subsequent patch that might require returning EOVERFLOW as a result
+of `checked_mul`.
 
-Changes since v4:
-- Documentation and example fixes, use Markdown formatting (Miguel Ojeda).
-- Discard read()/write() helpers to remove bound on Copy and fix overhead
-  (Daniel Almeida).
-- Improve error-handling in the constructor block (Andreas Hindborg).
-- Link to v3: https://lore.kernel.org/all/20241105104726.3111058-1-abdiel.janulgue@gmail.com/
+Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+---
+ rust/kernel/error.rs | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes since v3:
-- Reject ZST types by checking the type size in the constructor in
-  addition to requiring FromBytes/AsBytes traits for the type (Alice Ryhl).
-
-Changes since v2:
-- Fixed missing header for generating the bindings.
-
-Changes since v1:
-- Fix missing info in commit log where EOVERFLOW is used.
-- Restrict the dma coherent allocator to numeric types for now for valid
-  behaviour (Daniel Almeida).
-- Build slice dynamically.
-
-Abdiel Janulgue (2):
-  rust: error: Add EOVERFLOW
-  rust: add dma coherent allocator abstraction.
-
- rust/bindings/bindings_helper.h |   1 +
- rust/kernel/dma.rs              | 136 ++++++++++++++++++++++++++++++++
- rust/kernel/error.rs            |   1 +
- rust/kernel/lib.rs              |   1 +
- 4 files changed, 139 insertions(+)
- create mode 100644 rust/kernel/dma.rs
-
-
-base-commit: 40384c840ea1944d7c5a392e8975ed088ecf0b37
+diff --git a/rust/kernel/error.rs b/rust/kernel/error.rs
+index 52c502432447..cd57fac7f1f9 100644
+--- a/rust/kernel/error.rs
++++ b/rust/kernel/error.rs
+@@ -63,6 +63,7 @@ macro_rules! declare_err {
+     declare_err!(EPIPE, "Broken pipe.");
+     declare_err!(EDOM, "Math argument out of domain of func.");
+     declare_err!(ERANGE, "Math result not representable.");
++    declare_err!(EOVERFLOW, "Value too large for defined data type.");
+     declare_err!(ERESTARTSYS, "Restart the system call.");
+     declare_err!(ERESTARTNOINTR, "System call was interrupted by a signal and will be restarted.");
+     declare_err!(ERESTARTNOHAND, "Restart if no handler.");
 -- 
 2.43.0
 
