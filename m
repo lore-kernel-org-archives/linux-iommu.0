@@ -1,275 +1,152 @@
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2043.outbound.protection.outlook.com [40.107.92.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8E8C1FAC46
-	for <iommu@lists.linux.dev>; Tue,  3 Dec 2024 17:09:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733245743; cv=none; b=JIIdes0fioeF6k8es98SLCq6MkKMAEKPjZD4DS3tx30/HVboyo3PBSfFFRg7D8rCY+SHGx2yEF48i1Os0zhyuGASLWjcxltuiCSHske2zeSQsFxzlM2OlH9T5tHDXi7nDz1CUCeaBTHzyWPfi2f9lGxI9j0KDSvKOCZhFCHb+Q0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733245743; c=relaxed/simple;
-	bh=jDgoZVWs1EZ0BLsWSC/biSIEBFBgOOP/XfjuZPS8yO0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=aMDTWQSWOQGV1368Jk+XPJr4pNEo7rAae4Jzl16a+TknnSPvepk09hQae1jzYnSBj8scSp4ZERL/c/TPunCuADGPcZqWEC5WWzdKaLLHveVqouvwL+b2YlTQGP5hIdeNdKdhRXH8NQnUVQuX68jmk033xX3kyVsGyOkqvqChJmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kha2/Ksb; arc=none smtp.client-ip=209.85.167.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A711F8921;
+	Tue,  3 Dec 2024 17:31:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1733247104; cv=fail; b=EZymRvmjXX+e4/JkZY826x9P68OOoDRl2Rj2OlPfWwDU9R0jVfS//dSAlkotyrCLv14AfM8ODu5T9BalQs4LIWqIzYYbP1Xqbx1N7oYKY/uexHYiG4rVMIyhQsfbk8tc4a4BPOxqwVfW+loh1c0BR+sJl2gDpKaxzcEXwFwpwRo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1733247104; c=relaxed/simple;
+	bh=3mbMVuB4hcbN7LKdMi8sNqKmEyxavp20L7In6Lg8VCg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=juFqoGNBS0eyDKf2OuoDFHv2gFj+ego+qL4lkLTDa7/41WgqdvpHnPANRQnrXMRuH5sXIIl95Yi+xHyo+7WC1fECe5AT5Kr9CbPVCOnjJvAzd2k3fSiKTZJGhFsVxHEt1ZtLOjZc5C0FksNYASljG4MfvkhN2F0Kh56yPCqOPJ4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hmH3BCUu; arc=fail smtp.client-ip=40.107.92.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kha2/Ksb"
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-53ddb99e9dcso5921139e87.3
-        for <iommu@lists.linux.dev>; Tue, 03 Dec 2024 09:09:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733245740; x=1733850540; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OTR6Ylpv3eNdxiaC7COAI2rMXOLAET8qmxvIBqqw6fM=;
-        b=kha2/Ksbxn2DuLtOJJbZKguKBBH3D28M450YTKFoYb5lH/cU+H7lB96Kqy0jFk+DX7
-         6bVk2oIT1wuHGsi3Y/ui1lQOLPLDFm0W2gHiu/FcbODs+ynef6XuVsLDueag8Skhbu8+
-         lmGjY7xrG52XrvjVlQBasB4Ircg+emZRgBtGdbEDp0m+/DnjzRfLtLF6d4kDkgFgQAGw
-         XIu2RIbMydC4QEOCm6pkktWorJmVvyGzleOLjdu3VMJI9kj3769vJJ6GtrnQ31mFqfUO
-         5fRucwezf3HF5LUBGc/UB5ph0CpOSk7AuGM4C/kfK094WeKcF5n8P1en9JF8wCAY3IBd
-         IPKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733245740; x=1733850540;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OTR6Ylpv3eNdxiaC7COAI2rMXOLAET8qmxvIBqqw6fM=;
-        b=DnxWd5544ix6c+/JZkfITaetMkVWvhUS+QRDWmm75e1HEYoNjHIwOH8hFwOCCkgTAy
-         7gS2Q4mlCZkEQIqed7pG+vOoi1iigxb8fLykSOxuBOIm4mEipP4q+ukpq93J/oPO0HJU
-         OCIJY5bcMuEe1bT+U7S2ETBoGJrRaewN40bKMfojTUkjB/3rTgmkyrSEPBCCJYaHIuT7
-         q9QWseIokE5cKErASPVjZoyOb9fG7LF5kABiqO3xNReEiDL65qydjJKNek3vebMdau6n
-         z0JwafQTk/dZwccY1AoI4TFCiGKa4MRXRmzlFpspJyHpU990jaf2LJtBs1mAUSp1SPW8
-         RAzQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXN2COMkgYZqOBvgwjG497MsFnxCHix84bTX97Sy4z/+E24psHc2VcACspxofIP91HnWSZ/SQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzpHoyz3jYwkZaZVjYI5epRRZEGWBhNQVgJl1HquRbXnJ522Fb1
-	mnheaFiGV1PAobBomfJ1KKFqK/rqqQSwzWg5Pjx71W7eM6cOp6D/
-X-Gm-Gg: ASbGnctb695JLBT8/1KwVJM0dkLRYPKz6bGJPCg8dupWmhri6pFmB2GMbBlQsHs/lOh
-	yRJ47tRCvSJsSJoCbug8MWWmlJGYwkSFBRS3UiprSTF+Pk2GkMwpCMXxUMJIHrlCQYVnixp0HgO
-	ljM/tp4iUqUqN1WWIGc/ay3EDFn4uIftuzsdW7DI2EXraT8c/a3X4smthp8WnGk5iq5jnnYOugH
-	LSC1oxuEHcLo7FYo0EXdxneYrRZKzIMdUFlHpCbHn7oLC7N8gXNAnPW2E2JQ1tVsD2wRY8/FiIt
-	RHP6m+fpeJvKbZ56nvmE
-X-Google-Smtp-Source: AGHT+IHk1IYP2NKFAmvEFFHZPc7mvlW5OfXCL9iqwuQ5vcHYn6pBy4IkJ3t9oeRJ73P75rqoJytFaw==
-X-Received: by 2002:ac2:5b90:0:b0:53e:12d6:7853 with SMTP id 2adb3069b0e04-53e12d6786fmr1874749e87.4.1733245739714;
-        Tue, 03 Dec 2024 09:08:59 -0800 (PST)
-Received: from abj-NUC9VXQNX.. (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53df644336fsm1893394e87.80.2024.12.03.09.08.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2024 09:08:58 -0800 (PST)
-From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-To: rust-for-linux@vger.kernel.org
-Cc: Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>,
-	Gary Guo <gary@garyguo.net>,
-	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>,
-	Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Wedson Almeida Filho <wedsonaf@google.com>,
-	Valentin Obst <kernel@valentinobst.de>,
-	linux-kernel@vger.kernel.org (open list),
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	airlied@redhat.com,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: [PATCH v5 2/2] rust: add dma coherent allocator abstraction.
-Date: Tue,  3 Dec 2024 19:07:44 +0200
-Message-ID: <20241203170752.1834271-3-abdiel.janulgue@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241203170752.1834271-1-abdiel.janulgue@gmail.com>
-References: <20241203170752.1834271-1-abdiel.janulgue@gmail.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hmH3BCUu"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=oaZKuQ/ALhimitJ7xxup1K4YqO3KRg5ucZK+9NopDpbyVRF8/b42/41wm/JCpeNwmuvbv4GqZ4X4QpEUzx2ZvLTMH84xzdmf8ANSmGkSNLoi7CP9agQ+c++tE90zYfIKEK7r/xB2QdiP6npQh6pGYh1v5ACsMzrc+QHrr+UZyb4LaucHeviz9EUDWNKC8zNHqTTrOFDzqXFWqqVqGejONhYlpXzLLeWzMPd9o0xuDpnBZm7plr2yFYhgsgAZi9iRw9Ct/WsO76jDrLQps3wAapdV2sT97IyDe6qKjfzYtW2eUn3f3IT3L0X6CvnDOdF7sitFqW+4lTYmWcxf8XjJMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=thRiu1ljQKijE29fa+x/F0ZzXBsaZA7jDyS7e6ALdQs=;
+ b=oa3sE7uplYzdpZ51mvaMncAiV5gmeFe+A9npGrexLVrDnylRuKZ8eTosMSnZinZLA3NqYH3V5gsMc2lhIh1bYuFCXZ+TxkoKKxd6xfsR55Xc6JEy+NiAo/EGr+hZHknPrQDskL+YySz5Noro/82sUv3hCZ2aRwrHtDps47kcFxhTI7oJ9ukJCZr0sbjFbbibLbX6r2kd6k8bLY3Rlyy95yZfV57nJQgmzmui3HLueciQTbbo+WIiAB2ahLhmmI3u9CF4lSUZqJ8KA1nbNcSZyKO5Cv6BSEoItbRmzhXzOxwaGQymNudVqWmyucSBWfzbFtA5ZNbNd9RuHZc3SHpeIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=thRiu1ljQKijE29fa+x/F0ZzXBsaZA7jDyS7e6ALdQs=;
+ b=hmH3BCUulDfYsG8YWw1nXOGDjToykTJUBH6ARIMaTouc/8GW9KbrrSybSl1wfduNdaXHQ+imEwgUvI5g0gZIK7GPgRyfb9M2MSSjKkWH6uRqx2QVdyHjTPCswxulQo/SZ1I5itZJqEN7kBhCorcDc9jQtMDL5zVfuWQHHaFL5n8fsoNmiV4He0pR+Ue/TZsk+ulwgI4CT6ajPcpDsjo5cvMaDkLKhq5clG/3f1TvvWurkUTZgs6BVxNJx7sgL6SKgBCKHORzE60lUhXGAcxvPjGTii7NOZTbDYEqE5V9BC7YlJ0WRPPS2Y+yfAGTkrZbHg7GESg45B/Zfcf73jSdOA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by MW4PR12MB7237.namprd12.prod.outlook.com (2603:10b6:303:22a::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8207.14; Tue, 3 Dec
+ 2024 17:31:35 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8207.010; Tue, 3 Dec 2024
+ 17:31:33 +0000
+Date: Tue, 3 Dec 2024 13:31:32 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+	Will Deacon <will@kernel.org>
+Cc: patches@lists.linux.dev
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Improve uAPI comment for
+ IOMMU_HW_INFO_TYPE_ARM_SMMUV3
+Message-ID: <20241203173132.GA1930986@nvidia.com>
+References: <0-v1-191e5e24cec3+3b0-iommufd_smmuv3_hwinf_jgg@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0-v1-191e5e24cec3+3b0-iommufd_smmuv3_hwinf_jgg@nvidia.com>
+X-ClientProxiedBy: MN2PR01CA0056.prod.exchangelabs.com (2603:10b6:208:23f::25)
+ To CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|MW4PR12MB7237:EE_
+X-MS-Office365-Filtering-Correlation-Id: 22cefde8-35f3-41c0-ecb6-08dd13c054ae
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?kQf67atuLGABpGE4IxZ8b1dxcBaAvCDWPOPpK00V646x848+wROq7h3vImwb?=
+ =?us-ascii?Q?MwBx7W6n+zUDDue7rrLbJ3pLtc+LD+LUNLSQpAvgBT3ASkdkioetsyRMk2UY?=
+ =?us-ascii?Q?tdJpCOYusLoUCioJmtdxeTI+cW4gN8xWDI2bJLKwCicaB/7UPkkPI7rxx5iu?=
+ =?us-ascii?Q?yHGHeQshb2rXElv79BldBUV2bhyXRbcw3z6DwIKFgr+lwUYGF0b2Wk6R4iQ2?=
+ =?us-ascii?Q?rioQJqnZVvNrShw+glC9cB/+TpdlEo97ioDp3V3KvfELyGBNTB2XJX1s2hPj?=
+ =?us-ascii?Q?L3xsVfafAHmBXjGDoj4WwIbqgBtsEQxh4FH0Sb8EKBPhiLzj84CdkxoJcx14?=
+ =?us-ascii?Q?O8bQMPtEy7B7mhc4FUSfgUjOajjKLhfOByraOM56vs2Y9P9cu+ZWBG9wpRRr?=
+ =?us-ascii?Q?jmANR8UQsz6i9zzBTB/H98CW+G6M2GiKsKMLF+9EAeHJJdpWnzgFgZgSNAu+?=
+ =?us-ascii?Q?jgwRiiATvY45ZabF5nVYzi7yzh7Hf2kiT1lQMu6wsR/ifYpvqE30C4f47J6M?=
+ =?us-ascii?Q?SaGrqs3Jc1cWDXl/imuG9b8yRGvQhXt6UH3/1dvNnblINTXBW5vV4arvGqRL?=
+ =?us-ascii?Q?zpTucjCoNLCsXJqbOERKZo/mIHGXoWO8C5k/XPP8HP+RBFCqF6XylzeeVkQQ?=
+ =?us-ascii?Q?JhxsFYRk2CvjyyDgNPW5d78jHe8zrd98mqMaTTOS/JBZ6mvwKc1657L/QRYF?=
+ =?us-ascii?Q?Vs6IK0lfqs2rNQqkwSxzB15NmyI9D1hlHrEl3a3qc/wJFv8kYJILZOSCRVZx?=
+ =?us-ascii?Q?psI1X5ilbbbReqv4NQc8pK11lMWgQvU6WPAvB4bco9gRadfaDfq7L/QVC5g+?=
+ =?us-ascii?Q?/bPCktusz8OFmHyKtEGUX+wNuw92GaY8hQQuMd5sb5QeuecJbXK0XoKLSKKm?=
+ =?us-ascii?Q?oh/NAXEaYDMvCvdeaRinRTbHdBBEh8CUxw5BUj7LrLnhfGTnjtzUVZq4TEkQ?=
+ =?us-ascii?Q?357T0WC1FgiEqoxQSPqNhdSBQJs601JK8LwV2iprZd8hCAOVfhQKrke3IhE3?=
+ =?us-ascii?Q?dV7Hlj1jMiCZbudsysM37LCWVorNvNBeCDQqqHnpZnBYh38zEMNtuWEDc/Nf?=
+ =?us-ascii?Q?4VVV2caxYQMAWwmAExK5140sxrXl1YUUTmnLkDqdiUDGq5/szlEK5PJJhAXn?=
+ =?us-ascii?Q?k+2Sgt3iUI+KXbsC37ClzaPKZt4J6oq7r+2QvZ+mM+s/Kvx+OLFXK9XlCPKp?=
+ =?us-ascii?Q?HzH1ZcFq69+hiakJpXrd8GA3t4lYZMsyngNCandGVDBM5NM9/6ApaSB6CluC?=
+ =?us-ascii?Q?Dwfv99UCDosiFSCV2J81omEpG+pwXcTDez12dr9J/HPAgn2bI3KJ7d+0Tude?=
+ =?us-ascii?Q?RVC0G2/zf6wotNuR+m7l9dfK8riKfPBpewB1QhqHuLUeGQ=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?vDbXYnlS8s/h/csBUxUvBtWuo9y8KTcluoIl2RhZE3Y/dao+lNgxSPfojs5W?=
+ =?us-ascii?Q?eUpuSHJ4wqZeU7Kv0jlG/GRJRILM0VAXgX3nVLN11YkjJf90rUjPla0Mfzbx?=
+ =?us-ascii?Q?J/SL8bPw/rIaELPpQ9JX1RfgQm+vD/d2Jdiys5slYEnlFXjZrSJvjTWt/MUw?=
+ =?us-ascii?Q?6A2tjT2i09OfMpDblGfAIYVZxqpS47wGK4SXSSMP8eMqT1DqXSp5j6I3F45z?=
+ =?us-ascii?Q?lujHtUHBuvg4oE5QXqbSfi8c4QXhamxmZccmT6dHMg3yAiYEawcq3wiN89Vj?=
+ =?us-ascii?Q?HtOVRr9LmSS6x5aByPSYANk3yXg5pzAPw+i46GfJjLFpaNU6mCvR8i8tulep?=
+ =?us-ascii?Q?37ORP5xMmyMmLrSR2yQCuis8PScoSgtVrqtVZ51BwHxk7nqSJ+IewAEtwBqd?=
+ =?us-ascii?Q?qgVJhExzwX0KcmRjCLlo6mzN8SkTlXOM25Ln4BAtNKFOOwOqbdX7CBflLH4c?=
+ =?us-ascii?Q?C987Eq4usY7jcykBNSPO350VOe7e4JJfUgEDmc259OvW2EpyZxMti5VA8eeC?=
+ =?us-ascii?Q?gHQxtkPmx57NWgbEVWpVxCRUmzCw7scAWJ2T15WL4SOreKrdYcTOUVAtPaHu?=
+ =?us-ascii?Q?iIPYX1dzP44AVoZ3bKItP50boRl0Yfd3+p6FgNqRAlAeIwmXxEWVBEq3s+z0?=
+ =?us-ascii?Q?K/69nYlTD4/o8wJ7PEZDUJV4ukWSoZv1c+1h2V+278/NwuuhREphDIsRDi1U?=
+ =?us-ascii?Q?q3VyhKxvvgR3ITWyCrmOT6nTdX/VvEASFTtW8CLNWFWrFqOVgApl02TnnR9x?=
+ =?us-ascii?Q?gjnDKZWnuM0lQ6DfwcjwYczUPVwsRYVbqejcAxcd/J6HBI7+6xiux+2Fo9vA?=
+ =?us-ascii?Q?jAGHouXHeCkN4cr4Lr4aI9ErO+bbrcgz0qPCodjIuvKHJl5Ks2F3k/Hn/url?=
+ =?us-ascii?Q?WqBzdmmZw3Hg63LzwBmOwSr1q658xQ6WKIk53/fPyu5EPG92QHUqzhbOHxwh?=
+ =?us-ascii?Q?NKIrOz0Zvhh+gwqH+1FmtWVrlLyORrBNDCESOhRjlf68oRKg7pUHp9snudVs?=
+ =?us-ascii?Q?Wqzo3f27z//wbAF7nSEcgzsck7jaPEknaYm9dPub85x2SmFfpvADFl8VYdtz?=
+ =?us-ascii?Q?fqh3aG3BMfFQ1Wcf4iPsFlnwnaV9APiToAtiXs+P9RUv/EUsiBoXaBG92XM+?=
+ =?us-ascii?Q?4RHW5BJI9N4IIqdyTgUYk1+3KuZ3iparbTX69gyW+PVMmdZTIxRAEdy6LD2f?=
+ =?us-ascii?Q?lPMXt9zkmofsodVb2hZgNxZTzEQa6xJMmPfDU8NWEtucHUofqf33ZuxyHUwi?=
+ =?us-ascii?Q?isLAW1qItnrw4Ejpw3z6xm6Jo5Y2ynJEIO3+yRRkSLDUsR/RrL7EdDKdnb4t?=
+ =?us-ascii?Q?XGq0hjTpKP4mTHlaOw0bg4aM5YGgyW+W8/bjfRDvjG+6hlK/p+PQJNRwv9Aj?=
+ =?us-ascii?Q?WQxTBp/NFTMwZ8gZfi2KWLFyhJ+yOsXkAWyOwanjA6LB2kBGXzLOiAZ5HUKd?=
+ =?us-ascii?Q?DcwQjYNgOhi0xngDOEgR/tSu4GG69MdlfealLdlG4VghJ715AAuGmLhZ0s0L?=
+ =?us-ascii?Q?8Nj5I1Cwtlo4uYsVM/xYaNqx7otcM+UofYBDLhtan+XDc/7xvx4bUx5Fa0C1?=
+ =?us-ascii?Q?DYevKW/yhaN/hc1WyUfl4nkbUSRU/X1IzpnUZkuY?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 22cefde8-35f3-41c0-ecb6-08dd13c054ae
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Dec 2024 17:31:33.3756
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YUWVLSKEes4p12ijwUlneyCwzKoozWBOKMZqyjoksGzJTNH33PbiSihMPpgNN5/N
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7237
 
-Add a simple dma coherent allocator rust abstraction. Based on
-Andreas Hindborg's dma abstractions from the rnvme driver, which
-was also based on earlier work by Wedson Almeida Filho.
+On Tue, Nov 12, 2024 at 02:51:36PM -0400, Jason Gunthorpe wrote:
+> Be specific about what fields should be accessed in the idr result and
+> give other guidance to the VMM on how it should generate the
+> vIDR. Discussion on the list, and review of the qmeu implementation
+> understood this needs to be clearer and more detailed.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  include/uapi/linux/iommufd.h | 25 +++++++++++++++++--------
+>  1 file changed, 17 insertions(+), 8 deletions(-)
 
-Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
----
- rust/bindings/bindings_helper.h |   1 +
- rust/kernel/dma.rs              | 136 ++++++++++++++++++++++++++++++++
- rust/kernel/lib.rs              |   1 +
- 3 files changed, 138 insertions(+)
- create mode 100644 rust/kernel/dma.rs
+Applied to for-rc
 
-diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_helper.h
-index 5c4dfe22f41a..49bf713b9bb6 100644
---- a/rust/bindings/bindings_helper.h
-+++ b/rust/bindings/bindings_helper.h
-@@ -11,6 +11,7 @@
- #include <linux/blk_types.h>
- #include <linux/blkdev.h>
- #include <linux/cred.h>
-+#include <linux/dma-mapping.h>
- #include <linux/errname.h>
- #include <linux/ethtool.h>
- #include <linux/file.h>
-diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-new file mode 100644
-index 000000000000..9279be235fcf
---- /dev/null
-+++ b/rust/kernel/dma.rs
-@@ -0,0 +1,136 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Direct memory access (DMA).
-+//!
-+//! C header: [`include/linux/dma-mapping.h`](srctree/include/linux/dma-mapping.h)
-+
-+use crate::{
-+    bindings,
-+    build_assert,
-+    device::Device,
-+    error::code::*,
-+    error::Result,
-+    types::ARef,
-+    transmute::{AsBytes, FromBytes},
-+};
-+
-+/// An abstraction of the `dma_alloc_coherent` API.
-+///
-+/// This is an abstraction around the `dma_alloc_coherent` API which is used to allocate and map
-+/// large consistent DMA regions.
-+///
-+/// A [`CoherentAllocation`] instance contains a pointer to the allocated region (in the
-+/// processor's virtual address space) and the device address which can be given to the device
-+/// as the DMA address base of the region. The region is released once [`CoherentAllocation`]
-+/// is dropped.
-+///
-+/// # Invariants
-+///
-+/// For the lifetime of an instance of [`CoherentAllocation`], the cpu address is a valid pointer
-+/// to an allocated region of consistent memory and we hold a reference to the device.
-+pub struct CoherentAllocation<T: AsBytes + FromBytes> {
-+    dev: ARef<Device>,
-+    dma_handle: bindings::dma_addr_t,
-+    count: usize,
-+    cpu_addr: *mut T,
-+}
-+
-+impl<T: AsBytes + FromBytes> CoherentAllocation<T> {
-+    /// Allocates a region of `size_of::<T> * count` of consistent memory.
-+    ///
-+    /// # Examples
-+    ///
-+    /// ```
-+    /// use kernel::device::Device;
-+    /// use kernel::dma::CoherentAllocation;
-+    ///
-+    /// # fn test(dev: &Device) -> Result {
-+    /// let c: CoherentAllocation<u64> = CoherentAllocation::alloc_coherent(dev, 4, GFP_KERNEL)?;
-+    /// # Ok::<(), Error>(()) }
-+    /// ```
-+    pub fn alloc_coherent(
-+        dev: &Device,
-+        count: usize,
-+        flags: kernel::alloc::Flags,
-+    ) -> Result<CoherentAllocation<T>> {
-+        build_assert!(core::mem::size_of::<T>() > 0,
-+                      "It doesn't make sense for the allocated type to be a ZST");
-+
-+        let size = count.checked_mul(core::mem::size_of::<T>()).ok_or(EOVERFLOW)?;
-+        let mut dma_handle = 0;
-+        // SAFETY: device pointer is guaranteed as valid by invariant on `Device`.
-+        // We ensure that we catch the failure on this function and throw an ENOMEM
-+        let ret = unsafe {
-+            bindings::dma_alloc_attrs(
-+                dev.as_raw(),
-+                size,
-+                &mut dma_handle, flags.as_raw(),
-+                0,
-+            )
-+        };
-+        if ret.is_null() {
-+            return Err(ENOMEM)
-+        }
-+        // INVARIANT: We just successfully allocated a coherent region which is accessible for
-+        // `count` elements, hence the cpu address is valid. We also hold a refcounted reference
-+        // to the device.
-+        Ok(Self {
-+            dev: dev.into(),
-+            dma_handle,
-+            count,
-+            cpu_addr: ret as *mut T,
-+        })
-+    }
-+
-+    /// Returns the base address to the allocated region and the dma handle. The caller takes
-+    /// ownership of the returned resources.
-+    pub fn into_parts(self) -> (usize, bindings::dma_addr_t) {
-+        let ret = (self.cpu_addr as _, self.dma_handle);
-+        core::mem::forget(self);
-+        ret
-+    }
-+
-+    /// Returns the base address to the allocated region in the CPU's virtual address space.
-+    pub fn start_ptr(&self) -> *const T {
-+        self.cpu_addr as _
-+    }
-+
-+    /// Returns the base address to the allocated region in the CPU's virtual address space as
-+    /// a mutable pointer.
-+    pub fn start_ptr_mut(&mut self) -> *mut T {
-+        self.cpu_addr
-+    }
-+
-+    /// Returns a DMA handle which may given to the device as the DMA address base of
-+    /// the region.
-+    pub fn dma_handle(&self) -> bindings::dma_addr_t {
-+        self.dma_handle
-+    }
-+
-+    /// Returns the CPU-addressable region as a slice.
-+    pub fn cpu_buf<'a>(&self) -> &'a [T]
-+    {
-+        // SAFETY: The pointer is valid due to type invariant on `CoherentAllocation` and
-+        // is valid for reads for `self.count * size_of::<T>` bytes.
-+        unsafe { core::slice::from_raw_parts(self.cpu_addr, self.count) }
-+    }
-+
-+    /// Performs the same functionality as `cpu_buf`, except that a mutable slice is returned.
-+    pub fn cpu_buf_mut<'a>(&mut self) -> &'a mut [T]
-+    {
-+        // SAFETY: The pointer is valid due to type invariant on `CoherentAllocation` and
-+        // is valid for reads for `self.count * size_of::<T>` bytes.
-+        unsafe { core::slice::from_raw_parts_mut(self.cpu_addr, self.count) }
-+    }
-+}
-+
-+impl<T: AsBytes + FromBytes> Drop for CoherentAllocation<T> {
-+    fn drop(&mut self) {
-+        let size = self.count * core::mem::size_of::<T>();
-+        // SAFETY: the device, cpu address, and the dma handle is valid due to the
-+        // type invariants on `CoherentAllocation`.
-+        unsafe { bindings::dma_free_attrs(self.dev.as_raw(), size,
-+                                          self.cpu_addr as _,
-+                                          self.dma_handle, 0) }
-+    }
-+}
-diff --git a/rust/kernel/lib.rs b/rust/kernel/lib.rs
-index e1065a7551a3..6e90ebf5a130 100644
---- a/rust/kernel/lib.rs
-+++ b/rust/kernel/lib.rs
-@@ -35,6 +35,7 @@
- mod build_assert;
- pub mod cred;
- pub mod device;
-+pub mod dma;
- pub mod error;
- #[cfg(CONFIG_RUST_FW_LOADER_ABSTRACTIONS)]
- pub mod firmware;
--- 
-2.43.0
-
+Thanks,
+Jason
