@@ -1,290 +1,276 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB6861B4130
-	for <iommu@lists.linux.dev>; Wed,  4 Dec 2024 13:05:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA211E25FF;
+	Wed,  4 Dec 2024 13:57:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733317533; cv=none; b=CybCbXFp43ptfG/5Zsb3ulyqlRd9zxIb3y/javqtB5u9VwsMDCWE0bHUBMADRBq9eUZ3SNjwdO+NBIO1BktYZ9YPYFwN+EmG1VXIiFMpnyuPSKRPJk64u2HMaCcKVpU34NJZf2IPFLlUJPsGDNDWE5c0jpLWN3Yvxp/Idons5UQ=
+	t=1733320672; cv=none; b=B0dRLXj0igFRkI0ALGMdDLO4SmbPZ3iXacaNaxBIcejpnpIP6xCkaOzjxd3TtwEcIVmnG4Yz3/g6w267pc3rSm9jTILa9wXTcUdDC0d7ou+QXWtZnKW+WPcoFJxxW7BOvIyUYEtYei2DjaTIQJO3d33OgAfcqQboAJRP+MGHWXE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733317533; c=relaxed/simple;
-	bh=XVtkq5iJ4Mj7hRv7CqYFdnVlFpaRegC0V8RTwadfHQk=;
+	s=arc-20240116; t=1733320672; c=relaxed/simple;
+	bh=nRcE87+L5bCgoKKJIoTjYdbyogAeN7zenePjAQb0F78=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=JX81zvCkiLjglNgOOAL3myYxjYxbujl6bgVlU6ykQU4b4Rlw6J+aSXV54MCb8c0+ru18wWqKuVmXyHP23H3IulaeOBKDDI5P9pRm+2B6jraxANbAJGF6CvxewrTpIpf1ty2+7JC+gLVl/dVVuULkuFCMDz8NMqCdspzlD6PxFng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=wL73UjeX; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=qPufNg0a; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version:Content-Type; b=l+KAF0uHYsCkTloqmIfDfU4kcmkgwmS0nrZ2OmMYm1vVsIjaxH86BrrD/kgcg2YHvp3hpesUDFqxvXyeasJtTXuHXE5SrCjmqsdxz+pikqZvXlgLrRTv+qMTv3Xhf73CY7u+ND6/AZUaltOfz7e9cMStR7t89j1DhMhghzK2AIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=AJk6yCS7; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Qc5JYu1O; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="wL73UjeX";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="qPufNg0a"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="AJk6yCS7";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Qc5JYu1O"
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1733317524;
+	s=2020; t=1733320668;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ROH6zlh02KHc87r45BDTv/cN5afbSIuh9toQ2ctg4yk=;
-	b=wL73UjeXWyYQQmB1Pp1remQXdjAmCrtcWFIChE7E9HHlqL9M/l/akN/1PUyWWcio+M4hsd
-	d7PhJzhCnsWkx4s2pdhDctBT82t3yAu7JL5tjJcYh5qKSbFl1hdbxAKNn5Bt1Rnq8D3xyh
-	1W12Torjr4e84kQ605+X6R3Xvphy304E3U+iWFWCCSOPeoenFGFisFQOMcWHZkqvkIm/Yo
-	rqrivG3Lb9g3nGu76ZInJIUVeq0VCHCnHokMrMp17Gv781GoLj6bgF39qb7BhDi4tsMRg6
-	qBrRpQNn0HXqJMPWSPvD3rrF6D76de00gbF5IouDkUgEw4GC/F5dlO0bLlErmA==
+	bh=O8gMBaIWat/OC+daKLF/DrYEDK3rTNp+SHrrdeWTGo4=;
+	b=AJk6yCS77aWTtXPj71xsZCYeiYnNwSK2NZH6NgU8rogWhB7l+4kXbG2yjdyy/qPGJc8Ze0
+	mKRQe3OE1a47NDP0V45qudfLKpaT1KqOZDV7H8C6ByYt+1ZiDGIW7MDma09IFxwvjuPf1T
+	ZqOojKm+3WDjW6/pj7k2y5/dC/Y/9TY4B7Uom4cb4L8EE4HjQ+PbNWH4CFVKIc5hM1QX/K
+	/YxRHheXIFzTxU+OvGkI9ji6FfN7pzVgZRcKJmuNaUl3NRGc25GXOy3iSMr//2WG14bJZQ
+	KmJWaSOKlo3ogqipLJ3wbih/xb68hACAlIm0C3tAtfB5uziMiaWDMZrDepa9TQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1733317524;
+	s=2020e; t=1733320668;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ROH6zlh02KHc87r45BDTv/cN5afbSIuh9toQ2ctg4yk=;
-	b=qPufNg0aO0AVR52BVTeAWUHTNUKlqiQiXfPzDa82iuoktna7Zd4GaEhPSAChG0cycCtYIt
-	oiuHXrVUC/U2oQBQ==
-To: Anup Patel <anup@brainfault.org>
-Cc: Andrew Jones <ajones@ventanamicro.com>, iommu@lists.linux.dev,
- kvm-riscv@lists.infradead.org, kvm@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
- tjeznach@rivosinc.com, zong.li@sifive.com, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, atishp@atishpatra.org,
- alex.williamson@redhat.com, paul.walmsley@sifive.com, palmer@dabbelt.com,
- aou@eecs.berkeley.edu
-Subject: Re: [RFC PATCH 01/15] irqchip/riscv-imsic: Use hierarchy to reach
- irq_set_affinity
-In-Reply-To: <CAAhSdy27gaVJaXBrx8GB+Xr4ZTvp8hd0Jg8JokzehgC-=5pOmA@mail.gmail.com>
-References: <20241114161845.502027-17-ajones@ventanamicro.com>
- <20241114161845.502027-18-ajones@ventanamicro.com> <87mshcub2u.ffs@tglx>
- <CAAhSdy08gi998HsTkGpaV+bTWczVSL6D8c7EmuTQqovo63oXDw@mail.gmail.com>
- <874j3ktrjv.ffs@tglx> <87ser4s796.ffs@tglx>
- <CAAhSdy27gaVJaXBrx8GB+Xr4ZTvp8hd0Jg8JokzehgC-=5pOmA@mail.gmail.com>
-Date: Wed, 04 Dec 2024 14:05:23 +0100
-Message-ID: <87mshbsing.ffs@tglx>
+	bh=O8gMBaIWat/OC+daKLF/DrYEDK3rTNp+SHrrdeWTGo4=;
+	b=Qc5JYu1O1PkVaW+DC6Z5efyRWpKu6lebzkvOwpsmta3x4Bq25zwtdPx1O9s1NNfh2BTVXe
+	06TjE52LP4Ai7uDQ==
+To: Marc Zyngier <maz@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+ linux-pci@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+ <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Lu
+ Baolu <baolu.lu@linux.intel.com>, Shawn Guo <shawnguo@kernel.org>, Sascha
+ Hauer <s.hauer@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Huacai
+ Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Jiaxun Yang
+ <jiaxun.yang@flygoat.com>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement
+ <gregory.clement@bootlin.com>, Sebastian Hesselbarth
+ <sebastian.hesselbarth@gmail.com>, Anup Patel <anup@brainfault.org>, Paul
+ Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, Lorenzo Pieralisi
+ <lpieralisi@kernel.org>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?=
+ <kw@linux.com>, Manivannan
+ Sadhasivam <manivannan.sadhasivam@linaro.org>, Bjorn Helgaas
+ <bhelgaas@google.com>, Toan Le <toan@os.amperecomputing.com>, Alyssa
+ Rosenzweig <alyssa@rosenzweig.io>
+Subject: Re: [PATCH 02/11] genirq/msi: Add helper for creating MSI-parent
+ irq domains
+In-Reply-To: <20241204124549.607054-3-maz@kernel.org>
+References: <20241204124549.607054-1-maz@kernel.org>
+ <20241204124549.607054-3-maz@kernel.org>
+Date: Wed, 04 Dec 2024 14:57:47 +0100
+Message-ID: <878qsvsg84.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 
-On Wed, Dec 04 2024 at 09:13, Anup Patel wrote:
-> On Wed, Dec 4, 2024 at 4:29=E2=80=AFAM Thomas Gleixner <tglx@linutronix.d=
-e> wrote:
->> As I was looking at something else MSI related I had a look at
->> imsic_irq_set_affinity() again.
->>
->> It's actually required to have the message write in that function and
->> not afterwards as you invoke imsic_vector_move() from that function.
->>
->> That's obviously not true for the remap case as that will not change the
->> message address/data pair because the remap table entry is immutable -
->> at least I assume so for my mental sanity sake :)
->>
->> But that brings me to a related question. How is this supposed to work
->> with non-atomic message updates? PCI/MSI does not necessarily provide
->> masking, and the write of the address/data pair is done in bits and
->> pieces. So you can end up with an intermediate state seen by the device
->> which ends up somewhere in interrupt nirvana space.
->>
->> See the dance in msi_set_affinity() and commit 6f1a4891a592
->> ("x86/apic/msi: Plug non-maskable MSI affinity race") for further
->> explanation.
->>
->> The way how the IMSIC driver works seems to be pretty much the same as
->> the x86 APIC mess:
->>
->>         @address is the physical address of the per CPU MSI target
->>         address and @data is the vector ID on that CPU.
->>
->> So the non-atomic update in case of non-maskable MSI suffers from the
->> same problem. It works most of the time, but if it doesn't you might
->> stare at the occasionally lost interrupt and the stale device in
->> disbelief for quite a while :)
+On Wed, Dec 04 2024 at 12:45, Marc Zyngier wrote:
+> Creating an irq domain that serves as an MSI parent requires
+> a substantial amount of esoteric boiler-plate code, some of
+> which is often provided twice (such as the bus token).
 >
-> Yes, we have the same challenges as x86 APIC when changing
-> MSI affinity.
->>
->> I might be missing something which magically prevent that though :)
->>
-> Your understanding is correct. In fact, the IMSIC msi_set_affinity()
-> handling is inspired from x86 APIC approach due to similarity in
-> the overall MSI controller.
+> To make things a bit simpler for the unsuspecting MSI tinkerer,
+> provide a helper that does it for them, and serves as documentation
+> of what needs to be provided.
 >
-> The high-level idea of imsic_irq_set_affinity() is as follows:
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
+> ---
+>  include/linux/msi.h |  7 +++++++
+>  kernel/irq/msi.c    | 40 ++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 47 insertions(+)
 >
-> 1) Allocate new_vector (new CPU IMSIC address + new ID on that CPU)
->
-> 2) Update the MSI address and data programmed in the device
-> based on new_vector (see imsic_msi_update_msg())
->
-> 3) At this point the device points to the new_vector but old_vector
-> (old CPU IMSIC address + old ID on that CPU) is still enabled and
-> we might have received MSI on old_vector while we were busy
-> setting up a new_vector for the device. To address this, we call
-> imsic_vector_move().
->
-> 4) The imsic_vector_move() marks the old_vector as being
-> moved and schedules a lazy timer on the old CPU.
->
-> 5) The lazy timer expires on the old CPU and results in
-> __imsic_local_sync() being called on the old CPU.
->
-> 6) If there was a pending MSI on the old vector then the
-> __imsic_local_sync() function injects an MSI to the
-> new_vector using an MMIO write.
->
-> It is very unlikely that an MSI from device will be dropped
-> (unless I am missing something) but the unsolved issue
-> is that handling of in-flight MSI received on the old_vector
-> during the MSI re-programming is delayed which may have
-> side effects on the device driver side.
+> diff --git a/include/linux/msi.h b/include/linux/msi.h
+> index b10093c4d00ea..f08d14cf07103 100644
+> --- a/include/linux/msi.h
+> +++ b/include/linux/msi.h
+> @@ -594,6 +594,13 @@ struct irq_domain *msi_create_irq_domain(struct fwnode_handle *fwnode,
+>  					 struct msi_domain_info *info,
+>  					 struct irq_domain *parent);
+>  
+> +struct irq_domain *msi_create_parent_irq_domain(struct fwnode_handle *fwnode,
+> +						const struct msi_parent_ops *msi_parent_ops,
+> +						const struct irq_domain_ops *ops,
+> +						unsigned long flags, unsigned long size,
+> +						void *host_data,
+> +						struct irq_domain *parent);
 
-Interrupt delivery can be delayed for tons of other reasons.
+Can we please make this a template based interface similar to
+msi_create_device_irq_domain()?
 
-But yes, you are missing something which is worse than a jiffie delay:
+> +/**
+> + * msi_create_parent_irq_domain - Create an MSI-parent interrupt domain
+> + * @fwnode:		Optional fwnode of the interrupt controller
+> + * @msi_parent_ops:	MSI parent callbacks and configuration
+> + * @ops:		Interrupt domain ballbacks
+> + * @flags:		Interrupt domain flags
+> + * @size:		Interrupt domain size (0 if arbitrarily large)
+> + * @host_data:		Interrupt domain private data
+> + * @parent:		Parent irq domain
+> + *
+> + * Return: pointer to the created &struct irq_domain or %NULL on failure
+> + */
+> +struct irq_domain *msi_create_parent_irq_domain(struct fwnode_handle *fwnode,
+> +						const struct msi_parent_ops *msi_parent_ops,
+> +						const struct irq_domain_ops *ops,
+> +						unsigned long flags, unsigned long size,
+> +						void *host_data,
+> +						struct irq_domain *parent)
+> +{
+> +	struct irq_domain_info info = {
+> +		.fwnode		= fwnode,
+> +		.size		= size,
+> +		.hwirq_max	= size,
+> +		.ops		= ops,
+> +		.host_data	= host_data,
+> +		.domain_flags	= flags | IRQ_DOMAIN_FLAG_MSI_PARENT,
+> +		.parent		= parent,
+> +		.bus_token	= msi_parent_ops->bus_select_token,
+> +	};
 
-CPU                                     Device
-  msi_update_msg()
-     compose()
-     write()
-       write(msg->address_lo); [1]
-       write(msg->address_hi); [2]
-                                        Raises interrupt [3]
-       write(msg->data);       [4]
+Instead of hiding the template in the function?
 
-[2] can be ignored as it should not change (otherwise 32bit only devices
-would not work).
+We've been burnt with interfaces which might require extensions over
+time before and I just converted the GIC patch (3/11) over to a template
+at call site model. It results in the same code size reduction at the
+call sites, but allows us to expand the template without touching any
+existing driver in the future. See below.
 
-Lets assume that the original message was:
+It might be a good idea to have a specific msi_irq_domain_info template
+which only contains the information required instead of reusing and
+expanding irq_domain_info.
 
-     addr_lo =3D 0x1000, data =3D 0x10    (CPU1, vector 0x10)
-=20=20=20=20=20=20=20
-The new message is
-
-     addr_lo =3D 0x2000, data =3D 0x20    (CPU2, vector 0x20)
-
-After [2] the device sees:
-
-     addr_lo =3D 0x2000, data =3D 0x10    (CPU2, vector 0x10)
-
-The interrupt raised in [3] will end up on CPU2 at vector 0x10 which
-might be not in use or used by some other device. In any case the
-interrupt is not reaching the real device handler and you can't see that
-interrupt as pending in CPU1.
-
-That's why x86 in case of non-remapped interrupts has this for the two
-situations:
-
-  1) old->data =3D=3D new->data
-
-     write_msg(new);=20
-
-     The next interrupt either arrives on the old CPU or on the new CPU
-     depending on timing. There is no intermediate state because the
-     vector (data) is the same on both CPUs.
-
-  2) old->data !=3D new->data
-
-     tmp_msg.addr =3D old_msg.addr
-     tmp_msg.data =3D new_msg.data
-
-     write_msg(tmp_msg);
-
-     So after that write the device might raise the interrupt on CPU1
-     and vector 0x20.
-
-     The next step is
-
-     write_msg(new);=20
-
-     which changes the destination CPU to CPU2.
-
-     So depending what the device has observed the interrupt might end
-     up on
-
-     CPU1 vector 0x10   (old)
-     CPU1 vector 0x20   (tmp)
-     CPU2 vector 0x20   (new)
-
-     CPU1 vector 0x20 (tmp) is then checked in the pending register and
-     the interrupt is retriggered if pending.
-
-That requires to move the interrupt from actual interrupt context on the
-old target CPU. It allows to evaluate the old target CPUs pending
-register with local interrupts disabled, which obviously does not work
-remote.
-
-I don't see a way how that can work remote with the IMSIC either even if
-you can easily access the pending state of the remote CPU:
-
-CPU0                            CPU1                   Device
-set_affinity()
-  write_msg(tmp)
-    write(addr); // CPU1
-    write(data); // vector 0x20
-                                                        raise IRQ
-                                handle vector 0x20
-                                (spurious or other device)
-
-    check_pending(CPU1, 0x20) =3D=3D false -> Interrupt is lost
-
-Remapped interrupts do not have that issue because the table update is
-atomic vs. a concurrently raised interrupt, so that it either ends up on
-the old or on the new destination. The device message does not change as
-it always targets the table entry, which is immutable after setup.
-
-That's why x86 has this special msi affinity setter for the non remapped
-case. For the remapped case it's just using the hierarchy default which
-ends up at the remap domain.
-
-So the hierarchies look like this:
-
-   1) non-remap
-
-      PCI/MSI device domain
-         irq_chip.irq_set_affinity =3D msi_set_affinity;
-      VECTOR domain
-
-   2) remap
-
-      PCI/MSI device domain
-         irq_chip.irq_set_affinity =3D msi_domain_set_affinity;
-      REMAP domain
-         irq_chip.irq_set_affinity =3D remap_set_affinity;
-      VECTOR domain
-
-The special case of msi_set_affinity() is not involved in the remap case
-and solely utilized for the non-remap horrors. The remap case does not
-require the interrupt to be moved in interrupt context either because
-there is no intermediate step and pending register check on the old CPU
-involved.
-
-The vector cleanup of the old CPU always happens when the interrupt
-arrives on the new target for the first time independent of remapping
-mode. That's required for both cases to take care of the case where the
-interrupt is raised on the old vector (cpu1, 0x10) before the write
-happens and is pending in CPU1. So after desc::lock is released and
-interrupts are reenabled the interrupt is handled on CPU1. The next one
-is guaranteed to arrive on CPU2 and that triggers the clean up of the
-CPU1 vector, which releases it for reuse in the matrix allocator.
-
-I think you should model it in a similar way instead of trying to
-artificially reuse imsic_irq_set_affinity() for the remap case,
-especially when you decide to close the non-maskable MSI hole described
-above, which I recommend to do :)
-
-You still can utilize msi-lib and just have your private implementation
-of init_dev_msi_info() as a wrapper around the library similar to
-mbi_init_dev_msi_info() and its_init_dev_msi_info(). That wrapper would
-just handle the non-remap case to set info::chip:irq_set_affinity to the
-magic non-remap function.
-
-Hope that helps.
-
-> I believe in the future RISC-V AIA v2.0 (whenever that
-> happens) will address the gaps in AIA v1.0 (like this one).
-
-If that is strictly translation table based, yes.
+Hmm?
 
 Thanks,
 
         tglx
+---
+--- a/drivers/irqchip/irq-gic-v2m.c
++++ b/drivers/irqchip/irq-gic-v2m.c
+@@ -263,24 +263,25 @@ static struct msi_parent_ops gicv2m_msi_
+ 
+ static __init int gicv2m_allocate_domains(struct irq_domain *parent)
+ {
+-	struct irq_domain *inner_domain;
+ 	struct v2m_data *v2m;
++	struct irq_domain_info info = {
++		.ops		= &gic2m_domain_ops,
++		.parent		= parent,
++		.msi_parent_ops = &gicv2m_msi_parent_ops,
++	};
+ 
+ 	v2m = list_first_entry_or_null(&v2m_nodes, struct v2m_data, entry);
+ 	if (!v2m)
+ 		return 0;
+ 
+-	inner_domain = irq_domain_create_hierarchy(parent, 0, 0, v2m->fwnode,
+-						   &gicv2m_domain_ops, v2m);
+-	if (!inner_domain) {
+-		pr_err("Failed to create GICv2m domain\n");
+-		return -ENOMEM;
+-	}
+-
+-	irq_domain_update_bus_token(inner_domain, DOMAIN_BUS_NEXUS);
+-	inner_domain->flags |= IRQ_DOMAIN_FLAG_MSI_PARENT;
+-	inner_domain->msi_parent_ops = &gicv2m_msi_parent_ops;
+-	return 0;
++	info->fwnode = v2m->fwnode;
++	info->host_data = v2m;
++
++	if (msi_create_parent_irq_domain(&info))
++		return 0;
++
++	pr_err("Failed to create GICv2m domain\n");
++	return -ENOMEM;
+ }
+ 
+ static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -5076,31 +5076,27 @@ static void __init __iomem *its_map_one(
+ 
+ static int its_init_domain(struct its_node *its)
+ {
+-	struct irq_domain *inner_domain;
+-	struct msi_domain_info *info;
++	struct msi_domain_info *msi_info;
++	struct irq_domain_info info = {
++		.fwnode		= its->fwnode_handle,
++		.ops		= &its_domain_ops,
++		.parent		= its_parent,
++		.msi_parent_ops = &gic_v3_its_msi_parent_ops,
++		.flags		= its->msi_domain_flags,
++	};
+ 
+-	info = kzalloc(sizeof(*info), GFP_KERNEL);
+-	if (!info)
++	msi_info = kzalloc(sizeof(*info), GFP_KERNEL);
++	if (!msi_info)
+ 		return -ENOMEM;
+ 
+-	info->ops = &its_msi_domain_ops;
+-	info->data = its;
+-
+-	inner_domain = irq_domain_create_hierarchy(its_parent,
+-						   its->msi_domain_flags, 0,
+-						   its->fwnode_handle, &its_domain_ops,
+-						   info);
+-	if (!inner_domain) {
+-		kfree(info);
+-		return -ENOMEM;
+-	}
+-
+-	irq_domain_update_bus_token(inner_domain, DOMAIN_BUS_NEXUS);
+-
+-	inner_domain->msi_parent_ops = &gic_v3_its_msi_parent_ops;
+-	inner_domain->flags |= IRQ_DOMAIN_FLAG_MSI_PARENT;
+-
+-	return 0;
++	msi_info->ops = &its_msi_domain_ops;
++	msi_info->data = its;
++	info.host_data = msi_info;
++
++	if (msi_create_parent_irq_domain(&info))
++		return 0;
++	kfree(info);
++	return -ENOMEM;
+ }
+ 
+ static int its_init_vpe_domain(void)
+--- a/drivers/irqchip/irq-gic-v3-mbi.c
++++ b/drivers/irqchip/irq-gic-v3-mbi.c
+@@ -209,17 +209,14 @@ static const struct msi_parent_ops gic_v
+ 
+ static int mbi_allocate_domain(struct irq_domain *parent)
+ {
+-	struct irq_domain *nexus_domain;
++	struct irq_domain_info info = {
++		.fwnode		= parent->fwnode,
++		.ops		= &mbi_domain_ops,
++		.parent		= parent,
++		.msi_parent_ops = &gic_v3_mbi_msi_parent_ops,
++	};
+ 
+-	nexus_domain = irq_domain_create_hierarchy(parent, 0, 0, parent->fwnode,
+-						   &mbi_domain_ops, NULL);
+-	if (!nexus_domain)
+-		return -ENOMEM;
+-
+-	irq_domain_update_bus_token(nexus_domain, DOMAIN_BUS_NEXUS);
+-	nexus_domain->flags |= IRQ_DOMAIN_FLAG_MSI_PARENT;
+-	nexus_domain->msi_parent_ops = &gic_v3_mbi_msi_parent_ops;
+-	return 0;
++	return msi_create_parent_irq_domain(&info) ? 0 : -ENOMEM;
+ }
+ 
+ int __init mbi_init(struct fwnode_handle *fwnode, struct irq_domain *parent)
+
+
+
