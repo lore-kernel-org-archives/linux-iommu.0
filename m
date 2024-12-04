@@ -1,198 +1,290 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D9E21F426E;
-	Wed,  4 Dec 2024 12:46:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB6861B4130
+	for <iommu@lists.linux.dev>; Wed,  4 Dec 2024 13:05:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733316370; cv=none; b=N8GUin9Ro5oL9eX3F6aPC38MHeW1HPo7P+f2mjytl+EDA0W/oTAP1h4Qau8TED28d7qTAdcQpMznRnTyA6LCK/dN35vWBDLntdsoNjABHVLXJEq0Qb0auOjQ+9OY+uq48DnSD4i0Sdx0mO6jNlA2RSyf5C6V8sAShCJ8+GNLoOs=
+	t=1733317533; cv=none; b=CybCbXFp43ptfG/5Zsb3ulyqlRd9zxIb3y/javqtB5u9VwsMDCWE0bHUBMADRBq9eUZ3SNjwdO+NBIO1BktYZ9YPYFwN+EmG1VXIiFMpnyuPSKRPJk64u2HMaCcKVpU34NJZf2IPFLlUJPsGDNDWE5c0jpLWN3Yvxp/Idons5UQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733316370; c=relaxed/simple;
-	bh=WovDOhGvJI34dfRdwLOil5noAJ5CREZZX4oJMEsuV3c=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=JZInUacGoIJlqiN+9ZnWVoaiPIVScJEn+gdE3B6GPOC+U5D4cPK5DJT9LPqOcl6g9vk7XnZ0rSlk4qW15eGodnMY+VD2A18HS5vTpZR+tcacr9tshIfxWVYs9Z3grWxrvafY9++ODnoY0EJ1uB2X4eOvK6L3O/aSi6ZqqP1Mi6E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eUOAOGxD; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1733317533; c=relaxed/simple;
+	bh=XVtkq5iJ4Mj7hRv7CqYFdnVlFpaRegC0V8RTwadfHQk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=JX81zvCkiLjglNgOOAL3myYxjYxbujl6bgVlU6ykQU4b4Rlw6J+aSXV54MCb8c0+ru18wWqKuVmXyHP23H3IulaeOBKDDI5P9pRm+2B6jraxANbAJGF6CvxewrTpIpf1ty2+7JC+gLVl/dVVuULkuFCMDz8NMqCdspzlD6PxFng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=wL73UjeX; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=qPufNg0a; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eUOAOGxD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D740C4CEE4;
-	Wed,  4 Dec 2024 12:46:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733316370;
-	bh=WovDOhGvJI34dfRdwLOil5noAJ5CREZZX4oJMEsuV3c=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=eUOAOGxDdJCpu9CKizY2dme6+QjXgFdhMgbIAtu+zIYKisA9lS0WvyerxS1fXCxPY
-	 t3j55q66bUY9eCYymATDsBvYYd+IqYHPtn1e7vQx3RJyDLiWiiZcmWyYHYRa/Yb0Ln
-	 MP23MO1U0GrTvYw679XpCjcEmsS67z6gvNhik4vdE+Epv3wWWPgKxGcKHztdtZTY8F
-	 N9Gp8NbO7A3+t5/Kz0j7J765cEhdqVSHzFEjI6t+yuOY4AYcZ2dLyldBbRb0UGDIw9
-	 fuFJc9P29p0HnKXgUxtCjZp6djxgFRjuSXkSuWYGjCHcqcKpWMnMXvvqIlIh5EjUI1
-	 7fYhjW87yzjFQ==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=valley-girl.lan)
-	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.95)
-	(envelope-from <maz@kernel.org>)
-	id 1tIolc-000RHy-5S;
-	Wed, 04 Dec 2024 12:46:08 +0000
-From: Marc Zyngier <maz@kernel.org>
-To: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	loongarch@lists.linux.dev,
-	linux-riscv@lists.infradead.org,
-	linux-pci@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	WANG Xuerui <kernel@xen0n.name>,
-	Jiaxun Yang <jiaxun.yang@flygoat.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Gregory Clement <gregory.clement@bootlin.com>,
-	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-	Anup Patel <anup@brainfault.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Toan Le <toan@os.amperecomputing.com>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Subject: [PATCH 11/11] PCI: xgene: Convert to MSI parent infrastructure
-Date: Wed,  4 Dec 2024 12:45:49 +0000
-Message-Id: <20241204124549.607054-12-maz@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20241204124549.607054-1-maz@kernel.org>
-References: <20241204124549.607054-1-maz@kernel.org>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="wL73UjeX";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="qPufNg0a"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1733317524;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ROH6zlh02KHc87r45BDTv/cN5afbSIuh9toQ2ctg4yk=;
+	b=wL73UjeXWyYQQmB1Pp1remQXdjAmCrtcWFIChE7E9HHlqL9M/l/akN/1PUyWWcio+M4hsd
+	d7PhJzhCnsWkx4s2pdhDctBT82t3yAu7JL5tjJcYh5qKSbFl1hdbxAKNn5Bt1Rnq8D3xyh
+	1W12Torjr4e84kQ605+X6R3Xvphy304E3U+iWFWCCSOPeoenFGFisFQOMcWHZkqvkIm/Yo
+	rqrivG3Lb9g3nGu76ZInJIUVeq0VCHCnHokMrMp17Gv781GoLj6bgF39qb7BhDi4tsMRg6
+	qBrRpQNn0HXqJMPWSPvD3rrF6D76de00gbF5IouDkUgEw4GC/F5dlO0bLlErmA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1733317524;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ROH6zlh02KHc87r45BDTv/cN5afbSIuh9toQ2ctg4yk=;
+	b=qPufNg0aO0AVR52BVTeAWUHTNUKlqiQiXfPzDa82iuoktna7Zd4GaEhPSAChG0cycCtYIt
+	oiuHXrVUC/U2oQBQ==
+To: Anup Patel <anup@brainfault.org>
+Cc: Andrew Jones <ajones@ventanamicro.com>, iommu@lists.linux.dev,
+ kvm-riscv@lists.infradead.org, kvm@vger.kernel.org,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+ tjeznach@rivosinc.com, zong.li@sifive.com, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, atishp@atishpatra.org,
+ alex.williamson@redhat.com, paul.walmsley@sifive.com, palmer@dabbelt.com,
+ aou@eecs.berkeley.edu
+Subject: Re: [RFC PATCH 01/15] irqchip/riscv-imsic: Use hierarchy to reach
+ irq_set_affinity
+In-Reply-To: <CAAhSdy27gaVJaXBrx8GB+Xr4ZTvp8hd0Jg8JokzehgC-=5pOmA@mail.gmail.com>
+References: <20241114161845.502027-17-ajones@ventanamicro.com>
+ <20241114161845.502027-18-ajones@ventanamicro.com> <87mshcub2u.ffs@tglx>
+ <CAAhSdy08gi998HsTkGpaV+bTWczVSL6D8c7EmuTQqovo63oXDw@mail.gmail.com>
+ <874j3ktrjv.ffs@tglx> <87ser4s796.ffs@tglx>
+ <CAAhSdy27gaVJaXBrx8GB+Xr4ZTvp8hd0Jg8JokzehgC-=5pOmA@mail.gmail.com>
+Date: Wed, 04 Dec 2024 14:05:23 +0100
+Message-ID: <87mshbsing.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev, linux-riscv@lists.infradead.org, linux-pci@vger.kernel.org, joro@8bytes.org, suravee.suthikulpanit@amd.com, dwmw2@infradead.org, baolu.lu@linux.intel.com, tglx@linutronix.de, shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com, chenhuacai@kernel.org, kernel@xen0n.name, jiaxun.yang@flygoat.com, andrew@lunn.ch, gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com, anup@brainfault.org, paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, lpieralisi@kernel.org, kw@linux.com, manivannan.sadhasivam@linaro.org, bhelgaas@google.com, toan@os.amperecomputing.com, alyssa@rosenzweig.io
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-In an effort to move arm64 away from the legacy MSI setup,
-convert the xgene PCIe driver to the MSI-parent infrastructure
-and let each device have its own MSI domain.
+On Wed, Dec 04 2024 at 09:13, Anup Patel wrote:
+> On Wed, Dec 4, 2024 at 4:29=E2=80=AFAM Thomas Gleixner <tglx@linutronix.d=
+e> wrote:
+>> As I was looking at something else MSI related I had a look at
+>> imsic_irq_set_affinity() again.
+>>
+>> It's actually required to have the message write in that function and
+>> not afterwards as you invoke imsic_vector_move() from that function.
+>>
+>> That's obviously not true for the remap case as that will not change the
+>> message address/data pair because the remap table entry is immutable -
+>> at least I assume so for my mental sanity sake :)
+>>
+>> But that brings me to a related question. How is this supposed to work
+>> with non-atomic message updates? PCI/MSI does not necessarily provide
+>> masking, and the write of the address/data pair is done in bits and
+>> pieces. So you can end up with an intermediate state seen by the device
+>> which ends up somewhere in interrupt nirvana space.
+>>
+>> See the dance in msi_set_affinity() and commit 6f1a4891a592
+>> ("x86/apic/msi: Plug non-maskable MSI affinity race") for further
+>> explanation.
+>>
+>> The way how the IMSIC driver works seems to be pretty much the same as
+>> the x86 APIC mess:
+>>
+>>         @address is the physical address of the per CPU MSI target
+>>         address and @data is the vector ID on that CPU.
+>>
+>> So the non-atomic update in case of non-maskable MSI suffers from the
+>> same problem. It works most of the time, but if it doesn't you might
+>> stare at the occasionally lost interrupt and the stale device in
+>> disbelief for quite a while :)
+>
+> Yes, we have the same challenges as x86 APIC when changing
+> MSI affinity.
+>>
+>> I might be missing something which magically prevent that though :)
+>>
+> Your understanding is correct. In fact, the IMSIC msi_set_affinity()
+> handling is inspired from x86 APIC approach due to similarity in
+> the overall MSI controller.
+>
+> The high-level idea of imsic_irq_set_affinity() is as follows:
+>
+> 1) Allocate new_vector (new CPU IMSIC address + new ID on that CPU)
+>
+> 2) Update the MSI address and data programmed in the device
+> based on new_vector (see imsic_msi_update_msg())
+>
+> 3) At this point the device points to the new_vector but old_vector
+> (old CPU IMSIC address + old ID on that CPU) is still enabled and
+> we might have received MSI on old_vector while we were busy
+> setting up a new_vector for the device. To address this, we call
+> imsic_vector_move().
+>
+> 4) The imsic_vector_move() marks the old_vector as being
+> moved and schedules a lazy timer on the old CPU.
+>
+> 5) The lazy timer expires on the old CPU and results in
+> __imsic_local_sync() being called on the old CPU.
+>
+> 6) If there was a pending MSI on the old vector then the
+> __imsic_local_sync() function injects an MSI to the
+> new_vector using an MMIO write.
+>
+> It is very unlikely that an MSI from device will be dropped
+> (unless I am missing something) but the unsolved issue
+> is that handling of in-flight MSI received on the old_vector
+> during the MSI re-programming is delayed which may have
+> side effects on the device driver side.
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- drivers/pci/controller/Kconfig         |  1 +
- drivers/pci/controller/pci-xgene-msi.c | 44 +++++++++-----------------
- 2 files changed, 16 insertions(+), 29 deletions(-)
+Interrupt delivery can be delayed for tons of other reasons.
 
-diff --git a/drivers/pci/controller/Kconfig b/drivers/pci/controller/Kconfig
-index 98a62f4559dfd..205e0e365c6b1 100644
---- a/drivers/pci/controller/Kconfig
-+++ b/drivers/pci/controller/Kconfig
-@@ -304,6 +304,7 @@ config PCI_XGENE_MSI
- 	bool "X-Gene v1 PCIe MSI feature"
- 	depends on PCI_XGENE
- 	depends on PCI_MSI
-+	select IRQ_MSI_LIB
- 	default y
- 	help
- 	  Say Y here if you want PCIe MSI support for the APM X-Gene v1 SoC.
-diff --git a/drivers/pci/controller/pci-xgene-msi.c b/drivers/pci/controller/pci-xgene-msi.c
-index 88c0977bc41a4..d9e4d1e136f77 100644
---- a/drivers/pci/controller/pci-xgene-msi.c
-+++ b/drivers/pci/controller/pci-xgene-msi.c
-@@ -12,6 +12,7 @@
- #include <linux/module.h>
- #include <linux/msi.h>
- #include <linux/irqchip/chained_irq.h>
-+#include <linux/irqchip/irq-msi-lib.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
- #include <linux/of_pci.h>
-@@ -32,7 +33,6 @@ struct xgene_msi_group {
- struct xgene_msi {
- 	struct device_node	*node;
- 	struct irq_domain	*inner_domain;
--	struct irq_domain	*msi_domain;
- 	u64			msi_addr;
- 	void __iomem		*msi_regs;
- 	unsigned long		*bitmap;
-@@ -44,20 +44,6 @@ struct xgene_msi {
- /* Global data */
- static struct xgene_msi xgene_msi_ctrl;
- 
--static struct irq_chip xgene_msi_top_irq_chip = {
--	.name		= "X-Gene1 MSI",
--	.irq_enable	= pci_msi_unmask_irq,
--	.irq_disable	= pci_msi_mask_irq,
--	.irq_mask	= pci_msi_mask_irq,
--	.irq_unmask	= pci_msi_unmask_irq,
--};
--
--static struct  msi_domain_info xgene_msi_domain_info = {
--	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
--		  MSI_FLAG_PCI_MSIX),
--	.chip	= &xgene_msi_top_irq_chip,
--};
--
- /*
-  * X-Gene v1 has 16 groups of MSI termination registers MSInIRx, where
-  * n is group number (0..F), x is index of registers in each group (0..7)
-@@ -235,34 +221,34 @@ static void xgene_irq_domain_free(struct irq_domain *domain,
- 	irq_domain_free_irqs_parent(domain, virq, nr_irqs);
- }
- 
--static const struct irq_domain_ops msi_domain_ops = {
-+static const struct irq_domain_ops xgene_msi_domain_ops = {
- 	.alloc  = xgene_irq_domain_alloc,
- 	.free   = xgene_irq_domain_free,
- };
- 
-+static const struct msi_parent_ops xgene_msi_parent_ops = {
-+	.supported_flags	= (MSI_GENERIC_FLAGS_MASK	|
-+				   MSI_FLAG_PCI_MSIX),
-+	.required_flags		= (MSI_FLAG_USE_DEF_DOM_OPS	|
-+				   MSI_FLAG_USE_DEF_CHIP_OPS),
-+	.bus_select_token	= DOMAIN_BUS_PCI_MSI,
-+	.init_dev_msi_info	= msi_lib_init_dev_msi_info,
-+};
-+
- static int xgene_allocate_domains(struct xgene_msi *msi)
- {
--	msi->inner_domain = irq_domain_add_linear(NULL, NR_MSI_VEC,
--						  &msi_domain_ops, msi);
-+	msi->inner_domain = msi_create_parent_irq_domain(of_node_to_fwnode(msi->node),
-+							 &xgene_msi_parent_ops,
-+							 &xgene_msi_domain_ops,
-+							 0, NR_MSI_VEC, msi, NULL);
- 	if (!msi->inner_domain)
- 		return -ENOMEM;
- 
--	msi->msi_domain = pci_msi_create_irq_domain(of_node_to_fwnode(msi->node),
--						    &xgene_msi_domain_info,
--						    msi->inner_domain);
--
--	if (!msi->msi_domain) {
--		irq_domain_remove(msi->inner_domain);
--		return -ENOMEM;
--	}
--
- 	return 0;
- }
- 
- static void xgene_free_domains(struct xgene_msi *msi)
- {
--	if (msi->msi_domain)
--		irq_domain_remove(msi->msi_domain);
- 	if (msi->inner_domain)
- 		irq_domain_remove(msi->inner_domain);
- }
--- 
-2.39.2
+But yes, you are missing something which is worse than a jiffie delay:
 
+CPU                                     Device
+  msi_update_msg()
+     compose()
+     write()
+       write(msg->address_lo); [1]
+       write(msg->address_hi); [2]
+                                        Raises interrupt [3]
+       write(msg->data);       [4]
+
+[2] can be ignored as it should not change (otherwise 32bit only devices
+would not work).
+
+Lets assume that the original message was:
+
+     addr_lo =3D 0x1000, data =3D 0x10    (CPU1, vector 0x10)
+=20=20=20=20=20=20=20
+The new message is
+
+     addr_lo =3D 0x2000, data =3D 0x20    (CPU2, vector 0x20)
+
+After [2] the device sees:
+
+     addr_lo =3D 0x2000, data =3D 0x10    (CPU2, vector 0x10)
+
+The interrupt raised in [3] will end up on CPU2 at vector 0x10 which
+might be not in use or used by some other device. In any case the
+interrupt is not reaching the real device handler and you can't see that
+interrupt as pending in CPU1.
+
+That's why x86 in case of non-remapped interrupts has this for the two
+situations:
+
+  1) old->data =3D=3D new->data
+
+     write_msg(new);=20
+
+     The next interrupt either arrives on the old CPU or on the new CPU
+     depending on timing. There is no intermediate state because the
+     vector (data) is the same on both CPUs.
+
+  2) old->data !=3D new->data
+
+     tmp_msg.addr =3D old_msg.addr
+     tmp_msg.data =3D new_msg.data
+
+     write_msg(tmp_msg);
+
+     So after that write the device might raise the interrupt on CPU1
+     and vector 0x20.
+
+     The next step is
+
+     write_msg(new);=20
+
+     which changes the destination CPU to CPU2.
+
+     So depending what the device has observed the interrupt might end
+     up on
+
+     CPU1 vector 0x10   (old)
+     CPU1 vector 0x20   (tmp)
+     CPU2 vector 0x20   (new)
+
+     CPU1 vector 0x20 (tmp) is then checked in the pending register and
+     the interrupt is retriggered if pending.
+
+That requires to move the interrupt from actual interrupt context on the
+old target CPU. It allows to evaluate the old target CPUs pending
+register with local interrupts disabled, which obviously does not work
+remote.
+
+I don't see a way how that can work remote with the IMSIC either even if
+you can easily access the pending state of the remote CPU:
+
+CPU0                            CPU1                   Device
+set_affinity()
+  write_msg(tmp)
+    write(addr); // CPU1
+    write(data); // vector 0x20
+                                                        raise IRQ
+                                handle vector 0x20
+                                (spurious or other device)
+
+    check_pending(CPU1, 0x20) =3D=3D false -> Interrupt is lost
+
+Remapped interrupts do not have that issue because the table update is
+atomic vs. a concurrently raised interrupt, so that it either ends up on
+the old or on the new destination. The device message does not change as
+it always targets the table entry, which is immutable after setup.
+
+That's why x86 has this special msi affinity setter for the non remapped
+case. For the remapped case it's just using the hierarchy default which
+ends up at the remap domain.
+
+So the hierarchies look like this:
+
+   1) non-remap
+
+      PCI/MSI device domain
+         irq_chip.irq_set_affinity =3D msi_set_affinity;
+      VECTOR domain
+
+   2) remap
+
+      PCI/MSI device domain
+         irq_chip.irq_set_affinity =3D msi_domain_set_affinity;
+      REMAP domain
+         irq_chip.irq_set_affinity =3D remap_set_affinity;
+      VECTOR domain
+
+The special case of msi_set_affinity() is not involved in the remap case
+and solely utilized for the non-remap horrors. The remap case does not
+require the interrupt to be moved in interrupt context either because
+there is no intermediate step and pending register check on the old CPU
+involved.
+
+The vector cleanup of the old CPU always happens when the interrupt
+arrives on the new target for the first time independent of remapping
+mode. That's required for both cases to take care of the case where the
+interrupt is raised on the old vector (cpu1, 0x10) before the write
+happens and is pending in CPU1. So after desc::lock is released and
+interrupts are reenabled the interrupt is handled on CPU1. The next one
+is guaranteed to arrive on CPU2 and that triggers the clean up of the
+CPU1 vector, which releases it for reuse in the matrix allocator.
+
+I think you should model it in a similar way instead of trying to
+artificially reuse imsic_irq_set_affinity() for the remap case,
+especially when you decide to close the non-maskable MSI hole described
+above, which I recommend to do :)
+
+You still can utilize msi-lib and just have your private implementation
+of init_dev_msi_info() as a wrapper around the library similar to
+mbi_init_dev_msi_info() and its_init_dev_msi_info(). That wrapper would
+just handle the non-remap case to set info::chip:irq_set_affinity to the
+magic non-remap function.
+
+Hope that helps.
+
+> I believe in the future RISC-V AIA v2.0 (whenever that
+> happens) will address the gaps in AIA v1.0 (like this one).
+
+If that is strictly translation table based, yes.
+
+Thanks,
+
+        tglx
