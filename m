@@ -1,332 +1,133 @@
-Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E946F192B76
-	for <iommu@lists.linux.dev>; Wed,  4 Dec 2024 15:25:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E9112144D4;
+	Wed,  4 Dec 2024 16:58:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733325907; cv=none; b=UPZ5feiexQXCGhj8KYWPFD/8lrVibhOzU3fLASyteUI17sp/YEEYGgmev67YD5a+4xgzX0jI+c5nw4CcKzJH47exEgYqf/jxM4brsn3K4NJTpc2hxX7/UJU0bTB/EOdqtYyzXzRjsLY7XpdRehAo9GW78aXjqTXQRJelnwOF+7Q=
+	t=1733331504; cv=none; b=CdwMJ2k5kSJyR2OHnU2zMVCDjbMb+v9sdL0j1kKPpw13C+wJvlE+cnDxYGOvulCwsjwHR8Ygp4zjShB7829YK8qYc515A1ozR4tYD0ibgoYVRdrN7Yfae2oc8/3EfFmLS2SYD/9FuAR2X2paUSCy8cwmhSWtB+LZnNl2jjZe8IE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733325907; c=relaxed/simple;
-	bh=O5WJjOBByakdcI4s0VguzvXD2HwQImr70uF4lIfEQNM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=IY1UrBvIzlanlKYOL3jFztGCxUb1dO3oVJencEBnM0EpxlCjNPqjyLOfndHw9dmK2qWTOVwmGnWzQ5leqFNoKvfcAslH3jDsFMeHaEYXqiQHYjVseZdE3kcqxp5HqAmPtCDKbOzoWLaVGWaLW1O9uTqbvfH0oS0NQzwx8xM09rQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BM0h1bRG; arc=none smtp.client-ip=209.85.166.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1733331504; c=relaxed/simple;
+	bh=+X1/Nu5CoD/sFJfWzapKZW1fSBzONFEp4WsLJt5tBFM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=mpJg6RfdhfBYb501HNDCKgYo+OicZ7CB1yp+I1lGmNz+DWeHepknNida4Q7ZJ6t79q5A5XdBHZtg3LyMvVhCeDtyoGK9j2MCj/+ORdJygXii4RNj579/3RCqvWuHD+Nku2SjN6VgtquqWCDBIoMI5RZ/cOUb9PqQerrKxLVZq40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aOP6CR9x; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BM0h1bRG"
-Received: by mail-io1-f44.google.com with SMTP id ca18e2360f4ac-841acc8151aso245163039f.1
-        for <iommu@lists.linux.dev>; Wed, 04 Dec 2024 07:25:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733325905; x=1733930705; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Cj4ujPAaeCyeAbZ9pqBEXTCkhOV+aItvVddY7czsTYg=;
-        b=BM0h1bRGR/JW4vYMOUbNBfM43hmg2do3PO6VZ4jMgdfXpJBhBHnGMGe9PqdP6AcGxc
-         HgVLWaFIcG3NJBlGHrbzzDOV6gjQJlp510W3Nhnx4hcBDvt6GNzRajN7CTPzJubOMBsB
-         fhqcmVmqi0wwU9TYAjn7d75+F3JdrVff3vyQrX5tx8KZEpu7MFlke8BdeF2yj5q+M/kp
-         659h4pF2tfcf89kqMEe1DQjwYOp4/yCOIEYj2JN9+DveBwzEMMnoYi/Ac96+zbQHmd4v
-         Ag7ADWRzwQpRr6WmouQsvqBNDBKeMkz1HMo5JdD4ZcX/w432H4k9FKgvl6b2ziRa/CfP
-         bkpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733325905; x=1733930705;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Cj4ujPAaeCyeAbZ9pqBEXTCkhOV+aItvVddY7czsTYg=;
-        b=OWzSqNBQBrqaoCWnzFEXyxlP9u1Nh97aKmSdHLF8QurV6yCv7Ve0aXu6uTde7umPiu
-         UoZOzlk3oEVU4my0JtiBnF7FrGxZed5QuWJIwBbRU0+WW2tRzHT58J4te2XQhovG8a0n
-         r1Vz5V9e3lOC3s+zdZiP1U+lE7pdPGp+3tPo+MSrbmqMtr/MxfBXNUdwaCg0fyOyTJJT
-         E2tW1/WFejPYLX4lY5kudmbWkD1nkoLaGoeNsV5TW0MoTBdUHwEFerW598ruaEV+Y/Al
-         Jb9MtCpdQeulTccg9ulWzaSWhtOws9Okh8V4L51gY4sWOjuXv88AmPPCk5/k7sg4Nw01
-         rmeA==
-X-Forwarded-Encrypted: i=1; AJvYcCU0YKdPdh/uLEEIHq+Fe3ukVnpBbu5mTY4D/Ab8ry7uzv3qv+gTdL80HFkzkUAsEV8rT3XhWQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzI1OLbI4JIftpzRRCGyUxtumg65WN/hgOoQfGwPJ2XG1ct72IH
-	t7CVHBD9ZNEDtYQVMYjOCaM/8403zEMzDq6/AFf07/L8bmEYdyMrcwonQrr5in8xH7JXxd/hfME
-	g1XyX9K/zrGxdNNUwjOB+Fpn0PA8=
-X-Gm-Gg: ASbGncsIUP1f74CLpqoLxkLjEcg2vt07W7GEfD2geQUsup0ibifPXj1bxRm7x4LfABv
-	9CcRyMXFKiOi885KocFUm3f9JsfLZc6pErGcwapY7cFe5GJ3LhNjqm9gPgAfpcA==
-X-Google-Smtp-Source: AGHT+IGXz8ZEpavY/mki3CXE11rwwvgkmZyz0s+4JXHvmWaIgqfTb2XlYZfmbElP0xroAhcJz3jrYOihYr9XvFoXrYI=
-X-Received: by 2002:a05:6602:1546:b0:83a:a82b:f856 with SMTP id
- ca18e2360f4ac-8445b53bc6bmr982151039f.3.1733325904978; Wed, 04 Dec 2024
- 07:25:04 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aOP6CR9x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78FBBC4CED1;
+	Wed,  4 Dec 2024 16:58:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733331503;
+	bh=+X1/Nu5CoD/sFJfWzapKZW1fSBzONFEp4WsLJt5tBFM=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=aOP6CR9x1MSXJrkzdipFL7zDncCk2Thxf059pgA/sW+3ySc/PeajnF2NklWOgKgPR
+	 qDUYzE96KmEgvZV+zb7fcYB2Us8Q2XZppAo+uZL0OWWEe4wgw8v6+Em4PQzWUIhefd
+	 Ad9sARNwO4mv8wuDT2H8l7LpYo0VXodwiCX3rSyAE2Uv1KQiVRweTpkvbjQN8axGJH
+	 YhW86EqE2taRGhinPtKuZzwrjuBNi4Z8dpw5ec2hl09ollhAk9AfhtzVcY1JR3+SKM
+	 Ka5z7ZddkayW54a35jTNRpiZ5JJR2EBm0wRJtYSKuTHhT4MnnkLnThWGEjE0/VfyvG
+	 /aGN3V4EKMVpg==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Sasha Levin <sashal@kernel.org>,
+	joro@8bytes.org,
+	will@kernel.org,
+	iommu@lists.linux.dev
+Subject: [PATCH AUTOSEL 6.12 14/36] iommu/amd: Fix corruption when mapping large pages from 0
+Date: Wed,  4 Dec 2024 10:45:30 -0500
+Message-ID: <20241204154626.2211476-14-sashal@kernel.org>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20241204154626.2211476-1-sashal@kernel.org>
+References: <20241204154626.2211476-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241114160721.1527934-1-quic_bibekkum@quicinc.com>
- <20241114160721.1527934-4-quic_bibekkum@quicinc.com> <CAF6AEGuwWsAkRyF-h5Aj3KzM7iksb12HsfJ5Ks+-P8hv60MWFg@mail.gmail.com>
- <CAF6AEGvVteuOOMod6yw9_6eOn2PxAx+BR8sVOHAHp7Ts8XigBw@mail.gmail.com>
- <5696afa2-c4ab-42fe-b29a-6ecee622fbb4@quicinc.com> <CAF6AEGuMmdnOmATMy8f+YgGxfrYb5mkG_qgy870wZPebKaZjVQ@mail.gmail.com>
- <04da6036-56c4-4b8c-b75b-b5e96a089efc@quicinc.com>
-In-Reply-To: <04da6036-56c4-4b8c-b75b-b5e96a089efc@quicinc.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Wed, 4 Dec 2024 07:24:52 -0800
-Message-ID: <CAF6AEGt-e_4kGyfiO=_oCLX8E3z76zeZ2MbRe1GicZj4hTEu+g@mail.gmail.com>
-Subject: Re: [PATCH RESEND v17 3/5] iommu/arm-smmu: add support for PRR bit setup
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca, 
-	jsnitsel@redhat.com, robh@kernel.org, krzysztof.kozlowski@linaro.org, 
-	quic_c_gdjako@quicinc.com, dmitry.baryshkov@linaro.org, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, Connor Abbott <cwabbott0@gmail.com>, 
-	Rob Clark <robdclark@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.12.1
+Content-Transfer-Encoding: 8bit
 
-On Wed, Dec 4, 2024 at 3:28=E2=80=AFAM Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
->
->
->
-> On 11/22/2024 10:04 PM, Rob Clark wrote:
-> > On Fri, Nov 22, 2024 at 8:20=E2=80=AFAM Bibek Kumar Patro
-> > <quic_bibekkum@quicinc.com> wrote:
-> >>
-> >>
-> >>
-> >> On 11/21/2024 3:40 AM, Rob Clark wrote:
-> >>> On Wed, Nov 20, 2024 at 9:17=E2=80=AFAM Rob Clark <robdclark@gmail.co=
-m> wrote:
-> >>>>
-> >>>> On Thu, Nov 14, 2024 at 8:10=E2=80=AFAM Bibek Kumar Patro
-> >>>> <quic_bibekkum@quicinc.com> wrote:
-> >>>>>
-> >>>>> Add an adreno-smmu-priv interface for drm/msm to call
-> >>>>> into arm-smmu-qcom and initiate the PRR bit setup or reset
-> >>>>> sequence as per request.
-> >>>>>
-> >>>>> This will be used by GPU to setup the PRR bit and related
-> >>>>> configuration registers through adreno-smmu private
-> >>>>> interface instead of directly poking the smmu hardware.
-> >>>>>
-> >>>>> Suggested-by: Rob Clark <robdclark@gmail.com>
-> >>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> >>>>> ---
-> >>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 37 ++++++++++++++++=
-++++++
-> >>>>>    drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
-> >>>>>    include/linux/adreno-smmu-priv.h           | 14 ++++++++
-> >>>>>    3 files changed, 53 insertions(+)
-> >>>>>
-> >>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/i=
-ommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>>> index d26f5aea248e..0e4f3fbda961 100644
-> >>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>>> @@ -16,6 +16,8 @@
-> >>>>>
-> >>>>>    #define QCOM_DUMMY_VAL -1
-> >>>>>
-> >>>>> +#define GFX_ACTLR_PRR          (1 << 5)
-> >>>>> +
-> >>>>>    static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *sm=
-mu)
-> >>>>>    {
-> >>>>>           return container_of(smmu, struct qcom_smmu, smmu);
-> >>>>> @@ -99,6 +101,32 @@ static void qcom_adreno_smmu_resume_translation=
-(const void *cookie, bool termina
-> >>>>>           arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, r=
-eg);
-> >>>>>    }
-> >>>>>
-> >>>>> +static void qcom_adreno_smmu_set_prr_bit(const void *cookie, bool =
-set)
-> >>>>> +{
-> >>>>> +       struct arm_smmu_domain *smmu_domain =3D (void *)cookie;
-> >>>>> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
-> >>>>> +       struct arm_smmu_cfg *cfg =3D &smmu_domain->cfg;
-> >>>>> +       u32 reg =3D 0;
-> >>>>> +
-> >>>>> +       reg =3D  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACT=
-LR);
-> >>>>> +       reg &=3D ~GFX_ACTLR_PRR;
-> >>>>> +       if (set)
-> >>>>> +               reg |=3D FIELD_PREP(GFX_ACTLR_PRR, 1);
-> >>>>> +       arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg)=
-;
-> >>>>> +}
-> >>>>> +
-> >>>>> +static void qcom_adreno_smmu_set_prr_addr(const void *cookie, phys=
-_addr_t page_addr)
-> >>>>> +{
-> >>>>> +       struct arm_smmu_domain *smmu_domain =3D (void *)cookie;
-> >>>>> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
-> >>>>> +
-> >>>>> +       writel_relaxed(lower_32_bits(page_addr),
-> >>>>> +                               smmu->base + ARM_SMMU_GFX_PRR_CFG_L=
-ADDR);
-> >>>>> +
-> >>>>> +       writel_relaxed(upper_32_bits(page_addr),
-> >>>>> +                               smmu->base + ARM_SMMU_GFX_PRR_CFG_U=
-ADDR);
-> >>>>> +}
-> >>>>> +
-> >>>>>    #define QCOM_ADRENO_SMMU_GPU_SID 0
-> >>>>>
-> >>>>>    static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
-> >>>>> @@ -210,6 +238,7 @@ static bool qcom_adreno_can_do_ttbr1(struct arm=
-_smmu_device *smmu)
-> >>>>>    static int qcom_adreno_smmu_init_context(struct arm_smmu_domain =
-*smmu_domain,
-> >>>>>                   struct io_pgtable_cfg *pgtbl_cfg, struct device *=
-dev)
-> >>>>>    {
-> >>>>> +       const struct device_node *np =3D smmu_domain->smmu->dev->of=
-_node;
-> >>>>>           struct adreno_smmu_priv *priv;
-> >>>>>
-> >>>>>           smmu_domain->cfg.flush_walk_prefer_tlbiasid =3D true;
-> >>>>> @@ -239,6 +268,14 @@ static int qcom_adreno_smmu_init_context(struc=
-t arm_smmu_domain *smmu_domain,
-> >>>>>           priv->get_fault_info =3D qcom_adreno_smmu_get_fault_info;
-> >>>>>           priv->set_stall =3D qcom_adreno_smmu_set_stall;
-> >>>>>           priv->resume_translation =3D qcom_adreno_smmu_resume_tran=
-slation;
-> >>>>> +       priv->set_prr_bit =3D NULL;
-> >>>>> +       priv->set_prr_addr =3D NULL;
-> >>>>> +
-> >>>>> +       if (of_device_is_compatible(np, "qcom,smmu-500") &&
-> >>>>> +                       of_device_is_compatible(np, "qcom,adreno-sm=
-mu")) {
-> >>>>
-> >>>> fwiw, it seems like PRR actually works on sc7180, which is _not_
-> >>>> mmu-500, so I guess the support actually goes back further.
-> >>>>
-> >>>> I'm curious if we can just rely on this being supported by any hw th=
-at
-> >>>> has a6xx or newer?
-> >>>
-> >>>
-> >>> Also, unrelated, but we can't assume the smmu is powered when drm
-> >>> driver calls set_prr_bit/addr, could you add in runpm get/put around
-> >>> the register access?
-> >>>
-> >>
-> >> I see, thanks for this observation.
-> >> It's surely a possible case, when they access these registers
-> >> SMMU state is off.
-> >> I will add the suggested runpm ops around the register access.
-> >>
-> >>> Otherwise Conner and I have vk sparse residency working now
-> >>>
-> >>
-> >> Sorry, could not get this. Did you mean that vk sparse residency
-> >> is working now using this patch?
-> >
-> > Yes, vk sparse residency is working with this patch (plus addition of
-> > runpm get/put, plus drm/msm patches plus turnip patches) ;-)
-> >
->
-> Thanks for testing the sparse residency feature with our patch Rob,
-> I have an additional query regarding the adreno private interfaces.
-> Specifically, I was referring to other interfaces such as
-> qcom_adreno_smmu_get_fault_info [1]. It appears that we do not have a
-> runpm get/put around the register access in this context.
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-get_fault_info() is called from the iommu fault handler callback, so
-from the fault irq handler, which is why it didn't need the runpm
-get/put.  Maybe it is bad to make this assumption about usage, but
-then again adreno_smmu_priv isn't really a general purpose interface.
+[ Upstream commit e3a682eaf2af51a83f5313145ef592ce50fa787f ]
 
-> Could you please clarify whether we need an SMMU vote around register
-> access in the case of PRR? IMO, should the users of this callback ensure
-> they put a vote before accessing the cb?
+If a page is mapped starting at 0 that is equal to or larger than can fit
+in the current mode (number of table levels) it results in corrupting the
+mapping as the following logic assumes the mode is correct for the page
+size being requested.
 
-How can drm vote for the smmu device?  I guess it could power up
-itself and rely on device-link.. but that is pretty overkill to power
-up the entire gpu in this case.  I think it is best for the vote to
-happen in the PRR callbacks.
+There are two issues here, the check if the address fits within the table
+uses the start address, it should use the last address to ensure that last
+byte of the mapping fits within the current table mode.
 
-BR,
--R
+The second is if the mapping is exactly the size of the full page table it
+has to add another level to instead hold a single IOPTE for the large
+size.
 
-> [1]:
-> https://lore.kernel.org/all/20210610214431.539029-1-robdclark@gmail.com/
->
-> Thanks & regards,
-> Bibek
->
-> > BR,
-> > -R
-> >
-> >> Thanks & regards,
-> >> Bibek
-> >>
-> >>> BR,
-> >>> -R
-> >>>
-> >>>>
-> >>>>> +               priv->set_prr_bit =3D qcom_adreno_smmu_set_prr_bit;
-> >>>>> +               priv->set_prr_addr =3D qcom_adreno_smmu_set_prr_add=
-r;
-> >>>>> +       }
-> >>>>>
-> >>>>>           return 0;
-> >>>>>    }
-> >>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/=
-arm/arm-smmu/arm-smmu.h
-> >>>>> index e2aeb511ae90..2dbf3243b5ad 100644
-> >>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> >>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> >>>>> @@ -154,6 +154,8 @@ enum arm_smmu_cbar_type {
-> >>>>>    #define ARM_SMMU_SCTLR_M               BIT(0)
-> >>>>>
-> >>>>>    #define ARM_SMMU_CB_ACTLR              0x4
-> >>>>> +#define ARM_SMMU_GFX_PRR_CFG_LADDR     0x6008
-> >>>>> +#define ARM_SMMU_GFX_PRR_CFG_UADDR     0x600C
-> >>>>>
-> >>>>>    #define ARM_SMMU_CB_RESUME             0x8
-> >>>>>    #define ARM_SMMU_RESUME_TERMINATE      BIT(0)
-> >>>>> diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adren=
-o-smmu-priv.h
-> >>>>> index c637e0997f6d..614665153b3e 100644
-> >>>>> --- a/include/linux/adreno-smmu-priv.h
-> >>>>> +++ b/include/linux/adreno-smmu-priv.h
-> >>>>> @@ -50,6 +50,18 @@ struct adreno_smmu_fault_info {
-> >>>>>     *                 the GPU driver must call resume_translation()
-> >>>>>     * @resume_translation: Resume translation after a fault
-> >>>>>     *
-> >>>>> + * *CAUTION* : PRR callbacks (set_prr_bit/set_prr_addr) are NULL t=
-erminated for
-> >>>>> + *             targets without PRR support. Exercise caution and v=
-erify target
-> >>>>> + *             capabilities before invoking these callbacks to pre=
-vent potential
-> >>>>> + *             runtime errors or unexpected behavior.
-> >>>>> + *
-> >>>>> + * @set_prr_bit:   Extendible interface to be used by GPU to modif=
-y the
-> >>>>> + *                ACTLR register bits, currently used to configure
-> >>>>> + *                Partially-Resident-Region (PRR) bit for feature'=
-s
-> >>>>> + *                setup and reset sequence as requested.
-> >>>>> + * @set_prr_addr:  Configure the PRR_CFG_*ADDR register with the
-> >>>>> + *                physical address of PRR page passed from
-> >>>>> + *                GPU driver.
-> >>>>>     *
-> >>>>>     * The GPU driver (drm/msm) and adreno-smmu work together for co=
-ntrolling
-> >>>>>     * the GPU's SMMU instance.  This is by necessity, as the GPU is=
- directly
-> >>>>> @@ -67,6 +79,8 @@ struct adreno_smmu_priv {
-> >>>>>        void (*get_fault_info)(const void *cookie, struct adreno_smm=
-u_fault_info *info);
-> >>>>>        void (*set_stall)(const void *cookie, bool enabled);
-> >>>>>        void (*resume_translation)(const void *cookie, bool terminat=
-e);
-> >>>>> +    void (*set_prr_bit)(const void *cookie, bool set);
-> >>>>> +    void (*set_prr_addr)(const void *cookie, phys_addr_t page_addr=
-);
-> >>>>>    };
-> >>>>>
-> >>>>>    #endif /* __ADRENO_SMMU_PRIV_H */
-> >>>>> --
-> >>>>> 2.34.1
-> >>>>>
-> >>
->
+Since both corner cases require a 0 IOVA to be hit and doesn't start until
+a page size of 2^48 it is unlikely to ever hit in a real system.
+
+Reported-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lore.kernel.org/r/0-v1-27ab08d646a1+29-amd_0map_jgg@nvidia.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/amd/io_pgtable.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
+index 804b788f3f167..f3399087859fd 100644
+--- a/drivers/iommu/amd/io_pgtable.c
++++ b/drivers/iommu/amd/io_pgtable.c
+@@ -118,6 +118,7 @@ static void free_sub_pt(u64 *root, int mode, struct list_head *freelist)
+  */
+ static bool increase_address_space(struct amd_io_pgtable *pgtable,
+ 				   unsigned long address,
++				   unsigned int page_size_level,
+ 				   gfp_t gfp)
+ {
+ 	struct io_pgtable_cfg *cfg = &pgtable->pgtbl.cfg;
+@@ -133,7 +134,8 @@ static bool increase_address_space(struct amd_io_pgtable *pgtable,
+ 
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 
+-	if (address <= PM_LEVEL_SIZE(pgtable->mode))
++	if (address <= PM_LEVEL_SIZE(pgtable->mode) &&
++	    pgtable->mode - 1 >= page_size_level)
+ 		goto out;
+ 
+ 	ret = false;
+@@ -163,18 +165,21 @@ static u64 *alloc_pte(struct amd_io_pgtable *pgtable,
+ 		      gfp_t gfp,
+ 		      bool *updated)
+ {
++	unsigned long last_addr = address + (page_size - 1);
+ 	struct io_pgtable_cfg *cfg = &pgtable->pgtbl.cfg;
+ 	int level, end_lvl;
+ 	u64 *pte, *page;
+ 
+ 	BUG_ON(!is_power_of_2(page_size));
+ 
+-	while (address > PM_LEVEL_SIZE(pgtable->mode)) {
++	while (last_addr > PM_LEVEL_SIZE(pgtable->mode) ||
++	       pgtable->mode - 1 < PAGE_SIZE_LEVEL(page_size)) {
+ 		/*
+ 		 * Return an error if there is no memory to update the
+ 		 * page-table.
+ 		 */
+-		if (!increase_address_space(pgtable, address, gfp))
++		if (!increase_address_space(pgtable, last_addr,
++					    PAGE_SIZE_LEVEL(page_size), gfp))
+ 			return NULL;
+ 	}
+ 
+-- 
+2.43.0
+
