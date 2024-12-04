@@ -1,276 +1,359 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA211E25FF;
-	Wed,  4 Dec 2024 13:57:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79F6F205E1C
+	for <iommu@lists.linux.dev>; Wed,  4 Dec 2024 15:21:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733320672; cv=none; b=B0dRLXj0igFRkI0ALGMdDLO4SmbPZ3iXacaNaxBIcejpnpIP6xCkaOzjxd3TtwEcIVmnG4Yz3/g6w267pc3rSm9jTILa9wXTcUdDC0d7ou+QXWtZnKW+WPcoFJxxW7BOvIyUYEtYei2DjaTIQJO3d33OgAfcqQboAJRP+MGHWXE=
+	t=1733325685; cv=none; b=i4wdSw8+2sXAkfebdW3mEBwvKlvaRWEEJI9/dUCFuQnsbOR/Zd3VKPrByGmygEcKvLs859+QdFxAQbm5ZCQ5fizTEQv5nqrJ8fO+iV7NiV1c/NOhBboL9xLBWf92KNpDprA0GxoCC8d2RTcnnRi05nhBKWKDrkG2HvDuUISK8TM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733320672; c=relaxed/simple;
-	bh=nRcE87+L5bCgoKKJIoTjYdbyogAeN7zenePjAQb0F78=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=l+KAF0uHYsCkTloqmIfDfU4kcmkgwmS0nrZ2OmMYm1vVsIjaxH86BrrD/kgcg2YHvp3hpesUDFqxvXyeasJtTXuHXE5SrCjmqsdxz+pikqZvXlgLrRTv+qMTv3Xhf73CY7u+ND6/AZUaltOfz7e9cMStR7t89j1DhMhghzK2AIw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=AJk6yCS7; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Qc5JYu1O; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1733325685; c=relaxed/simple;
+	bh=rse/mHEaQ4pwvIL0MDej0dzbGWoZ2J37FA4ePeik7QU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VCw5kBl4GYCQ0UIn9eizInuY8m2I8QYgL3xFGWmlp0ckLTRNNV8B/WVoMGaAUDeNUiOtASx5umpaYk8WXri+yjbwLYprLsJWO/RagrL5t/NScFnzm6uBskwVIdMAC9HTozQyRdVDqU+0lEakt+Q8EUL3QBbvTPjpplN5ao86h6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M9OOciku; arc=none smtp.client-ip=209.85.166.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="AJk6yCS7";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Qc5JYu1O"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1733320668;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=O8gMBaIWat/OC+daKLF/DrYEDK3rTNp+SHrrdeWTGo4=;
-	b=AJk6yCS77aWTtXPj71xsZCYeiYnNwSK2NZH6NgU8rogWhB7l+4kXbG2yjdyy/qPGJc8Ze0
-	mKRQe3OE1a47NDP0V45qudfLKpaT1KqOZDV7H8C6ByYt+1ZiDGIW7MDma09IFxwvjuPf1T
-	ZqOojKm+3WDjW6/pj7k2y5/dC/Y/9TY4B7Uom4cb4L8EE4HjQ+PbNWH4CFVKIc5hM1QX/K
-	/YxRHheXIFzTxU+OvGkI9ji6FfN7pzVgZRcKJmuNaUl3NRGc25GXOy3iSMr//2WG14bJZQ
-	KmJWaSOKlo3ogqipLJ3wbih/xb68hACAlIm0C3tAtfB5uziMiaWDMZrDepa9TQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1733320668;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=O8gMBaIWat/OC+daKLF/DrYEDK3rTNp+SHrrdeWTGo4=;
-	b=Qc5JYu1O1PkVaW+DC6Z5efyRWpKu6lebzkvOwpsmta3x4Bq25zwtdPx1O9s1NNfh2BTVXe
-	06TjE52LP4Ai7uDQ==
-To: Marc Zyngier <maz@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
- linux-pci@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
- <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Lu
- Baolu <baolu.lu@linux.intel.com>, Shawn Guo <shawnguo@kernel.org>, Sascha
- Hauer <s.hauer@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Huacai
- Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Jiaxun Yang
- <jiaxun.yang@flygoat.com>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement
- <gregory.clement@bootlin.com>, Sebastian Hesselbarth
- <sebastian.hesselbarth@gmail.com>, Anup Patel <anup@brainfault.org>, Paul
- Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>,
- Albert Ou <aou@eecs.berkeley.edu>, Lorenzo Pieralisi
- <lpieralisi@kernel.org>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?=
- <kw@linux.com>, Manivannan
- Sadhasivam <manivannan.sadhasivam@linaro.org>, Bjorn Helgaas
- <bhelgaas@google.com>, Toan Le <toan@os.amperecomputing.com>, Alyssa
- Rosenzweig <alyssa@rosenzweig.io>
-Subject: Re: [PATCH 02/11] genirq/msi: Add helper for creating MSI-parent
- irq domains
-In-Reply-To: <20241204124549.607054-3-maz@kernel.org>
-References: <20241204124549.607054-1-maz@kernel.org>
- <20241204124549.607054-3-maz@kernel.org>
-Date: Wed, 04 Dec 2024 14:57:47 +0100
-Message-ID: <878qsvsg84.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M9OOciku"
+Received: by mail-io1-f42.google.com with SMTP id ca18e2360f4ac-84183532291so302888639f.2
+        for <iommu@lists.linux.dev>; Wed, 04 Dec 2024 07:21:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1733325682; x=1733930482; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0mWIbiNnKNYcwhrgwtmIyW8/OFwoBBcUW/PJNh6ViAc=;
+        b=M9OOcikuk4DY+Qkp84SpPQkEQe+CnCIsvAc/oJQqrG4lfKgnCXOAJeRBmCPGyMmSwF
+         NkUTHF5OKjdxj74Qr848GpfT8HNHvrFVitFwAboP+fcF7CImiYwMTFw3oBQQ9pTn9aVv
+         wxVUYZb6CX/RivDUyrwI2Nc/BpFDE6TRDB/nKHV32+r8+C9dtbJ4ZHQKYWkshZ8qFelD
+         bhCJKwBG/GIYcV940kToEhDQCyVWhVolFr714yAOp6jC8jX7MluCEuhIuh08FJcW0j8/
+         qMc7UZFgAgr5xgIAjOik8QdWn8oYKQgNSNqD+2TPYug3iusoOOCvvIJQIrrVl7hOaU5h
+         Tvxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733325682; x=1733930482;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0mWIbiNnKNYcwhrgwtmIyW8/OFwoBBcUW/PJNh6ViAc=;
+        b=GImdhIQ+uOoL5lrcTiGYQ7ev4ZZpwWh7XKY3RTgMROPKuysbxEbNzoNtyZe5gyudHi
+         VQmlMWVTX7Hh0YFfQQqAlpd3STjS72PKXcI5pQzIvaaRbMMww0ZjL5rQIMGbx81SudAu
+         2xE/unZ68yrtHWACnQdtC/IJ4onk6Lz02laW5fyL9J8aSPXgocO5f5QUvvlfowk+sOvs
+         cWFaW6oiipH8Y71821PtfrWXzJh4vrrrFvr3Y1D81ibZ6/i0SiM//IvYuhtID4V432AD
+         VWXZ8H+wY003A3WUmPcrH3taGiY/jk97wtGynzJaXNN86bG2VHZsCZDoASFp6fdAZ880
+         6Usw==
+X-Forwarded-Encrypted: i=1; AJvYcCVb771hpl/YtZSFAbtN0i93cfy83l4C+BCdliWF6mRW9ft4E4jZpZcgvPojtcgI/4RZBT7bKA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyQyi8VprPAWwRYzX/vDPN9E5DRbJBh6dtRxjXSA+DS1Zp20sR8
+	h6/qW6GRT3W/vc8B8kKOFR/Hlc8f8bLfmV3mvpVIwGpsNtdfAiHdwAi3NyoFv1HA3ZADosFvGh6
+	asQbQXc0Whh94oN8HZez8f+EW8qo=
+X-Gm-Gg: ASbGncuZwsVHD/veC+2lJ1Gvkb+6KjhwgRYCqG7T6D9rMH9ncIPx12S+xjl384hA/bO
+	3uwJCdZpNT+j7ZLiuUfeRkgzmfm2OIHZGTpUKXapRmh6gBwmZOzYhXmLkZmRG+g==
+X-Google-Smtp-Source: AGHT+IHDPo/m1Tgonui7uUaMfEFTF1kB0w/zjAZ5wQ/m2NZv6qbrVx899uJo0oDWh0QmO8HzCYsC+VfkeFHabmPKV1c=
+X-Received: by 2002:a05:6602:6b19:b0:843:e9c0:8290 with SMTP id
+ ca18e2360f4ac-8445b5585a1mr786739639f.6.1733325682440; Wed, 04 Dec 2024
+ 07:21:22 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20241114160721.1527934-1-quic_bibekkum@quicinc.com>
+ <20241114160721.1527934-4-quic_bibekkum@quicinc.com> <CAF6AEGuwWsAkRyF-h5Aj3KzM7iksb12HsfJ5Ks+-P8hv60MWFg@mail.gmail.com>
+ <9beca099-5cf3-42b5-b1f9-fb1551219b18@quicinc.com> <CAF6AEGvAOswFTpS5PHrgCsG_2-QN_Bi4YjZbPpV+r3x=9D2aUQ@mail.gmail.com>
+ <d2d8d9e9-74b1-4b05-84a2-dcfa204e6e00@quicinc.com>
+In-Reply-To: <d2d8d9e9-74b1-4b05-84a2-dcfa204e6e00@quicinc.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Wed, 4 Dec 2024 07:21:10 -0800
+Message-ID: <CAF6AEGtBva41Fz0tS4gRwK21ZqzDH5yGrWLY6TMeS6u7OFfS0Q@mail.gmail.com>
+Subject: Re: [PATCH RESEND v17 3/5] iommu/arm-smmu: add support for PRR bit setup
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca, 
+	jsnitsel@redhat.com, robh@kernel.org, krzysztof.kozlowski@linaro.org, 
+	quic_c_gdjako@quicinc.com, dmitry.baryshkov@linaro.org, iommu@lists.linux.dev, 
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, Connor Abbott <cwabbott0@gmail.com>, 
+	Rob Clark <robdclark@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 04 2024 at 12:45, Marc Zyngier wrote:
-> Creating an irq domain that serves as an MSI parent requires
-> a substantial amount of esoteric boiler-plate code, some of
-> which is often provided twice (such as the bus token).
+On Wed, Dec 4, 2024 at 3:27=E2=80=AFAM Bibek Kumar Patro
+<quic_bibekkum@quicinc.com> wrote:
 >
-> To make things a bit simpler for the unsuspecting MSI tinkerer,
-> provide a helper that does it for them, and serves as documentation
-> of what needs to be provided.
 >
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-> ---
->  include/linux/msi.h |  7 +++++++
->  kernel/irq/msi.c    | 40 ++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 47 insertions(+)
 >
-> diff --git a/include/linux/msi.h b/include/linux/msi.h
-> index b10093c4d00ea..f08d14cf07103 100644
-> --- a/include/linux/msi.h
-> +++ b/include/linux/msi.h
-> @@ -594,6 +594,13 @@ struct irq_domain *msi_create_irq_domain(struct fwnode_handle *fwnode,
->  					 struct msi_domain_info *info,
->  					 struct irq_domain *parent);
->  
-> +struct irq_domain *msi_create_parent_irq_domain(struct fwnode_handle *fwnode,
-> +						const struct msi_parent_ops *msi_parent_ops,
-> +						const struct irq_domain_ops *ops,
-> +						unsigned long flags, unsigned long size,
-> +						void *host_data,
-> +						struct irq_domain *parent);
+> On 11/22/2024 10:33 PM, Rob Clark wrote:
+> > On Fri, Nov 22, 2024 at 8:19=E2=80=AFAM Bibek Kumar Patro
+> > <quic_bibekkum@quicinc.com> wrote:
+> >>
+> >>
+> >>
+> >> On 11/20/2024 10:47 PM, Rob Clark wrote:
+> >>> On Thu, Nov 14, 2024 at 8:10=E2=80=AFAM Bibek Kumar Patro
+> >>> <quic_bibekkum@quicinc.com> wrote:
+> >>>>
+> >>>> Add an adreno-smmu-priv interface for drm/msm to call
+> >>>> into arm-smmu-qcom and initiate the PRR bit setup or reset
+> >>>> sequence as per request.
+> >>>>
+> >>>> This will be used by GPU to setup the PRR bit and related
+> >>>> configuration registers through adreno-smmu private
+> >>>> interface instead of directly poking the smmu hardware.
+> >>>>
+> >>>> Suggested-by: Rob Clark <robdclark@gmail.com>
+> >>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> >>>> ---
+> >>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 37 +++++++++++++++++=
++++++
+> >>>>    drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
+> >>>>    include/linux/adreno-smmu-priv.h           | 14 ++++++++
+> >>>>    3 files changed, 53 insertions(+)
+> >>>>
+> >>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/io=
+mmu/arm/arm-smmu/arm-smmu-qcom.c
+> >>>> index d26f5aea248e..0e4f3fbda961 100644
+> >>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >>>> @@ -16,6 +16,8 @@
+> >>>>
+> >>>>    #define QCOM_DUMMY_VAL -1
+> >>>>
+> >>>> +#define GFX_ACTLR_PRR          (1 << 5)
+> >>>> +
+> >>>>    static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smm=
+u)
+> >>>>    {
+> >>>>           return container_of(smmu, struct qcom_smmu, smmu);
+> >>>> @@ -99,6 +101,32 @@ static void qcom_adreno_smmu_resume_translation(=
+const void *cookie, bool termina
+> >>>>           arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, re=
+g);
+> >>>>    }
+> >>>>
+> >>>> +static void qcom_adreno_smmu_set_prr_bit(const void *cookie, bool s=
+et)
+> >>>> +{
+> >>>> +       struct arm_smmu_domain *smmu_domain =3D (void *)cookie;
+> >>>> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
+> >>>> +       struct arm_smmu_cfg *cfg =3D &smmu_domain->cfg;
+> >>>> +       u32 reg =3D 0;
+> >>>> +
+> >>>> +       reg =3D  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACTL=
+R);
+> >>>> +       reg &=3D ~GFX_ACTLR_PRR;
+> >>>> +       if (set)
+> >>>> +               reg |=3D FIELD_PREP(GFX_ACTLR_PRR, 1);
+> >>>> +       arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
+> >>>> +}
+> >>>> +
+> >>>> +static void qcom_adreno_smmu_set_prr_addr(const void *cookie, phys_=
+addr_t page_addr)
+> >>>> +{
+> >>>> +       struct arm_smmu_domain *smmu_domain =3D (void *)cookie;
+> >>>> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
+> >>>> +
+> >>>> +       writel_relaxed(lower_32_bits(page_addr),
+> >>>> +                               smmu->base + ARM_SMMU_GFX_PRR_CFG_LA=
+DDR);
+> >>>> +
+> >>>> +       writel_relaxed(upper_32_bits(page_addr),
+> >>>> +                               smmu->base + ARM_SMMU_GFX_PRR_CFG_UA=
+DDR);
+> >>>> +}
+> >>>> +
+> >>>>    #define QCOM_ADRENO_SMMU_GPU_SID 0
+> >>>>
+> >>>>    static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
+> >>>> @@ -210,6 +238,7 @@ static bool qcom_adreno_can_do_ttbr1(struct arm_=
+smmu_device *smmu)
+> >>>>    static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *=
+smmu_domain,
+> >>>>                   struct io_pgtable_cfg *pgtbl_cfg, struct device *d=
+ev)
+> >>>>    {
+> >>>> +       const struct device_node *np =3D smmu_domain->smmu->dev->of_=
+node;
+> >>>>           struct adreno_smmu_priv *priv;
+> >>>>
+> >>>>           smmu_domain->cfg.flush_walk_prefer_tlbiasid =3D true;
+> >>>> @@ -239,6 +268,14 @@ static int qcom_adreno_smmu_init_context(struct=
+ arm_smmu_domain *smmu_domain,
+> >>>>           priv->get_fault_info =3D qcom_adreno_smmu_get_fault_info;
+> >>>>           priv->set_stall =3D qcom_adreno_smmu_set_stall;
+> >>>>           priv->resume_translation =3D qcom_adreno_smmu_resume_trans=
+lation;
+> >>>> +       priv->set_prr_bit =3D NULL;
+> >>>> +       priv->set_prr_addr =3D NULL;
+> >>>> +
+> >>>> +       if (of_device_is_compatible(np, "qcom,smmu-500") &&
+> >>>> +                       of_device_is_compatible(np, "qcom,adreno-smm=
+u")) {
+> >>>
+> >>> fwiw, it seems like PRR actually works on sc7180, which is _not_
+> >>> mmu-500, so I guess the support actually goes back further.
+> >>>
+> >>
+> >> As I checked sc7180 was on previous variant of SMMU,
+> >> so targets on this variant have different steps to set PRR bit.
+> >> <Do not have both prr bit and PRR page registers>.
+> >
+> > Experimentally, I have to set both the PRR LADDR/UADDR regs and
+> > ACTLR.PRR bit on sc7180 to get the sparse-residency tests passing.  So
+> > the underlying hw seems to work in the same way as mmu-500.  _But_
+> > this is on a sc7180 chromebook, the situation might be different
+> > depending on fw on things that have QC hyp.
+> >
+>
+> I checked on sc7180 chipset which is based on the smmu-v2,
+> this time by looking for these offsets specifically. I can see the
+> nomenclature of the PRR related registers are a bit different
+> compared to MMU-500 variant.
+> Also the implementation register is 64 bit instead of
+> dual 32 bit as in case of MMU-500. and PRR bit is not marked in
+> ACTLR register offset.
 
-Can we please make this a template based interface similar to
-msi_create_device_irq_domain()?
+Interesting.. in my experiments it needed both the ACTLR.PRR bit set
+and the LADDR/UADDR.  Maybe it was just happy coincidence that two 32b
+writes worked?
 
-> +/**
-> + * msi_create_parent_irq_domain - Create an MSI-parent interrupt domain
-> + * @fwnode:		Optional fwnode of the interrupt controller
-> + * @msi_parent_ops:	MSI parent callbacks and configuration
-> + * @ops:		Interrupt domain ballbacks
-> + * @flags:		Interrupt domain flags
-> + * @size:		Interrupt domain size (0 if arbitrarily large)
-> + * @host_data:		Interrupt domain private data
-> + * @parent:		Parent irq domain
-> + *
-> + * Return: pointer to the created &struct irq_domain or %NULL on failure
-> + */
-> +struct irq_domain *msi_create_parent_irq_domain(struct fwnode_handle *fwnode,
-> +						const struct msi_parent_ops *msi_parent_ops,
-> +						const struct irq_domain_ops *ops,
-> +						unsigned long flags, unsigned long size,
-> +						void *host_data,
-> +						struct irq_domain *parent)
-> +{
-> +	struct irq_domain_info info = {
-> +		.fwnode		= fwnode,
-> +		.size		= size,
-> +		.hwirq_max	= size,
-> +		.ops		= ops,
-> +		.host_data	= host_data,
-> +		.domain_flags	= flags | IRQ_DOMAIN_FLAG_MSI_PARENT,
-> +		.parent		= parent,
-> +		.bus_token	= msi_parent_ops->bus_select_token,
-> +	};
+> So turns out PRR is supported but with some modification and
+> can be carried out with same compatible based approach only - as per
+> my understanding.
+>
+> In current patch plan was to provide support for MMU-500 based targets
+> and won't break any legacy targets, so we can take the PRR support
+> for legacy targets in different series once our evaluation is done on
+> smmu-v2 ?
 
-Instead of hiding the template in the function?
+I guess it wouldn't be the end of the world, but it would mean that
+drm would need to expose PRR support to userspace separately from
+sparse binding support.  Maybe we need to do that anyways.  (I'm not
+really sure how many different a6xx+smmu-v2 devices are out there, but
+I guess they are all based on the same generation of snapdragon?)
 
-We've been burnt with interfaces which might require extensions over
-time before and I just converted the GIC patch (3/11) over to a template
-at call site model. It results in the same code size reduction at the
-call sites, but allows us to expand the template without touching any
-existing driver in the future. See below.
+BR,
+-R
 
-It might be a good idea to have a specific msi_irq_domain_info template
-which only contains the information required instead of reusing and
-expanding irq_domain_info.
-
-Hmm?
-
-Thanks,
-
-        tglx
----
---- a/drivers/irqchip/irq-gic-v2m.c
-+++ b/drivers/irqchip/irq-gic-v2m.c
-@@ -263,24 +263,25 @@ static struct msi_parent_ops gicv2m_msi_
- 
- static __init int gicv2m_allocate_domains(struct irq_domain *parent)
- {
--	struct irq_domain *inner_domain;
- 	struct v2m_data *v2m;
-+	struct irq_domain_info info = {
-+		.ops		= &gic2m_domain_ops,
-+		.parent		= parent,
-+		.msi_parent_ops = &gicv2m_msi_parent_ops,
-+	};
- 
- 	v2m = list_first_entry_or_null(&v2m_nodes, struct v2m_data, entry);
- 	if (!v2m)
- 		return 0;
- 
--	inner_domain = irq_domain_create_hierarchy(parent, 0, 0, v2m->fwnode,
--						   &gicv2m_domain_ops, v2m);
--	if (!inner_domain) {
--		pr_err("Failed to create GICv2m domain\n");
--		return -ENOMEM;
--	}
--
--	irq_domain_update_bus_token(inner_domain, DOMAIN_BUS_NEXUS);
--	inner_domain->flags |= IRQ_DOMAIN_FLAG_MSI_PARENT;
--	inner_domain->msi_parent_ops = &gicv2m_msi_parent_ops;
--	return 0;
-+	info->fwnode = v2m->fwnode;
-+	info->host_data = v2m;
-+
-+	if (msi_create_parent_irq_domain(&info))
-+		return 0;
-+
-+	pr_err("Failed to create GICv2m domain\n");
-+	return -ENOMEM;
- }
- 
- static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -5076,31 +5076,27 @@ static void __init __iomem *its_map_one(
- 
- static int its_init_domain(struct its_node *its)
- {
--	struct irq_domain *inner_domain;
--	struct msi_domain_info *info;
-+	struct msi_domain_info *msi_info;
-+	struct irq_domain_info info = {
-+		.fwnode		= its->fwnode_handle,
-+		.ops		= &its_domain_ops,
-+		.parent		= its_parent,
-+		.msi_parent_ops = &gic_v3_its_msi_parent_ops,
-+		.flags		= its->msi_domain_flags,
-+	};
- 
--	info = kzalloc(sizeof(*info), GFP_KERNEL);
--	if (!info)
-+	msi_info = kzalloc(sizeof(*info), GFP_KERNEL);
-+	if (!msi_info)
- 		return -ENOMEM;
- 
--	info->ops = &its_msi_domain_ops;
--	info->data = its;
--
--	inner_domain = irq_domain_create_hierarchy(its_parent,
--						   its->msi_domain_flags, 0,
--						   its->fwnode_handle, &its_domain_ops,
--						   info);
--	if (!inner_domain) {
--		kfree(info);
--		return -ENOMEM;
--	}
--
--	irq_domain_update_bus_token(inner_domain, DOMAIN_BUS_NEXUS);
--
--	inner_domain->msi_parent_ops = &gic_v3_its_msi_parent_ops;
--	inner_domain->flags |= IRQ_DOMAIN_FLAG_MSI_PARENT;
--
--	return 0;
-+	msi_info->ops = &its_msi_domain_ops;
-+	msi_info->data = its;
-+	info.host_data = msi_info;
-+
-+	if (msi_create_parent_irq_domain(&info))
-+		return 0;
-+	kfree(info);
-+	return -ENOMEM;
- }
- 
- static int its_init_vpe_domain(void)
---- a/drivers/irqchip/irq-gic-v3-mbi.c
-+++ b/drivers/irqchip/irq-gic-v3-mbi.c
-@@ -209,17 +209,14 @@ static const struct msi_parent_ops gic_v
- 
- static int mbi_allocate_domain(struct irq_domain *parent)
- {
--	struct irq_domain *nexus_domain;
-+	struct irq_domain_info info = {
-+		.fwnode		= parent->fwnode,
-+		.ops		= &mbi_domain_ops,
-+		.parent		= parent,
-+		.msi_parent_ops = &gic_v3_mbi_msi_parent_ops,
-+	};
- 
--	nexus_domain = irq_domain_create_hierarchy(parent, 0, 0, parent->fwnode,
--						   &mbi_domain_ops, NULL);
--	if (!nexus_domain)
--		return -ENOMEM;
--
--	irq_domain_update_bus_token(nexus_domain, DOMAIN_BUS_NEXUS);
--	nexus_domain->flags |= IRQ_DOMAIN_FLAG_MSI_PARENT;
--	nexus_domain->msi_parent_ops = &gic_v3_mbi_msi_parent_ops;
--	return 0;
-+	return msi_create_parent_irq_domain(&info) ? 0 : -ENOMEM;
- }
- 
- int __init mbi_init(struct fwnode_handle *fwnode, struct irq_domain *parent)
-
-
-
+> We would explore more on this PRR feature for smmu-v2 based targets,
+> before supporting it.
+>
+> Thanks & regards,
+> Bibek
+>
+> >> It's MMU-500 targets only where PRR support is with both PRR bit
+> >> and PRR page addr registers. As I was re-visiting our discussions on v=
+13
+> >> regarding this - I remember that's why we started using the SMMU-
+> >> compatible string based PRR procedure selection instead of the reserve=
+d-
+> >> memory node. [1] i.e Based on SMMU variant (as selected by compatible
+> >> string), specific sequence will be selected.
+> >>
+> >> So for now only MMU-500 based selection has been supported as part of
+> >> this series and will add subsequent support for other SMMU-variants
+> >> thereafter.
+> >>
+> >>> I'm curious if we can just rely on this being supported by any hw tha=
+t
+> >>> has a6xx or newer?
+> >>>
+> >>
+> >> I'd need to check on targets which will be based on a6xx onwards, on
+> >> what will be the procedure planned to support PRR feature. I'll update
+> >> the information over this space.
+> >
+> > One of the open questions about the drm/msm sparse-memory patchset is
+> > whether we need to expose to userspace whether PRR is supported, or if
+> > we can just rely on sparse-binding support implying sparse residency
+> > (ie, PRR) support. All a6xx devices support per-process pgtables,
+> > which is the only requirement for basic sparseBinding support.  But
+> > PRR is required to additionally expose
+> > sparseResidencyBuffer/sparseResidencyImage2D.
+> >
+> > I think, long term, turnip probably will want to drop support for
+> > older kernels and remove support for legacy buffer mapping.  But if we
+> > have some a6xx devices without PRR, then to do that we'd need to
+> > decouple sparse binding and sparse residency.  (Vulkan allows a driver
+> > to expose the former without the latter.)
+> >
+> > BR,
+> > -R
+> >
+> >> [1]:
+> >> https://lore.kernel.org/all/5790afa3-f9c0-4720-9804-8a7ff3d91854@quici=
+nc.com/#:~:text=3D%3E%20I%20guess%20if,part%20as%20well.
+> >>
+> >> Thanks & regards,
+> >> Bibek
+> >>
+> >>> BR,
+> >>> -R
+> >>>
+> >>>> +               priv->set_prr_bit =3D qcom_adreno_smmu_set_prr_bit;
+> >>>> +               priv->set_prr_addr =3D qcom_adreno_smmu_set_prr_addr=
+;
+> >>>> +       }
+> >>>>
+> >>>>           return 0;
+> >>>>    }
+> >>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/a=
+rm/arm-smmu/arm-smmu.h
+> >>>> index e2aeb511ae90..2dbf3243b5ad 100644
+> >>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> >>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> >>>> @@ -154,6 +154,8 @@ enum arm_smmu_cbar_type {
+> >>>>    #define ARM_SMMU_SCTLR_M               BIT(0)
+> >>>>
+> >>>>    #define ARM_SMMU_CB_ACTLR              0x4
+> >>>> +#define ARM_SMMU_GFX_PRR_CFG_LADDR     0x6008
+> >>>> +#define ARM_SMMU_GFX_PRR_CFG_UADDR     0x600C
+> >>>>
+> >>>>    #define ARM_SMMU_CB_RESUME             0x8
+> >>>>    #define ARM_SMMU_RESUME_TERMINATE      BIT(0)
+> >>>> diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno=
+-smmu-priv.h
+> >>>> index c637e0997f6d..614665153b3e 100644
+> >>>> --- a/include/linux/adreno-smmu-priv.h
+> >>>> +++ b/include/linux/adreno-smmu-priv.h
+> >>>> @@ -50,6 +50,18 @@ struct adreno_smmu_fault_info {
+> >>>>     *                 the GPU driver must call resume_translation()
+> >>>>     * @resume_translation: Resume translation after a fault
+> >>>>     *
+> >>>> + * *CAUTION* : PRR callbacks (set_prr_bit/set_prr_addr) are NULL te=
+rminated for
+> >>>> + *             targets without PRR support. Exercise caution and ve=
+rify target
+> >>>> + *             capabilities before invoking these callbacks to prev=
+ent potential
+> >>>> + *             runtime errors or unexpected behavior.
+> >>>> + *
+> >>>> + * @set_prr_bit:   Extendible interface to be used by GPU to modify=
+ the
+> >>>> + *                ACTLR register bits, currently used to configure
+> >>>> + *                Partially-Resident-Region (PRR) bit for feature's
+> >>>> + *                setup and reset sequence as requested.
+> >>>> + * @set_prr_addr:  Configure the PRR_CFG_*ADDR register with the
+> >>>> + *                physical address of PRR page passed from
+> >>>> + *                GPU driver.
+> >>>>     *
+> >>>>     * The GPU driver (drm/msm) and adreno-smmu work together for con=
+trolling
+> >>>>     * the GPU's SMMU instance.  This is by necessity, as the GPU is =
+directly
+> >>>> @@ -67,6 +79,8 @@ struct adreno_smmu_priv {
+> >>>>        void (*get_fault_info)(const void *cookie, struct adreno_smmu=
+_fault_info *info);
+> >>>>        void (*set_stall)(const void *cookie, bool enabled);
+> >>>>        void (*resume_translation)(const void *cookie, bool terminate=
+);
+> >>>> +    void (*set_prr_bit)(const void *cookie, bool set);
+> >>>> +    void (*set_prr_addr)(const void *cookie, phys_addr_t page_addr)=
+;
+> >>>>    };
+> >>>>
+> >>>>    #endif /* __ADRENO_SMMU_PRIV_H */
+> >>>> --
+> >>>> 2.34.1
+> >>>>
+> >>
+>
