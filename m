@@ -1,68 +1,74 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62B211C3F2C
-	for <iommu@lists.linux.dev>; Wed,  4 Dec 2024 12:29:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A947C18BC19;
+	Wed,  4 Dec 2024 12:46:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733315379; cv=none; b=P76QmLGCkpFG08CxKJRRW63nBeD39/tNKSLfuQPKFoyLyhuc/28pgtY898W/bhm9gGMLtD/IPeaTrPUfKjdv6+cm3VkAXIP51+Thu1REjP0gM/hWHsPNypZep6ZuxcfePOA65CagHvE/luQ981QG75Ky44NwMAS0lheyRw3h7bM=
+	t=1733316366; cv=none; b=QlW33ti34KyGyFgxAy3AswwDjJkk9fdvOonaQzAvc77/Py3t/C1ejnORL5H9ZbiKj0SjGRcZeEKkPQjDNpmfYI27S6OIzYkCgfxeRyNBXxGKE/CrH+vkcwrrZwvwsNd79pA6NGqD6D7MqQQzemqQFPVm/Ag0Dy5pGqofkv3f+lI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733315379; c=relaxed/simple;
-	bh=qaXBrpGyFt9i3LniGPVfnD7c/ISqj1AsLkUlsnwfNM0=;
+	s=arc-20240116; t=1733316366; c=relaxed/simple;
+	bh=SWvLGrD5bHK6LkQqH6wSJ0wPWFyKPMKVEBv+X+6czU8=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=YQEER3wAqBRK1mXbLbVW1JwWSF4TmatkoDFPB06nZ2wutlseXu6LMC1noHr5h7lpKt6xIofxM/j3W8LDrmNHYwuhlveRMd3PxGeHuSlt0jsslpefbrJwzr/FF79E9cLU7P2fp2sCD+DYLaTgqDF9er1W083LhuTlV0NVvMNp+Zw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KGWkWilF; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 MIME-Version; b=e3llA0Ec/7iKyLNufYppp7ywH4NgghWFHiIJFlLgp4IYP/zJ1i3rJSqzxqukQViEZh5N3U+isWjfTB287Ori8UXiqpfzPkq4jjN43TPvsFwLGkKKLE2oLYKvSeJOC+zrt1hp1JulBoSwYYT8UyAXV7OiKU1khPz2sExDEY6n8FU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pgksu6L1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KGWkWilF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1733315378; x=1764851378;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qaXBrpGyFt9i3LniGPVfnD7c/ISqj1AsLkUlsnwfNM0=;
-  b=KGWkWilF2xRifXbHEtkYTCrQojnw2EOxoav7YXCIrQDxQcF+0YeWFReS
-   klWcox2DTLbGnYP3e6QTe4JUwCNJBSKMpGmIiBjQLOID3uDQdeF1EoqTt
-   z01HN1XYEagmznnGaSDZvTyDt6w+xX1RmP9zDC98m0Odk2JwQaNTQpsI/
-   HEECVH1D1mEvqIsLtIQY8Yl9NpaRGw5mNcpyn/p4cNtgHw2jRXSDjWOB6
-   XwGC3rWoUYG+meLYvVeDcB+ZSnPDr6glmvnIa8vamucRdqoTKNO4UKGEl
-   w54iBx8ti8WuEwu+laWTKsW8EqfZl5LIpPTMRw6gexIittCpEWDN/JlVS
-   w==;
-X-CSE-ConnectionGUID: FnVja9JcQE6UFe7EwOOkFg==
-X-CSE-MsgGUID: X1YRdHUmRFe1mOsfPzo3HQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11276"; a="32937925"
-X-IronPort-AV: E=Sophos;i="6.12,207,1728975600"; 
-   d="scan'208";a="32937925"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2024 04:29:34 -0800
-X-CSE-ConnectionGUID: rgp/M8gGTnS7x4VhjIBY0g==
-X-CSE-MsgGUID: 114BOdpTTM2lMbRF5mEGCQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,207,1728975600"; 
-   d="scan'208";a="93599091"
-Received: from unknown (HELO 984fee00a4c6.jf.intel.com) ([10.165.58.231])
-  by orviesa010.jf.intel.com with ESMTP; 04 Dec 2024 04:29:34 -0800
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	baolu.lu@linux.intel.com
-Cc: eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	iommu@lists.linux.dev,
-	zhenzhong.duan@intel.com,
-	vasant.hegde@amd.com,
-	will@kernel.org
-Subject: [PATCH v6 7/7] iommu: Remove the remove_dev_pasid op
-Date: Wed,  4 Dec 2024 04:29:28 -0800
-Message-Id: <20241204122928.11987-8-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20241204122928.11987-1-yi.l.liu@intel.com>
-References: <20241204122928.11987-1-yi.l.liu@intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pgksu6L1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55C02C4CED2;
+	Wed,  4 Dec 2024 12:46:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733316366;
+	bh=SWvLGrD5bHK6LkQqH6wSJ0wPWFyKPMKVEBv+X+6czU8=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=Pgksu6L1x9lwvYyaR3de4qE6JqwFDBovjtoTrN72K/hv52SRySq6bgOz66gXZLGNz
+	 H2EBNr2q9g5m4CWtw9cseezfj2nVE+Iry+yaV9zSR8GNv4brlz+JLl6UTuG2H81bVv
+	 2FN3KyehEeefVz6SXsPjW6TPGStkwp5ym8FrRqrfDNT3tHvaV072SLW6CfEE4BQIpF
+	 1xunjw5GxcrqrdOe9U3Qmst0MPdobQtxSTMjfDXkQ/F4+IIZxAZq0CHKa63n0AzFpN
+	 PgnLfWoiTX3zLNJcJkMRtOGh+Uz8yHIzFXGsv89qxKkuikpmQUAlXQByHh8pNRcD6d
+	 l55O49e2iQl0w==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=valley-girl.lan)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <maz@kernel.org>)
+	id 1tIolY-000RHy-3p;
+	Wed, 04 Dec 2024 12:46:04 +0000
+From: Marc Zyngier <maz@kernel.org>
+To: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-pci@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Jiaxun Yang <jiaxun.yang@flygoat.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Gregory Clement <gregory.clement@bootlin.com>,
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+	Anup Patel <anup@brainfault.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Toan Le <toan@os.amperecomputing.com>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Subject: [PATCH 01/11] irqchip: Make irq-msi-lib.h globally available
+Date: Wed,  4 Dec 2024 12:45:39 +0000
+Message-Id: <20241204124549.607054-2-maz@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20241204124549.607054-1-maz@kernel.org>
+References: <20241204124549.607054-1-maz@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,79 +76,213 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev, linux-riscv@lists.infradead.org, linux-pci@vger.kernel.org, joro@8bytes.org, suravee.suthikulpanit@amd.com, dwmw2@infradead.org, baolu.lu@linux.intel.com, tglx@linutronix.de, shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com, chenhuacai@kernel.org, kernel@xen0n.name, jiaxun.yang@flygoat.com, andrew@lunn.ch, gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com, anup@brainfault.org, paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, lpieralisi@kernel.org, kw@linux.com, manivannan.sadhasivam@linaro.org, bhelgaas@google.com, toan@os.amperecomputing.com, alyssa@rosenzweig.io
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-The iommu drivers that supports PASID have supported attaching pasid to the
-blocked_domain, hence remove the remove_dev_pasid op from the iommu_ops.
+Move irq-msi-lib.h into include/linux/irqchip, making it available
+to compilation units outside of drivers/irqchip. This requires some
+churn in drivers to fetch it from the new location.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- drivers/iommu/iommu.c | 17 ++++-------------
- include/linux/iommu.h |  5 -----
- 2 files changed, 4 insertions(+), 18 deletions(-)
+ drivers/irqchip/irq-gic-v2m.c                    | 2 +-
+ drivers/irqchip/irq-gic-v3-its-msi-parent.c      | 2 +-
+ drivers/irqchip/irq-gic-v3-its.c                 | 2 +-
+ drivers/irqchip/irq-gic-v3-mbi.c                 | 2 +-
+ drivers/irqchip/irq-imx-mu-msi.c                 | 2 +-
+ drivers/irqchip/irq-loongarch-avec.c             | 2 +-
+ drivers/irqchip/irq-loongson-pch-msi.c           | 2 +-
+ drivers/irqchip/irq-msi-lib.c                    | 2 +-
+ drivers/irqchip/irq-mvebu-gicp.c                 | 2 +-
+ drivers/irqchip/irq-mvebu-icu.c                  | 2 +-
+ drivers/irqchip/irq-mvebu-odmi.c                 | 2 +-
+ drivers/irqchip/irq-mvebu-sei.c                  | 2 +-
+ {drivers => include/linux}/irqchip/irq-msi-lib.h | 6 +++---
+ 13 files changed, 15 insertions(+), 15 deletions(-)
+ rename {drivers => include/linux}/irqchip/irq-msi-lib.h (84%)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 149ae5300cc4..d328d4753eef 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3317,17 +3317,9 @@ static void iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
- {
- 	const struct iommu_ops *ops = dev_iommu_ops(dev);
- 	struct iommu_domain *blocked_domain = ops->blocked_domain;
--	int ret = 1;
+diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
+index be35c5349986a..db79ae622f3c4 100644
+--- a/drivers/irqchip/irq-gic-v2m.c
++++ b/drivers/irqchip/irq-gic-v2m.c
+@@ -26,7 +26,7 @@
+ #include <linux/irqchip/arm-gic.h>
+ #include <linux/irqchip/arm-gic-common.h>
  
--	if (blocked_domain && blocked_domain->ops->set_dev_pasid) {
--		ret = blocked_domain->ops->set_dev_pasid(blocked_domain,
--							 dev, pasid, domain);
--	} else {
--		ops->remove_dev_pasid(dev, pasid, domain);
--		ret = 0;
--	}
--
--	WARN_ON(ret);
-+	WARN_ON(blocked_domain->ops->set_dev_pasid(blocked_domain,
-+						   dev, pasid, domain));
- }
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
  
- static int __iommu_set_group_pasid(struct iommu_domain *domain,
-@@ -3390,9 +3382,8 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
- 	ops = dev_iommu_ops(dev);
+ /*
+ * MSI_TYPER:
+diff --git a/drivers/irqchip/irq-gic-v3-its-msi-parent.c b/drivers/irqchip/irq-gic-v3-its-msi-parent.c
+index e150365fbe892..b4adee2a1aaae 100644
+--- a/drivers/irqchip/irq-gic-v3-its-msi-parent.c
++++ b/drivers/irqchip/irq-gic-v3-its-msi-parent.c
+@@ -8,7 +8,7 @@
+ #include <linux/pci.h>
  
- 	if (!domain->ops->set_dev_pasid ||
--	    (!ops->remove_dev_pasid &&
--	     (!ops->blocked_domain ||
--	      !ops->blocked_domain->ops->set_dev_pasid)))
-+	    !ops->blocked_domain ||
-+	    !ops->blocked_domain->ops->set_dev_pasid)
- 		return -EOPNOTSUPP;
+ #include "irq-gic-common.h"
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
  
- 	if (ops != domain->owner || pasid == IOMMU_NO_PASID)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 318d27841130..38c65e92ecd0 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -587,9 +587,6 @@ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
-  *		- IOMMU_DOMAIN_DMA: must use a dma domain
-  *		- 0: use the default setting
-  * @default_domain_ops: the default ops for domains
-- * @remove_dev_pasid: Remove any translation configurations of a specific
-- *                    pasid, so that any DMA transactions with this pasid
-- *                    will be blocked by the hardware.
-  * @viommu_alloc: Allocate an iommufd_viommu on a physical IOMMU instance behind
-  *                the @dev, as the set of virtualization resources shared/passed
-  *                to user space IOMMU instance. And associate it with a nesting
-@@ -647,8 +644,6 @@ struct iommu_ops {
- 			      struct iommu_page_response *msg);
+ #define ITS_MSI_FLAGS_REQUIRED  (MSI_FLAG_USE_DEF_DOM_OPS |	\
+ 				 MSI_FLAG_USE_DEF_CHIP_OPS |	\
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index 92244cfa04647..334fd15be1de1 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -41,7 +41,7 @@
+ #include <asm/exception.h>
  
- 	int (*def_domain_type)(struct device *dev);
--	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid,
--				 struct iommu_domain *domain);
+ #include "irq-gic-common.h"
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
  
- 	struct iommufd_viommu *(*viommu_alloc)(
- 		struct device *dev, struct iommu_domain *parent_domain,
+ #define ITS_FLAGS_CMDQ_NEEDS_FLUSHING		(1ULL << 0)
+ #define ITS_FLAGS_WORKAROUND_CAVIUM_22375	(1ULL << 1)
+diff --git a/drivers/irqchip/irq-gic-v3-mbi.c b/drivers/irqchip/irq-gic-v3-mbi.c
+index 3fe870f8ee174..63c658375fd55 100644
+--- a/drivers/irqchip/irq-gic-v3-mbi.c
++++ b/drivers/irqchip/irq-gic-v3-mbi.c
+@@ -18,7 +18,7 @@
+ 
+ #include <linux/irqchip/arm-gic-v3.h>
+ 
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
+ 
+ struct mbi_range {
+ 	u32			spi_start;
+diff --git a/drivers/irqchip/irq-imx-mu-msi.c b/drivers/irqchip/irq-imx-mu-msi.c
+index 4342a21de1eb0..b3f656c6e7708 100644
+--- a/drivers/irqchip/irq-imx-mu-msi.c
++++ b/drivers/irqchip/irq-imx-mu-msi.c
+@@ -24,7 +24,7 @@
+ #include <linux/pm_domain.h>
+ #include <linux/spinlock.h>
+ 
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
+ 
+ #define IMX_MU_CHANS            4
+ 
+diff --git a/drivers/irqchip/irq-loongarch-avec.c b/drivers/irqchip/irq-loongarch-avec.c
+index 0f6e465dd3095..c95704707219d 100644
+--- a/drivers/irqchip/irq-loongarch-avec.c
++++ b/drivers/irqchip/irq-loongarch-avec.c
+@@ -18,7 +18,7 @@
+ #include <asm/loongarch.h>
+ #include <asm/setup.h>
+ 
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
+ #include "irq-loongson.h"
+ 
+ #define VECTORS_PER_REG		64
+diff --git a/drivers/irqchip/irq-loongson-pch-msi.c b/drivers/irqchip/irq-loongson-pch-msi.c
+index bd337ecddb409..3f6f4e9887c53 100644
+--- a/drivers/irqchip/irq-loongson-pch-msi.c
++++ b/drivers/irqchip/irq-loongson-pch-msi.c
+@@ -15,7 +15,7 @@
+ #include <linux/pci.h>
+ #include <linux/slab.h>
+ 
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
+ #include "irq-loongson.h"
+ 
+ static int nr_pics;
+diff --git a/drivers/irqchip/irq-msi-lib.c b/drivers/irqchip/irq-msi-lib.c
+index d8e29fc0d4068..514b2616d9559 100644
+--- a/drivers/irqchip/irq-msi-lib.c
++++ b/drivers/irqchip/irq-msi-lib.c
+@@ -4,7 +4,7 @@
+ 
+ #include <linux/export.h>
+ 
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
+ 
+ /**
+  * msi_lib_init_dev_msi_info - Domain info setup for MSI domains
+diff --git a/drivers/irqchip/irq-mvebu-gicp.c b/drivers/irqchip/irq-mvebu-gicp.c
+index 2b6183919ea48..b206b7fe03f17 100644
+--- a/drivers/irqchip/irq-mvebu-gicp.c
++++ b/drivers/irqchip/irq-mvebu-gicp.c
+@@ -17,7 +17,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ 
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
+ 
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ 
+diff --git a/drivers/irqchip/irq-mvebu-icu.c b/drivers/irqchip/irq-mvebu-icu.c
+index b337f6c05f184..30d51a26ea05f 100644
+--- a/drivers/irqchip/irq-mvebu-icu.c
++++ b/drivers/irqchip/irq-mvebu-icu.c
+@@ -20,7 +20,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ 
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
+ 
+ #include <dt-bindings/interrupt-controller/mvebu-icu.h>
+ 
+diff --git a/drivers/irqchip/irq-mvebu-odmi.c b/drivers/irqchip/irq-mvebu-odmi.c
+index ff19bfd258dce..0ba39fbdb451f 100644
+--- a/drivers/irqchip/irq-mvebu-odmi.c
++++ b/drivers/irqchip/irq-mvebu-odmi.c
+@@ -18,7 +18,7 @@
+ #include <linux/of_address.h>
+ #include <linux/slab.h>
+ 
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
+ 
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ 
+diff --git a/drivers/irqchip/irq-mvebu-sei.c b/drivers/irqchip/irq-mvebu-sei.c
+index 065166ab5dbc0..c12e650ae7c92 100644
+--- a/drivers/irqchip/irq-mvebu-sei.c
++++ b/drivers/irqchip/irq-mvebu-sei.c
+@@ -14,7 +14,7 @@
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
+ 
+-#include "irq-msi-lib.h"
++#include <linux/irqchip/irq-msi-lib.h>
+ 
+ /* Cause register */
+ #define GICP_SECR(idx)		(0x0  + ((idx) * 0x4))
+diff --git a/drivers/irqchip/irq-msi-lib.h b/include/linux/irqchip/irq-msi-lib.h
+similarity index 84%
+rename from drivers/irqchip/irq-msi-lib.h
+rename to include/linux/irqchip/irq-msi-lib.h
+index 681ceabb7bc74..dd8d1d1385449 100644
+--- a/drivers/irqchip/irq-msi-lib.h
++++ b/include/linux/irqchip/irq-msi-lib.h
+@@ -2,8 +2,8 @@
+ // Copyright (C) 2022 Linutronix GmbH
+ // Copyright (C) 2022 Intel
+ 
+-#ifndef _DRIVERS_IRQCHIP_IRQ_MSI_LIB_H
+-#define _DRIVERS_IRQCHIP_IRQ_MSI_LIB_H
++#ifndef _IRQCHIP_IRQ_MSI_LIB_H
++#define _IRQCHIP_IRQ_MSI_LIB_H
+ 
+ #include <linux/bits.h>
+ #include <linux/irqdomain.h>
+@@ -24,4 +24,4 @@ bool msi_lib_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
+ 			       struct irq_domain *real_parent,
+ 			       struct msi_domain_info *info);
+ 
+-#endif /* _DRIVERS_IRQCHIP_IRQ_MSI_LIB_H */
++#endif /* _IRQCHIP_IRQ_MSI_LIB_H */
 -- 
-2.34.1
+2.39.2
 
