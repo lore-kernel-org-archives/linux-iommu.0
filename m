@@ -1,64 +1,24 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1B2A21A440
-	for <iommu@lists.linux.dev>; Thu,  5 Dec 2024 14:25:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43C1E21A44A
+	for <iommu@lists.linux.dev>; Thu,  5 Dec 2024 14:54:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733408758; cv=none; b=fr2CKhBQt6Zv2r7ceJlg+nvMgYp1c6U2EyhO23zDTJ08f9PAn8nP85nu6DHziR44v5i96RQnjvC70RNGIPVK6dZV/P/BvGe68zodsZ9QHxyO6JyQL+zF+EtsFE+0VKKhd19Yz6zl55ftwibnohLqsb7kDRlRpVwk+msm1Y9S2lw=
+	t=1733410491; cv=none; b=VECky6n4xXvfaPhHv61TJ1XMDSRbchL0Xmg4DixYrK31675UzF4ZsvHz7ncKxQgZrMK+JuXd6scK8db5XwNe2Wc5NBH/NqSIymoVsQG2HFvwoxo93Lt7aetdcKCMOcpwZCiotBvyIV8x9QOu6xvzTxFqm47hFKvL+hWvCPcHJaI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733408758; c=relaxed/simple;
-	bh=0qWPKNY/t9iR/pOsdFpN8VpUFDmeBzeQfCckYttTZnw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=isp/VxKtXw6zPecYF3CfPYNpcuwCsqJ2erF17VsxfZmPPY+4v5nYxHKwOVgY+W9i48YxPEHNhRdxOaVSLOwwLdMgL1/SmLCU0mGUm6D0WIKZdk1fxx+qYbcxbLfPC8MtdI/vqasqkAW4fj3eBn+7cUxQR1PNp1J6Vq7rkrbiKqM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K8XzLFFk; arc=none smtp.client-ip=209.85.167.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K8XzLFFk"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-53dd668c5easo1114802e87.1
-        for <iommu@lists.linux.dev>; Thu, 05 Dec 2024 06:25:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733408755; x=1734013555; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ECr3j+PJPfH3u1FCY8Jwj8p+fy3HgSStYnz6KYhRzjc=;
-        b=K8XzLFFkhhwzEujUERgQy+dcmPS8Cx7gQgII1U0wNAv1uLDwHY2HBQdu60ZpVDJNUd
-         GCE9tqBzgslIj25f8u3bDoUy/KTr8/E0DymBxH5DN4egltdvQ5WWwYjXAqRQ7UZzE58b
-         S4ACb8clr1GSW3u3JF7lvQ1mRbkpc6XcF/I/fS+OGP3QlUWVB99SdW2QmH7sjeBqksnz
-         nShjgSLURESllQXGtggZrqfM5uJ1EB5RFTjRrML9oR5/TE7krhda9VnmJFhkPm40RY6a
-         iJKFDUfF0A14SbqQzzTXrYiD0jWL3A9o6OLWNFFUSGlJlwRlqA7VNafCH1zqRkukh+jv
-         Pjvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733408755; x=1734013555;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ECr3j+PJPfH3u1FCY8Jwj8p+fy3HgSStYnz6KYhRzjc=;
-        b=Sn+qrp35N6tt+25EezWX8XXXkmrhMeONWRTNy5iV7w0sM2VDO4QXv/WS6+p3lIjv4o
-         3ZSUVBd60Dni9PwQrXlI8/0RVezddiVUnU9rtqyah1NtnJ9As+tOBgutYqDNTYWKKL4f
-         jqALFarWal/khpgrfHXFMtyve2xuluJ323JIebXkw+0DNvGKGyqhxR+XNpyTZcwIV2Cj
-         xLgJ3ekoKRyN00KTtCOCCgpk0EMIwPw+jvBwhHSPndG45Lf0IPKGMO/f9bLDlFPqq8ye
-         P9aA3taMb3E0E1mBKUamhHYcFMYKNWLljSeVNmYunukjG9VeMiXDELsNhxSfXrXl2Zro
-         7EAQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUGGiKZ8L7tfCgPGfZeLPb+P7fmUVAXVWfEB2A8m/x+lxqUd95u2ePmrrOHasTeSEEANp/8Kg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxbPFuQ1xCbrHn07jZDWvoc+3Gvbhn5VW/VJfUG3MD0Pl8w7wje
-	/qTBeu+0tPz1R6GSUmcrxruaiCFtNfOm2q9BS7Up7kDwch/vFLyn
-X-Gm-Gg: ASbGnct+tcF7pxRaEEcMHidEVE8+7uhGAo6DBo/GeLdiOdzeQcGtsQvZ6E9ZU7a0cb9
-	cL+GsWcGdHtJyp8A+TK0+jlFvrT7IkO4DKfFNW/P7tK4KT41IS6HfCKRnUcXbRBKllIx+IKTLD8
-	HMtJ+ZGuUY6snSD+Z7j8SZTJP2GuQIYtr6hSZctsVKTyw7Qc6IIay6iHDGTLgEo7SHFeBzZe2RT
-	S7Ys7Dsh2s5opLQ5lBphEli3DuxKWCmgCr3BynWgmo3rBIZXAhHVRxGv6xarfcKS9UDrbgFRojw
-	w1vE169BtJ6i/dBnpMJa
-X-Google-Smtp-Source: AGHT+IFzlJ/ndqgl+nEbM84hx+ZYeslhN+ABZV1lIYxXxfYOelqjUzikzeWd4ZSkjTOWIlPz8RbBWA==
-X-Received: by 2002:a05:6512:10cd:b0:53d:f63a:e428 with SMTP id 2adb3069b0e04-53e2192c603mr1207101e87.27.1733408754721;
-        Thu, 05 Dec 2024 06:25:54 -0800 (PST)
-Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53e229c1edcsm261651e87.187.2024.12.05.06.25.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Dec 2024 06:25:54 -0800 (PST)
-Message-ID: <c9baa4bb-81db-42ae-98be-d8cb7d57f237@gmail.com>
-Date: Thu, 5 Dec 2024 16:25:53 +0200
+	s=arc-20240116; t=1733410491; c=relaxed/simple;
+	bh=f8tH5F+wtgbza7viG4IOdVZJiWD//+m8I2XaKnLqIkM=;
+	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=C4AeIoxg7iEMNDgYkw/PjlmfKXXBKtd+OH5Ybxc8dfWv5ffF4VqXerVD1XbTbOGYnMUo9VB9lpIL0osDsYG28JHzgBw+K/WaVFARaErneZD1Gpp0k9RmKs8DhlkiZwplpOBbEYl6M8uJ6SlmNXINZwvrvsxmxj4gZZVfMmpZVsY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
+	by metis.whiteo.stw.pengutronix.de with esmtp (Exim 4.92)
+	(envelope-from <a.fatoum@pengutronix.de>)
+	id 1tJDFe-0008Hp-Hr; Thu, 05 Dec 2024 15:54:46 +0100
+Message-ID: <72ad8ca7-5280-457e-9769-b8a645966105@pengutronix.de>
+Date: Thu, 5 Dec 2024 15:54:43 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,68 +26,107 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 2/2] rust: add dma coherent allocator abstraction.
-To: Robin Murphy <robin.murphy@arm.com>, daniel.almeida@collabora.com
-Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
- Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
- Valentin Obst <kernel@valentinobst.de>,
- "open list:RUST" <rust-for-linux@vger.kernel.org>,
- open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-References: <20241205113234.2021442-1-abdiel.janulgue@gmail.com>
- <20241205113234.2021442-2-abdiel.janulgue@gmail.com>
- <1c13843f-6929-4bc6-8564-0ec2d964c41d@arm.com>
 Content-Language: en-US
-From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-In-Reply-To: <1c13843f-6929-4bc6-8564-0ec2d964c41d@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To: kasan-dev@googlegroups.com, iommu@lists.linux.dev,
+ Arnd Bergmann <arnd@arndb.de>
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+ Alexander Potapenko <glider@google.com>,
+ Andrey Konovalov <andreyknvl@gmail.com>, Dmitry Vyukov <dvyukov@google.com>,
+ Vincenzo Frascino <vincenzo.frascino@arm.com>, Christoph Hellwig
+ <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, "Paul E . McKenney"
+ <paulmck@kernel.org>, elver@google.com, Kees Cook <keescook@chromium.org>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>
+From: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Using KASAN to catch streaming DMA API violations
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: iommu@lists.linux.dev
 
-On 05/12/2024 15:07, Robin Murphy wrote:
->> +    pub fn alloc_coherent(
->> +        dev: &Device,
->> +        count: usize,
->> +        flags: kernel::alloc::Flags,
-> 
-> Might it be worth adding at least a placeholder type and argument for 
-> "attrs" as well, so there's less churn involved in coming back and 
-> adding it later? Or is the intention to have a separate 
-> dma_alloc_attrs() constructor for such users?
-> 
+Hello,
 
-It certainly is possible to include attrs in the constructor using Option:
-```
-     pub fn alloc_coherent(
-         dev: &Device,
-         count: usize,
-         flags: kernel::alloc::Flags,
-         attrs: Option<u64>,
-     ) -> Result<CoherentAllocation<T>> {
+This is a follow-up to a discussion that took place in the Kernel Sanitizers
+Office Hours (IIRC) at this year's Plumbers Event in Vienna.
 
-<cut>
-         let ret = unsafe {
-             bindings::dma_alloc_attrs(
-                 dev.as_raw(),
-                 size,
-                 &mut dma_handle, flags.as_raw(),
-                 attrs.unwrap_or(0),
-             )
-         };
-<cut>
-     }
+I had asked about how KCSAN could detect races due to DMA[1] and Arnd
+suggested that we could use KASAN to detect the CPU accessing buffers that
+it doesn't have ownership of. I mentioned having implemented[2] this exact scheme
+in the barebox bootloader's KASAN support and promised to type up an email
+about it to help getting a similar functionality into the kernel, but first
+some context:
 
-```
-So the signature of the constructor could be:
+The streaming DMA API is used to annotate ownership transfer of buffers in
+memory shared between the kernel and a DMA-capable device.
 
-let c = CoherentAllocation::alloc_coherent(dev, 4, GFP_KERNEL, None)?;
+The relevant kernel documentation is:
 
-Andreas, Miguel, Daniel, any thoughts?
+  https://www.kernel.org/doc/Documentation/DMA-API.txt
+  https://www.kernel.org/doc/Documentation/DMA-API-HOWTO.txt
 
-Regards,
-Abdiel
+But I'll give a quick recap. There are four key operations:
+
+ - dma_map_single() moves a range of memory from CPU to device ownership
+
+ - dma_sync_single_for_cpu() can be called on all or a subset of the range
+   mapped by dma_map_single() to move ownership back to the CPU
+
+ - dma_sync_single_for_device() moves back all oo a subset of the range
+   mapped by dma_map_single() to the ownership of the device
+
+ - dma_unmap_single() gives back ownership of a range of memory to the CPU
+
+It's a bug for the CPU or the device to access a streaming DMA mapping while
+it's owned by the other side. On many systems, that bug will manifest itself
+as memory corruption due to loss of cache coherence.
+
+To make it easier to spot some misuses of the API, the kernel has a
+CONFIG_DMA_API_DEBUG feature, which will run sanity checks when using the API.
+It can't however detect if a memory access happens to a buffer while it's
+owned by other side, which is where KASAN can come in by having CONFIG_DMA_API_DEBUG
+record ownership information into the KASAN shadow memory.
+
+That way accessing a device mapped buffer before sync'ing it to the CPU is
+detected like KASAN would detect a use-after-free.  When the ownership is moved
+back to the CPU, the memory is unpoisoned and such an access would be allowed
+again.
+
+I had implemented this scheme[3] in the barebox bootloader and it works ok:
+
+  BUG: KASAN: dma-mapped-to-device in eqos_send+0xdc/0x1a8
+  Read of size 4 at addr 0000000040419f00
+
+  Call trace:
+  [<7fbd4980>] (unwind_backtrace+0x0/0xb0) from [<7fbd4a40>] (dump_stack+0x10/0x18)
+  [<7fbd4a40>] (dump_stack+0x10/0x18) from [<7fba2360>] (kasan_report+0x11c/0x290)
+  [<7fba2360>] (kasan_report+0x11c/0x290) from [<7fba1f44>] (__asan_load4+0x54/0xb8)
+  [<7fba1f44>] (__asan_load4+0x54/0xb8) from [<7fb2e52c>] (eqos_send+0xdc/0x1a8)
+  [<7fb2e52c>] (eqos_send+0xdc/0x1a8) from [<7fbb6544>] (eth_send+0x154/0x16c)
+  [<7fbb6544>] (eth_send+0x154/0x16c) from [<7fbb7114>] (net_ip_send+0xe8/0xf8)
+  [<7fbb7114>] (net_ip_send+0xe8/0xf8) from [<7fbb7d10>] (net_udp_send+0x68/0x78)
+
+
+The aforementioned barebox functionality goes a step further and also used
+the shadow memory information to detect repeated syncs without an ownership
+change. While this is not a bug, my impression is that this is unnecessary
+overhead and a diagnostic could help correct a developer's misunderstanding
+of the API.
+
+I hope to kick off a discussion about this with my mail here and perhaps even
+motivate someone else to port it over or reimplement it. :D
+
+[1]: when CONFIG_KCSAN_REPORT_RACE_UNKNOWN_ORIGIN is enabled
+[2]: https://lore.barebox.org/barebox/20240910114832.2984195-1-a.fatoum@pengutronix.de/
+[3]: https://github.com/barebox/barebox/blob/master/drivers/dma/debug.c
+
+Cheers,
+Ahmad
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
