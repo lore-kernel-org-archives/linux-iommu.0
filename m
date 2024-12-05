@@ -1,88 +1,133 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1F1A218AC2
-	for <iommu@lists.linux.dev>; Thu,  5 Dec 2024 14:23:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1B2A21A440
+	for <iommu@lists.linux.dev>; Thu,  5 Dec 2024 14:25:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733408625; cv=none; b=j+mdS65DI8LjR/Pd2ye7Du3/Cmlo1OBNQjIWqyv2XqM6JNSN7Nd6B10Mcg0iSqbUh1+yzUMnaB/cu6V+qDNeDJCaFnMElqFTdiDDIV64KxACg8n9tP7KQ7q/OE/v3P1WDnq6EF8tFLw2zzLmuhXRxjB3/UnR7AiiCwG6mbm84js=
+	t=1733408758; cv=none; b=fr2CKhBQt6Zv2r7ceJlg+nvMgYp1c6U2EyhO23zDTJ08f9PAn8nP85nu6DHziR44v5i96RQnjvC70RNGIPVK6dZV/P/BvGe68zodsZ9QHxyO6JyQL+zF+EtsFE+0VKKhd19Yz6zl55ftwibnohLqsb7kDRlRpVwk+msm1Y9S2lw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733408625; c=relaxed/simple;
-	bh=4Eq+2aAjnFxe5lX/XGzJfW9qaZEcHbRfX/Ql8ZTqdio=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mGPe5asuXZZ9g5R7a1dhzkgB1mAhfJ5tn8y9R5QuxFvMfkYBVCGkaCXVuNs8V8EYAz1tmeT2CTvq67zyfTs4Et1SApzmJM93QF+rXaqP3pHPLbTHGogA34CBhCgEZFyEoCC2hzgNdRgvE/FzSGCA3CkA+QrH8aGIX4VrI38Wg+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B0281063;
-	Thu,  5 Dec 2024 06:24:10 -0800 (PST)
-Received: from J2N7QTR9R3 (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CE54B3F5A1;
-	Thu,  5 Dec 2024 06:23:40 -0800 (PST)
-Date: Thu, 5 Dec 2024 14:23:35 +0000
-From: Mark Rutland <mark.rutland@arm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: will@kernel.org, catalin.marinas@arm.com, joro@8bytes.org,
-	jean-philippe@linaro.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, joey.gouly@arm.com,
-	ryan.roberts@arm.com, broonie@kernel.org
-Subject: Re: [PATCH 2/2] arm64: cpufeature: Add GCS to cpucap_is_possible()
-Message-ID: <Z1G3Z9C9efBkVKjR@J2N7QTR9R3>
-References: <68a37b00a720f0827cac0e4f40e4d3a688924054.1733406275.git.robin.murphy@arm.com>
- <416c7369fcdce4ebb2a8f12daae234507be27e38.1733406275.git.robin.murphy@arm.com>
+	s=arc-20240116; t=1733408758; c=relaxed/simple;
+	bh=0qWPKNY/t9iR/pOsdFpN8VpUFDmeBzeQfCckYttTZnw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=isp/VxKtXw6zPecYF3CfPYNpcuwCsqJ2erF17VsxfZmPPY+4v5nYxHKwOVgY+W9i48YxPEHNhRdxOaVSLOwwLdMgL1/SmLCU0mGUm6D0WIKZdk1fxx+qYbcxbLfPC8MtdI/vqasqkAW4fj3eBn+7cUxQR1PNp1J6Vq7rkrbiKqM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K8XzLFFk; arc=none smtp.client-ip=209.85.167.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K8XzLFFk"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-53dd668c5easo1114802e87.1
+        for <iommu@lists.linux.dev>; Thu, 05 Dec 2024 06:25:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1733408755; x=1734013555; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ECr3j+PJPfH3u1FCY8Jwj8p+fy3HgSStYnz6KYhRzjc=;
+        b=K8XzLFFkhhwzEujUERgQy+dcmPS8Cx7gQgII1U0wNAv1uLDwHY2HBQdu60ZpVDJNUd
+         GCE9tqBzgslIj25f8u3bDoUy/KTr8/E0DymBxH5DN4egltdvQ5WWwYjXAqRQ7UZzE58b
+         S4ACb8clr1GSW3u3JF7lvQ1mRbkpc6XcF/I/fS+OGP3QlUWVB99SdW2QmH7sjeBqksnz
+         nShjgSLURESllQXGtggZrqfM5uJ1EB5RFTjRrML9oR5/TE7krhda9VnmJFhkPm40RY6a
+         iJKFDUfF0A14SbqQzzTXrYiD0jWL3A9o6OLWNFFUSGlJlwRlqA7VNafCH1zqRkukh+jv
+         Pjvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733408755; x=1734013555;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ECr3j+PJPfH3u1FCY8Jwj8p+fy3HgSStYnz6KYhRzjc=;
+        b=Sn+qrp35N6tt+25EezWX8XXXkmrhMeONWRTNy5iV7w0sM2VDO4QXv/WS6+p3lIjv4o
+         3ZSUVBd60Dni9PwQrXlI8/0RVezddiVUnU9rtqyah1NtnJ9As+tOBgutYqDNTYWKKL4f
+         jqALFarWal/khpgrfHXFMtyve2xuluJ323JIebXkw+0DNvGKGyqhxR+XNpyTZcwIV2Cj
+         xLgJ3ekoKRyN00KTtCOCCgpk0EMIwPw+jvBwhHSPndG45Lf0IPKGMO/f9bLDlFPqq8ye
+         P9aA3taMb3E0E1mBKUamhHYcFMYKNWLljSeVNmYunukjG9VeMiXDELsNhxSfXrXl2Zro
+         7EAQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUGGiKZ8L7tfCgPGfZeLPb+P7fmUVAXVWfEB2A8m/x+lxqUd95u2ePmrrOHasTeSEEANp/8Kg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxbPFuQ1xCbrHn07jZDWvoc+3Gvbhn5VW/VJfUG3MD0Pl8w7wje
+	/qTBeu+0tPz1R6GSUmcrxruaiCFtNfOm2q9BS7Up7kDwch/vFLyn
+X-Gm-Gg: ASbGnct+tcF7pxRaEEcMHidEVE8+7uhGAo6DBo/GeLdiOdzeQcGtsQvZ6E9ZU7a0cb9
+	cL+GsWcGdHtJyp8A+TK0+jlFvrT7IkO4DKfFNW/P7tK4KT41IS6HfCKRnUcXbRBKllIx+IKTLD8
+	HMtJ+ZGuUY6snSD+Z7j8SZTJP2GuQIYtr6hSZctsVKTyw7Qc6IIay6iHDGTLgEo7SHFeBzZe2RT
+	S7Ys7Dsh2s5opLQ5lBphEli3DuxKWCmgCr3BynWgmo3rBIZXAhHVRxGv6xarfcKS9UDrbgFRojw
+	w1vE169BtJ6i/dBnpMJa
+X-Google-Smtp-Source: AGHT+IFzlJ/ndqgl+nEbM84hx+ZYeslhN+ABZV1lIYxXxfYOelqjUzikzeWd4ZSkjTOWIlPz8RbBWA==
+X-Received: by 2002:a05:6512:10cd:b0:53d:f63a:e428 with SMTP id 2adb3069b0e04-53e2192c603mr1207101e87.27.1733408754721;
+        Thu, 05 Dec 2024 06:25:54 -0800 (PST)
+Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53e229c1edcsm261651e87.187.2024.12.05.06.25.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Dec 2024 06:25:54 -0800 (PST)
+Message-ID: <c9baa4bb-81db-42ae-98be-d8cb7d57f237@gmail.com>
+Date: Thu, 5 Dec 2024 16:25:53 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <416c7369fcdce4ebb2a8f12daae234507be27e38.1733406275.git.robin.murphy@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 2/2] rust: add dma coherent allocator abstraction.
+To: Robin Murphy <robin.murphy@arm.com>, daniel.almeida@collabora.com
+Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+ =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
+ Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
+ Valentin Obst <kernel@valentinobst.de>,
+ "open list:RUST" <rust-for-linux@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+References: <20241205113234.2021442-1-abdiel.janulgue@gmail.com>
+ <20241205113234.2021442-2-abdiel.janulgue@gmail.com>
+ <1c13843f-6929-4bc6-8564-0ec2d964c41d@arm.com>
+Content-Language: en-US
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+In-Reply-To: <1c13843f-6929-4bc6-8564-0ec2d964c41d@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, Dec 05, 2024 at 01:48:10PM +0000, Robin Murphy wrote:
-> Since system_supports_gcs() ends up referring to cpucap_is_possible(),
-> teach the latter about GCS for consistency with similar features.
+On 05/12/2024 15:07, Robin Murphy wrote:
+>> +    pub fn alloc_coherent(
+>> +        dev: &Device,
+>> +        count: usize,
+>> +        flags: kernel::alloc::Flags,
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-
-Looking around, we should probably do the same for HAFT.
-
-Mark.
-
-> ---
->  arch/arm64/include/asm/cpucaps.h    | 2 ++
->  arch/arm64/include/asm/cpufeature.h | 3 +--
->  2 files changed, 3 insertions(+), 2 deletions(-)
+> Might it be worth adding at least a placeholder type and argument for 
+> "attrs" as well, so there's less churn involved in coming back and 
+> adding it later? Or is the intention to have a separate 
+> dma_alloc_attrs() constructor for such users?
 > 
-> diff --git a/arch/arm64/include/asm/cpucaps.h b/arch/arm64/include/asm/cpucaps.h
-> index 201a46efd918..cbbf70e0f204 100644
-> --- a/arch/arm64/include/asm/cpucaps.h
-> +++ b/arch/arm64/include/asm/cpucaps.h
-> @@ -44,6 +44,8 @@ cpucap_is_possible(const unsigned int cap)
->  		return IS_ENABLED(CONFIG_ARM64_TLB_RANGE);
->  	case ARM64_HAS_S1POE:
->  		return IS_ENABLED(CONFIG_ARM64_POE);
-> +	case ARM64_HAS_GCS:
-> +		return IS_ENABLED(CONFIG_ARM64_GCS);
->  	case ARM64_UNMAP_KERNEL_AT_EL0:
->  		return IS_ENABLED(CONFIG_UNMAP_KERNEL_AT_EL0);
->  	case ARM64_WORKAROUND_843419:
-> diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
-> index b64e49bd9d10..8b4e5a3cd24c 100644
-> --- a/arch/arm64/include/asm/cpufeature.h
-> +++ b/arch/arm64/include/asm/cpufeature.h
-> @@ -847,8 +847,7 @@ static inline bool system_supports_poe(void)
->  
->  static inline bool system_supports_gcs(void)
->  {
-> -	return IS_ENABLED(CONFIG_ARM64_GCS) &&
-> -		alternative_has_cap_unlikely(ARM64_HAS_GCS);
-> +	return alternative_has_cap_unlikely(ARM64_HAS_GCS);
->  }
->  
->  static inline bool system_supports_haft(void)
-> -- 
-> 2.39.2.101.g768bb238c484.dirty
-> 
+
+It certainly is possible to include attrs in the constructor using Option:
+```
+     pub fn alloc_coherent(
+         dev: &Device,
+         count: usize,
+         flags: kernel::alloc::Flags,
+         attrs: Option<u64>,
+     ) -> Result<CoherentAllocation<T>> {
+
+<cut>
+         let ret = unsafe {
+             bindings::dma_alloc_attrs(
+                 dev.as_raw(),
+                 size,
+                 &mut dma_handle, flags.as_raw(),
+                 attrs.unwrap_or(0),
+             )
+         };
+<cut>
+     }
+
+```
+So the signature of the constructor could be:
+
+let c = CoherentAllocation::alloc_coherent(dev, 4, GFP_KERNEL, None)?;
+
+Andreas, Miguel, Daniel, any thoughts?
+
+Regards,
+Abdiel
+
