@@ -1,132 +1,94 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43C1E21A44A
-	for <iommu@lists.linux.dev>; Thu,  5 Dec 2024 14:54:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0AB721C199
+	for <iommu@lists.linux.dev>; Thu,  5 Dec 2024 15:04:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733410491; cv=none; b=VECky6n4xXvfaPhHv61TJ1XMDSRbchL0Xmg4DixYrK31675UzF4ZsvHz7ncKxQgZrMK+JuXd6scK8db5XwNe2Wc5NBH/NqSIymoVsQG2HFvwoxo93Lt7aetdcKCMOcpwZCiotBvyIV8x9QOu6xvzTxFqm47hFKvL+hWvCPcHJaI=
+	t=1733411057; cv=none; b=t3T8yQZ2vZa2q28gwT5bRYvOeLju8hWOyv8vX4r9L/XjTmHMf+aFvEU3HyQHudCMGbecq4bwfXMFiARKZND0DoRSWXHYPBYA682mho9RgTKGpDg9woxzDN1fpuZCkrhrhd5mqwOPQp4J5u6okAHUXhjh+D+940ScezvurLflcUk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733410491; c=relaxed/simple;
-	bh=f8tH5F+wtgbza7viG4IOdVZJiWD//+m8I2XaKnLqIkM=;
-	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=C4AeIoxg7iEMNDgYkw/PjlmfKXXBKtd+OH5Ybxc8dfWv5ffF4VqXerVD1XbTbOGYnMUo9VB9lpIL0osDsYG28JHzgBw+K/WaVFARaErneZD1Gpp0k9RmKs8DhlkiZwplpOBbEYl6M8uJ6SlmNXINZwvrvsxmxj4gZZVfMmpZVsY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-	by metis.whiteo.stw.pengutronix.de with esmtp (Exim 4.92)
-	(envelope-from <a.fatoum@pengutronix.de>)
-	id 1tJDFe-0008Hp-Hr; Thu, 05 Dec 2024 15:54:46 +0100
-Message-ID: <72ad8ca7-5280-457e-9769-b8a645966105@pengutronix.de>
-Date: Thu, 5 Dec 2024 15:54:43 +0100
+	s=arc-20240116; t=1733411057; c=relaxed/simple;
+	bh=D+6lIZ9bV7/xmzLlToKOUu2B1ZQZPieWd2KlAr78KFA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kK0/P31PKlo7dzG8WIeENivxSf7Wg2GDjxSraUweIQlwHb78rc1QJLSRQc/JYkG0JjJVS6bI4L7GZikGeBrgcdb1dTAsj0WYg4d8Ll9DyJb5rjacnvU8LOleRBxOU7cpxZfhvefKq7Mt5xjtgyKHHg3Q5Amjd6mFrub6YlOHFSE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FFLtffy8; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FFLtffy8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF0A0C4CED1;
+	Thu,  5 Dec 2024 15:04:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733411056;
+	bh=D+6lIZ9bV7/xmzLlToKOUu2B1ZQZPieWd2KlAr78KFA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FFLtffy8VkU0jop2tBE4Nby6MYHqO9tZwCt3wlR5Y6DtZRYvtVt1sLIPUxa7orxN9
+	 GMSUCXqbiKiLjiQuuFKz0RflS4afn99I+O2ZLpY+iHR6JYmP4TcwBuovzXI8q9eUbX
+	 pbqNeiIiC866KjlpDRx/tDV1828q0r2+rW+CwRwALRDcVrFtvu6FMce0MfIG/+50Md
+	 /t5M9uZxzMZlfOda4A+pqp5RQyrJYW9AdWgdp+QzLBTLA83OzDb44eBi6FR6t6cInq
+	 REIx0DBED9ljs/QKgUeReKQ0QxAuEAqPk3gqR9YAHbTMj42JP+6yCCXCdVEdpSRWC4
+	 vzHdM6+CTAakg==
+Date: Thu, 5 Dec 2024 15:04:11 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, catalin.marinas@arm.com, joro@8bytes.org,
+	jean-philippe@linaro.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, mark.rutland@arm.com,
+	joey.gouly@arm.com, ryan.roberts@arm.com
+Subject: Re: [PATCH 2/2] arm64: cpufeature: Add GCS to cpucap_is_possible()
+Message-ID: <051c017c-a60f-48a7-b09f-07f0f32e48e3@sirena.org.uk>
+References: <68a37b00a720f0827cac0e4f40e4d3a688924054.1733406275.git.robin.murphy@arm.com>
+ <416c7369fcdce4ebb2a8f12daae234507be27e38.1733406275.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-To: kasan-dev@googlegroups.com, iommu@lists.linux.dev,
- Arnd Bergmann <arnd@arndb.de>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>,
- Alexander Potapenko <glider@google.com>,
- Andrey Konovalov <andreyknvl@gmail.com>, Dmitry Vyukov <dvyukov@google.com>,
- Vincenzo Frascino <vincenzo.frascino@arm.com>, Christoph Hellwig
- <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, "Paul E . McKenney"
- <paulmck@kernel.org>, elver@google.com, Kees Cook <keescook@chromium.org>,
- Pengutronix Kernel Team <kernel@pengutronix.de>
-From: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Using KASAN to catch streaming DMA API violations
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: iommu@lists.linux.dev
-
-Hello,
-
-This is a follow-up to a discussion that took place in the Kernel Sanitizers
-Office Hours (IIRC) at this year's Plumbers Event in Vienna.
-
-I had asked about how KCSAN could detect races due to DMA[1] and Arnd
-suggested that we could use KASAN to detect the CPU accessing buffers that
-it doesn't have ownership of. I mentioned having implemented[2] this exact scheme
-in the barebox bootloader's KASAN support and promised to type up an email
-about it to help getting a similar functionality into the kernel, but first
-some context:
-
-The streaming DMA API is used to annotate ownership transfer of buffers in
-memory shared between the kernel and a DMA-capable device.
-
-The relevant kernel documentation is:
-
-  https://www.kernel.org/doc/Documentation/DMA-API.txt
-  https://www.kernel.org/doc/Documentation/DMA-API-HOWTO.txt
-
-But I'll give a quick recap. There are four key operations:
-
- - dma_map_single() moves a range of memory from CPU to device ownership
-
- - dma_sync_single_for_cpu() can be called on all or a subset of the range
-   mapped by dma_map_single() to move ownership back to the CPU
-
- - dma_sync_single_for_device() moves back all oo a subset of the range
-   mapped by dma_map_single() to the ownership of the device
-
- - dma_unmap_single() gives back ownership of a range of memory to the CPU
-
-It's a bug for the CPU or the device to access a streaming DMA mapping while
-it's owned by the other side. On many systems, that bug will manifest itself
-as memory corruption due to loss of cache coherence.
-
-To make it easier to spot some misuses of the API, the kernel has a
-CONFIG_DMA_API_DEBUG feature, which will run sanity checks when using the API.
-It can't however detect if a memory access happens to a buffer while it's
-owned by other side, which is where KASAN can come in by having CONFIG_DMA_API_DEBUG
-record ownership information into the KASAN shadow memory.
-
-That way accessing a device mapped buffer before sync'ing it to the CPU is
-detected like KASAN would detect a use-after-free.  When the ownership is moved
-back to the CPU, the memory is unpoisoned and such an access would be allowed
-again.
-
-I had implemented this scheme[3] in the barebox bootloader and it works ok:
-
-  BUG: KASAN: dma-mapped-to-device in eqos_send+0xdc/0x1a8
-  Read of size 4 at addr 0000000040419f00
-
-  Call trace:
-  [<7fbd4980>] (unwind_backtrace+0x0/0xb0) from [<7fbd4a40>] (dump_stack+0x10/0x18)
-  [<7fbd4a40>] (dump_stack+0x10/0x18) from [<7fba2360>] (kasan_report+0x11c/0x290)
-  [<7fba2360>] (kasan_report+0x11c/0x290) from [<7fba1f44>] (__asan_load4+0x54/0xb8)
-  [<7fba1f44>] (__asan_load4+0x54/0xb8) from [<7fb2e52c>] (eqos_send+0xdc/0x1a8)
-  [<7fb2e52c>] (eqos_send+0xdc/0x1a8) from [<7fbb6544>] (eth_send+0x154/0x16c)
-  [<7fbb6544>] (eth_send+0x154/0x16c) from [<7fbb7114>] (net_ip_send+0xe8/0xf8)
-  [<7fbb7114>] (net_ip_send+0xe8/0xf8) from [<7fbb7d10>] (net_udp_send+0x68/0x78)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="fK5nFpGDFbAVSTd6"
+Content-Disposition: inline
+In-Reply-To: <416c7369fcdce4ebb2a8f12daae234507be27e38.1733406275.git.robin.murphy@arm.com>
+X-Cookie: System checkpoint complete.
 
 
-The aforementioned barebox functionality goes a step further and also used
-the shadow memory information to detect repeated syncs without an ownership
-change. While this is not a bug, my impression is that this is unnecessary
-overhead and a diagnostic could help correct a developer's misunderstanding
-of the API.
+--fK5nFpGDFbAVSTd6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I hope to kick off a discussion about this with my mail here and perhaps even
-motivate someone else to port it over or reimplement it. :D
+On Thu, Dec 05, 2024 at 01:48:10PM +0000, Robin Murphy wrote:
+> Since system_supports_gcs() ends up referring to cpucap_is_possible(),
+> teach the latter about GCS for consistency with similar features.
 
-[1]: when CONFIG_KCSAN_REPORT_RACE_UNKNOWN_ORIGIN is enabled
-[2]: https://lore.barebox.org/barebox/20240910114832.2984195-1-a.fatoum@pengutronix.de/
-[3]: https://github.com/barebox/barebox/blob/master/drivers/dma/debug.c
+Not clear why this is part of a series, there's no obvious relationship
+with patch 1?
 
-Cheers,
-Ahmad
+>  static inline bool system_supports_gcs(void)
+>  {
+> -	return IS_ENABLED(CONFIG_ARM64_GCS) &&
+> -		alternative_has_cap_unlikely(ARM64_HAS_GCS);
+> +	return alternative_has_cap_unlikely(ARM64_HAS_GCS);
+>  }
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Ah, this is bitrot since the series was on the list for so long.  As
+well as HAFT which Rutland mentioned it looks like _bti_kernel(),
+_irq_prio_masking() and possibly others have the same thing.  Ideally
+we'd have no uses of IS_ENABLED() in these functions so it's a bit more
+obvious.  In any case
 
+Reviewed-by: Mark Brown <broonie@kernel.org>
+
+--fK5nFpGDFbAVSTd6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmdRwOoACgkQJNaLcl1U
+h9CKCQf+PJ8xyxhvWUHGbBuvArpSMIsFSw+7fhNagnbBeERzr41D0PePE5LX+Cmk
+6dz3kmNjq6dOXgE+3Rfkg6b+TXeIOusL+uYCaBrTYQBnEWM+lk9iLoDFQl7GGq3f
++qGLeP9ao7/bHZw4fud2kaNQqnRhkaQWMKBWgAqSJkJav74Px4IXdVUR5PhvtEHV
+N21Wqm2F/0/deeX8i8MWFqXIzVh3xGmHaNSTvRu5Cu6pZf0rKMKJ4zfPuvKOxLIb
+90qIFQ0LxjTmPJ3MbfkcpB79OcHKz5STwV+lc2MM0IEsMl48cqrY70xrnSK8MGRW
+dlGUimQQPI5s+0N/rctb0kDpMXz+mA==
+=NPof
+-----END PGP SIGNATURE-----
+
+--fK5nFpGDFbAVSTd6--
