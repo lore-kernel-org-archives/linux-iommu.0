@@ -1,197 +1,359 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2053.outbound.protection.outlook.com [40.107.92.53])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89216221461
-	for <iommu@lists.linux.dev>; Thu,  5 Dec 2024 18:44:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733424279; cv=fail; b=R9obQxO79Kd3tWyHmhni/0Ix2lXc7z9sZOm4y7kCB+j11a/ag3LCxbTSbTyXut6vxCCUE0vEwmWGdTgBs1esyJNfM0YzrfJv8UDh0J3PLQUWC1ann5ceScVNUCs1UAzuqVz8B+LP8JBonjkmzlBYif0th0bgo6OIciicBDcyFIM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733424279; c=relaxed/simple;
-	bh=xilU2xtgAZgr0JZTji/JrQXnfdNGQyNrzZfvOK8eaEc=;
-	h=Date:From:To:Cc:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=DtrefKrxJt0KNimX7aJ9ltNjgs1+B39Jt5HnZj1CBIGfXAAa3wUNSfTGFvfQVuePtP/eCQ1GmF9MjXzlzBNygQYcRc9uqEbY/48IovAwestDrJ9uGNLmtXEq68cPQUFcoR9knjS5zwACgVwa3LTigUY7pptNAPz1BOWAaySh0jA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=mfZMYSyM; arc=fail smtp.client-ip=40.107.92.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42C1D22B8A1
+	for <iommu@lists.linux.dev>; Thu,  5 Dec 2024 18:53:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1733424825; cv=none; b=U36PTTGH1/J3of9vUTXy6AhS/C+2bCN9s6P3dD1IwWsUIXpHSyMbvtelHQUqPMzITesmycmh6LeF7/hNc70m9xUik9TPzoU+JXJV6Jlq2CcP2GwqRNNRi+S7lEIMQX8EBGQiCrzYeSs7yCtiGwy4jXObDzk7K9cU9OwQgYOr3F4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1733424825; c=relaxed/simple;
+	bh=UhlkgQWRZUe442CDk2q6o6VCm/gPaOzM4pDcO6+pmhs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=jqyDYY1PL0zFUi0PAIqHSbHxpFkDeoZg7jXM4ujUg1RweVgcB/bYQUQTtJBdegUhB7jlgEr8IlOiFmAMye6LiTKh+p3HHrbIrX14vfcbps6fQa4roPu4Zv0NypmQtuPDLcjfkCA5BKNfhTeXJEl8sPhwDfwb+DK4QfleT+foTcE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=AdZS+3kp; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mfZMYSyM"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=a574l8knaX2SGBaHSYcbocKHmF7nQb/ehdav/U+nAUIiOnuqgF2zKgqDjVAEkco0o7c/qQioN1TrU7jplUTFnXs/9SrNoH16nUCljMhOrB8d0GiWJbFv2GDtBh+oBohnwk+mCRalbRWVcmjzOxU+t90e1AS4L8QkBaxG7vL3zJkJGa0GPt3mCSGghRS/+86ro5XDIJO4jp4ToEsreHRQxR07fB4t3l1UdiHcdj2E/F+5f3R5UNqg3wEYwVMUqcTM9wcLqJJs3bP751/PbYmE2dZ7e23E2VHXTBdM3EPmq4yf8qfi99tDuDOcFIXe8p0LcweKL/rUPjZYazN8RXtdsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BtSISHw6D94kP/rPIxx1EMX8xArB4VC9IUBXvIIH9+s=;
- b=Ddk8NnFYlCMrr+NIs4FSR26NPwigqIEsNPS1gfo6v0edvigYmQ0Lh12xqR9VEGj5Jpcb7eQPTvwKI6a+wTmW8H2dn6qWyPTksqAlpUf47/uCzSer/q3LnYO20+JYB1hPNPyU3+x5+u2QOD7cBLcnOIBokRLHzZoez4haFYqM//n17fmD7iqt8WAvD6pen2gaicBOVAlbW/XASEQZ/BIAbvy90XaJkcgtQc4g7jVK+pekLrx0u/msmbjI2bMw0hVPV8kYj9MohRgnABG7xNxfyY4ckmBdCM56fmWxwdXI0q7sr4I+WZnvYvpF+DqZ/8TckiiPAk2AxP/vBMESXHp3sg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BtSISHw6D94kP/rPIxx1EMX8xArB4VC9IUBXvIIH9+s=;
- b=mfZMYSyMnwCmjtNsdBY2M10bG4t4OqcEO/WrJ2zmgIBCteb+gI4TwGVpu9Pyl5tJ4dTqOL62pC7hPaTWP2z6NDNdXaajHpoEoO214blDJjlsMByM1KuSckdTE2MN6ScycoJt1fY56/ucjTGfU0/8ONR8aMa4u7PEOQLp0wHHyYdGnAqeDgDXHkU89lI1GE2ucZsZVlrr9vWNR/HFt3lG25e2XHDZiN1Qa1OQ440I0LKnrXa8P7JDptrrgMot9zfbJRoewUyDGppjrcqGZYU7yZq2CyQYgSIPFlnPqyweVxyKJ2JEqj8FfXwxF4cLS2yH7eF/OOws/XEA49HfZXj1yA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by CH2PR12MB4278.namprd12.prod.outlook.com (2603:10b6:610:ab::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8207.13; Thu, 5 Dec
- 2024 18:44:31 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%5]) with mapi id 15.20.8230.010; Thu, 5 Dec 2024
- 18:44:31 +0000
-Date: Thu, 5 Dec 2024 14:44:30 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
-Subject: [GIT PULL] Please pull IOMMUFD subsystem changes
-Message-ID: <20241205184430.GA2110789@nvidia.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="NWhtbCSZBtmsPm2R"
-Content-Disposition: inline
-X-ClientProxiedBy: BL1PR13CA0445.namprd13.prod.outlook.com
- (2603:10b6:208:2c3::30) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="AdZS+3kp"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4B5HaFOd003711;
+	Thu, 5 Dec 2024 18:53:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	l+UbAPNGKQuooGCTwCiddX+Dh5NpKdED3hZlIbAnc3U=; b=AdZS+3kpJJWdTxFc
+	QWEzajBkN3m6jgrepo5yzLRxBptsYinu7aqITgQB0LrGSvxrxs+9amb2hRiuawNS
+	oGMOXUKzvn+gyAu3agbZoOeNc/IJByMo85IpECZRD9MtU13BguFQB+vE4n4B2twD
+	6FUls6s2HO/vmAvF0+p4DoPsCqTizoMR9Wuo0gJsJdCAfHh8JeIf0LwdsunJJ1UE
+	L5uWWiyy6vP3zxMzJSBGLBt+8invBmVse2Li6RcBzcV3/CaFJQBXBCEoEdEoxjEK
+	EoMkqtzsNEDHVn+TXavr93QEqdzDrkAhaHX0b42zFBcFjYrCs38CmhrVxpVGK/0s
+	EjwgQA==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43ba0khf2c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 05 Dec 2024 18:53:29 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4B5IrSPG018141
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 5 Dec 2024 18:53:28 GMT
+Received: from [10.216.35.7] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 5 Dec 2024
+ 10:53:21 -0800
+Message-ID: <4c1df383-6a0a-4bed-8ece-b582712ca4cf@quicinc.com>
+Date: Fri, 6 Dec 2024 00:23:16 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CH2PR12MB4278:EE_
-X-MS-Office365-Filtering-Correlation-Id: 07c95b2d-3f43-4f1e-e4f7-08dd155cdaf3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?sZPieA1h752pYM8oEe5ttwcjHJ2t3LmL2m4574EOGD3D+2rHRHANIJRMteaz?=
- =?us-ascii?Q?iePXJBD6v0mpsde+wQGt1GoAFpTJPaxjYkU9ZOj/o4Bp6zag3waUxGFAZaa9?=
- =?us-ascii?Q?FFkLax55ECWCamHJYv7v/9/LumiXoGmtDtk4EguHbcYZ0IabwvbD1KFTcnHy?=
- =?us-ascii?Q?gkKCVUiRPQMTugn6EuYteagohgoO79V2FWnbBXoOE/AfQaZMkOQHalt7eTx3?=
- =?us-ascii?Q?E+l10zKnYFaZyxiVU8cHaoR6JQMRqCVQ5J8qIs/Tu8FQDsjYmOXyqB9j1/NY?=
- =?us-ascii?Q?hJ69eo1WRM3QzhiEczk763T7YDJQSsPdXUtIfSo5CLChdCUr5a6TM48v8TXR?=
- =?us-ascii?Q?mqNADE9nUOOmEnq/ekCRDJj+I7dgZoy39vqIo2daGh4fVuRHatdptAX3BZFf?=
- =?us-ascii?Q?P3vWrc0Vl8AzZQe4l0QpCtRv6oe0Y0/Pnl6u2QZ2UhYQNEatDHsCrnDBLh/t?=
- =?us-ascii?Q?XhhxQgeSrugFdIfBrmtsQDPji1jis4uZ5MYtEA+dKiYoVyhDokSdwrfMxVzM?=
- =?us-ascii?Q?y9CRTi/U2ui01D3ZzRJTtUuKpqsT7YOdu+4vN3YIMbVDSXokKBHOdnMZRgsF?=
- =?us-ascii?Q?lzGEW75a+3sGFP1BNbCVY1rwfRscPUcyOffmgkvFsIL6Ftvn/IJ0MIGwDl1o?=
- =?us-ascii?Q?LvRRZkipWcNZdrXo+6cXBBQFs1kTnFhrTlEkSfEP5x0hWicxQHInQ1Ak65L9?=
- =?us-ascii?Q?Hrmi1E1NZ6Y4OHMR7RzlMtwBl9LgMSemxhGkAjI7ux1ochTHUJ/c+yGRdfUG?=
- =?us-ascii?Q?anMlOlUB6xVvH2Q2E9zx7EO4SdcP/wa8dDsdier2SU6OkkBRC21Ck512OkcV?=
- =?us-ascii?Q?DnN0CYBf8mf8MjAkmkNVTY3zk0id5mbHMvNV+JqVze9Z2QyEPtrH2p8inGhj?=
- =?us-ascii?Q?2z4FNjcr/o4+Vb5LP8PV4JssSOU4YIT0zlaJGinBAfesjMI56Idv0UCaIsKX?=
- =?us-ascii?Q?zx+sLZPUhJbDhbEN0k8YsAwfbs65iKWRm/v9cTclB+bD64piithyAgRJUE1K?=
- =?us-ascii?Q?shwxEWToQU4+HXd+9BIBPThXYYXXSYNgnupTX9KjyvNovWr7R/9x1pOktKeY?=
- =?us-ascii?Q?wbnc6erehKbtTZCbZalGNvyRmEKCjZTj0Kt8AoIKAULJNx6Lj+60J8X5zntC?=
- =?us-ascii?Q?O2nV+DPUS2nDp/i7pyOdsIZ9Y/yLvtcRy5fEp3VnPAQy6Upn5C0cZAYgRnlu?=
- =?us-ascii?Q?ueMMq9fowsS+zoPUb98kKJbZwIKKdPSkgicBrntl7dVbQULugbpMkFcL4e5d?=
- =?us-ascii?Q?MbUqqQXISZprsDMgfQMxCGeYQ/sLRbgtNyOll0Y11XINGAomnKeRsWsrMv1l?=
- =?us-ascii?Q?ZwxDsOLAf8VV74y1J1KYa0mmSn8z5BmzTBxoimjsNoKW3w=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?bZzRRMOH0uq5hFhIvaSZElMHYIqcp9MoMBWC5CtbIkiv9QFDxok+wgxY8ro6?=
- =?us-ascii?Q?q2G9i2c8rr2x+RBhH6DMHAGAnWjjBayA71zt4DCoqhAzn1rz9+y3neFSvVWj?=
- =?us-ascii?Q?1TPuulJlDBNL/BWos6VMQde9RyojhD/SIsS6V2NZ6kuGum5+pvS4EyB3xp8b?=
- =?us-ascii?Q?XHdOqV3ce7G2s1VO5bcG+nIyAKqQYT7JT6WGN1IMjsH56SQEXdApKFS+UwNM?=
- =?us-ascii?Q?p6UBx/xh6bP9Lu/saMyqSyPzqDEX0idytqYGihvF78XsRmzV1/3w3EiLISSs?=
- =?us-ascii?Q?9G1s8kckQIDCBnlt1zpK3GDv0/MdpV/A2QqKH8DW3R1MVAlQ0GuLaZGJxWWy?=
- =?us-ascii?Q?ggAxDvOLO8E7oMzg7uE4xRiLYhnShpzMMjB0kF5aZDE/6IaheKsJh3prGwsg?=
- =?us-ascii?Q?fWWd0g7orR5zhdUOrKgFqlC31oeC5vf5kdXwPpQrCPQGZyy6biIZoaoZfAm9?=
- =?us-ascii?Q?vvEueQjQUUhDzdC76JItIKlQBZmu6x9jlHm9ZnJZWeGfYsUewQlfpnK9GaDc?=
- =?us-ascii?Q?XEVvNBcJSQCuHo9AJJSfV4+Usmt4TIEjFPhrlv9U/QgrWy61N8bWZ7gG1rVb?=
- =?us-ascii?Q?KbrmVSA5anQECxVAiK9A9wD5XxLbXA9SMFhocs9giMQc7j0mFl45hKytMug8?=
- =?us-ascii?Q?JqJE5HqJkASV0F5Eee1yQLGwPi9OZVB6qc5cGe5C6BBcf7Eafc0DZFNULIZ1?=
- =?us-ascii?Q?+ziHYG9JOnxGRAPEq3YWMnBzEns+L/JXhzXix+uSV/7vCfsTM1my3QHTvKja?=
- =?us-ascii?Q?iZAfWTnVAgT6swJOX0TEk0Tm7OZIQ0xLNSwxr+WzmA6ByJ2uHsdcldx5tk4C?=
- =?us-ascii?Q?A9lzrjS4NeTlQxrHSk55fuxYjVnEYU1q/+m0gP4kC7BdjoxURJv4izQjFmbW?=
- =?us-ascii?Q?xtVjlhFWvaJgj7NgSw5k/SUZuwGd6XFBG0Ap+IDHtirYqIdL819/+mHFVEY4?=
- =?us-ascii?Q?M5hy1xMqwAmafdTxqnAToawuwagdDBbaB40GTZDW3/Ui3bX2SRZ10Xn2YSwY?=
- =?us-ascii?Q?UuWyZcDY5zKUB/zF3pin4E2yB4nZXoqGPOpIYIHaUWnjwdKSIbqrpu0p8aDi?=
- =?us-ascii?Q?djyr0cySot0apdmKESJFohKRNzhl15FZdxZilc6JHZm4jh6iSt/mj6ZpPzcj?=
- =?us-ascii?Q?WBY4wC/gIFpOtLwaCOuEA3BH5hbWQDusgvgTNHQOfCDW9T9mXlZBv8vhZZi1?=
- =?us-ascii?Q?6rfNHUGLHzssKxlKB4yvT3gzzSnw66/2U0AyML7rgao4bjj1KpA7pmGjyFHS?=
- =?us-ascii?Q?4+qER6+b/RnEF0OvBOEp7LDGlgA5rQXh4liY4cRrS7IkKPEGgWFV66RV0KgR?=
- =?us-ascii?Q?1FqRrt7lVH9VlLlTTRzLFxhAR1w6xya2gUIvEFY6EMTZ6HLFTo/NwKIYGuRx?=
- =?us-ascii?Q?nR/1v4EO6bswAxxK7ZdI5QVPpu8nA3RoivW1tTMSWGc/9mZ2qxgNiiAe5TfT?=
- =?us-ascii?Q?9FWQnRhUaU8YHsBkBLt8q+3l42har97I6h1m31gE6EkmeJFYj8QYxMvhyNfm?=
- =?us-ascii?Q?8vYz99aRKMefIV0l87Y0v0FzCfezFm5CyodCmtn57Qx/Pp25Nj98YUdGj0nT?=
- =?us-ascii?Q?UyxTdceSYIf4WBkGgb2c9YQR8OSpAlo2V5tkq1Tq?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 07c95b2d-3f43-4f1e-e4f7-08dd155cdaf3
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2024 18:44:31.2553
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qXouJBQh/3Iv5xWW/yA6NJLvtFTAtplhRDjj3+3dsEz5Z2YVRsYNS2TZ3AspEINx
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4278
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RESEND v17 3/5] iommu/arm-smmu: add support for PRR bit
+ setup
+To: Rob Clark <robdclark@gmail.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <jgg@ziepe.ca>, <jsnitsel@redhat.com>, <robh@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>, <quic_c_gdjako@quicinc.com>,
+        <dmitry.baryshkov@linaro.org>, <iommu@lists.linux.dev>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        Connor Abbott <cwabbott0@gmail.com>,
+        "Rob
+ Clark" <robdclark@chromium.org>
+References: <20241114160721.1527934-1-quic_bibekkum@quicinc.com>
+ <20241114160721.1527934-4-quic_bibekkum@quicinc.com>
+ <CAF6AEGuwWsAkRyF-h5Aj3KzM7iksb12HsfJ5Ks+-P8hv60MWFg@mail.gmail.com>
+ <9beca099-5cf3-42b5-b1f9-fb1551219b18@quicinc.com>
+ <CAF6AEGvAOswFTpS5PHrgCsG_2-QN_Bi4YjZbPpV+r3x=9D2aUQ@mail.gmail.com>
+ <d2d8d9e9-74b1-4b05-84a2-dcfa204e6e00@quicinc.com>
+ <CAF6AEGtBva41Fz0tS4gRwK21ZqzDH5yGrWLY6TMeS6u7OFfS0Q@mail.gmail.com>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <CAF6AEGtBva41Fz0tS4gRwK21ZqzDH5yGrWLY6TMeS6u7OFfS0Q@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: K-8EQ6S21n68Yovjo5RNVE_VUPWT9O_U
+X-Proofpoint-GUID: K-8EQ6S21n68Yovjo5RNVE_VUPWT9O_U
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=0
+ mlxscore=0 bulkscore=0 mlxlogscore=999 spamscore=0 malwarescore=0
+ impostorscore=0 lowpriorityscore=0 clxscore=1015 priorityscore=1501
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2412050139
 
---NWhtbCSZBtmsPm2R
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-Hi Linus,
 
-One bug fix and some documentation updates
+On 12/4/2024 8:51 PM, Rob Clark wrote:
+> On Wed, Dec 4, 2024 at 3:27 AM Bibek Kumar Patro
+> <quic_bibekkum@quicinc.com> wrote:
+>>
+>>
+>>
+>> On 11/22/2024 10:33 PM, Rob Clark wrote:
+>>> On Fri, Nov 22, 2024 at 8:19 AM Bibek Kumar Patro
+>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>
+>>>>
+>>>>
+>>>> On 11/20/2024 10:47 PM, Rob Clark wrote:
+>>>>> On Thu, Nov 14, 2024 at 8:10 AM Bibek Kumar Patro
+>>>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>>>
+>>>>>> Add an adreno-smmu-priv interface for drm/msm to call
+>>>>>> into arm-smmu-qcom and initiate the PRR bit setup or reset
+>>>>>> sequence as per request.
+>>>>>>
+>>>>>> This will be used by GPU to setup the PRR bit and related
+>>>>>> configuration registers through adreno-smmu private
+>>>>>> interface instead of directly poking the smmu hardware.
+>>>>>>
+>>>>>> Suggested-by: Rob Clark <robdclark@gmail.com>
+>>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>>>> ---
+>>>>>>     drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 37 ++++++++++++++++++++++
+>>>>>>     drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
+>>>>>>     include/linux/adreno-smmu-priv.h           | 14 ++++++++
+>>>>>>     3 files changed, 53 insertions(+)
+>>>>>>
+>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>> index d26f5aea248e..0e4f3fbda961 100644
+>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>> @@ -16,6 +16,8 @@
+>>>>>>
+>>>>>>     #define QCOM_DUMMY_VAL -1
+>>>>>>
+>>>>>> +#define GFX_ACTLR_PRR          (1 << 5)
+>>>>>> +
+>>>>>>     static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>>>>>     {
+>>>>>>            return container_of(smmu, struct qcom_smmu, smmu);
+>>>>>> @@ -99,6 +101,32 @@ static void qcom_adreno_smmu_resume_translation(const void *cookie, bool termina
+>>>>>>            arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
+>>>>>>     }
+>>>>>>
+>>>>>> +static void qcom_adreno_smmu_set_prr_bit(const void *cookie, bool set)
+>>>>>> +{
+>>>>>> +       struct arm_smmu_domain *smmu_domain = (void *)cookie;
+>>>>>> +       struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>>>>> +       struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>>>>>> +       u32 reg = 0;
+>>>>>> +
+>>>>>> +       reg =  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR);
+>>>>>> +       reg &= ~GFX_ACTLR_PRR;
+>>>>>> +       if (set)
+>>>>>> +               reg |= FIELD_PREP(GFX_ACTLR_PRR, 1);
+>>>>>> +       arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
+>>>>>> +}
+>>>>>> +
+>>>>>> +static void qcom_adreno_smmu_set_prr_addr(const void *cookie, phys_addr_t page_addr)
+>>>>>> +{
+>>>>>> +       struct arm_smmu_domain *smmu_domain = (void *)cookie;
+>>>>>> +       struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>>>>> +
+>>>>>> +       writel_relaxed(lower_32_bits(page_addr),
+>>>>>> +                               smmu->base + ARM_SMMU_GFX_PRR_CFG_LADDR);
+>>>>>> +
+>>>>>> +       writel_relaxed(upper_32_bits(page_addr),
+>>>>>> +                               smmu->base + ARM_SMMU_GFX_PRR_CFG_UADDR);
+>>>>>> +}
+>>>>>> +
+>>>>>>     #define QCOM_ADRENO_SMMU_GPU_SID 0
+>>>>>>
+>>>>>>     static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
+>>>>>> @@ -210,6 +238,7 @@ static bool qcom_adreno_can_do_ttbr1(struct arm_smmu_device *smmu)
+>>>>>>     static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>>>>>                    struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>>>>>     {
+>>>>>> +       const struct device_node *np = smmu_domain->smmu->dev->of_node;
+>>>>>>            struct adreno_smmu_priv *priv;
+>>>>>>
+>>>>>>            smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+>>>>>> @@ -239,6 +268,14 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>>>>>            priv->get_fault_info = qcom_adreno_smmu_get_fault_info;
+>>>>>>            priv->set_stall = qcom_adreno_smmu_set_stall;
+>>>>>>            priv->resume_translation = qcom_adreno_smmu_resume_translation;
+>>>>>> +       priv->set_prr_bit = NULL;
+>>>>>> +       priv->set_prr_addr = NULL;
+>>>>>> +
+>>>>>> +       if (of_device_is_compatible(np, "qcom,smmu-500") &&
+>>>>>> +                       of_device_is_compatible(np, "qcom,adreno-smmu")) {
+>>>>>
+>>>>> fwiw, it seems like PRR actually works on sc7180, which is _not_
+>>>>> mmu-500, so I guess the support actually goes back further.
+>>>>>
+>>>>
+>>>> As I checked sc7180 was on previous variant of SMMU,
+>>>> so targets on this variant have different steps to set PRR bit.
+>>>> <Do not have both prr bit and PRR page registers>.
+>>>
+>>> Experimentally, I have to set both the PRR LADDR/UADDR regs and
+>>> ACTLR.PRR bit on sc7180 to get the sparse-residency tests passing.  So
+>>> the underlying hw seems to work in the same way as mmu-500.  _But_
+>>> this is on a sc7180 chromebook, the situation might be different
+>>> depending on fw on things that have QC hyp.
+>>>
+>>
+>> I checked on sc7180 chipset which is based on the smmu-v2,
+>> this time by looking for these offsets specifically. I can see the
+>> nomenclature of the PRR related registers are a bit different
+>> compared to MMU-500 variant.
+>> Also the implementation register is 64 bit instead of
+>> dual 32 bit as in case of MMU-500. and PRR bit is not marked in
+>> ACTLR register offset.
+> 
+> Interesting.. in my experiments it needed both the ACTLR.PRR bit set
+> and the LADDR/UADDR.  Maybe it was just happy coincidence that two 32b
+> writes worked?
+> 
 
-Thanks,
-Jason
+I think it's similar to case we discussed [1] in v11
+on why not good idea to use writeq on 32bit regs.
+So some corner cases for unaligned 32b addresses might get truncated.
 
-The following changes since commit 40384c840ea1944d7c5a392e8975ed088ecf0b37:
+[1]: 
+https://lore.kernel.org/all/ae35bf9b-4401-4a99-abd7-c0d9d399a46b@quicinc.com/#:~:text=So%20I%20think-,writeq,-for%2064bit%20write
 
-  Linux 6.13-rc1 (2024-12-01 14:28:56 -0800)
 
-are available in the Git repository at:
+>> So turns out PRR is supported but with some modification and
+>> can be carried out with same compatible based approach only - as per
+>> my understanding.
+>>
+>> In current patch plan was to provide support for MMU-500 based targets
+>> and won't break any legacy targets, so we can take the PRR support
+>> for legacy targets in different series once our evaluation is done on
+>> smmu-v2 ?
+> 
+> I guess it wouldn't be the end of the world, but it would mean that
+> drm would need to expose PRR support to userspace separately from
+> sparse binding support.  Maybe we need to do that anyways.  (I'm not
+> really sure how many different a6xx+smmu-v2 devices are out there, but
+> I guess they are all based on the same generation of snapdragon?)
+> 
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+We would need to audit on all the smmu-v2 based devices using a6xx
+version before I can comment on this, but mostly it should be in the 
+same generation of snapdragon (scxx/smxx).
 
-for you to fetch changes up to 2ca704f55e22b7b00cc7025953091af3c82fa5c0:
+Thanks & regards,
+bibek
 
-  iommu/arm-smmu-v3: Improve uAPI comment for IOMMU_HW_INFO_TYPE_ARM_SMMUV3 (2024-12-03 13:30:31 -0400)
+> BR,
+> -R
+> 
+>> We would explore more on this PRR feature for smmu-v2 based targets,
+>> before supporting it.
+>>
+>> Thanks & regards,
+>> Bibek
+>>
+>>>> It's MMU-500 targets only where PRR support is with both PRR bit
+>>>> and PRR page addr registers. As I was re-visiting our discussions on v13
+>>>> regarding this - I remember that's why we started using the SMMU-
+>>>> compatible string based PRR procedure selection instead of the reserved-
+>>>> memory node. [1] i.e Based on SMMU variant (as selected by compatible
+>>>> string), specific sequence will be selected.
+>>>>
+>>>> So for now only MMU-500 based selection has been supported as part of
+>>>> this series and will add subsequent support for other SMMU-variants
+>>>> thereafter.
+>>>>
+>>>>> I'm curious if we can just rely on this being supported by any hw that
+>>>>> has a6xx or newer?
+>>>>>
+>>>>
+>>>> I'd need to check on targets which will be based on a6xx onwards, on
+>>>> what will be the procedure planned to support PRR feature. I'll update
+>>>> the information over this space.
+>>>
+>>> One of the open questions about the drm/msm sparse-memory patchset is
+>>> whether we need to expose to userspace whether PRR is supported, or if
+>>> we can just rely on sparse-binding support implying sparse residency
+>>> (ie, PRR) support. All a6xx devices support per-process pgtables,
+>>> which is the only requirement for basic sparseBinding support.  But
+>>> PRR is required to additionally expose
+>>> sparseResidencyBuffer/sparseResidencyImage2D.
+>>>
+>>> I think, long term, turnip probably will want to drop support for
+>>> older kernels and remove support for legacy buffer mapping.  But if we
+>>> have some a6xx devices without PRR, then to do that we'd need to
+>>> decouple sparse binding and sparse residency.  (Vulkan allows a driver
+>>> to expose the former without the latter.)
+>>>
+>>> BR,
+>>> -R
+>>>
+>>>> [1]:
+>>>> https://lore.kernel.org/all/5790afa3-f9c0-4720-9804-8a7ff3d91854@quicinc.com/#:~:text=%3E%20I%20guess%20if,part%20as%20well.
+>>>>
+>>>> Thanks & regards,
+>>>> Bibek
+>>>>
+>>>>> BR,
+>>>>> -R
+>>>>>
+>>>>>> +               priv->set_prr_bit = qcom_adreno_smmu_set_prr_bit;
+>>>>>> +               priv->set_prr_addr = qcom_adreno_smmu_set_prr_addr;
+>>>>>> +       }
+>>>>>>
+>>>>>>            return 0;
+>>>>>>     }
+>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>>>>> index e2aeb511ae90..2dbf3243b5ad 100644
+>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>>>>> @@ -154,6 +154,8 @@ enum arm_smmu_cbar_type {
+>>>>>>     #define ARM_SMMU_SCTLR_M               BIT(0)
+>>>>>>
+>>>>>>     #define ARM_SMMU_CB_ACTLR              0x4
+>>>>>> +#define ARM_SMMU_GFX_PRR_CFG_LADDR     0x6008
+>>>>>> +#define ARM_SMMU_GFX_PRR_CFG_UADDR     0x600C
+>>>>>>
+>>>>>>     #define ARM_SMMU_CB_RESUME             0x8
+>>>>>>     #define ARM_SMMU_RESUME_TERMINATE      BIT(0)
+>>>>>> diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-smmu-priv.h
+>>>>>> index c637e0997f6d..614665153b3e 100644
+>>>>>> --- a/include/linux/adreno-smmu-priv.h
+>>>>>> +++ b/include/linux/adreno-smmu-priv.h
+>>>>>> @@ -50,6 +50,18 @@ struct adreno_smmu_fault_info {
+>>>>>>      *                 the GPU driver must call resume_translation()
+>>>>>>      * @resume_translation: Resume translation after a fault
+>>>>>>      *
+>>>>>> + * *CAUTION* : PRR callbacks (set_prr_bit/set_prr_addr) are NULL terminated for
+>>>>>> + *             targets without PRR support. Exercise caution and verify target
+>>>>>> + *             capabilities before invoking these callbacks to prevent potential
+>>>>>> + *             runtime errors or unexpected behavior.
+>>>>>> + *
+>>>>>> + * @set_prr_bit:   Extendible interface to be used by GPU to modify the
+>>>>>> + *                ACTLR register bits, currently used to configure
+>>>>>> + *                Partially-Resident-Region (PRR) bit for feature's
+>>>>>> + *                setup and reset sequence as requested.
+>>>>>> + * @set_prr_addr:  Configure the PRR_CFG_*ADDR register with the
+>>>>>> + *                physical address of PRR page passed from
+>>>>>> + *                GPU driver.
+>>>>>>      *
+>>>>>>      * The GPU driver (drm/msm) and adreno-smmu work together for controlling
+>>>>>>      * the GPU's SMMU instance.  This is by necessity, as the GPU is directly
+>>>>>> @@ -67,6 +79,8 @@ struct adreno_smmu_priv {
+>>>>>>         void (*get_fault_info)(const void *cookie, struct adreno_smmu_fault_info *info);
+>>>>>>         void (*set_stall)(const void *cookie, bool enabled);
+>>>>>>         void (*resume_translation)(const void *cookie, bool terminate);
+>>>>>> +    void (*set_prr_bit)(const void *cookie, bool set);
+>>>>>> +    void (*set_prr_addr)(const void *cookie, phys_addr_t page_addr);
+>>>>>>     };
+>>>>>>
+>>>>>>     #endif /* __ADRENO_SMMU_PRIV_H */
+>>>>>> --
+>>>>>> 2.34.1
+>>>>>>
+>>>>
+>>
 
-----------------------------------------------------------------
-iommufd 6.13 first rc pull
-
-- Correct typos in comments
-
-- Elaborate a comment about how the uAPI works for
-  IOMMU_HW_INFO_TYPE_ARM_SMMUV3
-
-- Fix a double free on error path and add test coverage for the bug
-
-----------------------------------------------------------------
-Jason Gunthorpe (1):
-      iommu/arm-smmu-v3: Improve uAPI comment for IOMMU_HW_INFO_TYPE_ARM_SMMUV3
-
-Nicolin Chen (2):
-      iommufd: Fix out_fput in iommufd_fault_alloc()
-      iommufd/selftest: Cover IOMMU_FAULT_QUEUE_ALLOC in iommufd_fail_nth
-
-Randy Dunlap (1):
-      iommufd: Fix typos in kernel-doc comments
-
- drivers/iommu/iommufd/fault.c                    |  2 --
- include/uapi/linux/iommufd.h                     | 31 +++++++++++++++---------
- tools/testing/selftests/iommu/iommufd_fail_nth.c | 14 +++++++++++
- 3 files changed, 34 insertions(+), 13 deletions(-)
-
---NWhtbCSZBtmsPm2R
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRRRCHOFoQz/8F5bUaFwuHvBreFYQUCZ1H0jAAKCRCFwuHvBreF
-YT/iAQCZ1hCGe5w0mtuFrvv0l1Dxp6f6yTPCjkktp0Z1vq+xeQEAkTvxJ112+eKx
-0isfw7bIXjQTxQlh6GkLMl3oeBU8qwQ=
-=49EO
------END PGP SIGNATURE-----
-
---NWhtbCSZBtmsPm2R--
