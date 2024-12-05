@@ -1,243 +1,216 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2CB691773A
-	for <iommu@lists.linux.dev>; Thu,  5 Dec 2024 13:07:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FEF2218AB7;
+	Thu,  5 Dec 2024 13:21:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733404047; cv=none; b=tYfxhZd+aeghdR5stRl4YWy5vpcaHi/oh5JUViqDqK6RijARD1nC8c9J6ZbGdSGKoRdq7UwlTlkJ0eJevsQ8KWU415s28MA0KHHhkYBx6u6GUbICfU+uCU5fLh/HqqjpB7LG3QNWMoONED4V4nI2mAtK5FKHFNl2L9KPjJlY65A=
+	t=1733404889; cv=none; b=eQS1tqzxuscEiX3As2+ZkpkMSDKbNHQv+YW7bpeFjvEwJprd5eejmFawTaLB1UWWd+LHUqcZwufmsKCeitBZb2tOxGtyJC//PKmQV0Zi5ByFATlZULupLWH5/p/7kWMczGnzNRo54S9kTr6kVmUqizR4dlrB3ICYNWYG0djqR7o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733404047; c=relaxed/simple;
-	bh=hXQ5wZu61uFc7V4ocZVh1IUQhjIFXGv8g9nffLwiDps=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mpUmNhEn4BHSr9hOBSpydqbZ1QsTMhoJT5yEgE2BIVVCCDvueZu5cL8yiWT9ed7NWh9CQjMq1iYbSR4UXzb7/Srgru72O6jZvdKpCF4LUgqx1lY/MlhfSylPE9T7shcQz01GovWrliTVeyJSj3nJhM5FNwVezD2/ISs+DwjPleU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7E7741063;
-	Thu,  5 Dec 2024 05:07:52 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5E9533F71E;
-	Thu,  5 Dec 2024 05:07:22 -0800 (PST)
-Message-ID: <1c13843f-6929-4bc6-8564-0ec2d964c41d@arm.com>
-Date: Thu, 5 Dec 2024 13:07:14 +0000
+	s=arc-20240116; t=1733404889; c=relaxed/simple;
+	bh=2q12rYsYxN3uODfne9dmVrHKJlJA6AoyLI1zA2GZEkE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=kvscvCoC1M8en2SOCTk7ZotQZCxICaqdGSGkyxI0MuFgOLnSh8hKdbP77yCWRXjM/O4TyghDGJ/AjLm/PIXZ9QPPXslom0mIS1SgpLv60aSA+U7Af/3zKcLxiawI2gEKoYW/UA7YTp3d4d2Vre4+4jYHD3UUNWMP/Sk+nl8NZdE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H+lzaElU; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H+lzaElU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0AF6C4CED1;
+	Thu,  5 Dec 2024 13:21:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733404888;
+	bh=2q12rYsYxN3uODfne9dmVrHKJlJA6AoyLI1zA2GZEkE=;
+	h=From:To:Cc:Subject:Date:From;
+	b=H+lzaElUPeXTGs5clo7MHNG0oVFBUYSvjua24SJLnGUQIxn98VOP+KifLfvBckk7/
+	 HqEBzTAmh4UkoeYd/HNnSDnip/CjZq/ud1qDu15X+cOlpJeCrUpmQLDyQP/JQXjI7p
+	 I2/47tTmR9RB+sQTdaPsdszTbuE88BSV/C++pq1sJnJj1ytM9Ho5If3MoSJHoWPU7f
+	 VOdM4yHSILu3LMqEVoXYQ9plIRBeGVAG6Yhj0AnKYdCL3GiP4um58gT6bbEeBVtVhz
+	 9xugwCcKPKMDE5rKpz7n0zhT9asfbcu2wleeYE8E/DUshDmqrdI0ewX+OpBWjsEJ+6
+	 iomgsmDby1UAg==
+From: Leon Romanovsky <leon@kernel.org>
+To: Jens Axboe <axboe@kernel.dk>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Sagi Grimberg <sagi@grimberg.me>
+Cc: Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org,
+	linux-mm@kvack.org,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH v4 00/18] Provide a new two step DMA mapping API
+Date: Thu,  5 Dec 2024 15:20:59 +0200
+Message-ID: <cover.1733398913.git.leon@kernel.org>
+X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 2/2] rust: add dma coherent allocator abstraction.
-To: Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com
-Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
- Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
- Valentin Obst <kernel@valentinobst.de>,
- "open list:RUST" <rust-for-linux@vger.kernel.org>,
- open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-References: <20241205113234.2021442-1-abdiel.janulgue@gmail.com>
- <20241205113234.2021442-2-abdiel.janulgue@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20241205113234.2021442-2-abdiel.janulgue@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 05/12/2024 11:32 am, Abdiel Janulgue wrote:
-> Add a simple dma coherent allocator rust abstraction. Based on
-> Andreas Hindborg's dma abstractions from the rnvme driver, which
-> was also based on earlier work by Wedson Almeida Filho.
-> 
-> Reviewed-by: Daniel Almeida <daniel.almeida@collabora.com>
-> Tested-by: Daniel Almeida <daniel.almeida@collabora.com>
-> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-> ---
->   rust/bindings/bindings_helper.h |   1 +
->   rust/kernel/dma.rs              | 136 ++++++++++++++++++++++++++++++++
->   rust/kernel/lib.rs              |   1 +
->   3 files changed, 138 insertions(+)
->   create mode 100644 rust/kernel/dma.rs
-> 
-> diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_helper.h
-> index 5c4dfe22f41a..49bf713b9bb6 100644
-> --- a/rust/bindings/bindings_helper.h
-> +++ b/rust/bindings/bindings_helper.h
-> @@ -11,6 +11,7 @@
->   #include <linux/blk_types.h>
->   #include <linux/blkdev.h>
->   #include <linux/cred.h>
-> +#include <linux/dma-mapping.h>
->   #include <linux/errname.h>
->   #include <linux/ethtool.h>
->   #include <linux/file.h>
-> diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-> new file mode 100644
-> index 000000000000..dd725c571ff7
-> --- /dev/null
-> +++ b/rust/kernel/dma.rs
-> @@ -0,0 +1,136 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +//! Direct memory access (DMA).
-> +//!
-> +//! C header: [`include/linux/dma-mapping.h`](srctree/include/linux/dma-mapping.h)
-> +
-> +use crate::{
-> +    bindings,
-> +    build_assert,
-> +    device::Device,
-> +    error::code::*,
-> +    error::Result,
-> +    types::ARef,
-> +    transmute::{AsBytes, FromBytes},
-> +};
-> +
-> +/// An abstraction of the `dma_alloc_coherent` API.
-> +///
-> +/// This is an abstraction around the `dma_alloc_coherent` API which is used to allocate and map
-> +/// large consistent DMA regions.
-> +///
-> +/// A [`CoherentAllocation`] instance contains a pointer to the allocated region (in the
-> +/// processor's virtual address space) and the device address which can be given to the device
-> +/// as the DMA address base of the region. The region is released once [`CoherentAllocation`]
-> +/// is dropped.
-> +///
-> +/// # Invariants
-> +///
-> +/// For the lifetime of an instance of [`CoherentAllocation`], the cpu address is a valid pointer
-> +/// to an allocated region of consistent memory and we hold a reference to the device.
-> +pub struct CoherentAllocation<T: AsBytes + FromBytes> {
-> +    dev: ARef<Device>,
-> +    dma_handle: bindings::dma_addr_t,
-> +    count: usize,
-> +    cpu_addr: *mut T,
-> +}
-> +
-> +impl<T: AsBytes + FromBytes> CoherentAllocation<T> {
-> +    /// Allocates a region of `size_of::<T> * count` of consistent memory.
-> +    ///
-> +    /// # Examples
-> +    ///
-> +    /// ```
-> +    /// use kernel::device::Device;
-> +    /// use kernel::dma::CoherentAllocation;
-> +    ///
-> +    /// # fn test(dev: &Device) -> Result {
-> +    /// let c: CoherentAllocation<u64> = CoherentAllocation::alloc_coherent(dev, 4, GFP_KERNEL)?;
-> +    /// # Ok::<(), Error>(()) }
-> +    /// ```
-> +    pub fn alloc_coherent(
-> +        dev: &Device,
-> +        count: usize,
-> +        flags: kernel::alloc::Flags,
+Changelog:
+v4:
+ * Added extra patch to add kernel-doc for iommu_unmap and iommu_unmap_fast
+ * Rebased to v6.13-rc1
+ * Added Will's tags
+v3: https://lore.kernel.org/all/cover.1731244445.git.leon@kernel.org
+ * Added DMA_ATTR_SKIP_CPU_SYNC to p2p pages in HMM.
+ * Fixed error unwind if dma_iova_sync fails in HMM.
+ * Clear all PFN flags which were set in map to make code.
+   more clean, the callers anyway cleaned them.
+ * Generalize sticky PFN flags logic in HMM.
+ * Removed not-needed #ifdef-#endif section.
+v2: https://lore.kernel.org/all/cover.1730892663.git.leon@kernel.org
+ * Fixed docs file as Randy suggested
+ * Fixed releases of memory in HMM path. It was allocated with kv..
+   variants but released with kfree instead of kvfree.
+ * Slightly changed commit message in VFIO patch.
+v1: https://lore.kernel.org/all/cover.1730298502.git.leon@kernel.org
+ * Squashed two VFIO patches into one
+ * Added Acked-by/Reviewed-by tags
+ * Fix docs spelling errors
+ * Simplified dma_iova_sync() API
+ * Added extra check in dma_iova_destroy() if mapped size to make code
+ * more clear
+ * Fixed checkpatch warnings in p2p patch
+ * Changed implementation of VFIO mlx5 mlx5vf_add_migration_pages() to
+   be more general
+ * Reduced the number of changes in VFIO patch
+v0: https://lore.kernel.org/all/cover.1730037276.git.leon@kernel.org
 
-Might it be worth adding at least a placeholder type and argument for 
-"attrs" as well, so there's less churn involved in coming back and 
-adding it later? Or is the intention to have a separate 
-dma_alloc_attrs() constructor for such users?
+----------------------------------------------------------------------------
+The code can be downloaded from:
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git tag:dma-split-dec-05
 
-(I assume adding an mmap method as and when needed won't affect any 
-existing users, so is fine not to worry about right now)
+----------------------------------------------------------------------------
+LWN coverage article:
+ * Dancing the DMA two-step https://lwn.net/Articles/997563/
 
-Thanks,
-Robin.
+----------------------------------------------------------------------------
+Currently the only efficient way to map a complex memory description through
+the DMA API is by using the scatterlist APIs. The SG APIs are unique in that
+they efficiently combine the two fundamental operations of sizing and allocating
+a large IOVA window from the IOMMU and processing all the per-address
+swiotlb/flushing/p2p/map details.
 
-> +    ) -> Result<CoherentAllocation<T>> {
-> +        build_assert!(core::mem::size_of::<T>() > 0,
-> +                      "It doesn't make sense for the allocated type to be a ZST");
-> +
-> +        let size = count.checked_mul(core::mem::size_of::<T>()).ok_or(EOVERFLOW)?;
-> +        let mut dma_handle = 0;
-> +        // SAFETY: device pointer is guaranteed as valid by invariant on `Device`.
-> +        // We ensure that we catch the failure on this function and throw an ENOMEM
-> +        let ret = unsafe {
-> +            bindings::dma_alloc_attrs(
-> +                dev.as_raw(),
-> +                size,
-> +                &mut dma_handle, flags.as_raw(),
-> +                0,
-> +            )
-> +        };
-> +        if ret.is_null() {
-> +            return Err(ENOMEM)
-> +        }
-> +        // INVARIANT: We just successfully allocated a coherent region which is accessible for
-> +        // `count` elements, hence the cpu address is valid. We also hold a refcounted reference
-> +        // to the device.
-> +        Ok(Self {
-> +            dev: dev.into(),
-> +            dma_handle,
-> +            count,
-> +            cpu_addr: ret as *mut T,
-> +        })
-> +    }
-> +
-> +    /// Returns the base address to the allocated region and the dma handle. The caller takes
-> +    /// ownership of the returned resources.
-> +    pub fn into_parts(self) -> (usize, bindings::dma_addr_t) {
-> +        let ret = (self.cpu_addr as _, self.dma_handle);
-> +        core::mem::forget(self);
-> +        ret
-> +    }
-> +
-> +    /// Returns the base address to the allocated region in the CPU's virtual address space.
-> +    pub fn start_ptr(&self) -> *const T {
-> +        self.cpu_addr as _
-> +    }
-> +
-> +    /// Returns the base address to the allocated region in the CPU's virtual address space as
-> +    /// a mutable pointer.
-> +    pub fn start_ptr_mut(&mut self) -> *mut T {
-> +        self.cpu_addr
-> +    }
-> +
-> +    /// Returns a DMA handle which may given to the device as the DMA address base of
-> +    /// the region.
-> +    pub fn dma_handle(&self) -> bindings::dma_addr_t {
-> +        self.dma_handle
-> +    }
-> +
-> +    /// Returns the CPU-addressable region as a slice.
-> +    pub fn cpu_buf(&self) -> &[T]
-> +    {
-> +        // SAFETY: The pointer is valid due to type invariant on `CoherentAllocation` and
-> +        // is valid for reads for `self.count * size_of::<T>` bytes.
-> +        unsafe { core::slice::from_raw_parts(self.cpu_addr, self.count) }
-> +    }
-> +
-> +    /// Performs the same functionality as `cpu_buf`, except that a mutable slice is returned.
-> +    pub fn cpu_buf_mut(&mut self) -> &mut [T]
-> +    {
-> +        // SAFETY: The pointer is valid due to type invariant on `CoherentAllocation` and
-> +        // is valid for reads for `self.count * size_of::<T>` bytes.
-> +        unsafe { core::slice::from_raw_parts_mut(self.cpu_addr, self.count) }
-> +    }
-> +}
-> +
-> +impl<T: AsBytes + FromBytes> Drop for CoherentAllocation<T> {
-> +    fn drop(&mut self) {
-> +        let size = self.count * core::mem::size_of::<T>();
-> +        // SAFETY: the device, cpu address, and the dma handle is valid due to the
-> +        // type invariants on `CoherentAllocation`.
-> +        unsafe { bindings::dma_free_attrs(self.dev.as_raw(), size,
-> +                                          self.cpu_addr as _,
-> +                                          self.dma_handle, 0) }
-> +    }
-> +}
-> diff --git a/rust/kernel/lib.rs b/rust/kernel/lib.rs
-> index e1065a7551a3..6e90ebf5a130 100644
-> --- a/rust/kernel/lib.rs
-> +++ b/rust/kernel/lib.rs
-> @@ -35,6 +35,7 @@
->   mod build_assert;
->   pub mod cred;
->   pub mod device;
-> +pub mod dma;
->   pub mod error;
->   #[cfg(CONFIG_RUST_FW_LOADER_ABSTRACTIONS)]
->   pub mod firmware;
+This uniqueness has been a long standing pain point as the scatterlist API
+is mandatory, but expensive to use. It prevents any kind of optimization or
+feature improvement (such as avoiding struct page for P2P) due to the
+impossibility of improving the scatterlist.
+
+Several approaches have been explored to expand the DMA API with additional
+scatterlist-like structures (BIO, rlist), instead split up the DMA API
+to allow callers to bring their own data structure.
+
+The API is split up into parts:
+ - Allocate IOVA space:
+    To do any pre-allocation required. This is done based on the caller
+    supplying some details about how much IOMMU address space it would need
+    in worst case.
+ - Map and unmap relevant structures to pre-allocated IOVA space:
+    Perform the actual mapping into the pre-allocated IOVA. This is very
+    similar to dma_map_page().
+
+In this and the next series [1], examples of three different users are converted
+to the new API to show the benefits and its versatility. Each user has a unique
+flow:
+ 1. RDMA ODP is an example of "SVA mirroring" using HMM that needs to
+    dynamically map/unmap large numbers of single pages. This becomes
+    significantly faster in the IOMMU case as the map/unmap is now just
+    a page table walk, the IOVA allocation is pre-computed once. Significant
+    amounts of memory are saved as there is no longer a need to store the
+    dma_addr_t of each page.
+ 2. VFIO PCI live migration code is building a very large "page list"
+    for the device. Instead of allocating a scatter list entry per allocated
+    page it can just allocate an array of 'struct page *', saving a large
+    amount of memory.
+ 3. NVMe PCI demonstrates how a BIO can be converted to a HW scatter
+    list without having to allocate then populate an intermediate SG table.
+
+To make the use of the new API easier, HMM and block subsystems are extended
+to hide the optimization details from the caller. Among these optimizations:
+ * Memory reduction as in most real use cases there is no need to store mapped
+   DMA addresses and unmap them.
+ * Reducing the function call overhead by removing the need to call function
+   pointers and use direct calls instead.
+
+This step is first along a path to provide alternatives to scatterlist and
+solve some of the abuses and design mistakes, for instance in DMABUF's P2P
+support.
+
+Thanks
+
+[1] This still points to v0, as the change is just around handling dma_iova_sync()
+and extra attribute flag provided to map/unmap:
+https://lore.kernel.org/all/cover.1730037261.git.leon@kernel.org
+
+Thanks
+
+Christoph Hellwig (6):
+  PCI/P2PDMA: Refactor the p2pdma mapping helpers
+  dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
+  iommu: generalize the batched sync after map interface
+  iommu/dma: Factor out a iommu_dma_map_swiotlb helper
+  dma-mapping: add a dma_need_unmap helper
+  docs: core-api: document the IOVA-based API
+
+Leon Romanovsky (12):
+  iommu: add kernel-doc for iommu_unmap and iommu_unmap_fast
+  dma-mapping: Add check if IOVA can be used
+  dma: Provide an interface to allow allocate IOVA
+  dma-mapping: Implement link/unlink ranges API
+  mm/hmm: let users to tag specific PFN with DMA mapped bit
+  mm/hmm: provide generic DMA managing logic
+  RDMA/umem: Store ODP access mask information in PFN
+  RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page
+    linkage
+  RDMA/umem: Separate implicit ODP initialization from explicit ODP
+  vfio/mlx5: Explicitly use number of pages instead of allocated length
+  vfio/mlx5: Rewrite create mkey flow to allow better code reuse
+  vfio/mlx5: Enable the DMA link API
+
+ Documentation/core-api/dma-api.rst   |  70 ++++
+ drivers/infiniband/core/umem_odp.c   | 250 +++++----------
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |  12 +-
+ drivers/infiniband/hw/mlx5/odp.c     |  65 ++--
+ drivers/infiniband/hw/mlx5/umr.c     |  12 +-
+ drivers/iommu/dma-iommu.c            | 459 +++++++++++++++++++++++----
+ drivers/iommu/iommu.c                |  83 ++---
+ drivers/pci/p2pdma.c                 |  38 +--
+ drivers/vfio/pci/mlx5/cmd.c          | 374 +++++++++++-----------
+ drivers/vfio/pci/mlx5/cmd.h          |  35 +-
+ drivers/vfio/pci/mlx5/main.c         |  87 +++--
+ include/linux/dma-map-ops.h          |  54 ----
+ include/linux/dma-mapping.h          |  86 +++++
+ include/linux/hmm-dma.h              |  32 ++
+ include/linux/hmm.h                  |  21 ++
+ include/linux/iommu.h                |   4 +
+ include/linux/pci-p2pdma.h           |  84 +++++
+ include/rdma/ib_umem_odp.h           |  25 +-
+ kernel/dma/direct.c                  |  44 +--
+ kernel/dma/mapping.c                 |  18 ++
+ mm/hmm.c                             | 250 ++++++++++++++-
+ 21 files changed, 1416 insertions(+), 687 deletions(-)
+ create mode 100644 include/linux/hmm-dma.h
+
+-- 
+2.47.0
+
