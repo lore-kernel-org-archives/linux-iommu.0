@@ -1,176 +1,134 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from fhigh-b6-smtp.messagingengine.com (fhigh-b6-smtp.messagingengine.com [202.12.124.157])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 402D7328B6
-	for <iommu@lists.linux.dev>; Fri,  6 Dec 2024 08:09:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1A5F1925AE
+	for <iommu@lists.linux.dev>; Fri,  6 Dec 2024 08:14:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.157
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733472552; cv=none; b=QLJQHBHNJltHRGH3oNZGTEv9+2M3jQKxXwm1ia4tytUBt3nOKWYchAxrnjmFefVl/FuJr4Fcy7ig80t3cwmA/qYhButbv0vQ1MRdyEtqZKbGj/3s4VXRuOqEgNn6b934Gk0NqqRfIkO2MuX8GCu1THQ+YlPyc8i9aEbEhUeJhX0=
+	t=1733472892; cv=none; b=oF/7Sr84qnag5lwD6VKpvStol9a21AcaCHaSn1Q9QdhZ3UuXZp7FavdUzONh+aEPzJxzEwh8wY9DVspwjXiNc+/bxaDjkRy7nQIcxkJGNL+qwKR49Uxg+VE3K05N0m3jloDswuh2wDo8y2xCkr2UACIhKijsBkS1lAeNJnQq0Ok=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733472552; c=relaxed/simple;
-	bh=+VxpK0k/hL/kCvi1Acu3jz/1kOIoyxFdWCqAlmYRY8Q=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hag2/VITYTgvh1z0h1AI8kU6jotmwc7wm4zAl2vwasmWc+toA4Os+VXfqYa2TCrUoEHIDl+4jXNXZRhAM9FIErOMimfSPfOtXS0WGSEOUjQVNm9QCMx386JxyoID4LKK68VmRTrGDOacOiLlKPEZZ5pQGybAosxU8YUF2rzJWe8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-	by metis.whiteo.stw.pengutronix.de with esmtp (Exim 4.92)
-	(envelope-from <a.fatoum@pengutronix.de>)
-	id 1tJTOb-0007hr-Ez; Fri, 06 Dec 2024 09:09:05 +0100
-Message-ID: <380e2207-7578-4aff-8ced-8653100a2983@pengutronix.de>
-Date: Fri, 6 Dec 2024 09:09:01 +0100
+	s=arc-20240116; t=1733472892; c=relaxed/simple;
+	bh=IAqIYw7gnawDzqJ7lK5JCZMKOi2tYNbQHSMiKtCtJwE=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=SS7/mp0dgdTsBpGFi0VF4LZdAvE9PGc6WyngAmgRPiMK+0DkVKQmEBUbcveCGgA63CEC5buPgfpaFJqfQEkUm0tmJlsq5efHGq74q0vJp7YnoC6K6694KKRHCdcMUMSDqQb9IDdRL5d9ctb087FL5DtBTD4rjqH9rGLt5p0aEqI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=pXckWW2s; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=sHeGb7qE; arc=none smtp.client-ip=202.12.124.157
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="pXckWW2s";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="sHeGb7qE"
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id 8B62125401A4;
+	Fri,  6 Dec 2024 03:14:49 -0500 (EST)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Fri, 06 Dec 2024 03:14:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1733472889;
+	 x=1733559289; bh=+CiivsHw0GsDv+l7OLvRGatcFJi5S1S1fcW7OKv42mQ=; b=
+	pXckWW2sFQ19Sq6hj4ppyWPyksFTQbWWkIRoM1f3diJjY8Bwi6yTOwUG8SblLFkn
+	mwlo6E2/91KSycR8HxkfbyUOeOknD6JSf0u7824fKWwZq+swDXEVQ8DJC2YSXK74
+	U26WAikvXsViGfhRx8kqHdZWPSeWRU2ix5QmaTS9/ied1BijNAp1ubYpeYWu30kl
+	iMNdfrTlPq2LRDs3Z+/ntwBoOc7DlJntFBnKWpAgt9jNQotposa0+qu4zNAHyJBN
+	lg5rXfJyugiCVF5PapkhkAz5zXapfQGuEru0FPhNrejID2/cKYL9kLmXGu7yuC9W
+	Swu/I9WmYRdjCfpNRLQZzw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1733472889; x=
+	1733559289; bh=+CiivsHw0GsDv+l7OLvRGatcFJi5S1S1fcW7OKv42mQ=; b=s
+	HeGb7qE+mYbLrKhAyu0eYOOPXNyuaD/ERydhaCaBOSD7kKrkvOoM/xxoFu8uZ4EO
+	8gpPWdCVnNdYZSi/EdGSIjdRpgcpXBnaccUTddH0QtOvSH2Q7RNaqqQebOkW3DHA
+	ZghBNcXffg4JU+swnVIjQy9ca9AegicrWmkQczQRZzKOxA/Gcy3bgrexZ60nM4Dn
+	6a/K+CUQTOMAoAxZZbSDU80qW1Nwq/+pGhhaXaTjZ67yoqVafxErByJfBA8r1N7V
+	0AX1lIfLMw9HdLyRDvfqb5uo9NIwOnM9Zvp1hXUfk7JrW1J0Cp5bTW9UjcNa+phX
+	1DZ2fq7Xw0PHwmqgUbS7w==
+X-ME-Sender: <xms:eLJSZ8oEBU9sosKyjwR7pKq3xbj7uonUkEZezol8JTAejBhi3JYvxA>
+    <xme:eLJSZyqingUbGotVfmXEmfiTf0cIt2SkcloadGaZLNtPdixxbrlQz3qGiEuHE47el
+    tZqIcS7Fc19RAwybKY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrieekgdduudehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
+    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrd
+    guvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefg
+    gfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepudeh
+    pdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehrohgsihhnrdhmuhhrphhhhiesrg
+    hrmhdrtghomhdprhgtphhtthhopehvihhntggvnhiiohdrfhhrrghstghinhhosegrrhhm
+    rdgtohhmpdhrtghpthhtohepkhgvvghstghoohhksegthhhrohhmihhumhdrohhrghdprh
+    gtphhtthhopegrnhgurhgvhihknhhvlhesghhmrghilhdrtghomhdprhgtphhtthhopehr
+    higrsghinhhinhdrrgdrrgesghhmrghilhdrtghomhdprhgtphhtthhopeguvhihuhhkoh
+    hvsehgohhoghhlvgdrtghomhdprhgtphhtthhopegvlhhvvghrsehgohhoghhlvgdrtgho
+    mhdprhgtphhtthhopehglhhiuggvrhesghhoohhglhgvrdgtohhmpdhrtghpthhtohepkh
+    grshgrnhdquggvvhesghhoohhglhgvghhrohhuphhsrdgtohhm
+X-ME-Proxy: <xmx:eLJSZxMgVcxqz0Gs_wLqlipfmPu89jkBAV5-3b9JsHLX5Z7oX9D3-A>
+    <xmx:eLJSZz4md8s0pf6otWcUcQ3Zjjbvm1JqurlGVtsbXCpinoCsQ39Ofw>
+    <xmx:eLJSZ77Agu_PYpt_x9IpyvpJJ2urUw7oP-amPVz50j94u1lNRlWHfA>
+    <xmx:eLJSZzhh5WctICoMy7-ZNMxQwOGMpmgZIrJmWIDaLwzhe3IG1BoeWw>
+    <xmx:ebJSZ6R-G1r3_buE5ycNdcbYxfZcFyDuAOEJFck1nIxbxD4kvV9nr-st>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 12DBB2220072; Fri,  6 Dec 2024 03:14:47 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Using KASAN to catch streaming DMA API violations
-To: Dmitry Vyukov <dvyukov@google.com>
-Cc: kasan-dev@googlegroups.com, iommu@lists.linux.dev,
- Arnd Bergmann <arnd@arndb.de>, Andrey Ryabinin <ryabinin.a.a@gmail.com>,
- Alexander Potapenko <glider@google.com>,
- Andrey Konovalov <andreyknvl@gmail.com>,
- Vincenzo Frascino <vincenzo.frascino@arm.com>, Christoph Hellwig
- <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, "Paul E . McKenney"
- <paulmck@kernel.org>, elver@google.com, Kees Cook <keescook@chromium.org>,
- Pengutronix Kernel Team <kernel@pengutronix.de>
+Date: Fri, 06 Dec 2024 09:14:27 +0100
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Ahmad Fatoum" <a.fatoum@pengutronix.de>, kasan-dev@googlegroups.com,
+ iommu@lists.linux.dev
+Cc: "Andrey Ryabinin" <ryabinin.a.a@gmail.com>,
+ "Alexander Potapenko" <glider@google.com>,
+ "Andrey Konovalov" <andreyknvl@gmail.com>,
+ "Dmitry Vyukov" <dvyukov@google.com>,
+ "Vincenzo Frascino" <vincenzo.frascino@arm.com>,
+ "Christoph Hellwig" <hch@lst.de>,
+ "Marek Szyprowski" <m.szyprowski@samsung.com>,
+ "Robin Murphy" <robin.murphy@arm.com>,
+ "Paul E. McKenney" <paulmck@kernel.org>, "Marco Elver" <elver@google.com>,
+ "Kees Cook" <keescook@chromium.org>,
+ "Pengutronix Kernel Team" <kernel@pengutronix.de>
+Message-Id: <360e2ec9-556e-4507-a539-f86f7619fe29@app.fastmail.com>
+In-Reply-To: <72ad8ca7-5280-457e-9769-b8a645966105@pengutronix.de>
 References: <72ad8ca7-5280-457e-9769-b8a645966105@pengutronix.de>
- <CACT4Y+Y5_8KYm2bjKPiwk5UP2Y_AbowV8c_Ai5UPmOn2GD+GEg@mail.gmail.com>
-Content-Language: en-US
-From: Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <CACT4Y+Y5_8KYm2bjKPiwk5UP2Y_AbowV8c_Ai5UPmOn2GD+GEg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: Using KASAN to catch streaming DMA API violations
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: iommu@lists.linux.dev
 
-Hi Dmitry,
+On Thu, Dec 5, 2024, at 15:54, Ahmad Fatoum wrote:
 
-On 06.12.24 08:06, Dmitry Vyukov wrote:
-> On Thu, 5 Dec 2024 at 15:54, Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
->>
->> Hello,
->>
->> This is a follow-up to a discussion that took place in the Kernel Sanitizers
->> Office Hours (IIRC) at this year's Plumbers Event in Vienna.
->>
->> I had asked about how KCSAN could detect races due to DMA[1] and Arnd
->> suggested that we could use KASAN to detect the CPU accessing buffers that
->> it doesn't have ownership of. I mentioned having implemented[2] this exact scheme
->> in the barebox bootloader's KASAN support and promised to type up an email
->> about it to help getting a similar functionality into the kernel, but first
->> some context:
->>
->> The streaming DMA API is used to annotate ownership transfer of buffers in
->> memory shared between the kernel and a DMA-capable device.
->>
->> The relevant kernel documentation is:
->>
->>   https://www.kernel.org/doc/Documentation/DMA-API.txt
->>   https://www.kernel.org/doc/Documentation/DMA-API-HOWTO.txt
->>
->> But I'll give a quick recap. There are four key operations:
->>
->>  - dma_map_single() moves a range of memory from CPU to device ownership
->>
->>  - dma_sync_single_for_cpu() can be called on all or a subset of the range
->>    mapped by dma_map_single() to move ownership back to the CPU
->>
->>  - dma_sync_single_for_device() moves back all oo a subset of the range
->>    mapped by dma_map_single() to the ownership of the device
->>
->>  - dma_unmap_single() gives back ownership of a range of memory to the CPU
->>
->> It's a bug for the CPU or the device to access a streaming DMA mapping while
->> it's owned by the other side. On many systems, that bug will manifest itself
->> as memory corruption due to loss of cache coherence.
->>
->> To make it easier to spot some misuses of the API, the kernel has a
->> CONFIG_DMA_API_DEBUG feature, which will run sanity checks when using the API.
->> It can't however detect if a memory access happens to a buffer while it's
->> owned by other side, which is where KASAN can come in by having CONFIG_DMA_API_DEBUG
->> record ownership information into the KASAN shadow memory.
->>
->> That way accessing a device mapped buffer before sync'ing it to the CPU is
->> detected like KASAN would detect a use-after-free.  When the ownership is moved
->> back to the CPU, the memory is unpoisoned and such an access would be allowed
->> again.
->>
->> I had implemented this scheme[3] in the barebox bootloader and it works ok:
->>
->>   BUG: KASAN: dma-mapped-to-device in eqos_send+0xdc/0x1a8
->>   Read of size 4 at addr 0000000040419f00
->>
->>   Call trace:
->>   [<7fbd4980>] (unwind_backtrace+0x0/0xb0) from [<7fbd4a40>] (dump_stack+0x10/0x18)
->>   [<7fbd4a40>] (dump_stack+0x10/0x18) from [<7fba2360>] (kasan_report+0x11c/0x290)
->>   [<7fba2360>] (kasan_report+0x11c/0x290) from [<7fba1f44>] (__asan_load4+0x54/0xb8)
->>   [<7fba1f44>] (__asan_load4+0x54/0xb8) from [<7fb2e52c>] (eqos_send+0xdc/0x1a8)
->>   [<7fb2e52c>] (eqos_send+0xdc/0x1a8) from [<7fbb6544>] (eth_send+0x154/0x16c)
->>   [<7fbb6544>] (eth_send+0x154/0x16c) from [<7fbb7114>] (net_ip_send+0xe8/0xf8)
->>   [<7fbb7114>] (net_ip_send+0xe8/0xf8) from [<7fbb7d10>] (net_udp_send+0x68/0x78)
->>
->>
->> The aforementioned barebox functionality goes a step further and also used
->> the shadow memory information to detect repeated syncs without an ownership
->> change. While this is not a bug, my impression is that this is unnecessary
->> overhead and a diagnostic could help correct a developer's misunderstanding
->> of the API.
->>
->> I hope to kick off a discussion about this with my mail here and perhaps even
->> motivate someone else to port it over or reimplement it. :D
->>
->> [1]: when CONFIG_KCSAN_REPORT_RACE_UNKNOWN_ORIGIN is enabled
->> [2]: https://lore.barebox.org/barebox/20240910114832.2984195-1-a.fatoum@pengutronix.de/
->> [3]: https://github.com/barebox/barebox/blob/master/drivers/dma/debug.c
-> 
-> 
-> Hi Ahmad,
-> 
-> This looks great. The example stack you posted - is it a real bug, or
-> an injected one? Has it found any real ones?
+> That way accessing a device mapped buffer before sync'ing it to the CPU is
+> detected like KASAN would detect a use-after-free.  When the ownership is moved
+> back to the CPU, the memory is unpoisoned and such an access would be allowed
+> again.
 
-That was an injected one. The code is recent enough not to have hit a
-barebox release yet.
- 
-I have gotten feedback that it was useful during driver development,
-but it hasn't found an issue yet. I did run it though against issues
-that were pointed out by reviewer feedback.
+Right. I would go even further and say that transferring ownership
+to the device poisons an area that is aligned to ARCH_DMA_MINALIGN,
+making it possibly bigger on both ends of the area. Transferring
+ownership back to the CPU only unpoisons the exact area that was
+specified, leaving the unaligned bytes around it as uninitialized.
 
-> Added the link to https://bugzilla.kernel.org/show_bug.cgi?id=198661
-> so that it's not lost.
+That may need to be controlled by an additional Kconfig option on
+top of poisoning the data initially.
 
-Cool, I didn't know that the discussion restarted in the Bugzilla.
+ARCH_DMA_MINALIGN is between 4 and 128 bytes depending on the
+architecture.
 
-> I guess this memory usually does not come from kmalloc, right?
+> The aforementioned barebox functionality goes a step further and also used
+> the shadow memory information to detect repeated syncs without an ownership
+> change. While this is not a bug, my impression is that this is unnecessary
+> overhead and a diagnostic could help correct a developer's misunderstanding
+> of the API.
 
-No, kmalloc() in barebox is just TLSF with DMA-suitable alignment.
+Agreed, there is clearly something wrong if a driver does it, but
+I can see them still work correctly without any risk of data corruption,
+so it's a different class of bug.
 
-> Otherwise it would be possible to use kasan_record_aux_stack() to
-> attach the stack of the last sync operation.
-
-barebox architectures currently only implement stack_dump(). It needs
-to be split into stack walk, kallsyms lookup and printing to console,
-before a kasan_record_aux_stack() equivalent can be implemented.
-
-> Re repeated syncs. If not all of them will be fixed, then at least for
-> the kernel it should be under a separate config b/c syzbot does not
-> tolerate false positives.
-
-Agreed.
-
-Cheers,
-Ahmad
-
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+     Arnd
