@@ -1,85 +1,66 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CBAC19ABD8;
-	Mon,  9 Dec 2024 19:28:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70AF919E804;
+	Mon,  9 Dec 2024 23:06:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733772519; cv=none; b=F0TxLMiTSP4P4XoSWMMqysx5H6g/4tNZTkM80HpAmVPA8XXjdIXYt+oVgrlsycLToY9mLiAt5CCaat5XQA4JMcYVmFQKQ3e1wLmrEpZu34IcnTvlsLdnkFlbq7rvyud7na2SgUIhQq8/d/h2AZA8GHY/lnK/A46WBT7tHFuEmQk=
+	t=1733785577; cv=none; b=V7hA3w8IiaG+w2DocCP9/oHv8LSNtTo9Jwc4XWrd014x3EKGg82IX/a+8ngBr2XOur1CnmifqPF7UXI+oX+pybRw69GSb63koEeG76sLZ31MkEL4fBHC7Tte2M6nyS9ER1TuEwSFJEAHlDoUaEiAg7LJIucUUpae5Fv+o1lp5aM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733772519; c=relaxed/simple;
-	bh=kxjlHoUo711933mpUTtj0HnQfOHBC8bMLbNiysZH5eM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WU3Tz8geB1EcC6xr76I+OnagP/0NEQHx8io3ZcGu/MdKPhJ8368wUOs1sxzWm3tj+iNiyPdvykFkm667fD0hyOtAx7+qji+kTUIhe9yLXa2iM1jvGXQVk3wR/WwBz9YyYZOIefThvibedQ9XrGkg7HYghj/ua44zNwWkjYAzqOM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N2MvmGLy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1733785577; c=relaxed/simple;
+	bh=nI45IWdza/lGjrHUHY+hfOBTFUpcPsRRCggpavDqgIM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DlB2zZXYb9zODB+P0y251Ma+EKJUhH+XGAJJg4rS5BDfb8Kae3jOqTDheNMuBGX9jmHWHtRd+WjvkhZpThhHg4SC1Y3y827G153hErMLwu0bZGS/MLfa4GuObWNXDFjD5HFyLtLoYwvuc5nu2SM+KJAcVH4c7Z8W+d4vfjGy0FM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GrF4o+vE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N2MvmGLy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01308C4CEE1;
-	Mon,  9 Dec 2024 19:28:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GrF4o+vE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C540CC4CED1;
+	Mon,  9 Dec 2024 23:06:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733772518;
-	bh=kxjlHoUo711933mpUTtj0HnQfOHBC8bMLbNiysZH5eM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=N2MvmGLykulGDGK/G8U63UudI02Eo9dORfFP9Gq6kzYwbrfdQCFVsjr6h+In+tgk1
-	 rPYNgGvZioTFM0aS7svo0eqs1xcqv5scwPie60SA+g8N+VY6k/8I01fiHo3gqgRkfX
-	 sP77RZRHjTfOD9IdjgNrAxxp+X6Y2bAtZJ7i861sb/wIZd659Wc6vYJNGVDq97ToR3
-	 GycyST/vZEc8u6aGUMxCvjfKYRMH3x39nvOxyCLMvnz2p6hffssjNAEJ8N8n2/63Ub
-	 sBRph9km/lsTiTE1MO3kmpTMmzozbDy7wTBV9/fGf6Qe3X1nJ4mHGw6RgGxfgobTYu
-	 y8s3wR+u92n2A==
+	s=k20201202; t=1733785577;
+	bh=nI45IWdza/lGjrHUHY+hfOBTFUpcPsRRCggpavDqgIM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GrF4o+vEfaeGYNO2bHvI3IV6KLYEVodBGu7kt0gaxLLo8lHuQWNiEhP6LEuebe1H/
+	 4yAxSbiV0j9ZvAhDNOz+YfyCxTS2AGJFKF6nSFuL2EH6B+Giq7hlIh3uidLs4zQlBT
+	 8HiP/jIPx0efODD/6duYQmppKOwjZG0GwVs3g84zbO4m4gtSmwU/c7NuurCecC8I/R
+	 PkklROAUDh8/qqAy1jMAwoze0jZnmiZM+YXou9dNpzl6EehN3hJYsiAYgMayKLKlgA
+	 AFUVEeeYZyvnW4kb3YY3x6jZ80w90Ue/z+AapUypQO19wEoESSEdGkzBjz6EmwXP8J
+	 ZwDwTPuDUSnmA==
+Date: Mon, 9 Dec 2024 23:06:12 +0000
 From: Will Deacon <will@kernel.org>
-To: andersson@kernel.org,
-	konradybcio@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	robimarko@gmail.com,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	Qingqing Zhou <quic_qqzhou@quicinc.com>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	linux-arm-msm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 0/2] Add support for GPU SMMU on QCS615
-Date: Mon,  9 Dec 2024 19:28:26 +0000
-Message-Id: <173377165271.3923447.13887093195540246332.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20241122074922.28153-1-quic_qqzhou@quicinc.com>
-References: <20241122074922.28153-1-quic_qqzhou@quicinc.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, patches@lists.linux.dev
+Subject: Re: [PATCH 3/3] iommu/arm-smmu-v3: Remove domain_alloc_paging()
+Message-ID: <20241209230611.GA13790@willie-the-truck>
+References: <0-v1-0bb8d5313a27+27b-smmuv3_paging_flags_jgg@nvidia.com>
+ <3-v1-0bb8d5313a27+27b-smmuv3_paging_flags_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3-v1-0bb8d5313a27+27b-smmuv3_paging_flags_jgg@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Fri, 22 Nov 2024 13:19:20 +0530, Qingqing Zhou wrote:
-> Enable GPU SMMU function on QCS615 platform. GPU SMMU is required
-> for address translation in GPU device.
+On Thu, Dec 05, 2024 at 11:43:29AM -0400, Jason Gunthorpe wrote:
+> arm_smmu_domain_alloc_paging_flags() with a flags = 0 now does the same
+> thing as arm_smmu_domain_alloc_paging(), remove
+> arm_smmu_domain_alloc_paging().
 > 
-> device tree dependency:
-> https://lore.kernel.org/all/20241104-add_initial_support_for_qcs615-v5-0-9dde8d7b80b0@quicinc.com/
-> 
-> gpucc dependency:
-> https://lore.kernel.org/all/20241108-qcs615-mm-dt-nodes-v1-0-b2669cac0624@quicinc.com/
-> https://lore.kernel.org/all/20241108-qcs615-mm-clockcontroller-v3-0-7d3b2d235fdf@quicinc.com/
-> 
-> [...]
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 31 ---------------------
+>  1 file changed, 31 deletions(-)
 
-Applied bindings change to will (for-joerg/arm-smmu/bindings), thanks!
+Ha! I was reviewing the previous patch and about to reply asking why we
+couldn't just implement arm_smmu_domain_alloc_paging() as a wrapper
+around arm_smmu_domain_alloc_paging() with flags of 0.
 
-[1/2] dt-bindings: arm-smmu: document QCS615 GPU SMMU
-      https://git.kernel.org/will/c/d1e22c7145af
+Good thing I read ahead :)
 
-Cheers,
--- 
 Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
