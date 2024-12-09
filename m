@@ -1,25 +1,46 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC5D2217F45
-	for <iommu@lists.linux.dev>; Mon,  9 Dec 2024 10:49:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22F5521771E
+	for <iommu@lists.linux.dev>; Mon,  9 Dec 2024 10:50:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733741395; cv=none; b=AwQreg9uBzyqVXw0RxXe2rzW16Iyid7x1dV/XgKL3C+17ZTT/FydeDj83Kg3kvcCrfwQdGtYBVToYrZbSyXGh6DAK8Q2jFn8jsguQ9bGj4KcsqbytkRxURGJQZN2/wAgjE59r+yjrkQnc6nfoUi2dNNdKsB1eshElmmTTk+3aXc=
+	t=1733741415; cv=none; b=MukBA6XH/1e4vqvvNFLJGtXIfDMGMxo9c6JQzT0H5ZyYPuhjtxUEwtygM4rv8Yv8Udbl4wrx3Bj+or4aq0Xu7V0DFoFfxohEvxkUO+3pVEWmJE5dWZxjonIkwaCHizHlfM8LHxfKPSZLs5wv4FTT8Rf8V38EzsvCHtqXnRw5So4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733741395; c=relaxed/simple;
-	bh=qDYE6sm06wT5iAye49l+JIErayXfaHy2n7nmUt4z920=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=L3S7pb+Y0tLr5zEK11wcG4ezabzldy078Vns/x5lloNqKG+ZDWOsELjGdlECWuuqGPMlcX5dsf9v0lh5MXkfQIpNODL4pJ2lujNAiryC64e4I18xI8pW3TzoBBhlXKRBozLeplgjzwH2usq/aUJjvCskzyu835Uhb30Q5upwaT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 23CE0113E;
-	Mon,  9 Dec 2024 02:50:20 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 27C9D3F5A1;
-	Mon,  9 Dec 2024 02:49:51 -0800 (PST)
-Message-ID: <593c0d63-d8fd-4439-a57a-97340212c197@arm.com>
-Date: Mon, 9 Dec 2024 10:49:49 +0000
+	s=arc-20240116; t=1733741415; c=relaxed/simple;
+	bh=Al1nYJcI+WH60uOcfQJpnPEsLD/SNuVV0FT8A72aZh8=;
+	h=Message-ID:Date:MIME-Version:To:CC:From:Subject:Content-Type; b=fW41JhPzmEl2DtkJF3Ge/2ktiN/5hD6RBa23CiyUh8BJQz2WEQW9Du64s/MOVfXVIAp8YcukXRws5RDIGAhyx5Vs4SjzuZUuhdfIX3TBFWufGUx8qzm/hK44Oj14JctJ5qSuBdaSorZ/j+aT6JxcPPdbMJFBfd6t/Udyh6ej4AA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=C0SyphQF; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="C0SyphQF"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4B9AP99G024521;
+	Mon, 9 Dec 2024 10:50:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=DQHDERoIpTVNFdTrNfwzhA
+	S6rWPsfyTUVsAC0tG+skQ=; b=C0SyphQFvKEUzcErdoVb4MAVnqc4eltzISRguW
+	u4FTbjkcpZYMKcIDa+AkPF6q1U2cNeCLMJWyt/WyGxukHLfs9NDu6TRUTNfLrJwJ
+	oMS7q2jgCIhB5vD49RnSiD1f0dtl1h6wp7AAWnCMTWAA0C6fc9J4u8spFEG6UhJd
+	p0MTkERm3MCf+5Iuu36VKJB9t81L1Dx7vMii3LW2MfuJHR8huSkd+C+Snnb8p1ma
+	vPW2cZfiVFaLMJPdp93M9t8Vb8B6aGxmk8LzD7ybcQFcLYUnT0qgUsa8qmjSmU3X
+	enzkPoXQYOFtBQQLlNLEn1QmzkRZnPQmVpwKLmwATxavKYmw==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43cc2ecj6d-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Dec 2024 10:50:10 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4B9Ao9Cq030892
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 9 Dec 2024 10:50:09 GMT
+Received: from [10.231.195.67] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 9 Dec 2024
+ 02:50:07 -0800
+Message-ID: <64931fac-085b-4ff3-9314-84bac2fa9bdb@quicinc.com>
+Date: Mon, 9 Dec 2024 18:50:06 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,33 +48,49 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: ath11k swiotlb buffer is full (on IMX8M with 4GiB DRAM)
-To: Christoph Hellwig <hch@lst.de>, Tim Harvey <tharvey@gateworks.com>
-Cc: Baochen Qiang <quic_bqiang@quicinc.com>, ath11k@lists.infradead.org,
- linux-wireless <linux-wireless@vger.kernel.org>,
- Fabio Estevam <festevam@gmail.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
-References: <CAJ+vNU0EL3T+GyNAbVbGqYYQ5NM3h7cgAwqxxBMuZjh+-YQ3bA@mail.gmail.com>
- <1b2ea8b2-6fbe-4118-b6c6-742c8f0be476@quicinc.com>
- <CAJ+vNU1-OZ3y4p2L+zf64AiVtUv70yZNqkT20jTxyE0_gJb6Jg@mail.gmail.com>
- <0282be95-9094-4d49-b79e-4f7c976dad00@quicinc.com>
- <CAJ+vNU32EMHjtchJRb1sODBrUKG2vZW4ZEu1_F0+dCCEjCn7Dg@mail.gmail.com>
- <20241209081714.GA25363@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20241209081714.GA25363@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Language: en-US
+To: Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski
+	<m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>
+CC: linux-kernel <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+From: Baochen Qiang <quic_bqiang@quicinc.com>
+Subject: missing clear bdr in check_ram_in_range_map()?
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: A1FLghzP3KIX_hPr8jPVNA5yMhoGy0YP
+X-Proofpoint-GUID: A1FLghzP3KIX_hPr8jPVNA5yMhoGy0YP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ mlxlogscore=752 priorityscore=1501 impostorscore=0 lowpriorityscore=0
+ adultscore=0 malwarescore=0 clxscore=1011 suspectscore=0 spamscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2412090084
 
-On 09/12/2024 8:17 am, Christoph Hellwig wrote:
-> I scrolled three pages before giving up as it was just quotes over
-> quotas.  Can you please write an email that contains whatever you're
-> trying to tell instead of just quotes?  Same for the person replying.
+Hi,
 
-TBH I'm hesitant to look too closely since everything those Atheros WiFi 
-drivers do with DMA tends to be sketchy, but from what I could make out 
-from skimming until I also gave up, I think it might be an attempt to 
-reinvent dma_alloc_pages(), or possibly dma_alloc_noncoherent().
+while checking check_ram_in_range_map() I am confused by the condition set/check on bdr.
+If I am reading the code correctly, if bdr is set once, it would never get cleared, hence
+that function will always returns 0.
 
-Cheers,
-Robin.
+should we clear bdr before each new iteration?
+
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 5b4e6d3bf7bc..1605b956b25e 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -611,6 +611,7 @@ static int check_ram_in_range_map(unsigned long start_pfn,
+                        return 1;
+
+                start_pfn = PFN_DOWN(bdr->cpu_start) + PFN_DOWN(bdr->size);
++               bdr = NULL;
+        }
+
+        return 0;
+
