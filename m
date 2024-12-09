@@ -1,50 +1,48 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E79834A02
-	for <iommu@lists.linux.dev>; Mon,  9 Dec 2024 03:06:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 229101E4A4
+	for <iommu@lists.linux.dev>; Mon,  9 Dec 2024 06:40:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733713621; cv=none; b=acF9XCc7I30D9KTUkM3BlcO7JldU1Yfj4V7qidIDlb4kuDM9ka89W/nV++Au1Ne+tC81mbHzi+bvvUqit8sCjoVlAmkpAYJeppUs9Um2eIBYWMjNQYFG9aCCLjwFefZxyGfumXIhX60P0nL9MPMSwScVtcHNc3gmEozweDHOz8Y=
+	t=1733726405; cv=none; b=OUihezXXNyzIkeY7RgZy/ayHUQAjX1TU2KTuddYDY3IILYTQRly8NjA6b+q+46niqpzsuEN51ULqC5DOzA44Ohh3CFUGVKILqE28eXPz3wUJQFNd/XsskPqJsEp5JO0TsZo0RFQtR725lsMj7kY3oRoTjzcjh32j0nP3xGwsWMU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733713621; c=relaxed/simple;
-	bh=9mChrCym/4+flBnFbJHTIod20eemaolFXc9PV3JDHAc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AnaRZAgZA8pWVy3+3V2rOM6vluxHH/R9/5FAHRzwpS3eiD54Zc6+JT6gAM56A74vqM2X6NDbWDJF+XfWOzXKv1auOCmIHNc/akzWy0vguqchuSQZkw0juo+mk2tpQmgoyzGYrrR5Dl8PALvX9NZK7tAteQBd/9/tQ4xBQJ9BgzQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WiYwaMaU; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1733726405; c=relaxed/simple;
+	bh=x5sPRU8eTi/G6a/BO/rmFiF6MHnctfialbqI7XtxzrU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=sCgGNaYptEm6Lr7EsHNLEiSN0S/J3I2TvDPLLlJRon9FAj3CkHMYCkpqELfr6fn9LPyAzLODIs3UFMtl5bIPiGRbbyMubNdq0no2/DOE901xnXuOPWLMW6B/QaTvyScQLv3Eu1ib8DGXtnDcozb67gPzS+Q+oUtG1hj2Kn4BBW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=UTGDCXsF; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WiYwaMaU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1733713621; x=1765249621;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9mChrCym/4+flBnFbJHTIod20eemaolFXc9PV3JDHAc=;
-  b=WiYwaMaUCw2vnyXe553Ip6Z1tkl2na0APrUyGPSSZ0zlDb/AgWts8l57
-   zG4Gw4GQ+VWsmx1tL+b9lmSAsL9nGhY/6kqkdpFiVO+3+qIBIE0V4gHP7
-   1jFUynZAlN5hxNzgEjp2/HCsm1XRxZOGdqQgRl2eyBQ+8kndEfgxTqili
-   BKH5g3ICNvsOj/dVy0z0FCGZqZkz3nlCPWX6NSFhBkUlewkDN+1bj0UT9
-   UMSaMjuD4vsSFzTeIZ1/7vUB4mQ1Zb5yiYWs3Hs/Rem5yWSM9Hfz2jlxR
-   aSUDkTMZDwf1atkvfah+avFcJj9jAxNZPP+MHGTWKAC8hWMUy5vHEnmb7
-   Q==;
-X-CSE-ConnectionGUID: VYvnNl56RLyrPGceyXLSug==
-X-CSE-MsgGUID: KQnDrvnkRVCEKArOzKB8mA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11280"; a="34055548"
-X-IronPort-AV: E=Sophos;i="6.12,218,1728975600"; 
-   d="scan'208";a="34055548"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2024 19:06:59 -0800
-X-CSE-ConnectionGUID: 2GyBujngRLC6HEnlGaRBrQ==
-X-CSE-MsgGUID: GSw289C8R0G7Z1T8GaUMLg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,218,1728975600"; 
-   d="scan'208";a="95140315"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2024 19:06:56 -0800
-Message-ID: <1f660d3c-04f7-4d16-beac-74412a5cf6d2@linux.intel.com>
-Date: Mon, 9 Dec 2024 11:05:27 +0800
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="UTGDCXsF"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4B8KiAvX013335;
+	Mon, 9 Dec 2024 06:39:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	DSeoM2X9fWbYHM2ycAB+AddFI+1jUgk7d2W2GhaCNqc=; b=UTGDCXsF6lOfnIjs
+	JXHBwNjg5J049GjMGXfLmMFb+LLl5LPCgx6HolC3RGhhWE2wq6dr6FvK7sBmMoIo
+	58PwaqRxlAta2LTWmygaC6THaxpayYrEfgv+gGRn3WFAHCYqwxyYaiL5jXhCVwiA
+	mbyaJfMsDvo4m9GXhn0ezS/k2ooAF55LlsB5g6JD3ShVJQtpJNETvMvdhBTnr3Q1
+	s7frSxDAXhDG2J6WyKKErw5kKcDCzt4Hoq0mko1cxwZPzKMRADZAQ5OZuS3bC64c
+	qtnBKEGB2zfR7yf0TiE8g40k+Ur0uLKrSgzFULySioDG51fjw/XqBdF1iGXZc54z
+	rqQu7w==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43cdc6bp16-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Dec 2024 06:39:54 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4B96drUp020051
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 9 Dec 2024 06:39:53 GMT
+Received: from [10.231.195.67] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Sun, 8 Dec 2024
+ 22:39:51 -0800
+Message-ID: <76df542c-ee17-493a-9a1a-284b49b0dbc0@quicinc.com>
+Date: Mon, 9 Dec 2024 14:39:49 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,77 +50,546 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/vt-d: Fix qi_batch NULL pointer with nested parent
- domain
-To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, kevin.tian@intel.com
-Cc: chao.p.peng@linux.intel.com, iommu@lists.linux.dev
-References: <20241207120304.5710-1-yi.l.liu@intel.com>
- <ce413d97-ec46-4cd9-932a-af804cd531cf@linux.intel.com>
- <b25901cf-6483-4434-804e-62bda4385796@intel.com>
+Subject: Re: ath11k swiotlb buffer is full (on IMX8M with 4GiB DRAM)
+To: Tim Harvey <tharvey@gateworks.com>
+CC: <ath11k@lists.infradead.org>,
+        linux-wireless
+	<linux-wireless@vger.kernel.org>,
+        Fabio Estevam <festevam@gmail.com>, Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>, <iommu@lists.linux.dev>
+References: <CAJ+vNU0EL3T+GyNAbVbGqYYQ5NM3h7cgAwqxxBMuZjh+-YQ3bA@mail.gmail.com>
+ <1b2ea8b2-6fbe-4118-b6c6-742c8f0be476@quicinc.com>
+ <CAJ+vNU1-OZ3y4p2L+zf64AiVtUv70yZNqkT20jTxyE0_gJb6Jg@mail.gmail.com>
+ <0282be95-9094-4d49-b79e-4f7c976dad00@quicinc.com>
+ <CAJ+vNU32EMHjtchJRb1sODBrUKG2vZW4ZEu1_F0+dCCEjCn7Dg@mail.gmail.com>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <b25901cf-6483-4434-804e-62bda4385796@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Baochen Qiang <quic_bqiang@quicinc.com>
+In-Reply-To: <CAJ+vNU32EMHjtchJRb1sODBrUKG2vZW4ZEu1_F0+dCCEjCn7Dg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: ElUoAoa9GNQYLLwbyxPWfpkDX7BSMNFd
+X-Proofpoint-GUID: ElUoAoa9GNQYLLwbyxPWfpkDX7BSMNFd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxscore=0
+ mlxlogscore=999 malwarescore=0 bulkscore=0 lowpriorityscore=0
+ clxscore=1011 suspectscore=0 spamscore=0 phishscore=0 priorityscore=1501
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2412090052
 
-On 12/9/24 11:07, Yi Liu wrote:
->> Perhaps add a helper to handle the domain->qi_batch allocation? And then
->> call it in the necessary paths? Something like this:
+
+
+On 12/7/2024 1:07 AM, Tim Harvey wrote:
+> On Mon, Nov 25, 2024 at 6:47 PM Baochen Qiang <quic_bqiang@quicinc.com> wrote:
 >>
->> --- a/drivers/iommu/intel/cache.c
->> +++ b/drivers/iommu/intel/cache.c
->> @@ -105,12 +105,35 @@ static void cache_tag_unassign(struct 
->> dmar_domain *domain, u16 did,
->>       spin_unlock_irqrestore(&domain->cache_lock, flags);
->>   }
 >>
->> +/* domain->qi_batch will be freed in iommu_free_domain() path. */
->> +static int domain_qi_batch_alloc(struct dmar_domain *domain)
->> +{
->> +    unsigned long flags;
->> +    int ret = 0;
->> +
->> +    spin_lock_irqsave(&domain->cache_lock, flags);
-> 
-> I'm wondering if there is any difference using the domain->lock v.s. using
-> the domain->cache_lock. The RID attach path acquires/releases the
-> domain->lock first, and then the domain->cache_lock. While the PASID path
-> does the reverse order. Although neither of the two paths hold the locks
-> for a long duration (no A-B-B-A locking issue), it still means when a
-> domain is shared between RID and PASID path, the domain->qi_batch check is
-> not in the same phase of the two paths.
-
-You are right. domain->lock is the right one.
-
-> 
->> +    if (domain->qi_batch)
->> +        goto out_unlock;
->> +
->> +    domain->qi_batch = kzalloc(sizeof(*domain->qi_batch), GFP_ATOMIC);
->> +    if (!domain->qi_batch)
->> +        ret = -ENOMEM;
->> +out_unlock:
->> +    spin_unlock_irqrestore(&domain->cache_lock, flags);
->> +
->> +    return ret;
->> +}
->> +
->>   static int __cache_tag_assign_domain(struct dmar_domain *domain, u16 
->> did,
->>                        struct device *dev, ioasid_t pasid)
->>   {
->>       struct device_domain_info *info = dev_iommu_priv_get(dev);
->>       int ret;
 >>
->> +    ret = domain_qi_batch_alloc(domain);
->> +    if (ret)
->> +        return ret;
->> +
+>> On 11/26/2024 2:02 AM, Tim Harvey wrote:
+>>> On Sun, Nov 24, 2024 at 11:23 PM Baochen Qiang <quic_bqiang@quicinc.com> wrote:
+>>>>
+>>>>
+>>>>
+>>>> On 11/23/2024 8:43 AM, Tim Harvey wrote:
+>>>>> On Thu, Nov 21, 2024 at 9:51 PM Baochen Qiang <quic_bqiang@quicinc.com> wrote:
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> On 11/22/2024 5:50 AM, Tim Harvey wrote:
+>>>>>>> On Tue, Nov 19, 2024 at 6:32 PM Baochen Qiang <quic_bqiang@quicinc.com> wrote:
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> On 11/20/2024 4:16 AM, Tim Harvey wrote:
+>>>>>>>>> Greetings,
+>>>>>>>>>
+>>>>>>>>> I've got an ath11k card that is failing to init on an IMX8MM system
+>>>>>>>>> with 4GB of DRAM:
+>>>>>>>>> [    7.551582] ath11k_pci 0000:01:00.0: BAR 0 [mem
+>>>>>>>>> 0x18000000-0x181fffff 64bit]: assigned
+>>>>>>>>> [    7.551713] ath11k_pci 0000:01:00.0: enabling device (0000 -> 0002)
+>>>>>>>>> [    7.552401] ath11k_pci 0000:01:00.0: MSI vectors: 16
+>>>>>>>>> [    7.552440] ath11k_pci 0000:01:00.0: qcn9074 hw1.0
+>>>>>>>>> [    7.887186] mhi mhi0: Loaded FW: ath11k/QCN9074/hw1.0/amss.bin,
+>>>>>>>>> sha256: 5ee1b7b204541b5f99984f21d694ececaec08fbce1b520ffe6fe740b02a4afd7
+>>>>>>>>> [    8.435964] ath11k_pci 0000:01:00.0: chip_id 0x0 chip_family 0x0
+>>>>>>>>> board_id 0xff soc_id 0xffffffff
+>>>>>>>>> [    8.435991] ath11k_pci 0000:01:00.0: fw_version 0x270206d0
+>>>>>>>>> fw_build_timestamp 2022-08-04 12:48 fw_build_id
+>>>>>>>>> WLAN.HK.2.7.0.1-01744-QCAHKSWPL_SILICONZ-1
+>>>>>>>>> [    8.441700] ath11k_pci 0000:01:00.0: Loaded FW:
+>>>>>>>>> ath11k/QCN9074/hw1.0/board-2.bin, sha256:
+>>>>>>>>> dbf0ca14aa1229eccd48f26f1026901b9718b143bd30b51b8ea67c84ba6207f1
+>>>>>>>>> [    9.753764] ath11k_pci 0000:01:00.0: Loaded FW:
+>>>>>>>>> ath11k/QCN9074/hw1.0/m3.bin, sha256:
+>>>>>>>>> b6d957f335073a15a8de809398e1506f0200a08747eaf7189c843cf519ffc1de
+>>>>>>>>> [    9.789791] ath11k_pci 0000:01:00.0: swiotlb buffer is full (sz:
+>>>>>>>>> 1048583 bytes), total 32768 (slots), used 2528 (slots)
+>>>>>>>>> [    9.789853] ath11k_pci 0000:01:00.0: failed to set up tcl_comp ring (0) :-12
+>>>>>>>>> [    9.790238] ath11k_pci 0000:01:00.0: failed to init DP: -12
+>>>>>>>>> root@noble-venice:~# cat /proc/cmdline
+>>>>>>>>> console=ttymxc1,115200 earlycon=ec_imx6q,0x30890000,115200
+>>>>>>>>> root=PARTUUID=5cdde84f-01 rootwait net.ifnames=0 cma=196M
+>>>>>>>>>
+>>>>>>>>> The IMX8MM's DRAM base is at 1GB so anything above 3GB hits the 32bit
+>>>>>>>>> address boundary. If I pass in a mem=3096M the device registers just
+>>>>>>>>> fine.
+>>>>>>>> yeah ... that parameter makes kernel alloc memory below 32bit boundary, thus swiotlb is not necessary.
+>>>>>>>
+>>>>>>> Hi Baochen,
+>>>>>>>
+>>>>>>> Yes, that makes sense as I step through the code. On IMX8M with DRAM
+>>>>>>> 3GB or less dma_capable(...) is true so swiotlb bounce buffers are not
+>>>>>>> needed.
+>>>>>>>
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I found this to be the case with modern kernels however I found
+>>>>>>>>> differing behavior with older kernels:
+>>>>>>>>> - 6.6 and 6.1 the device registers with 4GB DRAM but crashes on client connect
+>>>>>>>>> - 5.15 devices registers with 4GB DRAM and appears to work just fine
+>>>>>>>> are you using Linus' tree or the stable tree?
+>>>>>>>>
+>>>>>>>
+>>>>>>> For 6.6 I tested stable.
+>>>>>> can you try Linus's tree ? as I know the stable tree is possible to miss some important fix.
+>>>>>>
+>>>>>>>
+>>>>>>> This likely has something to do with commit dbd73acb22d8 ("wifi:
+>>>>>>> ath11k: enable 36 bit mask for stream DMA") but it would seem to me
+>>>>>>> that patch was trying to avoid the entire 32bit DMA limitation. Maybe
+>>>>>>> that patch sets the ath11k device DMA mask to 36 bits but maybe the
+>>>>>>> IMX8M PCI DMA is only capable of 32bits?
+>>>>>> that patch is making situation better, not worse. that said, it helps to avoid swiotlb in
+>>>>>> ath11k DMA, rather than to get it involved.
+>>>>>>
+>>>>>
+>>>>> Yes, that patch would be an improvement on systems capable of
+>>>>> addressing 64bit memory but not on the IMX8M which is seemingly
+>>>>> capable of only 32bit DMA over PCI.
+>>>>>
+>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Could anyone explain what is going on here? Obviously there have been
+>>>>>>>>> changes at some point to start using swiotlb which I believe was all
+>>>>>>>>> about avoiding 32bit DMA limitations but I'm not clear how I should be
+>>>>>>>>> configuring this for IMX8MM with 4GB DRAM. Maybe my kernel IOMMU
+>>>>>>>>> configuration is incorrect somehow?
+>>>>>>>> there are quite some options associated with IOMMU, not sure which one might be causing this. But basically you may check:
+>>>>>>>>
+>>>>>>>> CONFIG_IOMMU_IOVA
+>>>>>>>> CONFIG_IOMMU_API
+>>>>>>>> CONFIG_IOMMU_SUPPORT
+>>>>>>>> CONFIG_IOMMU_DMA=y
+>>>>>>>>
+>>>>>>>
+>>>>>>> These are enabled which I believe appropriate for IMX8M. If I want to
+>>>>>>> utilize the full 4GB DRAM on IMX then I must use IOMMU and swiotlb
+>>>>>>> which would mean a performance hit due to copying mem to/from bounce
+>>>>>>> buffers not to mention the fact that I can't figure out how to
+>>>>>>> configure the system to avoid the 'swiotlb swiotlb buffer is full'
+>>>>>>> issue.
+>>>>>
+>>>>> My statement regarding needing an IOMMU above is wrong; apparently the
+>>>>> IMX8M SoC's don't have an IOMMU but the fact I have it enabled in the
+>>>>> kernel should be a don't-care. If I understand swiotlb correctly, if I
+>>>>> did have an IOMMU then it would be used instead of swiotlb.
+>>>>>
+>>>>>>>
+>>>>>>> Enabling CONFIG_SWIOTLB_DYNAMIC does not help nor does increasing the
+>>>>>>> number of slots - it has something to do with the number/size of DMA
+>>>>>>> buffers that ath11k is asking for:
+>>>>>> yeah, ath11k asks for fixed size DMA buffer regardless of that config.
+>>>>>>
+>>>>>>> # dmesg | grep swiotlb_tbl_map_single
+>>>>>>> [    5.237731] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16384 (slots=32768/    32)
+>>>>>>> [    5.247519] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16416 (slots=32768/    64)
+>>>>>>> [    5.261794] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16448 (slots=32768/    96)
+>>>>>>> [    5.275114] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16480 (slots=32768/   128)
+>>>>>>> [    5.287757] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16512 (slots=32768/   160)
+>>>>>>> [    5.299688] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16544 (slots=32768/   192)
+>>>>>>> [    5.312482] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16576 (slots=32768/   224)
+>>>>>>> [    5.324493] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16608 (slots=32768/   256)
+>>>>>>> [    5.337001] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16640 (slots=32768/   288)
+>>>>>>> [    5.346754] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16672 (slots=32768/   320)
+>>>>>>> [    5.356571] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16704 (slots=32768/   352)
+>>>>>>> [    5.366372] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16736 (slots=32768/   384)
+>>>>>>> [    5.376164] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16768 (slots=32768/   416)
+>>>>>>> [    5.385944] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16800 (slots=32768/   448)
+>>>>>>> [    5.395712] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16832 (slots=32768/   480)
+>>>>>>> [    5.408270] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16864 (slots=32768/   512)
+>>>>>>> [    5.419768] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16896 (slots=32768/   544)
+>>>>>>> [    5.430966] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16928 (slots=32768/   576)
+>>>>>>> [    5.442368] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16960 (slots=32768/   608)
+>>>>>>> [    5.452422] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 16992 (slots=32768/   640)
+>>>>>>> [    5.463507] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17024 (slots=32768/   672)
+>>>>>>> [    5.473536] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17056 (slots=32768/   704)
+>>>>>>> [    5.485661] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17088 (slots=32768/   736)
+>>>>>>> [    5.495404] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17120 (slots=32768/   768)
+>>>>>>> [    5.509626] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17152 (slots=32768/   800)
+>>>>>>> [    5.519353] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17184 (slots=32768/   832)
+>>>>>>> [    5.529077] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17216 (slots=32768/   864)
+>>>>>>> [    5.538799] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17248 (slots=32768/   896)
+>>>>>>> [    5.548517] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17280 (slots=32768/   928)
+>>>>>>> [    5.558238] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17312 (slots=32768/   960)
+>>>>>>> [    5.567965] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index= 17344 (slots=32768/   992)
+>>>>>>> [    5.578943] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=     0 (slots=32768/   992)
+>>>>>>> [    5.578964] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  52B index=  8192 (slots=32768/   993)
+>>>>>>> [    5.599793] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=    32 (slots=32768/   992)
+>>>>>>> [    5.599861] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  68B index=  8193 (slots=32768/   993)
+>>>>>>> [    5.609589] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=    64 (slots=32768/   993)
+>>>>>>> [    5.628921] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=    96 (slots=32768/   992)
+>>>>>>> [    5.638703] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  68B index= 17376 (slots=32768/   993)
+>>>>>>> [    5.649602] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   128 (slots=32768/   992)
+>>>>>>> [    5.659389] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   160 (slots=32768/   992)
+>>>>>>> [    5.674038] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  96B index= 17377 (slots=32768/   993)
+>>>>>>> [    5.685016] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   192 (slots=32768/   992)
+>>>>>>> [    5.694819] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   224 (slots=32768/   992)
+>>>>>>> [    5.694831] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  52B index= 17378 (slots=32768/   993)
+>>>>>>> [    5.714194] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  40B index= 17379 (slots=32768/   994)
+>>>>>>> [    5.725089] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   256 (slots=32768/   992)
+>>>>>>> [    5.753507] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17380 (slots=32768/   996)
+>>>>>>> [    5.764668] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   288 (slots=32768/   992)
+>>>>>>> [    5.774456] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   320 (slots=32768/   992)
+>>>>>>> [    5.774620] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17384 (slots=32768/   996)
+>>>>>>> [    5.795091] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   352 (slots=32768/   992)
+>>>>>>> [    5.795241] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17388 (slots=32768/   996)
+>>>>>>> [    5.815724] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   384 (slots=32768/   992)
+>>>>>>> [    5.815884] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17392 (slots=32768/   996)
+>>>>>>> [    5.836357] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   416 (slots=32768/   992)
+>>>>>>> [    5.836368] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  52B index=  8194 (slots=32768/   993)
+>>>>>>> [    5.855856] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17396 (slots=32768/   997)
+>>>>>>> [    5.866818] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   448 (slots=32768/   992)
+>>>>>>> [    5.866978] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17400 (slots=32768/   996)
+>>>>>>> [    5.887451] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   480 (slots=32768/   992)
+>>>>>>> [    5.897231] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   512 (slots=32768/   992)
+>>>>>>> [    5.897389] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17404 (slots=32768/   996)
+>>>>>>> [    5.917866] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   544 (slots=32768/   992)
+>>>>>>> [    5.918026] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17408 (slots=32768/   996)
+>>>>>>> [    5.938489] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   576 (slots=32768/   992)
+>>>>>>> [    5.938642] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17412 (slots=32768/   996)
+>>>>>>> [    5.959121] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   608 (slots=32768/   992)
+>>>>>>> [    5.959135] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  52B index=  8195 (slots=32768/   993)
+>>>>>>> [    5.978619] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17416 (slots=32768/   997)
+>>>>>>> [    5.989588] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   640 (slots=32768/   992)
+>>>>>>> [    5.989738] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17420 (slots=32768/   996)
+>>>>>>> [    6.010215] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   672 (slots=32768/   992)
+>>>>>>> [    6.020001] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   704 (slots=32768/   992)
+>>>>>>> [    6.020158] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17424 (slots=32768/   996)
+>>>>>>> [    6.040643] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   736 (slots=32768/   992)
+>>>>>>> [    6.040798] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17428 (slots=32768/   996)
+>>>>>>> [    6.061287] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   768 (slots=32768/   992)
+>>>>>>> [    6.061437] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17432 (slots=32768/   996)
+>>>>>>> [    6.081918] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   800 (slots=32768/   992)
+>>>>>>> [    6.081929] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  52B index=  8196 (slots=32768/   993)
+>>>>>>> [    6.101409] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17436 (slots=32768/   997)
+>>>>>>> [    6.112375] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   832 (slots=32768/   992)
+>>>>>>> [    6.112528] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17440 (slots=32768/   996)
+>>>>>>> [    6.133004] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   864 (slots=32768/   992)
+>>>>>>> [    6.142785] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   896 (slots=32768/   992)
+>>>>>>> [    6.142949] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17444 (slots=32768/   996)
+>>>>>>> [    6.163426] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   928 (slots=32768/   992)
+>>>>>>> [    6.163576] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17448 (slots=32768/   996)
+>>>>>>> [    6.184058] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   960 (slots=32768/   992)
+>>>>>>> [    6.184208] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17452 (slots=32768/   996)
+>>>>>>> [    6.204691] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=   992 (slots=32768/   992)
+>>>>>>> [    6.204704] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  52B index=  8197 (slots=32768/   993)
+>>>>>>> [    6.224183] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17456 (slots=32768/   997)
+>>>>>>> [    6.235148] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=  1024 (slots=32768/   992)
+>>>>>>> [    6.235308] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 6224B index= 17460 (slots=32768/   996)
+>>>>>>> [    6.255777] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=  1056 (slots=32768/   992)
+>>>>>>> [    6.265552] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=  1088 (slots=32768/   992)
+>>>>>>> [    6.265633] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 2128B index= 17464 (slots=32768/   994)
+>>>>>>> [    6.286142] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=  1120 (slots=32768/   992)
+>>>>>>> [    6.286182] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  72B index= 17466 (slots=32768/   993)
+>>>>>>> [    7.574489] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=  1152 (slots=32768/   992)
+>>>>>>> [    7.584645] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  60B index= 17467 (slots=32768/   993)
+>>>>>>> [    7.595593] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=  1184 (slots=32768/   992)
+>>>>>>> [    7.595608] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  52B index=  8198 (slots=32768/   993)
+>>>>>>> [    7.605359] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=  1216 (slots=32768/   993)
+>>>>>>> [    7.624703] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 452B index=  1248 (slots=32768/   993)
+>>>>>>> [    7.635603] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=  1280 (slots=32768/   992)
+>>>>>>> [    7.645344] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>>  52B index=  1312 (slots=32768/   993)
+>>>>>>> [    7.656247] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=  1314 (slots=32768/   992)
+>>>>>>> [    7.683567] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single size=
+>>>>>>> 65535B index=  1346 (slots=32768/   992)
+>>>>>>> [    7.696095] ath11k_pci 0000:01:00.0: swiotlb_tbl_map_single
+>>>>>>> size=1048583B index=    -1 (slots=32768/   992)
+>>>>>>>
+>>>>>>> I'm still trying to understand the swiotlb allocation to see if there
+>>>>>>> is some configuration change I should be making.
+>>>>>>
+>>>>>> I suspect you hit the same issue mentioned here:
+>>>>>>
+>>>>>> https://lore.kernel.org/all/CAOMZO5A7+nxACoBPY0k8cOpVQByZtEV_N1489MK5wETHF_RXWA@mail.gmail.com/
+>>>>>>
+>>>>>> so can you check if below commit present in your kernel, and if not could you pick it up
+>>>>>> and try again?
+>>>>>>
+>>>>>> commit 14cebf689a78 ("swiotlb: Reinstate page-alignment for mappings >= PAGE_SIZE")
+>>>> ignore this request since it should be no related to your issue :(
+>>>>
+>>>>>>
+>>>>>
+>>>>> I bisected the 'swiotlb buffer is full' issue back to commit
+>>>>> aaf244141ed7 ("wifi: ath11k: fix IOMMU errors on buffer rings") which
+>>>>> looks to me to be a legitimate fix and if I revert it swiotlb is now
+>>>>> happy and the driver registers but I get the crash on client connect
+>>>>> that I was seeing in 6.6 so that commit fixes an issue, but causes
+>>>>> swiotlb to not be fulfilled.
+>>>> not really ... that commit is not the cause to your issue. you don;t see the 'swiotlb
+>>>> full' error after revert it simply because dma_map_single() is NOT called then.
+>>>>
+>>>>
+>>>>>
+>>>>> The issue seems to be that the swiotlb memory buffer allocator is
+>>>>> getting too fragmented to be useful with what ath11k is now asking for
+>>>>> (a lot of 2K and 64K buffers and then finally a 1048583B buffer which
+>>>>> fails due to the fragmentation of the swiotlb buffer.
+>>>> no, the direct cause to 'swiotlb full' error is that kernel does not allow a swiotlb map
+>>>> request larger than 256kb [1]:
+>>>>
+>>>> 'A single allocation from swiotlb is limited to IO_TLB_SIZE * IO_TLB_SEGSIZE bytes, which
+>>>> is 256 KiB with current definitions'
+>>>>
+>>>> while here ath11k is requesting a buffer of 1048583 bytes.
+>>>>
+>>>>
+>>>> howevr the question is that why swiotlb is involved here: for streamed DMA operation
+>>>> ath11k is capable of addressing 64GB memory (with 36bit DMA mask), in your case this
+>>>> covers whole system memory. the most possible reason I can think of is that swiotlb is
+>>>> forcebly enabled in your kernel (with swiotlb=force?) such that each DMA buffer would be
+>>>> bounced by swiotlb regardless of its physical address.
+>>>>
+>>>
+>>> I do not have swiotlb forced explicitly. Again, this is because I'm on
+>>> a IMX8MM with 4GiB DRAM which has no IOMMU and a 32bit DMA where
+>>> peripherals can not access memory over 3GiB as its base DRAM starting
+>>> at 1GiB (so swiotlb is getting used with a DRAM size >3GiB).
+>> ah ... I get your point and agree. so the limitation doesn't come from the ath11k
+>> hardware, but comes from IMX8MM itself. I guess the direct cause for involving swiotlb is
+>> dma_capable() returns false due to dev->bus_dma_limit is ((1ULL << 32) - 1).
+>>
+>>>
+>>> Reverting commit d0e2523bfa9c ("ath11k: allocate HAL_WBM2SW_RELEASE
+>>> ring from cacheable memory") indeed resolves this issue.
+>> correct. by reverting it ath11k uses dma_alloc_coherent() instead of dma_map_single(), so
+>> the issue is gone.
+>>
+>>>
+>>> I notice that ath12k has a similar architecture as ath11k where
+>>> ath12k_dp_srng_setup() looks like what ath11k_dp_srng_setup() before
+>>> the change to allocate its buffers from cacheable memory so it's
+>>> probably just a matter of time before the same changes are made to
+>>> ath12k which will break that for this platform/memory-size as well.
+>> thanks, will take care.
+>>
+>>>
+>>> So the way I see to resolve this either:
+>>> a) revert commit d0e2523bfa9c ("ath11k: allocate HAL_WBM2SW_RELEASE
+>>> ring from cacheable memory") - to stop asking for buffers >256KiB
+>>> b) find some other use of that upper 1GiB so that it can't be
+>>> allocated by DMA and swiotlb isn't needed
+>>> c) tell my board users to use mem=3096M and lose that last 1GiB of DRAM
+>>
+>> while the first one seems best it impacts performance. so I get another proposal: in case
+>> IOMMU not present, check DMA adressing limitation before allocating the buffer. If it can
+>> not cover 36 bit memory space and the system is able to alloc buffers above 4Gb, pass
+>> GFP_DMA32 or GFP_DMA to kzalloc() such that we can get a buffer below 4GB/16MB.
+>>
+>> anyway, can u send a patch for that?
+>>
 > 
-> also need to call it in __cache_tag_assign_parent_domain(). BTW. Is the
-> domain->qi_batch required if there is no ATS?
+> I could work up a patch if I understood the memory allocation better.
+> Do you know how to check for this situation?
+> 
+> Are you saying allow the current kzalloc and then check the address
+> given to see if it's dma-able (how?) then free it and realloc it with
+> GFP_DMA32 and skip the dma_map_single?
 
-Yes.
+yeah, somthing like that. But thinking it more I realize that it is not a general
+sollution, even it can fix the issue in your case.
 
-Thanks,
-baolu
+For a general sollution, what I can think of now is either of below:
+
+1. revert commit d0e2523bfa9c ("ath11k: allocate HAL_WBM2SW_RELEASE ring from cacheable
+memory"). This way we can avoid the size limitaion on streaming DMA.
+
+2. limit the allocation size to be less than 256KB.
+
+However both of them may have impact on performance.
+
+> 
+> I've added the iommu folk to the thread to see if they have any input.
+> To recap, the issue here is that ath11k wants to allocate some large
+> (~1MiB) cacheable buffers and on an iommu-less system (IMX8M) with a
+> 32bit DMA engine this will fail as it requires swiotlb and the buffer
+> size being too large results in a swiotlb buffer full error.
+> 
+> Best Regards,
+> 
+> Tim
+> 
+>>>
+>>>>
+>>>>
+>>>> [1] Documentation/core-api/swiotlb.rst
+>>>>
+>>>>>
+>>>>> I'm guessing that this has gone unnoticed for a while because there
+>>>>> are maybe not a lot of systems out there that require swiotlb with
+>>>>> ath11k (either no IOMMU or more memory than DMA can address) and my
+>>>>> guess is that if you test ath11k with swiotlb=force you will easily
+>>>>> see this 'swiotlb buffer is full' issue on other systems.
+>>>>>
+>>>>> I'm not that knowledgeable about ath11k but I do know that ath10 and
+>>>>> ath12k do not have this issue with swiotlb. Debugging a bit shows that
+>>>>> there are a lot of large DMA buffers being requested by ath11k and I'm
+>>>>> wondering if that could be reduced or optimized somehow.
+>>>>>
+>>>>>>
+>>>>>>>
+>>>>>>> To avoid using swiotlb is there some way to limit the memory region
+>>>>>>> used for DMA operations to below 32bit boundary yet still allow the
+>>>>>>> memory above 32bit to be useful in the system for userspace maybe?
+>>>>>> if you are using dma_alloc_coherent() I'm afraid there is no way for that. the API
+>>>>>> internally ignores any zone flags passed with the 'gfp' argument. see
+>>>>>>
+>>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/dma/mapping.c#n615
+>>>>>>
+>>>>>
+>>>>> is DMA_RESTRICTED_POOL a solution for me?
+>>>> i don;t think this help since this is used in coherent DMA?
+>>>>
+>>>
+>>> While DMA_RESTRICTED_POOL does allow defining the area used by swiotlb
+>>> it doesn't change the way swiotlb allocates buffers or the fact that
+>>> swiotlb is used at all.
+>>>
+>>> Best Regards,
+>>>
+>>> Tim
+>>>
+>>>
+>>>>>
+>>>>> Best Regards,
+>>>>>
+>>>>> Tim
+>>>>>
+>>>>
+>>
+
