@@ -1,96 +1,111 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22F5521771E
-	for <iommu@lists.linux.dev>; Mon,  9 Dec 2024 10:50:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEC611ACEB8
+	for <iommu@lists.linux.dev>; Mon,  9 Dec 2024 14:20:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733741415; cv=none; b=MukBA6XH/1e4vqvvNFLJGtXIfDMGMxo9c6JQzT0H5ZyYPuhjtxUEwtygM4rv8Yv8Udbl4wrx3Bj+or4aq0Xu7V0DFoFfxohEvxkUO+3pVEWmJE5dWZxjonIkwaCHizHlfM8LHxfKPSZLs5wv4FTT8Rf8V38EzsvCHtqXnRw5So4=
+	t=1733754017; cv=none; b=CPXsSesXacz1RTFOqextim8mVBqlZkcx4MJ2WOYN/CEw65Eh+aelU1cyYmH5xaSU9YQABKwYK7CnI7IJa2eg/A3QX6EChaUf8MCLT+h1sMZlA6YYJP7w0joiGukO4o+iMWPMedzWXBAKAi/KpFuUeEm26xqe04JH+6Y5u416ChY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733741415; c=relaxed/simple;
-	bh=Al1nYJcI+WH60uOcfQJpnPEsLD/SNuVV0FT8A72aZh8=;
-	h=Message-ID:Date:MIME-Version:To:CC:From:Subject:Content-Type; b=fW41JhPzmEl2DtkJF3Ge/2ktiN/5hD6RBa23CiyUh8BJQz2WEQW9Du64s/MOVfXVIAp8YcukXRws5RDIGAhyx5Vs4SjzuZUuhdfIX3TBFWufGUx8qzm/hK44Oj14JctJ5qSuBdaSorZ/j+aT6JxcPPdbMJFBfd6t/Udyh6ej4AA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=C0SyphQF; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1733754017; c=relaxed/simple;
+	bh=1IfxwKOe0K+SXDwRfMDias6ZXlgFg4AGO8kVbL4Ta8Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XjIxIaz6wS+zm6jfnxhaPhYX1PVcH0hDRhhip7LojIM2MZHQeaEsKQtzkEZicQLz25UEq3JCxf7OfcdypxEGK8aQ3Ug7dLX5m/TJULAWB/zVp2wzjUNhq5iUg2BTB8fd7wbp1onTRZw4XP0BQZrYs40U3TOWu4UAMmJnA/3/uKA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=eC+fVs+d; arc=none smtp.client-ip=209.85.219.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="C0SyphQF"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4B9AP99G024521;
-	Mon, 9 Dec 2024 10:50:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=DQHDERoIpTVNFdTrNfwzhA
-	S6rWPsfyTUVsAC0tG+skQ=; b=C0SyphQFvKEUzcErdoVb4MAVnqc4eltzISRguW
-	u4FTbjkcpZYMKcIDa+AkPF6q1U2cNeCLMJWyt/WyGxukHLfs9NDu6TRUTNfLrJwJ
-	oMS7q2jgCIhB5vD49RnSiD1f0dtl1h6wp7AAWnCMTWAA0C6fc9J4u8spFEG6UhJd
-	p0MTkERm3MCf+5Iuu36VKJB9t81L1Dx7vMii3LW2MfuJHR8huSkd+C+Snnb8p1ma
-	vPW2cZfiVFaLMJPdp93M9t8Vb8B6aGxmk8LzD7ybcQFcLYUnT0qgUsa8qmjSmU3X
-	enzkPoXQYOFtBQQLlNLEn1QmzkRZnPQmVpwKLmwATxavKYmw==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43cc2ecj6d-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 09 Dec 2024 10:50:10 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4B9Ao9Cq030892
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 9 Dec 2024 10:50:09 GMT
-Received: from [10.231.195.67] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 9 Dec 2024
- 02:50:07 -0800
-Message-ID: <64931fac-085b-4ff3-9314-84bac2fa9bdb@quicinc.com>
-Date: Mon, 9 Dec 2024 18:50:06 +0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="eC+fVs+d"
+Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-6d87fea84cdso33303256d6.2
+        for <iommu@lists.linux.dev>; Mon, 09 Dec 2024 06:20:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1733754014; x=1734358814; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=nowhEyl5dI6aIIqwammoplLG7dGCizfgN3AwcDBvNB8=;
+        b=eC+fVs+dszVuAWM0+rQF/Eo250gW1JXHQRQnqD2ykLz0nGUg3t4llMvUAF+BcYGrUb
+         BhwNXDovaOLiDyJdqQl873/57/P2hPTFowJgX1zsNopH4MjmP61grVwc/dLDox4G7+dd
+         r1CrR5xqvqCGvN4HB1WcmAOB15nnxAQfihaQv1alvXh3Ld6OSv3YjuYs8frgsbTSorxA
+         Ls7UocLp5u/v1TnnC37lBUegMzMefiT5ia7fNhoczaxDRn8cMTlyrzJb8EFv2DcV0MlR
+         crssuNri+ZgVNoaCO/vMxxmhr7m1wc2hF9lPpSPGJ4/hvu7M3gFskrsn5Cd5COxjc2AN
+         E+5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733754014; x=1734358814;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nowhEyl5dI6aIIqwammoplLG7dGCizfgN3AwcDBvNB8=;
+        b=N1hD7fYzzKscYjJn27b3ZkVGbRzVdMRuR9DrGgK7aTTVwNjfrWD9BuaBILvS5aM5nU
+         Phk8jImEeG6vy5Q736+vs0s6kXncDgQZ2lUbkzIiE9bMmpqn/OIQ9u3qRkMRIk84Pjne
+         LLYAle0Z6EUqgOSgJOaL9zhxNbdO8FZKHWIJUZrooNbScZDa8dCMPNI1VUaAL3LMo6go
+         JvgvDGhCUTgfAHkokxLcmNfRvo9ixP53xHVGc1XBdnngzoKCwRVBdP9PSfGM66OLyof6
+         JT2O0f+Pd8CRUlkJjneHju6qnOP5cUrGlTKQH5fm3wDY3gGBo/qnxlnNOAYMV/XFiwFx
+         6SXA==
+X-Forwarded-Encrypted: i=1; AJvYcCUhIsJdTsqCgi87ZNTNHAtEUKISGO33oRBXzdbSX1bsg+ngw2+YShgnblpJi9aaXlVuUg4UmA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwK/0E0pCJ1EcHcdYw7CTnkO76aFlC10aEX4rxZm2dZb8ee2wK5
+	wgZdiGTEOK+AouGOmubeCMNerAqSRgS/TyHPdpX8SLr6n2IOwxo495xg2KtTcYM=
+X-Gm-Gg: ASbGncvzbJlaThidQxTLJTAYzdQXB/pjaTO6yO+OK9LOCpF/IJV1egg18yO2g+k6fYv
+	y6jfoIGrFzRLAL+UW+ASetHEJpX6zhIOHnBsVLbtYGEW9N7k5DR8mTV164AF1ej5M1GE+7HcUYP
+	OHBuXxvzm8kXeuV4YsMJO2YXDA1bCpl6+aXqIVwi9IowoKE3m+ajT/PjF0HGtnECAQlPx+Ip8d7
+	nshttO4fD9dXvxAgflPU6EJsTTUlePyH1LIa4pTmRx5oqrzpLKRTAAznELkWlspvdneEKWqbQNP
+	euiBhBzKhoT7lMCp+FJUmKw=
+X-Google-Smtp-Source: AGHT+IHoY1ZOiHkAJnpdjYQRkeVDy7sffj3Siw+V0OMHlwsl39yE0CXPuxOPKOgDNwcCNM/wgKH60A==
+X-Received: by 2002:a05:6214:1c07:b0:6d8:a76d:b66c with SMTP id 6a1803df08f44-6d8e7170365mr191037006d6.30.1733754014582;
+        Mon, 09 Dec 2024 06:20:14 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6d8da6b2291sm48868886d6.58.2024.12.09.06.20.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Dec 2024 06:20:14 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tKecP-00000009sI1-2JGA;
+	Mon, 09 Dec 2024 10:20:13 -0400
+Date: Mon, 9 Dec 2024 10:20:13 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	linux-rt-devel@lists.linux.dev
+Subject: Re: [PATCH v2] iommu/tegra241-cmdqv: do not use smp_processor_id in
+ preemptible context
+Message-ID: <20241209142013.GC1888283@ziepe.ca>
+References: <Z1L1mja3nXzsJ0Pk@uudg.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-To: Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski
-	<m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>
-CC: linux-kernel <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-From: Baochen Qiang <quic_bqiang@quicinc.com>
-Subject: missing clear bdr in check_ram_in_range_map()?
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: A1FLghzP3KIX_hPr8jPVNA5yMhoGy0YP
-X-Proofpoint-GUID: A1FLghzP3KIX_hPr8jPVNA5yMhoGy0YP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
- mlxlogscore=752 priorityscore=1501 impostorscore=0 lowpriorityscore=0
- adultscore=0 malwarescore=0 clxscore=1011 suspectscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2412090084
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z1L1mja3nXzsJ0Pk@uudg.org>
 
-Hi,
+On Fri, Dec 06, 2024 at 10:01:14AM -0300, Luis Claudio R. Goncalves wrote:
+> During boot some of the calls to tegra241_cmdqv_get_cmdq() will happen
+> in preemptible context. As this function calls smp_processor_id(), if
+> CONFIG_DEBUG_PREEMPT is enabled, these calls will trigger a series of
+> "BUG: using smp_processor_id() in preemptible" backtraces.
+> 
+> As tegra241_cmdqv_get_cmdq() only calls smp_processor_id() to use the
+> CPU number as a factor to balance out traffic on cmdq usage, it is safe
+> to use raw_smp_processor_id() here.
+> 
+> v2: Sebastian helped identify that the problem was not exclusive to kernels
+>     with PREEMPT_RT enabled. The delta between v1 and v2 is the description.
+> 
+> Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-while checking check_ram_in_range_map() I am confused by the condition set/check on bdr.
-If I am reading the code correctly, if bdr is set once, it would never get cleared, hence
-that function will always returns 0.
+Makes sense
 
-should we clear bdr before each new iteration?
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 5b4e6d3bf7bc..1605b956b25e 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -611,6 +611,7 @@ static int check_ram_in_range_map(unsigned long start_pfn,
-                        return 1;
-
-                start_pfn = PFN_DOWN(bdr->cpu_start) + PFN_DOWN(bdr->size);
-+               bdr = NULL;
-        }
-
-        return 0;
-
+Jason
