@@ -1,89 +1,116 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4271E198A01;
-	Mon,  9 Dec 2024 19:19:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 648F0157A6B
+	for <iommu@lists.linux.dev>; Mon,  9 Dec 2024 19:24:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733771967; cv=none; b=Zr/XsA8vC6QbneyJl5VmqL68xya4RL/YR/CnZ+CrpzIt2LPzRAm8VQssV+XWly+o19A9cRQjaUqpUdpPvhyrVpfUMIzrzQddTNTZUgvvoFO5mSQawsP1FQBoG1HmDMLDBduMpgOaCtX/a9f0LaYa/KW2jTgPgcXGr7av6bFbv0c=
+	t=1733772257; cv=none; b=KqBBMFVfPaBBUPvzl1tf5BAzj/Jj7hlUkNOOzoDfVZSpOgI5yFDlBAE2l6E37j25RMqnjvcNUptBbUG004fo8mBzrMrfc2ng0E7+/w6E/LfFJ8oSw2KFhDZuz6owV4zEQkhm3tDIMZeS5rHVbsv+1+Hdx0f3Q1xpTdptQ+6Buog=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733771967; c=relaxed/simple;
-	bh=IkU30lh01yasDhhYl5DIZiX1actBPTKkOI868W5M7jM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Vs9deMVgYJxxWDIa/0JljpgAlf5mwG0dkgF6z6Z0fhwZLjfXW5qTWDROOFqibZ8m6sD7JvO/BS7gNpghA1SMPblx5YTy6ESiQBokFjiLH8FItg9mT55pjrcjx/cfePutzmzkAVWziiFSTdk8WKmdOq4JoFujQvCuegyxBd1uAKs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=X79ao65h; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1733772257; c=relaxed/simple;
+	bh=u50d26RvbtfcaZDxSeP0KgsaZLJEbWoUHpAH7IDGEBY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PLeWuHmxtJPm0asNI10nKBtls15wm66HwR6xR+mhAAX8+qoVe9j+zv/qbm+NFKgqE9dNTI7v4nb3YSnZjgjveXO1+hDfgdeI6sH3+vGgGR+ak5FUHcW0KZnJ4gIJPTPZRIsi49nU4pHeuF6XiANsuWnPDFrob7wTWIXK+3blcqg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=nPmwaYue; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="X79ao65h"
-Received: from [10.0.0.115] (c-67-182-156-199.hsd1.wa.comcast.net [67.182.156.199])
-	by linux.microsoft.com (Postfix) with ESMTPSA id A64AF211F951;
-	Mon,  9 Dec 2024 11:19:23 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A64AF211F951
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1733771964;
-	bh=aNTJR2KnZDmn2B9w7QnkiUuDqNvJl6jmEMliRyXtV4c=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=X79ao65h/u13GLNKxSqyMJ9uUvtBpp3rw2v4gWdlaDngbyQZXN55Xh0ffA4IZXRhV
-	 QT6eYndeymBwoYWDgPYJwOjTDoq9oNVdrDHwkzAldgCCnjvKQkd2EPP2EZ64G6LAZ0
-	 D3aklNFCdRwoxFPP+bj7TYr2I59tP+ffoezRugPw=
-Message-ID: <a76d129c-2956-4bbc-bd14-cb12737b64df@linux.microsoft.com>
-Date: Mon, 9 Dec 2024 11:19:23 -0800
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="nPmwaYue"
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4B9CD7oK011164;
+	Mon, 9 Dec 2024 19:24:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=pp1; bh=IIYYVux+1iMONKF0yPGBAnVmD9qlPsySTVsLN6kNI
+	Ck=; b=nPmwaYues2zOvimfhSz/7Q38h1gY77PJoy7yR1/nYjtlH3KRRJ2xTVoUw
+	a2npi8y4hNFB7HdJMQdw8qAJ68T+i9Yns9pW2z5ymWVG4o0tK2umkiqQizxQz8iB
+	ossZ2MfCMtuQusEtv0uc0CsiDmKMfD3ArqTTo1fqrH/0mt/g9qgUwb3jua31Wnhh
+	6PBFEAffufU3qlBVf296KbCt/ok+Q2A7d6VntXb4R4Sw8mcB9T/Z0at20cG4Wcq5
+	m+puduk6LCYrp9l7YRJ9DnYiuDTY6ewkZE3CSAVJoru9uSEYpn3K+/5P1mqTAEm+
+	abE6uxvPx3YMs63oTkqx23I7cjNeg==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 43ce0xa6bb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Dec 2024 19:24:08 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 4B9Hgq6Y032739;
+	Mon, 9 Dec 2024 19:24:07 GMT
+Received: from smtprelay06.wdc07v.mail.ibm.com ([172.16.1.73])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 43d0ps89ja-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Dec 2024 19:24:07 +0000
+Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
+	by smtprelay06.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4B9JO6WX7340672
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 9 Dec 2024 19:24:06 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3EC0E5806B;
+	Mon,  9 Dec 2024 19:24:06 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 847AB58065;
+	Mon,  9 Dec 2024 19:24:04 +0000 (GMT)
+Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.61.107.222])
+	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Mon,  9 Dec 2024 19:24:04 +0000 (GMT)
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
+        clegoate@redhat.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: [PATCH 0/6] iommu/s390: add support for IOMMU passthrough
+Date: Mon,  9 Dec 2024 14:23:57 -0500
+Message-ID: <20241209192403.107090-1-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.47.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/5] hyperv: Move hv_connection_id to hyperv-tlfs.h
-To: Wei Liu <wei.liu@kernel.org>
-Cc: linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, kvm@vger.kernel.org, iommu@lists.linux.dev,
- netdev@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-arch@vger.kernel.org, virtualization@lists.linux.dev,
- kys@microsoft.com, haiyangz@microsoft.com, mhklinux@outlook.com,
- decui@microsoft.com, catalin.marinas@arm.com, will@kernel.org,
- luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
- seanjc@google.com, pbonzini@redhat.com, peterz@infradead.org,
- daniel.lezcano@linaro.org, joro@8bytes.org, robin.murphy@arm.com,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, lpieralisi@kernel.org, kw@linux.com, robh@kernel.org,
- bhelgaas@google.com, arnd@arndb.de, sgarzare@redhat.com,
- jinankjain@linux.microsoft.com, muminulrussell@gmail.com,
- skinsburskii@linux.microsoft.com, mukeshrathor@microsoft.com,
- vkuznets@redhat.com, ssengar@linux.microsoft.com, apais@linux.microsoft.com,
- eahariha@linux.microsoft.com, horms@kernel.org
-References: <1732577084-2122-1-git-send-email-nunodasneves@linux.microsoft.com>
- <1732577084-2122-2-git-send-email-nunodasneves@linux.microsoft.com>
- <Z1Y0uJlVn-86KHE8@liuwe-devbox-debian-v2>
-Content-Language: en-US
-From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-In-Reply-To: <Z1Y0uJlVn-86KHE8@liuwe-devbox-debian-v2>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: JyeEx5IlrMzQ6eHTqj9k_W4m4waSpOv-
+X-Proofpoint-ORIG-GUID: JyeEx5IlrMzQ6eHTqj9k_W4m4waSpOv-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
+ definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ spamscore=0 clxscore=1011 impostorscore=0 mlxscore=0 mlxlogscore=417
+ priorityscore=1501 malwarescore=0 adultscore=0 bulkscore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2412090147
 
-On 12/8/2024 4:07 PM, Wei Liu wrote:
-> On Mon, Nov 25, 2024 at 03:24:40PM -0800, Nuno Das Neves wrote:
->> This definition is in the wrong file; it is part of the TLFS doc.
->>
->> Acked-by: Wei Liu <wei.liu@kernel.org>
->> Reviewed-by: Easwar Hariharan <eahariha@linux.microsoft.com>
->> Reviewed-by: Michael Kelley <mhklinux@outlook.com>
->> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-> 
-> One comment about the ordering of the tags. It is better to organize
-> them in the following order:
-> 
-> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-> Acked-by: Wei Liu <wei.liu@kernel.org>
-> Reviewed-by: Easwar Hariharan <eahariha@linux.microsoft.com>
-> Reviewed-by: Michael Kelley <mhklinux@outlook.com>
-> 
-> I've made the change for you while applying the patch.
-> 
+This series introduces the ability for certain devices on s390 to bypass
+a layer of IOMMU via the iommu.passthrough=1 option.  In order to enable
+this, the concept of an identity domain is added to s390-iommu.  On s390,
+IOMMU passthrough is only allowed if indicated via a special bit in s390
+CLP data for the associated device group, otherwise we must fall back to
+dma-iommu.
 
-Thank you, noted for next time.
+Matthew Rosato (6):
+  s390/pci: check for relaxed translation capability
+  s390: enable ARCH_HAS_PHYS_TO_DMA
+  iommu/s390: implement iommu passthrough via identity domain
+  iommu: add routine to check strict setting
+  iommu: document missing def_domain_type return
+  iommu/s390: implement def_domain_type
 
-> Thanks,
-> Wei.
+ arch/s390/Kconfig                  |  1 +
+ arch/s390/include/asm/device.h     | 12 ++++++
+ arch/s390/include/asm/dma-direct.h | 14 +++++++
+ arch/s390/include/asm/pci.h        |  2 +-
+ arch/s390/include/asm/pci_clp.h    |  4 +-
+ arch/s390/pci/pci.c                |  6 ++-
+ arch/s390/pci/pci_bus.c            |  2 +
+ arch/s390/pci/pci_clp.c            |  1 +
+ drivers/iommu/iommu.c              |  5 +++
+ drivers/iommu/s390-iommu.c         | 65 ++++++++++++++++++++++++++++--
+ include/linux/iommu.h              |  2 +
+ 11 files changed, 107 insertions(+), 7 deletions(-)
+ create mode 100644 arch/s390/include/asm/device.h
+ create mode 100644 arch/s390/include/asm/dma-direct.h
+
+-- 
+2.47.0
 
