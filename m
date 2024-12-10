@@ -1,117 +1,158 @@
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 321F31A2C0B
-	for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 14:30:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94C2816FF3B
+	for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 16:26:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733841060; cv=none; b=q+2XfApTmRA86E27vCP/LRAZj3vgZgtY5Ja/dmZSgI5e4R+WkkyKwJi3tNTrCcmU97+IeGWggKINaOwrsXGutBISH9FdW7r3zbewi7jWzVprL/SLZhHUz4n3pvRDjctMdzeeIrwtB11cU8h+KvaFnhpEPjFmvhDK0m8l3tiHBwM=
+	t=1733848009; cv=none; b=aDvIkDa7jUuwhzgj09ySbOnjGrVRNEpgUbLGgjhQNnX+xhiEz3Vk1rGyqJGh1GK3NzPcOR5uPF2SI+hXZMN3icKmO1ooJ24jbt6AFWKcB6ldRymQhM6Xx788B2kVSJb8P9XucLjuCopmBMm9ASTpRwjw6KIOs33w+Qihy6Geyj4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733841060; c=relaxed/simple;
-	bh=6PWfkKXT/AMHAqxX7cfEJo3L2lk7EqER7ygybDmzlBc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FFAGqfS+DRKhFCDKVXWW9rWCqfB3vynCPQt4QPqCnR6UJFUzk2rt5tct+IHw8s1lcQYLi0kjY+igQmNX57osoGmN1JbctVTf7ecodY6nziquBQQOiHxF4cJBD5GeK0psqDInQI1Q+GxGxJzu0FJon6zjE71VV20eGuB6OmvborA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UPVTbMjV; arc=none smtp.client-ip=209.85.166.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1733848009; c=relaxed/simple;
+	bh=7ne9y2HZeK03QnmWb6ITXdMTZJ//s1gJwlxN0xRzesM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=RalDufXEevBeVA2UwKir5p9nti6oZwvBWS5kvjWG/KvMGFCT7Nz7VjGz2dTKvnv8v8gXZOMS+BgZrqj7qPiZLL3pTf20tGMlq7PfdnfVS/fCBzT/3PLdoM986ipi+Cp/Jdt7lDL0ewMTt2YdZ1OLLnXWNoSG5/SCw33z54X2Fl4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Yt5yqWRw; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UPVTbMjV"
-Received: by mail-io1-f54.google.com with SMTP id ca18e2360f4ac-844ba46e0e6so64600539f.0
-        for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 06:30:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733841058; x=1734445858; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=i2N7XAtorM72yACmDgop2No+2dzqpehTFwae9k1iios=;
-        b=UPVTbMjVkXhOfKH7RucU0UIksWvzbjwlS+ILD7Uns2GY5kRQ4TqakCE4KRLoTWWwOi
-         aUg4avoCNCzF1Si51QMsltbJV8fm8F+ixhNwnxMAdBEtlaJJ9bCzcfxjBiI3NQhLOMB2
-         bVfq8YXQT3ahkDf9735il76RuqTc87WKxq3VSWF3wCFZbix9m5AvpLfXqavuNcZ7KXyI
-         w0/fXp7+yL+KBWi0yPn5HXk9qcMIPp0Kl2ZeA5P2OW7Pn+VisXY7LkbqG7tlLMLbgwXM
-         +uoRljQAtRFwEsuVi4iStK8thEskE6m+O2V549jOQp1ep0I76wScGvdIexhft1rP+gGD
-         KQjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733841058; x=1734445858;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=i2N7XAtorM72yACmDgop2No+2dzqpehTFwae9k1iios=;
-        b=FwJiWLne1rWt9oSXpu6SKT0M2wghjXsrSxwOTCX/R7e/aO13w5vBSnZnXTvu+ZZZmI
-         VuGZ7UPg6utqQA+KbfM02v/kJzGYrlA5Tq5yY1uI+8csGppZ4oQgpevuqjuoLysCfDKw
-         1zn1EF1NxA48uLWJ4EAhEEvLXHfJT5qBJJVFe0tEuiFlRPxxBFmTE2i089GFAWPOregn
-         Fxo3pTE2T4TxS4EneXv2nPW+jBV8j1k9mAAKCCwPeuC67oYnMLJK+JtaQWq8NLADissw
-         +Z6Exn3YJMvgSe54cWk+Qc5BNv5v7+HjC8pjfIvo1bjaPKqT0Oiev5FKJjIUB3zTTT8g
-         IIDQ==
-X-Gm-Message-State: AOJu0Yw5WxWQA+MugVl3ZECON3rgWN1E5lNj9ej7wFastNXoAA78Se1B
-	TeaulhzWCtkkWLxiCDnbupgNwipMkF3EPqOhy2JIdM46n0Z9sg/hLi7nkGhOIk9KOjwVApoMlgV
-	18rGlRwZUYt0Dqj8dqSPUunJjUTI=
-X-Gm-Gg: ASbGnctAkHriniAzMVrfGfFmvVMlPyVY80d/IFGfIlpswVTnZXziaUod9Kz04G8ppmQ
-	XKKeEO00gKokjjSyTH9XyTi3SR+BrkAfsnaE=
-X-Google-Smtp-Source: AGHT+IGZsjUHNHgZScctt9GhUUISo0b3ncG99pwHqmoX8StIWNsTQgzRKfAm5Fp0Di2hDokmvL3agPwZ+93jj5g8oTU=
-X-Received: by 2002:a05:6e02:1ca7:b0:3a7:6e34:9219 with SMTP id
- e9e14a558f8ab-3a811db26admr175649315ab.14.1733841056498; Tue, 10 Dec 2024
- 06:30:56 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Yt5yqWRw"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BADrYYg005962;
+	Tue, 10 Dec 2024 16:26:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=64ybYp
+	w/DtLTVNR6whj0o6KYiqsmVjRoQcI4XyXZFvk=; b=Yt5yqWRwazbWZ5tvmZF+L/
+	nsLm18iDUSwTnAiYG0yt9p4/FuAF1376G8Eo8pvUujpvLo98ojDo5qvrQ/RSR9wd
+	3OzYq5LkXurwMv2d0vglg/kvihwTOuJK3mntTOcWuhcAn0gJL2To/Tp/IDAf8X1Q
+	4dbzPo5Q5onbr7O07VPT/v7MqIkEnPTbE3uiSC0mgHiaFYtzkwOkx1ETXWa3NrrO
+	yKFmw/qwJKUg71eFOvJu/lOWAcNNmX2U9kSWHHs/9Di73gVCFM6kCQyAswBMjVDx
+	7oVIqi49zXsfzhKiiArv5nJJeND0Duy7yF4VVWe/23X22P1imQyOTQd2s/9gNyrQ
+	==
+Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 43ce1vr5u8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 10 Dec 2024 16:26:32 +0000 (GMT)
+Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma21.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 4BAG82DM032555;
+	Tue, 10 Dec 2024 16:26:31 GMT
+Received: from smtprelay05.dal12v.mail.ibm.com ([172.16.1.7])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 43d1pn4caa-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 10 Dec 2024 16:26:31 +0000
+Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
+	by smtprelay05.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4BAGQTc933096418
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 10 Dec 2024 16:26:30 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A936C58059;
+	Tue, 10 Dec 2024 16:26:29 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id F2EA35804B;
+	Tue, 10 Dec 2024 16:26:27 +0000 (GMT)
+Received: from [9.61.107.222] (unknown [9.61.107.222])
+	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 10 Dec 2024 16:26:27 +0000 (GMT)
+Message-ID: <0e80948b-7593-4b59-bb77-2f78f00ad2c3@linux.ibm.com>
+Date: Tue, 10 Dec 2024 11:26:27 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241028213146.238941-1-robdclark@gmail.com> <20241210111450.GA14735@willie-the-truck>
-In-Reply-To: <20241210111450.GA14735@willie-the-truck>
-From: Rob Clark <robdclark@gmail.com>
-Date: Tue, 10 Dec 2024 06:30:44 -0800
-Message-ID: <CAF6AEGs72rxvguSYbALWPL2FrO5coyijQXY4HEQdwvr8Fj4XKQ@mail.gmail.com>
-Subject: Re: [PATCH v10 0/4] io-pgtable-arm + drm/msm: Extend iova fault debugging
-To: Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
-	freedreno@lists.freedesktop.org, Robin Murphy <robin.murphy@arm.com>, 
-	Mostafa Saleh <smostafa@google.com>, Rob Clark <robdclark@chromium.org>, 
-	Boris Brezillon <boris.brezillon@collabora.com>, 
-	"open list:DRM DRIVER for Qualcomm Adreno GPUs" <dri-devel@lists.freedesktop.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Joao Martins <joao.m.martins@oracle.com>, Joerg Roedel <jroedel@suse.de>, 
-	Konrad Dybcio <konradybcio@kernel.org>, 
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>, 
-	open list <linux-kernel@vger.kernel.org>, 
-	"open list:POWER MANAGEMENT CORE" <linux-pm@vger.kernel.org>, Marijn Suijten <marijn.suijten@somainline.org>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Sean Paul <sean@poorly.run>, Steven Price <steven.price@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 5/6] iommu: document missing def_domain_type return
+To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, gerald.schaefer@linux.ibm.com,
+        schnelle@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
+        clegoate@redhat.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+References: <20241209192403.107090-1-mjrosato@linux.ibm.com>
+ <20241209192403.107090-6-mjrosato@linux.ibm.com>
+ <3db6f346-0cb4-41f7-b532-91bcb0265849@linux.intel.com>
+Content-Language: en-US
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <3db6f346-0cb4-41f7-b532-91bcb0265849@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: _GxKAIjVMnsRhL5VwBL0Ut3Bw19op3fQ
+X-Proofpoint-ORIG-GUID: _GxKAIjVMnsRhL5VwBL0Ut3Bw19op3fQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
+ definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ priorityscore=1501 clxscore=1015 phishscore=0 bulkscore=0 mlxlogscore=999
+ impostorscore=0 spamscore=0 malwarescore=0 suspectscore=0 adultscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2412100119
 
-On Tue, Dec 10, 2024 at 3:14=E2=80=AFAM Will Deacon <will@kernel.org> wrote=
-:
->
-> Hi Rob,
->
-> On Mon, Oct 28, 2024 at 02:31:36PM -0700, Rob Clark wrote:
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > This series extends io-pgtable-arm with a method to retrieve the page
-> > table entries traversed in the process of address translation, and then
-> > beefs up drm/msm gpu devcore dump to include this (and additional info)
-> > in the devcore dump.
-> >
-> > This is a respin of https://patchwork.freedesktop.org/series/94968/
-> > (minus a patch that was already merged)
-> >
-> > v2:  Fix an armv7/32b build error in the last patch
-> > v3:  Incorperate Will Deacon's suggestion to make the interface
-> >      callback based.
-> > v4:  Actually wire up the callback
-> > v5:  Drop the callback approach
-> > v6:  Make walk-data struct pgtable specific and rename
-> >      io_pgtable_walk_data to arm_lpae_io_pgtable_walk_data
-> > v7:  Re-use the pgtable walker added for arm_lpae_read_and_clear_dirty(=
-)
-> > v8:  Pass pte pointer to callback so it can modify the actual pte
-> > v9:  Fix selftests_running case
-> > v10: Call visit cb for all nodes traversed, leave the decision about
-> >      whether to care about non-leaf nodes to the callback
->
-> Do you plan to respin this? I see Mostafa left a proposal on patch 3.
+On 12/9/24 9:57 PM, Baolu Lu wrote:
+> On 12/10/24 03:24, Matthew Rosato wrote:
+>> In addition to IOMMU_DOMAIN_DMA, def_domain_type can also return
+>> IOMMU_DOMAIN_DMA_FQ when applicable, else flush queues will never be
+>> used.
+>>
+>> Signed-off-by: Matthew Rosato<mjrosato@linux.ibm.com>
+>> ---
+>>   include/linux/iommu.h | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 05279109c732..d0da1918d2de 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -585,6 +585,7 @@ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+>>    * @def_domain_type: device default domain type, return value:
+>>    *        - IOMMU_DOMAIN_IDENTITY: must use an identity domain
+>>    *        - IOMMU_DOMAIN_DMA: must use a dma domain
+>> + *              - IOMMU_DOMAIN_DMA_FQ: dma domain with batch invalidation
+> 
+> In which case must an iommu driver return IOMMU_DOMAIN_DMA_FQ?
+> 
+> The flush queue is a policy of "when and how to synchronize the IOTLB"
+> in dma-iommu.c. The iommu driver actually has no need to understand such
+> policy.
 
-Yeah, his suggestion looked reasonable.  I'll try to get back to this
-patchset today.
+If you look ahead to the next patch where I implement def_domain_type for s390, I found that if I only ever return IOMMU_DOMAIN_DMA from ops->def_domain_type then when go through iommu_dma_init_domain() we will never call iommu_dma_init_fq() regardless of IOMMU_CAP_DEFERRED_FLUSH because of the if (domain->type == IOMMU_DOMAIN_DMA_FQ) check.  So something isn't right here.
 
-BR,
--R
+It looks to me like the following is happening:
+
+We first have the iommu_def_domain_type set in iommu_subsys_init or via one of the set_default routines, e.g.:
+	if (!iommu_default_passthrough() && !iommu_dma_strict)
+		iommu_def_domain_type = IOMMU_DOMAIN_DMA_FQ;
+
+But when we arrive at iommu_group_alloc_default_domain()...
+
+if we have no ops->def_domain_type() defined we will call __iommu_group_alloc_default_domain using what is in iommu_def_domain_type, which could be IOMMU_DOMAIN_DMA, IOMMU_DOMAIN_DMA_FQ or IOMMU_DOMAIN_IDENTITY based on strict/passthrough settings.  Testing an s390 scenario today without this series applied, we will call __iommu_group_alloc_default_domain with IOMMU_DOMAIN_DMA_FQ, as long as iommu.strict/passthrough is not specified, so then later in dma-iommu:iommu_dma_init_domain() we can use FQ based on IOMMU_CAP_DEFERRED_FLUSH.
+
+but once we add ops->def_domain_type() then we end up calling iommu_group_alloc_default_domain() with a req_type == the return value from ops->def_domain_type(), which by the current definition can only be IOMMU_DOMAIN_DMA or IOMMU_DOMAIN_IDENTITY.  We will then call __iommu_group_alloc_default_domain with that req_type; so without this patch + the DMA_FQ path in patch 6 we would always end up allocating IOMMU_DOMAIN_DMA instead of IOMMU_DOMAIN_DMA_FQ by default, so when we arrive at dma:iommu_dma_init_domain() we won't check for IOMMU_CAP_DEFERRED_FLUSH because of the type.
+
+So unless I'm missing something I think either we have to
+1) be more flexible in what ops->default_domain_type() is allowed to return as this patch does 
+or 
+2) iommu core needs to look at the return from ops->default_domain_type() and decide whether it's OK to convert IOMMU_DOMAIN_DMA->IOMMU_DOMAIN_DMA_FQ based on strict setting.  This removes the decision from the individual drivers and dma-iommu can later decide whether or not to use it or not based on IOMMU_CAP_DEFERRED_FLUSH?  But would also affect other users of def_domain_type() today that perhaps did not want DMA_FQ?  Unsure.  What I mean is something like (untested):
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 6bdede4177ff..275daa7f819d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1744,9 +1744,11 @@ static int iommu_get_def_domain_type(struct iommu_group *group,
+                 */
+                type = ops->default_domain->type;
+        } else {
+-               if (ops->def_domain_type)
++               if (ops->def_domain_type) {
+                        type = ops->def_domain_type(dev);
+-               else
++                       if (type == IOMMU_DOMAIN_DMA && !iommu_dma_strict)
++                               type = IOMMU_DOMAIN_DMA_FQ;
++               } else
+                        return cur_type;
+        }
+        if (!type || cur_type == type)
+
+
