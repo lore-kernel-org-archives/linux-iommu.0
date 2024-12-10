@@ -1,217 +1,139 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4BAC233D70
-	for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 16:52:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E1B661A0B13
+	for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 18:42:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733849525; cv=none; b=lFLRHRzyxl9s3I9tTCRA3nvhj6L0iYoSbULS6z/ZwVUJ+IqdLqZy44ElEZxttvp8MWvgPq7BI4M8Vt5ibYGGEqRuu1me7pGTCN56bX6Z0h7qt6jzNq5ieFa6PFyTEmkPineO//VLdVENHsqY8FBSuaukSCkXpCY31i7uSSZLxt8=
+	t=1733856160; cv=none; b=lN4kl2+LsykibYdDlWcgIfz37Lu/xblnt6o+z/fl4tVxBrDqTTWSminJxcU5ALGatrD0k1diK7SlrqRFHPjjjpznhwnKP6taZ/WF60jv2hXfIkhKWl7eGk2ak21Th0DnuWdt1VZRlQPrBHkHkBdo5kDnX5uS55XZSs4rsqLeEgY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733849525; c=relaxed/simple;
-	bh=JBMkrQG/8cFEwbKJFanSCuDvcbSxAx5wFpFltTn+IAs=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AS7qXEY/uUnnKKmb7hzLOtc7JknJUCS029crA64bfb5k2o7O6SOl0wpwV6FWR02qB9njoRA2UnrPZyVrRky+y0W4EMZiN34e5Tv8DYiJwkc0P5Rl959SP7HZwCsD4Bu4AO/xcUr9EMmAyXHgGblZvYLdxhP2htZZjizWe0FZmwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZcncKFE7; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZcncKFE7"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-216728b1836so9175545ad.0
-        for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 08:52:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733849522; x=1734454322; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qh7p2d7+E2GMmgZFCCSWmo87bNDM3/nkgcYOWm/PC60=;
-        b=ZcncKFE7SCQdqm/q/9VFUy9Tf8MkEIZvXpuPyGdLPOm4yg/78dVH5xeHZkdV6hKHu1
-         IlJcP41rUOIHv/uPzuv67Dsypf0MZXzZ+GGSvSUpWPkw7iq7RMxOHOUJlfV9P74j2q8B
-         4vN+KKp6Iz5eZGqa/lQPmXVCO/XCL1AXZqEbhM5EMXaHxL4Xu0A1Df9YKOogQ1spY3Vj
-         ToS/9kfCHXUysprQTzgNA1ogtpoAv4wBEVRQR2DSOlWUs1porOWFDe1U0WyVLVGiveVo
-         ocCAK1Mty7K1htJQSsvuXCER8srf+IY1Zb5jZH1Gmj5lsZnUmqtbS6uxrUFd4rOEj5pl
-         GzOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733849522; x=1734454322;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qh7p2d7+E2GMmgZFCCSWmo87bNDM3/nkgcYOWm/PC60=;
-        b=Gihazwv7oi6BvVqcrnNUmU8bSIF1tbV4tBFoGzzCngPQXRClYv5LpTouepxlpLIEkr
-         Y/hXbgwJBaNXvWEM9g76G4X75CrdiKaj6umqUNtTZR+v82+IsXxX1mQOdBUsj3FemBqh
-         TxoQx/esyN25fGYCwS7PFGk6BtbzM9xrvPEpWUflVSqhBmg8BuYHFjWxGf+l6OCYFi1/
-         2lvnn9fWdVQNGyn1s98Iwmc384D4r2nq7l292qB3o3pAhAv92VQTbOs+rY1Zva/D7u+k
-         wcAtglC7kXoT0R090s8vsbqCdVj5bFW5BZQ6vDprmhMIk3FnSiz1UjCXGS5xhNweLSAf
-         GzlA==
-X-Gm-Message-State: AOJu0Ywz0RV2ElH2YhK5uCsyu/4w/3kSuFeD9DIYv3cMYM4d+rYQMeus
-	G38huJpbjz6o9eRNMZ7v6W8inCUO/l3QenSaWbx+MoEiTHYU7MwrjwGZhw==
-X-Gm-Gg: ASbGncu/E+i6GrUr5yIDadghtegq7q6yL/TZW2PBnndfj1FeIxYMLDFfRwnea9ZIbJ+
-	qNVTuOKu7rCeETw9YdlXS1SIf5zmmK/qnHyYATgUB9uvPJlXR++BZl8aNpXk9Xu/Xmet7IUzhKQ
-	AK572c/5dbUNgsYMpir7SHshwl0nawOVgVXuht0i/o4RpFy23dU7JIaXChueveaQuvMo8aLUlxO
-	hch3M3C/2cQr9IFL44TU1pJgUGMZxibejucvO65Ll4txu/RAzDHZuAGljWoaA9j/nr48KMgMjzs
-	U82P1baFOL27PLlcW7nxML76zCI/
-X-Google-Smtp-Source: AGHT+IGyppZ/XUmktj28oKiZ+5yOlPQdJYESYN99eWYi54gnG85QRxp2tq+GL1giES6A+moTdOjNmQ==
-X-Received: by 2002:a17:902:f684:b0:216:386e:dbc with SMTP id d9443c01a7336-216386e1127mr132673815ad.13.1733849522435;
-        Tue, 10 Dec 2024 08:52:02 -0800 (PST)
-Received: from localhost ([2a00:79e1:2e00:1301:12e9:d196:a1e9:ab67])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21632c4fd4dsm55201575ad.232.2024.12.10.08.52.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2024 08:52:01 -0800 (PST)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux.dev
-Cc: linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org,
-	Mostafa Saleh <smostafa@google.com>,
-	Will Deacon <will@kernel.org>,
-	Rob Clark <robdclark@chromium.org>,
-	Rob Clark <robdclark@gmail.com>,
-	Sean Paul <sean@poorly.run>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	dri-devel@lists.freedesktop.org (open list:DRM DRIVER for Qualcomm Adreno GPUs),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v11 4/4] drm/msm: Extend gpu devcore dumps with pgtbl info
-Date: Tue, 10 Dec 2024 08:51:22 -0800
-Message-ID: <20241210165127.600817-5-robdclark@gmail.com>
-X-Mailer: git-send-email 2.47.1
-In-Reply-To: <20241210165127.600817-1-robdclark@gmail.com>
-References: <20241210165127.600817-1-robdclark@gmail.com>
+	s=arc-20240116; t=1733856160; c=relaxed/simple;
+	bh=13n6v+T01Xi8fpqVO4hjM7iv1ONrRbl6Glb7UC/yXMA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=d4WQTqVgm6ttPMzZDGsaTrcCtdZPeeqhYuIi5YyXPChI4lwbNK4cPeqyLiPHmHQuEAgzsbx/n5TaojuFxKqKWGQIMd2zkoglLhtneQZ18QBwZT31pDRKuHxSPX1w1/Qc5renPGRHwjM5bN1PB/cu5xwJXJ0B9jczG73yqoXi5gI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 233CD1063;
+	Tue, 10 Dec 2024 10:43:04 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 26DEC3F58B;
+	Tue, 10 Dec 2024 10:42:34 -0800 (PST)
+Message-ID: <e2c80012-bf7a-4420-a478-482aac4903b8@arm.com>
+Date: Tue, 10 Dec 2024 18:42:27 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 5/6] iommu: document missing def_domain_type return
+To: Matthew Rosato <mjrosato@linux.ibm.com>,
+ Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
+ gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+ svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
+ clegoate@redhat.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-s390@vger.kernel.org
+References: <20241209192403.107090-1-mjrosato@linux.ibm.com>
+ <20241209192403.107090-6-mjrosato@linux.ibm.com>
+ <3db6f346-0cb4-41f7-b532-91bcb0265849@linux.intel.com>
+ <0e80948b-7593-4b59-bb77-2f78f00ad2c3@linux.ibm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <0e80948b-7593-4b59-bb77-2f78f00ad2c3@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-From: Rob Clark <robdclark@chromium.org>
+On 10/12/2024 4:26 pm, Matthew Rosato wrote:
+> On 12/9/24 9:57 PM, Baolu Lu wrote:
+>> On 12/10/24 03:24, Matthew Rosato wrote:
+>>> In addition to IOMMU_DOMAIN_DMA, def_domain_type can also return
+>>> IOMMU_DOMAIN_DMA_FQ when applicable, else flush queues will never be
+>>> used.
+>>>
+>>> Signed-off-by: Matthew Rosato<mjrosato@linux.ibm.com>
+>>> ---
+>>>    include/linux/iommu.h | 1 +
+>>>    1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>>> index 05279109c732..d0da1918d2de 100644
+>>> --- a/include/linux/iommu.h
+>>> +++ b/include/linux/iommu.h
+>>> @@ -585,6 +585,7 @@ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+>>>     * @def_domain_type: device default domain type, return value:
+>>>     *        - IOMMU_DOMAIN_IDENTITY: must use an identity domain
+>>>     *        - IOMMU_DOMAIN_DMA: must use a dma domain
+>>> + *              - IOMMU_DOMAIN_DMA_FQ: dma domain with batch invalidation
+>>
+>> In which case must an iommu driver return IOMMU_DOMAIN_DMA_FQ?
+>>
+>> The flush queue is a policy of "when and how to synchronize the IOTLB"
+>> in dma-iommu.c. The iommu driver actually has no need to understand such
+>> policy.
+> 
+> If you look ahead to the next patch where I implement def_domain_type for s390, I found that if I only ever return IOMMU_DOMAIN_DMA from ops->def_domain_type then when go through iommu_dma_init_domain() we will never call iommu_dma_init_fq() regardless of IOMMU_CAP_DEFERRED_FLUSH because of the if (domain->type == IOMMU_DOMAIN_DMA_FQ) check.  So something isn't right here.
 
-In the case of iova fault triggered devcore dumps, include additional
-debug information based on what we think is the current page tables,
-including the TTBR0 value (which should match what we have in
-adreno_smmu_fault_info unless things have gone horribly wrong), and
-the pagetable entries traversed in the process of resolving the
-faulting iova.
+Conceptually I don't think it ever makes sense for a driver to *require* 
+a device to use deferred invalidation. Furthermore it's been the whole 
+design for a while now that drivers should never see nor have to 
+acknowledge IOMMU_DOMAIN_DMA_FQ, it's now just an internal type which 
+exists largely for the sake of making the sysfs interface work really 
+neatly. Also beware that a major reason for overriding 
+iommu_def_domain_type with a paging domain is for untrusted devices, so 
+massaging the result based on iommu_dma_strict is still not necessarily 
+appropriate anyway.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/adreno/adreno_gpu.c | 10 ++++++++++
- drivers/gpu/drm/msm/msm_gpu.c           |  9 +++++++++
- drivers/gpu/drm/msm/msm_gpu.h           |  8 ++++++++
- drivers/gpu/drm/msm/msm_iommu.c         | 22 ++++++++++++++++++++++
- drivers/gpu/drm/msm/msm_mmu.h           |  3 ++-
- 5 files changed, 51 insertions(+), 1 deletion(-)
+It appears the real underlying issue is that, like everyone else in the 
+same situation, you're doing def_domain_type wrong. If and when you 
+can't support IOMMU_DOMAIN_IDENTITY, the expectation is that you make 
+__iommu_alloc_identity_domain() fail, such that if iommu_def_domain_type 
+is then ever set to passthrough, iommu_group_alloc_default_domain() 
+falls back to IOMMU_DOMAIN_DMA by itself, and the user gets told they 
+did a silly thing.
 
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index 076be0473eb5..f1d6e6665c30 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -868,6 +868,16 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
- 		drm_printf(p, "  - dir=%s\n", info->flags & IOMMU_FAULT_WRITE ? "WRITE" : "READ");
- 		drm_printf(p, "  - type=%s\n", info->type);
- 		drm_printf(p, "  - source=%s\n", info->block);
-+
-+		/* Information extracted from what we think are the current
-+		 * pgtables.  Hopefully the TTBR0 matches what we've extracted
-+		 * from the SMMU registers in smmu_info!
-+		 */
-+		drm_puts(p, "pgtable-fault-info:\n");
-+		drm_printf(p, "  - ttbr0: %.16llx\n", (u64)info->pgtbl_ttbr0);
-+		drm_printf(p, "  - asid: %d\n", info->asid);
-+		drm_printf(p, "  - ptes: %.16llx %.16llx %.16llx %.16llx\n",
-+			   info->ptes[0], info->ptes[1], info->ptes[2], info->ptes[3]);
- 	}
- 
- 	drm_printf(p, "rbbm-status: 0x%08x\n", state->rbbm_status);
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 0d4a3744cfcb..82f204f3bb8f 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -281,6 +281,15 @@ static void msm_gpu_crashstate_capture(struct msm_gpu *gpu,
- 	if (submit) {
- 		int i;
- 
-+		if (state->fault_info.ttbr0) {
-+			struct msm_gpu_fault_info *info = &state->fault_info;
-+			struct msm_mmu *mmu = submit->aspace->mmu;
-+
-+			msm_iommu_pagetable_params(mmu, &info->pgtbl_ttbr0,
-+						   &info->asid);
-+			msm_iommu_pagetable_walk(mmu, info->iova, info->ptes);
-+		}
-+
- 		state->bos = kcalloc(submit->nr_bos,
- 			sizeof(struct msm_gpu_state_bo), GFP_KERNEL);
- 
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 7cabc8480d7c..e25009150579 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -101,6 +101,14 @@ struct msm_gpu_fault_info {
- 	int flags;
- 	const char *type;
- 	const char *block;
-+
-+	/* Information about what we think/expect is the current SMMU state,
-+	 * for example expected_ttbr0 should match smmu_info.ttbr0 which
-+	 * was read back from SMMU registers.
-+	 */
-+	phys_addr_t pgtbl_ttbr0;
-+	u64 ptes[4];
-+	int asid;
- };
- 
- /**
-diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-index 2a94e82316f9..3e692818ba1f 100644
---- a/drivers/gpu/drm/msm/msm_iommu.c
-+++ b/drivers/gpu/drm/msm/msm_iommu.c
-@@ -195,6 +195,28 @@ struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu)
- 	return &iommu->domain->geometry;
- }
- 
-+int
-+msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4])
-+{
-+	struct msm_iommu_pagetable *pagetable;
-+	struct arm_lpae_io_pgtable_walk_data wd = {};
-+
-+	if (mmu->type != MSM_MMU_IOMMU_PAGETABLE)
-+		return -EINVAL;
-+
-+	pagetable = to_pagetable(mmu);
-+
-+	if (!pagetable->pgtbl_ops->pgtable_walk)
-+		return -EINVAL;
-+
-+	pagetable->pgtbl_ops->pgtable_walk(pagetable->pgtbl_ops, iova, &wd);
-+
-+	for (int i = 0; i < ARRAY_SIZE(wd.ptes); i++)
-+		ptes[i] = wd.ptes[i];
-+
-+	return 0;
-+}
-+
- static const struct msm_mmu_funcs pagetable_funcs = {
- 		.map = msm_iommu_pagetable_map,
- 		.unmap = msm_iommu_pagetable_unmap,
-diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
-index 88af4f490881..96e509bd96a6 100644
---- a/drivers/gpu/drm/msm/msm_mmu.h
-+++ b/drivers/gpu/drm/msm/msm_mmu.h
-@@ -53,7 +53,8 @@ static inline void msm_mmu_set_fault_handler(struct msm_mmu *mmu, void *arg,
- struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent);
- 
- int msm_iommu_pagetable_params(struct msm_mmu *mmu, phys_addr_t *ttbr,
--		int *asid);
-+			       int *asid);
-+int msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4]);
- struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu);
- 
- #endif /* __MSM_MMU_H__ */
--- 
-2.47.1
+What you see apple-dart doing is a hack around the old bus-based 
+iommu_domain_alloc() API where there wasn't enough information at the 
+right point to necessarily do the right thing.
 
+Thanks,
+Robin.
+
+> It looks to me like the following is happening:
+> 
+> We first have the iommu_def_domain_type set in iommu_subsys_init or via one of the set_default routines, e.g.:
+> 	if (!iommu_default_passthrough() && !iommu_dma_strict)
+> 		iommu_def_domain_type = IOMMU_DOMAIN_DMA_FQ;
+> 
+> But when we arrive at iommu_group_alloc_default_domain()...
+> 
+> if we have no ops->def_domain_type() defined we will call __iommu_group_alloc_default_domain using what is in iommu_def_domain_type, which could be IOMMU_DOMAIN_DMA, IOMMU_DOMAIN_DMA_FQ or IOMMU_DOMAIN_IDENTITY based on strict/passthrough settings.  Testing an s390 scenario today without this series applied, we will call __iommu_group_alloc_default_domain with IOMMU_DOMAIN_DMA_FQ, as long as iommu.strict/passthrough is not specified, so then later in dma-iommu:iommu_dma_init_domain() we can use FQ based on IOMMU_CAP_DEFERRED_FLUSH.
+> 
+> but once we add ops->def_domain_type() then we end up calling iommu_group_alloc_default_domain() with a req_type == the return value from ops->def_domain_type(), which by the current definition can only be IOMMU_DOMAIN_DMA or IOMMU_DOMAIN_IDENTITY.  We will then call __iommu_group_alloc_default_domain with that req_type; so without this patch + the DMA_FQ path in patch 6 we would always end up allocating IOMMU_DOMAIN_DMA instead of IOMMU_DOMAIN_DMA_FQ by default, so when we arrive at dma:iommu_dma_init_domain() we won't check for IOMMU_CAP_DEFERRED_FLUSH because of the type.
+> 
+> So unless I'm missing something I think either we have to
+> 1) be more flexible in what ops->default_domain_type() is allowed to return as this patch does
+> or
+> 2) iommu core needs to look at the return from ops->default_domain_type() and decide whether it's OK to convert IOMMU_DOMAIN_DMA->IOMMU_DOMAIN_DMA_FQ based on strict setting.  This removes the decision from the individual drivers and dma-iommu can later decide whether or not to use it or not based on IOMMU_CAP_DEFERRED_FLUSH?  But would also affect other users of def_domain_type() today that perhaps did not want DMA_FQ?  Unsure.  What I mean is something like (untested):
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 6bdede4177ff..275daa7f819d 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1744,9 +1744,11 @@ static int iommu_get_def_domain_type(struct iommu_group *group,
+>                   */
+>                  type = ops->default_domain->type;
+>          } else {
+> -               if (ops->def_domain_type)
+> +               if (ops->def_domain_type) {
+>                          type = ops->def_domain_type(dev);
+> -               else
+> +                       if (type == IOMMU_DOMAIN_DMA && !iommu_dma_strict)
+> +                               type = IOMMU_DOMAIN_DMA_FQ;
+> +               } else
+>                          return cur_type;
+>          }
+>          if (!type || cur_type == type)
+> 
+> 
