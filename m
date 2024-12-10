@@ -1,94 +1,181 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5378C2080C3;
-	Tue, 10 Dec 2024 11:14:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB7D11A2846
+	for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 13:03:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733829298; cv=none; b=QhpIVeTAEsU4E5C4U4YOX00bumUmeaSSpL0p9BCP3RKTTL7HU7SOoIgUwIt2ITmEKFqX3j6Tv8GSHOTrAfPoBVYmyCmQLOEGdKq0epIsDXtrNGZAggF592B0zgfJ2MnZRlqNcKZhcQ977z265ocoOmBE6rzEUpR/ZmkFkSwkMts=
+	t=1733835806; cv=none; b=oBjsDELbmOIkImsS1fsjgzAokVWlW/IS3gT6rj14TvydLJy3YMIxoCpOuihMfMYlu+9hNJ80Y9oxB2lhe/LU0lgC5ihKKclqFPsAbZNiRGIrsOIf/i8i/RT9403v6/f/RjS2+ColrdlsYViDvuVR4ijtfaY1WQf7CbbZ1FaGstM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733829298; c=relaxed/simple;
-	bh=lhICE9COOAdzLbeeCIG0N4z0GPEAUpsD9Gqft5qjfv4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cjpCoC09h17PNsFpwP4t1ribzWfcKoS7Cq82TKnFb5Jvj/kgMDwUvHnw+zkn/DypUUAuFfKBjxqkeZQ6UUyz0k/6QUrQRGlSa1+B5WMP3Y+R9IoPDFDgBcnQsQ1ZrB15aA33Onwl5GpTK5DDBpcf4w/G3jiMyyxrIZ3WgT9O7wU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oPiwb6ii; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1733835806; c=relaxed/simple;
+	bh=B75tNjKQhevbcTVExx2aMKJ7Rdvz+ByxuuZhYvYtgm8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Qw2Fnh+njIIiv5sunmAa6vi0nSQk3bltBmLGG2bN4htT56mlE0MpJvRoEWyqPyxu70X5PsjrqH5Zcd4jpapOqTadAHmQSO+BBDRLQndpMTyDpUIsvQFUNuQi0e1lakqrMUeCaDxyLvZt0t/F9I/2X3FL6uAJcHo/xjYW1gG6TCU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PhvQ8QYq; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oPiwb6ii"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B3CDC4CED6;
-	Tue, 10 Dec 2024 11:14:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733829297;
-	bh=lhICE9COOAdzLbeeCIG0N4z0GPEAUpsD9Gqft5qjfv4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oPiwb6iiYNDZ/WGH9n+gRvMNUl6iGEU0HBgF/24GiCfBXOtlBxpMlXU2u10//8QC8
-	 WqMttv5upsoZ3Tccjav4vJtLriG2z2rEYDsmEwVN/VvwArcRysn0T6bYIm41crkJJi
-	 sl87IZYqvkQV6kkCxvZux0h/iSCXHxL+rzPJIg7IUXYsrf8XX7OdYAOgsTC9Mt6yrS
-	 i0cjfLiLJFBKdSeY8auwuEVGyBJjgmQdF1jsB9TmQsBJLu/1gUHvM1k0/M620uRqjc
-	 LqySKf6zHG+OnkBUJPKGWGfTB29xpI/OQhVkIq7IrAf3p6AyEoCARe02X2SdIi2UIZ
-	 uzdvgQ8KgEQ0Q==
-Date: Tue, 10 Dec 2024 11:14:51 +0000
-From: Will Deacon <will@kernel.org>
-To: Rob Clark <robdclark@gmail.com>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Rob Clark <robdclark@chromium.org>,
-	Boris Brezillon <boris.brezillon@collabora.com>,
-	"open list:DRM DRIVER for Qualcomm Adreno GPUs" <dri-devel@lists.freedesktop.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Joerg Roedel <jroedel@suse.de>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:POWER MANAGEMENT CORE" <linux-pm@vger.kernel.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Sean Paul <sean@poorly.run>, Steven Price <steven.price@arm.com>
-Subject: Re: [PATCH v10 0/4] io-pgtable-arm + drm/msm: Extend iova fault
- debugging
-Message-ID: <20241210111450.GA14735@willie-the-truck>
-References: <20241028213146.238941-1-robdclark@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PhvQ8QYq"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1733835805; x=1765371805;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=B75tNjKQhevbcTVExx2aMKJ7Rdvz+ByxuuZhYvYtgm8=;
+  b=PhvQ8QYqMd/uoEJdt2K1G6SxnktOQneGRVzK6s1u4U0rm5NdNUVMNrPU
+   HJvdNaU+8UAEEjvgYWbKr+0sE1pEmitd75gjRLrI3z4D3UCHmHZqTm+sF
+   beZkZk/r4WcrWHPZG0zYzDMgFvR19Kr0qLYcKhNv/1fPBrOB1LuEL0ESk
+   EyFr9QfU+AfKRdqdm+x5SezVGMyE4b1TunQH7SoV4gOcEOh66XroK4IDR
+   neZMQ14RB4wGHITD99YrRXzPNTR+D1J3i9RfEX5H+D48zIFAWVqvQSQT3
+   0nfNN5ykuLhX/0CDAm0rO+gfPKa0+KSGSha2tWS4/O6E8rLnVW33ZZUFu
+   A==;
+X-CSE-ConnectionGUID: Qf85yRppTYebjcona75k5Q==
+X-CSE-MsgGUID: i/wslWeQRru3G1p94ZclUg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11282"; a="21760840"
+X-IronPort-AV: E=Sophos;i="6.12,222,1728975600"; 
+   d="scan'208";a="21760840"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2024 05:03:24 -0800
+X-CSE-ConnectionGUID: NELILM2URh+7AbFQf7mEoA==
+X-CSE-MsgGUID: MiVkhiWNQTebEAquQulAEA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,222,1728975600"; 
+   d="scan'208";a="95609589"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by fmviesa008.fm.intel.com with ESMTP; 10 Dec 2024 05:03:23 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	kevin.tian@intel.com,
+	baolu.lu@linux.intel.com
+Cc: chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev
+Subject: [PATCH v2] iommu/vt-d: Fix qi_batch NULL pointer with nested parent domain
+Date: Tue, 10 Dec 2024 05:03:22 -0800
+Message-Id: <20241210130322.17175-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241028213146.238941-1-robdclark@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 
-Hi Rob,
+The qi_batch is allocated when assigning cache tag for a domain. While
+for nested parent domain, it is missed. Hence, when trying to map pages
+to the nested parent, NULL dereference occurred. Also, there is potential
+memleak since there is no lock around domain->qi_batch allocation.
 
-On Mon, Oct 28, 2024 at 02:31:36PM -0700, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
-> 
-> This series extends io-pgtable-arm with a method to retrieve the page
-> table entries traversed in the process of address translation, and then
-> beefs up drm/msm gpu devcore dump to include this (and additional info)
-> in the devcore dump.
-> 
-> This is a respin of https://patchwork.freedesktop.org/series/94968/
-> (minus a patch that was already merged)
-> 
-> v2:  Fix an armv7/32b build error in the last patch
-> v3:  Incorperate Will Deacon's suggestion to make the interface
->      callback based.
-> v4:  Actually wire up the callback
-> v5:  Drop the callback approach
-> v6:  Make walk-data struct pgtable specific and rename
->      io_pgtable_walk_data to arm_lpae_io_pgtable_walk_data
-> v7:  Re-use the pgtable walker added for arm_lpae_read_and_clear_dirty()
-> v8:  Pass pte pointer to callback so it can modify the actual pte
-> v9:  Fix selftests_running case
-> v10: Call visit cb for all nodes traversed, leave the decision about
->      whether to care about non-leaf nodes to the callback
+To solve it, add a helper for qi_batch allocation, and call it in both
+the __cache_tag_assign_domain() and __cache_tag_assign_parent_domain().
 
-Do you plan to respin this? I see Mostafa left a proposal on patch 3.
+  BUG: kernel NULL pointer dereference, address: 0000000000000200
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  PGD 8104795067 P4D 0
+  Oops: Oops: 0000 [#1] PREEMPT SMP NOPTI
+  CPU: 223 UID: 0 PID: 4357 Comm: qemu-system-x86 Not tainted 6.13.0-rc1-00028-g4b50c3c3b998-dirty #2632
+  Call Trace:
+   ? __die+0x24/0x70
+   ? page_fault_oops+0x80/0x150
+   ? do_user_addr_fault+0x63/0x7b0
+   ? exc_page_fault+0x7c/0x220
+   ? asm_exc_page_fault+0x26/0x30
+   ? cache_tag_flush_range_np+0x13c/0x260
+   intel_iommu_iotlb_sync_map+0x1a/0x30
+   iommu_map+0x61/0xf0
+   batch_to_domain+0x188/0x250
+   iopt_area_fill_domains+0x125/0x320
+   ? rcu_is_watching+0x11/0x50
+   iopt_map_pages+0x63/0x100
+   iopt_map_common.isra.0+0xa7/0x190
+   iopt_map_user_pages+0x6a/0x80
+   iommufd_ioas_map+0xcd/0x1d0
+   iommufd_fops_ioctl+0x118/0x1c0
+   __x64_sys_ioctl+0x93/0xc0
+   do_syscall_64+0x71/0x140
+   entry_SYSCALL_64_after_hwframe+0x76/0x7e
 
-Thanks,
+Fixes: 705c1cdf1e73 ("iommu/vt-d: Introduce batched cache invalidation")
+Co-developed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+Change log:
+v2:
+ - Fix it by allocating domain->qi_batch under domain->cache_lock (Baolu)
+ - Simplify the calltrace log in commit message (Baolu)
 
-Will
+v1: https://lore.kernel.org/linux-iommu/20241207120304.5710-1-yi.l.liu@intel.com/
+---
+ drivers/iommu/intel/cache.c | 34 +++++++++++++++++++++++++++-------
+ 1 file changed, 27 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
+index e5b89f728ad3..09694cca8752 100644
+--- a/drivers/iommu/intel/cache.c
++++ b/drivers/iommu/intel/cache.c
+@@ -105,12 +105,35 @@ static void cache_tag_unassign(struct dmar_domain *domain, u16 did,
+ 	spin_unlock_irqrestore(&domain->cache_lock, flags);
+ }
+ 
++/* domain->qi_batch will be freed in iommu_free_domain() path. */
++static int domain_qi_batch_alloc(struct dmar_domain *domain)
++{
++	unsigned long flags;
++	int ret = 0;
++
++	spin_lock_irqsave(&domain->cache_lock, flags);
++	if (domain->qi_batch)
++		goto out_unlock;
++
++	domain->qi_batch = kzalloc(sizeof(*domain->qi_batch), GFP_ATOMIC);
++	if (!domain->qi_batch)
++		ret = -ENOMEM;
++out_unlock:
++	spin_unlock_irqrestore(&domain->cache_lock, flags);
++
++	return ret;
++}
++
+ static int __cache_tag_assign_domain(struct dmar_domain *domain, u16 did,
+ 				     struct device *dev, ioasid_t pasid)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	int ret;
+ 
++	ret = domain_qi_batch_alloc(domain);
++	if (ret)
++		return ret;
++
+ 	ret = cache_tag_assign(domain, did, dev, pasid, CACHE_TAG_IOTLB);
+ 	if (ret || !info->ats_enabled)
+ 		return ret;
+@@ -139,6 +162,10 @@ static int __cache_tag_assign_parent_domain(struct dmar_domain *domain, u16 did,
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	int ret;
+ 
++	ret = domain_qi_batch_alloc(domain);
++	if (ret)
++		return ret;
++
+ 	ret = cache_tag_assign(domain, did, dev, pasid, CACHE_TAG_NESTING_IOTLB);
+ 	if (ret || !info->ats_enabled)
+ 		return ret;
+@@ -190,13 +217,6 @@ int cache_tag_assign_domain(struct dmar_domain *domain,
+ 	u16 did = domain_get_id_for_dev(domain, dev);
+ 	int ret;
+ 
+-	/* domain->qi_bach will be freed in iommu_free_domain() path. */
+-	if (!domain->qi_batch) {
+-		domain->qi_batch = kzalloc(sizeof(*domain->qi_batch), GFP_KERNEL);
+-		if (!domain->qi_batch)
+-			return -ENOMEM;
+-	}
+-
+ 	ret = __cache_tag_assign_domain(domain, did, dev, pasid);
+ 	if (ret || domain->domain.type != IOMMU_DOMAIN_NESTED)
+ 		return ret;
+-- 
+2.34.1
+
