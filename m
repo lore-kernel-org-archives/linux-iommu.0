@@ -1,33 +1,47 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BACCE2248A1
-	for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 04:11:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39ECD23312A;
+	Tue, 10 Dec 2024 04:33:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733803901; cv=none; b=gDgy10WPDbQYu2KSB13W1wuVfDQ92gP0xmlauSMTuBALgBHI3IJmcVO130SLBuRboBRDUWT7xCa6v7QQSgk+zRMS+/TYhOuvzBzh+DpqRNKNPQWxFGNcYiO0gqP3vRQUyTqy0CqXR8d/s0KQRwRbaVBUfM/PYkqRznb4ZitzgZw=
+	t=1733805203; cv=none; b=f6mE2u2X3x2YwuYcO7fi5WXXjRl3QIDDo+QiAevbzkTaJmnzdqSHbbuqxfODS/xSQ8gWmgWTgN0y4KanPNWCZvl3rfeQV+0RhHxgFzM6racGDvjwaFm1gxEHJkvoJkOwnckp/gLdpSzqyejsEy49U7xUsfeACbbQ3Wga8Q8PBnE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733803901; c=relaxed/simple;
-	bh=zFsZv0jSpwyuQI19qncvelyx3Bf3OhU92E/nbMXeYFo=;
+	s=arc-20240116; t=1733805203; c=relaxed/simple;
+	bh=t5waVAzNALBU70hsF89/OfqKkEFf6t1GIMsIoR2cszU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kXer6u1qAxrqyLKLvxH0D/oyRlejx9lfU8PUa5uoEbqdkZTr0QsfIrO3NRsBwBbvspnVapQJh8mYSXbEC7Q0j0v28xttMzJtWDXojMHHyHNlMbN6Kdk2go37kfanLx6Dd5hJSELme1Nf+Cku1g5lNqPfaIncTUt1gcjSLjHFWy8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 845B168C4E; Tue, 10 Dec 2024 05:11:33 +0100 (CET)
-Date: Tue, 10 Dec 2024 05:11:33 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Tim Harvey <tharvey@gateworks.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
-	Baochen Qiang <quic_bqiang@quicinc.com>, ath11k@lists.infradead.org,
-	linux-wireless <linux-wireless@vger.kernel.org>,
-	Fabio Estevam <festevam@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
-	P Praneesh <ppranees@codeaurora.org>
-Subject: Re: ath11k swiotlb buffer is full (on IMX8M with 4GiB DRAM)
-Message-ID: <20241210041133.GA17116@lst.de>
-References: <CAJ+vNU0EL3T+GyNAbVbGqYYQ5NM3h7cgAwqxxBMuZjh+-YQ3bA@mail.gmail.com> <1b2ea8b2-6fbe-4118-b6c6-742c8f0be476@quicinc.com> <CAJ+vNU1-OZ3y4p2L+zf64AiVtUv70yZNqkT20jTxyE0_gJb6Jg@mail.gmail.com> <0282be95-9094-4d49-b79e-4f7c976dad00@quicinc.com> <CAJ+vNU32EMHjtchJRb1sODBrUKG2vZW4ZEu1_F0+dCCEjCn7Dg@mail.gmail.com> <20241209081714.GA25363@lst.de> <593c0d63-d8fd-4439-a57a-97340212c197@arm.com> <CAJ+vNU2ypE_Mn_6iKCmf5LYk9Sth=ryWXyewc5MhOKK8VoAKCA@mail.gmail.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=fSLrHwgF0zzMVhTjjfvdP7GMIqs2fUk2ov0aLQMF8AfrzcajLw5ET4o14HRZbkBQVvb1gOJoubeiwG2MoMM68oBBQGFffn3VB73Jpvt6PSemcd27yO0GImjTav2znyQNfGkiEgQnMuLsJxVdoY+LW2onMOIOeBQ7VHz+KQyT69s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=nzEj6mPI; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="nzEj6mPI"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=yHQ6nHpSWovH60gzu0oE4BkrgsHEhWRJ/1lstw88FCA=; b=nzEj6mPI7NnBhOWvRt55mC84A2
+	laccC44oUYfbXdTgTqDwaSOyEHTVsRUeeLqzlf1PqGRWb5FRn3HNSU+KslYYfLAeTD+pywD/GsjEq
+	j8DpUZ+6k06F3ZGS1nozCZ7+hDBlpkYLJMQ5kQUUPngTzppxoA/ZPSrhNJTsDRucTd28E4PJdm0aN
+	1H6REVxRnIsxfEQ3OT89PwmB6GaoVwodA1ao7JL8YnnhUD+I3NsuQ+UID2YDpSbKFaQ7YZc5SbZOb
+	BvIYq9guyGLa4PHQO1suhF0/X5o/pCrc+c/vQmrmrmq2qB7Ah1RY+4mt1HAAdGGIOIGnZ45qLq+Vz
+	TVAk+atw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.98 #2 (Red Hat Linux))
+	id 1tKrvz-0000000ACOO-0LdG;
+	Tue, 10 Dec 2024 04:33:19 +0000
+Date: Mon, 9 Dec 2024 20:33:19 -0800
+From: Christoph Hellwig <hch@infradead.org>
+To: Matthew Rosato <mjrosato@linux.ibm.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com,
+	hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+	svens@linux.ibm.com, borntraeger@linux.ibm.com,
+	farman@linux.ibm.com, clegoate@redhat.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH 2/6] s390: enable ARCH_HAS_PHYS_TO_DMA
+Message-ID: <Z1fEj_6beeRdGpJL@infradead.org>
+References: <20241209192403.107090-1-mjrosato@linux.ibm.com>
+ <20241209192403.107090-3-mjrosato@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,40 +50,15 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJ+vNU2ypE_Mn_6iKCmf5LYk9Sth=ryWXyewc5MhOKK8VoAKCA@mail.gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20241209192403.107090-3-mjrosato@linux.ibm.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Mon, Dec 09, 2024 at 11:15:02AM -0800, Tim Harvey wrote:
-> After a lot of back and forth and investigation this is due to the
-> IMX8M SoC's not having an IOMMU thus swiotlb is being used and ath11k
-> is requesting some buffers that are too large for swiotlb to provide.
-> There is a specific patch which added the HAL_WBM2SW_RELEASE buffers
-> to cacheable memory that could be reverted to fix this but the concern
-> was that it would impact performance moving those buffers to
-> non-cacheable memory (there are three ~1MiB buffers being allocated):
-> commit d0e2523bfa9cb ("ath11k: allocate HAL_WBM2SW_RELEASE ring from
-> cacheable memory").
+On Mon, Dec 09, 2024 at 02:23:59PM -0500, Matthew Rosato wrote:
+> PCI devices on s390 have a DMA offset that is reported via CLP.  In
+> preparation for allowing identity domains, enable ARCH_HAS_PHYS_TO_DMA
+> for s390 and get the dma offset for all PCI devices from the reported
+> CLP value.
 
-The combination of "buffers" and "swiotlb" sounds like Robin was right
-below. 
+Nothing new should select ARCH_HAS_PHYS_TO_DMA, please fill out the
+bus_dma_region attached to the device instead.
 
-> The chain of events as best I can tell are:
-> 
-> commit 6452f0a3d565 ("ath11k: allocate dst ring descriptors from
-> cacheable memory")
-> - Nov 12 2021 (made it into Linux 5.17)
-> - changes allocation of reo_dst rings to cacheable memory to allow
-> cached descriptor access to optimize CPU usage
-> - this is flawed because it uses virt_to_phys() to allocate cacheable
-> memory which does not work on systems with an IOMMU enabled or using
-> software IOMMU (swiotlb); this causes a kernel crash on client
-> association
-
-And this is where it started to take a wrong turn, that everyhing
-later basically made worse.  If you have long living and potentially
-large DMA allocations, you need to use dma_alloc_* interfaces.
-
-5.17 already had dma_alloc_pages for quite a while which was and still is
-the proper interface to use.  For much older kernel you'd be stuck
-with dma_alloc_noncoherent or dma_alloc_attrs with the right flag,
-but even that would have been much better.
