@@ -1,142 +1,94 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F3F91DC9B7
-	for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 09:40:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5378C2080C3;
+	Tue, 10 Dec 2024 11:14:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733823614; cv=none; b=FjFKjS+jS5a6ETev1SDKy3ev0eEQaitSi+tRfvN7Px+dQYrGYMOy0fRL3ixuNu7ARDY6bhynxiyhwDiN8PUxm2FVY6zdIwMcBJk9kECqw7svKl4H4XmDy4kprScbKcGL+WqxJ6XdcBMv+R/JJTQVeA4Xf0C2czD9j7eB6pK/zkM=
+	t=1733829298; cv=none; b=QhpIVeTAEsU4E5C4U4YOX00bumUmeaSSpL0p9BCP3RKTTL7HU7SOoIgUwIt2ITmEKFqX3j6Tv8GSHOTrAfPoBVYmyCmQLOEGdKq0epIsDXtrNGZAggF592B0zgfJ2MnZRlqNcKZhcQ977z265ocoOmBE6rzEUpR/ZmkFkSwkMts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733823614; c=relaxed/simple;
-	bh=U5CjvSU/lG/S/DU7I+Lm1n0fVR2lFtH1NSRTlp5kSIc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=b2GIpt8+rxhSVwGpn09JnUvLLsSemrRQpYOwahWbj3/9jL/AXF+b6AKVpPAXQ+o9YCfIA9cVZiK7zkEV+wu3rLUcJxYP1OVT7q01spIKRV9wQzZem98YEtQJ4YUWg7mNrs9C56qVjwAis1xHqP6jmtHLY2OPvw5gjH3jm5XCcLA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VZUX6NEb; arc=none smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1733829298; c=relaxed/simple;
+	bh=lhICE9COOAdzLbeeCIG0N4z0GPEAUpsD9Gqft5qjfv4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cjpCoC09h17PNsFpwP4t1ribzWfcKoS7Cq82TKnFb5Jvj/kgMDwUvHnw+zkn/DypUUAuFfKBjxqkeZQ6UUyz0k/6QUrQRGlSa1+B5WMP3Y+R9IoPDFDgBcnQsQ1ZrB15aA33Onwl5GpTK5DDBpcf4w/G3jiMyyxrIZ3WgT9O7wU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oPiwb6ii; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VZUX6NEb"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-4674c22c4afso157881cf.1
-        for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 01:40:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1733823611; x=1734428411; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2FDyzQaVBJmBdWgi+flPumHn5fgNwsPGMW4DJuw0nzM=;
-        b=VZUX6NEbmyEYAhfPy6MJfBKGteu78rQhYVbyinqpRG9nWYNl3umjldEb04GIBMHiL0
-         Ktdl9JwfcdhU4GU/IRNLUhludjFRFKqJQfAO7P3OS5dfafZlf9iRO945bhWPi4bPBtF3
-         JmQKKFeRbHFQ11ccuzSdqNpuwif0FTurFCTXTp4bXI58v0ZLipXGOiwryKceIT8bMJ/+
-         t2cC+LcBxK3v/YOP/GmseaVuwjBOfdbqczSEvmuG5/kpCftSnH7kQSz1BKDSdnUvYEU9
-         WZNGiqAVUghYuUekUnSMNfHAzTzTJWuuG6Wl1+YU3fOkaPhOKtaQNuPG9/AnI4Z3skWA
-         cWLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733823611; x=1734428411;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2FDyzQaVBJmBdWgi+flPumHn5fgNwsPGMW4DJuw0nzM=;
-        b=DyaUodfpa4S4rRcgkshXbpOaE/A2sqzN0y/9vsXvsI+oDfpUHweBXwEjsAHugNAb4z
-         PjjijdDYCttz7mDIRQ9fY4ER7eLJ+FENvqoNoWV/W6kQFaXOT27ab969MacrMHdeJaRB
-         kNhGRxUtsWgQjddrkdWG9OtRAT4udHXfyRfWdT8dI9pNKEo0/YO07rCWzieHTM+ecQYh
-         VS3cYkFtu9mTyrIfX3+8jipdYBH3PeSXO+JwN7tvg5MwPBDH+DSS3FAiIPCYYCjJBGjR
-         Y0dzgs+kxOvRpqv+LDqzYHgfB6Ef3looFyLl7A1BjIpJJ+BH04wMBHNnAQTDjXS0FbJ0
-         1LYg==
-X-Forwarded-Encrypted: i=1; AJvYcCXDzNZ6JgY+yea0UYwJ9cxk3R77mO5UBqfvi53mC1z2o4x9a2v3s4LuAggGrZmBllGxpm4oVg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YywK/YNoPRMiqTMEF6lUEJReu1orROWS6kP7ott34FRPVZH8go0
-	iUdvhffVwXI3ULKpY5rySs2jBA+G8YP7Bq4RdNEz1nuv4cpSmiJXoecRU9MdD66CxHtXTi7vaDL
-	Nl+TGJ4MKfVkKU9e1y4UAPEnjlUBtJ4NhUofRapV1ws3Q0V8ComiX
-X-Gm-Gg: ASbGncsegJrKdcWlqoA2oQy5RJ12NtDygH5kWDhrJ99KyI9Gob96kDx+7gAzqNtpXyh
-	mDVloVzgj8ySbL9/CivjxJDQAof0ygmM+qg==
-X-Google-Smtp-Source: AGHT+IH7V4UKeLrvjNkOyGEOEUYHbY8QYbuKts1kktkzSbiMR6UVtyJWD2Q0aBvHWwJs5sF1JPgPGTYIeXHNZCK6L4o=
-X-Received: by 2002:a05:622a:5186:b0:466:8a29:9de7 with SMTP id
- d75a77b69052e-46776158637mr3576401cf.12.1733823611360; Tue, 10 Dec 2024
- 01:40:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oPiwb6ii"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B3CDC4CED6;
+	Tue, 10 Dec 2024 11:14:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733829297;
+	bh=lhICE9COOAdzLbeeCIG0N4z0GPEAUpsD9Gqft5qjfv4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=oPiwb6iiYNDZ/WGH9n+gRvMNUl6iGEU0HBgF/24GiCfBXOtlBxpMlXU2u10//8QC8
+	 WqMttv5upsoZ3Tccjav4vJtLriG2z2rEYDsmEwVN/VvwArcRysn0T6bYIm41crkJJi
+	 sl87IZYqvkQV6kkCxvZux0h/iSCXHxL+rzPJIg7IUXYsrf8XX7OdYAOgsTC9Mt6yrS
+	 i0cjfLiLJFBKdSeY8auwuEVGyBJjgmQdF1jsB9TmQsBJLu/1gUHvM1k0/M620uRqjc
+	 LqySKf6zHG+OnkBUJPKGWGfTB29xpI/OQhVkIq7IrAf3p6AyEoCARe02X2SdIi2UIZ
+	 uzdvgQ8KgEQ0Q==
+Date: Tue, 10 Dec 2024 11:14:51 +0000
+From: Will Deacon <will@kernel.org>
+To: Rob Clark <robdclark@gmail.com>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Rob Clark <robdclark@chromium.org>,
+	Boris Brezillon <boris.brezillon@collabora.com>,
+	"open list:DRM DRIVER for Qualcomm Adreno GPUs" <dri-devel@lists.freedesktop.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:POWER MANAGEMENT CORE" <linux-pm@vger.kernel.org>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Sean Paul <sean@poorly.run>, Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v10 0/4] io-pgtable-arm + drm/msm: Extend iova fault
+ debugging
+Message-ID: <20241210111450.GA14735@willie-the-truck>
+References: <20241028213146.238941-1-robdclark@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241202140604.422235-1-smostafa@google.com> <20241202140604.422235-2-smostafa@google.com>
- <20241209235804.GA14069@willie-the-truck>
-In-Reply-To: <20241209235804.GA14069@willie-the-truck>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Tue, 10 Dec 2024 09:40:00 +0000
-Message-ID: <CAFgf54peN1fGOpr4Q4eihRTYFi1prT3LaQvH-K5x5KO50gmacw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] iommu/io-pgtable-arm: Fix stage-2 concatenation
- with 16K
-To: Will Deacon <will@kernel.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com, joro@8bytes.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241028213146.238941-1-robdclark@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Mon, Dec 9, 2024 at 11:58=E2=80=AFPM Will Deacon <will@kernel.org> wrote=
-:
->
-> On Mon, Dec 02, 2024 at 02:06:03PM +0000, Mostafa Saleh wrote:
-> > At the moment, io-pgtable-arm uses concatenation only if it is
-> > possible at level 0, which misses a case where concatenation is
-> > mandatory at level 1 according to R_SRKBC in Arm spec DDI0487 K.a.
-> >
-> > Also, that means concatenation can be used when not mandated,
-> > contradicting the comment on the code. However, these cases can only
-> > happen if the SMMUv3 driver is changed to use ias !=3D oas for stage-2.
-> >
-> > This patch re-writes the code to use concatenation only if mandatory,
-> > fixing the missing case for level-1 and granule 16K with PA =3D 40 bits=
-.
-> >
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > ---
-> >  drivers/iommu/io-pgtable-arm.c | 45 +++++++++++++++++++++++++---------
-> >  1 file changed, 33 insertions(+), 12 deletions(-)
-> >
-> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-=
-arm.c
-> > index 6b9bb58a414f..0055876b3527 100644
-> > --- a/drivers/iommu/io-pgtable-arm.c
-> > +++ b/drivers/iommu/io-pgtable-arm.c
-> > @@ -223,6 +223,33 @@ static inline int arm_lpae_max_entries(int i, stru=
-ct arm_lpae_io_pgtable *data)
-> >       return ptes_per_table - (i & (ptes_per_table - 1));
-> >  }
-> >
-> > +/*
-> > + * Check if concatenated PGDs are mandatory according to Arm DDI0487 (=
-K.a)
-> > + * 1) R_DXBSH: For 16KB, and 48-bit input size, use level 1 instead of=
- 0.
-> > + * 2) R_SRKBC: After de-ciphering the table for PA size and valid init=
-ial lookup
-> > + *   a) 40 bits PA size with 4K: use level 1 instead of level 0 (2 tab=
-les for ias =3D oas)
-> > + *   b) 40 bits PA size with 16K: use level 2 instead of level 1 (16 t=
-ables for ias =3D oas)
-> > + *   c) 42 bits PA size with 4K: use level 1 instead of level 0 (8 tab=
-les for ias =3D oas)
-> > + *   d) 48 bits PA size with 16K: use level 1 instead of level 0 (2 ta=
-bles for ias =3D oas)
-> > + */
-> > +static inline bool arm_lpae_concat_mandatory(struct arm_lpae_io_pgtabl=
-e *data)
-> > +{
-> > +     unsigned int ias =3D data->iop.cfg.ias;
-> > +     unsigned int oas =3D data->iop.cfg.oas;
-> > +
-> > +     /* Covers 1  and 2.d */
-> > +     if ((ARM_LPAE_GRANULE(data) =3D=3D SZ_16K) && (data->start_level =
-=3D=3D 0))
-> > +             return (oas =3D=3D 48) || (ias =3D 48);
->
-> I'm guessing the second disjunct here should be:
->
->         (ias =3D=3D 48);
->
+Hi Rob,
 
-Ouch, my bad.
+On Mon, Oct 28, 2024 at 02:31:36PM -0700, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
+> 
+> This series extends io-pgtable-arm with a method to retrieve the page
+> table entries traversed in the process of address translation, and then
+> beefs up drm/msm gpu devcore dump to include this (and additional info)
+> in the devcore dump.
+> 
+> This is a respin of https://patchwork.freedesktop.org/series/94968/
+> (minus a patch that was already merged)
+> 
+> v2:  Fix an armv7/32b build error in the last patch
+> v3:  Incorperate Will Deacon's suggestion to make the interface
+>      callback based.
+> v4:  Actually wire up the callback
+> v5:  Drop the callback approach
+> v6:  Make walk-data struct pgtable specific and rename
+>      io_pgtable_walk_data to arm_lpae_io_pgtable_walk_data
+> v7:  Re-use the pgtable walker added for arm_lpae_read_and_clear_dirty()
+> v8:  Pass pte pointer to callback so it can modify the actual pte
+> v9:  Fix selftests_running case
+> v10: Call visit cb for all nodes traversed, leave the decision about
+>      whether to care about non-leaf nodes to the callback
 
-> I'll make that change when applying...
->
-> Will
+Do you plan to respin this? I see Mostafa left a proposal on patch 3.
+
+Thanks,
+
+Will
