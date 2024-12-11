@@ -1,125 +1,164 @@
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A40EE1C3F13
-	for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 23:06:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB2E05672;
+	Wed, 11 Dec 2024 00:14:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733872005; cv=none; b=e5wTtq9246TXgrW+MxauBk79V1Z02MzhLyQjddEukV4j6OR4sDapJeGOwYBMwsSQHbsPh8L5X0krvXEzofXzacRNcs1WWA2pVfStzdexGni3nm4jMB6BpV7/r+0YmQ8Pphu2MXhIFti6KUa8OJ5AKNeHmoA1iie+9u3KPwFI/4o=
+	t=1733876093; cv=none; b=YTxxnq+IsUL89ngaKKbfyD0eRrBdR1U+hrv+q3HKsrt9pW22lcf4jw+8jPr5hIYj+SKU3seTcDAffNB+QCmwJOZ0GNLZMXz8Fa2361UGyRUo4TGzetsuQUx8HEVW/lIIVccWtPBCGb5l66fK0ShbQQXC5oRrdRoDV2JZT4WW3Ms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733872005; c=relaxed/simple;
-	bh=sVYXJXSzW6YUxCJsxxrtVnqQTqgEA8N5VXF4bXIS/Hg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pKaOdjZsG8Y/+yb0qNMWHERUAs/+x1H0rwEbJeU6m6a3Dp/IpXp40gCan77hrUnIZt/WolcqFx4oXnT5ZFDMH+lp/AVYbpvNS8Zfm13/lRrIE2EDrd+TSYWpVYZvSHYoa19bsj2HnSXhFEXZZ/P9G4MEz4vcQYSCnWz8vIqfxrQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gateworks.com; spf=pass smtp.mailfrom=gateworks.com; dkim=pass (2048-bit key) header.d=gateworks.com header.i=@gateworks.com header.b=CrQOZmY6; arc=none smtp.client-ip=209.85.219.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gateworks.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gateworks.com
+	s=arc-20240116; t=1733876093; c=relaxed/simple;
+	bh=4h21K1y9Z9l7y0DPA+vc7kYzKHGGP3oOLcObWgo9tSQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ma3Qcz0snXawvI/BauW0oTonU5llebi/oecOXvTlZazpe3+JYkeyYP8bWwcY4OwiNS9ROnGjAFYr/EDqTO0AaxY97zalK6DXwOCkuyWe9JN99Z8cBccd/iyef7ePcw3+rtasXXc/4CTfSL3PKAkVp9C05FmikJF9d9+9qjPvQYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NnhmrLf1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gateworks.com header.i=@gateworks.com header.b="CrQOZmY6"
-Received: by mail-yb1-f182.google.com with SMTP id 3f1490d57ef6-e3a0d2d15adso4152085276.0
-        for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 15:06:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gateworks.com; s=google; t=1733872002; x=1734476802; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UqT6g0W8wBftvp6aSxR69K7dIiruVpolHF6yT66BzYA=;
-        b=CrQOZmY6oVbeLIiRpEf6U7ZYGAwejvyLftXvJzIeRKKcVR3XmxIYe2bt3fy/v4Yegi
-         htAoagULk8utVX6oL4Y6eDluhtpLV0kG2wNWim0AywbflOn0O1QUarKSjjRV+kPxtRPk
-         Gsj5rdWc1RboRqvaKSl7QNvyprDF51fWfagROFmyxrov/maPm5Dniy1fhM7GRjVvAmhY
-         XF1ATF+oFglyoqXSPCt0MOIiVL3jtZ5x2zPCKlPgNJ5ghKZnAIDvAFTGUF7YsObuQZs0
-         HgV0RGNmWGqH04M3FtH9ymJ9XKuU6AR9WdA1krCWThZ5Rclnsq+YvBAIYXWEWJXHvqjR
-         A9Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733872002; x=1734476802;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UqT6g0W8wBftvp6aSxR69K7dIiruVpolHF6yT66BzYA=;
-        b=MNtojcPw6iLg2hAkfCfoCQsilovHihm7XFk1KfQA++JQBe/+1TYtqD1OmKU2j0h3rx
-         bOHSKrlc58aw2abH7i48I4BnndIf+UEIs24CDq1onkdnJSltRILI8RotERucJmRWpQQR
-         i5Zw4AwGIxLSBsTuU328btU/ae4O2BislqpvYAxHfF0rXmvf9loD1JCNuRLXeJPqE26H
-         wVV/aIlmQC6UgUDt4YzPT1NhBgdqW+QcVLfohriRvjabvruTpm1Nr8v0P+Xo3SYK31Wr
-         in5zR0CrY0vua2ZiSeUbIgxbWAVJDhC56Z266W3NsMn8rMwyQHFn68UuqlVyWcZ67mnc
-         u7XA==
-X-Forwarded-Encrypted: i=1; AJvYcCVBgkvrbxBfMyhvfGywfHorfiTpf1rUjejqh7zL2CvFQmvrmDSWfAAlvqk9z4WzNKF3p3TDRg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwpxVOzUofgzg22pJowU4VV/gZup8fQo0KrQCVs+GBG2fApY6Rb
-	SnT2G5u8p0J4gPfDuzjq8jS2DysFwkPqshVPx/zYa3sFgaR7fYWxirzuVpellvnnuvDY8Aq72jZ
-	J+mYTSks5MuIuTd4wUdjhSy1bey78wxRjfHqIFg==
-X-Gm-Gg: ASbGncvcNcz6teVRPHlvNa119l5BsJpuw0UtENpLpNBj9u9PvEnUH0DuwnGZo59X56M
-	CowVeQbs4LINLybjzakqczlJWpHAsa2yVVbw=
-X-Google-Smtp-Source: AGHT+IHDSE8vWTo5AI2GRtvcRlxTgl5Sv9MW1qFpKY2BPLTbrUME85VaPcnBA4mMZTf7UD9AjbDzT6zqXJ7grktQ4+s=
-X-Received: by 2002:a05:6902:260c:b0:e39:8f3e:30a1 with SMTP id
- 3f1490d57ef6-e3c8e645ca4mr949108276.46.1733872002729; Tue, 10 Dec 2024
- 15:06:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NnhmrLf1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEE48C4CED6;
+	Wed, 11 Dec 2024 00:14:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733876092;
+	bh=4h21K1y9Z9l7y0DPA+vc7kYzKHGGP3oOLcObWgo9tSQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=NnhmrLf15OP0vZ1BBuWnEFix9/nwPCVQj2QH0MJkizJYjTdLhGkWrDzwtGD8M4G8y
+	 IhYqcT/TxF8B9DRM05anOrP/fpsSD0eR0Dr4NXWmsGon5yxchG4nKuFFXk8yzi7j+p
+	 qtCmLSt2QgZMjUXUpkp2LDK1xHWOKz3dXqphYwET8vAaC8XBBcB7koOCXONVvTEHSd
+	 csvIicP5EjXog2YDrJJ33fbRQg6BThOf7cA8zJlGNVhnO5ykNd6g17+YLJmj4w2Umk
+	 8KA7jc9OT1WSleYLJs76mqjS+085ISejXzc+5kXdTmDrryDX5EX6i3dfvqQ5EJcnI/
+	 I4KfFG3dIW8Dg==
+Date: Wed, 11 Dec 2024 00:14:50 +0000
+From: Wei Liu <wei.liu@kernel.org>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "wei.liu@kernel.org" <wei.liu@kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+	"kys@microsoft.com" <kys@microsoft.com>,
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+	"decui@microsoft.com" <decui@microsoft.com>,
+	"tglx@linutronix.de" <tglx@linutronix.de>,
+	"mingo@redhat.com" <mingo@redhat.com>,
+	"bp@alien8.de" <bp@alien8.de>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+	"x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"davem@davemloft.net" <davem@davemloft.net>,
+	"edumazet@google.com" <edumazet@google.com>,
+	"kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>,
+	"James.Bottomley@HansenPartnership.com" <James.Bottomley@hansenpartnership.com>,
+	"martin.petersen@oracle.com" <martin.petersen@oracle.com>
+Subject: Re: [PATCH 0/5] hyper-v: Don't assume cpu_possible_mask is dense
+Message-ID: <Z1jZengWxcjEPdJD@liuwe-devbox-debian-v2>
+References: <20241003035333.49261-1-mhklinux@outlook.com>
+ <SN6PR02MB415740B41A34B1468BC6AE28D43D2@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAJ+vNU0EL3T+GyNAbVbGqYYQ5NM3h7cgAwqxxBMuZjh+-YQ3bA@mail.gmail.com>
- <1b2ea8b2-6fbe-4118-b6c6-742c8f0be476@quicinc.com> <CAJ+vNU1-OZ3y4p2L+zf64AiVtUv70yZNqkT20jTxyE0_gJb6Jg@mail.gmail.com>
- <0282be95-9094-4d49-b79e-4f7c976dad00@quicinc.com> <CAJ+vNU32EMHjtchJRb1sODBrUKG2vZW4ZEu1_F0+dCCEjCn7Dg@mail.gmail.com>
- <20241209081714.GA25363@lst.de> <593c0d63-d8fd-4439-a57a-97340212c197@arm.com>
- <CAJ+vNU2ypE_Mn_6iKCmf5LYk9Sth=ryWXyewc5MhOKK8VoAKCA@mail.gmail.com> <20241210041133.GA17116@lst.de>
-In-Reply-To: <20241210041133.GA17116@lst.de>
-From: Tim Harvey <tharvey@gateworks.com>
-Date: Tue, 10 Dec 2024 15:06:31 -0800
-Message-ID: <CAJ+vNU03Cqsc+O5anwmvJW8Wfd-06LbDMVHjxVFdixf01ZLczQ@mail.gmail.com>
-Subject: Re: ath11k swiotlb buffer is full (on IMX8M with 4GiB DRAM)
-To: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, Baochen Qiang <quic_bqiang@quicinc.com>, 
-	ath11k@lists.infradead.org, linux-wireless <linux-wireless@vger.kernel.org>, 
-	Fabio Estevam <festevam@gmail.com>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SN6PR02MB415740B41A34B1468BC6AE28D43D2@SN6PR02MB4157.namprd02.prod.outlook.com>
 
-On Mon, Dec 9, 2024 at 8:11=E2=80=AFPM Christoph Hellwig <hch@lst.de> wrote=
-:
->
-> On Mon, Dec 09, 2024 at 11:15:02AM -0800, Tim Harvey wrote:
-> > After a lot of back and forth and investigation this is due to the
-> > IMX8M SoC's not having an IOMMU thus swiotlb is being used and ath11k
-> > is requesting some buffers that are too large for swiotlb to provide.
-> > There is a specific patch which added the HAL_WBM2SW_RELEASE buffers
-> > to cacheable memory that could be reverted to fix this but the concern
-> > was that it would impact performance moving those buffers to
-> > non-cacheable memory (there are three ~1MiB buffers being allocated):
-> > commit d0e2523bfa9cb ("ath11k: allocate HAL_WBM2SW_RELEASE ring from
-> > cacheable memory").
->
-> The combination of "buffers" and "swiotlb" sounds like Robin was right
-> below.
->
-> > The chain of events as best I can tell are:
-> >
-> > commit 6452f0a3d565 ("ath11k: allocate dst ring descriptors from
-> > cacheable memory")
-> > - Nov 12 2021 (made it into Linux 5.17)
-> > - changes allocation of reo_dst rings to cacheable memory to allow
-> > cached descriptor access to optimize CPU usage
-> > - this is flawed because it uses virt_to_phys() to allocate cacheable
-> > memory which does not work on systems with an IOMMU enabled or using
-> > software IOMMU (swiotlb); this causes a kernel crash on client
-> > association
->
-> And this is where it started to take a wrong turn, that everyhing
-> later basically made worse.  If you have long living and potentially
-> large DMA allocations, you need to use dma_alloc_* interfaces.
->
-> 5.17 already had dma_alloc_pages for quite a while which was and still is
-> the proper interface to use.  For much older kernel you'd be stuck
-> with dma_alloc_noncoherent or dma_alloc_attrs with the right flag,
-> but even that would have been much better.
+On Tue, Dec 10, 2024 at 07:58:34PM +0000, Michael Kelley wrote:
+> From: mhkelley58@gmail.com <mhkelley58@gmail.com> Sent: Wednesday, October 2, 2024 8:53 PM
+> > 
+> > Code specific to Hyper-V guests currently assumes the cpu_possible_mask
+> > is "dense" -- i.e., all bit positions 0 thru (nr_cpu_ids - 1) are set,
+> > with no "holes". Therefore, num_possible_cpus() is assumed to be equal
+> > to nr_cpu_ids.
+> > 
+> > Per a separate discussion[1], this assumption is not valid in the
+> > general case. For example, the function setup_nr_cpu_ids() in
+> > kernel/smp.c is coded to assume cpu_possible_mask may be sparse,
+> > and other patches have been made in the past to correctly handle
+> > the sparseness. See bc75e99983df1efd ("rcu: Correctly handle sparse
+> > possible cpu") as noted by Mark Rutland.
+> > 
+> > The general case notwithstanding, the configurations that Hyper-V
+> > provides to guest VMs on x86 and ARM64 hardware, in combination
+> > with the algorithms currently used by architecture specific code
+> > to assign Linux CPU numbers, *does* always produce a dense
+> > cpu_possible_mask. So the invalid assumption is not currently
+> > causing failures. But in the interest of correctness, and robustness
+> > against future changes in the code that populates cpu_possible_mask,
+> > update the Hyper-V code to no longer assume denseness.
+> > 
+> > The typical code pattern with the invalid assumption is as follows:
+> > 
+> > 	array = kcalloc(num_possible_cpus(), sizeof(<some struct>),
+> > 			GFP_KERNEL);
+> > 	....
+> > 	index into "array" with smp_processor_id()
+> > 
+> > In such as case, the array might be indexed by a value beyond the size
+> > of the array. The correct approach is to allocate the array with size
+> > "nr_cpu_ids". While this will probably leave unused any array entries
+> > corresponding to holes in cpu_possible_mask, the holes are assumed to
+> > be minimal and hence the amount of memory wasted by unused entries is
+> > minimal.
+> > 
+> > Removing the assumption in Hyper-V code is done in several patches
+> > because they touch different kernel subsystems:
+> > 
+> > Patch 1: Hyper-V x86 initialization of hv_vp_assist_page (there's no
+> > 	 hv_vp_assist_page on ARM64)
+> > Patch 2: Hyper-V common init of hv_vp_index
+> > Patch 3: Hyper-V IOMMU driver
+> > Patch 4: storvsc driver
+> > Patch 5: netvsc driver
+> 
+> Wei --
+> 
+> Could you pick up Patches 1, 2, and 3 in this series for the hyperv-next
+> tree? Peter Zijlstra acked the full series [2], and Patches 4 and 5 have
+> already been picked by the SCSI and net maintainers respectively [3][4].
+> 
+> Let me know if you have any concerns.
 
-Christoph,
+Michael, I will take a look later after I finish dealing with the
+hyperv-fixes branch.
 
-I'm not clear what you are suggesting be done here. Are you suggesting
-that ath11k has been using the wrong mechanism by calling
-dma_map_single for cached DMA buffers? I'm not all that familiar with
-ath11k so I can't tell what buffers are considered long living.
+Thanks,
+Wei.
 
-Best Regards,
-
-Tim
+> 
+> Thanks,
+> 
+> Michael
+> 
+> [2] https://lore.kernel.org/linux-hyperv/20241004100742.GO18071@noisy.programming.kicks-ass.net/
+> [3] https://lore.kernel.org/linux-hyperv/yq15xnsjlc1.fsf@ca-mkp.ca.oracle.com/
+> [4] https://lore.kernel.org/linux-hyperv/172808404024.2772330.2975585273609596688.git-patchwork-notify@kernel.org/
+> 
+> > 
+> > I tested the changes by hacking the construction of cpu_possible_mask
+> > to include a hole on x86. With a configuration set to demonstrate the
+> > problem, a Hyper-V guest kernel eventually crashes due to memory
+> > corruption. After the patches in this series, the crash does not occur.
+> > 
+> > [1] https://lore.kernel.org/lkml/SN6PR02MB4157210CC36B2593F8572E5ED4692@SN6PR02MB4157.namprd02.prod.outlook.com/
+> > 
+> > Michael Kelley (5):
+> >   x86/hyperv: Don't assume cpu_possible_mask is dense
+> >   Drivers: hv: Don't assume cpu_possible_mask is dense
+> >   iommu/hyper-v: Don't assume cpu_possible_mask is dense
+> >   scsi: storvsc: Don't assume cpu_possible_mask is dense
+> >   hv_netvsc: Don't assume cpu_possible_mask is dense
+> > 
+> >  arch/x86/hyperv/hv_init.c       |  2 +-
+> >  drivers/hv/hv_common.c          |  4 ++--
+> >  drivers/iommu/hyperv-iommu.c    |  4 ++--
+> >  drivers/net/hyperv/netvsc_drv.c |  2 +-
+> >  drivers/scsi/storvsc_drv.c      | 13 ++++++-------
+> >  5 files changed, 12 insertions(+), 13 deletions(-)
+> > 
+> > --
+> > 2.25.1
+> > 
