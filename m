@@ -1,186 +1,134 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 560C81F0E34
-	for <iommu@lists.linux.dev>; Wed, 11 Dec 2024 10:57:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C84E6239BB9
+	for <iommu@lists.linux.dev>; Wed, 11 Dec 2024 12:42:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733914668; cv=none; b=i8saPbg1OAFJsq+5vjZ2xPW+LkrU8rVOGOgZF84C6GUxeRVt0gfXCS59jXwRNDJw0xsJMHVmKu9ARUUH0urV0JUNfYuA7wvv7svM4g4c0dTAbZoSHVl1gu1K2rlt9yPs9ja2rl862l/Ykbf7cj2uT7jMGlD0SFMnIOfvLy+p/+4=
+	t=1733920952; cv=none; b=DPqVq4UjYd74nGlVFz0PApEf8qlfUZdylmJCzsqchcitFhNQc/UdM9hZX1WcmmfGGSYsFb8REv18e9rE4ydhy200YTAOelCsj9g6pf9zKiHTS4BywQtyw2Vf+lwOwFlhu4V94TkB9AbPPbPk9NhdLQBoYYld7fKwF+BL+CJN5No=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733914668; c=relaxed/simple;
-	bh=l1HLbP5ajn2JJUN6VZxVichs3X9TNt8jAkd+61qbcRw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ReI/mxqZIeCsmSOOlI4pouiF/EnAhNdhfJW8NrYycBzBT96sn2QvnhqRXcUGNveiLipp8pvPHC6IebIiGB6XCRRhRWPtV/XmXF0Bp4pnDMJPAfX75lawevaoVw2zRSdjp6TtQbEyIuivz8YPKw7PX0BB2lErkIu3tm2Pxa+SjUw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=gJtA07EL; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1733920952; c=relaxed/simple;
+	bh=+pPozREZYjRG+b56Z1UXPgJ+oE1nAfY+niokrtw8zLE=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=lSOqYJcd5Mwza9qPWqfShJIbTGI68kvaUYWh6xEu1zuQRnjnJSxJVBWkn/QapakOBflA+BgtaZp55KfprAtikg8y9OWigzHyoP/0XxVE5oVvf/PGdlLCEGYQVwpIwo6YFjamnozOZJ0oZvY6Wz3aoV7UjOiC3KQPFjopwGf21dU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=U4UkSl1Z; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="gJtA07EL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1733914666;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=f+GQ8tsyGKgJFkU/B8nsOzseW/lELPWkUJqO5s1w+2A=;
-	b=gJtA07ELDDSEySCeYf71VyuSe6T0KrTKXqp/eaGh1TYCl8Q4DdSmxV3IMGrHBe3NIq6bov
-	jNGkGze7QZVP+r4Twq2uVXKT/+o3md995gIrRXq9tmuHbEtx5TbgQJ5vUvOJUH4oN8DDXk
-	lA6Par6rMv7mkaoZuToX56RYP138rBs=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-206-W-1DUeELPrWymDnoCqOgvw-1; Wed, 11 Dec 2024 05:57:42 -0500
-X-MC-Unique: W-1DUeELPrWymDnoCqOgvw-1
-X-Mimecast-MFC-AGG-ID: W-1DUeELPrWymDnoCqOgvw
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-434c214c05aso50478825e9.0
-        for <iommu@lists.linux.dev>; Wed, 11 Dec 2024 02:57:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="U4UkSl1Z"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-434ab938e37so43534545e9.0
+        for <iommu@lists.linux.dev>; Wed, 11 Dec 2024 04:42:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1733920949; x=1734525749; darn=lists.linux.dev;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=MTRNLbMqJF/ydYoFMhz0iMOSPnicV3TjHc8XcohZ0to=;
+        b=U4UkSl1ZaT+1nY71ORYpaixWZMPn0RATDlmTwwyVgFucpLxjcOBO1FvXzTC9Fmu8AD
+         FxoCs0pJiAewWJdup18jzl5Ns98doRhGUWxzY/Lcqg3ZXsAZMzuxQ/W74Dpvz7KGbkcd
+         dr8j2+J18ZOq1MVnooDGBYcb5Zq/ubOvMPmZkFd+e+fewRsH9Afvlvlnhpha5zcWdnQy
+         jW731CIdgbZmp3SiL/jZcYyfJccEk7mEAdIvkduAqZ5+ZaapHUZ+Iic3TRKdoaHuuo6+
+         cJVP76wrJRkrubujTahF1j/SAkOHCefldCHsqltFKd0SK0LtbOeDpvGDKjPfpFHKrTbr
+         HjSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733914661; x=1734519461;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=f+GQ8tsyGKgJFkU/B8nsOzseW/lELPWkUJqO5s1w+2A=;
-        b=SaRnjxqCckukgqZiqqGDAPzPfi2Ldoi4iLmuK/WHtJHz2DkbKMHoft4N7qFBW7N4Av
-         h1lP6ZWLe7s1yILuYRg8VqzK+SwppxYU6WNUVBenQtgDwvS24bFdny1nCmKevZpI59cR
-         GculOf1cSYchtBEStujY0zTG6NnCOY7J9/3csz2Vp5mavPyJdqmK56DgNx0ubyEzL4CD
-         vk/BsyahIpgEwJp0/VZ7CNgFpevLvfNLcLLyrOt26qHutulUOi5xV9tY6zomQPNwTHfE
-         +XmGDlgbbwSY05kkNY+Jqdc4pSNOwYBcylmhqjgzEAKPHsNoiHp1dCMjxy9l+gFTkqB/
-         mY1Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUURBF2N6//zT9NT64QqhOOwQTPGkf3O6T+OFi2LIv4hcmrel4c3LwR74m9QWWpfJsDZWC82w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxOVCdt/9HxhIHuaIP6wx5o5O5Q2gAU/l1+p7+SVMg02Hdla9l6
-	6T+epBkzyey4xxFAoJCbGUwTgcB/rScbmHFWYUHJJcGWYUYPmamhgPDULiUFg025o94b9JUPk26
-	qTCBHUm0xe1FC+R/9jBOFDSYM0pk/HcEstoJlwMD3k+VEc2fthjls
-X-Gm-Gg: ASbGnctZYZ7/2y/a7sN8koLHPiDvBqD7ghS3RO4Iky34KF4gdtY7eCQKfu7Y327AlQw
-	mS/XtK/SX23f3ppJ0B9DK5fnHdpTOFp8AqcRf5Uuq/UlYAu/dWcMg7ipDllKI5e4bzmgI2RoPEU
-	APbYYkpFJbBXd4o68KMFhqgHnpMvX7SjVbCPHCsFcERxwsbF/LM+HJahnhXp1Wzn5uW8ctWSw3H
-	uTJ3VkRKmt51MNGTPnrIqxCT0pU21j0UprGS2ut/npVQv+az7E1RxcMg6pcZzLJ5qyMyyt1Mndw
-	rwPnYEA=
-X-Received: by 2002:a05:6000:4009:b0:386:459e:e138 with SMTP id ffacd0b85a97d-3864cea3bd3mr1804836f8f.36.1733914661582;
-        Wed, 11 Dec 2024 02:57:41 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGUKg9H6oaYQkfGXXxli6E1+9isNZKdHb45oDqLX0mj0ZRLj88hfOhbB/b7Op8n69nDqmj22w==
-X-Received: by 2002:a05:6000:4009:b0:386:459e:e138 with SMTP id ffacd0b85a97d-3864cea3bd3mr1804821f8f.36.1733914661209;
-        Wed, 11 Dec 2024 02:57:41 -0800 (PST)
-Received: from [192.168.0.6] (ip-109-42-51-17.web.vodafone.de. [109.42.51.17])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-434f2b08972sm125280215e9.27.2024.12.11.02.57.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Dec 2024 02:57:40 -0800 (PST)
-Message-ID: <ba7d8da0-dcc3-40b8-ad99-50ec17a74573@redhat.com>
-Date: Wed, 11 Dec 2024 11:57:38 +0100
+        d=1e100.net; s=20230601; t=1733920949; x=1734525749;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=MTRNLbMqJF/ydYoFMhz0iMOSPnicV3TjHc8XcohZ0to=;
+        b=Wy/FwnM0Tr1p8uYVjGeoFCh81b82P3NKVFwTFOGYT/D/6GbA1TYDy3f94tNRlXmgI2
+         kvkOvbougWNc/zW3cerjUFWaCqoNkZkJ96OgtVtzNUw83+WeGUzp+sk3JCCUXzHiJPFW
+         RXFxJbl94o7XBcPSoWih5YfsqK9qUYZ86yrq0neqW5yWEa+Z6hj1PRfIfci2qjKtf9RA
+         bbWo8gBAieOYv69OKcAwT1hKfNbGyJbaEGNApC5AMKaJQu3toJzdIpzLEdIEkKAaUOFP
+         rZ/ie6muBvnU07VHKAUDwNMd7uIePa56nDKDIcFGSUU5Jn3rPfWz3Lc1vGmUaUCaWytW
+         AN0A==
+X-Gm-Message-State: AOJu0Yy81Jse7f5sXgZ5S7iA+KY3y0d48jruHvf3FeFXgjltyHZl3VE6
+	HzS8oHmO5+B+oTN5evNqivPkzkA05ztyxxUfvJBCTJHbheFBOTzjezjT+i+TLBc=
+X-Gm-Gg: ASbGncuTPqv9/b5PHFY+9LxZSbrvpXAQtzXNw7h6SEwH1YSuX1sZr3fsoeKjr+KjsBU
+	ACnCsiptviiML/2yhSkz1ksgFd80IqltI2gdM5Fz6uPNVK3gq2giWm1sR25OtR+fUVK8M6+K6tQ
+	eFRZiRHXFTbRT3HzMMgzQmdd4YRLQqP5oYy59mriGEepyMOi0Mg8gf2smwm8lgc8pSvfZ9zEfkY
+	mGI3jH5IIsqMAIOsnVa41q+EmgYkwF+X87VQCR8wigY5r695LbdM0ZiBsY=
+X-Google-Smtp-Source: AGHT+IGxa69eHux3N71eIRvq5utlWrpY9uGgIWWLRmNh0jDz0+cAdy5vgruJWClOqNFwg80c0yz02w==
+X-Received: by 2002:a5d:47a9:0:b0:385:d7a7:ad60 with SMTP id ffacd0b85a97d-3864ce89578mr1813784f8f.3.1733920949031;
+        Wed, 11 Dec 2024 04:42:29 -0800 (PST)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3878248f440sm1208036f8f.17.2024.12.11.04.42.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Dec 2024 04:42:28 -0800 (PST)
+Date: Wed, 11 Dec 2024 15:42:25 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev
+Subject: [bug report] iommu/vt-d: Drain PRQs when domain removed from RID
+Message-ID: <c5187676-2fa2-4e29-94e0-4a279dc88b49@stanley.mountain>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/7] iommu/s390: add basic routines for region 1st and 2nd
- tables
-To: Matthew Rosato <mjrosato@linux.ibm.com>, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, gerald.schaefer@linux.ibm.com,
- schnelle@linux.ibm.com
-Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
- svens@linux.ibm.com, borntraeger@linux.ibm.com, clegoate@redhat.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-s390@vger.kernel.org
-References: <20241209192549.107226-1-mjrosato@linux.ibm.com>
- <20241209192549.107226-4-mjrosato@linux.ibm.com>
-From: Thomas Huth <thuth@redhat.com>
-Autocrypt: addr=thuth@redhat.com; keydata=
- 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
-In-Reply-To: <20241209192549.107226-4-mjrosato@linux.ibm.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: u-b70qvvArWyY4Z_MthuqrSwHQbkggUB1JRvTTfIOLw_1733914661
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 09/12/2024 20.25, Matthew Rosato wrote:
-> Add common routines for region first and region second tables, similar
-> to what already exists for region third tables.  Routines added are
-> for determining an index value based on address, getting and setting
-> origin flags, and validating entries.
-> These routines are not yet used, but will be in subsequent commits.
-> 
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->   arch/s390/include/asm/pci_dma.h |  2 ++
->   drivers/iommu/s390-iommu.c      | 56 +++++++++++++++++++++++++++++++++
->   2 files changed, 58 insertions(+)
-> 
-> diff --git a/arch/s390/include/asm/pci_dma.h b/arch/s390/include/asm/pci_dma.h
-> index 42d7cc4262ca..8d8962e4fd58 100644
-> --- a/arch/s390/include/asm/pci_dma.h
-> +++ b/arch/s390/include/asm/pci_dma.h
-> @@ -55,6 +55,8 @@ enum zpci_ioat_dtype {
->   #define ZPCI_PT_BITS			8
->   #define ZPCI_ST_SHIFT			(ZPCI_PT_BITS + PAGE_SHIFT)
->   #define ZPCI_RT_SHIFT			(ZPCI_ST_SHIFT + ZPCI_TABLE_BITS)
-> +#define ZPCI_RS_SHIFT			(ZPCI_RT_SHIFT + ZPCI_TABLE_BITS)
-> +#define ZPCI_RF_SHIFT			(ZPCI_RS_SHIFT + ZPCI_TABLE_BITS)
->   
->   #define ZPCI_RTE_FLAG_MASK		0x3fffUL
->   #define ZPCI_RTE_ADDR_MASK		(~ZPCI_RTE_FLAG_MASK)
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index f6c27b6ab4c6..fcebc7415fb3 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -36,6 +36,16 @@ struct s390_domain {
->   
->   static struct iommu_domain blocking_domain;
->   
-> +static inline unsigned int calc_rfx(dma_addr_t ptr)
-> +{
-> +	return ((unsigned long)ptr >> ZPCI_RF_SHIFT) & ZPCI_INDEX_MASK;
-> +}
+Hello Lu Baolu,
 
-  Hi Matthew!
+Commit c43e1ccdebf2 ("iommu/vt-d: Drain PRQs when domain removed from
+RID") from Nov 4, 2024 (linux-next), leads to the following Smatch
+static checker warning:
 
-Correct me if I'm wrong, but IIRC Clang will barf at you when you declare a 
-"static inline" function in a .c file without using it? So this might break 
-bisection later when using Clang and -Werror ... maybe it's better to 
-introduce the functions just when they are also used?
+	drivers/iommu/intel/prq.c:95 intel_iommu_drain_pasid_prq()
+	warn: sleeping in atomic context
 
-  Thomas
+drivers/iommu/intel/prq.c
+    60 void intel_iommu_drain_pasid_prq(struct device *dev, u32 pasid)
+    61 {
+    62         struct device_domain_info *info;
+    63         struct dmar_domain *domain;
+    64         struct intel_iommu *iommu;
+    65         struct qi_desc desc[3];
+    66         int head, tail;
+    67         u16 sid, did;
+    68 
+    69         info = dev_iommu_priv_get(dev);
+    70         if (!info->pri_enabled)
+    71                 return;
+    72 
+    73         iommu = info->iommu;
+    74         domain = info->domain;
+    75         sid = PCI_DEVID(info->bus, info->devfn);
+    76         did = domain ? domain_id_iommu(domain, iommu) : FLPT_DEFAULT_DID;
+    77 
+    78         /*
+    79          * Check and wait until all pending page requests in the queue are
+    80          * handled by the prq handling thread.
+    81          */
+    82 prq_retry:
+    83         reinit_completion(&iommu->prq_complete);
+    84         tail = dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
+    85         head = dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
+    86         while (head != tail) {
+    87                 struct page_req_dsc *req;
+    88 
+    89                 req = &iommu->prq[head / sizeof(*req)];
+    90                 if (!req->pasid_present || req->pasid != pasid) {
+    91                         head = (head + sizeof(*req)) & PRQ_RING_MASK;
+    92                         continue;
+    93                 }
+    94 
+--> 95                 wait_for_completion(&iommu->prq_complete);
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This is a sleep.
 
+    96                 goto prq_retry;
+    97         }
+    98 
+    99         iopf_queue_flush_dev(dev);
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+flush sleeps as well.
+
+The call tree is:
+
+intel_mm_release() <- disables preempt with a spinlock
+-> intel_pasid_tear_down_entry() <- the patch added intel_iommu_drain_pasid_prq()
+   -> intel_iommu_drain_pasid_prq()
+
+regards,
+dan carpenter
