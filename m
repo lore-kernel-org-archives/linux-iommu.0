@@ -1,144 +1,93 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9BA420012A
-	for <iommu@lists.linux.dev>; Wed, 11 Dec 2024 02:31:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19D6B1FCCED
+	for <iommu@lists.linux.dev>; Wed, 11 Dec 2024 02:43:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733884299; cv=none; b=UV93Ks5BPrWGm5i8XoucvD4pc0zZCEajVaMk0ggIY8tQduxTspSnsUhxojR3F2FxkIcqxkjhX70xXlYZYLsiNQlCjREZCrBmUOj7nzU71hmyKRMCA/wZsnAMCSbsiOKMZoV3lBZyq8ysv2QRVtUmnW0/vCRMpYllEJzXyNXrolU=
+	t=1733885032; cv=none; b=ouKqH5vmcAw77Yf/9WQjdUc14eMEaXRALrAN/3EEh2DfA1hNEtOD45ERwNN58/2hp7CNok1TlGy6u4ldhz8C1AjYnGboJiWewnSek4mQckshsaru+1+bcupFGdg/WqxeL+MjutT4Y3/ZMRuxf+ylnRssKmwzbE5kZjgjar6eDxk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733884299; c=relaxed/simple;
-	bh=nt+HTDgYxOVTdeJgLR7i8ybNsexGO3q814SnR/l06OM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Eqp2xWTCGVFQ7QjsUZ+kPdCiTwvzhQqx6zNFu+p4lkBgGcOFwJu0BDBO/yMLdlyXL1kDJlAjKaTRkl+FPIrRTjJHcxNWzE/ESWbo0QNXgbPNIFoPCLgn5nVx0ihnz/30hxpH2QYB7d6M8eeadWGjN80z5xhKexld3OyqOFig0hY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=KtkgDgVx; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1733885032; c=relaxed/simple;
+	bh=GHgSmtR9vTzTjcJ4EaBcwK+ynctZcjBW+h/7n4rakHM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Nirj3h1fpCnZN1gO+uB8k48XAvIh9ugWlX8ZYBCuJw9iw/SbqwRI07CzhpHVDwop4gCyjKuosAQsjLHzJyQtgg+iTL/FlZRaf/ileg/q2WccGvPwJHlTqVay0zKsrtxGX+QVM8k8kllb5833BoUS/KEfrI6/FMIiJ92sfIr6poM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=sos2xtBo; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="KtkgDgVx"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BAF82LQ030874;
-	Wed, 11 Dec 2024 02:31:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	EJ4/4F4JNJmG41KLFAewschP079+tEh24O/wOSrqZhQ=; b=KtkgDgVx1Aqm0o+u
-	6iRX897PFHFo7WmhdgCB2T/mgCSK8OWntie9gk1cuv+LBNdOWkDYnwq2cgVGZEZR
-	HASJkS+Sx/S9fHC0GCAiqDSem0Q+DXuMT96PfZlwMdkR7bgyxU66DYZqZ0A0HENq
-	zVx6dW3S96OQUKr4kOIiMoGbeGbR+N5TgSndqfxDEW/Bjr0311JKKIEqFexdoWE+
-	h/eGHX1vzpCqcoNs8eQNRvF0p5wQr1/C+hHIm/+jQBU+0GjyebYSDzxTJZhxcFGX
-	QTwIwwPHJtHOOTCw0/oiwS046Td0pVb6Hws6vjHRsJzopK7mysAFiea6KIpXfvNz
-	dE85DQ==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43eg9ek5p9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 11 Dec 2024 02:31:29 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4BB2VT8i004462
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 11 Dec 2024 02:31:29 GMT
-Received: from [10.231.195.67] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 10 Dec
- 2024 18:31:27 -0800
-Message-ID: <5fe372df-ae51-4a8b-9fa3-a4a0ea2d33e3@quicinc.com>
-Date: Wed, 11 Dec 2024 10:31:25 +0800
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sos2xtBo"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-53e3a37ae07so3934527e87.3
+        for <iommu@lists.linux.dev>; Tue, 10 Dec 2024 18:43:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1733885027; x=1734489827; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=GHgSmtR9vTzTjcJ4EaBcwK+ynctZcjBW+h/7n4rakHM=;
+        b=sos2xtBoynlpaAd+taEPsZKUOXZLiRKOwD9/IqtMho2O53Vo5x6Gh6CZlpmEUWO2nn
+         8N54r54T5X0AUcH/py7C03/BVPRYHOH/yZWmZy2st/VEIXJOj5biXnWB11VFBerqT4Hj
+         +rXoG7GPBUg2NGmRUqcoCUmN0rSeYUdej9iA3jVW4ZhF9u+4kIncw3CvFuik/iH4NNPs
+         3tVm/SFW0u6QnI1ePKbK4hGeecLYNZqXecHftPnNaoRJt/GCXrfw8DHGxNHynyXxiCXy
+         DJOxO5lt3jskCCWnGLC1tDIrQGJnsK0Seb5VKn4159/57NAwIANmGk5CB42C7E2nNdr2
+         30+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733885027; x=1734489827;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GHgSmtR9vTzTjcJ4EaBcwK+ynctZcjBW+h/7n4rakHM=;
+        b=JjVA4Vy4MycZh8TEFDP3G08uO0xJpufXwSJveejgNPDr7h3HUQLHmV8YoLpVvlhQmk
+         rX+5CHwgBDmnX/BJ8veqdKaXnTy8VfwYkNxYFHLrQUwvgjDyB3O+rgTh8mxgXM7OYSiR
+         ixzQQ9OwflBIYWGTT7rLm8Cp+azGF62UarE4dfcAaj+CYdWiDIG51LBRG+wKzQMBjezl
+         sHIjIyQ80x6fBPYEBbm9MBqHM8IwrXn/C/VT8M1fjL4ytagvlmpqWTAkAYEDwRWGcaAo
+         j+4WiFcggjhDc6TNwlalQbUEVy2JXSqU2rkhKPvaJDB06tEsJULpfeAt14P7fS4cUZbD
+         agvQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUaO1oy/ysimyoHyS2zOZIaNG8vzQ870Ea9XoGydNC+y3BkiAIhnmiEyY7Ujatw5c+ACPF+5Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx7XAOykxy3VCcj9UkdMHlMlPo8wrlgmuYeKyLVZIiMqW8GA/25
+	CUVDjCNRyGMKbRmYWfWO5b2wQVAHJgXC72xtU1aJ/8F6LOcr59DvVMHPM66IzRr36IR9kJ3gLrH
+	rrVh71SoD9JrHN8ZivNeUzqRkmIHe8NXON6T3ow==
+X-Gm-Gg: ASbGncsoTDbAvbgOIhlqa+edKOfHxJv4PYS07V3KGaXTXyPWFRGlAbpZp0ppJbJSRyT
+	VcynhMmoD+nY7V6Pz5lY26jCxVs7jHL+hTw==
+X-Google-Smtp-Source: AGHT+IHS5KkQGk8APo1eXi8Rt0VOlOnXgP9QSvrLJC3hb+d5Eq1x/2VIMDfLSd1xVwCVFBb915rne/FHPXP95gCc0hQ=
+X-Received: by 2002:a05:6512:68b:b0:53e:3a7d:a1df with SMTP id
+ 2adb3069b0e04-5402a5fcc85mr299823e87.45.1733885027031; Tue, 10 Dec 2024
+ 18:43:47 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: ath11k swiotlb buffer is full (on IMX8M with 4GiB DRAM)
-To: Tim Harvey <tharvey@gateworks.com>, Christoph Hellwig <hch@lst.de>
-CC: Robin Murphy <robin.murphy@arm.com>, <ath11k@lists.infradead.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Fabio Estevam
-	<festevam@gmail.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>, <iommu@lists.linux.dev>
-References: <CAJ+vNU0EL3T+GyNAbVbGqYYQ5NM3h7cgAwqxxBMuZjh+-YQ3bA@mail.gmail.com>
- <1b2ea8b2-6fbe-4118-b6c6-742c8f0be476@quicinc.com>
- <CAJ+vNU1-OZ3y4p2L+zf64AiVtUv70yZNqkT20jTxyE0_gJb6Jg@mail.gmail.com>
- <0282be95-9094-4d49-b79e-4f7c976dad00@quicinc.com>
- <CAJ+vNU32EMHjtchJRb1sODBrUKG2vZW4ZEu1_F0+dCCEjCn7Dg@mail.gmail.com>
- <20241209081714.GA25363@lst.de>
- <593c0d63-d8fd-4439-a57a-97340212c197@arm.com>
- <CAJ+vNU2ypE_Mn_6iKCmf5LYk9Sth=ryWXyewc5MhOKK8VoAKCA@mail.gmail.com>
- <20241210041133.GA17116@lst.de>
- <CAJ+vNU03Cqsc+O5anwmvJW8Wfd-06LbDMVHjxVFdixf01ZLczQ@mail.gmail.com>
-Content-Language: en-US
-From: Baochen Qiang <quic_bqiang@quicinc.com>
-In-Reply-To: <CAJ+vNU03Cqsc+O5anwmvJW8Wfd-06LbDMVHjxVFdixf01ZLczQ@mail.gmail.com>
+References: <20241108121742.18889-1-yi.l.liu@intel.com> <20241108121742.18889-6-yi.l.liu@intel.com>
+In-Reply-To: <20241108121742.18889-6-yi.l.liu@intel.com>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Wed, 11 Dec 2024 10:43:35 +0800
+Message-ID: <CABQgh9GgWVZ6onc7Tu5ARJ_bPrm1GB-5EaQuh4OCu+ywC1Ez_g@mail.gmail.com>
+Subject: Re: [PATCH v5 5/5] iommufd: Extend IOMMU_GET_HW_INFO to report PASID capability
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: alex.williamson@redhat.com, jgg@nvidia.com, kevin.tian@intel.com, 
+	baolu.lu@linux.intel.com, joro@8bytes.org, eric.auger@redhat.com, 
+	nicolinc@nvidia.com, kvm@vger.kernel.org, chao.p.peng@linux.intel.com, 
+	iommu@lists.linux.dev, zhenzhong.duan@intel.com, vasant.hegde@amd.com, 
+	will@kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: s3MXoqu9gS9pQ18AhbXzfYgemfaB70Sa
-X-Proofpoint-ORIG-GUID: s3MXoqu9gS9pQ18AhbXzfYgemfaB70Sa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 phishscore=0 spamscore=0 mlxscore=0 suspectscore=0
- bulkscore=0 lowpriorityscore=0 impostorscore=0 adultscore=0
- mlxlogscore=807 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2411120000 definitions=main-2412110019
 
+On Fri, 8 Nov 2024 at 20:17, Yi Liu <yi.l.liu@intel.com> wrote:
+>
+> PASID usage requires PASID support in both device and IOMMU. Since the
+> iommu drivers always enable the PASID capability for the device if it
+> is supported, so it is reasonable to extend the IOMMU_GET_HW_INFO to
+> report the PASID capability to userspace.
+>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org> #aarch64 platform
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 
+Hi, Yi
 
-On 12/11/2024 7:06 AM, Tim Harvey wrote:
-> On Mon, Dec 9, 2024 at 8:11 PM Christoph Hellwig <hch@lst.de> wrote:
->>
->> On Mon, Dec 09, 2024 at 11:15:02AM -0800, Tim Harvey wrote:
->>> After a lot of back and forth and investigation this is due to the
->>> IMX8M SoC's not having an IOMMU thus swiotlb is being used and ath11k
->>> is requesting some buffers that are too large for swiotlb to provide.
->>> There is a specific patch which added the HAL_WBM2SW_RELEASE buffers
->>> to cacheable memory that could be reverted to fix this but the concern
->>> was that it would impact performance moving those buffers to
->>> non-cacheable memory (there are three ~1MiB buffers being allocated):
->>> commit d0e2523bfa9cb ("ath11k: allocate HAL_WBM2SW_RELEASE ring from
->>> cacheable memory").
->>
->> The combination of "buffers" and "swiotlb" sounds like Robin was right
->> below.
->>
->>> The chain of events as best I can tell are:
->>>
->>> commit 6452f0a3d565 ("ath11k: allocate dst ring descriptors from
->>> cacheable memory")
->>> - Nov 12 2021 (made it into Linux 5.17)
->>> - changes allocation of reo_dst rings to cacheable memory to allow
->>> cached descriptor access to optimize CPU usage
->>> - this is flawed because it uses virt_to_phys() to allocate cacheable
->>> memory which does not work on systems with an IOMMU enabled or using
->>> software IOMMU (swiotlb); this causes a kernel crash on client
->>> association
->>
->> And this is where it started to take a wrong turn, that everyhing
->> later basically made worse.  If you have long living and potentially
->> large DMA allocations, you need to use dma_alloc_* interfaces.
->>
->> 5.17 already had dma_alloc_pages for quite a while which was and still is
->> the proper interface to use.  For much older kernel you'd be stuck
->> with dma_alloc_noncoherent or dma_alloc_attrs with the right flag,
->> but even that would have been much better.
-> 
-> Christoph,
-> 
-> I'm not clear what you are suggesting be done here. Are you suggesting
-> that ath11k has been using the wrong mechanism by calling
-> dma_map_single for cached DMA buffers? I'm not all that familiar with
-> ath11k so I can't tell what buffers are considered long living.
+Found this patch still not gets merged in 6.13-rc1
+Any plan to respin.
 
-those buffers are allocated when driver load and freed when driver unload, so IMO they are
-long living.
+Will this target to 6.14?
 
-> 
-> Best Regards,
-> 
-> Tim
-
+Thanks
