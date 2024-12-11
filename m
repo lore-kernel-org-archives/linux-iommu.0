@@ -1,150 +1,120 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2065.outbound.protection.outlook.com [40.107.237.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4B541DE2DF;
-	Wed, 11 Dec 2024 18:14:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.65
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733940856; cv=fail; b=gZ8GqFiM8mduwc64XKydoZH7k1U2Mx/bCjYqmPQgZqJLkk8O7v7xL6ZcnzuYWok9rb1VokY7p93vMpa27G6DM8EKWytBOUmypl0v0looFoI8imF0OGREGdMGUxUbKHBiWEwIglmrVbZoYL2OuoWXhIOlhhYb/0F4pVy7O6dzvIs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733940856; c=relaxed/simple;
-	bh=ipY6d/MeMtHv0OS0vcp7o+NcihavJLSjRQDyWRRYTds=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=H/sGlX7WZtxIaHrgrarv8hm08AkbbiwrnqjRhVOO9lCxrRKFCvuUonGZmcCNmN3MuvZ0l8QElrGFgZy56f4AbGXzmwvBoNWvVAR3K2qUGm7vOkySNredmJZ7ISg0T/59HnTWGniVEKueV9iw3x8wWMuR7H+158A5AkT+G+HMf4Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=qOovLhuy; arc=fail smtp.client-ip=40.107.237.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="qOovLhuy"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=XIf++1kA0UuTK9IGOlACzE+FVGvg4Hc88+koArjejrHZ66pNVwisk3UUG1C2M7vqeuKLZuQac+6xF5r6VqCwQsi4N4Hx87AGp3tSB2+HgHPiT9tDakbUcXW3f37TMiG4eG1JWP2TSllhpnQRTsYNhgEmUQ6mKSFncknyTlWtiPx3WanLCzJy1/tWTYP9Y2xbApjLCAMKc6vFeTFGa6Y/fx+WMiLcDh6DJWEeHlJmH+GrlOhMHAXQlYHDomtZqpBVaWJH+jgi3aJ+wdhCn8X72MviUMNp81UB2WzssngmeeLQoIY7Wv2UoI67FoUxKaORH+PrO2zU6PNUYsZb/NOmzw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wreZdiUpL3gzKyVr1Riwn62duxMT+QOgI1O39D4e9NE=;
- b=CO+3pUpXJTZ2IrNfhHQf/rbqkdc2MdQ8uzCKx2usY2dshLlBxv67HvZCHbNHTqlhIRFyDyvFzn6mGotyNqofn5AfELGW3fRdbDGpLKlTxQkCiebzzOBdkxL3le8XhdLhnSL1tW+ZxSWVlLUOWiuLL88bQ2Nw32yAQiVk7mFCqgg2I7G2cf+eCShZErLSUHLWAt12U/TPbRd9ozM2onFEt36MwBrdOFbAOJXv9d6C5E3PQxNhs+mhvaL+3Elh2FA9MtSs4CsgvxD0v0Y1cIOOJQsWILrINBwHZZQH4Dl6zIpyeopPy4I6bTRGYaW8vEd/6e1FUuohEuoD++3hXlxX9Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wreZdiUpL3gzKyVr1Riwn62duxMT+QOgI1O39D4e9NE=;
- b=qOovLhuy1l9+dDraOh8zGbxG3+JJ9fHnOBG5qc55myRHZTOZVfufvNtRZChdKiz5jIvIobm9eN3Y9lTDOsLbg0AazVLs1z246Q/gDvCKxOtwGofVKcL4Pb6x+0bKEovUm9hBz9y1S2PUnlYRC2aK3egdWMRkkDDkpe1y/KIxLh4ChbBpvwTcKmfxXRIsif03guuUK25f81Q1RX23VRkUxPO8OvlMzF0B04tTTl0rFN2B+V110D/ZVTUMUgrP27mwXSYRQUWXePy6ZZxrrLXNrai9yiPIM2zgcmnL5ekaLPfk9cXjbqLGLV934kMdfHbrpySh5IoqNSSFYGW/bG/JFg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by IA1PR12MB8555.namprd12.prod.outlook.com (2603:10b6:208:44f::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8251.16; Wed, 11 Dec
- 2024 18:14:10 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%5]) with mapi id 15.20.8251.008; Wed, 11 Dec 2024
- 18:14:10 +0000
-Date: Wed, 11 Dec 2024 14:14:09 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Cc: patches@lists.linux.dev
-Subject: Re: [PATCH] iommufd/selftest: Remove domain_alloc_paging()
-Message-ID: <20241211181409.GA2463293@nvidia.com>
-References: <0-v1-8a3e7e21ff6a+1745d-iommufd_paging_flags_jgg@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0-v1-8a3e7e21ff6a+1745d-iommufd_paging_flags_jgg@nvidia.com>
-X-ClientProxiedBy: BN1PR13CA0019.namprd13.prod.outlook.com
- (2603:10b6:408:e2::24) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BC990209F3F
+	for <iommu@lists.linux.dev>; Wed, 11 Dec 2024 18:42:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1733942581; cv=none; b=s/aaageKoCsnvN/eqn1Qk5xzGf9ct+8NpaR/kENfb1My8w/S+4T2MWL80A3so0DcZEK+wKXeSR417IsA/CZTks+snwiQrJnlP1pGf4Z7U9P56fjaed5YLkRRF23w4jk6PbymPtMZP3hpG3za657F93GWHD7elZdSiWgTWxWCXSI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1733942581; c=relaxed/simple;
+	bh=nOxaA7vXSE8dZXi+JIJESbM9FVIYY69Bj4Igv6fd1WQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ULhOmEn3bVv6daHgn1BQJxMyEn46FAskxItgxwT9WVs1hL5USXm/GxspDh5dBORwNOuDHE+OyVMCf9TyvWP9OaCOWEZsjFdhf0zAa8usC/N9KJYbpz37zGREHe3b7XP0gUzQkdNthvHdhBS/DEQYAByfjFBttgznPKQLiqjVGBA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 216EE1007;
+	Wed, 11 Dec 2024 10:43:25 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 29D3D3F720;
+	Wed, 11 Dec 2024 10:42:55 -0800 (PST)
+Message-ID: <9e8fea35-9ec7-412b-8ce2-712c44a48021@arm.com>
+Date: Wed, 11 Dec 2024 18:42:53 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|IA1PR12MB8555:EE_
-X-MS-Office365-Filtering-Correlation-Id: 72594de9-8642-46f3-fcec-08dd1a0f9c55
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?uZqz9odRFawjAPw0SpKq271wBl7QHq7dubGgAIg4523w/a0e4QBwGIar2FPr?=
- =?us-ascii?Q?DTOcHbVXOozMtai74C009iFUygMHRWRWgGjp1K5BVme1+0maWs+xjhzVPCwc?=
- =?us-ascii?Q?M3T4pDWDImyliAbvUwB8KhGpn6dO7jQnx3hTIfzNLJkmYPwtupWqdFKHXAyU?=
- =?us-ascii?Q?kKi87m2CJWQo+51JV/qFffZY/zs/xUxtLKR2UljM5729T1KQxilc17zVug7j?=
- =?us-ascii?Q?wSqvRE03zJNSao3TKf6gVklvtOXPxmbzyU+dwqxioV5H8aV5nNZ2j1VO0zJv?=
- =?us-ascii?Q?g178ZITC3YwxzeLVkyEpQYY0KNyBi9MnJZ+nUem8h6/HhZELtApT8KYldg8A?=
- =?us-ascii?Q?rAegMWmN3puOX29sYoprSyRbIFHOMnx8kVU3Ia/H34C8Vkdag4sZ2pR5hZhu?=
- =?us-ascii?Q?g/8uzvUsWotBCNr8D0UToQgE2uitQSYb6Th4znRPfczkx//zNG4hF/+9bsEg?=
- =?us-ascii?Q?3B7Ad52fFljUU/xAMkpK6d8YoKY0NqKfg1ALmWFaAd/yMLRKFoMuLsuZUlKX?=
- =?us-ascii?Q?AfgoxEAvDGS4mZPD8m/bgGa7S84LgtQvdGXAWFb+U7WvGdE4eX35USa+g4ow?=
- =?us-ascii?Q?qmz1ONxxmF+0Cmf9kDE+ir5Dxn5qILRMoqOipmQszou7QInv3rP6kbxkTJ60?=
- =?us-ascii?Q?yIA2RCYkuXtGsAt3BbGyN0ywU5WH+JLEYH40PWCgZpywShehe4mISwCjn+/x?=
- =?us-ascii?Q?N4LDVezGdBOeh8R1O5Uznoi+guLfGNg5MPKh+nlpi+5SRkvhZnOdt/G2kb1M?=
- =?us-ascii?Q?BAWqxtXZSwS3XgulJB8MzU3tXb/MQQ1mHNGoNsG/Ki5dcAZoac34CC44IHNL?=
- =?us-ascii?Q?v3ce7LT3RG+sQlBf+X2I+2xd0pawoSWtCtwAZF4OdO0OVQf6RKXa7Wff6pYc?=
- =?us-ascii?Q?8MLKRQvCjXPRKVIgou5ODQ2laoDBO1FG5cRVlWU1SoV7QZyeIkZ0KEphN/3r?=
- =?us-ascii?Q?pVPDMfbzTz5E5VBnJa8eirQW+ZPMWA01jxVdDphcJnvIJH6vclt8sARvf2iV?=
- =?us-ascii?Q?nNw10UCPzJ9qnQaopgExTV6O70dP4omdGMBUGbs9/da1G6zW54kgvRNJ2Pd7?=
- =?us-ascii?Q?04DWGGsZrIAm5PRujHTluINH0im9Vh++wjEpv4UFF6MKPVosTS93i+GaOVWP?=
- =?us-ascii?Q?QUEqFF6MPFkGnY+fQcm3hWugMPPEiCBAovqTwfpjQc2NFibVk2HQO68busDK?=
- =?us-ascii?Q?Ub/bZ1Fm1NQ6R54kQE/mZ+1EuTkKMDaQv90Zm21AnEqHUWhNQdJCHTaYiV2z?=
- =?us-ascii?Q?3hoZl4Lc+BmR2vOkh/H/uy6+Lvhrnhz1LoO+W28HKkC1IG+loPgwrTQ+bHyL?=
- =?us-ascii?Q?skqWnTTM3BHj68M1tQa/3lAINON+wf6t/4GyB7E9queT5g=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?rbOROwzB4wlnwZ6bn/Crp9mOcMmImVX8POukdXAhZ5Jt7OTnWDtlz3sDZJXw?=
- =?us-ascii?Q?5ty218lISgF2hkS+6AQUxYF+9Lv7L5HntvMHFCVrPOSdEFM8c6vwo8fQC8jl?=
- =?us-ascii?Q?Rh9wCN9vBpimZSyxgCv823tHdtIZErVg+ROwSum64HPSy+BFEMuyP5VoI84E?=
- =?us-ascii?Q?GhUlQS+qxkb2jYWJs2Ie5WvSNQa23dVwTaGo/NP/sRY6Kt7uBCC8ZBvK/u1g?=
- =?us-ascii?Q?X8868E44JqKnQYfaXa0Iw781te8icBFq01IxuGOcCrU/j4ehtuVYm7LHBe4Y?=
- =?us-ascii?Q?riltA8Nj6X2fE1LJFAoEsvAHcpSqrUGa/cHy9GTNe+WCgJd7aIwyWT4YNEjM?=
- =?us-ascii?Q?dX90jKiES1rX2tJPixtOsbmhZ4ENCuY9NigAFrssmp/4NdECKPrCIEAxaLSB?=
- =?us-ascii?Q?x/hIkY/IIFppIguI+o2NOJ7hoN+2BGC6IfO3ikObCHjCPiuWWjLwj8Qg6EHP?=
- =?us-ascii?Q?0tg2PINnT8+42iU66Z4nRI2sRNoVRvUnQnmhoQibaw9RbM703yogexSnoFoP?=
- =?us-ascii?Q?4PP02ZCNx1BbBScnvmHIW2fcrpHNGwORqF4F/xuKbMANRAolz9Bjb8fqSV+4?=
- =?us-ascii?Q?hY/WYeMLp4K4UTxvlipQeBKURrEv/ArO20UZPBWlRO6IGwGptSr3mRnK2cnS?=
- =?us-ascii?Q?1xdkghOZGl0EgDxC512RZEDD23Y+p6jeifHUSg4WVFWUl4v7bB6RN28px7UQ?=
- =?us-ascii?Q?hbXF3dS++Bcts4ajsFid/biVsqa52oW/kVUsH06SYPE5wNbljqt/sU/B5rKe?=
- =?us-ascii?Q?Q4vant7mjzDkQ+POudVRiiTDHrsWQWyCDS7WSATlJBGKCPYhZlwdxND5P1TW?=
- =?us-ascii?Q?xHXIeEDg+oYOhgATTcIQ3ZFzTuqIfTUDSwUoV+xNnLxMG55XM+OK46/qyTKB?=
- =?us-ascii?Q?LMpoz2GqtzWx0Btq36/6AMK0CieYSO6BXw9An35U5VxZTZd1ynPgAdUwPEOE?=
- =?us-ascii?Q?zfwnMeW0/TSye3A/J001ZC9DtWsuL0wdPpAwCLRc3mbss6kfQswtnZ5cxBB5?=
- =?us-ascii?Q?DrPhrMw7NUbH5qOmvmdc/RzWrnlUFu9eSVCZAZ+yj6QLpAqoEeyL2iH/ELRY?=
- =?us-ascii?Q?ze0vhzKGUwI08xL/gEuOncv7hKtZz4mm21EYN+pKF/3hg6ZbjT3ylgTv9+Du?=
- =?us-ascii?Q?ZSmEbawujHBJBTmijRQ6IWZDuBnHro3gbUXH0FQkmT30MwNxuo75z7s40LaW?=
- =?us-ascii?Q?i6mfvVMVwsXfHfyB6hnMkhpVpfaA4rUTlTDI/80i0Zu4eY7nzjO5lXaSUUG7?=
- =?us-ascii?Q?gi3vm1MBB2VNL3gRyfRntzCq0pi7jaTLr0/83uzNaWTTpfLlvt/9m9iAl8wv?=
- =?us-ascii?Q?KqKYDKjCXx3whF0CZgflGChZOLUYhrYtrPdM6TxervyvXJjko5bH9FK5kDbs?=
- =?us-ascii?Q?ipMqbjuNqHcNuPVFxfUt4KLqxIQKjHboKNh6qtXpVG78ROVQnEo4sBB/wT4c?=
- =?us-ascii?Q?gQ5qpyP2BYAib8HqvhlET0SZIL5vKw/m8CGe4kqIzhH2bcwqlKonLACxW8vn?=
- =?us-ascii?Q?46b9U+qz+UV7F7Pph1aS3aEHdHi7aWOEiQMSMX9p1QorCDeh215Er7Sf53Jf?=
- =?us-ascii?Q?Jh+H3RQqqS2JERAlhDVRPS14TcUpk8+npB+1WQy7?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72594de9-8642-46f3-fcec-08dd1a0f9c55
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2024 18:14:10.7452
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Hm3PmW+sxWQXQ2tFnLgPyKSTAxLwSmoTPzGy10+QsQGdpdGTaO+4wrpyCn8rQOwX
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8555
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 5/6] iommu: document missing def_domain_type return
+To: Matthew Rosato <mjrosato@linux.ibm.com>,
+ Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
+ gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+ svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
+ clegoate@redhat.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-s390@vger.kernel.org
+References: <20241209192403.107090-1-mjrosato@linux.ibm.com>
+ <20241209192403.107090-6-mjrosato@linux.ibm.com>
+ <3db6f346-0cb4-41f7-b532-91bcb0265849@linux.intel.com>
+ <0e80948b-7593-4b59-bb77-2f78f00ad2c3@linux.ibm.com>
+ <e2c80012-bf7a-4420-a478-482aac4903b8@arm.com>
+ <b6edaea3-3ccb-424b-bd84-762936b7448e@linux.ibm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <b6edaea3-3ccb-424b-bd84-762936b7448e@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Dec 04, 2024 at 04:13:39PM -0400, Jason Gunthorpe wrote:
-> Since this implements domain_alloc_paging_flags() it only needs one
-> op. Fold mock_domain_alloc_paging() into mock_domain_alloc_paging_flags().
+On 10/12/2024 10:06 pm, Matthew Rosato wrote:
+> On 12/10/24 1:42 PM, Robin Murphy wrote:
+>> On 10/12/2024 4:26 pm, Matthew Rosato wrote:
+>>> On 12/9/24 9:57 PM, Baolu Lu wrote:
+>>>> On 12/10/24 03:24, Matthew Rosato wrote:
+>>>>> In addition to IOMMU_DOMAIN_DMA, def_domain_type can also return
+>>>>> IOMMU_DOMAIN_DMA_FQ when applicable, else flush queues will never be
+>>>>> used.
+>>>>>
+>>>>> Signed-off-by: Matthew Rosato<mjrosato@linux.ibm.com>
+>>>>> ---
+>>>>>     include/linux/iommu.h | 1 +
+>>>>>     1 file changed, 1 insertion(+)
+>>>>>
+>>>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>>>>> index 05279109c732..d0da1918d2de 100644
+>>>>> --- a/include/linux/iommu.h
+>>>>> +++ b/include/linux/iommu.h
+>>>>> @@ -585,6 +585,7 @@ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+>>>>>      * @def_domain_type: device default domain type, return value:
+>>>>>      *        - IOMMU_DOMAIN_IDENTITY: must use an identity domain
+>>>>>      *        - IOMMU_DOMAIN_DMA: must use a dma domain
+>>>>> + *              - IOMMU_DOMAIN_DMA_FQ: dma domain with batch invalidation
+>>>>
+>>>> In which case must an iommu driver return IOMMU_DOMAIN_DMA_FQ?
+>>>>
+>>>> The flush queue is a policy of "when and how to synchronize the IOTLB"
+>>>> in dma-iommu.c. The iommu driver actually has no need to understand such
+>>>> policy.
+>>>
+>>> If you look ahead to the next patch where I implement def_domain_type for s390, I found that if I only ever return IOMMU_DOMAIN_DMA from ops->def_domain_type then when go through iommu_dma_init_domain() we will never call iommu_dma_init_fq() regardless of IOMMU_CAP_DEFERRED_FLUSH because of the if (domain->type == IOMMU_DOMAIN_DMA_FQ) check.  So something isn't right here.
+>>
+>> Conceptually I don't think it ever makes sense for a driver to *require* a device to use deferred invalidation. Furthermore it's been the whole design for a while now that drivers should never see nor have to acknowledge IOMMU_DOMAIN_DMA_FQ, it's now just an internal type which exists largely for the sake of making the sysfs interface work really neatly. Also beware that a major reason for overriding iommu_def_domain_type with a paging domain is for untrusted devices, so massaging the result based on iommu_dma_strict is still not necessarily appropriate anyway.
+>>
+>> It appears the real underlying issue is that, like everyone else in the same situation, you're doing def_domain_type wrong. If and when you can't support IOMMU_DOMAIN_IDENTITY, the expectation is that you make __iommu_alloc_identity_domain() fail, such that if iommu_def_domain_type is then ever set to passthrough, iommu_group_alloc_default_domain() falls back to IOMMU_DOMAIN_DMA by itself, and the user gets told they did a silly thing.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/iommufd/selftest.c | 43 ++++++++++++--------------------
->  1 file changed, 16 insertions(+), 27 deletions(-)
+> OK, I almost see where this all fits to throw out def_domain_type for this series...  but looking at __iommu_alloc_identity_domain, the preferred approach is using a static identity domain which turns __iommu_alloc_identity_domain into a nofail case once you define the identity_domain:
+>   
+> if (ops->identity_domain)
+> 	return ops->identity_domain;
+> 
+> So it seems to me to be an all-or-nothing thing, whereas what I'm trying to achieve is a device-based decision on whether the group is allowed to use that identity domain.  Which reminds me that this is ultimately why I ended up looking into def_domain_type in the first place.
 
-Applied to iommufd for-next thanks
+Well, yeah, the static domain is very much designed for the typical case 
+where it *is* unconditionally available. Simple options right now would 
+be to have two sets of ops and select them per-instance, or if it's a 
+system-wide property perhaps have non-const ops and populate/clear 
+identity_domain as appropriate, or possibly even just stick with the 
+ops->domain_alloc(IOMMU_DOMAIN_IDENTITY) path (perhaps eventually 
+evolving into a specialised domain_alloc_identity op to also become 
+per-device?). What we should not have is mechanisms like the 
+def_domain_type hack where something claims to be available, but then 
+some other thing tries to say "oh but you mustn't touch that".
 
-Jason
+Thanks,
+Robin.
+
+> If I need __iommu_alloc_identity_domain to fail, I guess what I'm looking to do boils down to something like...
+> 
+> if (ops->identity_domain) {
+> 	if (!ops->allow_identity || ops->allow_identity(dev))
+> 		return ops->identity_domain;
+> 	else
+> 		return ERR_PTR(-EOPNOTSUPP);
+> }
+> 
+> 
+> 
+> 
+> 
+> 
