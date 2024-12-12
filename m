@@ -1,22 +1,22 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 976DE259496
-	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 08:35:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A65B259496
+	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 08:42:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733992505; cv=none; b=r8kXxAYiYmBabR0brlNITjMa+XvtduFDeTcTeUnyqkxP0VmmbsLa+3CHtvmA3M9nNSVAD/EdKmLv+1znUa02sQI4SshfSo3JHsbxARinbbqHzVlQw4pNFWmzLCXVEZObkJSyc0Sv7PHSRcx+3BeoRbsD8rjYB6syziXRusaiRVc=
+	t=1733992939; cv=none; b=DUeU+ZZmcP59A838PvhUocSKXsuPiRU98ZgdWPqL02jnNVVpe6lEiXnPpHXvWNeAU1xZsgdWAxvbIIS4OEw2yz6pSUfxKzKyanOJV0D60VwYgOWeaxn/EGOc4seKnF3/k8qrA1wdSBwLhPR4QSbYrLWpH79kQzg/60Q6S04hDvI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733992505; c=relaxed/simple;
-	bh=rrBYBkbHZcn5I1aF3U8lL3NmmSK4aCBmuavcvGmQk1k=;
+	s=arc-20240116; t=1733992939; c=relaxed/simple;
+	bh=qgD99XvHAf4K0f9XtMZ9UgqBA9Ac49qZgXfEM0h8An0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n2JrAlf9ckt7U//gtOF/SOYEx7gUEwE7vBOepX1Jhq2NypDuQZLAZWnKqcUNAtwu6uSk2lXJPy4+ZnPTgV2RPF+3O7NzSLC9DEZO0l9KxZvY07JDV2igU4h4f4qRzt11khM4bcneImXDpt+2LG/hJm42otG9ui4ce1PIRRGSocs=
+	 Content-Type:Content-Disposition:In-Reply-To; b=WXsSIqcv/R/MmOKYjSwLHdhn6t6hHUxjNY4UATOQgNm8KEPRJTDbOzelGKptKf7PQAD3+9owXaWncREgGMnk3q3ow71qj4Ytjl6uKSqBD05Go+Nif0Wo3MdoUd0GQZdheH3GIi7BnjhloF6pYU75fLmFK6JOAMnOd0UwIqPiCoc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id AE9AF68D12; Thu, 12 Dec 2024 09:34:59 +0100 (CET)
-Date: Thu, 12 Dec 2024 09:34:59 +0100
+	id B516068D1C; Thu, 12 Dec 2024 09:42:07 +0100 (CET)
+Date: Thu, 12 Dec 2024 09:42:06 +0100
 From: Christoph Hellwig <hch@lst.de>
 To: Leon Romanovsky <leon@kernel.org>
 Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
@@ -40,9 +40,10 @@ Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
 	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
 	kvm@vger.kernel.org, linux-mm@kvack.org,
 	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v4 05/18] dma-mapping: Add check if IOVA can be used
-Message-ID: <20241212083459.GB9376@lst.de>
-References: <cover.1733398913.git.leon@kernel.org> <b23a1e29f00f31f31641479c90f2471aee27fac5.1733398913.git.leon@kernel.org>
+Subject: Re: [PATCH v4 06/18] dma: Provide an interface to allow allocate
+ IOVA
+Message-ID: <20241212084206.GC9376@lst.de>
+References: <cover.1733398913.git.leon@kernel.org> <e562e9a5c5107fae2345150e550e9e850dbe3c0c.1733398913.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,21 +52,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b23a1e29f00f31f31641479c90f2471aee27fac5.1733398913.git.leon@kernel.org>
+In-Reply-To: <e562e9a5c5107fae2345150e550e9e850dbe3c0c.1733398913.git.leon@kernel.org>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Thu, Dec 05, 2024 at 03:21:04PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> This patch adds a check if IOVA can be used for the specific
-> transaction.
-> 
-> In the new API a DMA mapping transaction is identified by a
-> struct dma_iova_state, which holds some recomputed information
-> for the transaction which does not change for each page being
-> mapped.
+s/dma/dma-mapping/ in the subject.
 
-While the content of the patch here looks fine, the super fine
-grained patch split look really odd and makes sensible review
-hard.  Was this a request on one of the earlier versions?
+> function call per API call used in datapath as well as a lot of boilerplate
 
+Please trim commit messages to 73 characters so that they still look good
+in git show output.
+
+> +bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state,
+> +		phys_addr_t phys, size_t size)
+> +{
+> +	memset(state, 0, sizeof(*state));
+> +	if (!use_dma_iommu(dev))
+> +		return false;
+> +	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
+> +	    iommu_deferred_attach(dev, iommu_get_domain_for_dev(dev)))
+> +		return false;
+> +	return iommu_dma_iova_alloc(dev, state, phys, size);
+> +}
+
+Now that dma_iova_try_alloc is the only caller of iommu_dma_iova_alloc,
+maybe merge the two?
+
+Otherwise looks good:
+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
