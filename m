@@ -1,225 +1,340 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75B7B158DB1
-	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 11:50:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E22C21504F
+	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 15:14:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734004251; cv=none; b=ezk0z+9FNxoavOsmUP8mlXcqlD36BGmEc7EV09B6WIbnS2gSkqTxxogBoprQ8Z55tQ1wM6nyaWzJUrXN7esgFcQOA2x1tPz4mhqVX3CbFZgq0KQJy7TFTsoVt7kN60gCqA6DMRMEX+tKHGr0SnwoOFRq+S8cCEcr8acBVlQMfe4=
+	t=1734016484; cv=none; b=hGbzHMmH2HrZBGCZhEb32d7suSy9zU0tOjvnsx6ueyfbQp4lRuvX4Xat/sAZZ5aRlMSxzC+Mm1r+vtHQBp939RemzQTvxh7R0BF+hlwpS2auz+1QhR1RodzLhdkFu4Y+Ge/3R232uJnEFWkY/oHwJXvnphiLHmk9iDKZPNHyy08=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734004251; c=relaxed/simple;
-	bh=2/8fmd5VgNpqXW8dgj2xXxLShUyEn/GWqhefyS6zZpE=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=nDBQUe4RalyejJHtsgBiAmy3oC9vZ7yQCxYDx2/uT59egaRXM4Hs/sRmqryppaVPGTqmKzu/+BCz8+bTjjTIgo5eH8nhxZZpwAj7povgejlrxCTL3q3K0136zz4PIrfeHf3oAo+ejtOaxuLgzIyrzaBrS+vIL5eqlDiEh0toqHo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BrreSJWm; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1734016484; c=relaxed/simple;
+	bh=NW3EjXMxI99F0MPe5qKjgifvxiNpAVDAn8ZDUEvi7tI=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=gw+ONJHV0qvF/3aS/XA1LGTAPN0VT8bxuOnled8YrqPSM+Vxb/Kjd/+/8Gf34eMpySAe3jfxKcb1PwFltf2H4clF2O88I2lepZZV5bSMFINg6mc6mWkrQd2p/y+uTa3J6ERbEjqsXHI6ZCRpBLojAZPXSTi4NLxoN7ejJJYoG2E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=DR1iWU+B; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BrreSJWm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1734004250; x=1765540250;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=2/8fmd5VgNpqXW8dgj2xXxLShUyEn/GWqhefyS6zZpE=;
-  b=BrreSJWm/tIG53eKo3nqAvWld83KELsHtUNXp8VpAv4NcNtxeKgdqZWG
-   vtZCvjLN05hU13iFHkOFoMv5Yhv68DqC6oxbKQ/YbHCy6NWzPOHUKk8QM
-   8koKIISAwyt43eG0D1MF+2MRbMkYUUanqdVO91wl6aGlAFaz6gqmtwRe2
-   PH7zp22qS70+amrb8LwGY3SHpS4SYgvbXhrR0IdgVsDS1ZCyOe1R4tqsa
-   aG6htvjgo4C7Tu0X83GaDpAom0dB44K9KuBkMk8eOtxPrfPwXeOo+XmEc
-   4l1uvBZi9q99KI+DX4Tn8/nZolV5NEkqnsXKdHNn/wVfweJwlrmMpkuzc
-   w==;
-X-CSE-ConnectionGUID: pOooG8hhQTGQLKQavR6GQg==
-X-CSE-MsgGUID: Vi5yVMBpQU+JhLhsxRpfHA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11282"; a="45425346"
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="45425346"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Dec 2024 03:50:50 -0800
-X-CSE-ConnectionGUID: pCHZ+7xkQRazneLp6duE3w==
-X-CSE-MsgGUID: o+ihlf8nT/ydIgQYoL/whA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,228,1728975600"; 
-   d="scan'208";a="96442071"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.241.18]) ([10.124.241.18])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Dec 2024 03:50:46 -0800
-Message-ID: <65f58697-3899-41eb-892b-44f66df97876@linux.intel.com>
-Date: Thu, 12 Dec 2024 19:50:43 +0800
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="DR1iWU+B"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BC7F5dr029041;
+	Thu, 12 Dec 2024 15:14:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=AQ+8A5ZOfR19HYBSv5e2Cv
+	+jCB6DCwx+sCu8s/pdphc=; b=DR1iWU+BpZuLZudPxqt/Wn1+GvUj+Odr8TjZPK
+	IIepyIS/IN+cBbLsR4uAKYB6Kb+IwDHQwmLN7mzsfjLbs1yPcSPEVHaCQk6Xy18P
+	gzslngHYJkG0F13hP6TFKYO8I3oLQhNusgmsjjjtobANWTmw3W2pnNYud6l4O3xb
+	ojJDSCP3ok7FmvUlFMN5MgcoF+RTN2vW8SVm9SKogaynQHvEW/dBx6yQ+JsDGhZE
+	Q0alEmnW9ttAfAFvkKvfwDhS0dLf6aTcgLf2SKGVDfc/u8T1GKAMFMTkqRohsmt8
+	lGV4zIvvG4ratKmDpNUGhCo6g84C86HbfME7vw7N7Vx0PTAQ==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43fd4xucn5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 12 Dec 2024 15:14:29 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4BCFESqp028111
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 12 Dec 2024 15:14:28 GMT
+Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Thu, 12 Dec 2024 07:14:23 -0800
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+To: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <jgg@ziepe.ca>, <jsnitsel@redhat.com>,
+        <robh@kernel.org>, <krzysztof.kozlowski@linaro.org>,
+        <quic_c_gdjako@quicinc.com>, <dmitry.baryshkov@linaro.org>
+CC: <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <quic_bibekkum@quicinc.com>
+Subject: [PATCH v18 0/5] iommu/arm-smmu: introduction of ACTLR implementation for Qualcomm SoCs
+Date: Thu, 12 Dec 2024 20:43:57 +0530
+Message-ID: <20241212151402.159102-1-quic_bibekkum@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "Peng, Chao P" <chao.p.peng@intel.com>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix kernel NULL pointer dereference in
- cache_tag_flush_range_np()
-To: Yi Liu <yi.l.liu@intel.com>, "Duan, Zhenzhong"
- <zhenzhong.duan@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20241212072419.480967-1-zhenzhong.duan@intel.com>
- <760e2a44-299a-4369-a416-ead01d109514@intel.com>
- <SJ0PR11MB6744E3960431FEB30C36DE7A923F2@SJ0PR11MB6744.namprd11.prod.outlook.com>
- <c97bdf1b-2f18-4168-8d75-052f6bff4c53@intel.com>
- <SJ0PR11MB6744EF3EB81780C1EA07FB1F923F2@SJ0PR11MB6744.namprd11.prod.outlook.com>
- <9a52713b-3a33-4e64-ad8d-8394e9504d75@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <9a52713b-3a33-4e64-ad8d-8394e9504d75@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: iRBtTqSepXp1DyagHc5wq66yAOlZSjZA
+X-Proofpoint-GUID: iRBtTqSepXp1DyagHc5wq66yAOlZSjZA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ priorityscore=1501 bulkscore=0 mlxlogscore=999 phishscore=0 adultscore=0
+ suspectscore=0 spamscore=0 mlxscore=0 impostorscore=0 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2412120110
 
-On 2024/12/12 19:00, Yi Liu wrote:
-> 
-> 
-> On 2024/12/12 18:01, Duan, Zhenzhong wrote:
->> Hi Yi,
->>
->>> -----Original Message-----
->>> From: Liu, Yi L <yi.l.liu@intel.com>
->>> Sent: Thursday, December 12, 2024 5:29 PM
->>> Subject: Re: [PATCH] iommu/vt-d: Fix kernel NULL pointer dereference in
->>> cache_tag_flush_range_np()
->>>
->>> On 2024/12/12 16:19, Duan, Zhenzhong wrote:
->>>>
->>>>
->>>>> -----Original Message-----
->>>>> From: Liu, Yi L <yi.l.liu@intel.com>
->>>>> Sent: Thursday, December 12, 2024 3:45 PM
->>>>> Subject: Re: [PATCH] iommu/vt-d: Fix kernel NULL pointer 
->>>>> dereference in
->>>>> cache_tag_flush_range_np()
->>>>>
->>>>> On 2024/12/12 15:24, Zhenzhong Duan wrote:
->>>>>> When setup mapping on an paging domain before the domain is 
->>>>>> attached to
->>>>> any
->>>>>> device, a NULL pointer dereference triggers as below:
->>>>>>
->>>>>>     BUG: kernel NULL pointer dereference, address: 0000000000000200
->>>>>>     #PF: supervisor read access in kernel mode
->>>>>>     #PF: error_code(0x0000) - not-present page
->>>>>>     RIP: 0010:cache_tag_flush_range_np+0x114/0x1f0
->>>>>>     ...
->>>>>>     Call Trace:
->>>>>>      <TASK>
->>>>>>      ? __die+0x20/0x70
->>>>>>      ? page_fault_oops+0x80/0x150
->>>>>>      ? do_user_addr_fault+0x5f/0x670
->>>>>>      ? pfn_to_dma_pte+0xca/0x280
->>>>>>      ? exc_page_fault+0x78/0x170
->>>>>>      ? asm_exc_page_fault+0x22/0x30
->>>>>>      ? cache_tag_flush_range_np+0x114/0x1f0
->>>>>>      intel_iommu_iotlb_sync_map+0x16/0x20
->>>>>>      iommu_map+0x59/0xd0
->>>>>>      batch_to_domain+0x154/0x1e0
->>>>>>      iopt_area_fill_domains+0x106/0x300
->>>>>>      iopt_map_pages+0x1bc/0x290
->>>>>>      iopt_map_user_pages+0xe8/0x1e0
->>>>>>      ? xas_load+0x9/0xb0
->>>>>>      iommufd_ioas_map+0xc9/0x1c0
->>>>>>      iommufd_fops_ioctl+0xff/0x1b0
->>>>>>      __x64_sys_ioctl+0x87/0xc0
->>>>>>      do_syscall_64+0x50/0x110
->>>>>>      entry_SYSCALL_64_after_hwframe+0x76/0x7e
->>>>>>
->>>>>> qi_batch structure is allocated when domain is attached to a 
->>>>>> device for the
->>>>>> first time, when a mapping is setup before that, qi_batch is 
->>>>>> referenced to
->>>>>> do batched flush and trigger above issue.
->>>>>>
->>>>>> Fix it by checking qi_batch pointer and bypass batched flushing if no
->>>>>> device is attached.
->>>>>>
->>>>>> Cc: stable@vger.kernel.org
->>>>>> Fixes: 705c1cdf1e73 ("iommu/vt-d: Introduce batched cache 
->>>>>> invalidation")
->>>>>> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
->>>>>> ---
->>>>>>     drivers/iommu/intel/cache.c | 2 +-
->>>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
->>>>>>
->>>>>> diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/ 
->>>>>> cache.c
->>>>>> index e5b89f728ad3..bb9dae9a7fba 100644
->>>>>> --- a/drivers/iommu/intel/cache.c
->>>>>> +++ b/drivers/iommu/intel/cache.c
->>>>>> @@ -264,7 +264,7 @@ static unsigned long
->>>>> calculate_psi_aligned_address(unsigned long start,
->>>>>>
->>>>>>     static void qi_batch_flush_descs(struct intel_iommu *iommu, 
->>>>>> struct
->>> qi_batch
->>>>> *batch)
->>>>>>     {
->>>>>> -    if (!iommu || !batch->index)
->>>>>> +    if (!iommu || !batch || !batch->index)
->>>>>
->>>>> this is the same issue in the below link. 🙂 And we should fix it by
->>>>> allocating the qi_batch for parent domains. The nested parent 
->>>>> domains is
->>>>> not going to be attached to device at all. It acts more as a 
->>>>> background
->>>>> domain, so this fix will miss the future cache flushes. It would have
->>>>> bigger problems. 🙂
->>>>>
->>>>> https://lore.kernel.org/linux-iommu/20241210130322.17175-1-
->>>>> yi.l.liu@intel.com/
->>>>
->>>> Ah, just see this😊
->>>> This patch tries to fix an issue that mapping setup on a paging 
->>>> domain before
->>>> it's attached to a device, your patch fixed an issue that nested parent
->>>> domain's qi_batch is not allocated even if nested domain is attached to
->>>> a device. I think they are different issues?
->>>
->>> Oops. I see. I think your case is allocating a hwpt based on an IOAS 
->>> that
->>> already has mappings. When the hwpt is added to it, all the mappings of
->>> this IOAS would be pushing to the hwpt. But the hwpt has not been 
->>> attached
->>> yet, so hit this issue. I remember there is a immediate_attach bool 
->>> to let
->>> iommufd_hwpt_paging_alloc() do an attach before calling
->>> iopt_table_add_domain() which pushes the IOAS mappings to domain.
->>>
->>> One possible fix is to set the immediate_attach to be true. But I 
->>> doubt if
->>> it will be agreed since it was introduced due to some gap on ARM 
->>> side. If
->>> that gap has been resolved, this behavior would go away as well.
->>>
->>> So back to this issue, with this change, the flush would be skipped. It
->>> looks ok to me to skip cache flush for map path. And we should not 
->>> expect
->>> any unmap on this domain since there is no device attached (parent 
->>> domain
->>> is an exception), hence nothing to be flushed even there is unmap in the
->>> domain's IOAS. So it appears to be a acceptable fix. @Baolu, your 
->>> opinion?
->>
->> Hold on, it looks I'm wrong on analyzing related code 
->> qi_batch_flush_descs().
->> The iommu should always be NULL in my suspected case, so
->> qi_batch_flush_descs() will return early without issue.
->>
->> I reproduced the backtrace when playing with iommufd qemu nesting, I 
->> think your
->> previous comment is correct, I misunderstood the root cause of it, 
->> it's indeed
->> due to nesting parent domain not paging domain. Please ignore this patch.
-> 
-> Great. I also had a try to allocate hwpt with an IOAS that has already got
-> a bunch of mappings, it can work as the iommu is null.
-> 
-> @Baolu, you may ignore this patch as it's already fixed.
+This patch series consist of six parts and covers the following:
 
-Okay, thank you!
+1. Provide option to re-enable context caching to retain prefetcher
+   settings during reset and runtime suspend.
+
+2. Remove cfg inside qcom_smmu structure and replace it with single
+   pointer to qcom_smmu_match_data avoiding replication of multiple
+   members from same.
+
+3. Add support for ACTLR PRR bit setup via adreno-smmu-priv interface.
+
+4. Introduce intital set of driver changes to implement ACTLR register
+   for custom prefetcher settings in Qualcomm SoCs.
+
+5. Add ACTLR data and support for qcom_smmu_500.
+
+Changes in v18 from v17_RESEND:
+ - 1/5 : No changes
+ - 2/5 : No changes - reviewed-by tags collected
+ - 3/5 : Addition of
+   pm_runtime_resume_and_get()/pm_runtime_put_autosuspend()
+   around register access of PRR related private interfaces
+   as discussed in v17_RESEND.
+ - 4/5, 5/5 : No changes - reviewed-by tags collected
+ Link to v17_RESEND:
+ https://lore.kernel.org/all/20241114160721.1527934-1-quic_bibekkum@quicinc.com/
+
+Resend of v17:
+ Addition of minor fix of the build warning reported by kernel test robot [1] by powerpc_random config [2].
+ [1]:https://lore.kernel.org/all/202411140748.6mcFdJdO-lkp@intel.com/#t
+ [2]:https://download.01.org/0day-ci/archive/20241114/202411140748.6mcFdJdO-lkp@intel.com/config
+
+Changes in v17 from v16:
+ Tags provided earlier not collected yet on patch 1/5, 3/5, 4/5, 5/5
+ due to the following revisions:
+ - 1/5 : Move the CPRE workaround out of qualcomm specific logic and gate with config
+         , update the silicon-errata.rst file
+ - 2/5 : No changes - reviewed-by tags collected
+ - 3/5 : Move the compatible check before assignment of callback as suggested.
+ - 4/5 : Add the actlr setting for *adreno variant* of MMU-500 as well.
+ - 5/5 : Due to changes in 1/5, minor refactoring had to be done before adding table.
+ Link to v16:
+ https://lore.kernel.org/all/20241008125410.3422512-1-quic_bibekkum@quicinc.com/
+
+Changes in v16 from v15:
+ - Incorporate Dimitry's suggestion on patch 4/5 to use dev_dbg instead of dev_notice.
+ - Fix kernel test robot warning [1] coming for 32bit architecture configuration.
+ - Updatingthe tags
+ [1]: https://lore.kernel.org/all/202409230343.Q8KnYl2w-lkp@intel.com/
+ Link to v15:
+ https://lore.kernel.org/all/20240920155813.3434021-1-quic_bibekkum@quicinc.com/
+
+Changes in v15 from v14:
+ - As discussed with Robin and Dmitry modify the actlr table and logic to use
+   compatible string instead of sid, mask for device matching which is
+   similar to qcom_smmu_client_of_match mechanism.
+ - Expand the comment in qcom_smmu500_reset to document reason why CPRE bit is re-enabled again
+   after arm_mmu500_reset resets the bit.
+ - Rearrange the series in order to keep prefetch setting patches in the end.
+ Link to v14:
+ https://lore.kernel.org/all/20240816174259.2056829-1-quic_bibekkum@quicinc.com/
+
+Changes in v14 from v13:
+ Patch 6/6:
+ - As discussed incorprate changes to carry out PRR implementation only for
+   targets based on MMU-500 by using compat string based SMMU version detection.
+ - Split the set_actlr interface into two separate interface namely set_prr_bit
+   and set_prr_addr to set the prr enable bit and prr page address resepectively.
+ Patch 3/6:
+  - Fix a bug in gfx actlr_config which is uncovered while testing the gfx actlr setting in sc7280
+    during PRR experiment which prevented clients on certain sids of gfx smmmu to be skipped during
+    setting up of the ACTLR values : Fix involves swapping the arguments passed in smr_is_subset to make
+     device smr <from devicetree> a subset of actlr_config table entries < defined in the driver>.
+ Patch 4/6, 5/6:
+  - Sort the actlr table values in increasing order of the SIDs.
+ Link to v13:
+ https://lore.kernel.org/all/20240628140435.1652374-1-quic_bibekkum@quicinc.com/
+
+Changes in v13 from v12:
+ - Fix the compilation issues reported by kernel test robot [1].
+ [1]: https://lore.kernel.org/all/202406281241.xEX0TWjt-lkp@intel.com/#t
+ Link to v12:
+ https://lore.kernel.org/all/20240626143020.3682243-1-quic_bibekkum@quicinc.com/
+
+Changes in v12 from v11:
+ Changes to incorporate suggestion from Rob:
+ - Fix the set and reset logic for prr bit as pointed out in v11-6/6.
+ - Rename set_actlr_bit function name to set_prr.
+ - Add extension for PRR name as Partially-Resident-Region in comments
+   for set_prr function.
+ - Add few missing sids for sc7280 in patch-5/6.
+ Link to v11:
+ https://lore.kernel.org/all/20240605121713.3596499-1-quic_bibekkum@quicinc.com/
+
+Changes in v11 from v10:
+ - Include a new patch 6/6 to add support for ACTLR PRR bit
+   through adreno-smmu-priv interface as suggested by Rob and Dmitry.
+ Link to v10:
+ https://lore.kernel.org/all/20240524131800.2288259-1-quic_bibekkum@quicinc.com/
+
+Changes in v10 from v9:
+ - Added reviewed-by tags 1/5,2/5,3/5.
+ Changes incorporated:
+ - Remove redundant PRR bit setting from gfx actlr table(patch 4/5,5/5)
+   as this bit needs special handling in the gfx driver along with
+   the associated register settings.
+ Link to discussion on PRR bit:
+ https://lore.kernel.org/all/f2222714-1e00-424e-946d-c314d55541b8@quicinc.com/
+ Link to v9:
+ https://lore.kernel.org/all/20240123144543.9405-1-quic_bibekkum@quicinc.com/
+
+Changes in v9 from v8:
+ Changes to incorporate suggestions from Konrad as follows:
+ - Re-wrap struct members of actlr_variant in patch 4/5,5/5
+   in a cleaner way.
+ - Move actlr_config members to the header.
+ Link to v8:
+ https://lore.kernel.org/all/20240116150411.23876-1-quic_bibekkum@quicinc.com/
+
+Changes in v8 from v7:
+ - Added reviewed-by tags on patch 1/5, 2/5.
+ Changes to incorporate suggestions from Pavan and Konrad:
+ - Remove non necessary extra lines.
+ - Use num_smmu and num_actlrcfg to store the array size and use the
+   same to traverse the table and save on sentinel space along with
+   indentation levels.
+ - Refactor blocks containing qcom_smmu_set_actlr to remove block
+   repetition in patch 3/5.
+ - Change copyright year from 2023 to 2022-2023 in patch 3/5.
+ - Modify qcom_smmu_match_data.actlrvar and actlr_variant.actlrcfg to
+   const pointer to a const resource.
+ - use C99 designated initializers and put the address first.
+ Link to v7:
+ https://lore.kernel.org/all/20240109114220.30243-1-quic_bibekkum@quicinc.com/
+
+Changes in v7 from v6:
+ Changes to incorporate suggestions from Dmitry as follows:
+ - Use io_start address instead of compatible string to identify the
+   correct instance by comparing with smmu start address and check for
+   which smmu the corresponding actlr table is to be picked.
+Link to v6:
+https://lore.kernel.org/all/20231220133808.5654-1-quic_bibekkum@quicinc.com/
+
+Changes in v6 from v5:
+ - Remove extra Suggested-by tags.
+ - Add return check for arm_mmu500_reset in 1/5 as discussed.
+Link to v5:
+https://lore.kernel.org/all/20231219135947.1623-1-quic_bibekkum@quicinc.com/
+
+Changes in v5 from v4:
+ New addition:
+ - Modify copyright year in arm-smmu-qcom.h to 2023 from 2022.
+ Changes to incorporate suggestions from Dmitry as follows:
+ - Modify the defines for prefetch in (foo << bar) format
+   as suggested.(FIELD_PREP could not be used in defines
+   is not inside any block/function)
+ Changes to incorporate suggestions from Konrad as follows:
+ - Shift context caching enablement patch as 1/5 instead of 5/5 to
+   be picked up as independent patch.
+ - Fix the codestyle to orient variables in reverse xmas tree format
+   for patch 1/5.
+ - Fix variable name in patch 1/5 as suggested.
+ Link to v4:
+https://lore.kernel.org/all/20231215101827.30549-1-quic_bibekkum@quicinc.com/
+
+Changes in v4 from v3:
+ New addition:
+ - Remove actlrcfg_size and use NULL end element instead to traverse
+   the actlr table, as this would be a cleaner approach by removing
+   redundancy of actlrcfg_size.
+ - Renaming of actlr set function to arm_smmu_qcom based proprietary
+   convention.
+ - break from loop once sid is found and ACTLR value is initialized
+   in qcom_smmu_set_actlr.
+ - Modify the GFX prefetch value separating into 2 sensible defines.
+ - Modify comments for prefetch defines as per SMMU-500 TRM.
+ Changes to incorporate suggestions from Konrad as follows:
+ - Use Reverse-Christmas-tree sorting wherever applicable.
+ - Pass arguments directly to arm_smmu_set_actlr instead of creating
+   duplicate variables.
+ - Use array indexing instead of direct pointer addressed by new
+   addition of eliminating actlrcfg_size.
+ - Switch the HEX value's case from upper to lower case in SC7280
+   actlrcfg table.
+ Changes to incorporate suggestions from Dmitry as follows:
+ - Separate changes not related to ACTLR support to different commit
+   with patch 5/5.
+ - Using pointer to struct for arguments in smr_is_subset().
+ Changes to incorporate suggestions from Bjorn as follows:
+ - fix the commit message for patch 2/5 to properly document the
+   value space to avoid confusion.
+ Fixed build issues reported by kernel test robot [1] for
+ arm64-allyesconfig [2].
+ [1]: https://lore.kernel.org/all/202312011750.Pwca3TWE-lkp@intel.com/
+ [2]:
+https://download.01.org/0day-ci/archive/20231201/202312011750.Pwca3TWE-lkp@intel.com/config
+ Link to v3:
+https://lore.kernel.org/all/20231127145412.3981-1-quic_bibekkum@quicinc.com/
+
+Changes in v3 from v2:
+ New addition:
+ - Include patch 3/4 for adding ACTLR support and data for SC7280.
+ - Add driver changes for actlr support in gpu smmu.
+ - Add target wise actlr data and implementation ops for gpu smmu.
+ Changes to incorporate suggestions from Robin as follows:
+ - Match the ACTLR values with individual corresponding SID instead
+   of assuming that any SMR will be programmed to match a superset of
+   the data.
+ - Instead of replicating each elements from qcom_smmu_match_data to
+   qcom_smmu structre during smmu device creation, replace the
+   replicated members with qcom_smmu_match_data structure inside
+   qcom_smmu structre and handle the dereference in places that
+   requires them.
+ Changes to incorporate suggestions from Dmitry and Konrad as follows:
+ - Maintain actlr table inside a single structure instead of
+   nested structure.
+ - Rename prefetch defines to more appropriately describe their
+   behavior.
+ - Remove SM8550 specific implementation ops and roll back to default
+   qcom_smmu_500_impl implementation ops.
+ - Add back the removed comments which are NAK.
+ - Fix commit description for patch 4/4.
+ Link to v2:
+https://lore.kernel.org/all/20231114135654.30475-1-quic_bibekkum@quicinc.com/
+
+Changes in v2 from v1:
+ - Incorporated suggestions on v1 from Dmitry,Konrad,Pratyush.
+ - Added defines for ACTLR values.
+ - Linked sm8550 implementation structure to corresponding
+   compatible string.
+ - Repackaged actlr value set implementation to separate function.
+ - Fixed indentation errors.
+ - Link to v1:
+https://lore.kernel.org/all/20231103215124.1095-1-quic_bibekkum@quicinc.com/
+
+Changes in v1 from RFC:
+ - Incorporated suggestion form Robin on RFC
+ - Moved the actlr data table into driver, instead of maintaining
+   it inside soc specific DT and piggybacking on exisiting iommus
+   property (iommu = <SID, MASK, ACTLR>) to set this value during
+   smmu probe.
+ - Link to RFC:
+https://lore.kernel.org/all/a01e7e60-6ead-4a9e-ba90-22a8a6bbd03f@quicinc.com/
+
+Bibek Kumar Patro (5):
+  iommu/arm-smmu: re-enable context caching in smmu reset operation
+  iommu/arm-smmu: refactor qcom_smmu structure to include single pointer
+  iommu/arm-smmu: add support for PRR bit setup
+  iommu/arm-smmu: introduction of ACTLR for custom prefetcher settings
+  iommu/arm-smmu: add ACTLR data and support for qcom_smmu_500
+
+ Documentation/arch/arm64/silicon-errata.rst   |   3 +-
+ drivers/iommu/Kconfig                         |  12 ++
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c    |   5 +-
+ .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  |   2 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 120 +++++++++++++++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   3 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.h         |   2 +
+ include/linux/adreno-smmu-priv.h              |  14 ++
+ 8 files changed, 155 insertions(+), 6 deletions(-)
+
+--
+2.34.1
+
