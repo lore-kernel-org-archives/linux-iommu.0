@@ -1,55 +1,55 @@
 Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DB68235C4D
-	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 18:05:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B91A2368F2
+	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 18:05:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734026737; cv=none; b=k1G3IHd51SYsuwmDiQvfRFLpHXAKkSdKGErb9MYF4KHCJ/pWiXgDG96JK6hBRzARqDI2hZAr7U56ItWRsg4RwCsxF5ZH1M5S9PrQk6kmIRDEtH4Wgo4JKI/QvxwoeCDxQUVY7+GDniA9BJRI0DKejbygZ8TxJilk+091TbfeWeI=
+	t=1734026739; cv=none; b=un9DZbn3WsXu3230je/F4y8LSer8OomDiUoAAXE/EOyp2VAzfq+O0cXIFn0V3thi+iRvfZv43WHTSfUC5+2LpStLtQpjtpIY5wzbkU2nkYeezPRee7ieqUwhInZ0gsDL8VIfBbw6cMIrhXt1dF5M0QHwsaDyugtkLxbzLSYRGkk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734026737; c=relaxed/simple;
-	bh=QIyUf9RC5tml3wUiGzlbTmMFJHl3q8rlahMnK3AQH94=;
+	s=arc-20240116; t=1734026739; c=relaxed/simple;
+	bh=Z2UHwzkM46eNyOELnlSu5KplZV6dyg6FmiiX5LeoOuQ=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=hwhYUHb2J6UBSRLsUViS35aDjbDVuKvejgAlLWJLoyvxd24GFQH7wBuMxtYQ7nff5HKHDmc70ZlpPnnFxIWzKCrXeDSOkwAZ5Frhw3GKVyrb0u4Lk2RPKeOt5NExEA1qeZX8OBlHoVD0bWXRG0hs8VSxHzFFdqm1DWE9DjMW2c4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=jOmJzIjA; arc=none smtp.client-ip=209.85.128.74
+	 To:Cc:Content-Type; b=rVObOU9fjidHbhD37TcPBx5MqxskpzQVLxW54Rvqaa8pbNAJm4cDjx81GbU6fBxGQDKYnamatEsWGWvrRm7jbM3AOvCr2s8Y8gEedKVYHrFJRgwaaiz+eLyuv9jfLvElYfooY8kuvjmaFTM6x9UZmpXBk4lrmLXTcxKyOcwj1lY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oWt8sXhN; arc=none smtp.client-ip=209.85.128.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jOmJzIjA"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-4361c040ba8so5533305e9.1
-        for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 10:05:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oWt8sXhN"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-4361f371908so8309485e9.0
+        for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 10:05:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1734026734; x=1734631534; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1734026736; x=1734631536; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jZNgwB6X8v5j4gzxppU/t/fZqzqcDrO7o9YkYVnh2wA=;
-        b=jOmJzIjAioUyAdipNuSj1h3lLTlNXql85APo94ae0pAOLoUspnKauR/+x7JcrOwHhb
-         b3YQiUwbz1hvGqrc8QHtS5sMfWg7rhOu/Bd1WYwfZNlnhfiOBcY9wrVaqTDHlSs8RE+B
-         IYPTbyRmETpUqXEQp8hytdfrvRa3I9LbbkLwjluuZkLJ/A34G59ZfjbrPlUztb9XQw9J
-         RbFBxJUjq5AtDTiOPIhE0rfTgFiAOfCWJdJgTdOAusGRL+PxOfdoKuVgFusvbUoM8P7A
-         6uoGNG63eDlPianbjHP2DkUR9ZstU0n6rXOB95TbNA1DAPAEKXo4qPm9bKRYPRb8FxQ8
-         +i7w==
+        bh=YdMuO2gtmeL3RMqWaakXFL6M4DlcZZq40B5WqzcNta4=;
+        b=oWt8sXhN6sh/am+PHKKo8QiiibU28Vnpibnbtu5AUf6C7NM2DzMkSEsC36MTDe0NLB
+         cyHrZtIFsWOqj4zgOSxMRhxyNtBuiZ6nqvwZu1WHJFyhxIzQg57tji1desRdWjVNHcpV
+         qq4ZAVbEo8u0a6kvFzM95kyM47vQliAzkCDVoy1QUcffpsfBbAh0ao3F4nCiqDaIB2Xu
+         2OjR4gJkYRDu8NMCwoczJhO+hLVufr72u960yhpNBFo8Gn5jtFDuwFKNWjd8AvAAbQyn
+         YgkEyyF49l1yEQQVMaXLtdAph9MkLNlRb5bKGVgnwAXrNCgfG1J5HlYcj1VtYc+NXK0H
+         TLiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734026734; x=1734631534;
+        d=1e100.net; s=20230601; t=1734026736; x=1734631536;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jZNgwB6X8v5j4gzxppU/t/fZqzqcDrO7o9YkYVnh2wA=;
-        b=ghscIQpMidd1HYn4sslmwmAF3u53BWCD0tirEn2t9TD2Ry7ZHILLeERW+cCVSZFPSc
-         smkIKEPnXk5gNTyKjiVOsSsXAAq4fdCHKuejRedg+ONiFov/NvFaiT2I20MjHNSq+qtl
-         +WKP+B0zUtsYqFY85VcbAS+JhV123j4ejPai/PhMbvpW1+L/Ki+LZPy9mH24YzPPM4Rl
-         Mle/EGYPLHYrxk+1ZWQR+cZyx0WTN4So8My1Sbtd2LfjPC6FsYsWTsTGF43TzFRj5+DQ
-         WEiGW4lbV9FhKvNs25y6IwbBY/njjAp4Jponx4/VzawQxVda9EL471FubQrF34QjDe9S
-         Iwiw==
-X-Gm-Message-State: AOJu0YwRi5hP8eyNp4F0NdM0rnkYfvIiqzYFbEJSQIvlB+bkrHuOOaWq
-	s61cUrys+XY73hYrLxGHW15lzU5wVyzvWRdOXQyzqKgLVLeHloMyo1V/qaHbRWqXdEOXtyma2z+
-	XOJQKrkxZtw211/FbFjhFMusA3z26yzRksKrwctgv93HTGUL+ok+db8UwLyeZwq7NwyxCJNBGIt
-	cc8YQRSt4mZWAnug6U9KBYuEPsIazausRDLW+CpK37mQ==
-X-Google-Smtp-Source: AGHT+IFU5A2xYG/aIaT/yYE5/fNPeYIneyer4lpXo+usrcm3VGdKeb0NPMFh6orkypYDcbhz8IOsQoPR+yxjUA==
-X-Received: from wmmu14.prod.google.com ([2002:a05:600c:ce:b0:434:f0a3:7876])
+        bh=YdMuO2gtmeL3RMqWaakXFL6M4DlcZZq40B5WqzcNta4=;
+        b=pZsNx1dEyrl32Pg7t5TZZkZY8tx8Lk6abWkQJ9zEl0rN3PFk1ZGt6qNb51LBVHE41v
+         CvqJqR337BLlKUBzzSk1CQGN3nrARN57OyyI7RFGJvIrFvcfnPmwZEENncFAfocTlsTp
+         h4lEumnYwDblQXyner9DBY3e+6Ijyn+ZwlsFcHStliAIQpGLk7xwPabyb/ZhHmt1WEGu
+         3Z0fJDgR0IiZ/pdvGWR2UxgRwOyPH0YMegGDk2si0Qse29evDJTILDLOhLsRdlDezw8Y
+         tlM146/O5gBPRax+hphZra+LmnKuRbE35fuO9WcyVXnbhuLVf4SxEoJDaafiixQfNfPv
+         WZXA==
+X-Gm-Message-State: AOJu0YyfHDnB3ZaSCyDxSU5ENelBUcB066K7uS9+nFmgZ/mWhzqaYMiS
+	wSjOu6F0JlmkoI9Yj4yvBzLl2F1yH+MelZbG4y723/Ad9+z9FcbueZkIeD/xAchr2V9Ry0uC1b/
+	B+AizCtNX/L7zmEGb0nhQL3B8lIFQoA3M2qCutGQllSa+yk0N8EIfnDmh/bZGw9h6o5DWKjCwtA
+	7/F/4NmMFMY2+w+yDZaVukbd79h2xrU/U65LsXFJwkwg==
+X-Google-Smtp-Source: AGHT+IFhLgvU2Rm+DNubCv6JNasQpuX6sd+/DiydVh4HkRumx8mqOJN1mpnAimZm+KH9fDL3y3s/kc2a4/LuEQ==
+X-Received: from wmso20.prod.google.com ([2002:a05:600c:5114:b0:436:1abf:b8fe])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:3593:b0:434:f297:8e85 with SMTP id 5b1f17b1804b1-4361c3aaeeemr77507485e9.10.1734026733780;
- Thu, 12 Dec 2024 10:05:33 -0800 (PST)
-Date: Thu, 12 Dec 2024 18:03:48 +0000
+ 2002:a05:600c:5028:b0:435:172:5052 with SMTP id 5b1f17b1804b1-4362282768bmr38379225e9.1.1734026735825;
+ Thu, 12 Dec 2024 10:05:35 -0800 (PST)
+Date: Thu, 12 Dec 2024 18:03:49 +0000
 In-Reply-To: <20241212180423.1578358-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20241212180423.1578358-1-smostafa@google.com>
 X-Mailer: git-send-email 2.47.1.613.gc27f4b7a9f-goog
-Message-ID: <20241212180423.1578358-25-smostafa@google.com>
-Subject: [RFC PATCH v2 24/58] KVM: arm64: iommu: Support DABT for IOMMU
+Message-ID: <20241212180423.1578358-26-smostafa@google.com>
+Subject: [RFC PATCH v2 25/58] KVM: arm64: iommu: Add SMMUv3 driver
 From: Mostafa Saleh <smostafa@google.com>
 To: iommu@lists.linux.dev, kvmarm@lists.linux.dev, 
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
@@ -73,128 +73,106 @@ Cc: catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
 	Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Soon, SMMUv3 driver would be added and it would need to emulate
-access to some of its MMIO space.
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-Add a handler for DABTs for IOMMU drivers to be able to do so.
+Add the skeleton for an Arm SMMUv3 driver at EL2.
 
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
 ---
- arch/arm64/kvm/hyp/include/nvhe/iommu.h |  2 ++
- arch/arm64/kvm/hyp/nvhe/iommu/iommu.c   | 17 +++++++++++++++++
- arch/arm64/kvm/hyp/nvhe/mem_protect.c   | 19 +++++++++++++++++--
- 3 files changed, 36 insertions(+), 2 deletions(-)
+ arch/arm64/kvm/hyp/nvhe/Makefile            |  2 ++
+ arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c | 22 +++++++++++++++++++++
+ drivers/iommu/Kconfig                       |  9 +++++++++
+ include/kvm/arm_smmu_v3.h                   | 18 +++++++++++++++++
+ 4 files changed, 51 insertions(+)
+ create mode 100644 arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c
+ create mode 100644 include/kvm/arm_smmu_v3.h
 
-diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-index 06d12b35fa3e..cff75d67d807 100644
---- a/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-+++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-@@ -21,6 +21,7 @@ size_t kvm_iommu_map_pages(pkvm_handle_t domain_id,
- size_t kvm_iommu_unmap_pages(pkvm_handle_t domain_id, unsigned long iova,
- 			     size_t pgsize, size_t pgcount);
- phys_addr_t kvm_iommu_iova_to_phys(pkvm_handle_t domain_id, unsigned long iova);
-+bool kvm_iommu_host_dabt_handler(struct kvm_cpu_context *host_ctxt, u64 esr, u64 addr);
+diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/Makefile
+index d846962e7246..edfd8a11ac90 100644
+--- a/arch/arm64/kvm/hyp/nvhe/Makefile
++++ b/arch/arm64/kvm/hyp/nvhe/Makefile
+@@ -16,6 +16,8 @@ hyp-obj-$(CONFIG_TRACING) += clock.o events.o trace.o
+ hyp-obj-$(CONFIG_MODULES) += modules.o
+ hyp-obj-y += $(lib-objs)
  
- /* Flags for memory allocation for IOMMU drivers */
- #define IOMMU_PAGE_NOCACHE				BIT(0)
-@@ -49,6 +50,7 @@ struct kvm_iommu_ops {
- 	phys_addr_t (*iova_to_phys)(struct kvm_hyp_iommu_domain *domain, unsigned long iova);
- 	void (*iotlb_sync)(struct kvm_hyp_iommu_domain *domain,
- 			   struct iommu_iotlb_gather *gather);
-+	bool (*dabt_handler)(struct kvm_cpu_context *host_ctxt, u64 esr, u64 addr);
- };
++hyp-obj-$(CONFIG_ARM_SMMU_V3_PKVM) += iommu/arm-smmu-v3.o
++
+ $(obj)/hyp.lds: $(src)/hyp.lds.S FORCE
+ 	$(call if_changed_dep,cpp_lds_S)
  
- int kvm_iommu_init(void);
-diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-index fbab335d3490..e45dadd0c4aa 100644
---- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-+++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-@@ -4,6 +4,10 @@
-  *
-  * Copyright (C) 2022 Linaro Ltd.
-  */
+diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c b/arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c
+new file mode 100644
+index 000000000000..d2a570c9f3ec
+--- /dev/null
++++ b/arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * pKVM hyp driver for the Arm SMMUv3
++ *
++ * Copyright (C) 2022 Linaro Ltd.
++ */
 +#include <asm/kvm_hyp.h>
-+
-+#include <hyp/adjust_pc.h>
-+
- #include <kvm/iommu.h>
- 
- #include <nvhe/iommu.h>
-@@ -375,6 +379,19 @@ phys_addr_t kvm_iommu_iova_to_phys(pkvm_handle_t domain_id, unsigned long iova)
- 	return phys;
- }
- 
-+bool kvm_iommu_host_dabt_handler(struct kvm_cpu_context *host_ctxt, u64 esr, u64 addr)
-+{
-+	bool ret = false;
-+
-+	if (kvm_iommu_ops && kvm_iommu_ops->dabt_handler)
-+		ret = kvm_iommu_ops->dabt_handler(host_ctxt, esr, addr);
-+
-+	if (ret)
-+		kvm_skip_host_instr();
-+
-+	return ret;
-+}
-+
- static int iommu_power_on(struct kvm_power_domain *pd)
- {
- 	struct kvm_hyp_iommu *iommu = container_of(pd, struct kvm_hyp_iommu,
-diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-index a428ad9ca871..0fae651107db 100644
---- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-+++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-@@ -16,6 +16,7 @@
- #include <hyp/fault.h>
- 
- #include <nvhe/gfp.h>
++#include <kvm/arm_smmu_v3.h>
 +#include <nvhe/iommu.h>
- #include <nvhe/memory.h>
- #include <nvhe/mem_protect.h>
- #include <nvhe/mm.h>
-@@ -799,11 +800,16 @@ static int handle_host_perm_fault(struct kvm_cpu_context *host_ctxt, u64 esr, u6
- 	return handled ? 0 : -EPERM;
- }
- 
-+static bool is_dabt(u64 esr)
++
++size_t __ro_after_init kvm_hyp_arm_smmu_v3_count;
++struct hyp_arm_smmu_v3_device *kvm_hyp_arm_smmu_v3_smmus;
++
++static int smmu_init(void)
 +{
-+	return ESR_ELx_EC(esr) == ESR_ELx_EC_DABT_LOW;
++	return -ENOSYS;
 +}
 +
- void handle_host_mem_abort(struct kvm_cpu_context *host_ctxt)
- {
- 	struct kvm_vcpu_fault_info fault;
- 	u64 esr, addr;
--	int ret = 0;
-+	int ret = -EPERM;
++/* Shared with the kernel driver in EL1 */
++struct kvm_iommu_ops smmu_ops = {
++	.init				= smmu_init,
++};
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index b3aa1f5d5321..fea5d6a8b90b 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -437,6 +437,15 @@ config TEGRA241_CMDQV
+ 	  CMDQ-V extension.
+ endif
  
- 	esr = read_sysreg_el2(SYS_ESR);
- 	if (!__get_fault_info(esr, &fault)) {
-@@ -817,7 +823,15 @@ void handle_host_mem_abort(struct kvm_cpu_context *host_ctxt)
- 	}
- 
- 	addr = (fault.hpfar_el2 & HPFAR_MASK) << 8;
--	ret = host_stage2_idmap(addr);
-+	addr |= fault.far_el2 & FAR_MASK;
++config ARM_SMMU_V3_PKVM
++	bool "ARM SMMUv3 support for protected Virtual Machines"
++	depends on KVM && ARM64
++	help
++	  Enable a SMMUv3 driver in the KVM hypervisor, to protect VMs against
++	  memory accesses from devices owned by the host.
 +
-+	if (is_dabt(esr) && !addr_is_memory(addr) &&
-+	    kvm_iommu_host_dabt_handler(host_ctxt, esr, addr))
-+		goto return_to_host;
++	  Say Y here if you intend to enable KVM in protected mode.
 +
-+	/* If not handled, attempt to map the page. */
-+	if (ret == -EPERM)
-+		ret = host_stage2_idmap(addr);
- 
- 	if ((esr & ESR_ELx_FSC_TYPE) == ESR_ELx_FSC_PERM)
- 		ret = handle_host_perm_fault(host_ctxt, esr, addr);
-@@ -827,6 +841,7 @@ void handle_host_mem_abort(struct kvm_cpu_context *host_ctxt)
- 	else
- 		BUG_ON(ret && ret != -EAGAIN);
- 
-+return_to_host:
- 	trace_host_mem_abort(esr, addr);
- }
- 
+ config S390_IOMMU
+ 	def_bool y if S390 && PCI
+ 	depends on S390 && PCI
+diff --git a/include/kvm/arm_smmu_v3.h b/include/kvm/arm_smmu_v3.h
+new file mode 100644
+index 000000000000..521028b3ff71
+--- /dev/null
++++ b/include/kvm/arm_smmu_v3.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __KVM_ARM_SMMU_V3_H
++#define __KVM_ARM_SMMU_V3_H
++
++#include <asm/kvm_asm.h>
++#include <kvm/iommu.h>
++
++struct hyp_arm_smmu_v3_device {
++	struct kvm_hyp_iommu	iommu;
++};
++
++extern size_t kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_count);
++#define kvm_hyp_arm_smmu_v3_count kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_count)
++
++extern struct hyp_arm_smmu_v3_device *kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_smmus);
++#define kvm_hyp_arm_smmu_v3_smmus kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_smmus)
++
++#endif /* __KVM_ARM_SMMU_V3_H */
 -- 
 2.47.0.338.g60cca15819-goog
 
