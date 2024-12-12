@@ -1,22 +1,22 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A65B259496
-	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 08:42:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C997320DD48
+	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 08:43:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733992939; cv=none; b=DUeU+ZZmcP59A838PvhUocSKXsuPiRU98ZgdWPqL02jnNVVpe6lEiXnPpHXvWNeAU1xZsgdWAxvbIIS4OEw2yz6pSUfxKzKyanOJV0D60VwYgOWeaxn/EGOc4seKnF3/k8qrA1wdSBwLhPR4QSbYrLWpH79kQzg/60Q6S04hDvI=
+	t=1733993018; cv=none; b=cYHyhslDn6aiV8hDZfBC+l0LBrhj69JtVyfjA8T/3VWwnKO4iaj/IQbs/bY+SiT1sZpywA+4OifmVQJHWxyIu0X5KIAvrvuDuUy/7P6M0SDpzxam0G92sbKqT1fdQ/quSqpUeYo5wc/ZzlXA6NH8tatN3VINCOOHh9u8XJ4U28k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733992939; c=relaxed/simple;
-	bh=qgD99XvHAf4K0f9XtMZ9UgqBA9Ac49qZgXfEM0h8An0=;
+	s=arc-20240116; t=1733993018; c=relaxed/simple;
+	bh=8RFl2CwqYMkojD/dZ9pLtIVUQrwduMq474AnTdZJzds=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WXsSIqcv/R/MmOKYjSwLHdhn6t6hHUxjNY4UATOQgNm8KEPRJTDbOzelGKptKf7PQAD3+9owXaWncREgGMnk3q3ow71qj4Ytjl6uKSqBD05Go+Nif0Wo3MdoUd0GQZdheH3GIi7BnjhloF6pYU75fLmFK6JOAMnOd0UwIqPiCoc=
+	 Content-Type:Content-Disposition:In-Reply-To; b=hVYKmuu2p2edI3TofLY+Y4+2VNKHm4GGW578+b96ujnIdAA0U7uU6osWqmoa5b3n2fha8ePvjzsCjR3f8zrG8+fvPoNK5TTFBndCWaljZ7O29hhzXyfRz0prtQnkJxaWX9MBoJbw0Jx+XDMQvNi6soyqEep2B8+nidItvE++sOo=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id B516068D1C; Thu, 12 Dec 2024 09:42:07 +0100 (CET)
-Date: Thu, 12 Dec 2024 09:42:06 +0100
+	id EBD0A68D17; Thu, 12 Dec 2024 09:43:32 +0100 (CET)
+Date: Thu, 12 Dec 2024 09:43:32 +0100
 From: Christoph Hellwig <hch@lst.de>
 To: Leon Romanovsky <leon@kernel.org>
 Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
@@ -40,10 +40,9 @@ Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
 	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
 	kvm@vger.kernel.org, linux-mm@kvack.org,
 	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v4 06/18] dma: Provide an interface to allow allocate
- IOVA
-Message-ID: <20241212084206.GC9376@lst.de>
-References: <cover.1733398913.git.leon@kernel.org> <e562e9a5c5107fae2345150e550e9e850dbe3c0c.1733398913.git.leon@kernel.org>
+Subject: Re: [PATCH v4 08/18] dma-mapping: Implement link/unlink ranges API
+Message-ID: <20241212084332.GD9376@lst.de>
+References: <cover.1733398913.git.leon@kernel.org> <50de680233f2947594471d30976565c209bf7864.1733398913.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,30 +51,12 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e562e9a5c5107fae2345150e550e9e850dbe3c0c.1733398913.git.leon@kernel.org>
+In-Reply-To: <50de680233f2947594471d30976565c209bf7864.1733398913.git.leon@kernel.org>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-s/dma/dma-mapping/ in the subject.
+> +static inline int dma_iova_sync(struct device *dev, struct dma_iova_state *state,
 
-> function call per API call used in datapath as well as a lot of boilerplate
-
-Please trim commit messages to 73 characters so that they still look good
-in git show output.
-
-> +bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state,
-> +		phys_addr_t phys, size_t size)
-> +{
-> +	memset(state, 0, sizeof(*state));
-> +	if (!use_dma_iommu(dev))
-> +		return false;
-> +	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
-> +	    iommu_deferred_attach(dev, iommu_get_domain_for_dev(dev)))
-> +		return false;
-> +	return iommu_dma_iova_alloc(dev, state, phys, size);
-> +}
-
-Now that dma_iova_try_alloc is the only caller of iommu_dma_iova_alloc,
-maybe merge the two?
+Please avoid the overly long line here.
 
 Otherwise looks good:
 
