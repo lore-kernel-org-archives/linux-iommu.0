@@ -1,31 +1,32 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 906F4209F41
-	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 07:14:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8C9A1662E7
+	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 07:18:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733987666; cv=none; b=TU1x132z9cGYcujwoHVBPSZCGXNciL/WwR+/guDKu7p7YDLaYPCynLZWQf2KdImM3snS5X9S+mTAUha1Inilqr8VYBqaThmwQiZ+X8+as3mlzbK7AQ97Ja0ITrT2DmtWrNZjyGfu9PgF6ya6jvNu4Aaw9y+xq+caLTShNKd7AiQ=
+	t=1733987935; cv=none; b=MYbJfMpvmqgSSdE5Qiy2Cz+ex2ySKTC2i0cUObnojEEpABhkt+/Yo7EkynRz60ABHv8fVBOI1i+eaIOgf4WGIdzoH9WpZbL1/QfLztV/pMxsAY2robegkwG1QNE0TEj9Z7b7MgMutpFZLN3+JeFxdwVAdIu5Q9zTXPj8r+zux8I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733987666; c=relaxed/simple;
-	bh=hl0b4LicWQS3tXqT83aGHU3v7Vt+LOCxtkD/uO/X+uY=;
+	s=arc-20240116; t=1733987935; c=relaxed/simple;
+	bh=ureIN7gk8qiX/gfigB7a9KWHcqcUaVkWXDUpl1YVAqY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GqW8qNxTCOFB0HnH0j2rIYzLMR+nYmQ+K5RdjTKC+fBz56EcU2RjuuUWTpPeIGPCSI0sv/iZHc+fXZL8sEwm7iVKeYIW52dEHmvOY4jwtt1xPk/8OEJY/9hm6S+3ZKe5dWrxdKgCpN9WZDyA3p6VjLcmEvuPaB2+r/mYT4jrbn0=
+	 Content-Type:Content-Disposition:In-Reply-To; b=PBb1ZJKCOjvTZY7jMUtGaoboIKn+8VzNfr4K6lXh7nlAyCnWBumXebOwY2s9aWU8LBhseki7aGDSguABgngHKm9byYLADEkhvzaAAdM6y45y7lhgfR5MV4/oHoHRwL7KiFd9L2oaqAWnr11JeypZXW8VxJetOzCnrcWuPkgRgkY=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id F177068D07; Thu, 12 Dec 2024 08:14:18 +0100 (CET)
-Date: Thu, 12 Dec 2024 08:14:18 +0100
+	id 21C0068D07; Thu, 12 Dec 2024 08:18:49 +0100 (CET)
+Date: Thu, 12 Dec 2024 08:18:48 +0100
 From: Christoph Hellwig <hch@lst.de>
 To: Baochen Qiang <quic_bqiang@quicinc.com>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev
-Subject: Re: missing clear bdr in check_ram_in_range_map()?
-Message-ID: <20241212071418.GA6638@lst.de>
-References: <64931fac-085b-4ff3-9314-84bac2fa9bdb@quicinc.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Tim Harvey <tharvey@gateworks.com>,
+	Christoph Hellwig <hch@lst.de>, ath11k@lists.infradead.org,
+	linux-wireless <linux-wireless@vger.kernel.org>,
+	Fabio Estevam <festevam@gmail.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
+Subject: Re: ath11k swiotlb buffer is full (on IMX8M with 4GiB DRAM)
+Message-ID: <20241212071848.GB6638@lst.de>
+References: <0282be95-9094-4d49-b79e-4f7c976dad00@quicinc.com> <CAJ+vNU32EMHjtchJRb1sODBrUKG2vZW4ZEu1_F0+dCCEjCn7Dg@mail.gmail.com> <20241209081714.GA25363@lst.de> <593c0d63-d8fd-4439-a57a-97340212c197@arm.com> <CAJ+vNU2ypE_Mn_6iKCmf5LYk9Sth=ryWXyewc5MhOKK8VoAKCA@mail.gmail.com> <20241210041133.GA17116@lst.de> <CAJ+vNU03Cqsc+O5anwmvJW8Wfd-06LbDMVHjxVFdixf01ZLczQ@mail.gmail.com> <5fe372df-ae51-4a8b-9fa3-a4a0ea2d33e3@quicinc.com> <9b2e8ffa-ba2c-46da-a478-eb1fb44b693e@arm.com> <80992ae5-e329-4a34-94c8-9345b2e8a9a0@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,71 +35,15 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <64931fac-085b-4ff3-9314-84bac2fa9bdb@quicinc.com>
+In-Reply-To: <80992ae5-e329-4a34-94c8-9345b2e8a9a0@quicinc.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Mon, Dec 09, 2024 at 06:50:06PM +0800, Baochen Qiang wrote:
-> Hi,
-> 
-> while checking check_ram_in_range_map() I am confused by the condition set/check on bdr.
-> If I am reading the code correctly, if bdr is set once, it would never get cleared, hence
-> that function will always returns 0.
-> 
-> should we clear bdr before each new iteration?
+On Thu, Dec 12, 2024 at 01:24:45PM +0800, Baochen Qiang wrote:
+> yeah, you are right, Robin. didn't know there are convenient interfaces
+> like these already.
 
-I think so.  Even better refactor the code so that the non-NULL bdr
-doesn't leak out:
+FYI, the DMA-API documentation says pretty straight forward to not
+use the streaming API and documents these interfaces.  But maybe it's
+not clear enough, so I'm open to suggestions on how to make it more
+obvious.
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 5b4e6d3bf7bc..181e244f410a 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -584,6 +584,22 @@ int dma_direct_supported(struct device *dev, u64 mask)
- 	return mask >= phys_to_dma_unencrypted(dev, min_mask);
- }
- 
-+static const struct bus_dma_region *dma_find_range(struct device *dev,
-+		unsigned long start_pfn)
-+{
-+	const struct bus_dma_region *m;
-+
-+	for (m = dev->dma_range_map; PFN_DOWN(m->size); m++) {
-+		unsigned long cpu_start_pfn = PFN_DOWN(m->cpu_start);
-+
-+		if (start_pfn >= cpu_start_pfn &&
-+		    start_pfn - cpu_start_pfn < PFN_DOWN(m->size))
-+			return m;
-+	}
-+
-+	return NULL;
-+}
-+
- /*
-  * To check whether all ram resource ranges are covered by dma range map
-  * Returns 0 when further check is needed
-@@ -593,23 +609,14 @@ static int check_ram_in_range_map(unsigned long start_pfn,
- 				  unsigned long nr_pages, void *data)
- {
- 	unsigned long end_pfn = start_pfn + nr_pages;
--	const struct bus_dma_region *bdr = NULL;
--	const struct bus_dma_region *m;
- 	struct device *dev = data;
- 
- 	while (start_pfn < end_pfn) {
--		for (m = dev->dma_range_map; PFN_DOWN(m->size); m++) {
--			unsigned long cpu_start_pfn = PFN_DOWN(m->cpu_start);
-+		const struct bus_dma_region *bdr;
- 
--			if (start_pfn >= cpu_start_pfn &&
--			    start_pfn - cpu_start_pfn < PFN_DOWN(m->size)) {
--				bdr = m;
--				break;
--			}
--		}
-+		bdr = dma_find_range(dev, start_pfn);
- 		if (!bdr)
- 			return 1;
--
- 		start_pfn = PFN_DOWN(bdr->cpu_start) + PFN_DOWN(bdr->size);
- 	}
- 
