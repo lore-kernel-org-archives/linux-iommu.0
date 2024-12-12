@@ -1,111 +1,249 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFFBC17BB34
-	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 19:44:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21A101A7273
+	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 19:58:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734032679; cv=none; b=eiDC8y3eXom8iDV49V8q+dhOKxtz53rHinjA6plvhJi6X5jcPWL870uCTrSOlqJTo60ozgMH4naYbILpkYMYng/kMZWQjXyiMRmACC4zfAwUIVexBEe1XiWv+2G2TxYxqCQsbZt9S9hMhM/fh9d2YMZKGRciHD6T6fwt+FA8NVY=
+	t=1734033493; cv=none; b=i3YMoYA7tBtyg6o/Gz5nfl5hNOvNrKgKiSXW0wIbwc96vutugRW8UO+lgI4jKXAdRcvsxWC4P2g7WRi6GrCpi5SOKpm75nONpYOX2qxH5eBu3VnoH3/lEHQ1QgFglj4PP/o0eCD5TrYhGlWJ1ge0k215f0IxmFAlbK/gkbF+H/Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734032679; c=relaxed/simple;
-	bh=45Ud0Mn2aNdFEQLclVcWubuH1Q8UAhrJeGlwWksFBLE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Sz7pQcKOaWDkjpii4eOE8i3Tt+1JZSLiKYg/wd0g6M6WYuh/BwOtJ5qIMHU/BLYIsFsUdhZeKf9/vo6PBi2txqCG0iuX9EWr1OvrPJIj4ZsRnwI8NYmi+kg2AkZ0QEo9C3uw0tl93YAl/CBIrShIjUkKsenHt6sqMl7pJAmGXZc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VgGQt2FV; arc=none smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1734033493; c=relaxed/simple;
+	bh=sJ1KNowovNm0HPubZssrDATYTz+xau5qC1DIBkbKznk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=fQPtDI5niJ5i/EBDU4gcM/1fpaMr1kN7aTSjB1tmIlGeOMeXxPWyFnpmJH5skteykp8jAagwCVK++YRggD72OWkzutEJ2Vgg0dU/aB8Ix9Zbn7OdP9QMIfYvAu2FIHynGaIG4R5t70bMC+gow5DyAVPfam+vdn86dMqbv7R9aBk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gateworks.com; spf=pass smtp.mailfrom=gateworks.com; dkim=pass (2048-bit key) header.d=gateworks.com header.i=@gateworks.com header.b=lfqU+cUA; arc=none smtp.client-ip=209.85.128.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gateworks.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gateworks.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VgGQt2FV"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4675feed835so8669891cf.1
-        for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 11:44:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gateworks.com header.i=@gateworks.com header.b="lfqU+cUA"
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-6f26c517979so7900477b3.2
+        for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 11:58:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1734032677; x=1734637477; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Mtig8lXsoUwLD51T1aq3aT1xZ4mrN3No+06U1nAA6eA=;
-        b=VgGQt2FVgYubZ3Ke51YqBmIbTKU0ikl8bHTrYfIkjUghdWGFXBHw2s34LkExgNM2E2
-         YGfVWhoaRdoaXav0ywccchACKOSBVLco5DvoyIiCHiecH2G4H2ctIOG8sMoQgXtEDShN
-         pxz1wlAZrxf44MqSNxIc0w0eWIZ5/9wRabn4d9aZPNwk/6jfNvy/72/XAqUdlQo3oJ2O
-         KWhpEsQOfr8FXZt7PeUe6kLSjscNdCvR5JIvDz/W19zoOsdAP8hWdfET8fYU5TPR9T6W
-         QSS5imnGv0HJG99l7BBcoviYzxE5Bk2yQksoujO7dpw4H9VxumnZLYdEA4gVEbnJGNt9
-         H7zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734032677; x=1734637477;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gateworks.com; s=google; t=1734033489; x=1734638289; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Mtig8lXsoUwLD51T1aq3aT1xZ4mrN3No+06U1nAA6eA=;
-        b=Zvg+LAXvdB+8ECW2blHeHP4Susp4j5HdcuhkxZWMdAxOiA4ANeJjZ3uVrsB+V237ZV
-         rb3Eqgqb2l0S9YRynR5xeWQFstMGTEjJkC0PDYJ1iB+vBAarVV2j2H9sbZYtBdFny3uM
-         n07MCdqyGeET628DOGcX1o7xWgVqB9YdRxp6qa942s0MUzMsXqW7tMQbB4qe3/ACt6SV
-         L5uor7KHpqo7NwErFsCATeiiL2S01oBTRG4oBUk3UcSRkily//eKWvbdxyuyBpp3RxKW
-         Kbu/nJvlAIqFLTtMGB1U7KXj7vyn2QmRc6FPHHyPrLoVcImupgU0gcs9yAoVC8IIx0dp
-         ieUw==
-X-Gm-Message-State: AOJu0YxgDAEZW6LXVPuJqL+KdSqo0JVXr9M0c+nrqe/L+h/ALVB+O21a
-	yi6wBvvUWKExyVOACxrrXHEbrqtyxM8bg3pwNgi6nzQ//fq3QVYrOZJXyVPE2U8=
-X-Gm-Gg: ASbGncvp37ajITn7DOmdovZpbg/JmKzS24HHbJu8LaDsbgVHvXBCBapz5tdn83Ggrog
-	h0wKjno7tkIjfjJn8eqL8a/BZppU2aJqqossH384YIFCshFJMD3rc+vhdYcOFfjdXSyzjh2uOpA
-	Nb1C4ZX/Hae8srFBMyybOwb/gHd2Ih55g8Qy9EDhBJw6TVQ15j76JRF55yomh0G8pS3w4fuIfzl
-	pOnP+DBZa4aSkc3o4fGiGzpS0FgaYoMPBIlEaoOsW2OvN5QZGlfXkAPMn0GgNNjTNWquqCyHf6Z
-	rDJgkfGzkXCxZCMCUFzN66ISa1Jm4g==
-X-Google-Smtp-Source: AGHT+IE1sxaWouFki1wTNuqW4Mldx9O5wExQbsXpYwJ4pEsT62nJIL+C/8F//xL6ak8oICXCgpkwJg==
-X-Received: by 2002:a05:622a:1114:b0:466:9f89:3d6b with SMTP id d75a77b69052e-467a156ffb2mr26650471cf.24.1734032676656;
-        Thu, 12 Dec 2024 11:44:36 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-46783eb0d91sm28376531cf.63.2024.12.12.11.44.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2024 11:44:35 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tLp6x-000000001Zr-0B7D;
-	Thu, 12 Dec 2024 15:44:35 -0400
-Date: Thu, 12 Dec 2024 15:44:35 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, kvmarm@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, robdclark@gmail.com, joro@8bytes.org,
-	robin.murphy@arm.com, jean-philippe@linaro.org, nicolinc@nvidia.com,
-	vdonnefort@google.com, qperret@google.com, tabba@google.com,
-	danielmentz@google.com, tzukui@google.com
-Subject: Re: [RFC PATCH v2 40/58] KVM: arm64: smmu-v3: Add map/unmap pages
- and iova_to_phys
-Message-ID: <20241212194435.GA5484@ziepe.ca>
-References: <20241212180423.1578358-1-smostafa@google.com>
- <20241212180423.1578358-41-smostafa@google.com>
+        bh=es3BFB53+lctNKfs4aUSJijTNGpS8BvQvLSU21bgHvQ=;
+        b=lfqU+cUAu7U08b6l9uHUgNJs46/w17MDOhWlS8Zn1OVcrH56XwsHhlAfNh/URgAEL7
+         RSb89ohtkfCUmA8ArSjOPVrFDubtFODlamWXBuTpFmKyQvgkG+8hTS9Kirzy1qchLBk/
+         6jOGgFcig/EpGksUJOvblze0qf/ysXjPjTSiO9CGPhgsOFmDNNJjgTn4pMF3NSfiLsjP
+         3yA5Xw7EVxPkqlQzF4yYYFL88Q+wwPjv8UZxQYEBL2qrCPUj0QuFJHUUiz2pLCjqy8Fv
+         cIeeFnRr2vMY2hxXkSecus9jM7HTc89q8ZknRzfNKMRTNIUEZX5alIuP5tUEhBiBIdU+
+         ZZXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1734033489; x=1734638289;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=es3BFB53+lctNKfs4aUSJijTNGpS8BvQvLSU21bgHvQ=;
+        b=BvbwjLJpHAPg7BUDTrAZ+zqhlJF6giLKjKQ0AyEQ3+TLGXAK9aNWmSswrRRXXhXx5T
+         Vo7dkPXHPXMhN3roNdQuocZww+PVcsCEFwoEfvRN81fjhUkd7oUzGz+5Crkdl7bGchFU
+         VMjKJV2GAtXl9hDNp91DQWml0hYcDfxDeIL5RwloI36Ak64DDTx4fYn5RPIMMS7lnybD
+         KLRO4RnJmmKtybjTNyxyEc4LX3H2av+Tj783rKG30jsNKAsw4W6NO8KDaPMnWPifYXxU
+         vxghyxl1RPu4IsYxV8YzfNPvmMnrEDpsMDW8ppyr6u1A9suvb9vBgTGsMeZ26UZIikW5
+         VQCA==
+X-Forwarded-Encrypted: i=1; AJvYcCVS3PjVRJ/r6kmd/5ACcM4CHJeDdgTM7hvtzH9YLA1BY04Kbuz3dtmCrS40jOiKmO4qppP+ZQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzMYKpcwdwS705QopXcf3Mq+yJKacf4YRzIA+vCDh4tQW1PcegF
+	wjpoTAqvLjB532kr69Vde9ift0U2YKnRlMZtgDsqo7qPH+m1h5njD12xLSiLG+sorscOqYWRIOt
+	QWG++zqXsfshw39yf7I6J5C9jEmO52TQa/S9vCg==
+X-Gm-Gg: ASbGncuqZViwTY34LTyKCPkLRpPXtPw4lc/1wdOh2KIFAFcmP4TKu++hCnLMNJc/36V
+	Z5f72pS8+UwnwM7W8fKudqG6qLpsRi4C1baQ0Aw==
+X-Google-Smtp-Source: AGHT+IE+lPF/qLoY6pAEypWuIRGNZppvfbzy6XsQEdtFs6bR6IRA8406DPbu63fZQJOWbgOJrMamI9waVwE+nSHCj4A=
+X-Received: by 2002:a05:690c:3805:b0:6ef:7312:d06c with SMTP id
+ 00721157ae682-6f279b2367dmr120167b3.21.1734033488919; Thu, 12 Dec 2024
+ 11:58:08 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241212180423.1578358-41-smostafa@google.com>
+References: <CAJ+vNU0EL3T+GyNAbVbGqYYQ5NM3h7cgAwqxxBMuZjh+-YQ3bA@mail.gmail.com>
+ <1b2ea8b2-6fbe-4118-b6c6-742c8f0be476@quicinc.com> <CAJ+vNU1-OZ3y4p2L+zf64AiVtUv70yZNqkT20jTxyE0_gJb6Jg@mail.gmail.com>
+ <0282be95-9094-4d49-b79e-4f7c976dad00@quicinc.com> <CAJ+vNU32EMHjtchJRb1sODBrUKG2vZW4ZEu1_F0+dCCEjCn7Dg@mail.gmail.com>
+ <20241209081714.GA25363@lst.de> <593c0d63-d8fd-4439-a57a-97340212c197@arm.com>
+ <CAJ+vNU2ypE_Mn_6iKCmf5LYk9Sth=ryWXyewc5MhOKK8VoAKCA@mail.gmail.com>
+ <20241210041133.GA17116@lst.de> <CAJ+vNU03Cqsc+O5anwmvJW8Wfd-06LbDMVHjxVFdixf01ZLczQ@mail.gmail.com>
+ <5fe372df-ae51-4a8b-9fa3-a4a0ea2d33e3@quicinc.com> <9b2e8ffa-ba2c-46da-a478-eb1fb44b693e@arm.com>
+ <80992ae5-e329-4a34-94c8-9345b2e8a9a0@quicinc.com>
+In-Reply-To: <80992ae5-e329-4a34-94c8-9345b2e8a9a0@quicinc.com>
+From: Tim Harvey <tharvey@gateworks.com>
+Date: Thu, 12 Dec 2024 11:57:57 -0800
+Message-ID: <CAJ+vNU1v6JMTcnKhJAPtRu2A-rVjNNUd3MrqAP64EWMiNVuC4g@mail.gmail.com>
+Subject: Re: ath11k swiotlb buffer is full (on IMX8M with 4GiB DRAM)
+To: Baochen Qiang <quic_bqiang@quicinc.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, ath11k@lists.infradead.org, 
+	linux-wireless <linux-wireless@vger.kernel.org>, Fabio Estevam <festevam@gmail.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Dec 12, 2024 at 06:04:04PM +0000, Mostafa Saleh wrote:
-> Add map_pages and iova_to_phys HVC code, which
-> mainly calls the io-pgtable.
-> 
-> For unmap_pages, we rely on IO_PGTABLE_QUIRK_UNMAP_INVAL, where the
-> driver first calls unmap_pages which invalidate all the pages as
-> a typical unmap, issuing all the necessary TLB invalidations.
-> Then, we will start a page table with 2 callbacks:
-> - visit_leaf: for each unmapped leaf, it would decrement the refcount
->   of the page using __pkvm_host_unuse_dma(), reversing the what IOMMU
->   core does in map.
-> - visit_post_table: this would free any invalidated tables as they
->   wouldn't be freed because of the quirk.
+On Wed, Dec 11, 2024 at 9:24=E2=80=AFPM Baochen Qiang <quic_bqiang@quicinc.=
+com> wrote:
+>
+>
+>
+> On 12/11/2024 9:44 PM, Robin Murphy wrote:
+> > On 2024-12-11 2:31 am, Baochen Qiang wrote:
+> >>
+> >>
+> >> On 12/11/2024 7:06 AM, Tim Harvey wrote:
+> >>> On Mon, Dec 9, 2024 at 8:11=E2=80=AFPM Christoph Hellwig <hch@lst.de>=
+ wrote:
+> >>>>
+> >>>> On Mon, Dec 09, 2024 at 11:15:02AM -0800, Tim Harvey wrote:
+> >>>>> After a lot of back and forth and investigation this is due to the
+> >>>>> IMX8M SoC's not having an IOMMU thus swiotlb is being used and ath1=
+1k
+> >>>>> is requesting some buffers that are too large for swiotlb to provid=
+e.
+> >>>>> There is a specific patch which added the HAL_WBM2SW_RELEASE buffer=
+s
+> >>>>> to cacheable memory that could be reverted to fix this but the conc=
+ern
+> >>>>> was that it would impact performance moving those buffers to
+> >>>>> non-cacheable memory (there are three ~1MiB buffers being allocated=
+):
+> >>>>> commit d0e2523bfa9cb ("ath11k: allocate HAL_WBM2SW_RELEASE ring fro=
+m
+> >>>>> cacheable memory").
+> >>>>
+> >>>> The combination of "buffers" and "swiotlb" sounds like Robin was rig=
+ht
+> >>>> below.
+> >>>>
+> >>>>> The chain of events as best I can tell are:
+> >>>>>
+> >>>>> commit 6452f0a3d565 ("ath11k: allocate dst ring descriptors from
+> >>>>> cacheable memory")
+> >>>>> - Nov 12 2021 (made it into Linux 5.17)
+> >>>>> - changes allocation of reo_dst rings to cacheable memory to allow
+> >>>>> cached descriptor access to optimize CPU usage
+> >>>>> - this is flawed because it uses virt_to_phys() to allocate cacheab=
+le
+> >>>>> memory which does not work on systems with an IOMMU enabled or usin=
+g
+> >>>>> software IOMMU (swiotlb); this causes a kernel crash on client
+> >>>>> association
+> >>>>
+> >>>> And this is where it started to take a wrong turn, that everyhing
+> >>>> later basically made worse.  If you have long living and potentially
+> >>>> large DMA allocations, you need to use dma_alloc_* interfaces.
+> >>>>
+> >>>> 5.17 already had dma_alloc_pages for quite a while which was and sti=
+ll is
+> >>>> the proper interface to use.  For much older kernel you'd be stuck
+> >>>> with dma_alloc_noncoherent or dma_alloc_attrs with the right flag,
+> >>>> but even that would have been much better.
+> >>>
+> >>> Christoph,
+> >>>
+> >>> I'm not clear what you are suggesting be done here. Are you suggestin=
+g
+> >>> that ath11k has been using the wrong mechanism by calling
+> >>> dma_map_single for cached DMA buffers? I'm not all that familiar with
+> >>> ath11k so I can't tell what buffers are considered long living.
+> >>
+> >> those buffers are allocated when driver load and freed when driver unl=
+oad, so IMO they are
+> >> long living.
+> >
+> > The point is that if this driver wants a notion of "cached DMA buffers"=
+, then it should
+> > allocate such buffers the proper way, not try to reinvent it badly. Tha=
+t means using
+> > dma_alloc_pages(), or modern dma_alloc_noncoherent() which is essential=
+ly the same thing
+> > but with the dma_map_page() call automatically done for you as well.
+>
+> yeah, you are right, Robin. didn't know there are convenient interfaces l=
+ike these already.
+>
+> Tim, can you work out a patch then?
+>
 
-I don't know if the timelines will work out, but the pagetable stuff
-I'm working on will let you write a much more appropriate
-implementation for pkvm's usage than trying to hack it into the
-iopgtable code like this.
+How about:
 
-Even the iommu focused routines I have got now would solve this
-problem because they allways spit out a linked list of all the memory
-to free after map/unmap and never internally free it..
+diff --git a/drivers/net/wireless/ath/ath11k/dp.c
+b/drivers/net/wireless/ath/ath11k/dp.c
+index fbf666d0ecf1..557e06187e95 100644
+--- a/drivers/net/wireless/ath/ath11k/dp.c
++++ b/drivers/net/wireless/ath/ath11k/dp.c
+@@ -105,9 +105,8 @@ void ath11k_dp_srng_cleanup(struct ath11k_base
+*ab, struct dp_srng *ring)
+                return;
 
-Jason
+        if (ring->cached) {
+-               dma_unmap_single(ab->dev, ring->paddr_unaligned, ring->size=
+,
+-                                DMA_FROM_DEVICE);
+-               kfree(ring->vaddr_unaligned);
++               dma_free_noncoherent(ab->dev, ring->size, ring->vaddr_unali=
+gned,
++                                    ring->paddr_unaligned, DMA_FROM_DEVICE=
+);
+        } else {
+                dma_free_coherent(ab->dev, ring->size, ring->vaddr_unaligne=
+d,
+                                  ring->paddr_unaligned);
+@@ -249,28 +248,18 @@ int ath11k_dp_srng_setup(struct ath11k_base *ab,
+struct dp_srng *ring,
+                default:
+                        cached =3D false;
+                }
+-
+-               if (cached) {
+-                       ring->vaddr_unaligned =3D kzalloc(ring->size, GFP_K=
+ERNEL);
+-                       if (!ring->vaddr_unaligned)
+-                               return -ENOMEM;
+-
+-                       ring->paddr_unaligned =3D dma_map_single(ab->dev,
+-
+ring->vaddr_unaligned,
+-                                                              ring->size,
+-                                                              DMA_FROM_DEV=
+ICE);
+-                       if (dma_mapping_error(ab->dev, ring->paddr_unaligne=
+d)) {
+-                               kfree(ring->vaddr_unaligned);
+-                               ring->vaddr_unaligned =3D NULL;
+-                               return -ENOMEM;
+-                       }
+-               }
+        }
+
+-       if (!cached)
++       if (cached) {
++               ring->vaddr_unaligned =3D dma_alloc_noncoherent(ab->dev,
+ring->size,
++
+&ring->paddr_unaligned,
++                                                             DMA_FROM_DEVI=
+CE,
++                                                             GFP_KERNEL);
++       } else {
+                ring->vaddr_unaligned =3D dma_alloc_coherent(ab->dev, ring-=
+>size,
+
+&ring->paddr_unaligned,
+                                                           GFP_KERNEL);
++       }
+
+        if (!ring->vaddr_unaligned)
+                return -ENOMEM;
+
+If this is what we are talking about here I can submit that with a
+proper commit log. Note there are a lot of other calls to
+dma_map_single in the ath drivers and my understanding is those may be
+just fine for small short-lived buffers but I'm not clear if that is
+what they are always used for.
+
+Best Regards,
+
+Tim
+
+> >
+> > Thanks,
+> > Robin.
+>
