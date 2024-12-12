@@ -1,160 +1,64 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C0D9152196
-	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 05:24:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AE03748A
+	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 05:40:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733981102; cv=none; b=Jj7ivnRUduT2PkVfBh4SCCrQ+dS/aOUEuzLMSdQKgc5sLVhfsp/TP4DCWsML4ujGFvKs0QFnpausa/6U2GSoFEMSpeWnGHoHtfm3SPZ0VBb/uRBvZeQ5Kr4xFas7j+E7QHJ5Yw11hgVtgl+3ndPVry9Ga+htqG4w/MTGwWx28k8=
+	t=1733982023; cv=none; b=BRveCjEZdarvhOk82nE5m/Qrcxuq6TS+J5NOSBis2xjloJU1m+0JfZLOuVuwfjlprLB6652rn3/yPrfHCdPSt12NcD+N/f05U1O1e8J9xQCDP3lz3GxJMYNmK7ORquYUHni0EtSPJXm76XmbkTil0dvcBUel384QhW4+2Cgf91Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733981102; c=relaxed/simple;
-	bh=SgFBayqejWCx9ISB0P2ggd1prI3UXd/nQ6plu9oT9Cc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=aYqvzeYQu62Md0HQslATX1Szc2q7/PuSaYETdGLLFWhW9CMjbzaOfTBeYFkMT8Nx+IafCymGU0BXD9TvNc2Lv0pAxVakArEIK/18gvxOnVZUOW9eynh68VUxd41gnOXBcPJHj1evKRR41cCEvamCje0Efu2Zse+tq3sCv9+DNP4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=nxfPyYpr; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="nxfPyYpr"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BBHjejI018816;
-	Thu, 12 Dec 2024 05:24:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	da2ob7paYwwBsbs1CjtgSbAnN/c4QPrRkJNL3VpquTM=; b=nxfPyYprQk2QPr3U
-	m3Y1tuYNnUe/2HEobbRJ1j/XebBlBlcG9ntpMlpn1BEwX322ddV8v1Bvkf2YasMO
-	4fdh7rnk+KCqmqFgT6Nk1uS8P/ydWQNh23Gqgv1c82o7cAES5mIdpQFpV9uxOhAU
-	eDpbFKo7yxcFTr4PTEtQ6UVQ/qmCw2j/WxfxQPkHg6q01T2p/H7za+nU1gfoTbrm
-	g+1J9vnF/7MTTp+4rUzzH8j7dQ7l4/45Ing9Vti/xHcNJBu5Q/J9IEFYeB7W3fD/
-	jhiLBnnH78w6/0GEeEUW/EqHPoARigWDIxm9jv5NGNMrLKVxypsQrWrcjSbf23UI
-	moD04Q==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43ffdysc71-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 12 Dec 2024 05:24:50 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4BC5Onfh028162
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 12 Dec 2024 05:24:49 GMT
-Received: from [10.231.195.67] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 11 Dec
- 2024 21:24:47 -0800
-Message-ID: <80992ae5-e329-4a34-94c8-9345b2e8a9a0@quicinc.com>
-Date: Thu, 12 Dec 2024 13:24:45 +0800
+	s=arc-20240116; t=1733982023; c=relaxed/simple;
+	bh=8+wLHBxsVYK9GRcGzaHZkjg9nn60iJZ+PsU2pBMMUSI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=u8Kgx9iNIam1lit5WjGRB+LnoF2auzB68rc/XTvT0mu/SwtKi+/QDrGriZbZBJ+X4nU9s1yEg5liPPfkyES3F1ijoZFk6xwWeMtxRr5PutgphYEZFdUy2VwlYMiUyS6FdTlX5vBb6goufZQk6CzPst8F3DaZM43dR/3U909odu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 0C5B068D07; Thu, 12 Dec 2024 06:40:15 +0100 (CET)
+Date: Thu, 12 Dec 2024 06:40:14 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Ahmad Fatoum <a.fatoum@pengutronix.de>, kasan-dev@googlegroups.com,
+	iommu@lists.linux.dev, Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+	Alexander Potapenko <glider@google.com>,
+	Andrey Konovalov <andreyknvl@gmail.com>,
+	Dmitry Vyukov <dvyukov@google.com>,
+	Vincenzo Frascino <vincenzo.frascino@arm.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Marco Elver <elver@google.com>, Kees Cook <keescook@chromium.org>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>
+Subject: Re: Using KASAN to catch streaming DMA API violations
+Message-ID: <20241212054014.GA4695@lst.de>
+References: <72ad8ca7-5280-457e-9769-b8a645966105@pengutronix.de> <360e2ec9-556e-4507-a539-f86f7619fe29@app.fastmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: ath11k swiotlb buffer is full (on IMX8M with 4GiB DRAM)
-To: Robin Murphy <robin.murphy@arm.com>, Tim Harvey <tharvey@gateworks.com>,
-        Christoph Hellwig <hch@lst.de>
-CC: <ath11k@lists.infradead.org>,
-        linux-wireless
-	<linux-wireless@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Marek
- Szyprowski <m.szyprowski@samsung.com>, <iommu@lists.linux.dev>
-References: <CAJ+vNU0EL3T+GyNAbVbGqYYQ5NM3h7cgAwqxxBMuZjh+-YQ3bA@mail.gmail.com>
- <1b2ea8b2-6fbe-4118-b6c6-742c8f0be476@quicinc.com>
- <CAJ+vNU1-OZ3y4p2L+zf64AiVtUv70yZNqkT20jTxyE0_gJb6Jg@mail.gmail.com>
- <0282be95-9094-4d49-b79e-4f7c976dad00@quicinc.com>
- <CAJ+vNU32EMHjtchJRb1sODBrUKG2vZW4ZEu1_F0+dCCEjCn7Dg@mail.gmail.com>
- <20241209081714.GA25363@lst.de>
- <593c0d63-d8fd-4439-a57a-97340212c197@arm.com>
- <CAJ+vNU2ypE_Mn_6iKCmf5LYk9Sth=ryWXyewc5MhOKK8VoAKCA@mail.gmail.com>
- <20241210041133.GA17116@lst.de>
- <CAJ+vNU03Cqsc+O5anwmvJW8Wfd-06LbDMVHjxVFdixf01ZLczQ@mail.gmail.com>
- <5fe372df-ae51-4a8b-9fa3-a4a0ea2d33e3@quicinc.com>
- <9b2e8ffa-ba2c-46da-a478-eb1fb44b693e@arm.com>
-Content-Language: en-US
-From: Baochen Qiang <quic_bqiang@quicinc.com>
-In-Reply-To: <9b2e8ffa-ba2c-46da-a478-eb1fb44b693e@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: MyCwuV5Xo1usK8DSR4uY-XEznIn5o22C
-X-Proofpoint-GUID: MyCwuV5Xo1usK8DSR4uY-XEznIn5o22C
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- phishscore=0 mlxlogscore=906 lowpriorityscore=0 mlxscore=0 adultscore=0
- spamscore=0 bulkscore=0 impostorscore=0 priorityscore=1501 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2411120000
- definitions=main-2412120034
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <360e2ec9-556e-4507-a539-f86f7619fe29@app.fastmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
+On Fri, Dec 06, 2024 at 09:14:27AM +0100, Arnd Bergmann wrote:
+> Right. I would go even further and say that transferring ownership
+> to the device poisons an area that is aligned to ARCH_DMA_MINALIGN,
+> making it possibly bigger on both ends of the area. Transferring
+> ownership back to the CPU only unpoisons the exact area that was
+> specified, leaving the unaligned bytes around it as uninitialized.
 
+Yes.
 
-On 12/11/2024 9:44 PM, Robin Murphy wrote:
-> On 2024-12-11 2:31 am, Baochen Qiang wrote:
->>
->>
->> On 12/11/2024 7:06 AM, Tim Harvey wrote:
->>> On Mon, Dec 9, 2024 at 8:11 PM Christoph Hellwig <hch@lst.de> wrote:
->>>>
->>>> On Mon, Dec 09, 2024 at 11:15:02AM -0800, Tim Harvey wrote:
->>>>> After a lot of back and forth and investigation this is due to the
->>>>> IMX8M SoC's not having an IOMMU thus swiotlb is being used and ath11k
->>>>> is requesting some buffers that are too large for swiotlb to provide.
->>>>> There is a specific patch which added the HAL_WBM2SW_RELEASE buffers
->>>>> to cacheable memory that could be reverted to fix this but the concern
->>>>> was that it would impact performance moving those buffers to
->>>>> non-cacheable memory (there are three ~1MiB buffers being allocated):
->>>>> commit d0e2523bfa9cb ("ath11k: allocate HAL_WBM2SW_RELEASE ring from
->>>>> cacheable memory").
->>>>
->>>> The combination of "buffers" and "swiotlb" sounds like Robin was right
->>>> below.
->>>>
->>>>> The chain of events as best I can tell are:
->>>>>
->>>>> commit 6452f0a3d565 ("ath11k: allocate dst ring descriptors from
->>>>> cacheable memory")
->>>>> - Nov 12 2021 (made it into Linux 5.17)
->>>>> - changes allocation of reo_dst rings to cacheable memory to allow
->>>>> cached descriptor access to optimize CPU usage
->>>>> - this is flawed because it uses virt_to_phys() to allocate cacheable
->>>>> memory which does not work on systems with an IOMMU enabled or using
->>>>> software IOMMU (swiotlb); this causes a kernel crash on client
->>>>> association
->>>>
->>>> And this is where it started to take a wrong turn, that everyhing
->>>> later basically made worse.  If you have long living and potentially
->>>> large DMA allocations, you need to use dma_alloc_* interfaces.
->>>>
->>>> 5.17 already had dma_alloc_pages for quite a while which was and still is
->>>> the proper interface to use.  For much older kernel you'd be stuck
->>>> with dma_alloc_noncoherent or dma_alloc_attrs with the right flag,
->>>> but even that would have been much better.
->>>
->>> Christoph,
->>>
->>> I'm not clear what you are suggesting be done here. Are you suggesting
->>> that ath11k has been using the wrong mechanism by calling
->>> dma_map_single for cached DMA buffers? I'm not all that familiar with
->>> ath11k so I can't tell what buffers are considered long living.
->>
->> those buffers are allocated when driver load and freed when driver unload, so IMO they are
->> long living.
-> 
-> The point is that if this driver wants a notion of "cached DMA buffers", then it should
-> allocate such buffers the proper way, not try to reinvent it badly. That means using
-> dma_alloc_pages(), or modern dma_alloc_noncoherent() which is essentially the same thing
-> but with the dma_map_page() call automatically done for you as well.
+> That may need to be controlled by an additional Kconfig option on
+> top of poisoning the data initially.
 
-yeah, you are right, Robin. didn't know there are convenient interfaces like these already.
-
-Tim, can you work out a patch then?
-
-> 
-> Thanks,
-> Robin.
+Note that we'll definitively need a config option for the basic
+checks as well.  There is plenty o drivers that don't do any DMA
+ownership management right now.  And while I'd like to see everything
+fixed it's going to take a while to get there.
 
