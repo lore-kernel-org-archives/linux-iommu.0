@@ -1,55 +1,55 @@
-Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9B1B223C6F
-	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 18:04:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3E8C2253F7
+	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 18:04:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734026694; cv=none; b=jvGpgTFvY7gGOZ8remdXIaZLnAPFKr3cUHtrC0/nj78ImLZ6riTLUMLPG5pjweon/MEmJzbH8L7u6VwbJw6wahQjXsZ5i54HI0YwOFDnKY9iTV4TGMqHlbFFhO+uNq9MBQogZMwyDmqg0gJMvHxHqNE4sv+1hErPMNVP3FzOv+o=
+	t=1734026698; cv=none; b=VL5Clx5/YDMHSwB+5FfCosx8e6Q/5DAHz+l+/7KbeKzrUqGRz5vsAjRQPGLWrP3bdVYrxweKhmoMHASGpYWe2hJmsYbEeOrpZ8q6f4V/8DkdXfXgQjgH6uE2cRy+ivaGJKScaorPV/FEgvGBCqm3z4cf1wQVQUtwDkrEWeDrkZ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734026694; c=relaxed/simple;
-	bh=gp+CHgCT6MfjzlV3G7e67wFLwUFxHaGVgOQC7Dq+A54=;
+	s=arc-20240116; t=1734026698; c=relaxed/simple;
+	bh=p/qYAp+a0yQJRLOSye/K8aHYd6t+T9vmVjY6IoSMRKo=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=o04MlLLaBtk3j2E7ZW58FAivPBWMo4WNW86TpdNgR2KOFmKcPEDTndNMJS9BGDwXbPXo7Zn2r2aFZJu4/moWGRy26dBkLa4mxHFTCT9r/JiMcPqZCB0aBSFPwxekeJRJW9WWBh2T/Lk3KcYO1shKo1pTNUL1hRSkAJoq67rPG1I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3M//j0aq; arc=none smtp.client-ip=209.85.128.73
+	 To:Cc:Content-Type; b=H1l0dvMCWEYn+MOiZquEZPKxAHwdseLuZ8CZGwz1iMdVlb24XqdCA1H/WWVfLleAOJ/5SM9I8HJ2NvWVUYHKxtaGc5WwHo/59rCUXOfh1yr5nGBweFt7GSMaBl9UB1trZb3ANwFuR3D46/grkRLnFZcuVwMSHaWq5jl81J+SgGU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tIKpNa60; arc=none smtp.client-ip=209.85.128.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3M//j0aq"
-Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-4361efc9d1fso8309615e9.2
-        for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 10:04:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tIKpNa60"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-434efe65e62so5715865e9.3
+        for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 10:04:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1734026690; x=1734631490; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1734026694; x=1734631494; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fZxQMQu4cbyziwIooPRheQAiraNBUGRcC5SFKfDzOkk=;
-        b=3M//j0aqyNEzRY0nQpvNwGTCZUur3F9giWkaIozYT5cf2ZvByc4N9SAawPf/ocnoLU
-         m0BqKuPzNb4PK2DBgiDmslgeEC8b0xRMFPTmcR46VgVSXh3qmkfvIL5fWmRAVE5EYlRX
-         gs7CJqHj+KI/ciEwH/5X7GclIp07vkhmgnt051+9YiTZm2FYdWk992PQEEtD6FgxB0bF
-         cmnqNvAdd0qWYUP1r0PlKdNYuzc3l1m4chJzDq0IZPr5JHwLJ6qommOSmX5P0ujM08W9
-         89bd96L5tHbuWH4dOW1jSKBdoP0+JD0a3lhBOqHwXQ5kYD5tTVUTcTKXiCafjMCFf/g6
-         c3Og==
+        bh=wR1p8S8LwPyQNTvUjkaWT5KmeMMzb+jLodOVwCBm1UI=;
+        b=tIKpNa60vO62s5GYZUrJiNsn/Xnian55amLB20iUqYLoV3H8tEEV0LHt9gzLItdlul
+         uwMTIMox8V+o3XqTAt9wBPwZ6XDfZCqKOy08b/BapQdu7bToTCvQDJXFcnoXwc2bv+S5
+         lDsOpf5vhM2iOtDmK5Jm0J+/3Y/qhgnvfccFbYqApBakj5s81zbPZn1DJ+QbQaYBIdAG
+         tG5YTMFdDGxmcJc7j1I+RCRUk5fyedeF7lmoBurLwuYyDRKR7gAb7c+DeU3d85NM8e+T
+         ohxL/1s3cppw6wadyK8M45knBNe+e/VbYzkVHN65Y16ynGgzBDgWt92FBOd5PNdPND9o
+         hKdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734026690; x=1734631490;
+        d=1e100.net; s=20230601; t=1734026694; x=1734631494;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fZxQMQu4cbyziwIooPRheQAiraNBUGRcC5SFKfDzOkk=;
-        b=dyI5Cnpfuw0aNM/Gw61fOoec2YNPn/S3hS2F5agzhx4PG4Qd1tuP02SUbBwc3xONbt
-         021E+3SJHOnZbiamfzKMPdsSrOcuIrutus5y5xm6wM1+wI+QYkETv3sDczMOGmrtVAQ1
-         3fR0PBExUGsRKzSz7ElR+rhiRrWt8LdRl8rso/BwBxGhMeRrZ3HnKDCswh1SukKWfft/
-         EWPHeOpsmfZMEGq8x3roa/Xuzn6Wp4pVFJpcAG/RJiyUuCZyFtOEovL7yI+xUQCkfIL0
-         EYiKXL5n8aJj/3uOU7g8QQMIaf379WqSVohJure6M3k5oYyjJOuohHdZ1PjqzBlqwn38
-         Mb6w==
-X-Gm-Message-State: AOJu0Yx7h4zUA00reVL34YgXCFtEWKXlaPRE9+xzwwumKdXx46oFg28o
-	K/aOAPs5aRYsbpylZRRhr/b6s8AdN6YhSQfl+HkUYsCNwbgC4dFtsmPCwYBS7Ee54UQwbwycSC4
-	gGEpuOqoTKIpGOiVE9gF0ziqg5f6fp/FEHFlLomLfi1T+RwKia0DYCJaaUq2HvE8RC/ex8xE/+3
-	mjRnVVeR5I45EGTPtpDKYJGRaO1SM2Mql3SnvtHurJ9Q==
-X-Google-Smtp-Source: AGHT+IFzpfMVwcRrV2/gqjEcPWIIertEvfaFJMhjw3EeYh/NSeVQCIM7XVIoTxUlYOdKn5XnKjOATZ6q1zompA==
-X-Received: from wmbay15.prod.google.com ([2002:a05:600c:1e0f:b0:434:ff52:1c7])
+        bh=wR1p8S8LwPyQNTvUjkaWT5KmeMMzb+jLodOVwCBm1UI=;
+        b=BTlWLAVQs+r2keOYetMkFjCe864JNpfcn+FdpTFNw6k5qssHpVwFW/HV7+skvXjaxx
+         jskzxQ1dslgtsA+xm0GCFdalVKWQzii3zFJxO5nNtb4zsRqXibyxnxZfqInIdS0RBY30
+         k2bw7opr9y1Do3Nrx/JHfxetPudCa15cx5d7DZtaVWHJFR3jXV4cpp0X2Qs/cbt0yarr
+         g7pGlmjylY+d5GDH8ah6nH7kmiCGuw3UcjP30EyCCh1ruZ7uE49ZN8DKndxVyETpocHc
+         ezHdsZoGLlpcgEzozEWTcaLLj9wZ1uv0rT9zLIQ6HxXcKT4G0cg0+9q/Pz9x3nP2flFD
+         K1aA==
+X-Gm-Message-State: AOJu0YzryMUFzCSudXwQGA2N8bfNJqXJL+BGAGHuKg5qMvxcTWi6M9VY
+	EmuIAfYnVU/JViPbU4i5aAcBFQFlcZm5VuMLzzOEzuOU0kcFH7PuB2M0N9CF1ZJ/GQ54ogzXGFm
+	TmFoHf2ZJquBMt0ow6G2wC9E8RRfD4yRFswbMd9oVJ9NyW5czRPRDoxs+1XF5u3LH1T8G/Ap6YE
+	jiwllSBOtqjIFxZ7i/+602vFk+ru8bgEoS5hsW/G9kWg==
+X-Google-Smtp-Source: AGHT+IGngLUe7hTwqwYMuDaVTAngV7BbFyaM98e5ARjhrfPTg7ZpE0c7NHe9zxYUAMAR9O6PlwiwJtr/rnZAWw==
+X-Received: from wmbjl5.prod.google.com ([2002:a05:600c:6a85:b0:434:f119:f1a])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:a011:b0:434:f623:a004 with SMTP id 5b1f17b1804b1-4361c3a157cmr72244495e9.16.1734026690208;
- Thu, 12 Dec 2024 10:04:50 -0800 (PST)
-Date: Thu, 12 Dec 2024 18:03:27 +0000
+ 2002:a05:600c:3b09:b0:436:1b7a:c0b4 with SMTP id 5b1f17b1804b1-4361c3454dbmr64162005e9.1.1734026694237;
+ Thu, 12 Dec 2024 10:04:54 -0800 (PST)
+Date: Thu, 12 Dec 2024 18:03:29 +0000
 In-Reply-To: <20241212180423.1578358-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20241212180423.1578358-1-smostafa@google.com>
 X-Mailer: git-send-email 2.47.1.613.gc27f4b7a9f-goog
-Message-ID: <20241212180423.1578358-4-smostafa@google.com>
-Subject: [RFC PATCH v2 03/58] iommu/io-pgtable: Add configure() operation
+Message-ID: <20241212180423.1578358-6-smostafa@google.com>
+Subject: [RFC PATCH v2 05/58] iommu/arm-smmu-v3: Extract driver-specific bits
+ from probe function
 From: Mostafa Saleh <smostafa@google.com>
 To: iommu@lists.linux.dev, kvmarm@lists.linux.dev, 
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
@@ -75,140 +76,68 @@ Content-Type: text/plain; charset="UTF-8"
 
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-Allow IOMMU drivers to create the io-pgtable configuration without
-allocating any tables. This will be used by the SMMUv3-KVM driver to
-initialize a config and pass it to KVM.
+As we're about to share the arm_smmu_device_hw_probe() function with the
+KVM driver, extract bits that are specific to the normal driver.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
 ---
- drivers/iommu/io-pgtable-arm.c | 16 ++++++++++++++++
- drivers/iommu/io-pgtable.c     | 15 +++++++++++++++
- include/linux/io-pgtable.h     | 15 +++++++++++++++
- 3 files changed, 46 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 21 ++++++++++++---------
+ 1 file changed, 12 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 8d435a5bcd9a..e85866c90290 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -148,6 +148,13 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	return NULL;
- }
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 737c5b882355..702863c94f91 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4167,7 +4167,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
  
-+static int arm_64_lpae_configure_s1(struct io_pgtable_cfg *cfg)
-+{
-+	struct arm_lpae_io_pgtable data = {};
-+
-+	return arm_lpae_init_pgtable_s1(cfg, &data);
-+}
-+
- static struct io_pgtable *
- arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- {
-@@ -178,6 +185,13 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 	return NULL;
- }
+ 	if (reg & IDR0_MSI) {
+ 		smmu->features |= ARM_SMMU_FEAT_MSI;
+-		if (coherent && !disable_msipolling)
++		if (coherent)
+ 			smmu->options |= ARM_SMMU_OPT_MSIPOLL;
+ 	}
  
-+static int arm_64_lpae_configure_s2(struct io_pgtable_cfg *cfg)
-+{
-+	struct arm_lpae_io_pgtable data = {};
-+
-+	return arm_lpae_init_pgtable_s2(cfg, &data);
-+}
-+
- static struct io_pgtable *
- arm_32_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- {
-@@ -264,12 +278,14 @@ struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
- 	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_64_lpae_alloc_pgtable_s1,
- 	.free	= arm_lpae_free_pgtable,
-+	.configure	= arm_64_lpae_configure_s1,
- };
+@@ -4316,11 +4316,6 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 		smmu->oas = 48;
+ 	}
  
- struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns = {
- 	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_64_lpae_alloc_pgtable_s2,
- 	.free	= arm_lpae_free_pgtable,
-+	.configure	= arm_64_lpae_configure_s2,
- };
+-	if (arm_smmu_ops.pgsize_bitmap == -1UL)
+-		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
+-	else
+-		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
+-
+ 	/* Set the DMA mask for our table walker */
+ 	if (dma_set_mask_and_coherent(smmu->dev, DMA_BIT_MASK(smmu->oas)))
+ 		dev_warn(smmu->dev,
+@@ -4334,9 +4329,6 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
  
- struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns = {
-diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-index 8841c1487f00..be65f70ec2a6 100644
---- a/drivers/iommu/io-pgtable.c
-+++ b/drivers/iommu/io-pgtable.c
-@@ -99,3 +99,18 @@ void free_io_pgtable_ops(struct io_pgtable_ops *ops)
- 	io_pgtable_init_table[iop->fmt]->free(iop);
- }
- EXPORT_SYMBOL_GPL(free_io_pgtable_ops);
-+
-+int io_pgtable_configure(struct io_pgtable_cfg *cfg)
-+{
-+	const struct io_pgtable_init_fns *fns;
-+
-+	if (cfg->fmt >= IO_PGTABLE_NUM_FMTS)
-+		return -EINVAL;
-+
-+	fns = io_pgtable_init_table[cfg->fmt];
-+	if (!fns || !fns->configure)
-+		return -EOPNOTSUPP;
-+
-+	return fns->configure(cfg);
-+}
-+EXPORT_SYMBOL_GPL(io_pgtable_configure);
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index d7bfbf351975..f789234c703b 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -49,6 +49,7 @@ struct iommu_flush_ops {
- /**
-  * struct io_pgtable_cfg - Configuration data for a set of page tables.
-  *
-+ * @fmt:	       Format used for these page tables
-  * @quirks:        A bitmap of hardware quirks that require some special
-  *                 action by the low-level page table allocator.
-  * @pgsize_bitmap: A bitmap of page sizes supported by this set of page
-@@ -62,6 +63,7 @@ struct iommu_flush_ops {
-  *                 page table walker.
-  */
- struct io_pgtable_cfg {
-+	enum io_pgtable_fmt		fmt;
- 	/*
- 	 * IO_PGTABLE_QUIRK_ARM_NS: (ARM formats) Set NS and NSTABLE bits in
- 	 *	stage 1 PTEs, for hardware which insists on validating them
-@@ -241,6 +243,17 @@ struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
-  */
- void free_io_pgtable_ops(struct io_pgtable_ops *ops);
+ 	arm_smmu_device_iidr_probe(smmu);
  
-+/**
-+ * io_pgtable_configure - Create page table config
-+ *
-+ * @cfg:	The page table configuration.
-+ *
-+ * Initialize @cfg in the same way as alloc_io_pgtable_ops(), without allocating
-+ * anything.
-+ *
-+ * Not all io_pgtable drivers implement this operation.
-+ */
-+int io_pgtable_configure(struct io_pgtable_cfg *cfg);
+-	if (arm_smmu_sva_supported(smmu))
+-		smmu->features |= ARM_SMMU_FEAT_SVA;
+-
+ 	dev_info(smmu->dev, "ias %lu-bit, oas %lu-bit (features 0x%08x)\n",
+ 		 smmu->ias, smmu->oas, smmu->features);
+ 	return 0;
+@@ -4606,6 +4598,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
- /*
-  * Internal structures for page table allocator implementations.
-@@ -301,11 +314,13 @@ enum io_pgtable_caps {
-  *
-  * @alloc: Allocate a set of page tables described by cfg.
-  * @free:  Free the page tables associated with iop.
-+ * @configure: Create the configuration without allocating anything. Optional.
-  * @caps:  Combination of @io_pgtable_caps flags encoding the backend capabilities.
-  */
- struct io_pgtable_init_fns {
- 	struct io_pgtable *(*alloc)(struct io_pgtable_cfg *cfg, void *cookie);
- 	void (*free)(struct io_pgtable *iop);
-+	int (*configure)(struct io_pgtable_cfg *cfg);
- 	u32 caps;
- };
- 
++	if (arm_smmu_sva_supported(smmu))
++		smmu->features |= ARM_SMMU_FEAT_SVA;
++
++	if (disable_msipolling)
++		smmu->options &= ~ARM_SMMU_OPT_MSIPOLL;
++
++	if (arm_smmu_ops.pgsize_bitmap == -1UL)
++		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
++	else
++		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
++
+ 	/* Initialise in-memory data structures */
+ 	ret = arm_smmu_init_structures(smmu);
+ 	if (ret)
 -- 
 2.47.0.338.g60cca15819-goog
 
