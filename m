@@ -1,55 +1,55 @@
 Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6AE122FAD4
-	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 18:05:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C53FF231A26
+	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 18:05:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734026723; cv=none; b=Rg60SUa90lo6Yzbtw7hP92ly8wfaUv6pHBu9Yit1kcumwJzDJiqi7QV6F9LzyA1XtF0Ql/gWG4pA2YOz/TPFKi+FhuXqbLdPIKEmPdDdvXIEZoTeIEeghD0CsfkUKHu5v0ap61okPrUpm0afco3Yitm0oTinrdpekSnETOou80g=
+	t=1734026726; cv=none; b=M/Euw5sWY1cIad/lSKYK3Hh7uJkmK+OVamhU1tcPTnbyJJLnRCtG8AYLVNkV63WgqSrfU3XR0bjM/ibyx0g8Nj+7cFyR3lFeqI+0aY8SfEPjmbU+SG2kwf0uF6ckD5I6yzDpMqdSec2Z2WqZtAMhKScfMdaTUX/tTJYGJ8PitWA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734026723; c=relaxed/simple;
-	bh=7DeqoP+0h4J/nlEoKq6qxUg79CviM0U7ODp/Jiv7XFU=;
+	s=arc-20240116; t=1734026726; c=relaxed/simple;
+	bh=7KXEuH5v8YrWgzX2fXUjWcfTANvESrnvUggEWHtho/I=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=IehA4SVOD/0O0FR9QaVIEwYALHAHjRY5+cv/9gW8cIjBsTlDrnYYjRfHMsc/5sCzrFusVS5EB71anRt0lEU3DbGfoc3qQJxlgyf9lxnFu98IIjN71zrsvM8KKO33z+0xflEux+Gjph1XyKpJrm470CTDYDtpY7cEkgT+we8fZsg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eqizRCSQ; arc=none smtp.client-ip=209.85.128.73
+	 To:Cc:Content-Type; b=COscG+F4M68chl3D5VlRBvucI/KzIcrkhQN+iGj3eeUm/gXRto2tItvkJc63FQrWlGxGMqtYxXNLqWoUL9E+byYIzWY7FWBSes88W2fLKEUs+Rm7Qz0G1pXXxzIRxYBJBNdN7tQA47kK/HcAnygxZcqMIZTMVcIv+Y8NRf6/tX8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NSVVmOc1; arc=none smtp.client-ip=209.85.128.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eqizRCSQ"
-Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-43610eba55bso8218825e9.3
-        for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 10:05:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NSVVmOc1"
+Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-4361fc2b2d6so5532635e9.3
+        for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 10:05:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1734026719; x=1734631519; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1734026723; x=1734631523; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=r96D7jtEo6iMT7XaPgJfnXzgjFVNWq31bg+JNNbd33c=;
-        b=eqizRCSQ5dn2kgUT+YBOpSs8FBNYXMxhSH5CqnAcFNt7L80a1gNQ0d7Z9L8moBUDkq
-         nUXSCBg2xPJyMXNM55Wl3a+gx/e6di2lQZrhwNvKW7l2lfVmdxzIxOwQIghiHhFwzQEv
-         C9Oax8C/VJ3xEkbU5L6o5ppdYZozp86TvgU2Xei0lZXtuSNs0JcJSAlPGevP5OUDlccP
-         dbhCLS5iuHMTwg6tqljwycncZVavQh3S94eQyPVlPXHOPDasJCrFokleC1QVXp+UYFV7
-         Sb3aD5E4xsajQTVysVpcTbHC3QfiKztqWcr/PVNCPChyYE0aC0e696kWzn7kZBpRpwv0
-         EjBA==
+        bh=oAsQTCVq1k5cQX4NrU1R+91jvUrFkU1qGqPwmUapmCQ=;
+        b=NSVVmOc1IJUpH0tf5JbGSjX8vB3bg4HAWgqQR5KmWQ61nUq3jeplVyItctLzBoe96x
+         FrybuzftGGblrej95yjc6Z2v2iP0KcB403uI9BJtwoanuVylsoFdGljkXiHg5iiM9Jrb
+         tB1MeMeYHwr9JV1eDsQYfoX55B5DqNbWHGvJ8RZqtA+HTkMcGOGWgLe4dv2JmdlPjo/T
+         AXOCLyFLKjj8Ox0HJJL+z19fDd2Uu/33DkI31vbuYRHCM2/+BubdLy8t6hxqTURQ3oXp
+         IZP0NI8p9H63R+FZhCUbC3kxIzRXdKcZnVSqV7ZvnuEEKFWFZ7NJ0JT7SqJEK+3GcjpI
+         2ZsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734026719; x=1734631519;
+        d=1e100.net; s=20230601; t=1734026723; x=1734631523;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=r96D7jtEo6iMT7XaPgJfnXzgjFVNWq31bg+JNNbd33c=;
-        b=umKgdSzI5NULEXozfoMQvXaY6IUyYTMnngiLyeXprE/lswN2fL+v9/bhF0FlTHDprK
-         ZyHVPP4onctj4HHxxOuLP6GW/tM8VBMbDv00Nliul2wsy4eM4CVzH1I7mSzJZEmMi6ex
-         Cprb7qY1FRYvNAh+KZ1PUZA+/oPl/Zoo/AoISFLW6jbpyoL7g9wxlVDiurmxrmH8UDW2
-         tLiHRk0cV8WNQy6XAVj2M7JQBVugQj0sOQM97RJitqLA51YrkW7QSfsgN0Ez+RmREFdB
-         UL5qLM8vQuAGriHI4C3+94jm/a07wKgy51nxV8+hpdDnROSCcx9uVuifoA/Co2Ir/9qk
-         DISw==
-X-Gm-Message-State: AOJu0YzlzdN5ve0E1kJ9nMmVJQXdY98NXflPcli5sbJd/VsmMLe0jmNy
-	ziyfr2r7WwL6w0JzCBbVAgtmZej4ReXs5Xjhv4FYYtM6wkG6+erq3jRo9VTUVUBav1u+5o4iBYL
-	KeK6VsY3TghpOOgtS6xhcSAczEN+gTd2vx5fdKTaKfGw3BjmpsNbG5gRmPj4Mte5NHxvRnD/eZw
-	m1Oxr4Sr4HzzRzIWuNb8kOMYvmvtX7CKtJrN831cli9g==
-X-Google-Smtp-Source: AGHT+IHOlQVhqOBCLyKRJBicSu0YdgpRP9Z8cEsxdD6v5Zy8WYvPT3uz4gGoRc3GnnVzZTWZ+pU892qsZdg7uQ==
-X-Received: from wmhj22.prod.google.com ([2002:a05:600c:3016:b0:434:fe74:1bd5])
+        bh=oAsQTCVq1k5cQX4NrU1R+91jvUrFkU1qGqPwmUapmCQ=;
+        b=gqhKqhjPZHVErhXfsUQTYZhN6ul76gkHLQ4vGu280KqYWZ8VRMlc8cxg1UfZxCkKiA
+         Ih4g/JhWV5+dmB6B9RU/4Bkqn3YJZ/Ir22U7jlLpn8jryd/SbRi80EpTKCkQPHss0Fsi
+         r4o0KTsO1AIeGaRX1bCtE+3/fPWZ0TRireBxI15lf9M9WYMeikIps7sFPsWkCLIiVh+k
+         9XH1AyKy7kOFlswTP0RAm1H2M1IpfxamCoewHe2gyh8E9KyH0h7y0laN4HoMBQF3r+LZ
+         SB43Yk0/Xs/kqL7WX8eKXSLkjmW4ajMfruk9UmJYZAk1Zaoczm2VmJfLParcvyjZYKml
+         S6KQ==
+X-Gm-Message-State: AOJu0YwZkHXfoPYUVZxZmNnAROi4WfoK4hxKTo/cKAKH9DAT3vPRlk8t
+	VPl5unR0srDinLkrY9szPdzY1yvwVuFbwfF+7RFE7Ci5D3FLyIVr/efkJSaKNkEjsDO1e7R5dNh
+	xMymOiv+4iQrUYMxu270RG+FLZ3N6BfVwK2U//Qerojeq7X1NAZb8kt1cD0kGLYV+lpbfr8VKCZ
+	gzgcc4NdoFJjlfEV9Bq1uPPs4qit6UYU3WYTMUrJs9mg==
+X-Google-Smtp-Source: AGHT+IEK5984jXibFupy1tKIQcqayv18x11IpqLmg4k+VIF9btcstf/EJxCVy5RbSEtdnliqdjvouvMqk5ypZg==
+X-Received: from wmej18.prod.google.com ([2002:a05:600c:42d2:b0:434:a1af:5d39])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:3593:b0:435:294:f1c8 with SMTP id 5b1f17b1804b1-43622883637mr32346155e9.28.1734026719225;
- Thu, 12 Dec 2024 10:05:19 -0800 (PST)
-Date: Thu, 12 Dec 2024 18:03:41 +0000
+ 2002:a5d:59ad:0:b0:385:fb2c:6021 with SMTP id ffacd0b85a97d-3864ce986camr4566052f8f.39.1734026723319;
+ Thu, 12 Dec 2024 10:05:23 -0800 (PST)
+Date: Thu, 12 Dec 2024 18:03:43 +0000
 In-Reply-To: <20241212180423.1578358-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20241212180423.1578358-1-smostafa@google.com>
 X-Mailer: git-send-email 2.47.1.613.gc27f4b7a9f-goog
-Message-ID: <20241212180423.1578358-18-smostafa@google.com>
-Subject: [RFC PATCH v2 17/58] KVM: arm64: iommu: Add {attach, detach}_dev
+Message-ID: <20241212180423.1578358-20-smostafa@google.com>
+Subject: [RFC PATCH v2 19/58] KVM: arm64: iommu: support iommu_iotlb_gather
 From: Mostafa Saleh <smostafa@google.com>
 To: iommu@lists.linux.dev, kvmarm@lists.linux.dev, 
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
@@ -73,173 +73,143 @@ Cc: catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
 	Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Add attach/detach dev operations which are forwarded to the driver.
+To improve unmap performance, we can batch TLB invalidations at the
+end of the unmap similarly to what the kernel.
 
-To avoid racing between alloc/free domain and attach/detach dev,
-the refcount is used.
-
-Although, as IOMMU attach/detach are per-IOMMU and would require
-some sort of locking, nothing in the IOMMU core code need the lock
-so delegate that to the driver to use locks when needed and the
-hypervisor only guarantees no races between alloc/free domain.
-
-Also, add a new function kvm_iommu_init_device() to initialise common
-fields of the IOMMU struct, which is only the lock at the moment.
-The IOMMU core code will need to use the lock next for power
-management.
+We use the same data structure as the kernel and most of the same
+code.
 
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- arch/arm64/kvm/hyp/include/nvhe/iommu.h | 29 +++++++++++++
- arch/arm64/kvm/hyp/nvhe/iommu/iommu.c   | 56 ++++++++++++++++++++++++-
- include/kvm/iommu.h                     |  8 ++++
- 3 files changed, 91 insertions(+), 2 deletions(-)
+ arch/arm64/kvm/hyp/include/nvhe/iommu.h | 11 +++++++++--
+ arch/arm64/kvm/hyp/nvhe/iommu/iommu.c   | 22 +++++++++++++++++++++-
+ include/linux/iommu.h                   | 24 +++++++++++++-----------
+ 3 files changed, 43 insertions(+), 14 deletions(-)
 
 diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-index 8f619f415d1f..d6d7447fbac8 100644
+index 17f24a8eb1b9..06d12b35fa3e 100644
 --- a/arch/arm64/kvm/hyp/include/nvhe/iommu.h
 +++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-@@ -35,10 +35,39 @@ struct kvm_iommu_ops {
- 	int (*init)(void);
- 	int (*alloc_domain)(struct kvm_hyp_iommu_domain *domain, int type);
- 	void (*free_domain)(struct kvm_hyp_iommu_domain *domain);
-+	struct kvm_hyp_iommu *(*get_iommu_by_id)(pkvm_handle_t iommu_id);
-+	int (*attach_dev)(struct kvm_hyp_iommu *iommu, struct kvm_hyp_iommu_domain *domain,
-+			  u32 endpoint_id, u32 pasid, u32 pasid_bits);
-+	int (*detach_dev)(struct kvm_hyp_iommu *iommu, struct kvm_hyp_iommu_domain *domain,
-+			  u32 endpoint_id, u32 pasid);
+@@ -44,15 +44,22 @@ struct kvm_iommu_ops {
+ 			 phys_addr_t paddr, size_t pgsize,
+ 			 size_t pgcount, int prot, size_t *total_mapped);
+ 	size_t (*unmap_pages)(struct kvm_hyp_iommu_domain *domain, unsigned long iova,
+-			      size_t pgsize, size_t pgcount);
++			      size_t pgsize, size_t pgcount,
++			      struct iommu_iotlb_gather *gather);
+ 	phys_addr_t (*iova_to_phys)(struct kvm_hyp_iommu_domain *domain, unsigned long iova);
+-
++	void (*iotlb_sync)(struct kvm_hyp_iommu_domain *domain,
++			   struct iommu_iotlb_gather *gather);
  };
  
  int kvm_iommu_init(void);
  
-+int kvm_iommu_init_device(struct kvm_hyp_iommu *iommu);
-+
-+static inline hyp_spinlock_t *kvm_iommu_get_lock(struct kvm_hyp_iommu *iommu)
-+{
-+	/* See struct kvm_hyp_iommu */
-+	BUILD_BUG_ON(sizeof(iommu->lock) != sizeof(hyp_spinlock_t));
-+	return (hyp_spinlock_t *)(&iommu->lock);
-+}
-+
-+static inline void kvm_iommu_lock_init(struct kvm_hyp_iommu *iommu)
-+{
-+	hyp_spin_lock_init(kvm_iommu_get_lock(iommu));
-+}
-+
-+static inline void kvm_iommu_lock(struct kvm_hyp_iommu *iommu)
-+{
-+	hyp_spin_lock(kvm_iommu_get_lock(iommu));
-+}
-+
-+static inline void kvm_iommu_unlock(struct kvm_hyp_iommu *iommu)
-+{
-+	hyp_spin_unlock(kvm_iommu_get_lock(iommu));
-+}
-+
- extern struct hyp_mgt_allocator_ops kvm_iommu_allocator_ops;
+ int kvm_iommu_init_device(struct kvm_hyp_iommu *iommu);
  
- #endif /* __ARM64_KVM_NVHE_IOMMU_H__ */
++void kvm_iommu_iotlb_gather_add_page(struct kvm_hyp_iommu_domain *domain,
++				     struct iommu_iotlb_gather *gather,
++				     unsigned long iova,
++				     size_t size);
++
+ static inline hyp_spinlock_t *kvm_iommu_get_lock(struct kvm_hyp_iommu *iommu)
+ {
+ 	/* See struct kvm_hyp_iommu */
 diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-index ba2aed52a74f..df2dbe4c0121 100644
+index 83321cc5f466..a6e0f3634756 100644
 --- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
 +++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-@@ -127,6 +127,19 @@ handle_to_domain(pkvm_handle_t domain_id)
- 	return &domains[domain_id % KVM_IOMMU_DOMAINS_PER_PAGE];
+@@ -305,12 +305,30 @@ size_t kvm_iommu_map_pages(pkvm_handle_t domain_id,
+ 	return total_mapped;
  }
  
-+static int domain_get(struct kvm_hyp_iommu_domain *domain)
++static inline void kvm_iommu_iotlb_sync(struct kvm_hyp_iommu_domain *domain,
++					struct iommu_iotlb_gather *iotlb_gather)
 +{
-+	int old = atomic_fetch_inc_acquire(&domain->refs);
++	if (kvm_iommu_ops->iotlb_sync)
++		kvm_iommu_ops->iotlb_sync(domain, iotlb_gather);
 +
-+	BUG_ON(!old || (old + 1 < 0));
-+	return 0;
++	iommu_iotlb_gather_init(iotlb_gather);
 +}
 +
-+static void domain_put(struct kvm_hyp_iommu_domain *domain)
++void kvm_iommu_iotlb_gather_add_page(struct kvm_hyp_iommu_domain *domain,
++				     struct iommu_iotlb_gather *gather,
++				     unsigned long iova,
++				     size_t size)
 +{
-+	BUG_ON(!atomic_dec_return_release(&domain->refs));
++	_iommu_iotlb_add_page(domain, gather, iova, size, kvm_iommu_iotlb_sync);
 +}
 +
- int kvm_iommu_init(void)
+ size_t kvm_iommu_unmap_pages(pkvm_handle_t domain_id, unsigned long iova,
+ 			     size_t pgsize, size_t pgcount)
  {
- 	int ret;
-@@ -210,13 +223,44 @@ int kvm_iommu_free_domain(pkvm_handle_t domain_id)
- int kvm_iommu_attach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
- 			 u32 endpoint_id, u32 pasid, u32 pasid_bits)
- {
--	return -ENODEV;
-+	int ret;
-+	struct kvm_hyp_iommu *iommu;
-+	struct kvm_hyp_iommu_domain *domain;
-+
-+	iommu = kvm_iommu_ops->get_iommu_by_id(iommu_id);
-+	if (!iommu)
-+		return -EINVAL;
-+
-+	domain = handle_to_domain(domain_id);
-+	if (!domain || domain_get(domain))
-+		return -EINVAL;
-+
-+	ret = kvm_iommu_ops->attach_dev(iommu, domain, endpoint_id, pasid, pasid_bits);
-+	if (ret)
-+		domain_put(domain);
-+	return ret;
+ 	size_t size;
+ 	size_t unmapped;
+ 	struct kvm_hyp_iommu_domain *domain;
++	struct iommu_iotlb_gather iotlb_gather;
+ 
+ 	if (!pgsize || !pgcount)
+ 		return 0;
+@@ -323,6 +341,7 @@ size_t kvm_iommu_unmap_pages(pkvm_handle_t domain_id, unsigned long iova,
+ 	if (!domain || domain_get(domain))
+ 		return 0;
+ 
++	iommu_iotlb_gather_init(&iotlb_gather);
+ 	/*
+ 	 * Unlike map, the common code doesn't call the __pkvm_host_unuse_dma,
+ 	 * because this means that we need either walk the table using iova_to_phys
+@@ -334,7 +353,8 @@ size_t kvm_iommu_unmap_pages(pkvm_handle_t domain_id, unsigned long iova,
+ 	 * standardized, we leave that to the driver.
+ 	 */
+ 	unmapped = kvm_iommu_ops->unmap_pages(domain, iova, pgsize,
+-						pgcount);
++						pgcount, &iotlb_gather);
++	kvm_iommu_iotlb_sync(domain, &iotlb_gather);
+ 
+ 	domain_put(domain);
+ 	return unmapped;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index bd722f473635..c75877044185 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -911,6 +911,18 @@ static inline void iommu_iotlb_gather_add_range(struct iommu_iotlb_gather *gathe
+ 		gather->end = end;
  }
  
- int kvm_iommu_detach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
- 			 u32 endpoint_id, u32 pasid)
++/*
++ * If the new page is disjoint from the current range or is mapped at
++ * a different granularity, then sync the TLB so that the gather
++ * structure can be rewritten.
++ */
++#define _iommu_iotlb_add_page(domain, gather, iova, size, sync)		\
++	if (((gather)->pgsize && (gather)->pgsize != (size)) ||		\
++	    iommu_iotlb_gather_is_disjoint((gather), (iova), (size)))	\
++		sync((domain), (gather));				\
++	(gather)->pgsize = (size);					\
++	iommu_iotlb_gather_add_range((gather), (iova), (size))
++
+ /**
+  * iommu_iotlb_gather_add_page - Gather for page-based TLB invalidation
+  * @domain: IOMMU domain to be invalidated
+@@ -926,17 +938,7 @@ static inline void iommu_iotlb_gather_add_page(struct iommu_domain *domain,
+ 					       struct iommu_iotlb_gather *gather,
+ 					       unsigned long iova, size_t size)
  {
--	return -ENODEV;
-+	int ret;
-+	struct kvm_hyp_iommu *iommu;
-+	struct kvm_hyp_iommu_domain *domain;
-+
-+	iommu = kvm_iommu_ops->get_iommu_by_id(iommu_id);
-+	if (!iommu)
-+		return -EINVAL;
-+
-+	domain = handle_to_domain(domain_id);
-+	if (!domain || atomic_read(&domain->refs) <= 1)
-+		return -EINVAL;
-+
-+	ret = kvm_iommu_ops->detach_dev(iommu, domain, endpoint_id, pasid);
-+	if (ret)
-+		return ret;
-+	domain_put(domain);
-+	return ret;
+-	/*
+-	 * If the new page is disjoint from the current range or is mapped at
+-	 * a different granularity, then sync the TLB so that the gather
+-	 * structure can be rewritten.
+-	 */
+-	if ((gather->pgsize && gather->pgsize != size) ||
+-	    iommu_iotlb_gather_is_disjoint(gather, iova, size))
+-		iommu_iotlb_sync(domain, gather);
+-
+-	gather->pgsize = size;
+-	iommu_iotlb_gather_add_range(gather, iova, size);
++	_iommu_iotlb_add_page(domain, gather, iova, size, iommu_iotlb_sync);
  }
  
- size_t kvm_iommu_map_pages(pkvm_handle_t domain_id,
-@@ -236,3 +280,11 @@ phys_addr_t kvm_iommu_iova_to_phys(pkvm_handle_t domain_id, unsigned long iova)
- {
- 	return 0;
- }
-+
-+/* Must be called from the IOMMU driver per IOMMU */
-+int kvm_iommu_init_device(struct kvm_hyp_iommu *iommu)
-+{
-+	kvm_iommu_lock_init(iommu);
-+
-+	return 0;
-+}
-diff --git a/include/kvm/iommu.h b/include/kvm/iommu.h
-index 10ecaae0f6a3..6ff78d766466 100644
---- a/include/kvm/iommu.h
-+++ b/include/kvm/iommu.h
-@@ -45,4 +45,12 @@ extern void **kvm_nvhe_sym(kvm_hyp_iommu_domains);
- #define KVM_IOMMU_DOMAINS_ROOT_ORDER_NR	\
- 	(1 << get_order(KVM_IOMMU_DOMAINS_ROOT_SIZE))
- 
-+struct kvm_hyp_iommu {
-+#ifdef __KVM_NVHE_HYPERVISOR__
-+	hyp_spinlock_t			lock;
-+#else
-+	u32				unused;
-+#endif
-+};
-+
- #endif /* __KVM_IOMMU_H */
+ static inline bool iommu_iotlb_gather_queued(struct iommu_iotlb_gather *gather)
 -- 
 2.47.0.338.g60cca15819-goog
 
