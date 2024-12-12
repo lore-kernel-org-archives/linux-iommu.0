@@ -1,113 +1,205 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFCA522488E
-	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 18:08:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0398A188713
+	for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 19:41:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734026902; cv=none; b=jDJo+6vrz7OZ/mvEnmDpMPtxhwg9ra8YR6PZW3UGNU0NdrNbvSd20jmmR7BXXgZ5dzPVrXRhFXiBANaUYezziHr7L8Z8XymwynVfMPf8cYrsWYVTm2ZoAOxRZaOtKIz9Qs7tIRSTqxd8naJFppgwPYHa9VIScWSJ0tCH1ouMdCk=
+	t=1734032483; cv=none; b=MiS4IyYuhYFIeGTs54vwWsCnfUjqkcN5oOs/+hxb9O0Y8F1tUMdy7yfDmjweXg3wFuPiJTqngGa6qVVq8IQmzBVmOzC4ISTXdWlEhX5wAokFuBi8vZwgqI5AO0QvkLWI1c4l9GNDi1r7UYLkdwN0HauREHY8xbXnmVkGNsfGcXo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734026902; c=relaxed/simple;
-	bh=A4SoHROMcA/b4c41oXY+uc3schTEq/Qz+rWDBhibBfU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Iw+VHiNWcTXtWAnGnZ1Xk6VNKZaDNEuKP3WCqRamHfvBOISWoFor8Je6N7RkJmcGGxYtfL2RaL/IGvginXYYvaCTL6vsDu3/NTpLLc8g7NKYiJdaG5gjA1giQ6BUclUxy2PvRr7j5CjSa0Mh6jVkIpWCRb/Lp/FYy/IjuSc43co=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=pwkZGxdz; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1734032483; c=relaxed/simple;
+	bh=1fUaxnIWQ14Cl7MyHDiaPh/lA3BwLlrrlhJtMV8mhgg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fqIvxD2wmOiI3v8nRp78WHcMJnWljGaDbMomVoAiH/7LvrPDq9mg/Ihn8HR9546are9c9ptL10RLtds5vYuoGlADQiOjlqN2XtGzwzaU2m0vHj91R06vu5aZTzV43+Kc0nEHn0BCxWM7MvhfqpqWWmM8F0bY39s3Ieza44aF6dg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=P7whMmUZ; arc=none smtp.client-ip=209.85.219.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="pwkZGxdz"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BC7qAOE032186;
-	Thu, 12 Dec 2024 18:08:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	cKRHSSkFO/9qxXnX4VdFN+ENGR4IipewyVU2OtOSgwE=; b=pwkZGxdzRXJ2Gniw
-	egccIPPzOALI1zJcCjw5zl0F7E4zSWN7FXq6aBopmGg2igmA1nQEXl0TTn8NzO+u
-	5O75YYwy2FbnCHyPjFzFlZ15611kxQfrfwXQDFnmkRdLmUahptn5OJeOSuG1MYp5
-	qvF77DYJbYa6psPR8h0a+nHNOZM8DdNXL014A2275bagC+eElqhsb2PR4AVwvoGC
-	uQJnmAxN5wNbCoiAGuj9Tuf2feVtgxrptgmDEvWngD26TyoNN9MVRQ4Xsg4975WD
-	OTQuLayy4DOIhXVKWA+5OWfgQ6GC0yU9ac5WtsMbzTFZFNswirZuphDKeEr0Pa+O
-	BvcHNg==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43f6tfd390-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 12 Dec 2024 18:08:13 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4BCI8Caa025893
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 12 Dec 2024 18:08:12 GMT
-Received: from [10.111.178.2] (10.49.16.6) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 12 Dec
- 2024 10:08:11 -0800
-Message-ID: <ecbd70dd-9274-42b6-9673-9c6d82c4e763@quicinc.com>
-Date: Thu, 12 Dec 2024 10:08:10 -0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="P7whMmUZ"
+Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-6d8f544d227so6009416d6.1
+        for <iommu@lists.linux.dev>; Thu, 12 Dec 2024 11:41:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1734032481; x=1734637281; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=e3Kc4OCgSvKd/epZOxEeCEHon8tDHQaK9PORYrELsJ0=;
+        b=P7whMmUZyg/8UU6JNpLjsuVw7/Lk4d/Q+/C1gt8LVUPyVBPHOj4sr0N7zqhI8OK0GC
+         j0hDNe7G7Xjs/AhkIyeVvqvFTQ86oxPrLgJWS6wQXr1zI+89gsPE7mV2cA5LhwMq8icr
+         C4uSQYK4pw4ZItTqwvLqsmu5cBQ5Un6hV8zufvmUflX2ma+47qVbfDz82j+Lpilbg+IA
+         WkzwtzIJg8OAt9k1EwSQVHjQ+BL2Ol+pZKb9lUHdgS2wyrFCvbGe1YeKzGBU/dipiyxZ
+         7eyKQ4vSJwNvQcJuKjzXAJhnuEItHeLvBG1hvvjVhA7EcNA8pOUzcfu1jgLcKXQgua0R
+         6bgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1734032481; x=1734637281;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=e3Kc4OCgSvKd/epZOxEeCEHon8tDHQaK9PORYrELsJ0=;
+        b=Z0kCQTgQ/t0z+b9wCsLKV3teNPosk15R3fRy0yuX4V1/IXDb5WYbWqMWWKliWpn01L
+         O1QGqtZF05dw1SW1ZtJ3LAY++l5Y22hKHzvsoVhXXXtgMh1Sspme7UFrVMmUU+NcySot
+         M+rg9JWOvzYnncCn6JCUzYZXkpeshMfdgYFfKam+QFBc0NJ1XGg48xO0sUl3SfVUqk5I
+         3IrgpaHHxDRxMy9iNsbQI4M8kNMNPvUlTcbxwisH/PBDiE2d0ijk3iSuRBx4b34dzhkc
+         MUpjo/ilP858DlLI6kRIc/4R8oI4mPAJnqS1thyzPdxaob09RyutvksFGPf5dNCDveRD
+         v4yQ==
+X-Gm-Message-State: AOJu0YwBChlgcocH3riT0mS9vNZPwiKGT0jFHeejaKRDnHCNq/rzlBr5
+	pzkJulSacTqqT7JRAmcbB5rKlZ3Z+o2Mt7apIdFwzvXCEjCWPFl4PNplS36+p9E=
+X-Gm-Gg: ASbGncv4XK4Ea/WwXGg7dZZwm+dFsJiQZrjAVF3Gp8bGaRorqXV4lYr3462tV0FeynD
+	Qo0VwuHH9v65BOSW3lQRjUaegjtHHt5m3D6ksoz6/YC8kDkX3angF9fa86p0QQQ8wg2HcbDMutP
+	fWoi/XsP9ZU32VBvMU4G89UBGXA2eoE7WBuGZUBiMDxxS85s2rFFtRSpJKtsnDum+ZXyZ1/9Buj
+	fV7jUmSdto0rUm8fFsSR0HrRy3tdbSrptR1LNMLIaYEzG1ymsza0XQu2goG6AWSrLEl2v44x6jW
+	Jad6l7JSyg66Hcl1vBiZWXduTr38zQ==
+X-Google-Smtp-Source: AGHT+IEAIplt0z2RMr+HjydESxf+Hn46nEN6kxVZTLt1QJkSzwAdttK3JwjCrGJqs05d0XfX9mfmMg==
+X-Received: by 2002:ad4:5c66:0:b0:6d8:9124:8794 with SMTP id 6a1803df08f44-6db0f6ebbe6mr22392236d6.5.1734032480736;
+        Thu, 12 Dec 2024 11:41:20 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7b6eed3d22dsm162122185a.31.2024.12.12.11.41.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2024 11:41:20 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tLp3n-000000001YW-1idH;
+	Thu, 12 Dec 2024 15:41:19 -0400
+Date: Thu, 12 Dec 2024 15:41:19 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: iommu@lists.linux.dev, kvmarm@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, robdclark@gmail.com, joro@8bytes.org,
+	robin.murphy@arm.com, jean-philippe@linaro.org, nicolinc@nvidia.com,
+	vdonnefort@google.com, qperret@google.com, tabba@google.com,
+	danielmentz@google.com, tzukui@google.com
+Subject: Re: [RFC PATCH v2 00/58] KVM: Arm SMMUv3 driver for pKVM
+Message-ID: <20241212194119.GA4679@ziepe.ca>
+References: <20241212180423.1578358-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: ath11k swiotlb buffer is full (on IMX8M with 4GiB DRAM)
-To: Christoph Hellwig <hch@lst.de>, Baochen Qiang <quic_bqiang@quicinc.com>
-CC: Robin Murphy <robin.murphy@arm.com>, Tim Harvey <tharvey@gateworks.com>,
-        <ath11k@lists.infradead.org>,
-        linux-wireless
-	<linux-wireless@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        "Marek
- Szyprowski" <m.szyprowski@samsung.com>,
-        <iommu@lists.linux.dev>
-References: <0282be95-9094-4d49-b79e-4f7c976dad00@quicinc.com>
- <CAJ+vNU32EMHjtchJRb1sODBrUKG2vZW4ZEu1_F0+dCCEjCn7Dg@mail.gmail.com>
- <20241209081714.GA25363@lst.de>
- <593c0d63-d8fd-4439-a57a-97340212c197@arm.com>
- <CAJ+vNU2ypE_Mn_6iKCmf5LYk9Sth=ryWXyewc5MhOKK8VoAKCA@mail.gmail.com>
- <20241210041133.GA17116@lst.de>
- <CAJ+vNU03Cqsc+O5anwmvJW8Wfd-06LbDMVHjxVFdixf01ZLczQ@mail.gmail.com>
- <5fe372df-ae51-4a8b-9fa3-a4a0ea2d33e3@quicinc.com>
- <9b2e8ffa-ba2c-46da-a478-eb1fb44b693e@arm.com>
- <80992ae5-e329-4a34-94c8-9345b2e8a9a0@quicinc.com>
- <20241212071848.GB6638@lst.de>
-From: Jeff Johnson <quic_jjohnson@quicinc.com>
-Content-Language: en-US
-In-Reply-To: <20241212071848.GB6638@lst.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: PhVrHVHMthQseaX3U30Djw5Jr8uC55Ie
-X-Proofpoint-ORIG-GUID: PhVrHVHMthQseaX3U30Djw5Jr8uC55Ie
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- mlxlogscore=924 malwarescore=0 spamscore=0 lowpriorityscore=0
- impostorscore=0 adultscore=0 bulkscore=0 phishscore=0 priorityscore=1501
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2412120129
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20241212180423.1578358-1-smostafa@google.com>
 
-On 12/11/2024 11:18 PM, Christoph Hellwig wrote:
-> On Thu, Dec 12, 2024 at 01:24:45PM +0800, Baochen Qiang wrote:
->> yeah, you are right, Robin. didn't know there are convenient interfaces
->> like these already.
-> 
-> FYI, the DMA-API documentation says pretty straight forward to not
-> use the streaming API and documents these interfaces.  But maybe it's
-> not clear enough, so I'm open to suggestions on how to make it more
-> obvious.
+On Thu, Dec 12, 2024 at 06:03:24PM +0000, Mostafa Saleh wrote:
 
-This is probably less of a documentation issue and more of an issue with the
-fact that each instance of the ath driver is based upon the prior instance,
-and hence it inherits any usage of legacy APIs. So unless someone notices
-there is a better API, or proactively adds the usage of the new API for us,
-the ath drivers will continue to use legacy APIs.
+> This series adds a hypervisor driver for the Arm SMMUv3 IOMMU. Since the
+> hypervisor part of pKVM (called nVHE here) is minimal, moving the whole
+> host SMMU driver into nVHE isn't really an option. It is too large and
+> complex and requires infrastructure from all over the kernel. We add a
+> reduced nVHE driver that deals with populating the SMMU tables and the
+> command queue, and the host driver still deals with probing and some
+> initialization.
 
-So it is appreciated that light has been shed on this issue.
+The cover letter doesn't explain why someone needs page tables in the
+guest at all?
 
-/jeff
+If you are able to implement nested support then you can boot the
+guest with no-iommu and an effective identity translation through a
+hypervisor controlled S2. ie no guest map/unmap. Great DMA
+performance.
 
+I thought the point of doing the paravirt here was to allow dynamic
+pinning of the guest memory? This is the primary downside with nested.
+The entire guest memory has to be pinned down at guest boot.
+
+> 1. Paravirtual I/O page tables
+> This is the solution implemented in this series. The host creates
+> IOVA->HPA mappings with two hypercalls map_pages() and unmap_pages(), and
+> the hypervisor populates the page tables. Page tables are abstracted into
+> IOMMU domains, which allow multiple devices to share the same address
+> space. Another four hypercalls, alloc_domain(), attach_dev(), detach_dev()
+> and free_domain(), manage the domains, the semantics of those hypercalls
+> are almost identical to the IOMMU ops which make the kernel driver part
+> simpler.
+
+That is re-inventing virtio-iommu. I don't really understand why this
+series is hacking up arm-smmuv3 so much, that is not, and should not,
+be a paravirt driver. Why not create a clean new pkvm specific driver
+for the paravirt?? Or find a way to re-use parts of virtio-iommu?
+
+Shouldn't other arch versions of pkvm be able to re-use the same guest
+iommu driver?
+
+> b- Locking: The io-pgtable-arm is lockless under some guarantees of how
+>    the IOMMU code behaves. However with pKVM, the kernel is not trusted
+>    and a malicious kernel can issue concurrent requests causing memory
+>    corruption or UAF, so that it has to be locked in the hypervisor.
+
+? I don't get it, the hypervisor page table has to be private to the
+hypervisor. It is not that io-pgtable-arm is lockless, it is that it
+relies on a particular kind of caller supplied locking. pkvm's calls
+into its private io-pgtable-arm would need pkvm specific locking that
+makes sense for it. Where does a malicious guest kernel get into this?
+
+> 2. Nested SMMUv3 translation (with emulation)
+> Another approach is to rely on nested translation support which is
+> optional in SMMUv3, that requires an architecturally accurate emulation
+> of SMMUv3 which can be complicated including cmdq emulation.
+
+The confidential compute folks are going in this direction.
+
+> The trade off between the 2 approaches can be roughly summarised as:
+> Paravirtualization:
+> - Compatible with more HW (and IOMMUs).
+> - Better DMA performance due to shorter table walks/less TLB pressure
+> - Needs extra complexity to squeeze the last bit of optimization (around
+>   unmap, and map_sg).
+
+It has better straight line DMA performance if the DMAs are all
+static. Generally much, much worse performance if the DMAs are
+dynamically mapped as you have to trap so much stuff.
+
+The other negative is there is no way to get SVA support with
+para-virtualization.
+
+The positive is you don't have to pin the VM's memory.
+
+> Nested Emulation
+> - Faster map_pages (not sure about unmap because it requires cmdq
+>   emulation for TLB invalidation if DVM not used).
+
+If you can do nested then you can run in identity mode and then you
+don't have any performance down side. It is a complete win.
+
+Even if you do non-idenity nested is still likely faster for changing
+translation than paravirt approaches. A single cmdq range invalidate
+should be about the same broad overhead as a single paravirt call to
+unmap except they can be batched under load.
+
+Things like vCMDQ eliminate this overhead entirely, to my mind that is
+the future direction of this HW as you obviously need to HW optimize
+invalidation...
+
+> - Needs extra complexity for architecturally emulating SMMUv3.
+
+Lots of people have now done this, it is not really so bad. In
+exchange you get a full architected feature set, better performance,
+and are ready for HW optimizations.
+
+> - Add IDENTITY_DOMAIN support, I already have some patches for that, but
+>   didn’t want to complicate this series, I can send them separately.
+
+This seems kind of pointless to me. If you can tolerate identity (ie
+pin all memory) then do nested, and maybe don't even bother with a
+guest iommu.
+
+If you want most of the guest memory to be swappable/movable/whatever
+then paravirt is the only choice, and you really don't want the guest
+to have any identiy support at all.
+
+Really, I think you'd want to have both options, there is no "best"
+here. It depends what people want to use the VM for.
+
+My advice for merging would be to start with the pkvm side setting up
+a fully pinned S2 and do not have a guest driver. Nesting without
+emulating smmuv3. Basically you get protected identity DMA support. I
+think that would be a much less sprawling patch series. From there it
+would be well positioned to add both smmuv3 emulation and a paravirt
+iommu flow.
+
+Jason
