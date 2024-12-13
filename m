@@ -1,361 +1,274 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7CC51A0AF7
-	for <iommu@lists.linux.dev>; Fri, 13 Dec 2024 08:53:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0849319CC2D;
+	Fri, 13 Dec 2024 09:10:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734080018; cv=none; b=Hp0gHKL8c2seEqgnrcIMnDYsCBPNpR68Kh25G3Ow/KF9dIACMMbXfOOOmSd4tVR7Z8CfnLs/JFmsLTuqgYq2plFk7BEvXII5Rlv76yIyJMVxggVtYc6T53IUPUOKiS/kLiwXfFbEA2KQsp7mOyPWnWALpju4Y8JapKs61EVfwQQ=
+	t=1734081038; cv=none; b=kYf8wHJB3z8g+fWRYhZywcFYjDXafdEheoq7OSpznEOsgFSAVeieLYglAJGaXfSOXK5lxyy8z/YUde8wHdDJlp6SqrOwsQ5JgAzCJToKPwhsp8zKN3UK6glsUjl4oCNSuY3P0NY8zKrRX8oLktsqTJnSs79mnF51D76pnvINoVY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734080018; c=relaxed/simple;
-	bh=8LOKMXTGfojs0kpZhd8FW+s1DH5SqC1qYL9gaBIWQ8A=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IjwZhJUUECs/YU/LCnnrzJ36z+HqnPXRmiFzLlGoe1XEbKPgUJUzbi2NAf1HAD9K8NLBF6Uf1CcfnuoWryIfjVtfPlCTV3GDvzmM2qZpVd4LrRq3VPDGKy9lFmFCjTL41l9aEQBvasgX7DHGQ8Krn9nCczF0iNFMZTeFHmFIExE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g6EbCPdU; arc=none smtp.client-ip=209.85.167.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1734081038; c=relaxed/simple;
+	bh=3NMA+Q8puBTZ9TPCFytaLkpaOP4RCb5VlVLesHS9OOg=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=nJni3ze4ou1da0jgAT11R3cNyGPFBntaEz1SnRBe+NU/UBSJKxxLbQqSTGCbqEAN0+f6anf1mMk/3CLVEHzL3SFwB5jlJsLFspD4yi+1T+6ICvRf50pg4gYE/xaY6dTYE6/ADjxr3VbN4CbSq1rr6wOS8upfpMxThcZ2Q5wHxng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=n/KB6BU7; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g6EbCPdU"
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-540215984f0so1626023e87.1
-        for <iommu@lists.linux.dev>; Fri, 13 Dec 2024 00:53:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1734080014; x=1734684814; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wO+IqWaAE/QQthJs4hKylnhkuEpahrZWHhBprwS5+qI=;
-        b=g6EbCPdU2+UgZ9jBlPkxLUHNxQGdxKHMlM2DAQIdeOM2SYtyK6SS5wggaZQ01rRNsf
-         njB+Qlh/yWGp1ZtT0hcR7SL0eZFxDRXEiQTo1M2QTDJfpnYaS/iMVmKlPBBdEzo5EWWm
-         cNl8tsT1ez5Narh+JrFRW8SHbAFziYsvpoAU3xgsWCcUrTuNYyfw8bv52zCh4uEKvV8q
-         Jr+vwo0CoWczAa1wXTD7tDhOLpAwmlqEc4o/xPjUTYuX25uIwaQNn7bBMjnSXXi9oNJj
-         kVdZI3a7ZQ7kDBbJ2IVj7XYJXi6ET0nOqMg8o9ugL2x/SKCO3o1LrlQKd8mW2OAsGTLv
-         xtAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734080014; x=1734684814;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wO+IqWaAE/QQthJs4hKylnhkuEpahrZWHhBprwS5+qI=;
-        b=uQeJipe7qUe+YEV3z6VhcXT6kGD58mxbiDip6hB1fbrNyzMe6MG8pwB5PAfSb1c0By
-         7c+esaCxC95cA+JVRIi3iF247GYYtJ45fCq74S/N3Uz9YnlQn54Xpm7vYST5MMjrw9lW
-         noKmzDZNUOS0NvW0AFPFQ+BCJvZriygu7s8paA3AihCQ+J4ZH0h+iK3PeVZyU7LjuffD
-         zunIfmsaT7BxdwZ/+t51g4owVdQPfpzBU8YA2xbWUDW5RArb/JKZZ7SQ8Dq0GsDlB0WE
-         uikgMsT5GpK0Uj5lpjtC5s9qZ/aE3Bd0qNJPasKUXatNtg5zlSIYYlh2oWfP+/V6FohP
-         SVdQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXc+ncapWvvnN2zsGMhdWekeSBx64c3VY0AWKxr2yhZTreJN1kM86lISJXqR/DlUY24WDoHag==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyOuyRxpO5VKP1Opik1Hp9FDwhzah49M56CzQk4XX7WJnEYGVtU
-	TjKA/bxflznZUZi2CoQrYHpCD6X1k/u0PSjKATqcUZesssl6xC8V
-X-Gm-Gg: ASbGncspfqPlHDnnD6aNqK8Xw/7mHpNgVEI/iAn9MAYk5vGgRKtqtJ0pe/s9o7adT8w
-	1M+10JwtrnI/u0OBsTHWTWJahKnn8nfCdlbjlwYl1YIGVDxh2GFFyMxXLJ4HZkxYComY+iGqgu3
-	Spq3rkrIQNvv/OJPeYaW97qh2aSlocJB1REybdw0+V1y1W4jhfDQrYEjQ8wl6ck5kANXFaDMXCq
-	nonBBRDdWsINWRwu7gIid39OzPyakz2+IoJHOzRAmbf3YhqZ8TiQvPjUHLTmMbL6q+ZuBaPZygv
-	dS9CzCaUdBG9KTbrvwVuWnfzGLA=
-X-Google-Smtp-Source: AGHT+IHVuG9Jrb6uGHGXN5ZUs8Bvsew+npxqQM7foiXUZEFOxvSQYmQKNUPmZg5If2Gealc+H/bnbQ==
-X-Received: by 2002:a05:6512:3e17:b0:53e:362e:ed6 with SMTP id 2adb3069b0e04-54099b69b54mr446247e87.50.1734080013417;
-        Fri, 13 Dec 2024 00:53:33 -0800 (PST)
-Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54019d12d08sm1848431e87.59.2024.12.13.00.53.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Dec 2024 00:53:31 -0800 (PST)
-Message-ID: <7c8e84e7-a212-445f-bc4e-ef65dae7fb29@gmail.com>
-Date: Fri, 13 Dec 2024 10:53:29 +0200
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="n/KB6BU7"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
+	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=5QjshT1kSQNb+d5xZagQUJgjhAK9XGaWIc3Aawfto9s=; b=n/KB6BU7c6BqcUWbA74deLF+90
+	U1ZMTS9kWm6aEk74qaEUtIFuCmQzN2hahDWR1OITBxg8DkD1MSbXbjo06+ogKK1o84KLxGkrA0xOk
+	cpC6TnnO0WCfmKhG5NAkbsvMiPMilTgoW4wryT1o5YUJzZbOXTk2m0w6wfBZ8Kf7GsvfmwsEwqa4O
+	gkkCNmSLK+9xiSQJDX0E1Zf227tlrc36End4popnDHfXx3qzb7k0cZdG3CfYT4fXihs0w7zcxz/i/
+	eAx27TbZVKgdzHqqh9oRWHvgmE4Fa+9CmD71tx2n51zk5veYAeAD9PoVpuns1+Tw0evex6KQotSGI
+	E7KQtugA==;
+Received: from 54-240-197-239.amazon.com ([54.240.197.239] helo=u09cd745991455d.ant.amazon.com)
+	by casper.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
+	id 1tM1gt-0000000Bm7y-3hXY;
+	Fri, 13 Dec 2024 09:10:32 +0000
+Message-ID: <03fdfde8dc05ecce1f1edececf0800d8cb919ac1.camel@infradead.org>
+Subject: Re: [PATCH RFC/RFT] vfio/pci: Create feature to disable MSI
+ virtualization
+From: David Woodhouse <dwmw2@infradead.org>
+To: Thomas Gleixner <tglx@linutronix.de>, Jason Gunthorpe <jgg@ziepe.ca>, 
+ Alex Williamson <alex.williamson@redhat.com>
+Cc: kvm@vger.kernel.org, quic_bqiang@quicinc.com, kvalo@kernel.org, 
+ prestwoj@gmail.com, linux-wireless@vger.kernel.org,
+ ath11k@lists.infradead.org,  iommu@lists.linux.dev, kernel@quicinc.com,
+ johannes@sipsolutions.net,  jtornosm@redhat.com
+Date: Fri, 13 Dec 2024 09:10:30 +0000
+In-Reply-To: <87r0aspby6.ffs@tglx>
+References: <adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com>
+	 <20240812170014.1583783-1-alex.williamson@redhat.com>
+	 <20240813163053.GK1985367@ziepe.ca> <87r0aspby6.ffs@tglx>
+Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
+	boundary="=-O3PVYpsJyRduYaSqOF94"
+User-Agent: Evolution 3.52.3-0ubuntu1 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 2/2] rust: add dma coherent allocator abstraction.
-To: rust-for-linux@vger.kernel.org,
- Daniel Almeida <daniel.almeida@collabora.com>
-Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
- Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-References: <20241210221603.3174929-1-abdiel.janulgue@gmail.com>
- <20241210221603.3174929-3-abdiel.janulgue@gmail.com>
-Content-Language: en-US
-From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-In-Reply-To: <20241210221603.3174929-3-abdiel.janulgue@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 
-Gentle ping. Does this approach make sense? :)
 
-On 11/12/2024 00:14, Abdiel Janulgue wrote:
-> Add a simple dma coherent allocator rust abstraction. Based on
-> Andreas Hindborg's dma abstractions from the rnvme driver, which
-> was also based on earlier work by Wedson Almeida Filho.
-> 
-> Reviewed-by: Daniel Almeida <daniel.almeida@collabora.com>
-> Tested-by: Daniel Almeida <daniel.almeida@collabora.com>
-> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-> ---
->   rust/bindings/bindings_helper.h |   1 +
->   rust/kernel/dma.rs              | 223 ++++++++++++++++++++++++++++++++
->   rust/kernel/lib.rs              |   1 +
->   3 files changed, 225 insertions(+)
->   create mode 100644 rust/kernel/dma.rs
-> 
-> diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_helper.h
-> index 5c4dfe22f41a..49bf713b9bb6 100644
-> --- a/rust/bindings/bindings_helper.h
-> +++ b/rust/bindings/bindings_helper.h
-> @@ -11,6 +11,7 @@
->   #include <linux/blk_types.h>
->   #include <linux/blkdev.h>
->   #include <linux/cred.h>
-> +#include <linux/dma-mapping.h>
->   #include <linux/errname.h>
->   #include <linux/ethtool.h>
->   #include <linux/file.h>
-> diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-> new file mode 100644
-> index 000000000000..29ae744d6f2b
-> --- /dev/null
-> +++ b/rust/kernel/dma.rs
-> @@ -0,0 +1,223 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +//! Direct memory access (DMA).
-> +//!
-> +//! C header: [`include/linux/dma-mapping.h`](srctree/include/linux/dma-mapping.h)
-> +
-> +use crate::{
-> +    bindings,
-> +    build_assert,
-> +    device::Device,
-> +    error::code::*,
-> +    error::Result,
-> +    types::ARef,
-> +    transmute::{AsBytes, FromBytes},
-> +};
-> +
-> +/// Possible attributes associated with a DMA mapping.
-> +///
-> +/// They can be combined with the operators `|`, `&`, and `!`.
-> +///
-> +/// Values can be used from the [`attrs`] module.
-> +#[derive(Clone, Copy, PartialEq)]
-> +pub struct Attribs(u32);
-> +
-> +impl Attribs {
-> +    /// Get the raw representation of this attribute.
-> +    pub(crate) fn as_raw(self) -> u64 {
-> +        self.0.into()
-> +    }
-> +
-> +    /// Check whether `flags` is contained in `self`.
-> +    pub fn contains(self, flags: Attribs) -> bool {
-> +        (self & flags) == flags
-> +    }
-> +}
-> +
-> +impl core::ops::BitOr for Attribs {
-> +    type Output = Self;
-> +    fn bitor(self, rhs: Self) -> Self::Output {
-> +        Self(self.0 | rhs.0)
-> +    }
-> +}
-> +
-> +impl core::ops::BitAnd for Attribs {
-> +    type Output = Self;
-> +    fn bitand(self, rhs: Self) -> Self::Output {
-> +        Self(self.0 & rhs.0)
-> +    }
-> +}
-> +
-> +impl core::ops::Not for Attribs {
-> +    type Output = Self;
-> +    fn not(self) -> Self::Output {
-> +        Self(!self.0)
-> +    }
-> +}
-> +
-> +/// DMA mapping attrributes.
-> +pub mod attrs {
-> +    use super::Attribs;
-> +
-> +    /// Specifies that reads and writes to the mapping may be weakly ordered, that is that reads
-> +    /// and writes may pass each other.
-> +    pub const DMA_ATTR_WEAK_ORDERING: Attribs = Attribs(bindings::DMA_ATTR_WEAK_ORDERING);
-> +
-> +    /// Specifies that writes to the mapping may be buffered to improve performance.
-> +    pub const DMA_ATTR_WRITE_COMBINE: Attribs = Attribs(bindings::DMA_ATTR_WRITE_COMBINE);
-> +
-> +    /// Lets the platform to avoid creating a kernel virtual mapping for the allocated buffer.
-> +    pub const DMA_ATTR_NO_KERNEL_MAPPING: Attribs = Attribs(bindings::DMA_ATTR_NO_KERNEL_MAPPING);
-> +
-> +    /// Allows platform code to skip synchronization of the CPU cache for the given buffer assuming
-> +    /// that it has been already transferred to 'device' domain.
-> +    pub const DMA_ATTR_SKIP_CPU_SYNC: Attribs = Attribs(bindings::DMA_ATTR_SKIP_CPU_SYNC);
-> +
-> +    /// Forces contiguous allocation of the buffer in physical memory.
-> +    pub const DMA_ATTR_FORCE_CONTIGUOUS: Attribs = Attribs(bindings::DMA_ATTR_FORCE_CONTIGUOUS);
-> +
-> +    /// This is a hint to the DMA-mapping subsystem that it's probably not worth the time to try
-> +    /// to allocate memory to in a way that gives better TLB efficiency.
-> +    pub const DMA_ATTR_ALLOC_SINGLE_PAGES: Attribs = Attribs(bindings::DMA_ATTR_ALLOC_SINGLE_PAGES);
-> +
-> +    /// This tells the DMA-mapping subsystem to suppress allocation failure reports (similarly to
-> +    /// __GFP_NOWARN).
-> +    pub const DMA_ATTR_NO_WARN: Attribs = Attribs(bindings::DMA_ATTR_NO_WARN);
-> +
-> +    /// Used to indicate that the buffer is fully accessible at an elevated privilege level (and
-> +    /// ideally inaccessible or at least read-only at lesser-privileged levels).
-> +    pub const DMA_ATTR_PRIVILEGED: Attribs = Attribs(bindings::DMA_ATTR_PRIVILEGED);
-> +}
-> +
-> +/// An abstraction of the `dma_alloc_coherent` API.
-> +///
-> +/// This is an abstraction around the `dma_alloc_coherent` API which is used to allocate and map
-> +/// large consistent DMA regions.
-> +///
-> +/// A [`CoherentAllocation`] instance contains a pointer to the allocated region (in the
-> +/// processor's virtual address space) and the device address which can be given to the device
-> +/// as the DMA address base of the region. The region is released once [`CoherentAllocation`]
-> +/// is dropped.
-> +///
-> +/// # Invariants
-> +///
-> +/// For the lifetime of an instance of [`CoherentAllocation`], the cpu address is a valid pointer
-> +/// to an allocated region of consistent memory and we hold a reference to the device.
-> +pub struct CoherentAllocation<T: AsBytes + FromBytes> {
-> +    dev: ARef<Device>,
-> +    dma_handle: bindings::dma_addr_t,
-> +    count: usize,
-> +    cpu_addr: *mut T,
-> +    dma_attrs: Attribs,
-> +}
-> +
-> +impl<T: AsBytes + FromBytes> CoherentAllocation<T> {
-> +    /// Allocates a region of `size_of::<T> * count` of consistent memory.
-> +    ///
-> +    /// # Examples
-> +    ///
-> +    /// ```
-> +    /// use kernel::device::Device;
-> +    /// use kernel::dma::{attrs::*, CoherentAllocation};
-> +    ///
-> +    /// # fn test(dev: &Device) -> Result {
-> +    /// let c: CoherentAllocation<u64> = CoherentAllocation::alloc_attrs(dev, 4, GFP_KERNEL,
-> +    ///                                                                  DMA_ATTR_NO_WARN)?;
-> +    /// # Ok::<(), Error>(()) }
-> +    /// ```
-> +    pub fn alloc_attrs(
-> +        dev: &Device,
-> +        count: usize,
-> +        gfp_flags: kernel::alloc::Flags,
-> +        dma_attrs: Attribs,
-> +    ) -> Result<CoherentAllocation<T>> {
-> +        build_assert!(core::mem::size_of::<T>() > 0,
-> +                      "It doesn't make sense for the allocated type to be a ZST");
-> +
-> +        let size = count.checked_mul(core::mem::size_of::<T>()).ok_or(EOVERFLOW)?;
-> +        let mut dma_handle = 0;
-> +        // SAFETY: device pointer is guaranteed as valid by invariant on `Device`.
-> +        // We ensure that we catch the failure on this function and throw an ENOMEM
-> +        let ret = unsafe {
-> +            bindings::dma_alloc_attrs(
-> +                dev.as_raw(),
-> +                size,
-> +                &mut dma_handle, gfp_flags.as_raw(),
-> +                dma_attrs.as_raw(),
-> +            )
-> +        };
-> +        if ret.is_null() {
-> +            return Err(ENOMEM)
-> +        }
-> +        // INVARIANT: We just successfully allocated a coherent region which is accessible for
-> +        // `count` elements, hence the cpu address is valid. We also hold a refcounted reference
-> +        // to the device.
-> +        Ok(Self {
-> +            dev: dev.into(),
-> +            dma_handle,
-> +            count,
-> +            cpu_addr: ret as *mut T,
-> +            dma_attrs,
-> +        })
-> +    }
-> +
-> +    /// Performs the same functionality as `alloc_attrs`, except the `dma_attrs` is 0 by default.
-> +    pub fn alloc_coherent(dev: &Device,
-> +                          count: usize,
-> +                          gfp_flags: kernel::alloc::Flags) -> Result<CoherentAllocation<T>> {
-> +        CoherentAllocation::alloc_attrs(dev, count, gfp_flags, Attribs(0))
-> +    }
-> +
-> +    /// Returns the base address to the allocated region and the dma handle. The caller takes
-> +    /// ownership of the returned resources.
-> +    pub fn into_parts(self) -> (usize, bindings::dma_addr_t) {
-> +        let ret = (self.cpu_addr as _, self.dma_handle);
-> +        core::mem::forget(self);
-> +        ret
-> +    }
-> +
-> +    /// Returns the base address to the allocated region in the CPU's virtual address space.
-> +    pub fn start_ptr(&self) -> *const T {
-> +        self.cpu_addr as _
-> +    }
-> +
-> +    /// Returns the base address to the allocated region in the CPU's virtual address space as
-> +    /// a mutable pointer.
-> +    pub fn start_ptr_mut(&mut self) -> *mut T {
-> +        self.cpu_addr
-> +    }
-> +
-> +    /// Returns a DMA handle which may given to the device as the DMA address base of
-> +    /// the region.
-> +    pub fn dma_handle(&self) -> bindings::dma_addr_t {
-> +        self.dma_handle
-> +    }
-> +
-> +    /// Returns the CPU-addressable region as a slice.
-> +    pub fn cpu_buf(&self) -> &[T]
-> +    {
-> +        // SAFETY: The pointer is valid due to type invariant on `CoherentAllocation` and
-> +        // is valid for reads for `self.count * size_of::<T>` bytes.
-> +        unsafe { core::slice::from_raw_parts(self.cpu_addr, self.count) }
-> +    }
-> +
-> +    /// Performs the same functionality as `cpu_buf`, except that a mutable slice is returned.
-> +    pub fn cpu_buf_mut(&mut self) -> &mut [T]
-> +    {
-> +        // SAFETY: The pointer is valid due to type invariant on `CoherentAllocation` and
-> +        // is valid for reads for `self.count * size_of::<T>` bytes.
-> +        unsafe { core::slice::from_raw_parts_mut(self.cpu_addr, self.count) }
-> +    }
-> +}
-> +
-> +impl<T: AsBytes + FromBytes> Drop for CoherentAllocation<T> {
-> +    fn drop(&mut self) {
-> +        let size = self.count * core::mem::size_of::<T>();
-> +        // SAFETY: the device, cpu address, and the dma handle is valid due to the
-> +        // type invariants on `CoherentAllocation`.
-> +        unsafe { bindings::dma_free_attrs(self.dev.as_raw(), size,
-> +                                          self.cpu_addr as _,
-> +                                          self.dma_handle,
-> +                                          self.dma_attrs.as_raw(),) }
-> +    }
-> +}
-> diff --git a/rust/kernel/lib.rs b/rust/kernel/lib.rs
-> index e1065a7551a3..6e90ebf5a130 100644
-> --- a/rust/kernel/lib.rs
-> +++ b/rust/kernel/lib.rs
-> @@ -35,6 +35,7 @@
->   mod build_assert;
->   pub mod cred;
->   pub mod device;
-> +pub mod dma;
->   pub mod error;
->   #[cfg(CONFIG_RUST_FW_LOADER_ABSTRACTIONS)]
->   pub mod firmware;
+--=-O3PVYpsJyRduYaSqOF94
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, 2024-08-13 at 19:30 +0200, Thomas Gleixner wrote:
+> On Tue, Aug 13 2024 at 13:30, Jason Gunthorpe wrote:
+> > On Mon, Aug 12, 2024 at 10:59:12AM -0600, Alex Williamson wrote:
+> > > vfio-pci has always virtualized the MSI address and data registers as
+> > > MSI programming is performed through the SET_IRQS ioctl.=C2=A0 Often =
+this
+> > > virtualization is not used, and in specific cases can be unhelpful.
+> > >=20
+> > > One such case where the virtualization is a hinderance is when the
+> > > device contains an onboard interrupt controller programmed by the gue=
+st
+> > > driver.=C2=A0 Userspace VMMs have a chance to quirk this programming,
+> > > injecting the host physical MSI information, but only if the userspac=
+e
+> > > driver can get access to the host physical address and data registers=
+.
+> > >=20
+> > > This introduces a device feature which allows the userspace driver to
+> > > disable virtualization of the MSI capability address and data registe=
+rs
+> > > in order to provide read-only access the the physical values.
+> >=20
+> > Personally, I very much dislike this. Encouraging such hacky driver
+> > use of the interrupt subsystem is not a good direction. Enabling this
+> > in VMs will further complicate fixing the IRQ usages in these drivers
+> > over the long run.
+> >=20
+> > If the device has it's own interrupt sources then the device needs to
+> > create an irq_chip and related and hook them up properly. Not hackily
+> > read the MSI-X registers and write them someplace else.
+> >=20
+> > Thomas Gleixner has done alot of great work recently to clean this up.
+> >=20
+> > So if you imagine the driver is fixed, then this is not necessary.
+>=20
+> Yes. I looked at the at11k driver when I was reworking the PCI/MSI
+> subsystem and that's a perfect candidate for a proper device specific
+> interrupt domain to replace the horrible MSI hackery it has.
+
+The ath11k hacks may be awful, but in their defence, that's because the
+whole way the hardware works is awful.
+
+Q: With PCI passthrough to a guest, how does the guest OS tell the
+device where to do DMA?
+
+A: The guest OS just hands the device a guest physical address and the
+IOMMU does the rest. Nothing 'intercedes' between the guest and the
+device to mess with that address.
+
+Q: MSIs are just DMA. So with PCI passthrough to a guest, how does the
+guest OS configure the device's MSIs?=20
+
+<fantasy>
+A: The guest OS just hands the device a standard MSI message encoding
+the target guest APIC ID and vector (etc.), and the IOMMU does the
+rest. Nothing 'intercedes' between the guest and the device to mess
+with that MSI message.
+
+And thus ath11k didn't need to do *any* hacks to work around a stupid
+hardware design with the VMM snooping on stuff it ideally shouldn't
+have had any business touching in the first place.
+
+Posted interrupts are almost the *default* because the IOMMU receives a
+<source-id, vCPU APIC ID, vector> tuple on the bus. If receiving an
+interrupt for a vCPU which isn't currently running, that's when the
+IOMMU sets a bit in a table somewhere and notifies the host OS.
+
+All that special case MSI handling and routing code that I had
+nightmares about because it fell through a wormhole from a parallel
+universe, doesn't exist.
+
+And look, DPDK drivers which run in polling mode and 'abuse' MSIs by
+using real memory addresses and asking the device to "write <these> 32
+bits to <this> structure if you want attention" just work nicely in
+virtual machines too, just as they do on real hardware.
+</fantasy>
+
+/me wakes up...
+
+Shit.
+
+And we have to enable this Interrupt Remapping crap even to address
+more than 255 CPUs *without* virtualization? Even a *guest* has to see
+a virtual IOMMU and enable Interrupt Remapping to be able to use more
+than 255 vCPUs? Even though there were a metric shitload of spare bits
+in the MSI message we could have used=C2=B9.
+
+Wait, so that means we have to offer an IOMMU with *DMA* remapping to
+guests, which means 2-stage translations and/or massive overhead, just
+for that guest to be able to use >255 vCPUs?
+
+Screw you all, I'm going back to bed.
+
+
+
+=C2=B9 And *should* use, if we ever do something similar like, say, expand
+  the vector# space past 8 bits. Intel and AMD take note.=20
+
+--=-O3PVYpsJyRduYaSqOF94
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
+ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
+EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
+FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
+aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
+EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
+VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
+ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
+QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
+rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
+ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
+U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
+BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
+dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
+BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
+QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
+CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
+IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
+kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
+eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
+KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
+1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
+OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
+x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
+5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
+DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
+VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
+UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
+MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
+ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
+oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
+SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
+xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
+RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
+bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
+NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
+KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
+5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
+C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
+gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
+VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
+MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
+by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
+b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
+BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
+QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
+c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
+AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
+qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
+v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
+Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
+tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
+Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
+YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
+ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
+IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
+ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
+GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
+h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
+9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
+P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
+2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
+BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
+7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
+lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
+lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
+AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
+Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
+FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
+BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
+cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
+aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
+LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
+BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
+Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
+lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
+WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
+hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
+IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
+NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
+xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
+DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQxMjEzMDkxMDMwWjAvBgkqhkiG9w0BCQQxIgQg0WSLOk8Y
+lLFf6pnuUymSLAt1AAwcYu15/13SHDRah3Iwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
+A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
+dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
+DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
+MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
+Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
+lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgAp96cI12y5CujllDvWtNf1SADc+SR6ilZk
+S6NQe8K7HPT5KLqFtESRpJ6ZY/IqwzewKDeqMK1MEGoLBY/IjmF4k9tfg62ommCZCwWe/IgVms/z
+9OrkR7dO6AI1RjQMXLOaZ6/5auWGZGZMHtlFsCaxThwXeaXH96Ks273xDqMSGLxQCvgPD9Hnx5nY
+EcXc7C40IUWpnYL7irZK97/u6bR6iCl1udgDN736N8/84P6cKDocCPXEHaSUQkcQlltbxMwk9U82
+b5AshEzYmMYUM63AoMAqbWVZYYJhFz6mqXi14x3kJgP2WuQXxlF27tTI3yhzfV2crSB53vpydiLj
+CM8LjWoBBp26keTOJ4DwkjzeQRHS9Ucu17yDBzA3+GPXXx7AaS7toZStFhunLHu28lnbtwR001+l
+kK8a9z3fzkUapw0dxXtcCUR4ycExhatfixTB1gq1yMZSrlngV+mbmmL32ZIf08gQ2Csqf58tI9eh
+Ep0f1wnNV63ltnGr1mtn4oBJ4etMGaSy9DpYzVPdT/zhUj6ifxypkiFDl2pn2YHELbF3L5PHSX1x
+4TzgS4gJSDt358bVhxvp4O/lm04aQo/WxhBrrPGEfv/7hlgzOIpvxoasIZzG5MR6T4Qn7iUUqTHD
+lrzmVsFHPmAUOVA9lYeWwkFK3EjdPsLEOdxDH5VB7QAAAAAAAA==
+
+
+--=-O3PVYpsJyRduYaSqOF94--
