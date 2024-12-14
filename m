@@ -1,257 +1,279 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0B4019992C
-	for <iommu@lists.linux.dev>; Fri, 13 Dec 2024 22:49:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734130200; cv=none; b=MR7aQotBVuaL1VYMk18z2ivrr0p6kaYH1uB8QW32osO2QshhLprFdm6EVe8flrKeh2JDK9OUXaelNFBzpM1C+4JoEtKzPNlbBYeghE1iAbNEPlfPD2f4B3QxwWVIIJCwNPAnhUmz0iyuq4jcq9g/sV1yhX6MPUk39q8w6SkXJIs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734130200; c=relaxed/simple;
-	bh=0QrxwDumdv9ylh/ETp9pcFH7MM4XVeh5MXPIRYyG6vo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=l4PI5SggRlXHe9iq6K1spuDzRiByHOuJe9GpfecqrOD2wqwC5fVOtu8yGKEDzFt8dw5KtnzTFTl3gQX7LIv8X1eoyNe2GUdSyvvfO/9wsetI7G2RCmzgpRvKMZ2oErg6NUf4oH801Vl5W1snUNhhc+DO9sRPM2QjWOiAGyCvxGU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=UAw76aLS; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E417317BB0D
+	for <iommu@lists.linux.dev>; Sat, 14 Dec 2024 09:00:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.8
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1734166808; cv=fail; b=g4rHFvHzEtQDP+PiQD1Iy/U/mRiuBMNYJ0LFPl3UqnVrDMlfRlO67hcxcROpeUodZIZ6yQMUtwStQEEAboK34kPRIWZskQg4cVv2iQ6LMT0Zo5Uvwz7aZaHs6emuMCSgIVDWaiu1R4Yg4g6j+jzcY0fh/QMvq9UtKRdNZqbkPR0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1734166808; c=relaxed/simple;
+	bh=QHTV/HVoZkjULR/eoTo/kN/Putq3Q8w6wFKStQb50os=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=VsMumcULF+oSB8uK1nSJuSnEIWhR67aPDwWMTUjBlI+YaSrTWVbf1aUlNfUtPLGRBooiJCIB2uLUlOvmTodHQI/P90QHT4kP2Qf3SFNJxUZ4Exz7DXWD45xh1kkQHdUJyBH11Y56cvNI3b9pyEc4B9mQjIYSptZta9tpRYYs2d0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FRbSu22+; arc=fail smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="UAw76aLS"
-Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BDGfGaM026699;
-	Fri, 13 Dec 2024 22:49:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=pp1; bh=XlZ7QWe3g498nZiSw
-	gZp6D/1c5C+8eNDxfmcCpETGq0=; b=UAw76aLSePYWOlnh7yozAwkxQUCLqBZbN
-	hukhww4S7xxM7X+dvvgQKjIb1eRybVA4P9MKN3KjH3Cr+rAzklLUUo7t7U2tHXJp
-	oiaXuYgZw7bSyXDT0lssSuXciAjKBfsA421LrszGmMqlu4tXuNXzdexdFWnBhrWu
-	su/1kOLUSnzyLvgfTzg4VVwAPYoQwuRCEh/E0MnpMXwTGr7G7KEnrkOArNdDfL3D
-	kUacNDwAxu9GiV4l6AEAWat2i1xXywdFByOuB7YKi1mNTFdhjBoaj5aVmMxFWZW6
-	pV6jBKAO6vaxgOyNQ+1Rb2N3HQgwCMTVwVqbquZpPs12z+PCI5qNA==
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 43g9yhnqwh-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 13 Dec 2024 22:49:52 +0000 (GMT)
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 4BDIjudC029309;
-	Fri, 13 Dec 2024 22:49:51 GMT
-Received: from smtprelay02.dal12v.mail.ibm.com ([172.16.1.4])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 43gcprv9vw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 13 Dec 2024 22:49:51 +0000
-Received: from smtpav03.wdc07v.mail.ibm.com (smtpav03.wdc07v.mail.ibm.com [10.39.53.230])
-	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4BDMno9c26149410
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 13 Dec 2024 22:49:50 GMT
-Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 03EC85805A;
-	Fri, 13 Dec 2024 22:49:50 +0000 (GMT)
-Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3C25A58054;
-	Fri, 13 Dec 2024 22:49:48 +0000 (GMT)
-Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.61.107.222])
-	by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 13 Dec 2024 22:49:48 +0000 (GMT)
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
-Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
-        clegoate@redhat.com, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: [PATCH v2 3/3] iommu/s390: implement iommu passthrough via identity domain
-Date: Fri, 13 Dec 2024 17:49:41 -0500
-Message-ID: <20241213224941.571060-4-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.47.1
-In-Reply-To: <20241213224941.571060-1-mjrosato@linux.ibm.com>
-References: <20241213224941.571060-1-mjrosato@linux.ibm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FRbSu22+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1734166806; x=1765702806;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=QHTV/HVoZkjULR/eoTo/kN/Putq3Q8w6wFKStQb50os=;
+  b=FRbSu22+FC8KUzpQcrxz/rfnX9nGD43RjagG1Phcgq+DkQZJtE72e0E+
+   4mdEUA/CRGKgeSuQE+kKObKuz6CnJ1/2IFKCat+orNpEIhWxsYPYmn+cq
+   hsEY7oba/8/fneN7KJhOEJOy7K6cCp694YUyKMntGMdJAiK5NHnZGCmsX
+   r4kXWhDwdvACisfO3qbeBnvhoDcODOFaJxAl9CamrBxBlunweYLp0iTYA
+   eJrNluvWRosTaOMIqtDErXVDECZSZ1gdPtkFLmB9I5oDPXGjtk3D20sHq
+   aPaM2Fb9dlc1gNAfOr1uDrK0/PFWymIONqhbqRONBDkeOyKmdJYOa+89P
+   A==;
+X-CSE-ConnectionGUID: +kWq+r8pQUeJVs4hJFnPIQ==
+X-CSE-MsgGUID: BSRE/ZjbSLKx+ONb7iyekA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11285"; a="52134848"
+X-IronPort-AV: E=Sophos;i="6.12,233,1728975600"; 
+   d="scan'208";a="52134848"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2024 01:00:05 -0800
+X-CSE-ConnectionGUID: Kl41nV0ZTlmVRqKfqzERhQ==
+X-CSE-MsgGUID: ed10PX/6RoW99fRs+yLwDw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="101709684"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orviesa005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 14 Dec 2024 01:00:05 -0800
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Sat, 14 Dec 2024 01:00:04 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44 via Frontend Transport; Sat, 14 Dec 2024 01:00:04 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.42) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Sat, 14 Dec 2024 01:00:04 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=avISleb8g0jEoR4n4kH21ZzrYG1IkMir+MkAyxi76QpMb2ZjCY56wfIT292NULfMI2RrTAoGFwtCTZoTw8Va1d2Zwyy9QcPwLQj1PO6v3VGTvDILE9YVGLmX7aYiZZfPeKV2Ozb7yXu6dOdLrumav7foIBgHF1VREu3jCS32imPh/9L5YcFVbvVJK+FLHIxYFatQzW1o6XmfEsgpI9Chzamv+QF1IkosJECxm/FJWKDT5QSvpELdkvVAEbi1JfiINZVnVfUh25hl1QA9bbkej8DmTQNxvDjyaXGZkIKGkhKNZ8Pi5Ks4s5i3x8At77g4A+GNO9qpQBrgga4giTvezg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=T85BhBQfQGjZRMX+J6GsnLGLYrnQMl7tcEtJo4JoQro=;
+ b=IQtDRzKfo8IGZwBL6PUtEWIKCr+kpm1riVC2sZiJCr4TF+HRhu0+A1zV2UEpaj8umc41O5CWv4F0B16Oz8UJ8Plb5UoBLuFPuicmxyzQgsAC3yx0u1XGfzxv04dyjqrkrXVz7sNGrFf2umCuE07NZPI9MWLO+DeiwbXLNTHTUrqbj0E34pGLWFFb+Rjd0UGA/4JYpPG0QQX8u5Ex193ItVjfh50c6dmxXXnzcxdAQu1uovNwqfBgF5gpBURfsHXB4MJYPovTjfPmC8qynou+uVWA4wZfe1bPEyVNWZr8EK49aJsZGdt6At70Q1bFlvDQx75rO8q3w2C0CPOFy6w/rA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by CO1PR11MB5186.namprd11.prod.outlook.com (2603:10b6:303:9b::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8251.18; Sat, 14 Dec
+ 2024 08:59:22 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a%5]) with mapi id 15.20.8251.015; Sat, 14 Dec 2024
+ 08:59:21 +0000
+Message-ID: <46b7fc65-491f-4965-9d9b-d77901e41dfc@intel.com>
+Date: Sat, 14 Dec 2024 17:04:20 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 08/12] iommufd: Enforce pasid compatible domain for
+ PASID-capable device
+To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "eric.auger@redhat.com"
+	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+	"vasant.hegde@amd.com" <vasant.hegde@amd.com>
+References: <0f93cdeb-2317-4a8f-be22-d90811cb243b@intel.com>
+ <20241209145718.GC2347147@nvidia.com>
+ <9a3b3ae5-10d2-4ad6-9e3b-403e526a7f17@intel.com>
+ <BN9PR11MB5276563840B2D015C0F1104B8C3E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <a9e7c4cd-b93f-4bc9-8389-8e5e8f3ba8af@intel.com>
+ <BN9PR11MB52762E5F7077BF8107BDE07C8C3F2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <98229361-52a8-43ef-a803-90a3c7b945a7@intel.com>
+ <BN9PR11MB5276E01F29F76F38BE4909828C382@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <c91ea47c-ca71-4b37-b66c-821c92e3d191@intel.com>
+ <BN9PR11MB5276655399B4523F4CEEA63D8C382@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Z1wrQ+kgV53BsodW@nvidia.com>
+Content-Language: en-US
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <Z1wrQ+kgV53BsodW@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SI2PR01CA0003.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::16) To DS0PR11MB7529.namprd11.prod.outlook.com
+ (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: xEitcT7Om9Vv-MH5wyhxCzaQDno0AFNw
-X-Proofpoint-ORIG-GUID: xEitcT7Om9Vv-MH5wyhxCzaQDno0AFNw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 clxscore=1015
- priorityscore=1501 spamscore=0 lowpriorityscore=0 suspectscore=0
- malwarescore=0 impostorscore=0 mlxscore=0 bulkscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2412130159
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|CO1PR11MB5186:EE_
+X-MS-Office365-Filtering-Correlation-Id: da2b1da7-b570-4631-61a4-08dd1c1d99de
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016|7416014;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?a0FWQXZ6MkhiWjJnaS9zei94ekRrYnB3RGpUbXpOaTR4K042bXNCdWJrTzJq?=
+ =?utf-8?B?Q0VWUXZBTERPMjlubkpPUlZrcS9TbFJwSVFmQXhRb0FPVGRRc1kwUWNoVGN1?=
+ =?utf-8?B?RDRXR2hsQzhrZVRZdWpjWDE3NWJ1VXpnV0Z1WWx2SlV2NlFmUzJ4RkFZYjly?=
+ =?utf-8?B?UHMxS01TaHpBS0Z5V3dMcis5RDhjc2M4WCtrNnRKbkowWUhVdW9Xa3RDei85?=
+ =?utf-8?B?ZkxlNFpidUptNmg5d1ZDWkZabCtvQU45dDN3bzNRZTlNTktaaUh4WklQK1Z6?=
+ =?utf-8?B?VUgyNUxDajhyM2xVRExPOEx6VnVBbmFvbEl2a2NnUUdTSlIrK1VybWtYY3lK?=
+ =?utf-8?B?aDRYZzFtUHpvMjBHM1Ric1h1a2IwODFxMnlUYS9IOHZ1anJTWTVlMXJaYVZI?=
+ =?utf-8?B?M3QyWUVJSU5ZaDd1VEcrYXdxSllTK0dKdVk0UDdIWkY1N1hsN1d6eVA5bHdO?=
+ =?utf-8?B?cWc2VGVrQ2VWSUIxQk4wbXJZaFdPUFZvRlg2RFZYMmV2NVNtb1N2cEFKdHVK?=
+ =?utf-8?B?TEVWQWtieDFCM3JlOGY1Vk40Yk5ERkxsMlpQbFE0bUIrRVNBUHJGRGZyQ1Jl?=
+ =?utf-8?B?OHgwQTg5eWF2V21xVmtqZncvVC83eFpqc3h0ZFhBTXZ5c0xmUlpmUnhQN1V1?=
+ =?utf-8?B?V2hRaGtOZHkycXZsV21SUDYwblhJblowYTljN3cwTGc3TkJkeGNIOG1uYlZL?=
+ =?utf-8?B?aitITHRpbzRqd1h1NnJTOGZSNFc1TmJacCtJWkNrMUNhT2Q4SGszN0NUTy85?=
+ =?utf-8?B?SzUwYnU5NHhlMjJYZmhIbVV1SXo3VkNNWWhaNGMrRzAwaXI5T2gxQlgrUW9u?=
+ =?utf-8?B?TTZUbnVwU3RNeHhGeFo2LzJlVHBQVjdZZnJ0UWxWamJrY2hsaEtiWW1OdGFs?=
+ =?utf-8?B?STd2K1EwUzBBMlFzQjJ5ZnNYY3ZUZ2NWM0xvMVVoY3A5Qk9uKzlIV1NVclFD?=
+ =?utf-8?B?andtbXpDeTZTZjd0QTJ2RmJrOTgrMFZYSUhxa29pM2tZdUxERzd5c0tNaThV?=
+ =?utf-8?B?MjJIMytqZ0lBaStWSUlQeDRSbFNhalJIL1YyUkFRdkJqa3Z5Z3gzQTdLTEw5?=
+ =?utf-8?B?ZDR2S1doZEtCcVNCMDM4ckN1WStaVWtwMCtCWVNEYzgrZGluSXlNUnkyT1pE?=
+ =?utf-8?B?TVJuTEozMXZWbjhiK0NoNlFmd1hEY3R5aDMvUjJxUmUrNks3eElGdUR0M29Q?=
+ =?utf-8?B?blljSXlhQTFaUmxaVDFtZ0cyWWplUFIxb1dRd0pTMXpNL2c4SEEySXhoc0dx?=
+ =?utf-8?B?TEk3cGhvRlpmMzlhekV1aE9VTFNWS2txZEQ4TCtjdE9mTUpOY081SGVvRjkv?=
+ =?utf-8?B?bm5KcVBqdmpwUUpseVpLVTBmRzY0UGlJVEZZODFFN0VySjlLek1zbDhnRWht?=
+ =?utf-8?B?MkFZYU5vTHNabmJVclA0TjZaeUhaM1g0RndkQVJMTHUyazc2ZDRPY1JhOG01?=
+ =?utf-8?B?cW44ekZnMnlIQ3BtRFRJRHdmd0MxR0IxOGpBY1ZRZGZjWS9DTUpsZkdXMWJE?=
+ =?utf-8?B?MS9IQUpOc0M5QlhSNVBLa2QwdHhEVW04QkI1L0NWSHBaSStneEp5K3EwMWJ6?=
+ =?utf-8?B?d0hRMDQvUzdnVW4xSU5oQkMwVnpoT0gyYlYwdmM1TVRIeTl3ek9rSDFBUkgy?=
+ =?utf-8?B?N0JncU1zUjdpUS9TMmZqZU5scGhtU0xTU2pDZEpUWlgzUHR1VStBSS93Z2w4?=
+ =?utf-8?B?SGJ2Y3R6VFFjYlBleEF2dHFlUW5vVk54cHlKc2Zaanc0K3JpbHYwN1FIdzBE?=
+ =?utf-8?B?c0J3Yjh1ZllMYituOUVOWU1rZW1iZjNMb25pbnBoSWE4OVFYekNRR3ZLbUda?=
+ =?utf-8?B?N3lzZ1FNMU1jRlFqelJRTnpBS1NYeHhteUhVRXNOMi9PTmJjaUVIV0p3emRG?=
+ =?utf-8?Q?1cMjKPsgMPD5Z?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VmFUa0oyam9zbzJadFB3MW5ZdkNsTkdNbkE5c1puWVRwbDM5OWkyOHQ1OXVu?=
+ =?utf-8?B?MXJjZ3c5UkhhYnZ1Y2xleUExRm12dEpxU2R3U3hzSWdyOWZKWHM3ZnZiK3FS?=
+ =?utf-8?B?ZlpQT2g5Yys1VS8zOGY1QVQ4TWw3SHpCSDFYN0JDMGQ4WTJOV3VpTGhjZUhy?=
+ =?utf-8?B?dmtFZHZzekt3a0kxK2tySDJJVDZ4Ky9oOWFjeVRBUkJ1YUpWOUcwOU9Tclc0?=
+ =?utf-8?B?TmtnWEtsa0lhZkdTOVA2TUdJeGw0S1UyS09lem8rTkFDRkJtdkZ0VEcvWjRO?=
+ =?utf-8?B?TGdJSEdWNTZ6anYxWkpIajBnWTFhSkdGUzdrbHJZL2R2eGcrT0E3QVFWWnFM?=
+ =?utf-8?B?N0xBQnduUXdxSUY2T0ovbTZOV1lBclFsNlJySTFyTGlraTNzT3g1WkNtL3ZZ?=
+ =?utf-8?B?TDA5V3BNQVhmTkpJUit3ay8rbWdjVWhwR1g5RFVFcitoNi9IYm16MWR5cXlI?=
+ =?utf-8?B?N1FISTVhUlNOcHZNQWpxejQyYVdUamh5dnZWcGNFdWZ5bW5YVldqQWRHWTlD?=
+ =?utf-8?B?NFdPU1FkemQ4Q3ZvK0tKKy9JM2RkQU5KaTJ5b3RIem52RDl2d09RMG9UeU5R?=
+ =?utf-8?B?cnZwT3liSVBSd1AxVVU0RFowYlg0VWRDMXUwcDUvR1hEY1U3Sm5seDhFZkZW?=
+ =?utf-8?B?WVpVamYzaXJXRFdJNlhhY0IwM2Z0UCtyNGY1ak5BRVpDamJwdWtyb0d3TXFL?=
+ =?utf-8?B?Z2NxRlZJclhnenA0SkpueFptN1FMZ2dJYm1VcXJJemVOVGRnVlFiMUJHNmxP?=
+ =?utf-8?B?K2pyTVE1dkJKRnpGdFRPV01ScHpRZWFoYXNvVVFiSkI2S2JxdXN3WjhMWlhR?=
+ =?utf-8?B?LzJQc0JETXhrWkpJRWdCLzM4SEYxbWk2aUNFZzJTN2hVQk8wd2NzM0pBYVZa?=
+ =?utf-8?B?V0RjWS9JSnFvdWk4a200Z2pSTGQyVkwvcFk2cGZoOExrOThjdUM2WEsxSXBw?=
+ =?utf-8?B?QkdmU21iVE9DR251TFBXSkdXK25yQzhITzJvY2taVzNkRU0vYUVZaGlHdDNR?=
+ =?utf-8?B?aVZZcGZEb0M4NlBYK2NvcVdQQWdNVk85ck9VZ3h6Y3lOcDNlVk53Q2R1d2RE?=
+ =?utf-8?B?NFlySEJoMWowdVcwZGw5TElheUdYd2tCV2dHRVFDSlpOQkZMNDhSaHJPekp3?=
+ =?utf-8?B?SzJ3YVFhaFUxMENLSW5KbjFrdDBmUGg4VTdUcmc2ZUwwMjhpcWpTbllnZzBW?=
+ =?utf-8?B?dE0ycWVhaitZTldvbWk5a2F3a2NKMWY0STVUNGVTb1c2azZtdk5hbC93a3JT?=
+ =?utf-8?B?bkdHNWl6UHBSOGIxZEc0RnNhcXlveGQyREpYR2FaWkViRnQ2QkF0cnFzNHVW?=
+ =?utf-8?B?WFRidjh4N3Judy93MFFEUXlvS2xMYkQ4QVdhQXFaeTh0NWxZd1FDVmhCNVd5?=
+ =?utf-8?B?a21IQ2p3UTNVVHdFUE94czlMbkZLLzRNQTdRdGRkSDdBZ1VBdlJkNExaalBp?=
+ =?utf-8?B?K0RiOGY5Rm9wVFBGRmRZZzV0a1ZEYVBRMDZZZUV4R2R0WVU0RktHTFBaOTZD?=
+ =?utf-8?B?WHVIeC8yM3pSYUFOenRvMHNqa2JrRWpnYngyZU5uVzFkR0tLSzg3WGNaRjh3?=
+ =?utf-8?B?eVBMTnhtODhSOXgyQWxYR1YyL3JIQXRubEN0SDRhSlF3MUtQV3dFbDA5TXUx?=
+ =?utf-8?B?R1Y0dlVGOVdFU2h0ZFIrcHVnd1ArSk82c3JiZ2RzdW9BUEpndTk4cC81UEVL?=
+ =?utf-8?B?NHpHMW1xdDVvdXlRaCtDT2kwNmY2N0VmN2tIL1RyUHg0bW94ZWZrU1BhTXA4?=
+ =?utf-8?B?K3BqUVNVekhyUXdpdGNaV2w2WkRlYVR3WkZva2l0V0svSUxvWFlmWFFKbkky?=
+ =?utf-8?B?eUJwR0V6cnliWG5iNG15eEJTb1Z4Zm5ndytTY3ZrMmMyeWJQdklrREt4cng0?=
+ =?utf-8?B?SVhkT2lhWXh1a08xenAzM2FZV2RGTzF4RzAvYndRNDcrYjJ6UW5BU2JySnFi?=
+ =?utf-8?B?am1ha2F0ek03T2FTQVZTeEt5UXNMZzdDK013R1htWXBWSnNJSkJBRktXS3h5?=
+ =?utf-8?B?RTJNQTRIa0pCT0hvVXFkRkhQUDc3VTlUbTZkTGlWNzdDczlWRzQrMEhsUzdF?=
+ =?utf-8?B?Umw3bVgyRGlaL2RCT250M1VGaW80cFA4MktDTEdCYmY1UER6ZExZVWFJWmgy?=
+ =?utf-8?Q?AIP6k7uskjHC4QJ5jlF8ODjxq?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: da2b1da7-b570-4631-61a4-08dd1c1d99de
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2024 08:59:21.8919
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GT8gBgVM2bkpDGEFNHs5W/c/kACc8ahkg6XzhNTS4kac7+3Co1CepOPNjzkUeiP1o7p7y0YSG4502fVjw1Gsyg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5186
+X-OriginatorOrg: intel.com
 
-Enabled via the kernel command-line 'iommu.passthrough=1' option.
+On 2024/12/13 20:40, Jason Gunthorpe wrote:
+> On Fri, Dec 13, 2024 at 07:52:40AM +0000, Tian, Kevin wrote:
+> 
+>> I'm not sure where that requirement comes from. Does AMD require RID
+>> and PASID to use the same format when nesting is disabled? If yes, that's
+>> still a driver burden to handle, not iommufd's...
+> 
+> Yes, ARM and AMD require this too
+> 
+> The point of the iommufd enforcement of ALLOC_PAGING is to try to
+> discourage bad apps - ie apps that only work on Intel. We can check
+> the rid attach too if it is easy to do
 
-Introduce the concept of identity domains to s390-iommu, which relies on
-the bus_dma_region to offset identity mappings to the start of the DMA
-aperture advertized by CLP.
+I have an easy way to enforce RID attach. It is:
 
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
- arch/s390/pci/pci.c        |  6 ++-
- drivers/iommu/s390-iommu.c | 95 +++++++++++++++++++++++++++++---------
- 2 files changed, 76 insertions(+), 25 deletions(-)
+If the device is device capable, I would enforce all domains for this
+device (either RID or PASID) be flagged. The device capable info is static,
+so no need to add extra lock across the RID and PASID attach paths for the
+page table format alignment. This has only one drawback. If userspace is
+not going to use PASID, it still needs to allocated domain with this flag.
+I think AMD may need to confirm if it is acceptable.
 
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index 88f72745fa59..758b23331754 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -124,14 +124,16 @@ int zpci_register_ioat(struct zpci_dev *zdev, u8 dmaas,
- 	struct zpci_fib fib = {0};
- 	u8 cc;
- 
--	WARN_ON_ONCE(iota & 0x3fff);
- 	fib.pba = base;
- 	/* Work around off by one in ISM virt device */
- 	if (zdev->pft == PCI_FUNC_TYPE_ISM && limit > base)
- 		fib.pal = limit + (1 << 12);
- 	else
- 		fib.pal = limit;
--	fib.iota = iota | ZPCI_IOTA_RTTO_FLAG;
-+	if (iota == 0)
-+		fib.iota = iota;
-+	else
-+		fib.iota = iota | ZPCI_IOTA_RTTO_FLAG;
- 	fib.gd = zdev->gisa;
- 	cc = zpci_mod_fc(req, &fib, status);
- 	if (cc)
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index fbdeded3d48b..3d93a9644fca 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -16,7 +16,7 @@
- 
- #include "dma-iommu.h"
- 
--static const struct iommu_ops s390_iommu_ops;
-+static const struct iommu_ops s390_iommu_ops, s390_iommu_rtr_ops;
- 
- static struct kmem_cache *dma_region_table_cache;
- static struct kmem_cache *dma_page_table_cache;
-@@ -392,9 +392,11 @@ static int blocking_domain_attach_device(struct iommu_domain *domain,
- 		return 0;
- 
- 	s390_domain = to_s390_domain(zdev->s390_domain);
--	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	list_del_rcu(&zdev->iommu_list);
--	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-+	if (zdev->dma_table) {
-+		spin_lock_irqsave(&s390_domain->list_lock, flags);
-+		list_del_rcu(&zdev->iommu_list);
-+		spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-+	}
- 
- 	zpci_unregister_ioat(zdev, 0);
- 	zdev->dma_table = NULL;
-@@ -723,7 +725,13 @@ int zpci_init_iommu(struct zpci_dev *zdev)
- 	if (rc)
- 		goto out_err;
- 
--	rc = iommu_device_register(&zdev->iommu_dev, &s390_iommu_ops, NULL);
-+	if (zdev->rtr_avail) {
-+		rc = iommu_device_register(&zdev->iommu_dev,
-+					   &s390_iommu_rtr_ops, NULL);
-+	} else {
-+		rc = iommu_device_register(&zdev->iommu_dev, &s390_iommu_ops,
-+					   NULL);
-+	}
- 	if (rc)
- 		goto out_sysfs;
- 
-@@ -787,6 +795,39 @@ static int __init s390_iommu_init(void)
- }
- subsys_initcall(s390_iommu_init);
- 
-+static int s390_attach_dev_identity(struct iommu_domain *domain,
-+				    struct device *dev)
-+{
-+	struct zpci_dev *zdev = to_zpci_dev(dev);
-+	u8 status;
-+	int cc;
-+
-+	blocking_domain_attach_device(&blocking_domain, dev);
-+
-+	/* If we fail now DMA remains blocked via blocking domain */
-+	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
-+				0, &status);
-+	/*
-+	 * If the device is undergoing error recovery the reset code
-+	 * will re-establish the new domain.
-+	 */
-+	if (cc && status != ZPCI_PCI_ST_FUNC_NOT_AVAIL)
-+		return -EIO;
-+
-+	zdev_s390_domain_update(zdev, domain);
-+
-+	return 0;
-+}
-+
-+static const struct iommu_domain_ops s390_identity_ops = {
-+	.attach_dev = s390_attach_dev_identity,
-+};
-+
-+static struct iommu_domain s390_identity_domain = {
-+	.type = IOMMU_DOMAIN_IDENTITY,
-+	.ops = &s390_identity_ops,
-+};
-+
- static struct iommu_domain blocking_domain = {
- 	.type = IOMMU_DOMAIN_BLOCKED,
- 	.ops = &(const struct iommu_domain_ops) {
-@@ -794,23 +835,31 @@ static struct iommu_domain blocking_domain = {
- 	}
- };
- 
--static const struct iommu_ops s390_iommu_ops = {
--	.blocked_domain		= &blocking_domain,
--	.release_domain		= &blocking_domain,
--	.capable = s390_iommu_capable,
--	.domain_alloc_paging = s390_domain_alloc_paging,
--	.probe_device = s390_iommu_probe_device,
--	.device_group = generic_device_group,
--	.pgsize_bitmap = SZ_4K,
--	.get_resv_regions = s390_iommu_get_resv_regions,
--	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= s390_iommu_attach_device,
--		.map_pages	= s390_iommu_map_pages,
--		.unmap_pages	= s390_iommu_unmap_pages,
--		.flush_iotlb_all = s390_iommu_flush_iotlb_all,
--		.iotlb_sync      = s390_iommu_iotlb_sync,
--		.iotlb_sync_map  = s390_iommu_iotlb_sync_map,
--		.iova_to_phys	= s390_iommu_iova_to_phys,
--		.free		= s390_domain_free,
-+#define S390_IOMMU_COMMON_OPS() \
-+	.blocked_domain		= &blocking_domain, \
-+	.release_domain		= &blocking_domain, \
-+	.capable = s390_iommu_capable, \
-+	.domain_alloc_paging = s390_domain_alloc_paging, \
-+	.probe_device = s390_iommu_probe_device, \
-+	.device_group = generic_device_group, \
-+	.pgsize_bitmap = SZ_4K, \
-+	.get_resv_regions = s390_iommu_get_resv_regions, \
-+	.default_domain_ops = &(const struct iommu_domain_ops) { \
-+		.attach_dev	= s390_iommu_attach_device, \
-+		.map_pages	= s390_iommu_map_pages, \
-+		.unmap_pages	= s390_iommu_unmap_pages, \
-+		.flush_iotlb_all = s390_iommu_flush_iotlb_all, \
-+		.iotlb_sync      = s390_iommu_iotlb_sync, \
-+		.iotlb_sync_map  = s390_iommu_iotlb_sync_map, \
-+		.iova_to_phys	= s390_iommu_iova_to_phys, \
-+		.free		= s390_domain_free, \
- 	}
-+
-+static const struct iommu_ops s390_iommu_ops = {
-+	S390_IOMMU_COMMON_OPS()
-+};
-+
-+static const struct iommu_ops s390_iommu_rtr_ops = {
-+	.identity_domain	= &s390_identity_domain,
-+	S390_IOMMU_COMMON_OPS()
- };
+@Kevin, I'd like to echo the prior suggestion for nested domain. It looks
+hard to apply the pasid enforcement on it. So I'd like to limit the
+ALLOC_PASID flag to paging domains. Also, I doubt if the uapi needs to
+mandate the RID part to use this flag. It appears to me it can be done
+iommu drivers. If so, no need to mandate it in uapi. So I'm considering
+to do below changes to IOMMU_HWPT_ALLOC_PASID. The new definition does not
+mandate the RID part of devices, and leaves it to vendors. Hence, the
+iommufd only needs to ensure the paging domains used by PASID should be
+flagged. e.g. Intel won't fail PASID attach even its RID is using a domain
+that is not flagged (e.g. nested domain, under the new definition, nested
+domain does not use this flag). While, AMD would fail it if the RID domain
+is not using this flag. This has one more benefit, it leaves the
+flexibility of using pasid or not to user.
+
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index 0e27557fb86b..a1a11041d941 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -387,19 +387,20 @@ struct iommu_vfio_ioas {
+   *                                   enforced on device attachment
+   * @IOMMU_HWPT_FAULT_ID_VALID: The fault_id field of hwpt allocation data is
+   *                             valid.
+- * @IOMMU_HWPT_ALLOC_PASID: Requests a domain that can be used with PASID. The
+- *                          domain can be attached to any PASID on the device.
+- *                          Any domain attached to the non-PASID part of the
+- *                          device must also be flagged, otherwise attaching a
+- *                          PASID will blocked.
+- *                          If IOMMU does not support PASID it will return
+- *                          error (-EOPNOTSUPP).
++ * @IOMMU_HWPT_ALLOC_PAGING_PASID: Requests a paging domain that can be used
++ *                                 with PASID. The domain can be attached to
++ *                                 any PASID on the device. Vendors may 
+require
++ *                                 the non-PASID part of the device use this
++ *                                 flag as well. If yes, attaching a PASID 
+will
++ *                                 blocked if non-PASID part is not using it.
++ *                                 If IOMMU does not support PASID it will
++ *                                 return error (-EOPNOTSUPP).
+   */
+  enum iommufd_hwpt_alloc_flags {
+  	IOMMU_HWPT_ALLOC_NEST_PARENT = 1 << 0,
+  	IOMMU_HWPT_ALLOC_DIRTY_TRACKING = 1 << 1,
+  	IOMMU_HWPT_FAULT_ID_VALID = 1 << 2,
+-	IOMMU_HWPT_ALLOC_PASID = 1 << 3,
++	IOMMU_HWPT_ALLOC_PAGING_PASID = 1 << 3,
+  };
+
+  /**
 -- 
-2.47.1
-
+Regards,
+Yi Liu
