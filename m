@@ -1,102 +1,203 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F712036FD
-	for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 10:33:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734345225; cv=none; b=p8H+z2cTxYsuOKoqEKiU96cnESGXHAm2riKAbZhGoX+obR/VD00ArdyqhTV0kPeK2VXQqDoi8+wW/qhSqY84JcVTddhcKh2hgF82r+zbg8eOdrIkao4NXH/MtLdNzlAn4iifzTBwhZccNRbEuyd/swF3AIDhdkuUFq2Y2akQu4M=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734345225; c=relaxed/simple;
-	bh=PYwh9Ejzktqnk/4b3X6HTET4UjWYpwtQYwse3ElACjE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ADn9VgnXBnKS8rGheJlp5lqpkrAVc9d9qM2V+RO3QjNUPnThzHXiir0/BRJQXgxh0XJ0bhYLFkDB0Vrwh1Cw8IRc6MN8s7BaMXJrhOPRz8kfJ8+9WGDbOS+5PuLrEzdnMpgmpamOPFJ5fL/1JG0LccPyR5NXhidnzsmP3rErcqM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=hd15CHfd; arc=none smtp.client-ip=209.85.208.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D85E7A937
+	for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 11:00:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1734346859; cv=pass; b=UYi6HhBwt+d9r8HP1FEmHvGTm29z8LJOU4CqYxL5fL2d0ybFZeqAHNwtfwgRkAihQDBIDYxj8RELZpqNm3CgI+GtJI1lEgs8MgaFqsI8G4VoM3765RG/HiN8bv2ZkTzB3V1SoeuxBOu1hyCCKwBsL8YcuZe5jGmUfYp2VV/mohw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1734346859; c=relaxed/simple;
+	bh=5xkg+XoFQcDR4Nj5bHPQrnGb3VP3GtQKKAKjk8PtFws=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=DDu5+qreSZOWSgsj9KM3v0F4MMZqYnhfTC0gbkPc6SdhDQDCrGUh6TgtAuvEF4mei6niSAxmnpx0WhYyehdTubcQoEFnVud4KPh9cox4k0695xo4b3mitFGKpkoD2jXHuq23RK6Vy9sjOolpXu35XpMnZHUc9l36WZPTgzC1Sxo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=GqN/uwg3; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hd15CHfd"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3002c324e7eso45081571fa.3
-        for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 02:33:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1734345221; x=1734950021; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=81rR1eTM9HElymQ2hIkXvkfh84mtbQHR8oN+z/vprns=;
-        b=hd15CHfd+lW00u3mtgU4wNjWygXsoRs30zaQnNrtgaHUSN7FOD1lBzW8ZEEYt+I1Of
-         WB7GzwV7B4+29rkEo8vsj96F+ofsuU5xhCJl4cRUnu5V7gQ3FbaZSz3IztMDmNfGRur/
-         7OtduUNjG+WfXzN/gQLsirc9GYnmO6ZbAHN5nJSTY9G+QioMr/zkywZKL/hK1hr9ZHSi
-         kJUxy3WB+2zPFZDetpPiKomUywQGQu4cOu65uB4uuHBOjS/xJszeUo0IZiaTYv8kxJW+
-         9NGd+GGrjGIb9owtw+BdC9Pe8BKdt2vuwdvQhx1svNOUcHahgMZI+S0nVifuyRI3kIOw
-         kp+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734345221; x=1734950021;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=81rR1eTM9HElymQ2hIkXvkfh84mtbQHR8oN+z/vprns=;
-        b=a2JBIaz1HPOuVlB/TCpwyvCOVxSE9W7xQMyCSypNpK6Vq7MpxrI5BeJid0kVHWArH1
-         EjpFjduW6juz/ZQth1HG7EQBvD20DISNk8B9QwzI86Gjh6u7RYQhsUMFiEF+jjaaHsXs
-         EAxP9XPXKmFzESnRGQf6ypasZ+oEqNYOWmy5GUOJ/CBlc96M7ntFfUGNX8ek4RT/VgHV
-         fYTwGPWFK6Q1+HgS90/rPtkzRoEsaV1IqwIUzNGqFE5HUrSihj9yq43uUGGFdmGAKMAs
-         0sznDIDOWJTceJK/GKWBU975GWYnsnbq4IVrLodpxBwTE8G08dFIp/3BcysJIJJn2yju
-         73yA==
-X-Forwarded-Encrypted: i=1; AJvYcCW8V/Xy/Rja6aIt8okmiQ21LMDLkgHd95a+zOFYr1ZQ4dzldXEGns33PEYheOkyc9BsDaX6rg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzFqZU7Uc/0xGjSQB6hcPQ1DGqThalJiJyu1Kh67g6TBH4W5Xrh
-	k4BQmqcjfErwIlfp+TKqRTYwB/hdzp6EclrYNBDwPZpiaCjoWnVr3ek+s7psrWFWR4efNsCJPWq
-	LFCpY3fK51X377RBfx7L54ImSdSXFk3A6k/La/w==
-X-Gm-Gg: ASbGncvxViNLmwJUJ9iaIf0lzwTfmNGBB/lr2r6QujDCcVXCiwHrBcMkUt4ZU3ru1DC
-	wYztiISsIyqC4AAS2uZpEpao3AjT12Fd50nHm
-X-Google-Smtp-Source: AGHT+IEUf3iLQlaHwj+huKVEu7Rf6ZfMRHEmd0RkbAiajFtXRNVDdgnZzJS2Enw8KLsa6+/B9ivQKuoEjmBWCEUg1Qo=
-X-Received: by 2002:a05:6512:230b:b0:540:3561:969d with SMTP id
- 2adb3069b0e04-54099b7188fmr3706580e87.49.1734345221514; Mon, 16 Dec 2024
- 02:33:41 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="GqN/uwg3"
+ARC-Seal: i=1; a=rsa-sha256; t=1734346843; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=ZYlP6MkXJQuAGqB7M8bxK2G2Y66dw7Bvj7yYva62rvYea6pvky/lzA8j3sP1OPEGbVQh0IGDLFlsbN32P8aOocQSXCQPqb8eWwY5vAcAmLoxYKdQSR7U6TrQsxeO8lwmWzVwwi7u8XeBymdtSEB1SHl/W+w5K5ueQrCPCycOX/Q=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1734346843; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=piuy8bLoj7Ex+dtJ8kT5C+iCAk/X82mSA3N2sYjnfsU=; 
+	b=Gg4/pW8w9jW0ITFKHB/NbHRbkJrtVM6fRus1tQREAbwbSkK6rQpcsYW6HAuEw6TveTFd98Coqh9crRsd53v6MqyebLi8vGqUkTslqodfQGde34wLKj1XCOZkUDhhen6kDAD9tKMAFZqoAah1Unt9pQzYZPZKkoT6kOYMCAv3bfs=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
+	dmarc=pass header.from=<daniel.almeida@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1734346843;
+	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
+	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
+	bh=piuy8bLoj7Ex+dtJ8kT5C+iCAk/X82mSA3N2sYjnfsU=;
+	b=GqN/uwg3he+FwuubtfKQyUnghKNEboQMAnLD8XaA4XHZKpEq9yr4OovirttgL0Xi
+	NbprxYCNVQO1IL9P85LLC8DZlOdCFLIfwRdGQU4o1fN9MdQSpKqNeVp43rsGRbtII7I
+	zloiMj583cV3QoanT4iShEDTC1GFnNusDC0v5Qb4=
+Received: by mx.zohomail.com with SMTPS id 1734346841633737.7947914694015;
+	Mon, 16 Dec 2024 03:00:41 -0800 (PST)
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20241215-msm8917-v9-0-bacaa26f3eef@mainlining.org>
-In-Reply-To: <20241215-msm8917-v9-0-bacaa26f3eef@mainlining.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 16 Dec 2024 11:33:30 +0100
-Message-ID: <CACRpkdZ-ZEiGMUPObHU=kw=OUADrRGtxgMc-QC3EaBevp-Shng@mail.gmail.com>
-Subject: Re: [PATCH v9 0/8] Add MSM8917/PM8937/Redmi 5A
-To: =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>
-Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
-	Dang Huynh <danct12@riseup.net>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.200.121\))
+Subject: Re: [PATCH v7 2/2] rust: add dma coherent allocator abstraction.
+From: Daniel Almeida <daniel.almeida@collabora.com>
+In-Reply-To: <f340e2c9-a794-4ea9-8b1a-53496765e769@gmail.com>
+Date: Mon, 16 Dec 2024 08:00:24 -0300
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ Alice Ryhl <aliceryhl@google.com>,
+ rust-for-linux@vger.kernel.org,
+ Miguel Ojeda <ojeda@kernel.org>,
+ Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>,
+ Gary Guo <gary@garyguo.net>,
+ =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>,
+ Trevor Gross <tmgross@umich.edu>,
+ Danilo Krummrich <dakr@kernel.org>,
+ Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ airlied@redhat.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <216C2A0A-8393-47DC-9A83-0020461512BF@collabora.com>
+References: <20241210221603.3174929-1-abdiel.janulgue@gmail.com>
+ <20241210221603.3174929-3-abdiel.janulgue@gmail.com>
+ <CAH5fLgjO-GbB85dDdxLSSWY74cUn8-Lt-yaRGkUVxb-E8YaO2Q@mail.gmail.com>
+ <0F719804-2AD3-4C4E-A98C-2862295990BA@collabora.com>
+ <b7130ae2-6314-41d9-bda2-d875b22463bb@arm.com>
+ <263C49EB-5A5D-4DF4-B80A-A39E6CE58851@collabora.com>
+ <f340e2c9-a794-4ea9-8b1a-53496765e769@gmail.com>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+X-Mailer: Apple Mail (2.3826.200.121)
+X-ZohoMailClient: External
 
-On Sun, Dec 15, 2024 at 12:15=E2=80=AFPM Barnab=C3=A1s Cz=C3=A9m=C3=A1n
-<barnabas.czeman@mainlining.org> wrote:
 
-> This patch series add support for MSM8917 soc with PM8937 and
-> Xiaomi Redmi 5A (riva).
->
-> Signed-off-by: Barnab=C3=A1s Cz=C3=A9m=C3=A1n <barnabas.czeman@mainlining=
-.org>
-(...)
->       dt-bindings: pinctrl: qcom: Add MSM8917 pinctrl
-(...)
->       pinctrl: qcom: Add MSM8917 tlmm pinctrl driver
 
-Is it possible for me to apply these two patches in isolation?
+> On 16 Dec 2024, at 07:23, Abdiel Janulgue <abdiel.janulgue@gmail.com> =
+wrote:
+>=20
+>=20
+>=20
+> On 13/12/2024 21:08, Daniel Almeida wrote:
+>> Hi Robin,
+>>> On 13 Dec 2024, at 12:28, Robin Murphy <robin.murphy@arm.com> wrote:
+>>>=20
+>>> On 13/12/2024 2:47 pm, Daniel Almeida wrote:
+>>> [...]
+>>>>>> +    /// Returns the CPU-addressable region as a slice.
+>>>>>> +    pub fn cpu_buf(&self) -> &[T]
+>>>>>> +    {
+>>>>>> +        // SAFETY: The pointer is valid due to type invariant on =
+`CoherentAllocation` and
+>>>>>> +        // is valid for reads for `self.count * size_of::<T>` =
+bytes.
+>>>>>> +        unsafe { core::slice::from_raw_parts(self.cpu_addr, =
+self.count) }
+>>>>>=20
+>>>>> Immutable slices require that the data does not change while the
+>>>>> reference is live. Is that the case? If so, your safety comment =
+should
+>>>>> explain that.
+>>>>>=20
+>>>>>> +    }
+>>>>>> +
+>>>>>> +    /// Performs the same functionality as `cpu_buf`, except =
+that a mutable slice is returned.
+>>>>>> +    pub fn cpu_buf_mut(&mut self) -> &mut [T]
+>>>>>> +    {
+>>>>>> +        // SAFETY: The pointer is valid due to type invariant on =
+`CoherentAllocation` and
+>>>>>> +        // is valid for reads for `self.count * size_of::<T>` =
+bytes.
+>>>>>> +        unsafe { core::slice::from_raw_parts_mut(self.cpu_addr, =
+self.count) }
+>>>>>=20
+>>>>> Mutable slices require that the data is not written to *or read* =
+by
+>>>>> anybody else while the reference is live. Is that the case? If so,
+>>>>> your safety comment should explain that.
+>>>>>=20
+>>>> The buffer will probably be shared between the CPU and some =
+hardware device, since this is the
+>>>> point of the dma mapping API.
+>>>> It=E2=80=99s up to the caller to ensure that no hardware operations =
+that involve the buffer are currently taking
+>>>> place while the slices above are alive.
+>>>=20
+>>> Hmm, that sounds troublesome... the nature of coherent allocations =
+is that both CPU and device may access them at any time, and you can =
+definitely expect ringbuffer-style usage models where a CPU is writing =
+to part of the buffer while the device is reading/writing another part, =
+but also cases where a CPU needs to poll for a device write to a =
+particular location.
+>>>=20
+>> Ok, I had based my answer on some other drivers I=E2=80=99ve worked =
+on in the past where the approach I cited would work.
+>> I can see it not working for what you described, though.
+>> This is a bit unfortunate, because it means we are back to square =
+one, i.e.: back to read() and write() functions and
+>> to the bound on `Copy`. That=E2=80=99s because, no matter how you try =
+to dress this, there is no way to give safe and direct access
+>> to the underlying memory if you can=E2=80=99t avoid situations where =
+both the CPU and the device will be accessing the memory
+>> at the same time.
+>=20
+> This is unfortunate indeed. Thanks Alice for pointing out the =
+limitations of slice.
+>=20
+> Btw, do we have any other concerns in going back to plain old raw =
+pointers instead? i.e.,
+>=20
+>    pub fn read(&self, index: usize) -> Result<T> {
+>        if index >=3D self.count {
+>            return Err(EINVAL);
+>        }
+>=20
+>        let ptr =3D self.cpu_addr.wrapping_add(index);
+>        // SAFETY: We just checked that the index is within bounds.
+>        Ok(unsafe { ptr.read() })
+>    }
+>=20
+>    pub fn write(&self, index: usize, value: &T) -> Result
+>    where
+>        T: Copy,
+>    {
+>        if index >=3D self.count {
+>            return Err(EINVAL);
+>        }
+>=20
+>        let ptr =3D self.cpu_addr.wrapping_add(index);
+>        // SAFETY: We just checked that the index is within bounds.
+>        unsafe { ptr.write(*value) };
+>        Ok(())
+>    }
+>=20
+>> I guess the only improvement that could be made over the approach =
+used for v2 is to at least use copy_nonoverlapping
+>> instead,=20
+>=20
+> You mean introduce something like read_raw(dst: *mut u8,...) and =
+write_raw(&self, src: *const u8,...)?
 
-I want to make sure the patches get moving.
 
-Yours,
-Linus Walleij
+What I mean is that you don=E2=80=99t have to read (and bounds-check) a =
+single index per function call.
+
+Using copy_nonoverlapping lets you read/write multiple values with only =
+a single function call and a
+single check. It=E2=80=99s basically equivalent to a memcpy.
+
+
+>=20
+> Regards,
+> Abdiel
+
+
