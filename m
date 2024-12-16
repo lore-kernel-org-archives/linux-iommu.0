@@ -1,213 +1,181 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62CCA2010EF
-	for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 10:18:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23C4B1B4F3A
+	for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 10:23:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734344314; cv=none; b=enlpl1uuEF001zFN+zqGP86x7t3a4jjl7Xxtf9O9DJMeNH0dRbVA3Afigf+bXSpQteKZNaIUwFFkQbrpNnI88Ut9YwP0QrfW8HvUODUcWDD1CSDYB/7WGOb9YfAJ1zC+RqjKF8yppNMZHe7viZGZbXG9zYD2Nk7xyNZO8QGxKys=
+	t=1734344595; cv=none; b=I0ZPTavJvQMFK1iNtB3kDfIHkTttqg3RMtv7RsTpSpH9xbhUt6JyuGpjn3dDOG8accQz1+L2RVKOUV2tY3IyeQbYYDXH/Qx2EMMuiI2PLEAYMJVGmdh29WNMR5Yc+6aTQrnYDtxEui/hMDxHx7I+0botmeIecQg99/0lfEzKCaA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734344314; c=relaxed/simple;
-	bh=8ZRmIeW76t/I1WIb/QIxH1Qky+u71Mk4Lo1yE3WW+jE=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=jDYtpJTNBSFgx4Nq9TBkASGf7wTyQ0NnbpyvLZadVjm1zt5XddPm7c6gGDt8h28aGozsTofACKLwAs7KQmhi4GKFs+P5ZU8g63J/XtlPstRKm9D7huNDSAMFE5pkLXLRdVNb6ejvWslXw5aiut7UpxgmRSOf7TLHpFC927bA1Iw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=UheN/KU9; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1734344595; c=relaxed/simple;
+	bh=X7hz73YZMAuspL4ZSWRJS0L8v8iep2zqFRz8Exthqjo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=TxpKIzyTlLimnWaVTiVi948xuM//YQx7dVpUp9ad/aVmvQRMTQWQOU8DIWLWfM2LMdfHoyujQqeOvd8s+/LF7lU6AbFWZ6zm2Lum1lbGV1wHbUaPjWHcURZp8oGvX3xIgjevor+2yF2mXg83sYkzlFiYH71JWFBfjFPCz66jv/A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i54fJgJc; arc=none smtp.client-ip=209.85.167.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="UheN/KU9"
-Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BFNP1bQ021382;
-	Mon, 16 Dec 2024 10:18:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=F9oeZT
-	OvEDkV3gWjPGCTl5Hpqtrf5KHDTXD9gQqxMGs=; b=UheN/KU93Nw6MH+qHOsPTq
-	y15uWaWaCXf1er5qIQnKaMeRXFfSP3wLgxukROsWRJ7Q/qn3v6q9qEi22mYgxH5F
-	tlUGonWdRMvoHs8MxRjUq4oDHNdtlJaI+NOlMfoSnghdI50lvQvLMNFtpi7vTKoF
-	tQgkdDp09rxPJGdi6u3tTVlYvjUx5PPMBpxdSmF5ulxI8ac8GX/PmwTtXf13Ort1
-	r3EjKCHw2S+7tnrfqJOgG1H/naTxb8+zTY77Vp9DQK2J4eNb2yK7ZkXLL2kdrdSo
-	a8OCvfqa321GN5DKCv0kys/lGSYPa1/Xtppt1Zcba1e0YNVZjCPZVe9Pb0+W3RLA
-	==
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 43j0k4bd15-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 16 Dec 2024 10:18:25 +0000 (GMT)
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 4BG636sk011260;
-	Mon, 16 Dec 2024 10:18:24 GMT
-Received: from smtprelay05.dal12v.mail.ibm.com ([172.16.1.7])
-	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 43hpjjw75m-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 16 Dec 2024 10:18:24 +0000
-Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
-	by smtprelay05.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4BGAINxI12059226
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 16 Dec 2024 10:18:23 GMT
-Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3376958053;
-	Mon, 16 Dec 2024 10:18:23 +0000 (GMT)
-Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8BFEC58043;
-	Mon, 16 Dec 2024 10:18:20 +0000 (GMT)
-Received: from [9.152.212.155] (unknown [9.152.212.155])
-	by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 16 Dec 2024 10:18:20 +0000 (GMT)
-Message-ID: <d2d6c27d12a5d7770952a9c027d290204c4fac6d.camel@linux.ibm.com>
-Subject: Re: [PATCH v2 2/3] s390/pci: store DMA offset in bus_dma_region
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, gerald.schaefer@linux.ibm.com
-Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
-        clegoate@redhat.com, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Date: Mon, 16 Dec 2024 11:18:19 +0100
-In-Reply-To: <1a1c9b992a9a957e200d55b0a1330a0c3d75baa0.camel@linux.ibm.com>
-References: <20241213224941.571060-1-mjrosato@linux.ibm.com>
-		 <20241213224941.571060-3-mjrosato@linux.ibm.com>
-	 <1a1c9b992a9a957e200d55b0a1330a0c3d75baa0.camel@linux.ibm.com>
-Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
- keydata=mQINBGHm3M8BEAC+MIQkfoPIAKdjjk84OSQ8erd2OICj98+GdhMQpIjHXn/RJdCZLa58k
- /ay5x0xIHkWzx1JJOm4Lki7WEzRbYDexQEJP0xUia0U+4Yg7PJL4Dg/W4Ho28dRBROoJjgJSLSHwc
- 3/1pjpNlSaX/qg3ZM8+/EiSGc7uEPklLYu3gRGxcWV/944HdUyLcnjrZwCn2+gg9ncVJjsimS0ro/
- 2wU2RPE4ju6NMBn5Go26sAj1owdYQQv9t0d71CmZS9Bh+2+cLjC7HvyTHKFxVGOznUL+j1a45VrVS
- XQ+nhTVjvgvXR84z10bOvLiwxJZ/00pwNi7uCdSYnZFLQ4S/JGMs4lhOiCGJhJ/9FR7JVw/1t1G9a
- UlqVp23AXwzbcoV2fxyE/CsVpHcyOWGDahGLcH7QeitN6cjltf9ymw2spBzpRnfFn80nVxgSYVG1d
- w75ksBAuQ/3e+oTQk4GAa2ShoNVsvR9GYn7rnsDN5pVILDhdPO3J2PGIXa5ipQnvwb3EHvPXyzakY
- tK50fBUPKk3XnkRwRYEbbPEB7YT+ccF/HioCryqDPWUivXF8qf6Jw5T1mhwukUV1i+QyJzJxGPh19
- /N2/GK7/yS5wrt0Lwxzevc5g+jX8RyjzywOZGHTVu9KIQiG8Pqx33UxZvykjaqTMjo7kaAdGEkrHZ
- dVHqoPZwhCsgQARAQABtChOaWtsYXMgU2NobmVsbGUgPHNjaG5lbGxlQGxpbnV4LmlibS5jb20+iQ
- JXBBMBCABBAhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAhkBFiEEnbAAstJ1IDCl9y3cr+Q/Fej
- CYJAFAmWVooIFCQWP+TMACgkQr+Q/FejCYJCmLg/+OgZD6wTjooE77/ZHmW6Egb5nUH6DU+2nMHMH
- UupkE3dKuLcuzI4aEf/6wGG2xF/LigMRrbb1iKRVk/VG/swyLh/OBOTh8cJnhdmURnj3jhaefzslA
- 1wTHcxeH4wMGJWVRAhOfDUpMMYV2J5XoroiA1+acSuppelmKAK5voVn9/fNtrVr6mgBXT5RUnmW60
- UUq5z6a1zTMOe8lofwHLVvyG9zMgv6Z9IQJc/oVnjR9PWYDUX4jqFL3yO6DDt5iIQCN8WKaodlNP6
- 1lFKAYujV8JY4Ln+IbMIV2h34cGpIJ7f76OYt2XR4RANbOd41+qvlYgpYSvIBDml/fT2vWEjmncm7
- zzpVyPtCZlijV3npsTVerGbh0Ts/xC6ERQrB+rkUqN/fx+dGnTT9I7FLUQFBhK2pIuD+U1K+A+Egw
- UiTyiGtyRMqz12RdWzerRmWFo5Mmi8N1jhZRTs0yAUn3MSCdRHP1Nu3SMk/0oE+pVeni3ysdJ69Sl
- kCAZoaf1TMRdSlF71oT/fNgSnd90wkCHUK9pUJGRTUxgV9NjafZy7sx1Gz11s4QzJE6JBelClBUiF
- 6QD4a+MzFh9TkUcpG0cPNsFfEGyxtGzuoeE86sL1tk3yO6ThJSLZyqFFLrZBIJvYK2UiD+6E7VWRW
- 9y1OmPyyFBPBosOvmrkLlDtAtyfYInO0KU5pa2xhcyBTY2huZWxsZSA8bmlrbGFzLnNjaG5lbGxlQ
- GlibS5jb20+iQJUBBMBCAA+AhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAFiEEnbAAstJ1IDCl9y
- 3cr+Q/FejCYJAFAmWVoosFCQWP+TMACgkQr+Q/FejCYJB7oxAAksHYU+myhSZD0YSuYZl3oLDUEFP
- 3fm9m6N9zgtiOg/GGI0jHc+Tt8qiQaLEtVeP/waWKgQnje/emHJOEDZTb0AdeXZk+T5/ydrKRLmYC
- 6rPge3ue1yQUCiA+T72O3WfjZILI2yOstNwd1f0epQ32YaAvM+QbKDloJSmKhGWZlvdVUDXWkS6/m
- aUtUwZpddFY8InXBxsYCbJsqiKF3kPVD515/6keIZmZh1cTIFQ+Kc+UZaz0MxkhiCyWC4cH6HZGKR
- fiXLhPlmmAyW9FiZK9pwDocTLemfgMR6QXOiB0uisdoFnjhXNfp6OHSy7w7LTIHzCsJoHk+vsyvSp
- +fxkjCXgFzGRQaJkoX33QZwQj1mxeWl594QUfR4DIZ2KERRNI0OMYjJVEtB5jQjnD/04qcTrSCpJ5
- ZPtiQ6Umsb1c9tBRIJnL7gIslo/OXBe/4q5yBCtCZOoD6d683XaMPGhi/F6+fnGvzsi6a9qDBgVvt
- arI8ybayhXDuS6/StR8qZKCyzZ/1CUofxGVIdgkseDhts0dZ4AYwRVCUFQULeRtyoT4dKfEot7hPE
- /4wjm9qZf2mDPRvJOqss6jObTNuw1YzGlpe9OvDYtGeEfHgcZqEmHbiMirwfGLaTG2xKDx4g2jd2z
- Ocf83TCERFKJEhvZxB3tRiUQTd3dZ1TIaisv/o+y0K05pa2xhcyBTY2huZWxsZSA8bmlrbGFzLnNj
- aG5lbGxlQGdtYWlsLmNvbT6JAlQEEwEIAD4CGwEFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AWIQSds
- ACy0nUgMKX3Ldyv5D8V6MJgkAUCZZWiiwUJBY/5MwAKCRCv5D8V6MJgkNVuEACo12niyoKhnXLQFt
- NaqxNZ+8p/MGA7g2XcVJ1bYMPoZ2Wh8zwX0sKX/dLlXVHIAeqelL5hIv6GoTykNqQGUN2Kqf0h/z7
- b85o3tHiqMAQV0dAB0y6qdIwdiB69SjpPNK5KKS1+AodLzosdIVKb+LiOyqUFKhLnablni1hiKlqY
- yDeD4k5hePeQdpFixf1YZclGZLFbKlF/A/0Q13USOHuAMYoA/iSgJQDMSUWkuC0mNxdhfVt/gVJnu
- Kq+uKUghcHflhK+yodqezlxmmRxg6HrPVqRG4pZ6YNYO7YXuEWy9JiEH7MmFYcjNdgjn+kxx4IoYU
- O0MJ+DjLpVCV1QP1ZvMy8qQxScyEn7pMpQ0aW6zfJBsvoV3EHCR1emwKYO6rJOfvtu1rElGCTe3sn
- sScV9Z1oXlvo8pVNH5a2SlnsuEBQe0RXNXNJ4RAls8VraGdNSHi4MxcsYEgAVHVaAdTLfJcXZNCIU
- cZejkOE+U2talW2n5sMvx+yURAEVsT/50whYcvomt0y81ImvCgUz4xN1axZ3PCjkgyhNiqLe+vzge
- xq7B2Kx2++hxIBDCKLUTn8JUAtQ1iGBZL9RuDrBy2rR7xbHcU2424iSbP0zmnpav5KUg4F1JVYG12
- vDCi5tq5lORCL28rjOQqE0aLHU1M1D2v51kjkmNuc2pgLDFzpvgLQhTmlrbGFzIFNjaG5lbGxlIDx
- uaWtzQGtlcm5lbC5vcmc+iQJUBBMBCAA+AhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAFiEEnbAA
- stJ1IDCl9y3cr+Q/FejCYJAFAmWVoosFCQWP+TMACgkQr+Q/FejCYJAglRAAihbDxiGLOWhJed5cF
- kOwdTZz6MyYgazbr+2sFrfAhX3hxPFoG4ogY/BzsjkN0cevWpSigb2I8Y1sQD7BFWJ2OjpEpVQd0D
- sk5VbJBXEWIVDBQ4VMoACLUKgfrb0xiwMRg9C2h6KlwrPBlfgctfvrWWLBq7+oqx73CgxqTcGpfFy
- tD87R4ovR9W1doZbh7pjsH5Ae9xX5PnQFHruib3y35zC8+tvSgvYWv3Eg/8H4QWlrjLHHy2AfZDVl
- 9F5t5RfGL8NRsiTdVg9VFYg/GDdck9WPEgdO3L/qoq3Iuk0SZccGl+Nj8vtWYPKNlu2UvgYEbB8cl
- UoWhg+SjjYQka7/p6tc+CCPZ8JUpkgkAdt7yXt6370wP1gct2VztS6SEGcmAE1qxtGhi5Kuln4ZJ/
- UO2yxhPHgoW99OuZw3IRHe0+mNR67JbIpSuFWDFNjZ0nckQcU1taSEUi0euWs7i4MEkm0NsOsVhbs
- 4D2vMiC6kO/FqWOPmWZeAjyJw/KRUG4PaJAr5zJUx57nhKWgeTniW712n4DwCUh77D/PHY0nqBTG/
- B+QQCR/FYGpTFkO4DRVfapT8njDrsWyVpP9o64VNZP42S+DuRGWfUKCMAXsM/wPzRiDEVfnZMcUR9
- vwLSHeoV7MiIFC0xIrp5ES9R00t4UFgqtGc36DV71qjR+66Im0=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.2 (3.54.2-1.fc41) 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i54fJgJc"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-53e28cf55cdso3533905e87.3
+        for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 02:23:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1734344592; x=1734949392; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wQgc2lLILX6zWYW2cp2uo7oeDGv90xpnmmiFLnRu7LI=;
+        b=i54fJgJcN6ygU2+IUjwBsff8r7PnO2vpuFVsYhXmqnwjF8fWvn0nZpT4O+biObmHBI
+         gGm28nls5mq4fEhyuoW9eAr+7jSpEFgFF/fyUJPx4IXI/r95ajz33UvrugliI+/jsuGp
+         quTf+SIY+I4tq7JQZDYRY3qL0oRJvRaJltNdkiYDxnS7N9P0zknPB4/Hg5eoeE3TiQiA
+         IXs4ngHaihQWRe8zjC3t2sjiqV4O+WwkGzLGM5QmDjoqvgELg/xJJcmQIp6HhwEbxm7M
+         /iPpe5PIaXClJk7cYjrFDeUvPQwUUNiK28fTNrRsg1Q0mAhkmvt9gjnmRHVtaL16AOUi
+         hGWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1734344592; x=1734949392;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wQgc2lLILX6zWYW2cp2uo7oeDGv90xpnmmiFLnRu7LI=;
+        b=AdxaC40iFZBfzlDEWb9CiP+mrIxsr4XMUT6HbJvHamacsfxZ/9jzKzCQ/ZsT+xJ10W
+         1RnfdwvGhvI/vcIkpFdSsbIsKRatUyL3Kh8aA5SbcxrMvFbBoiCRbh0WIYE4dq7Tqy5b
+         IWtHU3xJiZbwSbpdwIObPLBpQ6i+bxZk13HJGF0dBsX/1K08B9UesFyp0NCFa1Kk56I8
+         KrBZDelLQIBk6r1cm6yUOEYBgGvhWvBaSDHhm67bceozzzPugbHFwwvI8UGAiI0fylZ5
+         FZcllSR9OXPJtdhLpnvX0YJsEi79h7C4rZpDWVjKqQEcwha1Md0/7DPdksGSPVRD9Ig2
+         bNZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU5ZoRsNdzNujF/DJWFvEx8Cb1Pgh0X+APxKhB0IVnDlfdcRNe1M2x/5lwn8PMNe9BeOpcCIw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwbieqF0OQDdxrDzmmWBAFPAcQrQgqXaG4wdcfsKIgi/M0mmHMc
+	9i6eAswLl9WRgds+oqZu3c5X7AacbJF5nfHJqYfBLsRLUhArjl8q
+X-Gm-Gg: ASbGncu0eG2N5LrJdb67uRKgeweUQYT0kfKOloXnsFFjiCssf/bq2t3cDJUQ4HMpzGv
+	YekbfsjDvFIIH9QVP7Ii8cwJU4NGMbX+mQSYnOzIbPX8531cDD8R+lAsEzFsqXOY7ptDyqaLsQ+
+	WoREJOcVlAjprHJUJ39JiDHtm8f/7S6eU3cIK1PRrKN1GDDsQiIOW/BnX+SIC6DjsrxAkVAD38w
+	v6oELy1j4e7G/CT7j8jpwGUVmux4NKcw2OImeLa7L3EZC59qKGKvCumrwh7KU6piPqMjC4Y6c4n
+	rsHjm1wTCSQ1YNAxip3GQosIXfk=
+X-Google-Smtp-Source: AGHT+IHUeir8mWJDMubLNBEwRE0TOe2jZjlVnj5E+6MVDLPtwfdQnftnTctkqu2Of/4M9kA/fowwPQ==
+X-Received: by 2002:a05:6512:3096:b0:540:5253:9669 with SMTP id 2adb3069b0e04-54090568080mr4056809e87.32.1734344591920;
+        Mon, 16 Dec 2024 02:23:11 -0800 (PST)
+Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54120b9f3basm789880e87.15.2024.12.16.02.23.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Dec 2024 02:23:10 -0800 (PST)
+Message-ID: <f340e2c9-a794-4ea9-8b1a-53496765e769@gmail.com>
+Date: Mon, 16 Dec 2024 12:23:08 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 86-5Kh2tH5bRQvb9PlAxH4F7583fyuWg
-X-Proofpoint-ORIG-GUID: 86-5Kh2tH5bRQvb9PlAxH4F7583fyuWg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- lowpriorityscore=0 malwarescore=0 bulkscore=0 mlxlogscore=999
- clxscore=1015 suspectscore=0 adultscore=0 phishscore=0 mlxscore=0
- spamscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2411120000 definitions=main-2412160083
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 2/2] rust: add dma coherent allocator abstraction.
+To: Daniel Almeida <daniel.almeida@collabora.com>,
+ Robin Murphy <robin.murphy@arm.com>, Alice Ryhl <aliceryhl@google.com>
+Cc: rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+ Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>,
+ Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
+ Danilo Krummrich <dakr@kernel.org>, Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+References: <20241210221603.3174929-1-abdiel.janulgue@gmail.com>
+ <20241210221603.3174929-3-abdiel.janulgue@gmail.com>
+ <CAH5fLgjO-GbB85dDdxLSSWY74cUn8-Lt-yaRGkUVxb-E8YaO2Q@mail.gmail.com>
+ <0F719804-2AD3-4C4E-A98C-2862295990BA@collabora.com>
+ <b7130ae2-6314-41d9-bda2-d875b22463bb@arm.com>
+ <263C49EB-5A5D-4DF4-B80A-A39E6CE58851@collabora.com>
+Content-Language: en-US
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+In-Reply-To: <263C49EB-5A5D-4DF4-B80A-A39E6CE58851@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, 2024-12-16 at 10:29 +0100, Niklas Schnelle wrote:
-> On Fri, 2024-12-13 at 17:49 -0500, Matthew Rosato wrote:
-> > PCI devices on s390 have a DMA offset that is reported via CLP.  In
-> > preparation for allowing identity domains, setup the bus_dma_region
-> > for all PCI devices using the reported CLP value.
-> >=20
-> > Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> > ---
-> >  arch/s390/pci/pci_bus.c | 18 ++++++++++++++++++
-> >  1 file changed, 18 insertions(+)
-> >=20
-> > diff --git a/arch/s390/pci/pci_bus.c b/arch/s390/pci/pci_bus.c
-> > index d5ace00d10f0..14527687d0f2 100644
-> > --- a/arch/s390/pci/pci_bus.c
-> > +++ b/arch/s390/pci/pci_bus.c
-> > @@ -19,6 +19,7 @@
-> >  #include <linux/jump_label.h>
-> >  #include <linux/pci.h>
-> >  #include <linux/printk.h>
-> > +#include <linux/dma-direct.h>
-> > =20
-> >  #include <asm/pci_clp.h>
-> >  #include <asm/pci_dma.h>
-> > @@ -284,10 +285,27 @@ static struct zpci_bus *zpci_bus_alloc(int topo, =
-bool topo_is_tid)
-> >  	return zbus;
-> >  }
-> > =20
-> > +static void pci_dma_range_setup(struct pci_dev *pdev)
-> > +{
-> > +	struct zpci_dev *zdev =3D to_zpci(pdev);
-> > +	struct bus_dma_region *map;
-> > +
-> > +	map =3D kzalloc(sizeof(*map), GFP_KERNEL);
-> > +	if (!map)
-> > +		return;
-> > +
-> > +	map->cpu_start =3D 0;
-> > +	map->dma_start =3D PAGE_ALIGN(zdev->start_dma);
-> > +	map->size =3D (u64)virt_to_phys(high_memory);
->=20
-> I don't think we should restrict the size here to the size of memory.
-> Instead I think it should be zdev->end_dma - zdev->start_dma.
->=20
-> Since we handle the restriction to memory size as reserved regions I
-> think that should be compatible. Also I think otherwise this might
-> break the admittedly odd s390_iommu_aperture=3DX kernel parameter on
-> LPARs.
 
-Correction, zdev->end_dma - zdev->start_dma + 1 because zdev->end_dma
-is inclusive ;-)
 
->=20
->=20
-> > +	pdev->dev.dma_range_map =3D map;
-> > +}
-> > +
-> >  void pcibios_bus_add_device(struct pci_dev *pdev)
-> >  {
-> >  	struct zpci_dev *zdev =3D to_zpci(pdev);
-> > =20
-> > +	pci_dma_range_setup(pdev);
-> > +
-> >  	/*
-> >  	 * With pdev->no_vf_scan the common PCI probing code does not
-> >  	 * perform PF/VF linking.
->=20
+On 13/12/2024 21:08, Daniel Almeida wrote:
+> Hi Robin,
+> 
+>> On 13 Dec 2024, at 12:28, Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 13/12/2024 2:47 pm, Daniel Almeida wrote:
+>> [...]
+>>>>> +    /// Returns the CPU-addressable region as a slice.
+>>>>> +    pub fn cpu_buf(&self) -> &[T]
+>>>>> +    {
+>>>>> +        // SAFETY: The pointer is valid due to type invariant on `CoherentAllocation` and
+>>>>> +        // is valid for reads for `self.count * size_of::<T>` bytes.
+>>>>> +        unsafe { core::slice::from_raw_parts(self.cpu_addr, self.count) }
+>>>>
+>>>> Immutable slices require that the data does not change while the
+>>>> reference is live. Is that the case? If so, your safety comment should
+>>>> explain that.
+>>>>
+>>>>> +    }
+>>>>> +
+>>>>> +    /// Performs the same functionality as `cpu_buf`, except that a mutable slice is returned.
+>>>>> +    pub fn cpu_buf_mut(&mut self) -> &mut [T]
+>>>>> +    {
+>>>>> +        // SAFETY: The pointer is valid due to type invariant on `CoherentAllocation` and
+>>>>> +        // is valid for reads for `self.count * size_of::<T>` bytes.
+>>>>> +        unsafe { core::slice::from_raw_parts_mut(self.cpu_addr, self.count) }
+>>>>
+>>>> Mutable slices require that the data is not written to *or read* by
+>>>> anybody else while the reference is live. Is that the case? If so,
+>>>> your safety comment should explain that.
+>>>>
+>>> The buffer will probably be shared between the CPU and some hardware device, since this is the
+>>> point of the dma mapping API.
+>>> It’s up to the caller to ensure that no hardware operations that involve the buffer are currently taking
+>>> place while the slices above are alive.
+>>
+>> Hmm, that sounds troublesome... the nature of coherent allocations is that both CPU and device may access them at any time, and you can definitely expect ringbuffer-style usage models where a CPU is writing to part of the buffer while the device is reading/writing another part, but also cases where a CPU needs to poll for a device write to a particular location.
+>>
+> 
+> Ok, I had based my answer on some other drivers I’ve worked on in the past where the approach I cited would work.
+> 
+> I can see it not working for what you described, though.
+> 
+> This is a bit unfortunate, because it means we are back to square one, i.e.: back to read() and write() functions and
+> to the bound on `Copy`. That’s because, no matter how you try to dress this, there is no way to give safe and direct access
+> to the underlying memory if you can’t avoid situations where both the CPU and the device will be accessing the memory
+> at the same time.
+> 
 
+This is unfortunate indeed. Thanks Alice for pointing out the 
+limitations of slice.
+
+Btw, do we have any other concerns in going back to plain old raw 
+pointers instead? i.e.,
+
+     pub fn read(&self, index: usize) -> Result<T> {
+         if index >= self.count {
+             return Err(EINVAL);
+         }
+
+         let ptr = self.cpu_addr.wrapping_add(index);
+         // SAFETY: We just checked that the index is within bounds.
+         Ok(unsafe { ptr.read() })
+     }
+
+     pub fn write(&self, index: usize, value: &T) -> Result
+     where
+         T: Copy,
+     {
+         if index >= self.count {
+             return Err(EINVAL);
+         }
+
+         let ptr = self.cpu_addr.wrapping_add(index);
+         // SAFETY: We just checked that the index is within bounds.
+         unsafe { ptr.write(*value) };
+         Ok(())
+     }
+
+> I guess the only improvement that could be made over the approach used for v2 is to at least use copy_nonoverlapping
+> instead, 
+
+You mean introduce something like read_raw(dst: *mut u8,...) and 
+write_raw(&self, src: *const u8,...)?
+
+Regards,
+Abdiel
