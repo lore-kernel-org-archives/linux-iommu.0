@@ -1,98 +1,112 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F8A21DFDE
-	for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 14:16:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CD74206261
+	for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 16:52:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734358575; cv=none; b=C1uP3SUKFOILQSigOhXN2AVsElEXgHXm4ENrS5EzdT8ZQkfZjpilw+c7dG+HgdqFmap5vxw8Gjf7CdBiZCas5hT8iS5yx8DLGLpDr8mr6zrzeRFbGziT5Gh2F9FtV5w+LtAhKFfogMJZ5HrCoKFLZns9rmalSfLcnigEs+csQ8k=
+	t=1734367931; cv=none; b=QwYaxO7GQO6A1IsYXGNmTTCTXCYJloeBhf7JJIihoUh0ABcPN5cru/IvIuJNLOIDBqPoRat4x5PHdZFBGBlpCwqoWfjHUyxsAcQxwIZ7zyQ6mendGSQfybnnRMJwCHs8dHOEh/RZuVxm+Zhqi8+cQKWV3TvhWbDMqed9+yp++YE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734358575; c=relaxed/simple;
-	bh=9F8Sq5ILmO/gzqNtjAPdIn6tThxcdWj/OBrH8RrPyDg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OsoFjjEEMKzKhO7HA5BGuSc+bFNvUluusCYDx+D/uGYFCt7o6is67VoU0TC+TB/cRKcilMJD+5US8Noxv3lWOw6veByYN2puCivfKKRqdKrVy/RvEo+mFuckW3ObOdDP3zOJDQvvqSkjL/E6d/dY4xpy6Lk9eqg2cI27oZdWI00=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=T5gs5hrd; arc=none smtp.client-ip=209.85.167.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1734367931; c=relaxed/simple;
+	bh=hQJh06npzFZQuNN/PchXcArER1Wj6OUszuaLkyZFTeQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WbMGAHrfCpumn1WqrW7Co5iUUy+aNpr6k8kle+UV40+xFZ2/3LncJzHFZcopuiRoRe0VeLZe5iZNu+Kl1xGmEot2HjzYRpL3WF+YMu/+GAUAfbfGidMtA7LzbfDu+Vda+onXkmJhTOm52XQALTuz5zNY6SHZ2OX+4aPCwaAQ94g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=kuEF7d+j; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="T5gs5hrd"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-53e3c47434eso4244625e87.3
-        for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 06:16:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1734358571; x=1734963371; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9F8Sq5ILmO/gzqNtjAPdIn6tThxcdWj/OBrH8RrPyDg=;
-        b=T5gs5hrdyzRFWOBxEyUNjPQwpmOOeB0h5U6Hsfz71/IKwP20X2T8iiqypVhTaH5MNX
-         Fp64JDnk3j0JYISHByKOsfWdRIqmDOuIodNKeypYrRHobQJDzroo8zFmKQGBqXf+1Tyl
-         d1vyPa2hF4PhwCZOeMbiHl47SDnkEjtjgsLoSFxhERuqT6nfKSDTGoySzCkUw16qDouD
-         kQtFJBdzF0LlCI9GqDnMGtrDRm0fmlPS03yNPwcAJOPAHkPjDfAFywldQadF2iVVGybx
-         im3Pof8WbL+HYy5dnJZJy4rtyeG/liwxvzLVSB+9g7SSZ+RlCz77750D66DeDoFLu7Vh
-         6kUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734358571; x=1734963371;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9F8Sq5ILmO/gzqNtjAPdIn6tThxcdWj/OBrH8RrPyDg=;
-        b=ows2Rm7diSbeSsWNJFNueAgZOQvaQ3Rj/WGZmNMQYoWV/D4UxdgdiAJOWztJ/VaKql
-         wKtfMOKfV6yvmpQF8q2NcrNF3ODlWVqxmSChHr0pKh9/P4GgMElrsrOSK8CMJ4JeDHw6
-         kVJAEmS9nWVJSwVe80Bfi/G3urUX+9Z71SWUVWYVyZrX1v5e/6sotLodES/eTLM40bVU
-         uuPgtgNliFy6nJ9cPDGZd27JOf/xPzjKeyJqUbx3kKHNopAtAmm51Jw7bGYC6Huf9N41
-         EkB1SM+J0Yy1X/yPoq4J77lFjMvwIOe3ew0cfHOh8uMJ60rdtjMde/m9lZmGFp7OecYp
-         3BRw==
-X-Forwarded-Encrypted: i=1; AJvYcCW5GFiUJDFK46HI32lvG0mNPrnXgW94CCeUs9B+QjKf/G9fh2fTun5i+eeoyrOTB0OHkmhS7Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw7SDpQBfiAEIlegoHSKwsJqicbdNzUrJgawYZiPtaM3/NExa0X
-	28ZAHsr3YCbgFB1S632N2JAA7bciuYw4hsUblbXDEMdOzRZ5OE8+JUDS31gEkGygrlNg+jAwaPP
-	Ugr8N5xGYcJY+4PiYCRQ5fim9xMVfOeKNP8iMXg==
-X-Gm-Gg: ASbGncvrkkxvjmlDkVKlv6o0/azPor1zmdSMW4EX66U4hsrLtWqY14PGIE9h1rzA1Jn
-	M1Gn4kODuX4Z81/mAJbGH5SjBhWPU3+/vjBcY
-X-Google-Smtp-Source: AGHT+IHrQd48Xs7QoUHIoEZ8phO8rM8S7YX0SBFWBJmTRPojYCc8OVEoWykulhJ01DH0iWUq+AcjAkdRGx/EZIl7tsM=
-X-Received: by 2002:a05:6512:318b:b0:53e:3a79:1ad2 with SMTP id
- 2adb3069b0e04-540917cb6a0mr4002662e87.40.1734358571463; Mon, 16 Dec 2024
- 06:16:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="kuEF7d+j"
+Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BGFI1OJ011975;
+	Mon, 16 Dec 2024 16:52:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=wFc0sC
+	e4Q4o5YSv/KTFMGIlY5wASucyUHTBeVufP2Tg=; b=kuEF7d+jps6tvCm+3rEvHK
+	kwWdQorZ1dk6avAm2DoM3SC4d5VFdG/Xy1iMWIaRSqwyjuM+G/09HVoV5WLbZYev
+	+vUqPaAUyFzMcX7lYh+CLomrqavbJoRBy6sTTNX3tGiPBkbSFV7JyccuokncdmIY
+	MU3u3/a1+3c1G9xyl1FNG+fg2cLTplQhd8OfKf9Hlk8wXbUx3xYjmIymjswAbL5Q
+	Osu7LxmgK0Xr7NqiX9w/R2VVxrBO7xna0+7FgLm/hDL4cSc2CISiqKTD4eOSkIGZ
+	U9Ppk1evT6LJZqh+npqyCQwgZH3JLBRVZxgGbxut28k3ABYJdqyymX6tJB6SQGXg
+	==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 43jcpb3k7f-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 16 Dec 2024 16:52:03 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 4BGCsQok029338;
+	Mon, 16 Dec 2024 16:52:02 GMT
+Received: from smtprelay07.wdc07v.mail.ibm.com ([172.16.1.74])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 43hmbsf0ns-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 16 Dec 2024 16:52:02 +0000
+Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
+	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4BGGq0c313828648
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 16 Dec 2024 16:52:00 GMT
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A607E58053;
+	Mon, 16 Dec 2024 16:52:00 +0000 (GMT)
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3958658043;
+	Mon, 16 Dec 2024 16:51:59 +0000 (GMT)
+Received: from [9.61.117.46] (unknown [9.61.117.46])
+	by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 16 Dec 2024 16:51:59 +0000 (GMT)
+Message-ID: <ddebeba2-e32c-4c00-8107-4f4e3850c477@linux.ibm.com>
+Date: Mon, 16 Dec 2024 11:51:58 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241215-msm8917-v9-0-bacaa26f3eef@mainlining.org> <20241215-msm8917-v9-3-bacaa26f3eef@mainlining.org>
-In-Reply-To: <20241215-msm8917-v9-3-bacaa26f3eef@mainlining.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 16 Dec 2024 15:16:00 +0100
-Message-ID: <CACRpkdbKrf=AXGT1PmjQ6=HFKZ-8qCy7eG6fQ2NVUUK3gJoVTw@mail.gmail.com>
-Subject: Re: [PATCH v9 3/8] pinctrl: qcom: Add MSM8917 tlmm pinctrl driver
-To: =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>
-Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
-	=?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/3] s390/pci: store DMA offset in bus_dma_region
+To: Niklas Schnelle <schnelle@linux.ibm.com>, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, gerald.schaefer@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
+        clegoate@redhat.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+References: <20241213224941.571060-1-mjrosato@linux.ibm.com>
+ <20241213224941.571060-3-mjrosato@linux.ibm.com>
+ <1a1c9b992a9a957e200d55b0a1330a0c3d75baa0.camel@linux.ibm.com>
+ <d2d6c27d12a5d7770952a9c027d290204c4fac6d.camel@linux.ibm.com>
+Content-Language: en-US
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <d2d6c27d12a5d7770952a9c027d290204c4fac6d.camel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 1tfxrZ2Zr4OaY_uVG5jy5pHR5KAjetBZ
+X-Proofpoint-GUID: 1tfxrZ2Zr4OaY_uVG5jy5pHR5KAjetBZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
+ definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1015
+ lowpriorityscore=0 impostorscore=0 spamscore=0 mlxscore=0 adultscore=0
+ mlxlogscore=773 suspectscore=0 bulkscore=0 phishscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2411120000
+ definitions=main-2412160137
 
-On Sun, Dec 15, 2024 at 12:15=E2=80=AFPM Barnab=C3=A1s Cz=C3=A9m=C3=A1n
-<barnabas.czeman@mainlining.org> wrote:
 
-> From: Otto Pfl=C3=BCger <otto.pflueger@abscue.de>
->
-> It is based on MSM8916 driver with the pinctrl definitions from
-> Qualcomm's downstream MSM8917 driver.
->
-> Signed-off-by: Otto Pfl=C3=BCger <otto.pflueger@abscue.de>
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Barnab=C3=A1s Cz=C3=A9m=C3=A1n <barnabas.czeman@mainlining=
-.org>
+>>> +	map->cpu_start = 0;
+>>> +	map->dma_start = PAGE_ALIGN(zdev->start_dma);
+>>> +	map->size = (u64)virt_to_phys(high_memory);
+>>
+>> I don't think we should restrict the size here to the size of memory.
+>> Instead I think it should be zdev->end_dma - zdev->start_dma.
+>>
+>> Since we handle the restriction to memory size as reserved regions I
+>> think that should be compatible. Also I think otherwise this might
+>> break the admittedly odd s390_iommu_aperture=X kernel parameter on
+>> LPARs.
+> 
+> Correction, zdev->end_dma - zdev->start_dma + 1 because zdev->end_dma
+> is inclusive ;-)
+> 
 
-Patch applied to the pinctrl tree.
+Forgot about that parameter, thanks...  OK, will change to:
 
-Yours,
-Linus Walleij
+map->size = zdev->end_dma - zdev->start_dma + 1;
