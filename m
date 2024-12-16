@@ -1,112 +1,102 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A84C4202F8C
-	for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 10:28:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F712036FD
+	for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 10:33:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734344898; cv=none; b=bkrFRZwl5KbB3JFqYNWXF57md2z7gCxQAhMJxJcGTmOPzp07bnVs4MEBowHSSre1oFpVhpVVBozJnQ44tcL0n1ov8EF5D5wnRTF2EL3HKEw436qtLeZJQrpdoq/q+DvilW+OaxVLCqJjqLx9jRiOgceWngkeidQ6yFJ7nWRifl8=
+	t=1734345225; cv=none; b=p8H+z2cTxYsuOKoqEKiU96cnESGXHAm2riKAbZhGoX+obR/VD00ArdyqhTV0kPeK2VXQqDoi8+wW/qhSqY84JcVTddhcKh2hgF82r+zbg8eOdrIkao4NXH/MtLdNzlAn4iifzTBwhZccNRbEuyd/swF3AIDhdkuUFq2Y2akQu4M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734344898; c=relaxed/simple;
-	bh=I6SS3jrfUdbjQxbfuV3zgKgJ1lGXHpGlboZOPNu8/w8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QipuQ3j3j9e4UY2yJXnu/HY17+sA3pDQBFrauX097hyBEdrJTY8JbQjKtUFejEB7eaSAUM3xoRcb7VK03o+kZ764sPH0N3i+lcNW3PLxcq4UJUX/LqmNDWIxcGKOosV19lgTrLGX329zgfGfPc09tt0gpzOLFTzgepIZYUhRjDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DpOzxNAX; arc=none smtp.client-ip=209.85.167.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1734345225; c=relaxed/simple;
+	bh=PYwh9Ejzktqnk/4b3X6HTET4UjWYpwtQYwse3ElACjE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ADn9VgnXBnKS8rGheJlp5lqpkrAVc9d9qM2V+RO3QjNUPnThzHXiir0/BRJQXgxh0XJ0bhYLFkDB0Vrwh1Cw8IRc6MN8s7BaMXJrhOPRz8kfJ8+9WGDbOS+5PuLrEzdnMpgmpamOPFJ5fL/1JG0LccPyR5NXhidnzsmP3rErcqM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=hd15CHfd; arc=none smtp.client-ip=209.85.208.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DpOzxNAX"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-54020b0dcd2so5541790e87.1
-        for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 02:28:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hd15CHfd"
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3002c324e7eso45081571fa.3
+        for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 02:33:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1734344895; x=1734949695; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=qo4gtspC0QWz1YSfHZwlyzeb7x8qKi22+rub3ebtAOs=;
-        b=DpOzxNAXdd8fyZ3qiPsDWr4OdjGrKsqjb4GTjMhMj6c6PB6H2xFT00oO5B452Bqptt
-         iZFGr6kW+P3/ODOx6estAfjSb7I5MPhDoy39wX2ADcePF0SFqskPZrAOXv14vkSqgW2b
-         nt2XKNWn9DKED3dImHVmX1EnUFPIn5Sw7lO1VwKp3ryVPYh5pEyfUfCIuYYfzKN70zOX
-         Y126E0T3NL9/eDoLmUXDWf0BiBcvnQkh2GPegVSoEcrsicMLl8vShqzy/ZQbYowOiKhr
-         pYtLZ/Aj06C3zPGwPXOLSwVsgPMiHr8zQkim7LLpCulEpU6Kj1zeUfRUthbChWXjXW12
-         2nwQ==
+        d=linaro.org; s=google; t=1734345221; x=1734950021; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=81rR1eTM9HElymQ2hIkXvkfh84mtbQHR8oN+z/vprns=;
+        b=hd15CHfd+lW00u3mtgU4wNjWygXsoRs30zaQnNrtgaHUSN7FOD1lBzW8ZEEYt+I1Of
+         WB7GzwV7B4+29rkEo8vsj96F+ofsuU5xhCJl4cRUnu5V7gQ3FbaZSz3IztMDmNfGRur/
+         7OtduUNjG+WfXzN/gQLsirc9GYnmO6ZbAHN5nJSTY9G+QioMr/zkywZKL/hK1hr9ZHSi
+         kJUxy3WB+2zPFZDetpPiKomUywQGQu4cOu65uB4uuHBOjS/xJszeUo0IZiaTYv8kxJW+
+         9NGd+GGrjGIb9owtw+BdC9Pe8BKdt2vuwdvQhx1svNOUcHahgMZI+S0nVifuyRI3kIOw
+         kp+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734344895; x=1734949695;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qo4gtspC0QWz1YSfHZwlyzeb7x8qKi22+rub3ebtAOs=;
-        b=N6wOL30NInNPXt2pdsjDinyxWSMW74kJfqGWg5qcr8iPTLp/bU28k5EkxFwxHYoBIW
-         q62bOW8FVglPOIbwJK2uiQkRqCRMeip7lnTl0shSzW7h/lbtI8+DN6ALFCFteAZSAi4g
-         qm1tCAglJPIcZT25aNaXJZtnwIMCO5qj53EU5DP0vdXXnv8C3LhA7kl3Soe1pJ/EznKn
-         aOL/uBf4PE5awpuB8+O5gRWEEvGu8nr91A7dfRWCRVOwW1oSg4UoSZe1t25oyazmK83N
-         0dX6VYOHqzsZYD71GIrPJ1WaDXoTFwcS2oPhSyR/rUIccZIh3QN9g8sL1ncz5nyDF7kd
-         olvw==
-X-Forwarded-Encrypted: i=1; AJvYcCUqVz2VeJFSBk+ZdkYjtS785BM/OqRSMLr3bGFEfz+84RnsDBsoZM0PgdA85yo+7y7dnFbahQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyrV3Rd0E/L0y1ylHbZz8dcjRcijlSy2nSWkhkCMdwUN7S/C36w
-	n28iAIP+bJW/N45G7PkOw2xT1DBVUzMNtTJVkKTCEM5mvd+P/ds6
-X-Gm-Gg: ASbGncvDZt++qkH/OcSzgLArlM8I6xXsdv6knrs5MiuOQz/JTSBX5qQoTTXgvBZ2+Go
-	iwc9loG6v2lKkveuji4JGaAmjwZKKOr8twYbr747LB+sDuTK8d5QQmA2uhSUmHPZ8BuAZgj0hfy
-	XtiesOnoPuD7P8KZz5P6nE42Y9vjLiSdfPsRFho9kYZLOaK86OdQG3+KumToHD67y6b8WkX0O2l
-	h4dU8+XCj0/UPgj6nerGTqJsdm45aow8suXIqrV5k+jUXxcuRPNQlhVbmDi8yChUoBm64kvC7Na
-	WZFBl+ZviR0/iuvA7XQzG7R7vEg=
-X-Google-Smtp-Source: AGHT+IHKteDfC2OCM7+VId/zWFwdJEzRXp9u+arJZpLS+qjCfcM0xdomEsTAyrePdyrGdWJsG8L7tg==
-X-Received: by 2002:a05:6512:3c82:b0:540:3579:c647 with SMTP id 2adb3069b0e04-5403579c673mr3819124e87.6.1734344894673;
-        Mon, 16 Dec 2024 02:28:14 -0800 (PST)
-Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54120c13c3asm783129e87.210.2024.12.16.02.28.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Dec 2024 02:28:13 -0800 (PST)
-Message-ID: <b877f4dd-08a7-4298-80d4-be3570c8fe93@gmail.com>
-Date: Mon, 16 Dec 2024 12:28:12 +0200
+        d=1e100.net; s=20230601; t=1734345221; x=1734950021;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=81rR1eTM9HElymQ2hIkXvkfh84mtbQHR8oN+z/vprns=;
+        b=a2JBIaz1HPOuVlB/TCpwyvCOVxSE9W7xQMyCSypNpK6Vq7MpxrI5BeJid0kVHWArH1
+         EjpFjduW6juz/ZQth1HG7EQBvD20DISNk8B9QwzI86Gjh6u7RYQhsUMFiEF+jjaaHsXs
+         EAxP9XPXKmFzESnRGQf6ypasZ+oEqNYOWmy5GUOJ/CBlc96M7ntFfUGNX8ek4RT/VgHV
+         fYTwGPWFK6Q1+HgS90/rPtkzRoEsaV1IqwIUzNGqFE5HUrSihj9yq43uUGGFdmGAKMAs
+         0sznDIDOWJTceJK/GKWBU975GWYnsnbq4IVrLodpxBwTE8G08dFIp/3BcysJIJJn2yju
+         73yA==
+X-Forwarded-Encrypted: i=1; AJvYcCW8V/Xy/Rja6aIt8okmiQ21LMDLkgHd95a+zOFYr1ZQ4dzldXEGns33PEYheOkyc9BsDaX6rg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzFqZU7Uc/0xGjSQB6hcPQ1DGqThalJiJyu1Kh67g6TBH4W5Xrh
+	k4BQmqcjfErwIlfp+TKqRTYwB/hdzp6EclrYNBDwPZpiaCjoWnVr3ek+s7psrWFWR4efNsCJPWq
+	LFCpY3fK51X377RBfx7L54ImSdSXFk3A6k/La/w==
+X-Gm-Gg: ASbGncvxViNLmwJUJ9iaIf0lzwTfmNGBB/lr2r6QujDCcVXCiwHrBcMkUt4ZU3ru1DC
+	wYztiISsIyqC4AAS2uZpEpao3AjT12Fd50nHm
+X-Google-Smtp-Source: AGHT+IEUf3iLQlaHwj+huKVEu7Rf6ZfMRHEmd0RkbAiajFtXRNVDdgnZzJS2Enw8KLsa6+/B9ivQKuoEjmBWCEUg1Qo=
+X-Received: by 2002:a05:6512:230b:b0:540:3561:969d with SMTP id
+ 2adb3069b0e04-54099b7188fmr3706580e87.49.1734345221514; Mon, 16 Dec 2024
+ 02:33:41 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 2/2] rust: add dma coherent allocator abstraction.
-To: Alice Ryhl <aliceryhl@google.com>
-Cc: rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
- Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>,
- Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?=
- <bjorn3_gh@protonmail.com>, Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
- Danilo Krummrich <dakr@kernel.org>, Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
- Daniel Almeida <daniel.almeida@collabora.com>
-References: <20241210221603.3174929-1-abdiel.janulgue@gmail.com>
- <20241210221603.3174929-3-abdiel.janulgue@gmail.com>
- <CAH5fLgjO-GbB85dDdxLSSWY74cUn8-Lt-yaRGkUVxb-E8YaO2Q@mail.gmail.com>
-Content-Language: en-US
-From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-In-Reply-To: <CAH5fLgjO-GbB85dDdxLSSWY74cUn8-Lt-yaRGkUVxb-E8YaO2Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20241215-msm8917-v9-0-bacaa26f3eef@mainlining.org>
+In-Reply-To: <20241215-msm8917-v9-0-bacaa26f3eef@mainlining.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Mon, 16 Dec 2024 11:33:30 +0100
+Message-ID: <CACRpkdZ-ZEiGMUPObHU=kw=OUADrRGtxgMc-QC3EaBevp-Shng@mail.gmail.com>
+Subject: Re: [PATCH v9 0/8] Add MSM8917/PM8937/Redmi 5A
+To: =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, linux-arm-msm@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
+	Dang Huynh <danct12@riseup.net>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+	Krzysztof Kozlowski <krzk@kernel.org>, =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 13/12/2024 16:27, Alice Ryhl wrote:
-> 
->> +    /// Returns the base address to the allocated region and the dma handle. The caller takes
->> +    /// ownership of the returned resources.
->> +    pub fn into_parts(self) -> (usize, bindings::dma_addr_t) {
->> +        let ret = (self.cpu_addr as _, self.dma_handle);
->> +        core::mem::forget(self);
->> +        ret
->> +    }
-> 
-> Not only does this skip the destructor of `dma_free_attrs`. It also
-> skips the destructor of fields including the `dev` field. Did you
-> intend to leave the refcount on `struct device` without decrementing
-> it?
-> 
+On Sun, Dec 15, 2024 at 12:15=E2=80=AFPM Barnab=C3=A1s Cz=C3=A9m=C3=A1n
+<barnabas.czeman@mainlining.org> wrote:
 
-Good catch. Yeah dev should be decremented here as well.
-Will incorporate fix into next revision.
+> This patch series add support for MSM8917 soc with PM8937 and
+> Xiaomi Redmi 5A (riva).
+>
+> Signed-off-by: Barnab=C3=A1s Cz=C3=A9m=C3=A1n <barnabas.czeman@mainlining=
+.org>
+(...)
+>       dt-bindings: pinctrl: qcom: Add MSM8917 pinctrl
+(...)
+>       pinctrl: qcom: Add MSM8917 tlmm pinctrl driver
 
-Regards,
-Abdiel
+Is it possible for me to apply these two patches in isolation?
 
+I want to make sure the patches get moving.
+
+Yours,
+Linus Walleij
