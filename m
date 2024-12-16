@@ -1,122 +1,132 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f172.google.com (mail-il1-f172.google.com [209.85.166.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6E421D319B;
-	Mon, 16 Dec 2024 20:28:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0A7F1D54D1
+	for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 20:54:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734380933; cv=none; b=kMJT7aKBGEG0UnsuEH1rgyZsW5UMcve0LfJEro1TPfNN4lWW4LnXuwrKyWXwY+GVK5vOcJvXrWnPKz3l4QvDl6ofSyJ/LkcUDbQyTOBRPcl3fdjHujksKnNkf/HaUdEIlYkqar/orTTNv11IGLdRl2NNp1dVEcQhfTtGEi7gc34=
+	t=1734382498; cv=none; b=vCXLLvMhdV1PARafeU7s7LUxGQA/z+lT97HSHbPaoU482K2ZjCl70QPqJyhYTtBfQsgZbASlzF3s/SPngBed25CF2p+NRo1qQfgw+aWI/YQ2QPuEwF/dM2ZvJNDS0sQb+qItzfVBCFBxY9fS63e/uU+XiuQ+tEIOqbthnUB4OJk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734380933; c=relaxed/simple;
-	bh=FotWk8yGNMrvtS9pnVO0+PaVtk3d/q6uE2rfZs0ZbqA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=K1QsBaSJxpXsfZaBNVnms8bkQVADZl7mcbJbv05Lmgp308E+RwSylt1DgTTEen+VcUnUESPW0BeLgwW1LLFilGEnMxfijk4Fx5MjDfaTf4dJcKWRk5QMaL+HgHMWsdbeU72ZL5fKk8zURirc4xZlmINMEt4mUruIJ5Sdi/u6NpI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Rd4H69LO; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1734382498; c=relaxed/simple;
+	bh=geG/YKx27V/zlwg0MEi0DPulSqUKvqAC78Zqn7duPTs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=YrI7XrFBPtYQnDORpxpvcEUtJTjmjFiIIbUFS8BY3AlPgOy6gNGE9FFWkwZh+2ZdEw+Bjje9EmdtLb6xubPphEY9AqI2C83Se91rXzOZJLTchdho/oEH+DzRLt61lj+2xAPFouWv2jNDf33iQEihxfDAWoujzmEVq6d82ohRtoI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d/lg907P; arc=none smtp.client-ip=209.85.166.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Rd4H69LO"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BGCk20D032589;
-	Mon, 16 Dec 2024 20:28:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	f5oXif9BpDrBWmz7s8nZtlUyESt5pnsWuJi2m792Ugw=; b=Rd4H69LOL0X0PWz3
-	bt34JGV2AYmPy7cAL1d2OUU8CfRtMJCVFoBJCjM2B5cX2TXWnQ3nKIzKK6bPXlXA
-	AvnOvshT9Moi7fY+rMJkoIeRpAT97vcq1ynJebZerRe9Bm51K7J64MBkGiaZPWiK
-	OsR5e6O9nnyfk/xsjHivFk6WuYof41h4INgcF3Qs5cAOSVz3VLQhKLVzdzmo6oVk
-	meZCnm+/JjtcYdhHjOwlWyRBStn6B/YwhpjpKJqFfWDWMhntsOe/w/wk0DRRj6NC
-	qHlhPQABotIXAAUf47FecmLqmHZdJcPgTvIFNEQRWffYPECBYQZgOAfL457pOleb
-	A+99JA==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43jmgah60u-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 16 Dec 2024 20:28:37 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4BGKSa9g000717
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 16 Dec 2024 20:28:36 GMT
-Received: from [10.216.59.147] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 16 Dec
- 2024 12:28:33 -0800
-Message-ID: <a15a7594-8793-478b-a86e-81a06812e4ff@quicinc.com>
-Date: Tue, 17 Dec 2024 01:58:30 +0530
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d/lg907P"
+Received: by mail-il1-f172.google.com with SMTP id e9e14a558f8ab-3a813899384so15467995ab.1
+        for <iommu@lists.linux.dev>; Mon, 16 Dec 2024 12:54:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1734382496; x=1734987296; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pGu56YKO1XlSS7wwJkm05qsGyYVWIdWmEMISHyf2DmA=;
+        b=d/lg907PycfqT87CDt2WqKJ2QCZvmsREvZoLzwmLgwQ1XJYTsNoLlDEK5YMhlYgICb
+         SumqH9874b2S5uQbm3q7S2YsTutkN/fp5JRYKVBRC7yy0lXy0vMqYOlYwa+Ym2cm+umT
+         ScKU12uNqNiug2KXxFXS4HhOnms++imZgpaE/zoVJKxrz27KUpV/uJWGCPxEoqYrrHeQ
+         vnTWZcN18NJgJ6Fv7o0cC92Ahy7yqwj9tDq39dryfUdQC73o1G9FsrkYXBrTOYnMQHBP
+         g7Ma/EIyKgbqWpD+wwwJkcmmiXTSpEaJTtqfaawVdyBRTQjajwwHa7B0EiAa8Up7ryIa
+         sdGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1734382496; x=1734987296;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pGu56YKO1XlSS7wwJkm05qsGyYVWIdWmEMISHyf2DmA=;
+        b=jMD+fL0pOUbyR/eT9+47D7EmvglzM7/wwMMXRYcDjI0jYLfljJbY60fqx4tY1btdGT
+         4Ph+/O5+OmPP2axux5RtVAn94KI9k/DAH0wcK/mcq/40aJ+27ofsCoEhH4AeNE3qrL4N
+         yu4w9DyJwQPgmbj4nDCkoOxYSQXPE76b/OpW0h2p8GmjrzM9OS/msHfd4h5cNHkjuLWR
+         qaRRv5mRVcLpnowANFG6HKzNmTuQmfqj7QRii0bX95T2kO+pnqzZfkwu8QJTjA6J0G+w
+         z7a8YQEWsHSipcaEKvrgUn3v4GsaqnzH+7A60kaqvuXkeWKv3cgyLiQjfqFaSSpAN4b6
+         k2Mw==
+X-Gm-Message-State: AOJu0Yx0JCS4oH8LYJYVEFmwdEi/02LmM/+NDpaudOMudn4vbFUvbhE0
+	Ou19t8jtPeQTUYj2uT7/7Lh2Pw3DIK8oGEz4VE74HlX1qM3wFYbD5VJlPNzGbCn0mj0RxeC8fEr
+	EfauHEODfzrMKsTzhGV8U3LolNR0=
+X-Gm-Gg: ASbGncs5QX/mHpDeZ0/VUiPCN7+Ba6zpZQyeDM7iXH4CzVbVhk4vohGYleuwOxTB89I
+	CBUc9YvvZfnXmRemqIOMdUDISkYJndGvqSPaRpuZwPvqxLNLvrFHc3pncDqb9errFqSgf
+X-Google-Smtp-Source: AGHT+IE6NSDPDfv/Nr17YFiwuwQ8NV0QFzK1yfUD5+dRWkpGvLeKWKyM4SsI5zKJl53NjUsanNs56HL6Xdim8pgvJWw=
+X-Received: by 2002:a05:6e02:1a07:b0:3ab:4bea:df97 with SMTP id
+ e9e14a558f8ab-3affbbb656fmr160374485ab.23.1734382495871; Mon, 16 Dec 2024
+ 12:54:55 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
+References: <20241216171017.4881-1-robdclark@gmail.com> <a15a7594-8793-478b-a86e-81a06812e4ff@quicinc.com>
+In-Reply-To: <a15a7594-8793-478b-a86e-81a06812e4ff@quicinc.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Mon, 16 Dec 2024 12:54:43 -0800
+Message-ID: <CAF6AEGsFeibyH5_a7m=9PMKReD4Xb+c=dEGsbCN0_UHiJK1vbA@mail.gmail.com>
 Subject: Re: [PATCH] iommu/arm-smmu-qcom: Only enable stall on smmu-v2
-To: Rob Clark <robdclark@gmail.com>, <iommu@lists.linux.dev>
-CC: <linux-arm-msm@vger.kernel.org>, <freedreno@lists.freedesktop.org>,
-        Rob
- Clark <robdclark@chromium.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy
-	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-        "moderated list:ARM
- SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-        open list
-	<linux-kernel@vger.kernel.org>
-References: <20241216171017.4881-1-robdclark@gmail.com>
-Content-Language: en-US
-From: Akhil P Oommen <quic_akhilpo@quicinc.com>
-In-Reply-To: <20241216171017.4881-1-robdclark@gmail.com>
+To: Akhil P Oommen <quic_akhilpo@quicinc.com>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+	freedreno@lists.freedesktop.org, Rob Clark <robdclark@chromium.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>, 
+	open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: kIrFKqYl1sD_I1pStUItg7ckvFPQClSP
-X-Proofpoint-GUID: kIrFKqYl1sD_I1pStUItg7ckvFPQClSP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 mlxlogscore=999 spamscore=0 impostorscore=0 bulkscore=0
- phishscore=0 suspectscore=0 priorityscore=1501 clxscore=1011 adultscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2412160168
+Content-Transfer-Encoding: quoted-printable
 
-On 12/16/2024 10:40 PM, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
-> 
-> On mmu-500, stall-on-fault seems to stall all context banks, causing the
-> GMU to misbehave.  So limit this feature to smmu-v2 for now.
-> 
-> This fixes an issue with an older mesa bug taking outo the system
-> because of GMU going off into the year.
-> 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index c4c52f7bd09a..1c881e88fc4d 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -331,8 +331,10 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->  	priv->get_ttbr1_cfg = qcom_adreno_smmu_get_ttbr1_cfg;
->  	priv->set_ttbr0_cfg = qcom_adreno_smmu_set_ttbr0_cfg;
->  	priv->get_fault_info = qcom_adreno_smmu_get_fault_info;
-> -	priv->set_stall = qcom_adreno_smmu_set_stall;
-> -	priv->resume_translation = qcom_adreno_smmu_resume_translation;
-> +	if (of_device_is_compatible(np, "qcom,smmu-v2")) {
-> +		priv->set_stall = qcom_adreno_smmu_set_stall;
-> +		priv->resume_translation = qcom_adreno_smmu_resume_translation;
-> +	}
+On Mon, Dec 16, 2024 at 12:28=E2=80=AFPM Akhil P Oommen
+<quic_akhilpo@quicinc.com> wrote:
+>
+> On 12/16/2024 10:40 PM, Rob Clark wrote:
+> > From: Rob Clark <robdclark@chromium.org>
+> >
+> > On mmu-500, stall-on-fault seems to stall all context banks, causing th=
+e
+> > GMU to misbehave.  So limit this feature to smmu-v2 for now.
+> >
+> > This fixes an issue with an older mesa bug taking outo the system
+> > because of GMU going off into the year.
+> >
+> > Signed-off-by: Rob Clark <robdclark@chromium.org>
+> > ---
+> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 6 ++++--
+> >  1 file changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu=
+/arm/arm-smmu/arm-smmu-qcom.c
+> > index c4c52f7bd09a..1c881e88fc4d 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > @@ -331,8 +331,10 @@ static int qcom_adreno_smmu_init_context(struct ar=
+m_smmu_domain *smmu_domain,
+> >       priv->get_ttbr1_cfg =3D qcom_adreno_smmu_get_ttbr1_cfg;
+> >       priv->set_ttbr0_cfg =3D qcom_adreno_smmu_set_ttbr0_cfg;
+> >       priv->get_fault_info =3D qcom_adreno_smmu_get_fault_info;
+> > -     priv->set_stall =3D qcom_adreno_smmu_set_stall;
+> > -     priv->resume_translation =3D qcom_adreno_smmu_resume_translation;
+> > +     if (of_device_is_compatible(np, "qcom,smmu-v2")) {
+> > +             priv->set_stall =3D qcom_adreno_smmu_set_stall;
+> > +             priv->resume_translation =3D qcom_adreno_smmu_resume_tran=
+slation;
+> > +     }
+>
+> Shall we disable this from the driver instead? A debugfs knob to trigger
+> coredump after a pagefault is very convenient.
 
-Shall we disable this from the driver instead? A debugfs knob to trigger
-coredump after a pagefault is very convenient.
+It would require the driver to find the compatible for the smmu, so it
+could differentiate btwn smmu-v2 and mmu-500, which seemed like it
+might be a bit uglier.
 
--Akhil
+Ideally/hopefully we could figure out how to make GMU a bit more
+resilient in the face of stalled translations, because it is useful to
+get accurate devcore dumps on smmu faults.  At that point we could
+revert this change.
 
->  	priv->set_prr_bit = NULL;
->  	priv->set_prr_addr = NULL;
->  
+BR,
+-R
 
+>
+> -Akhil
+>
+> >       priv->set_prr_bit =3D NULL;
+> >       priv->set_prr_addr =3D NULL;
+> >
+>
