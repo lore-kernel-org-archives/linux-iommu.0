@@ -1,94 +1,159 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 905B31DA61E
-	for <iommu@lists.linux.dev>; Tue, 17 Dec 2024 08:11:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B8CCA29;
+	Tue, 17 Dec 2024 13:00:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734423116; cv=none; b=grY3QFN2UybglCgydhJfHN0SEk27U3qNssEk1/B/IaDtETlOt7/lmzz2ZLkOq7ritX09WMmgirhEItDWGhX+dThKnD1nTPpnngZ3qM0fE7v2ivTyMckBwGtl/h09Dda8eKIYsnj0iDtB7qZFCVdUxTjVjjRx3wt4OcCo0xq5hgI=
+	t=1734440460; cv=none; b=T0i8pGvy9aSH6Z5h8rZBAud8bM8HIkUq/NNl79H5Uqzt/Tex+uu8Jrc2aX+g2SGHLlxaxItwCQqvIxXCInK9Be/UlR/Uyo678D0ojhITz+Ylftfxb3e+QRpc5XNDWALjfEHwkycg2AudyNiRxkTNXmtxkVfpt3MMuNKof3M8vWI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734423116; c=relaxed/simple;
-	bh=AERxveNaD/e1FdBKgOrry3YDia9uVcY/sn/NeRqtnS4=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=tsghGC4EF4rW1Mgyj2a0KEvpTbCb6e2QqgkwjfEEfwNwngB5z8Cia1xxM+p08BTMuqlo5YBjrXdPttQ5qovbrfan3aOzn4m8InGIjGSiLi9VxZ5DdICVZYv7XuOO32pdqWg22cMf7e2znk+luWkMxaxXe/IVj5xPAlB1txqHekU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cfaxVZuo; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1734440460; c=relaxed/simple;
+	bh=WUcPWFcOfeUf/sio4O36o8I8jrOpMF9pl2t7YRV1K7c=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=kcTmF/0zmtc5jZ7AU0mCs3x//4cIg/ucroYFKLpQ4S3z9U5MNDxZxlU4PR2jRWurhgviUWga87KOOnECbNO2g/lbzcLa+hZbZ58ZBILPvjLenLc9plBsb8igbNcTbDoZV5m2LisOAnW4jJWUua/jTL4E+fqLCh0PZdnwr56o55U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W2+t6vZC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cfaxVZuo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1734423115; x=1765959115;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AERxveNaD/e1FdBKgOrry3YDia9uVcY/sn/NeRqtnS4=;
-  b=cfaxVZuow4Z0pXMA1HAzZfYtESw9qpK+MfvZjmmqoVC+A7eyJT7vPITJ
-   rrF5AYSy45n97KXLfhmPWCQXVCxXskwTPICUZD6CA5cpag0LfpT2UeDd3
-   K33bqU/yt/mBfzg/akVoYZI/4NB0kRggOpGDrnMRbwkz1rbvBSF9jkXIp
-   P3UgCZV6EPaRh5VBAy41ZLxGvcfvtu0KT793gWExAwFOB5vsXWH8F4pxj
-   9nPGtnz436+eseA2/k+Dbn19X5Neq+mU/QvGLUJj+jtCuSO9UWS1iDtzf
-   XlbLW8Jdh0eCedMva0JcLf+dwXu4XgmkCR/FlbuJVOqBPQ081SPqvQtzK
-   A==;
-X-CSE-ConnectionGUID: XLNFROyVSwG+c5YmqKQoMA==
-X-CSE-MsgGUID: fLIxSMHeRQyw/OTEAR5G8Q==
-X-IronPort-AV: E=McAfee;i="6700,10204,11288"; a="34714766"
-X-IronPort-AV: E=Sophos;i="6.12,241,1728975600"; 
-   d="scan'208";a="34714766"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2024 00:11:55 -0800
-X-CSE-ConnectionGUID: CB/AFxD9TDmvgcENTL9KtQ==
-X-CSE-MsgGUID: olMcKVAyQ3mQL4+nA6zAzw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="128442656"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.241.34]) ([10.124.241.34])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2024 00:11:52 -0800
-Message-ID: <4807944c-2855-46da-9ba9-9f425ad30411@linux.intel.com>
-Date: Tue, 17 Dec 2024 16:11:49 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W2+t6vZC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4E42C4CED3;
+	Tue, 17 Dec 2024 13:00:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1734440459;
+	bh=WUcPWFcOfeUf/sio4O36o8I8jrOpMF9pl2t7YRV1K7c=;
+	h=From:To:Cc:Subject:Date:From;
+	b=W2+t6vZC3dFZWGD+hxEMeEPE1EEKt40fCuWrdg3SEm/26SFd4QEg0tiIvT2/Wek19
+	 ipbNsM3RLXl0RvFJrTnmhBFYT5MAx6OqnZ/oOKDrKGf32XUg477wAJn6V2jcBjZO/8
+	 Ii8+JaZkyyMGebvolPyBm40JjRdZQhIhr9H3yf5kaiaiXVcPFmwe/C4LJJ4P6impvd
+	 8/hR+n5YTMhKvuP9ew3PL2463hfk0ZudfO9HpYVaOpExaxG4v5E7GWf3f90dIP2oBV
+	 GHJCkATLPfGc2ofcLdQ0kQuhsYKz0DBm7jEilkgCea7JLERhDeOtEVUaSSk2h/iHeZ
+	 SwmUwQ1h0ckQQ==
+From: Leon Romanovsky <leon@kernel.org>
+To: Jens Axboe <axboe@kernel.dk>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Sagi Grimberg <sagi@grimberg.me>
+Cc: Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org,
+	linux-mm@kvack.org,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH v5 00/17] Provide a new two step DMA mapping API
+Date: Tue, 17 Dec 2024 15:00:18 +0200
+Message-ID: <cover.1734436840.git.leon@kernel.org>
+X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Draining PRQ in sva unbind path when FPD
- bit set
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>
-References: <20241217024240.139615-1-baolu.lu@linux.intel.com>
- <BL1PR11MB52712961A13B55ED1DDCCFE28C042@BL1PR11MB5271.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BL1PR11MB52712961A13B55ED1DDCCFE28C042@BL1PR11MB5271.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2024/12/17 15:39, Tian, Kevin wrote:
->> From: Lu Baolu<baolu.lu@linux.intel.com>
->> Sent: Tuesday, December 17, 2024 10:43 AM
->>
->> When a device uses a PASID for SVA (Shared Virtual Address), it's possible
->> that the PASID entry is marked as non-present and FPD bit set before the
->> device flushes all ongoing DMA requests and removes the SVA domain. This
->> can occur when an exception happens and the process terminates before the
->> device driver stops DMA and calls the iommu driver to unbind the PASID.
->>
->> There's no need to drain the PRQ in the mm release path. Instead, the PRQ
->> will be drained in the SVA unbind path. But in such case,
->> intel_pasid_tear_down_entry() only checks the presence of the pasid entry
->> and returns directly.
->>
->> Add the code to clear the FPD bit and drain the PRQ.
->>
->> Suggested-by: Kevin Tian<kevin.tian@intel.com>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> Need a fix tag given the old code doesn't work correctly?
+Changelog:
+v5:
+ * Trimmed long lines in all patches.
+ * Squashed "dma-mapping: Add check if IOVA can be used" into
+   "dma: Provide an interface to allow allocate IOVA" patch.
+ * Added tags from Christoph and Will.
+ * Fixed spelling/grammar errors.
+ * Change title from "dma: Provide an  ..." to be "dma-mapping: Provide an ...".
+ * Slightly changed hmm patch to set sticky flags in one place.
+v4: https://lore.kernel.org/all/cover.1733398913.git.leon@kernel.org
+ * Added extra patch to add kernel-doc for iommu_unmap and
+ * iommu_unmap_fast
+ * Rebased to v6.13-rc1
+ * Added Will's tags
+v3: https://lore.kernel.org/all/cover.1731244445.git.leon@kernel.org
+ * Added DMA_ATTR_SKIP_CPU_SYNC to p2p pages in HMM.
+ * Fixed error unwind if dma_iova_sync fails in HMM.
+ * Clear all PFN flags which were set in map to make code.
+   more clean, the callers anyway cleaned them.
+ * Generalize sticky PFN flags logic in HMM.
+ * Removed not-needed #ifdef-#endif section.
+v2: https://lore.kernel.org/all/cover.1730892663.git.leon@kernel.org
+ * Fixed docs file as Randy suggested
+ * Fixed releases of memory in HMM path. It was allocated with kv..
+   variants but released with kfree instead of kvfree.
+ * Slightly changed commit message in VFIO patch.
+v1: https://lore.kernel.org/all/cover.1730298502.git.leon@kernel.org
+ * Squashed two VFIO patches into one
+ * Added Acked-by/Reviewed-by tags
+ * Fix docs spelling errors
+ * Simplified dma_iova_sync() API
+ * Added extra check in dma_iova_destroy() if mapped size to make code
+ * more clear
+ * Fixed checkpatch warnings in p2p patch
+ * Changed implementation of VFIO mlx5 mlx5vf_add_migration_pages() to
+   be more general
+ * Reduced the number of changes in VFIO patch
+v0: https://lore.kernel.org/all/cover.1730037276.git.leon@kernel.org
 
-Yes.
+----------------------------------------------------------------------------
 
-Fixes: c43e1ccdebf2 ("iommu/vt-d: Drain PRQs when domain removed from RID")
+
+Christoph Hellwig (6):
+  PCI/P2PDMA: Refactor the p2pdma mapping helpers
+  dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
+  iommu: generalize the batched sync after map interface
+  iommu/dma: Factor out a iommu_dma_map_swiotlb helper
+  dma-mapping: add a dma_need_unmap helper
+  docs: core-api: document the IOVA-based API
+
+Leon Romanovsky (11):
+  iommu: add kernel-doc for iommu_unmap and iommu_unmap_fast
+  dma-mapping: Provide an interface to allow allocate IOVA
+  dma-mapping: Implement link/unlink ranges API
+  mm/hmm: let users to tag specific PFN with DMA mapped bit
+  mm/hmm: provide generic DMA managing logic
+  RDMA/umem: Store ODP access mask information in PFN
+  RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page
+    linkage
+  RDMA/umem: Separate implicit ODP initialization from explicit ODP
+  vfio/mlx5: Explicitly use number of pages instead of allocated length
+  vfio/mlx5: Rewrite create mkey flow to allow better code reuse
+  vfio/mlx5: Enable the DMA link API
+
+ Documentation/core-api/dma-api.rst   |  70 +++++
+ drivers/infiniband/core/umem_odp.c   | 250 +++++----------
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |  12 +-
+ drivers/infiniband/hw/mlx5/odp.c     |  65 ++--
+ drivers/infiniband/hw/mlx5/umr.c     |  12 +-
+ drivers/iommu/dma-iommu.c            | 454 +++++++++++++++++++++++----
+ drivers/iommu/iommu.c                |  84 ++---
+ drivers/pci/p2pdma.c                 |  38 +--
+ drivers/vfio/pci/mlx5/cmd.c          | 376 +++++++++++-----------
+ drivers/vfio/pci/mlx5/cmd.h          |  35 ++-
+ drivers/vfio/pci/mlx5/main.c         |  87 +++--
+ include/linux/dma-map-ops.h          |  54 ----
+ include/linux/dma-mapping.h          |  86 +++++
+ include/linux/hmm-dma.h              |  33 ++
+ include/linux/hmm.h                  |  21 ++
+ include/linux/iommu.h                |   4 +
+ include/linux/pci-p2pdma.h           |  84 +++++
+ include/rdma/ib_umem_odp.h           |  25 +-
+ kernel/dma/direct.c                  |  44 +--
+ kernel/dma/mapping.c                 |  18 ++
+ mm/hmm.c                             | 264 ++++++++++++++--
+ 21 files changed, 1423 insertions(+), 693 deletions(-)
+ create mode 100644 include/linux/hmm-dma.h
+
+-- 
+2.47.0
+
