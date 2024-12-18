@@ -1,132 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF7E11F76C7;
-	Tue, 17 Dec 2024 19:21:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7505113698E
+	for <iommu@lists.linux.dev>; Wed, 18 Dec 2024 03:10:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734463318; cv=none; b=Glr84PMOmwDhXMq5eOpKUykwdCmpB/0iLavMdY5m0VFChsEykwm8OQnUhTlKDbJYZkrEP3uBlPmb1bgrBWKCstWtlgOaFYwfAw/xd9TJh29TEdXnGghLnRQsoL475Gjav6ojEyymtAfvuoMQ6uVCPMsmRLMo/22/lYdMk8nZVfY=
+	t=1734491428; cv=none; b=N1q2HZKlbUw/0rO9m5OJIH6GiPDpjx8qfJ0QYOF91MdkX4+Y1vgl+lmuWjAqrsR2PgJEHvBtEl2XApB4enGUa+nbrVCY8F/vOm20J5gca6s+qaZvUtnh/vHOUCnoEOa3AChiNodms64pKR/FoCYnb28NEP8ROy5vUBu+WfmEMN4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734463318; c=relaxed/simple;
-	bh=GaDNdtEf3V/Quwv0a67s1DQ1eOlCYVx+3g5YUMb9+NY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z0RPtItjNRee2+DJQa/OMJVD4j76egADwEulRV9nrZeWQbjcl407xdGcsytUK0Ibc1lIUp5IZ44tbYZvP2cZL1zjmDP91oUpjIYLjrotu5EjPo81X2yOWMcD7W5lO/F4TyVbUo7Y/F5ii+XCptxO1VKYhM73Tpiv0+OltCdeBSQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j/6gh/H7; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1734491428; c=relaxed/simple;
+	bh=Z1VqGfy2LTCxobp0qobiMrtFZHWxMeW4quBbM+rwbFM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HJ/L9r52uTIsV9ZJVcDOQtNoIO7QuUlK16D21nM64OLUcJcEfa3TzHoxA5J5VlfaemmPfrkXJ9SBNqAS1ojdb6V9UwfGO10amVDvsH6UR1qwtirhyYEkczdAUVXJ49mpIUW6627ax17JKvLbXzHMDyiftXNWpseoYhv4kn8rTAU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EO5M+WJp; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j/6gh/H7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5FFCC4CED3;
-	Tue, 17 Dec 2024 19:21:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1734463318;
-	bh=GaDNdtEf3V/Quwv0a67s1DQ1eOlCYVx+3g5YUMb9+NY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=j/6gh/H740JjP2fCj6AY92fq9iWZYl+3YHoh0l6lgpD+VHEw90lkSLzwO9c9ray9L
-	 GA6vIQBoOLmzQU8Rc9rgPiq3MA1YKPT9FNNSUwqosbdhHOzQeyH8uoMqDRbDMvgCDx
-	 fEzzK0QAXEFyFRgMmAWjfvskwFlNwh3h7/7PElSx9TW3bOy8oozHY9x5UZn1AOm1u0
-	 RalCohXUzgrHvTUYF995BIwI1PqgQGmp1bHSo++YQK3Le9ifBthINWeGUu2Je7zLA5
-	 kt5Iy5sMgsFBoeOJpXs64PgyyXvme50EGSY+DYXJZ0cJmUQceYi6zT5oUbzFFC+eyL
-	 B3G02MXn7+7vw==
-Date: Tue, 17 Dec 2024 19:21:56 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "wei.liu@kernel.org" <wei.liu@kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-	"kys@microsoft.com" <kys@microsoft.com>,
-	"haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-	"decui@microsoft.com" <decui@microsoft.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"bp@alien8.de" <bp@alien8.de>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	"x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"James.Bottomley@HansenPartnership.com" <James.Bottomley@hansenpartnership.com>,
-	"martin.petersen@oracle.com" <martin.petersen@oracle.com>
-Subject: Re: [PATCH 0/5] hyper-v: Don't assume cpu_possible_mask is dense
-Message-ID: <Z2HPVCCfznUeMXh3@liuwe-devbox-debian-v2>
-References: <20241003035333.49261-1-mhklinux@outlook.com>
- <SN6PR02MB415740B41A34B1468BC6AE28D43D2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <Z1jZengWxcjEPdJD@liuwe-devbox-debian-v2>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EO5M+WJp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1734491427; x=1766027427;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Z1VqGfy2LTCxobp0qobiMrtFZHWxMeW4quBbM+rwbFM=;
+  b=EO5M+WJpS5E5HgovgC7g0/U9YKlfo0R1rXz0vTBZ/x9dfN1zsoMvSS1D
+   r4cStdtPFCBIHiGSOsukvImuJjAjv9bX/+9SORsO6zFhLQpID+sKWptIG
+   lSm05aMi5Xtxn3pPelF2HHXac3+QEA+TvNRS4cqrLilm+yaX3fgfhpvwd
+   XQpA/OPItPx2g79gg62A3iG2RRrxAvVzh8jsWHeckluRf3SXToNgui8Kx
+   wU7iDP4gCYQ7vMIjg7VgMhKHp7x9IixcgNPKUY7FksjxcUQMVyv2Rqbg2
+   jwpIj/F0ynU4xtwJzIB6GUPcyKK67e5tVN6HUeyKerTr9a8O9GDG1TebK
+   g==;
+X-CSE-ConnectionGUID: vbe5S4K/S2u2eJzgbfXDbA==
+X-CSE-MsgGUID: eSF3q2wwTfuOH7NylyiaBQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11289"; a="35103671"
+X-IronPort-AV: E=Sophos;i="6.12,243,1728975600"; 
+   d="scan'208";a="35103671"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2024 19:10:26 -0800
+X-CSE-ConnectionGUID: ZINxrdXeQQKRqnkmKQPbSQ==
+X-CSE-MsgGUID: F2CaTt1SShq4K0zr1bLooA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,243,1728975600"; 
+   d="scan'208";a="98308501"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2024 19:10:23 -0800
+Message-ID: <897738ba-5c1f-4d42-bf10-402d59e3f430@linux.intel.com>
+Date: Wed, 18 Dec 2024 11:08:47 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z1jZengWxcjEPdJD@liuwe-devbox-debian-v2>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/vt-d: Link cache tags of same iommu unit together
+To: Zhenzhong Duan <zhenzhong.duan@intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+Cc: dwmw2@infradead.org, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, yi.l.liu@intel.com, chao.p.peng@intel.com
+References: <20241216033809.170366-1-zhenzhong.duan@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20241216033809.170366-1-zhenzhong.duan@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Dec 11, 2024 at 12:14:50AM +0000, Wei Liu wrote:
-> On Tue, Dec 10, 2024 at 07:58:34PM +0000, Michael Kelley wrote:
-> > From: mhkelley58@gmail.com <mhkelley58@gmail.com> Sent: Wednesday, October 2, 2024 8:53 PM
-> > > 
-> > > Code specific to Hyper-V guests currently assumes the cpu_possible_mask
-> > > is "dense" -- i.e., all bit positions 0 thru (nr_cpu_ids - 1) are set,
-> > > with no "holes". Therefore, num_possible_cpus() is assumed to be equal
-> > > to nr_cpu_ids.
-> > > 
-> > > Per a separate discussion[1], this assumption is not valid in the
-> > > general case. For example, the function setup_nr_cpu_ids() in
-> > > kernel/smp.c is coded to assume cpu_possible_mask may be sparse,
-> > > and other patches have been made in the past to correctly handle
-> > > the sparseness. See bc75e99983df1efd ("rcu: Correctly handle sparse
-> > > possible cpu") as noted by Mark Rutland.
-> > > 
-> > > The general case notwithstanding, the configurations that Hyper-V
-> > > provides to guest VMs on x86 and ARM64 hardware, in combination
-> > > with the algorithms currently used by architecture specific code
-> > > to assign Linux CPU numbers, *does* always produce a dense
-> > > cpu_possible_mask. So the invalid assumption is not currently
-> > > causing failures. But in the interest of correctness, and robustness
-> > > against future changes in the code that populates cpu_possible_mask,
-> > > update the Hyper-V code to no longer assume denseness.
-> > > 
-> > > The typical code pattern with the invalid assumption is as follows:
-> > > 
-> > > 	array = kcalloc(num_possible_cpus(), sizeof(<some struct>),
-> > > 			GFP_KERNEL);
-> > > 	....
-> > > 	index into "array" with smp_processor_id()
-> > > 
-> > > In such as case, the array might be indexed by a value beyond the size
-> > > of the array. The correct approach is to allocate the array with size
-> > > "nr_cpu_ids". While this will probably leave unused any array entries
-> > > corresponding to holes in cpu_possible_mask, the holes are assumed to
-> > > be minimal and hence the amount of memory wasted by unused entries is
-> > > minimal.
-> > > 
-> > > Removing the assumption in Hyper-V code is done in several patches
-> > > because they touch different kernel subsystems:
-> > > 
-> > > Patch 1: Hyper-V x86 initialization of hv_vp_assist_page (there's no
-> > > 	 hv_vp_assist_page on ARM64)
-> > > Patch 2: Hyper-V common init of hv_vp_index
-> > > Patch 3: Hyper-V IOMMU driver
-> > > Patch 4: storvsc driver
-> > > Patch 5: netvsc driver
-> > 
-> > Wei --
-> > 
-> > Could you pick up Patches 1, 2, and 3 in this series for the hyperv-next
-> > tree? Peter Zijlstra acked the full series [2], and Patches 4 and 5 have
-> > already been picked by the SCSI and net maintainers respectively [3][4].
-> > 
-> > Let me know if you have any concerns.
+On 12/16/24 11:38, Zhenzhong Duan wrote:
+> Cache tag invalidation requests for a domain are accumulated until a
+> different iommu unit is found when traversing the cache_tags linked list.
+> But cache tags of same iommu unit can be distributed in the linked list,
+> this make batched flush less efficient. E.g., one device backed by iommu0
+> is attached to a domain in between two devices attaching backed by iommu1.
 > 
-> Michael, I will take a look later after I finish dealing with the
-> hyperv-fixes branch.
+> Group cache tags together for same iommu unit in cache_tag_assign() to
+> maximize the performance of batched flush.
+> 
+> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+> ---
+>   drivers/iommu/intel/cache.c | 11 ++++++++++-
+>   1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
+> index e5b89f728ad3..726052a841e0 100644
+> --- a/drivers/iommu/intel/cache.c
+> +++ b/drivers/iommu/intel/cache.c
+> @@ -48,6 +48,8 @@ static int cache_tag_assign(struct dmar_domain *domain, u16 did,
+>   	struct intel_iommu *iommu = info->iommu;
+>   	struct cache_tag *tag, *temp;
+>   	unsigned long flags;
+> +	struct cache_tag *temp2 = list_entry(&domain->cache_tags,
+> +					     struct cache_tag, node);
 
-Patch 1 to 3 have been applied to the hyperv-next branch.
+Is this valid for a list head?
 
-Wei.
+>   
+>   	tag = kzalloc(sizeof(*tag), GFP_KERNEL);
+>   	if (!tag)
+> @@ -73,8 +75,15 @@ static int cache_tag_assign(struct dmar_domain *domain, u16 did,
+>   			trace_cache_tag_assign(temp);
+>   			return 0;
+>   		}
+> +		if (temp->iommu == iommu)
+> +			temp2 = temp;
+>   	}
+> -	list_add_tail(&tag->node, &domain->cache_tags);
+> +	/*
+> +	 * Link cache tags of same iommu unit together, so consponding
+> +	 * flush ops can be batched for iommu unit.
+> +	 */
+> +	list_add(&tag->node, &temp2->node);
+> +
+>   	spin_unlock_irqrestore(&domain->cache_lock, flags);
+>   	trace_cache_tag_assign(tag);
+>   
+
