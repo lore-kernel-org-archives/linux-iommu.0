@@ -1,45 +1,44 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46E5515852E
-	for <iommu@lists.linux.dev>; Wed, 18 Dec 2024 08:33:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E07DF161311
+	for <iommu@lists.linux.dev>; Wed, 18 Dec 2024 08:34:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734510802; cv=none; b=UiU5rv8oTL/eQAb3PEjFF3CCZzoWESO5+Gu+0MwNFuKpTrXGvZjV2COAMxA2d+BFmepcah7dyKsobSJrOLCvhZuQQEmNtICqe7fXgjdHYMD+rgrCfbfF+zm27iGlhKUwbR57TckoZ0wZRU3qWVgx8+iKJaoOg6YjuoSzPxvoa5o=
+	t=1734510869; cv=none; b=U2/hI6DbeC2RXDFX0ITXpKI4vzuZ8vT+cCEsNm0hQFJkege/HxA3huJq8KQv49ryHJ8gWAePwjHJT3WnXj+kMD3uEEF4Kb4h/ZX0drM+Xqib+49zkUvrHjALrXUovlQp7nvngsKFjwMXoZmfWcSm26ZUjn00UN+zDpP3CFamTjg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734510802; c=relaxed/simple;
-	bh=SnXrVVcZicUpc/vldSOmA4Er3YIKiqZz/uXkr2nSFV8=;
+	s=arc-20240116; t=1734510869; c=relaxed/simple;
+	bh=AXgiAqf8zCy4z4l+ZTo7yj4JmZDdaTu2SLMSWq8tnIQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=abhO/osmqMHwfAfOpmAVyv3uDkqbCY2Ly3kSQufH2iDg38MnpkQb+zzdbfFidyQ8R0hgfK5kqtwVCzRNi8ytWaq7ck/Cy6aOe5XNlZVqytblxDPqfh6CjpsiUrQDdDNFYSfsJvh39KcCxor9t7x4DDblMQb0Hxh4ZkKQDtHD28w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=DpYdvIsE; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=psMubOyhd++1b5e+lw0zZZTT57JPeDlBXHGCOmXxly5RVlb+loUf3Vh4/u3Y+p11vBUAeca2dM6V84KtJQWRGdWL17nm9yjdJZ/0VPUUWKo3Uh56y2diQk+0+r+OyodBpcZ3fIwth3005+OVifbbeQ3xUzkGLCZKc75WuRdcQeU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=L/PhBiQX; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="DpYdvIsE"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="L/PhBiQX"
 Received: from 8bytes.org (p54921e31.dip0.t-ipconnect.de [84.146.30.49])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id D548F2C1E66;
-	Wed, 18 Dec 2024 09:33:17 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id E881F2C1E66;
+	Wed, 18 Dec 2024 09:34:26 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1734510798;
-	bh=SnXrVVcZicUpc/vldSOmA4Er3YIKiqZz/uXkr2nSFV8=;
+	s=default; t=1734510867;
+	bh=AXgiAqf8zCy4z4l+ZTo7yj4JmZDdaTu2SLMSWq8tnIQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=DpYdvIsE5/rFS4guUUOBuRAgp5vukDkiJn1CimvBFDFs/VA7+OkmUv4+yTLWJ5FRe
-	 Damw0ekNjs4c1ckhcY45ERDEfk9frwaCeCPS1jVZ5nMrJEUcWYq/VXfSgnNsJ9mIH1
-	 v9NpXifSGgKn3sNBr615xyf7e6W0Ig/3X0WoqtfVj5t4sOQLTmbzW9KzHdxA3Zgjnr
-	 u5BSOy/plsYe7PINGnLuQJsYfwYULPM/stRGD9qZlwYGQlsiQMEEP3hmf0oFVJh1LB
-	 mO0e/jWHj1xXm3pIkgonXftKsrDqAUfv1LQ51uB65lHDbwDM+Clqzx4IGlBOyJ/54E
-	 KDFaVbHo3zhgw==
-Date: Wed, 18 Dec 2024 09:33:16 +0100
+	b=L/PhBiQXCXvUKtQdIm9SMrOIEG/IPm44+d3XGhPbvXnJbzybv53AcIZwyf5SkhHuR
+	 SXxBQukR52ioyiEwII+nyrYUhTxEHkzgjodjMVZ8iYc8HdTGW/efqBbcv7PqObKH54
+	 kg0vTaoZECbO0HI+AlSTo6Bal7djOaqV+svGcDuFEgVuwAr54TiWk4ZZl/vU3WuN5E
+	 oUDwqenELP4tflBZycWNPIfrPW4ruT7LtRcZPyy5AN5WbzcbogyWo8qFgqkxt8Tdt+
+	 8NHubypRIuLmUBGw5BGckHCYHHy6ruqajXfLd/xwdoXYRsupbHfFkTejD7Kz8CWMG6
+	 aUOmSPjK4elDQ==
+Date: Wed, 18 Dec 2024 09:34:25 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Andrew Jones <ajones@ventanamicro.com>
-Cc: iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, tjeznach@rivosinc.com,
-	samuel.holland@sifive.com, will@kernel.org, robin.murphy@arm.com,
-	paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu
-Subject: Re: [PATCH v2 0/1] iommu/riscv: Add platform msi support
-Message-ID: <Z2KIzNl3Mf0aL8IP@8bytes.org>
-References: <20241112133504.491984-3-ajones@ventanamicro.com>
+To: Kees Bakker <kees@ijzerbout.nl>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+	Tian Kevin <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] iommu: Avoid use of NULL after WARN_ON_ONCE
+Message-ID: <Z2KJEUdGD_DFq_Xl@8bytes.org>
+References: <20241115190316.28A6B18DFF2@bout3.ijzerbout.nl>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,13 +47,17 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241112133504.491984-3-ajones@ventanamicro.com>
+In-Reply-To: <20241115190316.28A6B18DFF2@bout3.ijzerbout.nl>
 
-On Tue, Nov 12, 2024 at 02:35:05PM +0100, Andrew Jones wrote:
-> Andrew Jones (1):
->   iommu/riscv: Add support for platform msi
+On Fri, Nov 15, 2024 at 07:46:25PM +0100, Kees Bakker wrote:
+> There is a WARN_ON_ONCE to catch an unlikely situation when
+> domain_remove_dev_pasid can't find the `pasid`. In case it nevertheless
+> happens we must avoid using a NULL pointer.
 > 
->  drivers/iommu/riscv/iommu-platform.c | 102 ++++++++++++++++++++++-----
->  1 file changed, 84 insertions(+), 18 deletions(-)
+> Signed-off-by: Kees Bakker <kees@ijzerbout.nl>
+> ---
+>  drivers/iommu/intel/iommu.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
 
-Applied, thanks.
+This patch is Intel VT-d specific, please use the 'iommu/vt-d:' prefix
+in the subject line.
