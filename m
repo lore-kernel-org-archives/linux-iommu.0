@@ -1,47 +1,45 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9DE441791F4
-	for <iommu@lists.linux.dev>; Wed, 18 Dec 2024 08:38:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 11B3F156F44
+	for <iommu@lists.linux.dev>; Wed, 18 Dec 2024 08:40:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734511094; cv=none; b=JdoOwI8JHaMl57XtOYLNgTGJ0vWRrHMAFjhgK+evklb4UlIuNASxAMQQcP6Cx6wYp3LHBiHT1lns56HaryHikseDSDzRYCCtjvOun2kuHeXwBvyhOapPKqlJkHE9nBFY6fOYz9deukGyIIzaKD2w2GPrcfLTR0eaDcx0/vq3Mnc=
+	t=1734511215; cv=none; b=VbHo3gJ8mgTFO6EsOzcirPlQYriytFprH+d4H3y4+S2ijntfsPxs7yHOYxfQIye+B+Zsg6S/xuvnq/YxoFVm53qu9pVKXNRXKhdYKl5lrFe/QNkTOJcfHyPypzEf3E7UTr4UIkO9c2W2w2qzQ0Wq/m1K20/AefD8tt8E6C1fZqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734511094; c=relaxed/simple;
-	bh=9cBpC7Jzg7EStrooikSrqAoz0ndVmDWUvCOWsQYskTg=;
+	s=arc-20240116; t=1734511215; c=relaxed/simple;
+	bh=MV6KyVfXoz6PKOZWMTqYD+2szsG/qGUie4tUdM4jbnU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GqoN6nK8lKF41yCnXCJ0IeNkPF9IIqfiMf0Q2obUCWKNYwBxNgMNnK0a8X6NiB6D7jsSyc0dtO47YjsCDiK/9A3/8LlD5n9fgOSpa9Batp8nomyi98RM1vhdjLRG/n5tKSxAt+axQ+RnE1PC0T8rhIhx8Pie/lMj32IHx7sfEWw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=lNbKQX7v; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=PToGQ8c+MhcaaTW7zMvUj/4OlZv9fnVoqVY4P9BCwo74bGpEX5CWntgIJhWMu8JMBoiNj6CU9gTeAdY2wosjVDIRKKP0rTKLgSl5vN66XeDMQecAuujw5CcyDgl+N61yqHWpo3eQd5HDQwO3ueqRlXLEwmmjP8UBuTr8IC94Kb8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=jwMYFleB; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="lNbKQX7v"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="jwMYFleB"
 Received: from 8bytes.org (p54921e31.dip0.t-ipconnect.de [84.146.30.49])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 8CA7D2C1E66;
-	Wed, 18 Dec 2024 09:38:10 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 0E86A2C1E66;
+	Wed, 18 Dec 2024 09:40:13 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1734511090;
-	bh=9cBpC7Jzg7EStrooikSrqAoz0ndVmDWUvCOWsQYskTg=;
+	s=default; t=1734511213;
+	bh=MV6KyVfXoz6PKOZWMTqYD+2szsG/qGUie4tUdM4jbnU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lNbKQX7vWaZAAA2/78lj+Bh/6xIcAHnp0k+hgn6dxxla+ubQrJdN80rm/o8Yi+TQ/
-	 0R4egM63XVom4IQRRWwNcCiP7R83th5j4bA3KYa2tBkIuuZXbW90pc+1RRe0gaKYSN
-	 rPvp71kP3TS7K22jkAm+apdEe/l1WMnB/zxPIIpoeuAvqx94Z7D9CZ+rb79oqxxfsU
-	 c0DsdT9lpG7dAA67A4KP701K7NML1hVO1af4jLyf+ZM4HqQd5GppK5r9GQZsltauAl
-	 OE4VWrPuhtNnWJ6hcq8zqihyuc3o8q/PcemR2jZJggoic3YYyGzCCR0oUeqR3A1Gpp
-	 EtcA6h5YbfrtA==
-Date: Wed, 18 Dec 2024 09:38:09 +0100
+	b=jwMYFleBfIH5EjtdopEG/WNOvS6eQh8D3OcZO1Wj8ZvCyPCcOIiNrumrQk4OhXsHT
+	 qKLufnH0qpRJlNDW1YiVLK0wbx0jslFfBhitJokECoashxDH75zWKiloFer2QwNzCO
+	 KxQ40EdBXw7PfbzijsGydBKZj3jTo3b0nKkZL3yXh5+e9I/oWayJ5H+AlEYUq7gqW+
+	 V6etIZb71h68c9fZLxSE1YKaBkHDai0VNJmVzz9RBqu3r5a22qWyJZHUk0bQTFOT4F
+	 fYQ83+/myzHP4tnuMod9kRd0b9QaXekuiMXICmcsVPhUNTk7/bhQ+cTiIamMYixaO9
+	 N5gvZXAEWLdGA==
+Date: Wed, 18 Dec 2024 09:40:11 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	robin.murphy@arm.com, vasant.hegde@amd.com, arnd@arndb.de,
-	ubizjak@gmail.com, linux-arch@vger.kernel.org, jgg@nvidia.com,
-	kevin.tian@intel.com, jon.grimm@amd.com, santosh.shukla@amd.com,
-	pandoh@google.com, kumaranand@google.com
-Subject: Re: [PATCH v12 0/9] iommu/amd: Use 128-bit cmpxchg operation to
- update DTE
-Message-ID: <Z2KJ8SGMoTfx_t76@8bytes.org>
-References: <20241118054937.5203-1-suravee.suthikulpanit@amd.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, baolu.lu@linux.intel.com,
+	eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+	chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
+	zhenzhong.duan@intel.com, vasant.hegde@amd.com, will@kernel.org
+Subject: Re: [PATCH v6 0/7] Support attaching PASID to the blocked_domain
+Message-ID: <Z2KKaxftA52hAXN3@8bytes.org>
+References: <20241204122928.11987-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,25 +48,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241118054937.5203-1-suravee.suthikulpanit@amd.com>
+In-Reply-To: <20241204122928.11987-1-yi.l.liu@intel.com>
 
-On Mon, Nov 18, 2024 at 05:49:28AM +0000, Suravee Suthikulpanit wrote:
-> Suravee Suthikulpanit (9):
->   iommu/amd: Misc ACPI IVRS debug info clean up
->   iommu/amd: Disable AMD IOMMU if CMPXCHG16B feature is not supported
->   iommu/amd: Introduce struct ivhd_dte_flags to store persistent DTE
->     flags
->   iommu/amd: Introduce helper function to update 256-bit DTE
->   iommu/amd: Modify set_dte_entry() to use 256-bit DTE helpers
->   iommu/amd: Introduce helper function get_dte256()
->   iommu/amd: Modify clear_dte_entry() to avoid in-place update
->   iommu/amd: Lock DTE before updating the entry with WRITE_ONCE()
->   iommu/amd: Remove amd_iommu_apply_erratum_63()
+On Wed, Dec 04, 2024 at 04:29:21AM -0800, Yi Liu wrote:
+> Jason Gunthorpe (1):
+>   iommu/arm-smmu-v3: Make the blocked domain support PASID
 > 
->  drivers/iommu/amd/amd_iommu.h       |   4 +-
->  drivers/iommu/amd/amd_iommu_types.h |  41 ++-
->  drivers/iommu/amd/init.c            | 229 +++++++++--------
->  drivers/iommu/amd/iommu.c           | 378 +++++++++++++++++++++-------
->  4 files changed, 440 insertions(+), 212 deletions(-)
+> Yi Liu (6):
+>   iommu: Prevent pasid attach if no ops->remove_dev_pasid
+>   iommu: Consolidate the ops->remove_dev_pasid usage into a helper
+>   iommu: Detaching pasid by attaching to the blocked_domain
+>   iommu/vt-d: Make the blocked domain support PASID
+>   iommu/amd: Make the blocked domain support PASID
+>   iommu: Remove the remove_dev_pasid op
+> 
+>  drivers/iommu/amd/iommu.c                   | 10 +++++-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++----
+>  drivers/iommu/intel/iommu.c                 | 15 ++++++---
+>  drivers/iommu/iommu.c                       | 35 +++++++++++++--------
+>  include/linux/iommu.h                       |  5 ---
+>  5 files changed, 48 insertions(+), 29 deletions(-)
 
 Applied, thanks.
