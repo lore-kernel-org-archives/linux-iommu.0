@@ -1,61 +1,61 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C446221D8E
-	for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 11:10:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56674223311
+	for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 11:14:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734606630; cv=none; b=FzXB+DAKVtJsP9AdEz4m7nRq4SYipbz1tk/5pzJF22/RhHHkz93JbS2dR9NtSR2jY3UGFHAkv/o+pzkG1/G7PRTqnjhfNa8WsEkJbqLdLy/N1Z++xnEwVPXylggIAIvrx5QZA/Rwkgo+DlRRAQrDLIeWDP6ddgNLEgXq4j2Q9Cc=
+	t=1734606871; cv=none; b=uLZQLaTo1PXY3iIKMf67JCK/Kqel6sKMFhbTBoadIp+JYzQu3J2a8C98eTaXCCCBFgAooonQQrabOF/I7Y9+eiQHrbtvac0OFwdGh9q/4mt05ShEi7Fa2hdOUCBkXdQ+9OTI/9SSh6sulbNqR3ce7z2TCE+eV1sN9PEFa6se8qw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734606630; c=relaxed/simple;
-	bh=KA1ixWNP5WI3RizWmsymPfBhlXudCJCqwF4L4GJqyeo=;
+	s=arc-20240116; t=1734606871; c=relaxed/simple;
+	bh=8RuIoJ0q/4dY8lZ6nY/JYhaMNSssJ3bm0ZjjKWMF2fc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nmYIaTUze+UlU+zdyr0UrCyM2jR9+iaxzuADnTKu1aYy5VjhVReOTgO7Uiofi8nMtbMiX572B50+EJQtABYiJSyK/ZOmZR/JVNNqa0nWg1NQjJiWsJOSBEkeleofGekJYL+0X3diMfN/9y5atvkJMs0aPfKPJ3qwfMz8pE5yRec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ygi/OeO9; arc=none smtp.client-ip=209.85.218.52
+	 Content-Type:Content-Disposition:In-Reply-To; b=UvDS8tGQwWdUBeea/xs7qN8c7gYCo4/tjwp1cdjrF9ayPvF4QVxqjzQBBLDj4ukGSVYuG2FV3CAoTVSFKVZ/XnHYDWOuxs12iZ0Evg2Bm9+Pv0ZxwA1N39ep1LBOmXkDWnTnAYS1Ya+Umhb+zH9+RIOdqK06mE+16UYCnRZZG3o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QMkvzoIv; arc=none smtp.client-ip=209.85.218.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ygi/OeO9"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-aa66e4d1d5aso98826366b.2
-        for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 03:10:28 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QMkvzoIv"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-aa6aee68a57so106050166b.3
+        for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 03:14:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1734606627; x=1735211427; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1734606866; x=1735211666; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=d5b9H3Sr5EYFy0j2cHR9n5SDx5jRbjOaoGMUJe0iL/U=;
-        b=Ygi/OeO9+UzbmajMc6vHkpvx2nYinn6BjP1ZrGaPTMbYfeGOFWuVT485m3FGl6l7mB
-         1qZmFPWd6wf0ufvDw7jR2jWoYJuqtbQJ2v+cOnW5oTJsRb0PrHZQUIn6A+V8dhaV6siP
-         EGoE17/0qDyV0LCYoIBfk9IqGAnqwgOnCixHIKnRpNJ5HtgJXANakRwXe+MfWI0uu6zT
-         YTsiITXozmUmZjjBUpdLAs4Su82CO6k3JL2hZeCerkS+0GSA4OvsBxtdMP6eD1/Nr1/8
-         bf61q2pUtPOVXknUUqsnqQjCM9j9hV4BW1JGqLHQtsRRw1nOSm+ziFUUsEqkp8FmLFM1
-         GzJA==
+        bh=k232UiDWZ9i334Ovjw0KByCgbnjokcMOWAtrXY0DoWA=;
+        b=QMkvzoIv9MNy3/tmOszVE2kQknWv+fyaExkIC/1C1/p6EyytgO7PVUnNiLCrmeXawE
+         Zqc2dqX/UBvaGNFA33Ep5VmLqKLLDiPm5dLPlgAJm+rMKI1hNVxulf3PNziH8PJnEfb3
+         FLrudClVl8OogiDZO7wFmf8KiWy6okKfbNG62KOJKYil0Bek6gxzC8ZA9naZJXBVGq0r
+         QDZqD9mGmGjckDlFUXYucstv+5loic1z0Rr8wtvfmMuI4zJuTOfhf+tNkjRfyHxV28Vd
+         qB03ftMPejweliF4mooSk+ibuzr8gUAPc+PYrBk5luZxHzRDVuT/vuDI7WXAcq3n9ApX
+         bsXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734606627; x=1735211427;
+        d=1e100.net; s=20230601; t=1734606866; x=1735211666;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=d5b9H3Sr5EYFy0j2cHR9n5SDx5jRbjOaoGMUJe0iL/U=;
-        b=lR9eG1ie37ELSy2idwZ+c4J7Y+zpnKumJhhrrx3/VUggC7doJ9//IJ0T1vo+i05X3p
-         60KE7/9tLWHKrjZpPGGaPYnPIYzk2A6w9DFslajr4fllRSTF4F1Fk80uEHpXn2ccKyMC
-         RX9GGC45FK6R6Tn6asLxNmQuTTka5/M7oVBVhCMu4XuJixORAEpQPo9b+i/Ws4j+2yHz
-         +Waqx/XfE6PpPB1v+W1OByg3egrX78NaBBueeovANWIFeJEKTHNosg+keeRf4MVgkGJq
-         0C6XXHp5455mYo1f+OyPUr2oCkHpsFkq36Bb865FmglH/ZOVLBAAexuHu/ZZPOoEEjX+
-         d1BQ==
-X-Gm-Message-State: AOJu0YytZJrhhlogihwDjtBatcLgTbYq9YseexBhvgRvb5xfeGQ9dmsX
-	JIdmLmZ05Azbo7p49sJKOv5fUPQyu708w6TYLRs3l9HxTMqTtSucBT2YwNPi8A==
-X-Gm-Gg: ASbGncsh0YR/GP5P8XSPWb9WLwMbUNckfTDIiHEn3aFPolNELivH9vdcO4lMIOACHsJ
-	z9liOlT1MCX7e3DuCeNg++JyXDuaP3+kzhSwtXBxaWD6F6+IGkXDtR5K5/ZqWvSA9nY73DBQSiN
-	1Cv3Fs5NZB3l6stYdw6LpEDgUCjnZQgujTBFejT9PQ0LgvX/p1TtDB8r/gohZ/43ennrbjmM7Zr
-	WDzlmAbSPDxP8g/9q2r/qetjlPauCiw7UDxOk8E24FqiHHC15l6MQFfh0sWRUHpMrhe15Jns3jd
-	m9wzDJBgV2vikmc=
-X-Google-Smtp-Source: AGHT+IG1QUopT3Ag0ASkVgubCSavXZGnEyoaVH9YZtChHHKZ/cqx6LkSAMoHjTC7eHCXPYeU1uUf5Q==
-X-Received: by 2002:a17:907:7da0:b0:aa6:8d51:8fdb with SMTP id a640c23a62f3a-aac079029cdmr282978566b.19.1734606626623;
-        Thu, 19 Dec 2024 03:10:26 -0800 (PST)
+        bh=k232UiDWZ9i334Ovjw0KByCgbnjokcMOWAtrXY0DoWA=;
+        b=diuyjF4a/H7oaJ8L8BXAu/LEhEHy1aEtYGP57a/3+y247W412STJ/yShx5c0OP4zi5
+         DG8Pci0ahgGoMMtc7kj2OTZ9Kbg/5bVainHbdZeuR+Crx7p7j+tIcHPhUkSPLpEgFGsi
+         yT7DSD9oeMVQKa7s/8zZaBiyeS/+Ajb0dxIOmbRS3LZOSUOsF9rHDpupTymvI7e722b8
+         Bqr9vs5snXaZTrlWWlaOfZbU1LSU+NcUSC2jPl3uuKQJQC1BZOUjLWQgeYJTDnqiR8kL
+         UQ5gDnaYjIgpOyVgAfvHGXueJfGjBJb249HZRmFIGzvrabLsnLayDKAhiunzLdKc37Tk
+         ef9g==
+X-Gm-Message-State: AOJu0Yz8NTgi3iTBCGRZNTWUJWdOLS/6PKZswf560qKq1F1OMTeCub1o
+	tfV2GryQmAuEW+1elpSowl4hhKaohqm1DLVCLUBrPUzItHJvH/iRbgDBnluemg==
+X-Gm-Gg: ASbGncuLub5TCZG23Z3ImqXZ3cgv3aFYnQyZyMUc6sSrb5xejrNvCRKSRmEGhOStkwV
+	sLYEL+6KEKZb7ojjZLETbKycLlxvDY+deHucspxDuDEbkZmAi8QeaL0yseGLjO5mkFjdh/Q1Ezk
+	eqIgbzDeRkMse+5fNlv+23I+H0ddf/gRObsd1Tr4YJxE6GTP95G7oDQwRheEA9ek58h2/ImQ/WA
+	imLQs7IS4cpwTVrQ3i9CrMb9O9GOBJTcCBVxwcbCr4bGXAwzvY1MQ4lGjYMqoj8dMX/K7/U+Nzu
+	0pYno1HIdW1JNXE=
+X-Google-Smtp-Source: AGHT+IHKoh5EsN1uLkOfWMRdI2tQtHhYwKploXkp4V8soZqdefYj8PoGPzqWp1FX9+8rm326OJSgBg==
+X-Received: by 2002:a17:907:1c90:b0:aa6:85d0:1486 with SMTP id a640c23a62f3a-aabf496eb16mr518756966b.54.1734606866353;
+        Thu, 19 Dec 2024 03:14:26 -0800 (PST)
 Received: from google.com (61.134.90.34.bc.googleusercontent.com. [34.90.134.61])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aac0e894f7fsm54124966b.46.2024.12.19.03.10.26
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aac0e8954adsm55343466b.64.2024.12.19.03.14.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Dec 2024 03:10:26 -0800 (PST)
-Date: Thu, 19 Dec 2024 11:10:23 +0000
+        Thu, 19 Dec 2024 03:14:26 -0800 (PST)
+Date: Thu, 19 Dec 2024 11:14:23 +0000
 From: Quentin Perret <qperret@google.com>
 To: Mostafa Saleh <smostafa@google.com>
 Cc: iommu@lists.linux.dev, kvmarm@lists.linux.dev,
@@ -66,11 +66,10 @@ Cc: iommu@lists.linux.dev, kvmarm@lists.linux.dev,
 	robin.murphy@arm.com, jean-philippe@linaro.org, jgg@ziepe.ca,
 	nicolinc@nvidia.com, vdonnefort@google.com, tabba@google.com,
 	danielmentz@google.com, tzukui@google.com
-Subject: Re: [RFC PATCH v2 21/58] KVM: arm64: pkvm: Add
- __pkvm_host_add_remove_page()
-Message-ID: <Z2P_H4eahmrvhkIl@google.com>
+Subject: Re: [RFC PATCH v2 11/58] KVM: arm64: pkvm: Add pkvm_udelay()
+Message-ID: <Z2QADxbdoYi5q9iT@google.com>
 References: <20241212180423.1578358-1-smostafa@google.com>
- <20241212180423.1578358-22-smostafa@google.com>
+ <20241212180423.1578358-12-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,25 +78,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241212180423.1578358-22-smostafa@google.com>
+In-Reply-To: <20241212180423.1578358-12-smostafa@google.com>
 
-On Thursday 12 Dec 2024 at 18:03:45 (+0000), Mostafa Saleh wrote:
+On Thursday 12 Dec 2024 at 18:03:35 (+0000), Mostafa Saleh wrote:
 > From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> +/*
-> + * Temporarily unmap a page from the host stage-2, if @remove is true, or put it
-> + * back. After restoring the ownership to host, the page will be lazy-mapped.
-> + */
-> +int __pkvm_host_add_remove_page(u64 pfn, bool remove)
-> +{
-> +	int ret;
-> +	u64 host_addr = hyp_pfn_to_phys(pfn);
-> +	u8 owner = remove ? PKVM_ID_HYP : PKVM_ID_HOST;
-> +
-> +	host_lock_component();
-> +	ret = host_stage2_set_owner_locked(host_addr, PAGE_SIZE, owner);
+> 
+> Add a simple delay loop for drivers.
+> 
+> This could use more work. It should be possible to insert a wfe and save
+> power, but I haven't studied whether it is safe to do so with the host
+> in control of the event stream. The SMMU driver will use wfe anyway for
+> frequent waits (provided the implementation can send command queue
+> events).
 
-Any reason why this can't be expressed using __pkvm_host_donate_hyp()
-and __pkvm_hyp_donate_host()?
+Mooh, I'm thoroughly hating that we need this -- pKVM is non preemptible
+so we better not wait for too long.
 
-This doesn't check any state, so it feels like a dangerous primitive to
-have. Is the issue the overhead of mapping/unmapping into EL2 stage-1?
+I can surely figure it out from the following patches, but could you
+please expand on the use-case?
+
+On a side note I'm not too worried about the power impact of not having
+a wfe in there, again we better not be spinning for long enough that
+power starts to be noticeable.
