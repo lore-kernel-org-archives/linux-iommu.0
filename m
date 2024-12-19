@@ -1,84 +1,116 @@
-Received: from bout3.ijzerbout.nl (bout3.ijzerbout.nl [136.144.140.114])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 29F201FBEA9
-	for <iommu@lists.linux.dev>; Wed, 18 Dec 2024 20:10:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.140.114
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E86B41C79;
+	Thu, 19 Dec 2024 02:07:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734552659; cv=none; b=Pm/XM/VEv3A0HaoxuTeO4qvccDW6DpyvRtMts50rkQLcNcJ+z3e4LoX5iENovDX/DI/Zdy0PYgopOMpGxvWiyBU7VOXRDP9Ch4r9sfEIBKkoaLlE/txJx6TekaMqqWi5TUJ+PdEHbYE2aaJjYKJ0s62VvhGOZpdoBjXtz4cZxCI=
+	t=1734574059; cv=none; b=U051iFMgvWSyun68ufVaMY3dFqqT/qM3gPKaJuKO903XOB1rHVgyE+jK+lhF0UHuAkcRfU8+0CSDEByoK/bexOCN5f+IgS3fJ54IEhxXFSMZrOU0YbN8BvjTVRlCOiX/iRtsW8lwIE9HxgghS+q21AL5fcUWaEZuXC2MZbOYlGM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734552659; c=relaxed/simple;
-	bh=Ov/wxAiaAAERXrKseLXhMe4eegr6nqgJrnPd5yebYTs=;
-	h=From:Date:Subject:To:Cc:Message-Id; b=Cy/BFI0WgcS51vt9V/jTLYxxDZ51ebvbsZU6fYaLTfdT/pyjvCbT2SAEpFOdn76jT2xIPEwVrj0xFdvC9RuQO8/45d/sn05UFJk4sP2YfLvFWrgLMcSsuZTrHvJe+O/ulrq1hXgWDQmz76/huhymy7jAlrr3hTYDSfx61tBpmww=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ijzerbout.nl; spf=none smtp.mailfrom=bout3.ijzerbout.nl; dkim=pass (4096-bit key) header.d=ijzerbout.nl header.i=@ijzerbout.nl header.b=Zo9JMc8J; arc=none smtp.client-ip=136.144.140.114
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ijzerbout.nl
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bout3.ijzerbout.nl
+	s=arc-20240116; t=1734574059; c=relaxed/simple;
+	bh=u9RKb7yTKqQPGL6ESkRUFOfnECFsgIrUnpYAIzAyl1Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=k08vjNBSvNktYBmWKOfxbs6l3U3qfizl0vr49TvUDJamF8IFVvGM3ik4PCx/AKgtTvyBqsVktMCCr+h2FDaxEDxicN99H2cpm5XvJoS7i5LbD4gtrPF1TNBuoy0GJriJ0k+Jh6jg0yx05a2gsCIisqYHhYXYNzRqHuDSREaIcR4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NVTkSXsf; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=ijzerbout.nl header.i=@ijzerbout.nl header.b="Zo9JMc8J"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ijzerbout.nl; s=key;
-	t=1734552648; bh=Ov/wxAiaAAERXrKseLXhMe4eegr6nqgJrnPd5yebYTs=;
-	h=From:Date:Subject:To:Cc:From;
-	b=Zo9JMc8JGSBhXg+allbHKYMJah/OlQgqPdmszMR0E/b/ZFVR7Vo1ovuXJSTULpN84
-	 yKY8Yfq7A9UEuIk0E2klBJdFoteiUdtLUKCi/9LE6gXmN/6BeUsFFG1lDK5OL7G6za
-	 FvLlJl+c46FTivTyOl8vImpT8JCfO9qpRUVEsmJENy5HxMcXy0O1O5CT+1+T8WX2QB
-	 PDRIuoSfi38Fhv0xNVMxwwfegMdYb7CIUaG8gsQ2UWRArQiU4Oe9+d5KOe/BhJDQTM
-	 dze08V0ALtuqHWHHxJp3/msVlI7M8wJYfoVNSHtMEIEViFxqbjT9MdKVA1pQ7Y73wy
-	 d5Owbzrc6bw320FGyYRxeXH8xdV6VFmFUdPk5sN8MC+qhNOgQRAlJSzKUIWmsASzr5
-	 D6BKywSlvsXHbREBlvmHoam0RMNIzJ20+QRASVjLJicQha/9esmf8P3yoK4/LlAt6Z
-	 XAXpHbvpss36njc+BmtrcYxfW/HepPetXPIXWJOC+UvSOq4gHw4WMiOFldLtgsh3eB
-	 AYM+MScxRsvKz210aAVbvSBQEnmjeTiA0ZFoKPSgsijXXU8C03RSUyzusR4y6imi6Q
-	 hrOJ0SJmMaf2Jvr3+nrGwkoULzHUZFkIfeys5ZoGkYft2D/YFNa3mA379gh140XL9h
-	 J8W0SwUzeatz0Z+/6ag6Wm6c=
-Received: by bout3.ijzerbout.nl (Postfix, from userid 1000)
-	id E544818E57E; Wed, 18 Dec 2024 21:10:48 +0100 (CET)
-From: Kees Bakker <kees@ijzerbout.nl>
-Date: Fri, 15 Nov 2024 19:46:25 +0100
-Subject: [PATCH v2] iommu/vt-d: Avoid use of NULL after WARN_ON_ONCE
-To: Baolu Lu <baolu.lu@linux.intel.com>,
-    iommu@lists.linux.dev,
-    Tian Kevin <kevin.tian@intel.com>,
-    Joerg Roedel <joro@8bytes.org>,
-    Will Deacon <will@kernel.org>,
-    Robin Murphy <robin.murphy@arm.com>
-Cc: linux-kernel@vger.kernel.org
-Message-Id: <20241218201048.E544818E57E@bout3.ijzerbout.nl>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NVTkSXsf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1734574057; x=1766110057;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=u9RKb7yTKqQPGL6ESkRUFOfnECFsgIrUnpYAIzAyl1Y=;
+  b=NVTkSXsf7t00dEecaADWF+S+OiFIGTZ8ZiNhrtghH/QQVHqNI3rkJC6e
+   egXj3APkAnPuhL3sMlB/q/9nxQ5w0xj4RLL2gtSEY/ALhuds+LB8Ueodh
+   ugn0X0wLrQPu9uXZSR99i12uuZsEyNJIhgdcQD7/0YdSXsJg/phddgYYU
+   AXFCqbI6gjoapEdJnOtg1RmHYWgP67ztYXyhqwK7Wg7JiHUookRP0tyRy
+   xDAkLsZP9rx3ZmUWi8px4IhTDvC1/Y0fwZxRZ1XSLAa1u1wzii96rcKtR
+   4Oj5Qoi8HB0gWuGwpFz7Cr+1PhDuYY7nQsRhDE3MmsD2Xcs7UCpu03sAy
+   A==;
+X-CSE-ConnectionGUID: 2v/SEs5MTpuEKa74pppc9w==
+X-CSE-MsgGUID: 7Vi0EL3pRA2WpQa8bUv4Kg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11290"; a="35101033"
+X-IronPort-AV: E=Sophos;i="6.12,246,1728975600"; 
+   d="scan'208";a="35101033"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Dec 2024 18:07:37 -0800
+X-CSE-ConnectionGUID: BUEwx9zdRY+0awZQGNEcJQ==
+X-CSE-MsgGUID: Mwq7DUNKQP+Q7w80W636Fg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,246,1728975600"; 
+   d="scan'208";a="98449984"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Dec 2024 18:07:32 -0800
+Message-ID: <56c65e50-5890-42af-85b7-85f8a1bf5cf5@linux.intel.com>
+Date: Thu, 19 Dec 2024 10:05:53 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 07/14] iommufd/viommu: Add iommufd_viommu_get_vdev_id
+ helper
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, kevin.tian@intel.com,
+ will@kernel.org
+Cc: corbet@lwn.net, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+ robin.murphy@arm.com, dwmw2@infradead.org, shuah@kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kselftest@vger.kernel.org,
+ linux-doc@vger.kernel.org, eric.auger@redhat.com, jean-philippe@linaro.org,
+ mdf@kernel.org, mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
+ smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
+ patches@lists.linux.dev
+References: <cover.1734477608.git.nicolinc@nvidia.com>
+ <21d7e63b97d81d0acf9127418a67efe386787261.1734477608.git.nicolinc@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <21d7e63b97d81d0acf9127418a67efe386787261.1734477608.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-There is a WARN_ON_ONCE to catch an unlikely situation when
-domain_remove_dev_pasid can't find the `pasid`. In case it nevertheless
-happens we must avoid using a NULL pointer.
+On 12/18/24 13:00, Nicolin Chen wrote:
+> This is a reverse search v.s. iommufd_viommu_find_dev, as drivers may want
+> to convert a struct device pointer (physical) to its virtual device ID for
+> an event injection to the user space VM.
+> 
+> Again, this avoids exposing more core structures to the drivers, than the
+> iommufd_viommu alone.
+> 
+> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
+> ---
+>   include/linux/iommufd.h        |  8 ++++++++
+>   drivers/iommu/iommufd/driver.c | 20 ++++++++++++++++++++
+>   2 files changed, 28 insertions(+)
+> 
+> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+> index b082676c9e43..ac1f1897d290 100644
+> --- a/include/linux/iommufd.h
+> +++ b/include/linux/iommufd.h
+> @@ -190,6 +190,8 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
+>   					     enum iommufd_object_type type);
+>   struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
+>   				       unsigned long vdev_id);
+> +unsigned long iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
+> +					 struct device *dev);
 
-Signed-off-by: Kees Bakker <kees@ijzerbout.nl>
----
- v1 -> v2: change subject to use 'iommu/vt-d:' prefix
+Hi Nicolin,
 
- drivers/iommu/intel/iommu.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+This series overall looks good to me. But I have a question that might
+be irrelevant to this series itself.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 82ee86d86a93..e933c84faf0b 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4089,13 +4089,14 @@ void domain_remove_dev_pasid(struct iommu_domain *domain,
- 			break;
- 		}
- 	}
--	WARN_ON_ONCE(!dev_pasid);
- 	spin_unlock_irqrestore(&dmar_domain->lock, flags);
- 
- 	cache_tag_unassign_domain(dmar_domain, dev, pasid);
- 	domain_detach_iommu(dmar_domain, iommu);
--	intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
--	kfree(dev_pasid);
-+	if (!WARN_ON_ONCE(!dev_pasid)) {
-+		intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
-+		kfree(dev_pasid);
-+	}
- }
- 
- static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
--- 
-2.47.1
+The iommufd provides both IOMMUFD_OBJ_DEVICE and IOMMUFD_OBJ_VDEVICE
+objects. What is the essential difference between these two from
+userspace's perspective? And, which object ID should the IOMMU device
+driver provide when reporting other events in the future?
 
+Currently, the IOMMUFD uAPI reports IOMMUFD_OBJ_DEVICE in the page
+fault message, and IOMMUFD_OBJ_VDEVICE (if I understand it correctly) in
+the vIRQ message. It will be more future-proof if this could be defined
+clearly.
+
+Thanks,
+baolu
