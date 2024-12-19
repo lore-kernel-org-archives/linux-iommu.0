@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECCCF225A45
-	for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 13:27:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49851225A4A
+	for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 13:27:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734614877; cv=none; b=g3w8dPtNJ3lny+5H3ooWHkRS3DivhT1GX/1YBlv+TsbkTG+trWZhqBN8adEnFlrSKlb3QpXvTtTewbSTlVYFJsCDSmJpypEkVJFqy8rnFLnVJTbJWwJzc9H8/1oW3N0x7xY9Z71aT+d7nc+k+6m0aEcLYHTPci7S/tYiKSYoNTw=
+	t=1734614878; cv=none; b=reHtV4W1E98QUziLJiyJuD+MQdqGqXhWr5reZR/jRuOnXbU1fCevqDj+fjs5OSIpzF4CN0vIxgEUvuibLHwYeLxOJcufEAE+UF6Q5RfhGENXT64CulDvAO51CNOsm5KLHH4F/sYzmkJWvS4UKxhpZIuayZIKnPUbAo7vaqV9nb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734614877; c=relaxed/simple;
-	bh=LjXZy3D4E8cHf1e2AiavsRTAhxHXUIm0znoHAXz8a9s=;
+	s=arc-20240116; t=1734614878; c=relaxed/simple;
+	bh=I2NVYTE9vD7zEI+84eBMbk/urc6q8XgfJnAgCXlNOug=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=re7I8G2m47xZbhbX9N/vA8S0LOaI8wJ+snHrCbrZsohgVU2oTw/4Y9ILbTQmDgpjKAojRYPpZZNVJDd/i4R+p39ZXeVbVb/2N9FUBPP0gKxhnIGpTXyWl7W1rYB1VSB5Ib6sKkcYKiNWuX39+tbaH7cocNZ3G/kXjCkD9mTRTp0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bhNrcUrw; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version; b=p4DlVQggZmP8ujQwdahx6lk9Rai7PrmEfcgXHwcHM4kBIuCr4V1Ithbk37MYBsZiCuHTCaqQLfNgft2HftKj9ZuomTnVcqGon/q6lhAEpn6pZrcfXHefEYMUuyty+aSwlVkjw5QfqCYMNK+LGvVvU7OYOnPhhDZCPYSTCir4N9w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lEKkxvlg; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bhNrcUrw"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lEKkxvlg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1734614876; x=1766150876;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LjXZy3D4E8cHf1e2AiavsRTAhxHXUIm0znoHAXz8a9s=;
-  b=bhNrcUrw+3rfdJ0KshOyO6Jf9q8hNnBNGXCTDB2UZdmrSMdtgaHNR0XK
-   3iGYM7Dimtal+3OEopj4rGBqMtXjBHKVYMkfR6ufx+GKDTHUMb/aFRWFd
-   VOs4HhExNUyupivHjqgKIMbZIim8Jcx3UrP7UDb+HufKL7le0yy8sWYB9
-   z56wwkDOPnVbiM10aING2p6mSN9O6z5WpWNy4Npp5VeGbgFpds2msWoJS
-   NZO41DfEbNLq0JQmSiMy30uOeUQhjNae+TsruMC5gsrso3TjLvk67BsQC
-   rMKpQra6AHVG57fD3KU3+vU9YJ1zzk53xzmBW1b/lFmkU15lRi7v4PSrP
-   g==;
-X-CSE-ConnectionGUID: OdeYAZmjQZWrGR/90ElQhg==
-X-CSE-MsgGUID: EZv3yAaTSNeTEqBo3HA9NQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11290"; a="46542298"
+  bh=I2NVYTE9vD7zEI+84eBMbk/urc6q8XgfJnAgCXlNOug=;
+  b=lEKkxvlg+uSJ85cMHyh5VzsPTxbVVv6zAg5SuJrflKv2CBmW1Fru95Jm
+   2CJIg3caeRAH0+i2nBdEh4TiIMTqGAYu+f64EteZh+Kr3u4YEx3Nt8JB2
+   G1otNdyvNIyAhYpBENEP0A8L9WZIe5pHgVQMuzepJV5ynZvRKJTW7ICzq
+   yQAHicmMaX1eAn8iYcVsRUHZw9noK/XNds0Chmrp/cfJcEd+0DNXIXVl0
+   ZUOFb1lVFC4X5xwHDzf8tXT0mNzsvhhtUTHBFfvg0kc6XR5+YqO09eQtn
+   FDelCX9lh/kPJM1HoJa3XYYA6oRXanGSQFRuHV5B7ZYgDdGTuz8bAC65K
+   A==;
+X-CSE-ConnectionGUID: jfu9aEj5RdWWa9mgYnkK7A==
+X-CSE-MsgGUID: IcVkeaJjQIqCmcqPY5WSbw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11290"; a="46542304"
 X-IronPort-AV: E=Sophos;i="6.12,247,1728975600"; 
-   d="scan'208";a="46542298"
+   d="scan'208";a="46542304"
 Received: from orviesa004.jf.intel.com ([10.64.159.144])
   by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Dec 2024 05:27:51 -0800
-X-CSE-ConnectionGUID: LJ1r+vjGREeJI1Y+baYsTw==
-X-CSE-MsgGUID: ZOSBcfj0Sl2AxCPCHOgzOw==
+X-CSE-ConnectionGUID: lNMKF+WTTMWguBPJfdfvOQ==
+X-CSE-MsgGUID: 16bJ+O24TX2/stLjqmoYog==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.12,247,1728975600"; 
-   d="scan'208";a="103177329"
+   d="scan'208";a="103177333"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa004.jf.intel.com with ESMTP; 19 Dec 2024 05:27:50 -0800
+  by orviesa004.jf.intel.com with ESMTP; 19 Dec 2024 05:27:51 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	jgg@nvidia.com,
@@ -55,9 +55,9 @@ Cc: eric.auger@redhat.com,
 	iommu@lists.linux.dev,
 	vasant.hegde@amd.com,
 	will@kernel.org
-Subject: [PATCH v6 09/14] iommu/vt-d: Add IOMMU_HWPT_ALLOC_PASID support
-Date: Thu, 19 Dec 2024 05:27:41 -0800
-Message-Id: <20241219132746.16193-10-yi.l.liu@intel.com>
+Subject: [PATCH v6 10/14] iommufd: Allow allocating PASID-compatible domain
+Date: Thu, 19 Dec 2024 05:27:42 -0800
+Message-Id: <20241219132746.16193-11-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20241219132746.16193-1-yi.l.liu@intel.com>
 References: <20241219132746.16193-1-yi.l.liu@intel.com>
@@ -69,43 +69,65 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Intel iommu driver just treats it as a nop since Intel VT-d does not have
-special requirement on domains attached to either the PASID or RID of a
-PASID-capable device.
+The underlying framework has supported the PASID attach and related
+enforcement per the requirement of the IOMMU_HWPT_ALLOC_PASID flag.
+This extends iommufd to support PASID compatible domain requested by
+userspace or the PASID compatible domain allocated in the auto_domain
+path.
 
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/iommu.c  | 3 ++-
- drivers/iommu/intel/nested.c | 2 +-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/iommu/iommufd/device.c       | 4 +++-
+ drivers/iommu/iommufd/hw_pagetable.c | 7 ++++---
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cd5e339fd5bb..0a622a89d876 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3347,7 +3347,8 @@ intel_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
- 	bool first_stage;
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index c1ff3dbe109c..768eae6c3275 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -662,7 +662,9 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev, ioasid_t pasid,
+ 		goto out_unlock;
+ 	}
  
- 	if (flags &
--	    (~(IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
-+	    (~(IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
-+	       IOMMU_HWPT_ALLOC_PASID)))
- 		return ERR_PTR(-EOPNOTSUPP);
- 	if (nested_parent && !nested_supported(iommu))
- 		return ERR_PTR(-EOPNOTSUPP);
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index aba92c00b427..6ac5c534bef4 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -198,7 +198,7 @@ intel_iommu_domain_alloc_nested(struct device *dev, struct iommu_domain *parent,
- 	struct dmar_domain *domain;
- 	int ret;
+-	hwpt_paging = iommufd_hwpt_paging_alloc(idev->ictx, ioas, idev, 0,
++	hwpt_paging = iommufd_hwpt_paging_alloc(idev->ictx, ioas, idev,
++						pasid != IOMMU_NO_PASID ?
++						IOMMU_HWPT_ALLOC_PASID : 0,
+ 						immediate_attach, NULL);
+ 	if (IS_ERR(hwpt_paging)) {
+ 		destroy_hwpt = ERR_CAST(hwpt_paging);
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index 6fc848d3ef47..7787d0931761 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -111,7 +111,8 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ {
+ 	const u32 valid_flags = IOMMU_HWPT_ALLOC_NEST_PARENT |
+ 				IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
+-				IOMMU_HWPT_FAULT_ID_VALID;
++				IOMMU_HWPT_FAULT_ID_VALID |
++				IOMMU_HWPT_ALLOC_PASID;
+ 	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
+ 	struct iommufd_hwpt_paging *hwpt_paging;
+ 	struct iommufd_hw_pagetable *hwpt;
+@@ -228,7 +229,7 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+ 	struct iommufd_hw_pagetable *hwpt;
+ 	int rc;
  
--	if (!nested_supported(iommu) || flags)
-+	if (!nested_supported(iommu) || flags & ~IOMMU_HWPT_ALLOC_PASID)
+-	if ((flags & ~IOMMU_HWPT_FAULT_ID_VALID) ||
++	if ((flags & ~(IOMMU_HWPT_FAULT_ID_VALID | IOMMU_HWPT_ALLOC_PASID)) ||
+ 	    !user_data->len || !ops->domain_alloc_nested)
  		return ERR_PTR(-EOPNOTSUPP);
+ 	if (parent->auto_domain || !parent->nest_parent ||
+@@ -283,7 +284,7 @@ iommufd_viommu_alloc_hwpt_nested(struct iommufd_viommu *viommu, u32 flags,
+ 	struct iommufd_hw_pagetable *hwpt;
+ 	int rc;
  
- 	/* Must be nested domain */
+-	if (flags & ~IOMMU_HWPT_FAULT_ID_VALID)
++	if (flags & ~(IOMMU_HWPT_FAULT_ID_VALID | IOMMU_HWPT_ALLOC_PASID))
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 	if (!user_data->len)
+ 		return ERR_PTR(-EOPNOTSUPP);
 -- 
 2.34.1
 
