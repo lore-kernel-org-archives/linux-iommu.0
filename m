@@ -1,62 +1,61 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39B592594
-	for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 11:23:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5324223C7A
+	for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 11:28:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734607390; cv=none; b=kFTeviL+wQRo3A7dYrb5VLAJErjovuxEK24Jw915XRr9mWQjII68s+K0mJ+7VBW4qZ5l8RzRLoFYL+74ywYQg6wobpV+zswKf5b4Voi49wlma6ScacZeEz8xA5DkDbZnhOR75wOva04qr3u2h3F0tvHCduHYF+fWwu57OIZQUCA=
+	t=1734607736; cv=none; b=S1/zwEkS517eNEWIgab1hBFLVMKLvQfV6YhsXcIpY9D2OTb4mySGQpFH5Gqs04xnxis3Wpe3RepwWpWdlf12gFWOzOirrYqOQIQ2N91epxm3qiZqrOOUpej+mhmxc3g0hsqI24SwjczUCFisbXv276Wy0DiE1sZNt1CTgX/TfVw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734607390; c=relaxed/simple;
-	bh=4zgfT7Xg+JQmuyr3IdhaXo3BVOo4fRBTlxoKmbMDBiE=;
+	s=arc-20240116; t=1734607736; c=relaxed/simple;
+	bh=wYKv/Dx2yzx4NRTRmlHoRaJNN2B+pKE2rkXs/FSqNo4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eVHcyW3mctNfKd0zklslfvCVCozgnK00Aag+QGz/EPZrWQezLjGkBSObSHPojP4RS07aMZUU4aOoRlobuLhjAj4YJvx25q8BBe3eUfWENsfWIN9FAULv+434dA742kju5HDh4LPLqH7/kEU03+NYEIJoETi29SrRMiVNy5Vupiw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=lW9dw0gJ; arc=none smtp.client-ip=209.85.218.47
+	 Content-Type:Content-Disposition:In-Reply-To; b=YDZfFRHImeGTs5BL4So5fFbrxZews/M70uh23LEWd+9ofLVROV0lFRY2fB3AYOw5Asn5fV1O49/EsC1yJvHtxBURCzo5+hcFYOO35KAS+Iz80TSW0MQttcgpQPH5I/Ro23awkt2uqJvK8zu7JVCBngMbQMRTFzRGNx3yOBuKBY4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=op5R8iBf; arc=none smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="lW9dw0gJ"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-aabfb33aff8so127751166b.0
-        for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 03:23:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="op5R8iBf"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-aa692211331so127710366b.1
+        for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 03:28:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1734607387; x=1735212187; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1734607731; x=1735212531; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MNoCLTk5PLrDllVxHnAKqOI/0xe6p3W8/JGr5L06//I=;
-        b=lW9dw0gJ+ZtMhbq43uayXZBHkNauVkujzzy/dMpLd4MdZdCIvXgHZwi2jbkO070PjB
-         xPwatqR7tsntpfR12vR57Xvmf7cag+CCN1m61/j45+Na/lRbwHbvPvJs6mnD+qGX4aU3
-         XtN2bwvCEK6zKM01AU61VDXZrgmkP9LhoNqa+olTfguPXUbdynuHrEXMkC3c7iHeajKG
-         5B48zmAZ76KMh4nIX9VHY/mlcHP3SPCdsAi69JGf+ln1dKTXjp+4JHKcs7D8Or1qPYFE
-         3RY888/kD8xQ5OnH+LSRR41BWUYMc+h1QMNKzHuIUUtLMgZGGQ+Idf33wduf0yd94ImO
-         IJcQ==
+        bh=+efOnqODR5XSbllpBxRT6OF6WIdT5YO+sNBFdgpMN8Y=;
+        b=op5R8iBfS7BCVAexGHKqtgC+D3noXl8r3fDfDZ91Zi9VtVi/l0VaNZc0+q22sPhCry
+         zWpAf5nVQKqaDH3QrGzuDiTYWQFPeSA3MKTJigM/SymqBKQ1tWubmmF8WXcb2Y0Xa471
+         drT6ZUulcakFrubTmheK6QdAHy69eZDdojEV92tary84RARLUAs16O7CdFTaUkXfp0rb
+         ao2nw+7M7wT3NhPz9b2OWa5p8LleXbXrOKEUnXy70zLG+GqBn5heCxOy0suVTyq5qQc5
+         pA9t8tmxOZV1DtQvLIP+mJAWscsFUuDLd4BKzG8VJKSlCJkUOJYKY0cu6RQsbIsm4Q5N
+         w9XQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734607387; x=1735212187;
+        d=1e100.net; s=20230601; t=1734607731; x=1735212531;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MNoCLTk5PLrDllVxHnAKqOI/0xe6p3W8/JGr5L06//I=;
-        b=dCn7zMZAgDRx2SoCHbIkTslb8SIPUTNEvvUaJwlUUZtd6QOyTGphBeV6g55ZARVH1r
-         CZpBPmvXEBKq4v8mZDKmoGwLx51Irp3x0DJVH5itLfufRTsxjBk6jGneQY3a3jv+Vk5S
-         5ri1qs351XArJSrmxX1ZMDDGjF1CVWix2MOZfLl7MClrPO5vCyo1NlCgAvoIV90ixGgu
-         yhtb87mCCgIKDFsB2qL8+qynnP0eEbI8vGD/n4ERY4h2xGv88oPZ2H7G8QXfFkGeCgY/
-         uAeMqnarNpNkgVoG7WCjYsseDz58L2YP7DfOl0ECNGLSJP9h/EDCfvXrpK+ksFGzFGeL
-         mq+w==
-X-Gm-Message-State: AOJu0Yw8II5jYRorSxVPAAx0vs45bFYgzs9LnumCARTTowUOVGSRlTTq
-	Hjxt/AhRIqbiHw0WEU+S5Y1OK/Xce5eB3SpLu7VwmNBYURMDbdrgf+c05NxYKYqIymj3LA+LhYJ
-	fHw==
-X-Gm-Gg: ASbGncvy4eh8Oqp2BxT7CmrED8Ie1JRzDqYYn/2O7fSqJ8dFaxhRBqy1FfsV/GZ897e
-	7OD7Q80e5IptnhQbr+SOQbYT0lO4hp/rWWUu5geZzgym/G7lN9Bmjm1O2lTuxdSLO+lUU53JjRd
-	TSULe6n8uFepQk4mWlObmTniXPC8Ih2W7l66Z8qr2405NuZq7OClb2JE3T4sQ7wlVmQh0mVWm4K
-	5NtVAe4Q3ZaP3aGw2xOOaZcpnAfPOQZiTe0Ymdh96E8X9Acl+bM4TeYlMBcnRUPceyuklobHp8x
-	mOuoKNpNpdlIP80=
-X-Google-Smtp-Source: AGHT+IGBbkrBT1+E3hcflKVgebxmfU7Se8YKjT9HtDdCtUo3a97FGuUSH0zyshOzjTlEgkesB5a4qg==
-X-Received: by 2002:a17:907:9615:b0:a9a:6c41:50a8 with SMTP id a640c23a62f3a-aac08155183mr234984166b.17.1734607387303;
-        Thu, 19 Dec 2024 03:23:07 -0800 (PST)
+        bh=+efOnqODR5XSbllpBxRT6OF6WIdT5YO+sNBFdgpMN8Y=;
+        b=sy5JLZj5uVWlGB0Q0+T0lYPAyZXcKkV/8KyIhxoYqLrqK2ajBExMVoL5MZp2pcey5u
+         nubZksf12FNwqPxHT7pfRNKRgcS/o/vqVxQ01/SmHmh/0beeoHMYPTPiDnReuQLIorI2
+         8vPsQP8DzssCqRSpvHdmr6hboAAHe9Snq7elVVPH9IlBpsWNFSKJ73YnN+g3XS7erajr
+         Q895pTc7kydKgVDTu6lnWQCG4i9BSmhQQUclyEDLT/FqzGc2ClX78EiK1COwg6J/fO6H
+         5oU2AE9Hdfdtk563dep0n+J63FFYMtfuQpYOnGWLeET39cl+Wcwa8dL2+tw8x5ZJ097Q
+         ciFg==
+X-Gm-Message-State: AOJu0Yyc/cQWClgm8fK0At9i4EnnPWlSn9gOgcesnAVU0EkSjIT8L6g3
+	XpjBkPHeXrImBFEw1GCeMSismzuxD+wFib5Ak5Eyb58G6EYKyYmxSdLMnSBqdw==
+X-Gm-Gg: ASbGnctbbqb8RWgY6i+3krHwl5cVZ2BI9HC/B6G8tAOTxi0DfSrTLWWutm0Echi7ztx
+	oMnt1ciSTdkNKC+c0nb7q2NbFnkNEg9B+z7izxPgKSlZxVGOZ2cy/17BvxedFT88/NkMN+ljjke
+	vtDHNm0Ms6Jg3EmUGDlJQtuaIFgu4Zr9zGsRludfkTRPN7Yb0s4JyM4JAZi4vz260teid+dP15+
+	7QYAR9tecBxMAsjz+jJaGW6JweVHN42ndx+gu3PXua/+5ELGdU86wAC/wzOEs18OVKtrIv5VMoQ
+	U3v+eLl+ERGtBGI=
+X-Google-Smtp-Source: AGHT+IG3dsXDyN2H9c+ztZK9RDs7OlGyiKmp55kArM+zF0vJy/3UJNS0k2iPLxglWUvLs+MgvKzUiA==
+X-Received: by 2002:a17:906:308c:b0:aa6:abe7:ff49 with SMTP id a640c23a62f3a-aac08187acdmr234318566b.16.1734607731259;
+        Thu, 19 Dec 2024 03:28:51 -0800 (PST)
 Received: from google.com (61.134.90.34.bc.googleusercontent.com. [34.90.134.61])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aac0e82f31bsm54976666b.1.2024.12.19.03.23.06
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aac0e82f58asm55970766b.39.2024.12.19.03.28.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Dec 2024 03:23:06 -0800 (PST)
-Date: Thu, 19 Dec 2024 11:23:04 +0000
+        Thu, 19 Dec 2024 03:28:50 -0800 (PST)
+Date: Thu, 19 Dec 2024 11:28:48 +0000
 From: Quentin Perret <qperret@google.com>
 To: Mostafa Saleh <smostafa@google.com>
 Cc: iommu@lists.linux.dev, kvmarm@lists.linux.dev,
@@ -67,10 +66,12 @@ Cc: iommu@lists.linux.dev, kvmarm@lists.linux.dev,
 	robin.murphy@arm.com, jean-philippe@linaro.org, jgg@ziepe.ca,
 	nicolinc@nvidia.com, vdonnefort@google.com, tabba@google.com,
 	danielmentz@google.com, tzukui@google.com
-Subject: Re: [RFC PATCH v2 12/58] KVM: arm64: Add __pkvm_{use, unuse}_dma()
-Message-ID: <Z2QCGFN5V41Vux6Z@google.com>
+Subject: Re: [RFC PATCH v2 11/58] KVM: arm64: pkvm: Add pkvm_udelay()
+Message-ID: <Z2QDcODuqcJojTpG@google.com>
 References: <20241212180423.1578358-1-smostafa@google.com>
- <20241212180423.1578358-13-smostafa@google.com>
+ <20241212180423.1578358-12-smostafa@google.com>
+ <Z2QADxbdoYi5q9iT@google.com>
+ <Z2QBxPyBsxGNSuzT@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,40 +80,32 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241212180423.1578358-13-smostafa@google.com>
+In-Reply-To: <Z2QBxPyBsxGNSuzT@google.com>
 
-On Thursday 12 Dec 2024 at 18:03:36 (+0000), Mostafa Saleh wrote:
-> +int __pkvm_host_unuse_dma(phys_addr_t phys_addr, size_t size)
-> +{
-> +	int i;
-> +	size_t nr_pages = size >> PAGE_SHIFT;
-> +
-> +	if (WARN_ON(!PAGE_ALIGNED(phys_addr | size)))
-> +		return -EINVAL;
-> +
-> +	host_lock_component();
-> +	if (!range_is_memory(phys_addr, phys_addr + size))
-> +		goto out_ret;
-
-Nit: I think you can do this out of the critical section -- the memblock
-list is guaranteed stable by construction.
-
-> +	/*
-> +	 * We end up here after the caller successfully unmapped the page from
-> +	 * the IOMMU table. Which means that a ref is held, the page is shared
-> +	 * in the host s2, there can be no failure.
-> +	 */
-> +	for (i = 0; i < nr_pages; i++)
-> +		__pkvm_host_unuse_dma_page(phys_addr + i * PAGE_SIZE);
-> +
-> +out_ret:
-> +	host_unlock_component();
-> +	return 0;
-> +}
-> +
->  int __pkvm_host_share_guest(u64 pfn, u64 gfn, struct pkvm_hyp_vcpu *vcpu,
->  			    enum kvm_pgtable_prot prot)
->  {
-> -- 
-> 2.47.0.338.g60cca15819-goog
+On Thursday 19 Dec 2024 at 11:21:40 (+0000), Mostafa Saleh wrote:
+> On Thu, Dec 19, 2024 at 11:14:23AM +0000, Quentin Perret wrote:
+> > On Thursday 12 Dec 2024 at 18:03:35 (+0000), Mostafa Saleh wrote:
+> > > From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > > 
+> > > Add a simple delay loop for drivers.
+> > > 
+> > > This could use more work. It should be possible to insert a wfe and save
+> > > power, but I haven't studied whether it is safe to do so with the host
+> > > in control of the event stream. The SMMU driver will use wfe anyway for
+> > > frequent waits (provided the implementation can send command queue
+> > > events).
+> > 
+> > Mooh, I'm thoroughly hating that we need this -- pKVM is non preemptible
+> > so we better not wait for too long.
+> > 
+> > I can surely figure it out from the following patches, but could you
+> > please expand on the use-case?
 > 
+> The driver needs to poll some SMMU MMIO, so it needs to measure time
+> in terms of udelay to timeout, at the moment its arbitrary set to 100ms.
+
+OK, I'll look at the patches to see how hard it'd be to return to the
+host for scheduling while this is happening. It's probably hard because
+we're presumably in a funky state, but it's worth trying to figure it
+out. Any EL2 section longer than 100us or so is problematic in my view,
+so a 100*ms* timeout is scary!
