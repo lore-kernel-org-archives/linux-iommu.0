@@ -1,77 +1,44 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5324223C7A
-	for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 11:28:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEFF5223C6B;
+	Thu, 19 Dec 2024 11:30:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734607736; cv=none; b=S1/zwEkS517eNEWIgab1hBFLVMKLvQfV6YhsXcIpY9D2OTb4mySGQpFH5Gqs04xnxis3Wpe3RepwWpWdlf12gFWOzOirrYqOQIQ2N91epxm3qiZqrOOUpej+mhmxc3g0hsqI24SwjczUCFisbXv276Wy0DiE1sZNt1CTgX/TfVw=
+	t=1734607827; cv=none; b=aV3hJDIW0X4vBMRPK0tN4qO3qt9WbCjAykaRwfho1c/A2Lddw6YBzriHPpTNdxU17wpjoHDf2AZqx+QHFZLDPzAJz/3hM7PzN6keuJq6OXuov9Y1UWeKbooxpjgjcMTfNJTlIGlaDe0LCLw5vuQtNjD9w9CBkrnZe10UerXNfRc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734607736; c=relaxed/simple;
-	bh=wYKv/Dx2yzx4NRTRmlHoRaJNN2B+pKE2rkXs/FSqNo4=;
+	s=arc-20240116; t=1734607827; c=relaxed/simple;
+	bh=WZy77EM6Jp2nJGwMoUPBoqtGUEr8RfDUcV/Dtjbg0I8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YDZfFRHImeGTs5BL4So5fFbrxZews/M70uh23LEWd+9ofLVROV0lFRY2fB3AYOw5Asn5fV1O49/EsC1yJvHtxBURCzo5+hcFYOO35KAS+Iz80TSW0MQttcgpQPH5I/Ro23awkt2uqJvK8zu7JVCBngMbQMRTFzRGNx3yOBuKBY4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=op5R8iBf; arc=none smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=qjOT+izdsAUaUFSGBaoJqorJJgcOHCRKMOXARq9tbqC64HQZhH9WDUgmqNJoqywws5fuDtEjrqjh1maThGtJvqX6KB2ya/9CJ1gPHzocCGm0L4u1cftAVaSPb4HiyedWTCrSyzAIpaH4yJ238+MsqyFYqu3ppEXJdKz3xjs/XQA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GenVSOh3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="op5R8iBf"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-aa692211331so127710366b.1
-        for <iommu@lists.linux.dev>; Thu, 19 Dec 2024 03:28:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1734607731; x=1735212531; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+efOnqODR5XSbllpBxRT6OF6WIdT5YO+sNBFdgpMN8Y=;
-        b=op5R8iBfS7BCVAexGHKqtgC+D3noXl8r3fDfDZ91Zi9VtVi/l0VaNZc0+q22sPhCry
-         zWpAf5nVQKqaDH3QrGzuDiTYWQFPeSA3MKTJigM/SymqBKQ1tWubmmF8WXcb2Y0Xa471
-         drT6ZUulcakFrubTmheK6QdAHy69eZDdojEV92tary84RARLUAs16O7CdFTaUkXfp0rb
-         ao2nw+7M7wT3NhPz9b2OWa5p8LleXbXrOKEUnXy70zLG+GqBn5heCxOy0suVTyq5qQc5
-         pA9t8tmxOZV1DtQvLIP+mJAWscsFUuDLd4BKzG8VJKSlCJkUOJYKY0cu6RQsbIsm4Q5N
-         w9XQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734607731; x=1735212531;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+efOnqODR5XSbllpBxRT6OF6WIdT5YO+sNBFdgpMN8Y=;
-        b=sy5JLZj5uVWlGB0Q0+T0lYPAyZXcKkV/8KyIhxoYqLrqK2ajBExMVoL5MZp2pcey5u
-         nubZksf12FNwqPxHT7pfRNKRgcS/o/vqVxQ01/SmHmh/0beeoHMYPTPiDnReuQLIorI2
-         8vPsQP8DzssCqRSpvHdmr6hboAAHe9Snq7elVVPH9IlBpsWNFSKJ73YnN+g3XS7erajr
-         Q895pTc7kydKgVDTu6lnWQCG4i9BSmhQQUclyEDLT/FqzGc2ClX78EiK1COwg6J/fO6H
-         5oU2AE9Hdfdtk563dep0n+J63FFYMtfuQpYOnGWLeET39cl+Wcwa8dL2+tw8x5ZJ097Q
-         ciFg==
-X-Gm-Message-State: AOJu0Yyc/cQWClgm8fK0At9i4EnnPWlSn9gOgcesnAVU0EkSjIT8L6g3
-	XpjBkPHeXrImBFEw1GCeMSismzuxD+wFib5Ak5Eyb58G6EYKyYmxSdLMnSBqdw==
-X-Gm-Gg: ASbGnctbbqb8RWgY6i+3krHwl5cVZ2BI9HC/B6G8tAOTxi0DfSrTLWWutm0Echi7ztx
-	oMnt1ciSTdkNKC+c0nb7q2NbFnkNEg9B+z7izxPgKSlZxVGOZ2cy/17BvxedFT88/NkMN+ljjke
-	vtDHNm0Ms6Jg3EmUGDlJQtuaIFgu4Zr9zGsRludfkTRPN7Yb0s4JyM4JAZi4vz260teid+dP15+
-	7QYAR9tecBxMAsjz+jJaGW6JweVHN42ndx+gu3PXua/+5ELGdU86wAC/wzOEs18OVKtrIv5VMoQ
-	U3v+eLl+ERGtBGI=
-X-Google-Smtp-Source: AGHT+IG3dsXDyN2H9c+ztZK9RDs7OlGyiKmp55kArM+zF0vJy/3UJNS0k2iPLxglWUvLs+MgvKzUiA==
-X-Received: by 2002:a17:906:308c:b0:aa6:abe7:ff49 with SMTP id a640c23a62f3a-aac08187acdmr234318566b.16.1734607731259;
-        Thu, 19 Dec 2024 03:28:51 -0800 (PST)
-Received: from google.com (61.134.90.34.bc.googleusercontent.com. [34.90.134.61])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aac0e82f58asm55970766b.39.2024.12.19.03.28.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Dec 2024 03:28:50 -0800 (PST)
-Date: Thu, 19 Dec 2024 11:28:48 +0000
-From: Quentin Perret <qperret@google.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, kvmarm@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, robdclark@gmail.com, joro@8bytes.org,
-	robin.murphy@arm.com, jean-philippe@linaro.org, jgg@ziepe.ca,
-	nicolinc@nvidia.com, vdonnefort@google.com, tabba@google.com,
-	danielmentz@google.com, tzukui@google.com
-Subject: Re: [RFC PATCH v2 11/58] KVM: arm64: pkvm: Add pkvm_udelay()
-Message-ID: <Z2QDcODuqcJojTpG@google.com>
-References: <20241212180423.1578358-1-smostafa@google.com>
- <20241212180423.1578358-12-smostafa@google.com>
- <Z2QADxbdoYi5q9iT@google.com>
- <Z2QBxPyBsxGNSuzT@google.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GenVSOh3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77DE0C4CECE;
+	Thu, 19 Dec 2024 11:30:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1734607825;
+	bh=WZy77EM6Jp2nJGwMoUPBoqtGUEr8RfDUcV/Dtjbg0I8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GenVSOh3XU2e5AJnorSRRSioUtijToJOsGApMyITwDhvgZ4Y4EzR31hUh2NONg9Rw
+	 Eqz3EUsbX6qb+azS7mGCxt5h1iaVKWzB+95c1Mwk6ZgmBP8x0ayOqIL6MFbbMkhDcL
+	 lbamqngDPhxrUjnsUoeZjwAVjeQOPIqkXxQhZ/LC1f4G00ve8AMeF3q4LoUt+p/SS2
+	 OERqcx8zxSWh/ez35wO+SJFPDIYgtmRX7PW84+/udhueRPSrPysLaaZBM7Jz6MYQOE
+	 r9y0oHXrycr7RVDQBN0uA1xAlVt6645p0qVtsY3KE2DsL0Uk6jO4KC6UHu3//Us+wE
+	 ICW5uOqkwoalw==
+Date: Thu, 19 Dec 2024 11:30:20 +0000
+From: Will Deacon <will@kernel.org>
+To: Rob Clark <robdclark@gmail.com>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org,
+	Akhil P Oommen <quic_akhilpo@quicinc.com>,
+	Rob Clark <robdclark@chromium.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+	open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Only enable stall on smmu-v2
+Message-ID: <20241219113019.GA23640@willie-the-truck>
+References: <20241216171017.4881-1-robdclark@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,32 +47,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Z2QBxPyBsxGNSuzT@google.com>
+In-Reply-To: <20241216171017.4881-1-robdclark@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Thursday 19 Dec 2024 at 11:21:40 (+0000), Mostafa Saleh wrote:
-> On Thu, Dec 19, 2024 at 11:14:23AM +0000, Quentin Perret wrote:
-> > On Thursday 12 Dec 2024 at 18:03:35 (+0000), Mostafa Saleh wrote:
-> > > From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > > 
-> > > Add a simple delay loop for drivers.
-> > > 
-> > > This could use more work. It should be possible to insert a wfe and save
-> > > power, but I haven't studied whether it is safe to do so with the host
-> > > in control of the event stream. The SMMU driver will use wfe anyway for
-> > > frequent waits (provided the implementation can send command queue
-> > > events).
-> > 
-> > Mooh, I'm thoroughly hating that we need this -- pKVM is non preemptible
-> > so we better not wait for too long.
-> > 
-> > I can surely figure it out from the following patches, but could you
-> > please expand on the use-case?
+On Mon, Dec 16, 2024 at 09:10:17AM -0800, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
 > 
-> The driver needs to poll some SMMU MMIO, so it needs to measure time
-> in terms of udelay to timeout, at the moment its arbitrary set to 100ms.
+> On mmu-500, stall-on-fault seems to stall all context banks, causing the
+> GMU to misbehave.  So limit this feature to smmu-v2 for now.
 
-OK, I'll look at the patches to see how hard it'd be to return to the
-host for scheduling while this is happening. It's probably hard because
-we're presumably in a funky state, but it's worth trying to figure it
-out. Any EL2 section longer than 100us or so is problematic in my view,
-so a 100*ms* timeout is scary!
+MMU-500 has public documentation so please can you dig up what the
+actual behaviour is rather than guess?
+
+> This fixes an issue with an older mesa bug taking outo the system
+> because of GMU going off into the year.
+
+Sorry, but I don't understand this sentence.
+
+Will
