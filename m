@@ -1,64 +1,173 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C39B1BD9DE
-	for <iommu@lists.linux.dev>; Fri, 20 Dec 2024 10:51:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7DB61AC444
+	for <iommu@lists.linux.dev>; Fri, 20 Dec 2024 11:26:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734691916; cv=none; b=Boxd+cilnqx8x+gKpapmJdI1+SKVyBqXR3mF4leVitxOrKYT0QGKQrME0O9vIIP8LMytbTnV9K/cMd/XE0L158AX1h8NXjwH+l9n9E9+CCRPQkat1BMSVu+EtedrTmcHrkTh9S1/hAE2XKb7h6DdHXaP1CwsV14SP59wb7VgYMc=
+	t=1734693988; cv=none; b=r2StMcqHYdTZ6QdQFsIg0xtwzgRTpx6Gr2vSeoy0IsWaQByNG8gn1RiOR9IfYqvoe2/iPdVILyfAwc5DWySAAUAfSmAxwZpgRaHFE38nZISVo1T1Wpnmz8P5c6U/5j0bm5EkDBPhuPsURoiSO3RzCqNi6pmRSENMMg0UFENDCb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734691916; c=relaxed/simple;
-	bh=L3JTp4Zchb3YCGv/vAr9PA/1W4TWzDvDI93nASElA8Q=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=XOZI933eC233k+IT85Ts2/x3hMizjpgPRETrBrffIbbpaSLiz86izq/SFLdEBzz54k5T92ZY1vsitm31LZBWxOHgvXjPpdO0o6PenHKLxcyarGbJCSgcN0+lHbzSvdnr+bPgd8qCRRM0xjgGU7UBPkze5Mgk/yLC3yWQbe1G6yE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=FXwh9XBC reason="signature verification failed"; arc=none smtp.client-ip=220.197.31.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1734693988; c=relaxed/simple;
+	bh=0WzX3MQkYGmE1/tKbh9NNev17T02tgmw6EH2Zim0PVE=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=SU4aU1ujKsP7LS9DIXeqge/RermE8Ndjj+Fj5qn8HP9MUsxzaKGYj3OaYuMijQwuCyMf0dmjEU1JfcMfYXM2F+Q7k4w1Y6IAtYJw1tQou6gLogDF0ROKNI8jNQWHiXBK+aRB0ODodgRsmxBWRrXYuO9ZYBzx8PoqqD+zQCpckoo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=KIDjXJZ7; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="FXwh9XBC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=pRDaXkTGjX7R3KLIOZ+hFg8hT1FPiVLyVpMN6D7XCbA=; b=F
-	Xwh9XBChvVKvR3dLL7C8uBH0fqJhI5MtshgW9B3PmthsG6Wb4KNWuTetOAhCuZf/
-	UBqP+y7mPl4u9dqIxUbs8j6z3wAxclx9hea0cN3l8ezTLWADEpdNVBPFHiLGycwk
-	TsjpkTYP5A2xGH7VsucEGo4i+OKW/ZkrKphltYyQI4=
-Received: from andyshrk$163.com ( [58.22.7.114] ) by
- ajax-webmail-wmsvr-40-138 (Coremail) ; Fri, 20 Dec 2024 18:51:11 +0800
- (CST)
-Date: Fri, 20 Dec 2024 18:51:11 +0800 (CST)
-From: "Andy Yan" <andyshrk@163.com>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: devicetree@vger.kernel.org, conor+dt@kernel.org, 
-	linux-arm-kernel@lists.infradead.org, krzk+dt@kernel.org, 
-	joro@8bytes.org, heiko@sntech.de, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org, 
-	"Andy Yan" <andy.yan@rock-chips.com>
-Subject: Re:Re: [PATCH] dt-bindings: iommu: rockchip: Add Rockchip RK3576
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
- Copyright (c) 2002-2024 www.mailtech.cn 163com
-In-Reply-To: <172721001667.289647.10163147936752673484.robh@kernel.org>
-References: <20240920094947.7566-1-andyshrk@163.com>
- <172721001667.289647.10163147936752673484.robh@kernel.org>
-X-NTES-SC: AL_Qu2YBvqSvkAs5yORY+lS0zJw2L5KLrXQ55RVgP4ISMMety/k0AwKZFNTPmLdzeRN0FVvuJIZPp+skrPvdt2I
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="KIDjXJZ7"
+Received: from [192.168.30.162] (254C1A66.nat.pool.telekom.hu [37.76.26.102])
+	by mail.mainlining.org (Postfix) with ESMTPSA id 029FCE450C;
+	Fri, 20 Dec 2024 11:26:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1734693978;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=/r5C8XysB4BMKE04Wyv9EWVB5LkFZ4rFY+Jd94igHFA=;
+	b=KIDjXJZ7qYGF3oH78mvcs1+7O5rTUrBRrQzbUdBgQo6nx63+Aay0ZF+xrJIme6IyGltptg
+	4aIDirzE1gJsGdZEsClwXrRANkSks5qsQCkgM/93uce+7/Bq2cjUWCLXla5TC6fwzNszj6
+	4C4I6htWOABBv07DkUK6NzBFcUHSd/c0NRF51J5Tzrv7pKyCntbIpTSDgJPGU3/m7ylHh2
+	6bf2JDWr9KynezYuYabx1ohKLQ9GRtzhkaz4QmDxENJOabWGiw9buOcfYx2ZeLuLrbkrc3
+	2WqAkqh+o07onIKaZkYqTMm7lTX/tRVJcbOjz2VCP0TB+eeBiLTAqRI7go4d2A==
+From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+Subject: [PATCH v10 0/5] Add MSM8917/PM8937/Redmi 5A
+Date: Fri, 20 Dec 2024 12:26:13 +0100
+Message-Id: <20241220-msm8917-v10-0-35c27f704d34@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <662c9716.a714.193e3b15aac.Coremail.andyshrk@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:iigvCgD3f88fTGVn9wlFAA--.16687W
-X-CM-SenderInfo: 5dqg52xkunqiywtou0bp/1tbiqQW7XmdlQ8qU3gABsJ
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAFVUZWcC/23QzW7DIAwH8FepOC8TNhDwTnuPaQeHjxZpTapki
+ jZVffeRXkAaR1v8/ti+iy2uOW7i7XQXa9zzlpe5FCBfTsJfeD7HIYfSEChRgwQartvVEdgBrFd
+ BpqTZoCivb2tM+ecZ9fFZ6kvevpf195m8w9H9n7HDIIcESXmG4Fw071fO81ee83x+XdazOIJ2b
+ LCCirFgx9KaxOxogi5WFYO0FauCxxC8YR/IuqmLdYubsfXx8xSJpLaE3MemwYAVm4LLwkoHpYC
+ gj8cWq4rHgr3SLk2GKMXUxbbBqCu2x86AFskpPZqxi13FCM21XcFAlr2XGqXqY2qxqZgKntgz4
+ 5hU7Iz9eDz+AAVesqOMAgAA
+X-Change-ID: 20241019-msm8917-17c3d0ff4a52
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Linus Walleij <linus.walleij@linaro.org>, Amit Kucheria <amitk@kernel.org>, 
+ Thara Gopinath <thara.gopinath@gmail.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, 
+ Lukasz Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
+ linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
+ Dang Huynh <danct12@riseup.net>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1734693976; l=3592;
+ i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
+ bh=0WzX3MQkYGmE1/tKbh9NNev17T02tgmw6EH2Zim0PVE=;
+ b=HRn/BNUbX58DOIR3ALPGnWQWGQVEtKGEfuNBKVuYehrNUiu6DLuD0dBYB50LDPLB77L+saqBX
+ u9HH2eyYt90C2cDAugk0xryIuiMFXMwnZ1m+gYih7BDYixB5uozOIQa
+X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
+ pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-CnBpbmcKCkF0IDIwMjQtMDktMjUgMDQ6MzM6MzcsICJSb2IgSGVycmluZyAoQXJtKSIgPHJvYmhA
-a2VybmVsLm9yZz4gd3JvdGU6Cj4KPk9uIEZyaSwgMjAgU2VwIDIwMjQgMTc6NDk6NDAgKzA4MDAs
-IEFuZHkgWWFuIHdyb3RlOgo+PiBGcm9tOiBBbmR5IFlhbiA8YW5keS55YW5Acm9jay1jaGlwcy5j
-b20+Cj4+IAo+PiBKdXN0IGxpa2UgUkszNTg4LCBSSzM1NzYgaXMgY29tcGF0aWJsZSB0byB0aGUg
-ZXhpc3RpbmcgcmszNTY4Cj4+IGJpbmRpbmcuCj4+IAo+PiBTaWduZWQtb2ZmLWJ5OiBBbmR5IFlh
-biA8YW5keS55YW5Acm9jay1jaGlwcy5jb20+Cj4+IC0tLQo+PiAKPj4gIERvY3VtZW50YXRpb24v
-ZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9yb2NrY2hpcCxpb21tdS55YW1sIHwgMSArCj4+ICAx
-IGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykKPj4gCj4KPkFja2VkLWJ5OiBSb2IgSGVycmlu
-ZyAoQXJtKSA8cm9iaEBrZXJuZWwub3JnPgo+Cg==
+This patch series add support for MSM8917 soc with PM8937 and
+Xiaomi Redmi 5A (riva).
+
+Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+---
+Changes in v10:
+- msm8917: sdc1 cmd_on, cmd_off change bias-disable to bias-pull-up
+- Remove applied patches.
+- Link to v9: https://lore.kernel.org/r/20241215-msm8917-v9-0-bacaa26f3eef@mainlining.org
+
+Changes in v9:
+- msm8917:
+ - add some empty lines for separating pins more
+ - order compatible, reg, ranges properties
+- Link to v8: https://lore.kernel.org/r/20241211-msm8917-v8-0-197acc042036@mainlining.org
+
+Changes in v8:
+- pm8937, msm8917, msm8917-xiaomi-riva: remove unused includes
+- Link to v7: https://lore.kernel.org/r/20241124-msm8917-v7-0-612729834656@mainlining.org
+
+Changes in v7:
+- msm8917-xiaomi-riva:
+  - Add pinctrls for used GPIO pins.
+  - Use interrupts-extend for charger.
+  - Order properies.
+- Link to v6: https://lore.kernel.org/r/20241113-msm8917-v6-0-c348fb599fef@mainlining.org
+
+Changes in v6:
+- msm8917:
+  - Consolidate SDC pins, remove sdc2-cd-on/off pins.
+  - Remove cluster-sleep-0 and cluster-sleep-1
+  and rename cluster-sleep-2 to cluster-sleep-0.
+  - Fix spi, i2c and related pinctrl namings.
+- msm8917-xiaomi-riva: follow i2c name changes.
+- Link to v5: https://lore.kernel.org/r/20241112-msm8917-v5-0-3ca34d33191b@mainlining.org
+
+Changes in v5:
+- msm8917:
+  - Remove aliases.
+  - Rename spi, i2c labels and pins.
+  - Remove clock-frequency from timers
+  - Remove unused mpss_mem region.
+  - Use mboxes where it can be used, only smd-edge uses qcom,ipc.
+- msm8917-xiaomi-riva: Follow i2c label changes.
+- Link to v4: https://lore.kernel.org/r/20241109-msm8917-v4-0-8be9904792ab@mainlining.org
+
+Changes in v4:
+- msm8917 pinctrl: Fix gpio regexp in the schema.
+- msm8937 tsens: Rename ops_msm8976 to ops_common and use it for msm8937.
+- msm8917: fix address padding, naming and ordering, remove polling-delays.
+- Remove applied patches from the series.
+- Link to v3: https://lore.kernel.org/r/20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org
+
+Changes in v3:
+- msm8917-xiaomi-riva: Fix issues addressed by Konrad.
+- msm8917: Fix node addresses, orders of some properties.
+- pm8937: simplify vadc channels.
+- msm8917 pinctrl: Fix schema issues addressed by Krzysztof. 
+- Remove applied tcsr patch from this series.
+- Reword some commit title.
+- Link to v2: https://lore.kernel.org/r/20241031-msm8917-v2-0-8a075faa89b1@mainlining.org
+
+Changes in v2:
+- Add msm8937 tsens support.
+- Fix issues addressed by reviews.
+- Link to v1: https://lore.kernel.org/r/20241019-msm8917-v1-0-f1f3ca1d88e5@mainlining.org
+
+---
+Barnabás Czémán (3):
+      dt-bindings: nvmem: Add compatible for MS8917
+      dt-bindings: arm: qcom: Add Xiaomi Redmi 5A
+      arm64: dts: qcom: Add Xiaomi Redmi 5A
+
+Dang Huynh (1):
+      arm64: dts: qcom: Add PM8937 PMIC
+
+Otto Pflüger (1):
+      arm64: dts: qcom: Add initial support for MSM8917
+
+ Documentation/devicetree/bindings/arm/qcom.yaml    |    7 +
+ .../devicetree/bindings/nvmem/qcom,qfprom.yaml     |    1 +
+ arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+ arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts   |  333 ++++
+ arch/arm64/boot/dts/qcom/msm8917.dtsi              | 1954 ++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/pm8937.dtsi               |  150 ++
+ 6 files changed, 2446 insertions(+)
+---
+base-commit: 8503810115fbff903f626adc0788daa048302bc0
+change-id: 20241019-msm8917-17c3d0ff4a52
+
+Best regards,
+-- 
+Barnabás Czémán <barnabas.czeman@mainlining.org>
+
