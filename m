@@ -1,436 +1,155 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C7AF229158
-	for <iommu@lists.linux.dev>; Fri, 20 Dec 2024 23:41:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29A2638DE0;
+	Mon, 23 Dec 2024 02:30:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734738078; cv=none; b=L54T1kxzK9+lgcFG0AQhwd2XxbORY1tSnveV0QWDnFZiIuecDlLHhDghW+xO3DJYHQcRuMUcL/71BMxc20puMctNZdizJMWD35izWZt0iYaLQcJ9wANfzeBUF67rCZCAGEQ3bp6DaW1rn8boGYjvXiyAqLE2C1QMn2GsTJcDk98=
+	t=1734921022; cv=none; b=kc0pW4oHfRmvHC4w6ecQfQuX69CasN1YhNva7vjnmwlwQKPzeAd64gLUtaZc9swb5WvO7wbu/z+gdNdI+BsWMAOdaEcumhVGeW6iYy2R+nFQPm5DmvxM9Jur4H04gKvAAYAoDhijeRM6XLCZSApuUgYwq0lhHykAw22NoUYyIdM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734738078; c=relaxed/simple;
-	bh=yRrTth08180QfeHsiXKzN5bNhMrXGVQ/EVyPD3V4GyQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=N1rRJHfwbwbLo9awKxrVAC2FWeIVCf+zwTfAnVQbQchN8+Q5DYR9/CRL7nT/zlZvVCAkx8zpya4KNcwzW+YMQNmqwKYTs5jmqzkT/zEfG9jTlALqnKShkDC9dkW/DrLQcqiWfLcjxObVE9NExzxq4SQAqn2FvCvjpjBvykDOx8Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=XDcfCn/z; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	s=arc-20240116; t=1734921022; c=relaxed/simple;
+	bh=846d+cRFBoDrFep8BfHDhcE6RYZkZKHKE60fLL1H0x4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Z5qhZdszUKtdB5GS2anMD0XvKWb4PyOOzDzJMgM77wfNy1/C04HIrqlzi6mn/2qgpCpsnRiYG21WqEHBL3VXf+mY75UbO29UYQnTMUXAW2sd9Nya4sBVxRmji+kJ8lYhzdoX8fEFWf8DAzfTWhsIwHtgqlJbYH9UFMT7R35+tMA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Jylnz1wZ; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="XDcfCn/z"
-Received: from [192.168.30.162] (254C14D2.nat.pool.telekom.hu [37.76.20.210])
-	by mail.mainlining.org (Postfix) with ESMTPSA id 10B38E483B;
-	Fri, 20 Dec 2024 23:41:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1734738074;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=hQcWQj/wwnb5q+l0OdYD5VX4MPg+1aI9rfTFTUBDwbY=;
-	b=XDcfCn/zhRf9cww5tgo6wOD8MoZu594eUeFUEiOrf5t6D7nGm3cRULMHScXt3ip30kOiKh
-	CkipudUxj0uvL0xz/zw1UAF0mkRVkkbY7/XfM2q03aRJR6WOaeES5dqKPNdzN0fFeCbZiw
-	a9u0jVPwp6s640DQEAMa/FX4VVTnKdrPYD+chaG/Ini4241swWADkhKSeSLpHo6+co+1Hi
-	vUvqzLecD6R3WTU4hJ02lYnm8jkPOTSQbdlo3mtIIzNZkJeYATRHMdLDzw+FikHsKHfGEr
-	ds+vOSczDOadhFZ/mpFI69g54ImEdutgGTVWmg5Kpxl4Xzn9b2Ax3gzlXQEv0Q==
-From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Sat, 21 Dec 2024 00:40:51 +0100
-Subject: [PATCH v11 4/4] arm64: dts: qcom: Add Xiaomi Redmi 5A
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Jylnz1wZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1734921020; x=1766457020;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=846d+cRFBoDrFep8BfHDhcE6RYZkZKHKE60fLL1H0x4=;
+  b=Jylnz1wZfontQF03VHvyrKc1XCHjfWQByCsgwiUD80iClThSAm2/zo4p
+   H6Y0e780mBOcOn3NLXAl5LwxiekA/tVcKrcwFjmWsLvBy+qs2VxzVX1H2
+   9LrJVHjHUxFqGU8FD8Tdty01HFTPCb9jnah88dencyXoKJA9rTUa/Dhtx
+   2bQ2kXlYy6Ieob7UJtJk5wckdFulgwKalZidOB6MDqAdgvPi2j/pU0tbJ
+   oAR+fuFkPsWHWC77u5zVLxQtLAe4CzD2fbDD4073H644O62jk6FaO60n/
+   s1FUnnsOJKpQQ5v1P+mQpL7ULScnngQrjUAKSeFY9lx6yzU0dKIdyzP+m
+   w==;
+X-CSE-ConnectionGUID: 5du6UpswSfa7I9fLJWY4JQ==
+X-CSE-MsgGUID: Xp2K1KdgT9qJuVZlbV7t1w==
+X-IronPort-AV: E=McAfee;i="6700,10204,11294"; a="39320710"
+X-IronPort-AV: E=Sophos;i="6.12,256,1728975600"; 
+   d="scan'208";a="39320710"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2024 18:30:19 -0800
+X-CSE-ConnectionGUID: WxF/1ytIQjSsv80o60rM8A==
+X-CSE-MsgGUID: FxLvu3rfS3Gtu8sDqEny9w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="103189883"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2024 18:30:14 -0800
+Message-ID: <74bc9dbe-3420-4f0c-9e32-db49327a723d@linux.intel.com>
+Date: Mon, 23 Dec 2024 10:28:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20241221-msm8917-v11-4-901a74db4805@mainlining.org>
-References: <20241221-msm8917-v11-0-901a74db4805@mainlining.org>
-In-Reply-To: <20241221-msm8917-v11-0-901a74db4805@mainlining.org>
-To: Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Linus Walleij <linus.walleij@linaro.org>, Amit Kucheria <amitk@kernel.org>, 
- Thara Gopinath <thara.gopinath@gmail.com>, 
- "Rafael J. Wysocki" <rafael@kernel.org>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, 
- Lukasz Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
- linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
- =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1734738064; l=8999;
- i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=yRrTth08180QfeHsiXKzN5bNhMrXGVQ/EVyPD3V4GyQ=;
- b=EjGVw7i57I2qFGqVemyh80alnIt+SNxyism+iCPXYvjWLAOZurJpkyyOVkMmoT6boYAtMhmBI
- FggN3ddemfrCawfoGWe5cEvhO7nwl0q1LNi0ZDqZ4wFq8pyloT8CfFl
-X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
- pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 07/14] iommufd/viommu: Add iommufd_viommu_get_vdev_id
+ helper
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org, corbet@lwn.net,
+ joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+ dwmw2@infradead.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+ eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
+ mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
+ smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
+ patches@lists.linux.dev
+References: <cover.1734477608.git.nicolinc@nvidia.com>
+ <21d7e63b97d81d0acf9127418a67efe386787261.1734477608.git.nicolinc@nvidia.com>
+ <56c65e50-5890-42af-85b7-85f8a1bf5cf5@linux.intel.com>
+ <Z2OpylDlhLXoo3dt@Asurada-Nvidia>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Z2OpylDlhLXoo3dt@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Add initial support for Xiaomi Redmi 5A (riva).
+On 12/19/24 13:06, Nicolin Chen wrote:
+> On Thu, Dec 19, 2024 at 10:05:53AM +0800, Baolu Lu wrote:
+>> On 12/18/24 13:00, Nicolin Chen wrote:
+>>> This is a reverse search v.s. iommufd_viommu_find_dev, as drivers may want
+>>> to convert a struct device pointer (physical) to its virtual device ID for
+>>> an event injection to the user space VM.
+>>>
+>>> Again, this avoids exposing more core structures to the drivers, than the
+>>> iommufd_viommu alone.
+>>>
+>>> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
+>>> ---
+>>>    include/linux/iommufd.h        |  8 ++++++++
+>>>    drivers/iommu/iommufd/driver.c | 20 ++++++++++++++++++++
+>>>    2 files changed, 28 insertions(+)
+>>>
+>>> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+>>> index b082676c9e43..ac1f1897d290 100644
+>>> --- a/include/linux/iommufd.h
+>>> +++ b/include/linux/iommufd.h
+>>> @@ -190,6 +190,8 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
+>>>    					     enum iommufd_object_type type);
+>>>    struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
+>>>    				       unsigned long vdev_id);
+>>> +unsigned long iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
+>>> +					 struct device *dev);
+>> Hi Nicolin,
+>>
+>> This series overall looks good to me. But I have a question that might
+>> be irrelevant to this series itself.
+>>
+>> The iommufd provides both IOMMUFD_OBJ_DEVICE and IOMMUFD_OBJ_VDEVICE
+>> objects. What is the essential difference between these two from
+>> userspace's perspective?
+> A quick answer is an IOMMUFD_OBJ_DEVICE being a host physical
+> device and an IOMMUFD_OBJ_VDEVICE being an IOMMUFD_OBJ_DEVICE
+> related to IOMMUFD_OBJ_VIOMMU. Two of them can be seen in two
+> different layers. May refer to this graph:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/ 
+> Documentation/userspace-api/iommufd.rst?h=v6.13-rc3#n150
+> 
+>> And, which object ID should the IOMMU device
+>> driver provide when reporting other events in the future?
+>>
+>> Currently, the IOMMUFD uAPI reports IOMMUFD_OBJ_DEVICE in the page
+>> fault message, and IOMMUFD_OBJ_VDEVICE (if I understand it correctly) in
+>> the vIRQ message. It will be more future-proof if this could be defined
+>> clearly.
+> A vIRQ is actually reported per-vIOMMU in this design. Although
+> in the this series the SMMU driver seems to report a per-device
+> vIRQ, it internally converts the vDEVICE to a virtual device ID
+> and packs the virtual device ID into a per-vIOMMU event:
+> 
+> +/**
+> + * struct iommu_virq_arm_smmuv3 - ARM SMMUv3 Virtual IRQ
+> + *                                (IOMMU_VIRQ_TYPE_ARM_SMMUV3)
+> + * @evt: 256-bit ARM SMMUv3 Event record, little-endian.
+> + *       (Refer to "7.3 Event records" in SMMUv3 HW Spec)
+> + *
+> + * StreamID field reports a virtual device ID. To receive a virtual IRQ for a
+> + * device, a vDEVICE must be allocated via IOMMU_VDEVICE_ALLOC.
+> + */
+> +struct iommu_virq_arm_smmuv3 {
+> +	__aligned_le64 evt[4];
+>   };
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
----
- arch/arm64/boot/dts/qcom/Makefile                |   1 +
- arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts | 333 +++++++++++++++++++++++
- 2 files changed, 334 insertions(+)
+Thanks for the explanation. Maybe I am a bit over-considering here.
 
-diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index 4686f2a8ddd897227360b4de48a0618499ad463e..ee9b262b0e0fc3ec9d6515174c33f8b69b524842 100644
---- a/arch/arm64/boot/dts/qcom/Makefile
-+++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -62,6 +62,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-wingtech-wt86518.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-wingtech-wt86528.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-wingtech-wt88047.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-yiming-uz801v3.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= msm8917-xiaomi-riva.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8929-wingtech-wt82918hd.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8939-huawei-kiwi.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= msm8939-longcheer-l9100.dtb
-diff --git a/arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts b/arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts
-new file mode 100644
-index 0000000000000000000000000000000000000000..f1d22535fedd94467ba3f0a88b2110ce5360e7e1
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts
-@@ -0,0 +1,333 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2023, Barnabas Czeman
-+ */
-+
-+/dts-v1/;
-+
-+#include <dt-bindings/arm/qcom,ids.h>
-+#include <dt-bindings/gpio/gpio.h>
-+#include "msm8917.dtsi"
-+#include "pm8937.dtsi"
-+
-+/delete-node/ &qseecom_mem;
-+
-+/ {
-+	model = "Xiaomi Redmi 5A (riva)";
-+	compatible = "xiaomi,riva", "qcom,msm8917";
-+	chassis-type = "handset";
-+
-+	qcom,msm-id = <QCOM_ID_MSM8917 0>;
-+	qcom,board-id = <0x1000b 2>, <0x2000b 2>;
-+
-+	battery: battery {
-+		compatible = "simple-battery";
-+		charge-full-design-microamp-hours = <3000000>;
-+		energy-full-design-microwatt-hours = <11500000>;
-+		constant-charge-current-max-microamp = <1000000>;
-+		constant-charge-voltage-max-microvolt = <4400000>;
-+		precharge-current-microamp = <256000>;
-+		charge-term-current-microamp = <60000>;
-+		voltage-min-design-microvolt = <3400000>;
-+	};
-+
-+	chosen {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		stdout-path = "framebuffer0";
-+
-+		framebuffer0: framebuffer@90001000 {
-+			compatible = "simple-framebuffer";
-+			reg = <0x0 0x90001000 0x0 (720 * 1280 * 3)>;
-+			width = <720>;
-+			height = <1280>;
-+			stride = <(720 * 3)>;
-+			format = "r8g8b8";
-+
-+			clocks = <&gcc GCC_MDSS_AHB_CLK>,
-+				 <&gcc GCC_MDSS_AXI_CLK>,
-+				 <&gcc GCC_MDSS_VSYNC_CLK>,
-+				 <&gcc GCC_MDSS_MDP_CLK>,
-+				 <&gcc GCC_MDSS_BYTE0_CLK>,
-+				 <&gcc GCC_MDSS_PCLK0_CLK>,
-+				 <&gcc GCC_MDSS_ESC0_CLK>;
-+			power-domains = <&gcc MDSS_GDSC>;
-+		};
-+	};
-+
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+
-+		pinctrl-0 = <&gpio_keys_default>;
-+		pinctrl-names = "default";
-+
-+		key-volup {
-+			label = "Volume Up";
-+			linux,code = <KEY_VOLUMEUP>;
-+			gpios = <&tlmm 91 GPIO_ACTIVE_LOW>;
-+			debounce-interval = <15>;
-+		};
-+	};
-+
-+	vph_pwr: regulator-vph-pwr {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vph_pwr";
-+		regulator-min-microvolt = <3700000>;
-+		regulator-max-microvolt = <3700000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+	};
-+
-+	reserved-memory {
-+		qseecom_mem: qseecom@84a00000 {
-+			reg = <0x0 0x84a00000 0x0 0x1900000>;
-+			no-map;
-+		};
-+
-+		framebuffer_mem: memory@90001000 {
-+			reg = <0x0 0x90001000 0x0 (720 * 1280 * 3)>;
-+			no-map;
-+		};
-+	};
-+};
-+
-+&blsp1_i2c3 {
-+	status = "okay";
-+
-+	touchscreen@38 {
-+		compatible = "edt,edt-ft5306";
-+		reg = <0x38>;
-+		interrupts-extended = <&tlmm 65 IRQ_TYPE_LEVEL_LOW>;
-+		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
-+		pinctrl-0 = <&tsp_int_rst_default>;
-+		pinctrl-names = "default";
-+		vcc-supply = <&pm8937_l10>;
-+		iovcc-supply = <&pm8937_l5>;
-+		touchscreen-size-x = <720>;
-+		touchscreen-size-y = <1280>;
-+	};
-+};
-+
-+&blsp2_i2c1 {
-+	status = "okay";
-+
-+	bq27426@55 {
-+		compatible = "ti,bq27426";
-+		reg = <0x55>;
-+		monitored-battery = <&battery>;
-+	};
-+
-+	bq25601@6b{
-+		compatible = "ti,bq25601";
-+		reg = <0x6b>;
-+		interrupts-extended = <&tlmm 61 IRQ_TYPE_EDGE_FALLING>;
-+		pinctrl-0 = <&bq25601_int_default>;
-+		pinctrl-names = "default";
-+		input-voltage-limit-microvolt = <4400000>;
-+		input-current-limit-microamp = <1000000>;
-+		monitored-battery = <&battery>;
-+	};
-+};
-+
-+&pm8937_resin {
-+	linux,code = <KEY_VOLUMEDOWN>;
-+
-+	status = "okay";
-+};
-+
-+&rpm_requests {
-+	regulators-0 {
-+		compatible = "qcom,rpm-pm8937-regulators";
-+
-+		vdd_s1-supply = <&vph_pwr>;
-+		vdd_s2-supply = <&vph_pwr>;
-+		vdd_s3-supply = <&vph_pwr>;
-+		vdd_s4-supply = <&vph_pwr>;
-+
-+		vdd_l1_l19-supply = <&pm8937_s3>;
-+		vdd_l2_l23-supply = <&pm8937_s3>;
-+		vdd_l3-supply = <&pm8937_s3>;
-+		vdd_l4_l5_l6_l7_l16-supply = <&pm8937_s4>;
-+		vdd_l8_l11_l12_l17_l22-supply = <&vph_pwr>;
-+		vdd_l9_l10_l13_l14_l15_l18-supply = <&vph_pwr>;
-+
-+		pm8937_s1: s1 {
-+			regulator-min-microvolt = <1000000>;
-+			regulator-max-microvolt = <1225000>;
-+		};
-+
-+		pm8937_s3: s3 {
-+			regulator-min-microvolt = <1300000>;
-+			regulator-max-microvolt = <1300000>;
-+		};
-+
-+		pm8937_s4: s4 {
-+			regulator-min-microvolt = <2050000>;
-+			regulator-max-microvolt = <2050000>;
-+		};
-+
-+		pm8937_l2: l2 {
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+		};
-+
-+		pm8937_l5: l5 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8937_l6: l6 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8937_l7: l7 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8937_l8: l8 {
-+			regulator-min-microvolt = <2850000>;
-+			regulator-max-microvolt = <2900000>;
-+		};
-+
-+		pm8937_l9: l9 {
-+			regulator-min-microvolt = <3000000>;
-+			regulator-max-microvolt = <3300000>;
-+		};
-+
-+		pm8937_l10: l10 {
-+			regulator-min-microvolt = <2800000>;
-+			regulator-max-microvolt = <3000000>;
-+		};
-+
-+		pm8937_l11: l11 {
-+			regulator-min-microvolt = <2950000>;
-+			regulator-max-microvolt = <2950000>;
-+			regulator-allow-set-load;
-+			regulator-system-load = <200000>;
-+		};
-+
-+		pm8937_l12: l12 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <2950000>;
-+		};
-+
-+		pm8937_l13: l13 {
-+			regulator-min-microvolt = <3075000>;
-+			regulator-max-microvolt = <3075000>;
-+		};
-+
-+		pm8937_l14: l14 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <3300000>;
-+		};
-+
-+		pm8937_l15: l15 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <3300000>;
-+		};
-+
-+		pm8937_l16: l16 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8937_l17: l17 {
-+			regulator-min-microvolt = <2800000>;
-+			regulator-max-microvolt = <2900000>;
-+		};
-+
-+		pm8937_l19: l19 {
-+			regulator-min-microvolt = <1225000>;
-+			regulator-max-microvolt = <1350000>;
-+		};
-+
-+		pm8937_l22: l22 {
-+			regulator-min-microvolt = <2800000>;
-+			regulator-max-microvolt = <2800000>;
-+		};
-+
-+		pm8937_l23: l23 {
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+		};
-+	};
-+
-+};
-+
-+&sdhc_1 {
-+	vmmc-supply = <&pm8937_l8>;
-+	vqmmc-supply = <&pm8937_l5>;
-+
-+	status = "okay";
-+};
-+
-+&sdhc_2 {
-+	cd-gpios = <&tlmm 67 GPIO_ACTIVE_LOW>;
-+	vmmc-supply = <&pm8937_l11>;
-+	vqmmc-supply = <&pm8937_l12>;
-+	pinctrl-0 = <&sdc2_default &sdc2_cd_default>;
-+	pinctrl-1 = <&sdc2_sleep &sdc2_cd_default>;
-+	pinctrl-names = "default", "sleep";
-+
-+	status = "okay";
-+};
-+
-+&sleep_clk {
-+	clock-frequency = <32768>;
-+};
-+
-+&tlmm {
-+	bq25601_int_default: bq25601-int-default-state {
-+		pins = "gpio61";
-+		function = "gpio";
-+		drive-strength = <2>;
-+		bias-pull-up;
-+	};
-+
-+	gpio_keys_default: gpio-keys-default-state {
-+		pins = "gpio91";
-+		function = "gpio";
-+		drive-strength = <2>;
-+		bias-pull-up;
-+	};
-+
-+	sdc2_cd_default: sdc2-cd-default-state {
-+		pins = "gpio67";
-+		function = "gpio";
-+		drive-strength = <2>;
-+		bias-disable;
-+	};
-+
-+	tsp_int_rst_default: tsp-int-rst-default-state {
-+		pins = "gpio64", "gpio65";
-+		function = "gpio";
-+		drive-strength = <8>;
-+		bias-pull-up;
-+	};
-+};
-+
-+&wcnss {
-+	vddpx-supply = <&pm8937_l5>;
-+
-+	status = "okay";
-+};
-+
-+&wcnss_iris {
-+	compatible = "qcom,wcn3620";
-+	vddxo-supply = <&pm8937_l7>;
-+	vddrfa-supply = <&pm8937_l19>;
-+	vddpa-supply = <&pm8937_l9>;
-+	vdddig-supply = <&pm8937_l5>;
-+};
-+
-+&wcnss_mem {
-+	status = "okay";
-+};
-+
-+&xo_board {
-+	clock-frequency = <19200000>;
-+};
+Initially, my understanding is to report a virtual device ID when the
+object originates from a vIOMMU, and an iommufd device ID otherwise.
 
--- 
-2.47.1
+However, considering page fault scenarios, which are self-contained but
+linked to a hardware page table (hwpt), introduces ambiguity. Hwpt can
+be created with or without a vIOMMU. This raises the question: should
+the page fault message always report the iommufd device ID, or should
+the reporting depend on whether the hwpt was created from a vIOMMU?
 
+Thanks,
+baolu
