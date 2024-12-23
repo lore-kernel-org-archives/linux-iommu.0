@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29A2638DE0;
-	Mon, 23 Dec 2024 02:30:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEFEC184E
+	for <iommu@lists.linux.dev>; Mon, 23 Dec 2024 02:53:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734921022; cv=none; b=kc0pW4oHfRmvHC4w6ecQfQuX69CasN1YhNva7vjnmwlwQKPzeAd64gLUtaZc9swb5WvO7wbu/z+gdNdI+BsWMAOdaEcumhVGeW6iYy2R+nFQPm5DmvxM9Jur4H04gKvAAYAoDhijeRM6XLCZSApuUgYwq0lhHykAw22NoUYyIdM=
+	t=1734922416; cv=none; b=iE/SSPwl0St6c//4fGLOtzmHB6Us2w7Mxc5DLHv6Cgh9zbN9MIQ72D94uCer4tpwCE21pS0ORY/c7aIdHeo8Gur3Ga+C6OAjsir7BkUXgEb7rwYD9y7FC559XuKI5P43Q/KFJWVObNAIGBYqKXUai5q+dxqAuy0iqLCrKUI7m9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734921022; c=relaxed/simple;
-	bh=846d+cRFBoDrFep8BfHDhcE6RYZkZKHKE60fLL1H0x4=;
+	s=arc-20240116; t=1734922416; c=relaxed/simple;
+	bh=nCn4iWykc+wsnZcRPakoyhlpnV4vpCfSCvvr8jm5dYo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Z5qhZdszUKtdB5GS2anMD0XvKWb4PyOOzDzJMgM77wfNy1/C04HIrqlzi6mn/2qgpCpsnRiYG21WqEHBL3VXf+mY75UbO29UYQnTMUXAW2sd9Nya4sBVxRmji+kJ8lYhzdoX8fEFWf8DAzfTWhsIwHtgqlJbYH9UFMT7R35+tMA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Jylnz1wZ; arc=none smtp.client-ip=192.198.163.12
+	 In-Reply-To:Content-Type; b=nTcsI9FRu42Qrzw5RQ73fjVx7vNaSdminwXL2TpXGy/AruFMRr5x2vmunRa3SDaDQ/1lopq/wF4dd/yj8dR0ZQ1QLz0nv7NwKdvlwY4W+A9JZ9PoYmhJ82KXLTt/GEbf+RhprQ9apJE1HW4nNP+PV2MuSuSn0ZfkKyDGz81FTSk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Bf8rBQlk; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Jylnz1wZ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Bf8rBQlk"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1734921020; x=1766457020;
+  t=1734922415; x=1766458415;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=846d+cRFBoDrFep8BfHDhcE6RYZkZKHKE60fLL1H0x4=;
-  b=Jylnz1wZfontQF03VHvyrKc1XCHjfWQByCsgwiUD80iClThSAm2/zo4p
-   H6Y0e780mBOcOn3NLXAl5LwxiekA/tVcKrcwFjmWsLvBy+qs2VxzVX1H2
-   9LrJVHjHUxFqGU8FD8Tdty01HFTPCb9jnah88dencyXoKJA9rTUa/Dhtx
-   2bQ2kXlYy6Ieob7UJtJk5wckdFulgwKalZidOB6MDqAdgvPi2j/pU0tbJ
-   oAR+fuFkPsWHWC77u5zVLxQtLAe4CzD2fbDD4073H644O62jk6FaO60n/
-   s1FUnnsOJKpQQ5v1P+mQpL7ULScnngQrjUAKSeFY9lx6yzU0dKIdyzP+m
-   w==;
-X-CSE-ConnectionGUID: 5du6UpswSfa7I9fLJWY4JQ==
-X-CSE-MsgGUID: Xp2K1KdgT9qJuVZlbV7t1w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11294"; a="39320710"
+  bh=nCn4iWykc+wsnZcRPakoyhlpnV4vpCfSCvvr8jm5dYo=;
+  b=Bf8rBQlksy2KMYlf0eDeLeeNNyGTOrWCXTgeA2raP4yCZf89NePRgOv9
+   FfKgwjGjtgJgmWy8OsxT6cERduQhD9V/RqPryEbN7Tj61qMgnB12E9fCD
+   yDEeRm4KLJlLyQ8OmmiobZ7N5DAM4nJEv6tLhBC+4k1nSR4tzjsn+0W2a
+   k5o9FVz2AVmqP41qjzPIvlP0Jsos8fCwr8lIib9aMfEuJ634OOzcvMBAt
+   13ViruoOSbou7JhN9RTB/4WUpABOcoWBpUXtSTBYE7+wAzJ2Rq3k0pnkO
+   N46SAfAFBTl7nrfRRAKOrElysBSHnxZTCkfiuBE3ILiDVKPiBxFt3T+HA
+   g==;
+X-CSE-ConnectionGUID: Ppd4HullSXG3eDPVzFQIZQ==
+X-CSE-MsgGUID: rYt9euSERu6ww12ITEjMvw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11294"; a="45879025"
 X-IronPort-AV: E=Sophos;i="6.12,256,1728975600"; 
-   d="scan'208";a="39320710"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2024 18:30:19 -0800
-X-CSE-ConnectionGUID: WxF/1ytIQjSsv80o60rM8A==
-X-CSE-MsgGUID: FxLvu3rfS3Gtu8sDqEny9w==
+   d="scan'208";a="45879025"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2024 18:53:34 -0800
+X-CSE-ConnectionGUID: JON1ACDoQRC1WYeBStFfkg==
+X-CSE-MsgGUID: TyY8mjSGRtqndXXuTmYEIg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="103189883"
+X-IronPort-AV: E=Sophos;i="6.12,256,1728975600"; 
+   d="scan'208";a="103957310"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2024 18:30:14 -0800
-Message-ID: <74bc9dbe-3420-4f0c-9e32-db49327a723d@linux.intel.com>
-Date: Mon, 23 Dec 2024 10:28:32 +0800
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2024 18:53:32 -0800
+Message-ID: <f4c1ca6a-4ed5-49a7-b399-dd148cfb16bd@linux.intel.com>
+Date: Mon, 23 Dec 2024 10:51:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,104 +52,67 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 07/14] iommufd/viommu: Add iommufd_viommu_get_vdev_id
- helper
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org, corbet@lwn.net,
- joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
- dwmw2@infradead.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
- eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
- mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
- smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
- patches@lists.linux.dev
-References: <cover.1734477608.git.nicolinc@nvidia.com>
- <21d7e63b97d81d0acf9127418a67efe386787261.1734477608.git.nicolinc@nvidia.com>
- <56c65e50-5890-42af-85b7-85f8a1bf5cf5@linux.intel.com>
- <Z2OpylDlhLXoo3dt@Asurada-Nvidia>
+Subject: Re: [PATCH v6 09/14] iommu/vt-d: Add IOMMU_HWPT_ALLOC_PASID support
+To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
+ kevin.tian@intel.com
+Cc: eric.auger@redhat.com, nicolinc@nvidia.com, chao.p.peng@linux.intel.com,
+ iommu@lists.linux.dev, vasant.hegde@amd.com, will@kernel.org
+References: <20241219132746.16193-1-yi.l.liu@intel.com>
+ <20241219132746.16193-10-yi.l.liu@intel.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Z2OpylDlhLXoo3dt@Asurada-Nvidia>
+In-Reply-To: <20241219132746.16193-10-yi.l.liu@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 12/19/24 13:06, Nicolin Chen wrote:
-> On Thu, Dec 19, 2024 at 10:05:53AM +0800, Baolu Lu wrote:
->> On 12/18/24 13:00, Nicolin Chen wrote:
->>> This is a reverse search v.s. iommufd_viommu_find_dev, as drivers may want
->>> to convert a struct device pointer (physical) to its virtual device ID for
->>> an event injection to the user space VM.
->>>
->>> Again, this avoids exposing more core structures to the drivers, than the
->>> iommufd_viommu alone.
->>>
->>> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
->>> ---
->>>    include/linux/iommufd.h        |  8 ++++++++
->>>    drivers/iommu/iommufd/driver.c | 20 ++++++++++++++++++++
->>>    2 files changed, 28 insertions(+)
->>>
->>> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
->>> index b082676c9e43..ac1f1897d290 100644
->>> --- a/include/linux/iommufd.h
->>> +++ b/include/linux/iommufd.h
->>> @@ -190,6 +190,8 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
->>>    					     enum iommufd_object_type type);
->>>    struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
->>>    				       unsigned long vdev_id);
->>> +unsigned long iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
->>> +					 struct device *dev);
->> Hi Nicolin,
->>
->> This series overall looks good to me. But I have a question that might
->> be irrelevant to this series itself.
->>
->> The iommufd provides both IOMMUFD_OBJ_DEVICE and IOMMUFD_OBJ_VDEVICE
->> objects. What is the essential difference between these two from
->> userspace's perspective?
-> A quick answer is an IOMMUFD_OBJ_DEVICE being a host physical
-> device and an IOMMUFD_OBJ_VDEVICE being an IOMMUFD_OBJ_DEVICE
-> related to IOMMUFD_OBJ_VIOMMU. Two of them can be seen in two
-> different layers. May refer to this graph:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/ 
-> Documentation/userspace-api/iommufd.rst?h=v6.13-rc3#n150
+On 12/19/24 21:27, Yi Liu wrote:
+> Intel iommu driver just treats it as a nop since Intel VT-d does not have
+> special requirement on domains attached to either the PASID or RID of a
+> PASID-capable device.
 > 
->> And, which object ID should the IOMMU device
->> driver provide when reporting other events in the future?
->>
->> Currently, the IOMMUFD uAPI reports IOMMUFD_OBJ_DEVICE in the page
->> fault message, and IOMMUFD_OBJ_VDEVICE (if I understand it correctly) in
->> the vIRQ message. It will be more future-proof if this could be defined
->> clearly.
-> A vIRQ is actually reported per-vIOMMU in this design. Although
-> in the this series the SMMU driver seems to report a per-device
-> vIRQ, it internally converts the vDEVICE to a virtual device ID
-> and packs the virtual device ID into a per-vIOMMU event:
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c  | 3 ++-
+>   drivers/iommu/intel/nested.c | 2 +-
+>   2 files changed, 3 insertions(+), 2 deletions(-)
 > 
-> +/**
-> + * struct iommu_virq_arm_smmuv3 - ARM SMMUv3 Virtual IRQ
-> + *                                (IOMMU_VIRQ_TYPE_ARM_SMMUV3)
-> + * @evt: 256-bit ARM SMMUv3 Event record, little-endian.
-> + *       (Refer to "7.3 Event records" in SMMUv3 HW Spec)
-> + *
-> + * StreamID field reports a virtual device ID. To receive a virtual IRQ for a
-> + * device, a vDEVICE must be allocated via IOMMU_VDEVICE_ALLOC.
-> + */
-> +struct iommu_virq_arm_smmuv3 {
-> +	__aligned_le64 evt[4];
->   };
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index cd5e339fd5bb..0a622a89d876 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -3347,7 +3347,8 @@ intel_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
+>   	bool first_stage;
+>   
+>   	if (flags &
+> -	    (~(IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
+> +	    (~(IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
+> +	       IOMMU_HWPT_ALLOC_PASID)))
+>   		return ERR_PTR(-EOPNOTSUPP);
+>   	if (nested_parent && !nested_supported(iommu))
+>   		return ERR_PTR(-EOPNOTSUPP);
+> diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+> index aba92c00b427..6ac5c534bef4 100644
+> --- a/drivers/iommu/intel/nested.c
+> +++ b/drivers/iommu/intel/nested.c
+> @@ -198,7 +198,7 @@ intel_iommu_domain_alloc_nested(struct device *dev, struct iommu_domain *parent,
+>   	struct dmar_domain *domain;
+>   	int ret;
+>   
+> -	if (!nested_supported(iommu) || flags)
+> +	if (!nested_supported(iommu) || flags & ~IOMMU_HWPT_ALLOC_PASID)
+>   		return ERR_PTR(-EOPNOTSUPP);
+>   
+>   	/* Must be nested domain */
 
-Thanks for the explanation. Maybe I am a bit over-considering here.
+It's better to abort and fail a domain allocation when
+IOMMU_HWPT_ALLOC_PASID is set but the iommu lacks pasid support?
 
-Initially, my understanding is to report a virtual device ID when the
-object originates from a vIOMMU, and an iommufd device ID otherwise.
+Another related consideration is the support for page faults in nested
+domains once PASID is available in user space. Would it be reasonable to
+support page faults for nested domains?
 
-However, considering page fault scenarios, which are self-contained but
-linked to a hardware page table (hwpt), introduces ambiguity. Hwpt can
-be created with or without a vIOMMU. This raises the question: should
-the page fault message always report the iommufd device ID, or should
-the reporting depend on whether the hwpt was created from a vIOMMU?
+If so, perhaps it's time to open intel_iommu_domain_alloc_nested() to
+support IOMMU_HWPT_FAULT_ID_VALID when PRI is enabled on the device?
 
-Thanks,
+--
 baolu
