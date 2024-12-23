@@ -1,204 +1,239 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2084.outbound.protection.outlook.com [40.107.220.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E2671AC43A;
-	Mon, 23 Dec 2024 12:52:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734958341; cv=none; b=Q/egkdD6Rl4Fyx9nKQny/fZjMm33lSa4/agh/hjTQ2h3iXtQkVOSht+RsIC2fiackqRIk2uGVHCoXgmw0FCAU9fk6Y1/BgMIlwiq+HxHBMXsXHgLqptF+ct+QrCSpD6LfcOKeZKTGJA766fPkoGkE0Qm6r4/zYsETNV6kJRyHFo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734958341; c=relaxed/simple;
-	bh=rKTCQO0ZQLcAA+nfRoyIdKzGw+ZOLfg3l8ikMZw26X4=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=O+f7SGFqlFmHWzbk374ZYljVIc9MQ0HEal35MarmluWOpALWWCUVkSWWMlcpQN9/eY736ijo47xSTIXEVyY6n67fgB6wZ7HTEILgKc46oiMgWvMO9m43R5LUx+mg2+2NlygWasaaTUjAMrWWnwHCsJ2yjg5fxok42Ny9Bc6NtnE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FjFq49mA; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33D521B395B;
+	Mon, 23 Dec 2024 19:29:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.84
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1734982188; cv=fail; b=I+z4ytlYE92wUkKVijRxdlqPoncUVZsIlxuIrPzL+He/OWOAcL6dG8U03qDbquoQb8aN8GahtNbNXlnSw8zLfU1CGgEPq2pCDlJBH4ju+JrxwYHbuK2ddXzy1FXjIX2cYuc+0uMbpRvHVspFApLfH8scWb3Gdg8NLJMYqRwB+N8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1734982188; c=relaxed/simple;
+	bh=nL64+LXl6gs00dDndPE2TpPww8Y4zNii/J9B0bwnrjc=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JA6n8Wshf1tHz1FOtRKZdkfAvxhCskGZ6ZbN8V16trBF69byXO6CrPm43n1XCMvZDvSPaETsGnvJ15BhEUsAa/HjAOj4O/D1cCjRxGCwbqhMmNkkWWBXgR0zk8tplibXaCIE2DUuYb8pXL+6WMEdS4rO/D7Otub0OcyC6vifGbw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=JZVlryKx; arc=fail smtp.client-ip=40.107.220.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FjFq49mA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A63C4CED3;
-	Mon, 23 Dec 2024 12:52:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1734958341;
-	bh=rKTCQO0ZQLcAA+nfRoyIdKzGw+ZOLfg3l8ikMZw26X4=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=FjFq49mAwHcBvTzKpdyX3k/HG4fL697jY4DFyAhDS6zxJLNeaEX0cwmdPX6aPriA6
-	 hnWnImo9qSPMuUZJffzOBjU16GIM/LuEjYeYQI7D15/WeaQZlaEUn0jVx9D48uuvcB
-	 mlVBaZFlDCa7Oe/Ny3gPM6Pb9gye4gcSrw2ha2owE79kGxZn7qUPEBQzPCVp4YHkZV
-	 Z9zoq4K8mK7spF4ZQTcMyVOhfLLzTCY6JOhJg1oWtqDXssBLeViIcT9o/9ZSI45Pz6
-	 fSuMHdaXXxPxwayjmPI2R82ZvS7+c7JhS/DxMkXBEtnxdMnvgJzhJIdnCZpXtMShmL
-	 XpzYYuF6qn91A==
-Date: Mon, 23 Dec 2024 06:52:19 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="JZVlryKx"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=XIXFhmjuty85WgskRnqbZKTIZMoGuYWvHM+2c9iTM0MqnDOSX18nrBNu+qiaA/zDwQICgrXkCqe8DdatrVj465IxZD5vZIg8R8atPKd+7oDiaNdTuHHH6alfb0/XfIEkFRGEgfYISKfbG+7UgnTPsQLBwcIxySa9m08/slmTGkLuuGUpMddA0QTETckHp+uDyJ9JEVwrMlC8D5ig2Np/CUJ87oYz8VXQHhgWcyWT0UKcKrAmmktjVFDNLYVWCCYOopWf8hMWzaNgjhTejmYMhd8VmP75Y8Y+fbd78jBHDkOpeqfj5liSiN7JJXJFUWbWPokmwFb+hvfghaLTl7OdZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7qQP0GIfJkTKzYcHu5Vh46avbdd6+BW3oWoh8j+zoKc=;
+ b=j28XGuyoG1kHTGP9vNIMP6DtUK6PWkhZ0bPKOhA+sN+pbxrCaFZIQPfVK3UNkIsPAsAYSLzz8AenvNgS935b1vHcFV98WctJMeJbX+VFkKNsTjTzeCTLk21g4nWuMpZn95I99j4AMQKZLmKLjXrDz2zkm9zFFQyiRpn5NkLjc5JizvxcgJpOEKFtpjXekuVAyD29NPXpcU/cp40DSSCWtFidcuXohfEAPVw4G2280chvJafv5sop+Kp5BECoYyDtx9cIcgatZvrICobjJMAX9TmXZrcvC8MJD3htDi9MZqaFzIU/oBpbIQPtRSBYK1suexBZ1j0rEfSvDZ1tmiyHcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7qQP0GIfJkTKzYcHu5Vh46avbdd6+BW3oWoh8j+zoKc=;
+ b=JZVlryKxceW81bI7MFUgb8n2Ia6zeEPd2vOSB8mkwA9NJtbxqpC7wME2RVXYG/PsR8t/WiZw8ZR4TPNWI6rHR5Iy5LmKOdUIfygs+3Z8f+Ub4OlRQkoLT4w9h5eJveYao3Rq0J570hgGbcaP1IZYw/p46IrpfJp7gRi17e3tu9juzD6qXiXO3C7CwNlVYqqrBaF+KXuTEjUKL6oZXVgoXjE42p3Aj48qHskTywxmYHZHTB13Tx0pgLtcI1CR4iD5hu16Canp4b56KEXNBsyJbWZxRpWJnCApFEoRYXveCLSBj0B5pdX9qgklffodQf2RC3it+Rlo+L8CTjgNF01QuA==
+Received: from BN9PR03CA0520.namprd03.prod.outlook.com (2603:10b6:408:131::15)
+ by CYYPR12MB8963.namprd12.prod.outlook.com (2603:10b6:930:c3::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8272.21; Mon, 23 Dec
+ 2024 19:29:39 +0000
+Received: from BN2PEPF0000449D.namprd02.prod.outlook.com
+ (2603:10b6:408:131:cafe::4e) by BN9PR03CA0520.outlook.office365.com
+ (2603:10b6:408:131::15) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8272.20 via Frontend Transport; Mon,
+ 23 Dec 2024 19:29:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN2PEPF0000449D.mail.protection.outlook.com (10.167.243.148) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8293.12 via Frontend Transport; Mon, 23 Dec 2024 19:29:38 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 23 Dec
+ 2024 11:29:20 -0800
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 23 Dec
+ 2024 11:29:19 -0800
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Mon, 23 Dec 2024 11:29:17 -0800
+Date: Mon, 23 Dec 2024 11:29:15 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <will@kernel.org>,
+	<corbet@lwn.net>, <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>,
+	<robin.murphy@arm.com>, <dwmw2@infradead.org>, <shuah@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>, <eric.auger@redhat.com>,
+	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
+	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>,
+	<ddutile@redhat.com>, <yi.l.liu@intel.com>, <patches@lists.linux.dev>
+Subject: Re: [PATCH v3 07/14] iommufd/viommu: Add iommufd_viommu_get_vdev_id
+ helper
+Message-ID: <Z2m6CxUQgORFfoaG@Asurada-Nvidia>
+References: <cover.1734477608.git.nicolinc@nvidia.com>
+ <21d7e63b97d81d0acf9127418a67efe386787261.1734477608.git.nicolinc@nvidia.com>
+ <56c65e50-5890-42af-85b7-85f8a1bf5cf5@linux.intel.com>
+ <Z2OpylDlhLXoo3dt@Asurada-Nvidia>
+ <74bc9dbe-3420-4f0c-9e32-db49327a723d@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
- linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
- Robin Murphy <robin.murphy@arm.com>, Amit Kucheria <amitk@kernel.org>, 
- iommu@lists.linux.dev, "Rafael J. Wysocki" <rafael@kernel.org>, 
- Thara Gopinath <thara.gopinath@gmail.com>, 
- Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, 
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
- Lukasz Luba <lukasz.luba@arm.com>, Conor Dooley <conor+dt@kernel.org>, 
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
- Will Deacon <will@kernel.org>, linux-arm-msm@vger.kernel.org, 
- linux-gpio@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
- Dang Huynh <danct12@riseup.net>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
- Joerg Roedel <joro@8bytes.org>, Zhang Rui <rui.zhang@intel.com>, 
- Bjorn Andersson <andersson@kernel.org>
-To: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-In-Reply-To: <20241221-msm8917-v11-0-901a74db4805@mainlining.org>
-References: <20241221-msm8917-v11-0-901a74db4805@mainlining.org>
-Message-Id: <173495824869.503733.14210199491465064171.robh@kernel.org>
-Subject: Re: [PATCH v11 0/4] Add MSM8917/PM8937/Redmi 5A
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <74bc9dbe-3420-4f0c-9e32-db49327a723d@linux.intel.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF0000449D:EE_|CYYPR12MB8963:EE_
+X-MS-Office365-Filtering-Correlation-Id: a2dcdfb2-95a6-4212-ebc5-08dd23882406
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|36860700013|82310400026|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?fW945A6mMtATdhin2xqIYXp/w9AXn/uXoHZXzQp9jJdkST85uSMaLEMvTalx?=
+ =?us-ascii?Q?wsh4aSpDCO2/+X/sT4mdM7f0tZ+ce3VOkdWRVrh5WoQs1cRvYcHbw3Eg9wuO?=
+ =?us-ascii?Q?qumQ/wPuS8dsVOBN87am5AVgNg3OkIrUtDCqj/8ar2Dk1v25mSHDUPD93Tw7?=
+ =?us-ascii?Q?VDbm/Hk9gdmfwh65NF2CufFUzW96j5KYTrn/M8+qN8oWngjiMCpdDW1xxWZA?=
+ =?us-ascii?Q?8ZCgqw99gNou6LzgS16VvSkwOytS1S3x4a62DJEl2rudw0NjDL3V9mgS0KWI?=
+ =?us-ascii?Q?o2d7b/twKlpWHkJFUF9De5HF2JaUa6nRRcLutcGEvchGrrU8jahq/qu9tPGR?=
+ =?us-ascii?Q?Uqsrn2v3dtCAaQ5Iaoi9K/8mpB53mOfXKHoGDZiFx92VMXItOXI+1jRJ8/Cd?=
+ =?us-ascii?Q?RMRI/rnBm5NT6bR2qm5zCRwrxKq1zdEJCMXeREbO7aAS/7xImXV3PN9Iu7G4?=
+ =?us-ascii?Q?rEZvspazXsl8SIrkmsWeGvI++aI7JIWs5f+5yNZG9uyyK3j6k/HmBoZt/ISz?=
+ =?us-ascii?Q?MpQn5F5G4OywRMTOh/cWB7GlcUrByzNsJDCGIzUarBstO4P+9W8HtAivCPGf?=
+ =?us-ascii?Q?9DE13rw1pZWrNWn6iq7U/oYkOpKwYcBlHLQOAxIBoCxmYQT0DHUU/uV5rzM7?=
+ =?us-ascii?Q?scZ5cb+7LltHD2aPvD/gdAYBesUvg6tYn9SxBsubA78Wv7U5Sl3LP4iU3AEY?=
+ =?us-ascii?Q?S0loBzEYKH0Ta6lw2SRhtfLGwVD5scTfphGbdYsBWRJYVmAAS3z4u3GXsiJv?=
+ =?us-ascii?Q?ub2zR3uG5sb+lc2Bh59+RmfNdxbc3o4ujKDfItjgzpoYAPwAQUI10ukIkziV?=
+ =?us-ascii?Q?ycU2uD0qVpu65YLJnSM1aHNA9jwguZQMLkiKvOhvyyajl/yRBLPuS0MBNDev?=
+ =?us-ascii?Q?jvPj29xSmFqQt+bWeClek5mAFJMDu+yTmRpKo2JS+9T7OV3/e6pj1TLhCx+H?=
+ =?us-ascii?Q?gD+zbIFmMkc1sIEXCyf2Hs2o6WoRa1SBNP1JQQqCoQNTbmMhQKfwMTQC5tcc?=
+ =?us-ascii?Q?tJy77yHsRXpP5jvV7LM/gR+mq8wuBYU7F8dM3Y8h9cIbNbuIV9/ecMn2QAZR?=
+ =?us-ascii?Q?JEPUHS74Fg5EW55Sm0UGcbPNPqVepQn4B/fk2h5lPfvjb/cpMmgFVZ6mkuwL?=
+ =?us-ascii?Q?AiB5+w2vLBfWvNhzsJzt9dmOgT+RFQd10dtsJ+jQWO/pnwV7AMqGYa3zNGHs?=
+ =?us-ascii?Q?IcTKHFesaHHcaFo/JS5a+C3XiwNq9JflF+fc1OUGBQEQaV5gWm/o6W0XRbUO?=
+ =?us-ascii?Q?647PmgK1xguR09g1XiaBginqnXoyLcQGLs8acW5Do6VMLGxW7TVbVHlhpdh0?=
+ =?us-ascii?Q?ztDKabcWcfZsr/p/DPFSI3ZI16r551eTgMlTLwkNcJKUthw2gvxijI7qu9Yn?=
+ =?us-ascii?Q?vs6NCzEQYHBNevPhoM8qbr91SaCUwLmrJb5py+Xy8tIbISNsnBWU6oCxKB19?=
+ =?us-ascii?Q?9dx9nMUA79QSrjbJrZt70wR52GRBn+oGmUGVS3YUbphGSjORQycOZiJVTmqC?=
+ =?us-ascii?Q?26bCqrMRStgzBwY=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(82310400026)(376014)(7416014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Dec 2024 19:29:38.1404
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2dcdfb2-95a6-4212-ebc5-08dd23882406
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF0000449D.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8963
 
+On Mon, Dec 23, 2024 at 10:28:32AM +0800, Baolu Lu wrote:
+> On 12/19/24 13:06, Nicolin Chen wrote:
+> > On Thu, Dec 19, 2024 at 10:05:53AM +0800, Baolu Lu wrote:
+> > > On 12/18/24 13:00, Nicolin Chen wrote:
+> > > > This is a reverse search v.s. iommufd_viommu_find_dev, as drivers may want
+> > > > to convert a struct device pointer (physical) to its virtual device ID for
+> > > > an event injection to the user space VM.
+> > > > 
+> > > > Again, this avoids exposing more core structures to the drivers, than the
+> > > > iommufd_viommu alone.
+> > > > 
+> > > > Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
+> > > > ---
+> > > >    include/linux/iommufd.h        |  8 ++++++++
+> > > >    drivers/iommu/iommufd/driver.c | 20 ++++++++++++++++++++
+> > > >    2 files changed, 28 insertions(+)
+> > > > 
+> > > > diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+> > > > index b082676c9e43..ac1f1897d290 100644
+> > > > --- a/include/linux/iommufd.h
+> > > > +++ b/include/linux/iommufd.h
+> > > > @@ -190,6 +190,8 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
+> > > >    					     enum iommufd_object_type type);
+> > > >    struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
+> > > >    				       unsigned long vdev_id);
+> > > > +unsigned long iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
+> > > > +					 struct device *dev);
+> > > Hi Nicolin,
+> > > 
+> > > This series overall looks good to me. But I have a question that might
+> > > be irrelevant to this series itself.
+> > > 
+> > > The iommufd provides both IOMMUFD_OBJ_DEVICE and IOMMUFD_OBJ_VDEVICE
+> > > objects. What is the essential difference between these two from
+> > > userspace's perspective?
+> > A quick answer is an IOMMUFD_OBJ_DEVICE being a host physical
+> > device and an IOMMUFD_OBJ_VDEVICE being an IOMMUFD_OBJ_DEVICE
+> > related to IOMMUFD_OBJ_VIOMMU. Two of them can be seen in two
+> > different layers. May refer to this graph:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+> > Documentation/userspace-api/iommufd.rst?h=v6.13-rc3#n150
+> > 
+> > > And, which object ID should the IOMMU device
+> > > driver provide when reporting other events in the future?
+> > > 
+> > > Currently, the IOMMUFD uAPI reports IOMMUFD_OBJ_DEVICE in the page
+> > > fault message, and IOMMUFD_OBJ_VDEVICE (if I understand it correctly) in
+> > > the vIRQ message. It will be more future-proof if this could be defined
+> > > clearly.
+> > A vIRQ is actually reported per-vIOMMU in this design. Although
+> > in the this series the SMMU driver seems to report a per-device
+> > vIRQ, it internally converts the vDEVICE to a virtual device ID
+> > and packs the virtual device ID into a per-vIOMMU event:
+> > 
+> > +/**
+> > + * struct iommu_virq_arm_smmuv3 - ARM SMMUv3 Virtual IRQ
+> > + *                                (IOMMU_VIRQ_TYPE_ARM_SMMUV3)
+> > + * @evt: 256-bit ARM SMMUv3 Event record, little-endian.
+> > + *       (Refer to "7.3 Event records" in SMMUv3 HW Spec)
+> > + *
+> > + * StreamID field reports a virtual device ID. To receive a virtual IRQ for a
+> > + * device, a vDEVICE must be allocated via IOMMU_VDEVICE_ALLOC.
+> > + */
+> > +struct iommu_virq_arm_smmuv3 {
+> > +	__aligned_le64 evt[4];
+> >   };
+> 
+> Thanks for the explanation. Maybe I am a bit over-considering here.
+> 
+> Initially, my understanding is to report a virtual device ID when the
+> object originates from a vIOMMU, and an iommufd device ID otherwise.
+> 
+> However, considering page fault scenarios, which are self-contained but
+> linked to a hardware page table (hwpt), introduces ambiguity. Hwpt can
+> be created with or without a vIOMMU. This raises the question: should
+> the page fault message always report the iommufd device ID, or should
+> the reporting depend on whether the hwpt was created from a vIOMMU?
 
-On Sat, 21 Dec 2024 00:40:47 +0100, Barnabás Czémán wrote:
-> This patch series add support for MSM8917 soc with PM8937 and
-> Xiaomi Redmi 5A (riva).
-> 
-> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
-> ---
-> Changes in v11:
-> - msm8917:
->   - pll_opp_table: fix indentation
->   - gpu_opp_table: change to ascending order
-> - Remove applied patches.
-> - Link to v10: https://lore.kernel.org/r/20241220-msm8917-v10-0-3d5734e8c3a6@mainlining.org
-> 
-> Changes in v10:
-> - msm8917: sdc1 cmd_on, cmd_off change bias-disable to bias-pull-up
-> - Remove applied patches.
-> - Link to v9: https://lore.kernel.org/r/20241215-msm8917-v9-0-bacaa26f3eef@mainlining.org
-> 
-> Changes in v9:
-> - msm8917:
->  - add some empty lines for separating pins more
->  - order compatible, reg, ranges properties
-> - Link to v8: https://lore.kernel.org/r/20241211-msm8917-v8-0-197acc042036@mainlining.org
-> 
-> Changes in v8:
-> - pm8937, msm8917, msm8917-xiaomi-riva: remove unused includes
-> - Link to v7: https://lore.kernel.org/r/20241124-msm8917-v7-0-612729834656@mainlining.org
-> 
-> Changes in v7:
-> - msm8917-xiaomi-riva:
->   - Add pinctrls for used GPIO pins.
->   - Use interrupts-extend for charger.
->   - Order properies.
-> - Link to v6: https://lore.kernel.org/r/20241113-msm8917-v6-0-c348fb599fef@mainlining.org
-> 
-> Changes in v6:
-> - msm8917:
->   - Consolidate SDC pins, remove sdc2-cd-on/off pins.
->   - Remove cluster-sleep-0 and cluster-sleep-1
->   and rename cluster-sleep-2 to cluster-sleep-0.
->   - Fix spi, i2c and related pinctrl namings.
-> - msm8917-xiaomi-riva: follow i2c name changes.
-> - Link to v5: https://lore.kernel.org/r/20241112-msm8917-v5-0-3ca34d33191b@mainlining.org
-> 
-> Changes in v5:
-> - msm8917:
->   - Remove aliases.
->   - Rename spi, i2c labels and pins.
->   - Remove clock-frequency from timers
->   - Remove unused mpss_mem region.
->   - Use mboxes where it can be used, only smd-edge uses qcom,ipc.
-> - msm8917-xiaomi-riva: Follow i2c label changes.
-> - Link to v4: https://lore.kernel.org/r/20241109-msm8917-v4-0-8be9904792ab@mainlining.org
-> 
-> Changes in v4:
-> - msm8917 pinctrl: Fix gpio regexp in the schema.
-> - msm8937 tsens: Rename ops_msm8976 to ops_common and use it for msm8937.
-> - msm8917: fix address padding, naming and ordering, remove polling-delays.
-> - Remove applied patches from the series.
-> - Link to v3: https://lore.kernel.org/r/20241107-msm8917-v3-0-6ddc5acd978b@mainlining.org
-> 
-> Changes in v3:
-> - msm8917-xiaomi-riva: Fix issues addressed by Konrad.
-> - msm8917: Fix node addresses, orders of some properties.
-> - pm8937: simplify vadc channels.
-> - msm8917 pinctrl: Fix schema issues addressed by Krzysztof.
-> - Remove applied tcsr patch from this series.
-> - Reword some commit title.
-> - Link to v2: https://lore.kernel.org/r/20241031-msm8917-v2-0-8a075faa89b1@mainlining.org
-> 
-> Changes in v2:
-> - Add msm8937 tsens support.
-> - Fix issues addressed by reviews.
-> - Link to v1: https://lore.kernel.org/r/20241019-msm8917-v1-0-f1f3ca1d88e5@mainlining.org
-> 
-> ---
-> Barnabás Czémán (2):
->       dt-bindings: arm: qcom: Add Xiaomi Redmi 5A
->       arm64: dts: qcom: Add Xiaomi Redmi 5A
-> 
-> Dang Huynh (1):
->       arm64: dts: qcom: Add PM8937 PMIC
-> 
-> Otto Pflüger (1):
->       arm64: dts: qcom: Add initial support for MSM8917
-> 
->  Documentation/devicetree/bindings/arm/qcom.yaml  |    7 +
->  arch/arm64/boot/dts/qcom/Makefile                |    1 +
->  arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dts |  333 ++++
->  arch/arm64/boot/dts/qcom/msm8917.dtsi            | 1954 ++++++++++++++++++++++
->  arch/arm64/boot/dts/qcom/pm8937.dtsi             |  150 ++
->  5 files changed, 2445 insertions(+)
-> ---
-> base-commit: 8503810115fbff903f626adc0788daa048302bc0
-> change-id: 20241019-msm8917-17c3d0ff4a52
-> 
-> Best regards,
-> --
-> Barnabás Czémán <barnabas.czeman@mainlining.org>
-> 
-> 
+As you mentioned, HWPT itself can report IO page faults regardless
+of vIOMMU-based or not, i.e. it should just work fine with a HWPT-
+based model or a vIOMMU-based model.
 
+On the other hand, I think vIRQ can be seen as just a supplementary
+pathway to report non-HWPT faults, e.g. in arm-smmu-v3's interrupt
+handler, the logic is:
+    if (pri_is_supported && fault_is_iopgfault)
+        report via hwpt->fault;
+    else if (virq_is_registered && fault_is_virq)
+        report via virq;
+    else
+        print an unhandled irq;
 
-My bot found new DTB warnings on the .dts files added or changed in this
-series.
-
-Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
-are fixed by another series. Ultimately, it is up to the platform
-maintainer whether these warnings are acceptable or not. No need to reply
-unless the platform maintainer has comments.
-
-If you already ran DT checks and didn't see these error(s), then
-make sure dt-schema is up to date:
-
-  pip3 install dtschema --upgrade
-
-
-New warnings running 'make CHECK_DTBS=y qcom/msm8917-xiaomi-riva.dtb' for 20241221-msm8917-v11-0-901a74db4805@mainlining.org:
-
-arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: qfprom@a4000: compatible:0: 'qcom,msm8917-qfprom' is not one of ['qcom,apq8064-qfprom', 'qcom,apq8084-qfprom', 'qcom,ipq5332-qfprom', 'qcom,ipq6018-qfprom', 'qcom,ipq8064-qfprom', 'qcom,ipq8074-qfprom', 'qcom,ipq9574-qfprom', 'qcom,msm8226-qfprom', 'qcom,msm8916-qfprom', 'qcom,msm8974-qfprom', 'qcom,msm8976-qfprom', 'qcom,msm8996-qfprom', 'qcom,msm8998-qfprom', 'qcom,qcm2290-qfprom', 'qcom,qcs404-qfprom', 'qcom,sc7180-qfprom', 'qcom,sc7280-qfprom', 'qcom,sc8280xp-qfprom', 'qcom,sdm630-qfprom', 'qcom,sdm670-qfprom', 'qcom,sdm845-qfprom', 'qcom,sm6115-qfprom', 'qcom,sm6350-qfprom', 'qcom,sm6375-qfprom', 'qcom,sm8150-qfprom', 'qcom,sm8250-qfprom', 'qcom,sm8450-qfprom', 'qcom,sm8550-qfprom', 'qcom,sm8650-qfprom']
-	from schema $id: http://devicetree.org/schemas/nvmem/qcom,qfprom.yaml#
-arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: qfprom@a4000: Unevaluated properties are not allowed ('compatible' was unexpected)
-	from schema $id: http://devicetree.org/schemas/nvmem/qcom,qfprom.yaml#
-arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: /soc@0/qfprom@a4000: failed to match any schema with compatible: ['qcom,msm8917-qfprom', 'qcom,qfprom']
-arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: iommu@1e20000: compatible: 'oneOf' conditional failed, one must be fixed:
-	'qcom,msm8917-iommu' is not one of ['qcom,msm8916-iommu', 'qcom,msm8953-iommu']
-	'qcom,msm8917-iommu' is not one of ['qcom,msm8953-iommu', 'qcom,msm8976-iommu']
-	'qcom,msm-iommu-v2' was expected
-	from schema $id: http://devicetree.org/schemas/iommu/qcom,iommu.yaml#
-arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: /soc@0/iommu@1e20000: failed to match any schema with compatible: ['qcom,msm8917-iommu', 'qcom,msm-iommu-v1']
-arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: iommu@1f08000: compatible: 'oneOf' conditional failed, one must be fixed:
-	'qcom,msm8917-iommu' is not one of ['qcom,msm8916-iommu', 'qcom,msm8953-iommu']
-	'qcom,msm8917-iommu' is not one of ['qcom,msm8953-iommu', 'qcom,msm8976-iommu']
-	'qcom,msm-iommu-v2' was expected
-	from schema $id: http://devicetree.org/schemas/iommu/qcom,iommu.yaml#
-arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: /soc@0/iommu@1f08000: failed to match any schema with compatible: ['qcom,msm8917-iommu', 'qcom,msm-iommu-v1']
-
-
-
-
-
+Thanks
+Nicolin
