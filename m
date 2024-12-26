@@ -1,120 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CFDA175BF
-	for <iommu@lists.linux.dev>; Wed, 25 Dec 2024 07:13:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AB551C54A8;
+	Thu, 26 Dec 2024 22:39:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735110792; cv=none; b=uOtlW/5ZNOMGyS+41XiFv5tPEk5OXdQs2sxsZNbZ5KxPgQPlpgBh8DdQeMd8JpA6zieB0dfyECjB1umtgP+1rZ/3MGgiTCu8m8VWRokDKUPxZSFEnvjgEpu7Ze+Fi0ktTe7RkYoNKFEmVcbEEZ3QFaIlkg213AjH+qf9l5UcUz8=
+	t=1735252742; cv=none; b=Impd/g402WP2Qatl8tM5LWtT/c++5vJ/WcficnVc8sr5RWeHnijOoRDMSp4KLihgtMmPTl/gCOYpNgmCavvVhOpGi1S2ER4VXwNRdIQie9Nr0koZeYO0fogiLY1l6xL/KTtvauHBAgEWX7HrN8GAuQSC/eJ1i58QjgXQ7j/YG7U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735110792; c=relaxed/simple;
-	bh=6zBRm3R9WqOLT7S2y6DnCZo95YdaIrMH/l+HqqsSoZ0=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=dqyVd98qeHBwZ/PF6YcrrsAf9vYSoNgV35vEQ7anTnp777fPjKk+63LtCQzG2pLYeANjtJv5CA8ilKerF2ePU61wHJ2Su8T39uQLVqR034JoigUdtSMo+xS89bx57T1fe029j785FbAUXVds6qCHkT6F+/9ROjgl1qrFk4u0GSQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K3+k2m/H; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1735252742; c=relaxed/simple;
+	bh=ghvEWc+CY8H0nlr1RDV+hoiNH9dMWvFeMfs/OYEjr0c=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ebbY7776Poz+adYIiWBk6l4yY+5Xm4z/zCqou3lM6hVPXwE3XOeOhdweYFXPpLnswX+M4SrA0PZcLTC4rgQK8dADfdfht25ZzuKsQefffeiT3U/FpGlTNoAKtLQaC9RyQtr7T+kuLEDzdIP3lfsQGWKnvU1YIvSDuMuwyOW1MMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=npIoxWvE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K3+k2m/H"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1735110791; x=1766646791;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=6zBRm3R9WqOLT7S2y6DnCZo95YdaIrMH/l+HqqsSoZ0=;
-  b=K3+k2m/HDw4Z/ZdFp22W4Gr57m5HRwQbgUNz+EQYdcUxPVCqlXvd2GVR
-   lyrYjQyjrO+4n4mdn6+EkkY7Q+bNgupzONcK0K2THpJ/8kH4F1bzHuklb
-   Wab6aVcHNemKzU2wr4QQmkCfmcBaF57QQtnO+VNp/21a1CNFC2aAtzA+m
-   WX1hPxEoQtlJ4uAYMYv5QsMnOeQFHzmb0ZwK9E0XArY695w3xt/IR4a89
-   xhedKaDenc4aHSCBMowdc2GReTNHJnztNRmZVpAtpcwtc3amITZhEia5J
-   JCnlabpZGMqTcq6MWiDaSpeHJjuYH7ZJ9dkqbY/0arbCx+N4+n5cFFxX1
-   A==;
-X-CSE-ConnectionGUID: v03uKtZySQqVumQN259Geg==
-X-CSE-MsgGUID: KvcKtjf+RoSp+z8gQLLy0A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11296"; a="52968916"
-X-IronPort-AV: E=Sophos;i="6.12,262,1728975600"; 
-   d="scan'208";a="52968916"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Dec 2024 23:13:10 -0800
-X-CSE-ConnectionGUID: tjJ4oGq/TxiAlYu70foCSg==
-X-CSE-MsgGUID: DIwt8VzPQ9uD3XWL2Y6U6w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,262,1728975600"; 
-   d="scan'208";a="99515422"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.241.34]) ([10.124.241.34])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Dec 2024 23:13:07 -0800
-Message-ID: <5c5180cb-9bbe-4fa7-b109-5dad2ca9516a@linux.intel.com>
-Date: Wed, 25 Dec 2024 15:13:04 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="npIoxWvE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4453CC4CEE2;
+	Thu, 26 Dec 2024 22:39:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1735252742;
+	bh=ghvEWc+CY8H0nlr1RDV+hoiNH9dMWvFeMfs/OYEjr0c=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=npIoxWvEhlwQcxUAJn3Nn3nExWdThmhOt2E3wRP7AZsLMCDTOena4lCfjCB9ObV8v
+	 +8bE1nbr+FQ1W7fnOUrWuvP2oHnH7uo+IU9/7ihoPLVUd7Fuscag0H9l2Li/ZJnPUB
+	 OGwE6kkyR3nFgdyq/zE+5m+dssgj1faxr4E09/z6l+59WjBAwRhtTDgcHmseYRV1He
+	 RzosjZXEZzVzbWoO64u1m2VLhaDoy1b+yEsd9w1D9iZvpwywHLnqSy7Y0XlsFxUAfK
+	 FN0zYX+vf6/O4rB9trQPnTfNnv+pE0ETlF7UnvmPhPeR26utG/qLPpOtWbGne+xu7Y
+	 PxLL0kAPjIZrg==
+From: Bjorn Andersson <andersson@kernel.org>
+To: Konrad Dybcio <konradybcio@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Amit Kucheria <amitk@kernel.org>,
+	Thara Gopinath <thara.gopinath@gmail.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Lukasz Luba <lukasz.luba@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+	=?UTF-8?q?Barnab=C3=A1s=20Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+Cc: linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Dang Huynh <danct12@riseup.net>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	=?UTF-8?q?Otto=20Pfl=C3=BCger?= <otto.pflueger@abscue.de>,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+	Stephan Gerhold <stephan.gerhold@linaro.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v11 0/4] Add MSM8917/PM8937/Redmi 5A
+Date: Thu, 26 Dec 2024 16:38:32 -0600
+Message-ID: <173525273259.1449028.18344250660598461023.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.47.1
+In-Reply-To: <20241221-msm8917-v11-0-901a74db4805@mainlining.org>
+References: <20241221-msm8917-v11-0-901a74db4805@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, eric.auger@redhat.com, nicolinc@nvidia.com,
- chao.p.peng@linux.intel.com, iommu@lists.linux.dev, vasant.hegde@amd.com,
- will@kernel.org
-Subject: Re: [PATCH v6 09/14] iommu/vt-d: Add IOMMU_HWPT_ALLOC_PASID support
-To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
- kevin.tian@intel.com
-References: <20241219132746.16193-1-yi.l.liu@intel.com>
- <20241219132746.16193-10-yi.l.liu@intel.com>
- <f4c1ca6a-4ed5-49a7-b399-dd148cfb16bd@linux.intel.com>
- <acb2bead-1597-4fdd-b949-26eab2e62b0a@intel.com>
- <38e26d9f-0727-4b15-8e1d-03d262c15c8c@linux.intel.com>
- <c10755cb-6966-479b-b68c-9bc022c894d9@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <c10755cb-6966-479b-b68c-9bc022c894d9@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On 2024/12/25 12:30, Yi Liu wrote:
-> On 2024/12/25 09:02, Baolu Lu wrote:
->> On 12/24/24 19:35, Yi Liu wrote:
->>>> Another related consideration is the support for page faults in nested
->>>> domains once PASID is available in user space. Would it be 
->>>> reasonable to
->>>> support page faults for nested domains?
->>>
->>> yeah, it's good to discuss it.
->>>
->>>> If so, perhaps it's time to open intel_iommu_domain_alloc_nested() to
->>>> support IOMMU_HWPT_FAULT_ID_VALID when PRI is enabled on the device?
->>>
->>> IMHO, the PRQ support for nested domains requires some more facility. 
->>> PRQ
->>> can happen at either stage-1 or stage-2, iommu driver may need to tell
->>> it and forward to the correct domain (nested domain or parent 
->>> domain). Or
->>> the stage-2 is always pinned just as the VFIO/iommufd does. Hence, 
->>> any PRQ
->>> happens under nested translation should be due to stage-1.
->>
->> The parent domain is currently always pinned and does not yet support
->> page faults. Therefore, when a page fault occurs within a nested domain,
->> it apparently should be routed to user space...
->>
->> If we decide to support page faults on the stage-2 domain in the future,
->> we will need to figure out the correct destination of each page fault
->> and route it accordingly, either to the parent domain or the user space
->> nested domain. Hardware assistance would be beneficial, otherwise the
->> software may need to traverse the parent domain, which is not
->> performance friendly.
+
+On Sat, 21 Dec 2024 00:40:47 +0100, Barnabás Czémán wrote:
+> This patch series add support for MSM8917 soc with PM8937 and
+> Xiaomi Redmi 5A (riva).
 > 
-> this is my question. Is it still true the parent domain is always pinned
-> after the below series? If yes, then it's fine to enable IOPF for nested
-> domain.
 > 
-> https://lore.kernel.org/linux-iommu/20241015-jag-iopfv8-v4-0- 
-> b696ca89ba29@kernel.org/
 
-Then, perhaps we could enforce this in iommufd for a short-term purpose?
+Applied, thanks!
 
-When allocating a hwpt in iommufd, we should enforce that the flags
-IOMMU_HWPT_ALLOC_NEST_PARENT and IOMMU_HWPT_FAULT_ID_VALID cannot be set
-at the same time.
+[1/4] arm64: dts: qcom: Add PM8937 PMIC
+      commit: 89f6e0251d3a84aef8380f03009ac1bf182ec206
+[2/4] arm64: dts: qcom: Add initial support for MSM8917
+      commit: 7f18b1ea7987ff232bc53a830d0aa81ea31d762f
+[3/4] dt-bindings: arm: qcom: Add Xiaomi Redmi 5A
+      commit: 88efce82a55d61df76e2fc4bdc68459c0b3b7581
+[4/4] arm64: dts: qcom: Add Xiaomi Redmi 5A
+      commit: 26633b5820569a5e7bb29d713e978107f4a2bd94
 
----
-baolu
+Best regards,
+-- 
+Bjorn Andersson <andersson@kernel.org>
