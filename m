@@ -1,134 +1,120 @@
-Received: from omta34.uswest2.a.cloudfilter.net (omta34.uswest2.a.cloudfilter.net [35.89.44.33])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FD031F473E
-	for <iommu@lists.linux.dev>; Fri, 27 Dec 2024 14:36:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=35.89.44.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C23FD1FB3;
+	Fri, 27 Dec 2024 17:42:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735310216; cv=none; b=uXdzf6ih+IEBESMPDDGQv6tmo7vS4B06Qk8xlWb/gL2lC1WXeK2KtERtMdNu6Ke0gZp8StYtzWbYZZ6N6oOlpnW/I2wG82vPpqCa8rVWpOJEd+QzsoLstdDYnDSs/x2icbpvSikMloSshocBJEz8aUe+0M53068q1Q8ggyfzKko=
+	t=1735321342; cv=none; b=L801y9ufbTGKyalWW3C40SpLiJ4vAA2JlaqF0mB5GvZRR8D5JX6PANKQFwHGAJ6WmFX9p1IiDpcJNINkyAfHjFNfVLWOm3yqSktvveCjHtaXVgohDjC1qTi+ObxHs+poV5ydX5dtEC5ylu7fFrTKsKU7bBHtXmakSS98lbgie4w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735310216; c=relaxed/simple;
-	bh=sCDFXA2d6qIG0HjSf+icovIGvMld5LVg65YZVLam7vw=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=mfOWtG2sQHZ/rf1tkYRsZ4YlEIHy/+Wf6bBok58l8U/LnX4Ewy2/rFqr0uDlaUVI6VIXpRSefjZTUlLhe0ntqsx86ZsfyK6u5+k+yQdI/ELS2z9VBZhkn5iB+ysweUB2Pql05hCJuueG5vbmCi8AkFiZ0qKXvcMsWHn7H8fBcf4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linumiz.com; spf=pass smtp.mailfrom=linumiz.com; dkim=pass (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b=YG1iVMf9; arc=none smtp.client-ip=35.89.44.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linumiz.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linumiz.com
+	s=arc-20240116; t=1735321342; c=relaxed/simple;
+	bh=0bFdHqCzn5f2CvXlfqGybIGbQK8L/GTLyJ6yIAZPZGs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CqTuIyWLQTrY12Cyk2+00snUpUurTqylBk5/tkx2sd01epGTZxCLgnaXS69PnriL28TmqfizkkhSWIpPQiFTd8N+Yr3olLIbd5j58krnCOlDxEVH5Hv7ZDlPXZsyIq75ekj9F8BsBSu6mb9fVyUU3zrPtb3cUfxLG1LldFkr25k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uerjnRn9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b="YG1iVMf9"
-Received: from eig-obgw-6004a.ext.cloudfilter.net ([10.0.30.197])
-	by cmsmtp with ESMTPS
-	id R9uLtURqG09RnRBSQtrmTB; Fri, 27 Dec 2024 14:36:54 +0000
-Received: from md-in-79.webhostbox.net ([43.225.55.182])
-	by cmsmtp with ESMTPS
-	id RBSMtg5awWdNZRBSOtiEw0; Fri, 27 Dec 2024 14:36:53 +0000
-X-Authority-Analysis: v=2.4 cv=FtTO/Hrq c=1 sm=1 tr=0 ts=676ebb85
- a=LfuyaZh/8e9VOkaVZk0aRw==:117 a=kofhyyBXuK/oEhdxNjf66Q==:17
- a=IkcTkHD0fZMA:10 a=RZcAm9yDv7YA:10 a=-pn6D5nKLtMA:10 a=VwQbUJbxAAAA:8
- a=vU9dKmh3AAAA:8 a=CPlf_J6x6-pEMq4byrgA:9 a=QEXdDO2ut3YA:10
- a=rsP06fVo5MYu2ilr0aT5:22 a=ZCPYImcxYIQFgLOT52_G:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=linumiz.com
-	; s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-	References:To:Subject:Cc:MIME-Version:Date:Message-ID:Sender:Reply-To:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=wKy2kDXPQg5LSJ+WcxFbAZTOLG7mg+guZsqD/SyCt7Y=; b=YG1iVMf9n8nyhxGhXJ9JXjShIz
-	CyyVHB+uRKIVJ9+f3o66/63AWQ+e2tf91kaQlq03ZafdNpCFtSO20QO3/hkxSe3kZz2cMuN+OzSV/
-	gCH7NCp2ujKMEdg+x2fu58mSTaHD3ySNgyVpsQoPtbpHHFpHKT0CqpPYN+MJQ2Y2GY4JyMpuRZHsf
-	QfzCR7j02pPHzgiDiLeZeI3ubt//2OyB5LFWqTbPTRkhmqJoJi+H28/pzQGqEdZlyWTWH6CgYlj7m
-	YYTVSgzuV+COIIuZLeZcXAFZ+Qdrq9iKj3Z4UoIxMCpDDNX1ckqDTEzZVBcEcp5tYbwQ5s/Ibe/N6
-	9vkQx57Q==;
-Received: from [122.165.245.213] (port=40816 helo=[192.168.1.5])
-	by md-in-79.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.96.2)
-	(envelope-from <parthiban@linumiz.com>)
-	id 1tRBS8-003aTF-2w;
-	Fri, 27 Dec 2024 20:06:36 +0530
-Message-ID: <314b6bbe-613e-41a6-955e-50db6e11ef8e@linumiz.com>
-Date: Fri, 27 Dec 2024 20:06:30 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uerjnRn9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52404C4CED0;
+	Fri, 27 Dec 2024 17:42:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1735321342;
+	bh=0bFdHqCzn5f2CvXlfqGybIGbQK8L/GTLyJ6yIAZPZGs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=uerjnRn9qAtLEzUGvZUSOs4DGdLkb3mptAl+BnZV7M2SiEq/UIHP/l0jB2/M0W039
+	 cJliRm9pTDW4UIfHiEjFo6x8zVtR9urPmcZNvivkXRGKgTaBmSVnVtlQZyurpnuZH7
+	 ENOWgO44kAx4z4xp0qAJtcVsJNdBm7N90JE935SHx/bA/ZVe2hKaF3LcOMU7Hh1MYg
+	 Ro8u/DqH21EFFVPzpb1bZmIkCLZ0fYL8S/r9GY7DpWgmluLOItuC9q2xLHgwIS4kkJ
+	 jJhuQMuzsppKHclV2BRo23cKrw+fR8CbGdTG3n90j3sMPl80w7iYFi70InS2zL3imK
+	 WJKmnYJPtwe3g==
+Date: Fri, 27 Dec 2024 17:42:14 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Parthiban Nallathambi <parthiban@linumiz.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Maxime Ripard <mripard@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Vinod Koul <vkoul@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-clk@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-phy@lists.infradead.org
+Subject: Re: [PATCH RESEND 01/22] dt-bindings: iommu: sun50i: remove resets
+ from required property
+Message-ID: <20241227-backward-sandfish-3734dadba8a4@spud>
+References: <20241227-a133-display-support-v1-0-abad35b3579c@linumiz.com>
+ <20241227-a133-display-support-v1-1-abad35b3579c@linumiz.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: parthiban@linumiz.com, iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-phy@lists.infradead.org
-Subject: Re: [PATCH RESEND 00/22] Add support for A100/A133 display
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Samuel Holland <samuel@sholland.org>, Maxime Ripard <mripard@kernel.org>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
- Simona Vetter <simona@ffwll.ch>, Michael Turquette
- <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>,
- Philipp Zabel <p.zabel@pengutronix.de>,
- Linus Walleij <linus.walleij@linaro.org>, Vinod Koul <vkoul@kernel.org>,
- Kishon Vijay Abraham I <kishon@kernel.org>
-References: <20241227-a133-display-support-v1-0-abad35b3579c@linumiz.com>
-Content-Language: en-US
-From: Parthiban <parthiban@linumiz.com>
-Organization: Linumiz
-In-Reply-To: <20241227-a133-display-support-v1-0-abad35b3579c@linumiz.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - md-in-79.webhostbox.net
-X-AntiAbuse: Original Domain - lists.linux.dev
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - linumiz.com
-X-BWhitelist: no
-X-Source-IP: 122.165.245.213
-X-Source-L: No
-X-Exim-ID: 1tRBS8-003aTF-2w
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.5]) [122.165.245.213]:40816
-X-Source-Auth: parthiban@linumiz.com
-X-Email-Count: 10
-X-Org: HG=dishared_whb_net_legacy;ORG=directi;
-X-Source-Cap: bGludW1jbWM7aG9zdGdhdG9yO21kLWluLTc5LndlYmhvc3Rib3gubmV0
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfGUo+//Y2l3RKngJ+CanngYuaa/Mo259i8Hupo0RoQgeo1QqgQbHUsEERKEv2Q4NpmqWzshlRS03bGfQneQaHO/V28m1a/C75QgGSBnL0kXnAi2riHPM
- zxJzIXeqpp0Iur6FqaGT4BblbQJagc6vZXc+Gq5CVbn7pOOqMN/5nEYzeU8aEBMmbU4/0RGWuLxjgIgyTk3ekfB26u39UKkqFJ8=
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="jmNM+Wy3mOmacT9A"
+Content-Disposition: inline
+In-Reply-To: <20241227-a133-display-support-v1-1-abad35b3579c@linumiz.com>
 
-On 12/27/24 6:30 PM, Parthiban Nallathambi wrote:
-> This series depends on [1] for the eMMC/MMC controller to work and
-> [2] (lined up for 6.14) which adds support for the sram nodes and
-> display engine extends it's usage. Idea of this series to get initial
-> feedback and adjust, which will be rebased for 6.14 once [2] is merged.
-> 
-> This patch series adds support for A133 display pipeline based on
-> LVDS. dt-bindigs are organized in the start and later with code
-> changes.
-> 
-> PHY is shared between DSI and LVDS, so to control the PHY specific
-> to DSI/LVDS, phy_ops set_mode is introduced. To enable the DSI
-> using set_mode, analog control register MIPI Enable is used, which
-> may not be available for A31 (shares the same driver).
-> 
-> Otherwise, A133 also got hidden independent display engine i.e
-> mixer + tcon top to handle parallel display. But this patch series
-> adds only support for the 1 mixer which is documented.
-> 
-> [1]: https://lore.kernel.org/linux-sunxi/20241109003739.3440904-1-masterr3c0rd@epochal.quest/
-> [2]: https://lore.kernel.org/linux-sunxi/20241218-a100-syscon-v2-0-dae60b9ce192@epochal.quest/
-> 
+
+--jmNM+Wy3mOmacT9A
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Dec 27, 2024 at 06:30:50PM +0530, Parthiban Nallathambi wrote:
+> iommu in a133/a100 does not have reset control. remove it
+> from required property to make it optional.
+
+Merge this with patch 2, making the reset required for the existing
+devices and not permitted (false) for your new devices please.
+
+>=20
 > Signed-off-by: Parthiban Nallathambi <parthiban@linumiz.com>
-Apologize for polluting with resend again. My internal mail server got blocked due to
-volume count, which resulted in incomplete series again.
+> ---
+>  Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml |=
+ 1 -
+>  1 file changed, 1 deletion(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-=
+iommu.yaml b/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-io=
+mmu.yaml
+> index a8409db4a3e3..03176f68485b 100644
+> --- a/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.y=
+aml
+> +++ b/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.y=
+aml
+> @@ -42,7 +42,6 @@ required:
+>    - reg
+>    - interrupts
+>    - clocks
+> -  - resets
+> =20
+>  additionalProperties: false
+> =20
+>=20
+> --=20
+> 2.39.5
+>=20
 
-I will fix the mail server issue before resending the series. Sorry.
+--jmNM+Wy3mOmacT9A
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks,
-Parthiban
+-----BEGIN PGP SIGNATURE-----
 
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZ27m9gAKCRB4tDGHoIJi
+0gDTAQCkD8Xhuyviy0vhXeZ4H+KJGL4kLQQgH/BbJQrWmtEiKgEA0tU2Y5TQpef1
+SQ6NyzqbRTQrGqT89fyibG21/6vErQs=
+=VGkJ
+-----END PGP SIGNATURE-----
+
+--jmNM+Wy3mOmacT9A--
