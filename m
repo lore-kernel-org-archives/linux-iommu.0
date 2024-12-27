@@ -1,107 +1,134 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from omta34.uswest2.a.cloudfilter.net (omta34.uswest2.a.cloudfilter.net [35.89.44.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03C8628691;
-	Fri, 27 Dec 2024 13:16:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FD031F473E
+	for <iommu@lists.linux.dev>; Fri, 27 Dec 2024 14:36:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=35.89.44.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735305408; cv=none; b=PlgxlF9o4OP8UpLV5OKWu82TvWaARadk63jDbvh7AH66pFwPMoOkH2tayM4pzr8PvFk5gLBkCUEEM7Y4kJdPDiNdcqVE4HrXbderVXnpHNetmbSMfcC0kSnbmzKszDKOWW//xHnPUiMAtkhPXBXtb3ZM9WzRr9rWspH6014pIlI=
+	t=1735310216; cv=none; b=uXdzf6ih+IEBESMPDDGQv6tmo7vS4B06Qk8xlWb/gL2lC1WXeK2KtERtMdNu6Ke0gZp8StYtzWbYZZ6N6oOlpnW/I2wG82vPpqCa8rVWpOJEd+QzsoLstdDYnDSs/x2icbpvSikMloSshocBJEz8aUe+0M53068q1Q8ggyfzKko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735305408; c=relaxed/simple;
-	bh=Z7yi+afmx/uhCK7HF/9WlkjMbcxfvg7Jvqse7KgInuc=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=vGX/PUG5rv4Ls6tD2Sgou/Q0YnaazLM069CHueKT8unne3ljOb/42FVIthfRiKIq4Dq7lhjhzzde2ES7BWVgk5yKrpFhQkK47m1efyr0JqsOOxbyENIUe4m9CeonLSGTE3GaRaDLlydOoMUK0x4dMFgsi6fXb44aEsAAZD7Dm1Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y8P2gXOn; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1735310216; c=relaxed/simple;
+	bh=sCDFXA2d6qIG0HjSf+icovIGvMld5LVg65YZVLam7vw=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=mfOWtG2sQHZ/rf1tkYRsZ4YlEIHy/+Wf6bBok58l8U/LnX4Ewy2/rFqr0uDlaUVI6VIXpRSefjZTUlLhe0ntqsx86ZsfyK6u5+k+yQdI/ELS2z9VBZhkn5iB+ysweUB2Pql05hCJuueG5vbmCi8AkFiZ0qKXvcMsWHn7H8fBcf4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linumiz.com; spf=pass smtp.mailfrom=linumiz.com; dkim=pass (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b=YG1iVMf9; arc=none smtp.client-ip=35.89.44.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linumiz.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linumiz.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y8P2gXOn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A3BC4CEDD;
-	Fri, 27 Dec 2024 13:16:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1735305407;
-	bh=Z7yi+afmx/uhCK7HF/9WlkjMbcxfvg7Jvqse7KgInuc=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=Y8P2gXOnGvjWSR7pppbIn9+uiy3Y9Z0vluLjkcnTQQIn84OguGqJjddlR0L88yLuL
-	 6V421rGIxpejqKE1L75webWki/DzFlCQVYLG2EEYZUu5aMg7m/bqDDZBCa+9e0gYRc
-	 GQvakfM4lr1cf5OTDgZLfuizLhngqWC04+vFgSChXzU7C2wkSRI+1Y6TOZu5bddOva
-	 HpnmhmiemPafHX9z1Btzexlk1nP9OWD4z8Am666h9i+Xn7O6XfbI8llWno+XkcbsLg
-	 ufOCrrp0ZZ6Vo/+/3GmhHKoAhS02PuJ3f8CVCDc+tmhHOxbt6Qx7e2+DPzz9eMQkOs
-	 OKmBdYqFoXs3w==
-Date: Fri, 27 Dec 2024 07:16:45 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b="YG1iVMf9"
+Received: from eig-obgw-6004a.ext.cloudfilter.net ([10.0.30.197])
+	by cmsmtp with ESMTPS
+	id R9uLtURqG09RnRBSQtrmTB; Fri, 27 Dec 2024 14:36:54 +0000
+Received: from md-in-79.webhostbox.net ([43.225.55.182])
+	by cmsmtp with ESMTPS
+	id RBSMtg5awWdNZRBSOtiEw0; Fri, 27 Dec 2024 14:36:53 +0000
+X-Authority-Analysis: v=2.4 cv=FtTO/Hrq c=1 sm=1 tr=0 ts=676ebb85
+ a=LfuyaZh/8e9VOkaVZk0aRw==:117 a=kofhyyBXuK/oEhdxNjf66Q==:17
+ a=IkcTkHD0fZMA:10 a=RZcAm9yDv7YA:10 a=-pn6D5nKLtMA:10 a=VwQbUJbxAAAA:8
+ a=vU9dKmh3AAAA:8 a=CPlf_J6x6-pEMq4byrgA:9 a=QEXdDO2ut3YA:10
+ a=rsP06fVo5MYu2ilr0aT5:22 a=ZCPYImcxYIQFgLOT52_G:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=linumiz.com
+	; s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+	References:To:Subject:Cc:MIME-Version:Date:Message-ID:Sender:Reply-To:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=wKy2kDXPQg5LSJ+WcxFbAZTOLG7mg+guZsqD/SyCt7Y=; b=YG1iVMf9n8nyhxGhXJ9JXjShIz
+	CyyVHB+uRKIVJ9+f3o66/63AWQ+e2tf91kaQlq03ZafdNpCFtSO20QO3/hkxSe3kZz2cMuN+OzSV/
+	gCH7NCp2ujKMEdg+x2fu58mSTaHD3ySNgyVpsQoPtbpHHFpHKT0CqpPYN+MJQ2Y2GY4JyMpuRZHsf
+	QfzCR7j02pPHzgiDiLeZeI3ubt//2OyB5LFWqTbPTRkhmqJoJi+H28/pzQGqEdZlyWTWH6CgYlj7m
+	YYTVSgzuV+COIIuZLeZcXAFZ+Qdrq9iKj3Z4UoIxMCpDDNX1ckqDTEzZVBcEcp5tYbwQ5s/Ibe/N6
+	9vkQx57Q==;
+Received: from [122.165.245.213] (port=40816 helo=[192.168.1.5])
+	by md-in-79.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96.2)
+	(envelope-from <parthiban@linumiz.com>)
+	id 1tRBS8-003aTF-2w;
+	Fri, 27 Dec 2024 20:06:36 +0530
+Message-ID: <314b6bbe-613e-41a6-955e-50db6e11ef8e@linumiz.com>
+Date: Fri, 27 Dec 2024 20:06:30 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: linux-phy@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
- dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, 
- Kishon Vijay Abraham I <kishon@kernel.org>, 
- Jernej Skrabec <jernej.skrabec@gmail.com>, devicetree@vger.kernel.org, 
- Chen-Yu Tsai <wens@csie.org>, Joerg Roedel <joro@8bytes.org>, 
- linux-gpio@vger.kernel.org, Vinod Koul <vkoul@kernel.org>, 
- iommu@lists.linux.dev, Linus Walleij <linus.walleij@linaro.org>, 
- Simona Vetter <simona@ffwll.ch>, Stephen Boyd <sboyd@kernel.org>, 
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- David Airlie <airlied@gmail.com>, Conor Dooley <conor+dt@kernel.org>, 
- linux-sunxi@lists.linux.dev, Maxime Ripard <mripard@kernel.org>, 
- linux-clk@vger.kernel.org, Samuel Holland <samuel@sholland.org>, 
- Michael Turquette <mturquette@baylibre.com>, 
- Philipp Zabel <p.zabel@pengutronix.de>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Thomas Zimmermann <tzimmermann@suse.de>, 
- linux-arm-kernel@lists.infradead.org, Will Deacon <will@kernel.org>
-To: Parthiban Nallathambi <parthiban@linumiz.com>
-In-Reply-To: <20241227-a133-display-support-v1-3-13b52f71fb14@linumiz.com>
-References: <20241227-a133-display-support-v1-0-13b52f71fb14@linumiz.com>
- <20241227-a133-display-support-v1-3-13b52f71fb14@linumiz.com>
-Message-Id: <173530540581.3097883.7476966654699325435.robh@kernel.org>
-Subject: Re: [PATCH 03/22] dt-bindings: clock: sun8i de2 clock: Add PLL com
- clock
+User-Agent: Mozilla Thunderbird
+Cc: parthiban@linumiz.com, iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-phy@lists.infradead.org
+Subject: Re: [PATCH RESEND 00/22] Add support for A100/A133 display
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, Maxime Ripard <mripard@kernel.org>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Michael Turquette
+ <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>,
+ Philipp Zabel <p.zabel@pengutronix.de>,
+ Linus Walleij <linus.walleij@linaro.org>, Vinod Koul <vkoul@kernel.org>,
+ Kishon Vijay Abraham I <kishon@kernel.org>
+References: <20241227-a133-display-support-v1-0-abad35b3579c@linumiz.com>
+Content-Language: en-US
+From: Parthiban <parthiban@linumiz.com>
+Organization: Linumiz
+In-Reply-To: <20241227-a133-display-support-v1-0-abad35b3579c@linumiz.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - md-in-79.webhostbox.net
+X-AntiAbuse: Original Domain - lists.linux.dev
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - linumiz.com
+X-BWhitelist: no
+X-Source-IP: 122.165.245.213
+X-Source-L: No
+X-Exim-ID: 1tRBS8-003aTF-2w
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.1.5]) [122.165.245.213]:40816
+X-Source-Auth: parthiban@linumiz.com
+X-Email-Count: 10
+X-Org: HG=dishared_whb_net_legacy;ORG=directi;
+X-Source-Cap: bGludW1jbWM7aG9zdGdhdG9yO21kLWluLTc5LndlYmhvc3Rib3gubmV0
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfGUo+//Y2l3RKngJ+CanngYuaa/Mo259i8Hupo0RoQgeo1QqgQbHUsEERKEv2Q4NpmqWzshlRS03bGfQneQaHO/V28m1a/C75QgGSBnL0kXnAi2riHPM
+ zxJzIXeqpp0Iur6FqaGT4BblbQJagc6vZXc+Gq5CVbn7pOOqMN/5nEYzeU8aEBMmbU4/0RGWuLxjgIgyTk3ekfB26u39UKkqFJ8=
 
-
-On Fri, 27 Dec 2024 16:37:50 +0530, Parthiban Nallathambi wrote:
-> Some platforms like A100/A133 also uses pll-com clock as additional
-> clock source for the display clock. This is not documents both in
-> user manual and DE 2.0 specification. These changes are mainly from
-> vendor BSP.
+On 12/27/24 6:30 PM, Parthiban Nallathambi wrote:
+> This series depends on [1] for the eMMC/MMC controller to work and
+> [2] (lined up for 6.14) which adds support for the sram nodes and
+> display engine extends it's usage. Idea of this series to get initial
+> feedback and adjust, which will be rebased for 6.14 once [2] is merged.
+> 
+> This patch series adds support for A133 display pipeline based on
+> LVDS. dt-bindigs are organized in the start and later with code
+> changes.
+> 
+> PHY is shared between DSI and LVDS, so to control the PHY specific
+> to DSI/LVDS, phy_ops set_mode is introduced. To enable the DSI
+> using set_mode, analog control register MIPI Enable is used, which
+> may not be available for A31 (shares the same driver).
+> 
+> Otherwise, A133 also got hidden independent display engine i.e
+> mixer + tcon top to handle parallel display. But this patch series
+> adds only support for the 1 mixer which is documented.
+> 
+> [1]: https://lore.kernel.org/linux-sunxi/20241109003739.3440904-1-masterr3c0rd@epochal.quest/
+> [2]: https://lore.kernel.org/linux-sunxi/20241218-a100-syscon-v2-0-dae60b9ce192@epochal.quest/
 > 
 > Signed-off-by: Parthiban Nallathambi <parthiban@linumiz.com>
-> ---
->  .../devicetree/bindings/clock/allwinner,sun8i-a83t-de2-clk.yaml         | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+Apologize for polluting with resend again. My internal mail server got blocked due to
+volume count, which resulted in incomplete series again.
 
-My bot found errors running 'make dt_binding_check' on your patch:
+I will fix the mail server issue before resending the series. Sorry.
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/clock/allwinner,sun8i-a83t-de2-clk.example.dtb: clock@1000000: clocks: [[4294967295, 48], [4294967295, 101]] is too short
-	from schema $id: http://devicetree.org/schemas/clock/allwinner,sun8i-a83t-de2-clk.yaml#
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/clock/allwinner,sun8i-a83t-de2-clk.example.dtb: clock@1000000: clock-names: ['bus', 'mod'] is too short
-	from schema $id: http://devicetree.org/schemas/clock/allwinner,sun8i-a83t-de2-clk.yaml#
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/bus/allwinner,sun50i-a64-de2.example.dtb: clock@0: clocks: [[4294967295, 52], [4294967295, 99]] is too short
-	from schema $id: http://devicetree.org/schemas/clock/allwinner,sun8i-a83t-de2-clk.yaml#
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/bus/allwinner,sun50i-a64-de2.example.dtb: clock@0: clock-names: ['bus', 'mod'] is too short
-	from schema $id: http://devicetree.org/schemas/clock/allwinner,sun8i-a83t-de2-clk.yaml#
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20241227-a133-display-support-v1-3-13b52f71fb14@linumiz.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+Thanks,
+Parthiban
 
