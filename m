@@ -1,288 +1,186 @@
-Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from omta040.useast.a.cloudfilter.net (omta040.useast.a.cloudfilter.net [44.202.169.39])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA65E13B58F
-	for <iommu@lists.linux.dev>; Fri, 27 Dec 2024 08:37:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64648157485
+	for <iommu@lists.linux.dev>; Fri, 27 Dec 2024 11:08:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.202.169.39
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735288675; cv=none; b=l+hseWyCeYRL2Joz1V90MW286PlLTiqzZ4VVb/Fu8/q+kLJ2IV5Qhj3fsPCQIhzT79R8Jytyten5Vl60wFuhxLwOfNfqnQdIvoLKfADB2pe0zJkc9uDa0mJR2aWtE4M349ae5v6Z08KqLINM5ejYF+OrCJTfDLbgMmJ6YUKUnoA=
+	t=1735297705; cv=none; b=ErQ+gIqub84y5eyx341xDwtFyOQj0thu8/tsWHyxvGNoh79ryhAjElZ5TVscAyYr8BITycUqeQ73SxFs5BSaJ74nOMgJIgqojoSSPp27x1ru8BTscTg6nFicEfgJuUKQdRZWyjKVwZu5Vjqy7kxtk5vaL82AIMf8t1dnsk5btgk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735288675; c=relaxed/simple;
-	bh=E5XpsxsAehxwwveYea2HrjGPTiwyMIJR57dEiIRTeDY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GMoHwonSbG0wDZ72TbymFFcoM0m+io/Gcv4qI/b9Ql9Xolpqp0tiDvffg9idC2dUa4v80ErctWV7CIwk/scCgiFOlKXhFYzqW29MCb4YU0yb+97bR8cKnKd7xf9+YM8kD5LEgJTxV6mWzjZifNFFKG+J5Nx/81mMHO2ce6nhqAk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=TZ43yEG7; arc=none smtp.client-ip=209.85.166.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+	s=arc-20240116; t=1735297705; c=relaxed/simple;
+	bh=s6pgeYhBovYKLxAfzogU3RAM9N8F/zvXTKruRhJeLms=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=H8YsTNb3Bu4eI0kVbpBHijCSUwxlfpzZTvYdcLNQtOywiXNQC/n2Hy8hZO9Xo2kgmy9KgGYXoHE2tHnKEUDa4+iAz3H6PTI9drsJ9Zqy2YjcV9D3Pany6qClMHyPIz5k2DzoM8DVkadjxwW7qm7f7owLuIoZix4aZ5xMYavex00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linumiz.com; spf=pass smtp.mailfrom=linumiz.com; dkim=pass (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b=fkZWFWTG; arc=none smtp.client-ip=44.202.169.39
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linumiz.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linumiz.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="TZ43yEG7"
-Received: by mail-io1-f52.google.com with SMTP id ca18e2360f4ac-844eac51429so588158339f.2
-        for <iommu@lists.linux.dev>; Fri, 27 Dec 2024 00:37:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1735288673; x=1735893473; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nSZdTXx1oWeAD96ChZR/AxHkCGEYuuBJCiYM9eU7Hho=;
-        b=TZ43yEG76DtR5FybDQlT7ppmcvZZWy9EKjlpfUwL3z9nV2ZKAXOrQiCXuFlairb/VI
-         akEb7cTcExbAUSsD3zOAJcLb5gaURO2V/pNfeK0wCDl2WutYlQy33cSuIkNUfk6o4isB
-         kBrR2i0Aw5P346dEJmNcGEj50M9yG2l6yrt3nN13sjRfjH+j8ghMHGk+9PhqRpK+qO13
-         Gzo12b7RhL9w8kKjtd1PliB3hdfLfWrjx54uUJtXBDDmCHOI1zJuxggz41mxN1CDuv5k
-         VAmwcIMXU34DbIwqHoPnX3jSwDBYhmC1couDZcBNkFKykeV55PUgIgZU/7XXEqLKz+5i
-         ANlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1735288673; x=1735893473;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nSZdTXx1oWeAD96ChZR/AxHkCGEYuuBJCiYM9eU7Hho=;
-        b=k602mKWASuWnvW0LK/KIZTJAmKJYdjRZvgpnT3wi4o+oqnP5PnqN6Vk1NfYnQgux/v
-         nJnD+Y7xY1tIp+KHrJP42ukMysztIK8sVT6JxZjvwto8RvkzgXBxBUG74CAEhIgudk4n
-         mizXlclWXxqPH7qDUj25W4+gmfG2wSStb3fyTyvhnJ4xdaqHhzkQqQqXrjOrksNosFWg
-         AgszL6vHabMAaIeDTq9opSeDjDf+aftUIu5z/fMW3L4CZhN1o3+coiQ08VgbvV2Ruynv
-         flCfihTE770G6p/5QZc2qH5rMeoy5Ppn4v9cPh3c/vlGfNNB8vGf18o9a29jCw5RQeQ4
-         4vIA==
-X-Forwarded-Encrypted: i=1; AJvYcCU7YiJMQmPxriTT6WsvblrS5YaRRiIFBZJLb8pZAkZIi6E6Lo/0z0wkWWuwYBdTUD7IXcBjVA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwhIL1cLhx4DYNaDyJ23gtY4PToX33qpnz9Md4r2o/cXIltInER
-	HdF7oeql/8c5DspEGHxjlZ40EphVp1Ja22cS3HcmcdCIJzIYsfMuC2qgyzSy/0H4a02MrnqZy1O
-	c6GfzJLE75vASZi99GLZlD9WDhHVV9n6gnAspUg==
-X-Gm-Gg: ASbGncv5za3GRnkR3XxZqi+wOvXrNI7vKefZrsZ8WZIaEj2kM3gskHZ4Hyi/Yc5zTot
-	o2dfd2Cv0G0KBt1YDGr34hQ5faJAYroTHUQ62eiHA
-X-Google-Smtp-Source: AGHT+IF90MNCmZOGukHpWTbUxyha7YkUKCqLcQ50bedAQaFq1n4y6BkEM/676ICpqo7GYQyEkbuSs6cWm/+EFcva0PE=
-X-Received: by 2002:a05:6602:1511:b0:844:b6bd:4b35 with SMTP id
- ca18e2360f4ac-8499e2ac0e5mr2763403339f.0.1735288672940; Fri, 27 Dec 2024
- 00:37:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b="fkZWFWTG"
+Received: from eig-obgw-6006a.ext.cloudfilter.net ([10.0.30.182])
+	by cmsmtp with ESMTPS
+	id QguitXoxInNFGR8CbtXD6x; Fri, 27 Dec 2024 11:08:21 +0000
+Received: from md-in-79.webhostbox.net ([43.225.55.182])
+	by cmsmtp with ESMTPS
+	id R8CXtWQt3GAm4R8CYtgpPn; Fri, 27 Dec 2024 11:08:19 +0000
+X-Authority-Analysis: v=2.4 cv=d5HzywjE c=1 sm=1 tr=0 ts=676e8aa3
+ a=LfuyaZh/8e9VOkaVZk0aRw==:117 a=kofhyyBXuK/oEhdxNjf66Q==:17
+ a=IkcTkHD0fZMA:10 a=RZcAm9yDv7YA:10 a=-pn6D5nKLtMA:10 a=VwQbUJbxAAAA:8
+ a=vU9dKmh3AAAA:8 a=RKcyukLPUNyM5a_w4rQA:9 a=QEXdDO2ut3YA:10
+ a=rsP06fVo5MYu2ilr0aT5:22 a=ZCPYImcxYIQFgLOT52_G:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=linumiz.com
+	; s=default; h=Cc:To:Content-Transfer-Encoding:Content-Type:MIME-Version:
+	Message-Id:Date:Subject:From:Sender:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=Qi3UoCUDEqcy6/oiO96EhEgtnu7BnyUeV/rid1HTKPw=; b=fkZWFWTGC+zRmdjCb/wb69q7Oo
+	XhOjvw5PgWaBt6W7xI+DtLQLR73ui2o1RXsdfzbfZY3z2YLPnP0ggJ/efGOVlD++5W1b/vesW/kyp
+	obkjmrgKH+Owz3WRg5p0jgOscC1YVbK5jPeGkwEc+6ctKlADl3mQfQtP7NwOX5OzO6QjTfnix1pjY
+	1yAJMY/4KkoOjrKq3FHzwbKhTXFjkFf9XXXF8b4nJgjLcUL4+o9lqKEkTozD2zWIZjX626Kt3Vh+S
+	ClZICOaRtyDB6LDROsGHF7QlWxsbeedlNVyGMAu4Sjc0eyMyJDG6kockqCcOGV7FXCm86A2AVvaF2
+	pB6r5EYw==;
+Received: from [122.165.245.213] (port=50828 helo=[127.0.1.1])
+	by md-in-79.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96.2)
+	(envelope-from <parthiban@linumiz.com>)
+	id 1tR8CT-000bEK-2m;
+	Fri, 27 Dec 2024 16:38:13 +0530
+From: Parthiban Nallathambi <parthiban@linumiz.com>
+Subject: [PATCH 00/22] Add support for A100/A133 display
+Date: Fri, 27 Dec 2024 16:37:47 +0530
+Message-Id: <20241227-a133-display-support-v1-0-13b52f71fb14@linumiz.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240614142156.29420-1-zong.li@sifive.com> <20240614142156.29420-3-zong.li@sifive.com>
- <CAEEQ3wmccVW0ApAxeGM97XS7BH3khuzRK=wAhg5En3BjEKNnvw@mail.gmail.com> <CAPYmKFtHn+ggujCWeQoSaWPK-2G=-Om0DuCpFyf+ha+OXQfsnw@mail.gmail.com>
-In-Reply-To: <CAPYmKFtHn+ggujCWeQoSaWPK-2G=-Om0DuCpFyf+ha+OXQfsnw@mail.gmail.com>
-From: Zong Li <zong.li@sifive.com>
-Date: Fri, 27 Dec 2024 16:37:42 +0800
-Message-ID: <CANXhq0qo2=ztcv8CT8Qu4hk_wZpCnmupSknaGLB+mhxN3vqN8Q@mail.gmail.com>
-Subject: Re: [External] [RFC PATCH v2 02/10] iommu/riscv: support HPM and
- interrupt handling
-To: Xu Lu <luxu.kernel@bytedance.com>
-Cc: yunhui cui <cuiyunhui@bytedance.com>, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, tjeznach@rivosinc.com, paul.walmsley@sifive.com, 
-	palmer@dabbelt.com, aou@eecs.berkeley.edu, jgg@ziepe.ca, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAIOKbmcC/x3MwQqDMAyA4VeRnA00rYzhq8gOmY0uMLQ0UxzSd
+ 7d4/A7/f4JJVjHomxOy7Gq6LhXUNjB+eJkFNVaDd74j8g9kCgGjWvryH21Lac0/5HcXeAqeno6
+ hpinLpMe9HV6lXEqy7oxmAAAA
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>, 
+ Jernej Skrabec <jernej.skrabec@gmail.com>, 
+ Samuel Holland <samuel@sholland.org>, Maxime Ripard <mripard@kernel.org>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
+ Simona Vetter <simona@ffwll.ch>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Linus Walleij <linus.walleij@linaro.org>, Vinod Koul <vkoul@kernel.org>, 
+ Kishon Vijay Abraham I <kishon@kernel.org>
+Cc: iommu@lists.linux.dev, devicetree@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+ linux-phy@lists.infradead.org, 
+ Parthiban Nallathambi <parthiban@linumiz.com>
+X-Mailer: b4 0.14.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1735297689; l=4037;
+ i=parthiban@linumiz.com; s=20241125; h=from:subject:message-id;
+ bh=s6pgeYhBovYKLxAfzogU3RAM9N8F/zvXTKruRhJeLms=;
+ b=wWAYHRbwEECIDPFbPFqQ59rjdwtQ+jw3vZ52WZTk9fVX86Ea+nommDiehtuC86+EGPkNIpqoA
+ z9ov1dxYuUGAKe8SZH7wnREK9pOCHQl29v03yVf/v52pgE3tSUX1/Kq
+X-Developer-Key: i=parthiban@linumiz.com; a=ed25519;
+ pk=PrcMZ/nwnHbeXNFUFUS833wF3DAX4hziDHEbBp1eNb8=
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - md-in-79.webhostbox.net
+X-AntiAbuse: Original Domain - lists.linux.dev
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - linumiz.com
+X-BWhitelist: no
+X-Source-IP: 122.165.245.213
+X-Source-L: No
+X-Exim-ID: 1tR8CT-000bEK-2m
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([127.0.1.1]) [122.165.245.213]:50828
+X-Source-Auth: parthiban@linumiz.com
+X-Email-Count: 21
+X-Org: HG=dishared_whb_net_legacy;ORG=directi;
+X-Source-Cap: bGludW1jbWM7aG9zdGdhdG9yO21kLWluLTc5LndlYmhvc3Rib3gubmV0
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfOFFMW8Yn/iBLSeQ8XZRoshx5U8+npyfoqfuFrkVaHAKLPbv7kBqUA1iY2w/OQfbwedZVcWztvFUKvvvnKfkOY6Reg8kSOKObqbtT62dMmXPs6n++bsw
+ Hg5oZYrpS5fCzzQdUccQJ6cAXpUFSaVWjhj8yvkVmRo76iRvOM1BKhklsL5CyPAOUHm8+Br9FOJD85BAeIYmrXCuyKKqS+mhHbI=
 
-On Tue, Dec 10, 2024 at 4:48=E2=80=AFPM Xu Lu <luxu.kernel@bytedance.com> w=
-rote:
->
-> Hi Zong Li,
->
-> Thanks for your job. We have tested your iommu pmu driver and have
-> some feedbacks.
->
-> 1. Maybe it is better to clear ipsr.PMIP first and then handle the pmu
-> ovf irq in riscv_iommu_hpm_irq_handler(). Otherwise, if a new overflow
-> happens after the riscv_iommu_pmu_handle_irq() and before pmip clear,
-> we will drop it.
+This series depends on [1] for the eMMC/MMC controller to work and
+[2] (lined up for 6.14) which adds support for the sram nodes and
+display engine extends it's usage. Idea of this series to get initial
+feedback and adjust, which will be rebased for 6.14 once [2] is merged.
 
-Yes, you are right. Let me change the order in the next version.
+This patch series adds support for A133 display pipeline based on
+LVDS. dt-bindigs are organized in the start and later with code
+changes.
 
->
-> 2. The period_left can be messed in riscv_iommu_pmu_update() as
-> riscv_iommu_pmu_get_counter() always return the whole register value
-> while bit 63 in hpmcycle actually indicates whether overflow happens
-> instead of current value. Maybe these two functions should be
-> implemented as:
+PHY is shared between DSI and LVDS, so to control the PHY specific
+to DSI/LVDS, phy_ops set_mode is introduced. To enable the DSI
+using set_mode, analog control register MIPI Enable is used, which
+may not be available for A31 (shares the same driver).
 
-Thanks for catch that. I will fix them in the next version.
+Otherwise, A133 also got hidden independent display engine i.e
+mixer + tcon top to handle parallel display. But this patch series
+adds only support for the 1 mixer which is documented.
 
->
-> static void riscv_iommu_pmu_set_counter(struct riscv_iommu_pmu *pmu, u32 =
-idx,
->                                         u64 value)
-> {
->         void __iomem *addr =3D pmu->reg + RISCV_IOMMU_REG_IOHPMCYCLES;
->
->         if (WARN_ON_ONCE(idx < 0 || idx > pmu->num_counters))
->                 return;
->
->         if (idx =3D=3D 0)
->                 value =3D (value & ~RISCV_IOMMU_IOHPMCYCLES_OF) |
->                         (readq(addr) & RISCV_IOMMU_IOHPMCYCLES_OF);
->
->         writeq(FIELD_PREP(RISCV_IOMMU_IOHPMCTR_COUNTER, value), addr + id=
-x * 8);
-> }
->
-> static u64 riscv_iommu_pmu_get_counter(struct riscv_iommu_pmu *pmu, u32 i=
-dx)
-> {
->         void __iomem *addr =3D pmu->reg + RISCV_IOMMU_REG_IOHPMCYCLES;
->         u64 value;
->
->         if (WARN_ON_ONCE(idx < 0 || idx > pmu->num_counters))
->                 return -EINVAL;
->
->         value =3D readq(addr + idx * 8);
->
->         if (idx =3D=3D 0)
->                 return FIELD_GET(RISCV_IOMMU_IOHPMCYCLES_COUNTER, value);
->
->         return FIELD_GET(RISCV_IOMMU_IOHPMCTR_COUNTER, value);
-> }
->
-> Please ignore me if these issues have already been discussed.
->
-> Best regards,
->
-> Xu Lu
->
-> On Tue, Dec 10, 2024 at 3:55=E2=80=AFPM yunhui cui <cuiyunhui@bytedance.c=
-om> wrote:
-> >
-> > Add Luxu in the loop.
-> >
-> > On Fri, Jun 14, 2024 at 10:22=E2=80=AFPM Zong Li <zong.li@sifive.com> w=
-rote:
-> > >
-> > > This patch initialize the pmu stuff and uninitialize it when driver
-> > > removing. The interrupt handling is also provided, this handler need =
-to
-> > > be primary handler instead of thread function, because pt_regs is emp=
-ty
-> > > when threading the IRQ, but pt_regs is necessary by perf_event_overfl=
-ow.
-> > >
-> > > Signed-off-by: Zong Li <zong.li@sifive.com>
-> > > ---
-> > >  drivers/iommu/riscv/iommu.c | 65 +++++++++++++++++++++++++++++++++++=
-++
-> > >  1 file changed, 65 insertions(+)
-> > >
-> > > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.=
-c
-> > > index 8b6a64c1ad8d..1716b2251f38 100644
-> > > --- a/drivers/iommu/riscv/iommu.c
-> > > +++ b/drivers/iommu/riscv/iommu.c
-> > > @@ -540,6 +540,62 @@ static irqreturn_t riscv_iommu_fltq_process(int =
-irq, void *data)
-> > >         return IRQ_HANDLED;
-> > >  }
-> > >
-> > > +/*
-> > > + * IOMMU Hardware performance monitor
-> > > + */
-> > > +
-> > > +/* HPM interrupt primary handler */
-> > > +static irqreturn_t riscv_iommu_hpm_irq_handler(int irq, void *dev_id=
-)
-> > > +{
-> > > +       struct riscv_iommu_device *iommu =3D (struct riscv_iommu_devi=
-ce *)dev_id;
-> > > +
-> > > +       /* Process pmu irq */
-> > > +       riscv_iommu_pmu_handle_irq(&iommu->pmu);
-> > > +
-> > > +       /* Clear performance monitoring interrupt pending */
-> > > +       riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR, RISCV_IOMMU_I=
-PSR_PMIP);
-> > > +
-> > > +       return IRQ_HANDLED;
-> > > +}
-> > > +
-> > > +/* HPM initialization */
-> > > +static int riscv_iommu_hpm_enable(struct riscv_iommu_device *iommu)
-> > > +{
-> > > +       int rc;
-> > > +
-> > > +       if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM))
-> > > +               return 0;
-> > > +
-> > > +       /*
-> > > +        * pt_regs is empty when threading the IRQ, but pt_regs is ne=
-cessary
-> > > +        * by perf_event_overflow. Use primary handler instead of thr=
-ead
-> > > +        * function for PM IRQ.
-> > > +        *
-> > > +        * Set the IRQF_ONESHOT flag because this IRQ might be shared=
- with
-> > > +        * other threaded IRQs by other queues.
-> > > +        */
-> > > +       rc =3D devm_request_irq(iommu->dev,
-> > > +                             iommu->irqs[riscv_iommu_queue_vec(iommu=
-, RISCV_IOMMU_IPSR_PMIP)],
-> > > +                             riscv_iommu_hpm_irq_handler, IRQF_ONESH=
-OT | IRQF_SHARED, NULL, iommu);
-> > > +       if (rc)
-> > > +               return rc;
-> > > +
-> > > +       return riscv_iommu_pmu_init(&iommu->pmu, iommu->reg, dev_name=
-(iommu->dev));
-> > > +}
-> > > +
-> > > +/* HPM uninitialization */
-> > > +static void riscv_iommu_hpm_disable(struct riscv_iommu_device *iommu=
-)
-> > > +{
-> > > +       if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM))
-> > > +               return;
-> > > +
-> > > +       devm_free_irq(iommu->dev,
-> > > +                     iommu->irqs[riscv_iommu_queue_vec(iommu, RISCV_=
-IOMMU_IPSR_PMIP)],
-> > > +                     iommu);
-> > > +
-> > > +       riscv_iommu_pmu_uninit(&iommu->pmu);
-> > > +}
-> > > +
-> > >  /* Lookup and initialize device context info structure. */
-> > >  static struct riscv_iommu_dc *riscv_iommu_get_dc(struct riscv_iommu_=
-device *iommu,
-> > >                                                  unsigned int devid)
-> > > @@ -1612,6 +1668,9 @@ void riscv_iommu_remove(struct riscv_iommu_devi=
-ce *iommu)
-> > >         riscv_iommu_iodir_set_mode(iommu, RISCV_IOMMU_DDTP_IOMMU_MODE=
-_OFF);
-> > >         riscv_iommu_queue_disable(&iommu->cmdq);
-> > >         riscv_iommu_queue_disable(&iommu->fltq);
-> > > +
-> > > +       if (iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM)
-> > > +               riscv_iommu_pmu_uninit(&iommu->pmu);
-> > >  }
-> > >
-> > >  int riscv_iommu_init(struct riscv_iommu_device *iommu)
-> > > @@ -1651,6 +1710,10 @@ int riscv_iommu_init(struct riscv_iommu_device=
- *iommu)
-> > >         if (rc)
-> > >                 goto err_queue_disable;
-> > >
-> > > +       rc =3D riscv_iommu_hpm_enable(iommu);
-> > > +       if (rc)
-> > > +               goto err_hpm_disable;
-> > > +
-> > >         rc =3D iommu_device_sysfs_add(&iommu->iommu, NULL, NULL, "ris=
-cv-iommu@%s",
-> > >                                     dev_name(iommu->dev));
-> > >         if (rc) {
-> > > @@ -1669,6 +1732,8 @@ int riscv_iommu_init(struct riscv_iommu_device =
-*iommu)
-> > >  err_remove_sysfs:
-> > >         iommu_device_sysfs_remove(&iommu->iommu);
-> > >  err_iodir_off:
-> > > +       riscv_iommu_hpm_disable(iommu);
-> > > +err_hpm_disable:
-> > >         riscv_iommu_iodir_set_mode(iommu, RISCV_IOMMU_DDTP_IOMMU_MODE=
-_OFF);
-> > >  err_queue_disable:
-> > >         riscv_iommu_queue_disable(&iommu->fltq);
-> > > --
-> > > 2.17.1
-> > >
-> > >
-> >
-> > Thanks,
-> > Yunhui
+[1]: https://lore.kernel.org/linux-sunxi/20241109003739.3440904-1-masterr3c0rd@epochal.quest/
+[2]: https://lore.kernel.org/linux-sunxi/20241218-a100-syscon-v2-0-dae60b9ce192@epochal.quest/
+
+Signed-off-by: Parthiban Nallathambi <parthiban@linumiz.com>
+---
+Parthiban Nallathambi (22):
+      dt-bindings: iommu: sun50i: remove resets from required property
+      dt-bindings: display: sunxi: Add a100/a133 display engine compatibles
+      dt-bindings: clock: sun8i de2 clock: Add PLL com clock
+      dt-bindings: clock: sun8i de2 clock: Add a100/a133 compatible
+      dt-bindings: display: sun4i: add phy property
+      dt-bindings: display: sun4i: add a100/a133 tcon lcd
+      dt-bindings: vendor-prefixes: Shenzhen Baijie Technology
+      dt-bindings: arm: sunxi: document Szbaijie A133 helper board
+      iommu: sun50i: make reset control optional
+      pinctrl: sunxi: add missed lvds pins for a100/a133
+      drm/sun4i: Add support for a100/a133 display engine
+      drm/sun4i: Add support for a100/a133 mixer
+      drm/sun4i: make tcon top tv0 optional
+      drm/sun4i: add a100/a133 tcon top quirks
+      clk: sunxi-ng: sun8i-de2: add pll-com clock support
+      clk: sunxi-ng: sun8i-de2: Add support for a100/a133
+      phy: allwinner: phy-sun6i-mipi-dphy: add LVDS support
+      drm/sun4i: tcon: add a100/a133 lcd controller support
+      arm64: dts: allwinner: a100: add iommu
+      clk: sunxi-ng: add missing pll-com binding
+      arm64: dts: allwinner: a100: add display pipeline
+      arm64: dts: allwinner: a133: add szbaijie helper board
+
+ Documentation/devicetree/bindings/arm/sunxi.yaml   |   6 +
+ .../clock/allwinner,sun8i-a83t-de2-clk.yaml        |   6 +
+ .../allwinner,sun4i-a10-display-engine.yaml        |   2 +
+ .../bindings/display/allwinner,sun4i-a10-tcon.yaml |   7 +
+ .../display/allwinner,sun8i-a83t-de2-mixer.yaml    |   1 +
+ .../display/allwinner,sun8i-r40-tcon-top.yaml      |  17 ++
+ .../bindings/iommu/allwinner,sun50i-h6-iommu.yaml  |   1 -
+ .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
+ arch/arm64/boot/dts/allwinner/Makefile             |   1 +
+ arch/arm64/boot/dts/allwinner/sun50i-a100.dtsi     | 165 ++++++++++++++++++
+ .../dts/allwinner/sun50i-a133-helper-board.dts     | 129 ++++++++++++++
+ .../dts/allwinner/sun50i-a133-helper-core.dtsi     | 190 +++++++++++++++++++++
+ drivers/clk/sunxi-ng/ccu-sun8i-de2.c               |  23 ++-
+ drivers/gpu/drm/sun4i/sun4i_drv.c                  |   1 +
+ drivers/gpu/drm/sun4i/sun4i_tcon.c                 |  23 +++
+ drivers/gpu/drm/sun4i/sun8i_mixer.c                |  13 ++
+ drivers/gpu/drm/sun4i/sun8i_tcon_top.c             |  42 +++--
+ drivers/iommu/sun50i-iommu.c                       |   2 +-
+ drivers/phy/allwinner/phy-sun6i-mipi-dphy.c        |  23 ++-
+ drivers/pinctrl/sunxi/pinctrl-sun50i-a100.c        |  12 ++
+ include/dt-bindings/clock/sun50i-a100-ccu.h        |   1 +
+ 21 files changed, 645 insertions(+), 22 deletions(-)
+---
+base-commit: 6c086b91df8c6619239c6d6d6cbf6ae50da6c110
+change-id: 20241126-a133-display-support-ab43af32180a
+
+Best regards,
+-- 
+Parthiban Nallathambi <parthiban@linumiz.com>
+
