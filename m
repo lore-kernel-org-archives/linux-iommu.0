@@ -1,31 +1,31 @@
-Received: from omta034.useast.a.cloudfilter.net (omta034.useast.a.cloudfilter.net [44.202.169.33])
+Received: from omta40.uswest2.a.cloudfilter.net (omta40.uswest2.a.cloudfilter.net [35.89.44.39])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC8DE1F4E44
-	for <iommu@lists.linux.dev>; Fri, 27 Dec 2024 11:09:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.202.169.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC0CA1F4E2A
+	for <iommu@lists.linux.dev>; Fri, 27 Dec 2024 11:09:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=35.89.44.39
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735297781; cv=none; b=bpwWZlfKVASZYUYSoJLWHaFfc3tko21HnJmUU0RzpzGMMdan5fDPU4lfyByqpQ8vpExRFoDgvLxQHsXrzOS03v5EzhfPQh2qSvWmD1P7zN8xmG9Fi8+j2+mk4Rd8TR/0VHm+HoMskSuwNLde4LJlzpNdH5lvbXwMqt9MmIhu7s8=
+	t=1735297784; cv=none; b=aLPGWp0C/TwSEDYsTSY6oO/GUxx7Bk/DfAel+Z6g8lwEX8vgRxM6PEoTXeLA295r9K1EOHnsZ/wrVYbs143aDyYV+8KSMLPwYqmvR5UGFLrAX5YxDUvZ7/Y8l5ashrWEZsGz3OZduu9K8fdnH5r/bmfX3kou9+lhw+6I6OkAWjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735297781; c=relaxed/simple;
-	bh=AkiOtlTE4u/lst3b/C31pu+RJ7eNIYaDQvfAJLBj/Lc=;
+	s=arc-20240116; t=1735297784; c=relaxed/simple;
+	bh=qvS7+D/RTyyMg86CwtqbsAA+5EMqHdzQTTB53paC81Y=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=lg3p9ZFcSxEcjTiD7hTYGBRaz1Pu7PIkP3xoR4Hg9NkfdyVx6sjMbEQazyF4MwKk9o9EwoEZwg6d3l3EyFp5sxcV5PETnGivb3keaC9/WnF0tWSu9O2kpRj1FgQUDi3qS5BD4x36jRb7rlscB7x5fgFWfBJ6gtivUguqeN2MX88=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linumiz.com; spf=pass smtp.mailfrom=linumiz.com; dkim=pass (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b=S0je0AqP; arc=none smtp.client-ip=44.202.169.33
+	 In-Reply-To:To:Cc; b=Z9W7D9HQKyjKzjbXwEp/I6GRfhONRv8i69H0PNOqqp1MpQ2EARgtwaGy+7ggPYC9aypseB45n50oT+twgmvk4X24weK5MNZVuaEwSX27/pJPMhjHbuIz3fBcdTlB+NTJSDe70RZbia6C5hzmEbsSRz8YOuK9NMtUhwVnpM9A6CU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linumiz.com; spf=pass smtp.mailfrom=linumiz.com; dkim=pass (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b=PytkC0E6; arc=none smtp.client-ip=35.89.44.39
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linumiz.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linumiz.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b="S0je0AqP"
-Received: from eig-obgw-6005a.ext.cloudfilter.net ([10.0.30.201])
+	dkim=pass (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b="PytkC0E6"
+Received: from eig-obgw-6004a.ext.cloudfilter.net ([10.0.30.197])
 	by cmsmtp with ESMTPS
-	id R3MTt0UW9rKrbR8DqtWlxY; Fri, 27 Dec 2024 11:09:39 +0000
+	id R87ptFUg3vH7lR8DutJAe7; Fri, 27 Dec 2024 11:09:42 +0000
 Received: from md-in-79.webhostbox.net ([43.225.55.182])
 	by cmsmtp with ESMTPS
-	id R8Dotvsw3xK8vR8DptosEE; Fri, 27 Dec 2024 11:09:38 +0000
-X-Authority-Analysis: v=2.4 cv=T/9HTOKQ c=1 sm=1 tr=0 ts=676e8af2
+	id R8DsteE65WdNZR8Dttgaxu; Fri, 27 Dec 2024 11:09:42 +0000
+X-Authority-Analysis: v=2.4 cv=FtTO/Hrq c=1 sm=1 tr=0 ts=676e8af6
  a=LfuyaZh/8e9VOkaVZk0aRw==:117 a=kofhyyBXuK/oEhdxNjf66Q==:17
  a=IkcTkHD0fZMA:10 a=RZcAm9yDv7YA:10 a=-pn6D5nKLtMA:10 a=vU9dKmh3AAAA:8
- a=8YUH2e0Ys_Mie9xma7wA:9 a=QEXdDO2ut3YA:10 a=rsP06fVo5MYu2ilr0aT5:22
+ a=iM3t8g1HjrKnZeAfta4A:9 a=QEXdDO2ut3YA:10 a=rsP06fVo5MYu2ilr0aT5:22
  a=ZCPYImcxYIQFgLOT52_G:22
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=linumiz.com
 	; s=default; h=Cc:To:In-Reply-To:References:Message-Id:
@@ -33,21 +33,21 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=linumiz.com
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
 	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=YrLVykqlMMRYoAZ40Gm5GHLbrDBKpbvHh222+1nl1sg=; b=S0je0AqPcG82mvVT7NzzfWeAoV
-	V/1xVazSgiLrIsd7BH6MZP6YuM0JTgYGrc3NJc03czxEXxgumtgMHFkq2vowagvWHxM+YCutze28f
-	6caIqEol2DjO9Z0epKFb1W73R5V2F2niJ+QUjn2lK0vb08uVYgr1pvOK8GWZtfa1QRJ5jCRBTNrBY
-	/3E+752KR3zdKCvkcNaq3AQD93tYFpGH2KhaVspyvtA2h5VRmH4BB7rtB6SVIUwJpSbopnFSqHqRQ
-	2VzZmbFc7ZvGDF++qsdu//xh6qlRZsBRemSAKsgAmSascCedCDP6hLjUxJT+zb53VxODrDymGw7PB
-	kfJTwKoQ==;
+	bh=pGwPFK3xv/ptVPYpkqFPS9qGRy0Y0xu/iUwb0C9nXWg=; b=PytkC0E6+h8OO95GAaBDa6ToD/
+	X6RQBgyIH8yLV5owVMFw3iqDdsFtQ7HAhgXvnn++80/oOj9h12a7UwDVencs83+1ur5aknYnBbHfo
+	IlFfdbs9vOr14mDdckmSR3ntnnAZ39LJPqK9lC9zqTQ61W7VwgBb2fhR4dR/yqC4cBYD6L/VpumJT
+	bNXGByvvB0699BiYZg3Pq5nTJvZRms0xAAKqpyaFTYsQiwMDZS6p93PnIOLAOY9v21vNFe3extze8
+	/a7mKuI+Y37MesfcysEOGPf2nUBXtjkITvlJqeP9HiOAjVoEXo2OmIrM9S6dUT+v1OzkqfB4blkEA
+	K48J1JSA==;
 Received: from [122.165.245.213] (port=50828 helo=[127.0.1.1])
 	by md-in-79.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96.2)
 	(envelope-from <parthiban@linumiz.com>)
-	id 1tR8Dj-000bEK-2P;
-	Fri, 27 Dec 2024 16:39:31 +0530
+	id 1tR8Do-000bEK-38;
+	Fri, 27 Dec 2024 16:39:37 +0530
 From: Parthiban Nallathambi <parthiban@linumiz.com>
-Date: Fri, 27 Dec 2024 16:38:02 +0530
-Subject: [PATCH 15/22] clk: sunxi-ng: sun8i-de2: add pll-com clock support
+Date: Fri, 27 Dec 2024 16:38:03 +0530
+Subject: [PATCH 16/22] clk: sunxi-ng: sun8i-de2: Add support for a100/a133
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,7 +56,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241227-a133-display-support-v1-15-13b52f71fb14@linumiz.com>
+Message-Id: <20241227-a133-display-support-v1-16-13b52f71fb14@linumiz.com>
 References: <20241227-a133-display-support-v1-0-13b52f71fb14@linumiz.com>
 In-Reply-To: <20241227-a133-display-support-v1-0-13b52f71fb14@linumiz.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -79,11 +79,11 @@ Cc: iommu@lists.linux.dev, devicetree@vger.kernel.org,
  linux-phy@lists.infradead.org, 
  Parthiban Nallathambi <parthiban@linumiz.com>
 X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1735297689; l=2447;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1735297689; l=1043;
  i=parthiban@linumiz.com; s=20241125; h=from:subject:message-id;
- bh=AkiOtlTE4u/lst3b/C31pu+RJ7eNIYaDQvfAJLBj/Lc=;
- b=Y/xSmjtv1wT7leATqqeVpkuBgaCwMamcw8IupbHZtK5ZTIFCre5utab4tDMAUu0XYTzig7ggy
- 94CMKQxZvP1DNpxHqykapRq5BwdB3O29zw8ZDzOR3aH0aJp7q9TxfZ5
+ bh=qvS7+D/RTyyMg86CwtqbsAA+5EMqHdzQTTB53paC81Y=;
+ b=XNyGVAs9WW8vlM4qOOilUjJeSmld8IS3muoSSmNHF7R0BNHYwWiLQzsMYl1WyxP5KH08pxwbs
+ XX/zJxP3xkCCWn9sKa9YqO1pD/IsNIo4ZzA57+3OXY2mrliF2tLuPq7
 X-Developer-Key: i=parthiban@linumiz.com; a=ed25519;
  pk=PrcMZ/nwnHbeXNFUFUS833wF3DAX4hziDHEbBp1eNb8=
 X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
@@ -94,87 +94,47 @@ X-AntiAbuse: Sender Address Domain - linumiz.com
 X-BWhitelist: no
 X-Source-IP: 122.165.245.213
 X-Source-L: No
-X-Exim-ID: 1tR8Dj-000bEK-2P
+X-Exim-ID: 1tR8Do-000bEK-38
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
 X-Source-Sender: ([127.0.1.1]) [122.165.245.213]:50828
 X-Source-Auth: parthiban@linumiz.com
-X-Email-Count: 456
+X-Email-Count: 485
 X-Org: HG=dishared_whb_net_legacy;ORG=directi;
 X-Source-Cap: bGludW1jbWM7aG9zdGdhdG9yO21kLWluLTc5LndlYmhvc3Rib3gubmV0
 X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfBTzcBEF8w0g1qeuxWDefeUk6aixRcQKRDD8octeIZVv9Ani+4pKOmEgtQprRxVSTYyKP5GmxzrvCzQ4XKOimBGqqw7nkG4zc7uju0eiuVIRuMY/pGK0
- ZT4rCu9IGgYpsE7WmJWSsECssEXIKBkrzxSPiIrBjYdC/mzCNM5Vm2M9jEdfj0GURwZUB4P5ZAnMBdfUSTAsA9ZsWGpcKrjrnjI=
+X-CMAE-Envelope: MS4xfJEGzJhlbzIgsH4m+U7NhzyEXgKgxBWoQgdVwRHkZ74MdMIlcQK47pX4C3h9uqur4Kf0Y6nghZQ2FYfNKreAdbobaoI6BCLSECv5ozeCNKPtfubiOOWC
+ 0xKLx1mjNDgExlFhZocq384c3Sql1RXR5RycXzvWnuiLgYER7u6vhPkLFonVYs3SzfCtS3HMHmjR8LbAwGzVOJir6188p8YIY38=
 
-add optional pll-com support which is available in some platforms
-like A100/A133, which is used by the display clock. There is no
-documentation reference or details in DE 2.0 specification.
+Display clock uses 1 mixer without rotation support is same
+as v3s. There is also a hidden independent display engine
+with independent tcon_top available in A100/A133 bin (based
+on vendor BSP).
 
-But these changes are needed to get the display clock to work and
-this is inherited from the vendor BSP.
+Add new compatible for A100/A133 to accommodate the future changes
+for the independent DE.
 
 Signed-off-by: Parthiban Nallathambi <parthiban@linumiz.com>
 ---
- drivers/clk/sunxi-ng/ccu-sun8i-de2.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ drivers/clk/sunxi-ng/ccu-sun8i-de2.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/clk/sunxi-ng/ccu-sun8i-de2.c b/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
-index f2aa71206bc2..3e28c32050e0 100644
+index 3e28c32050e0..067820ab704d 100644
 --- a/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
 +++ b/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
-@@ -241,7 +241,7 @@ static const struct sunxi_ccu_desc sun50i_h5_de2_clk_desc = {
- 
- static int sunxi_de2_clk_probe(struct platform_device *pdev)
- {
--	struct clk *bus_clk, *mod_clk;
-+	struct clk *bus_clk, *mod_clk, *pll_clk;
- 	struct reset_control *rstc;
- 	void __iomem *reg;
- 	const struct sunxi_ccu_desc *ccu_desc;
-@@ -265,6 +265,11 @@ static int sunxi_de2_clk_probe(struct platform_device *pdev)
- 		return dev_err_probe(&pdev->dev, PTR_ERR(mod_clk),
- 				     "Couldn't get mod clk\n");
- 
-+	pll_clk = devm_clk_get_optional(&pdev->dev, "pll-com");
-+	if (IS_ERR(pll_clk))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(pll_clk),
-+				     "Couldn't get pll clk\n");
-+
- 	rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
- 	if (IS_ERR(rstc))
- 		return dev_err_probe(&pdev->dev, PTR_ERR(rstc),
-@@ -283,12 +288,20 @@ static int sunxi_de2_clk_probe(struct platform_device *pdev)
- 		goto err_disable_bus_clk;
- 	}
- 
-+	if (pll_clk) {
-+		ret = clk_prepare_enable(pll_clk);
-+		if (ret) {
-+			dev_err(&pdev->dev, "Couldn't enable pll clk: %d\n", ret);
-+			goto err_disable_mod_clk;
-+		}
-+	}
-+
- 	/* The reset control needs to be asserted for the controls to work */
- 	ret = reset_control_deassert(rstc);
- 	if (ret) {
- 		dev_err(&pdev->dev,
- 			"Couldn't deassert reset control: %d\n", ret);
--		goto err_disable_mod_clk;
-+		goto err_disable_pll_clk;
- 	}
- 
- 	ret = devm_sunxi_ccu_probe(&pdev->dev, reg, ccu_desc);
-@@ -299,6 +312,8 @@ static int sunxi_de2_clk_probe(struct platform_device *pdev)
- 
- err_assert_reset:
- 	reset_control_assert(rstc);
-+err_disable_pll_clk:
-+	clk_disable_unprepare(pll_clk);
- err_disable_mod_clk:
- 	clk_disable_unprepare(mod_clk);
- err_disable_bus_clk:
+@@ -342,6 +342,10 @@ static const struct of_device_id sunxi_de2_clk_ids[] = {
+ 		.compatible = "allwinner,sun50i-a64-de2-clk",
+ 		.data = &sun50i_a64_de2_clk_desc,
+ 	},
++	{
++		.compatible = "allwinner,sun50i-a100-de2-clk",
++		.data = &sun8i_v3s_de2_clk_desc,
++	},
+ 	{
+ 		.compatible = "allwinner,sun50i-h5-de2-clk",
+ 		.data = &sun50i_h5_de2_clk_desc,
 
 -- 
 2.39.5
