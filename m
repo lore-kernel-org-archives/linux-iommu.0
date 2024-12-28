@@ -1,161 +1,102 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.3])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 94558158520
-	for <iommu@lists.linux.dev>; Sat, 28 Dec 2024 12:22:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.3
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55803433A4;
+	Sat, 28 Dec 2024 14:09:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735388566; cv=none; b=fXVMfN+SgSLg8Iewb0lanMiCFj5Wr9GQRcW61jdr9Jlo5hYSSMpOE+e+BOvabCckqngFDOSpKZe4irMDgUxzyE3OVVw7+nbTHpNshhRTo84VKF/9VRhN5be5f2c4Fl0qV47RpyekctVsr9qJp6Y4K6qkOI7OtoldOdmNO8gCrcs=
+	t=1735394947; cv=none; b=F/N6Qijbipfq/RTorj72EzNeeMcO66Co5S5wsSiGRU/TeeXeSK9QLh2t01wd3mQpgThN0hDvBvUAGvXCzeP7lVj4+EOJC83UKsO4tnjUw7cy8jSygptRm047bgxwugc+FtAnwl8DC8JEpe0n+1gXcZuAgZUBwJjawgEW+ETwk10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735388566; c=relaxed/simple;
-	bh=petIqcJlxd8iSmQvvgYtdeeRpq68TUj90UxIHs7udJ0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=RvO/fX5ID+HMAshFojI28/pTLLqqzpNG6o9k4ZCdqjO4ZfHlU4QflfdLaGGlt4HWoeTgP+5ZelfHhx1ofT6mPEzZcgsY7dslnxgFMvVHxjxdRi9qgOAYpQc7A8qYc5A+JWznJnFXDbvbLC8Wf0t6YZkldvSKJ6t40gF/pKtI+j8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=WtK6hEZG; arc=none smtp.client-ip=117.135.210.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1735394947; c=relaxed/simple;
+	bh=Dkf6FNbmvczR6fwjr8TMuN/izWdItAgYtjp2h3zBUiU=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=OwMEIpyIyHZZkOfrq3+nQGcFgkHupejawuJtw9dc5YcIwMUin6swvu/jc7PzK6Pq4fRB43WZzWJBzmwt9zapVjzK/AwwE30l6zGfIYnUAWty0XOxnXBZJPuoDX5WimFwLCm/1BYicIJIwE+mj9h2V2/kpHFsClVVM+mAaSHXj8A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NkUtz/tz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="WtK6hEZG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:Subject:Date:Message-ID:MIME-Version; bh=bhOPV
-	k7Vqm2NJKMlmrYXdJYomM5xUIUvFVc3xFQAy60=; b=WtK6hEZGPNPUa1cDv++4K
-	YhvVzr0WIfR2a9UbzogKbhS0CorgWXWc8AZD3m4gcUJYZvkjUb7qW1l+cY9Iv28r
-	73gH9ToxTDxjAg6O/tMj+efdDYOLZ7G70jQpR00rTJ5RXGM1GlLjZBHKBLnklDZa
-	Us2bXlj+Tn9HYT60153eU0=
-Received: from ProDesk.. (unknown [])
-	by gzga-smtp-mtada-g1-0 (Coremail) with SMTP id _____wD3t0tl7W9nUxdCCQ--.1009S9;
-	Sat, 28 Dec 2024 20:22:09 +0800 (CST)
-From: Andy Yan <andyshrk@163.com>
-To: heiko@sntech.de,
-	krzk+dt@kernel.org,
-	joro@8bytes.org
-Cc: cl@rock-chips.com,
-	robh@kernel.org,
-	hjc@rock-chips.com,
-	vkoul@kernel.org,
-	devicetree@vger.kernel.org,
-	detlev.casanova@collabora.com,
-	cristian.ciocaltea@collabora.com,
-	dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-phy@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	Andy Yan <andy.yan@rock-chips.com>
-Subject: [PATCH v2 7/8] arm64: dts: rockchip: Add hdmi for rk3576
-Date: Sat, 28 Dec 2024 20:21:50 +0800
-Message-ID: <20241228122155.646957-8-andyshrk@163.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241228122155.646957-1-andyshrk@163.com>
-References: <20241228122155.646957-1-andyshrk@163.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NkUtz/tz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99235C4CECD;
+	Sat, 28 Dec 2024 14:09:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1735394947;
+	bh=Dkf6FNbmvczR6fwjr8TMuN/izWdItAgYtjp2h3zBUiU=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
+	b=NkUtz/tztIW/PhXP2LF3lMOFGClVFeWa5CrOwlzULAlP5973gEksD+7QteiFALTfX
+	 VSrG2ZV1ClfYJDpFKZ/XSzsPFm2GjtPLNXHsKUVmZkcoWAnQBhLqH4L1djr6ivwuzQ
+	 CC6JmtEo318beq4yK6HdKuaJ9UuwZpRwaEa96mxruNafNt1TqwFjEW/m7G75atqVpD
+	 TnbkkQCn+Sx7zNmI/vIDziT47eiZN+iW/fsCXv6NlpeB2jmRfGWJyA9Ktj38jF2evD
+	 aG0lOQ5LaKRaEoQT2DEchPI/mGcC+gG6q7Ee9tX+OGlrm9jeH73dwV2T65TrWBCRmL
+	 ICN4mGxILIv4Q==
+Date: Sat, 28 Dec 2024 08:09:05 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3t0tl7W9nUxdCCQ--.1009S9
-X-Coremail-Antispam: 1Uf129KBjvJXoWxAFW3uFWUJFWUKr43CFy8Krg_yoW5Wr4rp3
-	ZrCrWrXr4kWF12qasIkr1kJrZ5J395CFs5Kr1xAFyUtryagryakFWxXrn2yasFqr4UXanr
-	tFsrCry8KFs2qw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jgCztUUUUU=
-X-CM-SenderInfo: 5dqg52xkunqiywtou0bp/1tbiqArDXmdv62k-WwAAsR
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: vkoul@kernel.org, linux-phy@lists.infradead.org, 
+ cristian.ciocaltea@collabora.com, Andy Yan <andy.yan@rock-chips.com>, 
+ joro@8bytes.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ linux-rockchip@lists.infradead.org, heiko@sntech.de, 
+ dri-devel@lists.freedesktop.org, cl@rock-chips.com, 
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+ detlev.casanova@collabora.com, hjc@rock-chips.com, krzk+dt@kernel.org
+To: Andy Yan <andyshrk@163.com>
+In-Reply-To: <20241228122155.646957-6-andyshrk@163.com>
+References: <20241228122155.646957-1-andyshrk@163.com>
+ <20241228122155.646957-6-andyshrk@163.com>
+Message-Id: <173539494517.1967895.2732995549466236200.robh@kernel.org>
+Subject: Re: [PATCH v2 5/8] dt-bindings: display: vop2: Add rk3576 support
 
-From: Andy Yan <andy.yan@rock-chips.com>
 
-Add hdmi and it's phy dt node for rk3576.
+On Sat, 28 Dec 2024 20:21:48 +0800, Andy Yan wrote:
+> From: Andy Yan <andy.yan@rock-chips.com>
+> 
+> Add vop found on rk3576, the main difference between rk3576 and the
+> previous vop is that each VP has its own interrupt line.
+> 
+> Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
+> 
+> ---
+> 
+> Changes in v2:
+> - describe constraint SOC by SOC, as interrupts of rk3576 is very
+>   different from others
+> - Drop Krzysztof's Reviewed-by, as this version changed a lot.
+> 
+> Changes in v1:
+> - ordered by soc name
+> - Add description for newly added interrupt
+> 
+>  .../display/rockchip/rockchip-vop2.yaml       | 70 +++++++++++++++----
+>  1 file changed, 56 insertions(+), 14 deletions(-)
+> 
 
-Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
----
+My bot found errors running 'make dt_binding_check' on your patch:
 
-(no changes since v1)
+yamllint warnings/errors:
 
- arch/arm64/boot/dts/rockchip/rk3576.dtsi | 58 ++++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/rockchip/rockchip-vop2.yaml: properties:interrupts: {'minItems': 1, 'maxItems': 4, 'items': [{'description': 'vop system interrupt, such as bus error, and vsync for vop version under rk3576.'}, {'description': 'independent interrupts for each video port, such as vsync and other video port related error interrupts.'}]} should not be valid under {'required': ['maxItems']}
+	hint: "maxItems" is not needed with an "items" list
+	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3576.dtsi b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
-index 130d11a2cc89..b83f421dc11d 100644
---- a/arch/arm64/boot/dts/rockchip/rk3576.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
-@@ -450,6 +450,11 @@ soc {
- 		#size-cells = <2>;
- 		ranges;
- 
-+		hdptxphy_grf: syscon@26032000 {
-+			compatible = "rockchip,rk3576-hdptxphy-grf", "syscon";
-+			reg = <0x0 0x26032000 0x0 0x100>;
-+		};
-+
- 		sys_grf: syscon@2600a000 {
- 			compatible = "rockchip,rk3576-sys-grf", "syscon";
- 			reg = <0x0 0x2600a000 0x0 0x2000>;
-@@ -894,6 +899,46 @@ vop_mmu: iommu@27d07e00 {
- 			status = "disabled";
- 		};
- 
-+		hdmi: hdmi@27da0000 {
-+			compatible = "rockchip,rk3576-dw-hdmi-qp";
-+			reg = <0x0 0x27da0000 0x0 0x20000>;
-+			clocks = <&cru PCLK_HDMITX0>,
-+				 <&cru CLK_HDMITX0_EARC>,
-+				 <&cru CLK_HDMITX0_REF>,
-+				 <&cru MCLK_SAI6_8CH>,
-+				 <&cru CLK_HDMITXHDP>,
-+				 <&cru HCLK_VO0_ROOT>;
-+			clock-names = "pclk", "earc", "ref", "aud", "hdp", "hclk_vo1";
-+			interrupts = <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 339 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 340 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 367 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "avp", "cec", "earc", "main", "hpd";
-+			phys = <&hdptxphy>;
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&hdmi_txm0_pins &hdmi_tx_scl &hdmi_tx_sda>;
-+			power-domains = <&power RK3576_PD_VO0>;
-+			resets = <&cru SRST_HDMITX0_REF>, <&cru SRST_HDMITXHDP>;
-+			reset-names = "ref", "hdp";
-+			rockchip,grf = <&ioc_grf>;
-+			rockchip,vo-grf = <&vo0_grf>;
-+			status = "disabled";
-+
-+			ports {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				hdmi_in: port@0 {
-+					reg = <0>;
-+				};
-+
-+				hdmi_out: port@1 {
-+					reg = <1>;
-+				};
-+			};
-+		};
-+
- 		qos_hdcp1: qos@27f02000 {
- 			compatible = "rockchip,rk3576-qos", "syscon";
- 			reg = <0x0 0x27f02000 0x0 0x20>;
-@@ -1655,6 +1700,19 @@ uart11: serial@2afd0000 {
- 			status = "disabled";
- 		};
- 
-+		hdptxphy: hdmiphy@2b000000 {
-+			compatible = "rockchip,rk3576-hdptx-phy", "rockchip,rk3588-hdptx-phy";
-+			reg = <0x0 0x2b000000 0x0 0x2000>;
-+			clocks = <&cru CLK_PHY_REF_SRC>, <&cru PCLK_HDPTX_APB>;
-+			clock-names = "ref", "apb";
-+			resets = <&cru SRST_P_HDPTX_APB>, <&cru SRST_HDPTX_INIT>,
-+				 <&cru SRST_HDPTX_CMN>, <&cru SRST_HDPTX_LANE>;
-+			reset-names = "apb", "init", "cmn", "lane";
-+			rockchip,grf = <&hdptxphy_grf>;
-+			#phy-cells = <0>;
-+			status = "disabled";
-+		};
-+
- 		sram: sram@3ff88000 {
- 			compatible = "mmio-sram";
- 			reg = <0x0 0x3ff88000 0x0 0x78000>;
--- 
-2.34.1
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20241228122155.646957-6-andyshrk@163.com
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
