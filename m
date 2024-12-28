@@ -1,28 +1,28 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91A74C8DF
-	for <iommu@lists.linux.dev>; Sat, 28 Dec 2024 12:22:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.3])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F4F21531E2
+	for <iommu@lists.linux.dev>; Sat, 28 Dec 2024 12:22:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735388564; cv=none; b=Y6q2oF2WzVlbIuAGY49A+HIvELUBGhcz08Q4m1K8SDlShkxjZ2F7epO+LiSpuNv0f5CFopgUDvfKM7fBbVvlxYCVOgtwjFG0uIwRbvAtoSogwSHxHXoQB4oZ0HXxH6AHwJrTToTVKQMt0SEEfseng7AsjjbS8fBVMhbI+IClj5M=
+	t=1735388566; cv=none; b=bdkdZ2yiYWgv14c8zT9pzNaSSpe7ecMUilLqR8K8xLKfvqPKygqFcRA03MFyXTRA9I+o047I93AQ4AYQDu8OKSM8ewvV/xjo1w2ImBSB8U5Zm9QjUXfXL9ssmdXPrUoGZjVoFGATEfBsUQVQCOR2Bzx98e05/gb4ATn7SBO7l1M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735388564; c=relaxed/simple;
-	bh=uY/vrtonJknJiPjcrNdxF2in+We3Hm2EnHymmUFSl8I=;
+	s=arc-20240116; t=1735388566; c=relaxed/simple;
+	bh=HNmOpl8zpwMdxhTCa+C/z9UoUXlzWgtUYzxm3UEk4Q4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=RUsmpLtmO/NPEX9qIgjTwZeT2us1ynDMf1NDwrmv5pVxuacv6W4Ro21j1sjWmaFq0pgVNl+grICASDb3IF5ZvtMLtAXHv14Zv6SBsjBqS+FG616fIAvC2cDcg9yrxkIXd2dwQTswrnpzDUUXz8io7hir3B/gdL4oT4GAVRpKm9w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=LXGi/i2C; arc=none smtp.client-ip=220.197.31.2
+	 MIME-Version; b=ATWDlQEod2uYcmiYBvaWKRY6Tx2E6SDKa9n+VPeFwGzvuwaS0qF8Hls9TwOiaZt9s3K+3mCDa7oKl2blynWyZVtWWSksnJfSWZoazK3rtt4FoFoGKrojS994cFpmIDMfsgPBrR03B7fWyTOLRF1dCRIxX8LCV8PPhv72r8PmMYY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=dLHSRNBn; arc=none smtp.client-ip=117.135.210.3
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="LXGi/i2C"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="dLHSRNBn"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:Subject:Date:Message-ID:MIME-Version; bh=tWjTA
-	OLgd9HkbIXFzlj06PfRlzkvfWEKiYD/XWeq8os=; b=LXGi/i2CbK8w97uz6lNmS
-	fevRKfb7w9vg03qEzbeuO6Xpdrs7vlVFmDxID48ZcUnJBWw7PR3F+AfIQ0bh1vXG
-	8ErwPmIwr0Z8g7evJjVT4J+hRPLDrXzSjtXAW88tYMlsWZMmXOR01riv5dahx1yV
-	gpXGS/fByXPWdZjDRJK4iU=
+	s=s110527; h=From:Subject:Date:Message-ID:MIME-Version; bh=Y70Ks
+	G3a0/QnRSAm+pguniL3ipDIvFZnoeHSL0jrtDE=; b=dLHSRNBnRMzNTikVMl26l
+	xXm9E6lJWYGjcBM2N1jJZ+rao3THBBWfEhk8c/SmAnQiw1PagODMZAoSHC606FMO
+	qQg2UpokhpW86vc8ek1WC9uABtaeUXQF7s7QTL7XhaEiktS/j/vJc/1m7a1D38HP
+	dVJnceIjKUnrsNYet/wgiw=
 Received: from ProDesk.. (unknown [])
-	by gzga-smtp-mtada-g1-0 (Coremail) with SMTP id _____wD3t0tl7W9nUxdCCQ--.1009S7;
-	Sat, 28 Dec 2024 20:22:07 +0800 (CST)
+	by gzga-smtp-mtada-g1-0 (Coremail) with SMTP id _____wD3t0tl7W9nUxdCCQ--.1009S10;
+	Sat, 28 Dec 2024 20:22:10 +0800 (CST)
 From: Andy Yan <andyshrk@163.com>
 To: heiko@sntech.de,
 	krzk+dt@kernel.org,
@@ -41,9 +41,9 @@ Cc: cl@rock-chips.com,
 	linux-phy@lists.infradead.org,
 	linux-rockchip@lists.infradead.org,
 	Andy Yan <andy.yan@rock-chips.com>
-Subject: [PATCH v2 5/8] dt-bindings: display: vop2: Add rk3576 support
-Date: Sat, 28 Dec 2024 20:21:48 +0800
-Message-ID: <20241228122155.646957-6-andyshrk@163.com>
+Subject: [PATCH v2 8/8] arm64: dts: rockchip: Enable hdmi display on sige5
+Date: Sat, 28 Dec 2024 20:21:51 +0800
+Message-ID: <20241228122155.646957-9-andyshrk@163.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20241228122155.646957-1-andyshrk@163.com>
 References: <20241228122155.646957-1-andyshrk@163.com>
@@ -54,144 +54,101 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3t0tl7W9nUxdCCQ--.1009S7
-X-Coremail-Antispam: 1Uf129KBjvJXoWxWr1kWFWxArW5XFyUKr4xXrb_yoW5XF13pa
-	93CFyDXrWxGF1UXw4ktFn5Can5tF9Yyw4Ykrn7ta17KrsIgF4kWw4agr1DJr13WF17ZayY
-	9FsYk347G39avr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j7L05UUUUU=
-X-CM-SenderInfo: 5dqg52xkunqiywtou0bp/1tbiqA-DXmdv62k-HQAAsS
+X-CM-TRANSID:_____wD3t0tl7W9nUxdCCQ--.1009S10
+X-Coremail-Antispam: 1Uf129KBjvJXoW7WFyrXrWDKF18CrWrArWfAFb_yoW8Aryrp3
+	ZrurZ3GrZ5WFW7Xwn0yFy0vFn8twsY9FZxGr43XFy7Kr42gas3Gw1rGr1S9r1DZFW7Za1a
+	vFn7JFyY9wsrXw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jgCztUUUUU=
+X-CM-SenderInfo: 5dqg52xkunqiywtou0bp/1tbiqRXDXmdv5wS1hAAAs7
 
 From: Andy Yan <andy.yan@rock-chips.com>
 
-Add vop found on rk3576, the main difference between rk3576 and the
-previous vop is that each VP has its own interrupt line.
+Enable hdmi display on sige5.
 
 Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
-
 ---
 
-Changes in v2:
-- describe constraint SOC by SOC, as interrupts of rk3576 is very
-  different from others
-- Drop Krzysztof's Reviewed-by, as this version changed a lot.
+(no changes since v1)
 
-Changes in v1:
-- ordered by soc name
-- Add description for newly added interrupt
+ .../boot/dts/rockchip/rk3576-armsom-sige5.dts | 47 +++++++++++++++++++
+ 1 file changed, 47 insertions(+)
 
- .../display/rockchip/rockchip-vop2.yaml       | 70 +++++++++++++++----
- 1 file changed, 56 insertions(+), 14 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/display/rockchip/rockchip-vop2.yaml b/Documentation/devicetree/bindings/display/rockchip/rockchip-vop2.yaml
-index 2531726af306..f28cea4a6d82 100644
---- a/Documentation/devicetree/bindings/display/rockchip/rockchip-vop2.yaml
-+++ b/Documentation/devicetree/bindings/display/rockchip/rockchip-vop2.yaml
-@@ -20,6 +20,7 @@ properties:
-     enum:
-       - rockchip,rk3566-vop
-       - rockchip,rk3568-vop
-+      - rockchip,rk3576-vop
-       - rockchip,rk3588-vop
+diff --git a/arch/arm64/boot/dts/rockchip/rk3576-armsom-sige5.dts b/arch/arm64/boot/dts/rockchip/rk3576-armsom-sige5.dts
+index 7c7331936a7f..78798b0722a3 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3576-armsom-sige5.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3576-armsom-sige5.dts
+@@ -10,6 +10,7 @@
+ #include <dt-bindings/leds/common.h>
+ #include <dt-bindings/pinctrl/rockchip.h>
+ #include <dt-bindings/pwm/pwm.h>
++#include <dt-bindings/soc/rockchip,vop2.h>
+ #include <dt-bindings/usb/pd.h>
+ #include "rk3576.dtsi"
  
-   reg:
-@@ -37,10 +38,22 @@ properties:
-       - const: gamma-lut
+@@ -26,6 +27,17 @@ chosen {
+ 		stdout-path = "serial0:1500000n8";
+ 	};
  
-   interrupts:
--    maxItems: 1
--    description:
--      The VOP interrupt is shared by several interrupt sources, such as
--      frame start (VSYNC), line flag and other status interrupts.
-+    minItems: 1
-+    maxItems: 4
-+    items:
-+      - description:
-+          vop system interrupt, such as bus error, and vsync for vop version under
-+          rk3576.
-+      - description:
-+          independent interrupts for each video port, such as vsync and other video
-+          port related error interrupts.
++	hdmi-con {
++		compatible = "hdmi-connector";
++		type = "a";
 +
-+  interrupt-names:
-+    items:
-+      - const: vop-sys
-+      - const: vop-vp0
-+      - const: vop-vp1
-+      - const: vop-vp2
++		port {
++			hdmi_con_in: endpoint {
++				remote-endpoint = <&hdmi_out_con>;
++			};
++		};
++	};
++
+ 	leds: leds {
+ 		compatible = "gpio-leds";
  
-   # See compatible-specific constraints below.
-   clocks:
-@@ -127,31 +140,60 @@ allOf:
-           minItems: 7
-         clock-names:
-           minItems: 7
--
-         ports:
-           required:
-             - port@0
-             - port@1
-             - port@2
-             - port@3
--
-       required:
-         - rockchip,grf
-         - rockchip,vo1-grf
-         - rockchip,vop-grf
-         - rockchip,pmu
+@@ -214,6 +226,26 @@ &gpu {
+ 	status = "okay";
+ };
  
--    else:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - rockchip,rk3576-vop
-+    then:
-       properties:
--        rockchip,vo1-grf: false
--        rockchip,vop-grf: false
--        rockchip,pmu: false
--
-         clocks:
--          maxItems: 5
-+          minItems: 5
-         clock-names:
--          maxItems: 5
--
-+          minItems: 5
-+        ports:
-+          required:
-+            - port@0
-+            - port@1
-+            - port@2
-+        interrupts:
-+          minItems: 4
-+          maxItems: 4
-+        interrupt-names:
-+          items:
-+            - const: vop-sys
-+            - const: vop-vp0
-+            - const: vop-vp1
-+            - const: vop-vp2
-+      required:
-+        - rockchip,grf
-+        - rockchip,pmu
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - rockchip,rk3568-vop
-+              - rockchip,rk3566-vop
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 5
-+        clock-names:
-+          minItems: 5
-         ports:
-           required:
-             - port@0
++&hdmi {
++	status = "okay";
++};
++
++&hdmi_in {
++	hdmi_in_vp0: endpoint {
++		remote-endpoint = <&vp0_out_hdmi>;
++	};
++};
++
++&hdmi_out {
++	hdmi_out_con: endpoint {
++		remote-endpoint = <&hdmi_con_in>;
++	};
++};
++
++&hdptxphy {
++	status = "okay";
++};
++
+ &i2c1 {
+ 	status = "okay";
+ 
+@@ -656,3 +688,18 @@ &uart0 {
+ 	pinctrl-0 = <&uart0m0_xfer>;
+ 	status = "okay";
+ };
++
++&vop {
++	status = "okay";
++};
++
++&vop_mmu {
++	status = "okay";
++};
++
++&vp0 {
++	vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
++		reg = <ROCKCHIP_VOP2_EP_HDMI0>;
++		remote-endpoint = <&hdmi_in_vp0>;
++	};
++};
 -- 
 2.34.1
 
