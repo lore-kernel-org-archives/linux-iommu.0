@@ -1,110 +1,159 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 93AE58248D
-	for <iommu@lists.linux.dev>; Sun, 29 Dec 2024 10:50:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61A4C33062;
+	Sun, 29 Dec 2024 14:36:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735469424; cv=none; b=AwB70OiQlG9Ubr76cGJy7HV+nJwUZ2Q3mWpurq2Br9D3EHhqPhakCZeQZcjn84YFqDTNLiQ+AwI5qMkFW7AYhE3WXpj7wtyE3UXawl8/b+mqxZdKAZmjzcfcxTb4slXNgz+1ZtiwbfeHsE5D97usWz+1e1khFuhmppWlzhhv0GM=
+	t=1735482979; cv=none; b=XFjRy6VXgmBkyUQFxunKxtrAwyT2Jzf+sZJE6ntHq2bkM0rA5C7ZJdqV7TY0Sch1FNLbjdugPqWSgBGpbYMHjDL+IdqFzA7Z+tY/h3f8RDKzAbOFppYEG+dXty3Kk+39hWMpnBaL6XfERz9edrWqSn1hJA8dgFYCOI8dgbNEc30=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735469424; c=relaxed/simple;
-	bh=q1gEjD3TbD0ubPGJ6ySk4Sa58uaIyggiR94fEg1DvNk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=aBpWzmXLgIZCUl5oq1EgP0wR+XYtVZkfihaUD65nKJAM3HX+tpkqVCUTwHkyRh1sE0BP8f0kgvqhzUVwLxXfSjzH7pS43nhslHqYa5ZOy6aI+ix5ceezqipiawkzIdVLp94iiW9rIsg6bX/23n/Bcr5wwyadBieV03F6fcQNdBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=F/q3zeel reason="signature verification failed"; arc=none smtp.client-ip=117.135.210.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1735482979; c=relaxed/simple;
+	bh=Pc6YBENrL3gfox19a5Qfr+UZswxTEyvBHnbgbA3queU=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VyrhQsrw3EBOAoeGVYTCo4Iwu7DgWOL9A+PKiWR/7wGzEAY3jAApB07I8cWpPofe/27sSxpaWxUb/l/DcpnnlmzZqcnvYmLzzqNU1yaDHPObN2DrKjXTDtXU4PNajXVWdzllf8MoGTyHKzs9nH+o9l5SDnmQVpWPp1+hoIgnO6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=qKVQP+UH; arc=none smtp.client-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="F/q3zeel"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=6x6DDz8OXltjHQDY/Nb8O3LQiGK4ytUH+XsVeWN6k7M=; b=F
-	/q3zeels/yRCPMpYd0L8TenzEk7sD6Vblu5Ibux4tuxUHO9aqIIbXK62SZ7UXFpQ
-	UtKXMoDsR4tNc6BEa6nlKMmPgeHPOXE04XMCAD6iQKyw+/o/lHgpDkiNdlUrrb7w
-	FbKIqiCd9+nnT3uoW9AXKEOcjKbPNq+G590TSWi/Bs=
-Received: from andyshrk$163.com ( [58.22.7.114] ) by
- ajax-webmail-wmsvr-40-135 (Coremail) ; Sun, 29 Dec 2024 18:49:38 +0800
- (CST)
-Date: Sun, 29 Dec 2024 18:49:38 +0800 (CST)
-From: "Andy Yan" <andyshrk@163.com>
-To: "Krzysztof Kozlowski" <krzk@kernel.org>
-Cc: robh@kernel.org, iommu@lists.linux.dev, heiko@sntech.de, 
-	devicetree@vger.kernel.org, joro@8bytes.org, hjc@rock-chips.com, 
-	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, 
-	linux-phy@lists.infradead.org, vkoul@kernel.org, 
-	detlev.casanova@collabora.com, linux-arm-kernel@lists.infradead.org, 
-	"Andy Yan" <andy.yan@rock-chips.com>, 
-	linux-rockchip@lists.infradead.org, krzk+dt@kernel.org, 
-	cl@rock-chips.com
-Subject: Re:Re: [PATCH v2 5/8] dt-bindings: display: vop2: Add rk3576
- support
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
- Copyright (c) 2002-2024 www.mailtech.cn 163com
-In-Reply-To: <ihvrdnntfuvvycnlhysnm43wylotovvnivu4wxcne3bwc6etpj@n2rq6n77lmma>
-References: <20241228122155.646957-1-andyshrk@163.com>
- <20241228122155.646957-6-andyshrk@163.com>
- <ihvrdnntfuvvycnlhysnm43wylotovvnivu4wxcne3bwc6etpj@n2rq6n77lmma>
-X-NTES-SC: AL_Qu2YB/idtkss7iGeYOlS3TJ694VEL57u+a5GusA2ecAsnATi4iQeZGRsL2rN79jltAEHsN6nekZl9Y1BVSkd
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="qKVQP+UH"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
+	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
+	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=xIeTXK2tT8GiOrGH1G6rXzh8bEX4/s2CJjW9ca6ycWY=; b=qKVQP+UHNn1KBZzCZwhZEP+dv5
+	JVeHDMjBlFKGne6r2oerhTUo6xr4REMBXAj9Zsp4HrkIFIH5fyvmXDwITnbI0H/wSNZbUu0eqMw3c
+	Dlsclx1C5/gKngjj6XIB9hEGZxmX9opOFL0VFztQb7U5WYy5CugnVJb/Nrbzfpr2PQK/oxLm6Jbi3
+	mjAx2Wa0FQUFS/0TalNBcMOrAuR6U6AZUmIWyVNCY9QMr04kjj4w5QUesj3v/IrLWQulot4XZvRux
+	11daSIUyDraGOB0TtUfHnyo3S9yEeS+FAJfmZuQnI1bVcDSXWVjO8uHj/cGJ6j3s5jRvCXE3GKU0b
+	XJD9GaZw==;
+Received: from i5e860d12.versanet.de ([94.134.13.18] helo=diego.localnet)
+	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <heiko@sntech.de>)
+	id 1tRuOY-000400-7W; Sun, 29 Dec 2024 15:35:54 +0100
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: Andy Yan <andyshrk@163.com>
+Cc: krzk+dt@kernel.org, joro@8bytes.org, cl@rock-chips.com, robh@kernel.org,
+ hjc@rock-chips.com, vkoul@kernel.org, devicetree@vger.kernel.org,
+ detlev.casanova@collabora.com, cristian.ciocaltea@collabora.com,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-phy@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ Andy Yan <andy.yan@rock-chips.com>
+Subject: Re: [PATCH v2 0/8] Add display subsystem dt node on rk3576
+Date: Sun, 29 Dec 2024 15:35:53 +0100
+Message-ID: <3330586.aeNJFYEL58@diego>
+In-Reply-To: <6ff7470.1060.194112c804a.Coremail.andyshrk@163.com>
+References:
+ <20241228122155.646957-1-andyshrk@163.com> <4950097.GXAFRqVoOG@diego>
+ <6ff7470.1060.194112c804a.Coremail.andyshrk@163.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <4847f6b1.1c60.19412092a7a.Coremail.andyshrk@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:hygvCgDn76xCKXFnKw9LAA--.48082W
-X-CM-SenderInfo: 5dqg52xkunqiywtou0bp/1tbiqQTEXmdxJJEE4wADsw
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 
-CgpIaSBLcnp5c3p0b2YsCgpBdCAyMDI0LTEyLTI5IDE4OjEzOjM5LCAiS3J6eXN6dG9mIEtvemxv
-d3NraSIgPGtyemtAa2VybmVsLm9yZz4gd3JvdGU6Cj5PbiBTYXQsIERlYyAyOCwgMjAyNCBhdCAw
-ODoyMTo0OFBNICswODAwLCBBbmR5IFlhbiB3cm90ZToKPj4gRnJvbTogQW5keSBZYW4gPGFuZHku
-eWFuQHJvY2stY2hpcHMuY29tPgo+PiAKPj4gQWRkIHZvcCBmb3VuZCBvbiByazM1NzYsIHRoZSBt
-YWluIGRpZmZlcmVuY2UgYmV0d2VlbiByazM1NzYgYW5kIHRoZQo+PiBwcmV2aW91cyB2b3AgaXMg
-dGhhdCBlYWNoIFZQIGhhcyBpdHMgb3duIGludGVycnVwdCBsaW5lLgo+PiAKPj4gU2lnbmVkLW9m
-Zi1ieTogQW5keSBZYW4gPGFuZHkueWFuQHJvY2stY2hpcHMuY29tPgo+PiAKPj4gLS0tCj4+IAo+
-PiBDaGFuZ2VzIGluIHYyOgo+PiAtIGRlc2NyaWJlIGNvbnN0cmFpbnQgU09DIGJ5IFNPQywgYXMg
-aW50ZXJydXB0cyBvZiByazM1NzYgaXMgdmVyeQo+PiAgIGRpZmZlcmVudCBmcm9tIG90aGVycwo+
-PiAtIERyb3AgS3J6eXN6dG9mJ3MgUmV2aWV3ZWQtYnksIGFzIHRoaXMgdmVyc2lvbiBjaGFuZ2Vk
-IGEgbG90Lgo+PiAKPj4gQ2hhbmdlcyBpbiB2MToKPj4gLSBvcmRlcmVkIGJ5IHNvYyBuYW1lCj4+
-IC0gQWRkIGRlc2NyaXB0aW9uIGZvciBuZXdseSBhZGRlZCBpbnRlcnJ1cHQKPj4gCj4+ICAuLi4v
-ZGlzcGxheS9yb2NrY2hpcC9yb2NrY2hpcC12b3AyLnlhbWwgICAgICAgfCA3MCArKysrKysrKysr
-KysrKystLS0tCj4+ICAxIGZpbGUgY2hhbmdlZCwgNTYgaW5zZXJ0aW9ucygrKSwgMTQgZGVsZXRp
-b25zKC0pCj4+IAo+PiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
-bmdzL2Rpc3BsYXkvcm9ja2NoaXAvcm9ja2NoaXAtdm9wMi55YW1sIGIvRG9jdW1lbnRhdGlvbi9k
-ZXZpY2V0cmVlL2JpbmRpbmdzL2Rpc3BsYXkvcm9ja2NoaXAvcm9ja2NoaXAtdm9wMi55YW1sCj4+
-IGluZGV4IDI1MzE3MjZhZjMwNi4uZjI4Y2VhNGE2ZDgyIDEwMDY0NAo+PiAtLS0gYS9Eb2N1bWVu
-dGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvZGlzcGxheS9yb2NrY2hpcC9yb2NrY2hpcC12b3Ay
-LnlhbWwKPj4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2Rpc3BsYXkv
-cm9ja2NoaXAvcm9ja2NoaXAtdm9wMi55YW1sCj4+IEBAIC0yMCw2ICsyMCw3IEBAIHByb3BlcnRp
-ZXM6Cj4+ICAgICAgZW51bToKPj4gICAgICAgIC0gcm9ja2NoaXAscmszNTY2LXZvcAo+PiAgICAg
-ICAgLSByb2NrY2hpcCxyazM1Njgtdm9wCj4+ICsgICAgICAtIHJvY2tjaGlwLHJrMzU3Ni12b3AK
-Pj4gICAgICAgIC0gcm9ja2NoaXAscmszNTg4LXZvcAo+PiAgCj4+ICAgIHJlZzoKPj4gQEAgLTM3
-LDEwICszOCwyMiBAQCBwcm9wZXJ0aWVzOgo+PiAgICAgICAgLSBjb25zdDogZ2FtbWEtbHV0Cj4+
-ICAKPj4gICAgaW50ZXJydXB0czoKPj4gLSAgICBtYXhJdGVtczogMQo+PiAtICAgIGRlc2NyaXB0
-aW9uOgo+PiAtICAgICAgVGhlIFZPUCBpbnRlcnJ1cHQgaXMgc2hhcmVkIGJ5IHNldmVyYWwgaW50
-ZXJydXB0IHNvdXJjZXMsIHN1Y2ggYXMKPj4gLSAgICAgIGZyYW1lIHN0YXJ0IChWU1lOQyksIGxp
-bmUgZmxhZyBhbmQgb3RoZXIgc3RhdHVzIGludGVycnVwdHMuCj4+ICsgICAgbWluSXRlbXM6IDEK
-Pj4gKyAgICBtYXhJdGVtczogNAo+PiArICAgIGl0ZW1zOgo+PiArICAgICAgLSBkZXNjcmlwdGlv
-bjoKPgo+VGhhdCdzIGNvbnRyYWRpY3RvcnkuIG1pbi9tYXggc2F5IDEtNCwgYnV0IGhlcmUgeW91
-IGxpc3QgdHdvIGludGVycnVwdHMuCgpUaGVyZSBhcmUgNCBpbnRlcnJ1cHRzIG9uIHJrMzU3Niwg
-YW5kIHRoZSBvdGhlciBTT0Mgb25seSBoYXZlIG9uZS4KSSBhbSBzb3JyeSB0aGF0IEkgYW0gbm90
-IGZhbWlsaWFyIHdpdGggdGhpcyBzY2hlbWEgbGFuZ3VhZ2U7IEkgaGF2ZSByZWFkIG1hbnkKb3Ro
-ZXIgWUFNTCBiaW5kaW5ncyB0aGVzZSBkYXlzIGFuZCB0cnkgdG8gd3JpdGUgaXQgY29ycmVjdGx5
-LgoKTWF5YmUgSSBzaG91bGQgbm90IGxpc3QgdGhlIGludGVycnVwdHMtbmFtZXMgaGVyZSh0aGVu
-IGxpc3QgdGhlIGludGVycnVwdC1uYW1lIGJ5IHNvYyBhdCBhbGxPZjogIHBhcnQpLAogbGlrZSB0
-aGUgY2xvY2tzIGhhbmRsZXMgaW4gc2Ftc3VuZyx1c2IzLWRyZC1waHkueWFtbCAgPwoKPgo+PiAr
-ICAgICAgICAgIHZvcCBzeXN0ZW0gaW50ZXJydXB0LCBzdWNoIGFzIGJ1cyBlcnJvciwgYW5kIHZz
-eW5jIGZvciB2b3AgdmVyc2lvbiB1bmRlcgo+PiArICAgICAgICAgIHJrMzU3Ni4KPj4gKyAgICAg
-IC0gZGVzY3JpcHRpb246Cj4+ICsgICAgICAgICAgaW5kZXBlbmRlbnQgaW50ZXJydXB0cyBmb3Ig
-ZWFjaCB2aWRlbyBwb3J0LCBzdWNoIGFzIHZzeW5jIGFuZCBvdGhlciB2aWRlbwo+PiArICAgICAg
-ICAgIHBvcnQgcmVsYXRlZCBlcnJvciBpbnRlcnJ1cHRzLgo+PiArCj4+ICsgIGludGVycnVwdC1u
-YW1lczoKPj4gKyAgICBpdGVtczoKPj4gKyAgICAgIC0gY29uc3Q6IHZvcC1zeXMKPj4gKyAgICAg
-IC0gY29uc3Q6IHZvcC12cDAKPj4gKyAgICAgIC0gY29uc3Q6IHZvcC12cDEKPj4gKyAgICAgIC0g
-Y29uc3Q6IHZvcC12cDIKPgo+QW5kIHRoaXMgc2F5cyBleGFjdGx5IDQuCj4KPkJlc3QgcmVnYXJk
-cywKPktyenlzenRvZgo+Cj4KPl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCj5MaW51eC1yb2NrY2hpcCBtYWlsaW5nIGxpc3QKPkxpbnV4LXJvY2tjaGlwQGxp
-c3RzLmluZnJhZGVhZC5vcmcKPmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlz
-dGluZm8vbGludXgtcm9ja2NoaXAK
+Hi Andy,
+
+Am Sonntag, 29. Dezember 2024, 07:48:36 CET schrieb Andy Yan:
+>=20
+> Hi Heiko,
+>=20
+> At 2024-12-29 02:36:36, "Heiko St=FCbner" <heiko@sntech.de> wrote:
+> >Hi Andy,
+> >
+> >Am Samstag, 28. Dezember 2024, 13:21:43 CET schrieb Andy Yan:
+> >> From: Andy Yan <andy.yan@rock-chips.com>
+> >>=20
+> >>=20
+> >> As the VOP[0] and HDMI[1] driver have already been submitted for revie=
+w.
+> >> This series send all display related device tree part together.
+> >> [0] https://lore.kernel.org/linux-rockchip/20241219073931.3997788-1-an=
+dyshrk@163.com/T/#t
+> >> [1] https://lore.kernel.org/linux-rockchip/20241225103741.364597-1-and=
+yshrk@163.com/T/#t
+> >
+> >not to confuse you too much, I mainly meant that we were missing the
+> >"arm64: dts: rockchip:" patches from this series.
+>=20
+> Sorry, I misunderstood it in V2 . Before go to the next step, I would lik=
+e to confirm it again:
+> Does that mean I should:
+> 1.  the dts patches(6/8, 7/8 8/8) should be sent as a separate series.
+> 2. PATCH 5/8 should still go with the rk3576 vop driver[0]
+> 3. PATCH 3/8 should still go with the rk3576 hdmi dirver[1]
+> 4. PATCH 1/8, 2/8 4/8  should still be sent separate  ?
+
+exactly. The reason behind this is to prevent confusion about who is
+expected to apply a patch.
+
+The dt-binding goes together with driver-changes into that subsystem-tree.
+This normally also includes single bindings. So the "normal" expectation is
+that the iommu-binding patch goes through the iommu tree, the phy-binding
+patch goes through the phy tree and so on.
+
+And of course the hdmi-binding patch goes together with the hdmi-driver
+change.
+
+
+Heiko
+
+
+> >The dt-binding patches are (already) part of the driver changes and
+> >should stay part of those series, to prevent confusion of what part goes
+> >where :-) .
+> >
+> >
+> >Heiko
+> >
+> >
+> >> Changes in v2:
+> >> - Wrap commit message according to Linux coding style
+> >> - Make "rockchip,rk3588-hdptx-phy" const for "rockchip,rk3576-hdptx-ph=
+y"
+> >> - Make declare phy/ropll/lcpll reset line are not exit on rk3576
+> >> - describe constraint SOC by SOC for vop2 binding, as interrupts of rk=
+3576
+> >>   is very different from others
+> >> - Drop Krzysztof's Reviewed-by for vopp2 bindings, as this version cha=
+nged a lot.
+> >>=20
+> >> Changes in v1:
+> >> - ordered by soc name
+> >> - Add description for newly added interrupt
+> >>=20
+> >> Andy Yan (8):
+> >>   dt-bindings: soc: rockchip: add rk3576 hdptxphy grf syscon
+> >>   dt-bindings: phy: Add rk3576 hdptx phy
+> >>   dt-bindings: display: rockchip: Add rk3576 hdmi controller
+> >>   dt-bindings: iommu: rockchip: Add Rockchip RK3576
+> >>   dt-bindings: display: vop2: Add rk3576 support
+> >>   arm64: dts: rockchip: Add vop for rk3576
+> >>   arm64: dts: rockchip: Add hdmi for rk3576
+> >>   arm64: dts: rockchip: Enable hdmi display on sige5
+> >>=20
+> >>  .../rockchip/rockchip,rk3588-dw-hdmi-qp.yaml  |   1 +
+> >>  .../display/rockchip/rockchip-vop2.yaml       |  70 ++++++++--
+> >>  .../bindings/iommu/rockchip,iommu.yaml        |   1 +
+> >>  .../phy/rockchip,rk3588-hdptx-phy.yaml        |  62 ++++++---
+> >>  .../devicetree/bindings/soc/rockchip/grf.yaml |   1 +
+> >>  .../boot/dts/rockchip/rk3576-armsom-sige5.dts |  47 +++++++
+> >>  arch/arm64/boot/dts/rockchip/rk3576.dtsi      | 126 ++++++++++++++++++
+> >>  7 files changed, 276 insertions(+), 32 deletions(-)
+> >>=20
+> >>=20
+> >
+> >
+> >
+> >
+>=20
+
+
+
+
