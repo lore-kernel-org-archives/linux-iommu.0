@@ -1,50 +1,48 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D600E8F5B
-	for <iommu@lists.linux.dev>; Thu,  2 Jan 2025 03:16:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2463E1991DD;
+	Thu,  2 Jan 2025 10:40:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735787795; cv=none; b=mVf4nqiSwUgiEKJJi1meQ23SBVo58C4nHFs3zlhp1oWyg7FJJbia4YYj58p1UD9zc1lswdlNiYs2bAQeyaCRgziJbeH3a66U2Y0XiyIAp2X8y2CJ9KpuhiNznBZsiC1VkDcsLpTn8eZlkyOwdPnIx9zCI7ceoGyQjh7VEwCgo7I=
+	t=1735814403; cv=none; b=uWWLojrzwvjMZ1k3bMoHMZhrqAhSlgSk4h+zqra0bqEtx1Uf0T8BEcXbStsnO/IsFMVBTh8sGlYBnRpZxRDBIbF53dDyaWqgD1w3EPHT4VybDr2n7HhLsG3xAf9paLpRHmIdtgQUxzYDzZ9iuMgwojGJjsSW95tkU+ElIkcM3tQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735787795; c=relaxed/simple;
-	bh=v4sh3stxwm0IX1oo0VYd8crmRdPfutxapnjnCxc8FuU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=A+ctRiL0wiWXNuL8k/cvF0sIopTWHbmycLxhG5Sy5ck4/C1mLJym2hTdnTzAVqjQe8IOccIAR79B90EipeDcHhSnLiQdVuwISN4QcHlixVhYSvsAq8SMQ4pHCdECG820XDoOa1fTP0rNS4lxkoVsHoPsRysx/Ro5r1pO+NVHjUo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jk9nc9bv; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1735814403; c=relaxed/simple;
+	bh=sFhpSocXBzuHfvdIdwZUjNa+fLLP39W1xozKavWKN7k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=L1YG9AvH23tqNn9H/7gR1+kyIUMUP9z65vZqjBBV+NOMnrKfGr5Dsh5/s+QEtFcBTpg33eZRqfXtGxT5kWwbCME3pdyDAH8x+7GgZZxkUfmpVPjRDl3MJEXdf5Rg2MQnic6573QmV/jU8cxUbTaA05pY0hRqGNj7xdaXDFhP2RY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=M+RCemqK; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jk9nc9bv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1735787794; x=1767323794;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=v4sh3stxwm0IX1oo0VYd8crmRdPfutxapnjnCxc8FuU=;
-  b=jk9nc9bvOf7MTkLeQCw+oeyBKiph+L48oPawXPOHOUDiPLmJwrTgIaPl
-   iQo/NcEX4hnzdAzA8mQ+enmzXXMYI380wixo2p7LIolpd3pa27KDnCutt
-   iHvwjPPNVyrBPcSCHTEToB7X0EMFjkuDl+BPttQ0UoRlRR0+4AER6qL0e
-   Bt0EY8THk3bahMXo1ZZeX7GnaY7s9VErnJJkrKWBPgPeHN4+QZz5q0+/9
-   3uvsLAMtDPD2e0d58l8dWBavEanuJXcdS7fnys11q4TvyXv3pJkyHOwTV
-   EWGk9bq7y9AYcT/+7vqgxTjz/lKhqowgMPe4lvYDCNf9tDqfNt5Rb3M76
-   A==;
-X-CSE-ConnectionGUID: 4h/WUeVsQP2WJXDnmnaB7g==
-X-CSE-MsgGUID: 5p+giP73QKmYF6FvZ71fbA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11302"; a="47015078"
-X-IronPort-AV: E=Sophos;i="6.12,284,1728975600"; 
-   d="scan'208";a="47015078"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jan 2025 19:16:33 -0800
-X-CSE-ConnectionGUID: qrbxU08dSKy5Lw7htzZqlg==
-X-CSE-MsgGUID: cKoAIC2gQf6pwGxGx5DJ3Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="102239019"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jan 2025 19:16:31 -0800
-Message-ID: <7fe65fd2-40db-45bc-aa18-953e9717b685@linux.intel.com>
-Date: Thu, 2 Jan 2025 11:14:32 +0800
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="M+RCemqK"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 502Abf7L014673;
+	Thu, 2 Jan 2025 10:39:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	v3hq5pPhoLWrZ9X7JvsBOciwezW02shNULfJ/tgcfJM=; b=M+RCemqKUXimv01Y
+	ZnDtEChLTQuXxUe8HeYi8HKdIWkKChuxSNmvlgtnscJqmgfNEw7Gj4LgdtL0JlAr
+	9qeZElMA9rN1ac/ibBWL3XBJfYZXsnfAIfMcQhp9HX8VYQZK1J3IIAfW895bj+Jx
+	rW8nxAl8z9LNF5TxIFTLkWQWDW0Yfw9c3RUclWvOyKUkqlBcracUJhQie2VyaETU
+	v2N0X87+YgyJszkuSVy/PDh13FOdYEiVhz8iIHtCkqRcxierDt/6Bw2Jq9rRe2Bi
+	mk8Y1SQujavG6kjsTJW9WYwyxiV+yAREBc94/diDWhZ80plhPoXLikSKZd9UnZvV
+	N+r+bw==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43ws7a803n-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 02 Jan 2025 10:39:53 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 502Adq9S012910
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 2 Jan 2025 10:39:52 GMT
+Received: from [10.216.11.228] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 2 Jan 2025
+ 02:39:50 -0800
+Message-ID: <91d15d11-ec53-4ca2-a385-9fa69d861f2c@quicinc.com>
+Date: Thu, 2 Jan 2025 16:09:46 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,36 +50,137 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/vt-d: Link cache tags of same iommu unit
- together
-To: Zhenzhong Duan <zhenzhong.duan@intel.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-Cc: dwmw2@infradead.org, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, yi.l.liu@intel.com, chao.p.peng@intel.com
-References: <20241219054358.8654-1-zhenzhong.duan@intel.com>
+Subject: Re: [PATCH RFC] iommu: fix wrong DMA ops for iommu device
+To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <jgg@ziepe.ca>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <20241213150415.653821-1-quic_charante@quicinc.com>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20241219054358.8654-1-zhenzhong.duan@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Charan Teja Kalla <quic_charante@quicinc.com>
+In-Reply-To: <20241213150415.653821-1-quic_charante@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 6z0ZUrSPuaCUksmZqwBA8FiOfZsr_W5Z
+X-Proofpoint-GUID: 6z0ZUrSPuaCUksmZqwBA8FiOfZsr_W5Z
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ suspectscore=0 bulkscore=0 adultscore=0 spamscore=0 impostorscore=0
+ phishscore=0 clxscore=1015 malwarescore=0 mlxlogscore=999
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501020092
 
-On 12/19/24 13:43, Zhenzhong Duan wrote:
-> Cache tag invalidation requests for a domain are accumulated until a
-> different iommu unit is found when traversing the cache_tags linked list.
-> But cache tags of same iommu unit can be distributed in the linked list,
-> this make batched flush less efficient. E.g., one device backed by iommu0
-> is attached to a domain in between two devices attaching backed by iommu1.
+Just a quick ask if you have any comments for the below. BTW, in
+internal tests, when we revert the commit f188056352bc ("iommu: Avoid
+locking/unlocking for iommu_probe_device()", it is helping.
+
+I can share more details If the below is not sufficient.
+
+Thanks in advance...
+
+On 12/13/2024 8:34 PM, Charan Teja Kalla wrote:
+> Race between smmu device probe and iommu device probe is resulting into
+> wrong DMA ops used for the device.
 > 
-> Group cache tags together for same iommu unit in cache_tag_assign() to
-> maximize the performance of batched flush.
+> bus_iommu_probe(P1)                  of_iommu_configure(P2)
+> (from iommu_device_register)        (from insmod of a driver)
+> --------------------------         --------------------------
+> 1) probe_iommu_group()
+> (Fills just dev->iommu_group
+> under iommu_probe_device_lock)
+> 				2) iommu_probe_device():
+> 				  (acquires the iommu_probe_device_lock,
+> 				   but since dev->iommu_group is already
+> 				   set, it just returns without
+> 				   allocating the domain.)
 > 
-> Co-developed-by: Lu Baolu<baolu.lu@linux.intel.com>
-> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> Signed-off-by: Zhenzhong Duan<zhenzhong.duan@intel.com>
+> 				3) of_dma_configure_id()->
+> 				   arch_setup_dma_ops() gets called for
+> 				   this device, but returns with the
+> 				   error message:
+> 				   "Failed to set up IOMMU for device;
+> 				    retaining platform DMA ops"
+> 
+> 				4) device probe is succeeded where it
+> 				   can now setup iommu mappings using
+> 				   wrong ->dma_ops
+> 
+> 5) domain will be allocated later
+> and fills iommu_group->domain.
+> 
+> Step 3) and 4) denies iommu device from using 'iommu_dma_ops'.
+> 
+> This issue does exists on 6.6 because of commit f188056352bc ("iommu:
+> Avoid locking/unlocking for iommu_probe_device()") without which 2)
+> returns only after filling the domain under group->mutex, thus no issue.
+> 
+> With commit b5c58b2fdc42("dma-mapping: direct calls for dma-iommu"),
+> ->iommu_dma_ops is removed altogether and iommu api are directly being
+> called under "use_dma_iommu(): return dev->dma_iommu". Again,
+> ->dma_iommu flag is set only after domain allocation. So, If
+> there is a sufficient delay between steps 4) and 5), issue is still
+> exists but that seems very narrow to me.
+> 
+> I am thinking, setup of the domain before returning from step2) is the
+> way to fix this issue. Can you please help if you have any suggestions?
+> 
+> Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
 > ---
-> v2: avoid getting cache tag struct from list head (Baolu)
+>  drivers/iommu/iommu.c | 26 +++++++++++++++++++++++++-
+>  1 file changed, 25 insertions(+), 1 deletion(-)
 > 
->   drivers/iommu/intel/cache.c | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 3f1029c0825e..61fc8145f378 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -561,19 +561,43 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>  int iommu_probe_device(struct device *dev)
+>  {
+>  	const struct iommu_ops *ops;
+> +	struct iommu_group *group;
+>  	int ret;
+>  
+>  	mutex_lock(&iommu_probe_device_lock);
+>  	ret = __iommu_probe_device(dev, NULL);
+>  	mutex_unlock(&iommu_probe_device_lock);
+>  	if (ret)
+> -		return ret;
+> +		goto err_out;
+> +
+> +	group = iommu_group_get(dev);
+> +	if (!group) {
+> +		ret = -ENODEV;
+> +		goto err_release;
+> +	}
+> +
+> +	mutex_lock(&group->mutex);
+> +	if (!group->default_domain) {
+> +		ret = iommu_setup_default_domain(group, 0);
+> +		if (ret)
+> +			goto err_unlock;
+> +	}
+> +	mutex_unlock(&group->mutex);
+> +	iommu_group_put(group);
+>  
+>  	ops = dev_iommu_ops(dev);
+>  	if (ops->probe_finalize)
+>  		ops->probe_finalize(dev);
+>  
+>  	return 0;
+> +
+> +err_unlock:
+> +	mutex_unlock(&group->mutex);
+> +	iommu_group_put(group);
+> +err_release:
+> +	iommu_release_device(dev);
+> +err_out:
+> +	return ret;
+>  }
+>  
+>  static void __iommu_group_free_device(struct iommu_group *group,
 
-Queued for v6.14. Thanks!
