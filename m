@@ -1,81 +1,79 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C1A3E23CE
-	for <iommu@lists.linux.dev>; Tue, 31 Dec 2024 09:32:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0ED7A927
+	for <iommu@lists.linux.dev>; Thu,  2 Jan 2025 03:13:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735637544; cv=none; b=CSi2EVeFH83jA3bB+AaiHA40jidZ2rZ21I/tVFCKHEf+BgMZCq+F4gVYkTmzpF+67xO5uGzAu4I9UcsklIqhOiYDiZoUG44y8AFRV/DjA+7J9zLnhG8vKIRFp0C4E+/iMTkxtsReV7GOH4o4Hnz7GGC4LzJGq6eliTpSF5g2aEM=
+	t=1735787597; cv=none; b=drotnBL+d5P29CNAFI9P+jrTRasUWinw+IfwG8yzY9rGr7cvE3T0LycKBDV1ZbJ/mscgCMWywWF9hVPRywLoHH5ytWqW/YXCyvrhDQoC0ykTxHdJ6Qj2Ry25iog3ncs2wZJmjFTDeRPaBX3gWVaCtF9grCJXPVYCEirHBplG95s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735637544; c=relaxed/simple;
-	bh=SefbSpWQMhmWbFhTp7LsyjTAVJhDaW25OIX5ECCCxtE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=NJfWwx3+ldI+MfXKb20Sy5erHnuA3+bL04Ll4hcRytgmQKsUB9kHzqnUQ7+RLrk9pKhWZ8P+JbbH/WsDVOvuq7YuOFSNoyLv7JSO5xCBRy/g0e1tsR6arDttSvy24Zt+g/5GN12gpSSwQatrmlQfe0Ofu6+ncODT0ySnen67W4c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=jDRhSSkx; arc=none smtp.client-ip=117.135.210.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1735787597; c=relaxed/simple;
+	bh=GrK7X2RWGuwyU71KuFjemlSleteRU0fGnr0dG0tU3yE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=B9yQ8c3X8kNJ7CJJf5rVB02qwlOs3iiqxS5Gp44JAE83gUL03c+cTnUgAonpGHehxTY+8z4u9fyI3peYlttvuroojB257+5jAokL5K/CGC26eu70chaeHxg8mTN/d9KtbUA0bF1aOVVjLfFFI3rX08ekG18N2+cDBzTmn/azwnI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gVXgerjA; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="jDRhSSkx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:Subject:Date:Message-ID:MIME-Version; bh=gAzC/
-	E/F7q/7HFvoRLgpsRSdEdWdl1u9Ms//kuDq2hg=; b=jDRhSSkxqwLJqKUdO1aaW
-	F2Ha5TSL4HZSmDvqSh56vNz+ifMFrCHmMwi4nnLetoGB/8qGpuEuGOEMPdMDQ7yR
-	erTouyT4rNVc3J0PV+itsShs1DG6LxEi5qen0SzF5Zhbd5zbM1YQoPbvwMTM4Y5d
-	uJGrbf32sxWm4ByDyxRqPM=
-Received: from ProDesk.. (unknown [])
-	by gzga-smtp-mtada-g0-4 (Coremail) with SMTP id _____wD31yQLunNn0QGeCw--.9208S2;
-	Tue, 31 Dec 2024 17:31:59 +0800 (CST)
-From: Andy Yan <andyshrk@163.com>
-To: joro@8bytes.org
-Cc: heiko@sntech.de,
-	krzk+dt@kernel.org,
-	robh@kernel.org,
-	devicetree@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-rockchip@lists.infradead.org,
-	Andy Yan <andy.yan@rock-chips.com>
-Subject: [RESEND PATCH] dt-bindings: iommu: rockchip: Add Rockchip RK3576
-Date: Tue, 31 Dec 2024 17:31:50 +0800
-Message-ID: <20241231093154.252595-1-andyshrk@163.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gVXgerjA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1735787596; x=1767323596;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=GrK7X2RWGuwyU71KuFjemlSleteRU0fGnr0dG0tU3yE=;
+  b=gVXgerjAnYvbbJytflS+DzDgZMsfL16aLdzVcT9JLQBuW0Th9BhFpo/J
+   KiCFfixLtRmmsOnRwTh2IZpj42ohRnPsMl5YK8oDD76cOq3dFVAFAifnz
+   jm3THL7/f+HgpuWM5YoCqfjgA0Se0pFQXJc86H0mU0emgwQ5IUjbmv/yA
+   BBT5B/9zy2rm/htNEjnyoym/s50aduq1NjgeUEp3bD0dakZhQFwwTgvlZ
+   PmuKsYZ4rKZzcUj6VIdnoK4Ghl/CZAAXjXuifnETaIebRz/bXAbaEdNAX
+   sjIztfpVS+i/QEo6LTz+GYu4pv8o3BmdKQGQiIiyTg3tCMT6xr2mNdMVU
+   A==;
+X-CSE-ConnectionGUID: LwhLnEzaTymRRZDSmDQs2w==
+X-CSE-MsgGUID: /k635eWvTuarMr1qu0kIJw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11302"; a="35326928"
+X-IronPort-AV: E=Sophos;i="6.12,284,1728975600"; 
+   d="scan'208";a="35326928"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jan 2025 19:13:15 -0800
+X-CSE-ConnectionGUID: GDZlJSifQKCOB76Ftr6cdg==
+X-CSE-MsgGUID: UAapIAtzQMKs3Kb0m63c1Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,284,1728975600"; 
+   d="scan'208";a="101883905"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jan 2025 19:13:13 -0800
+Message-ID: <769bba44-9426-4950-b6db-3f021501095e@linux.intel.com>
+Date: Thu, 2 Jan 2025 11:11:15 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD31yQLunNn0QGeCw--.9208S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtw1xZFW3uF47Kw4kGw1rWFg_yoWfCFb_C3
-	WxZw4UZF4rtrWFvw1qvrWxWrn8G3W2kFn5ZFn8CFn5Ja4qvrWkJF95Jw1Yyr1UGr47uFyS
-	9Fn3Wry7XF9xGjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUbD73PUUUUU==
-X-CM-SenderInfo: 5dqg52xkunqiywtou0bp/xtbB0h7GXmdzt4U2PQABs4
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu/vt-d: Avoid use of NULL after WARN_ON_ONCE
+To: Kees Bakker <kees@ijzerbout.nl>, iommu@lists.linux.dev,
+ Tian Kevin <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: linux-kernel@vger.kernel.org
+References: <20241218201048.E544818E57E@bout3.ijzerbout.nl>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20241218201048.E544818E57E@bout3.ijzerbout.nl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Andy Yan <andy.yan@rock-chips.com>
+On 11/16/24 02:46, Kees Bakker wrote:
+> There is a WARN_ON_ONCE to catch an unlikely situation when
+> domain_remove_dev_pasid can't find the `pasid`. In case it nevertheless
+> happens we must avoid using a NULL pointer.
+> 
+> Signed-off-by: Kees Bakker<kees@ijzerbout.nl>
+> ---
+>   v1 -> v2: change subject to use 'iommu/vt-d:' prefix
+> 
+>   drivers/iommu/intel/iommu.c | 7 ++++---
+>   1 file changed, 4 insertions(+), 3 deletions(-)
 
-Just like RK3588, RK3576 is compatible to the existing rk3568
-binding.
-
-Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
----
-
- Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-index 621dde0e45d8..6ce41d11ff5e 100644
---- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-@@ -25,6 +25,7 @@ properties:
-           - rockchip,rk3568-iommu
-       - items:
-           - enum:
-+              - rockchip,rk3576-iommu
-               - rockchip,rk3588-iommu
-           - const: rockchip,rk3568-iommu
- 
--- 
-2.34.1
-
+Queued for v6.14. Thanks!
