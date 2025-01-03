@@ -1,126 +1,92 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 090371991A9
-	for <iommu@lists.linux.dev>; Fri,  3 Jan 2025 15:35:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EFBC1F9421;
+	Fri,  3 Jan 2025 15:37:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735918528; cv=none; b=UZ5fFXnYzKv53t8zX0VImtnQE31hj4F4RiGAMqKq+1pVSl41kRyWav10ePsfjcRzhE9Z5J49XcfUSxCQPmMQpy1Hsc51c5XjeWKl5MS4Ipk7FUVYjubMw4YTa2//99smgchyJsQTx/ldL5TUrzrseRzl3wNZ0D4kFGrO+IaDnfU=
+	t=1735918643; cv=none; b=YlA4XymKTCs1Qt91y8Yrlt/js+MskG4ycDQ4eofAV08r6izauP6oiY1O2jsGe034pQwW9by1yqXKTg3+8yPMLs9GWQRipfj0W5Jn/e3I/DYHMMuHIHDYUrmybBs9v10WU+lveOrRlfqhACf/VVJGixwZqoRCiKCcZ5Xy9K+tVlY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735918528; c=relaxed/simple;
-	bh=vcCOxf9MjAm6R004BwmvpnBmn1ugdF3644CrfRERETA=;
+	s=arc-20240116; t=1735918643; c=relaxed/simple;
+	bh=KnHv5oQRaYx4DU4fQ9sL4Q1OxVgQhnnH0NGST/QZixk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JQphRWQMMvBxTieV5bcrV42cuvs/q6xlI6J5kxMdk9avoWYanHpEsBHImonlLc9m+xKlfdcuFHmG/QTQB17faKkfhpgYPHO1CVgpmbLJojg0x6lYrDTJSvpVQ6BE0PpyqS7h7JuTSBR/7HDJLcfvKmSltTOANV5ViQm55LZPoOc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=I/AszDTU; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=cBIHdB+2hpVoCJ0KYI7lkEt+NVOAf/87KmxdxJMmyKp88PiLo8zr3Pz76KI5In16EVAf9N45j9ECg7VvtLSIfR7CbEpAQiJKpuxz+f33EX9+68TvEfDt6u7/dDwpZzPM7kETtw2W16YH+4zXPjXp1mrnMDX04kYSyj6u3PZmPFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LWKUa1Mz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="I/AszDTU"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-43621d2dd4cso57385e9.0
-        for <iommu@lists.linux.dev>; Fri, 03 Jan 2025 07:35:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1735918525; x=1736523325; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=7TAFKlJ6U7QCklm7PSgnN2whltr6YSbd0ouHsKVqiJ0=;
-        b=I/AszDTUp6GYgFaa1bkY9aAM9HPQMXKcEehUCobNOTqRT9CUcBj6DG7wp36YUoF8oS
-         fmyLaksj3GWeX1HXJZ0nHFIfIdkmqYKPNM6o0z3WIOggUwJ6ZU6ZEmJvNwato0TDNTtk
-         74t1d1pLtO/W7e33eNFJi9EArAjM+xGmZxx7euIW7gmzMkMKqYdvKS3K54ZeCZbQquqy
-         32OAH3jBFB6A9qehq/0IfQbMylI4ttQtSmInwctLF8zBhSuAH4ZOZWrF3vF4Iyyz1YYE
-         zd87dtGa58Oz1bZKgfLbfqa/Z12XpskqA+E6bfaf8DZfmpol34GLBE2aUnjQBmEglzTA
-         0TVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1735918525; x=1736523325;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7TAFKlJ6U7QCklm7PSgnN2whltr6YSbd0ouHsKVqiJ0=;
-        b=b8uNVWQmw16lJ/pX+wioMtomsBkHE6gynGc+K0YcOBIO13+NMo90C36nJnoIP5+368
-         F129ti+CiojGEnDkqY7fpSjO/vhcyz8x0+wNbLk2KjMuLeefMBc+/M8tYmmS4wVlK2RQ
-         ZUQNpYUmpmUEO5a93uV5xsrP+MIrP495oIcn/8mbEm8M9gVC8huEbI9jmjtXb3XaHPaX
-         CRwQy7O/mCIWlA1GEIRQHfHXSLovYrseUDpNiVG8RLxG/orJZGDdgS09MFuvbNfATRwd
-         qD3IG6bNL2bco2llJKMMFThFCXUpU2YXeVwittT4cUtCM+T3Soe/RtWn5dSJMzBampil
-         PkTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX6iUn7K2TTxrDe0xSvkKiN6WBTtAnWRU3TGhAOYGJ/Yxd53PO5tRWMiqO1GzgOEyO5rYMCLA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxAX5oOk9athuFpgzLNkqSCDfj0I1soazvPqQN+nEIL0cFYI/CK
-	jL+wWXiu1bi59sVyyE3d5v8EVX3InpbEam3OOVsVWUewU244zVGIR1F0WoHvbg==
-X-Gm-Gg: ASbGnctrYmW3mrbRIRFVU4r15d2w4S7qCP37ihCiNhVCYsOaV1bvrsA4zM5exHX/Iu/
-	GqVMF5nrDKIa9BqsrZgfs6bWbHvXDGDBiIH0PhxaqZhz06a+Ng1mZvGg6gE72UZK9yNAMv7WCWz
-	EIcJX/lHtttouFtrIjUxvsYq4D0ztuh2NHfsNf6GO4uSXybprRj10TJeACsJROXFj+BVjXy0G4F
-	B5uQt9QwvMXE/+sDfjedZlzIXKQN2onbND/rGhpVNV0z9R9ikko/sMfLM8f0ECXwmzDOjfpq0yt
-	SlxfPy7TXGPtJewuEig=
-X-Google-Smtp-Source: AGHT+IFYpv295mC4BjSl9FSXlia/fjrHlkEb0FIGQ5Me85JthE8z4rdE+//UhwlzrKWnZRqRsAmKQA==
-X-Received: by 2002:a05:600c:5788:b0:434:9e1d:44ef with SMTP id 5b1f17b1804b1-436ccb413f2mr875415e9.7.1735918525147;
-        Fri, 03 Jan 2025 07:35:25 -0800 (PST)
-Received: from google.com (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a1c832b32sm40339218f8f.23.2025.01.03.07.35.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jan 2025 07:35:24 -0800 (PST)
-Date: Fri, 3 Jan 2025 15:35:20 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	kvmarm@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com,
-	will@kernel.org, maz@kernel.org, oliver.upton@linux.dev,
-	joey.gouly@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	robdclark@gmail.com, joro@8bytes.org, jean-philippe@linaro.org,
-	nicolinc@nvidia.com, vdonnefort@google.com, qperret@google.com,
-	tabba@google.com, danielmentz@google.com, tzukui@google.com
-Subject: Re: [RFC PATCH v2 55/58] drivers/iommu: Add deferred map_sg
- operations
-Message-ID: <Z3gDuPe5C1Uj7y4m@google.com>
-References: <20241212180423.1578358-1-smostafa@google.com>
- <20241212180423.1578358-56-smostafa@google.com>
- <ce4c8db4-4895-426b-8d9d-97dc5d74fbc4@arm.com>
- <Z2Qshft8lQjI-x7c@google.com>
- <20250102201831.GB26854@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LWKUa1Mz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A7EAC4CECE;
+	Fri,  3 Jan 2025 15:37:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1735918642;
+	bh=KnHv5oQRaYx4DU4fQ9sL4Q1OxVgQhnnH0NGST/QZixk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LWKUa1MzSSp98zFZJn6r0t5w4VFvnZ3vGnndiVea73h68oea9nfH/0EvHg+RWHpOd
+	 byr1RTLZqoBgvYlOk9N3XjOLUnGlxqYqdLtkED9/XjE13dfiYdUTe0r2OwNR8RP2Pu
+	 VR6dGqCOPos9xSrTZ1LtQAb4i8VBMkdqlKzPFKkzsFigUgAdXmC2Z1yG17ZsrgNrEB
+	 o3mI52ODbFV1eGnZDob3GG4deQ28s3M5EmE75MbbMPeYUwcOEpwSSWM1Wh/FVcktrn
+	 Pv9EE30V2ew2k9HkaJLbE6M3GX7kZSuBVwgT14LZ2rvNdXoLKe+603UVNj9piP5o+O
+	 Mx6BKHL3vjOXQ==
+Date: Fri, 3 Jan 2025 15:37:17 +0000
+From: Will Deacon <will@kernel.org>
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Cc: robdclark@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+	jgg@ziepe.ca, jsnitsel@redhat.com, robh@kernel.org,
+	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
+	dmitry.baryshkov@linaro.org, iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v18 0/5] iommu/arm-smmu: introduction of ACTLR
+ implementation for Qualcomm SoCs
+Message-ID: <20250103153716.GE3816@willie-the-truck>
+References: <20241212151402.159102-1-quic_bibekkum@quicinc.com>
+ <28bd756a-e0bc-49e7-9415-4c05d38c5e28@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250102201831.GB26854@ziepe.ca>
+In-Reply-To: <28bd756a-e0bc-49e7-9415-4c05d38c5e28@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Thu, Jan 02, 2025 at 04:18:31PM -0400, Jason Gunthorpe wrote:
-> On Thu, Dec 19, 2024 at 02:24:05PM +0000, Mostafa Saleh wrote:
-> > I had a quick look now at s390, and it seems a bit different as they only
-> > notify the hypervisor about the iova range being changed, and don’t need
-> > to provide iova->paddr mapping which pKVM does.
-> 
-> Can you explain this statement some more. It seems strange to me, why
-> would the pkvm side, which has it's own page table, need to be be told
-> about the iova->paddr during range unmapping requests - and why would
-> the host/guest side have to unnecessarily store this information?
+(please don't top-post...)
 
-No, it doesn’t need to be told about the paddr on unmapping.
+On Mon, Dec 30, 2024 at 06:45:29PM +0530, Bibek Kumar Patro wrote:
+> On 12/12/2024 8:43 PM, Bibek Kumar Patro wrote:
+> > This patch series consist of six parts and covers the following:
+> > 
+> > 1. Provide option to re-enable context caching to retain prefetcher
+> >     settings during reset and runtime suspend.
+> > 
+> > 2. Remove cfg inside qcom_smmu structure and replace it with single
+> >     pointer to qcom_smmu_match_data avoiding replication of multiple
+> >     members from same.
+> > 
+> > 3. Add support for ACTLR PRR bit setup via adreno-smmu-priv interface.
+> > 
+> > 4. Introduce intital set of driver changes to implement ACTLR register
+> >     for custom prefetcher settings in Qualcomm SoCs.
+> > 
+> > 5. Add ACTLR data and support for qcom_smmu_500.
+> > 
+> > Changes in v18 from v17_RESEND:
+> >   - 1/5 : No changes
+> >   - 2/5 : No changes - reviewed-by tags collected
+> >   - 3/5 : Addition of
+> >     pm_runtime_resume_and_get()/pm_runtime_put_autosuspend()
+> >     around register access of PRR related private interfaces
+> >     as discussed in v17_RESEND.
+> >   - 4/5, 5/5 : No changes - reviewed-by tags collected
+> >   Link to v17_RESEND:
+> >   https://lore.kernel.org/all/20241114160721.1527934-1-quic_bibekkum@quicinc.com/
+>
+> Thought to follow up on this thread to highlight the latest version (v18) of
+> this series, in case it was missed during the vacation period.
 
-The problem is as follows;
-- With the current IOMMU API, an iommu_map_sg() function ends up looping on
-  iommu_map() which is very slow as map is a hypercall and there is a lot of
-  context switching.
-- So, we add a map_sg hypercall, instead of consuming the kernel scatterlist
-  which duplicates logic and can be complicated to do. A new iommu operation is
-  added add_deferred_map_sg(), where at iommu_map_sg() instead of calling
-  iommu_map() it calls add_deferred_map_sg() to add mapping, and 2 other new ops
-  also added to create and consume a sg request which comes from a single iommu_map_sg().
 
-The drawback of this approach is that it adds 3 new iommu_ops with a bit of niche
-semantics, which for now only used by this driver.
+I'm waiting for Rob (Clark) to ack the last patch, as he had comments on
+the previous version.
 
-An alternative approach as Robin suggested, is to treat all iommu_map as sg map,
-and when the driver gets the iotlb_sync_map() call it can just issue the hypercall,
-however this call only provides the IOVA range, which requires extra work or locking
-as mentioned in the thread, and as Robin mentioned s390 doing something similar,
-I was highlighting that in their driver, this call only notifies the hypervisor
-about an IOVA and not an actual pv map as pKVM, so it much simpler in their case.
-
-Thanks,
-Mostafa
-> 
-> Jason
+Will
