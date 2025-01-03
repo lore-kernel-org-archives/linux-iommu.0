@@ -1,84 +1,40 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAAF11C5F2F
-	for <iommu@lists.linux.dev>; Fri,  3 Jan 2025 15:19:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D27F192B84;
+	Fri,  3 Jan 2025 15:34:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735917545; cv=none; b=kF/jvwTLKEBeMSaWpbOCyXSITMKuG62TLxk6LHUY/S1fA35dapTLLP+slAccWWchBxkvRqwht8GVmpXknLfOi/t4eH3A03+kmW0BBJLux5V7qkLzRRUj1q+6kxuJYQ6xPk/7ioWvLxKJ4fjbxyzIxZVwvaICwOfN3HscAeqzpqA=
+	t=1735918480; cv=none; b=tKbhbeVHjsPr2BSYqd5l5gu9irhYKC0TGb+l34itHmoB/SFYqMM8DYP+5Wc06H+yLQxH/tgXf7JpABSSOzoRKMiO0I8KhxS4GaTMP8nTDwWZ8QUYDZtaATTyM7mSm7Pa5h4lGmKM0WxGi37bZZHX4IzqWTorQsN/uZkDZ0ZWe3c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735917545; c=relaxed/simple;
-	bh=CGB8nJCzb5yHLiu2JB0xT5s1DN9ayx5bmIexjSS5sZE=;
+	s=arc-20240116; t=1735918480; c=relaxed/simple;
+	bh=oGKckwtIYDG/dajdRaOy7mnGhcX91bcMCmVoCqjNfyE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RBNkpuu9VstfV7ft3dKOoycD9sJHbD6zYJnM4zMh51AJo8Z4rWp71SiBbu7Ys+K4COYN4ZuUsK9jqMzqgW4CEXgovas+fhF5EY9E6YZ35tSxkIlxKsVsy4GXOs8Byq2yxopuiN91RKGuEN9alzWv5ZjxwPO3EZC+jCLS/DIG3W0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=V8haeBPc; arc=none smtp.client-ip=209.85.222.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=Xq7yxutWQMtk6tKNRrnyHwtYkpem7hOppNh92HY8U/uc2OM6KWAJgK1znAgGGdprDBTFRedSC/yPnSaRUdJLSPKfJrX8PTKkEoYZIUyr1nUhUGLIaRvIhC8gA/FSHgk41EyVWj6sU0JBm37FQ0susIIMPRe+eqBji6Wr6VdxuZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hqQsfkhR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="V8haeBPc"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-7b6ed9ed5b9so1700967185a.2
-        for <iommu@lists.linux.dev>; Fri, 03 Jan 2025 07:19:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1735917543; x=1736522343; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CGB8nJCzb5yHLiu2JB0xT5s1DN9ayx5bmIexjSS5sZE=;
-        b=V8haeBPcUhdAD+wq/I8k/pnVYPcuY+elj8Fb9YaGX/pL8ENo9cLMjN4z+2/CejqBB/
-         Q/8ft5/ZNj8F5UoTy1gBUb6iKXLNYpROYy4QS7iKxvv2KPbDuWCpUA3g3rNEoS2cJH1h
-         v95AwOmM7BtdPkvNJgrRVQOINrTKHyRDUpnOmPa7JIcEuHnopF0yAOicYnnNShKuMkwJ
-         /NSiFpImH5Wjudwak2vmdEoeTncKjW4VrqrmtLGc58gnKkeOAUUuwKwfhfay0F1DSizH
-         HbN9kMQDSt9NOmM67fCpoXhKuRQYW7CdfUA281VoECXH9P/ZsaRm7gfhjiGJCvErJqcH
-         T2pA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1735917543; x=1736522343;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CGB8nJCzb5yHLiu2JB0xT5s1DN9ayx5bmIexjSS5sZE=;
-        b=g2kC4ZnNeKgdRxox/qlKP0lsv6xxJEpDWPGbixJA/mQmDYEFqGcak1pCUv/WFbOCR0
-         zlb8z7a+RkAGPSPApJ8F3ptakMXY+M9aQz6MLqvpGaiLke54Gs8/jZXsVE/JB2jSBkUl
-         hP/9xgEx+git4NRi0MmsSE3DDxtYHi2MJDkYirQjC2N9e//ANHOnh0OvdwJ2F9xMC+pR
-         rt7d6E2cOtu5VMTWCCMok/Knmy5irbzHu+4tx89oote1i8OAg0xjpZ9HJsHBryPQz9MS
-         XZWItEYCVYg5A0R/Iz4bY8K8Tq00kw4H5FjtFw7P1GsN8WL5NNTXQnSVHmTO1csPzV7d
-         2JYQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWy6JiJea+sX3NeYAU/dHBeGUSvZtsqscAnXx6iEAN+U67MlOjg24HdMQqNLCJvnmmWKe6/qA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyyBshSLTPI5V9cRXme6JGTxsu+Ae22RsuFqghu8M1vjaLhSINe
-	pLuKgNv8MaVFkylk8HZzBeVktjB9EVo3Oz+phjcJEgHXNJuNsuD7oaaFCICfTnY=
-X-Gm-Gg: ASbGnctNlPyP8omZN44ZlEAnNqxS58QfKoUAXixik7JHaTDWQjvOY+q5UMsA+Bd70PM
-	cmbpU1X0ka5CQPSPMudSRlEzGag07zYBjwFVStE5ZDK6ldWOemrpIDFS/iahA1qjQQtDSYCj09f
-	H5hEsRiP76NScVzj9oD38iH6XaYvGat1yG7d/CqpyvUCXDXclwTu2my461vhR8xr4XlV7XFS0lz
-	A0p4cOlmodMAc8DFoBwKCknmE1lRgR0Hsh6VoxUPsSxOgjshC+uKocPT/HFUHhNffcHbrA89+FP
-	yNsdrQBgxHdYCy8y9btfWBXSxmDrMg==
-X-Google-Smtp-Source: AGHT+IHTG+Bq32SHg17tHpm9vXIkHAkuaGHUCVV1avASRsb7eSYGQtc9W1/GwgW3NuW7igfw1fFU3w==
-X-Received: by 2002:a05:620a:488a:b0:7b6:d5cb:43a9 with SMTP id af79cd13be357-7b9ba773db8mr7230744485a.23.1735917542951;
-        Fri, 03 Jan 2025 07:19:02 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7b9ac478f0fsm1277723385a.71.2025.01.03.07.19.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jan 2025 07:19:01 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tTjS0-00000000iwx-2edn;
-	Fri, 03 Jan 2025 11:19:00 -0400
-Date: Fri, 3 Jan 2025 11:19:00 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: David Woodhouse <dwmw2@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>,
-	Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
-	quic_bqiang@quicinc.com, kvalo@kernel.org, prestwoj@gmail.com,
-	linux-wireless@vger.kernel.org, ath11k@lists.infradead.org,
-	iommu@lists.linux.dev, kernel@quicinc.com,
-	johannes@sipsolutions.net, jtornosm@redhat.com
-Subject: Re: [PATCH RFC/RFT] vfio/pci: Create feature to disable MSI
- virtualization
-Message-ID: <20250103151900.GE26854@ziepe.ca>
-References: <adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com>
- <20240812170014.1583783-1-alex.williamson@redhat.com>
- <20240813163053.GK1985367@ziepe.ca>
- <87r0aspby6.ffs@tglx>
- <03fdfde8dc05ecce1f1edececf0800d8cb919ac1.camel@infradead.org>
- <20250103143138.GC26854@ziepe.ca>
- <432d4304b579c5bd6973628c3c4aaad476627f7b.camel@infradead.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hqQsfkhR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7836C4CECE;
+	Fri,  3 Jan 2025 15:34:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1735918479;
+	bh=oGKckwtIYDG/dajdRaOy7mnGhcX91bcMCmVoCqjNfyE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hqQsfkhRD7PLWHRJQHXYj9EmUBzK7k1QpBkinOphaD62wy/XV7Sds4Q0mTNz4BBJc
+	 M2PzQb6ys8K5sUHpd81OpxyOpXNhU0jBqkf6g7ApO5rhvJ5BX1i3x3G86Mb1hR65RY
+	 1ANbqqn47PiaNI5wUGwq/GChm8wnavSKkaQfC8vPtQPpI3rg4wjo5JKcWtjkwnYRf5
+	 2N/6/3uWh2Se81r6k7xYRcAttkVqW0pbKN3UshCE3t5mLcgC57xcdIBBMx0XopHXMG
+	 ciJoX6MEyF1IzE+xawcJXr4v+ZHJ3c26h4d4JvQoMQ+JK5/co66MUcScK2cy+qCHPN
+	 lueryNh/+GsgQ==
+Date: Fri, 3 Jan 2025 15:34:35 +0000
+From: Will Deacon <will@kernel.org>
+To: Charan Teja Kalla <quic_charante@quicinc.com>
+Cc: joro@8bytes.org, robin.murphy@arm.com, jgg@ziepe.ca,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC] iommu: fix wrong DMA ops for iommu device
+Message-ID: <20250103153434.GC3816@willie-the-truck>
+References: <20241213150415.653821-1-quic_charante@quicinc.com>
+ <91d15d11-ec53-4ca2-a385-9fa69d861f2c@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,29 +43,76 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <432d4304b579c5bd6973628c3c4aaad476627f7b.camel@infradead.org>
+In-Reply-To: <91d15d11-ec53-4ca2-a385-9fa69d861f2c@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Fri, Jan 03, 2025 at 02:47:11PM +0000, David Woodhouse wrote:
+(Please try not to top-post as it makes the thread hard to follow)
 
-> Probably best for the hypervisor to have some way to *advertise* that
-> it's handling this though, as guests also might want to run on
-> hypervisors which don't.
+On Thu, Jan 02, 2025 at 04:09:46PM +0530, Charan Teja Kalla wrote:
+> On 12/13/2024 8:34 PM, Charan Teja Kalla wrote:
+> > Race between smmu device probe and iommu device probe is resulting into
+> > wrong DMA ops used for the device.
+> > 
+> > bus_iommu_probe(P1)                  of_iommu_configure(P2)
+> > (from iommu_device_register)        (from insmod of a driver)
+> > --------------------------         --------------------------
+> > 1) probe_iommu_group()
+> > (Fills just dev->iommu_group
+> > under iommu_probe_device_lock)
+> > 				2) iommu_probe_device():
+> > 				  (acquires the iommu_probe_device_lock,
+> > 				   but since dev->iommu_group is already
+> > 				   set, it just returns without
+> > 				   allocating the domain.)
+> > 
+> > 				3) of_dma_configure_id()->
+> > 				   arch_setup_dma_ops() gets called for
+> > 				   this device, but returns with the
+> > 				   error message:
+> > 				   "Failed to set up IOMMU for device;
+> > 				    retaining platform DMA ops"
+> > 
+> > 				4) device probe is succeeded where it
+> > 				   can now setup iommu mappings using
+> > 				   wrong ->dma_ops
+> > 
+> > 5) domain will be allocated later
+> > and fills iommu_group->domain.
+> > 
+> > Step 3) and 4) denies iommu device from using 'iommu_dma_ops'.
+> > 
+> > This issue does exists on 6.6 because of commit f188056352bc ("iommu:
+> > Avoid locking/unlocking for iommu_probe_device()") without which 2)
+> > returns only after filling the domain under group->mutex, thus no issue.
+> > 
+> > With commit b5c58b2fdc42("dma-mapping: direct calls for dma-iommu"),
+> > ->iommu_dma_ops is removed altogether and iommu api are directly being
+> > called under "use_dma_iommu(): return dev->dma_iommu". Again,
+> > ->dma_iommu flag is set only after domain allocation. So, If
+> > there is a sufficient delay between steps 4) and 5), issue is still
+> > exists but that seems very narrow to me.
+> > 
+> > I am thinking, setup of the domain before returning from step2) is the
+> > way to fix this issue. Can you please help if you have any suggestions?
+> > 
+> > Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+> > ---
+> >  drivers/iommu/iommu.c | 26 +++++++++++++++++++++++++-
+> >  1 file changed, 25 insertions(+), 1 deletion(-)
+>
+> Just a quick ask if you have any comments for the below. BTW, in
+> internal tests, when we revert the commit f188056352bc ("iommu: Avoid
+> locking/unlocking for iommu_probe_device()", it is helping.
+> 
+> I can share more details If the below is not sufficient.
+> 
+> Thanks in advance...
 
-If the hypervisor doesn't properly virtualize the device it shouldn't
-assign it to a VM to start with :\
+Can you reproduce the issue on 6.13-rc5? We bodged some of the probe
+code recently:
 
-Intel looked at the question of advertising clean interrupt remapping
-when trying to virtualize IMS and it didn't seem so great.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=229e6ee43d2a160a1592b83aad620d6027084aad
 
-Bare metal machines need to work, so any test they could think of
-adding would either fail on bare metal or fail on existing VMs.
+and a better set of fixes are queued in -next.
 
-VMM's have taken the approach of not telling the guest they are in VMs
-and then also not implementing the bare metal HW behaviors with full
-fidelity. So we have no way to discover that the VMM is, in fact,
-emulating broken "hw".
-
-Thus we get this push that all kernels need to accomodate the worst
-VMM behaviors :(
-
-Jason
+Will
