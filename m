@@ -1,70 +1,82 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 957AE19D06E
-	for <iommu@lists.linux.dev>; Fri,  3 Jan 2025 12:22:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A515A1FA8E6
+	for <iommu@lists.linux.dev>; Fri,  3 Jan 2025 14:31:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735906926; cv=none; b=I1h9Errvn8KPxj59oj6cDpBxBVGG7YakONS0y4SGp6L2JLG8uIouXm4w2swqHLgUA3lPlE2kxY2Lg2muq1oZ5MQZm82V2AxspoBPOsRbEJd8NiV4l3cUA+cP3KrjrTkWQx4vv2klkHNK1ga97OdRid6y20uNEEtVNRyechMl3LM=
+	t=1735914704; cv=none; b=Kc+jMv/TiRnJ1/JSsIN9fWJJ0qQg8I6emAf0XaB2LW0qn/s9Kisq0UJuwEfVI8cKITNNKi47AsF7D1tXj2skhmCQEgpkvtvjuVW4Gv3bJ58YYjm2wU4oq66NZ3GSnbygsCR7d2wojLjwD7xPABDbZZcUVf0P1PAYw8cpQaNdd9g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735906926; c=relaxed/simple;
-	bh=O8EXrmDhtANaIfvlDnTl772IIDoJbmLJdAgbz8+k41Q=;
+	s=arc-20240116; t=1735914704; c=relaxed/simple;
+	bh=Fe6qFIofTeLLtNfSn6+xkHpbsXHW37Fb7CK/4DFE27I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rG1XzVz/gBzWfqHcxxR4zKHYCdQ+CNZQTagWyCVBS/lmYVTYUR7YrUffnxONk82GsqWxeP8boTbUQvXt/ipQJVJPaOr1TQ7fW6zMjsJ7vrOjDI88bXeiJcexZbO7FfwrSdMQjnK/z12L7BHjLU+uCoH/2LzcqOggV+vPiJpGo2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=K3U9Jt5G; arc=none smtp.client-ip=209.85.167.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=lhRtTz4tYjss1MQeKJ0HdSSontGg3qk6QH5OqziJzocX3EKiJZzjGkM2WPhbjOSPi+dvVKOfriDajGwVLL5617ks2Opo4WjeKull5gpBhFw5ms7+Y8piSzd/ZIuoDJQIEzVXpj2bqZEDN9KO7zrcBIQZqSv7fOUvNKfhxOlMtm8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=QlpbDDyP; arc=none smtp.client-ip=209.85.160.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="K3U9Jt5G"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5401b7f7141so10993614e87.1
-        for <iommu@lists.linux.dev>; Fri, 03 Jan 2025 04:22:03 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="QlpbDDyP"
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-467a3f1e667so71919361cf.0
+        for <iommu@lists.linux.dev>; Fri, 03 Jan 2025 06:31:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1735906922; x=1736511722; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1735914701; x=1736519501; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cYsxb7BeQ7ZfzNcH7+s2mWWWWWRZcp/zu7awCW8Opwg=;
-        b=K3U9Jt5G33NX21Zaily3KDktzCgbtFuVxZLcHnduApU4Gg1LB1p09wtSzUom1fQBTo
-         4bkHcDPTy4NYzXFJExE2Qk0W/7dlD7uU9j0s7K0CcSZZGedZgQK8EHXBs1b4T4dn6wDw
-         TQZBOXCOuFiZQVpaT6qXMptN8wgoB0qDUJtDWdtadBMfUCxB212DX0R8DSEGyqzCKmIc
-         zflEjyW7pJRjHnr0v3ycQXz9EEuIdsiEkad70vKwhzpiBP20Z/9XtuaA0UDnJTvSPi3r
-         zrMjW9QMiQZxr/EB/Q5TYTIkVMcOv/4aJfMyMkQHiR2jWIA8IdM35oEhJp0rz3+a3VWh
-         VQDA==
+        bh=KZz1gAr6AH9VZR9mcSijrSsgtvQXf/lr7rOewXx+J4E=;
+        b=QlpbDDyPv2y2dpZw3MIvtHYMo1XEwd8C3JxtawS0ZJ7aw5xow98ihNotmPyOoyOAJq
+         Vqgg4tgiJ32TeAajeJCopksnRhO1zDJkTDGfbGvp9yExBuXAgGdMbN6B2POdhTnjlVvZ
+         7MxoYm+Uy2gMNN+ErUryBGbeTvEswLGqWZ8V/Qyp70KehCsM6YQ7GIEIrPgD6TLFqSIT
+         d1c49YAvGsH03nD1iqtNrvV8TmxYp8MZuchxOgl5qWD6r5Q6GdrwVurDX7LC1h3MVFsS
+         1LHtz7jT009XKeu2T1eXbRIuIOoz4kgslrogNTivybVweojNHQsarXUSFdVL6RGTOFUp
+         xrJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1735906922; x=1736511722;
+        d=1e100.net; s=20230601; t=1735914701; x=1736519501;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cYsxb7BeQ7ZfzNcH7+s2mWWWWWRZcp/zu7awCW8Opwg=;
-        b=bJR7yZy4ey4ZMVpe21ISw12GywvPydyId5HVQZQ2xHxnijIa35M1U0CPBBWlCJpok1
-         CheS06yd9gFvElurUcAKaQAXF+vmsAs8gJ7ebx621QfX/Mjc3H0Ir/RJMx1ePcoxkl4U
-         5EAFXyWaDYOyumKXKJt8RXoziU9hSfqnPJgzY5PL3uXEReZ80G6IWvVlmPVAMaV+52JM
-         7IwrguO2AwxulBy2LimeBH4Sr+7YlDJOWjPiZNF6BfB6vMKJHm+eeovzPFabz1797aTd
-         gV8+yYFyGAMM/8ck6gsXrFxkB/OxyNuG0jxWzibMB2aktAX49y6KS2LupFc2gzIbjxIF
-         W79g==
-X-Forwarded-Encrypted: i=1; AJvYcCWMB4Z46ggrZKDPvFlBLJRgINvEynlttThCj41b6UBUzis7qZwNnF6Zkby/hceeooSXI7265w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzMXdkYwjx1iMJb9Bt6e9SG1emcUY9pLS8UgPsnpfA0c8OWRf+l
-	dlVDVRlpZP8OPWA3CiBaYf1qmBkdjSSqcL8zNaeEppVZv9FBblRAjB6T1lm2Ib4=
-X-Gm-Gg: ASbGncuMpcNwwVtgNFwUSsMKhio4nA2AfCyaanMZwP6Uxc5wEuLpLH9E0uogClclrLl
-	rVWC8bfDZCVHESjYGGJi1QUUpNC/iC564vaEvNf1r4nLAosz7qtYAB/1VpouJ13sO0DrzKqAaf3
-	OOLEuBw3WHwn8wOQn33vQgF+dA8ctnIU5p2BUscsSfFPU/stfMzkGEr9ykDwBSHoD4KpuM6zyUR
-	hpypTO6Ptxh1/UjNdaKtU39mOSO4lM0wycC3FQ2r4WG0S25ZjMURThN6gPMtma63Hy78ntdcN0S
-	DxefBQL122AvFpGrz5mTTNWGg4ihZQRqkqWl
-X-Google-Smtp-Source: AGHT+IEkhlCStgRTYUkM2Z53ttoD7NcBvl2lyibDklVtolD0F7cE8yDUolsmvkDCrs4FxF9c6Igm9g==
-X-Received: by 2002:a05:6512:3f20:b0:53d:dd02:7cc5 with SMTP id 2adb3069b0e04-54229524640mr15589362e87.7.1735906921736;
-        Fri, 03 Jan 2025 04:22:01 -0800 (PST)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54223830207sm4216554e87.251.2025.01.03.04.21.59
+        bh=KZz1gAr6AH9VZR9mcSijrSsgtvQXf/lr7rOewXx+J4E=;
+        b=MgmR4/pj7q+6xMNp+YMhcP61zQ9h4tL9rxAHhBdbUaZFf/TZer9tTR+WhGlDIqbsxC
+         OrUJGp5y7NbISVRTrpRbUWba8CcvGfeq9BLqPS5VLCOPvKJDW9eerB5bQRKSj17lX1PB
+         JK8Z/7DOv4apti84C2rkV5C4Wpykmxpld7s0WdnHl/cPh3zs8Q0xuGhW4UV0mj9d2lW0
+         CviotZ8tDBzmBSWnOkVw8ueEAGUxTL5FMBvyv2QEjFHOtI0nB+YkIyW2nM6ejvlggzRx
+         1zE5hK0g+XqKCUS2M1L9qsFwQL+wW5LHYZBTi4NaI8gg8oRP7Zp/2tth8qgeV6uCPhWq
+         Hmmg==
+X-Forwarded-Encrypted: i=1; AJvYcCXev21AqDo4SS6LDVdun+MxD909oCuTq43MOlYixIaXTCdBbkLTjNrj3TmQDzKXJYu5pMCepw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx+b5BwKbFAbhpi3Ks0W3fIkviTxlxs+OLNObx+tyu9J/5Lgkhx
+	qlno0E+86DBmQBZZ9KWKYXdGHwqFFlCLLWI3Fd5He4Rbsr/dKfOvM0MagwBQ5TY=
+X-Gm-Gg: ASbGncsFuZpCD3SrF1WQGw2X9hdyH9thtdMJDp72yN2YTQ/eYWbkxMPFw50LdG7Bo0f
+	vwiShXSwLgoYenL0UxVP1+gtF/yJY2PzvRq/GdslWjSVY3CSS0/Z3NTDz/XENTeCvOD/6QXxxpI
+	MatP2RJg/virLOLnQJ+nTckyiMed73iIc1q76Py6EznDO46CNx9Ytp5Wr4B2QUb342W5+KnACdd
+	y1yWfVqNxQ6yIsw3gQl2sUHdUqwvEdkWIS1TBDTb4lEGaE19tiURnGUI03DCmzEBVtQpFg/eASq
+	qtBJ8NDM0OH03GlCvv1GPQMhhRi7NQ==
+X-Google-Smtp-Source: AGHT+IGiZCm/3QIaBTSxT82414Bd+tcXwlZF1XMVW0fnnGbWf0zxnCHe0OPTUe/2fE3HXHDT4SXs4g==
+X-Received: by 2002:a05:622a:10c:b0:467:68a2:cb55 with SMTP id d75a77b69052e-46a4a8eb7eemr795329811cf.28.1735914701493;
+        Fri, 03 Jan 2025 06:31:41 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-46a3e64cf47sm146147721cf.3.2025.01.03.06.31.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jan 2025 04:22:00 -0800 (PST)
-Date: Fri, 3 Jan 2025 14:21:58 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Zhang Heng <zhangheng@kylinos.cn>
-Cc: robdclark@gmail.com, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/msm: Use helper function devm_clk_get_prepared()
-Message-ID: <4okyywneygbskczj3ooay3ir7p2sfwfjvyde7jaixbrht7xu36@yiqlcvrwhypl>
-References: <20250103113059.463033-1-zhangheng@kylinos.cn>
+        Fri, 03 Jan 2025 06:31:39 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tTiiA-00000000iUS-1wLH;
+	Fri, 03 Jan 2025 10:31:38 -0400
+Date: Fri, 3 Jan 2025 10:31:38 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: David Woodhouse <dwmw2@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>,
+	Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+	quic_bqiang@quicinc.com, kvalo@kernel.org, prestwoj@gmail.com,
+	linux-wireless@vger.kernel.org, ath11k@lists.infradead.org,
+	iommu@lists.linux.dev, kernel@quicinc.com,
+	johannes@sipsolutions.net, jtornosm@redhat.com
+Subject: Re: [PATCH RFC/RFT] vfio/pci: Create feature to disable MSI
+ virtualization
+Message-ID: <20250103143138.GC26854@ziepe.ca>
+References: <adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com>
+ <20240812170014.1583783-1-alex.williamson@redhat.com>
+ <20240813163053.GK1985367@ziepe.ca>
+ <87r0aspby6.ffs@tglx>
+ <03fdfde8dc05ecce1f1edececf0800d8cb919ac1.camel@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,23 +85,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250103113059.463033-1-zhangheng@kylinos.cn>
+In-Reply-To: <03fdfde8dc05ecce1f1edececf0800d8cb919ac1.camel@infradead.org>
 
-On Fri, Jan 03, 2025 at 07:30:59PM +0800, Zhang Heng wrote:
-> Since commit 7ef9651e9792 ("clk: Provide new devm_clk helpers for prepared
-> and enabled clocks"), devm_clk_get() and clk_prepare() can now be replaced
-> by devm_clk_get_prepared() when driver prepares the clocks for the whole
-> lifetime of the device. Moreover, it is no longer necessary to unprepare
-> the clocks explicitly.
-> 
-> Signed-off-by: Zhang Heng <zhangheng@kylinos.cn>
-> ---
->  drivers/iommu/msm_iommu.c | 51 +++++++++------------------------------
->  1 file changed, 11 insertions(+), 40 deletions(-)
-> 
+On Fri, Dec 13, 2024 at 09:10:30AM +0000, David Woodhouse wrote:
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> <fantasy>
+> A: The guest OS just hands the device a standard MSI message encoding
+> the target guest APIC ID and vector (etc.), and the IOMMU does the
+> rest. Nothing 'intercedes' between the guest and the device to mess
+> with that MSI message.
+ 
+> /me wakes up...
 
--- 
-With best wishes
-Dmitry
+Well, I share your dream at least. :\
+
+Have the VMM shadow the virtual interrupt remapping tables and assign
+it to the phyiscal remapping so that the physical addr/data pair
+doesn't change. Driving interrupt routing fully via the remapping HW
+and not via MSI interception.
+
+IIRC Alex had a patch series for qemu to capture and rewrite the ath
+non-standard MSI locations, so virtualization worries should not block
+moving ath to use the device-specific MSI..
+
+Jason
