@@ -1,106 +1,97 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EEDF19CC0A
-	for <iommu@lists.linux.dev>; Thu,  2 Jan 2025 22:47:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2459E57D;
+	Fri,  3 Jan 2025 01:21:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735858057; cv=none; b=VwOFe5AYhdK79fNK1ng+5m7m3VVmw9nk/uYn599guomtYqpS3JPjLPrvmg+y0G4bXp8ZNMPEZdBFmx4p3Q9S9pRCKZ37KgHb9mlpjqhbrJTbUynTuvGy43eI1V00QuVk01JgjGK5S7F8supktPXcxgHabIRaJjxgvuaO7EIl/zU=
+	t=1735867308; cv=none; b=L1Mi+Knlo5TNPvGkpCZMyUt10jr/IotH+GTyrZVFwE2vIcnW5OlE97qEIuwG8sGjAQesPkAFCE/Lqjot4PXYqC03vQHfpz+DAqIC0caynGnbfZOHYk7CLy27pmwB1LseAWey+qWRqcDPoTmot7wx/RP3h0RKBCFkg+cGYPqf2Ao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735858057; c=relaxed/simple;
-	bh=DSsgKLf1vbtZiKK9KqlWW0egQ9/9VEQqsppWlI2aGHE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oP4KJsgpnQEjcTi625Pm1ypwbpvqRbKKOMyy8bX3fwqCizk98wkiFR6k0yhkUFvScV1hjWJLSQULYWg7fRscCR+qdnQAXq6BJkq2eQUgN995D6yySSjtEywnzKT3Pe7oKGr71CQGwhZhTo+fEHARFsyFWsq5GoOz8jm1HNSGyMs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=SDNGaaw3; arc=none smtp.client-ip=205.220.165.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1735867308; c=relaxed/simple;
+	bh=oERkHMNpZAO8boq4patQNzNmzLxeyP9280etk+NkYxI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QRxy6EFy5pUuA4enRT8V/8YflH3TrMTOlBAWhW/R3DPxYxGMtQipvwjMLLuWVzUIey03ynD4zFDSh4NXFuimKkdID/60/JJlFtUF2OaDIBzaN91NkgED9SaJgiJWomFO6S10Y9SK3Nt7ZbO/04Je+iyBX3zPW6PJOnDUpU4Ak2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Z905Qmmd; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="SDNGaaw3"
-Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 502KfuJ3015265;
-	Thu, 2 Jan 2025 22:47:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2023-11-20; bh=U7tnL0OGsltMWpN+/Pzxk8lgQVrxvWRSVUe9cvOe/ig=; b=
-	SDNGaaw3XbUj1S6QFvLVC5139scD7TWpEhyd5yis3wIKVV6VSOVbHlNrcbCU66nl
-	NVdhDYFwYbqv6NS8bkpwAdaWyyh3tOIF8bz+UkBWocmCmuLpmxfbG2TIOeUWP7Fm
-	c0Mr8tuTzNrtw2S8YuCEO6OKQ7bn/zWvrMUEOfeJZvZBQn5bhslrSBXfLkFbFRgH
-	3ZGgYVRJoa3WOTDSDSQp5gklzoOx67mGwJvrTZWdw0xTcyS0le6eFMWLDsNP7fbH
-	slppSPpJ40jmikDZS+DjCfLcNOHahqZEymWZn0Ds0I5cEeEtVBlV00WHVXLQ+9DR
-	0X2p9LQ1ZP8OY3huRPh0sg==
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 43t88a7d86-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 02 Jan 2025 22:47:14 +0000 (GMT)
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 502LaiUr008778;
-	Thu, 2 Jan 2025 22:47:13 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 43t7s93nwu-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 02 Jan 2025 22:47:13 +0000
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 502MlAtf004461;
-	Thu, 2 Jan 2025 22:47:12 GMT
-Received: from ca-mkp2.ca.oracle.com.com (mpeterse-ol9.allregionaliads.osdevelopmeniad.oraclevcn.com [100.100.251.135])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 43t7s93nuq-2;
-	Thu, 02 Jan 2025 22:47:12 +0000
-From: "Martin K. Petersen" <martin.petersen@oracle.com>
-To: kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, James.Bottomley@HansenPartnership.com,
-        mhkelley58@gmail.com
-Cc: "Martin K . Petersen" <martin.petersen@oracle.com>, iommu@lists.linux.dev,
-        netdev@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: (subset) [PATCH 0/5] hyper-v: Don't assume cpu_possible_mask is dense
-Date: Thu,  2 Jan 2025 17:46:38 -0500
-Message-ID: <173583977795.171606.8906239465384373872.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.46.2
-In-Reply-To: <20241003035333.49261-1-mhklinux@outlook.com>
-References: <20241003035333.49261-1-mhklinux@outlook.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Z905Qmmd"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1735867306; x=1767403306;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=oERkHMNpZAO8boq4patQNzNmzLxeyP9280etk+NkYxI=;
+  b=Z905QmmdNQci19gRstTjWicXbs7a4GuJc0bHNe8N8YB93A9IatqzQZ4P
+   MG8OWPOMm6kB/P7C1U0IAlh1cMBvLv75A5bYfQCEPKoAqS04bAswQlEzL
+   AzZMcD5L9U/4cL8dUV1pvCLEYSL6iIybunV5/wrVPV2CAzsqQvZVuHE6M
+   apPzAFENAtapHhWAmJETibz+W+UitHDRliOTDMADESm296YYKZsT5ua8z
+   T7EecfKSSDnwLPivWW1qN4LDHo0l6BsCOkN/agifTo5k2RszEl+5xUDxK
+   1x8Oi/d8stS+MA6dPhG7h6MwVGADxsRR7PF0yQQoPQciH+ENyedlPT/h/
+   g==;
+X-CSE-ConnectionGUID: EpkahEeSRgycCYLyQGFdAA==
+X-CSE-MsgGUID: NuEKRUcaSx+YEDeOqKQ+8w==
+X-IronPort-AV: E=McAfee;i="6700,10204,11303"; a="36277854"
+X-IronPort-AV: E=Sophos;i="6.12,286,1728975600"; 
+   d="scan'208";a="36277854"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2025 17:21:46 -0800
+X-CSE-ConnectionGUID: l7d9TjMyT3+vsV64Qnxyyw==
+X-CSE-MsgGUID: haCY/+8GQc64Sj1azNOVCA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="106695561"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2025 17:21:40 -0800
+Message-ID: <33d397ce-c324-4594-9f83-8f7e513e86e7@linux.intel.com>
+Date: Fri, 3 Jan 2025 09:19:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-01-02_03,2025-01-02_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 mlxscore=0
- suspectscore=0 phishscore=0 mlxlogscore=983 adultscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2411120000
- definitions=main-2501020199
-X-Proofpoint-GUID: e6Ywwye_omB8U1gOZ8hmAB14_FT6wkJA
-X-Proofpoint-ORIG-GUID: e6Ywwye_omB8U1gOZ8hmAB14_FT6wkJA
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 07/14] iommufd/viommu: Add iommufd_viommu_get_vdev_id
+ helper
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
+ will@kernel.org, corbet@lwn.net, joro@8bytes.org,
+ suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org,
+ shuah@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kselftest@vger.kernel.org,
+ linux-doc@vger.kernel.org, eric.auger@redhat.com, jean-philippe@linaro.org,
+ mdf@kernel.org, mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
+ smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
+ patches@lists.linux.dev
+References: <cover.1734477608.git.nicolinc@nvidia.com>
+ <21d7e63b97d81d0acf9127418a67efe386787261.1734477608.git.nicolinc@nvidia.com>
+ <56c65e50-5890-42af-85b7-85f8a1bf5cf5@linux.intel.com>
+ <Z2OpylDlhLXoo3dt@Asurada-Nvidia>
+ <74bc9dbe-3420-4f0c-9e32-db49327a723d@linux.intel.com>
+ <20250102202955.GE5556@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250102202955.GE5556@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 02 Oct 2024 20:53:28 -0700, mhkelley58@gmail.com wrote:
-
-> Code specific to Hyper-V guests currently assumes the cpu_possible_mask
-> is "dense" -- i.e., all bit positions 0 thru (nr_cpu_ids - 1) are set,
-> with no "holes". Therefore, num_possible_cpus() is assumed to be equal
-> to nr_cpu_ids.
+On 1/3/25 04:29, Jason Gunthorpe wrote:
+> On Mon, Dec 23, 2024 at 10:28:32AM +0800, Baolu Lu wrote:
 > 
-> Per a separate discussion[1], this assumption is not valid in the
-> general case. For example, the function setup_nr_cpu_ids() in
-> kernel/smp.c is coded to assume cpu_possible_mask may be sparse,
-> and other patches have been made in the past to correctly handle
-> the sparseness. See bc75e99983df1efd ("rcu: Correctly handle sparse
-> possible cpu") as noted by Mark Rutland.
-> 
-> [...]
+>> However, considering page fault scenarios, which are self-contained but
+>> linked to a hardware page table (hwpt), introduces ambiguity. Hwpt can
+>> be created with or without a vIOMMU. This raises the question: should
+>> the page fault message always report the iommufd device ID, or should
+>> the reporting depend on whether the hwpt was created from a vIOMMU?
+> I think every single event record read from the FD needs to clearly
+> specify what its fields are.
 
-Applied to 6.14/scsi-queue, thanks!
+That would work.
 
-[4/5] scsi: storvsc: Don't assume cpu_possible_mask is dense
-      https://git.kernel.org/mkp/scsi/c/6cb7063feb2e
+> Page fault need to clearly say it's field is a device ID.
 
--- 
-Martin K. Petersen	Oracle Linux Engineering
+Each field of fault message has been specified in uapi/linux/iommufd.h.
+
+---
+baolu
