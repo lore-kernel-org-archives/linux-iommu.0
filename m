@@ -1,45 +1,85 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EFBC1F9421;
-	Fri,  3 Jan 2025 15:37:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82D93192B84
+	for <iommu@lists.linux.dev>; Fri,  3 Jan 2025 15:47:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735918643; cv=none; b=YlA4XymKTCs1Qt91y8Yrlt/js+MskG4ycDQ4eofAV08r6izauP6oiY1O2jsGe034pQwW9by1yqXKTg3+8yPMLs9GWQRipfj0W5Jn/e3I/DYHMMuHIHDYUrmybBs9v10WU+lveOrRlfqhACf/VVJGixwZqoRCiKCcZ5Xy9K+tVlY=
+	t=1735919281; cv=none; b=ggcO39l/h2XQrrPEAeJlQ78hUD4CaXu2d/J5eBbXfRGh746jsLe+QxPYA641fO+egL3siyoaDZRFgtXrdYOyrb+4dLFJdzUQFFedzAMFNuzrBFFlQKqcsXi1MdZUZFFomm4onkNq1v7xIsQLLeCWn3WLZj2kHG2ySUO/uW0HfKM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735918643; c=relaxed/simple;
-	bh=KnHv5oQRaYx4DU4fQ9sL4Q1OxVgQhnnH0NGST/QZixk=;
+	s=arc-20240116; t=1735919281; c=relaxed/simple;
+	bh=x1YRhiBcjzePAFHkv66VCQ/BK2Y0AMCZi/UgyHe1DBM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cBIHdB+2hpVoCJ0KYI7lkEt+NVOAf/87KmxdxJMmyKp88PiLo8zr3Pz76KI5In16EVAf9N45j9ECg7VvtLSIfR7CbEpAQiJKpuxz+f33EX9+68TvEfDt6u7/dDwpZzPM7kETtw2W16YH+4zXPjXp1mrnMDX04kYSyj6u3PZmPFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LWKUa1Mz; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=Z9jlWtG6pOpVYzy1mDvIyDdZ3RmIfC1DMNLn/q9a2DFsQGzi9XDyFIGKgiFfFeCF51tb6gktFbT4LtQbwszbviywXgb06Yf91tNzz3RjVsFvtAEVvJfEkNh1UE5whuFsFEFBZ55glHPb+fs8vdsisaNLpJrbX9B7cae9hS0m+Bk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=XM2X9T3z; arc=none smtp.client-ip=209.85.219.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LWKUa1Mz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A7EAC4CECE;
-	Fri,  3 Jan 2025 15:37:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1735918642;
-	bh=KnHv5oQRaYx4DU4fQ9sL4Q1OxVgQhnnH0NGST/QZixk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LWKUa1MzSSp98zFZJn6r0t5w4VFvnZ3vGnndiVea73h68oea9nfH/0EvHg+RWHpOd
-	 byr1RTLZqoBgvYlOk9N3XjOLUnGlxqYqdLtkED9/XjE13dfiYdUTe0r2OwNR8RP2Pu
-	 VR6dGqCOPos9xSrTZ1LtQAb4i8VBMkdqlKzPFKkzsFigUgAdXmC2Z1yG17ZsrgNrEB
-	 o3mI52ODbFV1eGnZDob3GG4deQ28s3M5EmE75MbbMPeYUwcOEpwSSWM1Wh/FVcktrn
-	 Pv9EE30V2ew2k9HkaJLbE6M3GX7kZSuBVwgT14LZ2rvNdXoLKe+603UVNj9piP5o+O
-	 Mx6BKHL3vjOXQ==
-Date: Fri, 3 Jan 2025 15:37:17 +0000
-From: Will Deacon <will@kernel.org>
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: robdclark@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
-	jgg@ziepe.ca, jsnitsel@redhat.com, robh@kernel.org,
-	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
-	dmitry.baryshkov@linaro.org, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v18 0/5] iommu/arm-smmu: introduction of ACTLR
- implementation for Qualcomm SoCs
-Message-ID: <20250103153716.GE3816@willie-the-truck>
-References: <20241212151402.159102-1-quic_bibekkum@quicinc.com>
- <28bd756a-e0bc-49e7-9415-4c05d38c5e28@quicinc.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XM2X9T3z"
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-6dd43b08674so82282906d6.3
+        for <iommu@lists.linux.dev>; Fri, 03 Jan 2025 07:47:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1735919278; x=1736524078; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=x1YRhiBcjzePAFHkv66VCQ/BK2Y0AMCZi/UgyHe1DBM=;
+        b=XM2X9T3ziwxKTI2VA5vWogy+pcZjpaXd1o+HT6yrIuDalHHaJmeJnFOcyTyJ2xj4/a
+         LIoQIXE49JYF59hyvx+E1iEEVkjZu98kdBBjcK2wrQzVJLad9+2/q93dpDy+ZQl6fWT1
+         I1IF58jQ9GiY6kROpL1oaeWYroAsTo+svUP+bE/4bPCajNOdGY5NPOBrtD8b9y+UTXNd
+         M/RpEFk/LH3N8cE7UhMyCq8Ntb6zmMUdlTZpoc1IIWsYfON8svKz6tTg4zmp/L2idgFk
+         Vhq1aZcLeOC4bOKs1Tv51fUAcH272LzS6liqdH8cZdA3KMLf62FjD1AaXLgtHsmWEvnJ
+         SRBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1735919278; x=1736524078;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=x1YRhiBcjzePAFHkv66VCQ/BK2Y0AMCZi/UgyHe1DBM=;
+        b=umj9EOEmnxStkuaAyw5jjtMMXGH6doc7aEqs6h0nH5Uk92ZxDYVepcLaehXJXXNDvE
+         ACGRYLMv+WZB9Lw+YZzHCUiochrrKEO+dKqeiMGJ42fjo3xNYH7CJ639hwaece2c8kni
+         /gu4oKdNDmIghYtzXaOGvzr1FGdyopYBZTG+bhV0jxRb5JPSsIsF8TKqf5xh49Is0BVI
+         eEzYA4fwetb9tQ/AL6e6TwmuZGYmUFYhp4z26kSLrsCpXM4hQgKm0idaM3MEuoG9dR7Z
+         VtRWGPxWuShWmRt6Y02TUZMeu6Oqm0Lu3+RSu9n5yc1DtKrDMTKpHWL76sw/dsutFLje
+         iGZw==
+X-Forwarded-Encrypted: i=1; AJvYcCXRdRe5oaN34Z30ArTbxnN3hufhx29CJERoXdwx6BzQ6KyGsk8YkB1fe3kk4oi0VHEdsaZqsA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwYQNA2/COkSgk0E9ZR0x66cbGT9+m+5t4NMjLymrUbHLfG5MeY
+	yvMUOrXpE0qYeF6sU7iRbzl4CZpIHSS7MzyUeY5qkZuhNxhyCqX5ywdocOdvcn8=
+X-Gm-Gg: ASbGncvDmlWA6grbGNRCMYiOm+EOSOLwSQtnWbyCbEb563X0YPBpJRweX8CJJOubCz7
+	eP4gB+yR0/YbfDMnJuf9dIJbbsoX+ApkL+PwEMW1cNZaXTem23xjXboT6ifgAsDJ/jd3qYFTuiS
+	yET5MXkVOUXIWgjemWPiq07ujmi+oi5eMb5zY2CJ6cajaXhcbKztVkKNoYWYjCcRBT+UNngXuSE
+	mHrZyanN9MSr7POAS9ml3KoUCh1SUe4B7iprGKi2ndD0MDroBr1nkWyJEm8G1ATdlGx6kVcZ3SQ
+	TNmQ2YZpRIhLD4dHK53IZh2PQDd1yg==
+X-Google-Smtp-Source: AGHT+IHsMKKIkxQ7rcmRTm1VnxBXPwiUOd3sAui5NPCMrkirqlLHWMPVy74SUV1oTWvKIM353GCAdg==
+X-Received: by 2002:a05:6214:1314:b0:6d9:2e0c:56c9 with SMTP id 6a1803df08f44-6dd23308374mr932119066d6.9.1735919278451;
+        Fri, 03 Jan 2025 07:47:58 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6dd31faa052sm120006416d6.9.2025.01.03.07.47.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jan 2025 07:47:57 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tTju1-00000000jEE-0Nuy;
+	Fri, 03 Jan 2025 11:47:57 -0400
+Date: Fri, 3 Jan 2025 11:47:57 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	kvmarm@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com,
+	will@kernel.org, maz@kernel.org, oliver.upton@linux.dev,
+	joey.gouly@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com,
+	robdclark@gmail.com, joro@8bytes.org, jean-philippe@linaro.org,
+	nicolinc@nvidia.com, vdonnefort@google.com, qperret@google.com,
+	tabba@google.com, danielmentz@google.com, tzukui@google.com
+Subject: Re: [RFC PATCH v2 55/58] drivers/iommu: Add deferred map_sg
+ operations
+Message-ID: <20250103154757.GG26854@ziepe.ca>
+References: <20241212180423.1578358-1-smostafa@google.com>
+ <20241212180423.1578358-56-smostafa@google.com>
+ <ce4c8db4-4895-426b-8d9d-97dc5d74fbc4@arm.com>
+ <Z2Qshft8lQjI-x7c@google.com>
+ <20250102201831.GB26854@ziepe.ca>
+ <Z3gDuPe5C1Uj7y4m@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,45 +88,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <28bd756a-e0bc-49e7-9415-4c05d38c5e28@quicinc.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <Z3gDuPe5C1Uj7y4m@google.com>
 
-(please don't top-post...)
+On Fri, Jan 03, 2025 at 03:35:20PM +0000, Mostafa Saleh wrote:
 
-On Mon, Dec 30, 2024 at 06:45:29PM +0530, Bibek Kumar Patro wrote:
-> On 12/12/2024 8:43 PM, Bibek Kumar Patro wrote:
-> > This patch series consist of six parts and covers the following:
-> > 
-> > 1. Provide option to re-enable context caching to retain prefetcher
-> >     settings during reset and runtime suspend.
-> > 
-> > 2. Remove cfg inside qcom_smmu structure and replace it with single
-> >     pointer to qcom_smmu_match_data avoiding replication of multiple
-> >     members from same.
-> > 
-> > 3. Add support for ACTLR PRR bit setup via adreno-smmu-priv interface.
-> > 
-> > 4. Introduce intital set of driver changes to implement ACTLR register
-> >     for custom prefetcher settings in Qualcomm SoCs.
-> > 
-> > 5. Add ACTLR data and support for qcom_smmu_500.
-> > 
-> > Changes in v18 from v17_RESEND:
-> >   - 1/5 : No changes
-> >   - 2/5 : No changes - reviewed-by tags collected
-> >   - 3/5 : Addition of
-> >     pm_runtime_resume_and_get()/pm_runtime_put_autosuspend()
-> >     around register access of PRR related private interfaces
-> >     as discussed in v17_RESEND.
-> >   - 4/5, 5/5 : No changes - reviewed-by tags collected
-> >   Link to v17_RESEND:
-> >   https://lore.kernel.org/all/20241114160721.1527934-1-quic_bibekkum@quicinc.com/
->
-> Thought to follow up on this thread to highlight the latest version (v18) of
-> this series, in case it was missed during the vacation period.
+> An alternative approach as Robin suggested, is to treat all iommu_map as sg map,
+> and when the driver gets the iotlb_sync_map() call it can just issue the hypercall,
+> however this call only provides the IOVA range, which requires extra work or locking
+> as mentioned in the thread, and as Robin mentioned s390 doing something similar,
+> I was highlighting that in their driver, this call only notifies the hypervisor
+> about an IOVA and not an actual pv map as pKVM, so it much simpler in their case.
 
+Oh, that is much clearer, maybe incorporate some of that into the
+commit message.
 
-I'm waiting for Rob (Clark) to ack the last patch, as he had comments on
-the previous version.
+We are going in a general direction of trying to make the fast dma
+mapping path not require sg, so adding sg specific optimizations to
+the low level driver is not good.
 
-Will
+Batching the hypercalls in the gather and then flushing to execute the
+batch seems more reasonable.
+
+You could probably work on advancing this infrastructure separately
+via virtio-iommu..
+
+Jason
