@@ -1,97 +1,83 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2459E57D;
-	Fri,  3 Jan 2025 01:21:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10691192B62;
+	Fri,  3 Jan 2025 02:46:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735867308; cv=none; b=L1Mi+Knlo5TNPvGkpCZMyUt10jr/IotH+GTyrZVFwE2vIcnW5OlE97qEIuwG8sGjAQesPkAFCE/Lqjot4PXYqC03vQHfpz+DAqIC0caynGnbfZOHYk7CLy27pmwB1LseAWey+qWRqcDPoTmot7wx/RP3h0RKBCFkg+cGYPqf2Ao=
+	t=1735872411; cv=none; b=h7eK7DGfkcedqsWp2iVeI7VTZ0pn1LKp5rh8waWErMBNetO2qnvgTjQ3h+eEvS1/xmwiNcdSx1eGyCQqXV3SmfwTY/i4eAYw5Ue3ZaeUW3PYqQZKQgm0x0QbKtW9QTzo6OHeZAUbhWxubWopITCwU+R6X/PO+UOxvgDHbSdE3mw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735867308; c=relaxed/simple;
-	bh=oERkHMNpZAO8boq4patQNzNmzLxeyP9280etk+NkYxI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QRxy6EFy5pUuA4enRT8V/8YflH3TrMTOlBAWhW/R3DPxYxGMtQipvwjMLLuWVzUIey03ynD4zFDSh4NXFuimKkdID/60/JJlFtUF2OaDIBzaN91NkgED9SaJgiJWomFO6S10Y9SK3Nt7ZbO/04Je+iyBX3zPW6PJOnDUpU4Ak2Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Z905Qmmd; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1735872411; c=relaxed/simple;
+	bh=HNbF+5O8p3vFxk/5XDByidOa1qlDFCI6xUWBJXVcxzA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=nLQ3ITiqg9CRrbhnk0H1Wist1CiSYFoxGyk2BxASUISlv8809Q37qxZqMwmeOhUQIUWxsmBlVLLItY7RnVdVK/12Kp3Qg+LolsbxL0nKu/mTixmwai70ZOrV9MapYabAOadFQWUCkEIu1ag68hhdeSn0/B/iHSLSuvgcS+8InI8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SI6LGoTl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Z905Qmmd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1735867306; x=1767403306;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=oERkHMNpZAO8boq4patQNzNmzLxeyP9280etk+NkYxI=;
-  b=Z905QmmdNQci19gRstTjWicXbs7a4GuJc0bHNe8N8YB93A9IatqzQZ4P
-   MG8OWPOMm6kB/P7C1U0IAlh1cMBvLv75A5bYfQCEPKoAqS04bAswQlEzL
-   AzZMcD5L9U/4cL8dUV1pvCLEYSL6iIybunV5/wrVPV2CAzsqQvZVuHE6M
-   apPzAFENAtapHhWAmJETibz+W+UitHDRliOTDMADESm296YYKZsT5ua8z
-   T7EecfKSSDnwLPivWW1qN4LDHo0l6BsCOkN/agifTo5k2RszEl+5xUDxK
-   1x8Oi/d8stS+MA6dPhG7h6MwVGADxsRR7PF0yQQoPQciH+ENyedlPT/h/
-   g==;
-X-CSE-ConnectionGUID: EpkahEeSRgycCYLyQGFdAA==
-X-CSE-MsgGUID: NuEKRUcaSx+YEDeOqKQ+8w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11303"; a="36277854"
-X-IronPort-AV: E=Sophos;i="6.12,286,1728975600"; 
-   d="scan'208";a="36277854"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2025 17:21:46 -0800
-X-CSE-ConnectionGUID: l7d9TjMyT3+vsV64Qnxyyw==
-X-CSE-MsgGUID: haCY/+8GQc64Sj1azNOVCA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="106695561"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2025 17:21:40 -0800
-Message-ID: <33d397ce-c324-4594-9f83-8f7e513e86e7@linux.intel.com>
-Date: Fri, 3 Jan 2025 09:19:23 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SI6LGoTl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C4F2C4CED0;
+	Fri,  3 Jan 2025 02:46:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1735872410;
+	bh=HNbF+5O8p3vFxk/5XDByidOa1qlDFCI6xUWBJXVcxzA=;
+	h=From:To:Cc:Subject:Date:From;
+	b=SI6LGoTllTrTeMyXS4bpCG7Yb/HzxshsEz1Q7zVq+FumuTTblw7P057FAOYrSkl+E
+	 7VbikWGwD+HsVCeH1Q5WkcrGl714QCQUnGf6UifahF/fRWsPuGYvL5ux7m4O/ptday
+	 MlVmmbWjvyDaRH1eX4CebugmLKQ6dEtvs5wl9w+xhlS8qaJ+dILw97ld+SGWeHtIOz
+	 nYn24iK8ap0+rr+SblbjHlcuB1e94HVoaVHpBsvBzvWEXH2DwOGZ0mt8JyAUZ0oJ8/
+	 MLNI5bk51as4C1r5Cug/AG6go1z9lRRChaMA3V5sHmOP9Nq6VqcyoWNVUk57CWlII1
+	 QR+bFI3I0Pkag==
+From: guoren@kernel.org
+To: tjeznach@rivosinc.com
+Cc: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	paul.walmsley@sifive.com,
+	palmer@dabbelt.com,
+	baolu.lu@linux.intel.com,
+	zong.li@sifive.com,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Guo Ren <guoren@linux.alibaba.com>,
+	Guo Ren <guoren@kernel.org>
+Subject: [PATCH] iommu/riscv: Fixup compile warning
+Date: Thu,  2 Jan 2025 21:46:16 -0500
+Message-Id: <20250103024616.3359159-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 07/14] iommufd/viommu: Add iommufd_viommu_get_vdev_id
- helper
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
- will@kernel.org, corbet@lwn.net, joro@8bytes.org,
- suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org,
- shuah@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kselftest@vger.kernel.org,
- linux-doc@vger.kernel.org, eric.auger@redhat.com, jean-philippe@linaro.org,
- mdf@kernel.org, mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
- smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
- patches@lists.linux.dev
-References: <cover.1734477608.git.nicolinc@nvidia.com>
- <21d7e63b97d81d0acf9127418a67efe386787261.1734477608.git.nicolinc@nvidia.com>
- <56c65e50-5890-42af-85b7-85f8a1bf5cf5@linux.intel.com>
- <Z2OpylDlhLXoo3dt@Asurada-Nvidia>
- <74bc9dbe-3420-4f0c-9e32-db49327a723d@linux.intel.com>
- <20250102202955.GE5556@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250102202955.GE5556@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 1/3/25 04:29, Jason Gunthorpe wrote:
-> On Mon, Dec 23, 2024 at 10:28:32AM +0800, Baolu Lu wrote:
-> 
->> However, considering page fault scenarios, which are self-contained but
->> linked to a hardware page table (hwpt), introduces ambiguity. Hwpt can
->> be created with or without a vIOMMU. This raises the question: should
->> the page fault message always report the iommufd device ID, or should
->> the reporting depend on whether the hwpt was created from a vIOMMU?
-> I think every single event record read from the FD needs to clearly
-> specify what its fields are.
+From: Guo Ren <guoren@linux.alibaba.com>
 
-That would work.
+When __BITS_PER_LONG == 32, size_t is defined as unsigned int rather
+than unsigned long. Therefore, we should use size_t to avoid
+type-checking errors.
 
-> Page fault need to clearly say it's field is a device ID.
-
-Each field of fault message has been specified in uapi/linux/iommufd.h.
-
+Fixes: 488ffbf18171 ("iommu/riscv: Paging domain support")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Cc: Tomasz Jeznach <tjeznach@rivosinc.com>
 ---
-baolu
+ drivers/iommu/riscv/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index 8a05def774bd..38d381164385 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -1270,7 +1270,7 @@ static phys_addr_t riscv_iommu_iova_to_phys(struct iommu_domain *iommu_domain,
+ 					    dma_addr_t iova)
+ {
+ 	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
+-	unsigned long pte_size;
++	size_t pte_size;
+ 	unsigned long *ptr;
+ 
+ 	ptr = riscv_iommu_pte_fetch(domain, iova, &pte_size);
+-- 
+2.40.1
+
