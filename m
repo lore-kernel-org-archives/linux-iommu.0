@@ -1,183 +1,186 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2044.outbound.protection.outlook.com [40.107.93.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD0AA1D5CE5;
-	Mon,  6 Jan 2025 13:16:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736169397; cv=none; b=lEjelbyoPVZq7PsHjWXAOorB7VeIsSvhgdwqR4Xw8l0/5LLFzWZcsmwLX3eWQ56iIStNNMQY/ij+j/HmJIv+sjbbyxvm7ayOFM6LebvOFD3XAcoAkEINfEkkANBzdQVJt6XhgzSr8mUrd9r0w52NCIvMCYLMgs63r9CwM0b19TU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736169397; c=relaxed/simple;
-	bh=npx7aCXP/tspYW9iylyFl3RNgV54jVSGgG5Q17oWJQw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=G55KC3wNJUYe0DClUmu9QQbBaek9vRgG/U3al9WvZhOp4JukMabDgBHrRdmJD8PcvWKhW4ZpkxKdPMOJ7uJGBC27fEWk+QV++fpM4tzjxxuwyl6l2Uk+5HOBK9uM7lmo/7owl8eLF4DrhFUkec9jhmQPi/P1F5vqol5ibe85sag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=QfajyE7r; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B5031DDC36;
+	Mon,  6 Jan 2025 14:05:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736172316; cv=fail; b=nIxvoI9P6jodX6bIX/Q7XxByCrS+7BOYyJumkEQSWikfvLyBfLlP5OhaE2duNmSgsi2ZeIacnQYAlyK67semFM7tIInUT/UH8cttLFh0r+teLt+VS5BJtSWQJb3RFo/Gbwlkwcxcc2lLAzr7ddsL1l9q71OP5ws/BTFsSPfkFgM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736172316; c=relaxed/simple;
+	bh=6ip+dVX/AgeOAiFy2npLHaEHXZiAlqaoMYPPwQxEvM4=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=In1k0RIEW8UDNyMjvUX3av58JzyrFR7HIHN+Nw8O6h7rV9Uvbv0WvMd/onBCHP4HKL8ffk5vuP+Tvd3qH8kk1D6lOqttJs+wrN2zx97bQN+QAvIE+SXDgxx7djnPh+LcFTS8dq+Sa07IcjWeG28g9Ww/4fXJ59Ap7Dtt4bnFOeE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=SZ9xnjj/; arc=fail smtp.client-ip=40.107.93.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="QfajyE7r"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5063Xb0h016390;
-	Mon, 6 Jan 2025 13:16:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Q9zk11ew5+GOYnID16Y3ypoe0TwgLOgUuAa7vZfLpus=; b=QfajyE7rMzRSNuvN
-	PUsjwPCKgqcmFKKfvYwNj2XnZYdi6W9mpbu6pBXKksf6LRnnsb6KmL/zIEpTdwLz
-	GbDThOAw1ff4DVhYbgYEoOIpFenwtZNSR9RGjoUW1WUx9C0XfCD6PGvF6E9tIoZy
-	V3hWMHINXv1hA/G+whAHUARjpcr7YOqqWPKWLMrbaYLtaMvs2CGdCqKe6MWgALFW
-	Nt42oYUOB4sielibiO4PSkOrWlqprYTjRpPB8wL+W6FsOlyR8gK9dw5egI07FcL2
-	90XMLcNhgkS6INjnC8lzG2uN+pqtXaDwfjmVhheRvjawgUYxmrooX339UmD+TCPM
-	qiCFiQ==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4407ck14v9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 06 Jan 2025 13:16:19 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 506DGDqA024260
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 6 Jan 2025 13:16:13 GMT
-Received: from [10.218.24.190] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 6 Jan 2025
- 05:16:11 -0800
-Message-ID: <e8fa02bb-96b7-4010-92c9-7e1eb485a551@quicinc.com>
-Date: Mon, 6 Jan 2025 18:46:08 +0530
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="SZ9xnjj/"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=j5/96OHv7tQ8hjPoiHvBwIxEQcPgqv07yABDkdyJncYrMILMN1kKEzu6+8KLu2lHfec1m4XEK0OM3CzkKNrtmNMfDYf1kvMFUoz6P0lgqmswDSoBE3SKt6VsmoGs5CFfv+uyLJqRKPB9YBYPyIVnFu3uz/yzD6gxQd5TGwPe61QxGGU0F1dGqaHjrgzxb65jqr/iFieHeWGMuemNW9xOnhYgkg2Unp1PQT9Fua+tr2qZLISjoOD7uEWMTYL4vVpXELTw3kCUQFFiIfOXQe6twhXSHxMYxOjZNgiAKx03rDd6ovoxM+vQpVirQ40monoOWLXvhsEZlJ35s6vpV9STww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lyViYIS5lXyJc6yu5dcABGi/T7yiqqO38Yhq8RBnG7o=;
+ b=C6Q5iQgGl/Zvo6LPKpCRpnZLm5Ra4SCRu+Y5KCha0JGz+TGVSvMx/1Y1OhAid5SAXMlqd0j8dXEOEkQiV959Qpnw94HCu+lX9WrgBNxvkGbSf8oi5fpRQiFOP+Q8GKRX6JZ6YRlsJh7wUY4iZE/+m0c5QTlti1nDMv9PYmIGViz1rZT8CfzzLSFvrW9fO/DQJimUr54ndZUBDY+wkiZIBL260n65KLL6u6dJzv7C7or/74DZJRc53dJ/TLgo5YktPG064qQad1mLEHMQu4sRwn6K5TTsg1KPK8B17Em4NYPj3C7pas+yprqo79uiGqpftYqq7OODe2+X1TcPfRLIpg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lyViYIS5lXyJc6yu5dcABGi/T7yiqqO38Yhq8RBnG7o=;
+ b=SZ9xnjj/6lXxs/Gl3RKmd5IKvzgmUkyrjncUk7QOEMgCuPOdwCgF9CMm5jybm3hW7gZP4sJ8wm7w23r9no9FzLwtfDDQRqTRaJr4qeSfOH4tuexlbQAjpV495cmbT7NJGPS2/kGzzqo9TNcK9Gh6NcOFhOynphzMWffqkKrdX40=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ SA3PR12MB8047.namprd12.prod.outlook.com (2603:10b6:806:31b::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8314.17; Mon, 6 Jan 2025 14:05:07 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%5]) with mapi id 15.20.8314.015; Mon, 6 Jan 2025
+ 14:05:07 +0000
+Message-ID: <20f845ce-83f0-4765-b938-748e84803297@amd.com>
+Date: Mon, 6 Jan 2025 19:34:58 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/7] iommu/amd: Remove domain_alloc()
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>
+Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+ Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
+ patches@lists.linux.dev
+References: <2-v1-cf88773f22d1+39bd-amd_paging_flags_jgg@nvidia.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <2-v1-cf88773f22d1+39bd-amd_paging_flags_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0033.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:22::8) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC] iommu: fix wrong DMA ops for iommu device
-To: Will Deacon <will@kernel.org>
-CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <jgg@ziepe.ca>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-References: <20241213150415.653821-1-quic_charante@quicinc.com>
- <91d15d11-ec53-4ca2-a385-9fa69d861f2c@quicinc.com>
- <20250103153434.GC3816@willie-the-truck>
-Content-Language: en-US
-From: Charan Teja Kalla <quic_charante@quicinc.com>
-In-Reply-To: <20250103153434.GC3816@willie-the-truck>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 3Ae0ZQLUNeGXQ-87exUPsZ0zbU2rFC9j
-X-Proofpoint-ORIG-GUID: 3Ae0ZQLUNeGXQ-87exUPsZ0zbU2rFC9j
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 phishscore=0
- adultscore=0 malwarescore=0 spamscore=0 mlxlogscore=999 lowpriorityscore=0
- impostorscore=0 priorityscore=1501 suspectscore=0 mlxscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2411120000
- definitions=main-2501060118
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SA3PR12MB8047:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2fd19d33-dc39-4770-500a-08dd2e5b1fe7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?cUdPZ0tFQ1lMZ1NGbzlTQWdlT2lGTnlsc2o4d2ZTQjF4UUNZYmNQVFVXQ1Nz?=
+ =?utf-8?B?RlVBeXV2QkpsWk1yRmNtWDJMdm9HTk90WmRDanU5d3hsM3dWeVgxaFFPM2s5?=
+ =?utf-8?B?czRSMzlIRXRIUWI5MUcxbnBBOVd2b2grNXhVdnliU3lmU3NLa1Q3OWpzT0hM?=
+ =?utf-8?B?Lzh4bnhjSUMrRVc2SEovTGJ2OTRXR2FmY3dnM3dWekNjeStKZS9xc0RQbEJM?=
+ =?utf-8?B?d2JXMTl1d2xvbDVhOG94azhMalpxQTlyWVhCTy9rekhSWnFZTFJGc2pORlIr?=
+ =?utf-8?B?UjUycUZLbXNNNVVZNG5nN09nOExjcWgzUFJUdXcvZUtZOVBoQXlBQjkyeWQ0?=
+ =?utf-8?B?VEg1YW5VQW9VN1ZBY1djSkdsUWJGb1lSZm1Td3FkcEp2di9Ybjh1WWFJZmZJ?=
+ =?utf-8?B?QnhGamZ4RWZ6SUtRYWJ0aEVHaWRPZnZyZ2ZFQmJYNEJxL0huanlwdFNmY3Jy?=
+ =?utf-8?B?MGRyakp6UTZmd21iQnFhYWozWWl1R09jdVJvY3lRc2lib2J3WlZoWGNBbks3?=
+ =?utf-8?B?WTBmREY2Z20zM3NScCtIaVNWSE1pL2ZNYm9GS0k4aXVGbzhVNjRKRlQxSXAw?=
+ =?utf-8?B?Y3ZCcFFwdGd3Q21sNDhrL05tcFpTUXZraFBSbk44L2gvdHhQTjZBNStxOVcy?=
+ =?utf-8?B?cGt0c3QvQTFIRFpZU3JsOFN6TzVtRUhaK1FEREo1TWZidTJDNDFuN3Z4SkVZ?=
+ =?utf-8?B?QUpTQUIreUdUMkxac2F1R1pEZHJWWmM5bDNLd0VhajE4TmVkMXhOaU8wSUxt?=
+ =?utf-8?B?cFYvN1Yyb3JZZFoveWdHd2JlVERFQlVFc0dOTjVudUNUMHg3MzB5VWFuT3No?=
+ =?utf-8?B?bjhkeGN5NE5yT3pTUG5iWnpGZWFUajB1WUZ1Q01nTUxFSlhPYTRjQVdBYW5z?=
+ =?utf-8?B?MlJoZmhYTnc0Tkh5b05naUhWT1lzRnByam5rU2lXU1d2c1JGWk05VThycU53?=
+ =?utf-8?B?WWRYTE5GL1E3ckdmTEFrMUova1l4S2dnczNEMHhVZ1I5Z1VBL3ZNVFNYNSt2?=
+ =?utf-8?B?Q2xiYWJyTjdmWVY0Ky94MjYwWi9qNGlaWFBIN3RrSEpqekdyUzgzVmRDNk1x?=
+ =?utf-8?B?WkFRb01wWDFKMzNNWkttVVRteDdwMTR1aStVcGpLY1g3NTJML1krVk5RMjNx?=
+ =?utf-8?B?UDFQNEZaRUpyai9Lb2J1U1JqbWlyU0VDU1hpSnRhTE4zZjRsZVcxWDMxV1lw?=
+ =?utf-8?B?eGxwaGRmUTNHdHpSdGVFalpiMmtRWE8wdmhWMWFsUzkrUFBlQ1NlbkQ0QW45?=
+ =?utf-8?B?SGllL3BmTS9IeXBkdjlYNEdzNDZMVFN2K0JJV1NJN3FmemVpNS8rY2JDTC8v?=
+ =?utf-8?B?azl1VlNpUEUxUGRIUDVwZlM1NmRSYWtFYTVQT1JDMWRuemhyZldLeW5Jd2dD?=
+ =?utf-8?B?VGZ0TnlNTEVzWTA1OFN0VEFRWUlhMDBxN3hJR1cwcnF0cGdpSG0yWTg0U3p1?=
+ =?utf-8?B?WWl1ei9ydXZWUVptMWVudE5scDFBZGhRZ0QrTXM4THZsazFYOGlRZndOSjE3?=
+ =?utf-8?B?TnF2cnhNZUg3d2R2eEUvQzhMekM2d3p1Wk5UUHZyRzVweENqVHpZa3p2b3c4?=
+ =?utf-8?B?M0d0OUpUc281M0dRQVBWOC9JLzVQWllNRVhSc3V6NmkzNGJFdDh4L3dYOXZN?=
+ =?utf-8?B?WVJGUW9uaEhITWIvcjBsd3ROTEk1ZEVIc3RWbSt5TjJXM0lNSVlydCthZ3d6?=
+ =?utf-8?B?UW83NWt6WTl0WElpa1crdzRiMHZUZ3YzWnlQdHZjdTBlZm9OcmZvaEN4R2lY?=
+ =?utf-8?B?ZWlHSVRyT2xBbk1Ua20xOGRWYUlldmhKSjYrZHBJMVBtNTRmTHZHZXpuQkQ3?=
+ =?utf-8?B?NDBudHR0cEdKM3IvbHl4NWpnc1dXU2grOEZVeTdzNHpUMVFkVDFjWmRmZnhQ?=
+ =?utf-8?Q?cJHfLy2jBWz9A?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TUQyU01CRzRTNGxNWS9RYmowS2pJSXU3azExdFJQa1VldE8wZGRicDYreDFW?=
+ =?utf-8?B?cFVYN0Rtb1NlZE9UdTlVNUFTYXlBVWJQa0d6SGVQazl0M3BPUVJTazVTcDRj?=
+ =?utf-8?B?U21QZzhNWG12YUtnbGl3SklRQno2UUgvVmZ1MDVySWNDV0t3VG43b3ZrRHZQ?=
+ =?utf-8?B?OWdrdGRVUlIvUWVvQmRpRS9Oa0FrM1IvQ2JUMEtRQTFLVVFId3Y3WFhmTEc0?=
+ =?utf-8?B?ZTJwbzAyVzRhTjdUdlA4enR1TkxQRk1XeVc0bUdRSUR4cjRLOVRCNnE2eWpH?=
+ =?utf-8?B?MWpSNUd3MHZCZGc4bVlCaEFlTld6NUJ3THA4WDcyLzgvbmNiaG5iWFFGaXMx?=
+ =?utf-8?B?eVBVNTcrajduS1NFM1VtZHFGdUNGamFFcVNUTWt5RGsrUThGZ3NMeUt2Z3ZV?=
+ =?utf-8?B?elp0bFBjUWFDdjFEamRhL2lmVWdkQWtWN2J4L3lEeUh5NExnRzVYdE1ZN1Zk?=
+ =?utf-8?B?WTZ2M1graGZlY3RFak5ua290Szg1VVlxOG4vSFk4c0ttVXlxZjhyVDNyaTRF?=
+ =?utf-8?B?emdyY2RRVEUvVmVCdVZHYnIwSlBZd1FZenIrcDZvYlE3QnZzRVY5K3V5N3dz?=
+ =?utf-8?B?VDZ3c2FNNkcvdEdsZHh3MDZMelZMWDJ2ZXhNTklESkIvbGJISDJ2U3d5c0dO?=
+ =?utf-8?B?VjhCbDhNVzNDV1FvWUgrMmdZTWIyTU05UTZWOTRHdjYvYUw0SkwzemxzR2lj?=
+ =?utf-8?B?UGJVcEVkc1l1Y3B5ekM1VDYvUlRDY3dIaHBDaVlJaVVSZE1vVWF1MU8wSUcy?=
+ =?utf-8?B?UnBiSHN6R1J0andpSkU0bWVCTUVYaWtHRjlUUFRxUCtpMUJaVUY5SngzQWNl?=
+ =?utf-8?B?ZTE1RlRzcXFhTEpGY1k2NGcrN09iRGhJUjN2ZnNGS3A2Uko5UEcvUGVpNUtC?=
+ =?utf-8?B?U0FTa0dFM04wUCtheitIcldRUlNvUzNxTTRPeDkxZWtNTzhlallhNHc0QktO?=
+ =?utf-8?B?WWZQcE1rU1F5czhxUUJuc2syY2pUcjdaejN4R1RJQlZMZlo5M3RBZi9OSXoz?=
+ =?utf-8?B?cTJ4Y1hnUlNlM3M4REdyOFRxTElDODkyRVRSeWhMaFRrSkE2K2k1WTREVk1P?=
+ =?utf-8?B?c05zdkljVnd1NWRvWWgwa3I4b3piTWEwSGFTbkM2bDc0TW8zMjA4d3c1cm8z?=
+ =?utf-8?B?SnJEbmU3Nm95UmNmUHlwVDlMU0Z1Mk5wVndORkJ4Y2JGN25EMTZVYlBsU1lM?=
+ =?utf-8?B?OVhMTmR0RGZLSmFyZ01jKzFIK1BCL0g1WjM0bnBiczZ4azVIQ2dnUE42WVNt?=
+ =?utf-8?B?WjVCQkRFdmk1U3dYRlo1aXE5VnRRRDc5aEVRVnlGOGhWZlVvOHNqV3JaS0pD?=
+ =?utf-8?B?OHhrMUQ4ZGxnbjBkZHRYN1R3bDFUbmpNYm9RdUdwOENBVU14Z09mcDM2U3ND?=
+ =?utf-8?B?WFVYdysxbWM2TzNiazliaXVpTjJ4dXpLS3JmU2JMWjB5ekdjUFN6ZndWTFVu?=
+ =?utf-8?B?SXpMZmxZNVhuT0o2VG5INGNoaUVsUGZzTmJkZHNoM1FzS3Ric2FUMUlWNkZq?=
+ =?utf-8?B?SGVoRUcvT0lsN2tvd0RkMTJtQkhJc0g0Z2tOWUJJdGxsdjBUMnlxRmNYbE1S?=
+ =?utf-8?B?TUM5QkpkOVVPWUllU0c4RWNycmlvOTJWOXF1NzZ0Z2RXaTh6cUNzUDQ1MXVX?=
+ =?utf-8?B?WXZCVXNBL3FYRURkdDlKUGY3TkJ3Sys5VzRiQTlYYUJxaUVIUlgxeS8vazBB?=
+ =?utf-8?B?K1VrUnRNNkYrRUdVVGRoVzlObzN5cUxpVHlKRTFGeUpQeWdNd3dmMjYxakor?=
+ =?utf-8?B?dXd2LzZERWluL0ZUcDhsU2U5bFZOYUJ2ZmlCYkw4NzFTbGpHc01tem5XYW1X?=
+ =?utf-8?B?aGV6eG45cUEyKzJMRjF6M09iMzBESUQvR1Z3Y3lBWjduM2c5R1R4bmFnM29p?=
+ =?utf-8?B?OFJZL04vdlErKzB6Vk5WcE9MWlFqUzRUMEdCYWNjWlp3cEEydzNCaFZUL0RE?=
+ =?utf-8?B?V2pjVGtvVTkrbE1BUFdoU1BrbFVPSStoRUhRYTRVdXJ5cUUya1dLQWtvU1R1?=
+ =?utf-8?B?Q2hEbEdGSS9wNno2aXhBNVpYcjBXUlFpclJwd3lMc2c3Zi9ISnkxeGM5dS9m?=
+ =?utf-8?B?ZXdaKzVKMTYvSkMxUW5OeHhpallrQzAzb3EzSjFoc2hTcGV4VDR5cmZ1cHc0?=
+ =?utf-8?Q?UBK0Mont6BaVa0FeAvOEo/NrO?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2fd19d33-dc39-4770-500a-08dd2e5b1fe7
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2025 14:05:07.2507
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: v/lwRmNGZFpz6y8cVZfc423Btqk1gJinZ+Nf3jUELOEPmRHbqZf75WVgZ7yZDNtyHVoz9D7pVICME9p7RbxLMQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8047
 
-Thanks Will for the response!!
 
-On 1/3/2025 9:04 PM, Will Deacon wrote:
-> (Please try not to top-post as it makes the thread hard to follow)
+
+On 12/6/2024 5:53 AM, Jason Gunthorpe wrote:
+> IOMMU drivers should not be sensitive to the domain type, a paging domain
+> should be created based only on the flags passed in, the same for all
+> callers.
 > 
-> On Thu, Jan 02, 2025 at 04:09:46PM +0530, Charan Teja Kalla wrote:
->> On 12/13/2024 8:34 PM, Charan Teja Kalla wrote:
->>> Race between smmu device probe and iommu device probe is resulting into
->>> wrong DMA ops used for the device.
->>>
->>> bus_iommu_probe(P1)                  of_iommu_configure(P2)
->>> (from iommu_device_register)        (from insmod of a driver)
->>> --------------------------         --------------------------
->>> 1) probe_iommu_group()
->>> (Fills just dev->iommu_group
->>> under iommu_probe_device_lock)
->>> 				2) iommu_probe_device():
->>> 				  (acquires the iommu_probe_device_lock,
->>> 				   but since dev->iommu_group is already
->>> 				   set, it just returns without
->>> 				   allocating the domain.)
->>>
->>> 				3) of_dma_configure_id()->
->>> 				   arch_setup_dma_ops() gets called for
->>> 				   this device, but returns with the
->>> 				   error message:
->>> 				   "Failed to set up IOMMU for device;
->>> 				    retaining platform DMA ops"
->>>
->>> 				4) device probe is succeeded where it
->>> 				   can now setup iommu mappings using
->>> 				   wrong ->dma_ops
->>>
->>> 5) domain will be allocated later
->>> and fills iommu_group->domain.
->>>
->>> Step 3) and 4) denies iommu device from using 'iommu_dma_ops'.
->>>
->>> This issue does exists on 6.6 because of commit f188056352bc ("iommu:
->>> Avoid locking/unlocking for iommu_probe_device()") without which 2)
->>> returns only after filling the domain under group->mutex, thus no issue.
->>>
->>> With commit b5c58b2fdc42("dma-mapping: direct calls for dma-iommu"),
->>> ->iommu_dma_ops is removed altogether and iommu api are directly being
->>> called under "use_dma_iommu(): return dev->dma_iommu". Again,
->>> ->dma_iommu flag is set only after domain allocation. So, If
->>> there is a sufficient delay between steps 4) and 5), issue is still
->>> exists but that seems very narrow to me.
->>>
->>> I am thinking, setup of the domain before returning from step2) is the
->>> way to fix this issue. Can you please help if you have any suggestions?
->>>
->>> Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
->>> ---
->>>  drivers/iommu/iommu.c | 26 +++++++++++++++++++++++++-
->>>  1 file changed, 25 insertions(+), 1 deletion(-)
->>
->> Just a quick ask if you have any comments for the below. BTW, in
->> internal tests, when we revert the commit f188056352bc ("iommu: Avoid
->> locking/unlocking for iommu_probe_device()", it is helping.
->>
->> I can share more details If the below is not sufficient.
->>
->> Thanks in advance...
+> AMD was using the domain_alloc() path to force VFIO into a v1 domain type,
+> because v1 gives higher performance. However now that
+> IOMMU_HWPT_ALLOC_PASID is present, and a NULL device is not possible,
+> domain_alloc_paging_flags() will do the right thing for VFIO.
 > 
-> Can you reproduce the issue on 6.13-rc5? We bodged some of the probe
-> code recently:
+> When invoked from VFIO flags will be 0 and the amd_iommu_pgtable type of
+> domain will be selected. This is v1 by default unless the kernel command
+> line has overridden it to v2.
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=229e6ee43d2a160a1592b83aad620d6027084aad
-> 
-> and a better set of fixes are queued in -next.
+> If the admin is forcing v2 assume they know what they are doing so force
+> it everywhere, including for VFIO.
 
-Yes, we did try a better patch from Robin[1] and the issue is still
-reproducible.
+Agree. W/ global identity support and domain_alloc_paging_flags() in place, we
+don't need domain_alloc() ops.
 
-IIUC, these patches are trying to get valid smmu device, during the
-probe of an smmu client device, by traversing proper 'klist_devices'
-happening from iommu_init_device(). Please CMIW.
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
 
-But this bug makes iommu_init_device() to completely gets skipped.
-
-static int __iommu_probe_device(struct device *dev, ...)
-{
-	/* Device is probed already if in a group */
-        if (dev->iommu_group)
-                return 0;  --> driver call returns from here.
-
-        ret = iommu_init_device(dev, ops);
-        if (ret)
-                return ret;
-
-
-}
-
-Regarding the testing, we work on Android that is on LTS kernels, so, it
-may not be possible for us to try the thing on 6.13 and this seems a bug
-on LTS 6.6 kernel.
-
-[1]
-https://lore.kernel.org/all/0952ca36-c5d9-462a-ab7b-b97154c56919@arm.com/
-
-Thanks
+-Vasant
 
 
