@@ -1,129 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D33F3D69;
-	Mon,  6 Jan 2025 03:04:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 814E01D88BE
+	for <iommu@lists.linux.dev>; Mon,  6 Jan 2025 08:31:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736132643; cv=none; b=pBQ8krzq0UqaI6X3rgfN/MdD3J07UOyH9D5hL0fbWRxL89EitkrgG7l/RKdg8xN4Kea+m66mZmBu5yrGIv7UQvLUbqrmnvrb/VEmpZfThN7VmHxphTVPWGTb7nnjThMqD0j7FlfmiKgSKX/cUIwP4uuVxM2KkslQS/rhXRXva/k=
+	t=1736152295; cv=none; b=M84m5rwoVcIhxf0xKDCkhR4MIxrRXd66iDB3HXQnpzQKZxZKxCnife+xHC0SJSIy+qGRB/7+wCP20SY9kHw7srTDI6Hp3XcW/0nAkqn2CsHtdfEnPCOWwAaSIg7PBetr2OuL37fdmk3U2uj6CJ1h3861lZoQuMumEamnTwnk27I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736132643; c=relaxed/simple;
-	bh=L5CTqVAplYWz3cvc2Q2+gANM0xCm7wWwxzoKHr589zI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sQtWno9cHzH37iSd4ZVgSpMbIQpTDR97KvgjVr1LC4NcLwy/nlQG2vvR4LYTDpdM/XCyyFJdc1fkcD5c95eph6BCoBt+tUvwwib/diK3rsRk3sCG4hCZYhRoFDUWoYUHciGTKXwPtOfd0l35zV+Hs0HNyfDRbMqWwKgMunqj3Ic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZZEBK/hM; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZZEBK/hM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736132643; x=1767668643;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=L5CTqVAplYWz3cvc2Q2+gANM0xCm7wWwxzoKHr589zI=;
-  b=ZZEBK/hMReqLSwcsN+u5etscULC07FS7MQJa5mMPbp5ALDRHAfXf4HMu
-   FZawx0v0MLQXPr5svP0jW2YhZkFM8SbCh84JODywYHPC3RCaQa0k2rYUg
-   fOTYF0kov+qswxhu33iUte7GIf7omEQzGe3sSgt3J80gQVslfIOKwfrZN
-   4UNr2GflNiOz+pWmeAsdwEgA+QsTkN6hAwfXgdw4xhGhTbB0JYI62Ifrs
-   Wz4s/4w6N6mDTezkra4oH59p7fATIuakQ3203xmJlfy19P0KfvTf8/nZ4
-   6IS1F1zXMpitR7j1bjevVF41hk42KfP5aXk40B7T/8njfBm7kIaXmZIGR
-   g==;
-X-CSE-ConnectionGUID: ToVMwDVfRfmDzWqvTWgqgA==
-X-CSE-MsgGUID: CaPZMN8vQS23DKU7YqTK7A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11306"; a="36431342"
-X-IronPort-AV: E=Sophos;i="6.12,292,1728975600"; 
-   d="scan'208";a="36431342"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2025 19:03:45 -0800
-X-CSE-ConnectionGUID: dFnpKBihReKdlEaZXHSJug==
-X-CSE-MsgGUID: OINJhP+5SYWKmpQ13/0R3A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="139659644"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2025 19:03:39 -0800
-Message-ID: <585fc99f-c2dc-459c-929a-c7c7631b9caf@linux.intel.com>
-Date: Mon, 6 Jan 2025 11:01:32 +0800
+	s=arc-20240116; t=1736152295; c=relaxed/simple;
+	bh=mdW1Dhp8mTPIbOJSIufuNdW74kuICsBuLYeqGtO4PG4=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=q7cEMg7eWzC7Ff9kht2zI2Iatc/6GlgdiNMUA2B/cZt6aaQPaVNo70uhbs5g5sscnkI68NSUJZJzUp5zU/QFQxs1Q+iPh+m8l7wbCkh2P+SbMW91m/ueYen1/BJjmxK/PgEntmlZr5AplFq++09Bl5AvdaXcAuzPjcAcjSM6vtA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1tUiVn-0003Dn-TL; Mon, 06 Jan 2025 09:30:59 +0100
+Received: from lupine.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::4e] helo=lupine)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1tUiVj-0078KE-2q;
+	Mon, 06 Jan 2025 09:30:56 +0100
+Received: from pza by lupine with local (Exim 4.96)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1tUiVk-0008wh-1m;
+	Mon, 06 Jan 2025 09:30:56 +0100
+Message-ID: <ee93bdca7fddb03a1d1e8997ce21a9cb7339ae63.camel@pengutronix.de>
+Subject: Re: [PATCH RESEND 09/22] iommu: sun50i: make reset control optional
+From: Philipp Zabel <p.zabel@pengutronix.de>
+To: Parthiban Nallathambi <parthiban@linumiz.com>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai
+ <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, Samuel Holland
+ <samuel@sholland.org>, Maxime Ripard <mripard@kernel.org>, Maarten
+ Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann
+ <tzimmermann@suse.de>,  David Airlie <airlied@gmail.com>, Simona Vetter
+ <simona@ffwll.ch>, Michael Turquette <mturquette@baylibre.com>,  Stephen
+ Boyd <sboyd@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Vinod
+ Koul <vkoul@kernel.org>,  Kishon Vijay Abraham I <kishon@kernel.org>
+Cc: iommu@lists.linux.dev, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-phy@lists.infradead.org
+Date: Mon, 06 Jan 2025 09:30:56 +0100
+In-Reply-To: <20241227-a133-display-support-v1-9-abad35b3579c@linumiz.com>
+References: <20241227-a133-display-support-v1-0-abad35b3579c@linumiz.com>
+	 <20241227-a133-display-support-v1-9-abad35b3579c@linumiz.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 14/14] iommu/arm-smmu-v3: Report events that belong to
- devices attached to vIOMMU
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, kevin.tian@intel.com,
- corbet@lwn.net, will@kernel.org
-Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
- dwmw2@infradead.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
- eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
- mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
- smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
- patches@lists.linux.dev
-References: <cover.1735933254.git.nicolinc@nvidia.com>
- <69a46c72e43ed086840be462eef731167d90a9d8.1735933254.git.nicolinc@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <69a46c72e43ed086840be462eef731167d90a9d8.1735933254.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: iommu@lists.linux.dev
 
-On 1/4/25 03:43, Nicolin Chen wrote:
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 0a08aa82e7cc..55e3d5a14cca 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -1016,9 +1016,24 @@ struct iommu_ioas_change_process {
->   /**
->    * enum iommu_veventq_type - Virtual Event Queue Type
->    * @IOMMU_VEVENTQ_TYPE_DEFAULT: Reserved for future use
-> + * @IOMMU_VEVENTQ_TYPE_ARM_SMMUV3: ARM SMMUv3 Virtual Event Queue
->    */
->   enum iommu_veventq_type {
->   	IOMMU_VEVENTQ_TYPE_DEFAULT = 0,
-> +	IOMMU_VEVENTQ_TYPE_ARM_SMMUV3 = 1,
-> +};
-> +
-> +/**
-> + * struct iommu_vevent_arm_smmuv3 - ARM SMMUv3 Virtual Event
-> + *                                  (IOMMU_VEVENTQ_TYPE_ARM_SMMUV3)
-> + * @evt: 256-bit ARM SMMUv3 Event record, little-endian.
-> + *       (Refer to "7.3 Event records" in SMMUv3 HW Spec)
-> + *
-> + * StreamID field reports a virtual device ID. To receive a virtual event for a
-> + * device, a vDEVICE must be allocated via IOMMU_VDEVICE_ALLOC.
-> + */
-> +struct iommu_vevent_arm_smmuv3 {
-> +	__aligned_le64 evt[4];
->   };
+On Fr, 2024-12-27 at 18:30 +0530, Parthiban Nallathambi wrote:
+> A133/A100 SoC doesn't have reset control from the CCU. Get reset
+> control line optionally.
+>=20
+> Signed-off-by: Parthiban Nallathambi <parthiban@linumiz.com>
+> ---
+>  drivers/iommu/sun50i-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> index 8d8f11854676..2ba804d682dc 100644
+> --- a/drivers/iommu/sun50i-iommu.c
+> +++ b/drivers/iommu/sun50i-iommu.c
+> @@ -1030,7 +1030,7 @@ static int sun50i_iommu_probe(struct platform_devic=
+e *pdev)
+>  		goto err_free_cache;
+>  	}
+> =20
+> -	iommu->reset =3D devm_reset_control_get(&pdev->dev, NULL);
+> +	iommu->reset =3D devm_reset_control_get_optional(&pdev->dev, NULL);
+>  	if (IS_ERR(iommu->reset)) {
+>  		dev_err(&pdev->dev, "Couldn't get our reset line.\n");
+>  		ret =3D PTR_ERR(iommu->reset);
 
-Nit: I think it would be more readable to add a check in the vevent
-reporting helper.
+With dt-bindings changed to require resets on those platforms that do,
 
-diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
-index 77c34f8791ef..ccada0ada5ff 100644
---- a/drivers/iommu/iommufd/driver.c
-+++ b/drivers/iommu/iommufd/driver.c
-@@ -86,6 +86,9 @@ int iommufd_viommu_report_event(struct iommufd_viommu 
-*viommu,
-         if (WARN_ON_ONCE(!data_len || !event_data))
-                 return -EINVAL;
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
 
-+       if (WARN_ON_ONCE(type != IOMMU_VEVENTQ_TYPE_ARM_SMMUV3))
-+               return -EINVAL;
-+
-         down_read(&viommu->veventqs_rwsem);
-
-         veventq = iommufd_viommu_find_veventq(viommu, type);
-
-Or perhaps the compiler could automatically make a warning if the @type
-is not one of those values in enum iommu_veventq_type?
-
-Others look good to me.
-
-Thanks,
-baolu
+regards
+Philipp
