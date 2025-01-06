@@ -1,56 +1,56 @@
-Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
+Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2C6E1DF993
-	for <iommu@lists.linux.dev>; Mon,  6 Jan 2025 20:59:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FD511E00A7
+	for <iommu@lists.linux.dev>; Mon,  6 Jan 2025 21:01:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736197193; cv=none; b=EwRfnijtlBqeJiiKt7pFmwxtf89P5D5JRA79on1MfjMen7dXpBCb1sXvju3FQdAcbVAJ/8iRT9WR34JOOc9BWdajohdiGtOpQ4MthJz8/W5JptU0Ocy+x+kRt+Ev0tAu2ROe8F/WJxxhKgCE/0mbww3T/AlFiQkr1BKnNnmmuzI=
+	t=1736197266; cv=none; b=VgEV3v0lip4twr+QR/Fri19uyFFIi3i6CliFkhTiOHyJWWzyjkGHoVnK3JpgqE77SnGn3bP2FvRxetzr0HTC+OAxttSUgqcji9jotaJu0B6l5yKTL5mNA5gxDwWvWYZDnaakqLJ7TQO+8g6zoasAFxhFpHUHibFA1LAvPxYZ6D4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736197193; c=relaxed/simple;
-	bh=rcl+1SJA9ofyCXwS1P0TUFxWyoLXf0nJvOCIMKWwf5g=;
+	s=arc-20240116; t=1736197266; c=relaxed/simple;
+	bh=zvtMZtp5ZFWxiSkY66nztDv/vjqLXEPxyjWnZTntGxI=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BJrVrHRt6HFfOuCWoM8zCwmljvyznWyGDiYTrNOpGVDSYEltWtz4FL/1hdHS79N94Oa/ferXA0f8wukSlWDak+TzjskDTJr5FKvQ8TXHox6+UEHYzoYEgRQVijjRuNyoYEmt3rsJ/jtlg/BvJH7DvG8GKV47PPjWGBNzrlHQshk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D4fLrRR2; arc=none smtp.client-ip=209.85.166.49
+	 To:Cc:Content-Type; b=MdGN6+HTc/yfC4srgbgI4V4mo8D2RF46Xal4XdScUpcyuiTUw3N3sXjv7sUgTc2bnnvlvCh7biUUW2pS3SLdnHO6JOZGVLorfVunh+XQyPE9IS10FAOJRytzs6pblfBSDlUKFvD4x9zPIucQq0124nHuOmH2VDQVe345puXA3e8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d7n6ULNx; arc=none smtp.client-ip=209.85.166.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D4fLrRR2"
-Received: by mail-io1-f49.google.com with SMTP id ca18e2360f4ac-844d5444b3dso566786739f.1
-        for <iommu@lists.linux.dev>; Mon, 06 Jan 2025 12:59:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d7n6ULNx"
+Received: by mail-il1-f170.google.com with SMTP id e9e14a558f8ab-3ce3000761eso3727655ab.0
+        for <iommu@lists.linux.dev>; Mon, 06 Jan 2025 13:01:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736197191; x=1736801991; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1736197263; x=1736802063; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xHlppqM6gvLh+wGWzZMvi4bmlnS1UEsF/Gy7XASBKeY=;
-        b=D4fLrRR2fbzuFPidnUclJCvJJO35a+ekNMzRr/Uv6R3LmpW3MIBoojRwVv0uKX+Rlt
-         E1KGAOeiPDzP80vfOP4JGVOCaC+BYeSbjiEERSvqWX/q0rEAbstAH5/DVuigHYLPE/w+
-         oQp18aYjCaXFyrs94G+kd7snAJohFoxnvEJ+EsmIrZ2SVQ82OBBTyQqDFF735r0adSdX
-         Leclav+I1KSOQZWaoc6U5kz0EL6JcWq2aZ5uzya42PdKBKVqD+s2HxLlEKFqHXaWOxs6
-         N9m/uQgEeYgEs5iDQvG28/HoUjs2SKx0NsDRUlE98QGgPomP1EAIqZweTsdk5LDPSWg/
-         ZjbQ==
+        bh=nOzmxccnce1E7CXNiUs8eoUX3tWPwgiUu+2R9Zn1q5U=;
+        b=d7n6ULNxyyTxLsvhVPpAj/qSERLWNlLb06ARDlyL1SV1tdJHj/WUMSBD45BswTfD/4
+         IwX1F5D8KivDQXLgdC3IwD2ySn4xbOlZaMAXqQ5kT0SkSDiKPNjd3eHrlbAC8rMFscsV
+         V2TcExxoW50J/lhH/19Ten+oS1gdSPcp9AAoLCUG+8C191Rmyxe6VYs6tljhv1uqnxTQ
+         AoUhFPG3UHhKyO2s0qnjnzuD+tIJ9ljQY3zbwo+e7zlKZfNQDjqOX+sC2yrL6Xkl//z1
+         GooVSXTCECCPwcdXwDq5QswWKuhl9Z3xleNy8YbaZMZGshpyVvKnznoo92R35+H/3CxD
+         zl0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736197191; x=1736801991;
+        d=1e100.net; s=20230601; t=1736197263; x=1736802063;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=xHlppqM6gvLh+wGWzZMvi4bmlnS1UEsF/Gy7XASBKeY=;
-        b=Zq9v228qfyEWXFf9lDeECtSTROCHIgMdtbiCPlr264R4Xf6pjYKNCkoeck7uJVE95I
-         e54RWeG6VkCHInoxfGW9XDOiSwchFjYO32pFzS2/8f9no8Rggl1e5oFXQ6OFW4M63396
-         kQLEuzvqwMK3PLLP5FVXE6x9loLETiDl5qIKzJENxPogriIPFwT4Vm/GxF8pVTnX7vPj
-         PspzKA2xfrD7KJTWOAIRF46eZ1OJZgvMiPacNQqRjcemjBMiDyrkL+f4S/mdn2727IfN
-         SN8B4GiON0tZuFmh9ZuOF4mFVtNw3T2B8q2pMteS8T2jckI39Gqcqulz6E7nIFL40ssE
-         rB3g==
-X-Gm-Message-State: AOJu0Yxo8qW23hFwy1UFjjWSluVUAyapRnGSnO4EH6er9icPXHjkSiBq
-	24P4XYLp8CO/B5TLBJJ7WzYFiijGHJdLXcAS3voBBKgh0pC7uT+h6ySZu8S/o+m9sEN/WLieYUK
-	KDJF+D1okubI3M+4hrN1FMX0pFE8=
-X-Gm-Gg: ASbGnctHbTksjZOo+gjdJimBDhjCRTvw75V3kj5yK25iFfTxwxFHrUw5hySg2mr4mSU
-	Ks0rSEK5gD9ciHRCfA6ZU2GLHb+Cp5nr7fMjYJah6PvF+NrIzJnHvsrYrSaUMDajMCllp
-X-Google-Smtp-Source: AGHT+IFsoTqFksRVcj1Uq3xa18RTL4eR+t+8QWVvILYJNxKFRhJkMed879iGVSYCfUIJr246vFnKVIb3m+mEWzm/jDc=
-X-Received: by 2002:a05:6e02:3385:b0:3cd:d14c:be69 with SMTP id
- e9e14a558f8ab-3ce31d7b353mr6421065ab.11.1736197190870; Mon, 06 Jan 2025
- 12:59:50 -0800 (PST)
+        bh=nOzmxccnce1E7CXNiUs8eoUX3tWPwgiUu+2R9Zn1q5U=;
+        b=hXIxiTAbAHLlXstsdVEMqpADQeIcV10u2xAMwtH2raE4MvBkU5HzoIuf3ZJIfpSEil
+         tn7SlDYxcCowKytN19uakcDJoy++m+17OiULzDSa2ktIhG43L8NTNMNZUsKXiKB8D5Vk
+         qpC+Fye2NuxXZYAl/MlWDhTfvsWVzqMnxAbT7poNLckSO3pqEBPl+pkh5f8+2mMpmOfY
+         uWcYBGYmIhzHPQwdsy8u7Qfo/v9B80gX68XrjakojqEzmc544aCQEtfZ+UVM5IuR4O5W
+         XZnhbSBB/toWGHDROagKYvFXCHqXti9MU3SnfZzf/mTI5y2h9vKOwly56P+u/49HnkW4
+         KxiQ==
+X-Gm-Message-State: AOJu0YzScVJKmLJyj5f69FgMhP9KMK8l1HqlIEhy+nmBd0B+Lsy5B7a1
+	MPutKbyN8RSiQE+JRS/Zq76Eq4z474DzqsK6krZaJsuept9KZlCs7oyadpB35wkIT7q9/pCRoJQ
+	AOpZ/HYRGcq6GMEel9TGjyc0+6Go=
+X-Gm-Gg: ASbGncuve2nH3ODa48Em4L6IqduJMrNg4p1vCG5tHJRSSdSmFwEjVaPT2x2Gmxzzivj
+	isMPMxJz/etQ7tQcJA3j6p1jmbR034DHsXQYfEvO+R21FMEln2ulPHM078ai4ltzy9ElO
+X-Google-Smtp-Source: AGHT+IHqQnod+WLMTaza+oYE9/HZ2z8HLcXB/MzbtBLsKVq4Jqi09Mbkpt4Wcf/3+HNCWqrXskcu8GZwWbHmP3/D/R8=
+X-Received: by 2002:a05:6e02:18cd:b0:3a7:81a4:a557 with SMTP id
+ e9e14a558f8ab-3c2d65e508dmr468450635ab.24.1736197263407; Mon, 06 Jan 2025
+ 13:01:03 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,8 +61,8 @@ References: <20250102183232.115279-1-robdclark@gmail.com> <76b822f0-c4c5-4d47-8e
  <48373519-2867-419d-9f51-e7bd330b311c@quicinc.com>
 In-Reply-To: <48373519-2867-419d-9f51-e7bd330b311c@quicinc.com>
 From: Rob Clark <robdclark@gmail.com>
-Date: Mon, 6 Jan 2025 12:59:38 -0800
-Message-ID: <CAF6AEGvDGtP_AAwDYnv5C3Bdg5dJk2muNUpT+yGYe8bn97OSwA@mail.gmail.com>
+Date: Mon, 6 Jan 2025 13:00:51 -0800
+Message-ID: <CAF6AEGtNBoWnLA_dBBC-4U7DrWLO+hM_-9iraXgc45Aj885nCQ@mail.gmail.com>
 Subject: Re: [PATCH v2] iommu/arm-smmu-qcom: Only enable stall on smmu-v2
 To: Akhil P Oommen <quic_akhilpo@quicinc.com>
 Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
@@ -100,8 +100,10 @@ he
 > Btw, if stall is not enabled, I think there is no point in capturing
 > coredump from adreno pagefault handler. By the time we start coredump,
 > gpu might have switched context.
->
-> -Akhil.
->
-> > -Akhil
-> >
+
+Hmm, we do at least capture ttbr0 both in fault info and from the
+current submit, so it would at least be possible to tell if you are
+looking at the wrong context.
+
+BR,
+-R
