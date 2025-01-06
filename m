@@ -1,62 +1,54 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41C5115853A
-	for <iommu@lists.linux.dev>; Mon,  6 Jan 2025 11:42:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736163761; cv=none; b=bfBC8NwxpYNEOeaRDyKlTjSQoi7b+DvGrehoODWNT7XnulVT2ihOcHAyzSytdAM5JjtOxv4ku33Sgk3SQizP4ZVLiFAMSpViDCzAiq7l3ZiQix54HFGYb6B5rbNryJcCrlSlnch0U7kJ4HG6OiqaTuFhLz2SH9xWOaQRIm0nEj0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736163761; c=relaxed/simple;
-	bh=IIp3GSDpNKHJV//amYxYQ7fB2aU2J5KkVirIi/Y9QTI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HidTEj0de64rVHTAh9q+P3o3HXjY/sLLFzVzryKqPBIbxDFW2e2RjylN9kTzQeBJ/R1jaJ/OTYpJ//KFl9cw88dQC9yNRjAA1kbTd2aS3460Vb7BvsKMiLjD47rxERkeFiZiXFXvKOqG0WorFYfQshjzhyMUMvg47TKNlawy9xE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=lk/5hgD9; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="lk/5hgD9"
-Received: from 8bytes.org (p200300f6af348600d06e0009f19b6c7e.dip0.t-ipconnect.de [IPv6:2003:f6:af34:8600:d06e:9:f19b:6c7e])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from baidu.com (mx22.baidu.com [220.181.50.185])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 52A752E0016;
-	Mon,  6 Jan 2025 12:42:38 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1736163758;
-	bh=IIp3GSDpNKHJV//amYxYQ7fB2aU2J5KkVirIi/Y9QTI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lk/5hgD9a0e6k8r1VBOexWLyqG0a6du/oJPDy24bXKfEQqa7/fFiBlSRwntT053Pe
-	 B5IGIK2nZkMIGMAwlLK1v+/D+IgBJIG9qYyfqGhYsqcEDZVD5xV4J1sNE4R5U0MFKv
-	 e9xkY9S928hWTz9eshJqvuOC/7nkYNTADpGJM6618Qkq90JF17Vq1shw94lRTi87Nf
-	 DwOwcDSJOLCShh1dN7syjMYLV+XXyI/OssVkHUMgRxlsOL/TJKv2qxVR7zVrqdc3ZQ
-	 JCqd2r/xiUW0WaZah6NF/8OsI6b8zfk+adiTts5BwEAUFLEz86sjJxsh4BO7fHBggE
-	 icfUkkmu9aHtA==
-Date: Mon, 6 Jan 2025 12:42:37 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Gao Shiyuan <gaoshiyuan@baidu.com>
-Cc: suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com,
-	christophe.jaillet@wanadoo.fr, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] iommu/amd: remove return value of amd_iommu_detect
-Message-ID: <Z3vBrbu4b15zIBPN@8bytes.org>
-References: <20250103165808.80939-1-gaoshiyuan@baidu.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14D2C1DE2AC
+	for <iommu@lists.linux.dev>; Mon,  6 Jan 2025 12:16:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.181.50.185
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736165776; cv=none; b=MD6hF/5QLl94uUAtOWBdrM2+WwWefJ/yak316G3FCxdeOeFQ0Poro9+m/Dx7hkfObmaXA98+xbCZUgfkYjYqhD47qDH2ZJhIqX+8qcPoC1Z94tsv3fz7fcmJ077rHhrDL4iaRjhoHHmkVrF8BCZVQmmGlwsHJ8S2rVzpIQWKgwg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736165776; c=relaxed/simple;
+	bh=Z2Ax7T3P4sKOBEIfr7TC8Pik/TNgd/Hp3wBp8EFIeOg=;
+	h=From:To:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=GylyiYfeBUu4ohjZZJJTQveTRivoQgtpjlCGAApl73PMlhz/1qMqPjSQemH7XFWpY5ut5k1cBt9sHnoLLVBoj7SPvUTx2n5S9iawnl0zd5ltjX3K5OrCg7R1E77Fnv33IkwLP3CywCF7znXb7dCwEa/zQhrrQJ1e/hBe6c5soFI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; arc=none smtp.client-ip=220.181.50.185
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
+From: "Li,Rongqing" <lirongqing@baidu.com>
+To: Vasant Hegde <vasant.hegde@amd.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>
+Subject: =?utf-8?B?562U5aSNOiBb5aSW6YOo6YKu5Lu2XSBSZTogW1BBVENIXSBpb21tdTogbW92?=
+ =?utf-8?Q?e_the_adding_group_info_to_proper_place?=
+Thread-Topic: =?utf-8?B?W+WklumDqOmCruS7tl0gUmU6IFtQQVRDSF0gaW9tbXU6IG1vdmUgdGhlIGFk?=
+ =?utf-8?Q?ding_group_info_to_proper_place?=
+Thread-Index: AQHbXaBIEJfoKhEg2Uey3Jmee+SaRrMJEZoAgACcXgA=
+Date: Mon, 6 Jan 2025 12:15:36 +0000
+Message-ID: <e67792513f494bb385d9ca86d82d10f5@baidu.com>
+References: <20250103052811.39544-1-lirongqing@baidu.com>
+ <ac420b8a-cd5b-41dc-8a4d-247f560a9043@amd.com>
+In-Reply-To: <ac420b8a-cd5b-41dc-8a4d-247f560a9043@amd.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250103165808.80939-1-gaoshiyuan@baidu.com>
+X-FEAS-Client-IP: 172.31.51.54
+X-FE-Last-Public-Client-IP: 100.100.100.38
+X-FE-Policy-ID: 52:10:53:SYSTEM
 
-On Sat, Jan 04, 2025 at 12:58:08AM +0800, Gao Shiyuan wrote:
-> The return value of amd_iommu_detect is not used, so remove it and
-> is consistent with other iommu detect functions.
-> 
-> Signed-off-by: Gao Shiyuan <gaoshiyuan@baidu.com>
-> ---
->  drivers/iommu/amd/init.c  | 10 ++++------
->  include/linux/amd-iommu.h |  4 ++--
->  2 files changed, 6 insertions(+), 8 deletions(-)
-
-Applied, thanks.
+PiANCj4gT24gMS8zLzIwMjUgMTA6NTggQU0sIExpIFJvbmdRaW5nIHdyb3RlOg0KPiA+IEFmdGVy
+IGNvbW1pdCBmYTA4MjgwMzY0ODggKCJpb21tdTogU3BsaXQgaW9tbXVfZ3JvdXBfYWRkX2Rldmlj
+ZSgpIiksDQo+ID4gdGhlIGFkZGluZyBncm91cCBpbmZvcm1hdGlvbiBpcyBsZWZ0IGluIGlvbW11
+X2dyb3VwX2FsbG9jX2RldmljZSwgYnV0DQo+ID4NCj4gPiBAQCAtMTIzMCw2ICsxMjI5LDEwIEBA
+IGludCBpb21tdV9ncm91cF9hZGRfZGV2aWNlKHN0cnVjdA0KPiBpb21tdV9ncm91cA0KPiA+ICpn
+cm91cCwgc3RydWN0IGRldmljZSAqZGV2KQ0KPiANCj4gQWRkIGVycm9yIG1lc3NhZ2UgaWYgaW9t
+bXVfZ3JvdXBfYWxsb2NfZGV2aWNlKCkgZmFpbHMgaGVyZT8NCj4gDQoNCk9rLCBJIHdpbGwgYWRk
+IGEgZXJyb3IgbWVzc2FnZSBoZXJlDQoNClRoYW5rcw0KDQotTGkNCg0KPiAtVmFzYW50DQoNCg==
