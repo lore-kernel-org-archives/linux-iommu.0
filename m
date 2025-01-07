@@ -1,74 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 687F919049B;
-	Mon,  6 Jan 2025 23:51:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C84A2594A5
+	for <iommu@lists.linux.dev>; Tue,  7 Jan 2025 02:19:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736207517; cv=none; b=R+aasfcEigEtLc74E8DbLdP4rFwotnxupZQCE7cD8DIkRnRpTodMjuzw0n3/mtfYtJY+9hzPVjYVlIoxzFAz9t0CuDmVKx4xDbTLKQ0TzqdyIuQrN7cW8NJwqUaZ3ATP2v7l45ildymlzWdYRb5GPP6hH+uLB6847sh+Et2sphk=
+	t=1736216388; cv=none; b=GRKmznGmBp6WfrtID3W1sESDh0CE/k3xMPe+jLpgGe3ekZL2NVuayVdqhB1u10u50OQcwyz9CBksWQdtmvo5Gg0votw+eFwsblqdI1UoyrmPRMpdoerXONf8qJ/VVA9s+W/s/m+cU7EijVflzgfeNYkN/Y8p/Tb9rJss/BJU7D0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736207517; c=relaxed/simple;
-	bh=Fu660IWX5S6t38fvF4BJ3mJpDywwH3eUN5CgaE2RF48=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ATMY/GxgtOjMWs9Q1L7mHw+FJLgAai7RoVhFACu4AQNW3E4y2t4tfN+iOEc+ibb78yiT37Q+HvRt9YOQ9/va50r2ezNBFvWnIAUnjCntMOl9hdeRABwgZKQ3HUFYsISEmYDHzQ0BU8ixeVwdFsCHx7aPYNfMxSN/w9R8ddeDq/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=THtnK84Q; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736216388; c=relaxed/simple;
+	bh=rbGf6rT+Cm3J61ZGFndlpgPASQjd2g5y6byaF+Ysfuk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=m+no7eRC3+w8xUVuj72Fk39FnwxFyQ4KJ4lMsOGHJBuaisyV+QbWnZsiZHlvXNxJBauLXx9qAGUtRlGESHob2OroxEZTMtorRu9ICwPhqQJrQE6tdVsGRJEYrHMWREAA+q81/4je++GPG604zylnOyJB2RqIOYp+TZ254AspGQk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aOQ/kAFV; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="THtnK84Q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DAA0C4CED2;
-	Mon,  6 Jan 2025 23:51:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736207516;
-	bh=Fu660IWX5S6t38fvF4BJ3mJpDywwH3eUN5CgaE2RF48=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=THtnK84Q3Oz/4hr7raXMxtb5YnvUsRTP0Z19d7W1LrVc020uM7dHfZQfaxiTBglrb
-	 0uuuv4Ij3lvMxNaYs2U4xkdM1Mx/sGjqu1JF+EzVap0/mx7qJl607iIVwFe7HlG/s7
-	 X14tjNK13QKsu2ZiViNL1koaVJB20ifxb0W3EaYPXmPLvd3Yw+D43CTpT1bSdEobVq
-	 enX3QqiM+fai2TD9PUP4jYCjrP+vp1tAnLo3Mv9k74nhRw+qMFF8RVBP1HKE/Gn7Dh
-	 zUjVlCwE6j30/RjhJSLQ4oMUTU+dCUPoDR1ZtkaF7VWo4Bdbpz0SfAdBVCoaM5Jkwm
-	 nSJEIl5AN0w9g==
-Date: Mon, 6 Jan 2025 15:51:54 -0800
-From: Jakub Kicinski <kuba@kernel.org>
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: <davem@davemloft.net>, <pabeni@redhat.com>, <liuyonglong@huawei.com>,
- <fanghaiqing@huawei.com>, <zhangkun09@huawei.com>, Alexander Lobakin
- <aleksander.lobakin@intel.com>, Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, Andrew Morton
- <akpm@linux-foundation.org>, IOMMU <iommu@lists.linux.dev>, MM
- <linux-mm@kvack.org>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
- <daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, John
- Fastabend <john.fastabend@gmail.com>, Matthias Brugger
- <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>, <netdev@vger.kernel.org>,
- <intel-wired-lan@lists.osuosl.org>, <bpf@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- <linux-mediatek@lists.infradead.org>
-Subject: Re: [PATCH net-next v6 0/8] fix two bugs related to page_pool
-Message-ID: <20250106155154.7c349c67@kernel.org>
-In-Reply-To: <20250106130116.457938-1-linyunsheng@huawei.com>
-References: <20250106130116.457938-1-linyunsheng@huawei.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aOQ/kAFV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1736216386; x=1767752386;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=rbGf6rT+Cm3J61ZGFndlpgPASQjd2g5y6byaF+Ysfuk=;
+  b=aOQ/kAFVqgg9P9/TKz2yf1k0Q1q8K0slMoM4U0yMfE8mkYQ3O1J/YBcN
+   H3qtUE4CJHgss0HC7sC7K/wjTjMugDRdqNEXob5MrkC/1SteVYklziMSR
+   zVuz+c0huB7UDnoidELoZkSZEa7R/YNbyroeIbPUIEdC195g+hpjgUffB
+   9e0gyXqIIlOozX8244AY7ZfSVQb3f52S4pP1J5paCu4E48wA6sLzP11Zw
+   mgkHN4GgLzXFrQh1dVEqe0oXLnUmLFKZPPC/tif19Qb3MdUxyDvtJjYMi
+   WfW+85IaBzO0XZASNfxuuvzRthtiWT5iLPkBFOXji/86d2qIP/7rws8D3
+   Q==;
+X-CSE-ConnectionGUID: kbh/ybZrTK+saIdl2r9WGQ==
+X-CSE-MsgGUID: /ewIXoIZS3SOsaUvjtcc4A==
+X-IronPort-AV: E=McAfee;i="6700,10204,11307"; a="47800757"
+X-IronPort-AV: E=Sophos;i="6.12,294,1728975600"; 
+   d="scan'208";a="47800757"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2025 18:19:45 -0800
+X-CSE-ConnectionGUID: 7kCqahVYQJaHZIrRQLRrYQ==
+X-CSE-MsgGUID: FM7p5ujcRQyBNnTjGDLrAQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,294,1728975600"; 
+   d="scan'208";a="102442910"
+Received: from allen-sbox.sh.intel.com ([10.239.159.30])
+  by orviesa009.jf.intel.com with ESMTP; 06 Jan 2025 18:19:44 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Kees Bakker <kees@ijzerbout.nl>,
+	Zhenzhong Duan <zhenzhong.duan@intel.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] [PULL REQUEST] Intel IOMMU updates for v6.14
+Date: Tue,  7 Jan 2025 10:17:41 +0800
+Message-ID: <20250107021746.6908-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Mon, 6 Jan 2025 21:01:08 +0800 Yunsheng Lin wrote:
-> This patchset fix a possible time window problem for page_pool and
-> the dma API misuse problem as mentioned in [1], and try to avoid the
-> overhead of the fixing using some optimization.
-> 
-> From the below performance data, the overhead is not so obvious
-> due to performance variations for time_bench_page_pool01_fast_path()
-> and time_bench_page_pool02_ptr_ring, and there is about 20ns overhead
-> for time_bench_page_pool03_slow() for fixing the bug.
+Hi Joerg,
 
-This appears to make the selftest from the drivers/net target implode.
+The following changes have been queued for v6.14-rc1. They are about new
+features and code refactoring, including:
 
-[   20.227775][  T218] BUG: KASAN: use-after-free in page_pool_item_uninit+0x100/0x130
+ - Remove domain_alloc_paging()
+ - Remove capability audit code
+ - Draining PRQ in sva unbind path when FPD bit set
+ - Link cache tags of same iommu unit together
 
-Running the ping.py tests should be enough to repro.
+These patches are based on v6.13-rc6. The complete patches are also
+available at:
+
+https://github.com/LuBaolu/intel-iommu/commits/vtd-update-for-v6.14
+
+Please consider them for iommu next.
+
+Best regards,
+baolu
+
+Jason Gunthorpe (1):
+  iommu/vt-d: Remove domain_alloc_paging()
+
+Kees Bakker (1):
+  iommu/vt-d: Avoid use of NULL after WARN_ON_ONCE
+
+Lu Baolu (2):
+  iommu/vt-d: Remove iommu cap audit
+  iommu/vt-d: Draining PRQ in sva unbind path when FPD bit set
+
+Zhenzhong Duan (1):
+  iommu/vt-d: Link cache tags of same iommu unit together
+
+ drivers/iommu/intel/Makefile        |   2 +-
+ drivers/iommu/intel/cache.c         |  11 +-
+ drivers/iommu/intel/cap_audit.c     | 217 ----------------------------
+ drivers/iommu/intel/cap_audit.h     | 131 -----------------
+ drivers/iommu/intel/iommu.c         |  32 +---
+ drivers/iommu/intel/irq_remapping.c |   8 -
+ drivers/iommu/intel/pasid.c         |  22 ++-
+ drivers/iommu/intel/pasid.h         |   6 +
+ 8 files changed, 42 insertions(+), 387 deletions(-)
+ delete mode 100644 drivers/iommu/intel/cap_audit.c
+ delete mode 100644 drivers/iommu/intel/cap_audit.h
+
 -- 
-pw-bot: cr
+2.43.0
+
