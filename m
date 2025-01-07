@@ -1,125 +1,120 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 600EC194A7C
-	for <iommu@lists.linux.dev>; Tue,  7 Jan 2025 02:19:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+Received: from njjs-sys-mailin01.njjs.baidu.com (mx311.baidu.com [180.101.52.76])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8467C55887
+	for <iommu@lists.linux.dev>; Tue,  7 Jan 2025 03:36:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=180.101.52.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736216398; cv=none; b=Ym5WhyVgS6GuXhVp7BG6KNbAN6NDKJGlauBImcJTUYp7q50v8HoUUkUml6SkmYtq0FKuJnENZzhBt/TGGciWAtPw/40eRtzwHr/4TZu1ilu7KnVIJeltXHWtW9Ap8DYaH48z0wXzreAT2vY9dbMNYJR9VgjgctmdqMrh1JL/uqo=
+	t=1736220972; cv=none; b=rZa050EBnvzc/iRkPeXF/Jglr6v8W8UGFIP1M5pQDRnztxzE8jnouMMFbbexEIADZYp588n11phG0gvFSpE2lPkxiqYcx8isrvCslWlkhmqrsAS/rDbKxe9sarSHtubLtMMQSLL0Ax7EkeeGZAI1xq0rnD0AqWw8HrMSfsbg9Lk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736216398; c=relaxed/simple;
-	bh=eaFBNhUleBIzqfpyP4rk34HZeakw+3KJJswLfZJ0pb8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=eCwZVuN3cvQOeGPOse0gACT6z8NVJK5xbZ0aaHgCfp3O4Qu5M3yRXIabbv7ncPFqksqDyEn1VkRikAp9AbUKBcC4ZpSn4qBBs/3p8bywUyhW++IU78iV9nbdrW49z8+MyWEEAXQo2FhyxAO1hJKce8cXwd44wE0mK5xEbhOpN0A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IOeaROQM; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IOeaROQM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736216396; x=1767752396;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=eaFBNhUleBIzqfpyP4rk34HZeakw+3KJJswLfZJ0pb8=;
-  b=IOeaROQM4FKmmQPLTScWv+3BPEK+VfRmngIZovnFwGCZGT/oufddllNy
-   eGLVyQZg1LyPZl21v8gLzltps4ZaSZURN1eHxHzHktj4T8clYJP1mik/d
-   YjnyxapW0O048EZoc+WmH4cuFxQfLiTeLn8uQwI0X/9bNQPh/AzBj83n5
-   5TAsbCpS1R+aJ6/xepFMflZTj2cR1IN57WO8FiSvxSTHK+EYPJCmI2r6f
-   CcAGbzzUI1tAsvn3BLS9mLcHJzw6yaOQBO6ruktU/aG4lokdd/D+w3oKO
-   qcxwM+yZotKQZf45NHgGDCcqSax5QoJr2HEkIX7DdRiBRt7ok1mUcpMmD
-   Q==;
-X-CSE-ConnectionGUID: hXoludRIRvqSyKsFwxj/QA==
-X-CSE-MsgGUID: xXciyimdRuSHI0AVT15ZdQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11307"; a="47800792"
-X-IronPort-AV: E=Sophos;i="6.12,294,1728975600"; 
-   d="scan'208";a="47800792"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2025 18:19:55 -0800
-X-CSE-ConnectionGUID: 3v/mXa97TeaxPoAzyAW/WA==
-X-CSE-MsgGUID: mpdHqoqOTB2V1lWfK7WeZg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,294,1728975600"; 
-   d="scan'208";a="102442986"
-Received: from allen-sbox.sh.intel.com ([10.239.159.30])
-  by orviesa009.jf.intel.com with ESMTP; 06 Jan 2025 18:19:54 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Kees Bakker <kees@ijzerbout.nl>,
-	Zhenzhong Duan <zhenzhong.duan@intel.com>,
+	s=arc-20240116; t=1736220972; c=relaxed/simple;
+	bh=x9tmvcN+FW9WEf459jFjPK3PoO1W/G6lSA2mtYJGWL0=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=B4pinv40Kkv9jFuLVyVX0QlVhWPCkSvrarzxE3lNR5pjsq2k7OHYWQQKY1L54G054MWn5AouqPcX03/94yL3HycoBD9EL4dv0zjg29u8YbsHB5X0G95xPvScmDI3/LnhM5fFV44QxIWbo6rPnLj2Ksm65dYsMVjlKGQHq9OU4dE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; arc=none smtp.client-ip=180.101.52.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
+Received: from localhost (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
+	by njjs-sys-mailin01.njjs.baidu.com (Postfix) with ESMTP id 5C6157F0004B;
+	Tue,  7 Jan 2025 11:36:00 +0800 (CST)
+From: Li RongQing <lirongqing@baidu.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 5/5] iommu/vt-d: Link cache tags of same iommu unit together
-Date: Tue,  7 Jan 2025 10:17:46 +0800
-Message-ID: <20250107021746.6908-6-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250107021746.6908-1-baolu.lu@linux.intel.com>
-References: <20250107021746.6908-1-baolu.lu@linux.intel.com>
+	baolu.lu@linux.intel.com,
+	vasant.hegde@amd.com
+Cc: Li RongQing <lirongqing@baidu.com>
+Subject: [PATCH][v2] iommu: move the adding group info to proper place
+Date: Tue,  7 Jan 2025 11:35:58 +0800
+Message-Id: <20250107033558.41135-1-lirongqing@baidu.com>
+X-Mailer: git-send-email 2.9.4
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-From: Zhenzhong Duan <zhenzhong.duan@intel.com>
+After commit fa0828036488 ("iommu: Split iommu_group_add_device()"), the
+adding group information is left in iommu_group_alloc_device, but which
+only allocate group device, not attach the device to iommu group;
 
-Cache tag invalidation requests for a domain are accumulated until a
-different iommu unit is found when traversing the cache_tags linked list.
-But cache tags of same iommu unit can be distributed in the linked list,
-this make batched flush less efficient. E.g., one device backed by iommu0
-is attached to a domain in between two devices attaching backed by iommu1.
+so move the print to iommu probing and adding functions
 
-Group cache tags together for same iommu unit in cache_tag_assign() to
-maximize the performance of batched flush.
-
-Co-developed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
-Link: https://lore.kernel.org/r/20241219054358.8654-1-zhenzhong.duan@intel.com
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
 ---
- drivers/iommu/intel/cache.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+Diff with v1: add log when iommu_group_alloc_device failed in iommu_group_add_device
 
-diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
-index 09694cca8752..fc35cba59145 100644
---- a/drivers/iommu/intel/cache.c
-+++ b/drivers/iommu/intel/cache.c
-@@ -47,6 +47,7 @@ static int cache_tag_assign(struct dmar_domain *domain, u16 did,
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	struct intel_iommu *iommu = info->iommu;
- 	struct cache_tag *tag, *temp;
-+	struct list_head *prev;
- 	unsigned long flags;
+ drivers/iommu/iommu.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 599030e..2eaa8ab 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -586,6 +586,9 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
  
- 	tag = kzalloc(sizeof(*tag), GFP_KERNEL);
-@@ -65,6 +66,7 @@ static int cache_tag_assign(struct dmar_domain *domain, u16 did,
- 		tag->dev = iommu->iommu.dev;
+ 	mutex_unlock(&group->mutex);
  
- 	spin_lock_irqsave(&domain->cache_lock, flags);
-+	prev = &domain->cache_tags;
- 	list_for_each_entry(temp, &domain->cache_tags, node) {
- 		if (cache_tage_match(temp, did, iommu, dev, pasid, type)) {
- 			temp->users++;
-@@ -73,8 +75,15 @@ static int cache_tag_assign(struct dmar_domain *domain, u16 did,
- 			trace_cache_tag_assign(temp);
- 			return 0;
- 		}
-+		if (temp->iommu == iommu)
-+			prev = &temp->node;
- 	}
--	list_add_tail(&tag->node, &domain->cache_tags);
-+	/*
-+	 * Link cache tags of same iommu unit together, so corresponding
-+	 * flush ops can be batched for iommu unit.
-+	 */
-+	list_add(&tag->node, prev);
++	trace_add_device_to_group(group->id, dev);
++	dev_info(dev, "Adding to iommu group %d\n", group->id);
 +
- 	spin_unlock_irqrestore(&domain->cache_lock, flags);
- 	trace_cache_tag_assign(tag);
+ 	return 0;
  
+ err_remove_gdev:
+@@ -594,6 +597,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+ err_put_group:
+ 	iommu_deinit_device(dev);
+ 	mutex_unlock(&group->mutex);
++	dev_err(dev, "Failed to add to iommu group %d: %d\n", group->id, ret);
+ 	iommu_group_put(group);
+ 
+ 	return ret;
+@@ -1192,10 +1196,6 @@ static struct group_device *iommu_group_alloc_device(struct iommu_group *group,
+ 		goto err_free_name;
+ 	}
+ 
+-	trace_add_device_to_group(group->id, dev);
+-
+-	dev_info(dev, "Adding to iommu group %d\n", group->id);
+-
+ 	return device;
+ 
+ err_free_name:
+@@ -1204,7 +1204,6 @@ static struct group_device *iommu_group_alloc_device(struct iommu_group *group,
+ 	sysfs_remove_link(&dev->kobj, "iommu_group");
+ err_free_device:
+ 	kfree(device);
+-	dev_err(dev, "Failed to add to iommu group %d: %d\n", group->id, ret);
+ 	return ERR_PTR(ret);
+ }
+ 
+@@ -1219,10 +1218,14 @@ static struct group_device *iommu_group_alloc_device(struct iommu_group *group,
+ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ {
+ 	struct group_device *gdev;
++	int ret;
+ 
+ 	gdev = iommu_group_alloc_device(group, dev);
+-	if (IS_ERR(gdev))
+-		return PTR_ERR(gdev);
++	if (IS_ERR(gdev)) {
++		ret = PTR_ERR(gdev);
++		dev_err(dev, "Failed to add to iommu group %d: %d\n", group->id, ret);
++		return ret;
++	}
+ 
+ 	iommu_group_ref_get(group);
+ 	dev->iommu_group = group;
+@@ -1230,6 +1233,10 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ 	mutex_lock(&group->mutex);
+ 	list_add_tail(&gdev->list, &group->devices);
+ 	mutex_unlock(&group->mutex);
++
++	trace_add_device_to_group(group->id, dev);
++	dev_info(dev, "Adding to iommu group %d\n", group->id);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_add_device);
 -- 
-2.43.0
+2.9.4
 
