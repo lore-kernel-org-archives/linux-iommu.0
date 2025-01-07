@@ -1,183 +1,225 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2071.outbound.protection.outlook.com [40.107.96.71])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B80D81F03DB
-	for <iommu@lists.linux.dev>; Tue,  7 Jan 2025 13:46:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.96.71
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736257619; cv=fail; b=e9muc6AoH+JUzZcy058x5WG7Nj7HEAxgtu34O+FtheZcXGzzYzE4GguTLJwzARemv0UeiwpT7QKN2XPEdvfRdwgP+hHVCeKBzMdY05c2DaUXeXTfBfqwRf7XvQEMEVd2roq4/oOCxRjrPgKJ7xrLiXK++eJSBC5C6PXp6lBNuwM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736257619; c=relaxed/simple;
-	bh=XkgqRjxSfXCbhVdYvhln2pp+gzjlXscdSNgUU7Wvzqk=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=s+2WKwK8CgSuclxApj6fCAuxZ0SV6A4EFqFq1lX0Tqi6H/IFk1LLZEBnCopNOAmD8c8LK5bNj1IxlPY0ZRDNCc0dQBP3H7wyKz0a0tli9lqt4Z/WlsgbuV76xtn2nItPm0QrlnfJ5KnvOryhsyXFlIkeGctwv0tkge169y36+V0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=jPJhEYld; arc=fail smtp.client-ip=40.107.96.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 814861EF092;
+	Tue,  7 Jan 2025 14:26:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736260003; cv=none; b=q2wmKplhZYSgb0eY+8t8qsOOiLvgXvowBF18wBtZYlWTwqxo0XGoh05u9FVa92XnVS2Yo69thatFiGObdTNuv2FhY07cNN7tosiYnwP1gbck58OnaApyROhfmCbJul/B+TIvOi2NTRxM0MNfmKanG5vlaDEtkOqK5YZk5fBHsOU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736260003; c=relaxed/simple;
+	bh=AeMg2utTMAlKSbxWiRzE7yu6vRG6PdpdikVVUTzB7Po=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PDmcOvb7vW3o09BCZLWUhnyae4oaZ6PBQRrZfIlt93qRTltvWdJ0YxKJUWSp6xgB33KAEk6cQILKUfS0jWKkPt8lWkBUVTBeFsP7Oq4mXVCowP4uduS96eCaT9PfuhZBJCEnv+b0k+GVhr2/+CWPpQDLhyPbFB3TewsCR/WwjM4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HYL4fPuU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="jPJhEYld"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qmHrosMbeZXIJ77XSL0+66t4DAsqvfBTT/kMkd5fqsBNLD6OoNEU/k//DVrqqHWVW8zvbishFqyx5Fyl89z8mVM97Q1grJs6lHZWiLz6U8yf3szi4ekY2uPi3PwUXF/4S3aLo9taA6OnICitjiA+hip/P2N9eQIHFus0YWcnrmCyFVUmczF4WtD1noFoiTrSt0x/folypt5YMU8fammjVI27PHXkD7ISV4f4o2moEd0YINEy8Mkntfsxn6zENrrvGaQQYbblbH5D5w8rIqyLAkLBqIpNkGrdc8jhB1FGe+LHMDys57RizfMWEFdhE3Q+xfHWOiCfZ1bkLl/Gily+GA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XOjXgiXbCoT5yWMhIxeTEzXrx02vrxCEUzrPGhC7USg=;
- b=VA+deB0jprCoYSTXig0GF6jvNhB5yDEr7/7bwzhfkN77KVC8N9lW+SKjaac/+QV+lw/dcSAyJcc3gtVNTJH5ChCT2aXbv4fP6d6EVINc6XjLrCsS2T+jl4Cs9glxiszDPNuOpWftICYlBOl9GESfegNxVWIU5irZgIZz1JDi14kXMVeLbBD9vhfteiYpGJ9BLr92jZ6qXEHUqMlbH6apMzj4JKphRT3GRT2C37izuqbSZk2APQgREWed2Mt+HSrMcIcZf5lHqpKQZYAjCG5FJ/6y4njRdUVENDliJd9Anl04HJ5QIagrsumzXpcR8rbiiX+SY95tWDI28Z6CoKQpKg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XOjXgiXbCoT5yWMhIxeTEzXrx02vrxCEUzrPGhC7USg=;
- b=jPJhEYldL9mkGJYz4gHID/0FGzsiY5XlTuqKiXrN+xk4GpOZhYTQKTGScOt6BGPvGvr3+Vv9E/iV1mRMU/Wyb/JuUyC3WC8hHB3FNa+7mLMb6z+n4VqH75mskUjQhMrXtHtZS9MrToNAsGO/COIdqCdAXQMX1n/7ao3h1/3yd/s=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- SA0PR12MB4461.namprd12.prod.outlook.com (2603:10b6:806:9c::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8314.18; Tue, 7 Jan 2025 13:46:47 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%6]) with mapi id 15.20.8335.011; Tue, 7 Jan 2025
- 13:46:47 +0000
-Message-ID: <4c8fe862-4629-4c1f-9416-d82132e1b996@amd.com>
-Date: Tue, 7 Jan 2025 19:16:36 +0530
-User-Agent: Mozilla Thunderbird
-Subject: =?UTF-8?B?UmU6IOetlOWkjTogW+WklumDqOmCruS7tl0gUmU6IFtQQVRDSF1bdjJd?=
- =?UTF-8?Q?_iommu=3A_move_the_adding_group_info_to_proper_place?=
-To: "Li,Rongqing" <lirongqing@baidu.com>, "joro@8bytes.org"
- <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-References: <20250107033558.41135-1-lirongqing@baidu.com>
- <cafe5714-aeaa-4774-bdad-124e4e036ae7@amd.com>
- <a78452d7e99e49e7af2b6e3a3c312bda@baidu.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <a78452d7e99e49e7af2b6e3a3c312bda@baidu.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0047.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:22::22) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HYL4fPuU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1940CC4CED6;
+	Tue,  7 Jan 2025 14:26:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1736260003;
+	bh=AeMg2utTMAlKSbxWiRzE7yu6vRG6PdpdikVVUTzB7Po=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=HYL4fPuUt3YBqyPuBz92sS5jcy/VsnOz6MkBc+Fbk9qHBM2JFQcpjLIB5VduAzKzX
+	 Wog6S9U2SOSYofWSlq8OUKbOvKA9Z46TrCntIHu428GAwuyK4bZH0fQxNMzp33Bcn1
+	 WShlsGyIlFWAAqmI6IbMsU3k2+GM7FPDtsN6WV8C3t0InsWrCNNYfQJr5a3LItROi3
+	 WpEwlP8/8JmYS1fDCgkRu7PCzNfBZ2Koe6q8/FFo1HKARb14CWN6XkXP9zLY6Gdc06
+	 lG290+aDphxV1KOFeQxY4EHEag88h0oxdHfkn7a1G0uVf3RHzYAXFyeCJVndgHuCHp
+	 q6ystbxVShpDw==
+Message-ID: <f977c0ab-76f5-4869-9fb7-e111104e2fff@kernel.org>
+Date: Tue, 7 Jan 2025 15:26:35 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SA0PR12MB4461:EE_
-X-MS-Office365-Filtering-Correlation-Id: ff6a346a-8b48-4865-fa18-08dd2f21baa5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Tmovb2w5dGRGVEowTHBWUU9KUGtzbGFEdDZ6Q1M0Y0FtVkMycnB2b29QUUdk?=
- =?utf-8?B?MTJ0Y3FtNGZML1g4TDdmNXRkRUZmU1lvbGhXV3RuUjFKekVPT0xWUFpSM2N1?=
- =?utf-8?B?Q1dxeVhmYmdRZTBlb2ZqNDdIYWhlRXQ0N0FkRlViWVFJbkN2dTYwbFI5RzVm?=
- =?utf-8?B?YjcydUdSVUwzRStmdkp1REdieVZpQ21iREl5R3YrK05CdURhQm45Zllud1dk?=
- =?utf-8?B?SGYxYkNsYmJtbFowSjk4NmplNmlBVVhnWGx5clN1c3VZVEhDUk5SMzl4SDB3?=
- =?utf-8?B?UWwrSlcxS2l2REhUalBmenc4VTNJdWpjdFRIcTF6aFhxcHo3RGE1NnE1cG9s?=
- =?utf-8?B?RGNjOFdQSWVCcU1pRjNYSEtqUVAyeUpXM1VCK2paanZVRkNhR2ZDNmh0RllF?=
- =?utf-8?B?VE1DYzh0dkMzQ3FKcnpyRHVXQ2VjKzQrbGlCb1Z2Ny8zRndYQkRuc2ltVkhR?=
- =?utf-8?B?L1lYK3lCSTJKSHh1V3FhckpPa3VEeGhYT0V4OFgwak9JVnc3S1F6dmY1dzk4?=
- =?utf-8?B?UEd2Z2cxOTRONTJMVFowekV1WnJyOGJvb1h4bnFFM1ZDV1ZqbTNjRXBEOWpP?=
- =?utf-8?B?a1RrbDRvNm05eldWM2M5R3VzcStzM3R1WXBDZy9tbEF2c0JiUmFkN1lwOWtu?=
- =?utf-8?B?OWRTWnBJZ2F5SnRrTWdaRjJkcVpoNXcrK1JwNFhjL0V2SnRUdkpqZUg2cDV4?=
- =?utf-8?B?cE1WNzd5ZzdSajdzUkF6eWFOcEJ5b1YrYXplcVAraGZHMkZDdlhHRWF6cFF1?=
- =?utf-8?B?Q2g2bU94VTdlaWNxVXlPaVk5Z2pYVnVnUjdMQW0wUHdqNDAyRmVZZ01uRDdG?=
- =?utf-8?B?LzdiZ1BUNlVDUHg1OXE1cWFTZVN3aHp6aDBOakVQMHFrUWdUdExpL3FHZnd1?=
- =?utf-8?B?S3ZNQUtIQmFrc3U0UHFnaGpzdWpxeUlDbVhzSmFCd1lPdXF2TW1TVXIvYlFG?=
- =?utf-8?B?Y3BrNDMwRTMya1puS2RXWllNVlZ2RFhWMjVOSnU1UlVKYmkvTnViOE9ieHN2?=
- =?utf-8?B?SXVRU0Zna1FTZThEZkY1bW5hZDZiRXpmU0pFK2kxaXVFd2JWTEtRVE1mamF3?=
- =?utf-8?B?UWZ6VTNJaDRsZHRqRDkrb1dHY1VCbjFEc1dCQ000b3p5M04xMzZLWnRYK29o?=
- =?utf-8?B?QXM3bWxid3VlVEJadm1VUmlBcWd5Q0J2Rkg1Yzlqd2RBOW1LQWovNDQwbWtP?=
- =?utf-8?B?YkUxekU3eVNQZVRmQzRNWVB5dkFTZnBTek1mMUswbnJ4cmxXSjg5dUUxaW5W?=
- =?utf-8?B?dTVuNlBUN2hOOUpCS0ZjNXdmV01hVjJNRE90WkJRajRPKzA3WWhDNUJzd3JS?=
- =?utf-8?B?My9BU2VUM0RwcVVDRUpwWnFzSTJ0SEZMNU1oQUNSKy9WN1BXMm9hYmRvRXRm?=
- =?utf-8?B?cC9ad1pXV3F6Q0xsQTNNMHBGd1JwQ2k1cnNiWUpZeXFraTJhN3VZc3RaM1Jp?=
- =?utf-8?B?U1FhOEtLR1NtV2p2VTlQci85OEZqOVJlVDZMa05YT053Z0dqL1VjNlAvV05o?=
- =?utf-8?B?UFZuRkU3NkRtK3IzVng1SzNMWUJKd296dWZQeTBXbUxqVmc4ZWZ2Q1B3aXhm?=
- =?utf-8?B?VlZERG5GR29iT1pPaG83OXNMSlJKcjNkL0JRUHZ4Y3hTMWx4dm8yeG5CV241?=
- =?utf-8?B?bVNoT0ExZG5kaUE0Wk5lTURqQkMvU09RaXVjaEV3T0pMakVSbS9YNDFUR2hy?=
- =?utf-8?B?WGRuclUwRzE4TWRrV2M0eWtUc2loamNMQ1cwRUVETEoxOWoySGRVT2k0V04x?=
- =?utf-8?B?SUxib2NlWGpvNEZvdzg2STVxQ0RMREgyeWJqWEgrVWxZcHpidmRkMlJuYWg5?=
- =?utf-8?B?R1hyT2xPNm0xSmlzcUFwSG1va1pRYmU2dzFKdktPR0ZldlpTcWtBMWZJYmlo?=
- =?utf-8?Q?CCop0IEyw0tx3?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?c3MxRUtXUGU2emxPcnRmcjM4NWVOL2NselhhNkpjWVBONXlnMVVWMzIvRGJO?=
- =?utf-8?B?dzNWRW0yc3JXRXliYmgrbFRWWEFPdkZScGRrVjVNOGF5MGVCTm40eE5NTjM0?=
- =?utf-8?B?M25WMGVHcGM1ZC9VdnZQSko3U2dFTVJMdldxVWZsRFd6elRFM0RNUTYycjVt?=
- =?utf-8?B?cnBiM2t2ay9pRUQ1MlZ4em44bFFJR0ZydTNXSVI2eW43K2RuZEd4QzFrWEJz?=
- =?utf-8?B?d2ZxK1Z1V0pMeVVISXRqR3F5M3JRS3F4bGhDWnpJSkFOV3NQM21GTlZVL2w2?=
- =?utf-8?B?b3ozTWRaR0NsYnFUbVA2cnVpRUQzZ3BSbjYySk5FQnFmcU84eVd6S0RhV3lL?=
- =?utf-8?B?UkJkTmgxWER6NDBYM05sekdUd2M5TmkzVysxd2NTL2ZJbkFRQnU2NmJ0dEtt?=
- =?utf-8?B?M1U3WEluMkxSNTVrVzQxS0xWd1BYTWRucnJiVm5hdTQ2NFJWc202R2hQcXlx?=
- =?utf-8?B?ajBtS3Q3UzhkS2plQ3cyOUtkUFl1L0NMUHRxQTBaVGl5S01iSHFJZDVicGJY?=
- =?utf-8?B?d2NIWGxPdUJybDFzTDFxOWRsU0oyZzlHN3l6SVZhbXNHVWt1djRiUWwzUHh4?=
- =?utf-8?B?SGlmcmZaM2loSk5QWDhzalFCam1vS2lYLzI3S3hRWXJpWFY3WitHMWFjdGhL?=
- =?utf-8?B?bEhVdzBhemx4cFl2NU94UWQ5NVFOaVAwU0VLUFYrVlB1UDVUd0RWdTlkN0lq?=
- =?utf-8?B?d0tzZWxja2YvK3BMT2p2ZS9yU1pvZjZQTGhJTjV0SDZLVGd1QjlJT0lrRzBm?=
- =?utf-8?B?MWNqVndhR2NZUXZudmVqeExNQkFlQzNTQkJiV1JNSElIMCtRWFpWQktCUGZB?=
- =?utf-8?B?Y0RDeExHT1c0cUx2UWYxYzR1MUdSY0RzSG9BV1YyWlpUOEx2VGtzbEs2Yyt6?=
- =?utf-8?B?dlRIVjJoRTdZQzB3Z0k1aStjL2lyL3RXd0ZSTkVFVjNBdnRKTEU5dDMweE5r?=
- =?utf-8?B?eERFczhOS3NvU1F0ckNiYU1wQTV6dllYdlk4Q2dNckV0ek41V2FiSnVhZmhL?=
- =?utf-8?B?L3NiRlNmQngrMklRMzgxQTJrdWhpek92NW4rNldMY0pwb0VIbjFLbkZJNmdP?=
- =?utf-8?B?UWtETlpnNm84Mk5TTy94amlIT2dXSmVidHBnbyswTE9FSDViK0JQR3BLMGVX?=
- =?utf-8?B?NXM5TFBFUUpWaGJBVk5kbW03WnBMOEN4YlE1NXU3QWRCNmxUZ3VzNzQ1TkQ3?=
- =?utf-8?B?RVptcXVwbkk1Smw1dEVYNGhpWk5zbmFtbGtWUTRKOHU1eUxGNjg3V1hPQ0Va?=
- =?utf-8?B?N2FzWm4rRVdQdlA0VmFpUmdnUm1DVjNwZlVRazd2ZzN6NDc4RlNSeUp0eFBT?=
- =?utf-8?B?QTRNZW0rUEZ5YkJKbVd6WFdZWDdUTlJ1ZGpGUTRHOFFEbVhvaFRvMy9FZHNo?=
- =?utf-8?B?cFBUR1NLZkZ1WkJ5WEhsRkRhb2dWdXhhV2pqVkc3TnJYSjlmcDI3OWZSMldp?=
- =?utf-8?B?TmNCbk5pQWlJOVRNZHZXK3JxT3dxdW5SdGpWSjVpM3ZCOXV4RjBqTlpOZTU2?=
- =?utf-8?B?MkZ2RlNxREw2dHlnUHBRVUNqQXRMZHVBVnpleDlLMmphVEFXcDV5U2xHYXRL?=
- =?utf-8?B?R2xORHFzQWhmbzdYS3JvbXV6c2d6NXI2eWlPV2VxMHJ1L21lOThBMkxLanNs?=
- =?utf-8?B?OFowc0h2cnBEOFhHRUZWWTROS0NKd2gvdlVuVUhBV1FyUG90cW81TkwxczUx?=
- =?utf-8?B?L3J4Vk42SDVFTXd5WmVHTFd0bGtPcmNIVVBCaW9RZVAyeGlHcGt6NUlMY1lq?=
- =?utf-8?B?dHEzYUM5N2F4eGdEcUxPZkpRQWRFMU1NOU5ONTRxS3kyNWdXelp2VzQ2djdD?=
- =?utf-8?B?ak9hbzBDc29xSFVtcHpBM1VFYmk3SVhqZmFpSWdrQ1RpNFF6RGhZVTc2MGZW?=
- =?utf-8?B?NGVHaGFUOFlWK1RScWdZb0RRYnZuWmxzNFNycUtHVDFCaWI2Z2IxZTRSTkR1?=
- =?utf-8?B?WkdOc2lBU3NZWXhjMnFJZFRKbUhPcXRscGNCR3VJcW9ZRmJlWjJPYXJwSUpS?=
- =?utf-8?B?cHliYTRBNGJvenhRMFc3eDNtQXBJcUZKYzZ4ekF3cWxjdHJRb2VEWEhoSUhi?=
- =?utf-8?B?d2VaNEtqZHFLQkdTUk9IUGh4VkFGODVKdlY4SS9vSFlMTlRpYzc5Q1NRUUFp?=
- =?utf-8?Q?86Qw05/aaUog5gDIt61uTs+4a?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff6a346a-8b48-4865-fa18-08dd2f21baa5
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2025 13:46:47.1792
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: af0VTuwzDgWtnlcp8k227YUhF+dpR1vBLoDQd8o5uyqQscHH+nSk/dqEMn7j38D9r7poNP743P3wajNW/Tg9qQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4461
-
-Hi Li,
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v6 0/8] fix two bugs related to page_pool
+To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+ kuba@kernel.org, pabeni@redhat.com
+Cc: liuyonglong@huawei.com, fanghaiqing@huawei.com, zhangkun09@huawei.com,
+ Alexander Lobakin <aleksander.lobakin@intel.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Alexander Duyck <alexander.duyck@gmail.com>,
+ Andrew Morton <akpm@linux-foundation.org>, IOMMU <iommu@lists.linux.dev>,
+ MM <linux-mm@kvack.org>, Alexei Starovoitov <ast@kernel.org>,
+ Daniel Borkmann <daniel@iogearbox.net>,
+ John Fastabend <john.fastabend@gmail.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+ bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+References: <20250106130116.457938-1-linyunsheng@huawei.com>
+Content-Language: en-US
+From: Jesper Dangaard Brouer <hawk@kernel.org>
+In-Reply-To: <20250106130116.457938-1-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
 
-On 1/7/2025 6:00 PM, Li,Rongqing wrote:
->>> -	if (IS_ERR(gdev))
->>> -		return PTR_ERR(gdev);
->>> +	if (IS_ERR(gdev)) {
->>> +		ret = PTR_ERR(gdev);
->>> +		dev_err(dev, "Failed to add to iommu group %d: %d\n", group->id,
->> ret);
->>> +		return ret;
->>
->> Why not just return PTR_ERR(gdev)?
->>
+
+On 06/01/2025 14.01, Yunsheng Lin wrote:
+> This patchset fix a possible time window problem for page_pool and
+> the dma API misuse problem as mentioned in [1], and try to avoid the
+> overhead of the fixing using some optimization.
 > 
-> Since dev_err will print PTR_ERR(gdev), so I define a local variable to conversion once
+>  From the below performance data, the overhead is not so obvious
+> due to performance variations for time_bench_page_pool01_fast_path()
+> and time_bench_page_pool02_ptr_ring, and there is about 20ns overhead
+> for time_bench_page_pool03_slow() for fixing the bug.
+> 
+> Before this patchset:
+> root@(none)$ insmod bench_page_pool_simple.ko
+> [  323.367627] bench_page_pool_simple: Loaded
+> [  323.448747] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076997150 sec time_interval:76997150) - (invoke count:100000000 tsc_interval:7699707)
+> [  324.812884] time_bench: Type:atomic_inc Per elem: 1 cycles(tsc) 13.468 ns (step:0) - (measurement period time:1.346855130 sec time_interval:1346855130) - (invoke count:100000000 tsc_interval:134685507)
+> [  324.980875] time_bench: Type:lock Per elem: 1 cycles(tsc) 15.010 ns (step:0) - (measurement period time:0.150101270 sec time_interval:150101270) - (invoke count:10000000 tsc_interval:15010120)
+> [  325.652195] time_bench: Type:rcu Per elem: 0 cycles(tsc) 6.542 ns (step:0) - (measurement period time:0.654213000 sec time_interval:654213000) - (invoke count:100000000 tsc_interval:65421294)
+> [  325.669215] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
+> [  325.974848] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 29.633 ns (step:0) - (measurement period time:0.296338200 sec time_interval:296338200) - (invoke count:10000000 tsc_interval:29633814)
 
-Ok. Thanks
+(referring to above line, below)
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+> [  325.993517] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
+> [  326.576636] time_bench: Type:no-softirq-page_pool02 Per elem: 5 cycles(tsc) 57.391 ns (step:0) - (measurement period time:0.573911820 sec time_interval:573911820) - (invoke count:10000000 tsc_interval:57391174)
+> [  326.595307] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
+> [  328.422661] time_bench: Type:no-softirq-page_pool03 Per elem: 18 cycles(tsc) 181.849 ns (step:0) - (measurement period time:1.818495880 sec time_interval:1818495880) - (invoke count:10000000 tsc_interval:181849581)
+> [  328.441681] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
+> [  328.449584] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
+> [  328.755031] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 29.632 ns (step:0) - (measurement period time:0.296327910 sec time_interval:296327910) - (invoke count:10000000 tsc_interval:29632785)
 
--Vasant
+It is strange that fast-path "tasklet_page_pool01_fast_path" isn't
+faster than above "no-softirq-page_pool01".
+They are both 29.633 ns.
 
+What hardware is this?
+
+e.g. the cycle count of 2 cycles(tsc) seem strange.
+
+On my testlab hardware Intel CPU E5-1650 v4 @3.60GHz
+My fast-path numbers say 5.202 ns (18 cycles) for 
+"tasklet_page_pool01_fast_path"
+
+
+Raw data look like this
+
+[Tue Jan  7 15:15:18 2025] bench_page_pool_simple: pp_tasklet_handler(): 
+in_serving_softirq fast-path
+[Tue Jan  7 15:15:18 2025] bench_page_pool_simple: 
+time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
+[Tue Jan  7 15:15:18 2025] time_bench: 
+Type:tasklet_page_pool01_fast_path Per elem: 18 cycles(tsc) 5.202 ns 
+(step:0) - (measurement period time:0.052020430 sec 
+time_interval:52020430) - (invoke count:10000000 tsc_interval:187272981)
+[Tue Jan  7 15:15:18 2025] bench_page_pool_simple: 
+time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
+[Tue Jan  7 15:15:19 2025] time_bench: Type:tasklet_page_pool02_ptr_ring 
+Per elem: 55 cycles(tsc) 15.343 ns (step:0) - (measurement period 
+time:0.153438301 sec time_interval:153438301) - (invoke count:10000000 
+tsc_interval:552378168)
+[Tue Jan  7 15:15:19 2025] bench_page_pool_simple: 
+time_bench_page_pool03_slow(): in_serving_softirq fast-path
+[Tue Jan  7 15:15:19 2025] time_bench: Type:tasklet_page_pool03_slow Per 
+elem: 243 cycles(tsc) 67.725 ns (step:0) - (measurement period 
+time:0.677255574 sec time_interval:677255574) - (invoke count:10000000 
+tsc_interval:2438124315)
+
+
+> [  328.774308] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
+> [  329.578579] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 7 cycles(tsc) 79.523 ns (step:0) - (measurement period time:0.795236560 sec time_interval:795236560) - (invoke count:10000000 tsc_interval:79523650)
+> [  329.597769] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
+> [  331.507501] time_bench: Type:tasklet_page_pool03_slow Per elem: 19 cycles(tsc) 190.104 ns (step:0) - (measurement period time:1.901047510 sec time_interval:1901047510) - (invoke count:10000000 tsc_interval:190104743)
+> 
+> After this patchset:
+> root@(none)$ insmod bench_page_pool_simple.ko
+> [  138.634758] bench_page_pool_simple: Loaded
+> [  138.715879] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076972720 sec time_interval:76972720) - (invoke count:100000000 tsc_interval:7697265)
+> [  140.079897] time_bench: Type:atomic_inc Per elem: 1 cycles(tsc) 13.467 ns (step:0) - (measurement period time:1.346735370 sec time_interval:1346735370) - (invoke count:100000000 tsc_interval:134673531)
+> [  140.247841] time_bench: Type:lock Per elem: 1 cycles(tsc) 15.005 ns (step:0) - (measurement period time:0.150055080 sec time_interval:150055080) - (invoke count:10000000 tsc_interval:15005497)
+> [  140.919072] time_bench: Type:rcu Per elem: 0 cycles(tsc) 6.541 ns (step:0) - (measurement period time:0.654125000 sec time_interval:654125000) - (invoke count:100000000 tsc_interval:65412493)
+> [  140.936091] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
+> [  141.246985] time_bench: Type:no-softirq-page_pool01 Per elem: 3 cycles(tsc) 30.159 ns (step:0) - (measurement period time:0.301598160 sec time_interval:301598160) - (invoke count:10000000 tsc_interval:30159812)
+> [  141.265654] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
+> [  141.976265] time_bench: Type:no-softirq-page_pool02 Per elem: 7 cycles(tsc) 70.140 ns (step:0) - (measurement period time:0.701405780 sec time_interval:701405780) - (invoke count:10000000 tsc_interval:70140573)
+> [  141.994933] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
+> [  144.018945] time_bench: Type:no-softirq-page_pool03 Per elem: 20 cycles(tsc) 201.514 ns (step:0) - (measurement period time:2.015141210 sec time_interval:2015141210) - (invoke count:10000000 tsc_interval:201514113)
+> [  144.037966] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
+> [  144.045870] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
+> [  144.205045] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 1 cycles(tsc) 15.005 ns (step:0) - (measurement period time:0.150056510 sec time_interval:150056510) - (invoke count:10000000 tsc_interval:15005645)
+
+This 15.005 ns looks like a significant improvement over 29.633 ns
+
+> [  144.224320] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
+> [  144.916044] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 6 cycles(tsc) 68.269 ns (step:0) - (measurement period time:0.682693070 sec time_interval:682693070) - (invoke count:10000000 tsc_interval:68269300)
+> [  144.935234] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
+> [  146.997684] time_bench: Type:tasklet_page_pool03_slow Per elem: 20 cycles(tsc) 205.376 ns (step:0) - (measurement period time:2.053766310 sec time_interval:2053766310) - (invoke count:10000000 tsc_interval:205376624)
+> 
+
+
+Looks like I should also try out this patchset on my testlab, as this
+hardware seems significantly different than mine...
+
+
+> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
+> 
+> CC: Alexander Lobakin <aleksander.lobakin@intel.com>
+> CC: Robin Murphy <robin.murphy@arm.com>
+> CC: Alexander Duyck <alexander.duyck@gmail.com>
+> CC: Andrew Morton <akpm@linux-foundation.org>
+> CC: IOMMU <iommu@lists.linux.dev>
+> CC: MM <linux-mm@kvack.org>
+> 
+> Change log:
+> V6:
+>    1. Repost based on latest net-next.
+>    2. Rename page_pool_to_pp() to page_pool_get_pp().
+> 
+> V5:
+>    1. Support unlimit inflight pages.
+>    2. Add some optimization to avoid the overhead of fixing bug.
+> 
+> V4:
+>    1. use scanning to do the unmapping
+>    2. spilt dma sync skipping into separate patch
+> 
+> V3:
+>    1. Target net-next tree instead of net tree.
+>    2. Narrow the rcu lock as the discussion in v2.
+>    3. Check the ummapping cnt against the inflight cnt.
+> 
+> V2:
+>    1. Add a item_full stat.
+>    2. Use container_of() for page_pool_to_pp().
+> 
+> Yunsheng Lin (8):
+>    page_pool: introduce page_pool_get_pp() API
+>    page_pool: fix timing for checking and disabling napi_local
+>    page_pool: fix IOMMU crash when driver has already unbound
+>    page_pool: support unlimited number of inflight pages
+>    page_pool: skip dma sync operation for inflight pages
+>    page_pool: use list instead of ptr_ring for ring cache
+>    page_pool: batch refilling pages to reduce atomic operation
+>    page_pool: use list instead of array for alloc cache
+> 
+>   drivers/net/ethernet/freescale/fec_main.c     |   8 +-
+>   .../ethernet/google/gve/gve_buffer_mgmt_dqo.c |   2 +-
+>   drivers/net/ethernet/intel/iavf/iavf_txrx.c   |   6 +-
+>   drivers/net/ethernet/intel/idpf/idpf_txrx.c   |  14 +-
+>   drivers/net/ethernet/intel/libeth/rx.c        |   2 +-
+>   .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |   3 +-
+>   drivers/net/netdevsim/netdev.c                |   6 +-
+>   drivers/net/wireless/mediatek/mt76/mt76.h     |   2 +-
+>   include/linux/mm_types.h                      |   2 +-
+>   include/linux/skbuff.h                        |   1 +
+>   include/net/libeth/rx.h                       |   3 +-
+>   include/net/netmem.h                          |  24 +-
+>   include/net/page_pool/helpers.h               |  11 +
+>   include/net/page_pool/types.h                 |  63 +-
+>   net/core/devmem.c                             |   4 +-
+>   net/core/netmem_priv.h                        |   5 +-
+>   net/core/page_pool.c                          | 660 ++++++++++++++----
+>   net/core/page_pool_priv.h                     |  12 +-
+>   18 files changed, 664 insertions(+), 164 deletions(-)
+> 
