@@ -1,102 +1,71 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8498215854F;
-	Tue,  7 Jan 2025 06:29:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F259113B58D
+	for <iommu@lists.linux.dev>; Tue,  7 Jan 2025 08:32:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736231386; cv=none; b=Lp/Zr+di0aUVpIXztSbkPjrGJG9o4Ul4ORyrrNeEY9EwBG+SpDlhXe83jly6169fKeuX6VQbr4Vgo0KVibTkKl22UiWFeUwnlICZklrFT55e1jR8zKeANnqC1Hh1f/WoHq8vXzQq65XlJtAM2OWRvQob6Fn+SSlj/HUZROKnalQ=
+	t=1736238761; cv=none; b=PvXHbW9J+rqbFi4IxBConBjFM3vfNM2EWgssuIdjYOni9eTZBQk0KC9+YRGD1jKl3ymgM62n4Bj6vStWBNCCkf39RVEfJmpHFZK8jRSpuduqVTCNnowj8nJKuqkZ2Q73pHluvKY/JWxU2ufrzMuv8aH9TgujOxnihERpOlhz4e0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736231386; c=relaxed/simple;
-	bh=2ZNBQV83qRYlGIdvmpF5D7UXo7BcBAAFyvP+LUtLJ7w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Y6yWCXuq2K+tRJ4ORaXtuYxk8ItTsoQ1fhXOJcDAxRlUNzF7PFQSCCFwgp1/1KDZzY8p/xYsbU+wivudYFYQNgrbs4vXtsXQOMtgZYdRc9KTVP6GSouaiqE9Ovin0UEMCbPU/mr12rIBMuw7aGWPqfZpBFm4EWvqnGpeAgRtBw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UNBWoCvz; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1736238761; c=relaxed/simple;
+	bh=Ghj9OfMPmJcnSIAc8VA1uUGc/YVEJkgRnkYqAChTPRA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CecslCUI4II2nM0Y9wAmmhw7/xoTK5oZN1IxWy+5i2NDxGSAsfBwYFlhE1vJa/P2gsX2SH9PwUhN4uwnukzTdclXzFmUtP4x+mEmsSmfWjWrN8fe2HHAqWS65sNzmMDzqk+iLcVSSGORvqA8nFMILXdusiLSi1HYjryliof3Cbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=8Gk7gLPH; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UNBWoCvz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736231385; x=1767767385;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=2ZNBQV83qRYlGIdvmpF5D7UXo7BcBAAFyvP+LUtLJ7w=;
-  b=UNBWoCvzsnJEGqch395+NFIK6PndJBatctHUMd5+zyjvNTFJEd+4f55x
-   kmzoeF3st2KDjNmCe6Cp52x4CnQTDNK/37iibTXS9VVuYiY1nRP9LzlHG
-   6ihHAnQof/BwnOEvzVosC7fGyBa3l+tU0KvWIZVZ0tieEceD+Cr8Q8m7E
-   OgS1ufVDr08UjPSXo3Coq0vTjxumTTRbe6d18Zpi1OXF/bccIGpcOLlcF
-   OSmQACn0UAgI8Z/ebpxGFt7ggpy2wO9ale2rlW83PnbLktyVkkQcKiRTi
-   jko9b3TlCKPZ0m7kZuQzyMtKLHCI+QSYqEKe0eVVQu9bj2iEbaq49jni0
-   w==;
-X-CSE-ConnectionGUID: rfbcA7jdSQaykc4PpxIthw==
-X-CSE-MsgGUID: Im5XO3nGRymMjj5+CmLMxg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11307"; a="61775235"
-X-IronPort-AV: E=Sophos;i="6.12,294,1728975600"; 
-   d="scan'208";a="61775235"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2025 22:29:44 -0800
-X-CSE-ConnectionGUID: SW9KnGenTBmE8P1OnGYz/Q==
-X-CSE-MsgGUID: qJ2kkw5RQxOVafkwq6rSiA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="106702442"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2025 22:29:40 -0800
-Message-ID: <150e283f-1858-4282-912d-0bb78719b46b@linux.intel.com>
-Date: Tue, 7 Jan 2025 14:27:39 +0800
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="8Gk7gLPH"
+Received: from 8bytes.org (p54921e31.dip0.t-ipconnect.de [84.146.30.49])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id A78052E001D;
+	Tue,  7 Jan 2025 09:32:37 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1736238757;
+	bh=Ghj9OfMPmJcnSIAc8VA1uUGc/YVEJkgRnkYqAChTPRA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=8Gk7gLPHozVJ1x3OfrMbm6pRoTETlI1lJIAEGGHpj2Pnu6/Rt0qKbunau8X0d1Xwb
+	 lbx6LqpLNfExTJyeHSxE45LvF9ogjlecDxehM23xoW3vWielqtYMN7Kx86YCOHTYuy
+	 YsqqgIIGs9lkY22skvAfb1Nxoi8i1icK+heY1MpXPlNznHlisvTBp3Hn3m31OHIUFT
+	 BQVnC83CINAATdszl4Lfjt98xVGzDmEhHDVSVwOFa1TXMcWxB1xveWYnEK/tjaEqvJ
+	 TBxDOYSOfuO4R1N88eMIlIaeKEKsUzgjOd4Yhtfx+xE0jCZYmrW7W7YdXMR4IpPXSC
+	 Rb6f8+XUC9xQQ==
+Date: Tue, 7 Jan 2025 09:32:36 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Kees Bakker <kees@ijzerbout.nl>,
+	Zhenzhong Duan <zhenzhong.duan@intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] [PULL REQUEST] Intel IOMMU updates for v6.14
+Message-ID: <Z3zmpDToYOoOpYpq@8bytes.org>
+References: <20250107021746.6908-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 14/14] iommu/arm-smmu-v3: Report events that belong to
- devices attached to vIOMMU
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
- joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
- dwmw2@infradead.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
- eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
- mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
- smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
- patches@lists.linux.dev
-References: <cover.1735933254.git.nicolinc@nvidia.com>
- <69a46c72e43ed086840be462eef731167d90a9d8.1735933254.git.nicolinc@nvidia.com>
- <585fc99f-c2dc-459c-929a-c7c7631b9caf@linux.intel.com>
- <Z3wk9TvmUhB3/zlk@Asurada-Nvidia> <Z3yvZsq77bpnaoAb@Asurada-Nvidia>
- <75456867-8993-4be4-bcdf-14df28fe92cc@linux.intel.com>
- <Z3zDA3xx6w6dSQY+@Asurada-Nvidia>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Z3zDA3xx6w6dSQY+@Asurada-Nvidia>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250107021746.6908-1-baolu.lu@linux.intel.com>
 
-On 1/7/25 14:00, Nicolin Chen wrote:
-> On Tue, Jan 07, 2025 at 01:54:00PM +0800, Baolu Lu wrote:
->> On 1/7/25 12:36, Nicolin Chen wrote:
->>> +static bool arm_vsmmu_supports_veventq(unsigned int type)
->>> +{
->>> +	return type == IOMMU_VIOMMU_TYPE_ARM_SMMUV3;
->> Do you need to check the hardware capabilities before reporting this? I
->> am not familiar with the ARM architecture, but typically it's better to
->> make it like this,
->>
->> static bool arm_vsmmu_supports_veventq(struct iommufd_viommu *viommu,
->>                                         enum iommu_veventq_type type)
->> {
->> 	if (type != IOMMU_VEVENTQ_TYPE_ARM_SMMUV3)
->> 		return false;
->>
->> 	if (hardware_not_capable(viommu))
->> 		return false;
-> I think the ARM version of viommu_alloc op has already implemented
-> enough capability checks and rejected any of hardware_not_capable.
-> So, viommu shouldn't be a thing that the driver could actually use
-> to call this helper 🙂
+On Tue, Jan 07, 2025 at 10:17:41AM +0800, Lu Baolu wrote:
+> Hi Joerg,
+> 
+> The following changes have been queued for v6.14-rc1. They are about new
+> features and code refactoring, including:
+> 
+>  - Remove domain_alloc_paging()
+>  - Remove capability audit code
+>  - Draining PRQ in sva unbind path when FPD bit set
+>  - Link cache tags of same iommu unit together
+> 
+> These patches are based on v6.13-rc6. The complete patches are also
+> available at:
+> 
+> https://github.com/LuBaolu/intel-iommu/commits/vtd-update-for-v6.14
+> 
+> Please consider them for iommu next.
 
-Okay, fair enough.
+Applied, thanks.
+
