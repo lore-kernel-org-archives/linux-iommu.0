@@ -1,102 +1,127 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E815C1F03E2;
-	Tue,  7 Jan 2025 12:58:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08F5C1F0E2D
+	for <iommu@lists.linux.dev>; Tue,  7 Jan 2025 13:00:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736254728; cv=none; b=sUH1DJkUmtjkH8yzwZGR6ey8Rbd+2vl0g5J912yAzl/YYqw5lJh/nDubVcHXK2923TiqsI3X9RoBw7A6EwxMUKOV8F0MsoHphxAeKJRZWdYFph0EWOM0fkWM2hIiiC3ev+3j1Bno4A4to6pEWww1hM/olWH5haswhR0oR1mk/oo=
+	t=1736254860; cv=none; b=HAQxb6akmXKiYNh8byUnhAM+CPjTf0QL2o3bQBtw2bwavQTlTfuPitTlbCgpIEKicOk9pKKkkmny3Nu1s49tFrSn9lOXqYKZ+m6kQQ3deDEf9j8cNCTS+wlnU5ITk7VtOWKhWNUtTwhrh2TrnMgY1kXTBSZVYSYJfx0J7dOyUuk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736254728; c=relaxed/simple;
-	bh=0d8chFQwCQH17RxZgem2YuxeZFD8iqNF18spSTjEvc4=;
+	s=arc-20240116; t=1736254860; c=relaxed/simple;
+	bh=YG7rznFglI1BIhqXf+gryoJm8YQznnh/jTDTxMkRorI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Kwr3e1Q1wufSrK0wi/FkXAAM9opOvqsi1BYBmPUabmx3lROO9xa4zfd9ky48HQREGct04gYtBqDa2ZN21bmMspThHRKLzuDsIyaWgUZ0YMp5aijfV0JDmBwS5cBRcR4nMfDWMblK5IIGTWqgQDmbSA/QWNPYF719Tiv8KogyUk8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m8ySdhAY; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=JffDmpGCMITN+X6CDD2+M1+XqZgITcxtietrSL2Lj7zJeXQIp8wrZCLvps/K32Fs8tOBcolV/nyrMt9uYjAfOnUcR9ZPCQ+uuqwLjUBQdKC3I0PtkRuP0WNonTX2YGtgCCbMKz/ZomRj3yxSggFxH1dKHAQh9oKlGJnaMQ/tQNY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tzhaaOVh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m8ySdhAY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F014C4CEE2;
-	Tue,  7 Jan 2025 12:58:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tzhaaOVh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15BB5C4CED6;
+	Tue,  7 Jan 2025 13:00:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736254727;
-	bh=0d8chFQwCQH17RxZgem2YuxeZFD8iqNF18spSTjEvc4=;
+	s=k20201202; t=1736254859;
+	bh=YG7rznFglI1BIhqXf+gryoJm8YQznnh/jTDTxMkRorI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=m8ySdhAYCP+O/e4xmQy+M+8iHJf+MVc/zbwzBVDHy31+rGtRSf95w9/67SxvFbz/4
-	 nuEdInTnNN6apCgnGTLsBxOg95cwpbAa5q5bq5RkqGfkPRi1MfygXVkmLpvL7jSiVz
-	 mQCYobyHdRyRqzP9dTUKrrwmZUDHhpFognYGe+EcjMPhcCEPavD2oh60E6KVFg/2EI
-	 LcEylZoywSRRQzT4iTNN8D+jj8HzLw+cUu089n6lRlOM/vyETC/VWtoVrhZDaiASgp
-	 jT+dxh5ubmQnxiIrVrOzc+aoj9Yet8Ls4vJIVa3cbQvLe5AUW1PVy987hCJoXfO21p
-	 1mxzDVsIgFTEA==
-Date: Tue, 7 Jan 2025 12:58:41 +0000
+	b=tzhaaOVhdX3DkDUaw70hrfsADohzP1DM+8AAspoZUt/FJkm1b8JHUXYU45EZda1JZ
+	 ti3/SkVenR3KebBUpD3eR+Jpi+e+i8xzg0DR6wETNrXA2CR5YxgA+/2bxPD+pZAW9S
+	 fKWnRC/v6uQnuRS+iBAS8LDdfg26Uaj5wbuhsZBxu8vgQEWqsVufGDEHaF4rk56jaJ
+	 ++uW0yK7SzHt6w891YD2fB3XLnK9X/xGIxmP6HQIR4Ph/AQcAVvGL+Nk3lJznT+zQ3
+	 PH+G/Xb1owGvCKC64Cr2Qz2p8rq4NT/Vuo2LEdNuU4H0ZXwNZpfBChgYAoeY4zBMPa
+	 YIoWl1jG1eFzQ==
+Date: Tue, 7 Jan 2025 13:00:53 +0000
 From: Will Deacon <will@kernel.org>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: Rob Clark <robdclark@gmail.com>, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
-	Rob Clark <robdclark@chromium.org>,
-	"open list:DRM DRIVER for Qualcomm Adreno GPUs" <dri-devel@lists.freedesktop.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:SUSPEND TO RAM" <linux-pm@vger.kernel.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Ryan Roberts <ryan.roberts@arm.com>, Sean Paul <sean@poorly.run>
-Subject: Re: [PATCH v11 0/4] io-pgtable-arm + drm/msm: Extend iova fault
- debugging
-Message-ID: <20250107125840.GB6991@willie-the-truck>
-References: <20241210165127.600817-1-robdclark@gmail.com>
- <Z30kWxVxwJXO_z2_@google.com>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	catalin.marinas@arm.com, kernel-team@android.com,
+	Mostafa Saleh <smostafa@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+	Daniel Mentz <danielmentz@google.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH v6 0/2] iommu/arm-smmu-v3: Parse out event records
+Message-ID: <20250107130053.GC6991@willie-the-truck>
+References: <20241203184906.2264528-1-praan@google.com>
+ <173378062404.4091733.5462540525505481045.b4-ty@kernel.org>
+ <Z3u-fJSL7JurZXDc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Z30kWxVxwJXO_z2_@google.com>
+In-Reply-To: <Z3u-fJSL7JurZXDc@google.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, Jan 07, 2025 at 12:55:55PM +0000, Mostafa Saleh wrote:
-> On Tue, Dec 10, 2024 at 08:51:18AM -0800, Rob Clark wrote:
-> > From: Rob Clark <robdclark@chromium.org>
+On Mon, Jan 06, 2025 at 11:29:00AM +0000, Pranjal Shrivastava wrote:
+> On Tue, Dec 10, 2024 at 12:17:29AM +0000, Will Deacon wrote:
+> > On Tue, 03 Dec 2024 18:49:04 +0000, Pranjal Shrivastava wrote:
+> > > Enhance the arm-smmu-v3 driver to parse out useful information from
+> > > event records into a structure for better event handling & logging.
+> > > 
+> > > Some sample events, powered by QEMU:
+> > > 
+> > > 1. Bad StreamID:
+> > > 
+> > > [...]
 > > 
-> > This series extends io-pgtable-arm with a method to retrieve the page
-> > table entries traversed in the process of address translation, and then
-> > beefs up drm/msm gpu devcore dump to include this (and additional info)
-> > in the devcore dump.
+> > Applied to will (for-joerg/arm-smmu/updates), thanks!
 > > 
-> > This is a respin of https://patchwork.freedesktop.org/series/94968/
-> > (minus a patch that was already merged)
+> > [1/2] iommu/arm-smmu-v3: Introduce struct arm_smmu_event
+> >       https://git.kernel.org/will/c/43ca55f5555b
+> > [2/2] iommu/arm-smmu-v3: Log better event records
+> >       https://git.kernel.org/will/c/d814b70b9b90
 > > 
-> > v2:  Fix an armv7/32b build error in the last patch
-> > v3:  Incorperate Will Deacon's suggestion to make the interface
-> >      callback based.
-> > v4:  Actually wire up the callback
-> > v5:  Drop the callback approach
-> > v6:  Make walk-data struct pgtable specific and rename
-> >      io_pgtable_walk_data to arm_lpae_io_pgtable_walk_data
-> > v7:  Re-use the pgtable walker added for arm_lpae_read_and_clear_dirty()
-> > v8:  Pass pte pointer to callback so it can modify the actual pte
-> > v9:  Fix selftests_running case
-> > v10: Call visit cb for all nodes traversed, leave the decision about
-> >      whether to care about non-leaf nodes to the callback
-> > v11: Adjust logic in 3/4 [smostafa@]
+> > One thing I noticed when playing around with this on Qemu, however, is
+> > that we print the raw hex dump in reverse compared to the way in which
+> > the record tables are described in the spec. What do you think about
+> > doing something like the following on top of your series?
+> > 
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index 143ff6336a95..d33a150b29ef 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -1880,8 +1880,8 @@ static void arm_smmu_dump_raw_event(struct arm_smmu_device *smmu, u64 *raw,
+> >  
+> >  	dev_err(smmu->dev, "event 0x%02x received:\n", event->id);
+> >  
+> > -	for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
+> > -		dev_err(smmu->dev, "\t0x%016llx\n", raw[i]);
+> > +	for (i = EVTQ_ENT_DWORDS - 1; i >= 0; --i)
+> > +		dev_err(smmu->dev, "[%u]\t0x%016llx\n", i, raw[i]);
+> >  }
+> >  
+> >  #define ARM_SMMU_EVT_KNOWN(e)	((e)->id < ARRAY_SIZE(event_str) && event_str[(e)->id])
+> > 
+> > 
+> > Then, for example, a permission fault looks like:
+> > 
+> > [   32.543815] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x13 received:
+> > [   32.545115] arm-smmu-v3 arm-smmu-v3.0.auto: [3]	0x0000000000000000
+> > [   32.546361] arm-smmu-v3 arm-smmu-v3.0.auto: [2]	0x00000000fffff040
+> > [   32.548672] arm-smmu-v3 arm-smmu-v3.0.auto: [1]	0x0000020000000000
+> > [   32.550209] arm-smmu-v3 arm-smmu-v3.0.auto: [0]	0x0000002000000013
+> > [   32.551990] arm-smmu-v3 arm-smmu-v3.0.auto: event: F_PERMISSION client: 0000:00:04.0 sid: 0x20 ssid: 0x0 iova: 0xfffff040 ipa: 0x0
+> > [   32.553952] arm-smmu-v3 arm-smmu-v3.0.auto: unpriv data write s1 "Input address caused fault" stag: 0x0
+> > 
+> > I started going a step further and printing the records 32 bits at a
+> > time (again, to match the spec), but then I realised that the current
+> > code doesn't look like it handles big-endian properly...
 > 
-> I see the level initialization was not removed as it was in the diff[1], so it
-> seems to me that’s redundant as the level is set anyway in the callback, and
-> actually looking at that I see it’s not used or printed from the driver,
-> so may it can be removed all together, anyway that’s nit that may be Will can
-> fix it up while merging.
-> 
-> Otherwise, For the whole series
-> Reviewed-by: Mostafa Saleh <smostafa@google.com>
+> Ack. I think I can post another series to refactor this to match the
+> spec by logging 32-bits at a time in Little-endian. I'll give it a go..
 
-I'm happy to drop the 'level' field if it's not used. We can add it back
-if/when it's needed. Rob?
+Thanks.
+
+> > Finally, coccinelle suggests you could use str_read_write() instead of:
+> > 
+> > 	evt->read ? "read" : "write",
+> > 
+> > which I suppose we could.
+> 
+> Ack. I'll use `str_read_write` do you want me to club it with the above
+> refactor in a series?
+
+It's a bit obscure, but I suppose it preempts the inevitable patch we'll
+get when somebody else runs the tool.
 
 Will
