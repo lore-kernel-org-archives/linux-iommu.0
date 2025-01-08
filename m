@@ -1,112 +1,139 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBF921A239D
-	for <iommu@lists.linux.dev>; Wed,  8 Jan 2025 12:26:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 459C01F8906
+	for <iommu@lists.linux.dev>; Wed,  8 Jan 2025 12:28:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736339200; cv=none; b=nyGyNd4VKeQalNAhXeXTO9DC1CZs4M5TKBpxCS2dayoE1Ac7HguCH2L3eZkbsuuXqoYzibtKuJVtjFxvwF0M+b4Nl0pbCcZzmYmWN/uDi6lomf/fMoK2WS6HGLN7afaf5yLoiIA/P70j6qTf4x00j8Swb/XesK/K8pqTIDmDF0Y=
+	t=1736339315; cv=none; b=u+cvm3zzH9voQDR99VYLX6ExCr/RDcjk3cG5OZrHqoBJ45/j08Q8Fk++/fG7F3EZBb0dkjbtPMBV6TMDMHEJToQgm93sQpd4pudgsoyi9UfxlBWbfyNTu3sIPTYDUKYMAWzCNzYkOs4VI9kCcGeuEVTdXRGYU/9ooUd3h0tAY54=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736339200; c=relaxed/simple;
-	bh=5KYg9/0yJZNBhIV0w7CJaMYU/vNi2eZZd1DkVtRdQQs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sL0OTWuG+cqERc3HsUo6iz4K2nWi4+DUf0pYSzkmhK5k23uwLSLFnj42vMpopETGsjVD5cPpAHg/jdWJ9UkCxifM9ZTyktqOrangIC+SRROODFeE7bOb3TVJTScGSjkQ2Tpb5c0h2kRWQZj/Rpeo9v2kMDZAIsCpkFrJxxsebzM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NOtPzhyW; arc=none smtp.client-ip=209.85.167.43
+	s=arc-20240116; t=1736339315; c=relaxed/simple;
+	bh=UDKti+aJ77n6pROea8SeqbYgxfEhmJrwitmmnfWuZNE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=r8pke/yaxfy1sD+3oF8KvyOGcW7wxjef3vsJfmkvKDnVMEOTuUuEhoMJ+mYS2J8qe7SfPLhTaT8SLLT3xdynAeRXdFH83h9gQWBT6mfyBcxkZgyLPnC9Y5VisMWUNEQRrHKTK1jkGQZ/FmrlVnHtww2OWoLHwPRNBZpLP3y82N4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=npbJbKmr; arc=none smtp.client-ip=209.85.208.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NOtPzhyW"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-540215984f0so17210084e87.1
-        for <iommu@lists.linux.dev>; Wed, 08 Jan 2025 04:26:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="npbJbKmr"
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-3003943288bso188186581fa.0
+        for <iommu@lists.linux.dev>; Wed, 08 Jan 2025 04:28:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736339197; x=1736943997; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=N0gfeN+SuCgEzLzAVq2P0LR/0PNaBIiceVwqkkIzMjw=;
-        b=NOtPzhyWoooShze9dafwZA9LpoDXf7PqbPH7cnspLqh6AhG5/k+a/RyJKNrKMM3yHP
-         /iYdw8JOaIsavN+sXC78CAjkHUc5jcWrQ1aVnrmn7MfqSn/cmSRrGcm53ljPzhN0Ekfa
-         6uD5Ov3B6AYpWYAq5EaxUHD8mHTRO19iUT7AFRGX1NPQHmIxoCly9UXEbzW40+fVmPoN
-         /xj0W3NdIhmyeYFOOYQvOFBp31V78P1zH04QCPav8NBtHL7u3yrcKDa3w2h+Zjbx4WVe
-         WEX3HQ0bMEBa/wdepUdol06uVKgrEO/ff/740VMYiBAosHw9oUMHro/pkUZ9NEuOnGRv
-         Oalg==
+        d=gmail.com; s=20230601; t=1736339311; x=1736944111; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=SEOnBQPSx3LETN+z4pi6jcbb5PWSNzvQx1cogr085Nw=;
+        b=npbJbKmr98tD5F5UkIZIhobx2TH43MF7FbqFbnKwLIPdr2lcWiLlR2eDhGRcEaeZvl
+         VivF3Uvl6YGrImMz5azGyNXbU7Jnk6gQXpgv+PgJfqidrI3BpK916kGcozeb2g3XI5Ck
+         lmpnMVtrD+1tyDLc7OWaLPgecgcWVaiQGwYq5/z6YnXNJyhv8XKlVNzMvcI5VjME7Cip
+         t7cawNkfF0oNuV1bBI6l85J88hlp+FCq2o9hKJTlrPD8E9jQx8LXvHamNSo4WDZUXSjX
+         ED1beA6D/Krm1rW/B26tIco2W4o+XQ5+B12M5yZy5XPMvrBUDz/mQRELKoBxErYQKPWy
+         To8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736339197; x=1736943997;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=N0gfeN+SuCgEzLzAVq2P0LR/0PNaBIiceVwqkkIzMjw=;
-        b=suA1SU4SV2IiP5+DfCNy9DVHnFD7sjMBy07WYPySL7vURF0OfPNu8Q77oAsYEz+J64
-         qGRvyn/U+qmna6k0eI1gsgf7hMICCYy8ELHm4SQrbBOnhxZ++iBB+MCR57OhX2WePUMi
-         BOw+iibYabrS2CrD7Ov6PWgYBuyrcVvQPu+oAOlBp1H13FfJlAkXcAaxILNE5Dw/BSp1
-         b8Xa3i11rt52qEYAHTT0BO2s2I4xvsefqb7HktT2Dbg21VD/bbhEjL5Fy8m642dhI0uI
-         ETweSLY76VpPgDcbS8YTrVmR5wq8tCxvrgH+sfAqykorKSqVlNTaYj29x1EXoPglGR4g
-         wz8A==
-X-Forwarded-Encrypted: i=1; AJvYcCVsfzhdoRfRMiuLayHgMv4DKEAmMMQxmiEQ1HgyOH1e7XbNeMAM6/qFogy7p+Gt69SWIAVJzw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyDBCcNV7T09JbTH78GqHAKfrH8AlieCi9PT9XY76oniItzSMwA
-	LwYUEzZpgAzl66ZdWwjO64W88bBqZhopVeM1zdDAGzBGhzokK7GK
-X-Gm-Gg: ASbGncsgaeVuRNqIVk2EuU3y2ypt5ZFO/2H4v0ee1pbgC8HU3K+v4WfDW8VmlrlpFqD
-	j/bNq8fCudbgHHTZ2+0OvjUvrf1verFJToa5htWpIR7Pf5GfkoHIw/qNPR9B3QE0NavBOiahwf4
-	wRQneWO8ESiiaCHw0wgmo7WhyKgRIKcarRiYJjDfi/VkXm/MGd6XBcwiowpA9GNmruCfCaQjbK2
-	YdAoobxUawFRLZUiY4WlTc3slSxLZmSaX0obQJLpdK2prtosK8cnn8Hu0trneRB8LlvIkdGN62g
-	HvJqraKtYVmchBeJXK4TUaIr1jQ=
-X-Google-Smtp-Source: AGHT+IHvQlmIb7RLno4uHBOmUskv+F4p+BSpZBj6A8Ym0/fvkduXlIkPMZ4yidM7h8v5qd/h576RyQ==
-X-Received: by 2002:a05:6512:3da9:b0:53f:f074:801c with SMTP id 2adb3069b0e04-54284815c7dmr808380e87.41.1736339196661;
-        Wed, 08 Jan 2025 04:26:36 -0800 (PST)
-Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54223813692sm5397107e87.125.2025.01.08.04.26.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jan 2025 04:26:35 -0800 (PST)
-Message-ID: <0af017a8-8796-4552-aa16-bf2735f7b4ac@gmail.com>
-Date: Wed, 8 Jan 2025 14:26:34 +0200
+        d=1e100.net; s=20230601; t=1736339311; x=1736944111;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SEOnBQPSx3LETN+z4pi6jcbb5PWSNzvQx1cogr085Nw=;
+        b=J2oxU8vadcL/MTgkAFiN2ES+QDkmTf1XBeg9eXpCPj/XbpBCQQu8e/JjuUv0IHgE7+
+         p334dVN/AAzX2vbNRsb8BGRB6XBYYEaxQzQn+Qfex9bXWdwDE/oOG9XmXPpLJ8nOOMgS
+         ZlvYRFj16Q+CTZIbJzp6w8yLJqejQguCTV+DURSv4yrmNX5xbsuIcTdskaK33F2SuT8h
+         I672H5+kTaqJzcMmT8ZkoejdRiRfKYott8KFQDOL3XcGSeca1Vw0RIJbD9kagE+yGamH
+         FzqBhFYoaTUIHd7Lf+CcaMbnMDhgLJtEkv1HR9ghcyoRvG8uUno0/oXZe9K422n/qq5C
+         VOgA==
+X-Forwarded-Encrypted: i=1; AJvYcCX6CxP5ehrJ2xaskKRVdt5wYboyAVJ7c3zGuYYPEBkN2zNRpx+taK6mnCQ+MCh6ovTiHd63Eg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxhQNhEmmPzIW4OlIMz12B/cEdMrvQqmV3N/SenFcErRmriBanC
+	XGWEuiApyZW8I0XsNvwROZhyrV0Diyu9oO5O28jAnNoHu86/kp70
+X-Gm-Gg: ASbGncuAujPM2FHXwJlSF4GTIire7hykNzW21t9P7qJqLsczITuvt+H1C1ggRyX1XNC
+	6LNBhU2gkeRzJ1OZ5vRYxVG8P+wT/xkC3L07xO+XbqIDOVG0yFT+M3OcbYKAbzTRTmK3LQo3Ptv
+	25EVyex3pjiPUV4botk+Fs98X0eF/5kb0IbAF44s/sBz4x5eV996cKxGr6psZyh2LRIzhREf9vF
+	d+/t0AaStTSG0VZgyIB5D2kHaLBqWc9D+ShGM3qQdDPUeNIsoKIekBoic4zTRal+GcHn+WcMhYi
+	76ySEpg2Yn+i/kcg2wYJVcQj03o=
+X-Google-Smtp-Source: AGHT+IETg2TD1LvGCWsVjL1D6PNdVra3sYgydESLEO7ovogJqf6P6dXzxr8sp8sYxcrpAzWw7Xmw9g==
+X-Received: by 2002:a05:651c:2113:b0:302:4130:e0c8 with SMTP id 38308e7fff4ca-305f453e565mr6651561fa.9.1736339311205;
+        Wed, 08 Jan 2025 04:28:31 -0800 (PST)
+Received: from abj-NUC9VXQNX.. (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3045b082db8sm61183911fa.99.2025.01.08.04.28.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jan 2025 04:28:29 -0800 (PST)
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+To: daniel.almeida@collabora.com,
+	aliceryhl@google.com,
+	robin.murphy@arm.com,
+	rust-for-linux@vger.kernel.org
+Cc: Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>,
+	Gary Guo <gary@garyguo.net>,
+	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Valentin Obst <kernel@valentinobst.de>,
+	linux-kernel@vger.kernel.org (open list),
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	airlied@redhat.com,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Subject: [PATCH v8 0/2] Add dma coherent allocator abstraction
+Date: Wed,  8 Jan 2025 14:27:22 +0200
+Message-ID: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 2/2] rust: add dma coherent allocator abstraction.
-To: Andreas Hindborg <a.hindborg@kernel.org>
-Cc: rust-for-linux@vger.kernel.org,
- Daniel Almeida <daniel.almeida@collabora.com>,
- Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>, Alice Ryhl <aliceryhl@google.com>,
- Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-References: <20241210221603.3174929-1-abdiel.janulgue@gmail.com>
- <20241210221603.3174929-3-abdiel.janulgue@gmail.com>
- <7c8e84e7-a212-445f-bc4e-ef65dae7fb29@gmail.com> <87ikrflxxg.fsf@kernel.org>
-Content-Language: en-US
-From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-In-Reply-To: <87ikrflxxg.fsf@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Hi Andreas,
+Changes since v7:
+- Remove cpu_buf() and cpu_buf_mut() as exporting a r/w interface via
+  a slice is undefined behaviour due to slice's requirement that the
+  underlying pointer should not be modified (Alice Ryhl, Robin Murphy).
+- Reintroduce r/w helpers instead which includes proper safety
+  invariants (Daniel Almeida).
+- Link to v7: https://lore.kernel.org/lkml/20241210221603.3174929-1-abdiel.janulgue@gmail.com/
 
-On 19/12/2024 13:22, Andreas Hindborg wrote:
-> If you include the `Allocator` trait and the `Pool` it would make my
-> life a lot easier when rebasing nvme. For now I'm just going to use out
-> of tree patches that include the dma pool.
-> 
-> If you do not have a user for dma pool, maybe just include the
-> `Allocator` trait and indicate that it is there to support other dma
-> allocators in the future?
-> 
-> 
+Changes since v6:
+- Include the dma_attrs in the constructor, use alloc::Flags as inpiration
 
-Would it be okay with you to have the basic functionality merged first? 
-Once this is done, I will send up a follow-up patch that would then 
-include the allocator trait and the pool.
+Changes since v5:
+- Remove unnecessary lifetime annotation when returning the CPU buffer.
 
-Thanks!
+Changes since v4:
+- Documentation and example fixes, use Markdown formatting (Miguel Ojeda).
+- Discard read()/write() helpers to remove bound on Copy and fix overhead
+  (Daniel Almeida).
+- Improve error-handling in the constructor block (Andreas Hindborg).
 
-Cheers,
-Abdiel
+Changes since v3:
+- Reject ZST types by checking the type size in the constructor in
+  addition to requiring FromBytes/AsBytes traits for the type (Alice Ryhl).
+
+Changes since v2:
+- Fixed missing header for generating the bindings.
+
+Changes since v1:
+- Fix missing info in commit log where EOVERFLOW is used.
+- Restrict the dma coherent allocator to numeric types for now for valid
+  behaviour (Daniel Almeida).
+- Build slice dynamically.
+
+Abdiel Janulgue (2):
+  rust: error: Add EOVERFLOW
+  rust: add dma coherent allocator abstraction.
+
+ rust/bindings/bindings_helper.h |   1 +
+ rust/kernel/dma.rs              | 271 ++++++++++++++++++++++++++++++++
+ rust/kernel/error.rs            |   1 +
+ rust/kernel/lib.rs              |   1 +
+ 4 files changed, 274 insertions(+)
+ create mode 100644 rust/kernel/dma.rs
+
+
+base-commit: 0c5928deada15a8d075516e6e0d9ee19011bb000
+-- 
+2.43.0
+
