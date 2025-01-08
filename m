@@ -1,123 +1,112 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B78D1F8F19
-	for <iommu@lists.linux.dev>; Wed,  8 Jan 2025 12:13:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBF921A239D
+	for <iommu@lists.linux.dev>; Wed,  8 Jan 2025 12:26:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736338415; cv=none; b=R3SOKvv7VwO/A7aIifrpsQow14f5JKJR31Tz73tNfKoW1T10h/NF9CcY4fBwiMUIshOG+kZFTBT8n8+i2VJsFRt8tIFQhY3g5VI0b/MBCf+veuSk/2qaUQUHW4PZPH7LvzkuLgmU2oAiI0tZoZqsR3Wela+LKgDHsKAw/7IiTOI=
+	t=1736339200; cv=none; b=nyGyNd4VKeQalNAhXeXTO9DC1CZs4M5TKBpxCS2dayoE1Ac7HguCH2L3eZkbsuuXqoYzibtKuJVtjFxvwF0M+b4Nl0pbCcZzmYmWN/uDi6lomf/fMoK2WS6HGLN7afaf5yLoiIA/P70j6qTf4x00j8Swb/XesK/K8pqTIDmDF0Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736338415; c=relaxed/simple;
-	bh=aTUCe0dIJTabxq65+duMjvQ0xwrlksWU9hqQl/Sd1VU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TCfy6KU/44xyvdtKJVWPDxd28PCFeBhkOsWYVA7G743KZguj141OTwLBqYcMf5T8Cb9i2M9wqpDCCLYbrPWi7Yp2jbrA3ePzbp6fLzqidJhaIWskTb1yic5W+EgKi1iUfIIaPLdtYfvLJzeLW3B7M3CaB+iSOGefNvqJ8eF4LtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UCQNjU0U; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1736339200; c=relaxed/simple;
+	bh=5KYg9/0yJZNBhIV0w7CJaMYU/vNi2eZZd1DkVtRdQQs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sL0OTWuG+cqERc3HsUo6iz4K2nWi4+DUf0pYSzkmhK5k23uwLSLFnj42vMpopETGsjVD5cPpAHg/jdWJ9UkCxifM9ZTyktqOrangIC+SRROODFeE7bOb3TVJTScGSjkQ2Tpb5c0h2kRWQZj/Rpeo9v2kMDZAIsCpkFrJxxsebzM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NOtPzhyW; arc=none smtp.client-ip=209.85.167.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UCQNjU0U"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4368a290e0dso36455e9.1
-        for <iommu@lists.linux.dev>; Wed, 08 Jan 2025 04:13:33 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NOtPzhyW"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-540215984f0so17210084e87.1
+        for <iommu@lists.linux.dev>; Wed, 08 Jan 2025 04:26:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1736338412; x=1736943212; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RrYofVOoKvKwnZPsYWd13Rqdme4LuIQHlAMqCcS50NY=;
-        b=UCQNjU0UwqEF6qjY8a985jO+Xak8O6na8Cbd+ue+tmBc7avyxP5PriPPtBbMdE+EJl
-         sZmm7F5vRrXryp14tU8m2bkgCymwqsyKPJdFAL/Hn27+kClgLxBF2Jf3RR9c9ZxiJW5h
-         pXEyrsF4DwwZuhSZiacSf8xusfwv6q+ylMj0GGvTxkRCFBb6seOegvpC2KCpRwiA5aBX
-         3AMhSK242NkCbMzYnJC9JIW0Aakv3GW70tMmjQEsm44bEi9UxFOK5PaRRV9Nio3b3kml
-         2V4nrB6WYrM1clttfFh+HtVAOf5LkAJrYiXI32UjgHEzcbBY3ELb8d+nQMiiC0htnhJL
-         6wnQ==
+        d=gmail.com; s=20230601; t=1736339197; x=1736943997; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=N0gfeN+SuCgEzLzAVq2P0LR/0PNaBIiceVwqkkIzMjw=;
+        b=NOtPzhyWoooShze9dafwZA9LpoDXf7PqbPH7cnspLqh6AhG5/k+a/RyJKNrKMM3yHP
+         /iYdw8JOaIsavN+sXC78CAjkHUc5jcWrQ1aVnrmn7MfqSn/cmSRrGcm53ljPzhN0Ekfa
+         6uD5Ov3B6AYpWYAq5EaxUHD8mHTRO19iUT7AFRGX1NPQHmIxoCly9UXEbzW40+fVmPoN
+         /xj0W3NdIhmyeYFOOYQvOFBp31V78P1zH04QCPav8NBtHL7u3yrcKDa3w2h+Zjbx4WVe
+         WEX3HQ0bMEBa/wdepUdol06uVKgrEO/ff/740VMYiBAosHw9oUMHro/pkUZ9NEuOnGRv
+         Oalg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736338412; x=1736943212;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RrYofVOoKvKwnZPsYWd13Rqdme4LuIQHlAMqCcS50NY=;
-        b=p4f/J+Cjl09qOiKVyyYQp+mX9WYGofi2sWUzykqQXWfHolO35xNe7QzqX7jq/5nQSd
-         xD2cvYacE/iuRFQUEhZ2oych949BhLLELO0xyDM1VlnR0MpFSVcvhKVNQEkqc8/LWqS9
-         qRbGxRp9xnFNlk+K561EnpQwk/sSaoAuHbtsssmKSh4wbSNNW103HZE4mDBNKo4SQxGP
-         M2BjJcFIlwk/a5yMgkahRRmPdg2+ntwt2HojiUfeQ1SODvZi9/oK0VBtVAmVrpL05QHl
-         PyfMJtxND1LFn/2jIbFQilpxUXYaWfkPc0JQ2YjseSDiy56dpcKLdiHdufp8E5ewFb2i
-         qFaA==
-X-Forwarded-Encrypted: i=1; AJvYcCVbDAYyIhAnQPYNDmCEOVgFhJbL3Y7JdbkTIjUz4jivW9/Ixo5f/PzjBsnEYgCF4m83aOnmRQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywbt2y40aBEPJlTDjN10Ib44Fzjlqioyp+Bj9Xzzv0vDf9utoJ9
-	G8jNyAlsR2yU+Y3AQk/3MdaF1ALel3wrSDlAvYk+NDs8FZUQ9cQDovI1OpawgQ==
-X-Gm-Gg: ASbGncsrAxOr9S86sfq0xId6RjrRZBr2OfnnkbIQZTLaCA4fbwA4OkrfvuEaISvNpzS
-	S+q21wS8BiJEySYtZCq1b7K0a6l4QB4hWZiJKfkuxUzYu2lgcUZ/rvtKRCDVd37Dp7ks8oZ8huD
-	MkfrbJ6VlfMb7hWppeS6Z0x1BqTHDX+9/4AeyGKLs/XoX7sn5OFcqxLnDK09wvgiHM042zwE45z
-	oY0xOxXkyBa3DNDgacSok6CzERkv3I6JrIrzbe5ihT3/aKZCQLCyRjx/xz9mE4+/WZUelJOA46t
-	NWTXAcPp3rqWOLoOV9k=
-X-Google-Smtp-Source: AGHT+IFSxU9Nih+nRcbTdqUehEVnjBOqg3Pc7JvHWVRd2oCHQ3onm9/9x+7dn/+oiTY0W8mf2rq1iQ==
-X-Received: by 2002:a05:600c:4818:b0:42c:9e35:cde6 with SMTP id 5b1f17b1804b1-436e1f879cdmr1023645e9.2.1736338411667;
-        Wed, 08 Jan 2025 04:13:31 -0800 (PST)
-Received: from google.com (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-436e2e89ca5sm18817135e9.29.2025.01.08.04.13.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jan 2025 04:13:31 -0800 (PST)
-Date: Wed, 8 Jan 2025 12:13:27 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	kvmarm@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com,
-	will@kernel.org, maz@kernel.org, oliver.upton@linux.dev,
-	joey.gouly@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	robdclark@gmail.com, joro@8bytes.org, jean-philippe@linaro.org,
-	nicolinc@nvidia.com, vdonnefort@google.com, qperret@google.com,
-	tabba@google.com, danielmentz@google.com, tzukui@google.com
-Subject: Re: [RFC PATCH v2 55/58] drivers/iommu: Add deferred map_sg
- operations
-Message-ID: <Z35r54_zgpmO6FQ-@google.com>
-References: <20241212180423.1578358-1-smostafa@google.com>
- <20241212180423.1578358-56-smostafa@google.com>
- <ce4c8db4-4895-426b-8d9d-97dc5d74fbc4@arm.com>
- <Z2Qshft8lQjI-x7c@google.com>
- <20250102201831.GB26854@ziepe.ca>
- <Z3gDuPe5C1Uj7y4m@google.com>
- <20250103154757.GG26854@ziepe.ca>
+        d=1e100.net; s=20230601; t=1736339197; x=1736943997;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=N0gfeN+SuCgEzLzAVq2P0LR/0PNaBIiceVwqkkIzMjw=;
+        b=suA1SU4SV2IiP5+DfCNy9DVHnFD7sjMBy07WYPySL7vURF0OfPNu8Q77oAsYEz+J64
+         qGRvyn/U+qmna6k0eI1gsgf7hMICCYy8ELHm4SQrbBOnhxZ++iBB+MCR57OhX2WePUMi
+         BOw+iibYabrS2CrD7Ov6PWgYBuyrcVvQPu+oAOlBp1H13FfJlAkXcAaxILNE5Dw/BSp1
+         b8Xa3i11rt52qEYAHTT0BO2s2I4xvsefqb7HktT2Dbg21VD/bbhEjL5Fy8m642dhI0uI
+         ETweSLY76VpPgDcbS8YTrVmR5wq8tCxvrgH+sfAqykorKSqVlNTaYj29x1EXoPglGR4g
+         wz8A==
+X-Forwarded-Encrypted: i=1; AJvYcCVsfzhdoRfRMiuLayHgMv4DKEAmMMQxmiEQ1HgyOH1e7XbNeMAM6/qFogy7p+Gt69SWIAVJzw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyDBCcNV7T09JbTH78GqHAKfrH8AlieCi9PT9XY76oniItzSMwA
+	LwYUEzZpgAzl66ZdWwjO64W88bBqZhopVeM1zdDAGzBGhzokK7GK
+X-Gm-Gg: ASbGncsgaeVuRNqIVk2EuU3y2ypt5ZFO/2H4v0ee1pbgC8HU3K+v4WfDW8VmlrlpFqD
+	j/bNq8fCudbgHHTZ2+0OvjUvrf1verFJToa5htWpIR7Pf5GfkoHIw/qNPR9B3QE0NavBOiahwf4
+	wRQneWO8ESiiaCHw0wgmo7WhyKgRIKcarRiYJjDfi/VkXm/MGd6XBcwiowpA9GNmruCfCaQjbK2
+	YdAoobxUawFRLZUiY4WlTc3slSxLZmSaX0obQJLpdK2prtosK8cnn8Hu0trneRB8LlvIkdGN62g
+	HvJqraKtYVmchBeJXK4TUaIr1jQ=
+X-Google-Smtp-Source: AGHT+IHvQlmIb7RLno4uHBOmUskv+F4p+BSpZBj6A8Ym0/fvkduXlIkPMZ4yidM7h8v5qd/h576RyQ==
+X-Received: by 2002:a05:6512:3da9:b0:53f:f074:801c with SMTP id 2adb3069b0e04-54284815c7dmr808380e87.41.1736339196661;
+        Wed, 08 Jan 2025 04:26:36 -0800 (PST)
+Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54223813692sm5397107e87.125.2025.01.08.04.26.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jan 2025 04:26:35 -0800 (PST)
+Message-ID: <0af017a8-8796-4552-aa16-bf2735f7b4ac@gmail.com>
+Date: Wed, 8 Jan 2025 14:26:34 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250103154757.GG26854@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 2/2] rust: add dma coherent allocator abstraction.
+To: Andreas Hindborg <a.hindborg@kernel.org>
+Cc: rust-for-linux@vger.kernel.org,
+ Daniel Almeida <daniel.almeida@collabora.com>,
+ Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+ =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <benno.lossin@proton.me>, Alice Ryhl <aliceryhl@google.com>,
+ Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
+ Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+References: <20241210221603.3174929-1-abdiel.janulgue@gmail.com>
+ <20241210221603.3174929-3-abdiel.janulgue@gmail.com>
+ <7c8e84e7-a212-445f-bc4e-ef65dae7fb29@gmail.com> <87ikrflxxg.fsf@kernel.org>
+Content-Language: en-US
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+In-Reply-To: <87ikrflxxg.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jan 03, 2025 at 11:47:57AM -0400, Jason Gunthorpe wrote:
-> On Fri, Jan 03, 2025 at 03:35:20PM +0000, Mostafa Saleh wrote:
-> 
-> > An alternative approach as Robin suggested, is to treat all iommu_map as sg map,
-> > and when the driver gets the iotlb_sync_map() call it can just issue the hypercall,
-> > however this call only provides the IOVA range, which requires extra work or locking
-> > as mentioned in the thread, and as Robin mentioned s390 doing something similar,
-> > I was highlighting that in their driver, this call only notifies the hypervisor
-> > about an IOVA and not an actual pv map as pKVM, so it much simpler in their case.
-> 
-> Oh, that is much clearer, maybe incorporate some of that into the
-> commit message.
+Hi Andreas,
 
-Sure.
+On 19/12/2024 13:22, Andreas Hindborg wrote:
+> If you include the `Allocator` trait and the `Pool` it would make my
+> life a lot easier when rebasing nvme. For now I'm just going to use out
+> of tree patches that include the dma pool.
+> 
+> If you do not have a user for dma pool, maybe just include the
+> `Allocator` trait and indicate that it is there to support other dma
+> allocators in the future?
+> 
+> 
 
-> 
-> We are going in a general direction of trying to make the fast dma
-> mapping path not require sg, so adding sg specific optimizations to
-> the low level driver is not good.
-> 
-> Batching the hypercalls in the gather and then flushing to execute the
-> batch seems more reasonable.
-> 
-> You could probably work on advancing this infrastructure separately
-> via virtio-iommu..
+Would it be okay with you to have the basic functionality merged first? 
+Once this is done, I will send up a follow-up patch that would then 
+include the allocator trait and the pool.
 
-That was my impression also, I mentioned it in the commit message,
-but for virtio-iommu we need a change in the standard to define this
-operation, I can look into that.
+Thanks!
 
-Thanks,
-Mostafa
-> 
-> Jason
+Cheers,
+Abdiel
