@@ -1,163 +1,106 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 498321A239D
-	for <iommu@lists.linux.dev>; Wed,  8 Jan 2025 12:37:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com [209.85.222.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03F3D1F9F4C
+	for <iommu@lists.linux.dev>; Wed,  8 Jan 2025 12:56:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736339879; cv=none; b=gPv1mFSHhHBDI87KmwgdWfdNC6eMCBCVGbALzkXXY+HfB4J8qQ61UBkzI3d/Y7I5lOUvK1V9OKuACAZgDwCVRHOocdi71xv3osKUd6su8JB6aQdjh3aBHsNwfrVR6nEndzMQqS4YS84wsFsQDYGzQ642FplJDbK3JJgGPOQX1fI=
+	t=1736340972; cv=none; b=EhLV43lgL7GA8XKk2jF5+sssUTTWrtfhu+f4CemtRuBOB4aEcOTNJfXAho3YsAhw8KPn8NRntI0T1TK2M+zmeV5cjPxY8uE7pAmmteMwEvOhPFkd3z/X4VqKnktOyXHIV7hXbzljWN+UtU0kq/FN+10KASvbrsO+S4q7NQ/RQ4I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736339879; c=relaxed/simple;
-	bh=yb9EUqn7WZ0y1MaeoScWpJbB8IISrvkIkI2rXiU3t8g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XfO97uK6eQF6Ba7To5zxXeC6XX1MYsVM7lQxIO6MqDubHAhAWHv4e3aiw27t/TwC6fr+0tswEIOUZ5VnYwhby05rEotT4HDals4TyBuq+F1uT+tpP7A/GIJhV+hrJjZED98ISlYDmnkoTSKSHe5mE7kzzxIhvuzP67HMXyhOt2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B94FD12FC;
-	Wed,  8 Jan 2025 04:38:23 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6D1DD3F66E;
-	Wed,  8 Jan 2025 04:37:54 -0800 (PST)
-Message-ID: <cb2db54e-37e8-495d-916a-4e63c67019bb@arm.com>
-Date: Wed, 8 Jan 2025 12:37:30 +0000
+	s=arc-20240116; t=1736340972; c=relaxed/simple;
+	bh=oKT7Yz8DLH/KDqfm87YOoAHzlTdU3CIV02cT2d0S8zc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=aWlh6aC0ZGo2QpGSk45FduojpzbpQ4G+hLobZR2aL0i/fcaiMwoPFRhL1fZhfJDy4h1QCWk/+I3wFL6Q+xqme7+ZdYbkLaE29toNfnj+iJp6+kDvMMs1n9Pljzha2UyQ6MeOnPuCZNxqrGFCKQqXJXEtSD0Tk7kg2Dc6hTqt7YU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ua1-f47.google.com with SMTP id a1e0cc1a2514c-85b9f2de38eso3013054241.2
+        for <iommu@lists.linux.dev>; Wed, 08 Jan 2025 04:56:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736340969; x=1736945769;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zr5OAgOEPPZiSNcmjwmBPGqoc39w41Bm0SLcztepzJA=;
+        b=ILFRnAMQOjxrVH7yq7N/Tw5BO6PHgGDca9xTunUfbEiKV9TuDL+uch/P9zfgquqrIU
+         AZ31Qh0FrJeHp+sYMyrG5Wwdrb/VlkwgpVWH5AYGd2Xk6rbHz3MqH55m10x8SufCFTUG
+         4fMB2/4Pbh0r8og6oEkFSjVU7CKUICiXJunrnkXV9uGf2Hdq0g9hX0Brsjn1/8eqj4lI
+         FGP9ii5fMFHfdpnCAE5oJHgXMofRWZD9Htn6siET0kocovCDc1ZxvXJuCVh9T7bKjQCt
+         oaXV3Bxh1YPl7msVBmy9aaume028Q//c61S48iBuEqRSMea58r/2BteW+KI9OIvCylSx
+         mjEw==
+X-Forwarded-Encrypted: i=1; AJvYcCUfEN0KiFvQ3/Ft1rUsLkrV8w2NUlrn7Ol6aFt/iRgl8YXzYIFuEEHni/nzdEZPDO1axRvqeQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxxRw/3d3qhO93SyA+U1PKToPtHvE4NCA5NYwMEcUQpN/hktcrZ
+	UZf136w604/9VahfpAmtZEJFap4ctEuzx7L38AAEcevuZ95vegCUzFF6RzOB
+X-Gm-Gg: ASbGncsIgZE8H0P+F+7mIjK9AyXhqa1SEZwAKcr86LcKR6jAD/SAU0HRZpjkHhN0SgK
+	x8/3wlDjYADcMAAB8r0lZNps93Tf1dfAyZ0JDUuMM48X5PZ/6xz3Dk+5ys86gpS14OlwwgwQ/Gh
+	37wK3FanBMRToU5MymYY4P7f4eDiJYi/gIRKz2RkTulLawQT8yrQTwaqNRUaM5WSjqBQDK5mn3/
+	6HXq7Oz+CR5jAGQnZd7+oyaXaNEn5fFkTcmGfP9T6fArWXHsBHKE28GeAleIr83UhJYEgqV70IW
+	EzfYgEvVRS3prtl7uqU=
+X-Google-Smtp-Source: AGHT+IFDXTOXGGJgyy1jVeYkY1XxZgHn+/fp5DXevT9GeF7QLzREdqjwaBFdcbJrSUUrZzPaSFaoKg==
+X-Received: by 2002:a05:6102:3ca0:b0:4b2:5c4b:5186 with SMTP id ada2fe7eead31-4b3d0fe692emr1660846137.23.1736340969426;
+        Wed, 08 Jan 2025 04:56:09 -0800 (PST)
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com. [209.85.217.54])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-8610ac6df78sm8578143241.17.2025.01.08.04.56.09
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jan 2025 04:56:09 -0800 (PST)
+Received: by mail-vs1-f54.google.com with SMTP id ada2fe7eead31-4b1279ca1d2so4396150137.3
+        for <iommu@lists.linux.dev>; Wed, 08 Jan 2025 04:56:09 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVGTfAuAkrAPi8Z2HYq8c2afScY7WHk6sbOy4I0HJhQmVB40botDc20ym+y2PRCADl2vOgjRg==@lists.linux.dev
+X-Received: by 2002:a05:6102:5123:b0:4b2:ad82:1318 with SMTP id
+ ada2fe7eead31-4b3d0fde32amr1732752137.26.1736340968977; Wed, 08 Jan 2025
+ 04:56:08 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC] iommu: fix wrong DMA ops for iommu device
-To: Will Deacon <will@kernel.org>,
- Charan Teja Kalla <quic_charante@quicinc.com>
-Cc: joro@8bytes.org, jgg@ziepe.ca, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20241213150415.653821-1-quic_charante@quicinc.com>
- <91d15d11-ec53-4ca2-a385-9fa69d861f2c@quicinc.com>
- <20250103153434.GC3816@willie-the-truck>
- <e8fa02bb-96b7-4010-92c9-7e1eb485a551@quicinc.com>
- <20250107113126.GA6932@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250107113126.GA6932@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20250107131456.247610-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20250107131456.247610-1-krzysztof.kozlowski@linaro.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Wed, 8 Jan 2025 13:55:57 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWjRu8AnCei67oBX-eR6RqD6m11SbH6mRmpjD2sfTtFzA@mail.gmail.com>
+X-Gm-Features: AbW1kvZ52DN__RR4vjE2dLHCl44CSoj_lJNsAln_Gci5kCuBVU2sP3BZtvvNBVQ
+Message-ID: <CAMuHMdWjRu8AnCei67oBX-eR6RqD6m11SbH6mRmpjD2sfTtFzA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Correct indentation and style in DTS example
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, linux-arm-kernel@lists.infradead.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-leds@vger.kernel.org, linux-mmc@vger.kernel.org, 
+	linux-tegra@vger.kernel.org, linux-rtc@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 07/01/2025 11:31 am, Will Deacon wrote:
-> On Mon, Jan 06, 2025 at 06:46:08PM +0530, Charan Teja Kalla wrote:
->> On 1/3/2025 9:04 PM, Will Deacon wrote:
->>> On Thu, Jan 02, 2025 at 04:09:46PM +0530, Charan Teja Kalla wrote:
->>>> On 12/13/2024 8:34 PM, Charan Teja Kalla wrote:
->>>>> Race between smmu device probe and iommu device probe is resulting into
->>>>> wrong DMA ops used for the device.
->>>>>
->>>>> bus_iommu_probe(P1)                  of_iommu_configure(P2)
->>>>> (from iommu_device_register)        (from insmod of a driver)
->>>>> --------------------------         --------------------------
->>>>> 1) probe_iommu_group()
->>>>> (Fills just dev->iommu_group
->>>>> under iommu_probe_device_lock)
->>>>> 				2) iommu_probe_device():
->>>>> 				  (acquires the iommu_probe_device_lock,
->>>>> 				   but since dev->iommu_group is already
->>>>> 				   set, it just returns without
->>>>> 				   allocating the domain.)
->>>>>
->>>>> 				3) of_dma_configure_id()->
->>>>> 				   arch_setup_dma_ops() gets called for
->>>>> 				   this device, but returns with the
->>>>> 				   error message:
->>>>> 				   "Failed to set up IOMMU for device;
->>>>> 				    retaining platform DMA ops"
->>>>>
->>>>> 				4) device probe is succeeded where it
->>>>> 				   can now setup iommu mappings using
->>>>> 				   wrong ->dma_ops
->>>>>
->>>>> 5) domain will be allocated later
->>>>> and fills iommu_group->domain.
->>>>>
->>>>> Step 3) and 4) denies iommu device from using 'iommu_dma_ops'.
->>>>>
->>>>> This issue does exists on 6.6 because of commit f188056352bc ("iommu:
->>>>> Avoid locking/unlocking for iommu_probe_device()") without which 2)
->>>>> returns only after filling the domain under group->mutex, thus no issue.
->>>>>
->>>>> With commit b5c58b2fdc42("dma-mapping: direct calls for dma-iommu"),
->>>>> ->iommu_dma_ops is removed altogether and iommu api are directly being
->>>>> called under "use_dma_iommu(): return dev->dma_iommu". Again,
->>>>> ->dma_iommu flag is set only after domain allocation. So, If
->>>>> there is a sufficient delay between steps 4) and 5), issue is still
->>>>> exists but that seems very narrow to me.
->>>>>
->>>>> I am thinking, setup of the domain before returning from step2) is the
->>>>> way to fix this issue. Can you please help if you have any suggestions?
->>>>>
->>>>> Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
->>>>> ---
->>>>>   drivers/iommu/iommu.c | 26 +++++++++++++++++++++++++-
->>>>>   1 file changed, 25 insertions(+), 1 deletion(-)
->>>>
->>>> Just a quick ask if you have any comments for the below. BTW, in
->>>> internal tests, when we revert the commit f188056352bc ("iommu: Avoid
->>>> locking/unlocking for iommu_probe_device()", it is helping.
->>>>
->>>> I can share more details If the below is not sufficient.
->>>>
->>>> Thanks in advance...
->>>
->>> Can you reproduce the issue on 6.13-rc5? We bodged some of the probe
->>> code recently:
->>>
->>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=229e6ee43d2a160a1592b83aad620d6027084aad
->>>
->>> and a better set of fixes are queued in -next.
->>
->> Yes, we did try a better patch from Robin[1] and the issue is still
->> reproducible.
-> 
-> Did you try the -EPROBE_DEFER hack that got merged?
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=229e6ee43d2a160a1592b83aad620d6027084aad
-> 
-> Otherwise, you can try the stack queued for 6.14 in iommu/linux.git:
-> 
-> 46b3df8eb9bd iommu: Manage driver probe deferral better
-> fcbd62156742 iommu/arm-smmu-v3: Clean up more on probe failure
-> 97cb1fa02726 iommu/arm-smmu: Retire probe deferral workaround
-> 7d835134d4e1 iommu/arm-smmu: Make instance lookup robust
-> 
->> IIUC, these patches are trying to get valid smmu device, during the
->> probe of an smmu client device, by traversing proper 'klist_devices'
->> happening from iommu_init_device(). Please CMIW.
-> 
-> Well, they're fixing a race between the IOMMU probing and its client
-> devices attaching.
-> 
->> But this bug makes iommu_init_device() to completely gets skipped.
->>
->> static int __iommu_probe_device(struct device *dev, ...)
->> {
->> 	/* Device is probed already if in a group */
->>          if (dev->iommu_group)
->>                  return 0;  --> driver call returns from here.
->>
->>          ret = iommu_init_device(dev, ops);
->>          if (ret)
->>                  return ret;
->>
->>
->> }
->>
->> Regarding the testing, we work on Android that is on LTS kernels, so, it
->> may not be possible for us to try the thing on 6.13 and this seems a bug
->> on LTS 6.6 kernel.
-> 
-> We need to fix 6.13 before we fix 6.6 unless you can show that 6.13 is
-> unaffected (in which case, we can backport the fix(es)).
+On Tue, Jan 7, 2025 at 2:15=E2=80=AFPM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+> DTS example in the bindings should be indented with 2- or 4-spaces and
+> aligned with opening '- |', so correct any differences like 3-spaces or
+> mixtures 2- and 4-spaces in one binding.
+>
+> No functional changes here, but saves some comments during reviews of
+> new patches built on existing code.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Certainly the reasoning can't apply to mainline as given, since 
-arch_setup_dma_ops() stopped touching IOMMU stuff at all back in 6.10 
-(and indeed iommu_dma_ops itself no longer exists since 6.12).
+>  .../devicetree/bindings/mmc/renesas,sdhi.yaml |  78 +++----
+>  .../bindings/rtc/renesas,rzn1-rtc.yaml        |  22 +-
 
-Robin.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be> # renesas
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
