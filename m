@@ -1,129 +1,127 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CCF71A8F8F;
-	Thu,  9 Jan 2025 11:04:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 975E72153FE
+	for <iommu@lists.linux.dev>; Thu,  9 Jan 2025 11:14:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736420664; cv=none; b=BBfewwmG24Lx/xMgl00hRthpFYDsj557LZJHIGrDMJrALzpOJ4nKUkVnTptvO1UqTcLE8N99U2BkmFX9QJWVup0BNHzHu6obYZtWUsIj0Us4/DKn7tHjwhDy/kLyy05WfAXvvnUI9JLn0e+EOCJxOBjUUCK7FmGiPtgj3h5H5ts=
+	t=1736421272; cv=none; b=KKhHcuGwAadKhzUBbzdbfJkhr0M2cuktM3JG45JbaITKR1ZLhqd0Dxl3CNEFQb+YDNsnuzhGO2ZQ1THNsiCMS2JOtvGsGfes+4Py3jIuw4aCcfEXnI744CibzivFuKrUCPUQKNlyAmcLqY79AMPfzJz+7QrlJJPWyC46zKpPJkA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736420664; c=relaxed/simple;
-	bh=IP79LBJkq7R0JdTUMY4tcQDHZkX+te/jZ0WVpzZaqp4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fJeWAgtx/+PpOY1hE8/5BlzhOtHvE2p6IJ3ImrvfhhgnmwVmbIoW3cbxVSNPyHmidWBrTaE+D5TtKaIVCMDyAWAcKYwEQp/+d8fsJakXzffFA39TlEkTZvEqaD8uMUcc4IcTDW7GFnweBVjFkvd9NRwzfgMZ4VRA/hLfVNfbzjs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ii0cE7+6; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1736421272; c=relaxed/simple;
+	bh=OWWcFlbpG+OMXb7VXzYJPRO+OVmfyWw2GlvoPFeUbws=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=g5X68BhyYpgA3BWvzBwxf72rAZvPR1ovHovjWyXrgxoHUmhJZukboYU0fx5V+Vm2Nz70AwesJesWTwhxn6D92T3kTtqab5OrafjLm7uRktpcHB+TLPTnlqjiDwRi/F/udlbTchg7Enx1CdymOTQxF4e6NIQXPVOrXbY2U20p0PU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DKuN+0YF; arc=none smtp.client-ip=209.85.167.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ii0cE7+6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736420663; x=1767956663;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IP79LBJkq7R0JdTUMY4tcQDHZkX+te/jZ0WVpzZaqp4=;
-  b=ii0cE7+69Or4wslApfIvUmV5ay2+FzJu0CWQvstXuCB02Otv0ECea1JX
-   ijs+HNw+cq73JBYB5WIZEY0MADyqf3437WYCAAFbsSWz8T4uOm9GNbTb4
-   WLN8KqNZ7hb9xT7X55SDjZJQjlErZ2i+1/w+TRhqE9pFpfnBrIn0GawH4
-   uL/drBF2RsHH521M43J5uiH/kqSj1doN1omlRATEA6cFiG71MnF1FIu8C
-   W49sM+XmvCWrsyJJardsISrdz4LJNDUgXUfJ8mDfSjtpZvb/qoAMShbsq
-   5VNKyz+VLaKSCiCvx4eI8+gYGdZdpjXfUxIA7w/T3DwslMeGHtFvNy1W7
-   Q==;
-X-CSE-ConnectionGUID: LodtHzANSRK7BOHn6TXKoA==
-X-CSE-MsgGUID: M6h8+XBFRlmHMlMqRp1m8w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11309"; a="36370916"
-X-IronPort-AV: E=Sophos;i="6.12,301,1728975600"; 
-   d="scan'208";a="36370916"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2025 03:04:22 -0800
-X-CSE-ConnectionGUID: KWuf3KQCRHuOZRxQ0NsmIw==
-X-CSE-MsgGUID: GsyVUl2OT/W0wQ0EAIHqMg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="103259034"
-Received: from lkp-server01.sh.intel.com (HELO d63d4d77d921) ([10.239.97.150])
-  by orviesa010.jf.intel.com with ESMTP; 09 Jan 2025 03:04:16 -0800
-Received: from kbuild by d63d4d77d921 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tVqKk-000HRT-0t;
-	Thu, 09 Jan 2025 11:04:14 +0000
-Date: Thu, 9 Jan 2025 19:04:10 +0800
-From: kernel test robot <lkp@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com,
-	kevin.tian@intel.com, corbet@lwn.net, will@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, shuah@kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
-	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
-	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
-	patches@lists.linux.dev
-Subject: Re: [PATCH v5 14/14] iommu/arm-smmu-v3: Report events that belong to
- devices attached to vIOMMU
-Message-ID: <202501091822.4ocbIobQ-lkp@intel.com>
-References: <03c01be90e53f743a91b6c1376c408404b891867.1736237481.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DKuN+0YF"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-540201cfedbso755449e87.3
+        for <iommu@lists.linux.dev>; Thu, 09 Jan 2025 03:14:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1736421269; x=1737026069; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CDSrvt1tvrLZL3pv39ao1tOanTPvH3WNKnuKQXw/zNM=;
+        b=DKuN+0YFzq88Eo3MFn1uuSWOd/z/M8Sx0dZ9dqkTtat4wdCRHqUR8CLuzNi/bW/jx3
+         whaEyK3Rbw6lUj6lmapYasvCpcVxAEtMqPC6aBYJ/Sxmeh9S8WNr3UH9pQ0SM+987bua
+         FOTYmSHjcr9Vm4xNdDng5nwg5CT76YNXgJBIukb9VXTsYXBMJBO9DKwllwHfl/8xrKbP
+         P5shR73eQwhBIeDEgb56Cr+QrgKWgVHQD5fBBe+DinDXhEQdmIFy94AbIeUaSAB89Yr2
+         fgrB3Fjzp7bU50wTcibCHkAU2ADdYieIc4S7ecTnFX4+3i59j1HFWocSmJckNoQX+LIp
+         K1OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736421269; x=1737026069;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CDSrvt1tvrLZL3pv39ao1tOanTPvH3WNKnuKQXw/zNM=;
+        b=PJUvBUiBAY9Tih/dMW5oHAQJY9R4EgjfCI1Lj4ib/QdLO/p+9cgWSAeqJQF9ECH9+Q
+         1Lz0+CDrY521zcWWAj9QNjC3XZpDk3l2HRSJGezy/vzKNo1SeyyAdTxO88AIYpnMLHBh
+         V8UMkDVlRFljiMua+YGN/qEQAFQBp+Bloqe10S+ztrMh1o1JWdzDKnfU2gSEUtNQv3g3
+         /ss1SnL016Q8reNS8HtJNZdDWoaonhjWC4NtTxbv2PBBNBEiw9UzIiBka12l9ujmvGVz
+         S8gI6vOBH+FE5XQFti05iLBbMTlIk09FTU5X0+0cGwChsoFieUFQLL1u+xd6bHloNTnu
+         1oyg==
+X-Forwarded-Encrypted: i=1; AJvYcCV8sq8K/X5e4sq0qv7KuJueWM5lxN82nZMpxMsaLDI6DsV0wcfc7PBQecfBgvXRT8MFGBsizA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzcnCKCMQ3wAEC7extLFb9JtqW+DIpNlP+NiNVEkzw50hvz1sA+
+	RVdVka4nLHS5/dY8vQz6x2wDNXVbWRD5W6KkCdX5c+GXJ+Bal4V+
+X-Gm-Gg: ASbGncu7JWnezPnQLf+xTp3VB67dccxdix114CX2KmmtHh0DN82d2WuHkV8XRqFMNPR
+	BZXcc4UqZGVuJ6CzPRkaVF3mmhcCNr4sFOrxBN+vkuf9EFExWQHhj83Gyca27inrR6qJ1S2lWwq
+	rm2E2UyNCwBJn4Z+IOBHGvNR7CGRQZWLQpaGrt1CKcNF7AAFeiMBrGqAr4N8j2gwoAuXMTqw5IK
+	DQtDvWbLPI0HcUzyTtl6W4abHlwcnuIFmQelZgDntV9rJkiQL+QLapDiCHiLy3Bc7h2jJbYQPj6
+	RW8Mb/QVCcYaU2xrmSDm547OqKw=
+X-Google-Smtp-Source: AGHT+IGOTFBWUf0qMr+9PwwTq2Kyqqb8CpMObKdP6HCrxE2MChgbnsJPBPgxn4nmfxGO5Li8ZWHrqQ==
+X-Received: by 2002:a05:6512:2399:b0:542:19ef:9877 with SMTP id 2adb3069b0e04-542845232d2mr1720792e87.17.1736421268391;
+        Thu, 09 Jan 2025 03:14:28 -0800 (PST)
+Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5428be49e2esm165503e87.29.2025.01.09.03.14.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jan 2025 03:14:26 -0800 (PST)
+Message-ID: <ba95a574-2dba-4299-9ec4-bb776a228d98@gmail.com>
+Date: Thu, 9 Jan 2025 13:14:25 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <03c01be90e53f743a91b6c1376c408404b891867.1736237481.git.nicolinc@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
+To: Daniel Almeida <daniel.almeida@collabora.com>,
+ Daniel Sedlak <daniel@sedlak.dev>
+Cc: aliceryhl@google.com, robin.murphy@arm.com,
+ rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+ Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>,
+ Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
+ Danilo Krummrich <dakr@kernel.org>, Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+References: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
+ <20250108122825.136021-3-abdiel.janulgue@gmail.com>
+ <588af6c5-02cf-437a-a909-c22744a6df1c@sedlak.dev>
+ <EFC67281-5CE1-44BC-92A5-7B0E4A7FB6AD@collabora.com>
+Content-Language: en-US
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+In-Reply-To: <EFC67281-5CE1-44BC-92A5-7B0E4A7FB6AD@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Nicolin,
 
-kernel test robot noticed the following build warnings:
+On 08/01/2025 21:09, Daniel Almeida wrote:
+> I was trying to test this again, but it apparently doesn’t compile for the reasons
+> Daniel Sedlak pointed out above.
+> 
 
-[auto build test WARNING on e94dc6ddda8dd3770879a132d577accd2cce25f9]
+Okay, now I noticed the problem.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Nicolin-Chen/iommufd-Keep-OBJ-IOCTL-lists-in-an-alphabetical-order/20250108-011247
-base:   e94dc6ddda8dd3770879a132d577accd2cce25f9
-patch link:    https://lore.kernel.org/r/03c01be90e53f743a91b6c1376c408404b891867.1736237481.git.nicolinc%40nvidia.com
-patch subject: [PATCH v5 14/14] iommu/arm-smmu-v3: Report events that belong to devices attached to vIOMMU
-config: arm64-randconfig-r131-20250109 (https://download.01.org/0day-ci/archive/20250109/202501091822.4ocbIobQ-lkp@intel.com/config)
-compiler: clang version 18.1.8 (https://github.com/llvm/llvm-project 3b5b5c1ec4a3095ab096dd780e84d7ab81f3d7ff)
-reproduce: (https://download.01.org/0day-ci/archive/20250109/202501091822.4ocbIobQ-lkp@intel.com/reproduce)
+bindgen generates this rust signature for dma_alloc_attrs():
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202501091822.4ocbIobQ-lkp@intel.com/
+extern "C" {
+     pub fn dma_alloc_attrs(
+         dev: *mut device,
+         size: usize,
+         dma_handle: *mut dma_addr_t,
+         flag: gfp_t,
+         attrs: ffi::c_ulong,
+     ) -> *mut ffi::c_void;
+}
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c:461:21: sparse: sparse: invalid assignment: &=
-   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c:461:21: sparse:    left side has type restricted __le64
-   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c:461:21: sparse:    right side has type unsigned long long
-   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c:462:21: sparse: sparse: invalid assignment: |=
-   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c:462:21: sparse:    left side has type restricted __le64
-   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c:462:21: sparse:    right side has type unsigned long long
->> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c:464:23: sparse: sparse: cast from restricted __le64
-   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c:465:23: sparse: sparse: cast from restricted __le64
+We are interested in the last argument 'attrs'. For some reason it seems 
+ffi::c_ulong is defined as usize at least on top of `rust-next` commit 
+0c5928deada15a8d075516e6e0d9ee19011bb000.
 
-vim +461 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+In previous versions ffi::c_ulong used to be u64. I also noticed that 
+core::ffi::c_ulong is u64 while crate::ffi::c_ulong is usize. In the 
+previous versions they're both u64.
 
-   455	
-   456	int arm_vmaster_report_event(struct arm_smmu_vmaster *vmaster, u64 *evt)
-   457	{
-   458		struct iommu_vevent_arm_smmuv3 vevt =
-   459			*(struct iommu_vevent_arm_smmuv3 *)evt;
-   460	
- > 461		vevt.evt[0] &= ~EVTQ_0_SID;
-   462		vevt.evt[0] |= FIELD_PREP(EVTQ_0_SID, vmaster->vsid);
-   463	
- > 464		vevt.evt[0] = cpu_to_le64(vevt.evt[0]);
-   465		vevt.evt[1] = cpu_to_le64(vevt.evt[1]);
-   466	
-   467		return iommufd_viommu_report_event(&vmaster->vsmmu->core,
-   468						   IOMMU_VEVENTQ_TYPE_ARM_SMMUV3, &vevt,
-   469						   sizeof(vevt));
-   470	}
-   471	
+So my mistake here as is I tried to match the signature manually by 
+using usize as suggested by the compiler. Maybe we should stick to 
+ffi::c_ulong return type for Attrs::as_raw() to be in sync the 
+bindgen-generated interface?
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Regards,
+Abdiel
+
