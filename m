@@ -1,173 +1,159 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4223205AA7;
-	Fri, 10 Jan 2025 11:17:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9263220C03F
+	for <iommu@lists.linux.dev>; Fri, 10 Jan 2025 11:24:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736507879; cv=none; b=nUwep8vk7HovhNB1yyHk3uCtCkHxT06Cic/8Bsbzl4M6KwdI7PGZuWQg3zbtQcs0dOt+kdpcMa/ZHY4ujXolwX7vhampHAfTGoUg62oY1ziD4wSe7N7FGk2CqlUFeiDM3RCM0POMSWxQRj9fmFjMdhIn4CGCIeCMfodE2T0V7ew=
+	t=1736508262; cv=none; b=hH1sH6xUo4+nLT9RC8tLFnNRjDStW03z1UqQhRkZrF1lQlQBSdIQIUy18wbMd2kvzsgKO0DtY7d41kqEF61LKxl1EmgIGeObp37kono3K05a1kGIMlvUExvmHNRyfYtTi00oWaVwk8tYhVleF2yxVfzENTC9HSDS1oOrvlDtxGE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736507879; c=relaxed/simple;
-	bh=NNT8lim6HOEzWvQTMaikg/pT2u/9CHClCe/IHmsqHdc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=I3KbsmIfcLXAHemAgge2Dpk7m46XwbsoTaKeM9Al/b5KxIIBNU6nolI4WQlPAvT/6ZQQRXZKTI1Ck9EEQBTR+qJY9Ag/IHLJjVDXCy6PIa9oMZWfPHscmmGFM1a0I8k0AJwpPRlnRr+xLpPwz041EBBksO+L9YYRh36mwerD7Zc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GyTc3kH1; arc=none smtp.client-ip=209.85.216.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1736508262; c=relaxed/simple;
+	bh=qmdOynEegirXfs8lbmL3X7qVXIDYPMEWLa24p/5/Rs8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=MFEB4QKJM3r3gxWkrXg5MxR5zABBWA0Wh8Pgliu/2kn5w4sgGfsv0nDRMGNuhrSAzd9bPQmy6kX4WBW3itDeBxMSOBc7G7dWLktnKTwRX1qEVWMeGsTt/hhv+xNeOPBiPjGlumG0L6wN8t2ri+SEsZtiwQOIpXIgbATB+5zng2M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=X79fHcie; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GyTc3kH1"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2ee8e8e29f6so2611227a91.0;
-        Fri, 10 Jan 2025 03:17:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736507877; x=1737112677; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=XBGILMKbPORy8DLEp8X2Qh3B2A7Bk9CG+PKoCeUe1Jc=;
-        b=GyTc3kH1tr6oizFYZa14IHQ1ZPeGFWhodlQRljdL6+kMfoWHplnPCw/zzaUb25AzU1
-         maJm8H3dyFrEpF15N/DgLq1S5vUK7YwdjlpV0pTqTSJaR3jt78qsgI+WSfDUAtNojj4a
-         bSfCV6iJA74yDvMYo9EZpJ+6GCH8p0iuOzF5uwkB1TlNI4iN+NemQPVNtvvoJcXKVZjf
-         +En2wmxainMds+sY5CaH57JXsAFvvo4ukT/JhaNQ10O8Ii/9PYXFcWkL/GNsSjkpERwu
-         4TM+czLOocAVulOdLhBXBkTi0uFZnMLf4wV3zS5/DyjelZ5kAQRSXpz3RJdPjvrpFc+q
-         VCxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736507877; x=1737112677;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XBGILMKbPORy8DLEp8X2Qh3B2A7Bk9CG+PKoCeUe1Jc=;
-        b=SzywvxHQ5qYyDULYV3NDpfhSL8icAJciwdX71LjBBbWP16EmufuWvHB4RJuPZElaBf
-         spBd2Ruv5yjK1V+GMwB0vuvkXuz+nuHJCghQuUzGneVTXwV1EZVPcRq07LVZblHJshPf
-         kYmJd7T0G3pW0TQNjpQXBbQp46OFjJloXHD8m6fQwSRxp4cgyRPzD/apLmXHzE7B9QTi
-         3Gbz6Pfvrlg7RDtfbjtRBLACH2sOZ15s7D1AmLU8ROCX3wzHjd1HB4Jd2jqkpgAXweFt
-         I+iWz4CW0A7u3kPKhceSLcZiIp8w9YgGI+VxJvC/rWG9FkNHEk/QokRu60TQujn6kI0x
-         FLKA==
-X-Forwarded-Encrypted: i=1; AJvYcCVrYj7WtgZbuZifHoMkEk2GTLgMNdlNJc27ONGULR2pqyLRDLP+exk0ngYJmVZBB3o8ZV9PhQ==@lists.linux.dev, AJvYcCX5voH3d4N/kCgCVrFHXp7YMkmb88iEGHO/3SlrD2GlrJkeBavPoaWiJZAeNjRDAGlQ0Y0D0w78SF+HPmc=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzA6CFg6XYF0bJgIq+kFcMGHMG39zm8Vu/A0J7S0n2Az7RYRSId
-	1ao2jctYCgZj1DcNh1BU0MfqT+7AkcOO7XkkBwkFGfpR54Oh/p4q4iFpo703yxr2JNKJQLXnQ5F
-	mY96R0YSGOc66lElTQZc4RNEC1qs=
-X-Gm-Gg: ASbGncs4LzBnhaCxdLjc+ckXrPTCSHH7toEF3Zwk42MBEfkjM2lC+OTqa81FNjiTblO
-	aFJunuBc3p+Y0FF4cV9NpRs+ZT4BWEsCBjwrVFG7poSEOpSOFAaKaOEInM5Bz00XCkEfe
-X-Google-Smtp-Source: AGHT+IFYbBam4o4hPnqv5ECFznzUa81yzrzUmG6GTq7IvWKxjPCuMu/wl+xlLxnUadOXAssaCN8aC2NTJbFj4BQYFvU=
-X-Received: by 2002:a17:90b:2b83:b0:2ee:a4f2:b311 with SMTP id
- 98e67ed59e1d1-2f548f103e9mr15815078a91.8.1736507875452; Fri, 10 Jan 2025
- 03:17:55 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="X79fHcie"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250110111805euoutp01c790b811975d80480f705bacd55ad897~ZULiloIoG2332023320euoutp01-
+	for <iommu@lists.linux.dev>; Fri, 10 Jan 2025 11:18:05 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250110111805euoutp01c790b811975d80480f705bacd55ad897~ZULiloIoG2332023320euoutp01-
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1736507885;
+	bh=TgTYwp5m03s4FyCqPfd9OtpPPll4+/G1OU/rptcyx1o=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=X79fHcie3Zp6MHCo4GkQz36Z0+7eNRl5RXBfIxu6Bxo0u0ixcdka9wmamHeOjYhOK
+	 VW0jk1+p5/dYhG3wZqGhcvyiKG2m2NX7XJUaVPvRqdG778zmfZP0OI8/4EFpAEgB+M
+	 jB/CkExv3cZmjs38omjHn/Liotp7Y+OAJaxMTSFs=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20250110111805eucas1p2a23b1fa9b68c2bdb074900074ccf41b6~ZULiUkxAE1888618886eucas1p2E;
+	Fri, 10 Jan 2025 11:18:05 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges2new.samsung.com (EUCPMTA) with SMTP id B4.6B.20409.CE101876; Fri, 10
+	Jan 2025 11:18:04 +0000 (GMT)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250110111804eucas1p2a5fa56e1a9fabbba5dacd4486517c9fe~ZULiB54Ei2478724787eucas1p2b;
+	Fri, 10 Jan 2025 11:18:04 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20250110111804eusmtrp16eae7fee2bfe61c230a77b26b47ad407~ZULiBOKCS3036930369eusmtrp1B;
+	Fri, 10 Jan 2025 11:18:04 +0000 (GMT)
+X-AuditID: cbfec7f4-c39fa70000004fb9-5f-678101ec8dbd
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id BE.A0.19920.CE101876; Fri, 10
+	Jan 2025 11:18:04 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20250110111804eusmtip1d83a3fad2d77bf925e14fa2c4157dd52~ZULhYE6kD3066730667eusmtip1A;
+	Fri, 10 Jan 2025 11:18:03 +0000 (GMT)
+Message-ID: <d07e82a4-2880-4ae3-961b-471bfa7ac6c4@samsung.com>
+Date: Fri, 10 Jan 2025 12:18:02 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <401f2c46-0bc3-4e7f-b549-f868dc1834c5@leemhuis.info>
- <Z36UsE5dj6j5HhkX@kbusch-mbp> <20250109082849.GC20724@lst.de>
- <210e7b28-de05-44bc-9604-83a79ae131b0@leemhuis.info> <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
-In-Reply-To: <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
-From: Bruno Gravato <bgravato@gmail.com>
-Date: Fri, 10 Jan 2025 11:17:39 +0000
-X-Gm-Features: AbW1kvakzUWN3Ty8_Iw5S5n0dcdWHYdfxgarw1RZaaaHPbcJ6gOq-a2NLJaQBdk
-Message-ID: <CAOBLbT-hrN3hOHbhwkzokR_NXRLH9AgF4GNMi-=LP7Fuqwba_A@mail.gmail.com>
-Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
- X600M-STX + Ryzen 8700G
-To: Stefan <linux-kernel@simg.de>
-Cc: Keith Busch <kbusch@kernel.org>, bugzilla-daemon@kernel.org, 
-	Adrian Huang <ahuang12@lenovo.com>, 
-	Linux kernel regressions list <regressions@lists.linux.dev>, linux-nvme@lists.infradead.org, 
-	Jens Axboe <axboe@fb.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	LKML <linux-kernel@vger.kernel.org>, 
-	Thorsten Leemhuis <regressions@leemhuis.info>, Christoph Hellwig <hch@lst.de>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Use str_read_write helper w/ logs
+To: Pranjal Shrivastava <praan@google.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev, Daniel Mentz
+	<danielmentz@google.com>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20250107165100.1093357-1-praan@google.com>
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHKsWRmVeSWpSXmKPExsWy7djP87pvGBvTDfr6zC0mdLQyWfz6YmHR
+	OXsDu8Wea8eYLQ5+eMJqMXP/e0aLljumDuweTw7OY/JYM28No8eCTaUem1Z1snm82DyTMYA1
+	issmJTUnsyy1SN8ugSuje/lb5oJW/op/x96wNzDe5Oli5OSQEDCRePjiC2MXIxeHkMAKRon/
+	T/tZIZwvjBKrpi6DynxmlNjzdCErTMuWk9+YIBLLGSUubPjLAuF8ZJT4c6SFGaSKV8BOYsP8
+	FewgNouAqsTFjodQcUGJkzOfsIDYogLyEvdvzQCrERbwlGj5sYYNZJCIwARGiS1/97CBJJgF
+	0iWu7j3OAmGLS9x6Mp8JxGYTMJToetsFVsMpYCEx9dAGqBp5ieats5lBBkkIPOCQ+Lx9OQvE
+	3S4S2/Z/ZYSwhSVeHd/CDmHLSJye3MMC0dDOKLHg930mCAfojIbnt6A6rCXunPsFtI4DaIWm
+	xPpd+hBhR4neT89ZQcISAnwSN94KQhzBJzFp23RmiDCvREebEES1msSs4+vg1h68cIl5AqPS
+	LKRwmYXkzVlI3pmFsHcBI8sqRvHU0uLc9NRio7zUcr3ixNzi0rx0veT83E2MwCR0+t/xLzsY
+	l7/6qHeIkYmD8RCjBAezkgivpWxtuhBvSmJlVWpRfnxRaU5q8SFGaQ4WJXFe1RT5VCGB9MSS
+	1OzU1ILUIpgsEwenVANTluGRxZb7zn2c8n/XkryNHPeuPS7in7qq+3biNVuny2zOjkvE7k7Z
+	v2NT2NtvWe9eB/2c7+An5dG14TRvXY7UoTP6cwLynujNPtVqmszJpF5ecS130Zv70y2qNi6T
+	jtRTfFBRcWX1DYmHiiJzn0/giNs/496Lf3qJN3PfFuWVRl3bbSpSIPog82/59Jj698skNU6s
+	LORZq7krRFMqS/fL2hX8779OtHq6ZzKrSAm7/cT5fqwbUutPLD31MNFU6NCEJ3rGcrYSwmm5
+	8TH5h+SufTqtmMr6glttWTzn3tLu6PgTZ5oNdD14c3w19rz+zmKhGruknMfVc33V0gSzRyHq
+	QZmeuqk5mmY2DrtNVh9TYinOSDTUYi4qTgQA+6q9rLEDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrHIsWRmVeSWpSXmKPExsVy+t/xu7pvGBvTDR6tUrOY0NHKZPHri4VF
+	5+wN7BZ7rh1jtjj44Qmrxcz97xktWu6YOrB7PDk4j8ljzbw1jB4LNpV6bFrVyebxYvNMxgDW
+	KD2bovzSklSFjPziElulaEMLIz1DSws9IxNLPUNj81grI1MlfTublNSczLLUIn27BL2M7uVv
+	mQta+Sv+HXvD3sB4k6eLkZNDQsBEYsvJb0xdjFwcQgJLGSWe/5vGBJGQkTg5rYEVwhaW+HOt
+	iw2i6D2jxLEJO9hAErwCdhIb5q9gB7FZBFQlLnY8ZIaIC0qcnPmEBcQWFZCXuH9rBliNsICn
+	RMuPNWCDRAQmMEpsnXKMsYuRg4NZIF1i8rYakBohAXOJuRNugdUzC4hL3HoyH+wgNgFDia63
+	XWB7OQUsJKYe2sACUWMm0bW1ixHClpdo3jqbeQKj0CwkZ8xCMmoWkpZZSFoWMLKsYhRJLS3O
+	Tc8tNtQrTswtLs1L10vOz93ECIy4bcd+bt7BOO/VR71DjEwcjIcYJTiYlUR4LWVr04V4UxIr
+	q1KL8uOLSnNSiw8xmgLDYiKzlGhyPjDm80riDc0MTA1NzCwNTC3NjJXEed0un08TEkhPLEnN
+	Tk0tSC2C6WPi4JRqYNofJLLHds2upIeVSyMmvNL4wam/VKH+kV+0z4LenM9RAhNqYopFPO7f
+	Uu0zmVEUFVZj2eFqKHesPDRil5yl+mfvHVd483wiX85Se+Si6KkfeTSi9E2L5YxtM3J+v7/F
+	yrv5+hcj6aXHTSV/90Qa/Ts38Xb0vAaB7Rs0bpeXTSneve/+qsKkkBXa1wODly1dEPBBZvae
+	J05Z1/49TZt+g7GXKWfmWdnis1uSz95iedHkY84Za5P2On2xaKqy6K0zOy+fvBp5c7XVk1MP
+	A712hEQnKcRUq/7IDX9x7/7HSYouB0I3S92Timk/wL/w0E2Vj780e2pCszfunbx6dc8JS+8H
+	vN8OpYmq8O6Ztlwy5qcSS3FGoqEWc1FxIgC/AA/FQQMAAA==
+X-CMS-MailID: 20250110111804eucas1p2a5fa56e1a9fabbba5dacd4486517c9fe
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250110111804eucas1p2a5fa56e1a9fabbba5dacd4486517c9fe
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20250110111804eucas1p2a5fa56e1a9fabbba5dacd4486517c9fe
+References: <20250107165100.1093357-1-praan@google.com>
+	<CGME20250110111804eucas1p2a5fa56e1a9fabbba5dacd4486517c9fe@eucas1p2.samsung.com>
 
-Hi,
+On 07.01.2025 17:51, Pranjal Shrivastava wrote:
+> Adopt the `str_read_write` helper in event logging as highlighted [1].
+>
+> [1] https://lore.kernel.org/all/20250107130053.GC6991@willie-the-truck/
+>
+> Signed-off-by: Pranjal Shrivastava <praan@google.com>
 
-(resending in text-only mode, because mailing lists don't like HMTL
-emails... sorry to those getting this twice)
+This change landed in today's linux-next as commit f2c77f6e41e6 
+("iommu/arm-smmu-v3: Use str_read_write helper w/ logs"). It fails to 
+build here with arm64/defconfig on my setup. It looks that it misses to 
+add the following include:
 
-I can reply via email, that's not a problem.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c 
+b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 0e4cbb2c64d7..a0e395da8a88 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -26,6 +26,7 @@
+  #include <linux/pci.h>
+  #include <linux/pci-ats.h>
+  #include <linux/platform_device.h>
++#include <linux/string_choices.h>
+  #include <kunit/visibility.h>
+  #include <uapi/linux/iommufd.h>
 
-I'll try to run some more tests when I get the chance (it's been a
-very busy week, sorry).
-Besides the volatile write cache test, any other test I should try?
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 34b424c87be0..0e4cbb2c64d7 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1907,7 +1907,7 @@ static void arm_smmu_dump_event(struct arm_smmu_device *smmu, u64 *raw,
+>   		dev_err(smmu->dev, "%s %s %s %s \"%s\"%s%s stag: %#x",
+>   			evt->privileged ? "priv" : "unpriv",
+>   			evt->instruction ? "inst" : "data",
+> -			evt->read ? "read" : "write",
+> +			str_read_write(evt->read),
+>   			evt->s2 ? "s2" : "s1", event_class_str[evt->class],
+>   			evt->class_tt ? (evt->ttrnw ? " ttd_read" : " ttd_write") : "",
+>   			evt->stall ? " stall" : "", evt->stag);
 
-Regarding the M.2 slots. I believe this motherboard has no chipset. So
-both slots should be connected directly to the CPU (mine is Ryzen
-8600G), although they might be connecting to different parts of the
-CPU, right? I guess that can make a difference.
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-My disks are gen4 as well.
-
-Bruno
-
-
-On Thu, 9 Jan 2025 at 15:44, Stefan <linux-kernel@simg.de> wrote:
->
-> Hi,
->
-> due to Thorstens hints, I'm trying to reply to both, the bug tracker and
-> the mailing list.
->
-> > --- Comment #13 from Keith Busch (kbusch@kernel.org) ---
-> > If I'm summarizing correctly, we're seeing corruption on Lexar, Kingston,
-> > and now Samsung NVMe's?
->
-> The Kingston read errors may be something different. They are described
-> in detail in messages #108 and #113 of the Debian Bug Tracker
-> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1076372
->
-> With the Kington, I never saw the write errors that occur with Lexar and
-> Samsung on newer Kernels (and which are easy to reproduce).
->
-> (ATM I cannot provide test results from the Kingston SSD because the
-> Lexar is installed, the PC is installed remotely and in use. Thus I
-> can't swap the SSDS that often.)
->
-> > # cat /sys/block/nvme0n1/queue/fua
->
-> Returns "1"
->
-> > --- Comment #15 from Keith Busch (kbusch@kernel.org) --- as a test,
-> > could you turn off the volatile write cache?
-> >
-> > # sudo nvme set-feature /dev/nvme0n1 -f 6 -v 0
-> Had to modify that a little bit:
->
->    $ nvme get-feature /dev/nvme0n1 -f 6
->    get-feature:0x06 (Volatile Write Cache), Current value:0x00000001
->    $ nvme set-feature /dev/nvme0 -f 6 /dev/nvme0n1 -v 0
->    set-feature:0x06 (Volatile Write Cache), value:00000000,
-> cdw12:00000000, save:0
->    $ nvme get-feature /dev/nvme0n1 -f 6
->    get-feature:0x06 (Volatile Write Cache), Current value:00000000
->
-> Corruptions disappear (under 6.13.0-rc6) if volatile write cache is
-> disabled (and appear again if I turn it on with "-v 1").
->
-> But, lspci says I have a
->
->    Shenzhen Longsys Electronics Co., Ltd. Lexar NM790 NVME SSD
-> (DRAM-less) (rev 01) (prog-if 02 [NVM Express])
->
-> Note the "DRAM-less". This is confirmed by
-> https://www.techpowerup.com/ssd-specs/lexar-nm790-4-tb.d1591. Instead of
-> this, the SSD has a (*non-*volatile) SLC write cache and it uses 40 MB
-> Host-Memory-Buffer (HMB).
->
-> May there be an issue with the HMB allocation/usage ?
->
-> Is the mainboard firmware involved into HMB allocation/usage ? That
-> would explain, why volatile write caching via HMB works in the 2nd M.2
-> socket.
->
-> BTW, controller is MaxioTech MAP1602A, which is different from the
-> Samsung controllers.
->
-> > --- Comment #14 from Bruno Gravato (bgravato@gmail.com) --- The only
-> >  difference in the specs between the two M.2 slots is that one is
-> > gen5x4 (the main one, which is the one with problems) and the other
-> > is gen4x4 (this works fine, no errors).
->
-> AFAIK this primary M.2 socket is connected to dedicated PCIe lanes of
-> the CPU. On my PC, it runs in Gen4 mode (limited by SSD).
->
-> The secondary M.2 socket on the rear side is probably connected to PCIe
-> lanes which are usually used by a chipset -- but that socket works.
->
-> Regards Stefan
