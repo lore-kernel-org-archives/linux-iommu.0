@@ -1,98 +1,173 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB2631B4F14;
-	Fri, 10 Jan 2025 10:41:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4223205AA7;
+	Fri, 10 Jan 2025 11:17:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736505714; cv=none; b=CSExED41E2jsvNGfIHSrfmUa8rT1TL++HVPQe72CrVGR/3au8v2ZyA0Fr1EDMMfzuM96K/6vaias9AsxK6SCwGg4QlgI4YkPYT0yJnQhMOEUxUFlrf3ukUKWk2lA50px+fyUwb4kjRYbLtI990O7alCmIRRbjGABSoQGov5GMcQ=
+	t=1736507879; cv=none; b=nUwep8vk7HovhNB1yyHk3uCtCkHxT06Cic/8Bsbzl4M6KwdI7PGZuWQg3zbtQcs0dOt+kdpcMa/ZHY4ujXolwX7vhampHAfTGoUg62oY1ziD4wSe7N7FGk2CqlUFeiDM3RCM0POMSWxQRj9fmFjMdhIn4CGCIeCMfodE2T0V7ew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736505714; c=relaxed/simple;
-	bh=yCnSxExYWaMh5dh1OGwzEHD4iNSkU1H4c7a1ji3tCdw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ponwSbEo51D6lI9QxRNl5cIYSUFpmIhxe221hhFgmVXSHk9KmzLrgoZzB6p2BXi/HiDezMtd+4O9qfQMfE0cRaRhXRGoZuys4Du0sRop7ZUElm030kqS6rHZsY91gpS4/TyzMJ3hn75XK+Od8FPV1i46kz6HTDLpu4qrc7Kydqw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q2JaJu1k; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736507879; c=relaxed/simple;
+	bh=NNT8lim6HOEzWvQTMaikg/pT2u/9CHClCe/IHmsqHdc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=I3KbsmIfcLXAHemAgge2Dpk7m46XwbsoTaKeM9Al/b5KxIIBNU6nolI4WQlPAvT/6ZQQRXZKTI1Ck9EEQBTR+qJY9Ag/IHLJjVDXCy6PIa9oMZWfPHscmmGFM1a0I8k0AJwpPRlnRr+xLpPwz041EBBksO+L9YYRh36mwerD7Zc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GyTc3kH1; arc=none smtp.client-ip=209.85.216.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q2JaJu1k"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25A85C4CED6;
-	Fri, 10 Jan 2025 10:41:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736505714;
-	bh=yCnSxExYWaMh5dh1OGwzEHD4iNSkU1H4c7a1ji3tCdw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Q2JaJu1k6Ar8+L7uTLVGSokgYufZVi8n4XlnSd0lR0naCZrly69wo2jtOazBgc2oj
-	 pBGQUS8WsacmraJucdoWP5mUivkiuEQd/rzDcqKhs6LArvFhu+eO/aVlwKCPbk3YcI
-	 OT+p8LyT+W77Lul4CCB+IsAoMsLO4oSlqLtSmAPTNlumvi+lAT6lPL/Wp7w50GalPK
-	 6lvB0QkHbEMVFnKKRo97ePUTsiUePaNvdKo32uj6JqmFIxZkYiJ4VzIzJMQsZX3GMf
-	 wIuF72PUHHpUy6CyTm+dXvwnbw0/RBF8q6ksWIhF1lefPTrKR1WmwmUPDldD+CEA/T
-	 dQ1ZwMT524vpg==
-Date: Fri, 10 Jan 2025 11:41:47 +0100
-From: Danilo Krummrich <dakr@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	daniel.almeida@collabora.com, aliceryhl@google.com,
-	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
-Message-ID: <Z4D5a5NYrAbNxUL6@pollux>
-References: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
- <20250108122825.136021-3-abdiel.janulgue@gmail.com>
- <20250108135951.GA18074@lst.de>
- <CANiq72=R2N+QiCiHZQu-6YJ9aYpn_bik3BW3U=nAW3jL7unzLw@mail.gmail.com>
- <20250108151858.GB24499@lst.de>
- <Z36X_ZnCmBQBMoZ6@pollux>
- <20250109080812.GA20431@lst.de>
- <Z3-NqwAG_96yq8VD@pollux>
- <20250110083955.GA5395@lst.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GyTc3kH1"
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2ee8e8e29f6so2611227a91.0;
+        Fri, 10 Jan 2025 03:17:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1736507877; x=1737112677; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=XBGILMKbPORy8DLEp8X2Qh3B2A7Bk9CG+PKoCeUe1Jc=;
+        b=GyTc3kH1tr6oizFYZa14IHQ1ZPeGFWhodlQRljdL6+kMfoWHplnPCw/zzaUb25AzU1
+         maJm8H3dyFrEpF15N/DgLq1S5vUK7YwdjlpV0pTqTSJaR3jt78qsgI+WSfDUAtNojj4a
+         bSfCV6iJA74yDvMYo9EZpJ+6GCH8p0iuOzF5uwkB1TlNI4iN+NemQPVNtvvoJcXKVZjf
+         +En2wmxainMds+sY5CaH57JXsAFvvo4ukT/JhaNQ10O8Ii/9PYXFcWkL/GNsSjkpERwu
+         4TM+czLOocAVulOdLhBXBkTi0uFZnMLf4wV3zS5/DyjelZ5kAQRSXpz3RJdPjvrpFc+q
+         VCxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736507877; x=1737112677;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=XBGILMKbPORy8DLEp8X2Qh3B2A7Bk9CG+PKoCeUe1Jc=;
+        b=SzywvxHQ5qYyDULYV3NDpfhSL8icAJciwdX71LjBBbWP16EmufuWvHB4RJuPZElaBf
+         spBd2Ruv5yjK1V+GMwB0vuvkXuz+nuHJCghQuUzGneVTXwV1EZVPcRq07LVZblHJshPf
+         kYmJd7T0G3pW0TQNjpQXBbQp46OFjJloXHD8m6fQwSRxp4cgyRPzD/apLmXHzE7B9QTi
+         3Gbz6Pfvrlg7RDtfbjtRBLACH2sOZ15s7D1AmLU8ROCX3wzHjd1HB4Jd2jqkpgAXweFt
+         I+iWz4CW0A7u3kPKhceSLcZiIp8w9YgGI+VxJvC/rWG9FkNHEk/QokRu60TQujn6kI0x
+         FLKA==
+X-Forwarded-Encrypted: i=1; AJvYcCVrYj7WtgZbuZifHoMkEk2GTLgMNdlNJc27ONGULR2pqyLRDLP+exk0ngYJmVZBB3o8ZV9PhQ==@lists.linux.dev, AJvYcCX5voH3d4N/kCgCVrFHXp7YMkmb88iEGHO/3SlrD2GlrJkeBavPoaWiJZAeNjRDAGlQ0Y0D0w78SF+HPmc=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzA6CFg6XYF0bJgIq+kFcMGHMG39zm8Vu/A0J7S0n2Az7RYRSId
+	1ao2jctYCgZj1DcNh1BU0MfqT+7AkcOO7XkkBwkFGfpR54Oh/p4q4iFpo703yxr2JNKJQLXnQ5F
+	mY96R0YSGOc66lElTQZc4RNEC1qs=
+X-Gm-Gg: ASbGncs4LzBnhaCxdLjc+ckXrPTCSHH7toEF3Zwk42MBEfkjM2lC+OTqa81FNjiTblO
+	aFJunuBc3p+Y0FF4cV9NpRs+ZT4BWEsCBjwrVFG7poSEOpSOFAaKaOEInM5Bz00XCkEfe
+X-Google-Smtp-Source: AGHT+IFYbBam4o4hPnqv5ECFznzUa81yzrzUmG6GTq7IvWKxjPCuMu/wl+xlLxnUadOXAssaCN8aC2NTJbFj4BQYFvU=
+X-Received: by 2002:a17:90b:2b83:b0:2ee:a4f2:b311 with SMTP id
+ 98e67ed59e1d1-2f548f103e9mr15815078a91.8.1736507875452; Fri, 10 Jan 2025
+ 03:17:55 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250110083955.GA5395@lst.de>
+References: <401f2c46-0bc3-4e7f-b549-f868dc1834c5@leemhuis.info>
+ <Z36UsE5dj6j5HhkX@kbusch-mbp> <20250109082849.GC20724@lst.de>
+ <210e7b28-de05-44bc-9604-83a79ae131b0@leemhuis.info> <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
+In-Reply-To: <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
+From: Bruno Gravato <bgravato@gmail.com>
+Date: Fri, 10 Jan 2025 11:17:39 +0000
+X-Gm-Features: AbW1kvakzUWN3Ty8_Iw5S5n0dcdWHYdfxgarw1RZaaaHPbcJ6gOq-a2NLJaQBdk
+Message-ID: <CAOBLbT-hrN3hOHbhwkzokR_NXRLH9AgF4GNMi-=LP7Fuqwba_A@mail.gmail.com>
+Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
+ X600M-STX + Ryzen 8700G
+To: Stefan <linux-kernel@simg.de>
+Cc: Keith Busch <kbusch@kernel.org>, bugzilla-daemon@kernel.org, 
+	Adrian Huang <ahuang12@lenovo.com>, 
+	Linux kernel regressions list <regressions@lists.linux.dev>, linux-nvme@lists.infradead.org, 
+	Jens Axboe <axboe@fb.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	LKML <linux-kernel@vger.kernel.org>, 
+	Thorsten Leemhuis <regressions@leemhuis.info>, Christoph Hellwig <hch@lst.de>
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Jan 10, 2025 at 09:39:55AM +0100, Christoph Hellwig wrote:
-> On Thu, Jan 09, 2025 at 09:49:47AM +0100, Danilo Krummrich wrote:
-> > On Thu, Jan 09, 2025 at 09:08:12AM +0100, Christoph Hellwig wrote:
-> > > On Wed, Jan 08, 2025 at 04:21:33PM +0100, Danilo Krummrich wrote:
-> > > > What does "your code" mean? Duplicated in every driver?
-> > > 
-> > > Yes, interfaces to the DMA API should stay in readable C code and not
-> > > in weird bindings so that it reminds greppable and maintainable.
-> > > 
-> > 
-> > Rust drivers shouldn't use C APIs directly, but rather use an abstraction of the
-> > corresponding C API.
-> 
-> Don't force me to deal with your shiny language of the day.
+Hi,
 
-Again, no one asks you to deal with or maintain this piece of Rust code.
+(resending in text-only mode, because mailing lists don't like HMTL
+emails... sorry to those getting this twice)
 
-> Maintaining
-> multi-language projects is a pain I have no interest in dealing with.
-> If you want to use something that's not C, be that assembly or rust you
-> write to C interfaces and deal with the impedence mismatch yourself as
-> far as I'm concerned.
-> 
+I can reply via email, that's not a problem.
 
-This is exactly what we're doing and proposing here, isn't it?
+I'll try to run some more tests when I get the chance (it's been a
+very busy week, sorry).
+Besides the volatile write cache test, any other test I should try?
 
-We wrote a single piece of Rust code that abstracts the C API for all Rust
-drivers, which we offer to maintain ourselves.
+Regarding the M.2 slots. I believe this motherboard has no chipset. So
+both slots should be connected directly to the CPU (mine is Ryzen
+8600G), although they might be connecting to different parts of the
+CPU, right? I guess that can make a difference.
 
-What else are you asking for?
+My disks are gen4 as well.
+
+Bruno
+
+
+On Thu, 9 Jan 2025 at 15:44, Stefan <linux-kernel@simg.de> wrote:
+>
+> Hi,
+>
+> due to Thorstens hints, I'm trying to reply to both, the bug tracker and
+> the mailing list.
+>
+> > --- Comment #13 from Keith Busch (kbusch@kernel.org) ---
+> > If I'm summarizing correctly, we're seeing corruption on Lexar, Kingston,
+> > and now Samsung NVMe's?
+>
+> The Kingston read errors may be something different. They are described
+> in detail in messages #108 and #113 of the Debian Bug Tracker
+> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1076372
+>
+> With the Kington, I never saw the write errors that occur with Lexar and
+> Samsung on newer Kernels (and which are easy to reproduce).
+>
+> (ATM I cannot provide test results from the Kingston SSD because the
+> Lexar is installed, the PC is installed remotely and in use. Thus I
+> can't swap the SSDS that often.)
+>
+> > # cat /sys/block/nvme0n1/queue/fua
+>
+> Returns "1"
+>
+> > --- Comment #15 from Keith Busch (kbusch@kernel.org) --- as a test,
+> > could you turn off the volatile write cache?
+> >
+> > # sudo nvme set-feature /dev/nvme0n1 -f 6 -v 0
+> Had to modify that a little bit:
+>
+>    $ nvme get-feature /dev/nvme0n1 -f 6
+>    get-feature:0x06 (Volatile Write Cache), Current value:0x00000001
+>    $ nvme set-feature /dev/nvme0 -f 6 /dev/nvme0n1 -v 0
+>    set-feature:0x06 (Volatile Write Cache), value:00000000,
+> cdw12:00000000, save:0
+>    $ nvme get-feature /dev/nvme0n1 -f 6
+>    get-feature:0x06 (Volatile Write Cache), Current value:00000000
+>
+> Corruptions disappear (under 6.13.0-rc6) if volatile write cache is
+> disabled (and appear again if I turn it on with "-v 1").
+>
+> But, lspci says I have a
+>
+>    Shenzhen Longsys Electronics Co., Ltd. Lexar NM790 NVME SSD
+> (DRAM-less) (rev 01) (prog-if 02 [NVM Express])
+>
+> Note the "DRAM-less". This is confirmed by
+> https://www.techpowerup.com/ssd-specs/lexar-nm790-4-tb.d1591. Instead of
+> this, the SSD has a (*non-*volatile) SLC write cache and it uses 40 MB
+> Host-Memory-Buffer (HMB).
+>
+> May there be an issue with the HMB allocation/usage ?
+>
+> Is the mainboard firmware involved into HMB allocation/usage ? That
+> would explain, why volatile write caching via HMB works in the 2nd M.2
+> socket.
+>
+> BTW, controller is MaxioTech MAP1602A, which is different from the
+> Samsung controllers.
+>
+> > --- Comment #14 from Bruno Gravato (bgravato@gmail.com) --- The only
+> >  difference in the specs between the two M.2 slots is that one is
+> > gen5x4 (the main one, which is the one with problems) and the other
+> > is gen4x4 (this works fine, no errors).
+>
+> AFAIK this primary M.2 socket is connected to dedicated PCIe lanes of
+> the CPU. On my PC, it runs in Gen4 mode (limited by SSD).
+>
+> The secondary M.2 socket on the rear side is probably connected to PCIe
+> lanes which are usually used by a chipset -- but that socket works.
+>
+> Regards Stefan
