@@ -1,271 +1,149 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2070.outbound.protection.outlook.com [40.107.220.70])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0A33199396;
-	Sat, 11 Jan 2025 03:33:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.70
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736566421; cv=fail; b=NH8/UanM1UC/Kr7QV6cIP+FZP52yBv2BggaS6BcLvvYnIxOIS+flMo7V1lFE57vTkr3FWyrENFQQHIa0ruBD6KGVCtc7oEltQzW/TQ3yVbK7eBm4Q+WmLkjrn/FY3kpoa6iKOIwWPHintXx3Tmk8vC3JSgNABlhWANPxgcjvQ7o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736566421; c=relaxed/simple;
-	bh=CpICmkVyy/ovYcRg0oXpQLpMERRABe6nQkq2X/QAah4=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hoso3SlgpueSMDDCVXMa+0GqaoHDL17s753GM4VajjuDFgCinCkaKRvU4UQ5algrePEXWmKWLFrSA74UVhZNkEhCd2NpsZ0dECrX5DEqg4XKlxk1VG5rb2HAGiPLDDdljq9q4r9uaqLod5oq1MZ+w0WsmMBsEbnOpkGXIh+dAMY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=WOrPawZs; arc=fail smtp.client-ip=40.107.220.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28BC718C002;
+	Sat, 11 Jan 2025 10:44:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736592277; cv=none; b=ZmeUhc6FPg7gTSu+tubB8pdxXMytNrIYRQDnR4ZrWDBzImuaif7M6caD5O8aqtsID7TJRu//qKy1kaGJLRULYwYocMoPZOaW/LeKPVTlskO2iu5mWQj4Mn4FcF0gG9mvxhRzfBBT2KKHFX8B6fFbGMZjaErKtOWeMwzjxeNHApw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736592277; c=relaxed/simple;
+	bh=k53UvnXOx/G3Q0f+sZRsqAkJgIpoPizB5KvAGnxQfSw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kdL+TZB7ZGDDDuswBNrh8zzTK02HTIjuxm2IVs5bWAC4IZizlCaRTnUN6cjJ1f7MB4rwPto6+REvOL7Pxx6D5EbZ4x5QE21wb7gRoYgwQoeQR7wliNWttZQwXkPr91J6qLLEEXWwRWYvvtJAZSQ4MpY7X1yAKDYguWkuhiuh9MM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dGBHaBo5; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WOrPawZs"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=NqZQ3gOafsKPnEmHH5rxSFZaOls1XO9KSE6yAH3YFJyXmdk/wcsA6XIbIhFY1ftsy9BxXkm8MApKxakpalFWuT6IgXvsHKN7IQ+7kssL3oIylMJx9CqqkKD0H5FTO+1fJf9mFl25O3+yvXbNc5uR6zqRg36v3YYWQ46wgNqiVVLXZPgovDjlbzv6RhePja4730VNDHdVwntEmHCkDpHGjC8NcLIrsIB8wxfcXvkDlwVnWJfv+goZABfjVaQFr9k95o6hlPOmENyUK2P2/CfX53fr2P1n8RPTXyeBTt1tbxIuRorpmFCxRSMeHLNFUiDLr8S6YW92TLTjKcFRF/ZU0Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5+cYuVWoTFkp7rL+GzblKSnvY9PzSqXeL4iPuXRfwgg=;
- b=IEM+/2kT1e9U2gTGMRb18Qf5T8QegN54l/Phd4MmhztSG63z41D3j82aoajl/ycM/Krb7PZwRMVSLN0Muz4WJ8c39T+f/5DjJnfa3kn8dg7kY9RyTKDM5DCkKZGqmIQa/EIVVsh/Zx332x0xt1YJMZuWGjWUwF7Xx1bLiFcPy810BjQdXhbOl2VZJEcLvWlkliDhEaA8TxOfXxDvwL2U28rXpXa3fEhPdHPcX5XeBed3RjVfhmq9smquLHPBIQz6CPFjv5AQ3EUVk6pzSY3X23qXcxYOSy28d2DcHHOIQRERdR1COTGwZ0hz4BonedWYIB79p2YMekhFiNf+tNwkoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5+cYuVWoTFkp7rL+GzblKSnvY9PzSqXeL4iPuXRfwgg=;
- b=WOrPawZsZjyrYEceKrO1eDJEB3TRg0nvqZU1o8octRy0ctoWq0zYXclv4XwrXLN8pBG9+CMuOYzPVmyJnyN7Um4MDJ+iigNFBQpb6bltsuwWgLWvIGucvuevOzAPUAdYsVWRWKOy9gXm80smBlMB1FhqgxiFd/MQDs/lxMvOHKnaicoLFPmhBFPkuQSyy5m2sLbY50bv+pO8GT0A9YhHBBYLsfm5RN3WQPeNcBG/dUMoPlfrOv3mGhK9a5+YtipByaCcdnI+G5PIvQGdXNqDVj3gPp7xoz9LEDQtKkg4aFCFdp/lsOgEHcuZkmUsZHMoNAWQW0vjzLI8LbpTKr8SOg==
-Received: from DM5PR08CA0048.namprd08.prod.outlook.com (2603:10b6:4:60::37) by
- DS0PR12MB7948.namprd12.prod.outlook.com (2603:10b6:8:152::17) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8335.10; Sat, 11 Jan 2025 03:33:34 +0000
-Received: from DS1PEPF0001709B.namprd05.prod.outlook.com
- (2603:10b6:4:60:cafe::e) by DM5PR08CA0048.outlook.office365.com
- (2603:10b6:4:60::37) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8314.16 via Frontend Transport; Sat,
- 11 Jan 2025 03:33:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- DS1PEPF0001709B.mail.protection.outlook.com (10.167.18.105) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8335.7 via Frontend Transport; Sat, 11 Jan 2025 03:33:34 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 10 Jan
- 2025 19:33:19 -0800
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Fri, 10 Jan 2025 19:33:19 -0800
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
- Transport; Fri, 10 Jan 2025 19:33:17 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
-	<kevin.tian@intel.com>, <tglx@linutronix.de>, <maz@kernel.org>,
-	<alex.williamson@redhat.com>
-CC: <joro@8bytes.org>, <shuah@kernel.org>, <reinette.chatre@intel.com>,
-	<eric.auger@redhat.com>, <yebin10@huawei.com>, <apatel@ventanamicro.com>,
-	<shivamurthy.shastri@linutronix.de>, <bhelgaas@google.com>,
-	<anna-maria@linutronix.de>, <yury.norov@gmail.com>, <nipun.gupta@amd.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <kvm@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <patches@lists.linux.dev>,
-	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>,
-	<ddutile@redhat.com>
-Subject: [PATCH RFCv2 13/13] vfio/pci: Allow preset MSI IOVAs via VFIO_IRQ_SET_ACTION_PREPARE
-Date: Fri, 10 Jan 2025 19:32:29 -0800
-Message-ID: <d8b285b10bb888c3687330c529516b415d466686.1736550979.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1736550979.git.nicolinc@nvidia.com>
-References: <cover.1736550979.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dGBHaBo5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1736592276; x=1768128276;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=k53UvnXOx/G3Q0f+sZRsqAkJgIpoPizB5KvAGnxQfSw=;
+  b=dGBHaBo5CTrzK1VInMDZSPZM0/jSH5iILr8xcB2LLimtDFTKb6667TVx
+   BD+Um5mm5cn/7cTtFRdfGHqiFVXCk7zgBBZVln1aduu//N34IcVLrxLRF
+   5gV7o+YFBS8i1XqVIAs0+Xgja/p7eO8RX40f0GBN0dKDp/hWJUn9JEohn
+   qRhSJZ/GjHyKVcinHqcFDhZg2DN36vcWXKnPsghgQVthaAfnNkPrkI1jh
+   wrza2xrwxB+KtGm3LNH2RNmV8PPfU8vYD3Y4+3Z/iM/39+w2NfAKAvA6x
+   VMhvtvrF713iUHPugQrB+cv4CBlG5WWguwVDUyz8eZXqF+iZeTSSNtCw+
+   A==;
+X-CSE-ConnectionGUID: mZmZp0AgTJOYYRq+L+BK9g==
+X-CSE-MsgGUID: uK9T+9I2RaebQ7bUJPJVOw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11311"; a="40823156"
+X-IronPort-AV: E=Sophos;i="6.12,307,1728975600"; 
+   d="scan'208";a="40823156"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2025 02:44:35 -0800
+X-CSE-ConnectionGUID: zBWcrZmFRaibzSH9seaBfA==
+X-CSE-MsgGUID: a1JtxI6yTomU1pIhOr/GDg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,307,1728975600"; 
+   d="scan'208";a="108869450"
+Received: from lkp-server01.sh.intel.com (HELO d63d4d77d921) ([10.239.97.150])
+  by fmviesa004.fm.intel.com with ESMTP; 11 Jan 2025 02:44:33 -0800
+Received: from kbuild by d63d4d77d921 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1tWYyk-000KVL-2m;
+	Sat, 11 Jan 2025 10:44:30 +0000
+Date: Sat, 11 Jan 2025 18:43:37 +0800
+From: kernel test robot <lkp@intel.com>
+To: Wencheng Yang <east.moutain.yang@gmail.com>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	Wencheng Yang <east.moutain.yang@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drviers/iommu/amd: support P2P access through IOMMU when
+ SME is enabled
+Message-ID: <202501111847.N7CwntR4-lkp@intel.com>
+References: <20250110130756.333265-1-east.moutain.yang@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0001709B:EE_|DS0PR12MB7948:EE_
-X-MS-Office365-Filtering-Correlation-Id: da8246e0-122f-481e-6345-08dd31f0ba46
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|7416014|82310400026|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?5fGGaafnLtwGvDwL86dbuDTk2bl9wEFvuCAiudRKrwTe7QPTSLkpnBMaVe5c?=
- =?us-ascii?Q?0RW+MLb1GZKVkHgnfqnE209jgfPeUo7LiE+8vuGOkj4GfN0uO5ajq1aQxg/R?=
- =?us-ascii?Q?IjoG3FxfLDG7JbJoQ31BUTixjqW/4SdXhaGbO4quaEBmar78i+zQCC1CHk/q?=
- =?us-ascii?Q?lFNjLhieQcJ673BtJKyokKWcpQeFnXZDGX/9B+JfonHyBNGGZXk/w9OIGoq0?=
- =?us-ascii?Q?SBdy372vNMFFNm+RBipIciQSG1Q8aIXHSw005yqpj71cdTN3R5CaVewntkAT?=
- =?us-ascii?Q?fgGWU2xlkcKRIlR6y47Q21vQVgbUqX5CRaISuveeZa3EYRTq6FNoOHFAgpmp?=
- =?us-ascii?Q?FzIt7U5CcGMEIqhvdIco0esoa3nzUIBMuA0zCJJyqGlM3kEVs/SuQoEDdgku?=
- =?us-ascii?Q?ewlPv0Vkq6Ib3LJecorkoEebNmlANaJ/50qxUvhzQ5CaW4jJS5uGJo4EksX7?=
- =?us-ascii?Q?IhP4/UJO+uGJsd2zab6HI0z4FHKUWzhqZKsQ0/ogXCQwjbZWT0A2KGMvYDk0?=
- =?us-ascii?Q?fODwuG/R4XRrIh8gAROAV7SOiZ1pMHBdHh7S8ttz0bAqyrB+DCTGT0ApPyMw?=
- =?us-ascii?Q?2PxLwCRJDKhUrGOs4kjlPmg78MLVt9ttApUwWo5PPHJgMh9w+FfWR6+Qjach?=
- =?us-ascii?Q?U+t+MfbhA1igaUXDMYxB0N16wg2TMEMudI8KamO1GGS3BBTn3wRLT9YeCZV5?=
- =?us-ascii?Q?6M8BL4oIHhH9JmZU0REmGruj8SbgAkhbKXUaceLUaGcELIV9bqJRwAW4lXVi?=
- =?us-ascii?Q?0mmYzpCWoc+9pDT25G+cyO0hmBGgft1AO4A6TsbWBOaOYdaWZ0NMV1XNul3z?=
- =?us-ascii?Q?8PsR4P4v7fV/0gqqY6kIaiMM0iK7USnwmh4NG7WQXJ/rWbfcnLP2r7RfsBbt?=
- =?us-ascii?Q?85OIKTJWjy+Ofzc6SOYAmdQP0NxgVso37qXc/SyL9y5MJ/21/OZph/3qy5ZS?=
- =?us-ascii?Q?UlZ3fRFUAsl05oAy45dGp/VMUOxPnPdCno+rXIfS6iRYj3jC0Zq4U/n4XYB6?=
- =?us-ascii?Q?+fZPnB1ZqH00D0Gvxwdtg6bkQP6IRMY3WMwh9oV2tsfDonRgodjGdvn53UTe?=
- =?us-ascii?Q?7ZblBi/JP9z3d2rH8WNLKX7hkOi0p1GiCHj83rCnCbFJjFNX7SPvmIA8lTYx?=
- =?us-ascii?Q?quWDe4sSydwz3v9QWtCEQ1pNUKWFFC3ifS+qOaxv/pCtSlBq+6JHNpUcv7dG?=
- =?us-ascii?Q?W/iUdV6DOMNVQyXFMBJBLIm5gSEfmRgQdViqDTbsyp+5uDTYiupFbZEjiQIu?=
- =?us-ascii?Q?SvFhuKwX3qd35v8fJCpY+UJJw1e1XABGUo+aNY/i1Z0zYDpbtc946sQ2fKDz?=
- =?us-ascii?Q?n6kUId9WVRCgDE+kJM01DvKGh3WXwptv4C177diRlmvAnK/vkm/zXtXtXbbM?=
- =?us-ascii?Q?iqyIzCkKQ/7rDvp13wtSgWKXzzxbrvyJrzViQbHLxwBO8O8Fe/rJbx4GJaY8?=
- =?us-ascii?Q?lS79xEUbfRD0rMSTo/wybKh4RVmiuFT1o0JmVOJLXsbo+aUTxzdvZCaw/DtN?=
- =?us-ascii?Q?i2xYIbr1VHfWruY=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(1800799024)(7416014)(82310400026)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2025 03:33:34.2471
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: da8246e0-122f-481e-6345-08dd31f0ba46
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF0001709B.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7948
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250110130756.333265-1-east.moutain.yang@gmail.com>
 
-Add a new VFIO_IRQ_SET_ACTION_PREPARE to set VFIO_IRQ_SET_DATA_MSI_IOVA,
-giving user space an interface to forward to kernel the stage-1 IOVA (of
-a 2-stage translation: IOVA->IPA->PA) for an MSI doorbell address, since
-the ITS hardware needs to be programmed with the top level IOVA address,
-in order to work with the IOMMU on ARM64.
+Hi Wencheng,
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- include/uapi/linux/vfio.h         |  8 ++++--
- drivers/vfio/pci/vfio_pci_intrs.c | 46 +++++++++++++++++++++++++++++++
- drivers/vfio/vfio_main.c          |  3 ++
- 3 files changed, 55 insertions(+), 2 deletions(-)
+kernel test robot noticed the following build warnings:
 
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index c8dbf8219c4f..85095e59a3c6 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -590,6 +590,8 @@ struct vfio_irq_set {
- #define VFIO_IRQ_SET_ACTION_MASK	(1 << 3) /* Mask interrupt */
- #define VFIO_IRQ_SET_ACTION_UNMASK	(1 << 4) /* Unmask interrupt */
- #define VFIO_IRQ_SET_ACTION_TRIGGER	(1 << 5) /* Trigger interrupt */
-+#define VFIO_IRQ_SET_DATA_MSI_IOVA	(1 << 6) /* Data is MSI IOVA (u64) */
-+#define VFIO_IRQ_SET_ACTION_PREPARE	(1 << 7) /* Prepare interrupt */
- 	__u32	index;
- 	__u32	start;
- 	__u32	count;
-@@ -599,10 +601,12 @@ struct vfio_irq_set {
- 
- #define VFIO_IRQ_SET_DATA_TYPE_MASK	(VFIO_IRQ_SET_DATA_NONE | \
- 					 VFIO_IRQ_SET_DATA_BOOL | \
--					 VFIO_IRQ_SET_DATA_EVENTFD)
-+					 VFIO_IRQ_SET_DATA_EVENTFD | \
-+					 VFIO_IRQ_SET_DATA_MSI_IOVA)
- #define VFIO_IRQ_SET_ACTION_TYPE_MASK	(VFIO_IRQ_SET_ACTION_MASK | \
- 					 VFIO_IRQ_SET_ACTION_UNMASK | \
--					 VFIO_IRQ_SET_ACTION_TRIGGER)
-+					 VFIO_IRQ_SET_ACTION_TRIGGER | \
-+					 VFIO_IRQ_SET_ACTION_PREPARE)
- /**
-  * VFIO_DEVICE_RESET - _IO(VFIO_TYPE, VFIO_BASE + 11)
-  *
-diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
-index 8382c5834335..80ea6bc1941f 100644
---- a/drivers/vfio/pci/vfio_pci_intrs.c
-+++ b/drivers/vfio/pci/vfio_pci_intrs.c
-@@ -685,6 +685,8 @@ static int vfio_pci_set_msi_trigger(struct vfio_pci_core_device *vdev,
- 
- 	if (irq_is(vdev, index) && !count && (flags & VFIO_IRQ_SET_DATA_NONE)) {
- 		vfio_msi_disable(vdev, msix);
-+		for (i = start; i < start + count; i++)
-+			vfio_iommufd_device_unset_msi_iova(&vdev->vdev, i);
- 		return 0;
- 	}
- 
-@@ -728,6 +730,47 @@ static int vfio_pci_set_msi_trigger(struct vfio_pci_core_device *vdev,
- 	return 0;
- }
- 
-+static int vfio_pci_set_msi_prepare(struct vfio_pci_core_device *vdev,
-+				    unsigned int index, unsigned int start,
-+				    unsigned int count, uint32_t flags,
-+				    void *data)
-+{
-+	struct vfio_device *core = &vdev->vdev;
-+	uint64_t *iovas = data;
-+	unsigned int i;
-+	int ret;
-+
-+	if (!vfio_iommufd_device_ictx(core))
-+		return -EOPNOTSUPP;
-+	if (!(irq_is(vdev, index) || is_irq_none(vdev)))
-+		return -EINVAL;
-+
-+	if (flags & VFIO_IRQ_SET_DATA_NONE) {
-+		if (!count)
-+			return -EINVAL;
-+		for (i = start; i < start + count; i++)
-+			vfio_iommufd_device_unset_msi_iova(core, i);
-+		return 0;
-+	}
-+
-+	if (!(flags & VFIO_IRQ_SET_DATA_MSI_IOVA))
-+		return -EOPNOTSUPP;
-+	if (!IS_ENABLED(CONFIG_IRQ_MSI_IOMMU))
-+		return -EOPNOTSUPP;
-+
-+	ret = vfio_iommufd_device_set_num_msi_iovas(core, start + count);
-+	if (ret)
-+		return ret;
-+
-+	for (i = start; i < start + count; i++) {
-+		ret = vfio_iommufd_device_set_msi_iova(core, i, iovas[i]);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int vfio_pci_set_ctx_trigger_single(struct eventfd_ctx **ctx,
- 					   unsigned int count, uint32_t flags,
- 					   void *data)
-@@ -837,6 +880,9 @@ int vfio_pci_set_irqs_ioctl(struct vfio_pci_core_device *vdev, uint32_t flags,
- 		case VFIO_IRQ_SET_ACTION_TRIGGER:
- 			func = vfio_pci_set_msi_trigger;
- 			break;
-+		case VFIO_IRQ_SET_ACTION_PREPARE:
-+			func = vfio_pci_set_msi_prepare;
-+			break;
- 		}
- 		break;
- 	case VFIO_PCI_ERR_IRQ_INDEX:
-diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
-index 1fd261efc582..ad11c8e7da7b 100644
---- a/drivers/vfio/vfio_main.c
-+++ b/drivers/vfio/vfio_main.c
-@@ -1554,6 +1554,9 @@ int vfio_set_irqs_validate_and_prepare(struct vfio_irq_set *hdr, int num_irqs,
- 	case VFIO_IRQ_SET_DATA_EVENTFD:
- 		size = sizeof(int32_t);
- 		break;
-+	case VFIO_IRQ_SET_DATA_MSI_IOVA:
-+		size = sizeof(uint64_t);
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
+[auto build test WARNING on arm-perf/for-next/perf]
+[also build test WARNING on linus/master joro-iommu/next v6.13-rc6 next-20250110]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Wencheng-Yang/drviers-iommu-amd-support-P2P-access-through-IOMMU-when-SME-is-enabled/20250110-210948
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-next/perf
+patch link:    https://lore.kernel.org/r/20250110130756.333265-1-east.moutain.yang%40gmail.com
+patch subject: [PATCH] drviers/iommu/amd: support P2P access through IOMMU when SME is enabled
+config: x86_64-buildonly-randconfig-001-20250111 (https://download.01.org/0day-ci/archive/20250111/202501111847.N7CwntR4-lkp@intel.com/config)
+compiler: clang version 19.1.3 (https://github.com/llvm/llvm-project ab51eccf88f5321e7c60591c5546b254b6afab99)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250111/202501111847.N7CwntR4-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202501111847.N7CwntR4-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/iommu/amd/io_pgtable_v2.c:14:
+   In file included from include/linux/io-pgtable.h:6:
+   In file included from include/linux/iommu.h:10:
+   In file included from include/linux/scatterlist.h:8:
+   In file included from include/linux/mm.h:2223:
+   include/linux/vmstat.h:518:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
+     518 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
+         |                               ~~~~~~~~~~~ ^ ~~~
+>> drivers/iommu/amd/io_pgtable_v2.c:68:6: warning: variable 'pte' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+      68 |         if (!(prot & IOMMU_PROT_MMIO))
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/iommu/amd/io_pgtable_v2.c:71:2: note: uninitialized use occurs here
+      71 |         pte |= IOMMU_PAGE_PRESENT | IOMMU_PAGE_USER;
+         |         ^~~
+   drivers/iommu/amd/io_pgtable_v2.c:68:2: note: remove the 'if' if its condition is always true
+      68 |         if (!(prot & IOMMU_PROT_MMIO))
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      69 |                 pte = __sme_set(paddr & PM_ADDR_MASK);
+   drivers/iommu/amd/io_pgtable_v2.c:66:9: note: initialize the variable 'pte' to silence this warning
+      66 |         u64 pte;
+         |                ^
+         |                 = 0
+   2 warnings generated.
+
+
+vim +68 drivers/iommu/amd/io_pgtable_v2.c
+
+    63	
+    64	static u64 set_pte_attr(u64 paddr, u64 pg_size, int prot)
+    65	{
+    66		u64 pte;
+    67	
+  > 68		if (!(prot & IOMMU_PROT_MMIO))
+    69			pte = __sme_set(paddr & PM_ADDR_MASK);
+    70	
+    71		pte |= IOMMU_PAGE_PRESENT | IOMMU_PAGE_USER;
+    72		pte |= IOMMU_PAGE_ACCESS | IOMMU_PAGE_DIRTY;
+    73	
+    74		if (prot & IOMMU_PROT_IW)
+    75			pte |= IOMMU_PAGE_RW;
+    76	
+    77		/* Large page */
+    78		if (pg_size == IOMMU_PAGE_SIZE_1G || pg_size == IOMMU_PAGE_SIZE_2M)
+    79			pte |= IOMMU_PAGE_PSE;
+    80	
+    81		return pte;
+    82	}
+    83	
+
 -- 
-2.43.0
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
