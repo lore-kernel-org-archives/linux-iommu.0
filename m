@@ -1,149 +1,116 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28BC718C002;
-	Sat, 11 Jan 2025 10:44:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 584901B85D0
+	for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 19:00:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736592277; cv=none; b=ZmeUhc6FPg7gTSu+tubB8pdxXMytNrIYRQDnR4ZrWDBzImuaif7M6caD5O8aqtsID7TJRu//qKy1kaGJLRULYwYocMoPZOaW/LeKPVTlskO2iu5mWQj4Mn4FcF0gG9mvxhRzfBBT2KKHFX8B6fFbGMZjaErKtOWeMwzjxeNHApw=
+	t=1736622011; cv=none; b=WCEq2iFQwZtNXCHqfF/dVl0klNNa06+JmnKoQ3b5qWO8r5ndl3OLczgPKgCR3Fi3OxOyq1XaBqoNFUx28hck2SruZmL9sFJKZgwGc8v/B8RLsFnJP6HJ9Ky19EbR/mkG2hkfgwR3I5IZuS26huZ6yz4CtyY31kH8/0ZOyy7vrsE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736592277; c=relaxed/simple;
-	bh=k53UvnXOx/G3Q0f+sZRsqAkJgIpoPizB5KvAGnxQfSw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kdL+TZB7ZGDDDuswBNrh8zzTK02HTIjuxm2IVs5bWAC4IZizlCaRTnUN6cjJ1f7MB4rwPto6+REvOL7Pxx6D5EbZ4x5QE21wb7gRoYgwQoeQR7wliNWttZQwXkPr91J6qLLEEXWwRWYvvtJAZSQ4MpY7X1yAKDYguWkuhiuh9MM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dGBHaBo5; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1736622011; c=relaxed/simple;
+	bh=w2RLalgguC4wcmcCrxQZEvgRN248gOCpyiQk92eiW8A=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=E22/j/TTY6rodQPNle2T2S+JwI8L28JLsPg+CV+M3mQ0+ENO45KyhTkny89Rdn9leHO+qPNzkldXRtTDNwDkqglLB6AMHatqihdiOGW/w9aXWZPzCvwRG+Q+mgJoc+8Jcp3kSUs/jz+tPAgNy4WKpQ6fwZbSYY3xhHd95kmwD4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=pFodHIYg; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dGBHaBo5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736592276; x=1768128276;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=k53UvnXOx/G3Q0f+sZRsqAkJgIpoPizB5KvAGnxQfSw=;
-  b=dGBHaBo5CTrzK1VInMDZSPZM0/jSH5iILr8xcB2LLimtDFTKb6667TVx
-   BD+Um5mm5cn/7cTtFRdfGHqiFVXCk7zgBBZVln1aduu//N34IcVLrxLRF
-   5gV7o+YFBS8i1XqVIAs0+Xgja/p7eO8RX40f0GBN0dKDp/hWJUn9JEohn
-   qRhSJZ/GjHyKVcinHqcFDhZg2DN36vcWXKnPsghgQVthaAfnNkPrkI1jh
-   wrza2xrwxB+KtGm3LNH2RNmV8PPfU8vYD3Y4+3Z/iM/39+w2NfAKAvA6x
-   VMhvtvrF713iUHPugQrB+cv4CBlG5WWguwVDUyz8eZXqF+iZeTSSNtCw+
-   A==;
-X-CSE-ConnectionGUID: mZmZp0AgTJOYYRq+L+BK9g==
-X-CSE-MsgGUID: uK9T+9I2RaebQ7bUJPJVOw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11311"; a="40823156"
-X-IronPort-AV: E=Sophos;i="6.12,307,1728975600"; 
-   d="scan'208";a="40823156"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2025 02:44:35 -0800
-X-CSE-ConnectionGUID: zBWcrZmFRaibzSH9seaBfA==
-X-CSE-MsgGUID: a1JtxI6yTomU1pIhOr/GDg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,307,1728975600"; 
-   d="scan'208";a="108869450"
-Received: from lkp-server01.sh.intel.com (HELO d63d4d77d921) ([10.239.97.150])
-  by fmviesa004.fm.intel.com with ESMTP; 11 Jan 2025 02:44:33 -0800
-Received: from kbuild by d63d4d77d921 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tWYyk-000KVL-2m;
-	Sat, 11 Jan 2025 10:44:30 +0000
-Date: Sat, 11 Jan 2025 18:43:37 +0800
-From: kernel test robot <lkp@intel.com>
-To: Wencheng Yang <east.moutain.yang@gmail.com>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Wencheng Yang <east.moutain.yang@gmail.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drviers/iommu/amd: support P2P access through IOMMU when
- SME is enabled
-Message-ID: <202501111847.N7CwntR4-lkp@intel.com>
-References: <20250110130756.333265-1-east.moutain.yang@gmail.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pFodHIYg"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-436246b1f9bso4374225e9.1
+        for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 11:00:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1736622008; x=1737226808; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=83YnfLV99c7425ULqd9YcQOCKGkrgnBiUCwGR41A70o=;
+        b=pFodHIYgxvBLDEGjVzuj27iYQYL85r2a+6GJBZFwGqBBY/21LeVGSOBsF+dEUdC9aE
+         iXil9dEmDXxGLR+zjl9N92S7tDaMuBk2ZYQL08VWl3XOvSp7dF+5duJ6CiFwDlIbhVo/
+         ZNxpAIJcdHwKtPd7sh29cx9hwufMHf/j+e54teR5QC+0joh6k42YQ9+XZLkdyrpPKU4I
+         XI2lUvC/wycnyqDjcbksjkPR1KhJZoyT6sWYlvZpBs9jSU46/Fjzd7ela29RCkrtXPKR
+         mCt0uQquGfdJXuoTPGE4+Ls1BCIVsUx6I9T07/N8e0loARb2Fjdip2RidNEh5KSZBws5
+         deSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736622008; x=1737226808;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=83YnfLV99c7425ULqd9YcQOCKGkrgnBiUCwGR41A70o=;
+        b=XW7cLxJVrpPG0e+t4+ahIiFvP2n1nPNgllX/rATRT3QgNtyg4h2R5WoTrtHFHO+7AM
+         ePS/MfazbKpJEVhriBXPRISl0YYTtELYrWwQUHbdxPpFCmyKhB0z4P6dl53G5NsM8OmR
+         X9eMsJLAgnVZ+9HMjIqi86pYuFI6RO976r+1Z0s9QKejOi8kccKEQYELq4nSaJpJSMw2
+         xGULvbWZCkES4gd0QDlkLfv5JsBVrXjm9CN9byooNK46w4r5Ye9nSwQ9cQEE7/nhna1O
+         UkfAwQRWC3w10Gd73dOqHz4G2YuPsTc1RPwRUnwTeMJSOlmtFfr8GjCbyShAGSNfJ8tY
+         X3mQ==
+X-Gm-Message-State: AOJu0Yz2M2ZWOWnm/2H58k1bdIPzZkhqg52OIdW+kNEJYylawZOha3lY
+	KG3cJV1sjBZIXX8HCJp8Igt8UYSr+w57DJUQYTVPSVCQl/C225eNbpozzorqDLA=
+X-Gm-Gg: ASbGncucC6bH8u5/u1QKQJm+mFTBSQOV+XLaG3Iyz0TvMYSWNnI7MLKpuh51uDNe7EK
+	fOrLdHOKAh6SfR45k5Ki87GNtGBQt8L0nJ/FZKt+hwhxuB62eZdnWUBFxZNTs7Yx9OsjiD9/6ox
+	g/yyPCuWT0BnMYJLzGFBp8H/YfKDHzrx6BCsGbPmDcG+7mWSaLKbN1+oF3vB0wjQ1bE8dAJHXF4
+	bn2wgbQHIK2tBW9MvtMtsaq0z5d987KFX0YlGGQXFW4UIHl8s/L1UYmyQvaJaLH3yelYUks
+X-Google-Smtp-Source: AGHT+IELQO/OxTr5IXZCsTt3zJMTR1Diaau7OFJ11SNSSvofDLey97QdtnPb/Ld8MtAYleoaOKhKcA==
+X-Received: by 2002:a05:600c:1385:b0:436:1b94:2deb with SMTP id 5b1f17b1804b1-436e26f556fmr57845815e9.5.1736622007736;
+        Sat, 11 Jan 2025 11:00:07 -0800 (PST)
+Received: from [127.0.1.1] ([178.197.223.165])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-436e9d8fc81sm91309075e9.5.2025.01.11.11.00.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jan 2025 11:00:07 -0800 (PST)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 0/3] iommu: omap: Simplify few things
+Date: Sat, 11 Jan 2025 20:00:00 +0100
+Message-Id: <20250111-syscon-phandle-args-iommu-v1-0-3767dee585a6@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250110130756.333265-1-east.moutain.yang@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIALC/gmcC/x2MSQrDMAwAv2J0jsBSl0O/EnJwYzUVNHawSGkJ/
+ ntFj8Mwc4BJUzG4hQOavNW0FgcaAszPVBZBzc7AkS+RiNC+NteCm8v8EkxtMdS6rjuyJLrynfm
+ UzuD91uShn/97nHr/AatGR9RrAAAA
+X-Change-ID: 20250111-syscon-phandle-args-iommu-2ea162b223a4
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=629;
+ i=krzysztof.kozlowski@linaro.org; h=from:subject:message-id;
+ bh=w2RLalgguC4wcmcCrxQZEvgRN248gOCpyiQk92eiW8A=;
+ b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBngr+yHwT2CYIdMSwSBejwoZJi06/jF4kSiIAhc
+ PrwCXSsJt2JAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCZ4K/sgAKCRDBN2bmhouD
+ 12pTD/46KozNwCKqZpYIeZshmkdZtABBy8WpNFremjg8L6lJOKxsqUpOX/ry9ci5PK+8hzX6rhk
+ Qzk5TvQLy1NYtAik6M+95cFfnKmvVWh9kGmvkE8j/oqvMbjNEb5SpTglKIYrMHMgcf2ZpDS8+6v
+ hsMUHguzLXzNf4qWlG95WX1URFlM4UDlHO6Hx+1g0wAlS+CTTzyvRJy1tFaw68QqXBVoDHbou2C
+ lLNua9I3l9DQFrCQV4yNTGBfTGZN7LY8okQIJ7EvIxHWACpfWWEgk3KoH2YWLtqsf/K/9KPwmvg
+ WjcPuozn4X96bHXGaNmAiT1DAofIGq1afMvD7BPDg0SxOYzWHP7TmDZ7n/PrMTCqXiTI8hdjH8h
+ WSuaN6PYQekukfpYCJOC5QzMsMocJcyuTtZ+HydxRmgWCLwb4fR3Pu1Q1nP5CAI18bXvuV28Mnm
+ 7uNCLaABd/NRaAgtYIDYx4zV/vOzw7TKrUbSJxPmOdToIIZtp6bnt8D3AGkvPoK2ol9GnlLrw3V
+ rnOlVHgaLVHiJ9Fl9xgJY/vAxVPfwf8JL90lOy/XVIMLzR20NpulQ/NwRehAPKpZFG4leYm4OHu
+ MhSd/Y9rtKhgb83o9tZjQtUXIKzOl6JCduThAMTxAdkXnyLKvzrWZx1V6wy7Qj7ZMcnNBQy8GOR
+ R7qSvO9UrLzjaPQ==
+X-Developer-Key: i=krzysztof.kozlowski@linaro.org; a=openpgp;
+ fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
 
-Hi Wencheng,
+Few code simplifications without functional impact.  Not tested on
+hardware.
 
-kernel test robot noticed the following build warnings:
+Best regards,
+Krzysztof
 
-[auto build test WARNING on arm-perf/for-next/perf]
-[also build test WARNING on linus/master joro-iommu/next v6.13-rc6 next-20250110]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+---
+Krzysztof Kozlowski (3):
+      iommu: omap: Drop redundant check if ti,syscon-mmuconfig exists
+      iommu: omap: Simplify returning syscon PTR_ERR
+      iommu: omap: Use syscon_regmap_lookup_by_phandle_args
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Wencheng-Yang/drviers-iommu-amd-support-P2P-access-through-IOMMU-when-SME-is-enabled/20250110-210948
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-next/perf
-patch link:    https://lore.kernel.org/r/20250110130756.333265-1-east.moutain.yang%40gmail.com
-patch subject: [PATCH] drviers/iommu/amd: support P2P access through IOMMU when SME is enabled
-config: x86_64-buildonly-randconfig-001-20250111 (https://download.01.org/0day-ci/archive/20250111/202501111847.N7CwntR4-lkp@intel.com/config)
-compiler: clang version 19.1.3 (https://github.com/llvm/llvm-project ab51eccf88f5321e7c60591c5546b254b6afab99)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250111/202501111847.N7CwntR4-lkp@intel.com/reproduce)
+ drivers/iommu/omap-iommu.c | 19 +++----------------
+ 1 file changed, 3 insertions(+), 16 deletions(-)
+---
+base-commit: ed46c89bfab3e10f8c38d95bdeab32e1c5ff82f2
+change-id: 20250111-syscon-phandle-args-iommu-2ea162b223a4
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202501111847.N7CwntR4-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/iommu/amd/io_pgtable_v2.c:14:
-   In file included from include/linux/io-pgtable.h:6:
-   In file included from include/linux/iommu.h:10:
-   In file included from include/linux/scatterlist.h:8:
-   In file included from include/linux/mm.h:2223:
-   include/linux/vmstat.h:518:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
-     518 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
-         |                               ~~~~~~~~~~~ ^ ~~~
->> drivers/iommu/amd/io_pgtable_v2.c:68:6: warning: variable 'pte' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-      68 |         if (!(prot & IOMMU_PROT_MMIO))
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/amd/io_pgtable_v2.c:71:2: note: uninitialized use occurs here
-      71 |         pte |= IOMMU_PAGE_PRESENT | IOMMU_PAGE_USER;
-         |         ^~~
-   drivers/iommu/amd/io_pgtable_v2.c:68:2: note: remove the 'if' if its condition is always true
-      68 |         if (!(prot & IOMMU_PROT_MMIO))
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      69 |                 pte = __sme_set(paddr & PM_ADDR_MASK);
-   drivers/iommu/amd/io_pgtable_v2.c:66:9: note: initialize the variable 'pte' to silence this warning
-      66 |         u64 pte;
-         |                ^
-         |                 = 0
-   2 warnings generated.
-
-
-vim +68 drivers/iommu/amd/io_pgtable_v2.c
-
-    63	
-    64	static u64 set_pte_attr(u64 paddr, u64 pg_size, int prot)
-    65	{
-    66		u64 pte;
-    67	
-  > 68		if (!(prot & IOMMU_PROT_MMIO))
-    69			pte = __sme_set(paddr & PM_ADDR_MASK);
-    70	
-    71		pte |= IOMMU_PAGE_PRESENT | IOMMU_PAGE_USER;
-    72		pte |= IOMMU_PAGE_ACCESS | IOMMU_PAGE_DIRTY;
-    73	
-    74		if (prot & IOMMU_PROT_IW)
-    75			pte |= IOMMU_PAGE_RW;
-    76	
-    77		/* Large page */
-    78		if (pg_size == IOMMU_PAGE_SIZE_1G || pg_size == IOMMU_PAGE_SIZE_2M)
-    79			pte |= IOMMU_PAGE_PSE;
-    80	
-    81		return pte;
-    82	}
-    83	
-
+Best regards,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
