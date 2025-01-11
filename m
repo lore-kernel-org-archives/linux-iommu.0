@@ -1,62 +1,64 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 584901B85D0
-	for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 19:00:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EA1E1B85E4
+	for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 19:00:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736622011; cv=none; b=WCEq2iFQwZtNXCHqfF/dVl0klNNa06+JmnKoQ3b5qWO8r5ndl3OLczgPKgCR3Fi3OxOyq1XaBqoNFUx28hck2SruZmL9sFJKZgwGc8v/B8RLsFnJP6HJ9Ky19EbR/mkG2hkfgwR3I5IZuS26huZ6yz4CtyY31kH8/0ZOyy7vrsE=
+	t=1736622013; cv=none; b=QlWqoApA2no5lQ4JocPZnc+DQUmwCAhxi1WiyXOpHH+LtDNPS3099xdnqQwoLk7rbCBj/dJjBHCIvUH6P9gAIzIDKLB7tZpI6pq6yLS6+P+Brw3bHkSqsu7QJSmAYuRx78lERxwqKlL/AGxzwXVPtrPrKZ2w3lQTqDi8dZqKgv0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736622011; c=relaxed/simple;
-	bh=w2RLalgguC4wcmcCrxQZEvgRN248gOCpyiQk92eiW8A=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=E22/j/TTY6rodQPNle2T2S+JwI8L28JLsPg+CV+M3mQ0+ENO45KyhTkny89Rdn9leHO+qPNzkldXRtTDNwDkqglLB6AMHatqihdiOGW/w9aXWZPzCvwRG+Q+mgJoc+8Jcp3kSUs/jz+tPAgNy4WKpQ6fwZbSYY3xhHd95kmwD4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=pFodHIYg; arc=none smtp.client-ip=209.85.128.51
+	s=arc-20240116; t=1736622013; c=relaxed/simple;
+	bh=JU0TwdMjeSFQ90hC61OukfyZcV4B06qD4tAIkB9vGZk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=nBoLXXtHJgsnOsQzFY8ld3yliC2Ifr0gQF1LFd2vM2AuZXkMhhjcJEtq+MgvY3ZsRwE2L6Jffm/sD938aCL9RjNksXsbx2YY58bdALuaAuQut1Wv4pdKorBSuWj8V0msNkqK/UcRdNXCtuCHBuZbg5C2xsufw0kilv4KVTx2LvM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=sEimbzLl; arc=none smtp.client-ip=209.85.221.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pFodHIYg"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-436246b1f9bso4374225e9.1
-        for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 11:00:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sEimbzLl"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-38625aa01b3so324115f8f.3
+        for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 11:00:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1736622008; x=1737226808; darn=lists.linux.dev;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=83YnfLV99c7425ULqd9YcQOCKGkrgnBiUCwGR41A70o=;
-        b=pFodHIYgxvBLDEGjVzuj27iYQYL85r2a+6GJBZFwGqBBY/21LeVGSOBsF+dEUdC9aE
-         iXil9dEmDXxGLR+zjl9N92S7tDaMuBk2ZYQL08VWl3XOvSp7dF+5duJ6CiFwDlIbhVo/
-         ZNxpAIJcdHwKtPd7sh29cx9hwufMHf/j+e54teR5QC+0joh6k42YQ9+XZLkdyrpPKU4I
-         XI2lUvC/wycnyqDjcbksjkPR1KhJZoyT6sWYlvZpBs9jSU46/Fjzd7ela29RCkrtXPKR
-         mCt0uQquGfdJXuoTPGE4+Ls1BCIVsUx6I9T07/N8e0loARb2Fjdip2RidNEh5KSZBws5
-         deSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736622008; x=1737226808;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=linaro.org; s=google; t=1736622010; x=1737226810; darn=lists.linux.dev;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=83YnfLV99c7425ULqd9YcQOCKGkrgnBiUCwGR41A70o=;
-        b=XW7cLxJVrpPG0e+t4+ahIiFvP2n1nPNgllX/rATRT3QgNtyg4h2R5WoTrtHFHO+7AM
-         ePS/MfazbKpJEVhriBXPRISl0YYTtELYrWwQUHbdxPpFCmyKhB0z4P6dl53G5NsM8OmR
-         X9eMsJLAgnVZ+9HMjIqi86pYuFI6RO976r+1Z0s9QKejOi8kccKEQYELq4nSaJpJSMw2
-         xGULvbWZCkES4gd0QDlkLfv5JsBVrXjm9CN9byooNK46w4r5Ye9nSwQ9cQEE7/nhna1O
-         UkfAwQRWC3w10Gd73dOqHz4G2YuPsTc1RPwRUnwTeMJSOlmtFfr8GjCbyShAGSNfJ8tY
-         X3mQ==
-X-Gm-Message-State: AOJu0Yz2M2ZWOWnm/2H58k1bdIPzZkhqg52OIdW+kNEJYylawZOha3lY
-	KG3cJV1sjBZIXX8HCJp8Igt8UYSr+w57DJUQYTVPSVCQl/C225eNbpozzorqDLA=
-X-Gm-Gg: ASbGncucC6bH8u5/u1QKQJm+mFTBSQOV+XLaG3Iyz0TvMYSWNnI7MLKpuh51uDNe7EK
-	fOrLdHOKAh6SfR45k5Ki87GNtGBQt8L0nJ/FZKt+hwhxuB62eZdnWUBFxZNTs7Yx9OsjiD9/6ox
-	g/yyPCuWT0BnMYJLzGFBp8H/YfKDHzrx6BCsGbPmDcG+7mWSaLKbN1+oF3vB0wjQ1bE8dAJHXF4
-	bn2wgbQHIK2tBW9MvtMtsaq0z5d987KFX0YlGGQXFW4UIHl8s/L1UYmyQvaJaLH3yelYUks
-X-Google-Smtp-Source: AGHT+IELQO/OxTr5IXZCsTt3zJMTR1Diaau7OFJ11SNSSvofDLey97QdtnPb/Ld8MtAYleoaOKhKcA==
-X-Received: by 2002:a05:600c:1385:b0:436:1b94:2deb with SMTP id 5b1f17b1804b1-436e26f556fmr57845815e9.5.1736622007736;
-        Sat, 11 Jan 2025 11:00:07 -0800 (PST)
+        bh=+PW/3EHqkTVSUDSi98uyP6NlZnYHXc/ieQQmNS4dMCM=;
+        b=sEimbzLld7cXAa/fXgn+L5rnGBoQDGNor4mfftP2aEuoXRhHMI6t92FxLwP66AYgko
+         XQaMmRDQEfK7qXx08XG9ggvdyeeAo34JtNgDD4xnoIrJZ5I0GWN/eoBzC824DTDkYvj8
+         2ZdP/zjH4FQzZRfStKWDcRdlTVYoJwSQP6Qmfz/VSeyw6pFGVoaxHHBCmTbKfKrSd8mO
+         +S+ouGkNDeMKYF9vLMQczqzh7YW4mIzE2B1Fz5P0z8fM1s3WLsHHEaF/nOTLKOmrB4id
+         QLtP/mf80zt21sOSoRN4fQ5ofJsYHliqhg0fL2dXOH+PjefT9yPv6tAbNYNrrMZHt/F/
+         kRGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736622010; x=1737226810;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+PW/3EHqkTVSUDSi98uyP6NlZnYHXc/ieQQmNS4dMCM=;
+        b=WhiT+rlH4bzEi0uo18FznqQT/o6xit8cTmXkL4x9qpHxa5GoSm9R39Gxw8xgqhf4qo
+         N6/sbqJoMYMGqWV9NeZdp4H/kmuS024+T4EElr3CqFHSEP8FtR5dQsaaliKEq6wRMpcW
+         FaEwQ5FaV6uLIO9ESf14uPmaEzWg7ImzzCyUxeL5Zfks/AQ2sMDEl15cVBw1JOJbmuIY
+         n8jJ1hafr7oGjCM3J26i5g+IZ4cOzXtDtoc54NrVuR8rIVgaooDE7niIaa+ri+lQaWbv
+         7AZCa8DfMlY/O3vzcsbRjEJdcERSCkAblIPqcqULTgt0odT4R29F8VKuz3bRrAMmVgbR
+         JgvA==
+X-Gm-Message-State: AOJu0YxSfyBw+aWk0xsjlmNUYumcXzC8Qd9QPCJfhpFTc8IXEJyUjw2y
+	O/GZ9WM/rx50crl60gdYHJLynLV58G9aT4NLKEM9I8XRlyXEt48ukR8JP0r71Qw=
+X-Gm-Gg: ASbGncsZd/pj9wynYpv0w7qfeNljTKCZILlEwtr7arwtoBxkO4RuAOmAChxmO9+8660
+	M1t4IkzYZejkWHIpH88MAM9vJwMNJFlwQ+SXTnP7E1ktJaeaiTJu2xwOpb6FCot3RWI3CjKxXRk
+	qYUBf8cFpu+EQGvvK8PggG1jL0f+PakfrMDgV/uzIPWEopcdLA/ETq/afZ2xfOuRByOWFC9LN9Y
+	9hKR2OyJawEEbJnqdUSBaSY2m5/vUBTgG3m7OJ6fAoGhSYGvY8f2dX+hRBddPwg0RrnMnh1
+X-Google-Smtp-Source: AGHT+IHq0hIg7Nw5hzAVMFQ6qFqPN2h5LoXzXQjltVNuXkaUvtWrPCaTeD1jJRqtPCNIDucQyDlj3w==
+X-Received: by 2002:a05:600c:3c97:b0:42c:b55f:f4f with SMTP id 5b1f17b1804b1-436e2713e51mr60366275e9.6.1736622009942;
+        Sat, 11 Jan 2025 11:00:09 -0800 (PST)
 Received: from [127.0.1.1] ([178.197.223.165])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-436e9d8fc81sm91309075e9.5.2025.01.11.11.00.05
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-436e9d8fc81sm91309075e9.5.2025.01.11.11.00.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jan 2025 11:00:07 -0800 (PST)
+        Sat, 11 Jan 2025 11:00:09 -0800 (PST)
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 0/3] iommu: omap: Simplify few things
-Date: Sat, 11 Jan 2025 20:00:00 +0100
-Message-Id: <20250111-syscon-phandle-args-iommu-v1-0-3767dee585a6@linaro.org>
+Date: Sat, 11 Jan 2025 20:00:01 +0100
+Subject: [PATCH 1/3] iommu: omap: Drop redundant check if
+ ti,syscon-mmuconfig exists
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,52 +67,57 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIALC/gmcC/x2MSQrDMAwAv2J0jsBSl0O/EnJwYzUVNHawSGkJ/
- ntFj8Mwc4BJUzG4hQOavNW0FgcaAszPVBZBzc7AkS+RiNC+NteCm8v8EkxtMdS6rjuyJLrynfm
- UzuD91uShn/97nHr/AatGR9RrAAAA
-X-Change-ID: 20250111-syscon-phandle-args-iommu-2ea162b223a4
+Message-Id: <20250111-syscon-phandle-args-iommu-v1-1-3767dee585a6@linaro.org>
+References: <20250111-syscon-phandle-args-iommu-v1-0-3767dee585a6@linaro.org>
+In-Reply-To: <20250111-syscon-phandle-args-iommu-v1-0-3767dee585a6@linaro.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
  Robin Murphy <robin.murphy@arm.com>
 Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
  Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=629;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=977;
  i=krzysztof.kozlowski@linaro.org; h=from:subject:message-id;
- bh=w2RLalgguC4wcmcCrxQZEvgRN248gOCpyiQk92eiW8A=;
- b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBngr+yHwT2CYIdMSwSBejwoZJi06/jF4kSiIAhc
- PrwCXSsJt2JAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCZ4K/sgAKCRDBN2bmhouD
- 12pTD/46KozNwCKqZpYIeZshmkdZtABBy8WpNFremjg8L6lJOKxsqUpOX/ry9ci5PK+8hzX6rhk
- Qzk5TvQLy1NYtAik6M+95cFfnKmvVWh9kGmvkE8j/oqvMbjNEb5SpTglKIYrMHMgcf2ZpDS8+6v
- hsMUHguzLXzNf4qWlG95WX1URFlM4UDlHO6Hx+1g0wAlS+CTTzyvRJy1tFaw68QqXBVoDHbou2C
- lLNua9I3l9DQFrCQV4yNTGBfTGZN7LY8okQIJ7EvIxHWACpfWWEgk3KoH2YWLtqsf/K/9KPwmvg
- WjcPuozn4X96bHXGaNmAiT1DAofIGq1afMvD7BPDg0SxOYzWHP7TmDZ7n/PrMTCqXiTI8hdjH8h
- WSuaN6PYQekukfpYCJOC5QzMsMocJcyuTtZ+HydxRmgWCLwb4fR3Pu1Q1nP5CAI18bXvuV28Mnm
- 7uNCLaABd/NRaAgtYIDYx4zV/vOzw7TKrUbSJxPmOdToIIZtp6bnt8D3AGkvPoK2ol9GnlLrw3V
- rnOlVHgaLVHiJ9Fl9xgJY/vAxVPfwf8JL90lOy/XVIMLzR20NpulQ/NwRehAPKpZFG4leYm4OHu
- MhSd/Y9rtKhgb83o9tZjQtUXIKzOl6JCduThAMTxAdkXnyLKvzrWZx1V6wy7Qj7ZMcnNBQy8GOR
- R7qSvO9UrLzjaPQ==
+ bh=JU0TwdMjeSFQ90hC61OukfyZcV4B06qD4tAIkB9vGZk=;
+ b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBngr+z59T0wdz6nZaOzPJVmnu6RWUBcwaYTVzxd
+ NcqQDtiqf6JAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCZ4K/swAKCRDBN2bmhouD
+ 10xWD/wKpBcaRhMOt/aF5rrhNyKSQjCZPDlENPZNEBsLmPqFIcefYlzlWHrHtr/7QWp7Gi/DGey
+ 1mShcGuGWmAIUyed7PwVjKOuUsgVj9SCmB60jbl56FHtZn2fYvgLlj5wwm1mGbE7DPnqsFI8/ud
+ qzBNPKxWvWt8rxw7jEzS8Z7uN8kbfrUc25t0Y71SgggKRwqIzrthA0kvnEhBtaiPW8QyZIqM2OC
+ jR531qGCrRdzqm7rTK4l9j1DL0CyTJM6HndALKaeEwXy+QsVe+yI+NS+ABOVHtyIUd3GaEZucEz
+ D/K/dpzPCbUL9ObvfABlEd/9AMIJteCOcuFOfTQVxhUf8dapHSVoDGGnEcauFUSfHq4tGL9rxR3
+ XrcMSgbLa6Kq4HMT0Kr9tbiuha1yrz45kc47dxQMtVfZnTaX8LAVhwEzoGlLDX7c+h3XCD5LTHA
+ A4ZC79voez84ZURupI+6jvD34gJIPOWIPg6MKanJDlrktDMbrHTuoa5y5QvSLRPvRHzqBSrNOtH
+ 5zTGxKSiEgHQVFjaCdRfxQ6zWmCl9FBtHIaNBiSIi7LKSjrfMrEZbjvdi+OCvFzjkf1edNuCei/
+ 8FDrwPqtChINgtcFPtPBOxTfWBs3oa7Ita5FiQWWMjAzTZV5GNIqERBC8ayXI78f9N98pOGkg8z
+ QM11Xn8Y801aKpg==
 X-Developer-Key: i=krzysztof.kozlowski@linaro.org; a=openpgp;
  fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
 
-Few code simplifications without functional impact.  Not tested on
-hardware.
+The syscon_regmap_lookup_by_phandle() will fail if property does not
+exist, so doing of_property_read_bool() earlier is redundant.
 
-Best regards,
-Krzysztof
-
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
-Krzysztof Kozlowski (3):
-      iommu: omap: Drop redundant check if ti,syscon-mmuconfig exists
-      iommu: omap: Simplify returning syscon PTR_ERR
-      iommu: omap: Use syscon_regmap_lookup_by_phandle_args
+ drivers/iommu/omap-iommu.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
- drivers/iommu/omap-iommu.c | 19 +++----------------
- 1 file changed, 3 insertions(+), 16 deletions(-)
----
-base-commit: ed46c89bfab3e10f8c38d95bdeab32e1c5ff82f2
-change-id: 20250111-syscon-phandle-args-iommu-2ea162b223a4
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 3c62337f43c67720a15b67e8b610da7886f6f39c..04a7deaaba25cb270eb6eeaf6a21030440f78a5e 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1128,11 +1128,6 @@ static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
+ 	if (!of_device_is_compatible(np, "ti,dra7-dsp-iommu"))
+ 		return 0;
+ 
+-	if (!of_property_read_bool(np, "ti,syscon-mmuconfig")) {
+-		dev_err(&pdev->dev, "ti,syscon-mmuconfig property is missing\n");
+-		return -EINVAL;
+-	}
+-
+ 	obj->syscfg =
+ 		syscon_regmap_lookup_by_phandle(np, "ti,syscon-mmuconfig");
+ 	if (IS_ERR(obj->syscfg)) {
 
-Best regards,
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+2.43.0
 
