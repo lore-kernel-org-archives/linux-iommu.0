@@ -1,213 +1,299 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2049.outbound.protection.outlook.com [40.107.102.49])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2079.outbound.protection.outlook.com [40.107.101.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 210062147EE;
-	Fri, 10 Jan 2025 21:58:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D1BD149E13;
+	Sat, 11 Jan 2025 03:32:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.79
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736546321; cv=fail; b=O+zR/rTIg6sHes2pU8h7QPYJ2x6T39jbHBB1RSWpZt/v+bkUBWNH+187GFjSlbtHbZRaLVcDOtxjkMpWhOa8JCHtanMiS/MbAlVn42btk17JX0gIVch1VIhaDlqaRCV+dIsZnjVyxPUJaD44MMdqxxwZgbGTuVl3wvnazA7qOHc=
+	t=1736566374; cv=fail; b=kXFzeM6ojfcKy7xmjeqovA43EybtwvfJ3PqF3U1T1TgTh58WBY5Ww6CDNYSx3baDQRveGBE1XEtuqv2FoOiaI/sulrj8rJ3Dbv8oLV+fmHOtPmbsen0VoLTx5Ir1jMp6I2XjPZWqOqAMbaVm0EBrE7DpciSrsr/YpJeI4ZZtAp4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736546321; c=relaxed/simple;
-	bh=GUZbj71mEy5vuoVWfBuU/QCnJu2EWqQHVowHDmSXdU0=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Xk2JkYPYF7uszoSN12qqldzR9LCg6FE2ZPRFFjsVHyLP+Fo2/4lrfX3ec5iHeU17XAOizQr3eRbiuyqrzzBXftM7ylLHEOkB4lB7MP3aReifa60Ue7Zn1wfWy19kyFmTKMNwvvhISl7QOV8BDrbcIF2AZRXsoyCPM1CVk6k8S2I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hQkDXDoo; arc=fail smtp.client-ip=40.107.102.49
+	s=arc-20240116; t=1736566374; c=relaxed/simple;
+	bh=VgdZU1I7JZbfE1pTg7JsfM/8SYB4mwoJnpqq8ZwL9LI=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=cJ9Z/2GcavPs6FxJMyX4BkrBgF0l4g9CgcoNgdd7vktxf4sZcKbNHQCOza9tGAu8LbEqcBmbmZc8s3I4akjOOPPnL3flUiAGuHEAXH5Sj9L+Dt3Oq4iLawbOJFWlo3y/MEEHRuIGat3sxWv0QJI9YBwzEcyqEOa4N4E2gR+f5Ik=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UJ6oWdH1; arc=fail smtp.client-ip=40.107.101.79
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hQkDXDoo"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UJ6oWdH1"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=amVlqeXstqZuk+eQ2qKR1cYG+UUj3o6FAy3Wm+nRpaYRRrNtd4p1unI61dcbjs32Zla5T7CecS9JMTAQjrgfcUYLobU+IVa7e7hakAd1Vc7UP67MS5M5hIXdG6Y0MfoHVKyjFH0xuF/ungRL95xymCtEa8ylu+x/faT7c5DkoJSrzSnvpGNcY5EsH/E5M9Oi9+Y4uXJcjGiQawkTpYo+eD17W/0/7OHM92A61up+csS2j8pHM62gDoXbt9z7rF11ZAiIFQ7z6qg5KgDhMq2NR0lBgQma9bmolpyPqTo/bSk+BP/RLPAd8jKDPmZPMvFRaU/t5QWegbF6qonmC4J2xQ==
+ b=ZgHp3IClmMPJO4pTQqHADgkehDQWph//NWPPqfTn2gsrboqDqYDfBBs+XQnqW+aj59R9XVzKyzS7J4nqYK45JbGb5emSw2/SpvTLL5lQBXgDm6uEr6krSWlTvXiqnyhEPZ6soi8Il3c2fNlWVCsyqbAf1220xprubniX2aayKFaUj/L+7TEdiqEk6y4eqC6SbzQpa9Xn5cAaIS+CrsZFcXvsD80H0YEdLX8OcDhPj0nUAMasHa4jTkhWbX0BTETb3YVx/MFmzxmsQDTPjADeicbpl4tBDhVPyYbNZkkOhc4hvexII6AwxfztQ3ucBVg26Zo89NDho960TWXl3R1TAw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hJY/oyJ/rYLMf8rjP9KD6Uzi/DBklaBugSDHe2pdZ50=;
- b=H7WhsOo5twnVXTm/jCNAGsEpx54LowbDqSaqErMOna9llhaeXVHEPjDy3JRoXpQ/7vH+qUzxdU2155bhUb0cBHRBq/KzntdWE6UzCQKcLbKfE3fzi69Tz4CVyuTeygJyQu8Dj0EXh7Gd0feIqkGwm9rE4LO+f74RaRkqYEX+KOenD5YtKGuKYOqd7Em5D7hgwnYd/INnm64l9WgM1CXWEV2bXyMv1+CAFQsr/AklW9jXVJOiJZz32p2t5CjhZcwZZv+FxppRL1b4gSc7WPIJcO9jvb95nOjAfoAV7iPRMdN6HPy0R9O5xI+1YgkZWn3b6ZPeP0KhXSlms57MSviftg==
+ bh=AXEoudKpywhWWdJWYCfPZ2tsB98QT4kXh4FC6A4kRGQ=;
+ b=kyfnF861NrDe19ZVnlHRwAeiziwPLcj6FWHQ1OkOd86Nl66x0HdYWkU7Wp9TGnd/ZIKbzB36KRiAFTz7dE9YsZqfq3qOkjWkpaL1z0Rh9ZvbDTkXMNBLtiZP02jop1mLGL6HDHTxc9bjwWtUk6E9ehdgnOrtwW7e9BaVbbRXrjris/YCxg/kS7HUdtt9B1k7m1ZKYs7sXXALT7B2WBzVWQ69xsVZ7swiO5SzVRniAblJoBAiEDoETMtoUcVQAq1WyeDNid5GqGSCTSzejf/SLvTWSbBQ56OaWmRl9JM6HdWqrwgpgFf8cRdEejXS5xKEHVRSg1YA7hmBkbPShkQnqQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hJY/oyJ/rYLMf8rjP9KD6Uzi/DBklaBugSDHe2pdZ50=;
- b=hQkDXDoosjtin6DvUqUHsOkvsZoxG3HJRUSkARZPOPcuvKrvBLAp+kiFtv1icHT67o8x+9CpLAb/zBqEmKCxHXOo+zF4IhQAZog8Gec0Ey+7M/535HcIYYI3KSMLS1XGG5MnhvGQhP25uvH3DJFvjP7NrWvdti5YmEbeu74TYpRfrUlSNlz5N+bPu5vlfuJ+2+QEpwQ5zMWkbqo5w15LezJi2Lqk+RlgLT9Se7CIIMaCFZJWauyme60TUBj/E1gPubyANhnEP8V6vOF8MOkCO9kBzUTJrJAIK7vXtSfZF4/RBLc0aY08lwy+IaHhIyym5md7CtWkWzQ8EbGxhEy3EA==
-Received: from BYAPR02CA0021.namprd02.prod.outlook.com (2603:10b6:a02:ee::34)
- by SN7PR12MB8791.namprd12.prod.outlook.com (2603:10b6:806:32a::12) with
+ bh=AXEoudKpywhWWdJWYCfPZ2tsB98QT4kXh4FC6A4kRGQ=;
+ b=UJ6oWdH1YhM83nkI8b8YrOPLL+t+DofNPTLUNthHqwI+Vk0rX1f4v57y/XCpfjkuv2BFIjCnkFofJGckVH1CaAxmweYcuw+z6cJmSQoxd30rbLAbylIsKhMGprOPFwZ8tD7lfBEAV9ZS4siEG6uaHJUXPxyA9yp4BfIlKPzbrQXGBMusH3ykZZlzhhJSj+svsmtsqbVCH7EMHtVvHyO9j3UeaR1fPDmhFndpRVIQttuu0SuQBMIeRcyLBTvhjgFtL9kdoqOx+9WvGgM11KCL4qH5xFGKgW5qFotFN74AgObQRsmjshETLG8b9/r84KmEN3VmUfrY8/0poaiwOPlf0Q==
+Received: from DM6PR03CA0073.namprd03.prod.outlook.com (2603:10b6:5:333::6) by
+ LV3PR12MB9216.namprd12.prod.outlook.com (2603:10b6:408:1a5::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8335.12; Fri, 10 Jan
- 2025 21:58:35 +0000
-Received: from SJ5PEPF000001CA.namprd05.prod.outlook.com
- (2603:10b6:a02:ee:cafe::94) by BYAPR02CA0021.outlook.office365.com
- (2603:10b6:a02:ee::34) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8335.13 via Frontend Transport; Fri,
- 10 Jan 2025 21:58:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8335.11; Sat, 11 Jan
+ 2025 03:32:48 +0000
+Received: from DS1PEPF0001709A.namprd05.prod.outlook.com
+ (2603:10b6:5:333:cafe::d1) by DM6PR03CA0073.outlook.office365.com
+ (2603:10b6:5:333::6) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8335.15 via Frontend Transport; Sat,
+ 11 Jan 2025 03:32:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ5PEPF000001CA.mail.protection.outlook.com (10.167.242.39) with Microsoft
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ DS1PEPF0001709A.mail.protection.outlook.com (10.167.18.104) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8335.7 via Frontend Transport; Fri, 10 Jan 2025 21:58:35 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.8335.7 via Frontend Transport; Sat, 11 Jan 2025 03:32:48 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 10 Jan
- 2025 13:58:25 -0800
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 10 Jan
- 2025 13:58:25 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Fri, 10 Jan 2025 13:58:23 -0800
-Date: Fri, 10 Jan 2025 13:58:21 -0800
+ 2025 19:32:46 -0800
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Fri, 10 Jan 2025 19:32:46 -0800
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
+ Transport; Fri, 10 Jan 2025 19:32:44 -0800
 From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <kevin.tian@intel.com>, <corbet@lwn.net>, <will@kernel.org>,
-	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
-	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>, <eric.auger@redhat.com>,
+To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
+	<kevin.tian@intel.com>, <tglx@linutronix.de>, <maz@kernel.org>,
+	<alex.williamson@redhat.com>
+CC: <joro@8bytes.org>, <shuah@kernel.org>, <reinette.chatre@intel.com>,
+	<eric.auger@redhat.com>, <yebin10@huawei.com>, <apatel@ventanamicro.com>,
+	<shivamurthy.shastri@linutronix.de>, <bhelgaas@google.com>,
+	<anna-maria@linutronix.de>, <yury.norov@gmail.com>, <nipun.gupta@amd.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <kvm@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <patches@lists.linux.dev>,
 	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
 	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>,
-	<ddutile@redhat.com>, <yi.l.liu@intel.com>, <patches@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] iommufd: Add IOMMUFD_OBJ_VEVENTQ and
- IOMMUFD_CMD_VEVENTQ_ALLOC
-Message-ID: <Z4GX/R6lRwuhlBJQ@Asurada-Nvidia>
-References: <cover.1736237481.git.nicolinc@nvidia.com>
- <86e78625c48d0c8fb815496dbc57708b98a46ec7.1736237481.git.nicolinc@nvidia.com>
- <20250110174842.GI396083@nvidia.com>
- <Z4F0uZBg05J7Nuhl@Asurada-Nvidia>
- <20250110194950.GI5556@nvidia.com>
+	<ddutile@redhat.com>
+Subject: [PATCH RFCv2 00/13] iommu: Add MSI mapping support with nested SMMU
+Date: Fri, 10 Jan 2025 19:32:16 -0800
+Message-ID: <cover.1736550979.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250110194950.GI5556@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-NV-OnPremToCloud: AnonymousSubmission
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF000001CA:EE_|SN7PR12MB8791:EE_
-X-MS-Office365-Filtering-Correlation-Id: d1f49e53-39c2-44fb-d61f-08dd31c1ee8c
+X-MS-TrafficTypeDiagnostic: DS1PEPF0001709A:EE_|LV3PR12MB9216:EE_
+X-MS-Office365-Filtering-Correlation-Id: c939503c-7d33-4bee-2032-08dd31f09ebd
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|82310400026|36860700013|1800799024|7416014|376014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?W8YziFOA6+jBTDKEC79Hc2PEBNFjM3kOP3o9YMXmyliHe04WsPErFOdhDWpx?=
- =?us-ascii?Q?STcKOn5Glj0Ezv2AmC3vZwZcRqKAxhmYgrY80vWxS78dDQ4XLqRSNj7A8P6b?=
- =?us-ascii?Q?AB4EbseIQcAe59vAYNBslAmn4AQxKTtvKfTtoPUFwEx0xs4JgqviM4WN/GKD?=
- =?us-ascii?Q?26GG853mFEeANDIBrlQyC4lOxcYRB7BpOI11x6j2Osmphym52c8i0KoPOXcN?=
- =?us-ascii?Q?RFRLjvoZIDl7wqTKsqZaFPo/Lupuyctl0ayzAYVRroXu2KCvNbf4XIyhOUlX?=
- =?us-ascii?Q?3o+GNoI5UMj3amk8uwJtkeozcSNXkHY2tgkiZH4M3N6P63oH3BjWQIBg/c9+?=
- =?us-ascii?Q?q4leflnkaP3ZaxOgdddPMNpHRUtL7l2nhcqipJkIBWJzStigIDCumw42PMf8?=
- =?us-ascii?Q?PgI9L00+IyXoqlnUx2oG7aOuWTEd1s/OWdDp69sprsNhaNrIVZyACpvjbIXm?=
- =?us-ascii?Q?y+KHy0qgdwtwklP/SnyH+MHU6fNQEWK5UxuR1WlPc45CPg8RvbhzvHB77v83?=
- =?us-ascii?Q?xHFcYcdMTpT3EiQmvro6PlN+9nBS1RdSktlJTQZk4njLNFNMAshZVFj5esEM?=
- =?us-ascii?Q?1s9Sh2E1EN9o6Q/38ACkmLRa7XQ7bmERp6Awc/JXENz3NPz0lpTHzWhJvSQ5?=
- =?us-ascii?Q?eaO2DZPWVW+kKQI9DzNCeJ8vqIRolRKd0jqncG14Y+5s0Hh6NJ9TprgH0kQb?=
- =?us-ascii?Q?V9WONTzbcOyTlMlx3vEMsLDyS4tT3Fr/mEag9zcSK3IlK7GLUpuFO7xq1shw?=
- =?us-ascii?Q?ITLz4t+AG9hdkN606jMs2fLgNbZIyYJ5aJJN/UjIlOrq4ytNm3E2gWbxt/o8?=
- =?us-ascii?Q?iN7tU4yTqH40CvGVtt16zgjhwDeLY//xZHeHJoavuKIWsmC5tNKSmEwgLFEF?=
- =?us-ascii?Q?Ta9n03EfHMql56IAiW4WkXDYbh+nylB8bRSaYCoD51mUx71LRcv/6sKoSClq?=
- =?us-ascii?Q?mA9qnvkQ5cQkhvcmgs2dmt0N0IHvIynEcQupMKhIj2KwDHvRr92dpc4c6Mg/?=
- =?us-ascii?Q?j0Oju5aQv6Scy/7mhfj4kp2WMfyZhXFcpfFyWiaS/VNFBnleqIEeCqlUtgS6?=
- =?us-ascii?Q?XXwY1F0Abu3iyROfCVO0xi0t56fF8B9UPmXT8w2D6l1DdPzE6zrGfesWK66f?=
- =?us-ascii?Q?X326kTswMT0DZrPvCshlqeCRB15g1LRcRbGL73mSkY/IVDeV4yiMOT+bvdKk?=
- =?us-ascii?Q?8Pk64H3wWs20+9wagVVd0zeayuOqlZpLxpQ1nVBvTOd0USPzTOiXfCiuNLbS?=
- =?us-ascii?Q?336k6uZmElot5VQIAK0LmsJKVEZnhnAoQw6843svdbzKCgB87+rhBvza3v0j?=
- =?us-ascii?Q?+il0QaWcEFeSo1L2x36HIOghZzYsmyQ5zGlV00/8FyWp+8LqFAZ7nJTgkkti?=
- =?us-ascii?Q?xOEfqdZeDqrMaI+K700I4K0TM845OeSdh5JrVsA3MA5lVIYEZ/Yx27BLMoOd?=
- =?us-ascii?Q?4j1fR8Wcgirueb6EIYWCzYrw2Y905TNrlcFRvUDdwllI3AwolYwILgnV/hD+?=
- =?us-ascii?Q?MtLSyBWX+D0PoCI=3D?=
+	=?us-ascii?Q?W5QXUwCe8iRVr0+iFGv79hm9lBKvAVYWwQvVIZ165gXkc0UeSGm62sxHqqpp?=
+ =?us-ascii?Q?HK588xwpdXE7WE/TJFwQN/ngmNVQMVaOqEIayrSAhYsk7392Htw51FuyvEmE?=
+ =?us-ascii?Q?wRRXgt62iS0fw69Lu1gvp82kx9fRbxjIPdwc/TQIWSMJWWMiXwXu9CZ5P+9i?=
+ =?us-ascii?Q?SjvagdOfgvaKmU1pPlbJ85UUDSnSHK8jS5lB/Awm7rKgWMglig9Vu7D75TgN?=
+ =?us-ascii?Q?hcEInTXe3anNvl2ttOxqDsVdir48yPp/63XFUvxbOxf9Ug+G9qjwUILkqLKe?=
+ =?us-ascii?Q?i1R8J/QqIo1u6neDcKdbdfI1Y8g1srcwYMCY68bCA3xClWFvpcm74o1gI+WS?=
+ =?us-ascii?Q?96lpTHAbNzH0WxOTqLFicD/a1rYQ2/V8TMnzK92lKO7Mvji8BSdVGMXfesh2?=
+ =?us-ascii?Q?ei85qWTdR151CYCMFXFr/xO2oEU7XxLIN5Bsq+xTGrCCKMzxv/5CEv5qUgur?=
+ =?us-ascii?Q?t58FO7uqiNtK69todW2oy4pRJkyU9cde8yAspVxVh3fNpSoGuOaRjPW/Vb8d?=
+ =?us-ascii?Q?e3UmddhJzq7Rtrp4B8HxEIFWZwm0e1ri1VMHoCKkdI1q+kuN6ulA4sqZFDT0?=
+ =?us-ascii?Q?UM8AjBofH+UMN/1XtNDYgUVkeHmXwc5wzXxDHUy+sQsQiW7OTurGr17zfWbo?=
+ =?us-ascii?Q?6Pbg3z0F3hKfCTdPN2BzdP88opqXiCFIlDum2yTlEpzsVfz7vyeyHXKbqwyL?=
+ =?us-ascii?Q?mDWxn1tSmCaI+5bsLP/3cFMK9lBSJFAlHMuZAKiuqDqZDOOb7PIRqxJgiYJb?=
+ =?us-ascii?Q?0luZxMG6EfSbMPeddImEcn7pKnd97kOjBxzGJ/AZjp5BG+nX7A15LQa/K9ts?=
+ =?us-ascii?Q?NcR00UUCzs+bBR1l5MjqQvxNXGVerHVzdPPeiN2aaQLZfu4QXLr/WoD4r52P?=
+ =?us-ascii?Q?llK1DXPhRxU0wyX1jF/o7E1/+N6TFbC9lEXMxNt3LtL1C1Lk9S8GFU+8S5Xt?=
+ =?us-ascii?Q?cClpUtR6cLTuGQei1hKS7tbl9wA558pQsM8b6u44qYyzyhovTsf5FBBBqClr?=
+ =?us-ascii?Q?3MXnyr3pvThev24uPVge66PTDZm2alB8wDmC4fUEZqMU5farQqPAd/NAWuyc?=
+ =?us-ascii?Q?sYB/BODg3aiDGS9iGs8uG/nI+wgvF23Ca4ZjMcj2gGybqh/iLEu7XYV4LCy0?=
+ =?us-ascii?Q?rjgNt6XJlneFmSDPmZCzrMEHCQJQ8hOw0BrygQz4CcECRNhDmNp4e1Ni91ni?=
+ =?us-ascii?Q?jk85WzSpuY4Pi7G8uXe5pTIZ1oVEZmQpyGTGW/4ZdbP6JsASsiByZzZMXFHa?=
+ =?us-ascii?Q?xN7SSrRWOcdho4u7gMRLqXm7mCrhcD289h2Bb6UJ8K61n5nWhGCSF/d7ahsd?=
+ =?us-ascii?Q?TDmG6o6hPv1BbCqxCOShSOAmHS6Q6V/Nrz2FjfvaqpHVZXopqfEdpO1bJwKs?=
+ =?us-ascii?Q?D4+NDurAHgSWi6uCylmUyUa/km/6iwE2YLD4UBvxOsXT2SfqL9ITpKxvH9fr?=
+ =?us-ascii?Q?BaPQNlUSFSpFD1dFsaQLPaEZWjHv8L/c9kyBvHoNrO0eaqZqVVt8k3ceVhDd?=
+ =?us-ascii?Q?tdzYWAYWfSSfqq3rN9LjQ8z+l05RHeYB6Ccf?=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(1800799024)(7416014)(376014);DIR:OUT;SFP:1101;
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(1800799024)(7416014)(376014);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2025 21:58:35.6822
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2025 03:32:48.0335
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1f49e53-39c2-44fb-d61f-08dd31c1ee8c
+X-MS-Exchange-CrossTenant-Network-Message-Id: c939503c-7d33-4bee-2032-08dd31f09ebd
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SJ5PEPF000001CA.namprd05.prod.outlook.com
+	DS1PEPF0001709A.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8791
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9216
 
-On Fri, Jan 10, 2025 at 03:49:50PM -0400, Jason Gunthorpe wrote:
-> On Fri, Jan 10, 2025 at 11:27:53AM -0800, Nicolin Chen wrote:
-> > On Fri, Jan 10, 2025 at 01:48:42PM -0400, Jason Gunthorpe wrote:
-> > > On Tue, Jan 07, 2025 at 09:10:09AM -0800, Nicolin Chen wrote:
-> > > 
-> > > > +static ssize_t iommufd_veventq_fops_read(struct iommufd_eventq *eventq,
-> > > > +					 char __user *buf, size_t count,
-> > > > +					 loff_t *ppos)
-> > > > +{
-> > > > +	size_t done = 0;
-> > > > +	int rc = 0;
-> > > > +
-> > > > +	if (*ppos)
-> > > > +		return -ESPIPE;
-> > > > +
-> > > > +	mutex_lock(&eventq->mutex);
-> > > > +	while (!list_empty(&eventq->deliver) && count > done) {
-> > > > +		struct iommufd_vevent *cur = list_first_entry(
-> > > > +			&eventq->deliver, struct iommufd_vevent, node);
-> > > > +
-> > > > +		if (cur->data_len > count - done)
-> > > > +			break;
-> > > > +
-> > > > +		if (copy_to_user(buf + done, cur->event_data, cur->data_len)) {
-> > > > +			rc = -EFAULT;
-> > > > +			break;
-> > > > +		}
-> > > 
-> > > Now that I look at this more closely, the fault path this is copied
-> > > from is not great.
-> > > 
-> > > This copy_to_user() can block while waiting on a page fault, possibily
-> > > for a long time. While blocked the mutex is held and we can't add more
-> > > entries to the list.
-> > >
-> > > That will cause the shared IRQ handler in the iommu driver to back up,
-> > > which would cause a global DOS.
-> > >
-> > > This probably wants to be organized to look more like
-> > > 
-> > > while (itm = eventq_get_next_item(eventq)) {
-> > >    if (..) {
-> > >        eventq_restore_failed_item(eventq);
-> > >        return -1;
-> > >    }
-> > > }
-> > > 
-> > > Where the next_item would just be a simple spinlock across the linked
-> > > list manipulation.
-> > 
-> > Would it be simpler by just limiting one node per read(), i.e.
-> > no "while (!list_empty)" and no block?
-> > 
-> > The report() adds one node at a time, and wakes up the poll()
-> > each time of adding a node. And user space could read one event
-> > at a time too?
-> 
-> That doesn't really help, the issue is it holds the lock over the
-> copy_to_user() which it is doing because it doesn't want pull the item off
-> the list and then try to handle the failure and put it back.
+[ Background ]
+On ARM GIC systems and others, the target address of the MSI is translated
+by the IOMMU. For GIC, the MSI address page is called "ITS" page. When the
+IOMMU is disabled, the MSI address is programmed to the physical location
+of the GIC ITS page (e.g. 0x20200000). When the IOMMU is enabled, the ITS
+page is behind the IOMMU, so the MSI address is programmed to an allocated
+IO virtual address (a.k.a IOVA), e.g. 0xFFFF0000, which must be mapped to
+the physical ITS page: IOVA (0xFFFF0000) ===> PA (0x20200000).
+When a 2-stage translation is enabled, IOVA will be still used to program
+the MSI address, though the mappings will be in two stages:
+  IOVA (0xFFFF0000) ===> IPA (e.g. 0x80900000) ===> PA (0x20200000)
+(IPA stands for Intermediate Physical Address).
 
-Hmm, it seems that I haven't got your first narrative straight..
+If the device that generates MSI is attached to an IOMMU_DOMAIN_DMA, the
+IOVA is dynamically allocated from the top of the IOVA space. If attached
+to an IOMMU_DOMAIN_UNMANAGED (e.g. a VFIO passthrough device), the IOVA is
+fixed to an MSI window reported by the IOMMU driver via IOMMU_RESV_SW_MSI,
+which is hardwired to MSI_IOVA_BASE (IOVA==0x8000000) for ARM IOMMUs.
 
-Would you mind elaborate "copy_to_user() can block while waiting
-on a page fault"? When would this happen?
+So far, this IOMMU_RESV_SW_MSI works well as kernel is entirely in charge
+of the IOMMU translation (1-stage translation), since the IOVA for the ITS
+page is fixed and known by kernel. However, with virtual machine enabling
+a nested IOMMU translation (2-stage), a guest kernel directly controls the
+stage-1 translation with an IOMMU_DOMAIN_DMA, mapping a vITS page (at an
+IPA 0x80900000) onto its own IOVA space (e.g. 0xEEEE0000). Then, the host
+kernel can't know that guest-level IOVA to program the MSI address.
 
-Thanks
+There have been two approaches to solve this problem:
+1. Create an identity mapping in the stage-1. VMM could insert a few RMRs
+   (Reserved Memory Regions) in guest's IORT. Then the guest kernel would
+   fetch these RMR entries from the IORT and create an IOMMU_RESV_DIRECT
+   region per iommu group for a direct mapping. Eventually, the mappings
+   would look like: IOVA (0x8000000) === IPA (0x8000000) ===> 0x20200000
+   This requires an IOMMUFD ioctl for kernel and VMM to agree on the IPA.
+2. Forward the guest-level MSI IOVA captured by VMM to the host-level GIC
+   driver, to program the correct MSI IOVA. Forward the VMM-defined vITS
+   page location (IPA) to the kernel for the stage-2 mapping. Eventually:
+   IOVA (0xFFFF0000) ===> IPA (0x80900000) ===> PA (0x20200000)
+   This requires a VFIO ioctl (for IOVA) and an IOMMUFD ioctl (for IPA).
+
+Worth mentioning that when Eric Auger was working on the same topic with
+the VFIO iommu uAPI, he had the approach (2) first, and then switched to
+the approach (1), suggested by Jean-Philippe for reduction of complexity.
+
+The approach (1) basically feels like the existing VFIO passthrough that
+has a 1-stage mapping for the unmanaged domain, yet only by shifting the
+MSI mapping from stage 1 (guest-has-no-iommu case) to stage 2 (guest-has-
+iommu case). So, it could reuse the existing IOMMU_RESV_SW_MSI piece, by
+sharing the same idea of "VMM leaving everything to the kernel".
+
+The approach (2) is an ideal solution, yet it requires additional effort
+for kernel to be aware of the 1-stage gIOVA(s) and 2-stage IPAs for vITS
+page(s), which demands VMM to closely cooperate.
+ * It also brings some complicated use cases to the table where the host
+   or/and guest system(s) has/have multiple ITS pages.
+
+[ Execution ]
+Though these two approaches feel very different on the surface, they can
+share some underlying common infrastructure. Currently, only one pair of
+sw_msi functions (prepare/compose) are provided by dma-iommu for irqchip
+drivers to directly use. There could be different versions of functions
+from different domain owners: for existing VFIO passthrough cases and in-
+kernel DMA domain cases, reuse the existing dma-iommu's version of sw_msi
+functions; for nested translation use cases, there can be another version
+of sw_msi functions to handle mapping and msi_msg(s) differently.
+
+To support both approaches, in this series
+ - Get rid of the duplication in the "compose" function
+ - Introduce a function pointer for the previously "prepare" function
+ - Allow different domain owners to set their own "sw_msi" implementations
+ - Implement an iommufd_sw_msi function to additionally support a nested
+   translation use case using the approach (2), i.e. the RMR solution
+ - Add a pair of IOMMUFD options for a SW_MSI window for kernel and VMM to
+   agree on (for approach 1)
+ - Add a new VFIO ioctl to set the MSI(x) vector(s) for iommufd_sw_msi()
+   to update the msi_desc structure accordingly (for approach 2)
+
+A missing piece
+ - Potentially another IOMMUFD_CMD_IOAS_MAP_MSI ioctl for VMM to map the
+   IPAs of the vITS page(s) in the stage-2 io page table. (for approach 2)
+   (in this RFC, conveniently reuse the new IOMMUFD SW_MSI options to set
+    the vITS page's IPA, which works finely in a single-vITS-page case.)
+
+This is a joint effort that includes Jason's rework in irq/iommu/iommufd
+base level and my additional patches on top of that for new uAPIs.
+
+This series is on github:
+https://github.com/nicolinc/iommufd/commits/iommufd_msi-rfcv2
+Pairing QEMU branch for testing (approach 1):
+https://github.com/nicolinc/qemu/commits/wip/for_iommufd_msi-rfcv2-rmr
+Pairing QEMU branch for testing (approach 2):
+https://github.com/nicolinc/qemu/commits/wip/for_iommufd_msi-rfcv2-vits
+
+Changelog
+v2
+ * Rebase on v6.13-rc6
+ * Drop all the irq/pci patches and rework the compose function instead
+ * Add a new sw_msi op to iommu_domain for a per type implementation and
+   let iommufd core has its own implementation to support both approaches
+ * Add RMR-solution (approach 1) support since it is straightforward and
+   have been used in some out-of-tree projects widely
+v1
+ https://lore.kernel.org/kvm/cover.1731130093.git.nicolinc@nvidia.com/
+
+Thanks!
 Nicolin
+
+Jason Gunthorpe (5):
+  genirq/msi: Store the IOMMU IOVA directly in msi_desc instead of
+    iommu_cookie
+  genirq/msi: Rename iommu_dma_compose_msi_msg() to
+    msi_msg_set_msi_addr()
+  iommu: Make iommu_dma_prepare_msi() into a generic operation
+  irqchip: Have CONFIG_IRQ_MSI_IOMMU be selected by the irqchips that
+    need it
+  iommufd: Implement sw_msi support natively
+
+Nicolin Chen (8):
+  iommu: Turn fault_data to iommufd private pointer
+  iommufd: Make attach_handle generic
+  iommu: Turn iova_cookie to dma-iommu private pointer
+  iommufd: Add IOMMU_OPTION_SW_MSI_START/SIZE ioctls
+  iommufd/selftes: Add coverage for IOMMU_OPTION_SW_MSI_START/SIZE
+  iommufd/device: Allow setting IOVAs for MSI(x) vectors
+  vfio-iommufd: Provide another layer of msi_iova helpers
+  vfio/pci: Allow preset MSI IOVAs via VFIO_IRQ_SET_ACTION_PREPARE
+
+ drivers/iommu/Kconfig                         |   1 -
+ drivers/irqchip/Kconfig                       |   4 +
+ kernel/irq/Kconfig                            |   1 +
+ drivers/iommu/iommufd/iommufd_private.h       |  69 ++--
+ include/linux/iommu.h                         |  58 ++--
+ include/linux/iommufd.h                       |   6 +
+ include/linux/msi.h                           |  43 ++-
+ include/linux/vfio.h                          |  25 ++
+ include/uapi/linux/iommufd.h                  |  18 +-
+ include/uapi/linux/vfio.h                     |   8 +-
+ drivers/iommu/dma-iommu.c                     |  63 ++--
+ drivers/iommu/iommu.c                         |  29 ++
+ drivers/iommu/iommufd/device.c                | 312 ++++++++++++++++--
+ drivers/iommu/iommufd/fault.c                 | 122 +------
+ drivers/iommu/iommufd/hw_pagetable.c          |   5 +-
+ drivers/iommu/iommufd/io_pagetable.c          |   4 +-
+ drivers/iommu/iommufd/ioas.c                  |  34 ++
+ drivers/iommu/iommufd/main.c                  |  15 +
+ drivers/irqchip/irq-gic-v2m.c                 |   5 +-
+ drivers/irqchip/irq-gic-v3-its.c              |  13 +-
+ drivers/irqchip/irq-gic-v3-mbi.c              |  12 +-
+ drivers/irqchip/irq-ls-scfg-msi.c             |   5 +-
+ drivers/vfio/iommufd.c                        |  27 ++
+ drivers/vfio/pci/vfio_pci_intrs.c             |  46 +++
+ drivers/vfio/vfio_main.c                      |   3 +
+ tools/testing/selftests/iommu/iommufd.c       |  53 +++
+ .../selftests/iommu/iommufd_fail_nth.c        |  14 +
+ 27 files changed, 712 insertions(+), 283 deletions(-)
+
+-- 
+2.43.0
+
