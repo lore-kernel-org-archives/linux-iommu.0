@@ -1,148 +1,157 @@
-Received: from mail-il1-f205.google.com (mail-il1-f205.google.com [209.85.166.205])
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155FE2581
-	for <iommu@lists.linux.dev>; Sun, 12 Jan 2025 06:45:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.205
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2D5C14900F
+	for <iommu@lists.linux.dev>; Sun, 12 Jan 2025 07:49:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736664323; cv=none; b=sxnh9DD+CLpZE8//p/vvUECMiOTVx8LSvW+fE5Vs1yNO+E+T//NzvDjuIH+prtm9VqaGdqzyYzkjBJtNJStU/kS9S+7IfUuTlwbiHdDTbAHXxe86F7BhTMfm32fM4tRbCiAs32inJWYdqb06Nzh/ydw7fdCFmEDAxl534uprIos=
+	t=1736668165; cv=none; b=iIEdHVrmXgsyznfwRyi9e1zAgObli1YO/cwgZaX1fzZpQq/sRrY2lbVON34xjZbSGleqxEJsiKFSe7PvS6h5x6wPaXiTgryW/99uGgQT3TJQv89oPadyLeEA3pfclFroNa3bE7ltRfxT0+N+/SYqeelwCtBkNUi1rkRzWr69404=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736664323; c=relaxed/simple;
-	bh=xbzOFbhlixQ7eTb0zM5l7iGlgscFt7fafTOcvw/+6Gs=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=DO8hWISKi/lhBadpybUes+64+uhwi5OyKDwX9sAqip3c3TMErMrUqVNEHCe5PGcAXZE6Tmqhg1N785qWAxyPOqC+8Vf5Ywf8bfXtxY0ZILZqIf/UWpHjzLn6kzPcochDm2G5H5tlog7w+LXUKinVQPXnUMuhQholX5VPhkqdbBs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.205
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f205.google.com with SMTP id e9e14a558f8ab-3ce51b2fcc6so45032015ab.1
-        for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 22:45:21 -0800 (PST)
+	s=arc-20240116; t=1736668165; c=relaxed/simple;
+	bh=cNi9vhf9bGsIwHgm7dOKJB7hausRE69NcKHC5yezuYw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MHtmiOJ6lVFEs2NVHCoGUa9LcyxSDRtsAknE+KR4SHqOpODkXCLsnMOMySmymm3DubcqvL4YxuYiE2KSszbu61WAwcMoqaYjxryvPaFq9cqlBsKrlldPCCVFuS6KdNuWoH8/xE65jNatiWr3LPDBGJmFaXVqwZQ+fiMPW8TAW5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XXWmUDg3; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XXWmUDg3"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-216401de828so53943425ad.3
+        for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 23:49:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1736668163; x=1737272963; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gcU6OrSCKgDwFj8OIVqMhgOivSwgFqlZg2dJEdDSXwc=;
+        b=XXWmUDg335NR1O1ON0pDc3iIk/zI8ZuMkoUilE3HFXa/5dh13bEVfh8QoelvTle6I0
+         n24SZiInmq7nVFC5kzA1AMneztCwxYSXnxD1WtRz0jZGSZdFNDE3T92PvaKvBU3LreVN
+         N/sakwXIUk0R2qTJLEPFKYhq/DNUK2CK1ARF2zKNKES2QGWXqMKrl+yUJWCACpIzO9cr
+         yQg+w35n+m4pb+s0C5FNPDDaTYYZiSJT8RAZyOQdbQPc07wSrsHzdCrCTaFxNZxSg7/4
+         HihAyC+v5raTwVx7oPk7MV49vaxR6jC2/upzvlWEKOtunEuPAurebJ2pD/tEdvy7EFg5
+         ijtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736664321; x=1737269121;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=sLq8zTWGTcIk+AYd9zs5KeEJaaq0PNJXVC6RLIMwgWQ=;
-        b=DClp9qNaXQzf7SFt+jFhiHrg7MNMyJ2Dpt2raSc7CcRLQHYXGZT5vW1LqDnujWkBmV
-         JTVvTOtZ3F7fh75tmKi8AJNo+1YcsCoEjUYtzqtV0uSw5WgZiuFQyPnffHE2E73Xg/42
-         5bsOrQyy3gsP1OTNI7h6khd9Ii4roD+s/jPwg6h/iwGq1ZZzfwWLNXdF6bToblAfLILG
-         C8roN82FCbKWta8y2QH/jyACSmZcc4BGtix3VMRQgilY+1Aj0145MpZ+LJrTY4jUXFtq
-         ZxxIiObdufm24jmvdgaK5MN4QhKEedKbsDKriv+lUJz47KQdjMD/8OhpYdP8z50IgAcu
-         gh1Q==
-X-Gm-Message-State: AOJu0YyChgdgjkLFMhSPY6dFUBBozvhKY/nQRr0noR+8h6nMwRxjZOcE
-	mQK3OicI/QcQhR2+DedXsja/roQJALe5CSQ9/IuRO33N8DdBcp5v+mgbh40RRBPLUg2XY/l0VA4
-	jmKkOVKJJa4KPd97dXR6pTz8swo4BwNecVPObNiplzN7wcRZeRJLnGCbobQ==
-X-Google-Smtp-Source: AGHT+IFtSPYn4NmDpOOTknk8S1AqgLrydigC7fV6sigjoC6hn7gzKrrDuZJA6v0Ta2A+lbz3FUCHfS40UuzVxfV3bo4Y1lTxdS/n
+        d=1e100.net; s=20230601; t=1736668163; x=1737272963;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gcU6OrSCKgDwFj8OIVqMhgOivSwgFqlZg2dJEdDSXwc=;
+        b=uFklvXp2kpymBbfuMBXfU5z268fEGLnIY0tANB7nZdefmcD3X9pIkcjU+fjCQgWPAf
+         /EgVjNLE71nF3oX5HjESmIwxIqCDR0aMthrTGNVReXEXBS8AKGRd3HuYSpGUWUlyk3EE
+         YgndYpTQHOYP2M5ccgF7j0ynRBdOUCBPdLThZmXII/erQIVeX1WpfPZZT9Y839rGaCIE
+         ppmTMIC2TMRzRfcsllcdoVAM+Nnbl72t6Rcc7xxJ0XwqmDKK5YPc54W9PUbdhiYkT3Wb
+         w14KejHIW1MBj94I1k6cfsQogGInOFgCpJtjT2VIfHoIlaD5sVWys4/0N5yuOj3oAdga
+         EVMg==
+X-Forwarded-Encrypted: i=1; AJvYcCVgWBn4VCtujYNCid/EAfwNeZv4BmZOY68erpcNHwsgqk90yzpU6i3OAp0Nh3Fm1PSDG6H78Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyBtXd4tb/CNkuBo8H3qEowbuRTXicQrJADMFeXO9Xrq0aAC/p4
+	GvOMABo1YWLKjy4NzqGuxfs6TVZOAvghCPcNIZozquL2TmjNiUS6
+X-Gm-Gg: ASbGncuMNVdO6sJVeDIjCGoOgE1PV/H7Pe89YYZbbU5x/djbkLr+EBl8pkTI4QGyr6p
+	r2j4VwRJb7TxY6x6iEEYDCZBPaUcFZtVYG2YxCcA4dopuTBv3f2s5YPSqF3I25fesGRfQBJq5Y3
+	y3ywoMNKNp5A+wVQt83eT2FAesBMdKNxHXtBf4RY38p3snuPej/XjDvI6M1KQZWxJht5mNsO5iI
+	RhroQ9U8IgszabOA8U6EOUSMjgAATevgHUwu1B2OchiJ/g2bRh1FEnXBLP66RW5wQuKy+g=
+X-Google-Smtp-Source: AGHT+IFiHOZe64qhLb/veCLSRYGclr19x6jZ3sYxwuFoZpr0eA5JOkfIF30+U6Ck+eUHZBNY5AX52Q==
+X-Received: by 2002:a05:6a20:841b:b0:1e1:ae9a:6316 with SMTP id adf61e73a8af0-1e88d09cbbbmr32490659637.35.1736668162964;
+        Sat, 11 Jan 2025 23:49:22 -0800 (PST)
+Received: from tiger.hygon.cn ([112.64.138.194])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-72d4054947csm3867812b3a.29.2025.01.11.23.49.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jan 2025 23:49:22 -0800 (PST)
+From: Wencheng Yang <east.moutain.yang@gmail.com>
+To: 
+Cc: Wencheng Yang <east.moutain.yang@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] drviers/iommu/amd: support P2P access through IOMMU when SME is enabled
+Date: Sun, 12 Jan 2025 15:45:35 +0800
+Message-ID: <20250112074539.381848-1-east.moutain.yang@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a92:c548:0:b0:3a7:e8e1:cbc9 with SMTP id
- e9e14a558f8ab-3ce3a8f2809mr108673525ab.22.1736664321315; Sat, 11 Jan 2025
- 22:45:21 -0800 (PST)
-Date: Sat, 11 Jan 2025 22:45:21 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <67836501.050a0220.216c54.002c.GAE@google.com>
-Subject: [syzbot] [iommu?] UBSAN: shift-out-of-bounds in iova_bitmap_alloc
-From: syzbot <syzbot+85992ace37d5b7b51635@syzkaller.appspotmail.com>
-To: iommu@lists.linux.dev, jgg@nvidia.com, jgg@ziepe.ca, 
-	joao.m.martins@oracle.com, joro@8bytes.org, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hello,
+When SME is enabled, SME bit is set in IOMMU page table pte entry,
+it works fine if the pfn of the pte entry is memory. However, if
+the pfn is MMIO address, for example, map other device's mmio
+space to its io page table, in such situation, setting SME bit
+in pte would cause P2P failure.
 
-syzbot found the following issue on:
+Clear SME bit in io page table if the mapping is MMIO rather
+than memory.
 
-HEAD commit:    09a0fa92e5b4 Merge tag 'selinux-pr-20250107' of git://git...
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=16e35b0f980000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4ef22c4fce5135b4
-dashboard link: https://syzkaller.appspot.com/bug?extid=85992ace37d5b7b51635
-compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=121fbedf980000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=159e8ef8580000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/c59c19cd5728/disk-09a0fa92.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/27a8ecc530b5/vmlinux-09a0fa92.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/6ed4573ed205/bzImage-09a0fa92.xz
-
-The issue was bisected to:
-
-commit 266ce58989ba05e2a24460fdbf402d766c2e3870
-Author: Joao Martins <joao.m.martins@oracle.com>
-Date:   Tue Oct 24 13:51:05 2023 +0000
-
-    iommufd/selftest: Test IOMMU_HWPT_ALLOC_DIRTY_TRACKING
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11f3b218580000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13f3b218580000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15f3b218580000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+85992ace37d5b7b51635@syzkaller.appspotmail.com
-Fixes: 266ce58989ba ("iommufd/selftest: Test IOMMU_HWPT_ALLOC_DIRTY_TRACKING")
-
-iommufd_mock iommufd_mock0: Adding to iommu group 0
-------------[ cut here ]------------
-UBSAN: shift-out-of-bounds in drivers/iommu/iommufd/iova_bitmap.c:133:27
-shift exponent 63 is too large for 32-bit type 'int'
-CPU: 1 UID: 0 PID: 5829 Comm: syz-executor365 Not tainted 6.13.0-rc6-syzkaller-00038-g09a0fa92e5b4 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/13/2024
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:94 [inline]
- dump_stack_lvl+0x241/0x360 lib/dump_stack.c:120
- ubsan_epilogue lib/ubsan.c:231 [inline]
- __ubsan_handle_shift_out_of_bounds+0x3c8/0x420 lib/ubsan.c:468
- iova_bitmap_offset_to_index drivers/iommu/iommufd/iova_bitmap.c:133 [inline]
- iova_bitmap_alloc+0x2bd/0x2d0 drivers/iommu/iommufd/iova_bitmap.c:259
- iommu_read_and_clear_dirty drivers/iommu/iommufd/io_pagetable.c:534 [inline]
- iopt_read_and_clear_dirty_data+0x35a/0x6c0 drivers/iommu/iommufd/io_pagetable.c:594
- iommufd_hwpt_get_dirty_bitmap+0x17c/0x2e0 drivers/iommu/iommufd/hw_pagetable.c:470
- iommufd_fops_ioctl+0x4d6/0x5a0 drivers/iommu/iommufd/main.c:409
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:906 [inline]
- __se_sys_ioctl+0xf5/0x170 fs/ioctl.c:892
- do_syscall_x64 arch/x86/entry/common.c:52 [inline]
- do_syscall_64+0xf3/0x230 arch/x86/entry/common.c:83
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fa2fda974a9
-Code: 48 83 c4 28 c3 e8 37 17 00 00 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc593f2558 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007ffc593f2728 RCX: 00007fa2fda974a9
-RDX: 0000000020000300 RSI: 0000000000003b8c RDI: 0000000000000003
-RBP: 00007fa2fdb0a610 R08: 00007ffc593f2728 R09: 00007ffc593f2728
-R10: 00007ffc593f2728 R11: 0000000000000246 R12: 0000000000000001
-R13: 00007ffc593f2718 R14: 0000000000000001 R15: 0000000000000001
- </TASK>
----[ end trace ]---
-
-
+Signed-off-by: Wencheng Yang <east.moutain.yang@gmail.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/iommu/amd/amd_iommu_types.h | 7 ++++---
+ drivers/iommu/amd/io_pgtable.c      | 2 ++
+ drivers/iommu/amd/io_pgtable_v2.c   | 5 ++++-
+ drivers/iommu/amd/iommu.c           | 2 ++
+ 4 files changed, 12 insertions(+), 4 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index fdb0357e0bb9..b0f055200cf3 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -434,9 +434,10 @@
+ #define IOMMU_PTE_PAGE(pte) (iommu_phys_to_virt((pte) & IOMMU_PAGE_MASK))
+ #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
+ 
+-#define IOMMU_PROT_MASK 0x03
+-#define IOMMU_PROT_IR 0x01
+-#define IOMMU_PROT_IW 0x02
++#define IOMMU_PROT_MASK 0x07
++#define IOMMU_PROT_IR   0x01
++#define IOMMU_PROT_IW   0x02
++#define IOMMU_PROT_MMIO 0x04
+ 
+ #define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE	(1 << 2)
+ 
+diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
+index f3399087859f..dff887958a56 100644
+--- a/drivers/iommu/amd/io_pgtable.c
++++ b/drivers/iommu/amd/io_pgtable.c
+@@ -373,6 +373,8 @@ static int iommu_v1_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
+ 			__pte |= IOMMU_PTE_IR;
+ 		if (prot & IOMMU_PROT_IW)
+ 			__pte |= IOMMU_PTE_IW;
++		if (prot & IOMMU_PROT_MMIO)
++			__pte = __sme_clr(__pte);
+ 
+ 		for (i = 0; i < count; ++i)
+ 			pte[i] = __pte;
+diff --git a/drivers/iommu/amd/io_pgtable_v2.c b/drivers/iommu/amd/io_pgtable_v2.c
+index c616de2c5926..55f969727dea 100644
+--- a/drivers/iommu/amd/io_pgtable_v2.c
++++ b/drivers/iommu/amd/io_pgtable_v2.c
+@@ -65,7 +65,10 @@ static u64 set_pte_attr(u64 paddr, u64 pg_size, int prot)
+ {
+ 	u64 pte;
+ 
+-	pte = __sme_set(paddr & PM_ADDR_MASK);
++	pte = paddr & PM_ADDR_MASK;
++	if (!(prot & IOMMU_PROT_MMIO))
++		pte = __sme_set(pte);
++
+ 	pte |= IOMMU_PAGE_PRESENT | IOMMU_PAGE_USER;
+ 	pte |= IOMMU_PAGE_ACCESS | IOMMU_PAGE_DIRTY;
+ 
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 16f40b8000d7..9194ad681504 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2578,6 +2578,8 @@ static int amd_iommu_map_pages(struct iommu_domain *dom, unsigned long iova,
+ 		prot |= IOMMU_PROT_IR;
+ 	if (iommu_prot & IOMMU_WRITE)
+ 		prot |= IOMMU_PROT_IW;
++	if (iommu_prot & IOMMU_MMIO)
++		prot |= IOMMU_PROT_MMIO;
+ 
+ 	if (ops->map_pages) {
+ 		ret = ops->map_pages(ops, iova, paddr, pgsize,
+-- 
+2.43.0
 
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
