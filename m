@@ -1,139 +1,143 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4558D1B87D4
-	for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 19:00:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82B01C2C9;
+	Sun, 12 Jan 2025 00:42:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736622016; cv=none; b=LUWhY5FuKHTX0Dt4mcfWLw9rHF7Z8VYzNx6I6znLbGZrIQEtuBOJRGwv64I4DxTEo7gkP1QJUICGmbbojAc9NDbH58rsO05AAQfkUp/159vUNzdUjmeFWeBUOUL7r496ccBtyNWAQNcw/qA/wAQQySvihOQn76zAuZzYenF0IRs=
+	t=1736642552; cv=none; b=pzAG2ZUrMozCw47/Bij5441b61imhY0b2ItT1TqjZImU2WRinZWkkmODBHsFBxTZX2vaAKEZ4W7AMElAHfckk3jMaW45lCQSJDH2bb1hH/xrXQamtS4cZaMTwDCN5XH1l3crZAeGbU5Ys7TSvW9b6i8r2V73aNCkJM8R1kGYe2E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736622016; c=relaxed/simple;
-	bh=J9wumi7qlxcc6299rTzUmyAx5YxElF0K+3qqjT1gkcw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=a9SW47NDM4PsumSG7os2D5H1kpId7EhL3dxl43t0udzalcKwBIx+fR5q48S/Vq5IgfSOLZuMNbZUOlZgt1lMkSzjnhY7S4hg6JZyDTwDqt54WqYzipbyJKudxE+PeaiuCk5N7oORGUSzPCIyRrBzjBB4oxnbeCFnwlC7ltknjKo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=QJZAoKC/; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1736642552; c=relaxed/simple;
+	bh=Z1BKUv222L4W5EpLjlS5rXbNNqX1dnJIFJb1SINHK6c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tr9MUsPtJTFTmUooa8vrIsEDFZN4LwJwXijA+ZulU6UoSaHx1VB1w0jjTTuJ2BXdIXudVdZwI+7zY35rBdCxjhYxguL4vWtChymxHRQuzVHMHVy1trLt9JO0QBHl23R+3yYM1W7hkSNpfk2RHhEtXTYeZkpKJDM/53ros0a3qsE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hd9p6Igj; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QJZAoKC/"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-43616bf3358so4187705e9.3
-        for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 11:00:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1736622012; x=1737226812; darn=lists.linux.dev;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=u6+F/nzJic4e58KU64FVAzTlIBmwAdN4ZEHOdFxRX/U=;
-        b=QJZAoKC/4s/y99UqomvI6rYMsgzG0zTiaUf/aAf9nolRB9N6LSxtXPHdhqgzHoaYV6
-         mT/uBIpN5yf4vuJ1nbiEHzWQ+q8h45u8joocZVYyKA4jJac59cuDTsA3TzEKoqtbf5v4
-         P+KF8/dlBQQg2qWg6kCE+ibUOddpAqRMbYqLrlILCS2GIcUC8+4td+YLlmPj2z+HQDC2
-         JOv2xJkMz00vuOV0lLW0ngS1BTORkIJ8U1cK96rNLd/l8SoyGxk10YbLi3lLsVanybh4
-         oK16rdv3Em7x+iyogr7b5MrW3k4mJ97GGNiF1l67WLfHPdgvREV7UzaSfpiXS3LgQ5SE
-         +sFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736622012; x=1737226812;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=u6+F/nzJic4e58KU64FVAzTlIBmwAdN4ZEHOdFxRX/U=;
-        b=QqXWpTGmS73fceRYSrFr4Jx8jAHZ3QIWCi0YLCYrbs1NR3ubSp8Em7D2xjREwX9xL8
-         cU4A3Paw4tJujskKtIqwZ0qz7wq6o2hhUQNEFPy7K9+DvsiLUJMCYLusM4xCUKT/PYRc
-         9U8UPVSkuKfPZa3Tt1XbJ4sa/Q2e4yvR1fBC8EbOg8rghZlWYvfAKbWkwxflbvgtLuka
-         xDFRv2dc3xVSZHuMgRFEdjSq9F/Jp6dNqZqPviJ1JyfPg1AjfNQE7fantpSqMgwUewiX
-         B4qM882BNZPfe9hJHfIs40hpPP56diy1QkumbpGUrqxdTfFq34cScCgLsEpDm1ux7NEE
-         lIuA==
-X-Gm-Message-State: AOJu0YyiIFXXhJRldC4B+2AsZz6hHwLuVugSg5sRc1eI9HqUGjPynFSb
-	XAg2V03hHdXfbpatK+zfs5x96Q1Ps81PdKnh4djspL4OkCwR2xd1oSE5LNwnwkQ=
-X-Gm-Gg: ASbGncuT5+mPhp/rdxPg3bob2m/wMk/XZGOlQuLj7k8jwt4hidvlJ8BmK8+qLN/n52O
-	+QDibTzmM+nHovs7rKEJnSCFTfZ/88TFU9+Aaq+jLQ+dpxhBapLr/Kg96t+4kdhmkWmJPrEMjWj
-	1hvGWFsMgQZJ9v7YUJgJ0qEqOddRtfrhSbQ0TnMk0iLkS4Jlmq5rvk8u6cSNcCXZV8CzFYrB8rg
-	o2KZqYjuR16B30RHT5LakbPKYnn4uB47Hd5JT9gB22kgbw+9F7pQ5C566kSBKYK1DHw1iPu
-X-Google-Smtp-Source: AGHT+IEv1jVX6MaPzk9YWfFxPvpNhk7sVFVmQJQcQZ0AS1vBJC2okXilLS60NBRzCp5RCoDqcFh77g==
-X-Received: by 2002:a05:600c:1d0e:b0:436:17f4:9b3d with SMTP id 5b1f17b1804b1-436e26e271amr57227255e9.4.1736622012604;
-        Sat, 11 Jan 2025 11:00:12 -0800 (PST)
-Received: from [127.0.1.1] ([178.197.223.165])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-436e9d8fc81sm91309075e9.5.2025.01.11.11.00.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jan 2025 11:00:11 -0800 (PST)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Date: Sat, 11 Jan 2025 20:00:03 +0100
-Subject: [PATCH 3/3] iommu: omap: Use syscon_regmap_lookup_by_phandle_args
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hd9p6Igj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1736642550; x=1768178550;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Z1BKUv222L4W5EpLjlS5rXbNNqX1dnJIFJb1SINHK6c=;
+  b=hd9p6Igj2m3lwTVtguUCxltxP0j2YxLfoWvEXopxsww03CxTMHdRAKUO
+   9/mw9ZZfbc+J+itmkTnwFPa5FzhVdVPgiiYvZjqZ6gYgpkGgL7Amx5cB3
+   bFg9CNt08nIQTS8kcd7rU7C0PDgJGUXyB0l8wU4nD9/vwTCWCIfB6tVOV
+   4H/QqegvADCbWErFbAEYUnrlko+wCx3ThHxpw5SdOXaaYGbLH2f9gKyzp
+   ByEZdw7atnWR8ASfEqRubUhr9NPBwEaVhtJ2shAHx+cffmi5hVMfsmwB/
+   SZpV7eH772ya6X0wT/YtdOG+CeVN7e5VNJjIKVM2b1M2044udB84AbG3b
+   g==;
+X-CSE-ConnectionGUID: +c+4FlbcRb2/4thwg9aTQg==
+X-CSE-MsgGUID: IXh4qiTDSWmMHvDEAiBODw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11312"; a="59387757"
+X-IronPort-AV: E=Sophos;i="6.12,308,1728975600"; 
+   d="scan'208";a="59387757"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2025 16:42:30 -0800
+X-CSE-ConnectionGUID: 0P+b6rxfT0W1z3/oMwlZdw==
+X-CSE-MsgGUID: OufXYvbTTXeHj7WKqoVPBg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,308,1728975600"; 
+   d="scan'208";a="104131216"
+Received: from lkp-server01.sh.intel.com (HELO d63d4d77d921) ([10.239.97.150])
+  by orviesa006.jf.intel.com with ESMTP; 11 Jan 2025 16:42:24 -0800
+Received: from kbuild by d63d4d77d921 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1tWm3a-000LN4-1o;
+	Sun, 12 Jan 2025 00:42:22 +0000
+Date: Sun, 12 Jan 2025 08:41:22 +0800
+From: kernel test robot <lkp@intel.com>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	daniel.almeida@collabora.com, aliceryhl@google.com,
+	robin.murphy@arm.com, rust-for-linux@vger.kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Valentin Obst <kernel@valentinobst.de>,
+	linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+	iommu@lists.linux.dev, Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
+Message-ID: <202501120855.PXuydC6T-lkp@intel.com>
+References: <20250108122825.136021-3-abdiel.janulgue@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250111-syscon-phandle-args-iommu-v1-3-3767dee585a6@linaro.org>
-References: <20250111-syscon-phandle-args-iommu-v1-0-3767dee585a6@linaro.org>
-In-Reply-To: <20250111-syscon-phandle-args-iommu-v1-0-3767dee585a6@linaro.org>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1729;
- i=krzysztof.kozlowski@linaro.org; h=from:subject:message-id;
- bh=J9wumi7qlxcc6299rTzUmyAx5YxElF0K+3qqjT1gkcw=;
- b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBngr+154iJVDr6Bek6vf/Pmrauxc84a8nAup5US
- /XFRH/vaTuJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCZ4K/tQAKCRDBN2bmhouD
- 14woEACFdhHyjXi0vi9iVENRVyPy3ikrkEw41a3m2x0SBGK+HiWoDzPoCInQr2DvPP2ASOuOzlA
- 1fC0UM4T1d+hVbe6osM3LzwXAv+mFDD/QUyugOVdn0SfJr16/m4QWWo9TPzOJYWCF02A6PDENvy
- 8sZ0GBSQiVTVN6VwzHXh5Uz9xLskgc7iHDOHE3P3TSqV04Sm3tzb4n5CXIbn2rZVRha+G7FrhGA
- akLPeFi83AwKIHZPRBX4sCByOWRYAnGSSbukYgXskw0x0hyI3jurgqd6hY5PvnczkpLuKSFLDuA
- k80Zl7ErDIK9AUv2bmuKpNMQchjwI7U+tONa7bS+GBs4YT7yXNLgihDTeL3bDzlrwOpNo/vMD4R
- Vx1lc4ePMiM8i5v09vU74ik/+FZuZwF9tuGzAfgfVQcQkK4jsQZFKw/CiodsSZO4sctHnnJZuKt
- /oi0fjbJxFjCKxIZIPl7ad81JtB8Ll+btjsm8VJExar9NbYSgDtqVdMnVtKNFDl+e7lMzMzJ6lr
- N44D++a/ZXAxtDCVjn6SWJhVBjs7HQWr9Zrzdb7CYOFwTwguXE2LWCryMb3AG7OS4pkdxyuaIEP
- GNdjGmz+0cArwVPH6eFmvU+UnNXfOos7GlypMPJF4AuCnNmHBmdxUX8YaKuKhUCmoOrKNGO3VBo
- a1tz5uWcg3TioOA==
-X-Developer-Key: i=krzysztof.kozlowski@linaro.org; a=openpgp;
- fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250108122825.136021-3-abdiel.janulgue@gmail.com>
 
-Use syscon_regmap_lookup_by_phandle_args() which is a wrapper over
-syscon_regmap_lookup_by_phandle() combined with getting the syscon
-argument.  Except simpler code this annotates within one line that given
-phandle has arguments, so grepping for code would be easier.
+Hi Abdiel,
 
-There is also no real benefit in printing errors on missing syscon
-argument, because this is done just too late: runtime check on
-static/build-time data.  Dtschema and Devicetree bindings offer the
-static/build-time check for this already.
+kernel test robot noticed the following build errors:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- drivers/iommu/omap-iommu.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+[auto build test ERROR on v6.13-rc6]
+[also build test ERROR on linus/master]
+[cannot apply to next-20250110]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index bce27805805010ae473aa8dbd9e0cb903dd79bba..f12812d3f828ad382c7a84f6ecd604c8f35a6d10 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1127,19 +1127,13 @@ static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
- 	if (!of_device_is_compatible(np, "ti,dra7-dsp-iommu"))
- 		return 0;
- 
--	obj->syscfg =
--		syscon_regmap_lookup_by_phandle(np, "ti,syscon-mmuconfig");
-+	obj->syscfg = syscon_regmap_lookup_by_phandle_args(np, "ti,syscon-mmuconfig",
-+							   1, &obj->id);
- 	if (IS_ERR(obj->syscfg)) {
- 		/* can fail with -EPROBE_DEFER */
- 		return PTR_ERR(obj->syscfg);
- 	}
- 
--	if (of_property_read_u32_index(np, "ti,syscon-mmuconfig", 1,
--				       &obj->id)) {
--		dev_err(&pdev->dev, "couldn't get the IOMMU instance id within subsystem\n");
--		return -EINVAL;
--	}
--
- 	if (obj->id != 0 && obj->id != 1) {
- 		dev_err(&pdev->dev, "invalid IOMMU instance id\n");
- 		return -EINVAL;
+url:    https://github.com/intel-lab-lkp/linux/commits/Abdiel-Janulgue/rust-error-Add-EOVERFLOW/20250108-202929
+base:   v6.13-rc6
+patch link:    https://lore.kernel.org/r/20250108122825.136021-3-abdiel.janulgue%40gmail.com
+patch subject: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
+config: um-randconfig-001-20250112 (https://download.01.org/0day-ci/archive/20250112/202501120855.PXuydC6T-lkp@intel.com/config)
+compiler: clang version 20.0.0git (https://github.com/llvm/llvm-project f5cd181ffbb7cb61d582fe130d46580d5969d47a)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250112/202501120855.PXuydC6T-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202501120855.PXuydC6T-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> error[E0425]: cannot find function `dma_alloc_attrs` in crate `bindings`
+   --> rust/kernel/dma.rs:145:23
+   |
+   145   |               bindings::dma_alloc_attrs(
+   |                         ^^^^^^^^^^^^^^^ help: a function with a similar name exists: `dma_alloc_pages`
+   |
+   ::: rust/bindings/bindings_generated.rs:39433:5
+   |
+   39433 | /     pub fn dma_alloc_pages(
+   39434 | |         dev: *mut device,
+   39435 | |         size: usize,
+   39436 | |         dma_handle: *mut dma_addr_t,
+   39437 | |         dir: dma_data_direction,
+   39438 | |         gfp: gfp_t,
+   39439 | |     ) -> *mut page;
+   | |__________________- similarly named function `dma_alloc_pages` defined here
+--
+>> error[E0425]: cannot find function `dma_free_attrs` in crate `bindings`
+   --> rust/kernel/dma.rs:262:23
+   |
+   262   |               bindings::dma_free_attrs(
+   |                         ^^^^^^^^^^^^^^ help: a function with a similar name exists: `dma_free_pages`
+   |
+   ::: rust/bindings/bindings_generated.rs:39442:5
+   |
+   39442 | /     pub fn dma_free_pages(
+   39443 | |         dev: *mut device,
+   39444 | |         size: usize,
+   39445 | |         page: *mut page,
+   39446 | |         dma_handle: dma_addr_t,
+   39447 | |         dir: dma_data_direction,
+   39448 | |     );
+   | |_____- similarly named function `dma_free_pages` defined here
 
 -- 
-2.43.0
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
