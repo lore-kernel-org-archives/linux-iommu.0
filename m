@@ -1,143 +1,148 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f205.google.com (mail-il1-f205.google.com [209.85.166.205])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82B01C2C9;
-	Sun, 12 Jan 2025 00:42:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155FE2581
+	for <iommu@lists.linux.dev>; Sun, 12 Jan 2025 06:45:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.205
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736642552; cv=none; b=pzAG2ZUrMozCw47/Bij5441b61imhY0b2ItT1TqjZImU2WRinZWkkmODBHsFBxTZX2vaAKEZ4W7AMElAHfckk3jMaW45lCQSJDH2bb1hH/xrXQamtS4cZaMTwDCN5XH1l3crZAeGbU5Ys7TSvW9b6i8r2V73aNCkJM8R1kGYe2E=
+	t=1736664323; cv=none; b=sxnh9DD+CLpZE8//p/vvUECMiOTVx8LSvW+fE5Vs1yNO+E+T//NzvDjuIH+prtm9VqaGdqzyYzkjBJtNJStU/kS9S+7IfUuTlwbiHdDTbAHXxe86F7BhTMfm32fM4tRbCiAs32inJWYdqb06Nzh/ydw7fdCFmEDAxl534uprIos=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736642552; c=relaxed/simple;
-	bh=Z1BKUv222L4W5EpLjlS5rXbNNqX1dnJIFJb1SINHK6c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tr9MUsPtJTFTmUooa8vrIsEDFZN4LwJwXijA+ZulU6UoSaHx1VB1w0jjTTuJ2BXdIXudVdZwI+7zY35rBdCxjhYxguL4vWtChymxHRQuzVHMHVy1trLt9JO0QBHl23R+3yYM1W7hkSNpfk2RHhEtXTYeZkpKJDM/53ros0a3qsE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hd9p6Igj; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hd9p6Igj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736642550; x=1768178550;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Z1BKUv222L4W5EpLjlS5rXbNNqX1dnJIFJb1SINHK6c=;
-  b=hd9p6Igj2m3lwTVtguUCxltxP0j2YxLfoWvEXopxsww03CxTMHdRAKUO
-   9/mw9ZZfbc+J+itmkTnwFPa5FzhVdVPgiiYvZjqZ6gYgpkGgL7Amx5cB3
-   bFg9CNt08nIQTS8kcd7rU7C0PDgJGUXyB0l8wU4nD9/vwTCWCIfB6tVOV
-   4H/QqegvADCbWErFbAEYUnrlko+wCx3ThHxpw5SdOXaaYGbLH2f9gKyzp
-   ByEZdw7atnWR8ASfEqRubUhr9NPBwEaVhtJ2shAHx+cffmi5hVMfsmwB/
-   SZpV7eH772ya6X0wT/YtdOG+CeVN7e5VNJjIKVM2b1M2044udB84AbG3b
-   g==;
-X-CSE-ConnectionGUID: +c+4FlbcRb2/4thwg9aTQg==
-X-CSE-MsgGUID: IXh4qiTDSWmMHvDEAiBODw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11312"; a="59387757"
-X-IronPort-AV: E=Sophos;i="6.12,308,1728975600"; 
-   d="scan'208";a="59387757"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2025 16:42:30 -0800
-X-CSE-ConnectionGUID: 0P+b6rxfT0W1z3/oMwlZdw==
-X-CSE-MsgGUID: OufXYvbTTXeHj7WKqoVPBg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,308,1728975600"; 
-   d="scan'208";a="104131216"
-Received: from lkp-server01.sh.intel.com (HELO d63d4d77d921) ([10.239.97.150])
-  by orviesa006.jf.intel.com with ESMTP; 11 Jan 2025 16:42:24 -0800
-Received: from kbuild by d63d4d77d921 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tWm3a-000LN4-1o;
-	Sun, 12 Jan 2025 00:42:22 +0000
-Date: Sun, 12 Jan 2025 08:41:22 +0800
-From: kernel test robot <lkp@intel.com>
-To: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	daniel.almeida@collabora.com, aliceryhl@google.com,
-	robin.murphy@arm.com, rust-for-linux@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Valentin Obst <kernel@valentinobst.de>,
-	linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	iommu@lists.linux.dev, Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
-Message-ID: <202501120855.PXuydC6T-lkp@intel.com>
-References: <20250108122825.136021-3-abdiel.janulgue@gmail.com>
+	s=arc-20240116; t=1736664323; c=relaxed/simple;
+	bh=xbzOFbhlixQ7eTb0zM5l7iGlgscFt7fafTOcvw/+6Gs=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=DO8hWISKi/lhBadpybUes+64+uhwi5OyKDwX9sAqip3c3TMErMrUqVNEHCe5PGcAXZE6Tmqhg1N785qWAxyPOqC+8Vf5Ywf8bfXtxY0ZILZqIf/UWpHjzLn6kzPcochDm2G5H5tlog7w+LXUKinVQPXnUMuhQholX5VPhkqdbBs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.205
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f205.google.com with SMTP id e9e14a558f8ab-3ce51b2fcc6so45032015ab.1
+        for <iommu@lists.linux.dev>; Sat, 11 Jan 2025 22:45:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736664321; x=1737269121;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=sLq8zTWGTcIk+AYd9zs5KeEJaaq0PNJXVC6RLIMwgWQ=;
+        b=DClp9qNaXQzf7SFt+jFhiHrg7MNMyJ2Dpt2raSc7CcRLQHYXGZT5vW1LqDnujWkBmV
+         JTVvTOtZ3F7fh75tmKi8AJNo+1YcsCoEjUYtzqtV0uSw5WgZiuFQyPnffHE2E73Xg/42
+         5bsOrQyy3gsP1OTNI7h6khd9Ii4roD+s/jPwg6h/iwGq1ZZzfwWLNXdF6bToblAfLILG
+         C8roN82FCbKWta8y2QH/jyACSmZcc4BGtix3VMRQgilY+1Aj0145MpZ+LJrTY4jUXFtq
+         ZxxIiObdufm24jmvdgaK5MN4QhKEedKbsDKriv+lUJz47KQdjMD/8OhpYdP8z50IgAcu
+         gh1Q==
+X-Gm-Message-State: AOJu0YyChgdgjkLFMhSPY6dFUBBozvhKY/nQRr0noR+8h6nMwRxjZOcE
+	mQK3OicI/QcQhR2+DedXsja/roQJALe5CSQ9/IuRO33N8DdBcp5v+mgbh40RRBPLUg2XY/l0VA4
+	jmKkOVKJJa4KPd97dXR6pTz8swo4BwNecVPObNiplzN7wcRZeRJLnGCbobQ==
+X-Google-Smtp-Source: AGHT+IFtSPYn4NmDpOOTknk8S1AqgLrydigC7fV6sigjoC6hn7gzKrrDuZJA6v0Ta2A+lbz3FUCHfS40UuzVxfV3bo4Y1lTxdS/n
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250108122825.136021-3-abdiel.janulgue@gmail.com>
+X-Received: by 2002:a92:c548:0:b0:3a7:e8e1:cbc9 with SMTP id
+ e9e14a558f8ab-3ce3a8f2809mr108673525ab.22.1736664321315; Sat, 11 Jan 2025
+ 22:45:21 -0800 (PST)
+Date: Sat, 11 Jan 2025 22:45:21 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <67836501.050a0220.216c54.002c.GAE@google.com>
+Subject: [syzbot] [iommu?] UBSAN: shift-out-of-bounds in iova_bitmap_alloc
+From: syzbot <syzbot+85992ace37d5b7b51635@syzkaller.appspotmail.com>
+To: iommu@lists.linux.dev, jgg@nvidia.com, jgg@ziepe.ca, 
+	joao.m.martins@oracle.com, joro@8bytes.org, kevin.tian@intel.com, 
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Abdiel,
+Hello,
 
-kernel test robot noticed the following build errors:
+syzbot found the following issue on:
 
-[auto build test ERROR on v6.13-rc6]
-[also build test ERROR on linus/master]
-[cannot apply to next-20250110]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+HEAD commit:    09a0fa92e5b4 Merge tag 'selinux-pr-20250107' of git://git...
+git tree:       upstream
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=16e35b0f980000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4ef22c4fce5135b4
+dashboard link: https://syzkaller.appspot.com/bug?extid=85992ace37d5b7b51635
+compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=121fbedf980000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=159e8ef8580000
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Abdiel-Janulgue/rust-error-Add-EOVERFLOW/20250108-202929
-base:   v6.13-rc6
-patch link:    https://lore.kernel.org/r/20250108122825.136021-3-abdiel.janulgue%40gmail.com
-patch subject: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
-config: um-randconfig-001-20250112 (https://download.01.org/0day-ci/archive/20250112/202501120855.PXuydC6T-lkp@intel.com/config)
-compiler: clang version 20.0.0git (https://github.com/llvm/llvm-project f5cd181ffbb7cb61d582fe130d46580d5969d47a)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250112/202501120855.PXuydC6T-lkp@intel.com/reproduce)
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/c59c19cd5728/disk-09a0fa92.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/27a8ecc530b5/vmlinux-09a0fa92.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/6ed4573ed205/bzImage-09a0fa92.xz
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202501120855.PXuydC6T-lkp@intel.com/
+The issue was bisected to:
 
-All errors (new ones prefixed by >>):
+commit 266ce58989ba05e2a24460fdbf402d766c2e3870
+Author: Joao Martins <joao.m.martins@oracle.com>
+Date:   Tue Oct 24 13:51:05 2023 +0000
 
->> error[E0425]: cannot find function `dma_alloc_attrs` in crate `bindings`
-   --> rust/kernel/dma.rs:145:23
-   |
-   145   |               bindings::dma_alloc_attrs(
-   |                         ^^^^^^^^^^^^^^^ help: a function with a similar name exists: `dma_alloc_pages`
-   |
-   ::: rust/bindings/bindings_generated.rs:39433:5
-   |
-   39433 | /     pub fn dma_alloc_pages(
-   39434 | |         dev: *mut device,
-   39435 | |         size: usize,
-   39436 | |         dma_handle: *mut dma_addr_t,
-   39437 | |         dir: dma_data_direction,
-   39438 | |         gfp: gfp_t,
-   39439 | |     ) -> *mut page;
-   | |__________________- similarly named function `dma_alloc_pages` defined here
---
->> error[E0425]: cannot find function `dma_free_attrs` in crate `bindings`
-   --> rust/kernel/dma.rs:262:23
-   |
-   262   |               bindings::dma_free_attrs(
-   |                         ^^^^^^^^^^^^^^ help: a function with a similar name exists: `dma_free_pages`
-   |
-   ::: rust/bindings/bindings_generated.rs:39442:5
-   |
-   39442 | /     pub fn dma_free_pages(
-   39443 | |         dev: *mut device,
-   39444 | |         size: usize,
-   39445 | |         page: *mut page,
-   39446 | |         dma_handle: dma_addr_t,
-   39447 | |         dir: dma_data_direction,
-   39448 | |     );
-   | |_____- similarly named function `dma_free_pages` defined here
+    iommufd/selftest: Test IOMMU_HWPT_ALLOC_DIRTY_TRACKING
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11f3b218580000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13f3b218580000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15f3b218580000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+85992ace37d5b7b51635@syzkaller.appspotmail.com
+Fixes: 266ce58989ba ("iommufd/selftest: Test IOMMU_HWPT_ALLOC_DIRTY_TRACKING")
+
+iommufd_mock iommufd_mock0: Adding to iommu group 0
+------------[ cut here ]------------
+UBSAN: shift-out-of-bounds in drivers/iommu/iommufd/iova_bitmap.c:133:27
+shift exponent 63 is too large for 32-bit type 'int'
+CPU: 1 UID: 0 PID: 5829 Comm: syz-executor365 Not tainted 6.13.0-rc6-syzkaller-00038-g09a0fa92e5b4 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/13/2024
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:94 [inline]
+ dump_stack_lvl+0x241/0x360 lib/dump_stack.c:120
+ ubsan_epilogue lib/ubsan.c:231 [inline]
+ __ubsan_handle_shift_out_of_bounds+0x3c8/0x420 lib/ubsan.c:468
+ iova_bitmap_offset_to_index drivers/iommu/iommufd/iova_bitmap.c:133 [inline]
+ iova_bitmap_alloc+0x2bd/0x2d0 drivers/iommu/iommufd/iova_bitmap.c:259
+ iommu_read_and_clear_dirty drivers/iommu/iommufd/io_pagetable.c:534 [inline]
+ iopt_read_and_clear_dirty_data+0x35a/0x6c0 drivers/iommu/iommufd/io_pagetable.c:594
+ iommufd_hwpt_get_dirty_bitmap+0x17c/0x2e0 drivers/iommu/iommufd/hw_pagetable.c:470
+ iommufd_fops_ioctl+0x4d6/0x5a0 drivers/iommu/iommufd/main.c:409
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:906 [inline]
+ __se_sys_ioctl+0xf5/0x170 fs/ioctl.c:892
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0xf3/0x230 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fa2fda974a9
+Code: 48 83 c4 28 c3 e8 37 17 00 00 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc593f2558 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007ffc593f2728 RCX: 00007fa2fda974a9
+RDX: 0000000020000300 RSI: 0000000000003b8c RDI: 0000000000000003
+RBP: 00007fa2fdb0a610 R08: 00007ffc593f2728 R09: 00007ffc593f2728
+R10: 00007ffc593f2728 R11: 0000000000000246 R12: 0000000000000001
+R13: 00007ffc593f2718 R14: 0000000000000001 R15: 0000000000000001
+ </TASK>
+---[ end trace ]---
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
