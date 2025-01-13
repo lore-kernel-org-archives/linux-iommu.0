@@ -1,165 +1,109 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2081.outbound.protection.outlook.com [40.107.236.81])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30DEB204583;
-	Mon, 13 Jan 2025 16:40:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.81
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736786445; cv=fail; b=WHCTXMDs+W283JmOF7HMY3RfzMPyMSn2Go2DUzfYFP/BOgQ6KBAhKoiB98fSyYI/Xzph+7I6PSI3KZOPURpjfXvWgj8xIGwpfNzuBSOC8uvmR0a13PNMQv75IHeNw8SD7JRgl3+fnUZS7p4U9/XxQTJqEzJXN6U57NFRx5efB7M=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736786445; c=relaxed/simple;
-	bh=QnKlBB4pWTLJhy4Pr3OmmpwTGLhoORaF4yly6b8dUvE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=bNh+y/CQBy2Jj6jAa55TiLaODPgp5bP4xSG/jJRCRx8oTM6MAqm1P76G8kb8bbc2yVxAG9Pa3+0jWvknzAGPDVksubLwYWPwVff0I3sNlKE86BACL7IgWA7M8RLKeKqgd23NTzvRdO4sOeAPAFyDEByg2Pf9G9WjTaojMTAFwAM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ju1yMqRo; arc=fail smtp.client-ip=40.107.236.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ju1yMqRo"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TNObtvM5/NMvHxiHbtfcNYDVVhNfBLiJBYRc9iICRKPiCB8gSrar8Il+5rMygLwByda/zF0e+ya7U76m/fwALoZILmcmJkP3eBUfPJ9RnU9/tp4S8/pjPwdSg6lRSPu8e0VSILlHE3QYxstiXTYKmok3PipX5YzsyvExKHztjX7uA13GXz1zl05Qe48CCSJ1ZZDI97nOFu2I/6YORDW5WVF7h6vV/mTmphuqgsZvYr0AJiqJSPnMjCVeGKeZ/xPEYf0enacYXosn7QI6axE9XpgGOOjL7UAyFbt4FT5OM4ulRf8vSsfscrVkdLml3PqYWNATpHVA4L4YrgqfqYCHUw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QnKlBB4pWTLJhy4Pr3OmmpwTGLhoORaF4yly6b8dUvE=;
- b=JDNAyf7tRT5CEQ1pMjNpsOmEQkOrdJRLyrTq8Ik7gs5EY89TNq7ihnXPZ97F0GwtV6vk7zY1p1uJOFYs8ZCUXiWhDINqEiAq7Fyf1v75cOtXExwGDCcdJCn6tVkda4HlP4AoJYCXua515HqdMaHiVTqWOuoPtOJqcEKIQm8NgHgZsF9Bu+GxOWekledijxas0IuLk+xVXu0K454tPDKybayHDjM8m/tkzsDcHBtpHQlqNNrYKBptAMHi8QsSRo1k+ex1zpgjxFd1+C5qVVa+YatF05kG/NGfNfg4PNDSRa/nYz7Xu7CA9Oeek9MHGn9AtzAipylE8fb2xqIUGEyLdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QnKlBB4pWTLJhy4Pr3OmmpwTGLhoORaF4yly6b8dUvE=;
- b=ju1yMqRoOuDkglKXbBQYO/dq7GWUCSoSuDIeALnIbUOMRLkvpIzkk77XdVjJyeJnQAqCaZFSKSF0FuCKE4zjg5HmRVh7iZK/7ovQmIUWbaqE6TSAOZUBgikCXKgKNmwmm/XsSlclrEYPrMs71wh4OyHmRGYPSty0Tcd9fffKHeBTX7zyDcz6918wut5xlSPAyJvqS8Psp0MTsecGd9SXkFM2fKVlgdz38EyZbQX9LOkCxTDqIo6dueC/V0edyVHfpyJmx96A3E7p+TA5numPe0jD6qZlAbrfuRftT53Lms4W6Dt8Qne7OjYwRLv4COf8/k+fLZYbVY+UNcHsh8aIgg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by DM4PR12MB6495.namprd12.prod.outlook.com (2603:10b6:8:bc::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8335.18; Mon, 13 Jan
- 2025 16:40:39 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%5]) with mapi id 15.20.8314.022; Mon, 13 Jan 2025
- 16:40:39 +0000
-Date: Mon, 13 Jan 2025 12:40:37 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com,
-	tglx@linutronix.de, maz@kernel.org, alex.williamson@redhat.com,
-	joro@8bytes.org, shuah@kernel.org, reinette.chatre@intel.com,
-	eric.auger@redhat.com, yebin10@huawei.com, apatel@ventanamicro.com,
-	shivamurthy.shastri@linutronix.de, bhelgaas@google.com,
-	anna-maria@linutronix.de, yury.norov@gmail.com, nipun.gupta@amd.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
-	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
-	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
-	ddutile@redhat.com
-Subject: Re: [PATCH RFCv2 08/13] iommu: Turn iova_cookie to dma-iommu private
- pointer
-Message-ID: <20250113164037.GO5556@nvidia.com>
-References: <cover.1736550979.git.nicolinc@nvidia.com>
- <42c6ff3090636146a86501528eb03df99f83381c.1736550979.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <42c6ff3090636146a86501528eb03df99f83381c.1736550979.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: BL1PR13CA0253.namprd13.prod.outlook.com
- (2603:10b6:208:2ba::18) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E5B6190692
+	for <iommu@lists.linux.dev>; Mon, 13 Jan 2025 17:25:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736789123; cv=none; b=MKnck9dBrdyhB+n0TLIe5Zv2n03pTFFq2b19dMUTF0Z2jg0jJ48yuTqt1dYMmG3DMzQqIvjAblUg7BBcFoZW6h0ldFsINkyosPsd5NurfCOwTWxiuualx1LkY6hEYayE1mr+5rvHIqkk0cUv1mPptDRww+TLmtsfaLFht1efSWo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736789123; c=relaxed/simple;
+	bh=KGzd4ytGkkAu8mAOnGTRBb1s/TFRy2UWUB3jiEoyDv8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YpSNs5IWoL4keaT6i2BjmM1DrUy36SsLm58DMiTeCPtpV0LTBM0YvAqcuByZcEjsKLghMP1AwfE6G+Ves0q3/yVS+BBM0Qt90axqc2B5seGBn40LRFhVP1qLzyl/D0VuZTFpOzwTnfxoNxnl1GVvXcuLds1vJuFGzCzimurw2CY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DFCCC12FC;
+	Mon, 13 Jan 2025 09:25:49 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CE07A3F673;
+	Mon, 13 Jan 2025 09:25:20 -0800 (PST)
+Message-ID: <0a0a576e-dd4d-402a-a0ea-43eede4e7cd8@arm.com>
+Date: Mon, 13 Jan 2025 17:25:18 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DM4PR12MB6495:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5f35b9a3-5bc1-45b2-77e8-08dd33f10323
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|7416014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?uWMU17Z/9vkV4ZyqZ0LNEsH0n5X4a7Zfbjc8NJW+Nt1gkgSfoQlNFbFFxr2L?=
- =?us-ascii?Q?kXpndaaOuWqtDnpfrW5O3mWU0jqdGHRCnAvWQGGyMc73B/ER9/KjVkBpGXMv?=
- =?us-ascii?Q?48m65kVF2Rrv2rQxL7gkyAjYKuYSX1aFgfsH1hLYMTfqkkqEvNke0a22yF6f?=
- =?us-ascii?Q?aKhTVu7jWbfs8W/m8aW5pjv9GJdqdmzp5q3dM7Osb94QjAApwPeHF7v25ICW?=
- =?us-ascii?Q?Dv8jgDHuz4QmByUMcLbyAkbhjJNuDjOLEpnsdT+DdRCBwT6Ck09K16TyNPao?=
- =?us-ascii?Q?pBMN2NmRszyCb6pCPd28ub1rc+RkqmbK4U86n/zHcNUutRp/CN057gLJA/hL?=
- =?us-ascii?Q?1lSpUJLjIFgMu9FONH7xW5USG9vR2pXCdbflh8atND3ogrGeAd0w3DT3ZIH7?=
- =?us-ascii?Q?STH7ea9bY5b81cYEKzsBpyUHdLaWZnc6GVaVa4A98m5zNZqNXZmdLci/OTmg?=
- =?us-ascii?Q?t99p8vb37eSc+MhF14DdugnXeC1q+mhq3C0hucMd66fzGqdgWYqvSrYVTjjm?=
- =?us-ascii?Q?pQLa8g+V3HkfJurxP18U1EKQb1aomJweFJN2x+1vOCUVBmBuK9X2lPLqomN9?=
- =?us-ascii?Q?RfdnR2+wkIkChBc5dXQgGHWxEBFXR+REm+8G2S1bIhi+712e7EdO4HaYfXI0?=
- =?us-ascii?Q?caMEZ9yGVzMUcScKNRfwHup0U5yWLwF/2gSTTbSiroOjc9Ub6XM0uXODrdHR?=
- =?us-ascii?Q?BQGIrF0zGS1mA9RVmwgFOCbmOIviDxYY6mFM6g72fkOCBgnaXv2q/jQyRuzO?=
- =?us-ascii?Q?dRTeydFaeg46Zyy/fsbeP0icfYWiIv64fJKtLBhuYozrapUXVa/AkqIpFf3O?=
- =?us-ascii?Q?DREJIr/u8UdXg53jxsEM3YsvgQ9a/OAyVYD5acf9Ghk7kjgqL7SWltkxes0g?=
- =?us-ascii?Q?JosWFB1GzWHXEb26WTFj2if/6YgKZxtsvj3AYJ8ecmdVMKxy77gkHqKfDQWM?=
- =?us-ascii?Q?5QSO48cf5hq9VJkkp5hm4mOTFnH3Sld0cM3xjIriYFATew1LZvNZ6CXGvI1h?=
- =?us-ascii?Q?qfHkLby4yhz09vy8yMXLwZIdem6VkcA/nXM8ArQyHT0LC8t34b9uTaR9F4ew?=
- =?us-ascii?Q?Ne/8wG4HLmuFZDB7KWsjYn5YYJHRF/O0N74Gngh1bnpxxPinRDGwi9cdr/i7?=
- =?us-ascii?Q?/1HWFPvc8Inv84mOvDYPSeYabh6kCvKiCoCGfYwBjDkGPjNuNrS2Sc407kAZ?=
- =?us-ascii?Q?lurvHetwEEW/rgm6R3R9XSUNmKnkurWe3Z8k1X7ifG9msCFIs3empF4O8Qam?=
- =?us-ascii?Q?tk6pEYRONrwsUVT/WfIYKcMT7emLMu2JWa8rMw4zL8sfwazx9shepzn7L6tR?=
- =?us-ascii?Q?YjfSx/oPQYMY1ZBWmv5VB0267KRB21nPsMJg0TfA2l8ajOGwK2jwnaYin81s?=
- =?us-ascii?Q?Cxuq08WadGYes/kmQ2awdennA4JH?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(7416014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?HLfzxvzDhdacreZHj9GsiSlpyekIhQ2oFT+H9CphBDviYQQC0H3Z9OWCmKSx?=
- =?us-ascii?Q?LTmtdeLGaW/drWBRTPUK2BnTjPAYNI6yQSR/BgHEz4pscGs7JYh4OJ4UyEaq?=
- =?us-ascii?Q?1SnLzUo/QkDgCH9LQETXFnM0/X2gw29KGnprHIXX2t+XSGusgGCLM//2QjVi?=
- =?us-ascii?Q?eY5xxAoRQkkgE4zwQ+dERmjwNCSgcqiYd8UiaR9ghLr0SALovR0Fc0J/au44?=
- =?us-ascii?Q?FBVTTc7X64BApGhI1uBNDZ+iZqOVBNU90O3dgObl/4UBikc3A0c0uGe6EaG3?=
- =?us-ascii?Q?o76m2CqvoHFaPEqVXRPCe+LFwAi6CZJwDypsHtieeU4CRf2gRgzmj+wVaNYP?=
- =?us-ascii?Q?0WVPjfmGYIWTCsmeVjdOuKv4p4LvgxmrDVD63DcGM+z8D50ywSJL6uWC7+Ub?=
- =?us-ascii?Q?ctSegxbIza1vCt6m2fKZOoqPU43W8HU3ix9KiP6udSjfJfRAiK1uTT5aKyD6?=
- =?us-ascii?Q?/d29WKZujJFUCMxB7E63x9uwtfuCt/mJsoUMIBUSOwpNmL/V5NIB3xx4oyCD?=
- =?us-ascii?Q?aJ44CIpNug9AgvjNERHgGIySVUlFWXA3y7wCWtL5yxQeK9UBVEihGiyDnowB?=
- =?us-ascii?Q?HiWwMg+PXy8H7MgQuopbQt4YYpxSdnQGAxAzovLSTAVlt3BKLGz78qAg3DVV?=
- =?us-ascii?Q?gttHPjErJ/Dt04X9KGLeZjUAW+mpLH+oiSjEoQRCkWYWKi/EjHu9NtWjrPBU?=
- =?us-ascii?Q?XnaeFkeRct8Muwfsw4yIKC0icRvdYxB3V5QRI+85626GEnrWYVuM+Vrc+WMC?=
- =?us-ascii?Q?j9iyBovHuLJ0o3JVH+UILYT4uV4pHSel0wGN6+H/IIwSiPlBl+2pfOplyjFh?=
- =?us-ascii?Q?3oMIPeSLN4Ir+HXWDvaeS8YTfJYs7mHpU0skc49fIxWNaaDrR+Mh4YsBv6p7?=
- =?us-ascii?Q?DQiI9kcNiylfzeWE+LfHdFmSDI96QrGO/UH6RzdUz/Rg3aIxzXW/C9g1+8dY?=
- =?us-ascii?Q?wYC6KArRwJNNnAThVY5IyRrifIHE4dXGi5QwA2OO9ErW1hstn4Dfa9qn4+16?=
- =?us-ascii?Q?gB8lRuxSRPSFcZM82Vcl/HxEFCVBZAHCEdLyhKbaDl5yN7FljlsCr6cw9xSw?=
- =?us-ascii?Q?S0a8kNY5CuAQq91ANAyLQsAEOrPTOfJse6+lxwI1M14lDxyUXPFw61ppHlfZ?=
- =?us-ascii?Q?F0fHipFxEJHFLZg18VlT5e5W3qm+HdGBUYjTfCpNdmpXwx9imkbs8DvOjveA?=
- =?us-ascii?Q?uUR06ybngLUJXFWyImUvBtMzLFn1GLqle0Gz44FbIxzz1PE5cTwY+rLbjJ4z?=
- =?us-ascii?Q?c6q/Qsn5zXF+y53qx22QD9pl6Xgm/GvTnlIQeUixHGeTyV2xDtGgdKzC6zdy?=
- =?us-ascii?Q?y8wiazf6qAUjKfNmYqJpzRtznT8TSSGmxAFGokZXmMyrcOiS0wTrrVB9XCVf?=
- =?us-ascii?Q?MNMtb9u/RsV2r3eYXonUsEpcfWO39ZhQLaLJ6tXw0mfV1rKEJ6gcb5xBgfyS?=
- =?us-ascii?Q?+YzfaIvnKlMvGkorGIi3FSpQhzPf7Ld/0TjkdQDh98FcyzfqUCxNmDngFdXK?=
- =?us-ascii?Q?PY6lyYxuvqu568dSZifsdApthGsqIK6ARS9cyVQlZNs2yEkgP6ltKOIU5Eq7?=
- =?us-ascii?Q?i5vEwjF47Pb2J40MX34=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f35b9a3-5bc1-45b2-77e8-08dd33f10323
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2025 16:40:39.1165
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Y1rNZs7iLCT7Ev6SZBy+NlJFrSwvh/twMuJqaZrjTFoGn51BN6uGHYMI7RmJ8m+U
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6495
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC] iommu: fix wrong DMA ops for iommu device
+To: Charan Teja Kalla <quic_charante@quicinc.com>,
+ Will Deacon <will@kernel.org>
+Cc: joro@8bytes.org, jgg@ziepe.ca, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20241213150415.653821-1-quic_charante@quicinc.com>
+ <91d15d11-ec53-4ca2-a385-9fa69d861f2c@quicinc.com>
+ <20250103153434.GC3816@willie-the-truck>
+ <e8fa02bb-96b7-4010-92c9-7e1eb485a551@quicinc.com>
+ <20250107113126.GA6932@willie-the-truck>
+ <cb2db54e-37e8-495d-916a-4e63c67019bb@arm.com>
+ <acc57f57-6eb5-4d55-bc36-33624051eec9@quicinc.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <acc57f57-6eb5-4d55-bc36-33624051eec9@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jan 10, 2025 at 07:32:24PM -0800, Nicolin Chen wrote:
-> Now, iommufd has its own iommufd_sw_msi using iommufd_hwpt, the iommufd
-> owned domain's private pointer. Similarly, iova_cookie can be seen as a
-> dma-iommu owned domain's private pointer. So, move iova_cookie into the
-> union.
+On 10/01/2025 1:29 pm, Charan Teja Kalla wrote:
+[...]
+>>> We need to fix 6.13 before we fix 6.6 unless you can show that 6.13 is
+>>> unaffected (in which case, we can backport the fix(es)).
+>>
+>> Certainly the reasoning can't apply to mainline as given, since
+>> arch_setup_dma_ops() stopped touching IOMMU stuff at all back in 6.10
+>> (and indeed iommu_dma_ops itself no longer exists since 6.12).
+>>
+> 
+> @Robin
+> 
+> Agree that we don't have iommu_dma_ops but I can say that same race
+> still exists. Although dma_ops is not used, but the decision to call
+> into the iommu api's is determined by the 'dev->dma_iommu' flag, which
+> again, is set after domain is allocated for a device.
+> 
+> In the same race mentioned above,
+> 1) S: Domain is not allocated but the dev->iommu_group.
+> 2) C: Just returns as dev->iommu_group is filled.
+> 3) C: Continues probing and succeeds.
+> 4) C: Calls dma_alloc/map/.... But, it won't enter into iommu_ api's
+> because the 'dev->dma_iommu' is still 'false'.
+> 5) S: Domain is allocated and sets the 'dev->dma_iommu' to 'true'.
+> 
+> 4) above is the problematic step. Although issue exists but seems to me
+> that very narrow to get triggered. Please CMIW.
 
-This commit message would be clearer as:
+Hmm, yes, I guess there is a fundamental race where async client driver
+probe can observe a partially initialised group while the IOMMU driver
+itself is still running iommu_device_register()->bus_iommu_probe()...
+And in that case, this patch is wrong for two reasons: firstly, bodging
+the iommu_probe_device() call (which really should not exist at all)
+does not cover all cases; and secondly, forcibly creating the default
+domain in that path before we know bus_iommu_probe() has seen all other
+existing devices means iommu_get_default_domain_type() may miss their
+requirements and thus defeat the whole point of deferred allocation in
+the first place.
 
-Now that iommufd does not rely on dma-iommu.c for any purpose we can
-combine the dma-iommu.c iova_cookie and the iommufd_hwpt under the
-same union. This union is effectively 'owner data' can be used by the
-entity that allocated the domain. Note that legacy vfio type1 flows
-continue to use dma-iommu.c for sw_msi and still need iova_cookie.
+Having looked a bit closer, I think a more robust solution for now is
+probably as below.
 
-Jason
+Thanks,
+Robin.
+
+----->8-----
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d1af0547f553..8d90d196e38d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3120,6 +3120,11 @@ int iommu_device_use_default_domain(struct device *dev)
+  		return 0;
+  
+  	mutex_lock(&group->mutex);
++	/* We may race against bus_iommu_probe() finalising groups here */
++	if (!group->default_domain) {
++		ret = -EPROBE_DEFER;
++		goto unlock_out;
++	}
+  	if (group->owner_cnt) {
+  		if (group->domain != group->default_domain || group->owner ||
+  		    !xa_empty(&group->pasid_array)) {
