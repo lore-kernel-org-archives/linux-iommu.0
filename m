@@ -1,119 +1,229 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79F031B85FA
-	for <iommu@lists.linux.dev>; Tue, 14 Jan 2025 19:08:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D25B7205AB6
+	for <iommu@lists.linux.dev>; Tue, 14 Jan 2025 19:26:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736881732; cv=none; b=GFv9vXvtPQZVGHxp5O+7Vt2bse7XZELL3wNnIrj2gE397cT5yySXCowqnSibG6GapX5XiyonN1mfiVtaD06EyiIGOKcpXVPIluj3j0ud9BdZ4HpiF9CSkDq9qad7Ut8uOtbwMWGBpLWMzz1o3F/IgQinvdaAfKNtYSKpGUlEtXM=
+	t=1736882810; cv=none; b=EB5ZmUtIUdgXtcf45oYGKgefkXn4uw6LUaB83BF8kq1VMUJwzvpmO7rwLy5B+xbq0TbXS2oB0eoYDYfsUlPztaEKrDUJ/3b9qAPKvYf7UdtntRVaiTZImLAML9USS0p5s09dW2BDYBaqYHhAvOlX4/Q9sIewPCwMYekNQ6xsnqA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736881732; c=relaxed/simple;
-	bh=WXzIJ0bdCaeOzDQWfKoxB/Nv/Ie/cVikDTxK34EnSDQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ssO9cTMDGdl1OJH48/mBSw+V4U0aHCCmTC/o4nhJnpySrMosrgP09CVz3HcudNL83yYHt+g8KwSNhmmR8FySYNN1MmuTxUPbGmTXT1wTgjlT4hQvEMNEPB+BRmeu8+GF+yRGw32O2Jd5++wl/XykazEC/egAT7jy7Tlj07ekqgM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QHwmRdMo; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1736882810; c=relaxed/simple;
+	bh=RtnslbLXAI6fWAT6u5Jma/xqdzvggE3RkXqnsCbB4vk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=iQr3H7qYO5yTSXsn8sE1M+EXtnnoKrUvKjMlOqO2yuFIDHWIWr3qVIS5ACtfZFDG8YM615p9OVbFEtJuAutfFB+lWBM4Aj/cp9EQnM9lTFs0TqT37ofv87q3t0oBG+YEm0hkF28+dmWmtTVbR60tv+QnsrbxYR7UKnj+ARsIZ0k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=dxLUg/l6; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QHwmRdMo"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2165448243fso127267985ad.1
-        for <iommu@lists.linux.dev>; Tue, 14 Jan 2025 11:08:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dxLUg/l6"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-43620a5f81bso6371115e9.0
+        for <iommu@lists.linux.dev>; Tue, 14 Jan 2025 11:26:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736881730; x=1737486530; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=p1wluVr2KEmdL75RTkfvYUEaTzCJ1+TWXwMM3JOjwnE=;
-        b=QHwmRdMo3UMtk4ISTi/8fuzoF4ohXyYmVZrNV6jxLsPLwmHXUS4Mso6G/Vq6rbzXuE
-         e/l7iOGO0GAuYOrHuxOnTkItA0ZbMruL+i8mZUH3oA0EV32Qi5O3OrgY9L943Yf+n7CR
-         KQfUS4PiWQcZ/Zh2Y9W13Em2UvUhNUHWHuduwbSXIUFExNxB9c9cipHnYpFbvDDhpgo0
-         9aKg3I4IaGg38cSM7jpqBtOsxBNrmLXLpsV62mandlxjmwqeeW+9bVzEB4xrsIYN5joE
-         RQMBDXkWlsvB4ad0YFrkerLR6fe1IqgTjxVsaY3KR+dxRQ/Z3vA04ChXIRb3B28LE9Td
-         of3g==
+        d=linaro.org; s=google; t=1736882807; x=1737487607; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=R8zbHHjDHwUKprLOJl/lBp+WlB/iIXKfc0w2QQvt1CM=;
+        b=dxLUg/l6h6G+bb0GaCi/karqC0gf9U5ZBb8tZU5Iovp7GCh6nbRgIUnKLCXet4t+Xa
+         dR0xAcOLOw9e//8Q1tvDzYZVMSP7uZR+urMcbt1hDvqC8TpOOFBzrwcZfeEM/9ROBpai
+         UEm7O0ZPZWmhVjtlRsW3rZkmtCJEprdM0PKV5xJdc/gYJhxFXTTgsUL5EqdOJHDqvPeA
+         +DcGOrZHqsjr8z8yzuYmNCOBe3+W8eiYpW7Dknm9uQe0jJWndYcbs9nwRTqsHk7APRq+
+         eatXvRsYDpefEG8MLRNE2f8IoD3aEMJ7Q8mN6atqzDZF8dOCZCNek2XcvuLNwNDANgBH
+         i2Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736881730; x=1737486530;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=p1wluVr2KEmdL75RTkfvYUEaTzCJ1+TWXwMM3JOjwnE=;
-        b=fBqcKF6HZkgr4wia5ycoI9bfY1pSa9Im55IVFl6KptoUYAnzO4Rnrw4u4kLUiglHev
-         CK9zWkiFBZ9Ydm32GkMSs4ULzWRt2Ludl7pk0CD8GFoYfMLbN1ZCvNJrMODkcp/Nea/w
-         VPDyL5q7/rWJ0MSwpB3esqvNMZaPViirF7TzfB3AL0mB6Ft5NxKJym3RsyoZhMsD5Y7q
-         Gn4qe5MaWCsO86F3NEK44SonqzGglsVFHTMpYVTUVv7mykIfYAstgL2tjA3PiA/zYaFU
-         3vDXMMuDvRFdZPekCRNIXJEZR6pbfPjyNSZJcF8AQ/X5hdTkfZlT5i7p7aOZp71vxc4w
-         2/Bg==
-X-Forwarded-Encrypted: i=1; AJvYcCXuvvWQbsYHehHoxsGktWsRDf98HNYM3y+Lgg3EXDfJm9R59sJ/Zzme1I2ZJrhY21dSFCuDIw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyJdY0rG+Z0hgpJWfD8yhlqQHgchZYV47dRSAcmlNysnZICVntM
-	7lgGv/DQVyHZJdmYyQjtLRoWX7SzAv6oqwkPGWoRgb3BgAXzYNrC
-X-Gm-Gg: ASbGncu7i1SlZQkeJc9ubYoj6JoCs2Yti7G16maOB7b7mdo15OhBtveI9pea3Xw6srQ
-	2888NbEV2DaH2951uuO8oqvCQOSALkB7E+Ux5T68UnkV1AoTuMAlpFhrynPbKgv9G+SA+8z1oZ8
-	B6Xn1Pa9vVRJRC1uOhnxOAA5PIWi3dfA04wICpiEGyG0a9SJmzaZth0CdkrsPp7SurXSEYqmDf6
-	GGNbmV5zegusX5YwvNnPloU0L7q4qecaBMisAhXRQvbVCnNFlZw96afsRcU8xnlVFeShA==
-X-Google-Smtp-Source: AGHT+IESyEmcGSE8oZhcJJMi/VSL4QrSheSi1FfqVPunOJTITgUtOEiVoEEjSBASraWp4h6f237DmQ==
-X-Received: by 2002:a05:6a20:2594:b0:1e4:8fdd:8c77 with SMTP id adf61e73a8af0-1e88d13b502mr44951960637.8.1736881729674;
-        Tue, 14 Jan 2025 11:08:49 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-72d4067f609sm7938702b3a.138.2025.01.14.11.08.48
+        d=1e100.net; s=20230601; t=1736882807; x=1737487607;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=R8zbHHjDHwUKprLOJl/lBp+WlB/iIXKfc0w2QQvt1CM=;
+        b=f1gtTgn4u6kxoorutqMz/rEQxofH5GcypMGJMeuuVJPA63cn1PDvucebWGwiY/9elI
+         PnlS6YgO5LN+2Rpfzmm6qAMbdeEl1OqA+6NoNjs09ccqVPKHgbWSAtX1DB0VILQvfY02
+         om7Hl11jIR8U5SDaRemRzTUuKb7tY35EsH0oRHq5+0p8rzHcPhuhl+qRpHxfXduOTGLC
+         hmHD5m0hEoEBuFiCEL65Eg2jPA/8R/tnfqT1+mkCBqZHaVaYMkQKyhdqjmbApDtEZGFx
+         tvdOhjDbv3uETrvobIwfcrKo1CaGhpdyz4RDl0Wfg/FdnsdyNHD/ATBMQeF0PjXcnwLa
+         D1xA==
+X-Forwarded-Encrypted: i=1; AJvYcCXKlRPeTGQFLfvZ9Hvcc4PSS8QbWrD+wJEAQLVQdnOEjl0brFP9r5MBxlUMZIsIAiduuq1P4Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwHQUeb+S82HynDTtha6NyOVyHAPqIOgUOf22i37AYThW9zSrRx
+	RhBRJTHqC40srQLjZO19LjqRXskVA0picbZMZUjdwyPJaP3FJGfAoZv2wMJDg2s=
+X-Gm-Gg: ASbGnculDbKY1v4DCUpM93N54OBbu4399zafsABMEle9NfpYuNDQ1eVroHhzyj4RfNz
+	bL+KhxxAxI6Ak3Z/JG14dPv+63l2AZamUyFXrRXjuMNB25fPeK72AXqvTLA+F1EjPrNE1NnEVMB
+	Bga4OQHNHrTqqgFRpM3nH5jKZeklEXTodHGLTf5q+gWyZMToO+lL5FQtsgg5F4aJCk76aUJmwA3
+	Nv2MAH5YG3iYHR/AzVRaTTrdagL/Dpk00ndeGBXqkkupfRVgdICxB8+tqJ2R5nFqyPjL4U=
+X-Google-Smtp-Source: AGHT+IEnD9Q/PlL16atUZuQr3zo7osv/8GJqa0PNvMI0cYgqaJuTOZ+Meucj00enp/jZftDOrIqvJQ==
+X-Received: by 2002:a05:600c:3c8f:b0:434:f7f0:189c with SMTP id 5b1f17b1804b1-436e27007e9mr105673595e9.7.1736882807013;
+        Tue, 14 Jan 2025 11:26:47 -0800 (PST)
+Received: from krzk-bin.. ([178.197.223.165])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a8e4b8116sm15552826f8f.79.2025.01.14.11.26.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jan 2025 11:08:48 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date: Tue, 14 Jan 2025 11:08:47 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Tue, 14 Jan 2025 11:26:45 -0800 (PST)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To: Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
-	Daniel Mentz <danielmentz@google.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Use str_read_write helper w/ logs
-Message-ID: <617b98d2-b3f7-492d-bed2-5609c8f158d0@roeck-us.net>
-References: <20250107165100.1093357-1-praan@google.com>
+	Joerg Roedel <joro@8bytes.org>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	linux-rockchip@lists.infradead.org
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] iommu: Use str_enable_disable-like helpers
+Date: Tue, 14 Jan 2025 20:26:42 +0100
+Message-ID: <20250114192642.912331-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250107165100.1093357-1-praan@google.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jan 07, 2025 at 04:51:00PM +0000, Pranjal Shrivastava wrote:
-> Adopt the `str_read_write` helper in event logging as highlighted [1].
-> 
-> [1] https://lore.kernel.org/all/20250107130053.GC6991@willie-the-truck/
-> 
-> Signed-off-by: Pranjal Shrivastava <praan@google.com>
+Replace ternary (condition ? "enable" : "disable") syntax with helpers
+from string_choices.h because:
+1. Simple function call with one argument is easier to read.  Ternary
+   operator has three arguments and with wrapping might lead to quite
+   long code.
+2. Is slightly shorter thus also easier to read.
+3. It brings uniformity in the text - same string.
+4. Allows deduping by the linker, which results in a smaller binary
+   file.
 
-This may result in build errors such as:
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 ++-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       | 3 ++-
+ drivers/iommu/mtk_iommu.c                   | 9 +++++----
+ drivers/iommu/mtk_iommu_v1.c                | 3 ++-
+ drivers/iommu/rockchip-iommu.c              | 3 ++-
+ 5 files changed, 13 insertions(+), 8 deletions(-)
 
-Error log:
-In file included from include/linux/device.h:15,
-                 from include/linux/acpi.h:14,
-                 from drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:12:
-drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c: In function 'arm_smmu_dump_event':
-drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:1910:25: error: implicit declaration of function 'str_read_write'; did you mean 'sb_end_write'?
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 0e4cbb2c64d7..358072b4e293 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -26,6 +26,7 @@
+ #include <linux/pci.h>
+ #include <linux/pci-ats.h>
+ #include <linux/platform_device.h>
++#include <linux/string_choices.h>
+ #include <kunit/visibility.h>
+ #include <uapi/linux/iommufd.h>
+ 
+@@ -4321,7 +4322,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	 */
+ 	if (!!(reg & IDR0_COHACC) != coherent)
+ 		dev_warn(smmu->dev, "IDR0.COHACC overridden by FW configuration (%s)\n",
+-			 coherent ? "true" : "false");
++			 str_true_false(coherent));
+ 
+ 	switch (FIELD_GET(IDR0_STALL_MODEL, reg)) {
+ 	case IDR0_STALL_MODEL_FORCE:
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 79afc92e1d8b..de205a34ffc6 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -34,6 +34,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/ratelimit.h>
+ #include <linux/slab.h>
++#include <linux/string_choices.h>
+ 
+ #include <linux/fsl/mc.h>
+ 
+@@ -2106,7 +2107,7 @@ static void arm_smmu_rmr_install_bypass_smr(struct arm_smmu_device *smmu)
+ 	}
+ 
+ 	dev_notice(smmu->dev, "\tpreserved %d boot mapping%s\n", cnt,
+-		   cnt == 1 ? "" : "s");
++		   str_plural(cnt));
+ 	iort_put_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
+ }
+ 
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index ab60901f8f92..034b0e670384 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -29,6 +29,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/soc/mediatek/infracfg.h>
+ #include <linux/soc/mediatek/mtk_sip_svc.h>
++#include <linux/string_choices.h>
+ #include <asm/barrier.h>
+ #include <soc/mediatek/smi.h>
+ 
+@@ -510,7 +511,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 			bank->parent_dev,
+ 			"fault type=0x%x iova=0x%llx pa=0x%llx master=0x%x(larb=%d port=%d) layer=%d %s\n",
+ 			int_state, fault_iova, fault_pa, regval, fault_larb, fault_port,
+-			layer, write ? "write" : "read");
++			layer, str_write_read(write));
+ 	}
+ 
+ 	/* Interrupt clear */
+@@ -602,7 +603,7 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+ 			larb_mmu->bank[portid] = upper_32_bits(region->iova_base);
+ 
+ 		dev_dbg(dev, "%s iommu for larb(%s) port 0x%lx region %d rgn-bank %d.\n",
+-			enable ? "enable" : "disable", dev_name(larb_mmu->dev),
++			str_enable_disable(enable), dev_name(larb_mmu->dev),
+ 			portid_msk, regionid, upper_32_bits(region->iova_base));
+ 
+ 		if (enable)
+@@ -630,8 +631,8 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+ 		}
+ 		if (ret)
+ 			dev_err(dev, "%s iommu(%s) inframaster 0x%lx fail(%d).\n",
+-				enable ? "enable" : "disable",
+-				dev_name(data->dev), portid_msk, ret);
++				str_enable_disable(enable), dev_name(data->dev),
++				portid_msk, ret);
+ 	}
+ 	return ret;
+ }
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index b6de1ca00cef..a565b9e40f4a 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -25,6 +25,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
++#include <linux/string_choices.h>
+ #include <asm/barrier.h>
+ #include <asm/dma-iommu.h>
+ #include <dt-bindings/memory/mtk-memory-port.h>
+@@ -243,7 +244,7 @@ static void mtk_iommu_v1_config(struct mtk_iommu_v1_data *data,
+ 		larb_mmu = &data->larb_imu[larbid];
+ 
+ 		dev_dbg(dev, "%s iommu port: %d\n",
+-			enable ? "enable" : "disable", portid);
++			str_enable_disable(enable), portid);
+ 
+ 		if (enable)
+ 			larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 4b369419b32c..323cc665c357 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -25,6 +25,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
++#include <linux/string_choices.h>
+ 
+ #include "iommu-pages.h"
+ 
+@@ -611,7 +612,7 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+ 
+ 			dev_err(iommu->dev, "Page fault at %pad of type %s\n",
+ 				&iova,
+-				(flags == IOMMU_FAULT_WRITE) ? "write" : "read");
++				str_write_read(flags == IOMMU_FAULT_WRITE));
+ 
+ 			log_iova(iommu, i, iova);
+ 
+-- 
+2.43.0
 
-since the necessary include file is not included directly.
-
-Guenter
-
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 34b424c87be0..0e4cbb2c64d7 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1907,7 +1907,7 @@ static void arm_smmu_dump_event(struct arm_smmu_device *smmu, u64 *raw,
->  		dev_err(smmu->dev, "%s %s %s %s \"%s\"%s%s stag: %#x",
->  			evt->privileged ? "priv" : "unpriv",
->  			evt->instruction ? "inst" : "data",
-> -			evt->read ? "read" : "write",
-> +			str_read_write(evt->read),
->  			evt->s2 ? "s2" : "s1", event_class_str[evt->class],
->  			evt->class_tt ? (evt->ttrnw ? " ttd_read" : " ttd_write") : "",
->  			evt->stall ? " stall" : "", evt->stag);
-> -- 
-> 2.47.1.613.gc27f4b7a9f-goog
-> 
