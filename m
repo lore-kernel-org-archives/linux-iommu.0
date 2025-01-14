@@ -1,122 +1,134 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail178-22.suw51.mandrillapp.com (mail178-22.suw51.mandrillapp.com [198.2.178.22])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B96B51B2193
-	for <iommu@lists.linux.dev>; Tue, 14 Jan 2025 17:50:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4D4C1FA838
+	for <iommu@lists.linux.dev>; Tue, 14 Jan 2025 17:51:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.2.178.22
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736877055; cv=none; b=ucl7XI1egGkoUtMUc+gUg+oeJ18TSM9zSRC3mRX86erBJzo3GdLPC/hBq9r/ybt8wJRxmz9u8GFtNqQHvNXy1vLF+QpOOa1oDISNSapmYW8KqIhH0a93AYCm5BykC9OKPMsVQv5YHkvTg179MVhIwYnHIIN7t9a/XdIcSjKjJak=
+	t=1736877117; cv=none; b=SYJQL3wTWajleBPu+d+HLXveGaTw48qNX1tDs1UVwoN7jkXX6BgLTquwQ5c++1okGcKPrRkjsyv9MmFTJZwwe7mpeTsR9YNo5sEVcGXifankpCH6J0bMlelzgaUPd6sfgtPngQxleh2i2ZANIQo8jTNhp8NBWhZpUkjzDsGR52I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736877055; c=relaxed/simple;
-	bh=jhiLPLQ5EHJGFM5RBiKmAhzce5B9e4PtmrKhVR6E/dA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Yc5ICxZ+IxIIZq1pPPXdXy6D/eEfAG9i284ZbXPZMN/eDm5+7PFUh/5uVTQ4VusXz3tcx63+PX3c1A5pqCMh8KcfLVY6uNYvhBYem0YY/X0EMCvAqNBGDJGUCK8d79PgOSbR+ko9kDTBH5yGF8lick0XzAWQOiyD9yhhqncWX/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ljg7Fut6; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1736877117; c=relaxed/simple;
+	bh=2jcBvZoNRO5iONp51Cafz2Hc2Sp1Y/yFi0LBvxYLzdY=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Date:
+	 MIME-Version:Content-Type; b=OkyMTFEoJ5jDtiBiy+3UAmS2IQ50LNgR6O3CKWTwpkfeAsmLYEgqWoNObXrFQ0zkB/Qk0j2vLqQCvrSEeijxiJC3QzHLyq4FrsWk5BplGlB5AfOvvOkC8g5TklZNkWq0Y69iUAq8YF9gq/AopygEWKNZWCeYUEubJID22desKuo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech; spf=pass smtp.mailfrom=bounce.vates.tech; dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b=VlGpXUuJ; dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b=YyNTQjEF; arc=none smtp.client-ip=198.2.178.22
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bounce.vates.tech
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ljg7Fut6"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7b6f75f61f9so805004485a.0
-        for <iommu@lists.linux.dev>; Tue, 14 Jan 2025 09:50:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1736877053; x=1737481853; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5mHlM1K+9X8sxV3MK2j7gYZulmWvrxq73m0lB+iLJ+0=;
-        b=ljg7Fut6ZbwEWRsPSN4URFh7Q/Oi89UI7zgQiChO6KSmZkFfVWuMwrOI21ic7YPWo5
-         SPYvHehC1hFgKC5UawscDhbXSO4z6uK7Mis6POFVBwVgcZ2jurwHfp/11VnXZs4FKFZR
-         AJwQrt0uh1x/S6dwKMH9PLGaszOBAnJWf5Abru+dXY0xc89ze1t6W5HVKVKTUDto8sI8
-         TUjsy7M+saw0hSr/wswOxRKdWz0hgYL2QyMxMeVy7e4nmaUZ0it7WFNfh/gmEA3xBYRB
-         IoSwo1frg4/mYxMv9tBN1fFzTcacRsJm0ICfWD/eWKJ/oexq6S8x/teIuLIAxn7pSc/w
-         VuAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736877053; x=1737481853;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5mHlM1K+9X8sxV3MK2j7gYZulmWvrxq73m0lB+iLJ+0=;
-        b=QNsXghzADNO95vkBQJ0GWbmAvwheFGyKN0S6gX/lYCNJJZAqvH/QM9sM3HBmenPtwz
-         xRPfKW+ZNPejsDS7pb6yQXGDVCTtonCg2ld+GXh3fNWwAjkp+qVeRRjkH0kpLIohYgjs
-         lTnuz0jtiN6tsFqFpseK5eECuZSPkgMeJV8bGv8cWyNJCXOzxEQqwr6uLKnWEyl2oetp
-         S0EYoxbvTuH7vCjyEoGaizqBmKg5WJI8oRiEXUX2N9evF0CThU/WtepdMhh6VCj01V4u
-         8EfXJ2RoMyjrX5AvuvENDJn8WqqeYCT+Kj4+W8sw+F59aVeH+r/1gtZDT2ox4kuNFlLv
-         x/FQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU1uETRDCuIisjIbcY69E9dGrga1OI8NJHnoidwPMI7mplxUax+zdHZH1/K7bRaI2mgdkruww==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyFNqt4d7ilqAll2EnGq6kd+pCTbRkWVMCW7WTJHE2kgM8HwWtJ
-	B23CkB3atBfuiQARwRCxP+/7xcOjrKmbB/a1M55w9h+m6MiQ/NUlpsuYUVVZ0wc=
-X-Gm-Gg: ASbGncusrJen0Axpm1Tnn59NarytQeLzQRwKFsLydt5UumjAztNRQLHeK4r2soUPTiO
-	Rwx08EagQLVHNPpwMCsZhD0oH1F2zVvkW6k8Ghb9ajHyXW8MpsqsU+Gsv5MX+/W0oyS5w+T6Ovh
-	h5sFPt5zgdsgZbMpnt7Rsmx4t2odtGwC0XMKSgCY8aPGrLmP+dKcFceGAecvZ+Cy18KtR+0mJ+T
-	ylF0ZklTSaY/VDRs+pElqpydh70qD6ed8IeaGfZXyOAgm430y7RQBe68gpIHNULKv2ymZgsmsbS
-	uldByxLLlx8rBhyvuulXx/fBsU2R2w==
-X-Google-Smtp-Source: AGHT+IGcnjBYqccjRvfVMLpLXB6dxkCIiAPDhGAFKgZ2fyt68V+DVumq+1hNAC2/fAhif9tRhJg70Q==
-X-Received: by 2002:a05:620a:4102:b0:7b7:106a:19a8 with SMTP id af79cd13be357-7bcd973eed6mr4268570385a.22.1736877052733;
-        Tue, 14 Jan 2025 09:50:52 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7bce327b8besm626661385a.59.2025.01.14.09.50.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jan 2025 09:50:52 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tXl3z-00000002P4E-30HE;
-	Tue, 14 Jan 2025 13:50:51 -0400
-Date: Tue, 14 Jan 2025 13:50:51 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Suraj Sonawane <surajsonawane0215@gmail.com>
-Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	syzbot+c92878e123785b1fa2db@syzkaller.appspotmail.com
-Subject: Re: [PATCH] iommu: iommufd: fix WARNING in iommufd_device_unbind
-Message-ID: <20250114175051.GN26854@ziepe.ca>
-References: <20241123195900.3176-1-surajsonawane0215@gmail.com>
+	dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b="VlGpXUuJ";
+	dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b="YyNTQjEF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com;
+	s=mte1; t=1736877114; x=1737137614;
+	bh=az8rpG0APRcxLiWSmI+/bj3xR4gqvWnpdGPbdfScdrk=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
+	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
+	 Subject:From;
+	b=VlGpXUuJn8Jz2oaK/ZJTwN0W9aMXf793YJWAokZMUSmPjFJwKM8j/ByKpeZs5AUZk
+	 zczuJj22N4ZDbsYtqv6N0Y7z58wHQqXthFQ1i3rtL51OtZS1/DlIGM7j6l3mR9C2Su
+	 Aw3BZtrqrJo9Tn+E4Uq04wtcaCTFAONz5GFLdvCCnpB3ZkAATbxB7v0Oj31Oek6e6s
+	 bQzdKxZ0319KbTJEaEayqB3AP6GUPxGLMj8keOxoUvzzDPNEZ6iG3Fq2o5QLQzyX4X
+	 /BwVD+rhyCqLbirP979/6RTnsBwU8jWJAJ7H5E+O1spqWT0sp2TLbkqUVlLhDgerhX
+	 xxBZfSjcoLYAw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vates.tech; s=mte1;
+	t=1736877114; x=1737137614; i=teddy.astie@vates.tech;
+	bh=az8rpG0APRcxLiWSmI+/bj3xR4gqvWnpdGPbdfScdrk=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
+	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
+	 Subject:From;
+	b=YyNTQjEFcCrEpflceEe0lOYeKaDMVTiRW5SXUCaIVTzXPQvxMrr+yUI5zDB/4e97w
+	 4vo58Y7uwgZL+Jw/0bXI1f3nP6+xQIR8ehKzWQipHfQ1tKpUvMgDmBGkOU7S5RfpR0
+	 jlkdZlV30mgo9BvdgGtMW2sq1deCDjzg1e7OWDmsci1qriVm01I3SYCqHwdF1bGFli
+	 Jxu7PIsBn59BI8XWp8sILKz/eMoaWTLhdlKRJd2k5zxUZH8trrOkMzGN06NXzoOwTK
+	 irQfj7NJDURr/rEM6MviOfkPW0eyg2U9Td5iaVdkGEedSTOHYSFreTbj5Hg/uhvSR8
+	 /1aXJF9knFBYQ==
+Received: from pmta13.mandrill.prod.suw01.rsglab.com (localhost [127.0.0.1])
+	by mail178-22.suw51.mandrillapp.com (Mailchimp) with ESMTP id 4YXcBy4gygzGlsvR5
+	for <iommu@lists.linux.dev>; Tue, 14 Jan 2025 17:51:54 +0000 (GMT)
+From: "Teddy Astie" <teddy.astie@vates.tech>
+Subject: =?utf-8?Q?Re:=20[PATCH]=20riscv:=20Add=20initial=20Xen=20guest=20support=20for=20RISC-V?=
+Received: from [37.26.189.201] by mandrillapp.com id 53b5c9d2de9d4745b82f09c59357a60a; Tue, 14 Jan 2025 17:51:54 +0000
+X-Bm-Disclaimer: Yes
+X-Bm-Milter-Handled: 4ffbd6c1-ee69-4e1b-aabd-f977039bd3e2
+X-Bm-Transport-Timestamp: 1736877112710
+Message-Id: <0cac0b13-128c-4d8b-b235-09d7b440ad8e@vates.tech>
+To: "Milan Djokic" <milandjokic1995@gmail.com>, linux-riscv@lists.infradead.org
+Cc: paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, jgross@suse.com, sstabellini@kernel.org, oleksandr_tyshchenko@epam.com, Slavisa.Petrovic@rt-rk.com, Milan.Djokic@rt-rk.com, rafael.j.wysocki@intel.com, sunilvl@ventanamicro.com, takakura@valinux.co.jp, linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, iommu@lists.linux.dev
+References: <e4a649a7fdfc8fcf5f48a0bc4e76e5d546078083.1736868605.git.Slavisa.Petrovic@rt-rk.com>
+In-Reply-To: <e4a649a7fdfc8fcf5f48a0bc4e76e5d546078083.1736868605.git.Slavisa.Petrovic@rt-rk.com>
+X-Native-Encoded: 1
+X-Report-Abuse: =?UTF-8?Q?Please=20forward=20a=20copy=20of=20this=20message,=20including=20all=20headers,=20to=20abuse@mandrill.com.=20You=20can=20also=20report=20abuse=20here:=20https://mandrillapp.com/contact/abuse=3Fid=3D30504962.53b5c9d2de9d4745b82f09c59357a60a?=
+X-Mandrill-User: md_30504962
+Feedback-ID: 30504962:30504962.20250114:md
+Date: Tue, 14 Jan 2025 17:51:54 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241123195900.3176-1-surajsonawane0215@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Nov 24, 2024 at 01:29:00AM +0530, Suraj Sonawane wrote:
-> Fix an issue detected by syzbot:
-> WARNING in iommufd_device_unbind
-> iommufd: Time out waiting for iommufd object to become free
-> 
-> Resolve a warning in iommufd_device_unbind caused by a
-> timeout while waiting for the shortterm_users reference
-> count to reach zero. The existing 10-second timeout is
-> insufficient in some scenarios, resulting in failures
-> and the following warning:
-> 
-> WARNING in iommufd_device_unbind
-> iommufd: Time out waiting for iommufd object to become free
-> 
-> Increase the timeout in iommufd_object_dec_wait_shortterm
-> from 10 seconds to 12 seconds (msecs_to_jiffies(12000))
-> to allow sufficient time for the reference count to drop
-> to zero. This change prevents premature timeouts and reduces
-> the likelihood of warnings during iommufd_device_unbind.
-> 
-> The fix has been tested and validated by syzbot. This patch
-> closes the bug reported at the following syzkaller link.
-> 
-> 
-> Reported-by: syzbot+c92878e123785b1fa2db@syzkaller.appspotmail.com 
-> Closes: https://syzkaller.appspot.com/bug?extid=c92878e123785b1fa2db 
-> Tested-by: syzbot+c92878e123785b1fa2db@syzkaller.appspotmail.com 
-> Fixes: 6f9c4d8c468c ("iommufd: Do not UAF during iommufd_put_object") 
-> Signed-off-by: Suraj Sonawane <surajsonawane0215@gmail.com>
-> ---
->  drivers/iommu/iommufd/main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Le 14/01/2025 =C3=A0 17:13, Milan Djokic a =C3=A9crit=C2=A0:
+> diff --git a/test.txt b/test.txt
+> new file mode 100644
+> index 000000000000..e54267998982
+> --- /dev/null
+> +++ b/test.txt
+> @@ -0,0 +1,21 @@
+> +WARNING: added, moved or deleted file(s), does MAINTAINERS need updating=
+?
+> +#120:
+> +new file mode 100644
+> +
+> +WARNING: do not add new typedefs
+> +#808: FILE: include/xen/riscv/interface.h:15:
+> ++=09typedef struct { union { type * p; uint64_aligned_t q; }; }  \
+> +
+> +WARNING: please, no spaces at the start of a line
+> +#1006: FILE: include/xen/riscv/swiotlb-xen.h:10:
+> ++    return 0;$
+> +
+> +total: 0 errors, 3 warnings, 810 lines checked
+> +
+> +NOTE: For some of the reported defects, checkpatch may be able to
+> +      mechanically convert to the typical style using --fix or --fix-inp=
+lace.
+> +
+> +0001-riscv-Add-initial-Xen-guest-support-for-RISC-V.patch has style prob=
+lems, please review.
+> +
+> +NOTE: If any of the errors are false positives, please report
+> +      them to the maintainer, see CHECKPATCH in MAINTAINERS.
 
-I've taken this but I increased the timeout to 60s, which is similar
-to other such timeouts in the kernel
+I am not sure you want this here.
 
-Though I do wonder what syzkaller has done to hit this..
+ > diff --git a/arch/riscv/include/asm/hypervisor.h 
+b/arch/riscv/include/> asm/hypervisor.h
+ > new file mode 100644
+ > index 000000000000..3a117afe57f0
+ > --- /dev/null
+ > +++ b/arch/riscv/include/asm/hypervisor.h
+ > @@ -0,0 +1,9 @@
+ > +/* SPDX-License-Identifier: GPL-2.0 */
+ > +#ifndef _ASM_RISCV_HYPERVISOR_H
+ > +#define _ASM_RISCV_HYPERVISOR_H
+ > +
+ > +#include <asm/xen/hypervisor.h>
+ > +
+ > +void kvm_init_hyp_services(void);
+ > +
+ > +#endif
 
-Thanks,
-Jason
+kvm_init_hyp_services seems KVM-specific and doesn't seem to exist (yet) 
+for RISC-V.
+
+Teddy
+
+
+Teddy Astie | Vates XCP-ng Developer
+
+XCP-ng & Xen Orchestra - Vates solutions
+
+web: https://vates.tech
+
