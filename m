@@ -1,180 +1,111 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AA2A86CDAF;
-	Tue, 14 Jan 2025 16:00:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C00D16EC19
+	for <iommu@lists.linux.dev>; Tue, 14 Jan 2025 16:06:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736870455; cv=none; b=mVrUBfaYbE7hsFIV4qwVkPXVanrO1Ysc4ipEqjVLYD4D6eQ62T3PrpZB/oJuoXTxSQnm/p4s/hUKltFK9Yx575xVp8Ybgf4Eu58p3cJywENXYY5e6mTSf7gzmiFtJs47UTFV+bafWZSObl8uvO9GSRjpUJe6Dk/ePmmvKgpFq6E=
+	t=1736870800; cv=none; b=NhAFVESJ3Wu2tpx4EydfPlYbkUVf0MlFfqmiBOPkzP9kDQBJHOJejDGTMLZfrF+IY32jh2bvHOXbLI4govG+GClmXKUEtfnh6DoFoxtcEzAT8t0Fjs2Ha+46DRkNzkcMak2WPlofPkGztnl2NX1sh5bVLx3Vsq8bKNr+qGOPIxM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736870455; c=relaxed/simple;
-	bh=aWfKJEabF6fhYzlM/VczVohRgjerSXRLXxXHniHZnZ4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WWYNl6wZoKX8C/vItVgHdNcyWdmr7M6acO5iZjr/9UVH6ZrvndANSyibV/yIfHkM6JgzuAEAcG2Cb7mTcURCshW58eUK5qz1GAWHFV0F6wUbUTRJCzcrasFA3UtHZauNVCy/oZCFeLP6s6bc1D9QOaInyDuXBLY+6OTfQeDSIC8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 68F4C11FB;
-	Tue, 14 Jan 2025 08:01:21 -0800 (PST)
-Received: from donnerap.manchester.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2A3A23F673;
-	Tue, 14 Jan 2025 08:00:48 -0800 (PST)
-Date: Tue, 14 Jan 2025 16:00:45 +0000
-From: Andre Przywara <andre.przywara@arm.com>
-To: Parthiban Nallathambi <parthiban@linumiz.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
- Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Chen-Yu
- Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, Samuel
- Holland <samuel@sholland.org>, Maxime Ripard <mripard@kernel.org>, Maarten
- Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann
- <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Simona Vetter
- <simona@ffwll.ch>, Michael Turquette <mturquette@baylibre.com>, Stephen
- Boyd <sboyd@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus
- Walleij <linus.walleij@linaro.org>, Vinod Koul <vkoul@kernel.org>, Kishon
- Vijay Abraham I <kishon@kernel.org>, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-clk@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-phy@lists.infradead.org
-Subject: Re: [PATCH RESEND 10/22] pinctrl: sunxi: add missed lvds pins for
- a100/a133
-Message-ID: <20250114160045.2baacdaa@donnerap.manchester.arm.com>
-In-Reply-To: <20241227-a133-display-support-v1-10-abad35b3579c@linumiz.com>
-References: <20241227-a133-display-support-v1-0-abad35b3579c@linumiz.com>
-	<20241227-a133-display-support-v1-10-abad35b3579c@linumiz.com>
-Organization: ARM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+	s=arc-20240116; t=1736870800; c=relaxed/simple;
+	bh=dTe+nnPsZi8oBCf6r8VEkl+bNZLPtuGBo7vS34l10Yc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=IE52rqNkiZLSIsuUc7tQ2xKOtcz4RlZ9rn95yy6w5hDbqRgkWxnTCOqOjY9z7C2u6Z4LIdhnSgzvGInxVia4IrDyT0T8aio8Mh3FhIat5fFlSFJkQ+BSRZczq5zXjbAvCIpwh/QfSZz1KSH5s+f4JYgN4ZChUq6aIFvFYK/jyFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=CjAT5STA; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="CjAT5STA"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-43621d27adeso39606285e9.2
+        for <iommu@lists.linux.dev>; Tue, 14 Jan 2025 08:06:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura.hr; s=sartura; t=1736870797; x=1737475597; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0gqmZQACO9w3LJC8YO02xH6lzr6nCg5VTTM+s1OBnzI=;
+        b=CjAT5STAR0uf1ZjBbqr147bq+wSZIECjtcUVHHh6ALe4zkPZeR1m2RjL96CZ/xIONF
+         rfZwQ4TtiocTcPKq57KJFF8npKhBdGIL0EPf4uDUUj85tmpjOqHAYnDguQmiMdUVbQFs
+         G1N7vjp2+utQfHRJDv4r/WZzOUMNgxdcAWdFQrDNLRigsGDAVxX6CwJjtD4Wrh6Q8gy2
+         Oil0i9mcCEvSZHnAZzq4tIL5AWsA4DM/mEtccTeanCz/1x7nMg1sTaixA3LdMqDRtrIC
+         oLdZ8OgbK/jtADq7OLMQpLr3fSChnH1xZf0+liNnvaTrleu/llZUp+XI+NGmBZ8K/wSr
+         Xfsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736870797; x=1737475597;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0gqmZQACO9w3LJC8YO02xH6lzr6nCg5VTTM+s1OBnzI=;
+        b=kjwL5VoavSOkcNVNX3dF9m7ayVZZTHHwKneHU5ZKVNWGIXuQi0unc1Q8ij/QwZd475
+         pU30pEgpjTjnFLWj5w6PU4b5M5grkViEewXdp/adh17g2HcGEc5xYPjiVoNbBk7X/YD0
+         HfIgJRuwPy02t2AgDGzzNRaVjV/5UVb4CGAAUbReEpBN8AeyY0ZJ7GmPHx+Eo447/u0C
+         7j7itl92A0oosd1VoxCPHvqqGhdiV1WLS9SiNvp30F1+AXJ7Y+B8FgwqSW61hUYEUNwP
+         aL/E/27bkqX9npvmvRztc7B3nRMRbXx+C2gZ6KpbKp+1+Ogs8Lxr3gyUg/lmQ3IC3qZH
+         YPdQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVCuobaJdSzhELaA1xR4NeeRHQGTVje2NCpOzXBv4/VY+4InrOQWHkhTazz+mFMEgJTkNPR5g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzL2GcMEnGdw+OrlZ3c5Ol6L0CZxNIMlyD+y21f+S3GPULDEBu8
+	gzoa55UhE7D0e8e7MeyOTOdK2pVPEu5mUo50Y0zMcsEFAMF5uze82p+8XtLidxZpK+SXnGnDe6n
+	QLGI=
+X-Gm-Gg: ASbGncvcAtf/liaTcMY2SA1Hp6huGBz6pk4uXb2gRc3MKTkNbJdc2Ft0oK1D1TTFjSF
+	F8RYv7c+TWBFEIkfwimFypOKPgOipRwqbGB7pn3y73VHFdT85ZoHZ4BcHQ2YBxywGLnjo+vuN0W
+	tA5WVIQrFBBkiC6klPAZnBBtLfyw7tOw7YjUM2RovjyHdUnVbSvuSjGT2wtnzbqI3VihlpYnb1c
+	ibfq+p/0nmOAF5cmQRsSBUs+Fje/MDa4U+HLe7wqpRAgItTd7PaHRwkRH/O0UfUpIJJVKwQXxyb
+	xJ8MOW3YZgHCh/EO
+X-Google-Smtp-Source: AGHT+IEtcRD15Bkfdih9jwWpz12XEXEvsL3qzSqJKpUX7+iTScQQy1np3E7eSsjMUQXP8bE7n8kudQ==
+X-Received: by 2002:a05:6000:178d:b0:387:8752:5691 with SMTP id ffacd0b85a97d-38a87309d15mr22654193f8f.47.1736870796430;
+        Tue, 14 Jan 2025 08:06:36 -0800 (PST)
+Received: from fedora.. (cpe-188-129-45-73.dynamic.amis.hr. [188.129.45.73])
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-38a8e38c1d6sm15505594f8f.50.2025.01.14.08.06.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jan 2025 08:06:33 -0800 (PST)
+From: Robert Marko <robert.marko@sartura.hr>
+To: will@kernel.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	jgg@ziepe.ca,
+	nicolinc@nvidia.com,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: luka.perkov@sartura.hr,
+	Robert Marko <robert.marko@sartura.hr>,
+	kernel test robot <lkp@intel.com>
+Subject: [PATCH] iommu/arm-smmu-v3: add missing header
+Date: Tue, 14 Jan 2025 17:05:56 +0100
+Message-ID: <20250114160630.1122885-1-robert.marko@sartura.hr>
+X-Mailer: git-send-email 2.47.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, 27 Dec 2024 18:30:59 +0530
-Parthiban Nallathambi <parthiban@linumiz.com> wrote:
+str_read_write is currently undeclared and thus compilation will fail with:
+drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:1911:25: error: implicit declaration of function ‘str_read_write’; did you mean ‘sb_end_write’? [-Wimplicit-function-declaration]
 
-Hi,
+So include the missing linux/string_choices.h header to fix compilation.
 
-since LinusW wants to pull this already, I gave it a look, despite this
-series being not complete.
+Fixes: f2c77f6e41e6 ("iommu/arm-smmu-v3: Use str_read_write helper w/ logs")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202501111926.qOpnlK9J-lkp@intel.com/
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> lvds, lcd, dsi all shares the same GPIO D bank and lvds0
-> data 3 lines and lvds1 pins are missed, add them.
-> 
-> Signed-off-by: Parthiban Nallathambi <parthiban@linumiz.com>
-> ---
->  drivers/pinctrl/sunxi/pinctrl-sun50i-a100.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/drivers/pinctrl/sunxi/pinctrl-sun50i-a100.c b/drivers/pinctrl/sunxi/pinctrl-sun50i-a100.c
-> index df90c75fb3c5..b97de80ae2f3 100644
-> --- a/drivers/pinctrl/sunxi/pinctrl-sun50i-a100.c
-> +++ b/drivers/pinctrl/sunxi/pinctrl-sun50i-a100.c
-> @@ -256,72 +256,84 @@ static const struct sunxi_desc_pin a100_pins[] = {
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D12 */
-> +		  SUNXI_FUNCTION(0x3, "lvds0"),		/* D3P */
-
-I initially stumbled upon those first two pins being from lvds0, with the
-other 8 pins missing for this interface, but then realised that those are
-on portD, and we already describe them in this table (above). So those two
-were missing all the time.
-
-So having compared these lines to the A133 user manual, I can now say that
-they are all correct:
-
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-
-Linus, in contrast to what I originally thought, this patch *is* fine, so
-feel free to keep it in your tree.
-Sorry for the noise!
-
-Cheers,
-Andre
-
->  		  SUNXI_FUNCTION(0x4, "dsi0"),		/* DP3 */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 8)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 9),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D13 */
-> +		  SUNXI_FUNCTION(0x3, "lvds0"),		/* D3N */
->  		  SUNXI_FUNCTION(0x4, "dsi0"),		/* DM3 */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 9)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 10),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D14 */
-> +		  SUNXI_FUNCTION(0x3, "lvds1"),		/* D0P */
->  		  SUNXI_FUNCTION(0x4, "spi1"),		/* CS */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 10)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 11),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D15 */
-> +		  SUNXI_FUNCTION(0x3, "lvds1"),		/* D0N */
->  		  SUNXI_FUNCTION(0x4, "spi1"),		/* CLK */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 11)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 12),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D18 */
-> +		  SUNXI_FUNCTION(0x3, "lvds1"),		/* D1P */
->  		  SUNXI_FUNCTION(0x4, "spi1"),		/* MOSI */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 12)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 13),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D19 */
-> +		  SUNXI_FUNCTION(0x3, "lvds1"),		/* D1N */
->  		  SUNXI_FUNCTION(0x4, "spi1"),		/* MISO */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 13)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 14),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D20 */
-> +		  SUNXI_FUNCTION(0x3, "lvds1"),		/* D2P */
->  		  SUNXI_FUNCTION(0x4, "uart3"),		/* TX */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 14)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 15),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D21 */
-> +		  SUNXI_FUNCTION(0x3, "lvds1"),		/* D2N */
->  		  SUNXI_FUNCTION(0x4, "uart3"),		/* RX */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 15)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 16),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D22 */
-> +		  SUNXI_FUNCTION(0x3, "lvds1"),		/* CKP */
->  		  SUNXI_FUNCTION(0x4, "uart3"),		/* RTS */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 16)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 17),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D23 */
-> +		  SUNXI_FUNCTION(0x3, "lvds1"),		/* CKN */
->  		  SUNXI_FUNCTION(0x4, "uart3"),		/* CTS */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 17)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 18),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* CLK */
-> +		  SUNXI_FUNCTION(0x3, "lvds1"),		/* D3P */
->  		  SUNXI_FUNCTION(0x4, "uart4"),		/* TX */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 18)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 19),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
->  		  SUNXI_FUNCTION(0x2, "lcd0"),		/* DE */
-> +		  SUNXI_FUNCTION(0x3, "lvds1"),		/* D3N */
->  		  SUNXI_FUNCTION(0x4, "uart4"),		/* RX */
->  		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 19)),
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 20),
-> 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 0e4cbb2c64d7..a0e395da8a88 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -26,6 +26,7 @@
+ #include <linux/pci.h>
+ #include <linux/pci-ats.h>
+ #include <linux/platform_device.h>
++#include <linux/string_choices.h>
+ #include <kunit/visibility.h>
+ #include <uapi/linux/iommufd.h>
+ 
+-- 
+2.47.1
 
