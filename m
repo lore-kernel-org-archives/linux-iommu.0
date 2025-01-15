@@ -1,219 +1,125 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2085.outbound.protection.outlook.com [40.107.92.85])
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D84E139579
-	for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 14:44:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.85
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736952242; cv=fail; b=cf/SAImKgAQUTt0kTOyZpSmqC1neXkWZZq0UrPIsxAjExG0oJhg3EvqHgmtxip2CqlF1PDIn9LCpG+bLerT+YEMmVPJ2TL+lnOPpowZoJkjcwQMikIMHBSTUObrcg9Tw0r0w6tCFTR9cBhtlsJ3AJL7Ch6hZkzlIBVuIIFc4Zc0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736952242; c=relaxed/simple;
-	bh=JBQK/3FQHjpQtlW4HAeLSbaOLkJnBkn9Df1t22bXIGw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=I1d4wgUvQDaesJkntflB65gncEDtvqiNa7LHyblFmYuTKw6VzG2GHfNiixBh13DfGr5e290p5nsm9x8QZH6j6Rgw2SKs6hHjDSioRJ5dTAt/hmqj3JYjsOj58mMf0p01xBXEa8rSj0ZI8yxEdIEzCp+rVlLnPkc4JyUyHcgLd7A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Hei61D3u; arc=fail smtp.client-ip=40.107.92.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F01C4D599;
+	Wed, 15 Jan 2025 16:26:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.126.133
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736958394; cv=none; b=ipZPP7J2/5UD6IZw8jgb5pR+NWEFmdR8vDhOqEHFPdAV5a0qGr/vZiCuPDRJ23pYxpD5Qy9HL4V7A6U1VKetSryKru8FQoAGcs77tL2dS6V5Sb/QAXzz4I3ovwpWRYyesr6HAn+wC6jBddXew/jJolc7cZr4vSDx5wjVl5SWRV8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736958394; c=relaxed/simple;
+	bh=RltW2sS2ZYMoz6QtuOL8V8aRWEPd79GUWtcQFb6H7tI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JqIQF1fqojg5I/+twMsCQjrQfrPjTG9cIkOZlwEsByLOhSWWns2sqgmgX061JqtzdZRhCv1skjHNIJfs1MU8Ru+RypHhjrtWuPQ6xYrH3MHLa2EWUjB0LJ9XxC7z9f0eVMogsUiU8jmYsM3RrA7O+oFEhRf2tVDeiPEmMHxpTtc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=simg.de; spf=pass smtp.mailfrom=simg.de; dkim=pass (2048-bit key) header.d=simg.de header.i=linux-kernel@simg.de header.b=YWsVxS4X; arc=none smtp.client-ip=212.227.126.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=simg.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=simg.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Hei61D3u"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=p0KwUJzUO9isYY4go16yU0yMZnsHXyBH6fRTryF6dmmujIWdvR5sROmox/N2n02WkUuOpEejtBCZCsM36XDNgozvOkeX4YdCwp5kySSxsR2yGvmoZ0MIPyKmBERgm1Xh3OAxx0kmrhitKylUK62kpYTnSMAQED38Lwmt55TQPpnNhZk6hjH/9TLT6qqrY7fYBippBgIdUblPTul1Rq2I9Gp4ieSbeKJSigRFKKJ8xty+GYVTZDGn5fjo415z5OCgicp2EppRygN5s9CP7J0cNuxCB7sZ4AX21uIn2ateyCwcYfRF2qrQ1A+dFgWnXImF7GIXF8Ad4RMY9WDtETV2Og==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VewL4P1ayE1n6Keh3YG9J/NMyTMv2b0kYrX527yXOJM=;
- b=y3DKmvv+MlcrL3D5PlcAwdoScQPNejrIc3/LxGJ8iTxJfTcGt+nczpmQngv/sg5w9DvEHmRWawUcTPHzduIY7gVed1/YkGFe46Urp/hKxpqdEisC2a6U+/AwlFqV8sv9D1UzpUF9XV6nIVIiC158SHL8wcIHeI18Q5dx1DDyrcH5sUnMKMGEdnUq5YkkYFtb35eNkE54M2eDwJx1GAFlgfkvjmgifHPXd6AQ3+Egc6OKzRZ3sks+cXsldsO+R+WfggejNZO1nC9HnRc8ImsqIPnELbjVYN30Qj8hFALzuQd4gbIEuMVd++Pbxv4vJLZU0jtfaLds0MSOhxBenZTp3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VewL4P1ayE1n6Keh3YG9J/NMyTMv2b0kYrX527yXOJM=;
- b=Hei61D3u7VhSlJKdKzwBgW7O8AKMI06GTueAjPChfrQd8d2kzKjzyuCoK/gLEZjbOT1f1AzT9tJ4IDFQ62rLiALtgXmO1nUPpAxMa00i7tEZS+UbrF4Khrs9tzYcRtv5vvXLdiYhbARaGnnrm/1v43ccToBaAZqOacLZyBXDXMJ1yFaqP83eYgmWHzjY/Ser3+D5RSOt5rNEF5BgbVwbmr4HVv1IbCBAUBzYNRU34a9gy8x+6ithIVGHwiZZWE0kA1/E24JTS8kcv4Yiq5Rsv4xPobpVCbbMcxnf+AEY4GkUu/VBbFuU0t1vujZE17k7Cqy9+YCCiXM9fWX2kcNUEg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by IA1PR12MB6330.namprd12.prod.outlook.com (2603:10b6:208:3e4::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8356.13; Wed, 15 Jan
- 2025 14:43:56 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%5]) with mapi id 15.20.8335.017; Wed, 15 Jan 2025
- 14:43:55 +0000
-Date: Wed, 15 Jan 2025 10:43:54 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"vasant.hegde@amd.com" <vasant.hegde@amd.com>,
-	"will@kernel.org" <will@kernel.org>
-Subject: Re: [PATCH v6 01/14] iommu: Introduce a replace API for device pasid
-Message-ID: <20250115144354.GR5556@nvidia.com>
-References: <20241219132746.16193-1-yi.l.liu@intel.com>
- <20241219132746.16193-2-yi.l.liu@intel.com>
- <20250113202134.GX5556@nvidia.com>
- <BN9PR11MB5276A7F34F2B4206AF4233228C182@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250114134530.GD5556@nvidia.com>
- <BN9PR11MB5276D2FD6D1006B1C14087BD8C192@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276D2FD6D1006B1C14087BD8C192@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BN9PR03CA0858.namprd03.prod.outlook.com
- (2603:10b6:408:13d::23) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=simg.de header.i=linux-kernel@simg.de header.b="YWsVxS4X"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=simg.de;
+	s=s1-ionos; t=1736958375; x=1737563175; i=linux-kernel@simg.de;
+	bh=RltW2sS2ZYMoz6QtuOL8V8aRWEPd79GUWtcQFb6H7tI=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=YWsVxS4XUviVD6iRL/DAP5GU43rw1YNHdSrhkJ8cBjso6aWLoXdYMWOMp3BRTlXY
+	 gdxROmotnfqln9Xn9241J0pZkMOOSmyxGZdZ3dNApNpZSDkzqngxWWSMZO9/U2W2X
+	 lI+0W/ZMzu9n0GrG8uQIfeqMYGg5ydrRY9UNA2eazGxRu7dZ/ulEgZM5XDCChrOaX
+	 bPdZj2EoMgL7uAEht1D+zFef8teiG7zd/Q7RmaVfBWDfSSYEqFhfKOv1u6aB/9pDb
+	 aCyLux2u/3NWUAO+m+Rydk8k2td3JTWn3TZyWvYSgNKWu4BJ11DO4l2ebVpoJ8q1s
+	 RSYqbHBH5nI+lKex9A==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from [192.168.1.60] ([93.217.99.181]) by mrelayeu.kundenserver.de
+ (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MPowd-1ttDsK2rlj-00SSnq; Wed, 15 Jan 2025 17:26:15 +0100
+Message-ID: <7e5b72e9-7f7f-4e68-a42a-4411cc5778b1@simg.de>
+Date: Wed, 15 Jan 2025 17:26:14 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|IA1PR12MB6330:EE_
-X-MS-Office365-Filtering-Correlation-Id: 86eb0acd-9c13-42b1-cc37-08dd357309bb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?kIxiaLiItp73+4tuCqHa7XFXevDe+FqnDsIhM6xZ+huV4Xbl4gRJwsaKedi4?=
- =?us-ascii?Q?t4Qx4OSdbNICN9ZN+lpeJTpEZsSjjihryPveX/SN16dRC6Ek5sXVZrcuH8Be?=
- =?us-ascii?Q?pjhMmPzS/L1+TRBB40hlv7oPe8OWB+IAST6vtSYrmMqMGgVfNL57FV0zHdzO?=
- =?us-ascii?Q?5KVYvaVAypDy05+gW5C++u0xEgwp+G0L4mFe5DJH0domZ5TvnSobPgts88CW?=
- =?us-ascii?Q?5scnmFzJIC6D5Y/2BZGksCPbI16LraypGE7EwoJ0ner7MvLefoIQCnUWNCoB?=
- =?us-ascii?Q?OZNl5DGq26yWPwV7iEobwcZQbEI5NDrpJ1T7pY4geNjSS0Ni22FXcgMHYTpi?=
- =?us-ascii?Q?9hdsXJkz965i/JYHWFJS1sL2NJayRs90g/E6kVBxoi/luUP0eV33f6EpmQGa?=
- =?us-ascii?Q?q0ImVKhTXXnIy02VVyz0cv0axEqvQSLgmMeMJ5/3aNHhJJR2I/mwVnoZGUWU?=
- =?us-ascii?Q?Xp7jcV7nilDIQncxpnQfcFW5YD8Y0BEUPa/h72zLlmqRTYxlb9s6njkRXRaO?=
- =?us-ascii?Q?01vTiyDRYdWtceIBSz8Lw9+8+S3UL4hkPQYm2+VFzZFLLYQMsiPlo4JSS5n/?=
- =?us-ascii?Q?rJbtmDH1G07kOUAA7BR7GIZek/Xj74LJ1cOiUVjWxT61JJboG9fLhivhu+Y7?=
- =?us-ascii?Q?4sR7iN3R4fhnKRStXRssoHEFWnZVktE0g0KKcIwk8ctL5oLcw4plndmfo8uz?=
- =?us-ascii?Q?/hPriFRQ6nRdvDNZd4TDTQdOOVieIehCXlZz6NizVHcnX0ubxIc4kxuElJIy?=
- =?us-ascii?Q?jJ2hIKA2t76h+DNz1/BMIXta9i3tZq/eJn7pe+hyQVGufrkzHMvWHHwVP2/L?=
- =?us-ascii?Q?lWEUiRDX+F9TFIfTEJnpdPUwJqOBvJbDctHM1LdkJZZbKCvxI4+Wd+duXjAB?=
- =?us-ascii?Q?6lwvqw2vtFtjB7+rpWSq3mQFhu/deoIsBzdJAvv4ZUEAjyphJcjElo+e7DOI?=
- =?us-ascii?Q?dUkllngtyoKwWhPkngtOEARKx2Ft0BP2oIICXlH5RCjCD1K7onMBwPL8vUZ6?=
- =?us-ascii?Q?WXhkIJehXGUTzGgkcbW3rnR/gdiBI21yP8CPR+o5yjuvk4wicyFI2ak8/WlD?=
- =?us-ascii?Q?/5j3xTWhWXn73z87k6aZQER9msn8xTOg3foKsreb3jTN8VO3lpoVyWKMMDJD?=
- =?us-ascii?Q?BDDdfIF5yzqDZbP1DRvfshpBq1BHDhzR5hZXnDRRSq//LV5yaFlMkc8+22qj?=
- =?us-ascii?Q?48YRifK0o62+QH+w7DOBmYjUMU/B+IX63q0F0YMWKILwuILLO9QTRm+7nUkl?=
- =?us-ascii?Q?tgkjBtnKgq+ujGhQt3fdFURSLaiA7H2ZNBCZ4qtc+IDk8sGgQuhhJrCPPeEr?=
- =?us-ascii?Q?DnPmjqo9twKO0y25cskVK8cI5cManwExgbg3bzVMro7FYAx+ExhRALYHNyPj?=
- =?us-ascii?Q?Ah7vU1lPKvaAE3+DP2DXfBEkKyUv?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?NWqjJUiM4QBxdpr/Zo7J+YHV9litz/3WVp1dxJO5NzFcx+wP9EnUGLBrSxOg?=
- =?us-ascii?Q?NZV0idAR9KmsytvZTe4Ar22whmV7hW/rx/CovHJ0JTWq7WU+1pk5l/Jvvz/X?=
- =?us-ascii?Q?aDPmZ0T0MyZr397GoD3MQZMsM8X/SQgmafdBJuB0nbVSY8gNRUSH28PEh07M?=
- =?us-ascii?Q?US2q7xIw4LDJvwZYN2BkfCIRAJ3E7Ue9Y9tvVzr2Lztao+h1FCRJgJ/6Iss6?=
- =?us-ascii?Q?/4iU9Kbfv1W6mewC7vABV45idT5U9l2kiRGq0hQIQlfuZgb0bBNn4l6/F6if?=
- =?us-ascii?Q?ji7OyGSVvvW+CQg+L2twc22az7zq9tVvudvzjHNzCEZWlix5vtYdcu3vV01S?=
- =?us-ascii?Q?dQ8dcbnndI72ACAmFIcziAmLVQ02gd7unzB2bNPQ7fhqsUWiPdhlMQZwEKXc?=
- =?us-ascii?Q?ZzIzOjW1JlApMD+gRRixADNezN1Q7Z/TwN2q8asQou8eXoDz7dfkk/N0Wk2N?=
- =?us-ascii?Q?iU6zwdEX/jXUWM7Mp+nFhN+ddM73cICECw1Ykn+RgJJn9MF0yNjIM5ilHbvc?=
- =?us-ascii?Q?vWUPpw+T7hHABZ0mH8VFcwlnOuaQd5MFKEDK+WNnMfjg32TxFcpS4kfX+fFa?=
- =?us-ascii?Q?Rif+VXh3BJTEdDht7Ss+jsX4SdNHfaX1BENczUIEli5+allUQTrKxp9+sUWR?=
- =?us-ascii?Q?Eu6LyONjkE1hUWzfS60C64mDWKYtxHS7+WzPitpTUorvJzOZvM+aeYg9Zz4Q?=
- =?us-ascii?Q?D3B3tt6UWrK5NlnJBT/W4PxIAaAX2I2Bb8hudJIzbJWqBXlfxfQJHGo3U5zT?=
- =?us-ascii?Q?edpQ/rJ7pVvcBSTc/ukJA1FGoVSysmph35jDEovj9laaQb9fz21honQ+t7y6?=
- =?us-ascii?Q?c6+981Nu/W7GE6jCCFjeWo6uCqARAKzYegRWX8EzCDL0NO7pFZjZpAQ2i59c?=
- =?us-ascii?Q?chbHnbF6rZcoyVZY5iflw4nvGd+Hu9hcIBQbDTA5iMCypyFTqGStKw45kV9i?=
- =?us-ascii?Q?QpheyNtdmDEk5+o6ROKtzbk9QCSa8qKLctYRGiHJwLteAkvEVKkdHv6vIT6U?=
- =?us-ascii?Q?euyG4NP7d7BtxNdZZwLuZoFtMm0wEfvdqObOjKHDgUUdICatzHyJcv0Pu7oM?=
- =?us-ascii?Q?Ar2FBr2fhv58nT4u5sLi/hI9ANjLPhxgCK7pUNVEnAMPEwK0CBZW7QCEHV+f?=
- =?us-ascii?Q?v4J1mgysuqkggBphvC1g+piSzwl3bCJoVH4ZLlHOOJ42O4GQCR4SI3/4nKUQ?=
- =?us-ascii?Q?aGHdZ507vE+nzTu/rgWYg16oMoKZEkiB2dRrbIwG/px7NFzg4Pf3xMmB1we5?=
- =?us-ascii?Q?m9zi9KVWdvma7QCcctQM59QXqznRSYkl+QaXlh7HEu5+s7/NJoYpzBazug7t?=
- =?us-ascii?Q?k3JPLLHr0PGqJJ8WNwAJMDbSBBtSi0v7l2dS+K7jR5Eus046bdtx3lBHNjfZ?=
- =?us-ascii?Q?EHwtRvl3/f3StsgWk1hNvET9fKZEpd6CX1DdunK4Ssqmn/69pPuWSSGIoRFm?=
- =?us-ascii?Q?7aLY9VzO/wdStEMH97J5WfFtiAG6VLeKGfR/Ck8Ksq6yr+LBSXQ2fYIvxQkz?=
- =?us-ascii?Q?ayjPMdNeW15jMIQMucPpj+jBe+lNqdJVR2Gp7E8ssqlMpyR3ogmn6fSO61SF?=
- =?us-ascii?Q?X5ZcDWpHmGlPZYvBosK6Skaf0CCemqYJzqQ91vKn?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86eb0acd-9c13-42b1-cc37-08dd357309bb
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jan 2025 14:43:55.8849
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: B9ayO3w4hnBEY/mNtuNq9TNa0gUNKcx1wi7wf8fE6uBAEQr2+SvCLP92UZwfFMwP
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6330
+User-Agent: Mozilla Thunderbird
+Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
+ X600M-STX + Ryzen 8700G
+To: Bruno Gravato <bgravato@gmail.com>, bugzilla-daemon@kernel.org
+Cc: bugzilla-daemon@kernel.org, Keith Busch <kbusch@kernel.org>,
+ Adrian Huang <ahuang12@lenovo.com>,
+ Linux kernel regressions list <regressions@lists.linux.dev>,
+ linux-nvme@lists.infradead.org, Jens Axboe <axboe@fb.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ LKML <linux-kernel@vger.kernel.org>,
+ Thorsten Leemhuis <regressions@leemhuis.info>, Christoph Hellwig <hch@lst.de>
+References: <401f2c46-0bc3-4e7f-b549-f868dc1834c5@leemhuis.info>
+ <Z36UsE5dj6j5HhkX@kbusch-mbp> <20250109082849.GC20724@lst.de>
+ <210e7b28-de05-44bc-9604-83a79ae131b0@leemhuis.info>
+ <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
+ <CAOBLbT8103fAyoFNF8=YcEM1sM6HodcUe=Ee5NsE2hUkfCYv7g@mail.gmail.com>
+ <6c2a34ac-d158-4109-a166-e6d06cafa360@simg.de>
+ <CAOBLbT9LrqdHQ4-gGkRyB+vU3WnGo8f7X7m2=qK29+x=3QpzPw@mail.gmail.com>
+Content-Language: en-US
+From: Stefan <linux-kernel@simg.de>
+In-Reply-To: <CAOBLbT9LrqdHQ4-gGkRyB+vU3WnGo8f7X7m2=qK29+x=3QpzPw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:s6m+XZFkNT4XqeH9ZJr2u+oy+7X2xp4vVEBn5fsWllVwF3JOyUU
+ GJ5KAyZxl0py8rBIkROyWGo4qucHklto2Cq8exPWuYx1T1wP+n2eJBZczG2IaYAqBLl3bxl
+ as7rUiIibF09qncBYdfUM6zLxbrYDbA1zuIAf+U/H9xzI2pSqwRQ/loUN6h9q+ZjdibKQ/X
+ ltj6/mI14UKIJOm1cDGhg==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:kKnzRXl7azo=;TFVJ7dn1EfZPsiykdqQCXIRgMV3
+ iYE7wBSQ7tzcgf11PLvSox2WYT2fSzMwl74uQYIb+fenOrprLQES6IeILrBDhDNmCLjFAdosw
+ ZXVzJCns+DAIpSX+jFJJqpu760nRvR+JFO1LXtpO7ZDd3EzlxpyPgwULeK9e7wOLr/3tuStcS
+ Mn9fzB5IdM1yTi3sBgRbH5AdwChPQr+Ip7NaAyZvPH5u+iAo+lgsI++d33/m1VZ/pvhoCsyoT
+ gd9gyWeUjOJ7vSW1uKwo7/OeLIb3SVZvg2qrHnzkeZ9VTbjVVexoyEA5B/TpW6eUXmQgG7hMW
+ GDvlqxKipG2sdt8q+lrqZrPjt4eV0mUpnMo/T+MRP9/LerM7zzZvYecRrBeUmOk2oTDq4EmMe
+ blu+B3gdGImBCfkEGTjWO1Yk2JceguDKNchqpfp0Sxd25qEssLk8Lk+HI3QasTast6iodYA9r
+ faQ/gMtk4alJAZXpgDhoecU3CYnlVluEq6XjmgvP4u2j8dG6QpsivKPTNKe9Hpql+PbhWJW23
+ RT516kfCuZ+3AWBGYjDyPmxgVWWnv3FKfZduFcO+m03H3T56rdZRztKq0ypVhkOfDUUkrMK6o
+ 0Qcbwp1z5Wp8vZUc5JH7zbG3yvbQXDUrlUbLrW/YvhwScNOatyMJZFnecb+h4O7AH3VgSiMWR
+ sXuMQB00End/OEri+A+w9lMTAjfmRH9KsGvakCFVl2tsEYvxHMAQn6H9NgRoKpRhMr/8M7Txs
+ JhR+NB+NKZa5igiUy94SmYQ6f8RqMWLEDRQsJYDwTx/l4Ao75CvzRNNy9RpXBm/QYWuiF+8x2
+ jF+OhXFKnBJC+B/EFdrRplZkgXpgWGo51rOdjWBxhXn6Aj9HeIxZpE4b+7uUGXFhANT4J/FDX
+ Ghh+iDJAmNTe92Zf1K14UziqqTTPcCQtvfFaNsRRy+EiNDZmVrkLHs7JceWyd1ulXkMAal2BI
+ 6HJ4MLMYdXtRWyAcoZlfnTKWk6IhYIvoix/O6ap7/lwLXyQRFJXeQXYW063CakMC9DK4GdRoI
+ h5YllOImqm3FZDjTTzlQNtO8pXG68JPbeiwQyofkIPK1kr397DLkQRE/CdQ1CkhxIfDf/fnPA
+ 3151QV0ylu9BIGYszbJyg09aQApEdln/4jDdywCKA/w6hkGQNYmFAjshNkzFrUfcVH1EUOC+o
+ =
 
-On Wed, Jan 15, 2025 at 04:43:41AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Tuesday, January 14, 2025 9:46 PM
-> > 
-> > On Tue, Jan 14, 2025 at 08:10:41AM +0000, Tian, Kevin wrote:
-> > 
-> > > > > +	ret = __iommu_set_group_pasid(domain, group, pasid, curr-
-> > > > >domain);
-> > > > > +	if (ret)
-> > > > > +		WARN_ON(handle != xa_store(&group->pasid_array, pasid,
-> > > > > +					   curr, GFP_KERNEL));
-> > > >
-> > > > I wonder about the ordering here, is it OK to have PRIs being
-> > > > delivered to a domain that failed to attach? What cleans up that race
-> > > > condition with domain free?
-> > > >
-> > > > Should we replace the domain then set the xarray? (and same ordering
-> > > > question for normal attach)
-> > >
-> > > That makes sense to me.
-> > >
-> > > But I don't think there is a problem with attach. xa_insert() will
-> > > return error if an entry already exists. So there won't be any
-> > > PRI being delivered at __iommu_set_group_pasid(), no matter
-> > > it succeeds or not.
-> > 
-> > It has the same issue:
-> > 
-> > 	ret = xa_insert(&group->pasid_array, pasid, handle, GFP_KERNEL);
-> > 	if (ret)
-> > 		goto out_unlock;
-> > 
-> > 	ret = __iommu_set_group_pasid(domain, group, pasid);
-> >         .. Concurrently a PRI event is pushed to the domain ..
-> > 	if (ret)
-> > 		xa_erase(&group->pasid_array, pasid);
-> > 
-> >         .. Now what? Who fences the PRI event thread before the caller
-> > 	   frees the domain ..?
-> > 
-> > We arranged things so that detatch would fence the PRI, if detach is
-> > not called then there is no fence..
-> > 
-> 
-> Though I'm fine to change the order in attach too as it looks more
-> reasonable logically, I'm trying to understand the actual impact of
-> the original order (e.g. is the change worth of a Fix tag?)
-> 
-> If there is no detach happened before then it's the 1st attach to
-> a faultable domain and PRI will be enabled right before this function
-> hence no fence required.
-> 
-> Would a sane device trigger PRI in this window?
 
-I would say this is not a "sane" scenario, this is a theoretical race
-triggerable by the device. Perhaps a VFIO user can force the device to
-trigger this race and exploit the kernel.
+Hi,
 
-> If it's a detach-then-attach flow, detach will do the fence anyway
-> before the attach.
+Am 15.01.25 um 14:14 schrieb Bruno Gravato:
+> If yours behaves like mine, I'd expect that if you swap the disks in
+> config 2, that you won't have any errors as well...
 
-The issue is the error, once we do the xa_insert() then any faults will
-get routed to our domain and the fault path threads will hold pointers
-to the domain. Once the xa_insert() is done we must flush the fault
-path threads before allowing the domain to be freed.
+yeah, I would just need to plug something into the 2nd M.2 socket. But
+that can't be done remotely. I will do that on weekend or in next week.
 
-If __iommu_set_group_pasid() fails then we do an xa_erase() but
-nothing will flush the fault threads.
+BTW, is there a kernel parameter to ignore a NVME/PCI device? If the
+corruptions appear again after disabling the 2nd SSD, it is more likely
+that it is a kernel problem, e.g. a driver writing to memory reserved
+for some other driver/component. Such a bug may only occur under rare
+conditions. AFAIU, the patch "nvme-pci: place descriptor addresses in
+iod" form 6.3-rc1 attempts to use some space which is otherwise unused.
+Unfortunately I was not able to revert that patch because later changes
+depend on it.
 
-Jason
+So, I now only tried out whether just `NVME_MAX_SEGS 127` helps (see
+message from Matthias). Answer is no. This only seem to by an upper
+limit, because `/sys/class/block/nvme0n1/queue/max_segments` reports 33
+with unmodified kernels >=3D 6.3.7. With older kernels or kernels with
+reversed patch "nvme-pci: clamp max_hw_sectors based on DMA optimized
+limitation" (introduced in 6.3.7) this value is 127 and corruptions
+disappear.
+
+I guess, this value somehow has to be 127. In my case it is sufficient
+to revert the patch form 6.3.7. In Matthias's case, the values then
+becomes 128 and has to be limited additionally using `NVME_MAX_SEGS 127`
+
+Regards Stefan
+
+
