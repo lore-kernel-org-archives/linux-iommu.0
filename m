@@ -1,133 +1,136 @@
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87A942416B0;
-	Wed, 15 Jan 2025 13:14:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 156C726AF6
+	for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 14:32:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736946877; cv=none; b=BOfsJdN3mCFSDWYwBMbwt+E07D7+XOlGO338Iiaz9KNh9gTlZWKRMh5dnlDLGslP95sSGutKOCMSnWsw08v54NxZ05eBmgIM6NKHty0EapZFjjsHbpDEorS0UROcOgF/UtxYm1nZeOQm1fEnL6xhFRpgEw8tzSIG7U8eTLnGbyU=
+	t=1736951533; cv=none; b=GAzy5BrQEX04qugquMixmx/qbjPkWgGrX7pmUOd6FPfYeLpM9sDW+5WjEiqXW4lGVlbWHuWhbPAEtrDctgtiukXFFTOiTHH+NznBIUuub56QzUzlCieD00DGM0R+svhh2hbETGLs1WvqUiBYtg7vEAAgZzPGEvyCEopr11/r6Ew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736946877; c=relaxed/simple;
-	bh=WLxwRRuw0llt35psltVkoiEy1XeX4CQMuRjqCc1Wlhw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aUmRt7BWVe4c2ww47VLU2QUBUI05xZGpoGdhOe1HkNL55ydPoHnw+5a3DBWs4acBpEthfxQTFJI68fkhIC77LH/o+uYbz8wFiX+hT/2lcxDMmoqsStDDfwONUSl6PX1ZRxFOy2NZyeGNNztRw2VPPDN/qlHxRTMO0SiOjo30IzE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FXvRcoaY; arc=none smtp.client-ip=209.85.216.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FXvRcoaY"
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-2ef8c012913so8363852a91.3;
-        Wed, 15 Jan 2025 05:14:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736946875; x=1737551675; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=A9Nhc81z1QBg0/4jfG0c6X5JbsRpDWcMGWCj2xBov+4=;
-        b=FXvRcoaYxnIz0nXtmyEu61m6b7KNpKC2dS3GrS8Fkb/SeXWZojjX7stSpZEkdkyIw0
-         Qmof7yrdGDv4kKHUOovAA7ecA2q+/z+PwjBi2i5irX3SG3sfvkx+7vScw3NJBOn8ze9O
-         VoUYi0at8JQBiP8uVUMU4v8npyzxNZi5CG9LVO+k+Eork91WNrHXgjlhKCFFCN4cT7lq
-         8eKRSU02p6ImVAEnJzYU/5iLgtrvr/wRG63w4pr3HzGWoG3ZTUsB7mIk6+vGd4sRc5AR
-         5IyOZ1A+jClavg8YIoJyYSxw4h4T2hMKH2R5Krrq4WZKz5qFmq96GH9tZo9Xt3yI30NE
-         P1Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736946875; x=1737551675;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=A9Nhc81z1QBg0/4jfG0c6X5JbsRpDWcMGWCj2xBov+4=;
-        b=h+DpZVVeyyIq7ZrBj7HzgLQSM++7wpwxtJ0FrRBb8hRlBBeNcxrHqH1IO/gcW4QUTn
-         BOa9JIsentVOK5HxZcII6IUF1iJ9E6B07MvYNuhHLZXHHPUSJJKLexGKpGz6qBiktLjf
-         6eOuZMvOHeNSAjG5QiOJmqot8ZiFzuxynb39eI4qvy5rQW+yqPmxOQv9TACqLdGCDtnS
-         Yvp70uDD/pMBFO3G9crFG2C4zvuhaZqLbjWr8GXWN+mCMJ8v2h+6FoM1Wt5drpXaG70Y
-         t8Jkr7syzFUrJ/sZihs8gyW+SGs/6WSg37AfgN/mGZp2UftH+8MLDr4Nn0He6nzgua13
-         pPgw==
-X-Forwarded-Encrypted: i=1; AJvYcCVtRxED8HiO53EZF9itBkDBFUe7ifOhMKeWRKCoB/EoG/AynP+1bHyidcr4EptdeBK76YK0IQ==@lists.linux.dev, AJvYcCWnHeaa2YkYmqGUI21Q6IYqHyVRD4SaUsPHiw9A4Jv4914Rmpg5F0IQ0gfPzZBn0aV9szZieuCHpzR1uZw=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy/UK3/ju7ZafFWFFOO9o2XBqVmRnSEaCbKMr1NoxFwP32JHnOa
-	8h89dgURWpdtUDKxR8bAuceK1FtVoxLWTzr5pGym7KvSpJTwy6BVqxGbp9OBJ1rj7+kRUfBWt8z
-	uHuDpimPrtHf3CndsQFihk8VzHo8=
-X-Gm-Gg: ASbGnctyfW1/D2O8ux+eGK8j6bEwOKwGgbSB+696wCw5/5ZWT84SGn7Xk4VRI65vMqG
-	pMQssMsI7T8p2Az6xGzmYZzy3kkGT2KhoxnhWD+EMj9wSTDi31VlTY6RxQyL3uS75fGIu
-X-Google-Smtp-Source: AGHT+IGQ0R7x9YXj/h87iEBx+CVBf8QtEg+teUTy3q3W8ZCMxJ01VQONo6Wys+qd9jQey7KW+xhI8Rtvci604JXrJgs=
-X-Received: by 2002:a17:90b:2f4e:b0:2ee:f550:3848 with SMTP id
- 98e67ed59e1d1-2f548e98ea9mr38312650a91.5.1736946874762; Wed, 15 Jan 2025
- 05:14:34 -0800 (PST)
+	s=arc-20240116; t=1736951533; c=relaxed/simple;
+	bh=7b5pMKyTzRrl48ohb4rhah7QBafC+3E9JsNto5bnxKw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bWo41FeVrjnTXUXr7+N2pUkxD5dJ/5KZf17lXZzhK6kF1Efg0bgrwNWAU2G2Jkj2gljz/7mid+oja429I+a3H5j8i8DwdJ389PQID7I6xwDbSlO3LWuDkZoPxHyY40Evp+zq13ffMAtTRKsC9CKH7EFTMD55PYRDgs4SOJbi6Z8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C2F7C11FB;
+	Wed, 15 Jan 2025 06:32:39 -0800 (PST)
+Received: from [10.57.4.211] (unknown [10.57.4.211])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B91CE3F63F;
+	Wed, 15 Jan 2025 06:32:09 -0800 (PST)
+Message-ID: <c8a8fdf8-5de2-40ad-9da4-bb7a63ee8ea9@arm.com>
+Date: Wed, 15 Jan 2025 14:32:07 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <401f2c46-0bc3-4e7f-b549-f868dc1834c5@leemhuis.info>
- <Z36UsE5dj6j5HhkX@kbusch-mbp> <20250109082849.GC20724@lst.de>
- <210e7b28-de05-44bc-9604-83a79ae131b0@leemhuis.info> <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
- <CAOBLbT8103fAyoFNF8=YcEM1sM6HodcUe=Ee5NsE2hUkfCYv7g@mail.gmail.com> <6c2a34ac-d158-4109-a166-e6d06cafa360@simg.de>
-In-Reply-To: <6c2a34ac-d158-4109-a166-e6d06cafa360@simg.de>
-From: Bruno Gravato <bgravato@gmail.com>
-Date: Wed, 15 Jan 2025 13:14:18 +0000
-X-Gm-Features: AbW1kvZTTan8HgtPgAtw62bza1hvMNTlO07oElZfaQ_VFWMvcxTcAudnz_hCQFw
-Message-ID: <CAOBLbT9LrqdHQ4-gGkRyB+vU3WnGo8f7X7m2=qK29+x=3QpzPw@mail.gmail.com>
-Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
- X600M-STX + Ryzen 8700G
-To: Stefan <linux-kernel@simg.de>
-Cc: bugzilla-daemon@kernel.org, Keith Busch <kbusch@kernel.org>, 
-	Adrian Huang <ahuang12@lenovo.com>, 
-	Linux kernel regressions list <regressions@lists.linux.dev>, linux-nvme@lists.infradead.org, 
-	Jens Axboe <axboe@fb.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	LKML <linux-kernel@vger.kernel.org>, 
-	Thorsten Leemhuis <regressions@leemhuis.info>, Christoph Hellwig <hch@lst.de>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu-dma: Fix Oops on zero-sized DMA memory allocation
+To: hejiean@foxmail.com
+Cc: jroedel@suse.de, mhklinux@outlook.com, petr@tesarici.cz,
+ pasha.tatashin@soleen.com, nicolinc@nvidia.com,
+ Leon Romanovsky <leon@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+References: <tencent_999F11E711AD93EA6AB3B8A7B32D1FE9AD0A@qq.com>
+ <20250115123923.GN3146852@unreal>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250115123923.GN3146852@unreal>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 15 Jan 2025 at 10:48, Stefan <linux-kernel@simg.de> wrote:
-> > Stefan, did you ever try running your tests with 2 nvme disks
-> > installed on both slots? Or did you use only one slot at a time?
->
-> No, I only tested these configurations:
->
-> 1. 1st M.2: Lexar;    2nd M.2: empty
->     (Easy to reproduce write errors)
-> 2. 1st M.2: Kingsten; 2nd M.2: Lexar
->     (Difficult to reproduce read errors with 6.1 Kernel, but no issues
->     with a newer ones within several month of intense use)
->
-> I'll swap the SSD's soon. Then I will also test other configurations and
-> will try out a third SSD. If I get corruption with other SSD's, I will
-> check which modifications help.
+[ BTW I apparently never received the original mail and don't see it on 
+the list either... ]
 
-So it may be that the reason you no longer had errors in config 2 is
-not because you put a different SSD in the 1st slot, but because you
-now have the 2nd slot also occupied, like me.
+On 2025-01-15 12:39 pm, Leon Romanovsky wrote:
+> On Wed, Jan 15, 2025 at 08:21:03PM +0800, hejiean@foxmail.com wrote:
+>> From: Jiean He <hejiean@foxmail.com>
+>>
+>> In the `iommu_dma_ops.alloc` and `iommu_dma_ops.alloc_noncontiguous`
+>> interfaces, the `size` parameter is user-provided. When `size` is 0,
+>> an Oops occurs in `__iommu_dma_alloc_noncontiguous`, which is called
+>> by both interfaces.
+>>
+>> The root cause lies in the fact that `__iommu_dma_alloc_noncontiguous`
+>> calls `kvcalloc`, The `count` parameter of `kvcalloc` is controlled by
+>> the user-provided `size`, and when `size` is 0, `count` is also 0.
+>> `__iommu_dma_alloc_noncontiguous` uses `if (!pages)` to check the
+>> return value of `kvcalloc`, but it returns `ZERO_SIZE_PTR` instead of
+>> `NULL` while `count==0`. This leads to a kernel Oops when `pages` is
+>> dereferenced in subsequent operations,as the following trace:
+>>
+>> kernel NULL pointer dereference at virtual address 0000000000000010.
+>> Call trace:
+>> sg_alloc_append_table_from_pages+0x208/0x430
 
-If yours behaves like mine, I'd expect that if you swap the disks in
-config 2, that you won't have any errors as well...
-I'm very curious to see the result of that test!
+So... what you're saying is that there's a bug in 
+sg_alloc_append_table_from_pages() where it can dereference more of 
+"pages" than "n_pages" says is valid?
 
-Just to recap the results of my tests:
+Of course that's not to say that's the *only* issue that this scenario 
+could or would run into - indeed many allocation paths in various DMA 
+API implementations depend on get_order(size), and the kerneldoc 
+explicitly states that get_order(0) is undefined. So if you really think 
+it's worth formally accommodating zero-sized DMA API requests, rather 
+than leaving them as a nonsensical thing that drivers should obviously 
+not do in the first place, then iommu-dma is still not the logically 
+appropriate place to do that.
 
-Setup 1
-Main slot: Solidigm
-Secondary slot: (empty)
-Result: BAD - corruption happens
+Thanks,
+Robin.
 
-Setup 2
-Main slot: (empty)
-Secondary slot: Solidigm
-Result: GOOD - no corruption
+>> sg_alloc_table_from_pages_segment+0x3c/0xa0
+>> __iommu_dma_alloc_noncontiguous.constprop.0+0x130/0x278
+> 
+> Who is this user?
+> grep sg_alloc_append_table_from_pages shows only 4 users:
+> drivers/infiniband/core/umem.c
+> drivers/vfio/pci/mlx5/cmd.c
+> drivers/vfio/pci/virtio/migrate.c
+> lib/scatterlist.c
+> 
+> First 3 users have constant size and it is not 0.
+> The latter is used in wrapper sg_alloc_table_from_pages_segment(), which
+> is used by DRM and that layer already was supposed to catch nr_pages == 0.
+> 
+> Thanks
+> 
+>>
+>> This commit addresses the issue by adding a check for the `size`
+>> parameter in `__iommu_dma_alloc_noncontiguous`. If 0 is passed as `size`,
+>> a warning is reported and `NULL` is returned. This approach clearly
+>> indicates that the user-provided size might be illegal, helping users
+>> adjust their programs. In contrast, using `ZERO_OR_NULL_PTR` to check the
+>> return value of `kmalloc` (used by `kvcalloc` internally) does not
+>> distinguish between insufficient memory and a zero-sized memory request.
+>>
+>> Fixes: 0db2e5d18f76 ("iommu: Implement common IOMMU ops for DMA mapping")
+>>
+>> Signed-off-by: Jiean He <hejiean@foxmail.com>
+>> ---
+>>   drivers/iommu/dma-iommu.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index 2a9fa0c8cc00..3c9c905e7a8f 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -956,6 +956,11 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+>>   	    iommu_deferred_attach(dev, domain))
+>>   		return NULL;
+>>   
+>> +	if (unlikely(size == 0)) {
+>> +		dev_err(dev, "DMA alloc Zero-Sized memory is unsupported\n");
+>> +		return NULL;
+>> +	}
+>> +
+>>   	min_size = alloc_sizes & -alloc_sizes;
+>>   	if (min_size < PAGE_SIZE) {
+>>   		min_size = PAGE_SIZE;
+>> -- 
+>> 2.40.0.windows.1
+>>
 
-Setup 3
-Main slot: WD
-Secondary slot: (empty)
-Result: BAD - corruption happens
-
-Setup 4
-Main slot: WD
-Secondary slot: Solidigm
-Result: GOOD - no corruption (on either disk)
-
-So, in my case, it looks like the corruption only happens if I have
-only 1 disk installed in the main slot and the secondary slot is
-empty.
-If I have the two slots occupied or only the secondary slot occupied,
-there are no more errors.
-
-
-Bruno
