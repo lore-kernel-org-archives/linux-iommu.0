@@ -1,180 +1,168 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FCEB155A30;
-	Wed, 15 Jan 2025 08:33:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC3C223F269;
+	Wed, 15 Jan 2025 08:40:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.237.130.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736930028; cv=none; b=Ci4AKJ2mvPeFzISvnZg0jbrpFYPjhwoBlz07PofTf3GMTdoWl162ltrBiGpw13upMf+Kiu/8eIXZOWw6CggVnhO6J2A+fbT1DBSSEBUo+cR7cIb2hhF4RCPVHcn6MAqR40vX/y0Q1aoR2hJ8IvHHz3hoj1iLslAhREsWMCRIWFU=
+	t=1736930419; cv=none; b=g9WMd0T+3egTD8Dj4PyP29UOW2mXQVIWyQnW8m1JY8bJBupmPTrIO1cCg9tN/kyxa6mo+NWACPGwu5x+odvfOxyWLr2jnzmnY5Id5J/5xfzOiF3pOB9dafo8FEnew5JUwqKwuYc65Bm/n+oug3vmywuUyD7lKH9eMYSyCAJUoRw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736930028; c=relaxed/simple;
-	bh=q//4PX+/kKs0NcRsMaK0IRFD8IgnEeYPZkHGethy6Xc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tn0yaW4j8kX4iyFRYf/5dGgqhuZTLTjk0y72MAmWT25GUPotSTZ2la6ZC2qbxGEj9K+Desd8CdC+bVp/4eMYBpmfz7p/r5lWTOeJ0J+Au8h5bq/axFylcRUM5zHnoBkTn7xw+YmYOZMaz/GbhYCnFVRAfzp+UBYgZaMzAIAgPpQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mCWDVkUq; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736930419; c=relaxed/simple;
+	bh=A5vDtaKwCUYk4D/fYrU86gKCpU7MX1HzZn2F2HXS338=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZjV+aJjgBwVZB2AvjtYKH2AFCYGyiItnkrg9/Ek14M8HbqZSJGuv41NeZhNc5LmGop/AOkCxiW8880pzsJSW1twM5KGAgNpiC3gyYU1P7wIScTslciKMmWkeQwQEzQ+rvavrNThK/H2W2/vy9bjVelZj/WekSdGMbsgRuzF9cOw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info; spf=pass smtp.mailfrom=leemhuis.info; dkim=pass (2048-bit key) header.d=leemhuis.info header.i=@leemhuis.info header.b=t54iOFNm; arc=none smtp.client-ip=80.237.130.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=leemhuis.info
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mCWDVkUq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E083DC4CEE2;
-	Wed, 15 Jan 2025 08:33:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736930028;
-	bh=q//4PX+/kKs0NcRsMaK0IRFD8IgnEeYPZkHGethy6Xc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mCWDVkUqHQRGTYemu0OT2ih+ESCVIZ/aTGA9LOFnN2apzUXuQ6js3wGRvMvmPD0Q4
-	 qPuVV2jFdCTf9DIs+hAcwNkgetPw+3PG1Lpnlw/6yRfq11aaFbmf0jL/DFWnEBrlVw
-	 Ua5VHXN/Wk/lZkcpIs8HKqmwrhDVRgZOiJTe7WsPa5iJP6YN5+bhjqq5Jd10hVAZze
-	 QrEQ79dFiDRigierP81hoV+aRHQMIswxIRHmBXxqXzkaq8aaF3N2iCj59qFjsa3k/F
-	 66JPQhMe1Azzt9/n3bF5LnqLwPghqkXaMemOLirAJWtGi32tua3HSrRA0qNoLRzLR7
-	 YnubzClMeJP7Q==
-Date: Wed, 15 Jan 2025 10:33:40 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
-	Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v5 07/17] dma-mapping: Implement link/unlink ranges API
-Message-ID: <20250115083340.GL3146852@unreal>
-References: <cover.1734436840.git.leon@kernel.org>
- <fa43307222f263e65ae0a84c303150def15e2c77.1734436840.git.leon@kernel.org>
- <ad2312e0-10d5-467a-be5e-75e80805b311@arm.com>
+	dkim=pass (2048-bit key) header.d=leemhuis.info header.i=@leemhuis.info header.b="t54iOFNm"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=leemhuis.info; s=he214686; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:From:
+	Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:In-Reply-To:
+	References; bh=q6hBrcRMQhF/pox7UFnnZR0yegceyTy2ATLnjvMiHHU=; t=1736930417;
+	x=1737362417; b=t54iOFNmVPxvKLLwPjKsiSIPYw2Ifa42zzaPi4RMHNkXuMB7+5w1mTRHDEeTb
+	IBfgSKPV23e1u9fqTg7PTOMDIn5IRHWXuu/O4MK7XyKuhoxNQHaS6ZtLSrA83w3Aa4lE4xPIlKh9W
+	e8uVUIVaFqnFQSVAIP7Z+PNpzT+T1m23Bf9sWsS0p/R1Eg+trlqOLMfAscjI1/W2zioA6Qf/Y+Oo/
+	imKfO/liqoBkEZuDyhp9ySY5Lpy7qKi5glVM0ln+oCrMWHei08eQNlivmmHYTECwxKQ+WGNSpHg/l
+	bYDD/MIycePE1ZYIzryczRprAxGEehn6ZY4bFeYZAmdGIuhxwQ==;
+Received: from [2a02:8108:8980:2478:87e9:6c79:5f84:367d]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
+	id 1tXywX-002TwE-1b;
+	Wed, 15 Jan 2025 09:40:05 +0100
+Message-ID: <3b693647-5e82-4c39-8017-22cada56eb55@leemhuis.info>
+Date: Wed, 15 Jan 2025 09:40:04 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ad2312e0-10d5-467a-be5e-75e80805b311@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
+ X600M-STX + Ryzen 8700G
+To: Bruno Gravato <bgravato@gmail.com>, Stefan <linux-kernel@simg.de>
+Cc: Keith Busch <kbusch@kernel.org>, bugzilla-daemon@kernel.org,
+ Adrian Huang <ahuang12@lenovo.com>,
+ Linux kernel regressions list <regressions@lists.linux.dev>,
+ linux-nvme@lists.infradead.org, Jens Axboe <axboe@fb.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>
+References: <401f2c46-0bc3-4e7f-b549-f868dc1834c5@leemhuis.info>
+ <Z36UsE5dj6j5HhkX@kbusch-mbp> <20250109082849.GC20724@lst.de>
+ <210e7b28-de05-44bc-9604-83a79ae131b0@leemhuis.info>
+ <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
+ <CAOBLbT8103fAyoFNF8=YcEM1sM6HodcUe=Ee5NsE2hUkfCYv7g@mail.gmail.com>
+From: Thorsten Leemhuis <regressions@leemhuis.info>
+Content-Language: de-DE, en-US
+In-Reply-To: <CAOBLbT8103fAyoFNF8=YcEM1sM6HodcUe=Ee5NsE2hUkfCYv7g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1736930417;15830067;
+X-HE-SMSGID: 1tXywX-002TwE-1b
 
-On Tue, Jan 14, 2025 at 08:50:35PM +0000, Robin Murphy wrote:
-> On 17/12/2024 1:00 pm, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > Introduce new DMA APIs to perform DMA linkage of buffers
-> > in layers higher than DMA.
-> > 
-> > In proposed API, the callers will perform the following steps.
-> > In map path:
-> > 	if (dma_can_use_iova(...))
-> > 	    dma_iova_alloc()
-> > 	    for (page in range)
-> > 	       dma_iova_link_next(...)
-> > 	    dma_iova_sync(...)
-> > 	else
-> > 	     /* Fallback to legacy map pages */
-> >               for (all pages)
-> > 	       dma_map_page(...)
-> > 
-> > In unmap path:
-> > 	if (dma_can_use_iova(...))
-> > 	     dma_iova_destroy()
-> > 	else
-> > 	     for (all pages)
-> > 		dma_unmap_page(...)
-> > 
-> > Reviewed-by: Christoph Hellwig <hch@lst.de>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >   drivers/iommu/dma-iommu.c   | 259 ++++++++++++++++++++++++++++++++++++
-> >   include/linux/dma-mapping.h |  32 +++++
-> >   2 files changed, 291 insertions(+)
+On 15.01.25 07:37, Bruno Gravato wrote:
+> I finally got the chance to run some more tests with some interesting
+> and unexpected results...
 
-<...>
+FWIW, I briefly looked into the issue in between as well and can
+reproduce it[1] locally with my Samsung SSD 990 EVO Plus 4TB in the main
+M.2 slot of my DeskMini X600 using btrfs on a mainline kernel with a
+config from Fedora rawhide.
 
-> > +static void iommu_dma_iova_unlink_range_slow(struct device *dev,
-> > +		dma_addr_t addr, size_t size, enum dma_data_direction dir,
-> > +		unsigned long attrs)
-> > +{
-> > +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> > +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> > +	struct iova_domain *iovad = &cookie->iovad;
-> > +	size_t iova_start_pad = iova_offset(iovad, addr);
-> > +	dma_addr_t end = addr + size;
-> > +
-> > +	do {
-> > +		phys_addr_t phys;
-> > +		size_t len;
-> > +
-> > +		phys = iommu_iova_to_phys(domain, addr);
-> > +		if (WARN_ON(!phys))
-> > +			continue;
+So what can we that are affected by the problem do to narrow it down?
+
+What does it mean that disabling the NVMe devices's write cache often
+but apparently not always helps? It it just reducing the chance of the
+problem occurring or accidentally working around it?
+
+hch initially brought up that swiotlb seems to be used. Are there any
+BIOS setup settings we should try? I tried a few changes yesterday, but
+I still get the "PCI-DMA: Using software bounce buffering for IO
+(SWIOTLB)" message in the log and not a single line mentioning DMAR.
+
+Ciao, Thorsten
+
+[1] see start of this thread and/or
+https://bugzilla.kernel.org/show_bug.cgi?id=219609 for details
+
+> I put another disk (WD Black SN750) in the main M.2 slot (the
+> problematic one), but kept my main disk (Solidigm P44 Pro) in the
+> secondary M.2 slot (where it doesn't have any issues).
+> I rerun my test: step 1) copy a large number of files to the WD disk
+> (main slot), step 2) run btrfs scrub on it and expect some checksum
+> errors
+> To my surprise there were no errors!
+> I tried it twice with different kernels (6.2.6 and 6.11.5) and booting
+> from either disk (I have linux installations on both).
+> Still no errors.
 > 
-> Infinite WARN_ON loop, nice.
-
-No problem, will change it to WARN_ON_ONCE.
-
+> I then removed the Solidigm disk from the secondary and kept the WD
+> disk in the main M.2 slot.
+> Rerun my tests (on kernel 6.11.5) and bang! btrfs scrub now detected
+> quite a few checksum errors!
 > 
-> > +		len = min_t(size_t,
-> > +			end - addr, iovad->granule - iova_start_pad);
-
-<...>
-
-> > +
-> > +		swiotlb_tbl_unmap_single(dev, phys, len, dir, attrs);
+> I then tried disabling volatile write cache with "nvme set-feature
+> /dev/nvme0 -f 6 -v 0"
+> "nvme get-feature /dev/nvme0 -f 6" confirmed it was disabled, but
+> /sys/block/nvme0n1/queue/fua still showed 1... Was that supposed to
+> turn into 0?
 > 
-> This is still dumb. For everything other than the first and last granule,
-> either it's definitely not in SWIOTLB, or it is (per the unaligned size
-> thing above) but then "len" is definitely wrong and SWIOTLB will complain.
-
-Like Christoph said, we tested it with NVMe which uses SWIOTLB path and
-despite having a lot of unaligned sizes, it worked without SWIOTLB
-complains.
-
+> I re-run my test, but I still got checksum errors on btrfs scrub. So
+> disabling volatile write cache (assuming I did it correctly) didn't
+> make a difference in my case.
 > 
-> > +
-> > +		addr += len;
-> > +		iova_start_pad = 0;
-> > +	} while (addr < end);
-> > +}
-> > +
-> > +static void __iommu_dma_iova_unlink(struct device *dev,
-> > +		struct dma_iova_state *state, size_t offset, size_t size,
-> > +		enum dma_data_direction dir, unsigned long attrs,
-> > +		bool free_iova)
-> > +{
-> > +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> > +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> > +	struct iova_domain *iovad = &cookie->iovad;
-> > +	dma_addr_t addr = state->addr + offset;
-> > +	size_t iova_start_pad = iova_offset(iovad, addr);
-> > +	struct iommu_iotlb_gather iotlb_gather;
-> > +	size_t unmapped;
-> > +
-> > +	if ((state->__size & DMA_IOVA_USE_SWIOTLB) ||
-> > +	    (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)))
-> > +		iommu_dma_iova_unlink_range_slow(dev, addr, size, dir, attrs);
-> > +
-> > +	iommu_iotlb_gather_init(&iotlb_gather);
-> > +	iotlb_gather.queued = free_iova && READ_ONCE(cookie->fq_domain);
+> I put the Solidigm disk back into the secondary slot, booted and rerun
+> the test on the WD disk (main slot) just to be triple sure and still
+> no errors.
 > 
-> This makes things needlessly hard to follow, just keep the IOVA freeing
-> separate. And by that I really mean just have unlink and free, since
-> dma_iova_destroy() really doesn't seem worth the extra complexity to save
-> one line in one caller...
+> So it looks like the corruption only happens if only the main M.2 slot
+> is occupied and the secondary M.2 slot is free.
+> With two nvme disks (one on each M.2 slot), there were no errors at all.
+> 
+> Stefan, did you ever try running your tests with 2 nvme disks
+> installed on both slots? Or did you use only one slot at a time?
 
-In initial versions, I didn't implement dma_iova_destroy() and used
-unlink->free calls directly. Both Jason and Christoph asked me to
-provide dma_iova_destroy(), so we can reuse same iotlb_gather.
-
-Almost all callers (except HMM-like) will use this API call.
-
-Let's keep it.
-
-Thanks
+$ journalctl -k | grep -i -e DMAR -e IOMMU -e AMD-Vi -e SWIOTLB
+AMD-Vi: Using global IVHD EFR:0x246577efa2254afa, EFR2:0x0
+iommu: Default domain type: Translated
+iommu: DMA domain TLB invalidation policy: lazy mode
+pci 0000:00:00.2: AMD-Vi: IOMMU performance counters supported
+pci 0000:00:01.0: Adding to iommu group 0
+pci 0000:00:01.3: Adding to iommu group 1
+pci 0000:00:02.0: Adding to iommu group 2
+pci 0000:00:02.3: Adding to iommu group 3
+pci 0000:00:03.0: Adding to iommu group 4
+pci 0000:00:04.0: Adding to iommu group 5
+pci 0000:00:08.0: Adding to iommu group 6
+pci 0000:00:08.1: Adding to iommu group 7
+pci 0000:00:08.2: Adding to iommu group 8
+pci 0000:00:08.3: Adding to iommu group 9
+pci 0000:00:14.0: Adding to iommu group 10
+pci 0000:00:14.3: Adding to iommu group 10
+pci 0000:00:18.0: Adding to iommu group 11
+pci 0000:00:18.1: Adding to iommu group 11
+pci 0000:00:18.2: Adding to iommu group 11
+pci 0000:00:18.3: Adding to iommu group 11
+pci 0000:00:18.4: Adding to iommu group 11
+pci 0000:00:18.5: Adding to iommu group 11
+pci 0000:00:18.6: Adding to iommu group 11
+pci 0000:00:18.7: Adding to iommu group 11
+pci 0000:01:00.0: Adding to iommu group 12
+pci 0000:02:00.0: Adding to iommu group 13
+pci 0000:03:00.0: Adding to iommu group 14
+pci 0000:03:00.1: Adding to iommu group 15
+pci 0000:03:00.2: Adding to iommu group 16
+pci 0000:03:00.3: Adding to iommu group 17
+pci 0000:03:00.4: Adding to iommu group 18
+pci 0000:03:00.6: Adding to iommu group 19
+pci 0000:04:00.0: Adding to iommu group 20
+pci 0000:04:00.1: Adding to iommu group 21
+pci 0000:05:00.0: Adding to iommu group 22
+AMD-Vi: Extended features (0x246577efa2254afa, 0x0): PPR NX GT [5] IA GA
+PC GA_vAPIC
+AMD-Vi: Interrupt remapping enabled
+AMD-Vi: Virtual APIC enabled
+PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+perf/amd_iommu: Detected AMD IOMMU #0 (2 banks, 4 counters/bank).
