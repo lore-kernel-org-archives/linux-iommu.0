@@ -1,154 +1,149 @@
-Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53CF41D54E3
-	for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 19:20:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFDCD86350
+	for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 19:23:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736968813; cv=none; b=gQZNJQN+GX4nNbr4kFQC+BgbWhn7BLI4H69vsDelM6gfSMLSwhaLouGDpPYT9XR28fjwgTqtP5mEC94PCETEWQls6RMB5iyf2TeQEZe916XCbWGDLAKBXMHnEZUMSeD8S1pzt/Gc1RVfO9U5blaT2lGOr+5s4nYIRlL6M04vC9I=
+	t=1736969004; cv=none; b=YyjNRvL4V6TWIRsLujD0cfksqNQggoNlenTD712RDy5m0cMVB0nlnjyLzqZaJNDcLXg84NpUMt+mhQg/Tx4+Bx3wQCy8DYPrH+MX8GHm00zN04bWj2wz2gFjCbHMtqfnYu/erMQPTg/TnfMbRgARyVLeclVBKpWaGq82KnUPnA8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736968813; c=relaxed/simple;
-	bh=FfdfdoVOmnHCEP6olqKJcwvaVKKmlmjCha6T3kGRyYc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Qb/XRu6cJKHYvML9FR4f+hhfdPk/6ftpni/nmvph2Lx74t+RPyDobrJ36ZQX/QcFCp5c81kxElrAOTsaTl5LzpOXoyLmdWFb2TI7SEsNa4E/HQt2JBhyHcv6EQ8MIiBpWBUpTMUOHrNpCFvKwqdi8YDIB5fbaFMzTCHG7b72fBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=emBj9cVC; arc=none smtp.client-ip=209.85.219.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1736969004; c=relaxed/simple;
+	bh=Z7FzG7euO3hIbdQNFj1nHxIy2rlVNwpenA4ZfXjYvE4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DFTh2w6m7XiCsrr5fSxlHZNvNLx+2/8crOqX0pLqdLNAnp7pLSmJZi/Vg86HlYEflUi234IQ/Ga9Vd9lTgQJ3mZickz9PTOjmIaBdSbnrf35bk14e//b1olbTfsFBR8vJYT40M2TYBlCRpD26ZqnaXIoQL9p+N6rHr4PbK+evwU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g0tuPbm5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="emBj9cVC"
-Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-6dcf63155b0so1281286d6.1
-        for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 11:20:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736968810; x=1737573610; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yxOLisM/r2vqci17iimcnJ3+oT6PlH7eXAcAxS9wH8I=;
-        b=emBj9cVClIAJ8JdHaJEU0qRC5L78kEChM0md+158mE0dvUYE0cQY+ZSoSmuWNfT01F
-         Sh2HThIA2URdCKlMr48LfBV8M8GRh3TFmF/YkiXtH5Q9gRittc6c6TLD2QcYK12gu/rw
-         dHeh4PZlQHyza876iUti99BVDC/lk+rBohdZ2ldiWaYcJvNDVtUGpM7bu1vWSK84YqHZ
-         RKzIvpHvYqwz+Bj9px4RPCi2BuBWOntBJfCtQXvm5BKL4wfTjHQc3tKynSMgfFAnWh1v
-         ONR7lCZk2bEHXAv89PunQC0TeP6P8WedoaMbUNsoPp46CADadFRjHhuwsKbZEPg9zx4r
-         4fnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736968810; x=1737573610;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yxOLisM/r2vqci17iimcnJ3+oT6PlH7eXAcAxS9wH8I=;
-        b=CPhcPdRWuK4Uii17WjxvYsxrBcMjFd+5kniADnyUeet8Qkv0KghREz8M2q5OiAGb1/
-         svQ7R/PXDwABzbTqilS4oZpy8vTtV4pXjVoNSoA5HVekzTkR2Ks1GpbvJfQkMwWvwwTy
-         ZFYKWb8cLd4SPYKxJ2gcTdUSIpnHCfUutOqHpEKw7AiVWqatzZZkBoRdFEEtXUt+emM/
-         wKg0JFmEoYXkw9wrmPbFfOpJ7gW6f7PbGjq0lOtHWO8NB7KfdyJanWqzwr0YmG6owCdr
-         PsEvgB1WMmtEPgm2QV3DNmpf7zx0vEbOlDP+Ptyl6KoZs0+a3rJndCurFlircm9DrcPJ
-         /U+A==
-X-Forwarded-Encrypted: i=1; AJvYcCVjbfT+cQxDwcFdIoiqj6vxOxf48ZJFyIozZ1FCQSrLQfQquq3qu3kCXDih5WTyZvSxeDuIcg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyVN/GIn5CZ+m26kJ1AxZ+DLlDbW9EcaRak8pKo8hwijBUdvGVX
-	Y4c6/XVfG5KbB/TNA0Yv7HOcCjAGsjnVs8Wux5TF0oi2INMQ3oxjbDctBrMj86KkrpEHMPfcaQz
-	pcA+LHfR3Kwp13YJt8OHLdxRs0p0=
-X-Gm-Gg: ASbGncvj/I9q5RQWEuA4HR5oCuiuDlmW7eywLG8UBWw1aTCUY0rUzIYHmqOYAuFrS/U
-	f91c7dEmb1PFCAf3PuPk3zN0xBk2OunAfcMkV6g==
-X-Google-Smtp-Source: AGHT+IGcOD+cwuWLZQkHOERr/i/5IgCk1JWHnGSSNWX5DKVOVQdU9aSL/egf0MIChEkPIlmVmG4Q/k0vSx6KgLYio+A=
-X-Received: by 2002:a05:6214:3c8c:b0:6df:8c25:2c81 with SMTP id
- 6a1803df08f44-6df9b1d0b5emr530159576d6.5.1736968810243; Wed, 15 Jan 2025
- 11:20:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g0tuPbm5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1069C4CED1;
+	Wed, 15 Jan 2025 19:23:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1736969003;
+	bh=Z7FzG7euO3hIbdQNFj1nHxIy2rlVNwpenA4ZfXjYvE4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=g0tuPbm50mrx79+1WCgTJFjB4tvHBp6kK98SGuoE725UqlsXLN/Bcfd2FbKCVe5fH
+	 CpBgOgonMq2I981OT8FICRZAqs4GNTeQg/y+sRrA3NNRtu2AmRtej5t+HSAzMJbtsd
+	 DEzYGvpOzzRFy8vnUtnJnv27aDd7kZ+PR5mi6e5xkZ9p/QBEtYteDh//ZZEc/s8ebf
+	 2wQG9Zn782xszP80tMV+gX3ej8iA4Dp8EYU+58qHAuC3+CzB0Qktxv2ofw2Mq1YeUH
+	 jQz/VkzuQZf+kakMskF7bmhjyqIwpOuKlfMof87d+8ricl6I9wS3VFlMebHviSGeF0
+	 N/RoUeouBZwPg==
+Date: Wed, 15 Jan 2025 21:23:19 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: hejiean@foxmail.com, jroedel@suse.de, mhklinux@outlook.com,
+	petr@tesarici.cz, pasha.tatashin@soleen.com, nicolinc@nvidia.com,
+	Christoph Hellwig <hch@lst.de>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH] iommu-dma: Fix Oops on zero-sized DMA memory allocation
+Message-ID: <20250115192319.GQ3146852@unreal>
+References: <tencent_999F11E711AD93EA6AB3B8A7B32D1FE9AD0A@qq.com>
+ <20250115123923.GN3146852@unreal>
+ <c8a8fdf8-5de2-40ad-9da4-bb7a63ee8ea9@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <e4a649a7fdfc8fcf5f48a0bc4e76e5d546078083.1736868605.git.Slavisa.Petrovic@rt-rk.com>
- <alpine.DEB.2.22.394.2501141554170.2684657@ubuntu-linux-20-04-desktop> <2f1432e6-0d27-48fd-b034-475284f14233@gmail.com>
-In-Reply-To: <2f1432e6-0d27-48fd-b034-475284f14233@gmail.com>
-From: =?UTF-8?B?TWlsYW4gxJBva2nEhw==?= <milandjokic1995@gmail.com>
-Date: Wed, 15 Jan 2025 20:20:00 +0100
-X-Gm-Features: AbW1kvYPm3yU6yFTdo5RO9-y77hSL0M_d4qB1E2QaVvMAqTHQihGuVHlucVKfps
-Message-ID: <CAKp59VEOiXo+OKwPNiomtXNCsfDURCXaDktooi5JSoTSdhc90w@mail.gmail.com>
-Subject: Re: [PATCH] riscv: Add initial Xen guest support for RISC-V
-To: Oleksii Kurochko <oleksii.kurochko@gmail.com>, Stefano Stabellini <sstabellini@kernel.org>
-Cc: linux-riscv@lists.infradead.org, paul.walmsley@sifive.com, 
-	palmer@dabbelt.com, aou@eecs.berkeley.edu, jgross@suse.com, 
-	oleksandr_tyshchenko@epam.com, Slavisa.Petrovic@rt-rk.com, 
-	Milan.Djokic@rt-rk.com, rafael.j.wysocki@intel.com, sunilvl@ventanamicro.com, 
-	takakura@valinux.co.jp, linux-kernel@vger.kernel.org, 
-	xen-devel@lists.xenproject.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c8a8fdf8-5de2-40ad-9da4-bb7a63ee8ea9@arm.com>
 
-Hello Stefano, Oleksii
+On Wed, Jan 15, 2025 at 02:32:07PM +0000, Robin Murphy wrote:
+> [ BTW I apparently never received the original mail and don't see it on the
+> list either... ]
+> 
+> On 2025-01-15 12:39 pm, Leon Romanovsky wrote:
+> > On Wed, Jan 15, 2025 at 08:21:03PM +0800, hejiean@foxmail.com wrote:
+> > > From: Jiean He <hejiean@foxmail.com>
+> > > 
+> > > In the `iommu_dma_ops.alloc` and `iommu_dma_ops.alloc_noncontiguous`
+> > > interfaces, the `size` parameter is user-provided. When `size` is 0,
+> > > an Oops occurs in `__iommu_dma_alloc_noncontiguous`, which is called
+> > > by both interfaces.
+> > > 
+> > > The root cause lies in the fact that `__iommu_dma_alloc_noncontiguous`
+> > > calls `kvcalloc`, The `count` parameter of `kvcalloc` is controlled by
+> > > the user-provided `size`, and when `size` is 0, `count` is also 0.
+> > > `__iommu_dma_alloc_noncontiguous` uses `if (!pages)` to check the
+> > > return value of `kvcalloc`, but it returns `ZERO_SIZE_PTR` instead of
+> > > `NULL` while `count==0`. This leads to a kernel Oops when `pages` is
+> > > dereferenced in subsequent operations,as the following trace:
+> > > 
+> > > kernel NULL pointer dereference at virtual address 0000000000000010.
+> > > Call trace:
+> > > sg_alloc_append_table_from_pages+0x208/0x430
+> 
+> So... what you're saying is that there's a bug in
+> sg_alloc_append_table_from_pages() where it can dereference more of "pages"
+> than "n_pages" says is valid?
+> 
+> Of course that's not to say that's the *only* issue that this scenario could
+> or would run into - indeed many allocation paths in various DMA API
+> implementations depend on get_order(size), and the kerneldoc explicitly
+> states that get_order(0) is undefined. So if you really think it's worth
+> formally accommodating zero-sized DMA API requests, rather than leaving them
+> as a nonsensical thing that drivers should obviously not do in the first
+> place, then iommu-dma is still not the logically appropriate place to do
+> that.
 
-On Wed, Jan 15, 2025 at 5:30=E2=80=AFPM Oleksii Kurochko
-<oleksii.kurochko@gmail.com> wrote:
->
-> Hi Stefano,
->
-> On 1/15/25 1:01 AM, Stefano Stabellini wrote:
->
-> +Oleksii
->
-> On Tue, 14 Jan 2025, Milan Djokic wrote:
->
-> From: Slavisa Petrovic <Slavisa.Petrovic@rt-rk.com>
->
-> This patch introduces initial support for running RISC-V as a Xen guest.
-> It provides the necessary infrastructure and stubs for Xen-specific
-> operations. Key changes include:
->
-> - Modifications to the RISC-V kernel to integrate Xen-specific hypercalls
->   and interfaces, with function implementations stubbed for future work.
-> - Introduction of Xen-specific headers for RISC-V, including event
->   handling, hypervisor interaction, and page management. Functions are
->   defined but not yet implemented.
-> - Stub implementations for memory management, grant tables, and context
->   switching in the Xen environment, allowing further development and
->   integration.
->
-> Signed-off-by: Milan Djokic <Milan.Djokic@rt-rk.com>
-> Signed-off-by: Slavisa Petrovic <Slavisa.Petrovic@rt-rk.com>
->
-> Hi Milan, Slavisa,
->
-> Thank you very much for your contribution! Which Xen tree are you using
-> for development?
->
-> They are using [1] and have separate branches on top of latest. So we are=
- in
-> sync. Also, if you are interested we have created a task/epics for this f=
-eature in
-> [1] so you could also check there some details:
-> 1. https://gitlab.com/groups/xen-project/people/olkur/-/epics/5
-> 2. https://gitlab.com/xen-project/people/olkur/xen/-/issues/12
->
->  I am asking because RISC-V support in Xen is still in
-> the process of being upstreamed, and [1] is the tree that consolidates
-> all patches currently on the to-be-upstreamed list.
->
-> While the specific Xen tree you are using is not particularly important
-> at this stage, and using [1] is not a requirement, I am asking because
-> it is essential to align on the hypervisor ABI, especially regarding any
-> details that have not yet been upstreamed. Specifically, is there
-> anything in this patch series that relies on features not yet upstream
-> in Xen?
->
-> There are few features but some things which are Rt-Tk's branch in [1] co=
-uld go
-> without waiting for these features to be upstreamed.
->
-> Thanks.
->
-> ~ Oleksii
->
-> [1] https://gitlab.com/xen-project/people/olkur/xen/-/tree/latest?ref_typ=
-e=3Dheads
+I got his dump stack now and it is a bug in his testing module where he
+is getting size from users and passing to DMA API as is.
 
-As Oleksii already explained, we are working in sync with his latest
-branch where most of the risc port is done.
-I would just add that this patch introduces kernel risc-v hypercall
-support on which only our branch on xen tree depends on. Therefore, it
-won't disrupt any functionality with current upstream Xen, it will
-just introduce kernel functionality which is not used from Xen side
-until our branch is merged upstream.
+Thanks
 
-Best regards,
-Milan
+> 
+> Thanks,
+> Robin.
+> 
+> > > sg_alloc_table_from_pages_segment+0x3c/0xa0
+> > > __iommu_dma_alloc_noncontiguous.constprop.0+0x130/0x278
+> > 
+> > Who is this user?
+> > grep sg_alloc_append_table_from_pages shows only 4 users:
+> > drivers/infiniband/core/umem.c
+> > drivers/vfio/pci/mlx5/cmd.c
+> > drivers/vfio/pci/virtio/migrate.c
+> > lib/scatterlist.c
+> > 
+> > First 3 users have constant size and it is not 0.
+> > The latter is used in wrapper sg_alloc_table_from_pages_segment(), which
+> > is used by DRM and that layer already was supposed to catch nr_pages == 0.
+> > 
+> > Thanks
+> > 
+> > > 
+> > > This commit addresses the issue by adding a check for the `size`
+> > > parameter in `__iommu_dma_alloc_noncontiguous`. If 0 is passed as `size`,
+> > > a warning is reported and `NULL` is returned. This approach clearly
+> > > indicates that the user-provided size might be illegal, helping users
+> > > adjust their programs. In contrast, using `ZERO_OR_NULL_PTR` to check the
+> > > return value of `kmalloc` (used by `kvcalloc` internally) does not
+> > > distinguish between insufficient memory and a zero-sized memory request.
+> > > 
+> > > Fixes: 0db2e5d18f76 ("iommu: Implement common IOMMU ops for DMA mapping")
+> > > 
+> > > Signed-off-by: Jiean He <hejiean@foxmail.com>
+> > > ---
+> > >   drivers/iommu/dma-iommu.c | 5 +++++
+> > >   1 file changed, 5 insertions(+)
+> > > 
+> > > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > > index 2a9fa0c8cc00..3c9c905e7a8f 100644
+> > > --- a/drivers/iommu/dma-iommu.c
+> > > +++ b/drivers/iommu/dma-iommu.c
+> > > @@ -956,6 +956,11 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+> > >   	    iommu_deferred_attach(dev, domain))
+> > >   		return NULL;
+> > > +	if (unlikely(size == 0)) {
+> > > +		dev_err(dev, "DMA alloc Zero-Sized memory is unsupported\n");
+> > > +		return NULL;
+> > > +	}
+> > > +
+> > >   	min_size = alloc_sizes & -alloc_sizes;
+> > >   	if (min_size < PAGE_SIZE) {
+> > >   		min_size = PAGE_SIZE;
+> > > -- 
+> > > 2.40.0.windows.1
+> > > 
+> 
