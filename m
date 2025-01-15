@@ -1,76 +1,75 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2086.outbound.protection.outlook.com [40.107.236.86])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2068.outbound.protection.outlook.com [40.107.243.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6B2E22F392
-	for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 06:56:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.86
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87D5622FDFF
+	for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 06:56:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.68
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736924190; cv=fail; b=K8sA0oZvDMAEjT7T4lGKU557QZU2fQwaWCaNp8PXUKWGrvpx4hIv2zyay7pVy+Zq1g0qJ3Uqb5sofiyTTccfoWrhYrNA/vhRoKvj50wpNNqI+4bB/qCyTLx2auZ839a198MLLN5pd7pREixTTGMtcyEvBCKYZqijureX7LylAbA=
+	t=1736924194; cv=fail; b=XXMoc0XG7THQVNsrZsJ3egsBtu6JgWtJfG4rVJRQaO8bUDA0t7ICbf+c0I//pUU76mCZ5ezBHHVpXZMEX6PYadpwYO4MDfna8teDQl3Ub2plmrnGQ4hJWl/qcKeHlt2bePvhMoLAeqoZ5Ivpx2QjZ+FYl8i7eLKA/4ObXssV6gA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736924190; c=relaxed/simple;
-	bh=gGG+Ob9axHFKueqYCMvRiTQ/0ifCTEwabJdfpCG92A4=;
+	s=arc-20240116; t=1736924194; c=relaxed/simple;
+	bh=NqQXmJSYlD9c/4Y3CZmZTLcdc6VSmBy1aFLc2Xxqalc=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qGBvL5+W10ex4ogOlakrk5qQhgIM/MzAS393YgPuBLtyjeG+cwgQzJlqCBfA9SE1DFLuQ8jorwltzLJIMYKlg5lD4pQk7CsOUgBnfFR/0GeSTXo9NAEzBjLS9lM+B8pElB/bKpUdz6AU2Gsgo0c+a9KCLhLKZ+92EcXr/mYcDZc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=IwmoOQMM; arc=fail smtp.client-ip=40.107.236.86
+	 MIME-Version:Content-Type; b=I7dG8llOqz7ULrDP3Xk+KhzmW4Hvy04cOAiUbDsyjhjUoDZub9V0eyEhjq0n7Jmf9tR/uvgyk6Ogol8HuIU+L/3gi8sJvCJvx6Bs9XGFZKamOVBcvO/tz5DPcE1vunIo8FGGuq7SVRGALLa1w/BWSuBAKgiE1svQrBjPyR040nY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FDqhrPlL; arc=fail smtp.client-ip=40.107.243.68
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="IwmoOQMM"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FDqhrPlL"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=M9sWTpJnX6YCnBtjjVIndI55HKHZvNaIi+8OPqJUidOsuiCaQgSG47Br3KOmepEJ8oPlNSpmhg+5VFwelMVdpDWyJOC33sbW3VG031PmxD6m2BXop7PwH2koh7NZtjY2CMTpqPzaJGzAFjm2PNNtrxlyKRmRebAeGgdmES5LIZlYeTLkisOMfzCelW+cTPtJgpeB0BlhN8kTUj5lS3PE2z82N7BmxlHwja5d1N2Vorh/mWZ0wn9iX1ti5NnO2ZItdgFoV/2L4wnspiMYRzoAfhMH+GFCM9T0XgH7DkSHwiNtPsFKxUxPyd5qNn22qr3IXCYeizFmoNsIQm7lWua2sQ==
+ b=ZltAM2JAdcxIaxv3Iu6BkLSmZGXmlFOALMGKGsaRoyo6S587krBmLwPBTekAcBqy64POZ0z4Hw2WNICNw84AuhMXP3N74vEmlOpI3xbpbFd7ZpK4UYw1FRQpOjYQdY6xHuAsFRQs4ou4MsPjqRHo0cVyuKMRZ1NFQHwj2C1ZMWrTHmE7+mphKqFUlNk5TA24CsmScKArYpzBR7apmjLqfpswUE3hbAVl+fgNNuTO8ayi24Yx1b37nuH7AKrXew3phxaS+Do+7Gg3WVox60PTvO17PqK5A94iuD7w5PdBlPw0nZ+9CCbgj7wRdP/mEr9KbzO525UlzS5BPHmkz9r7lA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aT782u/NwAmNLZaTLyF68p53BgKVwh74JsUJvLIPTIo=;
- b=L9SvpwTMXrb2XcnCpOKS+4X68CyUjSd0l3Fw+lKoPwEeApmNluZIYfwZV+zZU58t5LG7pP0e5NA930hz3NjNDfqzTcOS2Mjb1wN8n2kmpzTvIEchjxGwogoCiqMNnzG0rn1lJaha+ji3VWxH6kbU4HH+ew3Qd6MM6alYZIiER8wzQx8vvzEwirr/01fMneLvZUYypuoevTA8uwMwTDwefFZh2TPDQihpyTFRmJAMLzxAs2GC9F6rsxs2Oh54SAktlGiq44O5lRSj6XCi/umJz+CHzNdZBq5SXANfaprYz1Joq8ljdW0mvKAW+8bN7/0jWj226QHk5+W5TBx+cSDhfQ==
+ bh=7WxOhNPvTxLG01UPWDiJhW2cbn1SNq3rNnqi9KkRGpc=;
+ b=daak5DxBwAXaatuqYah8rbYF1Y2HR2ebhw/Xu3ah+Bo2KBdWDwp2JdWDwDoDBSVD5hoqh8z4ATyPhsKTT1TJ8CgM/LabxWna+HiF6tsEkkq3liV6JwwcQyP1oPHXzsZ9x1qxWQRjRNtNTQT3ofvxqXERmCslag0hQd84vrkvKGFab8N+I3JzlAm7DXaByVwe/qPP7N3a7LIpS5ICZ/0BEIRDWS3c24Q8V0XF0+TKzHxnOiMngD6mnBJqWm09p7VG6B8IeARYbS6PbOUBcswszOX1edx1VzvyMwxlR7DoYi+6y7K+tXSdCKeRFmVRMW8h+Y9ggVe6Hi82XYrcR85mFw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aT782u/NwAmNLZaTLyF68p53BgKVwh74JsUJvLIPTIo=;
- b=IwmoOQMMi8Fk+31l651EHOmneEG41o1XZO40JgOQGByd3FgaG99z3C7LyJ1QI3LMiUJIhseahQrRXnC5/fy11uLfnMDLEHkJ0B/qys2pvO7+2LEN2apDk2hdqKAcfpRaklvLPZtFdM9SBog1GC+xrlYiMsZ9tQMZ+R5PPSpaMhB7hxg/RyGyCsIcyV9GVPDO3zf1jIbJx3NaHzDXUjyaP3RQ/4kmMV76dCQJ3AJxFTd+UNLhXKFKC6slPeAM3BlX+rtNWL2JHTmLaddoxHoR1JO8sD4I2AjEUhTo2s7aaix/Bu/YUlSiV8/uI9I+THRWLo9NQiu8cHWxzgwhJC+sgA==
-Received: from BN9PR03CA0725.namprd03.prod.outlook.com (2603:10b6:408:110::10)
- by IA0PR12MB7556.namprd12.prod.outlook.com (2603:10b6:208:43c::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8335.18; Wed, 15 Jan
- 2025 06:56:25 +0000
-Received: from BL6PEPF0001AB74.namprd02.prod.outlook.com
- (2603:10b6:408:110:cafe::25) by BN9PR03CA0725.outlook.office365.com
- (2603:10b6:408:110::10) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8335.17 via Frontend Transport; Wed,
+ bh=7WxOhNPvTxLG01UPWDiJhW2cbn1SNq3rNnqi9KkRGpc=;
+ b=FDqhrPlLIjA13z95FY5GP+Q9zCCydvatIKFsgRGxxDh9472pKKXR4SwwpAEFzkRodbCsWZYd7vWL3nYwSNflOIwoqpi/D/Lx3Z11SR1VGzqvpoF7lZcH14ATpoL2oZ9Ic6wdXkxftZcGBYDzcz6ngy7v3vu6deOivgAeGK9CguA19G5OTKt9DN/DphSbFBb+eqTh/5hCGWPdRd+RAHGMn0ErCceo5X7BAtuzY+DntamnoeShFVVneD7M/nnGnlG2P73TvA9Th+I6nQgpKpQTK5l2MmHLtZUvnSknuFIlfAX715kiud4nFQJpCuH5eoUOHQeAwx7qJ2+qc3s0qkWdFw==
+Received: from BN1PR10CA0026.namprd10.prod.outlook.com (2603:10b6:408:e0::31)
+ by DS7PR12MB5814.namprd12.prod.outlook.com (2603:10b6:8:76::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8356.13; Wed, 15 Jan 2025 06:56:25 +0000
+Received: from BL6PEPF00020E62.namprd04.prod.outlook.com
+ (2603:10b6:408:e0:cafe::f9) by BN1PR10CA0026.outlook.office365.com
+ (2603:10b6:408:e0::31) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8356.12 via Frontend Transport; Wed,
  15 Jan 2025 06:56:25 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BL6PEPF0001AB74.mail.protection.outlook.com (10.167.242.167) with Microsoft
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BL6PEPF00020E62.mail.protection.outlook.com (10.167.249.23) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
  15.20.8356.11 via Frontend Transport; Wed, 15 Jan 2025 06:56:24 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 14 Jan
+ 2025 22:56:09 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 14 Jan
  2025 22:56:08 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 14 Jan
- 2025 22:56:07 -0800
 Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
- Transport; Tue, 14 Jan 2025 22:56:07 -0800
+ Transport; Tue, 14 Jan 2025 22:56:08 -0800
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: <jgg@nvidia.com>
 CC: <kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
 	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, <joro@8bytes.org>,
 	<will@kernel.org>, <robin.murphy@arm.com>
-Subject: [PATCH rc v2 1/2] iommufd/fault: Destroy response and mutex in iommufd_fault_destroy()
-Date: Tue, 14 Jan 2025 22:55:59 -0800
-Message-ID: <bc8bb13e215af27e62ee51bdba3648dd4ed2dce3.1736923732.git.nicolinc@nvidia.com>
+Subject: [PATCH rc v2 2/2] iommufd/fault: Use a separate spinlock to protect fault->deliver list
+Date: Tue, 14 Jan 2025 22:56:00 -0800
+Message-ID: <b727b09df331658f9bead42d6340e942e71a4cb3.1736923732.git.nicolinc@nvidia.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1736923732.git.nicolinc@nvidia.com>
 References: <cover.1736923732.git.nicolinc@nvidia.com>
@@ -85,91 +84,259 @@ Content-Type: text/plain
 X-NV-OnPremToCloud: AnonymousSubmission
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB74:EE_|IA0PR12MB7556:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0ec752a2-99ee-4fa1-9b0a-08dd3531ba2d
+X-MS-TrafficTypeDiagnostic: BL6PEPF00020E62:EE_|DS7PR12MB5814:EE_
+X-MS-Office365-Filtering-Correlation-Id: abced9ce-e999-45ff-26af-08dd3531ba40
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|82310400026|36860700013|1800799024|376014|7053199007;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Rs5yZ2c+UJd1oC+ylxZrZMJnX2WNaHt12jwMHb3ol8k+M0QAlcWn1kQBEIhd?=
- =?us-ascii?Q?CZlxC1kD5uHcQH+lStFpaQ9hzg3f5XQc5VoEAPimFzsahtLJlQWVkgEqQDgG?=
- =?us-ascii?Q?yuU2rtAYLG25XnSnmeMsdi7YDrGVZ8TqwCFPwjHu1+i0SmPhTLrylPq7GbWr?=
- =?us-ascii?Q?GWhSk0XAJO/inLMLH1hVZTbE7B2IPkY8k0X8iwjLx6gIdXnuqG9q1j69qnse?=
- =?us-ascii?Q?0AriYQ3mQNnNai42sONKxpl6ZbhYOhI5r+Iv3p7VaiiZ+nsjSzjxWudszR5T?=
- =?us-ascii?Q?M7enV4SgvkZ5BZPizBuQHY1e0OQJt1JJV9f6Vq9a2+HJjTAh22EVy5j1nMbB?=
- =?us-ascii?Q?WkdahkztQq7BtbvMXv1uB4TYDhhGd1S9MUFYRtT+2sUrlnPjdde0tF6JBIay?=
- =?us-ascii?Q?IB6ifVUkqCA4aJk9DObJuFWfvAzJQk6bXgWkxsD4YddyWkBw3ZMFCdhRMWW0?=
- =?us-ascii?Q?VVrOCGIwdhjBlclPhP1kuUp6LmsslGb/SltEV1cwJHMID8yplzfjT7s0gzH6?=
- =?us-ascii?Q?zZCuW2nmXxcyUzAXno1rA5oC6tdnt0geDO+xY2JQvolU2dkC9KAgaqiSJ6NH?=
- =?us-ascii?Q?iREL2n598AyrwScTDOI9cxlvDmykk66rYiyR2SZYHzc9Zgk28LrmWaiVSi4+?=
- =?us-ascii?Q?GID+HLoLaHJl1BToLJGdlrZH8ajZT/xV42nmnt49/pDyF8WAJJElJ+uxi2qd?=
- =?us-ascii?Q?T1OFKs+H8Qa3IzNcdavBkmoAYKrrGwoSFvtKk1sSu5lsM8kgrjfaBM/Aebg2?=
- =?us-ascii?Q?cpVPRXQWo+GB81Q9oGRlNjxuU0SFQy0bQkC/RT0ilzr3XKnMDxAr2yaofB7x?=
- =?us-ascii?Q?OYvBbgnFUyeZQ/E6WXtFsGgMa8EOvmy1CrZHk+PdzuapQtT1ZAK5sWqR8xIw?=
- =?us-ascii?Q?UBxu6rWT1XyQa94dbLGObO0G7K+otwZwCmyK9YS6XdpS2vwOe5LX7Y+/5oVm?=
- =?us-ascii?Q?oxBXCdx6ByKcOSq0DOAjx3pk5tK+SsPtyawFeiiMqnB/WXQFMDO7NWZnVLrR?=
- =?us-ascii?Q?n2kSbY0+RASCxcsRvDrg4AsyQIRrvwETXHpffs5eH9EIjV9FbwR/ndUle/gQ?=
- =?us-ascii?Q?7q74N/igpwq1U8ayuUY89dKk0Y92fny9Y0VepAdFEbLGBhl2DktYRCbgzgUg?=
- =?us-ascii?Q?LnIdzmfV2Xwml+MxDngadaPM+m4U6BLo4EU62FTt7oZ8io/z2vf9KFOzqNRg?=
- =?us-ascii?Q?rf1FPecVehVdx9wEGQz0KFfiKn4QJ9OcKxd8p1Q+zs3KX7a9YMkF8FG54nT1?=
- =?us-ascii?Q?/QLv7ZiBuFeOEWbqn4/tQTkuNLdmoPbBIBSd2e8MyAq0CfTxlOaOQog+8JJI?=
- =?us-ascii?Q?ZF2ywkAoTWCc5ICBW7/UO1WvCVWjmX0Kl4hW9q5R6bcxPNPunspYx9ptkda3?=
- =?us-ascii?Q?7fpa7qM0l3/vPvpkmu1ha8pdtjnwvDesIisOWMWcoRGt7g7fMmRndXq2tdDJ?=
- =?us-ascii?Q?1K2Kdudmgaal1WUhef3HKEMj8UE+Q4WrHrACpFXxTdsP8KsA/7USR+/7dPFy?=
- =?us-ascii?Q?JFRRk0y8C5OHsm8=3D?=
+	=?us-ascii?Q?8E+jhWiwbsTJtupYbXL1xFbdCPbSon53SXAbE6qXobFzyIHkmh8wGLXIK2/w?=
+ =?us-ascii?Q?fTJ1ePYT1Q1lsLrSoKl0NgPbiJEZ2yQxE41vh51YWsnWwpi/SGve2+N/kfqQ?=
+ =?us-ascii?Q?VIPqyOdvy6lbFtuoomV5I5RgzJKpkJl1khyviBdTGUcRN05NXrjXHtc4ErSe?=
+ =?us-ascii?Q?L0a6qzP9YpOvy4ziup1/0mUNasrZ8kKVB52S7culT5bWrpyxGKsWMep2esa1?=
+ =?us-ascii?Q?I45nAXATsVS0ospXTUorXW9AoZLScljqk5ik+PlpeDmdVA8es5i9cTEqHDcC?=
+ =?us-ascii?Q?g8OaFSMw+8DhBb/dJIGkX6clf47rTbRvh8McBS4Z2gSwaxhwx1oVv/M33P2E?=
+ =?us-ascii?Q?hFqiKgomnkGpwBYJUGGHNqYQ44MhMPeQTgH5TVzZO/0VBz5PchjaBKT1SgUC?=
+ =?us-ascii?Q?RYhMHGnlNGczs1OmxTe/GmxPWipfT2ZFVAb/6Ml+SS5FtGHxmYN0UHgCFz0b?=
+ =?us-ascii?Q?zdEf4RHRsrmKqA8xT4ylDIzISK1zue7kqE6nz6VsOQTRUZLPuAYwKAqmYbXO?=
+ =?us-ascii?Q?kxjvmBcIVSNKoOw0+pajm0Y8A4wvuI236HZGi63xKAX60cyilMaqSv1eyV6E?=
+ =?us-ascii?Q?gCIZ2Z07gFNTm8zP1wdlGdPXAAPG2RMW2xWJh0qEcgazCr92pbrkwDUfR3GA?=
+ =?us-ascii?Q?tkO+KlihzZTBF4da/TAQSjmc4YqEC6p6pTFk/han7MqXkDDwxOVKOB9sU+WV?=
+ =?us-ascii?Q?RefoJFq6Fc3tVIv9gMabWkOkxztm6IzOuYmnSD1EZd2qLnQd4G3Sj/L5Etk6?=
+ =?us-ascii?Q?cKRCGuzpG7hacpo8E/Wt0EYk6B3PzqDjudI3WtKKkoPKv/MB6mN+VWn1culZ?=
+ =?us-ascii?Q?2J76mTUi1waM1iR3NqfnOIpYXXoMpRTTHbjTKCVggfk6s8j1TktQfTji3mG+?=
+ =?us-ascii?Q?OakpQswczA4Frbba90lU8gd+VqM3tPVcT7qPKT1fu7zS0vLan9y1uoGb1+4v?=
+ =?us-ascii?Q?nyVAZivnyYyrcX5FsrUuP4J+cv+Gnafr407WdqrS1vLJcNl6cIIukCNJfZ8T?=
+ =?us-ascii?Q?dvyRXn3E60I1jIJKjk8y9v1SuVL+/deVh+/67ccgcQNg90Ds9AsXzZFhHHD3?=
+ =?us-ascii?Q?UDSLHklO1KR4byr1cjN9EOC2VmrYVcw7UGUtaHqEKXroWYcwV6RFGBWrzOIA?=
+ =?us-ascii?Q?q13B1duykAJqtfV3+/lAWkTrWRzZlJmHuO9pbvvy2QRZaVvO8mhOXOfZjlV0?=
+ =?us-ascii?Q?cE4mT2p8yktr42FldH7IOi38w+AT1P4xo9sWCiXUWPMHtIFDCxh7xV1BR2B+?=
+ =?us-ascii?Q?2uEq+AfofFPK6INfoOaGprnSa0Vi55TxO4TQOPEq6aYcIl1+7kNu+l5ss7kc?=
+ =?us-ascii?Q?ea3TsiaiekQtR2GHM0or0P/PNXDnN61s2MN3g0jHCFk4GuWZdY3cVckfWwXk?=
+ =?us-ascii?Q?xTl1fYGfZkW8kZIB57FjcDlpBEJMjSNNnhhHHue49hjaKdcg0zbR5RmvH3+t?=
+ =?us-ascii?Q?yqIbOeWtc1y3lwXAQGTB75Q+EBfwR+DQWtv19px7MpKvuY81HY7nluKwLmAV?=
+ =?us-ascii?Q?obQTR87AdWoBn+o=3D?=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(1800799024)(376014)(7053199007);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(1800799024)(376014)(7053199007);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jan 2025 06:56:24.7511
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jan 2025 06:56:24.8883
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0ec752a2-99ee-4fa1-9b0a-08dd3531ba2d
+X-MS-Exchange-CrossTenant-Network-Message-Id: abced9ce-e999-45ff-26af-08dd3531ba40
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF0001AB74.namprd02.prod.outlook.com
+	BL6PEPF00020E62.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7556
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5814
 
-Both were missing in the initial patch.
+The fault->mutex was to serialize the fault read()/write() fops and the
+iommufd_fault_auto_response_faults(), mainly for fault->response. Also,
+it was conveniently used to fence the fault->deliver in poll() fop and
+iommufd_fault_iopf_handler().
+
+However, copy_from/to_user() may sleep if pagefaults are enabled. Thus,
+they could take a long time to wait for user pages to swap in, blocking
+iommufd_fault_iopf_handler() and its caller that is typically a shared
+IRQ handler of an IOMMU driver, resulting in a potential global DOS.
+
+Instead of resuing the mutex to protect the fault->deliver list, add a
+separate spinlock to do the job, so iommufd_fault_iopf_handler() would
+no longer be blocked by copy_from/to_user().
+
+Provide two list manipulation helpers for fault->deliver:
+ - Fetch the first iopf_group out of the fault->deliver list
+ - Restore an iopf_group back to the head of the fault->deliver list
+Then, replace list_first_entry and list_for_each with those.
+
+Lastly, move the fault->mutex closer to the fault->response and update
+its kdoc accordingly.
 
 Fixes: 07838f7fd529 ("iommufd: Add iommufd fault object")
 Cc: stable@vger.kernel.org
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 ---
- drivers/iommu/iommufd/fault.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iommu/iommufd/iommufd_private.h | 29 ++++++++++++++--
+ drivers/iommu/iommufd/fault.c           | 46 ++++++++++++++-----------
+ 2 files changed, 52 insertions(+), 23 deletions(-)
 
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index b6d706cf2c66..0b1bafc7fd99 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -443,14 +443,39 @@ struct iommufd_fault {
+ 	struct iommufd_ctx *ictx;
+ 	struct file *filep;
+ 
+-	/* The lists of outstanding faults protected by below mutex. */
+-	struct mutex mutex;
++	spinlock_t lock; /* protects the deliver list */
+ 	struct list_head deliver;
++	struct mutex mutex; /* serializes response flows */
+ 	struct xarray response;
+ 
+ 	struct wait_queue_head wait_queue;
+ };
+ 
++/* Fetch the first node out of the fault->deliver list */
++static inline struct iopf_group *
++iommufd_fault_deliver_fetch(struct iommufd_fault *fault)
++{
++	struct list_head *list = &fault->deliver;
++	struct iopf_group *group = NULL;
++
++	spin_lock(&fault->lock);
++	if (!list_empty(list)) {
++		group = list_first_entry(list, struct iopf_group, node);
++		list_del(&group->node);
++	}
++	spin_unlock(&fault->lock);
++	return group;
++}
++
++/* Restore a node back to the head of the fault->deliver list */
++static inline void iommufd_fault_deliver_restore(struct iommufd_fault *fault,
++						 struct iopf_group *group)
++{
++	spin_lock(&fault->lock);
++	list_add(&group->node, &fault->deliver);
++	spin_unlock(&fault->lock);
++}
++
+ struct iommufd_attach_handle {
+ 	struct iommu_attach_handle handle;
+ 	struct iommufd_device *idev;
 diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
-index 1fe804e28a86..685510224d05 100644
+index 685510224d05..8c82338ea303 100644
 --- a/drivers/iommu/iommufd/fault.c
 +++ b/drivers/iommu/iommufd/fault.c
-@@ -213,6 +213,7 @@ void iommufd_fault_destroy(struct iommufd_object *obj)
+@@ -102,17 +102,18 @@ static void iommufd_auto_response_faults(struct iommufd_hw_pagetable *hwpt,
+ 					 struct iommufd_attach_handle *handle)
  {
- 	struct iommufd_fault *fault = container_of(obj, struct iommufd_fault, obj);
- 	struct iopf_group *group, *next;
-+	unsigned long index;
+ 	struct iommufd_fault *fault = hwpt->fault;
+-	struct iopf_group *group, *next;
++	struct iopf_group *group;
+ 	unsigned long index;
  
- 	/*
- 	 * The iommufd object's reference count is zero at this point.
-@@ -225,6 +226,13 @@ void iommufd_fault_destroy(struct iommufd_object *obj)
+ 	if (!fault)
+ 		return;
+ 
+ 	mutex_lock(&fault->mutex);
+-	list_for_each_entry_safe(group, next, &fault->deliver, node) {
+-		if (group->attach_handle != &handle->handle)
++	while ((group = iommufd_fault_deliver_fetch(fault))) {
++		if (group->attach_handle != &handle->handle) {
++			iommufd_fault_deliver_restore(fault, group);
+ 			continue;
+-		list_del(&group->node);
++		}
  		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
  		iopf_free_group(group);
  	}
-+	xa_for_each(&fault->response, index, group) {
-+		xa_erase(&fault->response, index);
-+		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
-+		iopf_free_group(group);
-+	}
-+	xa_destroy(&fault->response);
-+	mutex_destroy(&fault->mutex);
- }
+@@ -212,7 +213,7 @@ int iommufd_fault_domain_replace_dev(struct iommufd_device *idev,
+ void iommufd_fault_destroy(struct iommufd_object *obj)
+ {
+ 	struct iommufd_fault *fault = container_of(obj, struct iommufd_fault, obj);
+-	struct iopf_group *group, *next;
++	struct iopf_group *group;
+ 	unsigned long index;
  
- static void iommufd_compose_fault_message(struct iommu_fault *fault,
+ 	/*
+@@ -221,8 +222,7 @@ void iommufd_fault_destroy(struct iommufd_object *obj)
+ 	 * accessing this pointer. Therefore, acquiring the mutex here
+ 	 * is unnecessary.
+ 	 */
+-	list_for_each_entry_safe(group, next, &fault->deliver, node) {
+-		list_del(&group->node);
++	while ((group = iommufd_fault_deliver_fetch(fault))) {
+ 		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
+ 		iopf_free_group(group);
+ 	}
+@@ -265,18 +265,21 @@ static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
+ 	if (*ppos || count % fault_size)
+ 		return -ESPIPE;
+ 
+-	mutex_lock(&fault->mutex);
+-	while (!list_empty(&fault->deliver) && count > done) {
+-		group = list_first_entry(&fault->deliver,
+-					 struct iopf_group, node);
+-
+-		if (group->fault_count * fault_size > count - done)
++	while ((group = iommufd_fault_deliver_fetch(fault))) {
++		if (done >= count ||
++		    group->fault_count * fault_size > count - done) {
++			iommufd_fault_deliver_restore(fault, group);
+ 			break;
++		}
+ 
++		mutex_lock(&fault->mutex);
+ 		rc = xa_alloc(&fault->response, &group->cookie, group,
+ 			      xa_limit_32b, GFP_KERNEL);
+-		if (rc)
++		if (rc) {
++			mutex_unlock(&fault->mutex);
++			iommufd_fault_deliver_restore(fault, group);
+ 			break;
++		}
+ 
+ 		idev = to_iommufd_handle(group->attach_handle)->idev;
+ 		list_for_each_entry(iopf, &group->faults, list) {
+@@ -285,15 +288,15 @@ static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
+ 						      group->cookie);
+ 			if (copy_to_user(buf + done, &data, fault_size)) {
+ 				xa_erase(&fault->response, group->cookie);
++				mutex_unlock(&fault->mutex);
++				iommufd_fault_deliver_restore(fault, group);
+ 				rc = -EFAULT;
+ 				break;
+ 			}
+ 			done += fault_size;
+ 		}
+-
+-		list_del(&group->node);
++		mutex_unlock(&fault->mutex);
+ 	}
+-	mutex_unlock(&fault->mutex);
+ 
+ 	return done == 0 ? rc : done;
+ }
+@@ -349,10 +352,10 @@ static __poll_t iommufd_fault_fops_poll(struct file *filep,
+ 	__poll_t pollflags = EPOLLOUT;
+ 
+ 	poll_wait(filep, &fault->wait_queue, wait);
+-	mutex_lock(&fault->mutex);
++	spin_lock(&fault->lock);
+ 	if (!list_empty(&fault->deliver))
+ 		pollflags |= EPOLLIN | EPOLLRDNORM;
+-	mutex_unlock(&fault->mutex);
++	spin_unlock(&fault->lock);
+ 
+ 	return pollflags;
+ }
+@@ -394,6 +397,7 @@ int iommufd_fault_alloc(struct iommufd_ucmd *ucmd)
+ 	INIT_LIST_HEAD(&fault->deliver);
+ 	xa_init_flags(&fault->response, XA_FLAGS_ALLOC1);
+ 	mutex_init(&fault->mutex);
++	spin_lock_init(&fault->lock);
+ 	init_waitqueue_head(&fault->wait_queue);
+ 
+ 	filep = anon_inode_getfile("[iommufd-pgfault]", &iommufd_fault_fops,
+@@ -442,9 +446,9 @@ int iommufd_fault_iopf_handler(struct iopf_group *group)
+ 	hwpt = group->attach_handle->domain->fault_data;
+ 	fault = hwpt->fault;
+ 
+-	mutex_lock(&fault->mutex);
++	spin_lock(&fault->lock);
+ 	list_add_tail(&group->node, &fault->deliver);
+-	mutex_unlock(&fault->mutex);
++	spin_unlock(&fault->lock);
+ 
+ 	wake_up_interruptible(&fault->wait_queue);
+ 
 -- 
 2.43.0
 
