@@ -1,109 +1,154 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE9081D63DF
-	for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 19:12:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53CF41D54E3
+	for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 19:20:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736968365; cv=none; b=C2ZtmC17sBk48W6qmv2Pf3fZX9winwZsRM0aYlBa+N7WDdf5GYSviKmk7xFfOcSiSWRKygIsRTH2Agb1l0hKfPeQ+15X9Nv3FnSHGlmoPbKQE0hg7FBcLOLy31cYsFxRGIjUTwx0zJm//nGwajfwLUEy36iBIInen3WNa0aXgpQ=
+	t=1736968813; cv=none; b=gQZNJQN+GX4nNbr4kFQC+BgbWhn7BLI4H69vsDelM6gfSMLSwhaLouGDpPYT9XR28fjwgTqtP5mEC94PCETEWQls6RMB5iyf2TeQEZe916XCbWGDLAKBXMHnEZUMSeD8S1pzt/Gc1RVfO9U5blaT2lGOr+5s4nYIRlL6M04vC9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736968365; c=relaxed/simple;
-	bh=B/gzOdGkeGxzAG0y8FfSoGbbohfBxqKo7MqsY7zNrDw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=N/QlZC6WU/wU/kpYIK/UbqesgVy6Wq0wd0/ABmMV+z2FXUsGRo/vLOnXZcl/MwLUlEgJZZ7mM5IuLtdmx26MXNrScBoukjQ5NV9wKXR2/shYF7fvSa84ZE+RWupzbRD5z9WjABDgaumAM2Q2pHT8IyHf44vypUlIPcFcnuOzcRw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ofn7vrpd; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1736968813; c=relaxed/simple;
+	bh=FfdfdoVOmnHCEP6olqKJcwvaVKKmlmjCha6T3kGRyYc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Qb/XRu6cJKHYvML9FR4f+hhfdPk/6ftpni/nmvph2Lx74t+RPyDobrJ36ZQX/QcFCp5c81kxElrAOTsaTl5LzpOXoyLmdWFb2TI7SEsNa4E/HQt2JBhyHcv6EQ8MIiBpWBUpTMUOHrNpCFvKwqdi8YDIB5fbaFMzTCHG7b72fBA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=emBj9cVC; arc=none smtp.client-ip=209.85.219.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ofn7vrpd"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-467a63f5d1cso1574371cf.0
-        for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 11:12:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="emBj9cVC"
+Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-6dcf63155b0so1281286d6.1
+        for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 11:20:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1736968362; x=1737573162; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/4oGFxCwPaJgAdqTBVjzj8myjSC006R3VVcxomH2jWc=;
-        b=Ofn7vrpdVUjYuxof92udIu+NM4DYYrQgHeKxLb0MLnOKH1677GnrmUMunQ4833a+Tq
-         az2MAAw845UP/F22RTfjM4fS2xr4roHu0ovVIWRoMHuqXXLUTmUiUMK9H/gFZUQ2FTsC
-         gNY6v+ptl0pZzLly+rgwb242ZgM7pVic8jmjUzt/VgWM+BwSDPCAefl0IzafO8gkC/s4
-         adRBFCc0LvbqHMZiQzIL2B5765iXBqo7/qLUGbjG9W8NQmbhS808UP7U+F8fjPvgV7Ti
-         mFLDzh6gHJhoJRgpytSE+B+V/B2QGdV/VFPDePgSqIk8/7n/Y3B2eA1PCAtZ6GlxLafD
-         t09w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736968362; x=1737573162;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1736968810; x=1737573610; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/4oGFxCwPaJgAdqTBVjzj8myjSC006R3VVcxomH2jWc=;
-        b=hNbnmAddJzkmmD6Wr4597eWwgliPdosBe28CRaKziyEBUApw/3F+yCfEZovrUIAAUe
-         uXsuHXCGgOJ5AZhexOrm/ZaIYg+9mWRyJP+8X0DtU4PU18QMKo9+eMQBuxXpwDvvRK5X
-         MPF3P2bcvwvP8HjCDIKOsUGXdiAreyZ9nZGORhgau1cT2DcX3AIq1H4j0ii0N0P4GLxc
-         IpD2aN9BcEHG6JwO5YMlL7YJfqth+T41hEwVVXVX/qEw66NEW0FxC3a2spq/c7mRVSq1
-         7nc2uqVfdreZd+jxyVld7hoCtq1ML3Cm6rG/7BuIAATGVMBNKyYqRNavRs+fxKRPbilx
-         s55A==
-X-Forwarded-Encrypted: i=1; AJvYcCVnPZJdTVQcMg4W8FMK8kGNBBtq29K1rq0yt4Zup1bmQXxNgoqBcLlpDZzA7Sk6GglYeRLTXg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwU8NpXcDgKHA4bTpvTX/GSh/Gwuwogu89wZ0p73G7nb+6dNDNe
-	tzleeNruJAEQRCuwAH70uktZHsGnMG36i76xYRkVMyOUmFePqokTjTv95euulQs=
-X-Gm-Gg: ASbGncvpRFMgqQ7sSdcM9un7jA/7Bo9gNHfOoEZS+VLK6yspTxRmMQOI541uXSyzaZC
-	Jjw2bXCxbom77sPLWKkfpYrSWk2z+bb8UIkgQgjsMyBsIrE6WjgHd3Ul+QvIDj1mxb7sjWOSHuC
-	TwD8Qgq1hW2006xx3rJvFhWecawTQRX0gvkXom+6pk3RPk92B/rdhZPnh5hkaVM9Lyv7yNLuc2X
-	kJVFf5fRZKrfD+Ym5TOJxsb+d5kqfhehrdy/PjaMQej5OX9ClO2Gg6oo7LEjTtxbPJDu4n8gxo6
-	lPdT98YbiWFZlUOVEDkJN3UOwIzqPw==
-X-Google-Smtp-Source: AGHT+IGLgsr87VLlZ/6vxEgew2f6ev8/p69ziLEOON6TEwqWnOVVTirBJBkB/bFj8Dm/enP76kSGnA==
-X-Received: by 2002:a05:622a:1a96:b0:462:ea22:33bb with SMTP id d75a77b69052e-46c7107aa17mr104417681cf.38.1736968361749;
-        Wed, 15 Jan 2025 11:12:41 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-46c873de559sm67648981cf.78.2025.01.15.11.12.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jan 2025 11:12:41 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tY8oi-00000002pPE-1jhH;
-	Wed, 15 Jan 2025 15:12:40 -0400
-Date: Wed, 15 Jan 2025 15:12:40 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Yong Wu <yong.wu@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-	linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH] iommu: Use str_enable_disable-like helpers
-Message-ID: <20250115191240.GA650389@ziepe.ca>
-References: <20250114192642.912331-1-krzysztof.kozlowski@linaro.org>
+        bh=yxOLisM/r2vqci17iimcnJ3+oT6PlH7eXAcAxS9wH8I=;
+        b=emBj9cVClIAJ8JdHaJEU0qRC5L78kEChM0md+158mE0dvUYE0cQY+ZSoSmuWNfT01F
+         Sh2HThIA2URdCKlMr48LfBV8M8GRh3TFmF/YkiXtH5Q9gRittc6c6TLD2QcYK12gu/rw
+         dHeh4PZlQHyza876iUti99BVDC/lk+rBohdZ2ldiWaYcJvNDVtUGpM7bu1vWSK84YqHZ
+         RKzIvpHvYqwz+Bj9px4RPCi2BuBWOntBJfCtQXvm5BKL4wfTjHQc3tKynSMgfFAnWh1v
+         ONR7lCZk2bEHXAv89PunQC0TeP6P8WedoaMbUNsoPp46CADadFRjHhuwsKbZEPg9zx4r
+         4fnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736968810; x=1737573610;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yxOLisM/r2vqci17iimcnJ3+oT6PlH7eXAcAxS9wH8I=;
+        b=CPhcPdRWuK4Uii17WjxvYsxrBcMjFd+5kniADnyUeet8Qkv0KghREz8M2q5OiAGb1/
+         svQ7R/PXDwABzbTqilS4oZpy8vTtV4pXjVoNSoA5HVekzTkR2Ks1GpbvJfQkMwWvwwTy
+         ZFYKWb8cLd4SPYKxJ2gcTdUSIpnHCfUutOqHpEKw7AiVWqatzZZkBoRdFEEtXUt+emM/
+         wKg0JFmEoYXkw9wrmPbFfOpJ7gW6f7PbGjq0lOtHWO8NB7KfdyJanWqzwr0YmG6owCdr
+         PsEvgB1WMmtEPgm2QV3DNmpf7zx0vEbOlDP+Ptyl6KoZs0+a3rJndCurFlircm9DrcPJ
+         /U+A==
+X-Forwarded-Encrypted: i=1; AJvYcCVjbfT+cQxDwcFdIoiqj6vxOxf48ZJFyIozZ1FCQSrLQfQquq3qu3kCXDih5WTyZvSxeDuIcg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyVN/GIn5CZ+m26kJ1AxZ+DLlDbW9EcaRak8pKo8hwijBUdvGVX
+	Y4c6/XVfG5KbB/TNA0Yv7HOcCjAGsjnVs8Wux5TF0oi2INMQ3oxjbDctBrMj86KkrpEHMPfcaQz
+	pcA+LHfR3Kwp13YJt8OHLdxRs0p0=
+X-Gm-Gg: ASbGncvj/I9q5RQWEuA4HR5oCuiuDlmW7eywLG8UBWw1aTCUY0rUzIYHmqOYAuFrS/U
+	f91c7dEmb1PFCAf3PuPk3zN0xBk2OunAfcMkV6g==
+X-Google-Smtp-Source: AGHT+IGcOD+cwuWLZQkHOERr/i/5IgCk1JWHnGSSNWX5DKVOVQdU9aSL/egf0MIChEkPIlmVmG4Q/k0vSx6KgLYio+A=
+X-Received: by 2002:a05:6214:3c8c:b0:6df:8c25:2c81 with SMTP id
+ 6a1803df08f44-6df9b1d0b5emr530159576d6.5.1736968810243; Wed, 15 Jan 2025
+ 11:20:10 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250114192642.912331-1-krzysztof.kozlowski@linaro.org>
+References: <e4a649a7fdfc8fcf5f48a0bc4e76e5d546078083.1736868605.git.Slavisa.Petrovic@rt-rk.com>
+ <alpine.DEB.2.22.394.2501141554170.2684657@ubuntu-linux-20-04-desktop> <2f1432e6-0d27-48fd-b034-475284f14233@gmail.com>
+In-Reply-To: <2f1432e6-0d27-48fd-b034-475284f14233@gmail.com>
+From: =?UTF-8?B?TWlsYW4gxJBva2nEhw==?= <milandjokic1995@gmail.com>
+Date: Wed, 15 Jan 2025 20:20:00 +0100
+X-Gm-Features: AbW1kvYPm3yU6yFTdo5RO9-y77hSL0M_d4qB1E2QaVvMAqTHQihGuVHlucVKfps
+Message-ID: <CAKp59VEOiXo+OKwPNiomtXNCsfDURCXaDktooi5JSoTSdhc90w@mail.gmail.com>
+Subject: Re: [PATCH] riscv: Add initial Xen guest support for RISC-V
+To: Oleksii Kurochko <oleksii.kurochko@gmail.com>, Stefano Stabellini <sstabellini@kernel.org>
+Cc: linux-riscv@lists.infradead.org, paul.walmsley@sifive.com, 
+	palmer@dabbelt.com, aou@eecs.berkeley.edu, jgross@suse.com, 
+	oleksandr_tyshchenko@epam.com, Slavisa.Petrovic@rt-rk.com, 
+	Milan.Djokic@rt-rk.com, rafael.j.wysocki@intel.com, sunilvl@ventanamicro.com, 
+	takakura@valinux.co.jp, linux-kernel@vger.kernel.org, 
+	xen-devel@lists.xenproject.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jan 14, 2025 at 08:26:42PM +0100, Krzysztof Kozlowski wrote:
-> Replace ternary (condition ? "enable" : "disable") syntax with helpers
-> from string_choices.h because:
-> 1. Simple function call with one argument is easier to read.  Ternary
->    operator has three arguments and with wrapping might lead to quite
->    long code.
-> 2. Is slightly shorter thus also easier to read.
-> 3. It brings uniformity in the text - same string.
-> 4. Allows deduping by the linker, which results in a smaller binary
->    file.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 ++-
->  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 3 ++-
->  drivers/iommu/mtk_iommu.c                   | 9 +++++----
->  drivers/iommu/mtk_iommu_v1.c                | 3 ++-
->  drivers/iommu/rockchip-iommu.c              | 3 ++-
->  5 files changed, 13 insertions(+), 8 deletions(-)
+Hello Stefano, Oleksii
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+On Wed, Jan 15, 2025 at 5:30=E2=80=AFPM Oleksii Kurochko
+<oleksii.kurochko@gmail.com> wrote:
+>
+> Hi Stefano,
+>
+> On 1/15/25 1:01 AM, Stefano Stabellini wrote:
+>
+> +Oleksii
+>
+> On Tue, 14 Jan 2025, Milan Djokic wrote:
+>
+> From: Slavisa Petrovic <Slavisa.Petrovic@rt-rk.com>
+>
+> This patch introduces initial support for running RISC-V as a Xen guest.
+> It provides the necessary infrastructure and stubs for Xen-specific
+> operations. Key changes include:
+>
+> - Modifications to the RISC-V kernel to integrate Xen-specific hypercalls
+>   and interfaces, with function implementations stubbed for future work.
+> - Introduction of Xen-specific headers for RISC-V, including event
+>   handling, hypervisor interaction, and page management. Functions are
+>   defined but not yet implemented.
+> - Stub implementations for memory management, grant tables, and context
+>   switching in the Xen environment, allowing further development and
+>   integration.
+>
+> Signed-off-by: Milan Djokic <Milan.Djokic@rt-rk.com>
+> Signed-off-by: Slavisa Petrovic <Slavisa.Petrovic@rt-rk.com>
+>
+> Hi Milan, Slavisa,
+>
+> Thank you very much for your contribution! Which Xen tree are you using
+> for development?
+>
+> They are using [1] and have separate branches on top of latest. So we are=
+ in
+> sync. Also, if you are interested we have created a task/epics for this f=
+eature in
+> [1] so you could also check there some details:
+> 1. https://gitlab.com/groups/xen-project/people/olkur/-/epics/5
+> 2. https://gitlab.com/xen-project/people/olkur/xen/-/issues/12
+>
+>  I am asking because RISC-V support in Xen is still in
+> the process of being upstreamed, and [1] is the tree that consolidates
+> all patches currently on the to-be-upstreamed list.
+>
+> While the specific Xen tree you are using is not particularly important
+> at this stage, and using [1] is not a requirement, I am asking because
+> it is essential to align on the hypervisor ABI, especially regarding any
+> details that have not yet been upstreamed. Specifically, is there
+> anything in this patch series that relies on features not yet upstream
+> in Xen?
+>
+> There are few features but some things which are Rt-Tk's branch in [1] co=
+uld go
+> without waiting for these features to be upstreamed.
+>
+> Thanks.
+>
+> ~ Oleksii
+>
+> [1] https://gitlab.com/xen-project/people/olkur/xen/-/tree/latest?ref_typ=
+e=3Dheads
 
-Jason
+As Oleksii already explained, we are working in sync with his latest
+branch where most of the risc port is done.
+I would just add that this patch introduces kernel risc-v hypercall
+support on which only our branch on xen tree depends on. Therefore, it
+won't disrupt any functionality with current upstream Xen, it will
+just introduce kernel functionality which is not used from Xen side
+until our branch is merged upstream.
+
+Best regards,
+Milan
