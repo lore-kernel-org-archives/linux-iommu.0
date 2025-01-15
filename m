@@ -1,149 +1,183 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from relay.smtp-ext.broadcom.com (relay.smtp-ext.broadcom.com [192.19.144.209])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFDCD86350
-	for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 19:23:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 522FC1D86F2
+	for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 19:57:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.19.144.209
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736969004; cv=none; b=YyjNRvL4V6TWIRsLujD0cfksqNQggoNlenTD712RDy5m0cMVB0nlnjyLzqZaJNDcLXg84NpUMt+mhQg/Tx4+Bx3wQCy8DYPrH+MX8GHm00zN04bWj2wz2gFjCbHMtqfnYu/erMQPTg/TnfMbRgARyVLeclVBKpWaGq82KnUPnA8=
+	t=1736971065; cv=none; b=MkrIY3ARkhUkGlz6+pZNiuQDtxR1YjZhD1i2Lqy+Z6bZTELaETZlQQELK5GxQttppBdiLBadRcHU8bGgH+Z25hifOV66CYuv/IGNEExOAlm76ERlP2ffLea0JSxunkZfNVO7nyy3Xc9zmd5/cZDx3XvQ3UnWp8JebR/tSz7kx/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736969004; c=relaxed/simple;
-	bh=Z7FzG7euO3hIbdQNFj1nHxIy2rlVNwpenA4ZfXjYvE4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DFTh2w6m7XiCsrr5fSxlHZNvNLx+2/8crOqX0pLqdLNAnp7pLSmJZi/Vg86HlYEflUi234IQ/Ga9Vd9lTgQJ3mZickz9PTOjmIaBdSbnrf35bk14e//b1olbTfsFBR8vJYT40M2TYBlCRpD26ZqnaXIoQL9p+N6rHr4PbK+evwU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g0tuPbm5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736971065; c=relaxed/simple;
+	bh=q3n1ZeAtXWa1wJ3Kfqg0zYhvAXxW12rvKXew84gB7hk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=VzvqFUiY1ncqpAxidU2VnUh00X0ud3MNISXmzPe2LzQPw8niwTvVpl2I3XVIN2pIZokk7hcWqISgM9H9rKiCQpTcwNcj6WZmvSwSiLm6o2pxEWC699DprzQMNkTDxquGPubpKojxHvhETfuDuJaYAIpMLzkv3tIExrG3m0l6Ji8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=VN3jPQ9+; arc=none smtp.client-ip=192.19.144.209
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g0tuPbm5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1069C4CED1;
-	Wed, 15 Jan 2025 19:23:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736969003;
-	bh=Z7FzG7euO3hIbdQNFj1nHxIy2rlVNwpenA4ZfXjYvE4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=g0tuPbm50mrx79+1WCgTJFjB4tvHBp6kK98SGuoE725UqlsXLN/Bcfd2FbKCVe5fH
-	 CpBgOgonMq2I981OT8FICRZAqs4GNTeQg/y+sRrA3NNRtu2AmRtej5t+HSAzMJbtsd
-	 DEzYGvpOzzRFy8vnUtnJnv27aDd7kZ+PR5mi6e5xkZ9p/QBEtYteDh//ZZEc/s8ebf
-	 2wQG9Zn782xszP80tMV+gX3ej8iA4Dp8EYU+58qHAuC3+CzB0Qktxv2ofw2Mq1YeUH
-	 jQz/VkzuQZf+kakMskF7bmhjyqIwpOuKlfMof87d+8ricl6I9wS3VFlMebHviSGeF0
-	 N/RoUeouBZwPg==
-Date: Wed, 15 Jan 2025 21:23:19 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: hejiean@foxmail.com, jroedel@suse.de, mhklinux@outlook.com,
-	petr@tesarici.cz, pasha.tatashin@soleen.com, nicolinc@nvidia.com,
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="VN3jPQ9+"
+Received: from mail-lvn-it-01.lvn.broadcom.net (mail-lvn-it-01.lvn.broadcom.net [10.36.132.253])
+	by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id BEFFBC0000D8;
+	Wed, 15 Jan 2025 11:47:58 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com BEFFBC0000D8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+	s=dkimrelay; t=1736970478;
+	bh=q3n1ZeAtXWa1wJ3Kfqg0zYhvAXxW12rvKXew84gB7hk=;
+	h=From:To:Cc:Subject:Date:From;
+	b=VN3jPQ9+eOVk9phdvWiyN+TJws0+BxKw1FZXKyJ+iv7eL4Ibe4sPIDGi1IpmOoW7o
+	 JhZX70m+PcFHCcS4/7fXdccIIeYFs+IXijnL6sdP552+cH3Q0sf7tVAmojkiqN53ck
+	 TJ5jjUztrbNf0EUx/A/2ZkxgJQVgcE0iZONJAVGM=
+Received: from fainelli-desktop.igp.broadcom.net (fainelli-desktop.dhcp.broadcom.net [10.67.48.245])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail-lvn-it-01.lvn.broadcom.net (Postfix) with ESMTPSA id 4F35818041CAC6;
+	Wed, 15 Jan 2025 11:47:58 -0800 (PST)
+From: Florian Fainelli <florian.fainelli@broadcom.com>
+To: linux-kernel@vger.kernel.org
+Cc: bcm-kernel-feedback-list@broadcom.com,
+	Justin Chen <justin.chen@broadcom.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Jonathan Corbet <corbet@lwn.net>,
 	Christoph Hellwig <hch@lst.de>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] iommu-dma: Fix Oops on zero-sized DMA memory allocation
-Message-ID: <20250115192319.GQ3146852@unreal>
-References: <tencent_999F11E711AD93EA6AB3B8A7B32D1FE9AD0A@qq.com>
- <20250115123923.GN3146852@unreal>
- <c8a8fdf8-5de2-40ad-9da4-bb7a63ee8ea9@arm.com>
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Petr Tesarik <petr@tesarici.cz>,
+	Michael Kelley <mhklinux@outlook.com>,
+	Lukas Bulwahn <lukas.bulwahn@redhat.com>,
+	Bagas Sanjaya <bagasdotme@gmail.com>,
+	Eder Zulian <ezulian@redhat.com>,
+	Sean Anderson <sean.anderson@linux.dev>,
+	linux-doc@vger.kernel.org (open list:DOCUMENTATION),
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	linux-trace-kernel@vger.kernel.org (open list:TRACING)
+Subject: [PATCH] swiotlb: Introduce DMA_ATTR_SKIP_DEVICE_SYNC
+Date: Wed, 15 Jan 2025 11:46:44 -0800
+Message-ID: <20250115194659.618438-1-florian.fainelli@broadcom.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c8a8fdf8-5de2-40ad-9da4-bb7a63ee8ea9@arm.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jan 15, 2025 at 02:32:07PM +0000, Robin Murphy wrote:
-> [ BTW I apparently never received the original mail and don't see it on the
-> list either... ]
-> 
-> On 2025-01-15 12:39 pm, Leon Romanovsky wrote:
-> > On Wed, Jan 15, 2025 at 08:21:03PM +0800, hejiean@foxmail.com wrote:
-> > > From: Jiean He <hejiean@foxmail.com>
-> > > 
-> > > In the `iommu_dma_ops.alloc` and `iommu_dma_ops.alloc_noncontiguous`
-> > > interfaces, the `size` parameter is user-provided. When `size` is 0,
-> > > an Oops occurs in `__iommu_dma_alloc_noncontiguous`, which is called
-> > > by both interfaces.
-> > > 
-> > > The root cause lies in the fact that `__iommu_dma_alloc_noncontiguous`
-> > > calls `kvcalloc`, The `count` parameter of `kvcalloc` is controlled by
-> > > the user-provided `size`, and when `size` is 0, `count` is also 0.
-> > > `__iommu_dma_alloc_noncontiguous` uses `if (!pages)` to check the
-> > > return value of `kvcalloc`, but it returns `ZERO_SIZE_PTR` instead of
-> > > `NULL` while `count==0`. This leads to a kernel Oops when `pages` is
-> > > dereferenced in subsequent operations,as the following trace:
-> > > 
-> > > kernel NULL pointer dereference at virtual address 0000000000000010.
-> > > Call trace:
-> > > sg_alloc_append_table_from_pages+0x208/0x430
-> 
-> So... what you're saying is that there's a bug in
-> sg_alloc_append_table_from_pages() where it can dereference more of "pages"
-> than "n_pages" says is valid?
-> 
-> Of course that's not to say that's the *only* issue that this scenario could
-> or would run into - indeed many allocation paths in various DMA API
-> implementations depend on get_order(size), and the kerneldoc explicitly
-> states that get_order(0) is undefined. So if you really think it's worth
-> formally accommodating zero-sized DMA API requests, rather than leaving them
-> as a nonsensical thing that drivers should obviously not do in the first
-> place, then iommu-dma is still not the logically appropriate place to do
-> that.
+From: Justin Chen <justin.chen@broadcom.com>
 
-I got his dump stack now and it is a bug in his testing module where he
-is getting size from users and passing to DMA API as is.
+Network device driver's receive path typically do the following:
 
-Thanks
+- dma_map_single(.., DMA_FROM_DEVICE)
+- dma_sync_single_for_cpu() to allow the CPU to inspect packet
+  descriptors
+- dma_unmap_single(.., DMA_FROM_DEVICE) when releasing the buffer
 
-> 
-> Thanks,
-> Robin.
-> 
-> > > sg_alloc_table_from_pages_segment+0x3c/0xa0
-> > > __iommu_dma_alloc_noncontiguous.constprop.0+0x130/0x278
-> > 
-> > Who is this user?
-> > grep sg_alloc_append_table_from_pages shows only 4 users:
-> > drivers/infiniband/core/umem.c
-> > drivers/vfio/pci/mlx5/cmd.c
-> > drivers/vfio/pci/virtio/migrate.c
-> > lib/scatterlist.c
-> > 
-> > First 3 users have constant size and it is not 0.
-> > The latter is used in wrapper sg_alloc_table_from_pages_segment(), which
-> > is used by DRM and that layer already was supposed to catch nr_pages == 0.
-> > 
-> > Thanks
-> > 
-> > > 
-> > > This commit addresses the issue by adding a check for the `size`
-> > > parameter in `__iommu_dma_alloc_noncontiguous`. If 0 is passed as `size`,
-> > > a warning is reported and `NULL` is returned. This approach clearly
-> > > indicates that the user-provided size might be illegal, helping users
-> > > adjust their programs. In contrast, using `ZERO_OR_NULL_PTR` to check the
-> > > return value of `kmalloc` (used by `kvcalloc` internally) does not
-> > > distinguish between insufficient memory and a zero-sized memory request.
-> > > 
-> > > Fixes: 0db2e5d18f76 ("iommu: Implement common IOMMU ops for DMA mapping")
-> > > 
-> > > Signed-off-by: Jiean He <hejiean@foxmail.com>
-> > > ---
-> > >   drivers/iommu/dma-iommu.c | 5 +++++
-> > >   1 file changed, 5 insertions(+)
-> > > 
-> > > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > > index 2a9fa0c8cc00..3c9c905e7a8f 100644
-> > > --- a/drivers/iommu/dma-iommu.c
-> > > +++ b/drivers/iommu/dma-iommu.c
-> > > @@ -956,6 +956,11 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
-> > >   	    iommu_deferred_attach(dev, domain))
-> > >   		return NULL;
-> > > +	if (unlikely(size == 0)) {
-> > > +		dev_err(dev, "DMA alloc Zero-Sized memory is unsupported\n");
-> > > +		return NULL;
-> > > +	}
-> > > +
-> > >   	min_size = alloc_sizes & -alloc_sizes;
-> > >   	if (min_size < PAGE_SIZE) {
-> > >   		min_size = PAGE_SIZE;
-> > > -- 
-> > > 2.40.0.windows.1
-> > > 
-> 
+Each of those operations incurs a copy from the original buffer to the
+TLB buffer, even if the device is known to be writing full buffers.
+
+Add a DMA_ATTR_SKIP_DEVICE_SYNC flag which can be set by device drivers
+to skip the copy at dma_map_single() to speed up the RX path when the
+device is known to be doing full buffer writes.
+
+This has been seen to provide a 20% speedup for Wi-Fi RX throughput
+testing.
+
+Signed-off-by: Justin Chen <justin.chen@broadcom.com>
+[florian: commit message, add DMA-API attribute flag]
+Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
+---
+ Documentation/core-api/dma-attributes.rst | 9 +++++++++
+ Documentation/core-api/swiotlb.rst        | 4 +++-
+ include/linux/dma-mapping.h               | 6 ++++++
+ include/trace/events/dma.h                | 3 ++-
+ kernel/dma/swiotlb.c                      | 8 ++++++++
+ 5 files changed, 28 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
+index 1887d92e8e92..ccd9c1891200 100644
+--- a/Documentation/core-api/dma-attributes.rst
++++ b/Documentation/core-api/dma-attributes.rst
+@@ -130,3 +130,12 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
+ subsystem that the buffer is fully accessible at the elevated privilege
+ level (and ideally inaccessible or at least read-only at the
+ lesser-privileged levels).
++
++DMA_ATTR_SKIP_DEVICE_SYNC
++-------------------------
++
++Device drivers can set DMA_ATTR_SKIP_DEVICE_SYNC in order to avoid doing a copy
++from the original buffer to the TLB buffer for dma_map_single() with a
++DMA_FROM_DEVICE direction. This can be used to save an extra copy in a device
++driver's data path when using swiotlb bounce buffering.
++
+diff --git a/Documentation/core-api/swiotlb.rst b/Documentation/core-api/swiotlb.rst
+index 9e0fe027dd3b..3bc1f9ba67b2 100644
+--- a/Documentation/core-api/swiotlb.rst
++++ b/Documentation/core-api/swiotlb.rst
+@@ -67,7 +67,9 @@ to the driver for programming into the device. If a DMA operation specifies
+ multiple memory buffer segments, a separate bounce buffer must be allocated for
+ each segment. swiotlb_tbl_map_single() always does a "sync" operation (i.e., a
+ CPU copy) to initialize the bounce buffer to match the contents of the original
+-buffer.
++buffer, except if DMA_ATTR_SKIP_DEVICE_SYNC is specified and the direction is
++DMA_FROM_DEVICE. This is a performance optimization that may not be suitable for
++all platforms.
+ 
+ swiotlb_tbl_unmap_single() does the reverse. If the DMA operation might have
+ updated the bounce buffer memory and DMA_ATTR_SKIP_CPU_SYNC is not set, the
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index b79925b1c433..bfdaa65f8e9d 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -58,6 +58,12 @@
+  */
+ #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+ 
++/*
++ * DMA_ATTR_SKIP_DEVICE_SYNC: used to indicate that the buffer does not need to
++ * be synchronized to the device.
++ */
++#define DMA_ATTR_SKIP_DEVICE_SYNC	(1UL << 10)
++
+ /*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
+  * be given to a device to use as a DMA source or target.  It is specific to a
+diff --git a/include/trace/events/dma.h b/include/trace/events/dma.h
+index d8ddc27b6a7c..6eb8fd7e3515 100644
+--- a/include/trace/events/dma.h
++++ b/include/trace/events/dma.h
+@@ -31,7 +31,8 @@ TRACE_DEFINE_ENUM(DMA_NONE);
+ 		{ DMA_ATTR_FORCE_CONTIGUOUS, "FORCE_CONTIGUOUS" }, \
+ 		{ DMA_ATTR_ALLOC_SINGLE_PAGES, "ALLOC_SINGLE_PAGES" }, \
+ 		{ DMA_ATTR_NO_WARN, "NO_WARN" }, \
+-		{ DMA_ATTR_PRIVILEGED, "PRIVILEGED" })
++		{ DMA_ATTR_PRIVILEGED, "PRIVILEGED" }, \
++		{ DMA_ATTR_SKIP_DEVICE_SYNC, "SKIP_DEVICE_SYNC" })
+ 
+ DECLARE_EVENT_CLASS(dma_map,
+ 	TP_PROTO(struct device *dev, phys_addr_t phys_addr, dma_addr_t dma_addr,
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index abcf3fa63a56..8dab89bf5e33 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -1435,8 +1435,16 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	 * the original data, even if it's garbage, is necessary to match
+ 	 * hardware behavior.  Use of swiotlb is supposed to be transparent,
+ 	 * i.e. swiotlb must not corrupt memory by clobbering unwritten bytes.
++	 *
++	 * Setting DMA_ATTR_SKIP_DEVICE_SYNC will negate the behavior described
++	 * before and avoid the copy from the original buffer to the TLB
++	 * buffer.
+ 	 */
++	if (dir == DMA_FROM_DEVICE && (attrs & DMA_ATTR_SKIP_DEVICE_SYNC))
++		goto out;
++
+ 	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE, pool);
++out:
+ 	return tlb_addr;
+ }
+ 
+-- 
+2.43.0
+
