@@ -1,194 +1,158 @@
-Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2087.outbound.protection.outlook.com [40.107.243.87])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49E7B22DF8A
-	for <iommu@lists.linux.dev>; Thu, 16 Jan 2025 20:42:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737060139; cv=none; b=qy04Qac4sdRs5QXRGZzpthH1wFPgA8sKTinpN7XlqdCLtg5lJSPk8E2HE00VvBw7GJLzaut3ThoRVho9iuDJTqnfeZVIwBC7lriK4/sEw4RNsXCyZphE6hbnI8dckaR/Bj7kITcYLjR1hU08xu5LcG51P7tYX8vbfCKbmJN9+uQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737060139; c=relaxed/simple;
-	bh=Hu13wJHGYVNYblz2m0YzM232uUIrrvin59q+oJmV1jg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ij6DocgaGUdHFM+c68hlj+EGeYnjjMy8CQXa4s5Jw9TPEgc5mBkbVqm9wpUUWoUj5eqy3PWzE3+5vCFwGUpaXJXgCdti2g/VBH2fjQT3duJ2yWFbTcfik+uOwVuAc532QDedEazoZxeC+ZkKha2w7ifXApTdqAQaduVf5EqHMkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B90xdGwu; arc=none smtp.client-ip=209.85.219.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4DED236ED6
+	for <iommu@lists.linux.dev>; Thu, 16 Jan 2025 20:42:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.87
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737060178; cv=fail; b=I35E+rgUwTuaRIdWAPgaSzjj7zVi2/pP0DRQ1lrme6D/yDHZEkOGXuHpKBhKmQMbyJ3np3DtgEcfp+bhy0QlD3WHMIDQU/dKq8Y9scF50l8Zh+Ifq87giCinfz8U7IkJ7y4Bf6Gb8vDFDdKsm9YV1yH6a/tyqVwrVEB59qoLiBA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737060178; c=relaxed/simple;
+	bh=EjNFsdq/1ja6rEUdxhAr688qFalu6saaf92QwBy+BGM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=NM3ryrQ6kIdwzGCEjkITOpQYKi6XUpIkkLtC9HUd23+8zh94szOWC1w6cnjwc+F3kvusyNOig5J/Lp/M9LTyFqbU5I8OCqoAjAKYedG6VbsPx+lddw59kNn1KNWr4DTUdFNHLI8stWlXkEyTxh/kmW3lEPfs6JV4KTEOSVZeIJ4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pv9nwpwD; arc=fail smtp.client-ip=40.107.243.87
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B90xdGwu"
-Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-6d900c27af7so14979976d6.2
-        for <iommu@lists.linux.dev>; Thu, 16 Jan 2025 12:42:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737060136; x=1737664936; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AJQkn8xBOrqxhMrTvXO5m4xHY+rpEt1QvLDpaLCQ2xA=;
-        b=B90xdGwuT3bUXliqiuUYsPL4Ep6DJp/iyPE/w73LDwF/q85kjziEfIRhZ5Xz++vU/K
-         mezDyLDaY0pcscWdTDYHFiWveeW3Y/otO+0eNvN4X0gMyUeqRfOLx6nPNyMl3V081PaB
-         mkH92RVRYARzPycdjoUuKAqgs/z47vd7n8NP9a8TFMiB+VTqOMl0NB/FYvKKrG0UcYZu
-         Ep+ZhpA7LpXBsUv891RoRunfnFbIbo+8CSDSVkabitTlOsmsCtpAWUbmVqWIR+SBmNSX
-         j9kA/HJNtph9izVLVVhhFI0vrlRIBB4BTaC7C5496BRht8sK7QTeRmFRrwF8Ksg4hOAD
-         IU/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737060136; x=1737664936;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AJQkn8xBOrqxhMrTvXO5m4xHY+rpEt1QvLDpaLCQ2xA=;
-        b=CtDSM1sutcb5PvGFByNJzkurxoP+ZT999x4m5CUl0Yu6NVeh7DiYVveoXxdlc+ImJk
-         Q2dhaBb8HYm7aagE4XJPVv0388MSll7DBORcDSm9dC8aJMNHMijfJnvsJXY3rr8jZL5q
-         1i/9QgeGKJgk5UAwiD/fZfSr6YfxDf0sS4ujKNisA7I6vAlmgWp8zf5wFXHdEL1vLole
-         YyPsJ2euOLfUSDY5D9kfZAtMEeAyCgjNOQ3CNTBNX6EKZL04LhSzhfqCYyLVItly1NGu
-         IstLnvDUQAg8ZnWPLyFCQlDiXmexFp87lHrIo2PMY5Mx7CbQyVxq8CT89b30kg8fBrdL
-         7tDQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXQqX4tkTeANyMFv0dCqihrpafNrBxKbvHDlADYxBHCLRA2MIxLgD3/DclOgoNkbOwfDHu5SQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx4xu+ZumxAKYz0a+SiXpRY7diBg5URJJTVFtumpmBMdhVjrgF8
-	7pODd4/ZjF6xd7rDyuii6Pix9j/0+fFmaDs0eSKdbL4Pt4NVVziIj0G8Hzmgt9TNxe1BnQS/ckw
-	4QXzJ4/I2u1gybOT+C3gUqHzPMJE=
-X-Gm-Gg: ASbGncviTuIUi+td4tfdm0cBHw88kBRClzYR1mlS+7wpaU6CSrTmJ++nsqH0nIh0ddL
-	ead7vd6zhazkdwsoVuO4ytiNVkQ1xq/CtkxuC2Q==
-X-Google-Smtp-Source: AGHT+IHACpWQarwyHqgVFej12h3sZ9v5XSkC82TZvdnRS6/tjJiM7t0IXYSpLP19pAQaJiQBCnassDGmy7JGKAd6wj8=
-X-Received: by 2002:a05:6214:240b:b0:6df:97a3:5e76 with SMTP id
- 6a1803df08f44-6e1b21d13e5mr4146116d6.27.1737060136243; Thu, 16 Jan 2025
- 12:42:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pv9nwpwD"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=upPv7ZAba+x6OXkr9Sg9/CbXC1HhxwNijZG3iDR2ete8iq58D39jUurYnpLGbrUSH0tLdefpvLekiFUZ+3U7BEvZ7aBaWmuQ9WliZudTFq7/1+WRUdQ4LUJ9krA9hB74xzB7lgrqUVTi8/mxwzxcAv6dstle0A8+tkS5dbTlxxOCADyKS9rzViLi4gZpg6BLylnegLCl8NLnRa7kVfAguO3/VPx2tmD+OL8HUOXql283UQjro0TJ6Dvz7MvyOHj9SGD8G+yBOox3NSpHtSR68k0QixHLbhYRjd2dVtoleYq3e7mXLw9OUDSbNBvCShmnVLPJKqKsKt+qbmtQtt+0mA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fVdXbTx8JmAAtkHUC5wPDlDUXgGyXRHRPWWBMixt68Y=;
+ b=Etb9UnvxDzdT5WhkcIrNbB7ERuRmLNYVdPllwwMYCPrHLa548GsOyt4pdlGcduC9GiHXTGkOSiQVPB9Hc3axKW6qqn8t/Fx8l6esMiwPyCPHko3YaNF0zTfYRKhDKQzhAaPxsEhkfGqBXXp2VzSTMazA+QihkP6A/PV5/XJBBba5nabvZ1uxIXhHUIuACQB9kT2jYUamxJlNdX3XMWpdDUV1zY6j50+8AFmQxAtz3aTgv3Qjl0304PDvJPMM0qJJVOXODPfXPsGvVp4sx2ii7l7+bYqjJjBAHItEHlfASanm5/h6dD2y174bi8lU+kj976bwNVDMeeVgs9C2OgcT6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fVdXbTx8JmAAtkHUC5wPDlDUXgGyXRHRPWWBMixt68Y=;
+ b=pv9nwpwDOAgP8kiUUtaEnFuh5GgwVzm/eaNACyeVY7a/sRif8eKq4B5HH5CknfYaJMZtiaoIYoNg0QbxOhHc7jmxTYTu7K1sW+7D7MqIdvffqJ4WnBv4EH7oyINw4r3WHVWNTO7VHEpojsnTklyhDSQxkQ6xoDgfXupujksQo7Ec2+KbazEp/n7si4k6qjT9pJlWGzX9e97na6JmQHKGyOVjFmHLl/KfE4560yh4boWRu+VXIA9vIYNiLfTrD2brLuv04F9gPmFXopqPFLRtdzJKUsjlr+y1/mWlBVnCyRmcZFUbluynSMuEtlRGMJ4G8iNoXCE54fcV/XxXsXzabw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by CH2PR12MB9520.namprd12.prod.outlook.com (2603:10b6:610:280::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8356.16; Thu, 16 Jan
+ 2025 20:42:54 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%5]) with mapi id 15.20.8335.017; Thu, 16 Jan 2025
+ 20:42:54 +0000
+Date: Thu, 16 Jan 2025 16:42:53 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com
+Subject: Re: [PATCH rc v2 1/2] iommufd/fault: Destroy response and mutex in
+ iommufd_fault_destroy()
+Message-ID: <20250116204253.GZ5556@nvidia.com>
+References: <cover.1736923732.git.nicolinc@nvidia.com>
+ <bc8bb13e215af27e62ee51bdba3648dd4ed2dce3.1736923732.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bc8bb13e215af27e62ee51bdba3648dd4ed2dce3.1736923732.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: BN0PR04CA0112.namprd04.prod.outlook.com
+ (2603:10b6:408:ec::27) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <e4a649a7fdfc8fcf5f48a0bc4e76e5d546078083.1736868605.git.Slavisa.Petrovic@rt-rk.com>
- <alpine.DEB.2.22.394.2501141554170.2684657@ubuntu-linux-20-04-desktop>
- <2f1432e6-0d27-48fd-b034-475284f14233@gmail.com> <CAKp59VEOiXo+OKwPNiomtXNCsfDURCXaDktooi5JSoTSdhc90w@mail.gmail.com>
- <alpine.DEB.2.22.394.2501151313590.2684657@ubuntu-linux-20-04-desktop>
-In-Reply-To: <alpine.DEB.2.22.394.2501151313590.2684657@ubuntu-linux-20-04-desktop>
-From: =?UTF-8?B?TWlsYW4gxJBva2nEhw==?= <milandjokic1995@gmail.com>
-Date: Thu, 16 Jan 2025 21:42:05 +0100
-X-Gm-Features: AbW1kvZkiUy496iMlyaJzvfye_IOgV9RfBQMyk7ZAcKoXtvYI4DmcGkMijbvCWw
-Message-ID: <CAKp59VG=MV2=gCFqsC16EpP9oGa=eDBFJbwn-vS5q8oKyM_ZJQ@mail.gmail.com>
-Subject: Re: [PATCH] riscv: Add initial Xen guest support for RISC-Vgh
-To: Stefano Stabellini <sstabellini@kernel.org>
-Cc: Oleksii Kurochko <oleksii.kurochko@gmail.com>, linux-riscv@lists.infradead.org, 
-	paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, 
-	jgross@suse.com, oleksandr_tyshchenko@epam.com, Slavisa.Petrovic@rt-rk.com, 
-	Milan.Djokic@rt-rk.com, rafael.j.wysocki@intel.com, sunilvl@ventanamicro.com, 
-	takakura@valinux.co.jp, linux-kernel@vger.kernel.org, 
-	xen-devel@lists.xenproject.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CH2PR12MB9520:EE_
+X-MS-Office365-Filtering-Correlation-Id: c60e617f-65fc-4382-8e10-08dd366e5a1b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?4r35sjxzsIb8yamddnCcnJzJ99WGze9p7MjP5uht7kmxmulXVgHwBMxKG7GX?=
+ =?us-ascii?Q?ufqAOlbbt4vLYpkODTZKmb0qoDIRiTuknk0KvyaoU49eVxzqIm6+1SSm8xdf?=
+ =?us-ascii?Q?J3nUZz1JXGzphcGdWfXR0vzEIPleNoCk63AOq1NWuYMj1C/0BBp+Ehljdp7U?=
+ =?us-ascii?Q?5Gs6I1T7HVRsiFoUuhuJRf/smtKDrPQBBA8I1P+uALzv19TB9f1l2MepB/As?=
+ =?us-ascii?Q?nG6c3cAbvcFSn0kV4cUT23NWFtUjgsOQ01pipGZo78x+ljTGDzp99k86IAnd?=
+ =?us-ascii?Q?ysdDgBxbT1SSkaLPEkWnpzUxFpIJprxTZfBZZi5KVYNIqWgBaBGkvSqSRg7n?=
+ =?us-ascii?Q?TcHcC/92z4Pb1vS/bHNk/Hs9dYawLC/+RFcgOULrQAKEaDdNX9cSSo8njvwy?=
+ =?us-ascii?Q?KEDlzybgaTtS4sX3DbsSUpQELYwWWVU60SGdCKopjy9E4ExKwSqGN5FdKuph?=
+ =?us-ascii?Q?QqYpIqyx7nGCiv2DfedogF/OCCYFnobo2XuYUfPV6PAKmbNJQXeFHCzRXtqQ?=
+ =?us-ascii?Q?YZn1oJ8Pa8DlPDFdMtbf0aiWD6bEziF0hqzNRBkQq4hbsLrtlIIfz9K5s4RE?=
+ =?us-ascii?Q?7jnhmTFKMPsW3ZLs8VUzPT4yCmzIrJEOto8+EpZ0DCAjNnsouIlswqP6n8fP?=
+ =?us-ascii?Q?PttZNB3y4Y5v2YZ4FUEbnJjzh+pnxPBk+AjjkQ8ehKswE95pAP1WUsEGAizu?=
+ =?us-ascii?Q?vW92w9qyQgToU0L0AJq8I7W4R2aJJ0/lR1pSmQYk/aYinQoMpgW1hhigQDTZ?=
+ =?us-ascii?Q?dP7JKqonqcYxt4p9KVGU+VL78HeuWBYJavQNOPgOzIjs3o1UoJ+oQNp2fRcb?=
+ =?us-ascii?Q?OQN4u1LT2hOoiSkU9BTY08sNcNAkC0Yj5j3OR6e6e7KyjmyBnksJp/0/ttQo?=
+ =?us-ascii?Q?N5s++iKtJ49KOZAPUZRgjJqmvCPCRO4uRtCphSXPwa+ui/k0rtg4kVk0ryjH?=
+ =?us-ascii?Q?44ezvXyoI7/70I8OMYyfeYxR5oQjJG5roSDkd33D85ZMO5okf71xyBIoNEll?=
+ =?us-ascii?Q?z+mYAVuCZQ/BwVyGlROGm8MYTkaAuF/SphBfytVBoU1AFAyntYJVdAU+8/Rr?=
+ =?us-ascii?Q?N5dTqHPVeYy+MyYnt4IpNBXqozk7HxdBJGQWtY99Up5DFcqXIqNxiOsa0Lpm?=
+ =?us-ascii?Q?OMwruBYlnrxyfv2JYgf0W9+IsTsQ8Ur4W72NeJcZaM8/NtSxG0QqgdRIuKNU?=
+ =?us-ascii?Q?DjfDOB1DRuKWiNxZF9rbf4tPjtTbLN0ke4MFsbD0ciEIqDnnRyUVZ6NJkqVB?=
+ =?us-ascii?Q?677oGeOtUjJFNoFtwMRzO6O2LsNcjQ9m6Q3xlr+qZ+/WgDPvNe4rQ2WnLJGN?=
+ =?us-ascii?Q?XKnYgDJey4Xov7CCKf4CREduUzhKtQuqrjoMYaaaB1dm20IpCeuZZJfH62Xz?=
+ =?us-ascii?Q?Uyp1EAhzR93QmzeDczCQxVkdc122?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?roiQ2VfS67LT9yOi3RqndQAMUZyrgqvrtP8dJS9UJNT8tI6m+rH2RPGMiUH8?=
+ =?us-ascii?Q?WOqm0FcNe+S5sX9iQMKoCoR3EtQ/J2r1+btn7vnjFFW1+8stqJJRl6oJQgWt?=
+ =?us-ascii?Q?YI+88Ajj7IupIof0DYTg0NhGEMChrMBuk/Kl55XZMfe5KLA+5DJZBWaH3TCf?=
+ =?us-ascii?Q?X3KaGn6tbRUnYHnA4lrwK2W7aqUDYohAZGT1PlBUK2LpNl/NtG3E83KfgcDY?=
+ =?us-ascii?Q?/NynRSmxclupvofcwWJ1sEelMeSnOSYxh+LNzC+SdcZDGJpTlO2UaJI1Rtre?=
+ =?us-ascii?Q?6YP96CQ/i6Ujg1AfECTlpyuMTVbLTtcAiGVRilAFS3LxH1ZLoHkkk5Mvu8Dc?=
+ =?us-ascii?Q?i/f2HJjTuobnh3URWtFRDZNdhPDAKXLK3qFUrWwHpmx8ll5ZdVvyvTlsZuEu?=
+ =?us-ascii?Q?iHiUaz6VhbA3D2tQlER3CGy2v4bViB1XYRqOfSSz8c3TGoAq6ruRjDeehbd3?=
+ =?us-ascii?Q?NAhuO6/9P3BGgK7TaT0YX++zq2mm8ioWbM5s3QSdVdAG8CRyA+K0844WKNtc?=
+ =?us-ascii?Q?AUJ3CmYFgjIzZR7EFuuY6G13d3FbdP5PNRa46Mb5oejNozYHcN7R9qegcj/w?=
+ =?us-ascii?Q?M0SbBVolPYZJdGGKRrPoUWlXX4EGNTttJnJm56YYFnY4DvPc1m3f+vpsYX8x?=
+ =?us-ascii?Q?ukF+dSmZHhZyGDaaM6wLcFS0SBwfITYn/ea4rFkxUyU4vAfEhqj1aGsUMdLJ?=
+ =?us-ascii?Q?/07bPVdrg7/NPQtTw2uIu04rePahvqL3iCSb54ch5Y9P2pqJ4aBozL7NmTW0?=
+ =?us-ascii?Q?VWVHoahd7qDkEwFG1HIh1hsOqDC4BQEXqHDhgME8t4Jc8hMQTs5Tq17NBmi/?=
+ =?us-ascii?Q?MI4f3R6ylhb3Ue8zKR3ScseZ0yLR6uRcRDrOCF5UdXBTvPAew+b6h+QH6Ndt?=
+ =?us-ascii?Q?GQTckG9mN0rWPCF44qlNgSuo8o28xHB6Uea3+GNWWclzc+iVSKh67Ig6q/6u?=
+ =?us-ascii?Q?44TTovh6r3JtsTnJlHEBd3frfSPW9s6xn9/lTWWwxvFfeHHpuOo1G6eZEmC0?=
+ =?us-ascii?Q?AYUEbHSPJdO4qwHtAPKKi4JJ2tSZTwi1AFFJdutBVnZLnvENmJIbH1tZReac?=
+ =?us-ascii?Q?xDXHn/UrA+7HsaCkk2KBLnQ5gpmEJG9tOsa4WOy6POwNk+Rcvhv+agtsDnDb?=
+ =?us-ascii?Q?kTJizs0mVuUvctqQBzJliNvzWYHG2DtPftgaGC0WL2u6h+V03vpuhEpu1Y/r?=
+ =?us-ascii?Q?BczQtza9UeUola4uhfMMQtMvSlRCILYxuiXURhhon3cIrKTCWPIG33UdaGjz?=
+ =?us-ascii?Q?Pw3EAUr5W/k9bP3N2633r4/WKQUb2DAIY03mfLN1ZADa3Xj7yzkXBXshhVBr?=
+ =?us-ascii?Q?ltcZwhizOy52QA4tiMVhCYKMODDgJO+QmE3AfoDaDCJwso4ughRfKG3hQ08R?=
+ =?us-ascii?Q?xdBYY77BQQu/YxtDou5glLwIt1DEm6bsqJ8lL6tNg4Wfi9b8MTTgh5yxbz45?=
+ =?us-ascii?Q?MaOV/8sLWx9sLkOUfn9wbMPNcTd/B/xASe8Ko8jEux7pDRze68tdHxWS5SLX?=
+ =?us-ascii?Q?1s9pJV5RnpfiZd0TqtPfAtiaTXgDWDm1qqqp7tCxhEe4md4yNO8Yf/JQwTag?=
+ =?us-ascii?Q?kV35NGZqtMfPGtJJTF0q2suZks+apbjOnS6b/x/E?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c60e617f-65fc-4382-8e10-08dd366e5a1b
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2025 20:42:54.4049
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NMUPCv+JLgp7SdLHOYHxysgE99HTHjjLVg9S7VUu+yemIidHKbet1/scdXrrr2Ff
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB9520
 
-On Wed, Jan 15, 2025 at 10:14=E2=80=AFPM Stefano Stabellini
-<sstabellini@kernel.org> wrote:
->
-> On Wed, 15 Jan 2025, Milan =C4=90oki=C4=87 wrote:
-> > Hello Stefano, Oleksii
-> >
-> > On Wed, Jan 15, 2025 at 5:30=E2=80=AFPM Oleksii Kurochko
-> > <oleksii.kurochko@gmail.com> wrote:
-> > >
-> > > Hi Stefano,
-> > >
-> > > On 1/15/25 1:01 AM, Stefano Stabellini wrote:
-> > >
-> > > +Oleksii
-> > >
-> > > On Tue, 14 Jan 2025, Milan Djokic wrote:
-> > >
-> > > From: Slavisa Petrovic <Slavisa.Petrovic@rt-rk.com>
-> > >
-> > > This patch introduces initial support for running RISC-V as a Xen gue=
-st.
-> > > It provides the necessary infrastructure and stubs for Xen-specific
-> > > operations. Key changes include:
-> > >
-> > > - Modifications to the RISC-V kernel to integrate Xen-specific hyperc=
-alls
-> > >   and interfaces, with function implementations stubbed for future wo=
-rk.
-> > > - Introduction of Xen-specific headers for RISC-V, including event
-> > >   handling, hypervisor interaction, and page management. Functions ar=
-e
-> > >   defined but not yet implemented.
-> > > - Stub implementations for memory management, grant tables, and conte=
-xt
-> > >   switching in the Xen environment, allowing further development and
-> > >   integration.
-> > >
-> > > Signed-off-by: Milan Djokic <Milan.Djokic@rt-rk.com>
-> > > Signed-off-by: Slavisa Petrovic <Slavisa.Petrovic@rt-rk.com>
-> > >
-> > > Hi Milan, Slavisa,
-> > >
-> > > Thank you very much for your contribution! Which Xen tree are you usi=
-ng
-> > > for development?
-> > >
-> > > They are using [1] and have separate branches on top of latest. So we=
- are in
-> > > sync. Also, if you are interested we have created a task/epics for th=
-is feature in
-> > > [1] so you could also check there some details:
-> > > 1. https://gitlab.com/groups/xen-project/people/olkur/-/epics/5
-> > > 2. https://gitlab.com/xen-project/people/olkur/xen/-/issues/12
-> > >
-> > >  I am asking because RISC-V support in Xen is still in
-> > > the process of being upstreamed, and [1] is the tree that consolidate=
-s
-> > > all patches currently on the to-be-upstreamed list.
-> > >
-> > > While the specific Xen tree you are using is not particularly importa=
-nt
-> > > at this stage, and using [1] is not a requirement, I am asking becaus=
-e
-> > > it is essential to align on the hypervisor ABI, especially regarding =
-any
-> > > details that have not yet been upstreamed. Specifically, is there
-> > > anything in this patch series that relies on features not yet upstrea=
-m
-> > > in Xen?
-> > >
-> > > There are few features but some things which are Rt-Tk's branch in [1=
-] could go
-> > > without waiting for these features to be upstreamed.
-> > >
-> > > Thanks.
-> > >
-> > > ~ Oleksii
-> > >
-> > > [1] https://gitlab.com/xen-project/people/olkur/xen/-/tree/latest?ref=
-_type=3Dheads
-> >
-> > As Oleksii already explained, we are working in sync with his latest
-> > branch where most of the risc port is done.
->
-> Perfect, I was hoping you'd say that! :-)
-> It is great to have you on board.
->
->
-> > I would just add that this patch introduces kernel risc-v hypercall
-> > support on which only our branch on xen tree depends on. Therefore, it
-> > won't disrupt any functionality with current upstream Xen, it will
-> > just introduce kernel functionality which is not used from Xen side
-> > until our branch is merged upstream.
->
-> Ideally, we should upstream the Xen side of an interface first to Xen,
-> then add support for the interface to Linux. Let me make a concrete
-> example. Let's say that you upstream hypercall support to Linux first,
-> using SBI_ECALL defined as 0xE. Then, during the upstreaming process,
-> the Xen community decides to change SBI_ECALL to 0XEA1 to make it the
-> same as ARM. You'd have to change the Linux code again to fix it. To
-> avoid this, it is best to wait upstreaming the Linux side, until the Xen
-> side is Acked.
->
-Sure, I got your point. This is actually one of the things we were not
-sure about (whether we should upstream Linux or Xen side first).
-Anyways it's good that we got review comments. We'll fix this patch
-according to suggestions and send it back when Xen side is upstream.
+On Tue, Jan 14, 2025 at 10:55:59PM -0800, Nicolin Chen wrote:
+> Both were missing in the initial patch.
+> 
+> Fixes: 07838f7fd529 ("iommufd: Add iommufd fault object")
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/iommufd/fault.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 
-> This was just an example, and Andrew is right that the SBI
-> Implementation ID for Xen is reserved to 0x7, see the SBI specification.
-Yes, we were not aware of it, thanks.
+I picked this one up
 
-BR,
-Milan
+Thanks,
+Jason
