@@ -1,223 +1,108 @@
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C79441DE8B6
-	for <iommu@lists.linux.dev>; Thu, 16 Jan 2025 12:53:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D91322A1D5;
+	Thu, 16 Jan 2025 13:17:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737031986; cv=none; b=ANdzxDkJLwKUpfHZTyD/fjF7axNejthjpv7qjqqkpzsFB7pAcPIM5eKbWdIcCuwV8N9kXjyylOtIJ4ZSf/STHt3u79YftPpxUQTrGnQg7osw4pW8mBXqkivZVe09Ya+7v3SkZu8cD+s3hjE9HXtpE0jXylVOSKcG7hK+OSQ62YE=
+	t=1737033451; cv=none; b=Bi2B+eKTzLrOnbmVsFfoGGgOvOcBJu17UTMMr8ZaNFJjuUYyfVSATPCxbE4OSK2T8GLXRl9tyg6YkzGKTKaRNl8Ra78/MBUvE5CdZeJR834oiiDpaK++Mgdt/ckeNED3DXy+MzHBEYZqzRsdJ6Mpf+Xp4VW2Wf1mfGRaYbd/fMY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737031986; c=relaxed/simple;
-	bh=JX+FZ+4pEGK/AUxs/jOM6wYs5it6Xt2+CUUfeUB2yUU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=P52C+CHZBxzGAdzf5YkyLGCxr925hVXrLkwiBQ7anZjFhqakUeyoMKtCI+8xQNI02KvzpTmEy74wL/Tq2lDpXue3QbtpfwAlvCGXRNltu7xCNpAWk3k9lHCrbylq8Khdylee38uzG9WGYr4efg/bBcIKgwtQbTVvaBsUIPa+O6U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.187
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.105])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4YYjPb35bPzbnp2;
-	Thu, 16 Jan 2025 20:49:55 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id F2BD61401F4;
-	Thu, 16 Jan 2025 20:52:58 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Thu, 16 Jan 2025 20:52:58 +0800
-Message-ID: <2b5a58f3-d67a-4bf7-921a-033326958ac6@huawei.com>
-Date: Thu, 16 Jan 2025 20:52:58 +0800
+	s=arc-20240116; t=1737033451; c=relaxed/simple;
+	bh=98YfFK3FLo/r2IcUebkfZNsNhdLdmUle6ZwkLclRkw0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qrSaXzsFbXc/YGuVs0Lc++1RLOu7dGsnHz40kWT67vIEYEJa4BgfxoYZQ/x/pOmfsnYo/x3K8XWQ/up4ZnJunJhRa3GpiE7qbyg38FvmFkuQ3iCAy6QRFQtQGjW42hv0tVt/UNxVTBsxRLhgStNk1znrHeI8iMX18t2Vxb8T08w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gvlIMcNP; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gvlIMcNP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97D4C4CED6;
+	Thu, 16 Jan 2025 13:17:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1737033451;
+	bh=98YfFK3FLo/r2IcUebkfZNsNhdLdmUle6ZwkLclRkw0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gvlIMcNPuW5PC6LunsMB/wk7ePhtPVrxSC2lErrCYeI+qwk3QofD1uzYzx57/6Wq0
+	 3OsXZT8yw/pnQbTE05e1CG0vPLHOEh3oBBHCXzwsmkFC+DfItlWAhF4QtWlfxKvwin
+	 seC+XCs9VFUN58Hf3dOrvT1KQGA5PwnxnPhD4tidr3aR+cDeGQq5zXIC4uXZfAAOXD
+	 Nvu1PHjZpOgTg7f8507h6FEJu5uPciO/HhpeicBeNkvA+RXeft2CbbyBZp6TxAhQCr
+	 W8FQiQzl4DRNmEfXT1dc81p6vGIiOlU1x1qMDJxsXQjTIqkNetLuxU8/U/YD+T8cRc
+	 qqbBQclPjbHyw==
+Date: Thu, 16 Jan 2025 14:17:24 +0100
+From: Danilo Krummrich <dakr@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	daniel.almeida@collabora.com, aliceryhl@google.com,
+	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
+Message-ID: <Z4kG5AcVeQKegLnb@pollux>
+References: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
+ <20250108122825.136021-3-abdiel.janulgue@gmail.com>
+ <20250108135951.GA18074@lst.de>
+ <CANiq72=R2N+QiCiHZQu-6YJ9aYpn_bik3BW3U=nAW3jL7unzLw@mail.gmail.com>
+ <20250108151858.GB24499@lst.de>
+ <Z36X_ZnCmBQBMoZ6@pollux>
+ <20250109080812.GA20431@lst.de>
+ <Z3-NqwAG_96yq8VD@pollux>
+ <20250110083955.GA5395@lst.de>
+ <Z4D5a5NYrAbNxUL6@pollux>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v7 3/8] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Jesper Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>,
-	<kuba@kernel.org>, <pabeni@redhat.com>
-CC: <zhangkun09@huawei.com>, <liuyonglong@huawei.com>,
-	<fanghaiqing@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
- Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
- Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Simon
- Horman <horms@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-	<linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-	<netdev@vger.kernel.org>, kernel-team <kernel-team@cloudflare.com>
-References: <20250110130703.3814407-1-linyunsheng@huawei.com>
- <20250110130703.3814407-4-linyunsheng@huawei.com>
- <921c827c-41b7-40af-8c01-c21adbe8f41f@kernel.org>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <921c827c-41b7-40af-8c01-c21adbe8f41f@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z4D5a5NYrAbNxUL6@pollux>
 
-On 2025/1/16 0:29, Jesper Dangaard Brouer wrote:
+On Fri, Jan 10, 2025 at 11:41:54AM +0100, Danilo Krummrich wrote:
+> On Fri, Jan 10, 2025 at 09:39:55AM +0100, Christoph Hellwig wrote:
+> > On Thu, Jan 09, 2025 at 09:49:47AM +0100, Danilo Krummrich wrote:
+> > > On Thu, Jan 09, 2025 at 09:08:12AM +0100, Christoph Hellwig wrote:
+> > > > On Wed, Jan 08, 2025 at 04:21:33PM +0100, Danilo Krummrich wrote:
+> > > > > What does "your code" mean? Duplicated in every driver?
+> > > > 
+> > > > Yes, interfaces to the DMA API should stay in readable C code and not
+> > > > in weird bindings so that it reminds greppable and maintainable.
+> > > > 
+> > > 
+> > > Rust drivers shouldn't use C APIs directly, but rather use an abstraction of the
+> > > corresponding C API.
+> > 
+> > Don't force me to deal with your shiny language of the day.
 > 
+> Again, no one asks you to deal with or maintain this piece of Rust code.
 > 
-> On 10/01/2025 14.06, Yunsheng Lin wrote:
-> [...]
->> In order not to call DMA APIs to do DMA unmmapping after driver
->> has already unbound and stall the unloading of the networking
->> driver, use some pre-allocated item blocks to record inflight
->> pages including the ones which are handed over to network stack,
->> so the page_pool can do the DMA unmmapping for those pages when
->> page_pool_destroy() is called. As the pre-allocated item blocks
->> need to be large enough to avoid performance degradation, add a
->> 'item_fast_empty' stat to indicate the unavailability of the
->> pre-allocated item blocks.
->>
+> > Maintaining
+> > multi-language projects is a pain I have no interest in dealing with.
+> > If you want to use something that's not C, be that assembly or rust you
+> > write to C interfaces and deal with the impedence mismatch yourself as
+> > far as I'm concerned.
+> > 
 > 
-
-...
-
->> +
->> +static __always_inline void __page_pool_release_page_dma(struct page_pool *pool,
->> +                             netmem_ref netmem,
->> +                             bool destroyed)
->> +{
->> +    struct page_pool_item *item;
->> +    dma_addr_t dma;
->> +
->> +    if (!pool->dma_map)
->> +        /* Always account for inflight pages, even if we didn't
->> +         * map them
->> +         */
->> +        return;
->> +
->> +    dma = page_pool_get_dma_addr_netmem(netmem);
->> +    item = netmem_get_pp_item(netmem);
->> +
->> +    /* dma unmapping is always needed when page_pool_destory() is not called
->> +     * yet.
->> +     */
->> +    DEBUG_NET_WARN_ON_ONCE(!destroyed && !page_pool_item_is_mapped(item));
->> +    if (unlikely(destroyed && !page_pool_item_is_mapped(item)))
->> +        return;
->> +
->> +    /* When page is unmapped, it cannot be returned to our pool */
->> +    dma_unmap_page_attrs(pool->p.dev, dma,
->> +                 PAGE_SIZE << pool->p.order, pool->p.dma_dir,
->> +                 DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING);
->> +    page_pool_set_dma_addr_netmem(netmem, 0);
->> +    page_pool_item_clear_mapped(item);
->> +}
->> +
+> This is exactly what we're doing and proposing here, isn't it?
 > 
-> I have a hard time reading/reviewing/maintaining below code, without
-> some design description.  This code needs more comments on what is the
-> *intend* and design it's trying to achieve.
+> We wrote a single piece of Rust code that abstracts the C API for all Rust
+> drivers, which we offer to maintain ourselves.
 > 
-> From patch description the only hint I have is:
->  "use some pre-allocated item blocks to record inflight pages"
-> 
-> E.g. Why is it needed/smart to hijack the page->pp pointer?
+> What else are you asking for?
 
-Mainly because there is no space available for keeping tracking of inflight
-pages, using page->pp can only find the page_pool owning the page, but page_pool
-is not able to keep track of the inflight page when the page is handled by
-networking stack.
+Since there hasn't been a reply so far, I assume that we're good with
+maintaining the DMA Rust abstractions separately.
 
-By using page_pool_item as below, the state is used to tell if a specific
-item is being used/dma mapped or not by scanning all the item blocks in
-pool->item_blocks. If a specific item is used by a page, then 'pp_netmem'
-will point to that page so that dma unmapping can be done for that page
-when page_pool_destroy() is called, otherwise free items sit in the
-pool->hold_items or pool->release_items by using 'lentry':
+Hence, the next version of this patch series will have the corresponding
+maintainer entry.
 
-struct page_pool_item {
-	unsigned long state;
-	
-	union {
-		netmem_ref pp_netmem;
-		struct llist_node lentry;
-	};
-};
-
-When a page is added to the page_pool, a item is deleted from pool->hold_items
-or pool->release_items and set the 'pp_netmem' pointing to that page and set
-'state' accordingly in order to keep track of that page.
-
-When a page is deleted from the page_pool, it is able to tell which page_pool
-this page belong to by using the below function, and after clearing the 'state',
-the item is added back to pool->release_items so that the item is reused for new
-pages.
-
-static inline struct page_pool_item_block *
-page_pool_item_to_block(struct page_pool_item *item)
-{
-	return (struct page_pool_item_block *)((unsigned long)item & PAGE_MASK);
-}
-
- static inline struct page_pool *page_pool_get_pp(struct page *page)
- {
-      return page_pool_item_to_block(page->pp_item)->pp;
- }
-
-
-> 
->> +static void __page_pool_item_init(struct page_pool *pool, struct page *page)
->> +{
-> 
-> Function name is confusing.  First I though this was init'ing a single
-> item, but looking at the code it is iterating over ITEMS_PER_PAGE.
-> 
-> Maybe it should be called page_pool_item_block_init ?
-
-The __page_pool_item_init() is added to make the below
-page_pool_item_init() function more readable or maintainable, changing
-it to page_pool_item_block_init doesn't seems consistent?
-
-> 
->> +    struct page_pool_item_block *block = page_address(page);
->> +    struct page_pool_item *items = block->items;
->> +    unsigned int i;
->> +
->> +    list_add(&block->list, &pool->item_blocks);
->> +    block->pp = pool;
->> +
->> +    for (i = 0; i < ITEMS_PER_PAGE; i++) {
->> +        page_pool_item_init_state(&items[i]);
->> +        __llist_add(&items[i].lentry, &pool->hold_items);
->> +    }
->> +}
->> +
->> +static int page_pool_item_init(struct page_pool *pool)
->> +{
->> +#define PAGE_POOL_MIN_INFLIGHT_ITEMS        512
->> +    struct page_pool_item_block *block;
->> +    int item_cnt;
->> +
->> +    INIT_LIST_HEAD(&pool->item_blocks);
->> +    init_llist_head(&pool->hold_items);
->> +    init_llist_head(&pool->release_items);
->> +
->> +    item_cnt = pool->p.pool_size * 2 + PP_ALLOC_CACHE_SIZE +
->> +        PAGE_POOL_MIN_INFLIGHT_ITEMS;
->> +    while (item_cnt > 0) {
->> +        struct page *page;
->> +
->> +        page = alloc_pages_node(pool->p.nid, GFP_KERNEL, 0);
->> +        if (!page)
->> +            goto err;
->> +
->> +        __page_pool_item_init(pool, page);
->> +        item_cnt -= ITEMS_PER_PAGE;
->> +    }
->> +
->> +    return 0;
->> +err:
->> +    list_for_each_entry(block, &pool->item_blocks, list)
->> +        put_page(virt_to_page(block));
-
-This one also have used-after-free problem as the page_pool_item_uninit
-in the previous version.
-
->> +
->> +    return -ENOMEM;
->> +}
->> +
-
+- Danilo
