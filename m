@@ -1,126 +1,165 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FD8419CC05;
-	Thu, 16 Jan 2025 21:00:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B0816F099;
+	Thu, 16 Jan 2025 21:08:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737061239; cv=none; b=MsGjdWpShChGnAb6aCPGT6RJzbejxR90pe3kleVJ4pZwIv5gon+MU8CZd+/13AaFfEnQ5K+IOuOUGQYYF0bsufZtgJNd6+V2xKY6mC/zgmWtjUXuiW8N2D6zSuT66evOqdKNzxKWZptyG77VeSIEX65Il/nPfdoZAmMD2ULQy5I=
+	t=1737061680; cv=none; b=lJQwF2mOWoXF6Ilr5PXuJmG1CatlaGqP+6ZVvo5d30euagMJpzqn88pYrpbgFy0UMRQtmdlng7pHEqO9lDuUFMPtu5XYYHRVbbteeZLmgN/RkJBbhae62CWrSJX3xmCj4DvFkZT6BAyo4HNfHRjjrsCR9nYp30L+H8lzUORP9lY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737061239; c=relaxed/simple;
-	bh=ei48WzDzQXjwdLn3xeNuV6Y9soa7jumN+VhYVf6oIbQ=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=scstilmMavMSoDRO3WtUaIh/93y6SgZX1cpqtw+OLNPuLjV5MAZvJQ5Crc8NBD5XhEoJUlJ7u+or1+XNG/sLANmIvf5I8LgMoN+6C/72ts02l4Lw8Gf4pF52pu7v9sELlF+4VQOprB2ZlGxCJWxd90phkX2W97xSaoA9jskpQdw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=krLzUDGJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1737061680; c=relaxed/simple;
+	bh=jz4mFU9u1twIuaW1pCTzx/vWfeheqpZU6b45voKJ0ZI=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=nlEUKYhhByDHbZgjVDS64SQpmbd/hOgBnuzkiLPh/W0xC4RYle53iF34YhZb4MCpXfWPZG6p91R+0iysYwxDwwRBCy7D+T894tGqcJc4LFbLskw+1xmnj/ilgCv2jxBzTh8GrOFLt8CjpkNeGexMkSzdVLv4Zl/cGZZV1YCL2kU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JgJhFSFl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="krLzUDGJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 128E9C4CEDF;
-	Thu, 16 Jan 2025 21:00:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JgJhFSFl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27BB0C4CED6;
+	Thu, 16 Jan 2025 21:07:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737061238;
-	bh=ei48WzDzQXjwdLn3xeNuV6Y9soa7jumN+VhYVf6oIbQ=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=krLzUDGJpvLy/t9Kt5pMwTh4Uez1IeaoqrxvB8XYpPZgBiTnhXx4WRFQUowinmlzn
-	 mRd7JZZtv/4faOqBd3sx4rT9ZKwaCYL17MWmvA3cPeiZ4C/X3JDh5iIhEbfp2u6hEE
-	 tMcHiOKCOMg0c+f9JGDQQeZMo2Hy0tiwzByswP6RQJZ2BrF7RRLWOnhFVxFdXbWaR1
-	 4YHKEEvilbrEG2rQafVavGW3VRP7kyVKE4Mw287KtrZwmyrHbWfMS4c5J3qeE9EMZ5
-	 NEqrqzzZ/4AzOrS8iZWTVjTXJxC+6RLJ+os16QqA8uukEZGLCxL9bltC9YfSkGdtKl
-	 Gy0sHHYDs+8bg==
-Received: from phl-compute-03.internal (phl-compute-03.phl.internal [10.202.2.43])
-	by mailfauth.phl.internal (Postfix) with ESMTP id DAAFD1200083;
-	Thu, 16 Jan 2025 16:00:36 -0500 (EST)
-Received: from phl-imap-12 ([10.202.2.86])
-  by phl-compute-03.internal (MEProxy); Thu, 16 Jan 2025 16:00:36 -0500
-X-ME-Sender: <xms:dHOJZ_8hnrsy-ECJdAOQhqbieHNitsZTUyWxpffUhYWXpC0s_BRHQQ>
-    <xme:dHOJZ7uv6bWKUdrSLNYRkQNUnErbS8jLliX3TjOn9CZwxad3Qot1cG_Imf2F-tjUu
-    I2mXftxq5MS6uIf3J0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrudeiuddgudegtdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
-    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
-    hnthhsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredt
-    tdenucfhrhhomhepfdfnvghonhcutfhomhgrnhhovhhskhihfdcuoehlvghonheskhgvrh
-    hnvghlrdhorhhgqeenucggtffrrghtthgvrhhnpeejvefflefgledvgfevvdetleehhfdv
-    ffehgeffkeevleeiveefjeetieelueeuvdenucevlhhushhtvghrufhiiigvpedtnecurf
-    grrhgrmhepmhgrihhlfhhrohhmpehlvghonhdomhgvshhmthhprghuthhhphgvrhhsohhn
-    rghlihhthidquddvfedtheefleekgedqvdejjeeljeejvdekqdhlvghonheppehkvghrnh
-    gvlhdrohhrgheslhgvohhnrdhnuhdpnhgspghrtghpthhtohepvdekpdhmohguvgepshhm
-    thhpohhuthdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhgpdhrtghpthhtoh
-    eprhhosghinhdrmhhurhhphhihsegrrhhmrdgtohhmpdhrtghpthhtoheplhhoghgrnhhg
-    seguvghlthgrthgvvgdrtghomhdprhgtphhtthhopegshhgvlhhgrggrshesghhoohhglh
-    gvrdgtohhmpdhrtghpthhtohepshgrghhisehgrhhimhgsvghrghdrmhgvpdhrtghpthht
-    ohepshhhrghmvggvrhgrlhhirdhkohhlohhthhhumhdrthhhohguiheshhhurgifvghird
-    gtohhmpdhrtghpthhtoheprhguuhhnlhgrphesihhnfhhrrgguvggrugdrohhrghdprhgt
-    phhtthhopehkvghvihhnrdhtihgrnhesihhnthgvlhdrtghomhdprhgtphhtthhopegrgi
-    gsohgvsehkvghrnhgvlhdrughk
-X-ME-Proxy: <xmx:dHOJZ9AsJorCdvsMQoxKmdUUyLaDrarWg_hDv0lIk4UGGYNSNWOc2A>
-    <xmx:dHOJZ7dgJxPeoxCqJDK6dxgG9pUYIr_52ACmcuhRIw1Qh9GaunCLwA>
-    <xmx:dHOJZ0NcoJ96f9Cm3V1tQ5aoiCzNw33kuCzYomD4dLo444b1fpQ0Xw>
-    <xmx:dHOJZ9kW1rLTlUibKKzm5XjNDGE7mt0S8k2egAdwWJej7fRDieXAPQ>
-    <xmx:dHOJZ-tBWC5CFeUXfiLbOKYQdG4K_dodDJWtuk1DQC1UPn6t-RWZL1C7>
-Feedback-ID: i927946fb:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id A17001C20067; Thu, 16 Jan 2025 16:00:36 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
+	s=k20201202; t=1737061680;
+	bh=jz4mFU9u1twIuaW1pCTzx/vWfeheqpZU6b45voKJ0ZI=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+	b=JgJhFSFlpSgBwC33cUPlLEwY7nroUBe4Dh4dJJ1Qbrf5FiYoxOrVTwPsTUcxxfRFU
+	 BfPi2xogBfE+QgsczG8EqWUNKWtN9TWbjTpe00eeUlDg/q0ggTEq2iMMOuG2iOSYS0
+	 cuuRUi9Eb9n4m/y9LibBZbDIhP/n3R8EddH/XQ75ywVAjo5zVH0ncK3WhKrOQtxfXP
+	 yHB6WuTxiAKzrk3XZyc83WHb/ow7ffLfGY9t5c7rjRFO1leS+gfsrvlKE1t6JGXnEw
+	 Dk92qEqVbimIs50isLxQCVjD+KR1csIFVVVcsKRPf1TRQC96vpaMIlbvnKyedvA4Kk
+	 GAoAla+4VpnAQ==
+Date: Thu, 16 Jan 2025 13:07:56 -0800 (PST)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
+To: =?UTF-8?Q?Milan_=C4=90oki=C4=87?= <milandjokic1995@gmail.com>
+cc: Stefano Stabellini <sstabellini@kernel.org>, 
+    Oleksii Kurochko <oleksii.kurochko@gmail.com>, 
+    linux-riscv@lists.infradead.org, paul.walmsley@sifive.com, 
+    palmer@dabbelt.com, aou@eecs.berkeley.edu, jgross@suse.com, 
+    oleksandr_tyshchenko@epam.com, Slavisa.Petrovic@rt-rk.com, 
+    Milan.Djokic@rt-rk.com, rafael.j.wysocki@intel.com, 
+    sunilvl@ventanamicro.com, takakura@valinux.co.jp, 
+    linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, 
+    iommu@lists.linux.dev
+Subject: Re: [PATCH] riscv: Add initial Xen guest support for RISC-Vgh
+In-Reply-To: <CAKp59VG=MV2=gCFqsC16EpP9oGa=eDBFJbwn-vS5q8oKyM_ZJQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.22.394.2501161304480.2684657@ubuntu-linux-20-04-desktop>
+References: <e4a649a7fdfc8fcf5f48a0bc4e76e5d546078083.1736868605.git.Slavisa.Petrovic@rt-rk.com> <alpine.DEB.2.22.394.2501141554170.2684657@ubuntu-linux-20-04-desktop> <2f1432e6-0d27-48fd-b034-475284f14233@gmail.com> <CAKp59VEOiXo+OKwPNiomtXNCsfDURCXaDktooi5JSoTSdhc90w@mail.gmail.com>
+ <alpine.DEB.2.22.394.2501151313590.2684657@ubuntu-linux-20-04-desktop> <CAKp59VG=MV2=gCFqsC16EpP9oGa=eDBFJbwn-vS5q8oKyM_ZJQ@mail.gmail.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Thu, 16 Jan 2025 23:00:14 +0200
-From: "Leon Romanovsky" <leon@kernel.org>
-To: "Jason Gunthorpe" <jgg@ziepe.ca>
-Cc: "Robin Murphy" <robin.murphy@arm.com>, "Jens Axboe" <axboe@kernel.dk>,
- "Joerg Roedel" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>,
- "Christoph Hellwig" <hch@lst.de>, "Sagi Grimberg" <sagi@grimberg.me>,
- "Keith Busch" <kbusch@kernel.org>, "Bjorn Helgaas" <bhelgaas@google.com>,
- "Logan Gunthorpe" <logang@deltatee.com>,
- "Yishai Hadas" <yishaih@nvidia.com>,
- "Shameer Kolothum" <shameerali.kolothum.thodi@huawei.com>,
- "Kevin Tian" <kevin.tian@intel.com>,
- "Alex Williamson" <alex.williamson@redhat.com>,
- "Marek Szyprowski" <m.szyprowski@samsung.com>,
- =?UTF-8?Q?J=C3=A9r=C3=B4me_Glisse?= <jglisse@redhat.com>,
- "Andrew Morton" <akpm@linux-foundation.org>,
- "Jonathan Corbet" <corbet@lwn.net>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
- linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
- kvm@vger.kernel.org, linux-mm@kvack.org,
- "Randy Dunlap" <rdunlap@infradead.org>
-Message-Id: <45eee716-83fd-4b15-ae11-2414aa119db3@app.fastmail.com>
-In-Reply-To: <20250116201853.GE674319@ziepe.ca>
-References: <cover.1734436840.git.leon@kernel.org>
- <fa43307222f263e65ae0a84c303150def15e2c77.1734436840.git.leon@kernel.org>
- <ad2312e0-10d5-467a-be5e-75e80805b311@arm.com>
- <20250115083340.GL3146852@unreal> <20250116201853.GE674319@ziepe.ca>
-Subject: Re: [PATCH v5 07/17] dma-mapping: Implement link/unlink ranges API
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="8323329-352887263-1737061680=:2684657"
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
+--8323329-352887263-1737061680=:2684657
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-On Thu, Jan 16, 2025, at 22:18, Jason Gunthorpe wrote:
-> On Wed, Jan 15, 2025 at 10:33:40AM +0200, Leon Romanovsky wrote:
->> > > +	do {
->> > > +		phys_addr_t phys;
->> > > +		size_t len;
->> > > +
->> > > +		phys = iommu_iova_to_phys(domain, addr);
->> > > +		if (WARN_ON(!phys))
->> > > +			continue;
->> > 
->> > Infinite WARN_ON loop, nice.
->> 
->> No problem, will change it to WARN_ON_ONCE.
->
-> I think the other point is that the addr doesn't increase, so this
-> loop will lock up.
+On Thu, 16 Jan 2025, Milan Đokić wrote:
+> On Wed, Jan 15, 2025 at 10:14 PM Stefano Stabellini
+> <sstabellini@kernel.org> wrote:
+> >
+> > On Wed, 15 Jan 2025, Milan Đokić wrote:
+> > > Hello Stefano, Oleksii
+> > >
+> > > On Wed, Jan 15, 2025 at 5:30 PM Oleksii Kurochko
+> > > <oleksii.kurochko@gmail.com> wrote:
+> > > >
+> > > > Hi Stefano,
+> > > >
+> > > > On 1/15/25 1:01 AM, Stefano Stabellini wrote:
+> > > >
+> > > > +Oleksii
+> > > >
+> > > > On Tue, 14 Jan 2025, Milan Djokic wrote:
+> > > >
+> > > > From: Slavisa Petrovic <Slavisa.Petrovic@rt-rk.com>
+> > > >
+> > > > This patch introduces initial support for running RISC-V as a Xen guest.
+> > > > It provides the necessary infrastructure and stubs for Xen-specific
+> > > > operations. Key changes include:
+> > > >
+> > > > - Modifications to the RISC-V kernel to integrate Xen-specific hypercalls
+> > > >   and interfaces, with function implementations stubbed for future work.
+> > > > - Introduction of Xen-specific headers for RISC-V, including event
+> > > >   handling, hypervisor interaction, and page management. Functions are
+> > > >   defined but not yet implemented.
+> > > > - Stub implementations for memory management, grant tables, and context
+> > > >   switching in the Xen environment, allowing further development and
+> > > >   integration.
+> > > >
+> > > > Signed-off-by: Milan Djokic <Milan.Djokic@rt-rk.com>
+> > > > Signed-off-by: Slavisa Petrovic <Slavisa.Petrovic@rt-rk.com>
+> > > >
+> > > > Hi Milan, Slavisa,
+> > > >
+> > > > Thank you very much for your contribution! Which Xen tree are you using
+> > > > for development?
+> > > >
+> > > > They are using [1] and have separate branches on top of latest. So we are in
+> > > > sync. Also, if you are interested we have created a task/epics for this feature in
+> > > > [1] so you could also check there some details:
+> > > > 1. https://gitlab.com/groups/xen-project/people/olkur/-/epics/5
+> > > > 2. https://gitlab.com/xen-project/people/olkur/xen/-/issues/12
+> > > >
+> > > >  I am asking because RISC-V support in Xen is still in
+> > > > the process of being upstreamed, and [1] is the tree that consolidates
+> > > > all patches currently on the to-be-upstreamed list.
+> > > >
+> > > > While the specific Xen tree you are using is not particularly important
+> > > > at this stage, and using [1] is not a requirement, I am asking because
+> > > > it is essential to align on the hypervisor ABI, especially regarding any
+> > > > details that have not yet been upstreamed. Specifically, is there
+> > > > anything in this patch series that relies on features not yet upstream
+> > > > in Xen?
+> > > >
+> > > > There are few features but some things which are Rt-Tk's branch in [1] could go
+> > > > without waiting for these features to be upstreamed.
+> > > >
+> > > > Thanks.
+> > > >
+> > > > ~ Oleksii
+> > > >
+> > > > [1] https://gitlab.com/xen-project/people/olkur/xen/-/tree/latest?ref_type=heads
+> > >
+> > > As Oleksii already explained, we are working in sync with his latest
+> > > branch where most of the risc port is done.
+> >
+> > Perfect, I was hoping you'd say that! :-)
+> > It is great to have you on board.
+> >
+> >
+> > > I would just add that this patch introduces kernel risc-v hypercall
+> > > support on which only our branch on xen tree depends on. Therefore, it
+> > > won't disrupt any functionality with current upstream Xen, it will
+> > > just introduce kernel functionality which is not used from Xen side
+> > > until our branch is merged upstream.
+> >
+> > Ideally, we should upstream the Xen side of an interface first to Xen,
+> > then add support for the interface to Linux. Let me make a concrete
+> > example. Let's say that you upstream hypercall support to Linux first,
+> > using SBI_ECALL defined as 0xE. Then, during the upstreaming process,
+> > the Xen community decides to change SBI_ECALL to 0XEA1 to make it the
+> > same as ARM. You'd have to change the Linux code again to fix it. To
+> > avoid this, it is best to wait upstreaming the Linux side, until the Xen
+> > side is Acked.
+> >
+> Sure, I got your point. This is actually one of the things we were not
+> sure about (whether we should upstream Linux or Xen side first).
+> Anyways it's good that we got review comments. We'll fix this patch
+> according to suggestions and send it back when Xen side is upstream.
 
-Yes, this is what I planned to do.
-
->
-> Possibly just do return? I suppose something is hopelessly corrupted
-> if we ever hit this..
->
-> Jason
+Thank you! In general, "first upstream to Xen, then to Linux" is a good
+guideline, but we can be flexible. For instance, in the case of
+hypercalls that seem pretty obvious how we are going to implement them,
+it might be sufficient to send a simple patch to Xen to add a document
+under xen.git/docs/ to document how the hypercall ABI will look like on
+RISC-V, without the implementation. With that document committed to
+xen.git, we can go forward with upstreaming the Linux side, even if the
+upstream Xen implementation is still lacking.
+--8323329-352887263-1737061680=:2684657--
