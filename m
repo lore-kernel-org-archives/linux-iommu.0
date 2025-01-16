@@ -1,62 +1,57 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D91322A1D5;
-	Thu, 16 Jan 2025 13:17:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A95DA1DE8B2
+	for <iommu@lists.linux.dev>; Thu, 16 Jan 2025 13:34:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737033451; cv=none; b=Bi2B+eKTzLrOnbmVsFfoGGgOvOcBJu17UTMMr8ZaNFJjuUYyfVSATPCxbE4OSK2T8GLXRl9tyg6YkzGKTKaRNl8Ra78/MBUvE5CdZeJR834oiiDpaK++Mgdt/ckeNED3DXy+MzHBEYZqzRsdJ6Mpf+Xp4VW2Wf1mfGRaYbd/fMY=
+	t=1737034470; cv=none; b=clA/LXQ4iBDKgqc9ahoK3vLXMuZvBC4U+aewT+Xc8ZOHla1v9KKEicsP/kCo1r0yGCK3wNFQt+2JUKHRd/MGAB6Jgnw6DsmAfOgmeQ3K8TmQll/iw8k2dRsfd8cqcUEq33NtdrzRSmOMAAuaCSnIktJwxyggmBHn0qb2nCWXocE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737033451; c=relaxed/simple;
-	bh=98YfFK3FLo/r2IcUebkfZNsNhdLdmUle6ZwkLclRkw0=;
+	s=arc-20240116; t=1737034470; c=relaxed/simple;
+	bh=4AlYFJT8Pbi6L1LPfbIROwds8P8lk+z7W7/xjXecyrk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qrSaXzsFbXc/YGuVs0Lc++1RLOu7dGsnHz40kWT67vIEYEJa4BgfxoYZQ/x/pOmfsnYo/x3K8XWQ/up4ZnJunJhRa3GpiE7qbyg38FvmFkuQ3iCAy6QRFQtQGjW42hv0tVt/UNxVTBsxRLhgStNk1znrHeI8iMX18t2Vxb8T08w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gvlIMcNP; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gvlIMcNP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97D4C4CED6;
-	Thu, 16 Jan 2025 13:17:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737033451;
-	bh=98YfFK3FLo/r2IcUebkfZNsNhdLdmUle6ZwkLclRkw0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=gvlIMcNPuW5PC6LunsMB/wk7ePhtPVrxSC2lErrCYeI+qwk3QofD1uzYzx57/6Wq0
-	 3OsXZT8yw/pnQbTE05e1CG0vPLHOEh3oBBHCXzwsmkFC+DfItlWAhF4QtWlfxKvwin
-	 seC+XCs9VFUN58Hf3dOrvT1KQGA5PwnxnPhD4tidr3aR+cDeGQq5zXIC4uXZfAAOXD
-	 Nvu1PHjZpOgTg7f8507h6FEJu5uPciO/HhpeicBeNkvA+RXeft2CbbyBZp6TxAhQCr
-	 W8FQiQzl4DRNmEfXT1dc81p6vGIiOlU1x1qMDJxsXQjTIqkNetLuxU8/U/YD+T8cRc
-	 qqbBQclPjbHyw==
-Date: Thu, 16 Jan 2025 14:17:24 +0100
-From: Danilo Krummrich <dakr@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	daniel.almeida@collabora.com, aliceryhl@google.com,
-	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
-Message-ID: <Z4kG5AcVeQKegLnb@pollux>
-References: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
- <20250108122825.136021-3-abdiel.janulgue@gmail.com>
- <20250108135951.GA18074@lst.de>
- <CANiq72=R2N+QiCiHZQu-6YJ9aYpn_bik3BW3U=nAW3jL7unzLw@mail.gmail.com>
- <20250108151858.GB24499@lst.de>
- <Z36X_ZnCmBQBMoZ6@pollux>
- <20250109080812.GA20431@lst.de>
- <Z3-NqwAG_96yq8VD@pollux>
- <20250110083955.GA5395@lst.de>
- <Z4D5a5NYrAbNxUL6@pollux>
+	 Content-Type:Content-Disposition:In-Reply-To; b=PxlPkHAk11rBp6FuXLCPM+Wn4s9rHAA9JfDxxnPABSJ/8F252B6MIEPneBhJzjGt+etRZRkcESubRPglolRVTj6R7tZUa9EAWYoKwBFkQPa2QZKBu8JujDqDpTT5YI29SRjFE7cMBQ4DQPxst050pusIvrDP0URls7qVye8hh8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5d9b6b034easo1948796a12.3
+        for <iommu@lists.linux.dev>; Thu, 16 Jan 2025 05:34:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737034467; x=1737639267;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SVe60wg+lBRnta1bqmFy0y2BGJWsXtB1Z65Ho0qku0Q=;
+        b=NJ/U321+mjceYfcDdPLdQo8Mwoh3nPqphNAqFfr7ZS+kLZLsj7oyAZRS1zalFdcMOn
+         uuNowNpstG32cbaeV0X4uY2JAsyKydSyYp8MV9dp7aUB/+wBbOz4tdzQzHxVAL1/HGoj
+         6XiLlZaO7aSHSlcHBIOPngKlvhSbUZJC2q1U7wuDSMk7sYRE6fPJv6S1k6zhQiJ6oHMz
+         4V6zm1rdrjA/w24SAhKgqHerHVZ/JKsE9CYOrwzhdwEusWwoafbVyASRGJtnXu+BM44o
+         SMlRhNk4SMoFLzNLVFtf/tqkTG+T+LpSuaMCOxRn1a3sfVQpZ3DGlYX3R33CPfyGGZYN
+         ucKQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWZeoA3Pfj95EyzDYwQIBO5TDFWuQrZE05U4jml/BGrQyRATvxWnFVGa6Xtv/7fgr+dm+DWag==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwMT/Yud7cGOENnuOI5N6Hp89rj81o7KvTJefZIJB3s5aSVWwRq
+	L8PSt5mOm7cyiUGlc8fK6hgAKqHshPxS/i1kIQ2c10dk22gwyzPl
+X-Gm-Gg: ASbGncvP+emBd+e3fyRoQMrn5vhEmPj0VwW3MBOZHsFEFWTNmdtOlvZg1oM7GmzjnMo
+	CbrRsb5+idPnwXUifG9+rcfsE1tMHGO5xKAoKIv/FsFT2KiJuKdYAw27oXxlR9wxcNuUgg8FVaC
+	3LQdoRDAbWVuouNZRHBW/H4LxWBBA3fGr5/H1VtzNUDbFL2Ce4xLBADPSyhaF6fQX9JiN8tqRpI
+	jprtfvDhC7Zq/IwZiRmE4teJkCABTX84xLOhWZJ1jkxNvo=
+X-Google-Smtp-Source: AGHT+IHtYQNu/MreF8vaipVwQK9Jbygxo12F5QwFq8ok5wSDVVmvL8xvzHcaQzGEHrOn8/LN+Kh48w==
+X-Received: by 2002:a17:907:1b03:b0:aab:eefd:4ceb with SMTP id a640c23a62f3a-ab2ab66d63cmr3465766366b.10.1737034466743;
+        Thu, 16 Jan 2025 05:34:26 -0800 (PST)
+Received: from gmail.com ([2a03:2880:30ff:9::])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab2c9563c10sm924750366b.92.2025.01.16.05.34.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jan 2025 05:34:26 -0800 (PST)
+Date: Thu, 16 Jan 2025 05:34:24 -0800
+From: Breno Leitao <leitao@debian.org>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Ido Schimmel <idosch@idosch.org>, iommu@lists.linux.dev,
+	dwmw2@infradead.org, tglx@linutronix.de, peterz@infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: Suspicious RCU usage in enable_drhd_fault_handling()
+Message-ID: <20250116-ludicrous-mature-ferret-8956dc@leitao>
+References: <Zx9OwdLIc_VoQ0-a@shredder.mtl.com>
+ <a45ae593-20b0-4604-bf2e-2870b2c7f11a@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,44 +60,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Z4D5a5NYrAbNxUL6@pollux>
+In-Reply-To: <a45ae593-20b0-4604-bf2e-2870b2c7f11a@linux.intel.com>
 
-On Fri, Jan 10, 2025 at 11:41:54AM +0100, Danilo Krummrich wrote:
-> On Fri, Jan 10, 2025 at 09:39:55AM +0100, Christoph Hellwig wrote:
-> > On Thu, Jan 09, 2025 at 09:49:47AM +0100, Danilo Krummrich wrote:
-> > > On Thu, Jan 09, 2025 at 09:08:12AM +0100, Christoph Hellwig wrote:
-> > > > On Wed, Jan 08, 2025 at 04:21:33PM +0100, Danilo Krummrich wrote:
-> > > > > What does "your code" mean? Duplicated in every driver?
-> > > > 
-> > > > Yes, interfaces to the DMA API should stay in readable C code and not
-> > > > in weird bindings so that it reminds greppable and maintainable.
-> > > > 
-> > > 
-> > > Rust drivers shouldn't use C APIs directly, but rather use an abstraction of the
-> > > corresponding C API.
+Hello Baolu,
+
+On Tue, Oct 29, 2024 at 09:15:55AM +0800, Baolu Lu wrote:
+> On 2024/10/28 16:43, Ido Schimmel wrote:
+> > Hi,
 > > 
-> > Don't force me to deal with your shiny language of the day.
-> 
-> Again, no one asks you to deal with or maintain this piece of Rust code.
-> 
-> > Maintaining
-> > multi-language projects is a pain I have no interest in dealing with.
-> > If you want to use something that's not C, be that assembly or rust you
-> > write to C interfaces and deal with the impedence mismatch yourself as
-> > far as I'm concerned.
+> > I have recently enabled CONFIG_RCU_EXPERT and CONFIG_PROVE_RCU_LIST in
+> > our debug configuration file and started observing the following splat
+> > [1] on one of our machines during boot. Searched the archives, but did
+> > not find a similar report.
 > > 
+> > Not sure what is the right fix as I am not familiar with this code, but
+> > I can easily test patches.
 > 
-> This is exactly what we're doing and proposing here, isn't it?
-> 
-> We wrote a single piece of Rust code that abstracts the C API for all Rust
-> drivers, which we offer to maintain ourselves.
-> 
-> What else are you asking for?
+> Thanks for reporting this issue. I've been able to reproduce it locally
+> and will work on a fix. I'll let you know as soon as I have an update.
 
-Since there hasn't been a reply so far, I assume that we're good with
-maintaining the DMA Rust abstractions separately.
+Have you had a chance to look at this problem? I am still seeing it in
+6.13-rc7.
 
-Hence, the next version of this patch series will have the corresponding
-maintainer entry.
-
-- Danilo
+Thanks
+--breno
