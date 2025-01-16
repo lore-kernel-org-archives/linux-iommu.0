@@ -1,165 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B0816F099;
-	Thu, 16 Jan 2025 21:08:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C0FC71DD88F;
+	Thu, 16 Jan 2025 23:23:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737061680; cv=none; b=lJQwF2mOWoXF6Ilr5PXuJmG1CatlaGqP+6ZVvo5d30euagMJpzqn88pYrpbgFy0UMRQtmdlng7pHEqO9lDuUFMPtu5XYYHRVbbteeZLmgN/RkJBbhae62CWrSJX3xmCj4DvFkZT6BAyo4HNfHRjjrsCR9nYp30L+H8lzUORP9lY=
+	t=1737069796; cv=none; b=szECKFsjAbLMSusAwbPT6Ib2pzia7SjE0uVfimdZsv0sO14vrLO6rg6UeHKlJzE3CsXZdQ5UDKmu73hY8DaYWOxMmot4ppIwByhwHarkVI/R3DPcxUY+FNGor3L5e2x62hdhK6n0i9CyYQ3Y2MBuSoNj/G468i0Wreea92PD4jo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737061680; c=relaxed/simple;
-	bh=jz4mFU9u1twIuaW1pCTzx/vWfeheqpZU6b45voKJ0ZI=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=nlEUKYhhByDHbZgjVDS64SQpmbd/hOgBnuzkiLPh/W0xC4RYle53iF34YhZb4MCpXfWPZG6p91R+0iysYwxDwwRBCy7D+T894tGqcJc4LFbLskw+1xmnj/ilgCv2jxBzTh8GrOFLt8CjpkNeGexMkSzdVLv4Zl/cGZZV1YCL2kU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JgJhFSFl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1737069796; c=relaxed/simple;
+	bh=lzcKpMvtoa9caH1dK776bAbqnopCsa5ERUGfA82TvbY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=HUbb7Wjit3VB3IniH9YQHYYcEfpRWqMHLko1fLsBtYiXaAqvd/MpENhQPXG3zDuxBrHung2pVEgbkQP9lU4erCO2gU1NzIG6cBTh2ESRBWWT397O/tgq6N/SlgjNyPnMdcDpFfpljhJvjFvwvU5SjYOBElEvhXnVfZrvrByIsiE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=aj9ZpFs/; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JgJhFSFl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27BB0C4CED6;
-	Thu, 16 Jan 2025 21:07:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737061680;
-	bh=jz4mFU9u1twIuaW1pCTzx/vWfeheqpZU6b45voKJ0ZI=;
-	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-	b=JgJhFSFlpSgBwC33cUPlLEwY7nroUBe4Dh4dJJ1Qbrf5FiYoxOrVTwPsTUcxxfRFU
-	 BfPi2xogBfE+QgsczG8EqWUNKWtN9TWbjTpe00eeUlDg/q0ggTEq2iMMOuG2iOSYS0
-	 cuuRUi9Eb9n4m/y9LibBZbDIhP/n3R8EddH/XQ75ywVAjo5zVH0ncK3WhKrOQtxfXP
-	 yHB6WuTxiAKzrk3XZyc83WHb/ow7ffLfGY9t5c7rjRFO1leS+gfsrvlKE1t6JGXnEw
-	 Dk92qEqVbimIs50isLxQCVjD+KR1csIFVVVcsKRPf1TRQC96vpaMIlbvnKyedvA4Kk
-	 GAoAla+4VpnAQ==
-Date: Thu, 16 Jan 2025 13:07:56 -0800 (PST)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To: =?UTF-8?Q?Milan_=C4=90oki=C4=87?= <milandjokic1995@gmail.com>
-cc: Stefano Stabellini <sstabellini@kernel.org>, 
-    Oleksii Kurochko <oleksii.kurochko@gmail.com>, 
-    linux-riscv@lists.infradead.org, paul.walmsley@sifive.com, 
-    palmer@dabbelt.com, aou@eecs.berkeley.edu, jgross@suse.com, 
-    oleksandr_tyshchenko@epam.com, Slavisa.Petrovic@rt-rk.com, 
-    Milan.Djokic@rt-rk.com, rafael.j.wysocki@intel.com, 
-    sunilvl@ventanamicro.com, takakura@valinux.co.jp, 
-    linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, 
-    iommu@lists.linux.dev
-Subject: Re: [PATCH] riscv: Add initial Xen guest support for RISC-Vgh
-In-Reply-To: <CAKp59VG=MV2=gCFqsC16EpP9oGa=eDBFJbwn-vS5q8oKyM_ZJQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2501161304480.2684657@ubuntu-linux-20-04-desktop>
-References: <e4a649a7fdfc8fcf5f48a0bc4e76e5d546078083.1736868605.git.Slavisa.Petrovic@rt-rk.com> <alpine.DEB.2.22.394.2501141554170.2684657@ubuntu-linux-20-04-desktop> <2f1432e6-0d27-48fd-b034-475284f14233@gmail.com> <CAKp59VEOiXo+OKwPNiomtXNCsfDURCXaDktooi5JSoTSdhc90w@mail.gmail.com>
- <alpine.DEB.2.22.394.2501151313590.2684657@ubuntu-linux-20-04-desktop> <CAKp59VG=MV2=gCFqsC16EpP9oGa=eDBFJbwn-vS5q8oKyM_ZJQ@mail.gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="aj9ZpFs/"
+Received: from thinkpad-p16sg1.corp.microsoft.com (unknown [20.236.10.66])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 220C020591A5;
+	Thu, 16 Jan 2025 15:23:14 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 220C020591A5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1737069794;
+	bh=NTt6eAeZulOXgSwKKcojtQtTZr5qsec7mtCKAgDqis0=;
+	h=From:To:Cc:Subject:Date:From;
+	b=aj9ZpFs/zTz59cSblNi82HiQ8/TWkT0sHEKkMl+c98XoAGr8T8D3xbIBOvEFqeSP6
+	 m+1n5yQFhBrkvITROOo+h3x8wDz2Z200t7jCrl64+w4kgPD0bvNN8DFlC+e9GmxCBH
+	 1oKkouiPTWwYHCxlxtqfVyvbaq/0dDWUnNtUDYZ0=
+From: Shyam Saini <shyamsaini@linux.microsoft.com>
+To: iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	virtualization@lists.linux.dev
+Cc: will@kernel.org,
+	jacob.pan@linux.microsoft.com,
+	eric.auger@redhat.com,
+	code@tyhicks.com,
+	eahariha@linux.microsoft.com,
+	vijayb@linux.microsoft.com
+Subject: [PATCH 0/3] make MSI IOVA base address and its length configurable
+Date: Thu, 16 Jan 2025 15:23:04 -0800
+Message-Id: <20250116232307.1436693-1-shyamsaini@linux.microsoft.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-352887263-1737061680=:2684657"
+Content-Transfer-Encoding: 8bit
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi,
 
---8323329-352887263-1737061680=:2684657
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Currently, the MSI_IOVA_BASE address is hard-coded to 0x80000000,
+assuming that all platforms have this address available for MSI IOVA
+reservation. However, this is not always the case, as some platforms
+reserve this address for other purposes. Consequently, these platforms
+cannot reserve the MSI_IOVA_BASE address for MSI.
 
-On Thu, 16 Jan 2025, Milan Đokić wrote:
-> On Wed, Jan 15, 2025 at 10:14 PM Stefano Stabellini
-> <sstabellini@kernel.org> wrote:
-> >
-> > On Wed, 15 Jan 2025, Milan Đokić wrote:
-> > > Hello Stefano, Oleksii
-> > >
-> > > On Wed, Jan 15, 2025 at 5:30 PM Oleksii Kurochko
-> > > <oleksii.kurochko@gmail.com> wrote:
-> > > >
-> > > > Hi Stefano,
-> > > >
-> > > > On 1/15/25 1:01 AM, Stefano Stabellini wrote:
-> > > >
-> > > > +Oleksii
-> > > >
-> > > > On Tue, 14 Jan 2025, Milan Djokic wrote:
-> > > >
-> > > > From: Slavisa Petrovic <Slavisa.Petrovic@rt-rk.com>
-> > > >
-> > > > This patch introduces initial support for running RISC-V as a Xen guest.
-> > > > It provides the necessary infrastructure and stubs for Xen-specific
-> > > > operations. Key changes include:
-> > > >
-> > > > - Modifications to the RISC-V kernel to integrate Xen-specific hypercalls
-> > > >   and interfaces, with function implementations stubbed for future work.
-> > > > - Introduction of Xen-specific headers for RISC-V, including event
-> > > >   handling, hypervisor interaction, and page management. Functions are
-> > > >   defined but not yet implemented.
-> > > > - Stub implementations for memory management, grant tables, and context
-> > > >   switching in the Xen environment, allowing further development and
-> > > >   integration.
-> > > >
-> > > > Signed-off-by: Milan Djokic <Milan.Djokic@rt-rk.com>
-> > > > Signed-off-by: Slavisa Petrovic <Slavisa.Petrovic@rt-rk.com>
-> > > >
-> > > > Hi Milan, Slavisa,
-> > > >
-> > > > Thank you very much for your contribution! Which Xen tree are you using
-> > > > for development?
-> > > >
-> > > > They are using [1] and have separate branches on top of latest. So we are in
-> > > > sync. Also, if you are interested we have created a task/epics for this feature in
-> > > > [1] so you could also check there some details:
-> > > > 1. https://gitlab.com/groups/xen-project/people/olkur/-/epics/5
-> > > > 2. https://gitlab.com/xen-project/people/olkur/xen/-/issues/12
-> > > >
-> > > >  I am asking because RISC-V support in Xen is still in
-> > > > the process of being upstreamed, and [1] is the tree that consolidates
-> > > > all patches currently on the to-be-upstreamed list.
-> > > >
-> > > > While the specific Xen tree you are using is not particularly important
-> > > > at this stage, and using [1] is not a requirement, I am asking because
-> > > > it is essential to align on the hypervisor ABI, especially regarding any
-> > > > details that have not yet been upstreamed. Specifically, is there
-> > > > anything in this patch series that relies on features not yet upstream
-> > > > in Xen?
-> > > >
-> > > > There are few features but some things which are Rt-Tk's branch in [1] could go
-> > > > without waiting for these features to be upstreamed.
-> > > >
-> > > > Thanks.
-> > > >
-> > > > ~ Oleksii
-> > > >
-> > > > [1] https://gitlab.com/xen-project/people/olkur/xen/-/tree/latest?ref_type=heads
-> > >
-> > > As Oleksii already explained, we are working in sync with his latest
-> > > branch where most of the risc port is done.
-> >
-> > Perfect, I was hoping you'd say that! :-)
-> > It is great to have you on board.
-> >
-> >
-> > > I would just add that this patch introduces kernel risc-v hypercall
-> > > support on which only our branch on xen tree depends on. Therefore, it
-> > > won't disrupt any functionality with current upstream Xen, it will
-> > > just introduce kernel functionality which is not used from Xen side
-> > > until our branch is merged upstream.
-> >
-> > Ideally, we should upstream the Xen side of an interface first to Xen,
-> > then add support for the interface to Linux. Let me make a concrete
-> > example. Let's say that you upstream hypercall support to Linux first,
-> > using SBI_ECALL defined as 0xE. Then, during the upstreaming process,
-> > the Xen community decides to change SBI_ECALL to 0XEA1 to make it the
-> > same as ARM. You'd have to change the Linux code again to fix it. To
-> > avoid this, it is best to wait upstreaming the Linux side, until the Xen
-> > side is Acked.
-> >
-> Sure, I got your point. This is actually one of the things we were not
-> sure about (whether we should upstream Linux or Xen side first).
-> Anyways it's good that we got review comments. We'll fix this patch
-> according to suggestions and send it back when Xen side is upstream.
+There was an [1] attempt to fix this problem by passing the MSI IOVA
+base as a kernel command line parameter. In the previous attempt,
+Will suggested reserving the MSI IOVA at runtime whenever there is a
+conflict with the default MSI_IOVA_BASE. However, dynamically reserving
+this address has debuggability concerns, as it becomes difficult to
+track IOMMU mapping failures.
 
-Thank you! In general, "first upstream to Xen, then to Linux" is a good
-guideline, but we can be flexible. For instance, in the case of
-hypercalls that seem pretty obvious how we are going to implement them,
-it might be sufficient to send a simple patch to Xen to add a document
-under xen.git/docs/ to document how the hypercall ABI will look like on
-RISC-V, without the implementation. With that document committed to
-xen.git, we can go forward with upstreaming the Linux side, even if the
-upstream Xen implementation is still lacking.
---8323329-352887263-1737061680=:2684657--
+This patch series aims to address the issue by introducing a new DTS
+property, "arm,smmu-pci-msi-iova-data". This property allows the
+configuration of MSI IOVA with a custom MSI base address and a custom
+length for IOMMU/SMMU drivers. It accommodates platforms that do not
+have the default MSI base address available for MSI reservation.
+
+[1]: https://lore.kernel.org/lkml/20200914181307.117792-1-vemegava@linux.microsoft.com/
+
+Thanks,
+Shyam
+
+Shyam Saini (3):
+  dt-bindings: iommu: add "arm,smmu-pci-msi-iova-data" property
+  iommu: consolidate MSI_IOVA macro definitions
+  arm-smmu: use dts passed MSI IOVA address and length
+
+ .../bindings/iommu/arm,smmu-v3.yaml           | 12 +++++
+ .../devicetree/bindings/iommu/arm,smmu.yaml   | 12 +++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 10 ++++-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  3 --
+ drivers/iommu/arm/arm-smmu/arm-smmu.c         | 11 +++--
+ drivers/iommu/virtio-iommu.c                  |  8 ++--
+ include/linux/iommu.h                         | 44 +++++++++++++++++++
+ 7 files changed, 86 insertions(+), 14 deletions(-)
+
+-- 
+2.34.1
+
