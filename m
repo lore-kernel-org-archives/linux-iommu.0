@@ -1,217 +1,161 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B274722CBEF;
-	Thu, 16 Jan 2025 18:03:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA381547E2
+	for <iommu@lists.linux.dev>; Thu, 16 Jan 2025 19:14:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737050587; cv=none; b=OcCC4MPR0MI6gP+Zd+2yuvEEvPrTw7eQo8kYPfzTyy3R4DFyvgcuJB3KOgzRMSZ6G8miXk4rqzljyt7F5pd9mOtNst+/vgTGYcgMuGnRCrm0khq1U/PgoSGsA/1FmJtfGDf2vof0yzJYvu9oUqGQ1vJJLmI4HCZlqhI4bYK5bks=
+	t=1737054899; cv=none; b=oTXD472UcNpWvkbywX55exFoBzsmsOkwqd6+LueYMzfWpug5QihaI48d+Kj7a85J1xxAgBNjtumhLTY6pCbXPo6h4fMndSE9k3U0N96giuQPtZ55172O2KgHcRyvCKXsB20rY/eQ12GOzN8obZ3YpXRT6xQ02cAc+Ra3FIacyrA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737050587; c=relaxed/simple;
-	bh=NJ3mCKVaerTWKdIY3yecqSXXrLTSZSkqHQ/cdTJWkEI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=p5a/Eg8Uu+17LLyVeBydMq9gZHzKLxL/uJpXTm5nHNAnTYh1rDP6x01rXQUceOK9UcXvks/YoP4PBmD75mMFvmHKcvdEtManYPTHMbNJFJjSnX8+6+eyalKyOr3yPBJqvsMpp/x6KUIKUVJQkItuU1vjGCgu/2MFBN8nYFokGH0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JeJd3zIn; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1737054899; c=relaxed/simple;
+	bh=dup/sGyrKh9WqqpYdYZY3lMgQO3Ij2gIanBBEaZheHQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=t+GwOxLXrsm5rhTd3adJMXm85pzidds89gK09rvYwJ8yFBHwOXHqDCj1GhvTxpgIhLlbEr3DwfaBNPO1qY1WwETKM2kRRUMXO6T7lvA6/PW43mj1vAO7WTwBmM/BqNIeP3QqZF8wGEle/SJ1l7PL4p+atVFrztpSJHMG6Hn4PRo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PlzGrg0a; arc=none smtp.client-ip=209.85.219.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JeJd3zIn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E65FAC4CED6;
-	Thu, 16 Jan 2025 18:03:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737050587;
-	bh=NJ3mCKVaerTWKdIY3yecqSXXrLTSZSkqHQ/cdTJWkEI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=JeJd3zInKgbOG12tOr+M4tKEbxueUw/GyR+YtZoFsftDzz0NwbDdOaZmqF5FjYFUW
-	 fq6OXxaf+kc1UKQI2xkfNOn0SjTKJnNQ6aXrCf7yXLUanwJgEZH991A6sCCJnotDSa
-	 45KUpiLVVf0vfVmDz6J+L0vQgxFwLj175YRjmd52cG4KnnH6aZEz/BDLoa+3C2t4i0
-	 kFtpeTJZdQUiafVv1ZfytHfbDixLf90R7zdAKIEem/f2ynVZGfoZoC/U9Zb8dAxh/z
-	 MRQBfGJg4zbVKAH1DtDFnZUofqYFq86ctZEd5OYqGxAaLB1XT8L0cfy+QG3chLi3AZ
-	 KqN2d3gF1mAPw==
-Message-ID: <f558df7a-d983-4fc5-8358-faf251994d23@kernel.org>
-Date: Thu, 16 Jan 2025 19:02:59 +0100
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PlzGrg0a"
+Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-6dd43aa1558so14002066d6.0
+        for <iommu@lists.linux.dev>; Thu, 16 Jan 2025 11:14:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1737054897; x=1737659697; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=OQt/5kPLKfcR/r6Q+UjR/d/646J1fzUVQYSmfGNoAZM=;
+        b=PlzGrg0arGwn1+zixIkrlaDDzKOVwtPo7qE+/G4hRUZjwx7xItTRnBK1try4J8Uzg9
+         yHhTP74QAoKxdREzqRLdu7FcXKUxM42ezDG0LVyVbBRYgmOqjfYFJgAFW1B2YZ9WKw2b
+         xcoYIYreRQX8dfLLGrgcUTCv8IhDefaHTIBhCfn8g6FOYwz+nPOS551pAUwwjFFsUyQX
+         dhUl012Z7OXDeN8gWVpjiTpL3KAuShkMre4/WSWpS/DqA1YsW+sIlyylZH3Xolin+sIV
+         SbhWh3Lln+CgnmBZvwh5KZ079431i35feVw0nVVNrHfTxhU21tw+L+Scu1DP3epx4eHp
+         OeNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737054897; x=1737659697;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OQt/5kPLKfcR/r6Q+UjR/d/646J1fzUVQYSmfGNoAZM=;
+        b=HGs6VPl7kVrVNCEZIFnV57w3C4FRoW3h5YsSUEO+Z5bt7B3R12EHSI1qH68RIku/4v
+         oaRe62AMIBgKoZas1jubtnvWZmwKnLlAXPBAB3eG/LHIYiJ/ULaH0cpRqfl148nXHMT7
+         LSKzxo2n9v1OCfYka31pUAl13UW540Gf9WlIb7HpFOmmWEffPsf3y8UUQkw2kFlf1ZN5
+         zKKVT45yrC+3kY/5T45pv3X7bkHB8+K2AwRKjryB9t+v9k+5y4EtWi3COnbMHGrRft3w
+         4dOH6BZgsT+VXw1d478Vc7AMVW+rZf6v92NFRJBwlCBL5x22UPpN5hW0EMSQT+cm85RX
+         QwMg==
+X-Forwarded-Encrypted: i=1; AJvYcCWWyCqOZ0ssyg6DPkq15TaFcY6Y03Q/ogw9Xh6V4ytMWc6J16VEmtYGBRNplecDuG5XkpmZiA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzwk0DmDasYI/KH/Lu4JemwNKwFdghD+Ako8R3pUjnUgn93bBNZ
+	AXT88jibC1+qCfrvVS11OS8NpR1/cBCkmxxEzSzb8zsAw4J4fJcFgQy9iyHfIM0=
+X-Gm-Gg: ASbGncthtf6PdPvBIitnk593TwB1ookYSQJBIIDjuQDRu0j3mT8+KXNVkVlbBlbyc9R
+	NbC0bSgOyhuH2ZatyDqcV2Ed4WBqe68QWZ8UwPTPN8PqH/+Dsf9CXyi7+pQG4tBzRPArSaFRJDL
+	a7bbRDvUf4WphJ8DJLzZxsvU8GKqQVJSTqVBrh63fgnWBE/AZTiQd8pawiqn6C5r59YanM2p72U
+	fTChQRZXtgpXAEwAKc1CV3Dnl+fjpKH9MwbAptwJ9C0uJgqkwZQ5WMbUpf22b3bRy+HWzBP00cQ
+	UYQbiJtHJVrgpCNwiSLVu+8kX51daQ==
+X-Google-Smtp-Source: AGHT+IEKLQFb6+AOsWzFxspuNmlLzUNEaMEFSc/MnRiIlEENEcAmYeVJMdkM047M2a18YZcxnlS9VA==
+X-Received: by 2002:a05:6214:19c8:b0:6df:97a3:5e5a with SMTP id 6a1803df08f44-6df9b255d62mr623412166d6.28.1737054896839;
+        Thu, 16 Jan 2025 11:14:56 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-46e1030e8dbsm2636371cf.44.2025.01.16.11.14.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jan 2025 11:14:55 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tYVKR-00000002xdV-1jHj;
+	Thu, 16 Jan 2025 15:14:55 -0400
+Date: Thu, 16 Jan 2025 15:14:55 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Mostafa Saleh <smostafa@google.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"maz@kernel.org" <maz@kernel.org>,
+	"oliver.upton@linux.dev" <oliver.upton@linux.dev>,
+	"joey.gouly@arm.com" <joey.gouly@arm.com>,
+	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+	"yuzenghui@huawei.com" <yuzenghui@huawei.com>,
+	"robdclark@gmail.com" <robdclark@gmail.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"vdonnefort@google.com" <vdonnefort@google.com>,
+	"qperret@google.com" <qperret@google.com>,
+	"tabba@google.com" <tabba@google.com>,
+	"danielmentz@google.com" <danielmentz@google.com>,
+	"tzukui@google.com" <tzukui@google.com>
+Subject: Re: [RFC PATCH v2 00/58] KVM: Arm SMMUv3 driver for pKVM
+Message-ID: <20250116191455.GC674319@ziepe.ca>
+References: <20241212180423.1578358-1-smostafa@google.com>
+ <20241212194119.GA4679@ziepe.ca>
+ <Z1yNWI9lBNIZg6Le@google.com>
+ <20250102201614.GA26854@ziepe.ca>
+ <Z35rEeSVwfZVA9IF@google.com>
+ <BN9PR11MB52767756EE35DA2359C351F08C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v7 0/8] fix two bugs related to page_pool
-To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
- kuba@kernel.org, pabeni@redhat.com
-Cc: zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com,
- Alexander Lobakin <aleksander.lobakin@intel.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>,
- Andrew Morton <akpm@linux-foundation.org>, IOMMU <iommu@lists.linux.dev>,
- MM <linux-mm@kvack.org>, Alexei Starovoitov <ast@kernel.org>,
- Daniel Borkmann <daniel@iogearbox.net>,
- John Fastabend <john.fastabend@gmail.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
- bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
-References: <20250110130703.3814407-1-linyunsheng@huawei.com>
- <3c8e4f86-87e2-470d-84d8-86c70b3e2fcc@kernel.org>
- <c02e856e-6ec5-49d0-8527-2647695a0174@huawei.com>
- <3a853e1b-b5bf-4709-b8f6-e466e3e7375e@kernel.org>
- <1bef4a35-efaa-4083-8ed5-8818fe285db5@huawei.com>
-Content-Language: en-US
-From: Jesper Dangaard Brouer <hawk@kernel.org>
-In-Reply-To: <1bef4a35-efaa-4083-8ed5-8818fe285db5@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN9PR11MB52767756EE35DA2359C351F08C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-
-
-On 16/01/2025 13.52, Yunsheng Lin wrote:
-> On 2025/1/16 1:40, Jesper Dangaard Brouer wrote:
->>
->>
->> On 15/01/2025 12.33, Yunsheng Lin wrote:
->>> On 2025/1/14 22:31, Jesper Dangaard Brouer wrote:
->>>>
->>>>
->>>> On 10/01/2025 14.06, Yunsheng Lin wrote:
->>>>> This patchset fix a possible time window problem for page_pool and
->>>>> the dma API misuse problem as mentioned in [1], and try to avoid the
->>>>> overhead of the fixing using some optimization.
->>>>>
->>>>>    From the below performance data, the overhead is not so obvious
->>>>> due to performance variations for time_bench_page_pool01_fast_path()
->>>>> and time_bench_page_pool02_ptr_ring, and there is about 20ns overhead
->>>>> for time_bench_page_pool03_slow() for fixing the bug.
->>>>>
->>>>
->>>> My benchmarking on x86_64 CPUs looks significantly different.
->>>>    - CPU: Intel(R) Xeon(R) CPU E5-1650 v4 @ 3.60GHz
->>>>
->>>> Benchmark (bench_page_pool_simple) results from before and after patchset:
->>>>
->>>> | Test name  | Cycles |       |    |Nanosec |        |       |      % |
->>>> | (tasklet_*)| Before | After |diff| Before |  After |  diff | change |
->>>> |------------+--------+-------+----+--------+--------+-------+--------|
->>>> | fast_path  |     19 |    24 |   5|  5.399 |  6.928 | 1.529 |   28.3 |
->>>> | ptr_ring   |     54 |    79 |  25| 15.090 | 21.976 | 6.886 |   45.6 |
->>>> | slow       |    238 |   299 |  61| 66.134 | 83.298 |17.164 |   26.0 |
->>>> #+TBLFM: $4=$3-$2::$7=$6-$5::$8=(($7/$5)*100);%.1f
->>>>
->>>> My above testing show a clear performance regressions across three
->>>> different page_pool operating modes.
->>>
->>> I retested it on arm64 server patch by patch as the raw performance
->>> data in the attachment, it seems the result seemed similar as before.
->>>
->>> Before this patchset:
->>>               fast_path              ptr_ring            slow
->>> 1.         31.171 ns               60.980 ns          164.917 ns
->>> 2.         28.824 ns               60.891 ns          170.241 ns
->>> 3.         14.236 ns               60.583 ns          164.355 ns
->>>
->>> With patch 1-4:
->>> 4.         31.443 ns               53.242 ns          210.148 ns
->>> 5.         31.406 ns               53.270 ns          210.189 ns
->>>
->>> With patch 1-5:
->>> 6.         26.163 ns               53.781 ns          189.450 ns
->>> 7.         26.189 ns               53.798 ns          189.466 ns
->>>
->>> With patch 1-8:
->>> 8.         28.108 ns               68.199 ns          202.516 ns
->>> 9.         16.128 ns               55.904 ns          202.711 ns
->>>
->>> I am not able to get hold of a x86 server yet, I might be able
->>> to get one during weekend.
->>>
->>> Theoretically, patch 1-4 or 1-5 should not have much performance
->>> impact for fast_path and ptr_ring except for the rcu_lock mentioned
->>> in page_pool_napi_local(), so it would be good if patch 1-5 is also
->>> tested in your testlab with the rcu_lock removing in
->>> page_pool_napi_local().
->>>
->>
->> What are you saying?
->>   - (1) test patch 1-5
->>   - or (2) test patch 1-5 but revert patch 2 with page_pool_napi_local()
+On Thu, Jan 16, 2025 at 06:39:31AM +0000, Tian, Kevin wrote:
+> > From: Mostafa Saleh <smostafa@google.com>
+> > Sent: Wednesday, January 8, 2025 8:10 PM
+> > 
+> > On Thu, Jan 02, 2025 at 04:16:14PM -0400, Jason Gunthorpe wrote:
+> > > On Fri, Dec 13, 2024 at 07:39:04PM +0000, Mostafa Saleh wrote:
+> > > > Yeah, SVA is tricky, I guess for that we would have to use nesting,
+> > > > but tbh, I don’t think it’s a deal breaker for now.
+> > >
+> > > Again, it depends what your actual use case for translation is inside
+> > > the host/guest environments. It would be good to clearly spell this out..
+> > > There are few drivers that directly manpulate the iommu_domains of a
+> > > device. a few gpus, ath1x wireless, some tegra stuff, "venus". Which
+> > > of those are you targetting?
+> > >
+> > 
+> > Not sure I understand this point about manipulating domains.
+> > AFAIK, SVA is not that common, including mobile spaces but I can be wrong,
+> > that’s why it’s not a priority here.
 > 
-> patch 1-5 with below applied.
-> 
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -1207,10 +1207,8 @@ static bool page_pool_napi_local(const struct page_pool *pool)
->          /* Synchronizated with page_pool_destory() to avoid use-after-free
->           * for 'napi'.
->           */
-> -       rcu_read_lock();
->          napi = READ_ONCE(pool->p.napi);
->          napi_local = napi && READ_ONCE(napi->list_owner) == cpuid;
-> -       rcu_read_unlock();
-> 
->          return napi_local;
->   }
-> 
+> Nested translation is required beyond SVA. A scenario which requires
+> a vIOMMU and multiple device domains within the guest would like to
+> embrace nesting. Especially for ARM vSMMU nesting is a must.
 
-Benchmark (bench_page_pool_simple) results from before and after
-patchset with patches 1-5m and rcu lock removal as requested.
+Right, if you need an iommu domain in the guest there are only three
+mainstream ways to get this in Linux:
+ 1) Use the DMA API and have the iommu group be translating. This is
+    optional in that the DMA API usually supports identity as an option.
+ 2) A driver directly calls iommu_paging_domain_alloc() and manually
+    attaches it to some device, and does not use the DMA API. My list
+    above of ath1x/etc are examples doing this
+ 3) Use VFIO
 
-| Test name  |Cycles |   1-5 |    | Nanosec |    1-5 |        |      % |
-| (tasklet_*)|Before | After |diff|  Before |  After |   diff | change |
-|------------+-------+-------+----+---------+--------+--------+--------|
-| fast_path  |    19 |    19 |   0|   5.399 |  5.492 |  0.093 |    1.7 |
-| ptr_ring   |    54 |    57 |   3|  15.090 | 15.849 |  0.759 |    5.0 |
-| slow       |   238 |   284 |  46|  66.134 | 78.909 | 12.775 |   19.3 |
-#+TBLFM: $4=$3-$2::$7=$6-$5::$8=(($7/$5)*100);%.1f
+My remark to Mostafa is to be specific, which of the above do you want
+to do in your mobile guest (and what driver exactly if #2) and why.
 
-This test with patches 1-5 looks much better regarding performance.
+This will help inform what the performance profile looks like and
+guide if nesting/para virt is appropriate.
 
---Jesper
+> But I'm not sure that I got Jason's point about " there is no way to get
+> SVA support with para-virtualization." virtio-iommu is a para-virtualized
+> model and SVA support is in its plan. The main requirement is to pass
+> the base pointer of the guest CPU page table to backend and PRI faults/
+> responses back forth.
 
-https://github.com/xdp-project/xdp-project/blob/main/areas/mem/page_pool07_bench_DMA_fix.org#e5-1650-pp01-dma-fix-v7-p1-5
+That's nesting, you have a full page table under the control of the
+guest, and the guest needs to have a level of HW-specific
+knowledge. It is just an alternative to using the native nesting
+vIOMMU.
 
-Kernel:
-  - 6.13.0-rc6-pp01-DMA-fix-v7-p1-5+ #5 SMP PREEMPT_DYNAMIC Thu Jan 16 
-18:06:53 CET 2025 x86_64 GNU/Linux
+What I mean by "para-virtualization" is the guest does map/unmap calls
+to the hypervisor and has no page tbale.
 
-Machine: Intel(R) Xeon(R) CPU E5-1650 v4 @ 3.60GHz
-
-modprobe bench_page_pool_simple loops=100000000
-
-Raw data:
-[  187.309423] bench_page_pool_simple: 
-time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
-[  187.872849] time_bench: Type:no-softirq-page_pool01 Per elem: 19 
-cycles(tsc) 5.539 ns (step:0) - (measurement period time:0.553906443 sec 
-time_interval:553906443) - (invoke count:100000000 tsc_interval:1994123064)
-[  187.892023] bench_page_pool_simple: 
-time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
-[  189.611070] time_bench: Type:no-softirq-page_pool02 Per elem: 61 
-cycles(tsc) 17.095 ns (step:0) - (measurement period time:1.709580367 
-sec time_interval:1709580367) - (invoke count:100000000 
-tsc_interval:6154679394)
-[  189.630414] bench_page_pool_simple: time_bench_page_pool03_slow(): 
-Cannot use page_pool fast-path
-[  197.222387] time_bench: Type:no-softirq-page_pool03 Per elem: 272 
-cycles(tsc) 75.826 ns (step:0) - (measurement period time:7.582681388 
-sec time_interval:7582681388) - (invoke count:100000000 
-tsc_interval:27298499214)
-[  197.241926] bench_page_pool_simple: pp_tasklet_handler(): 
-in_serving_softirq fast-path
-[  197.249968] bench_page_pool_simple: 
-time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
-[  197.808470] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 
-19 cycles(tsc) 5.492 ns (step:0) - (measurement period time:0.549225541 
-sec time_interval:549225541) - (invoke count:100000000 
-tsc_interval:1977272238)
-[  197.828174] bench_page_pool_simple: 
-time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
-[  199.422305] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 
-57 cycles(tsc) 15.849 ns (step:0) - (measurement period time:1.584920736 
-sec time_interval:1584920736) - (invoke count:100000000 
-tsc_interval:5705890830)
-[  199.442087] bench_page_pool_simple: time_bench_page_pool03_slow(): 
-in_serving_softirq fast-path
-[  207.342120] time_bench: Type:tasklet_page_pool03_slow Per elem: 284 
-cycles(tsc) 78.909 ns (step:0) - (measurement period time:7.890955151 
-sec time_interval:7890955151) - (invoke count:100000000 
-tsc_interval:28408319289)
-
+Jason
