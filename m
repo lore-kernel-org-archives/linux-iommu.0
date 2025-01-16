@@ -1,33 +1,38 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B85B722CA1F;
-	Thu, 16 Jan 2025 16:09:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC40F153808;
+	Thu, 16 Jan 2025 17:29:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.237.130.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737043797; cv=none; b=WoG/ncElZHoKsxSLMkjSAckTFViyMZ00m7mIGPg/GyYYpcHSPVWhU/GpDgwWzl4X8fvgCgKbcYZtd137xhrCeh2/T4h1Yn+SUoMRfie+e6Uacg0rCMu4wTYW+yNTzMEUQ8UOaPMwYh4pCpOCGIIdThm634q8+jtk/ST7KPZ8ivM=
+	t=1737048585; cv=none; b=Rz7mTH8cCieDlmii6eP7TFMjp/kbkn0fdcdl3ZX9u0TVQgpWbhkKMz6cGN0rHVWS0Ni6e3qhrzzehTGH32fMU9Fo7u6HwVZCDv4Y/JS0qMWtJgz0zlJ3/07mbAt0iGwQxNsKg60IhoxlFmCaCldqLkR69r7pmCo92xI+ghZXL/s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737043797; c=relaxed/simple;
-	bh=FqbKc2fY/kv4BYvAVtzqn0MGRJpWCRDnHMTimy8za7Q=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dV35kGF0/j2B++i5E6GJRcv/O4/vFjfOfmSMu7zRjL/x6IjSjCIZWQiM7v/BB7PT1/E3U6IUYzLF4uEtJ18oLJTqAJj1l9kSSjzn2xvFM/25SpVE4bBxlgIKVCyzW06uDjkF5iUu4Xu9DVn353xSYYK7yMg2B1wknJ2sEfmIl8Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sxuT5UpI; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1737048585; c=relaxed/simple;
+	bh=7T61ge3mcraFz4+NEGAAw1BMqAbpnBzhZHhT+bEYSIQ=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=bRn4CWwUzaY3z00afMsgo+2GNQvzvUAgc1DFilTVVTYa7IHdTKVf5punoqgjlloKq/Y1KgK/FxK46cR/rOaqzI75vUNNRcOAn+kDejFvdToTRjE4XcmJn+xjtaT97Sm7hINA0JnfirEDugBwkeLgohTvy7N/cp7KQQvZbZktXXU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info; spf=pass smtp.mailfrom=leemhuis.info; dkim=pass (2048-bit key) header.d=leemhuis.info header.i=@leemhuis.info header.b=ttRJeuLS; arc=none smtp.client-ip=80.237.130.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=leemhuis.info
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sxuT5UpI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11286C4CED6;
-	Thu, 16 Jan 2025 16:09:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737043797;
-	bh=FqbKc2fY/kv4BYvAVtzqn0MGRJpWCRDnHMTimy8za7Q=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=sxuT5UpIvmPd54H7pV1pDlE+i24u9gdhhGNalpaGB0IoY1cEO9YDsNhnTbt+cCPE9
-	 +UZZmlWaxQI64Fz5wvDD4of2tBGjYNcCw+oBvumOxHz71EomCdOsbs/x1QwDoL1k4g
-	 v/R9cqv9TrvGJPHBrMgv617wC/T28H5UVk+5cw2hfrMKnR6Ho6mc4Ky4kiUe5ej3cr
-	 pIC5dPOO75LkWD8x1oiueuZO46WJNr1MZeSLqv4g9QXbWkV4C5dinK0YYdSq6tzDsC
-	 JE9GJtBXCLTYMQcWk0o8KY+/OLWv+mw99t8V44E8ZtF1V3qxeN7rctOr5xkaP9pBK9
-	 PP6bBRCpJ0WvA==
-Message-ID: <95f258b2-52f5-4a80-a670-b9a182caec7c@kernel.org>
-Date: Thu, 16 Jan 2025 17:09:50 +0100
+	dkim=pass (2048-bit key) header.d=leemhuis.info header.i=@leemhuis.info header.b="ttRJeuLS"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=leemhuis.info; s=he214686; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:From:
+	Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:In-Reply-To:
+	References; bh=EmgiDGJ06XOUG1YIoDAkaKC1tAefzDilg41V+XocIA4=; t=1737048582;
+	x=1737480582; b=ttRJeuLSIR6PmtKVT1n8dHGxLxOEUGIru7JyC7DMVRKcU7v/q7OPOXqO6anPz
+	RZJxMh6YOKhlL6svdf+c2SzyEQHRtyKhXRZYGxcCjMcnFzzoAUQGd0pIRMlicutzPKO9Z2c+aVZQg
+	4tRJ5FVPDa7RgLa7e+NBpIjnySMnLkxGA0B/mdfWcvP2FHdslb5bKzlmWB+YIdMDaiMkW16y1Os7t
+	P9QM/N1TBJfAaNHeXsH0TaaUEa6dwtNl5jdLMlFrRkDX+6DQ4b/jTjoJdmi9RQQ84E4U73lQDuUa6
+	9IpV8BSU/zymvV4N5cI+CJ4TSYo1SW8HvZhDEo9vq0mq75KW9A==;
+Received: from [2a02:8108:8980:2478:87e9:6c79:5f84:367d]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
+	id 1tYTgT-0098c1-19;
+	Thu, 16 Jan 2025 18:29:33 +0100
+Message-ID: <d01f0e3c-7a0c-4255-baa0-27b31cc552d5@leemhuis.info>
+Date: Thu, 16 Jan 2025 18:29:32 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,255 +40,142 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v7 3/8] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
- kuba@kernel.org, pabeni@redhat.com
-Cc: zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
- Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet
- <edumazet@google.com>, Simon Horman <horms@kernel.org>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
- kernel-team <kernel-team@cloudflare.com>
-References: <20250110130703.3814407-1-linyunsheng@huawei.com>
- <20250110130703.3814407-4-linyunsheng@huawei.com>
- <921c827c-41b7-40af-8c01-c21adbe8f41f@kernel.org>
- <2b5a58f3-d67a-4bf7-921a-033326958ac6@huawei.com>
-Content-Language: en-US
-From: Jesper Dangaard Brouer <hawk@kernel.org>
-In-Reply-To: <2b5a58f3-d67a-4bf7-921a-033326958ac6@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
+ X600M-STX + Ryzen 8700G
+From: Thorsten Leemhuis <regressions@leemhuis.info>
+To: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ linux-nvme@lists.infradead.org
+Cc: Keith Busch <kbusch@kernel.org>, bugzilla-daemon@kernel.org,
+ Adrian Huang <ahuang12@lenovo.com>,
+ Linux kernel regressions list <regressions@lists.linux.dev>,
+ Jens Axboe <axboe@fb.com>, LKML <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@lst.de>, Stefan <linux-kernel@simg.de>,
+ Bruno Gravato <bgravato@gmail.com>
+References: <401f2c46-0bc3-4e7f-b549-f868dc1834c5@leemhuis.info>
+ <Z36UsE5dj6j5HhkX@kbusch-mbp> <20250109082849.GC20724@lst.de>
+ <210e7b28-de05-44bc-9604-83a79ae131b0@leemhuis.info>
+ <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
+ <CAOBLbT8103fAyoFNF8=YcEM1sM6HodcUe=Ee5NsE2hUkfCYv7g@mail.gmail.com>
+ <3b693647-5e82-4c39-8017-22cada56eb55@leemhuis.info>
+Content-Language: de-DE, en-US
+In-Reply-To: <3b693647-5e82-4c39-8017-22cada56eb55@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1737048582;e0f69537;
+X-HE-SMSGID: 1tYTgT-0098c1-19
 
+On 15.01.25 09:40, Thorsten Leemhuis wrote:
+> On 15.01.25 07:37, Bruno Gravato wrote:
+>> I finally got the chance to run some more tests with some interesting
+>> and unexpected results...
+> 
+> FWIW, I briefly looked into the issue in between as well and can
+> reproduce it[1] locally with my Samsung SSD 990 EVO Plus 4TB in the main
+> M.2 slot of my DeskMini X600 using btrfs on a mainline kernel with a
+> config from Fedora rawhide.
+> 
+> So what can we that are affected by the problem do to narrow it down?
+> 
+> What does it mean that disabling the NVMe devices's write cache often
+> but apparently not always helps? It it just reducing the chance of the
+> problem occurring or accidentally working around it?
+> 
+> hch initially brought up that swiotlb seems to be used. Are there any
+> BIOS setup settings we should try? I tried a few changes yesterday, but
+> I still get the "PCI-DMA: Using software bounce buffering for IO
+> (SWIOTLB)" message in the log and not a single line mentioning DMAR.
 
+FWIW, I meanwhile became aware that it is normal that there are no lines
+with DMAR when it comes to AMD's IOMMU. Sorry for the noise.
 
+But there is a new development:
 
-On 16/01/2025 13.52, Yunsheng Lin wrote:
-> On 2025/1/16 0:29, Jesper Dangaard Brouer wrote:
+I noticed earlier today that disabling the IOMMU in the BIOS Setup seems
+to prevent the corruption from occurring. Another user in the bugzilla
+ticket just confirmed this.
+
+Ciao, Thorsten
+
+> [1] see start of this thread and/or
+> https://bugzilla.kernel.org/show_bug.cgi?id=219609 for details
+> 
+>> I put another disk (WD Black SN750) in the main M.2 slot (the
+>> problematic one), but kept my main disk (Solidigm P44 Pro) in the
+>> secondary M.2 slot (where it doesn't have any issues).
+>> I rerun my test: step 1) copy a large number of files to the WD disk
+>> (main slot), step 2) run btrfs scrub on it and expect some checksum
+>> errors
+>> To my surprise there were no errors!
+>> I tried it twice with different kernels (6.2.6 and 6.11.5) and booting
+>> from either disk (I have linux installations on both).
+>> Still no errors.
 >>
+>> I then removed the Solidigm disk from the secondary and kept the WD
+>> disk in the main M.2 slot.
+>> Rerun my tests (on kernel 6.11.5) and bang! btrfs scrub now detected
+>> quite a few checksum errors!
 >>
->> On 10/01/2025 14.06, Yunsheng Lin wrote:
->> [...]
->>> In order not to call DMA APIs to do DMA unmmapping after driver
->>> has already unbound and stall the unloading of the networking
->>> driver, use some pre-allocated item blocks to record inflight
->>> pages including the ones which are handed over to network stack,
->>> so the page_pool can do the DMA unmmapping for those pages when
->>> page_pool_destroy() is called. As the pre-allocated item blocks
->>> need to be large enough to avoid performance degradation, add a
->>> 'item_fast_empty' stat to indicate the unavailability of the
->>> pre-allocated item blocks.
->>>
+>> I then tried disabling volatile write cache with "nvme set-feature
+>> /dev/nvme0 -f 6 -v 0"
+>> "nvme get-feature /dev/nvme0 -f 6" confirmed it was disabled, but
+>> /sys/block/nvme0n1/queue/fua still showed 1... Was that supposed to
+>> turn into 0?
 >>
-> 
-> ...
-> 
->>> +
->>> +static __always_inline void __page_pool_release_page_dma(struct page_pool *pool,
->>> +                             netmem_ref netmem,
->>> +                             bool destroyed)
->>> +{
->>> +    struct page_pool_item *item;
->>> +    dma_addr_t dma;
->>> +
->>> +    if (!pool->dma_map)
->>> +        /* Always account for inflight pages, even if we didn't
->>> +         * map them
->>> +         */
->>> +        return;
->>> +
->>> +    dma = page_pool_get_dma_addr_netmem(netmem);
->>> +    item = netmem_get_pp_item(netmem);
->>> +
->>> +    /* dma unmapping is always needed when page_pool_destory() is not called
->>> +     * yet.
->>> +     */
->>> +    DEBUG_NET_WARN_ON_ONCE(!destroyed && !page_pool_item_is_mapped(item));
->>> +    if (unlikely(destroyed && !page_pool_item_is_mapped(item)))
->>> +        return;
->>> +
->>> +    /* When page is unmapped, it cannot be returned to our pool */
->>> +    dma_unmap_page_attrs(pool->p.dev, dma,
->>> +                 PAGE_SIZE << pool->p.order, pool->p.dma_dir,
->>> +                 DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING);
->>> +    page_pool_set_dma_addr_netmem(netmem, 0);
->>> +    page_pool_item_clear_mapped(item);
->>> +}
->>> +
+>> I re-run my test, but I still got checksum errors on btrfs scrub. So
+>> disabling volatile write cache (assuming I did it correctly) didn't
+>> make a difference in my case.
 >>
->> I have a hard time reading/reviewing/maintaining below code, without
->> some design description.  This code needs more comments on what is the
->> *intend* and design it's trying to achieve.
+>> I put the Solidigm disk back into the secondary slot, booted and rerun
+>> the test on the WD disk (main slot) just to be triple sure and still
+>> no errors.
 >>
->>  From patch description the only hint I have is:
->>   "use some pre-allocated item blocks to record inflight pages"
+>> So it looks like the corruption only happens if only the main M.2 slot
+>> is occupied and the secondary M.2 slot is free.
+>> With two nvme disks (one on each M.2 slot), there were no errors at all.
 >>
->> E.g. Why is it needed/smart to hijack the page->pp pointer?
+>> Stefan, did you ever try running your tests with 2 nvme disks
+>> installed on both slots? Or did you use only one slot at a time?
 > 
-> Mainly because there is no space available for keeping tracking of inflight
-> pages, using page->pp can only find the page_pool owning the page, but page_pool
-> is not able to keep track of the inflight page when the page is handled by
-> networking stack.
-> 
-> By using page_pool_item as below, the state is used to tell if a specific
-> item is being used/dma mapped or not by scanning all the item blocks in
-> pool->item_blocks. If a specific item is used by a page, then 'pp_netmem'
-> will point to that page so that dma unmapping can be done for that page
-> when page_pool_destroy() is called, otherwise free items sit in the
-> pool->hold_items or pool->release_items by using 'lentry':
-> 
-> struct page_pool_item {
-> 	unsigned long state;
-> 	
-> 	union {
-> 		netmem_ref pp_netmem;
-> 		struct llist_node lentry;
-> 	};
-> };
+> $ journalctl -k | grep -i -e DMAR -e IOMMU -e AMD-Vi -e SWIOTLB
+> AMD-Vi: Using global IVHD EFR:0x246577efa2254afa, EFR2:0x0
+> iommu: Default domain type: Translated
+> iommu: DMA domain TLB invalidation policy: lazy mode
+> pci 0000:00:00.2: AMD-Vi: IOMMU performance counters supported
+> pci 0000:00:01.0: Adding to iommu group 0
+> pci 0000:00:01.3: Adding to iommu group 1
+> pci 0000:00:02.0: Adding to iommu group 2
+> pci 0000:00:02.3: Adding to iommu group 3
+> pci 0000:00:03.0: Adding to iommu group 4
+> pci 0000:00:04.0: Adding to iommu group 5
+> pci 0000:00:08.0: Adding to iommu group 6
+> pci 0000:00:08.1: Adding to iommu group 7
+> pci 0000:00:08.2: Adding to iommu group 8
+> pci 0000:00:08.3: Adding to iommu group 9
+> pci 0000:00:14.0: Adding to iommu group 10
+> pci 0000:00:14.3: Adding to iommu group 10
+> pci 0000:00:18.0: Adding to iommu group 11
+> pci 0000:00:18.1: Adding to iommu group 11
+> pci 0000:00:18.2: Adding to iommu group 11
+> pci 0000:00:18.3: Adding to iommu group 11
+> pci 0000:00:18.4: Adding to iommu group 11
+> pci 0000:00:18.5: Adding to iommu group 11
+> pci 0000:00:18.6: Adding to iommu group 11
+> pci 0000:00:18.7: Adding to iommu group 11
+> pci 0000:01:00.0: Adding to iommu group 12
+> pci 0000:02:00.0: Adding to iommu group 13
+> pci 0000:03:00.0: Adding to iommu group 14
+> pci 0000:03:00.1: Adding to iommu group 15
+> pci 0000:03:00.2: Adding to iommu group 16
+> pci 0000:03:00.3: Adding to iommu group 17
+> pci 0000:03:00.4: Adding to iommu group 18
+> pci 0000:03:00.6: Adding to iommu group 19
+> pci 0000:04:00.0: Adding to iommu group 20
+> pci 0000:04:00.1: Adding to iommu group 21
+> pci 0000:05:00.0: Adding to iommu group 22
+> AMD-Vi: Extended features (0x246577efa2254afa, 0x0): PPR NX GT [5] IA GA
+> PC GA_vAPIC
+> AMD-Vi: Interrupt remapping enabled
+> AMD-Vi: Virtual APIC enabled
+> PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+> perf/amd_iommu: Detected AMD IOMMU #0 (2 banks, 4 counters/bank).
 
-pahole  -C page_pool_item vmlinux
-struct page_pool_item {
-	/* An 'encoded_next' is a pointer to next item, lower 2 bits is used to
-	 * indicate the state of current item.
-	 */	
-	long unsigned int          encoded_next;     /*     0     8 */
-	union {
-		netmem_ref         pp_netmem;        /*     8     8 */
-		struct llist_node  lentry;           /*     8     8 */
-	};                                           /*     8     8 */
-
-	/* size: 16, cachelines: 1, members: 2 */
-	/* last cacheline: 16 bytes */
-};
-
-
-> When a page is added to the page_pool, a item is deleted from pool->hold_items
-> or pool->release_items and set the 'pp_netmem' pointing to that page and set
-> 'state' accordingly in order to keep track of that page.
-> 
-> When a page is deleted from the page_pool, it is able to tell which page_pool
-> this page belong to by using the below function, and after clearing the 'state',
-> the item is added back to pool->release_items so that the item is reused for new
-> pages.
-> 
-
-To understand below, I'm listing struct page_pool_item_block for other
-reviewers:
-
-pahole  -C page_pool_item_block vmlinux
-struct page_pool_item_block {
-	struct page_pool *         pp;               /*     0     8 */
-	struct list_head           list;             /*     8    16 */
-	unsigned int               flags;            /*    24     4 */
-	refcount_t                 ref;              /*    28     4 */
-	struct page_pool_item      items[];          /*    32     0 */
-
-	/* size: 32, cachelines: 1, members: 5 */
-	/* last cacheline: 32 bytes */
-};
-
-> static inline struct page_pool_item_block *
-> page_pool_item_to_block(struct page_pool_item *item)
-> {
-> 	return (struct page_pool_item_block *)((unsigned long)item & PAGE_MASK);
-
-This trick requires some comments explaining what is going on!
-Please correct me if I'm wrong: Here you a masking off the lower bits of
-the pointer to page_pool_item *item, as you know that a struct
-page_pool_item_block is stored in the top of a struct page.  This trick
-is like a "container_of" for going from page_pool_item to
-page_pool_item_block, right?
-
-I do notice that you have a comment above struct page_pool_item_block
-(that says "item_block is always PAGE_SIZE"), which is nice, but to be
-more explicit/clear:
-  I want a big comment block (placed above the main code here) that
-explains the design and intention behind this newly invented
-"item-block" scheme, like e.g. the connection between
-page_pool_item_block and page_pool_item. Like the advantage/trick that
-allows page->pp pointer to be an "item" and be mapped back to a "block"
-to find the page_pool object it belongs to.  Don't write *what* the code
-does, but write about the intended purpose and design reasons behind the
-code.
-
-
-> }
-> 
->   static inline struct page_pool *page_pool_get_pp(struct page *page)
->   {
->        return page_pool_item_to_block(page->pp_item)->pp;
->   }
-> 
-> 
->>
->>> +static void __page_pool_item_init(struct page_pool *pool, struct page *page)
->>> +{
->>
->> Function name is confusing.  First I though this was init'ing a single
->> item, but looking at the code it is iterating over ITEMS_PER_PAGE.
->>
->> Maybe it should be called page_pool_item_block_init ?
-> 
-> The __page_pool_item_init() is added to make the below
-> page_pool_item_init() function more readable or maintainable, changing
-> it to page_pool_item_block_init doesn't seems consistent?
-
-You (of-cause) also have to rename the other function, I though that was
-implicitly understood.
-
-BUT does my suggested rename make sense?  What I'm seeing is that all
-the *items* in the "block" is getting inited. But we are also setting up
-the "block" (e.g.  "block->pp=pool").
-
->>
->>> +    struct page_pool_item_block *block = page_address(page);
->>> +    struct page_pool_item *items = block->items;
->>> +    unsigned int i;
->>> +
->>> +    list_add(&block->list, &pool->item_blocks);
->>> +    block->pp = pool;
->>> +
->>> +    for (i = 0; i < ITEMS_PER_PAGE; i++) {
->>> +        page_pool_item_init_state(&items[i]);
->>> +        __llist_add(&items[i].lentry, &pool->hold_items);
->>> +    }
->>> +}
->>> +
->>> +static int page_pool_item_init(struct page_pool *pool)
->>> +{
->>> +#define PAGE_POOL_MIN_INFLIGHT_ITEMS        512
->>> +    struct page_pool_item_block *block;
->>> +    int item_cnt;
->>> +
->>> +    INIT_LIST_HEAD(&pool->item_blocks);
->>> +    init_llist_head(&pool->hold_items);
->>> +    init_llist_head(&pool->release_items);
->>> +
->>> +    item_cnt = pool->p.pool_size * 2 + PP_ALLOC_CACHE_SIZE +
->>> +        PAGE_POOL_MIN_INFLIGHT_ITEMS;
->>> +    while (item_cnt > 0) {
->>> +        struct page *page;
->>> +
->>> +        page = alloc_pages_node(pool->p.nid, GFP_KERNEL, 0);
->>> +        if (!page)
->>> +            goto err;
->>> +
->>> +        __page_pool_item_init(pool, page);
->>> +        item_cnt -= ITEMS_PER_PAGE;
->>> +    }
->>> +
->>> +    return 0;
->>> +err:
->>> +    list_for_each_entry(block, &pool->item_blocks, list)
->>> +        put_page(virt_to_page(block));
-> 
-> This one also have used-after-free problem as the page_pool_item_uninit
-> in the previous version.
-> 
->>> +
->>> +    return -ENOMEM;
->>> +}
->>> +
-> 
