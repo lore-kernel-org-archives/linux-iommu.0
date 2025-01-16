@@ -1,107 +1,99 @@
-Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1436732C8E
-	for <iommu@lists.linux.dev>; Thu, 16 Jan 2025 03:05:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09FB114F121
+	for <iommu@lists.linux.dev>; Thu, 16 Jan 2025 03:09:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736996712; cv=none; b=rpB6CHdGBUJSQSkKoCkjTEensUSxN7ZyG3ZtdGx0dw4RANBCa/L3K2duzVxU7JTzyyekLGHELdKf0MwoWUlCcD+tR/EP/Xeb/YauwHG1bNE7fszVswXMWBxxBp0HTA0uv5uQ1mXICfOMqL6jHy8CDwSSWUfRow64vk6bhv4/1K4=
+	t=1736996964; cv=none; b=QTjJiqENM9/Upu6gBoFMuFg+jsaivFa9nPezLToAOoIxgS9TJSbdAEWTB6aK3ms+jLrumO81jTBpdelkJ8gcF9nkq9OSof0rxlHWLYVLE9xhDG3tdIDXihl0AdcxTskFrjJ1hX6MO7wAcSupVcDHKauwNkmy6LfTwxYoMKJsQTI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736996712; c=relaxed/simple;
-	bh=ndokzHfK9DjzvnQLuIY2/EkLk5z5jVFlw8qOBGX6ASE=;
+	s=arc-20240116; t=1736996964; c=relaxed/simple;
+	bh=YvT347LAFtvqLpCK4qt1Yi9x/NqEjZFWcuO80fdGZVU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FYSP/hcOPY1jvYyzNuxcILHSDbHbkRx+E+AJ2DwJhICVNwl6S5rtxN5rbhNhjrPuQ6BGK111BD3+uklbzHS5RjeU3YSImEqwlL1r7w2JTzxzpWt6KN/sDei0Uscyx4fDWT8/FhV0mq7pgVrLjzPTGupc9poMpu56w/YDdx84uCQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mJNmIP7g; arc=none smtp.client-ip=209.85.214.182
+	 Content-Type:Content-Disposition:In-Reply-To; b=EThIzDa8TpZbPhwoSG+REhCW3o0iOIm7wHe/CFJZNa6VNbFKnWNglUf9nJ1nTVUTkXorP8l1wHju/UFGSf3ULbKn6+Qux620zPoHc6o64Lix+0sirSN4eXWlRkfkM4AtBdpj1TsjZK2gFjn6F+aRAJwvyk88kTGpdjDzt0LG7ao=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=s2HKZgbV; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mJNmIP7g"
-Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-21625b4f978so61655ad.0
-        for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 19:05:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="s2HKZgbV"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-215740b7fb8so73515ad.0
+        for <iommu@lists.linux.dev>; Wed, 15 Jan 2025 19:09:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1736996710; x=1737601510; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7cuWckv2mg3iIR5MCaEBEb/4QCrqfrfbJmqZ9RuoMko=;
-        b=mJNmIP7gwDj23KUUEaE3F4HcvGWJUiAWhpupPwRGrTCK8wNo8Yv3iYsvXdKUDUjwCe
-         0wHDPnIzR7VJuKlJRCNrko3XEXPjuCjlaGP6+ntVIjYvNzH9Ts2KagUY+wOD/Hwf4cri
-         7fX1FKhAjFlrV36gMmfGUeUFNmbOhB4hluixKJFfhfTL/AQAV9ph2iDIJkNaOTg47IZK
-         yjwQiIKOhTXFPe7RreR9pPafc8d8fZYqUcEGdffqY878KU33/eZnE9+bSMt+jINB2esJ
-         2j7bLWuSbKNIb7J9Emf9u9UKzFxBwaAWONZHiUeQuZjCemcU/1k6mLa/Oj3yyNgTGCaH
-         somA==
+        d=google.com; s=20230601; t=1736996962; x=1737601762; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=0k2tjWflbKcVqC6zMuhNKy98nVj8U7DcPtvNyfmp/OM=;
+        b=s2HKZgbVjwSJITFhOznr2xQHV6wmvvLfm5rlbzojkvWvLRPrp7Pj2ndTEDzGb4blYY
+         QyyaT2jYgeIAn9aZc703FHDESmDZHqbTE52m8am19t37pJLG0WpZP0CIFfq9o+WgJ34h
+         t9gbtfSPOWYCzksxiKywZcWBa/MsCTjexJPtfxo92EHphDStovETKbxRcl7LwbFOn2lA
+         hZ0QaoSa4EtPUV9MguUn7WoRVXOz/qHENU8rHWSGNS+XrtjVwxs62cRlgts9uVdOg83K
+         KYg4E6OWeRokq4Gal1rn/NzLFlKIbxg+nuea/YII4VZW4hHISxVVl3d8xDptj71rdlPx
+         rEeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736996710; x=1737601510;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7cuWckv2mg3iIR5MCaEBEb/4QCrqfrfbJmqZ9RuoMko=;
-        b=s0P8K3E++UVVCQFuuhEdNx+05zIG79K5km0DmNPaMlcDZqR9cNpxnmFMZCU4gGC93H
-         R89hsL6kMUmej+sRq9u3JCJF1wK67eGsP5KBpJJjz5pJDpUZkUI4/BUFbJ4N7e4ZmVSS
-         WfWdMIqGCM0z9YGVKMOu26PC47Vm25yZ1Cf0FlMy4Ne6TPdHLaCPediPwsCwJuGyXPQo
-         CcUr3ud3+ZCLzMEm5wqyH0XiPGb387/PgzXuql8ZVsYed7EQlImYOVPsn/Uf613fk4hO
-         mOB55blCZmazHtYdT2iEwfPfpaOopJleuWoOGXNZKeXAiQa5zqTZnZPluZzz4QUwHs8g
-         f4lQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUXBZqMPymlGzjpyr45ttXUzqRKU97LxWFswSIQsfm+6HDColAFv+wPIGJqNI/nZCfFuaf0Vw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxRtAooYWWUf+mW+PZyvBxfRQb2yuDEVRw38fJG9NK7AwB3PBFw
-	kBkLyvfuCbE/fsVbWVzDlHkaQxTfJ0TiKqfkxhxA2Oqs0wVHxwBD3l+FZDhbFg==
-X-Gm-Gg: ASbGnctJDpZkqXg2O6iFy4gv6/RLnbA+OlBJFPyDL9vuYu/hc+l80FbNHUobaTyZbnJ
-	BzxenMw9Pa/WMxEl9crw8mj2rurat3/GQIlgoDis1qH6hg5O9PoDVexIr5PPQuOnyOdj1MWda9E
-	Ugnj/0Hfp6DtH7Inv7YYJFjQSQ40Zs7sb6sLxas7ca8BdXpQhZQ9mx7XQ9HVO82LcypMLvjjiUL
-	Kj8n04IOVHE40PJNE8xi2jUwpgd/if55cuD2k98dv3dV0LAP0TYLL1cSnzylRyRHKdF6TkySXnz
-	0Q6W7NJ2H1ya
-X-Google-Smtp-Source: AGHT+IGgvey12XcQ8iP4n+eaUVK+cmvSLWMH2UIplRse6X8rSW8rrU74w2Bbqndq54XuqjUDHEawSg==
-X-Received: by 2002:a17:902:f785:b0:215:69a3:1c94 with SMTP id d9443c01a7336-21c12cfe139mr1268815ad.28.1736996710051;
-        Wed, 15 Jan 2025 19:05:10 -0800 (PST)
+        d=1e100.net; s=20230601; t=1736996962; x=1737601762;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0k2tjWflbKcVqC6zMuhNKy98nVj8U7DcPtvNyfmp/OM=;
+        b=MBRQc2Aw2mtHLzdOT0muf4lgAftwpq3qY+lb74R6HTvp4NbzAPLYMD8ngqlaXaHhDF
+         cf9Es15knG2IdTxH/HRrnaN7c4m+/Wy1HcQaDWhOYGW7SWDRwOORAxOd5EqS3JAd/jJv
+         A4eAG7PR8Y9iTJfVcQOIr+sZWDOg/C/Qy6NijHvF6A8o+vqSmFFghdlc83m9DoIghUYH
+         UCsdI27cMH3x5WDzwynSeN67SXpaMmdrhGcwLzSHAwWCP1Y1dXlzxZ1KPPkMLCq19vDw
+         RXMnZ5zUxdKrMXYMLcPNnzqbPHoA/bZw83KDH+61BsjN4n2QfNm9P8OYoIlcV5ZV5DVO
+         uyDw==
+X-Forwarded-Encrypted: i=1; AJvYcCVb5+g1b/vDb/O0UQXZQAVoVA44zE3dWIKaxXLUmTC3IOvh5oDg0x0DalY8UtQViQoWfzjkDA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw8C/7QY+7Ghu3x0DfEGcAtWR1mipEF501HRjimYcS1gk32mU5p
+	vBFO5y+Ab7gPX7eEBjMMWOLonv+aSJZy5+Q0kfUFCfcLF28II5BBRuQK7vRFTA==
+X-Gm-Gg: ASbGnctvko5kOq+JhCAwP8E1yc3h6E1iN/PpiPq/inTgvAkfkFdPgcIymglusbAhQJc
+	UvW7aNCboFlju67OiOdWXWa66U71hpGJ2lIyzW3UWltBycmxcltuKZMIL8Z2ImkgE6LszuhlyHP
+	tmMUYPt3aqm/QEpGzew4yPLaZ8x+c25FoaeIm1P1sb/zVAw5UQ5aetGaLuLKWo8//jXudLRijF7
+	rS21Km6KiCvReIufvhxoxOivVOmWVPsyLk4MjnvfmW2Uh4S/1eyyUHSHJLQ5SlbuDXWCIbENOtE
+	9bWMeYs17C/X
+X-Google-Smtp-Source: AGHT+IHZcCbVA815LPJGb0bCjcocKzrwMS8Y8KUYeVaCrLeZOxiM8S63vOxnYqo99Qw0ZPV4r1BBuA==
+X-Received: by 2002:a17:903:443:b0:21b:b3c4:7e0a with SMTP id d9443c01a7336-21c165a4395mr788135ad.13.1736996962080;
+        Wed, 15 Jan 2025 19:09:22 -0800 (PST)
 Received: from google.com (1.243.198.35.bc.googleusercontent.com. [35.198.243.1])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2f72c151cbfsm2135397a91.6.2025.01.15.19.05.06
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-72d40658b71sm9879160b3a.85.2025.01.15.19.09.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jan 2025 19:05:09 -0800 (PST)
-Date: Thu, 16 Jan 2025 03:05:00 +0000
+        Wed, 15 Jan 2025 19:09:21 -0800 (PST)
+Date: Thu, 16 Jan 2025 03:09:13 +0000
 From: Pranjal Shrivastava <praan@google.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Yong Wu <yong.wu@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-	linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH] iommu: Use str_enable_disable-like helpers
-Message-ID: <Z4h3XHrzB53IAvys@google.com>
-References: <20250114192642.912331-1-krzysztof.kozlowski@linaro.org>
+To: Robert Marko <robert.marko@sartura.hr>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca,
+	nicolinc@nvidia.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	luka.perkov@sartura.hr, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: add missing header
+Message-ID: <Z4h4WePiB7G0BZj-@google.com>
+References: <20250114160630.1122885-1-robert.marko@sartura.hr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250114192642.912331-1-krzysztof.kozlowski@linaro.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250114160630.1122885-1-robert.marko@sartura.hr>
 
-On Tue, Jan 14, 2025 at 08:26:42PM +0100, Krzysztof Kozlowski wrote:
-> Replace ternary (condition ? "enable" : "disable") syntax with helpers
-> from string_choices.h because:
-> 1. Simple function call with one argument is easier to read.  Ternary
->    operator has three arguments and with wrapping might lead to quite
->    long code.
-> 2. Is slightly shorter thus also easier to read.
-> 3. It brings uniformity in the text - same string.
-> 4. Allows deduping by the linker, which results in a smaller binary
->    file.
+On Tue, Jan 14, 2025 at 05:05:56PM +0100, Robert Marko wrote:
+> str_read_write is currently undeclared and thus compilation will fail with:
+> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:1911:25: error: implicit declaration of function ‘str_read_write’; did you mean ‘sb_end_write’? [-Wimplicit-function-declaration]
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> So include the missing linux/string_choices.h header to fix compilation.
+> 
+> Fixes: f2c77f6e41e6 ("iommu/arm-smmu-v3: Use str_read_write helper w/ logs")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Closes: https://lore.kernel.org/oe-kbuild-all/202501111926.qOpnlK9J-lkp@intel.com/
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 ++-
->  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 3 ++-
->  drivers/iommu/mtk_iommu.c                   | 9 +++++----
->  drivers/iommu/mtk_iommu_v1.c                | 3 ++-
->  drivers/iommu/rockchip-iommu.c              | 3 ++-
->  5 files changed, 13 insertions(+), 8 deletions(-)
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 0e4cbb2c64d7..358072b4e293 100644
+> index 0e4cbb2c64d7..a0e395da8a88 100644
 > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 > @@ -26,6 +26,7 @@
@@ -109,46 +101,22 @@ On Tue, Jan 14, 2025 at 08:26:42PM +0100, Krzysztof Kozlowski wrote:
 >  #include <linux/pci-ats.h>
 >  #include <linux/platform_device.h>
 > +#include <linux/string_choices.h>
-
-JFYI, this include was merged in the arm/smmu/updates branch recently,
-hence it shouldn't cause any trouble while merging.
-
 >  #include <kunit/visibility.h>
 >  #include <uapi/linux/iommufd.h>
->  
-> @@ -4321,7 +4322,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
->  	 */
->  	if (!!(reg & IDR0_COHACC) != coherent)
->  		dev_warn(smmu->dev, "IDR0.COHACC overridden by FW configuration (%s)\n",
-> -			 coherent ? "true" : "false");
-> +			 str_true_false(coherent));
->  
->  	switch (FIELD_GET(IDR0_STALL_MODEL, reg)) {
->  	case IDR0_STALL_MODEL_FORCE:
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index 79afc92e1d8b..de205a34ffc6 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -34,6 +34,7 @@
->  #include <linux/pm_runtime.h>
->  #include <linux/ratelimit.h>
->  #include <linux/slab.h>
-> +#include <linux/string_choices.h>
->  
->  #include <linux/fsl/mc.h>
->  
-> @@ -2106,7 +2107,7 @@ static void arm_smmu_rmr_install_bypass_smr(struct arm_smmu_device *smmu)
->  	}
->  
->  	dev_notice(smmu->dev, "\tpreserved %d boot mapping%s\n", cnt,
-> -		   cnt == 1 ? "" : "s");
-> +		   str_plural(cnt));
->  	iort_put_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
->  }
->  
 
-For the arm-smmu part.
-Acked-by: Pranjal Shrivastava <praan@google.com>
+Hi Robert,
+
+This fix has already been merged to the arm/smmu/updates branch [1]
+which should appear in -next when Joerg next rebuilds the branch.
 
 Thanks,
 Praan
+
+[1]
+https://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git/commit/?h=arm/smmu/updates
+
+>  
+> -- 
+> 2.47.1
+> 
+> 
