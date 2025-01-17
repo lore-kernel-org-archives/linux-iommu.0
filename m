@@ -1,381 +1,308 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 628F42135BC;
-	Fri, 17 Jan 2025 10:05:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737108302; cv=none; b=PPIewspFaGtJraFnY44evTzvZZwRhG4qCrY95FcTO8lm6v8dGk642gWLoaO16xMnTUCyVYvxRag4QAE6MjxJeqfCUkCUccl8d9tfe8mg4aunTRbuQWsKbuBLwDyqxSw2MRTFg9uOWtIHJjDCeLErsM0G9jMPtPWOwmw6G9kUtsY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737108302; c=relaxed/simple;
-	bh=NjoF5CkFbjfbiiDh3lbvpEgTINBqFJZ8gAtQ0qoZOsM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ZRp/oJT5rack7tKBTNcsxhJHpJzFF0cDdV8kFuWL63rh1D0qjr2NR2rIXMOzb9V4wYqWGA7MHDb4q4qJqdevc+B9Abt6YIGMqdVtqNPhY9QE40NDM9bT9j+C5I4hGKEhBCDSUCrRpgjeJx5npr27soHZNYw430F7pE256PKvUu4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dPnPlsl4; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECF0E1F7093
+	for <iommu@lists.linux.dev>; Fri, 17 Jan 2025 10:27:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737109637; cv=fail; b=J84XqZ+DHvSbiYnHztgumBPMqZFN79Xqn4UzvXHLXVzEuoXBiCoLFcmFxFo0hpvyKVvAixGLAdq5GRxGyLyU/NmZ2gxx4vUGXyND2tV25/L2EFv1j2nt0x/Bfn6sUndVFh5lYttJYtAqdIvGRpaAbLbPpGv14oftIQ1p943WMz8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737109637; c=relaxed/simple;
+	bh=TxwHsqrjZzG3nLmShIBR0UukjQwR6NuvH6E34ICNv+U=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=V3yCDVmj8ACeeiPMGN2LeJiTILQL+R0EvfSILQ4EGvNzVJzilBVtKGakeSN/GFHYyDhEskf7oha2WxllF+9bW7yE7wrSAMc+st4jQg1VhPEiNxI8vuTgmxrn9u0usMW8zv+Po44TAdpR3I7cW6OWLr+LRAB4Le+Bi44YqkmxH9U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b/neiiv4; arc=fail smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dPnPlsl4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 750C6C4CEDD;
-	Fri, 17 Jan 2025 10:05:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737108302;
-	bh=NjoF5CkFbjfbiiDh3lbvpEgTINBqFJZ8gAtQ0qoZOsM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=dPnPlsl4l3XEbZ6+YufhPOPVz19IDZFEVZFvoB2c4laBaP28NRzb/ZXJ06r4Me1/r
-	 ZtZjVoJHCnUfeZFeD4gCzg+vtq91HawcJ5qyJEdu23sfd9OtIUfRVcYghCJJDEurAp
-	 glHdtj4q1NaA0Z6Lra2VOeUfxHHriM0Q8hT9DTFrZDnqMncxg2Ra4WEHoYA8QI7+Mr
-	 AyV1GlmFAZg0fVxyqWovsMk/wbm3vWsw7G2di4YbfG4lUqsZLKMFUfLunEjTLAkdNb
-	 yYu6xI98I+5MpSRovIfbQr5xCjXxzzDgayLWG4w8ylx7iPalO6zWqSy4HYQSzkh58u
-	 aJO6ADhEGgmZg==
-From: Leon Romanovsky <leon@kernel.org>
-To: 
-Cc: Leon Romanovsky <leonro@nvidia.com>,
-	Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	"Keith Busch" <kbusch@kernel.org>,
-	"Bjorn Helgaas" <bhelgaas@google.com>,
-	"Logan Gunthorpe" <logang@deltatee.com>,
-	"Yishai Hadas" <yishaih@nvidia.com>,
-	"Shameer Kolothum" <shameerali.kolothum.thodi@huawei.com>,
-	"Kevin Tian" <kevin.tian@intel.com>,
-	"Alex Williamson" <alex.williamson@redhat.com>,
-	"Marek Szyprowski" <m.szyprowski@samsung.com>,
-	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
-	"Andrew Morton" <akpm@linux-foundation.org>,
-	"Jonathan Corbet" <corbet@lwn.net>,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org,
-	linux-mm@kvack.org,
-	"Randy Dunlap" <rdunlap@infradead.org>
-Subject: [PATCH v6 15/17] vfio/mlx5: Explicitly use number of pages instead of allocated length
-Date: Fri, 17 Jan 2025 12:03:46 +0200
-Message-ID: <e26f132eb79ee0217181a9c8d1d2856c8060ff1d.1737106761.git.leon@kernel.org>
-X-Mailer: git-send-email 2.47.1
-In-Reply-To: <cover.1737106761.git.leon@kernel.org>
-References: <cover.1737106761.git.leon@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b/neiiv4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1737109636; x=1768645636;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=TxwHsqrjZzG3nLmShIBR0UukjQwR6NuvH6E34ICNv+U=;
+  b=b/neiiv4FM1TPYlESF5WNBXCUUAS/zFUma8Ot1h+yLf8w4Q83CGeg0sv
+   8ab1KbZIqExH2GzpB/y72gbOUXkKujftK1VoXle16wVdMzoEbk8y5tJCA
+   2kC3qBSqA164sJr9TWCV7ljsjMmwXn3OjWPL1jPXogVk/R/oA6ejuRvd4
+   0M6QWNXI+BwIewArQUJ+MnmR4Ibk6cUB+3CDKCTcunFvo9xtlI6GgG9dA
+   fB4R6oBZa7mQQq4rLjdMru3e5VbGwDxF6q7+pP+bhPBVAeoEo2Z7B/kaC
+   tem607y4XgPE42SK/Z4tIbf8jGEJZ6ZjwPjwCspoYqau+8kVIiMb+9Fp5
+   w==;
+X-CSE-ConnectionGUID: K5A7LCHOQdm7Z5IuDDDX9A==
+X-CSE-MsgGUID: eJazG+oSRVWd1MYOJ22+Qg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11317"; a="48122129"
+X-IronPort-AV: E=Sophos;i="6.13,211,1732608000"; 
+   d="scan'208";a="48122129"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2025 02:27:15 -0800
+X-CSE-ConnectionGUID: JonJfYtmQzy7QPRs0IpvIA==
+X-CSE-MsgGUID: 79WkwgSWTRikbG1WdrOG6Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="106654126"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orviesa008.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 Jan 2025 02:27:15 -0800
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Fri, 17 Jan 2025 02:27:14 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44 via Frontend Transport; Fri, 17 Jan 2025 02:27:14 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.174)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Fri, 17 Jan 2025 02:27:14 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ZQLw62XznAJDQo/2jJjUtKOr2kSCCZLEhkLUwiHaNiwuCKi0FMBkdS2NMHZeep9ZKaBn6OaYrQwgfwV+iggLGp9p1022ILI+1eh5hSrSqDr4cln0UCVWLv2lmk/Orvuh8IydDdJXPgc/Vvpl8zRZnscBNtii81SPPrJ4XftK9XpbnRHoQ4eZTINiJw6TAIs70uHaPRVJjtwqcWuifUcAee9b1SHT+C3vs+StPgUdGzh7lXOyyNqjeHrrpLDC6/1Ybm/+dcd3XDWyL51GpbcqwgdFPF2Pbc6i7S4ps6Yam/D7rRir6fzvOMlMlbebjgFokT+EIniNvzWXn2n+1sdMtA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0z8p30BwsnDgov543yNZxfKo4MJmrWP6FXbnkoyI++w=;
+ b=CmBSbXvxPJdwYgMsvLh8g9v7r9mvIn/5ajX2C+b896YdiMmgYpW5INvRR2acbhibHQ4i1yh826+O61BpC2xjUFS2///4pvJL23T26ftcULeZqSJ2JyG2P39kc/fIwGzJOUw7zaellXCJi7ZZnZWIubYg937JlLj4tL1c9svlDzBS6OERUmIOPQf7W2F3081oWTX4Ot8U5AnnogwdwlXfVUsWl9UtN2mZqpEUn0wgSpr3/JbwJbifnOosEAAIjADEsFrKprgSCdqg0ji7C9cMOXWMocfyKbm3R+sYR31d4F2uofFenhkETXGoQGMnOXi7u4ixpEitt+4FhEKptHwMcg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by SA0PR11MB4607.namprd11.prod.outlook.com (2603:10b6:806:9b::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8356.17; Fri, 17 Jan
+ 2025 10:26:59 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a%4]) with mapi id 15.20.8356.010; Fri, 17 Jan 2025
+ 10:26:59 +0000
+Message-ID: <f685daca-081a-4ede-b1e1-559009fa9ebc@intel.com>
+Date: Fri, 17 Jan 2025 18:32:16 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 01/14] iommu: Introduce a replace API for device pasid
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	"Lu Baolu" <baolu.lu@linux.intel.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "vasant.hegde@amd.com" <vasant.hegde@amd.com>,
+	"will@kernel.org" <will@kernel.org>
+References: <20241219132746.16193-1-yi.l.liu@intel.com>
+ <20241219132746.16193-2-yi.l.liu@intel.com>
+ <20250113202134.GX5556@nvidia.com>
+ <BN9PR11MB5276A7F34F2B4206AF4233228C182@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250114134530.GD5556@nvidia.com>
+ <BN9PR11MB5276D2FD6D1006B1C14087BD8C192@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250115144354.GR5556@nvidia.com>
+ <BN9PR11MB52764E8C5599134A211DB3428C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <BN9PR11MB52764E8C5599134A211DB3428C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2PR02CA0046.apcprd02.prod.outlook.com
+ (2603:1096:3:18::34) To DS0PR11MB7529.namprd11.prod.outlook.com
+ (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|SA0PR11MB4607:EE_
+X-MS-Office365-Filtering-Correlation-Id: c73413fb-44b4-4797-06bc-08dd36e1793c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016|7053199007;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?K1lBRWYzVlM2M05GZzQvVjQzRDU5Y2RhV2E1VEpRTk9lZnhDUGluN2Y4cE1v?=
+ =?utf-8?B?dzg3cmcxQi96Z1gyNkZGeTBFNVNIWm94cDdSNU56c0NiS3piWHlpL2M5c2FB?=
+ =?utf-8?B?UW1ieHh6WUpiQ2IzditVYnV6aDdaUThQZHQ0V05YOEc1TldFV3hiQVE1bmFC?=
+ =?utf-8?B?WVNadFhUMUJ1TzJjWEZRZDhoWGRtKzZ2SlpTeVluNFRoU21YQ1U1UUtqNmJq?=
+ =?utf-8?B?OWN5TUhUdEpHWTB2RmZ0NXI0UDU1RExhUkRWd3hZK1RhM1NkQnNiNmZ3Z2ZB?=
+ =?utf-8?B?WW9TL05TOHNGU2NRNHNFOXkrY2JBRmpLZ2d3T0Z5V2dIcTNQclFDRkxvUndB?=
+ =?utf-8?B?aDVWaE5NS3c5NzMyM3I5c05pMjF6L2RkOUNNVitsRDFPMnVBZHZTdzRZWkxC?=
+ =?utf-8?B?SGNKVU0yNy9VeUVReDJsaFhHOXBkUUFsMnZoQjVYSFh4bjRVRHAyaDRDb3lz?=
+ =?utf-8?B?NHZ6alh1Y0RnRUFMakl3bEZLQ2JiRnpJYWx3d0tLMDZhZmFEcVRRWlRGV0p2?=
+ =?utf-8?B?a2J1bXNrRVRWbVdDRjM3MG9ZMXZLT0dQeHN3NFdQZEd1QWkrRHQ5MzBYLzVo?=
+ =?utf-8?B?NTRYamhwTW0yY1JRWmJ2U1VaM1VpUi9DTEZ0eHZHZE5VN1dYcktrOS9hUlJZ?=
+ =?utf-8?B?QisyWjNyZmVDL2I0b1hCdzNlWFNnSGhjb1ZXcGZpNWtOVlROR0VlSW1waGor?=
+ =?utf-8?B?ME16a000c09tSTlDQjhzRHkvL1RpVW5kMGtXT1JJYjVTUFFoTVV2eTBUdWJL?=
+ =?utf-8?B?bUlpdHU0VVU5alNCR1I0MSszTExoZlArUFJKRkR3QXJ5M2NFMEFtNjZTdnhz?=
+ =?utf-8?B?L0NMbVJ3N3hnZVNweEdJWWJnYjhpUEl0a1dtTGlMbzRadGNQSU14S3hYVkNZ?=
+ =?utf-8?B?cTRxWklFbUxrQWZJRjQ2WU5JYmtiYVg0T3VUZUdCSjBTQTFRM0tibE9sWnkw?=
+ =?utf-8?B?QjBXQ2FCZmdZSEJUYnBYY1lheDhDZFFKMzQveEg4aVhTTjI1a1dROVZKemF6?=
+ =?utf-8?B?RGJZdmd4cUx1NmtiMXowUHQxQmczSmRTaEx2TS9Yd28zWngxanUyM1BEQzhq?=
+ =?utf-8?B?ZlhHK081Ny8vTzczYjRZZlBQOFFIeHdUTlhGVEx1SXdNb251SEs5dW9oOTA5?=
+ =?utf-8?B?TVJJdXVNbDRDQVUxbitSaFQvVWg3Q3piRjkrR0lTZzUxMXVsMGpBWHFHRHoy?=
+ =?utf-8?B?YXBNM2N0RTBZTnlDYllyQnk2Z3FMQzRHWG50WFUraGE3Rkl4LzVuZWI1Z3Uy?=
+ =?utf-8?B?VkxuUnlzZjJINmZFMkE4cU1xczJTYUsxZlNkYURkOWdqVTdyb2xKVGJ5ZlY1?=
+ =?utf-8?B?QldWdVBaSlNSYVdtYjRrU1dwTjJxTlRWZUZnbkRMOWRyaThvSXd6VmdlUndW?=
+ =?utf-8?B?QS9UTUdpRUEyMzdGWXgxUHNrU2htQUEwL3RFblNNUm9ZZGtSdWNvMmJGbTdY?=
+ =?utf-8?B?YyswWFV1RzdNbzlSTzY1bDR0QkFkaVdhTzB0MnFCTW04bkY2V0lXMEdoNkZw?=
+ =?utf-8?B?bUVNc2h6ZE5jNU90akNiTjdhYzNnWURkMEs5RXV1UjhtbVpLdzJJdFhtYklN?=
+ =?utf-8?B?U1oxUTVzcVhESHcyRHRiL0UxT2s4NlY2bG1WTEtTYmdzbjRaUmt1aHFjeGNM?=
+ =?utf-8?B?YjZyc1lneDBLWklsZkpGcnhQckdLRmlSN2ZiN2NCSjVyQkJjU29uNHowWHBT?=
+ =?utf-8?B?cE5TbWZiNGVHaUwrNlNmWU01eE9LMEM5WlRLZVBFOTB5QXAwRkxYMVdMNXNo?=
+ =?utf-8?B?ZnBDbFU5K2ZCWnFESjYweCtLWThIUEJrdEhSOEhXWEpKaE0ycGU3YUIzemV6?=
+ =?utf-8?B?R0IzdVN0RklKWlplRW94dFUrNjR3Ti9FSnN0bUcxazRLRTNoeVdZTzhyOTVV?=
+ =?utf-8?Q?PHEVYGR0KIiI8?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z253NjRVQm8xbHZwWGVQZkNzN1BTcDRWL3l1dHVDUmpsYnNzSUlwVGN2d0NQ?=
+ =?utf-8?B?QllaY1h3T3ZtSXhVdklRczBpTWo3ZCtUT1l0WUdYSVVRRzVNSHg0T3RxNXpM?=
+ =?utf-8?B?aHE0QVNFemZVbmxUUlUxc1VKT3djYXVqR1JqbVhWK3RpQTRUUFY0TVE1NzdF?=
+ =?utf-8?B?VlhMVXFjOHBZN2JMRFlCb0VuZmdJaGQxU3Q1TU8zNTVCS2VDN3pIb2VzVWpL?=
+ =?utf-8?B?Syt2dkdGT2NqMHZsemtaQnNCU2RQa2djLzJNTDAvZmxybC93V01KSUIrMk1k?=
+ =?utf-8?B?M2k1dnFlMTcyaVpyakdMcWJWOHlRTkJUYzNKRERpUktML0FuZmprTk4vcnZm?=
+ =?utf-8?B?OHRpZ0c4TTI3K0FJTkJjbGJ2WkVsVUVIczg4d01KRzZycFZDMTF3K21YUW1Z?=
+ =?utf-8?B?VkJBOVdKbDFmUzc0ajRzdkxHYWdHTXBVQkd1YStnOUN1ajArcG1WSnJBVzAz?=
+ =?utf-8?B?anA2aHpXUlhTZDRiM2xYRTRJWGJTRGt3RzJlWllDK1E3RGFSTithdWNYbjZO?=
+ =?utf-8?B?VVFJT2lBYmlXMzJLaFlqenBwRWNYcURqZC9OYzAvWmd0T25SSVViT1dCbWxE?=
+ =?utf-8?B?M3RqNmgwVldQeXE1eEo2ejc4bXNWNUptV2x2WWxiYmpqMlhZazJndGw1MHlu?=
+ =?utf-8?B?VVBmSmlBb1kyMEJRc082emNSbmNmcSt0V0hhVHdTNGZmWVdNY1FuUmxSalk0?=
+ =?utf-8?B?WFArMW9NbUZ5RkNMMWlWMWlOcGxHaFNkUVliYWVDa0k4SkVFQnNIam9wRHZP?=
+ =?utf-8?B?bDRwa3lGai9PSTAvc2tBSW9qT0NobVY4K1cwU1dkcGF6cC9QV1loRkxnQVkr?=
+ =?utf-8?B?c05nMzFpa285YTM3M3MyOERiWWZ5d1pncXYxNkFyeEVDaldjdG81MUQzS244?=
+ =?utf-8?B?SENsRXQwWTNiNldXOUZDMGd5RjJxNGVtYzZWeDYxQUlvQXlrTVMxc0FsVjZ2?=
+ =?utf-8?B?a3N3K2p4MWs3d0VSTHcxUFZySDV3dE94WXZPd3pvV09sUEhKTXFBUTAxcHJ3?=
+ =?utf-8?B?aDI0Q2R5VHVERkhnaFp3UkxMcWJIV2ViRktVRmw5S1dwWE9Qb3hwd0R4RUhO?=
+ =?utf-8?B?aXAwRjRlTy9mU1gvbkkxeHdUVEZTK0ZWMW1oTUsvVWhuU2NTRlEvLzZwYU9Y?=
+ =?utf-8?B?SE03dHJEYkI4QkpqS3p0M2lnSTlVUXJzWUFLa0JiZ2g1QXJTMU5SUk5DRDln?=
+ =?utf-8?B?OW43THJzS1NrTUdwaEZ6R3FUcU1wKy9rcEZrcHYvL3U5Q0wzbGRibktrby9M?=
+ =?utf-8?B?WDJraFI0UHdENElCVVh1ck40b05vbmZST3NBTUpHdFVkSTJCSUcrNGlxRUtp?=
+ =?utf-8?B?NThwNEJtTXpyZTY4QUhpS1ZXUEs2NW1zRTlEeUZhT3NpRk1XUmxvNEZrTjNX?=
+ =?utf-8?B?bzd3dzNCYjI1TFdwN1U3UnNFUW1JNUdaUjFmcXM3V1BDeit3UUtzdW5RZEdh?=
+ =?utf-8?B?RjFZTHpvai9ZcGpMdVlqT1FhV2NESjN1R3FSdFU4cGEyREZQQTdsaHoreHE4?=
+ =?utf-8?B?dWQvTmh4MHJ5OEpFME9BckJ4VEpXNDBBZXV0RVd1MUhMVzI1QkJQUW5EYkl4?=
+ =?utf-8?B?NTVvS09wR3QwVXF1eDFPaXJyL1ZuZjlJZG1lWmFKb08zT29Iam80MjM0eDZv?=
+ =?utf-8?B?cklud0h6MzFneGdacGlKbXZPRDhFMFQ2dEY0VS9LZ1FpMVlZTUo5aUxJVjYy?=
+ =?utf-8?B?OWo1WDV4L2pGb3Y3SFljdE83T2YwbkVUdUViWWF0bmI5Nnp1WWc5WmxydlBI?=
+ =?utf-8?B?OUtJeGRSVG9TRTRXSkxnZ3JIWUc0cWdlYVgzRXpzamNKMktIZkVZRGRhaDBR?=
+ =?utf-8?B?TXV3UTBjb09ZK05lcWJaYjQ2ZTVFZ3JqUkhRdnZVcDhNNmQ1TmpDVkVrYjRW?=
+ =?utf-8?B?cEVUTGRoRThkSm5tYzBLZThmeUpDT1dJZUR1UUI0eS9UUFdMUEUxaFl0S0lm?=
+ =?utf-8?B?S2Y0eENyOHdFMGk5bjExTWtYWXE3ZWN3TVZnZzYrQngwTkhNNUJkNkpkWjlL?=
+ =?utf-8?B?OHp0b0tOdHAvS09lVCtNUnlDMjIycFoyV3lpSXBTNThTT1FQVGtmb0RUQk1R?=
+ =?utf-8?B?N3pRaDRrekFydytKTkNNRVovV0ZTYmhJNnFWKzVYZmRhdE9RRklWWFpNVVNj?=
+ =?utf-8?Q?Yj0CPPJuSjzcvZ9N9fcHco20y?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c73413fb-44b4-4797-06bc-08dd36e1793c
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2025 10:26:58.8982
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ie2ly/4sI0rGGhyfG2SVIr/dzJtcAHw+jDAgYGT4saEYg9H+LKscIDAa5Wn9sYrS9xKtM9SCiiASWcGUhcFP6g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4607
+X-OriginatorOrg: intel.com
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On 2025/1/16 13:48, Tian, Kevin wrote:
+>> From: Jason Gunthorpe <jgg@nvidia.com>
+>> Sent: Wednesday, January 15, 2025 10:44 PM
+>>
+>> On Wed, Jan 15, 2025 at 04:43:41AM +0000, Tian, Kevin wrote:
+>>>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>>> Sent: Tuesday, January 14, 2025 9:46 PM
+>>>>
+>>>> On Tue, Jan 14, 2025 at 08:10:41AM +0000, Tian, Kevin wrote:
+>>>>
+>>>>>>> +	ret = __iommu_set_group_pasid(domain, group, pasid, curr-
+>>>>>>> domain);
+>>>>>>> +	if (ret)
+>>>>>>> +		WARN_ON(handle != xa_store(&group->pasid_array,
+>> pasid,
+>>>>>>> +					   curr, GFP_KERNEL));
+>>>>>>
+>>>>>> I wonder about the ordering here, is it OK to have PRIs being
+>>>>>> delivered to a domain that failed to attach? What cleans up that race
+>>>>>> condition with domain free?
+>>>>>>
+>>>>>> Should we replace the domain then set the xarray? (and same
+>> ordering
+>>>>>> question for normal attach)
+>>>>>
+>>>>> That makes sense to me.
+>>>>>
+>>>>> But I don't think there is a problem with attach. xa_insert() will
+>>>>> return error if an entry already exists. So there won't be any
+>>>>> PRI being delivered at __iommu_set_group_pasid(), no matter
+>>>>> it succeeds or not.
+>>>>
+>>>> It has the same issue:
+>>>>
+>>>> 	ret = xa_insert(&group->pasid_array, pasid, handle, GFP_KERNEL);
+>>>> 	if (ret)
+>>>> 		goto out_unlock;
+>>>>
+>>>> 	ret = __iommu_set_group_pasid(domain, group, pasid);
+>>>>          .. Concurrently a PRI event is pushed to the domain ..
+>>>> 	if (ret)
+>>>> 		xa_erase(&group->pasid_array, pasid);
+>>>>
+>>>>          .. Now what? Who fences the PRI event thread before the caller
+>>>> 	   frees the domain ..?
+>>>>
+>>>> We arranged things so that detatch would fence the PRI, if detach is
+>>>> not called then there is no fence..
+>>>>
+>>>
+>>> Though I'm fine to change the order in attach too as it looks more
+>>> reasonable logically, I'm trying to understand the actual impact of
+>>> the original order (e.g. is the change worth of a Fix tag?)
+>>>
+>>> If there is no detach happened before then it's the 1st attach to
+>>> a faultable domain and PRI will be enabled right before this function
+>>> hence no fence required.
+>>>
+>>> Would a sane device trigger PRI in this window?
+>>
+>> I would say this is not a "sane" scenario, this is a theoretical race
+>> triggerable by the device. Perhaps a VFIO user can force the device to
+>> trigger this race and exploit the kernel.
+>>
+>>> If it's a detach-then-attach flow, detach will do the fence anyway
+>>> before the attach.
+>>
+>> The issue is the error, once we do the xa_insert() then any faults will
+>> get routed to our domain and the fault path threads will hold pointers
+>> to the domain. Once the xa_insert() is done we must flush the fault
+>> path threads before allowing the domain to be freed.
+>>
+>> If __iommu_set_group_pasid() fails then we do an xa_erase() but
+>> nothing will flush the fault threads.
+>>
+> 
+> If __iommu_set_group_pasid() fails iommufd will attempt to disable
+> PRI which reaches iopf_queue_remove_device(). The latter auto
+> responds to the list of pending faults.
+> 
+> But this is not a reliable assumption e.g. when multiple functions
+> (VFs and PF) share a single PRI entity.
 
-allocated_length is a multiple of page size and number of pages,
-so let's change the functions to accept number of pages. It opens
-us a venue to combine receive and send paths together with code
-readability improvement.
+I think iommufd fault only supports PF so far. VF is not supported. :) But
+it's better not make decisions based on this limitation when considering
+the PRI flushing issue.
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/vfio/pci/mlx5/cmd.c  | 32 ++++++++++-----------
- drivers/vfio/pci/mlx5/cmd.h  | 10 +++----
- drivers/vfio/pci/mlx5/main.c | 56 +++++++++++++++++++++++-------------
- 3 files changed, 57 insertions(+), 41 deletions(-)
+> So I agree it's conceptually clearer to swap the order of updating
+> xarray and doing attach.
+> 
+> btw in reality this won't trigger any issue on VT-d. The spec says
+> that PRI upon a non-present PASID entry (the state before attach
+> succeeds) is auto-responded by HW as 'Invalid Request'. So the
+> entire software faulting path won't triggered at all but this might
+> be a vendor specific behavior...
 
-diff --git a/drivers/vfio/pci/mlx5/cmd.c b/drivers/vfio/pci/mlx5/cmd.c
-index 7527e277c898..88e76afba606 100644
---- a/drivers/vfio/pci/mlx5/cmd.c
-+++ b/drivers/vfio/pci/mlx5/cmd.c
-@@ -318,8 +318,7 @@ static int _create_mkey(struct mlx5_core_dev *mdev, u32 pdn,
- 			struct mlx5_vhca_recv_buf *recv_buf,
- 			u32 *mkey)
- {
--	size_t npages = buf ? DIV_ROUND_UP(buf->allocated_length, PAGE_SIZE) :
--				recv_buf->npages;
-+	size_t npages = buf ? buf->npages : recv_buf->npages;
- 	int err = 0, inlen;
- 	__be64 *mtt;
- 	void *mkc;
-@@ -375,7 +374,7 @@ static int mlx5vf_dma_data_buffer(struct mlx5_vhca_data_buffer *buf)
- 	if (mvdev->mdev_detach)
- 		return -ENOTCONN;
- 
--	if (buf->dmaed || !buf->allocated_length)
-+	if (buf->dmaed || !buf->npages)
- 		return -EINVAL;
- 
- 	ret = dma_map_sgtable(mdev->device, &buf->table.sgt, buf->dma_dir, 0);
-@@ -445,7 +444,7 @@ static int mlx5vf_add_migration_pages(struct mlx5_vhca_data_buffer *buf,
- 
- 		if (ret)
- 			goto err_append;
--		buf->allocated_length += filled * PAGE_SIZE;
-+		buf->npages += filled;
- 		/* clean input for another bulk allocation */
- 		memset(page_list, 0, filled * sizeof(*page_list));
- 		to_fill = min_t(unsigned int, to_alloc,
-@@ -464,8 +463,7 @@ static int mlx5vf_add_migration_pages(struct mlx5_vhca_data_buffer *buf,
- }
- 
- struct mlx5_vhca_data_buffer *
--mlx5vf_alloc_data_buffer(struct mlx5_vf_migration_file *migf,
--			 size_t length,
-+mlx5vf_alloc_data_buffer(struct mlx5_vf_migration_file *migf, u32 npages,
- 			 enum dma_data_direction dma_dir)
- {
- 	struct mlx5_vhca_data_buffer *buf;
-@@ -477,9 +475,8 @@ mlx5vf_alloc_data_buffer(struct mlx5_vf_migration_file *migf,
- 
- 	buf->dma_dir = dma_dir;
- 	buf->migf = migf;
--	if (length) {
--		ret = mlx5vf_add_migration_pages(buf,
--				DIV_ROUND_UP_ULL(length, PAGE_SIZE));
-+	if (npages) {
-+		ret = mlx5vf_add_migration_pages(buf, npages);
- 		if (ret)
- 			goto end;
- 
-@@ -505,8 +502,8 @@ void mlx5vf_put_data_buffer(struct mlx5_vhca_data_buffer *buf)
- }
- 
- struct mlx5_vhca_data_buffer *
--mlx5vf_get_data_buffer(struct mlx5_vf_migration_file *migf,
--		       size_t length, enum dma_data_direction dma_dir)
-+mlx5vf_get_data_buffer(struct mlx5_vf_migration_file *migf, u32 npages,
-+		       enum dma_data_direction dma_dir)
- {
- 	struct mlx5_vhca_data_buffer *buf, *temp_buf;
- 	struct list_head free_list;
-@@ -521,7 +518,7 @@ mlx5vf_get_data_buffer(struct mlx5_vf_migration_file *migf,
- 	list_for_each_entry_safe(buf, temp_buf, &migf->avail_list, buf_elm) {
- 		if (buf->dma_dir == dma_dir) {
- 			list_del_init(&buf->buf_elm);
--			if (buf->allocated_length >= length) {
-+			if (buf->npages >= npages) {
- 				spin_unlock_irq(&migf->list_lock);
- 				goto found;
- 			}
-@@ -535,7 +532,7 @@ mlx5vf_get_data_buffer(struct mlx5_vf_migration_file *migf,
- 		}
- 	}
- 	spin_unlock_irq(&migf->list_lock);
--	buf = mlx5vf_alloc_data_buffer(migf, length, dma_dir);
-+	buf = mlx5vf_alloc_data_buffer(migf, npages, dma_dir);
- 
- found:
- 	while ((temp_buf = list_first_entry_or_null(&free_list,
-@@ -716,7 +713,7 @@ int mlx5vf_cmd_save_vhca_state(struct mlx5vf_pci_core_device *mvdev,
- 	MLX5_SET(save_vhca_state_in, in, op_mod, 0);
- 	MLX5_SET(save_vhca_state_in, in, vhca_id, mvdev->vhca_id);
- 	MLX5_SET(save_vhca_state_in, in, mkey, buf->mkey);
--	MLX5_SET(save_vhca_state_in, in, size, buf->allocated_length);
-+	MLX5_SET(save_vhca_state_in, in, size, buf->npages * PAGE_SIZE);
- 	MLX5_SET(save_vhca_state_in, in, incremental, inc);
- 	MLX5_SET(save_vhca_state_in, in, set_track, track);
- 
-@@ -738,8 +735,11 @@ int mlx5vf_cmd_save_vhca_state(struct mlx5vf_pci_core_device *mvdev,
- 	}
- 
- 	if (!header_buf) {
--		header_buf = mlx5vf_get_data_buffer(migf,
--			sizeof(struct mlx5_vf_migration_header), DMA_NONE);
-+		header_buf = mlx5vf_get_data_buffer(
-+			migf,
-+			DIV_ROUND_UP(sizeof(struct mlx5_vf_migration_header),
-+				     PAGE_SIZE),
-+			DMA_NONE);
- 		if (IS_ERR(header_buf)) {
- 			err = PTR_ERR(header_buf);
- 			goto err_free;
-diff --git a/drivers/vfio/pci/mlx5/cmd.h b/drivers/vfio/pci/mlx5/cmd.h
-index df421dc6de04..7d4a833b6900 100644
---- a/drivers/vfio/pci/mlx5/cmd.h
-+++ b/drivers/vfio/pci/mlx5/cmd.h
-@@ -56,7 +56,7 @@ struct mlx5_vhca_data_buffer {
- 	struct sg_append_table table;
- 	loff_t start_pos;
- 	u64 length;
--	u64 allocated_length;
-+	u32 npages;
- 	u32 mkey;
- 	enum dma_data_direction dma_dir;
- 	u8 dmaed:1;
-@@ -217,12 +217,12 @@ int mlx5vf_cmd_alloc_pd(struct mlx5_vf_migration_file *migf);
- void mlx5vf_cmd_dealloc_pd(struct mlx5_vf_migration_file *migf);
- void mlx5fv_cmd_clean_migf_resources(struct mlx5_vf_migration_file *migf);
- struct mlx5_vhca_data_buffer *
--mlx5vf_alloc_data_buffer(struct mlx5_vf_migration_file *migf,
--			 size_t length, enum dma_data_direction dma_dir);
-+mlx5vf_alloc_data_buffer(struct mlx5_vf_migration_file *migf, u32 npages,
-+			 enum dma_data_direction dma_dir);
- void mlx5vf_free_data_buffer(struct mlx5_vhca_data_buffer *buf);
- struct mlx5_vhca_data_buffer *
--mlx5vf_get_data_buffer(struct mlx5_vf_migration_file *migf,
--		       size_t length, enum dma_data_direction dma_dir);
-+mlx5vf_get_data_buffer(struct mlx5_vf_migration_file *migf, u32 npages,
-+		       enum dma_data_direction dma_dir);
- void mlx5vf_put_data_buffer(struct mlx5_vhca_data_buffer *buf);
- struct page *mlx5vf_get_migration_page(struct mlx5_vhca_data_buffer *buf,
- 				       unsigned long offset);
-diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
-index 8833e60d42f5..83247f016441 100644
---- a/drivers/vfio/pci/mlx5/main.c
-+++ b/drivers/vfio/pci/mlx5/main.c
-@@ -308,6 +308,7 @@ static struct mlx5_vhca_data_buffer *
- mlx5vf_mig_file_get_stop_copy_buf(struct mlx5_vf_migration_file *migf,
- 				  u8 index, size_t required_length)
- {
-+	u32 npages = DIV_ROUND_UP(required_length, PAGE_SIZE);
- 	struct mlx5_vhca_data_buffer *buf = migf->buf[index];
- 	u8 chunk_num;
- 
-@@ -315,12 +316,11 @@ mlx5vf_mig_file_get_stop_copy_buf(struct mlx5_vf_migration_file *migf,
- 	chunk_num = buf->stop_copy_chunk_num;
- 	buf->migf->buf[index] = NULL;
- 	/* Checking whether the pre-allocated buffer can fit */
--	if (buf->allocated_length >= required_length)
-+	if (buf->npages >= npages)
- 		return buf;
- 
- 	mlx5vf_put_data_buffer(buf);
--	buf = mlx5vf_get_data_buffer(buf->migf, required_length,
--				     DMA_FROM_DEVICE);
-+	buf = mlx5vf_get_data_buffer(buf->migf, npages, DMA_FROM_DEVICE);
- 	if (IS_ERR(buf))
- 		return buf;
- 
-@@ -373,7 +373,8 @@ static int mlx5vf_add_stop_copy_header(struct mlx5_vf_migration_file *migf,
- 	u8 *to_buff;
- 	int ret;
- 
--	header_buf = mlx5vf_get_data_buffer(migf, size, DMA_NONE);
-+	header_buf = mlx5vf_get_data_buffer(migf, DIV_ROUND_UP(size, PAGE_SIZE),
-+					    DMA_NONE);
- 	if (IS_ERR(header_buf))
- 		return PTR_ERR(header_buf);
- 
-@@ -388,7 +389,7 @@ static int mlx5vf_add_stop_copy_header(struct mlx5_vf_migration_file *migf,
- 	to_buff = kmap_local_page(page);
- 	memcpy(to_buff, &header, sizeof(header));
- 	header_buf->length = sizeof(header);
--	data.stop_copy_size = cpu_to_le64(migf->buf[0]->allocated_length);
-+	data.stop_copy_size = cpu_to_le64(migf->buf[0]->npages * PAGE_SIZE);
- 	memcpy(to_buff + sizeof(header), &data, sizeof(data));
- 	header_buf->length += sizeof(data);
- 	kunmap_local(to_buff);
-@@ -437,15 +438,20 @@ static int mlx5vf_prep_stop_copy(struct mlx5vf_pci_core_device *mvdev,
- 
- 	num_chunks = mvdev->chunk_mode ? MAX_NUM_CHUNKS : 1;
- 	for (i = 0; i < num_chunks; i++) {
--		buf = mlx5vf_get_data_buffer(migf, inc_state_size, DMA_FROM_DEVICE);
-+		buf = mlx5vf_get_data_buffer(
-+			migf, DIV_ROUND_UP(inc_state_size, PAGE_SIZE),
-+			DMA_FROM_DEVICE);
- 		if (IS_ERR(buf)) {
- 			ret = PTR_ERR(buf);
- 			goto err;
- 		}
- 
- 		migf->buf[i] = buf;
--		buf = mlx5vf_get_data_buffer(migf,
--				sizeof(struct mlx5_vf_migration_header), DMA_NONE);
-+		buf = mlx5vf_get_data_buffer(
-+			migf,
-+			DIV_ROUND_UP(sizeof(struct mlx5_vf_migration_header),
-+				     PAGE_SIZE),
-+			DMA_NONE);
- 		if (IS_ERR(buf)) {
- 			ret = PTR_ERR(buf);
- 			goto err;
-@@ -553,7 +559,8 @@ static long mlx5vf_precopy_ioctl(struct file *filp, unsigned int cmd,
- 	 * We finished transferring the current state and the device has a
- 	 * dirty state, save a new state to be ready for.
- 	 */
--	buf = mlx5vf_get_data_buffer(migf, inc_length, DMA_FROM_DEVICE);
-+	buf = mlx5vf_get_data_buffer(migf, DIV_ROUND_UP(inc_length, PAGE_SIZE),
-+				     DMA_FROM_DEVICE);
- 	if (IS_ERR(buf)) {
- 		ret = PTR_ERR(buf);
- 		mlx5vf_mark_err(migf);
-@@ -675,8 +682,8 @@ mlx5vf_pci_save_device_data(struct mlx5vf_pci_core_device *mvdev, bool track)
- 
- 	if (track) {
- 		/* leave the allocated buffer ready for the stop-copy phase */
--		buf = mlx5vf_alloc_data_buffer(migf,
--			migf->buf[0]->allocated_length, DMA_FROM_DEVICE);
-+		buf = mlx5vf_alloc_data_buffer(migf, migf->buf[0]->npages,
-+					       DMA_FROM_DEVICE);
- 		if (IS_ERR(buf)) {
- 			ret = PTR_ERR(buf);
- 			goto out_pd;
-@@ -917,11 +924,14 @@ static ssize_t mlx5vf_resume_write(struct file *filp, const char __user *buf,
- 				goto out_unlock;
- 			break;
- 		case MLX5_VF_LOAD_STATE_PREP_HEADER_DATA:
--			if (vhca_buf_header->allocated_length < migf->record_size) {
-+		{
-+			u32 npages = DIV_ROUND_UP(migf->record_size, PAGE_SIZE);
-+
-+			if (vhca_buf_header->npages < npages) {
- 				mlx5vf_free_data_buffer(vhca_buf_header);
- 
--				migf->buf_header[0] = mlx5vf_alloc_data_buffer(migf,
--						migf->record_size, DMA_NONE);
-+				migf->buf_header[0] = mlx5vf_alloc_data_buffer(
-+					migf, npages, DMA_NONE);
- 				if (IS_ERR(migf->buf_header[0])) {
- 					ret = PTR_ERR(migf->buf_header[0]);
- 					migf->buf_header[0] = NULL;
-@@ -934,6 +944,7 @@ static ssize_t mlx5vf_resume_write(struct file *filp, const char __user *buf,
- 			vhca_buf_header->start_pos = migf->max_pos;
- 			migf->load_state = MLX5_VF_LOAD_STATE_READ_HEADER_DATA;
- 			break;
-+		}
- 		case MLX5_VF_LOAD_STATE_READ_HEADER_DATA:
- 			ret = mlx5vf_resume_read_header_data(migf, vhca_buf_header,
- 							&buf, &len, pos, &done);
-@@ -944,12 +955,13 @@ static ssize_t mlx5vf_resume_write(struct file *filp, const char __user *buf,
- 		{
- 			u64 size = max(migf->record_size,
- 				       migf->stop_copy_prep_size);
-+			u32 npages = DIV_ROUND_UP(size, PAGE_SIZE);
- 
--			if (vhca_buf->allocated_length < size) {
-+			if (vhca_buf->npages < npages) {
- 				mlx5vf_free_data_buffer(vhca_buf);
- 
--				migf->buf[0] = mlx5vf_alloc_data_buffer(migf,
--							size, DMA_TO_DEVICE);
-+				migf->buf[0] = mlx5vf_alloc_data_buffer(
-+					migf, npages, DMA_TO_DEVICE);
- 				if (IS_ERR(migf->buf[0])) {
- 					ret = PTR_ERR(migf->buf[0]);
- 					migf->buf[0] = NULL;
-@@ -1037,8 +1049,11 @@ mlx5vf_pci_resume_device_data(struct mlx5vf_pci_core_device *mvdev)
- 	}
- 
- 	migf->buf[0] = buf;
--	buf = mlx5vf_alloc_data_buffer(migf,
--		sizeof(struct mlx5_vf_migration_header), DMA_NONE);
-+	buf = mlx5vf_alloc_data_buffer(
-+		migf,
-+		DIV_ROUND_UP(sizeof(struct mlx5_vf_migration_header),
-+			     PAGE_SIZE),
-+		DMA_NONE);
- 	if (IS_ERR(buf)) {
- 		ret = PTR_ERR(buf);
- 		goto out_buf;
-@@ -1148,7 +1163,8 @@ mlx5vf_pci_step_device_state_locked(struct mlx5vf_pci_core_device *mvdev,
- 					MLX5VF_QUERY_INC | MLX5VF_QUERY_CLEANUP);
- 		if (ret)
- 			return ERR_PTR(ret);
--		buf = mlx5vf_get_data_buffer(migf, size, DMA_FROM_DEVICE);
-+		buf = mlx5vf_get_data_buffer(migf,
-+				DIV_ROUND_UP(size, PAGE_SIZE), DMA_FROM_DEVICE);
- 		if (IS_ERR(buf))
- 			return ERR_CAST(buf);
- 		/* pre_copy cleanup */
+I'll swap the order between the group->pasid_array and
+__iommu_set_group_pasid() in both the PASID attach and replace path.
+
+I think the RID attach/replace path have the same problem since the
+PRI forwarding path also retrieves the iommu_attach_handle from the
+group->pasid_array. Even worse, I didn't see the RID path set the
+handle to group->pasid_array. @Baolu, perhaps you can help to fix
+the RID path? :)
+
 -- 
-2.47.1
-
+Regards,
+Yi Liu
