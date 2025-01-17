@@ -1,25 +1,41 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E6C81AAA37
-	for <iommu@lists.linux.dev>; Fri, 17 Jan 2025 19:34:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A3341B3957;
+	Fri, 17 Jan 2025 21:32:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.126.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737142473; cv=none; b=KkOlxJ8I7KXF4FzG9JR4pXyzpivCYi9P2+NNsPsOot99vJ+5bl89M49IAW0q1ekM5phRp4GAEvAwEpqjqlmg37RmelMBP3Z/BekupKam//A5N3h9DXAo1EDa+jrlyOzB3d3WteoctS++KHtiowBS56TraKPwCXbscY06b8n81iE=
+	t=1737149527; cv=none; b=hykSmF0x5j2R7gfQUTunuX8u4z1Pz0Q4Mf87+4fY19k20Fc5GNth31+Qg+I567wDK1076HlSt0WVV3Hvk5KOEnFUdqPYnCOL3rUuPMnHxJg3lwZ7YCh0/s4AVRtG52itposA1jmY7NerdhBWu7iGOWI3iJOdPwHIQGJUUPB5BU4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737142473; c=relaxed/simple;
-	bh=1tHrQSGLG+q4auP9qbQlJ95IEIz6kv8rW9SVgpeyH2g=;
+	s=arc-20240116; t=1737149527; c=relaxed/simple;
+	bh=xesf0RCMEI2P5fhtJgMZzY28yOfhI9GmNrYN1XjxGWk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=V29TlgOobsjm87FWj5jpnJe39dqWn/4Vu0iG+7/Dmcq1tdN48dMzODfXQvD5oLHdIDqevKMKY5DWtoVOZrUcRB/BiiDT8e9HbZ3VKKlKpZnBcNueen30qUsenAOEw96EXSQ+g/0ggJgwUyrLDC8kNStUEfZW1Y5YZkM6wSpvN4Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D32A01476;
-	Fri, 17 Jan 2025 11:34:53 -0800 (PST)
-Received: from [10.57.7.182] (unknown [10.57.7.182])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 485B63F73F;
-	Fri, 17 Jan 2025 11:34:23 -0800 (PST)
-Message-ID: <64ab28fc-adba-4193-beac-4af482b12699@arm.com>
-Date: Fri, 17 Jan 2025 19:34:20 +0000
+	 In-Reply-To:Content-Type; b=HXZ+nm9gCW/cKG1gBqrMVPFLmP1iOWgcBzv5HFm3VlJJTTPIRUxxAPUd/ZQ5ioNk4HtU1DAMAK/Qyt+9VFTOnxDomhgQtFfe7tqN7hhPfoy9r/FdJHsT23cfazna43g5fb6EApoFask6LdaEoxD864aSWDiOZiH7zM2YN65vBBw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=simg.de; spf=pass smtp.mailfrom=simg.de; dkim=pass (2048-bit key) header.d=simg.de header.i=linux-kernel@simg.de header.b=T/M5mc5l; arc=none smtp.client-ip=212.227.126.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=simg.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=simg.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=simg.de header.i=linux-kernel@simg.de header.b="T/M5mc5l"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=simg.de;
+	s=s1-ionos; t=1737149516; x=1737754316; i=linux-kernel@simg.de;
+	bh=vNc3h5uz9F4zhx4XMa1OwgBRM5wJa5mr4x8QwvlWzk0=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=T/M5mc5lTZXyVaWu0YWpBjHAmx/n/Y8ZNzZl+x2Ryn+ckxyftT5UkUjrPc9QxJW7
+	 zs7xdFhVS1AVvSqgimuxAfkHG4y4FOP9DP4EwTbFqHlU2VN4y8fCKG66FeAmtgUqG
+	 kUmtQn0KCCz1+TVAjXYU8hfuh2iSuE3lh+9kNmKYYIye5SOUtkR2mhFaurcmzZNT1
+	 AM2DfrPt3C18Ig2OfwpL0m3SKWYTii7NUFVgTA+igEHbWENWIebUXPaOPm/RJ63yq
+	 dJJmfrlSFP1sNrmN2+y0CyauNza88GRLhbSE/2cDP+c+HpWtSukcbwoIAj2f6Geof
+	 NLw0+yN2L/njjLIwYA==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from [192.168.1.60] ([87.158.34.72]) by mrelayeu.kundenserver.de
+ (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1N63i4-1tS8fs2Vtw-00v2kz; Fri, 17 Jan 2025 22:31:56 +0100
+Message-ID: <00b01ab3-ec9d-4a35-a593-c9fc764e0f04@simg.de>
+Date: Fri, 17 Jan 2025 22:31:55 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,166 +43,113 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] iommu/arm-smmu: Fix spurious interrupts with
- stall-on-fault
-To: Connor Abbott <cwabbott0@gmail.com>, Rob Clark <robdclark@gmail.com>,
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Sean Paul <sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>,
- Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Marijn Suijten <marijn.suijten@somainline.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, freedreno@lists.freedesktop.org
-References: <20250117-msm-gpu-fault-fixes-next-v1-0-bc9b332b5d0b@gmail.com>
- <20250117-msm-gpu-fault-fixes-next-v1-1-bc9b332b5d0b@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250117-msm-gpu-fault-fixes-next-v1-1-bc9b332b5d0b@gmail.com>
+Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
+ X600M-STX + Ryzen 8700G
+To: Christoph Hellwig <hch@lst.de>,
+ Thorsten Leemhuis <regressions@leemhuis.info>, bugzilla-daemon@kernel.org
+Cc: Bruno Gravato <bgravato@gmail.com>, Keith Busch <kbusch@kernel.org>,
+ Adrian Huang <ahuang12@lenovo.com>,
+ Linux kernel regressions list <regressions@lists.linux.dev>,
+ linux-nvme@lists.infradead.org, Jens Axboe <axboe@fb.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ LKML <linux-kernel@vger.kernel.org>
+References: <401f2c46-0bc3-4e7f-b549-f868dc1834c5@leemhuis.info>
+ <Z36UsE5dj6j5HhkX@kbusch-mbp> <20250109082849.GC20724@lst.de>
+ <210e7b28-de05-44bc-9604-83a79ae131b0@leemhuis.info>
+ <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
+ <CAOBLbT8103fAyoFNF8=YcEM1sM6HodcUe=Ee5NsE2hUkfCYv7g@mail.gmail.com>
+ <3b693647-5e82-4c39-8017-22cada56eb55@leemhuis.info>
+ <20250117080507.GA25953@lst.de>
+Content-Language: en-US
+From: Stefan <linux-kernel@simg.de>
+In-Reply-To: <20250117080507.GA25953@lst.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:m6Gfmgmqsk1tjmFw4DSDSQY9LC787w7nASuI3Gm+xrtwkaC9xWO
+ YyVeYms/XHyiKruYe4PrlqMd4fEVS3nE2dYlPB7GgyySZ4NjxGh4UixOipPGP9phEQtxLfy
+ OrGBQsk7erGNtjGXUnPF7YxK55BHxl2HNGyzkG5PwBRBCyYHgRgJKP4tITa9TMxqQ7RoX+m
+ Lolu3EZaJdyYogq8FD9Iw==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:+r7IGKcPWO0=;+/zIaAyPYIR0wy63YVAFUefbk/m
+ 7Ir7bLJsMPr28cKxbPiNL8F05l0XrmiSLB37W89WY1hcz6arFtOt2eAFAnjXp4xOrWIRJVuxi
+ UzouLXYp6Wkhbg3wKUAuT+tKU2IVFoC9xzOYDTi9iilELgjiRNQinQWR3rbuLNVFjngXOFsA3
+ 5XLjjB1p7IRkIcjuD2y3vYTEi78A0lBtFUIXlkks4RaZQn73Gmcv4N5f5pniT+PbJZhJzQM7+
+ L7S6Uu4I52EZeCUdNQ5Ve/lwiB6TjEtkzQ+BmyMOVr1dbatGJ/El/BoYvTjg5xaP8+S/5e6k4
+ GdpsWhT4v9KV31BkNbiJgzjSFxuUjwwK/ysTALMcTrLCOgubqLnHB3Nx44d1Wc640QT1vUW5E
+ WuGB6DMeKmumtIRamw3A0vRUVSJM7Gah6kJikT+/FUBENQuppO0fm8/KcqI6EC1ncFs70XQKe
+ znvaBPNZh/aKZLIIDR88vnRsrIU5GGdxbfZTLO/wf7cRpcbSSb/CrsOQLYYV/xStMvDsnpU7B
+ l72nShRWUNxb4H2pEbBUxKvUH8z+KQMGW0LPBBaxHDF4TAC/aV0nTq4E9FbFHzqro+b6jwTw3
+ rQWwanIktq+QTf/lV/1zlIP7YfdOQd0J3QNDgLnHHosgzQf9alJA5FdfkTq/77DumddF9wGeP
+ 1ZzCAik1dYDv8z260qXsWUB4lqYDYmP1ixCXwF+vaDTJtg84/6nbsKNqlLLExaz8qogpGF3kV
+ OYPM0r4+OKqlPJ+p+ZGzXfv0+8vfoxaYamGx9UXXBWAHhuw9Dyl0xbVqx/IS8uOFdlRuyrP5Y
+ vO0goD7A+ntV7Px2pG77v6CL9oPs4naINUrnWyB+2/yzSfiz33d1wN8jxXAZ2nMa7tnn11qFI
+ g8RQK06KvN2a8s7stXP1KBtXbkmD9r1XzDTOk6X/bHKKSLZXjtTBsAXnk6508nwaZcocGTzH+
+ cV1j9KSNtySAVA9wMA1D86bqAeVqkYBE5iH37CzX70mxFPo+JIg9QNNd45BuwiMoYWueNoNrJ
+ edon2FFt3CjdUIw0wRZUbZXLqN4/hIkEDbPyX8jc+mdipKSKtCcsasA+d7zlsBuFslUmHzSOa
+ dVtLQ3Wyui7Ivg3sXu/KclEwcgOJtPAsa3edI0GnAYJXezuG9yrzhpw0/ZjuuYTFPh/pV6mXw
+ =
 
-On 2025-01-17 6:47 pm, Connor Abbott wrote:
-> On some SMMUv2 implementations, including MMU-500, SMMU_CBn_FSR.SS
-> asserts an interrupt. The only way to clear that bit is to resume the
-> transaction by writing SMMU_CBn_RESUME, but typically resuming the
-> transaction requires complex operations (copying in pages, etc.) that
-> can't be done in IRQ context. drm/msm already has a problem, because
-> its fault handler sometimes schedules a job to dump the GPU state and
-> doesn't resume translation until this is complete.
-> 
-> Work around this by disabling context fault interrupts until after the
-> transaction is resumed. Because other context banks can share an IRQ
-> line, we may still get an interrupt intended for another context bank,
-> but in this case only SMMU_CBn_FSR.SS will be asserted and we can skip
-> it assuming that interrupts are disabled which is accomplished by
-> removing the bit from ARM_SMMU_CB_FSR_FAULT.
-> 
-> Signed-off-by: Connor Abbott <cwabbott0@gmail.com>
-> ---
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 15 +++++++++++++-
->   drivers/iommu/arm/arm-smmu/arm-smmu.c      | 32 ++++++++++++++++++++++++++++++
->   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 +-
->   3 files changed, 47 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 59d02687280e8d37b5e944619fcfe4ebd1bd6926..ee2fdf7e79a6d04bc2700e454253c96b573c5569 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -125,12 +125,25 @@ static void qcom_adreno_smmu_resume_translation(const void *cookie, bool termina
->   	struct arm_smmu_domain *smmu_domain = (void *)cookie;
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->   	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> -	u32 reg = 0;
-> +	u32 reg = 0, sctlr;
-> +	unsigned long flags;
->   
->   	if (terminate)
->   		reg |= ARM_SMMU_RESUME_TERMINATE;
->   
-> +	spin_lock_irqsave(&smmu_domain->stall_lock, flags);
-> +
->   	arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
-> +
-> +	/*
-> +	 * Re-enable interrupts after they were disabled by
-> +	 * arm_smmu_context_fault().
-> +	 */
-> +	sctlr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR);
-> +	sctlr |= ARM_SMMU_SCTLR_CFIE;
-> +	arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR, sctlr);
-> +
-> +	spin_unlock_irqrestore(&smmu_domain->stall_lock, flags);
->   }
->   
->   static void qcom_adreno_smmu_set_prr_bit(const void *cookie, bool set)
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index 79afc92e1d8b984dd35c469a3f283ad0c78f3d26..c92de760940ee2872f22dbe1b2519e02766aa143 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -457,12 +457,43 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->   				      DEFAULT_RATELIMIT_BURST);
->   	int idx = smmu_domain->cfg.cbndx;
->   	int ret;
-> +	unsigned long flags;
->   
->   	arm_smmu_read_context_fault_info(smmu, idx, &cfi);
->   
->   	if (!(cfi.fsr & ARM_SMMU_CB_FSR_FAULT))
->   		return IRQ_NONE;
->   
-> +	/*
-> +	 * On some implementations FSR.SS asserts a context fault
-> +	 * interrupt. We do not want this behavior, because resolving the
-> +	 * original context fault typically requires operations that cannot be
-> +	 * performed in IRQ context but leaving the stall unacknowledged will
-> +	 * immediately lead to another spurious interrupt as FSR.SS is still
-> +	 * set. Work around this by disabling interrupts for this context bank.
-> +	 * It's expected that interrupts are re-enabled after resuming the
-> +	 * translation.
-> +	 *
-> +	 * We have to do this before report_iommu_fault() so that we don't
-> +	 * leave interrupts disabled in case the downstream user decides the
-> +	 * fault can be resolved inside its fault handler.
-> +	 *
-> +	 * There is a possible race if there are multiple context banks sharing
-> +	 * the same interrupt and both signal an interrupt in between writing
-> +	 * RESUME and SCTLR. We could disable interrupts here before we
-> +	 * re-enable them in the resume handler, leaving interrupts enabled.
-> +	 * Lock the write to serialize it with the resume handler.
-> +	 */
-> +	if (cfi.fsr & ARM_SMMU_CB_FSR_SS) {
-> +		u32 val;
-> +
-> +		spin_lock_irqsave(&smmu_domain->stall_lock, flags);
 
-No need for _irqsave - if this IRQ handler could preempt itself, locking 
-would be the least of our worries ;)
+Hi,
 
-Also I'd be inclined to just use cb_lock for this rather than add a new 
-one. I guess there's an argument for granularity, but there's also an 
-argument that CFIE manipulation is just another context bank operation 
-which needs serialising against itself, and significantly rarer than the 
-others we have already.
+>> What does it mean that disabling the NVMe devices's write cache
+>> often but apparently not always helps? It it just reducing the
+>> chance of the problem occurring or accidentally working around it?
+>
+> For consumer NAND device you basically can't disable the volatile
+> write cache.  If you do disable it, that just means it gets flushed
+> after every write, meaning you have to write the entire NAND
+> (super)block for every write, causing a huge slowdown (and a lot of
+> media wear).  This will change timings a lot obviously.  If it
+> doesn't change the timing the driver just fakes it, which reputable
+> vendors shouldn't be doing, but I would not be entirely surprised
+> about for noname devices.
 
-Cheers,
-Robin.
+As already mentioned, my SSD has no DRAM and uses HMB (Host memory
+buffer). (It has non-volatile SLC cache.) Disabling volatile write cache
+has no significant effect on read/write performance of large files,
+because the HMB size in only 40MB. But things like file deletions may be
+slower.
 
-> +		val = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_SCTLR);
-> +		val &= ~ARM_SMMU_SCTLR_CFIE;
-> +		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, val);
-> +		spin_unlock_irqrestore(&smmu_domain->stall_lock, flags);
-> +	}
-> +
->   	ret = report_iommu_fault(&smmu_domain->domain, NULL, cfi.iova,
->   		cfi.fsynr & ARM_SMMU_CB_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
->   
-> @@ -921,6 +952,7 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
->   
->   	mutex_init(&smmu_domain->init_mutex);
->   	spin_lock_init(&smmu_domain->cb_lock);
-> +	spin_lock_init(&smmu_domain->stall_lock);
->   
->   	return &smmu_domain->domain;
->   }
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> index 2dbf3243b5ad2db01e17fb26c26c838942a491be..153fac131b2484d468fd482ffbf130efc8cfb8f6 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> @@ -216,7 +216,6 @@ enum arm_smmu_cbar_type {
->   					 ARM_SMMU_CB_FSR_TLBLKF)
->   
->   #define ARM_SMMU_CB_FSR_FAULT		(ARM_SMMU_CB_FSR_MULTI |	\
-> -					 ARM_SMMU_CB_FSR_SS |		\
->   					 ARM_SMMU_CB_FSR_UUT |		\
->   					 ARM_SMMU_CB_FSR_EF |		\
->   					 ARM_SMMU_CB_FSR_PF |		\
-> @@ -384,6 +383,7 @@ struct arm_smmu_domain {
->   	enum arm_smmu_domain_stage	stage;
->   	struct mutex			init_mutex; /* Protects smmu pointer */
->   	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
-> +	spinlock_t                      stall_lock;
->   	struct iommu_domain		domain;
->   };
->   
-> 
+AFAIS the corruption occur with both kinds of SSD's, the ones that have
+own DRAM and he ones that use HMB.
 
+> --- Comment #49 from Bruno Gravato ---
+>> * Not totally sure, but it seems most or everyone affected is
+>> using a Ryzen 8000 CPU -- and now one user showed up that mentioned
+>> a DeskMini x600 with a Ryzen 7000 CPU is not affected (see ticket
+>> for details). But that might be due to other aspects. A former
+>> colleague of mine who can reproduce the problem will later test if
+>> a different CPU line really is making a difference.
+>
+> One other different aspect for that user besides the 7000 series CPU
+> is that he's using a wifi card as well (that sits in a M.2 wifi slot
+> just below the main M.2 disk slot), so I wonder if that may play a
+> role? I think most of us have no wifi card installed. I think I have
+> a M.2 wifi card on my former NUC, I'll see if it's compatible with
+> the deskmini and try it out.
+>
+> The other reason could be some disk models aren't affected... I think
+> Stefan reported no issues on a Firecuda 520.
+
+Correct. To verify that the two other CPU series are not affected,
+someone who can reproduce this error and who have laying around another
+CPU must swap them.
+
+> --- Comment #51 from Ralph Gerstman --- > A missing network might preven=
+t the failure during install - at least
+> in Ubuntu> 22.10 - but can happen anyway. Enabling network seems to
+> raise the chance.
+I had to disable it in BIOS. Just not connecting it has no effect
+because drivers and firmware are still loaded.
+
+
+Just for the files (already mentioned it): I'm using the latest BIOS
+version 4.08 with  AGESA PI 1.2.0.2a (according to AsRock page) and
+firmware blobs version 20241210 from
+https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.gi=
+t/
+and I can confirm the the corruptions also occur with older versions of
+BIOS/firmware.
+
+Regards Stefan
