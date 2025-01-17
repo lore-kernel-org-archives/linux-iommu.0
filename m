@@ -1,227 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71D5619DF4B;
-	Fri, 17 Jan 2025 16:56:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75E381A23A8
+	for <iommu@lists.linux.dev>; Fri, 17 Jan 2025 17:22:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737132996; cv=none; b=HHX9tiO82HPnM0WQTt6QGj4MwlDns2R3QfOpFb8AjNGhY9gKB3db1tBrMus0m7wV6dD9ewC/iDKjZU5+uSfELEIwHsKHrKRFD3qjE1Ig8FY4ZJjEiFTPSrhZBM7wkpBRLFMnyxDYPztqIwznjYSLxJSEXozRPaiLE0b0llsnfus=
+	t=1737134528; cv=none; b=cW0xi8/rbytsWpHLSlC5899J62Wx06Pu0PTXewbGcKXcbeBz/2cMQSUkxcVDe0oja8mRbrNh8yjRz5dwjzmkPpO1osaXG9qNizCLkgDa41GMQHz525TwsvwxmM+RaHSVPi1LKV7+SCLDdNFN8S7mTq3c3FOXCI/JSVZpepzpdiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737132996; c=relaxed/simple;
-	bh=zcK8WB4ZaeZlWpWWyW2l5kp3TFVT9q3fShc6jxCxxIY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uAG2mlYfFzHTbdPD3I8Q7v8asoQui4QUJlTCtUFgfnMCvLlCoUy73VmtvRLzUr3UY0HzMPxs2bGHdZQTiaWo0uyTi1OrN17nqoxUyLkARpmCritIWO4hLPY0M8mUqIPmMl2kcCb1a2I1I8P3dsrziGOWtSFXbkp0szKXa6Lp9sU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bb6YIGt0; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1737134528; c=relaxed/simple;
+	bh=ch50kTqbrDd4nioi7l4WdUI2b/cPEQrG5hSaj1AwiKk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=P7ritvzYzrowGwzdUW5Q7842h6VkfqD2cFTK/UgYsyoMfGijN5Uk63g2vp3isGDFx4HdRA0U2qabiLZ0NA7QgOkfvsRLJaUuzKnMg3qUIzjhjE4Byz0AWoaDrD6J3yT+SnhnI3co+PTAr17VdL8/Oot2yZn3eCY7pW9Broia9uo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=RzA+lPjy; arc=none smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bb6YIGt0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E93E5C4CEDD;
-	Fri, 17 Jan 2025 16:56:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737132996;
-	bh=zcK8WB4ZaeZlWpWWyW2l5kp3TFVT9q3fShc6jxCxxIY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=bb6YIGt0sTIzbYBBsMO6q1tiNahm67G18z2l6sNOqX2eN+qeVvyCapie3vOm3YNkc
-	 NSPdxJAZyk5vpWT8H8OfMoNtSDf6aa9OV/EUUiONZtRngj21qQDt8EiK7ffyJYnRts
-	 ArS8w77jxFubn3ytE4/vD7zSe/IvGJXpOp4Fm8O6N1S/oarFpQxX9aW4oPlB+kS1Lu
-	 T2IZlwshC9xtUyQPamQxYQoraNqsDBvQDLZyrATTmn1z5XG3QLla27QAb8TbuA3IjD
-	 9nSIXx80DDPulxnKHoBBgGp2nO3oY78eTlKe2BDnpB5egabBnxjby1utKSUTHgQ0g5
-	 deI9gnMIYNj7w==
-Message-ID: <eb2381d2-34a4-4915-b0b5-b07cc81646d3@kernel.org>
-Date: Fri, 17 Jan 2025 17:56:29 +0100
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="RzA+lPjy"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-46defafbdafso27308421cf.0
+        for <iommu@lists.linux.dev>; Fri, 17 Jan 2025 09:22:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1737134525; x=1737739325; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mWqWCCvq4dit7q8wATuPZSt1vsy56MaPXRmal5Pwnng=;
+        b=RzA+lPjyikhXFjIYXCDSs6fD67FErMNLaioTbUbfvzpLas+t2IpFQVR81aboEMAf7X
+         cFgsxnAayY/TkB8DidEeSyIx0InnNHtH7Y2/Q/b141rxgijPQEx2ICoJKUTMZ5cFK7qY
+         qVVIy7IVCNSkypreDqxkOL0dAG8Lz526Q7WW1C95Q5SFBXgqiNE2fjyTPjbTuM4tAmVe
+         7HUvvZgFMsJNuFsPDjWso2tpvbg+tWhQpTjZIVZ8C2zJQvxB+WxddrqEE0LKgb9/Zpes
+         yaL74ab0WsUQie3dKJki3tmPhSveFGG49UOTR1YWumGluIDNYv0ZlHhNkAOxSN5PtgF/
+         mF0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737134525; x=1737739325;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mWqWCCvq4dit7q8wATuPZSt1vsy56MaPXRmal5Pwnng=;
+        b=K31q/7VX8GoTc4fMkQoy7QygYc/Zj+hd7T1mvFl1TdVZRE+AJiu29bfXG53jE7qES2
+         SGligHhkUEaShkVP4Z64N85D1o6pXAi3+jJh+9ch3q0WqzhzRW+IY1zd/da/LlbYhiIM
+         xfN+6GUlrcbpOjidU5mkjVc+CovSkXOAQhDM3Rm/2c3goDV0/+Rf7c5ndNsrHHK1ZGT9
+         /GlQ3FxBsTGmB0xDPx/mgyxBHGdbNe1RZuE+XrO0bzUC0RzdH52QP2RxsdicFN+wgYFL
+         K58SUf7i4XoGZr16a2cn8QPv6hmama8fFzmYodD5fXltzOL1Q9u94KkCq3TYKzIy1kPM
+         BMnQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUYJND/kF5QtP7PY9D7tlNA9YtUBexDI5856ekVKnSvcrGqI2iP8SRPez5JA88SBMNxbG8Y5g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzY2kShBLqM4dHBG1o9vkoWEQ2bgkP1dG1sxdxEmAVwMcTtBQRI
+	q9f8WYN0Y0k6LEA8MwwLYQz30x6jMVeU6BjMrwwful8iPz7R7uTkPiIxIIS969E=
+X-Gm-Gg: ASbGncvLuEMUo6qgCo0WF54LOsUBb+QT7GzHlSvmfEL3+PO5YldJJEIhtAXZm1+tJZd
+	6fspYW04ul9/fQoXBEYwISJKnxgnx/hGIBEk9A6M0J0xeFOtlbjQ7jZjGp66MvEGPt4Zr43fQvy
+	PO65v26fYiHBK+Yw/GJPg+ulkVC+IfBqHr+O/uCq5dWf3oCWlCIpMo+ibBv7BO+669zljmreleX
+	23W5ZkIMR/NJqT0lKKljE1vKDNJLOtWihrccucANlwjVI3wcL5vHKaRfEBeZ6oiYG3a+z1OUlMj
+	PY4rK36p6MXRn0HH3IERWAwNYJHoyQ==
+X-Google-Smtp-Source: AGHT+IEnvvopAuzyNCplmhKG8x3URwahSJDU3h5PkIakjZhO1icASJvI6Z9lh5kjv0X8/rjJ2Q/m1A==
+X-Received: by 2002:ac8:7c47:0:b0:467:45b7:c495 with SMTP id d75a77b69052e-46e12a56246mr46152611cf.15.1737134525304;
+        Fri, 17 Jan 2025 09:22:05 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-46e10436f3asm13244941cf.80.2025.01.17.09.22.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jan 2025 09:22:04 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tYq2m-000000036J2-15UA;
+	Fri, 17 Jan 2025 13:22:04 -0400
+Date: Fri, 17 Jan 2025 13:22:04 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu: Fix potential memory leak in
+ iopf_queue_remove_device()
+Message-ID: <20250117172204.GH674319@ziepe.ca>
+References: <20250117055800.782462-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v7 3/8] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
- kuba@kernel.org, pabeni@redhat.com
-Cc: zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
- Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet
- <edumazet@google.com>, Simon Horman <horms@kernel.org>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
- kernel-team <kernel-team@cloudflare.com>
-References: <20250110130703.3814407-1-linyunsheng@huawei.com>
- <20250110130703.3814407-4-linyunsheng@huawei.com>
- <921c827c-41b7-40af-8c01-c21adbe8f41f@kernel.org>
- <2b5a58f3-d67a-4bf7-921a-033326958ac6@huawei.com>
- <95f258b2-52f5-4a80-a670-b9a182caec7c@kernel.org>
- <92bb3a19-a619-4bf7-9ef5-b9eb12a57983@huawei.com>
-Content-Language: en-US
-From: Jesper Dangaard Brouer <hawk@kernel.org>
-In-Reply-To: <92bb3a19-a619-4bf7-9ef5-b9eb12a57983@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250117055800.782462-1-baolu.lu@linux.intel.com>
 
+On Fri, Jan 17, 2025 at 01:58:00PM +0800, Lu Baolu wrote:
+> The iopf_queue_remove_device() helper removes a device from the per-iommu
+> iopf queue when PRI is disabled on the device. It responds to all
+> outstanding iopf's with an IOMMU_PAGE_RESP_INVALID code and detaches the
+> device from the queue.
+> 
+> However, it fails to release the group structure that represents a group
+> of iopf's awaiting for a response after responding to the hardware. This
+> can cause a memory leak if iopf_queue_remove_device() is called with
+> pending iopf's.
+> 
+> Fix it by calling iopf_free_group() after the iopf group is responded.
+> 
+> Fixes: 199112327135 ("iommu: Track iopf group instead of last fault")
+> Cc: stable@vger.kernel.org
+> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/io-pgfault.c | 1 +
+>  1 file changed, 1 insertion(+)
 
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-On 17/01/2025 12.56, Yunsheng Lin wrote:
-> On 2025/1/17 0:09, Jesper Dangaard Brouer wrote:
-> 
-> ...
-> 
->>> Mainly because there is no space available for keeping tracking of inflight
->>> pages, using page->pp can only find the page_pool owning the page, but page_pool
->>> is not able to keep track of the inflight page when the page is handled by
->>> networking stack.
->>>
->>> By using page_pool_item as below, the state is used to tell if a specific
->>> item is being used/dma mapped or not by scanning all the item blocks in
->>> pool->item_blocks. If a specific item is used by a page, then 'pp_netmem'
->>> will point to that page so that dma unmapping can be done for that page
->>> when page_pool_destroy() is called, otherwise free items sit in the
->>> pool->hold_items or pool->release_items by using 'lentry':
->>>
->>> struct page_pool_item {
->>>      unsigned long state;
->>>      
->>>      union {
->>>          netmem_ref pp_netmem;
->>>          struct llist_node lentry;
->>>      };
->>> };
->>
->> pahole  -C page_pool_item vmlinux
->> struct page_pool_item {
->>      /* An 'encoded_next' is a pointer to next item, lower 2 bits is used to
->>       * indicate the state of current item.
->>       */
->>      long unsigned int          encoded_next;     /*     0     8 */
->>      union {
->>          netmem_ref         pp_netmem;        /*     8     8 */
->>          struct llist_node  lentry;           /*     8     8 */
->>      };                                           /*     8     8 */
->>
->>      /* size: 16, cachelines: 1, members: 2 */
->>      /* last cacheline: 16 bytes */
->> };
->>
->>
->>> When a page is added to the page_pool, a item is deleted from pool->hold_items
->>> or pool->release_items and set the 'pp_netmem' pointing to that page and set
->>> 'state' accordingly in order to keep track of that page.
->>>
->>> When a page is deleted from the page_pool, it is able to tell which page_pool
->>> this page belong to by using the below function, and after clearing the 'state',
->>> the item is added back to pool->release_items so that the item is reused for new
->>> pages.
->>>
->>
->> To understand below, I'm listing struct page_pool_item_block for other
->> reviewers:
->>
->> pahole  -C page_pool_item_block vmlinux
->> struct page_pool_item_block {
->>      struct page_pool *         pp;               /*     0     8 */
->>      struct list_head           list;             /*     8    16 */
->>      unsigned int               flags;            /*    24     4 */
->>      refcount_t                 ref;              /*    28     4 */
->>      struct page_pool_item      items[];          /*    32     0 */
->>
->>      /* size: 32, cachelines: 1, members: 5 */
->>      /* last cacheline: 32 bytes */
->> };
->>
->>> static inline struct page_pool_item_block *
->>> page_pool_item_to_block(struct page_pool_item *item)
->>> {
->>>      return (struct page_pool_item_block *)((unsigned long)item & PAGE_MASK);
->>
->> This trick requires some comments explaining what is going on!
->> Please correct me if I'm wrong: Here you a masking off the lower bits of
->> the pointer to page_pool_item *item, as you know that a struct
->> page_pool_item_block is stored in the top of a struct page.  This trick
->> is like a "container_of" for going from page_pool_item to
->> page_pool_item_block, right?
-> 
-> Yes, you are right.
-> 
->>
->> I do notice that you have a comment above struct page_pool_item_block
->> (that says "item_block is always PAGE_SIZE"), which is nice, but to be
->> more explicit/clear:
->>   I want a big comment block (placed above the main code here) that
->> explains the design and intention behind this newly invented
->> "item-block" scheme, like e.g. the connection between
->> page_pool_item_block and page_pool_item. Like the advantage/trick that
->> allows page->pp pointer to be an "item" and be mapped back to a "block"
->> to find the page_pool object it belongs to.  Don't write *what* the code
->> does, but write about the intended purpose and design reasons behind the
->> code.
-> 
-> The comment for page_pool_item_block is below, it seems I also wrote about
-> intended purpose and design reasons here.
-> 
-> /* The size of item_block is always PAGE_SIZE, so that the address of item_block
->   * for a specific item can be calculated using 'item & PAGE_MASK'
->   */
-> 
-> Anyway, If putting something like above for page_pool_item_to_block() does
-> make it clearer, will add some comment for page_pool_item_to_block() too.
-> 
->>
->>
->>> }
->>>
->>>    static inline struct page_pool *page_pool_get_pp(struct page *page)
->>>    {
->>>         return page_pool_item_to_block(page->pp_item)->pp;
->>>    }
->>>
->>>
->>>>
->>>>> +static void __page_pool_item_init(struct page_pool *pool, struct page *page)
->>>>> +{
->>>>
->>>> Function name is confusing.  First I though this was init'ing a single
->>>> item, but looking at the code it is iterating over ITEMS_PER_PAGE.
->>>>
->>>> Maybe it should be called page_pool_item_block_init ?
->>>
->>> The __page_pool_item_init() is added to make the below
->>> page_pool_item_init() function more readable or maintainable, changing
->>> it to page_pool_item_block_init doesn't seems consistent?
->>
->> You (of-cause) also have to rename the other function, I though that was
->> implicitly understood.
->>
->> BUT does my suggested rename make sense?  What I'm seeing is that all
->> the *items* in the "block" is getting inited. But we are also setting up
->> the "block" (e.g.  "block->pp=pool").
-> 
-> I am not really sure about that, as using the PAGE_SIZE block to hold the
-> item seems like a implementation detail, which might change in the future,
-> renaming other function to something like that doesn't seem right to me IMHO.
-> 
-> Also the next patch will add page_pool_item_blk_add() to support unlimited
-> inflight pages, it seems a better name is needed for that too, perheps rename
-> page_pool_item_blk_add() to page_pool_dynamic_item_add()?
-> 
-
-Hmmm... not sure about this.
-I think I prefer page_pool_item_blk_add() over page_pool_dynamic_item_add().
-
-> For __page_pool_item_init(), perhaps just inline it back to page_pool_item_init()
-> as __page_pool_item_init() is only used by page_pool_item_init(), and both of them
-> are not really large function.
-
-I like that you had a helper function. So, don't merge 
-__page_pool_item_init() into page_pool_item_init() just to avoid naming 
-it differently.
-
-Let me be more explicit what I'm asking for:
-
-IMHO you should rename:
-  - __page_pool_item_init() to __page_pool_item_block_init()
-and rename:
-  - page_pool_item_init() to page_pool_item_block_init()
-
-I hope this make it more clear what I'm saying.
-
---Jesper
+Jason
