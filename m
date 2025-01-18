@@ -1,185 +1,215 @@
-Received: from mail-pj1-f66.google.com (mail-pj1-f66.google.com [209.85.216.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2057.outbound.protection.outlook.com [40.107.244.57])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47FF72F50
-	for <iommu@lists.linux.dev>; Sat, 18 Jan 2025 13:37:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.66
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737207423; cv=none; b=sIllz5oV3H+VAomoY/IntM4x3WkbuDklS9Z3Vw0nh8x4plVWvl+T2f5Nr/I7zPIQlV++OxsUNB/2Lj8JpJ6T8qu5LChvZSSsLJgcV3AGVdKAC4vtPa8AtTnijGju3LwPa23NobwZDGGVJiGfzV1WbQBPNm5vDeQwWHGc8z0A2gI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737207423; c=relaxed/simple;
-	bh=dfkCDEjreWc0tw7VC3I2BHlPVozZjZ/VrjMc8whqjno=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ms2pVaTOaWsPoAmhcn2+tMqucO3FWGGpugRhqJNgcWfOEN9u/ZgksTlc4WReOFBWRrcPUdY6Dv6c0vqYgtO5+k1TpsN3bDwds+AwoDVrZTVrNpDA2KbykDKqdH9Evq5vKvOT0p+CDx66JtRC1NlZGVTkUiCS8DLZtV8dvGhV9nk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M65uJ/k0; arc=none smtp.client-ip=209.85.216.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3055A39FD9;
+	Sat, 18 Jan 2025 20:33:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.57
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737232388; cv=fail; b=ne1aHQeKkJ3o/Kj/zyNL83G0yARON/Bj20KhA06Im/H3C1+8zn2h2voFVly4gMlo0+wHRy9kNLozLEJhRMmP2bnj/vp38pJEZQLvhOIDP6jNE98BVQ5NTgpWtwq9Otq7HyJZ/SY1VJLb9ccl2zvF8PJRsWpvxY0hOlWcf/hC7d8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737232388; c=relaxed/simple;
+	bh=X3wVN9hRQtJbHVyOzvLxt+/OU4uZvD1RRsSIxls35YI=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=B+vb6SC+0h6O796JxoGxxYELlCgIJIkc4jiuz3MyJuF7KVFTrhI9GeXG/6dDIgq+TDdP6+s5ugwsbNioxED8Gp8htgbVVDmYkQAaktB2piT3kLCykGFD2Pyb292PSy41vgtL3lkkCd6P/VnpBft6g4E5QzzqdUXl1tPZj0OgeSo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=YRiZDYx6; arc=fail smtp.client-ip=40.107.244.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M65uJ/k0"
-Received: by mail-pj1-f66.google.com with SMTP id 98e67ed59e1d1-2f43d17b0e3so5531862a91.0
-        for <iommu@lists.linux.dev>; Sat, 18 Jan 2025 05:37:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737207422; x=1737812222; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fl7q3Ow0SI/mPnfg6y3Pb7fNtW/ik4Ugk2pGzG5GGpY=;
-        b=M65uJ/k0m0rL8V06h5EezkhKsvx3F5Uh4bCmpM48pTagPe9kS7jPGs8mvuqppQrTfw
-         qhlJuL1Mou1jWW9WQNFeIWQdU3mIjrhclAynGyq/SC0ewE3YMiDYZIl5PGKovgLfd6JT
-         0IJ1TTaZOIG0x6DJuBJiz27hfctTlbUoMLejT6bwD5JDYKuHiCjRbJhbSD3mDAZKR6av
-         QAv+OJQtJ6UXUmTtRrK7I4AE7JuNiAAv7m8nqTk0DUPOIJ43Lh03tVeFbHq6+WHc1cfJ
-         ixJebkMwDBBvDdoaue53nBNPMQzhF2Fgi84SflP/ADxxl/h5ZlObIL8CnS94SWTozJll
-         mZgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737207422; x=1737812222;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fl7q3Ow0SI/mPnfg6y3Pb7fNtW/ik4Ugk2pGzG5GGpY=;
-        b=ErhakKLUN4CuKiXBm5ixZyAMLhn5yelN19iGOV+C5kiPPPUh0q4S983MYRu+jgIYD1
-         cwlGR9a5V3Aw9emA/UzFZcz2qJr18FfXlXa05qANnClj5Ztoh2uFieRd8RUzyixwc7IJ
-         q1tfcdNVxv/kTRnxVpG8j6ZmG5WBXKnxCWnpySUkyOCPJeRhsb9lTeQ2dJa/jG3t/utn
-         ZEPKDWxDUJTcTB13/7lfa2y29Ei/4yPy2N5DdZu1SBzLczCnd553QJoG8+73LYzi/R74
-         GT+WWXPXIlBU+Utywnnt19IxYZUY/qIwFylU4Ah1OC4tzxVD7dTRQMYjDYp3izWn+PLC
-         auaw==
-X-Forwarded-Encrypted: i=1; AJvYcCWQ+HP+9p9zCyGpel67sATA8PvPc8WJTpklbailGf7cahG8rSepGxj5bRVGLPi1xD7kOWDbMQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx67bwuGiTCaQMHo3xtA6jFwClwD5S/Y+P5Ll5oGm03j6pXM7z5
-	5+r8ZVRkFdZjIPEVcJX6bPY0Pp8FHJl8NUmWVb+0ZYGgvhmHyhRv
-X-Gm-Gg: ASbGncsOiDB4VRS2Jo/zTqtsmG0+IzLsEbRT2L1Iz98kPiDfhpv40IxtoYI7MZg7jU8
-	0MaB2ml+aVLWOru4a2hcHs/BxrO7d7nNB/5wI9PxTptzWwVUWSQz/p/INJTxQiWKiBkbCDj5AFB
-	x/4FzphxujAqAbehTc7UGjj1+Jc8ZvRP64qxQFaI+z0as8gfnA64x/hq4OT+Cc8g40iOvVyqDPD
-	pEvk+pwVQfaTVtnsSVwojRPvtd97pm87FdL5G8idUtmCONYnWONLUwX6441IZJ04aQye0StC2cl
-	bskJUHA3lpAurMAJIslHSlOw7qcz2tdJVHFMjefXLysWAltR1HmHZmDXGA==
-X-Google-Smtp-Source: AGHT+IEr0UwAYjH54uv/p9tjrBBxTcKHekQANUfyWsFG5hb9xxGI3N4cbP/XpAUP9uw0bRrU4OjjPw==
-X-Received: by 2002:a05:6a00:4fd3:b0:72a:8461:d172 with SMTP id d2e1a72fcca58-72daf9becfamr10317751b3a.3.1737207421525;
-        Sat, 18 Jan 2025 05:37:01 -0800 (PST)
-Received: from ?IPV6:2409:8a55:301b:e120:28db:76a6:1c67:659f? ([2409:8a55:301b:e120:28db:76a6:1c67:659f])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-72dab84b639sm3744765b3a.84.2025.01.18.05.36.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Jan 2025 05:37:01 -0800 (PST)
-Message-ID: <3795e5e1-8a6a-4ee3-9778-1828ac5b2748@gmail.com>
-Date: Sat, 18 Jan 2025 21:36:52 +0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YRiZDYx6"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=GMntumkQ05fHi9jbSJJjesSX0yZz+ceA7TSzOOTSKAXCUHWf4UJ/NTWpCRcOAnFOK7aRZoY+D1hBUozuL0MijHSrCY8PtI3LKEe9zpXeIm+qPvPiXFzSDv7PqpgaQvS6S2LKtpu+pasOj5VEHJorD2OlwV7RAnNIp/Xbh5kudLk+mdY0zkWtpvTr37WJSrizjIV7A9W0Ep2lR1w/Fxul2Ij2F+N8aqmj3Uu+0WCBlO8OGEvfqYrtb+JQxaLfg3SQs9D5Bs1TwDVMc87dW/faq3vNOg/KSbNCsZoojOMMibpE82iN2lhEvByji+Tjx1yijWkIuDQ8nDSwFtfV0QpZyw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=b+l3h3Wa5GLWn0bXsSzQ+qRLAF4OgAT2gnX4c1w1ykQ=;
+ b=lUaptFpo2HTDxCTMUIvwCAWyYqiFhdaooRYjod5MFe29ZVVKOwJoc+b3oxE3c3gZWXx8eUTG/RGvBVZA88qEvIWqORT1e3Mogp2oHwupL1JqC6nyJilmV/YT0qSp2SmFRqcS26ynAfJpLFkXkzK3QXWp+yOSWLhpA4JpyEO8kWyaAao2ip/1zhIWKbHxJgNpy0zuQnD3vkwSwd9TbawSMgYbFVb1ePbcdIwFU3jCwFRy0KElV2IBYAWffYO7Mrvqz2aCWirdKQGMHnk7Ft8z6d+slYs1dgtNE3tbyvbBXbqpFtqj+beAL5DNZnmJib0LMOIbesIfeGnDB15sn6T06A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=b+l3h3Wa5GLWn0bXsSzQ+qRLAF4OgAT2gnX4c1w1ykQ=;
+ b=YRiZDYx6LZj4Mr5CCQdnX5DgMmA7W0qQCN/P+r5FtiTHa63m3oo1cel3F1Iwm9DVpgXpIoRnsnM7PYtqs+TXFF1zqjEWprabcTKCGjCXbe2xqqKRTjLXqwohrg9JgWWFYsC2laNgA1PlBJnzMI2WUDZLVHUUtLdKPiM39qcFYq8fm3A4NanKvbjYjrZiKbmLtSu/T37kpwIxoqQnHxXg4MpHhJfoSHJKQnXViP3u1S2IrwtS0VPmrKHL0Fl3yfxZ03zS5f9cUWsfZvRdbABNCM6IH1At6xj65s8gxVGtmTyYy+GO1j/kNNrOkCFTXOc/w3j83zuV1OamuIM4eJWw+w==
+Received: from DM5PR08CA0041.namprd08.prod.outlook.com (2603:10b6:4:60::30) by
+ BY5PR12MB4243.namprd12.prod.outlook.com (2603:10b6:a03:20f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8356.16; Sat, 18 Jan
+ 2025 20:33:02 +0000
+Received: from DS3PEPF0000C381.namprd04.prod.outlook.com
+ (2603:10b6:4:60:cafe::6f) by DM5PR08CA0041.outlook.office365.com
+ (2603:10b6:4:60::30) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8335.18 via Frontend Transport; Sat,
+ 18 Jan 2025 20:33:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ DS3PEPF0000C381.mail.protection.outlook.com (10.167.23.11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8377.8 via Frontend Transport; Sat, 18 Jan 2025 20:33:02 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Sat, 18 Jan
+ 2025 12:32:57 -0800
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Sat, 18 Jan 2025 12:32:57 -0800
+Received: from nvidia.com (10.127.8.14) by mail.nvidia.com (10.126.190.182)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Sat, 18 Jan 2025 12:32:52 -0800
+Date: Sat, 18 Jan 2025 12:32:49 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>, <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <kevin.tian@intel.com>,
+	<tglx@linutronix.de>, <maz@kernel.org>, <alex.williamson@redhat.com>,
+	<joro@8bytes.org>, <shuah@kernel.org>, <reinette.chatre@intel.com>,
+	<eric.auger@redhat.com>, <yebin10@huawei.com>, <apatel@ventanamicro.com>,
+	<shivamurthy.shastri@linutronix.de>, <bhelgaas@google.com>,
+	<anna-maria@linutronix.de>, <yury.norov@gmail.com>, <nipun.gupta@amd.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <kvm@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <patches@lists.linux.dev>,
+	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
+	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>,
+	<ddutile@redhat.com>
+Subject: Re: [PATCH RFCv2 06/13] iommufd: Make attach_handle generic
+Message-ID: <Z4wP8ad/4Q5wMryd@nvidia.com>
+References: <cover.1736550979.git.nicolinc@nvidia.com>
+ <c708aedc678c63e2466b43ab9d4f8ac876e49aa1.1736550979.git.nicolinc@nvidia.com>
+ <62ccc75d-3f30-4167-b9e1-21dd95a6631d@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v7 3/8] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Jesper Dangaard Brouer <hawk@kernel.org>,
- Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net, kuba@kernel.org,
- pabeni@redhat.com
-Cc: zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
- Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet
- <edumazet@google.com>, Simon Horman <horms@kernel.org>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
- kernel-team <kernel-team@cloudflare.com>
-References: <20250110130703.3814407-1-linyunsheng@huawei.com>
- <20250110130703.3814407-4-linyunsheng@huawei.com>
- <921c827c-41b7-40af-8c01-c21adbe8f41f@kernel.org>
- <2b5a58f3-d67a-4bf7-921a-033326958ac6@huawei.com>
- <95f258b2-52f5-4a80-a670-b9a182caec7c@kernel.org>
- <92bb3a19-a619-4bf7-9ef5-b9eb12a57983@huawei.com>
- <eb2381d2-34a4-4915-b0b5-b07cc81646d3@kernel.org>
-Content-Language: en-US
-From: Yunsheng Lin <yunshenglin0825@gmail.com>
-In-Reply-To: <eb2381d2-34a4-4915-b0b5-b07cc81646d3@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <62ccc75d-3f30-4167-b9e1-21dd95a6631d@intel.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF0000C381:EE_|BY5PR12MB4243:EE_
+X-MS-Office365-Filtering-Correlation-Id: c2f05d0f-1baa-4569-f847-08dd37ff4dfd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|36860700013|7416014|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?eJxgLvXqweRLe1RlmxzpFKpfZXb0fYtEO+WAgTIKMuaO9YLADNLeo71ANbIW?=
+ =?us-ascii?Q?LyCAb/p5+gQUON/ZdWdZz4JZvCfzpo0R2VW3/jtY4aQiq0Uvxa4wxUw+C9EW?=
+ =?us-ascii?Q?YWoNYeSN55AzP9t5SmGeYGf+q8ioUlx327H/MS28ppM4zgznf7TMPa2KqteP?=
+ =?us-ascii?Q?FKoUEvDCqk8hCsIdxZYzxt1Q9DpRHwuKaPideFanfLwjCawulOE72r5miyMZ?=
+ =?us-ascii?Q?AZvv7vKmqQLm9Bm3zIX1QQTluN2bam+rLBS4vngrNqtFdy6jUaZJ9GPv6lrm?=
+ =?us-ascii?Q?V4pqHgrsJdfgOflEkIoXyH/Hemp+mp5JFxgjN4NIUZK86WIuVqMJ/OBiSAyw?=
+ =?us-ascii?Q?kcnZdN49AB2H+4FF1M/GqgEmthYqIjg3eDh+HleQ3QVmnoMfSs3dMqVQZbjm?=
+ =?us-ascii?Q?VhphXxt1RKXSzlh1XhkS88T/5l51CC9KYa5n2jJnR38npgbzYYlxQ6UYZ48i?=
+ =?us-ascii?Q?zE7P/C0J+F35U8UYGssoJazF3cHPzvi4jYsOSpzl+rGZG16BiNXKx5DXCjjx?=
+ =?us-ascii?Q?1lGemj1HC/nYGE/2wPi/BezUS4XgnQ8oXlyyr/9977UHOA1kfafcPIhX8pst?=
+ =?us-ascii?Q?XLalqjokk67Unm7GMlz7iVwnP3P7r4AVwqw6Z7pW+fIEi8gAIdglbGJD1sfY?=
+ =?us-ascii?Q?I2RUVnfTXRbcLymlYjs/QC5YSFXo9RaDPNWKKz/CvQLTsjELbx/qNm2xjIrx?=
+ =?us-ascii?Q?RmhSPhwql2ZuKj8w+miSR2mU0WeYxAYz8Dl4pBA15pBho824KSbBb8Y5DU4f?=
+ =?us-ascii?Q?+VGhwE9OoC5YoJB4qSSpMO29SKJPbmtHAWUyqMOzk09ps3G3NM4pWWwv8o02?=
+ =?us-ascii?Q?OW0e7aXquG5aHUnYyw7qzs2qqaNPzMBv2i62tou6ksKSfdCiYTRYGuwxQ4L/?=
+ =?us-ascii?Q?Vo0MVPain1H5YKZG/YyuGdTPull4c9ba7t0MYjTv7lexlwsUbiIk9BF/x5N4?=
+ =?us-ascii?Q?odXHVTRHoR690dNNvXo9LDKmvuUPb1PQxnwdxPJ6oHJsNGJCjuGY/lPLhCmA?=
+ =?us-ascii?Q?xvvwSV5FySzRL9b+3lag2k4eKZNtv8nT/M0UZUe67bczF0U7Eq9NQWrIRXSN?=
+ =?us-ascii?Q?KM3j7yKNCC8d65T7egQOPbIZnmP9OVySXlS/HF1NBKqQnrrsQuAaze95sJ/E?=
+ =?us-ascii?Q?XjiT276G+7hp4id70MFG4OzuJUbdPRVY+YSnBp49MvMsat+9DdGKkDKzrJHG?=
+ =?us-ascii?Q?ALi++cZqdIlaAXivzNZGE3wlYHuHXhwnUcAGIudnjchI7jpnFMHf/orPEkhy?=
+ =?us-ascii?Q?E2vRX/BR56IgpTbvYWqxlhZG1Dd7UF8ziGU1ck894AmfYW936zU8gMGsPR/G?=
+ =?us-ascii?Q?aeyKFFxE5Dc6ZMT5e3WAQFzadnj3ow0GZ3qxxjesdl9awN6O+I7MLz5HufBo?=
+ =?us-ascii?Q?bl+HLaegGkNHQdT6e4xE5BYuSIpZgcizrehNe78Tplq+X7H5WALt8PpbiXz2?=
+ =?us-ascii?Q?CHEJnR748GpJyy3u9/W8XcYjXPRqwK39U9JtqpdSIo1oq6laJo8YRw=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2025 20:33:02.0062
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2f05d0f-1baa-4569-f847-08dd37ff4dfd
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF0000C381.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4243
 
-On 1/18/2025 12:56 AM, Jesper Dangaard Brouer wrote:
-
-...
-
->> I am not really sure about that, as using the PAGE_SIZE block to hold the
->> item seems like a implementation detail, which might change in the 
->> future,
->> renaming other function to something like that doesn't seem right to 
->> me IMHO.
->>
->> Also the next patch will add page_pool_item_blk_add() to support 
->> unlimited
->> inflight pages, it seems a better name is needed for that too, perheps 
->> rename
->> page_pool_item_blk_add() to page_pool_dynamic_item_add()?
->>
+On Sat, Jan 18, 2025 at 04:23:22PM +0800, Yi Liu wrote:
+> On 2025/1/11 11:32, Nicolin Chen wrote:
+> > "attach_handle" was added exclusively for the iommufd_fault_iopf_handler()
+> > used by IOPF/PRI use cases, along with the "fault_data". Now, the iommufd
+> > version of sw_msi function will resue the attach_handle and fault_data for
+> > a non-fault case.
+> > 
+> > Move the attach_handle part out of the fault.c file to make it generic for
+> > all cases. Simplify the remaining fault specific routine to attach/detach.
 > 
-> Hmmm... not sure about this.
-> I think I prefer page_pool_item_blk_add() over 
-> page_pool_dynamic_item_add().
+> I guess you can send it separately since both of our series need it. :)
+
+Jason, would you like to take this patch separately? I can send
+it prior to two big series for a quick review after rc1. It'll
+likely impact the vEVENTQ series too.
+
+> > +static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
+> > +				      struct iommufd_device *idev)
+> > +{
+> > +	struct iommufd_attach_handle *handle;
+> > +	int rc;
+> > +
+> > +	if (hwpt->fault) {
+> > +		rc = iommufd_fault_domain_attach_dev(hwpt, idev, true);
+> > +		if (rc)
+> > +			return rc;
+> > +	}
+> > +
+> > +	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+> > +	if (!handle) {
+> > +		rc = -ENOMEM;
+> > +		goto out_fault_detach;
+> > +	}
+> > +
+> > +	handle->idev = idev;
+> > +	rc = iommu_attach_group_handle(hwpt->domain, idev->igroup->group,
+> > +				       &handle->handle);
+> > +	if (rc)
+> > +		goto out_free_handle;
+> > +
+> > +	return 0;
+> > +
+> > +out_free_handle:
+> > +	kfree(handle);
+> > +	handle = NULL;
+> > +out_fault_detach:
+> > +	if (hwpt->fault)
+> > +		iommufd_fault_domain_detach_dev(hwpt, idev, handle, true);
+> > +	return rc;
+> > +}
+
+Here the revert path passes in a handle=NULL..
+
+> >   void iommufd_fault_domain_detach_dev(struct iommufd_hw_pagetable *hwpt,
+> > -				     struct iommufd_device *idev)
+> > +				     struct iommufd_device *idev,
+> > +				     struct iommufd_attach_handle *handle,
+> > +				     bool disable_iopf)
+> >   {
+> > +	if (handle)
+> > +		iommufd_auto_response_faults(hwpt, handle);
 > 
->> For __page_pool_item_init(), perhaps just inline it back to 
->> page_pool_item_init()
->> as __page_pool_item_init() is only used by page_pool_item_init(), and 
->> both of them
->> are not really large function.
-> 
-> I like that you had a helper function. So, don't merge 
-> __page_pool_item_init() into page_pool_item_init() just to avoid naming 
-> it differently.
+> no need to check handle. After this patch, both the non-fault and the fault
+> path will allocate handle. It cannot be used to isolate fault and non-fault
+> path. Also, the callers of iommufd_fault_domain_detach_dev() will check
+> hwpt->fault before calling it. So just call iommufd_auto_response_faults().
 
-Any particular reason for the above suggestion?
+..so we still need this !NULL validation? :-/
 
-After reusing the page_pool_item_uninit() to fix the similar
-use-after-freed problem，it seems reasonable to not expose the
-item_blcok as much as possible as item_blcok is really an
-implementation detail that should be hidden as much as possible
-IMHO.
-
-If it is able to reused for supporting the unlimited item case,
-then I am agreed that it might be better to refactor it out,
-but it is not really reusable.
-
-static int page_pool_item_init(struct page_pool *pool)
-{
-#define PAGE_POOL_MIN_INFLIGHT_ITEMS            512
-         struct page_pool_item_block *block;
-         int item_cnt;
-
-         INIT_LIST_HEAD(&pool->item_blocks);
-         init_llist_head(&pool->hold_items);
-         init_llist_head(&pool->release_items);
-
-         item_cnt = pool->p.pool_size * 2 + PP_ALLOC_CACHE_SIZE +
-                 PAGE_POOL_MIN_INFLIGHT_ITEMS;
-         for (; item_cnt > 0; item_cnt -= ITEMS_PER_PAGE) {
-                 struct page *page;
-                 unsigned int i;
-
-                 page = alloc_pages_node(pool->p.nid, GFP_KERNEL, 0);
-                 if (!page) {
-                         page_pool_item_uninit(pool);
-                         return -ENOMEM;
-                 }
-
-                 block = page_address(page);
-                 block->pp = pool;
-                 list_add(&block->list, &pool->item_blocks);
-
-                 for (i = 0; i < ITEMS_PER_PAGE; i++) {
-                         page_pool_item_init_state(&block->items[i]);
-                         __llist_add(&block->items[i].lentry, 
-&pool->hold_items);
-                 }
-         }
-
-         return 0;
-}
-
-> 
-> Let me be more explicit what I'm asking for:
-> 
-> IMHO you should rename:
->   - __page_pool_item_init() to __page_pool_item_block_init()
-> and rename:
->   - page_pool_item_init() to page_pool_item_block_init()
-> 
-> I hope this make it more clear what I'm saying.
- > > --Jesper
-> 
-
+Thanks
+Nicolin
