@@ -1,123 +1,139 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DC9B1DEFD4
-	for <iommu@lists.linux.dev>; Mon, 20 Jan 2025 14:26:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 501A99450;
+	Mon, 20 Jan 2025 14:31:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.237.130.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737383207; cv=none; b=Q3u2kvGLeASr0qLHTA2GdZQ6l3SMAokPg//IkFA8ya4bG1y2YmcUqKwHvYTv9SE472URMAwawq8TY6I4dXXrJrP5KZmokNJ6OSZlz4q7uW9azmnc8FHCFADEuTvaymgzQxO+uGlSVer4Gs7i3zrox3Z3hXROHqrXQ+cMCNQe8ow=
+	t=1737383503; cv=none; b=Fd3thDyE/vbPUI/X+O385Zy0XKm08i/m1reQDc3r1+4zmX5EqUs2F0MFTMWHbG3F+E3fi1iV6MC9mQ82Tbwi/0MQkfmIX+ju1ypCTzQ7q1i4NG4oqT86YLuE7F7e8MpU0iRcJR3obzUp6Ig1mUMIOy8Xyn5u05o6PtgP6MqMmjU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737383207; c=relaxed/simple;
-	bh=tv0Xp3xiPoEPgBSdoRMHuXoCTFjFb60HbGfkmSrhd+I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uyZYc0asOnlnmL7v/mLf4wYnfJMQ4+5oQ6oOHGja8Uued8PAAG/qCeVhq/44awzBUncDaU2VRsIlq0tWU/pYGPVxNxIwvH7MM/sHO5a+HDd5pOCThzqJoQTHbmxthtkEBc3GO1xwJ425BJMBhzIdBSVCiJB232ZBd1m1DPaSN5I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=mdAoAjoK; arc=none smtp.client-ip=209.85.222.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1737383503; c=relaxed/simple;
+	bh=yDgP+g3jcFEZqGjZBbmaV/ICEMH1iejEwX0rgIBLz40=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=btD3B9PKDKDnD0E/fNuPazcnxYtgm01g7J8rjYjDzIz+hPHmMPOcytyyQ8KjVbHk00/Nzu0jg2ogSfHDzVGi1aUJt53nVBe/CJRbg9bTjDIJ5mUbYkyn8Ut6i6L4KWH4fkiYkuq7+VSIrATfuUy+9aw+CmNor0JuztwIxlFaBsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info; spf=pass smtp.mailfrom=leemhuis.info; dkim=pass (2048-bit key) header.d=leemhuis.info header.i=@leemhuis.info header.b=wCDs6gNi; arc=none smtp.client-ip=80.237.130.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=leemhuis.info
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="mdAoAjoK"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-7be3f230436so421560785a.3
-        for <iommu@lists.linux.dev>; Mon, 20 Jan 2025 06:26:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1737383205; x=1737988005; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vr2EIyCsdB5gdGa7/0WwIe6wMDGX9eJ5N6s6izoCruk=;
-        b=mdAoAjoKY9l1leoJwuqzvCD7v+GHoxym6GGZwNoP70t3SJPPuhCcU+1fhTruDAzvRU
-         NVmLNQTSNRev4cO1J167L88D7/xoqxhSN77fj2c8eYyM5NGiwn+5owSVHJdYpY7YeIJP
-         Xvc1PTk0n3xKlxXFnYZo8/JOMpEC0kLWTzf5KRFdZhBMI8Yjzw0B1gtb4jhZJbQsdMeb
-         ZIgmlwhhf2KZPK2H+7ozTDsCGKbDzHmZYhIVj18lANgcsTaGgIALu8XBdn6zVO0hadK+
-         SOHWCeJbzjLtaVZBAhzBzTJ9fFQ/CRREMCAmcD1PrbiSxZKbCMrGc0P7zkb4I4vZH526
-         N6tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737383205; x=1737988005;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vr2EIyCsdB5gdGa7/0WwIe6wMDGX9eJ5N6s6izoCruk=;
-        b=aXo+IWbmPQHMcznvnIILotEHzFVi9gjkMlAsnYY32rxnaAeM5ShgZ+KI1UxI+HsifY
-         o2WPFpmqH3tyx3W1/bumB/UcIgoT/7OQ036Lsv6VjFbMyLBrhCF5SDvgnUeP+VZ6X1x1
-         jLTt06YJPS6diCOCSIinzDiJfTwyip48Mir2QerhRrHBYANMR0n6VH14br+wVSUx1Rfv
-         8HtqwvgI4msauinPQ/+chPWy6WgnZ3XzeR1EoQO1kwi5OxWnaVj6cMV4c63KutRUQhLW
-         /N7CKBrsnOzhNdbKpmYTchxXJLF9SBxjF/DvzpbHBATtx+3MBgiVeUaHmyaLQZwW3OFo
-         vIgA==
-X-Gm-Message-State: AOJu0YzbrqqWl/sduLOuvZ2jjJYo1WUefEFkUy6MgJOK8pR1bQb6wCYB
-	z87+F+GK5/kCi/f9w5sP2ErOAaS0pqno3G2G29DNHY6c2JIILhApvUGtK8Ficn0=
-X-Gm-Gg: ASbGncvhHjWM1DnMjOBXg3SZnG1ges8gS1oqcp2vcE/F8A5LMFZ8+Busz9TQwCJhatm
-	joFEwddRqbM+rRWb0Xkea1iR2qV5fI3luFtEY2X8pVZ9oNvb3LHRuj0PjKJrPRG4E7VB2m3e02a
-	+QiXGy6WNSZjbISHB4PNr/cQI5f1rO6mXcwsOquVOU/x1LBR3mDyeJDM4H6TYeQkdwV5//dGlmK
-	H2ktkEKyjzvCpdHzv0dvSCTlwOpQMppL8Fx4Sep7x42B+/0TCgyMhmOzAcV4/iFB3RSv9eIG+6U
-	7Mv8n/8iMXXNEk23iFnC/pdHEWFlmklpWAMtTdm4hCA=
-X-Google-Smtp-Source: AGHT+IGtvIsUesTGjb37GoPOTTbLeWODGXjdLhV2Jx7A+73Ah5xBJFQ5DKfLkBk9bBAu2jSA4Q8O9Q==
-X-Received: by 2002:a05:620a:4513:b0:7b6:c462:6b82 with SMTP id af79cd13be357-7be63288222mr2782957385a.54.1737383205075;
-        Mon, 20 Jan 2025 06:26:45 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7be6148931bsm446023485a.65.2025.01.20.06.26.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2025 06:26:44 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tZsjj-00000003PkA-2hgf;
-	Mon, 20 Jan 2025 10:26:43 -0400
-Date: Mon, 20 Jan 2025 10:26:43 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Shyam Saini <shyamsaini@linux.microsoft.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
-	will@kernel.org, jacob.pan@linux.microsoft.com,
-	eric.auger@redhat.com, code@tyhicks.com,
-	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com
-Subject: Re: [PATCH 0/3] make MSI IOVA base address and its length
- configurable
-Message-ID: <20250120142643.GM674319@ziepe.ca>
-References: <20250116232307.1436693-1-shyamsaini@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=leemhuis.info header.i=@leemhuis.info header.b="wCDs6gNi"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=leemhuis.info; s=he214686; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:From:
+	Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:In-Reply-To:
+	References; bh=Kf+3RT6jgJ74hGvY/qY+RUR8btMXfot0LemyRs8NySo=; t=1737383500;
+	x=1737815500; b=wCDs6gNiscyqogzLFlKsY3Fu+7RrMFJgL2r1V+bivzUU4SVRSTY2rrIuMktLW
+	p9GWmajONQwIm+k6i8wwS2nRCQms0a1aukICs3Fm+KrCkiwT5GVeBjq0mVwXke50RvXjT0EQnaCut
+	OFF8AkKJ0/c6TptuPT32voGXi3rW3iGY/UlElf72L85PAPyMO5Cr1bydZ6Fb6jXCdvIHzJZbs3EIb
+	1PrtiDtIAAo8ti5jhxQlxhP48T1Ux79d5uto4o5M6b9froo1yIoecZHUlC+MeRAi4wGEc2hA07O5p
+	1zPX7gviIw6Wm8EyiyfkkEUW16dLy3jbOFXgr76hsMtwgA65HQ==;
+Received: from [2a02:8108:8980:2478:87e9:6c79:5f84:367d]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
+	id 1tZsoL-0090Or-11;
+	Mon, 20 Jan 2025 15:31:29 +0100
+Message-ID: <10e39c88-4667-4c61-b3eb-3dd7ee3074c3@leemhuis.info>
+Date: Mon, 20 Jan 2025 15:31:28 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250116232307.1436693-1-shyamsaini@linux.microsoft.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
+ X600M-STX + Ryzen 8700G
+From: Thorsten Leemhuis <linux@leemhuis.info>
+To: Mario Limonciello <mario.limonciello@amd.com>
+Cc: Bruno Gravato <bgravato@gmail.com>, Stefan <linux-kernel@simg.de>,
+ Keith Busch <kbusch@kernel.org>, bugzilla-daemon@kernel.org,
+ Adrian Huang <ahuang12@lenovo.com>,
+ Linux kernel regressions list <regressions@lists.linux.dev>,
+ linux-nvme@lists.infradead.org, Jens Axboe <axboe@fb.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>
+References: <401f2c46-0bc3-4e7f-b549-f868dc1834c5@leemhuis.info>
+ <Z36UsE5dj6j5HhkX@kbusch-mbp> <20250109082849.GC20724@lst.de>
+ <210e7b28-de05-44bc-9604-83a79ae131b0@leemhuis.info>
+ <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
+ <CAOBLbT8103fAyoFNF8=YcEM1sM6HodcUe=Ee5NsE2hUkfCYv7g@mail.gmail.com>
+ <3b693647-5e82-4c39-8017-22cada56eb55@leemhuis.info>
+ <20250117080507.GA25953@lst.de>
+ <f81bb87a-c181-4973-be05-f7df84133a46@leemhuis.info>
+Content-Language: de-DE, en-US
+Autocrypt: addr=linux@leemhuis.info; keydata=
+ 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 n7RI
+In-Reply-To: <f81bb87a-c181-4973-be05-f7df84133a46@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1737383500;66f12a8a;
+X-HE-SMSGID: 1tZsoL-0090Or-11
 
-On Thu, Jan 16, 2025 at 03:23:04PM -0800, Shyam Saini wrote:
-> Hi,
+On 17.01.25 10:51, Thorsten Leemhuis wrote:
+> On 17.01.25 09:05, Christoph Hellwig wrote:
+>> On Wed, Jan 15, 2025 at 09:40:04AM +0100, Thorsten Leemhuis wrote:
+
+> And BTW a few bits of the latest development in the bugzilla ticket
+> (https://bugzilla.kernel.org/show_bug.cgi?id=219609 ):
 > 
-> Currently, the MSI_IOVA_BASE address is hard-coded to 0x80000000,
-> assuming that all platforms have this address available for MSI IOVA
-> reservation. However, this is not always the case, as some platforms
-> reserve this address for other purposes.
+> * iommu=pt and amd_iommu=off seems to work around the problem (in
+> addition to disabling the iommu in the BIOS setup).
+> 
+> * Not totally sure, but it seems most or everyone affected is using a
+> Ryzen 8000 CPU -- and now one user showed up that mentioned a DeskMini
+> x600 with a Ryzen 7000 CPU is not affected (see ticket for details). But
+> that might be due to other aspects. A former colleague of mine who can
+> reproduce the problem will later test if a different CPU line really is
+> making a difference.
 
-Can you explain this some more? This address is in the kernel
-controlled IOVA space, there are few ways a platform can impact this.
+My former colleague Christian Hirsch (not CCed) can reproduce the
+problem reliably. He today switched the CPU to a Ryzen 7 7700 and later
+to some Ryzen 9600X – and with those things worked just fine, e.g. no
+corruptions. But they came back after putting the 8600G back in.
 
-How is the platform impacting it? Is the non-functional IOVA always
-reflected in the iommu_get_resv_regions()?
+Ralph, can you please add this detail to the Asrock support ticket?
 
-Why not avoid this conflict in your platform software?
+Ciao, Thorsten
 
-> There was an [1] attempt to fix this problem by passing the MSI IOVA
-> base as a kernel command line parameter. 
-
-Yuk
-
-> In the previous attempt,
-> Will suggested reserving the MSI IOVA at runtime whenever there is a
-> conflict with the default MSI_IOVA_BASE. However, dynamically reserving
-> this address has debuggability concerns, as it becomes difficult to
-> track IOMMU mapping failures.
-
-Still, this approach seems like the best to me..
-
-> This patch series aims to address the issue by introducing a new DTS
-> property, "arm,smmu-pci-msi-iova-data". This property allows the
-> configuration of MSI IOVA with a custom MSI base address and a custom
-> length for IOMMU/SMMU drivers. It accommodates platforms that do not
-> have the default MSI base address available for MSI reservation.
-
-My understand was using DT to set kernel configurables was frowned
-upon? Ultimately MSI_IOVA_BASE is an arbitary choice by kernel
-software.
-
-Jason
+[1] he described building a x600 machine in the c't magazine, which is
+the reason why I and a few others affected and CCed build their x600 systems
