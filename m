@@ -1,60 +1,62 @@
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80AA41B85CA
-	for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 08:48:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 308181BBBD7
+	for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 08:48:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737449319; cv=none; b=tC1iUTqJ0wNvxwhdKf9XooofigPCG/KPl2ldFlzCdypZV/j1u+yZ1hefwZ3tREDigvSmLH+CeTU5GzM7O5/wxjT8u0ovmbI4I79T4RYt9ASffeYABngL+mkniYwJ2bU/9Lc6Er6hkbUnHbBomjwx9P42P9kwd/8GZBtlOZIwSl4=
+	t=1737449321; cv=none; b=ajyEKgSdDMzXrFqaM6gtltlKnCqJn/bK/AKNK13TMrhv+PKmm4gk2S6mn0trOf3nOtMq1unlRlUK7jt+1A5rezmBBKH143GPmw5nmuDAQeiF5CTlUxgbF4sy6LdcdwpZeaigG9exYznyxp3WCzAjSIfyVhxQdAkXhc1U+Z+7qo8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737449319; c=relaxed/simple;
-	bh=9yw+tJyscIFBRqqCRDiUeLgp6QlDzsEW2TiCp6TkP8M=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=q0AAqZM4bHqD/TY23xsyJ4ugY08nHEuwviKKaplhmmZMHhTrtrZF0srNBTTM+r/nqhNMrq9GdWw/5olzw65iStUvnJcq1RpMnWiP60aQko/B0IyacDS+yAEMEy+5VTZnnZ0t/aEmnRK96x9l/OJ1A6LJlM17OKL39ZmNqkIWhzw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S8e0X4ha; arc=none smtp.client-ip=209.85.208.176
+	s=arc-20240116; t=1737449321; c=relaxed/simple;
+	bh=ll0P9IfFa7p/1ScsbSL5ZIC9Tt28lrzdPJ+txKSWBpk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=IvfBztQ/j1mnzZriDCXnB3pfncJFQPMtSrt1a6B2iXecKS7Z5Jej8vpf+l2JBtzxX9/p34+0r62NT2H72NSPCPGySK7HuACsn2AgMC6fqXoLxQQmu8qXASiTlHeNHqBwyI3bQ4zkV3FbghCxGxm3bH9YQpKcnQdhG65Q9TOvTNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TuRCL+DA; arc=none smtp.client-ip=209.85.208.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S8e0X4ha"
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-30737db1aa9so24904831fa.1
-        for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 00:48:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TuRCL+DA"
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-30227ccf803so44461471fa.2
+        for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 00:48:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737449315; x=1738054115; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=V1IBBAaVfa6hiQTK+rLof3oKcml8F9zzRUwtu2WH63s=;
-        b=S8e0X4haiuEDkJxc0It8tl3XHqj+4SfPMjpgUU5YKZlcCyVaQWdJIHgE2p0UEzpK0V
-         XAcjcgQXj+H0R57Wa8YqGcZ2W8g2+wCRDjDqZVP3P0SGl4ZyXTjwWy9LvDgp4zzbDPhc
-         8skljOQRhagxmYM59e5q+0WeX9N4fpzF7yj2Jl41IhF7P/EdpFFnFOSkzj0sjXTTw2f7
-         1HIqn+BVbnQQoNvD6bJtl8HH4h9tz4C9xTuv5iSGWKuqQe9cU6W6XENWCh3h5S+SAEGc
-         eyz+IeUhVkIpAyzSZ1JmNoLCsxuDp7tG6q7C2CmYzkSHH7rW4xlU/HB9oTjOd9I6zZIp
-         oPtA==
+        d=gmail.com; s=20230601; t=1737449318; x=1738054118; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6t/NfctZQzCLSp1/vL00MczYX8ztZK8ZRUybzG+0jo8=;
+        b=TuRCL+DAdYi5nvZe8w77Nx+cqcK7MTK+QOqTKHN6ahgKgIqy6c+aKqYEoENY4b6Ywe
+         uT3vK5DAzK+U76kh89wbjQKz0xRhBlqykhR/jvsPYhFD/Urzh2YJSuQnU2WPeeRiwjVS
+         CsIPm4VobhLsmmambPXAsMNE8RS3l5LbNXAt3ZNnr/2J1yHvi4u9dcOsHqfYPQy8tpMa
+         7RiKmucJRTwpCY5tsJiBi7vP6i+/TeRryGYpgiQqhk6eiXcbfczmOO6xqKaoCSbCPQ2w
+         yEGNfB0xs3h2+fVUTlfaNn02sTri+syGV0ZM78Iw6IR2N6dc+//7dclYEItmG03g2218
+         nQ+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737449315; x=1738054115;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=V1IBBAaVfa6hiQTK+rLof3oKcml8F9zzRUwtu2WH63s=;
-        b=rn6gU7iCCiV2i2Gqqbe3WKf0DSbEp1wrueNfsCeZX/YMZR4MIj+qsiX6tHv6HVbXwj
-         nJ9oiF8OlH+8x4wwS5yII2oenHIhvPYU6dsZzRTMbDTkf+D2Nhgz6jtdhNEb4XNQ1gMA
-         9ddKZJWc6YQuRXJG8kaTOQru+eTfSlaOkOWErEQ5KJXeZyADi6AKwMM37cdDGvfBo87B
-         rWvO096bSSaHNX1CzoRvMb97DBGbSL078s3zWDvI76IfYqnIKyGk35ofh2l3sO+Vxvnn
-         VUGD/jPcB0+kd+CNohGhUrD5cnqaTszzaqqQqJwg3Jw5KNtOr5z/971f6hVM1YXOZzXA
-         lIjg==
-X-Forwarded-Encrypted: i=1; AJvYcCVmnzJrWX7IaZxgPy46trzFjX2jwuhOFRmOe/qcl1m9kVhwuCHKy4xm9QHK1R60ZTXUy/EGYA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzfPEKyZchCEF7WparcZb/ytDI4pRoVd0CzKFROf6r+n/afWidA
-	RZWWDPF0rmnlTuS40e43hWug9WysA8Isa9L8D7XWrpULM+fcgrlA
-X-Gm-Gg: ASbGncu8uFtjtlOWAXiIGo4IKoeTPBRssjdaWS8tERwW/l7bpDDUcCVFrC3yOOVd0Wu
-	tT0CMKYGOrtbcCvJJLmkdcb2YaFddqF7DWYGr++Bw+MZcHygiCxa3Bjad2X9g0Fk0hNl5sARhqp
-	996ufzj0uKJByWZMlIcHV+G78oUx/dn5YHAQZObq0gwhu9JS02BDLX4vlbc/QdLXkdTyyzoarRq
-	epDocLsrGFpsw8rwlTYxeCkV3PuTtGU1DH1GrcQoi43mXSOieOGcgX1sipELKunoMd2YCzWIFGk
-	LBvK/Dp71TVyyQ0MFk9idMpiO/Q+LluzThB+0s8E
-X-Google-Smtp-Source: AGHT+IFcDKuxLrpt/fzqSVNvr0kOtGLvjPWFjlocZAiJGOx4W6HVF21TJTzIPJJ/g6sQdX5jmV8FOw==
-X-Received: by 2002:a2e:be06:0:b0:307:2bc6:5ec6 with SMTP id 38308e7fff4ca-3072cb3cf90mr56185001fa.36.1737449315144;
-        Tue, 21 Jan 2025 00:48:35 -0800 (PST)
+        d=1e100.net; s=20230601; t=1737449318; x=1738054118;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6t/NfctZQzCLSp1/vL00MczYX8ztZK8ZRUybzG+0jo8=;
+        b=MydMpV/SiZlnUZJTx+f4jJkNp4LXBEy5ljQvQyG8wIytd/RkINpULqREQfe7j/bdw9
+         aHMsBcul4xE+1wKHWjn3WjX2nJyeEfiMnMj38m1ZMkn6uAWFt79PfmbsBwrShwgodhW9
+         FitJJ0O04EaNLIsrVZTiIAXjs5Dfqpnwo8XAQsQkjaNd/H30YAFumogE5gNwrY94z/hG
+         Y2yIO6+7XF4EMBxUT5fviBMMjutKzWleNB24pvbse1POwwlrbPmRhJbYsPJOc0jDQQ+7
+         sVAI4YTmksUUZl3xeT9SBTCV1PyZrlNQsnGjv3qNAakhx4Hd3X9ZVghEk5Gvdq99+NFK
+         D05Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXQtUW533hZsNEuabNfsjc/HAap8VPjPqg8ryPsX3rDLxYi6i1jFeATR1H3DjCJF0edAJ8Rcg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyqQaSzGkXpXslrRYViDgF9exdwAUn9DyVQ/7nENaBBuKdeHnHH
+	UJoGiZxfbEk9DMSaAmbOlvfmUGjVUd5quPWosMkTyNXjib9h/Vb6
+X-Gm-Gg: ASbGnct/ad0D0QEPwA6zg3pEnXrjQ9dOnbB70xDVsLXg8RFMBl/cbx4ZNQHwU9WW/Gu
+	XVxH9djB3C/xrq93cp0ESzbyu3UxLJPI9UV1V/HCfkcJOHngY3zANVYVF6qYfaIYjpCt6YsgWBX
+	3lRqvUfIzWzj451KtTKANCuijUhwHtjWeBQo0QKXrvl3G5vNGI/I6cdE00vjTEFhoc0tVvaPKLY
+	14QOQuLZJ5Rsolkk9/d/Xa87r1pGHG/74cSLOKIATOrfyCeocRDJ6YoNvOtzKz5f0jm9Lb/gdUZ
+	I3tt6MfCi/vPwPaykfuVLxONtGjN4B7U1eMkIV7c
+X-Google-Smtp-Source: AGHT+IEO9HiGi43wrj6DPjuve1YnbSDtbMLQpjtAFXaxo39GOA22EUsPUeQtUvgAJad6Hc8blBYA0w==
+X-Received: by 2002:a05:651c:993:b0:300:31db:a782 with SMTP id 38308e7fff4ca-3072ca5bccfmr59602761fa.6.1737449317996;
+        Tue, 21 Jan 2025 00:48:37 -0800 (PST)
 Received: from abj-NUC9VXQNX.. (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3072a4ed5c7sm21178651fa.82.2025.01.21.00.48.32
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3072a4ed5c7sm21178651fa.82.2025.01.21.00.48.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jan 2025 00:48:33 -0800 (PST)
+        Tue, 21 Jan 2025 00:48:36 -0800 (PST)
 From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 To: rust-for-linux@vger.kernel.org,
 	daniel.almeida@collabora.com,
@@ -77,10 +79,12 @@ Cc: Miguel Ojeda <ojeda@kernel.org>,
 	airlied@redhat.com,
 	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: [PATCH v9 0/3] Add dma coherent allocator abstraction
-Date: Tue, 21 Jan 2025 10:47:44 +0200
-Message-ID: <20250121084756.1051758-1-abdiel.janulgue@gmail.com>
+Subject: [PATCH v9 1/3] rust: error: Add EOVERFLOW
+Date: Tue, 21 Jan 2025 10:47:45 +0200
+Message-ID: <20250121084756.1051758-2-abdiel.janulgue@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250121084756.1051758-1-abdiel.janulgue@gmail.com>
+References: <20250121084756.1051758-1-abdiel.janulgue@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,60 +93,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Changes since v8:
-- Add MAINTAINERS entry
-- Fix build issues due to switch from core::ffi to crate:ffi in bindgen.
-- Ensure the wrapped attribute is non-pub in struct Attrs, declare it 
-  #[repr(transparent)] as well (Daniel Sedlak)
-- Link to v8: https://lore.kernel.org/all/20250108122825.136021-1-abdiel.janulgue@gmail.com/
+Trivial addition for missing EOVERFLOW error. This is used by a
+subsequent patch that might require returning EOVERFLOW as a result
+of `checked_mul`.
 
-Changes since v7:
-- Remove cpu_buf() and cpu_buf_mut() as exporting a r/w interface via
-  a slice is undefined behaviour due to slice's requirement that the
-  underlying pointer should not be modified (Alice Ryhl, Robin Murphy).
-- Reintroduce r/w helpers instead which includes proper safety
-  invariants (Daniel Almeida).
+Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+---
+ rust/kernel/error.rs | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes since v6:
-- Include the dma_attrs in the constructor, use alloc::Flags as inpiration
-
-Changes since v5:
-- Remove unnecessary lifetime annotation when returning the CPU buffer.
-
-Changes since v4:
-- Documentation and example fixes, use Markdown formatting (Miguel Ojeda).
-- Discard read()/write() helpers to remove bound on Copy and fix overhead
-  (Daniel Almeida).
-- Improve error-handling in the constructor block (Andreas Hindborg).
-
-Changes since v3:
-- Reject ZST types by checking the type size in the constructor in
-  addition to requiring FromBytes/AsBytes traits for the type (Alice Ryhl).
-
-Changes since v2:
-- Fixed missing header for generating the bindings.
-
-Changes since v1:
-- Fix missing info in commit log where EOVERFLOW is used.
-- Restrict the dma coherent allocator to numeric types for now for valid
-  behaviour (Daniel Almeida).
-- Build slice dynamically.
-
-Abdiel Janulgue (3):
-  rust: error: Add EOVERFLOW
-  rust: add dma coherent allocator abstraction.
-  MAINTAINERS: add entry for Rust dma mapping helpers device driver API
-
- MAINTAINERS                     |  10 ++
- rust/bindings/bindings_helper.h |   1 +
- rust/kernel/dma.rs              | 272 ++++++++++++++++++++++++++++++++
- rust/kernel/error.rs            |   1 +
- rust/kernel/lib.rs              |   1 +
- 5 files changed, 285 insertions(+)
- create mode 100644 rust/kernel/dma.rs
-
-
-base-commit: ceff0757f5dafb5be5205988171809c877b1d3e3
+diff --git a/rust/kernel/error.rs b/rust/kernel/error.rs
+index f6ecf09cb65f..1e510181432c 100644
+--- a/rust/kernel/error.rs
++++ b/rust/kernel/error.rs
+@@ -64,6 +64,7 @@ macro_rules! declare_err {
+     declare_err!(EPIPE, "Broken pipe.");
+     declare_err!(EDOM, "Math argument out of domain of func.");
+     declare_err!(ERANGE, "Math result not representable.");
++    declare_err!(EOVERFLOW, "Value too large for defined data type.");
+     declare_err!(ERESTARTSYS, "Restart the system call.");
+     declare_err!(ERESTARTNOINTR, "System call was interrupted by a signal and will be restarted.");
+     declare_err!(ERESTARTNOHAND, "Restart if no handler.");
 -- 
 2.43.0
 
