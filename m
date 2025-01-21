@@ -1,110 +1,92 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A71211BEF77
-	for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 09:27:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 309B21DF961
+	for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 09:55:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737451680; cv=none; b=XfqzImR108y51g+2tXucRgERoFhEN2vTOPA2u8MR7DHCE4k3FcsBZMod1OJ8e9kuYUlH5oRWXs55wyEA2KWSvAVzjAqVxikEbufAgeXgAKjPd8NhlyCwFvUJjBqcGzEo25TLTcA0o/RhBmECVWoCWCTUNh7JiUFH6D/qOp6JGK4=
+	t=1737453345; cv=none; b=oXMeQqjT/0+Y3pzPmzpipLVOUqPwJ5yX4PrIYYhQXxGpGwEEDPZONyZ1LaWlRVpsFriwaIu4zHG4qPbF78VVpmTU7JGRfGXi/3m+YBJP7ICE8co7W4Mo+hHLlDC+k+SvqInIaRgw3FnvP5tVLZwbqRlkpEXt5TtONlpiC0c8n60=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737451680; c=relaxed/simple;
-	bh=IF4TaY7d4duRohpHNCzfQE6bKthFQI9a4bf/i4NmVg4=;
+	s=arc-20240116; t=1737453345; c=relaxed/simple;
+	bh=8PXPzOwbrsC9kILUva2YUAXRsm8M3PW5xczYUTLbG/A=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qjPBFW4uPgNMWKVRaD1ah6fF+Lu6wA5ugF2D0nOhxFo3PfozXZgQ5dbfE1Zep+LRK34/MOX/YkwDeCYMOwCu0Wgb2COB3FGbc4Te1u7YaPy/zGOUpT/8zGdCbeh9ykSz+u5SrnxrhmKMadnDZyfjfFQLPiqx1BGoGKvp266kNLo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cj6RVY0w; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=XNCabDCgEMSPAn8jJYHi6mew7NhG5lSKwPZBfnuIJUgAjaXhP9+Ef+S0DZ4R1xklfB/080QJWIgzY+IOTEdH22rxWPU97N1mrjum0jjhPW/vJW8l0XnyJzrY4QXnqxFT8+5JDeyKGOZSSyBHzhSWXAxxBXSB3lCnvvrp/KbAvyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=RgpfrEWF; arc=none smtp.client-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cj6RVY0w"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-3862b40a6e0so3417407f8f.0
-        for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 01:27:58 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="RgpfrEWF"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-385e06af753so2673699f8f.2
+        for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 01:55:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737451677; x=1738056477; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1737453341; x=1738058141; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=IF4TaY7d4duRohpHNCzfQE6bKthFQI9a4bf/i4NmVg4=;
-        b=Cj6RVY0wQKt7UCteaXxkQVjifNPuHr/MfEsn6bI8IjZPWQ13VjiFETYEw86vzAcv4j
-         yThbWIjAmsPy2m7v16KbifOciw+qv1bzDHIV/uGgIVOvcHU9vFVHlBhw6LYUmksxNEQ6
-         gU4+HrbLH4+4zhErQDvhl8jS2spYF+rWIzUKmoSnwiwcuGxBlcyDmGGWS0+aqMVa4yco
-         vxkKg9+Wt8DxKUrGPJpckp54iwulJ558yzRiHBVYeK98zhQqSeD9hX4vpp/nJcnXsdMX
-         mhXSAOGZmfkDtf2TLeOj69slx4BUm60og2oI3FTEnEPGCyK1KIoFFAiELN8ilfNs8QWP
-         ZLjg==
+        bh=8PXPzOwbrsC9kILUva2YUAXRsm8M3PW5xczYUTLbG/A=;
+        b=RgpfrEWFi20bWKTOcfUhhvewRn2cnHOVDlVPw5Vx8fMzEXUoAs5GhcneslckZhRXPV
+         quEnF8FdqZ2vzkaAYLMTFZgypSDxV6aCtNcJe9B8xRrb8UhLlw9ePDJA6mREimxYSNIu
+         J3vPM5YskI18+H7WLBmzTHV/ZqUxi/Z2GXQaut1ktIFazdflbapILyNWuvPaPY5EK87E
+         ovhtUioasVyTn3sLBLfaA/INjVZx3PLZ59DgDDceGOWsBiwqLKrfS6Ht4BNfgMOS08UV
+         p8a79XOBj6YBVvETjDfe2F0VeROfPFRuLSGkcNTX9Jo2SRvnICRvegQyvWmEVRdGziVE
+         Q3rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737451677; x=1738056477;
+        d=1e100.net; s=20230601; t=1737453341; x=1738058141;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=IF4TaY7d4duRohpHNCzfQE6bKthFQI9a4bf/i4NmVg4=;
-        b=Hp/KFRmyfRoC67MulGlReEUnDP0qmdUBCEsag7cSJnnJ9Th71bO3lTuqbFs1BCex0w
-         sA1etKFgPoF1FbKAqpVL7CmJZeQ3EXjCuc8g8umtus0rL/OID7CUYofXNk+poRKL1849
-         Z1fxvo2iu75felGylJf3GXBsAQZdyUPkP742QuFChZuG60rJEQIEf0bqOAHDLSBDQ6zq
-         rVwCT27AXF4v9M1at/3E4dO66OUkzhPlpFkVJiLxQtO+lQir+lLFUuQ5EuTTKiCaAIDQ
-         9nWDH0EOEHv6xP1yRicDk/5EjUbuQ9F6wlR5kPtFs4UPhlij3c7HyReGV/6rit2XX7sP
-         BJ0A==
-X-Forwarded-Encrypted: i=1; AJvYcCXu3dpZB4OgNCWkprCweMYUZa57NqX9oOELhYD1zNQZEGq5f8mXYm+xB2RCCPZh8GXewKBy1Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzrBEblMBjV/a9mI4TfNyHtOpSkNTfTMCUcF5sZxMD8+ukDUe8/
-	8deOXK+y03ptB0+1yAwFN7acO9coBQkMHoq3HmNvEe2+ck4yUO71NqBCgZWoktTySPYb2WpYDwb
-	R5GEGljGGWkmAEFWOF6M5EW8kCFQ=
-X-Gm-Gg: ASbGncsDil30WcCfEKe65NKGhrE0hxCeI47H0APWdJf8wWAnPw1eltpC7Hy7y5roRGi
-	DHRkn61i1MTbhxQ4iGyihnVBj2hWQ+SB75hsZ6CdbxkwQhX2Jidu5
-X-Google-Smtp-Source: AGHT+IGsHiq2BXKFB5OMXmd0lgl9uWHfEUBKI+MYwp+JL4oD+JVooOEe842v0Fn2NK+Yo6kt6laXtC4RaZ/9ayRXYk0=
-X-Received: by 2002:adf:ea0d:0:b0:38b:da31:3e3e with SMTP id
- ffacd0b85a97d-38bf566c690mr13509240f8f.28.1737451676752; Tue, 21 Jan 2025
- 01:27:56 -0800 (PST)
+        bh=8PXPzOwbrsC9kILUva2YUAXRsm8M3PW5xczYUTLbG/A=;
+        b=OKGd/5PA8gmrpmm17JD0zU0cWY+VlpChc9gDs45gd7zJJFKww91CvQkIShFMkr++kf
+         Kr6A0xvZ+myaw4/cbzhJ3AJKHj0Pf5OJFspM9x2L4JOT7ZlErM7dRwNquejZG4yyNqGD
+         JbL8DVrjKYV3ST1MXjPrpaD4vAecTIZOCv25R5olNVo/A5Nqd9yLqO1wZz8VQ/9GwrdR
+         cH7OKEedyi3olqWydB9PhS+vLgjBJgdeCb/scUx6KkvKEu3FnRksjHOSUc03th/lDdli
+         auahoZ1OcJk1iE9pNkSBqYe34xpe6oy4Fx6BgAK+gV1OxLhOvNOC6RS64VexZLOkCIdp
+         AH2Q==
+X-Forwarded-Encrypted: i=1; AJvYcCU8Qj/0HeDjDekzxJeUCrARdvx622qwGNEsHoBD1hOrYtNorcQ3zR02ppqStXQZUepKB+HkMA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwZUlYy6WYhd1bKvox1Tgm+XDF0oaHQG8yGobNw/Uuq85drJvKg
+	+ySNQHemqmgDh2OKO5zu0KO5P2HdqvcZzgiubtP6kZ8fZYGkJc4MQyGQU9xVGUqMo2DE5B0KIg5
+	cWr0/zBgljAqBslc+wYag2COYrSMz18wRBDKd
+X-Gm-Gg: ASbGncuqDphHiFM7TH/SzKPB6TXAnyumtVL8ydoaO/+JUTNg9P9xv9tlRKWuGXjXX3H
+	EKtjea3WBEqMQlvklN77z6hS5vlGUdd+6wRiueFLw4ewOldoJfC0bLUE0tQVYRVmsPEUFT0+D61
+	bFfLIEEw==
+X-Google-Smtp-Source: AGHT+IE7KopMuvJB/37YGrU0+CEjSwlbu2NZ86YXc4fNcHk67SaKLR8AsHv99obklcQ0QFTCU4fwx+AhGp1sNJwYwbs=
+X-Received: by 2002:a5d:584d:0:b0:385:f7a3:fed1 with SMTP id
+ ffacd0b85a97d-38bf57b6717mr16579665f8f.44.1737453341430; Tue, 21 Jan 2025
+ 01:55:41 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250117071423.469880-1-east.moutain.yang@gmail.com> <20250120135933.GJ674319@ziepe.ca>
-In-Reply-To: <20250120135933.GJ674319@ziepe.ca>
-From: Wencheng Yang <east.moutain.yang@gmail.com>
-Date: Tue, 21 Jan 2025 17:27:45 +0800
-X-Gm-Features: AbW1kvYWGED4KZNuExXgO4AJnk3tgAnEtHwpSg2ObjCB4wpxxs4VW1Y66VsUkc4
-Message-ID: <CALrP2iXyfU91-bg3u0mAL8zQrriuQMbdtJ1Hta9XeBRQ_vDEHQ@mail.gmail.com>
-Subject: Re: [PATCH v2] drviers/iommu/amd: support P2P access through IOMMU
- when SME is enabled
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20250121084756.1051758-1-abdiel.janulgue@gmail.com> <20250121084756.1051758-2-abdiel.janulgue@gmail.com>
+In-Reply-To: <20250121084756.1051758-2-abdiel.janulgue@gmail.com>
+From: Alice Ryhl <aliceryhl@google.com>
+Date: Tue, 21 Jan 2025 10:55:29 +0100
+X-Gm-Features: AbW1kvYQlWV5FFQMfdmH_H_nGi0poXEpd85_Sr1sW-ET_ThW1oF8DVJ5JvmSYzY
+Message-ID: <CAH5fLgj6TAHhSQWJaK9pj1PAU7+dbJFHURd_qa8wgFE4syBxTg@mail.gmail.com>
+Subject: Re: [PATCH v9 1/3] rust: error: Add EOVERFLOW
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Cc: rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com, 
+	dakr@kernel.org, robin.murphy@arm.com, daniel@sedlak.dev, 
+	Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, 
+	open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 20, 2025 at 9:59=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrot=
-e:
+On Tue, Jan 21, 2025 at 9:48=E2=80=AFAM Abdiel Janulgue
+<abdiel.janulgue@gmail.com> wrote:
 >
-> On Fri, Jan 17, 2025 at 03:14:18PM +0800, Wencheng Yang wrote:
-> > When SME is enabled, memory encryption bit is set in IOMMU page table
-> > pte entry, it works fine if the pfn of the pte entry is memory.
-> > However, if the pfn is MMIO address, for example, map other device's mm=
-io
-> > space to its io page table, in such situation, setting memory encryptio=
-n
-> > bit in pte would cause P2P failure.
+> Trivial addition for missing EOVERFLOW error. This is used by a
+> subsequent patch that might require returning EOVERFLOW as a result
+> of `checked_mul`.
 >
-> This doesn't seem entirely right to me, the encrypted bit should flow
-> in from the entity doing the map and be based on more detailed
-> knowledge about what is happening.
->
-> Not be guessed at inside the iommu.
->
-> We have non-encrpyted CPU memory, and (someday) encrypted MMIO.
+> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 
-hi Jason
-
-IOMMU shouldn't and can't guess the type of the mapping, e.g. memory
-or device MMIO,
-VFIO passes the info in a flag to IOMMU to setup IO page table entry.
-There is another Qemu patch which will set the flag.
-Qemu path: https://lists.nongnu.org/archive/html/qemu-devel/2025-01/msg0283=
-7.html
-
-Thanks,
-Wencheng
-
->
-> Jason
+Reviewed-by: Alice Ryhl <aliceryhl@google.com>
