@@ -1,258 +1,268 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAEC01891AB
-	for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 07:18:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737443910; cv=fail; b=pKqk3OEddC5v2bt8IWYMLipD7FBe80wJjxh4/mUiejvEHcrMDbfOE5ywRxwacPsgfjYpiLDoiu0IPZP4XAcR36X/8wUAkm/AK7WL/Xtvw0l6srjeHPpBzZGV/UIyCMo/sw5LLgSUG90nZdkbQuq4EzRmA/FPthJnsyDaAl3UlHQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737443910; c=relaxed/simple;
-	bh=Pcsxq/0cXWggsntlBSZQKHOOSd1HBI3OpnLkbafwc+o=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ZmY4gv9VXLxRgK6cCdE4JsCyjAZkvbPAzN9tKg/yYyn5P5C/jZza3M8/OfCziW25gO5LsB6JL0/j9Shj4TvbMMfZxmKt6ZRTfZf+GOK/Ei6T2qmnREd4vY73uLlAhnD6+LJV9RNe1CTo1tRr4JPCspQOQb4YydTw1w7I2mU9EKE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dWa7Yh5k; arc=fail smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47A8F1714A5
+	for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 08:37:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737448657; cv=none; b=eMHHfAlI6XS1I6PwtbelU5SzV/MNQCRpRWj8k9XyOTLdC6zcs6hNhV4yMpnUvgstlYNFHlMU0AA3AlobpDQhFBwRdZlgxDHWNmf9P9HECC+XDkPdtjIkIVCLPKcl3GGqZE7XMXpehg0FcoX0s7l4Nhi6dmVIqZ40sKMuJWaECms=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737448657; c=relaxed/simple;
+	bh=q/YXcPkP6j9/JtYuCKtpB16EjGGLnClWx3lp0QegbYU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=LTXi9ZoR/LlFtECBdkzjPIGw2YphamcbrN1vql5t4CSdRL5Y0dmKwEm6XX6i0Lx/SGsNVTp63pTAghuQTleL2pWRIgcwhw1mL8Fqws7k/I5+VQG2GeQEqeKplwfVc/l8x1GIJwrXPp3h/UMlRMxrhWrYsyYPP3kA6FeJS6PlNxg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=d7ZVtUFI; arc=none smtp.client-ip=209.85.166.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dWa7Yh5k"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1737443908; x=1768979908;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Pcsxq/0cXWggsntlBSZQKHOOSd1HBI3OpnLkbafwc+o=;
-  b=dWa7Yh5k+LMsaFFzT11xerDwqVX0I6cOXsRv+gDdmP4ScCFah+DUFuGu
-   yfkliU+RMClWEjF144fEcct74nnqTnvy0T7j1x2GSC6OFOWGqicgFPIuT
-   FSO09/MLVUWj0X5Z2FbgxGXobBbAsJww+xPDTEpCFVH1zv8TrER/FQIOV
-   ARbH8EL0nVNYzBXv3+mUN1OBZd+ZlUnbxurdMke8U36pAjHjCXUdUpKdT
-   k9dExPREb/JdOCK49kRlKTKSeK2elppESMHRykqhf4xzpp/divgpjh9Bs
-   r7G4JzXMkpJDci3tpDBTyeXGbz7JTh5uKoYT2riPXYmGSQTnf+UYlzmIY
-   Q==;
-X-CSE-ConnectionGUID: mOl5zxsNR9yOCipo3nssUw==
-X-CSE-MsgGUID: dulBQJUSTaydG4yIVYOheA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11321"; a="41603210"
-X-IronPort-AV: E=Sophos;i="6.13,221,1732608000"; 
-   d="scan'208";a="41603210"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2025 23:18:26 -0800
-X-CSE-ConnectionGUID: ejG40NIbRkmOBUsZv/7t0A==
-X-CSE-MsgGUID: LLbjLhSfQ5WSH+OfvlFNKA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="129981408"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmviesa002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 Jan 2025 23:18:26 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Mon, 20 Jan 2025 23:18:25 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44 via Frontend Transport; Mon, 20 Jan 2025 23:18:25 -0800
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.42) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Mon, 20 Jan 2025 23:18:24 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eWe3GhM41NxsgWh3RGRmGfNO8RbN29WM6tlGgWdu78MQwISvT7+cTSxWYJXRMmseKRKXlMaJxSjAzIxSpqBaWyFTTZzULGU+Cql3SbCiFjaqyuWsMyh4gh6Q4P1nPKOhuXex3q6/SyRQhxLdjqIN5oes9g7kWn9jUvCtaLVhJUOooA8QZBlzt50Ry2NTdR8nBIzkuQzhgPjt8/SGwCNolvy3rQewPLByGAfsbRm/k5Mx+NvsCGdrKezrCa0e/s9+omPHyTdniOTd2MBp9qX2EQWQVf9yzQnFS8S+pCADOqGlVKufsMXY6HQQE9nxQgZBUttqSpwiwuyby6Ia+eI+/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RBaDE6Glmnr+ZVK58mUNLQ0J9HuCnAC8xM7u0OnexOU=;
- b=o47EM/gKwwfi/OSfNm5h7nRzDnQHMVs1hFjVJulGx19P43HMEhor7ceOHY0GEHV7ayh3BP8dt5EyW+mzYh/FLWxg5vdxtMnErcqJ9RlpN1eB+PR1dvgQleUAkbQOVbhRcR0Tpx5bXNSfsSTmbuPjXdDDZl66PsYWcOpuDp9brKcqMLii5sv+BPvlN+XHPX9wifniedIhA4dV/sM6F9439L7D1RmYqH//DTYhcfRvLQP+YDZMcyHBYhckDRdcf8TbMIE9Wqz6xo6klStWHcj7e/5PajmaaET7i5nEvh0H/IBUptKZexDvzT4IB598GrkTShm6/FQ7sLuRyR95akt6uQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by PH7PR11MB6931.namprd11.prod.outlook.com (2603:10b6:510:206::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8356.21; Tue, 21 Jan
- 2025 07:17:42 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%4]) with mapi id 15.20.8356.020; Tue, 21 Jan 2025
- 07:17:42 +0000
-Message-ID: <049af2c8-dc76-40c4-9e1c-3d4b9743607b@intel.com>
-Date: Tue, 21 Jan 2025 15:22:59 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] iommu: Store either domain or handle in
- group->pasid_array
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <joro@8bytes.org>, <kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
-	<iommu@lists.linux.dev>, <jacob.pan@linux.microsoft.com>,
-	<robin.murphy@arm.com>, <nicolinc@nvidia.com>, <will@kernel.org>
-References: <20250120030840.4171-1-yi.l.liu@intel.com>
- <20250120030840.4171-2-yi.l.liu@intel.com> <20250120155535.GK5556@nvidia.com>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20250120155535.GK5556@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SI2PR01CA0045.apcprd01.prod.exchangelabs.com
- (2603:1096:4:193::19) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="d7ZVtUFI"
+Received: by mail-il1-f181.google.com with SMTP id e9e14a558f8ab-3cfa9272c14so911055ab.3
+        for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 00:37:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1737448654; x=1738053454; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EErsvLFUMtwyIbJnbfERrawyL1tVSt57dS6Who8TTyY=;
+        b=d7ZVtUFIR2iQp/QI3ZBBruVu2zwGfDz3duQDx7qCSzqzEFgEtqA7KbO2THyPshLPr8
+         WCds9BoSMZDZDw/P2YcYCIw8qa07iaAqVAwCZKQGiKics6ld7GblsPYILBSqBQWaoJj5
+         i/uE9kOn5wNMpggtpo+URG/wfXN+wGHckLgSR29oKm19k38zeWjY4cOooG8z7qMfixts
+         KlWjGtOml7KqH7glvk0omi9lztn18Ujbk22ARldegXhu4IsP6WrOxtFYPrLen1JDgPRu
+         kgy1ySL75Hkn2Ag9BLWDpNX7++EmWm7E3r28dgF8LvTjQJczv7F4QFniCqHvVKZEfeYU
+         Hg7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737448654; x=1738053454;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EErsvLFUMtwyIbJnbfERrawyL1tVSt57dS6Who8TTyY=;
+        b=kOtoCBy79iRJA+jJFiIzH/qcTWvACX3+yWYgeDF7c00uYsvgVktuXZNiJOVytDqzV2
+         FJ0V4cJKij7pm1UbgGD8p/sBUX+tephK/FTKvxFA816JnvilQoWjZIHqO3f00Nrp2x2H
+         eMpQuJkVzfZ+DuTo8Hn5wTYudNmgNs1dzYkBUOkXISlWMrOSY18Z/fwBNItLu/4IWXON
+         Fg+xMay5IfHURw1ypFi6VtcT4eFJGiZDoDo7roIuXBpVX5i7uarNXi3UGUvX8QuMNdXh
+         mzIXg4EEZxx+4GCw93PqNUYFZiDZfvxTiLUbLP6CvuKHPFyo5cW5V5ORWInJW1Eft9RC
+         uJAg==
+X-Forwarded-Encrypted: i=1; AJvYcCV0NjYlTTyy8cI+UeO0VQqLkVTIYQ1xA0OXuVD0IGlbhOm2cHAT8d3anizQerWGl/+Rjm0dXg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxSS4ywMEAqP32AIA3ZL4vW8Lb2cuwUI4epoMVIPLtZtQePuiL3
+	DkZ7Oz0I9YHitU5ktq+brZfgvF1V8fhPk7d0G8rrVKo2G5hSuoJrFHM2QU8cVLYuP0e+/q1ySCA
+	qvtSrfSZ+KeplKVzNphx5V0wdhPb8oBJpJC8D1Q==
+X-Gm-Gg: ASbGncv/JBaJmCJmOAUuYm/E1jOLsAYAlzKzo4rmpzZSWe6HPy64HuWZjTpFJ39Otp6
+	Fto+mT18zpqiaaonN+gj5X7qxrZvf30Z8jgN/DiZcGb1VRic62SGe2A==
+X-Google-Smtp-Source: AGHT+IEC2oPzCFfgCD9zHXuJFglchxr8YhWRFH5WN/dbnSoPI76AiG7cPO+FnSUDX0oL8rjqJZtBboWg3N3DPymAVwM=
+X-Received: by 2002:a05:6e02:1aa8:b0:3cf:6d33:d40d with SMTP id
+ e9e14a558f8ab-3cf742812e4mr123041605ab.0.1737448654288; Tue, 21 Jan 2025
+ 00:37:34 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|PH7PR11MB6931:EE_
-X-MS-Office365-Filtering-Correlation-Id: e6c11d6a-b56c-4725-2c16-08dd39ebb1a6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016|7053199007;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?YkFVQSsvL0ZXLzdib3FnMXUweUtoakwxRlI1TEFRSC9aZlBoNFdzTlo1dG1K?=
- =?utf-8?B?Z0hnWHdhbmpmQVR3ZU84WGVaTG52WkRJRUxLa0lvS240S1BQK0lEaEdoQ0RQ?=
- =?utf-8?B?d3VDdUYwZEMwUzZzZjBGai94OUNmQXlvVysrWS9VNlZkRU52NVJ0ME9QSTJR?=
- =?utf-8?B?V2w4d0ZmWlVQckYydkdXQ0pRTlExZS9kWUt6ZU9rbzRyaGJyRFprSGlSOXY1?=
- =?utf-8?B?TTZpZnBuYXFVeXJJWU5abm1nZ1FCaUZza1JKQlRJcUhOVnlZMjNhekdFSFZ4?=
- =?utf-8?B?eUcxNnFqVnB1WnRtMzl1dE9Ba290b1NBZFJ6WTVWQWcrV1ZNdmNtcXYzMEVN?=
- =?utf-8?B?NGtWeFAvT0h6eFFIYk9PL2hZdFRjMnNoRzZIYnllWGw2ZFg0VFltb2VGWEtB?=
- =?utf-8?B?eFh3TmFiQmpYUGQrRmJhS3NoYWFCRWJBZ3k4aUdqaTBCak5qUEdhbFJrWE9R?=
- =?utf-8?B?QVY0S0dXL1gzdTJIOXNMalo1emc2OTV2aTlsQjJvNk5sZjZWeStvV2c1Y2dE?=
- =?utf-8?B?TnVQUkFNRnhMZEwxRmo0U1A5cDJQWGpiRmhmMHllakUzYkhDTWdPOTZMdHUz?=
- =?utf-8?B?MGdOL2tDZmVLZFhDTkxuaTNnK0twTlJUekJpWTZUWmMvdVVmS1puMnJSVUti?=
- =?utf-8?B?UTBpalJxRlpkKzcyWVRKNXFlVGpkSVdicjM3bGpSOE9JaEtDS0NuSG1OWEVG?=
- =?utf-8?B?SVJXRUlxbDJGUW9TeWNBSVY4ajJZZmVaRjFoTkp6U2ZMVEVsZHd3YkJiV3Bu?=
- =?utf-8?B?Z2EwZEFMaGRwWVVLMW9ocFh4MXdtdDBFYzVmbjNoQVE4bFE2eCtUMU5iZ2w2?=
- =?utf-8?B?TzdaeFhHMHRMYzgyTWY1MXBTelBYdUk5QzdKaDZTY0xNK01UUkViNVVUVEMy?=
- =?utf-8?B?Q2ZhSlRzL0VEdHVYaHRLRWNMbzI4SDFiSVI2czNMR1RBS0ZScFNGNHdQWTJE?=
- =?utf-8?B?bWV1UlM0WWpjaFlsSTNhQVBGTXo3Y1k3dW13YVNXWlBuV2V0OUJ2ZCtPeHh1?=
- =?utf-8?B?U3ZjNFZob1JDb1c0Y2o2WkpKS3UxZWdXNXRoaW4vSG1CL05tZjVjQWtydVNs?=
- =?utf-8?B?Mnd4M3NVYVJpeHZ6OGFhTWhSUG9teTlSdjJqZFJTRkxxWWp2TU5vanQxdEJB?=
- =?utf-8?B?R0tmeUtybmJaM1Vmc3JpY3lBc09NeDFOUGhzbVdzRlQ2dFdQZnJaaHdCTXNv?=
- =?utf-8?B?TjlrbklXMzAyb2tZN2Z2dzJVRHBiSFdJWmpGRlpwSzFwTnRNT3JtVkk4MS9j?=
- =?utf-8?B?c1Yza3Y2QWlmV3gvTUdPb1BPOENzVmp0ZXVFS24zUEZhMFpXN0p1bGNjV1RB?=
- =?utf-8?B?bEp6OUhTZHdyUmo1MUcxOGJTSzdqUGU0Y1BHc0NGb0xDWnR6N0RzYmNmcGV0?=
- =?utf-8?B?U0drMFdmK2M5MlRaNGgwSm5QbWI1dkdGM3VGV1JTcGdTZDBNTU9nNG55aVZ4?=
- =?utf-8?B?RVNOcjUxVmxpZmhWM0h1UkNZYTV4RG5kM0R6NGxtUDlSWGYzR0RxUGVOdHNZ?=
- =?utf-8?B?QmVLcFViMWpUcnFCakdTeGIwQlJjSFk4QURzTTZqVk5NNXZuejlmdDgwcHZL?=
- =?utf-8?B?T0xnMEdnUXV2OFk5eWtYSjFNbVgyY2laRXR0S1NST1BaL0RnQ0Eram9EUXJq?=
- =?utf-8?B?ZUtLdHdUb3V1S2tsOUtDbWtyRDE0RGdzdVRxR0tTL0paWjV2MFJGL3BDWGpC?=
- =?utf-8?B?Lzltc1kwOG1wdFFMWXFFb21sSFd4NCtYTDFPQTRIK0ZraFpjZnZQVmN3Nmxl?=
- =?utf-8?B?WlFMaDVDY0xseklncUsvajMvcEk5T1ZzRTE5ZVdZV3FtUWZVekp3azh3aEp4?=
- =?utf-8?B?TWdMUUhmYXYzYWF6Ym9IRElRTDJXL2F4U3lmUEhocUNEbkFIOHAxMWNZQjJu?=
- =?utf-8?Q?qPfxZHOf0HdBi?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RytHbEtUNVZ3a0RxNjZONXlhQVJSV21tOTJHYlhoSy9CR01HS0RYWWZMQm5p?=
- =?utf-8?B?SWlVcTN3MDZkcTNnVVhnS2JOQURsM3BqUk5NQzU4K1lwdkpPanNqRDRuTHJ5?=
- =?utf-8?B?dkJSUnRRN1l0cDdkU2ZuaDVJM2F2cGxCL3RrUVJoV0FlK0s3MEd1U3lXeFcx?=
- =?utf-8?B?cWZkbUZIYm14OWgxT053ZjhTaERNTFl3UU80K2xMQXN6RW00a2NEaXpuZUpH?=
- =?utf-8?B?UGVIb1oxMVpHcjBuVXhnQTRVckVZbW52UmNHTGtkWDMwaUtHWnY1Q0RzSFo2?=
- =?utf-8?B?RUFZamhYSTJ3RGs0Vnd2eGFSa1dMZHVwazlkdFlLSmdqVEIrSXRXck1YY1VB?=
- =?utf-8?B?K2ttL254czBPN05vL3Y0a3RsQWJuVnoxWHlEWStOci9ONUIyWlJmYVJZNVRX?=
- =?utf-8?B?UFFDTTk2UUJKeG1EYXBBNCs3WkJMclJsUjlWcnVuM3NTNXEvbVNoL0ZmZzBR?=
- =?utf-8?B?SXN2aU9WS1ZCRnRRWWlQdzdlSEh0UnJTaDB6UVNEMjZDMENzMFBxaDBZTG1H?=
- =?utf-8?B?RzRqQktvVnllU241cVFScVA2bnlrN096NXIyUW1ZbktzeGpBeDRhZFhMZHZ1?=
- =?utf-8?B?NWNoQmhWVCtjRktJOFNCTVpCdXhoa1pUbW1xRVBYc1M0T3dmajVxVjY0S0JQ?=
- =?utf-8?B?T3oyNXk0VDhEUzE1cWozbzlqb2pxUTdtQ3JvOWhqdkRVeGxob3M1MklvdjM0?=
- =?utf-8?B?K09abWwxdEFLNkF2Nmg4TS9kNUdXUmt1NXBqTlYzTzhId0w1eUpUNTlkWm9G?=
- =?utf-8?B?ay8wTElvRHBjdERUbVhqS3pFUWd4MVo0WmJpcWtGTTJvNlFsYUJ0d094NWcy?=
- =?utf-8?B?VmJZU0g2S1JOYXBGbkFocTczcnRCRTZZK2RTRVkzSDBGbk0vWHdWeWdwT0Uw?=
- =?utf-8?B?OHNYdmxSYnpTc2VOaUVTM2c2K0xXNy9HVnMzb2xLenovL0FWYmozME55Z2lW?=
- =?utf-8?B?akNIeHI4RzdvNzZWM2kvRkc3OTNhVjVYT294L2VtYzEzWHE3bXkwMVFZYXRv?=
- =?utf-8?B?dnRRdjByQ1ZqRDYrQ0htY0JRMTVjR01kMlJpRWZFMzFHMHJNUzhvVHU1R0Zz?=
- =?utf-8?B?UmVaRHRQVXZMNlUydFVwR0JScWNDVWRla3RLalFVMGJkNXRrQk4xVzhYdUUx?=
- =?utf-8?B?UG0vZTZkSWFsMjFQU1U1TTUraVl5dTZ0RFRLcjhuWlphVTJCaGJkaUhRbDFF?=
- =?utf-8?B?Z1pNR1BaNUcxaXNwcVZtS0F5b21Obkh2NlhLUnFDRzA3bkw4YUVjcXVVZi9Y?=
- =?utf-8?B?NEhTNDZnY1RQWFYrVUE5VkxCeWFzL3VWeDlGZVZ1QjhWYXlXRGltK3QzOFdU?=
- =?utf-8?B?TWVKK0YxelJ2TStObDRtUHRtUXJJbUN5NjQyQmswVGlqV2VTYStTWHVYSXVR?=
- =?utf-8?B?a3htbGVybUc1c2U4YU9KYk4wVHB6YkFzUlI1RkVxakNzL3RSMTVGSnZVMCtD?=
- =?utf-8?B?L21XZ0RtUm9pc2R6RHBYckMvRmM4aXQrWmZCa1QvOUpqd3ZLSS9saU80Z0Rs?=
- =?utf-8?B?M2FscE5HMExMTEViVngyOWZlY1g4UkZHWm5VTEhSNysvTkhMTUFLbXJSeDBX?=
- =?utf-8?B?WXlYTTk5bWhaYUxqVkRXQkc4c1NjQXVndi9tN3IraktPQmNNM2VPNzhSOXdu?=
- =?utf-8?B?ajFDSFJmOTJMNGo1ekpWanNueERTMmFaY2hVeWJjeWlrOUZDRTlwUXBhS054?=
- =?utf-8?B?WUh5czFUdEs2aExzQ2tpQlRVKzc2Q3BOckovNDM1anhiNllqYlF5ZCsvOEVq?=
- =?utf-8?B?YmRjSzJTd3FXc2kvYVZhdjdMVXE1WjlKeTB0N2VMWXNjK242QlFiVFphNWM2?=
- =?utf-8?B?M0QwOE54WlZMeXo2MW9iaFQ5MUpnTnRCdXBIb0tJV2tCN2tKVVZuVytKK1RC?=
- =?utf-8?B?SUN2bTV0YlZVM3ViTGZsRW5lU0RJeVViOHNkU3UxNHQ3OFhwVHVEemJVTWtD?=
- =?utf-8?B?R0dMWHE5b1NscHZXZ3ZHU1hzbGxzOEN1UDZGMlQ3NXRPbUI5eGtJLzR0UlZH?=
- =?utf-8?B?dUo4UVlXdEY5VzdSVFBtOFh0d213bGJaeGNHS0lEYk1iZFlUZUpGT3dnMkN5?=
- =?utf-8?B?QzVpK21sS1JxQlBldm4yY2hsQVdua0U2S29nRlU5M1hPTmcwNXZFUDY0VzVU?=
- =?utf-8?Q?l3bQDZQMsT0DTlzo5AJT+xtHJ?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e6c11d6a-b56c-4725-2c16-08dd39ebb1a6
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jan 2025 07:17:42.0313
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: t3n4NxFDZLQ76/Zv6XXpsFKHwHU06NnyphY+kKHghz/CJDuRL/qJMTL3PMHrd7FQ0Yyd54IEGSDkPfvbTLT5sA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6931
-X-OriginatorOrg: intel.com
+References: <20250115030306.29735-1-zong.li@sifive.com> <20250115030306.29735-3-zong.li@sifive.com>
+ <6301d20b-d51d-4f96-94ea-134e065d398e@arm.com> <CANXhq0oDv0b_S=6EmETAUkjQxo3Zz5fZ-yeP-9hHSMW9Ak5=sg@mail.gmail.com>
+ <b0dadc40-638e-4f14-8a5c-70c306bc4650@arm.com>
+In-Reply-To: <b0dadc40-638e-4f14-8a5c-70c306bc4650@arm.com>
+From: Zong Li <zong.li@sifive.com>
+Date: Tue, 21 Jan 2025 16:37:23 +0800
+X-Gm-Features: AbW1kvZ71HK_s4sWjLIFCatGdv6WaJXav0vR9gPNHa6MZdgG5R3zyOGc7TZo4Rc
+Message-ID: <CANXhq0oqeTJfSsDy0VKhfdeOssO7JVtz=XjZcFiLCbgkxK4zqw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] iommu/riscv: support HPM and interrupt handling
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, tjeznach@rivosinc.com, 
+	paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, 
+	luxu.kernel@bytedance.com, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2025/1/20 23:55, Jason Gunthorpe wrote:
-> On Sun, Jan 19, 2025 at 07:08:39PM -0800, Yi Liu wrote:
->> iommu_attach_device_pasid() only stores handle to group->pasid_array
->> when there is a valid handle input. However, it makes the
->> iommu_attach_device_pasid() unable to detect if the pasid has been
->> attached or not. To be complete, let the iommu_attach_device_pasid()
->> store the domain to group->pasid_array if no valid handle.
->>
->> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
->> ---
->>   drivers/iommu/iommu.c | 23 +++++++++++++++++------
->>   1 file changed, 17 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 28ffd836592b..278c4eb8f225 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -45,6 +45,8 @@ static unsigned int iommu_def_domain_type __read_mostly;
->>   static bool iommu_dma_strict __read_mostly = IS_ENABLED(CONFIG_IOMMU_DEFAULT_DMA_STRICT);
->>   static u32 iommu_cmd_line __read_mostly;
->>   
->> +enum { IOMMU_PASID_ARRAY_DOMAIN, IOMMU_PASID_ARRAY_HANDLE };
-> 
-> Since xarray says:
-> 
->   * @tag: Tag value (0, 1 or 3).
-> 
-> I would initialize those enums and add a small comment
+On Fri, Jan 17, 2025 at 8:45=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
+ wrote:
+>
+> On 2025-01-17 2:46 am, Zong Li wrote:
+> > On Thu, Jan 16, 2025 at 5:56=E2=80=AFAM Robin Murphy <robin.murphy@arm.=
+com> wrote:
+> >>
+> >> On 2025-01-15 3:03 am, Zong Li wrote:
+> >>> Initialize the PMU and uninitialize it when driver is removed.
+> >>> Interrupt handling is also implemented, and the handler needs
+> >>> to be a primary handler instead of a threaded function because
+> >>> pt_regs is empty when threading the IRQ. However, pt_regs is
+> >>> required by perf_event_overflow.
+> >>>
+> >>> Signed-off-by: Zong Li <zong.li@sifive.com>
+> >>> Tested-by: Xu Lu <luxu.kernel@bytedance.com>
+> >>> ---
+> >>>    drivers/iommu/riscv/iommu.c | 65 +++++++++++++++++++++++++++++++++=
+++++
+> >>>    1 file changed, 65 insertions(+)
+> >>>
+> >>> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.=
+c
+> >>> index 8a05def774bd..20ae90471484 100644
+> >>> --- a/drivers/iommu/riscv/iommu.c
+> >>> +++ b/drivers/iommu/riscv/iommu.c
+> >>> @@ -552,6 +552,62 @@ static irqreturn_t riscv_iommu_fltq_process(int =
+irq, void *data)
+> >>>        return IRQ_HANDLED;
+> >>>    }
+> >>>
+> >>> +/*
+> >>> + * IOMMU Hardware performance monitor
+> >>> + */
+> >>> +
+> >>> +/* HPM interrupt primary handler */
+> >>> +static irqreturn_t riscv_iommu_hpm_irq_handler(int irq, void *dev_id=
+)
+> >>> +{
+> >>> +     struct riscv_iommu_device *iommu =3D (struct riscv_iommu_device=
+ *)dev_id;
+> >>> +
+> >>> +     /* Clear performance monitoring interrupt pending */
+> >>> +     riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR, RISCV_IOMMU_IPS=
+R_PMIP);
+> >>> +
+> >>> +     /* Process pmu irq */
+> >>> +     riscv_iommu_pmu_handle_irq(&iommu->pmu);
+> >>> +
+> >>> +     return IRQ_HANDLED;
+> >>> +}
+> >>> +
+> >>> +/* HPM initialization */
+> >>> +static int riscv_iommu_hpm_enable(struct riscv_iommu_device *iommu)
+> >>> +{
+> >>> +     int rc;
+> >>> +
+> >>> +     if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM))
+> >>> +             return 0;
+> >>> +
+> >>> +     /*
+> >>> +      * pt_regs is empty when threading the IRQ, but pt_regs is nece=
+ssary
+> >>> +      * by perf_event_overflow. Use primary handler instead of threa=
+d
+> >>> +      * function for PM IRQ.
+> >>> +      *
+> >>> +      * Set the IRQF_ONESHOT flag because this IRQ might be shared w=
+ith
+> >>> +      * other threaded IRQs by other queues.
+> >>> +      */
+> >>> +     rc =3D devm_request_irq(iommu->dev,
+> >>> +                           iommu->irqs[riscv_iommu_queue_vec(iommu, =
+RISCV_IOMMU_IPSR_PMIP)],
+> >>> +                           riscv_iommu_hpm_irq_handler, IRQF_ONESHOT=
+ | IRQF_SHARED, NULL, iommu);
+> >>
+> >> Hmm, shared interrupts are tricky for PMUs, since perf requires any IR=
+Q
+> >> handler touching a PMU is running on pmu->cpu, so you have to be very
+> >> careful about maintaining affinity and not letting anyone else change =
+it
+> >> behind your back.
+> >>
+> >> The other thing is that if it really is shared, at this point you coul=
+d
+> >> now be in riscv_iommu_pmu_handle_irq() dereferencing NULL.
+> >
+> > Yes, the PMU IRQ line could be shared with the command queue, fault
+> > queue, and page-request queue.
+> > Could you please provide more tips on what is meant by "dereferencing
+> > NULL in riscv_iommu_pmu_handle_irq()"?
+> > I don't complete understand what needs to be done there.
+> > Thanks
+>
+> In general it's not a great idea to register an IRQ handler before the
+> data passed to that handler is initialised. What is pointed to by
+> (&iommu->pmu)->reg + RISCV_IOMMU_REG_IOCOUNTOVF if the IRQ fires right
+> now (and/or if CONFIG_DEBUG_SHIRQ ever gets fixed)? ;)
 
-yes.
+Sorry for the misunderstanding earlier; I understand now. I think I
+might need to exchange the IRQ request and PMU initialization,
+ensuring that the PMU instance is initialized before a PMU interrupt
+arrives. Thanks!
 
-> /* tags used with xa_tag_pointer() */
-> enum { IOMMU_PASID_ARRAY_DOMAIN = 0, IOMMU_PASID_ARRAY_HANDLE = 1 };
-> 
->> @@ -3397,10 +3400,14 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
->>   		}
->>   	}
->>   
->> -	if (handle)
->> +	if (handle) {
->>   		handle->domain = domain;
->> +		xa_entry = xa_tag_pointer(handle, IOMMU_PASID_ARRAY_HANDLE);
->> +	} else {
->> +		xa_entry = xa_tag_pointer(domain, IOMMU_PASID_ARRAY_DOMAIN);
->> +	}
-> 
-> What about iommu_attach_group_handle() ?
-> 
-> 	mutex_lock(&group->mutex);
-> 	ret = xa_insert(&group->pasid_array, IOMMU_NO_PASID, handle, GFP_KERNEL);
-> 	if (ret)
-> 
-> And iommu_replace_group_handle() ?
-> 
-> 	curr = xa_store(&group->pasid_array, IOMMU_NO_PASID, handle, GFP_KERNEL);
-> 
-> I think it should be consistent and it should call xa_tag_poiner() too
-> (even though it implicitly always is since the domain is stored in the
-> group)??
-
-yes, it needs to be fixed as well. I asked a help from Baolu in prior
-email, but I can enlarge this series to cover both RID and PASID path. :)
-
--- 
-Regards,
-Yi Liu
+>
+> (OK, it's not *literally* NULL, but hey...)
+>
+> Thanks,
+> Robin.
+>
+> >>
+> >>> +     if (rc)
+> >>> +             return rc;
+> >>> +
+> >>> +     return riscv_iommu_pmu_init(&iommu->pmu, iommu->reg, dev_name(i=
+ommu->dev));
+> >>> +}
+> >>> +
+> >>> +/* HPM uninitialization */
+> >>> +static void riscv_iommu_hpm_disable(struct riscv_iommu_device *iommu=
+)
+> >>> +{
+> >>> +     if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM))
+> >>> +             return;
+> >>> +
+> >>> +     devm_free_irq(iommu->dev,
+> >>> +                   iommu->irqs[riscv_iommu_queue_vec(iommu, RISCV_IO=
+MMU_IPSR_PMIP)],
+> >>> +                   iommu);
+> >>> +
+> >>> +     riscv_iommu_pmu_uninit(&iommu->pmu);
+> >>> +}
+> >>> +
+> >>>    /* Lookup and initialize device context info structure. */
+> >>>    static struct riscv_iommu_dc *riscv_iommu_get_dc(struct riscv_iomm=
+u_device *iommu,
+> >>>                                                 unsigned int devid)
+> >>> @@ -1596,6 +1652,9 @@ void riscv_iommu_remove(struct riscv_iommu_devi=
+ce *iommu)
+> >>>        riscv_iommu_iodir_set_mode(iommu, RISCV_IOMMU_DDTP_IOMMU_MODE_=
+OFF);
+> >>>        riscv_iommu_queue_disable(&iommu->cmdq);
+> >>>        riscv_iommu_queue_disable(&iommu->fltq);
+> >>> +
+> >>> +     if (iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM)
+> >>> +             riscv_iommu_pmu_uninit(&iommu->pmu);
+> >>>    }
+> >>>
+> >>>    int riscv_iommu_init(struct riscv_iommu_device *iommu)
+> >>> @@ -1635,6 +1694,10 @@ int riscv_iommu_init(struct riscv_iommu_device=
+ *iommu)
+> >>>        if (rc)
+> >>>                goto err_queue_disable;
+> >>>
+> >>> +     rc =3D riscv_iommu_hpm_enable(iommu);
+> >>> +     if (rc)
+> >>> +             goto err_hpm_disable;
+> >>> +
+> >>
+> >> I would leave this until after the whole IOMMU setup has succeeded. Th=
+e
+> >> PMU is not critical to IOMMU operation, so at that point an error is n=
+ot
+> >> fatal, it just means you don't get a PMU, thus there shouldn't need to
+> >> be any cleanup outside riscv_iommu_hpm_enable() itself.
+> >
+> > Thanks for pointing this out. PMU failure shouldn't cause the entire
+> > IOMMU to fail, let me modify it in the next version.
+> >
+> >>
+> >> Thanks,
+> >> Robin.
+> >>
+> >>>        rc =3D iommu_device_sysfs_add(&iommu->iommu, NULL, NULL, "risc=
+v-iommu@%s",
+> >>>                                    dev_name(iommu->dev));
+> >>>        if (rc) {
+> >>> @@ -1653,6 +1716,8 @@ int riscv_iommu_init(struct riscv_iommu_device =
+*iommu)
+> >>>    err_remove_sysfs:
+> >>>        iommu_device_sysfs_remove(&iommu->iommu);
+> >>>    err_iodir_off:
+> >>> +     riscv_iommu_hpm_disable(iommu);
+> >>> +err_hpm_disable:
+> >>>        riscv_iommu_iodir_set_mode(iommu, RISCV_IOMMU_DDTP_IOMMU_MODE_=
+OFF);
+> >>>    err_queue_disable:
+> >>>        riscv_iommu_queue_disable(&iommu->fltq);
+> >>
+>
