@@ -1,268 +1,148 @@
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47A8F1714A5
-	for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 08:37:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80AA41B85CA
+	for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 08:48:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737448657; cv=none; b=eMHHfAlI6XS1I6PwtbelU5SzV/MNQCRpRWj8k9XyOTLdC6zcs6hNhV4yMpnUvgstlYNFHlMU0AA3AlobpDQhFBwRdZlgxDHWNmf9P9HECC+XDkPdtjIkIVCLPKcl3GGqZE7XMXpehg0FcoX0s7l4Nhi6dmVIqZ40sKMuJWaECms=
+	t=1737449319; cv=none; b=tC1iUTqJ0wNvxwhdKf9XooofigPCG/KPl2ldFlzCdypZV/j1u+yZ1hefwZ3tREDigvSmLH+CeTU5GzM7O5/wxjT8u0ovmbI4I79T4RYt9ASffeYABngL+mkniYwJ2bU/9Lc6Er6hkbUnHbBomjwx9P42P9kwd/8GZBtlOZIwSl4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737448657; c=relaxed/simple;
-	bh=q/YXcPkP6j9/JtYuCKtpB16EjGGLnClWx3lp0QegbYU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LTXi9ZoR/LlFtECBdkzjPIGw2YphamcbrN1vql5t4CSdRL5Y0dmKwEm6XX6i0Lx/SGsNVTp63pTAghuQTleL2pWRIgcwhw1mL8Fqws7k/I5+VQG2GeQEqeKplwfVc/l8x1GIJwrXPp3h/UMlRMxrhWrYsyYPP3kA6FeJS6PlNxg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=d7ZVtUFI; arc=none smtp.client-ip=209.85.166.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+	s=arc-20240116; t=1737449319; c=relaxed/simple;
+	bh=9yw+tJyscIFBRqqCRDiUeLgp6QlDzsEW2TiCp6TkP8M=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=q0AAqZM4bHqD/TY23xsyJ4ugY08nHEuwviKKaplhmmZMHhTrtrZF0srNBTTM+r/nqhNMrq9GdWw/5olzw65iStUvnJcq1RpMnWiP60aQko/B0IyacDS+yAEMEy+5VTZnnZ0t/aEmnRK96x9l/OJ1A6LJlM17OKL39ZmNqkIWhzw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S8e0X4ha; arc=none smtp.client-ip=209.85.208.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="d7ZVtUFI"
-Received: by mail-il1-f181.google.com with SMTP id e9e14a558f8ab-3cfa9272c14so911055ab.3
-        for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 00:37:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S8e0X4ha"
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-30737db1aa9so24904831fa.1
+        for <iommu@lists.linux.dev>; Tue, 21 Jan 2025 00:48:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1737448654; x=1738053454; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EErsvLFUMtwyIbJnbfERrawyL1tVSt57dS6Who8TTyY=;
-        b=d7ZVtUFIR2iQp/QI3ZBBruVu2zwGfDz3duQDx7qCSzqzEFgEtqA7KbO2THyPshLPr8
-         WCds9BoSMZDZDw/P2YcYCIw8qa07iaAqVAwCZKQGiKics6ld7GblsPYILBSqBQWaoJj5
-         i/uE9kOn5wNMpggtpo+URG/wfXN+wGHckLgSR29oKm19k38zeWjY4cOooG8z7qMfixts
-         KlWjGtOml7KqH7glvk0omi9lztn18Ujbk22ARldegXhu4IsP6WrOxtFYPrLen1JDgPRu
-         kgy1ySL75Hkn2Ag9BLWDpNX7++EmWm7E3r28dgF8LvTjQJczv7F4QFniCqHvVKZEfeYU
-         Hg7w==
+        d=gmail.com; s=20230601; t=1737449315; x=1738054115; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=V1IBBAaVfa6hiQTK+rLof3oKcml8F9zzRUwtu2WH63s=;
+        b=S8e0X4haiuEDkJxc0It8tl3XHqj+4SfPMjpgUU5YKZlcCyVaQWdJIHgE2p0UEzpK0V
+         XAcjcgQXj+H0R57Wa8YqGcZ2W8g2+wCRDjDqZVP3P0SGl4ZyXTjwWy9LvDgp4zzbDPhc
+         8skljOQRhagxmYM59e5q+0WeX9N4fpzF7yj2Jl41IhF7P/EdpFFnFOSkzj0sjXTTw2f7
+         1HIqn+BVbnQQoNvD6bJtl8HH4h9tz4C9xTuv5iSGWKuqQe9cU6W6XENWCh3h5S+SAEGc
+         eyz+IeUhVkIpAyzSZ1JmNoLCsxuDp7tG6q7C2CmYzkSHH7rW4xlU/HB9oTjOd9I6zZIp
+         oPtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737448654; x=1738053454;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EErsvLFUMtwyIbJnbfERrawyL1tVSt57dS6Who8TTyY=;
-        b=kOtoCBy79iRJA+jJFiIzH/qcTWvACX3+yWYgeDF7c00uYsvgVktuXZNiJOVytDqzV2
-         FJ0V4cJKij7pm1UbgGD8p/sBUX+tephK/FTKvxFA816JnvilQoWjZIHqO3f00Nrp2x2H
-         eMpQuJkVzfZ+DuTo8Hn5wTYudNmgNs1dzYkBUOkXISlWMrOSY18Z/fwBNItLu/4IWXON
-         Fg+xMay5IfHURw1ypFi6VtcT4eFJGiZDoDo7roIuXBpVX5i7uarNXi3UGUvX8QuMNdXh
-         mzIXg4EEZxx+4GCw93PqNUYFZiDZfvxTiLUbLP6CvuKHPFyo5cW5V5ORWInJW1Eft9RC
-         uJAg==
-X-Forwarded-Encrypted: i=1; AJvYcCV0NjYlTTyy8cI+UeO0VQqLkVTIYQ1xA0OXuVD0IGlbhOm2cHAT8d3anizQerWGl/+Rjm0dXg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxSS4ywMEAqP32AIA3ZL4vW8Lb2cuwUI4epoMVIPLtZtQePuiL3
-	DkZ7Oz0I9YHitU5ktq+brZfgvF1V8fhPk7d0G8rrVKo2G5hSuoJrFHM2QU8cVLYuP0e+/q1ySCA
-	qvtSrfSZ+KeplKVzNphx5V0wdhPb8oBJpJC8D1Q==
-X-Gm-Gg: ASbGncv/JBaJmCJmOAUuYm/E1jOLsAYAlzKzo4rmpzZSWe6HPy64HuWZjTpFJ39Otp6
-	Fto+mT18zpqiaaonN+gj5X7qxrZvf30Z8jgN/DiZcGb1VRic62SGe2A==
-X-Google-Smtp-Source: AGHT+IEC2oPzCFfgCD9zHXuJFglchxr8YhWRFH5WN/dbnSoPI76AiG7cPO+FnSUDX0oL8rjqJZtBboWg3N3DPymAVwM=
-X-Received: by 2002:a05:6e02:1aa8:b0:3cf:6d33:d40d with SMTP id
- e9e14a558f8ab-3cf742812e4mr123041605ab.0.1737448654288; Tue, 21 Jan 2025
- 00:37:34 -0800 (PST)
+        d=1e100.net; s=20230601; t=1737449315; x=1738054115;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=V1IBBAaVfa6hiQTK+rLof3oKcml8F9zzRUwtu2WH63s=;
+        b=rn6gU7iCCiV2i2Gqqbe3WKf0DSbEp1wrueNfsCeZX/YMZR4MIj+qsiX6tHv6HVbXwj
+         nJ9oiF8OlH+8x4wwS5yII2oenHIhvPYU6dsZzRTMbDTkf+D2Nhgz6jtdhNEb4XNQ1gMA
+         9ddKZJWc6YQuRXJG8kaTOQru+eTfSlaOkOWErEQ5KJXeZyADi6AKwMM37cdDGvfBo87B
+         rWvO096bSSaHNX1CzoRvMb97DBGbSL078s3zWDvI76IfYqnIKyGk35ofh2l3sO+Vxvnn
+         VUGD/jPcB0+kd+CNohGhUrD5cnqaTszzaqqQqJwg3Jw5KNtOr5z/971f6hVM1YXOZzXA
+         lIjg==
+X-Forwarded-Encrypted: i=1; AJvYcCVmnzJrWX7IaZxgPy46trzFjX2jwuhOFRmOe/qcl1m9kVhwuCHKy4xm9QHK1R60ZTXUy/EGYA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzfPEKyZchCEF7WparcZb/ytDI4pRoVd0CzKFROf6r+n/afWidA
+	RZWWDPF0rmnlTuS40e43hWug9WysA8Isa9L8D7XWrpULM+fcgrlA
+X-Gm-Gg: ASbGncu8uFtjtlOWAXiIGo4IKoeTPBRssjdaWS8tERwW/l7bpDDUcCVFrC3yOOVd0Wu
+	tT0CMKYGOrtbcCvJJLmkdcb2YaFddqF7DWYGr++Bw+MZcHygiCxa3Bjad2X9g0Fk0hNl5sARhqp
+	996ufzj0uKJByWZMlIcHV+G78oUx/dn5YHAQZObq0gwhu9JS02BDLX4vlbc/QdLXkdTyyzoarRq
+	epDocLsrGFpsw8rwlTYxeCkV3PuTtGU1DH1GrcQoi43mXSOieOGcgX1sipELKunoMd2YCzWIFGk
+	LBvK/Dp71TVyyQ0MFk9idMpiO/Q+LluzThB+0s8E
+X-Google-Smtp-Source: AGHT+IFcDKuxLrpt/fzqSVNvr0kOtGLvjPWFjlocZAiJGOx4W6HVF21TJTzIPJJ/g6sQdX5jmV8FOw==
+X-Received: by 2002:a2e:be06:0:b0:307:2bc6:5ec6 with SMTP id 38308e7fff4ca-3072cb3cf90mr56185001fa.36.1737449315144;
+        Tue, 21 Jan 2025 00:48:35 -0800 (PST)
+Received: from abj-NUC9VXQNX.. (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3072a4ed5c7sm21178651fa.82.2025.01.21.00.48.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jan 2025 00:48:33 -0800 (PST)
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+To: rust-for-linux@vger.kernel.org,
+	daniel.almeida@collabora.com,
+	dakr@kernel.org,
+	robin.murphy@arm.com,
+	daniel@sedlak.dev
+Cc: Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>,
+	Gary Guo <gary@garyguo.net>,
+	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	linux-kernel@vger.kernel.org (open list),
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	airlied@redhat.com,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Subject: [PATCH v9 0/3] Add dma coherent allocator abstraction
+Date: Tue, 21 Jan 2025 10:47:44 +0200
+Message-ID: <20250121084756.1051758-1-abdiel.janulgue@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250115030306.29735-1-zong.li@sifive.com> <20250115030306.29735-3-zong.li@sifive.com>
- <6301d20b-d51d-4f96-94ea-134e065d398e@arm.com> <CANXhq0oDv0b_S=6EmETAUkjQxo3Zz5fZ-yeP-9hHSMW9Ak5=sg@mail.gmail.com>
- <b0dadc40-638e-4f14-8a5c-70c306bc4650@arm.com>
-In-Reply-To: <b0dadc40-638e-4f14-8a5c-70c306bc4650@arm.com>
-From: Zong Li <zong.li@sifive.com>
-Date: Tue, 21 Jan 2025 16:37:23 +0800
-X-Gm-Features: AbW1kvZ71HK_s4sWjLIFCatGdv6WaJXav0vR9gPNHa6MZdgG5R3zyOGc7TZo4Rc
-Message-ID: <CANXhq0oqeTJfSsDy0VKhfdeOssO7JVtz=XjZcFiLCbgkxK4zqw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iommu/riscv: support HPM and interrupt handling
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, tjeznach@rivosinc.com, 
-	paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, 
-	luxu.kernel@bytedance.com, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jan 17, 2025 at 8:45=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
- wrote:
->
-> On 2025-01-17 2:46 am, Zong Li wrote:
-> > On Thu, Jan 16, 2025 at 5:56=E2=80=AFAM Robin Murphy <robin.murphy@arm.=
-com> wrote:
-> >>
-> >> On 2025-01-15 3:03 am, Zong Li wrote:
-> >>> Initialize the PMU and uninitialize it when driver is removed.
-> >>> Interrupt handling is also implemented, and the handler needs
-> >>> to be a primary handler instead of a threaded function because
-> >>> pt_regs is empty when threading the IRQ. However, pt_regs is
-> >>> required by perf_event_overflow.
-> >>>
-> >>> Signed-off-by: Zong Li <zong.li@sifive.com>
-> >>> Tested-by: Xu Lu <luxu.kernel@bytedance.com>
-> >>> ---
-> >>>    drivers/iommu/riscv/iommu.c | 65 +++++++++++++++++++++++++++++++++=
-++++
-> >>>    1 file changed, 65 insertions(+)
-> >>>
-> >>> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.=
-c
-> >>> index 8a05def774bd..20ae90471484 100644
-> >>> --- a/drivers/iommu/riscv/iommu.c
-> >>> +++ b/drivers/iommu/riscv/iommu.c
-> >>> @@ -552,6 +552,62 @@ static irqreturn_t riscv_iommu_fltq_process(int =
-irq, void *data)
-> >>>        return IRQ_HANDLED;
-> >>>    }
-> >>>
-> >>> +/*
-> >>> + * IOMMU Hardware performance monitor
-> >>> + */
-> >>> +
-> >>> +/* HPM interrupt primary handler */
-> >>> +static irqreturn_t riscv_iommu_hpm_irq_handler(int irq, void *dev_id=
-)
-> >>> +{
-> >>> +     struct riscv_iommu_device *iommu =3D (struct riscv_iommu_device=
- *)dev_id;
-> >>> +
-> >>> +     /* Clear performance monitoring interrupt pending */
-> >>> +     riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR, RISCV_IOMMU_IPS=
-R_PMIP);
-> >>> +
-> >>> +     /* Process pmu irq */
-> >>> +     riscv_iommu_pmu_handle_irq(&iommu->pmu);
-> >>> +
-> >>> +     return IRQ_HANDLED;
-> >>> +}
-> >>> +
-> >>> +/* HPM initialization */
-> >>> +static int riscv_iommu_hpm_enable(struct riscv_iommu_device *iommu)
-> >>> +{
-> >>> +     int rc;
-> >>> +
-> >>> +     if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM))
-> >>> +             return 0;
-> >>> +
-> >>> +     /*
-> >>> +      * pt_regs is empty when threading the IRQ, but pt_regs is nece=
-ssary
-> >>> +      * by perf_event_overflow. Use primary handler instead of threa=
-d
-> >>> +      * function for PM IRQ.
-> >>> +      *
-> >>> +      * Set the IRQF_ONESHOT flag because this IRQ might be shared w=
-ith
-> >>> +      * other threaded IRQs by other queues.
-> >>> +      */
-> >>> +     rc =3D devm_request_irq(iommu->dev,
-> >>> +                           iommu->irqs[riscv_iommu_queue_vec(iommu, =
-RISCV_IOMMU_IPSR_PMIP)],
-> >>> +                           riscv_iommu_hpm_irq_handler, IRQF_ONESHOT=
- | IRQF_SHARED, NULL, iommu);
-> >>
-> >> Hmm, shared interrupts are tricky for PMUs, since perf requires any IR=
-Q
-> >> handler touching a PMU is running on pmu->cpu, so you have to be very
-> >> careful about maintaining affinity and not letting anyone else change =
-it
-> >> behind your back.
-> >>
-> >> The other thing is that if it really is shared, at this point you coul=
-d
-> >> now be in riscv_iommu_pmu_handle_irq() dereferencing NULL.
-> >
-> > Yes, the PMU IRQ line could be shared with the command queue, fault
-> > queue, and page-request queue.
-> > Could you please provide more tips on what is meant by "dereferencing
-> > NULL in riscv_iommu_pmu_handle_irq()"?
-> > I don't complete understand what needs to be done there.
-> > Thanks
->
-> In general it's not a great idea to register an IRQ handler before the
-> data passed to that handler is initialised. What is pointed to by
-> (&iommu->pmu)->reg + RISCV_IOMMU_REG_IOCOUNTOVF if the IRQ fires right
-> now (and/or if CONFIG_DEBUG_SHIRQ ever gets fixed)? ;)
+Changes since v8:
+- Add MAINTAINERS entry
+- Fix build issues due to switch from core::ffi to crate:ffi in bindgen.
+- Ensure the wrapped attribute is non-pub in struct Attrs, declare it 
+  #[repr(transparent)] as well (Daniel Sedlak)
+- Link to v8: https://lore.kernel.org/all/20250108122825.136021-1-abdiel.janulgue@gmail.com/
 
-Sorry for the misunderstanding earlier; I understand now. I think I
-might need to exchange the IRQ request and PMU initialization,
-ensuring that the PMU instance is initialized before a PMU interrupt
-arrives. Thanks!
+Changes since v7:
+- Remove cpu_buf() and cpu_buf_mut() as exporting a r/w interface via
+  a slice is undefined behaviour due to slice's requirement that the
+  underlying pointer should not be modified (Alice Ryhl, Robin Murphy).
+- Reintroduce r/w helpers instead which includes proper safety
+  invariants (Daniel Almeida).
 
->
-> (OK, it's not *literally* NULL, but hey...)
->
-> Thanks,
-> Robin.
->
-> >>
-> >>> +     if (rc)
-> >>> +             return rc;
-> >>> +
-> >>> +     return riscv_iommu_pmu_init(&iommu->pmu, iommu->reg, dev_name(i=
-ommu->dev));
-> >>> +}
-> >>> +
-> >>> +/* HPM uninitialization */
-> >>> +static void riscv_iommu_hpm_disable(struct riscv_iommu_device *iommu=
-)
-> >>> +{
-> >>> +     if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM))
-> >>> +             return;
-> >>> +
-> >>> +     devm_free_irq(iommu->dev,
-> >>> +                   iommu->irqs[riscv_iommu_queue_vec(iommu, RISCV_IO=
-MMU_IPSR_PMIP)],
-> >>> +                   iommu);
-> >>> +
-> >>> +     riscv_iommu_pmu_uninit(&iommu->pmu);
-> >>> +}
-> >>> +
-> >>>    /* Lookup and initialize device context info structure. */
-> >>>    static struct riscv_iommu_dc *riscv_iommu_get_dc(struct riscv_iomm=
-u_device *iommu,
-> >>>                                                 unsigned int devid)
-> >>> @@ -1596,6 +1652,9 @@ void riscv_iommu_remove(struct riscv_iommu_devi=
-ce *iommu)
-> >>>        riscv_iommu_iodir_set_mode(iommu, RISCV_IOMMU_DDTP_IOMMU_MODE_=
-OFF);
-> >>>        riscv_iommu_queue_disable(&iommu->cmdq);
-> >>>        riscv_iommu_queue_disable(&iommu->fltq);
-> >>> +
-> >>> +     if (iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM)
-> >>> +             riscv_iommu_pmu_uninit(&iommu->pmu);
-> >>>    }
-> >>>
-> >>>    int riscv_iommu_init(struct riscv_iommu_device *iommu)
-> >>> @@ -1635,6 +1694,10 @@ int riscv_iommu_init(struct riscv_iommu_device=
- *iommu)
-> >>>        if (rc)
-> >>>                goto err_queue_disable;
-> >>>
-> >>> +     rc =3D riscv_iommu_hpm_enable(iommu);
-> >>> +     if (rc)
-> >>> +             goto err_hpm_disable;
-> >>> +
-> >>
-> >> I would leave this until after the whole IOMMU setup has succeeded. Th=
-e
-> >> PMU is not critical to IOMMU operation, so at that point an error is n=
-ot
-> >> fatal, it just means you don't get a PMU, thus there shouldn't need to
-> >> be any cleanup outside riscv_iommu_hpm_enable() itself.
-> >
-> > Thanks for pointing this out. PMU failure shouldn't cause the entire
-> > IOMMU to fail, let me modify it in the next version.
-> >
-> >>
-> >> Thanks,
-> >> Robin.
-> >>
-> >>>        rc =3D iommu_device_sysfs_add(&iommu->iommu, NULL, NULL, "risc=
-v-iommu@%s",
-> >>>                                    dev_name(iommu->dev));
-> >>>        if (rc) {
-> >>> @@ -1653,6 +1716,8 @@ int riscv_iommu_init(struct riscv_iommu_device =
-*iommu)
-> >>>    err_remove_sysfs:
-> >>>        iommu_device_sysfs_remove(&iommu->iommu);
-> >>>    err_iodir_off:
-> >>> +     riscv_iommu_hpm_disable(iommu);
-> >>> +err_hpm_disable:
-> >>>        riscv_iommu_iodir_set_mode(iommu, RISCV_IOMMU_DDTP_IOMMU_MODE_=
-OFF);
-> >>>    err_queue_disable:
-> >>>        riscv_iommu_queue_disable(&iommu->fltq);
-> >>
->
+Changes since v6:
+- Include the dma_attrs in the constructor, use alloc::Flags as inpiration
+
+Changes since v5:
+- Remove unnecessary lifetime annotation when returning the CPU buffer.
+
+Changes since v4:
+- Documentation and example fixes, use Markdown formatting (Miguel Ojeda).
+- Discard read()/write() helpers to remove bound on Copy and fix overhead
+  (Daniel Almeida).
+- Improve error-handling in the constructor block (Andreas Hindborg).
+
+Changes since v3:
+- Reject ZST types by checking the type size in the constructor in
+  addition to requiring FromBytes/AsBytes traits for the type (Alice Ryhl).
+
+Changes since v2:
+- Fixed missing header for generating the bindings.
+
+Changes since v1:
+- Fix missing info in commit log where EOVERFLOW is used.
+- Restrict the dma coherent allocator to numeric types for now for valid
+  behaviour (Daniel Almeida).
+- Build slice dynamically.
+
+Abdiel Janulgue (3):
+  rust: error: Add EOVERFLOW
+  rust: add dma coherent allocator abstraction.
+  MAINTAINERS: add entry for Rust dma mapping helpers device driver API
+
+ MAINTAINERS                     |  10 ++
+ rust/bindings/bindings_helper.h |   1 +
+ rust/kernel/dma.rs              | 272 ++++++++++++++++++++++++++++++++
+ rust/kernel/error.rs            |   1 +
+ rust/kernel/lib.rs              |   1 +
+ 5 files changed, 285 insertions(+)
+ create mode 100644 rust/kernel/dma.rs
+
+
+base-commit: ceff0757f5dafb5be5205988171809c877b1d3e3
+-- 
+2.43.0
+
