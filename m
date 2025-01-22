@@ -1,123 +1,203 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 876551ADFFE
-	for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 10:15:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C89F21170D
+	for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 11:04:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737540953; cv=none; b=eXUpQPjkRIsUeWb8po1FdBNzq6ORgcpvA288E+BSYS01W6xbJrOt4uI+5hNBypCN2681/A1VKiOgsxkf+4VM2/JSBex/okhO1be1Y4HF8vRcqUZDGXbOZU91FUnLK4ERoIlMMpRGV6hzHn5eTl3lyy6GCW78NNVUpNEou/ktMyA=
+	t=1737543874; cv=none; b=gEv9R39KPhnl2IgW73w0h8XnPEC9j3Dui8vOeph7+QHk/L6k7uEj+TV01ivk6mjUViCNFB2gNVaqR4arDIqOlqQZbfAn+E3xVio0CFz/ELNHoHLQJjYO2wBlEAUtTvOAuY5kB0elLsEaQOVTC2IVWu0ftAuoP3wSny4eoGlHCmk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737540953; c=relaxed/simple;
-	bh=UBlzD8MynP4wtJMH3FouuoxGPAoh+UjXszE4ZLZb9PM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ix5860vB7ZcC3t1W8RfQKYJMX8il0bvQc+bgbe/DyBBQFZ7zRMrgLUswbPjz+8sfnHdiUK9JHVUMVubVn2MaX1l8tJTTSCSRlXbrkcp2mLbJnGE2KWFDqZccL3Is7XKYW08j0SRqzTKo5ZrIdpECrE2Tr5gsg/Sf1j4LfvMma7U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=b48bLO92; arc=none smtp.client-ip=209.85.221.43
+	s=arc-20240116; t=1737543874; c=relaxed/simple;
+	bh=utqVEO5I67Qn1SxggtlBg2uyccJsm9B3vF55yUEBW0Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YuISGqvGSOtj8Vxf9afhjxb60lPUa0TjsuYe+6CCT0DRBMLH9r+wNFkjKdlGUojpAqMdR4SVu9yFTBSZtUNkLgxYRzS/XOQkaIYJ2CM2zL2HCLhaOHvblinCEsTdXzMaVflAPVAeMBQ5GAxUPlBiFa0OAjaGkemVH5/Wu/fN5Fc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MBEDRsmS; arc=none smtp.client-ip=209.85.128.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="b48bLO92"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-385df53e559so5070751f8f.3
-        for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 02:15:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MBEDRsmS"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-43621d2dd4cso49405e9.0
+        for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 03:04:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1737540950; x=1738145750; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=We/e78Nv3R6LaJg7Byr6yv9XSyWPTTNeoplZz3yEeWg=;
-        b=b48bLO922vQhm+tWA0oWpJu9aSumDjwADTIp/JwzVUihNTcrGjeg1YfTZB9JJEBF2W
-         6YVBdYXHfRFOr0VMaCFukrVQ8GmVcyOOuACNB09VZCbaWGgOqpewfCGfHNE5AccvKgsJ
-         uAr6phKTtGTzGTeB+k07TFfoCTCNEh/k2+lwpCfTcSUGxw1iMVMM6WF9ajiz34rIy2Qh
-         sDrRG/50CaOVKaq5NCsRNRkfdYzj+wVxzj1vukOoh+pU5xvIW12pAGt2CqxYxQQonNcV
-         2wJSLh0nDjaSQVyjDU0TTF5PaCrpeNLuXUPQzUfE2W37vI/Ql/71WqTSGPXgcqrdShXU
-         bgpQ==
+        d=google.com; s=20230601; t=1737543871; x=1738148671; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=6x8SiYYYUQFFMCokfouR/mswZBMHq350sgLQtsTuQB0=;
+        b=MBEDRsmSuyy9VX32l8GdWBJEHNd9FLTUtT8vI59mYnkgeQOKmRwdgx5biwSwpcNuOz
+         zikBAOgZlrfSiXoQnQYMvLqUNfOcL0IHebCiJYe55C1YlCEAEo5HXsAlgyuqyU1PnuJl
+         tQ9MHlpZlZpexAzYCk/mZnErWcpsoxIcsQ1F0JSJef+ZYWbotvgb5upXO0JAzL2Py6ar
+         86RYYu77RzKwJxFm9InS9EW+RXcfKdXPeUKzQBEG6MizCxpEsG9DQqm+vxtvdvcX0NfE
+         LEVi6j5mAyhcGOCXabLfLqMQ/jQ8JhFnI4wVQz+z0UqYP0l+eWMzJt2UuQOSW0nxLuUH
+         GM7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737540950; x=1738145750;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=We/e78Nv3R6LaJg7Byr6yv9XSyWPTTNeoplZz3yEeWg=;
-        b=H0jVuFAJgCTCNNwHNadpZn9JmNOcQ3NV7VT9c698xSyErd8agBSyTj7UQy0tCFz0zw
-         bWpb3cIbEYNEnH3PREkDIh/NIDuuaEtWn1Z1DUj6TpRG/7WmFjPT8FTpwYoganjmwt9e
-         dcrFd+asny37swrr3dGZjHAznR03n06K5C6EEBH/yGfQjEPy1s2dyiqFJMefbxBH2cwn
-         ANMOTxQhrNuk6LMiGQDIduJqXiKSnMXlkISZ97Ntg68/QBJyW6SqexzSqr1IKmRjLt4I
-         iOSUSyr4boZR3sIvJGCs4ewTUhqR0bKhtXHpBh5l4UHdr1FpMLHyIqgbw8Q5MeY45nHF
-         cjDg==
-X-Forwarded-Encrypted: i=1; AJvYcCXSGMt7oSj2+S8YFzrg1jtb1NiJbKnefJdZQEQ7K9D9KCH/3M+WHCbX0/erU2Ke4XuHnlwbaA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx7b5U93Vi9fAsDrTXlD8aZT4KYv+p2E+sfEFO31i7yMUrIusJP
-	Jl13lbOhIjGWV7CiQ0Ycq785hgnumbtkV2oLBs9+qcZuw3gOfoOdbcA1eysp3F9dTWyGGsDHcuM
-	EmMiZbky5xBlVV2tL9Kqw0CwVOE7WSoaxIKyr
-X-Gm-Gg: ASbGncusHvfAPXcgIw9op5GnZkf+MWC0NBOg+zBZ/0xJ4eD/3nBbsITEsgN2nl/L7cX
-	BVO3mlbGO2RVc8RWE1Gb04O6vRYiJF3cIhSLHl4iIGPzu7YIFnJV1N46GJptL7oYUNPdz1Vu2Sb
-	ZdZZaS
-X-Google-Smtp-Source: AGHT+IHFzm4euUAacp6gvYxVizLBMwIg5oDbxoAH60HayNsSmT+3Q7l6UofaUmQpPsbKH7EPaW0Rk6q0dXkawUrfJmw=
-X-Received: by 2002:a5d:6d83:0:b0:385:efc7:932d with SMTP id
- ffacd0b85a97d-38bf57d2a39mr18199014f8f.46.1737540949669; Wed, 22 Jan 2025
- 02:15:49 -0800 (PST)
+        d=1e100.net; s=20230601; t=1737543871; x=1738148671;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6x8SiYYYUQFFMCokfouR/mswZBMHq350sgLQtsTuQB0=;
+        b=BibI2eI/8e75KquZhW++7BMfXrhd/+MVxM+HI/vB76p2I2nTn3ucboqNxKpVaI4pHN
+         cyOdWsH3pyQmVOQtqkgAampzpkb1Z0WOuGvtvCUXb+TVGSE8XBeHbbniW9aCg5cTIQDY
+         Uqx4/TQJUJam61no50VfwPTE2b7aScr3QsxgytvIkVnuC3bWauBnxJK0Ew+f26pBQovg
+         QIYDcCwhe5ryOF0+0yg5ykLiNCzBDBiQABR9TntOk4iqXreKLbWFPZNBsY3cH8M9eMSx
+         6QGWsRukhi5P6RarjhFtSt/JPN+MjXSSKGyXndCNET34Aje8AYcPC7OXWJ5DZyH2yZil
+         Y7hA==
+X-Forwarded-Encrypted: i=1; AJvYcCWeyf9nHui4hYfnJz2YoC9qeIADWiVzvzLVNJGUyP+EfgYEFyZfq3T0mrki6nkq3jSstmwjEw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxN+05bMeSQWC8meTnzICEQS3MxfAXzc4FfeZzg5sYftEuGXKnn
+	PASZe/Pjl7gxhu7Z4N0qGfskCgx5bzT4Hef1k5OdrRQc1QTdlcALLIFHagbZmQ==
+X-Gm-Gg: ASbGncscJ2sB9IAGBSUgZfUZ5SzoWNR1UHGJm2U2BkidxF1Mkvbd1rP+RBJtdG4uRu5
+	zQcKTAjo5nulptYIXNqksVxhefAlswzw/vfg+ENubcqYs+J7FWcVAJAoIjYW0SYSbLeJRSkWst7
+	v35OrQyrkpiBOd14qOJOCfYTnYzphbJHGWgWjmP6pR+ICQOz1ljwjDV0M7hWqlfT7D33ZK54Jp3
+	WBS0NpmcvzhQnnnqIWVFqFwSlLXBCcGbXOcqwrXBgMrMz+VIFAOpAQHtfZICTy4sakrnRPzDKmS
+	YBH0re5a7Es7QNr0hhi2iSy6S/tquA==
+X-Google-Smtp-Source: AGHT+IHCcPrZhJYSQbULZrw9Pp5790wT0aW6WD0dYCBGNGReHretNQSCRXdvXPT2A8uBJ9bQ0Dv2SQ==
+X-Received: by 2002:a05:600c:1d8f:b0:436:ed00:9e3 with SMTP id 5b1f17b1804b1-438b21c931dmr1151165e9.6.1737543870607;
+        Wed, 22 Jan 2025 03:04:30 -0800 (PST)
+Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38bf3221baasm16122838f8f.35.2025.01.22.03.04.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jan 2025 03:04:30 -0800 (PST)
+Date: Wed, 22 Jan 2025 11:04:24 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"maz@kernel.org" <maz@kernel.org>,
+	"oliver.upton@linux.dev" <oliver.upton@linux.dev>,
+	"joey.gouly@arm.com" <joey.gouly@arm.com>,
+	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+	"yuzenghui@huawei.com" <yuzenghui@huawei.com>,
+	"robdclark@gmail.com" <robdclark@gmail.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"vdonnefort@google.com" <vdonnefort@google.com>,
+	"qperret@google.com" <qperret@google.com>,
+	"tabba@google.com" <tabba@google.com>,
+	"danielmentz@google.com" <danielmentz@google.com>,
+	"tzukui@google.com" <tzukui@google.com>
+Subject: Re: [RFC PATCH v2 00/58] KVM: Arm SMMUv3 driver for pKVM
+Message-ID: <Z5DQuNn3GoU1vYPV@google.com>
+References: <20241212180423.1578358-1-smostafa@google.com>
+ <20241212194119.GA4679@ziepe.ca>
+ <Z1yNWI9lBNIZg6Le@google.com>
+ <20250102201614.GA26854@ziepe.ca>
+ <Z35rEeSVwfZVA9IF@google.com>
+ <BN9PR11MB52767756EE35DA2359C351F08C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250116191455.GC674319@ziepe.ca>
+ <BN9PR11MB52766732572A17627D16CBAC8C1B2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250121191432.1178734-1-abdiel.janulgue@gmail.com>
- <20250121191432.1178734-3-abdiel.janulgue@gmail.com> <CAH5fLgjVjAVwR+osD4ajKfyewdWPpkSyV+oy=ppaCULUdPqB7w@mail.gmail.com>
- <fb2216a4-306b-4635-bc13-10647e7cdb93@gmail.com>
-In-Reply-To: <fb2216a4-306b-4635-bc13-10647e7cdb93@gmail.com>
-From: Alice Ryhl <aliceryhl@google.com>
-Date: Wed, 22 Jan 2025 11:15:37 +0100
-X-Gm-Features: AbW1kvYHOBRoQQbvT-ruGTUBikUWtGUaNvOBrtbEBcj6jH7COvdJOr5ZaYwH_yE
-Message-ID: <CAH5fLghO3eh4VWjSiwX4bqORBMC8JF6RyDQM2eCPg6On5Ti9WQ@mail.gmail.com>
-Subject: Re: [PATCH v10 2/3] rust: add dma coherent allocator abstraction.
-To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Cc: rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com, 
-	dakr@kernel.org, robin.murphy@arm.com, Miguel Ojeda <ojeda@kernel.org>, 
-	Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>, 
-	Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
-	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, 
-	open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN9PR11MB52766732572A17627D16CBAC8C1B2@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On Wed, Jan 22, 2025 at 11:14=E2=80=AFAM Abdiel Janulgue
-<abdiel.janulgue@gmail.com> wrote:
-> >> +    /// Returns the device, base address, dma handle, attributes and =
-the size of the
-> >> +    /// allocated region.
-> >> +    ///
-> >> +    /// The caller takes ownership of the returned resources, i.e., w=
-ill have the responsibility
-> >> +    /// in calling `bindings::dma_free_attrs`. The allocated region i=
-s valid as long as
-> >> +    /// the returned device exists.
-> >> +    pub fn into_parts(
-> >> +        self,
-> >> +    ) -> (
-> >> +        ARef<Device>,
-> >> +        *mut T,
-> >> +        bindings::dma_addr_t,
-> >> +        crate::ffi::c_ulong,
-> >> +        usize,
-> >> +    ) {
-> >> +        let size =3D self.count * core::mem::size_of::<T>();
-> >> +        let ret =3D (
-> >> +            self.dev.clone(),
-> >
-> > Calling clone here increments the refcount, but you don't want to do
-> > that since it leaks a count.
-> >
->
-> You mean return the raw *mut bindings::device instead of ARef<Device>.
-> Otherwise the compiler complains not being able to move out ARef<Device>
-> because it doesn't implement Copy.
+On Fri, Jan 17, 2025 at 06:57:12AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@ziepe.ca>
+> > Sent: Friday, January 17, 2025 3:15 AM
+> > 
+> > On Thu, Jan 16, 2025 at 06:39:31AM +0000, Tian, Kevin wrote:
+> > > > From: Mostafa Saleh <smostafa@google.com>
+> > > > Sent: Wednesday, January 8, 2025 8:10 PM
+> > > >
+> > > > On Thu, Jan 02, 2025 at 04:16:14PM -0400, Jason Gunthorpe wrote:
+> > > > > On Fri, Dec 13, 2024 at 07:39:04PM +0000, Mostafa Saleh wrote:
+> > > > > > Yeah, SVA is tricky, I guess for that we would have to use nesting,
+> > > > > > but tbh, I don’t think it’s a deal breaker for now.
+> > > > >
+> > > > > Again, it depends what your actual use case for translation is inside
+> > > > > the host/guest environments. It would be good to clearly spell this out..
+> > > > > There are few drivers that directly manpulate the iommu_domains of a
+> > > > > device. a few gpus, ath1x wireless, some tegra stuff, "venus". Which
+> > > > > of those are you targetting?
+> > > > >
+> > > >
+> > > > Not sure I understand this point about manipulating domains.
+> > > > AFAIK, SVA is not that common, including mobile spaces but I can be
+> > wrong,
+> > > > that’s why it’s not a priority here.
+> > >
+> > > Nested translation is required beyond SVA. A scenario which requires
+> > > a vIOMMU and multiple device domains within the guest would like to
+> > > embrace nesting. Especially for ARM vSMMU nesting is a must.
 
-What I mean is that you should return an ARef<Device> without
-incrementing the refcount. I acknowledge that this requires unsafe,
-but it's the correct semantics and the unsafe is a consequence of
-using mem::forget.
+We can still do para-virtualization for guests the same way we do for the
+host and use a single stage IOMMU.
 
-You can write `core::ptr::read(&self.dev)`.
+> > 
+> > Right, if you need an iommu domain in the guest there are only three
+> > mainstream ways to get this in Linux:
+> >  1) Use the DMA API and have the iommu group be translating. This is
+> >     optional in that the DMA API usually supports identity as an option.
+> >  2) A driver directly calls iommu_paging_domain_alloc() and manually
+> >     attaches it to some device, and does not use the DMA API. My list
+> >     above of ath1x/etc are examples doing this
+> >  3) Use VFIO
+> > 
+> > My remark to Mostafa is to be specific, which of the above do you want
+> > to do in your mobile guest (and what driver exactly if #2) and why.
+> > 
+> > This will help inform what the performance profile looks like and
+> > guide if nesting/para virt is appropriate.
+> 
 
-Alice
+AFAIK, the most common use cases would be:
+- Devices using DMA API because it requires a lot of memory to be
+  contiguous in IOVA, which is hard to do with identity
+- Devices with security requirements/constraints to be isolated from the
+  rest of the system, also using DMA API
+- VFIO is something we are looking at the moment and have prototyped with
+  pKVM, and it should be supported soon in Android (only for platform
+  devices for now)
+
+> Yeah that part would be critical to help decide which route to pursue
+> first. Even when all options might be required in the end when pKVM
+> is scaled to more scenarios, as you mentioned in another mail, a staging
+> approach would be much preferrable to evolve.
+
+I agree that would probably be the case. I will work on more staging
+approach for v3, mostly without the pv part as Jason suggested.
+
+> 
+> The pros/cons between nesting/para virt is clear - more static the 
+> mapping is, more gain from the para approach due to less paging 
+> walking and smaller tlb footprint, while vice versa nesting performs
+> much better by avoiding frequent para calls on page table mgmt. 😊
+
+I am also working to get the numbers for both cases so we know
+the order of magnitude of each case, as I guess it won't be as clear
+for large systems with many DMA initiators what approach is best.
+
+
+Thanks,
+Mostafa
+
+> 
+> > 
+> > > But I'm not sure that I got Jason's point about " there is no way to get
+> > > SVA support with para-virtualization." virtio-iommu is a para-virtualized
+> > > model and SVA support is in its plan. The main requirement is to pass
+> > > the base pointer of the guest CPU page table to backend and PRI faults/
+> > > responses back forth.
+> > 
+> > That's nesting, you have a full page table under the control of the
+> > guest, and the guest needs to have a level of HW-specific
+> > knowledge. It is just an alternative to using the native nesting
+> > vIOMMU.
+> > 
+> > What I mean by "para-virtualization" is the guest does map/unmap calls
+> > to the hypervisor and has no page tbale.
+> > 
+> 
+> Yes, that should never happen for SVA.
