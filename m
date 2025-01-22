@@ -1,174 +1,318 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2043.outbound.protection.outlook.com [40.107.93.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E40DE8F7D;
-	Wed, 22 Jan 2025 08:05:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737533149; cv=fail; b=GsUd7dWZsuB4ga8FZw46y0/egLNaYAZdKElLawPGQq+XZsg/bOw+5iWlw0jKfV7EfH9ZuRzV4Px2bf/HH+8aCmQYBPX8S5N5YHXNe2Z1n9tgH7vOy5tRqPqhQd0Dv8VNoBbRLxO6yTQW0dYFjUB+mw9egDRbiMMlkDZNmlNG4bM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737533149; c=relaxed/simple;
-	bh=PEdC2LhEg60lro0U11/Z7tD/CGRY0GtVO4O657tZbGQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XKpO0WpDYahKlg9kR4mJldV2RD2LTLiF8gHTXJgi5XOSmaxdiQMT+DDvHcUmywf5sw0FrbfFzKmukpYYUJC3zDJzQ4z4n1nl3d/qL62RxkUeGCcSmElT7DLZA7dYpWPV0p37b9KRxrKcR8oEUqLa/Ccf6o0EOTbE1n02FJB0n9M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=YaXdqCqM; arc=fail smtp.client-ip=40.107.93.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 596D71F76C7
+	for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 08:58:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737536312; cv=none; b=Y0ur2cKILGo3Z750Pn2T68hul8pgJZCycpPhOLSR+nVDUYh4qt1bZCjsJlp7/rhzrQHOVNqtucktf//ZH8MTEjp8rc2a6Hnj7wOcfpRGOQCCTF/jLxeMV6EDd63nDll7P1hZ+pMaCwY71WIbIexDOLwqqlJ9s0cmni5Nlg2eVew=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737536312; c=relaxed/simple;
+	bh=eN8F6CRuOkdi+RxD3EmbgEjW3AueKj0j7dN2xoKugUw=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=aBa+5XWBflvM1BJZ/zD0TkUCMriOZHsz1XQbAKhLsHMmTJ9SJqYXAKchk5UAhC2102RXy7A3SnI9jHiC9GbJ+XQsU5/CODbCh/Br1z2KP5253SsDcQ3mhrPxQiVdVuRAaAzmM1zIMLDc5TnwOmeDaAiMkFKWrQU4Ov3ToqTTbvc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=RHE7BmuS; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YaXdqCqM"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ktll2yiSOX+xmv58QK602U/Reevso32AyekkCKjf/7tXZDixCSXyx6yXLSlUZVrEGX9syFCR48UhJQa22vFGB0AnvV5P+i4yzcBdmRSWdlK9r7AbYmComAp8baJuVKG8luykBx0ixgbKG2p9wVgrK+d32YTgZB+t05uqk+FsAvEfrFnKnJQ0g8ElHW4rsHwEyv0g3QBHTO6org/0tX2uUAU3Lbq+L77t4u9Yc8NOBtmudaY8a7t5i88OV4XZIrjoxxIdaNpx+jTKe+p8bkAteBViqgDZlV6IV6Gy5QoaVp0WmaLPwYkGas5owZl1MfPQVvRwPbv9JzPuCKSMJgCRww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ubF/gbwnxhF0YG2iCjGvMkPSPY2jfUoMjouIJewvoGU=;
- b=rf6pGt2S0LdMts5HchY7FOrvCv8GQjVv0hHS7y6Fb3Fgs4WY2Hkf/cqvQC8nckCY+aOj5lyr8LIyJKJeZOxyHd0sGs/N9AKaXmP6Ec81uTK34m67pGaYVL1qfDrzr7xxaajxAlfEn87ryeA4NZHzYSLauLL+t7AhgA8qxUJopXGJX20kydnqczpDAjkoc2a1Yd9mFtTeapOSlFB7OJupGOJx4rxwbrhVTDQVyrJgiXIAaJRqlznwPnqg5K83Nd4NZYjmFxlv17Wb3rJ1yRIa5AZNHYEnZmE6kOUh3CMpBF+SVqU+Eq26tv8jgOILGww/ADSBgn8xqPO+uzV2uD6wSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ubF/gbwnxhF0YG2iCjGvMkPSPY2jfUoMjouIJewvoGU=;
- b=YaXdqCqMpWROJHqDSWKMLMmj3U/cLzXim8bSDQ8x1i1ndFZkHDXGgMwHTZ+Xi97V4fzohi5pcjGbt001bJvPpAx6/1ZboqUkyTZQDggbvOL89QLZM9OtEuDP0m/yhZyLz70/etk/D/9tiasjIUmwkgSv+2rG3vDFmjqfOEosxXFE+ZQhyTqVVsOKaaJIHN7bylNQ25Ax6WpMxbkckrSprhxmWiBB3pdooppr6if3lESu/0ipeek03Pjcq1JpChhdLwV3ri72CGkoO976fbdH+OljhEgPTgQtGNz2PJZdoH7l2cPTL29q52HbYD6i4HH/TIXSRIdUqvsQpnfm2f9YYw==
-Received: from DM5PR07CA0090.namprd07.prod.outlook.com (2603:10b6:4:ae::19) by
- DS0PR12MB8788.namprd12.prod.outlook.com (2603:10b6:8:14f::11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8356.21; Wed, 22 Jan 2025 08:05:44 +0000
-Received: from DS3PEPF000099D7.namprd04.prod.outlook.com
- (2603:10b6:4:ae:cafe::ce) by DM5PR07CA0090.outlook.office365.com
- (2603:10b6:4:ae::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8356.22 via Frontend Transport; Wed,
- 22 Jan 2025 08:05:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DS3PEPF000099D7.mail.protection.outlook.com (10.167.17.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8377.8 via Frontend Transport; Wed, 22 Jan 2025 08:05:44 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 22 Jan
- 2025 00:05:25 -0800
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 22 Jan
- 2025 00:05:25 -0800
-Received: from nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Wed, 22 Jan 2025 00:05:19 -0800
-Date: Wed, 22 Jan 2025 00:05:17 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <kevin.tian@intel.com>, <corbet@lwn.net>, <will@kernel.org>,
-	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
-	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>, <eric.auger@redhat.com>,
-	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>,
-	<ddutile@redhat.com>, <yi.l.liu@intel.com>, <patches@lists.linux.dev>
-Subject: Re: [PATCH v5 08/14] iommufd/viommu: Add iommufd_viommu_report_event
- helper
-Message-ID: <Z5Cmvfp4JW9vmMTP@nvidia.com>
-References: <20250114134158.GC5556@nvidia.com>
- <Z4rVg1Xg5TCiFlSb@nvidia.com>
- <20250120181854.GQ5556@nvidia.com>
- <Z463eXfgNArCOfPn@nvidia.com>
- <20250121183611.GY5556@nvidia.com>
- <Z4/7pGx6F1mpAUuV@nvidia.com>
- <20250121200924.GZ5556@nvidia.com>
- <Z5ALWFVTOSC/8+ji@nvidia.com>
- <20250121211404.GB5556@nvidia.com>
- <Z5AUNVHzJPATVqAY@nvidia.com>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="RHE7BmuS"
+Received: from 8bytes.org (p54921e31.dip0.t-ipconnect.de [84.146.30.49])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 99AB92E0334;
+	Wed, 22 Jan 2025 09:58:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1737536301;
+	bh=eN8F6CRuOkdi+RxD3EmbgEjW3AueKj0j7dN2xoKugUw=;
+	h=Date:From:To:Cc:Subject:From;
+	b=RHE7BmuSKu0n4aB6FkvN4BNJr48KL3N9ujCm23YqRzRZC/Yl32SuiIHkRfA0BD7Lz
+	 EGCAFo3PaxjnauCixOsXK3jkHbp64tjl8rERHrUEwhF8lZNE4mloTzT0DH/wQgG3x/
+	 DPRTy9+ZveIvqyadOJsLOpqBTTVWoc0S4V0wxbdia3iR3Q5kNZhh+EfoEU656AWwdN
+	 lILiQpfSIgfhJZOKJ05bgxZWJ66HlpbkiUB34MqKAf7XXjnDA+0XoWx233JMGjpLuO
+	 wDf+bl66SviKq7bI7g2JcnTrGzMjvI2710+2OQ15Oa1GbmfMLDZGq1K/KmgbGd20ba
+	 2mIOiBgygXXLQ==
+Date: Wed, 22 Jan 2025 09:58:20 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Updates for Linux v6.14
+Message-ID: <Z5CzLFtBJZrnAMdk@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="K+LRosw8fYGAK1ti"
 Content-Disposition: inline
-In-Reply-To: <Z5AUNVHzJPATVqAY@nvidia.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF000099D7:EE_|DS0PR12MB8788:EE_
-X-MS-Office365-Filtering-Correlation-Id: dfb1e901-92ce-4dbe-7971-08dd3abb9267
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|82310400026|7416014|1800799024|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?8/6HX69zayoBH37fHzvDODjPfIcaAXKBUX9CWt4/woF5XQH4hYSF1ROmKONl?=
- =?us-ascii?Q?cViBPIX03teYOwnmZmRQmM4S01Ky65858Pn+1z28V85023IiyWyc1D0Zkmx6?=
- =?us-ascii?Q?uMbylKKDHl7/PgS/3v2lMzf2ugYc8N9aKXrJSjz7t8qGuCa9C4qsBPQfWMew?=
- =?us-ascii?Q?kRGrfscCYBZiwqAwQAoaB3yqNFf2Ne2+vTFkRhevMNkviVHnlImRBP0g8VsE?=
- =?us-ascii?Q?ca79vnXB+51CBixlndjmbzCUSMsGV2vv/DCplygRE12E9iys39v9p1NP3OW4?=
- =?us-ascii?Q?q3Z5FVF1r/unwdIAW08zNk/XoZUiiks0eXaLyjh3gZqap7NaWCVs+gVtRQym?=
- =?us-ascii?Q?OExKneVKB7pdiwZBguaY63BguHvcdQ1qAVs0kyjBaajGfFaeeTOKPBYByT3e?=
- =?us-ascii?Q?egVzaUgWl3epd6E1GFJTrFN0yJhYS0znrkBhV8CALWioF0IXBs+WYfqFFQSM?=
- =?us-ascii?Q?LHSriooLC8Es+mWqSfP3Pgp2ISDNtaY2k5a8/WXvTyW27J1usSoKew5wiwlf?=
- =?us-ascii?Q?AuXjqYk3R4cryKNjhfVb/FlVGTY5+fw9cwNBU1aoMR3vrfQ658ctNee31kSr?=
- =?us-ascii?Q?8/vRJ6wVgU7kCKTB1CmKKq9RleVhwi/lYfwo7sfQviEK7om7DGI7XnBQxOpj?=
- =?us-ascii?Q?U0+mbXA1PTRTLRsl84pZ6YO6EAQnSmysc+3AVavg0uLc4X8BbnSs2cSCpUkW?=
- =?us-ascii?Q?4wIYdkTX8Hh+9w+tT7vEd082m2x6MJsQOZd5r5NULDX5KAL1aLo3B7hHxAqA?=
- =?us-ascii?Q?I8ZpqgIrpDNFEW5stXYHdbfOo/Q/VsfsYL9PS13tdCKxfXAYrFT7LkIKX7xG?=
- =?us-ascii?Q?9bVCJwEHcqVd6ahxJhoA0mr6ATLpVE6C5Yj23iXF0r3gUddjDoPB0B11HJYK?=
- =?us-ascii?Q?bLHSnk1hsy9UcgluTxSSDZ9a7q9HLjAagfCPtQDfROlXHTIF9kmMh2N6HCIx?=
- =?us-ascii?Q?qIKGCr2jRId0EG+rUsqoyI9haWsAnWC+wcTZUQVCjnPh39UeQPSpU9Exbzxc?=
- =?us-ascii?Q?DRcYPe5xjRSsKwAgYDZZYEtTxVhOjG4YxrZNtT68C+eqTePYATqVDX+MsLc3?=
- =?us-ascii?Q?5WLwcV0SXvzo4hmfuIRaYuel4K9s/vYz471z9z3j1PsX4IPesEKGSQglOr0m?=
- =?us-ascii?Q?cttY/pOLlfQZTdAmoHMNC2oZcGRYUFngKtSzCB8Ytn5TZxAQIDNwUKaVZR5e?=
- =?us-ascii?Q?MYEkDlHHaLNp2dDE9+YfPFN6KpBibYUvsqDt3YIsuPcX//A+MTdeSekN863O?=
- =?us-ascii?Q?xtLyeXpgs2rANWB/q2cLBUdOWH5eIxk/XzIY+7j3lgwqgdcUd/yRFjtZsm5m?=
- =?us-ascii?Q?elJEqiMhyYBIGeJiEpk4tt/57GGWRDRkcqCtLs8aXqV6WffAYKWfPq4ReNrk?=
- =?us-ascii?Q?YJVfkzZVK7DYBxdAFmVtCKHtklZosdgTWCieuVhyizYL/FDGE2zsrqzs3WVg?=
- =?us-ascii?Q?pR3cZGvDFg4Xn1aMinNoj2E8xZnvGdrvIYZI6F90s7L7VIIAJqO276+bcKc/?=
- =?us-ascii?Q?Yv6TXu8IMEDvKzs=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(7416014)(1800799024)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2025 08:05:44.4466
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dfb1e901-92ce-4dbe-7971-08dd3abb9267
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF000099D7.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8788
 
-On Tue, Jan 21, 2025 at 01:40:13PM -0800, Nicolin Chen wrote:
-> On Tue, Jan 21, 2025 at 05:14:04PM -0400, Jason Gunthorpe wrote:
-> > Since we don't hold the spinlock the whole time there is a race where
-> > we could pull the overflow off and then another entry could be pushed
-> > while we do the copy_to_user.
-> 
-> I see. I'll be careful around that. I can imagine that one tricky
-> thing can be to restore the overflow node back to the list when a
-> copy_to_user fails..
 
-Hmm, it gets trickier because the overflow node is a preallocated
-single node per vEVENTQ. We must not only check list_empty for its
-restore, but also protect the overflow->header.sequence from races
-between atomic_inc and copy_to_user. However, we can't use a mutex
-because copy_to_user might DOS...
+--K+LRosw8fYGAK1ti
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-A simple solution could be to just duplicate overflow nodes, each
-of which contains a different sequence, like a regular vEVENT node.
-This certainly changes the uAPI for read(). Though the duplication
-of overflow nodes doesn't sound optimal, it's acceptable since the
-duplicated nodes would have been regular vEVENT nodes if there was
-no overflow (i.e. no extra overhead)?
+Hi Linus,
 
-Thanks
-Nicolin
+The following changes since commit 5bc55a333a2f7316b58edc7573e8e893f7acb532:
+
+  Linux 6.13-rc7 (2025-01-12 14:37:56 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-=
+updates-v6.14
+
+for you to fetch changes up to 125f34e4c107b151029ccbeea92631481bf5a6a1:
+
+  Merge branches 'arm/smmu/updates', 'arm/smmu/bindings', 'qualcomm/msm', '=
+rockchip', 'riscv', 'core', 'intel/vt-d' and 'amd/amd-vi' into next (2025-0=
+1-17 09:02:35 +0100)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v6.14
+
+Including:
+
+	- Core changes:
+	  - PASID support for the blocked_domain.
+
+	- ARM-SMMU Updates:
+	  - SMMUv2:
+	    * Implement per-client prefetcher configuration on Qualcomm SoCs.
+	    * Support for the Adreno SMMU on Qualcomm's SDM670 SOC.
+	  - SMMUv3:
+	    * Pretty-printing of event records.
+	    * Drop the ->domain_alloc_paging implementation in favour of
+	      ->domain_alloc_paging_flags(flags=3D=3D0).
+	  - IO-PGTable:
+	    * Generalisation of the page-table walker to enable external walkers
+	      (e.g. for debugging unexpected page-faults from the GPU).
+	    * Minor fix for handling concatenated PGDs at stage-2 with 16KiB pages.
+	  - Misc:
+	    * Clean-up device probing and replace the crufty probe-deferral hack
+	      with a more robust implementation of arm_smmu_get_by_fwnode().
+	    * Device-tree binding updates for a bunch of Qualcomm platforms.
+
+	- Intel VT-d Updates:
+	  - Remove domain_alloc_paging().
+	  - Remove capability audit code.
+	  - Draining PRQ in sva unbind path when FPD bit set.
+	  - Link cache tags of same iommu unit together.
+
+	- AMD-Vi Updates:
+	  - Use CMPXCHG128 to update DTE.
+	  - Cleanups of the domain_alloc_paging() path.
+
+	- RiscV IOMMU:
+	  - Platform MSI support.
+	  - Shutdown support.
+
+	- Rockchip IOMMU:
+	  - Add DT bindings for Rockchip RK3576.
+
+	- More smaller fixes and cleanups.
+
+----------------------------------------------------------------
+Alejandro Jimenez (1):
+      iommu/amd: Remove unused amd_iommu_domain_update()
+
+Andrew Jones (1):
+      iommu/riscv: Add support for platform msi
+
+Andy Yan (1):
+      dt-bindings: iommu: rockchip: Add Rockchip RK3576
+
+Barnab=E1s Cz=E9m=E1n (1):
+      dt-bindings: iommu: qcom,iommu: Add MSM8917 IOMMU to SMMUv1 compatibl=
+es
+
+Bibek Kumar Patro (5):
+      iommu/arm-smmu: Re-enable context caching in smmu reset operation
+      iommu/arm-smmu: Refactor qcom_smmu structure to include single pointer
+      iommu/arm-smmu: Add support for PRR bit setup
+      iommu/arm-smmu: Introduce ACTLR custom prefetcher settings
+      iommu/arm-smmu: Add ACTLR data and support for qcom_smmu_500
+
+Gao Shiyuan (1):
+      iommu/amd: remove return value of amd_iommu_detect
+
+Guo Ren (1):
+      iommu/riscv: Fixup compile warning
+
+Jason Gunthorpe (12):
+      iommu/arm-smmuv3: Update comments about ATS and bypass
+      iommu/arm-smmu-v3: Remove arm_smmu_domain_finalise() during attach
+      iommu/arm-smmu-v3: Make domain_alloc_paging_flags() directly determin=
+e the S1/S2
+      iommu/arm-smmu-v3: Remove domain_alloc_paging()
+      iommu/arm-smmu-v3: Make the blocked domain support PASID
+      iommu/vt-d: Remove domain_alloc_paging()
+      iommu/amd: Remove domain_alloc()
+      iommu/amd: Remove dev =3D=3D NULL checks
+      iommu/amd: Remove type argument from do_iommu_domain_alloc() and rela=
+ted
+      iommu/amd: Change amd_iommu_pgtable to use enum protection_domain_mode
+      iommu/amd: Move the nid to pdom_setup_pgtable()
+      iommu/amd: Fully decode all combinations of alloc_paging_flags
+
+Joerg Roedel (1):
+      Merge branches 'arm/smmu/updates', 'arm/smmu/bindings', 'qualcomm/msm=
+', 'rockchip', 'riscv', 'core', 'intel/vt-d' and 'amd/amd-vi' into next
+
+Kees Bakker (1):
+      iommu/vt-d: Avoid use of NULL after WARN_ON_ONCE
+
+Krzysztof Kozlowski (1):
+      iommu: Use str_enable_disable-like helpers
+
+Lu Baolu (2):
+      iommu/vt-d: Remove iommu cap audit
+      iommu/vt-d: Draining PRQ in sva unbind path when FPD bit set
+
+Melody Olvera (1):
+      dt-bindings: arm-smmu: Document SM8750 SMMU
+
+Mostafa Saleh (3):
+      iommu/io-pgtable-arm: Fix stage-2 concatenation with 16K
+      iommu/io-pgtable-arm: Add coverage for different OAS in selftest
+      iommu/io-pgtable-arm: Fix cfg reading in arm_lpae_concat_mandatory()
+
+Nicolin Chen (1):
+      iommu/tegra241-cmdqv: Read SMMU IDR1.CMDQS instead of hardcoding
+
+Pranjal Shrivastava (3):
+      iommu/arm-smmu-v3: Introduce struct arm_smmu_event
+      iommu/arm-smmu-v3: Log better event records
+      iommu/arm-smmu-v3: Use str_read_write helper w/ logs
+
+Qingqing Zhou (1):
+      dt-bindings: arm-smmu: document QCS615 GPU SMMU
+
+Richard Acayan (2):
+      dt-bindings: iommu: arm,smmu: add sdm670 adreno iommu compatible
+      iommu/arm-smmu-qcom: add sdm670 adreno iommu compatible
+
+Rob Clark (3):
+      iommu/io-pgtable-arm: Make pgtable walker more generic
+      iommu/io-pgtable-arm: Re-use the pgtable walk for iova_to_phys
+      iommu/io-pgtable-arm: Add way to debug pgtable walk
+
+Robin Murphy (5):
+      iommu/arm-smmu: Make instance lookup robust
+      iommu/arm-smmu: Retire probe deferral workaround
+      iommu/arm-smmu-v3: Clean up more on probe failure
+      iommu: Manage driver probe deferral better
+      iommu/arm-smmu-v3: Document SVA interaction with new pagetable featur=
+es
+
+Suravee Suthikulpanit (9):
+      iommu/amd: Misc ACPI IVRS debug info clean up
+      iommu/amd: Disable AMD IOMMU if CMPXCHG16B feature is not supported
+      iommu/amd: Introduce struct ivhd_dte_flags to store persistent DTE fl=
+ags
+      iommu/amd: Introduce helper function to update 256-bit DTE
+      iommu/amd: Modify set_dte_entry() to use 256-bit DTE helpers
+      iommu/amd: Introduce helper function get_dte256()
+      iommu/amd: Modify clear_dte_entry() to avoid in-place update
+      iommu/amd: Lock DTE before updating the entry with WRITE_ONCE()
+      iommu/amd: Remove amd_iommu_apply_erratum_63()
+
+Will Deacon (1):
+      iommu/arm-smmu-v3: Add missing #include of linux/string_choices.h
+
+Xu Lu (2):
+      iommu/riscv: Empty iommu queue before enabling it
+      iommu/riscv: Add shutdown function for iommu driver
+
+Yi Liu (6):
+      iommu: Prevent pasid attach if no ops->remove_dev_pasid
+      iommu: Consolidate the ops->remove_dev_pasid usage into a helper
+      iommu: Detaching pasid by attaching to the blocked_domain
+      iommu/vt-d: Make the blocked domain support PASID
+      iommu/amd: Make the blocked domain support PASID
+      iommu: Remove the remove_dev_pasid op
+
+Zhang Heng (1):
+      iommu/msm: Use helper function devm_clk_get_prepared()
+
+Zhenzhong Duan (1):
+      iommu/vt-d: Link cache tags of same iommu unit together
+
+ Documentation/arch/arm64/silicon-errata.rst        |   3 +-
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |  23 +-
+ .../devicetree/bindings/iommu/qcom,iommu.yaml      |   1 +
+ .../devicetree/bindings/iommu/rockchip,iommu.yaml  |   1 +
+ drivers/iommu/Kconfig                              |  12 +
+ drivers/iommu/amd/amd_iommu.h                      |   9 +-
+ drivers/iommu/amd/amd_iommu_types.h                |  41 +-
+ drivers/iommu/amd/init.c                           | 253 +++++-----
+ drivers/iommu/amd/iommu.c                          | 532 +++++++++++++----=
+----
+ drivers/iommu/amd/pasid.c                          |   3 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |  15 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 298 ++++++++----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  31 +-
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     |   8 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c         |   5 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c   |   2 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         | 121 ++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h         |   3 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c              |  43 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.h              |   2 +
+ drivers/iommu/intel/Makefile                       |   2 +-
+ drivers/iommu/intel/cache.c                        |  11 +-
+ drivers/iommu/intel/cap_audit.c                    | 217 ---------
+ drivers/iommu/intel/cap_audit.h                    | 131 -----
+ drivers/iommu/intel/iommu.c                        |  47 +-
+ drivers/iommu/intel/irq_remapping.c                |   8 -
+ drivers/iommu/intel/pasid.c                        |  22 +-
+ drivers/iommu/intel/pasid.h                        |   6 +
+ drivers/iommu/io-pgtable-arm.c                     | 227 +++++----
+ drivers/iommu/iommu.c                              |  37 +-
+ drivers/iommu/msm_iommu.c                          |  51 +-
+ drivers/iommu/mtk_iommu.c                          |   9 +-
+ drivers/iommu/mtk_iommu_v1.c                       |   3 +-
+ drivers/iommu/of_iommu.c                           |   2 -
+ drivers/iommu/riscv/iommu-pci.c                    |   8 +
+ drivers/iommu/riscv/iommu-platform.c               | 108 ++++-
+ drivers/iommu/riscv/iommu.c                        |  14 +-
+ drivers/iommu/riscv/iommu.h                        |   1 +
+ drivers/iommu/rockchip-iommu.c                     |   3 +-
+ include/linux/adreno-smmu-priv.h                   |   7 +
+ include/linux/amd-iommu.h                          |   4 +-
+ include/linux/io-pgtable.h                         |  11 +
+ include/linux/iommu.h                              |   5 -
+ 43 files changed, 1304 insertions(+), 1036 deletions(-)
+ delete mode 100644 drivers/iommu/intel/cap_audit.c
+ delete mode 100644 drivers/iommu/intel/cap_audit.h
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--K+LRosw8fYGAK1ti
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmeQsywACgkQK/BELZcB
+GuOYkRAAiVXGSvr3K2ajSz/aaojYgJQ/gd4ojE8XqKb7UCBT4OEYka6PQrfH30G1
+Q/PJc7NMM9XGjbTA+4n0DD3Q9bt+gbXU5c4ypXK0iA46ukDOZb8ex8dd0g2QdyPt
+46PwjoX1uxmpz8ikdoPUoKDlpzwVzsOYnEex12pyHF/3QmEM9KKK2xRph4tmXKWR
+9w8a/F0owLjTWsqB6xhrKxiweoXtU7/bKvoOyH8749XLTqgi6x12cfbIVY3Gq/j6
+QnNB66Cgyrj5AOo4fhFY9TdJoHpJ24SV0hXOyO6fnEYNy/KpvD0ffRMj0DS3ikGD
+arMHToIA6JBnDpQqo5bIK9fvG+6ioF3kpW7Yxwgoi6B7l1Al34fgTVu8xuJajW8U
+eviaf19PWs34fnr+iFw6tGunLsIgqUDqpb4Yka2uvwsRiowEI341XX2BUKayz8PP
+nARezvP1uiThlfqJjYGdDLRZdfubkkpacKQaCGitCy49SylrXeRb8pKn18l9HOZA
+k79paPcsN9RIR4jA9srXmrw9UtqmmIQX8hgtE3bpgIozCTbUaJ2R+/UlWBK9seDR
+Onn2+5Yp3NlCDW9P6PlAwkDrIB7bA5kLcJrLNxdzUq/NiPh3jVMw+NMX6pe/H3on
+q/plTt5KAeNrPcEzzx+lIOpT2El5aRwoNKiM5+5dcAbR2NoQwBs=
+=egzu
+-----END PGP SIGNATURE-----
+
+--K+LRosw8fYGAK1ti--
