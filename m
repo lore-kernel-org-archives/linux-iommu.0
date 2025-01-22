@@ -1,306 +1,129 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2088.outbound.protection.outlook.com [40.107.96.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68C15211475;
-	Wed, 22 Jan 2025 16:07:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.96.88
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737562059; cv=fail; b=Q30dQZCC3+XRUaskrKG+nRRPZQ8Qz9hEYO0LFlJeKyaupbfOq4tKNHrXOEpaO0xBylRcatgawViHqEfyv+xBvgDTh90r5e46apXJgrf87kPpxb093bKDtx/k4xf+wz7DcWP5tAz2KnmipgRcPu64qpD4vK7MsY2/8au4A2dNN/U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737562059; c=relaxed/simple;
-	bh=MnbTUk/gckk/ENA2tO1LP+8OrBW0fSlX2SzIXMUQd/g=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=bzvRDFLYseWrYe3aFy/5CvmL56lNcwwaKq0StKuFGAChFMySX6anOCSyKdObKL0pQGrae6NO+KWB8HcZNY01+ULi7KRjWL7XNfTvBomg2QJycOrtkYwv3uStsODp/3vAdl3oFqXP/as+QmBefh/iQ9mApp4q7qAAbZ41UECdbz4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=XjeWOb05; arc=fail smtp.client-ip=40.107.96.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2397C21422E
+	for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 16:20:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737562860; cv=none; b=sEYrIHvy8UOyk+zO2hJfSR44PElcpWkgZRv0oNlK+GodFWcLoE05l5N2fLn9iulMDRM/QFyyC3no1cvQ8PpXrQJPmNt9Zs02N1IJIkxhgLvCDW9tOoffCeNV+1iUSVvMOURwamsse6PRUm+C+9iYQnPktZTUN7/HcbFITSjqWxA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737562860; c=relaxed/simple;
+	bh=P2EqU1UXlLpqlLpL3YBFhOiIS1vRxeXI/7MP+rcwyE8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=F0EsNmRNpzirVyIBx98Irzfxo8iokicC9eYiz/Bfk/tV6Wv7N+KJwDpr51hEGk9mURGAsXCpW9ZshPNKjOnMLjHTf4gFLMvmeRHITo4LmYQtcUALjAuZFqAu9OImqKrXsBHh8QsMINxO4AKNDJnbai6Sw+yYgmQxBa1WFUCAAmU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ab5Sbocx; arc=none smtp.client-ip=209.85.219.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="XjeWOb05"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=snfYDPthkHvujyEfRQvo71SU74TTv4JnK+ZATaEbnbpOM1SgNfydcaPZOpOiKYBjC7V5OPVnhQdW5tapfLzCqDj9Nt1iphzK3wgZu6tbPTF84Z2CIrZi3x+AobamcDHPpZ4BW+sYwZf5ZNAehkVZxGky+P9aywgP+Yzw1AU3orrTLSL3j9Ve0v8+ONM46XGx/2OHd7egL7j7JWk6UYub5R38zLIXJbJ052l3d73QF7wvrMI73ZjnRSLbNgy3s54q+b4N6KQqyn7GiAtLgvtrsS5V+zbe5gVtxnP/6+/lnLQ8L5thN2oSaJL4Mzs5/Sk/gE2PeTDmo3nRbksJoHB8YA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Gn7rmMQc8wiTRXQxjr4gPez3+W3QzX8W6OEh3iBdX+g=;
- b=fTEHFmFWqeQs1qADeXbkRuWLjcrpBbpNci8Vmo8oaMO1UNMwdPVUM+TBLeui7LW2omTg5iF+YnFpl8V8NxZUpKnoH3mzFM0YInMUKINtmobkPmceC8TCPfY7DtyN6SRmpAnJH0bCZKIPBZjiFXmuQwgfT1z68X/xoyGZCpQnhENCNd38WL71uFiqJaLo3U9nwYgRMlmXPSW+zgZmpuU25kFLVFA5fUKrhWejAfvxiiYrl6i+TNIVyPQd0wnUl6l0ScJokSKiXXoEBNs9unnlpqAiWDCTOolM9i/jN8XtFl18z02obMmSK7zmUfE1sP0XKr35BtnrgdFppxczCUZYQw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gn7rmMQc8wiTRXQxjr4gPez3+W3QzX8W6OEh3iBdX+g=;
- b=XjeWOb05250QZvFSAUxvW/5q7WJic+Y/WHPBF5fCDhCFqNK8HKmxpJ8Fw8uJxF9/FBKDvVi3t6acTktaA+ahj4x1eFVWyB9Gbaku1n9bg53sdwpvjerLkfmGonH0hI1fVtMABrwCtphuLylxgTHXbXUnsxU/8Q+iYujtau7PaIo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5070.namprd12.prod.outlook.com (2603:10b6:5:389::22)
- by PH7PR12MB7985.namprd12.prod.outlook.com (2603:10b6:510:27b::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8377.17; Wed, 22 Jan
- 2025 16:07:34 +0000
-Received: from DM4PR12MB5070.namprd12.prod.outlook.com
- ([fe80::20a9:919e:fd6b:5a6e]) by DM4PR12MB5070.namprd12.prod.outlook.com
- ([fe80::20a9:919e:fd6b:5a6e%7]) with mapi id 15.20.8377.009; Wed, 22 Jan 2025
- 16:07:34 +0000
-Message-ID: <e363f428-0a49-a22c-530b-c8a17038cabd@amd.com>
-Date: Wed, 22 Jan 2025 10:07:31 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH 4/4] x86/sev: Fix broken SNP support with KVM module
- built-in
-Content-Language: en-US
-To: Ashish Kalra <Ashish.Kalra@amd.com>, seanjc@google.com,
- pbonzini@redhat.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
- john.allen@amd.com, herbert@gondor.apana.org.au, davem@davemloft.net,
- joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
- robin.murphy@arm.com
-Cc: michael.roth@amd.com, dionnaglaze@google.com, vasant.hegde@amd.com,
- kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-crypto@vger.kernel.org, linux-coco@lists.linux.dev,
- iommu@lists.linux.dev
-References: <cover.1737505394.git.ashish.kalra@amd.com>
- <6fc4cd0f07f884da4345951670aebff8815270b7.1737505394.git.ashish.kalra@amd.com>
-From: Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <6fc4cd0f07f884da4345951670aebff8815270b7.1737505394.git.ashish.kalra@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SA1PR04CA0002.namprd04.prod.outlook.com
- (2603:10b6:806:2ce::10) To DM4PR12MB5070.namprd12.prod.outlook.com
- (2603:10b6:5:389::22)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ab5Sbocx"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6e17d3e92d9so52937126d6.1
+        for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 08:20:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1737562857; x=1738167657; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=T9hDFjf5DGvpzHigba5X0fDbl6l6sC1pecUGU0oUOE0=;
+        b=ab5SbocxSz+gFl5RWbOC41teDo9Vh04WJdrtssB4GanMU6XhzPlYTF6IYjMk20afGd
+         UM/YTe+cK8MWXbaRAZfopUve8Qt5VxUlDNCZuBuAysZ3qvMRrOxYlA0Yi07LYODHIr4Z
+         rpatAY8fwMgeryeyPtwwvB9l65Alt27sjww5NKrhyv/ARhwtYHwPkvChS/kgo0uNHzLk
+         EMeTyS3kmE4iYVTEof/cwcPAcKrU88uE1HLW/WDUZEMIxnRzIz6pyVJfbFKkAbZVtl9t
+         uTca8nLDIZriU0gli9U7ZptHl241A7xwxYBg92YBJEVNSFzLNRcpI2NfWFm93/O+gab1
+         /ZUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737562857; x=1738167657;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T9hDFjf5DGvpzHigba5X0fDbl6l6sC1pecUGU0oUOE0=;
+        b=gySzBDmfUWRGWB1B2/XvEjF6R1wY82/s83FGaMMnzyKSmAMQPj1f0Pbgz76gBdepKE
+         45eHzNtkwOdo78iVf53R50K4lmgqjbXh/obrQfI2pcMkF3dulTb8QBzP16gnXYaL9Gpm
+         5abSgNH97JIDwNRhIWi2Jn1SnaEFf8x3et5tnPUOObFs+0R2+00ISor+0++hQ6BB5PW1
+         d7Z+zIFBkfYIM8SDLoACK9FQ2gmLAExNKYj/P95oJa3fpWcdUvqJGgTMEaE9uFnjfP2R
+         UwybYmTAIyP/E5ilmo8XDf1hu1DE5rro22qn/4ju+USrpzANURF/Z1aHonNNkEXiv3gR
+         AE7Q==
+X-Forwarded-Encrypted: i=1; AJvYcCW4BDjYu81wWhizXWKoD0uP5RWpAWW3HnbEuUHD2Yt4IuRuKkcHd9cM/44CVuGrPu/MZfyifg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw3nrJJvd8bQYlRBrYx184wFN4frdQg+1IEEFqTg4KcAreDtV3+
+	4SHBPpZhWlOmly5StwhlVemfMDrFn38tfvqCUsuHYZ7Fr+diINGRECBsInjXaYU=
+X-Gm-Gg: ASbGnctNDc49yTkMrRv5xUPJChOirm+vmGQANdHES75xMRCA6RmaoVaGsMQ3yUty22T
+	8eiBFkmWrfhMud3FtmppzutBGuzXLpY+YWvEGZttnE6lCLTZWysSC+mkiCqX38EAXvL4sallC8y
+	jfxieku9hQKrhHfONDfCa7mzz3B+BiqjfKVJbanbpI9tV9/hllpT8XtyCdSwKuZYxaU3xK3vIFZ
+	ZaqQ7ZSQhu6I0ASa09CM6DuP/UR0JBmGxuVsyoREzUa8EPmtGhVLd3ym1qXcmJy0AEwLdrTtvLe
+	BpXmPFLvoIswyWo5Q7RnEAdzAAMVVN+gQSie4X/HD9U=
+X-Google-Smtp-Source: AGHT+IEO4sjsfZ98DUdmFnOpRcKd5hBontzItCkyvXoYAGu8ZhSlBVq4j7OqBMeWhGsiwNzwffbF2Q==
+X-Received: by 2002:a0c:bf44:0:b0:6e1:f40c:b558 with SMTP id 6a1803df08f44-6e1f40cb631mr18093296d6.44.1737562856988;
+        Wed, 22 Jan 2025 08:20:56 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e1afc23080sm61987686d6.54.2025.01.22.08.20.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jan 2025 08:20:56 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tadTL-00000003qLW-46Wn;
+	Wed, 22 Jan 2025 12:20:55 -0400
+Date: Wed, 22 Jan 2025 12:20:55 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"maz@kernel.org" <maz@kernel.org>,
+	"oliver.upton@linux.dev" <oliver.upton@linux.dev>,
+	"joey.gouly@arm.com" <joey.gouly@arm.com>,
+	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+	"yuzenghui@huawei.com" <yuzenghui@huawei.com>,
+	"robdclark@gmail.com" <robdclark@gmail.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"vdonnefort@google.com" <vdonnefort@google.com>,
+	"qperret@google.com" <qperret@google.com>,
+	"tabba@google.com" <tabba@google.com>,
+	"danielmentz@google.com" <danielmentz@google.com>,
+	"tzukui@google.com" <tzukui@google.com>
+Subject: Re: [RFC PATCH v2 00/58] KVM: Arm SMMUv3 driver for pKVM
+Message-ID: <20250122162055.GV674319@ziepe.ca>
+References: <20241212180423.1578358-1-smostafa@google.com>
+ <20241212194119.GA4679@ziepe.ca>
+ <Z1yNWI9lBNIZg6Le@google.com>
+ <20250102201614.GA26854@ziepe.ca>
+ <Z35rEeSVwfZVA9IF@google.com>
+ <BN9PR11MB52767756EE35DA2359C351F08C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250116191455.GC674319@ziepe.ca>
+ <BN9PR11MB52766732572A17627D16CBAC8C1B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Z5DQuNn3GoU1vYPV@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5070:EE_|PH7PR12MB7985:EE_
-X-MS-Office365-Filtering-Correlation-Id: e0c28dac-8142-4bc4-0ef5-08dd3afee1e6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|7416014|1800799024|921020;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?TGtZUVR2emlucm5vd3UxNXdKVk5mMDJMcUJtbTF4cEwxV1NDejEyNmxxVTZI?=
- =?utf-8?B?TUlobGx5ZXFZS0x6QnRzam90ODc4YlZMTzBSdHgxcXhMeHo5c0oybUpaeUNZ?=
- =?utf-8?B?a1ZqOTdtZGR0Q2FzWVREanNIdS91bjBsWEJ5UTl2dDVvRDh2eHlUcWU5cCtB?=
- =?utf-8?B?QXEwSHJkcDhiUTJObjJsOFJFT3hmb1FoY3YxUHhTbmNFY0VxWElOa3F0USs2?=
- =?utf-8?B?YUNZcWx1eHNHTXh4d3BUb0tvcnBhTzBQY0dWcnVaU2NpTUZWMWpFeDFCSUts?=
- =?utf-8?B?U2ZYcjF3Q1lEbmE1blFmekFMUmZkcXUxenVTalpyK2NZTmQrSEd3WXg2bGZS?=
- =?utf-8?B?MFFqSnVhWjd5WWZ5bjJlcWdyVEQrSjZKMXZEMVpBRGJQL0RBRzZRK2QraWlE?=
- =?utf-8?B?WXQ1cFp2UFRlbnF2TkM5ZmpBUUlLOHVyc3NzNWd6NFAvYTE0YytvYkh5cHE1?=
- =?utf-8?B?OEFQUnlpSjE2eFZzNTZTY3VPZ2J6OU56bkFlQmxiNGpubXVYL3lMTkVmVXNO?=
- =?utf-8?B?ME5EV0RsNEp3bnRpdnZ3UWJDZlBFVzhvcHVqV1hJU1dzMU9OZlZGV1Ivd1do?=
- =?utf-8?B?YUNPOEVMVWROdGhQTTBZVzhSeWpBZ3RJYXNkaGZTdVhaRWJrWW83YzV1cHFV?=
- =?utf-8?B?VUZsMDdNOGd1bFEzS0FCd3NXTUh2WTNHRGhPdUFINUFUSXdWYlZVYU14cThq?=
- =?utf-8?B?ZjFvSitFdk5pdG4rNy9wQWZ2TDFFRHhzeVl1YzZiamZoMENyLzhaSnR2c3dR?=
- =?utf-8?B?RG5DZzlsbDNjcjRxVUFMQk1aNEh3R1FzN29kV1pTaHdzZ3M1TTFUcllkOTM5?=
- =?utf-8?B?U1d0NEF1b3p3VlpidnJMbWtrczNhYjUzZHYwczBUQ3V0M1dwYUh2RXpDQUlq?=
- =?utf-8?B?N044MlkweUlkVzYyYnVlSmlVcXYyOXhMZVlaRzg1VEw5QVdEanhRVG56S2FZ?=
- =?utf-8?B?Q1FPcnhBYWdUa3paVlN2SUovVVhoZGJXQjFGZFpiMW5yT05Bc1h1ZUdubzRx?=
- =?utf-8?B?UDVURnAvV2xjeFArd293Z3ZUb3JZVlhscFBvTkgxU0xWd2dvT2dWcGU2SzBo?=
- =?utf-8?B?OUdHUTBrTEthZGpiQS8vNVJycVV0QUpJQkJENDJtWnV6dkMyamhpamx4ajFt?=
- =?utf-8?B?alBkV2ovUjNub20wTFNUQjRLSnVhNUdkOWh5RUpnZEpRSGFyM1J6ZEVZQWhv?=
- =?utf-8?B?eTJtQXpnRW9xSHhCQUN4ZTVtTzZrYUVLQUI1Z0lTTW5oR3JmUFBLeVJpSkFV?=
- =?utf-8?B?d3pyV1dBVFVnNnNSN0ljRndxUzVDK0lncGlzUStHb1FJM2ZMc3phQ3o4RUNK?=
- =?utf-8?B?c294bE1ka3ZtTGE3YTVGaXlwblJKNWU3ZlRuNExUL2xMY2RCVWgyWVFYSEFx?=
- =?utf-8?B?WndvM0xOaHd1ay9MdlAzOGV0em5Mekc2TGQ4TmhhMFRvZ3VGbWVpLzY2K1lp?=
- =?utf-8?B?OWVkdTB0MlQ2b0tERVFRL3ZSbm9YLzVDQVFjYzRYZ1l3bEJwT05STk9yS1dw?=
- =?utf-8?B?ck5kd2hsUUdFa3B4TCt2U09aRVVRZXp2WHQxZVlxU2RIZlcxVzhXclE0UE9q?=
- =?utf-8?B?Qjk0S1NEMHhKcDFOcWFXK21aYnlMRnlhRDJzd1ovVVIzblZqMWxUaFFIWDRl?=
- =?utf-8?B?a2tmNWNBbThjVCtPRUxGNDZhYzhQL3JQQXRtSnZ1WWd4UjErQ01zVXA4RnA4?=
- =?utf-8?B?Y2l1d09kZUpMaDVudnlKU083WEZFZmE0cHNLL0ZNVDIrTWZXU0N4dGtnenRy?=
- =?utf-8?B?RHVTanFyMFkwQWR0a3MreDgyNFNzT1lndDR6Nk1kYkdsRU9xVStwNTczU0tz?=
- =?utf-8?B?TDZuM1duTC9JSWt4ZFF3em5PY2t6akwwOFp1VnhIR1lwRVZPZnVXT1FKT1V5?=
- =?utf-8?B?aTQxNVhZWXFlV1hpbFRvTTlqdmlXQ3hadFM1WnBpa29IMkVRVUw4U1hCS01t?=
- =?utf-8?Q?yxdl+atB5jc=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5070.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(921020);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?aTdMQi9iUXVERS9uNk1zRjRIZ3ZQWjE2WVJRMU04WGUrRjNtczJUd3RvK3Bq?=
- =?utf-8?B?MmcxMjNoLzZIMUY4M3lvNktuc0tlTERZcXBlRHhXMUlOQ2tncmtVYzA4RjZo?=
- =?utf-8?B?bVJpUmk4R0dLL3hlQlFCQnVKOWVvcUwrZ1FlbHFISlNUQ0ZITmpMaXQwTkhq?=
- =?utf-8?B?cUs0cFFiN3R1Vk9keXNGdFVBd1VaS3RxR1dXQ1dZeWljQWdweGNuQUZ0WTNm?=
- =?utf-8?B?c1BVOHNrSkhKb2oxMHdCSzlkZFZZZytVWi9qTnA4eC81cjd0ZjI0M2lydE5j?=
- =?utf-8?B?MzBDYXl4TGVkUkRORVlIVFFtSWZwMmxKMC9CMnV4d0YxSFYxNzNIMWxMbU15?=
- =?utf-8?B?aE1pRjk3QzZuamZpYmRIR09mSXcvRFVmYmtsSVM3cGVDbThWM3ZUYXFRS1Rm?=
- =?utf-8?B?Nmtwb1RWdjdnRU50UTl4UnRheDMrSWE3d3U3cGQweGRnVUVyN1lCY3dxZ2hU?=
- =?utf-8?B?bENxVTBPYi9pK0M1QmxwVFBPNmZPa2ZnaStlRTBwZzE2OEVGWlBJMWpLdTlw?=
- =?utf-8?B?QS9KaTkrZVN6SUJpTjE0VnM1ZXg4cmhFYzI0MFZheWMzNElKQThpQ3g4WEUx?=
- =?utf-8?B?WXA2NUREK0VLUFZ3Rk1xTEZTek5jWFZITWI1Q3d1bW5zek5TZTlOVVpySWpW?=
- =?utf-8?B?ZEpPRDVNM0pNNW1MYWF2TVgrNmJXYXhydUlTMXg4eFFMZEpqUCtXSGdDRW9P?=
- =?utf-8?B?RjdYZnJqR0g0WDRNMTB6UVlxZ0FxTFUySjdMeUxMbmhEUlNESHlCRkFWYU40?=
- =?utf-8?B?Zmp1MjNObUxoRUF1bTkraEZlTUIwR0V2R2V6U0xFNUkybHBpV2lxMS85a3o4?=
- =?utf-8?B?b1owN1VvOW5JTXBhRmFIb0RRbGpZWEdGUmxkcVVZK0tnQ0ZGd1c1Y0MvMGpM?=
- =?utf-8?B?RVlrYnpodVo5V2c0RG5nYjd1N0tpanVVam5MWE1DeDdBaFdKdmhFdjd4MXp3?=
- =?utf-8?B?VEJEY3dwdzRCUmxNQXd4NGg5djUyd25tdTFhSzRob096d3BLdkduYk45OG1I?=
- =?utf-8?B?dndLNDhtTkRxZ240YkNYSEFvOFJMc2Z6ZzlwdzVFNmkvWk5PUXVWRFl3U0ZC?=
- =?utf-8?B?cVlDZ2NZemVCMUlqNXN6R0ZrYUpVWDQ1WnVaZUk3RWRUb0FWSm5WTjZIOG0z?=
- =?utf-8?B?N0p1RXp1VnpleUkwRVFqaHQ4dy9VS1Q1L2xVbUtIeituTWFjVDMvYmNuRHd1?=
- =?utf-8?B?RG5xTW8zUEIyYjN3TExvL3hyNmJSZGhjci83TkFURG1Ma1p5L0JQZ2l4RWZR?=
- =?utf-8?B?UVlqL2tETGRvK21vK2xJRUNCdmFOVkFuOFNMcC9pN1JaLzhvK0dCV0NYdmE4?=
- =?utf-8?B?blBrZHowZWRnS1AzU0tOOTlZd29VaE9kT2FSemZyR2NoK05ZS0Qzd0Jualhy?=
- =?utf-8?B?SjY2OG1ha3FDZlU2Wkp1VzF2SjNlNGJwY28wVGFLRDBpcGIzY1VYUkROY2dI?=
- =?utf-8?B?NUN0amNFZ0pld3k2QVZzL0RnR1BLTDFnVVJyc0tqUHJPNUhTRXYwRmEzSy9h?=
- =?utf-8?B?d1JGUU9ndzMraThZRkRQS0ppclM5cU4zWDNVeDdlK1ZuT2hEN1RsV20xN0hR?=
- =?utf-8?B?Z2JDeDZ3Q0w0QkFKRHU4Uk5HODlIdDdKMjdsYS9FODhXdlRxSDZtZVdsQWlU?=
- =?utf-8?B?VmVQUlNqUEtJanJtSmV5dnJMcG1RR3ZScFNCRFJoNVkzMnpMTW45bitWbVFy?=
- =?utf-8?B?UmRvai9scUpSOWMxM2RTd3Q1dUVWdDBJOHo5Q3phVkhOUXZzeUhWVnZ6aC9y?=
- =?utf-8?B?aW5YSnA3bEZPVUl4MUd2bTV1VW0yQWdIMGQweWlBOVJ0ZjdqY1Bra2YrVC9p?=
- =?utf-8?B?Ri9Oc3RwMXc4R2YvVFhiOXZrMjJIaU1ndEF5ZWRVNlpQYkpJa0F6NFc5dzl4?=
- =?utf-8?B?dHdXS0xOcWZmOVBMTHhJTUtmbWUxRkg1QVNBNE5xOUpVN2tmSWloSER2MHYw?=
- =?utf-8?B?YkxYOTVOTTZYZHdjc1lhVUNkQjFvU29PV2tCNGxzMk0yOTlaOE5HS3M0OXho?=
- =?utf-8?B?Nncra3dxN20yb28rVmlPMnQxdlpoMnFXUFpVdU1rVUw0QTlURmJJZnh6YU1l?=
- =?utf-8?B?SytMV25XaTJjZG82a2lXelNnVzlYQ1dtQnM5YjcwT1o2QjAwYjd5dmZVYjc0?=
- =?utf-8?Q?rmlsusOrmcGRpyZUggUN3XqP9?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e0c28dac-8142-4bc4-0ef5-08dd3afee1e6
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5070.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2025 16:07:34.4541
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QBxv4ktDiDPlNUm5IK30PT0jOAW3E1FpP+HwyTulUqVi23GodLVfBuoyuf+PHk6LybtOttMqDO1o4s1l44fpug==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7985
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z5DQuNn3GoU1vYPV@google.com>
 
-On 1/21/25 19:00, Ashish Kalra wrote:
-> From: Ashish Kalra <ashish.kalra@amd.com>
-> 
-> This patch fixes issues with enabling SNP host support and effectively
-> SNP support which is broken with respect to the KVM module being
-> built-in.
+On Wed, Jan 22, 2025 at 11:04:24AM +0000, Mostafa Saleh wrote:
+> AFAIK, the most common use cases would be:
+> - Devices using DMA API because it requires a lot of memory to be
+>   contiguous in IOVA, which is hard to do with identity
 
-Should this be the second patch in the series, since the first patch is
-what allows the change from device_initcall() to subsys_initcall()?
+This is not a feature of the DMA API any driver should rely on .. Are
+you aware of one that does?
 
-> 
-> SNP host support is enabled in snp_rmptable_init() which is invoked as a
-> device_initcall(). Here device_initcall() is used as snp_rmptable_init()
-> expects AMD IOMMU SNP support to be enabled prior to it and the AMD
-> IOMMU driver enables SNP support after PCI bus enumeration.
-> 
-> Now, if kvm_amd module is built-in, it gets initialized before SNP host
-> support is enabled in snp_rmptable_init() :
-> 
-> [   10.131811] kvm_amd: TSC scaling supported
-> [   10.136384] kvm_amd: Nested Virtualization enabled
-> [   10.141734] kvm_amd: Nested Paging enabled
-> [   10.146304] kvm_amd: LBR virtualization supported
-> [   10.151557] kvm_amd: SEV enabled (ASIDs 100 - 509)
-> [   10.156905] kvm_amd: SEV-ES enabled (ASIDs 1 - 99)
-> [   10.162256] kvm_amd: SEV-SNP enabled (ASIDs 1 - 99)
-> [   10.171508] kvm_amd: Virtual VMLOAD VMSAVE supported
-> [   10.177052] kvm_amd: Virtual GIF supported
-> ...
-> ...
-> [   10.201648] kvm_amd: in svm_enable_virtualization_cpu
-> 
-> And then svm_x86_ops->enable_virtualization_cpu()
-> (svm_enable_virtualization_cpu) programs MSR_VM_HSAVE_PA as following:
-> wrmsrl(MSR_VM_HSAVE_PA, sd->save_area_pa);
-> 
-> So VM_HSAVE_PA is non-zero before SNP support is enabled on all CPUs.
-> 
-> snp_rmptable_init() gets invoked after svm_enable_virtualization_cpu()
-> as following :
-> ...
-> [   11.256138] kvm_amd: in svm_enable_virtualization_cpu
-> ...
-> [   11.264918] SEV-SNP: in snp_rmptable_init
-> 
-> This triggers a #GP exception in snp_rmptable_init() when snp_enable()
-> is invoked to set SNP_EN in SYSCFG MSR:
-> 
-> [   11.294289] unchecked MSR access error: WRMSR to 0xc0010010 (tried to write 0x0000000003fc0000) at rIP: 0xffffffffaf5d5c28 (native_write_msr+0x8/0x30)
-> ...
-> [   11.294404] Call Trace:
-> [   11.294482]  <IRQ>
-> [   11.294513]  ? show_stack_regs+0x26/0x30
-> [   11.294522]  ? ex_handler_msr+0x10f/0x180
-> [   11.294529]  ? search_extable+0x2b/0x40
-> [   11.294538]  ? fixup_exception+0x2dd/0x340
-> [   11.294542]  ? exc_general_protection+0x14f/0x440
-> [   11.294550]  ? asm_exc_general_protection+0x2b/0x30
-> [   11.294557]  ? __pfx_snp_enable+0x10/0x10
-> [   11.294567]  ? native_write_msr+0x8/0x30
-> [   11.294570]  ? __snp_enable+0x5d/0x70
-> [   11.294575]  snp_enable+0x19/0x20
-> [   11.294578]  __flush_smp_call_function_queue+0x9c/0x3a0
-> [   11.294586]  generic_smp_call_function_single_interrupt+0x17/0x20
-> [   11.294589]  __sysvec_call_function+0x20/0x90
-> [   11.294596]  sysvec_call_function+0x80/0xb0
-> [   11.294601]  </IRQ>
-> [   11.294603]  <TASK>
-> [   11.294605]  asm_sysvec_call_function+0x1f/0x30
-> ...
-> [   11.294631]  arch_cpu_idle+0xd/0x20
-> [   11.294633]  default_idle_call+0x34/0xd0
-> [   11.294636]  do_idle+0x1f1/0x230
-> [   11.294643]  ? complete+0x71/0x80
-> [   11.294649]  cpu_startup_entry+0x30/0x40
-> [   11.294652]  start_secondary+0x12d/0x160
-> [   11.294655]  common_startup_64+0x13e/0x141
-> [   11.294662]  </TASK>
-> 
-> This #GP exception is getting triggered due to the following errata for
-> AMD family 19h Models 10h-1Fh Processors:
-> 
-> Processor may generate spurious #GP(0) Exception on WRMSR instruction:
-> Description:
-> The Processor will generate a spurious #GP(0) Exception on a WRMSR
-> instruction if the following conditions are all met:
-> - the target of the WRMSR is a SYSCFG register.
-> - the write changes the value of SYSCFG.SNPEn from 0 to 1.
-> - One of the threads that share the physical core has a non-zero
-> value in the VM_HSAVE_PA MSR.
-> 
-> The document being referred to above:
-> https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/revision-guides/57095-PUB_1_01.pdf
-> 
-> To summarize, with kvm_amd module being built-in, KVM/SVM initialization
-> happens before host SNP is enabled and this SVM initialization
-> sets VM_HSAVE_PA to non-zero, which then triggers a #GP when
-> SYSCFG.SNPEn is being set and this will subsequently cause
-> SNP_INIT(_EX) to fail with INVALID_CONFIG error as SYSCFG[SnpEn] is not
-> set on all CPUs.
-> 
-> This patch fixes the current SNP host enabling code and effectively SNP
-> which is broken with respect to the KVM module being built-in.
-> 
-> Essentially SNP host enabling code should be invoked before KVM
-> initialization, which is currently not the case when KVM is built-in.
-> 
-> With the AMD IOMMU driver patch applied which moves SNP enable check
-> before enabling IOMMUs, snp_rmptable_init() can now be called early
-> with subsys_initcall() which enables SNP host support before KVM
-> initialization with kvm_amd module built-in.
-> 
-> Fixes: c3b86e61b756 ("x86/cpufeatures: Enable/unmask SEV-SNP CPU feature")
-> Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
-> ---
->  arch/x86/virt/svm/sev.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/virt/svm/sev.c b/arch/x86/virt/svm/sev.c
-> index 1dcc027ec77e..d5dc4889c445 100644
-> --- a/arch/x86/virt/svm/sev.c
-> +++ b/arch/x86/virt/svm/sev.c
-> @@ -571,7 +571,7 @@ static int __init snp_rmptable_init(void)
->  /*
->   * This must be called after the IOMMU has been initialized.
+> - Devices with security requirements/constraints to be isolated from the
+>   rest of the system, also using DMA API
 
-This comment is slightly stale now. Maybe modify it to indicate that the
-IOMMU SNP check must have been done.
+This is real, but again, in a mobile context does this even exist? It isn't
+like there are external PCIe ports that need securing on a phone?
 
-Thanks,
-Tom
+> - VFIO is something we are looking at the moment and have prototyped with
+>   pKVM, and it should be supported soon in Android (only for platform
+>   devices for now)
 
->   */
-> -device_initcall(snp_rmptable_init);
-> +subsys_initcall(snp_rmptable_init);
->  
->  static void set_rmp_segment_info(unsigned int segment_shift)
->  {
+Yes, this makes sense
+
+Jason
