@@ -1,351 +1,235 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0EC0170A15
-	for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 09:13:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737537229; cv=none; b=f5rnHSxA6WdKBw6BpciXSdMc1pVien6tKhWUjwa0pEuqF4VfwyFcs1LtEZYnJTkTHqwnkJH1/kFpCwrj3LG8jO+qRMMqCIZCw8/I3RAl1cy43YuQ5s5Y2j6LAq8+uuOrRbHG7xe18cVtjwC3ul9yidn78kYIcG9SPy60yGmhxVI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737537229; c=relaxed/simple;
-	bh=lJyM2M53C+oYgrKFYeHteahmuUakX1U9RqsD2aaf2AM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=i+MPhW1Xmik/ZhGRVNzb5THDEIwKbDb6DLKCkMb3/v6pkZjACrb0oo6Oqk0Nq43z4EKUrEj5Iii0DSlbl1kHjeUvkCKlXqKVCJ15Q05e4259m/mZ3D4ZgQMexWmg5FqTDUCLn0Hsg9MfmpSy39C4SUsMbsZqfVuVW8n1ITKbl2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iCFWoq4I; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC1EC84A3E;
+	Wed, 22 Jan 2025 09:33:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.20
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737538434; cv=fail; b=jeeUr/MaBEvGABRsh5v1cjM2mDRPnptsqzkG0vqvwCbPXeJTKxHgwSqcVf8OsFmLQ6gdmaGL7rxrzCvz2zcP/nQZ8rCPe51okW4IuAghYwZURt4NditLsZex7dcqOAGBmenwqSoC8bg2aGs9J415ljJwxQnbGGD/0JReOxzoY1E=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737538434; c=relaxed/simple;
+	bh=xwl5LUc/Q+ZxOmcnC8YVBDUYR2Of8tEEFfF7s+tCeKc=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=FUWGEEkZOvwc+PPsLcBQW+dREWs4eb4Pjc2goGYMLh4lI7OPdUdMswFexpWIcHOwHrqUBvlevbcIosSlQxKKdV7Z1U/Bf2VhJmgPLreB0uSPmNmVCYhbemNA2Se7i1nT7u5QdWrZthD9oCw+uuTBDGwRAOvC0dj1iPDMBGVnnRU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NBichNzt; arc=fail smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iCFWoq4I"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-385e06af753so3276497f8f.2
-        for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 01:13:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1737537225; x=1738142025; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8IkfhCmY6dDspr1DMhSmmJ7oWkBzIBYutY/kcr3VeIA=;
-        b=iCFWoq4I5IKC28V477QifzZitchysAJlolh6GGsG+2/c8mLr/tZ/4BDiaLXBRTRFv1
-         EP/x9sRBk3c5h3KljKluUPsbEw0gYHi+Klxv40Y/PNEpvHYqGGHxr3lkTkTBqTVfLvMY
-         a9t+hIZG1QltAywh0Cwa/9+CKrcGk986Pa1x8/ZK8zkhO8RmAFZUFlJvjMTAiBkIweFD
-         N2/ynUQT3JinYlopGqDQ4pFKtHqi307SFbtmUGisoL2C0gmpqJpKAHJfyIkCtGM6kpg+
-         MhpJJT3xnMwqSMNxFr36EDhEnl/Are5o24C4+OBljIUpTYp4nJbT0euas9SmzHSdtSMf
-         8L7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737537225; x=1738142025;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8IkfhCmY6dDspr1DMhSmmJ7oWkBzIBYutY/kcr3VeIA=;
-        b=JjOT0a3b0UdX8kWJNWUOK1MqP4o9SZn3uYarB1lU56b/K3Dp9c7JdsyKmhEWzikuK6
-         z++dhw+KsW1HR9GGWDMIOcG2B7eiJhRe0RsB1qNDOYCOinJso6rrCrzg4y2IFu4lAydO
-         3pht68kPCQ/6ELX3A/5WOuFCc1eEGt8wd9VBLjjLRIUbTlbEO0AgvbUI7vMnilokNSBF
-         DmsCjvjnYObyXmqdyzatI1c+fPQffMSaLtW+TBXT/Z3glP07vUdr4TIklsWTexAom3FL
-         Z/KvYMnsrreW+7mOueEUh52ug3y7m/9eZ2pLMJH2RxdDTpXAVdxtewhRcf6jzNxvgJaL
-         GNyw==
-X-Forwarded-Encrypted: i=1; AJvYcCUD7VigdqR/tAgnGp+l2kwYwg69NXuofG/Kp5e68v+BIwdjYQkmedVXpDdzZudtjELT8l9zNQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyNh/8l8JT96oQGQFXceYH/HVmOvoA7+nS0ljp34miBYY6PD3cH
-	xNF8nOZGAbruJ5tx8m4Nv0N01L0e7APY1WccytgceBLrW+C+YtnNRpi9f9nxYb5RdySj27cZwE6
-	fifrRijokTzwDEkqFe0UHMM+f7ZOl55hq52M4
-X-Gm-Gg: ASbGncsQZymteKMa/zcctwBrWyp5mcrVlcbOmAzbLrt2x9+3i4RxjZiZtrjX2n2BHr6
-	f82nAuAC7NkdEqZT5NA82e+mK2gHCOvKeDOAqK5JVXX25KGVwRAT/ZQolNordGgltuFazD88sHO
-	r6drz8
-X-Google-Smtp-Source: AGHT+IHK+Dd7SoRcT2CTFs1LpfotwW3in1hFTtTfbcnPZM3TLjGpvOahcpqaYeqbkLj0JCe1b5C4HTCvnr3bN7vIO2E=
-X-Received: by 2002:a05:6000:186f:b0:385:e105:d884 with SMTP id
- ffacd0b85a97d-38bf57b6095mr20621039f8f.46.1737537225109; Wed, 22 Jan 2025
- 01:13:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NBichNzt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1737538433; x=1769074433;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=xwl5LUc/Q+ZxOmcnC8YVBDUYR2Of8tEEFfF7s+tCeKc=;
+  b=NBichNztGh1oBvX8B/cpezLlKJElLNWj/zvkLA3XbBJLrMHwo5YT25Q7
+   T+JAFwnU3fmhuU6T/zJZMC/LHO9zDQ/R/2fC5n1ePeyvKsY85Z0nlkcup
+   Wue6aWT+botZ0wjlQxjVGOT4GGKRkRwVfhKadOuMlHe3aRTsa6Ej19PbU
+   ZBN9DikLmcp2K5oltWrym4AuSNbWotVy3AgJeI9rha1M0HtepIF4ZdEUt
+   NaAU8+UnTM1pRL9KeQHY23fGsqYaOOmh0gOyLhyB1R3AxaUOFs+EX6zH4
+   z3vgLbSE8DvJBvfDiMqYTQFPvsFnN8alhbCI+1YH6nLB80jaZOHwrfBqg
+   Q==;
+X-CSE-ConnectionGUID: Y94fqnCZRv6aCYL0DuoV8Q==
+X-CSE-MsgGUID: EsmJpQI+TgSxY/UyT3LWWQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11322"; a="37683952"
+X-IronPort-AV: E=Sophos;i="6.13,224,1732608000"; 
+   d="scan'208";a="37683952"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2025 01:33:52 -0800
+X-CSE-ConnectionGUID: q3rRBBa0SzifBpsmjA22WQ==
+X-CSE-MsgGUID: Hzj/A5L+Qryg+P196T1p9Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="112067298"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 22 Jan 2025 01:33:52 -0800
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Wed, 22 Jan 2025 01:33:51 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44 via Frontend Transport; Wed, 22 Jan 2025 01:33:51 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.44) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Wed, 22 Jan 2025 01:33:51 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=XUx8oLeH2d6YhdQxD0nqJYsSQTW/Xqr8K5wQbbX7rGYcmD0a5hpwnjWhUmLaaERgG23znGt3YcwuUsDoR0y6RvhzOuFg8o9sewxDRFhezfO0QwJmtCZ6oWRNg8mawbdGewMsNW2VHHghUYG49/p3Vn8S4A32LBVBV96R8P9Ti9yWUb7j6i9Ye7Kn5w8U7flDdhO9zOBysbE+y1FWXH2igPbjFyIF8f+7iUw3S5uzUKx9dDHYtSkTHWRkvhI8ggVDG8B+ObC2O1foWX6WE4TLVxcntylo0r1TPdO67A6KTVVwVQtn+jdE465b0U710tgVcf2ylD3ZcRznwFrndmZmmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Jj5OErtbqvP2tCpIwE2US+8IAh5gGnrEZzUjdb11FwA=;
+ b=fZaQUjwAZp1/+MT/j9g7Fcw2+CXfHCRNUDuMC0V6TUmaaolLdvzczI2fdcxV8YpAfq08uTldqZnK0M1ASUUnmIlJLAyElTnJWjSKRuSWMLiMeDmYgnHM4CTWkjItbd9cSwwb2hQERxR1kNTXZ/P5/Zo18eeMqVcj/uQMrSFfhWRkYZofAfdRwr9vNsGxp7MVZfs8Ta5yPo3JguBZ6cOlPyel0ZYDm5bmPful1+vtagnIDGOAkpMFs9Q7WCE7u0y3XcQ+mg/Tjyy6wJb/6akn5I9nX6MqpgyPyuHtLgKoj1oP6uP+yWNsfcA2Fq1h4/gCQlYfMLDJuijR64JxJXeOKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by PH0PR11MB4888.namprd11.prod.outlook.com (2603:10b6:510:32::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8377.16; Wed, 22 Jan
+ 2025 09:33:35 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%7]) with mapi id 15.20.8356.020; Wed, 22 Jan 2025
+ 09:33:35 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
+CC: "corbet@lwn.net" <corbet@lwn.net>, "will@kernel.org" <will@kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>, "suravee.suthikulpanit@amd.com"
+	<suravee.suthikulpanit@amd.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "shuah@kernel.org"
+	<shuah@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-kselftest@vger.kernel.org"
+	<linux-kselftest@vger.kernel.org>, "linux-doc@vger.kernel.org"
+	<linux-doc@vger.kernel.org>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>, "mdf@kernel.org"
+	<mdf@kernel.org>, "mshavit@google.com" <mshavit@google.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "smostafa@google.com"
+	<smostafa@google.com>, "ddutile@redhat.com" <ddutile@redhat.com>, "Liu, Yi L"
+	<yi.l.liu@intel.com>, "patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: RE: [PATCH v5 08/14] iommufd/viommu: Add iommufd_viommu_report_event
+ helper
+Thread-Topic: [PATCH v5 08/14] iommufd/viommu: Add iommufd_viommu_report_event
+ helper
+Thread-Index: AQHbYSdBMlcOcpQt3kG1noLochuwD7MQS3cAgAAP+QCAABREAIADyIOAgADmPQCAAAdNAIAAAd6AgAAN/YCAARw/AIAFRUmAgAR2FACAACrRgIABbFiAgAAWGACAAAPzAIAADsUAgAADTACAAAdFgIAALRcAgABztQCAACOA4A==
+Date: Wed, 22 Jan 2025 09:33:35 +0000
+Message-ID: <BN9PR11MB527600A5B8DC271075936A918CE12@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <Z4rVg1Xg5TCiFlSb@nvidia.com> <20250120181854.GQ5556@nvidia.com>
+ <Z463eXfgNArCOfPn@nvidia.com> <20250121183611.GY5556@nvidia.com>
+ <Z4/7pGx6F1mpAUuV@nvidia.com> <20250121200924.GZ5556@nvidia.com>
+ <Z5ALWFVTOSC/8+ji@nvidia.com> <20250121211404.GB5556@nvidia.com>
+ <Z5AUNVHzJPATVqAY@nvidia.com> <20250122002128.GC5556@nvidia.com>
+ <Z5CbGKYbwy+qPjyh@nvidia.com>
+In-Reply-To: <Z5CbGKYbwy+qPjyh@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH0PR11MB4888:EE_
+x-ms-office365-filtering-correlation-id: 384d5c07-ea37-4501-2636-08dd3ac7d84f
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|1800799024|7416014|376014|38070700018;
+x-microsoft-antispam-message-info: =?us-ascii?Q?q+MiHxTmF6miYvOQE5Pd7+iO0ljsPDMZ+cl4OBwdLVJv/oYE3lJsIUdID+Ei?=
+ =?us-ascii?Q?WQOfIbZpQRf8iXgZ9cWm3Dh/Kp3DCocxZOVPOPX1yVuRDrR7ZOsr2VXnp0lJ?=
+ =?us-ascii?Q?ziux12qpJfn7MP6f2OCaeHMp4b1qA1OSmdM0IHsXWCTqF8W3kHd+1PA5wrW+?=
+ =?us-ascii?Q?zJ8xTut9+DbW4A4MAZ+kOVb9zSEfy+n8pa0DI9TLAA6/t/jVMujf1xijdzlr?=
+ =?us-ascii?Q?dYsi1diJEdHwyOE82dF8PnGZima3TC/cMv9t+3WgCmC2NBS3M4TZHcTmRdyD?=
+ =?us-ascii?Q?bE4ksvuqjrqteWMUoT7eFcpE7xfmrdooVeD6MGhuAitpcZSHLmghhE2cKE7g?=
+ =?us-ascii?Q?F6ZqK3i+CO4if13a9AJAqGwI4tc/4xKG0n7XjiC/RciTv65wZEuw++ES15z7?=
+ =?us-ascii?Q?Ro74paKOQ0H2/zPvFcrolUG9++dNh/P/cnls9suwqfL/urTTGtFKdpiDfIs9?=
+ =?us-ascii?Q?GrqLwQpfYULusRgM8WNUXvRTiHG4HA4PQrFjl9y9vd6rW3+ZxOhaD54xAb27?=
+ =?us-ascii?Q?Ei/mt/1ql1JJVrntnxOTyW0eCq2LSPRBKu8To5de8S67/rdoUycc4m179s3x?=
+ =?us-ascii?Q?3xjgsFbv2BtDRsarUPNjo4XqS5Bo2cU9Z9pMTShFzT6A2ERmf9+r63249d6h?=
+ =?us-ascii?Q?nWLdINGTd9HsmpDZ+Puj56GLPcxe8ylWWJRs8wWVc43ERjHFP2ryNoQJpV8n?=
+ =?us-ascii?Q?ngSPK87X3syk3jGjM5GHHPKBzt/J4rGf7u3GJxWsPRSswSKuwl8HblUJdu0l?=
+ =?us-ascii?Q?Xo++NpJ4n9BUoZiWRu28LjpZZo9lpYB8LWEw65w0RXiNLkmh+2XDNyZPtg1z?=
+ =?us-ascii?Q?vkzbAvfDOOhV3wq46Dwhvdq/28+1rxNMjpQS/2tRHPaJZYgjtdxLpwa9FxEA?=
+ =?us-ascii?Q?z0ZPf/dd0Cb7DB3Wb2SIgCHo7SpUi7zBWl7wAkIQrYT2/b0T4xLUMEhX/JRJ?=
+ =?us-ascii?Q?waOeu2ayP8KWOUihRAVsWDrVDXamRCRWEFxmif01HzagTPS0bNSrJTbCRU7t?=
+ =?us-ascii?Q?nQSbBtXGac1F3AVWH1owucoTavwGy8dIBWvzUyInRjRy2O0LsDwUdoAUXJ1/?=
+ =?us-ascii?Q?LgGIvGTGsMEyx3LAlpGXzgwBNOZzmmsBIawShxbI7k8JfhNABh29m4ijDlak?=
+ =?us-ascii?Q?2X0XrceQqGsu9zvOL8uCMYCxO3ayrXN1tmVHlID0mo/1g+XU3Kv6UQKdgZPG?=
+ =?us-ascii?Q?2OVGt2YRE3LeavYCAOi6uUHqcOhBLVUYRoqilaXFTwI8aiTIuzHn0mzK1IWf?=
+ =?us-ascii?Q?YJE0O0k3Ig9zkNth2G8nQw/Z1qmuut07VSBZBSA7ze7tw+1ucPLUJpXUpPxh?=
+ =?us-ascii?Q?KG0rkypzghyFCwBuT78ylvYS+fKbvDDH8ELn2hKeapXj8ObjSVsOGuoK6DPo?=
+ =?us-ascii?Q?U6L+PXVqoRRWK7gJCArTbqB+n9cQfAVvbbnQN/Cyt4gMNDNOus0+S9DXIOq7?=
+ =?us-ascii?Q?L+fQnlpuykR1omyoR1uNWk+IiTeXrbuV?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?8xVf0X4kV2WRv7dj4T2xXy+bJ/hLnG0sU5+u3nS5XiXEI5J6wpTd3VPlr5EB?=
+ =?us-ascii?Q?J/a+Ar/sdjvlUwXTmLslBCHefbA806fOoC/kwoZ2rIoV9hZBX7Yt6HyMywMe?=
+ =?us-ascii?Q?fPI2mtoO3AcTNCrgf/0WmTu6ZSphoftZ+7zD83B5lCB7/ydZWs2MK/XkrIqB?=
+ =?us-ascii?Q?kI0kEm6pw2aeIXBlutP2GVt3Th6xw76pDLwKRqE9dLrz+yZ3IJ46Pk09cqJi?=
+ =?us-ascii?Q?AMedAyhHt5KGg970agbqZ3i8adDZQokJM2jVsLK46xOud1XqYXvunZcFjsM0?=
+ =?us-ascii?Q?0ZrV0PSrv5Yv48rz+rGrThNMGwg+sSn6XzzOk3nKuNhnx3tVn1RebvxpmIPi?=
+ =?us-ascii?Q?SfgO7jGopIM1UG2cohb07ZkSVT8CuVi5oE70B6URa7MCWAi6NPjPrqNf8XdH?=
+ =?us-ascii?Q?X2ntdorcly+afX4zYXE8XjFhX9xa6FFqjlyGccYhCOni6ILsF2o2EbuC47BW?=
+ =?us-ascii?Q?WC+i1b30+xfwTxmH60Opurctp/SLZ4xwByRvXDSdqRV2E8SvfWeq5SZM4Qxj?=
+ =?us-ascii?Q?Uc0u24cu6SAr5I9KApIDie/ED1w0RWazBMdW1nWiTi5H0Objp6r6JTcC6nxH?=
+ =?us-ascii?Q?TGMDKl2hpYL/mmbPe/+AmJrBMXBOVCco3e9mQ04xO6Nzi8rpt90jC2jjBao2?=
+ =?us-ascii?Q?46ARto+Enf2Xs/YJpWyg7B1B1qLDqsC9QwBRf1V+V8BC7oRjiLACEnfZhDxf?=
+ =?us-ascii?Q?FOJP2BjpCMMCxQkfvJ+mausLwLN9kc40qjzaptzNHK9/aWxuH8HOLNNTb6Tn?=
+ =?us-ascii?Q?xneGX+dxnT4RYMG2/3731tbgNuAVV7gF06tpGOW6K0zH+oaRvyNixBiiedd2?=
+ =?us-ascii?Q?hXZjqUS+95mPPvww4os5e6AzXDIQHA9q+9xVphx+Jab5TEBVv/5pz38vJhGX?=
+ =?us-ascii?Q?5gaeNm39VP9xXNgr863lA5Nz1Hq7LLBbmSfiW9BiP3oHvuEhSbD099G91xLu?=
+ =?us-ascii?Q?AODSLtLEYcJVzX9ciC0iiL0ebG+/glFE/lRt7GDSTRYqOBQHnls3g3QG2kB1?=
+ =?us-ascii?Q?z2LbdHV4IkUu6HwY41cmZ3PbcH4RIlTNh45mPYnZ9C7UCxZd2zskcxA7uqdH?=
+ =?us-ascii?Q?TNDykry/0F30oRjAWo5haZ47x+yHiVNEPm18ImYaL2O8RfNmkXNxxvv308Ly?=
+ =?us-ascii?Q?kkco1mLDlNWNt6xNkuxLBzHwWdacJEdFs6imb4xNcg3ZiQNZc1izKB9BBPI0?=
+ =?us-ascii?Q?1j8yQITdbWOjum5kxc0aHYH5jOM22SRiUbuOpAtuzPz36ArD6XrPeyTTvcDr?=
+ =?us-ascii?Q?sNnWThhKO1FdWqlQkZkx1A5xuh9Bx81A8aRryzmbdkgEIGZrhyLof2kNu6Vm?=
+ =?us-ascii?Q?6PjmHYE82hQIgXpHpV6gIAxnAIVYbDk33374r9gMOrCtgfxbIDJJwp4tmaqV?=
+ =?us-ascii?Q?7njXSibSDetzAQ0hi6u5xqdYUtaOe09GCx8LCjZYhgXLLra+GaBzSgCpC784?=
+ =?us-ascii?Q?jOZuIkPlnU9OpkiwUVPKJoQYoqjiFCy7hiwveTnRJhTPs8T8uYpu9w1aziQM?=
+ =?us-ascii?Q?DjnEmBbbT9a3fBrEp1phJABeFJ+TWWWPJ48hgaWOa65wSmYtHyaEh7F7HQKs?=
+ =?us-ascii?Q?fFdMOVi1lS/EGqXT+7HJygwEn1iIAbf8X02Ri800?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250121191432.1178734-1-abdiel.janulgue@gmail.com> <20250121191432.1178734-3-abdiel.janulgue@gmail.com>
-In-Reply-To: <20250121191432.1178734-3-abdiel.janulgue@gmail.com>
-From: Alice Ryhl <aliceryhl@google.com>
-Date: Wed, 22 Jan 2025 10:13:32 +0100
-X-Gm-Features: AbW1kvZBDfEun-f5Vo2uhtkolwcUGu5Q3JEc1au9tXb4idQdtbWRfdRIBZEiIxo
-Message-ID: <CAH5fLgjVjAVwR+osD4ajKfyewdWPpkSyV+oy=ppaCULUdPqB7w@mail.gmail.com>
-Subject: Re: [PATCH v10 2/3] rust: add dma coherent allocator abstraction.
-To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Cc: rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com, 
-	dakr@kernel.org, robin.murphy@arm.com, Miguel Ojeda <ojeda@kernel.org>, 
-	Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>, 
-	Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
-	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, 
-	open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 384d5c07-ea37-4501-2636-08dd3ac7d84f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jan 2025 09:33:35.7848
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Gw52n7Tyc9tDLdjMpK+DbWpM216bU8M/QiFSjC3CM7XzoPSnJueF6fn/FPepVaBdLKOW6UHPauECniOzRGkg7A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4888
+X-OriginatorOrg: intel.com
 
-On Tue, Jan 21, 2025 at 8:14=E2=80=AFPM Abdiel Janulgue
-<abdiel.janulgue@gmail.com> wrote:
->
-> Add a simple dma coherent allocator rust abstraction. Based on
-> Andreas Hindborg's dma abstractions from the rnvme driver, which
-> was also based on earlier work by Wedson Almeida Filho.
->
-> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-> ---
->  rust/bindings/bindings_helper.h |   1 +
->  rust/kernel/dma.rs              | 281 ++++++++++++++++++++++++++++++++
->  rust/kernel/lib.rs              |   1 +
->  3 files changed, 283 insertions(+)
->  create mode 100644 rust/kernel/dma.rs
->
-> diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_hel=
-per.h
-> index 5c4dfe22f41a..49bf713b9bb6 100644
-> --- a/rust/bindings/bindings_helper.h
-> +++ b/rust/bindings/bindings_helper.h
-> @@ -11,6 +11,7 @@
->  #include <linux/blk_types.h>
->  #include <linux/blkdev.h>
->  #include <linux/cred.h>
-> +#include <linux/dma-mapping.h>
->  #include <linux/errname.h>
->  #include <linux/ethtool.h>
->  #include <linux/file.h>
-> diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-> new file mode 100644
-> index 000000000000..ebae7270190e
-> --- /dev/null
-> +++ b/rust/kernel/dma.rs
-> @@ -0,0 +1,281 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +//! Direct memory access (DMA).
-> +//!
-> +//! C header: [`include/linux/dma-mapping.h`](srctree/include/linux/dma-=
-mapping.h)
-> +
-> +use crate::{
-> +    bindings, build_assert,
-> +    device::Device,
-> +    error::code::*,
-> +    error::Result,
-> +    transmute::{AsBytes, FromBytes},
-> +    types::ARef,
-> +};
-> +
-> +/// Possible attributes associated with a DMA mapping.
-> +///
-> +/// They can be combined with the operators `|`, `&`, and `!`.
-> +///
-> +/// Values can be used from the [`attrs`] module.
-> +#[derive(Clone, Copy, PartialEq)]
-> +#[repr(transparent)]
-> +pub struct Attrs(u32);
-> +
-> +impl Attrs {
-> +    /// Get the raw representation of this attribute.
-> +    pub(crate) fn as_raw(self) -> crate::ffi::c_ulong {
-> +        self.0 as _
-> +    }
-> +
-> +    /// Check whether `flags` is contained in `self`.
-> +    pub fn contains(self, flags: Attrs) -> bool {
-> +        (self & flags) =3D=3D flags
-> +    }
-> +}
-> +
-> +impl core::ops::BitOr for Attrs {
-> +    type Output =3D Self;
-> +    fn bitor(self, rhs: Self) -> Self::Output {
-> +        Self(self.0 | rhs.0)
-> +    }
-> +}
-> +
-> +impl core::ops::BitAnd for Attrs {
-> +    type Output =3D Self;
-> +    fn bitand(self, rhs: Self) -> Self::Output {
-> +        Self(self.0 & rhs.0)
-> +    }
-> +}
-> +
-> +impl core::ops::Not for Attrs {
-> +    type Output =3D Self;
-> +    fn not(self) -> Self::Output {
-> +        Self(!self.0)
-> +    }
-> +}
-> +
-> +/// DMA mapping attrributes.
-> +pub mod attrs {
-> +    use super::Attrs;
-> +
-> +    /// Specifies that reads and writes to the mapping may be weakly ord=
-ered, that is that reads
-> +    /// and writes may pass each other.
-> +    pub const DMA_ATTR_WEAK_ORDERING: Attrs =3D Attrs(bindings::DMA_ATTR=
-_WEAK_ORDERING);
-> +
-> +    /// Specifies that writes to the mapping may be buffered to improve =
-performance.
-> +    pub const DMA_ATTR_WRITE_COMBINE: Attrs =3D Attrs(bindings::DMA_ATTR=
-_WRITE_COMBINE);
-> +
-> +    /// Lets the platform to avoid creating a kernel virtual mapping for=
- the allocated buffer.
-> +    pub const DMA_ATTR_NO_KERNEL_MAPPING: Attrs =3D Attrs(bindings::DMA_=
-ATTR_NO_KERNEL_MAPPING);
-> +
-> +    /// Allows platform code to skip synchronization of the CPU cache fo=
-r the given buffer assuming
-> +    /// that it has been already transferred to 'device' domain.
-> +    pub const DMA_ATTR_SKIP_CPU_SYNC: Attrs =3D Attrs(bindings::DMA_ATTR=
-_SKIP_CPU_SYNC);
-> +
-> +    /// Forces contiguous allocation of the buffer in physical memory.
-> +    pub const DMA_ATTR_FORCE_CONTIGUOUS: Attrs =3D Attrs(bindings::DMA_A=
-TTR_FORCE_CONTIGUOUS);
-> +
-> +    /// This is a hint to the DMA-mapping subsystem that it's probably n=
-ot worth the time to try
-> +    /// to allocate memory to in a way that gives better TLB efficiency.
-> +    pub const DMA_ATTR_ALLOC_SINGLE_PAGES: Attrs =3D Attrs(bindings::DMA=
-_ATTR_ALLOC_SINGLE_PAGES);
-> +
-> +    /// This tells the DMA-mapping subsystem to suppress allocation fail=
-ure reports (similarly to
-> +    /// __GFP_NOWARN).
-> +    pub const DMA_ATTR_NO_WARN: Attrs =3D Attrs(bindings::DMA_ATTR_NO_WA=
-RN);
-> +
-> +    /// Used to indicate that the buffer is fully accessible at an eleva=
-ted privilege level (and
-> +    /// ideally inaccessible or at least read-only at lesser-privileged =
-levels).
-> +    pub const DMA_ATTR_PRIVILEGED: Attrs =3D Attrs(bindings::DMA_ATTR_PR=
-IVILEGED);
-> +}
-> +
-> +/// An abstraction of the `dma_alloc_coherent` API.
-> +///
-> +/// This is an abstraction around the `dma_alloc_coherent` API which is =
-used to allocate and map
-> +/// large consistent DMA regions.
-> +///
-> +/// A [`CoherentAllocation`] instance contains a pointer to the allocate=
-d region (in the
-> +/// processor's virtual address space) and the device address which can =
-be given to the device
-> +/// as the DMA address base of the region. The region is released once [=
-`CoherentAllocation`]
-> +/// is dropped.
-> +///
-> +/// # Invariants
-> +///
-> +/// For the lifetime of an instance of [`CoherentAllocation`], the cpu a=
-ddress is a valid pointer
-> +/// to an allocated region of consistent memory and we hold a reference =
-to the device.
-> +pub struct CoherentAllocation<T: AsBytes + FromBytes> {
-> +    dev: ARef<Device>,
-> +    dma_handle: bindings::dma_addr_t,
-> +    count: usize,
-> +    cpu_addr: *mut T,
-> +    dma_attrs: Attrs,
-> +}
-> +
-> +impl<T: AsBytes + FromBytes> CoherentAllocation<T> {
-> +    /// Allocates a region of `size_of::<T> * count` of consistent memor=
-y.
-> +    ///
-> +    /// # Examples
-> +    ///
-> +    /// ```
-> +    /// use kernel::device::Device;
-> +    /// use kernel::dma::{attrs::*, CoherentAllocation};
-> +    ///
-> +    /// # fn test(dev: &Device) -> Result {
-> +    /// let c: CoherentAllocation<u64> =3D CoherentAllocation::alloc_att=
-rs(dev.into(), 4, GFP_KERNEL,
-> +    ///                                                                 =
- DMA_ATTR_NO_WARN)?;
-> +    /// # Ok::<(), Error>(()) }
-> +    /// ```
-> +    pub fn alloc_attrs(
-> +        dev: ARef<Device>,
-> +        count: usize,
-> +        gfp_flags: kernel::alloc::Flags,
-> +        dma_attrs: Attrs,
-> +    ) -> Result<CoherentAllocation<T>> {
-> +        build_assert!(
-> +            core::mem::size_of::<T>() > 0,
-> +            "It doesn't make sense for the allocated type to be a ZST"
-> +        );
-> +
-> +        let size =3D count
-> +            .checked_mul(core::mem::size_of::<T>())
-> +            .ok_or(EOVERFLOW)?;
-> +        let mut dma_handle =3D 0;
-> +        // SAFETY: device pointer is guaranteed as valid by invariant on=
- `Device`.
-> +        // We ensure that we catch the failure on this function and thro=
-w an ENOMEM
-> +        let ret =3D unsafe {
-> +            bindings::dma_alloc_attrs(
-> +                dev.as_raw(),
-> +                size,
-> +                &mut dma_handle,
-> +                gfp_flags.as_raw(),
-> +                dma_attrs.as_raw(),
-> +            )
-> +        };
-> +        if ret.is_null() {
-> +            return Err(ENOMEM);
-> +        }
-> +        // INVARIANT: We just successfully allocated a coherent region w=
-hich is accessible for
-> +        // `count` elements, hence the cpu address is valid. We also hol=
-d a refcounted reference
-> +        // to the device.
-> +        Ok(Self {
-> +            dev,
-> +            dma_handle,
-> +            count,
-> +            cpu_addr: ret as *mut T,
-> +            dma_attrs,
-> +        })
-> +    }
-> +
-> +    /// Performs the same functionality as `alloc_attrs`, except the `dm=
-a_attrs` is 0 by default.
-> +    pub fn alloc_coherent(
-> +        dev: ARef<Device>,
-> +        count: usize,
-> +        gfp_flags: kernel::alloc::Flags,
-> +    ) -> Result<CoherentAllocation<T>> {
-> +        CoherentAllocation::alloc_attrs(dev, count, gfp_flags, Attrs(0))
-> +    }
-> +
-> +    /// Returns the device, base address, dma handle, attributes and the=
- size of the
-> +    /// allocated region.
-> +    ///
-> +    /// The caller takes ownership of the returned resources, i.e., will=
- have the responsibility
-> +    /// in calling `bindings::dma_free_attrs`. The allocated region is v=
-alid as long as
-> +    /// the returned device exists.
-> +    pub fn into_parts(
-> +        self,
-> +    ) -> (
-> +        ARef<Device>,
-> +        *mut T,
-> +        bindings::dma_addr_t,
-> +        crate::ffi::c_ulong,
-> +        usize,
-> +    ) {
-> +        let size =3D self.count * core::mem::size_of::<T>();
-> +        let ret =3D (
-> +            self.dev.clone(),
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Wednesday, January 22, 2025 3:16 PM
+>=20
+> On Tue, Jan 21, 2025 at 08:21:28PM -0400, Jason Gunthorpe wrote:
+> > On Tue, Jan 21, 2025 at 01:40:05PM -0800, Nicolin Chen wrote:
+> > > > There is also the minor detail of what happens if the hypervisor HW
+> > > > queue overflows - I don't know the answer here. It is security
+> > > > concerning since the VM can spam DMA errors at high rate. :|
+> > >
+> > > In my view, the hypervisor queue is the vHW queue for the VM, so
+> > > it should act like a HW, which means it's up to the guest kernel
+> > > driver that handles the high rate DMA errors..
+> >
+> > I'm mainly wondering what happens if the single physical kernel
+> > event queue overflows because it is DOS'd by a VM and the hypervisor
+> > cannot drain it fast enough?
+> >
+> > I haven't looked closely but is there some kind of rate limiting or
+> > otherwise to mitigate DOS attacks on the shared event queue from VMs?
+>=20
+> SMMUv3 reads the event out of the physical kernel event queue,
+> and adds that to faultq or veventq or prints it out. So, it'd
+> not overflow because of DOS? And all other drivers should do
+> the same?
+>=20
 
-Calling clone here increments the refcount, but you don't want to do
-that since it leaks a count.
+"add that to faultq or eventq" could take time or the irqthread
+could be preempted for various reasons then there is always an
+window within which an overflow condition could occur due to
+the smmu driver incapable of fetching pending events timely.
 
-otherwise lgtm
+On VT-d the driver could disable reporting non-recoverable fault
+for a given device via a control bit in the PASID entry, but I didn't
+see a similar knob for PRQ.
 
-Alice
+and the overflow situation on intel-iommu driver is higher than
+arm. The irqthread reads head/tail once, batch-reports  the
+events in-between, and then updates the head register...
+
+
