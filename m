@@ -1,63 +1,63 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C89F21170D
-	for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 11:04:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DABD211494
+	for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 11:28:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737543874; cv=none; b=gEv9R39KPhnl2IgW73w0h8XnPEC9j3Dui8vOeph7+QHk/L6k7uEj+TV01ivk6mjUViCNFB2gNVaqR4arDIqOlqQZbfAn+E3xVio0CFz/ELNHoHLQJjYO2wBlEAUtTvOAuY5kB0elLsEaQOVTC2IVWu0ftAuoP3wSny4eoGlHCmk=
+	t=1737545331; cv=none; b=jN69a5KY42IJabpQBEuNWMhkrKlK+8rigJtNR9RtgZq6cY8iCWg0gwbo/q92aCdbKsKBNFu5lL70D6qxPRBAgru16YY5+YLiQv8fZN3UUHNeCeAB67W/OxMoKkGUm8p55DVVjpnnpD51jiNiY5TjW/QE4nSCxE+Lp0CXwrn7FVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737543874; c=relaxed/simple;
-	bh=utqVEO5I67Qn1SxggtlBg2uyccJsm9B3vF55yUEBW0Q=;
+	s=arc-20240116; t=1737545331; c=relaxed/simple;
+	bh=4fKUIomfAcgC02nsMlRRquKUlHaw7xCNWdY44C2mH3s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YuISGqvGSOtj8Vxf9afhjxb60lPUa0TjsuYe+6CCT0DRBMLH9r+wNFkjKdlGUojpAqMdR4SVu9yFTBSZtUNkLgxYRzS/XOQkaIYJ2CM2zL2HCLhaOHvblinCEsTdXzMaVflAPVAeMBQ5GAxUPlBiFa0OAjaGkemVH5/Wu/fN5Fc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MBEDRsmS; arc=none smtp.client-ip=209.85.128.54
+	 Content-Type:Content-Disposition:In-Reply-To; b=FbnA8tYYJd9GvPHDQpnvm0PuGQZ8FQeaSgGJJPwae2ciac5ezku1Rhj2z9GL85mf1UYuMqnq5dgT94hsiGf1l4yhPkIDXtwzSzURCvcKR4Z0+OP0m8Kw2XK34/Pxoym1pomkKuvDJQlayfvGxLTmzPuO4f5UI+EXCEYo18w4ma8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KFN1BTJJ; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MBEDRsmS"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-43621d2dd4cso49405e9.0
-        for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 03:04:32 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KFN1BTJJ"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4368a290e0dso37575e9.1
+        for <iommu@lists.linux.dev>; Wed, 22 Jan 2025 03:28:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1737543871; x=1738148671; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1737545327; x=1738150127; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=6x8SiYYYUQFFMCokfouR/mswZBMHq350sgLQtsTuQB0=;
-        b=MBEDRsmSuyy9VX32l8GdWBJEHNd9FLTUtT8vI59mYnkgeQOKmRwdgx5biwSwpcNuOz
-         zikBAOgZlrfSiXoQnQYMvLqUNfOcL0IHebCiJYe55C1YlCEAEo5HXsAlgyuqyU1PnuJl
-         tQ9MHlpZlZpexAzYCk/mZnErWcpsoxIcsQ1F0JSJef+ZYWbotvgb5upXO0JAzL2Py6ar
-         86RYYu77RzKwJxFm9InS9EW+RXcfKdXPeUKzQBEG6MizCxpEsG9DQqm+vxtvdvcX0NfE
-         LEVi6j5mAyhcGOCXabLfLqMQ/jQ8JhFnI4wVQz+z0UqYP0l+eWMzJt2UuQOSW0nxLuUH
-         GM7g==
+        bh=CsNhBEt0dk+OxPbn5Xdlhe7W26EoJocfUoky1jHz1O0=;
+        b=KFN1BTJJbXLpzlZi9wlwG/XfQJuNBC2JoQXSjOb/W1z3ilhqezkC/r74QkiA+Yz8Xa
+         Jk/FpfuXWJW3dKdG8pMdMbYisjyziNzT94YMWmtDtU5Q5z13KbwzRv66Zeag+ISFExtI
+         f4NIW/thJcZwQJbiR1OQ/yCagijDEdzSx2KpKEeQr80n7fj+84gTeWwoex3TaX/3mlMH
+         1gYhe0d1uLqHTDPRIc7/c5P+oVsqHGk07eFLx+kAO4a6dRqnVA6IPiMM5L+mrBQ9dZJ7
+         mOSpfavc2qIVrbD8Ow+ObUBaG0fLzIv393UU+sNVi1W0DSkH/XAGtkOb6spqBQBlZS+2
+         o9Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737543871; x=1738148671;
+        d=1e100.net; s=20230601; t=1737545327; x=1738150127;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6x8SiYYYUQFFMCokfouR/mswZBMHq350sgLQtsTuQB0=;
-        b=BibI2eI/8e75KquZhW++7BMfXrhd/+MVxM+HI/vB76p2I2nTn3ucboqNxKpVaI4pHN
-         cyOdWsH3pyQmVOQtqkgAampzpkb1Z0WOuGvtvCUXb+TVGSE8XBeHbbniW9aCg5cTIQDY
-         Uqx4/TQJUJam61no50VfwPTE2b7aScr3QsxgytvIkVnuC3bWauBnxJK0Ew+f26pBQovg
-         QIYDcCwhe5ryOF0+0yg5ykLiNCzBDBiQABR9TntOk4iqXreKLbWFPZNBsY3cH8M9eMSx
-         6QGWsRukhi5P6RarjhFtSt/JPN+MjXSSKGyXndCNET34Aje8AYcPC7OXWJ5DZyH2yZil
-         Y7hA==
-X-Forwarded-Encrypted: i=1; AJvYcCWeyf9nHui4hYfnJz2YoC9qeIADWiVzvzLVNJGUyP+EfgYEFyZfq3T0mrki6nkq3jSstmwjEw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxN+05bMeSQWC8meTnzICEQS3MxfAXzc4FfeZzg5sYftEuGXKnn
-	PASZe/Pjl7gxhu7Z4N0qGfskCgx5bzT4Hef1k5OdrRQc1QTdlcALLIFHagbZmQ==
-X-Gm-Gg: ASbGncscJ2sB9IAGBSUgZfUZ5SzoWNR1UHGJm2U2BkidxF1Mkvbd1rP+RBJtdG4uRu5
-	zQcKTAjo5nulptYIXNqksVxhefAlswzw/vfg+ENubcqYs+J7FWcVAJAoIjYW0SYSbLeJRSkWst7
-	v35OrQyrkpiBOd14qOJOCfYTnYzphbJHGWgWjmP6pR+ICQOz1ljwjDV0M7hWqlfT7D33ZK54Jp3
-	WBS0NpmcvzhQnnnqIWVFqFwSlLXBCcGbXOcqwrXBgMrMz+VIFAOpAQHtfZICTy4sakrnRPzDKmS
-	YBH0re5a7Es7QNr0hhi2iSy6S/tquA==
-X-Google-Smtp-Source: AGHT+IHCcPrZhJYSQbULZrw9Pp5790wT0aW6WD0dYCBGNGReHretNQSCRXdvXPT2A8uBJ9bQ0Dv2SQ==
-X-Received: by 2002:a05:600c:1d8f:b0:436:ed00:9e3 with SMTP id 5b1f17b1804b1-438b21c931dmr1151165e9.6.1737543870607;
-        Wed, 22 Jan 2025 03:04:30 -0800 (PST)
+        bh=CsNhBEt0dk+OxPbn5Xdlhe7W26EoJocfUoky1jHz1O0=;
+        b=nHo9BQzeg67VMzpZpU6mR6MWP6nnuHPfK6Gz+Fbshrlwz1aMURycEzS2ihbYsimmQV
+         roh7JtpWInySrUGno4vrAztwxe8n299z4hxJzo2CSqHmphV3mrEs+d3JaMwYXR/kxWeW
+         zurc3XR9/UDP1OzqXN2YtHtClt/JAQ8NnEqGTXkAciB/CwTocE1ATLdXQE87X+0IvjqV
+         nf4BrUUrJe3KVDM0Y0lJcZh1k2qB1FOKIaeJGsFB31/8G02cvRaNo8Uxnzf/1iaEbg7h
+         m1hFDnpirq8NIjdaQ9msQacND8UvfdNzIzL5A8u6B7QcYc7sE++hYL3PKH7paIZp3tPJ
+         bf9A==
+X-Forwarded-Encrypted: i=1; AJvYcCUhTStjMB43t+7fWBI9RtlI0jRftgg1B9CZ5eQku9rjOzsLNLeFDCaObm6LgnRCkNwmGzg2bQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyRRfDQnjfrwEFBTa+AI+nvf5zIB9LSGn1FTgu5vTWLR0kziFoD
+	jj1ZTSQ+RxBrZAbTleKW0/xyAjIOPrJnwj1FfhKYm+jJQHzQz8e0DRIiGoBJfw==
+X-Gm-Gg: ASbGncvhXIFlStodEiqwywHyUYrfbt08HA5P2eoEAXpFVQKAMUN04nhX133HHtJIKLL
+	ylEpkhu4bdxkoqKvdTfeHyi6wZ2Zhao4Z7J1zfSmgs+A1UqOHfH/FYMTb8iMKUqdp2NJVhXQDYb
+	+bVabDhs58me93urh8o0o/DwJjJA1I8GbRQYlNguyeYyFzPJf7t0gMpmk6Kupzap+QcTB+Kjkjk
+	1PZFhHvVsBybQfq7Ss0zJXKdHQGpEk+PvAVyrRWekaH+lX++Y8/kTlq2t9TVMimL+t0DG0fBHOq
+	ma1JLJJuRTkUWd3uR3H1SEZFT7oudw==
+X-Google-Smtp-Source: AGHT+IECuRWfKnePAPaGqtvOA0k5raSnulcZedW9oYouCa9keSSKkUoBJV4FBWh1VG9lH6tWjMpe+A==
+X-Received: by 2002:a05:600c:1c96:b0:42c:9e35:cde6 with SMTP id 5b1f17b1804b1-438b218ae0dmr1070955e9.2.1737545327264;
+        Wed, 22 Jan 2025 03:28:47 -0800 (PST)
 Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38bf3221baasm16122838f8f.35.2025.01.22.03.04.29
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-438b3124a14sm21260335e9.0.2025.01.22.03.28.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jan 2025 03:04:30 -0800 (PST)
-Date: Wed, 22 Jan 2025 11:04:24 +0000
+        Wed, 22 Jan 2025 03:28:46 -0800 (PST)
+Date: Wed, 22 Jan 2025 11:28:42 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: "Tian, Kevin" <kevin.tian@intel.com>
 Cc: Jason Gunthorpe <jgg@ziepe.ca>,
@@ -83,15 +83,13 @@ Cc: Jason Gunthorpe <jgg@ziepe.ca>,
 	"danielmentz@google.com" <danielmentz@google.com>,
 	"tzukui@google.com" <tzukui@google.com>
 Subject: Re: [RFC PATCH v2 00/58] KVM: Arm SMMUv3 driver for pKVM
-Message-ID: <Z5DQuNn3GoU1vYPV@google.com>
+Message-ID: <Z5DWag7ZKCPl1Eje@google.com>
 References: <20241212180423.1578358-1-smostafa@google.com>
  <20241212194119.GA4679@ziepe.ca>
  <Z1yNWI9lBNIZg6Le@google.com>
  <20250102201614.GA26854@ziepe.ca>
  <Z35rEeSVwfZVA9IF@google.com>
- <BN9PR11MB52767756EE35DA2359C351F08C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250116191455.GC674319@ziepe.ca>
- <BN9PR11MB52766732572A17627D16CBAC8C1B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <BN9PR11MB52760686ABB3145E44BAD95A8C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -101,103 +99,119 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <BN9PR11MB52766732572A17627D16CBAC8C1B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB52760686ABB3145E44BAD95A8C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On Fri, Jan 17, 2025 at 06:57:12AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@ziepe.ca>
-> > Sent: Friday, January 17, 2025 3:15 AM
+Hi Kevin,
+
+On Thu, Jan 16, 2025 at 08:51:11AM +0000, Tian, Kevin wrote:
+> > From: Mostafa Saleh <smostafa@google.com>
+> > Sent: Wednesday, January 8, 2025 8:10 PM
 > > 
-> > On Thu, Jan 16, 2025 at 06:39:31AM +0000, Tian, Kevin wrote:
-> > > > From: Mostafa Saleh <smostafa@google.com>
-> > > > Sent: Wednesday, January 8, 2025 8:10 PM
-> > > >
-> > > > On Thu, Jan 02, 2025 at 04:16:14PM -0400, Jason Gunthorpe wrote:
-> > > > > On Fri, Dec 13, 2024 at 07:39:04PM +0000, Mostafa Saleh wrote:
-> > > > > > Yeah, SVA is tricky, I guess for that we would have to use nesting,
-> > > > > > but tbh, I don’t think it’s a deal breaker for now.
-> > > > >
-> > > > > Again, it depends what your actual use case for translation is inside
-> > > > > the host/guest environments. It would be good to clearly spell this out..
-> > > > > There are few drivers that directly manpulate the iommu_domains of a
-> > > > > device. a few gpus, ath1x wireless, some tegra stuff, "venus". Which
-> > > > > of those are you targetting?
-> > > > >
-> > > >
-> > > > Not sure I understand this point about manipulating domains.
-> > > > AFAIK, SVA is not that common, including mobile spaces but I can be
-> > wrong,
-> > > > that’s why it’s not a priority here.
+> > On Thu, Jan 02, 2025 at 04:16:14PM -0400, Jason Gunthorpe wrote:
+> > > On Fri, Dec 13, 2024 at 07:39:04PM +0000, Mostafa Saleh wrote:
+> > > > I am open to any suggestions, but I believe any solution considered for
+> > > > merge, should have enough features to be usable on actual systems
+> > (translating
+> > > > IOMMU can be used for example) so either para-virt as this series or full
+> > > > nesting as the PoC above (or maybe both?), which IMO comes down to
+> > the
+> > > > trade-off mentioned above.
 > > >
-> > > Nested translation is required beyond SVA. A scenario which requires
-> > > a vIOMMU and multiple device domains within the guest would like to
-> > > embrace nesting. Especially for ARM vSMMU nesting is a must.
-
-We can still do para-virtualization for guests the same way we do for the
-host and use a single stage IOMMU.
-
+> > > IMHO no, you can have a completely usable solution without host/guest
+> > > controlled translation. This is equivilant to a bare metal system with
+> > > no IOMMU HW. This exists and is still broadly useful. The majority of
+> > > cloud VMs out there are in this configuration.
+> > >
+> > > That is the simplest/smallest thing to start with. Adding host/guest
+> > > controlled translation is a build-on-top excercise that seems to have
+> > > a lot of options and people may end up wanting to do all of them.
+> > >
+> > > I don't think you need to show that host/guest controlled translation
+> > > is possible to make progress, of course it is possible. Just getting
+> > > to the point where pkvm can own the SMMU HW and provide DMA
+> > isolation
+> > > between all of it's direct host/guest is a good step.
 > > 
-> > Right, if you need an iommu domain in the guest there are only three
-> > mainstream ways to get this in Linux:
-> >  1) Use the DMA API and have the iommu group be translating. This is
-> >     optional in that the DMA API usually supports identity as an option.
-> >  2) A driver directly calls iommu_paging_domain_alloc() and manually
-> >     attaches it to some device, and does not use the DMA API. My list
-> >     above of ath1x/etc are examples doing this
-> >  3) Use VFIO
+> > My plan was basically:
+> > 1) Finish and send nested SMMUv3 as RFC, with more insights about
+> >    performance and complexity trade-offs of both approaches.
 > > 
-> > My remark to Mostafa is to be specific, which of the above do you want
-> > to do in your mobile guest (and what driver exactly if #2) and why.
+> > 2) Discuss next steps for the upstream solution in an upcoming conference
+> >    (like LPC or earlier if possible) and work on upstreaming it.
 > > 
-> > This will help inform what the performance profile looks like and
-> > guide if nesting/para virt is appropriate.
+> > 3) Work on guest device passthrough and IOMMU support.
+> > 
+> > I am open to gradually upstream this as you mentioned where as a first
+> > step pKVM would establish DMA isolation without translation for host,
+> > that should be enough to have functional pKVM and run protected
+> > workloads.
 > 
+> Does that approach assume starting from a full-fledged SMMU driver 
+> inside pKVM or do we still expect the host to enumerate/initialize
+> the hw (but skip any translation) so the pKVM part can focus only
+> on managing translation?
 
-AFAIK, the most common use cases would be:
-- Devices using DMA API because it requires a lot of memory to be
-  contiguous in IOVA, which is hard to do with identity
-- Devices with security requirements/constraints to be isolated from the
-  rest of the system, also using DMA API
-- VFIO is something we are looking at the moment and have prototyped with
-  pKVM, and it should be supported soon in Android (only for platform
-  devices for now)
-
-> Yeah that part would be critical to help decide which route to pursue
-> first. Even when all options might be required in the end when pKVM
-> is scaled to more scenarios, as you mentioned in another mail, a staging
-> approach would be much preferrable to evolve.
-
-I agree that would probably be the case. I will work on more staging
-approach for v3, mostly without the pv part as Jason suggested.
+I have been thinking about this, and I think most of the initialization
+won’t be changed, and we would do any possible initialization in the
+kernel avoiding complexity in the hypervisor (parsing
+device-tree/acpi...) also that makes code re-use easier if both drivers
+do that in the kernel space.
 
 > 
-> The pros/cons between nesting/para virt is clear - more static the 
-> mapping is, more gain from the para approach due to less paging 
-> walking and smaller tlb footprint, while vice versa nesting performs
-> much better by avoiding frequent para calls on page table mgmt. 😊
+> I'm curious about the burden of maintaining another IOMMU
+> subsystem under the KVM directory. It's not built into the host kernel
+> image, but hosted in the same kernel repo. This series tried to
+> reduce the duplication via io-pgtable-arm but still considerable 
+> duplication exists (~2000LOC in pKVM). The would be very confusing
+> moving forward and hard to maintain e.g. ensure bugs fixed in
+> both sides.
 
-I am also working to get the numbers for both cases so we know
-the order of magnitude of each case, as I guess it won't be as clear
-for large systems with many DMA initiators what approach is best.
+KVM IOMMU subsystem is very different from the one kernel, it’s about
+paravirtualtion and abstraction, I tried my best to make sure all
+possible code can be re-used by splitting arm-smmu-v3-common.c and
+io-pgtable-arm-common.c and even re-using iommu_iotlb_gather from the
+iommu code.
+So my guess, there won't be much of that effort as there is no
+duplication in logic.
 
+I am still thinking about how v3 will look like, but as mentioned I am
+inclined to Jason’s suggestion to reduce the series and remove the
+paravirtualtion stuff and only establish DMA isolation as a starting point.
+That will remove a lot of code from the KVM IOMMU for now, but we'd
+need to address that later.
+And we can build on top of this code either a para-virtual approach or
+nested-emulation one.
+
+> 
+> The CPU side is a different story. iiuc KVM-ARM is a split driver model 
+> from day one for nVHE. It's kept even for VHE with difference only
+> on using hypercall vs using direct function call. pKVM is added 
+> incrementally on top of nVHE hence it's natural to maintain the
+>  pKVM logic in the kernel repo. No duplication.
+> 
+> But there is no such thing in the IOMMU side. Probably we'd want to
+> try reusing the entire IOMMU sub-system in pKVM if it's agreed
+> to use full-fledged drivers in pKVM. Or if continuing the split-driver
+> model should we try splitting the existing drivers into two parts then
+> connecting two together via function call on native and via hypercall
+> in pKVM (similar to how KVM-ARM does)?
+
+For the IOMMU KVM code, it’s quite different from the kernel one and serves
+different purposes, so there is no logic duplication there.
+The idea to use hypercalls/function calls in some places for VHE/nVHE,
+doesn’t really translate here, as already the driver is abstracted by
+iommu_ops, unlike KVM which has one code base for everything, as I
+mentioned in another reply, we can standardize the hypercall part of the
+kernel driver into a an IOMMU agnostic file (as virtio-iommu) and the
+KVM SMMUv3 kernel driver would ony be responsible for initialization,
+that should be the closest to the split model in nVHE.
+
+Also, pKVM have some different code path in the kernel, for example pKVM
+has a different mem abort handler, different initialization (pkvm.c)
 
 Thanks,
 Mostafa
 
 > 
-> > 
-> > > But I'm not sure that I got Jason's point about " there is no way to get
-> > > SVA support with para-virtualization." virtio-iommu is a para-virtualized
-> > > model and SVA support is in its plan. The main requirement is to pass
-> > > the base pointer of the guest CPU page table to backend and PRI faults/
-> > > responses back forth.
-> > 
-> > That's nesting, you have a full page table under the control of the
-> > guest, and the guest needs to have a level of HW-specific
-> > knowledge. It is just an alternative to using the native nesting
-> > vIOMMU.
-> > 
-> > What I mean by "para-virtualization" is the guest does map/unmap calls
-> > to the hypervisor and has no page tbale.
-> > 
-> 
-> Yes, that should never happen for SVA.
+> Thanks
+> Kevin
