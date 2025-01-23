@@ -1,601 +1,246 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C73E20C477;
-	Thu, 23 Jan 2025 12:16:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21DCF3596B
+	for <iommu@lists.linux.dev>; Thu, 23 Jan 2025 12:36:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737634581; cv=none; b=jRAdzmueMWOTKR3YVm1hG9A5kcqOe1vRB+NmiQQmscea1tsy4f1dXSlzFMTlMFEBDq9IMjTeJVdbAD+Z27hMwvk4Kuca/oWi4qlw8q8Tnu29/Lp6YXveb5CHOsCnBsmtdtMsOsITaN8UQ5xxvY04zGOZZznW78eNaikjhlAIz6Q=
+	t=1737635792; cv=none; b=KNUnk+VxtJ74z93TnBeTjcGg0lPGO1Y4hVF/ETbqGnLFfiUjL3YZfkT/TDoSyGLFL3o5ZMj1k5fKeTBxLo48hdsSJ/Ne3nYMTnjLheTAuN1koBbe/EIhSLAq5Jo4vLwRwdP8A6UXhpoIDmyc8xLczdVuKbNTDIOh6AHxl1fV9yM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737634581; c=relaxed/simple;
-	bh=yJx41nxWQqXvdZ4jM5QwMJB+yrG9cAwxnm9UNLOvU+4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aOjg61p2dK/xrPEZibBZxkRSGhjysmuIZsRSa4zXzIsJ+mtWC40dithVCzBbP69mSXejE9W8S4ta2snOpcrLs2IpcWtOMAn/DPlVsSfLgqxkO7gs6ZNGGcng+PrhveL7Hy4NcoJm7Te/9WgU0aeGphNkakRz4KMDyaGtnC0CETs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OI9B9W3o; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1737635792; c=relaxed/simple;
+	bh=bwHb3k0CMWm2DzAjQYvrhi+e8E2Ul8Z3iF5VhIAnfbM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=kQ65skfgyTgzqLU0g9IliYZsqRkq/3n+0eo4mYPxVwalgACMIzdu1ynsGEBldbqkxHTeVBpdUtoXMdriSX83udBAHzWIDXyGA7uqeVmv3M1bosBsOLVFT9CjgJCW9zjDQUScYqVTBo2Y/+7vFfGd7kVGuY3tC+Oboe5CS+sHWlI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=cAAkQUV3; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OI9B9W3o"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1737634579; x=1769170579;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yJx41nxWQqXvdZ4jM5QwMJB+yrG9cAwxnm9UNLOvU+4=;
-  b=OI9B9W3oN52WfJec7B5BUtWVphUMakjAGYOezZ6n2uK4kqgb0nQ0b2ja
-   dRMHO0rAoloWsHGPbVlMpXtNDmw+8Ld0HJ/q/2OAkSxx28g0vsLuWk49R
-   Oxk1T/PS3vmOyqrbuTcTL1+rAyU2SbWnc0W+5OrYcSqOEsZcPHrM2/TS9
-   M9fCYBw3p0XOT4/+qcZG6dgHJIsUTxy7EvNUjqV5mbDoPeZxpM8lXOXsm
-   j/kV5LPKaq8EUWTwRa7bPNajKIZJv0aST0Fa46Fg7CIgjklLc4wRY42lD
-   vlXgkQh8OYP548F2pKKRs2iwm6guHJpUSgNgca+5mwlJ23UiWybDmE1uw
-   Q==;
-X-CSE-ConnectionGUID: KiE22NpySMG75E+ooLqzrA==
-X-CSE-MsgGUID: Chf6JoZ8SISSGW03zDWjeA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11324"; a="48627261"
-X-IronPort-AV: E=Sophos;i="6.13,228,1732608000"; 
-   d="scan'208";a="48627261"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2025 04:16:19 -0800
-X-CSE-ConnectionGUID: SRYI3lifS8mJ35Lgu/oD8A==
-X-CSE-MsgGUID: 0QWccIEfQZGUugFOBniN0A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="144681480"
-Received: from lkp-server01.sh.intel.com (HELO d63d4d77d921) ([10.239.97.150])
-  by orviesa001.jf.intel.com with ESMTP; 23 Jan 2025 04:16:15 -0800
-Received: from kbuild by d63d4d77d921 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1taw84-000b9j-2a;
-	Thu, 23 Jan 2025 12:16:12 +0000
-Date: Thu, 23 Jan 2025 20:16:01 +0800
-From: kernel test robot <lkp@intel.com>
-To: Zong Li <zong.li@sifive.com>, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, tjeznach@rivosinc.com,
-	paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu,
-	luxu.kernel@bytedance.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org
-Cc: oe-kbuild-all@lists.linux.dev, Zong Li <zong.li@sifive.com>
-Subject: Re: [PATCH 1/2] iommu/riscv: add RISC-V IOMMU PMU support
-Message-ID: <202501231928.CmUsMTXF-lkp@intel.com>
-References: <20250115030306.29735-2-zong.li@sifive.com>
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="cAAkQUV3"
+Received: from mordecai.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 597C22113BB;
+	Thu, 23 Jan 2025 13:30:14 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1737635414; bh=a9q1Fh53qZ0gTFwMyqXiOD//fC1kdAqomwhFFXs3J8g=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=cAAkQUV3E0cfe+dLy2TE9ZFw6ZpwKfjnEOVcEQBkuAlmup6LIFJ6KiuANUkNJ0/7n
+	 R60TRaqlXwkTE0RsgDn/kXz4QPXS41Y5il7E8bdkXL13yrOy0wWC/AJa7wjLDCPKvQ
+	 y5hcp4zs7LwXGYkfRxbXGq97F2e0Zuve2srf/9GfyBZ/PpeUkhnWX2AhP56A0H9VPb
+	 GAit4TStmGVR8ryZQtECd3l0+GdQkGPldHmAt+7epkYbL5u4sy2jY2KnL4Ht9GFmNf
+	 CeV2FWq/4YygRFF/msYfsDE2bLEnO/b+bXaPJtU33xc5f6ix5sS68+veKOhci5bZUg
+	 ymTzAu5fmFqKg==
+Date: Thu, 23 Jan 2025 13:30:09 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Cc: rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com,
+ dakr@kernel.org, robin.murphy@arm.com, aliceryhl@google.com, Miguel Ojeda
+ <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng
+ <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, =?UTF-8?B?QmrDtnJu?=
+ Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin
+ <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, Trevor
+ Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>,
+ linux-kernel@vger.kernel.org (open list), Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+ iommu@lists.linux.dev (open list:DMA MAPPING HELPERS)
+Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
+Message-ID: <20250123132940.1f3c2666@mordecai.tesarici.cz>
+In-Reply-To: <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
+References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
+	<20250123104333.1340512-3-abdiel.janulgue@gmail.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250115030306.29735-2-zong.li@sifive.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Zong,
+On Thu, 23 Jan 2025 12:42:58 +0200
+Abdiel Janulgue <abdiel.janulgue@gmail.com> wrote:
 
-kernel test robot noticed the following build errors:
+> Add a simple dma coherent allocator rust abstraction. Based on
+> Andreas Hindborg's dma abstractions from the rnvme driver, which
+> was also based on earlier work by Wedson Almeida Filho.
+> 
+> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+>[...]
+> +/// An abstraction of the `dma_alloc_coherent` API.
+> +///
+> +/// This is an abstraction around the `dma_alloc_coherent` API which is used to allocate and map
+> +/// large consistent DMA regions.
+> +///
+> +/// A [`CoherentAllocation`] instance contains a pointer to the allocated region (in the
+> +/// processor's virtual address space) and the device address which can be given to the device
+> +/// as the DMA address base of the region. The region is released once [`CoherentAllocation`]
+> +/// is dropped.
+> +///
+> +/// # Invariants
+> +///
+> +/// For the lifetime of an instance of [`CoherentAllocation`], the cpu address is a valid pointer
+> +/// to an allocated region of consistent memory and we hold a reference to the device.
+> +pub struct CoherentAllocation<T: AsBytes + FromBytes> {
+> +    dev: ARef<Device>,
+> +    dma_handle: bindings::dma_addr_t,
+> +    count: usize,
+> +    cpu_addr: *mut T,
+> +    dma_attrs: Attrs,
+> +}
+> +
+> +impl<T: AsBytes + FromBytes> CoherentAllocation<T> {
+> +    /// Allocates a region of `size_of::<T> * count` of consistent memory.
+> +    ///
+> +    /// # Examples
+> +    ///
+> +    /// ```
+> +    /// use kernel::device::Device;
+> +    /// use kernel::dma::{attrs::*, CoherentAllocation};
+> +    ///
+> +    /// # fn test(dev: &Device) -> Result {
+> +    /// let c: CoherentAllocation<u64> = CoherentAllocation::alloc_attrs(dev.into(), 4, GFP_KERNEL,
+> +    ///                                                                  DMA_ATTR_NO_WARN)?;
+> +    /// # Ok::<(), Error>(()) }
+> +    /// ```
+> +    pub fn alloc_attrs(
+> +        dev: ARef<Device>,
+> +        count: usize,
+> +        gfp_flags: kernel::alloc::Flags,
+> +        dma_attrs: Attrs,
+> +    ) -> Result<CoherentAllocation<T>> {
+> +        build_assert!(
+> +            core::mem::size_of::<T>() > 0,
+> +            "It doesn't make sense for the allocated type to be a ZST"
+> +        );
+> +
+> +        let size = count
+> +            .checked_mul(core::mem::size_of::<T>())
+> +            .ok_or(EOVERFLOW)?;
+> +        let mut dma_handle = 0;
+> +        // SAFETY: device pointer is guaranteed as valid by invariant on `Device`.
+> +        // We ensure that we catch the failure on this function and throw an ENOMEM
+> +        let ret = unsafe {
+> +            bindings::dma_alloc_attrs(
+> +                dev.as_raw(),
+> +                size,
+> +                &mut dma_handle,
+> +                gfp_flags.as_raw(),
+> +                dma_attrs.as_raw(),
+> +            )
+> +        };
+> +        if ret.is_null() {
+> +            return Err(ENOMEM);
+> +        }
+> +        // INVARIANT: We just successfully allocated a coherent region which is accessible for
+> +        // `count` elements, hence the cpu address is valid. We also hold a refcounted reference
+> +        // to the device.
+> +        Ok(Self {
+> +            dev,
+> +            dma_handle,
+> +            count,
+> +            cpu_addr: ret as *mut T,
+> +            dma_attrs,
+> +        })
+> +    }
+> +
+> +    /// Performs the same functionality as `alloc_attrs`, except the `dma_attrs` is 0 by default.
+> +    pub fn alloc_coherent(
+> +        dev: ARef<Device>,
+> +        count: usize,
+> +        gfp_flags: kernel::alloc::Flags,
+> +    ) -> Result<CoherentAllocation<T>> {
+> +        CoherentAllocation::alloc_attrs(dev, count, gfp_flags, Attrs(0))
+> +    }
+> +
+> +    /// Returns the device, base address, dma handle, attributes and the size of the
+> +    /// allocated region.
+> +    ///
+> +    /// The caller takes ownership of the returned resources, i.e., will have the responsibility
+> +    /// in calling `bindings::dma_free_attrs`. The allocated region is valid as long as
+> +    /// the returned device exists.
+> +    pub fn into_parts(
+> +        self,
+> +    ) -> (
+> +        ARef<Device>,
+> +        *mut T,
+> +        bindings::dma_addr_t,
+> +        crate::ffi::c_ulong,
+> +        usize,
+> +    ) {
+> +        let size = self.count * core::mem::size_of::<T>();
+> +        let ret = (
+> +            // SAFETY: `&self.dev` is valid for reads.
+> +            unsafe { core::ptr::read(&self.dev) },
+> +            self.cpu_addr,
+> +            self.dma_handle,
+> +            self.dma_attrs.as_raw(),
+> +            size,
+> +        );
+> +        core::mem::forget(self);
+> +        ret
+> +    }
+> +
+> +    /// Returns the base address to the allocated region in the CPU's virtual address space.
+> +    pub fn start_ptr(&self) -> *const T {
+> +        self.cpu_addr
+> +    }
+> +
+> +    /// Returns the base address to the allocated region in the CPU's virtual address space as
+> +    /// a mutable pointer.
+> +    pub fn start_ptr_mut(&mut self) -> *mut T {
+> +        self.cpu_addr
+> +    }
+> +
+> +    /// Returns a DMA handle which may given to the device as the DMA address base of
+> +    /// the region.
+> +    pub fn dma_handle(&self) -> bindings::dma_addr_t {
+> +        self.dma_handle
+> +    }
+> +
+> +    /// Reads data from the region starting from `offset` as a slice.
+> +    /// `offset` and `count` are in units of `T`, not the number of bytes.
+> +    ///
+> +    /// Due to the safety requirements of slice, the data returned should be regarded by the
+> +    /// caller as a snapshot of the region when this function is called, as the region could
+> +    /// be modified by the device at anytime. For ringbuffer type of r/w access or use-cases
+> +    /// where the pointer to the live data is needed, `start_ptr()` or `start_ptr_mut()`
+> +    /// could be used instead.
+> +    ///
+> +    /// # Safety
+> +    ///
+> +    /// Callers must ensure that no hardware operations that involve the buffer are currently
+> +    /// taking place while the returned slice is live.
+> +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Result<&[T]> {
+> +        if offset + count >= self.count {
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v6.13 next-20250123]
-[cannot apply to joro-iommu/next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+I'm probably missing something, but how do you know that this addition
+can't overflow? I mean, since this is a public function, users can do
+something dumb such as buf.as_slice(usize::MAX, n), can't they?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Zong-Li/iommu-riscv-add-RISC-V-IOMMU-PMU-support/20250115-110456
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20250115030306.29735-2-zong.li%40sifive.com
-patch subject: [PATCH 1/2] iommu/riscv: add RISC-V IOMMU PMU support
-config: riscv-randconfig-r062-20250123 (https://download.01.org/0day-ci/archive/20250123/202501231928.CmUsMTXF-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250123/202501231928.CmUsMTXF-lkp@intel.com/reproduce)
+What about something like:
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202501231928.CmUsMTXF-lkp@intel.com/
+    let end = offset.checked_add(count).ok_or(EOVERFLOW)?;
+    if end >= self.count { ... }
 
-All errors (new ones prefixed by >>):
+> +            return Err(EINVAL);
+> +        }
+> +        // SAFETY:
+> +        // - The pointer is valid due to type invariant on `CoherentAllocation`,
+> +        // we've just checked that the range and index is within bounds. The immutability of the
+> +        // of data is also guaranteed by the safety requirements of the function.
+> +        // - `offset` can't overflow since it is smaller than `self.count` and we've checked
+> +        // that `self.count` won't overflow early in the constructor.
+> +        Ok(unsafe { core::slice::from_raw_parts(self.cpu_addr.add(offset), count) })
+> +    }
+> +
+> +    /// Writes data to the region starting from `offset`. `offset` is in units of `T`, not the
+> +    /// number of bytes.
+> +    pub fn write(&self, src: &[T], offset: usize) -> Result {
+> +        if offset + src.len() >= self.count {
 
-   In file included from <command-line>:
-   drivers/iommu/riscv/iommu-pmu.c: In function 'get_event':
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/compiler_types.h:522:23: note: in definition of macro '__compiletime_assert'
-     522 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:542:9: note: in expansion of macro '_compiletime_assert'
-     542 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:72:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      72 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:61:43: note: in expansion of macro '__unsigned_scalar_typeof'
-      61 | #define __bf_cast_unsigned(type, x)     ((__unsigned_scalar_typeof(type))(x))
-         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:73:34: note: in expansion of macro '__bf_cast_unsigned'
-      73 |                                  __bf_cast_unsigned(_reg, ~0ull),       \
-         |                                  ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:155:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     155 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:19:24: note: in expansion of macro 'FIELD_GET'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                        ^~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:22:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      22 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(event, RISCV_IOMMU_IOHPMEVT_EVENTID);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/fortify-string.h:5,
-                    from include/linux/string.h:389,
-                    from include/linux/bitmap.h:13,
-                    from include/linux/cpumask.h:12,
-                    from arch/riscv/include/asm/processor.h:55,
-                    from arch/riscv/include/asm/thread_info.h:42,
-                    from include/linux/thread_info.h:60,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/riscv/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:79,
-                    from include/linux/spinlock.h:56,
-                    from include/linux/mmzone.h:8,
-                    from arch/riscv/include/asm/pgtable.h:9,
-                    from include/linux/pgtable.h:6,
-                    from arch/riscv/include/asm/io.h:15,
-                    from include/linux/io.h:14,
-                    from include/linux/io-64-nonatomic-hi-lo.h:5,
-                    from drivers/iommu/riscv/iommu-pmu.c:9:
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/bitfield.h:156:35: note: in definition of macro 'FIELD_GET'
-     156 |                 (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
-         |                                   ^~~~
-   drivers/iommu/riscv/iommu-pmu.c:22:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      22 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(event, RISCV_IOMMU_IOHPMEVT_EVENTID);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c: In function 'get_partial_matching':
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/compiler_types.h:522:23: note: in definition of macro '__compiletime_assert'
-     522 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:542:9: note: in expansion of macro '_compiletime_assert'
-     542 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:72:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      72 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:61:43: note: in expansion of macro '__unsigned_scalar_typeof'
-      61 | #define __bf_cast_unsigned(type, x)     ((__unsigned_scalar_typeof(type))(x))
-         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:73:34: note: in expansion of macro '__bf_cast_unsigned'
-      73 |                                  __bf_cast_unsigned(_reg, ~0ull),       \
-         |                                  ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:155:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     155 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:19:24: note: in expansion of macro 'FIELD_GET'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                        ^~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:23:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      23 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(partial_matching, RISCV_IOMMU_IOHPMEVT_DMASK);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/bitfield.h:156:35: note: in definition of macro 'FIELD_GET'
-     156 |                 (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
-         |                                   ^~~~
-   drivers/iommu/riscv/iommu-pmu.c:23:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      23 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(partial_matching, RISCV_IOMMU_IOHPMEVT_DMASK);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c: In function 'get_pid_pscid':
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/compiler_types.h:522:23: note: in definition of macro '__compiletime_assert'
-     522 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:542:9: note: in expansion of macro '_compiletime_assert'
-     542 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:72:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      72 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:61:43: note: in expansion of macro '__unsigned_scalar_typeof'
-      61 | #define __bf_cast_unsigned(type, x)     ((__unsigned_scalar_typeof(type))(x))
-         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:73:34: note: in expansion of macro '__bf_cast_unsigned'
-      73 |                                  __bf_cast_unsigned(_reg, ~0ull),       \
-         |                                  ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:155:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     155 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:19:24: note: in expansion of macro 'FIELD_GET'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                        ^~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:24:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      24 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(pid_pscid, RISCV_IOMMU_IOHPMEVT_PID_PSCID);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/bitfield.h:156:35: note: in definition of macro 'FIELD_GET'
-     156 |                 (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
-         |                                   ^~~~
-   drivers/iommu/riscv/iommu-pmu.c:24:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      24 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(pid_pscid, RISCV_IOMMU_IOHPMEVT_PID_PSCID);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c: In function 'get_did_gscid':
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/compiler_types.h:522:23: note: in definition of macro '__compiletime_assert'
-     522 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:542:9: note: in expansion of macro '_compiletime_assert'
-     542 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:72:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      72 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:61:43: note: in expansion of macro '__unsigned_scalar_typeof'
-      61 | #define __bf_cast_unsigned(type, x)     ((__unsigned_scalar_typeof(type))(x))
-         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:73:34: note: in expansion of macro '__bf_cast_unsigned'
-      73 |                                  __bf_cast_unsigned(_reg, ~0ull),       \
-         |                                  ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:155:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     155 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:19:24: note: in expansion of macro 'FIELD_GET'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                        ^~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:25:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      25 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(did_gscid, RISCV_IOMMU_IOHPMEVT_DID_GSCID);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/bitfield.h:156:35: note: in definition of macro 'FIELD_GET'
-     156 |                 (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
-         |                                   ^~~~
-   drivers/iommu/riscv/iommu-pmu.c:25:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      25 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(did_gscid, RISCV_IOMMU_IOHPMEVT_DID_GSCID);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c: In function 'get_filter_pid_pscid':
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/compiler_types.h:522:23: note: in definition of macro '__compiletime_assert'
-     522 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:542:9: note: in expansion of macro '_compiletime_assert'
-     542 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:72:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      72 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:61:43: note: in expansion of macro '__unsigned_scalar_typeof'
-      61 | #define __bf_cast_unsigned(type, x)     ((__unsigned_scalar_typeof(type))(x))
-         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:73:34: note: in expansion of macro '__bf_cast_unsigned'
-      73 |                                  __bf_cast_unsigned(_reg, ~0ull),       \
-         |                                  ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:155:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     155 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:19:24: note: in expansion of macro 'FIELD_GET'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                        ^~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:26:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      26 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(filter_pid_pscid, RISCV_IOMMU_IOHPMEVT_PV_PSCV);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/bitfield.h:156:35: note: in definition of macro 'FIELD_GET'
-     156 |                 (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
-         |                                   ^~~~
-   drivers/iommu/riscv/iommu-pmu.c:26:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      26 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(filter_pid_pscid, RISCV_IOMMU_IOHPMEVT_PV_PSCV);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c: In function 'get_filter_did_gscid':
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/compiler_types.h:522:23: note: in definition of macro '__compiletime_assert'
-     522 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:542:9: note: in expansion of macro '_compiletime_assert'
-     542 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:72:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      72 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:61:43: note: in expansion of macro '__unsigned_scalar_typeof'
-      61 | #define __bf_cast_unsigned(type, x)     ((__unsigned_scalar_typeof(type))(x))
-         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:73:34: note: in expansion of macro '__bf_cast_unsigned'
-      73 |                                  __bf_cast_unsigned(_reg, ~0ull),       \
-         |                                  ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:155:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     155 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:19:24: note: in expansion of macro 'FIELD_GET'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                        ^~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:27:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      27 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(filter_did_gscid, RISCV_IOMMU_IOHPMEVT_DV_GSCV);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/bitfield.h:156:35: note: in definition of macro 'FIELD_GET'
-     156 |                 (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
-         |                                   ^~~~
-   drivers/iommu/riscv/iommu-pmu.c:27:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      27 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(filter_did_gscid, RISCV_IOMMU_IOHPMEVT_DV_GSCV);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c: In function 'get_filter_id_type':
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/compiler_types.h:522:23: note: in definition of macro '__compiletime_assert'
-     522 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:542:9: note: in expansion of macro '_compiletime_assert'
-     542 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:72:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      72 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:61:43: note: in expansion of macro '__unsigned_scalar_typeof'
-      61 | #define __bf_cast_unsigned(type, x)     ((__unsigned_scalar_typeof(type))(x))
-         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:73:34: note: in expansion of macro '__bf_cast_unsigned'
-      73 |                                  __bf_cast_unsigned(_reg, ~0ull),       \
-         |                                  ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:155:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     155 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:19:24: note: in expansion of macro 'FIELD_GET'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                        ^~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:28:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      28 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(filter_id_type, RISCV_IOMMU_IOHPMEVT_IDT);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/iommu/riscv/iommu-pmu.c:19:46: error: 'struct perf_event' has no member named 'attr'
-      19 |                 return FIELD_GET(_mask, event->attr.config);            \
-         |                                              ^~
-   include/linux/bitfield.h:156:35: note: in definition of macro 'FIELD_GET'
-     156 |                 (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
-         |                                   ^~~~
-   drivers/iommu/riscv/iommu-pmu.c:28:1: note: in expansion of macro 'RISCV_IOMMU_PMU_ATTR_EXTRACTOR'
-      28 | RISCV_IOMMU_PMU_ATTR_EXTRACTOR(filter_id_type, RISCV_IOMMU_IOHPMEVT_IDT);
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/kernel.h:22,
-                    from include/linux/cpumask.h:11:
-   drivers/iommu/riscv/iommu-pmu.c: In function 'riscv_iommu_pmu_set_period':
->> drivers/iommu/riscv/iommu-pmu.c:235:63: error: 'struct perf_event' has no member named 'pmu'
-     235 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                                               ^~
-   include/linux/container_of.h:19:33: note: in definition of macro 'container_of'
-      19 |         void *__mptr = (void *)(ptr);                                   \
-         |                                 ^~~
-   drivers/iommu/riscv/iommu-pmu.c:235:39: note: in expansion of macro 'to_riscv_iommu_pmu'
-     235 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                       ^~~~~~~~~~~~~~~~~~
-   In file included from include/linux/init.h:5,
-                    from include/linux/io.h:11:
->> drivers/iommu/riscv/iommu-pmu.c:235:63: error: 'struct perf_event' has no member named 'pmu'
-     235 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                                               ^~
-   include/linux/build_bug.h:78:56: note: in definition of macro '__static_assert'
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                                        ^~~~
-   include/linux/container_of.h:20:9: note: in expansion of macro 'static_assert'
-      20 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |         ^~~~~~~~~~~~~
-   include/linux/container_of.h:20:23: note: in expansion of macro '__same_type'
-      20 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |                       ^~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:14:32: note: in expansion of macro 'container_of'
-      14 | #define to_riscv_iommu_pmu(p) (container_of(p, struct riscv_iommu_pmu, pmu))
-         |                                ^~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:235:39: note: in expansion of macro 'to_riscv_iommu_pmu'
-     235 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                       ^~~~~~~~~~~~~~~~~~
->> drivers/iommu/riscv/iommu-pmu.c:235:63: error: 'struct perf_event' has no member named 'pmu'
-     235 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                                               ^~
-   include/linux/build_bug.h:78:56: note: in definition of macro '__static_assert'
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                                        ^~~~
-   include/linux/container_of.h:20:9: note: in expansion of macro 'static_assert'
-      20 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |         ^~~~~~~~~~~~~
-   include/linux/container_of.h:21:23: note: in expansion of macro '__same_type'
-      21 |                       __same_type(*(ptr), void),                        \
-         |                       ^~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:14:32: note: in expansion of macro 'container_of'
-      14 | #define to_riscv_iommu_pmu(p) (container_of(p, struct riscv_iommu_pmu, pmu))
-         |                                ^~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:235:39: note: in expansion of macro 'to_riscv_iommu_pmu'
-     235 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                       ^~~~~~~~~~~~~~~~~~
-   include/linux/compiler_types.h:483:27: error: expression in static assertion is not an integer
-     483 | #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:78:56: note: in definition of macro '__static_assert'
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                                        ^~~~
-   include/linux/container_of.h:20:9: note: in expansion of macro 'static_assert'
-      20 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |         ^~~~~~~~~~~~~
-   include/linux/container_of.h:20:23: note: in expansion of macro '__same_type'
-      20 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |                       ^~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:14:32: note: in expansion of macro 'container_of'
-      14 | #define to_riscv_iommu_pmu(p) (container_of(p, struct riscv_iommu_pmu, pmu))
-         |                                ^~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:235:39: note: in expansion of macro 'to_riscv_iommu_pmu'
-     235 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                       ^~~~~~~~~~~~~~~~~~
->> drivers/iommu/riscv/iommu-pmu.c:236:43: error: 'struct perf_event' has no member named 'hw'
-     236 |         struct hw_perf_event *hwc = &event->hw;
-         |                                           ^~
-   In file included from ./arch/riscv/include/generated/asm/local.h:1,
-                    from include/asm-generic/local64.h:22,
-                    from ./arch/riscv/include/generated/asm/local64.h:1,
-                    from include/linux/u64_stats_sync.h:71,
-                    from include/linux/cgroup-defs.h:20,
-                    from include/linux/cgroup.h:28,
-                    from include/linux/perf_event.h:60,
-                    from drivers/iommu/riscv/iommu-bits.h:20,
-                    from drivers/iommu/riscv/iommu.h:18,
-                    from drivers/iommu/riscv/iommu-pmu.c:11:
->> drivers/iommu/riscv/iommu-pmu.c:237:37: error: 'struct hw_perf_event' has no member named 'period_left'
-     237 |         s64 left = local64_read(&hwc->period_left);
-         |                                     ^~
-   include/asm-generic/local.h:29:44: note: in definition of macro 'local_read'
-      29 | #define local_read(l)   atomic_long_read(&(l)->a)
-         |                                            ^
-   drivers/iommu/riscv/iommu-pmu.c:237:20: note: in expansion of macro 'local64_read'
-     237 |         s64 left = local64_read(&hwc->period_left);
-         |                    ^~~~~~~~~~~~
->> drivers/iommu/riscv/iommu-pmu.c:238:25: error: 'struct hw_perf_event' has no member named 'sample_period'
-     238 |         s64 period = hwc->sample_period;
-         |                         ^~
-   drivers/iommu/riscv/iommu-pmu.c:244:33: error: 'struct hw_perf_event' has no member named 'period_left'
-     244 |                 local64_set(&hwc->period_left, left);
-         |                                 ^~
-   include/asm-generic/local.h:30:44: note: in definition of macro 'local_set'
-      30 | #define local_set(l,i)  atomic_long_set((&(l)->a),(i))
-         |                                            ^
-   drivers/iommu/riscv/iommu-pmu.c:244:17: note: in expansion of macro 'local64_set'
-     244 |                 local64_set(&hwc->period_left, left);
-         |                 ^~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:245:20: error: 'struct hw_perf_event' has no member named 'last_period'
-     245 |                 hwc->last_period = period;
-         |                    ^~
-   drivers/iommu/riscv/iommu-pmu.c:251:33: error: 'struct hw_perf_event' has no member named 'period_left'
-     251 |                 local64_set(&hwc->period_left, left);
-         |                                 ^~
-   include/asm-generic/local.h:30:44: note: in definition of macro 'local_set'
-      30 | #define local_set(l,i)  atomic_long_set((&(l)->a),(i))
-         |                                            ^
-   drivers/iommu/riscv/iommu-pmu.c:251:17: note: in expansion of macro 'local64_set'
-     251 |                 local64_set(&hwc->period_left, left);
-         |                 ^~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:252:20: error: 'struct hw_perf_event' has no member named 'last_period'
-     252 |                 hwc->last_period = period;
-         |                    ^~
-   drivers/iommu/riscv/iommu-pmu.c:265:25: error: 'struct hw_perf_event' has no member named 'prev_count'
-     265 |         local64_set(&hwc->prev_count, (u64)-left);
-         |                         ^~
-   include/asm-generic/local.h:30:44: note: in definition of macro 'local_set'
-      30 | #define local_set(l,i)  atomic_long_set((&(l)->a),(i))
-         |                                            ^
-   drivers/iommu/riscv/iommu-pmu.c:265:9: note: in expansion of macro 'local64_set'
-     265 |         local64_set(&hwc->prev_count, (u64)-left);
-         |         ^~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:266:45: error: 'struct hw_perf_event' has no member named 'idx'
-     266 |         riscv_iommu_pmu_set_counter(pmu, hwc->idx, (u64)(-left) & max_period);
-         |                                             ^~
-   drivers/iommu/riscv/iommu-pmu.c:267:9: error: implicit declaration of function 'perf_event_update_userpage'; did you mean 'arch_perf_update_userpage'? [-Wimplicit-function-declaration]
-     267 |         perf_event_update_userpage(event);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
-         |         arch_perf_update_userpage
-   drivers/iommu/riscv/iommu-pmu.c: In function 'riscv_iommu_pmu_event_init':
-   drivers/iommu/riscv/iommu-pmu.c:274:63: error: 'struct perf_event' has no member named 'pmu'
-     274 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                                               ^~
-   include/linux/container_of.h:19:33: note: in definition of macro 'container_of'
-      19 |         void *__mptr = (void *)(ptr);                                   \
-         |                                 ^~~
-   drivers/iommu/riscv/iommu-pmu.c:274:39: note: in expansion of macro 'to_riscv_iommu_pmu'
-     274 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                       ^~~~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:274:63: error: 'struct perf_event' has no member named 'pmu'
-     274 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                                               ^~
-   include/linux/build_bug.h:78:56: note: in definition of macro '__static_assert'
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                                        ^~~~
-   include/linux/container_of.h:20:9: note: in expansion of macro 'static_assert'
-      20 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |         ^~~~~~~~~~~~~
-   include/linux/container_of.h:20:23: note: in expansion of macro '__same_type'
-      20 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |                       ^~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:14:32: note: in expansion of macro 'container_of'
-      14 | #define to_riscv_iommu_pmu(p) (container_of(p, struct riscv_iommu_pmu, pmu))
-         |                                ^~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:274:39: note: in expansion of macro 'to_riscv_iommu_pmu'
-     274 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                       ^~~~~~~~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:274:63: error: 'struct perf_event' has no member named 'pmu'
-     274 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                                               ^~
-   include/linux/build_bug.h:78:56: note: in definition of macro '__static_assert'
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                                        ^~~~
-   include/linux/container_of.h:20:9: note: in expansion of macro 'static_assert'
-      20 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |         ^~~~~~~~~~~~~
-   include/linux/container_of.h:21:23: note: in expansion of macro '__same_type'
-      21 |                       __same_type(*(ptr), void),                        \
-         |                       ^~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:14:32: note: in expansion of macro 'container_of'
-      14 | #define to_riscv_iommu_pmu(p) (container_of(p, struct riscv_iommu_pmu, pmu))
-         |                                ^~~~~~~~~~~~
-   drivers/iommu/riscv/iommu-pmu.c:274:39: note: in expansion of macro 'to_riscv_iommu_pmu'
-     274 |         struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-         |                                       ^~~~~~~~~~~~~~~~~~
-   include/linux/compiler_types.h:483:27: error: expression in static assertion is not an integer
-     483 | #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:78:56: note: in definition of macro '__static_assert'
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                                        ^~~~
-   include/linux/container_of.h:20:9: note: in expansion of macro 'static_assert'
-      20 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |         ^~~~~~~~~~~~~
-   include/linux/container_of.h:20:23: note: in expansion of macro '__same_type'
-      20 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |                       ^~~~~~~~~~~
+Same here.
 
-
-vim +19 drivers/iommu/riscv/iommu-pmu.c
-
-    15	
-    16	#define RISCV_IOMMU_PMU_ATTR_EXTRACTOR(_name, _mask)			\
-    17		static inline u32 get_##_name(struct perf_event *event)		\
-    18		{								\
-  > 19			return FIELD_GET(_mask, event->attr.config);		\
-    20		}								\
-    21	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Petr T
