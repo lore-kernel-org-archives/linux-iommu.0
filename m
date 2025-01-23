@@ -1,60 +1,62 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43D0320E00F
-	for <iommu@lists.linux.dev>; Thu, 23 Jan 2025 10:43:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1830620E009
+	for <iommu@lists.linux.dev>; Thu, 23 Jan 2025 10:43:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737629033; cv=none; b=tUiRcvhDAkRcLYyLAOZVnFh4dffaT1tqJMezCUfAZTOFdFgRxX9KmBj3S4gnIFlY+VV2hRIwgaAW7nil7MRDHLCnZLAkeWDABcWW7WGbqCXRUPlkrcm4wMsy//VvSN9XIqU1vqJT4Oxqs0D52SdflhfTcsCDdyUFnPf1E+gHB2Q=
+	t=1737629034; cv=none; b=mQEQ4ILrLZivsZq9YsI4prITX9sIDA88auuU4XDnd71c21aXuiqq0ZvZUgmvdraBteM+dj6NLE8+cfExwmCi2lczwguBe3WmVCJTlvb6ykpRGVy/k4XF/VNwvvoJsfGlH+DBVUUMpTXCK5URNGM8RBuC0cN8Wn4P6URjLH9ikBs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737629033; c=relaxed/simple;
-	bh=+VSyzMWcaeFrxcpn8P21db/DRWIE8eIcvt4ETGNq7bI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TbKhvm39YOKizL9ga5dfdPRqtoT7GIUxbmvYkuRXzozMC91q1ArJSAQP331FwZ7FSd//UgSzNY6ZQGBuvsd5t33No+5oZMM1jPA+Vcfgr4nHnUdbG4MTFhUHLJwfkM+AyunsKoa1LowDGB2dyjJatuJKtkJICGmipfN2mlmDhe0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ayIf8Bu8; arc=none smtp.client-ip=209.85.167.54
+	s=arc-20240116; t=1737629034; c=relaxed/simple;
+	bh=7y/5voRRl3iVEWd8dd9FMx/aIm3fFsPYaagWFci7DeI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=cqbFWkSNnyPKLWAV7e3h68SmDnQngWrVU2w8S2n6FKBeao36M0H7SJRgLXmhOW8ft86ySfVJZ8diNPXS8djptvP1nEZfyiV4av+T9fTpoiUJushMf76lTZ7QbjHtEtPs5oA1STD7mkOVNYkuE4p2NhGFS/0Jsk1w7u95H9KK7w4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OxkS4NDB; arc=none smtp.client-ip=209.85.167.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ayIf8Bu8"
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-53f757134cdso852836e87.2
-        for <iommu@lists.linux.dev>; Thu, 23 Jan 2025 02:43:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OxkS4NDB"
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-53e384e3481so732346e87.2
+        for <iommu@lists.linux.dev>; Thu, 23 Jan 2025 02:43:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737629029; x=1738233829; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Vs6vxvDASedSGwD6vuuKXmoK57VAFpx+XV9tSJhnRPQ=;
-        b=ayIf8Bu8grMQZBopwWhuzAatCThK3qRn1sdtyo2n0KLdXc88fmTw4Az9jaYj/SWVEm
-         L+0QO3hpUML0Ld5D/sLlX6rwWqP3NT61Kl+I+XMcyUv5rPrB3MpqEkWI3DYdeLCDNPXE
-         7OWudUGtCjDg8w/sKPFJP9NQGiUHhjO2WTKzbAAnCcn5ix8mA1knmS8FjMqUxFQnIwCx
-         d8ZNqOESrfpw061sMg8RCjSIRBmmpfrOaT/ugty1QCBRpsWjWu2viC8c0+FJVVAsZSrk
-         bB/KaLuIjPa/yGlcWxapj2yhXjWiQBomp70nK+mO9CIN18cnrU0Nw2eO0rM6/ccSfHxD
-         qgSA==
+        d=gmail.com; s=20230601; t=1737629031; x=1738233831; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MsTWX9yoQTMgLsmI/WJU+pLJbUvjBW8MdXlesjuHNQQ=;
+        b=OxkS4NDBhiQI450Kh3CTrXD+z1jULXTqvR1ZofkCW5TqMlqgONLKyQSMKbaI6XLq/Q
+         kGmXU6Gjk+Mgmv0YXLy/tteBZh3OztRT+9s9Y8I35RSjOME3+Hbe7wl3mv2fQJZq0XoP
+         dwOu280Hm26C5EUoA/IxlHokVG4t4xhcAQr6homO4991THrsKRAL7aDvz2WeoqbRZNxY
+         heyEYsqpxhEn7FnSBxhWrzbg55EbVKLLgwfBgp/w/jHdfW6PSg2pIG4MQg7GW0lZGtfW
+         VTcmi1elLSvgbJtr6E+H3fqATIjrsWLddBt0Fi55X6eQb5L5Qok+dCczTh79bMm0NxcB
+         XNOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737629029; x=1738233829;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Vs6vxvDASedSGwD6vuuKXmoK57VAFpx+XV9tSJhnRPQ=;
-        b=XSaX5d3+XSxwf5hSbOG24W3/BPzRNwuWdu2eOVdprDtc4ps2xzspMrxqy49XU20JsG
-         sEdOnQcJpQYC1W8l2WSKWWjlrOV8yfsAMJ83EzxrP77J5303VdIhwmHFFaeNEhum4SaQ
-         w1r3zjBX1+53qEbzRwhoUCOi+59NKIB+NVXEUDq4F3jL15pafjZQPIm0TPurSRmpfCYu
-         IkjWBw5JR5mv3F0/wj9JXSD3VjUrJFRjfKjL0F9JxeS2iyL4/w3rIqvqbDPyji5WjhYk
-         Muupfu2wJtIUHdethHAVR7VJ0fDrL80eqBsQ/xMg6iXBqOFBkeDZYNO/ULU+/PjxM/Q+
-         gJRQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVUV9kWJFZhNmCq7UhEdriBcsz+hVb3bai/2TT8RoyoqfKdUpAKlV0Fg1XqM8qBm0dzyywa4A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx2EI4fgHa3ZeTB9DtcDvl5ewkLsOjLsU9edmkMWd/5pCKBgov7
-	G9T6sf9N8olChkFw0LPzzCKLsw/rv/2p59NNRPRG1uKz+CJscAn1
-X-Gm-Gg: ASbGncvtyXaiqYPB7WrM6m3EBIwTz2U32Ztyw4i4Zua05iZoxUI2lKDMrNkFm2opgGA
-	0mtTjBxFYJ4hUYvckCPAuDbu313ErO54kp9tVwCoY1xswMlOR2BuZMip53TFuMBZljHEzr8cnx1
-	JAEvPcMbFO5i9wfu3rsxSC0jQLLXcVW4M0n6K5njRCAqkzxnDinFBKqbTbuY+3ZZmio+BCykdNs
-	Z6A/ZMf3jc+/0eQUXujJ+GBTxTpuOhbxT5fc14ILCHY+ivK5htW95Fa9MTGDBE1vhGiK1h4Mzas
-	4c6yi1b7y5v0Ww+CJxBpOadswvKmw6/cJM2w68HF54+b091iuOM=
-X-Google-Smtp-Source: AGHT+IGxx8s5w4BXQVnncFyJDQTXakJVDuuRVIiwBW08jZZSzDMCBmYcg+SIWcQdmUx1YdrNM/wA/Q==
-X-Received: by 2002:a19:f716:0:b0:542:1bdd:748d with SMTP id 2adb3069b0e04-5439c223e12mr7548727e87.13.1737629028968;
-        Thu, 23 Jan 2025 02:43:48 -0800 (PST)
+        d=1e100.net; s=20230601; t=1737629031; x=1738233831;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MsTWX9yoQTMgLsmI/WJU+pLJbUvjBW8MdXlesjuHNQQ=;
+        b=O4XOuqIhyCJYW+6nntxGZh409hjmIjmS+YaTY7ZoMRBaImgichXr4Syf1yUR2J7hMD
+         Ae4HAjUXvHs0yOg9uY8M5rYZJxqBG60/5s/Ouq1iJU56kp6RQTFmNXgJbE+x8JpmgTrb
+         Bz/a0S5lxMQuSyUYDTwRj50CXomvnTYYNbeHgSuuFNl6PMbuRn0YUg/lvpdhIFKeHYSj
+         ZAdiIfQPuXhMcpzPmvXaazvDNhQTvyE5ez9K5V/lwvkonHooywuifbh7wD8yl8cTodkm
+         nX8Eg/TW7rAIMtppxbgHlRNL8EM69VD3SAJ5Hq87Ngbg0qyJqtnr2N2jMg4dk4TdTnYM
+         FvZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV2ROboCjYw3TbTavIIcaUPvq/HPaTqcZ1Oo3ql4Bo0laLUeIHiWrm+Uj5cFe0kmINshlt3ug==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwKxTM2LA71UlJMwWIPR+LnUY1huu9o+22S9X3XyXHusVcHi3gA
+	BKU5VgG38HWML/XT1Q5v4d2HPVLsaMcLhrMzU76l4ML4OLH7b4TM
+X-Gm-Gg: ASbGncsJjhyz/FPqJIaK9WuuYrwyTVK9rRdKg5IYTQxmIeUPadx7FDBr65tmmWnvsoV
+	72iPlJDaxVCJtMM9hUImrxlaH6opL7jh3Nr18ZcXAO51rSvPe3KswO7nLqhGBx1VkgGKq9cgAVl
+	4LkVF5aOjcHPrON8n+I5MfqrTWOOPYSYCgbTWW3jOz2Ihgt9O9X1H0yu/R/L68TvVy+9mz5m8R0
+	v6NLzqmL2WupYGvQoxFA/InT7zBj2vZ6lZmPfI7D1xwO34IPxN8X0ZEUJFV+dXYyvEeOnPxIX2+
+	lcUGcvtNE3xOM+WXNQwx4DE4euSaK5kZE6UENK1lFRIur/VtYH0=
+X-Google-Smtp-Source: AGHT+IHnDXq/rQt9rvIEwMH/Qu1x3vMN4D/Sfbrtt3HCkRjO/okvdPh6Tg6yj0BiKhp7C2EH/cOaNw==
+X-Received: by 2002:a05:6512:3d2:b0:542:1b63:2e78 with SMTP id 2adb3069b0e04-5439c216b34mr5857889e87.2.1737629031044;
+        Thu, 23 Jan 2025 02:43:51 -0800 (PST)
 Received: from abj-NUC9VXQNX.. (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5439af0ea8esm2579873e87.80.2025.01.23.02.43.45
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5439af0ea8esm2579873e87.80.2025.01.23.02.43.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jan 2025 02:43:47 -0800 (PST)
+        Thu, 23 Jan 2025 02:43:49 -0800 (PST)
 From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 To: rust-for-linux@vger.kernel.org,
 	daniel.almeida@collabora.com,
@@ -76,10 +78,12 @@ Cc: Miguel Ojeda <ojeda@kernel.org>,
 	airlied@redhat.com,
 	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: [PATCH v11 0/3] Add dma coherent allocator abstraction
-Date: Thu, 23 Jan 2025 12:42:56 +0200
-Message-ID: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
+Subject: [PATCH v11 1/3] rust: error: Add EOVERFLOW
+Date: Thu, 23 Jan 2025 12:42:57 +0200
+Message-ID: <20250123104333.1340512-2-abdiel.janulgue@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
+References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,71 +92,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Changes since v10:
-- rename read() to as_slice() (Boqun Feng)
-- Do a bitwise copy of ARef<Device> in into_parts() when returning the
-  device reference (Alice Ryhl).
-- Link to v10: https://lore.kernel.org/all/20250121191432.1178734-1-abdiel.janulgue@gmail.com/
+Trivial addition for missing EOVERFLOW error. This is used by a
+subsequent patch that might require returning EOVERFLOW as a result
+of `checked_mul`.
 
-Changes since v9:
-- Use ARef<Device> in the constructor arguments, docs clarification avoid
-  manually dropping the refcount for the device in into_parts(), use
-  add() instead of wrapping_add() in the pointer arithmetic for performance
-  (Alice Ryhl).
+Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Reviewed-by: Alice Ryhl <aliceryhl@google.com>
+---
+ rust/kernel/error.rs | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes since v8:
-- Add MAINTAINERS entry
-- Fix build issues due to switch from core::ffi to crate:ffi in bindgen.
-- Ensure the wrapped attribute is non-pub in struct Attrs, declare it 
-  #[repr(transparent)] as well (Daniel Sedlak)
-
-Changes since v7:
-- Remove cpu_buf() and cpu_buf_mut() as exporting a r/w interface via
-  a slice is undefined behaviour due to slice's requirement that the
-  underlying pointer should not be modified (Alice Ryhl, Robin Murphy).
-- Reintroduce r/w helpers instead which includes proper safety
-  invariants (Daniel Almeida).
-
-Changes since v6:
-- Include the dma_attrs in the constructor, use alloc::Flags as inpiration
-
-Changes since v5:
-- Remove unnecessary lifetime annotation when returning the CPU buffer.
-
-Changes since v4:
-- Documentation and example fixes, use Markdown formatting (Miguel Ojeda).
-- Discard read()/write() helpers to remove bound on Copy and fix overhead
-  (Daniel Almeida).
-- Improve error-handling in the constructor block (Andreas Hindborg).
-
-Changes since v3:
-- Reject ZST types by checking the type size in the constructor in
-  addition to requiring FromBytes/AsBytes traits for the type (Alice Ryhl).
-
-Changes since v2:
-- Fixed missing header for generating the bindings.
-
-Changes since v1:
-- Fix missing info in commit log where EOVERFLOW is used.
-- Restrict the dma coherent allocator to numeric types for now for valid
-  behaviour (Daniel Almeida).
-- Build slice dynamically.
-
-Abdiel Janulgue (3):
-  rust: error: Add EOVERFLOW
-  rust: add dma coherent allocator abstraction.
-  MAINTAINERS: add entry for Rust dma mapping helpers device driver API
-
- MAINTAINERS                     |  10 ++
- rust/bindings/bindings_helper.h |   1 +
- rust/kernel/dma.rs              | 282 ++++++++++++++++++++++++++++++++
- rust/kernel/error.rs            |   1 +
- rust/kernel/lib.rs              |   1 +
- 5 files changed, 295 insertions(+)
- create mode 100644 rust/kernel/dma.rs
-
-
-base-commit: ceff0757f5dafb5be5205988171809c877b1d3e3
+diff --git a/rust/kernel/error.rs b/rust/kernel/error.rs
+index f6ecf09cb65f..1e510181432c 100644
+--- a/rust/kernel/error.rs
++++ b/rust/kernel/error.rs
+@@ -64,6 +64,7 @@ macro_rules! declare_err {
+     declare_err!(EPIPE, "Broken pipe.");
+     declare_err!(EDOM, "Math argument out of domain of func.");
+     declare_err!(ERANGE, "Math result not representable.");
++    declare_err!(EOVERFLOW, "Value too large for defined data type.");
+     declare_err!(ERESTARTSYS, "Restart the system call.");
+     declare_err!(ERESTARTNOINTR, "System call was interrupted by a signal and will be restarted.");
+     declare_err!(ERESTARTNOHAND, "Restart if no handler.");
 -- 
 2.43.0
 
