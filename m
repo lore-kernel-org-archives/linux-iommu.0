@@ -1,269 +1,165 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB24614B06E
-	for <iommu@lists.linux.dev>; Thu, 23 Jan 2025 17:11:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E6FFEC5
+	for <iommu@lists.linux.dev>; Thu, 23 Jan 2025 17:35:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737652268; cv=none; b=RETgogH22Hg92xjyq5lQ9xFclEw66hTY8GBBPdqhFXIHoUuEhKEdv52iUjTBsB5rOe+Q/qpDBQrVy6BWLMO0LhmLauc+/tw346fH0ksD4YXTQaDWhuKVHbKH/cdTymCjbc1ZQJVmFe9EnObk5Oxu9Lgy6byWqVRvOLPGBKgqhGk=
+	t=1737653733; cv=none; b=UnasWXtzGO4HNjjpEDg66enh3K/AB9ip8c+WrO0/s2XNf9fPRKjnZLH/JWVZg2EnkI/7HJfQiBwtQy0I6nQ3OQg/QGUK675OQrqqWsbdp6wMAhxZLpPgIu6qKXR/ftK4Zyc6zMQuZ33Ntp6HbKNYi2anGUSK2D0ca4zOO/30UpE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737652268; c=relaxed/simple;
-	bh=IElpbLrsOsHo9Fqp9+eo4+iSffumW7TRTtUYq1XiB5M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tltrzHrRGGV3yZnKsWqMQPe2w8859+W+D7OyeG0xYMH9Z5cIh5tpPzCcxsEMtskCQgfmw67kY32hbS5+0JYiFh7aow/QiSDjzRYm3v7veoHHdWp1pCTYygKyfvbHtuon0TVi/rJdGJC8BQFl5JxokbGTB2sz9liT+VjnwqII+cQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=eZ3O75yo; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1737653733; c=relaxed/simple;
+	bh=OOBTytmDaQ6UJzTPi1jox3V/5m4DQwpCEO0KPegpU2s=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UFsnUxw2+EXJ7ZQHEgbSK5GL0+QWKhxp06zlEa04HtGoLmKF0K1XrWT2A0w6ooWgrf2BqVZisYlT63ndJ/AOsc4S4gy13v0YtnHfHqXZY5sT4iqCqeA2XKKrv9mavmP14wcSEAvGqPTMmWQgGyBjUOuf2dwgpaKnhX7UsUHBakQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=CnWxtVDZ; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="eZ3O75yo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1737652265;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8fOKblc3FZS7ikfIHW19sV5gSa/Sm7uYNFXMWgCbP3w=;
-	b=eZ3O75yo4Ab+ks2V/70dOcPAi4tCy0pv+OLsbAD20PsjETifkC3bAO4qwjJcg0JhctNdjV
-	F9zCfuSMLothptxWWYS/ae+WVJeIllCAftSjnHJ9/fMY74Z9OIPnM4A0nx7WANkHielJ7e
-	RyN9dtjr8U1uNf2WBaSXkNUAQsJ7lH0=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-619-G3p3D_S4OAiUoXuAGNKZAw-1; Thu, 23 Jan 2025 12:11:02 -0500
-X-MC-Unique: G3p3D_S4OAiUoXuAGNKZAw-1
-X-Mimecast-MFC-AGG-ID: G3p3D_S4OAiUoXuAGNKZAw
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-43623bf2a83so9493495e9.0
-        for <iommu@lists.linux.dev>; Thu, 23 Jan 2025 09:11:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737652261; x=1738257061;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:reply-to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8fOKblc3FZS7ikfIHW19sV5gSa/Sm7uYNFXMWgCbP3w=;
-        b=PSTSs4MkorEkmoNA9e69Ka/sJHkRHiZOiQac4dZHEpg7yIMRkVpIa+Oq4z9Y8cieqB
-         uNYp5hIlYkmQYLO3tqNrNcfabSsE9BCfEKgSSVT/yEOGCkBaDqSgXtbV7H2A5SFUE87P
-         Y2BaUKR0b/SbPe8MbSPzSwcP2naWPd4geMfbdnNJujvybkZLG6GC9FoAwDls3F8nHUAZ
-         Nou+lEJOX+muKcdF4iOpNCV6etL90ZBvbuTwHEkIgdx1jwv1pjwlfJArY/LiXgiuyi2Q
-         lbPoN2nVK6aRp3D7OvQ0jXWPcqqFzfbClAk4vttXyqG1PTvZSGlwebTHIgH+TPMCT8Tu
-         wypw==
-X-Forwarded-Encrypted: i=1; AJvYcCUjTni9zEUkiIZTfEo8pONM3fBmhCl+pV59330dRuOqmwtlXUfntNC3fx8ybAC9w26lGt+g3Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx4+Q3V6rGTfZih/HW6AM4GqtBItQ7UTEVhC+40YzU9cK5EPhGl
-	cTrxrx/oS8kTeaDTcbLn7uRc1TutmFs8AIaFEdy8pmM943pB9HPVD65KAOD17HMvUbfhX2srcK6
-	lMM8ngGikHp5b8xEB4DWj2/O+o0y6qG6Jmj9qhVq9NAW9bEDKI/St
-X-Gm-Gg: ASbGncvQjBOJD+xYvuHx+v9IfiO8hdiL2dVGtEXGGiVzJbAcKnPPWp5ywgL9YkHutP5
-	BtXO+hhQjqCyKpYglYhybfWzeq/rZwJZcXxL/am67s+VYKSMqrihwFbTn64ni2hWUbGAZsKwrSC
-	aPlkXs3ZEwF3CXCQigzAmR/gDNBtg5xuDl3K9rSLgTbz9nX91bgtcy3ibBko327jxW0MOEEhP8T
-	2GOJbrb8ZZw+JkkM4ErJ+58bKlL2qhHQh+gBNAJvENHdXMcTWVKhkVsDrc1q7HIyRgQkIpngAXS
-	0OL5ky+1za+vNYxiQzkzGS5ZXU/4xdm4/mRZ5f+Row==
-X-Received: by 2002:a05:600c:c87:b0:434:ff30:a159 with SMTP id 5b1f17b1804b1-438912d54b1mr280615865e9.0.1737652261102;
-        Thu, 23 Jan 2025 09:11:01 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IEve2JNXs/aOVwoBIaoWNaT3prodhge18rjmwvoIe2mZAtYGf3exTDDbW8BsosdzSW8HiTIkw==
-X-Received: by 2002:a05:600c:c87:b0:434:ff30:a159 with SMTP id 5b1f17b1804b1-438912d54b1mr280615385e9.0.1737652260533;
-        Thu, 23 Jan 2025 09:11:00 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-438b31d9a39sm67975795e9.31.2025.01.23.09.10.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jan 2025 09:10:59 -0800 (PST)
-Message-ID: <fa9b443d-e068-41bc-ad03-9f04818c72e0@redhat.com>
-Date: Thu, 23 Jan 2025 18:10:54 +0100
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="CnWxtVDZ"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50NFr2iw031618;
+	Thu, 23 Jan 2025 17:35:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=3sAObRTPJYOicvuINKNxbQAM
+	Lh+X34dr0zItcLyQyQ8=; b=CnWxtVDZsoW06382hhUrxkUCZN6PsICjBsshSBM7
+	Dky1GYeFZ3yh3IkoNzfbUprCb/UjdidwYmFrtKByGeHBcXM1zd8aTaO3AHbMbxy8
+	qLbOCjWGiiYCs5qAjIDDbmgj80IV/DnYvsou60wwA8KeWuFhsFvwyvFy4reQgn0R
+	OjPXipHokqwj2jID6Qn0/1uqI20Z3RSVjTIo/iE/4xpfgecx8dYJBmtLapgxwQIN
+	Mt3RkIXH569SnzKV9Mt4XZJIBDZFo/hhyiJOCKtK5hVkCtEzaaqZL0R6G4JDbtIF
+	BRrWyRkKgqt61qoaJSMo6UochB36Z0NXUhFFIz//OLmvMw==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44brsyg93v-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 23 Jan 2025 17:35:17 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 50NHZGA4031330
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 23 Jan 2025 17:35:16 GMT
+Received: from hu-guptap-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Thu, 23 Jan 2025 09:35:12 -0800
+Date: Thu, 23 Jan 2025 23:04:58 +0530
+From: Prakash Gupta <quic_guptap@quicinc.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: Connor Abbott <cwabbott0@gmail.com>, Rob Clark <robdclark@gmail.com>,
+        "Will Deacon" <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Sean Paul
+	<sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>,
+        Abhinav Kumar
+	<quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <freedreno@lists.freedesktop.org>
+Subject: Re: [PATCH v3 1/3] iommu/arm-smmu: Fix spurious interrupts with
+ stall-on-fault
+Message-ID: <Z5J9wpooIH5/Ccrt@hu-guptap-hyd.qualcomm.com>
+References: <20250122-msm-gpu-fault-fixes-next-v3-0-0afa00158521@gmail.com>
+ <20250122-msm-gpu-fault-fixes-next-v3-1-0afa00158521@gmail.com>
+ <Z5IjsqQ6vTdUXiGt@hu-guptap-hyd.qualcomm.com>
+ <b593ac5e-cb29-473a-af1b-214168968679@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Reply-To: eric.auger@redhat.com
-Subject: Re: [PATCH RFCv2 02/13] genirq/msi: Rename
- iommu_dma_compose_msi_msg() to msi_msg_set_msi_addr()
-To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
- robin.murphy@arm.com, jgg@nvidia.com, kevin.tian@intel.com,
- tglx@linutronix.de, maz@kernel.org, alex.williamson@redhat.com
-Cc: joro@8bytes.org, shuah@kernel.org, reinette.chatre@intel.com,
- yebin10@huawei.com, apatel@ventanamicro.com,
- shivamurthy.shastri@linutronix.de, bhelgaas@google.com,
- anna-maria@linutronix.de, yury.norov@gmail.com, nipun.gupta@amd.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
- linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
- jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
- shameerali.kolothum.thodi@huawei.com, smostafa@google.com, ddutile@redhat.com
-References: <cover.1736550979.git.nicolinc@nvidia.com>
- <242034456c0bfcd7ecf75cb29d8e5c99db0675d6.1736550979.git.nicolinc@nvidia.com>
-From: Eric Auger <eric.auger@redhat.com>
-In-Reply-To: <242034456c0bfcd7ecf75cb29d8e5c99db0675d6.1736550979.git.nicolinc@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: e-6-BTjVAZa7_bffriKHUDtGLvjADkMJ6Sybw2c2C5w_1737652261
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <b593ac5e-cb29-473a-af1b-214168968679@arm.com>
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: QM4dPC_sVTC_fOBkeECY6Kk1472-TJ67
+X-Proofpoint-ORIG-GUID: QM4dPC_sVTC_fOBkeECY6Kk1472-TJ67
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-01-23_07,2025-01-23_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
+ lowpriorityscore=0 mlxlogscore=494 spamscore=0 mlxscore=0 clxscore=1015
+ impostorscore=0 malwarescore=0 adultscore=0 priorityscore=1501
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501230129
 
+On Thu, Jan 23, 2025 at 11:51:27AM +0000, Robin Murphy wrote:
+> On 2025-01-23 11:10 am, Prakash Gupta wrote:
+> > On Wed, Jan 22, 2025 at 03:00:58PM -0500, Connor Abbott wrote:
+> > > +	/*
+> > > +	 * The SMMUv2 architecture specification says that if stall-on-fault is
+> > > +	 * enabled the correct sequence is to write to SMMU_CBn_FSR to clear
+> > > +	 * the fault and then write to SMMU_CBn_RESUME. Clear the interrupt
+> > > +	 * first before running the user's fault handler to make sure we follow
+> > > +	 * this sequence. It should be ok if there is another fault in the
+> > > +	 * meantime because we have already read the fault info.
+> > > +	 */
+> > The context would remain stalled till we write to CBn_RESUME. Which is done
+> > in qcom_adreno_smmu_resume_translation(). For a stalled context further
+> > transactions are not processed and we shouldn't see further faults and
+> > or fault inerrupts. Do you observe faults with stalled context?
+> 
+> This aspect isn't exclusive to stalled contexts though - even for "normal"
+> terminated faults, clearing the FSR as soon as we've sampled all the
+> associated fault registers is no bad thing, since if a second fault does
+> occur while we're still reporting the first, we're then more likely to get a
+> full syndrome rather than just the FSR.MULTI bit.
+> 
+ARM SMMUv2 spec recommends, in case of reported fault sw should first
+correct the condition which casued the fault, I would interpret this as
+reporting fault to client using callback, and then write CBn_FSR and
+CBn_RESUME in this order. Even in case of reported fault where context is
+not stalled, the first step, IMO, I see no reason why should be any
+different.  I agree that delaying fault clearance can result in FSR.MULTI
+being set, but clearning fault before  prevent clients to use SCTLR.HUPCF
+on subsequent transactions while they take any debug action. The client
+should be reported fault in the same state it occured. Please refer
+qcom_smmu_context_fault() for this sequence.
 
+> > > +	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, cfi.fsr);
+> > > +
+> > >   	ret = report_iommu_fault(&smmu_domain->domain, NULL, cfi.iova,
+> > >   		cfi.fsynr & ARM_SMMU_CB_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
+> > >   	if (ret == -ENOSYS && __ratelimit(&rs))
+> > >   		arm_smmu_print_context_fault_info(smmu, idx, &cfi);
+> > > -	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, cfi.fsr);
+> > >   	return IRQ_HANDLED;
+> > >   }
+> > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> > > index 2dbf3243b5ad2db01e17fb26c26c838942a491be..789c64ff3eb9944c8af37426e005241a8288da20 100644
+> > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> > > @@ -216,7 +216,6 @@ enum arm_smmu_cbar_type {
+> > >   					 ARM_SMMU_CB_FSR_TLBLKF)
+> > >   #define ARM_SMMU_CB_FSR_FAULT		(ARM_SMMU_CB_FSR_MULTI |	\
+> > > -					 ARM_SMMU_CB_FSR_SS |		\
+> > Given writing to FSR.SS doesn't clear this bit but write to CBn_RESUME
+> > does, this seems right. This but can be taken as separate patch.
+> 
+> This change on its own isn't really useful - all that would achieve is that
+> instead of constantly re-reporting the FSR.SS "fault", the interrupt goes
+> unhandled and the IRQ core ends up disabling it permanently. If anything
+> that's arguably worse, since the storm of context fault reports does at
+> least give a fairly clear indication of what's gone wrong, rather than
+> having to deduce the cause of an "irq n: nobody cared" message entirely by
+> code inspection.
+> 
+Does spec allow or do we see reported fault with just FSR.SS bit. If answer
+is no then Keeping FSR_SS would be misleading. Here ARM_SMMU_CB_FSR_FAULT
+is used to clear fault bits or check valid faults. Also validity of this
+is not based on rest of the change. 
 
-
-On 1/11/25 4:32 AM, Nicolin Chen wrote:
-> From: Jason Gunthorpe <jgg@nvidia.com>
->
-> The new function is used to take in a u64 MSI address and store it in the
-> msi_msg. If the iommu has provided an alternative address then that is
-> replaced instead.
->
-> All callers have a tidy u64 already so this also consolidates the repeated
-> low/high code into a small helper.
->
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  include/linux/msi.h               | 18 ++++++++----------
->  drivers/irqchip/irq-gic-v2m.c     |  5 +----
->  drivers/irqchip/irq-gic-v3-its.c  | 13 +++----------
->  drivers/irqchip/irq-gic-v3-mbi.c  | 12 ++++--------
->  drivers/irqchip/irq-ls-scfg-msi.c |  5 ++---
->  5 files changed, 18 insertions(+), 35 deletions(-)
->
-> diff --git a/include/linux/msi.h b/include/linux/msi.h
-> index d442b4a69d56..f6369748fc6e 100644
-> --- a/include/linux/msi.h
-> +++ b/include/linux/msi.h
-> @@ -296,13 +296,8 @@ static inline void msi_desc_set_iommu_msi_iova(struct msi_desc *desc,
->  #endif
->  }
->  
-> -/**
-> - * iommu_dma_compose_msi_msg() - Apply translation to an MSI message
-> - * @desc: MSI descriptor prepared by iommu_dma_prepare_msi()
-> - * @msg: MSI message containing target physical address
-> - */
-> -static inline void iommu_dma_compose_msi_msg(struct msi_desc *desc,
-> -					     struct msi_msg *msg)
-> +static inline void msi_msg_set_msi_addr(struct msi_desc *desc,
-> +					struct msi_msg *msg, u64 msi_addr)
-nit: msi_msg_set_addr(ess) may be enough as the populated fields are
-address_lo/hi
->  {
->  #ifdef CONFIG_IRQ_MSI_IOMMU
->  	if (desc->iommu_msi_page_shift) {
-> @@ -310,11 +305,14 @@ static inline void iommu_dma_compose_msi_msg(struct msi_desc *desc,
->  			       << desc->iommu_msi_page_shift;
->  
->  		msg->address_hi = upper_32_bits(msi_iova);
-> -		msg->address_lo = lower_32_bits(msi_iova) |
-> -				  (msg->address_lo &
-> -				   ((1 << desc->iommu_msi_page_shift) - 1));
-> +		msg->address_lo =
-> +			lower_32_bits(msi_iova) |
-> +			(msi_addr & ((1 << desc->iommu_msi_page_shift) - 1));
-> +		return;
->  	}
->  #endif
-> +	msg->address_hi = upper_32_bits(msi_addr);
-> +	msg->address_lo = lower_32_bits(msi_addr);
->  }
->  
->  int msi_domain_insert_msi_desc(struct device *dev, unsigned int domid,
-> diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
-> index be35c5349986..6599c56873ad 100644
-> --- a/drivers/irqchip/irq-gic-v2m.c
-> +++ b/drivers/irqchip/irq-gic-v2m.c
-> @@ -87,9 +87,6 @@ static void gicv2m_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
->  	struct v2m_data *v2m = irq_data_get_irq_chip_data(data);
->  	phys_addr_t addr = gicv2m_get_msi_addr(v2m, data->hwirq);
->  
-> -	msg->address_hi = upper_32_bits(addr);
-> -	msg->address_lo = lower_32_bits(addr);
-> -
->  	if (v2m->flags & GICV2M_GRAVITON_ADDRESS_ONLY)
->  		msg->data = 0;
->  	else
-> @@ -97,7 +94,7 @@ static void gicv2m_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
->  	if (v2m->flags & GICV2M_NEEDS_SPI_OFFSET)
->  		msg->data -= v2m->spi_offset;
->  
-> -	iommu_dma_compose_msi_msg(irq_data_get_msi_desc(data), msg);
-> +	msi_msg_set_msi_addr(irq_data_get_msi_desc(data), msg, addr);
->  }
->  
->  static struct irq_chip gicv2m_irq_chip = {
-> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-> index 92244cfa0464..8c3ab7b471ca 100644
-> --- a/drivers/irqchip/irq-gic-v3-its.c
-> +++ b/drivers/irqchip/irq-gic-v3-its.c
-> @@ -1809,17 +1809,10 @@ static u64 its_irq_get_msi_base(struct its_device *its_dev)
->  static void its_irq_compose_msi_msg(struct irq_data *d, struct msi_msg *msg)
->  {
->  	struct its_device *its_dev = irq_data_get_irq_chip_data(d);
-> -	struct its_node *its;
-> -	u64 addr;
-> -
-> -	its = its_dev->its;
-> -	addr = its->get_msi_base(its_dev);
-> -
-> -	msg->address_lo		= lower_32_bits(addr);
-> -	msg->address_hi		= upper_32_bits(addr);
-> -	msg->data		= its_get_event_id(d);
->  
-> -	iommu_dma_compose_msi_msg(irq_data_get_msi_desc(d), msg);
-> +	msg->data = its_get_event_id(d);
-> +	msi_msg_set_msi_addr(irq_data_get_msi_desc(d), msg,
-> +			     its_dev->its->get_msi_base(its_dev));
->  }
->  
->  static int its_irq_set_irqchip_state(struct irq_data *d,
-> diff --git a/drivers/irqchip/irq-gic-v3-mbi.c b/drivers/irqchip/irq-gic-v3-mbi.c
-> index 3fe870f8ee17..513479da9ee3 100644
-> --- a/drivers/irqchip/irq-gic-v3-mbi.c
-> +++ b/drivers/irqchip/irq-gic-v3-mbi.c
-> @@ -147,22 +147,18 @@ static const struct irq_domain_ops mbi_domain_ops = {
->  
->  static void mbi_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
->  {
-> -	msg[0].address_hi = upper_32_bits(mbi_phys_base + GICD_SETSPI_NSR);
-> -	msg[0].address_lo = lower_32_bits(mbi_phys_base + GICD_SETSPI_NSR);
->  	msg[0].data = data->parent_data->hwirq;
-> -
-> -	iommu_dma_compose_msi_msg(irq_data_get_msi_desc(data), msg);
-> +	msi_msg_set_msi_addr(irq_data_get_msi_desc(data), &msg[0],
-> +			     mbi_phys_base + GICD_SETSPI_NSR);
->  }
->  
->  static void mbi_compose_mbi_msg(struct irq_data *data, struct msi_msg *msg)
->  {
->  	mbi_compose_msi_msg(data, msg);
->  
-> -	msg[1].address_hi = upper_32_bits(mbi_phys_base + GICD_CLRSPI_NSR);
-> -	msg[1].address_lo = lower_32_bits(mbi_phys_base + GICD_CLRSPI_NSR);
->  	msg[1].data = data->parent_data->hwirq;
-> -
-> -	iommu_dma_compose_msi_msg(irq_data_get_msi_desc(data), &msg[1]);
-> +	msi_msg_set_msi_addr(irq_data_get_msi_desc(data), &msg[1],
-> +			     mbi_phys_base + GICD_CLRSPI_NSR);
->  }
->  
->  static bool mbi_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
-> diff --git a/drivers/irqchip/irq-ls-scfg-msi.c b/drivers/irqchip/irq-ls-scfg-msi.c
-> index c0e1aafe468c..2ac6d89b4cb4 100644
-> --- a/drivers/irqchip/irq-ls-scfg-msi.c
-> +++ b/drivers/irqchip/irq-ls-scfg-msi.c
-> @@ -87,8 +87,6 @@ static void ls_scfg_msi_compose_msg(struct irq_data *data, struct msi_msg *msg)
->  {
->  	struct ls_scfg_msi *msi_data = irq_data_get_irq_chip_data(data);
->  
-> -	msg->address_hi = upper_32_bits(msi_data->msiir_addr);
-> -	msg->address_lo = lower_32_bits(msi_data->msiir_addr);
->  	msg->data = data->hwirq;
->  
->  	if (msi_affinity_flag) {
-> @@ -98,7 +96,8 @@ static void ls_scfg_msi_compose_msg(struct irq_data *data, struct msi_msg *msg)
->  		msg->data |= cpumask_first(mask);
->  	}
->  
-> -	iommu_dma_compose_msi_msg(irq_data_get_msi_desc(data), msg);
-> +	msi_msg_set_msi_addr(irq_data_get_msi_desc(data), msg,
-> +			     msi_data->msiir_addr);
->  }
->  
->  static int ls_scfg_msi_set_affinity(struct irq_data *irq_data,
-
+Thanks,
+Prakash
+ 
+> > 
+> > >   					 ARM_SMMU_CB_FSR_UUT |		\
+> > >   					 ARM_SMMU_CB_FSR_EF |		\
+> > >   					 ARM_SMMU_CB_FSR_PF |		\
+> > > 
+> > > -- 
+> > > 2.47.1
+> > > 
+> 
