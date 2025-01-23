@@ -1,170 +1,177 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2061.outbound.protection.outlook.com [40.107.102.61])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E405316F858;
-	Thu, 23 Jan 2025 18:50:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.61
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737658207; cv=fail; b=KV4dq8vsAKyo3+kPmFfyxn5tHCx6X3KntqN5aOdNrW/ZuarHECoEj7EZQe4CnnN/My6i89VNup8S2j4ltBXhg2Pj9Q/WRrksiHwJqnnNsTtFvgbtp5KElrQmcyhxTTPjo8xrY72tsmsVFvrB30wPxacoC+PfE0ATeEv14OrgJQU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737658207; c=relaxed/simple;
-	bh=sRuRUeqUS7kcLLvjupqEN7t+4p5yG1f4A4//v0ZkfWw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=NFKNLOQz9sjCgYCmvyuXPYkMAE6oR1EaipGz0IAMQ23uBShVMHYlIFwqqi6B14YejqXxUwGXc4JBXQ4Xbs4GoRsMNbEi9MB20u7P1XtZCFWHCnw5fWGCVBDvXkp5HxNXNAHwKgjGRNkzrzSwawtFS6oSMdk/9K+8XB7boaDmerM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ur/uM5g/; arc=fail smtp.client-ip=40.107.102.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8484B1BC4E
+	for <iommu@lists.linux.dev>; Thu, 23 Jan 2025 19:26:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737660400; cv=none; b=AgSQ3fXz+Zm9A/j2BCYr3kkVI2plbb+zdTQNnYWiTwb/UIeAy+aDzuUypMcnDV079yOrtKpdPpctXZHATdn7feOW7xyrhPbeFABGWf2z2ezii4DZaVuswaSOdG7YBBDDKyOcoxNQFeZQsb1fO7UwIZTw/vqI/x6rmQmo9UtY9aQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737660400; c=relaxed/simple;
+	bh=5db58c5dg0ySVECwNpTWJvf8PNP5Uf+onN97MrC/7l4=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZkSYo4F7Lbbs5wtaeYVTBgsIdlnP00oR9qg4evLAnzdT40O9s53iHyntHWYrklQeEp4bV13P07akFFoTrdfOSIqVo9zld409F9jKsnA/sPC7x2Dm7mMIcruTXbT61eEdJZ0I0B8nZpdiFEx2au4Wz6ljB7wy9Md75bwBpvvVyg4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=B8NUcHj0; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ur/uM5g/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JmNs3tL6Xq4VJd7m8y8keBs7BzH0ra4rSBjzBNzvwAldfg76TkLitZ0Sh0DddC/9AC3lkbs1y+8mGpGBnnibVBXMczk7rq9HW/oRA5XzFufA5nubPrkI22YVjIW1LBQpeV7DB6z3T5ct78oiFF3a4GuDJQRXSoSWop25aeSxKHDanMPXLlcFtsbEVwaAlyPv3TqKDw+ZALNbhJ+/SD8IpjW8wLo5tqJOg5djQsnWw61e/LFYigm4+R6Kl3/7x5Yx+KHIkBvKoaGDl10UCXBdJvx81/BnY5NPy8htnXsONE7Sz0ghbjg6zgAo5O0BcD5U8qQm/OPTVomcf+mZ9BwvYg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N1b1Q8GmaSF0vEswf5jRaS2PZltp1UUDo3HsfwD/dx8=;
- b=UPEb92ZxJS+5Q0+UxCJ+SlIffa4k4S6dgKcVf76eNbgl/d0ryxJaJevvckQufPIhcJOGZTFF98d4+V2tNhzWgL3uZTDdXDTPFEqwOfGOv7pSe77ZjzlbP9uKX1JW5snB6mvV2E5WQ1LK+PUp8192ZKXITs///lpHL3hoHQPthbj8LCE59Bu2kR2wzbdiDfJDox7EEQHb2oO8HCQ3krt3Q3azifA4Q/UCvUcQl+WIu6O+mVVJrBruhDwRRkxSuLdsTHoXrhA9FR4Z1up4GPJuwPXcl2tucy7LTznVcOffZzxSUkWJPmbfBfmzcmz1eRrrg4T1g1nK2QEWS+snDSasbA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N1b1Q8GmaSF0vEswf5jRaS2PZltp1UUDo3HsfwD/dx8=;
- b=ur/uM5g/ANCR4TeCI6Lv+nnidtzaMSsJdQWY7tmhn5mLHFPNbBeM51kF22P6UxAj/qwZSnIe19osa/Ok5pCuDvbLQAtjFtnWwnaItuvwDpF6thJCflDAAGTD9Py/jf+9InKDMw6guTv8AGPq13Gxz86J78jVUqo3QbPgFYqZFTa1G3jWQt67GRhoLGgDjeX7eEKUCDnGqJOY24MitHWKUk2HS9vqJ/f7cmZsVc1ACMjvPXG4cXCDvygFuUVUSbPcI6AmFdd/6a9V/euV3CSFKzzNO3d5sqUlRewp3rwx821JUmTTqgKWgCFzCX6+a9+YgqI5/Kl9T32RsOFXSF9U8w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by SA3PR12MB8437.namprd12.prod.outlook.com (2603:10b6:806:2f5::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8356.13; Thu, 23 Jan
- 2025 18:50:03 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%5]) with mapi id 15.20.8356.010; Thu, 23 Jan 2025
- 18:50:03 +0000
-Date: Thu, 23 Jan 2025 14:50:02 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Eric Auger <eric.auger@redhat.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
-	robin.murphy@arm.com, kevin.tian@intel.com, tglx@linutronix.de,
-	maz@kernel.org, alex.williamson@redhat.com, joro@8bytes.org,
-	shuah@kernel.org, reinette.chatre@intel.com, yebin10@huawei.com,
-	apatel@ventanamicro.com, shivamurthy.shastri@linutronix.de,
-	bhelgaas@google.com, anna-maria@linutronix.de, yury.norov@gmail.com,
-	nipun.gupta@amd.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	kvm@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	patches@lists.linux.dev, jean-philippe@linaro.org, mdf@kernel.org,
-	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
-	smostafa@google.com, ddutile@redhat.com
-Subject: Re: [PATCH RFCv2 02/13] genirq/msi: Rename
- iommu_dma_compose_msi_msg() to msi_msg_set_msi_addr()
-Message-ID: <20250123185002.GV5556@nvidia.com>
-References: <cover.1736550979.git.nicolinc@nvidia.com>
- <242034456c0bfcd7ecf75cb29d8e5c99db0675d6.1736550979.git.nicolinc@nvidia.com>
- <fa9b443d-e068-41bc-ad03-9f04818c72e0@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fa9b443d-e068-41bc-ad03-9f04818c72e0@redhat.com>
-X-ClientProxiedBy: BL1PR13CA0002.namprd13.prod.outlook.com
- (2603:10b6:208:256::7) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="B8NUcHj0"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50NDsI5s029652;
+	Thu, 23 Jan 2025 19:26:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	xbPxKwFgsEnv6VNL5xU4bAl2nRy0Cg3dN5HZEfeLACc=; b=B8NUcHj0AdZFf6hd
+	E+2f5JiMjkEuDXf74j7gu1AvZ3YsxRV79nNnlDFHUt/A2/ReT0JM/f1n9m02vDh6
+	oaTIaciBdpbOct9MiWZUevcQqH1MLk+oJKqY7OrU07/k3Ad0iObv64ownWQJD4Vj
+	EhmHAsBzbGHM35vV+JVD1Euuic3iCeCmh7q6PDOdl6ud88v1FDu/ru0cxUc39NQJ
+	WGI90ZM4OXr+55JcVRAaYSkkwGhKFIIMcTPCfzOu9MGj7wspR/jRQZmGuZ8SUttx
+	hJlC1TwBtz6/cDx1ruq+Y0v6iWnMm2Y2nHHQ4yjiHBYcpY1w6jD1MtphAj0zkAsI
+	4yyBfw==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44bq2crs02-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 23 Jan 2025 19:26:18 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 50NJQHXJ031213
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 23 Jan 2025 19:26:17 GMT
+Received: from hu-guptap-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Thu, 23 Jan 2025 11:26:13 -0800
+Date: Fri, 24 Jan 2025 00:55:52 +0530
+From: Prakash Gupta <quic_guptap@quicinc.com>
+To: Connor Abbott <cwabbott0@gmail.com>
+CC: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
+        "Robin
+ Murphy" <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        Sean Paul
+	<sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>,
+        Abhinav Kumar
+	<quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <freedreno@lists.freedesktop.org>
+Subject: Re: [PATCH v3 1/3] iommu/arm-smmu: Fix spurious interrupts with
+ stall-on-fault
+Message-ID: <Z5KXwNPrdirVUn8Z@hu-guptap-hyd.qualcomm.com>
+References: <20250122-msm-gpu-fault-fixes-next-v3-0-0afa00158521@gmail.com>
+ <20250122-msm-gpu-fault-fixes-next-v3-1-0afa00158521@gmail.com>
+ <Z5IjsqQ6vTdUXiGt@hu-guptap-hyd.qualcomm.com>
+ <CACu1E7H5X2EfY9AG=xceaoZJkbumwnrsU4QvNbxd_A2wgVVOaQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|SA3PR12MB8437:EE_
-X-MS-Office365-Filtering-Correlation-Id: f72c4579-7850-4049-dc47-08dd3bdebf1a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?yELQgnN1FMny2TrdEJgKxUKVt3hKtjxqggAKg2hv08MlUldMWCt/lJJgHkIf?=
- =?us-ascii?Q?vOT8d9m9qJxMUJ8AqfJD2FM+3IMQVpMBaMjwXbGZ4yuFmgXLnldLaZjBCpiP?=
- =?us-ascii?Q?PEnCWu38v7n3052QfSPT6QT/ytTKmMJ/XH0YeOdTMacSGbFOJLgPIHemeH+S?=
- =?us-ascii?Q?pPpiqRVf7NGDoxIoIonQ4lsJFbT0yjhmVBkFaRJ1RMWJGhlN33YTczzYXahR?=
- =?us-ascii?Q?JB4VEtG75I/aRQG6iREPc09NFtHOoLTfkA69MIIm1RwUdJGzRctulZIYy48L?=
- =?us-ascii?Q?OR9c2VEBAi2Ejs2aDlCS1Wn8xwXGNL8cSUwtDAzFISraqk7bDMg5065dTC/l?=
- =?us-ascii?Q?Uyx1Nm+K3kW7FEAtGbQQI1t8C/tj3j3uw9C6oLQgDERbcCI3L2VuBMvqZTZO?=
- =?us-ascii?Q?6HtYgXHPAtUfBSwi7CFDWqOv4O8wZ0c7DWUJrwWh0hPrs4E+q1wyiQSjTe2Y?=
- =?us-ascii?Q?/tFFsiat5ZporpMJk+d038XJpik0OjKoZJOyKIcTqM4K5ln+ioWQfb0pjvPa?=
- =?us-ascii?Q?ExJHELL46dQUVCoBx8hagS2vlyLxJu0GJisdH68053dootaFhX5BfPgIYPOZ?=
- =?us-ascii?Q?m79zf7Ju52/ElZNbvtTdLPvt5cgzc94WvHqwtLT2+EOQR40IU4kx94NCpqmP?=
- =?us-ascii?Q?yCuajStV75r70EPdQ475iYOzQ/S4Vdk+XijpppWI2wIl++5gL+Pf2F+zV6zK?=
- =?us-ascii?Q?2kqHwGwFSen4yg0HDIC3tj6IG1cYVlq3kOs9Tmr0RjAZBJYzaRvgtvqE6uyD?=
- =?us-ascii?Q?ozcwodGoj6Nghz+j9i7KfvB1SbJXoMV1qCKZd1VaAg5Bnm0Z2Ckh8Lu0ePgP?=
- =?us-ascii?Q?2BJQuOFIzXWx0KArtfvXCxXnl1URuz5UrinJwTaSy1ZO4+QTFTMi/FeATWoO?=
- =?us-ascii?Q?HGalFpWBkszFxXyhs0lKuCzOw8CVO0Mu6qmZ6z58nwpJMxNw0gJQMdR1ICJm?=
- =?us-ascii?Q?Jq2zVqrqou/MUgFwIzu6GcJNnoXFomqNVBPhsV3CbhWfPkmdl9kKftNmx6DL?=
- =?us-ascii?Q?YdJN1dyLg04Fuwkqaep6gq2JUXHkAAnnyQMjtyF9ots2e2Dxpbc77pYFjR7x?=
- =?us-ascii?Q?KqDO2mO5feEwjfAk0X2UNRjpHUQIA7+AfsOphOwXLGbbuofyYKy/libfHR5V?=
- =?us-ascii?Q?+Y19+M2Igz3RXmHgW4PTcTIdHksbe386VBFGySHlhrPWzDDOwCwQHg8Nlu4v?=
- =?us-ascii?Q?ZF21Wt0lFGVv4zlz8RZcK8Mb3vx20ZtwJLhyuOfE1dYxQ6KHgbK0mKOOBq04?=
- =?us-ascii?Q?l5StVj2YQAYkcggJYIvHos7967H4NWrcHnyziOjlfivpm3Rsj+eXFss+28rS?=
- =?us-ascii?Q?raBCVoA7GnaAGpq9vEi44pWdCugAtbbYUV0IcJrPnr/jwDjUNorEGG4ylovn?=
- =?us-ascii?Q?tr69z6/0N49jdpycDVItIowE5yTO?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?pG0x440yM0Zllv8u225NZRNTkbPqXkXjkeGTcVGomBsUmBdnITXwxuHalfz6?=
- =?us-ascii?Q?BAE+q+63zPnnCsHeYibaZD1qdlldeZUMVs3yQtAl2jgQs8b1vLeS9RwNjppZ?=
- =?us-ascii?Q?3Z087iwhsVIAzi+SbV93VOmPe4RzNU4NXyq5avhBIBKAgVT02YUU8DC8AInI?=
- =?us-ascii?Q?WngqMraSyKMCkYZsf+fI4RN1IgbJezGHCcXXI8YE7/5srAFxGP8otvqHlGdw?=
- =?us-ascii?Q?o4nxvMrDgdbs5F5Z3Q+Mqgtkv+AF7wtbCGfMDkbE4lHgtz18ZFw7L87NXyo+?=
- =?us-ascii?Q?ddvI9TiR0JSIqEblaF9ESshGXHUJL6C6SUYGSnEmWbzMYSSLaM4tJkhKoWwc?=
- =?us-ascii?Q?p445m3EISpvfEKMHX6+QnYFmOUdcE9DZ1JvohShyrtlPGwSwc211s4u5ZCSi?=
- =?us-ascii?Q?p1u60CV7W6rWgh34Nu1EpEM4nxkDTPQ+wmU0MRmkqaID50jGRFSZhKOb37jz?=
- =?us-ascii?Q?xf0Hv9hvgDL0irzJYHABrMuPvhy2SPEq+oCv1GJDWDo2QiPvX95AsECoqrsc?=
- =?us-ascii?Q?/aI9ml6FOFhNBQYessGwBZq3k17eLmheQoRDxQCRLRNTgC4gdZyO9l1I4wYr?=
- =?us-ascii?Q?zZgfnoH/IPDwcCGusOempKNIwShHib387lCrLKARmhCsPqfdHPR748zZLp3V?=
- =?us-ascii?Q?fxqsEAFGllZ1hw3fK5u/q/N2JF+kacTgoX7D8hnyZQdpLWz2LV4SVSFGRbs/?=
- =?us-ascii?Q?1S2iTyD8ccRd1mtsVEoXl3B4MBxGUrEkfn0wRHUzdgObj6i9sir0S82vTXJy?=
- =?us-ascii?Q?WRPgogaj2u1UuSDT+s1MHyu4wFXB+/72lfjdiTDrBd7VaLoJOgSjdPfxlVn5?=
- =?us-ascii?Q?wOF70jC0jC6CMf0jcGeoDuSZT11CwzMtMCPvyVQNYbcmUzjaDJsM3S9KqWM+?=
- =?us-ascii?Q?0Yf09kZR2KKmOw08+16sE6WgtREkP6inCwtoVxh9PQcCPeFLUx3doPiT9NBq?=
- =?us-ascii?Q?vAvWQOJEQg4EAE1D/Vd6N9lLfDP68uPQpn+FcsViXC4YLUwkOXQU4XvFCcNq?=
- =?us-ascii?Q?jZQ3p5RuvEyLAsMh7/hK4Lxkrw5aPYeffabXmusvQPZFsDZ93Kn4DpYF0d5Y?=
- =?us-ascii?Q?+5R8ZzL5F33neaEAigbgBovvz521I1ojkhJrDBqB3FlnISPv+rUmEkXRjqoo?=
- =?us-ascii?Q?3WyMF9a4eDroteA0nCpSIv2WkKfcAstRoy2muZOYwMcTgW0ex8ikNb5KZwZG?=
- =?us-ascii?Q?yPz/gWBNYPgP9BK/XJtfRSJ9tAWjYxpBKNnEJcpXoujrApay7aZc6ksryu0z?=
- =?us-ascii?Q?TfVx3IZRXsY+MKAtkyBbL3y8pa7JBDramIeBCZEvbxtsSB3+tc4ooh8l+Gb6?=
- =?us-ascii?Q?Ovz7fhy8cct6T9tG/0Rth1zXGLVEfIAKdvtfuasb/iqUnfE1p+B86OAPlHkm?=
- =?us-ascii?Q?qe/uDiJOZZhO3st2QE/SP66WXNLDUTBes96cVKMPqxCiVYIPe+9+Sk/q/bfs?=
- =?us-ascii?Q?c1oiBB7Z8dM6eKHJ6h00xsxdUDLUnlTmoybYibihDVurw9AtfqmOsayJBh67?=
- =?us-ascii?Q?JOlNi6uTNN9b75VHedPyzLVW7M2sjX08810tyDPmKA9pZjjO08XKV7JAvNWU?=
- =?us-ascii?Q?Hes7iNHdKUi6gb5gdDIm4MSUSf9QU6EW87e6hRDZ?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f72c4579-7850-4049-dc47-08dd3bdebf1a
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jan 2025 18:50:03.2800
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4XbKEvABu4/8zWLDeT/LpAZlrcr5qLIthsDZQX1MAhIoSa8PgvmQHofRxXItgXgk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8437
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACu1E7H5X2EfY9AG=xceaoZJkbumwnrsU4QvNbxd_A2wgVVOaQ@mail.gmail.com>
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: fBRnQJYsHzIeNqRvZGODuPo4dLE3j9Os
+X-Proofpoint-ORIG-GUID: fBRnQJYsHzIeNqRvZGODuPo4dLE3j9Os
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-01-23_08,2025-01-23_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=1 impostorscore=0 adultscore=0
+ priorityscore=1501 suspectscore=0 bulkscore=0 phishscore=0 spamscore=1
+ lowpriorityscore=0 malwarescore=0 mlxlogscore=222 mlxscore=1 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2411120000
+ definitions=main-2501230141
 
-On Thu, Jan 23, 2025 at 06:10:54PM +0100, Eric Auger wrote:
+On Thu, Jan 23, 2025 at 09:00:17AM -0500, Connor Abbott wrote:
+> On Thu, Jan 23, 2025 at 6:10 AM Prakash Gupta <quic_guptap@quicinc.com> wrote:
+> >
+> > On Wed, Jan 22, 2025 at 03:00:58PM -0500, Connor Abbott wrote:
+> >
+> > > +     /*
+> > > +      * On some implementations FSR.SS asserts a context fault
+> > > +      * interrupt. We do not want this behavior, because resolving the
+> > > +      * original context fault typically requires operations that cannot be
+> > > +      * performed in IRQ context but leaving the stall unacknowledged will
+> > > +      * immediately lead to another spurious interrupt as FSR.SS is still
+> > > +      * set. Work around this by disabling interrupts for this context bank.
+> > > +      * It's expected that interrupts are re-enabled after resuming the
+> > > +      * translation.
+> > > +      *
+> > > +      * We have to do this before report_iommu_fault() so that we don't
+> > > +      * leave interrupts disabled in case the downstream user decides the
+> > > +      * fault can be resolved inside its fault handler.
+> > > +      *
+> > > +      * There is a possible race if there are multiple context banks sharing
+> > > +      * the same interrupt and both signal an interrupt in between writing
+> > > +      * RESUME and SCTLR. We could disable interrupts here before we
+Not sure if multiple context bank with shared interrupt supported for
+arm-smmu driver, but even if does than context fault handler they would
+operate on their respective context register space, so I don't see the race
+at context register update. 
 
-> > -/**
-> > - * iommu_dma_compose_msi_msg() - Apply translation to an MSI message
-> > - * @desc: MSI descriptor prepared by iommu_dma_prepare_msi()
-> > - * @msg: MSI message containing target physical address
-> > - */
-> > -static inline void iommu_dma_compose_msi_msg(struct msi_desc *desc,
-> > -					     struct msi_msg *msg)
-> > +static inline void msi_msg_set_msi_addr(struct msi_desc *desc,
-> > +					struct msi_msg *msg, u64 msi_addr)
+> > > +      * re-enable them in the resume handler, leaving interrupts enabled.
+> > > +      * Lock the write to serialize it with the resume handler.
+> > > +      */
+> > > +     if (cfi.fsr & ARM_SMMU_CB_FSR_SS) {
+> > > +             u32 val;
+> > > +
+> > > +             spin_lock(&smmu_domain->cb_lock);
+> > > +             val = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_SCTLR);
+> > > +             val &= ~ARM_SMMU_SCTLR_CFIE;
+> > > +             arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, val);
+> > > +             spin_unlock(&smmu_domain->cb_lock);
+> > > +     }
+> > > +
+> > > +     /*
+> > > +      * The SMMUv2 architecture specification says that if stall-on-fault is
+> > > +      * enabled the correct sequence is to write to SMMU_CBn_FSR to clear
+> > > +      * the fault and then write to SMMU_CBn_RESUME. Clear the interrupt
+> > > +      * first before running the user's fault handler to make sure we follow
+> > > +      * this sequence. It should be ok if there is another fault in the
+> > > +      * meantime because we have already read the fault info.
+> > > +      */
+qcom_adreno_smmu_get_fault_info() reads the fault info as part of client
+fault hanlder. So it would not be ok to clear FSR before reporting the
+fault to client.
 
-> nit: msi_msg_set_addr(ess) may be enough as the populated fields are
-> address_lo/hi
+> > The context would remain stalled till we write to CBn_RESUME. Which is done
+> > in qcom_adreno_smmu_resume_translation(). For a stalled context further
+> > transactions are not processed and we shouldn't see further faults and
+> > or fault inerrupts. Do you observe faults with stalled context?
+> 
+> Yes. I've observed that on MMU-500 writing RESUME before the interrupt
+> has been cleared doesn't clear SS. This happened with v2 in the case
+> where there was already a devcoredump and drm/msm called
+> qcom_adreno_smmu_resume_translation() immediately from its fault
+> handler, and we'd get a storm of unhandled interrupts until it was
+> disabled. Given that the architecture spec says we're supposed to
+> clear the interrupt first this may have been an attempt to "help"
+> developers.
+> 
 
-Not sure I follow, you suggest to use msi_msg_set_addr() as the
-function name? Seems Ok
+Just to clarify, present sequence is:
+1. context fault with stall enable. FSR.SS set.
+2. Report fault to client
+3. resume/terminate stalled transaction
+4. clear FSR
 
-Jason
+At what point when you try #2->#3->#4 or #4->#2->#3 sequence, is FSR.SS
+cleared and interrupt storm is observed.  The way CFIE disable is helping
+with current patch indicates write FSR is unstalling context and subsequent
+transactions are faulted.  Do you stop getting interrupt storm after write
+RESUME. If you can mention your SCTLR configuration and FSR state in test
+sequence, it would be clearer. 
+
+An aside, If reducing delay between FSR and RESUME write helps then both
+can be done as part of qcom_adreno_smmu_resume_translation(). This will
+follow spec recommendation and also make sure fault registers are not
+cleared before reporting fault to client.
+
+Thanks,
+Prakash
