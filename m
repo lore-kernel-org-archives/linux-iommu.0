@@ -1,63 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2792E574;
-	Fri, 24 Jan 2025 15:47:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C730282F5
+	for <iommu@lists.linux.dev>; Fri, 24 Jan 2025 20:17:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737733638; cv=none; b=i5cwfPDFy7n7+mHNYeOSaagocelgeSZQDsH/IT+IAjl1JQpCHL7vIaAkCYNwgD6cmcONy06brIXQoK4ItLCTT/MGc6gA21OuRY3C0Hd9btkJRrEeF6seMPhK7EgV/IidaLPBG3krwImGoKYXzVE+TTcZHxAXszqgsZMUBTrl6ck=
+	t=1737749851; cv=none; b=GiLyRqL55lAbJnveufMOTZGSQx0pUhpx8ofj4wpMVDOemg4eqgPn8CzFp4XjkdIRyOK1dmSl2pXQTJA5+X7ypSLFbtP+2TQWiFE4cb1KPlc0QXgwHeGSkOuKCDr38MLZWrdXQ8pG7b2A129aLH6stWV8aW1EHrNahxyrm8oO+hk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737733638; c=relaxed/simple;
-	bh=cRHaqssYYaayYULQLWdzTSEwO4NfqwSDSAuyvMKEkI0=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=OjpkENuDWfJDt2YW5DHOKO+IxkO+4VmsqRqL9gKxUzvivqlYHz45NE0T29vpTRZGkEpfFbqkxT0V47wnVn0bsf0Kn/BIM25VuqtKBh6mZIj2CNLQRf7NMzRr/XBvWoWR/9BT9ZIxJAhiGihWVMVIXlhRSX6aL7bTGnCPOypvhqM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k9bFRQDE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1737749851; c=relaxed/simple;
+	bh=cSdBeqSdI7/awkmiroRIbKwN4Ne0/4Tk7FghcFFLVZs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WsxnJ/B1m5INdu078g81ltJ4T4hZVr9sdw9wpUp3mPHhUM0C0vsJ6i/mOgQEuspY3dw9poolPY7Ux+t9t3Pn1qR1GAoDQxA9ioCe4raTNELBqZSBOBcfYm9b8ZTbvXZvBaJXxniXauf0PVnWgXZQkrfmtGmRywl1xeLpn7qDlYI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=DVaOjRAF; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k9bFRQDE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC3F4C4CED2;
-	Fri, 24 Jan 2025 15:47:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737733637;
-	bh=cRHaqssYYaayYULQLWdzTSEwO4NfqwSDSAuyvMKEkI0=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=k9bFRQDECdHUvv2hELX368D73LhJZQWksHCre2Tr0OdDIID2ToHpcFPUG76VlZTBw
-	 OquyrCmtvj9LGITPIS18FOq+idbtNT9uE37xIxQBA4F4j2as4d8fvnX0bDHVTT4Qat
-	 tAjtns5oDqdQVR4adAnmz2Pyyc97YFCjxn02/13TBMX3X9YeZHdALZ8vJEe+uRCCtj
-	 wfthdr13sauG6brq0NyJSKG0KsNuIFZCq7W29M3CHOSf72CqR6jHDr4NgcUtk9vd9G
-	 PWq9jojFFc0iR099aDf3qNFGCz12josaxaGqQwPbrdpX4opwVgb41fFJpA68wZfRSP
-	 fdY6euMTlTsaw==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id EB54E380AA79;
-	Fri, 24 Jan 2025 15:47:43 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Updates for Linux v6.14
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Z5CzLFtBJZrnAMdk@8bytes.org>
-References: <Z5CzLFtBJZrnAMdk@8bytes.org>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <Z5CzLFtBJZrnAMdk@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v6.14
-X-PR-Tracked-Commit-Id: 125f34e4c107b151029ccbeea92631481bf5a6a1
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: f1c243fc78ca94fd72e2e6e8f0f49b7360fef475
-Message-Id: <173773366260.2077644.62531479999479828.pr-tracker-bot@kernel.org>
-Date: Fri, 24 Jan 2025 15:47:42 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="DVaOjRAF"
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50OF1JPp017605;
+	Fri, 24 Jan 2025 20:17:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=pp1; bh=vOg/PwTm5ybAaNIlaLLNyh8w/gQtdPpxqLvXcxRSg
+	FY=; b=DVaOjRAFz4epYK/Tq62I5xoUJfhN9kmsM86M3u0Nc9sv8aUH3QR08NsFh
+	F+txWcMhr7ZLSnDtDlppYW5E+1ocwZufEaI8tEA89ntnb/AEf05buof5Hk+7SqBK
+	VnfNj1b0jdcjuVeUHea6w7DkG4Te+tIEgpqW6p8LbYWx4BAOWvFswl+cdEawliqC
+	fZ6l/WoVgh8miXNVMMxZXHPi9eJEhU1iy9/veO9JzCY8c7jg5pjXnTm0+pVguawW
+	qmfwHIAR1Wj/A6ec9RGQOuc1nin6jumkE69ePhjhXKhmgxQsV3olV6O7LzgcglqR
+	dB39r3M5N2paLzy6b5L1TYo3iXjiA==
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 44cd4yhj06-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 24 Jan 2025 20:17:22 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 50OJIxUE024231;
+	Fri, 24 Jan 2025 20:17:21 GMT
+Received: from smtprelay03.wdc07v.mail.ibm.com ([172.16.1.70])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 448q0ynd9p-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 24 Jan 2025 20:17:21 +0000
+Received: from smtpav04.wdc07v.mail.ibm.com (smtpav04.wdc07v.mail.ibm.com [10.39.53.231])
+	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 50OKHJoS57147738
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 24 Jan 2025 20:17:19 GMT
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0AEB758045;
+	Fri, 24 Jan 2025 20:17:20 +0000 (GMT)
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 496A358054;
+	Fri, 24 Jan 2025 20:17:18 +0000 (GMT)
+Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.61.77.196])
+	by smtpav04.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Fri, 24 Jan 2025 20:17:18 +0000 (GMT)
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
+        clegoate@redhat.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: [PATCH v3 0/3] iommu/s390: add support for IOMMU passthrough
+Date: Fri, 24 Jan 2025 15:17:14 -0500
+Message-ID: <20250124201717.348736-1-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.48.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: nKIbAKcaBXOWq4iAI7AVgcYnI2_XpGEd
+X-Proofpoint-ORIG-GUID: nKIbAKcaBXOWq4iAI7AVgcYnI2_XpGEd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-01-24_08,2025-01-23_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ lowpriorityscore=0 suspectscore=0 bulkscore=0 impostorscore=0
+ mlxlogscore=662 priorityscore=1501 adultscore=0 malwarescore=0
+ phishscore=0 mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2411120000 definitions=main-2501240137
 
-The pull request you sent on Wed, 22 Jan 2025 09:58:20 +0100:
+This series introduces the ability for certain devices on s390 to bypass
+a layer of IOMMU via the iommu.passthrough=1 option.  In order to enable
+this, the concept of an identity domain is added to s390-iommu.  On s390,
+IOMMU passthrough is only allowed if indicated via a special bit in s390
+CLP data for the associated device group, otherwise we must fall back to
+dma-iommu.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v6.14
+Changes for v3:
+- Rebase onto 6.13
+- fixed bus_dma_region size (Niklas) 
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/f1c243fc78ca94fd72e2e6e8f0f49b7360fef475
+Changes for v2:
+- Remove ARCH_HAS_PHYS_TO_DMA, use bus_dma_region
+- Remove use of def_domain_type, use 1 of 2 ops chosen at init
 
-Thank you!
+Matthew Rosato (3):
+  s390/pci: check for relaxed translation capability
+  s390/pci: store DMA offset in bus_dma_region
+  iommu/s390: implement iommu passthrough via identity domain
+
+ arch/s390/include/asm/pci.h     |  2 +-
+ arch/s390/include/asm/pci_clp.h |  4 +-
+ arch/s390/pci/pci.c             |  6 ++-
+ arch/s390/pci/pci_bus.c         | 18 +++++++
+ arch/s390/pci/pci_clp.c         |  1 +
+ drivers/iommu/s390-iommu.c      | 95 +++++++++++++++++++++++++--------
+ 6 files changed, 99 insertions(+), 27 deletions(-)
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.48.1
+
