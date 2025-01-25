@@ -1,364 +1,232 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2048.outbound.protection.outlook.com [40.107.101.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0746B14B087;
-	Sat, 25 Jan 2025 00:31:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737765091; cv=fail; b=sBg2CpIeSiUKl2jbYqHwCDXS0OlOMH108G3BzB8g6nrB0MCkogf1rY7ShXJR3/vICK5361jvQJ8z8c8gDbv0yxLiIaWLbwqLPowdesGQyA3meBe7hMXtl8qGRXrzbkZum3aEMKIetzBxuuf/2x1VN/eb3BiQ+J6qv5cqS+7SRsA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737765091; c=relaxed/simple;
-	bh=JWMVS5jfHh4pOPW0KPune3VwmKvmWRE0u3fb6MQIuYU=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lQVmkxxWgQuvFqWqcd93Ab6FmC7j/md4aS86YPXsGpcSUZa/LA0TqAagHu/rexUugW4XYS6lwskGVOr1CUaLOGOOUDBarVDxhqq7tcWRjg9/09ZDclhkFnwhNjMtJHH8pviL9CppM85FCeIy8py8F8fJlSGQKXNiZoQ4iu1iKuM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=QEihLI/4; arc=fail smtp.client-ip=40.107.101.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F7191E505
+	for <iommu@lists.linux.dev>; Sat, 25 Jan 2025 00:39:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737765582; cv=none; b=qEbRyPT9Y0kVKU65MsRhn1fKFvD76bMdjT6AryweMAMZhGtYAq/42+o10fvjhue9KTquhLWhy/D1LKfr06/JCGb0NmE4aKTYOKisEJ2BoE49Xsl1YD4WLXRTAIEMsJwGbgUC0dTZ2GpbxhiEbRNq5FhQn2bTfUwZgCHC7jXTrIk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737765582; c=relaxed/simple;
+	bh=9w7I2x80ypxrKh1VEAFS2n6vYGIv+SvFiL4q0LdcGB8=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=k+d6RAmMG05a+0FGpRwQIg4WzVb0O4IC9MqRnP+39iODf8DctaowoG+6Rzfyf893oZHFfRNrFilBns0dxLDgYFlosDZ6TYQl8A+tnON+e8oNy+Jn2zpBHOdDToOjEBJSv+Otv0IIwfRfOGZFs7rv9LdpJVEQCxQVkaiNKEe+5Jc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pkTu4O34; arc=none smtp.client-ip=209.85.214.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="QEihLI/4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=j1SBc2AcdCaYxOFcBx274EqbLOCIp+VRehdmxHiGf0P9nBBGG6pnsU3amqycbHKXUKHbaADptyy00+BBj+5sfwutGAeWhu4oB4FCrKOIFvnAaY9pYdN4UPL9aUDglXc+WeTB1i/o+KFxk2I5QI4QgjfCx5PzzYkv5i8GHGqXufElqRXr1qJ9xNUO0C4/QI23Gu9qgFAp6EobDMsCe3Pr3rSWVwsm47VIg0TVrlP2+suQSTbVPa8Mc0BJIgkcdFxoALa4x5F2HmS1REdLW8+IV88ZPv7WfRvHgMD8wi5DMxecSIZJ5MRDEkFpSm58+SGa2xCEb8KLGtr1mDwHWmAM4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z33hiIVjzITDLyv3p1EoxttLpNxcG91reH9dqnWPbxg=;
- b=lT3lMu6M1VhJcKX0+xyPvfkJKgPfVaB4z7e8xMzIKsiXep3P8YtcuTANeTzIU8wUyiIG9OaokU8w0eYzJRteOHSDmi5RSY0TyIM2927Gh/xsE7gFh4Qi6eZkGBrbzm4hC4XJ4bIxPtIhXu/jp7pI0L6DpZvjtm+wSc7QGqVtt0ZzstNkmj610/vMdfmZGS4Rle5SSquyvESMIa0k603kq1N2iiPk2w8YD6PTfCp3pzeMi+gx3Nf+eYPoWNpn7n0mMTZ4wGKLVoKCsU8HmX1tSORQiITXx9mGwwVCBlsE+ndigroohItLUep9MAbab0YFKuazwj0p42FufSjgLMY0mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z33hiIVjzITDLyv3p1EoxttLpNxcG91reH9dqnWPbxg=;
- b=QEihLI/4Ey+bX3ls04fUm5qWvK9Jgohnh4Dji99i4rFrW+68joQOy7CmldT72ycfAfye6vbq0kDmKBddrSAieLlAtplq5gWBBWy0Y7+sWqYcvrfR7d+4vFW29Wyw7EQ1se5eXeAcbiy56tfGJeeYhqYsOazdijwZkeC4GH1qgvbFTcaPEZsaODw8ff5JfQseX5gDCrvUpNcIZHCbccpJfjpUx2DTib83P4qDbF1d4cV73VMNucqx0G243Ej+fRTh/yPHJs6Es83zifdEiV3syTBG//XDj9rpCgfAdjyQM1q5XOtmgj0e0rAh+fbAD1/YS7Y7Yg0mk7iZwpwjXz5Nrw==
-Received: from BLAPR03CA0122.namprd03.prod.outlook.com (2603:10b6:208:32e::7)
- by MW3PR12MB4345.namprd12.prod.outlook.com (2603:10b6:303:59::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8377.18; Sat, 25 Jan
- 2025 00:31:23 +0000
-Received: from BL02EPF0001A0FD.namprd03.prod.outlook.com
- (2603:10b6:208:32e:cafe::6a) by BLAPR03CA0122.outlook.office365.com
- (2603:10b6:208:32e::7) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8377.14 via Frontend Transport; Sat,
- 25 Jan 2025 00:31:23 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BL02EPF0001A0FD.mail.protection.outlook.com (10.167.242.104) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8377.8 via Frontend Transport; Sat, 25 Jan 2025 00:31:23 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 24 Jan
- 2025 16:31:09 -0800
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Fri, 24 Jan 2025 16:31:08 -0800
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
- Transport; Fri, 24 Jan 2025 16:31:07 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <kevin.tian@intel.com>, <corbet@lwn.net>,
-	<will@kernel.org>
-CC: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>,
-	<robin.murphy@arm.com>, <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>,
-	<shuah@kernel.org>, <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>, <eric.auger@redhat.com>,
-	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>,
-	<ddutile@redhat.com>, <yi.l.liu@intel.com>, <patches@lists.linux.dev>
-Subject: [PATCH v6 12/14] iommu/arm-smmu-v3: Introduce struct arm_smmu_vmaster
-Date: Fri, 24 Jan 2025 16:30:41 -0800
-Message-ID: <d68ca2f38f28c50a3109bc5a84716ca79bc3d7f3.1737754129.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1737754129.git.nicolinc@nvidia.com>
-References: <cover.1737754129.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pkTu4O34"
+Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-216387ddda8so59481245ad.3
+        for <iommu@lists.linux.dev>; Fri, 24 Jan 2025 16:39:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1737765578; x=1738370378; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+X65piYQS/WCBt65hh+j7JofkNo9XQN9knqyTTubMeE=;
+        b=pkTu4O34FJ2aa/vC8G0wGqJYOtKA075ZqVLnhDz6s4KdxNJOexRgas0K9ZqD7sexZd
+         Y1wYgwDZuVFIrUR8jRLeLnSqfSi5T/TQ8R0HRs2d+EIdlAfOPwrIOhQJyvNOkoAOVhHx
+         8SQzFfkdwUbgXaPzGYvflc5mkWi+UsiMSpXNIRVLuiKi7pms20LvP0svAPPMzjDNJztE
+         uGFuht9aM0YIg3SWLtoiOEXgB1AwLtwxq0/IXblji3snV5WegkYz47C0DiABpsB2nUtH
+         BFe460S4XMTu/IE9QbZBbx8zFE0Zk0uqeoDMMFFdGYZHA+kI4duaXzrkqakTI4IbMDue
+         nrhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737765578; x=1738370378;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+X65piYQS/WCBt65hh+j7JofkNo9XQN9knqyTTubMeE=;
+        b=Myw7Eqvl3eE51Fj7ppjrv8e5cDU0EQCQ/07g0KHpcxn8e50hHc0IEKil/7ZumTaHz9
+         eonVZM3ZoJ9AXUEn5GYgKCvKE1+HhTSqp1IDTaoMXn3jnUUliMidfGQQUJmDCsy5aHN+
+         ep9c8RKquG4N4hO2oqFseczJVUZplqUY0esVMeMrCy+wNL0zAc8j6O8aiOhJVEqdEmsy
+         fARZyYAafhHBsKVST72usGQ4TiEfptXy3D4vncmQC8zNoPsvQ6KUNekO//8zjfSX/4nr
+         1jDKIChk1DlG00wQDnTeG42EGKv7AiFLFwooJ3ZcW05rR6y9lIvLjFleZDKqR59fXtuw
+         NxQg==
+X-Forwarded-Encrypted: i=1; AJvYcCXEp8kH4qaq706niVGYmvj5s4sUoi9wgxOleddronzTsKj9ZAOBaKvhk6UQ+Gmq2ua/CLca8g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwjflL24gHOMKxXU8q6FX9WnNtYn61ppjoCIDn9UFeeM3lk5SjT
+	W7iucOqeoAKU8KlecvEc/4kl59slmuHrtO7i5h1vUwnS8COvLhtXxS16cmWAglxyxoM4Tamfgd6
+	BdQ==
+X-Google-Smtp-Source: AGHT+IH8zqVnP4Psc/uYL4UhGgHMW+W6e9Nz3rYjPKiv7YzdXD9pSuwl/RQiWph/kP5Qf47fPPDng4ucmM4=
+X-Received: from pfwo3.prod.google.com ([2002:a05:6a00:1bc3:b0:725:df7a:f4e3])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:6d8a:b0:1ea:f941:8da0
+ with SMTP id adf61e73a8af0-1eb214e52damr45529351637.24.1737765578583; Fri, 24
+ Jan 2025 16:39:38 -0800 (PST)
+Date: Fri, 24 Jan 2025 16:39:37 -0800
+In-Reply-To: <5af2cc74-c56d-4bcf-870e-afa98d6456b3@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF0001A0FD:EE_|MW3PR12MB4345:EE_
-X-MS-Office365-Filtering-Correlation-Id: 011ef2d6-e4c1-4650-f42d-08dd3cd79899
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|376014|7416014|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?TXpO3EkSLh0PmYCjEXlZaCzfvgujYnU44SGkClBLagzk/FJtBPIpJU7KAxu0?=
- =?us-ascii?Q?o9NJkpo4XMAyDtUNed8dAp7sv9nqqohUN3Kxhq5PANLRV9v8wTbNN/BaKVsN?=
- =?us-ascii?Q?PWSMvIG3nQn77cHKvaoW0WN3FeBC8YViZ1aAVDGL3cP+xn6eqdfkyPDWCHT0?=
- =?us-ascii?Q?upwPErrEy2Aa079x9Hv6++1CQQBe6/r7e/bnBCgLvASikASqw1JDMa78BK2G?=
- =?us-ascii?Q?q4Y7UY75c8CZ8/VUOVRxHe2UEPNcXBYvv2Jaa3omLqav8s+hVRWWCHn5qCJH?=
- =?us-ascii?Q?DxGB/3n/QuGzEknkQuJMU078N2ST19Ia33iP4Nt52Zm6xkYtw2B0VYGLlaR2?=
- =?us-ascii?Q?4kzLR7GlYZEtZVWTiin0/ELo6fIBG2FMB3Roa47G072dY91eYOvnnwMY+tsw?=
- =?us-ascii?Q?OmKTWGHlLcZ6iDpwM2F2WpYGMpwhGjHzBhulTPNZvk6yzZVugtAEIJdsfEgR?=
- =?us-ascii?Q?bEQKC/KH/2SEeeDLdofWeBQ4rOB10LA5AxxCRVDk94unvNeEdWssvRSySHLU?=
- =?us-ascii?Q?KcxnCzgM07syh0YHsOBvlDrGUKYgTr+Wa6LiZRnzmtRqCxFqqakk7uDpayTx?=
- =?us-ascii?Q?Fcl64c45cGvBVkRGUnjf2kYsNxDoi8Wqej2MZKGW2C1ytUgBE/sP1xa6SPpQ?=
- =?us-ascii?Q?cuo3PjbVru2+ndUWQ0/iKWA9j2aNVviIHCV//K3ZOe8b79xuAB46qCpwAuTc?=
- =?us-ascii?Q?5ak57XJVt8wYXzEwsPcd4IpT+McIk89iaAsCwFxa2qC7wB32zAQwDI3IPGs4?=
- =?us-ascii?Q?S3ULsVdxSzgO2KNRwGIUWFYDRc0ZvNCHj3RHnzBetpy5Z3GDRT1e8qlWxf9g?=
- =?us-ascii?Q?bXWGQxH5qUVOJGYBAPqIqisidUtVuFAuUs9JrE7qzQ5QlRsWuGpXBMSKMHxX?=
- =?us-ascii?Q?z/ivG8X2VFzLNpWG9L4teGWgHHQpx+GdQTN300vZiyaR0aS5RPDbKi1cFadd?=
- =?us-ascii?Q?9pxaWymQ2mwCvfDLv3UT24lFLtz8O6nR1jZ3zXLjBI4CB/+dqfbPoDA2vr0W?=
- =?us-ascii?Q?xu0zCbplkZL++68X0nDsjIkpGJEl5iB5j2TNILhKK8sDl3jpDKWPI2eU4pb1?=
- =?us-ascii?Q?6qoyhlmDTYkruWRsgA6hJoet2YVyYgm1BdcJw1wVttqcHyzT/sJ0jx75cq4g?=
- =?us-ascii?Q?RXEs2NFHjyLG1Ge+hXxyc7xQRYfwz1lIwbpCV04KLW8AGJJi26FtnILcVg5k?=
- =?us-ascii?Q?GK6vud/cJHIifuIQr7Pq5EqYYZAuZIEbYxWCBvUy0z0aW/gpzjsMHe/YjjCu?=
- =?us-ascii?Q?loEAgpAuHDb/YtavE/Ci9wydHaYIf+DQ8SOGZ1QxZLNpqkmI8nUR1l5VD7mR?=
- =?us-ascii?Q?odlb38pxkxa+nwiLeJU7wCjQVdkz8MPGVzdGlkGVwh8lQj7g/lfmslhJUtdj?=
- =?us-ascii?Q?KXRz+A3klHcM2pzB220DEGJVwoC3Vy+AbDPeiLNCP6bXmcteRThEsjn9evNg?=
- =?us-ascii?Q?hdoDR907KkKVfbv5849y0ZXuH41xmxSlT5L0Nv86DX0U3lg6OVnf3FivJK/z?=
- =?us-ascii?Q?HLhomCX12PM6qXY=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(376014)(7416014)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2025 00:31:23.0464
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 011ef2d6-e4c1-4650-f42d-08dd3cd79899
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF0001A0FD.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4345
+Mime-Version: 1.0
+References: <cover.1737505394.git.ashish.kalra@amd.com> <0b74c3fce90ea464621c0be1dbf681bf46f1aadd.1737505394.git.ashish.kalra@amd.com>
+ <c310e42d-d8a8-4ca0-f308-e5bb4e978002@amd.com> <5df43bd9-e154-4227-9202-bd72b794fdfb@amd.com>
+ <5af2cc74-c56d-4bcf-870e-afa98d6456b3@amd.com>
+Message-ID: <Z5QyybbSk4NeroyZ@google.com>
+Subject: Re: [PATCH 1/4] iommu/amd: Check SNP support before enabling IOMMU
+From: Sean Christopherson <seanjc@google.com>
+To: Ashish Kalra <ashish.kalra@amd.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, Tom Lendacky <thomas.lendacky@amd.com>, pbonzini@redhat.com, 
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, 
+	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, 
+	john.allen@amd.com, herbert@gondor.apana.org.au, davem@davemloft.net, 
+	joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org, 
+	robin.murphy@arm.com, michael.roth@amd.com, dionnaglaze@google.com, 
+	kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, linux-coco@lists.linux.dev, 
+	iommu@lists.linux.dev
+Content-Type: text/plain; charset="us-ascii"
 
-Use it to store all vSMMU-related data. The vsid (Virtual Stream ID) will
-be the first use case. Then, add a rw_semaphore to protect it.
+On Fri, Jan 24, 2025, Ashish Kalra wrote:
+> With discussions with the AMD IOMMU team, here is the AMD IOMMU
+> initialization flow:
 
-Also add a pair of arm_smmu_attach_prepare/commit_vmaster helpers to set
-or unset the master->vmaster point. Put these helpers inside the existing
-arm_smmu_attach_prepare/commit(). Note that identity and blocked ops don't
-call arm_smmu_attach_prepare/commit(), thus simply call the new helpers at
-the top, so a device attaching to an identity/blocked domain can unset the
-master->vmaster when the device is moving away from a nested domain.
+..
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> IOMMU SNP check
+>   Core IOMMU subsystem init is done during iommu_subsys_init() via
+>   subsys_initcall.  This function does change the DMA mode depending on
+>   kernel config.  Hence, SNP check should be done after subsys_initcall.
+>   That's why its done currently during IOMMU PCI init (IOMMU_PCI_INIT stage).
+>   And for that reason snp_rmptable_init() is currently invoked via
+>   device_initcall().
+>  
+> The summary is that we cannot move snp_rmptable_init() to subsys_initcall as
+> core IOMMU subsystem gets initialized via subsys_initcall.
+
+Just explicitly invoke RMP initialization during IOMMU SNP setup.  Pretending
+there's no connection when snp_rmptable_init() checks amd_iommu_snp_en and has
+a comment saying it needs to come after IOMMU SNP setup is ridiculous.
+
+Compile tested only.
+
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 23 ++++++++++
- .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 45 +++++++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 32 ++++++++++++-
- 3 files changed, 99 insertions(+), 1 deletion(-)
+From: Sean Christopherson <seanjc@google.com>
+Date: Fri, 24 Jan 2025 16:25:58 -0800
+Subject: [PATCH] x86/sev: iommu/amd: Explicitly init SNP's RMP table during
+ IOMMU SNP setup
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index bd9d7c85576a..4435ad7db776 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -799,6 +799,11 @@ struct arm_smmu_stream {
- 	struct rb_node			node;
- };
+Explicitly initialize the RMP table during IOMMU SNP setup, as there is a
+hard dependency on the IOMMU being configured first, and dancing around
+the dependency with initcall shenanigans and a comment is all kinds of
+stupid.
+
+The RMP is blatantly not a device; initializing it via a device_initcall()
+is confusing and "works" only because of dumb luck: due to kernel build
+order, when the the PSP driver is built-in, its effective device_initcall()
+just so happens to be invoked after snp_rmptable_init().
+
+That all falls apart if the order is changed in any way.  E.g. if KVM
+is built-in and attempts to access the RMP during its device_initcall(),
+chaos ensues.
+
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/include/asm/sev.h |  1 +
+ arch/x86/virt/svm/sev.c    | 25 ++++++++-----------------
+ drivers/iommu/amd/init.c   |  7 ++++++-
+ 3 files changed, 15 insertions(+), 18 deletions(-)
+
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index 91f08af31078..30da0fc15923 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -503,6 +503,7 @@ static inline void snp_kexec_begin(void) { }
  
-+struct arm_smmu_vmaster {
-+	struct arm_vsmmu		*vsmmu;
-+	unsigned long			vsid;
-+};
-+
- struct arm_smmu_event {
- 	u8				stall : 1,
- 					ssv : 1,
-@@ -824,6 +829,8 @@ struct arm_smmu_master {
- 	struct arm_smmu_device		*smmu;
- 	struct device			*dev;
- 	struct arm_smmu_stream		*streams;
-+	struct arm_smmu_vmaster		*vmaster;
-+	struct rw_semaphore		vmaster_rwsem;
- 	/* Locked by the iommu core using the group mutex */
- 	struct arm_smmu_ctx_desc_cfg	cd_table;
- 	unsigned int			num_streams;
-@@ -972,6 +979,7 @@ struct arm_smmu_attach_state {
- 	bool disable_ats;
- 	ioasid_t ssid;
- 	/* Resulting state */
-+	struct arm_smmu_vmaster *vmaster;
- 	bool ats_enabled;
- };
- 
-@@ -1055,9 +1063,24 @@ struct iommufd_viommu *arm_vsmmu_alloc(struct device *dev,
- 				       struct iommu_domain *parent,
- 				       struct iommufd_ctx *ictx,
- 				       unsigned int viommu_type);
-+int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
-+				    struct iommu_domain *domain);
-+void arm_smmu_attach_commit_vmaster(struct arm_smmu_attach_state *state);
- #else
- #define arm_smmu_hw_info NULL
- #define arm_vsmmu_alloc NULL
-+
-+static inline int
-+arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
-+				struct iommu_domain *domain)
-+{
-+	return 0; /* NOP */
-+}
-+
-+static inline void
-+arm_smmu_attach_commit_vmaster(struct arm_smmu_attach_state *state)
-+{
-+}
- #endif /* CONFIG_ARM_SMMU_V3_IOMMUFD */
- 
- #endif /* _ARM_SMMU_V3_H */
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-index c7cc613050d9..98138088fd16 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-@@ -85,6 +85,51 @@ static void arm_smmu_make_nested_domain_ste(
- 	}
- }
- 
-+int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
-+				    struct iommu_domain *domain)
-+{
-+	struct arm_smmu_nested_domain *nested_domain;
-+	struct arm_smmu_vmaster *vmaster;
-+	unsigned long vsid;
-+	int ret;
-+
-+	iommu_group_mutex_assert(state->master->dev);
-+
-+	if (domain->type != IOMMU_DOMAIN_NESTED)
-+		return 0;
-+	nested_domain = to_smmu_nested_domain(domain);
-+
-+	/* Skip invalid vSTE */
-+	if (!(nested_domain->ste[0] & cpu_to_le64(STRTAB_STE_0_V)))
-+		return 0;
-+
-+	ret = iommufd_viommu_get_vdev_id(&nested_domain->vsmmu->core,
-+					 state->master->dev, &vsid);
-+	if (ret)
-+		return ret;
-+
-+	vmaster = kzalloc(sizeof(*vmaster), GFP_KERNEL);
-+	if (!vmaster)
-+		return -ENOMEM;
-+	vmaster->vsmmu = nested_domain->vsmmu;
-+	vmaster->vsid = vsid;
-+	state->vmaster = vmaster;
-+
-+	return 0;
-+}
-+
-+void arm_smmu_attach_commit_vmaster(struct arm_smmu_attach_state *state)
-+{
-+	struct arm_smmu_master *master = state->master;
-+
-+	down_write(&master->vmaster_rwsem);
-+	if (state->vmaster != master->vmaster) {
-+		kfree(master->vmaster);
-+		master->vmaster = state->vmaster;
-+	}
-+	up_write(&master->vmaster_rwsem);
-+}
-+
- static int arm_smmu_attach_dev_nested(struct iommu_domain *domain,
- 				      struct device *dev)
+ #ifdef CONFIG_KVM_AMD_SEV
+ bool snp_probe_rmptable_info(void);
++int __init snp_rmptable_init(void);
+ int snp_lookup_rmpentry(u64 pfn, bool *assigned, int *level);
+ void snp_dump_hva_rmpentry(unsigned long address);
+ int psmash(u64 pfn);
+diff --git a/arch/x86/virt/svm/sev.c b/arch/x86/virt/svm/sev.c
+index 9a6a943d8e41..d932aa21340b 100644
+--- a/arch/x86/virt/svm/sev.c
++++ b/arch/x86/virt/svm/sev.c
+@@ -189,19 +189,19 @@ void __init snp_fixup_e820_tables(void)
+  * described in the SNP_INIT_EX firmware command description in the SNP
+  * firmware ABI spec.
+  */
+-static int __init snp_rmptable_init(void)
++int __init snp_rmptable_init(void)
  {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index ea76f25c0661..686c171dd273 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2802,6 +2802,7 @@ int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
- 	struct arm_smmu_domain *smmu_domain =
- 		to_smmu_domain_devices(new_domain);
- 	unsigned long flags;
-+	int ret;
+ 	u64 max_rmp_pfn, calc_rmp_sz, rmptable_size, rmp_end, val;
+ 	void *rmptable_start;
+ 
+-	if (!cc_platform_has(CC_ATTR_HOST_SEV_SNP))
+-		return 0;
++	if (WARN_ON_ONCE(!cc_platform_has(CC_ATTR_HOST_SEV_SNP)))
++		return -ENOSYS;
+ 
+-	if (!amd_iommu_snp_en)
+-		goto nosnp;
++	if (WARN_ON_ONCE(!amd_iommu_snp_en))
++		return -ENOSYS;
+ 
+ 	if (!probed_rmp_size)
+-		goto nosnp;
++		return -ENOSYS;
+ 
+ 	rmp_end = probed_rmp_base + probed_rmp_size - 1;
+ 
+@@ -218,13 +218,13 @@ static int __init snp_rmptable_init(void)
+ 	if (calc_rmp_sz > probed_rmp_size) {
+ 		pr_err("Memory reserved for the RMP table does not cover full system RAM (expected 0x%llx got 0x%llx)\n",
+ 		       calc_rmp_sz, probed_rmp_size);
+-		goto nosnp;
++		return -ENOSYS;
+ 	}
+ 
+ 	rmptable_start = memremap(probed_rmp_base, probed_rmp_size, MEMREMAP_WB);
+ 	if (!rmptable_start) {
+ 		pr_err("Failed to map RMP table\n");
+-		goto nosnp;
++		return -ENOMEM;
+ 	}
  
  	/*
- 	 * arm_smmu_share_asid() must not see two domains pointing to the same
-@@ -2831,9 +2832,15 @@ int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
+@@ -261,17 +261,8 @@ static int __init snp_rmptable_init(void)
+ 	crash_kexec_post_notifiers = true;
+ 
+ 	return 0;
+-
+-nosnp:
+-	cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
+-	return -ENOSYS;
+ }
+ 
+-/*
+- * This must be called after the IOMMU has been initialized.
+- */
+-device_initcall(snp_rmptable_init);
+-
+ static struct rmpentry *get_rmpentry(u64 pfn)
+ {
+ 	if (WARN_ON_ONCE(pfn > rmptable_max_pfn))
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 0e0a531042ac..d00530156a72 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3171,7 +3171,7 @@ static bool __init detect_ivrs(void)
+ 	return true;
+ }
+ 
+-static void iommu_snp_enable(void)
++static __init void iommu_snp_enable(void)
+ {
+ #ifdef CONFIG_KVM_AMD_SEV
+ 	if (!cc_platform_has(CC_ATTR_HOST_SEV_SNP))
+@@ -3196,6 +3196,11 @@ static void iommu_snp_enable(void)
+ 		goto disable_snp;
  	}
  
- 	if (smmu_domain) {
-+		ret = arm_smmu_attach_prepare_vmaster(state, new_domain);
-+		if (ret)
-+			return ret;
++	if (snp_rmptable_init()) {
++		pr_warn("SNP: RMP initialization failed, SNP cannot be supported.\n");
++		goto disable_snp;
++	}
 +
- 		master_domain = kzalloc(sizeof(*master_domain), GFP_KERNEL);
--		if (!master_domain)
-+		if (!master_domain) {
-+			kfree(state->vmaster);
- 			return -ENOMEM;
-+		}
- 		master_domain->master = master;
- 		master_domain->ssid = state->ssid;
- 		if (new_domain->type == IOMMU_DOMAIN_NESTED)
-@@ -2860,6 +2867,7 @@ int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
- 			spin_unlock_irqrestore(&smmu_domain->devices_lock,
- 					       flags);
- 			kfree(master_domain);
-+			kfree(state->vmaster);
- 			return -EINVAL;
- 		}
+ 	pr_info("IOMMU SNP support enabled.\n");
+ 	return;
  
-@@ -2892,6 +2900,8 @@ void arm_smmu_attach_commit(struct arm_smmu_attach_state *state)
- 
- 	lockdep_assert_held(&arm_smmu_asid_lock);
- 
-+	arm_smmu_attach_commit_vmaster(state);
-+
- 	if (state->ats_enabled && !master->ats_enabled) {
- 		arm_smmu_enable_ats(master);
- 	} else if (state->ats_enabled && master->ats_enabled) {
-@@ -3158,8 +3168,17 @@ static void arm_smmu_attach_dev_ste(struct iommu_domain *domain,
- static int arm_smmu_attach_dev_identity(struct iommu_domain *domain,
- 					struct device *dev)
- {
-+	int ret;
- 	struct arm_smmu_ste ste;
- 	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-+	struct arm_smmu_attach_state state = {
-+		.master = master,
-+	};
-+
-+	ret = arm_smmu_attach_prepare_vmaster(&state, domain);
-+	if (ret)
-+		return ret;
-+	arm_smmu_attach_commit_vmaster(&state);
- 
- 	arm_smmu_make_bypass_ste(master->smmu, &ste);
- 	arm_smmu_attach_dev_ste(domain, dev, &ste, STRTAB_STE_1_S1DSS_BYPASS);
-@@ -3178,7 +3197,17 @@ static struct iommu_domain arm_smmu_identity_domain = {
- static int arm_smmu_attach_dev_blocked(struct iommu_domain *domain,
- 					struct device *dev)
- {
-+	int ret;
- 	struct arm_smmu_ste ste;
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-+	struct arm_smmu_attach_state state = {
-+		.master = master,
-+	};
-+
-+	ret = arm_smmu_attach_prepare_vmaster(&state, domain);
-+	if (ret)
-+		return ret;
-+	arm_smmu_attach_commit_vmaster(&state);
- 
- 	arm_smmu_make_abort_ste(&ste);
- 	arm_smmu_attach_dev_ste(domain, dev, &ste,
-@@ -3428,6 +3457,7 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 
- 	master->dev = dev;
- 	master->smmu = smmu;
-+	init_rwsem(&master->vmaster_rwsem);
- 	dev_iommu_priv_set(dev, master);
- 
- 	ret = arm_smmu_insert_master(smmu, master);
+
+base-commit: ac80076177131f6e3291737c851a6fe32cc03fd3
 -- 
-2.43.0
 
