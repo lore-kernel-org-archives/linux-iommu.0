@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79D2F2397BC;
-	Sun, 26 Jan 2025 15:08:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA1718DF6B;
+	Sun, 26 Jan 2025 15:09:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737904132; cv=none; b=ht2e21B8c76UQfS3mwzNCKjmPqb2adM9YKFQEun2gSeY1TP7nBdKf8tZg8RXtmSlRS7zAtslAQ3/fES8bfFLzwDx2pRq2Cg2zZD0vIDVdyefG2c4CyUggvQMe1wlUOuxqq6pyrzLZhLuAM4IIa3m8h1gQko4nbskvVzruUye00U=
+	t=1737904154; cv=none; b=Uv/bymLWjeoIc2mIYB2Xiv93QGj2nWlVWPuUmo4lNxhX5QX59u/fXBISZsk07Q6EikFCU+nFdY9pqNd//L2zhOxVo7y1yWQF1CrgY6c8TaPpThok/lU3Zz3axMX0hjGzn7moo9o8xPUoBKBHJlmbAT4l1M0yu68miXCYQBWc/1c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737904132; c=relaxed/simple;
-	bh=w5ou4aymrycn9YCZ0dGlUhtssM+6saQcaT9B4ULTHdw=;
+	s=arc-20240116; t=1737904154; c=relaxed/simple;
+	bh=4gxp0Us1gN/S3Gs0f8tqzA1wk8Sit8ldVbqMDRDe/5M=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=SqVhjxgIq2o+Rlq6E1ZNpbXbcjD6lSkLRNis8hzMPzBVctFUrsf//N7+vsY4haJ7hTPqvgyQHZKLgvEg+86Nqil3d/pO5pOMqSOvOCT+0OGKHfLGBouN443J0QadD1c3ZID+Pzk26wxhMtt4tfHueSVg8QpgkfpzqmvfpcxxZFI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l8XdL9t+; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=CTlB73cOxKqvWcZnzdiLnJ0mZ5uf9RwubcQi55k+rUADDZC74FFAVCSOsBTl3I4V774ZUJFbXsnZpmjOBnyqF7DmvgM5xfaYn5VxJ/PKMDMtwJmxYyUVbRDNv6spAvFZ6lpEiaJDJWeyfTOjDg5t0aUxdlV5luj12tl+74xho4I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NlFHeFzS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l8XdL9t+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92B76C4CEE2;
-	Sun, 26 Jan 2025 15:08:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NlFHeFzS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83920C4CEE2;
+	Sun, 26 Jan 2025 15:09:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737904132;
-	bh=w5ou4aymrycn9YCZ0dGlUhtssM+6saQcaT9B4ULTHdw=;
+	s=k20201202; t=1737904154;
+	bh=4gxp0Us1gN/S3Gs0f8tqzA1wk8Sit8ldVbqMDRDe/5M=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=l8XdL9t+1BuhdslL4Bh90flbBQ17ouejul7QMpZ4ZquFYd9B/EWiTRaZ4sh2yiOTH
-	 jP5K/RtiuLFLAU3DGoMd0gsYQgPQKE3NQxZFjwoaGzTokK5C37THOv76Oz45k0fgR9
-	 lD5n8dpz1ZdzHTX970MqhmXPdbHrGl5g9NtiSSWqtOCez7LNKarXbGfABl2EYslgH/
-	 A3wXjHSTmYNhJte1LtiWEHBnImMUA+g4CZ7DWuUCvq0PdNuPH+cgbYTJ39lEboJYCp
-	 mZPiYeSfe2UU6gcaQ7mpci1lQ1qD59mlmVynbDk42wGxjIQBb3TnQs7VSxx4F9BmYg
-	 DlcaJMEPxX+cA==
+	b=NlFHeFzSJbfWv611mDiY2k1NJ8u2mq42nxMAwknG6go/po2QJbGB2YLfnjf8nntyg
+	 d4+QnczWeaO+05n2gu8FPboT5XJcZp+pLDxayddaTth/6GadmoRWsl6ojTmttkHo/d
+	 8R62nG8WuMkkZq/j2JJW4gT0xiC+0gQSUSCsSYslBcuZ8PCIuwsGV9oGNxRxBxwBBC
+	 +phAr5gOPMNfSuSDP55vZQEWpRE3J0L0uM5pgoTxq8OhevX/dwGd6zIawitcZOV0zS
+	 z+lEiu5ZItMU8l9WdGSZYLSWAIua05nlhIzyPKs+GhOAvEn7OUjVjT4caB41NoS6FG
+	 HUHycjvQRMvow==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -40,12 +40,12 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	praan@google.com,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.6 4/9] iommu/arm-smmu-v3: Clean up more on probe failure
-Date: Sun, 26 Jan 2025 10:08:32 -0500
-Message-Id: <20250126150839.962669-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 3/8] iommu/arm-smmu-v3: Clean up more on probe failure
+Date: Sun, 26 Jan 2025 10:08:55 -0500
+Message-Id: <20250126150902.962837-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250126150839.962669-1-sashal@kernel.org>
-References: <20250126150839.962669-1-sashal@kernel.org>
+In-Reply-To: <20250126150902.962837-1-sashal@kernel.org>
+References: <20250126150902.962837-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,7 +54,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.6.74
+X-stable-base: Linux 6.1.127
 Content-Transfer-Encoding: 8bit
 
 From: Robin Murphy <robin.murphy@arm.com>
@@ -78,10 +78,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 12 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 68b81f9c2f4b1..6cecbac0e6bab 100644
+index 45b43f729f895..96b72f3dad0d0 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3875,7 +3875,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+@@ -3880,7 +3880,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
  	/* Initialise in-memory data structures */
  	ret = arm_smmu_init_structures(smmu);
  	if (ret)
@@ -90,7 +90,7 @@ index 68b81f9c2f4b1..6cecbac0e6bab 100644
  
  	/* Record our private device structure */
  	platform_set_drvdata(pdev, smmu);
-@@ -3886,22 +3886,29 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+@@ -3891,22 +3891,29 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
  	/* Reset the device */
  	ret = arm_smmu_device_reset(smmu, bypass);
  	if (ret)
@@ -123,7 +123,7 @@ index 68b81f9c2f4b1..6cecbac0e6bab 100644
 +	return ret;
  }
  
- static void arm_smmu_device_remove(struct platform_device *pdev)
+ static int arm_smmu_device_remove(struct platform_device *pdev)
 -- 
 2.39.5
 
