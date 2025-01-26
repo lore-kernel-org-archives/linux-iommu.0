@@ -1,232 +1,251 @@
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from alln-iport-8.cisco.com (alln-iport-8.cisco.com [173.37.142.95])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F7191E505
-	for <iommu@lists.linux.dev>; Sat, 25 Jan 2025 00:39:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737765582; cv=none; b=qEbRyPT9Y0kVKU65MsRhn1fKFvD76bMdjT6AryweMAMZhGtYAq/42+o10fvjhue9KTquhLWhy/D1LKfr06/JCGb0NmE4aKTYOKisEJ2BoE49Xsl1YD4WLXRTAIEMsJwGbgUC0dTZ2GpbxhiEbRNq5FhQn2bTfUwZgCHC7jXTrIk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737765582; c=relaxed/simple;
-	bh=9w7I2x80ypxrKh1VEAFS2n6vYGIv+SvFiL4q0LdcGB8=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=k+d6RAmMG05a+0FGpRwQIg4WzVb0O4IC9MqRnP+39iODf8DctaowoG+6Rzfyf893oZHFfRNrFilBns0dxLDgYFlosDZ6TYQl8A+tnON+e8oNy+Jn2zpBHOdDToOjEBJSv+Otv0IIwfRfOGZFs7rv9LdpJVEQCxQVkaiNKEe+5Jc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pkTu4O34; arc=none smtp.client-ip=209.85.214.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48F171362
+	for <iommu@lists.linux.dev>; Sun, 26 Jan 2025 05:10:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=173.37.142.95
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737868254; cv=fail; b=DM8nmI1BmH6t1XQVWqSsdjxcGpEGhmqiZJEknr9YsAgXuEI5qa2OhvMl/xPQ+w29JHbzWEGvxonNTvfcN5hw1x9lOO9mIu79Don8nB/AKcmzvMYCAO/Al1lMDIN9U07S2mZcEXuoWQtryTFpU0jAeLe1Bc2T8r97ze7hIHJqhgg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737868254; c=relaxed/simple;
+	bh=2pGesDSJR9MVbpM9S0Pyu/5g50pTBAjObOxX6oz50rs=;
+	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=ilwY+IzvB44IXrvXQb1HiYExK24hG8yCyT4uw4TuxqNZMHgTIxa731WaW0A1/Y0cmm7jMF75YbB9HbVrEb8AIrBxrHajKn62VcrVNoa/9HkbTIylVD+1X/Rhgr74Lx8EyrqBXURbyMDyqOiSn8S934FudKqloN0TK9maq+uViXM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cisco.com; spf=pass smtp.mailfrom=cisco.com; dkim=pass (1024-bit key) header.d=cisco.com header.i=@cisco.com header.b=PMKNxuam; arc=fail smtp.client-ip=173.37.142.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cisco.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cisco.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pkTu4O34"
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-216387ddda8so59481245ad.3
-        for <iommu@lists.linux.dev>; Fri, 24 Jan 2025 16:39:39 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=cisco.com header.i=@cisco.com header.b="PMKNxuam"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1737765578; x=1738370378; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+X65piYQS/WCBt65hh+j7JofkNo9XQN9knqyTTubMeE=;
-        b=pkTu4O34FJ2aa/vC8G0wGqJYOtKA075ZqVLnhDz6s4KdxNJOexRgas0K9ZqD7sexZd
-         Y1wYgwDZuVFIrUR8jRLeLnSqfSi5T/TQ8R0HRs2d+EIdlAfOPwrIOhQJyvNOkoAOVhHx
-         8SQzFfkdwUbgXaPzGYvflc5mkWi+UsiMSpXNIRVLuiKi7pms20LvP0svAPPMzjDNJztE
-         uGFuht9aM0YIg3SWLtoiOEXgB1AwLtwxq0/IXblji3snV5WegkYz47C0DiABpsB2nUtH
-         BFe460S4XMTu/IE9QbZBbx8zFE0Zk0uqeoDMMFFdGYZHA+kI4duaXzrkqakTI4IbMDue
-         nrhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737765578; x=1738370378;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+X65piYQS/WCBt65hh+j7JofkNo9XQN9knqyTTubMeE=;
-        b=Myw7Eqvl3eE51Fj7ppjrv8e5cDU0EQCQ/07g0KHpcxn8e50hHc0IEKil/7ZumTaHz9
-         eonVZM3ZoJ9AXUEn5GYgKCvKE1+HhTSqp1IDTaoMXn3jnUUliMidfGQQUJmDCsy5aHN+
-         ep9c8RKquG4N4hO2oqFseczJVUZplqUY0esVMeMrCy+wNL0zAc8j6O8aiOhJVEqdEmsy
-         fARZyYAafhHBsKVST72usGQ4TiEfptXy3D4vncmQC8zNoPsvQ6KUNekO//8zjfSX/4nr
-         1jDKIChk1DlG00wQDnTeG42EGKv7AiFLFwooJ3ZcW05rR6y9lIvLjFleZDKqR59fXtuw
-         NxQg==
-X-Forwarded-Encrypted: i=1; AJvYcCXEp8kH4qaq706niVGYmvj5s4sUoi9wgxOleddronzTsKj9ZAOBaKvhk6UQ+Gmq2ua/CLca8g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwjflL24gHOMKxXU8q6FX9WnNtYn61ppjoCIDn9UFeeM3lk5SjT
-	W7iucOqeoAKU8KlecvEc/4kl59slmuHrtO7i5h1vUwnS8COvLhtXxS16cmWAglxyxoM4Tamfgd6
-	BdQ==
-X-Google-Smtp-Source: AGHT+IH8zqVnP4Psc/uYL4UhGgHMW+W6e9Nz3rYjPKiv7YzdXD9pSuwl/RQiWph/kP5Qf47fPPDng4ucmM4=
-X-Received: from pfwo3.prod.google.com ([2002:a05:6a00:1bc3:b0:725:df7a:f4e3])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:6d8a:b0:1ea:f941:8da0
- with SMTP id adf61e73a8af0-1eb214e52damr45529351637.24.1737765578583; Fri, 24
- Jan 2025 16:39:38 -0800 (PST)
-Date: Fri, 24 Jan 2025 16:39:37 -0800
-In-Reply-To: <5af2cc74-c56d-4bcf-870e-afa98d6456b3@amd.com>
+  d=cisco.com; i=@cisco.com; l=1466; q=dns/txt; s=iport;
+  t=1737868252; x=1739077852;
+  h=from:to:subject:date:message-id:
+   content-transfer-encoding:mime-version;
+  bh=M8bfGcqWscNFJoW1gBGGNnctJLlGzDy0qXIEmctg//I=;
+  b=PMKNxuampLN5LZtScrTl1MrlTLr1LVmSCQr2ddmcKltkvKYUsv4N09Uk
+   ebQFiJ4G0WIoNEVwHwjCReR+rXZ/kuriqFgL1BbQogc0WM4/gmXF0DXLW
+   QJRyBmtyMxIZ58x5weethqyUQx+bmaLDMz8rrKRLtlgebOxySrtZIH7q9
+   I=;
+X-CSE-ConnectionGUID: ynVFCCj0RZ2QKq5bDp4Qjg==
+X-CSE-MsgGUID: qcS3VWPpT5miBiZyVYtbTQ==
+X-IPAS-Result: =?us-ascii?q?A0BuAQBMw5Vnj4r/Ja1agQklgS6BclKCGUiIIQOFLYZTg?=
+ =?us-ascii?q?iEDnhiBJQNWDwEBAQ0CRAQBAYUHAop0AiY0CQ4BAgQBAQEBAwIDAQEBAQEBA?=
+ =?us-ascii?q?QEBAQELAQEFAQEBAgEHBRQBAQEBAQE5BUmGCIZaAQMDEihRAQgRAwECHgFBH?=
+ =?us-ascii?q?QkBBAESCBqCYIJlAwGqHgGBQAKKK3iBNIEB4CCBSIMOgXODTQGGBoRcJxuBS?=
+ =?us-ascii?q?USBV4IwOD6ERYQTgi8Egi9LejCDP6BaUnscA1ksAVUTFwsHBSt+EDgDIAs2F?=
+ =?us-ascii?q?RwCFA0QDwYQBG0FNUE6gg1pSTcCDQI1gh4kWIIrgiGCPYRFhFOCQ1SCRIIUe?=
+ =?us-ascii?q?msDAxYRgyd7HoFNHUADC209NwYOGwUEgTUFnDA8hAEBWQE0RWfIBwqEG6F8F?=
+ =?us-ascii?q?6pTmHwiqGECBAIEBQIPAQEGgWc6gVtwFYMiUhkPji0NCcsReDwCBwsBAQMJk?=
+ =?us-ascii?q?WMBAQ?=
+IronPort-PHdr: A9a23:Ui+w7hPMh2HEBEONNiYl6nc2WUAX0o4cdiYc7p4hzrVWfbvmpNLpP
+ VfU4rNmi1qaFYnY6vcRk+PNqOigQm0P55+drWoPOIJBTR4LiMga3kQgDceJBFe9LavCZC0hF
+ 8MEX1hgl0w=
+IronPort-Data: A9a23:44MeBKxCYCvyjhuDMGV6t+c3xirEfRIJ4+MujC+fZmUNrF6WrkVWn
+ WZKC2uAb/zZZmL8eIwjPomwoEIEvJLRn4BhQAtsqVhgHilAwSbn6Xt1DatR0we6dJCroJdPt
+ p1GAjX4BJlqCCea/lH1b+CJQUBUjcmgXqD7BPPPJhd/TAplTDZJoR94kobVuKYw6TSCK13L4
+ IiaT/H3Ygf/hmYtaD9MsMpvlTs21BjMkGJA1rABTagjUG/2zxE9EJ8ZLKetGHr0KqE8NvK6X
+ evK0Iai9Wrf+Ro3Yvv9+losWhRXKlJ6FVHmZkt+A8BOsDAbzsAB+vpT2M4nVKtio27hc+adZ
+ zl6ncfYpQ8BZsUgkQmGOvVSO3kW0aZuoNcrLZUj2CCe5xWuTpfi/xlhJFAwA6Mz0eQvO1MUz
+ N8BdTohdky6he3jldpXSsE07igiBNPgMIVavjRryivUSK5/B5vCWK7No9Rf2V/chOgXQq2YP
+ JVfM2cyKk2bM3WjOX9PYH46tO6tj2PzeidVgFmUvqEwpWPUyWSd1ZCxaoKFJIfVG5U9ckCwv
+ 2n9pFrGOgkmadme4zu340ydmuXzpHauMG4VPOblrqEx2gL7KnYoIBwRUF6mif24kVKlHdZeL
+ VEEvCYjs8APGFeDVNLxWVi85XWDpBNZA4MWGOwh4wbLwa3Ri+qEOoQaZi9HVvINn81ufw5w7
+ 3yQwtnFHWBWsrLAHBpx6YyohT+1PCEUK0oLaikFURYJ7rHfTGcb0EunojFLTvXdszHlJQwc1
+ Qxmu8TXulnysSLp//jmlbwkq2vwznQscuLTzl6INo5CxlgpDLNJn6TytTDmAQ9ode51tGWps
+ nkegNS55+sTF5yLnyHlaLxSR+75vafVb22N2AEH83wdG9KFpiPLkWd4vWAWGauVGp9aEdMUS
+ BaJ4FoPuM870IWCN/4pM9PZ5zsWIVjITom9CauOMbKik7B6dRSM+2l1dFWM0mX22EkqmudXB
+ HtoWZjEMJruMow+lGDeb75EidcDn3lurUuNHsqT50r8jtKjiIu9Fext3K2mMrthtPvsTcS82
+ 4o3CvZmPD0GAL2mO3mNr9RLRb3IRFBiba3LRwVsXrfrCiJtGXoqDLnaxrZJRmCvt/49ejvgl
+ p1lZnJl9Q==
+IronPort-HdrOrdr: A9a23:JPd2aqgwT4n4nRBP0JvFaWr5IXBQX4Z23DAbv31ZSRFFG/FwyP
+ re/8jzhCWVtN9OYhAdcIi7SdS9qBPnmaKdkrNhQYtKOzOW8ldATbsSprcKrAeQYBEWmtQtsZ
+ uIEJIOReEYb2IK9/oSiTPQe71Psbv3lZxA7t2uqUuFODsaE52ImD0JczpzfHcGIzVuNN4SLr
+ bZzMxBoDarZHQQaeqGJlRtZYL+juyOvqjLJTodCTAayCTmt16VAbjBfCSw71M7aXdi0L0i+W
+ /Kn0jS/aO4qcy2zRfayiv684lWsMGJ8KoNOOW8zuwubhn8gAehY4psH5eYuioune2p4FE21P
+ HRvhYbOdhp4X+5RBD6nfKt4Xig7N8d0Q6g9baquwqgnSU/fkN+NyN1v/MYTvIe0TtlgDgz6t
+ MN44vTjespMfqJplWC2zGPbWAnqqJxykBSyNL6SBdkIM0jQa4UoooF8ExPFpAcWCr89YA8Ce
+ FrSNrR/fBMbDqhHgbkV0RUsaiRt04Ib2C7a1lHvtbQ3yldnXh/wUddzMsDnm0Y/JZ4T5Vf/e
+ zLPqlhibkLF6YtHOpALfZERdHyBn3GQBrKPm7XKVP7FLsfM3aIr5Ls+r066OyjZZRNxpovn5
+ bKVk9eqAcJCgvTINzL2IcO/gHGQW27UziowsZC54Jhsrm5X7bvOT3rciFaryJhmYRsPiT2YY
+ fBBHsNOY6TEYLHI/c44zHD
+X-Talos-CUID: 9a23:2GXXD2F7/fZHgxLTqmJ28nA6MesnKkfvlk7zOhKyJX41cb+aHAo=
+X-Talos-MUID: 9a23:rgFSUQrNHxonmt9dkmwezyhpD5xW3Jy2NB0IkL8Hidi6BDB6Bw7I2Q==
+X-IronPort-Anti-Spam-Filtered: true
+Received: from rcdn-l-core-01.cisco.com ([173.37.255.138])
+  by alln-iport-8.cisco.com with ESMTP/TLS/TLS_AES_256_GCM_SHA384; 26 Jan 2025 05:09:21 +0000
+Received: from alln-opgw-3.cisco.com (alln-opgw-3.cisco.com [173.37.147.251])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by rcdn-l-core-01.cisco.com (Postfix) with ESMTPS id 2FF0E18000295
+	for <iommu@lists.linux.dev>; Sun, 26 Jan 2025 05:09:21 +0000 (GMT)
+X-CSE-ConnectionGUID: aoug/27mTqOQxV6ItgAVCg==
+X-CSE-MsgGUID: 9GYmslMGRVGpJYPzNwWINw==
+Authentication-Results: alln-opgw-3.cisco.com; dkim=pass (signature verified) header.i=@cisco.com
+X-IronPort-AV: E=Sophos;i="6.13,235,1732579200"; 
+   d="scan'208";a="21089495"
+Received: from mail-dm6nam10lp2049.outbound.protection.outlook.com (HELO NAM10-DM6-obe.outbound.protection.outlook.com) ([104.47.58.49])
+  by alln-opgw-3.cisco.com with ESMTP/TLS/TLS_AES_256_GCM_SHA384; 26 Jan 2025 05:09:20 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Dw4t+MhvS09rlG5ji8eLZVvN/Pu3mwfqFGRixoX33hVisYm6ELiAJrFB0VVCmP9MSCd6uU5/XT1i++TMA0Xk1j3hsWlvpy/jqz3Ei/kMZPrGO32To0LLC+1GTexU+jue4CIrMbNA2Hlt928/7HTpOkLN+aJaD9gq3XXVIhe3lIxW7/5B4CrDXimbOMFKoay/+E6crOiX/SIsHD1WpTwcGG6m9yhLm0q4mCFVIe+XrNrsNUwnA3bxYgjyOUNn0HrFT8/IESx7Ao+bb4uimgVQr1lJEFjRq42kPczkzO9gSKjyu7UdjmtHIjaRNKh0HND+qX+juNgMncYr8LiNtXAy9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=M8bfGcqWscNFJoW1gBGGNnctJLlGzDy0qXIEmctg//I=;
+ b=vCUXJYy4zpiubbQxygfpjZj1BOKKDu7Plfnc8EsApOz6+yHfGxU9x8qP3NlgBwJALpTpYthU1fj1/7LWYAOngDhNevvawQLVb90TUHaPnbQApNAb35h8F/af3zxCpIxr8HZqDAe6BSo66YTYsQ/DelQiRsv5MWsghuFDjGi0OK7maijkaZTEbyQ+krTnpC9vexm1QLiTN3aG1HzwVqYhtPNRzsrhLyqJuR06P88Cg82cOxogTVBPuuBeNZ7prFzh5dWtfQhC67est7xpoIm/xPh2/7oG81btveiKng2ec+03pzE08GXzzLkPFu24IfOstJXAkxF5RVIOLN4liadhAA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=cisco.com; dmarc=pass action=none header.from=cisco.com;
+ dkim=pass header.d=cisco.com; arc=none
+Received: from SA1PR11MB6687.namprd11.prod.outlook.com (2603:10b6:806:25a::15)
+ by LV8PR11MB8557.namprd11.prod.outlook.com (2603:10b6:408:1e8::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8377.20; Sun, 26 Jan
+ 2025 05:09:19 +0000
+Received: from SA1PR11MB6687.namprd11.prod.outlook.com
+ ([fe80::ce10:662e:d436:61fc]) by SA1PR11MB6687.namprd11.prod.outlook.com
+ ([fe80::ce10:662e:d436:61fc%6]) with mapi id 15.20.8377.009; Sun, 26 Jan 2025
+ 05:09:17 +0000
+From: "Adrian Mardare (amardare)" <amardare@cisco.com>
+To: "dwmw2@infradead.org" <dwmw2@infradead.org>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: Make intel iommu disable swiotlb
+Thread-Topic: RE: Make intel iommu disable swiotlb
+Thread-Index: AdtvsD0ftWLNWRWAS6GH2Kfd6X3gwA==
+Date: Sun, 26 Jan 2025 05:09:17 +0000
+Message-ID:
+ <SA1PR11MB6687F4E752138AAED3FC980DCDED2@SA1PR11MB6687.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SA1PR11MB6687:EE_|LV8PR11MB8557:EE_
+x-ms-office365-filtering-correlation-id: 6836eb7c-2e74-47d9-7ec5-08dd3dc795d8
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|1800799024|366016|38070700018;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?hjKJzhA17PEpkbLMhiVX5+R9xzwWKw65x76xEdq8pMc/Du9+jMOP3tXVKAbO?=
+ =?us-ascii?Q?SSZkIm7zKOk5f6vYEUKT+aKHUczXQDsiLfZAL684o1GEy0FL1TNIgBMQAloH?=
+ =?us-ascii?Q?s/+yr4BRcMEHFoyt7IHDRg0wY5HrVlTl0CtaKU9C+VFhbhyz3de0Dp5CT3jC?=
+ =?us-ascii?Q?rSFnE5i5O0CF3nPkZQLKq6emGMoWB/3kHekds0OYR/WqnT5KHqV+oyAu6sTT?=
+ =?us-ascii?Q?yLI3E1doi4TvRUIMNITFIpk5eAstcW4W7ewy4RMQbI2mqVLCVPxTUvrlTrS7?=
+ =?us-ascii?Q?NTTN7DhuYEh+R8+c3MNdamL8ecbUPBoxbYze1CUVNIgC3irdrSrJm63rvL/9?=
+ =?us-ascii?Q?AE0PbNdXh18GukVTXozbhkMeaw92RYmNXDdUkmredJm1KKn9Ml24fiVY7k6P?=
+ =?us-ascii?Q?TrXOJzrASEzfXcIEi35ldadhXLybEKGu5pXH8ga7Gcn4F4MHTVTQ3J8rPzYF?=
+ =?us-ascii?Q?33K3zPD6gDWpWgic+Hory6f2tG3/6K943guS5qFvc3bvoJPMGKGD6FY7dani?=
+ =?us-ascii?Q?LyyF1Eo3ZkgbMRpImwyzxg5JoLnxRuVPniIhO8aqZ/TwrC/H88zPPWHhvZUU?=
+ =?us-ascii?Q?RJH+CwWcBft/AmudvVuP4/vkACYTTTDdnvr8UVkZ29eodA3rzF2u6OOcK7/j?=
+ =?us-ascii?Q?SPck58YoRJ1U+fuF0ZFbhmNXTbTSYl9avAumIZ+KITmqYyUZPO4XSWD6LDcz?=
+ =?us-ascii?Q?o/aMTsqDM8xx4jqw3lcOz1aelKatrX/vXiJlWmQnrUNQoIE3FakKS50bXKUt?=
+ =?us-ascii?Q?SX4rUovC/DdU30gxLmg0Jz342PX+f/3jsCSLrdVjfFwM7fHhh2ZuzfF2Lohi?=
+ =?us-ascii?Q?hMp/vdiine4TPXZaLTqo8HNzdZksDts9vVBvkhyXbeNokLhkOsQ+3jBYbkH/?=
+ =?us-ascii?Q?iAan7pAiiQYUJg0Dw5uuaRVq41pmpU4DNQvap72TRnI5/DQSG8rlYOcW9NZh?=
+ =?us-ascii?Q?6CkQkqesvITgVrclgKYP/vMSGBpMWixVJcNKMIYdu7KZZ4e5+vTVOzdCvFtE?=
+ =?us-ascii?Q?WMtdysleHAhNbFil2YHyVW38El1+jYp/eDCBKPLdg+pD3Dq+c0uWG7hKMKLO?=
+ =?us-ascii?Q?vAZKskU7KZNuIb78hlRPt8+jdNmrLfFtrFcJYyZVBRodm75BmQSnWeI/7w3X?=
+ =?us-ascii?Q?zz4zZm0xXogqMP40a1Y+jM39UeQWKj4mzKBX/hb9Fyl4bRLc14j/GHADugRL?=
+ =?us-ascii?Q?CT/TMJcZbMyj4AK95c2JUEFg/53ZTOXQuHZJJsC8K4FU8e+EPd0ZjPWMgCNf?=
+ =?us-ascii?Q?Vn9leioxGYnLTyItSUpZo9wa6OV+mZorPaRee9hpG9u94v4LKmsktaH3e8zY?=
+ =?us-ascii?Q?rdwdLBh1LOmX6StAyCbBQSO/D0L4y7fv9vDdnSYXgTiTQljLdBwPBXkp+ERm?=
+ =?us-ascii?Q?hNCzj81tr3SWGnc+H21I8l03RkTOfh65luRUpkuhJy3dAsu7Xr5QBdH2FRqt?=
+ =?us-ascii?Q?wPotYDdd4wEDUVYi3XIg8MfpM7i37s0A?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR11MB6687.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?BpkQslIjflBGriFkmypCGVg6UhU6LzjOuDJ20qXSYdYXJi8Qx3Px2R8tXH+2?=
+ =?us-ascii?Q?Nf325gEMeM2rhJTRvACgEMGvbdaOqjBqw7hPGjQa51ksT2SIhU7ixjLMGMQQ?=
+ =?us-ascii?Q?gdQszhwyskRY5gMtVGawt0nIOlORUXkQ/UCla/kgplS8IkmYd48/nfHbM6ma?=
+ =?us-ascii?Q?bLr4m9YrDxcefxz4b9pAyFQA34edd59NRHM6cKHruTKZAy6C2tc7kNL74bgC?=
+ =?us-ascii?Q?ZzQOi9pJadFlBbLrtTozD+uXkmzSMeqZNwoE+PoaY5zWUe2eN8IJr9XTroS0?=
+ =?us-ascii?Q?eulbiU4w6mnbT91j7vdaeeNinoWuEZlffmuObZOk/7lMtz0uCu52HBeG3Ga+?=
+ =?us-ascii?Q?Uycsrj2RkZazex0KcIh+BNuwFmg3FnjKjypxt/M7U9siFNecD0Aj/9JUdm4E?=
+ =?us-ascii?Q?1QrQHVFBi5sDCVU48HykYInArr1kG+ey25g3K3y0G1qhZ+wybLdkHXFNEp4x?=
+ =?us-ascii?Q?lFzJx4wdjOTibBFkEXc1xhtdeLaPNuBmlrhYF4iaMhyizTTGVZcP+SJJ9S/9?=
+ =?us-ascii?Q?YDLtoWzNj+LdFLg9mwn9waV/5T+GfP2O2MTERIu+MpgIUHVx79bPe6tm94uT?=
+ =?us-ascii?Q?nJlM48+uOW+I0w+76oIF0xIGZmAoOn9OKzpsJcH4XjrDO6f0vOyTdS9tSPcL?=
+ =?us-ascii?Q?r6UmYBJyq6UNuaQmM6ArmFhosf2+wE8rINRGiSZWbeVLW4+qtY13rHxJYw8T?=
+ =?us-ascii?Q?CfuFvBnNd3gxmNHBCOI3RsKZ+QjqDsEqvVhavom/GAh0rxbSTOLvi+7MzVy+?=
+ =?us-ascii?Q?WzBmk3PT2aCUu/TNv/QGnvInuTTx4HxRFOBl3CZVH2TUGOovpmDISzWvmVjj?=
+ =?us-ascii?Q?yEsmrFOMHSc7EoyT+IOYaTU8mOu0sI5963eFOlFd7werbnyCBeiLTEphRSPg?=
+ =?us-ascii?Q?TbsUB1kd/1wZCE1Diy62+s7bgmrH4Cd5O3Oc7a09xR1uS73Fh6Tf5Z6i6sL9?=
+ =?us-ascii?Q?3sA0WVyRFyBo2Utq7sRJ49ERjjA07IPcLhufodfnSg7syhNGpz30U091rfBz?=
+ =?us-ascii?Q?+7JlFdW95rODutGor0K2ZD0GAlFnOIRGYaBRPIr29fx58gNLi9Nc7vNqtoRx?=
+ =?us-ascii?Q?tnjzTjqFn2s7jzvIZKViL78Eip0ifBGvDsFhbPkeL+uz92BtXjboDMM8xVA8?=
+ =?us-ascii?Q?vhdJKIdsl4t0GSJVvrAuW2Dha4MYgj/rspa7Mn8SZU86SJNClpAO/WfdykzW?=
+ =?us-ascii?Q?c0bWq4jplHXpc7UucjuQlM4vXhRyaRsS9gpBuCOxwvaRurfkCzohFZx+uv3+?=
+ =?us-ascii?Q?ar33aprhnG0LrmVKQpujnHQn7fveWEoByPwhlFx0xqfy4XWRTicihQYB/YC5?=
+ =?us-ascii?Q?CV/RV03oknzrCgfrrnM31gHT2d09723VBJlF+S0NEDz5n5vUAb2PkSOvj9EP?=
+ =?us-ascii?Q?GoxQVbbrGSOAYl3WrsUgMeE/TVHzDjg0OydD4oFFutdFKHGC7/39ZtjMDpjg?=
+ =?us-ascii?Q?8LI+PBmvkD8fvKoOMJZwkbmOZiIPGCTq1vFYRscdK4s1RK2CmELiVLz2zOTa?=
+ =?us-ascii?Q?fscmNU1VRZpKG61+g/NKJN7AW9xz8alcStulQhrGvBrlI1muZ3ycifjMvPzj?=
+ =?us-ascii?Q?3SO8LoF8ZuOQ/z6/N2R98YOkLzzpOXOFFzRqQ4pQ?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <cover.1737505394.git.ashish.kalra@amd.com> <0b74c3fce90ea464621c0be1dbf681bf46f1aadd.1737505394.git.ashish.kalra@amd.com>
- <c310e42d-d8a8-4ca0-f308-e5bb4e978002@amd.com> <5df43bd9-e154-4227-9202-bd72b794fdfb@amd.com>
- <5af2cc74-c56d-4bcf-870e-afa98d6456b3@amd.com>
-Message-ID: <Z5QyybbSk4NeroyZ@google.com>
-Subject: Re: [PATCH 1/4] iommu/amd: Check SNP support before enabling IOMMU
-From: Sean Christopherson <seanjc@google.com>
-To: Ashish Kalra <ashish.kalra@amd.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, Tom Lendacky <thomas.lendacky@amd.com>, pbonzini@redhat.com, 
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, 
-	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, 
-	john.allen@amd.com, herbert@gondor.apana.org.au, davem@davemloft.net, 
-	joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org, 
-	robin.murphy@arm.com, michael.roth@amd.com, dionnaglaze@google.com, 
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-crypto@vger.kernel.org, linux-coco@lists.linux.dev, 
-	iommu@lists.linux.dev
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+X-OriginatorOrg: cisco.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR11MB6687.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6836eb7c-2e74-47d9-7ec5-08dd3dc795d8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jan 2025 05:09:17.7702
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5ae1af62-9505-4097-a69a-c1553ef7840e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OQsJIxby5+yk7rMCgj4sj9VySb+ZgJkDNSnms2rtW1Zfil8TeBEFuv3Jk+Rd9rYnTKB0zUcbwQACy1ozmtac4A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR11MB8557
+X-Outbound-SMTP-Client: 173.37.147.251, alln-opgw-3.cisco.com
+X-Outbound-Node: rcdn-l-core-01.cisco.com
 
-On Fri, Jan 24, 2025, Ashish Kalra wrote:
-> With discussions with the AMD IOMMU team, here is the AMD IOMMU
-> initialization flow:
+(resending as plain-text)
+Hi...
+I'd like to submit the below patch.
+While investigating a difference in memory consumption between the kernel i=
+n 5.4.x and in 6.6.x,
+I noticed there is around ~80M less reported in MemTotal in 6.6.x versus 5.=
+4.x.
+This is because  in 6.6.x  the swiotlb is still enabled and consuming about=
+ 80M of kernel memory, even though
+the intel iommu has been fully initialized.
+This change will cause the swiotlb to be disabled /  memory to be released =
+( via swiotlb_exit ).
+Thanks,
+Adrian
 
-..
 
-> IOMMU SNP check
->   Core IOMMU subsystem init is done during iommu_subsys_init() via
->   subsys_initcall.  This function does change the DMA mode depending on
->   kernel config.  Hence, SNP check should be done after subsys_initcall.
->   That's why its done currently during IOMMU PCI init (IOMMU_PCI_INIT stage).
->   And for that reason snp_rmptable_init() is currently invoked via
->   device_initcall().
->  
-> The summary is that we cannot move snp_rmptable_init() to subsys_initcall as
-> core IOMMU subsystem gets initialized via subsys_initcall.
+From 27e63e727f23189e9c98d81fb445141f998c0808 Mon Sep 17 00:00:00 2001
+From: Adrian Mardare <amardare@cisco.com>
+Date: Sat, 25 Jan 2025 23:41:31 -0500
+Subject: [PATCH] Make intel iommu disable swiotlb
 
-Just explicitly invoke RMP initialization during IOMMU SNP setup.  Pretending
-there's no connection when snp_rmptable_init() checks amd_iommu_snp_en and has
-a comment saying it needs to come after IOMMU SNP setup is ridiculous.
+On boards where intel iommu has been successfully
+initialized, we need to disable the swiotlb as there
+is no reason for swiotlb to be active past that.
 
-Compile tested only.
-
+Signed-off-by: Adrian Mardare <amardare@cisco.com>
 ---
-From: Sean Christopherson <seanjc@google.com>
-Date: Fri, 24 Jan 2025 16:25:58 -0800
-Subject: [PATCH] x86/sev: iommu/amd: Explicitly init SNP's RMP table during
- IOMMU SNP setup
+drivers/iommu/intel/iommu.c | 3 +++
+1 file changed, 3 insertions(+)
 
-Explicitly initialize the RMP table during IOMMU SNP setup, as there is a
-hard dependency on the IOMMU being configured first, and dancing around
-the dependency with initcall shenanigans and a comment is all kinds of
-stupid.
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index cc46098f875b..971023d33a70 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3166,6 +3166,9 @@ int __init intel_iommu_init(void)
+               pr_info("Intel(R) Virtualization Technology for Directed I/O=
+\n");
 
-The RMP is blatantly not a device; initializing it via a device_initcall()
-is confusing and "works" only because of dumb luck: due to kernel build
-order, when the the PSP driver is built-in, its effective device_initcall()
-just so happens to be invoked after snp_rmptable_init().
+                intel_iommu_enabled =3D 1;
++#ifdef CONFIG_SWIOTLB
++             x86_swiotlb_enable =3D false;
++#endif
 
-That all falls apart if the order is changed in any way.  E.g. if KVM
-is built-in and attempts to access the RMP during its device_initcall(),
-chaos ensues.
+                return 0;
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/include/asm/sev.h |  1 +
- arch/x86/virt/svm/sev.c    | 25 ++++++++-----------------
- drivers/iommu/amd/init.c   |  7 ++++++-
- 3 files changed, 15 insertions(+), 18 deletions(-)
-
-diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-index 91f08af31078..30da0fc15923 100644
---- a/arch/x86/include/asm/sev.h
-+++ b/arch/x86/include/asm/sev.h
-@@ -503,6 +503,7 @@ static inline void snp_kexec_begin(void) { }
- 
- #ifdef CONFIG_KVM_AMD_SEV
- bool snp_probe_rmptable_info(void);
-+int __init snp_rmptable_init(void);
- int snp_lookup_rmpentry(u64 pfn, bool *assigned, int *level);
- void snp_dump_hva_rmpentry(unsigned long address);
- int psmash(u64 pfn);
-diff --git a/arch/x86/virt/svm/sev.c b/arch/x86/virt/svm/sev.c
-index 9a6a943d8e41..d932aa21340b 100644
---- a/arch/x86/virt/svm/sev.c
-+++ b/arch/x86/virt/svm/sev.c
-@@ -189,19 +189,19 @@ void __init snp_fixup_e820_tables(void)
-  * described in the SNP_INIT_EX firmware command description in the SNP
-  * firmware ABI spec.
-  */
--static int __init snp_rmptable_init(void)
-+int __init snp_rmptable_init(void)
- {
- 	u64 max_rmp_pfn, calc_rmp_sz, rmptable_size, rmp_end, val;
- 	void *rmptable_start;
- 
--	if (!cc_platform_has(CC_ATTR_HOST_SEV_SNP))
--		return 0;
-+	if (WARN_ON_ONCE(!cc_platform_has(CC_ATTR_HOST_SEV_SNP)))
-+		return -ENOSYS;
- 
--	if (!amd_iommu_snp_en)
--		goto nosnp;
-+	if (WARN_ON_ONCE(!amd_iommu_snp_en))
-+		return -ENOSYS;
- 
- 	if (!probed_rmp_size)
--		goto nosnp;
-+		return -ENOSYS;
- 
- 	rmp_end = probed_rmp_base + probed_rmp_size - 1;
- 
-@@ -218,13 +218,13 @@ static int __init snp_rmptable_init(void)
- 	if (calc_rmp_sz > probed_rmp_size) {
- 		pr_err("Memory reserved for the RMP table does not cover full system RAM (expected 0x%llx got 0x%llx)\n",
- 		       calc_rmp_sz, probed_rmp_size);
--		goto nosnp;
-+		return -ENOSYS;
- 	}
- 
- 	rmptable_start = memremap(probed_rmp_base, probed_rmp_size, MEMREMAP_WB);
- 	if (!rmptable_start) {
- 		pr_err("Failed to map RMP table\n");
--		goto nosnp;
-+		return -ENOMEM;
- 	}
- 
- 	/*
-@@ -261,17 +261,8 @@ static int __init snp_rmptable_init(void)
- 	crash_kexec_post_notifiers = true;
- 
- 	return 0;
--
--nosnp:
--	cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
--	return -ENOSYS;
- }
- 
--/*
-- * This must be called after the IOMMU has been initialized.
-- */
--device_initcall(snp_rmptable_init);
--
- static struct rmpentry *get_rmpentry(u64 pfn)
- {
- 	if (WARN_ON_ONCE(pfn > rmptable_max_pfn))
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 0e0a531042ac..d00530156a72 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3171,7 +3171,7 @@ static bool __init detect_ivrs(void)
- 	return true;
- }
- 
--static void iommu_snp_enable(void)
-+static __init void iommu_snp_enable(void)
- {
- #ifdef CONFIG_KVM_AMD_SEV
- 	if (!cc_platform_has(CC_ATTR_HOST_SEV_SNP))
-@@ -3196,6 +3196,11 @@ static void iommu_snp_enable(void)
- 		goto disable_snp;
- 	}
- 
-+	if (snp_rmptable_init()) {
-+		pr_warn("SNP: RMP initialization failed, SNP cannot be supported.\n");
-+		goto disable_snp;
-+	}
-+
- 	pr_info("IOMMU SNP support enabled.\n");
- 	return;
- 
-
-base-commit: ac80076177131f6e3291737c851a6fe32cc03fd3
--- 
-
+--=20
+2.34.1
