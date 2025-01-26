@@ -1,112 +1,98 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E11378F4B
-	for <iommu@lists.linux.dev>; Sun, 26 Jan 2025 09:09:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB21D1F76C5;
+	Sun, 26 Jan 2025 15:07:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737882564; cv=none; b=KeiWH/hwuhDq4QRuw9eV+sFyGLLTrqL1cnuFguFXi8GbzpechEHPMmXZzzC5egUdD3HVrIUJx2iYkcKRq3NsnvvqQDEhlIu1aQ9cb6u7BqnP/57GD3crk/Bso94za/Mc31n1h/K39FO+3ilyEWeWZC2sL8wJznYMWYXLWKzg1kw=
+	t=1737904060; cv=none; b=bjQ5slN8UVBLtoVRForwIqNr5bft5HhAp5DLPdDpaW3MH1X9JBOHjPCVRo+DfAf7kJ1bOsGQaf09uhtlUlK0XfIpNksjnuLO5eIm4qU7IOqv144jyvhJjJp32M9iBrdBCm3miVtRa8BybSM6IaVlNg2SbcIuPMljQCvwItHJ5Gg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737882564; c=relaxed/simple;
-	bh=YaGoWGpsklGIQt67nkm2fqrq/O3GNFyu96dmoP7FMbA=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=kJQrBP9xzUwrz7Xq1MNkIk6NdNVNF8jtSIX5cQysRpqwWBKn3h5RELfb3WZCyJFXoL4utUCJS1cz7Xt3u0Pgq9/Sa8By0cR1jZOxMPdckysNomRWblpQK1CBkgwJDhN46MHlUV6XJarJZ7r7srSPFIxNldDjzw4Y45sp1M2Qco8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R+0OiaH0; arc=none smtp.client-ip=209.85.216.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1737904060; c=relaxed/simple;
+	bh=wU4p/1jhFmOpkLwYEez7JQ4/M7aI4yao+Hq6x1njINs=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Ed/aOkR0YarwOnA0NZ4SjAfOj6CMQizs/bhInjsNBGdl1vt5hkQZRKeCJ3S9Vdtq69N2fbAYHQWOM4R4KeCWwxC30FOT5OAc5nml2W0T/jn61uM+NneEId1KU8Uyn1jmgw9t+drdMlvmhmLP55ZlxeP27AVzA8IY0MSEV0MJjFQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mL3cegW/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R+0OiaH0"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2ef7733a1dcso829102a91.3
-        for <iommu@lists.linux.dev>; Sun, 26 Jan 2025 01:09:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737882562; x=1738487362; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=3+cfvIoxVPtQPbBiDtAArxp4pruZxdup7yQD95mYg5w=;
-        b=R+0OiaH0+bB4OgXt9Z5mTZjLsPyzwv+FOOMcD2CX9/Uph+3CEXHo7R3NdWtW+uqMl0
-         xcLdbMTOOKko42ktv0Tn79DUg9fUVk768fgyfusUtlUy1h6+xhOW1K+mmV/AjgaufWoz
-         EnaDv63Yt3+3GdU6tJtykgHndbS2j6LG3u2fQV2ryRWY3gW+HcDlT8KzEJisrvzimB8u
-         mqqhXbIzBpNF4n6kWYB7fUZQX9jcxYIDeKH2WfABuOnodksjg1WF4t2BEKiqv0CLYee6
-         uXaLI1Uf0YlQnm5BN+6PltGfBg7RA6EmZXa4r2mgCku7TgdP8KSJypk7fX1zvsRT+FSz
-         OJLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737882562; x=1738487362;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3+cfvIoxVPtQPbBiDtAArxp4pruZxdup7yQD95mYg5w=;
-        b=RxxDAFikiw1H3fD1pL3FAE8HhdjOW1rl3J7aMqMUIKPesuK6M9bL/rAzHmEvYIi9dk
-         uF/xLIYwZ/sJmMRcM/nXqnGm8GFTfmheBpZ6foQsW2Cew/cMlhUpA2qQZQ5uElEwhSfd
-         qvCCilgQ8G0PtfS2bu4bq9wIMiKMruJmucrtHczfys5pE5QWEtBHDATmMMJl4mRogUVA
-         r/Tey3Edi+569HQ63q0G9q751JYo4SP96XYp3aRUaVyEpkfk2HxIMRDmQH/wI3KTyUr1
-         e4jiuincktqsvBStJ68d5eRz3NO0pwm9ZnzHJNkICIBzlS5+vKovkdfrPhLZltCIlYIP
-         jW+w==
-X-Forwarded-Encrypted: i=1; AJvYcCW/5Zl7hSKOjpLhxzau/wB0GHCX3IwrBWq8nA8FpSFafucHNGwhwuyzjo3p/bVv9E0t948U8g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzSevF5Qev84S/tbBARlP28aQF2aeJUAoiWDCCQ31SKa5ApibMm
-	kbu+3H8ZtxNksq5oGI8pfR1oAY+R0gPeESoKDboKdI//mZAwo7APKQUtB+yo/qqZJkCtHdYdfV/
-	dzp94/fGyeP8SaDY6isbpoBIKUbo=
-X-Gm-Gg: ASbGncu8lnjQ/692nvqB2nXigbca3ttmZz65xz5q8korOW9uEwKStMwbpvkMvDzJs7F
-	jUYUkP3HPnr90azBtjNnGMV0IO2HQ8ZOuNY21gbOuCTRg/R9lDBaye+wvNV4mrr827NDrdyGauD
-	ydQctmL2ACw2LObimEVbo=
-X-Google-Smtp-Source: AGHT+IGyFrPT4kR55B4ZMMZHTE8tGSsiEWF19KzvgoA/wX6bcBPgwPkzKXnYGeJ3GAz1YYzHx47vq+dmkRrs5wTKm9A=
-X-Received: by 2002:a17:90b:6c3:b0:2f2:a9bd:afe9 with SMTP id
- 98e67ed59e1d1-2f782c562e7mr19339344a91.2.1737882562298; Sun, 26 Jan 2025
- 01:09:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mL3cegW/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A570C4CED3;
+	Sun, 26 Jan 2025 15:07:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1737904059;
+	bh=wU4p/1jhFmOpkLwYEez7JQ4/M7aI4yao+Hq6x1njINs=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=mL3cegW/bXM2txhFZa7BL+PQ8WUt9Ew9W9xNTzcw9INy9UbyjbpB/Cbh5MOUG2Rkb
+	 dkiUbz6HKIl4b0vM9dzno7RmdrlZDZsApA3hXOl1r2N/VRkGESPp7BL8bEelCtFeZs
+	 4CmCST6js0faHpzQEw12CGIM0JOJkJ+bUxiEhBPhZ4ULhGYnMZ/NgNNR+2IXqxaXz5
+	 5nZSTAM/2bUnad1rNpfcZTCP9wWG9rGT+bvE9iE7TUZWNbph3fD9htEaQK86VOW/Vs
+	 pY37rEmvrakc0TrEtYfXDkQxGEFCWyQVOdZ7M+Pjj5Wj3pCq1P9tfYj9/ADjAlEci0
+	 JVWXGUZcfTQAg==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Richard Acayan <mailingradian@gmail.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Will Deacon <will@kernel.org>,
+	Sasha Levin <sashal@kernel.org>,
+	robdclark@gmail.com,
+	joro@8bytes.org,
+	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.13 05/16] iommu/arm-smmu-qcom: add sdm670 adreno iommu compatible
+Date: Sun, 26 Jan 2025 10:07:07 -0500
+Message-Id: <20250126150720.961959-5-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20250126150720.961959-1-sashal@kernel.org>
+References: <20250126150720.961959-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Dima Stepanov <dstepanov.src@gmail.com>
-Date: Sun, 26 Jan 2025 10:09:10 +0100
-X-Gm-Features: AWEUYZm5hLwacDRU2jedBsltQ2YaAUYDFf65Lzvj2nTxQ-1bOx2-UciHK0b6pYs
-Message-ID: <CAEHp+Gasm2ZuYPusn1ZsMuePpjV0atutVGTr9n3-DT=tQODYkQ@mail.gmail.com>
-Subject: [PATCH] kernel/dma: dma_common_find_pages returns pages for requested address
-To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Dima Stepanov <dstepanov.src@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.13
+Content-Transfer-Encoding: 8bit
 
-Recently hit an issue on an attempt to mmap allocated DMA memory to the
-user space. It isn't the case for any device, but only if dma_mmap_attrs
-call will use the iommu_dma_mmap() function as a backend.
-If the kernel address (cpu_addr) passed to the iommu_dma_mmap function
-is the same as returned by allocator (dma_alloc_coherent) then memory
-will be mapped correctly. But if the address passed is inside the
-allocated region, then the mapping in the user space will still refer
-to the start of the region and not to the middle of it.
+From: Richard Acayan <mailingradian@gmail.com>
 
-The reason for it is the dma_common_find_pages() call, which returns the
-very first page of the vm structure regardless of the cpu_addr passed.
+[ Upstream commit 42314738906380cbd3b6e9caf3ad34e1b2d66035 ]
 
-The idea for the fix is to return not the first page in the vm
-structure, but the page related to the requested cpu_addr.
+Add the compatible for the separate IOMMU on SDM670 for the Adreno GPU.
 
-Signed-off-by: Dima Stepanov <dstepanov.src@gmail.com>
+This IOMMU has the compatible strings:
+
+	"qcom,sdm670-smmu-v2", "qcom,adreno-smmu", "qcom,smmu-v2"
+
+While the SMMU 500 doesn't need an entry for this specific SoC, the
+SMMU v2 compatible should have its own entry, as the fallback entry in
+arm-smmu.c handles "qcom,smmu-v2" without per-process page table support
+unless there is an entry here. This entry can't be the
+"qcom,adreno-smmu" compatible because dedicated GPU IOMMUs can also be
+SMMU 500 with different handling.
+
+Signed-off-by: Richard Acayan <mailingradian@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20241114004713.42404-6-mailingradian@gmail.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/remap.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-index 9e2afad1c615..238fbf2821a6 100644
---- a/kernel/dma/remap.c
-+++ b/kernel/dma/remap.c
-@@ -9,12 +9,15 @@
- struct page **dma_common_find_pages(void *cpu_addr)
- {
-     struct vm_struct *area = find_vm_area(cpu_addr);
-+    int i;
-
-     if (!area || !(area->flags & VM_DMA_COHERENT))
-         return NULL;
-     WARN(area->flags != VM_DMA_COHERENT,
-          "unexpected flags in area: %p\n", cpu_addr);
--    return area->pages;
-+    i = (PAGE_ALIGN((uintptr_t)cpu_addr) - (uintptr_t)area->addr) >>
-PAGE_SHIFT;
-+
-+    return &area->pages[i];
- }
-
- /*
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 6372f3e25c4bc..601fb878d0ef2 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -567,6 +567,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+ 	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_v2_data },
++	{ .compatible = "qcom,sdm670-smmu-v2", .data = &qcom_smmu_v2_data },
+ 	{ .compatible = "qcom,sdm845-smmu-v2", .data = &qcom_smmu_v2_data },
+ 	{ .compatible = "qcom,sdm845-smmu-500", .data = &sdm845_smmu_500_data },
+ 	{ .compatible = "qcom,sm6115-smmu-500", .data = &qcom_smmu_500_impl0_data},
 -- 
-2.43.0
+2.39.5
+
