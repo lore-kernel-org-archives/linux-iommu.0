@@ -1,48 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69D221F8EE9;
-	Sun, 26 Jan 2025 15:07:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEF29232376;
+	Sun, 26 Jan 2025 15:08:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737904073; cv=none; b=WT2dxm6H0H1mKrcjhlGtEZpKVveUFi7/7h8FK60ToH+PFTKb+YOII300GaEqtzY3N2j9QF29YelhEMl9D5+tZYXyYSetCxwP6GDF4BM2MF7qk+0/JsHXcR3+R8O+V2/1KVz/soUwXPkSu3OLbjzabsz7qkCf2JKOXIJKicSE+4Q=
+	t=1737904096; cv=none; b=N5Y5MBCHHbGp9hpDjTgLxdO+N7gaMx+wjjK6SHQYt4F9A+ZPyvbg+czHXkco3bumndBxxbMWVbuthJJKM6OQSck4v10pJKHWhMGshzJeDTzyyAS5XZHJX+zHKMNpT9kSN9tkLtu9TGOLnCRLZi+PzpacYJJxTEpW6GxGA7IEZew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737904073; c=relaxed/simple;
-	bh=+cYr+yDB4KdKLf+B1LGrp82PwqiBAnl8xKrFvWVtEE4=;
+	s=arc-20240116; t=1737904096; c=relaxed/simple;
+	bh=wU4p/1jhFmOpkLwYEez7JQ4/M7aI4yao+Hq6x1njINs=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=eFzIieIoM4AaC2OgS+UshyTy5Lj2T08CQVuTHxj6rTxOyURFXoYGsu/9lZGj4p9M45iQrU3aKJDIs2C7QBUWDwdgBjYhRdgUj2BroKiafTcutn3kIsLX2pvE+T53bn8bXW0yQqhfSsp1mwyQPRaSbYxCrWB6ab92Qh2lg3vdbnE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TrbP2g7J; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=hQSLAtotugNCTxWCvljRGJc4COsBECiN+n5uNwDmFodm4ukF3Oja91rlGJvNaIohB9QBB8b1Tq9JiM1x1e19G+ojHn9ArnK25kjDgOgaBVPtBpYgSfrnBS9Clf8lqjoW2BmaEynBpTlsfHahL3Y3oAxAuDlPAD4OcPh030kdzP4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GOp5L6OM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TrbP2g7J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5A9BC4CEE3;
-	Sun, 26 Jan 2025 15:07:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GOp5L6OM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64F0DC4CEE2;
+	Sun, 26 Jan 2025 15:08:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737904073;
-	bh=+cYr+yDB4KdKLf+B1LGrp82PwqiBAnl8xKrFvWVtEE4=;
+	s=k20201202; t=1737904096;
+	bh=wU4p/1jhFmOpkLwYEez7JQ4/M7aI4yao+Hq6x1njINs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=TrbP2g7JOTYzOZ805TQcaiRKo3BMW/Tx1xM9oMS4Q/CHQAzql6DLEnGhb4F9CWAiG
-	 INosoYaCQqvLq+HSTfbjcEEgPQhIuTPBQIfpuhdi+Km+5N0kyY7Sz59cx49fIiM98Z
-	 N17EjljgCEnwHK8rJhsoRDxqMFl1U9xDMGJa5t93j2UkP/eJ/QmjHx99yFNNCjTQBo
-	 /u6OifPqPsu7PCJmxGDf+mVjKj3GEypFSENgnqTiTSegBGBIYShss5hNL6atT+wPui
-	 IAoi/dqwow8SmDQx2gUYAGOY2apSYJmqdmfKn35GrYiKJouGZeXN45PDyDSCbl8uqL
-	 NSNteRGRWONFw==
+	b=GOp5L6OM4wVDh1s+xSL1DRfSgmYJB/iZLOxusQ8l/9jrHKWkKcypxWJd2LiXRf+eZ
+	 5haWKU6tm8YuHrNw7Frw0TOp+LjS3SWGMaYODqjcx45DJl5DB2LIhpEGIkcHrLKyih
+	 KtOFZIreDsFKtgHDJ32qv2AfmL6YUD+iZugULefpFnK9R2yFRcj6zI7ifr9u0uSafl
+	 AY8hoHnSj1uKIxaxP7zycqanT7ETyxcfFg/3x5qXtIYmN+cxPuNdp6wkXi9iKPGLHM
+	 gOSjess8MvhGBu33LpaNrAovnPD6Iu01DoLZ8dRQxanUTPko076/4dRLJe3JEAGW74
+	 JQswOcTQEJZxw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Kees Bakker <kees@ijzerbout.nl>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <jroedel@suse.de>,
+Cc: Richard Acayan <mailingradian@gmail.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Will Deacon <will@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
-	dwmw2@infradead.org,
+	robdclark@gmail.com,
 	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.13 11/16] iommu/vt-d: Avoid use of NULL after WARN_ON_ONCE
-Date: Sun, 26 Jan 2025 10:07:13 -0500
-Message-Id: <20250126150720.961959-11-sashal@kernel.org>
+	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.12 04/14] iommu/arm-smmu-qcom: add sdm670 adreno iommu compatible
+Date: Sun, 26 Jan 2025 10:07:51 -0500
+Message-Id: <20250126150803.962459-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250126150720.961959-1-sashal@kernel.org>
-References: <20250126150720.961959-1-sashal@kernel.org>
+In-Reply-To: <20250126150803.962459-1-sashal@kernel.org>
+References: <20250126150803.962459-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,48 +52,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.13
+X-stable-base: Linux 6.12.11
 Content-Transfer-Encoding: 8bit
 
-From: Kees Bakker <kees@ijzerbout.nl>
+From: Richard Acayan <mailingradian@gmail.com>
 
-[ Upstream commit 60f030f7418d3f1d94f2fb207fe3080e1844630b ]
+[ Upstream commit 42314738906380cbd3b6e9caf3ad34e1b2d66035 ]
 
-There is a WARN_ON_ONCE to catch an unlikely situation when
-domain_remove_dev_pasid can't find the `pasid`. In case it nevertheless
-happens we must avoid using a NULL pointer.
+Add the compatible for the separate IOMMU on SDM670 for the Adreno GPU.
 
-Signed-off-by: Kees Bakker <kees@ijzerbout.nl>
-Link: https://lore.kernel.org/r/20241218201048.E544818E57E@bout3.ijzerbout.nl
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+This IOMMU has the compatible strings:
+
+	"qcom,sdm670-smmu-v2", "qcom,adreno-smmu", "qcom,smmu-v2"
+
+While the SMMU 500 doesn't need an entry for this specific SoC, the
+SMMU v2 compatible should have its own entry, as the fallback entry in
+arm-smmu.c handles "qcom,smmu-v2" without per-process page table support
+unless there is an entry here. This entry can't be the
+"qcom,adreno-smmu" compatible because dedicated GPU IOMMUs can also be
+SMMU 500 with different handling.
+
+Signed-off-by: Richard Acayan <mailingradian@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20241114004713.42404-6-mailingradian@gmail.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel/iommu.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 79e0da9eb626c..8f75c11a3ec48 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4090,13 +4090,14 @@ void domain_remove_dev_pasid(struct iommu_domain *domain,
- 			break;
- 		}
- 	}
--	WARN_ON_ONCE(!dev_pasid);
- 	spin_unlock_irqrestore(&dmar_domain->lock, flags);
- 
- 	cache_tag_unassign_domain(dmar_domain, dev, pasid);
- 	domain_detach_iommu(dmar_domain, iommu);
--	intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
--	kfree(dev_pasid);
-+	if (!WARN_ON_ONCE(!dev_pasid)) {
-+		intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
-+		kfree(dev_pasid);
-+	}
- }
- 
- static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 6372f3e25c4bc..601fb878d0ef2 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -567,6 +567,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+ 	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_v2_data },
++	{ .compatible = "qcom,sdm670-smmu-v2", .data = &qcom_smmu_v2_data },
+ 	{ .compatible = "qcom,sdm845-smmu-v2", .data = &qcom_smmu_v2_data },
+ 	{ .compatible = "qcom,sdm845-smmu-500", .data = &sdm845_smmu_500_data },
+ 	{ .compatible = "qcom,sm6115-smmu-500", .data = &qcom_smmu_500_impl0_data},
 -- 
 2.39.5
 
