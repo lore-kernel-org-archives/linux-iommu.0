@@ -1,48 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 634801F78F3;
-	Sun, 26 Jan 2025 15:07:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69D221F8EE9;
+	Sun, 26 Jan 2025 15:07:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737904067; cv=none; b=gN8un2Cpz6yp63cQP7n2Pj1OZj/hX+RJNEtiUfu1RlKKg90Uqob2E04aZDGRZHE50qQvxxpxn7si1srPWLf5VFsxdNvZbpTPN5ufhhJ6E7UCxp3klztzCf4umXSvm3tfCQgPRw2H08vaZBMPO84aloHCdH2ZaVkQNHdLDemQWsY=
+	t=1737904073; cv=none; b=WT2dxm6H0H1mKrcjhlGtEZpKVveUFi7/7h8FK60ToH+PFTKb+YOII300GaEqtzY3N2j9QF29YelhEMl9D5+tZYXyYSetCxwP6GDF4BM2MF7qk+0/JsHXcR3+R8O+V2/1KVz/soUwXPkSu3OLbjzabsz7qkCf2JKOXIJKicSE+4Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737904067; c=relaxed/simple;
-	bh=VwtHtXRZokdyObfCFfPJnG6JQySXwP52lYn0MqDKdn4=;
+	s=arc-20240116; t=1737904073; c=relaxed/simple;
+	bh=+cYr+yDB4KdKLf+B1LGrp82PwqiBAnl8xKrFvWVtEE4=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=D8NBrQzw8bfhf1vpk8uK3yg7MWWUGChHC+1ENhTOKugWb5Pjc9VgNBeihxMeJgDExCMYnqX2bX1H/pk5pi1wBH0SmSWof4REuV+GIjSGALKssikZ3Nmt80F04QT4DFInPJHvN5pQ1Sjhn4W2tbIasUvXAAH0pgTThXbIAY3VYW4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Om1VNdi2; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=eFzIieIoM4AaC2OgS+UshyTy5Lj2T08CQVuTHxj6rTxOyURFXoYGsu/9lZGj4p9M45iQrU3aKJDIs2C7QBUWDwdgBjYhRdgUj2BroKiafTcutn3kIsLX2pvE+T53bn8bXW0yQqhfSsp1mwyQPRaSbYxCrWB6ab92Qh2lg3vdbnE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TrbP2g7J; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Om1VNdi2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69B3AC4CED3;
-	Sun, 26 Jan 2025 15:07:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TrbP2g7J"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5A9BC4CEE3;
+	Sun, 26 Jan 2025 15:07:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737904066;
-	bh=VwtHtXRZokdyObfCFfPJnG6JQySXwP52lYn0MqDKdn4=;
+	s=k20201202; t=1737904073;
+	bh=+cYr+yDB4KdKLf+B1LGrp82PwqiBAnl8xKrFvWVtEE4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Om1VNdi2GgGXNL/iAbl6Zw03vQo1fax2LhAl8a+F1VK281haejl7BtLJ/UezKuzu1
-	 Vu3kESI129QEmnKu4kCQJZSOwkmBV0r/67up3g7nag/jJSbMcUh2vIXsnUxzUWiYcc
-	 Ff3CGuOg2nrmxl/FuO+dRyAIbfm3zQHrbQd5dX5x+nfqscAxexltukBstf4TL0/IFl
-	 Gvn46xdu2YU2Y4jv/BJ8fd+KgKS/jtjps7vIIzccW5ApmVsqQBMNWh0hZEub/OjMfo
-	 RolTIRBPp7gWSB/Cak8pcp8rQf78yseRxxwl2CiDB/5oZPOlB2GU6+EJUx3RwkOYXR
-	 Ynvv5Hw1fvEBw==
+	b=TrbP2g7JOTYzOZ805TQcaiRKo3BMW/Tx1xM9oMS4Q/CHQAzql6DLEnGhb4F9CWAiG
+	 INosoYaCQqvLq+HSTfbjcEEgPQhIuTPBQIfpuhdi+Km+5N0kyY7Sz59cx49fIiM98Z
+	 N17EjljgCEnwHK8rJhsoRDxqMFl1U9xDMGJa5t93j2UkP/eJ/QmjHx99yFNNCjTQBo
+	 /u6OifPqPsu7PCJmxGDf+mVjKj3GEypFSENgnqTiTSegBGBIYShss5hNL6atT+wPui
+	 IAoi/dqwow8SmDQx2gUYAGOY2apSYJmqdmfKn35GrYiKJouGZeXN45PDyDSCbl8uqL
+	 NSNteRGRWONFw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>,
+Cc: Kees Bakker <kees@ijzerbout.nl>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <jroedel@suse.de>,
 	Sasha Levin <sashal@kernel.org>,
+	dwmw2@infradead.org,
 	joro@8bytes.org,
-	jgg@ziepe.ca,
-	nicolinc@nvidia.com,
-	mshavit@google.com,
-	smostafa@google.com,
-	praan@google.com,
-	linux-arm-kernel@lists.infradead.org,
+	will@kernel.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.13 07/16] iommu/arm-smmu-v3: Clean up more on probe failure
-Date: Sun, 26 Jan 2025 10:07:09 -0500
-Message-Id: <20250126150720.961959-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.13 11/16] iommu/vt-d: Avoid use of NULL after WARN_ON_ONCE
+Date: Sun, 26 Jan 2025 10:07:13 -0500
+Message-Id: <20250126150720.961959-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20250126150720.961959-1-sashal@kernel.org>
 References: <20250126150720.961959-1-sashal@kernel.org>
@@ -57,73 +54,45 @@ X-Patchwork-Hint: Ignore
 X-stable-base: Linux 6.13
 Content-Transfer-Encoding: 8bit
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Kees Bakker <kees@ijzerbout.nl>
 
-[ Upstream commit fcbd621567420b3a2f21f49bbc056de8b273c625 ]
+[ Upstream commit 60f030f7418d3f1d94f2fb207fe3080e1844630b ]
 
-kmemleak noticed that the iopf queue allocated deep down within
-arm_smmu_init_structures() can be leaked by a subsequent error return
-from arm_smmu_device_probe(). Furthermore, after arm_smmu_device_reset()
-we will also leave the SMMU enabled with an empty Stream Table, silently
-blocking all DMA. This proves rather annoying for debugging said probe
-failure, so let's handle it a bit better by putting the SMMU back into
-(more or less) the same state as if it hadn't probed at all.
+There is a WARN_ON_ONCE to catch an unlikely situation when
+domain_remove_dev_pasid can't find the `pasid`. In case it nevertheless
+happens we must avoid using a NULL pointer.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/5137901958471cf67f2fad5c2229f8a8f1ae901a.1733406914.git.robin.murphy@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Kees Bakker <kees@ijzerbout.nl>
+Link: https://lore.kernel.org/r/20241218201048.E544818E57E@bout3.ijzerbout.nl
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/iommu/intel/iommu.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index a5c7002ff75bb..0beb3e9ee3c67 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4663,7 +4663,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	/* Initialise in-memory data structures */
- 	ret = arm_smmu_init_structures(smmu);
- 	if (ret)
--		return ret;
-+		goto err_free_iopf;
- 
- 	/* Record our private device structure */
- 	platform_set_drvdata(pdev, smmu);
-@@ -4674,22 +4674,29 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	/* Reset the device */
- 	ret = arm_smmu_device_reset(smmu);
- 	if (ret)
--		return ret;
-+		goto err_disable;
- 
- 	/* And we're up. Go go go! */
- 	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
- 				     "smmu3.%pa", &ioaddr);
- 	if (ret)
--		return ret;
-+		goto err_disable;
- 
- 	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
- 	if (ret) {
- 		dev_err(dev, "Failed to register iommu\n");
--		iommu_device_sysfs_remove(&smmu->iommu);
--		return ret;
-+		goto err_free_sysfs;
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 79e0da9eb626c..8f75c11a3ec48 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4090,13 +4090,14 @@ void domain_remove_dev_pasid(struct iommu_domain *domain,
+ 			break;
+ 		}
  	}
+-	WARN_ON_ONCE(!dev_pasid);
+ 	spin_unlock_irqrestore(&dmar_domain->lock, flags);
  
- 	return 0;
-+
-+err_free_sysfs:
-+	iommu_device_sysfs_remove(&smmu->iommu);
-+err_disable:
-+	arm_smmu_device_disable(smmu);
-+err_free_iopf:
-+	iopf_queue_free(smmu->evtq.iopf);
-+	return ret;
+ 	cache_tag_unassign_domain(dmar_domain, dev, pasid);
+ 	domain_detach_iommu(dmar_domain, iommu);
+-	intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
+-	kfree(dev_pasid);
++	if (!WARN_ON_ONCE(!dev_pasid)) {
++		intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
++		kfree(dev_pasid);
++	}
  }
  
- static void arm_smmu_device_remove(struct platform_device *pdev)
+ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
 -- 
 2.39.5
 
