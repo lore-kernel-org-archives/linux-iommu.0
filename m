@@ -1,51 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4044B1F91E9;
-	Sun, 26 Jan 2025 15:08:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77521237A45;
+	Sun, 26 Jan 2025 15:08:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737904104; cv=none; b=ciwTG8Yce9dx1+ChxmlQv7EeL5eiv+quG31HAj8ev3ykqAL94XYwcBpKjrp5WcUn/Whu5yTrLMkty+ApBMYd88bShtlNc1WbknUQWtjszVQdcfmfB3cnsE6fHoGWyNhiOj53wMTgr9OSTinpBRjDxPHz4Og3IrL5r4kT6tuU9+k=
+	t=1737904124; cv=none; b=uC6Y5FlmEqGpXUrqP8fUo/PWDV/psqArTAcsl7P3ONHmO/uKD9QyHEk7rhLHHHWhxug2nQgVKHq6BWJpbYmnpOLeVsuNuei3hzb/iTuiEsH8W3afx9ZyDn0fIzbKgvHQ+6MRkNmb8WIZqGtdTFXRQvtwMnP3xYMFlLi1KaRwCno=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737904104; c=relaxed/simple;
-	bh=ww5KYbqmh2q/FNejbSlmIeDcfqTGFh6lqcmJoJClQ4E=;
+	s=arc-20240116; t=1737904124; c=relaxed/simple;
+	bh=1ztisbHwpmkKSTOlDKaozWadrVEdSWR7WX4DbSoZdkY=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=VS/N9wJPp5C2v+ZIMUbYN1CCwkryXry0rEeks9cXtfvb/Km+Z2mM0EoySbnmkjYWL3OvHdIc58uZ34CB6rtiYjIxkaJvLgwkG2rh+99QGCy0xIZtVgSYCZBTovrk0gDqJwDEoBFd7Yy02gvcxx4zPaNDJl4x0Ee8T73HxXRyLbk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oIRV3aUm; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=BdLh+o8OaZyLYosL0Ye0PQiVXhP2hliyNrjIgenhCaluEXxdX1nj2FKZk8vPu2pRF5W4jREsCEoPjy4B+KoeHH1eZGYUoYRhy7rSTRe/v/qjeatuFkysx5ej7N3Asd+uyZq3xbqbf6f7H4EtIEs17IUINVRuRWNA6c2cWq+3huk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cc3RtTQK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oIRV3aUm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C73C4CEE5;
-	Sun, 26 Jan 2025 15:08:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cc3RtTQK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20FE9C4CEE3;
+	Sun, 26 Jan 2025 15:08:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737904104;
-	bh=ww5KYbqmh2q/FNejbSlmIeDcfqTGFh6lqcmJoJClQ4E=;
+	s=k20201202; t=1737904124;
+	bh=1ztisbHwpmkKSTOlDKaozWadrVEdSWR7WX4DbSoZdkY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=oIRV3aUmtYtvmB83OGt8W2gz99CrDpswbjH3OZKiJfOHOi8RehGbVkzIzd4RysG4R
-	 Jmr/Qq9r1PmaDh/SFhMuFAKwJH8eUIQfmX6Eie51GiDrKX0Mds14NqHQZG0Yw8V7fO
-	 adGyyZt++wo0W7knk4Z6Z2gSYKf5NWOVCWwMUFlksdZVLhnT7owi2kw+gNqWtj4IX4
-	 Zan9g7EB0BGcyKipqbHohPDqG7tnRj2imShUJwwOznKT3XtOEt08xIZC3in6147mOh
-	 ZgpsYru+wEIhAK3rNuZjpSSeG86slJXuoQ0xo8Oyk968i2TplqxBfKiJ0R4EOC5LX5
-	 gkIF+BPPs1p1A==
+	b=Cc3RtTQKNGtdhOov1AZn0BjhNrJ6K1qUt+HT+HZJNAfzzLd6kJhGt5ymxzjCjIdFN
+	 Ila0jc/J3jEizQROAaiqBcjUdUClBc8RuwfX0bIiqQpNg5c2Pv/BsMLbYX4I+B4LW/
+	 vTyW4+3CNgTeaALXmsAj3ez5U0iojmVEMiOUUOJzQdi0bWASeIZQG4AqP7d5YpKGvA
+	 B9PvLR/YCa9aVESIq03Va9AVRG06OMjfU+1b+ZGFxQtdEQndqc2VnPTlVdgWdMpxHo
+	 65Nqq0ma/s30dd7Z0qMcJRsqqfnBJeacjVe3qMwer0LA9IUsCT1vkmlsUvilDZbXJ9
+	 5fBrPiJfRNFOg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Robin Murphy <robin.murphy@arm.com>,
+Cc: Richard Acayan <mailingradian@gmail.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
 	Will Deacon <will@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
+	robdclark@gmail.com,
 	joro@8bytes.org,
-	jgg@ziepe.ca,
-	nicolinc@nvidia.com,
-	mshavit@google.com,
-	smostafa@google.com,
-	praan@google.com,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.12 06/14] iommu/arm-smmu-v3: Clean up more on probe failure
-Date: Sun, 26 Jan 2025 10:07:53 -0500
-Message-Id: <20250126150803.962459-6-sashal@kernel.org>
+	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.6 2/9] iommu/arm-smmu-qcom: add sdm670 adreno iommu compatible
+Date: Sun, 26 Jan 2025 10:08:30 -0500
+Message-Id: <20250126150839.962669-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250126150803.962459-1-sashal@kernel.org>
-References: <20250126150803.962459-1-sashal@kernel.org>
+In-Reply-To: <20250126150839.962669-1-sashal@kernel.org>
+References: <20250126150839.962669-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,76 +52,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.12.11
+X-stable-base: Linux 6.6.74
 Content-Transfer-Encoding: 8bit
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Richard Acayan <mailingradian@gmail.com>
 
-[ Upstream commit fcbd621567420b3a2f21f49bbc056de8b273c625 ]
+[ Upstream commit 42314738906380cbd3b6e9caf3ad34e1b2d66035 ]
 
-kmemleak noticed that the iopf queue allocated deep down within
-arm_smmu_init_structures() can be leaked by a subsequent error return
-from arm_smmu_device_probe(). Furthermore, after arm_smmu_device_reset()
-we will also leave the SMMU enabled with an empty Stream Table, silently
-blocking all DMA. This proves rather annoying for debugging said probe
-failure, so let's handle it a bit better by putting the SMMU back into
-(more or less) the same state as if it hadn't probed at all.
+Add the compatible for the separate IOMMU on SDM670 for the Adreno GPU.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/5137901958471cf67f2fad5c2229f8a8f1ae901a.1733406914.git.robin.murphy@arm.com
+This IOMMU has the compatible strings:
+
+	"qcom,sdm670-smmu-v2", "qcom,adreno-smmu", "qcom,smmu-v2"
+
+While the SMMU 500 doesn't need an entry for this specific SoC, the
+SMMU v2 compatible should have its own entry, as the fallback entry in
+arm-smmu.c handles "qcom,smmu-v2" without per-process page table support
+unless there is an entry here. This entry can't be the
+"qcom,adreno-smmu" compatible because dedicated GPU IOMMUs can also be
+SMMU 500 with different handling.
+
+Signed-off-by: Richard Acayan <mailingradian@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20241114004713.42404-6-mailingradian@gmail.com
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 353fea58cd318..064ef03caa454 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4609,7 +4609,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	/* Initialise in-memory data structures */
- 	ret = arm_smmu_init_structures(smmu);
- 	if (ret)
--		return ret;
-+		goto err_free_iopf;
- 
- 	/* Record our private device structure */
- 	platform_set_drvdata(pdev, smmu);
-@@ -4620,22 +4620,29 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	/* Reset the device */
- 	ret = arm_smmu_device_reset(smmu);
- 	if (ret)
--		return ret;
-+		goto err_disable;
- 
- 	/* And we're up. Go go go! */
- 	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
- 				     "smmu3.%pa", &ioaddr);
- 	if (ret)
--		return ret;
-+		goto err_disable;
- 
- 	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
- 	if (ret) {
- 		dev_err(dev, "Failed to register iommu\n");
--		iommu_device_sysfs_remove(&smmu->iommu);
--		return ret;
-+		goto err_free_sysfs;
- 	}
- 
- 	return 0;
-+
-+err_free_sysfs:
-+	iommu_device_sysfs_remove(&smmu->iommu);
-+err_disable:
-+	arm_smmu_device_disable(smmu);
-+err_free_iopf:
-+	iopf_queue_free(smmu->evtq.iopf);
-+	return ret;
- }
- 
- static void arm_smmu_device_remove(struct platform_device *pdev)
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index d491589360197..e6b4bab0dde2e 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -554,6 +554,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+ 	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_v2_data },
++	{ .compatible = "qcom,sdm670-smmu-v2", .data = &qcom_smmu_v2_data },
+ 	{ .compatible = "qcom,sdm845-smmu-v2", .data = &qcom_smmu_v2_data },
+ 	{ .compatible = "qcom,sdm845-smmu-500", .data = &sdm845_smmu_500_data },
+ 	{ .compatible = "qcom,sm6115-smmu-500", .data = &qcom_smmu_500_impl0_data},
 -- 
 2.39.5
 
