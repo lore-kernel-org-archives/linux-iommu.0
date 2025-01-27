@@ -1,129 +1,161 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA1718DF6B;
-	Sun, 26 Jan 2025 15:09:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22BDAB664
+	for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 03:04:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737904154; cv=none; b=Uv/bymLWjeoIc2mIYB2Xiv93QGj2nWlVWPuUmo4lNxhX5QX59u/fXBISZsk07Q6EikFCU+nFdY9pqNd//L2zhOxVo7y1yWQF1CrgY6c8TaPpThok/lU3Zz3axMX0hjGzn7moo9o8xPUoBKBHJlmbAT4l1M0yu68miXCYQBWc/1c=
+	t=1737947091; cv=none; b=ob8OSqyEZYUY78fNhfFy7VXazKLsrb4rOv/q7NdMPfzOV8NwPfzOz0SyFdOLGGNftPoov1c8vxuig2AfNh+Pll5CUObYtehzqzUAqkrAhC5uQnHjKs/9UB7gS/cdCCIG78ievYyTWTnT0RXZgOY+ohLK1fyXZt2I3c9drnwe2fs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737904154; c=relaxed/simple;
-	bh=4gxp0Us1gN/S3Gs0f8tqzA1wk8Sit8ldVbqMDRDe/5M=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=CTlB73cOxKqvWcZnzdiLnJ0mZ5uf9RwubcQi55k+rUADDZC74FFAVCSOsBTl3I4V774ZUJFbXsnZpmjOBnyqF7DmvgM5xfaYn5VxJ/PKMDMtwJmxYyUVbRDNv6spAvFZ6lpEiaJDJWeyfTOjDg5t0aUxdlV5luj12tl+74xho4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NlFHeFzS; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NlFHeFzS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83920C4CEE2;
-	Sun, 26 Jan 2025 15:09:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737904154;
-	bh=4gxp0Us1gN/S3Gs0f8tqzA1wk8Sit8ldVbqMDRDe/5M=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=NlFHeFzSJbfWv611mDiY2k1NJ8u2mq42nxMAwknG6go/po2QJbGB2YLfnjf8nntyg
-	 d4+QnczWeaO+05n2gu8FPboT5XJcZp+pLDxayddaTth/6GadmoRWsl6ojTmttkHo/d
-	 8R62nG8WuMkkZq/j2JJW4gT0xiC+0gQSUSCsSYslBcuZ8PCIuwsGV9oGNxRxBxwBBC
-	 +phAr5gOPMNfSuSDP55vZQEWpRE3J0L0uM5pgoTxq8OhevX/dwGd6zIawitcZOV0zS
-	 z+lEiu5ZItMU8l9WdGSZYLSWAIua05nlhIzyPKs+GhOAvEn7OUjVjT4caB41NoS6FG
-	 HUHycjvQRMvow==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	jgg@ziepe.ca,
-	nicolinc@nvidia.com,
-	mshavit@google.com,
-	smostafa@google.com,
-	praan@google.com,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.1 3/8] iommu/arm-smmu-v3: Clean up more on probe failure
-Date: Sun, 26 Jan 2025 10:08:55 -0500
-Message-Id: <20250126150902.962837-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250126150902.962837-1-sashal@kernel.org>
-References: <20250126150902.962837-1-sashal@kernel.org>
+	s=arc-20240116; t=1737947091; c=relaxed/simple;
+	bh=gK4pIIi9Ighd05s3NQ5mROHOTI5Kf01z9UvGLk89fwo=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=mHfoZ0cGts4aKkrfJdgODudfsXQfEDZzZlF9vozwoOIjstYKcGWeR7UDRDEtS7Tv9SGaM6FpS7skH+QrzFJN36kckTKjnQHsNsdMu39AFNGFTiABIBxg2JrU1x/G8vsW/G2zsM/Vi9h2XsxclGyjBV+3cvbtkjkwoKX0FFBYBY8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.163])
+	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4YhCt359LFz1JJ4v;
+	Mon, 27 Jan 2025 11:03:39 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 3AB8E180042;
+	Mon, 27 Jan 2025 11:04:45 +0800 (CST)
+Received: from localhost.localdomain (10.90.30.45) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Mon, 27 Jan 2025 11:04:44 +0800
+From: Yunsheng Lin <linyunsheng@huawei.com>
+To: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC: <zhangkun09@huawei.com>, <liuyonglong@huawei.com>,
+	<fanghaiqing@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>, Alexander
+ Lobakin <aleksander.lobakin@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+	Alexander Duyck <alexander.duyck@gmail.com>, Andrew Morton
+	<akpm@linux-foundation.org>, IOMMU <iommu@lists.linux.dev>, MM
+	<linux-mm@kvack.org>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
+	<daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, John
+ Fastabend <john.fastabend@gmail.com>, Matthias Brugger
+	<matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>, <netdev@vger.kernel.org>,
+	<intel-wired-lan@lists.osuosl.org>, <bpf@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-mediatek@lists.infradead.org>
+Subject: [RFC v8 0/5] fix two bugs related to page_pool
+Date: Mon, 27 Jan 2025 10:57:29 +0800
+Message-ID: <20250127025734.3406167-1-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.30.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.127
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-From: Robin Murphy <robin.murphy@arm.com>
+This patchset fix a possible time window problem for page_pool and
+the dma API misuse problem as mentioned in [1], and try to avoid the
+overhead of the fixing using some optimization.
 
-[ Upstream commit fcbd621567420b3a2f21f49bbc056de8b273c625 ]
+From the below performance data, the overhead is not so obvious
+due to performance variations in arm64 server and less than 1 ns in
+x86 server for time_bench_page_pool01_fast_path() and
+time_bench_page_pool02_ptr_ring, and there is about 10~20ns overhead
+for time_bench_page_pool03_slow(), see more detail in [2].
 
-kmemleak noticed that the iopf queue allocated deep down within
-arm_smmu_init_structures() can be leaked by a subsequent error return
-from arm_smmu_device_probe(). Furthermore, after arm_smmu_device_reset()
-we will also leave the SMMU enabled with an empty Stream Table, silently
-blocking all DMA. This proves rather annoying for debugging said probe
-failure, so let's handle it a bit better by putting the SMMU back into
-(more or less) the same state as if it hadn't probed at all.
+arm64 server:
+Before this patchset:
+              fast_path              ptr_ring            slow
+1.         31.171 ns               60.980 ns          164.917 ns
+2.         28.824 ns               60.891 ns          170.241 ns
+3.         14.236 ns               60.583 ns          164.355 ns
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/5137901958471cf67f2fad5c2229f8a8f1ae901a.1733406914.git.robin.murphy@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+With patchset:
+6.         26.163 ns               53.781 ns          189.450 ns
+7.         26.189 ns               53.798 ns          189.466 ns
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 45b43f729f895..96b72f3dad0d0 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3880,7 +3880,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	/* Initialise in-memory data structures */
- 	ret = arm_smmu_init_structures(smmu);
- 	if (ret)
--		return ret;
-+		goto err_free_iopf;
- 
- 	/* Record our private device structure */
- 	platform_set_drvdata(pdev, smmu);
-@@ -3891,22 +3891,29 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	/* Reset the device */
- 	ret = arm_smmu_device_reset(smmu, bypass);
- 	if (ret)
--		return ret;
-+		goto err_disable;
- 
- 	/* And we're up. Go go go! */
- 	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
- 				     "smmu3.%pa", &ioaddr);
- 	if (ret)
--		return ret;
-+		goto err_disable;
- 
- 	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
- 	if (ret) {
- 		dev_err(dev, "Failed to register iommu\n");
--		iommu_device_sysfs_remove(&smmu->iommu);
--		return ret;
-+		goto err_free_sysfs;
- 	}
- 
- 	return 0;
-+
-+err_free_sysfs:
-+	iommu_device_sysfs_remove(&smmu->iommu);
-+err_disable:
-+	arm_smmu_device_disable(smmu);
-+err_free_iopf:
-+	iopf_queue_free(smmu->evtq.iopf);
-+	return ret;
- }
- 
- static int arm_smmu_device_remove(struct platform_device *pdev)
+X86 server:
+| Test name  |Cycles |   1-5 |    | Nanosec |    1-5 |        |      % |
+| (tasklet_*)|Before | After |diff|  Before |  After |   diff | change |
+|------------+-------+-------+----+---------+--------+--------+--------|
+| fast_path  |    19 |    19 |   0|   5.399 |  5.492 |  0.093 |    1.7 |
+| ptr_ring   |    54 |    57 |   3|  15.090 | 15.849 |  0.759 |    5.0 |
+| slow       |   238 |   284 |  46|  66.134 | 78.909 | 12.775 |   19.3 |
+
+And about 16 bytes of memory is also needed for each page_pool owned
+page to fix the dma API misuse problem 
+
+1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
+2. https://lore.kernel.org/all/f558df7a-d983-4fc5-8358-faf251994d23@kernel.org/
+
+CC: Alexander Lobakin <aleksander.lobakin@intel.com>
+CC: Robin Murphy <robin.murphy@arm.com>
+CC: Alexander Duyck <alexander.duyck@gmail.com>
+CC: Andrew Morton <akpm@linux-foundation.org>
+CC: IOMMU <iommu@lists.linux.dev>
+CC: MM <linux-mm@kvack.org>
+
+Change log:
+V8:
+  1. Drop last 3 patch as it causes observable performance degradation
+     for x86 system.
+  2. Remove rcu read lock in page_pool_napi_local().
+  3. Renaming item function more consistently.
+
+V7:
+  1. Fix a used-after-free bug reported by KASAN as mentioned by Jakub.
+  2. Fix the 'netmem' variable not setting up correctly bug as mentioned
+     by Simon.
+
+V6:
+  1. Repost based on latest net-next.
+  2. Rename page_pool_to_pp() to page_pool_get_pp().
+
+V5:
+  1. Support unlimit inflight pages.
+  2. Add some optimization to avoid the overhead of fixing bug.
+
+V4:
+  1. use scanning to do the unmapping
+  2. spilt dma sync skipping into separate patch
+
+V3:
+  1. Target net-next tree instead of net tree.
+  2. Narrow the rcu lock as the discussion in v2.
+  3. Check the ummapping cnt against the inflight cnt.
+
+V2:
+  1. Add a item_full stat.
+  2. Use container_of() for page_pool_to_pp().
+
+Yunsheng Lin (5):
+  page_pool: introduce page_pool_get_pp() API
+  page_pool: fix timing for checking and disabling napi_local
+  page_pool: fix IOMMU crash when driver has already unbound
+  page_pool: support unlimited number of inflight pages
+  page_pool: skip dma sync operation for inflight pages
+
+ drivers/net/ethernet/freescale/fec_main.c     |   8 +-
+ .../ethernet/google/gve/gve_buffer_mgmt_dqo.c |   2 +-
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c   |   6 +-
+ drivers/net/ethernet/intel/idpf/idpf_txrx.c   |  14 +-
+ drivers/net/ethernet/intel/libeth/rx.c        |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |   3 +-
+ drivers/net/netdevsim/netdev.c                |   6 +-
+ drivers/net/wireless/mediatek/mt76/mt76.h     |   2 +-
+ include/linux/mm_types.h                      |   2 +-
+ include/linux/skbuff.h                        |   1 +
+ include/net/libeth/rx.h                       |   3 +-
+ include/net/netmem.h                          |  22 +-
+ include/net/page_pool/helpers.h               |  15 +
+ include/net/page_pool/types.h                 |  46 +-
+ net/core/devmem.c                             |   4 +-
+ net/core/netmem_priv.h                        |   5 +-
+ net/core/page_pool.c                          | 425 ++++++++++++++++--
+ net/core/page_pool_priv.h                     |  10 +-
+ net/core/xdp.c                                |   3 +-
+ 19 files changed, 500 insertions(+), 79 deletions(-)
+
 -- 
-2.39.5
+2.33.0
 
