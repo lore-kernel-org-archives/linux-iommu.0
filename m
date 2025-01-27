@@ -1,179 +1,200 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2065.outbound.protection.outlook.com [40.107.100.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 244C31D540
-	for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 09:44:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.65
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737971084; cv=fail; b=uIHhqqGmhNQrOSKOMWdWQFYX+bea/EGwmOzlHPRz25yOlKWRG+zgki1PJ5LBnhXVqcKvkXQG+Y/140dwfFA4wbCj17rh0K71lBY3hkTLEO3ipsTvCMxFAc5CAbhOJRDO9tsaIIyI8WSM2IIGLUr5JZ1q2Dj2yPR9hby6i8gki/s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737971084; c=relaxed/simple;
-	bh=L4QcH0F3f5gS1dGXwj3Au9wYn7bE9xT5tA3Hof6mBjs=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=NAa6doJcEa0CISE/XsuBfK5IS9TZu22wvAtQbI2a0ImSIRbo7BYnyNethQP+4/GViBGysAxH1ppzGY/64tcG8up9FL04vymNps5Kd4IO5SlPHeHCiti1FEM5nBlNex3AowVD19BmIsGNckCMcuf/ENjkse+LbFmRjuuGNg9pX9Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=TkjUKlO1; arc=fail smtp.client-ip=40.107.100.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF28A1FCCEA
+	for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 09:45:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1737971122; cv=none; b=rCyV4CSJUWyVZNVXVsN+zhpYZBQ1esELoQEhya+d5kCv6FFkdOWuhkR8hCpC8cNMSG3aZ23CfVl1BD+bDV4I7qPbopyUtltwMhaqJvKMzSwWUf2qbRDbwmDqw4Yhm8Er1nnzsPrWnmcnl2TnNa7bp1Hp7PHyq1SIa/4FkbKh3H4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1737971122; c=relaxed/simple;
+	bh=vQ3gmIZqaNW1g/LT+/j4YlDwXHe3djbAtV5fO8bABQ8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=W80abQN32M7B3xHsbqgDMQYnwrg7+Bh6I2bv+HeaWjsAjnnMt7tBrVFd7EZ1B4d59jWFGCcYpCY+vkvySGcHnaMWtPoAZ1dGPNVQNgxv9EkBU4mUZBMgY3XafCgYtlQH0UzuV0IuWgoB7eHLMhiy9Y5CKF1ujWR5j6RnRShGVXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fUqG2/ol; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="TkjUKlO1"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YfW9uL6Em6zU0IHTsOhNQjlAQpUTKRZG7A72CquGMmh36AsHHrpo1mclB/o9FOP4m0JySVxrBadb6sbJdZvL01no+eK0g7i6n0kpptNccETSfNU7jcFUtnW5zUKyTtzZpU6nfiTBQeVIKgQ0OJy2IbrHj6MHMB50qKvnB0hvmNxhoXuYBwxz42uINQD13/CHM/0TJkejAoWvyNqHgEzIesPC6BlWpqjlrkNQmNc5VLYP7eS8piPO4wQjbK12xfDA5Xw7oID1x70DpyeGoM2DvMAS180/ZPoymgrA1LUWOfFzkXCnRjSkElpMXtDrAVemcdLyIVE+tD06uiE6Ike0lA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=G42qLWQPI9RcrrIGE/1FONfqq2fUt96GtpzE/SDGWns=;
- b=e3KbtDlVs4rH0XVW0DdHKWoxW3ZJBYlYHezxwYD3v/ohsD23Y13ItLwv6GZ9+Fho7HIOBB4B5CdC80957xHYCrxNeFRPxX1tnUoUhT/BpSX2E5toIgP5w9WxcVJoG/QEPcjTUrlZcOD2Obj4+7JX9/1b8fTw5dC//sOAHs+6Fp0milcWBQowKnmvGG+UZCbr9LC9AEpFzoBv0QEIPFpINggmWu032YQhzvRC7XGefzxNeXQ3k7TUYOdr2DQJYShyWLDggQ8j6jdJm/Z1UYYz48TBP+nljeCFi1TKKt+sZ4GRjYwQuVcfVypur8z66r6xd4ZsbJWlt1IkDtIuNkcslQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G42qLWQPI9RcrrIGE/1FONfqq2fUt96GtpzE/SDGWns=;
- b=TkjUKlO11QPBHaxcs7po51kqCPrIacki8PguDehu1AvP3GgJDehr6uv8us5Btq6vJAyIpFafmKQ95ME5h5SztRsnxvycN+sNqb46E/0T4Wd4Bl2HCJS63R3qfi0t1qEMNUvgXTxx6IjYmo61hypZnIDKPLWJEBqKtLAAVdCjDgY=
-Received: from SJ0PR05CA0052.namprd05.prod.outlook.com (2603:10b6:a03:33f::27)
- by SA1PR12MB8887.namprd12.prod.outlook.com (2603:10b6:806:386::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8377.22; Mon, 27 Jan
- 2025 09:44:39 +0000
-Received: from SJ5PEPF00000205.namprd05.prod.outlook.com
- (2603:10b6:a03:33f:cafe::e6) by SJ0PR05CA0052.outlook.office365.com
- (2603:10b6:a03:33f::27) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8398.14 via Frontend Transport; Mon,
- 27 Jan 2025 09:44:39 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- SJ5PEPF00000205.mail.protection.outlook.com (10.167.244.38) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8398.14 via Frontend Transport; Mon, 27 Jan 2025 09:44:38 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 27 Jan
- 2025 03:44:36 -0600
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	Hamish McIntyre-Bhatty <kernel-bugzilla@regd.hamishmb.com>
-Subject: [PATCH] iommu/amd: Expicitly enable CNTRL.EPHEn bit in resume path
-Date: Mon, 27 Jan 2025 09:44:11 +0000
-Message-ID: <20250127094411.5931-1-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fUqG2/ol"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-436326dcb1cso27480275e9.0
+        for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 01:45:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1737971119; x=1738575919; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qWfgF91HXh+KWhnSvXw9sos0v6cTulWAKwLbp0WnDlU=;
+        b=fUqG2/ollIvHMcBHvq0fvDA7aASRleZY1nfq02PAtXwIN9rjiIFWo861DGj2IvSRLC
+         OfatsU2JAWEo1vATWMClSASEuX51Moi23RIGfly3K5AURCmY9uxNjCzynMbp83eWQeIb
+         fnsvsYc0SwU0kszr1EGENb79xwdf+V9oanhBdY43WwQZ4pxfybgTu8PQkAHU4TiJV62B
+         g+xACHVht9clE4Xwf5k1j9F5fdsoUVkH0q6ZymlMiE8YJxmhAM/mOL5u8H9rEuejIonV
+         I7SI6rsvLMYeaSW9x3mwX/Q52xn7Jl06cbQ3wwSUTNRMz95JfrF62GMh+2pbv1kMPT16
+         cOHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737971119; x=1738575919;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qWfgF91HXh+KWhnSvXw9sos0v6cTulWAKwLbp0WnDlU=;
+        b=cfF2hfoBWHLMLZLALPi2X6r2GhvMH8JtH6FNDDDI4ufFgrJnCFb4yHr0qow6yowo/9
+         /HmvT6ivLWqKMwW8Osde2AdilNyLWc0FBIoMImaGYDwrTwhetZJEA8UO+PDd7x7GLfeK
+         wx9MSVyEGOD2XWM2EpjheyOocdAu2bWtW2Wnt140uGqO7l1EWaDoaaAlZ/OuQ4Fn2xAh
+         Rjs6VDvMC1KjJTNB3DFP3tNabIb0WOZvPmYduTrntKi9rAyQPs9TsOhGxRaS0hK03MYk
+         ba6fBJPI2KH+066ivGtnZVfj1qgr5P5vlg4LJDgZ+goJq7EaYUKQoVeisc+FU3DZqjX+
+         /SYA==
+X-Forwarded-Encrypted: i=1; AJvYcCU32/4WEHk2Olf6xhlIFg/4rcxgET11JujuUYdkP006Ddg5Ca4JVZ2sCywejejx0pbtzQUbiQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzL4vAAuqOc6ygme9J2/RPSu5GQv6RphE1sMcWv0eB/VGnNkfOY
+	u9gczdYHUBmtc6STcDj/1RIOJrqH43doOxznoYryGbEXc0K82eICHa2xiXt2Dr1QUnNYNeQGOge
+	YcJJyllSTLO5i/gsCHlHcnFoisy9VflpgVZeN
+X-Gm-Gg: ASbGncuJsHoapDt7Y5pXS1vTkNg79fRckKNh9PQQstdRxVNUKzbVrGp9Ll5WQr/X2XW
+	VTqo/nJ79+lRlwLcTXe1A9JkICHejvPv3623q5SA5PWfDxL+yXRcb4bJ7Qqr0fSwp73+cRXqlG7
+	kF/M+ACwpf6ylnelIX
+X-Google-Smtp-Source: AGHT+IEXkLLN3S3MMw4xRiFR1Y8MHCtfk58zMT4UAb6q3UkIxnbgrIDMMRrud/wsyj6Dp4vZezgOZE+N4vP5xJk59zI=
+X-Received: by 2002:a05:6000:1864:b0:386:3328:6106 with SMTP id
+ ffacd0b85a97d-38bf59e199cmr43026813f8f.35.1737971119189; Mon, 27 Jan 2025
+ 01:45:19 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF00000205:EE_|SA1PR12MB8887:EE_
-X-MS-Office365-Filtering-Correlation-Id: 31f7ccb7-827c-416f-bda8-08dd3eb7379e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|36860700013|82310400026|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?6ryQMB5vIN/msmp5h4V+OmH8U1ijVk/N5HnmS3lZ/KgqlnflaDybODApdzC5?=
- =?us-ascii?Q?9aHKpoqX7PJBtA+vaTAGNvTUXc5AGIBbZtAZff3i76Y6Pjb8L0q7tc/3bkUq?=
- =?us-ascii?Q?W7IXkGNHbHh1d/agHIFD6BGAaxNRf4UaLEqwOUa61Jp9eDd+5s/im7oEDl3D?=
- =?us-ascii?Q?Q/lpglY2JNzYW9akMCKblRLFalmlLRBE+fzXKa90Ai+PIjgFsfD5MJ/Zfd5P?=
- =?us-ascii?Q?eaLemHOx34DEkM1i8bWgqTGkiu+H4uVgvWDIWEU9ODt7qY82wEclYjFpaPIM?=
- =?us-ascii?Q?j50H1LHFt2ccnJjICGr5XkC+ANDYbGVAfdo/pLDreEQY56jHWVGfy2OBOdFN?=
- =?us-ascii?Q?OZTHPWzLwalOKqStB2dxtjwP9kRSSlC6ewrYBhP/HQpA4rNSbP2/WqM6omCU?=
- =?us-ascii?Q?KmbVPUTLArqMvRDXMhCCqkDNC1ix19Zdl/sGkglCY6aJUKeP8bfgMQuqhHkM?=
- =?us-ascii?Q?ocwrORlh/gg2DRrkyadBQ8VQNqUBxiXoH8kqb1ZI9UW6fFPr1X8tqmE/bC2D?=
- =?us-ascii?Q?XEiGnF9txjlChyWdfqI4S9uexNiwV+zFTvTyf/D+PWrDbHv7rmmCWq/zg4BZ?=
- =?us-ascii?Q?AvCtjQi8b6qgNO9mkkMofBSOC4VUQaqOWo9egVaPetUH7L6sK39hgBwwNkFB?=
- =?us-ascii?Q?KKC9utm05t4VhiMx6vDl+vQe2XOSgyyx/iosO+Zosf3M0RPLHfpjHlEJb8uM?=
- =?us-ascii?Q?kbTvao9bq6tJ8brhHKOSpGY2yinRUuEaIlFoXoKSfJUa3qKpQTrZTE3DHaiA?=
- =?us-ascii?Q?Q2vZCDBB2c+d2EDKWbYdoydwIBcHN1Q4ey0XnPjRUP13Kn+NBGZUIXFBzLKT?=
- =?us-ascii?Q?1yn2xhV87D4yYVoAEZ0c4n0gxGqKAThionH6bwj9kC0nzbXPYwFX8xaqty3k?=
- =?us-ascii?Q?2Y3UQdNSfMa7AnIN3wVNpRCotkKyH1jKVkQKRz3LSMQsTpmadvjkQswUBRZS?=
- =?us-ascii?Q?FplLco4q746tRKDCjnujjTI0FScEVY5aUkOM0PRQ9sUSD7CB76sKjNaqFIPF?=
- =?us-ascii?Q?jSS33R6P3s8zejiBh1ohdMamapEZcuJK10wnmua38mxiYJp7ANVYjx3JzK2S?=
- =?us-ascii?Q?Q+3cbC3kp8WB3kgSqBxDVA23NwsMxOJzInzWiwJr0QZRZcEBp4khMg0OanDZ?=
- =?us-ascii?Q?Rmx7fK9CKC3wCMrIzFvUHcEeIpmsp7w/fjg1azsfKXJcr2fi4r+J3z0M5HB2?=
- =?us-ascii?Q?QxRrnSFtQagLChzD03XvNm7JRuoDdaJNFUt5Gww02ic4DjAagEkpNj3wnrPX?=
- =?us-ascii?Q?cbul9wKNqbfVJOf8CjadSxGTpcyS7+80dgXtIgc458lXimhZx5li0bhup/Pz?=
- =?us-ascii?Q?F777rTlZK5v7LP9laUYOBIarhPxg6p+9BXFoPDVecUd+hwt1T9JgOj2gWE84?=
- =?us-ascii?Q?IjyZWMkxR89kogOr2LNSbJqBdzCAZvXFLDbOvzuklRbq0bt9HA7m+ae/niNb?=
- =?us-ascii?Q?uLLE/EZWwaI=3D?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(36860700013)(82310400026)(13003099007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2025 09:44:38.8003
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 31f7ccb7-827c-416f-bda8-08dd3eb7379e
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ5PEPF00000205.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8887
+References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
+ <20250123104333.1340512-3-abdiel.janulgue@gmail.com> <CAH5fLgjL0aGGwkjEfXH08Jopwin1NfkLzp9vQWKcHPEum8jV4g@mail.gmail.com>
+ <20250127071625.1882afa4@meshulam.tesarici.cz>
+In-Reply-To: <20250127071625.1882afa4@meshulam.tesarici.cz>
+From: Alice Ryhl <aliceryhl@google.com>
+Date: Mon, 27 Jan 2025 10:45:06 +0100
+X-Gm-Features: AWEUYZlHQHrC2gBJEuAbWTkeobjQJsyNv5yQQrQaI_rFXqTf4MZLW4pDDd9H1bE
+Message-ID: <CAH5fLgic6kdOQyw+=S49p4rVnA7x6maKPVakd1uqA5fkGxZiXA@mail.gmail.com>
+Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
+To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>, rust-for-linux@vger.kernel.org, 
+	daniel.almeida@collabora.com, dakr@kernel.org, robin.murphy@arm.com, 
+	Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, 
+	open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-With recent kernel, AMDGPU failed to resume after suspend on certain laptop.
+On Mon, Jan 27, 2025 at 7:16=E2=80=AFAM Petr Tesa=C5=99=C3=ADk <petr@tesari=
+ci.cz> wrote:
+>
+> On Fri, 24 Jan 2025 08:27:36 +0100
+> Alice Ryhl <aliceryhl@google.com> wrote:
+>
+> > On Thu, Jan 23, 2025 at 11:43=E2=80=AFAM Abdiel Janulgue
+> > <abdiel.janulgue@gmail.com> wrote:
+> > >
+> > > Add a simple dma coherent allocator rust abstraction. Based on
+> > > Andreas Hindborg's dma abstractions from the rnvme driver, which
+> > > was also based on earlier work by Wedson Almeida Filho.
+> > >
+> > > Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+> >
+> > Overall I think it looks pretty good, but a follow-up from our
+> > discussion the other day.
+> >
+> > > +    /// Returns the device, base address, dma handle, attributes and=
+ the size of the
+> > > +    /// allocated region.
+> > > +    ///
+> > > +    /// The caller takes ownership of the returned resources, i.e., =
+will have the responsibility
+> > > +    /// in calling `bindings::dma_free_attrs`. The allocated region =
+is valid as long as
+> > > +    /// the returned device exists.
+> > > +    pub fn into_parts(
+> > > +        self,
+> > > +    ) -> (
+> > > +        ARef<Device>,
+> > > +        *mut T,
+> > > +        bindings::dma_addr_t,
+> > > +        crate::ffi::c_ulong,
+> > > +        usize,
+> > > +    ) {
+> > > +        let size =3D self.count * core::mem::size_of::<T>();
+> > > +        let ret =3D (
+> > > +            // SAFETY: `&self.dev` is valid for reads.
+> > > +            unsafe { core::ptr::read(&self.dev) },
+> >
+> > This safety comment should explain why this will not lead to
+> > decrementing the refcount too many times. Which is because this
+> > doesn't actually duplicate the ARef due to the use of mem::forget.
+> >
+> > That said, I think wrapping self in ManuallyDrop is slightly easier to
+> > read than using mem::forget. I refer you to this pattern from Tokio
+> > that solves a similar problem:
+> > https://github.com/tokio-rs/tokio/blob/ee19b0ed7371b069112b9c9ef9280b81=
+f3438d26/tokio/src/sync/rwlock/owned_write_guard.rs#L38-L51
+> >
+> > > +            self.cpu_addr,
+> > > +            self.dma_handle,
+> > > +            self.dma_attrs.as_raw(),
+> >
+> > Why not return the Attrs type instead of an integer?
+> >
+> > > +            size,
+> > > +        );
+> > > +        core::mem::forget(self);
+> > > +        ret
+> > > +    }
+> >
+> > > +    /// Reads data from the region starting from `offset` as a slice=
+.
+> > > +    /// `offset` and `count` are in units of `T`, not the number of =
+bytes.
+> > > +    ///
+> > > +    /// Due to the safety requirements of slice, the data returned s=
+hould be regarded by the
+> > > +    /// caller as a snapshot of the region when this function is cal=
+led, as the region could
+> > > +    /// be modified by the device at anytime. For ringbuffer type of=
+ r/w access or use-cases
+> > > +    /// where the pointer to the live data is needed, `start_ptr()` =
+or `start_ptr_mut()`
+> > > +    /// could be used instead.
+> > > +    ///
+> > > +    /// # Safety
+> > > +    ///
+> > > +    /// Callers must ensure that no hardware operations that involve=
+ the buffer are currently
+> > > +    /// taking place while the returned slice is live.
+> > > +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Re=
+sult<&[T]> {
+> >
+> > You were asked to rename this function because it returns a slice, but
+> > I wonder if it's better to take an `&mut [T]` argument and to have
+> > this function copy data into that argument. That way, we could make
+> > the function itself safe. Perhaps the actual copy needs to be
+> > volatile?
+> >
+> > Well ... I understand that we did this previously and that we want to
+> > avoid it because it causes too much reading if T is a struct and we
+> > just want to read one of its fields. How about an API like this?
+> >
+> > dma_read!(my_alloc[7].foo)
+> >
+> > which expands to something that reads the value of the foo field of
+> > the 7th element, and
+> >
+> > dma_write!(my_alloc[7].foo =3D 13);
+> >
+> > That expands to something that writes 13 to field foo of the 7th elemen=
+t.
+> >
+> > Thoughts? I'm proposing this to avoid going in circles between the
+> > same solutions.
+>
+> I don't have a strong opinion, but maybe you could elaborate a bit on
+> what exactly you dislike about as_slice() / as_slice_mut().
 
-Sample log:
------------
-Nov 14 11:52:19 Thinkbook kernel: iommu ivhd0: AMD-Vi: Event logged [ILLEGAL_DEV_TABLE_ENTRY device=0000:06:00.0 pasid=0x00000 address=0x135300000 flags=0x0080]
-Nov 14 11:52:19 Thinkbook kernel: AMD-Vi: DTE[0]: 7d90000000000003
-Nov 14 11:52:19 Thinkbook kernel: AMD-Vi: DTE[1]: 0000100103fc0009
-Nov 14 11:52:19 Thinkbook kernel: AMD-Vi: DTE[2]: 2000000117840013
-Nov 14 11:52:19 Thinkbook kernel: AMD-Vi: DTE[3]: 0000000000000000
+The as_slice() method is unsafe as currently defined. The purpose of
+this proposal is so we can have a method that is not unsafe.
 
-This is because in resume path, CNTRL[EPHEn] is not set. Fix this by
-setting CNTRL[EPHEn] to 1 in resume path if EFR[EPHSUP] is set.
-
-Note
-  May be better approach is to save the control register in suspend path
-  and restore it in resume path instead of trying to set indivisual
-  bits. We will have separate patch for that.
-
-Closes: https://bugzilla.kernel.org/show_bug.cgi?id=219499
-Fixes: c4cb2311110 ("iommu/amd: Add support for enable/disable IOPF")
-Tested-by: Hamish McIntyre-Bhatty <kernel-bugzilla@regd.hamishmb.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h | 1 +
- drivers/iommu/amd/init.c            | 4 ++++
- 2 files changed, 5 insertions(+)
-
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 0bbda60d3cdc..23caea22f8dc 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -175,6 +175,7 @@
- #define CONTROL_GAM_EN		25
- #define CONTROL_GALOG_EN	28
- #define CONTROL_GAINT_EN	29
-+#define CONTROL_EPH_EN		45
- #define CONTROL_XT_EN		50
- #define CONTROL_INTCAPXT_EN	51
- #define CONTROL_IRTCACHEDIS	59
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index c5cd92edada0..438848b0682f 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2653,6 +2653,10 @@ static void iommu_init_flags(struct amd_iommu *iommu)
- 
- 	/* Set IOTLB invalidation timeout to 1s */
- 	iommu_set_inv_tlb_timeout(iommu, CTRL_INV_TO_1S);
-+
-+	/* Enable Enhanced Peripheral Page Request Handling */
-+	if (check_feature(FEATURE_EPHSUP))
-+		iommu_feature_enable(iommu, CONTROL_EPH_EN);
- }
- 
- static void iommu_apply_resume_quirks(struct amd_iommu *iommu)
--- 
-2.31.1
-
+Alice
