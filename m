@@ -1,93 +1,137 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E3427603F
-	for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 11:50:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49AAA1FC107;
+	Mon, 27 Jan 2025 12:14:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737978652; cv=none; b=ECXYp77HzPxVFGmr7YVRfnfUrFbMIkuS1AzdxsDE/SqxrY+3eKlcGLa0GDv8A3pxqN6otXKpYguyprrVlBOR7LnpOFho9CNaLPme4KDhXYsTqjRxnYqhsIAqrFw0tTOTy5tldd6OrpBQD1jxo6yVIrBYuDzbFKrnGj9EMHw++HY=
+	t=1737980059; cv=none; b=dgp3HtfVBWVVqBQq8z0FNIphjW5NAWOuOT2Z900EWRw3fUdS6w7YDeRNbHuxChmCxvC5aHbRNu3V2D7E4f1AJOSduBiJ7Qx89k1PENoUej3wxHblG5JsJyrNbwuMViygNgOYHVtOUrPkho1oVLXom3dJ+2LcZVd579D3deTf5ok=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737978652; c=relaxed/simple;
-	bh=9Fblea8VNjbVS6kyikRdl98WSUQLiEvsEjx8H7dbUbk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=q+65RZWm8SzLOKaWofYD2s79GniN6h/msYyc8UCwhV0J3afsOzLAMRZA3AG28gfSxr6TnW83NOdK5lrYgk1Je3V4YdMXY0uj6AnWFD9X5EwzXenUrAX7iF4FGyrUbrzvsouffmRO2jSxFFsjxH15UpXbshv5af4Gp5hoHepLfRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6544E497;
-	Mon, 27 Jan 2025 03:51:16 -0800 (PST)
-Received: from [10.57.36.159] (unknown [10.57.36.159])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 999163F694;
-	Mon, 27 Jan 2025 03:50:48 -0800 (PST)
-Message-ID: <50b71ac2-b84f-4f09-8795-d1c89a7c56af@arm.com>
-Date: Mon, 27 Jan 2025 11:50:41 +0000
+	s=arc-20240116; t=1737980059; c=relaxed/simple;
+	bh=RWaTTbwlvoCDZr/EnStdSvExJm+aaevIVtWZlj0S/ow=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BZaGP9TjKloCjHfNTMvoNzEWNPl7W3Obhy0saNCvYt5ebB3Yis/7m+dmhZ1avddtabUrZ4bg3x6wZdCMducDECLdlIIKpEnKgIk83gHwjbEVHylBXsnZqPyenktApj7/Ft2pNUJ0Hfhwi+t0bQN2voaPhlF4keMrVvuJpuXdP88=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WO9fekRc; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WO9fekRc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB18CC4CED2;
+	Mon, 27 Jan 2025 12:14:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1737980058;
+	bh=RWaTTbwlvoCDZr/EnStdSvExJm+aaevIVtWZlj0S/ow=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=WO9fekRc0xWXb7+F6Wq/6XB52Ci5a2yazoGvglMhg6QZ9s3Mem4eI/UbHNFFUNIJc
+	 1qY8jFgCP9idzHOdLHTV2L31pWZcL6EI5C2U3EGlq5wbW/6zSbr0W2xHqPZk2MAnu7
+	 YuX5NFEb9ovpRpXvaPo9AvVaGKIFtwpZF5noC8VLQzG+Vv8KgrO0pQQOHrszvNMTnO
+	 l7KQCJdJ9UHs0NEiMUszrd2w4YjQ3WwfY65UrYi3B3nLHz9UOWtowpcAxzuL0h+41e
+	 /sNfhn6SCWq10Q7deqoVEL+8i+aDbNyRzVBtyKkpvjmJg+ZCZfSpfwPg6PGgs30JuU
+	 0G7zwVVwZvT7w==
+Date: Mon, 27 Jan 2025 13:14:12 +0100
+From: Danilo Krummrich <dakr@kernel.org>
+To: Alice Ryhl <aliceryhl@google.com>
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com,
+	robin.murphy@arm.com, Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
+Message-ID: <Z5d4lMlvA17M004C@pollux>
+References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
+ <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
+ <CAH5fLgjL0aGGwkjEfXH08Jopwin1NfkLzp9vQWKcHPEum8jV4g@mail.gmail.com>
+ <Z5dh6cSnNxwbefJX@pollux>
+ <CAH5fLggMSiHZwHJ3md0eH7smyDNVL3L=Sre7F0SXSSnPrJiO-A@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] kernel/dma: dma_common_find_pages returns pages for
- requested address
-To: Dima Stepanov <dstepanov.src@gmail.com>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <CAEHp+Gasm2ZuYPusn1ZsMuePpjV0atutVGTr9n3-DT=tQODYkQ@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <CAEHp+Gasm2ZuYPusn1ZsMuePpjV0atutVGTr9n3-DT=tQODYkQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAH5fLggMSiHZwHJ3md0eH7smyDNVL3L=Sre7F0SXSSnPrJiO-A@mail.gmail.com>
 
-On 2025-01-26 9:09 am, Dima Stepanov wrote:
-> Recently hit an issue on an attempt to mmap allocated DMA memory to the
-> user space. It isn't the case for any device, but only if dma_mmap_attrs
-> call will use the iommu_dma_mmap() function as a backend.
-> If the kernel address (cpu_addr) passed to the iommu_dma_mmap function
-> is the same as returned by allocator (dma_alloc_coherent) then memory
-> will be mapped correctly. But if the address passed is inside the
-> allocated region, then the mapping in the user space will still refer
-> to the start of the region and not to the middle of it.
+On Mon, Jan 27, 2025 at 11:43:39AM +0100, Alice Ryhl wrote:
+> On Mon, Jan 27, 2025 at 11:37 AM Danilo Krummrich <dakr@kernel.org> wrote:
+> >
+> > On Fri, Jan 24, 2025 at 08:27:36AM +0100, Alice Ryhl wrote:
+> > > On Thu, Jan 23, 2025 at 11:43 AM Abdiel Janulgue
+> > > <abdiel.janulgue@gmail.com> wrote:
+> > > > +    /// Reads data from the region starting from `offset` as a slice.
+> > > > +    /// `offset` and `count` are in units of `T`, not the number of bytes.
+> > > > +    ///
+> > > > +    /// Due to the safety requirements of slice, the data returned should be regarded by the
+> > > > +    /// caller as a snapshot of the region when this function is called, as the region could
+> > > > +    /// be modified by the device at anytime. For ringbuffer type of r/w access or use-cases
+> > > > +    /// where the pointer to the live data is needed, `start_ptr()` or `start_ptr_mut()`
+> > > > +    /// could be used instead.
+> > > > +    ///
+> > > > +    /// # Safety
+> > > > +    ///
+> > > > +    /// Callers must ensure that no hardware operations that involve the buffer are currently
+> > > > +    /// taking place while the returned slice is live.
+> > > > +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Result<&[T]> {
+> > >
+> > > You were asked to rename this function because it returns a slice, but
+> > > I wonder if it's better to take an `&mut [T]` argument and to have
+> > > this function copy data into that argument. That way, we could make
+> > > the function itself safe. Perhaps the actual copy needs to be
+> > > volatile?
+> >
+> > Why do we consider the existing one unsafe?
+> >
+> > Surely, it's not desirable that the contents of the buffer are modified by the
+> > HW unexpectedly, but is this a concern in terms of Rust safety requirements?
+> >
+> > And if so, how does this go away with the proposed approach?
 > 
-> The reason for it is the dma_common_find_pages() call, which returns the
-> very first page of the vm structure regardless of the cpu_addr passed.
-> 
-> The idea for the fix is to return not the first page in the vm
-> structure, but the page related to the requested cpu_addr.
+> In Rust, it is undefined behavior if the value behind an immutable
+> reference changes (unless the type uses UnsafeCell / Opaque or
+> similar). That is, any two consecutive reads of the same immutable
+> reference must return the same byte value no matter what happened in
+> between those reads.
 
-No, that's a bug in the caller of dma_mmap_attrs(). As the kerneldoc 
-says, cpu_addr/dma_addr/size must still represent the whole buffer as 
-returned by the allocator - any offset for the mapping itself relative 
-to the start of the buffer is expressed in vma->pgoff.
+Undefined as in the sense of anything is allowed to happen? I thought undefined
+as in you might still see the old value on two consecutive reads.
 
-Thanks,
-Robin.
+Do you have a pointer to the corresponding docs?
 
-> Signed-off-by: Dima Stepanov <dstepanov.src@gmail.com>
-> ---
->   kernel/dma/remap.c | 5 ++++-
->   1 file changed, 4 insertions(+), 1 deletion(-)
 > 
-> diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-> index 9e2afad1c615..238fbf2821a6 100644
-> --- a/kernel/dma/remap.c
-> +++ b/kernel/dma/remap.c
-> @@ -9,12 +9,15 @@
->   struct page **dma_common_find_pages(void *cpu_addr)
->   {
->       struct vm_struct *area = find_vm_area(cpu_addr);
-> +    int i;
-> 
->       if (!area || !(area->flags & VM_DMA_COHERENT))
->           return NULL;
->       WARN(area->flags != VM_DMA_COHERENT,
->            "unexpected flags in area: %p\n", cpu_addr);
-> -    return area->pages;
-> +    i = (PAGE_ALIGN((uintptr_t)cpu_addr) - (uintptr_t)area->addr) >>
-> PAGE_SHIFT;
-> +
-> +    return &area->pages[i];
->   }
-> 
->   /*
+> If we manually perform the read as a volatile read, then it is
+> arguably allowed for the value to be modified by the hardware while we
+> read the value.
 
+From read_volatile() [1]: "In particular, a race between a read_volatile and any
+write operation to the same location is undefined behavior."
+
+Also, what if the hardware put a value that is invalid for the type?
+
+[1] https://doc.rust-lang.org/std/ptr/fn.read_volatile.html
+
+> 
+> > > Well ... I understand that we did this previously and that we want to
+> > > avoid it because it causes too much reading if T is a struct and we
+> > > just want to read one of its fields. How about an API like this?
+> > >
+> > > dma_read!(my_alloc[7].foo)
+> > >
+> > > which expands to something that reads the value of the foo field of
+> > > the 7th element, and
+> > >
+> > > dma_write!(my_alloc[7].foo = 13);
+> >
+> > I really like how this turns out.
+> 
+> Yes, I think it would be a nice API.
+> 
+> Alice
