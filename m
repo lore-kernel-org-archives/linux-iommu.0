@@ -1,202 +1,100 @@
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BED22AD31
-	for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 16:59:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FDD23C6BA
+	for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 17:47:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737997155; cv=none; b=PzrAHg65GYWGhKEdQLYQQwy0NYsPb33c3vWK2Oje2pisQ9rL0AZDaNGWnv0MSgECNnqhSvTOkjhhDHSgZ0oNHai9DlZkxXb+i6qvUrVzzPDPPaqa7T3Lbhtv14SpGmruMncAYLdew3QDPdmDYwSDjKQeIl17c3Phs3ef+86jb0E=
+	t=1738000070; cv=none; b=kaLhFa748R/58ML7Z4yvJ48mKOfrImvclY4H6Yy6Ju6KEE1AsQDlTZto7GdgzR67JxoRntCqd3Kq3U3N1QQD/hjNQfLg6YemW/MxT9aUat2RaK+jNrgqsBsU1ACHiIAj6wnU0MFWhRCNyycvIAA1gWQwFTBmJBTTSRuCjcbAqbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737997155; c=relaxed/simple;
-	bh=IyhY8Nc5rHINPUEfT+qN2JUY9ihr8tk6OU1St5qmS0o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F7KdcQDmTu3Fd3E9YT74s8CxhHqzWqo4jPwvuceZTlCol06AAp0edNMXwkQjHnnblpsDZ62OUDSCXNZowNZMXkmRlMKr0JwWMLgGpHZ9J6+Tq2h4SL4h853P6Bg5iqCca3Ecw8i2G3CP7Aw3bkg5ulvCsTHbiN1kgnhWxpSuabg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mU+G+iqT; arc=none smtp.client-ip=209.85.219.51
+	s=arc-20240116; t=1738000070; c=relaxed/simple;
+	bh=hPYmbEUCp7iIhh115VWVrSODZIGTULkBUYhG2VADp4k=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GtxM900NxvlVOvBwXdkZZYzr0vbfwncYF4ak24gb4vYhoJ2XF+Spy2vIAWE+gsDWriHTYCM3YlrNeH6LMHqmnYt/5rGRWOkQ982uVSrYg7XLwM23vho/bLac64e+cRxB2mf36rkcX/2chELVYrEu8Z+e9oImUU8G8wol5i6B4mc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iJAXlWY2; arc=none smtp.client-ip=209.85.214.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mU+G+iqT"
-Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-6d8f99cb0d9so38796146d6.0
-        for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 08:59:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iJAXlWY2"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-21a0374a1fcso9214265ad.2
+        for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 09:47:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737997153; x=1738601953; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :feedback-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=nboNSWpa+9naq6E3adySsjqNVG3tF96PrADTuFIhRe4=;
-        b=mU+G+iqTGB+xa0zfnSpxqvlOJ/eqZrPTOUM0z9jJRQyrg2AytAvoFPNK/c7mLHm9GD
-         YNzdIYyAX+rvUj8fPQBgq/KATZtCLqdO/k7esjKRzfrtQHigJSYofDHflqTQRQgt+n2J
-         gFVJ5Egf/JMnZq4mDt2/xAxV7mt6yzLD508C4GYSUoRST23GqT3W0vNuwffXFKdPQgwo
-         KVpUcydw+mYRFJhtZ5cuYNVNuBQtGwKpJdD5+1N8eL25fCshh2qOVfGwIjjbaETo4Mko
-         pbsdQsRJtzZtuIPc0O+ct6WfvuuHDwJew6X7rqwWFH0pS3nlaez/YExdrd+sQRUXWfww
-         Y8pw==
+        d=gmail.com; s=20230601; t=1738000068; x=1738604868; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hPYmbEUCp7iIhh115VWVrSODZIGTULkBUYhG2VADp4k=;
+        b=iJAXlWY2X4VZktqrn8GDUd3qO4f0+YPNUbYhjcfR6rOrcjCsLfdZYKPQvQjhwwnxHM
+         KEd3DHYh4h78b6sxtv9oiyrxm31+X3Wozg7VL2YfjUJ3O2V4gJVD6LvUaFTNg6D6XcaW
+         hqGQDcFTG3qkiNO3mGtMS028FGQeZuodqI8AWI0dKpYJVlhCcaChvcqGglE6VST7SVlf
+         2ZF5R+JozMEtmVhM+gC135B/YxJWvRG3od/HPVxe5cX3mZw1Bkt6yIM/QWnvA+cjuj4D
+         fYTAbfTrGDsmGe4OrPW3/MMp3Wx2jD2fhxvyR9MTMOcD9dMrWZzkaaO3HgC3pBFdZ/Vg
+         AYTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737997153; x=1738601953;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :feedback-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nboNSWpa+9naq6E3adySsjqNVG3tF96PrADTuFIhRe4=;
-        b=Mq8ELMNXtW8ek/4PQCRmmgkTGJTXbRW8HhPI9t/xAAbGn1i2dY9Vi+tLYZjVikgYqQ
-         xx+Os5KFK7k37APuAA+GVSfYme25OcziH/+DYkkhtkrI7gSB4NIYFBfXAw3b1CSyqxjt
-         R62aAS9a99WYaoOBGzTX9/Ms7WMEBkh1nDGNQdQdiDyuKjDdmmcvlFJz0DInxnJVAnkp
-         RW4mZQ7ZwpzgfuBMvejDKaR0pXfoJDuZ1Z8ayHDsGpXIBQNOcYqYrHaTQQelmxHQc0lJ
-         V0rj8aNRbKHY+o/TLJc0+KhoYMlOlvTRWWYsP8ZyJ1UIEIWwl+AbHY9IVO9L1tgARpRz
-         oaXg==
-X-Forwarded-Encrypted: i=1; AJvYcCXuDsCwyt5s8W4hfBaukQCZODBuOHEq3iLBrxsI+WEP5ZqI8YB1C8fOpioEhwAQYl6sBuxaVQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxxkdhGyL3DbGCDQ4wUbBHMxYzWw9FykwRG4SVgFDlgK20z9US+
-	sToANaZwy8NkSydaBtjlx0o9HZjnmCdsbKQ6YEWUZ5WMPuox9ku6
-X-Gm-Gg: ASbGncur20HolIhOab27lKdha1AxheblSdb9JHBWhD3KxYN/9P6H0dH+bXjTXzKlcl8
-	k3Xttfd7D0qGmv/cNYnS8P5f01dNx89QaDMRrd8Zld+7alcLjngH/edonUcKxGujPu/NKKle38V
-	A2yyc9anSpqvZrgNdKOHLqBR/ZkjAhmkspPKHM4otlKubFKg4iQqBa8Wo6aXVsPQfipsFZFtyRO
-	egbWNZOnlt3ixhaYfOgrJD6NBn4SZuAWSdKQYh8YVm9sH8SbWrSYA6/r5HJA29ngma1Cruu+DGX
-	jeuyBK2MKEw9qviE+0XIYVZ/nNitbbgIhBj5MFaOloE/lLvrXPDzB2LFKHLspgDE10SIKsghUqR
-	Wf3+8kg==
-X-Google-Smtp-Source: AGHT+IGn3n3gALW0Hqd7/opgdSZz56Kb4U7C9/AHgmAhhPjyRkjUZEVHawjbykmTYdWBahkcmZd78w==
-X-Received: by 2002:a05:6214:240a:b0:6e1:715f:cdd0 with SMTP id 6a1803df08f44-6e1b215a5bemr645850396d6.16.1737997153215;
-        Mon, 27 Jan 2025 08:59:13 -0800 (PST)
-Received: from fauth-a2-smtp.messagingengine.com (fauth-a2-smtp.messagingengine.com. [103.168.172.201])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e205ac48dcsm36347816d6.123.2025.01.27.08.59.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2025 08:59:12 -0800 (PST)
-Received: from phl-compute-08.internal (phl-compute-08.phl.internal [10.202.2.48])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 1DB291200084;
-	Mon, 27 Jan 2025 11:59:12 -0500 (EST)
-Received: from phl-mailfrontend-02 ([10.202.2.163])
-  by phl-compute-08.internal (MEProxy); Mon, 27 Jan 2025 11:59:12 -0500
-X-ME-Sender: <xms:X7uXZ4uimpxfeozUASjBH_HlkrWcuAd5kKMqZGGUgMOazR3bbnLDGg>
-    <xme:X7uXZ1cz-kUQ_Ic03shGAecfkeA79XxQySZCeARSSCQif8xbRvugZuC98IIJaJaqq
-    ECYUtQYgTK6XB60bw>
-X-ME-Received: <xmr:X7uXZzxePFMKL-eygBJGnJn6EFtsTURx2ZftXhjAhNlHWI6AljKP9kw3NLCIXA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrudejgedgudefjedvucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
-    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnecujfgurhepfffhvfevuffkfhggtggugfgjsehtkeertddt
-    tdejnecuhfhrohhmpeeuohhquhhnucfhvghnghcuoegsohhquhhnrdhfvghnghesghhmrg
-    hilhdrtghomheqnecuggftrfgrthhtvghrnhepvefghfeuveekudetgfevudeuudejfeel
-    tdfhgfehgeekkeeigfdukefhgfegleefnecuvehluhhsthgvrhfuihiivgeptdenucfrrg
-    hrrghmpehmrghilhhfrhhomhepsghoqhhunhdomhgvshhmthhprghuthhhphgvrhhsohhn
-    rghlihhthidqieelvdeghedtieegqddujeejkeehheehvddqsghoqhhunhdrfhgvnhhgpe
-    epghhmrghilhdrtghomhesfhhigihmvgdrnhgrmhgvpdhnsggprhgtphhtthhopedvtddp
-    mhhouggvpehsmhhtphhouhhtpdhrtghpthhtoheprghlihgtvghrhihhlhesghhoohhglh
-    gvrdgtohhmpdhrtghpthhtohepuggrkhhrsehkvghrnhgvlhdrohhrghdprhgtphhtthho
-    pegrsgguihgvlhdrjhgrnhhulhhguhgvsehgmhgrihhlrdgtohhmpdhrtghpthhtoheprh
-    hushhtqdhfohhrqdhlihhnuhigsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthht
-    ohepuggrnhhivghlrdgrlhhmvghiuggrsegtohhllhgrsghorhgrrdgtohhmpdhrtghpth
-    htoheprhhosghinhdrmhhurhhphhihsegrrhhmrdgtohhmpdhrtghpthhtohepohhjvggu
-    rgeskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprghlvgigrdhgrgihnhhorhesghhmrg
-    hilhdrtghomhdprhgtphhtthhopehgrghrhiesghgrrhihghhuohdrnhgvth
-X-ME-Proxy: <xmx:YLuXZ7NzkdnQaJwCdwpyI5PF2T5LLI7umgbIm_n1J0evrrTueiaeTg>
-    <xmx:YLuXZ4_ZKHBiySGWY4953KLLB1URc4E74IX7yMkKY7vtKHPvsd-L8w>
-    <xmx:YLuXZzW4lYeslH6Cw3RKigl_54mIRdCDaM6hm6R45EV1zj5gAvzmDw>
-    <xmx:YLuXZxeeuHdjS322o-C92OAmGud_IPu3ymd0hUngGPvmeaJXrKn5fw>
-    <xmx:YLuXZ6fGiI8j5BX2XPFArSCT_1G3t2GzHvQDQO6saJoIKJEahX1gUeQ2>
-Feedback-ID: iad51458e:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 27 Jan 2025 11:59:11 -0500 (EST)
-Date: Mon, 27 Jan 2025 08:59:10 -0800
-From: Boqun Feng <boqun.feng@gmail.com>
-To: Alice Ryhl <aliceryhl@google.com>
-Cc: Danilo Krummrich <dakr@kernel.org>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com,
-	robin.murphy@arm.com, Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
-Message-ID: <Z5e7Xv4Y9007Ia0a@tardis.local>
-References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
- <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
- <CAH5fLgjL0aGGwkjEfXH08Jopwin1NfkLzp9vQWKcHPEum8jV4g@mail.gmail.com>
- <Z5dh6cSnNxwbefJX@pollux>
- <CAH5fLggMSiHZwHJ3md0eH7smyDNVL3L=Sre7F0SXSSnPrJiO-A@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1738000068; x=1738604868;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hPYmbEUCp7iIhh115VWVrSODZIGTULkBUYhG2VADp4k=;
+        b=XKLlx366GG1Ec28WMO3KzQiUI8Dr/SksxviKAth2BvWCyNbHJva6ptRlUfFmFEO+k3
+         hf59YCC9nv68aSub3xCaz+Oyr/jWQKGk08xbuKIvOZi7/CbF6CiBV0K8HGwiDaDIPWBx
+         dbFgsSetQcMfRKpbef65WiMGna5LZqwhH42HPtninvLG/278khpVYKYSqusiM2KcdPak
+         G1txDm+7jbpccnfLuYbXQmAqT2Ddo73bRzy9BmtfneTG+mh0MEvQ+QkCX6/Bja2Viurd
+         kdvNtOqJtT+UHmvC49hyvBKblDA6dQ2voRY+BqdJt7W3jQENbgQZpRAhaO+wsZ3jZjoi
+         4vSQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWA4TeqHxxXssdUKgSYQS5OyFn+jE/vK5fRdwPYCveMjWfM0xNm3M8I5981hao5a4q+7p4X8w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxgCmbbb+LN0LK4zj5sGJs39e/tn23HNjOoer9NRAy8IIAlOvGD
+	wTd0/mHV38ThL6ejQnoZ/dWS5Vpc3ak+UAZhWUNgDIEIufZZR3ffMalXosrdlKhTSp6d6z/wIdo
+	o9yIXcMwf72HuLwGC0kiHgueXGkY=
+X-Gm-Gg: ASbGncvtIufLFxj/vWGnuChBPXUnLkLL+aiLXNN/zAIUDz9I8jpmrjOJNeReqpWIZLJ
+	jPtf4NpGsJpt9xflufIz114l3U2dd+ZWZkdX64O4p9BsdGsvPkLD38CXXi8Jg5QB1UeAVKPtxIw
+	mN9Vctkr6uj03oXmOHeA==
+X-Google-Smtp-Source: AGHT+IHi7SkZWcG3QPpYFvorx3JGWtZ4d6yy3ERoWvh9SbpH52TbIPugBTipbABwOfJfwkvEjOCXaKOBhQG+/Yuf79c=
+X-Received: by 2002:a17:902:f68c:b0:215:b8b6:d2c4 with SMTP id
+ d9443c01a7336-21c35551599mr233228605ad.4.1738000068469; Mon, 27 Jan 2025
+ 09:47:48 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAH5fLggMSiHZwHJ3md0eH7smyDNVL3L=Sre7F0SXSSnPrJiO-A@mail.gmail.com>
+References: <CAEHp+Gasm2ZuYPusn1ZsMuePpjV0atutVGTr9n3-DT=tQODYkQ@mail.gmail.com>
+ <50b71ac2-b84f-4f09-8795-d1c89a7c56af@arm.com>
+In-Reply-To: <50b71ac2-b84f-4f09-8795-d1c89a7c56af@arm.com>
+From: Dima Stepanov <dstepanov.src@gmail.com>
+Date: Mon, 27 Jan 2025 18:47:37 +0100
+X-Gm-Features: AWEUYZluomvG73DT3G_MgMRBxvP-P4gznzu_7OEpypuOz2NdPzNzw-3LFX4_lTA
+Message-ID: <CAEHp+GZRNApNBxznU8YioJO7+ezosKtUmTqaQXe8J6r2QyGjcw@mail.gmail.com>
+Subject: Re: [PATCH] kernel/dma: dma_common_find_pages returns pages for
+ requested address
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 27, 2025 at 11:43:39AM +0100, Alice Ryhl wrote:
-> On Mon, Jan 27, 2025 at 11:37 AM Danilo Krummrich <dakr@kernel.org> wrote:
-> >
-> > On Fri, Jan 24, 2025 at 08:27:36AM +0100, Alice Ryhl wrote:
-> > > On Thu, Jan 23, 2025 at 11:43 AM Abdiel Janulgue
-> > > <abdiel.janulgue@gmail.com> wrote:
-> > > > +    /// Reads data from the region starting from `offset` as a slice.
-> > > > +    /// `offset` and `count` are in units of `T`, not the number of bytes.
-> > > > +    ///
-> > > > +    /// Due to the safety requirements of slice, the data returned should be regarded by the
-> > > > +    /// caller as a snapshot of the region when this function is called, as the region could
-> > > > +    /// be modified by the device at anytime. For ringbuffer type of r/w access or use-cases
-> > > > +    /// where the pointer to the live data is needed, `start_ptr()` or `start_ptr_mut()`
-> > > > +    /// could be used instead.
-> > > > +    ///
-> > > > +    /// # Safety
-> > > > +    ///
-> > > > +    /// Callers must ensure that no hardware operations that involve the buffer are currently
-> > > > +    /// taking place while the returned slice is live.
-> > > > +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Result<&[T]> {
-> > >
-> > > You were asked to rename this function because it returns a slice, but
-> > > I wonder if it's better to take an `&mut [T]` argument and to have
-> > > this function copy data into that argument. That way, we could make
-> > > the function itself safe. Perhaps the actual copy needs to be
-> > > volatile?
-> >
-> > Why do we consider the existing one unsafe?
-> >
-> > Surely, it's not desirable that the contents of the buffer are modified by the
-> > HW unexpectedly, but is this a concern in terms of Rust safety requirements?
-> >
-> > And if so, how does this go away with the proposed approach?
-> 
-> In Rust, it is undefined behavior if the value behind an immutable
-> reference changes (unless the type uses UnsafeCell / Opaque or
-> similar). That is, any two consecutive reads of the same immutable
-> reference must return the same byte value no matter what happened in
-> between those reads.
-> 
-> If we manually perform the read as a volatile read, then it is
-> arguably allowed for the value to be modified by the hardware while we
-> read the value.
-> 
+On Mon, Jan 27, 2025 at 12:50=E2=80=AFPM Robin Murphy <robin.murphy@arm.com=
+> wrote:
+>
+> No, that's a bug in the caller of dma_mmap_attrs(). As the kerneldoc
+> says, cpu_addr/dma_addr/size must still represent the whole buffer as
+> returned by the allocator - any offset for the mapping itself relative
+> to the start of the buffer is expressed in vma->pgoff.
+>
+> Thanks,
+> Robin.
 
-Do you also assume that volatile read/write provide some sort of
-atomicity? Because otherwise even though the read/write may not be
-considered as UB, then results can be load/store teared.
+I see, thanks for clarification Robin. I was confused, because depending
+on the backend it will work or not work. But i believe that in this case it=
+ is
+undefined behavior. That is unfortunate to me, since the idea behind was:
+- The memory allocated once because of device/firmware
+- Different users could request a part of this memory from the kernel and
+mmap it
 
-I asked because I think in case that we need atomicity, we should just
-use atomic APIs.
+And i didn't want to expose this offset information to the user. Wanted to
+rely on the kernel to mmap the proper part of the buffer.
 
-Regards,
-Boqun
-
-> > > Well ... I understand that we did this previously and that we want to
-> > > avoid it because it causes too much reading if T is a struct and we
-> > > just want to read one of its fields. How about an API like this?
-> > >
-> > > dma_read!(my_alloc[7].foo)
-> > >
-> > > which expands to something that reads the value of the foo field of
-> > > the 7th element, and
-> > >
-> > > dma_write!(my_alloc[7].foo = 13);
-> >
-> > I really like how this turns out.
-> 
-> Yes, I think it would be a nice API.
-> 
-> Alice
+Thanks,
+Dima.
