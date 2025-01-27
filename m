@@ -1,204 +1,93 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFC781FDA84
-	for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 13:42:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E9503433CB
+	for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 16:53:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737985358; cv=none; b=rpS0SxwNzTSa5VEEJP1qlRdSXMxbaLGX1jf7LcuJiqTxOgF0d/vj469prflClN7H4oJR0kBKgd/wubm6+U2s3ySshZQYiDX2bGIMXqgFnwaK2YZs9G6u0lcuaMj6h9qiFLgPnM4+5HNSmBBwA8xguqmKA9ZnWCbzscAnJFVFreI=
+	t=1737996826; cv=none; b=RQX9JpLp80rKOaGJ46gKRwXfKHTnNlmken+GMpPIgKceqT+FkAXRz5Zq0oP2qiQWStyoM6qzI38sH6a7g+Q1+wkowuqwqG3CPmrEfVq4wgEMkAucOBlyicCaucyeQQw8ULjTR4ONxp4pFebDAqY8efLd8aw/PzTGOgjATweD7Cs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737985358; c=relaxed/simple;
-	bh=6Nq3I3ITKZv0IXgcOLjXZuLwpx/EfYVFVeHWV7yUXEQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=datFr5lpNhVAWvKcAHP8r7C6Iv4EnowALLoB0z7CWFwzgdverPtUQH1u9eJyht5DAU+nRh2Pr17Ojx/GqEzgJggtVofdzvgVQqsfNFROWg0IRl3dRYVfH5zH2YKulWbyoCS8z0FE/WGQyCDzroSGk5RGDcFMC/MQYUVXI+pQymY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=j3KYwXzw; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="j3KYwXzw"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-3862b40a6e0so3195655f8f.0
-        for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 05:42:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1737985355; x=1738590155; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yiRgqKCmPUOuLqzynS79+3g8qS12Jbff6lOqEXSlZGM=;
-        b=j3KYwXzwoXlFJVr+VmgTpymnDtKsCF8r0fENcwuPywidoAF7a26LDHlpaXiCD7a8uf
-         DhKBV+EqSJ0UmLcuNUCwZbzSzt3kRhu8dI9mWPEoK7FOody1gX44N7ibeN7kDNiGbE0s
-         KqXBnh2wTkG3G7e44cLz51I0adjN5+CsFhFp6OOmVZf376JyXFbLbRfe+to79CYyb6Oq
-         B2JZrREY8v8Cq1OIwfLV5c20fjRdaMT1xuncuC2P0v8eVfJyUaH0eWDVZpG/JVWVNoIj
-         bhGybivcqjkQz9T1p5cZpCF2iENLUpP/GHI3SyIwIxrwVBnJvmP4w+/ZOT6a/n4XDasG
-         2V+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737985355; x=1738590155;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yiRgqKCmPUOuLqzynS79+3g8qS12Jbff6lOqEXSlZGM=;
-        b=ShqX9TKIxqMcAHrFn9aBxXnNVqu8+RoD82U7VhxoExkQxbE8rsU//C//KntMsWvCsZ
-         Alm3zjqjBauMUKH3QLZQE6/ipZsAX+MbJL+feaPKEa3TAzo/qfmUWk1GP9SquwPcbcQ8
-         R4TnFJ1spI9DspvvZHcUqUuE5ZcKrv5gVqIIbterj7+igdDz45BZgm6o4/LACXtz6vcv
-         ZOLqzaOaz4IyaSwIFg0EphKr0tMBYTNb6ilq3pxlWtcLJvfxMeomI/B3A4o6I5KSiwiD
-         A7JeRP5MuH/iKCSvrt3Gz3KLu5lhMxEn++JMN+mTQpMntmUWNrXvEdJ+fER7jtrFjPgd
-         Da/Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXHW3HfBNR5w9/cfVCGSlbP9VtJr+nTdhyeyAAF7W7nZcLXk7fforpY8U3qyN0hLvqg358AuA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx88EPW8+AlVbCv/C42Ni7ZbpSkRZCKN6VDLCG7Qj6HS7W6nH0o
-	PU5LXH8x7YN1dnER2eJRgSMXnSSVcLnU6m1alcVCgtwxZuzv596UE+70f6WxpynwGmGesh/yohY
-	9AKoKvxo4E41hkzkfGnR039LYunVCvI3ShIvz
-X-Gm-Gg: ASbGnctYvtSf7OZo/qgymBPg5vSP0dcNFI1QblkL0g/ITS7dAuM4hoLtMXuh9k4Y14W
-	OmQyYTP1ksclqRzpf/O+G/x3G8SGn42gbr7+CPLBtxGEQ9TJHnFg2q1+wnAqvz2jQdhO5Yd+90f
-	MooAXSZ4u3rRkrFMGx
-X-Google-Smtp-Source: AGHT+IEDdRxzS7lECtfoCpXJHhVlK5dqs5kfhvGEGKfcBDzyrN4yu3hY7kXP7mKLvtkEgZHwRihj7dep3rkKlWCdiWY=
-X-Received: by 2002:a5d:6d86:0:b0:38a:518d:97b with SMTP id
- ffacd0b85a97d-38bf564d0c7mr34827729f8f.11.1737985355145; Mon, 27 Jan 2025
- 05:42:35 -0800 (PST)
+	s=arc-20240116; t=1737996826; c=relaxed/simple;
+	bh=59LAdO589fHFbObQH5bNlKOAm/AwZsa5UEmq/TKBdGY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=PoH8w5XyR35tkvYvmq8qQcmcBBIZXFO7/rboWjUU9zKlpP2axWLF8hz8s0tkANYBl4lv/Bl9IzweZyiWL9/YqYiMYoOeUQJGN0heiaKF+y3O1mvVQHNKifjrhkvZMKE6EZNMXDvhCqmzbs5ruuyAOxH62t0bsvUXWf2CaYMy/tw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8772E497;
+	Mon, 27 Jan 2025 08:54:09 -0800 (PST)
+Received: from [10.57.36.159] (unknown [10.57.36.159])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0B40D3F528;
+	Mon, 27 Jan 2025 08:53:41 -0800 (PST)
+Message-ID: <14f36a55-7814-4fe6-a82f-9e369960c4ce@arm.com>
+Date: Mon, 27 Jan 2025 16:53:39 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
- <20250123104333.1340512-3-abdiel.janulgue@gmail.com> <CAH5fLgjL0aGGwkjEfXH08Jopwin1NfkLzp9vQWKcHPEum8jV4g@mail.gmail.com>
- <Z5dh6cSnNxwbefJX@pollux> <CAH5fLggMSiHZwHJ3md0eH7smyDNVL3L=Sre7F0SXSSnPrJiO-A@mail.gmail.com>
- <Z5d4lMlvA17M004C@pollux> <CAH5fLgiQcJcR+DYr7g3AfRPufAmM_4ZqHraGsYz7k1vU7=TZ-g@mail.gmail.com>
- <Z5eLXn2jo-r4WgGN@pollux>
-In-Reply-To: <Z5eLXn2jo-r4WgGN@pollux>
-From: Alice Ryhl <aliceryhl@google.com>
-Date: Mon, 27 Jan 2025 14:42:23 +0100
-X-Gm-Features: AWEUYZmupmN4NNintStX_BjnDRmCPBi9oujsttUbNkR9bOBpGsEbFa2-gDK6oSA
-Message-ID: <CAH5fLgiV3++zZ6xNOhy7Je+qQ7Lh2mo2C4erYTZhGWvZZ0mpFA@mail.gmail.com>
-Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>, rust-for-linux@vger.kernel.org, 
-	daniel.almeida@collabora.com, robin.murphy@arm.com, 
-	Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
-	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
-	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, 
-	open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: Make intel iommu disable swiotlb
+To: "Adrian Mardare (amardare)" <amardare@cisco.com>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>,
+ "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <SA1PR11MB6687F4E752138AAED3FC980DCDED2@SA1PR11MB6687.namprd11.prod.outlook.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <SA1PR11MB6687F4E752138AAED3FC980DCDED2@SA1PR11MB6687.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jan 27, 2025 at 2:34=E2=80=AFPM Danilo Krummrich <dakr@kernel.org> =
-wrote:
->
-> On Mon, Jan 27, 2025 at 02:25:03PM +0100, Alice Ryhl wrote:
-> > On Mon, Jan 27, 2025 at 1:14=E2=80=AFPM Danilo Krummrich <dakr@kernel.o=
-rg> wrote:
-> > >
-> > > On Mon, Jan 27, 2025 at 11:43:39AM +0100, Alice Ryhl wrote:
-> > > > On Mon, Jan 27, 2025 at 11:37=E2=80=AFAM Danilo Krummrich <dakr@ker=
-nel.org> wrote:
-> > > > >
-> > > > > On Fri, Jan 24, 2025 at 08:27:36AM +0100, Alice Ryhl wrote:
-> > > > > > On Thu, Jan 23, 2025 at 11:43=E2=80=AFAM Abdiel Janulgue
-> > > > > > <abdiel.janulgue@gmail.com> wrote:
-> > > > > > > +    /// Reads data from the region starting from `offset` as=
- a slice.
-> > > > > > > +    /// `offset` and `count` are in units of `T`, not the nu=
-mber of bytes.
-> > > > > > > +    ///
-> > > > > > > +    /// Due to the safety requirements of slice, the data re=
-turned should be regarded by the
-> > > > > > > +    /// caller as a snapshot of the region when this functio=
-n is called, as the region could
-> > > > > > > +    /// be modified by the device at anytime. For ringbuffer=
- type of r/w access or use-cases
-> > > > > > > +    /// where the pointer to the live data is needed, `start=
-_ptr()` or `start_ptr_mut()`
-> > > > > > > +    /// could be used instead.
-> > > > > > > +    ///
-> > > > > > > +    /// # Safety
-> > > > > > > +    ///
-> > > > > > > +    /// Callers must ensure that no hardware operations that=
- involve the buffer are currently
-> > > > > > > +    /// taking place while the returned slice is live.
-> > > > > > > +    pub unsafe fn as_slice(&self, offset: usize, count: usiz=
-e) -> Result<&[T]> {
-> > > > > >
-> > > > > > You were asked to rename this function because it returns a sli=
-ce, but
-> > > > > > I wonder if it's better to take an `&mut [T]` argument and to h=
-ave
-> > > > > > this function copy data into that argument. That way, we could =
-make
-> > > > > > the function itself safe. Perhaps the actual copy needs to be
-> > > > > > volatile?
-> > > > >
-> > > > > Why do we consider the existing one unsafe?
-> > > > >
-> > > > > Surely, it's not desirable that the contents of the buffer are mo=
-dified by the
-> > > > > HW unexpectedly, but is this a concern in terms of Rust safety re=
-quirements?
-> > > > >
-> > > > > And if so, how does this go away with the proposed approach?
-> > > >
-> > > > In Rust, it is undefined behavior if the value behind an immutable
-> > > > reference changes (unless the type uses UnsafeCell / Opaque or
-> > > > similar). That is, any two consecutive reads of the same immutable
-> > > > reference must return the same byte value no matter what happened i=
-n
-> > > > between those reads.
-> > >
-> > > Undefined as in the sense of anything is allowed to happen?
-> >
-> > Yes.
-> >
-> > > I thought undefined
-> > > as in you might still see the old value on two consecutive reads.
-> >
-> > That is the optimization that motivates this being UB, but it's
-> > defined as full UB.
-> >
-> > > Do you have a pointer to the corresponding docs?
-> >
-> > Sure, it's on the "behavior considered undefined" page:
-> > Moreover, the bytes pointed to by a shared reference, including
-> > transitively through other references (both shared and mutable) and
-> > Boxes, are immutable; transitivity includes those references stored in
-> > fields of compound types.
-> >
-> > https://doc.rust-lang.org/reference/behavior-considered-undefined.html#=
-r-undefined.immutable
-> >
-> > > > If we manually perform the read as a volatile read, then it is
-> > > > arguably allowed for the value to be modified by the hardware while=
- we
-> > > > read the value.
-> > >
-> > > From read_volatile() [1]: "In particular, a race between a read_volat=
-ile and any
-> > > write operation to the same location is undefined behavior."
-> >
-> > I mean, ultimately we are a bit on our own here. In C code you just
-> > use an ordinary read / write, so we could use the ordinary
-> > core::ptr::copy_nonoverlapping method to mirror that. We've been told
-> > from the Rust project that we should just do these kinds of things
-> > like we do in C - technically these things aren't okay in C either,
-> > but because LLVM will try to avoid breaking patterns used in the
-> > kernel, they shouldn't break in Rust either.
-> >
-> > But using an immutable reference should be avoided because that gives
-> > LLVM optimization hints that we are not giving to LLVM in C code.
->
-> Thanks for clarifying.
->
-> I think we should add this as a note to the corresponding code.
+On 2025-01-26 5:09 am, Adrian Mardare (amardare) wrote:
+> (resending as plain-text)
+> Hi...
+> I'd like to submit the below patch.
+> While investigating a difference in memory consumption between the kernel in 5.4.x and in 6.6.x,
+> I noticed there is around ~80M less reported in MemTotal in 6.6.x versus 5.4.x.
+> This is because  in 6.6.x  the swiotlb is still enabled and consuming about 80M of kernel memory, even though
+> the intel iommu has been fully initialized.
+> This change will cause the swiotlb to be disabled /  memory to be released ( via swiotlb_exit ).
+> Thanks,
+> Adrian
+> 
+> 
+>  From 27e63e727f23189e9c98d81fb445141f998c0808 Mon Sep 17 00:00:00 2001
+> From: Adrian Mardare <amardare@cisco.com>
+> Date: Sat, 25 Jan 2025 23:41:31 -0500
+> Subject: [PATCH] Make intel iommu disable swiotlb
+> 
+> On boards where intel iommu has been successfully
+> initialized, we need to disable the swiotlb as there
+> is no reason for swiotlb to be active past that.
 
-As for whether it should be volatile or not, we should follow the
-kernel's guidance in C code. I notice this sentence:
+Except there are *two* reasons: 32-bit devices in identity domains, and 
+untrusted (e.g. Thunderbolt) devices...
 
-Pointers to data structures in coherent memory which might be modified
-by I/O devices can, sometimes, legitimately be volatile. A ring buffer
-used by a network adapter, where that adapter changes pointers to
-indicate which descriptors have been processed, is an example of this
-type of situation.
-https://docs.kernel.org/process/volatile-considered-harmful.html
+See commits c5a5dc4cbbf4 ("iommu/vt-d: Don't switch off swiotlb if 
+bounce page is used") and subsequently 327d5b2fee91 ("iommu/vt-d: Allow 
+32bit devices to uses DMA domain")
 
-Alice
+Thanks,
+Robin.
+
+> Signed-off-by: Adrian Mardare <amardare@cisco.com>
+> ---
+> drivers/iommu/intel/iommu.c | 3 +++
+> 1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index cc46098f875b..971023d33a70 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -3166,6 +3166,9 @@ int __init intel_iommu_init(void)
+>                 pr_info("Intel(R) Virtualization Technology for Directed I/O\n");
+> 
+>                  intel_iommu_enabled = 1;
+> +#ifdef CONFIG_SWIOTLB
+> +             x86_swiotlb_enable = false;
+> +#endif
+> 
+>                  return 0;
+> 
+
