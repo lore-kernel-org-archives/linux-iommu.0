@@ -1,186 +1,179 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 485B21FF7BB
-	for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 13:25:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEDE31FF60F;
+	Mon, 27 Jan 2025 13:25:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737984319; cv=none; b=mmkstnEjTQ2IFxE4acLnzZCjdiLHDmT6whRLiljKvQlwAG+YgBTzXQVngRxSxtWCSMsUydXR4PL6Hl6Q0GAvSG/Y8UUw43omfFdxFHPwfu/xC2f+WCtez32ffW8t0rl2QR0cgOguf6+86GwoFWyholVIS/S7F0/9VaTkeH6Q4ek=
+	t=1737984331; cv=none; b=ftbI7iVt3e+DnsELGXNoebxH8Jm6yzOlxPrOgt5nljdP9ZBVeGoIzaAH+d4Ea1vKppGJgAwiVVCJW5OxiQQhpcv/QeEI2auDVhkeLaJ2+8DfZBxGLaagqawbnkB8J8JeexnY5cJelNksglNC+dV03JtiuIAxNCUrPeOWpQ0xe7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737984319; c=relaxed/simple;
-	bh=g21G4uOhUCGyECIb8LzzjY0TJbnZ+EwXLSKOlZOShCc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=d9fAg/B5wP6kLgTcpRJ/VVN4lTCGd3Ahed7hyfpd9UxAOBcj4SbmbjoYHk4b2y++SV25QG2VG7kCiWJ+AO2JRULY5DV+ICg0xphUT9gvkZX9cDgJnMnZKbmjOFQdMkfKZQyerqGlcxE24oV3NDR9t4ABGZPbDyil0NBQDdhfFNo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Z24fC3gx; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1737984331; c=relaxed/simple;
+	bh=RjFj+btLOrA1I0c/0XDEPot6dd9rNyckywxmgkJzq3o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QY1HaSC+tcqkRu16uCdXF39TDHwhZxP/RUVWHFe5g7CshiLGX82kYTkNsCdeGTROYWqjmlThPqSz2fO8JVIRFVs9lAKMmvJRhjWNo37kyVL+oTX1ddKyauCUJ7DA8kANbAJ25HMreryqFqq6ri+oZOBLQm0bjzatcgsN8Ky8zLM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=c4TphOHn; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Z24fC3gx"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-43624b2d453so48332785e9.2
-        for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 05:25:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1737984315; x=1738589115; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pJauN0CzklAnvkMrANOqyYzY4QWxzprdz1MQVlIfyOU=;
-        b=Z24fC3gx86kcJvgg2MbB2OQGHcgy6VK1wGnfS9wBwdev9VStP6RNUCP95vN+YW1Ld9
-         XsdX4T4pblx2O7pg2orKn5AIoJJXOeU7y8GDaZPG1j/zlWmH7p7p6RYK4w513fkm8YnL
-         srVKcNPZO5ko5x6p0fiPACTWLuhxtAcWFadAYLje8ybHJP0n+2QhQfFbO30ORvd4/yHK
-         KnZsnq3VlkRxRTeQoE6IHsIYXQe4bc+IT5PIKz4WFc24voyNaXQA3g+kcGnv6az2iSLj
-         Sr+yLWzMDzoDEdSAMlaYc9elk04OMWlnqRAwiVs32nuTmTAqZ9O1a5VsL7NffK7DfNAA
-         L26Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737984315; x=1738589115;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pJauN0CzklAnvkMrANOqyYzY4QWxzprdz1MQVlIfyOU=;
-        b=si9NI1zCnxlLB8TX7u87hyJmGzj77qhvkYawqZZ9pZ5Ihn3c9tIizJ0NsbsWS3C0ly
-         8pOyjJ52/U6PClFQFGZ0ZrzQfQ2h72VYYhcZV37PieVA1wZBa8Ub+NPvw5b9VWRpRlSv
-         xQiK4m2Kh9HYpClIl1k2nB36AdRw7DNPWsyH5r3jzQ8DGpIK9NCKUJz8h+rrizTfrai4
-         fdU14UjKtMxWI5JLuLpFCjiGyi9ZMj6esPh6ChuuwP2/ddkU2FFlsHCtQ/Jo0x/O/Kac
-         GPwcIvZdGMCLLTKp9Yjz/3nYqfnadMh+rZxHq653RwbChNHxx++lyGpf3rLFEnENLMTM
-         gm7w==
-X-Forwarded-Encrypted: i=1; AJvYcCVFNfWFSoOPHcLYyfVK8KYmcMm2bMnTYvXQq4gDe1BLWEuKlqZbhwf5WvczamD3c0ZRxnQvdA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw63eacU08uIkaeMdyWrfFlrMmhbi1z4+UA1LzGtxpu0RMFWsZt
-	Ya4lYQDc/QmIPtwdTjtFlxwxTj8Z2U+5UmUmlI0YEYW2RNBhKkr9yfNu9B6PdWbMlkD2UibRzSD
-	9GsFaujHUWJ6ZkeXey9/STw4YB+h3z0nZDehf
-X-Gm-Gg: ASbGnctFpTbK7VSojh/MGUYkbkQb5T6N2sj3sUmV/+fBBxKB1/27KJEfKTiEbxFoPkx
-	VcS9Em4GrSnxxhKlXTA61K0FnDMt1/Qdkl58OTNVXaAlsCzwxaVo2FUU8f8CAjMoyuejM3wtt2i
-	2CfjinrHrOwWUdO2Bo
-X-Google-Smtp-Source: AGHT+IElrY+hftsTN63x+drY7Gg7h6yLUjEsXJ4B3Xb/Oce5k73r27uZ/SM/ScRnDFvNgcnmWKfi2nLnTPgdhxFZL3M=
-X-Received: by 2002:a05:600c:46cb:b0:434:f0df:9fd with SMTP id
- 5b1f17b1804b1-438913c5b82mr376186085e9.2.1737984315456; Mon, 27 Jan 2025
- 05:25:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="c4TphOHn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1737984329; x=1769520329;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RjFj+btLOrA1I0c/0XDEPot6dd9rNyckywxmgkJzq3o=;
+  b=c4TphOHnOc6wrt2+smoGshV7o6p9F15alON/EAq8PJ9nPfbZ03eYHLE0
+   LYEzkqP7sUu1f+2XxTk/YsB9lnpxeEF47VM6CUyO+9OW3IMs1Kawc/NFa
+   8YAxQTeA2bfAwhdxu5fS0sAmFL+70H5LHFcLwKMXCMm3q0wo3f2YM+rnS
+   2smR6qVdZbEekuIHYXyn7CVaFjL+tPhRIxEiurTqCD/obnKOS6wOFFwuK
+   7xAaPlJ2FXdQNs3dbJNsiLAgc8fy/HnuvaSw+ixLvP6ElLLr0i77w2/ZQ
+   qZ9uCGjnqRBmH8v/E0VyKAgUV2U7XeG6qaZBDUUPhEZPxf2/dU1HrgRoi
+   Q==;
+X-CSE-ConnectionGUID: hnQP/NfES8C1CqTjUlYg3g==
+X-CSE-MsgGUID: HGeRKCaCRVicLpUxN+FMag==
+X-IronPort-AV: E=McAfee;i="6700,10204,11328"; a="42105370"
+X-IronPort-AV: E=Sophos;i="6.13,238,1732608000"; 
+   d="scan'208";a="42105370"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2025 05:25:22 -0800
+X-CSE-ConnectionGUID: oOw//HyuRH2sXbDiVD3/cA==
+X-CSE-MsgGUID: F7vXYkyrSx2N1gt4t3xT9A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="131730368"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2025 05:25:02 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1tcP6l-00000005jpm-3fIe;
+	Mon, 27 Jan 2025 15:24:55 +0200
+Date: Mon, 27 Jan 2025 15:24:55 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Damien Le Moal <dlemoal@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Corey Minyard <minyard@acm.org>, Peter Huewe <peterhuewe@gmx.de>,
+	Jarkko Sakkinen <jarkko@kernel.org>,
+	Tero Kristo <kristo@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+	Ian Abbott <abbotti@mev.co.uk>,
+	H Hartley Sweeten <hsweeten@visionengravers.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Len Brown <lenb@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	John Allen <john.allen@amd.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Vinod Koul <vkoul@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Moritz Fischer <mdf@kernel.org>, Liviu Dudau <liviu.dudau@arm.com>,
+	Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Peter Rosin <peda@axentia.se>, Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Markuss Broks <markuss.broks@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Lee Jones <lee@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+	Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+	Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+	Yisen Zhuang <yisen.zhuang@huawei.com>,
+	Stanislaw Gruszka <stf_xl@wp.pl>, Kalle Valo <kvalo@kernel.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Tony Lindgren <tony@atomide.com>, Mark Brown <broonie@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Xiang Chen <chenxiang66@hisilicon.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Vaibhav Hiremath <hvaibhav.linux@gmail.com>,
+	Alex Elder <elder@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+	Jacky Huang <ychuang3@nuvoton.com>, Helge Deller <deller@gmx.de>,
+	Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Kees Cook <keescook@chromium.org>,
+	Trond Myklebust <trond.myklebust@hammerspace.com>,
+	Anna Schumaker <anna@kernel.org>,
+	Masahiro Yamada <masahiroy@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Takashi Iwai <tiwai@suse.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-ide@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+	linux-integrity@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+	linux-efi@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-fpga@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-input@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+	linux-leds@vger.kernel.org, linux-wireless@vger.kernel.org,
+	linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
+	linux-spi@vger.kernel.org, linux-amlogic@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, greybus-dev@lists.linaro.org,
+	linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+	linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+	iommu@lists.linux.dev, linux-trace-kernel@vger.kernel.org,
+	kasan-dev@googlegroups.com, linux-hardening@vger.kernel.org,
+	linux-nfs@vger.kernel.org, linux-kbuild@vger.kernel.org,
+	alsa-devel@alsa-project.org, linux-sound@vger.kernel.org
+Subject: Re: [PATCH 00/34] address all -Wunused-const warnings
+Message-ID: <Z5eJJ199QwL0HVJT@smile.fi.intel.com>
+References: <20240403080702.3509288-1-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
- <20250123104333.1340512-3-abdiel.janulgue@gmail.com> <CAH5fLgjL0aGGwkjEfXH08Jopwin1NfkLzp9vQWKcHPEum8jV4g@mail.gmail.com>
- <Z5dh6cSnNxwbefJX@pollux> <CAH5fLggMSiHZwHJ3md0eH7smyDNVL3L=Sre7F0SXSSnPrJiO-A@mail.gmail.com>
- <Z5d4lMlvA17M004C@pollux>
-In-Reply-To: <Z5d4lMlvA17M004C@pollux>
-From: Alice Ryhl <aliceryhl@google.com>
-Date: Mon, 27 Jan 2025 14:25:03 +0100
-X-Gm-Features: AWEUYZmwF5ZMIOVJCBOISWAfWAkX6o3XaxmkhSWzCkWFY6K9i9YoTKJL6EzmydE
-Message-ID: <CAH5fLgiQcJcR+DYr7g3AfRPufAmM_4ZqHraGsYz7k1vU7=TZ-g@mail.gmail.com>
-Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>, rust-for-linux@vger.kernel.org, 
-	daniel.almeida@collabora.com, robin.murphy@arm.com, 
-	Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
-	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
-	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, 
-	open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240403080702.3509288-1-arnd@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Mon, Jan 27, 2025 at 1:14=E2=80=AFPM Danilo Krummrich <dakr@kernel.org> =
-wrote:
->
-> On Mon, Jan 27, 2025 at 11:43:39AM +0100, Alice Ryhl wrote:
-> > On Mon, Jan 27, 2025 at 11:37=E2=80=AFAM Danilo Krummrich <dakr@kernel.=
-org> wrote:
-> > >
-> > > On Fri, Jan 24, 2025 at 08:27:36AM +0100, Alice Ryhl wrote:
-> > > > On Thu, Jan 23, 2025 at 11:43=E2=80=AFAM Abdiel Janulgue
-> > > > <abdiel.janulgue@gmail.com> wrote:
-> > > > > +    /// Reads data from the region starting from `offset` as a s=
-lice.
-> > > > > +    /// `offset` and `count` are in units of `T`, not the number=
- of bytes.
-> > > > > +    ///
-> > > > > +    /// Due to the safety requirements of slice, the data return=
-ed should be regarded by the
-> > > > > +    /// caller as a snapshot of the region when this function is=
- called, as the region could
-> > > > > +    /// be modified by the device at anytime. For ringbuffer typ=
-e of r/w access or use-cases
-> > > > > +    /// where the pointer to the live data is needed, `start_ptr=
-()` or `start_ptr_mut()`
-> > > > > +    /// could be used instead.
-> > > > > +    ///
-> > > > > +    /// # Safety
-> > > > > +    ///
-> > > > > +    /// Callers must ensure that no hardware operations that inv=
-olve the buffer are currently
-> > > > > +    /// taking place while the returned slice is live.
-> > > > > +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -=
-> Result<&[T]> {
-> > > >
-> > > > You were asked to rename this function because it returns a slice, =
-but
-> > > > I wonder if it's better to take an `&mut [T]` argument and to have
-> > > > this function copy data into that argument. That way, we could make
-> > > > the function itself safe. Perhaps the actual copy needs to be
-> > > > volatile?
-> > >
-> > > Why do we consider the existing one unsafe?
-> > >
-> > > Surely, it's not desirable that the contents of the buffer are modifi=
-ed by the
-> > > HW unexpectedly, but is this a concern in terms of Rust safety requir=
-ements?
-> > >
-> > > And if so, how does this go away with the proposed approach?
-> >
-> > In Rust, it is undefined behavior if the value behind an immutable
-> > reference changes (unless the type uses UnsafeCell / Opaque or
-> > similar). That is, any two consecutive reads of the same immutable
-> > reference must return the same byte value no matter what happened in
-> > between those reads.
->
-> Undefined as in the sense of anything is allowed to happen?
+On Wed, Apr 03, 2024 at 10:06:18AM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> Compilers traditionally warn for unused 'static' variables, but not
+> if they are constant. The reason here is a custom for C++ programmers
+> to define named constants as 'static const' variables in header files
+> instead of using macros or enums.
+> 
+> In W=1 builds, we get warnings only static const variables in C
+> files, but not in headers, which is a good compromise, but this still
+> produces warning output in at least 30 files. These warnings are
+> almost all harmless, but also trivial to fix, and there is no
+> good reason to warn only about the non-const variables being unused.
+> 
+> I've gone through all the files that I found using randconfig and
+> allmodconfig builds and created patches to avoid these warnings,
+> with the goal of retaining a clean build once the option is enabled
+> by default.
+> 
+> Unfortunately, there is one fairly large patch ("drivers: remove
+> incorrect of_match_ptr/ACPI_PTR annotations") that touches
+> 34 individual drivers that all need the same one-line change.
+> If necessary, I can split it up by driver or by subsystem,
+> but at least for reviewing I would keep it as one piece for
+> the moment.
+> 
+> Please merge the individual patches through subsystem trees.
+> I expect that some of these will have to go through multiple
+> revisions before they are picked up, so anything that gets
+> applied early saves me from resending.
 
-Yes.
+Arnd, can you refresh this one? It seems some misses still...
+I have got 3+ 0-day reports against one of the mux drivers.
 
-> I thought undefined
-> as in you might still see the old value on two consecutive reads.
+https://lore.kernel.org/all/?q=adg792a.c
 
-That is the optimization that motivates this being UB, but it's
-defined as full UB.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> Do you have a pointer to the corresponding docs?
 
-Sure, it's on the "behavior considered undefined" page:
-Moreover, the bytes pointed to by a shared reference, including
-transitively through other references (both shared and mutable) and
-Boxes, are immutable; transitivity includes those references stored in
-fields of compound types.
-
-https://doc.rust-lang.org/reference/behavior-considered-undefined.html#r-un=
-defined.immutable
-
-> > If we manually perform the read as a volatile read, then it is
-> > arguably allowed for the value to be modified by the hardware while we
-> > read the value.
->
-> From read_volatile() [1]: "In particular, a race between a read_volatile =
-and any
-> write operation to the same location is undefined behavior."
-
-I mean, ultimately we are a bit on our own here. In C code you just
-use an ordinary read / write, so we could use the ordinary
-core::ptr::copy_nonoverlapping method to mirror that. We've been told
-from the Rust project that we should just do these kinds of things
-like we do in C - technically these things aren't okay in C either,
-but because LLVM will try to avoid breaking patterns used in the
-kernel, they shouldn't break in Rust either.
-
-But using an immutable reference should be avoided because that gives
-LLVM optimization hints that we are not giving to LLVM in C code.
-
-> Also, what if the hardware put a value that is invalid for the type?
-
-The trait bounds require that T is FromBytes, which has a safety
-requirement that all bit-patterns must be valid for the type.
-
-Alice
