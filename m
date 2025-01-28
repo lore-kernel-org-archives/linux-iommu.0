@@ -1,41 +1,41 @@
 Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DEAD51C
-	for <iommu@lists.linux.dev>; Tue, 28 Jan 2025 10:15:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D55961917D8
+	for <iommu@lists.linux.dev>; Tue, 28 Jan 2025 10:23:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738059340; cv=pass; b=lOyQOdFCH1tHHHLjAE/1Yi+uYOryBgcojtDm7UtUoWlOMxc6lZ/vKAPDKxh8OzWEOAJ4ntC3ueRRUVi90ZsxbbNFiY9QIKXYCyXWpWRb8jqcy0prMG+71nTi7G+7PWVEaNagvXBUu4+7+6Y1peCUElxf9IQe7/H1y9zYLrjfbcA=
+	t=1738059796; cv=pass; b=jS/lxByedNyAX8Vncf7KWiAMzz1J+gztFOvaXo/md4qRhDS2XiwZ+aKOcm8RH4iPO7c6bwVYQVpnC/cxGc9DBn5/SvTn/ZvB1ze4nmkG+9Od/ka3yBcMLPP8bfvT28Ld482G9JMJn9ppJbK80QFaFxiAZzhtIjQjaSVJqI/g0I8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738059340; c=relaxed/simple;
-	bh=rSX+R2st+gbYVa2uSul/aZDry8BR9qSOpAWjcK5Y5sI=;
+	s=arc-20240116; t=1738059796; c=relaxed/simple;
+	bh=OUlEzlN8rKsfzxO3bFje5k5NF7SE7FqfKjk0K+uX7EA=;
 	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=jYHYkIuvYhyEemwjqJupWAVeyfoRZXhydBPjUverLi+Ourb7Et8OUkLuHRb9xrX4xr7E9DtyJizipw3R5nRQaubIwO2SI4R8Y3LWWJP4b4bsEKcSUJozGLoaOuLQF4Kg+0gCiaHrgfKUz5/n7504mG/0McpIiY6x6Tu59RXaiPA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=TEqYdIbo; arc=pass smtp.client-ip=136.143.188.112
+	 Message-Id:References:To; b=iNBC/xKdoXC/+ECLay+t08AIbYIHHi7LQASoJIZa4uitqUpe9i7ClqenjbFV4ZV/I/pRt3bToU5hu7YegdhOAUevln2UXBZGu8ZHm5zZzbsv/l1PVJiuvbwWvMBCK7aaqrAwghR0aBTmgHopR7WiMV7p4WnTSWQJXQi4P3QDvjI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=ZtON5QEE; arc=pass smtp.client-ip=136.143.188.112
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="TEqYdIbo"
-ARC-Seal: i=1; a=rsa-sha256; t=1738059319; cv=none; 
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="ZtON5QEE"
+ARC-Seal: i=1; a=rsa-sha256; t=1738059778; cv=none; 
 	d=zohomail.com; s=zohoarc; 
-	b=g/BPC96uBss/vx6TBJomjihz1dQCdfxm6jJNAEbkV66+2cHbe+iBcjsSv1rwV4BGDZwk0ObgeVxPFoVu1pohD6WqP/nEzzaUYE4IADFwqoUjBRG99Q4d2k8C0Kb293HvaDmU+qp536D/LxsDlN+VhJ2LrLtuwSoqy5a9mnbrvkU=
+	b=SBshQv91bgNHPBl637MI6poPuAtao2suvvDSb/lC3ozRQ5yJ3DfI3XtUelQcEYTNd+lY2yr4x7W7Zc7mrrgl4PNTnEXEhZ/J4lTVOGcH1s0tXwvMpZOHM0oKfzxk+gGivTXufaFaGKnKe1YP/MUFY+N3fyvZ1SjaPgzFWPaPNQA=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1738059319; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=rSX+R2st+gbYVa2uSul/aZDry8BR9qSOpAWjcK5Y5sI=; 
-	b=En+jvcIzZSus6BMgzCkdbeWnii6IghHnAYKvr0W/l0xZ8xNnkbgMkosts5HpSxMKlDUePj/gaXDU0KTSKkOqBJ6sLcVh6kqI+LgpPvfitfvX1Tw2XCePiHdwdxLtwmRUj2DmqKlfrBp4FMp2/EBJUikjXfmuLJB++XO1GK0IXA0=
+	t=1738059778; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=OUlEzlN8rKsfzxO3bFje5k5NF7SE7FqfKjk0K+uX7EA=; 
+	b=IMc5jjs+zveduvd/4fwbDfKNqzD/d+mfNYnN2ikd/qyb8HHseIe0VawK6P3QN7N9OzOlBkgalwPbZqXPAC2Scgyp2NN0WkpgEPuFZLPFZMurDsQPUJiLhtR7DSPnzEp0Pvvq1ZVm1TJWPFQMJanolT3ebPLyDtEzs5DGsPKL+Qo=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
 	dkim=pass  header.i=collabora.com;
 	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
 	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1738059319;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1738059778;
 	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
 	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
-	bh=rSX+R2st+gbYVa2uSul/aZDry8BR9qSOpAWjcK5Y5sI=;
-	b=TEqYdIboaJmxVmZAl5Dcxfg5bbjMXyYi+wLJ1i7zBx6G0Nz5ZIPpH3ngWbQnzazS
-	4iDnDrROKy+//AEV0qUbdQhuCDiFwXbtIxmrh2nLl+El1WR++7D4N+UdvYI0uxR+n/g
-	qnOGcS3D/8+A8orkfgItuXUQsV87JBrBON3A0U7c=
-Received: by mx.zohomail.com with SMTPS id 1738059312965878.968649915268;
-	Tue, 28 Jan 2025 02:15:12 -0800 (PST)
+	bh=OUlEzlN8rKsfzxO3bFje5k5NF7SE7FqfKjk0K+uX7EA=;
+	b=ZtON5QEExXQHPfDFqfXB4RtSYH6o2FENnGXNMGidH81DZ29rCqinru2WuhXvEXru
+	Dc1gRQFJ2mN/fDJhk+3+pugwWxip8NTB4+u1VS5YeAwQeAabW+OSqQvlDqI94ZW1HW/
+	zfGkDoPiIz40v3PZdqdsl7rPwH9ESJgzPlqtdT4c=
+Received: by mx.zohomail.com with SMTPS id 1738059771363954.1193914927703;
+	Tue, 28 Jan 2025 02:22:51 -0800 (PST)
 Content-Type: text/plain;
 	charset=utf-8
 Precedence: bulk
@@ -44,16 +44,14 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.300.87.4.3\))
-Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
+Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
 From: Daniel Almeida <daniel.almeida@collabora.com>
-In-Reply-To: <ddd6c0f6-a0da-4bf1-b9fd-9f73651b7cb0@gmail.com>
-Date: Tue, 28 Jan 2025 07:14:56 -0300
-Cc: Danilo Krummrich <dakr@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>,
- Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
- aliceryhl@google.com,
+In-Reply-To: <CAH5fLgiW6n82hMhbmJ-ynd6329mEDFX6TzxXQZaaoG47HAWWcA@mail.gmail.com>
+Date: Tue, 28 Jan 2025 07:22:35 -0300
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
  rust-for-linux@vger.kernel.org,
+ dakr@kernel.org,
+ robin.murphy@arm.com,
  Miguel Ojeda <ojeda@kernel.org>,
  Alex Gaynor <alex.gaynor@gmail.com>,
  Boqun Feng <boqun.feng@gmail.com>,
@@ -64,43 +62,33 @@ Cc: Danilo Krummrich <dakr@kernel.org>,
  Trevor Gross <tmgross@umich.edu>,
  Valentin Obst <kernel@valentinobst.de>,
  open list <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@lst.de>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
- Greg KH <gregkh@linuxfoundation.org>
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <16DAE79A-1D63-40D0-9329-5008BC6ABC64@collabora.com>
-References: <CANiq72=R2N+QiCiHZQu-6YJ9aYpn_bik3BW3U=nAW3jL7unzLw@mail.gmail.com>
- <20250108151858.GB24499@lst.de> <Z36X_ZnCmBQBMoZ6@pollux>
- <20250109080812.GA20431@lst.de> <Z3-NqwAG_96yq8VD@pollux>
- <20250110083955.GA5395@lst.de> <Z4D5a5NYrAbNxUL6@pollux>
- <Z4kG5AcVeQKegLnb@pollux> <bbc60912-7ed5-4bb1-b273-8061abe49e10@arm.com>
- <Z4kshDHw8NEjQONR@pollux> <Z4pheSjBMOjgvk8W@phenom.ffwll.local>
- <ddd6c0f6-a0da-4bf1-b9fd-9f73651b7cb0@gmail.com>
-To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Message-Id: <95382414-7A44-45A4-8F3F-C6D755422AD5@collabora.com>
+References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
+ <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
+ <CAH5fLgjL0aGGwkjEfXH08Jopwin1NfkLzp9vQWKcHPEum8jV4g@mail.gmail.com>
+ <0E0FC88B-95C0-4DBE-B497-AF9101BACE70@collabora.com>
+ <CAH5fLgiW6n82hMhbmJ-ynd6329mEDFX6TzxXQZaaoG47HAWWcA@mail.gmail.com>
+To: Alice Ryhl <aliceryhl@google.com>
 X-Mailer: Apple Mail (2.3826.300.87.4.3)
 X-ZohoMailClient: External
 
+Alice,
 
-
-> On 17 Jan 2025, at 16:10, Abdiel Janulgue <abdiel.janulgue@gmail.com> =
-wrote:
 >=20
+> The difference is exactly that - you reduce the amount of data copied
+> to just the size of the field.
 >=20
-> On 17/01/2025 15:56, Simona Vetter wrote:
->> Plus this patch here is not even close to tackling
->> the sg based dma-api parts.
->=20
-> The scatterlist portion of dma-api bindings are in the pipeline. The =
-idea was to start upstreaming this basic component of the dma-api first.
->=20
-> Regards,
-> Abdiel
+> Alice
 >=20
 
-Oh, I just realized you=E2=80=99re working on the scatterlist stuff. =
-This will indeed come in handy!
 
-Thanks for that.
+Is your idea to have that *in addition* to the safe methods?
 
-=E2=80=94 Daniel=20=
+How does it work when you want to read a T at a time?
+
+=E2=80=94 Daniel=
