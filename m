@@ -1,94 +1,107 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D55961917D8
-	for <iommu@lists.linux.dev>; Tue, 28 Jan 2025 10:23:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738059796; cv=pass; b=jS/lxByedNyAX8Vncf7KWiAMzz1J+gztFOvaXo/md4qRhDS2XiwZ+aKOcm8RH4iPO7c6bwVYQVpnC/cxGc9DBn5/SvTn/ZvB1ze4nmkG+9Od/ka3yBcMLPP8bfvT28Ld482G9JMJn9ppJbK80QFaFxiAZzhtIjQjaSVJqI/g0I8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738059796; c=relaxed/simple;
-	bh=OUlEzlN8rKsfzxO3bFje5k5NF7SE7FqfKjk0K+uX7EA=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=iNBC/xKdoXC/+ECLay+t08AIbYIHHi7LQASoJIZa4uitqUpe9i7ClqenjbFV4ZV/I/pRt3bToU5hu7YegdhOAUevln2UXBZGu8ZHm5zZzbsv/l1PVJiuvbwWvMBCK7aaqrAwghR0aBTmgHopR7WiMV7p4WnTSWQJXQi4P3QDvjI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=ZtON5QEE; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC28F1917D8
+	for <iommu@lists.linux.dev>; Tue, 28 Jan 2025 10:25:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738059947; cv=none; b=HerezUhojn3db4KReILeBkSHO2EKRDY0smUJ5JyFUhZE2wv3IweU7bq+Ss9nel7X9agWfPGiWblxkx7TdEq3IPuxttNKXJP3oLBuX+EkhOXTU0IRqRknFuJCkT2waWTFEuz6Tz7YV8J73nKeZ5uRNAQ9N0Z/fmaD17weizcJeZM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738059947; c=relaxed/simple;
+	bh=MJu5R0MF5TiC+CyW0Qe9EekqjqUAvKAoZ/rwwaVRzWU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jHsHp+iSyYOUnAi39nIuXte0lwXm5QH7vavRj8ym3ONMrKZp+VoY7nkrt0W8E2YJEK+FHkdu9qQVmdSzaUw00rv2TJuZ6AwedhZiNspQQWuEn8DSx48irpmhwECQVnCIj2bQEZ98d/1PsS+9iX7GuTg+V4IOiJNXpuREFl8xmMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aoCAalQW; arc=none smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="ZtON5QEE"
-ARC-Seal: i=1; a=rsa-sha256; t=1738059778; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=SBshQv91bgNHPBl637MI6poPuAtao2suvvDSb/lC3ozRQ5yJ3DfI3XtUelQcEYTNd+lY2yr4x7W7Zc7mrrgl4PNTnEXEhZ/J4lTVOGcH1s0tXwvMpZOHM0oKfzxk+gGivTXufaFaGKnKe1YP/MUFY+N3fyvZ1SjaPgzFWPaPNQA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1738059778; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=OUlEzlN8rKsfzxO3bFje5k5NF7SE7FqfKjk0K+uX7EA=; 
-	b=IMc5jjs+zveduvd/4fwbDfKNqzD/d+mfNYnN2ikd/qyb8HHseIe0VawK6P3QN7N9OzOlBkgalwPbZqXPAC2Scgyp2NN0WkpgEPuFZLPFZMurDsQPUJiLhtR7DSPnzEp0Pvvq1ZVm1TJWPFQMJanolT3ebPLyDtEzs5DGsPKL+Qo=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
-	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1738059778;
-	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
-	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
-	bh=OUlEzlN8rKsfzxO3bFje5k5NF7SE7FqfKjk0K+uX7EA=;
-	b=ZtON5QEExXQHPfDFqfXB4RtSYH6o2FENnGXNMGidH81DZ29rCqinru2WuhXvEXru
-	Dc1gRQFJ2mN/fDJhk+3+pugwWxip8NTB4+u1VS5YeAwQeAabW+OSqQvlDqI94ZW1HW/
-	zfGkDoPiIz40v3PZdqdsl7rPwH9ESJgzPlqtdT4c=
-Received: by mx.zohomail.com with SMTPS id 1738059771363954.1193914927703;
-	Tue, 28 Jan 2025 02:22:51 -0800 (PST)
-Content-Type: text/plain;
-	charset=utf-8
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aoCAalQW"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-3862b40a6e0so3913304f8f.0
+        for <iommu@lists.linux.dev>; Tue, 28 Jan 2025 02:25:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1738059944; x=1738664744; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MJu5R0MF5TiC+CyW0Qe9EekqjqUAvKAoZ/rwwaVRzWU=;
+        b=aoCAalQWfmLew9clX72avo7M5/uSpMKhHwSR+Oi/DMdGFw8ZgKzkeRmL+MG7FormsT
+         c6exFSOamihVLrk3BH546oirQpWWnYOP0O/4XEHAXlh/86f+FdUHsiQIls11oAisO9Wq
+         qRX0gq+OjmuOpZb8ieBV4axbxPGBlnsQbn5/kjzSZXeV3wCOySA8eybTgLjykChqzZeO
+         S/NQSZIiLQPmXggRVvQcp4s5qauorkxnIC+FBKVsiVygcl9ABEvZS32X696NJ7Yc96Sw
+         77l31wKnRxP4gWYuj/0t0rg9V62Du5sBgfowkOpJYRe12NKcOdc9wlmas2wBLY/Bai18
+         4RDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1738059944; x=1738664744;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MJu5R0MF5TiC+CyW0Qe9EekqjqUAvKAoZ/rwwaVRzWU=;
+        b=tMS8uIksPCnNfDdEby9kmDt92bVSujyBymctW8vOb/lVzHwAkEiqlmJnrQCSMcRrNW
+         g9xJ8MhqazXsuVGwK5M4zUh4YAvyiEhfPWb7/vgbtgv0CpHmeQWrIbVTOEfjJ2u+O3DQ
+         n83BqJl88D66sAmn2jqaktEPuOp4AjZiIRv9y/JHJQ3xcdgw4h13gjT0nR+tEdyX0hdH
+         x95Dj/gKUFNPJ+5o+2bVh5l9N9BG5gMJJ5hnzxC5aK18bkYazZCr1eRDlnjg3drl1kXA
+         NJepw1vMceZpkKtdzrZ6RcsAohnyR3ko+hoEnaABp/Vpxx1+C554j3yEKW7Ka9xa2PH2
+         oivw==
+X-Forwarded-Encrypted: i=1; AJvYcCUYI2J4Yd3uUTE+za5a4keAQr+NduEkfVaZuz/1NAXaR8/24PLnlsx5tnFRg2Fwfpo/8Oqs5A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzqBDMMCJNycmS6/1fVOlwFYmYvSGKg9Y0OevNvwUMopvPZdL/5
+	+Q81I4W+Kfdk0JlYJHIb3iYk4j0whi9I6eWxgW5rPa9tnOcPq+VUUojh18r2sqyd19TvD2BfS/l
+	mK1goRHxnaXNCamcPTfNmou/iMROlRuvcx3t1
+X-Gm-Gg: ASbGnctOMJ+MM58c5b65O86G72IIFAL01K88oGEahPu8fpoI2Vs2Dj0SHa45E78YbTm
+	UKpcn49wAWcCH2A0MIGvhfvP9+CQitbisbxBr6oRstlUh6AlgKBc1z5FAHCLGTCtV3Z4xMF9cRN
+	cvFaLLc3E/YmNqJKyJV8yresKh1A==
+X-Google-Smtp-Source: AGHT+IEH90BFbkOp2SYmGkeYnH3Xp0516Xr0wSSe7xPqdF4528/Cj7GbtqfF9cTkbeL7NcQEeKy+SngdmFt02Mg/p5A=
+X-Received: by 2002:adf:e946:0:b0:38a:88bc:a8e3 with SMTP id
+ ffacd0b85a97d-38bf567a57fmr33366059f8f.33.1738059944088; Tue, 28 Jan 2025
+ 02:25:44 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.300.87.4.3\))
-Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
-From: Daniel Almeida <daniel.almeida@collabora.com>
-In-Reply-To: <CAH5fLgiW6n82hMhbmJ-ynd6329mEDFX6TzxXQZaaoG47HAWWcA@mail.gmail.com>
-Date: Tue, 28 Jan 2025 07:22:35 -0300
-Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
- rust-for-linux@vger.kernel.org,
- dakr@kernel.org,
- robin.murphy@arm.com,
- Miguel Ojeda <ojeda@kernel.org>,
- Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>,
- Gary Guo <gary@garyguo.net>,
- =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>,
- Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <95382414-7A44-45A4-8F3F-C6D755422AD5@collabora.com>
+MIME-Version: 1.0
 References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
- <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
- <CAH5fLgjL0aGGwkjEfXH08Jopwin1NfkLzp9vQWKcHPEum8jV4g@mail.gmail.com>
- <0E0FC88B-95C0-4DBE-B497-AF9101BACE70@collabora.com>
- <CAH5fLgiW6n82hMhbmJ-ynd6329mEDFX6TzxXQZaaoG47HAWWcA@mail.gmail.com>
-To: Alice Ryhl <aliceryhl@google.com>
-X-Mailer: Apple Mail (2.3826.300.87.4.3)
-X-ZohoMailClient: External
+ <20250123104333.1340512-3-abdiel.janulgue@gmail.com> <CAH5fLgjL0aGGwkjEfXH08Jopwin1NfkLzp9vQWKcHPEum8jV4g@mail.gmail.com>
+ <0E0FC88B-95C0-4DBE-B497-AF9101BACE70@collabora.com> <CAH5fLgiW6n82hMhbmJ-ynd6329mEDFX6TzxXQZaaoG47HAWWcA@mail.gmail.com>
+ <95382414-7A44-45A4-8F3F-C6D755422AD5@collabora.com>
+In-Reply-To: <95382414-7A44-45A4-8F3F-C6D755422AD5@collabora.com>
+From: Alice Ryhl <aliceryhl@google.com>
+Date: Tue, 28 Jan 2025 11:25:32 +0100
+X-Gm-Features: AWEUYZnhdm-O4jhFXri6BK-i1np_sxsPH8BwJdv_jxk9-d66JQytiLOOaeJiOPM
+Message-ID: <CAH5fLgjZiux1_=dNuZN+7SEY6fUGMDNLoJNTwmHcB=WbKChwzw@mail.gmail.com>
+Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
+To: Daniel Almeida <daniel.almeida@collabora.com>
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>, rust-for-linux@vger.kernel.org, 
+	dakr@kernel.org, robin.murphy@arm.com, Miguel Ojeda <ojeda@kernel.org>, 
+	Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>, 
+	Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, 
+	open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Alice,
+On Tue, Jan 28, 2025 at 11:23=E2=80=AFAM Daniel Almeida
+<daniel.almeida@collabora.com> wrote:
+>
+> Alice,
+>
+> >
+> > The difference is exactly that - you reduce the amount of data copied
+> > to just the size of the field.
+> >
+> > Alice
+> >
+>
+>
+> Is your idea to have that *in addition* to the safe methods?
+>
+> How does it work when you want to read a T at a time?
 
->=20
-> The difference is exactly that - you reduce the amount of data copied
-> to just the size of the field.
->=20
-> Alice
->=20
+I mean, I imagine that you could make the syntax
+`dma_read!(my_alloc[7])` read the entire struct. I'm not sure which
+safe methods you are referring to, because right now there is only the
+unsafe as_slice().
 
-
-Is your idea to have that *in addition* to the safe methods?
-
-How does it work when you want to read a T at a time?
-
-=E2=80=94 Daniel=
+Alice
