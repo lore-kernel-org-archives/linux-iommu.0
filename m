@@ -1,127 +1,70 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFF2B191F83
-	for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 21:12:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 454EE18B476;
+	Tue, 28 Jan 2025 06:12:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738012338; cv=none; b=lrN4mbHT3CDfx14QMe4hJ1UbyFR6a9UirhqKANebj/xrS/ID3+AIsM5Ht0leS5TRLZyese/sIGNyZ5/A7tgdH0n+su2nt/XpfOnOiFV+EcoGnEyf1dv+arnN2PbE+klmmZzEqp2v4NjAGLKQfte/90rWOzHCQdNLGzQMFPJfp5s=
+	t=1738044738; cv=none; b=p4r4cVxjiTz+8wBOS3hbfhTnut5LvueWhCvEIvw8m2Xou46KaanJY3hSkkw/GBv97zLVQ7SFK8LDMgkJuFoQAZeHZ+1j9ajnl/mAMn4N6bqzoZmPcubWzIrTST4p2SDVrWXHuNXVGCX++9dgVjTpdTUZzLMa1w0tFVowJ0PMdSk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738012338; c=relaxed/simple;
-	bh=QIUlCdDDgNKC8e57Y3+feDkX5uLyeyfTJ0A0n34JkIU=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=GaKl5KbVHa2BjyfCA9wWaFzeVTkxEOdIVIFhDoV5KziFzbfALHENpTA6ekE8EHAjrCXdX6m6JKstZLoYCERw+IUNvGuJo+PQyMdbotbIyx/aYcZim+yUdSh+nrsmkh1gsJaXbF9/3b0oNrFjGp8rTdD7euanNDTAtthwgTh70YM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=lhgoeO+l; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1738044738; c=relaxed/simple;
+	bh=JLZRvtPx01zZ02Bp8wGAIaOL7w4LyZ+P9o5Ndkme27k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GAAy6R5mCU1BEZ2Pc/o+5wwor7rVUkl+GPh15+CuIfAQ7LohbEnYZq1NSi/fvT4Lm+fe97DDJLOhnSCtslVxMGxRJijxteHVExjYd6VWENNxhYWo8hbatQaYvQapnvoBnO8a8mMLnYfNDlv9NqLOtxFeuH2zB4hjFTn7y8aWOg4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=d46jtVwr; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="lhgoeO+l"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-21632eacb31so62222255ad.0
-        for <iommu@lists.linux.dev>; Mon, 27 Jan 2025 13:12:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1738012336; x=1738617136; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=K6hZefyXL2l96pWmeGJw77FS+9rwDaTak9GYI9pCtzA=;
-        b=lhgoeO+l4iGCizGj970OA73V7S5A9LfpkY3VZqTYDm73oonVxZEbownRbALloPodkB
-         AozxNYgQWwi9UxtrlgVUsd7ZyY5uPZvmV7F9rFOiktl5R1TCR++Hr6WdYLpxHYMwLT8q
-         7GHcEIIxvKMs6mOiFI67i6IgVAYQGLG2vqT3QhMijjd1BvZSjXXDdeXvvEm9qkZ87ml3
-         aBXrLvu/qO9SlCCCFCOWFH+wN8EiIwu9SdvLvus3Fm4mF4kq1bRPg+QuRnpz6WmFKhWe
-         +WtyIvOIzOgGG4et2yIeOnqMCWsUawsAYqGqgIxk4EzypcDIjOJQva2XhCh1bL6PqSPC
-         8SuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738012336; x=1738617136;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=K6hZefyXL2l96pWmeGJw77FS+9rwDaTak9GYI9pCtzA=;
-        b=hxUrR9tq7ZrWWmAoJnz/f3PYu8J5HB57WIubo8ttBc854UrLDF3CJaRkvZhap24WJX
-         560RVCThzrI9YC3tMS21eJn0fhfbnhxnqa4h3JODNf5NYYHNjHbMPFGYeEGx8yUjfyCu
-         UttM41KFPgT+58Ivt9HfUvTWd+HD1N58YMeJ5t8B5vl0aBTqkh1dXRmQg5szhCk+jEgP
-         7qr+3TQG4zgPK8DY0BzKYqTbHU3rDjpwrX8pDQ4v3Ki1A8aAgdYkvs/8gAU3U4sCnXNS
-         PeKE/AxYWoh3BHjp6kffkWURjGCtYHs5tEPZ05ztnWmoE2ufgR1CnzqSWig8z30bdS6L
-         W5cA==
-X-Forwarded-Encrypted: i=1; AJvYcCXVND4Yz0VdoXD8U3BQ2S2ZOtRwcPESHzcHUk0hacKlBMefxXn/xv0MIc7lCsd3Yk1F4nUPyg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzeNzAD2r6cn+0vbjMKPcueG+0gc67PdOZ7ciTbobeawHsPl7ms
-	18WSOCP2GGvfWjsX8hpuMCPFPIgCkMHtCr5XrQ8n6PC0fUfhrzJ+NGClrUKi0nEEyyss0t62VMz
-	0Qw==
-X-Google-Smtp-Source: AGHT+IEwgayOURYSvjY7e6XLYoI71UjcKramt48qbeELOlKyudPYpVmcvakyD5Op74xYsySjMiHHABxL/+s=
-X-Received: from pfbcb5.prod.google.com ([2002:a05:6a00:4305:b0:725:936f:c305])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:8d1:b0:725:f153:22d5
- with SMTP id d2e1a72fcca58-72dafb9e674mr61995080b3a.18.1738012335920; Mon, 27
- Jan 2025 13:12:15 -0800 (PST)
-Date: Mon, 27 Jan 2025 13:12:14 -0800
-In-Reply-To: <e23a94f0-c35f-4d50-b348-4cd64b5ebb67@amd.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="d46jtVwr"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=xpq0EzznBsykUuruz4uXaOlJN+LKQNMON88eEeJONJ4=; b=d46jtVwrm7L+V7m3wvZM2xQGAk
+	Q0dEQl6ZBqvJMmVNqAx+clFFc7Xy4ECPalPCgl1U/8zlKjtTjpa76KWpmBr8ACOHvEJFewwxkvgbi
+	CDEX75YTHfqOclu+9RQenq7sOQkAAKQoGb5ncTOC2LHKd3kaaelhet5ACjVrRrGYW18SAzU2hdu7y
+	VOeKjRJkMVV6gq6lCSwsH5NKrWX4/dDBneQx0Q34rrgXB36SZNWSKJAhiIhu0laSCYgbCnfan4GQd
+	phn5CjzqGSXl/dYGOE7lH2u/OmOPCWcJyjgrA/gm8klELE8eLoY3nmrdKFHeIMv6ymf9LO2Srz6a+
+	4t7y5oKg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.98 #2 (Red Hat Linux))
+	id 1tcepU-00000004C7D-0hfc;
+	Tue, 28 Jan 2025 06:12:08 +0000
+Date: Mon, 27 Jan 2025 22:12:08 -0800
+From: Christoph Hellwig <hch@infradead.org>
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+	zhangkun09@huawei.com, liuyonglong@huawei.com,
+	fanghaiqing@huawei.com, Robin Murphy <robin.murphy@arm.com>,
+	Alexander Duyck <alexander.duyck@gmail.com>,
+	IOMMU <iommu@lists.linux.dev>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC v8 3/5] page_pool: fix IOMMU crash when driver has already
+ unbound
+Message-ID: <Z5h1OMgcHuPSMaHM@infradead.org>
+References: <20250127025734.3406167-1-linyunsheng@huawei.com>
+ <20250127025734.3406167-4-linyunsheng@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <cover.1737505394.git.ashish.kalra@amd.com> <0b74c3fce90ea464621c0be1dbf681bf46f1aadd.1737505394.git.ashish.kalra@amd.com>
- <c310e42d-d8a8-4ca0-f308-e5bb4e978002@amd.com> <5df43bd9-e154-4227-9202-bd72b794fdfb@amd.com>
- <5af2cc74-c56d-4bcf-870e-afa98d6456b3@amd.com> <Z5QyybbSk4NeroyZ@google.com> <e23a94f0-c35f-4d50-b348-4cd64b5ebb67@amd.com>
-Message-ID: <Z5f2rnMyBAjK88dP@google.com>
-Subject: Re: [PATCH 1/4] iommu/amd: Check SNP support before enabling IOMMU
-From: Sean Christopherson <seanjc@google.com>
-To: Ashish Kalra <ashish.kalra@amd.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, Tom Lendacky <thomas.lendacky@amd.com>, pbonzini@redhat.com, 
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, 
-	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, 
-	john.allen@amd.com, herbert@gondor.apana.org.au, davem@davemloft.net, 
-	joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org, 
-	robin.murphy@arm.com, michael.roth@amd.com, dionnaglaze@google.com, 
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-crypto@vger.kernel.org, linux-coco@lists.linux.dev, 
-	iommu@lists.linux.dev
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250127025734.3406167-4-linyunsheng@huawei.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Mon, Jan 27, 2025, Ashish Kalra wrote:
-> Hello Sean,
-> 
-> On 1/24/2025 6:39 PM, Sean Christopherson wrote:
-> > On Fri, Jan 24, 2025, Ashish Kalra wrote:
-> >> With discussions with the AMD IOMMU team, here is the AMD IOMMU
-> >> initialization flow:
-> > 
-> > ..
-> > 
-> >> IOMMU SNP check
-> >>   Core IOMMU subsystem init is done during iommu_subsys_init() via
-> >>   subsys_initcall.  This function does change the DMA mode depending on
-> >>   kernel config.  Hence, SNP check should be done after subsys_initcall.
-> >>   That's why its done currently during IOMMU PCI init (IOMMU_PCI_INIT stage).
-> >>   And for that reason snp_rmptable_init() is currently invoked via
-> >>   device_initcall().
-> >>  
-> >> The summary is that we cannot move snp_rmptable_init() to subsys_initcall as
-> >> core IOMMU subsystem gets initialized via subsys_initcall.
-> > 
-> > Just explicitly invoke RMP initialization during IOMMU SNP setup.  Pretending
-> > there's no connection when snp_rmptable_init() checks amd_iommu_snp_en and has
-> > a comment saying it needs to come after IOMMU SNP setup is ridiculous.
-> > 
-> 
-> Thanks for the suggestion and the patch, i have tested it works for all cases
-> and scenarios. I will post the next version of the patch-set based on this
-> patch.
+On Mon, Jan 27, 2025 at 10:57:32AM +0800, Yunsheng Lin wrote:
+> Note, the devmem patchset seems to make the bug harder to fix,
+> and may make backporting harder too. As there is no actual user
+> for the devmem and the fixing for devmem is unclear for now,
+> this patch does not consider fixing the case for devmem yet.
 
-One thing I didn't account for: if IOMMU initialization fails and iommu_snp_enable()
-is never reached, CC_ATTR_HOST_SEV_SNP will be left set.
+Is there another outstanding patchet?  Or do you mean the existing
+devmem code already merged?  If that isn't actually used it should
+be removed, but otherwise you need to fix it.
 
-I don't see any great options.  Something like the below might work?  And maybe
-keep a device_initcall() in arch/x86/virt/svm/sev.c that sanity checks that SNP
-really is fully enabled?  Dunno, hopefully someone has a better idea.
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 0e0a531042ac..6d62ee8e0055 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3295,6 +3295,9 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
-                ret = state_next();
-        }
- 
-+       if (ret && !amd_iommu_snp_en)
-+               cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
-+
-        return ret;
- }
