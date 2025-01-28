@@ -1,145 +1,162 @@
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A82C41A841E;
-	Tue, 28 Jan 2025 14:24:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.126.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB39A1DE4FC
+	for <iommu@lists.linux.dev>; Tue, 28 Jan 2025 17:30:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738074283; cv=none; b=KjCyUav3iL8KjCCsKbOd/2XGDxDRBHdNsdLmgiQASSj6FZxpdfxNgNgDDzx/M/JhRJaLx9eYfrXSl0p9/ZlY7YyLDnesKronY+LhTruLb0MgLz3S1sEX8gB2rrAacZ9GS0vG7+6HaWO1dbPLo2f1hyCX5keiigwG5x/HzCM5uwo=
+	t=1738085408; cv=none; b=qU0ewdsBsqzM/zu/1DyzLfxPLd/+hXXpr/3RrqOw8MTDIsKUNwGsG5shMdL0BYkbfYqG83uFWjrQljXa3ED4fF50mDKzIfhkA3mjzr48qCbmlL0jtAG/rBTo5yg6GOePFKtJ2beIN/oB6ICvxCpDgIZBwa/6GQUZb+vdYX0YJH4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738074283; c=relaxed/simple;
-	bh=W+UEOhbFx/rklJvMkdqpyyUT1DddbYt5ggnJeVz08EA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=C+1d1TPJyT6VhEZ2BkBEwSsyDIbbSdbTngIil70jLdXpdx5BoLWa+hkEpfEAm0ooUmfk4DOAuhVNTD6EeYbGyz2h+XS+6p0HLOXkt8p36+FvavWFtWVqnsMJVeFmmqWN84mFB2j8iqYyBegVaqLzRbzAll0xbgxy/lPr/Vreg9M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=simg.de; spf=pass smtp.mailfrom=simg.de; dkim=pass (2048-bit key) header.d=simg.de header.i=linux-kernel@simg.de header.b=xvL3OkTa; arc=none smtp.client-ip=212.227.126.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=simg.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=simg.de
+	s=arc-20240116; t=1738085408; c=relaxed/simple;
+	bh=tysSkBR0Z8lEM3foLBv4kTY9Hl+FQOveKxPM9tZicv0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lmDGG5/Oa41PdM7JbTCRsLhfZaqjbIN8vgqqUZTzGkk4C1aM93vk5LtNRjGWM4+ZSqIVzHshSCQ8a2LgqR6nF03PcL/VdR+0oAo/7VQRL6rzJEBkPr4p3PY8oLEV3rvbgHixSXezwD0Vjn/KWWfoI9cq+ltFvPv2caDBVVm5Xok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Nwci7+Dw; arc=none smtp.client-ip=209.85.219.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=simg.de header.i=linux-kernel@simg.de header.b="xvL3OkTa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=simg.de;
-	s=s1-ionos; t=1738074265; x=1738679065; i=linux-kernel@simg.de;
-	bh=mSwKFariyFIkIz2C7OT20lJ2HRy8/iEqy4unexi0ZWA=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=xvL3OkTaqrOxzUzsTJ9Ai4OOU+c7gS7MB4stk50ObOTOnlDgTvJeFWDnzyNNykHe
-	 pZC+QiSV7Ei6l5jf2O3uxBpiUQ602JzZdM1asnUqVQVZqcW9K60HoTUhfx1j9KxlA
-	 kRMFnCI07Bppr/ey2zNE5jZVIfVQbCrN7HyfQNY4zlofGfxWmVXL3KNzmtuOxlNV4
-	 5mTw1gorLn55IYupGcQCL3NSQYQ3NrrGP20rzaU4OuFhfEYt80fWIctgUPBMjsFZy
-	 trjO9SS6Jahv0bf5Y/FArmTrfB4lSplYiyWqB7X/wL+nPsnBxf3GiRXpfqN2Vbnw+
-	 kj1yLqJOpOqxRP9v4w==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from [192.168.1.60] ([93.217.97.102]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MRVy9-1trJFs0Yz7-00SCYr; Tue, 28 Jan 2025 15:24:25 +0100
-Message-ID: <e01fdde0-4760-487d-af0e-2aecf9d7ade2@simg.de>
-Date: Tue, 28 Jan 2025 15:24:24 +0100
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Nwci7+Dw"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6d888fc8300so29533636d6.3
+        for <iommu@lists.linux.dev>; Tue, 28 Jan 2025 09:30:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1738085404; x=1738690204; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=WDYik77/xun0xe9niWU6y+mgX3x25FoUK2bntOot5h8=;
+        b=Nwci7+DwF496Bh+3E0UaGMx9VGZwcKS5nQHWtiGjFJMrIl/wTniI63mQSrsYYmgfEB
+         d0JOO/xCo0XARz4SlqLDv7UsW0YtxH1I13+Qlr09mEBgjXlTLAtMQUA2G2A/IGTOZLpI
+         E29ITso2AIFhMc8usTY2BOSSFzZZ0K0TJQsVxFQJdu7g80zhaHO2SCoJIZknvqgSQ1o+
+         y8+HSijWa1qHMAzjJ/K1mmoxjljRSH33AOr1yaSwf4TRqx4gRKzt22tnFVFXouH7Cfwm
+         mQDTgRyLzNDu0V1ac+KbRV+6KqXb9OM2dxZw8s+m50R7Ze3WaG7/ik8dqFLaFvS3rzAP
+         Eb4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1738085404; x=1738690204;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WDYik77/xun0xe9niWU6y+mgX3x25FoUK2bntOot5h8=;
+        b=F+QvN4/U7/WKw1vfYhIPOt10jr4Gv8UHWoTyI0L29SYF2RbmUv35ikl++O80geJ+r6
+         r8OsppbdeyTojMt+wq5SRHgA4uXjBzirB62cC0ShZLyAShSmAhMD0w1Hzgs+6nc3X3bg
+         f6klMEIuwpY4jjC948zrLjpX/uu6l8RU5CrOjPhW/HdHbBQ+rIcH4YykTZXTw7QpyhcZ
+         u7NNFKsQtnTKrC30+D/2hUJbaGjq8Pw2bLbU9cwVtYMuBhLOJfZ3YI7RloghPEZDcx4v
+         W5qAchYkMzxHb4qdlqHisTerVVWQ3c0FIa8y27z7ecQEc+X7ngSTN4qiQQDcEkpmwTnd
+         qkbA==
+X-Forwarded-Encrypted: i=1; AJvYcCUqyVxpBj1NGIqlEuBdN8PmFoS84aQb2UQieaQhHwpsT2Ne3jtz1esdIwaZvTxOr3LHf7pgLA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzu1mBdOlksXVu3EmDP2pI2lvt53aMymUhpyLcRpk/938mq+dTt
+	e0GtKDiUV8sa8oq8KgwjKziIJX86kXZXzqmf3iZh0AL6ZBf94Ss0D0afkReejlE=
+X-Gm-Gg: ASbGnctUSE4xCbgB6mo0eUaPyeZhpqnL9I3CPKTflFTZAZUSJ2O6GaNnQGQIGQn6SM6
+	vwJTaQk9Hyb7U+Mzn0cs4Pta0Ps0nMIoMJkcIV7yVFtB9LZjEq70rXiOt3zFJZZ50ac7quWWwag
+	I/Ibun8BdfTWTUW2/G/8vvCDq7xfjg3oMGICKV296CA9lQbFhgyRG3jH+7MGx98ytgxx4TIuq/w
+	dFlJMBnsR/P/L8//33oQin2R5XaQ6iXiMbWwPT0tmp57EXlPVICaG3c/8B65rcYa+uvuvtv17fw
+	4gehxTpMr+d1tMjyRpv24JQLspWKFn/imILV/jGwPs2/K/sRuwsv3XpW6EzEFCcF
+X-Google-Smtp-Source: AGHT+IHXPALu4u+DKA7wUGmdN7CK3HwJKRJc2DZTgmFqwqNFpsajznD1cDb3S1znrg8mB76NY8eQ8Q==
+X-Received: by 2002:a05:6214:224e:b0:6e1:5076:c400 with SMTP id 6a1803df08f44-6e1b21e52edmr675377206d6.39.1738085403769;
+        Tue, 28 Jan 2025 09:30:03 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e20524c9afsm47259876d6.48.2025.01.28.09.30.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jan 2025 09:30:03 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tcpPW-00000007fAp-37V1;
+	Tue, 28 Jan 2025 13:30:02 -0400
+Date: Tue, 28 Jan 2025 13:30:02 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Matthew Rosato <mjrosato@linux.ibm.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com,
+	hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+	svens@linux.ibm.com, borntraeger@linux.ibm.com,
+	farman@linux.ibm.com, clegoate@redhat.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] iommu/s390: implement iommu passthrough via
+ identity domain
+Message-ID: <20250128173002.GE1524382@ziepe.ca>
+References: <20250124201717.348736-1-mjrosato@linux.ibm.com>
+ <20250124201717.348736-4-mjrosato@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
- X600M-STX + Ryzen 8700G
-To: "Dr. David Alan Gilbert" <linux@treblig.org>, bugzilla-daemon@kernel.org
-Cc: Christoph Hellwig <hch@lst.de>, Thorsten Leemhuis <linux@leemhuis.info>,
- bugzilla-daemon@kernel.org, Mario Limonciello <mario.limonciello@amd.com>,
- Bruno Gravato <bgravato@gmail.com>, Keith Busch <kbusch@kernel.org>,
- Adrian Huang <ahuang12@lenovo.com>,
- Linux kernel regressions list <regressions@lists.linux.dev>,
- linux-nvme@lists.infradead.org, Jens Axboe <axboe@fb.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- LKML <linux-kernel@vger.kernel.org>
-References: <20250109082849.GC20724@lst.de>
- <210e7b28-de05-44bc-9604-83a79ae131b0@leemhuis.info>
- <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de>
- <CAOBLbT8103fAyoFNF8=YcEM1sM6HodcUe=Ee5NsE2hUkfCYv7g@mail.gmail.com>
- <3b693647-5e82-4c39-8017-22cada56eb55@leemhuis.info>
- <20250117080507.GA25953@lst.de>
- <f81bb87a-c181-4973-be05-f7df84133a46@leemhuis.info>
- <10e39c88-4667-4c61-b3eb-3dd7ee3074c3@leemhuis.info>
- <20250128074133.GA22435@lst.de>
- <379bba80-df0f-44c5-a15e-fd4393c52b8f@simg.de> <Z5jTKTfKUeLm4uJT@gallifrey>
-Content-Language: en-US
-From: Stefan <linux-kernel@simg.de>
-In-Reply-To: <Z5jTKTfKUeLm4uJT@gallifrey>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:/P/SH35o2dcXOOcdHEWfuB7XIuUjpuAcCyL91L8fn3Gf07gYgGe
- opGiETDLtflImCYl+epBa6MuxfJdJIlbgMkdI8xpPOj9Q/IFJNGvEGIjDL+lJ+igD1L/rU9
- 2gQvfKdRN5/QxRmcJ8YLg7xzzqLf0u2xbG5S2N+zsq86KTYkjebgEe4s7pNMjjP7mTpyxOS
- GFut2iv8qumgCQJijxMTw==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:Utrt6PODP34=;0QnlnCFh+ie3wFy6kCKVptnOQhr
- 85ulsoTaYyCr5QmSlH8STjNzcUnWVrAFJxxFkGyMtkuvyVGLEqlKLcUYVI7uYKnwb0oMdTrrD
- rGxmUdpO82/TGXX/BsqQ3ugl5wGcdbNVpx84S0Mawnqg9C+wjD+yvdMYG8t42AcD4APtu7pMb
- wbnwtm3tS0yauuRK8vTgarnM5S1i+XDHQzPwqOXAuUgYm+zdiapyCks8wT26ly7fwncW9s2qc
- TN7IBmUgaYtVOrT6oU5p3ytzQp0qF2bJoANmWdEeduIVXX9gGfTVq9wnfYAhu0QpMeY90zrS0
- vvnLwkMIwK0Awo8lSzW4tlErULPBVKv69Al7FZqiyxzRkTzGLl/Szjiv2DUZjbILkk2Q7Vv6x
- OlVHHxsvra/7Tvb3iVbZ/gswD3qoob7LifJjWdYAEDyhf2ulVyAJJNvwphK5MD3/i2jBTGiBL
- 1BkLU9DCgnoHYGSvAJKxLKgN4yju4Yz4uPKx8a2RDhUB1+9f40TePTBa3+CHsdjHxs+eMTrpw
- kUPPfrodtG2Bi3zrS2eSS3+FgDisIpC8GSWYA1lYBxzhQXkzIO5AMes7KCHAHZ8m47Cf5UCrq
- Y6oDkHIXOhLwlsSfXdhWIWmUGMbXGaZxWSp13V3P+NPyjj3OG+VlzvRojX8uEak7EyyDilt29
- /yZo0ww97fV9Ln+Ds+rnpcUz9r7MDV991zpwglFkPEqYitZk2VRPKhWSciKUV8t88E/Isoiw1
- IKb59bilSxCFHh5VNoJL5O+SneKJknKkWPIJysqUM96BVf0Lf8PU1fgfeMLrYOSpnWKlcZ2Ti
- D1ICAAT9W+nV1mRoDanxWW166WTmuZu+vnVW7zbAxCXbq/Yg1oiy0G8sEwX3dGrxgsf9Veh57
- e7iKbPhei+fD8J9fDXyJ/0Zl6jL8MRJkDid/XlkZv1+TwRviJyOILVssWAsBI4MBlUNUCE+Rp
- XrySnr3TxedmpDaJZ285COjuMo47xa7bbvpfJ2qNvOjI0r69qvk2MzJzkFsgqACi457m+MCj5
- YwtT6lKfj/XDPdx4DCxeHlWwzgdNiDhsNZDLSUlN1Evd2EJ3g2g5D42N+8Ff+oz56mCUGNdRt
- x+gxJJCS1XTJ3EPA3wz/VOOK53AWZe+knlrDFsvDJ4MxzxNn8nENX1Qmc3kaBCqMjWWWqcOcu
- 35gG076nIw4tNoMGo/lttYDemDGM8FBTh4r0Al8BUvz87iSQjqnMCeVx9gE8FMkWiGKel7YkL
- FoXC7PKDCeInmpLH47/UmAMDlLXSSts7qX9HOw1hcqQVTqup0j8Lab0=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250124201717.348736-4-mjrosato@linux.ibm.com>
 
-Hi,
+On Fri, Jan 24, 2025 at 03:17:17PM -0500, Matthew Rosato wrote:
+> Enabled via the kernel command-line 'iommu.passthrough=1' option.
+> 
+> Introduce the concept of identity domains to s390-iommu, which relies on
+> the bus_dma_region to offset identity mappings to the start of the DMA
+> aperture advertized by CLP.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>  arch/s390/pci/pci.c        |  6 ++-
+>  drivers/iommu/s390-iommu.c | 95 +++++++++++++++++++++++++++++---------
+>  2 files changed, 76 insertions(+), 25 deletions(-)
 
-Am 28.01.25 um 13:52 schrieb Dr. David Alan Gilbert:
-> Is there any characterisation of the corrupted data; last time I
-> looked at the bz there wasn't.
+Seems Ok
 
-Yes, there is. (And I already reported it at least on the Debian bug
-tracker, see links in the initial message.)
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-f3 reports overwritten sectors, i.e. it looks like the pseudo-random
-test pattern is written to wrong position. These corruptions occur in
-clusters whose size is an integer multiple of 2^17 bytes in most cases
-(about 80%) and 2^15 in all cases.
+> -static const struct iommu_ops s390_iommu_ops = {
+> -	.blocked_domain		= &blocking_domain,
+> -	.release_domain		= &blocking_domain,
+> -	.capable = s390_iommu_capable,
+> -	.domain_alloc_paging = s390_domain_alloc_paging,
+> -	.probe_device = s390_iommu_probe_device,
+> -	.device_group = generic_device_group,
+> -	.pgsize_bitmap = SZ_4K,
+> -	.get_resv_regions = s390_iommu_get_resv_regions,
+> -	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= s390_iommu_attach_device,
+> -		.map_pages	= s390_iommu_map_pages,
+> -		.unmap_pages	= s390_iommu_unmap_pages,
+> -		.flush_iotlb_all = s390_iommu_flush_iotlb_all,
+> -		.iotlb_sync      = s390_iommu_iotlb_sync,
+> -		.iotlb_sync_map  = s390_iommu_iotlb_sync_map,
+> -		.iova_to_phys	= s390_iommu_iova_to_phys,
+> -		.free		= s390_domain_free,
+> +#define S390_IOMMU_COMMON_OPS() \
+> +	.blocked_domain		= &blocking_domain, \
+> +	.release_domain		= &blocking_domain, \
+> +	.capable = s390_iommu_capable, \
+> +	.domain_alloc_paging = s390_domain_alloc_paging, \
+> +	.probe_device = s390_iommu_probe_device, \
+> +	.device_group = generic_device_group, \
+> +	.pgsize_bitmap = SZ_4K, \
+> +	.get_resv_regions = s390_iommu_get_resv_regions, \
+> +	.default_domain_ops = &(const struct iommu_domain_ops) { \
+> +		.attach_dev	= s390_iommu_attach_device, \
+> +		.map_pages	= s390_iommu_map_pages, \
+> +		.unmap_pages	= s390_iommu_unmap_pages, \
+> +		.flush_iotlb_all = s390_iommu_flush_iotlb_all, \
+> +		.iotlb_sync      = s390_iommu_iotlb_sync, \
+> +		.iotlb_sync_map  = s390_iommu_iotlb_sync_map, \
+> +		.iova_to_phys	= s390_iommu_iova_to_phys, \
+> +		.free		= s390_domain_free, \
+>  	}
+> +
+> +static const struct iommu_ops s390_iommu_ops = {
+> +	S390_IOMMU_COMMON_OPS()
+> +};
+> +
+> +static const struct iommu_ops s390_iommu_rtr_ops = {
+> +	.identity_domain	= &s390_identity_domain,
+> +	S390_IOMMU_COMMON_OPS()
+>  };
 
-The frequency of these corruptions is roughly 1 cluster per 50 GB written.
+Though it is a pattern in iommu drivers to use a non-cost ops and
+mutate them during probe. For instance you could NULL
+s390_iommu_rtr_ops->identity_domain if the platform does not support
+it.
 
-Can others confirm this or do they observe a different characteristic?
+On the other hand your version with a const ops is security nicer.
 
-Regards Stefan
+Alternatively, I have a patch series that adds a
+domain_alloc_identity() function to get virtio-iommu moved to the new
+APIs, that could work well here too and keep the const ops.
 
-
-> I mean, is it reliably any of:
->     a) What's the size of the corruption?
->            block, cache line, word, bit???
->     b) Position?
->            e.g. last word in a block or something?
->     c) Data?
->            pile of zero's/ff's junk/etc?
->
->     d) Is it a missed write, old data, or partially written block?
->
-> Dave
->
->>> Puh.  I'm kinda lost on what we could do about this on the Linux
->>> side.
->>
->> Because it also depends on the CPU series, a firmware or hardware issue
->> seems to be more likely than a Linux bug.
->>
->> ATM ASRock is still trying to reproduce the issue. (I'm in contact with
->> them to. But they have Chinese new year holidays in Taiwan this week.)
->>
->> If they can't reproduce it, they have to provide an explanation why the
->> issues are seen by so many users.
->>
->> Regards Stefan
->>
->>
-
+Jason
