@@ -1,164 +1,170 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6FD119D8A2
-	for <iommu@lists.linux.dev>; Tue, 28 Jan 2025 10:37:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738060639; cv=pass; b=ebmoqAPkPoWKTJ1YXno16cAoqh7vNcfsK8zqKYXKFVXnAJVEaoEgyr2/GpNQhDgSWTSxZzspqLj648A9PdNnQ5H2I4tsWVttVfo7ZsIpmgqzHFiE/roTCB1XdOEqYsQ3OdVnjWBlGSx/L+GkgMPZxZ6h4/IHKodpnzYgNAOS1IY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738060639; c=relaxed/simple;
-	bh=Iy8jL+RO4kCeCWANeotzNXbiNiT5D6HxELcbUATE7KI=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=P8pQOaj4xX7zbjBA+wq2AB2k11WC1rOW2xH2fIQBXbY3uhOJRwUV+2+Azv4oDJdV991H0FyvX5pDMxe4/ZRbAwh22J7pial+yNOr4+f0yz6ZPk6bW9PeYdtsJDQu8cbB105L4p4In6fHxupMVJMTZQwzJBwf8id99DjzkkLb1IU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=SbSmuRoR; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82FF9EED6
+	for <iommu@lists.linux.dev>; Tue, 28 Jan 2025 11:08:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738062517; cv=none; b=KDme883K6fyzOF2W3AJ5Qxn43LLzMs+a7p/ueqRUf3k8Rd5KKJpOpbe/8mpsvwNcKLXkqd5vuHEZjZQqTNohozz/GQpWXbtnSkn05Px3pMjeVOMMVxRaOfiwT4xEVR1qh8ywXGLyS9VAHQAlmdnLfQkWKlnNOpZz37iVvt34000=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738062517; c=relaxed/simple;
+	bh=1PAlU4202PMErFrgW0CMZf1LAQcEcfqWASbwbJWtcoA=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=T4jx1On2c4Q4sMKu2ft69UpHXuBcC9R4w6mYz/j3GMKPhallQtUSWZ9GDj5BZAjvYcNGRgxq3ErDJFOd1A+LVSJ6nMsTz08940ugyLG+SHf0GMIduB+Neqw5dVmX4WUTNybiNMb2rGEwt5iXJb62E9tEto67HkcBtTTa4V65Hys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=ZZFJtr7i; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="SbSmuRoR"
-ARC-Seal: i=1; a=rsa-sha256; t=1738060620; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=nMWaP8QhBMSFwiQFHXhh9+w5h+K9wBRT0aJ6/Y/QZvGHk/6Wdxqwi/ie6FVty6lOoG5eA9vcKEFUvOSg9Kv+1j6l6gJeDlPluwn67iB7pWgf8duhP9bPpCSbovUd35yIK1OUI0eqYjVHNwtjQk7wTDfQyH1NwGoe5a0zIgbpnjw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1738060620; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=HCS7Y/La3qKBzsI149zadTuSnL283J0V9/JciMTktvQ=; 
-	b=a9gzWZAZpv2DdOs6klXod8Cc1F0qXnuAnAOvLh5LZWN81KKLpoP0eCT/70/o/kTso4TiGmpRawv1/ANGO+JurxuqfHPP301QOqXFomOa9AtMSPc4niUkAID5fQ+OwtDU3jP2BsZJrH8zLjvPLBrBn6KvWjoQ7nTouaIJBCLq7GY=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
-	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1738060620;
-	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
-	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
-	bh=HCS7Y/La3qKBzsI149zadTuSnL283J0V9/JciMTktvQ=;
-	b=SbSmuRoRJcDdhFGq5GhZlYXVdwcZB/BaYMHzFu0UjA8ZkiauDSzi9dDmJVzUv+GN
-	3z1XxQxrB8QOEaOrw1byYHhVrdPRJVbUaCVOVcEdAwr9XW1Zt2KIJa6UhMGDxoSjhhF
-	eNneaaYNBxJ85QBFDoX8YuSXGuwDf0WkJSdx2v/E=
-Received: by mx.zohomail.com with SMTPS id 1738060592449555.1420105642246;
-	Tue, 28 Jan 2025 02:36:32 -0800 (PST)
-Content-Type: text/plain;
-	charset=utf-8
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ZZFJtr7i"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50SACkJr025292;
+	Tue, 28 Jan 2025 11:08:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	HpXhjxy8FK90HGA5mfYSFxDnd1NzEZOUKZXCQxoSaqw=; b=ZZFJtr7iEd+F/tRH
+	u2cwgWya6VG51QwP/Q6ZNnkHw/cDMSYCqx8O77VNr7CmKqGJwmUg7VfMB5yEnxHw
+	jldVyF12Ggve8pmoavXYNhSI7iq5o7cSu699SLlGDI5in+5jcydGn97txU/Y7Ycn
+	GMLMVQU6PVQ+o6jbXL6lTqU7mMAtwnc1WJCKWYQHXd6K3jUAskm8WPqq7zMtlFzY
+	O/yx9BxCxIO1Yna5NiRRfWnR/2fs3ep/Vy2C/LdPrAN+YlanTs5ByCnWNwXz05bQ
+	Ay7Hl6gAK8p/cxHKBDrvYayQqIST9jHJ51hz+ocoqX8uGwcRK+Le96rlPnzc275E
+	OhYAHw==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44ew9n84q4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 28 Jan 2025 11:08:17 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 50SB8GYq013745
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 28 Jan 2025 11:08:16 GMT
+Received: from hu-guptap-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Tue, 28 Jan 2025 03:08:12 -0800
+Date: Tue, 28 Jan 2025 16:37:59 +0530
+From: Prakash Gupta <quic_guptap@quicinc.com>
+To: Connor Abbott <cwabbott0@gmail.com>
+CC: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
+        "Robin
+ Murphy" <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        Sean Paul
+	<sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>,
+        Abhinav Kumar
+	<quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <freedreno@lists.freedesktop.org>
+Subject: Re: [PATCH v3 1/3] iommu/arm-smmu: Fix spurious interrupts with
+ stall-on-fault
+Message-ID: <Z5i6GQDd5apN+a10@hu-guptap-hyd.qualcomm.com>
+References: <20250122-msm-gpu-fault-fixes-next-v3-0-0afa00158521@gmail.com>
+ <20250122-msm-gpu-fault-fixes-next-v3-1-0afa00158521@gmail.com>
+ <Z5IjsqQ6vTdUXiGt@hu-guptap-hyd.qualcomm.com>
+ <CACu1E7H5X2EfY9AG=xceaoZJkbumwnrsU4QvNbxd_A2wgVVOaQ@mail.gmail.com>
+ <Z5KXwNPrdirVUn8Z@hu-guptap-hyd.qualcomm.com>
+ <CACu1E7GOS+_biN=AuQwYK47ApRPFGygyD+U5X9d_4ReXKrzbfw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.300.87.4.3\))
-Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
-From: Daniel Almeida <daniel.almeida@collabora.com>
-In-Reply-To: <CAH5fLgjZiux1_=dNuZN+7SEY6fUGMDNLoJNTwmHcB=WbKChwzw@mail.gmail.com>
-Date: Tue, 28 Jan 2025 07:36:17 -0300
-Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
- rust-for-linux@vger.kernel.org,
- dakr@kernel.org,
- robin.murphy@arm.com,
- Miguel Ojeda <ojeda@kernel.org>,
- Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>,
- Gary Guo <gary@garyguo.net>,
- =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>,
- Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <D3CC752A-8FE3-4B2A-93A2-7FEC2EC3940E@collabora.com>
-References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
- <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
- <CAH5fLgjL0aGGwkjEfXH08Jopwin1NfkLzp9vQWKcHPEum8jV4g@mail.gmail.com>
- <0E0FC88B-95C0-4DBE-B497-AF9101BACE70@collabora.com>
- <CAH5fLgiW6n82hMhbmJ-ynd6329mEDFX6TzxXQZaaoG47HAWWcA@mail.gmail.com>
- <95382414-7A44-45A4-8F3F-C6D755422AD5@collabora.com>
- <CAH5fLgjZiux1_=dNuZN+7SEY6fUGMDNLoJNTwmHcB=WbKChwzw@mail.gmail.com>
-To: Alice Ryhl <aliceryhl@google.com>
-X-Mailer: Apple Mail (2.3826.300.87.4.3)
-X-ZohoMailClient: External
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACu1E7GOS+_biN=AuQwYK47ApRPFGygyD+U5X9d_4ReXKrzbfw@mail.gmail.com>
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: O5OzzwV6RozAHM5MY_D8K1NnFZrtlya_
+X-Proofpoint-ORIG-GUID: O5OzzwV6RozAHM5MY_D8K1NnFZrtlya_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-01-28_04,2025-01-27_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ lowpriorityscore=0 spamscore=0 mlxscore=0 priorityscore=1501
+ mlxlogscore=617 adultscore=0 malwarescore=0 phishscore=0 suspectscore=0
+ impostorscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2411120000 definitions=main-2501280086
 
->=20
-> I mean, I imagine that you could make the syntax
-> `dma_read!(my_alloc[7])` read the entire struct. I'm not sure which
-> safe methods you are referring to, because right now there is only the
-> unsafe as_slice().
->=20
-> Alice
+On Thu, Jan 23, 2025 at 03:14:16PM -0500, Connor Abbott wrote:
+> On Thu, Jan 23, 2025 at 2:26 PM Prakash Gupta <quic_guptap@quicinc.com> wrote:
+> >
+> > On Thu, Jan 23, 2025 at 09:00:17AM -0500, Connor Abbott wrote:
+> > > On Thu, Jan 23, 2025 at 6:10 AM Prakash Gupta <quic_guptap@quicinc.com> wrote:
+> > > >
+> > > > On Wed, Jan 22, 2025 at 03:00:58PM -0500, Connor Abbott wrote:
+> > > > The context would remain stalled till we write to CBn_RESUME. Which is done
+> > > > in qcom_adreno_smmu_resume_translation(). For a stalled context further
+> > > > transactions are not processed and we shouldn't see further faults and
+> > > > or fault inerrupts. Do you observe faults with stalled context?
+> > >
+> > > Yes. I've observed that on MMU-500 writing RESUME before the interrupt
+> > > has been cleared doesn't clear SS. This happened with v2 in the case
+> > > where there was already a devcoredump and drm/msm called
+> > > qcom_adreno_smmu_resume_translation() immediately from its fault
+> > > handler, and we'd get a storm of unhandled interrupts until it was
+> > > disabled. Given that the architecture spec says we're supposed to
+> > > clear the interrupt first this may have been an attempt to "help"
+> > > developers.
+> > >
+> >
+> > Just to clarify, present sequence is:
+> > 1. context fault with stall enable. FSR.SS set.
+> > 2. Report fault to client
+> > 3. resume/terminate stalled transaction
+> > 4. clear FSR
+> >
+> > At what point when you try #2->#3->#4 or #4->#2->#3 sequence, is FSR.SS
+> > cleared and interrupt storm is observed.
+> 
+> With #2->#3->#4 FSR.SS is *not* cleared and there is a subsequent
+> interrupt storm with only FSR.SS asserted. With #4->#2->#3 there is no
+> interrupt storm. From this we conclude that MMU-500 does not clear
+> FSR.SS unless #4 happens before #3.
+> 
+Thanks Connor for clarification. I get your point now. I think it's
+expected interrupt storm with #2->#3->#4 sequence is expected.  With
+CONFIG_ARM_SMMU_QCOM_DEBUG enabled, context fault follows the sequence of
+#1->#2->#4->#3, which is spec recommended.
 
-I mean this:
+so, common fault handler can be modified to follow the same sequence, but I
+have concern regarding clearing FSR before reporting fault to client.
+qcom_adreno_smmu_get_fault_info() is an example I gave but other client
+handler may have similar expecation of fault register not changed before
+client fault handler is called.
 
-+    /// Writes data to the region starting from `offset`. `offset` is =
-in units of `T`, not the
-+    /// number of bytes.
-+    pub fn write(&self, src: &[T], offset: usize) -> Result {
-+        if offset + src.len() >=3D self.count {
-+            return Err(EINVAL);
-+        }
-+        // SAFETY:
-+        // - The pointer is valid due to type invariant on =
-`CoherentAllocation`
-+        // and we've just checked that the range and index is within =
-bounds.
-+        // - `offset` can't overflow since it is smaller than =
-`self.count` and we've checked
-+        // that `self.count` won't overflow early in the constructor.
-+        unsafe {
-+            core::ptr::copy_nonoverlapping(src.as_ptr(), =
-self.cpu_addr.add(offset), src.len())
-+        };
-+        Ok(())
-+    }
-+}
+> > The way CFIE disable is helping
+> > with current patch indicates write FSR is unstalling context and subsequent
+> > transactions are faulted.
+> 
+> No, it does not indicate that. The interrupt storm happens even when
+> there is exactly one context fault, and when the interrupt storm
+> happens *only* FSR.SS is asserted. I've verified this with debug
+> prints. Once more, MMU-500 will assert an interrupt when only FSR.SS
+> is asserted. This has nothing to do with subsequent transactions.
+> 
+> > Do you stop getting interrupt storm after write
+> > RESUME.
+> 
+> Yes, as long as the write to RESUME happens after all other bits in
+> FSR are cleared.
+> 
+> > If you can mention your SCTLR configuration and FSR state in test
+> > sequence, it would be clearer.
+> 
+> SCTLR has both HUPCF and CFCFG enabled.
+> 
+> >
+> > An aside, If reducing delay between FSR and RESUME write helps then both
+> > can be done as part of qcom_adreno_smmu_resume_translation(). This will
+> > follow spec recommendation and also make sure fault registers are not
+> > cleared before reporting fault to client.
+I think this sequence should address the issue you are observing.
 
-=E2=80=A6and the similar read() method that was apparently removed, =
-i.e.:
-
-+    /// Reads data from the region starting from `offset` as a slice.
-+    /// `offset` and `count` are in units of `T`, not the number of =
-bytes.
-+    ///
-+    /// Due to the safety requirements of slice, the data returned =
-should be regarded by the
-+    /// caller as a snapshot of the region when this function is =
-called, as the region could
-+    /// be modified by the device at anytime. For ringbuffer type of =
-r/w access or use-cases
-+    /// where the pointer to the live data is needed, `start_ptr()` or =
-`start_ptr_mut()`
-+    /// could be used instead.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that no hardware operations that involve =
-the buffer are currently
-+    /// taking place while the returned slice is live.
-+    pub unsafe fn read(&self, offset: usize, count: usize) -> =
-Result<&[T]> {
-+        if offset + count >=3D self.count {
-+            return Err(EINVAL);
-+        }
-+        // SAFETY: The pointer is valid due to type invariant on =
-`CoherentAllocation`,
-+        // we've just checked that the range and index is within =
-bounds. The immutability of the
-+        // of data is also guaranteed by the safety requirements of the =
-function.
-+        Ok(unsafe { =
-core::slice::from_raw_parts(self.cpu_addr.wrapping_add(offset), count) =
-})
-+    }
-
-I don=E2=80=99t think there=E2=80=99s anything wrong with these, so =
-maybe your solution can come in as a convenience
-when one wants to save on the amount of copying? IMHO the two methods =
-above co-exist with what
-you propose.
-
-The unsafe `as_slice()` and `as_slice_mut()` should also stay, in my =
-opinion. They can be used, for example,
-in codec drivers.
-
-=E2=80=94 Daniel
-
+> >
+> > Thanks,
+> > Prakash
