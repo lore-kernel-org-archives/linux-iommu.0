@@ -1,168 +1,231 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF29D1B4257
-	for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 12:11:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 537D61AAE08
+	for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 12:16:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738152675; cv=none; b=MMUwhE0s+bNxNSuk9/HMaYL0oZJpGt43JroUCYg27+8MLdawowwocszlAU2xz72cAjr5KSb0wIqNksTr7d1DgbhQyF+ouS32m3+MO4u4CSkYP/qj8e3OXWNQF4mSj3tbaovJ4U9pqvnHjv4XWaYPXtQQCxwnez+Y1kuun2Ek7ug=
+	t=1738152974; cv=none; b=N486m0UxRsHPzWAUzvnKb+oF5KYbhf8PRRHQBvwDKeaaK6/kWbxUfYFQnRU3qc7GticQaibaCcvmuurGKPuem9MiBiZI5QVcjRhICqILhJHpPCu+7BdW8w3mE1olOzEkhJzaTEn/9QVbr64bJiyr+tEty6GZNtClab5PbjyaACs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738152675; c=relaxed/simple;
-	bh=6IdA7SqmTNXeAUkejuPdnOPZIQXSzN75bEY9k/EhdgA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LOuoBhpOLW3SS+wpuNfLPvjGHZjy/hOKY7trMkYHo0VLA/uOkXi0K4l328v1p0N5Y6u4g+gr/FtL9un7rM0FimblsWJh0YtFjI25MsnGGl7KFDt0EFSV4Bi35VHIsDArRXxwjtV206kfDM5okZGnhtBEhOTciERx+0TA+XKuzxA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ir5WDZu1; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1738152974; c=relaxed/simple;
+	bh=/baOjcO8BDS9wABFMnNMjlMdnguKi8ayu5Sr/AxFX8M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YlaXSmivwNCHMzbqXC8J4kkeBT4tLhQxMOCeGSEre46cjNekkA73VwAc2EFznyX4TbL6+72yjAsfE5EPKd5nMQtFDaKaQgFCwb1I5FaPTHId9kY7TxTsWl9O79sapPZWa4vCOVoClv2JJ/jHZ1p+JIMs2W9nld0ZBe5GPLB3Yms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WVzBACTX; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ir5WDZu1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1738152671;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FfYT43qInjD7+NE+73mPjG28PGMRFzMEZ6xoue/ST5Q=;
-	b=ir5WDZu1E2XC2kFyD1y6DjnX5k67KU3J8HPHwoYg9O0jwLQLkp82fskNYFQix6sE7wHUoV
-	sDiZKCbdY5WdLxxKjTF5+Rhk4qwAL72yswApb7hYz957UEo7omf5N1OY11sGnG12p+H2CM
-	Rr/NMfqN2eVhoS5vMYbW3K3A/W0iEVM=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-319-vnOl-gSbNO6RZ082aIPUQg-1; Wed, 29 Jan 2025 07:11:10 -0500
-X-MC-Unique: vnOl-gSbNO6RZ082aIPUQg-1
-X-Mimecast-MFC-AGG-ID: vnOl-gSbNO6RZ082aIPUQg
-Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-5da0ce0ee51so5909467a12.2
-        for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 04:11:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WVzBACTX"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-438d9c391fcso85185e9.0
+        for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 04:16:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1738152970; x=1738757770; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=KsoV/LvY+nhEMjljzompPtNYOVC1vuKo/PhocupCgIA=;
+        b=WVzBACTXRcVHxNlDl2H8O2lOyqFCGo/7qa/MBgKYeZ9J7EuTZNWnH/lIjnmeMLcdD2
+         QYp8q4tMOEoq9+9m/5ie2FoomZglOXzQLO+RE+9Ddt7x7VZe5Czj2VBDP2J0wcmu7CeX
+         FwctmiX5KnPQCeqxBl3L7ZyTcj+vJtj9Fty2UdCtfperAjJm6tsykWPkETHPKlGyKbBy
+         CZj2eQLpA0AWpWEVU2GGZ3YxCcFtIEc0syjOv9wjnmex61oyjlUQsCP0RV3tXaQ0FWyN
+         J8A2bIY3mVeXNDUiV0RK/Z4+4ideMKQQ4sjZnSmNfCziq16wdLXPqf3pd6GFmwETf3xu
+         nI9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738152669; x=1738757469;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:reply-to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FfYT43qInjD7+NE+73mPjG28PGMRFzMEZ6xoue/ST5Q=;
-        b=HlIN9Fk13ESr5NgzDqQAwvDIDeH5c5UK+pyHgrfZX2XO6fHtJvUxt0NAuJwBdmtA0r
-         wMVNM/CvA/RKpYslJDMzmD+9PUJ/ps6c+3C6vr6EOv1Z1HH8iCX2q0gJWIW7vNE28mGr
-         IM9sWIqhCoMIZPqc8ZFFbX/rE/ywwMByot/fofRQukgu7e4LPbF2bdNWKxDxRidwAGNr
-         ea0oJI30KCv2+XsrLtbC9HgOI/nar9zK9Gj7f7pmPuMhtxaO7CHLlk1hc7gtfb/UUCc+
-         B/L6tYuh+rKEd22z3STbfnnt/Vlxn+sx1M8nn3S16Inem2XikMohi3q4fxv30GYHV+Kz
-         3S0A==
-X-Forwarded-Encrypted: i=1; AJvYcCUp+FxypaCwKXM7roGMXuI4omfpmWLSiy0tKdapTeq6Eh16pbdBo+vYSSKdaic+L0hiAzIpng==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwwaBI81XUpLLDxNxY4+Ubj2DpjdkVtjl12rt3D2pvDXKpN1Llb
-	5ePzFlzNGhQ4pL+S0ZGPrqCK27PVpHRYSmJ/H1YGRWBNWBGGULMCdgMFsExq8ZEInpLrFmbyd9r
-	hiVN91Z5gHVPdO5z6grKUHIgedvl+rCmISAsn1SNFITS5O7X226zw
-X-Gm-Gg: ASbGncuUMkdGETkt18rikUJ9W7C3cjbasjWMMZvVSG8ukG+YAank1h3Ak+7RG3x37xq
-	GLJofgQn1NmWOkjcc0C2vUA7yQ795As19Em5rgzBJu4gRDc47rLB0apkmiMBUw8w3j7cbSAsExL
-	7p9gmYOMXkwKUbI8qwYUPNcygFIop9moXaaEfQRiXLo/W/vZQ00yFt1Re2baf399J82Gm0gZeA1
-	pRu9T1WV1HOHVPlLEgZdVR/P/1yLiXNhQgecekkIad9fm748Qem1TXM1H7YdIwgQpbs032EzSk+
-	6HFOIAw98P310PRGugRg+82c5mJziji5qtWxq0Z3soQEpnVffpCM
-X-Received: by 2002:a05:6402:42d4:b0:5d9:a54:f8b4 with SMTP id 4fb4d7f45d1cf-5dc5efbf5bamr2757086a12.11.1738152669154;
-        Wed, 29 Jan 2025 04:11:09 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IHWwGofFlveJZZ8Y8RCQ261keTvS+w2IGgafzQLJiEPoI+LUqDstLACEsFV9aVwDeaatRYmZg==
-X-Received: by 2002:a05:6402:42d4:b0:5d9:a54:f8b4 with SMTP id 4fb4d7f45d1cf-5dc5efbf5bamr2757022a12.11.1738152668668;
-        Wed, 29 Jan 2025 04:11:08 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5dc1863978asm8680072a12.33.2025.01.29.04.11.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jan 2025 04:11:06 -0800 (PST)
-Message-ID: <38896dfc-b5d9-4efd-8aff-bbe8cdb47c6e@redhat.com>
-Date: Wed, 29 Jan 2025 13:11:03 +0100
+        d=1e100.net; s=20230601; t=1738152970; x=1738757770;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KsoV/LvY+nhEMjljzompPtNYOVC1vuKo/PhocupCgIA=;
+        b=mcXNMhEd98uc80b5XhBW7Nwb7TyGgub8YKTOJ8wCCayB6cgDvNlhv3deVPOh5RiM0q
+         ZmGtpONjvUzbebap9Ze4Ei1JT+ph2w3B/3wzRodwQj3rkQJL/UCGBCQ3CpbqQ5Eh7YHT
+         fDdzy99nkGm5ifi1YC8qMGdmO7E61DcLd5rZjfTXz04U8MI07t2AZnM/ywZk5MohlukB
+         79IhcRfiVluZ848b7tnTyEZ2VDRbJ2g2eApjogUgOnzRhDkU08I0KsBEQ1zkyXu8nsB4
+         30U9NN5KC76pv1kBmHFOnAcTNtna649SBa9fPaun8SAgtwj8kV4XBuT/dPwL2vrfUhjT
+         PAyQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWB3UYz/7X7pu8NXxJvTVN4c6igQlhWdzz2sZw/xDUGOcAgaTsN+1LYcAcGIfAGQq7tAseJkg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwdGMk/btiY4yKIDYlPN0WwM0GDldseSKguBw3JTkcR3CWtfCiu
+	UpXn6E7GDZnsRYkPLtQD8Vlpv4gTsg0aA43U0N5e3jqiQg9NdezgryktAZx0aA==
+X-Gm-Gg: ASbGncsTJdkIYAO/j44Kk1r6GQkSP53qXvRdisIgx4yTORgveXvr5qxDu3qMnJXNdgX
+	IQTdlExzJxVyO5F5sX+EDPkXY/tmC0a6KTBR8CaXhfgqMYCYOZoPoIll/7eSRLzKzQFuL9Id0ff
+	aIj7D8/NqLbj/di8KZsxiAtejWXpHNq1rj6uojZND0GUZtjjuTFgKEkifCxHDQAu0qofrj2Kjuw
+	ugg8gAv0YQx7kKM+0j/3/if+/uVVfDmqR3wXSWnjbSp1elYes/wWIGf3rYcJCH2niBBdUf+NO5F
+	Fpj5ApMk9j2v/No2uEB6vgfwruYqFb5QdcWY6eQNiwjqpaEAHa0=
+X-Google-Smtp-Source: AGHT+IHdxx2hNjGazr2D3TklGqwL4KUAhuNB+hsGlC38PJET1VJkzQdQAU4y4v+hrBc5bwG0U2GAiA==
+X-Received: by 2002:a7b:c3d8:0:b0:42c:9e35:cde6 with SMTP id 5b1f17b1804b1-438dc37d9aemr978295e9.2.1738152970287;
+        Wed, 29 Jan 2025 04:16:10 -0800 (PST)
+Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38c3ec83e20sm10167480f8f.23.2025.01.29.04.16.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jan 2025 04:16:09 -0800 (PST)
+Date: Wed, 29 Jan 2025 12:16:05 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"maz@kernel.org" <maz@kernel.org>,
+	"oliver.upton@linux.dev" <oliver.upton@linux.dev>,
+	"joey.gouly@arm.com" <joey.gouly@arm.com>,
+	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+	"yuzenghui@huawei.com" <yuzenghui@huawei.com>,
+	"robdclark@gmail.com" <robdclark@gmail.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"vdonnefort@google.com" <vdonnefort@google.com>,
+	"qperret@google.com" <qperret@google.com>,
+	"tabba@google.com" <tabba@google.com>,
+	"danielmentz@google.com" <danielmentz@google.com>,
+	"tzukui@google.com" <tzukui@google.com>
+Subject: Re: [RFC PATCH v2 00/58] KVM: Arm SMMUv3 driver for pKVM
+Message-ID: <Z5ocBVxDnqZVINXQ@google.com>
+References: <20241212180423.1578358-1-smostafa@google.com>
+ <20241212194119.GA4679@ziepe.ca>
+ <Z1yNWI9lBNIZg6Le@google.com>
+ <20250102201614.GA26854@ziepe.ca>
+ <Z35rEeSVwfZVA9IF@google.com>
+ <BN9PR11MB52767756EE35DA2359C351F08C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250116191455.GC674319@ziepe.ca>
+ <BN9PR11MB52766732572A17627D16CBAC8C1B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Z5DQuNn3GoU1vYPV@google.com>
+ <BN9PR11MB52760945FBCF542F77DCF4CA8CE02@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Reply-To: eric.auger@redhat.com
-Subject: Re: [PATCH RFCv2 01/13] genirq/msi: Store the IOMMU IOVA directly in
- msi_desc instead of iommu_cookie
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
- robin.murphy@arm.com, kevin.tian@intel.com, tglx@linutronix.de,
- maz@kernel.org, alex.williamson@redhat.com, joro@8bytes.org,
- shuah@kernel.org, reinette.chatre@intel.com, yebin10@huawei.com,
- apatel@ventanamicro.com, shivamurthy.shastri@linutronix.de,
- bhelgaas@google.com, anna-maria@linutronix.de, yury.norov@gmail.com,
- nipun.gupta@amd.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
- linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
- jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
- shameerali.kolothum.thodi@huawei.com, smostafa@google.com, ddutile@redhat.com
-References: <cover.1736550979.git.nicolinc@nvidia.com>
- <671b2128c193fc9ac9af0f4add96f85a785f513a.1736550979.git.nicolinc@nvidia.com>
- <1b48e138-3134-442a-9796-e3a33b106221@redhat.com>
- <20250123184855.GU5556@nvidia.com>
-From: Eric Auger <eric.auger@redhat.com>
-In-Reply-To: <20250123184855.GU5556@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: 7YS88p6hyfLqTddJdAlEH0nByMiOlP4hJ1LXNK1RCvY_1738152669
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN9PR11MB52760945FBCF542F77DCF4CA8CE02@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-Hi,
+On Thu, Jan 23, 2025 at 08:13:34AM +0000, Tian, Kevin wrote:
+> > From: Mostafa Saleh <smostafa@google.com>
+> > Sent: Wednesday, January 22, 2025 7:04 PM
+> > 
+> > On Fri, Jan 17, 2025 at 06:57:12AM +0000, Tian, Kevin wrote:
+> > > > From: Jason Gunthorpe <jgg@ziepe.ca>
+> > > > Sent: Friday, January 17, 2025 3:15 AM
+> > > >
+> > > > On Thu, Jan 16, 2025 at 06:39:31AM +0000, Tian, Kevin wrote:
+> > > > > > From: Mostafa Saleh <smostafa@google.com>
+> > > > > > Sent: Wednesday, January 8, 2025 8:10 PM
+> > > > > >
+> > > > > > On Thu, Jan 02, 2025 at 04:16:14PM -0400, Jason Gunthorpe wrote:
+> > > > > > > On Fri, Dec 13, 2024 at 07:39:04PM +0000, Mostafa Saleh wrote:
+> > > > > > > > Yeah, SVA is tricky, I guess for that we would have to use nesting,
+> > > > > > > > but tbh, I don’t think it’s a deal breaker for now.
+> > > > > > >
+> > > > > > > Again, it depends what your actual use case for translation is inside
+> > > > > > > the host/guest environments. It would be good to clearly spell this
+> > out..
+> > > > > > > There are few drivers that directly manpulate the iommu_domains
+> > of a
+> > > > > > > device. a few gpus, ath1x wireless, some tegra stuff, "venus". Which
+> > > > > > > of those are you targetting?
+> > > > > > >
+> > > > > >
+> > > > > > Not sure I understand this point about manipulating domains.
+> > > > > > AFAIK, SVA is not that common, including mobile spaces but I can be
+> > > > wrong,
+> > > > > > that’s why it’s not a priority here.
+> > > > >
+> > > > > Nested translation is required beyond SVA. A scenario which requires
+> > > > > a vIOMMU and multiple device domains within the guest would like to
+> > > > > embrace nesting. Especially for ARM vSMMU nesting is a must.
+> > 
+> > We can still do para-virtualization for guests the same way we do for the
+> > host and use a single stage IOMMU.
+> 
+> same way but both require a nested setup.
+> 
+> In concept there are two layers of address translations: GVA->GPA via
+> guest page table, and GPA->HPA via pKVM page table.
+> 
+> The difference between host/guest is just on the GPA mapping. For host
+> it's 1:1 with additional hardening for which portion can be mapped and
+> which cannot. For guest it's non-identical with the mapping established
+> from the host.
+> 
+> A nested translation naturally fits that conceptual layers.
+> 
+> Using a single-stage IOMMU means you need to combine two layers
+> into one layer i.e. GVA->HPA by removing GPA. Then you have to
+> paravirt guest page table so every guest PTE change is intercepted
+> to replace GPA with HPA.
+> 
+> Doing so completely kills the benefit of SVA, which is why Jason said
+> a no-go.
 
+I agree, this can’t work with SVA, in order to make that work we would
+need some new para-virt operation to install the S1 table, and the
+hypervisor has to configure the device in nested translation.
 
-On 1/23/25 7:48 PM, Jason Gunthorpe wrote:
-> On Thu, Jan 23, 2025 at 06:10:48PM +0100, Eric Auger wrote:
->
->>> However iommufd now permits the domain to change while the driver is
->>> probed and VFIO userspace can create races with IRQ changes calling
->>> iommu_dma_prepare/compose_msi_msg() and changing/freeing the iommu_domain.
->> and is it safe in iommu_dma_prepare_msi()?
-> iommu_dma_prepare_msi() takes the group mutex:
->
-> int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
-> {
-> 	struct device *dev = msi_desc_to_dev(desc);
-> 	struct iommu_group *group = dev->iommu_group;
->
-> 	mutex_lock(&group->mutex);
-> 	if (group->domain && group->domain->sw_msi)
-> 		ret = group->domain->sw_msi(group->domain, desc, msi_addr);
->
-> Which prevents changing domain attachments during execution.
->
-> For iommufd, if the domain attachment changes immediately after
-> iommu_dma_prepare_msi() unlocks, then the information given to
-> msi_desc_set_iommu_msi_iova() is still valid on the new domain.
->
-> This is because the iommufd implementation of sw_msi keeps the same
-> IOVA for the same ITS page globally across all domains. Any racing
-> change of domain will attach a new domain with the right ITS IOVA
-> already mapped and populated.
-> It is why this series stops using the domain pointer as a cookie
-> inside the msi_desc, immediately after the group->mutex is unlocked
-> a new domain can be attached and the old domain can be freed, which
-> would UAF the domain pointer in the cookie.
-OK thank you for the clarification
->
->>> diff --git a/include/linux/msi.h b/include/linux/msi.h
->>> index b10093c4d00e..d442b4a69d56 100644
->>> --- a/include/linux/msi.h
->>> +++ b/include/linux/msi.h
->>> @@ -184,7 +184,8 @@ struct msi_desc {
->>>  	struct msi_msg			msg;
->>>  	struct irq_affinity_desc	*affinity;
->>>  #ifdef CONFIG_IRQ_MSI_IOMMU
->>> -	const void			*iommu_cookie;
->> you may add kernel doc comments above
-> I wondered if internal stuff was not being documented as the old
-> iommu_cookie didn't have a comment..
->
-> But sure:
->
->  * @iommu_msi_iova: Optional IOVA from the IOMMU to overide the msi_addr.
->  *                  Only used if iommu_msi_page_shift != 0
->  * @iommu_msi_page_shift: Indicates how many bits of the original address
->  *                        should be preserved when using iommu_msi_iova.
-Sounds good
+But, for guests that doesn’t need SVA, they can just use single-stage
+para-virt (like virtio-iommu)
 
-Eric
->
-> Jason
->
+> 
+> > 
+> > > >
+> > > > Right, if you need an iommu domain in the guest there are only three
+> > > > mainstream ways to get this in Linux:
+> > > >  1) Use the DMA API and have the iommu group be translating. This is
+> > > >     optional in that the DMA API usually supports identity as an option.
+> > > >  2) A driver directly calls iommu_paging_domain_alloc() and manually
+> > > >     attaches it to some device, and does not use the DMA API. My list
+> > > >     above of ath1x/etc are examples doing this
+> > > >  3) Use VFIO
+> > > >
+> > > > My remark to Mostafa is to be specific, which of the above do you want
+> > > > to do in your mobile guest (and what driver exactly if #2) and why.
+> > > >
+> > > > This will help inform what the performance profile looks like and
+> > > > guide if nesting/para virt is appropriate.
+> > >
+> > 
+> > AFAIK, the most common use cases would be:
+> > - Devices using DMA API because it requires a lot of memory to be
+> >   contiguous in IOVA, which is hard to do with identity
+> > - Devices with security requirements/constraints to be isolated from the
+> >   rest of the system, also using DMA API
+> > - VFIO is something we are looking at the moment and have prototyped with
+> >   pKVM, and it should be supported soon in Android (only for platform
+> >   devices for now)
+> 
+> what really matters is the frequency of map/unmap.
+Yes, though it differs between devices/systems :/ that’s why I reckon we
+would need both on the long term. However, starting with some benchmarks
+for these cases can help to understand the magnitude of both solutions
+and prioritise which one is more suitable to start with for upstream.
 
+Thanks,
+Mostafa
+> 
+> > 
+> > > Yeah that part would be critical to help decide which route to pursue
+> > > first. Even when all options might be required in the end when pKVM
+> > > is scaled to more scenarios, as you mentioned in another mail, a staging
+> > > approach would be much preferrable to evolve.
+> > 
+> > I agree that would probably be the case. I will work on more staging
+> > approach for v3, mostly without the pv part as Jason suggested.
+> > 
+> > >
+> > > The pros/cons between nesting/para virt is clear - more static the
+> > > mapping is, more gain from the para approach due to less paging
+> > > walking and smaller tlb footprint, while vice versa nesting performs
+> > > much better by avoiding frequent para calls on page table mgmt. 😊
+> > 
+> > I am also working to get the numbers for both cases so we know
+> > the order of magnitude of each case, as I guess it won't be as clear
+> > for large systems with many DMA initiators what approach is best.
+> > 
+> > 
+> 
+> That'd be great!
