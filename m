@@ -1,324 +1,168 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AFDE1B424A
-	for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 11:15:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF29D1B4257
+	for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 12:11:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738149351; cv=none; b=Lf6ifwdG48q1a50fO3w1WPYVQIRaIGnsHi8M41ze6U7Vfj75Ag2gM8D9VRkMW6NvKviwzxT9O9123XyQjDxc6r8lbasNLkymPPh4flx9hvjty4XkZ77i26ZCpHUJ3cUIbE+h5vki1q/vTvwZtVlNwhdY8dY9XB/0T2rErRe9d3I=
+	t=1738152675; cv=none; b=MMUwhE0s+bNxNSuk9/HMaYL0oZJpGt43JroUCYg27+8MLdawowwocszlAU2xz72cAjr5KSb0wIqNksTr7d1DgbhQyF+ouS32m3+MO4u4CSkYP/qj8e3OXWNQF4mSj3tbaovJ4U9pqvnHjv4XWaYPXtQQCxwnez+Y1kuun2Ek7ug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738149351; c=relaxed/simple;
-	bh=9LklkQyZ4FLpGPXHWHvasvNafazcgSsZ9+b3vACuhhA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fdsLVVnaXlNJhug/Pe4A2E22gcw3vatJD4zeplI/JIoQ3KKFbAe1ruH8AqoF7XY30cbN4pb88uaT2NW3r5qFG9aRwdF5FJg1DS+r106h7y1LjiOgUxs/GJBn5lyJar6/XfoOxakf5e/l03RKL2rk9RWX/3VvmZLAvdd0uLv4otI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OKWnu1bU; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1738152675; c=relaxed/simple;
+	bh=6IdA7SqmTNXeAUkejuPdnOPZIQXSzN75bEY9k/EhdgA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LOuoBhpOLW3SS+wpuNfLPvjGHZjy/hOKY7trMkYHo0VLA/uOkXi0K4l328v1p0N5Y6u4g+gr/FtL9un7rM0FimblsWJh0YtFjI25MsnGGl7KFDt0EFSV4Bi35VHIsDArRXxwjtV206kfDM5okZGnhtBEhOTciERx+0TA+XKuzxA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ir5WDZu1; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OKWnu1bU"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-438d9c391fcso82565e9.0
-        for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 03:15:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1738149347; x=1738754147; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=lIj0S75Nq583PWPyqj5G995an+ZD2/gTQqnPSbczUig=;
-        b=OKWnu1bUZFSY43uKddtIF6LSNhwiLbP105aRAUDf4lS/0uacqSaet59xR0oM2w+93x
-         04rdoMzyUr4ouOV7LLrtodP2EKQUesQ7Xj00KdSzDCTALTW7pce9L2Vlbf+YyTS+EhVO
-         Y2HXQHiStHVZA2h4hzo6bJnAo9PTjHxNsvthMsiP8oLpcE/NWGbDpGVQ5sJk4UjrQ9iA
-         99zZNBlD1eKnL8AvJQYZ7EhatvWj9AW6ox298qGVCCWvx0miJIV4NkfNqVq65Kf1Lltv
-         gqT142AvydD/v5wnSeaYFhV7KrhHfk2WIHjHFGCRUjSChg+mFfuxQ6O0vrHnqDHqROZs
-         zhPQ==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ir5WDZu1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1738152671;
+	h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=FfYT43qInjD7+NE+73mPjG28PGMRFzMEZ6xoue/ST5Q=;
+	b=ir5WDZu1E2XC2kFyD1y6DjnX5k67KU3J8HPHwoYg9O0jwLQLkp82fskNYFQix6sE7wHUoV
+	sDiZKCbdY5WdLxxKjTF5+Rhk4qwAL72yswApb7hYz957UEo7omf5N1OY11sGnG12p+H2CM
+	Rr/NMfqN2eVhoS5vMYbW3K3A/W0iEVM=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-319-vnOl-gSbNO6RZ082aIPUQg-1; Wed, 29 Jan 2025 07:11:10 -0500
+X-MC-Unique: vnOl-gSbNO6RZ082aIPUQg-1
+X-Mimecast-MFC-AGG-ID: vnOl-gSbNO6RZ082aIPUQg
+Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-5da0ce0ee51so5909467a12.2
+        for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 04:11:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738149347; x=1738754147;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lIj0S75Nq583PWPyqj5G995an+ZD2/gTQqnPSbczUig=;
-        b=vk60he/dPsrpbzHMyHsF7xWNdXABbEvLugVvKQAKSOO4pFpWPxmtAA0SXAgsNmS2Cn
-         S/FN2FNqkkF7s16jmZUo/PyazEXMIGKNOq0mGgd0aX9BIB2nwzPYcYMKlX1HPu4uxKpZ
-         g46TMLReL5atZvGAfDq+YOXGJ0AGVF6tdrmQC8soPEDCqTq+NbPbqIVt3K5O4SQ2CITW
-         5f3Tg7qw8kL4mHFF+K1BeLYlzMGhaMjtb3eEDGvDTTz3LLMFZ1X6/TjwVGUI+B0xC1Tk
-         oACqqXjXDR06PpsL2aO6u5eW5vzzeLZjLjeXO/t62zuKXWisz/Mt/6k3TqCBWH0AnT4O
-         1xLQ==
-X-Gm-Message-State: AOJu0YzMPNUU88YSW4nFFM2xPequMae1OyFOF44KHaR3d3pChm7fu7IP
-	Ag/QkLzeyfsDUKNMSHMnhkH6z2q+RuGzqAsCY7tg2gswig8jKnjTTouI4QEmJQ==
-X-Gm-Gg: ASbGncsk1FJHneJT/m3AAx1h00if1/JHEE2iAkqFu8NZdmoIz33ewhu634QIoZpb2EU
-	x9+kyF8uxcI8Be0x7GI8nxqwuslIUorji1/ywQ+Pt/qh0/JK+NVguHdJZuSpUx96xemksrbCePb
-	svXPc1u9rRMMCShqkNQxUZskMimvnZF+1mKswadfXIA5HfjG9HoqlAu2LKqikWGMifvt0y9VAlP
-	CRqvp/ZhhXmCk3g2acdNq8xy7MSXO6yWT/MdYhUzu9WZ5GhlzJPQBU9rqvo4yQSSnFFMMPHv33+
-	eTOY2CR+670eE0AHuX0GJzj7xmwAxZs9Zm2SfaI0VETABs+/MJI=
-X-Google-Smtp-Source: AGHT+IHxyZfWztzZgfuJiUeDYUFJ1Qtfo43qMHUxbq5Zh05k0OwXtJFs0omeilOH7fX0Bdxckb3jCg==
-X-Received: by 2002:a05:600c:1f84:b0:42b:a961:e51 with SMTP id 5b1f17b1804b1-438dc21f186mr939945e9.0.1738149347033;
-        Wed, 29 Jan 2025 03:15:47 -0800 (PST)
-Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-438dcc52096sm19488465e9.39.2025.01.29.03.15.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jan 2025 03:15:46 -0800 (PST)
-Date: Wed, 29 Jan 2025 11:15:42 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, kvmarm@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, robdclark@gmail.com, joro@8bytes.org,
-	jean-philippe@linaro.org, jgg@ziepe.ca, nicolinc@nvidia.com,
-	vdonnefort@google.com, qperret@google.com, tabba@google.com,
-	danielmentz@google.com, tzukui@google.com
-Subject: Re: [RFC PATCH v2 27/58] KVM: arm64: smmu-v3: Setup command queue
-Message-ID: <Z5oN3sAk2RY4vyOr@google.com>
-References: <20241212180423.1578358-1-smostafa@google.com>
- <20241212180423.1578358-28-smostafa@google.com>
- <4e9d04e4-729d-483d-8533-06b3e0a2fb04@arm.com>
+        d=1e100.net; s=20230601; t=1738152669; x=1738757469;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FfYT43qInjD7+NE+73mPjG28PGMRFzMEZ6xoue/ST5Q=;
+        b=HlIN9Fk13ESr5NgzDqQAwvDIDeH5c5UK+pyHgrfZX2XO6fHtJvUxt0NAuJwBdmtA0r
+         wMVNM/CvA/RKpYslJDMzmD+9PUJ/ps6c+3C6vr6EOv1Z1HH8iCX2q0gJWIW7vNE28mGr
+         IM9sWIqhCoMIZPqc8ZFFbX/rE/ywwMByot/fofRQukgu7e4LPbF2bdNWKxDxRidwAGNr
+         ea0oJI30KCv2+XsrLtbC9HgOI/nar9zK9Gj7f7pmPuMhtxaO7CHLlk1hc7gtfb/UUCc+
+         B/L6tYuh+rKEd22z3STbfnnt/Vlxn+sx1M8nn3S16Inem2XikMohi3q4fxv30GYHV+Kz
+         3S0A==
+X-Forwarded-Encrypted: i=1; AJvYcCUp+FxypaCwKXM7roGMXuI4omfpmWLSiy0tKdapTeq6Eh16pbdBo+vYSSKdaic+L0hiAzIpng==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwwaBI81XUpLLDxNxY4+Ubj2DpjdkVtjl12rt3D2pvDXKpN1Llb
+	5ePzFlzNGhQ4pL+S0ZGPrqCK27PVpHRYSmJ/H1YGRWBNWBGGULMCdgMFsExq8ZEInpLrFmbyd9r
+	hiVN91Z5gHVPdO5z6grKUHIgedvl+rCmISAsn1SNFITS5O7X226zw
+X-Gm-Gg: ASbGncuUMkdGETkt18rikUJ9W7C3cjbasjWMMZvVSG8ukG+YAank1h3Ak+7RG3x37xq
+	GLJofgQn1NmWOkjcc0C2vUA7yQ795As19Em5rgzBJu4gRDc47rLB0apkmiMBUw8w3j7cbSAsExL
+	7p9gmYOMXkwKUbI8qwYUPNcygFIop9moXaaEfQRiXLo/W/vZQ00yFt1Re2baf399J82Gm0gZeA1
+	pRu9T1WV1HOHVPlLEgZdVR/P/1yLiXNhQgecekkIad9fm748Qem1TXM1H7YdIwgQpbs032EzSk+
+	6HFOIAw98P310PRGugRg+82c5mJziji5qtWxq0Z3soQEpnVffpCM
+X-Received: by 2002:a05:6402:42d4:b0:5d9:a54:f8b4 with SMTP id 4fb4d7f45d1cf-5dc5efbf5bamr2757086a12.11.1738152669154;
+        Wed, 29 Jan 2025 04:11:09 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IHWwGofFlveJZZ8Y8RCQ261keTvS+w2IGgafzQLJiEPoI+LUqDstLACEsFV9aVwDeaatRYmZg==
+X-Received: by 2002:a05:6402:42d4:b0:5d9:a54:f8b4 with SMTP id 4fb4d7f45d1cf-5dc5efbf5bamr2757022a12.11.1738152668668;
+        Wed, 29 Jan 2025 04:11:08 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5dc1863978asm8680072a12.33.2025.01.29.04.11.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jan 2025 04:11:06 -0800 (PST)
+Message-ID: <38896dfc-b5d9-4efd-8aff-bbe8cdb47c6e@redhat.com>
+Date: Wed, 29 Jan 2025 13:11:03 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4e9d04e4-729d-483d-8533-06b3e0a2fb04@arm.com>
+User-Agent: Mozilla Thunderbird
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH RFCv2 01/13] genirq/msi: Store the IOMMU IOVA directly in
+ msi_desc instead of iommu_cookie
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+ robin.murphy@arm.com, kevin.tian@intel.com, tglx@linutronix.de,
+ maz@kernel.org, alex.williamson@redhat.com, joro@8bytes.org,
+ shuah@kernel.org, reinette.chatre@intel.com, yebin10@huawei.com,
+ apatel@ventanamicro.com, shivamurthy.shastri@linutronix.de,
+ bhelgaas@google.com, anna-maria@linutronix.de, yury.norov@gmail.com,
+ nipun.gupta@amd.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
+ jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
+ shameerali.kolothum.thodi@huawei.com, smostafa@google.com, ddutile@redhat.com
+References: <cover.1736550979.git.nicolinc@nvidia.com>
+ <671b2128c193fc9ac9af0f4add96f85a785f513a.1736550979.git.nicolinc@nvidia.com>
+ <1b48e138-3134-442a-9796-e3a33b106221@redhat.com>
+ <20250123184855.GU5556@nvidia.com>
+From: Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <20250123184855.GU5556@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: 7YS88p6hyfLqTddJdAlEH0nByMiOlP4hJ1LXNK1RCvY_1738152669
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jan 23, 2025 at 01:01:55PM +0000, Robin Murphy wrote:
-> On 2024-12-12 6:03 pm, Mostafa Saleh wrote:
-> > From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > 
-> > Map the command queue allocated by the host into the hypervisor address
-> > space. When the host mappings are finalized, the queue is unmapped from
-> > the host.
-> 
-> Don't forget the fun of reimplementing the errata workarounds to avoid
-> generating certain problematic command sequences - beware it's mostly
-> implicit in the current kernel driver :)
+Hi,
 
-Thanks, I see I missed “ARM_SMMU_OPT_CMDQ_FORCE_SYNC”, I will try to re-use
-as much of the command queue code as possible in v3, although it’s unlikely
-the hypervisor will have the some insertion algorithm as the host, but at
-least for the command population.
 
-Thanks,
-Mostafa
+On 1/23/25 7:48 PM, Jason Gunthorpe wrote:
+> On Thu, Jan 23, 2025 at 06:10:48PM +0100, Eric Auger wrote:
+>
+>>> However iommufd now permits the domain to change while the driver is
+>>> probed and VFIO userspace can create races with IRQ changes calling
+>>> iommu_dma_prepare/compose_msi_msg() and changing/freeing the iommu_domain.
+>> and is it safe in iommu_dma_prepare_msi()?
+> iommu_dma_prepare_msi() takes the group mutex:
+>
+> int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+> {
+> 	struct device *dev = msi_desc_to_dev(desc);
+> 	struct iommu_group *group = dev->iommu_group;
+>
+> 	mutex_lock(&group->mutex);
+> 	if (group->domain && group->domain->sw_msi)
+> 		ret = group->domain->sw_msi(group->domain, desc, msi_addr);
+>
+> Which prevents changing domain attachments during execution.
+>
+> For iommufd, if the domain attachment changes immediately after
+> iommu_dma_prepare_msi() unlocks, then the information given to
+> msi_desc_set_iommu_msi_iova() is still valid on the new domain.
+>
+> This is because the iommufd implementation of sw_msi keeps the same
+> IOVA for the same ITS page globally across all domains. Any racing
+> change of domain will attach a new domain with the right ITS IOVA
+> already mapped and populated.
+> It is why this series stops using the domain pointer as a cookie
+> inside the msi_desc, immediately after the group->mutex is unlocked
+> a new domain can be attached and the old domain can be freed, which
+> would UAF the domain pointer in the cookie.
+OK thank you for the clarification
+>
+>>> diff --git a/include/linux/msi.h b/include/linux/msi.h
+>>> index b10093c4d00e..d442b4a69d56 100644
+>>> --- a/include/linux/msi.h
+>>> +++ b/include/linux/msi.h
+>>> @@ -184,7 +184,8 @@ struct msi_desc {
+>>>  	struct msi_msg			msg;
+>>>  	struct irq_affinity_desc	*affinity;
+>>>  #ifdef CONFIG_IRQ_MSI_IOMMU
+>>> -	const void			*iommu_cookie;
+>> you may add kernel doc comments above
+> I wondered if internal stuff was not being documented as the old
+> iommu_cookie didn't have a comment..
+>
+> But sure:
+>
+>  * @iommu_msi_iova: Optional IOVA from the IOMMU to overide the msi_addr.
+>  *                  Only used if iommu_msi_page_shift != 0
+>  * @iommu_msi_page_shift: Indicates how many bits of the original address
+>  *                        should be preserved when using iommu_msi_iova.
+Sounds good
 
-> 
-> Thanks,
-> Robin.
-> 
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > ---
-> >   arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c | 165 ++++++++++++++++++++
-> >   include/kvm/arm_smmu_v3.h                   |   4 +
-> >   2 files changed, 169 insertions(+)
-> > 
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c b/arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c
-> > index f7e60c188cb0..e15356509424 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c
-> > +++ b/arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c
-> > @@ -41,6 +41,15 @@ struct hyp_arm_smmu_v3_device *kvm_hyp_arm_smmu_v3_smmus;
-> >   	__ret;							\
-> >   })
-> > +#define smmu_wait_event(_smmu, _cond)				\
-> > +({								\
-> > +	if ((_smmu)->features & ARM_SMMU_FEAT_SEV) {		\
-> > +		while (!(_cond))				\
-> > +			wfe();					\
-> > +	}							\
-> > +	smmu_wait(_cond);					\
-> > +})
-> > +
-> >   static int smmu_write_cr0(struct hyp_arm_smmu_v3_device *smmu, u32 val)
-> >   {
-> >   	writel_relaxed(val, smmu->base + ARM_SMMU_CR0);
-> > @@ -60,6 +69,123 @@ static void smmu_reclaim_pages(u64 phys, size_t size)
-> >   	WARN_ON(__pkvm_hyp_donate_host(phys >> PAGE_SHIFT, size >> PAGE_SHIFT));
-> >   }
-> > +#define Q_WRAP(smmu, reg)	((reg) & (1 << (smmu)->cmdq_log2size))
-> > +#define Q_IDX(smmu, reg)	((reg) & ((1 << (smmu)->cmdq_log2size) - 1))
-> > +
-> > +static bool smmu_cmdq_full(struct hyp_arm_smmu_v3_device *smmu)
-> > +{
-> > +	u64 cons = readl_relaxed(smmu->base + ARM_SMMU_CMDQ_CONS);
-> > +
-> > +	return Q_IDX(smmu, smmu->cmdq_prod) == Q_IDX(smmu, cons) &&
-> > +	       Q_WRAP(smmu, smmu->cmdq_prod) != Q_WRAP(smmu, cons);
-> > +}
-> > +
-> > +static bool smmu_cmdq_empty(struct hyp_arm_smmu_v3_device *smmu)
-> > +{
-> > +	u64 cons = readl_relaxed(smmu->base + ARM_SMMU_CMDQ_CONS);
-> > +
-> > +	return Q_IDX(smmu, smmu->cmdq_prod) == Q_IDX(smmu, cons) &&
-> > +	       Q_WRAP(smmu, smmu->cmdq_prod) == Q_WRAP(smmu, cons);
-> > +}
-> > +
-> > +static int smmu_add_cmd(struct hyp_arm_smmu_v3_device *smmu,
-> > +			struct arm_smmu_cmdq_ent *ent)
-> > +{
-> > +	int i;
-> > +	int ret;
-> > +	u64 cmd[CMDQ_ENT_DWORDS] = {};
-> > +	int idx = Q_IDX(smmu, smmu->cmdq_prod);
-> > +	u64 *slot = smmu->cmdq_base + idx * CMDQ_ENT_DWORDS;
-> > +
-> > +	if (smmu->iommu.power_is_off)
-> > +		return -EPIPE;
-> > +
-> > +	ret = smmu_wait_event(smmu, !smmu_cmdq_full(smmu));
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	cmd[0] |= FIELD_PREP(CMDQ_0_OP, ent->opcode);
-> > +
-> > +	switch (ent->opcode) {
-> > +	case CMDQ_OP_CFGI_ALL:
-> > +		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
-> > +		break;
-> > +	case CMDQ_OP_CFGI_CD:
-> > +		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SSID, ent->cfgi.ssid);
-> > +		fallthrough;
-> > +	case CMDQ_OP_CFGI_STE:
-> > +		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SID, ent->cfgi.sid);
-> > +		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_LEAF, ent->cfgi.leaf);
-> > +		break;
-> > +	case CMDQ_OP_TLBI_NH_VA:
-> > +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
-> > +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
-> > +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
-> > +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
-> > +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
-> > +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
-> > +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
-> > +		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_VA_MASK;
-> > +		break;
-> > +	case CMDQ_OP_TLBI_NSNH_ALL:
-> > +		break;
-> > +	case CMDQ_OP_TLBI_NH_ASID:
-> > +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
-> > +		fallthrough;
-> > +	case CMDQ_OP_TLBI_S12_VMALL:
-> > +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
-> > +		break;
-> > +	case CMDQ_OP_TLBI_S2_IPA:
-> > +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
-> > +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
-> > +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
-> > +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
-> > +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
-> > +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
-> > +		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_IPA_MASK;
-> > +		break;
-> > +	case CMDQ_OP_CMD_SYNC:
-> > +		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
-> > +		break;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	for (i = 0; i < CMDQ_ENT_DWORDS; i++)
-> > +		slot[i] = cpu_to_le64(cmd[i]);
-> > +
-> > +	smmu->cmdq_prod++;
-> > +	writel(Q_IDX(smmu, smmu->cmdq_prod) | Q_WRAP(smmu, smmu->cmdq_prod),
-> > +	       smmu->base + ARM_SMMU_CMDQ_PROD);
-> > +	return 0;
-> > +}
-> > +
-> > +static int smmu_sync_cmd(struct hyp_arm_smmu_v3_device *smmu)
-> > +{
-> > +	int ret;
-> > +	struct arm_smmu_cmdq_ent cmd = {
-> > +		.opcode = CMDQ_OP_CMD_SYNC,
-> > +	};
-> > +
-> > +	ret = smmu_add_cmd(smmu, &cmd);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return smmu_wait_event(smmu, smmu_cmdq_empty(smmu));
-> > +}
-> > +
-> > +__maybe_unused
-> > +static int smmu_send_cmd(struct hyp_arm_smmu_v3_device *smmu,
-> > +			 struct arm_smmu_cmdq_ent *cmd)
-> > +{
-> > +	int ret = smmu_add_cmd(smmu, cmd);
-> > +
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return smmu_sync_cmd(smmu);
-> > +}
-> > +
-> >   static int smmu_init_registers(struct hyp_arm_smmu_v3_device *smmu)
-> >   {
-> >   	u64 val, old;
-> > @@ -94,6 +220,41 @@ static int smmu_init_registers(struct hyp_arm_smmu_v3_device *smmu)
-> >   	return 0;
-> >   }
-> > +static int smmu_init_cmdq(struct hyp_arm_smmu_v3_device *smmu)
-> > +{
-> > +	u64 cmdq_base;
-> > +	size_t cmdq_nr_entries, cmdq_size;
-> > +	int ret;
-> > +	enum kvm_pgtable_prot prot = PAGE_HYP;
-> > +
-> > +	cmdq_base = readq_relaxed(smmu->base + ARM_SMMU_CMDQ_BASE);
-> > +	if (cmdq_base & ~(Q_BASE_RWA | Q_BASE_ADDR_MASK | Q_BASE_LOG2SIZE))
-> > +		return -EINVAL;
-> > +
-> > +	smmu->cmdq_log2size = cmdq_base & Q_BASE_LOG2SIZE;
-> > +	cmdq_nr_entries = 1 << smmu->cmdq_log2size;
-> > +	cmdq_size = cmdq_nr_entries * CMDQ_ENT_DWORDS * 8;
-> > +
-> > +	cmdq_base &= Q_BASE_ADDR_MASK;
-> > +
-> > +	if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY))
-> > +		prot |= KVM_PGTABLE_PROT_NORMAL_NC;
-> > +
-> > +	ret = ___pkvm_host_donate_hyp_prot(cmdq_base >> PAGE_SHIFT,
-> > +					   PAGE_ALIGN(cmdq_size) >> PAGE_SHIFT,
-> > +					   false, prot);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	smmu->cmdq_base = hyp_phys_to_virt(cmdq_base);
-> > +
-> > +	memset(smmu->cmdq_base, 0, cmdq_size);
-> > +	writel_relaxed(0, smmu->base + ARM_SMMU_CMDQ_PROD);
-> > +	writel_relaxed(0, smmu->base + ARM_SMMU_CMDQ_CONS);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >   static int smmu_init_device(struct hyp_arm_smmu_v3_device *smmu)
-> >   {
-> >   	int ret;
-> > @@ -113,6 +274,10 @@ static int smmu_init_device(struct hyp_arm_smmu_v3_device *smmu)
-> >   	if (ret)
-> >   		return ret;
-> > +	ret = smmu_init_cmdq(smmu);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> >   	return kvm_iommu_init_device(&smmu->iommu);
-> >   }
-> > diff --git a/include/kvm/arm_smmu_v3.h b/include/kvm/arm_smmu_v3.h
-> > index fb24bcef1624..393a1a04edba 100644
-> > --- a/include/kvm/arm_smmu_v3.h
-> > +++ b/include/kvm/arm_smmu_v3.h
-> > @@ -16,8 +16,12 @@ struct hyp_arm_smmu_v3_device {
-> >   	struct kvm_hyp_iommu	iommu;
-> >   	phys_addr_t		mmio_addr;
-> >   	size_t			mmio_size;
-> > +	unsigned long		features;
-> >   	void __iomem		*base;
-> > +	u32			cmdq_prod;
-> > +	u64			*cmdq_base;
-> > +	size_t			cmdq_log2size;
-> >   };
-> >   extern size_t kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_count);
-> 
+Eric
+>
+> Jason
+>
+
