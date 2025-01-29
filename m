@@ -1,315 +1,124 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2894C12EBE7
-	for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 13:44:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D05D22EE5
+	for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 13:50:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738158264; cv=none; b=JTQzRwOQfz9Qv0Ue3jtke/AaeW8u5ohrHRlBX5UEJVf2uhs+a7tSAiLFxeGLR0xKVbwGQq+VSJ31VVPdsekSGR0N/h9YHf6J/wNkwTfFBTjiiNy77y7+7RgnsHiBharMTfJ2IwllTb7qb3apP6wNdSrjIcL7hREaRv/BSoiOJkY=
+	t=1738158657; cv=none; b=EFUg3STeMDzmjWgzUKmdm7ISjxrX5+PvR9o2rb5SrgarILkfREFEREbX2RgJAb037hL0OGz1LSgYD2IIU0k7diOglkPS3wsZyTxZoa+eOVPcPVqK6O2FJRtfCqzV0SwPagPkEPs43vrChj4dKG6ygfVLdpHaXQWdd/pZSdi5UPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738158264; c=relaxed/simple;
-	bh=b9UgbSGBeNmmJCIGLoCXB4vAkJ110kVpSuKj6rgRcYE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VyXo2xD6cNddEXbBaQSP9l+RX4cynO/PA9ZGUbDZMf0Riun7zuoml4NovuR04zUYh7y0qB46rP0X5PONdL6dbL4UnZxZLNGWsttncay0lFcyft1RDdOO59tTglFqBkhNRJkS82nLLaK+jl5R8YB4nsjJNKa6q2dTyxf22GULOtU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=F5hhpXna; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1738158657; c=relaxed/simple;
+	bh=vlPMfwZ+C0CQX8CZbIzbwgggxxliwvbZU+YOWu/UjqQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Di0+Y7agyXwzbC9U3+1YHZ7+gtvoypYGQ/UvFPLSyWzc31xNXrw/0arTdAKhOvWTFi9wKzJULzHrQzy7PbniZ2E1cP6rQHOuET2dI7fJTc8MKerCceZdSQS8WqQurKP8S9lr88QVNWQxyL9TtcR0M2rVG9lw/S1yDsW6zAmgX8U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=BpjslgrV; arc=none smtp.client-ip=209.85.219.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="F5hhpXna"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1738158261;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Sf+DtGmrqdTwE2hubtPrHYXjgFDMJbqgNNnIu1aYodU=;
-	b=F5hhpXnawqB7JDJTKlAkraF4zN1rBoiucBAajLOYYZ6e2eBw8+veMPz8Xq0WHLAz7CidT6
-	AboQJ/MwGLuGELSCiBYlBKzwqqjKxZhyvLa4YVd40ye0dhlsVoK0E2LSnFLFwJWZeWBuVV
-	9thfV9+iW7aTCr+4qsjybbgfLoKM5Zg=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-575-Cyzm_DfqO2a8J4r112U0XQ-1; Wed, 29 Jan 2025 08:44:20 -0500
-X-MC-Unique: Cyzm_DfqO2a8J4r112U0XQ-1
-X-Mimecast-MFC-AGG-ID: Cyzm_DfqO2a8J4r112U0XQ
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-7b6e1b036e9so667601985a.1
-        for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 05:44:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="BpjslgrV"
+Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-6d900c27af7so66950186d6.2
+        for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 05:50:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1738158654; x=1738763454; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=vlPMfwZ+C0CQX8CZbIzbwgggxxliwvbZU+YOWu/UjqQ=;
+        b=BpjslgrVJV/3edWfY2/mviitMjIIcYulmEt48ij1P2//Ch8qmveHusEiVAqSpPqL+E
+         YDuNodOb+GOJOaYduT/RbMqWEsPmM/CIVhU7PMlc0J/fVaOg2XT/1Np3YgY4yCY+bFVA
+         NRsrBPhGdYHzMnom8xFgtYnXuQ5GLlfoViXppeptu9SHQCFh0zlfH3afVq00zthOWbaE
+         JOBDjx/BxNvkHtKx9HknDy8GIAytLEFtY/vSh+i86qZGkXqBHgqB9g6zdQqlO1dLdhMc
+         s2Jm3BuF/gKY5XsftCEmH5phTg9xizsH1+b5O7uYQzETE91yRErTlQqxzeYxjhoNWlAL
+         d0Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738158259; x=1738763059;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:reply-to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Sf+DtGmrqdTwE2hubtPrHYXjgFDMJbqgNNnIu1aYodU=;
-        b=Gr5tSLCvZwNsgEaPzZFgcv3pGQNhZmmy9c4AuW3Nfjw22ZVT83RtCbcMfkqUOj+wnX
-         nOTGIxa3Wa2nsDFWhG48+9iOFqDfMHaWyPHISYWnEkSAm1m0TS7t26RdUoOArlvFdsiH
-         gUFOBAU29ZA0JVoGnOBhd05afRK7/3/f5ZQ8pK1UqptcG8VJdylfEUpTewzMeOKXwP+S
-         t5wBVRh+jaHm2sw82b2zlcjhXi79iJqKsHejmPRHOwLWNGLLBa94FsJ+F7KMhzhkpKRa
-         EQBSVp8BKcf+RPPwy/YBqPPejB70s8nJN49PtE/CY4ov9k5IiJ0RDhXSUjjI/zcht0w+
-         ZAxQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXy4K4P7AKfxy3tvlVRJKdP2jkq9oh7rZ+7jmhhy6ULl825ou3NvzlhRmcWM/ndpTTBlQlgwg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzN7qGacRr5uMEhrkRbh3eO5bnsvjJNNTy//8ERnfzi7dwgwH11
-	Xtbqnzzyvk0Wp9zZQVskhi3oL/WP2vWZMtOAfm6CDKd8Y9MKMozKKsUkITVMXPpFi3SaP52YUmv
-	wWHMHRPmxCxX/4XJpi/jpm/avaEHneStn8bINXW8mMR15VZw7eSL7
-X-Gm-Gg: ASbGncuHO4K6EjTe4Ztp0Zpi5bAKV31FwqEJIApqJsX9m/ZzjxQ9lVWMrjsF2kfJ3pT
-	zhx4eJckxfgMrw80yywtPGdrE990+BZYcOJiS86yPEm4deO08E7Utx0m4pxoN3UYyIMK1tKb8+N
-	w/liCi6ekBRPeBlDrJXvt72e+HmW52zYgf+bDJ1Lgq2iEOchDppM3+zZnBFsT6sAJhQJ8+i48Lc
-	LGY4344MW6eYFblPzEsgYptL/OhhSLwWJagzsJ/fS95IOF8ujAikant8oX9M9AnydwzEM4fAlO7
-	orRHVk3vaSdlhv9eJ/fk4i/AzUvff9Y592sVDoUhv5Y9GCrqidy+
-X-Received: by 2002:a05:620a:4387:b0:7b6:d910:5b31 with SMTP id af79cd13be357-7bffcd902b1mr487013585a.39.1738158259362;
-        Wed, 29 Jan 2025 05:44:19 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IHfdRRfWiU/OFcr3Tb9Wnx23c3Oss13g014CVs37t9ZgKQ1ODWd2wjx8kgWWU1PdQbKyQMMZA==
-X-Received: by 2002:a05:620a:4387:b0:7b6:d910:5b31 with SMTP id af79cd13be357-7bffcd902b1mr487009785a.39.1738158258956;
-        Wed, 29 Jan 2025 05:44:18 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7be9af03b3dsm619851385a.90.2025.01.29.05.44.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jan 2025 05:44:18 -0800 (PST)
-Message-ID: <0521187e-c511-4ab1-9ffa-be2be8eacd04@redhat.com>
-Date: Wed, 29 Jan 2025 14:44:12 +0100
+        d=1e100.net; s=20230601; t=1738158654; x=1738763454;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vlPMfwZ+C0CQX8CZbIzbwgggxxliwvbZU+YOWu/UjqQ=;
+        b=bE2aGbycZu7j1IVdYCODM+bru2jCsJSxWrIlm7l5Tf+sTpLT8wJ5lEU1ocgqlBuLR8
+         9TiStwJHuRgK0Hs6fqZ82zuaQe7qt/E3tgtl6gI/fvqgAJVyS7C+eMLFTrtt+avp2SHG
+         9oWbKkubGo0QzMTWMegNUYJDFjUwFFHZO4NulQO7cOK7eH2sYBFhrwW0tmbm0Y/ewyuS
+         p7zqzMYSKTp5kAvTS4KSSLfk/2YRVeSKNusq2Vq4EwPm0Y+mIVU/C0hFuoWkdCq57fEj
+         tsCPHAi2K28MKsWwZKobx4UKlTPxedLblGNyiWF8WLz4/ANVL8cp/Eys1FBGxADYE0Yz
+         pB7g==
+X-Forwarded-Encrypted: i=1; AJvYcCU+OTXGO4jbq8vBiyo+gJ0BX28JcP3knseYRHnW6AA8MrjMiGfBRWVak8Udxc3MrvUJcR+z6Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyoh65XIzCBt5DMC3Gnsj5LaBq8Fm68Yifjo8nHrWa32xh+L8ae
+	eboqwMehGVrzA3nfq73+XpEU2FhleV2+WHGczSLMDP4uzHuAE4orOqdTss0y8rs=
+X-Gm-Gg: ASbGncvDgqn6aMLZhtaDKpTaPsFPMieNVQmzo4m76bHfhDGMuVdabQOI/14ihtfU9dh
+	tjphzN5nwDNjzjHpNiEQtlEng0VolE+qWUz87JIHx7L4EGxkVJXR60AAi2Ejdi6Xst3jmoiVqdP
+	WG9dr3u+CULA5J99uuMbKsf3PVXFJ+JwrIA3ygBc9bA3wkwGHMGdsIzhtWKDapfpmSdp5pxyp3I
+	RaOFh60afIOwdD7ldpUPI6poQjC8yDiG6ADsH4Xutc5rJxvavTKBZ3yMjN+xcWu+z8nlLbfA/jW
+	+sMqZL6F2WEIS0OYQt0+C9MnBRKvM2adysUF9zN4pQ32L+KmOFIgw1uivaUlgxs3
+X-Google-Smtp-Source: AGHT+IHlGOABfGzgCS+9RYYlIPNHGozwdrTB/aVN3u/ZTODdcBYH+YEI+HYYcAFunhC+uzQZ0l632A==
+X-Received: by 2002:a05:6214:252c:b0:6e0:86ab:4b46 with SMTP id 6a1803df08f44-6e243c63cb9mr63742866d6.31.1738158654377;
+        Wed, 29 Jan 2025 05:50:54 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e2058c236csm55482536d6.104.2025.01.29.05.50.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jan 2025 05:50:53 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1td8Sz-00000009Bm2-1Dp2;
+	Wed, 29 Jan 2025 09:50:53 -0400
+Date: Wed, 29 Jan 2025 09:50:53 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"maz@kernel.org" <maz@kernel.org>,
+	"oliver.upton@linux.dev" <oliver.upton@linux.dev>,
+	"joey.gouly@arm.com" <joey.gouly@arm.com>,
+	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+	"yuzenghui@huawei.com" <yuzenghui@huawei.com>,
+	"robdclark@gmail.com" <robdclark@gmail.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"vdonnefort@google.com" <vdonnefort@google.com>,
+	"qperret@google.com" <qperret@google.com>,
+	"tabba@google.com" <tabba@google.com>,
+	"danielmentz@google.com" <danielmentz@google.com>,
+	"tzukui@google.com" <tzukui@google.com>
+Subject: Re: [RFC PATCH v2 00/58] KVM: Arm SMMUv3 driver for pKVM
+Message-ID: <20250129135053.GB2120662@ziepe.ca>
+References: <20241212180423.1578358-1-smostafa@google.com>
+ <20241212194119.GA4679@ziepe.ca>
+ <Z1yNWI9lBNIZg6Le@google.com>
+ <20250102201614.GA26854@ziepe.ca>
+ <Z35rEeSVwfZVA9IF@google.com>
+ <BN9PR11MB52760686ABB3145E44BAD95A8C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Z5DWag7ZKCPl1Eje@google.com>
+ <BN9PR11MB5276B783D518DB354BF58A3C8CE02@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Z5odLXPZPAwu4oqe@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Reply-To: eric.auger@redhat.com
-Subject: Re: [PATCH RFCv2 09/13] iommufd: Add IOMMU_OPTION_SW_MSI_START/SIZE
- ioctls
-To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
- robin.murphy@arm.com, jgg@nvidia.com, kevin.tian@intel.com,
- tglx@linutronix.de, maz@kernel.org, alex.williamson@redhat.com
-Cc: joro@8bytes.org, shuah@kernel.org, reinette.chatre@intel.com,
- yebin10@huawei.com, apatel@ventanamicro.com,
- shivamurthy.shastri@linutronix.de, bhelgaas@google.com,
- anna-maria@linutronix.de, yury.norov@gmail.com, nipun.gupta@amd.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
- linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
- jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
- shameerali.kolothum.thodi@huawei.com, smostafa@google.com, ddutile@redhat.com
-References: <cover.1736550979.git.nicolinc@nvidia.com>
- <d3cb1694e07be0e214dc44dcb2cb74f014606560.1736550979.git.nicolinc@nvidia.com>
-From: Eric Auger <eric.auger@redhat.com>
-In-Reply-To: <d3cb1694e07be0e214dc44dcb2cb74f014606560.1736550979.git.nicolinc@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: WCll0axJK37CERwciVHsEl_vG7TdOLopxe0zWjySUkw_1738158259
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Z5odLXPZPAwu4oqe@google.com>
 
-Hi,
+On Wed, Jan 29, 2025 at 12:21:01PM +0000, Mostafa Saleh wrote:
+> levels) and can’t be separated from the kernel as that defeats the
+> point of KVM, that means that all hypercalls have to be stable ABI,
+> same for the shared data, shared structs, types...
 
+Sorry, just trying to understand this sentance, today pkvm has no
+stable ABI right? That is the whole point of building it into the
+kernel?
 
-On 1/11/25 4:32 AM, Nicolin Chen wrote:
-> For systems that require MSI pages to be mapped into the IOMMU translation
-> the IOMMU driver provides an IOMMU_RESV_SW_MSI range, which is the default
-> recommended IOVA window to place these mappings. However, there is nothing
-> special about this address. And to support the RMR trick in VMM for nested
-well at least it shall not overlap VMM's RAM. So it was not random either.
-> translation, the VMM needs to know what sw_msi window the kernel is using.
-> As there is no particular reason to force VMM to adopt the kernel default,
-> provide a simple IOMMU_OPTION_SW_MSI_START/SIZE ioctl that the VMM can use
-> to directly specify the sw_msi window that it wants to use, which replaces
-> and disables the default IOMMU_RESV_SW_MSI from the driver to avoid having
-> to build an API to discover the default IOMMU_RESV_SW_MSI.
-IIUC the MSI window will then be different when using legacy VFIO
-assignment and iommufd backend.
-MSI reserved regions are exposed in
-/sys/kernel/iommu_groups/<n>/reserved_regions
-0x0000000008000000 0x00000000080fffff msi
+Things like the CC world are creating stable ABIs for their pkvm like
+environments because they are not built into the kernel? And thus they
+take the pain of that?
 
-Is that configurability reflected accordingly?
-
-How do you make sure it does not collide with other resv regions? I
-don't see any check here.
-
->
-> Since iommufd now has its own sw_msi function, this is easy to implement.
->
-> To keep things simple, the parameters are global to the entire iommufd FD,
-> and will directly replace the IOMMU_RESV_SW_MSI values. The VMM must set
-> the values before creating any hwpt's to have any effect.
->
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/iommufd/iommufd_private.h |  4 +++
->  include/uapi/linux/iommufd.h            | 18 ++++++++++++-
->  drivers/iommu/iommufd/device.c          |  4 +++
->  drivers/iommu/iommufd/io_pagetable.c    |  4 ++-
->  drivers/iommu/iommufd/ioas.c            | 34 +++++++++++++++++++++++++
->  drivers/iommu/iommufd/main.c            |  6 +++++
->  6 files changed, 68 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index 3e83bbb5912c..9f071609f00b 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -45,6 +45,9 @@ struct iommufd_ctx {
->  	struct mutex sw_msi_lock;
->  	struct list_head sw_msi_list;
->  	unsigned int sw_msi_id;
-> +	/* User-programmed SW_MSI region, to override igroup->sw_msi_start */
-> +	phys_addr_t sw_msi_start;
-> +	size_t sw_msi_size;
->  
->  	u8 account_mode;
->  	/* Compatibility with VFIO no iommu */
-> @@ -281,6 +284,7 @@ int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd);
->  int iommufd_ioas_option(struct iommufd_ucmd *ucmd);
->  int iommufd_option_rlimit_mode(struct iommu_option *cmd,
->  			       struct iommufd_ctx *ictx);
-> +int iommufd_option_sw_msi(struct iommu_option *cmd, struct iommufd_ctx *ictx);
->  
->  int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd);
->  int iommufd_check_iova_range(struct io_pagetable *iopt,
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 34810f6ae2b5..c864a201e502 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -294,7 +294,9 @@ struct iommu_ioas_unmap {
->  
->  /**
->   * enum iommufd_option - ioctl(IOMMU_OPTION_RLIMIT_MODE) and
-> - *                       ioctl(IOMMU_OPTION_HUGE_PAGES)
-> + *                       ioctl(IOMMU_OPTION_HUGE_PAGES) and
-> + *                       ioctl(IOMMU_OPTION_SW_MSI_START) and
-> + *                       ioctl(IOMMU_OPTION_SW_MSI_SIZE)
->   * @IOMMU_OPTION_RLIMIT_MODE:
->   *    Change how RLIMIT_MEMLOCK accounting works. The caller must have privilege
->   *    to invoke this. Value 0 (default) is user based accounting, 1 uses process
-> @@ -304,10 +306,24 @@ struct iommu_ioas_unmap {
->   *    iommu mappings. Value 0 disables combining, everything is mapped to
->   *    PAGE_SIZE. This can be useful for benchmarking.  This is a per-IOAS
->   *    option, the object_id must be the IOAS ID.
-> + * @IOMMU_OPTION_SW_MSI_START:
-> + *    Change the base address of the IOMMU mapping region for MSI doorbell(s).
-> + *    It must be set this before attaching a device to an IOAS/HWPT, otherwise
-> + *    this option will be not effective on that IOAS/HWPT. User can choose to
-> + *    let kernel pick a base address, by simply ignoring this option or setting
-> + *    a value 0 to IOMMU_OPTION_SW_MSI_SIZE. Global option, object_id must be 0
-I think we should document it cannot be put at a random place either.
-> + * @IOMMU_OPTION_SW_MSI_SIZE:
-> + *    Change the size of the IOMMU mapping region for MSI doorbell(s). It must
-> + *    be set this before attaching a device to an IOAS/HWPT, otherwise it won't
-> + *    be effective on that IOAS/HWPT. The value is in MB, and the minimum value
-> + *    is 1 MB. A value 0 (default) will invalidate the MSI doorbell base address
-> + *    value set to IOMMU_OPTION_SW_MSI_START. Global option, object_id must be 0
->   */
->  enum iommufd_option {
->  	IOMMU_OPTION_RLIMIT_MODE = 0,
->  	IOMMU_OPTION_HUGE_PAGES = 1,
-> +	IOMMU_OPTION_SW_MSI_START = 2,
-> +	IOMMU_OPTION_SW_MSI_SIZE = 3,
->  };
->  
->  /**
-> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> index f75b3c23cd41..093a3bd798db 100644
-> --- a/drivers/iommu/iommufd/device.c
-> +++ b/drivers/iommu/iommufd/device.c
-> @@ -445,10 +445,14 @@ static int
->  iommufd_device_attach_reserved_iova(struct iommufd_device *idev,
->  				    struct iommufd_hwpt_paging *hwpt_paging)
->  {
-> +	struct iommufd_ctx *ictx = idev->ictx;
->  	int rc;
->  
->  	lockdep_assert_held(&idev->igroup->lock);
->  
-> +	/* Override it with a user-programmed SW_MSI region */
-> +	if (ictx->sw_msi_size && ictx->sw_msi_start != PHYS_ADDR_MAX)
-> +		idev->igroup->sw_msi_start = ictx->sw_msi_start;
->  	rc = iopt_table_enforce_dev_resv_regions(&hwpt_paging->ioas->iopt,
->  						 idev->dev,
->  						 &idev->igroup->sw_msi_start);
-> diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-> index 8a790e597e12..5d7f5ca1eecf 100644
-> --- a/drivers/iommu/iommufd/io_pagetable.c
-> +++ b/drivers/iommu/iommufd/io_pagetable.c
-> @@ -1446,7 +1446,9 @@ int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
->  		if (sw_msi_start && resv->type == IOMMU_RESV_MSI)
->  			num_hw_msi++;
->  		if (sw_msi_start && resv->type == IOMMU_RESV_SW_MSI) {
-> -			*sw_msi_start = resv->start;
-> +			/* Bypass the driver-defined SW_MSI region, if preset */
-> +			if (*sw_msi_start == PHYS_ADDR_MAX)
-> +				*sw_msi_start = resv->start;
->  			num_sw_msi++;
->  		}
->  
-> diff --git a/drivers/iommu/iommufd/ioas.c b/drivers/iommu/iommufd/ioas.c
-> index 1542c5fd10a8..3f4e25b660f9 100644
-> --- a/drivers/iommu/iommufd/ioas.c
-> +++ b/drivers/iommu/iommufd/ioas.c
-> @@ -620,6 +620,40 @@ int iommufd_option_rlimit_mode(struct iommu_option *cmd,
->  	return -EOPNOTSUPP;
->  }
->  
-> +int iommufd_option_sw_msi(struct iommu_option *cmd, struct iommufd_ctx *ictx)
-> +{
-> +	if (cmd->object_id)
-> +		return -EOPNOTSUPP;
-> +
-> +	if (cmd->op == IOMMU_OPTION_OP_GET) {
-> +		switch (cmd->option_id) {
-> +		case IOMMU_OPTION_SW_MSI_START:
-> +			cmd->val64 = (u64)ictx->sw_msi_start;
-> +			break;
-> +		case IOMMU_OPTION_SW_MSI_SIZE:
-> +			cmd->val64 = (u64)ictx->sw_msi_size;
-> +			break;
-> +		default:
-> +			return -EOPNOTSUPP;
-> +		}
-> +		return 0;
-> +	}
-> +	if (cmd->op == IOMMU_OPTION_OP_SET) {
-> +		switch (cmd->option_id) {
-> +		case IOMMU_OPTION_SW_MSI_START:
-> +			ictx->sw_msi_start = (phys_addr_t)cmd->val64;
-> +			break;
-> +		case IOMMU_OPTION_SW_MSI_SIZE:
-> +			ictx->sw_msi_size = (size_t)cmd->val64;
-> +			break;
-> +		default:
-> +			return -EOPNOTSUPP;
-> +		}
-> +		return 0;
-> +	}
-> +	return -EOPNOTSUPP;
-> +}
-> +
->  static int iommufd_ioas_option_huge_pages(struct iommu_option *cmd,
->  					  struct iommufd_ioas *ioas)
->  {
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> index 7cc9497b7193..026297265c71 100644
-> --- a/drivers/iommu/iommufd/main.c
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -229,6 +229,8 @@ static int iommufd_fops_open(struct inode *inode, struct file *filp)
->  	init_waitqueue_head(&ictx->destroy_wait);
->  	mutex_init(&ictx->sw_msi_lock);
->  	INIT_LIST_HEAD(&ictx->sw_msi_list);
-> +	ictx->sw_msi_start = PHYS_ADDR_MAX;
-> +	ictx->sw_msi_size = 0;
->  	filp->private_data = ictx;
->  	return 0;
->  }
-> @@ -287,6 +289,10 @@ static int iommufd_option(struct iommufd_ucmd *ucmd)
->  	case IOMMU_OPTION_RLIMIT_MODE:
->  		rc = iommufd_option_rlimit_mode(cmd, ucmd->ictx);
->  		break;
-> +	case IOMMU_OPTION_SW_MSI_START:
-> +	case IOMMU_OPTION_SW_MSI_SIZE:
-> +		rc = iommufd_option_sw_msi(cmd, ucmd->ictx);
-> +		break;
->  	case IOMMU_OPTION_HUGE_PAGES:
->  		rc = iommufd_ioas_option(ucmd);
->  		break;
-Eric
-
+Jason
