@@ -1,133 +1,173 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4EF51BCA07
-	for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 14:08:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56B3A1B422F
+	for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 14:55:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738159731; cv=none; b=usr41ln2Z5AvtPrXOE7VxzkDqlIQv5rokPxYlPVi0o8KqlaZEJtzUEnnn1F4/eox2EAhnYoo1+efmEbVBz2+joFQiERJUNl8bw+mnQvqoGUY/MkkYYgz4m0//69eQZc5rOSOmgVmrc6Jc4yKVscawB5SwYTsuzF7Hlx/36K5XLM=
+	t=1738162503; cv=none; b=f15dMDjXiNXGjPQwsKaWQDbX9JdDkdK8j0S+x7BY/obgvc4nSrpsnmTa3WH5/EVtvuGLeomf78Udy9uDg4KUcGJoNpbBOiiXc6gF0BiLxMB+Xt4LoC+o1z1Hcx/LsuJMUYX6QjxcctVp3MZ0b8ams76lUKc3oPjvOLkAMw4zwQk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738159731; c=relaxed/simple;
-	bh=gT2PZen3KYaZzX/+EwPdZUZa3eaq/QOFJ2UlB6rCuFI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YfTyeBembEyGa1AgdB2Z2NJPaGA/aBvMurmfzIT33VdELNGH0sRuGITaA1ntTRUKqssaS81oZp78jq7VdyKifoMyZBBzxCt/GAwIfvYsZi1dY57yp2UphS3Pg6GXWx/BXSTGxh8R7x2EGNRPmjbPO87IVHha6nogOGJcU6w/e0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FiTDhk5i; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1738162503; c=relaxed/simple;
+	bh=6+OO8Q3b3zt1nWaEORWp4Hfs0gfS/N+UGYsLrltBN2k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=B9n0x1040wl0WYK2DvM1MXDB0PpWSpY8E4b6oyznx45p1o8r/0Qp0EpzFXhbsJtx5aklhnHmR2mKRe5ZEvLGG/Dxsx37J9owOtvqA5OEqIO4hSK/NfC68roU+pCs/UFQ/1YhoNSeRQH70r5ZdTg1ENOfEIFFpCvTSgjJT5bGKRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=adNLn+Zz; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FiTDhk5i"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-438d9c391fcso90785e9.0
-        for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 06:08:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1738159728; x=1738764528; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=mwnygbMsmdCq2LJyfsumivo8IAZG4XDnKYNgemYLbF4=;
-        b=FiTDhk5iWHSPcPYYcKmgiLu2+hOGNtHavKNxZhBEOy9XNQlTKFQNWk7pD2mVt1exXC
-         oKx/PkXRVvaEHYYZjGrVb3zCLZ8iQHxekfqu21/QBN55CpV8/LU/HEFvT9UrXmMWUq6V
-         HUqtOMNCfCGwuspAN46CbJCY08JDRiHq1fYPELCmTiKm6GbWFA8uPGbiipKPVGCKs6E6
-         WCEVo4A4esH6tHN9X9N75m2qcxGEtepMHHHGItNMHG2NJXV2wljlkiriQZOjNpt8Ia7E
-         PX23ZZE6qJcu0rwYST/BMWvo3P6csrMIC/7w2OLzlVg1vt+XCrc30Cffr1qtTjNi0+pr
-         y4HQ==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="adNLn+Zz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1738162501;
+	h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=41DS6NhU0zxHo0sjvBCG7EzuBprQ0MM39VMITq82vi0=;
+	b=adNLn+Zzv4RHcnOL631eVTRUqQR3/h9rl4QQOp8TEfn7EwFF6/4lLbE0nyOS6767OAJBjd
+	VBtdI7t2+FUbwuiso2DlntR1Rlz1Y2FVawj64yrqZOYod5bLo4o9BIf9IwJ711IRPSV1eK
+	NrUH1EjQ6158brqHrRUJumfKEZKUBX0=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-654-jcqIkjqyPO-0ssn1Mp6n7Q-1; Wed, 29 Jan 2025 09:54:58 -0500
+X-MC-Unique: jcqIkjqyPO-0ssn1Mp6n7Q-1
+X-Mimecast-MFC-AGG-ID: jcqIkjqyPO-0ssn1Mp6n7Q
+Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-7b6f3b93f5cso171735585a.0
+        for <iommu@lists.linux.dev>; Wed, 29 Jan 2025 06:54:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738159728; x=1738764528;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mwnygbMsmdCq2LJyfsumivo8IAZG4XDnKYNgemYLbF4=;
-        b=n7ISnhdR+QvKnbdgIlEjPuhWOjCYQ5yoRBdwgYXDmA5WBZlvsOzb3kXewZ03yIYgVO
-         A/Uf/PdaK4RO7ooEaxS8tuoprQdqg28JKQh2XT8RZsTSByeoSBAVfgYNezwhD5ijIOpg
-         uWMAn8vADnNlqZwQuhBeMsRsFi7Q3nmkUEE+mBBNoh2VVrMvILrZ91lI/t88vmxheaYx
-         csenU46IE09pBHi2PUR8Wk1OjgLtkqbAXdo3DV6yPfRRY7o0Dto5Sva2SgVCaAxMQ31J
-         F2Lq+S9nWv7+dfoM8XkOpXuJi2LZ0YhRI+9hcIAEdPasHH7MbGXGGfLXrq3xPU4JjKtM
-         UeSw==
-X-Forwarded-Encrypted: i=1; AJvYcCXQCi6HU9BGnAE8x1/1gMYDNLV8iThfr7YWiril4qYrIEuMDGKXI/jNna+Pl0wslPrcqlHV0A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YycuRPOUJWoN3TIklWr95pAW+F5hZlS0KCxcU6EfDRVO46KMk+z
-	S5ld8zUZUwD+3WVBr2B9yE+ws6ro/cWB2arNbwdrV1oqCRfHMEp2ep1sKtYIZw==
-X-Gm-Gg: ASbGncuf4XNHPK1XtliE6N2H0ucbsBR53KKkIv7lQ/DQW9DU6X50U2zbdPTTosKzT5n
-	Q7U6VbpuhP1XygVgS0fHdow5kaJ8RT7OcEaiptGHJbnhhT/1EafnjI3nbbsXx4wGNydHCBDuLTv
-	R1L4zLyW1oHKegPeGKhwXj5P+AiWjs+WyeqO0nY7H7G6r5iSBLZ3yCNW+nJn9c32OfQwiWv8onq
-	QuO8qnXxc59Kqx6Whuxpys+C2qmcVBpCKDMZwpjvG9qmCX36aWgpjt4obDbvyw06MggHRfV40+X
-	YYtd73qd7ECJSCaI7ZPI+Frp6S3GlGite8UahiWUjyjA/7n1Zxc=
-X-Google-Smtp-Source: AGHT+IEBmc8wE9vCyM9jLK6IJcRV2lIxnHwIYu6bH9hjFBBeHTH+WuqVZsZJrlcZA0Sb+Jn5z82GDQ==
-X-Received: by 2002:a05:600c:3585:b0:434:9d0b:bd7c with SMTP id 5b1f17b1804b1-438dcbf4e2fmr913185e9.3.1738159727917;
-        Wed, 29 Jan 2025 06:08:47 -0800 (PST)
-Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-438dcc6de2dsm24352725e9.26.2025.01.29.06.08.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jan 2025 06:08:47 -0800 (PST)
-Date: Wed, 29 Jan 2025 14:08:43 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-	"will@kernel.org" <will@kernel.org>,
-	"maz@kernel.org" <maz@kernel.org>,
-	"oliver.upton@linux.dev" <oliver.upton@linux.dev>,
-	"joey.gouly@arm.com" <joey.gouly@arm.com>,
-	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
-	"yuzenghui@huawei.com" <yuzenghui@huawei.com>,
-	"robdclark@gmail.com" <robdclark@gmail.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"vdonnefort@google.com" <vdonnefort@google.com>,
-	"qperret@google.com" <qperret@google.com>,
-	"tabba@google.com" <tabba@google.com>,
-	"danielmentz@google.com" <danielmentz@google.com>,
-	"tzukui@google.com" <tzukui@google.com>
-Subject: Re: [RFC PATCH v2 00/58] KVM: Arm SMMUv3 driver for pKVM
-Message-ID: <Z5o2a-RSiWqQOISc@google.com>
-References: <20241212180423.1578358-1-smostafa@google.com>
- <20241212194119.GA4679@ziepe.ca>
- <Z1yNWI9lBNIZg6Le@google.com>
- <20250102201614.GA26854@ziepe.ca>
- <Z35rEeSVwfZVA9IF@google.com>
- <BN9PR11MB52760686ABB3145E44BAD95A8C1A2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <Z5DWag7ZKCPl1Eje@google.com>
- <BN9PR11MB5276B783D518DB354BF58A3C8CE02@BN9PR11MB5276.namprd11.prod.outlook.com>
- <Z5odLXPZPAwu4oqe@google.com>
- <20250129135053.GB2120662@ziepe.ca>
+        d=1e100.net; s=20230601; t=1738162498; x=1738767298;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=41DS6NhU0zxHo0sjvBCG7EzuBprQ0MM39VMITq82vi0=;
+        b=w4Mim3+W1oJa+gbdnADPHHOD1VcFqRglVGlRBx1TKFMblRsNScqti83WxkkroNThb1
+         CBaCTi6iV2h6+xG+H6s+H/Dty99PkhysleKXuuEhDnQio6zdJx0lCc0Bg2RHs8JMQgIC
+         QSam8fOQzMz0h6L3rvt/PNnTfDxZ9aBZzsBVrRhQTYqCohD9I3O9pblm1kMk2X/3o80o
+         IND1v1vnUhmlUp9AGzO33jb4GLEdYpKfxvIP4SOMzKB3oDD8d4vsgGzwoFo7560HgCcK
+         BirOrXxWhbgSiWD28/6946m6IhMkELI6lN9IAU3jwSYABSG9CrN2DGIOHdn44IuCvKts
+         jEKg==
+X-Forwarded-Encrypted: i=1; AJvYcCU0PBG7BZP+++Xe9NsbO0gzHh7LBg6Ofh24o8lHXOXQOrrjgeQgkIoRc13V3pWcktNWWOIyew==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwlgclL2EYCWePKQVLhO2795j5lLTcwUQyGLXwcg1XoSCKjwjo+
+	9NW0MJUZXJuqQU03lFck8a2z2MzElTrklfdQ8PaLBZgVIkjlrK+CrqKqBlJL+I6bJIbgtirH/EV
+	M/bV5uB+Z8DrD0hpbG9LdRZYUJAHUEeBFqQ+wqWMfZte5M9gb2v2a
+X-Gm-Gg: ASbGncue+XUpaq3hyuHM5L5eOjgvuxker82kkF9EbTFdoMeAJv9WexA3/+O0CrrGYDb
+	h3aDtgb6dNzr0L2ogFEtishD37w/1El/4ouU9IrxlLA37GbzTq0FTnSjlpSet+Kses5hOZ+fsnR
+	nXKNW4ujR/C/OKjDQYJQbPGbBkniU6+Z2WE0+dUUIOKuQoxKRT2t7lEqymdtcv9TWnYNzI3xfYC
+	J2+OXlH8Dzm7+c01tnIJr+ARphKVDx2Ch4OBLBRagn17DghQe4x6LcCvnIpEhbSMkrkax44u3QC
+	l14yzww91e9pJW3D3s9zcA+Vdy34U4xcrqwsTuVdtPG0qrixc/sF
+X-Received: by 2002:a05:620a:3951:b0:7b6:d710:22ad with SMTP id af79cd13be357-7bffc653717mr574629485a.27.1738162497776;
+        Wed, 29 Jan 2025 06:54:57 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IHPWgJozhXbMPe2UuS+N7int1mBv1T30ENqy//KBekCyuXuA7cZhOllIHHQgTzUZoQnKd9qwQ==
+X-Received: by 2002:a05:620a:3951:b0:7b6:d710:22ad with SMTP id af79cd13be357-7bffc653717mr574623385a.27.1738162497407;
+        Wed, 29 Jan 2025 06:54:57 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7be9af0d281sm629855985a.99.2025.01.29.06.54.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jan 2025 06:54:56 -0800 (PST)
+Message-ID: <de6b9dc1-dedd-4a3d-9db7-cb4b8e281697@redhat.com>
+Date: Wed, 29 Jan 2025 15:54:48 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250129135053.GB2120662@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH RFCv2 00/13] iommu: Add MSI mapping support with nested
+ SMMU
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "kevin.tian@intel.com" <kevin.tian@intel.com>,
+ "tglx@linutronix.de" <tglx@linutronix.de>, "maz@kernel.org"
+ <maz@kernel.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "shuah@kernel.org" <shuah@kernel.org>,
+ "reinette.chatre@intel.com" <reinette.chatre@intel.com>,
+ "yebin (H)" <yebin10@huawei.com>,
+ "apatel@ventanamicro.com" <apatel@ventanamicro.com>,
+ "shivamurthy.shastri@linutronix.de" <shivamurthy.shastri@linutronix.de>,
+ "bhelgaas@google.com" <bhelgaas@google.com>,
+ "anna-maria@linutronix.de" <anna-maria@linutronix.de>,
+ "yury.norov@gmail.com" <yury.norov@gmail.com>,
+ "nipun.gupta@amd.com" <nipun.gupta@amd.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+ "patches@lists.linux.dev" <patches@lists.linux.dev>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "mdf@kernel.org" <mdf@kernel.org>, "mshavit@google.com"
+ <mshavit@google.com>, "smostafa@google.com" <smostafa@google.com>,
+ "ddutile@redhat.com" <ddutile@redhat.com>
+References: <cover.1736550979.git.nicolinc@nvidia.com>
+ <4946ea266bdc4b1e8796dee1b228bd8f@huawei.com>
+ <20250123132432.GJ5556@nvidia.com>
+From: Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <20250123132432.GJ5556@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: ARXSJUdU2xc7MIThXwLS9DKHF_Ia57Txt-a1Npxoehw_1738162498
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jan 29, 2025 at 09:50:53AM -0400, Jason Gunthorpe wrote:
-> On Wed, Jan 29, 2025 at 12:21:01PM +0000, Mostafa Saleh wrote:
-> > levels) and can’t be separated from the kernel as that defeats the
-> > point of KVM, that means that all hypercalls have to be stable ABI,
-> > same for the shared data, shared structs, types...
-> 
-> Sorry, just trying to understand this sentance, today pkvm has no
-> stable ABI right? That is the whole point of building it into the
-> kernel?
 
-Yes.
+Hi Jason,
 
-> 
-> Things like the CC world are creating stable ABIs for their pkvm like
-> environments because they are not built into the kernel? And thus they
-> take the pain of that?
+On 1/23/25 2:24 PM, Jason Gunthorpe wrote:
+> On Thu, Jan 23, 2025 at 09:06:49AM +0000, Shameerali Kolothum Thodi wrote:
+>
+>> One confusion I have about the above text is, do we still plan to support the
+>> approach -1( Using RMR in Qemu)
+> Yes, it remains an option. The VMM would use the
+> IOMMU_OPTION_SW_MSI_START/SIZE ioctls to tell the kernel where it
+> wants to put the RMR region then it would send the RMR into the VM
+> through ACPI.
+>
+> The kernel side promises that the RMR region will have a consistent
+> (but unpredictable!) layout of ITS pages (however many are required)
+> within that RMR space, regardless of what devices/domain are attached.
+>
+> I would like to start with patches up to #10 for this part as it
+> solves two of the three problems here.
+>
+>> or you are just mentioning it here because
+>> it is still possible to make use of that. I think from previous discussions the
+>> argument was to adopt a more dedicated MSI pass-through model which I
+>> think is  approach-2 here.  
+> The basic flow of the pass through model is shown in the last two
+> patches, it is not fully complete but is testable. It assumes a single
+> ITS page. The VM would use IOMMU_OPTION_SW_MSI_START/SIZE to put the
+> ITS page at the correct S2 location and then describe it in the ACPI
+> as an ITS page not a RMR.
+This is a nice to have feature but not mandated in the first place, is it?
+>
+> The VMM will capture the MSI writes and use
+> VFIO_IRQ_SET_ACTION_PREPARE to convey the guests's S1 translation to
+> the IRQ subsystem.
+>
+> This missing peice is cleaning up the ITS mapping to allow for
+> multiple ITS pages. I've imagined that kvm would someone give iommufd
+> a FD that holds the specific ITS pages instead of the
+> IOMMU_OPTION_SW_MSI_START/SIZE flow.
+That's what I don't get: at the moment you only pass the gIOVA. With
+technique 2, how can you build the nested mapping, ie.
 
-Yes, my point is, we can't just separate pKVM as Kevin was mentioning as
-they has no ABI and it is tightly coupled with the kernel.
+         S1           S2
+gIOVA    ->    gDB    ->    hDB
+
+without passing the full gIOVA/gDB S1 mapping to the host?
+
+Eric
 
 
-Thanks,
-Mostafa
-
-> 
+>
 > Jason
+>
+
