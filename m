@@ -1,107 +1,189 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1052122619;
-	Wed, 29 Jan 2025 21:33:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5703EC2FB
+	for <iommu@lists.linux.dev>; Thu, 30 Jan 2025 07:43:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738186410; cv=none; b=gsOTmnjxPQNIQfXHwPOQ8+NI8x+9fkjV9yRYXyIbzCsV/LiGmLaODs1aduGkDhL+zuahb8UU78LDo8KJxJQFVuqE1NIVOi3av2LAMAQcGWbIhzGH2QZVfmxhTYo+pTiCniirFCYV3jPaEQ91SAlstylpNtHvzgw5Ua3Xoit6Eow=
+	t=1738223037; cv=none; b=KkiDLU9Q6dcmgoKFoUY89/BO3w1kgqlyu4nOuiI4lY9qbzAGiVyizzSOqGser7wp7eUzamtieknnioD3E6jIuCMQ1N8Yvt9JCvIgC3Krf0wkcYGV73Cit4wPitfnkaXzR/ECK0+LJccpF6JSkiUv/ueIfQ5gBh6VFbLNAAnkJ3w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738186410; c=relaxed/simple;
-	bh=h/cQnz9PXbCjGYQAWuFFP0csETsOS4lQ0r2XZpJmQT4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZXHssDJYx0ZNDUh2waz6GqEcFqPvd0M2r7aQLC1ko/df23xYtE7gqQ9rh/9m8LlAnpfGyYediOSxCv6oc5wKvD1MhyQwNb0wW7z7POv8/XdPbxuMme6A8VwbllylhhyUvwiQ7pKJu8oe1o0NfUaojusOr7abKKaFatf4v4N8QmY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AyiJeoDV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1738223037; c=relaxed/simple;
+	bh=dd4wxrAEl67NN1MHlGbcY4eYeym8W1xthUwc2jYLjbI=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Z30Rr7yO0DNafhfL0BSLgdIAkQXsKoR0H3LYsgC5N1u0Uzqc6NkS7dc04OBEc/BzRjk9bXAjBs5jD9IGwSfh5D44+0d7vfSX0CC7DYP1GRi4ggtrM3aaxqVJaInBd9bCXbtg1TnmdbeqFU1m8HM0UdVX0snzNpEJ8VYQZuy8pFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=lGBq5agf; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AyiJeoDV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E340EC4CED1;
-	Wed, 29 Jan 2025 21:33:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738186409;
-	bh=h/cQnz9PXbCjGYQAWuFFP0csETsOS4lQ0r2XZpJmQT4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=AyiJeoDVU90Fub9EsdRxY7zvtDDnHc8TKuZHPma1isJ0uzuTHduzdF+quRF5GqhDw
-	 2g7m4BfhMIZE+6zz44pBch7rZKDYtwdeVEroa1BtMYBzpI/hiSzrVzGI4JeRIp8944
-	 esewl9bYKOuUCC3jlmgq78gWzNGrwCO9JYVnFXiQSlYXaRXOkg6hdhVm7TpFN7s67c
-	 Mv8HQ8B+qitRyPhm0U65MzxdtH7Od2SkVZjAIEEu/AYr/tvCxPcTqBZj+5W5GeamnW
-	 QthXO7I0fEnQMq22X6g9AqHL+k/nfDr+yMmYdGbChw2/YG5A9EXk3esC34ej5uK3o+
-	 7hJqIHcfIl6aA==
-Date: Wed, 29 Jan 2025 22:33:22 +0100
-From: Danilo Krummrich <dakr@kernel.org>
-To: Christoph Hellwig <hch@lst.de>, Greg KH <gregkh@linuxfoundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	daniel.almeida@collabora.com, aliceryhl@google.com,
-	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
-Message-ID: <Z5qeoqRZKjiR1YAD@pollux>
-References: <20250108135951.GA18074@lst.de>
- <CANiq72=R2N+QiCiHZQu-6YJ9aYpn_bik3BW3U=nAW3jL7unzLw@mail.gmail.com>
- <20250108151858.GB24499@lst.de>
- <Z36X_ZnCmBQBMoZ6@pollux>
- <20250109080812.GA20431@lst.de>
- <Z3-NqwAG_96yq8VD@pollux>
- <20250110083955.GA5395@lst.de>
- <Z4D5a5NYrAbNxUL6@pollux>
- <Z4kG5AcVeQKegLnb@pollux>
- <20250128092334.GA28548@lst.de>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="lGBq5agf"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50U5NnbW012290;
+	Thu, 30 Jan 2025 07:43:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=L5esRv
+	Ci/m5GKfKnMLPG/QAe1S5nmkHUDdg6rxxx6K4=; b=lGBq5agfk+wzCUsDXEOpB7
+	ylBnWhEQeuadgeB4hY+9E4Vn6rIjaHVL2UZ7+Mkfz8WzqVfYSAFC5fqeyE1QdYta
+	qXBM9gdVdFXIkb5mdFOuqUTP9AFSUxzJ7M7wTjd8+XTQEB9JvJhHK2lSJAdrc9re
+	Yb7GYkAmmtCukMUi0RAYFSZ4GMl/qKh4SDEq50lfLuECq27bywbbfYefDV6mNjZr
+	EDy73UtWfavIjt+cW8ze18lp+eRmAk2xyAdl+xhbBPdO8Crfx3Y8HdyMX+RJ+Rf1
+	a3BsM+6L1PboPrziNlhVl+PODS2CF5yJ2qCTt+jmVO3bEB5Izpi2819d+sS5yQBA
+	==
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 44g3880huv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 30 Jan 2025 07:43:43 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 50U54mN3018922;
+	Thu, 30 Jan 2025 07:43:42 GMT
+Received: from smtprelay06.dal12v.mail.ibm.com ([172.16.1.8])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 44dd01mq6u-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 30 Jan 2025 07:43:42 +0000
+Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
+	by smtprelay06.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 50U7hfui33555088
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 30 Jan 2025 07:43:41 GMT
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 5697B58052;
+	Thu, 30 Jan 2025 07:43:41 +0000 (GMT)
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 5FE6C58065;
+	Thu, 30 Jan 2025 07:43:39 +0000 (GMT)
+Received: from [9.152.212.245] (unknown [9.152.212.245])
+	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Thu, 30 Jan 2025 07:43:39 +0000 (GMT)
+Message-ID: <53c930df7058288776392073964a70025ca62d19.camel@linux.ibm.com>
+Subject: Re: [PATCH v3 3/3] iommu/s390: implement iommu passthrough via
+ identity domain
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Matthew Rosato <mjrosato@linux.ibm.com>, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, gerald.schaefer@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
+        clegoate@redhat.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Date: Thu, 30 Jan 2025 08:43:38 +0100
+In-Reply-To: <20250124201717.348736-4-mjrosato@linux.ibm.com>
+References: <20250124201717.348736-1-mjrosato@linux.ibm.com>
+	 <20250124201717.348736-4-mjrosato@linux.ibm.com>
+Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
+ keydata=mQINBGHm3M8BEAC+MIQkfoPIAKdjjk84OSQ8erd2OICj98+GdhMQpIjHXn/RJdCZLa58k
+ /ay5x0xIHkWzx1JJOm4Lki7WEzRbYDexQEJP0xUia0U+4Yg7PJL4Dg/W4Ho28dRBROoJjgJSLSHwc
+ 3/1pjpNlSaX/qg3ZM8+/EiSGc7uEPklLYu3gRGxcWV/944HdUyLcnjrZwCn2+gg9ncVJjsimS0ro/
+ 2wU2RPE4ju6NMBn5Go26sAj1owdYQQv9t0d71CmZS9Bh+2+cLjC7HvyTHKFxVGOznUL+j1a45VrVS
+ XQ+nhTVjvgvXR84z10bOvLiwxJZ/00pwNi7uCdSYnZFLQ4S/JGMs4lhOiCGJhJ/9FR7JVw/1t1G9a
+ UlqVp23AXwzbcoV2fxyE/CsVpHcyOWGDahGLcH7QeitN6cjltf9ymw2spBzpRnfFn80nVxgSYVG1d
+ w75ksBAuQ/3e+oTQk4GAa2ShoNVsvR9GYn7rnsDN5pVILDhdPO3J2PGIXa5ipQnvwb3EHvPXyzakY
+ tK50fBUPKk3XnkRwRYEbbPEB7YT+ccF/HioCryqDPWUivXF8qf6Jw5T1mhwukUV1i+QyJzJxGPh19
+ /N2/GK7/yS5wrt0Lwxzevc5g+jX8RyjzywOZGHTVu9KIQiG8Pqx33UxZvykjaqTMjo7kaAdGEkrHZ
+ dVHqoPZwhCsgQARAQABtChOaWtsYXMgU2NobmVsbGUgPHNjaG5lbGxlQGxpbnV4LmlibS5jb20+iQ
+ JXBBMBCABBAhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAhkBFiEEnbAAstJ1IDCl9y3cr+Q/Fej
+ CYJAFAmWVooIFCQWP+TMACgkQr+Q/FejCYJCmLg/+OgZD6wTjooE77/ZHmW6Egb5nUH6DU+2nMHMH
+ UupkE3dKuLcuzI4aEf/6wGG2xF/LigMRrbb1iKRVk/VG/swyLh/OBOTh8cJnhdmURnj3jhaefzslA
+ 1wTHcxeH4wMGJWVRAhOfDUpMMYV2J5XoroiA1+acSuppelmKAK5voVn9/fNtrVr6mgBXT5RUnmW60
+ UUq5z6a1zTMOe8lofwHLVvyG9zMgv6Z9IQJc/oVnjR9PWYDUX4jqFL3yO6DDt5iIQCN8WKaodlNP6
+ 1lFKAYujV8JY4Ln+IbMIV2h34cGpIJ7f76OYt2XR4RANbOd41+qvlYgpYSvIBDml/fT2vWEjmncm7
+ zzpVyPtCZlijV3npsTVerGbh0Ts/xC6ERQrB+rkUqN/fx+dGnTT9I7FLUQFBhK2pIuD+U1K+A+Egw
+ UiTyiGtyRMqz12RdWzerRmWFo5Mmi8N1jhZRTs0yAUn3MSCdRHP1Nu3SMk/0oE+pVeni3ysdJ69Sl
+ kCAZoaf1TMRdSlF71oT/fNgSnd90wkCHUK9pUJGRTUxgV9NjafZy7sx1Gz11s4QzJE6JBelClBUiF
+ 6QD4a+MzFh9TkUcpG0cPNsFfEGyxtGzuoeE86sL1tk3yO6ThJSLZyqFFLrZBIJvYK2UiD+6E7VWRW
+ 9y1OmPyyFBPBosOvmrkLlDtAtyfYInO0KU5pa2xhcyBTY2huZWxsZSA8bmlrbGFzLnNjaG5lbGxlQ
+ GlibS5jb20+iQJUBBMBCAA+AhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAFiEEnbAAstJ1IDCl9y
+ 3cr+Q/FejCYJAFAmWVoosFCQWP+TMACgkQr+Q/FejCYJB7oxAAksHYU+myhSZD0YSuYZl3oLDUEFP
+ 3fm9m6N9zgtiOg/GGI0jHc+Tt8qiQaLEtVeP/waWKgQnje/emHJOEDZTb0AdeXZk+T5/ydrKRLmYC
+ 6rPge3ue1yQUCiA+T72O3WfjZILI2yOstNwd1f0epQ32YaAvM+QbKDloJSmKhGWZlvdVUDXWkS6/m
+ aUtUwZpddFY8InXBxsYCbJsqiKF3kPVD515/6keIZmZh1cTIFQ+Kc+UZaz0MxkhiCyWC4cH6HZGKR
+ fiXLhPlmmAyW9FiZK9pwDocTLemfgMR6QXOiB0uisdoFnjhXNfp6OHSy7w7LTIHzCsJoHk+vsyvSp
+ +fxkjCXgFzGRQaJkoX33QZwQj1mxeWl594QUfR4DIZ2KERRNI0OMYjJVEtB5jQjnD/04qcTrSCpJ5
+ ZPtiQ6Umsb1c9tBRIJnL7gIslo/OXBe/4q5yBCtCZOoD6d683XaMPGhi/F6+fnGvzsi6a9qDBgVvt
+ arI8ybayhXDuS6/StR8qZKCyzZ/1CUofxGVIdgkseDhts0dZ4AYwRVCUFQULeRtyoT4dKfEot7hPE
+ /4wjm9qZf2mDPRvJOqss6jObTNuw1YzGlpe9OvDYtGeEfHgcZqEmHbiMirwfGLaTG2xKDx4g2jd2z
+ Ocf83TCERFKJEhvZxB3tRiUQTd3dZ1TIaisv/o+y0K05pa2xhcyBTY2huZWxsZSA8bmlrbGFzLnNj
+ aG5lbGxlQGdtYWlsLmNvbT6JAlQEEwEIAD4CGwEFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AWIQSds
+ ACy0nUgMKX3Ldyv5D8V6MJgkAUCZZWiiwUJBY/5MwAKCRCv5D8V6MJgkNVuEACo12niyoKhnXLQFt
+ NaqxNZ+8p/MGA7g2XcVJ1bYMPoZ2Wh8zwX0sKX/dLlXVHIAeqelL5hIv6GoTykNqQGUN2Kqf0h/z7
+ b85o3tHiqMAQV0dAB0y6qdIwdiB69SjpPNK5KKS1+AodLzosdIVKb+LiOyqUFKhLnablni1hiKlqY
+ yDeD4k5hePeQdpFixf1YZclGZLFbKlF/A/0Q13USOHuAMYoA/iSgJQDMSUWkuC0mNxdhfVt/gVJnu
+ Kq+uKUghcHflhK+yodqezlxmmRxg6HrPVqRG4pZ6YNYO7YXuEWy9JiEH7MmFYcjNdgjn+kxx4IoYU
+ O0MJ+DjLpVCV1QP1ZvMy8qQxScyEn7pMpQ0aW6zfJBsvoV3EHCR1emwKYO6rJOfvtu1rElGCTe3sn
+ sScV9Z1oXlvo8pVNH5a2SlnsuEBQe0RXNXNJ4RAls8VraGdNSHi4MxcsYEgAVHVaAdTLfJcXZNCIU
+ cZejkOE+U2talW2n5sMvx+yURAEVsT/50whYcvomt0y81ImvCgUz4xN1axZ3PCjkgyhNiqLe+vzge
+ xq7B2Kx2++hxIBDCKLUTn8JUAtQ1iGBZL9RuDrBy2rR7xbHcU2424iSbP0zmnpav5KUg4F1JVYG12
+ vDCi5tq5lORCL28rjOQqE0aLHU1M1D2v51kjkmNuc2pgLDFzpvgLQhTmlrbGFzIFNjaG5lbGxlIDx
+ uaWtzQGtlcm5lbC5vcmc+iQJUBBMBCAA+AhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAFiEEnbAA
+ stJ1IDCl9y3cr+Q/FejCYJAFAmWVoosFCQWP+TMACgkQr+Q/FejCYJAglRAAihbDxiGLOWhJed5cF
+ kOwdTZz6MyYgazbr+2sFrfAhX3hxPFoG4ogY/BzsjkN0cevWpSigb2I8Y1sQD7BFWJ2OjpEpVQd0D
+ sk5VbJBXEWIVDBQ4VMoACLUKgfrb0xiwMRg9C2h6KlwrPBlfgctfvrWWLBq7+oqx73CgxqTcGpfFy
+ tD87R4ovR9W1doZbh7pjsH5Ae9xX5PnQFHruib3y35zC8+tvSgvYWv3Eg/8H4QWlrjLHHy2AfZDVl
+ 9F5t5RfGL8NRsiTdVg9VFYg/GDdck9WPEgdO3L/qoq3Iuk0SZccGl+Nj8vtWYPKNlu2UvgYEbB8cl
+ UoWhg+SjjYQka7/p6tc+CCPZ8JUpkgkAdt7yXt6370wP1gct2VztS6SEGcmAE1qxtGhi5Kuln4ZJ/
+ UO2yxhPHgoW99OuZw3IRHe0+mNR67JbIpSuFWDFNjZ0nckQcU1taSEUi0euWs7i4MEkm0NsOsVhbs
+ 4D2vMiC6kO/FqWOPmWZeAjyJw/KRUG4PaJAr5zJUx57nhKWgeTniW712n4DwCUh77D/PHY0nqBTG/
+ B+QQCR/FYGpTFkO4DRVfapT8njDrsWyVpP9o64VNZP42S+DuRGWfUKCMAXsM/wPzRiDEVfnZMcUR9
+ vwLSHeoV7MiIFC0xIrp5ES9R00t4UFgqtGc36DV71qjR+66Im0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.3 (3.54.3-1.fc41) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250128092334.GA28548@lst.de>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: SnQ_F1zm6vnT9POTI9bQ-tzd1zNUBuoF
+X-Proofpoint-GUID: SnQ_F1zm6vnT9POTI9bQ-tzd1zNUBuoF
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-01-30_03,2025-01-29_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ mlxlogscore=999 phishscore=0 clxscore=1015 adultscore=0 priorityscore=1501
+ spamscore=0 impostorscore=0 malwarescore=0 suspectscore=0 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501300057
 
-On Tue, Jan 28, 2025 at 10:23:34AM +0100, Christoph Hellwig wrote:
-> On Thu, Jan 16, 2025 at 02:17:24PM +0100, Danilo Krummrich wrote:
-> > Since there hasn't been a reply so far, I assume that we're good with
-> > maintaining the DMA Rust abstractions separately.
-> 
-> No, I'm not.  This was an explicit:
-> 
-> Nacked-by: Christoph Hellwig <hch@lst.de>
-> 
-> And I also do not want another maintainer.  If you want to make Linux
-> impossible to maintain due to a cross-language codebase do that in
-> your driver so that you have to do it instead of spreading this cancer
-> to core subsystems.  (where this cancer explicitly is a cross-language
-> codebase and not rust itself, just to escape the flameware brigade).
+On Fri, 2025-01-24 at 15:17 -0500, Matthew Rosato wrote:
+> Enabled via the kernel command-line 'iommu.passthrough=3D1' option.
+>=20
+> Introduce the concept of identity domains to s390-iommu, which relies on
+> the bus_dma_region to offset identity mappings to the start of the DMA
+> aperture advertized by CLP.
+>=20
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>  arch/s390/pci/pci.c        |  6 ++-
+>  drivers/iommu/s390-iommu.c | 95 +++++++++++++++++++++++++++++---------
+>  2 files changed, 76 insertions(+), 25 deletions(-)
+>=20
+> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+> index 88f72745fa59..758b23331754 100644
+> --- a/arch/s390/pci/pci.c
+> +++ b/arch/s390/pci/pci.c
+> @@ -124,14 +124,16 @@ int zpci_register_ioat(struct zpci_dev *zdev, u8 dm=
+aas,
+>  	struct zpci_fib fib =3D {0};
+>  	u8 cc;
+> =20
+> -	WARN_ON_ONCE(iota & 0x3fff);
+>  	fib.pba =3D base;
+>  	/* Work around off by one in ISM virt device */
+>  	if (zdev->pft =3D=3D PCI_FUNC_TYPE_ISM && limit > base)
+>  		fib.pal =3D limit + (1 << 12);
+>  	else
+>  		fib.pal =3D limit;
+> -	fib.iota =3D iota | ZPCI_IOTA_RTTO_FLAG;
+> +	if (iota =3D=3D 0)
+> +		fib.iota =3D iota;
 
-I accept that you don't want to be involved with Rust in the kernel, which is
-why we offered to maintain the Rust abstraction layer for the DMA coherent
-allocator as a separate component (which it would be anyways) ourselves.
+Taking another look, I think there is a small problem with the logic of
+passing iota =3D=3D 0 to indicate direct mapping. In
+zpci_hot_reset_device() we call zpci_register_ioat() with iota set to
+virt_to_phys(zdev->dma_table) and while zdev->dma_table is NULL for the
+identity domain we can't rely on virt_to_phys(NULL) =3D=3D NULL.
 
-As explained previously, this component is just a user of the DMA coherent
-allocator API (just like any other driver) and the reason we want this component
-is because otherwise this abstraction layer would end up in every Rust driver
-that needs the DMA coherent allocator as duplicated code, which for obvious
-reasons isn't desirable.
-
-Throughout this conversation I did not see technical arguments or concerns
-against this, but I did recognize your opposition against Rust in the kernel
-and cross-language projects.
-
-Being a maintainer myself, I think it is outside the scope of a maintainer to
-restrict the usage of a public kernel API for a certain entity arbitrarily and /
-or by personal preference, which, as it appears to me, is the case here.
-
-@Greg, @Linus: I believe this would be on your purview.
-
-Please find the full thread in [1].
-
-[1] https://lore.kernel.org/rust-for-linux/20250108135951.GA18074@lst.de/
+> +	else
+> +		fib.iota =3D iota | ZPCI_IOTA_RTTO_FLAG;
+>  	fib.gd =3D zdev->gisa;
+>  	cc =3D zpci_mod_fc(req, &fib, status);
+>  	if (cc)
