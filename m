@@ -1,112 +1,78 @@
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 921B61D516A
-	for <iommu@lists.linux.dev>; Mon,  3 Feb 2025 19:13:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F19621019A;
+	Mon,  3 Feb 2025 19:15:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738610030; cv=none; b=BFdAnuN/5qRbgSdmV29mdoUVUZOA5lIUyqnNRflAhst30uFhvKfKp2hbATT0beDMT/YMGJh4ZjKxokfjn6Crh05p8/oI6IKLUuJjM+I+FCPXqI+X24aufveMt4qu961XK9raa/7K460Uovc+uF7Q6mScq5YraI24GdnQXyYTFYY=
+	t=1738610124; cv=none; b=gkOuK+s7E3n1MPTciozxDTyQUc8WUP1T7gW788qBsejRNRV1UE73I9THQfTnblOcSzkXn4ra+8S4mXNu1faWgou3hx67OfAYNsu2odNLe1zYKSjaE/NjCSOxi7nuS+f5u5VFmYhSNgndFRBuHMbdNhxeVZ1yBVmpRFUIg3M90FY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738610030; c=relaxed/simple;
-	bh=8JWcxXoxbQ+/d4OLTmav8rntW6yu0LESXzb02dgf9Es=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mXkr4AqOksNi9A8IXuj6LYIBrtuwYWcB6U1/xjttqBRPINLw5UqFVlhC+YcSTkn6z+RtuTxjaBI+V01U6Wjc3NuQ7eEsjoNi0QAxvS/5JWoalq2nP7Umjql7zLC/OF8hme8q/6veTm0OJee+fApuOFziwu/a8NcGeBjHas5+AJU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VyR1eTo3; arc=none smtp.client-ip=209.85.222.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1738610124; c=relaxed/simple;
+	bh=EHqDeqDddNIApfCVLPDVdinDu5ErQOOB8uPUawpqjOA=;
+	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
+	 In-Reply-To:To:Cc; b=ailVdHbClBDR8TMQDDV6yc1Ilejozp3X8JODWnJ6ClAi6ZHEmfUnbSbMZgR+nyhIvpFA+5HezssD2C8qwVmGQpq58Z+xZRlVSkAif2rerJcV3Ti89Ie4kR+rd1Htsu7HgPMA6CkKjxS+XiG7UiTyRElR8VqkwpN3Urb2A1tbBTk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AVgbLtYI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VyR1eTo3"
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-7be49f6b331so450336885a.1
-        for <iommu@lists.linux.dev>; Mon, 03 Feb 2025 11:13:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1738610027; x=1739214827; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8JWcxXoxbQ+/d4OLTmav8rntW6yu0LESXzb02dgf9Es=;
-        b=VyR1eTo3ovPFfZCXbLCX35nrQcEqMZ7UQODYX4cQY9Sxa26L65uGidqvCaZA4j75mm
-         6K68HWFOF7hg2cXhZT4Q+63ok1AOpbyvccXO/Y3q/OakPw1luwCc4/h2RtvbvFKLKanT
-         BEBvBScu+oNzb6/bl2Xt3CDJ1P1RUzgaT2CMgIUMzEiY1MNN38DJFwhZWm008gMnEeDN
-         kP4NXps8Xc0gPOAhcFw+guJdjhoHpqnUkianCAWc2pl169mg+lHNZ2MjOlLXY9EwQxYC
-         ACt6uUg30+VA1HcRlJ6qs6/hiSIH0NfAWnj5nSYdgaf2Kp0R5Ploulu+l8CIlp//+MO1
-         pZMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738610027; x=1739214827;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8JWcxXoxbQ+/d4OLTmav8rntW6yu0LESXzb02dgf9Es=;
-        b=fYPiIwlk0/WgmA5mGEykhLct1GGMdtrk1Xit7mNMD88OcZOtVPtV3Y72j58ayTCHCd
-         SQGgGTG+PrA4BzGy71JBBXr1cEaAY+Z5coMnb7v1VGDQqfVM7lKIeSpIGOWRy9QOyv1T
-         XdIJQVpSb7GcVsDwQlo2GxLJK/eI+8lZLPG2yuOhyE89qI2jEM0hy/OOdb99OSMt93Ba
-         NrpRRO79gq+jVjZ1KtCHySDWisdMAnNGaL5XUsHsKNeR36QFrtKlqiJlFATfSzi4dFi8
-         W5P+dQZQ2jDmBdjQD9Ro/HNU6Orb67ppvM9Wkdyn1++hq0pbAgazYwrqVX4ijff9t4qa
-         DEIQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVjje4MDBQC0cud/OGQSORefWaqtv3ToC+MlS2n/PU4WBF7rpynwT1KZb3RcnRBIY/XkieYwg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzqZCUAybGvkeDs1xoZURVNL3eTHx0dQxuVlcF6WzY6hXzOmd93
-	pavxqfmAvLj2bfGfwiZISor3LATuj5wal/7M1rfCb5qr3Vr7+51pPTrvlV74QaI=
-X-Gm-Gg: ASbGncvecgnfRB4cwA+G9+rxXaxPImjpzFsG8QMhnJLl9cBgVcIZNH7SCMHV4obaEE1
-	BswBS0GkvA0Oa21DEMCaffQOJyyNgOukJgVX4+jQHzEoyDZ4gafau4ZsF6gu/Vh9h+ovT7mDXNO
-	wWJ2tORBrItus/xU9BTvwiBtmcv6787Mu5VmTihL3OnrDUL2INJWg8PmCzbNjbXFV98AVPl0fQN
-	p6v/vlpio55aiq6gVJO6JWyU2tOERJrR/k9ykP9M/Nw3KN+ZQvESHHKs2og7VOAqTHxolYe8y/R
-	5TUis2hHVKM1sLeLUsJzHl7F8T/Vz72PmHjrBX57WEybyn6Lv/BFE1j4154zJw8F
-X-Google-Smtp-Source: AGHT+IH9lm7yxORMtUKnhgtCo398qO3xBrZWzG2Ji8hCZqnDx3AD/ekoAplJegHaKOf+kPYlEc3QqA==
-X-Received: by 2002:a05:6214:1316:b0:6d8:7ccf:b692 with SMTP id 6a1803df08f44-6e243c19ebemr308346136d6.11.1738610027388;
-        Mon, 03 Feb 2025 11:13:47 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e2549225e8sm53233546d6.88.2025.02.03.11.13.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Feb 2025 11:13:46 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tf1tC-0000000BLdk-1MYP;
-	Mon, 03 Feb 2025 15:13:46 -0400
-Date: Mon, 3 Feb 2025 15:13:46 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>, thierry.reding@gmail.com,
-	vdumpa@nvidia.com, joro@8bytes.org, will@kernel.org,
-	jonathanh@nvidia.com, baolu.lu@linux.intel.com, jsnitsel@redhat.com,
-	jroedel@suse.de, regressions@lists.linux.dev,
-	linux-tegra@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [REGRESSION] Invalid gather when using Tegra210 media engines
-Message-ID: <20250203191346.GG2296753@ziepe.ca>
-References: <c6a6f114-3acd-4d56-a13b-b88978e927dc@tecnico.ulisboa.pt>
- <20250203170617.GE2296753@ziepe.ca>
- <4ea1a48c-9020-4793-ac9b-b51fc289e442@tecnico.ulisboa.pt>
- <20250203174331.GF2296753@ziepe.ca>
- <a0f776ba-bfd2-41fd-8370-14818b86bfbe@arm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AVgbLtYI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B609C4CEE3;
+	Mon,  3 Feb 2025 19:15:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1738610124;
+	bh=EHqDeqDddNIApfCVLPDVdinDu5ErQOOB8uPUawpqjOA=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=AVgbLtYIrdpvCq52oUDxyK4YHXb5iofWOH/lli5LhAaiyHBvqP3CWsOW5Hy6tiW4l
+	 9vuNOIg2goB/R2/vlCShLYIBOaDk6p2ocLHMvJyb3HL8EzScQRTtJ3Bn6+d8Fj5c0S
+	 TtzSvNdOtLb1UNaf7MwOs/1ya8lU8UhQXGj4PyAQw9xjEFt6WooODqVkhzx+K2c5is
+	 Gr0D5CsHvLosSWL1UH9pKeN1aCWNDNLGRzsVUIwy1ndfd5+7vcAr2VdK1icmGdNkPX
+	 FfV7qW9d/zY836F6LxZ9KRc8+NDQrHWQgY5n6mVKrU4HbotvExgOWhRtkbe0QC//FL
+	 npmInPiPK1kwQ==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id ADDA2380AA67;
+	Mon,  3 Feb 2025 19:15:52 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a0f776ba-bfd2-41fd-8370-14818b86bfbe@arm.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 0/1] iommu/riscv: Add platform msi support
+From: patchwork-bot+linux-riscv@kernel.org
+Message-Id: 
+ <173861015130.3409359.9807283652658448466.git-patchwork-notify@kernel.org>
+Date: Mon, 03 Feb 2025 19:15:51 +0000
+References: <20241112133504.491984-3-ajones@ventanamicro.com>
+In-Reply-To: <20241112133504.491984-3-ajones@ventanamicro.com>
+To: Andrew Jones <ajones@ventanamicro.com>
+Cc: linux-riscv@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, tjeznach@rivosinc.com,
+ samuel.holland@sifive.com, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, paul.walmsley@sifive.com, palmer@dabbelt.com,
+ aou@eecs.berkeley.edu
 
-On Mon, Feb 03, 2025 at 06:49:07PM +0000, Robin Murphy wrote:
-> I'd hope the historical reasons for not supporting IOMMU_DOMAIN_DMA in
-> tegra-smmu no longer apply, given that all the default domain stuff has now
-> been integrated into host1x for the newer arm-smmu based Tegras.
+Hello:
 
-Indeed I do see appropriate looking calls to the normal DMA API, and
-the other mapping path is conditionalized by !host->domain.
+This patch was applied to riscv/linux.git (fixes)
+by Joerg Roedel <jroedel@suse.de>:
 
-So, why didn't it work for Diogo? Even in identity mode the DMA API
-will return correct DMA addresses and the !host->domain path will skip
-mapping them.
+On Tue, 12 Nov 2024 14:35:05 +0100 you wrote:
+> Add MSI support for a platform IOMMU. May be tested with QEMU when
+> including [1].
+> 
+> Based on linux-next commit 28955f4fa282 ("Add linux-next specific files for 20241112")
+> 
+> [1] https://lore.kernel.org/all/20241106133407.604587-1-dbarboza@ventanamicro.com/
+> 
+> [...]
 
-Poking around I wonder if there is some assumption that if other parts
-of the stack, maybe the DRM driver, are using the special domain than
-everyone is? It seems to blindly pass around IOVA without really
-checking who is consuming it.
+Here is the summary with links:
+  - [v2,1/1] iommu/riscv: Add support for platform msi
+    https://git.kernel.org/riscv/c/d5f88acdd6ff
 
-Christian was telling me DMABUF had some drivers that made the
-(incorrect!) assumption they were all sharing translation.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-It does seem like a nice project for someone who has the hardware to
-rip out all of this custom domain stuff and just have the iommu layer
-setup a shared dma-iommu domain.
 
-Jason
