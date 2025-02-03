@@ -1,64 +1,48 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F274B1E9905
-	for <iommu@lists.linux.dev>; Mon,  3 Feb 2025 08:37:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 976501FA859;
+	Mon,  3 Feb 2025 08:38:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738571826; cv=none; b=OS7U1vJb+0GeI5aGYxwT33PSAxVFQCIKEge8G2iuwRmVPw9KuQ42WY1SQ4I4IR17FWQ8fg20DqeMqK3HMUWYgFhapKfsh8cGjA0lO5FQkFg9eXA02M1WXSK7xbsATlb/LuxSOUU5zY69TmEdiTm+mgAAOdhiusLcVRQr0142jms=
+	t=1738571893; cv=none; b=mGc0KNG12F3iIbcW1QD2YsdEsMT7pHMq91CNY1aCQDluI58FtYKAsQv6Y0BfTmTwC6pw6eun0crecmLEYQHlj9DgDGUvHHGWKkPg8VCoJyk4IqKqRZ6Tolay+dotFPrYLH0xeDWzB2aUz8GZvv9dzOhrqZ2BavypikA88kGgvSs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738571826; c=relaxed/simple;
-	bh=gWOFAt2rybSaMtiQKrZAONssTjaaeIu2CUJS662ZrX0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aBFG20qMydPolNkN7Lnhu5VmsEapcjhQp7jxjHZdwob7O9G4NKZ/o4cZsicNx7fqAeeKObFsImfCTtlgvr8BSAuRODeKw2WSNiqEK837MC/MUoCUPtFeq7zov/nR1e6QGJJvnKzTJNYmFMXgTj+1eRtc5WNhBJRsorSBIyQMe9k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CmoIp3kL; arc=none smtp.client-ip=209.85.167.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1738571893; c=relaxed/simple;
+	bh=EJVvYHmUv5g/Vnq219Og/XdQw7v2OLZ38BqZWLWWbgA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=TnmM+YbCfr6JVrtku7HjaBByPZ1SgnRdyWeJ0lm6B5ZRcZi3t8mqdv3wLdPjXmrIW9C8uUCnZM+JAVGrnAFgupDvLIwSvNpEEacR5o8p6Iwg4guYKYZ6yDKNHuHx4nFZq5dHv8t80Sfgj6T0NfCdpah1JS7dwUkEpveZo5wJwsw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=PV4PSb9y; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CmoIp3kL"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-540218726d5so3879580e87.2
-        for <iommu@lists.linux.dev>; Mon, 03 Feb 2025 00:37:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738571823; x=1739176623; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=j30JImXL8j/mQY7XDaNDiKvNWf91T15iq6ow2JICGdU=;
-        b=CmoIp3kLfCUbmbGXvq/dBMv2QRWns8IKnJv44MuuliDE4vMb9S2N+NONWti+FNg7Cq
-         vwWRazniXZM78vplfgxvsn5AWGbGNS7Zy/QKTxol4z9RwljTS9KTT9SC7clDImLbgOEe
-         WGHmFnJ3dfgVgaByJNZd+SlxYBikx+JWO1LItjTmC9Shpda6xMvsUmTb5ksFaiDA+VNJ
-         7iiN1IwqJX503+wXPB1MB605XR9hKxLlSAoDDxpao+C5+NoF3kPZ61yOKhYtr8zPVhUz
-         f3gtM8pj7X/ABvOnQ1QNZ5wViuAd8DVfXCV3FlIc4eVQh+GilBTFiH2wBMokHb+Leut5
-         UU6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738571823; x=1739176623;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=j30JImXL8j/mQY7XDaNDiKvNWf91T15iq6ow2JICGdU=;
-        b=uhdwqGPR6zwCqaWyEF+6qMfAp6zGxNJyF6+bnt96KTyboe8ZFWtMMW1ikECmjSwq0c
-         xHUw3AjQbkKu6WNqdfZkPQ9CoXXYhqBMgrl69DR+9TWe4OoaaMJFCTmBySLy28jDVIQP
-         uoV3kjzYErGZ0ZoGp/yQLDBkP2th+21Zh5VZjYimKZV6pS+wcWC2BbzGqiB7TCdnSsld
-         RQTsmZPSMv7/HA+HmsGFn1av+0iOesolPAt07fG701E8bua3oxPhRzUFbOD2Hq3GKOS9
-         WoW7EEal2PNxPHONk2BQey7mX4FEDjpVX0mMRmkWGPp6DpY62+LtbQBPJwZ5ol/CAgey
-         hT+g==
-X-Forwarded-Encrypted: i=1; AJvYcCUGg5rP2I2E1cXFG5FWB8l3PBbgAO4X5A+48qH6+Svt6wlptjK2LE4G4CJwhK+bXm/gJFvj+g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YygUw0cR0ZPQI0Oj0r5jArsXSsKHAByBQsJjTjUcxYF1xv6+qQ5
-	tLUQsfemMboeKPfems5x0hN4KJHqpQH8LFa063myQURZgwldkwEb
-X-Gm-Gg: ASbGncsrxs3si1pLmEv1kRxxBIZf6PcG7C76Fcc0rXEwJKvvy8PSOaQNiBQRfgjM48l
-	qypZioUcaNUieEgMIebfoaSvSsIEAdHemxBIDoGy7R+UsNGlCALOa0Q1OnBOm8pmz/jHs9u5T0v
-	NGOlgKc0e3IsXfOC4Gaq0hQ0HgZeewRfMr3Bt7/9ICfwQQrrRxfKp7qJ9wRFqFN5ZA45ElhSBoG
-	l7nXieSgeKPI9RsewKIiO2uTCzPqYUBFOGkW6huVXPceu4DmEuSSH4nswujNqEQsEhESBhqB1Cy
-	62yR5tEua9n5mXx6ZsYJXjmGQJQncxSP88/bpPq3PZ6F94rIHA06dj6CbyA9FQ==
-X-Google-Smtp-Source: AGHT+IF2J0IfkNwwMwXACa9nZcYDX3ga+w/KRzEdi7zlalBoWSm0GuqBJLQ+dPRSCXr9qDRpU/nP3A==
-X-Received: by 2002:ac2:430a:0:b0:540:1b2d:8ef3 with SMTP id 2adb3069b0e04-543e4c3ca2cmr5198254e87.52.1738571822740;
-        Mon, 03 Feb 2025 00:37:02 -0800 (PST)
-Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-543ebebe6a3sm1197056e87.219.2025.02.03.00.37.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Feb 2025 00:37:02 -0800 (PST)
-Message-ID: <b8ea4215-f4f9-44ba-8976-7d60afd7c8d7@gmail.com>
-Date: Mon, 3 Feb 2025 10:37:00 +0200
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="PV4PSb9y"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5135lEr1007514;
+	Mon, 3 Feb 2025 08:38:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	XVGYg007DqlZ14Celc1KRgbSlHax+yNO1OqjdJZgd5k=; b=PV4PSb9ywGcurZ2N
+	BQBhAJnxJtXP/oJ1EBRGtk0FtNpLNTKo70pmYFul3I0+AU5Szf30TnFfqIdJXqX0
+	hxsiwpJksDdw6sqBxwwd/VGrfSaX29gWFiSxHHn30GjYuYPSdUTOCUIm5dt/97hM
+	xxbNC4APIDCokYgC5+CkA2lQovNlm+XjnlGmcdqu0mzVQ7bpPoQ3tk9uIdubCxrY
+	tY5LbjoM1NmeHrIR59ApO4uTCoBnplgOesGoKcgyNL4PuldS0BUkolPCOQR+e3Nh
+	SbynayGywdqj3BaBs4ID1mm2pJNjt4TtiTFsnW8lKm7EoTQ31J21d8agVF9C8KgP
+	iyTeRA==
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44jqxw0bva-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 03 Feb 2025 08:38:01 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5138bxcX030486
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 3 Feb 2025 08:37:59 GMT
+Received: from [10.219.57.57] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 3 Feb 2025
+ 00:37:55 -0800
+Message-ID: <273df630-007d-4aaf-9432-2884a7e94d5e@quicinc.com>
+Date: Mon, 3 Feb 2025 14:07:52 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,37 +50,86 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v11 3/3] MAINTAINERS: add entry for Rust dma mapping
- helpers device driver API
-To: Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
- daniel.almeida@collabora.com, dakr@kernel.org, aliceryhl@google.com
-Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
- <20250123104333.1340512-4-abdiel.janulgue@gmail.com>
- <4956d01e-2d06-4edd-813b-9da94b482069@arm.com>
+Subject: Re: [PATCH v4 0/2] Add support for GPU SMMU on QCS8300
+To: Krzysztof Kozlowski <krzk@kernel.org>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg
+ Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson
+	<andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>
+References: <20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com>
+ <20250203-lean-delightful-ermine-f5b902@krzk-bin>
 Content-Language: en-US
-From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-In-Reply-To: <4956d01e-2d06-4edd-813b-9da94b482069@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Pratyush Brahma <quic_pbrahma@quicinc.com>
+In-Reply-To: <20250203-lean-delightful-ermine-f5b902@krzk-bin>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: A3Y4AVxh3AHw6zDw3dRdd7GiAx6Rmuqp
+X-Proofpoint-GUID: A3Y4AVxh3AHw6zDw3dRdd7GiAx6Rmuqp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-03_03,2025-01-31_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 priorityscore=1501 mlxscore=0 suspectscore=0
+ adultscore=0 impostorscore=0 clxscore=1015 lowpriorityscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2501170000 definitions=main-2502030068
 
 
+On 2/3/2025 1:03 PM, Krzysztof Kozlowski wrote:
+> On Mon, Feb 03, 2025 at 11:17:00AM +0530, Pratyush Brahma wrote:
+>> Enable GPU SMMU function on QCS8300 platform. GPU SMMU is required
+>> for address translation in GPU device.
+>>
+>> Signed-off-by: Pratyush Brahma <quic_pbrahma@quicinc.com>
+>> --
+>> Changes since v3:
+>> - Modified the order of clock voting and properties as suggested by Konrad
+>> - Removed dependency on clocks in commit text as change is merged in
+>>    linux-next before current base commit
+>>
+>> Link to v3:
+>> https://lore.kernel.org/all/20241227105818.28516-1-quic_pbrahma@quicinc.com/
+>>
+> How are you sending these?
+>
+> b4 diff 20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com
+> Grabbing thread from lore.kernel.org/all/20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com/t.mbox.gz
+> Checking for older revisions
+> Grabbing search results from lore.kernel.org
+>    Added from v3: 2 patches
+> ---
+> Analyzing 7 messages in the thread
+> Preparing fake-am for v3: dt-bindings: arm-smmu: Document QCS8300 GPU SMMU
+> ERROR: v3 series incomplete; unable to create a fake-am range
+> ---
+> Could not create fake-am range for lower series v3
+I have sent this version of the patch series using b4 for the first 
+time, as suggested earlier [1]. The issue might be due to the previous 
+version being sent
+incorrectly using git send-mail. Consequently, I had to manually apply 
+the previous patches after creating the b4 branch,
+since "b4 prep -F" was throwing an error when trying to apply the last 
+patch.
 
-On 30/01/2025 13:49, Robin Murphy wrote:
-> On 2025-01-23 10:42 am, Abdiel Janulgue wrote:
->> Add an entry for the Rust dma mapping helpers abstractions.
-> 
-> Can't really speak for the Rust side of things, but I could be an 
-> additional reviewer to keep an eye on the DMA API angle if that would help.
-> 
+[1] 
+https://lore.kernel.org/all/64ak7h5pwqinmcymas5i4xexa6bntvti7zkwfhzx7qrsmgaow3@zmn7jffcrp5f/
+>
+> Best regards,
+> Krzysztof
+>
+-- 
+Thanks and Regards
+Pratyush Brahma
 
-Yes, would really appreciate your help! Thanks!
-Abdiel
