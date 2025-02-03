@@ -1,189 +1,193 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2053.outbound.protection.outlook.com [40.107.95.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22A9520B7ED
-	for <iommu@lists.linux.dev>; Mon,  3 Feb 2025 19:22:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738610554; cv=none; b=ePk+SZJpDb8N/GaPb0tvAMaLp6swFj5askeoOAFeUPoL0yBrNSUxsKrAxjsKwlBjUJEJFlVDqyjeQ4srFRMcVkH39Cb/KbSWeoYqjxijEpb/q160q3a5GbBPMwRO3iLWOgQijC91zpjpDjMKbQZV+tX8kjBIKWgjVxXKdzQU3zI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738610554; c=relaxed/simple;
-	bh=47I4W/OdFRdOnxyJFooCrp1d9zqBf6rBozHIs8h9RnU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iHeQIOMZGHPZqyvT4J/A2KM9/fwmiFayb/s2INXV3+Tg3ILr3j+4APZAlS0Ec34op78EPYuprEVpU5Ogfi82ptbT7KaSdzFImV/Srd8oTHzuDvSITndLPDlMuGS+iRxpluj7rywZiKYkqyfRgSnCuCrHdkmuZaXEWmD/VL0IbF4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=cx4M+6wj; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9226B78F54;
+	Mon,  3 Feb 2025 21:56:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.53
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738619786; cv=fail; b=D+UVdJmQOAoCQY3gffaCU8mYouYSrKAx3DxZkljVZldBlGUOBEeFa+65mgiKTGyawp/3zyZzHNYcr9dp/TYYQn6sKbAnsp0n3f/V6GlK44mz6Y1nHawbY3tZ1LPkdjRhpgblJ47+x5QB2SUaEMdSOyL3lDoGDvlmB+DHq3TvPKw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738619786; c=relaxed/simple;
+	bh=Ii71AmI4iKuL3pySBtVyKrzvZMG5fPLbrgotcL3y0Ro=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=l3ST3L1rz8+Tr2zDPbJjXyjCYTEHJJkeEoLCbdRv3lENAzwlljVSjEcYsRwnRGw5ZObUW6AjXaAlu8A+ZBZxtCHrSpfZjFsStKzQCLgT0oY9UVFTw7mTvChOZ5jcjlk4xJVBSr+j7ATEwqSxdtYwA+SNuTHdhJh6/+kTJz+rCeo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=fpR8yuZU; arc=fail smtp.client-ip=40.107.95.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cx4M+6wj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1738610549;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=8JzCvz88snSnAVNQMXnklYQMU/jabK+PbGj82gu/vrw=;
-	b=cx4M+6wj5cfvk9accn0ptGtG756AOAuYWbPy6D0IxpaGgpqqCa4+ZX8mWRiMO9z9UM6jxD
-	Ko2q3wqdeVLbdgn/id3WQBRHzaDgCHIb42xG+pIii8TsRU2IEJlC3IwS4Xp7cy9nOYNm9I
-	/SSjQD2fH77W/7pKGdbZPlZckpfbu2E=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-226-Wete-p6SM6usiqOAviFGlw-1; Mon, 03 Feb 2025 14:22:28 -0500
-X-MC-Unique: Wete-p6SM6usiqOAviFGlw-1
-X-Mimecast-MFC-AGG-ID: Wete-p6SM6usiqOAviFGlw
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-4361efc9d1fso38382445e9.2
-        for <iommu@lists.linux.dev>; Mon, 03 Feb 2025 11:22:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738610545; x=1739215345;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8JzCvz88snSnAVNQMXnklYQMU/jabK+PbGj82gu/vrw=;
-        b=iPDjc1LY+53rb1k1giI0xtHHV0erMKALi6uj4D4jKhPfaa5Almmw3fU/gsIBgcSvSH
-         e9rpD5ET1RKwVxeccYSfwVQHvEvwIa7I1LHi3PgoT1Aymcbp4xlliLJ7In66fxxkH52O
-         8xYYVRH7PLmz/AZY2hUHXI491oGASjXliSVRCRezCW3t6H/dluSMb+UICnc4z/PBuIuZ
-         7Ho4Kw1OMS5+u2llumb9K2evnciiJaWsWRkarTK36cOP83uqgRSR08uVQqQ8LMOWiyhi
-         drvRoEDqnk79y2+oSkyGPoLuPe6t6d3LsoxFpOtXFcQDQcIPz6B0moiDWpRDSpbTFmwK
-         go4A==
-X-Forwarded-Encrypted: i=1; AJvYcCVnTCYU6xW23QdI2lw1sULYCInJqhSJjWuXhYqcIMWhKSzF6Fhh6fVdeB+OtjerR+6RQCtEDA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyzMOh8yunZzkiWbUDP8ufGcufty2CciGCrDceasBD0PW71vqaB
-	mHmsqYo4/nmWzwX0lf9OkZ8IReUjzRe3JMDQv9UsCLqLOyT8JoFs7OeDeD1Bgvf6s5tpwP6A+EF
-	eC/kbnRpTgSRxPEuxhY6qgJgDOeT/mSOSFyR9k/tUNlUb3CqmIyg9
-X-Gm-Gg: ASbGnctaol6Jrs6rP0nWZX9thgcSylGeBkvgbsW71DRZ3eJPDI+hC5aoqSOM+Yi8gPg
-	UpOpkefsz06pmYF7SdC7lvi8xXubxFvAvxAwvz7mxySnyWdC18Os/3o+ZAOdBFuMGundlxD/2ie
-	7F1mWjI5Me9XGK5b2KvP5Mk6gD6ElX+e8Y/ySajWL0OOOqA5r16AxfpJ4ceAkaQeQv/NEgkMQEm
-	nt8Di4EUUkAmhjLf8iqBBnnBJMTlsj8agd7SZcGDtRAwgAmzwD0fsEgbn107pycEiswCNuBVlQT
-	06Cl/A==
-X-Received: by 2002:a05:600c:6c44:b0:436:fb02:e90 with SMTP id 5b1f17b1804b1-438dc48aa14mr222541265e9.10.1738610545568;
-        Mon, 03 Feb 2025 11:22:25 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IEBlGAFDIU1GLvsSC3pDPLeHERpJ5yoHpiUEpzS4SGlu1H0ypOa5OhIad8hucJaADA6QYw8AQ==
-X-Received: by 2002:a05:600c:6c44:b0:436:fb02:e90 with SMTP id 5b1f17b1804b1-438dc48aa14mr222541065e9.10.1738610545216;
-        Mon, 03 Feb 2025 11:22:25 -0800 (PST)
-Received: from [192.168.10.3] ([151.62.97.55])
-        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-438dcc26d6fsm197969255e9.14.2025.02.03.11.22.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Feb 2025 11:22:24 -0800 (PST)
-Message-ID: <5d5a6640-2f14-4d80-bc5e-4d8274251793@redhat.com>
-Date: Mon, 3 Feb 2025 20:22:22 +0100
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="fpR8yuZU"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=HtpfhdS5pNnp2QNTiHxuKyFvmT3dmo/w6iMRQLSx/OA2eF72lUKMULpS4m+VjWRlJvMNGiA0qWq48yrtBwM9HfsN4zfZ1aCyzQf/r2KRyea4rBwCZCL6W4QwPXiROndRDViDKWWckUUx21a2qtggCNmWoF61WtzifCNPTywWOOqoM3lF1xyrT8u92I+Y4lTiORh1sXhp/kPjaSTGajLaPyLgvyq4blh/jKYIYZWLfU/h6t+mNsM+piT3aKUv4CbzqFpVBvd0lB6lW/+RmaTmijMJtSIQgbJGDdedYmubvINCNJz44WF0xeMlLt9L2en3AEmQX70XfMP/ELkwt5366g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FxTVmHdVjePyEOhaxnVHntAs06z7NcOhKF+Mc1sLImY=;
+ b=L3U6TowtUQO2WDQxVD9gVjO5mbcnuHphqmjnuT5s1hAm7bp8r6GKr8U633n5kfXu93AOMVWYg1JWv7a513T/dRmXp+R0lbkyvm5F0nFxYo52Pk1Lm/VfOKwhjH5tPfu2G7k68MiGnMfYB1fpSEqKWeVk7brfT5QIv3JFl8kj4Xij28jTWZsuA+ZWTVcu/SXXRo/KP++zgia3OsAeYVt+0Pi4Mp+A7CjW3yuHEFjSYz8yUFzu4Qeg0MeYwuG2fAO7akFohCvUFag0OKtCxkFc1SS8SyjvYCw4xebirjwmBahdnlamfWm5QLYqBjduJyyQ2Ik117lrcR+xXAP2ipyLpA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FxTVmHdVjePyEOhaxnVHntAs06z7NcOhKF+Mc1sLImY=;
+ b=fpR8yuZUDY9dwF24pB0KNIzNrKVaWWtDoIthLcO6RvPGPL2RmyaFNFocfr+sWHnFQ0nNa5AQGYg0FHS24/85qArjfwe2k/aKD/05C7g/P/tDrTugxMo0et4hh/euulF4r78KE0w1JKkd27nD7OYSMo4y49wP1egM47AngGjKWeI=
+Received: from SN6PR16CA0049.namprd16.prod.outlook.com (2603:10b6:805:ca::26)
+ by DS7PR12MB6021.namprd12.prod.outlook.com (2603:10b6:8:87::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8398.23; Mon, 3 Feb 2025 21:56:19 +0000
+Received: from SN1PEPF0002BA4F.namprd03.prod.outlook.com
+ (2603:10b6:805:ca:cafe::b5) by SN6PR16CA0049.outlook.office365.com
+ (2603:10b6:805:ca::26) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8356.21 via Frontend Transport; Mon,
+ 3 Feb 2025 21:56:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ SN1PEPF0002BA4F.mail.protection.outlook.com (10.167.242.72) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8398.14 via Frontend Transport; Mon, 3 Feb 2025 21:56:18 +0000
+Received: from ethanolx7e2ehost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 3 Feb
+ 2025 15:56:17 -0600
+From: Ashish Kalra <Ashish.Kalra@amd.com>
+To: <seanjc@google.com>, <pbonzini@redhat.com>, <tglx@linutronix.de>,
+	<mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
+	<x86@kernel.org>, <hpa@zytor.com>, <thomas.lendacky@amd.com>,
+	<john.allen@amd.com>, <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>
+CC: <michael.roth@amd.com>, <dionnaglaze@google.com>, <nikunj@amd.com>,
+	<ardb@kernel.org>, <kevinloughlin@google.com>, <Neeraj.Upadhyay@amd.com>,
+	<kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-crypto@vger.kernel.org>, <linux-coco@lists.linux.dev>,
+	<iommu@lists.linux.dev>
+Subject: [PATCH v3 0/3] Fix broken SNP support with KVM module built-in
+Date: Mon, 3 Feb 2025 21:56:07 +0000
+Message-ID: <cover.1738618801.git.ashish.kalra@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
-To: Hector Martin <marcan@marcan.st>, Jason Gunthorpe <jgg@nvidia.com>,
- Greg KH <gregkh@linuxfoundation.org>,
- Linus Torvalds <torvalds@linux-foundation.org>
-Cc: phasta@kernel.org, Christoph Hellwig <hch@lst.de>,
- Danilo Krummrich <dakr@kernel.org>,
- Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com,
- aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
- Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-References: <Z3-NqwAG_96yq8VD@pollux> <20250110083955.GA5395@lst.de>
- <Z4D5a5NYrAbNxUL6@pollux> <Z4kG5AcVeQKegLnb@pollux>
- <20250128092334.GA28548@lst.de>
- <293df3d54bad446e8fd527f204c6dc301354e340.camel@mailbox.org>
- <20250130154646.GA2298732@nvidia.com> <2025013030-gummy-cosmic-7927@gregkh>
- <20250130172437.GN5556@nvidia.com>
- <2025013148-reversal-pessimism-1515@gregkh>
- <20250131135421.GO5556@nvidia.com>
- <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
-From: Paolo Bonzini <pbonzini@redhat.com>
-Autocrypt: addr=pbonzini@redhat.com; keydata=
- xsEhBFRCcBIBDqDGsz4K0zZun3jh+U6Z9wNGLKQ0kSFyjN38gMqU1SfP+TUNQepFHb/Gc0E2
- CxXPkIBTvYY+ZPkoTh5xF9oS1jqI8iRLzouzF8yXs3QjQIZ2SfuCxSVwlV65jotcjD2FTN04
- hVopm9llFijNZpVIOGUTqzM4U55sdsCcZUluWM6x4HSOdw5F5Utxfp1wOjD/v92Lrax0hjiX
- DResHSt48q+8FrZzY+AUbkUS+Jm34qjswdrgsC5uxeVcLkBgWLmov2kMaMROT0YmFY6A3m1S
- P/kXmHDXxhe23gKb3dgwxUTpENDBGcfEzrzilWueOeUWiOcWuFOed/C3SyijBx3Av/lbCsHU
- Vx6pMycNTdzU1BuAroB+Y3mNEuW56Yd44jlInzG2UOwt9XjjdKkJZ1g0P9dwptwLEgTEd3Fo
- UdhAQyRXGYO8oROiuh+RZ1lXp6AQ4ZjoyH8WLfTLf5g1EKCTc4C1sy1vQSdzIRu3rBIjAvnC
- tGZADei1IExLqB3uzXKzZ1BZ+Z8hnt2og9hb7H0y8diYfEk2w3R7wEr+Ehk5NQsT2MPI2QBd
- wEv1/Aj1DgUHZAHzG1QN9S8wNWQ6K9DqHZTBnI1hUlkp22zCSHK/6FwUCuYp1zcAEQEAAc0j
- UGFvbG8gQm9uemluaSA8cGJvbnppbmlAcmVkaGF0LmNvbT7CwU0EEwECACMFAlRCcBICGwMH
- CwkIBwMCAQYVCAIJCgsEFgIDAQIeAQIXgAAKCRB+FRAMzTZpsbceDp9IIN6BIA0Ol7MoB15E
- 11kRz/ewzryFY54tQlMnd4xxfH8MTQ/mm9I482YoSwPMdcWFAKnUX6Yo30tbLiNB8hzaHeRj
- jx12K+ptqYbg+cevgOtbLAlL9kNgLLcsGqC2829jBCUTVeMSZDrzS97ole/YEez2qFpPnTV0
- VrRWClWVfYh+JfzpXmgyhbkuwUxNFk421s4Ajp3d8nPPFUGgBG5HOxzkAm7xb1cjAuJ+oi/K
- CHfkuN+fLZl/u3E/fw7vvOESApLU5o0icVXeakfSz0LsygEnekDbxPnE5af/9FEkXJD5EoYG
- SEahaEtgNrR4qsyxyAGYgZlS70vkSSYJ+iT2rrwEiDlo31MzRo6Ba2FfHBSJ7lcYdPT7bbk9
- AO3hlNMhNdUhoQv7M5HsnqZ6unvSHOKmReNaS9egAGdRN0/GPDWr9wroyJ65ZNQsHl9nXBqE
- AukZNr5oJO5vxrYiAuuTSd6UI/xFkjtkzltG3mw5ao2bBpk/V/YuePrJsnPFHG7NhizrxttB
- nTuOSCMo45pfHQ+XYd5K1+Cv/NzZFNWscm5htJ0HznY+oOsZvHTyGz3v91pn51dkRYN0otqr
- bQ4tlFFuVjArBZcapSIe6NV8C4cEiSTOwE0EVEJx7gEIAMeHcVzuv2bp9HlWDp6+RkZe+vtl
- KwAHplb/WH59j2wyG8V6i33+6MlSSJMOFnYUCCL77bucx9uImI5nX24PIlqT+zasVEEVGSRF
- m8dgkcJDB7Tps0IkNrUi4yof3B3shR+vMY3i3Ip0e41zKx0CvlAhMOo6otaHmcxr35sWq1Jk
- tLkbn3wG+fPQCVudJJECvVQ//UAthSSEklA50QtD2sBkmQ14ZryEyTHQ+E42K3j2IUmOLriF
- dNr9NvE1QGmGyIcbw2NIVEBOK/GWxkS5+dmxM2iD4Jdaf2nSn3jlHjEXoPwpMs0KZsgdU0pP
- JQzMUMwmB1wM8JxovFlPYrhNT9MAEQEAAcLBMwQYAQIACQUCVEJx7gIbDAAKCRB+FRAMzTZp
- sadRDqCctLmYICZu4GSnie4lKXl+HqlLanpVMOoFNnWs9oRP47MbE2wv8OaYh5pNR9VVgyhD
- OG0AU7oidG36OeUlrFDTfnPYYSF/mPCxHttosyt8O5kabxnIPv2URuAxDByz+iVbL+RjKaGM
- GDph56ZTswlx75nZVtIukqzLAQ5fa8OALSGum0cFi4ptZUOhDNz1onz61klD6z3MODi0sBZN
- Aj6guB2L/+2ZwElZEeRBERRd/uommlYuToAXfNRdUwrwl9gRMiA0WSyTb190zneRRDfpSK5d
- usXnM/O+kr3Dm+Ui+UioPf6wgbn3T0o6I5BhVhs4h4hWmIW7iNhPjX1iybXfmb1gAFfjtHfL
- xRUr64svXpyfJMScIQtBAm0ihWPltXkyITA92ngCmPdHa6M1hMh4RDX+Jf1fiWubzp1voAg0
- JBrdmNZSQDz0iKmSrx8xkoXYfA3bgtFN8WJH2xgFL28XnqY4M6dLhJwV3z08tPSRqYFm4NMP
- dRsn0/7oymhneL8RthIvjDDQ5ktUjMe8LtHr70OZE/TT88qvEdhiIVUogHdo4qBrk41+gGQh
- b906Dudw5YhTJFU3nC6bbF2nrLlB4C/XSiH76ZvqzV0Z/cAMBo5NF/w=
-In-Reply-To: <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: N3eovNI6GczZgXfa5FYrUEg4Ek4Q71Zhcu-uRLyPpGE_1738610546
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF0002BA4F:EE_|DS7PR12MB6021:EE_
+X-MS-Office365-Filtering-Correlation-Id: de8f7135-4e12-493b-d1c0-08dd449d96af
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|36860700013|7416014|376014|82310400026|921020;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?OaxTkcM+FB9VP/khAUKOupKhTvHaPPs+y5lPhAU8ppT1jdBEj14P90tOmZ2h?=
+ =?us-ascii?Q?lSIs06d1wy7htT7feW+nNBgVgg9MOBzaqLQ3zM/dOQ4EzRcpdR7jo/hHGBax?=
+ =?us-ascii?Q?s4La0bxd0yIxz3qCBkeqFd9vu0+J8Y7okZyjjAlnMEP5iA+d0waGhu+jnsZa?=
+ =?us-ascii?Q?JkpijBvPqvz8f6HMzjgNbn7hLolyUtz0JXw31Kky9IaFg6wn6m8EAeOEgYiJ?=
+ =?us-ascii?Q?Vy1cGoB/dXItBW+3EsI8bAmZT4EklHm/+4d7C4bv74MhLoUZHvmSyOseqRFR?=
+ =?us-ascii?Q?fdy8tUQ0bbVCaWdbbMMiwx9eALoa5AB+OHVA86RV5GycY2fGMMxcgGwox6XO?=
+ =?us-ascii?Q?aHjuwTVR5LXNoyFKUKTDo8cjrMzF6deIWHYAS6LnhqC+4RybCfHxLzbiIEZL?=
+ =?us-ascii?Q?/mCo/8tA0B0HJWjdQZ+F5VhYogAT6hMO5sPIJufr/rTKdOnOvG9qTNnZ1abK?=
+ =?us-ascii?Q?+8C7vYby12l2L8wxt0h8gL773QyQHxaX1+TF2GNsv+uIuRaNZat4rYqz2/8D?=
+ =?us-ascii?Q?nD1KpvvZr/WivzCnMKVZ45abPTU4uiPISZkcQYuerFD24qMBA1iyg1hmN1/6?=
+ =?us-ascii?Q?3hLkeNz3xCqmRBZfyrhKgY2tMzALNkSw73+wEY7QDOtAdb8pnOsdKRQEjYUe?=
+ =?us-ascii?Q?rKFSWEwbS+65gqZI4qxiIS/x103/FM5VYmxst5q+euv6SC2LB7qSlwbTVZeK?=
+ =?us-ascii?Q?M38h82fj9rHb6jyrBtlRSFE2Gw9gYhr/7mn4wTLP8iACi3+TAt7HTlgpwtly?=
+ =?us-ascii?Q?lOdRQjuqICqxU7npqerDTqpNyvkqwsoU4bgK60dGyMg3vkE+ulm2La/4orSV?=
+ =?us-ascii?Q?FCtRdOSxneca6GKLYUkREFQlDFbY2DQIh8BrdTwXB1dcMuxXtbSzwF+/RFMS?=
+ =?us-ascii?Q?HgznFV2SVnnl6n1pKmOVHKBkcQYVZngSPC+G9y8QU1pCr2FbUXQwD10RmrB/?=
+ =?us-ascii?Q?JxV/DRDp8EEz2w53r9q3bUG6w0+IxyaFc1sZNpAQTZ2SE+kfVsZ4eKBBW90z?=
+ =?us-ascii?Q?6CY5MZNI1MSw1YgzqB0XHKoOIgw9dg0yRmNZBV7xsLIlfHcWivSKgR2SoUXi?=
+ =?us-ascii?Q?VeiWnIsRFZRkMX4KTnBpyBw4ZGzb+DyGXYpB1iABhUSaDMjwA8xju7kONtEy?=
+ =?us-ascii?Q?F+pOSQCY4yUSn1oZ1rMyj3iTdIppSyLbREAB3DW+/h0CS1mVyTfIZRV++vEu?=
+ =?us-ascii?Q?MHUXvVqS1IzWQ4bh4dcnye260Ww+b2HhHt3YdQLtSDJ5iIQfqrYZ4cYNNhXS?=
+ =?us-ascii?Q?rHONNz3OFGqnOKaE7mypiw48j71yiUcj+T4g0lJR1P5+PmlZWGW/KNHeUuSC?=
+ =?us-ascii?Q?hwiv9j1uF0HbCM2f2KBoGBLa/+4JRDGXk1mgFN3EF15w/hbuMMPqjjduF06z?=
+ =?us-ascii?Q?PtbwuE/K9jZpD7aAISRjFwnP6gjE0keRcxEZNx988ahiagjAr2ThAp2BPuE6?=
+ =?us-ascii?Q?U0wDa+BRVmbsLl22Dw4Pqkfs7jPALo9STnhZo0sJfTJMgIiJ54rUlxQ3T+VK?=
+ =?us-ascii?Q?1S7jBzkoRYHFQ9AAYaJc7xetnevMkDBsPxhd?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(7416014)(376014)(82310400026)(921020);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2025 21:56:18.4356
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: de8f7135-4e12-493b-d1c0-08dd449d96af
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF0002BA4F.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6021
 
-On 2/3/25 19:46, Hector Martin wrote:
-> Adding Linus
-> 
-> My 2c: If Linus doesn't pipe up with an authoritative answer to this
-> thread, Miguel and the other Rust folks should just merge this series
-> once it is reviewed and ready, ignoring Christoph's overt attempt at
-> sabotaging the project.
+From: Ashish Kalra <ashish.kalra@amd.com>
 
-Hold your horses...  I agree that they should just merge the series in 
-the unlikely event that Linus doesn't chime in over the next two months, 
-but I would very strongly suggest that it's sent to Linus (assuming he 
-doesn't jump in now) as a separate pull request.
+This patch-set fixes the current SNP host enabling code and effectively SNP
+which is broken with respect to the KVM module being built-in.
 
-This is almost always a good thing to do when you have commits that 
-merit specific attention (example: 
-https://www.uwsg.indiana.edu/hypermail/linux/kernel/2109.2/10311.html).
+Essentially SNP host enabling code should be invoked before KVM
+initialization, which is currently not the case when KVM is built-in.
 
-My 2 cents as someone that is certainly not any kind of VIP, but has 
-been in MAINTAINERS for quite a while.
+SNP host support is currently enabled in snp_rmptable_init() which is
+invoked as a device_initcall(). Here device_initcall() is used as
+snp_rmptable_init() expects AMD IOMMU SNP support to be enabled prior
+to it and the AMD IOMMU driver enables SNP support after PCI bus enumeration.
 
-> Rust folks: Please don't waste your time and mental cycles on drama like
-> this. It's not worth your time. Either Linus likes it, or he doesn't.
-> Everything else is distractions orchestrated by a subset of saboteur
-> maintainers who are trying to demoralize you until you give up, because
-> they know they're going to be on the losing side of history sooner or
-> later. No amount of sabotage from old entrenched maintainers is going to
-> stop the world from moving forward towards memory-safe languages.
+This patch-set adds support to call snp_rmptable_init() early and
+directly from iommu_snp_enable() (after checking and enabling IOMMU
+SNP support) which enables SNP host support before KVM initialization
+with kvm_amd module built-in.
 
-I have a question, which is unrelated to my opinion of Rust for Linux: 
-in what way do you think this tirade is actually helping?
+Additionally the patch-set adds support to initialize PSP SEV driver
+during KVM module probe time.
 
-> FWIW, in my opinion, the "cancer" comment from Christoph would be enough
-> to qualify for Code-of-Conduct action, but I doubt anything of the sort
-> will happen.
+This patch-set has been tested with the following cases/scenarios:
+1). kvm_amd module built-in.
+2). kvm_amd module built-in with intremap=off kernel command line.
+3). kvm_amd module built-in with iommu=off kernel command line.
+4). kvm_amd built as a module.
+5). kvm_amd built as module with iommu=off kernel command line.
 
-FWIW I agree that it was borderline and probably on the wrong side of 
-the edge.  But I am happy for one that Christoph has since expanded 
-beyond the "cancer" comment, because that's at least a technical 
-argument, unlike yours above.
+v3:
+- Ensure that dropping the device_initcall() happens in the same
+patch that wires up the IOMMU code to invoke snp_rmptable_init()
+which then makes sure that snp_rmptable_init() is still getting
+called and also merge patches 3 & 4.
+- Fix commit logs.
 
-Paolo
+v2:
+- Drop calling iommu_snp_enable() early before enabling IOMMUs as
+IOMMU subsystem gets initialized via subsys_initcall() and hence
+snp_rmptable_init() cannot be invoked via subsys_initcall().
+- Instead add support to call snp_rmptable_init() early and
+directly via iommu_snp_enable().
+- Fix commit logs.
+
+Fixes: c3b86e61b756 ("x86/cpufeatures: Enable/unmask SEV-SNP CPU feature")
+
+Ashish Kalra (1):
+  x86/sev: Fix broken SNP support with KVM module built-in
+
+Sean Christopherson (2):
+  crypto: ccp: Add external API interface for PSP module initialization
+  KVM: SVM: Ensure PSP module is initialized if KVM module is built-in
+
+ arch/x86/include/asm/sev.h  |  2 ++
+ arch/x86/kvm/svm/sev.c      | 10 ++++++++++
+ arch/x86/virt/svm/sev.c     | 23 +++++++----------------
+ drivers/crypto/ccp/sp-dev.c | 14 ++++++++++++++
+ drivers/iommu/amd/init.c    | 24 ++++++++++++++++++++----
+ include/linux/psp-sev.h     |  9 +++++++++
+ 6 files changed, 62 insertions(+), 20 deletions(-)
+
+-- 
+2.34.1
 
