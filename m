@@ -1,33 +1,25 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BC3C1D618C;
-	Mon,  3 Feb 2025 11:37:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 96FAB1F9AAB
+	for <iommu@lists.linux.dev>; Mon,  3 Feb 2025 13:01:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738582625; cv=none; b=pf8MkCayVrVVhy5dGfrxad1tB0qCXK2y9uEcOehDA//OuliXR6G7mwOaqrj0mmX+L32jlXWP9QBhi5iDlyIIR7ldvleGiwwIWBvxXyxdUZoF+Gw2T/9TTRFcu122wX43RibeF3SS7sP1PIDs0g/RMU+pSTcZltI/6oOq8FVh8VI=
+	t=1738587716; cv=none; b=KP+RGIuIoJ/87TqrLjin/jY8DgVH7DSQhT927t0VjMcAn8NEktnykFLfYHuM7bxl27H6vvUppJ9e1o+Bp/biGhoP20gSlZoeqdANPKvRidwJO0u0F04O1V6p7eWebePrFRxhRmBaWBrq3ZoPp9pzMBqNRtCLTjBlHbG155moQ0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738582625; c=relaxed/simple;
-	bh=T+/ksBsqsgzrU/GxsuaQSiGHetzXlkOCwN6tGYQwnmI=;
+	s=arc-20240116; t=1738587716; c=relaxed/simple;
+	bh=7U3L4yXUTJhjGPwyS5Q2iEGQ0qdZzVQZBVRxTXwRq1k=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LHhgzk7QlV3IiTKJPyc5CqlhObEl+dWT4scYXv5FLJ0WGDNU1vsqOML934et2RyRC/lxB+F+VzMmaiSb0vwdbDvAMfQbD+DJmXjqXo4zRrKEQir6loYPOoOhlntG5tcI9VBseeIxMdsl92YflQDBUn/siTdoQrt3BIUFgFOutjw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G8suxZlN; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G8suxZlN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26160C4CED2;
-	Mon,  3 Feb 2025 11:36:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738582624;
-	bh=T+/ksBsqsgzrU/GxsuaQSiGHetzXlkOCwN6tGYQwnmI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=G8suxZlNI/ZOkEXFttH/TdfKIvi6IPBFI8Goz11V3/tdMyIGqLh/6fFCcG1QjEIdc
-	 mwuWQ6gPucLEFEV5zHO7YRfUx4kCUu03tiWNWkIyd2L81CvhHUwBi2+tSJ9vcZ2xCj
-	 ubp7FOZLvGaIy7A6uRCj4swA9q4Uj1YOqWO6cdRJtK1h4g1Y/eQUjuAGS9eet3OFe3
-	 uTaMPoFdR1E7CrZA389jher3KN08SgCUS5X/TOKrQirhUKb4iFJzw/JmRQBogIxnID
-	 bef+bY2NfmoFx1Gas/SstyZWBovGQo5pJD4fwqmPkx9eY7yuhbSRlLOkCddGsTDF1A
-	 A/cWH/YTW0WKg==
-Message-ID: <4a9d0dd1-fa8a-4437-b829-0de0f20f476a@kernel.org>
-Date: Mon, 3 Feb 2025 12:36:57 +0100
+	 In-Reply-To:Content-Type; b=Rmpt8P0U1bgiO/UfOmzuiHfu5AHx99VYwipyi9FH8hYHZ5AYcPESWM2VHfWQDlaJXvvaTuooUv31yhqN4vrLkgQS6aQqkN7L5r4SZF6T+oAzMveTo9cnJA8glMoiN9P+GpZ8mmve3bRDFZUZPdSKb1s3driQ98w6ch/7OeXeL+o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4DDB511FB;
+	Mon,  3 Feb 2025 05:02:18 -0800 (PST)
+Received: from [10.57.37.14] (unknown [10.57.37.14])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4C7203F58B;
+	Mon,  3 Feb 2025 05:01:52 -0800 (PST)
+Message-ID: <42a8ca6f-a881-4b4c-9ddb-bf3f2bc6f539@arm.com>
+Date: Mon, 3 Feb 2025 13:01:45 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,91 +27,50 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 0/2] Add support for GPU SMMU on QCS8300
-To: Pratyush Brahma <quic_pbrahma@quicinc.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org
-References: <20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com>
- <20250203-lean-delightful-ermine-f5b902@krzk-bin>
- <273df630-007d-4aaf-9432-2884a7e94d5e@quicinc.com>
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <273df630-007d-4aaf-9432-2884a7e94d5e@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: iommu: flood of ahci 0000:e6:00.0: AMD-Vi: Event logged
+ [IO_PAGE_FAULT domain=0x0055 address=0xa14a4000 flags=0x0070]
+To: Corentin Labbe <clabbe.montjoie@gmail.com>, joro@8bytes.org,
+ suravee.suthikulpanit@amd.com, will@kernel.org, iommu@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org
+References: <Z6CGzUSV7llweytQ@Red>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <Z6CGzUSV7llweytQ@Red>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 03/02/2025 09:37, Pratyush Brahma wrote:
->> How are you sending these?
->>
->> b4 diff 20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com
->> Grabbing thread from lore.kernel.org/all/20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com/t.mbox.gz
->> Checking for older revisions
->> Grabbing search results from lore.kernel.org
->>    Added from v3: 2 patches
->> ---
->> Analyzing 7 messages in the thread
->> Preparing fake-am for v3: dt-bindings: arm-smmu: Document QCS8300 GPU SMMU
->> ERROR: v3 series incomplete; unable to create a fake-am range
->> ---
->> Could not create fake-am range for lower series v3
-> I have sent this version of the patch series using b4 for the first 
-> time, as suggested earlier [1]. The issue might be due to the previous 
-> version being sent
-> incorrectly using git send-mail. Consequently, I had to manually apply 
-> the previous patches after creating the b4 branch,
-> since "b4 prep -F" was throwing an error when trying to apply the last 
-> patch.
+On 2025-02-03 9:05 am, Corentin Labbe wrote:
+> Hello
 > 
-OK, that explains.
+> I have a supermicro server which is flooded of kernel message:
+> ahci 0000:e6:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0055 address=0xa14a4000 flags=0x0070]
+> 
+> The server works perfectly anyway.
+> It happens with official ubuntu kernel vmlinuz-6.8.0-51-generic.
+> I tried also a custom 6.12.6, same problem.
+> 
+> I tried to update bios, no change.
+> I tried iommu=soft, no change.
+> 
+> I dont know what to do next.
+> 
+> Regards
+> 
 
-Best regards,
-Krzysztof
+> IOMMU group 83 e6:00.0 SATA controller [0106]: Marvell Technology Group Ltd. 88SE9230 PCIe 2.0 x2 4-port SATA 6 Gb/s RAID Controller [1b4b:9230] (rev 11)
+
+Wow, a Marvell SATA controller doing something other than the usual 
+phantom function quirk, that's a nice change :D
+
+I'd guess that firmware has left it running for something like legacy 
+IDE emulation (if that's still a thing?) or its own soft-RAID driver, 
+but neglected to declare an IVMD entry to described the reserved memory 
+region(s) it's using for that. A smoking gun would be if 0xa14a4000 
+matches some firmware-reserved PA in the system memory map. In that 
+case, if you're lucky you might have some firmware/BIOS option to 
+disable fancy behaviour and leave it in plain AHCI mode. Otherwise, 
+booting with "iommu.passthrough=1" (or the even bigger hammer of 
+"amd_iommu=off") should at least allow you to ignore the issue.
+
+Thanks,
+Robin.
