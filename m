@@ -1,133 +1,132 @@
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C103AD27;
-	Sun,  2 Feb 2025 08:32:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4252A154457;
+	Mon,  3 Feb 2025 05:47:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738485169; cv=none; b=DLVpZktvplKOYFno8kc/3lUBqFo9zNWnNXXDjHhfC2slExKY3vhRjS1W30qw0pb1441Qwn5ySd3nkQ6FKDcjUqKa6/6OYTlWeq/HgRGXMQsnI012Jelxw1SKIMFbzR6uckSSb+3u9ke0+U19NZcIPR1FTYzDnnTxJjManWS63ps=
+	t=1738561655; cv=none; b=QS9zbzAPiZ9qeRurtDU1ubWnjtAr3YhA75Sw1I01gqydpCu/iD0hP6QwO+NOhcr+8wNDClmQt/DB7JiPlxhn650qkG6k61Ac5+0VCgyckdR2DRrdzyV/71uDerOPvK4Tg4uDgnUr0kL2LIJeabSoNAtkmNtfx9fanJAk80O/N+Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738485169; c=relaxed/simple;
-	bh=h5gZJXr1gG8fo7EF0ILDnAS2K7ODCxc8o+NZCCDv9tQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=lFWU/+O2UFJKajkjLNx1V//gfa0ElSWG7vncCfvGN37b2nGZiKFvC1Eyr+FDxbDkq7p5mg6GYlTKy1gYqrJli2x57Opuczh47MEFkCAyhS9fPDGnlxTP+GqfwPr0mMBhd7eCDHAjG2K2tr62Ys1/sWENteMmBa+wFQy29BCrYzE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VhIpfbzT; arc=none smtp.client-ip=209.85.216.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1738561655; c=relaxed/simple;
+	bh=C52hZGEnU+5L8rUb8fX1gAW+tFKzWQJaceetmBf+h7A=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=aSJvCpHuQB9H3cGcVLXns46YJaVuTWkFplF3UCY5kWyPJEA7OxYNjgB7VdR1wHvGJLIzb+bv4AVNE21AS6bTDrn2BkqYAnY0Xc5ymm1s9boGRIGAf468s/Ir0Wivm09dDQ8LZFApHoIdHNjrF+I4bMbwvHYyZKxxgXS36s98rs0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=ltg78XKi; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VhIpfbzT"
-Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-2f441791e40so4397282a91.3;
-        Sun, 02 Feb 2025 00:32:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738485168; x=1739089968; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=h5gZJXr1gG8fo7EF0ILDnAS2K7ODCxc8o+NZCCDv9tQ=;
-        b=VhIpfbzTnqkGF6t1hvCEo8MFGEsSEdh+vdvJ+EjHwbprXn2Btu7VnvXh+Hf92yO2W6
-         QDLV73EbuZoAkGPdbpKrIrGq/iLtZzMWFus/JExyIUhoBGEJuoAuJ7ra9aeZPBm6aNev
-         DocuTepIj6wcb8Vi/ZRUwT0AMOTFYJ5xqOTuL5oJF8TQLyLYRGewxcQGP6KGle63D/sH
-         DMP7/ji8vEcCuNxObv4gAXGADOonR1IrA0CgrFgsY35vYsI58gycyAJWVUowdZWE4OnA
-         Snju9S+LJ89LHhcNxc/YPgKDWsvYzaUUfqhVeb7uICpayY0vXY0WuO7K4seEkb+yvd+Z
-         ZV+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738485168; x=1739089968;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=h5gZJXr1gG8fo7EF0ILDnAS2K7ODCxc8o+NZCCDv9tQ=;
-        b=sW6JohGkffnN/uYVBlTQRAhWNRSg1lfrn/e5SEVjKqT6n8Qr4kDYV7B3diw0iOO5VG
-         aMwk02M/7OLysjiRBXd9tugv8IXbHWPaP4VGaYPszIRml6twl0lRoTLzJd5K/QqSSTyD
-         XWN+zbTfxLU92mFMvk09Ij4g5myiVPqwWkd/h6Z1K0Zyl/s552fqhIs+rSmcj8MiKAYa
-         fMiNdWg/XWyiKOi8rJ1v2Wm/ENVx4J9MdsBTfecTr367xeKpA8QOg06YgHRHk3NbzT+u
-         F+McF4j+Nu1N/72t1XX5DGd01Irb/m0ffDDXlOIXAh/9iLo9LOza+aN0ZHWTnuRccWww
-         /LZQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW5hWogWSCIg4ejfFeoWXIGpvP98A4yZ7TYsReQG7IKvSJka+6O6okNBa5niNuWM+SwDCZYbQ==@lists.linux.dev, AJvYcCWjPq4J6IfXKntR8fqpmZr9KrRCdFP8XNDN7dFC332L91aFtmRfawegvG7buAm6zfwAwMpCmDGFilxBDh8=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxhJgk+QCI1ew18x9KEpDT0tMiKZ+w4uttlnosPHR+5QIWHrDdh
-	2rngHiX8gQdnHucqIdPqIdRe5vnWHmal6/ibmItemWH7IhuJlLopsL9KOxxhd3eL/Lerz9Itzop
-	0wMgHsNkwEMGxv2ycEfXb7JN6274=
-X-Gm-Gg: ASbGncsl5bB282PrJ962R9uHpoKSt7/G2JNfMc0oMK6LP/6REHlF/bAEU6vC75Iv6Ir
-	WcdD6W2jKTF0N+kli6NG/f2OwmIK8ewgZpi3VCxeJU15T6umYWEb5hboMXeOTT47c4ysqBiK2gc
-	B6Xeu6r+Wx5/WBf7LlvpJl8o23Mzc=
-X-Google-Smtp-Source: AGHT+IF4Xed2UK/m1b70t2nhQ8MCa/ZGxcKczWbWLCesTg1dtRBkKclSXAXCoFAdI2mFiGLkTfshl1Z+s2zbAA4wYng=
-X-Received: by 2002:a17:90b:2742:b0:2f2:a796:26b with SMTP id
- 98e67ed59e1d1-2f83abb3480mr24835867a91.1.1738485167545; Sun, 02 Feb 2025
- 00:32:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ltg78XKi"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51314l0R029816;
+	Mon, 3 Feb 2025 05:47:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=q5Rtfn1YqxNVFbmTqKHdTA
+	zUVGKqbWFPva1lsYU5loU=; b=ltg78XKiLSzCfn667/Xhvbw1CMz+JFG/si0nCt
+	3soLNja1VyIm4yGU9ZglPrOjAfXF2aJK8qNRs7X59sdTMp5yqo1HRVYaa52HExZu
+	6MLgDhA1lvaTFS35XUicXO2XZTdJvu/ovUXS5AtQ78q+CyGvktkq5HDb370FeHc1
+	hh0z4xH/1aRx+S0A1XXcg9XGzaIWmBoxcBIiHl2QxfhfAFfgvuulI6BHuKjGNuEe
+	89pQwUl8EY98jplFZfLg60TWysuq8QH2g+t/fKa1nrh1aKfCuCAjhTGBl8ExZmr2
+	FHnFBsmmgGkCdJAhGBEi3v2wwKogq9CuJ6IkufIjHHLpg9Eg==
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44jkt9gc5h-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 03 Feb 2025 05:47:23 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5135lMaU004178
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 3 Feb 2025 05:47:22 GMT
+Received: from hu-pbrahma-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01c.na.qualcomm.com (10.45.79.139) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Sun, 2 Feb 2025 21:47:18 -0800
+From: Pratyush Brahma <quic_pbrahma@quicinc.com>
+Subject: [PATCH v4 0/2] Add support for GPU SMMU on QCS8300
+Date: Mon, 3 Feb 2025 11:17:00 +0530
+Message-ID: <20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250109082849.GC20724@lst.de> <210e7b28-de05-44bc-9604-83a79ae131b0@leemhuis.info>
- <726275aa-a3c2-4dbd-9055-a14db93efa29@simg.de> <CAOBLbT8103fAyoFNF8=YcEM1sM6HodcUe=Ee5NsE2hUkfCYv7g@mail.gmail.com>
- <3b693647-5e82-4c39-8017-22cada56eb55@leemhuis.info> <20250117080507.GA25953@lst.de>
- <f81bb87a-c181-4973-be05-f7df84133a46@leemhuis.info> <10e39c88-4667-4c61-b3eb-3dd7ee3074c3@leemhuis.info>
- <20250128074133.GA22435@lst.de> <379bba80-df0f-44c5-a15e-fd4393c52b8f@simg.de>
- <Z5jTKTfKUeLm4uJT@gallifrey> <e01fdde0-4760-487d-af0e-2aecf9d7ade2@simg.de>
-In-Reply-To: <e01fdde0-4760-487d-af0e-2aecf9d7ade2@simg.de>
-From: Bruno Gravato <bgravato@gmail.com>
-Date: Sun, 2 Feb 2025 08:32:31 +0000
-X-Gm-Features: AWEUYZkyNSsitq97aeori6flZ7edGQ2TehN5fCXAeaoGoRvqgLYMRyksBa46SfI
-Message-ID: <CAOBLbT8V5DkuXzzgp2dPOZkGomqiLa_cdC=e=uWBtcWpP7L=Ww@mail.gmail.com>
-Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
- X600M-STX + Ryzen 8700G
-To: Stefan <linux-kernel@simg.de>
-Cc: "Dr. David Alan Gilbert" <linux@treblig.org>, Christoph Hellwig <hch@lst.de>, 
-	Thorsten Leemhuis <linux@leemhuis.info>, Mario Limonciello <mario.limonciello@amd.com>, 
-	Keith Busch <kbusch@kernel.org>, Adrian Huang <ahuang12@lenovo.com>, 
-	Linux kernel regressions list <regressions@lists.linux.dev>, linux-nvme@lists.infradead.org, 
-	Jens Axboe <axboe@fb.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAFRYoGcC/x3MTQqAIBBA4avErBvwL6GuEi2yRptFFkohRHdPW
+ n6L9x7IlJgyDM0DiW7OfMQK0zawbHMMhLxWgxKqE1JLdAZdmuOyYfAF875f6IRWVvZWC2ughmc
+ iz+WfjtP7fuMeJrlkAAAA
+X-Change-ID: 20250131-b4-branch-gfx-smmu-b03261963064
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        "Joerg
+ Roedel" <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson
+	<andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>
+CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        Pratyush Brahma <quic_pbrahma@quicinc.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1738561638; l=1334;
+ i=quic_pbrahma@quicinc.com; s=20250113; h=from:subject:message-id;
+ bh=C52hZGEnU+5L8rUb8fX1gAW+tFKzWQJaceetmBf+h7A=;
+ b=ZigvjhygBZF19rnm+g8YvU1XT4/3jY7gtH5afdWi7mvmCoG25aazD0RYksaQ/FawQH2WZXlpr
+ ulRzT862ONcA3I1aJGZPuucC4GsNmyXDA5lZ2B66bjOM0jqY0abSNnR
+X-Developer-Key: i=quic_pbrahma@quicinc.com; a=ed25519;
+ pk=YvfZKC4rRO1Fot+wlXZqsoQWnAtLqrpMyEzslw3Ji+M=
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: CZtqv26BXbf8AiH0JveP80KA-yFhHDPK
+X-Proofpoint-GUID: CZtqv26BXbf8AiH0JveP80KA-yFhHDPK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-03_02,2025-01-31_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ lowpriorityscore=0 malwarescore=0 mlxlogscore=999 adultscore=0
+ clxscore=1011 priorityscore=1501 suspectscore=0 phishscore=0
+ impostorscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2501170000 definitions=main-2502030047
 
-I just realized I replied only to the bugzilla list. Sorry about that.
+Enable GPU SMMU function on QCS8300 platform. GPU SMMU is required
+for address translation in GPU device.
 
-So I'm forwarding my reply to everyone else who was in CC and may not
-be getting the bugzilla emails.
+Signed-off-by: Pratyush Brahma <quic_pbrahma@quicinc.com>
+--
+Changes since v3:
+- Modified the order of clock voting and properties as suggested by Konrad
+- Removed dependency on clocks in commit text as change is merged in
+  linux-next before current base commit
 
-> > Is there any characterisation of the corrupted data; last time I
-> > looked at the bz there wasn't.
->
-> Yes, there is. (And I already reported it at least on the Debian bug
-> tracker, see links in the initial message.)
->
-> f3 reports overwritten sectors, i.e. it looks like the pseudo-random
-> test pattern is written to wrong position. These corruptions occur in
-> clusters whose size is an integer multiple of 2^17 bytes in most cases
-> (about 80%) and 2^15 in all cases.
->
-> The frequency of these corruptions is roughly 1 cluster per 50 GB written.
->
-> Can others confirm this or do they observe a different characteristic?
+Link to v3:
+https://lore.kernel.org/all/20241227105818.28516-1-quic_pbrahma@quicinc.com/
 
-In my tests I was using real data: a backup of my files.
+Changes since v2:
+Corrected typo in cover letter to include QCS8300
+Link to
+v2:https://lore.kernel.org/all/20241227104651.4531-1-quic_pbrahma@quicinc.com/
 
-On one such test I copied over 300K files, variables sizes and types
-totalling about 60GB. A bit over 20 files got corrupted.
-I tried copying the files over the network (ethernet) using rsync/ssh.
-I also tried restoring the files using restic (over ssh as well). And
-I also tried copying the files locally from a SATA disk. In all cases
-I got similar results with some files being corrupted.
-The destination nvme disk was using btrfs and running btrfs scrub
-after the copy detects quite a few checksum errors.
+Changes since v1:
+Updated bindings for gpu smmu for qcs8300 as per Dmitry's comment
+Link to v1:
+https://lore.kernel.org/all/20241224100521.7616-1-quic_pbrahma@quicinc.com/
 
-I analyzed some of those corrupted files and one of them happened to
-be a text file (linux kernel source code).
-A big portion of the text was replaced with text from another file in
-the same directory (being text made it easy to find where it came
-from).
-So this was a contiguous block of text that was overwritten with a
-contiguous block of text from another file.
-If I remember correctly the other file was not corrupted (so the
-blocks weren't swapped). It looked like a certain block of text was
-written twice: on the correct file and on another file in the same
-directory.
+---
+Pratyush Brahma (2):
+      dt-bindings: arm-smmu: Document QCS8300 GPU SMMU
+      arm64: dts: qcom: qcs8300: Add device node for  gfx_smmu
 
-I also got some jpeg images corrupted. I was able to open and view
-(partially) those images and it looked like a portion of the image was
-repeated in a different part of it), so blocks of the same file were
-probably duplicated and overwritten within itself.
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |  3 +-
+ arch/arm64/boot/dts/qcom/qcs8300.dtsi              | 39 ++++++++++++++++++++++
+ 2 files changed, 41 insertions(+), 1 deletion(-)
+---
+base-commit: a13f6e0f405ed0d3bcfd37c692c7d7fa3c052154
+change-id: 20250131-b4-branch-gfx-smmu-b03261963064
 
-The blocks being overwritten seemed to be different sizes on different files.
+Best regards,
+-- 
+Pratyush Brahma <quic_pbrahma@quicinc.com>
 
-Bruno
