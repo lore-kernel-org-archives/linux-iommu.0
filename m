@@ -1,142 +1,184 @@
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF834206F33;
-	Tue,  4 Feb 2025 09:13:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B83E20DD65
+	for <iommu@lists.linux.dev>; Tue,  4 Feb 2025 12:55:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738660393; cv=none; b=ECkzn5KkIbl7UmUv9vGh69QmYVX5J7SVv7yRCydWGT5zK/tTh8r28qps7BzTyHMId1LcSHB7GLJH1QloHlYEZ7J24bVnY8PbKTDqm9muCxec3DSi6xFQs45jyTkbJ1r2mXVRN6EUh5yDnWhaQ/B2wS/xxDk1vpgUFuzC4saJvcg=
+	t=1738673715; cv=none; b=TGmM1dKd3pe8KugQfL/gnNG6zM9cldQ2DGwvcHh8HtiftDfh08LQp5WPDdqTzcVepkjI20e9L45sfo9gFsOqBcsEYoZe8pQ9qqw++UysCEH9gzBN2HcjxCHe58MjToY6ZcsFmY+d369UoGI/szmzGJQ5Erdo6iAum5LyIgoVQdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738660393; c=relaxed/simple;
-	bh=Zj7E2MeqphGb/FoGa7alLHmNq9sT8LOGDhFNQC0kVjI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=vAUVVmJjrNRvm0aBwlLJqfWOLMDY4zDYGNV/IB7F54tlBSUF+MfjRwQH9kabMDvprY4dFf3QuTc4lrdM3991qJh8dWheI8EJkfACGuZLEhytOvNSPwL8B70NJR6w0H1XDb5XkY2cXHeZ7sTQQ57YO52VUJ9qpkIRO9hSuvzeB90=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dMWPVjQd; arc=none smtp.client-ip=209.85.216.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1738673715; c=relaxed/simple;
+	bh=zGL9epENRNO7rvIHohYlhRMg7cx1KKq80o7dktun6zo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LanwyDAlr6FNFfIDs3WXffpjrXd8uqmYshxg2+pgbiIDK/OGPgG/gZCwmUr8telSadVByyLrkgLNLWaMlRsxnKrBJVySHczBK0WFdPS3f1UvDI5EUg5DHAXpH7ZXwYK1MEC1SIg44lHNXM3yVoz9wnDPvN1Rzj2PBaQNdbTfWmw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=dXKULbj0; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dMWPVjQd"
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-2f43d17b0e3so8940975a91.0;
-        Tue, 04 Feb 2025 01:13:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738660391; x=1739265191; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+AHMI1n0um1Uc2f0ky1zL1PO/sMw1al2b0gfWEzKF20=;
-        b=dMWPVjQduAdIak9+vMyZlKLFS/I9Dz9Z6vEcRz+dfQZSC/0IAbLUyav7hKQT2Qr2zI
-         8gaPdeb6LNoCpzPHoVoCQvH0nRAD70MjDD/avrC6Jj+1Ri+UtVHJxmTvsFu/NU3V72bQ
-         IoqaeUX9iVoaSB4RzeFEaq3LUOm8wxhkFu0vNFu9DJDe322CxyneTBH9QorSwHxeGfJw
-         WLkuq6yeq6K4TcgJ+pxu1Xk8fI0eMUqurOx7PSDs+w90kEZcT32I2xzmeNcFXjPFb+ml
-         GO9wAqrrFMYx7ifacDck3YbsD91sO0TJq7NKqG/ijZBxedYUGOnvC4Ti7S/wahvxlE26
-         kG7Q==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dXKULbj0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1738673713;
+	h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=twPDg30fIiJNLDt2SiVRKkvqJ/64dc+oeH98LcXpjks=;
+	b=dXKULbj0yRceviKf3NIs3NoVgyEjJHUoGWVJOm4eluy1yRWinXaWcDsDsfn0gum11McPg0
+	SzhCY43QfCiTa32WsBBWJ/Zil9sYsVInP85Z4nmxDREuAyRNjFBkrbCMP5IcmGcnx7NY+9
+	YJ6hnXcETF8IpCDtjYIT3ZDtlZ+IQ24=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-475-h0RxFMBMMo25sHW1epMQ-g-1; Tue, 04 Feb 2025 07:55:10 -0500
+X-MC-Unique: h0RxFMBMMo25sHW1epMQ-g-1
+X-Mimecast-MFC-AGG-ID: h0RxFMBMMo25sHW1epMQ-g
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-6e4237b6cf0so10827566d6.1
+        for <iommu@lists.linux.dev>; Tue, 04 Feb 2025 04:55:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738660391; x=1739265191;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20230601; t=1738673709; x=1739278509;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=+AHMI1n0um1Uc2f0ky1zL1PO/sMw1al2b0gfWEzKF20=;
-        b=oLW1xfJEXkgb92UYFihWfxXheT8sR2MsZyZLPy+4VQOL5S0mosBdDukK+rESBSMvlM
-         taJCepP9hjfePKjHFk4mR/olzR5pef7sXejuJk+rgHtWyQWEuqUQEfuTPOkFafHsi48S
-         BoHLHOvtNBK0cphy3JhqG9esheh6wChBnuiB04bNyUj7MDJIcYJ8xoV5rjzgV0DgUxhZ
-         tAeeBTvodMwsMEM0qQww83us0ydr3YPtHIsuGgu35EbFFfmixxaTIOhabCLKyggABaiq
-         RuCgniDTJTOgenn2K/RNq58ryRfDMR8WyDXHuf+WVj/MxfX00KdfwWpv9t2j9slXjlWK
-         fkPw==
-X-Forwarded-Encrypted: i=1; AJvYcCV7WOJhQi692LgPBEEpXov6Y2RKUMUXoENRil2bHOnteRmlZ5MfPeDKKjDAweg4rWeh2nUl8rNl3t9mzWA=@lists.linux.dev, AJvYcCVehH/bhAcr05ts2zxAdKjndj+StaGA1HYhdD3LzLiphK6odzAtKiiIc1k2dRu+rlb7CZ660w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw2mdaZ3oGQF6ZTKumcENd2ygPkD8g88hACPUkuEsqFGPc9l0/7
-	8nNgLmVX8yVnNdiQxhaGvM++Gk6/gcJ88zuRry2vnB6kPwFIa275BN/1HKkIMHUnHOEZiBbBwU9
-	QI1M8Hj6lM+PmZN84fg7A8tYlGxg=
-X-Gm-Gg: ASbGncvRKnaRReaHajdwBF+5NRpHf/ioJPruKnvpYX932H86yCEHKXG9Nzil265AwmD
-	o0BRPW7E5u+UsLGUdgKDTKwOYocA3jF/44uwKU0eZAdy5LpY/9F58ZRY4igKvhRH2UDsIad7AT5
-	Mox/xvELUUCVd1xP3JCmp5Y/ke3uQ=
-X-Google-Smtp-Source: AGHT+IEjr+5p9ULMzoc/xpn7zcsHmFh9pQft0Sd8GQkkXIpsHHX4xJoLdzK+6o4pH/qlQ/u3VVH/AFYlbacH5FUEJZE=
-X-Received: by 2002:a17:90b:51cc:b0:2ea:498d:809f with SMTP id
- 98e67ed59e1d1-2f83ac5e467mr32092446a91.26.1738660391086; Tue, 04 Feb 2025
- 01:13:11 -0800 (PST)
+        bh=twPDg30fIiJNLDt2SiVRKkvqJ/64dc+oeH98LcXpjks=;
+        b=MVD60C+UdH7UHpRj4tgseFtnmaJRBefNv6GxcRXNGY0B0SB/GjdHkdIimE3GtGju2v
+         jlCDW80aIIw3PtU4oLH+raCj63pPJ0gifFm7qZTYPrxcsTp+2fB/GBlpThA+4j4FcC1p
+         mGfiXQp3QrfidngDs5amFDakKR92BtGSt0f3B0qCgCPdONBRDcPGH3JUacb4D06niy5K
+         RwtYLxCoZ2DzlbKqURU9mL1dcVc0+jy6egNVp74VikHXqYtkDH+TZIr1vf+XhuSlQ5IW
+         6DcAHXcX4wza1r3MFMFbykXZCWrBLJfT3E+XBMFh5uD8Licj8q73wNH+54cQT0uXQC21
+         afiQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXD5idFtKzc+EXbxxAFOtgo5EjGHUbvXbwNcscMoee79Jc9QVwoxsSrcvvJGJbm+sGTmp1Jlg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy/XEE4HHg+U2gbX9hTVV/xxhs2kyo1qcvSmrIZJVWLWz1OjSAB
+	bZnGtRtY/HQvD/rRxLtNj/f0kARzi/EYFkGMAi066zvYyiyCzjNAnMDn49CIfiBsAo85+2NtB/R
+	Py6V8kDldJba0lW09c8FqhbjDS2KVPyjEkwfC96VvO1jLUStEe0bK
+X-Gm-Gg: ASbGncukdLE6y0g0m2OEa9IVv+JBrHF7a9e/J5zHgu63uY3XzmzQfa7OtlJH5WmPLah
+	w/lLkuQkn2AkwiNDmVQ1Rby+bivAo78/hoP1GhInp+e2+bZ+awIHNWHkPmiwAsYADzsRdgB8Dbp
+	p2oJi0/x2YPMSyC7FBpmXgfx/lPtJj/EIqQ3HmKLp7+4ogeu80tkxEqDCPctJHOXPymYJYKIJK9
+	8/xvMG0FPip4T5J2Jt8duxoq7PpSYk9EtjAat7rYl0JrHx4ZdTKHyRa8j9YoHc2TB4Hgu8NOLQl
+	k393sB9IWSwMe5ppi3i+uekmdAnyopezjom+JrJAXjHHcMDolHUV
+X-Received: by 2002:a05:6214:1c0b:b0:6d9:2e46:dc35 with SMTP id 6a1803df08f44-6e243bf84c3mr422214716d6.25.1738673709631;
+        Tue, 04 Feb 2025 04:55:09 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IF1a38N2TZdISEECvq/s7iOToAmmfm3GmVQAMYB+u0Kmi1Pw+6Ta7PfZF01eEC876vzaXAEXA==
+X-Received: by 2002:a05:6214:1c0b:b0:6d9:2e46:dc35 with SMTP id 6a1803df08f44-6e243bf84c3mr422214216d6.25.1738673709310;
+        Tue, 04 Feb 2025 04:55:09 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e254814029sm61998046d6.29.2025.02.04.04.55.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Feb 2025 04:55:08 -0800 (PST)
+Message-ID: <cb087202-3a64-428c-bba2-196a3612e5ff@redhat.com>
+Date: Tue, 4 Feb 2025 13:55:01 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAOBLbT8103fAyoFNF8=YcEM1sM6HodcUe=Ee5NsE2hUkfCYv7g@mail.gmail.com>
- <3b693647-5e82-4c39-8017-22cada56eb55@leemhuis.info> <20250117080507.GA25953@lst.de>
- <f81bb87a-c181-4973-be05-f7df84133a46@leemhuis.info> <10e39c88-4667-4c61-b3eb-3dd7ee3074c3@leemhuis.info>
- <20250128074133.GA22435@lst.de> <379bba80-df0f-44c5-a15e-fd4393c52b8f@simg.de>
- <Z5jTKTfKUeLm4uJT@gallifrey> <e01fdde0-4760-487d-af0e-2aecf9d7ade2@simg.de>
- <CAOBLbT8V5DkuXzzgp2dPOZkGomqiLa_cdC=e=uWBtcWpP7L=Ww@mail.gmail.com> <20250204061208.GA29300@lst.de>
-In-Reply-To: <20250204061208.GA29300@lst.de>
-From: Bruno Gravato <bgravato@gmail.com>
-Date: Tue, 4 Feb 2025 09:12:54 +0000
-X-Gm-Features: AWEUYZklsTO1DdX17XI0s3UrJDzPBR2NguTIOGWaQniEHqaiG2AWZWpwapwJWK0
-Message-ID: <CAOBLbT_kn+5H-+RYM1UOAkxhfJnpqKMNv9_d_Ys9CgY_=TcdsA@mail.gmail.com>
-Subject: Re: [Bug 219609] File corruptions on SSD in 1st M.2 socket of AsRock
- X600M-STX + Ryzen 8700G
-To: Christoph Hellwig <hch@lst.de>
-Cc: Stefan <linux-kernel@simg.de>, "Dr. David Alan Gilbert" <linux@treblig.org>, 
-	Thorsten Leemhuis <linux@leemhuis.info>, Mario Limonciello <mario.limonciello@amd.com>, 
-	Keith Busch <kbusch@kernel.org>, Adrian Huang <ahuang12@lenovo.com>, 
-	Linux kernel regressions list <regressions@lists.linux.dev>, linux-nvme@lists.infradead.org, 
-	Jens Axboe <axboe@fb.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	LKML <linux-kernel@vger.kernel.org>, bugzilla-daemon@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH RFCv2 00/13] iommu: Add MSI mapping support with nested
+ SMMU
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "kevin.tian@intel.com" <kevin.tian@intel.com>,
+ "tglx@linutronix.de" <tglx@linutronix.de>, "maz@kernel.org"
+ <maz@kernel.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "shuah@kernel.org" <shuah@kernel.org>,
+ "reinette.chatre@intel.com" <reinette.chatre@intel.com>,
+ "yebin (H)" <yebin10@huawei.com>,
+ "apatel@ventanamicro.com" <apatel@ventanamicro.com>,
+ "shivamurthy.shastri@linutronix.de" <shivamurthy.shastri@linutronix.de>,
+ "bhelgaas@google.com" <bhelgaas@google.com>,
+ "anna-maria@linutronix.de" <anna-maria@linutronix.de>,
+ "yury.norov@gmail.com" <yury.norov@gmail.com>,
+ "nipun.gupta@amd.com" <nipun.gupta@amd.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+ "patches@lists.linux.dev" <patches@lists.linux.dev>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "mdf@kernel.org" <mdf@kernel.org>, "mshavit@google.com"
+ <mshavit@google.com>, "smostafa@google.com" <smostafa@google.com>,
+ "ddutile@redhat.com" <ddutile@redhat.com>
+References: <cover.1736550979.git.nicolinc@nvidia.com>
+ <4946ea266bdc4b1e8796dee1b228bd8f@huawei.com>
+ <20250123132432.GJ5556@nvidia.com>
+ <de6b9dc1-dedd-4a3d-9db7-cb4b8e281697@redhat.com>
+ <20250129150454.GH5556@nvidia.com>
+ <8e4c21b5-3b79-4f0b-b920-59b825c2fb81@redhat.com>
+ <20250129201307.GJ5556@nvidia.com>
+From: Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <20250129201307.GJ5556@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: Lb0livAqrzO0SaIy5EurFowsU37lJvA7kEmwIQfs_iM_1738673709
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, 4 Feb 2025 at 06:12, Christoph Hellwig wrote:
->
-> On Sun, Feb 02, 2025 at 08:32:31AM +0000, Bruno Gravato wrote:
-> > In my tests I was using real data: a backup of my files.
-> >
-> > On one such test I copied over 300K files, variables sizes and types
-> > totalling about 60GB. A bit over 20 files got corrupted.
-> > I tried copying the files over the network (ethernet) using rsync/ssh.
-> > I also tried restoring the files using restic (over ssh as well). And
-> > I also tried copying the files locally from a SATA disk. In all cases
-> > I got similar results with some files being corrupted.
-> > The destination nvme disk was using btrfs and running btrfs scrub
-> > after the copy detects quite a few checksum errors.
->
-> So you used various different data sources, and the desintation was
-> always the nvme device in the suspect slot.
->
-
-Yes, regardless of the data source, the destination was always a
-single nvme disk on the main M.2 nvme slot, with the secondary M.2
-nvme slot empty.
-I tried 3 different disks (WD, Crucial and Solidigm) with similar results.
-If I put any of those disks on the secondary M.2 slot (with the main
-slot empty) the problem doesn't occur.
-The one that intrigues me most is if I put 2 nvme disks in, occupying
-both M.2 slots, the problem doesn't occur either.
-The secondary slot must be empty for the issue to happen.
-
-I didn't try using the main M.2 slot as source instead of target, to
-see if the problem also occurs on reading as well.
-I could try that if you think it's worth testing.
+Hi Jason,
 
 
-> > I analyzed some of those corrupted files and one of them happened to
-> > be a text file (linux kernel source code).
-> > A big portion of the text was replaced with text from another file in
-> > the same directory (being text made it easy to find where it came
-> > from).
-> > So this was a contiguous block of text that was overwritten with a
-> > contiguous block of text from another file.
-> > If I remember correctly the other file was not corrupted (so the
-> > blocks weren't swapped). It looked like a certain block of text was
-> > written twice: on the correct file and on another file in the same
-> > directory.
+On 1/29/25 9:13 PM, Jason Gunthorpe wrote:
+> On Wed, Jan 29, 2025 at 06:46:20PM +0100, Eric Auger wrote:
+>>>>> This missing peice is cleaning up the ITS mapping to allow for
+>>>>> multiple ITS pages. I've imagined that kvm would someone give iommufd
+>>>>> a FD that holds the specific ITS pages instead of the
+>>>>> IOMMU_OPTION_SW_MSI_START/SIZE flow.
+>>>> That's what I don't get: at the moment you only pass the gIOVA. With
+>>>> technique 2, how can you build the nested mapping, ie.
+>>>>
+>>>>          S1           S2
+>>>> gIOVA    ->    gDB    ->    hDB
+>>>>
+>>>> without passing the full gIOVA/gDB S1 mapping to the host?
+>>> The nested S2 mapping is already setup before the VM boots:
+>>>
+>>>  - The VMM puts the ITS page (hDB) into the S2 at a fixed address (gDB)
+>> Ah OK. Your gDB has nothing to do with the actual S1 guest gDB,
+>> right?
+> I'm not totally sure what you mean by gDB? The above diagram suggests
+> it is the ITS page address in the S2? Ie the guest physical address of
+> the ITS.
+Yes this is what I meant, ie. the guest ITS doorbell GPA
 >
-> That's a very interesting pattern.
+> Within the VM, when it goes to call iommu_dma_prepare_msi(), it will
+> provide the gDB adress as the phys_addr_t msi_addr.
 >
-> > I also got some jpeg images corrupted. I was able to open and view
-> > (partially) those images and it looked like a portion of the image was
-> > repeated in a different part of it), so blocks of the same file were
-> > probably duplicated and overwritten within itself.
-> >
-> > The blocks being overwritten seemed to be different sizes on different files.
+> This happens because the GIC driver will have been informed of the ITS
+> page at the gDB address, and it will use
+> iommu_dma_prepare_msi(). Exactly the same as bare metal.
+
+understood this is the standard MSI binding scheme.
 >
-> This does sound like a fairly common pattern due to SSD FTL issues,
-> but I still don't want to rule out swiotlb, which due to the bucketing
-> could maybe also lead to these, but I can't really see how.  But the
-> fact that the affected systems seem to be using swiotlb despite no
-> good reason for them to do so still leaves me puzzled.
+>> It is computed in iommufd_sw_msi_get_map() from the sw_msi_start pool.
+>> Is that correct?
+> Yes, for a single ITS page it will reliably be put at sw_msi_start.
+> Since the VMM can provide sw_msi_start through the OPTION, the VMM can
+> place the ITS page where it wants and then program the ACPI to tell
+> the VM to call iommu_dma_prepare_msi(). (don't use this flow, it
+> doesn't work for multi ITS, for testing only)
+OK so you need to set host sw_msi_start to the guest doorbell GPA which
+is currently set, in qemu, at
+GITS_TRANSLATER 0x08080000 + 0x10000
+
+In my original integration, I passed pairs of S1 gIOVA/gDB used by the
+guest and this gDB was directly reused for mapping hDB.
+
+I think I get it now.
+
+Eric
 >
+>> https://lore.kernel.org/all/20210411111228.14386-9-eric.auger@redhat.com/
+>> I was passing both the gIOVA and the "true" gDB Eric
+> If I understand this right, it still had the hypervisor dynamically
+> setting up the S2, here it is pre-set and static?
+>
+> Jason
+>
+
