@@ -1,246 +1,132 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A66A207E13;
-	Tue,  4 Feb 2025 14:36:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86696215777
+	for <iommu@lists.linux.dev>; Tue,  4 Feb 2025 16:54:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738679795; cv=none; b=UyCYMp5hVL7sJIuFBvSPFkb324Q6W3AYS/G68frgh8cncSalSYUjlgvbSM2nO9xxKaymt6h9btiPFj4LmlADRNQeo0vaH5Zyb6QNZj/FA8Cjw6LI0Lu0VD/fgnLTcyPs4TGjsQYbdhBXEMBK62TISrjbVgR46BSmQtoya/Idcjk=
+	t=1738688063; cv=none; b=eEKjbFU80HV3jLpjBTIAmsHVPQPPH36aSsHoFLd5kH7vkDDdMSPoPzS4za4E1KJ45qYRrViNvck7oMHh73Iqf3OFbOqLl6AqBfFIBCQlXNTIJSOh5r4jUcnnbcS/eWcR0Nyq494igbEtGRNzEBEReqxIDyBmJMCYsb/PrTnH2mY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738679795; c=relaxed/simple;
-	bh=2OfiAE3BjhZPyjDDoqHlXy1A3Xu34fHmnCjC6o04Amo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=p43rgknzgwXs8i5S2kfeMcGD6pSB42ISBGw8RI3HJJrSL+mMWZKDhOMg5WE4YD/YL6H7I+drwV37kxpKnQvFWEj3KwOZ4xhtaR35vUstOZyxLIaCGCy3Rk/oYv10AtmcX9uTUgsKHRVJIM/NKQCSwwu9dU06Zl7/Ye2keeD7ksg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nh+aYPBL; arc=none smtp.client-ip=209.85.128.43
+	s=arc-20240116; t=1738688063; c=relaxed/simple;
+	bh=dvbGjmFPIipFOAHao5it2MHqCCB+34eacpcE+gOPX6A=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=QlFIqynpt4BGkPQ8hcJtmDqpckNmqXN5tI5I50tJV6zTicy8zVN9f6sYzmyL+W0JKaG/vEyc0u+X7UD2K5TGKAEYI4hUrOkdxF2CO9ITEogKiPDwCKaHkfm913nMGvdSZpZo8QYZI7B3ShYt1ygAzZQiPl82lCStIvhR746FYpg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kSguWrh6; arc=none smtp.client-ip=209.85.167.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nh+aYPBL"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4363dc916ceso41586145e9.0;
-        Tue, 04 Feb 2025 06:36:33 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kSguWrh6"
+Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-3eba50d6da7so1643771b6e.2
+        for <iommu@lists.linux.dev>; Tue, 04 Feb 2025 08:54:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738679792; x=1739284592; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RRXFmx47Swzpej4Yg7u4uG0EqwNxFusRlkdCHqjIDuk=;
-        b=nh+aYPBLRE/tJNbvocXUmSk8mYYmp3SzsdD4Ziyw6iaFvL3+nQWoNp54UU/jUOasqT
-         tO2LlUZ67F7tHSB9Y1gvJ5uWdv3YFGJTU08pLMxxRo/DTXqpt9HMFJmO9zJ6Q91RNPgq
-         5u8CEsxys3Dd+jfIMpoB3AcNLA3sYdXFp27o1Fg852fj9MyXNCk2+ocxBjMmTzypLekw
-         SgkBK4V5EuO57nBcd0SNnPoI/w4zjBLhbX1K0HCt2fYAs+cxbmErjZBs/KhA9M0zh57Z
-         IH+rGncF47bm5lr/M7cNDmArTyj4f51bwKA147Ey2jBJir4jlEt+mNYSxI4YtoX/pl8C
-         XhVQ==
+        d=gmail.com; s=20230601; t=1738688060; x=1739292860; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ufxqeTPbh5jVi4KeE739Ux/m/0UeBoN+5T7+ZjE4za4=;
+        b=kSguWrh60R/64sDkZ7XXkE5M+4jkFaWx7Wgoxyogd3cCBN8hH1ackxVcjvN5cr7AD+
+         r0OiGI7jmRrhSm92vWcEMkaM2sAKamRmzKNg6TIbLD/FBtrGFu3PJLSzWQT/1zEy2ugo
+         Saa0ukJDW0euNNJ0YQ0zwmM8HNgj3rfkV93VggZbu5wjj1haSIKVXFzN7cKo2QLbn/d0
+         XPbaEP2BQjV18GH1m2bhJzxB5PPNVSKz7jquTrdtqwY8k1Fn4CJS2f2J+z//VSU58hRA
+         jpZsBxj3+DB9UP+k4glZaI2gU/kZgpaTlOg9NJEwcA43tqNMn+MJL8XxzXggok93gXzf
+         h3zA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738679792; x=1739284592;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RRXFmx47Swzpej4Yg7u4uG0EqwNxFusRlkdCHqjIDuk=;
-        b=A1JmowEDmJU/0KA9nQv0HVzFws20dJWxZ055ogST0VtcWuDVR81+7gXt40JcRvaSo3
-         B3V4m9Gj+lc8bimabthHhYmHAh4KDcmc66dH1QVYjjJtN2mxiyjz+hQhafxD1nMv6Sas
-         UulwjsNJ/+rekNlJGQsF34pG2JJyquVEjc8knrKnE+/OGD0C6zLYw1K0jQwL5Zu+eaUX
-         /UPpkOlp/g04OtDvy68UqWSa6bQyTLQoVe1Fb0zaQBlweCoHW/I4l5rh7s8huPVSX9lm
-         VGqDir62nEHm8SwPFFmDtTtW8H+pAkH4kGgRzHmxuy5htepxyz9Q0FYBgaHtbr/LXeO3
-         rInA==
-X-Forwarded-Encrypted: i=1; AJvYcCU+T0uwqWrGcQ0sGmmx9HivhUFEsVIu6R90wnzY1hIfU5FAeSSqaKRTLF62YLXiaNoevo+UFw==@lists.linux.dev, AJvYcCWnL2zjBAVtz0VxEj3NWtm8zeDFEo9lcFuSw7/lg+xFyT8h7Puw1d5mZPMJ641346QMd3A5+n0NXZ2wR+U=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzMbUuXZsb5o1b8i4uun3huP1zCvOQJLH+HQ8dTVaEUzq9fu9eQ
-	C1MuRRQH5DE/v/38cXeexMU+ulctQq5rep6l3Mo3EX47x/0gvfkJ
-X-Gm-Gg: ASbGnctaLJJgdPp8hjaM3rAsIgl1dCDDblKLgvCPoyTP+QQgV1/l//7rZDvnkLdbP/K
-	KSAVqmTetyRi0fhRRetH0kfMNzvIWGFWhvGWqQjxdBD1M1nl0HmLCmdW4ruH+8UHVIu1ot/qQsC
-	Au3P0qZ5vivK50d2op0c4v3wYI/772sUv8vnEbWHF8TdaAZ3jlnt9CFLDeA8tO8lNPRKykyY1uN
-	j1INjldiPBK2X7E0UvmC4ilVBgUiE8pk0jRz6Qod+VumSKZ6YvrSDOFasvtlnZCjHsuWOm+UdCf
-	n9XNwR0V9kNHSfZWSYzS5GxRrN4Qq8prJ3uf7WXDvoVeyQ4818KxRtTuWaFFqn08s/mm5JkAudN
-	aJg==
-X-Google-Smtp-Source: AGHT+IHi7/2GKpcdSjTAWwC6JBPMZH0RMa4KtzNjlcdd4DLL0nuLjpKiK5fg5XRwBNd0E03fFoUvMw==
-X-Received: by 2002:a05:600c:4286:b0:436:1b0b:2633 with SMTP id 5b1f17b1804b1-43905f782a9mr26556025e9.9.1738679791319;
-        Tue, 04 Feb 2025 06:36:31 -0800 (PST)
-Received: from orome (p200300e41f281900f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f28:1900:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-438dcc6df51sm232194865e9.30.2025.02.04.06.36.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Feb 2025 06:36:29 -0800 (PST)
-Date: Tue, 4 Feb 2025 15:36:27 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Mikko Perttunen <cyndis@kapsi.fi>, Robin Murphy <robin.murphy@arm.com>, 
-	Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>, vdumpa@nvidia.com, joro@8bytes.org, will@kernel.org, 
-	jonathanh@nvidia.com, baolu.lu@linux.intel.com, jsnitsel@redhat.com, jroedel@suse.de, 
-	regressions@lists.linux.dev, linux-tegra@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [REGRESSION] Invalid gather when using Tegra210 media engines
-Message-ID: <vfn52yxf3udhyjqrgc3binmsdjzjd2salojsvaad7hsukozknp@u6rziyz2vz2o>
-References: <c6a6f114-3acd-4d56-a13b-b88978e927dc@tecnico.ulisboa.pt>
- <20250203170617.GE2296753@ziepe.ca>
- <4ea1a48c-9020-4793-ac9b-b51fc289e442@tecnico.ulisboa.pt>
- <20250203174331.GF2296753@ziepe.ca>
- <a0f776ba-bfd2-41fd-8370-14818b86bfbe@arm.com>
- <20250203191346.GG2296753@ziepe.ca>
- <ff901d60-dd54-440f-a0da-4b72052eafd6@kapsi.fi>
- <20250204132112.GH2296753@ziepe.ca>
+        d=1e100.net; s=20230601; t=1738688060; x=1739292860;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ufxqeTPbh5jVi4KeE739Ux/m/0UeBoN+5T7+ZjE4za4=;
+        b=sFXCCvNhUOntARVhYU8+YULNtFpcY1e8vNy+LvnBF5ZDDIJ6gHbC3Fma+TArEKKVp4
+         tCHPvew+pwM9nZBsH4TvC/71Z+sOBvd8gNpsm+Tw3XsShiRQBmiGvM0OdWi1ZKQ28ECP
+         afhdV8XM0U7v2CyzoTUBW5aGzcXYkZNClsSKC7C71jQwqKfWDetLEHIeUiEofNLeFk4S
+         YXIQHfvGwOwq8jE9zMGEmUKcdAifLqkqICohaEEXoCNqkfKKy2VBLDOlvEfgIwswMiYv
+         XnU1ilnFD+RC/i1kBqGXR3SGLAn1xt/ZFoWq7nikSwXNII2uYRC6W7ml6b2y7JEaUN14
+         zUxw==
+X-Forwarded-Encrypted: i=1; AJvYcCUQQusTyWTB2eBZWOShcPED9aM/at14veNiqWWCY6x/G24gyMcGkc9PhNDqer05DymUe19EUA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwH9NuKk9sV2zHZYEc1TPGFHX5B3YmGtkousyWD6CxBZ2omLZwp
+	G6s0YwOpz6xAmWcgyD5eOZUjLf8QWq3Bsxo+rc7iJT2g7h81ePRCZPIfiDPR1gxPAlFFD5wZVCq
+	g6KQxqI8Kv38B0KfP2668FHWKLmk=
+X-Gm-Gg: ASbGncsHV9DneBJcgvgvR1dIo3H6N29OdAx/s8ZowadMFQ4R2ICQ9j9piw8FFOWFqZi
+	ltlioNdL07fUdNs9FF1adHhtU9+yNYNbDVrIhPE5IGe6laYbgDSM7vWfyF5nh/wTIAyEc9EvXJQ
+	==
+X-Google-Smtp-Source: AGHT+IF7EnaFEJFCSlyCLr+nn83vnKdF6Emxb8uA3hFJPTocYeG615mU6+dytSHRjTRpgNZMbqe79WfG5L4cwrXkxj4=
+X-Received: by 2002:a05:6808:1b99:b0:3eb:6044:5a85 with SMTP id
+ 5614622812f47-3f323a76658mr18482915b6e.20.1738688060469; Tue, 04 Feb 2025
+ 08:54:20 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="s77jwfgx65ngiaut"
-Content-Disposition: inline
-In-Reply-To: <20250204132112.GH2296753@ziepe.ca>
+References: <20250108122825.136021-1-abdiel.janulgue@gmail.com> <20250108122825.136021-3-abdiel.janulgue@gmail.com>
+In-Reply-To: <20250108122825.136021-3-abdiel.janulgue@gmail.com>
+From: Thomas Hampton <thomas.j.hampton@gmail.com>
+Date: Tue, 4 Feb 2025 10:54:09 -0600
+X-Gm-Features: AWEUYZmrSMVxm_k1uivRyBQVGcUir-2h4LgjAJyf97InNoJiKzYSKb_gYdAF1GQ
+Message-ID: <CAEmX-ZUbPqNUBj2-xAf=5uGE_GWAQQ79akADZCDxNsmx7Lf9VQ@mail.gmail.com>
+Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com, 
+	aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org
+Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, 
+	Valentin Obst <kernel@valentinobst.de>, open list <linux-kernel@vger.kernel.org>, 
+	Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 
+On 1/8/2025 6:27 AM, Abdiel Janulgue wrote:
 
---s77jwfgx65ngiaut
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [REGRESSION] Invalid gather when using Tegra210 media engines
-MIME-Version: 1.0
+> +    /// Returns the base address, dma handle, attributes and the size of the allocated region.
+> +    /// The caller takes ownership of the returned resources, i.e., will have the responsibility
+> +    /// in calling `bindings::dma_free_attrs`.
+> +    pub fn into_parts(self) -> (*mut T, bindings::dma_addr_t, usize, usize) {
+> +        let size = self.count * core::mem::size_of::<T>();
+> +        let ret = (
+> +            self.cpu_addr,
+> +            self.dma_handle,
+> +            self.dma_attrs.as_raw(),
+> +            size,
+> +        );
+> +        // Drop the device's reference count associated with this object. This is needed as no
+> +        // destructor will be called on this object once this function returns.
+> +        // SAFETY: the device pointer is still valid as of this point due to the type invariants
+> +        // on `CoherentAllocation`.
+> +        unsafe { bindings::put_device(self.dev.as_raw()) }
+> +        core::mem::forget(self);
+> +        ret
+> +    }
 
-On Tue, Feb 04, 2025 at 09:21:12AM -0400, Jason Gunthorpe wrote:
-> On Tue, Feb 04, 2025 at 12:26:46PM +0900, Mikko Perttunen wrote:
-> > On 2/4/25 4:13 AM, Jason Gunthorpe wrote:
-> > > On Mon, Feb 03, 2025 at 06:49:07PM +0000, Robin Murphy wrote:
-> > > > I'd hope the historical reasons for not supporting IOMMU_DOMAIN_DMA=
- in
-> > > > tegra-smmu no longer apply, given that all the default domain stuff=
- has now
-> > > > been integrated into host1x for the newer arm-smmu based Tegras.
-> > >=20
-> > > Indeed I do see appropriate looking calls to the normal DMA API, and
-> > > the other mapping path is conditionalized by !host->domain.
-> > >=20
-> > > So, why didn't it work for Diogo? Even in identity mode the DMA API
-> > > will return correct DMA addresses and the !host->domain path will skip
-> > > mapping them.
-> > >=20
-> > > Poking around I wonder if there is some assumption that if other parts
-> > > of the stack, maybe the DRM driver, are using the special domain than
-> > > everyone is? It seems to blindly pass around IOVA without really
-> > > checking who is consuming it.
-> >=20
-> > I'm not sure where that would be, but it's certainly possible given that
-> > this combination of code paths wouldn't have been tested.
->=20
-> I saw some weird stuff.. Like tegra_bo_pin() does:
->=20
-> 	/*
-> 	 * If we've manually mapped the buffer object through the IOMMU, make su=
-re to return the
-> 	 * existing IOVA address of our mapping.
-> 	 */
-> 	if (!obj->mm) {
-> 	} else {
-> 		map->phys =3D obj->iova;
-> 		map->chunks =3D 1;
->=20
-> And obj->iova isn't obviously linked to a dma map on dev.. The comment
-> reads like it is making the assumption that there is only one iommu
-> domain shared by everyone (without checking dev is part of that
-> scheme)
+Would it be feasible and prudent to avoid exposing `pub fn
+into_parts`, `pub fn first_ptr`, `pub fn first_ptr_mut`?
 
-Yes, that's correct. We used to have a bit more code around to deal with
-single domain (Tegra SMMU is supported on some platforms where we have a
-maximum of 4 address spaces, hence we have to be very careful about what
-devices share which address space).
+It seems like some sort of functional access method might be better
+for keeping future Rust code maintainable and Rusty.
 
-In fact the host1x and DRM drivers also support Tegra20, which didn't
-have an IOMMU at all, but one of those really old GARTs. On top of that
-it only supported a 32 *M*iB window. I think others have concluded that
-today we can't practically use GART and it's better to use something
-like CMA for those cases. So maybe that's not an argument anymore.
+For example, making client code from:
 
-Most of these restrictions no longer apply as of Tegra124 (I think) and
-starting with Tegra186 the IOMMU is an ARM SMMU, so none of these work-
-arounds should be needed there. Most of this code exists for very legacy
-reasons, but there's still people with Tegra30, Tegra114, Tegra124 and
-Tegra210, all of which are susceptible to this (at least partially).
+> {
+>    let ctrl_id = unsafe { &*(id.first_ptr() as *const NvmeIdCtrl) };
+>    number_of_namespaces = ctrl_id.nn.into();
+>    mdts = ctrl_id.mdts;
+> }
 
-> > > Christian was telling me DMABUF had some drivers that made the
-> > > (incorrect!) assumption they were all sharing translation.
-> > >=20
-> > > It does seem like a nice project for someone who has the hardware to
-> > > rip out all of this custom domain stuff and just have the iommu layer
-> > > setup a shared dma-iommu domain.
-> >=20
-> > This has been a long-standing project. The issue is that some boot chai=
-ns
-> > set up the display expecting identity mappings,
+Into something like,
+pub fn expose(self, op: F)
+  where F: Fn(*const T) {
+    op(self.cpu_addr);
+}
 
-I should revive an old patch series that attempted to get rid of most of
-this. The plan was indeed to remove all of the direct IOMMU API code and
-use DMA API exclusively. There were a couple of issues with it, such as
-performance regressions due to the extra mappings required, but I think
-I got pretty far in mitigating most of those.
+let number_of_namespaces;
+let mdts;
+id.expose(|data| {
+let ctrl_id = &*(data as *const NvmeIdCtrl);
+    number_of_namespaces = ctrl_id.nn.into();
+    mdts = ctrl_id.mdts;
+});
 
-In the end I got frustrated with it a few years back because there are
-some corner cases that I couldn't make work and testing of this becomes
-increasingly complicated. And yes, display was specifically an issue on
-Tegra210 platforms (earlier platforms didn't usually set up display on
-boot).
+And to avoid code docs like:
 
-One additional problem with supporting the reserved-memory identity
-mappings is that existing firmware doesn't set things up correctly and
-these devices are software EOL'ed, so no new releases are planned that
-could contain a fix for this.
-
-> The smmu driver can match on compatible strings and leave some devices
-> in identity mode, if that helps. Other drivers are doing this to work
-> around various issues.
-
-This might indeed be a viable path. Again, we need to be careful about
-the older devices, but maybe a shared dma-iommu domain would work these
-days.
-
-We definitely want to transition to a DMA IOMMU domain later on, but it
-would need to be after display has had a chance to set things up. And it
-would still need a firmware that actually passes the right information
-to DT because otherwise we'd still get SMMU faults from the display
-hardware trying to scan out from memory that it doesn't own (or I guess
-scanning out garbage from memory that's now being used for other
-purposes).
-
-> > See https://lore.kernel.org/linux-iommu/20220512190052.1152377-5-thierr=
-y.reding@gmail.com/
->=20
-> But using RMR seems like a better solution?
-
-reserved-memory is the DT equivalent of ACPI's RMR, as far as I
-understand. Or at least, it's the closest thing to it. We don't have
-ACPI on these devices, hence why we do this via reserved-memory DT
-nodes. But again, the problem is that firmware doesn't currently pass
-this correctly to the kernel, so we'd need a new release for that. I'd
-need to find out what can be done to achieve this. One big issue might
-be that it'd be a DT ABI break, technically. So upstream Linux would
-only work reliably using that new version. That might be fine if we can
-make some sort of official release.
-
-> We could perhaps also figure out some way to leave the translation in
-> identity until the DRM driver completes the reset, then the DRM driver
-> could activate the DMA API translation manually.
-
-Yeah. We do something similar for Tegra186 and later where we have the
-memory controller redirect accesses to the SMMU only after the device
-has been attached. I'm not sure if we can do that for the old Tegra
-SMMU, though. It would probably still require a firmware update to make
-sure this can be properly handed off to the kernel.
-
-Thierry
-
---s77jwfgx65ngiaut
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmeiJegACgkQ3SOs138+
-s6FGYg//R+2hX7Er3Nt3qSKe0ctG9++lWg5Zoe3ePz3HvRIASVmsr4K5q+4Op+vI
-h1oBcxXET5dpgYLGo2etIk0KmpLjflCfRB5MkzM1U1lvUGcDWyGpp75bJhDp5rDI
-lNLw2Qj8VdwmcRv+t1tng5haEZtrAKN1afr7MJ6efEie5+zJIOtKrppoCw/BSkyl
-Ln9KtQqE7SiaYVZIkyIhW7kr/ez09BJlssV9JtUQBDiOZnvIppKS24rNlUKqdSgN
-BvFhLq7arEDyVn1TS/vzSqBmSEXtdv0oYKemiuyCFoI98JSTOLOLM1m8H0djblJ1
-4m09WolC5SVMip+smHZBU9hupNKQNZcWQpdlv1KYY/PbxGsHT/O6W660yrk2R14A
-fRARzZ+GMoBFzu0AVtdZi5yMKhJx3GhDv1TLCQ1prVQPn59kI/ONG44oVAoE/FLS
-/ispuyxkTbx1+Aev9yR7GAzk0SQ+7j338o2VvWw9E+258WaAxxFxFulvkHakQGuH
-sb1KquYznexEibF8UL9ALNnSvo5x0s2cvc9ORbS+Q8ox5ESJFoRKhIzm3QlirzMf
-7j4e+SpjFhndL8LbVoqcY3BOlb0CUu5QciBWOyYIvDBz/8NpqASpxD/vBn8hycbb
-4cm+4gzVLHZm3SHJ6JW3tJgW/Ev8WhlxWTvJ4EB3F2s1IdCu5Pc=
-=QY9n
------END PGP SIGNATURE-----
-
---s77jwfgx65ngiaut--
+> /// The caller <...> will have the responsibility in calling `bindings::dma_free_attrs`.
