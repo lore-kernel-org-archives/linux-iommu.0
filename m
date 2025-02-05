@@ -1,111 +1,142 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC7BD1FF7D0
-	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 19:31:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B966207E0E
+	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 19:55:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738783920; cv=none; b=Lm967nRU84im+cqB3VRf7nIXMmfBCsjJUhq55uOiV+Dmy7TcZqF9RW+G+p5LLFWpQjYxHmWs2HxGZKD5L9qPqrrxLx7Jm6DmINtRxpMRSDhivHG+3o6wmx8j2BOlgBUCRtANVZqfCkmE206OWjpdHkQzpC9jlvB6CNJraZpSk/k=
+	t=1738785360; cv=none; b=J+OPBZwyUsLWmdybjnJ4Dr4xTktenbcU2JGVPBWBAU/VrEAS/vT7OPVyAFJhnbj9lE08uONhAOSwD/ATTopFR1yG+8Gu2dy7WCHi2Y9D+5vR+PxA3EdyFw8bwDkO7BgdjXxc5Fzhvj6JGkp69adPr0p66/xtP5RNpb8i5E4PtW0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738783920; c=relaxed/simple;
-	bh=2rxoVBPGkYRdke7t02zWdPgQ6HfJzuAcVvL+PkSrGoc=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=KosnockIG+adlMRmN50LuNWZzFmWX0X61ViAPR7Io2PPjwPp0TUA5WL9CORK1rLigWNCWuTlPNDg053JxJ72x9ZLwzJ/lYX1MI+eOIVsNZm9uaYFum/hAwGtFdUlvSyngzhP4aabqAcerb7O4UPr7motCFEeE2fh9l2sSksGDRg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3U65+wq8; arc=none smtp.client-ip=209.85.216.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1738785360; c=relaxed/simple;
+	bh=iPFum/ooN80cOPMsh94P49PMd9sImNoX5r665M1PBEQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=o6yKN/pH0WIoEfCA35LLi542bNpexdEy+aCJgBFyZIlOKYnPSKBfeHOcq696SM274mpMjVAqPAYJZGO+w2Qxj+/HP68bbZUehYfu2kVChwOF/ppE0WGtCw2XxAeqzTSLvkYhH2HQdWvkIB5lufFFrNGjmyGsEUL0KJvSj2JkyCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Fs1//zAe; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3U65+wq8"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-2f9fdc4dc84so113064a91.2
-        for <iommu@lists.linux.dev>; Wed, 05 Feb 2025 11:31:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1738783917; x=1739388717; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ityHFYbQHjCJ1n0TCLpdhG0BGuuO1UwpdTT8iBBDxQE=;
-        b=3U65+wq88sSYll8tX5YcgTSthuIPWCP3/hnEN5aqaYTYfzN/EaZd2gSceYUDidDKm+
-         2jje+5ccJpLwkdD85mvUv8BrgeNq9b3kcgQIDo3mDwr3ex+JYy3tx30maG36DQDrbCRz
-         YjxkSgLA2A9tEpfNBAZ5a7b6kck9adyJKvXhMO2fGkX8rP/RNKSgdyV+4IIXKYQ79bTc
-         yk02CEoniQIE0Cz7PH0xG5OE28XA7/ghKBiIBs1wBR4LaTI+BskHiDQbuVGpBvPhMRuk
-         POA5bc8xw3MPxBDbC9OZnvi1ri36XRKXR0iIs2d4wFkMhemI+A7tGydVqhSZGfAK2If9
-         fT9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738783917; x=1739388717;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ityHFYbQHjCJ1n0TCLpdhG0BGuuO1UwpdTT8iBBDxQE=;
-        b=gWL67XnqMZ4zhy/4/0/bxsy/VD58XqWUQsXsJlL+SFSXjNJ5pypdOtMTUesBTqn3Hc
-         5ZhwI5OPBD9wnXuUubBkAylRx6VUlJaIteBK7FH+dZoncQEgAt3KQtT9xUY5/RE2mTo0
-         rLlWvfB4pWGdeHs3aE/N7gp6mydGa25vzYkpNGUYvRoIBxlZsEUCTeLwzOJyPX/ON3P+
-         vI2R5wNR0jxYJow47VnZu6Ifh8SfJRroDs99e73iUmfAYYlNCR+KlL++YQVIcyp2vQSc
-         JG9lWXmwxHNpLI7IMv0njbQjc0ncGX9cKA8mBE0CCLa8CW7tr0gNNYSEookaHoPxfqKO
-         9+ag==
-X-Forwarded-Encrypted: i=1; AJvYcCXDIc+3JZbPj+ZIw35+L0upv/yCYg+8qPxACKfPoG2z98olknJ99Deg79njYmOVLTdVVIRaQA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzsbk30bbvjmpZJdClM8M+iyK0/GBrua1g+2o0JBILsEqI7i2+d
-	63haaqRfiE864FxwO8SMeBwvE8tS9nNUa9wJNtcbtx3TXOVFqNq4jEap1GqpNLJ0AExkqZl+dQK
-	S+g==
-X-Google-Smtp-Source: AGHT+IGYpR9H2o7CsrEfJdhduqV6CItDd+RRnz38obHEp/U4zWkL8bbKIHK5OX1zzdtql3FDGJLnjb3ZcYY=
-X-Received: from pfwy2.prod.google.com ([2002:a05:6a00:1c82:b0:72f:f548:3e09])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:28cc:b0:725:f1b1:cbc5
- with SMTP id d2e1a72fcca58-730350f96demr7928023b3a.3.1738783917255; Wed, 05
- Feb 2025 11:31:57 -0800 (PST)
-Date: Wed, 5 Feb 2025 11:31:51 -0800
-In-Reply-To: <8f7822df-466d-497c-9c41-77524b2870b6@amd.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Fs1//zAe"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 515EtBre000663;
+	Wed, 5 Feb 2025 19:55:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=NsNoTA
+	zBIrSlGCv20i9hObAFmMvUHA4jpdgPNAIpdWo=; b=Fs1//zAeAtUSdbAsmkoaxG
+	Wuk/KfT0vD3Knm9Nu1MlnkKTfY659XvN7HUNDTRLjGE5+fteWi1/tFPu3MmDaOMW
+	PYuuXpXbNOqV2xz9i9tSUYqkYjGHbqQSb9QMdklKAKJ9/eFL49y/eey2qZBY5hZ5
+	rkhqQm93gQAvPy1tyKfpBMre3906X/ZV2yWJZkQPcS2fmQyt7JdKwbC79bwc7GD0
+	PnTyTRvvf/yqgPCKh1qtBRkQ+25dmaW9TzroR7Ortjtt+8phMgIeIg4DzmfRUqZw
+	Kq/pfcP2AizXMP6ujS+QlKiRHAHyU4fA730tiifHt4zS/lO4vzHc45QQBVBO+8fg
+	==
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 44m1t84c49-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 05 Feb 2025 19:55:50 +0000 (GMT)
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 515JU3h8006535;
+	Wed, 5 Feb 2025 19:55:48 GMT
+Received: from smtprelay03.dal12v.mail.ibm.com ([172.16.1.5])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 44hyekjg0c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 05 Feb 2025 19:55:48 +0000
+Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
+	by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 515JtlUM29688426
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 5 Feb 2025 19:55:47 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6A81658055;
+	Wed,  5 Feb 2025 19:55:47 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D58A85804B;
+	Wed,  5 Feb 2025 19:55:45 +0000 (GMT)
+Received: from [9.61.30.101] (unknown [9.61.30.101])
+	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Wed,  5 Feb 2025 19:55:45 +0000 (GMT)
+Message-ID: <c0c82eb4-3849-4127-b6bf-bee329653a24@linux.ibm.com>
+Date: Wed, 5 Feb 2025 14:55:45 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <cover.1738618801.git.ashish.kalra@amd.com> <e9f542b9f96a3de5bb7983245fa94f293ef96c9f.1738618801.git.ashish.kalra@amd.com>
- <62b643dd-36d9-4b8d-bed6-189d84eeab59@amd.com> <Z6OA9OhxBgsTY2ni@google.com> <8f7822df-466d-497c-9c41-77524b2870b6@amd.com>
-Message-ID: <Z6O8p96ExhWFEn_9@google.com>
-Subject: Re: [PATCH v3 3/3] x86/sev: Fix broken SNP support with KVM module built-in
-From: Sean Christopherson <seanjc@google.com>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Ashish Kalra <Ashish.Kalra@amd.com>, pbonzini@redhat.com, tglx@linutronix.de, 
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, 
-	hpa@zytor.com, thomas.lendacky@amd.com, john.allen@amd.com, 
-	herbert@gondor.apana.org.au, davem@davemloft.net, joro@8bytes.org, 
-	suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com, 
-	michael.roth@amd.com, dionnaglaze@google.com, nikunj@amd.com, ardb@kernel.org, 
-	kevinloughlin@google.com, Neeraj.Upadhyay@amd.com, kvm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, 
-	linux-coco@lists.linux.dev, iommu@lists.linux.dev
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 3/3] iommu/s390: implement iommu passthrough via
+ identity domain
+To: Niklas Schnelle <schnelle@linux.ibm.com>, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, gerald.schaefer@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
+        clegoate@redhat.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+References: <20250124201717.348736-1-mjrosato@linux.ibm.com>
+ <20250124201717.348736-4-mjrosato@linux.ibm.com>
+ <53c930df7058288776392073964a70025ca62d19.camel@linux.ibm.com>
+Content-Language: en-US
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <53c930df7058288776392073964a70025ca62d19.camel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: C5Ly6ffk3UkHDhTlnvilvDtqF16XvjFp
+X-Proofpoint-ORIG-GUID: C5Ly6ffk3UkHDhTlnvilvDtqF16XvjFp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-05_06,2025-02-05_03,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
+ mlxlogscore=999 suspectscore=0 phishscore=0 lowpriorityscore=0
+ priorityscore=1501 spamscore=0 mlxscore=0 clxscore=1015 malwarescore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2501170000 definitions=main-2502050148
 
-On Wed, Feb 05, 2025, Vasant Hegde wrote:
-> On 2/5/2025 8:47 PM, Sean Christopherson wrote:
-> > On Wed, Feb 05, 2025, Vasant Hegde wrote:
-> >>> @@ -3318,6 +3326,9 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
-> >>>  		ret = state_next();
-> >>>  	}
-> >>>  
-> >>> +	if (ret && !amd_iommu_snp_en && cc_platform_has(CC_ATTR_HOST_SEV_SNP))
-> >>
-> >>
-> >> I think we should clear when `amd_iommu_snp_en` is true.
-> > 
-> > That doesn't address the case where amd_iommu_prepare() fails, because amd_iommu_snp_en
-> > will be %false (its init value) and the RMP will be uninitialized, i.e.
-> > CC_ATTR_HOST_SEV_SNP will be incorrectly left set.
+On 1/30/25 2:43 AM, Niklas Schnelle wrote:
+> On Fri, 2025-01-24 at 15:17 -0500, Matthew Rosato wrote:
+>> Enabled via the kernel command-line 'iommu.passthrough=1' option.
+>>
+>> Introduce the concept of identity domains to s390-iommu, which relies on
+>> the bus_dma_region to offset identity mappings to the start of the DMA
+>> aperture advertized by CLP.
+>>
+>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+>> ---
+>>  arch/s390/pci/pci.c        |  6 ++-
+>>  drivers/iommu/s390-iommu.c | 95 +++++++++++++++++++++++++++++---------
+>>  2 files changed, 76 insertions(+), 25 deletions(-)
+>>
+>> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+>> index 88f72745fa59..758b23331754 100644
+>> --- a/arch/s390/pci/pci.c
+>> +++ b/arch/s390/pci/pci.c
+>> @@ -124,14 +124,16 @@ int zpci_register_ioat(struct zpci_dev *zdev, u8 dmaas,
+>>  	struct zpci_fib fib = {0};
+>>  	u8 cc;
+>>  
+>> -	WARN_ON_ONCE(iota & 0x3fff);
+>>  	fib.pba = base;
+>>  	/* Work around off by one in ISM virt device */
+>>  	if (zdev->pft == PCI_FUNC_TYPE_ISM && limit > base)
+>>  		fib.pal = limit + (1 << 12);
+>>  	else
+>>  		fib.pal = limit;
+>> -	fib.iota = iota | ZPCI_IOTA_RTTO_FLAG;
+>> +	if (iota == 0)
+>> +		fib.iota = iota;
 > 
-> You are right. I missed early failure scenarios :-(
-> 
-> > 
-> > And conversely, IMO clearing CC_ATTR_HOST_SEV_SNP after initializing the IOMMU
-> > and RMP is wrong as well.  Such a host is probably hosed regardless, but from
-> > the CPU's perspective, SNP is supported and enabled.
-> 
-> So we don't want to clear  CC_ATTR_HOST_SEV_SNP after RMP initialization -OR-
-> clear for all failures?
+> Taking another look, I think there is a small problem with the logic of
+> passing iota == 0 to indicate direct mapping. In
+> zpci_hot_reset_device() we call zpci_register_ioat() with iota set to
+> virt_to_phys(zdev->dma_table) and while zdev->dma_table is NULL for the
+> identity domain we can't rely on virt_to_phys(NULL) == NULL.
 
-I honestly don't know, because the answer largely depends on what happens with
-hardware.  I asked in an earlier version of this series if IOMMU initialization
-failure after the RMP is configured is even survivable.
+Thanks for pointing this out.  We discussed this a fair bit off-list, but to summarize here: I'll include an additional patch in the next version that will drive IOAT registration code through s390-iommu, since really this owns the dma_table and knows when it does (not) make sense to register it.  Places in s390 code that need to perform IOAT re-registration (such as zpci_hot_reset_device) will call into this routine and let s390-iommu determine the correct action based upon the type of domain in use.  
 
-For this series, I think it makes sense to match the existing behavior, unless
-someone from AMD can definitively state that we should do something different.
-And the existing behavior is that amd_iommu_snp_en and CC_ATTR_HOST_SEV_SNP will
-be left set if the IOMMU completes iommu_snp_enable(), and the kernel completes
-RMP setup.
+I'll set that patch before this one, so then this patch remains unchanged except to replace the zpci_register_ioat call added by this patch in s390_attach_dev_identity with the new routine.
+
+> 
+>> +	else
+>> +		fib.iota = iota | ZPCI_IOTA_RTTO_FLAG;
+>>  	fib.gd = zdev->gisa;
+>>  	cc = zpci_mod_fc(req, &fib, status);
+>>  	if (cc)
+
