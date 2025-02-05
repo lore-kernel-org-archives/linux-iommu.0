@@ -1,87 +1,113 @@
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80822211491
-	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 02:41:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48E0E40849;
+	Wed,  5 Feb 2025 03:45:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738723290; cv=none; b=WiVlOkhxR0UClLeX7RvAHRcAtY2+dArnBjM+8eHdJAC5EMsyUFzWCpdGX4yGDCbl/bbkL/PEUVlPFIltqKpTnNZ+shwjl00XBupQCIOGRr7+srzpZuvKbjq32eyuYfwc3qS9Vc/q4gKZL75u1R4gQ3FekpAuZzih1KidxyqehBk=
+	t=1738727126; cv=none; b=d/Nf4hu1q5RScvNSLHTPjH2jcuVENtV2AUBmOg3U+aBNI4GKRkVHEor8IF2ykdUaOtZSk2xgPbyRjLE1TTaBEuWWDw2cudcvred+FBGsC4Y0ZrGvTGhoKQd/iNqDIOGmIGbwkkHl1OeMUdmuy4KaoGFpva8eU2Z2/v4ml2ACR7s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738723290; c=relaxed/simple;
-	bh=QwQn3prrCd9nf+gWzBIeH8P3iezKUf5V2n1S7gTfQSo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=elpvCU9BQ8/ka0FMFlG4NR2l9oyv197EPhWLWIULVUcsrCVK6FaIQb7WfLiSO9YwIwyPeG3NUvAuU91ZSSsjPcq36VmlGH7rOICfUFyCe9DA4tnEjloERmiRWo1kY/OcH05LZnOA0ZyUGp5QqwVhZQmrJpwAgSjqJg5yQzQfwms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lJrGj/DU; arc=none smtp.client-ip=209.85.210.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1738727126; c=relaxed/simple;
+	bh=MLaFTGCPEcg9NYXwrgf9SMfKqQ9G+0WJl/NqM7xYYn8=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Vh31IposDgPqhaa9+Y5CcarHjnksTpbbqExAfQWmTEFPAUeDDv1UtmhF5og3V5HjEGIeU+2g7/aW0RPhAVwURwgpSdjj/9292zvbqtEGOd+2A+dnieZJqc5R8/B8I0mA5c7D2Ec1ffJk3CfAtUUUug7wicl72Qtf+bT7+zzEN6Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ks7Pitsw; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lJrGj/DU"
-Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-724f4d99bc7so1442041a34.1
-        for <iommu@lists.linux.dev>; Tue, 04 Feb 2025 18:41:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738723287; x=1739328087; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QwQn3prrCd9nf+gWzBIeH8P3iezKUf5V2n1S7gTfQSo=;
-        b=lJrGj/DUHk/aOsdp3rYc1lfI3MOF3EBj3CBG8pNEpyZKP2HCNg5ly34qE3CwYKWwpW
-         42Hh/7nd+zJaRniSV/ZHWQd2/GB0N7WtdioxAcBWme9jUhE5E964eexLbk7AGou318Ec
-         +H+teTyiw99t3PcmbRw6hFiHSLFHSaebwaCZmHMvx1UNAfED4lTObkUCBvfN9IlykZ+1
-         i1PuEY5lbEj01LoMQHeMfJl2JR0srSFxUxXlqSm3O6KOdd5+cu9PMO6F4Bsn73rSOm+O
-         LmxAzrvRGUHhxSjxX8vzhLv0jjkaF0AXMu7b/Ne6KrD49vMWhyqHzEyjGHPf/THLx+JE
-         5D+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738723287; x=1739328087;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=QwQn3prrCd9nf+gWzBIeH8P3iezKUf5V2n1S7gTfQSo=;
-        b=Hq571Lw1mJxpyPdzlNMbrZ3FVVhAqpztjj4n0BvrSvsi6TDyvrlmfsOQRo0G/zgnXz
-         Oe+OU8IEOPVTLzpy1bCA0nqJud77oXMfJVAyuUJykBYmjTFjRqut8rvYWGil4DkLupe6
-         OA8Czm6H8orSXrg/6Gbxwyqh3A4On9KbJy+jF6SbOR8aNUAH2KExSs/TAloffUZy2QTx
-         et5Aru9U2RXRviwLiD7jyIA52RXhwQRF79JPnIBgtg6gvkrKxGBG5Z/+kHYMos+o2vPm
-         pP0ER0GBv2SWpIGBqhhzXnSuKSOjTVGJJXp5dBNZ0KhITRBPOIuuzJ9UNidJ0UPNrra8
-         MGbg==
-X-Forwarded-Encrypted: i=1; AJvYcCUZULFpUpWiGVHlOBdNsPEkXZ5Yk06Q3lmO0i9G/10WWfBr8wb41fEvJfW6lvkIGd/MjiUXMg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YylMliYS0F1lszZsfulC/YPC4XRSi4Mo1eYI7ALDLMfr8U3MbWZ
-	yxdIjuSoJxhnTD66PXATG/RIBMIaASAIuI17ejUiFfKEde8PRkolOPevLmoQjMedQilFe3LV4dh
-	OxKKpBfgvoEQ95xlDsDE+d+1jZiw=
-X-Gm-Gg: ASbGncvqw6zTYQKb/R9aY5Do1VjF+9O9vMdhIHGmek0i2rhwc0ILZUjLLC2X+HNW1ST
-	nPaFqA4E6nzVBLuGNOOm/CwHoUGyxAZVrghfEqDUZymgpRl7HRPNyHGBorEVib7vtX2Zxx7uQIw
-	==
-X-Google-Smtp-Source: AGHT+IETE5RM6ytR4I0MAoaOcUYN/nT4zaRWwsSaMUFzY7MuCNXhcUa43uNFxmzefRwg1gzObIY0smWMYi3lZSbjz34=
-X-Received: by 2002:a05:6830:390f:b0:71f:c1df:187e with SMTP id
- 46e09a7af769-726a428f697mr1007784a34.27.1738723287529; Tue, 04 Feb 2025
- 18:41:27 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ks7Pitsw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1738727125; x=1770263125;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=MLaFTGCPEcg9NYXwrgf9SMfKqQ9G+0WJl/NqM7xYYn8=;
+  b=ks7Pitsw8DQYqLAPWG2p8sHcmQGGzieIkiMBtZsUAR3VCrhIY39PP/0e
+   9HbgWGg+LBZOzs+0/DWRJWjeNJQ2btNXfMjcdUy5e8wXUPyc4x/H53vQr
+   DypmzCHWAbs3bRTLNM48DRddBLaJ7dUmvab1nYkCp3RMBP1yuHD9Eqf3/
+   E4H77rBAEohkS+Ch/+LkL2evqK8usU3vKn2/pWcq24KH4Aa/DYy8kRvWn
+   1pPFiTOOkpYLWtJxSObD97tEyAbzzQPkfSSLkD8jdRyvglszAB/TnrH23
+   Tu4n6GMNZwdttR2H1lFt/3rxmYGaJsBAZMOcUp0xzg7d8NApQlL/HMips
+   g==;
+X-CSE-ConnectionGUID: V2Je3YZiQIKQVLVqHQXteA==
+X-CSE-MsgGUID: lgqYDOioRVyMxJcvwVgpug==
+X-IronPort-AV: E=McAfee;i="6700,10204,11336"; a="39165405"
+X-IronPort-AV: E=Sophos;i="6.13,260,1732608000"; 
+   d="scan'208";a="39165405"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2025 19:45:25 -0800
+X-CSE-ConnectionGUID: WpR9JSfURxSI/IIjqWagHg==
+X-CSE-MsgGUID: qbIxOqA5Tj+fNgVN36xa1g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,260,1732608000"; 
+   d="scan'208";a="141642470"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.242.149]) ([10.124.242.149])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2025 19:45:18 -0800
+Message-ID: <284dd081-8d53-45ef-ae18-78b0388c98ca@linux.intel.com>
+Date: Wed, 5 Feb 2025 11:45:15 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
- <20250108122825.136021-3-abdiel.janulgue@gmail.com> <CAEmX-ZUbPqNUBj2-xAf=5uGE_GWAQQ79akADZCDxNsmx7Lf9VQ@mail.gmail.com>
-In-Reply-To: <CAEmX-ZUbPqNUBj2-xAf=5uGE_GWAQQ79akADZCDxNsmx7Lf9VQ@mail.gmail.com>
-From: Thomas Hampton <thomas.j.hampton@gmail.com>
-Date: Tue, 4 Feb 2025 20:41:16 -0600
-X-Gm-Features: AWEUYZnrN-ey9XldwNfEx9_sBu9MokwgLKnIwcLv6TBhp-pMZofzcBpx-zH6lCs
-Message-ID: <CAEmX-ZXg0w3RHN7hYe4bFOcg9srNapQU18JjTAWbBjwWurNC4g@mail.gmail.com>
-Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
-To: Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com, 
-	aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org
-Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
-	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
-	Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, 
-	Valentin Obst <kernel@valentinobst.de>, open list <linux-kernel@vger.kernel.org>, 
-	Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Zhangfei Gao <zhangfei.gao@linaro.org>,
+ acpica-devel@lists.linux.dev, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+ kvm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+ linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Robert Moore <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+ Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Donald Dutile <ddutile@redhat.com>, Eric Auger <eric.auger@redhat.com>,
+ Hanjun Guo <guohanjun@huawei.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jerry Snitselaar <jsnitsel@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+ Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ patches@lists.linux.dev, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v4 00/12] Initial support for SMMUv3 nested translation
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <0-v4-9e99b76f3518+3a8-smmuv3_nesting_jgg@nvidia.com>
+ <20241112182938.GA172989@nvidia.com>
+ <CABQgh9HOHzeRF7JfrXrRAcGB53o29HkW9rnVTf4JefeVWDvzyQ@mail.gmail.com>
+ <20241113012359.GB35230@nvidia.com>
+ <9df3dd17-375a-4327-b2a8-e9f7690d81b1@linux.intel.com>
+ <20241113164316.GL35230@nvidia.com>
+ <6ed97a10-853f-429e-8506-94b218050ad3@linux.intel.com>
+ <20241115175522.GA35230@nvidia.com> <20250122192622.GA965540@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250122192622.GA965540@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Feb 4, 2025 at 10:54=E2=80=AFAM Thomas Hampton
-<thomas.j.hampton@gmail.com> wrote:
->
-On second thought, this wouldn't prevent the construction of a closure
-that simply extracts the pointer itself, nevermind.
+On 2025/1/23 3:26, Jason Gunthorpe wrote:
+> On Fri, Nov 15, 2024 at 01:55:22PM -0400, Jason Gunthorpe wrote:
+>>>> I need your help to remove IOMMU_DEV_FEAT_IOPF from the intel
+>>>> driver. I have a patch series that eliminates it from all the other
+>>>> drivers, and I wrote a patch to remove FEAT_SVA from intel..
+>>> Yes, sure. Let's make this happen in the next cycle.
+>>>
+>>> FEAT_IOPF could be removed. IOPF manipulation can be handled in the
+>>> domain attachment path. A per-device refcount can be implemented. This
+>>> count increments with each iopf-capable domain attachment and decrements
+>>> with each detachment. PCI PRI is enabled for the first iopf-capable
+>>> domain and disabled when the last one is removed. Probably we can also
+>>> solve the PF/VF sharing PRI issue.
+>> Here is what I have so far, if you send me a patch for vt-d to move
+>> FEAT_IOPF into attach as you describe above (see what I did to arm for
+>> example), then I can send it next cycle
+>>
+>> https://github.com/jgunthorpe/linux/commits/iommu_no_feat/
+> Hey Baolu, a reminder on this, lets try for it next cycle?
+
+Oh, I forgot this. Thanks for the reminding. Sure, let's try to make it
+in the next cycle.
+
+---
+baolu
