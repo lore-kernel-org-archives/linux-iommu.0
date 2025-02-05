@@ -1,131 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E3E220DD65
-	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 02:28:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80822211491
+	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 02:41:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738722522; cv=none; b=OW1k47O7A8aRQdx1RC/KVVDr4un2PYaUBgIJ9p7QxGgrHggQVNetBfevqCistIWLN2v424mhlntoTdkoiEAq9gxsGBGxuguokmNWtuibj4yEBVRrT5s1kBnPvSdeHm04E+jKVe1OI5Qqlu+oG/pWU2TnZzZcPYjI78IVcYV9Rc4=
+	t=1738723290; cv=none; b=WiVlOkhxR0UClLeX7RvAHRcAtY2+dArnBjM+8eHdJAC5EMsyUFzWCpdGX4yGDCbl/bbkL/PEUVlPFIltqKpTnNZ+shwjl00XBupQCIOGRr7+srzpZuvKbjq32eyuYfwc3qS9Vc/q4gKZL75u1R4gQ3FekpAuZzih1KidxyqehBk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738722522; c=relaxed/simple;
-	bh=Xk8RR9GftsHj4y0HQNqLNT78o3cejeCFocN4ysQOLqQ=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=ks7J6YFL7XSX/LI8GqgBUQ5z8FELYWd/egBAmBTfuGXrHEbXfqrfRRYQp9yI/lxsMzZQACZcUhE6u4UjAy12dc4zQZsPXHWwNdXIR1aAzoRwvLSSbAFVBILrQM0gJkuaT9Cb38SPnuaC+At6dVb5qIyO7rjCBHntmc6vyxGlH/0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AwuRvFFk; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1738723290; c=relaxed/simple;
+	bh=QwQn3prrCd9nf+gWzBIeH8P3iezKUf5V2n1S7gTfQSo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=elpvCU9BQ8/ka0FMFlG4NR2l9oyv197EPhWLWIULVUcsrCVK6FaIQb7WfLiSO9YwIwyPeG3NUvAuU91ZSSsjPcq36VmlGH7rOICfUFyCe9DA4tnEjloERmiRWo1kY/OcH05LZnOA0ZyUGp5QqwVhZQmrJpwAgSjqJg5yQzQfwms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lJrGj/DU; arc=none smtp.client-ip=209.85.210.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AwuRvFFk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1738722520; x=1770258520;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Xk8RR9GftsHj4y0HQNqLNT78o3cejeCFocN4ysQOLqQ=;
-  b=AwuRvFFk7RzGQngEOrHxjIbc5pv309QnQvPWYGCArGV4Y6ZhKmMsetCq
-   6jFZ4PLNA9ViIvlQLqYu2UvdC3CPl9/OVJBpCLhYirg0j1Kt0L0XEg05/
-   ggH0CQHwx7taxmUs4lh4liIWMIQho2huO+gSMdnNBWSFOu4GINvhDykEG
-   PuhO4kZ5J9L11vJ4W/PJNkIV/d2v30MYgYO8SR1z8SyKpR/80QRmKhuuF
-   ERzszQdQhbM2iF9k9O2hjGm6sSK9QVMhFgqR4/gncQoWCHTfwvC9funoL
-   WwxWQocJh7OUwjLeJNnhGjnfI1hKtE/D9p7yQ8YezpFc+7PbCtlk0zKzH
-   Q==;
-X-CSE-ConnectionGUID: 11sdI03DRPWRryc4XCaPVA==
-X-CSE-MsgGUID: xmdQt+SASZCgqACV3jOCYQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="39380946"
-X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
-   d="scan'208";a="39380946"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2025 18:28:40 -0800
-X-CSE-ConnectionGUID: c0apBYhbSOSFXVZwC1lGnQ==
-X-CSE-MsgGUID: U+8h4zgnRyuh/QffODtlhg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="134012636"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.242.149]) ([10.124.242.149])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2025 18:28:37 -0800
-Message-ID: <941d401c-c009-4dcf-bb93-00c25490dd38@linux.intel.com>
-Date: Wed, 5 Feb 2025 10:28:35 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lJrGj/DU"
+Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-724f4d99bc7so1442041a34.1
+        for <iommu@lists.linux.dev>; Tue, 04 Feb 2025 18:41:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1738723287; x=1739328087; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QwQn3prrCd9nf+gWzBIeH8P3iezKUf5V2n1S7gTfQSo=;
+        b=lJrGj/DUHk/aOsdp3rYc1lfI3MOF3EBj3CBG8pNEpyZKP2HCNg5ly34qE3CwYKWwpW
+         42Hh/7nd+zJaRniSV/ZHWQd2/GB0N7WtdioxAcBWme9jUhE5E964eexLbk7AGou318Ec
+         +H+teTyiw99t3PcmbRw6hFiHSLFHSaebwaCZmHMvx1UNAfED4lTObkUCBvfN9IlykZ+1
+         i1PuEY5lbEj01LoMQHeMfJl2JR0srSFxUxXlqSm3O6KOdd5+cu9PMO6F4Bsn73rSOm+O
+         LmxAzrvRGUHhxSjxX8vzhLv0jjkaF0AXMu7b/Ne6KrD49vMWhyqHzEyjGHPf/THLx+JE
+         5D+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1738723287; x=1739328087;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QwQn3prrCd9nf+gWzBIeH8P3iezKUf5V2n1S7gTfQSo=;
+        b=Hq571Lw1mJxpyPdzlNMbrZ3FVVhAqpztjj4n0BvrSvsi6TDyvrlmfsOQRo0G/zgnXz
+         Oe+OU8IEOPVTLzpy1bCA0nqJud77oXMfJVAyuUJykBYmjTFjRqut8rvYWGil4DkLupe6
+         OA8Czm6H8orSXrg/6Gbxwyqh3A4On9KbJy+jF6SbOR8aNUAH2KExSs/TAloffUZy2QTx
+         et5Aru9U2RXRviwLiD7jyIA52RXhwQRF79JPnIBgtg6gvkrKxGBG5Z/+kHYMos+o2vPm
+         pP0ER0GBv2SWpIGBqhhzXnSuKSOjTVGJJXp5dBNZ0KhITRBPOIuuzJ9UNidJ0UPNrra8
+         MGbg==
+X-Forwarded-Encrypted: i=1; AJvYcCUZULFpUpWiGVHlOBdNsPEkXZ5Yk06Q3lmO0i9G/10WWfBr8wb41fEvJfW6lvkIGd/MjiUXMg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YylMliYS0F1lszZsfulC/YPC4XRSi4Mo1eYI7ALDLMfr8U3MbWZ
+	yxdIjuSoJxhnTD66PXATG/RIBMIaASAIuI17ejUiFfKEde8PRkolOPevLmoQjMedQilFe3LV4dh
+	OxKKpBfgvoEQ95xlDsDE+d+1jZiw=
+X-Gm-Gg: ASbGncvqw6zTYQKb/R9aY5Do1VjF+9O9vMdhIHGmek0i2rhwc0ILZUjLLC2X+HNW1ST
+	nPaFqA4E6nzVBLuGNOOm/CwHoUGyxAZVrghfEqDUZymgpRl7HRPNyHGBorEVib7vtX2Zxx7uQIw
+	==
+X-Google-Smtp-Source: AGHT+IETE5RM6ytR4I0MAoaOcUYN/nT4zaRWwsSaMUFzY7MuCNXhcUa43uNFxmzefRwg1gzObIY0smWMYi3lZSbjz34=
+X-Received: by 2002:a05:6830:390f:b0:71f:c1df:187e with SMTP id
+ 46e09a7af769-726a428f697mr1007784a34.27.1738723287529; Tue, 04 Feb 2025
+ 18:41:27 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] iommu/vt-d: Make intel_iommu_drain_pasid_prq()
- cover faults for RID
-To: Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>
-References: <20250121023150.815972-1-baolu.lu@linux.intel.com>
- <3cca401b-e274-471b-8910-bb30873ead1b@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3cca401b-e274-471b-8910-bb30873ead1b@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
+ <20250108122825.136021-3-abdiel.janulgue@gmail.com> <CAEmX-ZUbPqNUBj2-xAf=5uGE_GWAQQ79akADZCDxNsmx7Lf9VQ@mail.gmail.com>
+In-Reply-To: <CAEmX-ZUbPqNUBj2-xAf=5uGE_GWAQQ79akADZCDxNsmx7Lf9VQ@mail.gmail.com>
+From: Thomas Hampton <thomas.j.hampton@gmail.com>
+Date: Tue, 4 Feb 2025 20:41:16 -0600
+X-Gm-Features: AWEUYZnrN-ey9XldwNfEx9_sBu9MokwgLKnIwcLv6TBhp-pMZofzcBpx-zH6lCs
+Message-ID: <CAEmX-ZXg0w3RHN7hYe4bFOcg9srNapQU18JjTAWbBjwWurNC4g@mail.gmail.com>
+Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com, 
+	aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org
+Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, 
+	Valentin Obst <kernel@valentinobst.de>, open list <linux-kernel@vger.kernel.org>, 
+	Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2025/1/21 15:01, Yi Liu wrote:
-> On 2025/1/21 10:31, Lu Baolu wrote:
->> This driver supports page faults on PCI RID since commit <9f831c16c69e>
->> ("iommu/vt-d: Remove the pasid present check in prq_event_thread") by
->> allowing the reporting of page faults with the pasid_present field 
->> cleared
->> to the upper layer for further handling. The fundamental assumption here
->> is that the detach or replace operations act as a fence for page faults.
->> This implies that all pending page faults associated with a specific RID
->> or PASID are flushed when a domain is detached or replaced from a device
->> RID or PASID.
->>
->> However, the intel_iommu_drain_pasid_prq() helper does not correctly
->> handle faults for RID. This leads to faults potentially remaining pending
->> in the iommu hardware queue even after the domain is detached, thereby
->> violating the aforementioned assumption.
->>
->> Fix this issue by extending intel_iommu_drain_pasid_prq() to cover faults
->> for RID.
->>
->> Fixes: 9f831c16c69e ("iommu/vt-d: Remove the pasid present check in 
->> prq_event_thread")
->> Cc: stable@vger.kernel.org
->> Suggested-by: Kevin Tian <kevin.tian@intel.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
->> ---
->>   drivers/iommu/intel/prq.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> Change log:
->> v2:
->>   - Add check on page faults targeting RID.
->>
->> v1: https://lore.kernel.org/linux-iommu/20250120080144.810455-1- 
->> baolu.lu@linux.intel.com/
->>
->> diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
->> index c2d792db52c3..064194399b38 100644
->> --- a/drivers/iommu/intel/prq.c
->> +++ b/drivers/iommu/intel/prq.c
->> @@ -87,7 +87,9 @@ void intel_iommu_drain_pasid_prq(struct device *dev, 
->> u32 pasid)
->>           struct page_req_dsc *req;
->>           req = &iommu->prq[head / sizeof(*req)];
->> -        if (!req->pasid_present || req->pasid != pasid) {
->> +        if (req->rid != sid ||
-> 
-> Does intel-iommu driver managed pasid per-bdf? or global? If the prior one,
-> the rid check is needed even in the old time that does not PRIs in the RID
-> path.
-
-Do you mean that this fix should be back ported farther than the fix tag
-commit?
-
-The iommu driver doesn't manage the PASID. IOMMUFD and SVA do actually.
-The SVA uses global PASID. IOMMUFD doesn't yet support PASIDs, pending
-the merging of your patches. Therefore, per-BDF PASID management is not
-currently implemented in the Linux tree. Anything I overlooked?
-
----
-baolu
+On Tue, Feb 4, 2025 at 10:54=E2=80=AFAM Thomas Hampton
+<thomas.j.hampton@gmail.com> wrote:
+>
+On second thought, this wouldn't prevent the construction of a closure
+that simply extracts the pointer itself, nevermind.
