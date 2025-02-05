@@ -1,271 +1,111 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FE2F1FF7B3;
-	Wed,  5 Feb 2025 19:28:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC7BD1FF7D0
+	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 19:31:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738783737; cv=none; b=GfXmEt2iV7GWgRq4SSAFo6vjpSy4SSddFW9PndXBeyPFPsZzgW5URaDvkn15OmlQ01agytFlVN3/vKYCxeFRTpFpkpeylNUWz6zZTYWZGBagkXpdMqEv/Egy6ohA+0Tah7yvIcUuVp8zkhLiYfPaYB8zEuNFBnsDU3MuBF0RwWI=
+	t=1738783920; cv=none; b=Lm967nRU84im+cqB3VRf7nIXMmfBCsjJUhq55uOiV+Dmy7TcZqF9RW+G+p5LLFWpQjYxHmWs2HxGZKD5L9qPqrrxLx7Jm6DmINtRxpMRSDhivHG+3o6wmx8j2BOlgBUCRtANVZqfCkmE206OWjpdHkQzpC9jlvB6CNJraZpSk/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738783737; c=relaxed/simple;
-	bh=CVSmvf4JDPuVGxBFx/HwVVb29l+JTKh8ULy8blTX1DM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gZXrgSS0WKoKdH3nuPUCcuRIg6rThqguiI2Xaf9q8YjWOhQq5Unxl9IjgxGgaZG4vjOxeGbxAKNXrQEyztp7lQVQ/xTVKHeu0PILc+JSxrO98vBQdi5C8AViwa67u2b4CFrD289knoEnIAH/kVzbeo83G9rn6RyruT3I5zv5EBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A6FFB1063;
-	Wed,  5 Feb 2025 11:29:16 -0800 (PST)
-Received: from [10.57.35.21] (unknown [10.57.35.21])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B6D0C3F5A1;
-	Wed,  5 Feb 2025 11:28:38 -0800 (PST)
-Message-ID: <be153973-550c-4ea8-bf65-35b5ce28ac22@arm.com>
-Date: Wed, 5 Feb 2025 19:28:37 +0000
+	s=arc-20240116; t=1738783920; c=relaxed/simple;
+	bh=2rxoVBPGkYRdke7t02zWdPgQ6HfJzuAcVvL+PkSrGoc=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=KosnockIG+adlMRmN50LuNWZzFmWX0X61ViAPR7Io2PPjwPp0TUA5WL9CORK1rLigWNCWuTlPNDg053JxJ72x9ZLwzJ/lYX1MI+eOIVsNZm9uaYFum/hAwGtFdUlvSyngzhP4aabqAcerb7O4UPr7motCFEeE2fh9l2sSksGDRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3U65+wq8; arc=none smtp.client-ip=209.85.216.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3U65+wq8"
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-2f9fdc4dc84so113064a91.2
+        for <iommu@lists.linux.dev>; Wed, 05 Feb 2025 11:31:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1738783917; x=1739388717; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ityHFYbQHjCJ1n0TCLpdhG0BGuuO1UwpdTT8iBBDxQE=;
+        b=3U65+wq88sSYll8tX5YcgTSthuIPWCP3/hnEN5aqaYTYfzN/EaZd2gSceYUDidDKm+
+         2jje+5ccJpLwkdD85mvUv8BrgeNq9b3kcgQIDo3mDwr3ex+JYy3tx30maG36DQDrbCRz
+         YjxkSgLA2A9tEpfNBAZ5a7b6kck9adyJKvXhMO2fGkX8rP/RNKSgdyV+4IIXKYQ79bTc
+         yk02CEoniQIE0Cz7PH0xG5OE28XA7/ghKBiIBs1wBR4LaTI+BskHiDQbuVGpBvPhMRuk
+         POA5bc8xw3MPxBDbC9OZnvi1ri36XRKXR0iIs2d4wFkMhemI+A7tGydVqhSZGfAK2If9
+         fT9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1738783917; x=1739388717;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ityHFYbQHjCJ1n0TCLpdhG0BGuuO1UwpdTT8iBBDxQE=;
+        b=gWL67XnqMZ4zhy/4/0/bxsy/VD58XqWUQsXsJlL+SFSXjNJ5pypdOtMTUesBTqn3Hc
+         5ZhwI5OPBD9wnXuUubBkAylRx6VUlJaIteBK7FH+dZoncQEgAt3KQtT9xUY5/RE2mTo0
+         rLlWvfB4pWGdeHs3aE/N7gp6mydGa25vzYkpNGUYvRoIBxlZsEUCTeLwzOJyPX/ON3P+
+         vI2R5wNR0jxYJow47VnZu6Ifh8SfJRroDs99e73iUmfAYYlNCR+KlL++YQVIcyp2vQSc
+         JG9lWXmwxHNpLI7IMv0njbQjc0ncGX9cKA8mBE0CCLa8CW7tr0gNNYSEookaHoPxfqKO
+         9+ag==
+X-Forwarded-Encrypted: i=1; AJvYcCXDIc+3JZbPj+ZIw35+L0upv/yCYg+8qPxACKfPoG2z98olknJ99Deg79njYmOVLTdVVIRaQA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzsbk30bbvjmpZJdClM8M+iyK0/GBrua1g+2o0JBILsEqI7i2+d
+	63haaqRfiE864FxwO8SMeBwvE8tS9nNUa9wJNtcbtx3TXOVFqNq4jEap1GqpNLJ0AExkqZl+dQK
+	S+g==
+X-Google-Smtp-Source: AGHT+IGYpR9H2o7CsrEfJdhduqV6CItDd+RRnz38obHEp/U4zWkL8bbKIHK5OX1zzdtql3FDGJLnjb3ZcYY=
+X-Received: from pfwy2.prod.google.com ([2002:a05:6a00:1c82:b0:72f:f548:3e09])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:28cc:b0:725:f1b1:cbc5
+ with SMTP id d2e1a72fcca58-730350f96demr7928023b3a.3.1738783917255; Wed, 05
+ Feb 2025 11:31:57 -0800 (PST)
+Date: Wed, 5 Feb 2025 11:31:51 -0800
+In-Reply-To: <8f7822df-466d-497c-9c41-77524b2870b6@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 02/19] iommu/tegra: Do not use struct page as the handle
- for pts
-To: Jason Gunthorpe <jgg@nvidia.com>, Alim Akhtar <alim.akhtar@samsung.com>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, Albert Ou <aou@eecs.berkeley.edu>,
- asahi@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
- David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
- iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
- linux-tegra@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>,
- Hector Martin <marcan@marcan.st>, Palmer Dabbelt <palmer@dabbelt.com>,
- Paul Walmsley <paul.walmsley@sifive.com>,
- Samuel Holland <samuel@sholland.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>, Krishna Reddy <vdumpa@nvidia.com>,
- Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>
-Cc: Bagas Sanjaya <bagasdotme@gmail.com>, Joerg Roedel <jroedel@suse.de>,
- Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
- David Rientjes <rientjes@google.com>, Matthew Wilcox <willy@infradead.org>
-References: <2-v1-416f64558c7c+2a5-iommu_pages_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <2-v1-416f64558c7c+2a5-iommu_pages_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+References: <cover.1738618801.git.ashish.kalra@amd.com> <e9f542b9f96a3de5bb7983245fa94f293ef96c9f.1738618801.git.ashish.kalra@amd.com>
+ <62b643dd-36d9-4b8d-bed6-189d84eeab59@amd.com> <Z6OA9OhxBgsTY2ni@google.com> <8f7822df-466d-497c-9c41-77524b2870b6@amd.com>
+Message-ID: <Z6O8p96ExhWFEn_9@google.com>
+Subject: Re: [PATCH v3 3/3] x86/sev: Fix broken SNP support with KVM module built-in
+From: Sean Christopherson <seanjc@google.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Ashish Kalra <Ashish.Kalra@amd.com>, pbonzini@redhat.com, tglx@linutronix.de, 
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, 
+	hpa@zytor.com, thomas.lendacky@amd.com, john.allen@amd.com, 
+	herbert@gondor.apana.org.au, davem@davemloft.net, joro@8bytes.org, 
+	suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com, 
+	michael.roth@amd.com, dionnaglaze@google.com, nikunj@amd.com, ardb@kernel.org, 
+	kevinloughlin@google.com, Neeraj.Upadhyay@amd.com, kvm@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, 
+	linux-coco@lists.linux.dev, iommu@lists.linux.dev
+Content-Type: text/plain; charset="us-ascii"
 
-On 2025-02-04 6:34 pm, Jason Gunthorpe wrote:
-> Instead use the virtual address and dma_map_single() like as->pd
-> uses. Introduce a small struct tegra_pt instead of void * to have some
-> clarity what is using this API and add compile safety during the
-> conversion.
-
-Hmm, I'm not sure it's all that clear to have a major discrepancy 
-between how different levels of pagetable are referenced - I'd say 
-either use an explicit type for both, or just rework this as a u32** 
-along the same lines as the current patch #1.
-
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/tegra-smmu.c | 68 ++++++++++++++++++++------------------
->   1 file changed, 36 insertions(+), 32 deletions(-)
+On Wed, Feb 05, 2025, Vasant Hegde wrote:
+> On 2/5/2025 8:47 PM, Sean Christopherson wrote:
+> > On Wed, Feb 05, 2025, Vasant Hegde wrote:
+> >>> @@ -3318,6 +3326,9 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
+> >>>  		ret = state_next();
+> >>>  	}
+> >>>  
+> >>> +	if (ret && !amd_iommu_snp_en && cc_platform_has(CC_ATTR_HOST_SEV_SNP))
+> >>
+> >>
+> >> I think we should clear when `amd_iommu_snp_en` is true.
+> > 
+> > That doesn't address the case where amd_iommu_prepare() fails, because amd_iommu_snp_en
+> > will be %false (its init value) and the RMP will be uninitialized, i.e.
+> > CC_ATTR_HOST_SEV_SNP will be incorrectly left set.
 > 
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index 717bcd3b8de7dc..1e85141c80548d 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -51,13 +51,15 @@ struct tegra_smmu {
->   	struct iommu_device iommu;	/* IOMMU Core code handle */
->   };
->   
-> +struct tegra_pt;
-> +
->   struct tegra_smmu_as {
->   	struct iommu_domain domain;
->   	struct tegra_smmu *smmu;
->   	unsigned int use_count;
->   	spinlock_t lock;
->   	u32 *count;
-> -	struct page **pts;
-> +	struct tegra_pt **pts;
->   	u32 *pd;
->   	dma_addr_t pd_dma;
->   	unsigned id;
-> @@ -155,6 +157,10 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu, unsigned long offset)
->   #define SMMU_PDE_ATTR		(SMMU_PDE_READABLE | SMMU_PDE_WRITABLE | \
->   				 SMMU_PDE_NONSECURE)
->   
-> +struct tegra_pt {
-> +	u32 val[SMMU_NUM_PTE];
-> +};
-> +
->   static unsigned int iova_pd_index(unsigned long iova)
->   {
->   	return (iova >> SMMU_PDE_SHIFT) & (SMMU_NUM_PDE - 1);
-> @@ -564,11 +570,9 @@ static void tegra_smmu_set_pde(struct tegra_smmu_as *as, unsigned long iova,
->   	smmu_flush(smmu);
->   }
->   
-> -static u32 *tegra_smmu_pte_offset(struct page *pt_page, unsigned long iova)
-> +static u32 *tegra_smmu_pte_offset(struct tegra_pt *pt, unsigned long iova)
->   {
-> -	u32 *pt = page_address(pt_page);
-> -
-> -	return pt + iova_pt_index(iova);
-> +	return &pt->val[iova_pt_index(iova)];
->   }
->   
->   static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
-> @@ -576,19 +580,19 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
->   {
->   	unsigned int pd_index = iova_pd_index(iova);
->   	struct tegra_smmu *smmu = as->smmu;
-> -	struct page *pt_page;
-> +	struct tegra_pt *pt;
->   
-> -	pt_page = as->pts[pd_index];
-> -	if (!pt_page)
-> +	pt = as->pts[pd_index];
-> +	if (!pt)
->   		return NULL;
->   
->   	*dmap = smmu_pde_to_dma(smmu, as->pd[pd_index]);
->   
-> -	return tegra_smmu_pte_offset(pt_page, iova);
-> +	return tegra_smmu_pte_offset(pt, iova);
->   }
->   
->   static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
-> -		       dma_addr_t *dmap, struct page *page)
-> +		       dma_addr_t *dmap, struct tegra_pt *pt)
->   {
->   	unsigned int pde = iova_pd_index(iova);
->   	struct tegra_smmu *smmu = as->smmu;
-> @@ -596,21 +600,21 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
->   	if (!as->pts[pde]) {
->   		dma_addr_t dma;
->   
-> -		dma = dma_map_page(smmu->dev, page, 0, SMMU_SIZE_PT,
-> -				   DMA_TO_DEVICE);
-> +		dma = dma_map_single(smmu->dev, pt, SMMU_SIZE_PD,
+> You are right. I missed early failure scenarios :-(
+> 
+> > 
+> > And conversely, IMO clearing CC_ATTR_HOST_SEV_SNP after initializing the IOMMU
+> > and RMP is wrong as well.  Such a host is probably hosed regardless, but from
+> > the CPU's perspective, SNP is supported and enabled.
+> 
+> So we don't want to clear  CC_ATTR_HOST_SEV_SNP after RMP initialization -OR-
+> clear for all failures?
 
-SMMU_SIZE_PT (yeah they're numerically the same, but still...)
+I honestly don't know, because the answer largely depends on what happens with
+hardware.  I asked in an earlier version of this series if IOMMU initialization
+failure after the RMP is configured is even survivable.
 
-> +				     DMA_TO_DEVICE);
->   		if (dma_mapping_error(smmu->dev, dma)) {
-> -			__iommu_free_pages(page, 0);
-> +			iommu_free_page(pt);
->   			return NULL;
->   		}
->   
->   		if (!smmu_dma_addr_valid(smmu, dma)) {
->   			dma_unmap_page(smmu->dev, dma, SMMU_SIZE_PT,
->   				       DMA_TO_DEVICE);
-
-All the unmaps should be converted to _single as well (and in patch #1) 
-- the APIs are not officially interchangeable.
-
-Thanks,
-Robin.
-
-> -			__iommu_free_pages(page, 0);
-> +			iommu_free_page(pt);
->   			return NULL;
->   		}
->   
-> -		as->pts[pde] = page;
-> +		as->pts[pde] = pt;
->   
->   		tegra_smmu_set_pde(as, iova, SMMU_MK_PDE(dma, SMMU_PDE_ATTR |
->   							      SMMU_PDE_NEXT));
-> @@ -633,7 +637,7 @@ static void tegra_smmu_pte_get_use(struct tegra_smmu_as *as, unsigned long iova)
->   static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
->   {
->   	unsigned int pde = iova_pd_index(iova);
-> -	struct page *page = as->pts[pde];
-> +	struct tegra_pt *pt = as->pts[pde];
->   
->   	/*
->   	 * When no entries in this page table are used anymore, return the
-> @@ -646,7 +650,7 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
->   		tegra_smmu_set_pde(as, iova, 0);
->   
->   		dma_unmap_page(smmu->dev, pte_dma, SMMU_SIZE_PT, DMA_TO_DEVICE);
-> -		__iommu_free_pages(page, 0);
-> +		iommu_free_page(pt);
->   		as->pts[pde] = NULL;
->   	}
->   }
-> @@ -666,16 +670,16 @@ static void tegra_smmu_set_pte(struct tegra_smmu_as *as, unsigned long iova,
->   	smmu_flush(smmu);
->   }
->   
-> -static struct page *as_get_pde_page(struct tegra_smmu_as *as,
-> -				    unsigned long iova, gfp_t gfp,
-> -				    unsigned long *flags)
-> +static struct tegra_pt *as_get_pde_page(struct tegra_smmu_as *as,
-> +					unsigned long iova, gfp_t gfp,
-> +					unsigned long *flags)
->   {
->   	unsigned int pde = iova_pd_index(iova);
-> -	struct page *page = as->pts[pde];
-> +	struct tegra_pt *pt = as->pts[pde];
->   
->   	/* at first check whether allocation needs to be done at all */
-> -	if (page)
-> -		return page;
-> +	if (pt)
-> +		return pt;
->   
->   	/*
->   	 * In order to prevent exhaustion of the atomic memory pool, we
-> @@ -685,7 +689,7 @@ static struct page *as_get_pde_page(struct tegra_smmu_as *as,
->   	if (gfpflags_allow_blocking(gfp))
->   		spin_unlock_irqrestore(&as->lock, *flags);
->   
-> -	page = __iommu_alloc_pages(gfp | __GFP_DMA, 0);
-> +	pt = iommu_alloc_page(gfp | __GFP_DMA);
->   
->   	if (gfpflags_allow_blocking(gfp))
->   		spin_lock_irqsave(&as->lock, *flags);
-> @@ -696,13 +700,13 @@ static struct page *as_get_pde_page(struct tegra_smmu_as *as,
->   	 * if allocation succeeded and the allocation failure isn't fatal.
->   	 */
->   	if (as->pts[pde]) {
-> -		if (page)
-> -			__iommu_free_pages(page, 0);
-> +		if (pt)
-> +			iommu_free_page(pt);
->   
-> -		page = as->pts[pde];
-> +		pt = as->pts[pde];
->   	}
->   
-> -	return page;
-> +	return pt;
->   }
->   
->   static int
-> @@ -712,15 +716,15 @@ __tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
->   {
->   	struct tegra_smmu_as *as = to_smmu_as(domain);
->   	dma_addr_t pte_dma;
-> -	struct page *page;
-> +	struct tegra_pt *pt;
->   	u32 pte_attrs;
->   	u32 *pte;
->   
-> -	page = as_get_pde_page(as, iova, gfp, flags);
-> -	if (!page)
-> +	pt = as_get_pde_page(as, iova, gfp, flags);
-> +	if (!pt)
->   		return -ENOMEM;
->   
-> -	pte = as_get_pte(as, iova, &pte_dma, page);
-> +	pte = as_get_pte(as, iova, &pte_dma, pt);
->   	if (!pte)
->   		return -ENOMEM;
->   
-
+For this series, I think it makes sense to match the existing behavior, unless
+someone from AMD can definitively state that we should do something different.
+And the existing behavior is that amd_iommu_snp_en and CC_ATTR_HOST_SEV_SNP will
+be left set if the IOMMU completes iommu_snp_enable(), and the kernel completes
+RMP setup.
