@@ -1,98 +1,131 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 712C521CA17
-	for <iommu@lists.linux.dev>; Tue,  4 Feb 2025 23:36:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E3E220DD65
+	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 02:28:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738712219; cv=none; b=Y7kdl0sFlWsQZnW42+mANoR/l4guLXiNVrj+jsniOH9fBQ2jnkLBhgZakVsKcZNxvj0a2GZ6THX8xIOtO1m10dFAB/pCwI1WxnXjZmRdwQpvhX5FlM9UprSTKyRneilTBZCxLf7YsEAQqfGxlxHbf9uSLa5ZQiEo4JB5hnciS5g=
+	t=1738722522; cv=none; b=OW1k47O7A8aRQdx1RC/KVVDr4un2PYaUBgIJ9p7QxGgrHggQVNetBfevqCistIWLN2v424mhlntoTdkoiEAq9gxsGBGxuguokmNWtuibj4yEBVRrT5s1kBnPvSdeHm04E+jKVe1OI5Qqlu+oG/pWU2TnZzZcPYjI78IVcYV9Rc4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738712219; c=relaxed/simple;
-	bh=R+Y6WZ2VttQSZ3o+eVRKRUcuHQ4tlXNm/aCDAigwpNY=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=rBmyG3JjAycSW/KVHz01nUqpnw30XlueTwcIUM2V9+L63RLvP2EZD0BpmX2neDopWPnbaf5830c8puOlkhgraL9rvcb/6CTowMNuYK7LNJcbi3YqmIsdwLox1reF5wSf1qG5zQIhX8cVleU36xbEG6LEvVZ4QNYTct2tlIEuZZ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--jxgao.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bUTd4Zqa; arc=none smtp.client-ip=209.85.216.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--jxgao.bounces.google.com
+	s=arc-20240116; t=1738722522; c=relaxed/simple;
+	bh=Xk8RR9GftsHj4y0HQNqLNT78o3cejeCFocN4ysQOLqQ=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=ks7J6YFL7XSX/LI8GqgBUQ5z8FELYWd/egBAmBTfuGXrHEbXfqrfRRYQp9yI/lxsMzZQACZcUhE6u4UjAy12dc4zQZsPXHWwNdXIR1aAzoRwvLSSbAFVBILrQM0gJkuaT9Cb38SPnuaC+At6dVb5qIyO7rjCBHntmc6vyxGlH/0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AwuRvFFk; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bUTd4Zqa"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-2f9e3a00fcdso15995a91.0
-        for <iommu@lists.linux.dev>; Tue, 04 Feb 2025 15:36:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1738712218; x=1739317018; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=re3PSxTV4DNU5pVphE4C5vvtq76V/ASBC4zGcW/yfQQ=;
-        b=bUTd4Zqaf0bM5pdC9M2fOJ6Xlm74o7thqJpQojvOkKbzi8PpchJ12q1HlV/hxKyuyv
-         QcF0YZaBGroech0J8i4A4vvoe+hBGtUp6IWLxDHh78fV1jcFg10LYBuXdBIIqAHlUM5Q
-         WFtPbZENceRVN0HpWFmyk/Dw8HbS1SuoapsMVqfwAY4IL/8uLG/dVC8Yk1fP6YIy4XhR
-         w6YsQlyddfMVdcfRbhhAcISQLW5DygIfnRflJXSjrxYJ245tnW/iJquP0M9JRPov6l1h
-         7Xb0oncrFpRy7dWjbjt212QgJ+1+6NcVU4FEpdJi1t7kDUV0WkS/FJ0yLxWNe4j0ch8Y
-         vtPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738712218; x=1739317018;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=re3PSxTV4DNU5pVphE4C5vvtq76V/ASBC4zGcW/yfQQ=;
-        b=pokMa5i4OtJWTG7ByU6ELsIcxbR7d9/P9QvK/qCshnhS1lFleV+S4nUuhpFAs/TPui
-         M3HTVM4Sh8vaFsjwKa6NG8DnXpLaQu3xFlU8q0KqNsdQhoYQDeQbXSPd6klU34RM3f3f
-         yO6VlefShAO1WhgNoynDE5i7A1trjhqefWDkmD0tv9hOsh0yOLYMXAxBQ21baRPYif9r
-         DuRUIYgOXzzz8o1eBFaJYmYL0C4hLmQQcGC8k+PPAPQnrxXNiGRj88FJkhXvn9hlRwMd
-         83OpmRamWySb+QxEP7Lg52ViAjfMtWsjgGZCHqpG1SvJIAJ73mylaOa96TRoB+7IQutA
-         MYTg==
-X-Forwarded-Encrypted: i=1; AJvYcCUbbaWuRbtXlBKN0E8OlSLdUNpSH5F/FqfRtxnR/z5SMX0s3IFcqblx6QrBvoKHOG/FEnmtVg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw+Q/1rSoEApKkuZ9W27UfXE990PFGSxjaKEKPnUR9wBej6swbw
-	HqVPPEPLodvh+uUl9f50eFp9Bgb6mPAZHqOyNX7HDOO0UMc2KQRj5GTiDjc0jnsEyMTxX5bzPg=
-	=
-X-Google-Smtp-Source: AGHT+IFjLwbq46SXedWka0QmmBPXIbrzOFu+JuTwezZ4xvg82r8SLnEq4/vkuBjZR0vrrtV6EJI24Y1VSg==
-X-Received: from pjbcz6.prod.google.com ([2002:a17:90a:d446:b0:2ea:61ba:b8f7])
- (user=jxgao job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:4f4b:b0:2ee:aed2:c15c
- with SMTP id 98e67ed59e1d1-2f9e083cc9cmr935737a91.28.1738712217752; Tue, 04
- Feb 2025 15:36:57 -0800 (PST)
-Date: Tue,  4 Feb 2025 23:36:30 +0000
-In-Reply-To: <20250204233630.3407878-1-jxgao@google.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AwuRvFFk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1738722520; x=1770258520;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Xk8RR9GftsHj4y0HQNqLNT78o3cejeCFocN4ysQOLqQ=;
+  b=AwuRvFFk7RzGQngEOrHxjIbc5pv309QnQvPWYGCArGV4Y6ZhKmMsetCq
+   6jFZ4PLNA9ViIvlQLqYu2UvdC3CPl9/OVJBpCLhYirg0j1Kt0L0XEg05/
+   ggH0CQHwx7taxmUs4lh4liIWMIQho2huO+gSMdnNBWSFOu4GINvhDykEG
+   PuhO4kZ5J9L11vJ4W/PJNkIV/d2v30MYgYO8SR1z8SyKpR/80QRmKhuuF
+   ERzszQdQhbM2iF9k9O2hjGm6sSK9QVMhFgqR4/gncQoWCHTfwvC9funoL
+   WwxWQocJh7OUwjLeJNnhGjnfI1hKtE/D9p7yQ8YezpFc+7PbCtlk0zKzH
+   Q==;
+X-CSE-ConnectionGUID: 11sdI03DRPWRryc4XCaPVA==
+X-CSE-MsgGUID: xmdQt+SASZCgqACV3jOCYQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="39380946"
+X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
+   d="scan'208";a="39380946"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2025 18:28:40 -0800
+X-CSE-ConnectionGUID: c0apBYhbSOSFXVZwC1lGnQ==
+X-CSE-MsgGUID: U+8h4zgnRyuh/QffODtlhg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="134012636"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.242.149]) ([10.124.242.149])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2025 18:28:37 -0800
+Message-ID: <941d401c-c009-4dcf-bb93-00c25490dd38@linux.intel.com>
+Date: Wed, 5 Feb 2025 10:28:35 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250204233630.3407878-1-jxgao@google.com>
-X-Mailer: git-send-email 2.48.1.362.g079036d154-goog
-Message-ID: <20250204233630.3407878-4-jxgao@google.com>
-Subject: [RFC PATCH 3/3] set full_buffer_write for nvme devices.
-From: Jianxiong Gao <jxgao@google.com>
-To: Keith Busch <kbusch@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>, 
-	Robin Murphy <robin.murphy@arm.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Dan Williams <dan.j.williams@intel.com>, Erdem Aktas <erdemaktas@google.com>, 
-	Vishal Annapurve <vannapurve@google.com>, Ryan Afranji <afranji@google.com>, 
-	linux-nvme@lists.infradead.org, iommu@lists.linux.dev, 
-	Jianxiong Gao <jxgao@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] iommu/vt-d: Make intel_iommu_drain_pasid_prq()
+ cover faults for RID
+To: Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>
+References: <20250121023150.815972-1-baolu.lu@linux.intel.com>
+ <3cca401b-e274-471b-8910-bb30873ead1b@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <3cca401b-e274-471b-8910-bb30873ead1b@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-NVMe dma operations always overwrite the whole dma buffer passed to
-the device. Making use the newly introduced full_buffer_write flag
-so in cases swiotlb is used to bounce the buffer, we no longer need
-to do the extra copy on preparing the buffer.
+On 2025/1/21 15:01, Yi Liu wrote:
+> On 2025/1/21 10:31, Lu Baolu wrote:
+>> This driver supports page faults on PCI RID since commit <9f831c16c69e>
+>> ("iommu/vt-d: Remove the pasid present check in prq_event_thread") by
+>> allowing the reporting of page faults with the pasid_present field 
+>> cleared
+>> to the upper layer for further handling. The fundamental assumption here
+>> is that the detach or replace operations act as a fence for page faults.
+>> This implies that all pending page faults associated with a specific RID
+>> or PASID are flushed when a domain is detached or replaced from a device
+>> RID or PASID.
+>>
+>> However, the intel_iommu_drain_pasid_prq() helper does not correctly
+>> handle faults for RID. This leads to faults potentially remaining pending
+>> in the iommu hardware queue even after the domain is detached, thereby
+>> violating the aforementioned assumption.
+>>
+>> Fix this issue by extending intel_iommu_drain_pasid_prq() to cover faults
+>> for RID.
+>>
+>> Fixes: 9f831c16c69e ("iommu/vt-d: Remove the pasid present check in 
+>> prq_event_thread")
+>> Cc: stable@vger.kernel.org
+>> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+>> ---
+>>   drivers/iommu/intel/prq.c | 4 +++-
+>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> Change log:
+>> v2:
+>>   - Add check on page faults targeting RID.
+>>
+>> v1: https://lore.kernel.org/linux-iommu/20250120080144.810455-1- 
+>> baolu.lu@linux.intel.com/
+>>
+>> diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
+>> index c2d792db52c3..064194399b38 100644
+>> --- a/drivers/iommu/intel/prq.c
+>> +++ b/drivers/iommu/intel/prq.c
+>> @@ -87,7 +87,9 @@ void intel_iommu_drain_pasid_prq(struct device *dev, 
+>> u32 pasid)
+>>           struct page_req_dsc *req;
+>>           req = &iommu->prq[head / sizeof(*req)];
+>> -        if (!req->pasid_present || req->pasid != pasid) {
+>> +        if (req->rid != sid ||
+> 
+> Does intel-iommu driver managed pasid per-bdf? or global? If the prior one,
+> the rid check is needed even in the old time that does not PRIs in the RID
+> path.
 
-Signed-off-by: Jianxiong Gao <jxgao@google.com>
+Do you mean that this fix should be back ported farther than the fix tag
+commit?
+
+The iommu driver doesn't manage the PASID. IOMMUFD and SVA do actually.
+The SVA uses global PASID. IOMMUFD doesn't yet support PASIDs, pending
+the merging of your patches. Therefore, per-BDF PASID management is not
+currently implemented in the Linux tree. Anything I overlooked?
+
 ---
- drivers/nvme/host/pci.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 278bed4e35bb..8fb6a0a87202 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3209,6 +3209,7 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
- 		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(48));
- 	else
- 		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-+	dma_set_full_buffer_write(&pdev->dev, true);
- 	dma_set_min_align_mask(&pdev->dev, NVME_CTRL_PAGE_SIZE - 1);
- 	dma_set_max_seg_size(&pdev->dev, 0xffffffff);
- 
--- 
-2.48.1.362.g079036d154-goog
-
+baolu
