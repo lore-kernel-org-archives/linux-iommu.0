@@ -1,137 +1,62 @@
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89540194094
-	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 15:17:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004501494DF
+	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 15:43:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738768632; cv=none; b=SVKuQ9hjMfTadpyoROe+By2nNTJ9NlkonzzRX9msyaisNytJYlnCjCz+2hbpeGBnur8XZfPb6I0foXB6JMxwOpJ2qyZgMESSaEWZXmVg/NYPMkZ5qa7vjGBY5WlyUE6NPJEpYE3HhlysYDV4tM79kt6dL4hoKOXtk7FWWBDxx0M=
+	t=1738770207; cv=none; b=Kk0koWQtk/Vpks9w88MxHshx3e0dL5kexivIBaCfGObao3pPIxa9QXxQcDwEHn2hiE2P85xwR+z76AWswEHxAWhE0VTQoseWXq3nx5OLLCGj2lCUkoVwfFLDX6klYpjRd+rfO0NdiSYoJR6aRo8M3fqaSrWR/JknNXbP2Z6tNPk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738768632; c=relaxed/simple;
-	bh=9bQWjyfhOKP94dxGty6MaGQ0+wHvs6zeGJ3FOjx7a4k=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=ODYM34lAcugUs1/sxd1dxuybyUigdUM67aioBFRC4I+iuEWZ6y//dG9pm7rLd7PpOueP7IS/SLdUmszr8oZOLJvK2vRd6PsMMbLNZELzCsWuYoXbDOD/vill08gxogoS/kx0QnHPfYNDNfd9mEtuQQIEAv7rTJixs4r09WwveDo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=c26BzEbw; arc=none smtp.client-ip=209.85.214.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="c26BzEbw"
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-21f1a7dc0e6so27860715ad.3
-        for <iommu@lists.linux.dev>; Wed, 05 Feb 2025 07:17:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1738768630; x=1739373430; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=t0aN/8guITRu30BL0HaWPnLZfgsAxjHGJklJU83lkGw=;
-        b=c26BzEbwD0rC4TomvJE82zd1N/xy6zg5+mMjVOGUh/gciSIglUHVegOc7wbeJhSG6v
-         8ELi3yS6xIDNz0+q1p6zBVpbl5cKKvG73BXwglDJJjceMPxP5QNIUrzKurqXvA+9Pg8b
-         YMKA5/RSxhid3+piRPArgBG4X0vrda+apwvRognH76ZB2iXV+JsyByeSJPyQJ122vNFL
-         mSv+Kt+XEqFafPcpgo561tyg1OYVFNUqSi6J3AlqHI1OWNopjegMKIkOIjsOju1B3TmW
-         vOyNV1SC1K9rQdUMRYFLkEVAfyPzANnhXmyDl8oYpmownZv6ATV7soawPakT+MJ6dELN
-         FWKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738768630; x=1739373430;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=t0aN/8guITRu30BL0HaWPnLZfgsAxjHGJklJU83lkGw=;
-        b=TTZq8zsNSCqZUw40I/dVb92d6YRJnfyWlZuwqT1bDc7NoZgjoG4XH82SAwH0kfqZjx
-         zO6kc7ffAn4zGTpam0BNRMnr0NKofHS/yiVhENy9eyNAjkjgKcaZ7nJVha1n7M2CwxiY
-         93KCRDfupJs6hLI7nqpz+VufjZ7UbEXC3pBW7KNeBU+H1jr/N40R0sx/BsqlCCISS6vz
-         In1BObZDawe172j2lCm9iEFz85a0cXlGe4c1MTKfoCXu1MWJ4Av6txFpxQCUQwXMxQhC
-         lWFFenbVhIW4pGeQa4rqshMFsRwoW7K5jXKKl2wEQVksULGAGMkYRGi6InoH6Mi9eGF8
-         wBMg==
-X-Forwarded-Encrypted: i=1; AJvYcCUNh6dRVj40M+uxNIhJ2HlGRasLb6qOFr8vTQi6Gl+jcvALZq7/CAJqgQmp/aVCRjv9D/kGyQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxzdku7NN/p4CV6BR0Lm19YKJMk/O/Ki6A+71lJ0pVUkUwLFiS3
-	ZwAqQbSetWpjlKCFnlXOvTs0wsw97x0+5UXXW8DuwadtomjBp5QM7umvTmIBKOFIQCj1JYHjzX3
-	Zwg==
-X-Google-Smtp-Source: AGHT+IHjO2ZnCRxSz9ckB9UKOIbx0lfEs9B109yICVMG4UQB0RF4tpKtRhegltvZ6NeMdGY988NLUYMrptA=
-X-Received: from plas19.prod.google.com ([2002:a17:903:2013:b0:21f:467:f8ae])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:903:228a:b0:21d:cd0c:a1ac
- with SMTP id d9443c01a7336-21f17df7196mr51828645ad.17.1738768629827; Wed, 05
- Feb 2025 07:17:09 -0800 (PST)
-Date: Wed, 5 Feb 2025 07:17:08 -0800
-In-Reply-To: <62b643dd-36d9-4b8d-bed6-189d84eeab59@amd.com>
+	s=arc-20240116; t=1738770207; c=relaxed/simple;
+	bh=0Qve9Fu9dMEQ9bG1ILIvvS9vURx5fQVE2V5aiYBTDKQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nFSk+IRMUvA8DMeXdOjwbNfVjmBZu8qVrdcBaG1SEZW59shiJdCArao5sfzrwe4vtGP8N0POSNoGhhcdpVVt18UTcXM+xuAOMlbwRdzZFl+phbaPXF/xsomi3KkOEI0LGnEYgNBDpuVB2P9JPtg+hL95wSUMyBno3F/NqD5vnqQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 49C6E68BFE; Wed,  5 Feb 2025 16:43:21 +0100 (CET)
+Date: Wed, 5 Feb 2025 16:43:21 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jianxiong Gao <jxgao@google.com>, Keith Busch <kbusch@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Erdem Aktas <erdemaktas@google.com>,
+	Vishal Annapurve <vannapurve@google.com>,
+	Ryan Afranji <afranji@google.com>, linux-nvme@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 0/3] Add an option for devices to skip SWIOTLB
+ pre-copy on read.
+Message-ID: <20250205154321.GB13814@lst.de>
+References: <20250204233630.3407878-1-jxgao@google.com> <Z6MZLWRv1hC8uLo1@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <cover.1738618801.git.ashish.kalra@amd.com> <e9f542b9f96a3de5bb7983245fa94f293ef96c9f.1738618801.git.ashish.kalra@amd.com>
- <62b643dd-36d9-4b8d-bed6-189d84eeab59@amd.com>
-Message-ID: <Z6OA9OhxBgsTY2ni@google.com>
-Subject: Re: [PATCH v3 3/3] x86/sev: Fix broken SNP support with KVM module built-in
-From: Sean Christopherson <seanjc@google.com>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Ashish Kalra <Ashish.Kalra@amd.com>, pbonzini@redhat.com, tglx@linutronix.de, 
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, 
-	hpa@zytor.com, thomas.lendacky@amd.com, john.allen@amd.com, 
-	herbert@gondor.apana.org.au, davem@davemloft.net, joro@8bytes.org, 
-	suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com, 
-	michael.roth@amd.com, dionnaglaze@google.com, nikunj@amd.com, ardb@kernel.org, 
-	kevinloughlin@google.com, Neeraj.Upadhyay@amd.com, kvm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, 
-	linux-coco@lists.linux.dev, iommu@lists.linux.dev
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z6MZLWRv1hC8uLo1@smile.fi.intel.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Wed, Feb 05, 2025, Vasant Hegde wrote:
-> Hi Ashish,
+On Wed, Feb 05, 2025 at 09:54:21AM +0200, Andy Shevchenko wrote:
+> On Tue, Feb 04, 2025 at 11:36:27PM +0000, Jianxiong Gao wrote:
+> > Removes an extra memory copy that occurs during IO read
+> > operations through the SWIOTLB. During high throughput
+> > read workloads, this extra copy is causing a lot of stress
+> > on the SWIOTLB.
+> > 
+> > With high performance devices, for example NVMe devices,
+> > the device will be overwriting the entire buffer.
 > 
-> [Sorry. I didn't see this series and responded to v2].
+> Is this really guaranteed? I can imagine surprise power cut or
+> hotplug event, for example, just in the middle of the transfer.
 
-Heh, and then I saw your other email first and did the same.  Copying my response
-here, too (and fixing a few typos in the process).
+Many command can return less data than originally mapped.  Get Log Page
+is an example that comes to mind that is heavily used that way.
 
-> > diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> > index c5cd92edada0..4bcb474e2252 100644
-> > --- a/drivers/iommu/amd/init.c
-> > +++ b/drivers/iommu/amd/init.c
-> > @@ -3194,7 +3194,7 @@ static bool __init detect_ivrs(void)
-> >  	return true;
-> >  }
-> >  
-> > -static void iommu_snp_enable(void)
-> > +static __init void iommu_snp_enable(void)
-> >  {
-> >  #ifdef CONFIG_KVM_AMD_SEV
-> >  	if (!cc_platform_has(CC_ATTR_HOST_SEV_SNP))
-> > @@ -3219,6 +3219,14 @@ static void iommu_snp_enable(void)
-> >  		goto disable_snp;
-> >  	}
-> >  
-> > +	/*
-> > +	 * Enable host SNP support once SNP support is checked on IOMMU.
-> > +	 */
-> > +	if (snp_rmptable_init()) {
-> > +		pr_warn("SNP: RMP initialization failed, SNP cannot be supported.\n");
-> > +		goto disable_snp;
-> > +	}
-> > +
-> >  	pr_info("IOMMU SNP support enabled.\n");
-> >  	return;
-> >  
-> > @@ -3318,6 +3326,9 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
-> >  		ret = state_next();
-> >  	}
-> >  
-> > +	if (ret && !amd_iommu_snp_en && cc_platform_has(CC_ATTR_HOST_SEV_SNP))
-> 
-> 
-> I think we should clear when `amd_iommu_snp_en` is true.
-
-That doesn't address the case where amd_iommu_prepare() fails, because amd_iommu_snp_en
-will be %false (its init value) and the RMP will be uninitialized, i.e.
-CC_ATTR_HOST_SEV_SNP will be incorrectly left set.
-
-And conversely, IMO clearing CC_ATTR_HOST_SEV_SNP after initializing the IOMMU
-and RMP is wrong as well.  Such a host is probably hosed regardless, but from
-the CPU's perspective, SNP is supported and enabled.
-
-> May be below check is enough?
-> 
-> 	if (ret && amd_iommu_snp_en)
-> 
-> 
-> -Vasant
-> 
-> 
