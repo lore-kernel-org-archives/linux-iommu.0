@@ -1,178 +1,143 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D09801FE455
-	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 18:52:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D4371FF1DB
+	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 18:53:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738781575; cv=none; b=hwMSxSBJUc/eQMw1LDXh8FVYIDYauVCb7ONxHTU6ydu7uV7fFYgkwDe1My04JTlHNAmG6KsUgKI1pI0wxOwnMLc8pml7Gsj9RAw2krmXrjNtDYemb7s9WMuoWDyQUOoQ7YnFr4KRCRBpT84JmZ9GBhmuAXv6LpYjmEXEB4htNFE=
+	t=1738781610; cv=none; b=WmsG69zhYKjxHV4TiZnR9rx/Jhcugi+3+LKxVeCGYi8iYk+RLc3u5uHeXyjZk811SAQvK1IpJGDBfCRxYRBE9GS9dd4KT6++NtAEpcUJZcdhQQjJjIuOcPSMpL/UQLelZduEgXxGHXSCN9SsTQPwnL3Lscrl3I6AYcZhg+c838s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738781575; c=relaxed/simple;
-	bh=wTQiBPhtG/LA/pI3K/rKZEgoocSO4ktBAZk2Ts29GvE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HWntRxmocQO4aJWXy+mYivuLse2w0W6iaBqnqv+Iur38qNKggkxy5Ztfd+DdcKKs1EbQ/5q3AtYgxx3gaP/WF7vhhjRm6Hjk2BhCGG6DR6oVpD489RWZQVDdCHXIFzeScsa9dMOwPvcs+hGFnn4zxXy7mnX9O8Rmijg1qIktP1U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch; spf=none smtp.mailfrom=ffwll.ch; dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b=O3cjV28C; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ffwll.ch
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b="O3cjV28C"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-436281c8a38so605405e9.3
-        for <iommu@lists.linux.dev>; Wed, 05 Feb 2025 10:52:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google; t=1738781572; x=1739386372; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ePVNd0w+sVoa196Zz6yKJq58LAUrkT1uJTWGzJaE14w=;
-        b=O3cjV28Cu/gSkjCO3j8CtPm+0mGvbO6+GLidbujJ9K/73Mna4F2nizNg1YmbBjUy5m
-         n4KOYpm2lvKwPaOwmE4yqbiTnf4XBIn4IvgFzn3e9DmbWeXKdAStrErZTLh6MUha3dtf
-         fLvYToeIlqFmQiMWMZV3tyN7ayJJoaUii3ZPI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738781572; x=1739386372;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ePVNd0w+sVoa196Zz6yKJq58LAUrkT1uJTWGzJaE14w=;
-        b=eSC2gaMp7iCBaMEJP31xjeXEi1O98otBvnPhC0RaqK4mKuEqM3QsGuaXLCHchAHjrU
-         2SW+9mE37yBio41sCTrEgkqPHEg3flyu1bMbj85FGyCQZL2wWLB6yrLJRUhcmKd02rJI
-         HWqeLNDrAboyoXltp34SP+99125Ah3V8f9VbHLOQzq8FiejTCvqmVb0eiwu+aYLmcVHt
-         2tv1xMhLn+HH7oumegh1O4lkhViAQXZiaW1MbgLsFuCiafGO855ln6q3V6zyROFROrnL
-         Vh6kdCZs0MBuVJb0ay53UAZIwXm+R1/gtKigCuaZlvOc2TECFcSoKA8gUfj9ohw2/+nr
-         uR5g==
-X-Forwarded-Encrypted: i=1; AJvYcCUDTxzrtdghIgzFKAnov2Y5jA+XVCh92EdqvVsbjuayQWooREDkN292EdlsAMk1w6quY6C5bA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxIHr/O/Vekpv7oLK1pVknoGkZ18KjpSgejTIYoUI9fYz+FNtCA
-	0NcDtxsl6wK25H3dj4vEoZC9GLwsjY1wwjOFi/PjZAIBO9psMIoD1nO9T+Z9jeo=
-X-Gm-Gg: ASbGncuK/0fjFwna+IyjjMzh91PdT8PVzUw2zUtWbZM1JVwsFY0GT0CttmxrI9xsf3x
-	y5dnyYOk6A6wXDCrMu/dlBdgSS0zBoKEk4/6V6PKsSstE127aCCnjRyjmczNNWaCYj88zDobpNF
-	9M1BK3PMa+nlWPRCSdBds0FUhmLHIx3rghy+4G/KZ/35YLJiz2FOO5q32KKUuzRj21o2fUS8ea5
-	8QJTJ+caVqq4pCItNcbZRfCGHR5vJUR0Nxxjyr4/mIu5IzwglPNKHVaLDSZlIS9ZKZ6ZCDFCruc
-	y711NS2v/JGS6lb22jjDj/xzk1Y=
-X-Google-Smtp-Source: AGHT+IFj/bNfkP952mgSDtZ9yP9hHw6wGl45/r2VXPQTulXqtOd73dZIJPv3lk+l159xaf5CNE6cdw==
-X-Received: by 2002:a05:600c:1d9d:b0:434:ffe3:bc7d with SMTP id 5b1f17b1804b1-4390d43d796mr41071805e9.16.1738781571766;
-        Wed, 05 Feb 2025 10:52:51 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:5485:d4b2:c087:b497])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4390db11264sm29164665e9.35.2025.02.05.10.52.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Feb 2025 10:52:51 -0800 (PST)
-Date: Wed, 5 Feb 2025 19:52:48 +0100
-From: Simona Vetter <simona.vetter@ffwll.ch>
-To: Hector Martin <marcan@marcan.st>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Greg KH <gregkh@linuxfoundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
-	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
-	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	daniel.almeida@collabora.com, aliceryhl@google.com,
-	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	DRI Development <dri-devel@lists.freedesktop.org>
-Subject: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
- coherent allocator abstraction.)
-Message-ID: <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
-Mail-Followup-To: Hector Martin <marcan@marcan.st>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Greg KH <gregkh@linuxfoundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
-	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
-	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	daniel.almeida@collabora.com, aliceryhl@google.com,
-	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	DRI Development <dri-devel@lists.freedesktop.org>
-References: <Z4D5a5NYrAbNxUL6@pollux>
- <Z4kG5AcVeQKegLnb@pollux>
- <20250128092334.GA28548@lst.de>
- <293df3d54bad446e8fd527f204c6dc301354e340.camel@mailbox.org>
- <20250130154646.GA2298732@nvidia.com>
- <2025013030-gummy-cosmic-7927@gregkh>
- <20250130172437.GN5556@nvidia.com>
- <2025013148-reversal-pessimism-1515@gregkh>
- <20250131135421.GO5556@nvidia.com>
- <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
+	s=arc-20240116; t=1738781610; c=relaxed/simple;
+	bh=YI+XXeFpYm0aYXJj/XaJuizksSALY8idolNJiTmoPbw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=t3rSYXgTeiAJsH68HUwCmFnogAOKGpXOMa7iw8T3eYCOHV0iU7pXeitKoD2nPB5qNPtrKtId1mLvQNotYEYfsAcd5A5gk5jgaXLF93uRfatneJ2BPClVzNEqQwBYEsLTXhZ7bPpQWI7dHgo5mTEGYo+/GB15W7URkPJhg3l+idE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C0B501063;
+	Wed,  5 Feb 2025 10:53:50 -0800 (PST)
+Received: from [10.57.35.21] (unknown [10.57.35.21])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6D82B3F5A1;
+	Wed,  5 Feb 2025 10:53:25 -0800 (PST)
+Message-ID: <ce6d471a-a863-45ca-8a35-66dbbabe47c1@arm.com>
+Date: Wed, 5 Feb 2025 18:53:23 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
-X-Operating-System: Linux phenom 6.12.11-amd64 
+User-Agent: Mozilla Thunderbird
+Subject: Re: iommu: flood of ahci 0000:e6:00.0: AMD-Vi: Event logged
+ [IO_PAGE_FAULT domain=0x0055 address=0xa14a4000 flags=0x0070]
+To: Corentin Labbe <clabbe.montjoie@gmail.com>
+Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Vasant Hegde <vasant.hegde@amd.com>
+References: <Z6CGzUSV7llweytQ@Red>
+ <42a8ca6f-a881-4b4c-9ddb-bf3f2bc6f539@arm.com> <Z6NpZcbE6fiIkSGh@Red>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <Z6NpZcbE6fiIkSGh@Red>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Feb 04, 2025 at 03:46:14AM +0900, Hector Martin wrote:
-> Adding Linus
+On 2025-02-05 1:36 pm, Corentin Labbe wrote:
+> Le Mon, Feb 03, 2025 at 01:01:45PM +0000, Robin Murphy a écrit :
+>> On 2025-02-03 9:05 am, Corentin Labbe wrote:
+>>> Hello
+>>>
+>>> I have a supermicro server which is flooded of kernel message:
+>>> ahci 0000:e6:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0055 address=0xa14a4000 flags=0x0070]
+>>>
+>>> The server works perfectly anyway.
+>>> It happens with official ubuntu kernel vmlinuz-6.8.0-51-generic.
+>>> I tried also a custom 6.12.6, same problem.
+>>>
+>>> I tried to update bios, no change.
+>>> I tried iommu=soft, no change.
+>>>
+>>> I dont know what to do next.
+>>>
+>>> Regards
+>>>
+>>
+>>> IOMMU group 83 e6:00.0 SATA controller [0106]: Marvell Technology Group Ltd. 88SE9230 PCIe 2.0 x2 4-port SATA 6 Gb/s RAID Controller [1b4b:9230] (rev 11)
+>>
+>> Wow, a Marvell SATA controller doing something other than the usual
+>> phantom function quirk, that's a nice change :D
+>>
+>> I'd guess that firmware has left it running for something like legacy
+>> IDE emulation (if that's still a thing?) or its own soft-RAID driver,
+>> but neglected to declare an IVMD entry to described the reserved memory
+>> region(s) it's using for that. A smoking gun would be if 0xa14a4000
+>> matches some firmware-reserved PA in the system memory map. In that
+>> case, if you're lucky you might have some firmware/BIOS option to
+>> disable fancy behaviour and leave it in plain AHCI mode. Otherwise,
+>> booting with "iommu.passthrough=1" (or the even bigger hammer of
+>> "amd_iommu=off") should at least allow you to ignore the issue.
+>>
 > 
-> My 2c: If Linus doesn't pipe up with an authoritative answer to this
-> thread, Miguel and the other Rust folks should just merge this series
-> once it is reviewed and ready, ignoring Christoph's overt attempt at
-> sabotaging the project. If Linus pulls it, what Christoph says doesn't
-> matter. If Linus doesn't pull it, the R4L project is essentially dead
-> until either Linus or Christoph make a move. Everything else is beating
-> around the bush.
+> Hello
 > 
-> Rust folks: Please don't waste your time and mental cycles on drama like
-> this. It's not worth your time. Either Linus likes it, or he doesn't.
-> Everything else is distractions orchestrated by a subset of saboteur
-> maintainers who are trying to demoralize you until you give up, because
-> they know they're going to be on the losing side of history sooner or
-> later. No amount of sabotage from old entrenched maintainers is going to
-> stop the world from moving forward towards memory-safe languages.
+> Thanks for your help
 > 
-> FWIW, in my opinion, the "cancer" comment from Christoph would be enough
-> to qualify for Code-of-Conduct action, but I doubt anything of the sort
-> will happen.
+> There was no AHCI option in the BIOS (appart hotplug enable).
+> 
+> Adding iommu.passthrough=1 lead to absence of thoses messages.
+> 
+> Unfortunatly, my example is not correct, the address is mostly random:
+> dmesg |grep IO_PAGE_FAULT | grep -o 'address=0x[0-9a-f]*' | sort | uniq -c | wc -l
+> 9297
+> 
+> dmesg |grep IO_PAGE_FAULT | grep -o 'address=0x[0-9a-f]*' | sort | uniq -c | head
+>        2 address=0x1101f000
+>        2 address=0x1101f004
+>        3 address=0x1102f000
+>        1 address=0x1102f004
+>        2 address=0x1102f008
+>        2 address=0x1102f010
+>        2 address=0x11043000
+>        2 address=0x11043004
+>        1 address=0x11047000
+>        1 address=0x11047004
+> 
+> dmesg |grep IO_PAGE_FAULT | grep -o 'address=0x[0-9a-f]*' | sort | uniq -c | tail
+>        2 address=0xfffffffffe751004
+>        2 address=0xfffffffffe7e6000
+>        2 address=0xfffffffffe7e6004
+>        4 address=0xfffffffffe823000
+>        3 address=0xfffffffffe823004
+>        2 address=0xfffffffffe830000
+>        2 address=0xfffffffffe830004
+>        3 address=0xfffffffffe833000
+>        1 address=0xfffffffffe833004
+>        1 address=0xfffffffffe833008
 
-Yeah no.
+OK, these look like iommu-dma addresses, and the fact that they're up 
+into the full 64-bit space implies that the 32-bit ones are most likely 
+also kernel DMA burning through the whole 32-bit IOVA space rather than 
+inadvertent physical address (and possibly the SATA driver is leaking 
+DMA mappings as it keeps getting errors and retrying?). Indeed it seems 
+the firmware stuff probably was a red herring.
 
-https://chaos.social/@sima/113942119012147959
+I guess that then points to a question of whether it's maybe just the 
+SATA driver going wonky and trying to make the device write to a 
+DMA_TO_DEVICE mapping, or something going awry at the IOMMU to divert 
+the device accesses to a different address space from the one iommu-dma 
+believes it's using...
 
-This was about you, because typing a proper answer takes a bit longer. It
-was also about your toots on fedi, like this:
+> But the domain/flags are always the same
+> 
+> Full dmesg (without IOMMU messages) https://uk01.z.antigena.com/l/VspdfbZQLwA2gZviRaGoPfE2bAxamMd9VFWOj4n78OuhpCoBo5HcXgWgXfTVvyxW1R3W9GTx4RbHm1MGyqBINkuTrnW31h9eTfLTUvXfcYh-IaTwmSc5kZo_-iU9-qQLbKsIjA9LNxyfbAA2AKGOSws6K4vuOrR6i-DL5DiQW1gHCrhhBMgE0Y7RK2m9
+> 
+> The server is doing qemu GPU passthough via VFIO.
+> I believe (aka I need to re-verify) that message start whatever qemu starts or not.
 
-https://social.treehouse.systems/@marcan/113941468353031993
+Oh, it's certainly not impossible that that getting VFIO involved may 
+tickle some bug or misconfiguration wherein the wrong device ends up 
+inadvertently attached to the wrong domain. I don't know the ins and 
+outs of debugging with the AMD driver, though, so I think this is the 
+point where I have to leave this one to Vasant :)
 
-And "haha it's only a joke" does not work with your public profile and following.
-
-I do understand the frustration and temptation to just burn it all to the
-ground, head the call of the sirens, or maybe for me more pick up goat
-farming in the Swiss Alps. But you can't have it both and expect to also
-be part of and contribute to the same community. And personally I don't
-appreciate getting drenched in gasoline while I'm trying to quench flames
-on the ground.
-
-And this isn't the first time or the second, by now it's a pretty clear
-pattern over some years. And with the first I could explain why you react
-like that and you had my full understanding, but eventually that runs a
-bit thin as an excuse.  Now I'm left with the unlikely explanation that
-you just like thundering in as the cavalry, fashionably late, maximally
-destructive, because it entertains the masses on fedi or reddit or
-wherever. I have no idea what you're trying to achieve here, I really
-don't get it, but I am for sure fed up dealing with the fallout.
-
-Cheers, Sima
--- 
-Simona Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Thanks,
+Robin.
