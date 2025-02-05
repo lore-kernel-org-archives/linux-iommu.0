@@ -1,95 +1,77 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E7F81DC9AF;
-	Wed,  5 Feb 2025 16:11:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB8731519BA
+	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 16:18:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738771871; cv=none; b=RvGFmaR9FP/xsm82zx/vRuibHdJedlDZOJ1X3r+knmS+ViLWHacmvK04+kxpGVJOzFYa72ywuWbAsjjUzilcr8an7yZB2VSngDEhz5zi67RGOIjMR01M9vByD50/4Ugq971RnXZOIl+NykBxq7YDdocFfAxGNCELdytUu1uL2bE=
+	t=1738772300; cv=none; b=XHp0V/0lN32x9JVPnzIzzzULxZFwYGVhG9YtZuCFKmoIRbO2lM37oLXz5Zyysh8F/J89TYRRH1mW6+myTNMslskefab7i4Iz7ARQfs2M3TH8Km/+wES/qhtbCztruR4QqTF2SIP6qChDttVO7u6reE4rxNqQGk7EYYICLwKxkVA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738771871; c=relaxed/simple;
-	bh=d4LhsD3lA8sn51zkFNV/8GzLm09PHfYU4Wr+BwsY6hU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UH9NsC0rUhkOnm0Yzpu1ChreXV0DuiCVq+M+XgCNXzRGzmwPYPhJlRNtv6gC9lKs0IWQmkEKSnjTGjXjHwn0wP9FeiaLNPDyjmYiZOvHTSXl3/bURy7p+AMYVDGWdfGRp1bTZZBuqbICJV02NAn8F/8Pg4X5Fua2tUxO/srpJoU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3605E1063;
-	Wed,  5 Feb 2025 08:11:31 -0800 (PST)
-Received: from [10.57.35.21] (unknown [10.57.35.21])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E6F3C3F58B;
-	Wed,  5 Feb 2025 08:11:01 -0800 (PST)
-Message-ID: <f8d73cd3-f85c-49c3-8b37-4eaad0255860@arm.com>
-Date: Wed, 5 Feb 2025 16:11:00 +0000
+	s=arc-20240116; t=1738772300; c=relaxed/simple;
+	bh=RvpzDGf5Iwop1VDAqYYlfM34uq83/esOXK9tr/k0MiQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XlMW8q54s/cddo1OWjqrwOmPvTy/jyqbJ5jZa7yeZ+kSqILnU80eqPIIwgwu3s3kqf13UzIvsy/6UkkP0RLl0d9NN5scv4IqsQ5yIfdSaN/ChkyMWshRCUlVNs2YgRmlWuAM1w6FNYrFZcbl5PTPjewZRpKkvuNu7EHiH00amnU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nu5E7bEw; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nu5E7bEw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E00BC4CED1;
+	Wed,  5 Feb 2025 16:18:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1738772300;
+	bh=RvpzDGf5Iwop1VDAqYYlfM34uq83/esOXK9tr/k0MiQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nu5E7bEw+j30/3syrjFPv3u7g4Z3H9YUJM33CyaFwUwO3pfydwQVseUJ7jBAA0he8
+	 WwdcvFtS4OEpA6cZLAQWPLdzlWmi0sMlyIBODmG+G17/JncqrBQv5Q5mfPOeGcugAh
+	 5TE812f/AzwGM7nxuoJslC9ZgiieWvDBb4GmjpTRMB0+bFTBgkIcd3B1SZhthO89iM
+	 yZudHcABciAIoBC+o4GPUGtL9phAJJ54tvCzSiIjLO3kFhZLqWdePOtweTzyXN5abw
+	 SvNTEOp9yEjyANQbkyakKEdIwfXCq6Pc8R6yJxte1qRMl/+QQEqwZG/H4FqwQSEEIq
+	 I2dP0ampwpSMQ==
+Date: Wed, 5 Feb 2025 09:18:16 -0700
+From: Keith Busch <kbusch@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Jianxiong Gao <jxgao@google.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jens Axboe <axboe@kernel.dk>, Sagi Grimberg <sagi@grimberg.me>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Erdem Aktas <erdemaktas@google.com>,
+	Vishal Annapurve <vannapurve@google.com>,
+	Ryan Afranji <afranji@google.com>, linux-nvme@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 0/3] Add an option for devices to skip SWIOTLB
+ pre-copy on read.
+Message-ID: <Z6OPSFuxtEluOb8o@kbusch-mbp>
+References: <20250204233630.3407878-1-jxgao@google.com>
+ <Z6MZLWRv1hC8uLo1@smile.fi.intel.com>
+ <20250205154321.GB13814@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 16/19] iommu/amd: Use roundup_pow_two() instead of
- get_order()
-To: Jason Gunthorpe <jgg@nvidia.com>, Alim Akhtar <alim.akhtar@samsung.com>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, Albert Ou <aou@eecs.berkeley.edu>,
- asahi@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
- David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
- iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
- linux-tegra@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>,
- Hector Martin <marcan@marcan.st>, Palmer Dabbelt <palmer@dabbelt.com>,
- Paul Walmsley <paul.walmsley@sifive.com>,
- Samuel Holland <samuel@sholland.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>, Krishna Reddy <vdumpa@nvidia.com>,
- Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>
-Cc: Bagas Sanjaya <bagasdotme@gmail.com>, Joerg Roedel <jroedel@suse.de>,
- Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
- David Rientjes <rientjes@google.com>, Matthew Wilcox <willy@infradead.org>
-References: <16-v1-416f64558c7c+2a5-iommu_pages_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <16-v1-416f64558c7c+2a5-iommu_pages_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250205154321.GB13814@lst.de>
 
-On 2025-02-04 6:34 pm, Jason Gunthorpe wrote:
->    1 << (get_order(x) + PAGE_SHIFT) ==  roundup_pow_two()
-
-...unless x < 2048, which does seem possible here if last_bdf is 
-sufficiently small. Not too significant in the cases where the result is 
-only rounded back up again for an allocation or remap anyway, but I do 
-wonder about the use of dev_table_size in iommu_set_device_table(), and 
-whether this change might break it, or whether it's already wrong for 
-that case and this might actually fix it...
-
-Thanks,
-Robin.
-
-> Use the shorter version.
+On Wed, Feb 05, 2025 at 04:43:21PM +0100, Christoph Hellwig wrote:
+> On Wed, Feb 05, 2025 at 09:54:21AM +0200, Andy Shevchenko wrote:
+> > On Tue, Feb 04, 2025 at 11:36:27PM +0000, Jianxiong Gao wrote:
+> > > Removes an extra memory copy that occurs during IO read
+> > > operations through the SWIOTLB. During high throughput
+> > > read workloads, this extra copy is causing a lot of stress
+> > > on the SWIOTLB.
+> > > 
+> > > With high performance devices, for example NVMe devices,
+> > > the device will be overwriting the entire buffer.
+> > 
+> > Is this really guaranteed? I can imagine surprise power cut or
+> > hotplug event, for example, just in the middle of the transfer.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/amd/init.c | 5 +----
->   1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index f1c5041647173c..7d77929bc63af3 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -247,10 +247,7 @@ static void init_translation_status(struct amd_iommu *iommu)
->   
->   static inline unsigned long tbl_size(int entry_size, int last_bdf)
->   {
-> -	unsigned shift = PAGE_SHIFT +
-> -			 get_order((last_bdf + 1) * entry_size);
-> -
-> -	return 1UL << shift;
-> +	return roundup_pow_of_two((last_bdf + 1) * entry_size);
->   }
->   
->   int amd_iommu_get_num_iommus(void)
+> Many command can return less data than originally mapped.  Get Log Page
+> is an example that comes to mind that is heavily used that way.
 
+It's also easy enough for a user to "mistakenly" request more memory
+than the device will transfer. The safest thing is to clear any contents
+that may get copied back to the user.
