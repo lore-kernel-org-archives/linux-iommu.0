@@ -1,72 +1,73 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06DF7BA2E
-	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 13:36:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C7A6126C18
+	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 13:41:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738762603; cv=none; b=Gvrvn+HNejmBA2Y+IZYONo1uZm/nATV6bJmBOyhOHIBR1amqX4J0o3JHVp4WImcNNTHqyrWQdLboXTXrfSE3QYxKH4mjJ8oIrEVpDot5OhGgydfqXkJWdaqdMqgtad5UseKiwG8SJJ+w1kjE09y39INHW19B3LxcPvkAIdB9nr0=
+	t=1738762906; cv=none; b=TOm8y4HbDTFCc2dmIdQ6o12O2vaO3YMBvQ3bMnQNg8l9w8U3xKXC7O2B8HcPH/Rmf5GlFToWHcuEkmUHrn4SErjiHUqBcnIbhXrtXugPkZxaUtne5yWRius2PAPwmld6sTMuBuHMCiw+WcRLRNwonRXQfhn+lDRiqzSz7QOagLQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738762603; c=relaxed/simple;
-	bh=mp9HoxO6TA8BwWFZLool1CPyAEZW4XDbFIr6YzcpduE=;
+	s=arc-20240116; t=1738762906; c=relaxed/simple;
+	bh=Lr+5KZ13veBJ07It3Yd9s4/CTrSJcCuhjjvOpdqKT/g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DrcNEbkgRaGYKsaG16RaShGZrgl1nj6kN3K+e5bcgzvSijTLhrqYF7q/qvN5VSVKnFXmVJL3O097DgWEljlW40MVXruMw/9V4RVVmYrYuaZT2A0xY/DeunOOzYCPCEGFIBr+lZ+CoE3bC1cEACqxnI3sIu5NSrXpi2NvkWHGxCQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UhbwnBrD; arc=none smtp.client-ip=209.85.128.53
+	 Content-Type:Content-Disposition:In-Reply-To; b=IDtlhjzf43JDpt4BCBeMV4tpJe7hT881llzSPxqPyxqTRT0aCex5jLOcHb+Kbp3IxpM8VgcyxzDXQPDIZsS/F459wEetD4O+igmXnkBJx4VM/Peog6JWOlsQSIiEMHthuusFQM2v8KLPemueMO3pzcqKCesmJaK7Lyz/H31zJeY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JJcg0CjV; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UhbwnBrD"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4361f664af5so77548065e9.1
-        for <iommu@lists.linux.dev>; Wed, 05 Feb 2025 05:36:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JJcg0CjV"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-38db0c06e96so1008410f8f.2
+        for <iommu@lists.linux.dev>; Wed, 05 Feb 2025 05:41:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738762600; x=1739367400; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1738762903; x=1739367703; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=25qxsmD7FJX9q8ti6skHEnaD8hQH8wQXyucRPM/iUuU=;
-        b=UhbwnBrD3zbfWGhqCU8EnFPw0cyZeJrYOqb8tVwvDZXhbMEw2NzjFC/GFOyl8MRIN9
-         djthx5UL4+lIUkLnnpT5vclZK5l6YCdP8uCW3quktvU7q4qg/5cRnEn49YaAlbxqZEII
-         OvgoWaLK+B6E8El9Zue6BJGQH7P54EjC122ysZMXFjo0rjjkOBEKvpakQrv5rsKm5jWM
-         4l+/sLA8SMbW4ig/qq35Z6cuen5ijyREAEP1Z67le/zYeYwuBzdm9HYahoErmVhWe0AR
-         7Xqpw8PPIJY1+XO1uOj/5TuMp0s80937rNhofeeueAmt7/kJxfhXhCdTxZWvwROXPaZz
-         i6tQ==
+        bh=xFPvMTIko7RUlkglGsjRjisDlAMQ0L0NE9oHfkSjMWM=;
+        b=JJcg0CjVma9yDXlJ6Y2dlbcTBfWKhdnmDQswcd97IBi/DtXoRRyPCTXuTAnesa+wr4
+         5hKshX1WE8igACryrYzp7zLZFCXIPGcyszy1LOiAVXOL2hLxmYEzXbQ56S+6GsZihQQw
+         vJwcw8ku2sRItETz/2MnqOL9pbkAK7y8hRfIrx7zw6kh3Z3tD/vYxEhvrHbBDvmplZTW
+         0u3lvVIELrPxOtlZ03tEIhjT1AkA20IsiXg6rc30Yz81FTHxNoTDGmNlljYZN7asp8Sv
+         bsx+QMT5dCWFcwx74PsYoLBZCsVG6/zeLYSO3d9xKgZUjstO/WiahLf3AeTKDIZbXkOv
+         rJpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738762600; x=1739367400;
+        d=1e100.net; s=20230601; t=1738762903; x=1739367703;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=25qxsmD7FJX9q8ti6skHEnaD8hQH8wQXyucRPM/iUuU=;
-        b=UoiQ3W/GCd3VlfCTCYJX2RyWqggqUXAF4Efc58XhhCjoanEEsdHR8PPWiSoJUhuCN9
-         cIBLLiYRpjG7mkojjTfuIhTpgs27+xCm6NiDkcKwYmcCM61UIL3T6Xj6g8dCXVuG8NAE
-         9g/eDZ8+N5mGHFRQpIEeXuC0nOc8Wlu8t4Qc3EUkSt/iOCpe/dD1RUfwthV7FH4V4GB1
-         q43utEgxrYSPtCnuyu/yAhxJjU/T1G9R2RwBTRk7fIwsthR0LWrzaNZRqpdMPfAKZl9l
-         pn0PyJtmI8iVC+GBjrBvYSs5m1clRbUI1DoTMx1Bqg1EwOTy1HsyY8tV4kOwpH+NxzW8
-         CiGw==
-X-Forwarded-Encrypted: i=1; AJvYcCXnPTIae2ZKNXuoyRSExz3RAN4YrseJbi76xWpMM9q7AZ1NL84BJfhmfkh3TxTaQ9Tx7JoUwg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw743BOukD+XHtfQB+51o73C1pU6TJvP/G6HVvGXmBBlKDkFpVb
-	APJEHu/E8fqMqlRcaCCj5+0koFcF76NdfSCJB9c3b1Fegh1OOKYBT8fPDg==
-X-Gm-Gg: ASbGncsnismhrsY/V8RUH7kOe+v65O6ST3PI/eH5ySyK83u2Z8qwoxeeFRhur+ikmIJ
-	QwLNu8j8U7vhSReM0tsr9rlrUUG+EudoqOKCu6+lK7rNi+YJxYp5n1CEdzsGdUuDbyZ1o4pVTKd
-	GtVv5AdUkiBH6SQbgE//MV7/KAaJgfqNOFIg/mOR0fEaLfYxui3QZjBzJNia3mlmLUt1VEN7dYo
-	smuL7TyQouYdEbkGYspdxeO5esos4KWUOalQ88Hu5DhcQtI62Ubr8lUo76S2IMzQmlWjyNjP27d
-	5b5FiG2Pfc45UL/J
-X-Google-Smtp-Source: AGHT+IE8amJVXyAnREAQ170V3BU+lI01ghztADCVY6XG5cSihE83Nt/NFSjGoNx/mxp22MItkH1j5Q==
-X-Received: by 2002:a05:600c:1d1e:b0:435:294:f1c8 with SMTP id 5b1f17b1804b1-4390d574e09mr20181015e9.28.1738762599998;
-        Wed, 05 Feb 2025 05:36:39 -0800 (PST)
+        bh=xFPvMTIko7RUlkglGsjRjisDlAMQ0L0NE9oHfkSjMWM=;
+        b=sAMJlcigHrmNN78GzPoegOFQ9y+vBhHkF+kdD1VXhmQT547p7qVhZhSEjWrpKrcsx5
+         nyIn4lSDkOY68h7rEeYmsB54hC2fMv8mkxzuFs7ieYyPox/uxTun7TKEoTQ06RLWF4uE
+         rrU5eECkGw82d293suXraaDgXwcxd++kIbe/WBSSxVunjXeAd1g7/Vfb6K6qS5nDdvOq
+         XXbcLs6g8MYanwE4HEtM80mk9erO8SrgR/PEHq3W63IpVC6dZcqrdVoM9rhvxt0Uigho
+         cQK3UNjLV/a9G+71FMKlcR7qwjQF4x/wzZzgTXWHyqbejDJQt8cnwg670/Mf9ijCCwml
+         o96g==
+X-Forwarded-Encrypted: i=1; AJvYcCWD7ER3FPF0Qs8s/pCwIuis0bdbdjNjRtxUqLstnygMC7NYoFFXdgK9ajY5LBe10/3j2wK8NA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yww8UKOUx1PnviRKme7hZ9I7wpLRYCdMc/W4XdO1WrY7gET4rRD
+	fUnZ+trZ5TojjOrXgF49a4cQUh9XyFjDNifwAWQIACEy7MfQRsg0
+X-Gm-Gg: ASbGncvKamXrRjLEWjYGm5RdU3bJmqE5QkkTAp8EIkvOkmUuYIYbDaDjHEYpnSzxNRL
+	jJS9W3OTMrA1bnirwaUHpDxzkv4vhdp1zr2rzbOz+kaTRxkMzZs2jV/+VUZJwXvaFbo5fQczdRd
+	w2Hy3+wNV/uAJpnB08QkB2skTFjMoEuRjUEPZzAwuiufFFvsVZ7Pc1DfgeIxhRJm+hz5gRG6O9s
+	BocwgCv8+tcXhHFS9ZUM4bEsI60nQeAuemwmn7znqRbIZtnBvsmudovtum60DlNEHxt+lbtbcXM
+	nF6vsIb5rF/J7CHK
+X-Google-Smtp-Source: AGHT+IE41Ns76J3NfuF1YmTbO6rT4ejaawkIKve3VGyDmVrgZUVBLjFau3taVoNLAnv07S7U6/8rlg==
+X-Received: by 2002:a5d:584c:0:b0:38d:a8f7:cb73 with SMTP id ffacd0b85a97d-38db48d5a24mr1971575f8f.40.1738762902640;
+        Wed, 05 Feb 2025 05:41:42 -0800 (PST)
 Received: from Red ([2a01:cb1d:894:1200:4a02:2aff:fe07:1efc])
-        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-4390da88e33sm21245135e9.31.2025.02.05.05.36.39
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-38c5c1cf53asm18459418f8f.87.2025.02.05.05.41.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Feb 2025 05:36:39 -0800 (PST)
-Date: Wed, 5 Feb 2025 14:36:37 +0100
+        Wed, 05 Feb 2025 05:41:42 -0800 (PST)
+Date: Wed, 5 Feb 2025 14:41:40 +0100
 From: Corentin Labbe <clabbe.montjoie@gmail.com>
-To: Robin Murphy <robin.murphy@arm.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+	robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
 Subject: Re: iommu: flood of ahci 0000:e6:00.0: AMD-Vi: Event logged
  [IO_PAGE_FAULT domain=0x0055 address=0xa14a4000 flags=0x0070]
-Message-ID: <Z6NpZcbE6fiIkSGh@Red>
+Message-ID: <Z6NqlD2Je5xVtFui@Red>
 References: <Z6CGzUSV7llweytQ@Red>
- <42a8ca6f-a881-4b4c-9ddb-bf3f2bc6f539@arm.com>
+ <0e4c38a8-3f7c-4cbe-9dd0-9e73d4d947e0@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,85 +77,33 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <42a8ca6f-a881-4b4c-9ddb-bf3f2bc6f539@arm.com>
+In-Reply-To: <0e4c38a8-3f7c-4cbe-9dd0-9e73d4d947e0@amd.com>
 
-Le Mon, Feb 03, 2025 at 01:01:45PM +0000, Robin Murphy a écrit :
-> On 2025-02-03 9:05 am, Corentin Labbe wrote:
+Le Wed, Feb 05, 2025 at 05:33:50PM +0530, Vasant Hegde a écrit :
+> Hi,
+> 
+> On 2/3/2025 2:35 PM, Corentin Labbe wrote:
 > > Hello
 > > 
 > > I have a supermicro server which is flooded of kernel message:
 > > ahci 0000:e6:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0055 address=0xa14a4000 flags=0x0070]
-> > 
-> > The server works perfectly anyway.
-> > It happens with official ubuntu kernel vmlinuz-6.8.0-51-generic.
-> > I tried also a custom 6.12.6, same problem.
-> > 
-> > I tried to update bios, no change.
-> > I tried iommu=soft, no change.
-> > 
-> > I dont know what to do next.
-> > 
-> > Regards
-> > 
 > 
-> > IOMMU group 83 e6:00.0 SATA controller [0106]: Marvell Technology Group Ltd. 88SE9230 PCIe 2.0 x2 4-port SATA 6 Gb/s RAID Controller [1b4b:9230] (rev 11)
+> 0x70 means, Page was present, its write request, but device doesn't have
+> required permission.
 > 
-> Wow, a Marvell SATA controller doing something other than the usual 
-> phantom function quirk, that's a nice change :D
+> As Robin mentioned, it could be FW region. Can you please double check?
 > 
-> I'd guess that firmware has left it running for something like legacy 
-> IDE emulation (if that's still a thing?) or its own soft-RAID driver, 
-> but neglected to declare an IVMD entry to described the reserved memory 
-> region(s) it's using for that. A smoking gun would be if 0xa14a4000 
-> matches some firmware-reserved PA in the system memory map. In that 
-> case, if you're lucky you might have some firmware/BIOS option to 
-> disable fancy behaviour and leave it in plain AHCI mode. Otherwise, 
-> booting with "iommu.passthrough=1" (or the even bigger hammer of 
-> "amd_iommu=off") should at least allow you to ignore the issue.
+> Also what is the failure scenario? You see as soon as you boot or after running
+> some tests? Can you provide dmesg?
+> 
+> -Vasant
 > 
 
 Hello
 
-Thanks for your help
+How to double check firmware region ?
 
-There was no AHCI option in the BIOS (appart hotplug enable).
-
-Adding iommu.passthrough=1 lead to absence of thoses messages.
-
-Unfortunatly, my example is not correct, the address is mostly random:
-dmesg |grep IO_PAGE_FAULT | grep -o 'address=0x[0-9a-f]*' | sort | uniq -c | wc -l
-9297
-
-dmesg |grep IO_PAGE_FAULT | grep -o 'address=0x[0-9a-f]*' | sort | uniq -c | head
-      2 address=0x1101f000
-      2 address=0x1101f004
-      3 address=0x1102f000
-      1 address=0x1102f004
-      2 address=0x1102f008
-      2 address=0x1102f010
-      2 address=0x11043000
-      2 address=0x11043004
-      1 address=0x11047000
-      1 address=0x11047004
-
-dmesg |grep IO_PAGE_FAULT | grep -o 'address=0x[0-9a-f]*' | sort | uniq -c | tail
-      2 address=0xfffffffffe751004
-      2 address=0xfffffffffe7e6000
-      2 address=0xfffffffffe7e6004
-      4 address=0xfffffffffe823000
-      3 address=0xfffffffffe823004
-      2 address=0xfffffffffe830000
-      2 address=0xfffffffffe830004
-      3 address=0xfffffffffe833000
-      1 address=0xfffffffffe833004
-      1 address=0xfffffffffe833008
-
-But the domain/flags are always the same
-
-Full dmesg (without IOMMU messages) https://kernel.montjoie.ovh/dmesg.0
-
-The server is doing qemu GPU passthough via VFIO.
-I believe (aka I need to re-verify) that message start whatever qemu starts or not.
+For other questions, I just sent an email to Robin with all answers.
 
 Thanks
 Regards
