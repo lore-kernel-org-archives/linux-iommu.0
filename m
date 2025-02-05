@@ -1,142 +1,155 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B966207E0E
-	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 19:55:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 284F71FE47E
+	for <iommu@lists.linux.dev>; Wed,  5 Feb 2025 20:36:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738785360; cv=none; b=J+OPBZwyUsLWmdybjnJ4Dr4xTktenbcU2JGVPBWBAU/VrEAS/vT7OPVyAFJhnbj9lE08uONhAOSwD/ATTopFR1yG+8Gu2dy7WCHi2Y9D+5vR+PxA3EdyFw8bwDkO7BgdjXxc5Fzhvj6JGkp69adPr0p66/xtP5RNpb8i5E4PtW0=
+	t=1738787804; cv=none; b=YxWHUVA/jXReb+sBs+3nlcUa5gLYXF+cn+ZtTySaS63ApaGNqp7TI2WmPZsELb6eKxw+7HDovdgzmODq3vpST1dytX579CPdkJ39JrV79m373xlvpF7Z4eOmadlwlo6aIhOZSlRzEyne1PmpmrJakmH+iZw/ffF+NPmt0UbHycc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738785360; c=relaxed/simple;
-	bh=iPFum/ooN80cOPMsh94P49PMd9sImNoX5r665M1PBEQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=o6yKN/pH0WIoEfCA35LLi542bNpexdEy+aCJgBFyZIlOKYnPSKBfeHOcq696SM274mpMjVAqPAYJZGO+w2Qxj+/HP68bbZUehYfu2kVChwOF/ppE0WGtCw2XxAeqzTSLvkYhH2HQdWvkIB5lufFFrNGjmyGsEUL0KJvSj2JkyCk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Fs1//zAe; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1738787804; c=relaxed/simple;
+	bh=iuXh0TwQYZ/oRfuf6C74IO87n76azj0vyRXdJEtUi7k=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Content-Type; b=PgyllChVAXn+yJkC+AaxLEfIH3Ako5owN6LVnM3s3XLYMPPLoHRwqCG0arXvVHjPHaR8lge5kwVulDfLi/3CoD6Cr1w1mN/5vxGsPJ9TI3o2saKEjkQbqz7UfFQXf4g9w4l0R3pUyLgbO5VUbUwlKdFo8yInmf58Kr/Vt6nheio=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Vj/mbHH1; arc=none smtp.client-ip=209.85.208.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Fs1//zAe"
-Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 515EtBre000663;
-	Wed, 5 Feb 2025 19:55:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=NsNoTA
-	zBIrSlGCv20i9hObAFmMvUHA4jpdgPNAIpdWo=; b=Fs1//zAeAtUSdbAsmkoaxG
-	Wuk/KfT0vD3Knm9Nu1MlnkKTfY659XvN7HUNDTRLjGE5+fteWi1/tFPu3MmDaOMW
-	PYuuXpXbNOqV2xz9i9tSUYqkYjGHbqQSb9QMdklKAKJ9/eFL49y/eey2qZBY5hZ5
-	rkhqQm93gQAvPy1tyKfpBMre3906X/ZV2yWJZkQPcS2fmQyt7JdKwbC79bwc7GD0
-	PnTyTRvvf/yqgPCKh1qtBRkQ+25dmaW9TzroR7Ortjtt+8phMgIeIg4DzmfRUqZw
-	Kq/pfcP2AizXMP6ujS+QlKiRHAHyU4fA730tiifHt4zS/lO4vzHc45QQBVBO+8fg
-	==
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 44m1t84c49-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 05 Feb 2025 19:55:50 +0000 (GMT)
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 515JU3h8006535;
-	Wed, 5 Feb 2025 19:55:48 GMT
-Received: from smtprelay03.dal12v.mail.ibm.com ([172.16.1.5])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 44hyekjg0c-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 05 Feb 2025 19:55:48 +0000
-Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-	by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 515JtlUM29688426
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 5 Feb 2025 19:55:47 GMT
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6A81658055;
-	Wed,  5 Feb 2025 19:55:47 +0000 (GMT)
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D58A85804B;
-	Wed,  5 Feb 2025 19:55:45 +0000 (GMT)
-Received: from [9.61.30.101] (unknown [9.61.30.101])
-	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Wed,  5 Feb 2025 19:55:45 +0000 (GMT)
-Message-ID: <c0c82eb4-3849-4127-b6bf-bee329653a24@linux.ibm.com>
-Date: Wed, 5 Feb 2025 14:55:45 -0500
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vj/mbHH1"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5d4e2aa7ea9so440869a12.2
+        for <iommu@lists.linux.dev>; Wed, 05 Feb 2025 12:36:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1738787801; x=1739392601; darn=lists.linux.dev;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7LaIHhUhM3MiwbNj642cr48xuyOAOk/UPtx3aLDwDwM=;
+        b=Vj/mbHH1IW+Cse8vB4xotnoT3ZQm4SVTKyzvEmQl17KV3B8i9yYOpw4UUiVnbqqkOd
+         0W2/AdeLLeudjxDJQEyWOC/y6RJQAK+YsYtFG58JUAC3OFyPN4oyToR7ZFMdu0k+wAo0
+         CP01JIN2iwpBDUqc77WxJZf7lUJV7qg30/KcQHg5THycpyCG/cYtY6JdD1P0KOlZKmfE
+         vIYBahRni51x08cGWBYVJarAI3yzaQ15Qs2Kb16C9A027ngE1jxM3klRVXXapuRM+9y0
+         t6dOnsZrYP7nUlC1zx4JdUGH+VEuld6XDWVrTS2VWnD7d3YBOZeM37jmF+/7cj0fb4Lq
+         rWLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1738787801; x=1739392601;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7LaIHhUhM3MiwbNj642cr48xuyOAOk/UPtx3aLDwDwM=;
+        b=Pz1ZUFqi3LcCCtQ4udT9/9C2ZCVDyTOOBlfy1r+CGrBNKI7TG8HrOy5UvABsp7jVe1
+         LYqhlzx7CjbZVNg4/toHh+VqIdvP6a7LLvC3vgGOxU5WEGynNFkqzJ+Awa6jrdeiJWoy
+         KtdSigJoCf000rXcCFJB5Qx52FL+3UBVlkSn6VSgnDD2VCt5VI4KhebWhSF3B4b8tGJY
+         +/eIiRIXoWnJmK2+Cs9zh+E5VJftBC/vUBGnoXeyx6qhpe333ersTzx1SL4sN7lyv2mH
+         ym+TB48UlkKZtPZ7vNUapgzAnINsP98fg+ynZC2n8qrGL4tO08ZU/uAIfM+6JZ8h6hz5
+         g0IA==
+X-Forwarded-Encrypted: i=1; AJvYcCWPRxWSvuneDdyuOHSTmpnyjkvkkJh5Nl7Gr7IkeAI+81eyoxXqmAQ8/2Uh47fyL9CqcVcTpA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxRut9M5oZwkMDIg++l/KsTWc16p5xuh76P+GyRuwfylTaL0Vhj
+	aiYlUjKYPbQUMtBaFJRIXs9G9F/jEmNjllcSqJIKL4LBkEt9wZH854EjhcFDu0Hw6NhVDF1671F
+	aOfoSDLsEHl43Qqv7GBRmLnnuipk=
+X-Gm-Gg: ASbGncstEW9C+q0vYVC6cy89YpqsIcky+5mplA4xjC+6k41KlOS2ekXRAlvMv+PsIZZ
+	kqFzUDsahYfWQg95UlOYkEFkwE4s3VzYc7HL7YIUggtzQ1IBZFoSI9cjZIaEGN3E0/j+X0GU=
+X-Google-Smtp-Source: AGHT+IGCNARq/S6flKBk1hsdDpgzC0mJGccw8CN73wZw3M31xCCPOI69qccB2KG7dZGEukQGOPb+n7mn03YtMGHd1pw=
+X-Received: by 2002:a17:906:f593:b0:aaf:c27e:12e8 with SMTP id
+ a640c23a62f3a-ab75e35dbc2mr567563366b.37.1738787801129; Wed, 05 Feb 2025
+ 12:36:41 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/3] iommu/s390: implement iommu passthrough via
- identity domain
-To: Niklas Schnelle <schnelle@linux.ibm.com>, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, gerald.schaefer@linux.ibm.com
-Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
-        clegoate@redhat.com, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-References: <20250124201717.348736-1-mjrosato@linux.ibm.com>
- <20250124201717.348736-4-mjrosato@linux.ibm.com>
- <53c930df7058288776392073964a70025ca62d19.camel@linux.ibm.com>
-Content-Language: en-US
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <53c930df7058288776392073964a70025ca62d19.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: C5Ly6ffk3UkHDhTlnvilvDtqF16XvjFp
-X-Proofpoint-ORIG-GUID: C5Ly6ffk3UkHDhTlnvilvDtqF16XvjFp
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-02-05_06,2025-02-05_03,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
- mlxlogscore=999 suspectscore=0 phishscore=0 lowpriorityscore=0
- priorityscore=1501 spamscore=0 mlxscore=0 clxscore=1015 malwarescore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2501170000 definitions=main-2502050148
+References: <Z4D5a5NYrAbNxUL6@pollux> <Z4kG5AcVeQKegLnb@pollux>
+ <20250128092334.GA28548@lst.de> <293df3d54bad446e8fd527f204c6dc301354e340.camel@mailbox.org>
+ <20250130154646.GA2298732@nvidia.com> <2025013030-gummy-cosmic-7927@gregkh>
+ <20250130172437.GN5556@nvidia.com> <2025013148-reversal-pessimism-1515@gregkh>
+ <20250131135421.GO5556@nvidia.com> <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
+ <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
+In-Reply-To: <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
+From: Dave Airlie <airlied@gmail.com>
+Date: Thu, 6 Feb 2025 06:36:28 +1000
+X-Gm-Features: AWEUYZl4PgDWEAOqJs8geanKYzm8-RmxJs8QL-ZQeTHW_IM3hse2lK_-6T3WYCA
+Message-ID: <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
+Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
+ coherent allocator abstraction.)
+To: Hector Martin <marcan@marcan.st>, Jason Gunthorpe <jgg@nvidia.com>, 
+	Greg KH <gregkh@linuxfoundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, 
+	phasta@kernel.org, Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>, 
+	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>, 
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com, 
+	aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org, 
+	Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, 
+	open list <linux-kernel@vger.kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	airlied@redhat.com, "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, 
+	DRI Development <dri-devel@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On 1/30/25 2:43 AM, Niklas Schnelle wrote:
-> On Fri, 2025-01-24 at 15:17 -0500, Matthew Rosato wrote:
->> Enabled via the kernel command-line 'iommu.passthrough=1' option.
->>
->> Introduce the concept of identity domains to s390-iommu, which relies on
->> the bus_dma_region to offset identity mappings to the start of the DMA
->> aperture advertized by CLP.
->>
->> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->> ---
->>  arch/s390/pci/pci.c        |  6 ++-
->>  drivers/iommu/s390-iommu.c | 95 +++++++++++++++++++++++++++++---------
->>  2 files changed, 76 insertions(+), 25 deletions(-)
->>
->> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
->> index 88f72745fa59..758b23331754 100644
->> --- a/arch/s390/pci/pci.c
->> +++ b/arch/s390/pci/pci.c
->> @@ -124,14 +124,16 @@ int zpci_register_ioat(struct zpci_dev *zdev, u8 dmaas,
->>  	struct zpci_fib fib = {0};
->>  	u8 cc;
->>  
->> -	WARN_ON_ONCE(iota & 0x3fff);
->>  	fib.pba = base;
->>  	/* Work around off by one in ISM virt device */
->>  	if (zdev->pft == PCI_FUNC_TYPE_ISM && limit > base)
->>  		fib.pal = limit + (1 << 12);
->>  	else
->>  		fib.pal = limit;
->> -	fib.iota = iota | ZPCI_IOTA_RTTO_FLAG;
->> +	if (iota == 0)
->> +		fib.iota = iota;
-> 
-> Taking another look, I think there is a small problem with the logic of
-> passing iota == 0 to indicate direct mapping. In
-> zpci_hot_reset_device() we call zpci_register_ioat() with iota set to
-> virt_to_phys(zdev->dma_table) and while zdev->dma_table is NULL for the
-> identity domain we can't rely on virt_to_phys(NULL) == NULL.
+On Thu, 6 Feb 2025 at 04:52, Simona Vetter <simona.vetter@ffwll.ch> wrote:
+>
+> On Tue, Feb 04, 2025 at 03:46:14AM +0900, Hector Martin wrote:
+> > Adding Linus
+> >
+> > My 2c: If Linus doesn't pipe up with an authoritative answer to this
+> > thread, Miguel and the other Rust folks should just merge this series
+> > once it is reviewed and ready, ignoring Christoph's overt attempt at
+> > sabotaging the project. If Linus pulls it, what Christoph says doesn't
+> > matter. If Linus doesn't pull it, the R4L project is essentially dead
+> > until either Linus or Christoph make a move. Everything else is beating
+> > around the bush.
+> >
+> > Rust folks: Please don't waste your time and mental cycles on drama like
+> > this. It's not worth your time. Either Linus likes it, or he doesn't.
+> > Everything else is distractions orchestrated by a subset of saboteur
+> > maintainers who are trying to demoralize you until you give up, because
+> > they know they're going to be on the losing side of history sooner or
+> > later. No amount of sabotage from old entrenched maintainers is going to
+> > stop the world from moving forward towards memory-safe languages.
+> >
+> > FWIW, in my opinion, the "cancer" comment from Christoph would be enough
+> > to qualify for Code-of-Conduct action, but I doubt anything of the sort
+> > will happen.
+>
+> Yeah no.
+>
+> https://chaos.social/@sima/113942119012147959
+>
+> This was about you, because typing a proper answer takes a bit longer. It
+> was also about your toots on fedi, like this:
+>
+> https://social.treehouse.systems/@marcan/113941468353031993
+>
+> And "haha it's only a joke" does not work with your public profile and following.
+>
+> I do understand the frustration and temptation to just burn it all to the
+> ground, head the call of the sirens, or maybe for me more pick up goat
+> farming in the Swiss Alps. But you can't have it both and expect to also
+> be part of and contribute to the same community. And personally I don't
+> appreciate getting drenched in gasoline while I'm trying to quench flames
+> on the ground.
+>
+> And this isn't the first time or the second, by now it's a pretty clear
+> pattern over some years. And with the first I could explain why you react
+> like that and you had my full understanding, but eventually that runs a
+> bit thin as an excuse.  Now I'm left with the unlikely explanation that
+> you just like thundering in as the cavalry, fashionably late, maximally
+> destructive, because it entertains the masses on fedi or reddit or
+> wherever. I have no idea what you're trying to achieve here, I really
+> don't get it, but I am for sure fed up dealing with the fallout.
+>
 
-Thanks for pointing this out.  We discussed this a fair bit off-list, but to summarize here: I'll include an additional patch in the next version that will drive IOAT registration code through s390-iommu, since really this owns the dma_table and knows when it does (not) make sense to register it.  Places in s390 code that need to perform IOAT re-registration (such as zpci_hot_reset_device) will call into this routine and let s390-iommu determine the correct action based upon the type of domain in use.  
+To back up Sima here, we don't need grandstanding, brigading, playing
+to the crowd, streamer drama creation or any of that in discussions
+around this.
 
-I'll set that patch before this one, so then this patch remains unchanged except to replace the zpci_register_ioat call added by this patch in s390_attach_dev_identity with the new routine.
+The r4l team and drm maintainer team have this sort of thing in hand,
+it's not like we don't understand the community of the Linux kernel,
+and having this first reaction to blow shit up and dramatise it just
+isn't helpful.
 
-> 
->> +	else
->> +		fib.iota = iota | ZPCI_IOTA_RTTO_FLAG;
->>  	fib.gd = zdev->gisa;
->>  	cc = zpci_mod_fc(req, &fib, status);
->>  	if (cc)
+Being toxic on the right side of an argument is still toxic, please
+try and be better, and maybe take a step back and consider is what you
+are posting going to help the discussion or just adding pointless
+drama to it.
 
+Dave.
