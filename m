@@ -1,90 +1,182 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E974A70818
-	for <iommu@lists.linux.dev>; Thu,  6 Feb 2025 02:13:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9C7722370C
+	for <iommu@lists.linux.dev>; Thu,  6 Feb 2025 05:30:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738808016; cv=none; b=ZUj6/vbyqX1rcqtyTVuY6teQfrW28UrmpFAWdXhJK1OaqaN/OkxWUYgplLPFK4Yul5lrZG0KfsPNNMApmOq2D8TwCFELmgXQF2OyUrGb1tRm2imckhA0CUA/4asb9WKCj7HnjKCdduvoz2KDpo2J82JDaCRGs3b2C6V7ob6FUYA=
+	t=1738819812; cv=none; b=jifLUYq+s/6/MBVGld6N2oXQdW3UECb4xIABtbD3YtcDBR8AqQaJztvQU0YrEreCxmdnf2U3Ljvw5f2Gxl2w1h3rnoGJL6E/9U3mCcju0zwzSG1P/X4kyL8EkxAXWUIY6+IoJsYxSVaxFLY2Rnj8Rd6zG/I2NOiH9UPPORKJqg0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738808016; c=relaxed/simple;
-	bh=MPbnuZ1ow3tlM4Uv6Z/zyzk9+r7Hmhv9A/qr2lRAQ3Q=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Y4l698+6gJXxlAkgMXZRRJe96zYNr/nV4mFSyaKkTJQQOH4CPl8JZMO2MOv3Uq4FY11TIvnAmAbOHvjWE4ZvUXhMaiSMOa2ySPzyWu1KG4sPbZMplA6thsrXkQwTqf7vmw+k9Av7TZcOup0TyWptLoZj3uzWprNvl+gBPITTF/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: 3a7d4ce2e42f11efa216b1d71e6e1362-20250206
-X-CTIC-Tags:
-	HR_CC_COUNT, HR_CC_DOMAIN_COUNT, HR_CC_NAME, HR_CC_NO_NAME, HR_CTE_8B
-	HR_CTT_MISS, HR_DATE_H, HR_DATE_WKD, HR_DATE_ZONE, HR_FROM_NAME
-	HR_SJ_LANG, HR_SJ_LEN, HR_SJ_LETTER, HR_SJ_NOR_SYM, HR_SJ_PHRASE
-	HR_SJ_PHRASE_LEN, HR_SJ_WS, HR_TO_COUNT, HR_TO_DOMAIN_COUNT, HR_TO_NO_NAME
-	IP_TRUSTED, SRC_TRUSTED, DN_TRUSTED, SA_TRUSTED, SA_EXISTED
-	SN_TRUSTED, SN_EXISTED, SPF_NOPASS, DKIM_NOPASS, DMARC_NOPASS
-	CIE_BAD, CIE_GOOD, CIE_GOOD_SPF, GTI_FG_BS, GTI_RG_INFO
-	GTI_C_BU, AMN_T1, AMN_GOOD, AMN_C_TI, AMN_C_BU
-	ABX_MISS_RDNS
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.45,REQID:250f8590-452d-4961-83a0-296b1a9d160a,IP:10,
-	URL:0,TC:0,Content:0,EDM:-30,RT:0,SF:-15,FILE:0,BULK:0,RULE:Release_Ham,AC
-	TION:release,TS:-35
-X-CID-INFO: VERSION:1.1.45,REQID:250f8590-452d-4961-83a0-296b1a9d160a,IP:10,UR
-	L:0,TC:0,Content:0,EDM:-30,RT:0,SF:-15,FILE:0,BULK:0,RULE:EDM_GN8D19FE,ACT
-	ION:release,TS:-35
-X-CID-META: VersionHash:6493067,CLOUDID:6aad5d02811ccb8a696d51ce0a976a2f,BulkI
-	D:2502061008201UDVF6YE,BulkQuantity:0,Recheck:0,SF:17|19|24|44|66|78|102,T
-	C:nil,Content:0|50,EDM:2,IP:-2,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:n
-	il,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 0
-X-CID-BAS: 0,_,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_FAS,TF_CID_SPAM_FSD,TF_CID_SPAM_FSI
-X-UUID: 3a7d4ce2e42f11efa216b1d71e6e1362-20250206
-X-User: liuye@kylinos.cn
-Received: from localhost.localdomain [(223.70.160.239)] by mailgw.kylinos.cn
-	(envelope-from <liuye@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 407595292; Thu, 06 Feb 2025 10:08:16 +0800
-From: Liu Ye <liuye@kylinos.cn>
-To: shuah@kernel.org
-Cc: chenxiang66@hisilicon.com,
-	zhujun2@cmss.chinamobile.com,
-	iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Liu Ye <liuye@kylinos.cn>
-Subject: [PATCH] selftests/dma: Fix bad array reference.
-Date: Thu,  6 Feb 2025 10:08:08 +0800
-Message-Id: <20250206020808.50561-1-liuye@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1738819812; c=relaxed/simple;
+	bh=tNOsQ8XTPAWYz9ImmrEJwRpNQeju67/8X20L+ujIqzE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hu+xGiIRaj6mJ51ZKPknPw9EXRrvkOdPH0gKIDHwxmBhTA6P6xDgBNgbB3hW5wXtA7YUfjeSxphzwz+JHblQTfszInLiyVhEc0Zsbr8w3i2XW/dBznYscDxLezWcJ3Ccum7/rmUkszAtRyfGJLqmjxoDFOqKpJybpEvU0QcNPgE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=q5MsBWCV; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="q5MsBWCV"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-21f16af1f71so7762895ad.3
+        for <iommu@lists.linux.dev>; Wed, 05 Feb 2025 21:30:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1738819809; x=1739424609; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=pRoJEJRUPVObRh6bcpNHZcCJSeUoo6qbmkVpHeNteUs=;
+        b=q5MsBWCVuNC2F3hHvNX2toyzdzN7weOFg9ToelHKL9D+M46XGiWQ5XNJP8TZygo/2l
+         /VMaRugfGhGMjFZ11jr5lpc8xbiffVjrUG9UuDirKIosba0GyRvc35TZOtFyAekc2kpD
+         hkwUwp3prQsqP62LeAeeKlBgQkWbM8Hm5/37sUCLmboL2iyjX85QTdX/PlXw7ZBTGijG
+         kctxyjz+dWKNVW8lc0dDM3m3U+EuYAPwAp5sjKEetlI33t4h6eIY3wL+zkFiXex8lvjV
+         o8W5wVJfEjHcKOrVxVZuENQLV5/YYvGW2V5E7xLy/VDk4ERqnx5OMUORDVuF+t3JSwFn
+         6NpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1738819809; x=1739424609;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pRoJEJRUPVObRh6bcpNHZcCJSeUoo6qbmkVpHeNteUs=;
+        b=E6ILICiiJS/KBN3EOZ3Owxhh/IqK4HVrKsjsUBlu7HEwhhYKlQVdwaLYNujXMyvLJQ
+         FheuTF8izmWNwU+HvV8Jhb5K2JWCsjSnJGVmA9mjjHZvt0pu2wAPGNHh5vjPA77KWa2i
+         0chcQ2/ZTWDCSRk8jFBzOU3aZ009HvsIRFsVZrQA9c5n9W3LUlcUS1Pd6+4pfOE85yQJ
+         EqJsxCtQ43mjourGqw6x918bQIyw5D72WvGQitAtsrcYiMcWHhvLuaXikLFKoc62xu6D
+         9MT+/CDE0yJy2tpi8WRbhgE+4fNn2bJdkfFlh12zwEzUJ4q8a+NXDTK7rR8EHneeUdDA
+         AUZA==
+X-Forwarded-Encrypted: i=1; AJvYcCWKDiOX8FvWq8TT+CP9Y929/60+9yyUbTb76lftf6gzOlfC45JdzMRBBTSg5TG/GGU5bCFmeg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzhCeidU3guX3HGkbYwpx5mzoWcWfdnjjYFTGyhQD3FhM3+U5dX
+	cbrAjXgWlQJSOWWb/fc9zCG6kUcPnQNKq9JVy/IpALO2QICKQ+NEFdlhhRpwFd4=
+X-Gm-Gg: ASbGnctSqzwMQkvdoUP4Ao2b5e8mw85Am9nrouqli8FWPuqwhXrMhC7chLXK+IEr1er
+	GakrBrUGVwqxSDd6iqGxzMQUDH9pu0+OPv+MddaOBeIYgma1SKnNdSLEjoywkho0VzZ1MUjLkzj
+	P0KFzCf4nkSzT+KGQogtBHkrb7AZpBXZNAQEVYQJU5C8StqBNQJu6FrH6feg59tUOuBdoRpXOzV
+	syxvcPNvgllgu3pVWgV3nPuJ7eWB5AmSDKRGxCyh6LRlTHo45iwp2EUI4qwChlDlg3KsPT8Qb2x
+	43+VmQdNRNNPDj+yH/RMawyq+kkNzDkxbg==
+X-Google-Smtp-Source: AGHT+IE1tNZkBLKVThcpOUcjJPjEE6LeUB5SuPAtY9c/ZHJbnXa2ZNVKpzCci8Lb0vwwFKWpOtSe+Q==
+X-Received: by 2002:a17:902:d28b:b0:216:410d:4c53 with SMTP id d9443c01a7336-21f17ebba71mr74788475ad.41.1738819809035;
+        Wed, 05 Feb 2025 21:30:09 -0800 (PST)
+Received: from tjeznach.ba.rivosinc.com ([64.71.180.162])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21f3653c997sm3459215ad.78.2025.02.05.21.30.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Feb 2025 21:30:08 -0800 (PST)
+Date: Wed, 5 Feb 2025 21:30:05 -0800
+From: Tomasz Jeznach <tjeznach@rivosinc.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alim Akhtar <alim.akhtar@samsung.com>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Hector Martin <marcan@marcan.st>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>, Bagas Sanjaya <bagasdotme@gmail.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	David Rientjes <rientjes@google.com>,
+	Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH 17/19] iommu/riscv: Update to use
+ iommu_alloc_pages_node_lg2()
+Message-ID: <Z6RI3ftJTrm3UxoO@tjeznach.ba.rivosinc.com>
+References: <0-v1-416f64558c7c+2a5-iommu_pages_jgg@nvidia.com>
+ <17-v1-416f64558c7c+2a5-iommu_pages_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <17-v1-416f64558c7c+2a5-iommu_pages_jgg@nvidia.com>
 
-dir[directions] should be directions[dir] to correctly index the
-directions array.
+On Tue, Feb 04, 2025 at 02:34:58PM -0400, Jason Gunthorpe wrote:
+> One part of RISCV already has a computed size, the other part seems to use
+> PAGE_SIZE (which is probably SZ_4K?). Convert the call.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/riscv/iommu.c | 15 ++++++++-------
+>  1 file changed, 8 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index 549bd8d0615d75..b7cee3d651b179 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -65,13 +65,15 @@ static int riscv_iommu_devres_pages_match(struct device *dev, void *res, void *p
+>  	return devres->addr == target->addr;
+>  }
+>  
+> -static void *riscv_iommu_get_pages(struct riscv_iommu_device *iommu, int order)
+> +static void *riscv_iommu_get_pages(struct riscv_iommu_device *iommu,
+> +				   unsigned int size)
+>  {
+>  	struct riscv_iommu_devres *devres;
+>  	void *addr;
+>  
+> -	addr = iommu_alloc_pages_node(dev_to_node(iommu->dev),
+> -				      GFP_KERNEL_ACCOUNT, order);
+> +	addr = iommu_alloc_pages_node_lg2(dev_to_node(iommu->dev),
+> +					  GFP_KERNEL_ACCOUNT,
+> +					  order_base_2(size));
+>  	if (unlikely(!addr))
+>  		return NULL;
+>  
+> @@ -161,9 +163,8 @@ static int riscv_iommu_queue_alloc(struct riscv_iommu_device *iommu,
+>  	} else {
+>  		do {
+>  			const size_t queue_size = entry_size << (logsz + 1);
+> -			const int order = get_order(queue_size);
+>  
+> -			queue->base = riscv_iommu_get_pages(iommu, order);
+> +			queue->base = riscv_iommu_get_pages(iommu, queue_size);
+>  			queue->phys = __pa(queue->base);
 
-Signed-off-by: Liu Ye <liuye@kylinos.cn>
----
- tools/testing/selftests/dma/dma_map_benchmark.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+All allocations must be 4k aligned, including sub-page allocs.
 
-diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
-index b12f1f9babf8..b925756373ce 100644
---- a/tools/testing/selftests/dma/dma_map_benchmark.c
-+++ b/tools/testing/selftests/dma/dma_map_benchmark.c
-@@ -118,7 +118,7 @@ int main(int argc, char **argv)
- 	}
- 
- 	printf("dma mapping benchmark: threads:%d seconds:%d node:%d dir:%s granule: %d\n",
--			threads, seconds, node, dir[directions], granule);
-+			threads, seconds, node, directions[dir], granule);
- 	printf("average map latency(us):%.1f standard deviation:%.1f\n",
- 			map.avg_map_100ns/10.0, map.map_stddev/10.0);
- 	printf("average unmap latency(us):%.1f standard deviation:%.1f\n",
--- 
-2.25.1
+Note from IOMMU/RISC-V spec:
 
+"If the command-queue has 256 or fewer entries then the base address of the
+queue is always aligned to 4-KiB."
+
+I can't find this to be guaranteed with new allocation API.
+
+>  		} while (!queue->base && logsz-- > 0);
+>  	}
+> @@ -618,7 +619,7 @@ static struct riscv_iommu_dc *riscv_iommu_get_dc(struct riscv_iommu_device *iomm
+>  				break;
+>  			}
+>  
+> -			ptr = riscv_iommu_get_pages(iommu, 0);
+> +			ptr = riscv_iommu_get_pages(iommu, PAGE_SIZE);
+>  			if (!ptr)
+>  				return NULL;
+>  
+> @@ -698,7 +699,7 @@ static int riscv_iommu_iodir_alloc(struct riscv_iommu_device *iommu)
+>  	}
+>  
+>  	if (!iommu->ddt_root) {
+> -		iommu->ddt_root = riscv_iommu_get_pages(iommu, 0);
+> +		iommu->ddt_root = riscv_iommu_get_pages(iommu, PAGE_SIZE);
+>  		iommu->ddt_phys = __pa(iommu->ddt_root);
+>  	}
+>  
+> -- 
+> 2.43.0
+> 
+
+best,
+- Tomasz
