@@ -1,19 +1,19 @@
 Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A129F6BFC0
-	for <iommu@lists.linux.dev>; Thu,  6 Feb 2025 02:12:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E974A70818
+	for <iommu@lists.linux.dev>; Thu,  6 Feb 2025 02:13:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738807976; cv=none; b=pkTRkglSUaKGlTr6kbO3y/Fz7+dZrj+e3Q+yrctCVljko2zDpzIc5qkG0FFCWPi5NA3rRc8zVjdOQNR8YLPa01o9zFkuTDrcI9Ro25UmMPg/wvhugxlWAVCi1WHN2A0wWHM0XIvpiYYf6qW+3B3QPQKqDgKuE3G0BQ2ynsTo9EI=
+	t=1738808016; cv=none; b=ZUj6/vbyqX1rcqtyTVuY6teQfrW28UrmpFAWdXhJK1OaqaN/OkxWUYgplLPFK4Yul5lrZG0KfsPNNMApmOq2D8TwCFELmgXQF2OyUrGb1tRm2imckhA0CUA/4asb9WKCj7HnjKCdduvoz2KDpo2J82JDaCRGs3b2C6V7ob6FUYA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738807976; c=relaxed/simple;
+	s=arc-20240116; t=1738808016; c=relaxed/simple;
 	bh=MPbnuZ1ow3tlM4Uv6Z/zyzk9+r7Hmhv9A/qr2lRAQ3Q=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=kjBcitaJHN8z+4WahUSv8uSPmPVpQ960EGW+JK3lDaF2tXjwqOZ+jQ5d5mb7P8IDbSEQjHdv58z6Pcu59Pe2Mmj+I+ujXzc6MCRaLNYvd7DszBxg9v3cIFM/Dy6aDTr++6Rb50za1+3FNt6ULm5XbOZ1qft7LGz+RUBCRiHurdo=
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Y4l698+6gJXxlAkgMXZRRJe96zYNr/nV4mFSyaKkTJQQOH4CPl8JZMO2MOv3Uq4FY11TIvnAmAbOHvjWE4ZvUXhMaiSMOa2ySPzyWu1KG4sPbZMplA6thsrXkQwTqf7vmw+k9Av7TZcOup0TyWptLoZj3uzWprNvl+gBPITTF/M=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: da6ca3d8e42f11efa216b1d71e6e1362-20250206
+X-UUID: 3a7d4ce2e42f11efa216b1d71e6e1362-20250206
 X-CTIC-Tags:
 	HR_CC_COUNT, HR_CC_DOMAIN_COUNT, HR_CC_NAME, HR_CC_NO_NAME, HR_CTE_8B
 	HR_CTT_MISS, HR_DATE_H, HR_DATE_WKD, HR_DATE_ZONE, HR_FROM_NAME
@@ -24,12 +24,11 @@ X-CTIC-Tags:
 	CIE_BAD, CIE_GOOD, CIE_GOOD_SPF, GTI_FG_BS, GTI_RG_INFO
 	GTI_C_BU, AMN_T1, AMN_GOOD, AMN_C_TI, AMN_C_BU
 	ABX_MISS_RDNS
-X-CID-CACHE: Type:Local,Time:202502061008+08,HitQuantity:1
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.45,REQID:819c88e5-44d1-4377-87f2-e8eebea3ecf4,IP:10,
+X-CID-O-INFO: VERSION:1.1.45,REQID:250f8590-452d-4961-83a0-296b1a9d160a,IP:10,
 	URL:0,TC:0,Content:0,EDM:-30,RT:0,SF:-15,FILE:0,BULK:0,RULE:Release_Ham,AC
 	TION:release,TS:-35
-X-CID-INFO: VERSION:1.1.45,REQID:819c88e5-44d1-4377-87f2-e8eebea3ecf4,IP:10,UR
+X-CID-INFO: VERSION:1.1.45,REQID:250f8590-452d-4961-83a0-296b1a9d160a,IP:10,UR
 	L:0,TC:0,Content:0,EDM:-30,RT:0,SF:-15,FILE:0,BULK:0,RULE:EDM_GN8D19FE,ACT
 	ION:release,TS:-35
 X-CID-META: VersionHash:6493067,CLOUDID:6aad5d02811ccb8a696d51ce0a976a2f,BulkI
@@ -39,22 +38,23 @@ X-CID-META: VersionHash:6493067,CLOUDID:6aad5d02811ccb8a696d51ce0a976a2f,BulkI
 X-CID-BVR: 0
 X-CID-BAS: 0,_,0,_
 X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_FAS,TF_CID_SPAM_FSD,TF_CID_SPAM_FSI
-X-UUID: da6ca3d8e42f11efa216b1d71e6e1362-20250206
+X-UUID: 3a7d4ce2e42f11efa216b1d71e6e1362-20250206
 X-User: liuye@kylinos.cn
 Received: from localhost.localdomain [(223.70.160.239)] by mailgw.kylinos.cn
 	(envelope-from <liuye@kylinos.cn>)
 	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 609545772; Thu, 06 Feb 2025 10:12:45 +0800
+	with ESMTP id 407595292; Thu, 06 Feb 2025 10:08:16 +0800
 From: Liu Ye <liuye@kylinos.cn>
 To: shuah@kernel.org
-Cc: zhujun2@cmss.chinamobile.com,
+Cc: chenxiang66@hisilicon.com,
+	zhujun2@cmss.chinamobile.com,
 	iommu@lists.linux.dev,
 	linux-kselftest@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Liu Ye <liuye@kylinos.cn>
 Subject: [PATCH] selftests/dma: Fix bad array reference.
-Date: Thu,  6 Feb 2025 10:12:39 +0800
-Message-Id: <20250206021239.51897-1-liuye@kylinos.cn>
+Date: Thu,  6 Feb 2025 10:08:08 +0800
+Message-Id: <20250206020808.50561-1-liuye@kylinos.cn>
 X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
