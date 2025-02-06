@@ -1,170 +1,90 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2067.outbound.protection.outlook.com [40.107.102.67])
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BCEF219E8C;
-	Wed,  5 Feb 2025 22:56:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.67
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738796192; cv=fail; b=Y2C76s1A/hBtVtK5ajCt/hMx5BIlRHQR+XSQvz/YCox4vC7QRfnNKgXYnKR3+WrpF6eaZdnJ1UBWI52+T9G0XxA5RsB9pVa2Kr7r9lP66rXVSioJLotUTVHaCu63t9yRJ8Nlfb0keaZuRa2tyPSBEEjK0e9VZfRHY/yDPOV1bsQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738796192; c=relaxed/simple;
-	bh=yI4yeQhBssj4h1Vj0CJvmN9KkNRerh81Uew5YThdMYA=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=re4zCDqEvoqEbgycoi8aawgVi7ebT/n1etLn+fHIMPyfRSaVPQ2L8UlOgU3dABqDgMsrSFIM++g6eWI+fxH6IP8vxzUK4Eui8HJ8lBKbKysKyNRHBYyKdTUIi2d+j5WZHfZmO/TQK4fsDRIf95j1UkxiIE2oANa6NGkMHAPNvvQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ofHOPQO6; arc=fail smtp.client-ip=40.107.102.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ofHOPQO6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=X3C0DG82sZibRXIn17vWjWEG05s/8boA0jStOe9RaHLNnGGdJEt0DP9tUHfqGVoN6nYor2hQ5pbgJP9HiEKBScPgMQYpQoMNb/eiFTIUyOHu4HMk4TEzdEYOH76PCzF2JIdNK6ynDdLjmwVtkggAvUVjBTck/kQWK43Ad0X/T0OdcBSgTwLiH71GanhoJFaWSbc6v7axIxssooqVUnPWlzPk6bmH2EICi/N0vO5/wAXSSn1e4pmtslmpCoawqYN7gDi+mE1fL4t+Cm5V7xZQr4NQEAVnR/MV646sbze3SuUppS+pu/Mqy18TUHx9a6ahJ5pvjFmAQ+C9zHG1KLrCTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yXbZTfV7enqU/d0Qu+wv66UV1AX70M5onR0V5YskAKU=;
- b=aae2QkssgcUgjGw7iEytu/LNjlFqJnDo2pgUZMAoWiQMTJOKWXZIEBIxoEzRlAprxOiP/zWHlC1Y+VEOHXYsJUhsOxz20zZiSWx7cfa12PfCPoi3m/qgFudgoW4QB01yqeVD3EpvzThqNdXRw7tBHNEmm5HnxpbdXb418U5rLrBzQ1YjTbwMVm7JrTrBAQVa6Shu5nXddWlyMxuPHT5TrVKMsm7gGYfF5uUYZ0Vg9EMDlAtVHrIVWTEr/S4b8w7QzMnNgcNl4+3XsFrp5G/hbPGYuwL6yT0NfjLh2jwk1mUkcBf+5eAguKansvVihGLpfDuHoGhblsm+q30KzIRJdQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=linux.microsoft.com
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yXbZTfV7enqU/d0Qu+wv66UV1AX70M5onR0V5YskAKU=;
- b=ofHOPQO6q4UQ49GJe2vpMJgui5EQErm01m3w6QD/avtHPTXk4nzt13b7gEaCaW1AfNyVOH/VJd6LqGehci9PT5u+bLnrb8PbJOr77GQSIFGr8uYJaR3DGOASOTJkVsWkbUOGvqfObS5yaG+aWhJcxd9Vfn03jBtshOS/QVg/QIft5gr+k/5gYLMxJRKRj5LpyP3Sxq2bbun4Gu/eS3yWze4mg9jT5yBSta3VXr0SODH/jsT90kWTerTZsGWOvTmvANuFtrhTXwQD8cQMuXox+l+9gDHpgajvkIOEWDU211P7gGYF3gHnQmNlZijt3jlXAf2F8FZt2zfbRYtAo8Hn3g==
-Received: from DM6PR18CA0023.namprd18.prod.outlook.com (2603:10b6:5:15b::36)
- by IA1PR12MB6209.namprd12.prod.outlook.com (2603:10b6:208:3e7::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8398.25; Wed, 5 Feb
- 2025 22:56:28 +0000
-Received: from DS1PEPF00017099.namprd05.prod.outlook.com
- (2603:10b6:5:15b:cafe::c4) by DM6PR18CA0023.outlook.office365.com
- (2603:10b6:5:15b::36) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8398.24 via Frontend Transport; Wed,
- 5 Feb 2025 22:56:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- DS1PEPF00017099.mail.protection.outlook.com (10.167.18.103) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8398.14 via Frontend Transport; Wed, 5 Feb 2025 22:56:28 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 5 Feb 2025
- 14:56:18 -0800
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Wed, 5 Feb 2025 14:56:18 -0800
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Wed, 5 Feb 2025 14:56:16 -0800
-Date: Wed, 5 Feb 2025 14:56:15 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
-	<kevin.tian@intel.com>, <tglx@linutronix.de>, <maz@kernel.org>,
-	<alex.williamson@redhat.com>, <joro@8bytes.org>, <shuah@kernel.org>,
-	<reinette.chatre@intel.com>, <eric.auger@redhat.com>, <yebin10@huawei.com>,
-	<apatel@ventanamicro.com>, <shivamurthy.shastri@linutronix.de>,
-	<bhelgaas@google.com>, <anna-maria@linutronix.de>, <yury.norov@gmail.com>,
-	<nipun.gupta@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<kvm@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<patches@lists.linux.dev>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
-	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
-	<smostafa@google.com>, <ddutile@redhat.com>
-Subject: Re: [PATCH RFCv2 00/13] iommu: Add MSI mapping support with nested
- SMMU
-Message-ID: <Z6Psj2+ingBos0Bn@Asurada-Nvidia>
-References: <cover.1736550979.git.nicolinc@nvidia.com>
- <20250205144904.39285de4@DESKTOP-0403QTC.>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A129F6BFC0
+	for <iommu@lists.linux.dev>; Thu,  6 Feb 2025 02:12:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738807976; cv=none; b=pkTRkglSUaKGlTr6kbO3y/Fz7+dZrj+e3Q+yrctCVljko2zDpzIc5qkG0FFCWPi5NA3rRc8zVjdOQNR8YLPa01o9zFkuTDrcI9Ro25UmMPg/wvhugxlWAVCi1WHN2A0wWHM0XIvpiYYf6qW+3B3QPQKqDgKuE3G0BQ2ynsTo9EI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738807976; c=relaxed/simple;
+	bh=MPbnuZ1ow3tlM4Uv6Z/zyzk9+r7Hmhv9A/qr2lRAQ3Q=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=kjBcitaJHN8z+4WahUSv8uSPmPVpQ960EGW+JK3lDaF2tXjwqOZ+jQ5d5mb7P8IDbSEQjHdv58z6Pcu59Pe2Mmj+I+ujXzc6MCRaLNYvd7DszBxg9v3cIFM/Dy6aDTr++6Rb50za1+3FNt6ULm5XbOZ1qft7LGz+RUBCRiHurdo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: da6ca3d8e42f11efa216b1d71e6e1362-20250206
+X-CTIC-Tags:
+	HR_CC_COUNT, HR_CC_DOMAIN_COUNT, HR_CC_NAME, HR_CC_NO_NAME, HR_CTE_8B
+	HR_CTT_MISS, HR_DATE_H, HR_DATE_WKD, HR_DATE_ZONE, HR_FROM_NAME
+	HR_SJ_LANG, HR_SJ_LEN, HR_SJ_LETTER, HR_SJ_NOR_SYM, HR_SJ_PHRASE
+	HR_SJ_PHRASE_LEN, HR_SJ_WS, HR_TO_COUNT, HR_TO_DOMAIN_COUNT, HR_TO_NO_NAME
+	IP_TRUSTED, SRC_TRUSTED, DN_TRUSTED, SA_TRUSTED, SA_EXISTED
+	SN_TRUSTED, SN_EXISTED, SPF_NOPASS, DKIM_NOPASS, DMARC_NOPASS
+	CIE_BAD, CIE_GOOD, CIE_GOOD_SPF, GTI_FG_BS, GTI_RG_INFO
+	GTI_C_BU, AMN_T1, AMN_GOOD, AMN_C_TI, AMN_C_BU
+	ABX_MISS_RDNS
+X-CID-CACHE: Type:Local,Time:202502061008+08,HitQuantity:1
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.45,REQID:819c88e5-44d1-4377-87f2-e8eebea3ecf4,IP:10,
+	URL:0,TC:0,Content:0,EDM:-30,RT:0,SF:-15,FILE:0,BULK:0,RULE:Release_Ham,AC
+	TION:release,TS:-35
+X-CID-INFO: VERSION:1.1.45,REQID:819c88e5-44d1-4377-87f2-e8eebea3ecf4,IP:10,UR
+	L:0,TC:0,Content:0,EDM:-30,RT:0,SF:-15,FILE:0,BULK:0,RULE:EDM_GN8D19FE,ACT
+	ION:release,TS:-35
+X-CID-META: VersionHash:6493067,CLOUDID:6aad5d02811ccb8a696d51ce0a976a2f,BulkI
+	D:2502061008201UDVF6YE,BulkQuantity:0,Recheck:0,SF:17|19|24|44|66|78|102,T
+	C:nil,Content:0|50,EDM:2,IP:-2,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:n
+	il,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_FAS,TF_CID_SPAM_FSD,TF_CID_SPAM_FSI
+X-UUID: da6ca3d8e42f11efa216b1d71e6e1362-20250206
+X-User: liuye@kylinos.cn
+Received: from localhost.localdomain [(223.70.160.239)] by mailgw.kylinos.cn
+	(envelope-from <liuye@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 609545772; Thu, 06 Feb 2025 10:12:45 +0800
+From: Liu Ye <liuye@kylinos.cn>
+To: shuah@kernel.org
+Cc: zhujun2@cmss.chinamobile.com,
+	iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Liu Ye <liuye@kylinos.cn>
+Subject: [PATCH] selftests/dma: Fix bad array reference.
+Date: Thu,  6 Feb 2025 10:12:39 +0800
+Message-Id: <20250206021239.51897-1-liuye@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250205144904.39285de4@DESKTOP-0403QTC.>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF00017099:EE_|IA1PR12MB6209:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3b115ee8-02df-4c0b-6c9d-08dd4638531c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|36860700013|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?cF4RTl/n3hGhuaYBhJJ3EsaOYA9gA9CBXTwy0/1OtVp3e/c6BR/Li6ntYeIq?=
- =?us-ascii?Q?N1GYLl7h6kUdfdBSDybUMvKqcjM4W3s8Li5GG6/JV9ceOWscnCMP2Z3+ZLfq?=
- =?us-ascii?Q?NTb/+x6XASO30XMhnEnAIeL3Eq4fI15A2yBpF44ChLX9sO9KuWnFujwUV6wB?=
- =?us-ascii?Q?EvXCpEjBCkaShfrmJPExb1924ugYTFsuwddCwVEmu+aL97U7ZDOgIFPiDiel?=
- =?us-ascii?Q?tZgJK4s9na2UnkW56tMnkZLckUWYj6flSWvYt8PSKkerPW8oLaV0GW0x+FGc?=
- =?us-ascii?Q?LElaVlo+uqe8VTRnnriJicc94kyFvVDejfqwCWjrncRAiZXcFhlAQD9FnQ+c?=
- =?us-ascii?Q?HCZdhUZNXZe/LK1y9487fAC1nn5e21tV8xZ4yuebqrDL2lnaPV5r+aLWaRrd?=
- =?us-ascii?Q?OlELZhdjRNsUC/Uk+ZvedYs7RMS6Z1vMVJl1oyOVgaivwPxu8bbHy6YHzz2z?=
- =?us-ascii?Q?7is9PoC7qnXE6hdBRu8jFsIFiFlzFmUyBb/NNb31jm6qWnmnBT43unc39uq4?=
- =?us-ascii?Q?R0ojpEeUV/5BL610uxaiTeR53p+HzVssqTrLOTqwgK7+FyM6weslSH0kk703?=
- =?us-ascii?Q?odPzl4xIYXlq3TKIhsyKDTzpI+L1MSMSu08IwoegyOgNYndqtt/qT9S1tJWz?=
- =?us-ascii?Q?UEk75JVSoH/sxY35x0gs+lzlmi/QntZ3/gYzfSxAxDoYwdgTw85i/KmqQSj/?=
- =?us-ascii?Q?Plv456LPYheQ6QUOb39lPcvbejjJG+4UDpZn0Cpug0Hn/69FGnYV+W8XyMXO?=
- =?us-ascii?Q?YR6sIiWusn6WRGMwcQkMJHyNciuYeCLxCTed4E5KJuJ4TDtfZPE6FMSTceKR?=
- =?us-ascii?Q?qbzMtLq4Qb47TbJN10Ko0GZrt6ZI+LdK6DoHksskgYkC1UWc0TYQMIo3TLE0?=
- =?us-ascii?Q?F5de+uZePBk106hitJnJsuTNglKYgVmdIRPZQ1qUluFOv7IvFlvASTqBmxGl?=
- =?us-ascii?Q?FStkHtXntIhtuTtyzG/ihJT0D1Afmb1q2wXI0lYOI6RLwD9qAJ+1mNAIjdO9?=
- =?us-ascii?Q?qPpgE5lU2MWgNUEz5JafwNNGEwDrutsxindI18hbEbM9RJyMNkyE1+LLoDvi?=
- =?us-ascii?Q?KBrdH2RvXDfmh3RjfnjYJy9d2GgnbQh7s9PAEHGhC1c+PtbVTnXlLGktRCiB?=
- =?us-ascii?Q?mAdr/GPmQFDSLrQBAS6i2VXOS9ASNG+lxVzw3YS+GjoKvw5sGYC5ae2tpesD?=
- =?us-ascii?Q?S0NYUVLAF/JKf8aG9PMbUGciBIUIWiJ79NdeMDfdQPCflbuwKSlC/7WAWf1q?=
- =?us-ascii?Q?KCsSZ5V7LgK3qdXrBKfUC0b/c/07AkDkzjj4WDDJTg9oHFCj4+bMEKgbxhJh?=
- =?us-ascii?Q?evx6x2mXDqgYhJFlhHPzXNQXebNymPkzWzpKLi9rflkLxG/lnc9YUGPc1Wv9?=
- =?us-ascii?Q?dIa8ccUKdKK+QqQewzfq+E/HJ/zz8566jCDCTOxVFeBKVlTG0OahWlaADiu8?=
- =?us-ascii?Q?cbCAs2d01WmHQMtuYzmqRFISKyOsJQ+bN++JgQ+VOcCHvIXA4J+kY7Z7rIjs?=
- =?us-ascii?Q?f2SkUYgY/XUh++Y=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2025 22:56:28.1869
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b115ee8-02df-4c0b-6c9d-08dd4638531c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF00017099.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6209
+Content-Transfer-Encoding: 8bit
 
-On Wed, Feb 05, 2025 at 02:49:04PM -0800, Jacob Pan wrote:
-> > There have been two approaches to solve this problem:
-> > 1. Create an identity mapping in the stage-1. VMM could insert a few
-> > RMRs (Reserved Memory Regions) in guest's IORT. Then the guest kernel
-> > would fetch these RMR entries from the IORT and create an
-> > IOMMU_RESV_DIRECT region per iommu group for a direct mapping.
-> > Eventually, the mappings would look like: IOVA (0x8000000) === IPA
-> > (0x8000000) ===> 0x20200000 This requires an IOMMUFD ioctl for kernel
-> > and VMM to agree on the IPA.
-> 
-> Should this RMR be in a separate range than MSI_IOVA_BASE? The guest
-> will have MSI_IOVA_BASE in a reserved region already, no?
-> e.g. # cat
-> /sys/bus/pci/devices/0015\:01\:00.0/iommu_group/reserved_regions
-> 0x0000000008000000 0x00000000080fffff msi
+dir[directions] should be directions[dir] to correctly index the
+directions array.
 
-No. In Patch-9, the driver-defined MSI_IOVA_BASE will be ignored if
-userspace has assigned IOMMU_OPTION_SW_MSI_START/SIZE, even if they
-might have the same values as the MSI_IOVA_BASE window.
+Signed-off-by: Liu Ye <liuye@kylinos.cn>
+---
+ tools/testing/selftests/dma/dma_map_benchmark.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The idea of MSI_IOVA_BASE in this series is a kernel default that'd
-be only effective when user space doesn't care to set anything.
+diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
+index b12f1f9babf8..b925756373ce 100644
+--- a/tools/testing/selftests/dma/dma_map_benchmark.c
++++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+@@ -118,7 +118,7 @@ int main(int argc, char **argv)
+ 	}
+ 
+ 	printf("dma mapping benchmark: threads:%d seconds:%d node:%d dir:%s granule: %d\n",
+-			threads, seconds, node, dir[directions], granule);
++			threads, seconds, node, directions[dir], granule);
+ 	printf("average map latency(us):%.1f standard deviation:%.1f\n",
+ 			map.avg_map_100ns/10.0, map.map_stddev/10.0);
+ 	printf("average unmap latency(us):%.1f standard deviation:%.1f\n",
+-- 
+2.25.1
 
-Thanks
-Nicolin
