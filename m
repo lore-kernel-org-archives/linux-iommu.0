@@ -1,196 +1,213 @@
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2085.outbound.protection.outlook.com [40.107.212.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 135EF226170
-	for <iommu@lists.linux.dev>; Thu,  6 Feb 2025 09:19:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.63.210.85
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738833597; cv=none; b=S41YIzTL2lFbWbtpiNkHR5KzjDwfbUNcblAqe3Aqqtv2wBjTdV2wS9DKIz5rdlwOUpE/xUkQH1rlV9Vo1ahHmMaPG1kWKyYM4RdKM62K9Nd6NGj1hAqF7jm60wLDACYU2rPKvlbAMeNM7EOW6itkG8B71zhNw465d0s9fksB89Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738833597; c=relaxed/simple;
-	bh=Ufb2eylb3+DnuZABfILPsWYDDimlj3OEATXOyCLWYkI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=bMNLwQ5fdWVSK2gfMWig1yQ1FIdSnq2ItQpjJCd4MQYJsTrnUtiwGP1xR6XHiAQTVjU/kncpx7febLnwCxODbv8dIlHSS+naSQpl41G0XUwsgK1KWtZZUZo93V+0q4/TFHSfXM1KHxPSZ6gFYT3grPRQnQD0gE5jNseSw5213Xo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st; spf=pass smtp.mailfrom=marcan.st; dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b=zOA0+CLt; arc=none smtp.client-ip=212.63.210.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=marcan.st
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E64FD18DB34;
+	Thu,  6 Feb 2025 13:17:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.85
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738847848; cv=fail; b=Mal9Zpn8gMEoG8ejpGXy9hGfPUj5EBjMmPpTZLc2R31YZmP+W5l+7nIQzinskXIaO30ah8N4F6q/hhsqSvg9Z1EUE0Ms+H8O5be5/nBFxAHTkRomveRLoaG2GOqgstY1JJF6OEXhiuZ7D1XdbU2eWWWix3BNH/Ga/nCWYk/fl0M=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738847848; c=relaxed/simple;
+	bh=VhCLITNoxfn68E7OxSkD8ElI+X1JKcxoPv0D0mX6uRs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=tTD5d1nDHQVmDfrxNNQ2Vai9w6DCayTGCkqOoKSatuFha0LfzOo5JCk8HtynfNft6M7xPSV6Ji2KG55uQGOompc03tRRVY691Z1DFSfCSFkntdXDo0BnjcHmNosc7I9fOTtJ2b41ykreYfUC4VqMsSkIdxIza80OwERAV6DuDE4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cdhXOGvC; arc=fail smtp.client-ip=40.107.212.85
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b="zOA0+CLt"
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: marcan@marcan.st)
-	by mail.marcansoft.com (Postfix) with ESMTPSA id CF00243598;
-	Thu,  6 Feb 2025 09:19:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-	t=1738833585; bh=Ufb2eylb3+DnuZABfILPsWYDDimlj3OEATXOyCLWYkI=;
-	h=Date:Subject:To:References:From:In-Reply-To;
-	b=zOA0+CLtKNsbLq+FloF3HrT3spuPM67n3zW1PnjeqhurqVEghbvreCtJk3UUO/aDR
-	 A5BswsLuMQ1zvz7S07JkFOGDqlLzi7eXZK2zSZGA2Yj3DDODssYzz/jKZUwuD1EX/m
-	 vSOHmE4ZOQU63PQZ8eTDZ6R48nQVxP4GjQojjbmFpN1GadB/vEO1ce+G/8+dbs86fQ
-	 BGrxg2G990/5xcNKQ1GKVr7zVvQU6xndun8rBOmX/gv9A4+YYqf0pVPVPxkPfflMUW
-	 EgJT5f90yw9EPghXDmuajr8XaT8en616WmuK8sa9o/ngtnxfOmVs0qOhapy16ySZsQ
-	 SxRklUSEz735w==
-Message-ID: <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st>
-Date: Thu, 6 Feb 2025 18:19:42 +0900
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cdhXOGvC"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ixnV4QBUa8pN9kOn+mHE9LCNxca+perCs/9wrFM4gyWpgkLs1hL7kXMRKeBfzLMioQ1yje7HUYBYMNCtucfSIFYu0Hr211G1qXn/G9iPr8Gncir3nQu5qfYMWdyI+kBbJ6PlXqDWRMnakX2jtUATJ5qxPXf+goETkPArh5LUJ2Vto+tvZygcW5Jf3sez6Hlcgqx00OmB4OUxnFVXQtfZN7lI1zsSrPJFaWs4EbwjsPEJ0du4dHQOqA3AeUbnkb4XCz7LzfnwyXOsrMAOGZJxIHlZdyBLCMHBjAbrbkneQYCSQJOx3CVJqPALWYLaPrGKe01R6kX1liUIxQ3OrKa5/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bvGBtO1g0Tf10DP3Tmh3PU4BulQZrk+/hjd9Hhf3IuE=;
+ b=wn0xk/Z5CapK5PD7TZMtKOTSBpG01mpS2ZPfmPLpQCED+aSi4+S4iZS4JzH7rrJT/cktsmyAuv6vN2SIXWHhS19qc/39YNlY3hN6DPh6obd/nesWdJWZQEz2+b7sJnJJ2JLoNQwFHDPmqYSGEQEk+nlCP+pTnIbnzyBDAYFBPzx531gJY0WAhSH7tVXBzBHlTU25rLozxPG3ls+7yzquz20+fKfCuwIfj5xNp/TacBbVwloH+9w0tjFEjpdZxUlx5QH3grOJeVYU2O4bpYGfFgeTgB6+siSbfLqStpJS2OMnRabMLhSZgYlzCqf3Hs0C3M1D5HJS05KNKmnOz1brng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bvGBtO1g0Tf10DP3Tmh3PU4BulQZrk+/hjd9Hhf3IuE=;
+ b=cdhXOGvCShpbEy4/E+rs09HnzaRUVgpkJPomhTnpaPMFJmhr03NZElo1RBduByTopsMr2bwnHQl6NIj+qMkPAbdMblUSg0OzpcbMmglNiWJiVD/o/HC9gwOqa7JeMOP0V+9q+sy2NmtcBy8IJz6bl7jlQFI9+TPPMZvatHl53/gQvxWyoL8WxDoUeEtK2tV5aD76YKN8g0+nONaHuqa/MF6EFoASsscwJLqEPV+bso2DZN9kMr3W5kEqbCH0mfSHF+5a6VCEt5ZSjSTw4sr8tlef4Utzf1gaFoOtCiNHMfwBzglp3FI2n/ZSiWV/FBTSsjBOgZnddxoqI6VNHreN7g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by MW4PR12MB7239.namprd12.prod.outlook.com (2603:10b6:303:228::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8422.11; Thu, 6 Feb
+ 2025 13:17:22 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%6]) with mapi id 15.20.8398.025; Thu, 6 Feb 2025
+ 13:17:22 +0000
+Date: Thu, 6 Feb 2025 09:17:21 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: Alim Akhtar <alim.akhtar@samsung.com>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Hector Martin <marcan@marcan.st>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>, Bagas Sanjaya <bagasdotme@gmail.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	David Rientjes <rientjes@google.com>,
+	Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH 17/19] iommu/riscv: Update to use
+ iommu_alloc_pages_node_lg2()
+Message-ID: <20250206131721.GF2960738@nvidia.com>
+References: <0-v1-416f64558c7c+2a5-iommu_pages_jgg@nvidia.com>
+ <17-v1-416f64558c7c+2a5-iommu_pages_jgg@nvidia.com>
+ <Z6RI3ftJTrm3UxoO@tjeznach.ba.rivosinc.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z6RI3ftJTrm3UxoO@tjeznach.ba.rivosinc.com>
+X-ClientProxiedBy: BN0PR04CA0160.namprd04.prod.outlook.com
+ (2603:10b6:408:eb::15) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
- coherent allocator abstraction.)
-To: Dave Airlie <airlied@gmail.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Greg KH <gregkh@linuxfoundation.org>,
- Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
- Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
- Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com,
- aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
- Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
- DRI Development <dri-devel@lists.freedesktop.org>
-References: <Z4D5a5NYrAbNxUL6@pollux> <Z4kG5AcVeQKegLnb@pollux>
- <20250128092334.GA28548@lst.de>
- <293df3d54bad446e8fd527f204c6dc301354e340.camel@mailbox.org>
- <20250130154646.GA2298732@nvidia.com> <2025013030-gummy-cosmic-7927@gregkh>
- <20250130172437.GN5556@nvidia.com>
- <2025013148-reversal-pessimism-1515@gregkh>
- <20250131135421.GO5556@nvidia.com>
- <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
- <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
- <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
-From: Hector Martin <marcan@marcan.st>
-Content-Language: en-US
-In-Reply-To: <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|MW4PR12MB7239:EE_
+X-MS-Office365-Filtering-Correlation-Id: 241bfcde-e9cf-488a-9919-08dd46b0976b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?tcoh6BLfTNYQrUurNmQX5dcHc8PRyHGEyjJmuHEYO9AjV98Xz4Xl4+f7Plrv?=
+ =?us-ascii?Q?N4mFgEblZ/PD5/UwbrFZX8wL9IV7QjBa58IBfSsESybpAF5tIfKyqfWQ7YGO?=
+ =?us-ascii?Q?5A3C6ryJ50nRTP9yCx/oL6JyJgRAHbVJx8Ez+TY/3SgCw3MMyPZJvi6rMcuy?=
+ =?us-ascii?Q?1elziEbGk/Hxb8sm8gKIibr8xg0jN3CgcS/7Th0XfanzsIsyMGltOEnVdVnt?=
+ =?us-ascii?Q?MTWIedDQylfhIeVuykIja8Ku3v5a6bc+0YekhWPzDXsaAiM/0BT8bb6TLNFO?=
+ =?us-ascii?Q?C4e3ww506Q8cLDQ1WIS3CgzL5EhjCpGAEEzLHSyYHSm0GAinNBZD091odrVm?=
+ =?us-ascii?Q?pZSNM1Z1t9huK9jjuns/KST3jDnzKf6S+50En1eH5xVMOBR2W0rKQaiPASPn?=
+ =?us-ascii?Q?J0T1oacst8ctH7/OEq1CQhvsp5wL5QAANGz/bwMUnsIezK5YeSb0Q5hsGSM6?=
+ =?us-ascii?Q?aEnTLa7tC33fkoY/l5bQkEP7E5ElIp/3J/zzLXlBECAbNHsAJDLJyebgw5ge?=
+ =?us-ascii?Q?EcO4TiC82t+uhuHywKR4TWQABGqqfKXs+cvXXKBRljzvqF4SZ6xXw+3htr0Q?=
+ =?us-ascii?Q?AI7QF7ShcSTjxNvT9bmSusK/4A4vIEavZ9tjXwC+5gt3xOXLWBkGQbfZZsIa?=
+ =?us-ascii?Q?YFXHY4tGl+p0arpC3QgERo78wN3Dkg8BkUM7e+WQdsavZIttS94LPSh8geyM?=
+ =?us-ascii?Q?lNWpOTMmQszRfXLYcdNY2stqZUQNzx3/bP55l0iTPwroTw52cfLkejbklAN8?=
+ =?us-ascii?Q?JEcA0zDuei+Abe8r/hp0xk45cCLjQUT0uUBL956NWAZiaQPpEPTsGvkp9P75?=
+ =?us-ascii?Q?kbq6cMORMSCfkyywL7Ff4tgAxXctoGEp2AEB25FrPAEHjTXM4pgWa6WZEneb?=
+ =?us-ascii?Q?DqxIQBU8yi66VT0zr4hnijyR7jZZnM2wuHdeQkIQvMQI8Sch2Zk/7wqYq7kq?=
+ =?us-ascii?Q?OmBY2AnJq2v27KZbQCYqQPDdFOR9wCdWT+O+dsUPfZniyfOEJZpVtD2yrLM/?=
+ =?us-ascii?Q?4Npdrr9mpAzzF2dyiqL1uHu3olAPp92qEy/cv/wFWDDs7OLcIZqD5I+RlCmA?=
+ =?us-ascii?Q?PaaXFCKbLaWZ/RyfGQuyXnVg8srb27X8ImHC3aaiM1pLcS/kbql5pu/TpeYQ?=
+ =?us-ascii?Q?OVrTxJg90WFbPbXT0b9wpXqvhhj2lMtaeZ5JX5Z4CHWo086hfnnHuxgo6kP+?=
+ =?us-ascii?Q?3FqugN7tK+r/qdpcP9KTqssmw5D9/0tmlVFwWjAAGQI20n+Qv7UAYnc8V8Uc?=
+ =?us-ascii?Q?nQwg00aicNbZ/LT14ydJEdRKBT2v+aIv2X3ss7N4WszuJb+TAucvPqDmYC+s?=
+ =?us-ascii?Q?aBSqXUk1uPOTwJhSo7E2MUQDNP+cPxKjjrLR22u0l0Gv/wIHzH/rmFTh423u?=
+ =?us-ascii?Q?cKDDNVqxRymZRZDfHhuPpfAKf3me?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?KRkj07ZxtVvtzA1Gc1po/3FHX8h8zowcRgPicr44lisU//1R9GYEMKwQtfRo?=
+ =?us-ascii?Q?c7XCSfOzhmhGPbyL/JK5C5hp2+VZIL0CDsk6oHvWtPw2K6suI/RBkB/iasBM?=
+ =?us-ascii?Q?kx2Q0lDgMNtmRcRze7/ytzDZ+3sZMX/DQVUitb4AlhtvVmj3qn7FNCpD6OCf?=
+ =?us-ascii?Q?+rX9IY7hFjiVBJcqvV+0r1M2Q0viAa0C3Av3sVPvRPlhIhgZuYA0cgp/khGz?=
+ =?us-ascii?Q?WdxTCghdpmaMIOQSJLrnQZKIShJSyii5sCDw+8DqvNaOOiZmYq4xiS5LSR/q?=
+ =?us-ascii?Q?J3F8ZqcG0HLlMh/uM92K5hF+zlT+eKxoofZ2Tkt6Svt1zz4sCAfUiq1qWQkJ?=
+ =?us-ascii?Q?83sCLVR2hsza0z/DmOY4TeBXCaFo29Ufsd1tT1j+FRaTOVUUaknXYg+7TJVY?=
+ =?us-ascii?Q?+PFMc0MaueD2xEk7K0n+T78e+gGWadSNJq+WFTen8rQ0mLv2soWDyxYjBx8k?=
+ =?us-ascii?Q?50huEt/9R2/q58qFvOZTz/ZpjrQx0eaB9GrFaHxa9cm4cdAUXXP5qTiBEdon?=
+ =?us-ascii?Q?C1v2ZqOG3vKz8gLTFy2ZPfwq6NFOGPelf6QaVrTShuo1VioxHTiyyCgVzrt2?=
+ =?us-ascii?Q?OFbLupdMFZNYz5MfFpJToGoBvvk/jpUiSFxg0WZr3sBz832VgcO3OBtzdNnb?=
+ =?us-ascii?Q?NuwGcooW58nZOtpoDh862mUI5so0+NdsYalO4Mj+NmLEwnR3rIotKXtnH4WD?=
+ =?us-ascii?Q?GlaRQ+tpEA9O4JyC+r1kJwkfPCnRuMIKorjhcai2PfvYv3VH6rtpzBb1sS/1?=
+ =?us-ascii?Q?PWyqVXjI2IH0uQ+iWuffCFONE6NG9Qbrp8K80cxn6Uqtz40tUf/fImeIwu+d?=
+ =?us-ascii?Q?Ry36rVuxoXYl1+iO6/2Lc+A5UZFsh5VkdSFITi1+iSMbdqIIGWbNCWNdP/l2?=
+ =?us-ascii?Q?mkRIuZwhyyNp+6YPNrpAv1k/wKwsxyVPwcXbWqPGM+QshWQHLaLbYXN5sC/I?=
+ =?us-ascii?Q?I6yTSamZctYDK7U3sbxokg76jL6oFE7Sq5Qgh3FLhRCRdp0xii7Yk+M9P3LM?=
+ =?us-ascii?Q?WFbmgNmd88N+dnJQ6xhAuKYfOZhXakHuzBtY+50fEQYjsA0AIxqz87deWdF0?=
+ =?us-ascii?Q?aeTZTYeepKU4qWbmrHGfZcqcEa2Y5IA03d7KIAMpQKNXaNLlCKQQlGWAf8YA?=
+ =?us-ascii?Q?y4JMvsQD+3bsw39PEH1i0s3LRgw+JXQSSwKK3o3f2CampaKcCUprEMqSHKyD?=
+ =?us-ascii?Q?9OUiUPaDhCUQud858eFj2dOE7LPAbj2CVY8yz7dFi0sj9qqNmjgEpKQcFd/5?=
+ =?us-ascii?Q?xHmAWrfzn9e5avZp1BTe61WeIGYlC9XA84y7o3El2qAREuiodeb6piNzS+N+?=
+ =?us-ascii?Q?/DzzZZcHqZphtfwdr2Ajb9wuyz6J/R8AVGzhktI+RmNpAJ85UcrY+DnEq35e?=
+ =?us-ascii?Q?A/C2jD57VRDizRlMEK/3uNJ1sIAuVfmC6ISpZR25ErV/VYEWUkf8zjGFO1y9?=
+ =?us-ascii?Q?Ef8FAf4t7607ztY8t4GHbdgalUZ/ZF71hToPd845HWRNkgNw9jrb6RbxSn8J?=
+ =?us-ascii?Q?HHhJqzwBo4aQ1ng6tT0b2iHjpK1RNEE4Yhrrv0LUWR3Z+YZO2fXUHXYXQTff?=
+ =?us-ascii?Q?IKk8bvb5IETlB8dSbD4=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 241bfcde-e9cf-488a-9919-08dd46b0976b
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2025 13:17:22.7420
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: owwSbsaBEmQ+2p1T3qr2auAT11+Z8FarXRqrFwaA8vOXs0wlzvOg7JxL+2vsCzjm
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7239
 
-On 2025/02/06 5:36, Dave Airlie wrote:
-> On Thu, 6 Feb 2025 at 04:52, Simona Vetter <simona.vetter@ffwll.ch> wrote:
->>
->> On Tue, Feb 04, 2025 at 03:46:14AM +0900, Hector Martin wrote:
->>> Adding Linus
->>>
->>> My 2c: If Linus doesn't pipe up with an authoritative answer to this
->>> thread, Miguel and the other Rust folks should just merge this series
->>> once it is reviewed and ready, ignoring Christoph's overt attempt at
->>> sabotaging the project. If Linus pulls it, what Christoph says doesn't
->>> matter. If Linus doesn't pull it, the R4L project is essentially dead
->>> until either Linus or Christoph make a move. Everything else is beating
->>> around the bush.
->>>
->>> Rust folks: Please don't waste your time and mental cycles on drama like
->>> this. It's not worth your time. Either Linus likes it, or he doesn't.
->>> Everything else is distractions orchestrated by a subset of saboteur
->>> maintainers who are trying to demoralize you until you give up, because
->>> they know they're going to be on the losing side of history sooner or
->>> later. No amount of sabotage from old entrenched maintainers is going to
->>> stop the world from moving forward towards memory-safe languages.
->>>
->>> FWIW, in my opinion, the "cancer" comment from Christoph would be enough
->>> to qualify for Code-of-Conduct action, but I doubt anything of the sort
->>> will happen.
->>
->> Yeah no.
->>
->> https://chaos.social/@sima/113942119012147959
->>
->> This was about you, because typing a proper answer takes a bit longer. It
->> was also about your toots on fedi, like this:
->>
->> https://social.treehouse.systems/@marcan/113941468353031993
->>
->> And "haha it's only a joke" does not work with your public profile and following.
->>
->> I do understand the frustration and temptation to just burn it all to the
->> ground, head the call of the sirens, or maybe for me more pick up goat
->> farming in the Swiss Alps. But you can't have it both and expect to also
->> be part of and contribute to the same community. And personally I don't
->> appreciate getting drenched in gasoline while I'm trying to quench flames
->> on the ground.
->>
->> And this isn't the first time or the second, by now it's a pretty clear
->> pattern over some years. And with the first I could explain why you react
->> like that and you had my full understanding, but eventually that runs a
->> bit thin as an excuse.  Now I'm left with the unlikely explanation that
->> you just like thundering in as the cavalry, fashionably late, maximally
->> destructive, because it entertains the masses on fedi or reddit or
->> wherever. I have no idea what you're trying to achieve here, I really
->> don't get it, but I am for sure fed up dealing with the fallout.
->>
+On Wed, Feb 05, 2025 at 09:30:05PM -0800, Tomasz Jeznach wrote:
+> > @@ -161,9 +163,8 @@ static int riscv_iommu_queue_alloc(struct riscv_iommu_device *iommu,
+> >  	} else {
+> >  		do {
+> >  			const size_t queue_size = entry_size << (logsz + 1);
+> > -			const int order = get_order(queue_size);
+> >  
+> > -			queue->base = riscv_iommu_get_pages(iommu, order);
+> > +			queue->base = riscv_iommu_get_pages(iommu, queue_size);
+> >  			queue->phys = __pa(queue->base);
 > 
-> To back up Sima here, we don't need grandstanding, brigading, playing
-> to the crowd, streamer drama creation or any of that in discussions
-> around this.
-> 
-> The r4l team and drm maintainer team have this sort of thing in hand,
-> it's not like we don't understand the community of the Linux kernel,
-> and having this first reaction to blow shit up and dramatise it just
-> isn't helpful.
-> 
-> Being toxic on the right side of an argument is still toxic, please
-> try and be better, and maybe take a step back and consider is what you
-> are posting going to help the discussion or just adding pointless
-> drama to it.
-> 
-> Dave.
+> All allocations must be 4k aligned, including sub-page allocs.
 
-I'm tired.
+Oh weird, so it requires 4k alignment but the HW can refuse to support
+a 4k queue length?
 
-I'm tired of seeing positive, technically impressive kernel projects
-blockaded delayed by maintainers with no technical justification, and at
-best end up moving along at a glacial pace.
+I changed it to this:
 
-I'm tired of seeing important contributors and maintainers give up and
-throw the towel after enduring repeated misbehavior and hostility
-towards their efforts from others.
++                       queue->base = riscv_iommu_get_pages(
++                               iommu, max(queue_size, SZ_4K));
 
-I'm tired of getting messages, privately and publicly, from all kinds of
-people, saying they won't touch the kernel with a 10-foot pole due to
-the hostility and the baroque, regressive process.
+> >  		} while (!queue->base && logsz-- > 0);
+> >  	}
+> > @@ -618,7 +619,7 @@ static struct riscv_iommu_dc *riscv_iommu_get_dc(struct riscv_iommu_device *iomm
+> >  				break;
+> >  			}
+> >  
+> > -			ptr = riscv_iommu_get_pages(iommu, 0);
+> > +			ptr = riscv_iommu_get_pages(iommu, PAGE_SIZE);
+> >  			if (!ptr)
+> >  				return NULL;
+> >  
+> > @@ -698,7 +699,7 @@ static int riscv_iommu_iodir_alloc(struct riscv_iommu_device *iommu)
+> >  	}
+> >  
+> >  	if (!iommu->ddt_root) {
+> > -		iommu->ddt_root = riscv_iommu_get_pages(iommu, 0);
+> > +		iommu->ddt_root = riscv_iommu_get_pages(iommu, PAGE_SIZE);
+> >  		iommu->ddt_phys = __pa(iommu->ddt_root);
+> >  	}
 
-I'm tired of seeing people get away with using words like "cancer" to
-describe others' work, with zero repercussion.
+Should these be SZ_4K as well or PAGE_SIZE?
 
-I'm tired of *politely and calmly* calling out hostile and unwelcoming
-behavior from maintainers and suggest ways to improve, only to be
-ignored and nothing change (note: this refers to other instances, not
-this instance).
-
-I'm tired of having to spend hours or days of my time to upstream simple
-things, because even the simplest of changes en up in a bikeshed.
-
-I'm tired of having to manually format code instead of using clang-format.
-
-I'm tired of drive-by nitpickers who send useless review comments on
-code they don't take the time to understand.
-
-I'm tired of having to review patches in an email client, where I can't
-even tell which patches are for me to merge and not without writing
-complex filtering rules to correlate email bodies with kernel subsystem
-paths, which I don't have the time to write and maintain.
-
-I'm tired of having to type a half dozen `b4` commands just to send a
-change.
-
-And I'm tired of hearing things will get better if I just "trust the
-process" or let people work from within, while nothing seems to have
-actually changed in years despite endless discussion about these
-problems on the sidelines.
-
-If shaming on social media does not work, then tell me what does,
-because I'm out of ideas.
-
-- Hector
-
+Thanks,
+Jason
