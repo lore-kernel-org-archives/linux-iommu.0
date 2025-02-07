@@ -1,284 +1,167 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2081.outbound.protection.outlook.com [40.107.244.81])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB1B31DE3AA
-	for <iommu@lists.linux.dev>; Fri,  7 Feb 2025 13:49:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738936196; cv=none; b=LA1hQkWS5yJn8RjCl5AciGkbxEo1M8d5BOUktDPl8gkhjDVlQu9+lCk23pKGh2LNxsoUnH9JUCRRzTEPl5adghDztshGMzGjtx3VeE2LrxMTTv4Bkn+f7BS5KJnC9u4wfPP//9cxtpvE/vT1rAubVuJ70zuui69Lo1x4My8Y2fE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738936196; c=relaxed/simple;
-	bh=juFaumXjbLoOz65YU45sqBaxAyFGQIdadpsHlfe1m5M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FxLoLNYN6w6vTatIlTiXviaiwgGb7VrZCOaQPgNI6h4XZq3q5Ol3XiCkOSi276IcXvutqP6iouxt8HkO92xYvH11aHHHc9RfaaZy5xXLmZT4lj4MXLGiFRyfvaYxz2UBEUXHmPtu6BHeFheAqK09+qY+a3NImXosT/suBC2tAFs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch; spf=none smtp.mailfrom=ffwll.ch; dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b=LpCjLoQt; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ffwll.ch
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F8437FD;
+	Fri,  7 Feb 2025 14:30:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.81
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738938625; cv=fail; b=GPfc6lozRmS3rr/HEM809LJOoEHRnLm2ItJksfBpzpbov5C2YbZEoh6oN5EJvVxmmFKoGeWb7VhtM+fR5HVlsGP+l2Ezsh3Q/EfAAJ9NpA5iAl7s410u86dvV6171hyT+Ll+oKW2cxp1hFprVQCFJhi1qq31HkE0luSiDpYo52I=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738938625; c=relaxed/simple;
+	bh=aeAHGan8frRSOjjQL9eaRiVKAxx9omZhXzQzeICzgTA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=dTb4R4vw2HQwZkmWh8PTZmWY7hVPcnsCHx4t5uVV0IVUCTzTgAfLtUkbBJCFAQXxZvzPvM9g5/OITTuku06Natl+PY/6qbhQutj7eh9INM3EiOmYFV/ysCRyO1vGgaa1WH9zkYYFKvypOjHTNYvWk7wwjcabDYlUIrIxyKKRpkI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=LWp+7IDC; arc=fail smtp.client-ip=40.107.244.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b="LpCjLoQt"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-38dc9eba8a1so596580f8f.1
-        for <iommu@lists.linux.dev>; Fri, 07 Feb 2025 05:49:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google; t=1738936193; x=1739540993; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=gpzEGYGNBlnkdvpss0WFxUtrvy3hr5xZCI7pyjeA6nE=;
-        b=LpCjLoQt8uSh0c02pSzKJquhnPO8Iw8ePf6FiYpTZbCLCWWHZbVvMa0AryRsaUAkE/
-         mnKV4WUXJ5X/a67XvWiJ9/yCThcrwsv7mA0KcclHNOK5wjuEcV1UKXK1zIN7c1NKJjPT
-         oIxH2W87/iFdG2gFOiOGhyHT6+oJ03gJq/6zQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738936193; x=1739540993;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gpzEGYGNBlnkdvpss0WFxUtrvy3hr5xZCI7pyjeA6nE=;
-        b=AyQPyJdTLW/Fmq38rIPCLkgZCtCTsWIQIC3NGOOo1SJRmhvWRNLusKNyjETXBBNspK
-         Sb2avIksfsJZeJ4gE84AiElc0woZQx5dvKYfH1GR2Z69ED3laFXd+wGhhslRLMZQvzGg
-         rC4/0v9aOfzfsOTwI2oqpXVfqccZ8bUiZFEFrisWkK1ju2CMrlbn+XM0JB/OdFKvjx9C
-         a3nU9t4iE2/RMLuq4G603liSr1AkCvjFJvmI41vs0RpIe6OhJfNJNOdALxCxdiYdhyCy
-         PLYJlch7BdoQHDlNw5HaOMZ0AqzSRgH9kHBBYG0EDgHjRkFThjPZF4z6WH7MrMiuCw/t
-         Kplg==
-X-Forwarded-Encrypted: i=1; AJvYcCWczb/Y9l43D76Pyi6DzeTeP0I2DLzy89vc9yIBptFd8Gskt8fs2y2E9YNDSnlLJg+3PrSTGA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxgdAQzmTOMbt97qHop2m9ODgbZ7nwL4ydcPka7dMIjoGQaExLH
-	zST8fWVUSln42oUGYhdURv8bObDeKOCzC9khqdB2G5zRv1UFm4i8N83udT/+8dk=
-X-Gm-Gg: ASbGncudCiAKOFuDzIQ17GwGdsQr51fB/CNeIvTKVevog4wAOOOp2yrEaSlbpJ0kNv9
-	evykBIoKiVBS9b0tWHOe/nYnLQhDr+jLXB/q5msGfTBbM+x3+LW4gV4kNeGb6ed7xXL0IZzP6qn
-	rYTStOCM8BIIb77TwjwqjWYtcKPJwm0XbDzy7S4I7ht3o/rFfEh3kAnUZYEEvHGAPuxW7b5vFni
-	inuryyJrjuWMN13L4zMj0ls6yZh30ep4NW3nxHd9sAmn5AHrMxNvr7woSVl6Rn0W8JFPcy+5B+S
-	9XHVW/jdzuOtKExQKPIeEjJD6pE=
-X-Google-Smtp-Source: AGHT+IGJqAMB1t0pJiSzXY6UMdV7Lyj9QcEwc09QaQmxoJvGxizmah3qJE54xKnmFhg5DOnjQ57dWQ==
-X-Received: by 2002:a05:6000:1a8d:b0:38a:88b8:99af with SMTP id ffacd0b85a97d-38dc8dd0c01mr2285461f8f.22.1738936192850;
-        Fri, 07 Feb 2025 05:49:52 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:5485:d4b2:c087:b497])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38dbdd53a6esm4511438f8f.43.2025.02.07.05.49.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Feb 2025 05:49:52 -0800 (PST)
-Date: Fri, 7 Feb 2025 14:49:50 +0100
-From: Simona Vetter <simona.vetter@ffwll.ch>
-To: Hector Martin <marcan@marcan.st>
-Cc: Simona Vetter <simona@ffwll.ch>, Jason Gunthorpe <jgg@nvidia.com>,
-	Greg KH <gregkh@linuxfoundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
-	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
-	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	daniel.almeida@collabora.com, aliceryhl@google.com,
-	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	DRI Development <dri-devel@lists.freedesktop.org>
-Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
- coherent allocator abstraction.)
-Message-ID: <Z6YPfsDSNdRUskvp@phenom.ffwll.local>
-Mail-Followup-To: Hector Martin <marcan@marcan.st>,
-	Simona Vetter <simona@ffwll.ch>, Jason Gunthorpe <jgg@nvidia.com>,
-	Greg KH <gregkh@linuxfoundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
-	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
-	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	daniel.almeida@collabora.com, aliceryhl@google.com,
-	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	DRI Development <dri-devel@lists.freedesktop.org>
-References: <293df3d54bad446e8fd527f204c6dc301354e340.camel@mailbox.org>
- <20250130154646.GA2298732@nvidia.com>
- <2025013030-gummy-cosmic-7927@gregkh>
- <20250130172437.GN5556@nvidia.com>
- <2025013148-reversal-pessimism-1515@gregkh>
- <20250131135421.GO5556@nvidia.com>
- <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
- <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
- <4c143b85-063a-4413-a6ca-e9d80e26da96@marcan.st>
- <c5a49bcb-45cf-4295-80e0-c4b07083df00@marcan.st>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="LWp+7IDC"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=x3P+OJSqv3UlgMPLpQMLVUD164LSHByz4B9WO+JTxwDNVNAKVaxAl1Vn8gEDwYySYTvzJr3NclQqtTExy7nwJCUlEf1ppIvzzgooBG9FJ8xezRy1lIWpmM6DV1fxJw08TLw6UfrmKtPiBnxf0b4kNnl/jOBHyo0Ud7VGK+IebsuMpeF/8Ex6tbW3y1RGj2WMU+KSqMXI5JHYL8bIu0NFE+D9Qv8esRUcrfi+b8LJjpU2MEFvjlHNUy+dLvgdz6gJcaqVbdfXq9t45rRffp0EK5Snnw2N6C53Ok1H/wyBjGm3Fx+rqNEiKM0V7ZNVFtGD2d3Pm1hyrlUNNc/sVHDgOw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ipOFZTxOZxoj16RgTXZauS2etwkMx8gyHG2OFMi4LKg=;
+ b=eSBQ5ezaVRyXfJIj6h7WLy8T1PJv5telPW7h5Jw98n/HPgXt6vWWAW0zCexg5V6K2tF9iIfqoLLwJC6tAekC2axsudpSL413S/sevUFqhCKMwyKn1u6zOQebqqe4qDU6mONo20O/57WmD589tVfVMx8ztHygwhHIa1dAiEN6vox0Ut3wg5scYMRe7ipubsUNma3au2ehb+Tvcel97tT9T+LuapPWx/PLzDE/ynD8rgitEQEqY/pQYwaL+dRyzS+4YoquHkC3bwAOtRLLWBkqf0iu8q0kqbE7ae0ALuVPbQJVqnW5FpG4XnpQi/eDvSSD3uV5S5nWB0OI3be1W7O2ZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ipOFZTxOZxoj16RgTXZauS2etwkMx8gyHG2OFMi4LKg=;
+ b=LWp+7IDCJyQXRTJ8ssjkFgxZXnn5pyw4lg6X6vkfN8+FFNLDkMdVNLKESdoXPzKNZnDceab2jSff7rIdhcnam5oJnStageuAzDaROsMjrDd9gQqA2WgZJrU9IO0nT7xKgw2pHeQDLgavd9grJPSm0LwQDmnO4gn0C1AJqAjk4SaAVRoQGEX9GoexpYIiGG7QCEb11scoBjDm64klsloU/8oPURMLeagik5Y9UF3Kv4dJIVrFn67+CPScIMFarHiQvcpmj/77wpHqMUUCvdajTjyAJeIHabb32w6Q8v1UO2S6N71KOFMqFguVesCv/kWsJ3f8H22LKSpL+lT2nGbs2w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by LV8PR12MB9420.namprd12.prod.outlook.com (2603:10b6:408:200::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8422.14; Fri, 7 Feb
+ 2025 14:30:21 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%6]) with mapi id 15.20.8422.011; Fri, 7 Feb 2025
+ 14:30:21 +0000
+Date: Fri, 7 Feb 2025 10:30:20 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Eric Auger <eric.auger@redhat.com>, will@kernel.org,
+	robin.murphy@arm.com, kevin.tian@intel.com, tglx@linutronix.de,
+	maz@kernel.org, alex.williamson@redhat.com, joro@8bytes.org,
+	shuah@kernel.org, reinette.chatre@intel.com, yebin10@huawei.com,
+	apatel@ventanamicro.com, shivamurthy.shastri@linutronix.de,
+	bhelgaas@google.com, anna-maria@linutronix.de, yury.norov@gmail.com,
+	nipun.gupta@amd.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	kvm@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	patches@lists.linux.dev, jean-philippe@linaro.org, mdf@kernel.org,
+	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
+	smostafa@google.com, ddutile@redhat.com
+Subject: Re: [PATCH RFCv2 09/13] iommufd: Add IOMMU_OPTION_SW_MSI_START/SIZE
+ ioctls
+Message-ID: <20250207143020.GR2960738@nvidia.com>
+References: <cover.1736550979.git.nicolinc@nvidia.com>
+ <d3cb1694e07be0e214dc44dcb2cb74f014606560.1736550979.git.nicolinc@nvidia.com>
+ <0521187e-c511-4ab1-9ffa-be2be8eacd04@redhat.com>
+ <20250129145800.GG5556@nvidia.com>
+ <Z6WLXTiYVzuN368E@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z6WLXTiYVzuN368E@Asurada-Nvidia>
+X-ClientProxiedBy: MN0P223CA0028.NAMP223.PROD.OUTLOOK.COM
+ (2603:10b6:208:52b::17) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c5a49bcb-45cf-4295-80e0-c4b07083df00@marcan.st>
-X-Operating-System: Linux phenom 6.12.11-amd64 
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|LV8PR12MB9420:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5fd856ea-a7bd-4702-218d-08dd4783f398
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?1EM23bpJ747+QvLN+70Zi8PijeL0eLyAyfG1Ztmx04KWrJ5UhLaB8VXQGYC7?=
+ =?us-ascii?Q?HYYj59Dg5Lx5OPw1dpef6mUs+R2wep8+aBP7OeMgui/CApS1615gktjmU24h?=
+ =?us-ascii?Q?QcpUNVjGPzckauZPfUXvI+HUXBphWMw5fCgFHfKzpzMDGTDH5WO/6QnV7UgL?=
+ =?us-ascii?Q?X4tV6+3Np+5BtN9EDs3oQLafEeOMbYJ2nrMgNwrUCoKrfNzh66Z6JwUfjr0x?=
+ =?us-ascii?Q?CUItOMX34Ayh1TVHUcSI4YqmoOZFnSVsygclZDPzP1kb08JIW0lovbBsdO+P?=
+ =?us-ascii?Q?qhRJofDxVFnGrCYmCIvvBSf5869sQRX0QVB8afbN/HD1J4mTH6DOI/YqWDPf?=
+ =?us-ascii?Q?+nU9qnkVbeYmwFKNhDH4BcabC3B+5QQ4j1Vm3WmfrXhreqp3MAQ+XmGRw6V2?=
+ =?us-ascii?Q?yh5jligML9o1CX85nhCk+GYxSKRBfLjw2OKUogXOx5yn8nVNhtC3IFQxL/LI?=
+ =?us-ascii?Q?FiygTvkwWGeTMT3FxvYhdmI4a1S6xoIfsI+JQ7i6FJPt4tirCfTL1xTLYL3S?=
+ =?us-ascii?Q?VtGQMk77MrFwCSrY28JRSnLQ+fA15Cn35eA+CcmcS0kWUmEauWSVl+Z01Zu8?=
+ =?us-ascii?Q?0My6I3zwLPgBDZ5baB0J4j9g5a97MHPl0d4RcF06EeFYiAN631aMNYj4pDr/?=
+ =?us-ascii?Q?lMAJnxtEbExpVf42IHm7a4lNwL1ERDbELHwjr+R4+WbZF5hYkWLeJEmStSxH?=
+ =?us-ascii?Q?CRsy7XCz5YQLeFOJn921HT3URiNbCecAPo2Jdg/0lCvoBahm9e3Ou4bRgPaO?=
+ =?us-ascii?Q?MxvYWsX9HAqgh7azj4mXcIjanYsoU0KW5epqr8ACVbeIeoqYOF6Yhy47hRm0?=
+ =?us-ascii?Q?JnlW5+NlSfFz7dJcI6L3UBf4W8lbkPmMxakHpsEz9K9y+Nlg9NpIWXWvnXe6?=
+ =?us-ascii?Q?Rus+Uu2oDuNQXe8Eqww+2J2RCSOKcPs8dZ4cllqeKFXrvosFFo+5X7ezyRl2?=
+ =?us-ascii?Q?Eo1/H534E3scICEgWWmgKTg6UmV4p+3S2y4DjFOuHSUtEMUgggayIxuh0zYI?=
+ =?us-ascii?Q?OIMbeVmrXTMFYOkgIemIA98UHG2dAKacT8wNNkSUP6fcvgCfnvjkv1MnFxAi?=
+ =?us-ascii?Q?/tW2cmKeuvT5oHVTzkuTx4lWIH12XT9uhB1g50XCc5fdMmqUZ4n4YGTCl7ZW?=
+ =?us-ascii?Q?XXRiGjMAIPLAQ0r51hh2qO/QnLGw/rdGxW0P3EiC4wcXpvOggxYUG3kXh99T?=
+ =?us-ascii?Q?uycMz36WGg2EJij3OhM41IyESO+/1kWri0b/JlbIOE4CySZ0g6LOF30V9F8E?=
+ =?us-ascii?Q?gkAON3WgRjlraII6bhGL547hGZIV57i69p3LSNBmK724dBs79cHrMMIGRFJq?=
+ =?us-ascii?Q?11A2iKzb1KLSNUKavEOGHg4VEbw+g2vMSGRzUeZTLOQtyMoSo4rgBIWKMvYG?=
+ =?us-ascii?Q?e2ehri3l4KgBg5kIqbtgLO4xW1Sz?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?W5pdmYCtMkO5sWUb+fl0d93LW7XDodof8+cGPnIhAB2tX4j1Kzn1Vti2qu7U?=
+ =?us-ascii?Q?XcB9slYzc0Vx/Q/mXv2XziLD3TSVLsvWouCKq+O3DBa1FmBMDu6tr28hue3w?=
+ =?us-ascii?Q?9U4nqOp5CMXs5b54LTWepFn7wMtA7XKuOH7aIrfvuoJmkc/yqznxLp36dEOc?=
+ =?us-ascii?Q?27aEz6FMwiDwoiKjdm04sTzIMry4Cdi2HqdbSo3IDsjBwyaIqfvXaDEQwKf8?=
+ =?us-ascii?Q?hRoM6DvYdnxfxTwwjrV5ItkK5dU0G6W0+ksSM7IBvUr1l1uWGDiCEYKuQFdZ?=
+ =?us-ascii?Q?Zh5Xs3T9upxPbYaAz75RvV1g5GKBIfhgbWYEWll4nqoZImmSQGjlFw725B7P?=
+ =?us-ascii?Q?LTyH1zOFrrRVotVKI4oTzgpqQvavj3OluUYuF2auu345nzF0L8844xHAS8dv?=
+ =?us-ascii?Q?qJ5g1dk0L5rr3pkSkm2MxVuiE3AqRUNb+z5NLrAUxreJudp3OY0SDNLh6uG0?=
+ =?us-ascii?Q?jYJdpZ6YR9rh8LSHHfoYyf5XlgOB794Oqck6cj5Mi6UoJa0FZoFe81MHOxri?=
+ =?us-ascii?Q?tisH6Z994BaksePb9/tyncgpZoVYEfxMZjEogovvgaC3srKZeBEq4D7+mvp5?=
+ =?us-ascii?Q?zLe3mXov2HW+0qq6pUzSszT1c/kjuIQaDbFmpAJ9b0KpRvPDK4uoziYJ8SxH?=
+ =?us-ascii?Q?OJAANypuVns8POy+nbb3WzcW0rqbuUktGnbvUSxqOujh+3njiEML3iEofkXU?=
+ =?us-ascii?Q?+akAg/mCx8SvCQtRz25ZIn1Cmc5wGWRQpp+lD4nHRIBhExniOMoEBnSfXIsq?=
+ =?us-ascii?Q?nIXAmgDfQPUFaO0vPr0GEn990coj+6GzPQ3OOotbVNAwYCr/b2kKbgaCnMey?=
+ =?us-ascii?Q?5GzOz0uhiz+p96t/0LgP/wjTEECWi29slI+hyArgZeFW0FkW0GhkVwbLE8ak?=
+ =?us-ascii?Q?+kjpURl3CHEKQlM4FkKoK3YBZoKIHPo237xieYOkJ2bi85h51mbJ07c20bO2?=
+ =?us-ascii?Q?QDipiZ8zncj8dxSsJHNmTNAp79F7qcLaoIJUr2i8rhmGgCW+NtllZdSlyK9c?=
+ =?us-ascii?Q?kucqeS3hon3we8YspPbSLnSm2E/ZuU3G+SWrf84wnv206QXIizKWtOVgojHI?=
+ =?us-ascii?Q?dJGQlyFyoMDitJZH2xP4gpr1rIJ8+y3s5wLwsiJMjV00PoUNVDtPFrNPAg6A?=
+ =?us-ascii?Q?+BhhiGdUiCtnZy1PYfVTba1cYmzFVI8IpTE5vgR//AIkT2f0Z6GugQmXssVd?=
+ =?us-ascii?Q?Id4MkNRZOWIckj/n8TOukKx40+lnIPe6bDVi/mInFARjB+7y88nVUGFubnST?=
+ =?us-ascii?Q?0kMeTHMyvlXuxU1hX27i9VE2ZGQrXcOFug+Lj1ocs/oFFN50vIz9la+ODScJ?=
+ =?us-ascii?Q?dPBZ63KoRAfLudVTwC/+mWLDdMr+/9UTTgn5bdp0HAymGlmMmNHlyKK+n1QN?=
+ =?us-ascii?Q?Wj2vyrISSlfAL6H2V4a3a7HOFuI0+SkUOHQWb3i4+ZaeInmEEQ9lUt5r814k?=
+ =?us-ascii?Q?gbTNNhc5jr2J75kTZWfseWFhumFcE9ocxlDMorAKQKEOAdp8Treji/lmoaYW?=
+ =?us-ascii?Q?gln+f47wDCIAZF29P36e5pJ12PTKl75L8pjFmLzoPCnZbleW87THaUofxGPd?=
+ =?us-ascii?Q?YuXbtm39lkoMrrZx2MD9xATuWVfMKmgYVOwzgYHV?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5fd856ea-a7bd-4702-218d-08dd4783f398
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2025 14:30:21.1569
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8/GeIdvHIl3f5Hz5vqSGaxFg6K/f18CDyn++i9rBsB6Rd1T9vMw2p/1rKf2KFEtn
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9420
 
-On Fri, Feb 07, 2025 at 07:20:03PM +0900, Hector Martin wrote:
-> On 2025/02/07 18:41, Hector Martin wrote:
-> > On 2025/02/06 3:52, Simona Vetter wrote:
-> >> On Tue, Feb 04, 2025 at 03:46:14AM +0900, Hector Martin wrote:
-> >>> Adding Linus
-> >>>
-> >>> My 2c: If Linus doesn't pipe up with an authoritative answer to this
-> >>> thread, Miguel and the other Rust folks should just merge this series
-> >>> once it is reviewed and ready, ignoring Christoph's overt attempt at
-> >>> sabotaging the project. If Linus pulls it, what Christoph says doesn't
-> >>> matter. If Linus doesn't pull it, the R4L project is essentially dead
-> >>> until either Linus or Christoph make a move. Everything else is beating
-> >>> around the bush.
-> >>>
-> >>> Rust folks: Please don't waste your time and mental cycles on drama like
-> >>> this. It's not worth your time. Either Linus likes it, or he doesn't.
-> >>> Everything else is distractions orchestrated by a subset of saboteur
-> >>> maintainers who are trying to demoralize you until you give up, because
-> >>> they know they're going to be on the losing side of history sooner or
-> >>> later. No amount of sabotage from old entrenched maintainers is going to
-> >>> stop the world from moving forward towards memory-safe languages.
-> >>>
-> >>> FWIW, in my opinion, the "cancer" comment from Christoph would be enough
-> >>> to qualify for Code-of-Conduct action, but I doubt anything of the sort
-> >>> will happen.
-> >>
-> >> Yeah no.
-> >>
-> >> https://chaos.social/@sima/113942119012147959
-> >>
-> >> This was about you, because typing a proper answer takes a bit longer. It
-> >> was also about your toots on fedi, like this:
-> >>
-> >> https://social.treehouse.systems/@marcan/113941468353031993
-> >>
-> >> And "haha it's only a joke" does not work with your public profile and following.
-> >>
-> >> I do understand the frustration and temptation to just burn it all to the
-> >> ground, head the call of the sirens, or maybe for me more pick up goat
-> >> farming in the Swiss Alps. But you can't have it both and expect to also
-> >> be part of and contribute to the same community. And personally I don't
-> >> appreciate getting drenched in gasoline while I'm trying to quench flames
-> >> on the ground.
-> >>
-> >> And this isn't the first time or the second, by now it's a pretty clear
-> >> pattern over some years. And with the first I could explain why you react
-> >> like that and you had my full understanding, but eventually that runs a
-> >> bit thin as an excuse.  Now I'm left with the unlikely explanation that
-> >> you just like thundering in as the cavalry, fashionably late, maximally
-> >> destructive, because it entertains the masses on fedi or reddit or
-> >> wherever. I have no idea what you're trying to achieve here, I really
-> >> don't get it, but I am for sure fed up dealing with the fallout.
-> >>
-> >> Cheers, Sima
-> > 
-> > Since we're into complaining about social media posts on the list now,
-> > I'm going to link one of yours:
-> > 
-> > https://chaos.social/@sima/113961496955043901
-> > 
-> > An R4L maintainer quit after multiple rounds of hostility, including
-> > some completely unacceptable public comments bordering on downright
-> > harassment from tytso, a situation which was widely publicized.
-> > 
-> > If, according to you, that's "shockingly smooth" with "no outsized
-> > drama" other than "what I stirred up" (I guess you also missed the whole
-> > LWN post about this thread before I posted anything on Fedi? That's how
-> > I even found out about this), then I'm glad I'm disengaging with this
-> > community. The Stockholm syndrome and utter denial is palpable.
-
-Yes, the kernel's conduct is still not where I think it needs to be. And
-there are still cases occuring with some regularity which would be
-unacceptable on dri-devel and sanctioned under the freedesktop.org code of
-conduct. But that's not really new, it's not really specific to the r4l
-project, and despite that it's still not good enough, it's definitely much
-better than 10 years ago.
-
-That all aside, I put the "outsized" very intentionally in my comment. It
-carries a lot more than just the above paragraph in just one small word.
-
-> > I thought I could work with you on these issues; I don't know what
-> > happened over the past year since we last had a private conversation
-> > about this, but clearly you've changed your mind.
-
-I got seriously annoyed with you about two years ago for the first time,
-but kept chatting for quite a while longer. Nothing changed. Like I said,
-I'm not complaining about this specific case here, but about a pattern
-that you've established consistently over a fair amount of time.
-
-And if you're wondering why you didn't realize this: It's impossible to
-change people by telling them they're wrong. What does tend to work is
-explaining different perspectives, so that they can figure it out
-themselves. And sometimes that's just way too subtle to ever register.
-
-> > Thus, as you kindly requested of me in social media,
-> > 
-> > https://chaos.social/@sima/113961283260455876
-> > 
-> > I will now proceed to fuck off. Good luck.
-
-I wasn't fully awake yet this morning, but I have no issue standing behind
-that thread in it's entirety. Lightly edited for typos below, with one
-sentence added for a bit more context:
-
-This isn't about "being civil" or "friendly" and even less about "don't
-call out". This is about calling out in an ineffective and imprecise way,
-so that the people actually trying to change things are busy patching up
-your collateral damage instead of implementing real changes, while all
-you've achieved is airing your frustration for internet drama points.
-
-Aside from that I've learned through private feedback since my first mail
-here that your social media brigading has had much more of a chilling
-effect on contributors than I assumed, which is not acceptable.
-
-When you're that harmful with your calling out, eventually I'm going to be
-fed up, and you get a live round shot across your bow. And if that then
-causes you to ragequit, because you can't actually deal with the heat
-you've been dishing out coming back around the corner:
-
-Fuck off.
-
-Or as Dave Airlie put it upthread in this conversation:
-
-"Being toxic on the right side of an argument is still toxic, [...]"
-
-So please do call out broken things, do change things, I've been doing it
-for well over a decade in the linux kernel. But do it in a way that you're
-not just becoming part of the problem and making it bigger.
-
-> Oh, and one last thing. I've heard that, in whatever backroom
-> conversations you've been having about this situation, there has
-> apparently been a belief, explicit or implicit, that I am in any way
-> employed to work on the Linux kernel.
+On Thu, Feb 06, 2025 at 08:26:05PM -0800, Nicolin Chen wrote:
+> Yea, I found iopt_reserve_iova() is actually missed entirely...
 > 
-> Unlike most people in this thread, I don't enjoy the luxury of a cushy
-> tech job that pays me to deal with this community. I am supported
-> exclusively by donations, which incidentally, have been steadily
-> *de*creasing since the start of the Asahi Linux project. The project has
-> zero corporate sponsorship.
-> 
-> And I do believe the fact that essentially all high-level Linux kernel
-> maintainers and contributors are paid by corporations to do it is a
-> major factor that has caused this community to become wildly out of
-> touch with what it means to be a community FOSS project.
+> While fixing this, I see a way to turn the OPTIONs back to per-
+> idev, if you still prefer them to be per-idev(?). Then, we can
+> check a given input in the set_option() against the device's
+> reserved region list from the driver, prior to device attaching
+> to any HWPT.
 
-I'm really not in favor of chiding people for how they earn money, because
-this world isn't fair and critizing people for how they get their bills
-paid is generally not ok. But this is a bit too much to just let it slide.
+I didn't have a strong opinion, if the idev works without complexity
+then I'd stick with that on the basis of narrower scope is usually
+better.
 
-It's fairly plausible that you need the social media brigading to generate
-attention that you can convert into enough donations to support the asahi
-project. But someone has to clean up the mess your shitstorms create, it's
-sure not you, which means my and other people's mental health essentially
-pay your bills. And I really do not appreciate that dynamic.
-
-Cheers, Sima
--- 
-Simona Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Jason
