@@ -1,158 +1,124 @@
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 158331A2C04
-	for <iommu@lists.linux.dev>; Fri,  7 Feb 2025 19:18:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.63.210.85
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB87C71747
+	for <iommu@lists.linux.dev>; Fri,  7 Feb 2025 20:53:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738955934; cv=none; b=ssZauD7nB3z807VyXLToBZXTzEfZA4Khr3y5Wobv5pqkKNW0g1ARNhDAbmILW6JSBu4ajSlKmfLEWM0DLW/ijt6eP8U98Ss+JuZI8ir7t+tTh06MGCmSGwZtu4dlNvUDWT4ggLnrs8ZL3liP9B55jvWLy4bvzhSJI133qBvFDf4=
+	t=1738961628; cv=none; b=jIv/sDlhffvNCUkKJvdwpCDhlvzuH4uKGcDGRIMbXXsLBhche6OBaUI11VQeQa//2QEWwG3VuUOhQt97YKq16iiKax0coZju5HP3xVIoWyPNQI/QZ291b83dj1W9qkSTWXhQVRGLW9kXgy+4hICriAXLdvR0YivSHwmoDHKrhIg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738955934; c=relaxed/simple;
-	bh=hzKbZ8fP/OSMSD/R0tqD9tsgwLS5wn2Ud2IztAjubuM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kR35vXp93XHQz1wOx971fHntEFJQsXk8fpNfrKxofHhJx6lD6krwQ6/Acwt2DwpK1F2a2D8JZaDVHf1ZDgd74Aek59WeeWJkFquz8gF5zqOAQtsqXj5BvZ5+0/otvwMuJt1cHgFpW5ncCdXI3D++D2oU99wTxWD944zPXc8+00w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st; spf=pass smtp.mailfrom=marcan.st; dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b=sHjNiqpm; arc=none smtp.client-ip=212.63.210.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=marcan.st
+	s=arc-20240116; t=1738961628; c=relaxed/simple;
+	bh=+XE1Gibj53XUdm3yvQ0U9Wn6es8t7Fa+pXS6zzOUfNg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=XfqaHF/rXO0N9fG6gz0VTkaoMovQQbpdL01EgOWqBcFcNPLoqoPMDyxov5s8CNMHzmP6P/BmWAddUJ6nb7qIPePC0axSfpDuEPOjdp47n98XsB9Jcsqr3e1ClhEEsslHwLPmcqG/ucNW0huRBYTomXV74PhleUgaz3jtafbJdKw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=GI1AQyIw; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b="sHjNiqpm"
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: marcan@marcan.st)
-	by mail.marcansoft.com (Postfix) with ESMTPSA id B39684203E;
-	Fri,  7 Feb 2025 19:18:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-	t=1738955928; bh=hzKbZ8fP/OSMSD/R0tqD9tsgwLS5wn2Ud2IztAjubuM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=sHjNiqpm+Nd9HwV76Weu9j8XnhP47P+uq7573nSGjE9eJAyMBGyfSz+yDqxX6/PbL
-	 qGSrltV/BCfiDLNFTn81hhoQodk3U1539JLY+XxQxsYSYqNw5pmUFc1mBnVZftWSlu
-	 xlcYlCzr/llfrxVde6Zuv+94X0XSE9sUPZTFGxNLXwKD6ciSyz2pWKO2yZz9Q6rXCS
-	 L0fglNEajp8MokCOE25A31kFkq2rWrA5e+tWOksyAmdAJG3AC0U8m5vtM2BC02b0ck
-	 hByJ4GYVkOtsVXJaITTvCU2bOyI/hIwth37+vWN3sNvsFpWOjkzlICkMkNrTaWi1/1
-	 +DLBb/GdHKTjw==
-Message-ID: <ae11fa0f-7b3e-4dd7-8b4f-da0e9daa99bd@marcan.st>
-Date: Sat, 8 Feb 2025 04:18:44 +0900
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="GI1AQyIw"
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 517C1Apo028647;
+	Fri, 7 Feb 2025 20:53:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=pp1; bh=MaC+iU9MwJfPXnKDmF+0wEXepTZYUvrOmE2qOB7q+
+	4k=; b=GI1AQyIwClkwioyBaIHD43FEVX9dHg8HmyBRc4nY2vLz6U3xKzTeyhQoW
+	1M8+0FY2aoXUxAr/AgaCHgfdqvGAPC9IsPagI+PVaYkl0X4n5bLHSmD2J49duVRX
+	Dp2c9rp+lr3KaXLCPnPOZfEEHqDpoaClF6ZuvzDAjd0i/hfzpayvRwCncYLc9G+V
+	1ywm2HcZiC6Li4WV4s3LKYxwG393V+Zw4lwOmWhQ1zdm0qdWQCkTNDnIemAscaoP
+	977JU40Bpri/yv51S3EDmWk46AnEYXKS2lZzm92wKKQLAurWuxi1CGZ4WxHGT2JR
+	VpzQtt8uCzZ6k4PaAG4o3bZVjKZ8g==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 44n910d1q6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 07 Feb 2025 20:53:39 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 517Hq4Vp016391;
+	Fri, 7 Feb 2025 20:53:38 GMT
+Received: from smtprelay06.dal12v.mail.ibm.com ([172.16.1.8])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 44hwxswmne-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 07 Feb 2025 20:53:38 +0000
+Received: from smtpav04.wdc07v.mail.ibm.com (smtpav04.wdc07v.mail.ibm.com [10.39.53.231])
+	by smtprelay06.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 517Krb8x16646810
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 7 Feb 2025 20:53:38 GMT
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9C36758052;
+	Fri,  7 Feb 2025 20:53:37 +0000 (GMT)
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 02DF658045;
+	Fri,  7 Feb 2025 20:53:36 +0000 (GMT)
+Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.61.30.101])
+	by smtpav04.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Fri,  7 Feb 2025 20:53:35 +0000 (GMT)
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
+        clegoate@redhat.com, jgg@nvidia.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: [PATCH v4 0/4] iommu/s390: add support for IOMMU passthrough
+Date: Fri,  7 Feb 2025 15:53:31 -0500
+Message-ID: <20250207205335.473946-1-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.48.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
- coherent allocator abstraction.)
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
- Danilo Krummrich <dakr@kernel.org>, Dave Airlie <airlied@gmail.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Greg KH <gregkh@linuxfoundation.org>,
- phasta@kernel.org, Christoph Hellwig <hch@lst.de>,
- Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com,
- aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
- Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
- DRI Development <dri-devel@lists.freedesktop.org>
-References: <2025013030-gummy-cosmic-7927@gregkh>
- <20250130172437.GN5556@nvidia.com>
- <2025013148-reversal-pessimism-1515@gregkh>
- <20250131135421.GO5556@nvidia.com>
- <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
- <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
- <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
- <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st>
- <Z6UPXxEJYpanU9iU@cassiopeiae>
- <4c0a7cf9-26e1-4a19-8a6e-7c30bc3aef86@marcan.st>
- <20250207-mature-pastel-rottweiler-e6dbd9@lemur>
- <1bbdf8b7-a70b-4994-865e-7fcb8d53ebef@marcan.st>
- <CAHk-=wiQUya5_zTwLFNT2XkX-bf_H1vJiJ3zuADnO-3EwOOjVA@mail.gmail.com>
-From: Hector Martin <marcan@marcan.st>
-Content-Language: en-US
-In-Reply-To: <CAHk-=wiQUya5_zTwLFNT2XkX-bf_H1vJiJ3zuADnO-3EwOOjVA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: lJAzURkSLHDBwagGGbtFvD0Sxd48ofPT
+X-Proofpoint-GUID: lJAzURkSLHDBwagGGbtFvD0Sxd48ofPT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-07_09,2025-02-07_03,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=651
+ priorityscore=1501 impostorscore=0 bulkscore=0 clxscore=1015
+ lowpriorityscore=0 phishscore=0 spamscore=0 malwarescore=0 suspectscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2501170000 definitions=main-2502070153
 
+This series introduces the ability for certain devices on s390 to bypass
+a layer of IOMMU via the iommu.passthrough=1 option.  In order to enable
+this, the concept of an identity domain is added to s390-iommu.  On s390,
+IOMMU passthrough is only allowed if indicated via a special bit in s390
+CLP data for the associated device group, otherwise we must fall back to
+dma-iommu.
 
+Changes for v4:
+- Additional patch to handle IOAT registration within s390-iommu.  This
+  fixes an issue with re-registration of identity domain during events
+  like zpci_hot_reset_device
+- Fixup page alignment for bus_dma_region setup
+- Dropped a few review/test tags due to above changes
 
-On 2025/02/08 3:33, Linus Torvalds wrote:
-> On Fri, 7 Feb 2025 at 10:02, Hector Martin <marcan@marcan.st> wrote:
->>
->> Meanwhile, for better or worse, much of Linux infra *is* centralized -
->> for example, the mailing lists themselves, and a lot of the Git hosting.
-> 
-> The mailing lists are mostly on kernel.org, but the git hosting most
-> certainly is not centralized in any way.
-> 
-> The kernel.org git repositories used to be special in that I didn't
-> require signed tags for them, because I trusted the user maintenance.
-> But I was encouraging signed tags even back then, and once it got to
-> the point where most were signed anyway, I just made it a rule. So now
-> kernel.org isn't special even in that respect.
-> 
-> Now, kernel.org is very much _convenient_. And you see that in the
-> stats: of my pulls in the last year, 85% have been from kernel.org.
-> But that is very much because it is convenient, not because it's
-> centralized.
-> 
-> But that still leaves the 15% that aren't kernel.org.
+Changes for v3:
+- Rebase onto 6.13
+- fixed bus_dma_region size (Niklas) 
 
-For all intents and purposes, 85% centralized might as well be fully
-centralized. That is, any downtime on kernel.org will affect the
-community effectively the same as downtime on a true central SPOF would.
+Changes for v2:
+- Remove ARCH_HAS_PHYS_TO_DMA, use bus_dma_region
+- Remove use of def_domain_type, use 1 of 2 ops chosen at init
 
-> More importtantly, not being centralized was very much a basic tenet
-> of git, so *if* git.kernel.org were to become problematic, it's very
-> easy to move git repositories anywhere else. Very much by design.
+Matthew Rosato (4):
+  s390/pci: check for relaxed translation capability
+  s390/pci: store DMA offset in bus_dma_region
+  iommu/s390: handle IOAT registration based on domain
+  iommu/s390: implement iommu passthrough via identity domain
 
-And this is why, over focus on *decentraliation*, I think we should be
-focusing on *recoverability* and *data availability*.
+ arch/s390/include/asm/pci.h     |   4 +-
+ arch/s390/include/asm/pci_clp.h |   4 +-
+ arch/s390/kvm/pci.c             |  17 +---
+ arch/s390/pci/pci.c             |  35 ++++----
+ arch/s390/pci/pci_bus.c         |  18 +++++
+ arch/s390/pci/pci_clp.c         |   1 +
+ arch/s390/pci/pci_sysfs.c       |  11 +--
+ drivers/iommu/s390-iommu.c      | 138 ++++++++++++++++++++++++++------
+ 8 files changed, 161 insertions(+), 67 deletions(-)
 
-There are two distinct scenarios. If kernel.org goes down for a while,
-that screws with people's workflow. They can find alternatives, but it
-will cause immediate, acute disruption, even while using "decentralized"
-git. You still need to tell people where the new repos are, reconfigure
-remotes, etc.. If the disruption is expected to be short-lived, a lot of
-people will choose to just ride it out, rather than find alternatives,
-or will only use alternatives in an ad-hoc manner where strictly
-necessary. Nobody does a "true" complete migration to another Git
-hosting when faced with a brief, temporary outage (heck, even just the
-time it takes to push a Linux Git tree from scratch to somewhere new is
-much longer than ideal, more so if your internet connection isn't the
-best or the routing to the server in question isn't great). At most you
-push whatever you're working on as needed somewhere else.
-
-If kernel.org goes down permanently or long term (or becomes
-problematic), that's when you start doing a full migration. And thanks
-to the Git design, this is possible - not because it's decentralized per
-se, but because everyone has local copies of almost everything, and they
-can easily be restored onto a new service.
-
-The same goes for a forge scenario. If it goes down briefly, you fix it,
-and you can still use email to communicate with people ad hoc and send
-git changes around through any other hosting. It's still Git at the end
-of the day. Emailed patches and Git trees aren't going to become
-unusable just because most or all of the regular development happens on
-a forge.
-
-And if it goes down permanently or long term, or becomes problematic,
-what really matters isn't that it's "decentralized" as in federation.
-It's that the data is available, in much the same way it is for
-lore.kernel.org, and that people are actively backing it up (and it
-isn't hard to arrange for a handful of folks/organizations to have up to
-date mirrors, you don't need a Git-like scenario where literally
-everyone has full repo dumps; heck, I have a big NAS at home, I'd
-volunteer myself). Then, the service can be restored elsewhere when
-needed. If the issue is with the specific forge software used, you can
-always develop a migration plan to a different software (which, if the
-risk is managed properly, shouldn't be a time-critical process anyway).
-
-- Hector
+-- 
+2.48.1
 
