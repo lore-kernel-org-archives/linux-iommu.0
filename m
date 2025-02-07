@@ -1,176 +1,192 @@
-Received: from mx.treblig.org (mx.treblig.org [46.235.229.95])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 492101B0423;
-	Fri,  7 Feb 2025 18:54:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.229.95
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738954457; cv=none; b=GlCiSQyEH0+5AigkHVQCH7HwUJnXmGgL8bDrgqczS/dj6cFeefswWUMUEgD9yPvCYgZVdtjaTOWLY5ivoPR/UwajKnfwY58hYoEWqsdHTd3Ipq6HgqGS7+LRObgZWGPDqPs/5m1eutoU/WS2BduyCdm8ZI7u4hsmrK5jOR+iOS4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738954457; c=relaxed/simple;
-	bh=39tM/FelPk8IXPE4RyvCWWz+ddMpywlUPjAZQcKRfUY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=djIFkZK4wBwSdW1XlTA3KHSyZPQ4RfFaBeoljoiFaKMJHPdGPcNfDCzrUvZ51nJuexbeStTDPLNq8A6azYwMeR0Pk7Qc03iOhvxFKYq0sT/Pj7soz33iWCTFYAa597CpbY6EhRMSwtPZCwgGRJrVv8kLXma1ETeStpVcZFAHufk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=treblig.org; spf=pass smtp.mailfrom=treblig.org; dkim=pass (2048-bit key) header.d=treblig.org header.i=@treblig.org header.b=smKJK53u; arc=none smtp.client-ip=46.235.229.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=treblig.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=treblig.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A20E61A255C;
+	Fri,  7 Feb 2025 19:00:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.81
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738954817; cv=fail; b=nbsbtwNMtnpHpgWhspIFy4+Xv8sBiP+eoakZQV3+KDKHvWONfgxcXrmKPW+O+qKM6NKeqLiwfcULhHpnoXOHWD56rXsrhLBNQLpcL5aKCOBVo+gxKTPVlYTVH4QvqClBaQl9QyALxSXW1Ww1HSaqBdl5ZO4YBqGJWWSfUOsBKwc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738954817; c=relaxed/simple;
+	bh=8BL0sG3lbCH5SacapsUvLQe23vdpT1GzGtOHV5/gCZ8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bW1Wqq/jMU21LhrZ/MsundimlwHn38+NI0WHMN7X4jLEAUCd0UQAXcxdWxwXNsg/CcFpjxY3zL9IEbMmjWQSpMovpO2wB3mqatjASgxBmdy1bq1wjG2P2ZS6rFNfplJtnAhnONDudlOyDSqPU6dwmzYLkgSL7hsZ1k0T886xgb4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=CKib/QBI; arc=fail smtp.client-ip=40.107.93.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=treblig.org header.i=@treblig.org header.b="smKJK53u"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
-	; s=bytemarkmx; h=Content-Type:MIME-Version:Message-ID:Subject:From:Date:From
-	:Subject; bh=EAcqYwz2jmB6Mvusczq8VIeE3A07B10hda1ej7t/Xe8=; b=smKJK53uK4eErOQV
-	PDjUcgn3F89vn7KLBPpz/VkKUhnQuII8VRw7zR8UyeMBeNDJVSAxi12sNrwyadDFDtWWS0Xndz4SO
-	ldx/PvWRDZgBXjf3APTyUBa4sguVxsFYPwiU+wjnbnjcsxAIN3j1R+6So9KLN5tk4s1TeG0wbhl9I
-	rtezlIgvdtv+ZV8v5FYvDOMipJ1I7B05/bma9ABqItWYzGj2COLa8SutJ+aD4qvEuqArt9WCn1WBe
-	0KuZ0ejFNeLfXX43LM1Wdk/qqTCWEkPFLm7EN38d/H/iQs5HGCi0olpebtywvE+qzfaW1r/QB3y/a
-	ADK20FLy8pv2gt+KiQ==;
-Received: from dg by mx.treblig.org with local (Exim 4.96)
-	(envelope-from <dg@treblig.org>)
-	id 1tgTU3-00ELPl-1K;
-	Fri, 07 Feb 2025 18:53:47 +0000
-Date: Fri, 7 Feb 2025 18:53:47 +0000
-From: "Dr. David Alan Gilbert" <linux@treblig.org>
-To: Hector Martin <marcan@marcan.st>
-Cc: Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-	Danilo Krummrich <dakr@kernel.org>, Dave Airlie <airlied@gmail.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Greg KH <gregkh@linuxfoundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
-	Christoph Hellwig <hch@lst.de>,
-	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	daniel.almeida@collabora.com, aliceryhl@google.com,
-	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	DRI Development <dri-devel@lists.freedesktop.org>
-Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
- coherent allocator abstraction.)
-Message-ID: <Z6ZWu44D9UCXVIgi@gallifrey>
-References: <2025013148-reversal-pessimism-1515@gregkh>
- <20250131135421.GO5556@nvidia.com>
- <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
- <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
- <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
- <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st>
- <Z6UPXxEJYpanU9iU@cassiopeiae>
- <4c0a7cf9-26e1-4a19-8a6e-7c30bc3aef86@marcan.st>
- <20250207-mature-pastel-rottweiler-e6dbd9@lemur>
- <1bbdf8b7-a70b-4994-865e-7fcb8d53ebef@marcan.st>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CKib/QBI"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=yXsWVQGCnyADpPTALVVhE1j0NlxBRLrIMiKnKWmAFn9dSaJCZZ5vPAwH54rs9MX2Sk5cDRA6mIyPzNTtfoZRJY1E67BEcuk7OpZHqj8Nf6OpfhpDfToq1wjQRvFTB2SmPC64F2LAou5ES1tK+r7Bh816499Y46aCLvI9oqf2/X0/ExEFCKCUrJJOsDYU6t+9LXD2rOFnd+P9S9i5GuXz5bnak68rXzzBVmtGSNKUaZwrxB1GBEzykAcKhL/cdu6+sudzYu+Gwsw6SERE1c2B6w7Zear/q9SKwTY027ds9HrN8hs4gHFhSa0AoIdduX9rfLCYZ/spXjRWccK/hHkSDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RRaQCsf9iuofoR+rSp+ojThNdpIeXH8YDlf1WOqUSH4=;
+ b=OjO0FqNn35NtNrFJDTWrAT5EjyLwf757ijXc+FAkbrsPdjDcbNtbj3YpUPoVQTj3MK6L+rbGuVmkS0YIIicjyg8EdA6t9cNjuXkLxHYnxcaJLTkr1HVkWSXSQOu0wl5czeoB2Xd4I/RxtRfE5ztqGDfhsObbv44Iz+ls1qUPSqsTCGgPqQHDMjB3QK8suAc/VcI16T4DIZScbFUIApkznfBQrdvZaJIObWIseZ8r3WKoS66bH430CxCTEgsb5yrkdSSsJE9HtjosfC4p34tlSzwmubB5RNX+oIFeKHw5a1/MK5lM2JzZf1ifT+NkY9ejiKkxVG0PQ8yX3W9+zLO9nA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RRaQCsf9iuofoR+rSp+ojThNdpIeXH8YDlf1WOqUSH4=;
+ b=CKib/QBI4cNFqKVb/FxUlfHbDJMKSdfhGf8X1csTeGqoZBCbOdUIr9NmfoTMY4b4DHWIfQmiRg5EA9RGquWX3ZXLOgZ3nmug6vQj5fUWCaZQSWU9ZWp2Y1k1tBmfIO+qKaMD9sqihn8Hp0IuribNbPVI0cwdzTte6FaMYXpNKmPcU0KAdBNNwo5dGNflKWNCKEu5R1vj4wsJg/32cy3lzDppI6EQIBjOtw6lQwk6mlOjoCYJc3SzevQaAYmMtOwnJUmdrQo8e0H7H5BB4ym9Nn36mdxYec7oVdWvUi60dX68R/JGr63YiJjiFjlzbpSeu2oFYrRIboE7S1ZU+XXDAg==
+Received: from PH7P220CA0157.NAMP220.PROD.OUTLOOK.COM (2603:10b6:510:33b::23)
+ by DM6PR12MB4217.namprd12.prod.outlook.com (2603:10b6:5:219::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8422.10; Fri, 7 Feb
+ 2025 19:00:06 +0000
+Received: from CY4PEPF0000E9CD.namprd03.prod.outlook.com
+ (2603:10b6:510:33b:cafe::bd) by PH7P220CA0157.outlook.office365.com
+ (2603:10b6:510:33b::23) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8398.31 via Frontend Transport; Fri,
+ 7 Feb 2025 19:00:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ CY4PEPF0000E9CD.mail.protection.outlook.com (10.167.241.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8398.14 via Frontend Transport; Fri, 7 Feb 2025 19:00:04 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 7 Feb 2025
+ 10:59:51 -0800
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Fri, 7 Feb 2025 10:59:51 -0800
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Fri, 7 Feb 2025 10:59:50 -0800
+Date: Fri, 7 Feb 2025 10:59:48 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Eric Auger <eric.auger@redhat.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <kevin.tian@intel.com>, <tglx@linutronix.de>,
+	<maz@kernel.org>, <alex.williamson@redhat.com>, <joro@8bytes.org>,
+	<shuah@kernel.org>, <reinette.chatre@intel.com>, <yebin10@huawei.com>,
+	<apatel@ventanamicro.com>, <shivamurthy.shastri@linutronix.de>,
+	<bhelgaas@google.com>, <anna-maria@linutronix.de>, <yury.norov@gmail.com>,
+	<nipun.gupta@amd.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<kvm@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+	<patches@lists.linux.dev>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
+	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
+	<smostafa@google.com>, <ddutile@redhat.com>
+Subject: Re: [PATCH RFCv2 09/13] iommufd: Add IOMMU_OPTION_SW_MSI_START/SIZE
+ ioctls
+Message-ID: <Z6ZYJAjYTKGqEbxB@Asurada-Nvidia>
+References: <cover.1736550979.git.nicolinc@nvidia.com>
+ <d3cb1694e07be0e214dc44dcb2cb74f014606560.1736550979.git.nicolinc@nvidia.com>
+ <0521187e-c511-4ab1-9ffa-be2be8eacd04@redhat.com>
+ <20250129145800.GG5556@nvidia.com>
+ <Z6WLXTiYVzuN368E@Asurada-Nvidia>
+ <20250207143020.GR2960738@nvidia.com>
+ <20250207152801.GV2960738@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <1bbdf8b7-a70b-4994-865e-7fcb8d53ebef@marcan.st>
-X-Chocolate: 70 percent or better cocoa solids preferably
-X-Operating-System: Linux/6.1.0-21-amd64 (x86_64)
-X-Uptime: 18:48:07 up 275 days,  6:02,  1 user,  load average: 0.06, 0.05,
- 0.00
-User-Agent: Mutt/2.2.12 (2023-09-09)
+In-Reply-To: <20250207152801.GV2960738@nvidia.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9CD:EE_|DM6PR12MB4217:EE_
+X-MS-Office365-Filtering-Correlation-Id: 930190c7-29b5-45a4-dc36-08dd47a9a1f3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|7416014|36860700013|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?IkEMTy6F/lVL1+bFrSzb3qVXhV1cZu6kUaBdwoDgNhG3njRUfiKisFvxRgo8?=
+ =?us-ascii?Q?+T+k8VZcI5Kmjid3HEVCkHCMzMy6yxFkBWNhwyLNq9bQ20NvplrVryKqSarK?=
+ =?us-ascii?Q?F2SVRNUrslK4FzliU8s08ccpeDpkUmb2zUpt/REj8DYkvMevV6dQkCEQmDj3?=
+ =?us-ascii?Q?VWN+xZHufuN8H6M06h6byEqw7oAytpD1JssLKJyaqCxhRw6ymhHLt8BncgAO?=
+ =?us-ascii?Q?wA6uf+zQcVx13iembr6D8fJKJGeGwPJJ1SpmgfWNa2ZY0ZguGgk6YIHocBZd?=
+ =?us-ascii?Q?r+Wtjjv3KfQGP64RnsKru9GssDX/SQWoFK5nqc4lAYkKuHTL2xPfl8aztGnY?=
+ =?us-ascii?Q?sxSn/wYy1GOFhdCRCAcEgXJfhNNzPxBfU3F3eWRwOC5bO8j2tnQb0ohLcaKq?=
+ =?us-ascii?Q?hdJKfa1bMZbgJRTzxeqiYjTRaA10socSyTwgXw/XcnilCMu+YFgQY9bufkag?=
+ =?us-ascii?Q?5jqs07OMIIrw1+4ALaC5ZOiecmtNYUrzHBz1s8YPGErCdDQvWNznfdl+3GCw?=
+ =?us-ascii?Q?ek46QRCgw2msQHOMG09FGpiMvQJ6MU2Q7DSLqJytdwiGZg3KpjsxgLfdvUni?=
+ =?us-ascii?Q?tLl99XoYu6ooO4hWV3id/y37rL7y/txykRFaOAEI8MNUjOE8eP1YIcQ9+lv7?=
+ =?us-ascii?Q?ey2vuHF9KmeS/mefwph7DyNK9BP7R5iOnS+uVKnqCtETnC/C1kJkER0h1tvj?=
+ =?us-ascii?Q?MO0MxwP2POmYvDAdQL2TA+RkV5sLrMAn3vjiZ96ZDzdj9n9BQ0MEkMwXE71a?=
+ =?us-ascii?Q?3/AflYkpFtdWHkLHmg7ud/ulsvBDNfPfPeKf10oQHMUzFvIVZ1sAu67Ooi1w?=
+ =?us-ascii?Q?o09PlHEoznBqpa7fIekIRbLFU+ptBH2IdUYw458p2V56Ul8iF7NYK34nhMYX?=
+ =?us-ascii?Q?A++ovTtbW273AfrZXPrYgXDLf3FeEaAuNrSMj4v8SEIF7Z00k3oeUxqGRz0T?=
+ =?us-ascii?Q?vAF1FLFmSkchOBNslpxz/7me7p5ok0zAjdk/iyRLCFkc5ils6cD0O+KkH73E?=
+ =?us-ascii?Q?CIfa+KHmE/9l8luvLvv2UMEaRP5i37wlHbE7hbtYPofYY8hVF6dyj+nExRMF?=
+ =?us-ascii?Q?02Na3n/TczH1CELLWu0SHQvB/lvmeORLsAk8M4dk1Rcm5RrTJOjHXFBbfTG0?=
+ =?us-ascii?Q?Ct7oODHKCqVJHLUYzUEfruKCR8MLInNyZVAl4A4FiTnDeMHGXCj/Jnk9NKy8?=
+ =?us-ascii?Q?gRSIo3LeE4oJWBUzt6/JXd5+CY9c+SpBdAc3a1/NpDF6umCZ1OhtBfdMFXga?=
+ =?us-ascii?Q?898fu4BnsoqfifPaJheme/UTR8IbgYdB+VhKN/mY8qf6T2LssuJMvAkTdBme?=
+ =?us-ascii?Q?RFlR+ZMyyHmUm4eKoWW2WQvi9PE//3IwUnad8yyTqHYKUXiVQcni2EEiiNxl?=
+ =?us-ascii?Q?C82k5IR0Jb755Q0bpv/oMjPQhCk06UWnO5TcUmXDw0eTeWC91sZoRbrbf6Us?=
+ =?us-ascii?Q?FJvTe6Kdev5wB2fylGGSccRHeMiPSmBP58bYJhjek0zfKOKyPZXlX0kWmUXq?=
+ =?us-ascii?Q?szCF9flYUrKxVFQ=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2025 19:00:04.7699
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 930190c7-29b5-45a4-dc36-08dd47a9a1f3
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000E9CD.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4217
 
-* Hector Martin (marcan@marcan.st) wrote:
-> On 2025/02/08 2:14, Konstantin Ryabitsev wrote:
-> > On Fri, Feb 07, 2025 at 05:16:28AM +0900, Hector Martin wrote:
-> >> And what I see, is very little effort to improve that status quo, or at
-> >> least very little that yields any actual change that isn't just
-> >> band-aids (e.g. tooling like b4, which is nice and appreciated, but
-> >> doesn't fix any underlying issues). And that's not going to change no
-> >> matter how many long technical arguments we have on the MLs (or even off
-> >> MLs, since MLs are also not particularly good for this, and I've seen
-> >> multiple arguments only reach a resolution after being redirected to IRC).
+On Fri, Feb 07, 2025 at 11:28:01AM -0400, Jason Gunthorpe wrote:
+> On Fri, Feb 07, 2025 at 10:30:20AM -0400, Jason Gunthorpe wrote:
+> > On Thu, Feb 06, 2025 at 08:26:05PM -0800, Nicolin Chen wrote:
+> > > Yea, I found iopt_reserve_iova() is actually missed entirely...
+> > > 
+> > > While fixing this, I see a way to turn the OPTIONs back to per-
+> > > idev, if you still prefer them to be per-idev(?). Then, we can
+> > > check a given input in the set_option() against the device's
+> > > reserved region list from the driver, prior to device attaching
+> > > to any HWPT.
 > > 
-> > From my perspective, there are several camps clashing when it comes to the
-> > kernel development model. One is people who are (rightfully) pointing out that
-> > using the mailing lists was fine 20 years ago, but the world of software
-> > development has vastly moved on to forges.
-> > 
-> > The other camp is people who (also rightfully) point out that kernel
-> > development has always been decentralized and we should resist all attempts to
-> > get ourselves into a position where Linux is dependent on any single
-> > Benevolent Entity (Github, Gitlab, LF, kernel.org, etc), because this would
-> > give that entity too much political or commercial control or, at the very
-> > least, introduce SPoFs.
-> > 
-> > At best, I can hope to make both camps grumpily agree to coexist.
-> > 
-> > I *am* very wary of Benevolent Entities, because we have too many very recent
-> > examples of companies "realigning priorities" when political winds shift.
-> > Programs and initiatives that have until recently been poster board examples
-> > of progress and benevolence are shuttered and defunded. I am concerned that
-> > we're only a couple of mood swings away from someone deciding that free
-> > software should not be allowed to exist because it benefits America's foes.
-> > Many of us remember all too well when large tech giants treated Linux as a
-> > "cancer" to be opposed, and I can certainly see that idea easily re-entering
-> > some Big Brain in Charge.
-> > 
-> > From my perspective, I would like to ensure that Linux development can
-> > continue without a hard dependency on a single centralized forge -- whether
-> > controlled by a large commercial entity, or even a standalone one that is
-> > operated by kernel.org. It's becoming shockingly difficult to operate a public
-> > resource on the web unless you're willing to put it behind a large commercial
-> > CDN that will protect you from hostile bots (and if you do that, you're back
-> > to depending on the whims of a Benevolent Entity).
-> > 
-> > We're trying to get lore.kernel.org to the point where it's like a global
-> > messaging bus that is indexed and searchable. Currently, you mostly have to
-> > send things to a mailing list for them to end up on lore, but it's gradually
-> > becoming less and less the case. We're already bridging with bugzilla and we
-> > should be able to bridge with forges soon, too (currently delayed again
-> > because I'm scrambling to move kernel.org frontends away from Equinix). Who
-> > knows, we may be actually leapfrogging the forge era of software development
-> > straight into "AI" agents era -- but that remains to be seen.
-> > 
-> > Anyway, all of this is to say that I'm happy that you've found b4 useful, but
-> > I wouldn't view it as a band-aid -- it's just a very small and email-centric
-> > way to interact with the kernel lore.
-> > 
+> > I didn't have a strong opinion, if the idev works without complexity
+> > then I'd stick with that on the basis of narrower scope is usually
+> > better.
+
+We could forward the "SW_MSI_START" location or vITS's IPA into
+each vSMMU module in the QEMU, then vSMMU module would initiate
+SET_OPTION when an iommufd-enabled VFIO device attaching to it.
+
+That's how I tested it. And this is one vITS in the VM, so we'd
+only have one fixed location for all devices.
+
+> If you make it per-idev then it is also implicitly per-GIC as well
+> since each idev has exactly one GIC
 > 
-> The centralization concern is valid, but there are technical solutions
-> to this, such as forge federation. It's possible to set up a forge
-> environment to be less of a SPoF, such as by ensuring all data is open
-> and archiveable to allow for migration and backup restore, even by third
-> parties (you can make practically ~all forge data public except for
-> login passwords, and we have email-based reset processes for those).
-> It's also possible to simply shard, and let different subsystems choose
-> their own forge infrastructure, so downtime has a more limited effect.
-> 
-> Meanwhile, for better or worse, much of Linux infra *is* centralized -
-> for example, the mailing lists themselves, and a lot of the Git hosting.
+> This would make it useful as a way to get each ITS page mapped into a
+> single fixed location.. 
 
-Although, many of the subsystems have their own patchworks or other systems
-anyway dotted in random places.
+Hmm, is it for the approach-2 (i.e. vITS solution)?
 
-It's actually something I find quite hard, it might seem there is
-*a* Linux contribution process, but if you do fixups or devices all over
-rather than in one subsystem you end up tripping over the oddities
-of each maintainer; then trying to figure out when they're prepared
-to take a patch, or where to check for whether they've taken it,
-or whether to expect it to turn up in -next can all be quite random.
+Do you mean a use case:
+Multiple vITS pages <=> One pITS page?
 
+> Really hard to use from the VMM though
 
-<snip>
+I could imagine. The caller initiating a SET_OPTION call in VMM
+will have to know what vITS page for what device. So, this info
+has to go through the KVM/IRQ module to get processed and then
+forwarded to the caller (vSMMU module at this moment)..
 
-> - Hector
-
-Dave
-
-> 
-> 
--- 
- -----Open up your eyes, open up your mind, open up your code -------   
-/ Dr. David Alan Gilbert    |       Running GNU/Linux       | Happy  \ 
-\        dave @ treblig.org |                               | In Hex /
- \ _________________________|_____ http://www.treblig.org   |_______/
+Thanks
+Nicolin
