@@ -1,313 +1,248 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2087.outbound.protection.outlook.com [40.107.220.87])
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E75C3DAC14;
-	Fri,  7 Feb 2025 14:46:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.87
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738939581; cv=fail; b=sh2EWDwypiNAJAckuAHWBO/goi7+YIsw8IiWAVXgAvMKp78DfsqaX+a2RyU5imCWrNAxA6wrHHUPJitv3r1vVnKxpn1/N8fEBhxC4tugSlwe3BsHKEYNE/KWqzLahfcEugf2ihNo3N5GxMfKLw2JxZm9bjNJbX5Nwz92VOFbx7E=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738939581; c=relaxed/simple;
-	bh=/DsZanOKUiRAxi15K4X8kaW3F7lumtANzuJcQlsRWZk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=ndAYIw7VGcgN53rsT5qT3yZL2Exj5YbswnQnATd5edujjWQ9m4vYBfZo8+xhTu2gwh+cbQx+h6q+VCQeyys9lONo1EI/ArOjvRwU7nCICegcQg/P32Ti0XUjJofees7b1eZsB5e2pHZsSspTIf2PmAADoXKL2QiUHSTjUbgupRk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PT3d29Tg; arc=fail smtp.client-ip=40.107.220.87
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37F28238D27
+	for <iommu@lists.linux.dev>; Fri,  7 Feb 2025 14:54:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.63.210.85
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738940085; cv=none; b=Yl6eyvDysWreo3Uk3/QaV/MW839K2LaGEDSOrEww2uV8IUR1NmSVY2OxbeIGV2KPfm0hpg0K4YwLEcs1Z7uzVWObYIpLaCX8AzcC6VEh/DwTqnoW1rfWLXRASHXTBo7IMFq1UXbWOpcvKA2zCxAlceH85v7ajQwBmYmK4Ya1q4c=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738940085; c=relaxed/simple;
+	bh=VqkQLcFGQ0F9GDrz/XsQTbEhW4Idk0VNtejdKRcQIGM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Hx+vf+G8qU3+A3Ss69+85DNW+r50XMQuB7Ca+FD8LYy8uBOSEI+ZrRd1X+/twLM0mzGKxrXgyQr6rcllSVTjh0VXPmyAHG+XziN2KSBnOsogvar0CsMs1Ey9hIWIEhpF1MKwCodyz39M+QEbAaKu4y12b6lydim8Eg33K954MlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st; spf=pass smtp.mailfrom=marcan.st; dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b=IiT/K37/; arc=none smtp.client-ip=212.63.210.85
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=marcan.st
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PT3d29Tg"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qV89OXa/1daUYsk481R/bq/l4/hK6nGtU+4NMSdAtM5YlE7w03lfcCmVwIgmgjYwfZzJThojR54BG5jpbnZWCjO2HwvUgFXYzcS8X7hOYasFLB5HEma3jGD4v/v4BmiCFFgnx0CcULiOOHeinNE+4mrJRbxcHvLLYjSjJrsEcKMQaqkfdzk3rpntczkt16p6lQY3tSKHIfapUi5zaapjN+8dGHgdYj0iW6XW3IcBQK+frJ5GNl/QRGvKtLXGTkxFGhmC1/W6VTSSrnh+58iZeeafPu1S45uESRHDBI5gs/c14fQiDN0OECZsryy+nPROn2hZMRDPVQc0VqU0AeT49g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=taZDL+P8T4R41VAWufBOZjDYvZwW2jUtgpxbnymPEiE=;
- b=PtUik+h6JIcWmTMef+BAfkOgJErlZuT8BGsRZqE0P21c8ObsIf7++ehmKk5HilSfJh07zKzy3ay2rSm9/vTALplBSVNpGhJV7ihJL6+RNsWmYgXb6i3HLpJ+dWYw9XCspQQAnWqDX53zlMotpSZaxP1QmALRqq+xemJxpZWfex4NLJSWNnyozTv0qLsVrRzfN0bdU11LyayKaeCvnfQlAc3sQCbUl/MF0ZZ+wD/t+DXZvzs1gwjjGXcnXaURIoea1VnU83GkqGe9mSyzObLzzftcgOKIF/GijJxC/2s55/k4hsHZoYDI7JQWsIg7ERbT2v6CXMxWatJpZaaJP3CGnQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=taZDL+P8T4R41VAWufBOZjDYvZwW2jUtgpxbnymPEiE=;
- b=PT3d29TgGQgES1agX5/l+mNv4KTfNZHChowVXtQ4JKoEv/bqAtKYe7jtCMfJ/Tct0H6Vs8Xk8zbQ5p8I3EstG7pbxN0BK3f5vbC0XZt5uuN1KRqU0yVGbE5jWUFGGSRTPXs6ErT7fFrLlXyQb8rua91H6TLUNjSlHxdEESe2GgG1HoOBF20v58MPJKn/RG6gcB+ece8+GnE0PFmM0eHTLTlBLHJAPgO3znOOhyXZVEPH/JNtEikusxc8/bEXQd1sYCeE2a04tQCCWXtyoTzj5TF//43+nQfkzZETrniXb8dr8wdGpt9UbIfI/1tPegDRgu+dHQB6ARwYAEiV7WeBLw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by MW4PR12MB7029.namprd12.prod.outlook.com (2603:10b6:303:1eb::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8422.14; Fri, 7 Feb
- 2025 14:46:09 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%6]) with mapi id 15.20.8422.011; Fri, 7 Feb 2025
- 14:46:09 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	virtualization@lists.linux.dev,
-	Will Deacon <will@kernel.org>
-Cc: Eric Auger <eric.auger@redhat.com>,
-	patches@lists.linux.dev
-Subject: [PATCH 1/5] iommu/virtio: Break out bypass identity support into a global static
-Date: Fri,  7 Feb 2025 10:46:01 -0400
-Message-ID: <1-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
-In-Reply-To: <0-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0413.namprd13.prod.outlook.com
- (2603:10b6:208:2c2::28) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b="IiT/K37/"
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: marcan@marcan.st)
+	by mail.marcansoft.com (Postfix) with ESMTPSA id E35C541D83;
+	Fri,  7 Feb 2025 14:54:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+	t=1738940079; bh=VqkQLcFGQ0F9GDrz/XsQTbEhW4Idk0VNtejdKRcQIGM=;
+	h=Date:Subject:To:References:From:In-Reply-To;
+	b=IiT/K37/AxclMcLIwDnGk6idIx7CYfJT7ITOjf65Okkwi1yMdGacXD7i0X5DSGYPW
+	 0VUKTyQM8ksbi1L/INuNs3o+78LncQfwSdWFyZnaqJFFHotnm3CSsnOWDYBwDqKLcj
+	 OFOuWuqEWc1Y0lyYSSKhlMTE8lP+IIJcShR4kbDoiET4niDA3WAcEevvrPup9zBeC/
+	 jvAPe6IpM19vcODCZ7GlqcckmF3hC8bNkjsZKCRkaXjPbQmFb7Ruazn2Tc+xO7yMt9
+	 4z51rMQ3w/h8CLI+HuH6FdpHZr9VUs0nGliXocbeX/I0KGMrTLKWV/psSjieY65xrm
+	 CEP2oz3AZqM4Q==
+Message-ID: <a869236a-1d59-4524-a86b-be08a15262ec@marcan.st>
+Date: Fri, 7 Feb 2025 23:54:35 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|MW4PR12MB7029:EE_
-X-MS-Office365-Filtering-Correlation-Id: e787b134-2bea-4cd7-4dc3-08dd478627fa
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?ksmaViMHItEOPLzhy2zFbs856X4vo7HFPsIynUQTA54/gD/fDtDqfTYvGc5C?=
- =?us-ascii?Q?ACPkOBiuOIBniOjHkPOHgWtprx58uhUKGjkCF6Fx5ERoqlKPtgj2ZWctPk9+?=
- =?us-ascii?Q?4Vd+WRP2N3Wg1jRQN40Aw9qOQAGLvRBc4jCNtAWG9bOT5wQScr44WUAj2mMg?=
- =?us-ascii?Q?ja5ZNZU8PJs4XmJrxFJuSyeHghpqCYdeOAoLZiQKhu15hswQnNIsBWYUG8+T?=
- =?us-ascii?Q?U4chLaYoKxZctXmgjn+LKxYGJOmxXQnXEv07M6TM1aJHafRx8OBnTtWplV6s?=
- =?us-ascii?Q?WUyFOYHvByVyzU2F7HTy0DryBXFHiDdcpYvPPnKnPCpRjI41gLkrepkuNER4?=
- =?us-ascii?Q?tfRNq15VesGIO5ZZkH1EI0NwAmxhNePbj1mMFHDxmbsr9032/OaNzwK/b9bp?=
- =?us-ascii?Q?92SDC7pFwk5j97ZqU48Kxxp8AiIe9yYA1uk33h9sN0GS/ubz+kJ4GkZ77/Pi?=
- =?us-ascii?Q?6rAqJa5tod8XKRVsgv9fnGq00kFohkn501oBj06C7gf/abBtoqm6bYQO3u6w?=
- =?us-ascii?Q?H41smOVd9951GzG+Y6ftyfT2G55q0C0OoXWyQCRppUnUUW4xRI3Wvrm1ydE8?=
- =?us-ascii?Q?SyytDTN7ctIWtkZkTGqlwRXEiWLliyh5yfrrBs1IgfbMT8aFUhZCNpgN/B1a?=
- =?us-ascii?Q?aoRe4ksWpeDPIo8PkIbIRTGjZ0UkbidDuOKAQPv5rGo23zarbE79rgf8WUoe?=
- =?us-ascii?Q?EbZHKoaiZ/1Y+zYCzN5OukH06k8Wj6H20lxF0Jz+5YP7G0KoGdRfZ1AseF58?=
- =?us-ascii?Q?JPN7rhXB1GItpBI8wg6XLVoxsoH9sJWZC9zCidRRjnChuash8nlC+Ap7MheD?=
- =?us-ascii?Q?A/jg8c9cEriTPaKRpdz3AGmXfGe+Dyz4B+N5hyqaZlEvZYRPybzCcvfy1iM7?=
- =?us-ascii?Q?5U58RJ1R4eLYAuD5vYBor4qBTzdYeZKbNCd9a9QKjaXYYNdnUGM333CF3mJy?=
- =?us-ascii?Q?L30vzlUnyweZmJyFTkrDLLDzwA5OViIoL+dVjR4KgmcVf2cnrA4uYCul6S3O?=
- =?us-ascii?Q?kmoxUfEnrHWXDhCKggjjAzdk8+igyVZYBlQELlXtsDjxbbZx55wXE6jGQjKn?=
- =?us-ascii?Q?YCxiZ8pl62h3rWeWMuBZtoSN8bCUcbbIhZFhOxcZX8fpmKMKfbhR64+ORPMb?=
- =?us-ascii?Q?rkY0qYIjayl/tWykAql1aE4vjZI2OCdNBuFOa4ktrBsI+S+o1R74t1JJwqaf?=
- =?us-ascii?Q?Vd9tXldvNP48G2kWcJTxV0bkxfNetsvyWk+HNw/7oL2QGa6IPuYLDBkgOty5?=
- =?us-ascii?Q?7Z60TTbFz1LXSo3OeCS1BM0iX/098X/L2OXQPIOTUK3DDJYUd5exeLHRAp5C?=
- =?us-ascii?Q?yvpkTjL0l7yot9PbqgxLWbz17QIQpgiN12lSAjSjVhiyjLddHAbWOXo4kt0D?=
- =?us-ascii?Q?cTAA8D3gutj0uJ84wDyh1Ynku41t?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?OwqFAaSefWCEwM9RjTfA75XV6WUla4WQTrbFrHfSGZus3cwntJ5PCTvadbj2?=
- =?us-ascii?Q?vcHb1MEwbsI9NBvften06dLTCE4ZSij0h+zcn5fLGEqbEfYbBoPFpKau5oVH?=
- =?us-ascii?Q?tFXBntAl6x/c5i+Wa5BxHdJvkEy6sb0BeWLjcPWYm4DVTdiJa+CKTX+f5wBG?=
- =?us-ascii?Q?01CKvy4DwGRzH4mzljtm1teNSoENN8zWJwr2UyAZnn9ZbgdP2XtSnXBZSNzu?=
- =?us-ascii?Q?XmbjgkREiCCkrBpMbVTaeKg7tL+7FaPJwoH7fMmSUKO+owJKe7SqihYnH5e6?=
- =?us-ascii?Q?sTpXIw0aSIFIII5R+IDg9yVJL9YFtcvrxvIkF2fetO/by9jnauWBEgd0uTq+?=
- =?us-ascii?Q?//I4vRNQabK63NZB+sq/Mvg75RsYa3UjJTqOHm5v7aRqutqxZaKRm+xghYJS?=
- =?us-ascii?Q?jCtjYxaOmXSa2PaZuJJa5TtmWKFS3Q6f/qYdQ8vs7VSi8Dl881KZmoLrT7RP?=
- =?us-ascii?Q?IQnfTAf3Czn23fwocK8hRFf1EFzKFH2Ily8G43ZzXPcqELKBj0HIsEYsJ9RB?=
- =?us-ascii?Q?Xx8rnzWT+5gugARk1DV012HwgeOVk4xSIyy2UBAASsF82QSjDH640UfSXlNP?=
- =?us-ascii?Q?hyKLFZuAJbNbJdODLE8krAdocNJbTsE+8QvLPKLPs9oyUhls7+eDo80rcNbt?=
- =?us-ascii?Q?+hK66UGyOx02o2hWG86epZYevWp5EQfbSsQ6I6vy3pRXmV6Xu45yq/C6as++?=
- =?us-ascii?Q?vm/zoBV2gdVWm+B6otpiEZnlKlEjTscXCY12kqchCZtnFqssvR9Dtx3/jEdW?=
- =?us-ascii?Q?5cK+OYeO3KXRjx3s/ARAFUJacc6d7rshLaky+lpkdvTCFJ10CtRFP0tQxS+w?=
- =?us-ascii?Q?wjlfLl/UT41lPhmcrrI1rGBODyicrHUApj68kHTbiU4tkjTB3164rIbuhieX?=
- =?us-ascii?Q?whyWpFNpYUKdi7Q/Eofd8WcbMI35a+MNbIUb0MeQe6gzzo+BQ8agQqyo0WWg?=
- =?us-ascii?Q?mKhmrwyHjSP/GSQwNLwEWNpYTsa9g3b4mgKms0k9UgKM9HrO5OdZB2owybjP?=
- =?us-ascii?Q?lRuz5vYgm3VJsiwAjpTIVpdXGma9yU1M0avQGQBpgPcnxh1t4fKOLds+UeQ6?=
- =?us-ascii?Q?tJ34nrPvxOUQg3tiesE69WkNwM2+h6PVWPS3+HimAabwwbprlIBc6UMOsZpo?=
- =?us-ascii?Q?o1r14h9xDrPma2vaBK7al5D1hqQYuWjYQsqECEC8vsKMLq2lPaWgofMBazig?=
- =?us-ascii?Q?o1f+0XrwD1+uIDTGFy3cdscCICmni08n1xCi7xp9gtCiTvF+8FOHajso9EQr?=
- =?us-ascii?Q?/hvopWMP/2//kViSV2VArkuU9glPuDvs9/F2l6QSmKRc1norBss+3Orhm8de?=
- =?us-ascii?Q?cjpYBA2Tt7F+l62HAW8qP16IwDy3fWx4kxO+tRuJS0ybTF1Az2BJMjMBSM2P?=
- =?us-ascii?Q?CXMhGcOOl9QRyfXqviypXdgPQFoLbD5bK0M8lxCd/UqLbeL5QZLvTIO1W5RD?=
- =?us-ascii?Q?wu5koSH4UE5ALcgEykpoesujuzIsjUY7g16pUlr1T36Hh2SbZnZSSQwuwbbI?=
- =?us-ascii?Q?tGQnxLGiSIV7fti0bt37SE8AJl/56mQp4VC8bEKzcBfvxqNPOCsHPCkYl4sX?=
- =?us-ascii?Q?2rVmEbQslTsIpcXsSl62v6fTNOAA+pLJVqoqiCoH?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e787b134-2bea-4cd7-4dc3-08dd478627fa
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2025 14:46:07.9682
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: otjLrpz3Gg+LKsEQI3ClCp9WkiT8ffdvuTBUd87YCWHog7xy+IErw67HtuwZE0FD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7029
+User-Agent: Mozilla Thunderbird
+Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
+ coherent allocator abstraction.)
+To: Simona Vetter <simona@ffwll.ch>, Jason Gunthorpe <jgg@nvidia.com>,
+ Greg KH <gregkh@linuxfoundation.org>,
+ Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
+ Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
+ Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+ Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com,
+ aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
+ Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+ =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
+ Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ DRI Development <dri-devel@lists.freedesktop.org>
+References: <293df3d54bad446e8fd527f204c6dc301354e340.camel@mailbox.org>
+ <20250130154646.GA2298732@nvidia.com> <2025013030-gummy-cosmic-7927@gregkh>
+ <20250130172437.GN5556@nvidia.com>
+ <2025013148-reversal-pessimism-1515@gregkh>
+ <20250131135421.GO5556@nvidia.com>
+ <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
+ <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
+ <4c143b85-063a-4413-a6ca-e9d80e26da96@marcan.st>
+ <c5a49bcb-45cf-4295-80e0-c4b07083df00@marcan.st>
+ <Z6YPfsDSNdRUskvp@phenom.ffwll.local>
+From: Hector Martin <marcan@marcan.st>
+Content-Language: en-US
+In-Reply-To: <Z6YPfsDSNdRUskvp@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-To make way for a domain_alloc_paging conversion add the typical global
-static IDENTITY domain. This supports VMMs that have a
-VIRTIO_IOMMU_F_BYPASS_CONFIG config.
 
-If the VMM does not have support then the domain_alloc path is still used,
-which creates an IDENTITY domain out of a paging domain.
 
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/virtio-iommu.c | 86 ++++++++++++++++++++++++++++--------
- 1 file changed, 67 insertions(+), 19 deletions(-)
+On 2025/02/07 22:49, Simona Vetter wrote:
+> On Fri, Feb 07, 2025 at 07:20:03PM +0900, Hector Martin wrote:
+>> On 2025/02/07 18:41, Hector Martin wrote:
+>>> On 2025/02/06 3:52, Simona Vetter wrote:
+>>>> On Tue, Feb 04, 2025 at 03:46:14AM +0900, Hector Martin wrote:
+>>>>> Adding Linus
+>>>>>
+>>>>> My 2c: If Linus doesn't pipe up with an authoritative answer to this
+>>>>> thread, Miguel and the other Rust folks should just merge this series
+>>>>> once it is reviewed and ready, ignoring Christoph's overt attempt at
+>>>>> sabotaging the project. If Linus pulls it, what Christoph says doesn't
+>>>>> matter. If Linus doesn't pull it, the R4L project is essentially dead
+>>>>> until either Linus or Christoph make a move. Everything else is beating
+>>>>> around the bush.
+>>>>>
+>>>>> Rust folks: Please don't waste your time and mental cycles on drama like
+>>>>> this. It's not worth your time. Either Linus likes it, or he doesn't.
+>>>>> Everything else is distractions orchestrated by a subset of saboteur
+>>>>> maintainers who are trying to demoralize you until you give up, because
+>>>>> they know they're going to be on the losing side of history sooner or
+>>>>> later. No amount of sabotage from old entrenched maintainers is going to
+>>>>> stop the world from moving forward towards memory-safe languages.
+>>>>>
+>>>>> FWIW, in my opinion, the "cancer" comment from Christoph would be enough
+>>>>> to qualify for Code-of-Conduct action, but I doubt anything of the sort
+>>>>> will happen.
+>>>>
+>>>> Yeah no.
+>>>>
+>>>> https://chaos.social/@sima/113942119012147959
+>>>>
+>>>> This was about you, because typing a proper answer takes a bit longer. It
+>>>> was also about your toots on fedi, like this:
+>>>>
+>>>> https://social.treehouse.systems/@marcan/113941468353031993
+>>>>
+>>>> And "haha it's only a joke" does not work with your public profile and following.
+>>>>
+>>>> I do understand the frustration and temptation to just burn it all to the
+>>>> ground, head the call of the sirens, or maybe for me more pick up goat
+>>>> farming in the Swiss Alps. But you can't have it both and expect to also
+>>>> be part of and contribute to the same community. And personally I don't
+>>>> appreciate getting drenched in gasoline while I'm trying to quench flames
+>>>> on the ground.
+>>>>
+>>>> And this isn't the first time or the second, by now it's a pretty clear
+>>>> pattern over some years. And with the first I could explain why you react
+>>>> like that and you had my full understanding, but eventually that runs a
+>>>> bit thin as an excuse.  Now I'm left with the unlikely explanation that
+>>>> you just like thundering in as the cavalry, fashionably late, maximally
+>>>> destructive, because it entertains the masses on fedi or reddit or
+>>>> wherever. I have no idea what you're trying to achieve here, I really
+>>>> don't get it, but I am for sure fed up dealing with the fallout.
+>>>>
+>>>> Cheers, Sima
+>>>
+>>> Since we're into complaining about social media posts on the list now,
+>>> I'm going to link one of yours:
+>>>
+>>> https://chaos.social/@sima/113961496955043901
+>>>
+>>> An R4L maintainer quit after multiple rounds of hostility, including
+>>> some completely unacceptable public comments bordering on downright
+>>> harassment from tytso, a situation which was widely publicized.
+>>>
+>>> If, according to you, that's "shockingly smooth" with "no outsized
+>>> drama" other than "what I stirred up" (I guess you also missed the whole
+>>> LWN post about this thread before I posted anything on Fedi? That's how
+>>> I even found out about this), then I'm glad I'm disengaging with this
+>>> community. The Stockholm syndrome and utter denial is palpable.
+> 
+> Yes, the kernel's conduct is still not where I think it needs to be. And
+> there are still cases occuring with some regularity which would be
+> unacceptable on dri-devel and sanctioned under the freedesktop.org code of
+> conduct. But that's not really new, it's not really specific to the r4l
+> project, and despite that it's still not good enough, it's definitely much
+> better than 10 years ago.
+> 
+> That all aside, I put the "outsized" very intentionally in my comment. It
+> carries a lot more than just the above paragraph in just one small word.
+> 
+>>> I thought I could work with you on these issues; I don't know what
+>>> happened over the past year since we last had a private conversation
+>>> about this, but clearly you've changed your mind.
+> 
+> I got seriously annoyed with you about two years ago for the first time,
+> but kept chatting for quite a while longer. Nothing changed. Like I said,
+> I'm not complaining about this specific case here, but about a pattern
+> that you've established consistently over a fair amount of time.
+> 
+> And if you're wondering why you didn't realize this: It's impossible to
+> change people by telling them they're wrong. What does tend to work is
+> explaining different perspectives, so that they can figure it out
+> themselves. And sometimes that's just way too subtle to ever register.
+> 
+>>> Thus, as you kindly requested of me in social media,
+>>>
+>>> https://chaos.social/@sima/113961283260455876
+>>>
+>>> I will now proceed to fuck off. Good luck.
+> 
+> I wasn't fully awake yet this morning, but I have no issue standing behind
+> that thread in it's entirety. Lightly edited for typos below, with one
+> sentence added for a bit more context:
+> 
+> This isn't about "being civil" or "friendly" and even less about "don't
+> call out". This is about calling out in an ineffective and imprecise way,
+> so that the people actually trying to change things are busy patching up
+> your collateral damage instead of implementing real changes, while all
+> you've achieved is airing your frustration for internet drama points.
+> 
+> Aside from that I've learned through private feedback since my first mail
+> here that your social media brigading has had much more of a chilling
+> effect on contributors than I assumed, which is not acceptable.
+> 
+> When you're that harmful with your calling out, eventually I'm going to be
+> fed up, and you get a live round shot across your bow. And if that then
+> causes you to ragequit, because you can't actually deal with the heat
+> you've been dishing out coming back around the corner:
+> 
+> Fuck off.
+> 
+> Or as Dave Airlie put it upthread in this conversation:
+> 
+> "Being toxic on the right side of an argument is still toxic, [...]"
+> 
+> So please do call out broken things, do change things, I've been doing it
+> for well over a decade in the linux kernel. But do it in a way that you're
+> not just becoming part of the problem and making it bigger.
+> 
+>> Oh, and one last thing. I've heard that, in whatever backroom
+>> conversations you've been having about this situation, there has
+>> apparently been a belief, explicit or implicit, that I am in any way
+>> employed to work on the Linux kernel.
+>>
+>> Unlike most people in this thread, I don't enjoy the luxury of a cushy
+>> tech job that pays me to deal with this community. I am supported
+>> exclusively by donations, which incidentally, have been steadily
+>> *de*creasing since the start of the Asahi Linux project. The project has
+>> zero corporate sponsorship.
+>>
+>> And I do believe the fact that essentially all high-level Linux kernel
+>> maintainers and contributors are paid by corporations to do it is a
+>> major factor that has caused this community to become wildly out of
+>> touch with what it means to be a community FOSS project.
+> 
+> I'm really not in favor of chiding people for how they earn money, because
+> this world isn't fair and critizing people for how they get their bills
+> paid is generally not ok. But this is a bit too much to just let it slide.
+> 
+> It's fairly plausible that you need the social media brigading to generate
+> attention that you can convert into enough donations to support the asahi
+> project. But someone has to clean up the mess your shitstorms create, it's
+> sure not you, which means my and other people's mental health essentially
+> pay your bills. And I really do not appreciate that dynamic.
+> 
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index b85ce6310ddbda..c71a996760bddb 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -48,6 +48,7 @@ struct viommu_dev {
- 	u64				pgsize_bitmap;
- 	u32				first_domain;
- 	u32				last_domain;
-+	u32				identity_domain_id;
- 	/* Supported MAP flags */
- 	u32				map_flags;
- 	u32				probe_size;
-@@ -70,7 +71,6 @@ struct viommu_domain {
- 	struct rb_root_cached		mappings;
- 
- 	unsigned long			nr_endpoints;
--	bool				bypass;
- };
- 
- struct viommu_endpoint {
-@@ -305,6 +305,22 @@ static int viommu_send_req_sync(struct viommu_dev *viommu, void *buf,
- 	return ret;
- }
- 
-+static int viommu_send_attach_req(struct viommu_dev *viommu, struct device *dev,
-+				  struct virtio_iommu_req_attach *req)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	int ret;
-+	int i;
-+
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		req->endpoint = cpu_to_le32(fwspec->ids[i]);
-+		ret = viommu_send_req_sync(viommu, req, sizeof(*req));
-+		if (ret)
-+			return ret;
-+	}
-+	return 0;
-+}
-+
- /*
-  * viommu_add_mapping - add a mapping to the internal tree
-  *
-@@ -687,12 +703,6 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
- 	vdomain->viommu		= viommu;
- 
- 	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
--		if (virtio_has_feature(viommu->vdev,
--				       VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
--			vdomain->bypass = true;
--			return 0;
--		}
--
- 		ret = viommu_domain_map_identity(vdev, vdomain);
- 		if (ret) {
- 			ida_free(&viommu->domain_ids, vdomain->id);
-@@ -719,10 +729,8 @@ static void viommu_domain_free(struct iommu_domain *domain)
- 
- static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
--	int i;
- 	int ret = 0;
- 	struct virtio_iommu_req_attach req;
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
- 	struct viommu_domain *vdomain = to_viommu_domain(domain);
- 
-@@ -761,16 +769,9 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		.domain		= cpu_to_le32(vdomain->id),
- 	};
- 
--	if (vdomain->bypass)
--		req.flags |= cpu_to_le32(VIRTIO_IOMMU_ATTACH_F_BYPASS);
--
--	for (i = 0; i < fwspec->num_ids; i++) {
--		req.endpoint = cpu_to_le32(fwspec->ids[i]);
--
--		ret = viommu_send_req_sync(vdomain->viommu, &req, sizeof(req));
--		if (ret)
--			return ret;
--	}
-+	ret = viommu_send_attach_req(vdomain->viommu, dev, &req);
-+	if (ret)
-+		return ret;
- 
- 	if (!vdomain->nr_endpoints) {
- 		/*
-@@ -788,6 +789,40 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	return 0;
- }
- 
-+static int viommu_attach_identity_domain(struct iommu_domain *domain,
-+					 struct device *dev)
-+{
-+	int ret = 0;
-+	struct virtio_iommu_req_attach req;
-+	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
-+	struct viommu_domain *vdomain = to_viommu_domain(domain);
-+
-+	req = (struct virtio_iommu_req_attach) {
-+		.head.type	= VIRTIO_IOMMU_T_ATTACH,
-+		.domain		= cpu_to_le32(vdev->viommu->identity_domain_id),
-+		.flags          = cpu_to_le32(VIRTIO_IOMMU_ATTACH_F_BYPASS),
-+	};
-+
-+	ret = viommu_send_attach_req(vdev->viommu, dev, &req);
-+	if (ret)
-+		return ret;
-+
-+	if (vdev->vdomain) {
-+		vdev->vdomain->nr_endpoints--;
-+		vdomain->nr_endpoints++;
-+		vdev->vdomain = vdomain;
-+	}
-+	return 0;
-+}
-+
-+static struct viommu_domain viommu_identity_domain = {
-+	.domain = { .type = IOMMU_DOMAIN_IDENTITY,
-+		    .ops =
-+			    &(const struct iommu_domain_ops){
-+				    .attach_dev = viommu_attach_identity_domain,
-+			    } }
-+};
-+
- static void viommu_detach_dev(struct viommu_endpoint *vdev)
- {
- 	int i;
-@@ -1061,6 +1096,7 @@ static bool viommu_capable(struct device *dev, enum iommu_cap cap)
- }
- 
- static struct iommu_ops viommu_ops = {
-+	.identity_domain	= &viommu_identity_domain.domain,
- 	.capable		= viommu_capable,
- 	.domain_alloc		= viommu_domain_alloc,
- 	.probe_device		= viommu_probe_device,
-@@ -1184,6 +1220,18 @@ static int viommu_probe(struct virtio_device *vdev)
- 	if (virtio_has_feature(vdev, VIRTIO_IOMMU_F_MMIO))
- 		viommu->map_flags |= VIRTIO_IOMMU_MAP_F_MMIO;
- 
-+	/* Reserve an ID to use as the bypass domain */
-+	if (virtio_has_feature(viommu->vdev, VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
-+		viommu->identity_domain_id = viommu->first_domain;
-+		viommu->first_domain++;
-+	} else {
-+		/*
-+		 * Assume the VMM is sensible and it either supports bypass on
-+		 * all instances or no instances.
-+		 */
-+		viommu_ops.identity_domain = NULL;
-+	}
-+
- 	viommu_ops.pgsize_bitmap = viommu->pgsize_bitmap;
- 
- 	virtio_device_ready(vdev);
--- 
-2.43.0
+If I were trying to get more funds, I'd be spending my time finding
+corporate sponsors, not documenting the failings of the Linux kernel
+community in public. Believe it or not, no, the latter doesn't get me
+more donations.
+
+Given you have now decided to add "baseless public accusations from a
+position of power" to the list of abuses perpetrated by Linux kernel
+maintainers, I think it's about time we stop having this conversation.
+
+- Hector
 
