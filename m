@@ -1,138 +1,176 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx.treblig.org (mx.treblig.org [46.235.229.95])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 537F51A2399
-	for <iommu@lists.linux.dev>; Fri,  7 Feb 2025 18:33:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 492101B0423;
+	Fri,  7 Feb 2025 18:54:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.229.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738953228; cv=none; b=OSpaUSUpP123bFbNbtNaIut+r8Q0M68yw5W1zvzapS0ME8fLlugWII61qL91Qm7JMnzcJe6FRE8WPuP4GFuRh3jfhHK82LoDIrXj2YDhoGIFxk2cR3lV6q/yFjDMuKa3Yj4npvxcmQz+b6kw9TfnMGwkLOxb8ekU4b7T5EWsTic=
+	t=1738954457; cv=none; b=GlCiSQyEH0+5AigkHVQCH7HwUJnXmGgL8bDrgqczS/dj6cFeefswWUMUEgD9yPvCYgZVdtjaTOWLY5ivoPR/UwajKnfwY58hYoEWqsdHTd3Ipq6HgqGS7+LRObgZWGPDqPs/5m1eutoU/WS2BduyCdm8ZI7u4hsmrK5jOR+iOS4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738953228; c=relaxed/simple;
-	bh=nsvreyKbULHQViKCHN8Xzu3sXBSkdh4jaUA6rkaR12A=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aFJ1Dtuj5IIO4WSRmEFDkTqdrRaX6i8mKHkY/eNvfgdyBf4/Uq1wEkRMfSjoOf3Pcs6QaweikjT5cLpjSTqKb7POJdPkXxEnb/TQqIBe0U63sMzor5MkPIBNpJ6Nu2oOfvft+c0Dzdi0wLS2bTN38didrvJHxv8wL4ZPOREUYw0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=IGfEjqf5; arc=none smtp.client-ip=209.85.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	s=arc-20240116; t=1738954457; c=relaxed/simple;
+	bh=39tM/FelPk8IXPE4RyvCWWz+ddMpywlUPjAZQcKRfUY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=djIFkZK4wBwSdW1XlTA3KHSyZPQ4RfFaBeoljoiFaKMJHPdGPcNfDCzrUvZ51nJuexbeStTDPLNq8A6azYwMeR0Pk7Qc03iOhvxFKYq0sT/Pj7soz33iWCTFYAa597CpbY6EhRMSwtPZCwgGRJrVv8kLXma1ETeStpVcZFAHufk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=treblig.org; spf=pass smtp.mailfrom=treblig.org; dkim=pass (2048-bit key) header.d=treblig.org header.i=@treblig.org header.b=smKJK53u; arc=none smtp.client-ip=46.235.229.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=treblig.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=treblig.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="IGfEjqf5"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-5dcf0de81ebso4698089a12.1
-        for <iommu@lists.linux.dev>; Fri, 07 Feb 2025 10:33:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1738953224; x=1739558024; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=LSfjVDdFy380pTqlr6fb1AB4PEji/7GivU8X5uTYCzs=;
-        b=IGfEjqf5GHsDS58lbuUfRq7C5K1jwTGHZV0T1/g10CRae53F8uftnafH2ezCq7RkxV
-         qn/q+UVYQO8FHEFm+SLmQLFhxEKdyBfqZLZOIkDx/cYFqUWdxpyNoneaPknS5LSm5NhO
-         1+hEcCx9yRSZCG7KegksLF3Mhs1Tq1weNQTZA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738953224; x=1739558024;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=LSfjVDdFy380pTqlr6fb1AB4PEji/7GivU8X5uTYCzs=;
-        b=StW33kXw/zvCm2NBEV8rj+XL8WyUg9qNkyegoqcR1pbRlC9fjAD77XEnsOf0ej0BsG
-         aqzxHSE4HkU6RvYYNGm34cgEnuw15ffIzkZ4km920MbmJT1aY7IG3CLnFjKg20q2hNi3
-         WuA6/MIhW5+D4lOOu3pgPPZFJ111UCy7DtG0kfJ70xK9XXuWtOvnDvWPS++0+IjGj7vl
-         uOm3v0/p87QFetfSqpymsjGCVGhso38OGPFnkmfs0MXhKaWIjTFPOjOyUA2v+EuCggxQ
-         PJbZ+G/IdjIgUpY3wly8aJSHKDVQIq5UPTdUYbJEuNRbqCA2QD5P2mXMkl3XTaq5NUCu
-         GLsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXOYGYPiuun2cvnsn4iEBdHQprYsVV2sxpLP8pbdp3IwCm4SqT31wKBuTHCuvCZRLnzO0xF6g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxxmvosP6tv4drkQ092ByHPKw+HpFSAW+QKteBkLPdzmSc9lF5D
-	7AD7I35+LB538SjlaFCft4sFIR6nBiJ7f20hmxhUWJB2/8q+Hl/N4pEqdWKR1PPqEGDUY4GuYLH
-	85y4=
-X-Gm-Gg: ASbGnctgolJgjv3pGxerilszawTcJ5v7jDM0ET5jJrlV2hh8sKNqjGpz5NZZ6ned1pS
-	yKbS9mU7i/SE2l5yyByiru6smwnaQfuzd/iqLtcRD+knlUvyz9dZrM9JmuNcg1lFWGZHhUH/QhF
-	FggGGwehOF2/xb4X0J69Yn6DVeT/NBkvbnF6f0K988uGrHmsJ7kT/sxfVnA40Y+ynp/lFQ0AQQD
-	00mdfYb+nQvPGorSO1tqLiVHM8K0wvo5DqqXTFwPMWQlXaUVeOYcRvysQ0GavaPMX7RpMqmlyMe
-	iGWJDvc6Fettiq4B7iweuCdzTz9bZNHOZbnZg7DT1jZYcjNff7L59qEfwLqkt+5LpA==
-X-Google-Smtp-Source: AGHT+IHtOp/b2VzHp5l4MLMFA3NJsMnAHpXVyfdpzJeeJWCsEHfWgYukG0g+c4S1iYt3+ASGgxQAsA==
-X-Received: by 2002:a17:907:3f12:b0:ab6:8fda:3bcf with SMTP id a640c23a62f3a-ab789c85e91mr475103466b.56.1738953224581;
-        Fri, 07 Feb 2025 10:33:44 -0800 (PST)
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com. [209.85.218.47])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab78405313dsm218124766b.55.2025.02.07.10.33.44
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Feb 2025 10:33:44 -0800 (PST)
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-aaecf50578eso475545266b.2
-        for <iommu@lists.linux.dev>; Fri, 07 Feb 2025 10:33:44 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCU3UfzO7NoE2ztUgUmzTk3S5tVa/6T7bHCxAWUyfs7+XzsHk8MLxGKuNZ+HvzZT+zqMza8vmQ==@lists.linux.dev
-X-Received: by 2002:a17:907:3f12:b0:ab6:8fda:3bcf with SMTP id
- a640c23a62f3a-ab789c85e91mr475100466b.56.1738953223934; Fri, 07 Feb 2025
- 10:33:43 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=treblig.org header.i=@treblig.org header.b="smKJK53u"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
+	; s=bytemarkmx; h=Content-Type:MIME-Version:Message-ID:Subject:From:Date:From
+	:Subject; bh=EAcqYwz2jmB6Mvusczq8VIeE3A07B10hda1ej7t/Xe8=; b=smKJK53uK4eErOQV
+	PDjUcgn3F89vn7KLBPpz/VkKUhnQuII8VRw7zR8UyeMBeNDJVSAxi12sNrwyadDFDtWWS0Xndz4SO
+	ldx/PvWRDZgBXjf3APTyUBa4sguVxsFYPwiU+wjnbnjcsxAIN3j1R+6So9KLN5tk4s1TeG0wbhl9I
+	rtezlIgvdtv+ZV8v5FYvDOMipJ1I7B05/bma9ABqItWYzGj2COLa8SutJ+aD4qvEuqArt9WCn1WBe
+	0KuZ0ejFNeLfXX43LM1Wdk/qqTCWEkPFLm7EN38d/H/iQs5HGCi0olpebtywvE+qzfaW1r/QB3y/a
+	ADK20FLy8pv2gt+KiQ==;
+Received: from dg by mx.treblig.org with local (Exim 4.96)
+	(envelope-from <dg@treblig.org>)
+	id 1tgTU3-00ELPl-1K;
+	Fri, 07 Feb 2025 18:53:47 +0000
+Date: Fri, 7 Feb 2025 18:53:47 +0000
+From: "Dr. David Alan Gilbert" <linux@treblig.org>
+To: Hector Martin <marcan@marcan.st>
+Cc: Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+	Danilo Krummrich <dakr@kernel.org>, Dave Airlie <airlied@gmail.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Greg KH <gregkh@linuxfoundation.org>,
+	Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
+	Christoph Hellwig <hch@lst.de>,
+	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	daniel.almeida@collabora.com, aliceryhl@google.com,
+	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	DRI Development <dri-devel@lists.freedesktop.org>
+Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
+ coherent allocator abstraction.)
+Message-ID: <Z6ZWu44D9UCXVIgi@gallifrey>
+References: <2025013148-reversal-pessimism-1515@gregkh>
+ <20250131135421.GO5556@nvidia.com>
+ <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
+ <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
+ <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
+ <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st>
+ <Z6UPXxEJYpanU9iU@cassiopeiae>
+ <4c0a7cf9-26e1-4a19-8a6e-7c30bc3aef86@marcan.st>
+ <20250207-mature-pastel-rottweiler-e6dbd9@lemur>
+ <1bbdf8b7-a70b-4994-865e-7fcb8d53ebef@marcan.st>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <2025013030-gummy-cosmic-7927@gregkh> <20250130172437.GN5556@nvidia.com>
- <2025013148-reversal-pessimism-1515@gregkh> <20250131135421.GO5556@nvidia.com>
- <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st> <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
- <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
- <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st> <Z6UPXxEJYpanU9iU@cassiopeiae>
- <4c0a7cf9-26e1-4a19-8a6e-7c30bc3aef86@marcan.st> <20250207-mature-pastel-rottweiler-e6dbd9@lemur>
- <1bbdf8b7-a70b-4994-865e-7fcb8d53ebef@marcan.st>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 In-Reply-To: <1bbdf8b7-a70b-4994-865e-7fcb8d53ebef@marcan.st>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 7 Feb 2025 10:33:27 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wiQUya5_zTwLFNT2XkX-bf_H1vJiJ3zuADnO-3EwOOjVA@mail.gmail.com>
-X-Gm-Features: AWEUYZnMc9rrYSL8b5KBAFdfhmKQWSDBm7ZGh4b76ktZGQGeBJNjsWmuQH4lWbE
-Message-ID: <CAHk-=wiQUya5_zTwLFNT2XkX-bf_H1vJiJ3zuADnO-3EwOOjVA@mail.gmail.com>
-Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
- coherent allocator abstraction.)
-To: Hector Martin <marcan@marcan.st>
-Cc: Konstantin Ryabitsev <konstantin@linuxfoundation.org>, Danilo Krummrich <dakr@kernel.org>, 
-	Dave Airlie <airlied@gmail.com>, Jason Gunthorpe <jgg@nvidia.com>, Greg KH <gregkh@linuxfoundation.org>, 
-	phasta@kernel.org, Christoph Hellwig <hch@lst.de>, 
-	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>, 
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com, 
-	aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org, 
-	Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
-	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
-	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, 
-	open list <linux-kernel@vger.kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	airlied@redhat.com, "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, 
-	DRI Development <dri-devel@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Chocolate: 70 percent or better cocoa solids preferably
+X-Operating-System: Linux/6.1.0-21-amd64 (x86_64)
+X-Uptime: 18:48:07 up 275 days,  6:02,  1 user,  load average: 0.06, 0.05,
+ 0.00
+User-Agent: Mutt/2.2.12 (2023-09-09)
 
-On Fri, 7 Feb 2025 at 10:02, Hector Martin <marcan@marcan.st> wrote:
->
+* Hector Martin (marcan@marcan.st) wrote:
+> On 2025/02/08 2:14, Konstantin Ryabitsev wrote:
+> > On Fri, Feb 07, 2025 at 05:16:28AM +0900, Hector Martin wrote:
+> >> And what I see, is very little effort to improve that status quo, or at
+> >> least very little that yields any actual change that isn't just
+> >> band-aids (e.g. tooling like b4, which is nice and appreciated, but
+> >> doesn't fix any underlying issues). And that's not going to change no
+> >> matter how many long technical arguments we have on the MLs (or even off
+> >> MLs, since MLs are also not particularly good for this, and I've seen
+> >> multiple arguments only reach a resolution after being redirected to IRC).
+> > 
+> > From my perspective, there are several camps clashing when it comes to the
+> > kernel development model. One is people who are (rightfully) pointing out that
+> > using the mailing lists was fine 20 years ago, but the world of software
+> > development has vastly moved on to forges.
+> > 
+> > The other camp is people who (also rightfully) point out that kernel
+> > development has always been decentralized and we should resist all attempts to
+> > get ourselves into a position where Linux is dependent on any single
+> > Benevolent Entity (Github, Gitlab, LF, kernel.org, etc), because this would
+> > give that entity too much political or commercial control or, at the very
+> > least, introduce SPoFs.
+> > 
+> > At best, I can hope to make both camps grumpily agree to coexist.
+> > 
+> > I *am* very wary of Benevolent Entities, because we have too many very recent
+> > examples of companies "realigning priorities" when political winds shift.
+> > Programs and initiatives that have until recently been poster board examples
+> > of progress and benevolence are shuttered and defunded. I am concerned that
+> > we're only a couple of mood swings away from someone deciding that free
+> > software should not be allowed to exist because it benefits America's foes.
+> > Many of us remember all too well when large tech giants treated Linux as a
+> > "cancer" to be opposed, and I can certainly see that idea easily re-entering
+> > some Big Brain in Charge.
+> > 
+> > From my perspective, I would like to ensure that Linux development can
+> > continue without a hard dependency on a single centralized forge -- whether
+> > controlled by a large commercial entity, or even a standalone one that is
+> > operated by kernel.org. It's becoming shockingly difficult to operate a public
+> > resource on the web unless you're willing to put it behind a large commercial
+> > CDN that will protect you from hostile bots (and if you do that, you're back
+> > to depending on the whims of a Benevolent Entity).
+> > 
+> > We're trying to get lore.kernel.org to the point where it's like a global
+> > messaging bus that is indexed and searchable. Currently, you mostly have to
+> > send things to a mailing list for them to end up on lore, but it's gradually
+> > becoming less and less the case. We're already bridging with bugzilla and we
+> > should be able to bridge with forges soon, too (currently delayed again
+> > because I'm scrambling to move kernel.org frontends away from Equinix). Who
+> > knows, we may be actually leapfrogging the forge era of software development
+> > straight into "AI" agents era -- but that remains to be seen.
+> > 
+> > Anyway, all of this is to say that I'm happy that you've found b4 useful, but
+> > I wouldn't view it as a band-aid -- it's just a very small and email-centric
+> > way to interact with the kernel lore.
+> > 
+> 
+> The centralization concern is valid, but there are technical solutions
+> to this, such as forge federation. It's possible to set up a forge
+> environment to be less of a SPoF, such as by ensuring all data is open
+> and archiveable to allow for migration and backup restore, even by third
+> parties (you can make practically ~all forge data public except for
+> login passwords, and we have email-based reset processes for those).
+> It's also possible to simply shard, and let different subsystems choose
+> their own forge infrastructure, so downtime has a more limited effect.
+> 
 > Meanwhile, for better or worse, much of Linux infra *is* centralized -
 > for example, the mailing lists themselves, and a lot of the Git hosting.
 
-The mailing lists are mostly on kernel.org, but the git hosting most
-certainly is not centralized in any way.
+Although, many of the subsystems have their own patchworks or other systems
+anyway dotted in random places.
 
-The kernel.org git repositories used to be special in that I didn't
-require signed tags for them, because I trusted the user maintenance.
-But I was encouraging signed tags even back then, and once it got to
-the point where most were signed anyway, I just made it a rule. So now
-kernel.org isn't special even in that respect.
+It's actually something I find quite hard, it might seem there is
+*a* Linux contribution process, but if you do fixups or devices all over
+rather than in one subsystem you end up tripping over the oddities
+of each maintainer; then trying to figure out when they're prepared
+to take a patch, or where to check for whether they've taken it,
+or whether to expect it to turn up in -next can all be quite random.
 
-Now, kernel.org is very much _convenient_. And you see that in the
-stats: of my pulls in the last year, 85% have been from kernel.org.
-But that is very much because it is convenient, not because it's
-centralized.
 
-But that still leaves the 15% that aren't kernel.org.
+<snip>
 
-Since I did the stats, in case anybody is interested, the top
-non-kernel.org hosts for my pulls are github.com, git.samba.org,
-gitlab.freedesktop.org, evilpiepirate.org, git.infradead.org and
-git.lwn.net (and there's a handful of other ones in there).
+> - Hector
 
-(And while I did the stats just for *my* pulls, if you look at total
-merges over-all, the non-korg repositories are actually at 20% - I
-think my percentages are higher simply because I tend to pull from
-mostly top-level maintainers, and those are even more likely to use a
-kernel.org account).
+Dave
 
-More importtantly, not being centralized was very much a basic tenet
-of git, so *if* git.kernel.org were to become problematic, it's very
-easy to move git repositories anywhere else. Very much by design.
-
-              Linus
+> 
+> 
+-- 
+ -----Open up your eyes, open up your mind, open up your code -------   
+/ Dr. David Alan Gilbert    |       Running GNU/Linux       | Happy  \ 
+\        dave @ treblig.org |                               | In Hex /
+ \ _________________________|_____ http://www.treblig.org   |_______/
