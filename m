@@ -1,177 +1,97 @@
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB66680BFF
-	for <iommu@lists.linux.dev>; Fri,  7 Feb 2025 10:20:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.63.210.85
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF3FE1DE4CC;
+	Fri,  7 Feb 2025 10:51:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738923611; cv=none; b=bEBLvhUdGKtKTy8/bSUmPto7jgv1Ev99tR7CHUq2wqpQN28lVm9MfPcYYgNWwPa5fTMr8kg1x3Kv0JsnAjKY7tVcYRWQw28BgwH96qKm1uKTRdNV0Z/jRlBnK3ZH1KuPxsSioSYt+y9zA8UhXKJqx4caBSEewT6Q7I2yL1zDJWk=
+	t=1738925482; cv=none; b=VLNyPeyHPx3PYdECtltC2EEoAEJBoeu3FI/b3p6Idk27rLveUDN5nDhCFjt7LESHw3oX8SHknC9qid94icrTBapLwPc1Cz8cN4+3RMdQ5jFmXq8ZzOLuSXWWvMJy0sgMCVE90EhNcu2mEdvgiobqz1E0Bu4pl6YejqQRdDKJm+o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738923611; c=relaxed/simple;
-	bh=9+0b5N0nDXjlOdh4CZLsVjIW1hn3/KeNxflDFFbSabo=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=edkZJEH9+jwDIWLRWYQzkEA1OLq3+0KFX1j+uVo62MmTMl+p9Y/iDEh60kreWV94wMj4S7Rp4trFLjGpwNV8fbSiQDHhUQde0CQUapNQK4O264Ew03ktOZzEZNwetlbUElOI5SB01iT6l3U8But/i9odkeAnW+bIenwJmR9FFA8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st; spf=pass smtp.mailfrom=marcan.st; dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b=CB6gSxDi; arc=none smtp.client-ip=212.63.210.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=marcan.st
+	s=arc-20240116; t=1738925482; c=relaxed/simple;
+	bh=MzcVNhMxXBx2E3qC8/y/P/Qle44XJcvW/ssofTN4iaQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qc6vaKczyg+fiAozYmnQsQVfIY28NaKxwdoz65wdYRfqhv+8NqTHL0zIFgOMmkQIkv38tYgZzpboVqW8YGlNjxhq+z2PyGuhTMcAFK/ruemFY5XHmO9jHNVqRr2jF1uSABKNp9Y37Wep0R6mrzOUB3Efmb9CH6gBUc4Jrv1RYzE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=YLJd763n; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b="CB6gSxDi"
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: marcan@marcan.st)
-	by mail.marcansoft.com (Postfix) with ESMTPSA id 5350341D83;
-	Fri,  7 Feb 2025 10:20:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-	t=1738923606; bh=9+0b5N0nDXjlOdh4CZLsVjIW1hn3/KeNxflDFFbSabo=;
-	h=Date:Subject:From:To:Cc:References:In-Reply-To;
-	b=CB6gSxDiIaKLrF6ORcX3n4YTVmoGYcpplzsp8ALUPjgjfmF8V9lZ6eSFTUdxgRKAs
-	 R47c0DGTD5KsSFCo44NlMxEfGNJ4guhu9gWJMdzY48tkvul7AOidp9LG8zfL7o2Di1
-	 K3L/SiWGuk7sQ8nHMN1yEqXRqr3Edsd7OkxrWnM54IuIcEgCp86sugiR7XbmLJ7/Oc
-	 7Ea4KriPYNSYwOZeqO2Ad5eFNkx6BTgkIeSshCL1wyYJZ9jF3x/YAhaIe+EOMiQg9z
-	 Aj7zjGVGXkSuKwd4OrW8BapKIyL7jvIMxfrY0hDUL7UXavjnbwt+P5U6lgCpRASHDO
-	 D8tTitlLeaGvw==
-Message-ID: <c5a49bcb-45cf-4295-80e0-c4b07083df00@marcan.st>
-Date: Fri, 7 Feb 2025 19:20:03 +0900
-Precedence: bulk
-X-Mailing-List: iommu@lists.linux.dev
-List-Id: <iommu.lists.linux.dev>
-List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
-List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="YLJd763n"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E311C4CED1;
+	Fri,  7 Feb 2025 10:51:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1738925481;
+	bh=MzcVNhMxXBx2E3qC8/y/P/Qle44XJcvW/ssofTN4iaQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YLJd763nKR/qpPon6brx/5IRYFRIzFN/u8Zww/XQOZxOtuqw3zHr+Hq1mqttty5km
+	 T/WKXSPleOBA5p637odXy0YN3ziva5TPf0Hvr3pcH9ojqSo+tn6970GZr7g9N1gBUX
+	 5b7m1AEZvdvP6HhP9zKqasmHoA2fA1KVRjq9ewoE=
+Date: Fri, 7 Feb 2025 11:51:13 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Hector Martin <marcan@marcan.st>
+Cc: Simona Vetter <simona@ffwll.ch>, Jason Gunthorpe <jgg@nvidia.com>,
+	Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
+	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
+	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	daniel.almeida@collabora.com, aliceryhl@google.com,
+	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	DRI Development <dri-devel@lists.freedesktop.org>
 Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
  coherent allocator abstraction.)
-From: Hector Martin <marcan@marcan.st>
-To: Simona Vetter <simona@ffwll.ch>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Greg KH <gregkh@linuxfoundation.org>,
- Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
- Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
- Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com,
- aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
- Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
- DRI Development <dri-devel@lists.freedesktop.org>
-References: <Z4D5a5NYrAbNxUL6@pollux> <Z4kG5AcVeQKegLnb@pollux>
- <20250128092334.GA28548@lst.de>
- <293df3d54bad446e8fd527f204c6dc301354e340.camel@mailbox.org>
- <20250130154646.GA2298732@nvidia.com> <2025013030-gummy-cosmic-7927@gregkh>
+Message-ID: <2025020738-observant-rocklike-75cc@gregkh>
+References: <293df3d54bad446e8fd527f204c6dc301354e340.camel@mailbox.org>
+ <20250130154646.GA2298732@nvidia.com>
+ <2025013030-gummy-cosmic-7927@gregkh>
  <20250130172437.GN5556@nvidia.com>
  <2025013148-reversal-pessimism-1515@gregkh>
  <20250131135421.GO5556@nvidia.com>
  <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
  <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
  <4c143b85-063a-4413-a6ca-e9d80e26da96@marcan.st>
-Content-Language: en-US
-In-Reply-To: <4c143b85-063a-4413-a6ca-e9d80e26da96@marcan.st>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <c5a49bcb-45cf-4295-80e0-c4b07083df00@marcan.st>
+Precedence: bulk
+X-Mailing-List: iommu@lists.linux.dev
+List-Id: <iommu.lists.linux.dev>
+List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
+List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c5a49bcb-45cf-4295-80e0-c4b07083df00@marcan.st>
 
+On Fri, Feb 07, 2025 at 07:20:03PM +0900, Hector Martin wrote:
+> And I do believe the fact that essentially all high-level Linux kernel
+> maintainers and contributors are paid by corporations to do it is a
+> major factor that has caused this community to become wildly out of
+> touch with what it means to be a community FOSS project.
 
+Please note, that ever since I started keeping track of this type of
+thing, way back in 2003 or so, it has been the case that over 80% of the
+contributions come from company-funded developers.  Which means it
+really goes back before that as well.
 
-On 2025/02/07 18:41, Hector Martin wrote:
-> On 2025/02/06 3:52, Simona Vetter wrote:
->> On Tue, Feb 04, 2025 at 03:46:14AM +0900, Hector Martin wrote:
->>> Adding Linus
->>>
->>> My 2c: If Linus doesn't pipe up with an authoritative answer to this
->>> thread, Miguel and the other Rust folks should just merge this series
->>> once it is reviewed and ready, ignoring Christoph's overt attempt at
->>> sabotaging the project. If Linus pulls it, what Christoph says doesn't
->>> matter. If Linus doesn't pull it, the R4L project is essentially dead
->>> until either Linus or Christoph make a move. Everything else is beating
->>> around the bush.
->>>
->>> Rust folks: Please don't waste your time and mental cycles on drama like
->>> this. It's not worth your time. Either Linus likes it, or he doesn't.
->>> Everything else is distractions orchestrated by a subset of saboteur
->>> maintainers who are trying to demoralize you until you give up, because
->>> they know they're going to be on the losing side of history sooner or
->>> later. No amount of sabotage from old entrenched maintainers is going to
->>> stop the world from moving forward towards memory-safe languages.
->>>
->>> FWIW, in my opinion, the "cancer" comment from Christoph would be enough
->>> to qualify for Code-of-Conduct action, but I doubt anything of the sort
->>> will happen.
->>
->> Yeah no.
->>
->> https://chaos.social/@sima/113942119012147959
->>
->> This was about you, because typing a proper answer takes a bit longer. It
->> was also about your toots on fedi, like this:
->>
->> https://social.treehouse.systems/@marcan/113941468353031993
->>
->> And "haha it's only a joke" does not work with your public profile and following.
->>
->> I do understand the frustration and temptation to just burn it all to the
->> ground, head the call of the sirens, or maybe for me more pick up goat
->> farming in the Swiss Alps. But you can't have it both and expect to also
->> be part of and contribute to the same community. And personally I don't
->> appreciate getting drenched in gasoline while I'm trying to quench flames
->> on the ground.
->>
->> And this isn't the first time or the second, by now it's a pretty clear
->> pattern over some years. And with the first I could explain why you react
->> like that and you had my full understanding, but eventually that runs a
->> bit thin as an excuse.  Now I'm left with the unlikely explanation that
->> you just like thundering in as the cavalry, fashionably late, maximally
->> destructive, because it entertains the masses on fedi or reddit or
->> wherever. I have no idea what you're trying to achieve here, I really
->> don't get it, but I am for sure fed up dealing with the fallout.
->>
->> Cheers, Sima
-> 
-> Since we're into complaining about social media posts on the list now,
-> I'm going to link one of yours:
-> 
-> https://chaos.social/@sima/113961496955043901
-> 
-> An R4L maintainer quit after multiple rounds of hostility, including
-> some completely unacceptable public comments bordering on downright
-> harassment from tytso, a situation which was widely publicized.
-> 
-> If, according to you, that's "shockingly smooth" with "no outsized
-> drama" other than "what I stirred up" (I guess you also missed the whole
-> LWN post about this thread before I posted anything on Fedi? That's how
-> I even found out about this), then I'm glad I'm disengaging with this
-> community. The Stockholm syndrome and utter denial is palpable.
-> 
-> I thought I could work with you on these issues; I don't know what
-> happened over the past year since we last had a private conversation
-> about this, but clearly you've changed your mind.
-> 
-> Thus, as you kindly requested of me in social media,
-> 
-> https://chaos.social/@sima/113961283260455876
-> 
-> I will now proceed to fuck off. Good luck.
+And that's good, it means that we have backing to do this properly, from
+the companies that benifit from it.  To not have that would make it much
+harder for any of this to work properly at all.
 
-Oh, and one last thing. I've heard that, in whatever backroom
-conversations you've been having about this situation, there has
-apparently been a belief, explicit or implicit, that I am in any way
-employed to work on the Linux kernel.
+So don't try to play the "you all work for companies" card, that isn't
+going to fly as obviously we all speak for ourselves here, and our
+companies _know_ they can't tell us what to do, but they give us insight
+into the problems that they have with Linux in order for us to help
+change it to make it better for everyone.
 
-Unlike most people in this thread, I don't enjoy the luxury of a cushy
-tech job that pays me to deal with this community. I am supported
-exclusively by donations, which incidentally, have been steadily
-*de*creasing since the start of the Asahi Linux project. The project has
-zero corporate sponsorship.
+Because again, everyone has the same problems (individuals and
+companies), and so solving it for one "group", solves it for everyone.
 
-And I do believe the fact that essentially all high-level Linux kernel
-maintainers and contributors are paid by corporations to do it is a
-major factor that has caused this community to become wildly out of
-touch with what it means to be a community FOSS project.
+thanks,
 
-- Hector
-
+greg k-h
