@@ -1,133 +1,119 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCD6C23C8C3
-	for <iommu@lists.linux.dev>; Fri,  7 Feb 2025 15:53:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FF382E40B;
+	Fri,  7 Feb 2025 17:14:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738943582; cv=none; b=rIOiSvu4hj+5LRdaiEYeHzzLGBKy1o6TQiTrXVr/Cod45PH0SHWh2GG/XrgbcqHES91lcSFmNxcULDegDw3ax0s398fIP8d3CjTyNzeNAh7hq3MbYwEnE8T3Nw5OFaJa1+ZQjqqs4D4xYy7sCwYU7f/dvIKRk0O9pNvHZ8SNgTc=
+	t=1738948482; cv=none; b=pM7nsAOtfzK9NRaFeUeh89G5rW2YEr3M30lLZrBC0jyd69fC7xwc3YXsUjErnzmmFo0gaWK8KErUH3FsDZrAOoKWmAi12z76n3gJcEwfn9Q9OEqV8f8BB4F83woUzZK0gsJcOLPghWkF5EGuOQslNWqqiJSbQ5FAF1DZIG9pc4E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738943582; c=relaxed/simple;
-	bh=X4FyYyM76uPhPu1hVXeJMPGMeE4u2JXxuI63wEfoZW4=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=L8Tc50JC+gY/eLnqRcYBzZZT8lqM8mnVyYFdM8K83ihrs85t6IetF7bCkcN2UKe4+L20Lwn72QVk86k7X0Ggo5+0jzNcTpQsvkBOqzwBs/reMmMQHKFpUUD91Q30LvFIcMj4fd8XGY30MIPy5+jYFSh+bCzfnhEUnaKPe1usKVw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=niieJVWX; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1738948482; c=relaxed/simple;
+	bh=u/ED8JNnC1UQpHwKYWpyVLSbIfd3idX0j4jpEDRD/Po=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HL6alPBNjkGzT+6N92kGMMlFVFYSWavNjL+ildoki5kjDACBiaCu8tPItSIFPZTduEY6mk9qvIrMBBr90b+QAsRYJAGvdksj8xr1ho2xkU+MhXI1kw4qPLiux0GU1W10N2L35/puNJPSHQYqqQhGfBR72K8G+ngkO1pip0uzeVs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=EB4qZguv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="niieJVWX"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-216430a88b0so49492755ad.0
-        for <iommu@lists.linux.dev>; Fri, 07 Feb 2025 07:53:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1738943580; x=1739548380; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ty/lYVQe0xeM+ZUp5PGdxNRQlc6F6zefI3WalpOLCeU=;
-        b=niieJVWXWWkqk41HY1/RVqTofDLv1CAY5pwwStpOec9aB/IiHqIGuZuQCgnG0UT8d0
-         pgfV8m+49fRQ+05H2cIUyuO0QMnPZR7YUNeLlQSgWDCvbPyID+DZJGA2rgOWsizPFPEy
-         y/edIr27yOmbfOsq9t7hV5GgEDslLopJApe1yM3yUXTtZ2jVRat4fLMZvoOF7+QQp+zF
-         9E+yjQTaPpSoCVux0pVjF/3IiF5aZ/xdUvoW+ua4C4KRfhFMvrdZwf9yo1LoXQT1J0yO
-         8tFOOxpiQRLNTzBTGTedlggH/3774obAGcPEnj7pxNnntsiqBEP/qK4Hot28GP+liK19
-         ZSYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738943580; x=1739548380;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ty/lYVQe0xeM+ZUp5PGdxNRQlc6F6zefI3WalpOLCeU=;
-        b=XMTzNTohggmmfeZ55fGntY0GpgU/z037Ee2BR56r3W1ScHGoYfsreDpiCwYG7EGD7I
-         Qj9CT1O/7dJCrNFVCy6f7uuiLtZEPm/srUFy8SPhg8aa3Vpprahwrd5zGzm+C6jIn0E6
-         N/60LLHFp1gdvM+IZg5OTKPO4Hf+/X+8a6IicUg89YHv4UQoW0Gmt9P1p8gbWJA62XqG
-         5xERL9uC9gvu920Rg3QU2u2IM8E1VxjnUIPvFxQxc1HMjv+Plf2dci1kpDDUVTVMDv9l
-         Q0zQM6XrQDib0g9Xwq5FWH6//Tj1FHcSoLMJEN65je6DHpd8l/t4olx0moOuPcWXp+Zl
-         13Nw==
-X-Forwarded-Encrypted: i=1; AJvYcCWoXRnSCg1i3uEdJwmRFbeR9/hIFpsMz/fXcmK4aI3PBEIE5nPxfpe94DmWKideptG9aN6Vug==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz/IdcOO/s68dOiKAn25I5J2dPRiMTBNu42vRTv7UBpguEFQ+u3
-	sS2qCGifYQ1Hxc33kCcXEpxbiKmUJHFM410XSHktNafvJvcKOUiirdMN3Fk6YyVYO3tdAfu81Go
-	D3g==
-X-Google-Smtp-Source: AGHT+IE34s79rxFs1yVfbXs6jbXDDVmdSyAet3NGVEZa2V1uZSj8KivTD1QL8oytIt0boZSaiqIBiOwN7L0=
-X-Received: from pgbcp9.prod.google.com ([2002:a05:6a02:4009:b0:ad5:1ef8:7643])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:9011:b0:1db:e536:158e
- with SMTP id adf61e73a8af0-1ee03a8f46fmr7541650637.22.1738943579930; Fri, 07
- Feb 2025 07:52:59 -0800 (PST)
-Date: Fri, 7 Feb 2025 07:52:58 -0800
-In-Reply-To: <d27f91a9-0dff-4445-8d2f-9db862acd1d0@amd.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="EB4qZguv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E9F4C4CED1;
+	Fri,  7 Feb 2025 17:14:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1738948481;
+	bh=u/ED8JNnC1UQpHwKYWpyVLSbIfd3idX0j4jpEDRD/Po=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=EB4qZguvpalT0C0z5a/gmU1Fx/oGkxoHt7O7oT5NG1M+IgG+gErAElJCoutxyOcyX
+	 A5ZLVUwf1kS+TT68/W3kyrxczesNU++Zz7xX8hX2jqAVzSKXaZrc4qpBW5aQgmXsep
+	 naRvC6qJ9IxhQQE4HYjYFv54gzi1+cJhRLxSN7nY=
+Date: Fri, 7 Feb 2025 12:14:36 -0500
+From: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+To: Hector Martin <marcan@marcan.st>
+Cc: Danilo Krummrich <dakr@kernel.org>, Dave Airlie <airlied@gmail.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Greg KH <gregkh@linuxfoundation.org>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org, Christoph Hellwig <hch@lst.de>, 
+	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>, Abdiel Janulgue <abdiel.janulgue@gmail.com>, 
+	daniel.almeida@collabora.com, aliceryhl@google.com, robin.murphy@arm.com, 
+	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, 
+	Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin <benno.lossin@proton.me>, 
+	Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
+	Valentin Obst <kernel@valentinobst.de>, open list <linux-kernel@vger.kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, DRI Development <dri-devel@lists.freedesktop.org>
+Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
+ coherent allocator abstraction.)
+Message-ID: <20250207-mature-pastel-rottweiler-e6dbd9@lemur>
+References: <2025013030-gummy-cosmic-7927@gregkh>
+ <20250130172437.GN5556@nvidia.com>
+ <2025013148-reversal-pessimism-1515@gregkh>
+ <20250131135421.GO5556@nvidia.com>
+ <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
+ <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
+ <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
+ <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st>
+ <Z6UPXxEJYpanU9iU@cassiopeiae>
+ <4c0a7cf9-26e1-4a19-8a6e-7c30bc3aef86@marcan.st>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <cover.1738618801.git.ashish.kalra@amd.com> <e9f542b9f96a3de5bb7983245fa94f293ef96c9f.1738618801.git.ashish.kalra@amd.com>
- <62b643dd-36d9-4b8d-bed6-189d84eeab59@amd.com> <Z6OA9OhxBgsTY2ni@google.com>
- <8f7822df-466d-497c-9c41-77524b2870b6@amd.com> <Z6O8p96ExhWFEn_9@google.com> <d27f91a9-0dff-4445-8d2f-9db862acd1d0@amd.com>
-Message-ID: <Z6YsWiTGM___898F@google.com>
-Subject: Re: [PATCH v3 3/3] x86/sev: Fix broken SNP support with KVM module built-in
-From: Sean Christopherson <seanjc@google.com>
-To: Ashish Kalra <ashish.kalra@amd.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, pbonzini@redhat.com, tglx@linutronix.de, 
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, 
-	hpa@zytor.com, thomas.lendacky@amd.com, john.allen@amd.com, 
-	herbert@gondor.apana.org.au, davem@davemloft.net, joro@8bytes.org, 
-	suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com, 
-	michael.roth@amd.com, dionnaglaze@google.com, nikunj@amd.com, ardb@kernel.org, 
-	kevinloughlin@google.com, Neeraj.Upadhyay@amd.com, kvm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, 
-	linux-coco@lists.linux.dev, iommu@lists.linux.dev
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <4c0a7cf9-26e1-4a19-8a6e-7c30bc3aef86@marcan.st>
 
-On Wed, Feb 05, 2025, Ashish Kalra wrote:
-> On 2/5/2025 1:31 PM, Sean Christopherson wrote:
-> > On Wed, Feb 05, 2025, Vasant Hegde wrote:
-> >> So we don't want to clear  CC_ATTR_HOST_SEV_SNP after RMP initialization -OR-
-> >> clear for all failures?
-> > 
-> > I honestly don't know, because the answer largely depends on what happens with
-> > hardware.  I asked in an earlier version of this series if IOMMU initialization
-> > failure after the RMP is configured is even survivable.
-> > 
-> 
-> As i mentioned earlier and as part of this series and summarizing this again here:
+On Fri, Feb 07, 2025 at 05:16:28AM +0900, Hector Martin wrote:
+> And what I see, is very little effort to improve that status quo, or at
+> least very little that yields any actual change that isn't just
+> band-aids (e.g. tooling like b4, which is nice and appreciated, but
+> doesn't fix any underlying issues). And that's not going to change no
+> matter how many long technical arguments we have on the MLs (or even off
+> MLs, since MLs are also not particularly good for this, and I've seen
+> multiple arguments only reach a resolution after being redirected to IRC).
 
-Thanks!
+From my perspective, there are several camps clashing when it comes to the
+kernel development model. One is people who are (rightfully) pointing out that
+using the mailing lists was fine 20 years ago, but the world of software
+development has vastly moved on to forges.
 
-> - snp_rmptable_init() enables SNP support system-wide and that means the HW starts
-> doing RMP checks for memory accesses, but as RMP table is zeroed out initially, 
-> all memory is configured to be host/HV owned. 
-> 
-> It is only after SNP_INIT(_EX) that RMP table is configured and initialized with
-> HV_Fixed, firmware pages and stuff like IOMMU RMP enforcement is enabled. 
-> 
-> If the IOMMU initialization fails after IOMMU support on SNP check is completed
-> and host SNP is enabled, then SNP_INIT(_EX) will fail as IOMMUs need to be enabled
-> for SNP_INIT to succeed.
-> 
-> > For this series, I think it makes sense to match the existing behavior, unless
-> > someone from AMD can definitively state that we should do something different.
-> > And the existing behavior is that amd_iommu_snp_en and CC_ATTR_HOST_SEV_SNP will
-> > be left set if the IOMMU completes iommu_snp_enable(), and the kernel completes
-> > RMP setup.
-> 
-> Yes, that is true and this behavior is still consistent with this series.
-> 
-> Again to reiterate, if iommu_snp_enable() and host SNP enablement is successful,
-> any late IOMMU initialization failures should cause SNP_INIT to fail and that means
-> IOMMU RMP enforcement will never get enabled and RMP table will remain configured
-> for all memory marked as HV/host owned. 
+The other camp is people who (also rightfully) point out that kernel
+development has always been decentralized and we should resist all attempts to
+get ourselves into a position where Linux is dependent on any single
+Benevolent Entity (Github, Gitlab, LF, kernel.org, etc), because this would
+give that entity too much political or commercial control or, at the very
+least, introduce SPoFs.
 
-So the kernel should be able to limp along, but CC_ATTR_HOST_SEV_SNP will be in
-a half-baked state.
+At best, I can hope to make both camps grumpily agree to coexist.
 
-Would it make sense to WARN if the RMP has been configured?  E.g. as a follow-up
-change:
+I *am* very wary of Benevolent Entities, because we have too many very recent
+examples of companies "realigning priorities" when political winds shift.
+Programs and initiatives that have until recently been poster board examples
+of progress and benevolence are shuttered and defunded. I am concerned that
+we're only a couple of mood swings away from someone deciding that free
+software should not be allowed to exist because it benefits America's foes.
+Many of us remember all too well when large tech giants treated Linux as a
+"cancer" to be opposed, and I can certainly see that idea easily re-entering
+some Big Brain in Charge.
 
-	/*
-	 * SNP platform initilazation requires IOMMUs to be fully configured.
-	 * If the RMP has NOT been configured, simply mark SNP as unsupported.
-	 * If the RMP is configured, but RMP enforcement has not been enabled
-	 * in IOMMUs, then the system is in a half-baked state, but can limp
-	 * along as all memory should be Hypervisor-Owned in the RMP.   WARN,
-	 * but leave SNP as "supported" to avoid confusing the kernel.
-	 */
-	if (ret && cc_platform_has(CC_ATTR_HOST_SEV_SNP) &&
-	    !WARN_ON_ONCE(amd_iommu_snp_en))
-		cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
+From my perspective, I would like to ensure that Linux development can
+continue without a hard dependency on a single centralized forge -- whether
+controlled by a large commercial entity, or even a standalone one that is
+operated by kernel.org. It's becoming shockingly difficult to operate a public
+resource on the web unless you're willing to put it behind a large commercial
+CDN that will protect you from hostile bots (and if you do that, you're back
+to depending on the whims of a Benevolent Entity).
+
+We're trying to get lore.kernel.org to the point where it's like a global
+messaging bus that is indexed and searchable. Currently, you mostly have to
+send things to a mailing list for them to end up on lore, but it's gradually
+becoming less and less the case. We're already bridging with bugzilla and we
+should be able to bridge with forges soon, too (currently delayed again
+because I'm scrambling to move kernel.org frontends away from Equinix). Who
+knows, we may be actually leapfrogging the forge era of software development
+straight into "AI" agents era -- but that remains to be seen.
+
+Anyway, all of this is to say that I'm happy that you've found b4 useful, but
+I wouldn't view it as a band-aid -- it's just a very small and email-centric
+way to interact with the kernel lore.
+
+-K
+
