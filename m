@@ -1,201 +1,135 @@
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B77031A7046
-	for <iommu@lists.linux.dev>; Sat,  8 Feb 2025 20:45:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.9.28.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FD4B24338C
+	for <iommu@lists.linux.dev>; Sat,  8 Feb 2025 23:55:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739047504; cv=none; b=phVZXGjOfcQA+0T9Q+GnmytQPoet3eBYPhKOXrgfQ4bV75Nlu5AiKXykMERre16zfxsThqOIzRY0wvZbnxG5CLtAoKQZti+VyOAI+JH81Nn/LpfIMl2LRs3YXMALV5ogISUq5XbLWBFQS0lugdICeG5mLcFA4oBv6jUdQFmUKo4=
+	t=1739058923; cv=none; b=A7kLP9t4Bq7aVGbFvHolyIubFDidi+5Y1Lme6HnUkAijyGN7Oy/v+YXmbFPSBcrPLaM+UO2kPqse+6e1BzIIIng/QJs06HXpMgE5hX38DNro1QPWoUiI8UsdqYSD881xnbZUr6BSVTIr7KKl45DTfPkLKnNLHpiooi2lW8RgYQM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739047504; c=relaxed/simple;
-	bh=MSjuyu4jTk60r211/Aj4I3bmRFDePtmI4OUPp76TA8U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Rj8IKcO67CmFD1ehw/vl59mseggkJYmmEt3x4AkpWYLk/i9pXei6mR8GmWLeyQTHDcyfICk8b0zrMzomp4DHCRzMAMbAStleOKWnaVo9PKkmAAiCXgPdkuMrwens0MmTGwPcIIQZBFzU46rjIosMu9Ovzo9zhSUj+Kdj2+U6nD0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu; spf=pass smtp.mailfrom=mit.edu; dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b=bR9oNLqb; arc=none smtp.client-ip=18.9.28.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mit.edu
+	s=arc-20240116; t=1739058923; c=relaxed/simple;
+	bh=JRYaldM9lNmyv0V3AluADdJ9dlvrHbXlkp5UU3XH9Rg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cYOF+f6ArPFaxFjALianelOQI+PgpHRk838gZUTtpL9pzDyp2lhu2nGSNw7EFmvJofOQA0M7zOMOMLDtuV9fE2XMd95uPwUg/gnioFGJudyCH1+8Mlm2sVANI8F7K2goq7j8+jTaxdSX26qYxpdrhvUE87Apqhlq3vtcOZOQMhs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=vt.edu; spf=pass smtp.mailfrom=vt.edu; dkim=pass (2048-bit key) header.d=vt-edu.20230601.gappssmtp.com header.i=@vt-edu.20230601.gappssmtp.com header.b=mHlkptNY; arc=none smtp.client-ip=209.85.160.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=vt.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vt.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b="bR9oNLqb"
-Received: from cwcc.thunk.org (pool-173-48-111-148.bstnma.fios.verizon.net [173.48.111.148])
-	(authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-	by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 518KiGOj028750
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 8 Feb 2025 15:44:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-	t=1739047466; bh=i4/aJJgLvt2vX9K0kAeUf0wS62Jq2SDxN3YWCkva0QA=;
-	h=Date:From:Subject:Message-ID:MIME-Version:Content-Type;
-	b=bR9oNLqbfd3dv4YQX7/Vtgz/20TMk/PM5VyDusFulLscsAdL4ONdaEOs56qChYT8f
-	 c182rp019vz5W5sQhHNRDzdZC5uLWTb8jRsLVaA5uCvOUh/jEPWLpFn9VL8vF+gc9w
-	 ANqjOq/nhErzEJEH181/E8xs74J49IJoiRiNBt3N0b3vwfle3GjD3aSDnPfmNTYZLS
-	 Nv+pSJWqVVpN574IUPrps2xyxfBGe26zvJW1yw9NtUC2FwK9QrIVROJsArSWr41iHs
-	 /8c35u4E8ECXTcWTrpP/1qIkjwlxIuSFjfxB41M1EC4sj9aOEnCEx1innvruMfSX11
-	 G5G0uympP8mfA==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-	id 7C10915C013F; Sat, 08 Feb 2025 15:44:16 -0500 (EST)
-Date: Sat, 8 Feb 2025 15:44:16 -0500
-From: "Theodore Ts'o" <tytso@mit.edu>
-To: "Dr. Greg" <greg@enjellic.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-        Hector Martin <marcan@marcan.st>, Dave Airlie <airlied@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, Greg KH <gregkh@linuxfoundation.org>,
-        phasta@kernel.org, Christoph Hellwig <hch@lst.de>,
-        Danilo Krummrich <dakr@kernel.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-        daniel.almeida@collabora.com, aliceryhl@google.com,
-        robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
-        Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-        Bj??rn Roy Baron <bjorn3_gh@protonmail.com>,
-        Benno Lossin <benno.lossin@proton.me>,
-        Andreas Hindborg <a.hindborg@kernel.org>,
-        Trevor Gross <tmgross@umich.edu>,
-        Valentin Obst <kernel@valentinobst.de>,
-        open list <linux-kernel@vger.kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-        "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-        DRI Development <dri-devel@lists.freedesktop.org>
-Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
- coherent allocator abstraction.)
-Message-ID: <20250208204416.GL1130956@mit.edu>
-References: <2025013030-gummy-cosmic-7927@gregkh>
- <20250130172437.GN5556@nvidia.com>
- <2025013148-reversal-pessimism-1515@gregkh>
- <20250131135421.GO5556@nvidia.com>
- <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
- <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
- <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
- <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st>
- <CAHk-=wi=ZmP2=TmHsFSUGq8vUZAOWWSK1vrJarMaOhReDRQRYQ@mail.gmail.com>
- <20250207121638.GA7356@wind.enjellic.com>
+	dkim=pass (2048-bit key) header.d=vt-edu.20230601.gappssmtp.com header.i=@vt-edu.20230601.gappssmtp.com header.b="mHlkptNY"
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-2b83078ed33so1485845fac.2
+        for <iommu@lists.linux.dev>; Sat, 08 Feb 2025 15:55:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=vt-edu.20230601.gappssmtp.com; s=20230601; t=1739058920; x=1739663720; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mPicVwQS5wbJAwKsL40Ymzq5q/Ob6IjbFcIhIGSOedI=;
+        b=mHlkptNYF7CYvYDAZDciRfWPTRMplKSWSLeKBmkjI+ZF5eJ5l9kBqfuyUsypMyRM5A
+         D4cse1sWYyEzcmSovuc5rRdTDARLDPZ0JFAF2MACpVjWc3Mi5GAx5yA4dMDFwxxXBZrb
+         qcbGk3Qdo5UUXAr286QrEcuEpIuy6JO86VFlQNSxkzCUe4WAHJSCqaeTsAXiGD9Ya7EN
+         U4GN1m5lNXZoUmuSLO3T8zo0jzXMxAuieMctvp0lEMhD75XR5VQAeAifJcN+jpmNH47P
+         yCYXenXiDNOM4qg0KSmZb72V/LXMMno2F/4mcAQBeCLxkwTYUJWHLS0EzjWtUjUraiGE
+         VAqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739058920; x=1739663720;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mPicVwQS5wbJAwKsL40Ymzq5q/Ob6IjbFcIhIGSOedI=;
+        b=LyNTsoUOzpYekDWqiv/CY8sPBZkkgz1WP8wx55wAGZSrVVqSr0P1YLLvFCDE5Awtp4
+         lKZyX70ejEi/hp/u7WFg13r6npiA7jO4l6xj4PBVKgeKRIMCX80WKlljNpnR18fd2KHw
+         OCsITYvNMbB9hl6TL0mGAFFbrN1dafOxJ1TwEiCEgALoGqucQcrPwsb5Z3T9PnIbf4Tt
+         xRpMRERmhc1rMGU64Ak1aSgek9Q7ueIZUfMgcIBVqx3CRAZPrYjIbi9E7SnyTP4QZXPP
+         mCqjewqep9KHYoedUExTtMjzHwsgOv8BAwaW86foN0TXCBpbUL++SLNtWwQhnrvq08bO
+         ZXvA==
+X-Forwarded-Encrypted: i=1; AJvYcCVP4pRnkVEFSwqFUqk4EFVus/9TGR8e9nU/S1y2/OHxyWTo2BFyPLIJt9PYwb3GyeqynOltyg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz99nVlzKQQroHuNUFUtnMWYfhR56O9SsHu0K0U6wUV9j/daUad
+	ifaolnJtnUQX3x8VuIH0B805Lnha6Wnsn5yimx0dUpUgEYojMlouROY81f7eSEs=
+X-Gm-Gg: ASbGncvnaNw4mL80Wmz6zkjd4lZPL8Vy0SrhS2wD9DoFakyECc3hhNPuQRntb7poZLX
+	zg7cD60HQTj2VMO3iF8ar5TlXu65Hj7uwRVPws0nVnqdeS3jnhFvxuKekBtayFHZDaZFfWjbi57
+	SgSXvMCW2wEiW3Ok89Uno6GNEDbjj9Gj1JttK+/TwH/SgyP5q7PaEPROTlTEw5+pwUeRafl1HD6
+	81MaYzH9MxAIGC3UQYKqiSOimfGDunKeieGC/cSNfl+EFn/Cfn+s6UlBshsY148i/B2Iyr2ygbO
+	H6ZfVyTwA4tDuS8lX1CZTeCAXUpCv6XZGlQ0JhwG+5qwXxhSzDnN8IKTtQ==
+X-Google-Smtp-Source: AGHT+IHWk4r4HVyiqLL19e9cELrxNlFZUIzBX3h21rZtA7zL/FAkU7jPy3L3H4qYyNZyOB/xY8XDPw==
+X-Received: by 2002:a05:6870:5154:b0:2b7:fa6f:9672 with SMTP id 586e51a60fabf-2b83ee95b12mr5471087fac.38.1739058920357;
+        Sat, 08 Feb 2025 15:55:20 -0800 (PST)
+Received: from ?IPV6:2603:8080:7400:36da:dff5:4180:2562:4c1e? ([2603:8080:7400:36da:dff5:4180:2562:4c1e])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-2b826262333sm1734780fac.37.2025.02.08.15.55.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 08 Feb 2025 15:55:19 -0800 (PST)
+Message-ID: <1894f095-e93a-4def-a223-d5c089ecc2df@vt.edu>
+Date: Sat, 8 Feb 2025 17:55:16 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250207121638.GA7356@wind.enjellic.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
+To: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+ Christoph Hellwig <hch@lst.de>
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+ daniel.almeida@collabora.com, aliceryhl@google.com, robin.murphy@arm.com,
+ rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+ Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>,
+ Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
+ Danilo Krummrich <dakr@kernel.org>, Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ Greg KH <gregkh@linuxfoundation.org>
+References: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
+ <20250108122825.136021-3-abdiel.janulgue@gmail.com>
+ <20250108135951.GA18074@lst.de>
+ <CANiq72=R2N+QiCiHZQu-6YJ9aYpn_bik3BW3U=nAW3jL7unzLw@mail.gmail.com>
+Content-Language: en-US
+From: Carlos Bilbao <bilbao@vt.edu>
+In-Reply-To: <CANiq72=R2N+QiCiHZQu-6YJ9aYpn_bik3BW3U=nAW3jL7unzLw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 07, 2025 at 06:16:38AM -0600, Dr. Greg wrote:
+Hello,
+
+On 1/8/25 09:16, Miguel Ojeda wrote:
+> On Wed, Jan 8, 2025 at 3:00 PM Christoph Hellwig <hch@lst.de> wrote:
+>>
+>> No rust code in kernel/dma, please.
 > 
-> The all powerful sub-system maintainer model works well if the big
-> technology companies can employ omniscient individuals in these roles,
-> but those types are a bit hard to come by.
+> What do you suggest?
 
-I'll let you in a secret.  The maintainers are not "all-powerfui".  We
-are the "thin blue line" that is trying to keep the code to be
-maintainable and high quality.  Like most leaders of volunteer
-organization, whether it is the Internet Engineerint Task Force (the
-standards body for the Internet), we actually have very little power.
-We can not *command* people to work on retiring technical debt, or to
-improve testing infrastructure, or work on some particular feature
-that we'd very like for our users.
+This is it. What do people suggest? This thread has received a lot of
+attention -- maybe it's an opportunity for the community to brainstorm.
+Here's an idea:
 
-All we can do is stop things from being accepted (either in our
-subsystem, or the imprimatur of the IETF).  Hopefully, we're only
-stopping bad things from progressing, but that *really* is all we can
-actually do.
+Some maintainers clearly hate wrappers/bindings to Rust, while others don't
+mind as long as the R4L folks commit to the maintenance duties. Depending on
+the subsystem, it will be a completely different conversation. It seems to
+me that right now, every time the R4L folks interact with a new subsystem,
+they need to understand the maintainer's stance. That looks like an
+exhausting process.
 
-One of the things which gets very frustrating from the maintainer's
-perspective is development teams that are only interested in their pet
-feature, and we *know*, through very bitter experience, that 95+% of
-the time, once the code is accepted, the engineers which contribute
-the code will disappear, never to be seen again.  As a result, a very
-common dynamic is that maintainers will exercise the one and only
-power which they have --- which is to refuse to accept code until it
-is pretty much perfect --- since once we accept the code, we instantly
-lose all leverge, and the contributors will be disappear, and we will
-be left with the responsibility of cleanig up the mess.  (And once
-there are users, we can't even rip out the code, since that would be a
-user-visible regression.)
+Would it make sense to have a C middleman that Rust calls instead of
+binding directly to the C funcs? This dispatcher would provide a simpler,
+stable API with fixed function signatures, even if the C functions change.
+If a C func is removed/changed, only the C dispatcher would need to be
+adapted, but until that happens, a new error could be returned to the Rust
+side (not ideal, but Rust doesn't just break). 
 
-Occasionally, there is an accusation that different standards that
-might apply for people who are in the "gold old buys club".  But what
-isn't appreciated, is that it is precisely because people who are
-long-term members of the community are trusted to stick around and
-will support code that the have sponsored.  For example, Darrick Wong,
-who contributed ext4 metadata checksuming support before we moved on
-to become the XFS maintainer, is still reviewing and making
-contributions to code that he contributed many years to ext4.  I've
-been known to submit fixes to test bugs for xfs-specific tests in
-xfstests that I discovered when running daily spinner tests on the
-linux git tree.
+This would obviously impose some limitations on the Rust side, but it might
+be less conflictive than direct bindings. Also, in Abdiel's case here (for
+example), he'd explicitly take on the maintenance of the Rust abstraction
+and its DMA dispatchers, leaving no ambiguity about ownership.
 
-Just in the past two weeks, I've spent 15+ hours working on cleaning
-up a casefold "security fix" that had nasty on-disk backwards
-compatibility issues.  Part of it was that it was ext4 (although I
-discovered that there was also fsck.f2fs problems that had been
-overlooked), but the *other* part of why I spent so much time was that
-I sponsored the casefolding patches, and so I felt I certain moral
-responsibility to make sure the code was continued to be maintained.
+> 
+> Thanks!
+> 
+> Cheers,
+> Miguel
+> 
+> 
 
-(And note, this has nothing to do with who employs me; the 15-20 hours
-that I spent working on creating the fix and the test scripts was
-purely on my own time, on the weekend, or late at night.  The time
-that I spend doing this isn't reflected in my performance reviews, or
-promotion propects --- in fact, arguably, over the past 15 years, this
-has probably slowed down my promotion prospects; I've only been
-promoted once since joining said big tech company...)
-
-> Not sure what the fix is, from a project management perspective the
-> technology industry has never faced a challenge like this.  The fork
-> model, which was the classic protection in open-source, doesn't work
-> at this scale.
-
-Well, here's my suggestion.  Teams that want to get features,
-especially ones that might be potentially disruptive, into the tree,
-need to spend time becoming part of the *community*.  This means that
-they need to participate in part of the joint effort to keep the code
-maintainable and high quaity --- even if it isn't part of their
-company's short-term goals, or directly related to their pet feature
-that they are trying to get upstream.
-
-This was the trust of my "Beyond Upstream First" presentation which I
-gave to the Linux Foundation Member Summit last fall[1].
-
-[1] https://docs.google.com/presentation/d/11rMc8PBeyMItV6hv31OHSZ626_6FCZxjX6ZxEAehCpQ/edit#slide=id.p
-
-Now, I'll say that the Rust developers are making strides in the right
-direction here.  Miguel has stood for election for the Technical
-Adviory Board, and has been contributing in various ways beyond just
-Rust for Linux.  Ultimately, Cristoph's concern is that Rust is going
-to make life harder for maintainers because of particular build breaks
-getting in the way of the very limited bandwidth that Maintainers have
-(and again, a lot of the work that we do gets done on our own personal
-time; it's rare that even those maintainers employed by a "big
-technology company" have complete freedom to work on whatever they
-want; and they certainly don't have minions employed to do all of the
-grunt work to support code maintenance work, especially if we let
-crappy code slip past us in the name of "time to market" concerns.)
-
-So I think we'll get past this.  It might take some more effort, and
-more trust building --- on both sides --- but I'm fairly optismistic
-that it will happen.  It might not happe as *fast* as people might
-like; as Linus pointed out, it took ten years for the Clang compiler
-to be considered 100% fully supported --- and this was without needing
-to worrying about language issues, including an upstream language
-community which refuses to make any kind of backwards compatibility
-guarantees, and which is *actively* hostile to a second Rust compiler
-implementation (I suspect because it might limit their ability to make
-arbitrary backwards-incompatble language changes).
-
-> Obviously respect and open-mindedness to new ideas appears to be the
-> grease that makes all of this run smoothly.  Unfortunately that seems
-> to be about as rare a commodity as omniscience in our industry.
-
-The other thing which is super rare is people and companies who care
-about tech debt cleanup, code maintainability, and code quality.
-Instead of complaining about maintainers for who are unreasonably
-caring about these things, when they are desparately under-resourced
-to do as good of a job as they industry demands, how about meeting us
-half-way and *helping* us with these sort of long-term code health
-issues?  Maybe if you engage us as part of the community, we'll be a
-lot more open to adding changes that might increase the code
-maintenance burden?
-
-Cheers,
-
-					- Ted
+Thanks,
+Carlos
