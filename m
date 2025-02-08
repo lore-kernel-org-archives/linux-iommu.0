@@ -1,303 +1,179 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2071.outbound.protection.outlook.com [40.107.220.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EC661D79A5;
-	Sat,  8 Feb 2025 09:03:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.71
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739005425; cv=fail; b=lnPvfkyDNavvJZh9EGKvRkVuh2N8/oMZtEi2rPox/cnBTzqtmXu13qUNJweBrv1LTXiStG7PucuwB6x4SfPSVXJIChsc14OYcvH4dMD1RovuVdBkSv90YcshgKAAfRAyfnJqakmJc0Dgt+yU0dY4xW+iXpwZ91pwv0uTgUtdf6I=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739005425; c=relaxed/simple;
-	bh=tfK4keXP6Utitp47u6p0wIc2KYrP4j4XoE0qhPeKxgw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rbjE+4WRRs8IzO4Ycuw5R8Cu0R5sdwyxdMNLZEsdyX08djAENYMUwq9rrxG3/rIgs4icjW9TcZXFcvldMnNIZ/BqAl9SaysgFt1Isyr1oQZSN78GIuBm5u0SXfo+dFOR9eePjtIP7HLZfPSWMoc8lJ833U7yD/vguOutoYi0FHo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=YB79Cekl; arc=fail smtp.client-ip=40.107.220.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B4CE246339;
+	Sat,  8 Feb 2025 15:56:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739030173; cv=none; b=hxRoIK3tgX2AqByAkxA1J/dSgWneSeVYph9b2DmgraMBAielhadRpuE0ZUshOmv0yFVYdnoD5SbAdrmQ4BFIMWf7WGFBusKfIpRfurcO3ik/BjC0Kw5BTnVi5Zj761Bb339rCw/d7ue1dcY5/ReujhFsXvqMwRo9KxCDEWy9z/I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739030173; c=relaxed/simple;
+	bh=BRk7BBm7oSdWplPPvfzhGPnNM6vM2mjwIOaR+mXLbRw=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=UEQdgqBm52oufTXuuG9ld3fPkABR8rWtgitts8mH1OUgQ9FWvjRGCsuckVlzyhnHR/Vu3zMkkHrs3Ki23RnP6TUZZFPAUa6kiTAevWKLE1lWU4wBAshF6WXhRZDdkBwgxca+Mz+kITrZoY9d7Hen+D/gpW9rmKi5totQOb670ug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OmEd8Q1y; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YB79Cekl"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=RSARF7Rv+/eyjOOsFYRcq12E89SeHwDJQM0xYfXpuYkEIPfo3b/fjIrfsvfqjCUhq8ZJpdQbHArnMWCjh7fxcEVlUgfIL2XLGOCL2GRJi3wlII/t0EfT3BmpN37QKtmt74kVTDd8EvgOsIwt9Rd6BUjcwnGTVAqsFtk+PHeSWN12UOxYFRVbRFIG1eKCnwhSLoZU+jWCPno/OH5D8BJvA592yOKTJvuhPOMb0c7oz6XFrrBSCthWq3W11UCl68W6AS5x5oZAKjdGtr7+VjJvZxkOX8rJiYpNquA/bFn8WSGMbnV0oJatZepKmtnTM3OIKwJy/PyjwPK2XQU7qtpcGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L1wQ1OlxyUNC6t/+EFekUqCIAmqr4wF1LuLBv5UCmok=;
- b=XeSpmntnH4zAQG7IwhZGEGRrQvyP5Jwx2OdDbmem2Q7HdZRpyhCYAVYzBUCiiD54E5xF9OeJNMUeZ4D0BOoieApo3ywmuvt5HqncQSX9mOXrl3AX5i/OdWs5PoQLWc1MoCXOMVOGzp2EkWzzI6wYSLo9h2NMWSidKB/FRjGN4RwOwLmD4o/OcPUCWxJL1/7+mLUsjbSaXMy8ct9dpoSQdTP2nwI3XsPu8Iki4feMCUzYK4SC2SKi73dSpzyaJ9YmddKZdE0J37KBVwJUoOf3u4NH2CLP3odNe/ehmRwwb2dSZWAAaJsXMTny6tSYZposvzdrdGrA90jO68SzBTHJ8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L1wQ1OlxyUNC6t/+EFekUqCIAmqr4wF1LuLBv5UCmok=;
- b=YB79CeklMcrzTuDGjDPmiHtNZK4MuUHvEZADu4jVcYgP517V32kXZqGsk3seOlNgev2tWwgV/aGrAl3oP5ul4qKq68OqTPdFViV8vDL8G7Jz23m5pnn83GKut4qTdpr+1+tWdQHei4f9kUtsUMMRuPNwtia8sHvXaqYKcFZzjA/FTBk7d6iRI7fjcY9Tz6DH4kZQqLH/MfggARL7HshAock54OjF93rFNdwFm9wMyUCkrfksO1SBqEJtW3FVHj5uUpkKhi0JFxbEf3dKKcaGYFnFdlNyWV3s4zs686eduol4ZbEHbMSk3vLe70XxkarNCnDPfBhzvvj7Cnf8Tu/GPg==
-Received: from DS7PR07CA0024.namprd07.prod.outlook.com (2603:10b6:5:3af::6) by
- PH7PR12MB7236.namprd12.prod.outlook.com (2603:10b6:510:207::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8422.12; Sat, 8 Feb
- 2025 09:03:38 +0000
-Received: from DS3PEPF000099D5.namprd04.prod.outlook.com
- (2603:10b6:5:3af:cafe::bf) by DS7PR07CA0024.outlook.office365.com
- (2603:10b6:5:3af::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8398.24 via Frontend Transport; Sat,
- 8 Feb 2025 09:03:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DS3PEPF000099D5.mail.protection.outlook.com (10.167.17.6) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8398.14 via Frontend Transport; Sat, 8 Feb 2025 09:03:38 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Sat, 8 Feb 2025
- 01:03:22 -0800
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Sat, 8 Feb
- 2025 01:03:22 -0800
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
- Transport; Sat, 8 Feb 2025 01:03:21 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <kevin.tian@intel.com>, <tglx@linutronix.de>,
-	<maz@kernel.org>
-CC: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<shuah@kernel.org>, <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<eric.auger@redhat.com>, <baolu.lu@linux.intel.com>, <yi.l.liu@intel.com>,
-	<yury.norov@gmail.com>, <jacob.pan@linux.microsoft.com>,
-	<patches@lists.linux.dev>
-Subject: [PATCH v1 13/13] iommufd/selftest: Add coverage for IOMMU_OPTION_SW_MSI_START/SIZE
-Date: Sat, 8 Feb 2025 01:02:46 -0800
-Message-ID: <257ac74e767f29930aa47991224fab96f36c3899.1739005085.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1739005085.git.nicolinc@nvidia.com>
-References: <cover.1739005085.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OmEd8Q1y"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4362f61757fso29341915e9.2;
+        Sat, 08 Feb 2025 07:56:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1739030170; x=1739634970; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-disposition:mime-version
+         :message-id:subject:cc:to:from:date:sender:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gghYPUNRCdyG2yLo4ZGDDboCtEVr9fYIBuiGTMEQtB8=;
+        b=OmEd8Q1y1Bnvq1BzfjaB+H3/V8cw7LNQ2Q8onDgqLbhtnWJHafSRYhHwJM9Y6nqZPe
+         4Faw4l8DmH89By3ryfXGMml8PafSfad5Y/T8qvsU0lj5TxbJFfxULf6E8j72QjAfLbi0
+         aiE8G0u3oG3CeEXKtsryRf02yHmHGapHKZiNxJHwOWOayGP4FP8S/Yc9Tsc/qmbT4i9P
+         sI26DHpyDiN14qYQda7GNBKb+CJ2ac3Kn/zEckpdfKpf0a1bf/uGxwt5T5Zs0kPuO2T4
+         Tt947jV12YSASh1Ny52uGBDSZyLMtKsnRsYFLT42MYtRx0JRyu3aQY0Ah9sQC/4LISo0
+         t3bQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739030170; x=1739634970;
+        h=content-transfer-encoding:content-disposition:mime-version
+         :message-id:subject:cc:to:from:date:sender:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=gghYPUNRCdyG2yLo4ZGDDboCtEVr9fYIBuiGTMEQtB8=;
+        b=cCFGnTY5Pvy+yVMtBkFQvsjVlel5UlFHu0vcdo9qcIe7qkmLdBP6NQ5HmVQKU80OY9
+         m/h2xQp9JfMA1a6j7tSyboefBPVL+kn6dn2xBjs9rRCzQ3QAku49LUEbMUTjzXCovfFG
+         URry+q6Nwd2N+aZ6xfY8JhXxh05IStfvQxr+Inyr2PFYg5Vd0lAWLGBfhSgllrxFkpsY
+         o3ZCDkRJ6X5oRVHzAuWK5w0Zo7Jj3dh7gdSUNpmV9dNfq58FIGjTvicZLs8eKbzCA968
+         PTrMDRNDx6Kp8BZbm8GQ21jluduvfMJFsd6MOI9sr/PbRvrXvgYvAMArGlTeb16lRiCY
+         KDgQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVR1rgrmmAIn20WuEfxVoABStpjTCFuogvFz3mFZQhf67mWPoVHOiRb0NnVfgxlaofjI5qQbQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw9AE+2ZdFvFiKMHpObe1mhI9+MiPu0YRG1JTtonJX9HAS156d4
+	RMvXp3fHxjXIaYwREfwyXuZZ4FiNV66OoyUXBYsllsaT69C6tJKk
+X-Gm-Gg: ASbGncumFEXShUNIbdaeoZXOa6/ws9oLdCE6A5XlJq3BwfG1PikzRBiFUC4v/gLeJLC
+	SSwWz1TIyKe4n5hFsyjSGPVPHYtXJQycjXACVAfKHzxwFUo2rBMEUAzgbhhMjKz/w5lLUMmSN83
+	7Fuufco/PIUy7r6jy2aZHHQfRz5d5+uPWTMi2iGDYHx7+cefC0qTjsg1ygJJiCPSNltC88AVVat
+	P9sWbNEdCR69Izfnbg+v38rLqjRClCmGi51+SzJrFHrzKhsFhemSTCHpxocu9Jf/vDO090l3ckH
+	HfE2s7nP9FiczEeXqcgEGd+4ZuMWGjWhSZ3D5aHI8Imkz6+W
+X-Google-Smtp-Source: AGHT+IEXT4VHtoN7BWCb9b46QkhkIIkudo6GwKbhv3dYWDQ39vj5aKhwilizZwe5JyZGlUhGnb2oMA==
+X-Received: by 2002:a7b:c001:0:b0:434:f5c0:3288 with SMTP id 5b1f17b1804b1-439250df455mr58897315e9.29.1739030169469;
+        Sat, 08 Feb 2025 07:56:09 -0800 (PST)
+Received: from eldamar.lan (c-82-192-244-13.customer.ggaweb.ch. [82.192.244.13])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4391dcae129sm88297535e9.17.2025.02.08.07.56.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Feb 2025 07:56:08 -0800 (PST)
+Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
+Received: by eldamar.lan (Postfix, from userid 1000)
+	id 18929BE2EE7; Sat, 08 Feb 2025 16:56:07 +0100 (CET)
+Date: Sat, 8 Feb 2025 16:56:07 +0100
+From: Salvatore Bonaccorso <carnil@debian.org>
+To: Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Sasha Levin <sashal@kernel.org>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
+	Radoslav =?iso-8859-1?Q?Bod=F3?= <radoslav.bodo@igalileo.cz>
+Cc: regressions@lists.linux.dev, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [6.1.y] Regression from b1e6e80a1b42 ("xen/swiotlb: add alignment
+ check for dma buffers") when booting with Xen and mpt3sas_cm0 _scsih_probe
+ failures
+Message-ID: <Z6d-l2nCO1mB4_wx@eldamar.lan>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF000099D5:EE_|PH7PR12MB7236:EE_
-X-MS-Office365-Filtering-Correlation-Id: 68c58570-a574-4a3b-0efa-08dd481f79ea
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|82310400026|36860700013|7416014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?ZsvpKbGLo0OursV4CLkUkdJL5llEiy/LwZXnOFpvLYzXG8hsYOGXz/9CzgxP?=
- =?us-ascii?Q?3+0yqG7IdoSieCoKb5TB0U3ngCCnBkJ6MHxtBVAE/5tq+D3ceuTNgHXGNkAn?=
- =?us-ascii?Q?gIBnAErdQP3zlla3SgabemgHkwik9XSu/Fdwk50xA+9YqY/Tmz0AGa9yIjkM?=
- =?us-ascii?Q?xaA+vrZu82fOgCyh/Er2CgspH6o3vCpxdyDeHwXaI2ZUNFmF+xi3L4tMaOMH?=
- =?us-ascii?Q?+fCGCDle3yJl838ADe7Zi4Iioj9qTNPYG7tGk8g77VjJQwXRgbTHIvwK7Kuk?=
- =?us-ascii?Q?DekYyBoUzu8Ffg9RSRExh6KQYsBQv51/PwVkzBUNAYAIz+l2NnFOUm2sluMf?=
- =?us-ascii?Q?x82MVkU9rUPhuCX0M3EF8NQxwqLiQl9701CRg3UzKi7v5JIH8pE9p2rZsBAd?=
- =?us-ascii?Q?OVa+VBjnJ1uDRXOj1nuj0ypVopVQni1p6OJ4fh3BLMaMF6ng7YiIBjU7+sTZ?=
- =?us-ascii?Q?/7q36ZBYnXunQhvS3asZLtI+GY1x1a8mJUjTE27UdCdOGrj++CZYpzkq1dax?=
- =?us-ascii?Q?HrnpMO63HCkXVyK/9Nqp7qfgDvtZ7xTzuYzxi6zGo1NNAuZLqVO0tFnH3Byc?=
- =?us-ascii?Q?AeTiMRPS5fhdj1DZVFc2rW4by5Cr7ULrNOA/CqrQ4VeDN02IWfPyDikIixxD?=
- =?us-ascii?Q?e3jJcjtdhP+VYi9YNu7focSKOg3HMflRUuXdfTumInm5RRt1QgujSdrh2N2A?=
- =?us-ascii?Q?TQAy7PGYlunQ8FMxUlc2RhUHMvZ531F3FRPj5i4FuNz2pUDODQz6ofn9W/k2?=
- =?us-ascii?Q?U4OZlS9v3lBBXpccNAq0WdtWeNuqm+c//JLShiT0gCrfQ19WPlpDSRBAls6T?=
- =?us-ascii?Q?oMdb6b4pFYVeUwd0OfAKmXsBps+I6bl5w08+0Bqmg0QMUMUr/tmAow3PDxT0?=
- =?us-ascii?Q?Xqy2Hw2VSY2rOS7x+IdlKDM08IEupfTkn4GNiKlXkj5UtF0MG2prWewAgJSw?=
- =?us-ascii?Q?w+jUjHVvvTO69lwPjGAaUBJXc8kQ7tLlDufkvst1hFAo3mxCQcJKsEeJ+ANG?=
- =?us-ascii?Q?0gb2Ux1hWvpBxbMj2RKY/2hDJpzcDVGWOcYIcloxNwxbUlhuWwdQE0kpS7ol?=
- =?us-ascii?Q?2EGhgklPXNWACSwj+i4LawYi3P5CxFy/dp0wiXSMTK2OnFCMSKFy+BMXH8g3?=
- =?us-ascii?Q?N5K1Zr6f+PnX9o0JUah6KGMcwD6zLElVhlbDGXqzUm6YhXXP1BxGWOhTZBcX?=
- =?us-ascii?Q?DXk5JuAmJjKXZeDVuGotXdjPj/vgW2nwtE4Q6YD0ugtM9DRQ0IQYuqAaNrXN?=
- =?us-ascii?Q?JEIcM1AcHksRgPPHLBGQtP+edLkPn3xdi7oOxBcaDV4DiUQzHhhB5dnQ4JRd?=
- =?us-ascii?Q?Y/3hlffOexyDAOPp6imf3tqfxJmzHcwhKq+9K9QRozizzvQbQNO3AvXdBNRc?=
- =?us-ascii?Q?mm/cliO5jkRqnl3+PRK1UFq/7KKs08OYO7Wx+8OpLNih1x0PNCF2LqL5bKZW?=
- =?us-ascii?Q?7M7lbXXmetgB8SzCHdjKjVRgI5x5bYOuzvQjqV4SzFTp7URwUTHJejSf9PI3?=
- =?us-ascii?Q?/SrKmsi6E0eCZR4=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(82310400026)(36860700013)(7416014)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2025 09:03:38.1640
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 68c58570-a574-4a3b-0efa-08dd481f79ea
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF000099D5.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7236
 
-Also add fail_nth coverage too.
+Hi Juergen, hi all,
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- tools/testing/selftests/iommu/iommufd.c       | 97 +++++++++++++++++++
- .../selftests/iommu/iommufd_fail_nth.c        | 21 ++++
- 2 files changed, 118 insertions(+)
+Radoslav Bodó reported in Debian an issue after updating our kernel
+from 6.1.112 to 6.1.115. His report in full is at:
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index a1b2b657999d..db7dfc5ae56a 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -334,6 +334,103 @@ TEST_F(change_process, basic)
- 	ASSERT_EQ(child, waitpid(child, NULL, 0));
- }
- 
-+FIXTURE(iommufd_sw_msi)
-+{
-+	int fd;
-+	uint32_t ioas_id;
-+	uint32_t idev_id[2];
-+};
-+
-+FIXTURE_SETUP(iommufd_sw_msi)
-+{
-+	self->fd = open("/dev/iommu", O_RDWR);
-+	ASSERT_NE(-1, self->fd);
-+
-+	test_ioctl_ioas_alloc(&self->ioas_id);
-+	test_cmd_mock_domain(self->ioas_id, NULL, NULL, &self->idev_id[0]);
-+	test_cmd_mock_domain_flags(self->ioas_id, MOCK_FLAGS_DEVICE_NO_ATTACH,
-+				   NULL, NULL, &self->idev_id[1]);
-+}
-+
-+FIXTURE_TEARDOWN(iommufd_sw_msi)
-+{
-+	teardown_iommufd(self->fd, _metadata);
-+}
-+
-+TEST_F(iommufd_sw_msi, basic)
-+{
-+	struct iommu_option cmd = {
-+		.size = sizeof(cmd),
-+		.op = IOMMU_OPTION_OP_SET,
-+	};
-+
-+	/* Negative case: object_id must be a device id */
-+	cmd.object_id = self->ioas_id;
-+	cmd.option_id = IOMMU_OPTION_SW_MSI_START;
-+	cmd.val64 = 0x70000000;
-+	EXPECT_ERRNO(ENOENT, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+	cmd.object_id = 0;
-+	cmd.option_id = IOMMU_OPTION_SW_MSI_SIZE;
-+	cmd.val64 = 2;
-+	EXPECT_ERRNO(ENOENT, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+
-+	/* Negative case: device must not be attached already */
-+	if (self->idev_id[0]) {
-+		cmd.object_id = self->idev_id[0];
-+		cmd.option_id = IOMMU_OPTION_SW_MSI_START;
-+		cmd.val64 = 0x70000000;
-+		EXPECT_ERRNO(EBUSY, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+	}
-+
-+	/* Device attached to nothing */
-+	if (self->idev_id[1]) {
-+		/* Negative case: alignment failures */
-+		cmd.object_id = self->idev_id[1];
-+		cmd.option_id = IOMMU_OPTION_SW_MSI_START;
-+		cmd.val64 = 0x7fffffff;
-+		EXPECT_ERRNO(EINVAL, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+		cmd.val64 = 0x7fffff00;
-+		EXPECT_ERRNO(EINVAL, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+		cmd.val64 = 0x7fff0000;
-+		EXPECT_ERRNO(EINVAL, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+
-+		/* Negative case: overlap against [0x80000000, 0x80ffffff] */
-+		cmd.option_id = IOMMU_OPTION_SW_MSI_START;
-+		cmd.val64 = 0x80000000;
-+		EXPECT_ERRNO(EADDRINUSE, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+		cmd.val64 = 0x80400000;
-+		EXPECT_ERRNO(EADDRINUSE, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+		cmd.val64 = 0x80800000;
-+		EXPECT_ERRNO(EADDRINUSE, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+		cmd.val64 = 0x80c00000;
-+		EXPECT_ERRNO(EADDRINUSE, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+		/* Though an address that starts 1MB below will be okay ... */
-+		cmd.val64 = 0x7ff00000;
-+		ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+		/* ... but not with a 2MB size */
-+		cmd.option_id = IOMMU_OPTION_SW_MSI_SIZE;
-+		cmd.val64 = 2;
-+		EXPECT_ERRNO(EADDRINUSE, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+
-+		/* Set a safe 2MB window */
-+		cmd.option_id = IOMMU_OPTION_SW_MSI_START;
-+		cmd.val64 = 0x70000000;
-+		ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+		cmd.option_id = IOMMU_OPTION_SW_MSI_SIZE;
-+		cmd.val64 = 2;
-+		ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+
-+		/* Read them back to verify */
-+		cmd.op = IOMMU_OPTION_OP_GET;
-+		cmd.option_id = IOMMU_OPTION_SW_MSI_START;
-+		ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+		ASSERT_EQ(cmd.val64, 0x70000000);
-+		cmd.option_id = IOMMU_OPTION_SW_MSI_SIZE;
-+		ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
-+		ASSERT_EQ(cmd.val64, 2);
-+	}
-+}
-+
- FIXTURE(iommufd_ioas)
- {
- 	int fd;
-diff --git a/tools/testing/selftests/iommu/iommufd_fail_nth.c b/tools/testing/selftests/iommu/iommufd_fail_nth.c
-index 64b1f8e1b0cf..be0d7735dfeb 100644
---- a/tools/testing/selftests/iommu/iommufd_fail_nth.c
-+++ b/tools/testing/selftests/iommu/iommufd_fail_nth.c
-@@ -615,6 +615,10 @@ TEST_FAIL_NTH(basic_fail_nth, access_pin_domain)
- /* device.c */
- TEST_FAIL_NTH(basic_fail_nth, device)
- {
-+	struct iommu_option cmd = {
-+		.size = sizeof(cmd),
-+		.op = IOMMU_OPTION_OP_SET,
-+	};
- 	struct iommu_hwpt_selftest data = {
- 		.iotlb = IOMMU_TEST_IOTLB_DEFAULT,
- 	};
-@@ -624,6 +628,7 @@ TEST_FAIL_NTH(basic_fail_nth, device)
- 	uint32_t ioas_id;
- 	uint32_t ioas_id2;
- 	uint32_t stdev_id;
-+	uint32_t idev_id2;
- 	uint32_t idev_id;
- 	uint32_t hwpt_id;
- 	uint32_t viommu_id;
-@@ -692,6 +697,22 @@ TEST_FAIL_NTH(basic_fail_nth, device)
- 				 IOMMU_HWPT_DATA_SELFTEST, &data, sizeof(data)))
- 		return -1;
- 
-+	if (_test_cmd_mock_domain_flags(self->fd, ioas_id,
-+					MOCK_FLAGS_DEVICE_NO_ATTACH, NULL, NULL,
-+					&idev_id2))
-+		return -1;
-+
-+	cmd.object_id = idev_id2;
-+	cmd.option_id = IOMMU_OPTION_SW_MSI_START;
-+	cmd.val64 = 0x70000000;
-+	if (ioctl(self->fd, IOMMU_OPTION, &cmd))
-+		return -1;
-+
-+	cmd.option_id = IOMMU_OPTION_SW_MSI_SIZE;
-+	cmd.val64 = 2;
-+	if (ioctl(self->fd, IOMMU_OPTION, &cmd))
-+		return -1;
-+
- 	return 0;
- }
- 
--- 
-2.43.0
+https://bugs.debian.org/1088159
 
+He reports that after switching to 6.1.115 (and present in any of the
+later 6.1.y series) booting under xen, the mptsas devices are not
+anymore accessible, the boot shows:
+
+mpt3sas version 43.100.00.00 loaded
+mpt3sas_cm0: 63 BIT PCI BUS DMA ADDRESSING SUPPORTED, total mem (8086116 kB)
+mpt3sas_cm0: CurrentHostPageSize is 0: Setting default host page size to 4k
+mpt3sas_cm0: MSI-X vectors supported: 96
+mpt3sas_cm0:  0 40 40
+mpt3sas_cm0: High IOPs queues : disabled
+mpt3sas0-msix0: PCI-MSI-X enabled: IRQ 447
+mpt3sas0-msix1: PCI-MSI-X enabled: IRQ 448
+mpt3sas0-msix2: PCI-MSI-X enabled: IRQ 449
+mpt3sas0-msix3: PCI-MSI-X enabled: IRQ 450
+mpt3sas0-msix4: PCI-MSI-X enabled: IRQ 451
+mpt3sas0-msix5: PCI-MSI-X enabled: IRQ 452
+mpt3sas0-msix6: PCI-MSI-X enabled: IRQ 453
+mpt3sas0-msix7: PCI-MSI-X enabled: IRQ 454
+mpt3sas0-msix8: PCI-MSI-X enabled: IRQ 455
+mpt3sas0-msix9: PCI-MSI-X enabled: IRQ 456
+mpt3sas0-msix10: PCI-MSI-X enabled: IRQ 457
+mpt3sas0-msix11: PCI-MSI-X enabled: IRQ 458
+mpt3sas0-msix12: PCI-MSI-X enabled: IRQ 459
+mpt3sas0-msix13: PCI-MSI-X enabled: IRQ 460
+mpt3sas0-msix14: PCI-MSI-X enabled: IRQ 461
+mpt3sas0-msix15: PCI-MSI-X enabled: IRQ 462
+mpt3sas0-msix16: PCI-MSI-X enabled: IRQ 463
+mpt3sas0-msix17: PCI-MSI-X enabled: IRQ 464
+mpt3sas0-msix18: PCI-MSI-X enabled: IRQ 465
+mpt3sas0-msix19: PCI-MSI-X enabled: IRQ 466
+mpt3sas0-msix20: PCI-MSI-X enabled: IRQ 467
+mpt3sas0-msix21: PCI-MSI-X enabled: IRQ 468
+mpt3sas0-msix22: PCI-MSI-X enabled: IRQ 469
+mpt3sas0-msix23: PCI-MSI-X enabled: IRQ 470
+mpt3sas0-msix24: PCI-MSI-X enabled: IRQ 471
+mpt3sas0-msix25: PCI-MSI-X enabled: IRQ 472
+mpt3sas0-msix26: PCI-MSI-X enabled: IRQ 473
+mpt3sas0-msix27: PCI-MSI-X enabled: IRQ 474
+mpt3sas0-msix28: PCI-MSI-X enabled: IRQ 475
+mpt3sas0-msix29: PCI-MSI-X enabled: IRQ 476
+mpt3sas0-msix30: PCI-MSI-X enabled: IRQ 477
+mpt3sas0-msix31: PCI-MSI-X enabled: IRQ 478
+mpt3sas0-msix32: PCI-MSI-X enabled: IRQ 479
+mpt3sas0-msix33: PCI-MSI-X enabled: IRQ 480
+mpt3sas0-msix34: PCI-MSI-X enabled: IRQ 481
+mpt3sas0-msix35: PCI-MSI-X enabled: IRQ 482
+mpt3sas0-msix36: PCI-MSI-X enabled: IRQ 483
+mpt3sas0-msix37: PCI-MSI-X enabled: IRQ 484
+mpt3sas0-msix38: PCI-MSI-X enabled: IRQ 485
+mpt3sas0-msix39: PCI-MSI-X enabled: IRQ 486
+mpt3sas_cm0: iomem(0x00000000ac400000), mapped(0x00000000d9f45f61), size(65536)
+mpt3sas_cm0: ioport(0x0000000000006000), size(256)
+mpt3sas_cm0: CurrentHostPageSize is 0: Setting default host page size to 4k
+mpt3sas_cm0: scatter gather: sge_in_main_msg(1), sge_per_chain(7), sge_per_io(128), chains_per_io(19)
+mpt3sas_cm0: failure at drivers/scsi/mpt3sas/mpt3sas_scsih.c:12348/_scsih_probe()!
+
+We were able to bissect the changes (see https://bugs.debian.org/1088159#64) down to
+
+b1e6e80a1b42 ("xen/swiotlb: add alignment check for dma buffers")
+
+#regzbot introduced: b1e6e80a1b42
+#regzbot link: https://bugs.debian.org/1088159
+
+reverting the commit resolves the issue.
+
+Does that ring some bells?
+
+In fact we have two more bugs reported with similar symptoms but not
+yet confirmed they are the same, but I'm referencing them here as well
+in case we are able to cross-match to root cause:
+
+https://bugs.debian.org/1093371 (megaraid_sas didn't work anymore with
+Xen)
+
+and
+
+https://bugs.debian.org/1087807 (Unable to boot: i40e swiotlb buffer
+is full)
+
+(but again the these are yet not confirmed to have the same root
+cause).
+
+Thanks in advance,
+
+Regards,
+Salvatore
