@@ -1,162 +1,194 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3B4B4C9F
-	for <iommu@lists.linux.dev>; Sun,  9 Feb 2025 06:44:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33E146FBF
+	for <iommu@lists.linux.dev>; Sun,  9 Feb 2025 08:25:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739083468; cv=none; b=KNplCc/XebiYBmGLpHwAicHmINe1FsSpgAFLohMs4DHRBvfjXpdiTgRFuVG3KC0JYzZSZGPPZ+uL8t+1LShMNk61EtnmJaFPNl1yQSdyEMHEnkaJLjGqILjlT9+dIRuF5OunxqQiJsp1RijFYUPYusK8aFr1mK0aUNs2ZcAU+oc=
+	t=1739089532; cv=none; b=id7scAE86S1Ktwa1jY5vY293lzI4Gd+69exFJROglJ6MHajR2fdRkH5SFw5pVPDb6Rnlldu4QHs4I/5tNxUbzyJz1GYKjzWw7K6jyDLFLhLK/WS04lOSQxMJsDL8xuPb85H4unl4Vb7eErpv2FaeBKxisjvJhvBecJsJzVy34Ug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739083468; c=relaxed/simple;
-	bh=k5z8UYLykpDZztIbyOAipUwnXwi+GKpDaKyRXhJIv8c=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CvfKaKoWpzgPaKsiVSTxIjpttVbtiDTFMR5iEVH437PA9vo2LplEtFRUUlk7AnVdwu/LpYuqKujZS2cOuXoWTiKB4lT8DKJLk/g7V0CraZuq0U3HYEE3+ia4TvpV6QWtVxlQGm4AbHYDeXZDjRSNI5ttBIl1+9MvduicnV5EugQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BqFl5W8U; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BqFl5W8U"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1739083465;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=k5z8UYLykpDZztIbyOAipUwnXwi+GKpDaKyRXhJIv8c=;
-	b=BqFl5W8UyPsa3cgzafJi3mWnpfSnk8ciPa6Dc4N4TrujWktZyx/aWVe2IFCymV93hD9SDm
-	tg+np9GrQZE1V9UouT0ea4+AanGfM7ShFngsWGi5R9ov4OfiRaOTrLr1QUbsYqT23WP6rC
-	8cGC2grQABhfjhmPnlmHRI6x54py2y4=
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
- [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-623-zohX3w3BM4GVxjYaQowSzA-1; Sun, 09 Feb 2025 01:44:24 -0500
-X-MC-Unique: zohX3w3BM4GVxjYaQowSzA-1
-X-Mimecast-MFC-AGG-ID: zohX3w3BM4GVxjYaQowSzA
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-21f379b7bb3so50915225ad.2
-        for <iommu@lists.linux.dev>; Sat, 08 Feb 2025 22:44:23 -0800 (PST)
+	s=arc-20240116; t=1739089532; c=relaxed/simple;
+	bh=USlt6WBdDTcM2aycYNDVxBnuOmsJewaFSksVTJXgdgY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=eX8hY3+aO5FcPWTflfdrcmjUVq2UYgPek4qnMf+ghiY39/v9PiZJlt6Q5qDDgZta4y7GqSGwdxJUdgQJmUe/WdGZRYZl+cDtjKPoZ9GPYvMq7ZssTfy4B5CuSumFYIcfgI311rt1eu4wCU/SyDdQYxIfDHup7VwDAVfgrEH6f7I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gompa.dev; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.219.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gompa.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-6e41e17645dso31591066d6.2
+        for <iommu@lists.linux.dev>; Sun, 09 Feb 2025 00:25:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739083463; x=1739688263;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1739089530; x=1739694330;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=k5z8UYLykpDZztIbyOAipUwnXwi+GKpDaKyRXhJIv8c=;
-        b=nyWrdC+9utYpfwEhVv0h/+5CGw8xR28QKlDjXg289OhswdDkFzK/A6ZuGBr/hxMEKo
-         PG4CtzkjmfF84f3rsBZakvknjRQqF0sOIsCEciwYJn+dOx65+tW8KvKG+RFQwVKpVIHV
-         xGqworDVSTlBiFWL7RKyqyzD0t81toeBMGpGCNtlrcUuTa1uoWZTRMvv2DhwbRpt6kbX
-         4Od0QPoHCqsZvbQiFoNYOqgI5IMfcTaO+GHIyUSFfQBWAA1+cQOYUC/HhixZJx7rllNU
-         ZrQXhpFIFIVLYCVX6Clu/RjD+KdxPIyBoF9PPAFtYWOaQ1nrL/javtfbky47ioEAturx
-         rT/w==
-X-Forwarded-Encrypted: i=1; AJvYcCVjBYIrykmkvzBTpf7dNOQsCage1a6GforlMc57SPEkPkd4klshM4A1yGBT8xOnSTpU8UL3vQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzYDa/cpuk8oXDby7MNRmIXs42fLNoZiiPaBbMvSnu/E6JWWJ+D
-	E4ZLMMudkAkMSqrXfAFSi97JX+aLFZYzZFqbTdgB9d4T5/tW3WgaChYJ1paA8kYhzLxL++fho9z
-	5vCpPa3Q7fZ0v9qjYe9umaOGLQ0JqcYoX8GWeNRzi+s7l3xT4KdqAdcOx4G63ca+jriySmQCldM
-	30FLeIs4QfuCOMecRmPmhs5JD5uGM=
-X-Gm-Gg: ASbGncvYgQi5RIbJzsn0/9Y7XBMV0pHCCSD9RovpL+ys5VKpx3MA15nu7bvQ9H0/UcZ
-	/dvEB3NtHsLyIcA3zB3tWfYoWeGDe4N++xPRg4DOAJJMgX8W/hy6NHs6v1rhG
-X-Received: by 2002:a17:903:13c6:b0:21a:8300:b9ce with SMTP id d9443c01a7336-21f4e7772e2mr169600095ad.49.1739083463124;
-        Sat, 08 Feb 2025 22:44:23 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGO6/xttu4T8jZGaWc2hd6Zzb3mRsY1UKxFcJ0RUiPT3DBzdzt7cBP21ECwMvO1eY4S6krwSRPMmgqxuGo22uE=
-X-Received: by 2002:a17:903:13c6:b0:21a:8300:b9ce with SMTP id
- d9443c01a7336-21f4e7772e2mr169599735ad.49.1739083462831; Sat, 08 Feb 2025
- 22:44:22 -0800 (PST)
+        bh=USlt6WBdDTcM2aycYNDVxBnuOmsJewaFSksVTJXgdgY=;
+        b=vTGFLoEeTC9p8s5F6VF3bKXJoERezrbvLC3u/d49mtShqRkW11aASN2yNN/NJBeybe
+         snX4Iqp5ZnM2lbe+lQ0dB0sMp2qRAKF0iy28BEA6PpOuEhfwhAFTv8YrDIacjlu0Ii09
+         ElM/Ml0X48J9EVWuCLWQy90loaN2ntUkI+lsLsgUC8hj+DJQS36oAyQFGc5eN3dWhqf6
+         mTgHxjxzun4+yo7v0biCIum4jGYdhOxOeoxtyiK+W28oSJZ1T/fAJ1VBtgA3VvO2wJ9k
+         1hvgkK6irh0v+xlvgG29aPzOmwK/MiKvAlaq59lKQKnbdZsX/AbeXfuJzwu66xqwuiDA
+         guww==
+X-Forwarded-Encrypted: i=1; AJvYcCVZ6XOhwuNYK+9+u/CFZXVcr1RdZFia+md6oc+Ntwmi0fjfZMCvkQts/GA0egSyhHGlZXh9xQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxaVugIo9WFi2AcC/Zn6biJqJOMCIADBANHWL2i373XptUpc9Pc
+	o9WRj3KQQ5P79hMCTaFUSzJLu9CAVUfqZKzCHnk2rNhq3BgG6ow5
+X-Gm-Gg: ASbGncvhInTqkiNUkb5bX8xuzMXWswSgfX/PJbyf3M+GbgPdzPh9+YzzsKd2Z88VKL7
+	px6VU8yZ9q4z+AJrgaY5vhQUpqZrfIODsEFJvaJJTGazic+Oof0/ThsBE2ic0FxUG5Qr3pilZCT
+	8WTmw2l8x6/Ux+zlNFgDbmU54mN1Q/Jm+irs3S1eg3j/4peBqsv4PFmobPqejvih2iLLZfARaL0
+	Xgk9fMSL54do6li/dRmNARWwAYPT/OtMkCY73HJ+GWglCdNdNzCT7gUs6csukkGNEDhc1OWbE58
+	0fO5ktzoNlEYZWlCri3j8ZrT
+X-Google-Smtp-Source: AGHT+IH0bnSrax4ouGaMRHepnNM7v38bNacxAv9jJN97d/yQxAFzqXYs3yHAdQLLdROltMGZT89cgg==
+X-Received: by 2002:ad4:5f89:0:b0:6d8:8a7b:66a4 with SMTP id 6a1803df08f44-6e4455e8913mr144676746d6.14.1739089530028;
+        Sun, 09 Feb 2025 00:25:30 -0800 (PST)
+Received: from skuld-framework.localnet ([32.221.37.233])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e441251d52sm29565596d6.108.2025.02.09.00.25.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 09 Feb 2025 00:25:29 -0800 (PST)
+From: Neal Gompa <neal@gompa.dev>
+To: Hector Martin <marcan@marcan.st>,
+ Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Cc: Danilo Krummrich <dakr@kernel.org>, Dave Airlie <airlied@gmail.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Greg KH <gregkh@linuxfoundation.org>,
+ Linus Torvalds <torvalds@linux-foundation.org>, phasta@kernel.org,
+ Christoph Hellwig <hch@lst.de>,
+ Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+ Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com,
+ aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
+ Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+ =?UTF-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
+ Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
+ Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ David Airlie <airlied@redhat.com>,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ DRI Development <dri-devel@lists.freedesktop.org>
+Subject:
+ Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma coherent
+ allocator abstraction.)
+Date: Sun, 09 Feb 2025 03:25:26 -0500
+Message-ID: <7742420.9J7NaK4W3v@skuld-framework>
+In-Reply-To: <20250207-prehistoric-married-dormouse-3e1aa7@lemur>
+References:
+ <2025013148-reversal-pessimism-1515@gregkh>
+ <1bbdf8b7-a70b-4994-865e-7fcb8d53ebef@marcan.st>
+ <20250207-prehistoric-married-dormouse-3e1aa7@lemur>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
- <20250108122825.136021-3-abdiel.janulgue@gmail.com> <20250108135951.GA18074@lst.de>
- <CANiq72=R2N+QiCiHZQu-6YJ9aYpn_bik3BW3U=nAW3jL7unzLw@mail.gmail.com> <1894f095-e93a-4def-a223-d5c089ecc2df@vt.edu>
-In-Reply-To: <1894f095-e93a-4def-a223-d5c089ecc2df@vt.edu>
-From: David Airlie <airlied@redhat.com>
-Date: Sun, 9 Feb 2025 16:44:10 +1000
-X-Gm-Features: AWEUYZmapeVmf6BlNwM1udDZl6mMgq_iwcj8x5DFYjHWYQsJjAcjx42A4duswn0
-Message-ID: <CAMwc25p1kGHjy7z19Kg+vv7yVc0bF2taA08hBKhk72e4HiK5xA@mail.gmail.com>
-Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
-To: Carlos Bilbao <bilbao@vt.edu>
-Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>, Christoph Hellwig <hch@lst.de>, 
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com, 
-	aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org, 
-	Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
-	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
-	Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, 
-	Valentin Obst <kernel@valentinobst.de>, open list <linux-kernel@vger.kernel.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, 
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, Greg KH <gregkh@linuxfoundation.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: 8Qe-efF8aIMpALtWyso-s959vd33OY2TcUs-K8n8YzY_1739083463
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 
-On Sun, Feb 9, 2025 at 9:55=E2=80=AFAM Carlos Bilbao <bilbao@vt.edu> wrote:
->
-> Hello,
->
-> On 1/8/25 09:16, Miguel Ojeda wrote:
-> > On Wed, Jan 8, 2025 at 3:00=E2=80=AFPM Christoph Hellwig <hch@lst.de> w=
-rote:
-> >>
-> >> No rust code in kernel/dma, please.
-> >
-> > What do you suggest?
->
-> This is it. What do people suggest? This thread has received a lot of
-> attention -- maybe it's an opportunity for the community to brainstorm.
-> Here's an idea:
->
-> Some maintainers clearly hate wrappers/bindings to Rust, while others don=
-'t
-> mind as long as the R4L folks commit to the maintenance duties. Depending=
- on
-> the subsystem, it will be a completely different conversation. It seems t=
-o
-> me that right now, every time the R4L folks interact with a new subsystem=
-,
-> they need to understand the maintainer's stance. That looks like an
-> exhausting process.
->
+On Friday, February 7, 2025 1:16:11=E2=80=AFPM Eastern Standard Time Konsta=
+ntin=20
+Ryabitsev wrote:
+> On Sat, Feb 08, 2025 at 03:02:11AM +0900, Hector Martin wrote:
+> > The centralization concern is valid, but there are technical solutions
+> > to this, such as forge federation.
+>=20
+> Unfortunately, forge federation is really only between Forgejo instances =
+and
+> is still pretty nascent, afaict. The most promising development in
+> decentralized forges that I've seen is Radicle, but I'm yet to try it aga=
+in
+> ever since they got collectively drunk on bitcoin coolaid a few years ago.
 
-That is the process we are committed to, everyone has a voice and gets
-to be heard, and we move forward in the appropriate manner with each
-maintainer. Bypassing maintainers is the last resort, not engaging at
-all with maintainers isn't a productive way forward either. Your below
-attempt is trying to create a technical solution to a social problem.
+Strictly speaking, this isn't true. Forgefed federation was tested very ear=
+ly=20
+on with Codeberg's Gitea fork (before it was called Forgejo) and Pagure wit=
+h=20
+its Forgefed extension[1]. The initial design and development was across th=
+ree=20
+forge systems (Vervis, Forgejo, and Pagure).
 
-> Would it make sense to have a C middleman that Rust calls instead of
-> binding directly to the C funcs? This dispatcher would provide a simpler,
-> stable API with fixed function signatures, even if the C functions change=
-.
-> If a C func is removed/changed, only the C dispatcher would need to be
-> adapted, but until that happens, a new error could be returned to the Rus=
-t
-> side (not ideal, but Rust doesn't just break).
->
-> This would obviously impose some limitations on the Rust side, but it mig=
-ht
-> be less conflictive than direct bindings. Also, in Abdiel's case here (fo=
-r
-> example), he'd explicitly take on the maintenance of the Rust abstraction
-> and its DMA dispatchers, leaving no ambiguity about ownership.
->
+Even before that, Pagure has data portability built into its design in a wa=
+y=20
+no other forge has today: all project metadata is stored as JSON data check=
+ed=20
+into specialized Git repos. That means it's trivial to mirror and archive=20
+projects to have redundant instances or failover instances to support whate=
+ver=20
+reliability and high availability guarantees you'd like.
 
-This just adds overheads for everyone to little advantage for the
-cases where maintainers are fine with all the other approaches.
+And insofar as cross system contributions, Pagure supports making pull=20
+requests that pull from arbitrary Git servers (as long as the Pagure instan=
+ce=20
+can connect to it) with its remote pull request feature. That has been a co=
+re=20
+feature for nearly the entire time it has existed.
 
-Also the bindings code in rust is usually pretty trivial to change,
-it's not like you can really abstract things that far, changing APIs
-is hard no matter what, understanding the nuances in every C driver
-can takes months of work adding rust bindings to your changes is
-rarely going to be the limiting factor. We have learned over the years
-to not make API changes that are subtle or hidden, and can leave out
-of tree or in development users broken in subtle ways and as long as
-we keep making API changes like that, updating the rust code is the
-least of anyone's worries. This isn't like having to learn Mandarin vs
-English, it's code written with a different syntax, it's not even
-perl.
+It's not that it wasn't possible, it's just nobody cares. In the 11 years=20
+since Pagure was created, literally no other forge has even intimated that=
+=20
+they want even *some* of the concepts Pagure has. Extensibility and=20
+portability are simply not important concepts to anyone anymore.
 
-Dave.
+If it was, maybe more people would have been excited about Pagure, I'd have=
+=20
+more contributors to that project, and there'd be more deployments out ther=
+e=20
+showing it off.
+
+It is what it is, I guess. =E2=98=B9=EF=B8=8F
+
+[1]: https://pagure.io/pagure-forgefed
+
+> > Meanwhile, for better or worse, much of Linux infra *is* centralized -
+> > for example, the mailing lists themselves, and a lot of the Git hosting.
+>=20
+> Yes, but it's at least resilient. If someone knocks out vger.kernel.org,
+> kernel development will still continue because maintainers are still cc'd
+> directly via email, and email is still the only widely adopted federated
+> platform that we have, with nothing else coming anywhere close.
+>=20
+
+That's really a self-inflicted choice. Adoption is always a catch-22. If yo=
+u=20
+really wanted federated forge development and have some aspect of=20
+decentralized development, you always can even with forges or other tools.=
+=20
+It's just not something being considered or explored in the Linux kernel=20
+community, despite how much some folks dislike the email-based workflow.
+
+> > At the end of the day, I do not believe a theoretical breakdown of Linux
+> > infra would be a major long-term setback to Linux kernel development.
+>=20
+> We know it's the case when kernel.org went off the air for months in 2011.
+> :) Let's keep it that way!
+>=20
+> > But I'm afraid you'll find much if not most of the true opposition to
+> > forges is not technical, it is philosophical or preference-based (even
+> > though it may be presented as technical opposition, sometimes to
+> > intentionally mislead). This is, in fact, quite a mirror of the R4L
+> > situation, where technical arguments ("show me you can write a real
+> > driver") quickly lead to non-technical arguments when solutions are
+> > proposed ("it's cancer").
+> >=20
+> > I actually considered moving soc/apple development to a forge personally
+> > in the near future (obviously not my call to make any more), and I was
+> > fully expecting a pile of pushback, "because that's not how we do things
+> > here". Who knows, I might have gotten a "fuck you, either you accept
+> > email patches or I remove you from MAINTAINTERS" from Linus.
+>=20
+> It is my goal to be able to give subsystems a way to use forges without it
+> impacting how they interact with upstream or handle tree-wide changes. Th=
+at
+> is, once I'm done moving things from one Benevolent Company to another.
+>=20
+
+Honestly, this is probably not possible. If a subsystem moves to a forge=20
+workflow, it pretty much means tree-wide changes need to work partially tha=
+t=20
+way too.
+
+
+=2D-=20
+=E7=9C=9F=E5=AE=9F=E3=81=AF=E3=81=84=E3=81=A4=E3=82=82=E4=B8=80=E3=81=A4=EF=
+=BC=81/ Always, there's only one truth!
+
+
 
