@@ -1,195 +1,188 @@
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2086.outbound.protection.outlook.com [40.107.243.86])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6278013B2BB
-	for <iommu@lists.linux.dev>; Sun,  9 Feb 2025 16:28:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739118510; cv=none; b=qfVixioOBw7k9Pqbd9X9SEE7l6ojaQ7mNlS8jsOK5bXbN4dFLrxzjg/hhQ3vr9AvgJsxAzGACCPMt/5NFpKZtNbywrwOr9LpLAkYImsLnqMTFQQlGpADE0gM+f50Mr9i89rWOwhLpI2VcYjbCQhuqblp8kT+OIoQ7V1wdPw5Gzc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739118510; c=relaxed/simple;
-	bh=nQQGWFIz4kSqnu1kGUbVo6y3Ae6KjA9/WE3B2NnCO9c=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=EtAOJXNo5DfW8iyXyYPO/SXZ7xlQyLAmAEK3ztvLFtvzG7TGDga2pD22EL29ARJFl8GLWibYk44brQXCK0xKUYROSZ8V/c5vFTY+iM/ASMpdTmr7TxVhOqB+Tfn78M7Avr+zMOPUKocyg6SHclHZw8bXOTzyrN3MF6CDgqCT9Do=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=vt.edu; spf=pass smtp.mailfrom=vt.edu; dkim=pass (2048-bit key) header.d=vt-edu.20230601.gappssmtp.com header.i=@vt-edu.20230601.gappssmtp.com header.b=P6tZjGYC; arc=none smtp.client-ip=209.85.167.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=vt.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vt.edu
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D170243368;
+	Sun,  9 Feb 2025 18:09:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.86
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739124552; cv=fail; b=CdegqxXP/dBhH9OlJU2Mift8umFEImCqYkJ4hx1XrfLDC4vUL99l1ejyroEkcKpgpD9y/bLTyBzOtVa1qw7MzT7qA2uzeJEcG+oATbwluMBPbMNbtVrXlysNA7FDOGGy+ohhDYe0nnZ/rIiN/walqXUzjVDqA9JTBzh1QlC7tLk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739124552; c=relaxed/simple;
+	bh=LFmrktfpZrEIqee0Q3K8/g30ar3TV2Or0nTqoJBfA1k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=itoDwt/pXBLXmsFPMt4s0jJ6spvjce36yImchhO40ILZntAwi3pgzcV1FbEiFyQke6jPtp/GwPfXDa40F922kUNsmcEfo5bXsLZmFVI5u9ecLkpj8Q8aQ70NQ450wRFSsMndtCoWSzgZkpyutROciUcfEFlK3rz4rXvoojXaLO8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=U69LezBj; arc=fail smtp.client-ip=40.107.243.86
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vt-edu.20230601.gappssmtp.com header.i=@vt-edu.20230601.gappssmtp.com header.b="P6tZjGYC"
-Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-3f3aaa9cdcdso174861b6e.3
-        for <iommu@lists.linux.dev>; Sun, 09 Feb 2025 08:28:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vt-edu.20230601.gappssmtp.com; s=20230601; t=1739118507; x=1739723307; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=nQQGWFIz4kSqnu1kGUbVo6y3Ae6KjA9/WE3B2NnCO9c=;
-        b=P6tZjGYC5I2QDOQfLIyImX7bkt/peTzFCWufPDxBZW3nwV0k7eL+NeQYLRUzmzZhb2
-         8tawUXotfTLCNj7+k36jvOfQXzahmiuv9ttTvIqZd2GtuEaFwsoJQS3e7un2LFUaqgn4
-         n99wlT2Tiq2wR24FJTaSD724PlGXo02dURg16At6eqdLsvZMBcYKYRIyYvtfogiEZivY
-         sHuB9U+QTm+bEo6yPregXsmjpeVKlPYBZ/rLRqAyQuKQUsdnXFqT3sAPbRXYL4JEpX18
-         KNc272walZM7BOnXQOvrTTZ8aNFapBPY1OO8aV6guEB/BmrpfDjd1B4Aaejw1wxyQo5K
-         7mrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739118507; x=1739723307;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nQQGWFIz4kSqnu1kGUbVo6y3Ae6KjA9/WE3B2NnCO9c=;
-        b=j0TFM5c8kgcLuH05ljzpob3P8YMJ9MS34LualNoJ8V2wJFrbGo5Zuyq2vZoKXy+jdd
-         qVAXehNZA1cmYA0MVBPvQQ60zF8YJHcid28vDwQAnMZzs3StowcBR8yAu/awC8ppvgpX
-         j/HN5NxQtQG6cMawESP0liMIMF2r6BjrnfUBsU65KptaOwqn54/7bNjqpdV/VWOQ1OoV
-         4YjHUcT5GGzUKeSHsIaFyWzBxnCJ3Ka5YFN7Aq1bGgmduGpxp7IxN1EEXau1SOt+MZ9A
-         cb3oazxZkA6QM0+tSCEXoiUaqQyC7xvnKC+Nv6+8hiMpPAl/DF60+H7z81N1x15Oq0ya
-         j62Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWEtKWYqyL8kEOXBkuYtxDDtRN1R9xzwTDPhWvmXdeitODxYdgyKizO/FS4EJfopMtXZAkaKg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyO9wAXxy5l4VDJ3n/QM+mcfy1v0d9R95V0+j/sgrkHQtycAx/L
-	mS+6qun3wfDVQ5YKcs0WJn0DOIMzWM0wJwOAuc6dSMRHKotwRtY90vYZZus7/Ro=
-X-Gm-Gg: ASbGncuCew7Suw62o/Yr1GqaRNom70uAfeeoL1nauSWbFQ1saGY1gLoapXFDB7QErLS
-	fNbHEXA5C4ck4JvhKbIMBCFSGSt7je6VI+hCZC/Fw1MhgP06EqFccKYsxPiOQnAbV5jg+bFVLig
-	g/AS7Qdk3aUk5qiX6rNdT0us/u3bJusNgLTrAzBC1HAvyp0pZWXlr1fUaKl0nKT6V9/TcDIXXPl
-	u2nYVvj7y9yyCZmifk4dpcUrOvXvxH6c5E1iuv2rGp9nPU8+9FUH+ea4ts7uoeyGLI1FDZ4suHa
-	pwpTHF/it+nAn1E9bYULmBDZMXTAqhVXWiq/oTFzqwJUUJWmrx+GOE+32A==
-X-Google-Smtp-Source: AGHT+IFNMNWYl1WupTtff3rH3xveYZ/zBgh1j4QRo8cZQGBw00E8/IkGzma+E84CDwsDvfT0eK3wjQ==
-X-Received: by 2002:a05:6808:4482:b0:3f1:cd30:d692 with SMTP id 5614622812f47-3f39237a1f4mr7611873b6e.26.1739118507407;
-        Sun, 09 Feb 2025 08:28:27 -0800 (PST)
-Received: from ?IPV6:2603:8080:7400:36da:dff5:4180:2562:4c1e? ([2603:8080:7400:36da:dff5:4180:2562:4c1e])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-3f389fd5d48sm1799868b6e.42.2025.02.09.08.28.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 09 Feb 2025 08:28:26 -0800 (PST)
-Message-ID: <d7944fbd-f9ed-4d5f-892f-5afd72c3c6a1@vt.edu>
-Date: Sun, 9 Feb 2025 10:28:24 -0600
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="U69LezBj"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=gSvj+QHyo7TePlpkUM4IzY4O53oF17a4GDsIGRLLfA1ixyIqqfrIHzvljYv2rWcA5g33tnJht9AMrGRqM6M2yMiS0qChAVH8dFnIcdabPoXl2KpZk79f42+h5R5diHUHN65hz4akqk0nraBgaXcPhshernkNS4WbcVsDZQ7Scm2VjWhvFMTq+kOOTpLUqzjASuxIvOJyjG1DwhGpcXip98DQloAUpZlKNmeZu+3cGDDugOWJQ7ryXVfcRWRQzGqXMRYIj9UNQf7MCNmoDfmHEbZrLn0UZcM1Kblht5XFP3sOsEFttFEZnWNimueVZAYdnlobFAexkcefhInYc625mg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aDwjT4ULXGqJr98wR7tt3ay7EjO8FGkvowpJmrFY/Kk=;
+ b=i0rv4LZM31C+PXLt5sc3lSxYvry8Snm9SI8HCWE4gBjY7GOO0vACGjDJBKjpFF2nfztDAVBPkgCfH9jWxJPr45TSpUIdMs/llJBKgdpAP5RoY+V9GK+eEJIzHDOfiHLDadlPTAOhmL9B8cjASC6o/aMicfAwbzDycBe2QOfVZJ5OzqiRVkj8gnNKh41Rc520DPsa3xP7zRe5FM5ir4j3JWmiSkcJqN9shodhGEoz7d3FkWtHscy5zokAxIcuXjzM8u3Mme74ImrU+tYCb12+zlA/hcowpW1o4+Tn1NJe8MFkOTrcoP98Q1R+X0L5/4hH148677nooKLBn7jVeE7g7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aDwjT4ULXGqJr98wR7tt3ay7EjO8FGkvowpJmrFY/Kk=;
+ b=U69LezBjeyC1UNUHjP6PYLR314xai5GQty1zr0sQe+IZ2/+QuX+WpP1OSI1hZ6LLIgFGw5bGwNr7FTzlqLirZ0qZk/KMioLNO2vRW5lZvh9YKKDfbH4pO0ylt1JWu1ZFllahmoMgM95h5FOSa+7OFWnviiKx3QJUBB3UkreKl5WyelHlc++nq2TLMJBQPWipUnI1w8EKKDgJrf300MYcvtW1N/xOD8Qtr1XG7wRBe7Nxd0CUrC8jHVtBVNYcue7Jgo3hLy2HXe/EoDqypBwb0P65wYqCV1vQwbL9m1N4I0ON2uzJNRkU8VL+qz7ml94bw2z3BaZBrDHvenD9/SLdqg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by IA0PR12MB9047.namprd12.prod.outlook.com (2603:10b6:208:402::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8422.18; Sun, 9 Feb
+ 2025 18:09:07 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%6]) with mapi id 15.20.8422.015; Sun, 9 Feb 2025
+ 18:09:07 +0000
+Date: Sun, 9 Feb 2025 14:09:05 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Eric Auger <eric.auger@redhat.com>, will@kernel.org,
+	robin.murphy@arm.com, kevin.tian@intel.com, tglx@linutronix.de,
+	maz@kernel.org, alex.williamson@redhat.com, joro@8bytes.org,
+	shuah@kernel.org, reinette.chatre@intel.com, yebin10@huawei.com,
+	apatel@ventanamicro.com, shivamurthy.shastri@linutronix.de,
+	bhelgaas@google.com, anna-maria@linutronix.de, yury.norov@gmail.com,
+	nipun.gupta@amd.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	kvm@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	patches@lists.linux.dev, jean-philippe@linaro.org, mdf@kernel.org,
+	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
+	smostafa@google.com, ddutile@redhat.com
+Subject: Re: [PATCH RFCv2 09/13] iommufd: Add IOMMU_OPTION_SW_MSI_START/SIZE
+ ioctls
+Message-ID: <20250209180905.GI3660748@nvidia.com>
+References: <cover.1736550979.git.nicolinc@nvidia.com>
+ <d3cb1694e07be0e214dc44dcb2cb74f014606560.1736550979.git.nicolinc@nvidia.com>
+ <0521187e-c511-4ab1-9ffa-be2be8eacd04@redhat.com>
+ <20250129145800.GG5556@nvidia.com>
+ <Z6WLXTiYVzuN368E@Asurada-Nvidia>
+ <20250207143020.GR2960738@nvidia.com>
+ <20250207152801.GV2960738@nvidia.com>
+ <Z6ZYJAjYTKGqEbxB@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z6ZYJAjYTKGqEbxB@Asurada-Nvidia>
+X-ClientProxiedBy: BN9PR03CA0851.namprd03.prod.outlook.com
+ (2603:10b6:408:13d::16) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
-From: Carlos Bilbao <bilbao@vt.edu>
-To: David Airlie <airlied@redhat.com>,
- "carlos.bilbao@kernel.org" <carlos.bilbao@kernel.org>
-Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
- Christoph Hellwig <hch@lst.de>, Abdiel Janulgue <abdiel.janulgue@gmail.com>,
- daniel.almeida@collabora.com, aliceryhl@google.com, robin.murphy@arm.com,
- rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
- Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>,
- Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?=
- <bjorn3_gh@protonmail.com>, Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
- Danilo Krummrich <dakr@kernel.org>, Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
- Greg KH <gregkh@linuxfoundation.org>
-References: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
- <20250108122825.136021-3-abdiel.janulgue@gmail.com>
- <20250108135951.GA18074@lst.de>
- <CANiq72=R2N+QiCiHZQu-6YJ9aYpn_bik3BW3U=nAW3jL7unzLw@mail.gmail.com>
- <1894f095-e93a-4def-a223-d5c089ecc2df@vt.edu>
- <CAMwc25p1kGHjy7z19Kg+vv7yVc0bF2taA08hBKhk72e4HiK5xA@mail.gmail.com>
- <42efddde-9fe0-4984-a903-c89328a726b6@vt.edu>
-Content-Language: en-US
-In-Reply-To: <42efddde-9fe0-4984-a903-c89328a726b6@vt.edu>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|IA0PR12MB9047:EE_
+X-MS-Office365-Filtering-Correlation-Id: d4c78d0f-7b60-4110-c7e9-08dd4934d81f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?lGFgpBl0xo+tRDrnT44SL+kHSOH3h/s7in/utbQF20WAz9OB6gxlAxGBVhKU?=
+ =?us-ascii?Q?Yma5/BnUG0/6nu3f+2Er38Hyks0BkJj2BWZSMu5NnByBY2ChE3sYWTuoT8qV?=
+ =?us-ascii?Q?kV6Nzyz9fqRHj+3k1x9T/S7TKDbOGpqZP5hrlaOxqFE2hGPXvC/dzivBmgIl?=
+ =?us-ascii?Q?sN5FPllmXgFRyqM8K10I9JwfgiHz+I/Bspt2lRcVv8qsDvHrtHjn2sswTgVC?=
+ =?us-ascii?Q?e87AXZ8UPgzCiNkRxXHOBzEhMix0R057VuFK3CHqSoXcjvGSITCeyurQpPZT?=
+ =?us-ascii?Q?mrfGqwleQtojBrVV6QbM4TguyCuF5DfUBN7PDYmeCPL6lN0X7C2tWmBPIMhw?=
+ =?us-ascii?Q?YZudDl8nowGwAHPp7l4FSPz0UzlCJqCpRuoMYYb3b3hEDlXuHi7aPEcXn5oN?=
+ =?us-ascii?Q?dIxn2mJr26nsvQg4t/llIx0F9bhBCREABMtx5n+g+dZM6QhPOxpTMFtpaf1s?=
+ =?us-ascii?Q?qaALFDMKLtcbjxtFIU2jQBzrG2zlYVydRu/f2QHLWnDNtPNsUukYWNnvFp2h?=
+ =?us-ascii?Q?xX8ZK8UPwM+2VgT1/sJbWLhSR6HiZT9w/MPWdDedAyWXxLGSRKbY1Rtlk8Ec?=
+ =?us-ascii?Q?UEYl9a9xNAEjJqrFFXLzWBszZsdhO96TLPobmGx0066WlpAj9ogwck20xnug?=
+ =?us-ascii?Q?/7HR4MOyDmxpMHEEnzBvb0Q7B5QPEUtaTUVWPf6mlmXPMQX5euG7MxcRBm83?=
+ =?us-ascii?Q?1F6eM3FtyoQmkHKdTmxb064cbY3DtvUJJMw17Tg61LmZxix1jLeCWsAu4zmf?=
+ =?us-ascii?Q?wW3sXkfARU86xFLm+BvAT6drN66z0a4XE7hsKvb25pqiAwbMJqWoXSzx/1gI?=
+ =?us-ascii?Q?k1Gp/8I0RM7hbw0pm6iHJTjFDXFAjRmZEsHmR+Qn37o+nSP9i8XmETnZxcAi?=
+ =?us-ascii?Q?FZLBICath1K2z+IhaWn6mFS+oXtNhVrcVkpGxkbvnWmvskdXpV5NU6J4OiEd?=
+ =?us-ascii?Q?KsJa8wAsyJb0n3iPgUr0CNRLdqEOWgIiDpgDhJuqYqvHNwAMZ4HA9jngCuj7?=
+ =?us-ascii?Q?yz3SKA7MLP6T8YmA6/cVNEYqyw1OdnAl1rVbZ5xVDtFuUHmxRwK5WbrbNIP9?=
+ =?us-ascii?Q?2mNIjgmPEvGS/gnPCFvoh+PKJ9LbNkHeNT/bGrJ+ARiBXYiOLS4VugDqYDr0?=
+ =?us-ascii?Q?LIkOu3Ndjg/Mar+O20DplXQEPp8aW2LYsSAgjFSWI8lE0YJPUsfBHf6oOZ0k?=
+ =?us-ascii?Q?N+VRbnCPdVzX2Vgo3jnmK8u4zWF5JPca1SyWLjXOtucgWrkW1508xK6c3OyM?=
+ =?us-ascii?Q?qxj7fgSQ+gx1DIoXC6TuGJ0YQu+Uv13d21igM/u6rPEbutEID//NkJl3+XaW?=
+ =?us-ascii?Q?O4ylgdVYiZIkYW/Bo1POgCR6WLDhQKzwM4Dm2yGiQtfkgUqx/p6VeNAnS5yj?=
+ =?us-ascii?Q?z33rB5v7/B+/6bR5+CGUgvg7m9Kq?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?nRQLEmDYrTt9ZvlIFx3OiGJPC27WOlnZVbcjeYZ7GqGikF6Hl/HZjmjqxCmy?=
+ =?us-ascii?Q?ho2Km+L6S15PnRy6BQmhhafQ/iSs9fNEMtHL4lsQSR78X1Q7+m6Thxjzb6cb?=
+ =?us-ascii?Q?4B/qbvtN9eWvRWyxWzDiFk5GJpvtKYLcb/AB7CfBx95Uly7Nf+flRbF8JPMi?=
+ =?us-ascii?Q?NS+7CKI38SdOHJk+qcWcgbg0iEAsBxgeR9oRwjnqI64L3sccKq82JMRP9LA1?=
+ =?us-ascii?Q?IwFdmVIj0OOfANaL894F1QPtOPFN7lwDRamyQdy0UkPztf5880IMLxd/aIxq?=
+ =?us-ascii?Q?3vVc+H3/pTzWW2Z3GrKzycSZ2shyLLbZdh37xgC48f5d61CLD+GYV2h36Wg7?=
+ =?us-ascii?Q?5tgtj8nGRJefkVswPWjXkuuIPQsF49SFGhyzaZchC1Ix0l21RBn60OG3n96R?=
+ =?us-ascii?Q?U28Z6lnPcXxgxUi0Mqy2XaiX4anh6178mOAOlZUaaEv+05hZHUGuX+Vjexk/?=
+ =?us-ascii?Q?jc50VvFXXz/1x7uvQYm/ddJlnaWgqieMfb+pE7f4rnZ87n64nvv8vyLXfTsW?=
+ =?us-ascii?Q?mBAmq/w1QyXpMoolM4uFTr2Yu2VMdnQCckXowWOsetelpw2uS5E5v/InJv8/?=
+ =?us-ascii?Q?KMwQHPT6ZexvGCaiqUvxsKE52kf53wqUJmOEV8fRSVO+07UMdn8exsBm7lI+?=
+ =?us-ascii?Q?KMN9cK4jLx+E84A4grujPJpTSHa9cSS1PFHN+vdBTwx/6AbB2PDcHU887uxC?=
+ =?us-ascii?Q?I1rvDg21OWYtOttjCUzSJ7W/Lp4pzsFjBWh2aTlO1xEKhNydSTOyFzJgFAoQ?=
+ =?us-ascii?Q?+mA/By0GdshvpbR0TeB6YMwMEljv3neIm3QIzUmSlcivVDDHA793F4xyG4Kh?=
+ =?us-ascii?Q?rhaA2DnMu0L+zHbpw+k6Rdra5QpByEHSYfdAtMAIXsQmQMOzYcXy7fm0CKZd?=
+ =?us-ascii?Q?QMm39NUzlyKDPxpS3XaoHhKmgbOGGhLNxZpDr2jp0V0b2pgPZ8xvODpBPKaY?=
+ =?us-ascii?Q?+bwsBaQJakNC85skABTFJA2t/T0GuPIj9LpIW28Ddh7OxFDUHFsNKlo4RBco?=
+ =?us-ascii?Q?GaFsluO9Fp1eDBa+mOFYzERUS/a+gHsn0+1BMI+anfsp6epmVlJtJNErPMPU?=
+ =?us-ascii?Q?HSjFu4H1V6RYfiIUFyQ5DQYffS/Bg3skmE9WespwdReKJEjj/WhNhtroAKgG?=
+ =?us-ascii?Q?YOxmkuDL1bZqrawa6gVqonXrxKDZ+SZcSJMKCGLb/uh3wNL543C91jlEnPjU?=
+ =?us-ascii?Q?2+agSmPn9Zcv2+EFmeDqE/vPkctB0zLVPBUPhrUUkphnuKbVHygwKgd6WDLQ?=
+ =?us-ascii?Q?3gtH2PDa+srgD9W3mYyA9msgkjwnBrGNze7nhY+MQuPsq8IHTr2IenjVzryd?=
+ =?us-ascii?Q?yY/gDbejwHngKKjgGBZ+Vf5Sh95FiC+MIhtq0Yn+Gnn95f84WPLyXjH2Ygeu?=
+ =?us-ascii?Q?6qcnYzZCp1VXSTQyTQ3XVJj/osSz3yISrE4dRsWBY8LqewaW3abhPis6hfoS?=
+ =?us-ascii?Q?O0mJ2+a0LX1VmqtASSbHIKFGIBfrA3FOZkakWGIQV0KDuu6wztbd6+9GYx9b?=
+ =?us-ascii?Q?mfv13Qjce38XJmSzDMiDXYeg4bdsfXDQzWrv7x7Nky7rpGjK84n+wJ2xJOEy?=
+ =?us-ascii?Q?dJCqOgwwTKmq7qAKhWo=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d4c78d0f-7b60-4110-c7e9-08dd4934d81f
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2025 18:09:07.1330
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: crdjbK+baQ8S9AKTtPgIwa+UfekPcGx79lN6KtB568uVMGo/2p+x7c9f3UFez3B5
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB9047
 
-On 2/9/25 10:19, Carlos Bilbao wrote:
+On Fri, Feb 07, 2025 at 10:59:48AM -0800, Nicolin Chen wrote:
+> On Fri, Feb 07, 2025 at 11:28:01AM -0400, Jason Gunthorpe wrote:
+> > On Fri, Feb 07, 2025 at 10:30:20AM -0400, Jason Gunthorpe wrote:
+> > > On Thu, Feb 06, 2025 at 08:26:05PM -0800, Nicolin Chen wrote:
+> > > > Yea, I found iopt_reserve_iova() is actually missed entirely...
+> > > > 
+> > > > While fixing this, I see a way to turn the OPTIONs back to per-
+> > > > idev, if you still prefer them to be per-idev(?). Then, we can
+> > > > check a given input in the set_option() against the device's
+> > > > reserved region list from the driver, prior to device attaching
+> > > > to any HWPT.
+> > > 
+> > > I didn't have a strong opinion, if the idev works without complexity
+> > > then I'd stick with that on the basis of narrower scope is usually
+> > > better.
 
-> Hello David,
->
-> On 2/9/25 00:44, David Airlie wrote:
->> On Sun, Feb 9, 2025 at 9:55 AM Carlos Bilbao <bilbao@vt.edu> wrote:
->>> Hello,
->>>
->>> On 1/8/25 09:16, Miguel Ojeda wrote:
->>>> On Wed, Jan 8, 2025 at 3:00 PM Christoph Hellwig <hch@lst.de> wrote:
->>>>> No rust code in kernel/dma, please.
->>>> What do you suggest?
->>> This is it. What do people suggest? This thread has received a lot of
->>> attention -- maybe it's an opportunity for the community to brainstorm.
->>> Here's an idea:
->>>
->>> Some maintainers clearly hate wrappers/bindings to Rust, while others don't
->>> mind as long as the R4L folks commit to the maintenance duties. Depending on
->>> the subsystem, it will be a completely different conversation. It seems to
->>> me that right now, every time the R4L folks interact with a new subsystem,
->>> they need to understand the maintainer's stance. That looks like an
->>> exhausting process.
->>>
->> That is the process we are committed to, everyone has a voice and gets
->> to be heard, and we move forward in the appropriate manner with each
->> maintainer. Bypassing maintainers is the last resort, not engaging at
->> all with maintainers isn't a productive way forward either. Your below
->> attempt is trying to create a technical solution to a social problem.
->>
->>> Would it make sense to have a C middleman that Rust calls instead of
->>> binding directly to the C funcs? This dispatcher would provide a simpler,
->>> stable API with fixed function signatures, even if the C functions change.
->>> If a C func is removed/changed, only the C dispatcher would need to be
->>> adapted, but until that happens, a new error could be returned to the Rust
->>> side (not ideal, but Rust doesn't just break).
->>>
->>> This would obviously impose some limitations on the Rust side, but it might
->>> be less conflictive than direct bindings. Also, in Abdiel's case here (for
->>> example), he'd explicitly take on the maintenance of the Rust abstraction
->>> and its DMA dispatchers, leaving no ambiguity about ownership.
->>>
->> This just adds overheads for everyone to little advantage for the
->> cases where maintainers are fine with all the other approaches.
-> I'm not sure there's a need to worry about overhead in this hypothetical
-> case if the dispatcher is merely a translator and doesn't validate inputs,
-> copy buffers, or such. It would be less than calling from userspace.
->
-> What I meant to say (I wasn't clear before) was for this solution to apply
-> to cases where maintainers are firmly against all alternatives. Obviously,
-> if all the parties involved are happy, direct bindings are preferable.
->
->
->> Also the bindings code in rust is usually pretty trivial to change,
->> it's not like you can really abstract things that far, changing APIs
->> is hard no matter what, understanding the nuances in every C driver
->> can takes months of work adding rust bindings to your changes is
->> rarely going to be the limiting factor. We have learned over the years
->> to not make API changes that are subtle or hidden, and can leave out
->> of tree or in development users broken in subtle ways and as long as
->> we keep making API changes like that, updating the rust code is the
->> least of anyone's worries. This isn't like having to learn Mandarin vs
->> English, it's code written with a different syntax, it's not even
->> perl.
-> I'm not sure there's a need to worry about overhead in this hypothetical
-> case if the dispatcher is merely a translator and doesn't validate inputs,
-> copy buffers, or such. It would be less than calling from userspace.
->
-> What I meant to say (and wasn't clear before) is that this solution could
-> apply to cases where maintainers are firmly against all better
-> alternatives. Of course, if all the parties involved are happy with direct
-> bindings, that's preferable. But as you said, this is a social problem, so
-> maybe it's not a one-size-fits-all solution.
+On reflection I don't think a per-idev is going to work very
+well.. Part of the design was to keep track of a bitmap of already
+mapped pages in the single hpwt that unions all of the devices. If it
+is per-device then that basic thing doesn't work and it becomes much
+more complicated
 
+> I could imagine. The caller initiating a SET_OPTION call in VMM
+> will have to know what vITS page for what device. So, this info
+> has to go through the KVM/IRQ module to get processed and then
+> forwarded to the caller (vSMMU module at this moment)..
 
-I accidentally copied this twice after rephrasing, not trying to be
-annoying x).
+Ultimately, as we saw in the other conversation, the qemu command line
+will need to describe the GIC(s) and all their ITS pages directly,
+somehow.
 
-
->
-> I agree that in some cases, abstracting the API could be complicated, but
-> I’d focus on keeping it simple and providing Rust with the minimum subset
-> it needs to keep things moving forward. Abdiel's PR is a good example --
-> by keeping the functions in his CoherentAllocation, we keep that option,
-> but lose the granularity of DMA mapping attributes (which would be some
-> default in the C dispatcher).
->
-> I agree that making subtle API changes is risky, and it would def. be
-> something to keep an eye on.
->
-> And yes, with this approach, some Rust developers may eventually miss
-> certain DMA functionalities in the future; but that would still be better
-> than the current situation, where _all_ Rust devs are missing all DMA
-> capabilities.
->
->> Dave.
->>
-> Thanks,
-> Carlos
+Jason
