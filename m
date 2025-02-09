@@ -1,132 +1,162 @@
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE1ED2F22
-	for <iommu@lists.linux.dev>; Sun,  9 Feb 2025 03:42:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3B4B4C9F
+	for <iommu@lists.linux.dev>; Sun,  9 Feb 2025 06:44:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739072558; cv=none; b=QlDcEK1hxEpb/WKiplvpkjXTA933iHwrFQ3SwyaX1sx+DDdJOStMVgWoiEYisqeVz2rGNfVQrTyJmyTincu0lTQHWguCwngvdJC+GV/9w9DT100EdtuybLxnl7plV5Eguy2VYauxAoCZHRCXhIS4s9DgwVwB78+DsZ0T/K3PxDA=
+	t=1739083468; cv=none; b=KNplCc/XebiYBmGLpHwAicHmINe1FsSpgAFLohMs4DHRBvfjXpdiTgRFuVG3KC0JYzZSZGPPZ+uL8t+1LShMNk61EtnmJaFPNl1yQSdyEMHEnkaJLjGqILjlT9+dIRuF5OunxqQiJsp1RijFYUPYusK8aFr1mK0aUNs2ZcAU+oc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739072558; c=relaxed/simple;
-	bh=9sm3gxMiOwsNPRto3FrFWPnVsGg+EBADVuq1/l3kytk=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=bnMvxTjRRfcVMEEHgCfDhwmYuKByEVQsiM2OCqx+LWYme72700gUwj1iUJ9v6Wfsk/4aUyCk0M6hywIBt9+rQz0Bmr1fc4bOqtrvc5LejVKZAcS/hU1bUVOviX5WkfKUqd0iq6BrqpjwebeXdeuExywCrqcKqjivebuktoPd5SE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=efCxpZ/z; arc=none smtp.client-ip=209.85.216.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1739083468; c=relaxed/simple;
+	bh=k5z8UYLykpDZztIbyOAipUwnXwi+GKpDaKyRXhJIv8c=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=CvfKaKoWpzgPaKsiVSTxIjpttVbtiDTFMR5iEVH437PA9vo2LplEtFRUUlk7AnVdwu/LpYuqKujZS2cOuXoWTiKB4lT8DKJLk/g7V0CraZuq0U3HYEE3+ia4TvpV6QWtVxlQGm4AbHYDeXZDjRSNI5ttBIl1+9MvduicnV5EugQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BqFl5W8U; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="efCxpZ/z"
-Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-2fa19e1d027so3751026a91.0
-        for <iommu@lists.linux.dev>; Sat, 08 Feb 2025 19:42:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739072556; x=1739677356; darn=lists.linux.dev;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9sm3gxMiOwsNPRto3FrFWPnVsGg+EBADVuq1/l3kytk=;
-        b=efCxpZ/zPrRiwnzpQ/PK0vO5vjpAv88Q1s5FBjVveMkmtibFxKwCc9sBnFsEAI7RM2
-         xioZwcK/m6+eOKRaSxQHouW81wyzKU0o0y9UnhOQq6vkPXMUn9J3UAcukuCUseWEjEOq
-         PHlozvcripNjj1u0jA+WSQvVErdyxPohFQ1/vx/qLqMYPlZrJMNB+TOzIHajbvAU3sz3
-         t3zrAO0pTvHK4rQzxjDTcld7wU3T8P0nsjfR9ki3xm4NoBZMpI1qzP4KEDrx9PBVWirQ
-         loaiu+1tUhip58UzIzw9HPyuOV0lGicWrSfzlgsKUO5Jp1JacMbnU+067aJZSKk7m3aI
-         DeyQ==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BqFl5W8U"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1739083465;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=k5z8UYLykpDZztIbyOAipUwnXwi+GKpDaKyRXhJIv8c=;
+	b=BqFl5W8UyPsa3cgzafJi3mWnpfSnk8ciPa6Dc4N4TrujWktZyx/aWVe2IFCymV93hD9SDm
+	tg+np9GrQZE1V9UouT0ea4+AanGfM7ShFngsWGi5R9ov4OfiRaOTrLr1QUbsYqT23WP6rC
+	8cGC2grQABhfjhmPnlmHRI6x54py2y4=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-623-zohX3w3BM4GVxjYaQowSzA-1; Sun, 09 Feb 2025 01:44:24 -0500
+X-MC-Unique: zohX3w3BM4GVxjYaQowSzA-1
+X-Mimecast-MFC-AGG-ID: zohX3w3BM4GVxjYaQowSzA
+Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-21f379b7bb3so50915225ad.2
+        for <iommu@lists.linux.dev>; Sat, 08 Feb 2025 22:44:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739072556; x=1739677356;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1739083463; x=1739688263;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=9sm3gxMiOwsNPRto3FrFWPnVsGg+EBADVuq1/l3kytk=;
-        b=tMlGJCvaqoGJRyMhK5HhMJYugvuUvMxuVx8n6k8Ri5iz85W2F0Ma3xw0Js6F4jcx7d
-         ej1f7P5B1Qdh9fs3WEU9sx+unDM/FVtOeOEbaGEz9UHRklIWTaAtFgeYQMgE/WcYRvpT
-         jfRDFD4w46pl8/r87NrZwmD7GnBDdXAGpXD4Ld6z6jzNelErk/UY9y+IADq7wNYJyAFm
-         yveDsh1GZam/sxbkjSRO8gxWECGbksITgfiM3uAJDEPxub5zLPZxWG018ekYRa/RFEI2
-         df15cgUKuUOvf/OAvvOCC0SIpCRPxswplCvsGf/XAhxBjlEGKKdTnH25GTIitZ8xlBgH
-         xUIg==
-X-Forwarded-Encrypted: i=1; AJvYcCXZTSUWNHznRbt7f7YDeQtXhZPrx48VvKW12Afilld6gPMWxJSaj60CWDxyQNirwdmHjxbrEg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzw/nHIgQX4ezVdO/kqJBQiWSxSpfhgh21FtTdpU3fKjHmLHEqS
-	Vk72CK+iR6bz8+ZJYlWZKRPBWFzIYOzjSp+9vfnF+Dleligb0T66
-X-Gm-Gg: ASbGncuHDDfJ5j1/Vjz4dFZ3P3Gpw23YknTLR8XQMD/YfBDJEHFnAD3cgoIRYoN2Fdl
-	Fwblkj1ooaa0ECa0GeVcn9c37YDUYu5Zc1OC25o4NCLTovFVFjfoKoP07SNwepualU6sysYcH4x
-	yI43iQic5zsUwf9d10WDwChjU3+v9wnYWcTtOsSp/Rs3NpoUZKkH4D+l/+egAr5k3Kv4+Ura4fX
-	JTj7q8+9NS7dAADrVkCzHOUh4/lEwKtiyK0dUxGTjgfO+J01XQjBfhexOg1F+E8p0sHJFLXJgpd
-	NH6D0OvOOHliQDVXxGjppW2SyOTxz6FRPdzdMw==
-X-Google-Smtp-Source: AGHT+IFIGPvbys18Pg2PiTRNkYOvGrVtZH0DY6ZMJMhtbD5njuL33AsHDahXPogl9WTOTBn7c+mybg==
-X-Received: by 2002:a05:6a00:2e27:b0:725:db34:6a7d with SMTP id d2e1a72fcca58-7305d5931cdmr13418207b3a.23.1739072555893;
-        Sat, 08 Feb 2025 19:42:35 -0800 (PST)
-Received: from smtpclient.apple ([2601:645:4300:5ca0:581a:da0b:12d0:f2d4])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73048bf1413sm5423354b3a.98.2025.02.08.19.42.33
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 08 Feb 2025 19:42:35 -0800 (PST)
-Content-Type: text/plain;
-	charset=utf-8
+        bh=k5z8UYLykpDZztIbyOAipUwnXwi+GKpDaKyRXhJIv8c=;
+        b=nyWrdC+9utYpfwEhVv0h/+5CGw8xR28QKlDjXg289OhswdDkFzK/A6ZuGBr/hxMEKo
+         PG4CtzkjmfF84f3rsBZakvknjRQqF0sOIsCEciwYJn+dOx65+tW8KvKG+RFQwVKpVIHV
+         xGqworDVSTlBiFWL7RKyqyzD0t81toeBMGpGCNtlrcUuTa1uoWZTRMvv2DhwbRpt6kbX
+         4Od0QPoHCqsZvbQiFoNYOqgI5IMfcTaO+GHIyUSFfQBWAA1+cQOYUC/HhixZJx7rllNU
+         ZrQXhpFIFIVLYCVX6Clu/RjD+KdxPIyBoF9PPAFtYWOaQ1nrL/javtfbky47ioEAturx
+         rT/w==
+X-Forwarded-Encrypted: i=1; AJvYcCVjBYIrykmkvzBTpf7dNOQsCage1a6GforlMc57SPEkPkd4klshM4A1yGBT8xOnSTpU8UL3vQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzYDa/cpuk8oXDby7MNRmIXs42fLNoZiiPaBbMvSnu/E6JWWJ+D
+	E4ZLMMudkAkMSqrXfAFSi97JX+aLFZYzZFqbTdgB9d4T5/tW3WgaChYJ1paA8kYhzLxL++fho9z
+	5vCpPa3Q7fZ0v9qjYe9umaOGLQ0JqcYoX8GWeNRzi+s7l3xT4KdqAdcOx4G63ca+jriySmQCldM
+	30FLeIs4QfuCOMecRmPmhs5JD5uGM=
+X-Gm-Gg: ASbGncvYgQi5RIbJzsn0/9Y7XBMV0pHCCSD9RovpL+ys5VKpx3MA15nu7bvQ9H0/UcZ
+	/dvEB3NtHsLyIcA3zB3tWfYoWeGDe4N++xPRg4DOAJJMgX8W/hy6NHs6v1rhG
+X-Received: by 2002:a17:903:13c6:b0:21a:8300:b9ce with SMTP id d9443c01a7336-21f4e7772e2mr169600095ad.49.1739083463124;
+        Sat, 08 Feb 2025 22:44:23 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGO6/xttu4T8jZGaWc2hd6Zzb3mRsY1UKxFcJ0RUiPT3DBzdzt7cBP21ECwMvO1eY4S6krwSRPMmgqxuGo22uE=
+X-Received: by 2002:a17:903:13c6:b0:21a:8300:b9ce with SMTP id
+ d9443c01a7336-21f4e7772e2mr169599735ad.49.1739083462831; Sat, 08 Feb 2025
+ 22:44:22 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.400.131.1.6\))
-Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
- coherent allocator abstraction.)
-From: comex <comexk@gmail.com>
-In-Reply-To: <20250208204416.GL1130956@mit.edu>
-Date: Sat, 8 Feb 2025 19:42:22 -0800
-Cc: "Dr. Greg" <greg@enjellic.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- Hector Martin <marcan@marcan.st>,
- Dave Airlie <airlied@gmail.com>,
- Jason Gunthorpe <jgg@nvidia.com>,
- Greg KH <gregkh@linuxfoundation.org>,
- phasta@kernel.org,
- Christoph Hellwig <hch@lst.de>,
- Danilo Krummrich <dakr@kernel.org>,
- Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>,
- daniel.almeida@collabora.com,
- aliceryhl@google.com,
- robin.murphy@arm.com,
- rust-for-linux@vger.kernel.org,
- Miguel Ojeda <ojeda@kernel.org>,
- Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>,
- Gary Guo <gary@garyguo.net>,
- Bj??rn Roy Baron <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>,
- Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
- DRI Development <dri-devel@lists.freedesktop.org>
+MIME-Version: 1.0
+References: <20250108122825.136021-1-abdiel.janulgue@gmail.com>
+ <20250108122825.136021-3-abdiel.janulgue@gmail.com> <20250108135951.GA18074@lst.de>
+ <CANiq72=R2N+QiCiHZQu-6YJ9aYpn_bik3BW3U=nAW3jL7unzLw@mail.gmail.com> <1894f095-e93a-4def-a223-d5c089ecc2df@vt.edu>
+In-Reply-To: <1894f095-e93a-4def-a223-d5c089ecc2df@vt.edu>
+From: David Airlie <airlied@redhat.com>
+Date: Sun, 9 Feb 2025 16:44:10 +1000
+X-Gm-Features: AWEUYZmapeVmf6BlNwM1udDZl6mMgq_iwcj8x5DFYjHWYQsJjAcjx42A4duswn0
+Message-ID: <CAMwc25p1kGHjy7z19Kg+vv7yVc0bF2taA08hBKhk72e4HiK5xA@mail.gmail.com>
+Subject: Re: [PATCH v8 2/2] rust: add dma coherent allocator abstraction.
+To: Carlos Bilbao <bilbao@vt.edu>
+Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>, Christoph Hellwig <hch@lst.de>, 
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>, daniel.almeida@collabora.com, 
+	aliceryhl@google.com, robin.murphy@arm.com, rust-for-linux@vger.kernel.org, 
+	Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, 
+	Valentin Obst <kernel@valentinobst.de>, open list <linux-kernel@vger.kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, 
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, Greg KH <gregkh@linuxfoundation.org>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: 8Qe-efF8aIMpALtWyso-s959vd33OY2TcUs-K8n8YzY_1739083463
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <C0508D03-FE8E-4253-A29D-97E7E3768CC4@gmail.com>
-References: <2025013030-gummy-cosmic-7927@gregkh>
- <20250130172437.GN5556@nvidia.com>
- <2025013148-reversal-pessimism-1515@gregkh>
- <20250131135421.GO5556@nvidia.com>
- <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
- <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
- <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
- <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st>
- <CAHk-=wi=ZmP2=TmHsFSUGq8vUZAOWWSK1vrJarMaOhReDRQRYQ@mail.gmail.com>
- <20250207121638.GA7356@wind.enjellic.com> <20250208204416.GL1130956@mit.edu>
-To: Theodore Ts'o <tytso@mit.edu>
-X-Mailer: Apple Mail (2.3826.400.131.1.6)
 
-On Feb 8, 2025, at 12:44=E2=80=AFPM, Theodore Ts'o <tytso@mit.edu> =
-wrote:
->=20
-> including an upstream language
-> community which refuses to make any kind of backwards compatibility
-> guarantees, and which is *actively* hostile to a second Rust compiler
-> implementation (I suspect because it might limit their ability to make
-> arbitrary backwards-incompatble language changes).
+On Sun, Feb 9, 2025 at 9:55=E2=80=AFAM Carlos Bilbao <bilbao@vt.edu> wrote:
+>
+> Hello,
+>
+> On 1/8/25 09:16, Miguel Ojeda wrote:
+> > On Wed, Jan 8, 2025 at 3:00=E2=80=AFPM Christoph Hellwig <hch@lst.de> w=
+rote:
+> >>
+> >> No rust code in kernel/dma, please.
+> >
+> > What do you suggest?
+>
+> This is it. What do people suggest? This thread has received a lot of
+> attention -- maybe it's an opportunity for the community to brainstorm.
+> Here's an idea:
+>
+> Some maintainers clearly hate wrappers/bindings to Rust, while others don=
+'t
+> mind as long as the R4L folks commit to the maintenance duties. Depending=
+ on
+> the subsystem, it will be a completely different conversation. It seems t=
+o
+> me that right now, every time the R4L folks interact with a new subsystem=
+,
+> they need to understand the maintainer's stance. That looks like an
+> exhausting process.
+>
 
-Rust does, of course, make all sorts of backward compatibility =
-guarantees for stabilized features.
+That is the process we are committed to, everyone has a voice and gets
+to be heard, and we move forward in the appropriate manner with each
+maintainer. Bypassing maintainers is the last resort, not engaging at
+all with maintainers isn't a productive way forward either. Your below
+attempt is trying to create a technical solution to a social problem.
 
-The list of unstable features used by Rust for Linux is still long, but =
-getting shorter.
+> Would it make sense to have a C middleman that Rust calls instead of
+> binding directly to the C funcs? This dispatcher would provide a simpler,
+> stable API with fixed function signatures, even if the C functions change=
+.
+> If a C func is removed/changed, only the C dispatcher would need to be
+> adapted, but until that happens, a new error could be returned to the Rus=
+t
+> side (not ideal, but Rust doesn't just break).
+>
+> This would obviously impose some limitations on the Rust side, but it mig=
+ht
+> be less conflictive than direct bindings. Also, in Abdiel's case here (fo=
+r
+> example), he'd explicitly take on the maintenance of the Rust abstraction
+> and its DMA dispatchers, leaving no ambiguity about ownership.
+>
 
-https://github.com/Rust-for-Linux/linux/issues/2=
+This just adds overheads for everyone to little advantage for the
+cases where maintainers are fine with all the other approaches.
+
+Also the bindings code in rust is usually pretty trivial to change,
+it's not like you can really abstract things that far, changing APIs
+is hard no matter what, understanding the nuances in every C driver
+can takes months of work adding rust bindings to your changes is
+rarely going to be the limiting factor. We have learned over the years
+to not make API changes that are subtle or hidden, and can leave out
+of tree or in development users broken in subtle ways and as long as
+we keep making API changes like that, updating the rust code is the
+least of anyone's worries. This isn't like having to learn Mandarin vs
+English, it's code written with a different syntax, it's not even
+perl.
+
+Dave.
+
