@@ -1,37 +1,37 @@
-Received: from out-182.mta0.migadu.com (out-182.mta0.migadu.com [91.218.175.182])
+Received: from out-170.mta0.migadu.com (out-170.mta0.migadu.com [91.218.175.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2456D25C6E5
-	for <iommu@lists.linux.dev>; Mon, 10 Feb 2025 19:40:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5060125C6FE;
+	Mon, 10 Feb 2025 19:40:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739216425; cv=none; b=sQVdYChQssleMSR6HzZt2zVRKIH+0mUhqjRdAcnh7C8QOXqfAA5TpOMux7hvrU+if2DGcIBJggFRhwsdC5CH7hTR++2xFwH4YJQvvl05zMRyCw+Y3uvOhPL4ET4owwQYDyIlNGlsamZI9Z3TrC15XfnwnSVrkVSGnDrfqg8hEho=
+	t=1739216427; cv=none; b=t28nn1ES4zmGu7uW/eelKA2zc8kWw+O+ZFRx964GeGKITbYoipVleKKIf3cwQOg1BaqLaoM7hAPwzbPm6026Vr9P6KRpNan1DILju5KRZVxnEj7tMC3Mmk/4tuewSVK1xUSamydEyr1aaNWHxeg2fMU9M4A2JP0SnJzilnsVTag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739216425; c=relaxed/simple;
-	bh=DPdvKhQ3kbgTp3Fn2VyCCGlV/g2DDrlKViyHLbfPM1o=;
+	s=arc-20240116; t=1739216427; c=relaxed/simple;
+	bh=aaTDpX6ibfDGaC/RfCGv1TxYljIk7EiF/i2ba6hh4K4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=EEn2RaRDpWbiyb+oH7b3tgRN7l6p4k3vz4AV5KNDAl/Xwq3BDGsAlSk7hudcPmyDB/zbe8g0jN8rCBR1C39xHkoa+DnyNeWLDh3s6KV0yckcOFD3aYk48l1uaS3cOk1wSAFrtlFybZlSW7X7+dw4aAxWP68/klKlbFEniKjiHtI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io; spf=pass smtp.mailfrom=rosenzweig.io; dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b=tllRQVac; arc=none smtp.client-ip=91.218.175.182
+	 In-Reply-To:To:Cc; b=k1ufKZ6V8zKY60ktYH9xO+EmgEEc0lfuMTmgY9ANwZiJ9nvQ+DmV98eICK+MoXmSnYwlt/3RxQWhhBbkJN940ySTvsjM5cQd6Eg+RI7h7Yw82fx6Sz0tUr6deRw0SKKrWvAIPVGOKf4Y2HShU10yrgM/7jO7L8LMWpuiKtFGhKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io; spf=pass smtp.mailfrom=rosenzweig.io; dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b=Yrdlg6Us; arc=none smtp.client-ip=91.218.175.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rosenzweig.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b="tllRQVac"
+	dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b="Yrdlg6Us"
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rosenzweig.io;
-	s=key1; t=1739216421;
+	s=key1; t=1739216423;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=SPT9rgj0rLpckhACaCzlKgGeeCb7MV3HiAZFcPnjPCo=;
-	b=tllRQVac7aKjW2rAIx9zhjYgi3keo7pIMJVAyv9DPj9OLvDEc2qwDn/EGjJy7Cp68AeeVG
-	meyL9UWkzu0Tl6WW1e8ETEYsIeY6gmt+aBvfwfjak5T1P2UPcZl/fkj+HoXdoo4eSK0aet
-	kirFTxP+VoV8bo18i7Tg17IgrNpSenV4ODzdY2iNO3iwvvAFNjwCjqzVNuFri9pDQIqS+R
-	UyZHSTm5//LLl7MAR7rtGyfvjDpRZ1tSlMrXPSN6gzU0VLrBU9VeqDDiDElEZja/Q8M1Lu
-	/Q19d3lYFID7XJBT5atjBpYL6cJ07UUV6xcX16JP+Bvec4EMlIONvOCGvHj6qQ==
+	bh=Kz0nyJ7WvRmnQlm0RtDzsCt8ytIfHB7c5nD03lfkpQo=;
+	b=Yrdlg6Ustd49sldQRowOZXLEs3setf3ln0voRaH2wpyzcHRMKugrZJJR6cG/nvo7YfRo82
+	F2SNQJsefmje6IDldZouEfGy/ZFbQcNfmintFJKrfTWdFWeQEkgprAHvIaawXX3R08LX0d
+	myH2eEG2yOT0PdpYfdRP3uMeBRxTdFw7whaQJSTJZw7AisxI/PNMYD/Iv79/Uy3Db7BnHb
+	lSh2GprWdYqrFj/+ib4R2B4TEFkQh8uDGYOIl7pAkdNZ6CDIG8VMAij9UeoIeidRQG+I1M
+	jCcj+EIblzby3we1eq2bs58/ML1A5CKEdIttLYa+t9mwmIrgzXRWPlkujijycw==
 From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Date: Mon, 10 Feb 2025 14:39:53 -0500
-Subject: [PATCH 1/5] iommu/dart: Track if the DART is locked
+Date: Mon, 10 Feb 2025 14:39:54 -0500
+Subject: [PATCH 2/5] iommu/dart: Skip reset for locked DARTs
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250210-locked-dart-v1-1-5d97fe247f35@rosenzweig.io>
+Message-Id: <20250210-locked-dart-v1-2-5d97fe247f35@rosenzweig.io>
 References: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
 In-Reply-To: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
 To: Sven Peter <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>, 
@@ -48,88 +48,95 @@ To: Sven Peter <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>,
  Robin Murphy <robin.murphy@arm.com>
 Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- Alyssa Rosenzweig <alyssa@rosenzweig.io>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2311; i=alyssa@rosenzweig.io;
- h=from:subject:message-id; bh=DPdvKhQ3kbgTp3Fn2VyCCGlV/g2DDrlKViyHLbfPM1o=;
- b=kA0DAAgB/v5QWgr1WA0ByyZiAGeqVhmhMAEDsg2LrpEFYFtHpvoi59s/jPPOHIcYInI9JT71g
- IkCMwQAAQgAHRYhBENe4JuwrwDQHar2OP7+UFoK9VgNBQJnqlYZAAoJEP7+UFoK9VgNwJMQAKJm
- FqkCYR0CPS075sM8jAaNwH61RG7jWysqRhdrd9RWnY90Ni9DTozTZTBpYHGqjlvU39F0nC70WPU
- LfTQcqV8PiymZ30FpxyPpRynmJwrw6FjDhQNI3xJy9KLEjy0GqoNwwjYVFUdftXoPetPjGo2bv/
- L0mY2vXCS0aPvoPOA9Y2iJOEjpAiHlC+XYAkZaDzbsDTIiXHPj3NzLEi3y/d13fxWw4YGX1uHHd
- 0mYyd0ymPgb8An9pwmL2Q75NgVJdPRYKdY/ZhlMbUfd6h/EYRleKkZNW13Lpk2M8Nnxdc852dPD
- 0HJdmn0h1UpRjuIkY32hA6gzmFXj77jpcOsqRkEmVDS5nCvrGv3aL5J3vxUjqbeXoENGeSOtZQT
- vx5xVm0J+ueuwPZRqZxK0yUkP3sqU8Nvwa5znSSOzDVAwQ4aLqpYHXYrChHbn6MVWYd8yC7vR6j
- xZbVGQqU4FUiDHJEr+HMvyOb9TlvSFuWuFtXBnH49YNxFtDqNT8eZZA/4ADIDMUGWBlIbkp/1kl
- trouAk/ftwx9TuM5CxccxVng79ULPOfbfOPMonaWkjf9TAEU6pq0SFh/lI1Vd6iRLVyuJBh9BXQ
- 1VrnET6L1lVXVO7CW0CSiYLWFIcGylH4C4fcDLgL5AZqTApbaK7pkdVmrUrzfdOAmgPYxAnDiJd
- KwjO5
+ Alyssa Rosenzweig <alyssa@rosenzweig.io>, Hector Martin <marcan@marcan.st>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2327; i=alyssa@rosenzweig.io;
+ h=from:subject:message-id; bh=aaTDpX6ibfDGaC/RfCGv1TxYljIk7EiF/i2ba6hh4K4=;
+ b=owEBbQKS/ZANAwAIAf7+UFoK9VgNAcsmYgBnqlYZ4XpVKED3AuP44JWAGY5N9sUenu+SB6n/R
+ MuO7oEpJq6JAjMEAAEIAB0WIQRDXuCbsK8A0B2q9jj+/lBaCvVYDQUCZ6pWGQAKCRD+/lBaCvVY
+ DVZtEACF0ixVnQrS6o/8V7HVns7hmOv7asVpK1AKZstPf+b99/Ojt6HaJkBlZfR5mQXZVpPwF+8
+ Cq9lJpfykH/tBMISpG2Uhr6qkBDcDe8AQALK/179b3VCOydowJ2njiRYTUqe7jTaUFs6GrEuI4M
+ 3/kee6DR+rA7s0SqTE9huwjyAo/tIFQKuQUf2ha1o5LeBQ7Hmkjt0OjW9qCiaTdrk/xawtzCjtp
+ K9Ee2y4/Ev90qmvm/0cpj4QcuCvSKehKn930a7biQu83n0mDSdWBXqeigbHDzRxPwhsee+fw8aa
+ /LxMi5bw/CmyUf1orROoFQG3NfPQT+5lnO7hu/gPfDXRvbNGlR+tNY3qWosjT10wssd+2sq9lp/
+ qCIP2+XYnOA0M5bFNwDKkcTvjm2Uy+AV1MheCb+LXXX35BCKlMPHc7BeeMNhtIBUW0u1UeWpbo7
+ 6opowGblNJW0OdQY8TidlegtFq5uSyDlXuWYYWYdBElBvpte0CqinXEVwgiGvHDTHXf61aYrXm6
+ pTdSCj3YS8/IcDNVRqsEZYUqKhMaBmcrLLBWSKK7RX01BeMdT3rTD7AzkErkiv5pxM1CSyRLcLQ
+ qar7Wl3CUPorSW2uVQMzGfSqGKQGjtcHRMkjYIgJaz8vk3jb7oy6Sku6S/awoFpvhLYU4xV+UBt
+ 2eAYA9IwaIuqDBQ==
 X-Developer-Key: i=alyssa@rosenzweig.io; a=openpgp;
  fpr=435EE09BB0AF00D01DAAF638FEFE505A0AF5580D
 X-Migadu-Flow: FLOW_OUT
 
-Some DARTs are locked at boot-time. That means they are already
-configured and we cannot change their configuration, which requires
-special handling. Locked DARTs are identified in the configuration
-register. Check this bit when probing and save the result so we can
-handle accordingly.
+Locked DARTs cannot be reconfigured, therefore the reset/restore
+procedure can't work and should not be needed. Skip it, allowing locked
+DARTs to probe.
 
+Co-developed-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Hector Martin <marcan@marcan.st>
 Signed-off-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
 ---
- drivers/iommu/apple-dart.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/iommu/apple-dart.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 95ba3caeb40177901086076416874b9905a1f40a..460cf96bc8001e051916f356d5d175b35e36c608 100644
+index 460cf96bc8001e051916f356d5d175b35e36c608..9c74a95eb7e819e94ab2fb47ed0d411a1eba8bf7 100644
 --- a/drivers/iommu/apple-dart.c
 +++ b/drivers/iommu/apple-dart.c
-@@ -197,6 +197,7 @@ struct apple_dart_hw {
-  * @lock: lock for hardware operations involving this dart
-  * @pgsize: pagesize supported by this DART
-  * @supports_bypass: indicates if this DART supports bypass mode
-+ * @locked: indicates if this DART is locked
-  * @sid2group: maps stream ids to iommu_groups
-  * @iommu: iommu core device
-  */
-@@ -217,6 +218,7 @@ struct apple_dart {
- 	u32 pgsize;
- 	u32 num_streams;
- 	u32 supports_bypass : 1;
-+	u32 locked : 1;
+@@ -452,17 +452,9 @@ apple_dart_t8110_hw_invalidate_tlb(struct apple_dart_stream_map *stream_map)
  
- 	struct iommu_group *sid2group[DART_MAX_STREAMS];
- 	struct iommu_device iommu;
-@@ -1076,6 +1078,11 @@ static irqreturn_t apple_dart_t8110_irq(int irq, void *dev)
- 	return IRQ_HANDLED;
- }
- 
-+static bool apple_dart_is_locked(struct apple_dart *dart)
-+{
-+	return !!(readl(dart->regs + dart->hw->lock) & dart->hw->lock_bit);
-+}
-+
- static int apple_dart_probe(struct platform_device *pdev)
+ static int apple_dart_hw_reset(struct apple_dart *dart)
  {
- 	int ret;
-@@ -1143,6 +1150,7 @@ static int apple_dart_probe(struct platform_device *pdev)
- 		goto err_clk_disable;
+-	u32 config;
+ 	struct apple_dart_stream_map stream_map;
+ 	int i;
+ 
+-	config = readl(dart->regs + dart->hw->lock);
+-	if (config & dart->hw->lock_bit) {
+-		dev_err(dart->dev, "DART is locked down until reboot: %08x\n",
+-			config);
+-		return -EINVAL;
+-	}
+-
+ 	stream_map.dart = dart;
+ 	bitmap_zero(stream_map.sidmap, DART_MAX_STREAMS);
+ 	bitmap_set(stream_map.sidmap, 0, dart->num_streams);
+@@ -1151,9 +1143,11 @@ static int apple_dart_probe(struct platform_device *pdev)
  	}
  
-+	dart->locked = apple_dart_is_locked(dart);
+ 	dart->locked = apple_dart_is_locked(dart);
+-	ret = apple_dart_hw_reset(dart);
+-	if (ret)
+-		goto err_clk_disable;
++	if (!dart->locked) {
++		ret = apple_dart_hw_reset(dart);
++		if (ret)
++			goto err_clk_disable;
++	}
+ 
+ 	ret = request_irq(dart->irq, dart->hw->irq_handler, IRQF_SHARED,
+ 			  "apple-dart fault handler", dart);
+@@ -1192,7 +1186,9 @@ static void apple_dart_remove(struct platform_device *pdev)
+ {
+ 	struct apple_dart *dart = platform_get_drvdata(pdev);
+ 
+-	apple_dart_hw_reset(dart);
++	if (!dart->locked)
++		apple_dart_hw_reset(dart);
++
+ 	free_irq(dart->irq, dart);
+ 
+ 	iommu_device_unregister(&dart->iommu);
+@@ -1325,6 +1321,10 @@ static __maybe_unused int apple_dart_resume(struct device *dev)
+ 	unsigned int sid, idx;
+ 	int ret;
+ 
++	/* Locked DARTs can't be restored, and they should not need it */
++	if (dart->locked)
++		return 0;
++
  	ret = apple_dart_hw_reset(dart);
- 	if (ret)
- 		goto err_clk_disable;
-@@ -1165,9 +1173,9 @@ static int apple_dart_probe(struct platform_device *pdev)
- 
- 	dev_info(
- 		&pdev->dev,
--		"DART [pagesize %x, %d streams, bypass support: %d, bypass forced: %d] initialized\n",
-+		"DART [pagesize %x, %d streams, bypass support: %d, bypass forced: %d, locked: %d] initialized\n",
- 		dart->pgsize, dart->num_streams, dart->supports_bypass,
--		dart->pgsize > PAGE_SIZE);
-+		dart->pgsize > PAGE_SIZE, dart->locked);
- 	return 0;
- 
- err_sysfs_remove:
+ 	if (ret) {
+ 		dev_err(dev, "Failed to reset DART on resume\n");
 
 -- 
 2.48.1
