@@ -1,155 +1,126 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3DA61B6CE1
-	for <iommu@lists.linux.dev>; Mon, 10 Feb 2025 11:01:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 721CD1A9B5D
+	for <iommu@lists.linux.dev>; Mon, 10 Feb 2025 11:20:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739185292; cv=none; b=Hq6mkWa//juFsKgLM1FQOidsbIb4p8aWiVS9FPiGHCUUEwzDTjxUT/T6rg2qrUfIQukB4k3kWH7n/sBp6F6eGkTn+rGhJ7gfc0eku4U6FellajoaSavUIM4BkWE2DpcHkSsj5sw0YB4s0SoNPRYOq6mB+ddm49k5bWdmPelBmNE=
+	t=1739186436; cv=none; b=eBRq0mXL8NsFjOXF9VCE3zTv/7E1IV8LC7AVDkRRXJLGyxFTzWN8uBcktSBk9VbBiV+SsCtfXYMMCg292z96CKOjB0EUcYdKLjT/rtiSTlpCQItgQkQWLdAo1fqWiRoDjlG3gxSlbW3J72/0RAGrQdXZsiQ8leK5twD9xKfmXJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739185292; c=relaxed/simple;
-	bh=WgW6ZEWyu81z7BrqyHmBRuGMtk2zuQXDhJEjREDVx6c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CBV8vohqVQfRqpO0OMeylK5GZL4EdbUJmIX5SwJGD8fcBWgmKiMHvsy3JB/IL9N7rQW7VZrxtraVpT6Oev1jdis4hphiAiCDH4/t77HCu7vmfX8vah4cVWWm63COUa/2p9lCMy5BLnnpuGjV4AvDVOLTzwwT9AUPwdeTSJ7WisY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=QjZqTsiT; arc=none smtp.client-ip=209.85.167.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1739186436; c=relaxed/simple;
+	bh=UmhTdp0yOp0xOBa0fKhmJv6Yjngb6GLcstrvhe0JLRc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GAC36KRFPzk22ZIkidABlIwoIATKb77hHy8WWJ8jNRovHxvEqIb2oNFPxipyr8YrQ06PkxwmJYM6DyGzviFBbm79zVGnmpBC13eqbJ5d37hYK74YRrW/c7e8Cw4TDA8xB92NUHe20acfzrWG6JX+pFnh8Ma525HnwGiYl98xxro=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SSLg9QDH; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QjZqTsiT"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-545097ff67cso1121948e87.2
-        for <iommu@lists.linux.dev>; Mon, 10 Feb 2025 03:01:30 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SSLg9QDH"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4394a0c65fcso3068035e9.1
+        for <iommu@lists.linux.dev>; Mon, 10 Feb 2025 03:20:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1739185289; x=1739790089; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=GtTBVwp4J9apExhc56rvDYwcShHHaMo1N7lDCxauzzY=;
-        b=QjZqTsiTcO5XwgzUY0lQvThXd+egK2KyVZT8oLhgx2/f/+FRrkt778DG35Elhv6OsU
-         3DCLrzKnjfcYm8gLP/MKDm6MFczgngypo9yn1hq9rFyFkvwSc1S5WMNV9DPMdzIKrMc2
-         uyVzwuxN/EKAw3puE09NNdzqxzNDduYVWRQcCvHcaJYnbkcicQ/yKakvDFqt0GxqD8Y8
-         vsN4AF5ao50fahCsHCcgPago6kgCvNFKz4YW0qpjmiMCog4nw32iiz/t+TOGsytljApn
-         T3n01v7ejEiOzjvpWjoyjaO5XQV/XLsTCBevM7mo3UZXe7Q1twKsWrC36/4gDN6hoUUx
-         lHDQ==
+        d=gmail.com; s=20230601; t=1739186433; x=1739791233; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=nWk1tmUv6R6ofIovz55Q8Qebo6k6REo/VNEY88i+dbU=;
+        b=SSLg9QDHw61k7g2jbe/2FM7xeCZzgwNqo4m22wfALrjaeOzvLqdOZESLoWz32qy8VU
+         YEYFLOkCEPWPJQ0vkJ97c99Unrq5jQbSlBEilogltUPZF37SBLj3WvsntZVeog4Yhyie
+         RGRjp70rKwVIW2Fc2t4zGNwi3oEZZ2zwlLbURLvormpAK6lTxX9VrRTvBdYTS92bIZIs
+         QUV6KZYIf+2JysTP6ufPrl/B4XnlH70vIL9uRRznAMauz+ZAY4dq3Of8L34CcfUjtLUX
+         31YgVdnnG7M1xpP4GgHWUl47wHQM4Y2D8DQRdWX8PjMUSUmirwhtx6VZ4oKlk5XU3Gy3
+         1RtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739185289; x=1739790089;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GtTBVwp4J9apExhc56rvDYwcShHHaMo1N7lDCxauzzY=;
-        b=Qaw4yWwfOUWuFFAWoCNat6R+kTjsumVvjIEoQ95tW9lK1D5phEjzN6HM7sTWjz00Zv
-         P9DZbl2Ra2NvyWnBLVMBqObD8Q6OAjL+Co4V/hP1grC0P0kdfUlCjsWWKV5mSxhgH/Fa
-         Da/4eGnwd1rj/b/a2X+b6o9XU8ZFhuj4TbkVfouEl+oK4NGKhreWaaOYbaMDaZDr12OW
-         veP2/tEwL3C74bhzUBu1iNBTf1//LWzt7XExRZLMcBhyQGz9L/d109JASVelwjYYzlFk
-         2qMfP3mbSzmgOx+qMWGBwRuKZfvPbYTLV9qi6jhyX6otDehBceabiCoto1gU3OQnp0Sa
-         sxEg==
-X-Forwarded-Encrypted: i=1; AJvYcCUFjNvuOTLhCAaKtQ4L/P/5EKjgZxxTJPbGqW4R/9UFLNgsqKItJFZ0dECnx1G8WD1p7jFPeQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwajIfhrNB4d40gL8FPPaTfdnV7v0RmIDkJnayj9QQZLMfrqBFZ
-	4fk/ybplLkmynj37mrS4FVxTDVNXD5bjW90h3Yi3d2OOsl8qPwSo5eWRtB1veL4=
-X-Gm-Gg: ASbGncup/RA4tJfJZPg9PmQ8nKdoOY7kI+CCl/hpQ7xYKAVIioPuL37e1Bmgkn1svYE
-	sgZBLns4eYdSyxXqeskwwuCV4jVf3TN3HCbHMdqOw/NmN+aS19MOCkzxyAmkyeLIKjLeINQUFU1
-	X2N5Nax1T7OaOIimsTV7Qouo1AszGMdEG1b6hpSdORR982s110XawM9yN4RJB98NpBQsJI9qJah
-	HEOsTbh9zsBJ4+MRyf46WHdB9zeRqWP6B5AiCDBAhGFClRY9MmWh20slGrGRYsZ+D4G1t+UoN9e
-	z7iOxb+RpoPlmNkKn/S3D6f74Ivrye7RE1BgJG4pSiOQ1bBA8+y0L/Z+mLU7rC5a3O3FJLQ=
-X-Google-Smtp-Source: AGHT+IESGWlTJg2cuv8Kgo6v/dDQZjg10SE7StQf8S4vcvj1tAiGKln4CJ/xT6Y54Ae/tQTmSnk31g==
-X-Received: by 2002:a05:6512:4022:b0:545:ae6:d740 with SMTP id 2adb3069b0e04-5450ae6d79amr1090753e87.41.1739185289056;
-        Mon, 10 Feb 2025 03:01:29 -0800 (PST)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5450c0823acsm321386e87.118.2025.02.10.03.01.28
+        d=1e100.net; s=20230601; t=1739186433; x=1739791233;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nWk1tmUv6R6ofIovz55Q8Qebo6k6REo/VNEY88i+dbU=;
+        b=nKOTVYVXNqWzZRz+fNwazNm+RnODD5P4DPmtB8b9vaw95XSrmZIJehOFtpV/rUa0x2
+         F0CPaO+dMHWeIr21kt9nfO1zjY7VpeR6u/yASfd5Thdth+4YLpZiXc3hxaoVmAvO1zcf
+         PogWjFt+3ixb3woqLc9ND+S9kNZZyKKnt4tGpvPf41iipgj2IJbs4o0bbEP5g27hCJAM
+         eCnBT7W29Y+FjQeRX4f3xroaHo7XiDHZZnrlbbawDokjMxa2UN1EFWalSy1jxAZEYsUY
+         62xK5CA4IObidpT1MVSxNvM8nVevwi5QWZuOiqT4CMl3G1dJE6Kirw0sWQQDouPJv7JD
+         f0Mg==
+X-Gm-Message-State: AOJu0Yx6Y+tGXCqwWWXeTt6sYMKaKJdUb/iFQFelEE6YtqewL6aPRZlh
+	Fv13xYJj3vCNZAsvakBEFmUaM6bwlohRIBqO2pn3mwbhegKQk1BN
+X-Gm-Gg: ASbGncvT8fZ/mfMtg/oCZyP6RRcE3/Bsy/mzXCTAja6GHlShvklPzf+OG/n/QXK5jGl
+	AkJ//+ccqg9hs8c8FTYVrrw8R/aInWLG9u+EYhUDopKG0kRhxWcIQT8vJU57KP67vWogQHQFKHO
+	HVwMvFJ1ttjiUtqPICTpbEd64BMLNHhdLn3mzaCvMZFIVUfcJIDvwHfaxV828dawFpN/lkNIPSb
+	oAmlnSL5VdSuCoFDN5NPlOxFbEPhonisRMDeNdNLKnuMLLf5Js2ET3yv8hzMvBmiwZnI7rwRW9N
+	yLqsB7Z/rn5n
+X-Google-Smtp-Source: AGHT+IGbRwLLu9tR/y2eBa/u7toSv7se05o3znHII8V/vw85Z3xbe+EWFjbGzJGpwzoJnEMDsZOF7A==
+X-Received: by 2002:a05:600c:3503:b0:434:f817:4492 with SMTP id 5b1f17b1804b1-439249cddf9mr124532365e9.31.1739186432404;
+        Mon, 10 Feb 2025 03:20:32 -0800 (PST)
+Received: from void.void ([141.226.169.178])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38dbdd1af07sm12174656f8f.15.2025.02.10.03.20.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Feb 2025 03:01:28 -0800 (PST)
-Date: Mon, 10 Feb 2025 13:01:27 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Pratyush Brahma <quic_pbrahma@quicinc.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] arm64: dts: qcom: qcs8300: Add device node for
- gfx_smmu
-Message-ID: <464vbzwgv44fn4iw5vj5yzpstzhcsb7rzuedf4fwl23hmdhews@d4q33ro6hxq3>
-References: <20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com>
- <20250203-b4-branch-gfx-smmu-v4-2-eaa7aa762f48@quicinc.com>
+        Mon, 10 Feb 2025 03:20:32 -0800 (PST)
+From: Andrew Kreimer <algonell@gmail.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>
+Cc: iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Andrew Kreimer <algonell@gmail.com>
+Subject: [PATCH] iommu/exynos: Fix typos
+Date: Mon, 10 Feb 2025 13:20:04 +0200
+Message-ID: <20250210112027.29791-1-algonell@gmail.com>
+X-Mailer: git-send-email 2.48.1.268.g9520f7d998
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250203-b4-branch-gfx-smmu-v4-2-eaa7aa762f48@quicinc.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Feb 03, 2025 at 11:17:02AM +0530, Pratyush Brahma wrote:
-> Add the device node for gfx smmu that is required for gpu
-> specific address translations.
-> 
-> Signed-off-by: Pratyush Brahma <quic_pbrahma@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/qcs8300.dtsi | 39 +++++++++++++++++++++++++++++++++++
->  1 file changed, 39 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/qcs8300.dtsi b/arch/arm64/boot/dts/qcom/qcs8300.dtsi
-> index 4a057f7c0d9fae0ebd1b3cf3468746b382bc886b..7a8211bec139375b5aab939f123d88fca7aceff2 100644
-> --- a/arch/arm64/boot/dts/qcom/qcs8300.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/qcs8300.dtsi
-> @@ -2674,6 +2674,45 @@ gpucc: clock-controller@3d90000 {
->  			#power-domain-cells = <1>;
->  		};
->  
-> +		adreno_smmu: iommu@3da0000 {
-> +			compatible = "qcom,qcs8300-smmu-500", "qcom,adreno-smmu",
-> +				     "qcom,smmu-500", "arm,mmu-500";
-> +			reg = <0x0 0x3da0000 0x0 0x20000>;
-> +			#iommu-cells = <2>;
-> +			#global-interrupts = <2>;
-> +
-> +			interrupts = <GIC_SPI 672 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 673 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 678 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 679 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 680 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 681 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 682 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 683 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 684 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 685 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 686 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 687 IRQ_TYPE_LEVEL_HIGH>;
-> +
-> +			clocks = <&gpucc GPU_CC_CX_GMU_CLK>,
-> +				 <&gpucc GPU_CC_HUB_CX_INT_CLK>,
-> +				 <&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>,
-> +				 <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
-> +				 <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>,
-> +				 <&gpucc GPU_CC_AHB_CLK>,
-> +				 <&gpucc GPU_CC_HUB_AON_CLK>;
-> +
-> +			 clock-names = "gcc_gpu_memnoc_gfx_clk",
+There are some typos in comments/messages:
+ - modyfying -> modifying
+ - Unabled -> Unable
 
-Stray whitespace after the Tab symbol
+Fix them via codespell.
 
-> +				       "gcc_gpu_snoc_dvm_gfx_clk",
-> +				       "gpu_cc_ahb_clk",
-> +				       "gpu_cc_hlos1_vote_gpu_smmu_clk",
-> +				       "gpu_cc_cx_gmu_clk",
-> +				       "gpu_cc_hub_cx_int_clk",
-> +				       "gpu_cc_hub_aon_clk";
+Signed-off-by: Andrew Kreimer <algonell@gmail.com>
+---
+ drivers/iommu/exynos-iommu.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-clocks and clock-names do not match.
-
-> +			power-domains = <&gpucc GPU_CC_CX_GDSC>;
-> +			dma-coherent;
-> +		};
-> +
->  		pmu@9091000 {
->  			compatible = "qcom,qcs8300-llcc-bwmon", "qcom,sc7280-llcc-bwmon";
->  			reg = <0x0 0x9091000 0x0 0x1000>;
-> 
-> -- 
-> 2.34.1
-> 
-
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index c666ecab955d..69e23e017d9e 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -249,7 +249,7 @@ struct exynos_iommu_domain {
+ 	struct list_head clients; /* list of sysmmu_drvdata.domain_node */
+ 	sysmmu_pte_t *pgtable;	/* lv1 page table, 16KB */
+ 	short *lv2entcnt;	/* free lv2 entry counter for each section */
+-	spinlock_t lock;	/* lock for modyfying list of clients */
++	spinlock_t lock;	/* lock for modifying list of clients */
+ 	spinlock_t pgtablelock;	/* lock for modifying page table @ pgtable */
+ 	struct iommu_domain domain; /* generic domain data structure */
+ };
+@@ -292,7 +292,7 @@ struct sysmmu_drvdata {
+ 	struct clk *aclk;		/* SYSMMU's aclk clock */
+ 	struct clk *pclk;		/* SYSMMU's pclk clock */
+ 	struct clk *clk_master;		/* master's device clock */
+-	spinlock_t lock;		/* lock for modyfying state */
++	spinlock_t lock;		/* lock for modifying state */
+ 	bool active;			/* current status */
+ 	struct exynos_iommu_domain *domain; /* domain we belong to */
+ 	struct list_head domain_node;	/* node for domain clients list */
+@@ -746,7 +746,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 	ret = devm_request_irq(dev, irq, exynos_sysmmu_irq, 0,
+ 				dev_name(dev), data);
+ 	if (ret) {
+-		dev_err(dev, "Unabled to register handler of irq %d\n", irq);
++		dev_err(dev, "Unable to register handler of irq %d\n", irq);
+ 		return ret;
+ 	}
+ 
 -- 
-With best wishes
-Dmitry
+2.48.1.268.g9520f7d998
+
