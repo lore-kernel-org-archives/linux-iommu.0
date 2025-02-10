@@ -1,117 +1,201 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2069.outbound.protection.outlook.com [40.107.100.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66F9C25C6E6;
-	Mon, 10 Feb 2025 19:49:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739216957; cv=none; b=bLRX62C5npQFSjbDmFHNnTtzb/xQo4uWPvYq/+a59S2hWsr1RYd8IlqKW3gbr4sIZyWhj/vVF8T4L3NCN05dZedZzzp2J8mmEXofpINevmptyzFOpBfA76tTo8J8xjMbGwUz+CSj0k/2+asxb14KjbQJmCjHAOCXKCYHTcjRXDU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739216957; c=relaxed/simple;
-	bh=Ty6k5I1/hnJTjgA0qZmIAImp0Z7XZeXOKWP8irziz4s=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=EDrlpN/kUcahxr413cr1GNbBYXbvqxi0Bt0G89cU8ubXMBuK5r1QPQn/lHn5AUwmONL58xY4FOHgeaq23te1HUem9gnilkMeKIg3yQHx9GmGi+HMKFjRTDk5QIcqDnnYr7MAqOBoxy0zk9P7sUbsL8xAosy3CvvxoV3tds6zHX0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gompa.dev; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gompa.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-5de594e2555so4912725a12.2;
-        Mon, 10 Feb 2025 11:49:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739216953; x=1739821753;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=95fC/C95p1+hJwvVm5h6wvO5Q4omEjar82baF+zynPs=;
-        b=Hc2Lb5XxwXfOXBNVFeLafcZH4fxKO5cd8rrFMvtFFGh2mQs5OCcVVxW3wHvzzH1lwl
-         MDeggNApY5MTtYhms9oZtzw0W4b7cnCZK9mCsyZf9kszw6K/ygAcRn4Aij6RKJo7WDE9
-         h84+oVQjTaGhmvrRUWpmdeaId6u5H/wYigH5hxL9lbWAsGrEI0F1Y/4Nvn6EYR85e7fH
-         EnLVmDHvLj4f8kS/UW3g40RYwLoPC6dwWalGvZKvR7nmRxI0hVQMMEvO/wu8R5BwCrYY
-         q3UarGEB6lhZdEXywNzdTTN+l2MEzr3dCaXGLLWv1wyud6428Lw8omG3Sc6RpagXsdTO
-         kUog==
-X-Forwarded-Encrypted: i=1; AJvYcCVgA9zHN8s2G4MifsPUrni/AX+9S/Fd9HOF6DECDpAFQCtrkrJq224gaLuy1yb+IJ66a57gzxE=@lists.linux.dev, AJvYcCVnYuUPDsTrz5PphaNSOtOJl4Gkhmv+WaD6cXxH4a/u4ZJE2k5oZzCpOGKGajIZgiz/dawN2A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyJjJiQuCKA7CWN9lJe31kY595rpy5TFtYnc5x+k/xL9SidmxA8
-	O/nIkn3n7AloYGN8vUw5xVy7binzW3YgPX62FLxf8EreSTaNqlEBXjSc1wOsb/E=
-X-Gm-Gg: ASbGncuemoqOmEJ9sQGUCz7V3xV4PHmDEyQGN9Tm851hmUJxRzNffuIQ1WqyygER3Zd
-	yXc1cKp6Xnu0n3r0KZ7LIsv6RoQNKoXjtsJYmluX058/p3Wq/BtyDzdXY5GH61lMYbBrVmVoef+
-	DxTebh8rKGNXRBJ44Ro1IAgiahmC/MUS9nfbi/ZdVLh3SP6zbCA1oRg2aEeR4KO3PCUGa/FnZmm
-	q1UQjhInXjd/VrJfmAykL0f/eNFHVUq5AxC2sHieCWWxvHsW8Rfwaipk1KAzNTkJxdldT/M0SmP
-	7lUYBdj2ihdaIRJlI9uF8mOW6sIOGHASObR5ZUyPtPsOww==
-X-Google-Smtp-Source: AGHT+IHoX/uYw3YN4dYm6jpyyi9dl6DRA0TaT3bpL3AWIxwXOWvPjFWq/uIqGutRYm7nomVjvHZF+A==
-X-Received: by 2002:a05:6402:5290:b0:5dc:ebb8:fe64 with SMTP id 4fb4d7f45d1cf-5de45019313mr16194293a12.14.1739216952988;
-        Mon, 10 Feb 2025 11:49:12 -0800 (PST)
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com. [209.85.208.49])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5de59f893ebsm5723258a12.45.2025.02.10.11.49.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Feb 2025 11:49:12 -0800 (PST)
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5de77a5d2a2so2777993a12.0;
-        Mon, 10 Feb 2025 11:49:11 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVPHK8PdQUXv6JsF2LSCJVDPSKNuxBJ889Jj1cHk6P57ofqxhMI1wYe8zFNItYawxuDXPHDz54=@lists.linux.dev, AJvYcCVgwdzn0C6yCHmJVGAz/sySM4Uk7OAUNwCo+p+9sPjidJGbO99yza0UwH+QWfLfhX3FGjFCfg==@lists.linux.dev
-X-Received: by 2002:a05:6402:2106:b0:5dc:a44d:36bd with SMTP id
- 4fb4d7f45d1cf-5de4500274cmr13498767a12.8.1739216951504; Mon, 10 Feb 2025
- 11:49:11 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76C352586DC;
+	Mon, 10 Feb 2025 22:53:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739228027; cv=fail; b=L0MslxMYRikvDv75gG3B01zRgYAZroemj5lXOD64fpQ20yxbo/uKBEq/LiLcc2EFBTOp8DWUDqUFfpcEMW6ZJ5+ahNiX+cbjUSCwU3Vb3MgZdWRyDqK6e2rOmgIM6208JLrFhfTrMHSyu0OhWrnkLNT7UilPCmZZHpzxMHY32hQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739228027; c=relaxed/simple;
+	bh=shF3SVdLmwCQm6B/tzjDai357btRppXx6otszFFmZMI=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=cEHHG1BlkWKSQ6lGYVACmdSDERp3qU+ZJq+yagXoxzqUmrIc7TctJ+sL51iMvWC30gJrXobkVpOAHB7NGxwqFIzSdJX1W9r9Nk7GpXuqcy83RjIzG3AJEOuIbOGCbGlJqXS/fedNOi2oX2qMgpHhUPfArNZ6nY5pqZKXd3RUulM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=kq0K4PPY; arc=fail smtp.client-ip=40.107.100.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="kq0K4PPY"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Abu9EqvUzGZk0nAhkSGFRJTR+7IyMtxaL4cLSInjxbY8X3ifA5K4Z7GUsZeyoQOJYp5Lz8OGVJ6/AnOwH9RtxbQpLIyRlx/CFfv3XMVjpIYMx4I31O4wxZJ5D58zYnil4MCdLEnb1kzQXe6CP6lxRY0jF0ubKuBfCvQ1hwvq6B2AAUVbfSsZqgma/aT7CohtiS5MjEeP/3TEVOz6q0DyJ7Z4v7Fr4jxs7N7pLI3wELGBbScklBPWg4iPlkK4aDKlQFw2OJ8tRGEK51zeBP+5M4gKeBkLGGTzYvqid58tU9CoDicL1EahIQaobMuBoIiOJeVgI5ISvESE9LBmk8oglg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=M9zvQoXEYq+0FAvlzUaGUD/wo8pG1yrjRiQjZ+7CbEk=;
+ b=kxIeJGYyWGylpm8m/aqxuzNs3d1vQo6GJsAcg3ZQbBqiIpP6HBY/B9W6p1G88cUBdLAt2HhTegqQNA1e9GohgfmJj6FeALLlREahMUk0ZSbGd21hYA1kDi8NkoOM6SdXIImbFta9NKFd9DGBApNVVv0QTcJxXyPFiqkT/bpOKpunQmYwauK2vdBMnGFvh0afDWRosgzHWzXaxqw/OwBek7yRIYGBPm+t/GIN4MAyvZkEko1EHVSsU9YLPYwQk1fo1ulTc19BZ38PJzOp0JC5WoQWJHumQ/R+R2gzHzlZo4dyJ06LbwdnEFBUJQSoQx8Zx7/a7ow0BqSL8xTp7lToTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M9zvQoXEYq+0FAvlzUaGUD/wo8pG1yrjRiQjZ+7CbEk=;
+ b=kq0K4PPYXk2mpB3gKLSidMhc+O1QgAyN6LqlvmjRVTbrypfKF/RxuVgquG3C/sTURwywB7fnubzmImhWh4iecBwnACgMZFIIWKe/YEKhMN9rj/PCo9HvAYXydzQJQgValozTKINk4EvIP8uYNEyhTEiURPzGkkJX82kLflEYFFg=
+Received: from BN0PR04CA0143.namprd04.prod.outlook.com (2603:10b6:408:ed::28)
+ by DM4PR12MB6400.namprd12.prod.outlook.com (2603:10b6:8:b9::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8398.28; Mon, 10 Feb 2025 22:53:40 +0000
+Received: from BL6PEPF0001AB58.namprd02.prod.outlook.com
+ (2603:10b6:408:ed:cafe::c) by BN0PR04CA0143.outlook.office365.com
+ (2603:10b6:408:ed::28) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8398.31 via Frontend Transport; Mon,
+ 10 Feb 2025 22:53:40 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BL6PEPF0001AB58.mail.protection.outlook.com (10.167.241.10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8445.10 via Frontend Transport; Mon, 10 Feb 2025 22:53:40 +0000
+Received: from ethanolx7e2ehost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 10 Feb
+ 2025 16:53:39 -0600
+From: Ashish Kalra <Ashish.Kalra@amd.com>
+To: <seanjc@google.com>, <pbonzini@redhat.com>, <tglx@linutronix.de>,
+	<mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
+	<x86@kernel.org>, <hpa@zytor.com>, <thomas.lendacky@amd.com>,
+	<john.allen@amd.com>, <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>
+CC: <michael.roth@amd.com>, <dionnaglaze@google.com>, <nikunj@amd.com>,
+	<ardb@kernel.org>, <kevinloughlin@google.com>, <Neeraj.Upadhyay@amd.com>,
+	<vasant.hegde@amd.com>, <Stable@vger.kernel.org>, <kvm@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+	<linux-coco@lists.linux.dev>, <iommu@lists.linux.dev>
+Subject: [PATCH v4 0/3] Fix broken SNP support with KVM module built-in
+Date: Mon, 10 Feb 2025 22:53:29 +0000
+Message-ID: <cover.1739226950.git.ashish.kalra@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
-In-Reply-To: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
-From: Neal Gompa <neal@gompa.dev>
-Date: Mon, 10 Feb 2025 14:48:35 -0500
-X-Gmail-Original-Message-ID: <CAEg-Je9BskhHuehHLES=5WNPk2jjd=38207XsfEmFDMiF=b0bA@mail.gmail.com>
-X-Gm-Features: AWEUYZnvFQWMfElhV3JVfcrxv5vOkguawqzwZra2J81VWXgm4X-CWu02f7-pmbw
-Message-ID: <CAEg-Je9BskhHuehHLES=5WNPk2jjd=38207XsfEmFDMiF=b0bA@mail.gmail.com>
-Subject: Re: [PATCH 0/5] iommu: apple-dart: Support locked DARTs
-To: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Cc: Sven Peter <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, asahi@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB58:EE_|DM4PR12MB6400:EE_
+X-MS-Office365-Filtering-Correlation-Id: b3979a56-9dfa-4ab7-a862-08dd4a25c33a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|36860700013|7416014|376014|82310400026|921020;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?YzpbiiHdq08jnC3q/0TEnJD5HaUMfOD8pKk9nnc/lr/vKksNJ1C66Sg/0FZU?=
+ =?us-ascii?Q?38dLsrXmE0t6H8Ikqin5xCFeVXYRYZihDUPEJwWwrFTeapozxKrjPdCZbK1E?=
+ =?us-ascii?Q?d625Eu3tHugUZLwZ3jubWUZnwnq7PxfbbydFXoyAb2SOIb8rwTb6sSGNPOZO?=
+ =?us-ascii?Q?nB8tsFv7aZEsyeh5JwcbnFXoEv6EbxjPl99AMCYQXd8KVPOBwcOQnv4lyJpk?=
+ =?us-ascii?Q?rvyTADzg2cfQ99nbcoBmKZVOwZf57mmBfnOPZg0pUoTJaEWCdPnetABQuFms?=
+ =?us-ascii?Q?whaQn2N2XyrUIs/rodk1ptBwj/J2G3cctvFTlQ36qyCy1CUA4xgjsqsJkDqg?=
+ =?us-ascii?Q?R5NOSP1weH81urcmh75DWpLg2xbcpPgkQBh3Pe3V4aQvju2qFKkSnLVost7k?=
+ =?us-ascii?Q?j+APACzI+681osFdnvDDziSQZMGqSKg+bNNUA7D5fW3oZ2ZSdiyaJ+C0vlFW?=
+ =?us-ascii?Q?fv5SpHTzy4X5RCzW0FB73IdyjI+MS/TWyBKOxOAV8mh03nCwZVn5VYEFjG/I?=
+ =?us-ascii?Q?mnLDC23YYoFOzIwMYUOsIGlkjvPy0jLlIvj9U2hUy/tZ79v/c+ddXnvVWDNI?=
+ =?us-ascii?Q?1APdMbKJKDqjt4662Ob1NBFJc+SEKAYnIVILt4E982ukohNL2ZA+P7cKO8Ap?=
+ =?us-ascii?Q?OxTkamBKpP1dOahHI7BTGGwiQIPl8QKNJmW6ufHVLhQwiQWmN7tvird4dKaF?=
+ =?us-ascii?Q?gRZhKRK7k4lLZkdER3T5+1Xy8eV9jHaEzI0Ap5K8ZTIih/vOF1ajtDQGvPZq?=
+ =?us-ascii?Q?7GB0xjN4nz+11gHidVHiWOi3VX+Qwxw5FN0aW/yce+bZcOV54qqkPk+o4MSP?=
+ =?us-ascii?Q?YiLUgqZRxH8B0PmVMxUBvZLLkJjfESmySHTRp5bJJa7ttDIHYQ0LtnfAzrs9?=
+ =?us-ascii?Q?AqJMnnGaTZPv2Y9P0BnPBO9vn0AqKZ7fBvLXLlIJv088GcahIjfmpcwHKsgW?=
+ =?us-ascii?Q?5ucYYMCNpmledjnDedQAM8D9CURHn0WA9XU5HPwwz22/pU6wzrwdMnbgv1j1?=
+ =?us-ascii?Q?Hg2Ey1tXGsD4S3+nyI55Rn/LoVvfLnLa0ebD0luXyumEvB/B6KFG6VELDmQI?=
+ =?us-ascii?Q?VXIlZp+9IsIZ7bK3Z8nuztL8wWEcAihUfpgUg3azfoi8HlVANSUVaHhO7kum?=
+ =?us-ascii?Q?MXGWF3SBUJtRoNSSBvspBV6Pxdip9W3w8rT9IN43b0R8qaGSlCj2mNUkC0tb?=
+ =?us-ascii?Q?kjqmIy2cCUnV/yLzTvuMZu8htIPnXqbydmLeT7FI3jrUbUnXcO7WnejjnWoD?=
+ =?us-ascii?Q?KIeovKZBi/l2+tu7BnwZnbIQD1AwKBZyLRh7EDQxzAEZuqc/P/PSlxd3m4zt?=
+ =?us-ascii?Q?DksCjHGnbv3CjtTJsgEHWnVhbsiXOOMGy6w/GWi05zrBeQiTfeqt9oWrxfRn?=
+ =?us-ascii?Q?T2UEj18NT+OAW8rOz6YVPdRua3X83OFQCQK3DX/S9TKs7CL84pgg+6pHdnub?=
+ =?us-ascii?Q?ci1lZjOTgqCISP1D38WUZoVWW+Wlov6WPnYDxWOjL4QMfUnj1Wbgap66ucI+?=
+ =?us-ascii?Q?x/ANDvDOZH0ZbOzWJviNkwx/uWdx8cE5q2nK?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(7416014)(376014)(82310400026)(921020);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2025 22:53:40.5500
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3979a56-9dfa-4ab7-a862-08dd4a25c33a
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF0001AB58.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6400
 
-On Mon, Feb 10, 2025 at 2:44=E2=80=AFPM Alyssa Rosenzweig <alyssa@rosenzwei=
-g.io> wrote:
->
-> Some DARTs on Apple SoCs are "locked" at boot time, meaning we cannot
-> write most of their configuration registers. Currently, we refuse to
-> probe locked DARTs and do not include any in the upstream device trees.
-> However, the DARTs used for the display controller are locked, so we
-> need to handle locked DARTs as a prerequisite for a KMS driver.
->
-> This series teaches the iommu/apple-dart driver about locked DARTs,
-> preparing for a future upstream display driver. It has been extensively
-> tested downstream with our work-in-progress display driver.
->
-> Signed-off-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-> ---
-> Alyssa Rosenzweig (5):
->       iommu/dart: Track if the DART is locked
->       iommu/dart: Skip reset for locked DARTs
->       iommu/dart: Set DMA domain for locked DARTs
->       iommu/dart: Reject identity domain for locked DARTs
->       iommu/dart: Assert !locked when configuring
->
->  drivers/iommu/apple-dart.c | 47 +++++++++++++++++++++++++++++++---------=
-------
->  1 file changed, 32 insertions(+), 15 deletions(-)
-> ---
-> base-commit: 2014c95afecee3e76ca4a56956a936e23283f05b
-> change-id: 20250210-locked-dart-d7ece05f19a8
->
-> Best regards,
-> --
-> Alyssa Rosenzweig <alyssa@rosenzweig.io>
->
->
+From: Ashish Kalra <ashish.kalra@amd.com>
 
-Series LGTM, having looked over this many times as part of kernel
-maintenance for Fedora Asahi Remix.
+This patch-set fixes the current SNP host enabling code and effectively SNP
+which is broken with respect to the KVM module being built-in.
 
-Reviewed-by: Neal Gompa <neal@gompa.dev>
+Essentially SNP host enabling code should be invoked before KVM
+initialization, which is currently not the case when KVM is built-in.
 
+SNP host support is currently enabled in snp_rmptable_init() which is
+invoked as a device_initcall(). Here device_initcall() is used as
+snp_rmptable_init() expects AMD IOMMU SNP support to be enabled prior
+to it and the AMD IOMMU driver enables SNP support after PCI bus enumeration.
 
---=20
-=E7=9C=9F=E5=AE=9F=E3=81=AF=E3=81=84=E3=81=A4=E3=82=82=E4=B8=80=E3=81=A4=EF=
-=BC=81/ Always, there's only one truth!
+This patch-set adds support to call snp_rmptable_init() early and
+directly from iommu_snp_enable() (after checking and enabling IOMMU
+SNP support) which enables SNP host support before KVM initialization
+with kvm_amd module built-in.
+
+Additionally the patch-set adds support to initialize PSP SEV driver
+during KVM module probe time.
+
+This patch-set has been tested with the following cases/scenarios:
+1). kvm_amd module and PSP driver built-in.
+2). kvm_amd module built-in with intremap=off kernel command line.
+3). kvm_amd module built-in with iommu=off kernel command line.
+4). kvm_amd and PSP driver built as modules.
+5). kvm_amd built as module with iommu=off kernel command line.
+6). kvm_amd module as built-in and PSP driver as module.
+7). kvm_amd build as a module and PSP driver as built-in.
+
+v4:
+- Add warning if SNP support has been checked on IOMMUs and host
+SNP support has been enabled but late IOMMU initialization fails
+subsequently.
+- Add reviewed-by's.
+
+v3:
+- Ensure that dropping the device_initcall() happens in the same
+patch that wires up the IOMMU code to invoke snp_rmptable_init()
+which then makes sure that snp_rmptable_init() is still getting
+called and also merge patches 3 & 4.
+- Fix commit logs.
+
+v2:
+- Drop calling iommu_snp_enable() early before enabling IOMMUs as
+IOMMU subsystem gets initialized via subsys_initcall() and hence
+snp_rmptable_init() cannot be invoked via subsys_initcall().
+- Instead add support to call snp_rmptable_init() early and
+directly via iommu_snp_enable().
+- Fix commit logs.
+
+Fixes: c3b86e61b756 ("x86/cpufeatures: Enable/unmask SEV-SNP CPU feature")
+
+Ashish Kalra (1):
+  x86/sev: Fix broken SNP support with KVM module built-in
+
+Sean Christopherson (2):
+  crypto: ccp: Add external API interface for PSP module initialization
+  KVM: SVM: Ensure PSP module is initialized if KVM module is built-in
+
+ arch/x86/include/asm/sev.h  |  2 ++
+ arch/x86/kvm/svm/sev.c      | 10 ++++++++++
+ arch/x86/virt/svm/sev.c     | 23 +++++++----------------
+ drivers/crypto/ccp/sp-dev.c | 14 ++++++++++++++
+ drivers/iommu/amd/init.c    | 34 ++++++++++++++++++++++++++++++----
+ include/linux/psp-sev.h     |  9 +++++++++
+ 6 files changed, 72 insertions(+), 20 deletions(-)
+
+-- 
+2.34.1
+
