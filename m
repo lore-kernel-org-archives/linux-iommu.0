@@ -1,126 +1,117 @@
-Received: from out-180.mta0.migadu.com (out-180.mta0.migadu.com [91.218.175.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B74FE2580D9
-	for <iommu@lists.linux.dev>; Mon, 10 Feb 2025 19:40:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66F9C25C6E6;
+	Mon, 10 Feb 2025 19:49:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739216433; cv=none; b=I5+diZM0hzvjLKGedWJwSr0IxkQ6Bhwj/hWTyUdXcK7wlOBqWrCr6TfNUjaVyXNeBhA1JT1/YyAh2sIBOicjFHtrbpLfyE0KFe/rf5MIo8BW6sJgxWOsLZTJfKePnl/mGihvTJDaY9/nQgqEBk/XpqqVl5fK7dpyIu4OW0C9fMI=
+	t=1739216957; cv=none; b=bLRX62C5npQFSjbDmFHNnTtzb/xQo4uWPvYq/+a59S2hWsr1RYd8IlqKW3gbr4sIZyWhj/vVF8T4L3NCN05dZedZzzp2J8mmEXofpINevmptyzFOpBfA76tTo8J8xjMbGwUz+CSj0k/2+asxb14KjbQJmCjHAOCXKCYHTcjRXDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739216433; c=relaxed/simple;
-	bh=apwlrHK+NFmUFcATPM4IEl3yfbQ24a1UqxWS9zc+/wc=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=AdbjX2KUo+RevpcnR0nZw6FI+Ophy1Mgbq3uue3dQdW3/Ag3I7vhBYjNYANILZE6vEO8GCcYAI5v1N7H5wS8DIQ/K1hGdHjLtglZq8GHpJdTFMPDuPfxbT7bjHpcLK6X5GizV8FJwAYR1HzYNg1nXPyqbyh/8n0p1DUJBR52P2A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io; spf=pass smtp.mailfrom=rosenzweig.io; dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b=mEB+Xkj8; arc=none smtp.client-ip=91.218.175.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rosenzweig.io
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b="mEB+Xkj8"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rosenzweig.io;
-	s=key1; t=1739216428;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=lOD2Sq5+ZH4AcnNDOmSUoO/ljPGq1eIifxgBsdfQLiY=;
-	b=mEB+Xkj8T8zGigBKiyv7FB06VJrCxIGpILs21+CpcutU5jlc0MWNb1aUfNlgnvwcp5Zwub
-	psyi+BgX8tRe1LYfw35T0eLHelVndz55BfAqxCuXw8Ecyw0yPUbJcHTsJmD9mZhEfT9DdP
-	bIEZWiNNb4U52rCnloNeb9NjZMv1yOVQTL5x3mbfRvc+Mc+xFEwZJkf8kk25clMtRcvDa9
-	IRYHl+O2rWr+dmA452gcgDFHawO8b09IezIHm3NA553dfTGiaPHi47vRE5ObJdaO0iIQVI
-	T45sAe5S5uPg7yezUVNN8zVAS4XMYpOxL9Fw2Ebw1edHwxE2E2qT4Jho5N5uyA==
-From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Date: Mon, 10 Feb 2025 14:39:57 -0500
-Subject: [PATCH 5/5] iommu/dart: Assert !locked when configuring
+	s=arc-20240116; t=1739216957; c=relaxed/simple;
+	bh=Ty6k5I1/hnJTjgA0qZmIAImp0Z7XZeXOKWP8irziz4s=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=EDrlpN/kUcahxr413cr1GNbBYXbvqxi0Bt0G89cU8ubXMBuK5r1QPQn/lHn5AUwmONL58xY4FOHgeaq23te1HUem9gnilkMeKIg3yQHx9GmGi+HMKFjRTDk5QIcqDnnYr7MAqOBoxy0zk9P7sUbsL8xAosy3CvvxoV3tds6zHX0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gompa.dev; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gompa.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-5de594e2555so4912725a12.2;
+        Mon, 10 Feb 2025 11:49:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739216953; x=1739821753;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=95fC/C95p1+hJwvVm5h6wvO5Q4omEjar82baF+zynPs=;
+        b=Hc2Lb5XxwXfOXBNVFeLafcZH4fxKO5cd8rrFMvtFFGh2mQs5OCcVVxW3wHvzzH1lwl
+         MDeggNApY5MTtYhms9oZtzw0W4b7cnCZK9mCsyZf9kszw6K/ygAcRn4Aij6RKJo7WDE9
+         h84+oVQjTaGhmvrRUWpmdeaId6u5H/wYigH5hxL9lbWAsGrEI0F1Y/4Nvn6EYR85e7fH
+         EnLVmDHvLj4f8kS/UW3g40RYwLoPC6dwWalGvZKvR7nmRxI0hVQMMEvO/wu8R5BwCrYY
+         q3UarGEB6lhZdEXywNzdTTN+l2MEzr3dCaXGLLWv1wyud6428Lw8omG3Sc6RpagXsdTO
+         kUog==
+X-Forwarded-Encrypted: i=1; AJvYcCVgA9zHN8s2G4MifsPUrni/AX+9S/Fd9HOF6DECDpAFQCtrkrJq224gaLuy1yb+IJ66a57gzxE=@lists.linux.dev, AJvYcCVnYuUPDsTrz5PphaNSOtOJl4Gkhmv+WaD6cXxH4a/u4ZJE2k5oZzCpOGKGajIZgiz/dawN2A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyJjJiQuCKA7CWN9lJe31kY595rpy5TFtYnc5x+k/xL9SidmxA8
+	O/nIkn3n7AloYGN8vUw5xVy7binzW3YgPX62FLxf8EreSTaNqlEBXjSc1wOsb/E=
+X-Gm-Gg: ASbGncuemoqOmEJ9sQGUCz7V3xV4PHmDEyQGN9Tm851hmUJxRzNffuIQ1WqyygER3Zd
+	yXc1cKp6Xnu0n3r0KZ7LIsv6RoQNKoXjtsJYmluX058/p3Wq/BtyDzdXY5GH61lMYbBrVmVoef+
+	DxTebh8rKGNXRBJ44Ro1IAgiahmC/MUS9nfbi/ZdVLh3SP6zbCA1oRg2aEeR4KO3PCUGa/FnZmm
+	q1UQjhInXjd/VrJfmAykL0f/eNFHVUq5AxC2sHieCWWxvHsW8Rfwaipk1KAzNTkJxdldT/M0SmP
+	7lUYBdj2ihdaIRJlI9uF8mOW6sIOGHASObR5ZUyPtPsOww==
+X-Google-Smtp-Source: AGHT+IHoX/uYw3YN4dYm6jpyyi9dl6DRA0TaT3bpL3AWIxwXOWvPjFWq/uIqGutRYm7nomVjvHZF+A==
+X-Received: by 2002:a05:6402:5290:b0:5dc:ebb8:fe64 with SMTP id 4fb4d7f45d1cf-5de45019313mr16194293a12.14.1739216952988;
+        Mon, 10 Feb 2025 11:49:12 -0800 (PST)
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com. [209.85.208.49])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5de59f893ebsm5723258a12.45.2025.02.10.11.49.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Feb 2025 11:49:12 -0800 (PST)
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5de77a5d2a2so2777993a12.0;
+        Mon, 10 Feb 2025 11:49:11 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVPHK8PdQUXv6JsF2LSCJVDPSKNuxBJ889Jj1cHk6P57ofqxhMI1wYe8zFNItYawxuDXPHDz54=@lists.linux.dev, AJvYcCVgwdzn0C6yCHmJVGAz/sySM4Uk7OAUNwCo+p+9sPjidJGbO99yza0UwH+QWfLfhX3FGjFCfg==@lists.linux.dev
+X-Received: by 2002:a05:6402:2106:b0:5dc:a44d:36bd with SMTP id
+ 4fb4d7f45d1cf-5de4500274cmr13498767a12.8.1739216951504; Mon, 10 Feb 2025
+ 11:49:11 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250210-locked-dart-v1-5-5d97fe247f35@rosenzweig.io>
 References: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
 In-Reply-To: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
-To: Sven Peter <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>, 
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>
-Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- Alyssa Rosenzweig <alyssa@rosenzweig.io>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2308; i=alyssa@rosenzweig.io;
- h=from:subject:message-id; bh=apwlrHK+NFmUFcATPM4IEl3yfbQ24a1UqxWS9zc+/wc=;
- b=owEBbQKS/ZANAwAIAf7+UFoK9VgNAcsmYgBnqlYZdwU6iimgUcyo61wE4/xA3zJtr53OpF+Dx
- ctCIBx48SSJAjMEAAEIAB0WIQRDXuCbsK8A0B2q9jj+/lBaCvVYDQUCZ6pWGQAKCRD+/lBaCvVY
- DVycD/49tr1weIxdnNGNmj3jpsXXmZOfwks2OSyN89yavv1Na4aT4E+O2fNw3BRnk1VspirBigp
- ll9E48WekXnXMa8kQxS/2I1/aYigRPd2T4L2iiKbxPEi8UCNQgbAqGlHGxvqhCLvvYh+2aiDLpv
- xH2nW+kMVzdMlunP7GVyAZZvOyCG2RtlbboG0Qj5J4G3nZpDU6AaDXYbHX1a4FzTsPS0LqiTnpt
- qUqjp6NjnCOMaQlHvKIjhf83bVlSMr7tzYIhdzb80lX/ZAJGtOhM5feKQyeF9wkfVhaFtU/pN4V
- 35/in4R1dTefaMz6tsoF3MBj/m44M8slSaK86gCIePgTWDpr+e6z8wqy8fjqgghaxlNuV7f1wMz
- 34yVh6f/hp1tQn0C7xlKfF1rhCAk+LblHY9/U2CLdt85dWhLBFnANsyPpPgMCqqp0z6G2pqYGOB
- qz1a1oPkM8XMYzed6vENNWVflXNkAYPcHfY1/tXCck/4jWHVdfp7ZUaCDX6wTFBOMHKy9LVPJsl
- UBZX50SMZJhbfMPNyhvJFTuPc3c0W4HFibXi+NA2Pw92klqA2ja8fy8CQ6hOMYf+PvjKayDLUZv
- lil/vSW3MdZk8Hee4FrkwJv+iftK+Js8/p9i3HQRHdzCNRXjNkiTXHTc6x/iYwiWIWIM3oaGoWz
- T6IiGUagk+V8YCw==
-X-Developer-Key: i=alyssa@rosenzweig.io; a=openpgp;
- fpr=435EE09BB0AF00D01DAAF638FEFE505A0AF5580D
-X-Migadu-Flow: FLOW_OUT
+From: Neal Gompa <neal@gompa.dev>
+Date: Mon, 10 Feb 2025 14:48:35 -0500
+X-Gmail-Original-Message-ID: <CAEg-Je9BskhHuehHLES=5WNPk2jjd=38207XsfEmFDMiF=b0bA@mail.gmail.com>
+X-Gm-Features: AWEUYZnvFQWMfElhV3JVfcrxv5vOkguawqzwZra2J81VWXgm4X-CWu02f7-pmbw
+Message-ID: <CAEg-Je9BskhHuehHLES=5WNPk2jjd=38207XsfEmFDMiF=b0bA@mail.gmail.com>
+Subject: Re: [PATCH 0/5] iommu: apple-dart: Support locked DARTs
+To: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Cc: Sven Peter <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, asahi@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Configuration is only possible and needed for non-locked DARTs and will
-fail for locked DARTs. We cannot try -- assert that we do not.
+On Mon, Feb 10, 2025 at 2:44=E2=80=AFPM Alyssa Rosenzweig <alyssa@rosenzwei=
+g.io> wrote:
+>
+> Some DARTs on Apple SoCs are "locked" at boot time, meaning we cannot
+> write most of their configuration registers. Currently, we refuse to
+> probe locked DARTs and do not include any in the upstream device trees.
+> However, the DARTs used for the display controller are locked, so we
+> need to handle locked DARTs as a prerequisite for a KMS driver.
+>
+> This series teaches the iommu/apple-dart driver about locked DARTs,
+> preparing for a future upstream display driver. It has been extensively
+> tested downstream with our work-in-progress display driver.
+>
+> Signed-off-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+> ---
+> Alyssa Rosenzweig (5):
+>       iommu/dart: Track if the DART is locked
+>       iommu/dart: Skip reset for locked DARTs
+>       iommu/dart: Set DMA domain for locked DARTs
+>       iommu/dart: Reject identity domain for locked DARTs
+>       iommu/dart: Assert !locked when configuring
+>
+>  drivers/iommu/apple-dart.c | 47 +++++++++++++++++++++++++++++++---------=
+------
+>  1 file changed, 32 insertions(+), 15 deletions(-)
+> ---
+> base-commit: 2014c95afecee3e76ca4a56956a936e23283f05b
+> change-id: 20250210-locked-dart-d7ece05f19a8
+>
+> Best regards,
+> --
+> Alyssa Rosenzweig <alyssa@rosenzweig.io>
+>
+>
 
-Signed-off-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
----
- drivers/iommu/apple-dart.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Series LGTM, having looked over this many times as part of kernel
+maintenance for Fedora Asahi Remix.
 
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 29b627b38e8c37afd2b6a72865f43d24b633834a..87eb87bb2f5158d000a2c2fc801b722a2262c941 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -309,6 +309,7 @@ apple_dart_hw_enable_translation(struct apple_dart_stream_map *stream_map)
- 	struct apple_dart *dart = stream_map->dart;
- 	int sid;
- 
-+	WARN_ON(stream_map->dart->locked);
- 	for_each_set_bit(sid, stream_map->sidmap, dart->num_streams)
- 		writel(dart->hw->tcr_enabled, dart->regs + DART_TCR(dart, sid));
- }
-@@ -318,6 +319,7 @@ static void apple_dart_hw_disable_dma(struct apple_dart_stream_map *stream_map)
- 	struct apple_dart *dart = stream_map->dart;
- 	int sid;
- 
-+	WARN_ON(stream_map->dart->locked);
- 	for_each_set_bit(sid, stream_map->sidmap, dart->num_streams)
- 		writel(dart->hw->tcr_disabled, dart->regs + DART_TCR(dart, sid));
- }
-@@ -328,7 +330,7 @@ apple_dart_hw_enable_bypass(struct apple_dart_stream_map *stream_map)
- 	struct apple_dart *dart = stream_map->dart;
- 	int sid;
- 
--	WARN_ON(!stream_map->dart->supports_bypass);
-+	WARN_ON(stream_map->dart->locked || !stream_map->dart->supports_bypass);
- 	for_each_set_bit(sid, stream_map->sidmap, dart->num_streams)
- 		writel(dart->hw->tcr_bypass,
- 		       dart->regs + DART_TCR(dart, sid));
-@@ -340,6 +342,7 @@ static void apple_dart_hw_set_ttbr(struct apple_dart_stream_map *stream_map,
- 	struct apple_dart *dart = stream_map->dart;
- 	int sid;
- 
-+	WARN_ON(stream_map->dart->locked);
- 	WARN_ON(paddr & ((1 << dart->hw->ttbr_shift) - 1));
- 	for_each_set_bit(sid, stream_map->sidmap, dart->num_streams)
- 		writel(dart->hw->ttbr_valid |
-@@ -353,6 +356,7 @@ static void apple_dart_hw_clear_ttbr(struct apple_dart_stream_map *stream_map,
- 	struct apple_dart *dart = stream_map->dart;
- 	int sid;
- 
-+	WARN_ON(stream_map->dart->locked);
- 	for_each_set_bit(sid, stream_map->sidmap, dart->num_streams)
- 		writel(0, dart->regs + DART_TTBR(dart, sid, idx));
- }
+Reviewed-by: Neal Gompa <neal@gompa.dev>
 
--- 
-2.48.1
 
+--=20
+=E7=9C=9F=E5=AE=9F=E3=81=AF=E3=81=84=E3=81=A4=E3=82=82=E4=B8=80=E3=81=A4=EF=
+=BC=81/ Always, there's only one truth!
