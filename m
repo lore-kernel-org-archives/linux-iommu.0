@@ -1,126 +1,165 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 721CD1A9B5D
-	for <iommu@lists.linux.dev>; Mon, 10 Feb 2025 11:20:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76D9D1DEFFC;
+	Mon, 10 Feb 2025 11:31:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739186436; cv=none; b=eBRq0mXL8NsFjOXF9VCE3zTv/7E1IV8LC7AVDkRRXJLGyxFTzWN8uBcktSBk9VbBiV+SsCtfXYMMCg292z96CKOjB0EUcYdKLjT/rtiSTlpCQItgQkQWLdAo1fqWiRoDjlG3gxSlbW3J72/0RAGrQdXZsiQ8leK5twD9xKfmXJ0=
+	t=1739187113; cv=none; b=jXHfYrCkl96OQIMUDux4Fzero4iGpdUBLgjZk4U1KDTmOKKx0EceKUJH3PY29KfdnxdbIULZHjyyzNjFQbpW1dVViH25HmwlrH1IpMqm3DN33+e3XFSzuLhz3M+8ZM73wpRihaRB17r5jf/87lhIz4IRCrKF6BIWAjtdJhv+lbs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739186436; c=relaxed/simple;
-	bh=UmhTdp0yOp0xOBa0fKhmJv6Yjngb6GLcstrvhe0JLRc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GAC36KRFPzk22ZIkidABlIwoIATKb77hHy8WWJ8jNRovHxvEqIb2oNFPxipyr8YrQ06PkxwmJYM6DyGzviFBbm79zVGnmpBC13eqbJ5d37hYK74YRrW/c7e8Cw4TDA8xB92NUHe20acfzrWG6JX+pFnh8Ma525HnwGiYl98xxro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SSLg9QDH; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1739187113; c=relaxed/simple;
+	bh=lHfVa4WaezjaNaPZ+xqar2iWP4d9jh7xMhWtcE8W7mQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=Zzmx/G65jRR2/jfqUWVJejAfdIxzxOqGoX8XMx02owi0r9pmaX6PxhPZq2zw35YnuqCJEi2cPHzyT+F/jd8bH8rB9N/8wJC2tNa71+xTMKbzZqzJOp3Qs6wrTPBqNB9ZZTILuxV6B+YhlGGldU+KARCEAz/Xv9B7SM45SWdshYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=I1nw7tqi; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SSLg9QDH"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4394a0c65fcso3068035e9.1
-        for <iommu@lists.linux.dev>; Mon, 10 Feb 2025 03:20:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739186433; x=1739791233; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=nWk1tmUv6R6ofIovz55Q8Qebo6k6REo/VNEY88i+dbU=;
-        b=SSLg9QDHw61k7g2jbe/2FM7xeCZzgwNqo4m22wfALrjaeOzvLqdOZESLoWz32qy8VU
-         YEYFLOkCEPWPJQ0vkJ97c99Unrq5jQbSlBEilogltUPZF37SBLj3WvsntZVeog4Yhyie
-         RGRjp70rKwVIW2Fc2t4zGNwi3oEZZ2zwlLbURLvormpAK6lTxX9VrRTvBdYTS92bIZIs
-         QUV6KZYIf+2JysTP6ufPrl/B4XnlH70vIL9uRRznAMauz+ZAY4dq3Of8L34CcfUjtLUX
-         31YgVdnnG7M1xpP4GgHWUl47wHQM4Y2D8DQRdWX8PjMUSUmirwhtx6VZ4oKlk5XU3Gy3
-         1RtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739186433; x=1739791233;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nWk1tmUv6R6ofIovz55Q8Qebo6k6REo/VNEY88i+dbU=;
-        b=nKOTVYVXNqWzZRz+fNwazNm+RnODD5P4DPmtB8b9vaw95XSrmZIJehOFtpV/rUa0x2
-         F0CPaO+dMHWeIr21kt9nfO1zjY7VpeR6u/yASfd5Thdth+4YLpZiXc3hxaoVmAvO1zcf
-         PogWjFt+3ixb3woqLc9ND+S9kNZZyKKnt4tGpvPf41iipgj2IJbs4o0bbEP5g27hCJAM
-         eCnBT7W29Y+FjQeRX4f3xroaHo7XiDHZZnrlbbawDokjMxa2UN1EFWalSy1jxAZEYsUY
-         62xK5CA4IObidpT1MVSxNvM8nVevwi5QWZuOiqT4CMl3G1dJE6Kirw0sWQQDouPJv7JD
-         f0Mg==
-X-Gm-Message-State: AOJu0Yx6Y+tGXCqwWWXeTt6sYMKaKJdUb/iFQFelEE6YtqewL6aPRZlh
-	Fv13xYJj3vCNZAsvakBEFmUaM6bwlohRIBqO2pn3mwbhegKQk1BN
-X-Gm-Gg: ASbGncvT8fZ/mfMtg/oCZyP6RRcE3/Bsy/mzXCTAja6GHlShvklPzf+OG/n/QXK5jGl
-	AkJ//+ccqg9hs8c8FTYVrrw8R/aInWLG9u+EYhUDopKG0kRhxWcIQT8vJU57KP67vWogQHQFKHO
-	HVwMvFJ1ttjiUtqPICTpbEd64BMLNHhdLn3mzaCvMZFIVUfcJIDvwHfaxV828dawFpN/lkNIPSb
-	oAmlnSL5VdSuCoFDN5NPlOxFbEPhonisRMDeNdNLKnuMLLf5Js2ET3yv8hzMvBmiwZnI7rwRW9N
-	yLqsB7Z/rn5n
-X-Google-Smtp-Source: AGHT+IGbRwLLu9tR/y2eBa/u7toSv7se05o3znHII8V/vw85Z3xbe+EWFjbGzJGpwzoJnEMDsZOF7A==
-X-Received: by 2002:a05:600c:3503:b0:434:f817:4492 with SMTP id 5b1f17b1804b1-439249cddf9mr124532365e9.31.1739186432404;
-        Mon, 10 Feb 2025 03:20:32 -0800 (PST)
-Received: from void.void ([141.226.169.178])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38dbdd1af07sm12174656f8f.15.2025.02.10.03.20.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Feb 2025 03:20:32 -0800 (PST)
-From: Andrew Kreimer <algonell@gmail.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>
-Cc: iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org,
-	Andrew Kreimer <algonell@gmail.com>
-Subject: [PATCH] iommu/exynos: Fix typos
-Date: Mon, 10 Feb 2025 13:20:04 +0200
-Message-ID: <20250210112027.29791-1-algonell@gmail.com>
-X-Mailer: git-send-email 2.48.1.268.g9520f7d998
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="I1nw7tqi"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51A75xOs010163;
+	Mon, 10 Feb 2025 11:31:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	DX94Y1DLftOcH76cc/D2dTQlv3D9/SsCUAFkAr8Sem8=; b=I1nw7tqiz/kFxhle
+	Holws7trVi6BbmPtbdZWtxDXO1BYTSZYNzA6vQX6lyPfjqpMGFS8TaxpIqaPB9pS
+	r+F6220WPsqkv5A6PeAfjP8HaEjV16ol5TChfvLQXyuW9+0lbtncAgLwNes/Y8Yl
+	L+LHCj5IoMnNPgMCNJza9rwcrPQ7MuwvlvruR13buTflMezkp90Bs1C4xEnHSsCs
+	rn8dFMFO72BhMpf2fae4LYcQJ13YrcGnq4kGhOK70rxKYJxIgMUnml7Z2vCX/npH
+	UBC0vUf0AyyGf935f+62qdKw6m+pbQLXZ59TWMeiIAHc0kP8wXSRHfUKf6j5+u4O
+	4C9b7A==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44qcs58sem-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 10 Feb 2025 11:31:40 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51ABVdQB028977
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 10 Feb 2025 11:31:39 GMT
+Received: from [10.216.18.35] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 10 Feb
+ 2025 03:31:35 -0800
+Message-ID: <6ddda82b-d90c-4f16-a1e5-1a63fca7aba2@quicinc.com>
+Date: Mon, 10 Feb 2025 17:01:26 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 2/2] arm64: dts: qcom: qcs8300: Add device node for
+ gfx_smmu
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg
+ Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson
+	<andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>
+References: <20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com>
+ <20250203-b4-branch-gfx-smmu-v4-2-eaa7aa762f48@quicinc.com>
+ <464vbzwgv44fn4iw5vj5yzpstzhcsb7rzuedf4fwl23hmdhews@d4q33ro6hxq3>
+Content-Language: en-US
+From: Pratyush Brahma <quic_pbrahma@quicinc.com>
+In-Reply-To: <464vbzwgv44fn4iw5vj5yzpstzhcsb7rzuedf4fwl23hmdhews@d4q33ro6hxq3>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 1FNwXa16gvd1MBf64JJ-2x1HySUAS9rq
+X-Proofpoint-GUID: 1FNwXa16gvd1MBf64JJ-2x1HySUAS9rq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-10_06,2025-02-10_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
+ mlxlogscore=946 phishscore=0 lowpriorityscore=0 spamscore=0 malwarescore=0
+ adultscore=0 clxscore=1015 mlxscore=0 priorityscore=1501 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2501170000
+ definitions=main-2502100097
 
-There are some typos in comments/messages:
- - modyfying -> modifying
- - Unabled -> Unable
 
-Fix them via codespell.
+On 2/10/2025 4:31 PM, Dmitry Baryshkov wrote:
+> On Mon, Feb 03, 2025 at 11:17:02AM +0530, Pratyush Brahma wrote:
+>> Add the device node for gfx smmu that is required for gpu
+>> specific address translations.
+>>
+>> Signed-off-by: Pratyush Brahma <quic_pbrahma@quicinc.com>
+>> ---
+>>   arch/arm64/boot/dts/qcom/qcs8300.dtsi | 39 +++++++++++++++++++++++++++++++++++
+>>   1 file changed, 39 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/qcs8300.dtsi b/arch/arm64/boot/dts/qcom/qcs8300.dtsi
+>> index 4a057f7c0d9fae0ebd1b3cf3468746b382bc886b..7a8211bec139375b5aab939f123d88fca7aceff2 100644
+>> --- a/arch/arm64/boot/dts/qcom/qcs8300.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/qcs8300.dtsi
+>> @@ -2674,6 +2674,45 @@ gpucc: clock-controller@3d90000 {
+>>   			#power-domain-cells = <1>;
+>>   		};
+>>   
+>> +		adreno_smmu: iommu@3da0000 {
+>> +			compatible = "qcom,qcs8300-smmu-500", "qcom,adreno-smmu",
+>> +				     "qcom,smmu-500", "arm,mmu-500";
+>> +			reg = <0x0 0x3da0000 0x0 0x20000>;
+>> +			#iommu-cells = <2>;
+>> +			#global-interrupts = <2>;
+>> +
+>> +			interrupts = <GIC_SPI 672 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 673 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 678 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 679 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 680 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 681 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 682 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 683 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 684 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 685 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 686 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 687 IRQ_TYPE_LEVEL_HIGH>;
+>> +
+>> +			clocks = <&gpucc GPU_CC_CX_GMU_CLK>,
+>> +				 <&gpucc GPU_CC_HUB_CX_INT_CLK>,
+>> +				 <&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>,
+>> +				 <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
+>> +				 <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>,
+>> +				 <&gpucc GPU_CC_AHB_CLK>,
+>> +				 <&gpucc GPU_CC_HUB_AON_CLK>;
+>> +
+>> +			 clock-names = "gcc_gpu_memnoc_gfx_clk",
+> Stray whitespace after the Tab symbol
+>
+>> +				       "gcc_gpu_snoc_dvm_gfx_clk",
+>> +				       "gpu_cc_ahb_clk",
+>> +				       "gpu_cc_hlos1_vote_gpu_smmu_clk",
+>> +				       "gpu_cc_cx_gmu_clk",
+>> +				       "gpu_cc_hub_cx_int_clk",
+>> +				       "gpu_cc_hub_aon_clk";
+> clocks and clock-names do not match.
+>
+>> +			power-domains = <&gpucc GPU_CC_CX_GDSC>;
+>> +			dma-coherent;
+>> +		};
+>> +
+>>   		pmu@9091000 {
+>>   			compatible = "qcom,qcs8300-llcc-bwmon", "qcom,sc7280-llcc-bwmon";
+>>   			reg = <0x0 0x9091000 0x0 0x1000>;
+>>
+>> -- 
+>> 2.34.1
+>>
+Thanks for checking. Will address these in next version.
 
-Signed-off-by: Andrew Kreimer <algonell@gmail.com>
----
- drivers/iommu/exynos-iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index c666ecab955d..69e23e017d9e 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -249,7 +249,7 @@ struct exynos_iommu_domain {
- 	struct list_head clients; /* list of sysmmu_drvdata.domain_node */
- 	sysmmu_pte_t *pgtable;	/* lv1 page table, 16KB */
- 	short *lv2entcnt;	/* free lv2 entry counter for each section */
--	spinlock_t lock;	/* lock for modyfying list of clients */
-+	spinlock_t lock;	/* lock for modifying list of clients */
- 	spinlock_t pgtablelock;	/* lock for modifying page table @ pgtable */
- 	struct iommu_domain domain; /* generic domain data structure */
- };
-@@ -292,7 +292,7 @@ struct sysmmu_drvdata {
- 	struct clk *aclk;		/* SYSMMU's aclk clock */
- 	struct clk *pclk;		/* SYSMMU's pclk clock */
- 	struct clk *clk_master;		/* master's device clock */
--	spinlock_t lock;		/* lock for modyfying state */
-+	spinlock_t lock;		/* lock for modifying state */
- 	bool active;			/* current status */
- 	struct exynos_iommu_domain *domain; /* domain we belong to */
- 	struct list_head domain_node;	/* node for domain clients list */
-@@ -746,7 +746,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 	ret = devm_request_irq(dev, irq, exynos_sysmmu_irq, 0,
- 				dev_name(dev), data);
- 	if (ret) {
--		dev_err(dev, "Unabled to register handler of irq %d\n", irq);
-+		dev_err(dev, "Unable to register handler of irq %d\n", irq);
- 		return ret;
- 	}
- 
 -- 
-2.48.1.268.g9520f7d998
+Thanks and Regards
+Pratyush Brahma
 
