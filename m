@@ -1,108 +1,154 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5622940BF5
-	for <iommu@lists.linux.dev>; Tue, 11 Feb 2025 00:55:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16BC92F5E;
+	Tue, 11 Feb 2025 04:46:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739235308; cv=none; b=YUdqFcZxhGHxbtC397Rc6heMOyKNTKW9hBH1+qQETYiN5fbQ6i3X6+W4xg0Rrnphh9tpUZOn7UAxfr+iVTJGQBii7/q2c0fToA28D51mswBp6Zv2pj3ldqt/Z11z3Q9tpKzapd6pQ3q4/N8W/4e4ReLSWqzZthIhiThHoRJXipM=
+	t=1739249191; cv=none; b=P3WULdGyxFU7xT27nJCAnVah9WrtysCrnAxN4ueAlkdNFyNT4QEs7MxhNN+zfYy35GxIdzEYv4Zz7/3ieIVbfLI8iRUiVs7WC9LJIgKPaA2Npmw/6P16oKnXKbgvzfeo5HqRDXyXuRoOT3bgZINEU1MqYaFurH4fPNiWZ2F/UEc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739235308; c=relaxed/simple;
-	bh=9UPE4gAjA3kdh0cfDkk/TDuCcO9wTQ/O5a49YqPV3V4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IFeHo8QMet/vk3lnwjskL6NG+mSMlRgVGY4/YF7BGwUz9QJV1oDyq7V67qkKvQJn/UItpgjwAIGlQk93qc1JDIArPeo2nrRsGnRZxrVR9LL/6VYnqLzihyqNXXQmTQVIVTub2mi7crGZX3jx/Bz0CY/Pvxdks7hPFCQgGy/7BKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PfIePs05; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1739249191; c=relaxed/simple;
+	bh=McOZt8EMFCYaBYql7fipCYligaaQW+bEOpaqsbXqnjg=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=rsHpsaiuR2zXI5pn0mxB+28vj2JlnXsPhdHnHtCRuSJ8iJpsIT97zaYTP9ioTi4+S2qCYLTmpQBDKQnKBAHnmiIKVouLsnGny1JVeUv+OSlakg+1kLz4lJjh0UigzY5lkOAJ19OzISiAHphMRwNPad4ZpDhwtnnmsTgV5tyl/hA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=eUn+bCH5; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PfIePs05"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1739235308; x=1770771308;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9UPE4gAjA3kdh0cfDkk/TDuCcO9wTQ/O5a49YqPV3V4=;
-  b=PfIePs051UDt23ChTftR168PjiN/9z6QKX73NowIIWKR/v5kPJvythlj
-   /cTq3/eCoZma8bi4QnOk/hpwSGNpaizdyEHTOtIRr4psWgBcmZ9kusP3v
-   bCi/4YT0CVJxEtZpUQAnZY7urJwf7Fwyv3MS6nJqdAoRm5SplKCVb9Ygf
-   SGWIbI0+gvMOfGF3AH7DZBN5/N9GWB5DKeFddZwKBm//heqXu2IRfv+cg
-   gzrbGKqK3Ho0S4/2gZRQmPEVIJCgrg1szIQes4g/XmpCp9HdXnB6N62Xn
-   0ylBM4+8RVGiN/SqbjUD0L+NYswXLRb4yqBwC9n917ZGz37ZFeUFlKaP+
-   w==;
-X-CSE-ConnectionGUID: 4QvAV0SHRVqHHNyGQ7Ey0w==
-X-CSE-MsgGUID: ZMt43b5VS2WZvU2AB8C1Kg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11341"; a="39756008"
-X-IronPort-AV: E=Sophos;i="6.13,275,1732608000"; 
-   d="scan'208";a="39756008"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2025 16:55:05 -0800
-X-CSE-ConnectionGUID: BnzoMNqASkG1Uvq77yJj7A==
-X-CSE-MsgGUID: Y1PQ1Y+vQWurqnOvyHSnvg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,275,1732608000"; 
-   d="scan'208";a="112186405"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa006.fm.intel.com with ESMTP; 10 Feb 2025 16:55:04 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] iommu/vt-d: Make intel_iommu_drain_pasid_prq() cover faults for RID
-Date: Tue, 11 Feb 2025 08:55:12 +0800
-Message-ID: <20250211005512.985563-2-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250211005512.985563-1-baolu.lu@linux.intel.com>
-References: <20250211005512.985563-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="eUn+bCH5"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51AKKLpG002481;
+	Tue, 11 Feb 2025 04:46:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=rweMDKU7jILbWAEYKzmL8t
+	nl3AeztWlseOhIln/HMIY=; b=eUn+bCH5rH7ClEElyqdzELkI7+r9wA/SSdCDgd
+	feVTdg5rVSMcd55jFJ0IulM3hiZ12oFfbj58WzbNDemQUMywq/yXleWG1T1HDsUj
+	5LqTI6Hb8LIjis4771NMG5dwqxm9KSgd1dzRCLiRnmQCygIEmyutb3/bv++Qog5Z
+	g8yHjOGcrJbM1ptzWxOCCJTYPrkAPQP6CfbjeDvql/cQQwZh/ErK+RdkRvUqlL3g
+	yhsaKJ7eu+EVz6GsAyKuMPp6zU6Dj2tp2cbPgRql1RlbyCIZbNp3Qps5af1UADJi
+	peTH0BoTZtPBtg5CslsaqUkiL8HUu0Ms/UG6pgV81CdAr/Gw==
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44p0dqentu-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 11 Feb 2025 04:46:18 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51B4kIir027512
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 11 Feb 2025 04:46:18 GMT
+Received: from hu-pbrahma-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01c.na.qualcomm.com (10.45.79.139) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Mon, 10 Feb 2025 20:46:14 -0800
+From: Pratyush Brahma <quic_pbrahma@quicinc.com>
+Subject: [PATCH v5 0/2] Add support for GPU SMMU on QCS8300
+Date: Tue, 11 Feb 2025 10:15:52 +0530
+Message-ID: <20250211-b4-branch-gfx-smmu-v5-0-ff0bcb6a3c51@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAADWqmcC/22Nyw6DIBREf8XcdW+DgPSx6n80LpCC3IVooRobw
+ 7+X2m2T2ZxJ5swGyUayCa7VBtEulGgMBZpDBcbr0FukR2HgjDesFjV2Eruog/HYuxXTMMzYMcF
+ VfVGCKQllOEXraN2l97awp/Qa43v/WOS3/ek4E/90i0SGVutTieJOnm/PmQwFczTjAG3O+QNn4
+ tHOtgAAAA==
+X-Change-ID: 20250131-b4-branch-gfx-smmu-b03261963064
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        "Joerg
+ Roedel" <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson
+	<andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>
+CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        Pratyush Brahma <quic_pbrahma@quicinc.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1739249174; l=2091;
+ i=quic_pbrahma@quicinc.com; s=20250113; h=from:subject:message-id;
+ bh=McOZt8EMFCYaBYql7fipCYligaaQW+bEOpaqsbXqnjg=;
+ b=ueb+q6Ysrxv/DCpBNWDdVRsGrNMhzSvM0V5LKPqZKAWZoBWXj8Uv5bjzoOQARTT93xShN5lPX
+ qC8ao66917NAV68qi4oAhRc6p2LMVbe7o3I2xEhn7Sx3Te02jzwYIfC
+X-Developer-Key: i=quic_pbrahma@quicinc.com; a=ed25519;
+ pk=YvfZKC4rRO1Fot+wlXZqsoQWnAtLqrpMyEzslw3Ji+M=
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: rtXo1t1Nyw0bIEMNcaL8cpqxdvesyucX
+X-Proofpoint-ORIG-GUID: rtXo1t1Nyw0bIEMNcaL8cpqxdvesyucX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-11_02,2025-02-10_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ phishscore=0 spamscore=0 malwarescore=0 impostorscore=0 lowpriorityscore=0
+ clxscore=1011 priorityscore=1501 bulkscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2501170000
+ definitions=main-2502110026
 
-This driver supports page faults on PCI RID since commit <9f831c16c69e>
-("iommu/vt-d: Remove the pasid present check in prq_event_thread") by
-allowing the reporting of page faults with the pasid_present field cleared
-to the upper layer for further handling. The fundamental assumption here
-is that the detach or replace operations act as a fence for page faults.
-This implies that all pending page faults associated with a specific RID
-or PASID are flushed when a domain is detached or replaced from a device
-RID or PASID.
+Enable GPU SMMU function on QCS8300 platform. GPU SMMU is required
+for address translation in GPU device.
 
-However, the intel_iommu_drain_pasid_prq() helper does not correctly
-handle faults for RID. This leads to faults potentially remaining pending
-in the iommu hardware queue even after the domain is detached, thereby
-violating the aforementioned assumption.
-
-Fix this issue by extending intel_iommu_drain_pasid_prq() to cover faults
-for RID.
-
-Fixes: 9f831c16c69e ("iommu/vt-d: Remove the pasid present check in prq_event_thread")
-Cc: stable@vger.kernel.org
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20250121023150.815972-1-baolu.lu@linux.intel.com
+Signed-off-by: Pratyush Brahma <quic_pbrahma@quicinc.com>
 ---
- drivers/iommu/intel/prq.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Changes since v4:
+- Corrected the clocks list to be inline with clock-names
+- Removed stray whitespaces
+- Added r-by tag from Krzysztof on the bindings patch
+- Link to v4: https://lore.kernel.org/r/20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com
 
-diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
-index c2d792db52c3..064194399b38 100644
---- a/drivers/iommu/intel/prq.c
-+++ b/drivers/iommu/intel/prq.c
-@@ -87,7 +87,9 @@ void intel_iommu_drain_pasid_prq(struct device *dev, u32 pasid)
- 		struct page_req_dsc *req;
- 
- 		req = &iommu->prq[head / sizeof(*req)];
--		if (!req->pasid_present || req->pasid != pasid) {
-+		if (req->rid != sid ||
-+		    (req->pasid_present && pasid != req->pasid) ||
-+		    (!req->pasid_present && pasid != IOMMU_NO_PASID)) {
- 			head = (head + sizeof(*req)) & PRQ_RING_MASK;
- 			continue;
- 		}
+Changes since v3:
+- Modified the order of clock voting and properties as suggested by Konrad
+- Removed dependency on clocks in commit text as change is merged in
+  linux-next before current base commit
+
+Link to v3:
+https://lore.kernel.org/all/20241227105818.28516-1-quic_pbrahma@quicinc.com/
+
+Changes since v2:
+Corrected typo in cover letter to include QCS8300
+Link to
+v2:https://lore.kernel.org/all/20241227104651.4531-1-quic_pbrahma@quicinc.com/
+
+Changes since v1:
+Updated bindings for gpu smmu for qcs8300 as per Dmitry's comment
+Link to v1:
+https://lore.kernel.org/all/20241224100521.7616-1-quic_pbrahma@quicinc.com/
+
+To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Joerg Roedel <joro@8bytes.org>
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+To: Bjorn Andersson <andersson@kernel.org>
+To: Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux.dev
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arm-msm@vger.kernel.org
+
+---
+Pratyush Brahma (2):
+      dt-bindings: arm-smmu: Document QCS8300 GPU SMMU
+      arm64: dts: qcom: qcs8300: Add device node for  gfx_smmu
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |  3 +-
+ arch/arm64/boot/dts/qcom/qcs8300.dtsi              | 39 ++++++++++++++++++++++
+ 2 files changed, 41 insertions(+), 1 deletion(-)
+---
+base-commit: a13f6e0f405ed0d3bcfd37c692c7d7fa3c052154
+change-id: 20250131-b4-branch-gfx-smmu-b03261963064
+
+Best regards,
 -- 
-2.43.0
+Pratyush Brahma <quic_pbrahma@quicinc.com>
 
