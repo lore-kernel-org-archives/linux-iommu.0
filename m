@@ -1,114 +1,182 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B2779CD;
-	Tue, 11 Feb 2025 15:16:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB2AE253340
+	for <iommu@lists.linux.dev>; Tue, 11 Feb 2025 15:25:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739287014; cv=none; b=k/cwenZchjfmCsRp35amq1CGLM+c5JFQTvDm9aJoRFcLlD2d0raJmTsS8GTVyWmK5XLZUm5mekC+nOSF2K04GKLcUHVR7vLe9XMl5io/hZeBBY/t7RZqvyzX+iavY3qKhdaMcxZjOhYYDIgt0ic0zctwbVpfOKS2XM/7mocz3Vs=
+	t=1739287533; cv=none; b=SVnfYEp9gQurxX1FDDM9cbk0AHeuMSkno+mynGoIduzZucsmP2cKIPpfAZ0oqvE1kB02J7xW8PUOdQY5U2RR1c8J/BDaK2UG/aV6l3H+UCgCWcWqK7D6nun7a4/hrLbPfEyzqcl/500FEXrRv4ZoCe38pS6WQUom50T28LVZjsg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739287014; c=relaxed/simple;
-	bh=RTGxW5AvzVSz8elarxvdv1y9lwLwzv8O6K/rF3m8CcQ=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=pLkiatQYAa7akK7ZM8cBBi22X3YcR0tYjllSNCioSMOmdO9cjPXDkwK1gP+i4CjhGYNpaWD3eiS+zmMRM6gS/zNCwfnsryEjiSqmVFohowWJl1xx8GR+A05TcNeFpr1uYhsHXbdP7S118KjG71zNugjidn383xKA4Iw4Cm7oyg8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QwTlTUoD; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739287533; c=relaxed/simple;
+	bh=8q89y8G7WBLY8y6QY0gDAqk5nmkC11+b3ZyOX7ul1kY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=KiGmDQEDo/Vkmo5HqKmE9jR4hSp34JM9qE6t/SmAF387kEa9JUdUyey7VJyQzCja6uGEjQ7uASJQQOBZYW3FBYap0JLvJ/acG329eMsQanAodJZBjKcgqBmG88lyZeogQeOj2aq9GdxtCcLXNYKr53P1Y5AlTJQSFULWTONFcXU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=f1ygNHlE; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=f1ygNHlE; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QwTlTUoD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFB6DC4CEDD;
-	Tue, 11 Feb 2025 15:16:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739287013;
-	bh=RTGxW5AvzVSz8elarxvdv1y9lwLwzv8O6K/rF3m8CcQ=;
-	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-	b=QwTlTUoDPVBAmL6PatKWXdCQ+QVMTTRPm9XC2f6TrGQxaLAbtHdiLmSBWDFMJ0CtQ
-	 3sVWMc4uTCL+nvZ2LJrHadWa7vifrkgIwtCdO+rJ7urAFUC8dmGftSFWNaXZHWZ1Sa
-	 GgDS6umkL954588wZifcJ9c53s/bP10Brj0CEntMYkTRZW/cfChvlkV1QXTZWffVJD
-	 zqK793f2gVtSADLw2hf7ZQC0/1LbNW5aM+uq5w1cWQVdg65bmLMyBrbA2yoheQkOPC
-	 CWn3Iwlk/8xZbAR5vnVawqCecy5YFFSkDmiFwrNW+ySzf9dIsSSOfeHa3dbziu7Nop
-	 Fh/hvm7qilg2g==
-Message-ID: <f2dc2e86-efa3-488f-bb0a-33bc681525c5@kernel.org>
-Date: Tue, 11 Feb 2025 16:16:47 +0100
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="f1ygNHlE";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="f1ygNHlE"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 93FCA37363;
+	Tue, 11 Feb 2025 12:04:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1739275481; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7+JonyeTS6PhmJUJZ7cwFOpKA9QAKAShpmEQryox7lg=;
+	b=f1ygNHlEKOh+wqzr5Bw8tgj1xvQeSPm0CX93J6GGbGyWsio/hs85hO7PYIhiK977tm6t8F
+	2E7TbMOFvyFWF0MKDWeFPcG2nCkH3JdwQMmabolIhf+HnOHKL1ZyED/NwEhn4gApyiHLIu
+	1fkS/q8EFadYRtjyu3cSGL3TSp5O49g=
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.com header.s=susede1 header.b=f1ygNHlE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1739275481; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7+JonyeTS6PhmJUJZ7cwFOpKA9QAKAShpmEQryox7lg=;
+	b=f1ygNHlEKOh+wqzr5Bw8tgj1xvQeSPm0CX93J6GGbGyWsio/hs85hO7PYIhiK977tm6t8F
+	2E7TbMOFvyFWF0MKDWeFPcG2nCkH3JdwQMmabolIhf+HnOHKL1ZyED/NwEhn4gApyiHLIu
+	1fkS/q8EFadYRtjyu3cSGL3TSp5O49g=
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 5851313782;
+	Tue, 11 Feb 2025 12:04:41 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id A7geFNk8q2e3GgAAD6G6ig
+	(envelope-from <jgross@suse.com>); Tue, 11 Feb 2025 12:04:41 +0000
+From: Juergen Gross <jgross@suse.com>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	xen-devel@lists.xenproject.org,
+	Jan Vejvalka <jan.vejvalka@lfmotol.cuni.cz>
+Subject: [PATCH 1/2] xen/swiotlb: relax alignment requirements
+Date: Tue, 11 Feb 2025 13:04:31 +0100
+Message-ID: <20250211120432.29493-2-jgross@suse.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250211120432.29493-1-jgross@suse.com>
+References: <20250211120432.29493-1-jgross@suse.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/2] arm64: dts: qcom: qcs8300: Add device node for
- gfx_smmu
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Pratyush Brahma <quic_pbrahma@quicinc.com>
-Cc: andersson@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
- iommu@lists.linux.dev, joro@8bytes.org, konradybcio@kernel.org,
- krzk+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- robh@kernel.org, robin.murphy@arm.com, will@kernel.org
-References: <20250203-b4-branch-gfx-smmu-v4-2-eaa7aa762f48@quicinc.com>
- <ed3cc71a-426e-4044-86dd-945751e282d5@quicinc.com>
- <990bb621-5056-4460-82db-9805699d8a8d@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <990bb621-5056-4460-82db-9805699d8a8d@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 93FCA37363
+X-Spam-Score: -3.01
+X-Rspamd-Action: no action
+X-Spamd-Result: default: False [-3.01 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	MID_CONTAINS_FROM(1.00)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_MISSING_CHARSET(0.50)[];
+	R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	TO_DN_SOME(0.00)[];
+	DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.com:+];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCPT_COUNT_SEVEN(0.00)[7];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	ASN(0.00)[asn:25478, ipnet:::/0, country:RU];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim,suse.com:mid,suse.com:email,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Flag: NO
+X-Spam-Level: 
 
-On 10/02/2025 12:41, Krzysztof Kozlowski wrote:
-> On 10/02/2025 05:58, Pratyush Brahma wrote:
->> Hi
->>
->> Can someone kindly review this patch?
->>
-> 
-> After 7 days? Community is not working for you to make such demands.
-> Observe standard waiting time. Or better: Please relax, and help out by
-> reviewing other patches on the mailing lists in order to relieve the
-> burden of maintainers and move your patches higher up the list.
+When mapping a buffer for DMA via .map_page or .map_sg DMA operations,
+there is no need to check the machine frames to be aligned according
+to the mapped areas size. All what is needed in these cases is that the
+buffer is contiguous at machine level.
 
-Before you start pinging us, test your patches. That's one of the
-easiest steps to get your patches reviewed or applied fast.
+So carve out the alignment check from range_straddles_page_boundary()
+and move it to a helper called by xen_swiotlb_alloc_coherent() and
+xen_swiotlb_free_coherent() directly.
 
-Best regards,
-Krzysztof
+Fixes: 9f40ec84a797 ("xen/swiotlb: add alignment check for dma buffers")
+Reported-by: Jan Vejvalka <jan.vejvalka@lfmotol.cuni.cz>
+Tested-by: Jan Vejvalka <jan.vejvalka@lfmotol.cuni.cz>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+---
+ drivers/xen/swiotlb-xen.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index a337edcf8faf..26c62e0d34e9 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -74,19 +74,21 @@ static inline phys_addr_t xen_dma_to_phys(struct device *dev,
+ 	return xen_bus_to_phys(dev, dma_to_phys(dev, dma_addr));
+ }
+ 
++static inline bool range_requires_alignment(phys_addr_t p, size_t size)
++{
++	phys_addr_t algn = 1ULL << (get_order(size) + PAGE_SHIFT);
++	phys_addr_t bus_addr = pfn_to_bfn(XEN_PFN_DOWN(p)) << XEN_PAGE_SHIFT;
++
++	return IS_ALIGNED(p, algn) && !IS_ALIGNED(bus_addr, algn);
++}
++
+ static inline int range_straddles_page_boundary(phys_addr_t p, size_t size)
+ {
+ 	unsigned long next_bfn, xen_pfn = XEN_PFN_DOWN(p);
+ 	unsigned int i, nr_pages = XEN_PFN_UP(xen_offset_in_page(p) + size);
+-	phys_addr_t algn = 1ULL << (get_order(size) + PAGE_SHIFT);
+ 
+ 	next_bfn = pfn_to_bfn(xen_pfn);
+ 
+-	/* If buffer is physically aligned, ensure DMA alignment. */
+-	if (IS_ALIGNED(p, algn) &&
+-	    !IS_ALIGNED((phys_addr_t)next_bfn << XEN_PAGE_SHIFT, algn))
+-		return 1;
+-
+ 	for (i = 1; i < nr_pages; i++)
+ 		if (pfn_to_bfn(++xen_pfn) != ++next_bfn)
+ 			return 1;
+@@ -156,7 +158,8 @@ xen_swiotlb_alloc_coherent(struct device *dev, size_t size,
+ 
+ 	*dma_handle = xen_phys_to_dma(dev, phys);
+ 	if (*dma_handle + size - 1 > dma_mask ||
+-	    range_straddles_page_boundary(phys, size)) {
++	    range_straddles_page_boundary(phys, size) ||
++	    range_requires_alignment(phys, size)) {
+ 		if (xen_create_contiguous_region(phys, order, fls64(dma_mask),
+ 				dma_handle) != 0)
+ 			goto out_free_pages;
+@@ -182,7 +185,8 @@ xen_swiotlb_free_coherent(struct device *dev, size_t size, void *vaddr,
+ 	size = ALIGN(size, XEN_PAGE_SIZE);
+ 
+ 	if (WARN_ON_ONCE(dma_handle + size - 1 > dev->coherent_dma_mask) ||
+-	    WARN_ON_ONCE(range_straddles_page_boundary(phys, size)))
++	    WARN_ON_ONCE(range_straddles_page_boundary(phys, size) ||
++			 range_requires_alignment(phys, size)))
+ 	    	return;
+ 
+ 	if (TestClearPageXenRemapped(virt_to_page(vaddr)))
+-- 
+2.43.0
+
