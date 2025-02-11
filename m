@@ -1,99 +1,60 @@
-Received: from baidu.com (mx22.baidu.com [220.181.50.185])
+Received: from out-189.mta0.migadu.com (out-189.mta0.migadu.com [91.218.175.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F2631F03D9
-	for <iommu@lists.linux.dev>; Tue, 11 Feb 2025 10:15:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.181.50.185
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3BB91F1905
+	for <iommu@lists.linux.dev>; Tue, 11 Feb 2025 12:17:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.189
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739268936; cv=none; b=uJ+hkQ65vVe0fJOl4ZRNywG1hQh6azvCfoXULKxR4ulQysrnBqQ+FN84YxkEduUhCIc0QSXDtCfGnwUQcbcDc+M7BC+A5rHxNrXoAaeKBn6b90dwS7dhUmCGtw1R7GcPLCZeGghWOiy/TBhxIzDeYJJmdddt7AhkmHyIZ5x4zUk=
+	t=1739276241; cv=none; b=R95jCcNgE6BJUaTnUhGTQntgvTrSV6rXSDydVLvyetYFDm3vK9pd1XAfmjt5c90GoAinh7Dp6u6fIVHh1yHXf0FCP2k2lHInaLzf/QHIRhffOd2cRaDSNnoybFNNgoZ3QbdgCY2B3XS5S0MO2bY8G+Rly0Si5llxsG9lOd20eFk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739268936; c=relaxed/simple;
-	bh=vhmJP3SgUFSb6aFAs8HFWZ9wlbBpAyJtm6J8tuD/dc0=;
-	h=From:To:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=G6JyfNMe6KS+Mc2Qs1038cf4ggYrrLLWSdUzZ3MIuPUo1Lr7vF3XgrC0Hh+WLPeRujkSXYV9jsV/EymQN00rJ63BCHyAVYKgj+06apZZYHq+ymNdI/olc6HCUOVdm4T6sfgvIg7Q1pGLeFEVcylKxVDJGdxq4Zv5Rx78soJuSN8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; arc=none smtp.client-ip=220.181.50.185
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
-From: "Li,Rongqing" <lirongqing@baidu.com>
-To: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "vasant.hegde@amd.com" <vasant.hegde@amd.com>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIXVt2Ml0gaW9tbXU6IG1vdmUgdGhlIGFkZGluZyBncm91?=
- =?gb2312?Q?p_info_to_proper_place?=
-Thread-Topic: [PATCH][v2] iommu: move the adding group info to proper place
-Thread-Index: AQHbYLVFO1AW+mElyEO41nYmqp3VlLNCGexg
-Date: Tue, 11 Feb 2025 10:14:49 +0000
-Message-ID: <a77952f74d1e4d718d24983b2292971d@baidu.com>
-References: <20250107033558.41135-1-lirongqing@baidu.com>
-In-Reply-To: <20250107033558.41135-1-lirongqing@baidu.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1739276241; c=relaxed/simple;
+	bh=6aUhrzJlTBy3sWK4uKb4ZsjibWQEe12+QrvuuiLN5UY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bVYuOFZgwPis0oNF/qtLEln5NJLvKrm9eklP5HYSNiaoqwXIA6+gOk1my02w2/zQjgjJEyNS+3pGHQCrTY+dxzNPNqMqf6FdtTfF6bCw8xGGFJc/7NXL6sHZlbDobDJxPY1J4wFYZs5NkXdUO0ISCrTt3HbppVhiywUxr+xrNWc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io; spf=pass smtp.mailfrom=rosenzweig.io; dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b=d/TGtefH; arc=none smtp.client-ip=91.218.175.189
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rosenzweig.io
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b="d/TGtefH"
+Date: Tue, 11 Feb 2025 07:17:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rosenzweig.io;
+	s=key1; t=1739276226;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6aUhrzJlTBy3sWK4uKb4ZsjibWQEe12+QrvuuiLN5UY=;
+	b=d/TGtefHLpW6ZjTac2OFk42U5TbMYSEGR2nBO4lgoKgazhrXof5x39MQ7j1ph76yUNjqSp
+	wRI1Agy8c5q0nXK+6T4vTXWdlNAj+Q0y/OlcBjb4LjXb/o9zmPeFg1EFnIXfUVdsHzvc3/
+	O/Fzm+Y4QLmJdwh9O6j8Z7hBvDEiNxqDC2IMFr35lSvKJ5ygr8VfWk18LrZ5Vh9g9Sp8Va
+	/+IyeB6SoZIXl+qxOCHBgVj7h28znjHgyuWIimTLOhNHHYwfSOyob4KaDX0yCSZ2t0rPQo
+	2iFxYmafjdXT/TZz2WlN5wsg36AyKUVNvfmN/VztiNAzPRFPMa95B4GmolOSAA==
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+To: Nick Chan <towinchenmi@gmail.com>
+Cc: Sven Peter <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/5] iommu/dart: Reject identity domain for locked DARTs
+Message-ID: <Z6s_vXUrZjyhECC2@blossom>
+References: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
+ <20250210-locked-dart-v1-4-5d97fe247f35@rosenzweig.io>
+ <5d82d549-663f-4438-922a-6831e57e80b5@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-FEAS-Client-IP: 172.31.51.56
-X-FE-Last-Public-Client-IP: 100.100.100.38
-X-FE-Policy-ID: 52:10:53:SYSTEM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5d82d549-663f-4438-922a-6831e57e80b5@gmail.com>
+X-Migadu-Flow: FLOW_OUT
 
-DQo+IEFmdGVyIGNvbW1pdCBmYTA4MjgwMzY0ODggKCJpb21tdTogU3BsaXQgaW9tbXVfZ3JvdXBf
-YWRkX2RldmljZSgpIiksIHRoZQ0KPiBhZGRpbmcgZ3JvdXAgaW5mb3JtYXRpb24gaXMgbGVmdCBp
-biBpb21tdV9ncm91cF9hbGxvY19kZXZpY2UsIGJ1dCB3aGljaCBvbmx5DQo+IGFsbG9jYXRlIGdy
-b3VwIGRldmljZSwgbm90IGF0dGFjaCB0aGUgZGV2aWNlIHRvIGlvbW11IGdyb3VwOw0KPiANCj4g
-c28gbW92ZSB0aGUgcHJpbnQgdG8gaW9tbXUgcHJvYmluZyBhbmQgYWRkaW5nIGZ1bmN0aW9ucw0K
-PiANCj4gUmV2aWV3ZWQtYnk6IEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+DQo+
-IFNpZ25lZC1vZmYtYnk6IExpIFJvbmdRaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNvbT4NCg0KDQoN
-ClBpbmcNCg0KVGhhbmtzDQoNCi1MaVJvbmdRaW5nDQoNCg0KPiAtLS0NCj4gRGlmZiB3aXRoIHYx
-OiBhZGQgbG9nIHdoZW4gaW9tbXVfZ3JvdXBfYWxsb2NfZGV2aWNlIGZhaWxlZCBpbg0KPiBpb21t
-dV9ncm91cF9hZGRfZGV2aWNlDQo+IA0KPiAgZHJpdmVycy9pb21tdS9pb21tdS5jIHwgMjEgKysr
-KysrKysrKysrKystLS0tLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMTQgaW5zZXJ0aW9ucygrKSwg
-NyBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lvbW11LmMg
-Yi9kcml2ZXJzL2lvbW11L2lvbW11LmMgaW5kZXgNCj4gNTk5MDMwZS4uMmVhYThhYiAxMDA2NDQN
-Cj4gLS0tIGEvZHJpdmVycy9pb21tdS9pb21tdS5jDQo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW9t
-bXUuYw0KPiBAQCAtNTg2LDYgKzU4Niw5IEBAIHN0YXRpYyBpbnQgX19pb21tdV9wcm9iZV9kZXZp
-Y2Uoc3RydWN0IGRldmljZSAqZGV2LA0KPiBzdHJ1Y3QgbGlzdF9oZWFkICpncm91cF9saXN0DQo+
-IA0KPiAgCW11dGV4X3VubG9jaygmZ3JvdXAtPm11dGV4KTsNCj4gDQo+ICsJdHJhY2VfYWRkX2Rl
-dmljZV90b19ncm91cChncm91cC0+aWQsIGRldik7DQo+ICsJZGV2X2luZm8oZGV2LCAiQWRkaW5n
-IHRvIGlvbW11IGdyb3VwICVkXG4iLCBncm91cC0+aWQpOw0KPiArDQo+ICAJcmV0dXJuIDA7DQo+
-IA0KPiAgZXJyX3JlbW92ZV9nZGV2Og0KPiBAQCAtNTk0LDYgKzU5Nyw3IEBAIHN0YXRpYyBpbnQg
-X19pb21tdV9wcm9iZV9kZXZpY2Uoc3RydWN0IGRldmljZSAqZGV2LA0KPiBzdHJ1Y3QgbGlzdF9o
-ZWFkICpncm91cF9saXN0DQo+ICBlcnJfcHV0X2dyb3VwOg0KPiAgCWlvbW11X2RlaW5pdF9kZXZp
-Y2UoZGV2KTsNCj4gIAltdXRleF91bmxvY2soJmdyb3VwLT5tdXRleCk7DQo+ICsJZGV2X2Vycihk
-ZXYsICJGYWlsZWQgdG8gYWRkIHRvIGlvbW11IGdyb3VwICVkOiAlZFxuIiwgZ3JvdXAtPmlkLCBy
-ZXQpOw0KPiAgCWlvbW11X2dyb3VwX3B1dChncm91cCk7DQo+IA0KPiAgCXJldHVybiByZXQ7DQo+
-IEBAIC0xMTkyLDEwICsxMTk2LDYgQEAgc3RhdGljIHN0cnVjdCBncm91cF9kZXZpY2UNCj4gKmlv
-bW11X2dyb3VwX2FsbG9jX2RldmljZShzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmdyb3VwLA0KPiAgCQln
-b3RvIGVycl9mcmVlX25hbWU7DQo+ICAJfQ0KPiANCj4gLQl0cmFjZV9hZGRfZGV2aWNlX3RvX2dy
-b3VwKGdyb3VwLT5pZCwgZGV2KTsNCj4gLQ0KPiAtCWRldl9pbmZvKGRldiwgIkFkZGluZyB0byBp
-b21tdSBncm91cCAlZFxuIiwgZ3JvdXAtPmlkKTsNCj4gLQ0KPiAgCXJldHVybiBkZXZpY2U7DQo+
-IA0KPiAgZXJyX2ZyZWVfbmFtZToNCj4gQEAgLTEyMDQsNyArMTIwNCw2IEBAIHN0YXRpYyBzdHJ1
-Y3QgZ3JvdXBfZGV2aWNlDQo+ICppb21tdV9ncm91cF9hbGxvY19kZXZpY2Uoc3RydWN0IGlvbW11
-X2dyb3VwICpncm91cCwNCj4gIAlzeXNmc19yZW1vdmVfbGluaygmZGV2LT5rb2JqLCAiaW9tbXVf
-Z3JvdXAiKTsNCj4gIGVycl9mcmVlX2RldmljZToNCj4gIAlrZnJlZShkZXZpY2UpOw0KPiAtCWRl
-dl9lcnIoZGV2LCAiRmFpbGVkIHRvIGFkZCB0byBpb21tdSBncm91cCAlZDogJWRcbiIsIGdyb3Vw
-LT5pZCwgcmV0KTsNCj4gIAlyZXR1cm4gRVJSX1BUUihyZXQpOw0KPiAgfQ0KPiANCj4gQEAgLTEy
-MTksMTAgKzEyMTgsMTQgQEAgc3RhdGljIHN0cnVjdCBncm91cF9kZXZpY2UNCj4gKmlvbW11X2dy
-b3VwX2FsbG9jX2RldmljZShzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmdyb3VwLCAgaW50DQo+IGlvbW11
-X2dyb3VwX2FkZF9kZXZpY2Uoc3RydWN0IGlvbW11X2dyb3VwICpncm91cCwgc3RydWN0IGRldmlj
-ZSAqZGV2KSAgew0KPiAgCXN0cnVjdCBncm91cF9kZXZpY2UgKmdkZXY7DQo+ICsJaW50IHJldDsN
-Cj4gDQo+ICAJZ2RldiA9IGlvbW11X2dyb3VwX2FsbG9jX2RldmljZShncm91cCwgZGV2KTsNCj4g
-LQlpZiAoSVNfRVJSKGdkZXYpKQ0KPiAtCQlyZXR1cm4gUFRSX0VSUihnZGV2KTsNCj4gKwlpZiAo
-SVNfRVJSKGdkZXYpKSB7DQo+ICsJCXJldCA9IFBUUl9FUlIoZ2Rldik7DQo+ICsJCWRldl9lcnIo
-ZGV2LCAiRmFpbGVkIHRvIGFkZCB0byBpb21tdSBncm91cCAlZDogJWRcbiIsIGdyb3VwLT5pZCwN
-Cj4gcmV0KTsNCj4gKwkJcmV0dXJuIHJldDsNCj4gKwl9DQo+IA0KPiAgCWlvbW11X2dyb3VwX3Jl
-Zl9nZXQoZ3JvdXApOw0KPiAgCWRldi0+aW9tbXVfZ3JvdXAgPSBncm91cDsNCj4gQEAgLTEyMzAs
-NiArMTIzMywxMCBAQCBpbnQgaW9tbXVfZ3JvdXBfYWRkX2RldmljZShzdHJ1Y3QNCj4gaW9tbXVf
-Z3JvdXAgKmdyb3VwLCBzdHJ1Y3QgZGV2aWNlICpkZXYpDQo+ICAJbXV0ZXhfbG9jaygmZ3JvdXAt
-Pm11dGV4KTsNCj4gIAlsaXN0X2FkZF90YWlsKCZnZGV2LT5saXN0LCAmZ3JvdXAtPmRldmljZXMp
-Ow0KPiAgCW11dGV4X3VubG9jaygmZ3JvdXAtPm11dGV4KTsNCj4gKw0KPiArCXRyYWNlX2FkZF9k
-ZXZpY2VfdG9fZ3JvdXAoZ3JvdXAtPmlkLCBkZXYpOw0KPiArCWRldl9pbmZvKGRldiwgIkFkZGlu
-ZyB0byBpb21tdSBncm91cCAlZFxuIiwgZ3JvdXAtPmlkKTsNCj4gKw0KPiAgCXJldHVybiAwOw0K
-PiAgfQ0KPiAgRVhQT1JUX1NZTUJPTF9HUEwoaW9tbXVfZ3JvdXBfYWRkX2RldmljZSk7DQo+IC0t
-DQo+IDIuOS40DQoNCg==
+> > Signed-off-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+> > Signed-off-by: Janne Grunau <j@jannau.net>
+> The submitter's sign-off must be the last sign-off. It appears that you are the author
+> of this patch, so drop Janne's sign-off.
+
+Thanks, fixed in v2.
