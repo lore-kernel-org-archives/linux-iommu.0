@@ -1,60 +1,130 @@
-Received: from out-189.mta0.migadu.com (out-189.mta0.migadu.com [91.218.175.189])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3BB91F1905
-	for <iommu@lists.linux.dev>; Tue, 11 Feb 2025 12:17:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.189
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E449A1FCF74
+	for <iommu@lists.linux.dev>; Tue, 11 Feb 2025 12:29:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739276241; cv=none; b=R95jCcNgE6BJUaTnUhGTQntgvTrSV6rXSDydVLvyetYFDm3vK9pd1XAfmjt5c90GoAinh7Dp6u6fIVHh1yHXf0FCP2k2lHInaLzf/QHIRhffOd2cRaDSNnoybFNNgoZ3QbdgCY2B3XS5S0MO2bY8G+Rly0Si5llxsG9lOd20eFk=
+	t=1739276945; cv=none; b=eBCVvRdg6xrlf8XAc/JBVN+CIaTOyPNnldwzB0V6C4AHolpSPjQbJG/C7ZKwxaOHHhMEkUF9mTGWJ+MwYJB/TylZCwJZxhEOcrUqWi5L3XoDnoo3n8Se6bnSfM2d+p5rTf3lS0ral2shp0AdFUSkY0B++UuMLtWNiSDyUDhVpiI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739276241; c=relaxed/simple;
-	bh=6aUhrzJlTBy3sWK4uKb4ZsjibWQEe12+QrvuuiLN5UY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bVYuOFZgwPis0oNF/qtLEln5NJLvKrm9eklP5HYSNiaoqwXIA6+gOk1my02w2/zQjgjJEyNS+3pGHQCrTY+dxzNPNqMqf6FdtTfF6bCw8xGGFJc/7NXL6sHZlbDobDJxPY1J4wFYZs5NkXdUO0ISCrTt3HbppVhiywUxr+xrNWc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io; spf=pass smtp.mailfrom=rosenzweig.io; dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b=d/TGtefH; arc=none smtp.client-ip=91.218.175.189
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rosenzweig.io
+	s=arc-20240116; t=1739276945; c=relaxed/simple;
+	bh=RcqBaJ+EL7CCfV/bFegfRimyJtpwi2rMY3RrvnBDwkY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AFGK3hZTXMHH49cBe0DnsUbEZYM/NEvny/gjYK6hnYATrBxvuTeEgxmzjrgaiorwkaMQ6IKwLiN0MV+/YExl99JYddCkzwGP00CvHCjuX5m5jgXr3wTj0PHi4v47hfIonF6DwMbMMBDmZ/TaLG77X/ufZjdSOEd6AOLGSZ/JvAo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=mG5KJkJE; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=mG5KJkJE; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b="d/TGtefH"
-Date: Tue, 11 Feb 2025 07:17:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rosenzweig.io;
-	s=key1; t=1739276226;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6aUhrzJlTBy3sWK4uKb4ZsjibWQEe12+QrvuuiLN5UY=;
-	b=d/TGtefHLpW6ZjTac2OFk42U5TbMYSEGR2nBO4lgoKgazhrXof5x39MQ7j1ph76yUNjqSp
-	wRI1Agy8c5q0nXK+6T4vTXWdlNAj+Q0y/OlcBjb4LjXb/o9zmPeFg1EFnIXfUVdsHzvc3/
-	O/Fzm+Y4QLmJdwh9O6j8Z7hBvDEiNxqDC2IMFr35lSvKJ5ygr8VfWk18LrZ5Vh9g9Sp8Va
-	/+IyeB6SoZIXl+qxOCHBgVj7h28znjHgyuWIimTLOhNHHYwfSOyob4KaDX0yCSZ2t0rPQo
-	2iFxYmafjdXT/TZz2WlN5wsg36AyKUVNvfmN/VztiNAzPRFPMa95B4GmolOSAA==
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-To: Nick Chan <towinchenmi@gmail.com>
-Cc: Sven Peter <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] iommu/dart: Reject identity domain for locked DARTs
-Message-ID: <Z6s_vXUrZjyhECC2@blossom>
-References: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
- <20250210-locked-dart-v1-4-5d97fe247f35@rosenzweig.io>
- <5d82d549-663f-4438-922a-6831e57e80b5@gmail.com>
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="mG5KJkJE";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="mG5KJkJE"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id E68A937B3E;
+	Tue, 11 Feb 2025 12:04:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1739275475; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=zxuVAvyzkp6zq60Y3IIgw3a0N6EBZB0/ewpeFUtjxfE=;
+	b=mG5KJkJEA9cENgXVVW1/b1jxBw55qBBByi9PqzfHzpewCvY3NEQwN486QwswigWR3z3MaO
+	5RV9+Cpgb3JBOuZf7DOhtGxjiRbMQmmRdcShemoF4qnQwJsM6EDshp0HbF+ORTW7Gu3afx
+	DdhHDp5aJLMzmzDwtMCbwbIAsgo2hUY=
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.com header.s=susede1 header.b=mG5KJkJE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1739275475; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=zxuVAvyzkp6zq60Y3IIgw3a0N6EBZB0/ewpeFUtjxfE=;
+	b=mG5KJkJEA9cENgXVVW1/b1jxBw55qBBByi9PqzfHzpewCvY3NEQwN486QwswigWR3z3MaO
+	5RV9+Cpgb3JBOuZf7DOhtGxjiRbMQmmRdcShemoF4qnQwJsM6EDshp0HbF+ORTW7Gu3afx
+	DdhHDp5aJLMzmzDwtMCbwbIAsgo2hUY=
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 7ECAB13782;
+	Tue, 11 Feb 2025 12:04:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id njSKHdM8q2egGgAAD6G6ig
+	(envelope-from <jgross@suse.com>); Tue, 11 Feb 2025 12:04:35 +0000
+From: Juergen Gross <jgross@suse.com>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	x86@kernel.org
+Cc: Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	xen-devel@lists.xenproject.org,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH 0/2] xen/swiotlb: one fix and one optimization
+Date: Tue, 11 Feb 2025 13:04:30 +0100
+Message-ID: <20250211120432.29493-1-jgross@suse.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5d82d549-663f-4438-922a-6831e57e80b5@gmail.com>
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: E68A937B3E
+X-Spam-Level: 
+X-Spamd-Result: default: False [-3.01 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	MID_CONTAINS_FROM(1.00)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_MISSING_CHARSET(0.50)[];
+	R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	MIME_TRACE(0.00)[0:+];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCPT_COUNT_TWELVE(0.00)[13];
+	ARC_NA(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	FROM_EQ_ENVFROM(0.00)[];
+	ASN(0.00)[asn:25478, ipnet:::/0, country:RU];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.com:+];
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.com:dkim,suse.com:mid]
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Spam-Score: -3.01
+X-Spam-Flag: NO
 
-> > Signed-off-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-> > Signed-off-by: Janne Grunau <j@jannau.net>
-> The submitter's sign-off must be the last sign-off. It appears that you are the author
-> of this patch, so drop Janne's sign-off.
+Patch 1 removes an unneeded alignment requirement, which resulted in
+exhausting the SWIOTLB with normal use cases.
 
-Thanks, fixed in v2.
+Patch 2 is an optimization to avoid destroying a contiguous region
+without any need to do so.
+
+There will be probably another patch following to allow larger
+contiguous regions to be created, but this one isn't ready yet.
+
+Juergen Gross (2):
+  xen/swiotlb: relax alignment requirements
+  xen/swiotlb: don't destroy contiguous region in all cases
+
+ arch/x86/include/asm/xen/swiotlb-xen.h |  5 +++--
+ arch/x86/xen/mmu_pv.c                  | 18 ++++++++++-----
+ drivers/xen/swiotlb-xen.c              | 31 ++++++++++++++++----------
+ 3 files changed, 34 insertions(+), 20 deletions(-)
+
+-- 
+2.43.0
+
