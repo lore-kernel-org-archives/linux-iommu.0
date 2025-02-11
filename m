@@ -1,156 +1,95 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B9D32F5E;
-	Tue, 11 Feb 2025 04:46:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F94F1E500C;
+	Tue, 11 Feb 2025 06:07:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739249197; cv=none; b=sIn2CGbHsDkwbH9IIhiZlrn0HtzrGkMVtoGf02Qx3kEShD2NpMhRTMTHhbh5piUeFAzrDIrpnfyvD25Jl6CeG0X8lRj6lH8UbEAvZUsobsyEofTjgxD0nYJYdP/1yvDoUz6eWx/lSBSOCyU230d4/IAVxbPkTztIFlVhXnCfSnA=
+	t=1739254064; cv=none; b=BGy0+a/MUzENQU1MDqytha8kGo4GbCWjuKKmMv6LFj/+/TCVviB9pnxMtbBtds3PzYxePfV+ZPi0Rx96RCIjaWP8Jfw233hQ2poKPIdSRmCR1ijkY6mslxX2nOmvE0l8KKk8Zqr8rX2iO6dtvxfuoo9ADP/mRZqegEJ8zUaej0E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739249197; c=relaxed/simple;
-	bh=gcoXknSb0nqMBF7zF9lg0gM7M10yomH9HjJDuP8Rvkc=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=kCSt98hzelqHeLm/z1n6yaUQ8vbSLw8T6JiBbqK3C/Qfg3WHMqLs3gr7bvdeofjuBk22H7gPUDcnsd1Xm/71nvv3TWdZmpfrau6Jo7kMaBbE968E/j2mMwdbLj48PTX++G8VF2s5gINjsktF3dMIq7sIQvXehyn0pOSYdXCPUWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=fpnYA/IS; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1739254064; c=relaxed/simple;
+	bh=eZCYBoaijxw4u7sSmxmhwO3Ew2yN/pa2fTKBphMnoEU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=R2GGZ9vePH1wnxGjUWbwBFbajkWua6SqhX3be+clpLFWwfZ+i9XEUDgGgYHlJrXbacD4s+nzE6NqjoXEIydLOfoMlavWFsV2VMuVpG68s+Li46qr/IX8uKaJ2F7cfFCPqDvXQR+rVP50yxc5G2hTjNuq1dyEc2CTGYadRyeL2aw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YCcKrxki; arc=none smtp.client-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="fpnYA/IS"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51B3wofr007898;
-	Tue, 11 Feb 2025 04:46:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ry3wqNc5AurTrjK0HmPzRbRKkeVYjEyiwQ9iuY3We4g=; b=fpnYA/ISB0MX56oT
-	/L3a3B+2JeU8K4TysHnfutQeX6veHw4RqmMLTk5zuNUNRYZ0fWvEWbnvbLOPPPm9
-	uwT0cBmr9tfe78R2O5OTdAGePKSlSR0I9oxxf9LWR8r6p03I8OKOW1Bge3NHHpQu
-	C+wE/60wdd9SfRDd3WmztE9eP5ND7+ytG8yzYVr6TSI2gEs+SY2zXycyHrSWG8WL
-	EwBOdr57CUH6qhVNku39xaE1zPQUOB5LSpJglud2vFlSxXFXUkQWciUS9KYHlAoW
-	t5viqBCq3ZYfzxpn4nxQR3T2DIQUIlEPTHtmuSU6Jdoz8LWFu3qFusVNGiONWtNG
-	V+zD2Q==
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44qy4d82vr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 11 Feb 2025 04:46:27 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51B4kQWu018120
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 11 Feb 2025 04:46:26 GMT
-Received: from hu-pbrahma-hyd.qualcomm.com (10.80.80.8) by
- nasanex01c.na.qualcomm.com (10.45.79.139) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Mon, 10 Feb 2025 20:46:22 -0800
-From: Pratyush Brahma <quic_pbrahma@quicinc.com>
-Date: Tue, 11 Feb 2025 10:15:54 +0530
-Subject: [PATCH v5 2/2] arm64: dts: qcom: qcs8300: Add device node for
- gfx_smmu
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YCcKrxki"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-21f3e2b4eceso97362255ad.2;
+        Mon, 10 Feb 2025 22:07:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1739254061; x=1739858861; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eZCYBoaijxw4u7sSmxmhwO3Ew2yN/pa2fTKBphMnoEU=;
+        b=YCcKrxkiMFH9set6SEtp0zUQDse1EMS/fwu6G0/q0Dv5dZy4lUImFhY3z8/0Qpvo4m
+         aciVU5V63/vN8QpsYrJfbKMU0nu4dTxGGS8UftzpIUljgcmofUqTf1lH6MkaXCYZGjKU
+         8OwAfg5in42ECZk96YYruZx86UDP9IG3Xcvw4oaB7BW1mUxiYqQH2ZJaKIoA32/mHZDt
+         NAMYh5+1iCtBbZotEvHhmS/bVGPNEBdHkmnGG9p9zIPPZxMsjPwAkA7ucACuNRxW5Puy
+         3vkDpTfxIF7I4D4S6U/PBhoGZM/0oOeCsFntQfETYrc+jFdqiMHNVlvv1F5mJ0Yw2Ois
+         om2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739254061; x=1739858861;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=eZCYBoaijxw4u7sSmxmhwO3Ew2yN/pa2fTKBphMnoEU=;
+        b=I3t4RuSZMJFpgwRrK0AjiDwveg05n/V7/2+k0ORcAJcbC/8VwrZ+IZKjNgIJ7XYZgx
+         0qiaIbRxVn8Y4Pji2K9XY4Xfqg1Vh47gb9CMygIAOQjL0BRcqpONnSX3yUmvIOAwmP56
+         tkz4ynhNAg7wTPuTRuDs3I+k5TvB7daupndQ4tdwg2O9IyqoT1KrqylCcuOZZDh50AMx
+         gs+oClQNlUQugSc0wTlpKL9NwKpJwKb0LMfoLtHDD7JLNZatPc9Bq7Rxn1LP/NgY7Bsf
+         W1KcioQ2zE23Mi6dgb3Ep3xE+7+OpEYvNhVKe2kR1psyyzQ/kmlUz+R9adzFjOS1ZRlD
+         eX8w==
+X-Forwarded-Encrypted: i=1; AJvYcCXeeTz9A6XAsktYNYTxU4sFPWlEvAOn3JkB5uDT1GuJRg7tzm7BWec/ERdLAJUQi/YS8PO74g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw+91lH8Cj0Rysl+6bS3s/+HMMXRmsnVQOwW6Js3Torsq90Yw6o
+	mfRwsLDzty73rojFC+K/BfexhwZnbISzGtG3VcyXVfZdENkNoRd2
+X-Gm-Gg: ASbGncvqWfu1okYsf49ofYj5hJBBs8941L/MA5NkxaHXS+WXSJSdmtxiKy2Vf7i+Va9
+	klFs/npiPKvQxeZkZGIPuB5VbstsjzJhMgNea1yVYg5OT3c26bTwAMJ/qM6W9bcSBKKy4+qe6S4
+	TwIIperK8FtCmD9MlfTDgsJUu4bDAQqKvpujBBgN1gfAIabXgaRX4/padSVNCFzi5uMB1bPP+Bp
+	zqRGzQDdHaJ14Ua8ADGK9fr28DPZGnKuk6AFq5zuyBVU7EpIR7EPrj4alrZ9zEnw5+Pf74AoUiP
+	GsNctbmWgX6HcxA2jqAoyYJGNsgTttCVJf1f1Xwly4Tg1g==
+X-Google-Smtp-Source: AGHT+IEXZbVvFHUebNOQTZZuCtmrL4QARTAUGAoCZ0Io2NendW61xrPGBTihSLTOMP+6ldmhBpF1jA==
+X-Received: by 2002:a17:902:f60a:b0:212:63db:bb15 with SMTP id d9443c01a7336-21f4e75e5famr272057935ad.38.1739254060656;
+        Mon, 10 Feb 2025 22:07:40 -0800 (PST)
+Received: from [10.89.236.32] (wf126-032.ust.hk. [175.159.126.32])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21f3683dc35sm87436575ad.126.2025.02.10.22.07.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Feb 2025 22:07:40 -0800 (PST)
+Message-ID: <5d82d549-663f-4438-922a-6831e57e80b5@gmail.com>
+Date: Tue, 11 Feb 2025 14:07:36 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20250211-b4-branch-gfx-smmu-v5-2-ff0bcb6a3c51@quicinc.com>
-References: <20250211-b4-branch-gfx-smmu-v5-0-ff0bcb6a3c51@quicinc.com>
-In-Reply-To: <20250211-b4-branch-gfx-smmu-v5-0-ff0bcb6a3c51@quicinc.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        "Joerg
- Roedel" <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski
-	<krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bjorn Andersson
-	<andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>
-CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>,
-        Pratyush Brahma <quic_pbrahma@quicinc.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1739249174; l=2215;
- i=quic_pbrahma@quicinc.com; s=20250113; h=from:subject:message-id;
- bh=gcoXknSb0nqMBF7zF9lg0gM7M10yomH9HjJDuP8Rvkc=;
- b=4WeFDyk3oQqXxXujEm7n+MFUw8AwltsKPeuxIhZMIIPSFVpL/aIX/DmFRdiM+FZqY/j/3jRc2
- Zwnzb/lfkxZAg/3+1b+U2mA4c/t/c8jOhyRwPMr933bTGd6KBnN3jwe
-X-Developer-Key: i=quic_pbrahma@quicinc.com; a=ed25519;
- pk=YvfZKC4rRO1Fot+wlXZqsoQWnAtLqrpMyEzslw3Ji+M=
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: Vb7cShOAO85QkYl-8e1b2qcMokOwfcSW
-X-Proofpoint-GUID: Vb7cShOAO85QkYl-8e1b2qcMokOwfcSW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-02-11_02,2025-02-10_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 mlxlogscore=739 bulkscore=0 phishscore=0 spamscore=0
- suspectscore=0 adultscore=0 lowpriorityscore=0 mlxscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2501170000 definitions=main-2502110026
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 4/5] iommu/dart: Reject identity domain for locked DARTs
+To: Alyssa Rosenzweig <alyssa@rosenzweig.io>, Sven Peter
+ <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
+Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
+ <20250210-locked-dart-v1-4-5d97fe247f35@rosenzweig.io>
+Content-Language: en-US
+From: Nick Chan <towinchenmi@gmail.com>
+In-Reply-To: <20250210-locked-dart-v1-4-5d97fe247f35@rosenzweig.io>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Add the device node for gfx smmu that is required for gpu
-specific address translations.
 
-Signed-off-by: Pratyush Brahma <quic_pbrahma@quicinc.com>
----
- arch/arm64/boot/dts/qcom/qcs8300.dtsi | 39 +++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+Alyssa Rosenzweig 於 2025/2/11 凌晨3:39 寫道:
+> This cannot work.
+>
+> Signed-off-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+> Signed-off-by: Janne Grunau <j@jannau.net>
+The submitter's sign-off must be the last sign-off. It appears that you are the author
+of this patch, so drop Janne's sign-off.
+[...]
 
-diff --git a/arch/arm64/boot/dts/qcom/qcs8300.dtsi b/arch/arm64/boot/dts/qcom/qcs8300.dtsi
-index 4a057f7c0d9fae0ebd1b3cf3468746b382bc886b..f1c90db7b0e689035fbbaaa551611be34adf9ab6 100644
---- a/arch/arm64/boot/dts/qcom/qcs8300.dtsi
-+++ b/arch/arm64/boot/dts/qcom/qcs8300.dtsi
-@@ -2674,6 +2674,45 @@ gpucc: clock-controller@3d90000 {
- 			#power-domain-cells = <1>;
- 		};
- 
-+		adreno_smmu: iommu@3da0000 {
-+			compatible = "qcom,qcs8300-smmu-500", "qcom,adreno-smmu",
-+				     "qcom,smmu-500", "arm,mmu-500";
-+			reg = <0x0 0x3da0000 0x0 0x20000>;
-+			#iommu-cells = <2>;
-+			#global-interrupts = <2>;
-+
-+			interrupts = <GIC_SPI 672 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 673 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 678 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 679 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 680 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 681 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 682 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 683 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 684 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 685 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 686 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 687 IRQ_TYPE_LEVEL_HIGH>;
-+
-+			clocks = <&gpucc GPU_CC_CX_GMU_CLK>,
-+				 <&gpucc GPU_CC_HUB_CX_INT_CLK>,
-+				 <&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>,
-+				 <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
-+				 <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>,
-+				 <&gpucc GPU_CC_AHB_CLK>,
-+				 <&gpucc GPU_CC_HUB_AON_CLK>;
-+
-+			clock-names = "gpu_cc_cx_gmu_clk",
-+				      "gpu_cc_hub_cx_int_clk",
-+				      "gpu_cc_hlos1_vote_gpu_smmu_clk",
-+				      "gcc_gpu_memnoc_gfx_clk",
-+				      "gcc_gpu_snoc_dvm_gfx_clk",
-+				      "gpu_cc_ahb_clk",
-+				      "gpu_cc_hub_aon_clk";
-+			power-domains = <&gpucc GPU_CC_CX_GDSC>;
-+			dma-coherent;
-+		};
-+
- 		pmu@9091000 {
- 			compatible = "qcom,qcs8300-llcc-bwmon", "qcom,sc7280-llcc-bwmon";
- 			reg = <0x0 0x9091000 0x0 0x1000>;
-
--- 
-2.34.1
+Nick Chan
 
