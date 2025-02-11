@@ -1,130 +1,150 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E449A1FCF74
-	for <iommu@lists.linux.dev>; Tue, 11 Feb 2025 12:29:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6A79320F;
+	Tue, 11 Feb 2025 13:29:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739276945; cv=none; b=eBCVvRdg6xrlf8XAc/JBVN+CIaTOyPNnldwzB0V6C4AHolpSPjQbJG/C7ZKwxaOHHhMEkUF9mTGWJ+MwYJB/TylZCwJZxhEOcrUqWi5L3XoDnoo3n8Se6bnSfM2d+p5rTf3lS0ral2shp0AdFUSkY0B++UuMLtWNiSDyUDhVpiI=
+	t=1739280541; cv=none; b=g7t8lgEElrdq0XQiXGsTRbE/Ncr+FCTtXfkoPclqEHxVyA+a8H7EaEW7SevAIosfPP/i3mY9sRPRlwSgKWZSA4Ji/6sA1X2FHPxwMSBK16zuKV18wOPcVX4X8pBd0npX/lh/WmuJ2Be/ZiFTDUd2kL7tT+Q8QX7/AGfU6vvprI0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739276945; c=relaxed/simple;
-	bh=RcqBaJ+EL7CCfV/bFegfRimyJtpwi2rMY3RrvnBDwkY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AFGK3hZTXMHH49cBe0DnsUbEZYM/NEvny/gjYK6hnYATrBxvuTeEgxmzjrgaiorwkaMQ6IKwLiN0MV+/YExl99JYddCkzwGP00CvHCjuX5m5jgXr3wTj0PHi4v47hfIonF6DwMbMMBDmZ/TaLG77X/ufZjdSOEd6AOLGSZ/JvAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=mG5KJkJE; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=mG5KJkJE; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1739280541; c=relaxed/simple;
+	bh=dqNsW3cC15v27jSPs0dEzsu7+QJx12fycZgZDdvv0Qg=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=s19WQmzx6S07qNGsuqOSEAhkBGek0CUzkHHPVQICf81eiAgWe3yFEA6gI+6K/xCs0Aaa4rvUaVxieCoLSQTsKhkAVyaSZgxaHgHeTWrasd3sMPdKj9RuCOlK0npJMmF/R3pyJz+7r6E86ha/A9kKPgBAT0So/9yaEUFFWu4lmzg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xn1brrTa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="mG5KJkJE";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="mG5KJkJE"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id E68A937B3E;
-	Tue, 11 Feb 2025 12:04:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1739275475; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-	bh=zxuVAvyzkp6zq60Y3IIgw3a0N6EBZB0/ewpeFUtjxfE=;
-	b=mG5KJkJEA9cENgXVVW1/b1jxBw55qBBByi9PqzfHzpewCvY3NEQwN486QwswigWR3z3MaO
-	5RV9+Cpgb3JBOuZf7DOhtGxjiRbMQmmRdcShemoF4qnQwJsM6EDshp0HbF+ORTW7Gu3afx
-	DdhHDp5aJLMzmzDwtMCbwbIAsgo2hUY=
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.com header.s=susede1 header.b=mG5KJkJE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1739275475; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-	bh=zxuVAvyzkp6zq60Y3IIgw3a0N6EBZB0/ewpeFUtjxfE=;
-	b=mG5KJkJEA9cENgXVVW1/b1jxBw55qBBByi9PqzfHzpewCvY3NEQwN486QwswigWR3z3MaO
-	5RV9+Cpgb3JBOuZf7DOhtGxjiRbMQmmRdcShemoF4qnQwJsM6EDshp0HbF+ORTW7Gu3afx
-	DdhHDp5aJLMzmzDwtMCbwbIAsgo2hUY=
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 7ECAB13782;
-	Tue, 11 Feb 2025 12:04:35 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id njSKHdM8q2egGgAAD6G6ig
-	(envelope-from <jgross@suse.com>); Tue, 11 Feb 2025 12:04:35 +0000
-From: Juergen Gross <jgross@suse.com>
-To: linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	x86@kernel.org
-Cc: Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	xen-devel@lists.xenproject.org,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH 0/2] xen/swiotlb: one fix and one optimization
-Date: Tue, 11 Feb 2025 13:04:30 +0100
-Message-ID: <20250211120432.29493-1-jgross@suse.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xn1brrTa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C72D0C4CEDD;
+	Tue, 11 Feb 2025 13:29:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739280541;
+	bh=dqNsW3cC15v27jSPs0dEzsu7+QJx12fycZgZDdvv0Qg=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
+	b=Xn1brrTa8PUgjgKYSe42q6OvxHapJBaUC0V8AEU9gN1aVq/eY/Wb2zw1xQi8VzW6y
+	 P6PzOx/iI6tFYe4J3CJRP/HdDUhooB3sq4yKPQxSZEkN4cncd/4hheMqrAz+GL/Uer
+	 /V1LC6PRjuvkRdYyq76nJOaz66a8fJyTaieJPIatsRe2OgJZC97yljYGvQGUQJV9Ia
+	 tp0lTyM3cqPl9LKEdEbfvdU2i2Yz3ijAkNhnTQ8LGXakpSimRfmmhgwl/ED5Y05/Pe
+	 xxUTwsNUNpWtPQC4F/DwOy8+Q0LRwVL3gVsh3V7RGsPeYof6fnM/JNRGVIGCUuHzY8
+	 KJM7Ux7ykkrcA==
+Date: Tue, 11 Feb 2025 07:28:59 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: E68A937B3E
-X-Spam-Level: 
-X-Spamd-Result: default: False [-3.01 / 50.00];
-	BAYES_HAM(-3.00)[99.99%];
-	MID_CONTAINS_FROM(1.00)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_MISSING_CHARSET(0.50)[];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	MIME_TRACE(0.00)[0:+];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	RCPT_COUNT_TWELVE(0.00)[13];
-	ARC_NA(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	FROM_EQ_ENVFROM(0.00)[];
-	ASN(0.00)[asn:25478, ipnet:::/0, country:RU];
-	RCVD_TLS_ALL(0.00)[];
-	DKIM_TRACE(0.00)[suse.com:+];
-	TO_DN_SOME(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.com:dkim,suse.com:mid]
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Rspamd-Action: no action
-X-Spam-Score: -3.01
-X-Spam-Flag: NO
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, 
+ Konrad Dybcio <konradybcio@kernel.org>, iommu@lists.linux.dev, 
+ Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+ linux-arm-kernel@lists.infradead.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+ devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Pratyush Brahma <quic_pbrahma@quicinc.com>
+In-Reply-To: <20250211-b4-branch-gfx-smmu-v5-0-ff0bcb6a3c51@quicinc.com>
+References: <20250211-b4-branch-gfx-smmu-v5-0-ff0bcb6a3c51@quicinc.com>
+Message-Id: <173928051052.2596191.5953179871612881836.robh@kernel.org>
+Subject: Re: [PATCH v5 0/2] Add support for GPU SMMU on QCS8300
 
-Patch 1 removes an unneeded alignment requirement, which resulted in
-exhausting the SWIOTLB with normal use cases.
 
-Patch 2 is an optimization to avoid destroying a contiguous region
-without any need to do so.
+On Tue, 11 Feb 2025 10:15:52 +0530, Pratyush Brahma wrote:
+> Enable GPU SMMU function on QCS8300 platform. GPU SMMU is required
+> for address translation in GPU device.
+> 
+> Signed-off-by: Pratyush Brahma <quic_pbrahma@quicinc.com>
+> ---
+> Changes since v4:
+> - Corrected the clocks list to be inline with clock-names
+> - Removed stray whitespaces
+> - Added r-by tag from Krzysztof on the bindings patch
+> - Link to v4: https://lore.kernel.org/r/20250203-b4-branch-gfx-smmu-v4-0-eaa7aa762f48@quicinc.com
+> 
+> Changes since v3:
+> - Modified the order of clock voting and properties as suggested by Konrad
+> - Removed dependency on clocks in commit text as change is merged in
+>   linux-next before current base commit
+> 
+> Link to v3:
+> https://lore.kernel.org/all/20241227105818.28516-1-quic_pbrahma@quicinc.com/
+> 
+> Changes since v2:
+> Corrected typo in cover letter to include QCS8300
+> Link to
+> v2:https://lore.kernel.org/all/20241227104651.4531-1-quic_pbrahma@quicinc.com/
+> 
+> Changes since v1:
+> Updated bindings for gpu smmu for qcs8300 as per Dmitry's comment
+> Link to v1:
+> https://lore.kernel.org/all/20241224100521.7616-1-quic_pbrahma@quicinc.com/
+> 
+> To: Will Deacon <will@kernel.org>
+> To: Robin Murphy <robin.murphy@arm.com>
+> To: Joerg Roedel <joro@8bytes.org>
+> To: Rob Herring <robh@kernel.org>
+> To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+> To: Conor Dooley <conor+dt@kernel.org>
+> To: Bjorn Andersson <andersson@kernel.org>
+> To: Konrad Dybcio <konradybcio@kernel.org>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: iommu@lists.linux.dev
+> Cc: devicetree@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-arm-msm@vger.kernel.org
+> 
+> ---
+> Pratyush Brahma (2):
+>       dt-bindings: arm-smmu: Document QCS8300 GPU SMMU
+>       arm64: dts: qcom: qcs8300: Add device node for  gfx_smmu
+> 
+>  .../devicetree/bindings/iommu/arm,smmu.yaml        |  3 +-
+>  arch/arm64/boot/dts/qcom/qcs8300.dtsi              | 39 ++++++++++++++++++++++
+>  2 files changed, 41 insertions(+), 1 deletion(-)
+> ---
+> base-commit: a13f6e0f405ed0d3bcfd37c692c7d7fa3c052154
+> change-id: 20250131-b4-branch-gfx-smmu-b03261963064
+> 
+> Best regards,
+> --
+> Pratyush Brahma <quic_pbrahma@quicinc.com>
+> 
+> 
+> 
 
-There will be probably another patch following to allow larger
-contiguous regions to be created, but this one isn't ready yet.
 
-Juergen Gross (2):
-  xen/swiotlb: relax alignment requirements
-  xen/swiotlb: don't destroy contiguous region in all cases
+My bot found new DTB warnings on the .dts files added or changed in this
+series.
 
- arch/x86/include/asm/xen/swiotlb-xen.h |  5 +++--
- arch/x86/xen/mmu_pv.c                  | 18 ++++++++++-----
- drivers/xen/swiotlb-xen.c              | 31 ++++++++++++++++----------
- 3 files changed, 34 insertions(+), 20 deletions(-)
+Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
+are fixed by another series. Ultimately, it is up to the platform
+maintainer whether these warnings are acceptable or not. No need to reply
+unless the platform maintainer has comments.
 
--- 
-2.43.0
+If you already ran DT checks and didn't see these error(s), then
+make sure dt-schema is up to date:
+
+  pip3 install dtschema --upgrade
+
+
+New warnings running 'make CHECK_DTBS=y for arch/arm64/boot/dts/qcom/' for 20250211-b4-branch-gfx-smmu-v5-0-ff0bcb6a3c51@quicinc.com:
+
+arch/arm64/boot/dts/qcom/qcs8300-ride.dtb: iommu@3da0000: clock-names:0: 'gcc_gpu_memnoc_gfx_clk' was expected
+	from schema $id: http://devicetree.org/schemas/iommu/arm,smmu.yaml#
+arch/arm64/boot/dts/qcom/qcs8300-ride.dtb: iommu@3da0000: clock-names:1: 'gcc_gpu_snoc_dvm_gfx_clk' was expected
+	from schema $id: http://devicetree.org/schemas/iommu/arm,smmu.yaml#
+arch/arm64/boot/dts/qcom/qcs8300-ride.dtb: iommu@3da0000: clock-names:2: 'gpu_cc_ahb_clk' was expected
+	from schema $id: http://devicetree.org/schemas/iommu/arm,smmu.yaml#
+arch/arm64/boot/dts/qcom/qcs8300-ride.dtb: iommu@3da0000: clock-names:3: 'gpu_cc_hlos1_vote_gpu_smmu_clk' was expected
+	from schema $id: http://devicetree.org/schemas/iommu/arm,smmu.yaml#
+arch/arm64/boot/dts/qcom/qcs8300-ride.dtb: iommu@3da0000: clock-names:4: 'gpu_cc_cx_gmu_clk' was expected
+	from schema $id: http://devicetree.org/schemas/iommu/arm,smmu.yaml#
+arch/arm64/boot/dts/qcom/qcs8300-ride.dtb: iommu@3da0000: clock-names:5: 'gpu_cc_hub_cx_int_clk' was expected
+	from schema $id: http://devicetree.org/schemas/iommu/arm,smmu.yaml#
+
+
+
+
 
