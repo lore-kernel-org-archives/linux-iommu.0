@@ -1,123 +1,80 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 290193BB54;
-	Tue, 11 Feb 2025 18:34:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from out-172.mta0.migadu.com (out-172.mta0.migadu.com [91.218.175.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B643425D542
+	for <iommu@lists.linux.dev>; Tue, 11 Feb 2025 18:40:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739298875; cv=none; b=ABSBjhBGWILc3avuKuniBif+mZ4crR4POdB0l1HV5Kg4kph8hY2eZ3znNijFk3nexlkIu5lTHt/dq82CYiMlZZfBsrd1S1aPQiY9kCNBZzwd99wpFafW5mnHUOdaCNiX9E9z5s0HCJFgd40zCKIm1P8ng9gFhSUnzvTdvZpaozQ=
+	t=1739299224; cv=none; b=KgFbX5IDttPF3U1mZiZYvStY8dIxy2fPrLLnEHZ+lUV6JSNAiW3kHF8ohb9QgoARun5oJhrwKi8+Ls98IZtXVNjU55lTYVsWTugDHOfY5P1CYby1mJtluSkiZc6NjpEMZmTIeyx+fVUI7huCzf7ojurdKqmoT77zjXQgtmXmEEE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739298875; c=relaxed/simple;
-	bh=TvhfNc3I07qiTd32YHIKmw3g9aChxrMBZe65U1A7VhQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IsNOc84CSn5Yxx7snGMZfK+H8NMVJqIdFiw30HaNKspPAw3dC8RfMSiqu4hOaH9LsxcuZZNQRlfly4nhWs9cmV3GcSNqUUeBczotXjT6gOv4HTiI5QEgjqfWJTvZlLUVFsnKi5ywoJE1roQQRykga/z1skPsPbF+UW1IGjr8H0I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DDA0E13D5;
-	Tue, 11 Feb 2025 10:34:53 -0800 (PST)
-Received: from [10.57.35.63] (unknown [10.57.35.63])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2C11D3F58B;
-	Tue, 11 Feb 2025 10:34:30 -0800 (PST)
-Message-ID: <98af5c02-5006-4272-aaf0-a0e30c312059@arm.com>
-Date: Tue, 11 Feb 2025 18:34:27 +0000
+	s=arc-20240116; t=1739299224; c=relaxed/simple;
+	bh=douAAtq1juT4etZFymJAHKVVxPzVgwUUhJUWCYFwR9Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=N2BJwnw8aoQlQiGBCqfi2C4IDdhSCZYokvOOoZQNup/apVw8PnnZyShPanClqJCSfBPw+g8mCh4bgvL7pOMAPNdQdNgOM3DZhD0smhFScW2TIQxLjnl7RAGIjGdSijMns5YSLaovwdaFJiIX+6SyVak4lBANBtK9Y5NFSbqmAF0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io; spf=pass smtp.mailfrom=rosenzweig.io; dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b=DEP9DTdO; arc=none smtp.client-ip=91.218.175.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rosenzweig.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rosenzweig.io
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=rosenzweig.io header.i=@rosenzweig.io header.b="DEP9DTdO"
+Date: Tue, 11 Feb 2025 13:40:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rosenzweig.io;
+	s=key1; t=1739299210;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TAqhdEJIac1nBI7ghVhE2bBif5ol3c9AIgGMBRie10Y=;
+	b=DEP9DTdOL7rgm9GNUJd6f3Y15SCXoMpg/zGbtOV3YCnDxmMHyOfbamgMAEtFnkbQ9XNUm+
+	MNw1pcp/LWTC1B+uJMKjcG5+3N9OeKlZWSoTbJmYBVdgrHLjOgskY7ZE3decNuTCUvHyRp
+	3CeV3xiGX1VHrxkMU/bGgEmKJUVhQmG1xMP65Tp37UsFCMdNMSIQmOjPsLLuyhFseo7qsj
+	PgOPDlaCfAqLkkGGguWC+wdPYj41eZWPEOnASbTHsZ4/5C7ZwpoFKKL67dASGx1ETp00q4
+	wdXWp+4qmJqoLYHAKoplMwVk+bsNqAe35ttAdXPXTwiVpv4hlnJQmT/ndXtstg==
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Sven Peter <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/5] iommu/dart: Set DMA domain for locked DARTs
+Message-ID: <Z6uZhQtPAE8Ck_b0@blossom>
+References: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
+ <20250210-locked-dart-v1-3-5d97fe247f35@rosenzweig.io>
+ <1d6b3fe7-9376-422b-a2e6-ebaed7b6cd75@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/5] iommu/dart: Skip reset for locked DARTs
-To: Alyssa Rosenzweig <alyssa@rosenzweig.io>, Sven Peter
- <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Hector Martin <marcan@marcan.st>
-References: <20250210-locked-dart-v1-0-5d97fe247f35@rosenzweig.io>
- <20250210-locked-dart-v1-2-5d97fe247f35@rosenzweig.io>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250210-locked-dart-v1-2-5d97fe247f35@rosenzweig.io>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1d6b3fe7-9376-422b-a2e6-ebaed7b6cd75@arm.com>
+X-Migadu-Flow: FLOW_OUT
 
-On 2025-02-10 7:39 pm, Alyssa Rosenzweig wrote:
-> Locked DARTs cannot be reconfigured, therefore the reset/restore
-> procedure can't work and should not be needed. Skip it, allowing locked
-> DARTs to probe.
-> 
-> Co-developed-by: Hector Martin <marcan@marcan.st>
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> Signed-off-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-> ---
->   drivers/iommu/apple-dart.c | 24 ++++++++++++------------
->   1 file changed, 12 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index 460cf96bc8001e051916f356d5d175b35e36c608..9c74a95eb7e819e94ab2fb47ed0d411a1eba8bf7 100644
-> --- a/drivers/iommu/apple-dart.c
-> +++ b/drivers/iommu/apple-dart.c
-> @@ -452,17 +452,9 @@ apple_dart_t8110_hw_invalidate_tlb(struct apple_dart_stream_map *stream_map)
->   
->   static int apple_dart_hw_reset(struct apple_dart *dart)
->   {
-> -	u32 config;
->   	struct apple_dart_stream_map stream_map;
->   	int i;
->   
-> -	config = readl(dart->regs + dart->hw->lock);
-> -	if (config & dart->hw->lock_bit) {
-> -		dev_err(dart->dev, "DART is locked down until reboot: %08x\n",
-> -			config);
-> -		return -EINVAL;
-> -	}
-> -
->   	stream_map.dart = dart;
->   	bitmap_zero(stream_map.sidmap, DART_MAX_STREAMS);
->   	bitmap_set(stream_map.sidmap, 0, dart->num_streams);
-> @@ -1151,9 +1143,11 @@ static int apple_dart_probe(struct platform_device *pdev)
->   	}
->   
->   	dart->locked = apple_dart_is_locked(dart);
-> -	ret = apple_dart_hw_reset(dart);
-> -	if (ret)
-> -		goto err_clk_disable;
-> +	if (!dart->locked) {
-> +		ret = apple_dart_hw_reset(dart);
-> +		if (ret)
-> +			goto err_clk_disable;
-> +	}
->   
->   	ret = request_irq(dart->irq, dart->hw->irq_handler, IRQF_SHARED,
->   			  "apple-dart fault handler", dart);
-> @@ -1192,7 +1186,9 @@ static void apple_dart_remove(struct platform_device *pdev)
->   {
->   	struct apple_dart *dart = platform_get_drvdata(pdev);
->   
-> -	apple_dart_hw_reset(dart);
-> +	if (!dart->locked)
-> +		apple_dart_hw_reset(dart);
+Hi Robin,
 
-Not much point saving anything on suspend either, in that case.
+> > This is required.
+> 
+> Now that we can, I'd really rather do this properly and not offer an
+> identity domain in the first place when it's not available.
+
+I'm reading through iommu.c but I don't see a way to avoid offering an
+identity domain without the DMA override here, just reading through the
+logic of iommu_get_default_domain_type. Could you point me to what you
+have in mind?
 
 Thanks,
-Robin.
+Alyssa
 
-> +
->   	free_irq(dart->irq, dart);
->   
->   	iommu_device_unregister(&dart->iommu);
-> @@ -1325,6 +1321,10 @@ static __maybe_unused int apple_dart_resume(struct device *dev)
->   	unsigned int sid, idx;
->   	int ret;
->   
-> +	/* Locked DARTs can't be restored, and they should not need it */
-> +	if (dart->locked)
-> +		return 0;
-> +
->   	ret = apple_dart_hw_reset(dart);
->   	if (ret) {
->   		dev_err(dev, "Failed to reset DART on resume\n");
+> > --- a/drivers/iommu/apple-dart.c
+> > +++ b/drivers/iommu/apple-dart.c
+> > @@ -941,6 +941,8 @@ static int apple_dart_def_domain_type(struct device *dev)
+> >   		return IOMMU_DOMAIN_IDENTITY;
+> >   	if (!cfg->stream_maps[0].dart->supports_bypass)
+> >   		return IOMMU_DOMAIN_DMA;
+> > +	if (cfg->stream_maps[0].dart->locked)
+> > +		return IOMMU_DOMAIN_DMA;
+> >   	return 0;
+> >   }
+> > 
 > 
-
