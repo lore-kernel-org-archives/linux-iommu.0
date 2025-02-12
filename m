@@ -1,74 +1,142 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C8A920F08F;
-	Wed, 12 Feb 2025 14:16:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E1CE25A33E;
+	Wed, 12 Feb 2025 14:37:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739369821; cv=none; b=Qnl/EILpmd2faWVpZiZ2flGEhs8TakjRRyIe3qsrg2sNwie+NmIjIwUCSwwul5aJyfLfciSbKW9WCJVFTxao08akrlJl/gzug5E+PS0RQPR7MCNOumzEN4sXAFbn2SoVk8DF3yUY0W04QQFhdSmirdWS7bS1OQieqJHrYCU4j4w=
+	t=1739371077; cv=none; b=oKgfhoP7P8/29+oiy+kWHcvIKba6n/33QfAdvVhAw/5IlNHrncRGEwxxLt1QrjCNCsJTBRCoXv3wLVca4HezUupoPvZ+Po7mD8iMjCrHJKB+vF+yjT538DhQxT0C0qSBh2HgmQ7bmgN5xlTqELUk7qgD5+dekhrvgCPwL47Jc1Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739369821; c=relaxed/simple;
-	bh=nJIt1x77AQg4AAepbl9YgW1/uaqkSdDOIWHzOh9PTgw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qEZfZn5D1cQPt6kGP0/gDLoJSMfGf1efNF+batsmoeBc4qCx4+gkuimQ4/YHrewOXofsXzb+aQKOGIDuhUwbvAI0/4HSI7u9xuU+ULm5PBolpR3GAE0VUTv0N/LW0vyVrS0lpqOobQMErfR892joyYYk5AiGljci/wllg6eCfPY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 69BA912FC;
-	Wed, 12 Feb 2025 06:17:19 -0800 (PST)
-Received: from [10.57.36.235] (unknown [10.57.36.235])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 957DB3F6A8;
-	Wed, 12 Feb 2025 06:16:56 -0800 (PST)
-Message-ID: <021d006e-1fe3-4f58-8e79-b5e316de347f@arm.com>
-Date: Wed, 12 Feb 2025 14:16:54 +0000
+	s=arc-20240116; t=1739371077; c=relaxed/simple;
+	bh=VUBM57jOz21qhzl4JgnGGgiFmJ16K4z/3nSk3V+odWQ=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=s2shW5vJglAG87cdDeYvL24imuL5UvQsf1AjZDX+Yeu2/TwaFKy9yTZxDAWk7sh7XliIjfQq/zfeqBWxeq2o1eTTNsnGLhQqRPaIXrR/fhNhYrDuA/7p062z5ukppZU4Y/6dMdpxFTk8Ao1cjjXMdX8OD15O72sLkw2Eah3N9D4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Je5v/O6R; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Je5v/O6R"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B43F8C4CEE4;
+	Wed, 12 Feb 2025 14:37:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739371076;
+	bh=VUBM57jOz21qhzl4JgnGGgiFmJ16K4z/3nSk3V+odWQ=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
+	b=Je5v/O6RvOmLtL1lWrIBnUZdIB9qSs5EzOVdh0V7z1Wp5/q7Seycikmd3UDwzVhZd
+	 r60tyUtkLhGWXvRZua2EZbVry+x0exOrN9X7SVOi670+LrPax9T3ze+hHf3T2ZZQlx
+	 qJ3AfWEUNv2W3g7BTWsTnpXRct0ysuDJFPDaK4km1V1sbRsMa51ZkgF4LNXd/YgKfV
+	 8FLPNGgSpj8395pzX311yHjDr5sDyA5Hqhin4D4jIxNmmIMpqqWi3EcLZL9QstKpGG
+	 aTsR2kRVHbQCnBFJD15qKYbIyjx5k7u6LwWO/hTn/KMThp19m0vZvZEkAlWJ7UK6dK
+	 oA8B5HOGhqO1g==
+Date: Wed, 12 Feb 2025 08:37:55 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/5] iommu: Add domain_alloc_identity()
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, virtualization@lists.linux.dev,
- Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>,
- patches@lists.linux.dev, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
- Sven Peter <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>
-References: <2-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
- <f0164c18-9ded-4c41-a8c5-c225a978973d@arm.com>
- <20250212140316.GA3844591@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250212140316.GA3844591@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Will Deacon <will@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Daniil Titov <daniilt971@gmail.com>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, 
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
+ Joerg Roedel <joro@8bytes.org>, Conor Dooley <conor+dt@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Stephan Gerhold <stephan@gerhold.net>, linux-arm-msm@vger.kernel.org, 
+ linux-clk@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, 
+ iommu@lists.linux.dev, Stephen Boyd <sboyd@kernel.org>, 
+ Bjorn Andersson <andersson@kernel.org>, devicetree@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, Dang Huynh <danct12@riseup.net>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>
+To: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+In-Reply-To: <20250211-msm8937-v1-0-7d27ed67f708@mainlining.org>
+References: <20250211-msm8937-v1-0-7d27ed67f708@mainlining.org>
+Message-Id: <173937096484.3561919.15204410384855360487.robh@kernel.org>
+Subject: Re: [PATCH 00/10] Initial support of MSM8937 and Xiaomi Redmi 3S
 
-On 2025-02-12 2:03 pm, Jason Gunthorpe wrote:
-> On Wed, Feb 12, 2025 at 01:56:55PM +0000, Robin Murphy wrote:
->> On 2025-02-07 2:46 pm, Jason Gunthorpe wrote:
->>> virtio-iommu has a mode where the IDENTITY domain is actually a paging
->>> domain with an identity mapping covering some of the system address
->>> space manually created.
->>>
->>> To support this add a new domain_alloc_identity() op that accepts
->>> the struct device so that virtio can allocate and fully finalize a
->>> paging domain to return.
->>
->> Oh, I'd already managed to forget this idea - this could be convenient for
->> DART to implement per-instance identity domain support as well.
+
+On Tue, 11 Feb 2025 23:37:44 +0100, Barnabás Czémán wrote:
+> This patch series add initial support for MSM8937 SoC
+> and Xiaomi Redmi 3S (land).
 > 
-> If we are going to broaden this someday then I suggest the core code should
-> implement it entirely buy asking the driver for a paging domain and
-> then mapping all of system memory into it. There is nothing special
-> here that needs to be in driver code.
+> The series is extending the MSM8917 gcc and pinctrl drivers
+> because they are sibling SoCs.
+> MSM8937 have 4 more A53 cores and have one more dsi port then
+> MSM8917.
+> It implements little-big architecture and uses Adreno 505.
+> 
+> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+> ---
+> Barnabás Czémán (5):
+>       dt-bindings: mfd: qcom,tcsr: Add compatible for MSM8937
+>       dt-bindings: nvmem: Add compatible for MS8937
+>       dt-bindings: iommu: qcom,iommu: Add MSM8937 IOMMU to SMMUv1 compatibles
+>       dt-bindings: arm: qcom: Add Xiaomi Redmi 3S
+>       arm64: dts: qcom: Add Xiaomi Redmi 3S
+> 
+> Dang Huynh (2):
+>       pinctrl: qcom: msm8917: Add MSM8937 wsa_reset pin
+>       arm64: dts: qcom: Add initial support for MSM8937
+> 
+> Daniil Titov (3):
+>       dt-bindings: clock: gcc-msm8917: Split to separate schema
+>       dt-bindings: clock: Add MSM8937 Global Clock controller compatible
+>       clk: qcom: gcc: Add support for Global Clock controller found on MSM8937
+> 
+>  Documentation/devicetree/bindings/arm/qcom.yaml    |    7 +
+>  .../bindings/clock/qcom,gcc-msm8909.yaml           |   10 +-
+>  .../bindings/clock/qcom,gcc-msm8917.yaml           |   74 +
+>  .../devicetree/bindings/iommu/qcom,iommu.yaml      |    1 +
+>  .../devicetree/bindings/mfd/qcom,tcsr.yaml         |    1 +
+>  .../devicetree/bindings/nvmem/qcom,qfprom.yaml     |    1 +
+>  arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+>  arch/arm64/boot/dts/qcom/msm8937-xiaomi-land.dts   |  402 ++++
+>  arch/arm64/boot/dts/qcom/msm8937.dtsi              | 2145 ++++++++++++++++++++
+>  drivers/clk/qcom/Kconfig                           |    6 +-
+>  drivers/clk/qcom/gcc-msm8917.c                     |  617 +++++-
+>  drivers/pinctrl/qcom/Kconfig.msm                   |    4 +-
+>  drivers/pinctrl/qcom/pinctrl-msm8917.c             |    8 +-
+>  include/dt-bindings/clock/qcom,gcc-msm8917.h       |   17 +
+>  14 files changed, 3277 insertions(+), 17 deletions(-)
+> ---
+> base-commit: df5d6180169ae06a2eac57e33b077ad6f6252440
+> change-id: 20250210-msm8937-228ef0dc3ec9
+> 
+> Best regards,
+> --
+> Barnabás Czémán <barnabas.czeman@mainlining.org>
+> 
+> 
 
-Sorry, that was just in terms of having a domain_alloc_identity() op 
-that's allowed to fail, being potentially neater than otherwise having 
-to register distinct per-instance ops with and without the static 
-identity_domain. I'm inclined to agree that if anyone really is 
-desperate for identity-mapped paging domains in the absence of true 
-identity support, then indeed we probably should handle that in core 
-code much like we do for improvised blocking domains.
 
-Thanks,
-Robin.
+My bot found new DTB warnings on the .dts files added or changed in this
+series.
+
+Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
+are fixed by another series. Ultimately, it is up to the platform
+maintainer whether these warnings are acceptable or not. No need to reply
+unless the platform maintainer has comments.
+
+If you already ran DT checks and didn't see these error(s), then
+make sure dt-schema is up to date:
+
+  pip3 install dtschema --upgrade
+
+
+New warnings running 'make CHECK_DTBS=y for arch/arm64/boot/dts/qcom/' for 20250211-msm8937-v1-0-7d27ed67f708@mainlining.org:
+
+arch/arm64/boot/dts/qcom/msm8937-xiaomi-land.dtb: gpu@1c00000: clock-names:5: 'alwayson' is not one of ['core', 'iface', 'mem', 'mem_iface', 'alt_mem_iface', 'gfx3d', 'rbbmtimer', 'rbcpr']
+	from schema $id: http://devicetree.org/schemas/display/msm/gpu.yaml#
+arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: clock-controller@1800000: clocks: [[18], [51], [52, 1], [52, 0]] is too short
+	from schema $id: http://devicetree.org/schemas/clock/qcom,gcc-msm8917.yaml#
+arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: clock-controller@1800000: clock-names: ['xo', 'sleep_clk', 'dsi0pll', 'dsi0pllbyte'] is too short
+	from schema $id: http://devicetree.org/schemas/clock/qcom,gcc-msm8917.yaml#
+arch/arm64/boot/dts/qcom/msm8917-xiaomi-riva.dtb: clock-controller@1800000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
+	from schema $id: http://devicetree.org/schemas/clock/qcom,gcc-msm8917.yaml#
+
+
+
+
+
