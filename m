@@ -1,221 +1,128 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7C56200B95;
-	Wed, 12 Feb 2025 21:14:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2EA51FBC81
+	for <iommu@lists.linux.dev>; Wed, 12 Feb 2025 21:34:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739394859; cv=none; b=UQRck0379Az/h6cVR5YzuW0KFzg+NsEv8FVPfjMBhL9gf3+s1OQoh+x2t1zEXP17y20XfpL6hAU72zQXFZSxM/zItNDOpbNh8gxQ2ezohB17FfNgOcVdaeHxIISFb7DQFkrp3Z4xsvPHJ4M/Lq50U9LOcGBy5c1azLfVLq1a1fo=
+	t=1739396071; cv=none; b=oC1P4Djth2XPnmtlM/EzTResMtEsYYEYQBD47Y5v+ArH1+Dg15eDqQsFcdlfww0b0T4wQ2I/kUqfz7JXMkx4ECvaXxDK0kzOTo7YhXM40PxotBcGnROp7T8OD3QSM5BKveyBr9GPnnjGbPIL7QaRvwQ56VgW4sHxK6vi47LSefA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739394859; c=relaxed/simple;
-	bh=dIqhk3djFsc3cAOqbHbhVUyG0+f+BY8S2yEkmEIiT0A=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=uj25RgMvhMAn7Tdtp7KKMGlWjGHchakiBI6YT4j0PCAhEgKCzedsac6ndstnIgDau9DO1WIX8Hn7MyctKdREm6GHrUrCdJqPumI9fmlVUI7oNvmfxdQ2v5wpZ9/DNX2pGSdNYCUwPBvLadXK3ggR9wa3lY5U38zXIjB6XMQjcTg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FM39xked; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739396071; c=relaxed/simple;
+	bh=fzERoalNNXp/hmizWvEuDSArp4eamDZD6SV8xLCFnvg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Fki6wLYXunGjc4I4tMBjLHLIe1aBbEEfG9BnkP+TcmhL1v1yDz4+s7f6ichcDjeilRWz3Pd2iQ2YbFCMJVTkc/EE+H3mXh0YetUQhSok+LJzUe1+nLesSqbe35hDuX7T3i6WgSHvnzAfxYZed4uefET1fAKpinfKoM5ADOdoOvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=qtDmKaS/; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FM39xked"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE131C4CEDF;
-	Wed, 12 Feb 2025 21:14:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739394859;
-	bh=dIqhk3djFsc3cAOqbHbhVUyG0+f+BY8S2yEkmEIiT0A=;
-	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-	b=FM39xked9CJJ3VZLi/LCH1yVlQqygsPF/WnRs/3TQ2j433zTnyeI/p/Ijho6DIq/3
-	 pvz7mYSzGYJqWeTLWKAjh/TnwSYjLq9cu34OsSH0+Zh+yfa+qGZ4izxvs0yxwa2OGX
-	 4pOYDBnRURLqRKCtB0g0cNc+J8IYSNo8n4BUz5UTmBRQVG9w0Ch2btNJpcBjRa9fQy
-	 Vrf7A139Fu0Jfb+nVA/cgfyGSzvuus8wMazx1h2r87V07jE5/ONnaSj6Njh8KOkbbX
-	 y23UCGj69P19iTesAWohj3PGUSbj3zisSvm7na3Q0LZ0YU0yg3/hNwweBzimQlI2+t
-	 lpNCWwV7fRtMQ==
-Date: Wed, 12 Feb 2025 13:14:16 -0800 (PST)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To: =?UTF-8?Q?J=C3=BCrgen_Gro=C3=9F?= <jgross@suse.com>
-cc: Stefano Stabellini <sstabellini@kernel.org>, linux-kernel@vger.kernel.org, 
-    x86@kernel.org, iommu@lists.linux.dev, 
-    Boris Ostrovsky <boris.ostrovsky@oracle.com>, 
-    Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
-    Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, 
-    "H. Peter Anvin" <hpa@zytor.com>, 
-    Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, 
-    xen-devel@lists.xenproject.org
-Subject: Re: [PATCH 2/2] xen/swiotlb: don't destroy contiguous region in all
- cases
-In-Reply-To: <b7bc43f9-47e6-4994-bba9-5c8be92a8e52@suse.com>
-Message-ID: <alpine.DEB.2.22.394.2502121310320.619090@ubuntu-linux-20-04-desktop>
-References: <20250211120432.29493-1-jgross@suse.com> <20250211120432.29493-3-jgross@suse.com> <alpine.DEB.2.22.394.2502111728560.619090@ubuntu-linux-20-04-desktop> <b7bc43f9-47e6-4994-bba9-5c8be92a8e52@suse.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="qtDmKaS/"
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51CKGGfx030209;
+	Wed, 12 Feb 2025 21:34:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=pp1; bh=MgBTRAm2qlJPQpFVXIko132bunUaVhteRudWPVi7E
+	cQ=; b=qtDmKaS/QND1FLaq2CHccAYvt3EpqeaIgNcG+ds+rjYnrZyPBJlclhtgN
+	7NQmFI121Ig3lwz/olAaLxevcBsK1OW/I9ELZk914nr31sXuYOdONzT69/lFt4e2
+	QymGUS6zsQsbopPgvxZmCAC4qhiwzSLoQex6YJuphBgfK+jh4iivVOm9LMVzQcij
+	/gcyQL7vM30VHoI8yn0h6t6ghVIyjomDuEJxZaMExIIcNFnpNTFV5uW16D+TPhGU
+	CAZlnWIVrzRpwmR4ILuSEO/m9yOr9llT8RKUftLchyHAq4piyxAg3o+LSKnf5H89
+	TDJKVNiLWWlxY2Xd6xUEbbdU2mSCQ==
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 44rjfywmnd-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 12 Feb 2025 21:34:22 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 51CISi6L028244;
+	Wed, 12 Feb 2025 21:34:21 GMT
+Received: from smtprelay02.dal12v.mail.ibm.com ([172.16.1.4])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 44phyyk53x-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 12 Feb 2025 21:34:21 +0000
+Received: from smtpav03.dal12v.mail.ibm.com (smtpav03.dal12v.mail.ibm.com [10.241.53.102])
+	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 51CLYKK427460106
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 12 Feb 2025 21:34:20 GMT
+Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6C5975805A;
+	Wed, 12 Feb 2025 21:34:20 +0000 (GMT)
+Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4C74F58056;
+	Wed, 12 Feb 2025 21:34:19 +0000 (GMT)
+Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.61.186.234])
+	by smtpav03.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 12 Feb 2025 21:34:19 +0000 (GMT)
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, borntraeger@linux.ibm.com, farman@linux.ibm.com,
+        clegoate@redhat.com, jgg@nvidia.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: [PATCH v5 0/4] iommu/s390: add support for IOMMU passthrough
+Date: Wed, 12 Feb 2025 16:34:14 -0500
+Message-ID: <20250212213418.182902-1-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.48.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-226463992-1739394832=:619090"
-Content-ID: <alpine.DEB.2.22.394.2502121313580.619090@ubuntu-linux-20-04-desktop>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: c8Zv0tFLzrc5MeB81vmbhQJXWciR6Rc1
+X-Proofpoint-ORIG-GUID: c8Zv0tFLzrc5MeB81vmbhQJXWciR6Rc1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-12_06,2025-02-11_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 impostorscore=0
+ mlxscore=0 suspectscore=0 adultscore=0 clxscore=1015 mlxlogscore=689
+ lowpriorityscore=0 priorityscore=1501 phishscore=0 malwarescore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2501170000 definitions=main-2502120152
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+This series introduces the ability for certain devices on s390 to bypass
+a layer of IOMMU via the iommu.passthrough=1 option.  In order to enable
+this, the concept of an identity domain is added to s390-iommu.  On s390,
+IOMMU passthrough is only allowed if indicated via a special bit in s390
+CLP data for the associated device group, otherwise we must fall back to
+dma-iommu.
 
---8323329-226463992-1739394832=:619090
-Content-Type: text/plain; CHARSET=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-ID: <alpine.DEB.2.22.394.2502121313581.619090@ubuntu-linux-20-04-desktop>
+Changes for v5:
+- Fixup error checking for bus_dma_region size
+- Add review/test tags
 
-On Wed, 12 Feb 2025, Jürgen Groß wrote:
-> On 12.02.25 02:30, Stefano Stabellini wrote:
-> > On Tue, 11 Feb 2025, Juergen Gross wrote:
-> > > In case xen_swiotlb_alloc_coherent() needed to create a contiguous
-> > > region only for other reason than the memory not being compliant with
-> > > the device's DMA mask, there is no reason why this contiguous region
-> > > should be destroyed by xen_swiotlb_free_coherent() later. Destroying
-> > > this region should be done only, if the memory of the region was
-> > > allocated with more stringent placement requirements than the memory
-> > > it did replace.
-> > > 
-> > > Signed-off-by: Juergen Gross <jgross@suse.com>
-> > > ---
-> > >   arch/x86/include/asm/xen/swiotlb-xen.h |  5 +++--
-> > >   arch/x86/xen/mmu_pv.c                  | 18 ++++++++++++------
-> > >   drivers/xen/swiotlb-xen.c              | 11 +++++++----
-> > >   3 files changed, 22 insertions(+), 12 deletions(-)
-> > > 
-> > > diff --git a/arch/x86/include/asm/xen/swiotlb-xen.h
-> > > b/arch/x86/include/asm/xen/swiotlb-xen.h
-> > > index abde0f44df57..a353f20c7e79 100644
-> > > --- a/arch/x86/include/asm/xen/swiotlb-xen.h
-> > > +++ b/arch/x86/include/asm/xen/swiotlb-xen.h
-> > > @@ -4,8 +4,9 @@
-> > >     int xen_swiotlb_fixup(void *buf, unsigned long nslabs);
-> > >   int xen_create_contiguous_region(phys_addr_t pstart, unsigned int order,
-> > > -				unsigned int address_bits,
-> > > -				dma_addr_t *dma_handle);
-> > > +				 unsigned int address_bits,
-> > > +				 dma_addr_t *dma_handle,
-> > > +				 unsigned int *address_bits_in);
-> > >   void xen_destroy_contiguous_region(phys_addr_t pstart, unsigned int
-> > > order);
-> > >     #endif /* _ASM_X86_SWIOTLB_XEN_H */
-> > > diff --git a/arch/x86/xen/mmu_pv.c b/arch/x86/xen/mmu_pv.c
-> > > index 2c70cd35e72c..fb586238f7c4 100644
-> > > --- a/arch/x86/xen/mmu_pv.c
-> > > +++ b/arch/x86/xen/mmu_pv.c
-> > > @@ -2208,19 +2208,22 @@ void __init xen_init_mmu_ops(void)
-> > >   static unsigned long discontig_frames[1<<MAX_CONTIG_ORDER];
-> > >     #define VOID_PTE (mfn_pte(0, __pgprot(0)))
-> > > -static void xen_zap_pfn_range(unsigned long vaddr, unsigned int order,
-> > > -				unsigned long *in_frames,
-> > > -				unsigned long *out_frames)
-> > > +static int xen_zap_pfn_range(unsigned long vaddr, unsigned int order,
-> > > +			     unsigned long *in_frames,
-> > > +			     unsigned long *out_frames)
-> > >   {
-> > >   	int i;
-> > > +	u64 address_bits = 0;
-> > >   	struct multicall_space mcs;
-> > >     	xen_mc_batch();
-> > >   	for (i = 0; i < (1UL<<order); i++, vaddr += PAGE_SIZE) {
-> > >   		mcs = __xen_mc_entry(0);
-> > >   -		if (in_frames)
-> > > +		if (in_frames) {
-> > >   			in_frames[i] = virt_to_mfn((void *)vaddr);
-> > > +			address_bits |= in_frames[i] << PAGE_SHIFT;
-> > > +		}
-> > >     		MULTI_update_va_mapping(mcs.mc, vaddr, VOID_PTE, 0);
-> > >   		__set_phys_to_machine(virt_to_pfn((void *)vaddr),
-> > > INVALID_P2M_ENTRY);
-> > > @@ -2229,6 +2232,8 @@ static void xen_zap_pfn_range(unsigned long vaddr,
-> > > unsigned int order,
-> > >   			out_frames[i] = virt_to_pfn((void *)vaddr);
-> > >   	}
-> > >   	xen_mc_issue(0);
-> > > +
-> > > +	return fls64(address_bits);
-> > >   }
-> > >     /*
-> > > @@ -2321,7 +2326,8 @@ static int xen_exchange_memory(unsigned long
-> > > extents_in, unsigned int order_in,
-> > >     int xen_create_contiguous_region(phys_addr_t pstart, unsigned int
-> > > order,
-> > >   				 unsigned int address_bits,
-> > > -				 dma_addr_t *dma_handle)
-> > > +				 dma_addr_t *dma_handle,
-> > > +				 unsigned int *address_bits_in)
-> > >   {
-> > >   	unsigned long *in_frames = discontig_frames, out_frame;
-> > >   	unsigned long  flags;
-> > > @@ -2336,7 +2342,7 @@ int xen_create_contiguous_region(phys_addr_t pstart,
-> > > unsigned int order,
-> > >   	spin_lock_irqsave(&xen_reservation_lock, flags);
-> > >     	/* 1. Zap current PTEs, remembering MFNs. */
-> > > -	xen_zap_pfn_range(vstart, order, in_frames, NULL);
-> > > +	*address_bits_in = xen_zap_pfn_range(vstart, order, in_frames, NULL);
-> > >     	/* 2. Get a new contiguous memory extent. */
-> > >   	out_frame = virt_to_pfn((void *)vstart);
-> > > diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-> > > index 26c62e0d34e9..3f3724f53914 100644
-> > > --- a/drivers/xen/swiotlb-xen.c
-> > > +++ b/drivers/xen/swiotlb-xen.c
-> > > @@ -118,6 +118,7 @@ int xen_swiotlb_fixup(void *buf, unsigned long nslabs)
-> > >   	int rc;
-> > >   	unsigned int order = get_order(IO_TLB_SEGSIZE << IO_TLB_SHIFT);
-> > >   	unsigned int i, dma_bits = order + PAGE_SHIFT;
-> > > +	unsigned int dummy;
-> > >   	dma_addr_t dma_handle;
-> > >   	phys_addr_t p = virt_to_phys(buf);
-> > >   @@ -129,7 +130,7 @@ int xen_swiotlb_fixup(void *buf, unsigned long
-> > > nslabs)
-> > >   		do {
-> > >   			rc = xen_create_contiguous_region(
-> > >   				p + (i << IO_TLB_SHIFT), order,
-> > > -				dma_bits, &dma_handle);
-> > > +				dma_bits, &dma_handle, &dummy);
-> > >   		} while (rc && dma_bits++ < MAX_DMA_BITS);
-> > >   		if (rc)
-> > >   			return rc;
-> > > @@ -144,6 +145,7 @@ xen_swiotlb_alloc_coherent(struct device *dev, size_t
-> > > size,
-> > >   		dma_addr_t *dma_handle, gfp_t flags, unsigned long attrs)
-> > >   {
-> > >   	u64 dma_mask = dev->coherent_dma_mask;
-> > > +	unsigned int address_bits = fls64(dma_mask), address_bits_in;
-> > >   	int order = get_order(size);
-> > >   	phys_addr_t phys;
-> > >   	void *ret;
-> > > @@ -160,10 +162,11 @@ xen_swiotlb_alloc_coherent(struct device *dev,
-> > > size_t size,
-> > >   	if (*dma_handle + size - 1 > dma_mask ||
-> > >   	    range_straddles_page_boundary(phys, size) ||
-> > >   	    range_requires_alignment(phys, size)) {
-> > > -		if (xen_create_contiguous_region(phys, order, fls64(dma_mask),
-> > > -				dma_handle) != 0)
-> > > +		if (xen_create_contiguous_region(phys, order, address_bits,
-> > > +						 dma_handle,
-> > > &address_bits_in))
-> > >   			goto out_free_pages;
-> > > -		SetPageXenRemapped(virt_to_page(ret));
-> > > +		if (address_bits_in > address_bits)
-> > > +			SetPageXenRemapped(virt_to_page(ret));
-> > 
-> > This has the unfortunate side effect of making "PageXenRemapped"
-> > unreliable as an indicator of whether a page has been remapped. A page
-> > could still be remapped without the "PageXenRemapped" bit being set.
-> > 
-> > I recommend adding an in-code comment to clarify this behavior.
-> 
-> The PageXenRemapped bit is used only for determining whether
-> xen_destroy_contiguous_region() should be called. And by not setting the bit
-> I'm avoiding to call xen_destroy_contiguous_region() later. So I don't see any
-> unfortunate side effect.
+Changes for v4:
+- Additional patch to handle IOAT registration within s390-iommu.  This
+  fixes an issue with re-registration of identity domain during events
+  like zpci_hot_reset_device
+- Fixup page alignment for bus_dma_region setup
+- Dropped a few review/test tags due to above changes
 
-While the purpose of PageXenRemapped is to determine whether
-xen_destroy_contiguous_region() should be called for the region, the
-name "PageXenRemapped" suggests more generically that the region is
-remapped.
+Changes for v3:
+- Rebase onto 6.13
+- fixed bus_dma_region size (Niklas) 
 
-Without this patch, all the regions that are remapped have
-PageXenRemapped set. The name matches its meaning. (Also,
-xen_destroy_contiguous_region() is called an them.)
+Changes for v2:
+- Remove ARCH_HAS_PHYS_TO_DMA, use bus_dma_region
+- Remove use of def_domain_type, use 1 of 2 ops chosen at init
 
-With this patch, not all the regions that are remapped have
-PageXenRemapped set. The name does not match its meaning.
---8323329-226463992-1739394832=:619090--
+Matthew Rosato (4):
+  s390/pci: check for relaxed translation capability
+  s390/pci: store DMA offset in bus_dma_region
+  iommu/s390: handle IOAT registration based on domain
+  iommu/s390: implement iommu passthrough via identity domain
+
+ arch/s390/include/asm/pci.h     |   4 +-
+ arch/s390/include/asm/pci_clp.h |   4 +-
+ arch/s390/kvm/pci.c             |  17 +---
+ arch/s390/pci/pci.c             |  35 ++++----
+ arch/s390/pci/pci_bus.c         |  25 ++++++
+ arch/s390/pci/pci_clp.c         |   1 +
+ arch/s390/pci/pci_sysfs.c       |  11 +--
+ drivers/iommu/s390-iommu.c      | 138 ++++++++++++++++++++++++++------
+ 8 files changed, 168 insertions(+), 67 deletions(-)
+
+-- 
+2.48.1
+
