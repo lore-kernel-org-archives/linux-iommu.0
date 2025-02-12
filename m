@@ -1,187 +1,138 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5A1B21018A
-	for <iommu@lists.linux.dev>; Wed, 12 Feb 2025 16:20:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5BD7253F09;
+	Wed, 12 Feb 2025 17:05:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739377227; cv=none; b=dLwSFRMkXtyFr+hb4g4KMpKRjiluKlLAAH/mGnhWtPcTDwZJ1Jsn1KVfGgDUC8ZqNKSqMY5ustgfPrlGlDeodgPiKDCmDhL6A0a1EYiDqzgsW9B2TVzrX1p2A8dUr6FQ9sAMg0j6jWJwWrXWMIOAhYktPcucj497QXGs4jvggZU=
+	t=1739379939; cv=none; b=STBkPRvxDONIx+6G4nbHcVjVptZaP6mhnF10g+YCDC7c+gHaRuNiX5F9xaeQ3p3OMcCrndePKybDXQI7pLR7KBdQZX2XOQ+R/1I/c4vTVFzw0nfWihEyagjOUqnT3DgM5cwc5uoR9UPdS+XeUoYfQB9r165e2c6ge93hEWn3NvE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739377227; c=relaxed/simple;
-	bh=IH6FJ/LOaKwyiedQHW7mKTCXkZR7qoVHrS4dm49fsuM=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=ZhQwkM6mZGHCVjCTIeBOGvh4hzx4GSfZ86pys+JvVXN2Q46G07dbEW2RbH5CWxcpX/FuLqQU53VLa3vo3W7yLyiOtbfpOCHvBp9japJIlSWhdB+okZuVWOjrt+ZOkxNli7cGhWthnB0zKzeFSVhtviNDhgy1F6ZcfgAOtTNNZSY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=Byx1S3Df; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	s=arc-20240116; t=1739379939; c=relaxed/simple;
+	bh=YsudT/6TBnrXzrKQm/Qxe9K/MN4Wek53eMr5xX7Cpl4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=tKaIhNMEJP5jPtWeuu0Qs+fvDv0pmgotiJCLkDrHtqEHioOWcHDE4/kBUqyXqH+wE44LaiiKMYL3zUYIsZiZOoxMD9c1DAivZzICGpyWFwiG/e7LaPnGrYQeKiJLYMKj2eZLxLZtAVhj0OiJDahbjF5btY4OmFBY/xUaVBAbKHM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=oDk5cFeA; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="Byx1S3Df"
-Received: from localhost (web.docker-mailserver_default [172.18.0.2])
-	by mail.mainlining.org (Postfix) with ESMTPSA id 1EEE9BB835;
-	Wed, 12 Feb 2025 16:20:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1739377223;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=QIxsFEW0fxFxc9Uh+/NGJ+ZhMAYCRBTTVCPuNqXBoWo=;
-	b=Byx1S3Df880pwgYYJt/jlleUmRcSPicWQL0Wc8t66UFcEb4Ymrj0X6U5GMcQUYlG72P2mw
-	AeaCaTksiVCGthozukYYKwjh3r55Uz37MR6DYqQJeSryK0a28AaAI628C8QpSgwcNHP8YN
-	Ugp1f/43WQ36lJKDc/0i2PQxPXa9x9s6e5JY19LUMUxLF26KtosgKVuDcScxwxfcNnXhTl
-	I2VksJS6LWy8Axv7ckWW8Blhfu29BQg92lauuTdMQbk2adwD+FDeA1/O/6pkjMXAnZ2L7e
-	27oLOvRuwFSq3zr1O60LashbJabjiwJfddqgNM7GEOJWHLXh+m8VAne7uyZi2Q==
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="oDk5cFeA"
+Received: from DESKTOP-0403QTC. (unknown [20.236.11.42])
+	by linux.microsoft.com (Postfix) with ESMTPSA id D8FA52107AA4;
+	Wed, 12 Feb 2025 09:05:36 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D8FA52107AA4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1739379937;
+	bh=TW1VMid6dkrWdHmdL4kONKDzLsTVzZ4wZc9lDpBiMvM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
+	b=oDk5cFeArxzEJY4PKwww6/XyIqeQP/AuRea73/TYxGQFkQxlRFmZCIdLPDKx3GQXZ
+	 uhxdWCatyI2FFZbImorgeaYFaPPmHdLN8qW5gzOadT4OdPfx8UjN72iCURPx2z7yuV
+	 K/aN5CIyC6U7ORlTqBUD3BBmjleRQMHu9WK6lXos=
+Date: Wed, 12 Feb 2025 09:05:35 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev, Joerg Roedel
+ <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ virtualization@lists.linux.dev, Will Deacon <will@kernel.org>, Eric Auger
+ <eric.auger@redhat.com>, patches@lists.linux.dev,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH 0/5] Convert virtio-iommu to domain_alloc_paging()
+Message-ID: <20250212090535.4973dbaf@DESKTOP-0403QTC.>
+In-Reply-To: <20250212115845.GA1627174@myrica>
+References: <0-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
+	<67abee53.170a0220.154671.ae28SMTPIN_ADDED_BROKEN@mx.google.com>
+	<20250212115845.GA1627174@myrica>
+Reply-To: jacob.pan@linux.microsoft.com
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Wed, 12 Feb 2025 17:20:23 +0100
-From: barnabas.czeman@mainlining.org
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Cc: Bjorn Andersson <andersson@kernel.org>, Michael Turquette
- <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>,
- =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, Linus Walleij
- <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, Srinivas Kandagatla
- <srinivas.kandagatla@linaro.org>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio
- <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org,
- linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- iommu@lists.linux.dev, Dang Huynh <danct12@riseup.net>
-Subject: Re: [PATCH 08/10] arm64: dts: qcom: Add initial support for MSM8937
-In-Reply-To: <7664b71c-ed47-4765-9ac4-5dbe3ec80d3c@oss.qualcomm.com>
-References: <20250211-msm8937-v1-0-7d27ed67f708@mainlining.org>
- <20250211-msm8937-v1-8-7d27ed67f708@mainlining.org>
- <7664b71c-ed47-4765-9ac4-5dbe3ec80d3c@oss.qualcomm.com>
-Message-ID: <d4792e6323e2dd5392a0d9633df62174@mainlining.org>
-X-Sender: barnabas.czeman@mainlining.org
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 2025-02-12 14:07, Konrad Dybcio wrote:
-> On 11.02.2025 11:37 PM, Barnabás Czémán wrote:
->> From: Dang Huynh <danct12@riseup.net>
->> 
->> Add initial support for MSM8937 SoC.
->> 
->> Signed-off-by: Dang Huynh <danct12@riseup.net>
->> Co-developed-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->> ---
-> 
-> So the computer tells me 8917 and 8937 are *very* similar. Have you
-> tried assessing how making 8937.dtsi an overlay atop 8917.dtsi would
-> work out?
+Hi Jean-Philippe,
 
-They are similar but there are many small differences:
-- have two dsi
-- using adreno 505
-- different iommu it uses arm,smmu for gpu and qcom,iommu for 
-applications
-- 8 cores
-- camss will be a different a bit
-- venus will be different a bit
-- have more i2c and spi
-- different mdp version
+On Wed, 12 Feb 2025 11:58:45 +0000
+Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
 
-Maybe i can find more differences, originally it was based on 
-msm8917.dtsi
-but we have decided to keep it separate, also it have different license 
-from 8917.
-The plan is MSM8940 and SDM439 support will based on msm8937.dtsi in the 
-future.
+> Hi Jacob,
+> 
+> On Tue, Feb 11, 2025 at 04:41:51PM -0800, Jacob Pan wrote:
+> > > However, there seem to be some unrelated qemu bugs. 7.0.0 does not
+> > > have working VIRTIO_IOMMU_F_BYPASS_CONFIG and neither qemu works
+> > > with an IDENTITY domain using !VIRTIO_IOMMU_F_BYPASS_CONFIG. It
+> > > prints:
+> > > 
+> > >  qemu-system-x86_64: iommu has granularity incompatible with
+> > > target AS qemu-system-x86_64: iommu map to non memory area
+> > > 80000000 qemu-system-x86_64: iommu map to non memory area c0000000
+> > >  qemu-system-x86_64: iommu map to non memory area e0000000
+> > >  qemu-system-x86_64: iommu map to non memory area f0000000
+> > >  qemu-system-x86_64: iommu map to non memory area f8000000
+> > >  qemu-system-x86_64: iommu map to non memory area fc000000
+> > >  qemu-system-x86_64: iommu map to non memory area fe000000
+> > >  qemu-system-x86_64: iommu map to non memory area fe800000
+> > >  qemu-system-x86_64: iommu map to non memory area 0
+> > >  qemu-system-x86_64: iommu map to non memory area fef00000
+> > >  qemu-system-x86_64: iommu map to non memory area ff000000
+> > >  qemu-system-x86_64: iommu has granularity incompatible with
+> > > target AS qemu-system-x86_64: iommu map to non memory area
+> > > 200000000 qemu-system-x86_64: iommu map to non memory area
+> > > 400000000 qemu-system-x86_64: iommu map to non memory area
+> > > 800000000 qemu-system-x86_64: iommu map to non memory area
+> > > 1000000000 qemu-system-x86_64: iommu map to non memory area
+> > > 2000000000 qemu-system-x86_64: iommu map to non memory area
+> > > 4000000000  
+> > 
+> > I see the same on arm64 with v9.0, assigned an ixgbe nic via VFIO.
+> > 
+> > qemu-system-aarch64: iommu map to non memory area 0
+> > qemu-system-aarch64: iommu map to non memory area 8100000
+> > qemu-system-aarch64: iommu map to non memory area 8200000
+> > qemu-system-aarch64: iommu map to non memory area 8400000
+> > qemu-system-aarch64: iommu map to non memory area 8800000
+> > qemu-system-aarch64: iommu map to non memory area 0
+> > qemu-system-aarch64: iommu map to non memory area 0
+> > qemu-system-aarch64: iommu map to non memory area c000000
+> > qemu-system-aarch64: iommu map to non memory area 10000000
+> > qemu-system-aarch64: iommu map to non memory area 20000000
+> > qemu-system-aarch64: iommu has granularity incompatible with target
+> > AS qemu-system-aarch64: iommu map to non memory area 200000000
+> > qemu-system-aarch64: iommu map to non memory area 400000000
+> > qemu-system-aarch64: iommu map to non memory area 800000000
+> > qemu-system-aarch64: iommu map to non memory area 1000000000
+> > qemu-system-aarch64: iommu map to non memory area 2000000000
+> > qemu-system-aarch64: iommu map to non memory area 4000000000
+> > qemu-system-aarch64: iommu map to non memory area 8000000000
+> > qemu-system-aarch64: iommu map to non memory area 10000000000
+> > qemu-system-aarch64: iommu map to non memory area 20000000000
+> > qemu-system-aarch64: iommu map to non memory area 40000000000
+> > qemu-system-aarch64: iommu map to non memory area 80000000000
+> > qemu-system-aarch64: iommu map to non memory area 100000000000
+> > qemu-system-aarch64: iommu map to non memory area 200000000000
+> > qemu-system-aarch64: iommu map to non memory area 400000000000
+> > qemu-system-aarch64: iommu map to non memory area 800000000000     
+> 
+> QEMU v9.0 and v9.1 have reached end of life. Do you also get this
+> error with QEMU v9.2.x?
+have not tried. will do.
 
-> 
-> 
->>  arch/arm64/boot/dts/qcom/msm8937.dtsi | 2145 
->> +++++++++++++++++++++++++++++++++
->>  1 file changed, 2145 insertions(+)
->> 
->> diff --git a/arch/arm64/boot/dts/qcom/msm8937.dtsi 
->> b/arch/arm64/boot/dts/qcom/msm8937.dtsi
->> new file mode 100644
->> index 
->> 0000000000000000000000000000000000000000..ef633c1694ad98165e58130cbeb186d2f0e2dcaa
->> --- /dev/null
->> +++ b/arch/arm64/boot/dts/qcom/msm8937.dtsi
->> @@ -0,0 +1,2145 @@
->> +// SPDX-License-Identifier: BSD-3-Clause
->> +/*
->> + * Copyright (c) 2023, Dang Huynh <danct12@riseup.net>
->> + */
->> +
->> +#include <dt-bindings/clock/qcom,gcc-msm8917.h>
->> +#include <dt-bindings/clock/qcom,rpmcc.h>
->> +#include <dt-bindings/interrupt-controller/arm-gic.h>
->> +#include <dt-bindings/power/qcom-rpmpd.h>
->> +#include <dt-bindings/thermal/thermal.h>
->> +
->> +/ {
->> +	interrupt-parent = <&intc>;
->> +
->> +	#address-cells = <2>;
->> +	#size-cells = <2>;
->> +
->> +	clocks {
->> +		xo_board: xo-board {
->> +			compatible = "fixed-clock";
->> +			#clock-cells = <0>;
->> +		};
->> +
->> +		sleep_clk: sleep-clk {
->> +			compatible = "fixed-clock";
->> +			#clock-cells = <0>;
->> +		};
->> +	};
->> +
->> +	cpus {
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +
->> +		cpu4: cpu@0 {
-> 
-> I'm pretty sure a CPU with a MPIDR of 0 should be called CPU0
-> 
->> +			compatible = "arm,cortex-a53";
->> +			reg = <0x0>;
->> +			device_type = "cpu";
->> +			enable-method = "psci";
->> +			operating-points-v2 = <&cpu_opp_table_c0>;
->> +			next-level-cache = <&l2_0>;
->> +			#cooling-cells = <2>;
->> +			l2_0: l2-cache {
-> 
-> Please add a newline between the last property and the subnode
-> 
->> +				compatible = "cache";
->> +				cache-level = <2>;
-> 
-> cache-size = <0x80000>;
-> 
-> [...]
-> 
->> +		cpu0: cpu@100 {
->> +			compatible = "arm,cortex-a53";
->> +			reg = <0x100>;
->> +			device_type = "cpu";
->> +			next-level-cache = <&l2_1>;
->> +			enable-method = "psci";
->> +			operating-points-v2 = <&cpu_opp_table_c1>;
->> +			#cooling-cells = <2>;
->> +			power-domains = <&cpu_pd0>;
->> +			power-domain-names = "psci";
->> +			l2_1: l2-cache {
->> +				compatible = "cache";
->> +				cache-level = <2>;
-> 
-> cache-size = <0x100000>;
-> 
-> I'll do further review if you decide it makes sense to keep this
-> separate from 8917
-> 
-> Konrad
+> Are you running an arm64 guest on an x86 host with TCG, or arm64
+> guest on arm64 host with KVM?
+This is arm64 guest and host.
+
+>  Does reproducing this require
+> modifying QEMU or Linux to disable support for F_BYPASS_CONFIG, or
+> just passing QEMU/kernel parameters?
+I only modified guest code to pretend F_BYPASS_CONFIG is not supported,
+ a couple of places like:
+
+-       if (virtio_has_feature(viommu->vdev,
+  VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
++       if (!virtio_has_feature(viommu->vdev,
+  VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
+
+Is there a QEMU command line option to disable
+VIRTIO_IOMMU_F_BYPASS_CONFIG?
+
+
