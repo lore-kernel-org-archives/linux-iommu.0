@@ -1,59 +1,74 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F0D25D558;
-	Wed, 12 Feb 2025 18:53:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ECAD211A2F
+	for <iommu@lists.linux.dev>; Wed, 12 Feb 2025 19:15:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739386427; cv=none; b=lceoWFLwHKmyyu6UA/Izs2K62msy/d4wEhzPjASGXsUhIg5LuH0C1JLWHmzWLa5qkX5UAGvkY4aeGTp9ETmcfwUeAgq1dsHKsapLo+49ix9b7n1YFXTTwqtKDkznEjPwf91cZ+RJn8x5KtB3JXNZ80JqxeyQVHFMRR0cfM3RM0g=
+	t=1739387742; cv=none; b=OnzbSMEeEUJA0n2/YOakxGl59oMs5w4fJ/7in+5pbgkDrQPlEwkMofzxbZ1BQWKLOu5RMGnBFSdoY8PEWoJQXgh89FmqGutfG4DSlajMkQ1KRkoqAcaMwtMnYhHSvVItu4zX+ZZurqsxxZ+W0La6mDafwNfZ5g2hof/9Ieeme5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739386427; c=relaxed/simple;
-	bh=5tJWQW682yVJHOELemxqrvB3V23kM6i2rx1d75/VJ70=;
+	s=arc-20240116; t=1739387742; c=relaxed/simple;
+	bh=j/MRe+mq2tPhTDU1WqstTBB8ACCVQAqwnxs28dXhnl4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ryngTr32FwviBEiGkWtW4PkILev51JlYQVx6NkFta+MFD6MZLr5bgie1jk5/sQ+4Rysbg2tVC+z2OPrurT7xPCzQYMxEvQBTit2RmtnmQHidsxUULTlcF5lYbQ56qg9A/9ltvxQPxCNJpJsEr4CERARq/zZq7jSYRnRk2RMzfY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=RQsJzdIo; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=QwsybKw0X0+/xtf9UICqWM0lZWE5+mG3eRE5EaJBQ+aGP+a2NUCQkC+DBycW3btu33j4PCdJjLzqWI4a1YlR0sYEc2wOmd42PjVn4wV4kInsTREIuL/05Ow4aK/Vu+zykBpOZEqq1Ewo1TdzCsXM+Ik6q2A5MeIV7O57VTQyaVc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Kx7oIH3i; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RQsJzdIo"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=oUOokMrKASXdzZOA3VRoZ7fdfSIasrczhgZC+ARdsyE=; b=RQsJzdIo4sjdvkb3W0fwkdFRaa
-	O57YRtnEq+Dfi18rN1QQwUuBy8dYpnMr5IQlIOiChqEyQR5T5MXOqbangz7v/EBYWW/HkX+P8uxVd
-	idVVcsVuC1PGXaAK7beZ2GFCmN9Y3Y8pSbs17s98gPhCfsWxM/EmI7xjeGTmmG7zZ3FYar1vcZ1GW
-	h55laSfKYbPWaVvzr2P1udrViDnu1von3OwcqpmZgx3g3jQPH5tdQFFtQN3ZwqwAF5L+Oug9GX7y+
-	ZjNB66u0s3SGCr440I3G2m1FDfd3d+xBpNUtfFXpL6XIDVSPSq0qiSv8tjXfWua6lN4yAYuGQBmSo
-	eK0Oz+Zw==;
-Received: from willy by casper.infradead.org with local (Exim 4.98 #2 (Red Hat Linux))
-	id 1tiHrZ-00000005dDY-05Hq;
-	Wed, 12 Feb 2025 18:53:33 +0000
-Date: Wed, 12 Feb 2025 18:53:32 +0000
-From: Matthew Wilcox <willy@infradead.org>
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-	zhangkun09@huawei.com, liuyonglong@huawei.com,
-	fanghaiqing@huawei.com,
-	Alexander Lobakin <aleksander.lobakin@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alexander Duyck <alexander.duyck@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	IOMMU <iommu@lists.linux.dev>, MM <linux-mm@kvack.org>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-	bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net-next v9 0/4] fix the DMA API misuse problem for
- page_pool
-Message-ID: <Z6zuLJU7o_gRsQRu@casper.infradead.org>
-References: <20250212092552.1779679-1-linyunsheng@huawei.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Kx7oIH3i"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-38dd93a4e8eso33136f8f.1
+        for <iommu@lists.linux.dev>; Wed, 12 Feb 2025 11:15:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1739387739; x=1739992539; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=HqNd92Cgc359wI1YLkJzjmHs2FZOPIccP/HZnTPHBgs=;
+        b=Kx7oIH3ihwcKIn5LUll9lvpZpie65OeGeQL5/K2MJjZrYI1cPv2cGSoSU4ApEJGA7o
+         TWgWsCkkxEUWLexkiAwlUrsEk5XS0+GGSboZWS5KmzyP2sX7rtUpKNaQKglquBQL6cmO
+         v0TfWNZ8yA53UrhxYb7idFrAMgPR6/oZOJFBMMr+7YbQk5gzX1aYXzVkn6/Me+VKkyft
+         /ahHgxDLwSHzw+oEqYpU5kQdmwtFyhZiOQnCtIU9y7hHADaNJQMr9kveh+zMkigihzhg
+         5+9xyRiG0OUijc9R40qMAfoKdbtC4M+SQzRE0J1Un07Ot6nS+uE/7wPX4SodfQ2J1GMe
+         wB0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739387739; x=1739992539;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HqNd92Cgc359wI1YLkJzjmHs2FZOPIccP/HZnTPHBgs=;
+        b=DSbTkWLOJXbMRYmfn9OR8McQIkvA4dGFyFRX6GAa1qJzzauJ4P7cs9qbx0aF1t5Hnf
+         FThhtPmn/NKxFhZM8dky9nQ1alOABFZRCIYadOO59URj0ZrCsy+gYQuideB7TRQlUfVS
+         JDzOwV929wd4VQVQJCY9NAgl0vfh7S9pf8g+bZu8dBW4d3S0bHtD5WGy6ME5FD5wKeN1
+         fCTHRfOPtTjEGMI6i8P0tpaG0yh2/Hx7X5xBokf1QynXreXpsixayXD7ibdtvMhWdApJ
+         Zu89UFD3rOpjfniIH5JQUJ2lY75kF6TqsjFvOhwX8vbBhcz2oXNqolQGkD9FaiFY58Eo
+         4ygg==
+X-Forwarded-Encrypted: i=1; AJvYcCUgZtsICRkV1NC+4JUU8uoLqGhzCdFViQQ5OEzZlNGmwnd44JbJTYVqsEdN6lKi7v4fmTUa6g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwQDf81PWy08zoJoNQ53+xsh949IQBwaR9PQl/JXS888mB9HMK9
+	WVm0x6mNhigS/UQH3HeStYSHbouOJWFKPs0YtjcoP2eCU/7SY752Xn450Wy0C3I=
+X-Gm-Gg: ASbGnctMcxvnEgG0YqohIjiyNIw6rxEwO0GFdP/tGd5l7Mcpg0bx08DVC+4wmMPTy5w
+	7HBIR3TWTQrgM/oYrHmYMus5GLdR6A4AG5k98b1Fs1YugVJ3dBpKxmWCC/k1r3sBKciM1cowgma
+	JWNXuLN635PTJoiLCqOxh8bRLsXSpvF79D+8eq2g2Kj3rGP4h+NpkrjZh2nDFyaTaKYSVDP+mCS
+	7/vMuAyQiEiYuM0vLDFnFcWpO98SCO4w1uhuAt8AvvfFZxvuyzbhyVEMMwtoTvG1jZn81Lbga9u
+	apmHFXA5Q/Zv2g==
+X-Google-Smtp-Source: AGHT+IGkzecCOJkuqQbBI6huzDaIBc5zvDDm9U/5OMf0bnMDKXZpSgMYgPel+hUwbay3rx6H0lyECA==
+X-Received: by 2002:a5d:5f48:0:b0:38d:c9da:d0d7 with SMTP id ffacd0b85a97d-38f244da097mr707581f8f.2.1739387739336;
+        Wed, 12 Feb 2025 11:15:39 -0800 (PST)
+Received: from myrica ([2.221.137.100])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4395a053f46sm28934625e9.14.2025.02.12.11.15.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Feb 2025 11:15:38 -0800 (PST)
+Date: Wed, 12 Feb 2025 19:16:03 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>, patches@lists.linux.dev
+Subject: Re: [PATCH 0/5] Convert virtio-iommu to domain_alloc_paging()
+Message-ID: <20250212191603.GA4085684@myrica>
+References: <0-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
+ <67abee53.170a0220.154671.ae28SMTPIN_ADDED_BROKEN@mx.google.com>
+ <20250212115845.GA1627174@myrica>
+ <67acd4e2.630a0220.365aab.e098SMTPIN_ADDED_BROKEN@mx.google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,12 +77,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250212092552.1779679-1-linyunsheng@huawei.com>
+In-Reply-To: <67acd4e2.630a0220.365aab.e098SMTPIN_ADDED_BROKEN@mx.google.com>
 
-On Wed, Feb 12, 2025 at 05:25:47PM +0800, Yunsheng Lin wrote:
-> This patchset fix the dma API misuse problem as mentioned in [1].
+On Wed, Feb 12, 2025 at 09:05:35AM -0800, Jacob Pan wrote:
+> >  Does reproducing this require
+> > modifying QEMU or Linux to disable support for F_BYPASS_CONFIG, or
+> > just passing QEMU/kernel parameters?
+> I only modified guest code to pretend F_BYPASS_CONFIG is not supported,
+>  a couple of places like:
 > 
-> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
+> -       if (virtio_has_feature(viommu->vdev,
+>   VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
+> +       if (!virtio_has_feature(viommu->vdev,
+>   VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
+> 
+> Is there a QEMU command line option to disable
+> VIRTIO_IOMMU_F_BYPASS_CONFIG?
 
-That's a very long and complicated thread.  I gave up.  You need to
-provide a proper description of the problem.
+No, but I have a patch for testing that didn't seem worth upstreaming:
+https://jpbrucker.net/git/qemu/commit/?h=virtio-iommu/bypass&id=ab2f435576a95914d2939ef4f0b190548721fe7b
+With it I'm able to reproduce the issue, looks like I only tested this
+case with virtual devices and not VFIO. I'll look for a fix
+
+Thanks,
+Jean
