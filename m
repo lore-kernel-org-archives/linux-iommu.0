@@ -1,46 +1,45 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 48E5BB665;
-	Wed, 12 Feb 2025 00:43:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FBF52C1A2;
+	Wed, 12 Feb 2025 01:23:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739321038; cv=none; b=i9JXHT+aDXf5d9+pUhPUussDy+ZQIXQNur556unFtjTrj/lNGk3qNQMxlHJOqmjDGD27OoVVCRRSTjVFFkmcT5UducIFeOhSbGRCgKpV9aAOqqYsGkzJ3+W/1C6T3vOps9aFmb0Maq/f3n4hOLQLc+BCyg+9FrqvCv6GM0gjIcM=
+	t=1739323419; cv=none; b=qaZA+p0qZMApSsaB3aF8EfFE2/zww6kcpbqgtpWIOPzFmYV7V5HC/rB91Sch6QLRqcIQx3v5LoydhrY6JzQtJwHBOrqWWzFR38H+GyNpkv3pgIgGvHbnsSAn5xpNCblxjFC6DcO0VtX6DxJjkbZPmcG+cMzqIlHQB2zkUvPmPg4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739321038; c=relaxed/simple;
-	bh=QzU9ddI/RxkMzmG60R93vS+PJSGE/413INfnWtXmn/w=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=BVbEPWT9HLUHlFtunzOnOcGNudsazWfQxLcacpnVzli8ehnAnrnm0n50/Ry7AlNDvAJzJSer2kXzUiLLPExt1XALHB33rvqtb/BdRdGfQGzInO7VwMCc3dO0B4/A9D2NALDjaJx+RY8zOVdU3U7rgIVkzsZE5qIIquwVxTf7B7s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=O1qlXhUy; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1739323419; c=relaxed/simple;
+	bh=NxZg3s6KMEv9gnhHvHFUocnGM1b/XIp3StXzcFhH2Xo=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=UuD1p2md9E7lpPuIAdwv2zOJvG/DnX/XTG20uqiJwlhoErzSLFGdEdJh/PAQKkuVL0dddat8yW9wLGZuoEOwQtUmg2+gy5PlTgyRtT3T1LBay5hBM7YQg2cusrrQ7/NzlyeQ+jwaKYT+7DRHJH690Nu7g6+KCGHuWLiaiquAPEQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oVWLqG08; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="O1qlXhUy"
-Received: from DESKTOP-0403QTC. (unknown [20.236.10.163])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 5B1142107AB2;
-	Tue, 11 Feb 2025 16:43:56 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5B1142107AB2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1739321036;
-	bh=sfhNP2zwy3L/x2MoYp9ApQFHl8JFG6RrQ0ndfVcdPOE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
-	b=O1qlXhUyZJyouU6jqy7z6y0DLjXO1Wo/VC9QO3xOq4xOuJH9DotirO/yIrh94QMBs
-	 WOPdtx/E0SD/EjQx1F+D5HY05daHSR7a33xznQUATlmSL35A/q2L919bnmRqCxBL1o
-	 oDSEPq0W3teOlDKgrR9JYhk2FguKChOfn0UmSzvI=
-Date: Tue, 11 Feb 2025 16:43:55 -0800
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
- virtualization@lists.linux.dev, Will Deacon <will@kernel.org>, Eric Auger
- <eric.auger@redhat.com>, patches@lists.linux.dev,
- jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH 1/5] iommu/virtio: Break out bypass identity support
- into a global static
-Message-ID: <20250211164355.5a1c1647@DESKTOP-0403QTC.>
-In-Reply-To: <1-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
-References: <0-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
- <1-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
-Reply-To: jacob.pan@linux.microsoft.com
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oVWLqG08"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1FD4C4CEDD;
+	Wed, 12 Feb 2025 01:23:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739323418;
+	bh=NxZg3s6KMEv9gnhHvHFUocnGM1b/XIp3StXzcFhH2Xo=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+	b=oVWLqG08PSOIXVkoGpvBSiL9K4kGQ1GwdmXPtyeAygaJn0meND1EiB2qktwJ22JVf
+	 go66AHTs0Cf3DuR6GsEFGt6bRYNSBNihzJP+6imQsIeJ8y+jU2ux129YLsrqJeegRJ
+	 RVmCgUnBlcMePi+eTjrQoAcpuPanxmZHoJFoTk4RjKV9Lf9v7lqoH7puNadklMKJr5
+	 eE+1NSuNulTWL95rJw8t2pmoJsp5RU/ZkWGjmj1ouBSSb1TujhysaTM2fFu38UHGgU
+	 b/slIh2skJHM9AGoogbS0SBO79NplryENo8z6B8yjdmhnjczivKwoL2/TN9DkcYDSi
+	 8LD8TglJLq9fg==
+Date: Tue, 11 Feb 2025 17:23:36 -0800 (PST)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
+To: Juergen Gross <jgross@suse.com>
+cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+    Stefano Stabellini <sstabellini@kernel.org>, 
+    Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, 
+    xen-devel@lists.xenproject.org, 
+    Jan Vejvalka <jan.vejvalka@lfmotol.cuni.cz>
+Subject: Re: [PATCH 1/2] xen/swiotlb: relax alignment requirements
+In-Reply-To: <20250211120432.29493-2-jgross@suse.com>
+Message-ID: <alpine.DEB.2.22.394.2502111723280.619090@ubuntu-linux-20-04-desktop>
+References: <20250211120432.29493-1-jgross@suse.com> <20250211120432.29493-2-jgross@suse.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,193 +47,81 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-Hi Jason,
-
-On Fri,  7 Feb 2025 10:46:01 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> To make way for a domain_alloc_paging conversion add the typical
-> global static IDENTITY domain. This supports VMMs that have a
-> VIRTIO_IOMMU_F_BYPASS_CONFIG config.
+On Tue, 11 Feb 2025, Juergen Gross wrote:
+> When mapping a buffer for DMA via .map_page or .map_sg DMA operations,
+> there is no need to check the machine frames to be aligned according
+> to the mapped areas size. All what is needed in these cases is that the
+> buffer is contiguous at machine level.
 > 
-> If the VMM does not have support then the domain_alloc path is still
-> used, which creates an IDENTITY domain out of a paging domain.
+> So carve out the alignment check from range_straddles_page_boundary()
+> and move it to a helper called by xen_swiotlb_alloc_coherent() and
+> xen_swiotlb_free_coherent() directly.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Fixes: 9f40ec84a797 ("xen/swiotlb: add alignment check for dma buffers")
+> Reported-by: Jan Vejvalka <jan.vejvalka@lfmotol.cuni.cz>
+> Tested-by: Jan Vejvalka <jan.vejvalka@lfmotol.cuni.cz>
+> Signed-off-by: Juergen Gross <jgross@suse.com>
+
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
+
+
 > ---
->  drivers/iommu/virtio-iommu.c | 86
-> ++++++++++++++++++++++++++++-------- 1 file changed, 67
-> insertions(+), 19 deletions(-)
+>  drivers/xen/swiotlb-xen.c | 20 ++++++++++++--------
+>  1 file changed, 12 insertions(+), 8 deletions(-)
 > 
-> diff --git a/drivers/iommu/virtio-iommu.c
-> b/drivers/iommu/virtio-iommu.c index b85ce6310ddbda..c71a996760bddb
-> 100644 --- a/drivers/iommu/virtio-iommu.c
-> +++ b/drivers/iommu/virtio-iommu.c
-> @@ -48,6 +48,7 @@ struct viommu_dev {
->  	u64				pgsize_bitmap;
->  	u32				first_domain;
->  	u32				last_domain;
-> +	u32				identity_domain_id;
->  	/* Supported MAP flags */
->  	u32				map_flags;
->  	u32				probe_size;
-> @@ -70,7 +71,6 @@ struct viommu_domain {
->  	struct rb_root_cached		mappings;
->  
->  	unsigned long			nr_endpoints;
-> -	bool				bypass;
->  };
->  
->  struct viommu_endpoint {
-> @@ -305,6 +305,22 @@ static int viommu_send_req_sync(struct
-> viommu_dev *viommu, void *buf, return ret;
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index a337edcf8faf..26c62e0d34e9 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -74,19 +74,21 @@ static inline phys_addr_t xen_dma_to_phys(struct device *dev,
+>  	return xen_bus_to_phys(dev, dma_to_phys(dev, dma_addr));
 >  }
 >  
-> +static int viommu_send_attach_req(struct viommu_dev *viommu, struct
-> device *dev,
-> +				  struct virtio_iommu_req_attach
-> *req) +{
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +	int ret;
-> +	int i;
-nit: coding style inconsistent within this patch. Inverted xmas tree
-here.
-
-> +	for (i = 0; i < fwspec->num_ids; i++) {
-> +		req->endpoint = cpu_to_le32(fwspec->ids[i]);
-> +		ret = viommu_send_req_sync(viommu, req,
-> sizeof(*req));
-> +		if (ret)
-> +			return ret;
-> +	}
-> +	return 0;
-> +}
-> +
->  /*
->   * viommu_add_mapping - add a mapping to the internal tree
->   *
-> @@ -687,12 +703,6 @@ static int viommu_domain_finalise(struct
-> viommu_endpoint *vdev, vdomain->viommu		= viommu;
->  
->  	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
-> -		if (virtio_has_feature(viommu->vdev,
-> -
-> VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
-> -			vdomain->bypass = true;
-> -			return 0;
-> -		}
-> -
->  		ret = viommu_domain_map_identity(vdev, vdomain);
->  		if (ret) {
->  			ida_free(&viommu->domain_ids, vdomain->id);
-> @@ -719,10 +729,8 @@ static void viommu_domain_free(struct
-> iommu_domain *domain) 
->  static int viommu_attach_dev(struct iommu_domain *domain, struct
-> device *dev) {
-> -	int i;
->  	int ret = 0;
->  	struct virtio_iommu_req_attach req;
-> -	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
->  	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
->  	struct viommu_domain *vdomain = to_viommu_domain(domain);
->  
-> @@ -761,16 +769,9 @@ static int viommu_attach_dev(struct iommu_domain
-> *domain, struct device *dev) .domain		=
-> cpu_to_le32(vdomain->id), };
->  
-> -	if (vdomain->bypass)
-> -		req.flags |=
-> cpu_to_le32(VIRTIO_IOMMU_ATTACH_F_BYPASS); -
-> -	for (i = 0; i < fwspec->num_ids; i++) {
-> -		req.endpoint = cpu_to_le32(fwspec->ids[i]);
-> -
-> -		ret = viommu_send_req_sync(vdomain->viommu, &req,
-> sizeof(req));
-> -		if (ret)
-> -			return ret;
-> -	}
-> +	ret = viommu_send_attach_req(vdomain->viommu, dev, &req);
-> +	if (ret)
-> +		return ret;
->  
->  	if (!vdomain->nr_endpoints) {
->  		/*
-> @@ -788,6 +789,40 @@ static int viommu_attach_dev(struct iommu_domain
-> *domain, struct device *dev) return 0;
->  }
->  
-> +static int viommu_attach_identity_domain(struct iommu_domain *domain,
-> +					 struct device *dev)
+> +static inline bool range_requires_alignment(phys_addr_t p, size_t size)
 > +{
-> +	int ret = 0;
-> +	struct virtio_iommu_req_attach req;
-> +	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
-> +	struct viommu_domain *vdomain = to_viommu_domain(domain);
+> +	phys_addr_t algn = 1ULL << (get_order(size) + PAGE_SHIFT);
+> +	phys_addr_t bus_addr = pfn_to_bfn(XEN_PFN_DOWN(p)) << XEN_PAGE_SHIFT;
 > +
-> +	req = (struct virtio_iommu_req_attach) {
-> +		.head.type	= VIRTIO_IOMMU_T_ATTACH,
-> +		.domain		=
-> cpu_to_le32(vdev->viommu->identity_domain_id),
-> +		.flags          =
-> cpu_to_le32(VIRTIO_IOMMU_ATTACH_F_BYPASS),
-> +	};
-> +
-> +	ret = viommu_send_attach_req(vdev->viommu, dev, &req);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (vdev->vdomain) {
-> +		vdev->vdomain->nr_endpoints--;
-> +		vdomain->nr_endpoints++;
-> +		vdev->vdomain = vdomain;
-> +	}
-> +	return 0;
+> +	return IS_ALIGNED(p, algn) && !IS_ALIGNED(bus_addr, algn);
 > +}
 > +
-> +static struct viommu_domain viommu_identity_domain = {
-> +	.domain = { .type = IOMMU_DOMAIN_IDENTITY,
-> +		    .ops =
-> +			    &(const struct iommu_domain_ops){
-> +				    .attach_dev =
-> viommu_attach_identity_domain,
-> +			    } }
-> +};
-> +
->  static void viommu_detach_dev(struct viommu_endpoint *vdev)
+>  static inline int range_straddles_page_boundary(phys_addr_t p, size_t size)
 >  {
->  	int i;
-> @@ -1061,6 +1096,7 @@ static bool viommu_capable(struct device *dev,
-> enum iommu_cap cap) }
+>  	unsigned long next_bfn, xen_pfn = XEN_PFN_DOWN(p);
+>  	unsigned int i, nr_pages = XEN_PFN_UP(xen_offset_in_page(p) + size);
+> -	phys_addr_t algn = 1ULL << (get_order(size) + PAGE_SHIFT);
 >  
->  static struct iommu_ops viommu_ops = {
-> +	.identity_domain	= &viommu_identity_domain.domain,
->  	.capable		= viommu_capable,
->  	.domain_alloc		= viommu_domain_alloc,
->  	.probe_device		= viommu_probe_device,
-> @@ -1184,6 +1220,18 @@ static int viommu_probe(struct virtio_device
-> *vdev) if (virtio_has_feature(vdev, VIRTIO_IOMMU_F_MMIO))
->  		viommu->map_flags |= VIRTIO_IOMMU_MAP_F_MMIO;
+>  	next_bfn = pfn_to_bfn(xen_pfn);
 >  
-> +	/* Reserve an ID to use as the bypass domain */
-> +	if (virtio_has_feature(viommu->vdev,
-> VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
-> +		viommu->identity_domain_id = viommu->first_domain;
-> +		viommu->first_domain++;
-Could also use ida_alloc() instead of special treatment, it would be
-consistent with the paging identity domain ID.
-
-> +	} else {
-> +		/*
-> +		 * Assume the VMM is sensible and it either supports
-> bypass on
-> +		 * all instances or no instances.
-> +		 */
-> +		viommu_ops.identity_domain = NULL;
-> +	}
-> +
->  	viommu_ops.pgsize_bitmap = viommu->pgsize_bitmap;
+> -	/* If buffer is physically aligned, ensure DMA alignment. */
+> -	if (IS_ALIGNED(p, algn) &&
+> -	    !IS_ALIGNED((phys_addr_t)next_bfn << XEN_PAGE_SHIFT, algn))
+> -		return 1;
+> -
+>  	for (i = 1; i < nr_pages; i++)
+>  		if (pfn_to_bfn(++xen_pfn) != ++next_bfn)
+>  			return 1;
+> @@ -156,7 +158,8 @@ xen_swiotlb_alloc_coherent(struct device *dev, size_t size,
 >  
->  	virtio_device_ready(vdev);
-
+>  	*dma_handle = xen_phys_to_dma(dev, phys);
+>  	if (*dma_handle + size - 1 > dma_mask ||
+> -	    range_straddles_page_boundary(phys, size)) {
+> +	    range_straddles_page_boundary(phys, size) ||
+> +	    range_requires_alignment(phys, size)) {
+>  		if (xen_create_contiguous_region(phys, order, fls64(dma_mask),
+>  				dma_handle) != 0)
+>  			goto out_free_pages;
+> @@ -182,7 +185,8 @@ xen_swiotlb_free_coherent(struct device *dev, size_t size, void *vaddr,
+>  	size = ALIGN(size, XEN_PAGE_SIZE);
+>  
+>  	if (WARN_ON_ONCE(dma_handle + size - 1 > dev->coherent_dma_mask) ||
+> -	    WARN_ON_ONCE(range_straddles_page_boundary(phys, size)))
+> +	    WARN_ON_ONCE(range_straddles_page_boundary(phys, size) ||
+> +			 range_requires_alignment(phys, size)))
+>  	    	return;
+>  
+>  	if (TestClearPageXenRemapped(virt_to_page(vaddr)))
+> -- 
+> 2.43.0
+> 
