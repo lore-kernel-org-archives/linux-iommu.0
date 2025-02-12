@@ -1,85 +1,73 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D2C025EF88;
-	Wed, 12 Feb 2025 18:50:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F0D25D558;
+	Wed, 12 Feb 2025 18:53:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739386212; cv=none; b=Ix6hMxfzxK0uZFC42Wjvv/+0Bg7MFSXxbnMXlUJBnEyAWmquhRlabiMrOrk4/3+20YtEoyXR9FUvuFishKmXLeN9UC31aHQmsat02C/1ixazOLoWuWLoGEUWa3C9wqiLJbFv2OAf261RS9wQjtwF1ifaXTIYVzsPB/gkS+VZlA8=
+	t=1739386427; cv=none; b=lceoWFLwHKmyyu6UA/Izs2K62msy/d4wEhzPjASGXsUhIg5LuH0C1JLWHmzWLa5qkX5UAGvkY4aeGTp9ETmcfwUeAgq1dsHKsapLo+49ix9b7n1YFXTTwqtKDkznEjPwf91cZ+RJn8x5KtB3JXNZ80JqxeyQVHFMRR0cfM3RM0g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739386212; c=relaxed/simple;
-	bh=lGlxXkbFy07wbUNZfaE3M07fdK69wC8uPNp3TGFo45M=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rLxFL2JSzEBEnFs5nPeqQL4qhu6sun6DOF3h9jF+M6VJHBlmUYI68mfo+dc7YspuiZxwFOVeFlX6seKabv2mUJASjkdhWFmsBWH18Avr9EVDXUjzRZq7/PE/6lGy6y69I1nDPh6J06de4uQKrazafWoEdF7WuQlRXqJhdESJhus=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=rPgHeTSM; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1739386427; c=relaxed/simple;
+	bh=5tJWQW682yVJHOELemxqrvB3V23kM6i2rx1d75/VJ70=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ryngTr32FwviBEiGkWtW4PkILev51JlYQVx6NkFta+MFD6MZLr5bgie1jk5/sQ+4Rysbg2tVC+z2OPrurT7xPCzQYMxEvQBTit2RmtnmQHidsxUULTlcF5lYbQ56qg9A/9ltvxQPxCNJpJsEr4CERARq/zZq7jSYRnRk2RMzfY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=RQsJzdIo; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="rPgHeTSM"
-Received: from DESKTOP-0403QTC. (unknown [20.236.11.29])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 6B550203F3C4;
-	Wed, 12 Feb 2025 10:50:10 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6B550203F3C4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1739386210;
-	bh=GsNREgUQkdRhQmpSXgjlhj2apwo/vmOxAV4p+n55rkM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
-	b=rPgHeTSM9VYlBQl19pi2YSgKeKL//9CaQJj3SqmDuosXycw0HlXxqwSDBl/sE4R18
-	 q2o4DZLIkmlZ9crjdKVYag13xe5klY8FJ8rE2KmwABePR/hPw6c9+DfSfzHuoOWGiE
-	 MzVMwhU8UU1QP7wGjY2ZQrgEQ6RVmgdfIvrbpqRc=
-Date: Wed, 12 Feb 2025 10:50:08 -0800
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
- virtualization@lists.linux.dev, Will Deacon <will@kernel.org>, Eric Auger
- <eric.auger@redhat.com>, patches@lists.linux.dev,
- jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH 0/5] Convert virtio-iommu to domain_alloc_paging()
-Message-ID: <20250212105008.3d35ee43@DESKTOP-0403QTC.>
-In-Reply-To: <20250212125007.GP3754072@nvidia.com>
-References: <0-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
-	<20250211164151.723cfce0@DESKTOP-0403QTC.>
-	<20250212125007.GP3754072@nvidia.com>
-Reply-To: jacob.pan@linux.microsoft.com
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RQsJzdIo"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=oUOokMrKASXdzZOA3VRoZ7fdfSIasrczhgZC+ARdsyE=; b=RQsJzdIo4sjdvkb3W0fwkdFRaa
+	O57YRtnEq+Dfi18rN1QQwUuBy8dYpnMr5IQlIOiChqEyQR5T5MXOqbangz7v/EBYWW/HkX+P8uxVd
+	idVVcsVuC1PGXaAK7beZ2GFCmN9Y3Y8pSbs17s98gPhCfsWxM/EmI7xjeGTmmG7zZ3FYar1vcZ1GW
+	h55laSfKYbPWaVvzr2P1udrViDnu1von3OwcqpmZgx3g3jQPH5tdQFFtQN3ZwqwAF5L+Oug9GX7y+
+	ZjNB66u0s3SGCr440I3G2m1FDfd3d+xBpNUtfFXpL6XIDVSPSq0qiSv8tjXfWua6lN4yAYuGQBmSo
+	eK0Oz+Zw==;
+Received: from willy by casper.infradead.org with local (Exim 4.98 #2 (Red Hat Linux))
+	id 1tiHrZ-00000005dDY-05Hq;
+	Wed, 12 Feb 2025 18:53:33 +0000
+Date: Wed, 12 Feb 2025 18:53:32 +0000
+From: Matthew Wilcox <willy@infradead.org>
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+	zhangkun09@huawei.com, liuyonglong@huawei.com,
+	fanghaiqing@huawei.com,
+	Alexander Lobakin <aleksander.lobakin@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alexander Duyck <alexander.duyck@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	IOMMU <iommu@lists.linux.dev>, MM <linux-mm@kvack.org>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	John Fastabend <john.fastabend@gmail.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+	bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net-next v9 0/4] fix the DMA API misuse problem for
+ page_pool
+Message-ID: <Z6zuLJU7o_gRsQRu@casper.infradead.org>
+References: <20250212092552.1779679-1-linyunsheng@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250212092552.1779679-1-linyunsheng@huawei.com>
 
-Hi Jason,
-
-On Wed, 12 Feb 2025 08:50:07 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Tue, Feb 11, 2025 at 04:41:51PM -0800, Jacob Pan wrote:
+On Wed, Feb 12, 2025 at 05:25:47PM +0800, Yunsheng Lin wrote:
+> This patchset fix the dma API misuse problem as mentioned in [1].
 > 
-> > I see the same on arm64 with v9.0, assigned an ixgbe nic via VFIO.  
-> 
-> Huh, I figured it worked on ARM..
-> 
-> There is no requirement that an iommu driver implement identity, this
-> is all an optimization. If it doesn't work in alot of cases can we
-> just remove it? It would simplfy a lot..
-> 
-Currently, identity domain type can be set via sysfs. To prevent that,
-maybe we need this?
+> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
 
-+static int viommu_def_domain_type(struct device *dev)
-+{
-+  	return IOMMU_DOMAIN_DMA;
-+}
-+
- static struct iommu_ops viommu_ops = {
-        .identity_domain        = &viommu_identity_domain.domain,
-        .capable                = viommu_capable,
-@@ -1096,6 +1106,7 @@ static struct iommu_ops viommu_ops = {
-        .device_group           = viommu_device_group,
-        .get_resv_regions       = viommu_get_resv_regions,
-        .of_xlate               = viommu_of_xlate,
-+       .def_domain_type = viommu_def_domain_type,
-        .owner                  = THIS_MODULE,
-
+That's a very long and complicated thread.  I gave up.  You need to
+provide a proper description of the problem.
