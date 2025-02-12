@@ -1,46 +1,46 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D28D91FBC93
-	for <iommu@lists.linux.dev>; Wed, 12 Feb 2025 06:05:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 346E21FBC86
+	for <iommu@lists.linux.dev>; Wed, 12 Feb 2025 06:05:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739340346; cv=none; b=s0V+BTgkpwgP+8O1jTbQVOlR+DNVXkZ4XzVF5bbMI31la9ow/HUN42MjPWDkN6pv2BO74Tnr62yDgDaQBHuyNlsXgMPxhazmUYHXdEfbVJcscbgDRO2IyqRUyTEQUsWfmlnUoBKNlTP6Lxh/NAtVO4pn2fEgqgPzt+kzsb1iUZE=
+	t=1739340346; cv=none; b=GxcWhpiB1XZeFNzDNyfqT34nJzn6x01PZex+xR62OQgoQ0kA3hKeH7OXsfKbUFma06vKDr99vy6Kd8ZOXLqrD+ZG0QQPIzaHyb0oURCcjXym3kB5gcfB9yTlI6ZvDqGpQLSAN4jyG6MiMzFcegEsfamKj1V28YPKZBOu6W0i90U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1739340346; c=relaxed/simple;
-	bh=2RcVdMUL+PQyeQxm8eDU9BR1dOV9Z+AD0LDM1xBKE9g=;
+	bh=qtnTL5RVy6tbTXXU8EAxdl3xRIJBWG7pn7C0i9z52ak=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=dN060NPnaGkxxnMFqNrJwOJcMP54wwGRvTfHAaCRFHs1s9gvc/UkanJkxbSUjZxqmdn6b0ZyQmNzf01E/D5Lg1bzjrWH1hwugfoivQ5vHHvdtBnWCDno4eiX8wsQjLjc8LqRrHQDS4FTEGPsG7oxInfFNOKtiNMoW/h57hTCtEw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KDKH5aZi; arc=none smtp.client-ip=198.175.65.10
+	 MIME-Version; b=cDe760Ug4BeGoDKUUSDoASiMl8QdUWiqNehS5y5fa41fjGpY0pDRmhRmrUbmrqPfhVHC3vBiuHt1xhO/gsuV0EiHmf5YVAtpNA2vb31AZE4T7yiFarcIvVGFpGfgqxw6dxw3b05aI+LWti0ZpOkFTCzd2pw7DK85Ef0ij/K8jRk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C1DBdLpY; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KDKH5aZi"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C1DBdLpY"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1739340345; x=1770876345;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2RcVdMUL+PQyeQxm8eDU9BR1dOV9Z+AD0LDM1xBKE9g=;
-  b=KDKH5aZiiUFXZr/+jhjaumNA3rmBVpr7VSRNKNDNiaadUYz6W4C0FaE0
-   07nA6biWv0N+Fe1+r+KYg0gfZqZaajq0kM0alYVNRSJEV5lanPHeXeC3A
-   0Px1K4kfNK/8RKf4u7WTsChjLx0SkMw+2s1RpLCOqPzhKDvGQUzrAQRYg
-   SkBQQzd8vJ1MqyRBmRUjrheOfLUtWAJsnGwVkMG/oZ/+4LXwd5OLF60XP
-   DZMHqZiYTGcSmN6wBzP+tXnpswpU26elv+/HCAMkFmsFppFMMo3kyHbWr
-   z7ZBJ8dmrHW3nVGqjUxje6kMCucBtOS0vKQmEj56xobJeaOfnslgYs1Ir
-   Q==;
-X-CSE-ConnectionGUID: Dtl78oJuRTCBTre1VQ0oxA==
-X-CSE-MsgGUID: 1beGC4XeRv6mYYXygMp1yA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11342"; a="57391231"
+  bh=qtnTL5RVy6tbTXXU8EAxdl3xRIJBWG7pn7C0i9z52ak=;
+  b=C1DBdLpYr53GAQV8GQkKmzPOcjEnW3qmgSjPtvODOtbHwbFW+DGs8Oul
+   XWJu16g8RItqO05iXkFw3pa6WlqeTLNnKoOqJcI6jcAm6mKNAhnSWDAUv
+   ndOVwAJdZetQY2mJY9g5N5+bLI4TDssKgYFcxjnjeCHmbUFbSdifWFPH9
+   P5IaoEA+Sno5QLgNSznJGXmhUcHLyXUWsXHAzwW1YmgnlwhAlgRn8wGgM
+   ZROkPV2ISDpRUO1+HcMjVvg2kkiYaJ4ytGcjpPwJKvmo3+TqEFJ6GE+Mu
+   GnfQS4PVXzYA1HvrK4IsJj7mFhD/Nc/kfouR8G9kKJolFz0OUdS8jZCtZ
+   w==;
+X-CSE-ConnectionGUID: 2rhSkkOLSNOrtLiyaeMvJA==
+X-CSE-MsgGUID: 3IDt02q5SSGuAmLyskwRgg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11342"; a="57391237"
 X-IronPort-AV: E=Sophos;i="6.13,279,1732608000"; 
-   d="scan'208";a="57391231"
+   d="scan'208";a="57391237"
 Received: from orviesa005.jf.intel.com ([10.64.159.145])
   by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2025 22:05:44 -0800
-X-CSE-ConnectionGUID: HyigzjrrShu+mX9zHIt9Aw==
-X-CSE-MsgGUID: BDuMwkhEQaiPbi1FPov/mg==
+X-CSE-ConnectionGUID: QiuYno6zQqKJizpbUXMyAQ==
+X-CSE-MsgGUID: ktc2MGo2SY+SmV8bpwtLcw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="117899997"
+   d="scan'208";a="117900003"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
   by orviesa005.jf.intel.com with ESMTP; 11 Feb 2025 22:05:44 -0800
 From: Yi Liu <yi.l.liu@intel.com>
@@ -53,9 +53,9 @@ Cc: kevin.tian@intel.com,
 	robin.murphy@arm.com,
 	nicolinc@nvidia.com,
 	will@kernel.org
-Subject: [PATCH 2/5] iommu: Drop iommu_group_replace_domain()
-Date: Tue, 11 Feb 2025 22:05:37 -0800
-Message-Id: <20250212060540.261436-3-yi.l.liu@intel.com>
+Subject: [PATCH 3/5] iommu: Store either domain or handle in group->pasid_array
+Date: Tue, 11 Feb 2025 22:05:38 -0800
+Message-Id: <20250212060540.261436-4-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250212060540.261436-1-yi.l.liu@intel.com>
 References: <20250212060540.261436-1-yi.l.liu@intel.com>
@@ -67,66 +67,151 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-iommufd does not use it now, so drop it.
+iommu_attach_device_pasid() only stores handle to group->pasid_array
+when there is a valid handle input. However, it makes the
+iommu_attach_device_pasid() unable to detect if the pasid has been
+attached or not previously.
 
+To be complete, let the iommu_attach_device_pasid() store the domain
+to group->pasid_array if no valid handle. The other users of the
+group->pasid_array should be updated to be consistent. e.g. the
+iommu_attach_group_handle() and iommu_replace_group_handle().
+
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommu.c | 35 ++++++-----------------------------
- 1 file changed, 6 insertions(+), 29 deletions(-)
+ drivers/iommu/iommu.c | 47 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 34 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index eef7e19c547d..4ccb36b5aa30 100644
+index 4ccb36b5aa30..a7ebcbaafb10 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -2187,32 +2187,6 @@ int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_attach_group);
+@@ -45,6 +45,9 @@ static unsigned int iommu_def_domain_type __read_mostly;
+ static bool iommu_dma_strict __read_mostly = IS_ENABLED(CONFIG_IOMMU_DEFAULT_DMA_STRICT);
+ static u32 iommu_cmd_line __read_mostly;
  
--/**
-- * iommu_group_replace_domain - replace the domain that a group is attached to
-- * @group: IOMMU group that will be attached to the new domain
-- * @new_domain: new IOMMU domain to replace with
-- *
-- * This API allows the group to switch domains without being forced to go to
-- * the blocking domain in-between.
-- *
-- * If the currently attached domain is a core domain (e.g. a default_domain),
-- * it will act just like the iommu_attach_group().
-- */
--int iommu_group_replace_domain(struct iommu_group *group,
--			       struct iommu_domain *new_domain)
--{
--	int ret;
++/* Tags used with xa_tag_pointer() in group->pasid_array */
++enum { IOMMU_PASID_ARRAY_DOMAIN = 0, IOMMU_PASID_ARRAY_HANDLE = 1 };
++
+ struct iommu_group {
+ 	struct kobject kobj;
+ 	struct kobject *devices_kobj;
+@@ -3331,6 +3334,17 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
+ 		iommu_remove_dev_pasid(device->dev, pasid, domain);
+ }
+ 
++static void *iommu_make_pasid_entry(struct iommu_domain *domain,
++				    struct iommu_attach_handle *handle)
++{
++	if (handle) {
++		handle->domain = domain;
++		return xa_tag_pointer(handle, IOMMU_PASID_ARRAY_HANDLE);
++	}
++
++	return xa_tag_pointer(domain, IOMMU_PASID_ARRAY_DOMAIN);
++}
++
+ /*
+  * iommu_attach_device_pasid() - Attach a domain to pasid of device
+  * @domain: the iommu domain.
+@@ -3348,6 +3362,7 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 	struct iommu_group *group = dev->iommu_group;
+ 	struct group_device *device;
+ 	const struct iommu_ops *ops;
++	void *pasid_entry;
+ 	int ret;
+ 
+ 	if (!group)
+@@ -3363,6 +3378,8 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 	if (ops != domain->owner || pasid == IOMMU_NO_PASID)
+ 		return -EINVAL;
+ 
++	pasid_entry = iommu_make_pasid_entry(domain, handle);
++
+ 	mutex_lock(&group->mutex);
+ 	for_each_group_device(group, device) {
+ 		if (pasid >= device->dev->iommu->max_pasids) {
+@@ -3371,10 +3388,7 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 		}
+ 	}
+ 
+-	if (handle)
+-		handle->domain = domain;
 -
--	if (!new_domain)
--		return -EINVAL;
--
--	mutex_lock(&group->mutex);
--	ret = __iommu_group_set_domain(group, new_domain);
--	mutex_unlock(&group->mutex);
--	return ret;
--}
--EXPORT_SYMBOL_NS_GPL(iommu_group_replace_domain, "IOMMUFD_INTERNAL");
--
- static int __iommu_device_set_domain(struct iommu_group *group,
- 				     struct device *dev,
- 				     struct iommu_domain *new_domain,
-@@ -3559,9 +3533,12 @@ EXPORT_SYMBOL_NS_GPL(iommu_detach_group_handle, "IOMMUFD_INTERNAL");
-  * @new_domain: new IOMMU domain to replace with
-  * @handle: attach handle
-  *
-- * This is a variant of iommu_group_replace_domain(). It allows the caller to
-- * provide an attach handle for the new domain and use it when the domain is
-- * attached.
-+ * This API allows the group to switch domains without being forced to go to
-+ * the blocking domain in-between. It allows the caller to provide an attach
-+ * handle for the new domain and use it when the domain is attached.
-+ *
-+ * If the currently attached domain is a core domain (e.g. a default_domain),
-+ * it will act just like the iommu_attach_group_handle().
-  */
- int iommu_replace_group_handle(struct iommu_group *group,
+-	ret = xa_insert(&group->pasid_array, pasid, handle, GFP_KERNEL);
++	ret = xa_insert(&group->pasid_array, pasid, pasid_entry, GFP_KERNEL);
+ 	if (ret)
+ 		goto out_unlock;
+ 
+@@ -3454,13 +3468,17 @@ struct iommu_attach_handle *
+ iommu_attach_handle_get(struct iommu_group *group, ioasid_t pasid, unsigned int type)
+ {
+ 	struct iommu_attach_handle *handle;
++	void *pasid_entry;
+ 
+ 	xa_lock(&group->pasid_array);
+-	handle = xa_load(&group->pasid_array, pasid);
+-	if (!handle)
++	pasid_entry = xa_load(&group->pasid_array, pasid);
++	if (xa_pointer_tag(pasid_entry) == IOMMU_PASID_ARRAY_HANDLE) {
++		handle = xa_untag_pointer(pasid_entry);
++		if (type && handle->domain->type != type)
++			handle = ERR_PTR(-EBUSY);
++	} else {
+ 		handle = ERR_PTR(-ENOENT);
+-	else if (type && handle->domain->type != type)
+-		handle = ERR_PTR(-EBUSY);
++	}
+ 	xa_unlock(&group->pasid_array);
+ 
+ 	return handle;
+@@ -3483,15 +3501,17 @@ int iommu_attach_group_handle(struct iommu_domain *domain,
+ 			      struct iommu_group *group,
+ 			      struct iommu_attach_handle *handle)
+ {
++	void *pasid_entry;
+ 	int ret;
+ 
+ 	if (!handle)
+ 		return -EINVAL;
+ 
+-	handle->domain = domain;
++	pasid_entry = iommu_make_pasid_entry(domain, handle);
+ 
+ 	mutex_lock(&group->mutex);
+-	ret = xa_insert(&group->pasid_array, IOMMU_NO_PASID, handle, GFP_KERNEL);
++	ret = xa_insert(&group->pasid_array,
++			IOMMU_NO_PASID, pasid_entry, GFP_KERNEL);
+ 	if (ret)
+ 		goto err_unlock;
+ 
+@@ -3544,13 +3564,13 @@ int iommu_replace_group_handle(struct iommu_group *group,
  			       struct iommu_domain *new_domain,
+ 			       struct iommu_attach_handle *handle)
+ {
+-	void *curr;
++	void *curr, *pasid_entry;
+ 	int ret;
+ 
+ 	if (!new_domain || !handle)
+ 		return -EINVAL;
+ 
+-	handle->domain = new_domain;
++	pasid_entry = iommu_make_pasid_entry(new_domain, handle);
+ 
+ 	mutex_lock(&group->mutex);
+ 	ret = xa_reserve(&group->pasid_array, IOMMU_NO_PASID, GFP_KERNEL);
+@@ -3561,7 +3581,8 @@ int iommu_replace_group_handle(struct iommu_group *group,
+ 	if (ret)
+ 		goto err_release;
+ 
+-	curr = xa_store(&group->pasid_array, IOMMU_NO_PASID, handle, GFP_KERNEL);
++	curr = xa_store(&group->pasid_array,
++			IOMMU_NO_PASID, pasid_entry, GFP_KERNEL);
+ 	WARN_ON(xa_is_err(curr));
+ 
+ 	mutex_unlock(&group->mutex);
 -- 
 2.34.1
 
