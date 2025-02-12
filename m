@@ -1,141 +1,221 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D012D202F64
-	for <iommu@lists.linux.dev>; Wed, 12 Feb 2025 20:19:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7C56200B95;
+	Wed, 12 Feb 2025 21:14:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739391594; cv=none; b=kQF+IragSI5GIPkW5JNE+eiBpIjiQlDDQ9q8/SZMYA22loCCk+U1vThaH+0Y/HrUKvRXLL3YPcg+3ZuqfF2kqY6dwcNAHsufhpcgpjXd+s0jPBnHIRxNGp1DRS4mLGL+5vv7VZTTyIGwR2s2NVWmX7MdTH8FJwdMRzULWAzYnQU=
+	t=1739394859; cv=none; b=UQRck0379Az/h6cVR5YzuW0KFzg+NsEv8FVPfjMBhL9gf3+s1OQoh+x2t1zEXP17y20XfpL6hAU72zQXFZSxM/zItNDOpbNh8gxQ2ezohB17FfNgOcVdaeHxIISFb7DQFkrp3Z4xsvPHJ4M/Lq50U9LOcGBy5c1azLfVLq1a1fo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739391594; c=relaxed/simple;
-	bh=J9wumi7qlxcc6299rTzUmyAx5YxElF0K+3qqjT1gkcw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=mkHne/OnxfjWihpnTL4Tq4SUtArSGMu+0WEZjEVd8yS/nLyxCQL1IbDfJa1RHCt2Nbrk2h6JGurmMhu0fIpldaDj1aPIX3TYtk69I+w79ksMUJ/+eknmfbRdny+uSwbLX43tEAWlqwooLMY0xn3QUej0Cs8hJmImBwcbVBb41XI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=zV4ZYh+5; arc=none smtp.client-ip=209.85.208.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1739394859; c=relaxed/simple;
+	bh=dIqhk3djFsc3cAOqbHbhVUyG0+f+BY8S2yEkmEIiT0A=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=uj25RgMvhMAn7Tdtp7KKMGlWjGHchakiBI6YT4j0PCAhEgKCzedsac6ndstnIgDau9DO1WIX8Hn7MyctKdREm6GHrUrCdJqPumI9fmlVUI7oNvmfxdQ2v5wpZ9/DNX2pGSdNYCUwPBvLadXK3ggR9wa3lY5U38zXIjB6XMQjcTg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FM39xked; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zV4ZYh+5"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-5de3723cb76so7785a12.3
-        for <iommu@lists.linux.dev>; Wed, 12 Feb 2025 12:19:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1739391591; x=1739996391; darn=lists.linux.dev;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=u6+F/nzJic4e58KU64FVAzTlIBmwAdN4ZEHOdFxRX/U=;
-        b=zV4ZYh+5EEBeb3PC8tUGmCo3GXUYqNFjx3Hl7T6KJdQJ2LTxOubgD2GMs+anL9ED2i
-         Ly+NwZ48s/W6A0q4sqEH9ujgwSoZZLicDjhIp6xEgVLFAm6kYy2u0wQfoucRcaM4+T2e
-         5ga0/x5jcSiU00HKSUlIDU95PpnbHVOO7O4nD5X0ZmKNilP0j/1iAIVpCESW1oo43ORI
-         YNrhmT+ph5wxDDRQ0DJZIi3pUImZkihL/Tmt3IxFv1Q+wwLqIZwU09HxrWZbA29D0DR5
-         K9kxqgkwugCsS9CZkbSRlUxB4uAUDyQq7TWxjNj/YHSbeby3qsHbfpagp/f2IowrBGCr
-         huHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739391591; x=1739996391;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=u6+F/nzJic4e58KU64FVAzTlIBmwAdN4ZEHOdFxRX/U=;
-        b=cR164C/Dhx5LqcNUljghGRqi5gyAKTv6uXzJO6zHLymKSInhKjEaFlcAlNcZN1gPIu
-         LWR4TuC29yD2aUeF+3LXafIPwZKn0jWz3bk7xo6as2tc98jFGSn6Jfx7h2vAox7s3jj5
-         XLz4/JPVeWAqsmhyeTO3j5KId+klWxRb07xFNgpR+9PWhgp+eTwDx+HuwD3O20eJk4jc
-         zSViwT+49Vw9451T5dgTJCfpbC5UdZRMiNQiGHDlDum37mCvJCGlNbPH5xCKdSsCytdW
-         VwqZ5EmOfwxaxyT1CMplICfaQYvu2sS/GeURDWmuyQTMSSL4TeTogf/PbO/EtHzZl/TF
-         ph7w==
-X-Gm-Message-State: AOJu0YwCwyrxWfrT3lV9FNhvdEoefaBautuyxYkixN2VOCIoVtB/bT1f
-	EzI5LOlMfK5gDad66W1+RBHLfTNncVt+u5ph2sfAFrkyc9fFCeuXf/WsURAR8fM=
-X-Gm-Gg: ASbGncsGYk3+mx+XaVmey+u/J6kpqNU981lEev1f9uPldeHEC9J2d7MMlnAvhMSC9hn
-	OGuO0EqmGgWXkNqq6MQzbW28Z1n0RFQJmzRplWQAJJUymguL5gHv+yVY8dehuDPoTIXvKntrboA
-	X0g8vG5REOBBsze5olKZVQ1kgBVCbWNXgVcNc3IHV9d/Z19IQ8Y6NAvNsuF6jWCDe1HJXOcxMtT
-	EDEYZklmWK29W4xwgBxGvA3g0Qkvs+i36lii7GJCTmAjowIIr9f8kqnFXf4y93Tq/z91qBHgSfW
-	Id/M9j2uxV1OP+jxesLeBMUSDGXRa54=
-X-Google-Smtp-Source: AGHT+IFVsggGxzqlN/vZf4SFgQQpoTSQaeE0j9ooOvf/iQpaNXtig8fCxgL3//Gs75L6jr0AEe4gNw==
-X-Received: by 2002:a05:6402:40cd:b0:5de:a752:3c7d with SMTP id 4fb4d7f45d1cf-5deade02885mr1522371a12.6.1739391591011;
-        Wed, 12 Feb 2025 12:19:51 -0800 (PST)
-Received: from [127.0.1.1] ([178.197.218.144])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5de59f893ebsm9436732a12.45.2025.02.12.12.19.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Feb 2025 12:19:49 -0800 (PST)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Date: Wed, 12 Feb 2025 21:19:35 +0100
-Subject: [PATCH RESEND 3/3] iommu: omap: Use
- syscon_regmap_lookup_by_phandle_args
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FM39xked"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE131C4CEDF;
+	Wed, 12 Feb 2025 21:14:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739394859;
+	bh=dIqhk3djFsc3cAOqbHbhVUyG0+f+BY8S2yEkmEIiT0A=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+	b=FM39xked9CJJ3VZLi/LCH1yVlQqygsPF/WnRs/3TQ2j433zTnyeI/p/Ijho6DIq/3
+	 pvz7mYSzGYJqWeTLWKAjh/TnwSYjLq9cu34OsSH0+Zh+yfa+qGZ4izxvs0yxwa2OGX
+	 4pOYDBnRURLqRKCtB0g0cNc+J8IYSNo8n4BUz5UTmBRQVG9w0Ch2btNJpcBjRa9fQy
+	 Vrf7A139Fu0Jfb+nVA/cgfyGSzvuus8wMazx1h2r87V07jE5/ONnaSj6Njh8KOkbbX
+	 y23UCGj69P19iTesAWohj3PGUSbj3zisSvm7na3Q0LZ0YU0yg3/hNwweBzimQlI2+t
+	 lpNCWwV7fRtMQ==
+Date: Wed, 12 Feb 2025 13:14:16 -0800 (PST)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
+To: =?UTF-8?Q?J=C3=BCrgen_Gro=C3=9F?= <jgross@suse.com>
+cc: Stefano Stabellini <sstabellini@kernel.org>, linux-kernel@vger.kernel.org, 
+    x86@kernel.org, iommu@lists.linux.dev, 
+    Boris Ostrovsky <boris.ostrovsky@oracle.com>, 
+    Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
+    Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, 
+    "H. Peter Anvin" <hpa@zytor.com>, 
+    Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, 
+    xen-devel@lists.xenproject.org
+Subject: Re: [PATCH 2/2] xen/swiotlb: don't destroy contiguous region in all
+ cases
+In-Reply-To: <b7bc43f9-47e6-4994-bba9-5c8be92a8e52@suse.com>
+Message-ID: <alpine.DEB.2.22.394.2502121310320.619090@ubuntu-linux-20-04-desktop>
+References: <20250211120432.29493-1-jgross@suse.com> <20250211120432.29493-3-jgross@suse.com> <alpine.DEB.2.22.394.2502111728560.619090@ubuntu-linux-20-04-desktop> <b7bc43f9-47e6-4994-bba9-5c8be92a8e52@suse.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250212-syscon-phandle-args-iommu-v1-3-c3fab486b426@linaro.org>
-References: <20250212-syscon-phandle-args-iommu-v1-0-c3fab486b426@linaro.org>
-In-Reply-To: <20250212-syscon-phandle-args-iommu-v1-0-c3fab486b426@linaro.org>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1729;
- i=krzysztof.kozlowski@linaro.org; h=from:subject:message-id;
- bh=J9wumi7qlxcc6299rTzUmyAx5YxElF0K+3qqjT1gkcw=;
- b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBnrQJccqLErD/jL7OyJNpS7lTBh7SFfQbhopUl3
- i1FCXVvl7mJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCZ60CXAAKCRDBN2bmhouD
- 1z9SD/0V45R0Dr0Gsk6W+9AJn0o53W0eP5qesp0hzSdhUFvKk1/Nyz0472zLdSR2L38oywV9SbE
- ySEkrA2bKRxcLYKV4kRFeTDxln6ARH0N9GPBNynnsCAz1aUihKYNRY4GyrzMNRyudxEpIarweV1
- XuvYlnx+13q6HL8VkUuA6/s1pBaMOEmHZ0AOVNyxCvbSinQwekU4WmL0BsfmjekqREs1SvLetfj
- Tv75bftsQwlU9LcNXaGXhcpjyfNzFu527W+8OHTGOx/1uIq7Tl2gn4SKfWSCZlC+zrCiHpegy7X
- 6SO4akowKQYWh+B+DrmgUQSjP2fbgqrBU4clUhmVTSLxgPhmMghaMk79nnohljMiDNUSS61y07x
- 1eYcbSiLpPpwwH+kQ8Y8wmQ+eo8enpx9Za4YAbMu+YbrTqzB1PFkH9ZG4Hsp96U/t1uhPLWYQz3
- iQD9JAmXnEhIh7NxRQP9r/TmFNLbvFiQRvNksJJT5Vezm5Y/mS8wAjOeotMe0bOvhzFFnTH/YP3
- HCp2zNeEaRsuiFF44N50CSPP5kPwWK4IlkWZ2yVkiqneiqeLeMllNVwHnZD9Uoi82wvLDnciGT3
- 5WSdFMeQY9iX5Qb/64GcSBuaCpzdZ7AnM5qVy371ckQt8WBoyvxsYkHsXT+YUgG+oVflmnt8ayN
- c/bwFyGivjIl6aA==
-X-Developer-Key: i=krzysztof.kozlowski@linaro.org; a=openpgp;
- fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
+Content-Type: multipart/mixed; BOUNDARY="8323329-226463992-1739394832=:619090"
+Content-ID: <alpine.DEB.2.22.394.2502121313580.619090@ubuntu-linux-20-04-desktop>
 
-Use syscon_regmap_lookup_by_phandle_args() which is a wrapper over
-syscon_regmap_lookup_by_phandle() combined with getting the syscon
-argument.  Except simpler code this annotates within one line that given
-phandle has arguments, so grepping for code would be easier.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-There is also no real benefit in printing errors on missing syscon
-argument, because this is done just too late: runtime check on
-static/build-time data.  Dtschema and Devicetree bindings offer the
-static/build-time check for this already.
+--8323329-226463992-1739394832=:619090
+Content-Type: text/plain; CHARSET=UTF-8
+Content-Transfer-Encoding: 8BIT
+Content-ID: <alpine.DEB.2.22.394.2502121313581.619090@ubuntu-linux-20-04-desktop>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- drivers/iommu/omap-iommu.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+On Wed, 12 Feb 2025, Jürgen Groß wrote:
+> On 12.02.25 02:30, Stefano Stabellini wrote:
+> > On Tue, 11 Feb 2025, Juergen Gross wrote:
+> > > In case xen_swiotlb_alloc_coherent() needed to create a contiguous
+> > > region only for other reason than the memory not being compliant with
+> > > the device's DMA mask, there is no reason why this contiguous region
+> > > should be destroyed by xen_swiotlb_free_coherent() later. Destroying
+> > > this region should be done only, if the memory of the region was
+> > > allocated with more stringent placement requirements than the memory
+> > > it did replace.
+> > > 
+> > > Signed-off-by: Juergen Gross <jgross@suse.com>
+> > > ---
+> > >   arch/x86/include/asm/xen/swiotlb-xen.h |  5 +++--
+> > >   arch/x86/xen/mmu_pv.c                  | 18 ++++++++++++------
+> > >   drivers/xen/swiotlb-xen.c              | 11 +++++++----
+> > >   3 files changed, 22 insertions(+), 12 deletions(-)
+> > > 
+> > > diff --git a/arch/x86/include/asm/xen/swiotlb-xen.h
+> > > b/arch/x86/include/asm/xen/swiotlb-xen.h
+> > > index abde0f44df57..a353f20c7e79 100644
+> > > --- a/arch/x86/include/asm/xen/swiotlb-xen.h
+> > > +++ b/arch/x86/include/asm/xen/swiotlb-xen.h
+> > > @@ -4,8 +4,9 @@
+> > >     int xen_swiotlb_fixup(void *buf, unsigned long nslabs);
+> > >   int xen_create_contiguous_region(phys_addr_t pstart, unsigned int order,
+> > > -				unsigned int address_bits,
+> > > -				dma_addr_t *dma_handle);
+> > > +				 unsigned int address_bits,
+> > > +				 dma_addr_t *dma_handle,
+> > > +				 unsigned int *address_bits_in);
+> > >   void xen_destroy_contiguous_region(phys_addr_t pstart, unsigned int
+> > > order);
+> > >     #endif /* _ASM_X86_SWIOTLB_XEN_H */
+> > > diff --git a/arch/x86/xen/mmu_pv.c b/arch/x86/xen/mmu_pv.c
+> > > index 2c70cd35e72c..fb586238f7c4 100644
+> > > --- a/arch/x86/xen/mmu_pv.c
+> > > +++ b/arch/x86/xen/mmu_pv.c
+> > > @@ -2208,19 +2208,22 @@ void __init xen_init_mmu_ops(void)
+> > >   static unsigned long discontig_frames[1<<MAX_CONTIG_ORDER];
+> > >     #define VOID_PTE (mfn_pte(0, __pgprot(0)))
+> > > -static void xen_zap_pfn_range(unsigned long vaddr, unsigned int order,
+> > > -				unsigned long *in_frames,
+> > > -				unsigned long *out_frames)
+> > > +static int xen_zap_pfn_range(unsigned long vaddr, unsigned int order,
+> > > +			     unsigned long *in_frames,
+> > > +			     unsigned long *out_frames)
+> > >   {
+> > >   	int i;
+> > > +	u64 address_bits = 0;
+> > >   	struct multicall_space mcs;
+> > >     	xen_mc_batch();
+> > >   	for (i = 0; i < (1UL<<order); i++, vaddr += PAGE_SIZE) {
+> > >   		mcs = __xen_mc_entry(0);
+> > >   -		if (in_frames)
+> > > +		if (in_frames) {
+> > >   			in_frames[i] = virt_to_mfn((void *)vaddr);
+> > > +			address_bits |= in_frames[i] << PAGE_SHIFT;
+> > > +		}
+> > >     		MULTI_update_va_mapping(mcs.mc, vaddr, VOID_PTE, 0);
+> > >   		__set_phys_to_machine(virt_to_pfn((void *)vaddr),
+> > > INVALID_P2M_ENTRY);
+> > > @@ -2229,6 +2232,8 @@ static void xen_zap_pfn_range(unsigned long vaddr,
+> > > unsigned int order,
+> > >   			out_frames[i] = virt_to_pfn((void *)vaddr);
+> > >   	}
+> > >   	xen_mc_issue(0);
+> > > +
+> > > +	return fls64(address_bits);
+> > >   }
+> > >     /*
+> > > @@ -2321,7 +2326,8 @@ static int xen_exchange_memory(unsigned long
+> > > extents_in, unsigned int order_in,
+> > >     int xen_create_contiguous_region(phys_addr_t pstart, unsigned int
+> > > order,
+> > >   				 unsigned int address_bits,
+> > > -				 dma_addr_t *dma_handle)
+> > > +				 dma_addr_t *dma_handle,
+> > > +				 unsigned int *address_bits_in)
+> > >   {
+> > >   	unsigned long *in_frames = discontig_frames, out_frame;
+> > >   	unsigned long  flags;
+> > > @@ -2336,7 +2342,7 @@ int xen_create_contiguous_region(phys_addr_t pstart,
+> > > unsigned int order,
+> > >   	spin_lock_irqsave(&xen_reservation_lock, flags);
+> > >     	/* 1. Zap current PTEs, remembering MFNs. */
+> > > -	xen_zap_pfn_range(vstart, order, in_frames, NULL);
+> > > +	*address_bits_in = xen_zap_pfn_range(vstart, order, in_frames, NULL);
+> > >     	/* 2. Get a new contiguous memory extent. */
+> > >   	out_frame = virt_to_pfn((void *)vstart);
+> > > diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> > > index 26c62e0d34e9..3f3724f53914 100644
+> > > --- a/drivers/xen/swiotlb-xen.c
+> > > +++ b/drivers/xen/swiotlb-xen.c
+> > > @@ -118,6 +118,7 @@ int xen_swiotlb_fixup(void *buf, unsigned long nslabs)
+> > >   	int rc;
+> > >   	unsigned int order = get_order(IO_TLB_SEGSIZE << IO_TLB_SHIFT);
+> > >   	unsigned int i, dma_bits = order + PAGE_SHIFT;
+> > > +	unsigned int dummy;
+> > >   	dma_addr_t dma_handle;
+> > >   	phys_addr_t p = virt_to_phys(buf);
+> > >   @@ -129,7 +130,7 @@ int xen_swiotlb_fixup(void *buf, unsigned long
+> > > nslabs)
+> > >   		do {
+> > >   			rc = xen_create_contiguous_region(
+> > >   				p + (i << IO_TLB_SHIFT), order,
+> > > -				dma_bits, &dma_handle);
+> > > +				dma_bits, &dma_handle, &dummy);
+> > >   		} while (rc && dma_bits++ < MAX_DMA_BITS);
+> > >   		if (rc)
+> > >   			return rc;
+> > > @@ -144,6 +145,7 @@ xen_swiotlb_alloc_coherent(struct device *dev, size_t
+> > > size,
+> > >   		dma_addr_t *dma_handle, gfp_t flags, unsigned long attrs)
+> > >   {
+> > >   	u64 dma_mask = dev->coherent_dma_mask;
+> > > +	unsigned int address_bits = fls64(dma_mask), address_bits_in;
+> > >   	int order = get_order(size);
+> > >   	phys_addr_t phys;
+> > >   	void *ret;
+> > > @@ -160,10 +162,11 @@ xen_swiotlb_alloc_coherent(struct device *dev,
+> > > size_t size,
+> > >   	if (*dma_handle + size - 1 > dma_mask ||
+> > >   	    range_straddles_page_boundary(phys, size) ||
+> > >   	    range_requires_alignment(phys, size)) {
+> > > -		if (xen_create_contiguous_region(phys, order, fls64(dma_mask),
+> > > -				dma_handle) != 0)
+> > > +		if (xen_create_contiguous_region(phys, order, address_bits,
+> > > +						 dma_handle,
+> > > &address_bits_in))
+> > >   			goto out_free_pages;
+> > > -		SetPageXenRemapped(virt_to_page(ret));
+> > > +		if (address_bits_in > address_bits)
+> > > +			SetPageXenRemapped(virt_to_page(ret));
+> > 
+> > This has the unfortunate side effect of making "PageXenRemapped"
+> > unreliable as an indicator of whether a page has been remapped. A page
+> > could still be remapped without the "PageXenRemapped" bit being set.
+> > 
+> > I recommend adding an in-code comment to clarify this behavior.
+> 
+> The PageXenRemapped bit is used only for determining whether
+> xen_destroy_contiguous_region() should be called. And by not setting the bit
+> I'm avoiding to call xen_destroy_contiguous_region() later. So I don't see any
+> unfortunate side effect.
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index bce27805805010ae473aa8dbd9e0cb903dd79bba..f12812d3f828ad382c7a84f6ecd604c8f35a6d10 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1127,19 +1127,13 @@ static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
- 	if (!of_device_is_compatible(np, "ti,dra7-dsp-iommu"))
- 		return 0;
- 
--	obj->syscfg =
--		syscon_regmap_lookup_by_phandle(np, "ti,syscon-mmuconfig");
-+	obj->syscfg = syscon_regmap_lookup_by_phandle_args(np, "ti,syscon-mmuconfig",
-+							   1, &obj->id);
- 	if (IS_ERR(obj->syscfg)) {
- 		/* can fail with -EPROBE_DEFER */
- 		return PTR_ERR(obj->syscfg);
- 	}
- 
--	if (of_property_read_u32_index(np, "ti,syscon-mmuconfig", 1,
--				       &obj->id)) {
--		dev_err(&pdev->dev, "couldn't get the IOMMU instance id within subsystem\n");
--		return -EINVAL;
--	}
--
- 	if (obj->id != 0 && obj->id != 1) {
- 		dev_err(&pdev->dev, "invalid IOMMU instance id\n");
- 		return -EINVAL;
+While the purpose of PageXenRemapped is to determine whether
+xen_destroy_contiguous_region() should be called for the region, the
+name "PageXenRemapped" suggests more generically that the region is
+remapped.
 
--- 
-2.43.0
+Without this patch, all the regions that are remapped have
+PageXenRemapped set. The name matches its meaning. (Also,
+xen_destroy_contiguous_region() is called an them.)
 
+With this patch, not all the regions that are remapped have
+PageXenRemapped set. The name does not match its meaning.
+--8323329-226463992-1739394832=:619090--
