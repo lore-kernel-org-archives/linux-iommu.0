@@ -1,91 +1,122 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4ADD4205E35
-	for <iommu@lists.linux.dev>; Thu, 13 Feb 2025 11:40:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B959213E63;
+	Thu, 13 Feb 2025 11:54:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739446837; cv=none; b=DVfKk/S77gM85l+NSx+dtRVJd6i3vpnF81JPmGUT1W2icU5Yb//RUh1PIiw4bxgFr76NwHkeAdapggEc/dYxFFRs6ztqP8tVPfQWnU3cj0osEpvj5b2htoQ798CXqcBYvqm1Yd1/2xNuIapkiUJDUcCLXkYtCmK/r5oijKFxR+Y=
+	t=1739447659; cv=none; b=Bpo7yAMdOWJDslRl/BeXXQmbKqPYKBGhqk5gLpiO45mKj1anfHVN+GSFOWxRx04dWb21BTGheJAfaZJ29dHhCyqi8ZTUSjUo+ryJzIDTwIy4gC8bWFIU3H/eemWwRD0Z7sA9PiG3hElFOBlkZEb/9gMXT29MlZLfUmFSJTC3OUw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739446837; c=relaxed/simple;
-	bh=f5Hw4kGSX8PTFpswXPrMdeZsbOISqrnlWZqD05X3RIM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lRjj/oebhwH5ZVMyBWbojnE8V4rTcPFdqZaYixnyg456plpaGB92XjtT71/wDI0W/ZcFc8ByogKSdiGErWatYz+Gj6u9BV4eM4OCenLvig5Ud6RKfVAQSHQH7s0vwEZBz2nPdO9uRCQRP3m4WCILUbi4jXDWZFM3nSM/IHAMy5Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5980716F3;
-	Thu, 13 Feb 2025 03:40:56 -0800 (PST)
-Received: from [10.57.38.122] (unknown [10.57.38.122])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B55EA3F6A8;
-	Thu, 13 Feb 2025 03:40:34 -0800 (PST)
-Message-ID: <e8d2b014-499c-4cbc-95b6-6ed227c4c920@arm.com>
-Date: Thu, 13 Feb 2025 11:40:32 +0000
+	s=arc-20240116; t=1739447659; c=relaxed/simple;
+	bh=MqDW9zds1aMzuxEr+ieIN3w8AUaeMBOtLSwPLf49hX4=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=qwa9QQqBS7Z5ZaFDP81yT1HNdjw2kCdkknVZaxymQZoICjUv9plzwiBFGhDyKnA98R8Qm7Zew1BmiIanJIQIafSWx+LV4/nLa06oHQJmmZBOcTiXGTy5LBSpTvRdM+r7lmt7x4WOT/Cj4GwqwERCeCdghhtkOhPGr2svUuM8PIA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Q3BI4qYO; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Jc11mgkW; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Q3BI4qYO";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Jc11mgkW"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1739447656;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nVCFtiwujzbXkpW5Uts1EM44uRKfVCoT8Jxt43kwJZs=;
+	b=Q3BI4qYOehHagnGv2BUg8gNnenIzTcCi1NMESdqL0fLyHd4Yzz9+IYpIkFW3DSmDQXC8IS
+	mDGtthYVDx2iQwWZwUnTh5RKYIrVO3hb0Gfqd1n1IKRRgimeBkq0ktFM6oTIF5/fZCTowq
+	Gq3dQ9PHcGRe4lFk/9u9qz7xDA+MuzWXW085gYb3gIveOvL3Y5trtL5vHA8iXcWnWTD0YW
+	N5txuktSnn/uYzDWCNP62XXc7dXXwAOMmprC65aAK79c1RgYmPW9hsupcNDm5bZgV/YLLR
+	o5Wz5nWNxmHCU6rp6EVQiJketXY0mDMiDZ3D3yWCHb/4u5bU1K44Ws+l+l30Fw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1739447656;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nVCFtiwujzbXkpW5Uts1EM44uRKfVCoT8Jxt43kwJZs=;
+	b=Jc11mgkW0InKn0tScvUbjLrXp5+HWbjchgXOPuZeADaKpvfZUaX8cj1bJW72TjyGhkpFQJ
+	YQ0RMmw6VpI9zhBw==
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com,
+ kevin.tian@intel.com, maz@kernel.org
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+ shuah@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kselftest@vger.kernel.org,
+ eric.auger@redhat.com, baolu.lu@linux.intel.com, yi.l.liu@intel.com,
+ yury.norov@gmail.com, jacob.pan@linux.microsoft.com,
+ patches@lists.linux.dev
+Subject: Re: [PATCH v1 01/13] genirq/msi: Store the IOMMU IOVA directly in
+ msi_desc instead of iommu_cookie
+In-Reply-To: <a580069c5e494ffffa668218b6fe3a207b01efec.1739005085.git.nicolinc@nvidia.com>
+References: <cover.1739005085.git.nicolinc@nvidia.com>
+ <a580069c5e494ffffa668218b6fe3a207b01efec.1739005085.git.nicolinc@nvidia.com>
+Date: Thu, 13 Feb 2025 12:54:15 +0100
+Message-ID: <87y0yajc0o.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RESEND 3/3] iommu: omap: Use
- syscon_regmap_lookup_by_phandle_args
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20250212-syscon-phandle-args-iommu-v1-0-c3fab486b426@linaro.org>
- <20250212-syscon-phandle-args-iommu-v1-3-c3fab486b426@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250212-syscon-phandle-args-iommu-v1-3-c3fab486b426@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 2025-02-12 8:19 pm, Krzysztof Kozlowski wrote:
-> Use syscon_regmap_lookup_by_phandle_args() which is a wrapper over
-> syscon_regmap_lookup_by_phandle() combined with getting the syscon
-> argument.  Except simpler code this annotates within one line that given
-> phandle has arguments, so grepping for code would be easier.
-> 
-> There is also no real benefit in printing errors on missing syscon
-> argument, because this is done just too late: runtime check on
-> static/build-time data.  Dtschema and Devicetree bindings offer the
-> static/build-time check for this already.
+On Sat, Feb 08 2025 at 01:02, Nicolin Chen wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
+>
+> All the iommu cases simply want to override the MSI page's address with
+> the IOVA that was mapped through the iommu. This doesn't need a cookie
+> pointer, we just need to store the IOVA and its page size in the
+> msi_desc.
 
-With my suggestion for capturing a more useful general error in the 
-other change, I agree with this one.
+We need to do nothing :)
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> Instead provide msi_desc_set_iommu_msi_iova() which allows the IOMMU side
+> to specify the IOVA that the MSI page is placed during
+> iommu_dma_prepare_msi(). This is stored in the msi_desc and then
+> iommu_dma_compose_msi_msg() is a simple inline that sets address_hi/lo.
+>
+> The next patch will correct the naming.
+>
+> This is done because we cannot correctly lock access to group->domain
+> in
 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->   drivers/iommu/omap-iommu.c | 10 ++--------
->   1 file changed, 2 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index bce27805805010ae473aa8dbd9e0cb903dd79bba..f12812d3f828ad382c7a84f6ecd604c8f35a6d10 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1127,19 +1127,13 @@ static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
->   	if (!of_device_is_compatible(np, "ti,dra7-dsp-iommu"))
->   		return 0;
->   
-> -	obj->syscfg =
-> -		syscon_regmap_lookup_by_phandle(np, "ti,syscon-mmuconfig");
-> +	obj->syscfg = syscon_regmap_lookup_by_phandle_args(np, "ti,syscon-mmuconfig",
-> +							   1, &obj->id);
->   	if (IS_ERR(obj->syscfg)) {
->   		/* can fail with -EPROBE_DEFER */
->   		return PTR_ERR(obj->syscfg);
->   	}
->   
-> -	if (of_property_read_u32_index(np, "ti,syscon-mmuconfig", 1,
-> -				       &obj->id)) {
-> -		dev_err(&pdev->dev, "couldn't get the IOMMU instance id within subsystem\n");
-> -		return -EINVAL;
-> -	}
-> -
->   	if (obj->id != 0 && obj->id != 1) {
->   		dev_err(&pdev->dev, "invalid IOMMU instance id\n");
->   		return -EINVAL;
-> 
+Now this gets really confusing. How is the next patch which corrects the
+naming related the locking problem?
+
+> the atomic context that iommu_dma_compose_msi_msg() is called under. Today
+> the locking miss is tolerable because dma_iommu.c operates under an
+> assumption that the domain does not change while a driver is probed.
+>
+> However iommufd now permits the domain to change while the driver is
+> probed and VFIO userspace can create races with IRQ changes calling
+> iommu_dma_prepare_msi/compose_msi_msg() and changing/freeing the
+> iommu_domain.
+>
+> Removing the pointer, and critically, the call to
+> iommu_get_domain_for_dev() during compose resolves this race.
+
+So this change log really fails to follow the basic structure:
+
+   The context, the problem and the solution
+
+Something like this:
+
+   The IOMMU translation for MSI message addresses is a two stage
+   process:
+
+     1) A cookie containing the IOVA address is stored in the MSI
+        descriptor, when a MSI interrupt is allocated
+
+     2) The compose callback uses this cookie to apply the translation
+        to the message address.
+
+   This worked so far because .......
+
+   With the iommufd rework this becomes racy, because ...
+
+   Fix this by storing ... instead of ... ....
+
+Hmm?
+
+        tglx
 
