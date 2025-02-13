@@ -1,135 +1,101 @@
-Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34888537E5
-	for <iommu@lists.linux.dev>; Thu, 13 Feb 2025 03:50:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739418603; cv=pass; b=Bc8avoV+3nJbw2A/kg1DFLLcLHG/dI0BJyH573Ibo8Ge98/GYLXKfqgPuqioVWJt6Bns/MD2sdMXoUigkIlkOv1F/o/HFoLydoM0TIdR/M/m0c6XTfwPLb7klO5LWT2DEm0/UNqerwSOjtzVO1HRwxdW89OGZMyleuT2qJ/mmpA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739418603; c=relaxed/simple;
-	bh=WHYu1ZS/p9mxM+ozqemo6cP3PiAvsHAKZpgoXka46AI=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=LyTZp4Q3OV4CzgtO+H+VvGjxTr6f6W1Jvx3orTMuGOPHL7sMl6M/M01ao73STJdI/8+pWyiCfYvxGxdRKRp1RzT2OvttUzPs9J8SJMnIU/B0FhsnHL7sHNIS4LU1mM22+VSrcka06lLMntmJKum0e7Sd85/vwG4CF7erLbDCQNs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=icenowy.me; spf=pass smtp.mailfrom=icenowy.me; dkim=pass (2048-bit key) header.d=icenowy.me header.i=uwu@icenowy.me header.b=BWZ7KxFP; arc=pass smtp.client-ip=136.143.188.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=icenowy.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icenowy.me
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3EF27EC4;
+	Thu, 13 Feb 2025 05:47:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739425646; cv=none; b=IpcMzINsPbt5cPefIrS/OyKjcc4hXKVbFFo48m4YWBqPqgs+xRrBkyiVtQJ5KlmNJkG8iRX5IYRqQBW8ZvISLIhIVvCbwkrVmRXxcZA+FhPgMpwnDldQ449hHe2THheuZhPsZ+0e/4Q2RHVsSA96pDwvvDof6NRLx4DsLZICbEw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739425646; c=relaxed/simple;
+	bh=prolQBF6q3UBJQB4VkPy0upy3Xt7W32yLlCxZItHgdI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=OyGriH1TK9P15lnDnPKYMXJubKWv/CNRn0Ql8/t/DRjYT74V9th1IwrcQ7cC64pu5sumX2v2KY5gYyeqfMoYK5eeWxGs+2EdKWSGYYMu23EvcWmfWNwfS+cA5z+FT4te8E5WpfsWR11U8Sd4pBjjxKbbWI8TDsHYwUJkzlJKOL0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Z4TBMtMi; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=icenowy.me header.i=uwu@icenowy.me header.b="BWZ7KxFP"
-ARC-Seal: i=1; a=rsa-sha256; t=1739418578; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=fbT64vxAHYqVOenrWrvSXND6bw3rDp0EXMcTJOW4r10ZOXOtwVDrbLXw6dIh13dyq2ic+xZp5mAWlYebunyhr1/d9Lu90tb73JFGzZYUmxZobh8wbHSkzbQ2D8WSwShuCf8OuBk89TJC4QenPFgsu3qeNZXr1AH73GMwvIMqcXo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1739418578; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=WHYu1ZS/p9mxM+ozqemo6cP3PiAvsHAKZpgoXka46AI=; 
-	b=jjwbtahT8Gdx7JKCLgxQGErqD+rckdyVpC2WOw6G0G0jfjDWpQeCcARlwmo7NWj/nKxPvqsSeClPekq2nesx2AB7QB2EKyrsatk4Mvdieid+NdLz9UBj+Xomq7nrN0wRR7e14hBGPEdlWjpTpOOfipJBujXifczHtd1GRAR8ep4=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=icenowy.me;
-	spf=pass  smtp.mailfrom=uwu@icenowy.me;
-	dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1739418578;
-	s=zmail2; d=icenowy.me; i=uwu@icenowy.me;
-	h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:MIME-Version:Message-Id:Reply-To;
-	bh=WHYu1ZS/p9mxM+ozqemo6cP3PiAvsHAKZpgoXka46AI=;
-	b=BWZ7KxFPlgO5GbULTRCma04EoD7+75tnOegirkMZvna3Y7L5YPpONAufuMXrge58
-	lhgYI9NMKUqKXgDYqkZkhd7MuISbzw/RHjh/iYPZO16XZBkJ9KYTrFzTp0TKi7rd32t
-	LYcNn/bx1IHZH9EJt33APXIU2cbC4LOiTC2WpcvYXV0IbqcVZyc3bKBoqvJSs+/tKQ1
-	mom5ncgtAytRKlE7AcglLfl182C7MIt6zRMUBJPJdP4V8R1VxBbXinDZ3ZBOmUr3wj3
-	mlXbckpCrW1cUCuI5shoPAcGdwo6njybqw66USsKfCfE6xXMeZj0iEx+LDkkzGoj81n
-	1YhNg8Eyfw==
-Received: by mx.zohomail.com with SMTPS id 1739418575396322.68472183264555;
-	Wed, 12 Feb 2025 19:49:35 -0800 (PST)
-Message-ID: <d7d1fb8af8857e7ebfdea48213849ea9ba446477.camel@icenowy.me>
-Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
- coherent allocator abstraction.)
-From: Icenowy Zheng <uwu@icenowy.me>
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: Hector Martin <marcan@marcan.st>, Steven Rostedt <rostedt@goodmis.org>, 
- "Dr. Greg" <greg@enjellic.com>, Linus Torvalds
- <torvalds@linux-foundation.org>, Dave Airlie <airlied@gmail.com>, Jason
- Gunthorpe <jgg@nvidia.com>, Greg KH <gregkh@linuxfoundation.org>,
- phasta@kernel.org, Christoph Hellwig <hch@lst.de>,  Miguel Ojeda
- <miguel.ojeda.sandonis@gmail.com>, Abdiel Janulgue
- <abdiel.janulgue@gmail.com>,  daniel.almeida@collabora.com,
- aliceryhl@google.com, robin.murphy@arm.com, 
- rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, Alex
- Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>, Gary Guo
- <gary@garyguo.net>, Bj??rn Roy Baron <bjorn3_gh@protonmail.com>, Benno
- Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>,
- Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>, Marek Szyprowski
- <m.szyprowski@samsung.com>,  airlied@redhat.com, "open list:DMA MAPPING
- HELPERS" <iommu@lists.linux.dev>,  DRI Development
- <dri-devel@lists.freedesktop.org>
-Date: Thu, 13 Feb 2025 11:49:20 +0800
-In-Reply-To: <Z6nTxks3u-ErSalQ@cassiopeiae>
-References: <20250131135421.GO5556@nvidia.com>
-	 <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
-	 <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
-	 <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
-	 <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st>
-	 <CAHk-=wi=ZmP2=TmHsFSUGq8vUZAOWWSK1vrJarMaOhReDRQRYQ@mail.gmail.com>
-	 <20250207121638.GA7356@wind.enjellic.com>
-	 <Z6bdCrgGEq8Txd-s@home.goodmis.org>
-	 <1e8452ab-613a-4c85-adc0-0c4a293dbf50@marcan.st>
-	 <07c447b77bdac1f8ade1f93456f853f89d4842ee.camel@icenowy.me>
-	 <Z6nTxks3u-ErSalQ@cassiopeiae>
-Organization: Anthon Open-Source Community
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Z4TBMtMi"
+Received: from DESKTOP-0403QTC. (unknown [50.53.30.84])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 593C5203F3CF;
+	Wed, 12 Feb 2025 21:47:24 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 593C5203F3CF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1739425644;
+	bh=s5+xYFUSjRfJypY4kS/R9cuXaiW/u4Res3wzREtZc3g=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
+	b=Z4TBMtMiRv2SfnjJRPFski7UW+GdtCHfSpa6uT5M6Y81GgljaAJS+C24wcteOwFoR
+	 fAjoHzLbR3yzXVZ7okgqQd0Ygyle085eUgYsrZl7r9cSI7F94GbnzcwpCgrWbggP07
+	 zL1qaUXtneTr0hUG4SvWqb72eLrXEL1RDVBqqT+E=
+Date: Wed, 12 Feb 2025 21:47:23 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ virtualization@lists.linux.dev, Will Deacon <will@kernel.org>, Eric Auger
+ <eric.auger@redhat.com>, patches@lists.linux.dev,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH 3/5] iommu/virtio: Move to domain_alloc_paging()
+Message-ID: <20250212214723.1ebf173e@DESKTOP-0403QTC.>
+In-Reply-To: <20250212233053.GV3754072@nvidia.com>
+References: <0-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
+	<3-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
+	<20250212112235.714b0a14@DESKTOP-0403QTC.>
+	<20250212233053.GV3754072@nvidia.com>
+Reply-To: jacob.pan@linux.microsoft.com, Easwar Hariharan
+ <eahariha@linux.microsoft.com>, "zhangyu1@microsoft.com"
+ <zhangyu1@microsoft.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ZohoMailClient: External
-X-ZohoMail-Owner: <d7d1fb8af8857e7ebfdea48213849ea9ba446477.camel@icenowy.me>+zmo_0_
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-=E5=9C=A8 2025-02-10=E6=98=9F=E6=9C=9F=E4=B8=80=E7=9A=84 11:24 +0100=EF=BC=
-=8CDanilo Krummrich=E5=86=99=E9=81=93=EF=BC=9A
-> On Mon, Feb 10, 2025 at 05:41:30PM +0800, Icenowy Zheng wrote:
-> > Furtherly, the monorepo nature of Linux kernel means to refactor an
-> > interface, it's usually the person changing the callee that need to
-> > change all callers to satify the interface change; having Rust code
-> > in
-> > tree calling the interface effectively means adding the
-> > responsibility
-> > of fixing the Rust code when the interface changes, which could be
-> > not
-> > acceptable by the C-only maintainers. In regards of adding a
-> > maintainer, having more maintainers means more communication.
->=20
-> This is exactly the same as for every new driver / component,
-> regardless of
-> whether it is written in C or in Rust.
->=20
-> It is absolutely common that driver maintainers help with integrating
-> core API
-> changes, if necessary.
->=20
-> I don't see why the same process should not work for Rust
-> abstractions.
+Hi Jason,
 
-Because integrating API changes could involve change to contexts of API
-calls, which could be difficult for Rust situation, especially when
-it's not required for core API maintainers to be able to write Rust.
+On Wed, 12 Feb 2025 19:30:53 -0400
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
->=20
-> (Additionally, in this particular case even one of the reviewers of
-> DMA MAPPING HELPERS offered to be a reviewer of the Rust abstractions
-> too, in
-> order to keep eye on the DMA API angle.)
+> On Wed, Feb 12, 2025 at 11:22:35AM -0800, Jacob Pan wrote:
+> 
+> > Do you foresee the implementation can leverage your generic iommu_pt
+> > work? i.e. for building guest IO page tables. It will add a new
+> > flavor (page table based in addition to map/unmap) to
+> > viommu_domain_alloc_paging() i think.  
+> 
+> Yes I do, I think it should be no problem and it will bring the
+> missing x86 formats that are currently not available in iopgtbl
+> wrappers.
+I guess the missing x86 formats are AMDv2 and VT-d S1?
 
-Sorry, but I did a fact check on this, and I found that the only
-"reviewer" of DMA MAPPING HELPERS is Robin Murphy, he has only one
-reply in this thread, and the reply only says "Indeed, FWIW it seems
-like the appropriate level of abstraction to me,=20
-judging by the other wrappers living in rust/kernel/ already", he
-didn't offer to be a reviewer, and he still says "Rust folks are happy
-to take responsibility for un-breaking the=20
-Rust build if and when it happens".
+> I'm working toward getting a cut back AMD only series ready to post,
+> the other series on the iommu-pages should be the last preperation
+> work.
+> 
+> Certainly I would be happy to help you get it implemented if that is
+> your interest.
 
-He is just saying he's going to accept the abstraction, which should be
-not able to forcibly override Christoph's explicit NACK here.
+Yes, that is definitely our interest! We are looking at expanding
+hyperv-iommu to include guest DMA remapping support (current code has
+IRQ remapping only). This expansion includes paging and sva domains. In
+terms of the need for paging domain, I believe it is identical to
+virtio-iommu page table extensions.
+
+It would be great if you could help adding/accommodating such usage to
+the generic iommu_pt. I think it will be a subset of features as
+intended for iommufd. I.e. map/unmap operation.
+
+One difference/simplification than virtio-iommu is that Hyperv-iommu
+(backend) does not want to support map/unmap hypercall based paging
+domain. IOW, page table based paging domain only, let the guest own S1.
+
+Our code and backend support are still in the early stages, that is why
+I am attempting to convert virtio-iommu driver to iommu_pt. Not sure if
+anyone has done the QEMU part to support VIRTIO_IOMMU_F_ATTACH_TABLE?
+@Jean @Eric Do you know?
+
+Adding a couple developers from our side. @Yu Zhang @Easwar Hariharan.
+
+
