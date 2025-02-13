@@ -1,85 +1,113 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 66F2E21D3D8
-	for <iommu@lists.linux.dev>; Thu, 13 Feb 2025 11:30:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC472227E9F;
+	Thu, 13 Feb 2025 11:34:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739446241; cv=none; b=acpCK9Fo5TPHjG9q1f5upj02PlKj60n3HUrCnlUGqk6YY1zwR1KXVsMhc5ZIXs9eTHOkm43ADcDn49qpvz7GpIbkiMxSOtVA2irXz+1WI01CdKctfvnBAunUBpjCfrm9C5ZwZIGE4tvRi69tAG3QhIgKg7lJWqh7onC2vrWLzm8=
+	t=1739446465; cv=none; b=M12LOT8rG0cPRN1jCp6TMM9I0nur3JK1CIV0IFl76v919qNUZTbb7TlOg7ivCEv586sOIQeKIgXCyvpV4J5pepOxrMg9Uf3yhWjwzSerjmqKzQ24zGF64sDrE+0PYSxDFOs/dvPpe2fZUK0xqzwY06oWomLFmmC2MrBEzO8/Ccc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739446241; c=relaxed/simple;
-	bh=j7SUEIEGDmwV0UMTw4L/0KijLpcUGnxzR0w5SRUXNPo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tRCtZe8nEkGeQhFkn/vJrEglqZR3HxY3Vey+xW6NLH2HzoEiX2FwoVeFw+wNtn8x0mYXM6dAXQha9WhtLN4hqML+vSiSD9aEXEfVO+l+EZLvL4XGsm2aEV+YsMSCrSdmfLwLcz5YHOkt3TcL7eV4SfqyayZpqM5jajhqquyWtl8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6797B113E;
-	Thu, 13 Feb 2025 03:30:59 -0800 (PST)
-Received: from [10.57.38.122] (unknown [10.57.38.122])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C284A3F6A8;
-	Thu, 13 Feb 2025 03:30:37 -0800 (PST)
-Message-ID: <dd1b7ca0-ef9f-4b9d-bca1-8a72c22231bb@arm.com>
-Date: Thu, 13 Feb 2025 11:30:35 +0000
+	s=arc-20240116; t=1739446465; c=relaxed/simple;
+	bh=OiHvXcKA8YEFpd9Ho+xwvuJZYb/UQvHhXv95Idt26nk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZghI0fVQogNTdDiyTkxCZv3bMvkPH75jlnfRskDWpI4QBg3RL88O0GlHmV3dxjQCyI8ziowdEAW0HSz6WZFvbGSjp9Wx6QwQXHTjJG5Owi4tM8GlW9nPbIFCGq/eoMT/0Zo8QkNj0uDus0jvzsTNuxvUys7m09VopoX9w/IYr1k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VH9KUzDf; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VH9KUzDf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C6D1C4CED1;
+	Thu, 13 Feb 2025 11:34:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739446465;
+	bh=OiHvXcKA8YEFpd9Ho+xwvuJZYb/UQvHhXv95Idt26nk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VH9KUzDf56JrzQWwxUKQHMH8PhlT80HnzwC6f0hEa7xiJQCHJbsULUpCwdDCBmV9p
+	 4/RNBZyLaNjWHoVMUjVajSj9gH1Fjn5HgF4y3mdZ6iAF/ljFCqjAzP5hOKD9mM9FES
+	 vbL3Sbr9Dl8VCdvhKsBYjFsZkoCO2mpjKWF5iDY1LgoMpz5x+ayMB//WKs2t7Gw0rF
+	 gOw8MspHlbKYeHnFl1/SRW2OXQkGeacM8F+lv8uX8THx9WHxBHO7D9Vf2zUs3F4cbp
+	 WXXJHtTBlik1+ymnomlNF/nEwUaqr3nF7dfBnPFS9gnSL06jeFRCYBvVdCcpub70k+
+	 0UNM8tgqXONtQ==
+Date: Thu, 13 Feb 2025 12:34:16 +0100
+From: Danilo Krummrich <dakr@kernel.org>
+To: Icenowy Zheng <uwu@icenowy.me>
+Cc: Hector Martin <marcan@marcan.st>, Steven Rostedt <rostedt@goodmis.org>,
+	"Dr. Greg" <greg@enjellic.com>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	Dave Airlie <airlied@gmail.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Greg KH <gregkh@linuxfoundation.org>, phasta@kernel.org,
+	Christoph Hellwig <hch@lst.de>,
+	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	daniel.almeida@collabora.com, aliceryhl@google.com,
+	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	Bj??rn Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	DRI Development <dri-devel@lists.freedesktop.org>
+Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
+ coherent allocator abstraction.)
+Message-ID: <Z63YuDYEEXfurxpY@cassiopeiae>
+References: <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
+ <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
+ <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st>
+ <CAHk-=wi=ZmP2=TmHsFSUGq8vUZAOWWSK1vrJarMaOhReDRQRYQ@mail.gmail.com>
+ <20250207121638.GA7356@wind.enjellic.com>
+ <Z6bdCrgGEq8Txd-s@home.goodmis.org>
+ <1e8452ab-613a-4c85-adc0-0c4a293dbf50@marcan.st>
+ <07c447b77bdac1f8ade1f93456f853f89d4842ee.camel@icenowy.me>
+ <Z6nTxks3u-ErSalQ@cassiopeiae>
+ <d7d1fb8af8857e7ebfdea48213849ea9ba446477.camel@icenowy.me>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RESEND 2/3] iommu: omap: Simplify returning syscon PTR_ERR
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20250212-syscon-phandle-args-iommu-v1-0-c3fab486b426@linaro.org>
- <20250212-syscon-phandle-args-iommu-v1-2-c3fab486b426@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250212-syscon-phandle-args-iommu-v1-2-c3fab486b426@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d7d1fb8af8857e7ebfdea48213849ea9ba446477.camel@icenowy.me>
 
-On 2025-02-12 8:19 pm, Krzysztof Kozlowski wrote:
-> No need to store PTR_ERR into temporary, local 'ret' variable.
+On Thu, Feb 13, 2025 at 11:49:20AM +0800, Icenowy Zheng wrote:
+> 在 2025-02-10星期一的 11:24 +0100，Danilo Krummrich写道：
+> > 
+> > (Additionally, in this particular case even one of the reviewers of
+> > DMA MAPPING HELPERS offered to be a reviewer of the Rust abstractions
+> > too, in
+> > order to keep eye on the DMA API angle.)
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->   drivers/iommu/omap-iommu.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 04a7deaaba25cb270eb6eeaf6a21030440f78a5e..bce27805805010ae473aa8dbd9e0cb903dd79bba 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1123,7 +1123,6 @@ static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
->   					      struct omap_iommu *obj)
->   {
->   	struct device_node *np = pdev->dev.of_node;
-> -	int ret;
->   
->   	if (!of_device_is_compatible(np, "ti,dra7-dsp-iommu"))
->   		return 0;
-> @@ -1132,8 +1131,7 @@ static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
->   		syscon_regmap_lookup_by_phandle(np, "ti,syscon-mmuconfig");
->   	if (IS_ERR(obj->syscfg)) {
->   		/* can fail with -EPROBE_DEFER */
+> Sorry, but I did a fact check on this, and I found that the only
+> "reviewer" of DMA MAPPING HELPERS is Robin Murphy, he has only one
+> reply in this thread, and the reply only says "Indeed, FWIW it seems
+> like the appropriate level of abstraction to me, 
+> judging by the other wrappers living in rust/kernel/ already", he
+> didn't offer to be a reviewer,
 
-This comment is no longer correct or useful, since it's alluding to the 
-check which you removed in the previous patch. I'd just clean up the 
-whole lot in patch #1 as it's all closely related, and also turn this 
-return into a dev_err_probe() to capture the spirit of the other errors 
-being replaced, perhaps something like "No valid ti,syscon-mmuconfig 
-available" - that way it adds some value for debugging probe deferral 
-issues more than broken DTs.
+As Abdiel pointed out already, he did offer it in [1].
 
-Thanks,
-Robin.
+But that's not the relevant part, but I think how you handled being in doubt is
+relevant.
 
-> -		ret = PTR_ERR(obj->syscfg);
-> -		return ret;
-> +		return PTR_ERR(obj->syscfg);
->   	}
->   
->   	if (of_property_read_u32_index(np, "ti,syscon-mmuconfig", 1,
-> 
+I think the correct way would have been to just ask for a pointer that proves
+the statement in question.
 
+Instead you just went ahead with the big words "fact check" and then even got it
+wrong. In your "fact check" you did not put any disclaimer to e.g. indicate that
+you might not have the full picture, etc.
+
+Ultimately, the way you replied to this, comes across as an immediate accuse of
+lying.
+
+I really think that we should *not* pick up this way of arguing that nowadays
+became all too present.
+
+- Danilo
+
+[1] https://lore.kernel.org/rust-for-linux/4956d01e-2d06-4edd-813b-9da94b482069@arm.com/
