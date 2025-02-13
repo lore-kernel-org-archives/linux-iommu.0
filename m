@@ -1,31 +1,25 @@
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D6EE215066
-	for <iommu@lists.linux.dev>; Thu, 13 Feb 2025 11:13:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 66F2E21D3D8
+	for <iommu@lists.linux.dev>; Thu, 13 Feb 2025 11:30:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739445209; cv=none; b=Nc1luH4LDJdRAKzqrMUgYU/kWH1sMU3xayCFhB14EMuBMDKzFCJ7AYpXrBgaQyLXHfp76k92286RPeDV6aDnJAZiElcinW0PJUnvtI5udursO7zHVBdl5cj63WG5iqpTR32LWOuJh09Udl6e360Bnursbbbjv+kfopnoRDtFcI8=
+	t=1739446241; cv=none; b=acpCK9Fo5TPHjG9q1f5upj02PlKj60n3HUrCnlUGqk6YY1zwR1KXVsMhc5ZIXs9eTHOkm43ADcDn49qpvz7GpIbkiMxSOtVA2irXz+1WI01CdKctfvnBAunUBpjCfrm9C5ZwZIGE4tvRi69tAG3QhIgKg7lJWqh7onC2vrWLzm8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739445209; c=relaxed/simple;
-	bh=uBbuyzSkt8awEsdjpCoyug75xEtJcJzY3ERuKiAc0z4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Uq1aj8Y5p5ssIM258nDSl7V/zBNWo9TIEMFrb+wzaER+S3+8cUl3ugvJSgllo2K1ao3Z4eGCjvFVxXgDlb40uBxlTxqWmj0m/I7comI8z60eE9iTTNcoUNgUcxlIWd014V3Q2WWPdP8E/P6vo8bYaH3SwRSgNeYOq2yNrW5la9Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.163])
-	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Ytsrv5vcRz2FdXd;
-	Thu, 13 Feb 2025 19:09:35 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id 0608A180042;
-	Thu, 13 Feb 2025 19:13:23 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Thu, 13 Feb 2025 19:13:22 +0800
-Message-ID: <febbedb5-4d37-4799-83f6-6f1add26a2fd@huawei.com>
-Date: Thu, 13 Feb 2025 19:13:22 +0800
+	s=arc-20240116; t=1739446241; c=relaxed/simple;
+	bh=j7SUEIEGDmwV0UMTw4L/0KijLpcUGnxzR0w5SRUXNPo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tRCtZe8nEkGeQhFkn/vJrEglqZR3HxY3Vey+xW6NLH2HzoEiX2FwoVeFw+wNtn8x0mYXM6dAXQha9WhtLN4hqML+vSiSD9aEXEfVO+l+EZLvL4XGsm2aEV+YsMSCrSdmfLwLcz5YHOkt3TcL7eV4SfqyayZpqM5jajhqquyWtl8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6797B113E;
+	Thu, 13 Feb 2025 03:30:59 -0800 (PST)
+Received: from [10.57.38.122] (unknown [10.57.38.122])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C284A3F6A8;
+	Thu, 13 Feb 2025 03:30:37 -0800 (PST)
+Message-ID: <dd1b7ca0-ef9f-4b9d-bca1-8a72c22231bb@arm.com>
+Date: Thu, 13 Feb 2025 11:30:35 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,93 +27,59 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v9 0/4] fix the DMA API misuse problem for
- page_pool
-To: Matthew Wilcox <willy@infradead.org>
-CC: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-	<zhangkun09@huawei.com>, <liuyonglong@huawei.com>, <fanghaiqing@huawei.com>,
-	Alexander Lobakin <aleksander.lobakin@intel.com>, Robin Murphy
-	<robin.murphy@arm.com>, Alexander Duyck <alexander.duyck@gmail.com>, Andrew
- Morton <akpm@linux-foundation.org>, IOMMU <iommu@lists.linux.dev>, MM
-	<linux-mm@kvack.org>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
-	<daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, John
- Fastabend <john.fastabend@gmail.com>, Matthias Brugger
-	<matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>, <netdev@vger.kernel.org>,
-	<intel-wired-lan@lists.osuosl.org>, <bpf@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-mediatek@lists.infradead.org>
-References: <20250212092552.1779679-1-linyunsheng@huawei.com>
- <Z6zuLJU7o_gRsQRu@casper.infradead.org>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <Z6zuLJU7o_gRsQRu@casper.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH RESEND 2/3] iommu: omap: Simplify returning syscon PTR_ERR
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20250212-syscon-phandle-args-iommu-v1-0-c3fab486b426@linaro.org>
+ <20250212-syscon-phandle-args-iommu-v1-2-c3fab486b426@linaro.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250212-syscon-phandle-args-iommu-v1-2-c3fab486b426@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemf200006.china.huawei.com (7.185.36.61)
 
-On 2025/2/13 2:53, Matthew Wilcox wrote:
-> On Wed, Feb 12, 2025 at 05:25:47PM +0800, Yunsheng Lin wrote:
->> This patchset fix the dma API misuse problem as mentioned in [1].
->>
->> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
+On 2025-02-12 8:19 pm, Krzysztof Kozlowski wrote:
+> No need to store PTR_ERR into temporary, local 'ret' variable.
 > 
-> That's a very long and complicated thread.  I gave up.  You need to
-> provide a proper description of the problem.
-
-The description of the problem is in the commit log of patch 2
-as something below:
-"Networking driver with page_pool support may hand over page
-still with dma mapping to network stack and try to reuse that
-page after network stack is done with it and passes it back
-to page_pool to avoid the penalty of dma mapping/unmapping.
-With all the caching in the network stack, some pages may be
-held in the network stack without returning to the page_pool
-soon enough, and with VF disable causing the driver unbound,
-the page_pool does not stop the driver from doing it's
-unbounding work, instead page_pool uses workqueue to check
-if there is some pages coming back from the network stack
-periodically, if there is any, it will do the dma unmmapping
-related cleanup work.
-
-As mentioned in [1], attempting DMA unmaps after the driver
-has already unbound may leak resources or at worst corrupt
-memory. Fundamentally, the page pool code cannot allow DMA
-mappings to outlive the driver they belong to."
-
-
-The description of the fixing is also in the commit log of patch 2
-as below:
-"By using the 'struct page_pool_item' referenced by page->pp_item,
-page_pool is not only able to keep track of the inflight page to
-do dma unmmaping if some pages are still handled in networking
-stack when page_pool_destroy() is called, and networking stack is
-also able to find the page_pool owning the page when returning
-pages back into page_pool:
-1. When a page is added to the page_pool, an item is deleted from
-   pool->hold_items and set the 'pp_netmem' pointing to that page
-   and set item->state and item->pp_netmem accordingly in order to
-   keep track of that page, refill from pool->release_items when
-   pool->hold_items is empty or use the item from pool->slow_items
-   when fast items run out.
-2. When a page is released from the page_pool, it is able to tell
-   which page_pool this page belongs to by masking off the lower
-   bits of the pointer to page_pool_item *item, as the 'struct
-   page_pool_item_block' is stored in the top of a struct page. And
-   after clearing the pp_item->state', the item for the released page
-   is added back to pool->release_items so that it can be reused for
-   new pages or just free it when it is from the pool->slow_items.
-3. When page_pool_destroy() is called, item->state is used to tell if
-   a specific item is being used/dma mapped or not by scanning all the
-   item blocks in pool->item_blocks, then item->netmem can be used to
-   do the dma unmmaping if the corresponding inflight page is dma
-   mapped."
-
-it is worth to mention that the changing of page->pp to page->pp_item
-for the above fix may be able to enable the decoupling page_pool from
-using the metadata of 'struct page' if folios only provide a memdesc
-pointer to the page_pool subsystem in the future as pp_item may be
-used as the metadata replacement of existing 'struct page'.
-
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>   drivers/iommu/omap-iommu.c | 4 +---
+>   1 file changed, 1 insertion(+), 3 deletions(-)
 > 
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index 04a7deaaba25cb270eb6eeaf6a21030440f78a5e..bce27805805010ae473aa8dbd9e0cb903dd79bba 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1123,7 +1123,6 @@ static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
+>   					      struct omap_iommu *obj)
+>   {
+>   	struct device_node *np = pdev->dev.of_node;
+> -	int ret;
+>   
+>   	if (!of_device_is_compatible(np, "ti,dra7-dsp-iommu"))
+>   		return 0;
+> @@ -1132,8 +1131,7 @@ static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
+>   		syscon_regmap_lookup_by_phandle(np, "ti,syscon-mmuconfig");
+>   	if (IS_ERR(obj->syscfg)) {
+>   		/* can fail with -EPROBE_DEFER */
+
+This comment is no longer correct or useful, since it's alluding to the 
+check which you removed in the previous patch. I'd just clean up the 
+whole lot in patch #1 as it's all closely related, and also turn this 
+return into a dev_err_probe() to capture the spirit of the other errors 
+being replaced, perhaps something like "No valid ti,syscon-mmuconfig 
+available" - that way it adds some value for debugging probe deferral 
+issues more than broken DTs.
+
+Thanks,
+Robin.
+
+> -		ret = PTR_ERR(obj->syscfg);
+> -		return ret;
+> +		return PTR_ERR(obj->syscfg);
+>   	}
+>   
+>   	if (of_property_read_u32_index(np, "ti,syscon-mmuconfig", 1,
+> 
+
