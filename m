@@ -1,99 +1,112 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA414206F3E
-	for <iommu@lists.linux.dev>; Thu, 13 Feb 2025 09:45:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739439940; cv=none; b=azPXO8xLc5hqJhjO/ukxW/3W+8XdemtwrcVVRI4IpFIGwjX/vBmEGX5ksYESscIoqUPosh9/KQn4tS4CAOR9QKa6kN8S5js3N+NlMovjiEkMHNub+HzpaxlH4eHJv63tbhNkO0R3rmmJVb7tJPSl6MbpeQTenW5gbsmNyVQPpl0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739439940; c=relaxed/simple;
-	bh=3Ilo/X3a30c4xDyqJmeIBjYKRtFgQM1sP1z2Knqi7Q0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FoJcKV2ps/EE3i/sEkcrFPfu4cqBjpQDYW35gdFd2URXcbgYStllNGCe98qqdmvWOEff/IKxB3m8JIAJAQAiOr0+rZLixsfScH1b7aL2OX1piJFJBPVkIIU9l8I3v0f/MhZULChcO1nM+JAYv1LY8WCGfRbJRLXAlt6O+aI4Evs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=pFGrvy+j; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FECD20D4E6
+	for <iommu@lists.linux.dev>; Thu, 13 Feb 2025 09:51:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739440263; cv=pass; b=aZPzhzPAK+davsS8W1ix+gEUWqxQIZEBtJU/DqTkFbTofFPm/M/RTB5L1KeH9inOmQiOfydjgwscHo1OEeWjLZumVyPIklb54cDdps3S13CY5RMGvynXzRWqMbfOLF9t80EXb48DXBOIkPNqbp+wM826/M4b/omigYe9s2MUdnM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739440263; c=relaxed/simple;
+	bh=aSRyyPeM6e5hQFaheTBxy/WzU6InWEh4hO0nlSkJE6o=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=mzPEdYZJEsF3apH+xI5JtqMaEvNq81cjGT0Mox2xv9dWrwqI4qBkazkkf7z52yxYIrKChRAV0Mq7jW2oz6Vlcmb1igMCuc5NYHFa5lsnn+amX8aVbb6VmsbTYXIfUzCRwfWllvshENsYqwxRgyzqQgC2ICIkpSoaMvMcNxXAX68=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=icenowy.me; spf=pass smtp.mailfrom=icenowy.me; dkim=pass (2048-bit key) header.d=icenowy.me header.i=uwu@icenowy.me header.b=jSEwOGCZ; arc=pass smtp.client-ip=136.143.188.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=icenowy.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icenowy.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pFGrvy+j"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4395a917f33so9495915e9.1
-        for <iommu@lists.linux.dev>; Thu, 13 Feb 2025 01:45:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1739439937; x=1740044737; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3Ilo/X3a30c4xDyqJmeIBjYKRtFgQM1sP1z2Knqi7Q0=;
-        b=pFGrvy+jTedsek6US8JEqYdSvMtIjn67hBUk9mQP0R2T1lWyez5MsNnaKlTimzQqw6
-         F+HcOn9miOYPkbSHvEKUHnPeZSLOVxZqWh0zYagfZKN15E+T4OJMLBEgMAq6Djx+BpbW
-         t32AnBdipXTxDysbH11gx5Q9E1q9mTX8eBs3xjd/BxNWacjuAQTrjig42aESX/pQBmvQ
-         FWXxTGNOuRbEnYtwMDQQ4qd6YJ7mpI+xfjes05MICDCyNswGb8U1oeFUOxejOAMrBM83
-         8DjEZsyxNMmpJIS+jG1em78dfaAf7hoWL4gDwtBH4n+vXHy6uIDfE/6GeyBOU6IgVxju
-         qUww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739439937; x=1740044737;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3Ilo/X3a30c4xDyqJmeIBjYKRtFgQM1sP1z2Knqi7Q0=;
-        b=GsaCBHqtx1NyUKYwCHwXg/1+nOBmA1hII0AV4D0Z4e7GY3Gw7eOqMP6mYXTkOQ6GaQ
-         Oz/RVDf91kuwvlQUXi/cx/ToUk6pD5Vk8PpvQOIC0gb6jEZ+8nWx/A+XZgNBy0xMP2UQ
-         B7Xq9TOFdiVefuvJaiev31xFbZIWe7LAJH4wdch5hb0n/fslX+c/fh91NNJ1YThZxIRT
-         rG8FNvofthort6d+dGQIOqgnMxw1wLrJo0tm1RG7mZfq4FqUcEuy1604+rA0x6G4W0hT
-         xuylWhYI97XIbsJ68E/k5k8P3WRfKfVmWSwjtglRNJ1vlUyIjtWPXOYBp15uSYm4NBHL
-         18vg==
-X-Forwarded-Encrypted: i=1; AJvYcCUIQ9fES3YXDbJ7CZdKPJLCCzOgHvMBU/Azb+4d2JmtX5x8eTO3bZBa4WzyRC75KAUeJVdTow==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzKFIA+2O6ElLqr8MN9oRyQUpFbmyZgSrqPf7y++Vm3PHmg7S5A
-	A3euV3672zofIGUFa/pmj8EkCytNXEduBvqZIzQ5ifl4MT94ooaTN7fSHu1W/Ws=
-X-Gm-Gg: ASbGncvjqtDymw67qBajyOiMOFfgPHnRHmZeQ+EnDlf23NhzBvSQzDEtH1aYD0ORCSI
-	6wvi5RHbKEY8o0lpkQSSXXQNwHFewbvgifeEBVsfOKr0Gm+JrjJIwvJLlqUpAR5R1lzOlTN3IaE
-	+xE+/JsgLtneC3x6VEyyhCWL92obwEzQkopczbSbhNly9+ZNKH0O1UxQpJvpk4snryvHHFrGgUV
-	Wb7+ZEY4fq4T2D/yi0yb3yg1MyTwzqSqWswUgEscTeMjK6YpKFq8aqxJtsWd3vPm0usyFtV8Il+
-	jYccvuOYcQSrCA==
-X-Google-Smtp-Source: AGHT+IEIeCgAGFBXoUwvmjdG4kaT43lYwV+Fkp3fDkVeP6qXvOFBGNPRA7BU0T2qf6XHumXXrDCSDQ==
-X-Received: by 2002:a5d:47ca:0:b0:38d:cc9c:630c with SMTP id ffacd0b85a97d-38f24f2c099mr1998761f8f.10.1739439936845;
-        Thu, 13 Feb 2025 01:45:36 -0800 (PST)
-Received: from myrica ([2.221.137.100])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38f258b41b5sm1396930f8f.14.2025.02.13.01.45.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Feb 2025 01:45:36 -0800 (PST)
-Date: Thu, 13 Feb 2025 09:46:01 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: jacob.pan@linux.microsoft.com,
-	Easwar Hariharan <eahariha@linux.microsoft.com>,
-	"zhangyu1@microsoft.com" <zhangyu1@microsoft.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>, patches@lists.linux.dev,
-	tina.zhang@intel.com
-Subject: Re: [PATCH 3/5] iommu/virtio: Move to domain_alloc_paging()
-Message-ID: <20250213094601.GA243081@myrica>
-References: <0-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
- <3-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
- <20250212112235.714b0a14@DESKTOP-0403QTC.>
- <20250212233053.GV3754072@nvidia.com>
- <67ad876d.170a0220.3c21dc.85ceSMTPIN_ADDED_BROKEN@mx.google.com>
+	dkim=pass (2048-bit key) header.d=icenowy.me header.i=uwu@icenowy.me header.b="jSEwOGCZ"
+ARC-Seal: i=1; a=rsa-sha256; t=1739440236; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=cRWqjHO3xN30Cw8P6pNjxFBHiCsis+aZAywXAQQYz0GWTOzg1oiFFne67FvDzzHXxFXURB6pn6t9zRKK+0innD1DfTbe4wpQXyj08ECXCAZQEonjvmHTRwQmyjK43v+vQXRcp95/akdrW5jCorq02xdEyvArN9jJfyIcxciCJcg=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1739440236; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=aSRyyPeM6e5hQFaheTBxy/WzU6InWEh4hO0nlSkJE6o=; 
+	b=aMuTrwZ2XVBEhcXDtMCdnSsVoVsZziE1u76i99bG7mvbsPT9lvzPSeDi+2QA0nqkLPa1D4GXwCaJsOUQQIH/qhQ8baPca8WdM/FXSr+tlzyVMJ884F3JxiwojjCNlk8ACNa5n/h2vtK+SaBLLZfi9EmWSSNVXH4SSd2l6iQw9dI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=icenowy.me;
+	spf=pass  smtp.mailfrom=uwu@icenowy.me;
+	dmarc=pass header.from=<uwu@icenowy.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1739440236;
+	s=zmail2; d=icenowy.me; i=uwu@icenowy.me;
+	h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:MIME-Version:Message-Id:Reply-To;
+	bh=aSRyyPeM6e5hQFaheTBxy/WzU6InWEh4hO0nlSkJE6o=;
+	b=jSEwOGCZw1I/yx2GrlRv6f9kQrS6mIJ7n6nMPE6VRODYffhsDVgZrLzBR3EGZKje
+	o/FnCSuNxR1g0M44IR5Y5fqTl2HupozZDOx2YrZpECMrEGWoDERDy1cUpeL1i5s736a
+	mktxmteFrD6x1efFzZ1jxYud5ZlOQNhbzpG9csJh5nPbdscUDKTTsCMOMkN6YvaWiZl
+	wcZ7ggGLARF+nzr7N/lQUEvlQRbp8IkZYcxGlIxnEdRGcmPQT1B4KWyl5m//85XVCaT
+	+BZWOHlEivDQWFWB/hfDVKGtOHu+w9eAzNoYuI/f/pd1Ab/recIDPshuoEgOPeyZMcE
+	pQqQCE0HGw==
+Received: by mx.zohomail.com with SMTPS id 1739440234709175.6616970322301;
+	Thu, 13 Feb 2025 01:50:34 -0800 (PST)
+Message-ID: <2e57e189de98a165e24bb0f65b2e0c9b17f51e40.camel@icenowy.me>
+Subject: Re: On community influencing (was Re: [PATCH v8 2/2] rust: add dma
+ coherent allocator abstraction.)
+From: Icenowy Zheng <uwu@icenowy.me>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>, Danilo Krummrich
+	 <dakr@kernel.org>
+Cc: Hector Martin <marcan@marcan.st>, Steven Rostedt <rostedt@goodmis.org>, 
+ "Dr. Greg" <greg@enjellic.com>, Linus Torvalds
+ <torvalds@linux-foundation.org>, Dave Airlie <airlied@gmail.com>, Jason
+ Gunthorpe <jgg@nvidia.com>, Greg KH <gregkh@linuxfoundation.org>,
+ phasta@kernel.org, Christoph Hellwig <hch@lst.de>,  Miguel Ojeda
+ <miguel.ojeda.sandonis@gmail.com>, daniel.almeida@collabora.com,
+ aliceryhl@google.com,  robin.murphy@arm.com,
+ rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, Alex
+ Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>, Gary Guo
+ <gary@garyguo.net>, Bj??rn Roy Baron <bjorn3_gh@protonmail.com>, Benno
+ Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>,
+ Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, airlied@redhat.com, "open list:DMA MAPPING
+ HELPERS" <iommu@lists.linux.dev>, DRI Development
+ <dri-devel@lists.freedesktop.org>
+Date: Thu, 13 Feb 2025 17:50:20 +0800
+In-Reply-To: <b0efde29-248f-43f2-97bf-ab16b55af63a@gmail.com>
+References: <20250131135421.GO5556@nvidia.com>
+	 <2b9b75d1-eb8e-494a-b05f-59f75c92e6ae@marcan.st>
+	 <Z6OzgBYZNJPr_ZD1@phenom.ffwll.local>
+	 <CAPM=9tzPR9wd=3Wbjnp-T0W8-dDfGah-H3Ny52G85B+2Ev9ksA@mail.gmail.com>
+	 <208e1fc3-cfc3-4a26-98c3-a48ab35bb9db@marcan.st>
+	 <CAHk-=wi=ZmP2=TmHsFSUGq8vUZAOWWSK1vrJarMaOhReDRQRYQ@mail.gmail.com>
+	 <20250207121638.GA7356@wind.enjellic.com>
+	 <Z6bdCrgGEq8Txd-s@home.goodmis.org>
+	 <1e8452ab-613a-4c85-adc0-0c4a293dbf50@marcan.st>
+	 <07c447b77bdac1f8ade1f93456f853f89d4842ee.camel@icenowy.me>
+	 <Z6nTxks3u-ErSalQ@cassiopeiae>
+	 <d7d1fb8af8857e7ebfdea48213849ea9ba446477.camel@icenowy.me>
+	 <b0efde29-248f-43f2-97bf-ab16b55af63a@gmail.com>
+Organization: Anthon Open-Source Community
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <67ad876d.170a0220.3c21dc.85ceSMTPIN_ADDED_BROKEN@mx.google.com>
+X-ZohoMailClient: External
+X-ZohoMail-Owner: <2e57e189de98a165e24bb0f65b2e0c9b17f51e40.camel@icenowy.me>+zmo_0_
 
-Hi Jacob,
+=E5=9C=A8 2025-02-13=E6=98=9F=E6=9C=9F=E5=9B=9B=E7=9A=84 08:41 +0200=EF=BC=
+=8CAbdiel Janulgue=E5=86=99=E9=81=93=EF=BC=9A
+> Hi,
+>=20
+> On 13/02/2025 05:49, Icenowy Zheng wrote:
+> >=20
+> > Sorry, but I did a fact check on this, and I found that the only
+> > "reviewer" of DMA MAPPING HELPERS is Robin Murphy, he has only one
+> > reply in this thread, and the reply only says "Indeed, FWIW it
+> > seems
+> > like the appropriate level of abstraction to me,
+> > judging by the other wrappers living in rust/kernel/ already", he
+> > didn't offer to be a reviewer,=20
+>=20
+> Robin did offer:
+>=20
+> https://lore.kernel.org/rust-for-linux/4956d01e-2d06-4edd-813b-9da94b4820=
+69@arm.com/
 
-On Wed, Feb 12, 2025 at 09:47:23PM -0800, Jacob Pan wrote:
-> Our code and backend support are still in the early stages, that is why
-> I am attempting to convert virtio-iommu driver to iommu_pt. Not sure if
-> anyone has done the QEMU part to support VIRTIO_IOMMU_F_ATTACH_TABLE?
-> @Jean @Eric Do you know?
+Well okay it's a further thing.
 
-As far as I know Tina worked on this most recently:
-https://github.com/TinaZhangZW/qemu/commits/virtio-iommu/vt-d-pgtable/
-https://lore.kernel.org/all/20231106071226.9656-1-tina.zhang@intel.com/
-
-Thanks,
-Jean
