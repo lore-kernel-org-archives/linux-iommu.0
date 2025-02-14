@@ -1,175 +1,129 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54BC0189912;
-	Fri, 14 Feb 2025 05:42:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5043B1DD866
+	for <iommu@lists.linux.dev>; Fri, 14 Feb 2025 06:11:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739511776; cv=none; b=tMcKU0v4zX/+dtt0r1yN7M7oTuP9UXg+d2OBD2QceCN64TyZkGpi1oidKwRma0Je8+k2nk02metJ68qyrJkQLFuEZ/LgWLW/oTFSoy1SNLpQntYaOvvoWcDLhJWovs+z5DrRrMmW9XDW9Fnz//q5aru8fuUK1FQXtmC+mwF2vDI=
+	t=1739513461; cv=none; b=bp6e9wZ7U/OvmIKvDzPOQ/6nfn6V+OcLVmChQeuJLUJIwY1063rcSjcmuup69JKtol2mt1/VaQgULtTGsBwogjvSLJA6aa4lJZRPTQgX+1mN9+Hvo3HpMZbx1iAdPs4afSpp6lQ4iyJ2/c6oiTlszX9tO14vK/V6zSMrkKjxq84=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739511776; c=relaxed/simple;
-	bh=h6p7Y22j2hIaMSGgYnBcUas0+FeWCyvYHlZZIhCytkM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=g8o3uJ8lHoIxSp2n4pAUe9+0v8701EpF9/QfNQUnOANtnUtfeJISCFyx6+G+SqFRU26VIjvgw3yLU9F7yQOLYfsQMDGoa86H+rXfAKvLFj0lkpVSGQgv6uu0rt0x5xBhS8TbTNCnitrslwGV0k5k7jTCiJ++c25lR9zNLK7ebYw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hZTWzL+R; arc=none smtp.client-ip=192.198.163.10
+	s=arc-20240116; t=1739513461; c=relaxed/simple;
+	bh=ro5xkK8yo/KndYQDY5G/N/Su5NsLJ2Xcrw1UPYjyoa4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Krp9x/7WraWT/sq/W08lmYyf+xRStwJ+hQVT6C3gzXExxBG4ySUa10SwgkVqHO9HrHlDpUNv4FRtv8+1egujZ6UFpTi6RQEKqCsUHDLqk2GdRJoLJLY0o08VGmBiwPS4FQ5OB4IynC4przcXQ/3MRZ4ZRcrZ3SuWV8o8p0UEP+g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IfBALzGf; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hZTWzL+R"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IfBALzGf"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1739511774; x=1771047774;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=h6p7Y22j2hIaMSGgYnBcUas0+FeWCyvYHlZZIhCytkM=;
-  b=hZTWzL+RAv+XZmiZrV5fw47VQDy/Ohj+5ukcULnwOic2Zd02c/1c2E72
-   XW3lEnHM3FSdY0cL76767L/PtMR44X7rdebn27/tKpu5iA8+ffWygFxN6
-   8s3bjo0I7Dswm6fYg1ENtEMBxQM0DMqNZmijOr0yU0mSVHNRyHvpPbCcs
-   Qt8rxfcrnFVXz9o2jLv/HvrOYQ6uf4kyj+gkOtrUnqI2B7J7i5s4lBgKg
-   kYth46ptZ/BXtRaBovIm4OQobMYDNYPRW7rMKo6YdzEsN2quCEt7cDz6c
-   rBUgpPxzJ3v5w16tbMnTa51sDjpy9QouBPyq+rVRkzeUkWXtKe0zpDnEo
-   w==;
-X-CSE-ConnectionGUID: hxpl+tuZS66Brpxuh7xeAw==
-X-CSE-MsgGUID: a7C+9IccSz6rgY4sQuHuOQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="51680991"
-X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
-   d="scan'208";a="51680991"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 21:42:54 -0800
-X-CSE-ConnectionGUID: HFEGjSazTHyw5Tz92aIw/w==
-X-CSE-MsgGUID: RMkJwxJhQSmPkE76rQWIFA==
+  t=1739513460; x=1771049460;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ro5xkK8yo/KndYQDY5G/N/Su5NsLJ2Xcrw1UPYjyoa4=;
+  b=IfBALzGfz90RuGmneQv+C0p99IoMkTLDsUz+M1gyHTHDtIUZAaa6d/bm
+   qslmwDV54oKviBwfnIl4Bm+WzfsRbroyGTRhd0eRB+PFILpv3Bd3rM3gA
+   aYvzZLkMOA8yP3DhHFFvtmU1h0aNEIGSQkN5cIyZA2IyUNszLSKFzcgF3
+   1qeADSEwON4vKhjasB+yZ0vJFZzHygFh0MNXOtcxw7DKZqdGn6s2tS2d8
+   o01usatNv7A9SQ8hPwOify4WfJ25PKJbZKBbH25Ux9z/Gm/E8fE8fXbjF
+   WrV1K+QFUa/1rFm1Wfpa0S/mrtz9R5m7k0aGDdchqP5qwCHAMTFDbjJU5
+   Q==;
+X-CSE-ConnectionGUID: qBdxBZLfTrSmWHnZbxg6ig==
+X-CSE-MsgGUID: 5CqbTmLGQ7+5Eo1q3vUGZg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11344"; a="40124443"
+X-IronPort-AV: E=Sophos;i="6.13,284,1732608000"; 
+   d="scan'208";a="40124443"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 22:11:00 -0800
+X-CSE-ConnectionGUID: wVpSM2PQQvCo3DVnaeEv7Q==
+X-CSE-MsgGUID: 5ZcLeNMmSKCVjI3nhGwtNw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="118573799"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 21:42:47 -0800
-Message-ID: <bc9f4477-7976-4955-85dc-3e05ebe95ead@linux.intel.com>
-Date: Fri, 14 Feb 2025 13:39:52 +0800
+   d="scan'208";a="114268011"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by orviesa008.jf.intel.com with ESMTP; 13 Feb 2025 22:10:56 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>,
+	Zhou Wang <wangzhou1@hisilicon.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 00/12] iommu: Remove IOMMU_DEV_FEAT_SVA/_IOPF
+Date: Fri, 14 Feb 2025 14:10:52 +0800
+Message-ID: <20250214061104.1959525-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 00/12] Initial support for SMMUv3 nested translation
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Zhangfei Gao <zhangfei.gao@linaro.org>, acpica-devel@lists.linux.dev,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
- Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Lorenzo Pieralisi <lpieralisi@kernel.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Robert Moore <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>,
- Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Donald Dutile <ddutile@redhat.com>, Eric Auger <eric.auger@redhat.com>,
- Hanjun Guo <guohanjun@huawei.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Jerry Snitselaar <jsnitsel@redhat.com>, Moritz Fischer <mdf@kernel.org>,
- Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
- patches@lists.linux.dev, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Mostafa Saleh <smostafa@google.com>
-References: <20241112182938.GA172989@nvidia.com>
- <CABQgh9HOHzeRF7JfrXrRAcGB53o29HkW9rnVTf4JefeVWDvzyQ@mail.gmail.com>
- <20241113012359.GB35230@nvidia.com>
- <9df3dd17-375a-4327-b2a8-e9f7690d81b1@linux.intel.com>
- <20241113164316.GL35230@nvidia.com>
- <6ed97a10-853f-429e-8506-94b218050ad3@linux.intel.com>
- <20241115175522.GA35230@nvidia.com> <20250122192622.GA965540@nvidia.com>
- <284dd081-8d53-45ef-ae18-78b0388c98ca@linux.intel.com>
- <f7b6c833-b6c1-4154-9b77-13553e501f2b@linux.intel.com>
- <20250213184317.GB3886819@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250213184317.GB3886819@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2/14/25 02:43, Jason Gunthorpe wrote:
-> On Thu, Feb 13, 2025 at 07:57:51PM +0800, Baolu Lu wrote:
->> On 2025/2/5 11:45, Baolu Lu wrote:
->>> On 2025/1/23 3:26, Jason Gunthorpe wrote:
->>>> On Fri, Nov 15, 2024 at 01:55:22PM -0400, Jason Gunthorpe wrote:
->>>>>>> I need your help to remove IOMMU_DEV_FEAT_IOPF from the intel
->>>>>>> driver. I have a patch series that eliminates it from all the other
->>>>>>> drivers, and I wrote a patch to remove FEAT_SVA from intel..
->>>>>> Yes, sure. Let's make this happen in the next cycle.
->>>>>>
->>>>>> FEAT_IOPF could be removed. IOPF manipulation can be handled in the
->>>>>> domain attachment path. A per-device refcount can be implemented. This
->>>>>> count increments with each iopf-capable domain attachment
->>>>>> and decrements
->>>>>> with each detachment. PCI PRI is enabled for the first iopf-capable
->>>>>> domain and disabled when the last one is removed. Probably we can also
->>>>>> solve the PF/VF sharing PRI issue.
->>>>> Here is what I have so far, if you send me a patch for vt-d to move
->>>>> FEAT_IOPF into attach as you describe above (see what I did to arm for
->>>>> example), then I can send it next cycle
->>>>>
->>>>> https://github.com/jgunthorpe/linux/commits/iommu_no_feat/
->>>> Hey Baolu, a reminder on this, lets try for it next cycle?
->>>
->>> Oh, I forgot this. Thanks for the reminding. Sure, let's try to make it
->>> in the next cycle.
->>
->> Hi Jason,
->>
->> I've worked through the entire series. The patches are available here:
->>
->> https://github.com/LuBaolu/intel-iommu/commits/iommu-no-feat-v6.14-rc2
->>
->> Please check if this is the right direction.
-> 
-> Looks great, and you did all the cleanup stuff too!
-> 
-> The vt-d flow is a little more complicated than the ARM logic because
-> the driver flow is structed differently.
-> 
-> Do we really want ATS turned on if the only thing attached is an
-> IDENTITY domain? That will unnecessarily slow down ATS capable HW.. It
-> is functionally OK though.
+The new method for driver fault reporting support relies on the domain
+to specify a iopf_handler. The driver should detect this and setup the
+HW when fault capable domains are attached.
 
-It depends. The Intel driver uses a simple approach.
+Move SMMUv3 to use this method and have VT-D validate support during
+attach so that all three fault capable drivers have a no-op FEAT_SVA and
+_IOPF. Then remove them.
 
-When the IOMMU is working in legacy mode, PASID and PRI are not
-supported. In this case, ATS will not be enabled if the identity domain
-is attached to the device.
+This was initiated by Jason. I'm following up to remove FEAT_IOPF and
+further clean up.
 
-When the IOMMU is working in scalable mode, PASID and PRI are supported.
-ATS will always be enabled, even if the identity domain is attached to
-the device, because the PASID might use PRI, which depends on ATS
-functionality. This might not be the best choice, but it is the
-simplest and functional.
+The whole series is also available at github:
+https://github.com/LuBaolu/intel-iommu/commits/iommu_no_feat-v1
 
-If any device does not work with the identity domain and ATS enabled,
-then we can add a quirk to the driver, as we already have such a
-mechanism.
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-> 
-> Also, are there enough ATC flushes around any domain type change? I
-> didn't check..
+Jason Gunthorpe (3):
+  iommu/arm-smmu-v3: Put iopf enablement in the domain attach path
+  iommu/vt-d: Check if SVA is supported when attaching the SVA domain
+  iommu: Remove IOMMU_DEV_FEAT_SVA
 
-The VT-d specification defines guidance for software to manage caches,
-both the IOTLB in the IOMMU and the ATC on the device (Table 28,
-Guidance to Software for Invalidations). The driver was written
-according to that guidance.
+Lu Baolu (9):
+  iommu/vt-d: Move scalable mode ATS enablement to probe path
+  iommu/vt-d: Move PRI enablement in probe path
+  iommu/vt-d: Cleanup intel_context_flush_present()
+  iommu/vt-d: Put iopf enablement in domain attach path
+  iommufd/selftest: Put iopf enablement in domain attach path
+  dmaengine: idxd: Remove unnecessary IOMMU_DEV_FEAT_IOPF
+  uacce: Remove unnecessary IOMMU_DEV_FEAT_IOPF
+  iommufd: Remove unnecessary IOMMU_DEV_FEAT_IOPF
+  iommu: Remove iommu_dev_enable/disable_feature()
 
-> I feel like we should leave "iommu: Move PRI enablement for VF to
-> iommu driver" out for now, every driver needs this check?  AMD
-> supports SVA and PRI so it needs it too.
+ drivers/accel/amdxdna/aie2_pci.c              |  13 +-
+ drivers/dma/idxd/init.c                       |  43 +--
+ drivers/iommu/amd/iommu.c                     |  34 --
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  86 +----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 130 ++++----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  34 +-
+ drivers/iommu/intel/iommu.c                   | 301 ++++++------------
+ drivers/iommu/intel/iommu.h                   |  50 ++-
+ drivers/iommu/intel/nested.c                  |  16 +-
+ drivers/iommu/intel/pasid.c                   |  41 +--
+ drivers/iommu/intel/prq.c                     |   2 +-
+ drivers/iommu/intel/svm.c                     |  52 ++-
+ drivers/iommu/iommu-sva.c                     |   3 -
+ drivers/iommu/iommu.c                         |  32 --
+ drivers/iommu/iommufd/device.c                |   1 -
+ drivers/iommu/iommufd/fault.c                 | 111 ++-----
+ drivers/iommu/iommufd/iommufd_private.h       |   3 -
+ drivers/iommu/iommufd/selftest.c              |  52 ++-
+ drivers/misc/uacce/uacce.c                    |  40 ---
+ include/linux/iommu.h                         |  35 --
+ 20 files changed, 380 insertions(+), 699 deletions(-)
 
-Yes, agreed.
+-- 
+2.43.0
 
-> 
-> Do you want to squash those fixup patches and post it?
-
-Yes, sure. Let me post it for further review.
-
-> Thanks,
-> Jason
-
-Thanks,
-baolu
