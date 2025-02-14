@@ -1,188 +1,153 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 516CC1C861E
-	for <iommu@lists.linux.dev>; Fri, 14 Feb 2025 20:58:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC44B1FDA73
+	for <iommu@lists.linux.dev>; Fri, 14 Feb 2025 23:38:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739566701; cv=none; b=u3X9I3ZGcfni0fRi6n3ijX4u0GsarIfDnbbgqVcCEplOdIYkpP3Yyfy20KmA2GAIHUUKBxN7yZhIbpEmPwkfTs/fLslNTMyz0p2T0Csk8BtFEDGwfW8fH0y8CVABBD2DL41LNpKSplsLJbhAQwOXNe44HGSWeBIZvyCL3WIbyL4=
+	t=1739576326; cv=none; b=FZDXQ+YcG8CSowD5DFY/pCpqUNGdJr10ffOOufNfyy/UZoBUtJnRAkhTgtHnOmcqRHLg3ptdocFerfrjmt6GXsXo3AaWDRMlOWnJvinLew0bBHjqgm3f3M6ogyoosSWmRXwPCLh4L+b+h6DCJGxHXWtksIjxPGqY5hQL8cCaoSE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739566701; c=relaxed/simple;
-	bh=vaKwmHnAyriqw0O10M/Qwf2Y5vvws0cQSQXtACGqsfk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=hC6Nbq3fkJ1tekzv370pujrzPxvQcDwvDcbUhZ5zmLe5kG5XC2H2SVrIX41tkNLfPlcmnwwxpNNvMCi0xkevmmFu8SbLnm5wH8OoxVHX2XdfVgDkHqTdvSSCgRho7XkyrMj+EltO/G01dvHIT5smMVp99SeGQt9mCl432FJe+3Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=h62IkDFm; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1739576326; c=relaxed/simple;
+	bh=3FgOVFO8GNqDS2zLxm0cMMBnAmqo1GiengKzpNDRW/g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Jlmc5WwYC2K39wUy0RmmQq6zwQp4cxiC+UlQOaqHNwhj8HMueYxC/XAJ5+fE7vAx1P4Z4EEAnRKLkgMvA77lH54RpzIrn3xEd043kVdX+kniodV5ykLy5314K1gOcnYhdsg+ECTOtoeyGkrX9tlX/WQR8TWsgn+BSH1EWK1i1AQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=djL3CMHi; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="h62IkDFm"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-21f8c280472so7415ad.1
-        for <iommu@lists.linux.dev>; Fri, 14 Feb 2025 12:58:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1739566699; x=1740171499; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2YgySpnqFZLhvEyVlrQicLthetC3cVznXnvyAWuRKPc=;
-        b=h62IkDFmcsmpAAYm2U8xUlE00yrh+72F/qmAtqxfAaRJVGJNSS2zvEt6ab44jVyzKh
-         k6BCReLzCJFae38/EyFXsDw00iHnofoXp1ZWjpvlr1QbZf8WKqdL/czfqHxspBcdPNaB
-         W0gCepW3RCxHuhpi26Uk0ZPF5kp6jxb9pX0JJI7B3XXWor9C0SU/Rv2esBnKaP3hmg4s
-         giyPc/CJdAe4ebLmAMFISkg/ZXYBRYtCpVl18ffKZdqRYXezIVz8GzkWOeSE9kMkmRDQ
-         NJB2l5lZArTc5VDXXJ4pQnCVf6oThNKMdPCMFnseVkE71T0gwXouXy6qgYrjIaWkpMmD
-         0oVg==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="djL3CMHi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1739576323;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=dkl08VAARbn7X2yB9Abn8zNYw7VapeXfiEWGo0rvbzs=;
+	b=djL3CMHit+bg3N+hWicN9LYIyCccqQ+L5+Mj8u9D3HsTNc+/W1O6Vt5GOlFEl8OAcC8SQQ
+	RA4XrvGiGCP2JpqDOLyVBQGEgUhJhwpdyaH1iJ6P+hmZ/ljUWwVrJ7h19XkZddE3HVTzm2
+	COSNjMbbeYXSF4ZbR4LzdL8koAmdlRw=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-368--vDGtD6RPMWHxn6cX00DaQ-1; Fri, 14 Feb 2025 18:38:40 -0500
+X-MC-Unique: -vDGtD6RPMWHxn6cX00DaQ-1
+X-Mimecast-MFC-AGG-ID: -vDGtD6RPMWHxn6cX00DaQ_1739576319
+Received: by mail-wr1-f71.google.com with SMTP id ffacd0b85a97d-38dc6aad9f8so1980840f8f.1
+        for <iommu@lists.linux.dev>; Fri, 14 Feb 2025 15:38:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739566699; x=1740171499;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2YgySpnqFZLhvEyVlrQicLthetC3cVznXnvyAWuRKPc=;
-        b=eGyRbo7DSWpG5U4fbB+4OkjitTqhFlqrt7z70KoGDlk3uIDHEeFavyCDZ7p6zFzD1b
-         /H5nvHEs2odmXR31WO+XS/r6Dwv+5ZO3+lnI/6FV9m7SjM/fwjCInS77X8wOrEskVbEE
-         PUba+ADlPhTAIQLmuEuXP+Oh1fW4hNPxBzbogbcgTwG8vO3UG59Rnel+YVgS9+B7IuUY
-         4eS+dM4V50PMZVBAuutmmxlRMt295SaptcOMUZsgBKQJUl4OoOpWnEd9pjYwUrPdUUwg
-         xw5+ntHCLfETewRRpTax3cZ1UDcc3UFkUXRRynsWLSRPFCr5TqSFfoQan4dO+nB4BzOq
-         2tCg==
-X-Forwarded-Encrypted: i=1; AJvYcCXbOPDV0qh/q2u1dHzP2NNyIAbvAz1gSRUMUtuwD79PiSm6HmQ0SeGlq0hslablPzJ83l62+w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy/Hb7+RTTkpCLwbh0gD77ItufaW7ObT+DpyLzIfp6n1vsEIXQJ
-	a9ZB6ObbaEtNodZQxeyUE+wTcYRgrkQ3sEOFk7ggs71WMYC3J7SGlbpG1pIjsHsXjs9+saO0tk/
-	dIOM4eBakO+JGruwK67GhGihv9K6o9cgqdsM3
-X-Gm-Gg: ASbGncuGKvaZtfz7a1ywe24/QkU7A7Dd3Xq1CSXtUCUSY09NdJ0zi8utS4ubMGsvYEB
-	4T32aiP0oK0T/xpTOzdyGgujVIX+pWSnkMO0AHZKEzchnbHMGldd58wCSKrtpR/omvXXEZ1Gcmg
-	4M8PxcfE/PXrruVptUz3N5rXlaNi4=
-X-Google-Smtp-Source: AGHT+IHMo7WsTDcyDI2IJxk30OmWpNkq4lqd/LDPkpSnJQoBmryh3jggnLVgBNK9KRLZbjUR8YF1jff3s8KWZZmox3M=
-X-Received: by 2002:a17:902:d50d:b0:220:c905:689f with SMTP id
- d9443c01a7336-22104ec0a38mr369985ad.25.1739566699325; Fri, 14 Feb 2025
- 12:58:19 -0800 (PST)
+        d=1e100.net; s=20230601; t=1739576319; x=1740181119;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=dkl08VAARbn7X2yB9Abn8zNYw7VapeXfiEWGo0rvbzs=;
+        b=xLPOUztUwiteLWy/ZdjBjHHa2PZphumH+c8nrELNUcGoZwUm1+CF/YuXtDt2FjijGU
+         aczVgkX3t6FsIoYzXfH/uEO/78hFCvtBPmNFvPrTs6QWPSTAtXt9bumT42CLjeS76WYj
+         2/EnbTm0VTmJQ4br6DkSDv3uWqyDmqZVbzN3BIlS+I1JhrIuNbDoyuaOMAVxDqhpiCFX
+         23McgvU2KUNSY5R4dy7iGZGco6rxiBbqZAuJeA2s9hFEH8z8sGT2KTGlzD0WIUO1Wrve
+         I6JY5WzRqbN0mWAY1kMhpuweSc4Y3+NVXtk0FaKSzwNEMRHzuLhxG5CAYcO1o4QilqYl
+         C06Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUffYUwbT+PYjxinLU/6xBeIr0zgUXdgQacU4F7egtOQYsoZguHAic/6HKeebTmkXJwH2SGLg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxi4d2dASvyPt8xy02052I7OTzgFXUmt1EGdV7gs2vC7OwcPEu7
+	BjKGPlK5p8ADuNYXBFOK/IEZqUBM0fIo5+1ZHZcFZtyc3ilZWSlCeEHzjCmp0IGAKtAQSugqISz
+	pdjchSLMPEDmnBkdjrEr4FP9l8/8DbYemJdRfNjOuOIQEcnfDyUXP
+X-Gm-Gg: ASbGncuRc6NCi8OFZY+45dL2Y6/iMmDBQnNn7qsppLfJ8sgwyOWw1X3lAv5nOYX+4Sr
+	ePKy94CPBDGLAAJQK6SMbBkOt8LP4xcZJF3cixJrW7CziD8CxEL8AvzVfC/L8SDVcI03OnNpoD9
+	DVdrFlfLFdDFcKI2KAmIugl7PUyhsigNE1iDe+OSgoNhvFIshZev2/z5iIjNZa/PZcwxMVK31rO
+	VzBfM0gZ9FSdvaCYCh0d/frIp1To1vb0h6IzfkQPGYEfULOEnedRyoAMQ/h8/AKARUr/MfxiB19
+	PyLQe6hjprQ=
+X-Received: by 2002:a05:6000:1f8d:b0:38d:b028:d906 with SMTP id ffacd0b85a97d-38f33c20f7cmr1320390f8f.21.1739576319207;
+        Fri, 14 Feb 2025 15:38:39 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGuwJR95sgolXJa3JZbal6oWOnodlKaw9NVdzdZq6kdIBfuHesYm3UO/VFsI1pO4iTzeaJo2w==
+X-Received: by 2002:a05:6000:1f8d:b0:38d:b028:d906 with SMTP id ffacd0b85a97d-38f33c20f7cmr1320351f8f.21.1739576318838;
+        Fri, 14 Feb 2025 15:38:38 -0800 (PST)
+Received: from [192.168.10.48] ([176.206.122.109])
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-38f259f7987sm5694927f8f.87.2025.02.14.15.38.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Feb 2025 15:38:38 -0800 (PST)
+Message-ID: <dbb0ceba-4748-47ca-9aae-affd189e2f92@redhat.com>
+Date: Sat, 15 Feb 2025 00:38:36 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250212092552.1779679-1-linyunsheng@huawei.com> <20250212092552.1779679-3-linyunsheng@huawei.com>
-In-Reply-To: <20250212092552.1779679-3-linyunsheng@huawei.com>
-From: Mina Almasry <almasrymina@google.com>
-Date: Fri, 14 Feb 2025 12:58:05 -0800
-X-Gm-Features: AWEUYZkrCnzHRX-UM7YzAnXpZTXuHcolUoh7nm-MSMVw8gpzJwYFTphmx0X5nYE
-Message-ID: <CAHS8izPZe0UHn8P38EvzX0ei_jGJnsXg99B5ra9Ldu09aWBU-Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v9 2/4] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, 
-	zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com, 
-	Robin Murphy <robin.murphy@arm.com>, Alexander Duyck <alexander.duyck@gmail.com>, 
-	IOMMU <iommu@lists.linux.dev>, Andrew Morton <akpm@linux-foundation.org>, 
-	Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>, 
-	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 0/3] Fix broken SNP support with KVM module built-in
+To: Sean Christopherson <seanjc@google.com>,
+ Ashish Kalra <Ashish.Kalra@amd.com>
+Cc: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ thomas.lendacky@amd.com, john.allen@amd.com, herbert@gondor.apana.org.au,
+ davem@davemloft.net, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+ will@kernel.org, robin.murphy@arm.com, michael.roth@amd.com,
+ dionnaglaze@google.com, nikunj@amd.com, ardb@kernel.org,
+ kevinloughlin@google.com, Neeraj.Upadhyay@amd.com, vasant.hegde@amd.com,
+ Stable@vger.kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-crypto@vger.kernel.org, linux-coco@lists.linux.dev,
+ iommu@lists.linux.dev
+References: <cover.1739226950.git.ashish.kalra@amd.com>
+ <Z6vByjY9t8X901hQ@google.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Autocrypt: addr=pbonzini@redhat.com; keydata=
+ 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
+In-Reply-To: <Z6vByjY9t8X901hQ@google.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: 9lmtf0LStEN0yOCAM8rjdF7mtnf7i8dCoBteZnMjQ7s_1739576319
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Feb 12, 2025 at 1:34=E2=80=AFAM Yunsheng Lin <linyunsheng@huawei.co=
-m> wrote:
->
-> Networking driver with page_pool support may hand over page
-> still with dma mapping to network stack and try to reuse that
-> page after network stack is done with it and passes it back
-> to page_pool to avoid the penalty of dma mapping/unmapping.
-> With all the caching in the network stack, some pages may be
-> held in the network stack without returning to the page_pool
-> soon enough, and with VF disable causing the driver unbound,
-> the page_pool does not stop the driver from doing it's
-> unbounding work, instead page_pool uses workqueue to check
-> if there is some pages coming back from the network stack
-> periodically, if there is any, it will do the dma unmmapping
-> related cleanup work.
->
-> As mentioned in [1], attempting DMA unmaps after the driver
-> has already unbound may leak resources or at worst corrupt
-> memory. Fundamentally, the page pool code cannot allow DMA
-> mappings to outlive the driver they belong to.
->
-> Currently it seems there are at least two cases that the page
-> is not released fast enough causing dma unmmapping done after
-> driver has already unbound:
-> 1. ipv4 packet defragmentation timeout: this seems to cause
->    delay up to 30 secs.
-> 2. skb_defer_free_flush(): this may cause infinite delay if
->    there is no triggering for net_rx_action().
->
-> In order not to call DMA APIs to do DMA unmmapping after driver
-> has already unbound and stall the unloading of the networking
-> driver, use some pre-allocated item blocks to record inflight
-> pages including the ones which are handed over to network stack,
-> so the page_pool can do the DMA unmmapping for those pages when
-> page_pool_destroy() is called. As the pre-allocated item blocks
-> need to be large enough to avoid performance degradation, add a
-> 'item_fast_empty' stat to indicate the unavailability of the
-> pre-allocated item blocks.
->
-> By using the 'struct page_pool_item' referenced by page->pp_item,
-> page_pool is not only able to keep track of the inflight page to
-> do dma unmmaping if some pages are still handled in networking
-> stack when page_pool_destroy() is called, and networking stack is
-> also able to find the page_pool owning the page when returning
-> pages back into page_pool:
-> 1. When a page is added to the page_pool, an item is deleted from
->    pool->hold_items and set the 'pp_netmem' pointing to that page
->    and set item->state and item->pp_netmem accordingly in order to
->    keep track of that page, refill from pool->release_items when
->    pool->hold_items is empty or use the item from pool->slow_items
->    when fast items run out.
-> 2. When a page is released from the page_pool, it is able to tell
->    which page_pool this page belongs to by masking off the lower
->    bits of the pointer to page_pool_item *item, as the 'struct
->    page_pool_item_block' is stored in the top of a struct page. And
->    after clearing the pp_item->state', the item for the released page
->    is added back to pool->release_items so that it can be reused for
->    new pages or just free it when it is from the pool->slow_items.
-> 3. When page_pool_destroy() is called, item->state is used to tell if
->    a specific item is being used/dma mapped or not by scanning all the
->    item blocks in pool->item_blocks, then item->netmem can be used to
->    do the dma unmmaping if the corresponding inflight page is dma
->    mapped.
->
-> The overhead of tracking of inflight pages is about 10ns~20ns,
-> which causes about 10% performance degradation for the test case
-> of time_bench_page_pool03_slow() in [2].
->
-> Note, the devmem patchset seems to make the bug harder to fix,
-> and may make backporting harder too. As there is no actual user
-> for the devmem and the fixing for devmem is unclear for now,
-> this patch does not consider fixing the case for devmem yet.
->
-> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kern=
-el.org/T/
-> 2. https://github.com/netoptimizer/prototype-kernel
-> CC: Robin Murphy <robin.murphy@arm.com>
-> CC: Alexander Duyck <alexander.duyck@gmail.com>
-> CC: IOMMU <iommu@lists.linux.dev>
-> Fixes: f71fec47c2df ("page_pool: make sure struct device is stable")
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> Tested-by: Yonglong Liu <liuyonglong@huawei.com>
-[...]
-> +
-> +/* The size of item_block is always PAGE_SIZE, so that the address of it=
-em_block
-> + * for a specific item can be calculated using 'item & PAGE_MASK'
-> + */
-> +struct page_pool_item_block {
-> +       struct page_pool *pp;
-> +       struct list_head list;
-> +       struct page_pool_item items[];
-> +};
-> +
+On 2/11/25 22:31, Sean Christopherson wrote:
+> On Mon, Feb 10, 2025, Ashish Kalra wrote:
+>> Ashish Kalra (1):
+>>    x86/sev: Fix broken SNP support with KVM module built-in
+>>
+>> Sean Christopherson (2):
+>>    crypto: ccp: Add external API interface for PSP module initialization
+>>    KVM: SVM: Ensure PSP module is initialized if KVM module is built-in
+> 
+> Unless I've overlooked a dependency, patch 3 (IOMMU vs. RMP) is entirely
+> independent of patches 1 and 2 (PSP vs. KVM).  If no one objects, I'll take the
+> first two patches through the kvm-x86 tree, and let the tip/iommu maintainers
+> sort out the last patch.
+I'll queue them myself (yes I still exist...) since I have a largish PR 
+from Marc anyway.
 
-I think this feedback was mentioned in earlier iterations of the series:
+Paolo
 
-Can we not hold a struct list_head in the page_pool that keeps track
-of inflight netmems that we need to dma-unmap on page_pool_destroy?
-Why do we have to modify the pp entry in the struct page and struct
-net_iov?
-
-The decision to modify pp entry in struct page and struct net_iov is
-making this patchset bigger and harder to review IMO.
-
---=20
-Thanks,
-Mina
