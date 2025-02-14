@@ -1,174 +1,188 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2063.outbound.protection.outlook.com [40.107.94.63])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DA4819066D;
-	Fri, 14 Feb 2025 20:23:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.63
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739564594; cv=fail; b=sMGvHOrvfvFGcfnygXzDI8ydcd6o8HGiVLPEd1VzdERW9Bv9rDYlEk11W0yiB4dkQPe2FB/f7/ZREXfHfXUlthakCenli9AqJ1RiH+4sf1Dab8EDi5r181PujclMaq5neu/jgWkooGFAA38cAscPXw7ihtP7cBOI3qXhxy9AuU0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739564594; c=relaxed/simple;
-	bh=Gk3N05iu2w8dssK8fX54bLY6EgDJGD7JhsMQUKhxsAU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=urgXrqXLuMTug9ZbvLQVq1proVhcVlhyi3UMlJRhwAgLnAii34/EOEXPGt87nhysbhU6TnCHYvNBKMmb+27tmJLjYWRcUl7LYB8zYu5ZxPos1SgbAHLOXRmYKIzWGFWxuej/9/FaQUBghogzQUC3v2o9dKs1M+HD8IFvg+dfWss=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PSVQIQ73; arc=fail smtp.client-ip=40.107.94.63
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 516CC1C861E
+	for <iommu@lists.linux.dev>; Fri, 14 Feb 2025 20:58:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739566701; cv=none; b=u3X9I3ZGcfni0fRi6n3ijX4u0GsarIfDnbbgqVcCEplOdIYkpP3Yyfy20KmA2GAIHUUKBxN7yZhIbpEmPwkfTs/fLslNTMyz0p2T0Csk8BtFEDGwfW8fH0y8CVABBD2DL41LNpKSplsLJbhAQwOXNe44HGSWeBIZvyCL3WIbyL4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739566701; c=relaxed/simple;
+	bh=vaKwmHnAyriqw0O10M/Qwf2Y5vvws0cQSQXtACGqsfk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hC6Nbq3fkJ1tekzv370pujrzPxvQcDwvDcbUhZ5zmLe5kG5XC2H2SVrIX41tkNLfPlcmnwwxpNNvMCi0xkevmmFu8SbLnm5wH8OoxVHX2XdfVgDkHqTdvSSCgRho7XkyrMj+EltO/G01dvHIT5smMVp99SeGQt9mCl432FJe+3Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=h62IkDFm; arc=none smtp.client-ip=209.85.214.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PSVQIQ73"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bvLwtwnfY/lAkJ3NIBa6CsFWq88frXdj2LNjh1FwWEwWwh6ZMFDYHZ7b4RCcHs+s8qu3JGzNSdxgvrMmke/+UOn1IVqiSLh7odq6uJXz+7VfAvf2l9K6U0GWL/c3WtSsP0eBSITgMWl5lEE7sSuyqaaKvO1u47woenzXJSsE62Oz9fm11LxPx/Dg7YYpF33vo1C4NxzzPAih6uT+AZs5fVibL4luk071IaPBvOwqWGACSOkpS/uBaoMA5b58vc2WbdkBBC8GQ9ZI5lTLiJQ00eK6mp2NrazA8wIyMJ71x5wWXSC1np8luFPhJ0Hk4vz9S+RuDRnEo7kH1rp+ZpdYOg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=izbFWxu4Vr+f/WPuyleqNpbsTmr32AdyChgMGGJ8muc=;
- b=J3eWJi1/BG4qbZI/8+8i/VZZBFvua1DNElq0LljlKmhOtqMYqruJ9ApO5Of9ZgKlj3Ae7LGvhqakqzsZ0q1Vc0l0H06y0wIqwwcyerKv1qgbzQpd56v9IsFWCStcHT9FiUXhf9zkvcgYD4NDpQJAzTEZG5xCS05RmWVn0uIITg3qzI2mzf9wMPuAB4JxXoIbL9ewxFyP/JZ+0kvRWBxtH14cNF4xJ53OO3bdg4RLTfX16zsOkHV9TU5uwty6UiDOJD2HJy6ZTovjcNzZNr7A63D9CIJgequciID8EX5YVCaIQgsYLKynB55QHhHK78CFwAUitFNqiHz0z9J3WubA/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=izbFWxu4Vr+f/WPuyleqNpbsTmr32AdyChgMGGJ8muc=;
- b=PSVQIQ73Oe+nXFoBwZ4/rPQn26iwXvGH9LURfV+ntCO7+Gx6LlqxN8h+1s2Tc1NagSwzoDXGJS1Qd/CIBy2gIx5NtOgDFL3pUuVmNMMOw1cJmwII6YGPQWtdGu9ZaipPa5BCwSV+Me+MGZ7sqr13xoO5Io5301pwqzDC5hzPFeCTT+Qk5T46OHgkeCQRsGEpyQxrLKSCoeB7hF2S03C8duhCCSelFZXTJxe1goZ9cqCYv9gh10A5NrLFg5bdnBJg+QCP6Ic8qW0zrWZNYHxSqHd8LnR17/NcOK8BxnVaJqy7Uuparm22jv9Tf6aeFaV9zW52igIKXMB/eQczF/PGSQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by SN7PR12MB7419.namprd12.prod.outlook.com (2603:10b6:806:2a6::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8445.16; Fri, 14 Feb
- 2025 20:23:10 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%6]) with mapi id 15.20.8445.013; Fri, 14 Feb 2025
- 20:23:10 +0000
-Date: Fri, 14 Feb 2025 16:23:08 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: kevin.tian@intel.com, corbet@lwn.net, will@kernel.org, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, shuah@kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
-	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
-	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
-	patches@lists.linux.dev
-Subject: Re: [PATCH v6 03/14] iommufd: Abstract an iommufd_eventq from
- iommufd_fault
-Message-ID: <20250214202308.GJ3886819@nvidia.com>
-References: <cover.1737754129.git.nicolinc@nvidia.com>
- <8427398787e81b81d0dc6df5661032b2301c06f1.1737754129.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8427398787e81b81d0dc6df5661032b2301c06f1.1737754129.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: MN2PR15CA0062.namprd15.prod.outlook.com
- (2603:10b6:208:237::31) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="h62IkDFm"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-21f8c280472so7415ad.1
+        for <iommu@lists.linux.dev>; Fri, 14 Feb 2025 12:58:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1739566699; x=1740171499; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2YgySpnqFZLhvEyVlrQicLthetC3cVznXnvyAWuRKPc=;
+        b=h62IkDFmcsmpAAYm2U8xUlE00yrh+72F/qmAtqxfAaRJVGJNSS2zvEt6ab44jVyzKh
+         k6BCReLzCJFae38/EyFXsDw00iHnofoXp1ZWjpvlr1QbZf8WKqdL/czfqHxspBcdPNaB
+         W0gCepW3RCxHuhpi26Uk0ZPF5kp6jxb9pX0JJI7B3XXWor9C0SU/Rv2esBnKaP3hmg4s
+         giyPc/CJdAe4ebLmAMFISkg/ZXYBRYtCpVl18ffKZdqRYXezIVz8GzkWOeSE9kMkmRDQ
+         NJB2l5lZArTc5VDXXJ4pQnCVf6oThNKMdPCMFnseVkE71T0gwXouXy6qgYrjIaWkpMmD
+         0oVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739566699; x=1740171499;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2YgySpnqFZLhvEyVlrQicLthetC3cVznXnvyAWuRKPc=;
+        b=eGyRbo7DSWpG5U4fbB+4OkjitTqhFlqrt7z70KoGDlk3uIDHEeFavyCDZ7p6zFzD1b
+         /H5nvHEs2odmXR31WO+XS/r6Dwv+5ZO3+lnI/6FV9m7SjM/fwjCInS77X8wOrEskVbEE
+         PUba+ADlPhTAIQLmuEuXP+Oh1fW4hNPxBzbogbcgTwG8vO3UG59Rnel+YVgS9+B7IuUY
+         4eS+dM4V50PMZVBAuutmmxlRMt295SaptcOMUZsgBKQJUl4OoOpWnEd9pjYwUrPdUUwg
+         xw5+ntHCLfETewRRpTax3cZ1UDcc3UFkUXRRynsWLSRPFCr5TqSFfoQan4dO+nB4BzOq
+         2tCg==
+X-Forwarded-Encrypted: i=1; AJvYcCXbOPDV0qh/q2u1dHzP2NNyIAbvAz1gSRUMUtuwD79PiSm6HmQ0SeGlq0hslablPzJ83l62+w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy/Hb7+RTTkpCLwbh0gD77ItufaW7ObT+DpyLzIfp6n1vsEIXQJ
+	a9ZB6ObbaEtNodZQxeyUE+wTcYRgrkQ3sEOFk7ggs71WMYC3J7SGlbpG1pIjsHsXjs9+saO0tk/
+	dIOM4eBakO+JGruwK67GhGihv9K6o9cgqdsM3
+X-Gm-Gg: ASbGncuGKvaZtfz7a1ywe24/QkU7A7Dd3Xq1CSXtUCUSY09NdJ0zi8utS4ubMGsvYEB
+	4T32aiP0oK0T/xpTOzdyGgujVIX+pWSnkMO0AHZKEzchnbHMGldd58wCSKrtpR/omvXXEZ1Gcmg
+	4M8PxcfE/PXrruVptUz3N5rXlaNi4=
+X-Google-Smtp-Source: AGHT+IHMo7WsTDcyDI2IJxk30OmWpNkq4lqd/LDPkpSnJQoBmryh3jggnLVgBNK9KRLZbjUR8YF1jff3s8KWZZmox3M=
+X-Received: by 2002:a17:902:d50d:b0:220:c905:689f with SMTP id
+ d9443c01a7336-22104ec0a38mr369985ad.25.1739566699325; Fri, 14 Feb 2025
+ 12:58:19 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|SN7PR12MB7419:EE_
-X-MS-Office365-Filtering-Correlation-Id: 549d6dea-e307-4f02-c954-08dd4d356621
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|366016|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Xf6C2/1Tjr5bSU74B/pZfVAnJ91LSaQSOFTyeQWGvXJtzPvhuGtCaGU7uUE9?=
- =?us-ascii?Q?Vray7+I84JYVbVyp8aw5pVNMc9Fejh+pMFCbIN3hQwZxHLjMtVNWyJSdooVJ?=
- =?us-ascii?Q?iiopABcIb7AgmJjxXabunzR/hmUCUkbp23Lr3kUsMEZyl3A86gMRCWblWlM+?=
- =?us-ascii?Q?UGvuBhINaWHzVy8jWOqImAD4LwWjUkiRXXqRsdYL2v6l47qSWKVxqPc3nWOY?=
- =?us-ascii?Q?j8YVVTgtmN1xmot2IC92cT2//ZwbL44f2U5jc9LzfCDbpxDTxUXhagzjZgV6?=
- =?us-ascii?Q?xzYkqpNVfFUxcjS/Bkqrq4nc7RRub7ZQMv8wbd/IQJRgSUKnxFJx4xdCzp/3?=
- =?us-ascii?Q?OvGyM9i9/LEGykk1pep8HNm7bDvPz+AEPtgXL5G+wfBxfo2x1LhEune1oeFl?=
- =?us-ascii?Q?+L/E69pQJN7RxtCHaEN4crWy2txi8cBtg7kW65mNtESVjerzYbE1UG+pDB8X?=
- =?us-ascii?Q?HfNjeDjNNu/IIR3ytHMw+/2bC5xoj2C0Ezi20tDAY7V+Ua2gCiFcTFVNz+Er?=
- =?us-ascii?Q?wtu3DpT3tdhqz0Pf+L/f4df5NgjZEF4HddyIuWbsixBS0cVf6S39TRw68q7C?=
- =?us-ascii?Q?NVsBZ9xe5xVoHsNOYHlFqafZkie7EQBSwJ7YnTu3uKw/VhsTLU4djcZX7agq?=
- =?us-ascii?Q?6vdbAM/KJxB4ll3ToSsEx6oBO4irfh3Jy9YiIHe/nKOjINti8ax0xnEO1zq+?=
- =?us-ascii?Q?uYzpzAgzyXI1seb0vLKUpLFcCpr2QIusQ9myvCNVcoZdiucZUnznVx7YOl/8?=
- =?us-ascii?Q?y1MAea6CM4hGyjJTOrUo6aWSDJPgfnZp/6VK14E8009ZoJAXoehKbKMb71HD?=
- =?us-ascii?Q?q3xUbFHYRhX0qYZZ9ttuIEIVtUt9qoEXt1m9Sdq3FV/maxRLh+BpLryYFr9Z?=
- =?us-ascii?Q?Sn+NNAjBxHq2FH0VnB9ktJH6JS6eVwHh0SfjZMwI7hpihVQQ5ugNopXs+V25?=
- =?us-ascii?Q?GjJFyNgSoIBsYx0LNr1nSYL3xezNm2aGUgVNJ8Ney1cYSzjCAF0dJ44OUKYj?=
- =?us-ascii?Q?/iOczurXIfQj7TaFyRAeuNppjckVbn6IyZr3nhYedHrIwB66RTM3LJ/wTNXa?=
- =?us-ascii?Q?+RAQF92oekNHxYv+UsSWIytHb0XT3SDfQENvwdZjzhWwMJE8hdPTdGuRKOOB?=
- =?us-ascii?Q?NbGIpjMpfvhFfsc77KivTnwqtQLWa8zPDaQomipX60E7DzbI45ZYsoE79U3V?=
- =?us-ascii?Q?r1qcKmkrBeZvD0kfAgbN0Zo5NijXorQREz3khjgk+YURTP+ph5ZqZNuPORpi?=
- =?us-ascii?Q?Gd7ZJPXLuYtd/uUS5McHDAbfUvmtxRVCp3IPGfaZoLLvI542Q0pBLYmXrsGK?=
- =?us-ascii?Q?1djX7rTU35skWynkPsTT1prIkOSKbhtYTswqpbxVRY5w12sa4EP2swxMN5FA?=
- =?us-ascii?Q?3l16ma4/IDKe/UsyNVeGEaYEsIEC?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?3a2tftmEEhvMDKCR/f5INm7Dfjxnl0XBdhkJKdVvYR+6kxyQRal2uCUIamKU?=
- =?us-ascii?Q?OIXNqQU/Lx3jmgFvAzwNe4lhhnQn8J3wKnS3gfAZMB/gBYdEnZMkfUUkKN/F?=
- =?us-ascii?Q?j9ehZwuGzte/39hm+h2Xu4CiHxP7rxIT1GHF/uJjstWBi1HOTOwzfI/Gipto?=
- =?us-ascii?Q?scBEp8XjfgmZRjqWC9ZdjDII5eJgdArIxTKREPaNKsQigeja8bJNGwl6Z4hJ?=
- =?us-ascii?Q?i7gSTY79YH5jwCpHIquEamBYMXpYIZKpWx5VL8B/wmfo5gx4x2VuKdIAn6QV?=
- =?us-ascii?Q?10Wq8p9eiBL/L0UIqyrrEefIUCVt/O/FNTSjN5Ji+S85lEHLcXxAJXXx+HRg?=
- =?us-ascii?Q?8j1v9JNlzILIy92G8kB+aOdlwk8bSk5q+ySAEmPXXNuo5GyS5WNjAHZ+IHRD?=
- =?us-ascii?Q?JQj9gFXu0/cS0Ml4nSDoZx+4s9u+x1AU2rRP600tPOmFL+MrngKFdLMkGDks?=
- =?us-ascii?Q?abVaBuAmCkZVrCNcerDGG3G53t4Q4ST2vznyIDwrgE7/pci0VoUjKhittCC2?=
- =?us-ascii?Q?hBsWOjsQsJTtj2jHAf2e1dHRT47kT2H/ppD0QRn8HiWrICb/d8KsqEREtUXR?=
- =?us-ascii?Q?gwaXvNiBbMnj5qBZ6AMfIyV+c7uIVQoo9OiLs7n6xzdzlhwn3wny2MRb51dZ?=
- =?us-ascii?Q?gX6qUx+xzC+zqdJhOD93EGlkrQXuaUKa9PZmWe1OxMxZoBrnkyOzPIk+M5xU?=
- =?us-ascii?Q?zvhSkwrI8vtub6pIJeGj6pYdZZPcWLmtdxGDET7Hyj3DFyRDWvLv4rCcRjpN?=
- =?us-ascii?Q?U8yuIIXn8kR8gn4QkYikqSE3EyPO0uRsNagaj/wXAZyOw/r2Sq2TLKaZZFKV?=
- =?us-ascii?Q?p7D4YmmtDwmoh60nxWWBqFqPzD7cO/7k1sSJ1uFuPROdCCET6K+uNMudHGNI?=
- =?us-ascii?Q?LhjRLdcxnWGorStVISrDQJnPJP4LxUB4wL11AXZ3MgYs7U3ltYypptKNeuZR?=
- =?us-ascii?Q?C5O+w/k8FLG3lPRcx/Cw9BwdyUNmb1e7JusnEjjonvpK7hyt1XZKiz4sDWCc?=
- =?us-ascii?Q?F09/zIYTlRZgrTGi2ajT9uMZN0LofXYDnyu9WK0jC7y65ZcwfSD3KNDRx3CY?=
- =?us-ascii?Q?8dwpCuMzjvYtJo+hmEq4ifVTvcwrNPpB9nvSl0ywmnMMD0UlghGd6Q8azVVs?=
- =?us-ascii?Q?FMiz/SVuBYZX81PDd5yGsdHFgrU31Zcd5gaYC7aX3ivfDG3Qls+HT0nq0+A8?=
- =?us-ascii?Q?BmVBdfsG5Ducbv+BBV3PsHvsiEAmyC/0P/W3Wp6kPe9m79gaRN+WUFetY+VD?=
- =?us-ascii?Q?fq/6dzTaJQPdtlfXC5Cj/asK72Kq3fNRYpNdY9fmA+4VK2/e/C/5Tkih0587?=
- =?us-ascii?Q?wbegweIDgjEAZryB81zfz/i+lB+9Q7ICiwKx0UvYPcLOGqgLoWfj8k5sxbtA?=
- =?us-ascii?Q?OGK+ZURj5hFHK6HYGfT/DgyJZGwuAmK7f6iAUCPxGct+wem/O/HZKOzx5DNV?=
- =?us-ascii?Q?yPJ4mZwTUmmORWdIjPEhs6NDZblyk4Amt4qincQBUQE++w8yVI5kF92m0sDW?=
- =?us-ascii?Q?5vfOdCGkmqF1/pNS7cgEcCg4HJxYMnbTu5q9HsA7iS4ejaRRDF+ahOWGgN2s?=
- =?us-ascii?Q?AESCW8i/Bc8dH24zdSg=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 549d6dea-e307-4f02-c954-08dd4d356621
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2025 20:23:10.0796
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GO0rsCbMs3O+XAbM0FiVpqH8z/csalQvUSI7aFN/rQ06i0VecNIzRJQ5C3fAZ1QL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7419
+References: <20250212092552.1779679-1-linyunsheng@huawei.com> <20250212092552.1779679-3-linyunsheng@huawei.com>
+In-Reply-To: <20250212092552.1779679-3-linyunsheng@huawei.com>
+From: Mina Almasry <almasrymina@google.com>
+Date: Fri, 14 Feb 2025 12:58:05 -0800
+X-Gm-Features: AWEUYZkrCnzHRX-UM7YzAnXpZTXuHcolUoh7nm-MSMVw8gpzJwYFTphmx0X5nYE
+Message-ID: <CAHS8izPZe0UHn8P38EvzX0ei_jGJnsXg99B5ra9Ldu09aWBU-Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v9 2/4] page_pool: fix IOMMU crash when driver
+ has already unbound
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, 
+	zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com, 
+	Robin Murphy <robin.murphy@arm.com>, Alexander Duyck <alexander.duyck@gmail.com>, 
+	IOMMU <iommu@lists.linux.dev>, Andrew Morton <akpm@linux-foundation.org>, 
+	Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>, 
+	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, linux-mm@kvack.org, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jan 24, 2025 at 04:30:32PM -0800, Nicolin Chen wrote:
-> The fault object was designed exclusively for hwpt's IO page faults (PRI).
-> But its queue implementation can be reused for other purposes too, such as
-> hardware IRQ and event injections to user space.
-> 
-> Meanwhile, a fault object holds a list of faults. So it's more accurate to
-> call it a "fault queue". Combining the reusing idea above, abstract a new
-> iommufd_eventq as a common structure embedded into struct iommufd_fault,
-> similar to hwpt_paging holding a common hwpt.
-> 
-> Add a common iommufd_eventq_ops and iommufd_eventq_init to prepare for an
-> IOMMUFD_OBJ_VEVENTQ (vIOMMU Event Queue).
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/iommufd/iommufd_private.h |  28 ++++--
->  drivers/iommu/iommufd/fault.c           | 111 +++++++++++++-----------
->  drivers/iommu/iommufd/hw_pagetable.c    |   6 +-
->  3 files changed, 82 insertions(+), 63 deletions(-)
+On Wed, Feb 12, 2025 at 1:34=E2=80=AFAM Yunsheng Lin <linyunsheng@huawei.co=
+m> wrote:
+>
+> Networking driver with page_pool support may hand over page
+> still with dma mapping to network stack and try to reuse that
+> page after network stack is done with it and passes it back
+> to page_pool to avoid the penalty of dma mapping/unmapping.
+> With all the caching in the network stack, some pages may be
+> held in the network stack without returning to the page_pool
+> soon enough, and with VF disable causing the driver unbound,
+> the page_pool does not stop the driver from doing it's
+> unbounding work, instead page_pool uses workqueue to check
+> if there is some pages coming back from the network stack
+> periodically, if there is any, it will do the dma unmmapping
+> related cleanup work.
+>
+> As mentioned in [1], attempting DMA unmaps after the driver
+> has already unbound may leak resources or at worst corrupt
+> memory. Fundamentally, the page pool code cannot allow DMA
+> mappings to outlive the driver they belong to.
+>
+> Currently it seems there are at least two cases that the page
+> is not released fast enough causing dma unmmapping done after
+> driver has already unbound:
+> 1. ipv4 packet defragmentation timeout: this seems to cause
+>    delay up to 30 secs.
+> 2. skb_defer_free_flush(): this may cause infinite delay if
+>    there is no triggering for net_rx_action().
+>
+> In order not to call DMA APIs to do DMA unmmapping after driver
+> has already unbound and stall the unloading of the networking
+> driver, use some pre-allocated item blocks to record inflight
+> pages including the ones which are handed over to network stack,
+> so the page_pool can do the DMA unmmapping for those pages when
+> page_pool_destroy() is called. As the pre-allocated item blocks
+> need to be large enough to avoid performance degradation, add a
+> 'item_fast_empty' stat to indicate the unavailability of the
+> pre-allocated item blocks.
+>
+> By using the 'struct page_pool_item' referenced by page->pp_item,
+> page_pool is not only able to keep track of the inflight page to
+> do dma unmmaping if some pages are still handled in networking
+> stack when page_pool_destroy() is called, and networking stack is
+> also able to find the page_pool owning the page when returning
+> pages back into page_pool:
+> 1. When a page is added to the page_pool, an item is deleted from
+>    pool->hold_items and set the 'pp_netmem' pointing to that page
+>    and set item->state and item->pp_netmem accordingly in order to
+>    keep track of that page, refill from pool->release_items when
+>    pool->hold_items is empty or use the item from pool->slow_items
+>    when fast items run out.
+> 2. When a page is released from the page_pool, it is able to tell
+>    which page_pool this page belongs to by masking off the lower
+>    bits of the pointer to page_pool_item *item, as the 'struct
+>    page_pool_item_block' is stored in the top of a struct page. And
+>    after clearing the pp_item->state', the item for the released page
+>    is added back to pool->release_items so that it can be reused for
+>    new pages or just free it when it is from the pool->slow_items.
+> 3. When page_pool_destroy() is called, item->state is used to tell if
+>    a specific item is being used/dma mapped or not by scanning all the
+>    item blocks in pool->item_blocks, then item->netmem can be used to
+>    do the dma unmmaping if the corresponding inflight page is dma
+>    mapped.
+>
+> The overhead of tracking of inflight pages is about 10ns~20ns,
+> which causes about 10% performance degradation for the test case
+> of time_bench_page_pool03_slow() in [2].
+>
+> Note, the devmem patchset seems to make the bug harder to fix,
+> and may make backporting harder too. As there is no actual user
+> for the devmem and the fixing for devmem is unclear for now,
+> this patch does not consider fixing the case for devmem yet.
+>
+> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kern=
+el.org/T/
+> 2. https://github.com/netoptimizer/prototype-kernel
+> CC: Robin Murphy <robin.murphy@arm.com>
+> CC: Alexander Duyck <alexander.duyck@gmail.com>
+> CC: IOMMU <iommu@lists.linux.dev>
+> Fixes: f71fec47c2df ("page_pool: make sure struct device is stable")
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> Tested-by: Yonglong Liu <liuyonglong@huawei.com>
+[...]
+> +
+> +/* The size of item_block is always PAGE_SIZE, so that the address of it=
+em_block
+> + * for a specific item can be calculated using 'item & PAGE_MASK'
+> + */
+> +struct page_pool_item_block {
+> +       struct page_pool *pp;
+> +       struct list_head list;
+> +       struct page_pool_item items[];
+> +};
+> +
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+I think this feedback was mentioned in earlier iterations of the series:
 
-Jason
+Can we not hold a struct list_head in the page_pool that keeps track
+of inflight netmems that we need to dma-unmap on page_pool_destroy?
+Why do we have to modify the pp entry in the struct page and struct
+net_iov?
+
+The decision to modify pp entry in struct page and struct net_iov is
+making this patchset bigger and harder to review IMO.
+
+--=20
+Thanks,
+Mina
