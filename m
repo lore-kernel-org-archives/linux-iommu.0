@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFB961FCFD2
-	for <iommu@lists.linux.dev>; Fri, 14 Feb 2025 06:11:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C16D1FDA7C
+	for <iommu@lists.linux.dev>; Fri, 14 Feb 2025 06:11:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739513489; cv=none; b=kiw1nWVJoR5AxgSi98NVQeeY1rMYWOMWk1fEKu2rjlGYpdx/a7Mt40AByPnq9c13egJPqTIRmh6gwsriHU/tSnn1cYVYq/FydO2fy/zsgf1HKHbuN2lX4Z619CN9ZqAweNFLpdJaKP11CCa9CVVyNCUlIMk4sMdJ5J6MD2wR/is=
+	t=1739513492; cv=none; b=moYd75ZK/J7yNdzQRXp/Tt15hyu+Y6J3E6WCde7X8pxRwHoAElJZCZOpO1+ue5sN6XSrp5ZYB1MNZp2Oo8pnbTLH7qVc1iK/tMXG9LuPJbcE1dN+t5GAIFAjZGrJKEWAEsZZ3iTNfSbbXd8VKNh4J5IbaW/K/lvaWXmTrdG7neI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739513489; c=relaxed/simple;
-	bh=fgHuJ9roGkGcY1DwYyoCbSL2BPlcZHJT3W616Z69MAg=;
+	s=arc-20240116; t=1739513492; c=relaxed/simple;
+	bh=P/XSQ+RylB0GJpNm9N0XVJmh1MmFI4aZgfpnMDOBpzE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=d3YRvN7ncrwWxGEwZj5TE3YkDUR+uiPBN7NmJbwJt0LN2m8sBfr78sDj8EnwAQgmUoh4yeuKEEgDDzgp5UAx/nq3bO2+dCz6to9CGrF9RcOMGaJ9dl03//a/ADhpP1CvlwvsVkEP3jbOMeaExd3nn+E37SaRsxeaDvHi7RwhmvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JT9bNJ1p; arc=none smtp.client-ip=192.198.163.17
+	 MIME-Version; b=U6bsQRX2lcEkcCy4Rx0D5wWS/TNZsdKDxz2FRBaSmxQw58ryI4DRyQYQN+RcfTKV8wuqk/QqBqpN9PuImCkf+8qLkwNucp+vqxtmuhZEnqEijOf3Qg55JUCGMIMbWOCA7HLmYxmhO29UWzjkigVPxhHmRpmwR1Z7F79calb3LVM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AN5sDtjL; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JT9bNJ1p"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AN5sDtjL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1739513488; x=1771049488;
+  t=1739513491; x=1771049491;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=fgHuJ9roGkGcY1DwYyoCbSL2BPlcZHJT3W616Z69MAg=;
-  b=JT9bNJ1pPJrEqCCN657nBJXjzqCGgJhK5xPva38P3aN+abRLMtXcP5mC
-   G7nL5+T2V+JOKrAlRFHbrO81Zup/en/0S+BMB7mZGcEYcHglqpXmdkkU/
-   EXNuWr0jhwnWck/SnD55+aHp/W7ODy/268TKPPhKZMfKFpcX85bTX2AZ+
-   U8PoleoJ0eDyiGP2UvkC2zIJS6iTHinczHV31TKTjooRPMs3GZMYRlNAC
-   irVFCkpGofvNJFqykTtK24jSZIL7eMW60vmSlrpescmv1nYPNkmdIwOwE
-   BxeeVgVpkdcPHC6G7i2WY+BFo6n+cfN9x60rUH7XfZV735wrolbO9tR+l
+  bh=P/XSQ+RylB0GJpNm9N0XVJmh1MmFI4aZgfpnMDOBpzE=;
+  b=AN5sDtjL7NttuWHOCX68aKTzi1S+QsB67rRdPUIvTKko/JKRftOI7y2U
+   /DITwL7UD04WRzSjmOxSguByKub+bnO7j0yBtdXq5EUvd20oGn+sNcg88
+   tQqM0bWj12rkoFFDrzDYBrhWyCT3wXwYkvH+YQh4ND2Kynhw++dvTUn+c
+   7evnGQSoc7ASPZqSWEfKZ3W+48uNCp9/60bc+mwBdKYT7nzwvx9yNs+Hm
+   ksy4Y+9d5NRbKp3Jg21YbCBUEvV0iNTl4ZkkVVncwdJ/vl7bDGO8MVXrH
+   TmTU5aQRo3g6P3eyE5uxUXsbZPJD2sWIXDaPPZLhJRetOnSk9kz9TxHyK
    Q==;
-X-CSE-ConnectionGUID: GVMB8Hn9Rr229MXWmUxhuw==
-X-CSE-MsgGUID: K2rYPxnMQ9eO1UlBCj746g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11344"; a="40124567"
+X-CSE-ConnectionGUID: pkWOVP66QmKTsZS9GPeBTQ==
+X-CSE-MsgGUID: B7I+67nwTYWwb3+A+D9Gfw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11344"; a="40124578"
 X-IronPort-AV: E=Sophos;i="6.13,284,1732608000"; 
-   d="scan'208";a="40124567"
+   d="scan'208";a="40124578"
 Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 22:11:28 -0800
-X-CSE-ConnectionGUID: d0j8rxAwTn22ylVVX/unXQ==
-X-CSE-MsgGUID: SJrsJydUR/yAre0ggqPyCw==
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 22:11:31 -0800
+X-CSE-ConnectionGUID: QYD1vStwT/y8rh9/95omaA==
+X-CSE-MsgGUID: y/8M73bQRjCyFm0342wm4w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="114268149"
+   d="scan'208";a="114268155"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa008.jf.intel.com with ESMTP; 13 Feb 2025 22:11:24 -0800
+  by orviesa008.jf.intel.com with ESMTP; 13 Feb 2025 22:11:28 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -57,9 +57,9 @@ Cc: Fenghua Yu <fenghua.yu@intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 08/12] iommufd/selftest: Put iopf enablement in domain attach path
-Date: Fri, 14 Feb 2025 14:11:00 +0800
-Message-ID: <20250214061104.1959525-9-baolu.lu@linux.intel.com>
+Subject: [PATCH 09/12] dmaengine: idxd: Remove unnecessary IOMMU_DEV_FEAT_IOPF
+Date: Fri, 14 Feb 2025 14:11:01 +0800
+Message-ID: <20250214061104.1959525-10-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250214061104.1959525-1-baolu.lu@linux.intel.com>
 References: <20250214061104.1959525-1-baolu.lu@linux.intel.com>
@@ -71,122 +71,92 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Update iopf enablement in the iommufd mock device driver to use the new
-method, similar to the arm-smmu-v3 driver. Enable iopf support when any
-domain with an iopf_handler is attached, and disable it when the domain
-is removed.
-
-Add a refcount in the mock device state structure to keep track of the
-number of domains set to the device and PASIDs that require iopf.
+The IOMMU_DEV_FEAT_IOPF implementation in the iommu driver is just a no-op.
+It will also be removed from the iommu driver in the subsequent patch.
+Remove it to avoid dead code.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/iommufd/selftest.c | 52 +++++++++++++++++++++++++-------
- 1 file changed, 41 insertions(+), 11 deletions(-)
+ drivers/dma/idxd/init.c | 37 ++++++-------------------------------
+ 1 file changed, 6 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index d40deb0a4f06..a6b12cee7b00 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -58,6 +58,9 @@ enum {
- 	MOCK_PFN_HUGE_IOVA = _MOCK_PFN_START << 2,
- };
- 
-+static int mock_dev_enable_iopf(struct device *dev, struct iommu_domain *domain);
-+static void mock_dev_disable_iopf(struct device *dev, struct iommu_domain *domain);
-+
- /*
-  * Syzkaller has trouble randomizing the correct iova to use since it is linked
-  * to the map ioctl's output, and it has no ide about that. So, simplify things.
-@@ -164,6 +167,7 @@ struct mock_dev {
- 	unsigned long flags;
- 	int id;
- 	u32 cache[MOCK_DEV_CACHE_NUM];
-+	unsigned int iopf_refcount;
- };
- 
- static inline struct mock_dev *to_mock_dev(struct device *dev)
-@@ -197,11 +201,19 @@ static int mock_domain_nop_attach(struct iommu_domain *domain,
- 	if (domain->dirty_ops && (mdev->flags & MOCK_FLAGS_DEVICE_NO_DIRTY))
- 		return -EINVAL;
- 
-+	return mock_dev_enable_iopf(dev, domain);
-+}
-+
-+static int mock_domain_blocking_attach(struct iommu_domain *domain,
-+				       struct device *dev)
-+{
-+	mock_dev_disable_iopf(dev, domain);
-+
- 	return 0;
+diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
+index 1e5038cca22c..d44944195807 100644
+--- a/drivers/dma/idxd/init.c
++++ b/drivers/dma/idxd/init.c
+@@ -626,21 +626,6 @@ static void idxd_disable_system_pasid(struct idxd_device *idxd)
+ 	idxd->pasid = IOMMU_PASID_INVALID;
  }
  
- static const struct iommu_domain_ops mock_blocking_ops = {
--	.attach_dev = mock_domain_nop_attach,
-+	.attach_dev = mock_domain_blocking_attach,
- };
- 
- static struct iommu_domain mock_blocking_domain = {
-@@ -549,22 +561,42 @@ static void mock_domain_page_response(struct device *dev, struct iopf_fault *evt
- {
- }
- 
--static int mock_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
-+static int mock_dev_enable_iopf(struct device *dev, struct iommu_domain *domain)
- {
--	if (feat != IOMMU_DEV_FEAT_IOPF || !mock_iommu_iopf_queue)
-+	struct mock_dev *mdev = to_mock_dev(dev);
-+	int ret;
-+
-+	if (!domain->iopf_handler)
-+		return 0;
-+
-+	if (!mock_iommu_iopf_queue)
- 		return -ENODEV;
- 
--	return iopf_queue_add_device(mock_iommu_iopf_queue, dev);
-+	if (mdev->iopf_refcount) {
-+		mdev->iopf_refcount++;
-+		return 0;
-+	}
-+
-+	ret = iopf_queue_add_device(mock_iommu_iopf_queue, dev);
-+	if (ret)
-+		return ret;
-+
-+	mdev->iopf_refcount = 1;
-+
-+	return 0;
- }
- 
--static int mock_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
-+static void mock_dev_disable_iopf(struct device *dev, struct iommu_domain *domain)
- {
--	if (feat != IOMMU_DEV_FEAT_IOPF || !mock_iommu_iopf_queue)
--		return -ENODEV;
-+	struct mock_dev *mdev = to_mock_dev(dev);
-+
-+	if (!domain->iopf_handler)
-+		return;
-+
-+	if (--mdev->iopf_refcount)
-+		return;
- 
- 	iopf_queue_remove_device(mock_iommu_iopf_queue, dev);
+-static int idxd_enable_sva(struct pci_dev *pdev)
+-{
+-	int ret;
 -
+-	ret = iommu_dev_enable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
+-	if (ret)
+-		return ret;
 -	return 0;
+-}
+-
+-static void idxd_disable_sva(struct pci_dev *pdev)
+-{
+-	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
+-}
+-
+ static int idxd_probe(struct idxd_device *idxd)
+ {
+ 	struct pci_dev *pdev = idxd->pdev;
+@@ -655,17 +640,13 @@ static int idxd_probe(struct idxd_device *idxd)
+ 	dev_dbg(dev, "IDXD reset complete\n");
+ 
+ 	if (IS_ENABLED(CONFIG_INTEL_IDXD_SVM) && sva) {
+-		if (idxd_enable_sva(pdev)) {
+-			dev_warn(dev, "Unable to turn on user SVA feature.\n");
+-		} else {
+-			set_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
++		set_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
+ 
+-			rc = idxd_enable_system_pasid(idxd);
+-			if (rc)
+-				dev_warn(dev, "No in-kernel DMA with PASID. %d\n", rc);
+-			else
+-				set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
+-		}
++		rc = idxd_enable_system_pasid(idxd);
++		if (rc)
++			dev_warn(dev, "No in-kernel DMA with PASID. %d\n", rc);
++		else
++			set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
+ 	} else if (!sva) {
+ 		dev_warn(dev, "User forced SVA off via module param.\n");
+ 	}
+@@ -703,8 +684,6 @@ static int idxd_probe(struct idxd_device *idxd)
+  err:
+ 	if (device_pasid_enabled(idxd))
+ 		idxd_disable_system_pasid(idxd);
+-	if (device_user_pasid_enabled(idxd))
+-		idxd_disable_sva(pdev);
+ 	return rc;
  }
  
- static void mock_viommu_destroy(struct iommufd_viommu *viommu)
-@@ -709,8 +741,6 @@ static const struct iommu_ops mock_ops = {
- 	.device_group = generic_device_group,
- 	.probe_device = mock_probe_device,
- 	.page_response = mock_domain_page_response,
--	.dev_enable_feat = mock_dev_enable_feat,
--	.dev_disable_feat = mock_dev_disable_feat,
- 	.user_pasid_table = true,
- 	.viommu_alloc = mock_viommu_alloc,
- 	.default_domain_ops =
+@@ -715,8 +694,6 @@ static void idxd_cleanup(struct idxd_device *idxd)
+ 	idxd_cleanup_internals(idxd);
+ 	if (device_pasid_enabled(idxd))
+ 		idxd_disable_system_pasid(idxd);
+-	if (device_user_pasid_enabled(idxd))
+-		idxd_disable_sva(idxd->pdev);
+ }
+ 
+ /*
+@@ -1248,8 +1225,6 @@ static void idxd_remove(struct pci_dev *pdev)
+ 	free_irq(irq_entry->vector, irq_entry);
+ 	pci_free_irq_vectors(pdev);
+ 	pci_iounmap(pdev, idxd->reg_base);
+-	if (device_user_pasid_enabled(idxd))
+-		idxd_disable_sva(pdev);
+ 	pci_disable_device(pdev);
+ 	destroy_workqueue(idxd->wq);
+ 	perfmon_pmu_remove(idxd);
 -- 
 2.43.0
 
