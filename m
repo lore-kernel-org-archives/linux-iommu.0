@@ -1,107 +1,92 @@
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B0F21EDA34
-	for <iommu@lists.linux.dev>; Sat, 15 Feb 2025 19:43:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.167.242.64
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739648630; cv=none; b=RY7vpTXneXlR26wOt15Eu9BTTXeVs4j2zvT2a4fjP5tkJm+kifTErhnM3pEB0NKXEURVICwP6aa+TLp4HQZpyfiKTEdMlsbcq42L6DpbNLax2819rrONNQ2Odd1HIjWHIskLDvMf3T0R5y541NZ57DFwvwMDtovz4rVw0+2wiqU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739648630; c=relaxed/simple;
-	bh=aqlKCwiWQwaADZiGJGLwvMY4WxGCqqgsu+/fFmoalpg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ePdADfXzD5AI3HtheL7fvA46J6WYQCDO+Yx/5VskD61OMYqSzYeHWVBXZdOWWdpmlFO79yfgDBPNzg8cGVClOwJyG9JAS0uEOOg8Zg06Zh+3870/NlJ1Z/xmxXWHlt0sBVYD9882GfjdcL5ykbb4k0Q8DR8QrP18D1ZlBJBXkkE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com; spf=pass smtp.mailfrom=ideasonboard.com; dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b=ciXV6QQK; arc=none smtp.client-ip=213.167.242.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ideasonboard.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C3BA170A37
+	for <iommu@lists.linux.dev>; Sat, 15 Feb 2025 21:41:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739655674; cv=pass; b=O2KtzEGQ4cID/k7PDa59pzlweYeVzZCGD5i61PyzgrdWZr3VVr7L4WjnO2A66J558TxqoQsfQV5J+hav0pPCO7otLEdKPlVCwD9aP3wCToI4dbQh49N98QK+MmI/SljREeYvGWPeI5eHJZBcd3xGDwELIvAribEc0qmsxZKzkQg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739655674; c=relaxed/simple;
+	bh=wNkunTcwZ7tTA1DeZin72+i0UjvFvWDXsnEPq5Terjg=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=squqXXcPmhLKuVX2xYoggazbECoEbF9lz+jYBY+BaYqB+YK0cUTF0S3ezqUFVaeDPrUqFTPomMfExmBT8swNAbkTj69h6xorYZUMZW8Kiw6Qyt2+8LwaWlfhW3Rq+nbm7EpSiQqLL1OMAgz4XFQyRYbAEdUcDeLplepZ4hv3hGU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=Ix1kiSRe; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b="ciXV6QQK"
-Received: from pendragon.ideasonboard.com (81-175-209-231.bb.dnainternet.fi [81.175.209.231])
-	by perceval.ideasonboard.com (Postfix) with ESMTPSA id 8268578E;
-	Sat, 15 Feb 2025 20:42:20 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-	s=mail; t=1739648540;
-	bh=aqlKCwiWQwaADZiGJGLwvMY4WxGCqqgsu+/fFmoalpg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ciXV6QQKMNabAtWB71rKDXbANKJy2yaHJYmQjmMfOW/mo7VsdeM/SZ/3d1dZryChw
-	 8BHpgt6jUkPX/KKqqAxmgFrGHJD9ATWgivTFS68lFAREsNfcSAI2chxrmL/tvhFWfz
-	 k9YWROuZQxMg5m1R16mm9aeJ7fRWKHXVGSdIUrUY=
-Date: Sat, 15 Feb 2025 21:43:28 +0200
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To: Sicelo <absicsz@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
-	mchehab@kernel.org, andersson@kernel.org,
-	mathieu.poirier@linaro.org, hns@goldelico.com, b-padhi@ti.com,
-	andreas@kemnade.info, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-	Sakari Ailus <sakari.ailus@iki.fi>
-Subject: Re: [PATCH 2/4] media: omap3isp: Handle ARM dma_iommu_mapping
-Message-ID: <20250215194328.GF12632@pendragon.ideasonboard.com>
-References: <cover.1730136799.git.robin.murphy@arm.com>
- <34542c9552ce8cd12a5c292e79589acd964075d5.1730136799.git.robin.murphy@arm.com>
- <Z7A61N13dZpu53xI@tp440p.steeds.sam>
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="Ix1kiSRe"
+ARC-Seal: i=1; a=rsa-sha256; t=1739655657; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=NbX1zk1lg5k6KUKx1JyEb2MC59KZDsQkxUBoxWqsKymk2rMqrc9HN3QeS89/nuKKPvOcawEa3zwXskPqK1VblRyG161w7e8C/3d0JR2A1Q8Pu7YKUOVwETAB0HYdooPeNffgNu/SRputb5Af2db0QBdi/LfOcFwcUdsVvKRznXM=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1739655657; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=wNkunTcwZ7tTA1DeZin72+i0UjvFvWDXsnEPq5Terjg=; 
+	b=nePZuMOi0a0q7a70EOq9QWbMnnNGyjGsRLFkDZxERQYxS0e84YNxJcnULoV9K7dpFkesgBoWMBA/W4ZfsMe6CX+ELGRsmayZUNr/Sdj5OnPoFB4LBSobw00f1wZpFRoTvq7zWwCtLUEKIp3ek7TiQ6c6/hJKadfJxbUukP0AIbY=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
+	dmarc=pass header.from=<daniel.almeida@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1739655657;
+	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
+	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
+	bh=wNkunTcwZ7tTA1DeZin72+i0UjvFvWDXsnEPq5Terjg=;
+	b=Ix1kiSRebBSiPWqdHJJgvZ6BIc/Q0F6yUFY2Hk/fjFflsGiAgVBZjR17s0R8geOO
+	zF5GMFV72somwG5rfOgROzHgSWKKWhYA3bMe6X8ZiXI6Qi+Ual8W+1FBUYImQsWEI4r
+	2txR+/eMZBLdiEkTMebM/lIDDKimeK9kCZ+Uj7Mk=
+Received: by mx.zohomail.com with SMTPS id 1739655655643285.80977869700473;
+	Sat, 15 Feb 2025 13:40:55 -0800 (PST)
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Z7A61N13dZpu53xI@tp440p.steeds.sam>
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.300.87.4.3\))
+Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
+From: Daniel Almeida <daniel.almeida@collabora.com>
+In-Reply-To: <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
+Date: Sat, 15 Feb 2025 18:40:37 -0300
+Cc: rust-for-linux@vger.kernel.org,
+ dakr@kernel.org,
+ robin.murphy@arm.com,
+ aliceryhl@google.com,
+ Miguel Ojeda <ojeda@kernel.org>,
+ Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>,
+ Gary Guo <gary@garyguo.net>,
+ =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>,
+ Trevor Gross <tmgross@umich.edu>,
+ Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ airlied@redhat.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <633274AD-E55C-4A90-AB72-33D3E176176F@collabora.com>
+References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
+ <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+X-Mailer: Apple Mail (2.3826.300.87.4.3)
+X-ZohoMailClient: External
 
-CC'ing Sakari.
+Hi Abdiel
 
-Sakari, would you pick this patch ?
+I noticed that there=E2=80=99s no API to call =
+`dma_set_mask/dma_set_coherent_mask`.
 
-On Sat, Feb 15, 2025 at 08:57:24AM +0200, Sicelo wrote:
-> On Mon, Oct 28, 2024 at 05:58:36PM +0000, Robin Murphy wrote:
-> > It's no longer practical for the OMAP IOMMU driver to trick
-> > arm_setup_iommu_dma_ops() into ignoring its presence, so let's use the
-> > same tactic as other IOMMU API users on 32-bit ARM and explicitly kick
-> > the arch code's dma_iommu_mapping out of the way to avoid problems.
-> > 
-> > Fixes: 4720287c7bf7 ("iommu: Remove struct iommu_ops *iommu from arch_setup_dma_ops()")
-> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > ---
-> >  drivers/media/platform/ti/omap3isp/isp.c | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> > 
-> > diff --git a/drivers/media/platform/ti/omap3isp/isp.c b/drivers/media/platform/ti/omap3isp/isp.c
-> > index 91101ba88ef0..b2210841a320 100644
-> > --- a/drivers/media/platform/ti/omap3isp/isp.c
-> > +++ b/drivers/media/platform/ti/omap3isp/isp.c
-> > @@ -1961,6 +1961,13 @@ static int isp_attach_iommu(struct isp_device *isp)
-> >  	struct dma_iommu_mapping *mapping;
-> >  	int ret;
-> >  
-> > +	/* We always want to replace any default mapping from the arch code */
-> > +	mapping = to_dma_iommu_mapping(isp->dev);
-> > +	if (mapping) {
-> > +		arm_iommu_detach_device(isp->dev);
-> > +		arm_iommu_release_mapping(mapping);
-> > +	}
-> > +
-> >  	/*
-> >  	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
-> >  	 * VAs. This will allocate a corresponding IOMMU domain.
-> > -- 
-> > 2.39.2.101.g768bb238c484.dirty
-> > 
-> 
-> I have finally found time to test this patch on the Nokia N900 and can
-> confirm it is working fine.
-> 
-> I was wondering - is there a reason that it is not merged yet? I tested
-> on 6.14-rc2, which did not have it, and notice it is also not in
-> linux-next.
-> 
-> If it helps:
-> 
-> Tested-by: Sicelo A. Mhlongo <absicsz@gmail.com>
+This should probably be included, i.e.:
 
--- 
-Regards,
+```
+By default, the kernel assumes that your device can address 32-bits of =
+DMA addressing.
+For a 64-bit capable device, this needs to be increased, and for a =
+device with limitations,
+it needs to be decreased.
+```
 
-Laurent Pinchart
+=E2=80=94 Daniel=
