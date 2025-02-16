@@ -1,92 +1,220 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C3BA170A37
-	for <iommu@lists.linux.dev>; Sat, 15 Feb 2025 21:41:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739655674; cv=pass; b=O2KtzEGQ4cID/k7PDa59pzlweYeVzZCGD5i61PyzgrdWZr3VVr7L4WjnO2A66J558TxqoQsfQV5J+hav0pPCO7otLEdKPlVCwD9aP3wCToI4dbQh49N98QK+MmI/SljREeYvGWPeI5eHJZBcd3xGDwELIvAribEc0qmsxZKzkQg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739655674; c=relaxed/simple;
-	bh=wNkunTcwZ7tTA1DeZin72+i0UjvFvWDXsnEPq5Terjg=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=squqXXcPmhLKuVX2xYoggazbECoEbF9lz+jYBY+BaYqB+YK0cUTF0S3ezqUFVaeDPrUqFTPomMfExmBT8swNAbkTj69h6xorYZUMZW8Kiw6Qyt2+8LwaWlfhW3Rq+nbm7EpSiQqLL1OMAgz4XFQyRYbAEdUcDeLplepZ4hv3hGU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=Ix1kiSRe; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F3EBBE49
+	for <iommu@lists.linux.dev>; Sun, 16 Feb 2025 03:52:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739677953; cv=none; b=UfQDhRv6f/dNy48eYuc8WqBjyesMN20UFgyktMKEqfUAsNztEt5J6aDGL1/+t5s4JsoabUiPsbIjWjQEXEXS2Ag8bcwAMxpChSNJPSiVlv1/N8IOt94Dh/GvyV31osahbwKGKkbgKdhVGMDRUP39QglHaBocvKnQgpLZ7y0urM4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739677953; c=relaxed/simple;
+	bh=gjherQri/hqJvFgP4ZQr49N1g6Ns9CxS3aNNztHaDZ4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=PuiGJbcZxXWcie1VkxDlpAmsjTMslAtLWZzOzAvGAkbPbo2FP7KEEUzyCuwGnPICk6TOpzJx6HQtrLn0diflls8VJPqNH2GGrjQYF1ft/KFmVq0f9cHNEMaXIqMntKNrffy1OkTqhlmUJqCb1QyW0BaBNUuu8HAIY2GIHyr7aLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XTh4sce2; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="Ix1kiSRe"
-ARC-Seal: i=1; a=rsa-sha256; t=1739655657; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=NbX1zk1lg5k6KUKx1JyEb2MC59KZDsQkxUBoxWqsKymk2rMqrc9HN3QeS89/nuKKPvOcawEa3zwXskPqK1VblRyG161w7e8C/3d0JR2A1Q8Pu7YKUOVwETAB0HYdooPeNffgNu/SRputb5Af2db0QBdi/LfOcFwcUdsVvKRznXM=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1739655657; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=wNkunTcwZ7tTA1DeZin72+i0UjvFvWDXsnEPq5Terjg=; 
-	b=nePZuMOi0a0q7a70EOq9QWbMnnNGyjGsRLFkDZxERQYxS0e84YNxJcnULoV9K7dpFkesgBoWMBA/W4ZfsMe6CX+ELGRsmayZUNr/Sdj5OnPoFB4LBSobw00f1wZpFRoTvq7zWwCtLUEKIp3ek7TiQ6c6/hJKadfJxbUukP0AIbY=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
-	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1739655657;
-	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
-	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
-	bh=wNkunTcwZ7tTA1DeZin72+i0UjvFvWDXsnEPq5Terjg=;
-	b=Ix1kiSRebBSiPWqdHJJgvZ6BIc/Q0F6yUFY2Hk/fjFflsGiAgVBZjR17s0R8geOO
-	zF5GMFV72somwG5rfOgROzHgSWKKWhYA3bMe6X8ZiXI6Qi+Ual8W+1FBUYImQsWEI4r
-	2txR+/eMZBLdiEkTMebM/lIDDKimeK9kCZ+Uj7Mk=
-Received: by mx.zohomail.com with SMTPS id 1739655655643285.80977869700473;
-	Sat, 15 Feb 2025 13:40:55 -0800 (PST)
-Content-Type: text/plain;
-	charset=utf-8
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XTh4sce2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1739677951; x=1771213951;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gjherQri/hqJvFgP4ZQr49N1g6Ns9CxS3aNNztHaDZ4=;
+  b=XTh4sce2OF6WDv/aHVV7x+YC9dUIWyw7Jngch1Q8hNdHTpd6fz4SMxaB
+   JCiGvoVzt3DBtGXmDef+2VLwfMBaRuxUhZV+N/EUXsk8nebgycO3SMlt/
+   l0j+zE21OHMpaS6mHpCIF39I6JpFQPQ5IS5gOt3b2xBhaT7xs2x7reKe3
+   9tz/OSZaSqKI0AC4JORPAoWsFiUYoXFeiY1UsdkS+bttL6jMEdLPSyL98
+   +cF1bG/3vHC/GARhpjx+sfZebzCjDlhEv7Asn9U69Wcs6YF7LjlTnSZoP
+   47pgB3nCySibAlMXLel8XCEiGxrkjrgia8cqHc+9m+8SR9ROkB4WwJppw
+   w==;
+X-CSE-ConnectionGUID: RFPMQeFDQnCgSGLVksEgTA==
+X-CSE-MsgGUID: 61iA8eJCSCy3YWoaL7Welw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11346"; a="57919291"
+X-IronPort-AV: E=Sophos;i="6.13,290,1732608000"; 
+   d="scan'208";a="57919291"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2025 19:52:30 -0800
+X-CSE-ConnectionGUID: 4U+JvQ4ETZyBpl1pI5UmKg==
+X-CSE-MsgGUID: BCNiTLKnRYC8+AYgbhrE/A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,290,1732608000"; 
+   d="scan'208";a="113544652"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orviesa009.jf.intel.com with ESMTP; 15 Feb 2025 19:52:30 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	kevin.tian@intel.com,
+	baolu.lu@linux.intel.com,
+	jgg@nvidia.com
+Cc: yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	robin.murphy@arm.com,
+	nicolinc@nvidia.com,
+	will@kernel.org,
+	vasant.hegde@amd.com
+Subject: [PATCH v7 00/13] iommufd support pasid attach/replace
+Date: Sat, 15 Feb 2025 19:52:15 -0800
+Message-Id: <20250216035228.23831-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.300.87.4.3\))
-Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
-From: Daniel Almeida <daniel.almeida@collabora.com>
-In-Reply-To: <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
-Date: Sat, 15 Feb 2025 18:40:37 -0300
-Cc: rust-for-linux@vger.kernel.org,
- dakr@kernel.org,
- robin.murphy@arm.com,
- aliceryhl@google.com,
- Miguel Ojeda <ojeda@kernel.org>,
- Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>,
- Gary Guo <gary@garyguo.net>,
- =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>,
- Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <633274AD-E55C-4A90-AB72-33D3E176176F@collabora.com>
-References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
- <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
-To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-X-Mailer: Apple Mail (2.3826.300.87.4.3)
-X-ZohoMailClient: External
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi Abdiel
+PASID (Process Address Space ID) is a PCIe extension that tags the DMA
+transactions from a physical device. Most modern IOMMU hardware supports
+PASID-granular address translation. This allows a PASID-capable device
+to be attached to multiple hardware page tables (hwpts, also known as
+domains), with each attachment tagged by a PASID.
 
-I noticed that there=E2=80=99s no API to call =
-`dma_set_mask/dma_set_coherent_mask`.
+This series builds on a previous preparation series [1]. It begins by
+adding a missing IOMMU API to replace the domain for a PASID. Utilizing
+the IOMMU PASID attach/replace/detach APIs, this series introduces
+iommufd APIs for device drivers to attach, replace, or detach PASIDs
+to/from hwpts at the request of userspace. It also enforces PASID compatibility
+with domain requirements, allocates PASID-compatible hwpts in iommufd,
+and includes self-tests to validate the iommufd APIs.
 
-This should probably be included, i.e.:
+The complete code is available at the following link [2]. Please note that
+the existing iommufd self-test was broken, and a temporary fix patch is at
+the top of the branch [2]. If you wish to run the iommufd self-test, please
+apply that fix. We apologize for any inconvenience.
 
-```
-By default, the kernel assumes that your device can address 32-bits of =
-DMA addressing.
-For a 64-bit capable device, this needs to be increased, and for a =
-device with limitations,
-it needs to be decreased.
-```
+[1] https://lore.kernel.org/linux-iommu/20250212060540.261436-1-yi.l.liu@intel.com/
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_pasid
 
-=E2=80=94 Daniel=
+Change log:
+
+v7:
+ - Remove the iommu_attach_handle related refactors, as they have been addressed
+   by Nic's series.
+ - Address the comments on patch 01 of v6 in a separate series [1]. Store either
+   the domain or handle in group->pasid_array, and swap the order of setting
+   group->pasid_array and invoking the attach operation of IOMMU drivers.
+ - Introduce iommu_attach_device_pasid_handle() and iommu_replace_device_pasid_handle(),
+   and remove iommu_replace_device_pasid() since iommufd consistently uses the
+   _handle() API.
+ - Add patch 04 to include reserved_iova only for the RID path, as the underlying
+   helpers are shared by both the RID and PASID paths, but only the RID path needs
+   to add reserved_iova.
+ - Remove the iommu_dev.max_pasids check in patch 11 of v6. The mock IOMMU always
+   supports 20-bit PASIDs, so there is no need to verify PASID support in the mock
+   IOMMU driver. Additionally, the IOMMU_HWPT_ALLOC_PASID flag does not imply PASID
+   support, so it should be removed to avoid misleading IOMMU driver programming.
+
+v6: https://lore.kernel.org/linux-iommu/20241219132746.16193-1-yi.l.liu@intel.com/
+ - Add kdoc to iommufd_device_get_attach_handle() to note the returned handle
+   should be used with care. (Baolu)
+ - Reworked the patch 07 and 08 of v5 to avoid domain allocation failure on VT-d
+   after applying patch 07 of v5.
+     1) Split out the intel iommu driver IOMMU_HWPT_ALLOC_PASID support out of
+        patch 08
+     2) Rework the PASID-compatible domain enforcement by checking the RID domain
+        and idev->pasid_hwpts under the idev->igroup->lock.
+ - iommufd_device_pasid_do_attach() returns -EINVAL if there is old hwpt and it's
+   not the same with new hwpt. This aligns with how the iommufd_device_do_attach()
+   deals it. Otherwise, attaching the same pasid to the same ioas is going to fail
+   before the auto_domain loop goes to the correct hwpt. Thsi is not reasonable. So
+   make this change.
+ - Enhanced the pasid selftest to have non-pasid-capable device and pasid-capable
+   device.
+ - The order of the series is tweaked to be prepare the iommufd for pasid attach,
+   add pasid attach, add PASID-compat domain enforcement and then add the PASID-compat
+   hwpt allocation.
+ - Rebased on top of 6.13-rc3 and some already applied patches.
+
+v5: https://lore.kernel.org/linux-iommu/20241104132513.15890-1-yi.l.liu@intel.com/
+ - Fix a mistake in patch 02 of v4 (Kevin)
+ - Move the iommufd_handle helpers to device.c
+ - Add IOMMU_HWPT_ALLOC_PASID check to enforce pasid-compatible domain for pasid
+   capable device in iommufd
+ - Update the iommufd selftest to use IOMMU_HWPT_ALLOC_PASID
+
+v4: https://lore.kernel.org/linux-iommu/20240912131255.13305-1-yi.l.liu@intel.com/
+ - Replace remove_dev_pasid() by supporting set_dev_pasid() for blocking domain (Kevin)
+	- This is done by the preparation series "Support attaching PASID to the blocked_domain"
+ - Misc tweaks to foil the merging of the iommufd iopf series. Three new patches are added:
+	- iommufd: Always pass iommu_attach_handle to iommu core
+	- iommufd: Move the iommufd_handle helpers to iommufd_private.h
+	- iommufd: Refactor __fault_domain_replace_dev() to be a wrapper of iommu_replace_group_handle()
+ - Renmae patch 03 of v3 to be "iommufd: Support pasid attach/replace"
+ - Add test case for attaching/replacing iopf-capable hwpt to pasid
+
+v3: https://lore.kernel.org/kvm/20240628090557.50898-1-yi.l.liu@intel.com/
+ - Split the set_dev_pasid op enhancements for domain replacement to be a
+   separate series "Make set_dev_pasid op supportting domain replacement" [1].
+   The below changes are made in the separate series.
+   *) set_dev_pasid() callback should keep the old config if failed to attach to
+      a domain. This simplifies the caller a lot as caller does not need to attach
+      it back to old domain explicitly. This also avoids some corner cases in which
+      the core may do duplicated domain attachment as described in below link (Jason)
+      https://lore.kernel.org/linux-iommu/BN9PR11MB52768C98314A95AFCD2FA6478C0F2@BN9PR11MB5276.namprd11.prod.outlook.com/
+   *) Drop patch 10 of v2 as it's a bug fix and can be submitted separately (Kevin)
+   *) Rebase on top of Baolu's domain_alloc_paging refactor series (Jason)
+ - Drop the attach_data which includes attach_fn and pasid, insteadly passing the
+   pasid through the device attach path. (Jason)
+ - Add a pasid-num-bits property to mock dev to make pasid selftest work (Kevin)
+
+v2: https://lore.kernel.org/linux-iommu/20240412081516.31168-1-yi.l.liu@intel.com/
+ - Domain replace for pasid should be handled in set_dev_pasid() callbacks
+   instead of remove_dev_pasid and call set_dev_pasid afteward in iommu
+   layer (Jason)
+ - Make xarray operations more self-contained in iommufd pasid attach/replace/detach
+   (Jason)
+ - Tweak the dev_iommu_get_max_pasids() to allow iommu driver to populate the
+   max_pasids. This makes the iommufd selftest simpler to meet the max_pasids
+   check in iommu_attach_device_pasid()  (Jason)
+
+v1: https://lore.kernel.org/kvm/20231127063428.127436-1-yi.l.liu@intel.com/#r
+ - Implemnet iommu_replace_device_pasid() to fall back to the original domain
+   if this replacement failed (Kevin)
+ - Add check in do_attach() to check corressponding attach_fn per the pasid value.
+
+rfc: https://lore.kernel.org/linux-iommu/20230926092651.17041-1-yi.l.liu@intel.com/
+
+Regards,
+	Yi Liu
+
+Yi Liu (13):
+  iommu: Add iommu_attach_device_pasid_handle()
+  iommu: Introduce a replace API for device pasid
+  iommufd: Pass @pasid through the device attach/replace path
+  iommufd/device: Only add reserved_iova in non-pasid path
+  iommufd: Mark PASID-compatible domain
+  iommufd: Support pasid attach/replace
+  iommufd: Enforce PASID-compatible domain for RID
+  iommu/vt-d: Add IOMMU_HWPT_ALLOC_PASID support
+  iommufd: Allow allocating PASID-compatible domain
+  iommufd/selftest: Add set_dev_pasid in mock iommu
+  iommufd/selftest: Add a helper to get test device
+  iommufd/selftest: Add test ops to test pasid attach/detach
+  iommufd/selftest: Add coverage for iommufd pasid attach/detach
+
+ drivers/dma/idxd/init.c                       |   2 +-
+ drivers/iommu/intel/iommu.c                   |   3 +-
+ drivers/iommu/intel/nested.c                  |   2 +-
+ drivers/iommu/iommu-priv.h                    |   4 +
+ drivers/iommu/iommu-sva.c                     |  10 +-
+ drivers/iommu/iommu.c                         | 113 +++++-
+ drivers/iommu/iommufd/Makefile                |   1 +
+ drivers/iommu/iommufd/device.c                | 139 ++++---
+ drivers/iommu/iommufd/hw_pagetable.c          |  15 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  32 +-
+ drivers/iommu/iommufd/iommufd_test.h          |  31 ++
+ drivers/iommu/iommufd/pasid.c                 | 155 ++++++++
+ drivers/iommu/iommufd/selftest.c              | 219 ++++++++++-
+ include/linux/iommu.h                         |  34 +-
+ include/linux/iommufd.h                       |   7 +
+ tools/testing/selftests/iommu/iommufd.c       | 348 ++++++++++++++++++
+ .../selftests/iommu/iommufd_fail_nth.c        |  41 ++-
+ tools/testing/selftests/iommu/iommufd_utils.h | 102 +++++
+ 18 files changed, 1157 insertions(+), 101 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/pasid.c
+
+-- 
+2.34.1
+
