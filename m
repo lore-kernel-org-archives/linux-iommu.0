@@ -1,46 +1,46 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3757C1304BA
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDF3C13632B
 	for <iommu@lists.linux.dev>; Sun, 16 Feb 2025 03:52:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739677957; cv=none; b=Zt202F8JRRocPbtvaXa1N3+BOEr5DAcfp6D/FzRS17KhD1d/arm7rPK7+WpZuGswz4Ncwt7DoaAVHrD0KK0om3oYZnWeIIgpDU4tNA1Dms/LR2MlzH2FMnKPksxQVO4Zx56bG+32Y9UXNULc/0Wuo4Npoa6DcwaAtnh6mOlkzDY=
+	t=1739677958; cv=none; b=OysLj0uClIT1FeA08VVgdL7FABgQGnj9miMZ/C5QlMR4fdkg55GTQFa0iI48aB6WovbXDgWip7tQ0HguARjD7/tTB9ISixh7dLbw4g6ItNiH5TsqHakaIFoKx95WnYE3qn8v0pLY8wI0LUDWampra+U2sAav88Bxj4exZ8kBMu0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739677957; c=relaxed/simple;
-	bh=/bJfwctC8lUUgU0M/8hG62WnG5qAAa9a66BW8jU4qWU=;
+	s=arc-20240116; t=1739677958; c=relaxed/simple;
+	bh=g76yQs23lFu2jEx0sokX6uIeA30iUsVAfGJnUlnGUj8=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=oi+Y4OSuyGY5DFPzTVoUV3oinxGHNNxeJ6BTXStZe/nSNNuItU2cZpGKGcgQXbIlbAjZe1YRzcRWS+3edaKlBWQA7Ts23MsfwmgJ9d6n0vB8TT03cB0/saXPMsl4Cf1uu7PCTJ0HxECELAKc0NqYWnd2cXkav4d4gPTUzKFneyM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VppLqozo; arc=none smtp.client-ip=192.198.163.8
+	 MIME-Version; b=PJ8SRWLgnL2bUudzlqtxHwDvinpzki1vio18LrB4v430Y0WMYv+tMO3a2Y1plH9bP1ESDi0JuvHk5NK0/mjWQgvD1AbPmEqRGICGdqw5FBdLIyUB0qu/RMqmXkumDELeP87l9ntrSopkquWg3gFIxmrbM0wWROIlMnLbO0+hd8Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g03prw/P; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VppLqozo"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g03prw/P"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1739677956; x=1771213956;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/bJfwctC8lUUgU0M/8hG62WnG5qAAa9a66BW8jU4qWU=;
-  b=VppLqozoItVihKl1OvNiHfn+hahwPVAGtvnnelBGHsDdNcYrDjUlIPqo
-   AdjUJnXNpfk34LSAgDmNv4GZH8c8Iu8om7ZW70ufzsVtI3EXPDY0hoBAb
-   WXJxPVDFcHhvE4zwW9zwRqvQdBmGSenrBf+gPWMBGmbhiAMyIH5A9WmtW
-   sKITn/Zom3PakskiGsBn3B3NKbpDqYks5eYbtc4m6H8WtiZrjrMuV6Jfc
-   7MrfHMDWb1NQgH1ZvPBtMx7SArqMCboxDHdzCUYmfQSMB8S5urw81goF3
-   V5LLCJeHwl4S+8DE+W9YbKPjXHspAfhwWeXeWFK4aAvO38UKedwsUhFaR
+  bh=g76yQs23lFu2jEx0sokX6uIeA30iUsVAfGJnUlnGUj8=;
+  b=g03prw/PLy00cPmN1cosv2XCW1bBDUjUE59nrGESp15tYi8fgLljLEHU
+   dYj57SoHNCmHCRsarg7o+/tn5bINaXVgGxEFrnawXb6xnJ2IOnCiepQ8d
+   NV4vTcVm7QC9u1ivO2bIrkn537rV4U8eK5xUcMC0FX858/DQp4ZFzRc0s
+   K9Nj9IriolY8+0f6nyNktBQHjkbWkObT7hk3krgca4TErqB+uJHKfuCgl
+   VPv2Rxgo2sHCNkukMge4aKcT/FsxV91RS2isxpfzzMH9HCsyIk8KWilVu
+   4pTaEsR6KuYLzCOxjzij7oCkB4ggdpVOsRZWALozW2C8hw2WRk5U0dSPU
    A==;
-X-CSE-ConnectionGUID: kXreKR7FS+ev2b7zGYBe+Q==
-X-CSE-MsgGUID: A6uZftFDSYmqwMTHc3Ez6Q==
-X-IronPort-AV: E=McAfee;i="6700,10204,11346"; a="57919333"
+X-CSE-ConnectionGUID: P1QjywjQQHmp2Xo+bcRSZg==
+X-CSE-MsgGUID: DFQbpSIKTRaD1pRuqKl89Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11346"; a="57919341"
 X-IronPort-AV: E=Sophos;i="6.13,290,1732608000"; 
-   d="scan'208";a="57919333"
+   d="scan'208";a="57919341"
 Received: from orviesa009.jf.intel.com ([10.64.159.149])
   by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2025 19:52:34 -0800
-X-CSE-ConnectionGUID: StvaeB7vRTCPpLHsgtgCPA==
-X-CSE-MsgGUID: HgYu4qmnTLaR8fdgXM12aw==
+X-CSE-ConnectionGUID: MO0mHbsjQL6cK/bM6hz0HA==
+X-CSE-MsgGUID: 8WVyFGIcR0WMLwTTPwKXOA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,290,1732608000"; 
-   d="scan'208";a="113544737"
+   d="scan'208";a="113544753"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
   by orviesa009.jf.intel.com with ESMTP; 15 Feb 2025 19:52:35 -0800
 From: Yi Liu <yi.l.liu@intel.com>
@@ -54,9 +54,9 @@ Cc: yi.l.liu@intel.com,
 	nicolinc@nvidia.com,
 	will@kernel.org,
 	vasant.hegde@amd.com
-Subject: [PATCH v7 07/13] iommufd: Enforce PASID-compatible domain for RID
-Date: Sat, 15 Feb 2025 19:52:22 -0800
-Message-Id: <20250216035228.23831-8-yi.l.liu@intel.com>
+Subject: [PATCH v7 08/13] iommu/vt-d: Add IOMMU_HWPT_ALLOC_PASID support
+Date: Sat, 15 Feb 2025 19:52:23 -0800
+Message-Id: <20250216035228.23831-9-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250216035228.23831-1-yi.l.liu@intel.com>
 References: <20250216035228.23831-1-yi.l.liu@intel.com>
@@ -68,73 +68,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Per the definition of IOMMU_HWPT_ALLOC_PASID, iommufd needs to enforce
-the RID to use PASID-compatible domain if PASID has been attached, and
-vice versa. The PASID path has already enforced it. This adds the
-enforcement in the RID path.
-
-This enforcement requires a lock across the RID and PASID attach path,
-the idev->igroup->lock is used as both the RID and the PASID path holds
-it.
+Intel iommu driver just treats it as a nop since Intel VT-d does not have
+special requirement on domains attached to either the PASID or RID of a
+PASID-capable device.
 
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/device.c | 28 ++++++++++++++++++++++------
- 1 file changed, 22 insertions(+), 6 deletions(-)
+ drivers/iommu/intel/iommu.c  | 3 ++-
+ drivers/iommu/intel/nested.c | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 30dd2f79491a..e0f097b04467 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -357,6 +357,22 @@ iommufd_device_attach_reserved_iova(struct iommufd_device *idev,
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index cc46098f875b..7bc890609b90 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3338,7 +3338,8 @@ intel_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
+ 	bool first_stage;
  
- /* The device attach/detach/replace helpers for attach_handle */
+ 	if (flags &
+-	    (~(IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
++	    (~(IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
++	       IOMMU_HWPT_ALLOC_PASID)))
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 	if (nested_parent && !nested_supported(iommu))
+ 		return ERR_PTR(-EOPNOTSUPP);
+diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+index aba92c00b427..6ac5c534bef4 100644
+--- a/drivers/iommu/intel/nested.c
++++ b/drivers/iommu/intel/nested.c
+@@ -198,7 +198,7 @@ intel_iommu_domain_alloc_nested(struct device *dev, struct iommu_domain *parent,
+ 	struct dmar_domain *domain;
+ 	int ret;
  
-+static int iommufd_hwpt_pasid_compat(struct iommufd_hw_pagetable *hwpt,
-+				     struct iommufd_device *idev,
-+				     ioasid_t pasid)
-+{
-+	lockdep_assert_held(&idev->igroup->lock);
-+
-+	if (pasid == IOMMU_NO_PASID &&
-+	    !xa_empty(&idev->pasid_hwpts) && !hwpt->pasid_compat)
-+		return -EINVAL;
-+
-+	if (pasid != IOMMU_NO_PASID &&
-+	    (!idev->igroup->hwpt->pasid_compat || !hwpt->pasid_compat))
-+		return -EINVAL;
-+	return 0;
-+}
-+
- int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 			       struct iommufd_device *idev,
- 			       ioasid_t pasid)
-@@ -364,10 +380,9 @@ int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 	struct iommufd_attach_handle *handle;
- 	int rc;
+-	if (!nested_supported(iommu) || flags)
++	if (!nested_supported(iommu) || flags & ~IOMMU_HWPT_ALLOC_PASID)
+ 		return ERR_PTR(-EOPNOTSUPP);
  
--	lockdep_assert_held(&idev->igroup->lock);
--
--	if (pasid != IOMMU_NO_PASID && !hwpt->pasid_compat)
--		return -EINVAL;
-+	rc = iommufd_hwpt_pasid_compat(hwpt, idev, pasid);
-+	if (rc)
-+		return rc;
- 
- 	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
- 	if (!handle)
-@@ -441,8 +456,9 @@ int iommufd_hwpt_replace_device(struct iommufd_device *idev,
- 	struct iommufd_attach_handle *handle, *old_handle;
- 	int rc;
- 
--	if (pasid != IOMMU_NO_PASID && !hwpt->pasid_compat)
--		return -EINVAL;
-+	rc = iommufd_hwpt_pasid_compat(hwpt, idev, pasid);
-+	if (rc)
-+		return rc;
- 
- 	old_handle = iommufd_device_get_attach_handle(idev, pasid);
- 
+ 	/* Must be nested domain */
 -- 
 2.34.1
 
