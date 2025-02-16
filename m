@@ -1,47 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F3EBBE49
-	for <iommu@lists.linux.dev>; Sun, 16 Feb 2025 03:52:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D33E1799F
+	for <iommu@lists.linux.dev>; Sun, 16 Feb 2025 03:52:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739677953; cv=none; b=UfQDhRv6f/dNy48eYuc8WqBjyesMN20UFgyktMKEqfUAsNztEt5J6aDGL1/+t5s4JsoabUiPsbIjWjQEXEXS2Ag8bcwAMxpChSNJPSiVlv1/N8IOt94Dh/GvyV31osahbwKGKkbgKdhVGMDRUP39QglHaBocvKnQgpLZ7y0urM4=
+	t=1739677954; cv=none; b=AICOu2xQWs39VPg4W9Jujjvy7kImqzXp1Xwd5agvDWIJLMII+GhqQ3yy8o65XKzEDKUOkSUn71rxAnX7K6SoSyq/jf8ZF105F6JRNHH96BYGLYaWKm257vKDsAUmqbOSLzKPT6Xoxxn/sJylb84VY6fswAZE08aZvWxeMb1vf7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739677953; c=relaxed/simple;
-	bh=gjherQri/hqJvFgP4ZQr49N1g6Ns9CxS3aNNztHaDZ4=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=PuiGJbcZxXWcie1VkxDlpAmsjTMslAtLWZzOzAvGAkbPbo2FP7KEEUzyCuwGnPICk6TOpzJx6HQtrLn0diflls8VJPqNH2GGrjQYF1ft/KFmVq0f9cHNEMaXIqMntKNrffy1OkTqhlmUJqCb1QyW0BaBNUuu8HAIY2GIHyr7aLI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XTh4sce2; arc=none smtp.client-ip=192.198.163.8
+	s=arc-20240116; t=1739677954; c=relaxed/simple;
+	bh=MwNJmVDmBnILd7EH/BINS6Na4Ir3Qf1Ci9y4IEi1n98=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=gpfCIugfuBecI5auZAO7DI7yZHtuiS09yxgXQXOYPU4kQ1ZLG+yu2IJ2HF0gMXY5ntfh3fdNbA0fPopjpDyT4La5x+2JxdeOvIZJSbzFe8UNLLzg4AQpUX98FIzQPKgOK3Fqmv31g5wTWYSdtV4kvkaf0qSOOpJdUFidhyyiHzM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GSk8f5yq; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XTh4sce2"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GSk8f5yq"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1739677951; x=1771213951;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gjherQri/hqJvFgP4ZQr49N1g6Ns9CxS3aNNztHaDZ4=;
-  b=XTh4sce2OF6WDv/aHVV7x+YC9dUIWyw7Jngch1Q8hNdHTpd6fz4SMxaB
-   JCiGvoVzt3DBtGXmDef+2VLwfMBaRuxUhZV+N/EUXsk8nebgycO3SMlt/
-   l0j+zE21OHMpaS6mHpCIF39I6JpFQPQ5IS5gOt3b2xBhaT7xs2x7reKe3
-   9tz/OSZaSqKI0AC4JORPAoWsFiUYoXFeiY1UsdkS+bttL6jMEdLPSyL98
-   +cF1bG/3vHC/GARhpjx+sfZebzCjDlhEv7Asn9U69Wcs6YF7LjlTnSZoP
-   47pgB3nCySibAlMXLel8XCEiGxrkjrgia8cqHc+9m+8SR9ROkB4WwJppw
-   w==;
-X-CSE-ConnectionGUID: RFPMQeFDQnCgSGLVksEgTA==
-X-CSE-MsgGUID: 61iA8eJCSCy3YWoaL7Welw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11346"; a="57919291"
+  t=1739677952; x=1771213952;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=MwNJmVDmBnILd7EH/BINS6Na4Ir3Qf1Ci9y4IEi1n98=;
+  b=GSk8f5yq6mTIzrE9k4bddL3SHSRrPuAL08KmR0rwxmeWBJmljwhhmKxX
+   fLF6kCKsn4ZwVwkflciJAQcsrEV3JDaOVkPKJ1WNJTjilu64nwPsFy/vT
+   2nLiPPsGOEql9fZBMmkxBqznNmYcYTR5T4F/FBXHJd0uQmO2XEv5ooyBc
+   79ehHTsz7v8rd8chvaRXK8AZzKD2Vfnk5SDAck4/P7XKriTa6tPUOCzAG
+   g9VDVGw2Xr/hI6DrXdDAZJgaNlarRO1islL54IIC0/IONdJ4fQAKwrg2t
+   bdaPZDOTbjMBxo3tpJuDkQuuK2twwQd5Z1Gjvlos+PxKObU0MfOWoFNhr
+   Q==;
+X-CSE-ConnectionGUID: 2QqK43bHQVy0MmotFm11Rg==
+X-CSE-MsgGUID: wucUzfgCRWyPRSjXSX1fzg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11346"; a="57919295"
 X-IronPort-AV: E=Sophos;i="6.13,290,1732608000"; 
-   d="scan'208";a="57919291"
+   d="scan'208";a="57919295"
 Received: from orviesa009.jf.intel.com ([10.64.159.149])
   by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2025 19:52:30 -0800
-X-CSE-ConnectionGUID: 4U+JvQ4ETZyBpl1pI5UmKg==
-X-CSE-MsgGUID: BCNiTLKnRYC8+AYgbhrE/A==
+X-CSE-ConnectionGUID: XaygsWa3T6SC+wjGvvOXNQ==
+X-CSE-MsgGUID: Wkc+1htmT5miwlar7C+drQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,290,1732608000"; 
-   d="scan'208";a="113544652"
+   d="scan'208";a="113544658"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa009.jf.intel.com with ESMTP; 15 Feb 2025 19:52:30 -0800
+  by orviesa009.jf.intel.com with ESMTP; 15 Feb 2025 19:52:31 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	kevin.tian@intel.com,
@@ -53,10 +54,12 @@ Cc: yi.l.liu@intel.com,
 	nicolinc@nvidia.com,
 	will@kernel.org,
 	vasant.hegde@amd.com
-Subject: [PATCH v7 00/13] iommufd support pasid attach/replace
-Date: Sat, 15 Feb 2025 19:52:15 -0800
-Message-Id: <20250216035228.23831-1-yi.l.liu@intel.com>
+Subject: [PATCH v7 01/13] iommu: Add iommu_attach_device_pasid_handle()
+Date: Sat, 15 Feb 2025 19:52:16 -0800
+Message-Id: <20250216035228.23831-2-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20250216035228.23831-1-yi.l.liu@intel.com>
+References: <20250216035228.23831-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,156 +68,147 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-PASID (Process Address Space ID) is a PCIe extension that tags the DMA
-transactions from a physical device. Most modern IOMMU hardware supports
-PASID-granular address translation. This allows a PASID-capable device
-to be attached to multiple hardware page tables (hwpts, also known as
-domains), with each attachment tagged by a PASID.
+The existing iommu_attach_device_pasid() function allows both a valid
+handle and a NULL handle, which is not consistent with the RID path where
+iommu_attach_group() and iommu_attach_group_handle() coexist. To refine
+it, this adds iommu_attach_device_pasid_handle() to cover the case with
+valid handle, while let the iommu_attach_device_pasid() only deals with
+the case with NULL handle.
 
-This series builds on a previous preparation series [1]. It begins by
-adding a missing IOMMU API to replace the domain for a PASID. Utilizing
-the IOMMU PASID attach/replace/detach APIs, this series introduces
-iommufd APIs for device drivers to attach, replace, or detach PASIDs
-to/from hwpts at the request of userspace. It also enforces PASID compatibility
-with domain requirements, allocates PASID-compatible hwpts in iommufd,
-and includes self-tests to validate the iommufd APIs.
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+ drivers/dma/idxd/init.c   |  2 +-
+ drivers/iommu/iommu-sva.c | 10 ++++++----
+ drivers/iommu/iommu.c     |  8 ++++----
+ include/linux/iommu.h     | 34 +++++++++++++++++++++++++++++-----
+ 4 files changed, 40 insertions(+), 14 deletions(-)
 
-The complete code is available at the following link [2]. Please note that
-the existing iommufd self-test was broken, and a temporary fix patch is at
-the top of the branch [2]. If you wish to run the iommufd self-test, please
-apply that fix. We apologize for any inconvenience.
-
-[1] https://lore.kernel.org/linux-iommu/20250212060540.261436-1-yi.l.liu@intel.com/
-[2] https://github.com/yiliu1765/iommufd/tree/iommufd_pasid
-
-Change log:
-
-v7:
- - Remove the iommu_attach_handle related refactors, as they have been addressed
-   by Nic's series.
- - Address the comments on patch 01 of v6 in a separate series [1]. Store either
-   the domain or handle in group->pasid_array, and swap the order of setting
-   group->pasid_array and invoking the attach operation of IOMMU drivers.
- - Introduce iommu_attach_device_pasid_handle() and iommu_replace_device_pasid_handle(),
-   and remove iommu_replace_device_pasid() since iommufd consistently uses the
-   _handle() API.
- - Add patch 04 to include reserved_iova only for the RID path, as the underlying
-   helpers are shared by both the RID and PASID paths, but only the RID path needs
-   to add reserved_iova.
- - Remove the iommu_dev.max_pasids check in patch 11 of v6. The mock IOMMU always
-   supports 20-bit PASIDs, so there is no need to verify PASID support in the mock
-   IOMMU driver. Additionally, the IOMMU_HWPT_ALLOC_PASID flag does not imply PASID
-   support, so it should be removed to avoid misleading IOMMU driver programming.
-
-v6: https://lore.kernel.org/linux-iommu/20241219132746.16193-1-yi.l.liu@intel.com/
- - Add kdoc to iommufd_device_get_attach_handle() to note the returned handle
-   should be used with care. (Baolu)
- - Reworked the patch 07 and 08 of v5 to avoid domain allocation failure on VT-d
-   after applying patch 07 of v5.
-     1) Split out the intel iommu driver IOMMU_HWPT_ALLOC_PASID support out of
-        patch 08
-     2) Rework the PASID-compatible domain enforcement by checking the RID domain
-        and idev->pasid_hwpts under the idev->igroup->lock.
- - iommufd_device_pasid_do_attach() returns -EINVAL if there is old hwpt and it's
-   not the same with new hwpt. This aligns with how the iommufd_device_do_attach()
-   deals it. Otherwise, attaching the same pasid to the same ioas is going to fail
-   before the auto_domain loop goes to the correct hwpt. Thsi is not reasonable. So
-   make this change.
- - Enhanced the pasid selftest to have non-pasid-capable device and pasid-capable
-   device.
- - The order of the series is tweaked to be prepare the iommufd for pasid attach,
-   add pasid attach, add PASID-compat domain enforcement and then add the PASID-compat
-   hwpt allocation.
- - Rebased on top of 6.13-rc3 and some already applied patches.
-
-v5: https://lore.kernel.org/linux-iommu/20241104132513.15890-1-yi.l.liu@intel.com/
- - Fix a mistake in patch 02 of v4 (Kevin)
- - Move the iommufd_handle helpers to device.c
- - Add IOMMU_HWPT_ALLOC_PASID check to enforce pasid-compatible domain for pasid
-   capable device in iommufd
- - Update the iommufd selftest to use IOMMU_HWPT_ALLOC_PASID
-
-v4: https://lore.kernel.org/linux-iommu/20240912131255.13305-1-yi.l.liu@intel.com/
- - Replace remove_dev_pasid() by supporting set_dev_pasid() for blocking domain (Kevin)
-	- This is done by the preparation series "Support attaching PASID to the blocked_domain"
- - Misc tweaks to foil the merging of the iommufd iopf series. Three new patches are added:
-	- iommufd: Always pass iommu_attach_handle to iommu core
-	- iommufd: Move the iommufd_handle helpers to iommufd_private.h
-	- iommufd: Refactor __fault_domain_replace_dev() to be a wrapper of iommu_replace_group_handle()
- - Renmae patch 03 of v3 to be "iommufd: Support pasid attach/replace"
- - Add test case for attaching/replacing iopf-capable hwpt to pasid
-
-v3: https://lore.kernel.org/kvm/20240628090557.50898-1-yi.l.liu@intel.com/
- - Split the set_dev_pasid op enhancements for domain replacement to be a
-   separate series "Make set_dev_pasid op supportting domain replacement" [1].
-   The below changes are made in the separate series.
-   *) set_dev_pasid() callback should keep the old config if failed to attach to
-      a domain. This simplifies the caller a lot as caller does not need to attach
-      it back to old domain explicitly. This also avoids some corner cases in which
-      the core may do duplicated domain attachment as described in below link (Jason)
-      https://lore.kernel.org/linux-iommu/BN9PR11MB52768C98314A95AFCD2FA6478C0F2@BN9PR11MB5276.namprd11.prod.outlook.com/
-   *) Drop patch 10 of v2 as it's a bug fix and can be submitted separately (Kevin)
-   *) Rebase on top of Baolu's domain_alloc_paging refactor series (Jason)
- - Drop the attach_data which includes attach_fn and pasid, insteadly passing the
-   pasid through the device attach path. (Jason)
- - Add a pasid-num-bits property to mock dev to make pasid selftest work (Kevin)
-
-v2: https://lore.kernel.org/linux-iommu/20240412081516.31168-1-yi.l.liu@intel.com/
- - Domain replace for pasid should be handled in set_dev_pasid() callbacks
-   instead of remove_dev_pasid and call set_dev_pasid afteward in iommu
-   layer (Jason)
- - Make xarray operations more self-contained in iommufd pasid attach/replace/detach
-   (Jason)
- - Tweak the dev_iommu_get_max_pasids() to allow iommu driver to populate the
-   max_pasids. This makes the iommufd selftest simpler to meet the max_pasids
-   check in iommu_attach_device_pasid()  (Jason)
-
-v1: https://lore.kernel.org/kvm/20231127063428.127436-1-yi.l.liu@intel.com/#r
- - Implemnet iommu_replace_device_pasid() to fall back to the original domain
-   if this replacement failed (Kevin)
- - Add check in do_attach() to check corressponding attach_fn per the pasid value.
-
-rfc: https://lore.kernel.org/linux-iommu/20230926092651.17041-1-yi.l.liu@intel.com/
-
-Regards,
-	Yi Liu
-
-Yi Liu (13):
-  iommu: Add iommu_attach_device_pasid_handle()
-  iommu: Introduce a replace API for device pasid
-  iommufd: Pass @pasid through the device attach/replace path
-  iommufd/device: Only add reserved_iova in non-pasid path
-  iommufd: Mark PASID-compatible domain
-  iommufd: Support pasid attach/replace
-  iommufd: Enforce PASID-compatible domain for RID
-  iommu/vt-d: Add IOMMU_HWPT_ALLOC_PASID support
-  iommufd: Allow allocating PASID-compatible domain
-  iommufd/selftest: Add set_dev_pasid in mock iommu
-  iommufd/selftest: Add a helper to get test device
-  iommufd/selftest: Add test ops to test pasid attach/detach
-  iommufd/selftest: Add coverage for iommufd pasid attach/detach
-
- drivers/dma/idxd/init.c                       |   2 +-
- drivers/iommu/intel/iommu.c                   |   3 +-
- drivers/iommu/intel/nested.c                  |   2 +-
- drivers/iommu/iommu-priv.h                    |   4 +
- drivers/iommu/iommu-sva.c                     |  10 +-
- drivers/iommu/iommu.c                         | 113 +++++-
- drivers/iommu/iommufd/Makefile                |   1 +
- drivers/iommu/iommufd/device.c                | 139 ++++---
- drivers/iommu/iommufd/hw_pagetable.c          |  15 +-
- drivers/iommu/iommufd/iommufd_private.h       |  32 +-
- drivers/iommu/iommufd/iommufd_test.h          |  31 ++
- drivers/iommu/iommufd/pasid.c                 | 155 ++++++++
- drivers/iommu/iommufd/selftest.c              | 219 ++++++++++-
- include/linux/iommu.h                         |  34 +-
- include/linux/iommufd.h                       |   7 +
- tools/testing/selftests/iommu/iommufd.c       | 348 ++++++++++++++++++
- .../selftests/iommu/iommufd_fail_nth.c        |  41 ++-
- tools/testing/selftests/iommu/iommufd_utils.h | 102 +++++
- 18 files changed, 1157 insertions(+), 101 deletions(-)
- create mode 100644 drivers/iommu/iommufd/pasid.c
-
+diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
+index b946f78f85e1..d11a763ef124 100644
+--- a/drivers/dma/idxd/init.c
++++ b/drivers/dma/idxd/init.c
+@@ -593,7 +593,7 @@ static int idxd_enable_system_pasid(struct idxd_device *idxd)
+ 	 * DMA domain is owned by the driver, it should support all valid
+ 	 * types such as DMA-FQ, identity, etc.
+ 	 */
+-	ret = iommu_attach_device_pasid(domain, dev, pasid, NULL);
++	ret = iommu_attach_device_pasid(domain, dev, pasid);
+ 	if (ret) {
+ 		dev_err(dev, "failed to attach device pasid %d, domain type %d",
+ 			pasid, domain->type);
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index 503c5d23c1ea..09d676ddf15e 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -115,8 +115,9 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+ 
+ 	/* Search for an existing domain. */
+ 	list_for_each_entry(domain, &mm->iommu_mm->sva_domains, next) {
+-		ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid,
+-						&handle->handle);
++		ret = iommu_attach_device_pasid_handle(domain, dev,
++						       iommu_mm->pasid,
++						       &handle->handle);
+ 		if (!ret) {
+ 			domain->users++;
+ 			goto out;
+@@ -130,8 +131,9 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+ 		goto out_free_handle;
+ 	}
+ 
+-	ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid,
+-					&handle->handle);
++	ret = iommu_attach_device_pasid_handle(domain, dev,
++					       iommu_mm->pasid,
++					       &handle->handle);
+ 	if (ret)
+ 		goto out_free_domain;
+ 	domain->users = 1;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index c3bf8e131a8e..95830f670e18 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3423,9 +3423,9 @@ static void *iommu_make_pasid_entry(struct iommu_domain *domain,
+  *
+  * Return: 0 on success, or an error.
+  */
+-int iommu_attach_device_pasid(struct iommu_domain *domain,
+-			      struct device *dev, ioasid_t pasid,
+-			      struct iommu_attach_handle *handle)
++int __iommu_attach_device_pasid(struct iommu_domain *domain,
++				struct device *dev, ioasid_t pasid,
++				struct iommu_attach_handle *handle)
+ {
+ 	/* Caller must be a probed driver on dev */
+ 	struct iommu_group *group = dev->iommu_group;
+@@ -3476,7 +3476,7 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 	mutex_unlock(&group->mutex);
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
++EXPORT_SYMBOL_GPL(__iommu_attach_device_pasid);
+ 
+ /*
+  * iommu_detach_device_pasid() - Detach the domain from pasid of device
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 38c65e92ecd0..d795de7bad8f 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -1122,9 +1122,24 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+ int iommu_device_claim_dma_owner(struct device *dev, void *owner);
+ void iommu_device_release_dma_owner(struct device *dev);
+ 
+-int iommu_attach_device_pasid(struct iommu_domain *domain,
+-			      struct device *dev, ioasid_t pasid,
+-			      struct iommu_attach_handle *handle);
++int __iommu_attach_device_pasid(struct iommu_domain *domain,
++				struct device *dev, ioasid_t pasid,
++				struct iommu_attach_handle *handle);
++
++static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
++					    struct device *dev, ioasid_t pasid)
++{
++	return __iommu_attach_device_pasid(domain, dev, pasid, NULL);
++}
++
++static inline int
++iommu_attach_device_pasid_handle(struct iommu_domain *domain,
++				 struct device *dev, ioasid_t pasid,
++				 struct iommu_attach_handle *handle)
++{
++	return __iommu_attach_device_pasid(domain, dev, pasid, handle);
++}
++
+ void iommu_detach_device_pasid(struct iommu_domain *domain,
+ 			       struct device *dev, ioasid_t pasid);
+ ioasid_t iommu_alloc_global_pasid(struct device *dev);
+@@ -1139,6 +1154,8 @@ struct iommu_fault_param {};
+ struct iommu_iotlb_gather {};
+ struct iommu_dirty_bitmap {};
+ struct iommu_dirty_ops {};
++struct iommu_attach_handle {};
++
+ 
+ static inline bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
+ {
+@@ -1451,8 +1468,15 @@ static inline int iommu_device_claim_dma_owner(struct device *dev, void *owner)
+ }
+ 
+ static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
+-					    struct device *dev, ioasid_t pasid,
+-					    struct iommu_attach_handle *handle)
++					    struct device *dev, ioasid_t pasid)
++{
++	return -ENODEV;
++}
++
++static inline int
++iommu_attach_device_pasid_handle(struct iommu_domain *domain,
++				 struct device *dev, ioasid_t pasid,
++				 struct iommu_attach_handle *handle)
+ {
+ 	return -ENODEV;
+ }
 -- 
 2.34.1
 
