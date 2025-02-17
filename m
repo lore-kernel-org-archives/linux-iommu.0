@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87B842222B1
-	for <iommu@lists.linux.dev>; Mon, 17 Feb 2025 15:00:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 247EF225771
+	for <iommu@lists.linux.dev>; Mon, 17 Feb 2025 16:30:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739804455; cv=none; b=tQ2Pev6inBm0q2ZwaV7PUg+iq57RxDcOUfH4x2jww03QoBg4C5VYnPvvaPgpYQoDWvuePFYgiI1S/+pOP/Qbkge9VSGF82DPtLv95aTy0ukWFs1N3ZOIrMMkotGZ3oDHqTRjL/D5aezoOfXXU2DMaFW+bcKJRDkzpZc2boKgLus=
+	t=1739809807; cv=none; b=SVl3keI/h3C6Wz65yZ6e7/74v9dwoyQvtVnG6NqehBSqjYT4bfrNjZm1Ce1AkgjzBsB8p6+ALFSyjw+7EE3LGm/nJcoVBlBaGEPFVLog8CJSdw/OkmRIdjlKOy/semLLitCg/wJ02zAFO0U6pEW43oCQdL+1eDu+PS4IClUqPck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739804455; c=relaxed/simple;
-	bh=jMq0rzaJsv+MpOoTrFRgRWYF77w0q1RbPXY+cKmV/mA=;
+	s=arc-20240116; t=1739809807; c=relaxed/simple;
+	bh=1ET7ngNwdP/7uhiBrI0skP0NwZt8InzQ+yuq7r3vEOU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=l+KxtSd0WdRlO0MjF2ZIijjOwGIaVakXW21rVBO7je+92SrXqQzW+/DxZPCPk1muzUyaYy4Sweq1KO15FGhflpXsgf3Nby5l4LFCBHvUwD3nQyF3P0PUE470gZJYSDqxqoIhoUA4D4eil4luHemUL/K1Wy8tJpMBoaQJRv42hHE=
+	 In-Reply-To:Content-Type; b=rvTw17hQNh+bnP85IQg6rzzvpHBIBM35glnmPCET0FZphI0hp7Wa6+K6lKSdieQmZ9TmR99GwKeDgpHnCeAWbGPnrlHQ3R9lyBsGsfcHHNM03+rY5VvuYL7jjNd2EO49EghJ8mz0GRRIUKfL3FtaWepOWc9L76Pg3XnEczddzE8=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D949C152B;
-	Mon, 17 Feb 2025 07:01:11 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6C364152B;
+	Mon, 17 Feb 2025 08:30:23 -0800 (PST)
 Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5CF9D3F6A8;
-	Mon, 17 Feb 2025 07:00:49 -0800 (PST)
-Message-ID: <4a7823b2-2634-4148-8446-ad01a09b6880@arm.com>
-Date: Mon, 17 Feb 2025 15:00:46 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 766D73F5A1;
+	Mon, 17 Feb 2025 08:29:54 -0800 (PST)
+Message-ID: <f882ec8a-c577-4487-bf46-8c406c60aa67@arm.com>
+Date: Mon, 17 Feb 2025 16:29:36 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,10 +27,10 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iommu: Get DT/ACPI parsing into the proper probe path
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Lorenzo Pieralisi <lpieralisi@kernel.org>,
- Hanjun Guo <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+Subject: Re: [PATCH 1/2] iommu: Handle race with default domain setup
+To: Charan Teja Kalla <quic_charante@quicinc.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
  "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
  Russell King <linux@armlinux.org.uk>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,162 +39,94 @@ Cc: Lorenzo Pieralisi <lpieralisi@kernel.org>,
  <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>,
- Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-pci@vger.kernel.org, Charan Teja Kalla <quic_charante@quicinc.com>
+ Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-pci@vger.kernel.org
 References: <cover.1739486121.git.robin.murphy@arm.com>
- <c2f0ae276fd5a18e1653bae8bb0c51670e35b283.1739486121.git.robin.murphy@arm.com>
- <20250214201435.GF3696814@ziepe.ca>
+ <87bd187fa98a025c9665747fbfe757a8bf249c18.1739486121.git.robin.murphy@arm.com>
+ <2a090f80-e145-410d-8d02-efdaf324c8c9@quicinc.com>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <20250214201435.GF3696814@ziepe.ca>
+In-Reply-To: <2a090f80-e145-410d-8d02-efdaf324c8c9@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 14/02/2025 8:14 pm, Jason Gunthorpe wrote:
-> On Thu, Feb 13, 2025 at 11:49:00PM +0000, Robin Murphy wrote:
+On 14/02/2025 12:57 pm, Charan Teja Kalla wrote:
+> Thanks a lot for posting these patches, Robin.
 > 
->> much just calling the same path twice. At client driver probe time,
->> dev->driver is obviously set; conversely at device_add(), or a
->> subsequent bus_iommu_probe(), any device waiting for an IOMMU really
-> 
-> Could you put the dev->driver test into iommu_device_use_default_domain()?
-> 
-> It looks like many of the cases are just guarding that call.
-> 
->> should *not* have a driver already, so we can use that as a condition to
->> disambiguate the two cases, and avoid recursing back into the IOMMU core
->> at the wrong times.
-> 
-> Which sounds like this:
-> 
->> +		mutex_unlock(&iommu_probe_device_lock);
->> +		dev->bus->dma_configure(dev);
->> +		mutex_lock(&iommu_probe_device_lock);
->> +	}
-> 
-> Shouldn't call iommu_device_use_default_domain() ?
-
-Semantically it shouldn't really be called at this stage, but it won't 
-be anyway since "to_<x>_driver(NULL)->driver_managed_dma" is not false - 
-trouble is it's also not true ;)
-
-> But... I couldn't guess what the problem with calling it is?
-> 
-> In the not-probed case it will see dev->iommu_group is NULL and succeed.
-> 
-> The probed case could be prevented by checking dev->iommu_group sooner
-> in __iommu_probe_device()?
-> 
-> Anyhow, the approach seems OK
-> 
->> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
->> index 9f4efa8f75a6..42b8f1833c3c 100644
->> --- a/drivers/acpi/scan.c
->> +++ b/drivers/acpi/scan.c
->> @@ -1619,6 +1619,9 @@ static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
->>   {
->>   	int err;
->>   
->> +	if (device_iommu_mapped(dev))
->> +		return 0;
-> 
-> This is unlocked and outside a driver context, it should have a
-> comment explaining why races with probe can't happen?
-
-Sure, for now this is more just an opportunistic thing - since we'll now 
-expect to come through this path twice, if we see a group assigned then 
-we know for sure that someone else already set up the fwspec for that to 
-happen, so there's definitely nothing to do here and we can skip 
-potentially waiting for iommu_probe_device_lock.
-
->> +	/*
->> +	 * For FDT-based systems and ACPI IORT/VIOT, the common firmware parsing
->> +	 * is buried in the bus dma_configure path. Properly unpicking that is
->> +	 * still a fairly big job, so for now just invoke the whole thing. Our
->> +	 * bus_iommu_probe() walk may see devices with drivers already bound,
->> +	 * but that must mean they're already configured - either probed by
->> +	 * another IOMMU, or there was no IOMMU for iommu_fwspec_init() to wait
->> +	 * for - so either way we can safely skip this and avoid worrying about
->> +	 * those recursing back here thinking they need a replay call.
->> +	 */
->> +	if (!dev->driver && dev->bus->dma_configure) {
->> +		mutex_unlock(&iommu_probe_device_lock);
->> +		dev->bus->dma_configure(dev);
->> +		mutex_lock(&iommu_probe_device_lock);
->> +	}
->> +
->> +	/*
->> +	 * At this point, either valid devices now have a fwspec, or we can
->> +	 * assume that only one of Intel, AMD, s390, PAMU or legacy SMMUv2 can
->> +	 * be present, and that any of their registered instances has suitable
->> +	 * ops for probing, and thus cheekily co-opt the same mechanism.
->> +	 */
->> +	ops = iommu_fwspec_ops(dev_iommu_fwspec_get(dev));
->> +	if (!ops)
->> +		return -ENODEV;
->> +
->>   	/* Device is probed already if in a group */
->>   	if (dev->iommu_group)
+> On 2/14/2025 5:18 AM, Robin Murphy wrote:
+>>   drivers/iommu/iommu.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 870c3cdbd0f6..2486f6d6ef68 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -3097,6 +3097,11 @@ int iommu_device_use_default_domain(struct device *dev)
 >>   		return 0;
-> 
-> This is the test I mean, if iommu_group is set then
-> dev->iommu->iommu_dev->ops is supposed to be valid too. It seems like
-> it should be done earlier..
-
-Yeah, looking at it now I'm really not sure why this ended up in this 
-order - I guess I was effectively adding the dma_configure() call to the 
-front of the existing iommu_fwspec_ops() check, and then I moved the 
-lockdep_assert() up to make more sense. But then the ops check probably 
-should have been after the group check to begin with, for much the same 
-reasoning as above. I'll sort that out for v2.
-
->> +	/*
->> +	 * And if we do now see any replay calls, they would indicate someone
->> +	 * misusing the dma_configure path outside bus code.
->> +	 */
->> +	if (dev_iommu_fwspec_get(dev) && dev->driver)
->> +		dev_WARN(dev, "late IOMMU probe at driver bind, something fishy here!\n");
-> 
-> WARN_ON_ONCE or dump_stack() to get the stack trace out?
-
-Indeed, hence dev_WARN() (!= dev_warn())
-
->> @@ -121,6 +121,9 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
->>   	if (!master_np)
->>   		return -ENODEV;
 >>   
->> +	if (device_iommu_mapped(dev))
->> +		return 0;
+>>   	mutex_lock(&group->mutex);
+>> +	/* We may race against bus_iommu_probe() finalising groups here */
+>> +	if (!group->default_domain) {
+>> +		ret = -EPROBE_DEFER;
+>> +		goto unlock_out;
+>> +	}
 > 
-> Same note
-
-Ack.
-
->> @@ -151,7 +154,12 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
->>   		iommu_fwspec_free(dev);
->>   	mutex_unlock(&iommu_probe_device_lock);
->>   
->> -	if (!err && dev->bus)
->> +	/*
->> +	 * If we have reason to believe the IOMMU driver missed the initial
->> +	 * iommu_probe_device() call for dev, try to fix it up. This should
->> +	 * no longer happen unless of_dma_configure() is being misused.
->> +	 */
->> +	if (!err && dev->driver)
->>   		err = iommu_probe_device(dev);
+> We just hit the issue again even after picking up this patch, though
+> very hard to reproduce, on 6.6 LTS.
 > 
-> This is being conservative? After some time of nobody complaining
-> it can be removed?
+> After code inspection, it seems the issue is that - default domain is
+> setup in the bus_iommu_probe() before hitting of this replay.
+> 
+> A:async client probe in platform_dma_configure(), B:bus_iommu_probe() :-
+> 
+> 1) A: sets up iommu_fwspec under iommu_probe_device_lock.
+> 
+> 2) B: Sets the dev->iommu_group under iommu_probe_device_lock. Domain
+> setup is deferred.
+> 
+> 3) A: Returns with out allocating the default domain, as
+> dev->iommu_group is set, whose checks are also made under the same
+> 'iommu_probe_device_lock'. __This miss setting of the valid dev->dma_ops__.
+> 
+> 4) B: Sets up the group->default_domain under group->mutex.
+> 
+> 5) A: iommu_device_use_default_domain(): Relies on this
+> group->default_domain, under the same mutex, to decide if need to go for
+> replay, which is skipped. This is skipping the setting up of valid
+> dma_ops and that's an issue.
+> 
+> But I don't think that the same issue exists on 6.13 because of your
+> patch, b67483b3c44e ("iommu/dma: Centralise iommu_setup_dma_ops()").
+> bus_iommu_probe():
+>       list_for_each_entry_safe(group, next, &group_list, entry) {
+> 		mutex_lock(&group->mutex);
+> 		for_each_group_device(group, gdev)
+> 			iommu_setup_dma_ops(gdev->dev);
+> 		mutex_unlock(&group->mutex);
+>       }
+> 
+> This makes the step4 above force to use the valid dma_iommu api, thus I
+> see no issue when there is no probe deferral.
+> 
+> So, I think we are good with this patch on 6.13.
+> 
+> Now coming back to 6.6 LTS, any ideas you have here, please?
 
-Indeed I feel sufficiently confident about the ACPI path (which at the 
-moment is effectively arm64-only) to remove it from there already, but 
-less so about all the assorted DT platforms. That said, I guess adding a 
-new dependency on dev->driver here might still represent a change of 
-behaviour for the sketchy direct calls of of_dma_configure() outside bus 
-code, since in a lot of those the target device doesn't actually have 
-its own driver either. Maybe I need to think about this a bit more...
+Thanks for the analysis once again! I've not looked closely at 6.6 yet, 
+but if we're all happy this looks like the right fix for mainline then 
+I'll start having a look at the backport as soon as I can (so much for 
+hoping it would be simple...)
 
-Thanks,
+Cheers,
 Robin.
+
+> 
+>>   	if (group->owner_cnt) {
+>>   		if (group->domain != group->default_domain || group->owner ||
+>>   		    !xa_empty(&group->pasid_array)) {
+> 
+> 
+> Thanks,
+> Charan
