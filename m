@@ -1,152 +1,112 @@
-Received: from lahtoruutu.iki.fi (lahtoruutu.iki.fi [185.185.170.37])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFA08189BB0
-	for <iommu@lists.linux.dev>; Sun, 16 Feb 2025 10:27:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=185.185.170.37
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739701658; cv=pass; b=X3gtZYkflRIX5jlP43ZHkasSopPMgHeg81XzWayjre6UFF6oqvCTWYVpwdfWIOdO+NEWw4pVkvcIMIY3dNiv0OlnGjKKQlUAEW43qPw6gml3Or7+G4q9m62psST8nLIlFfqWRyZ0nqQjUrLogWWj7drBvMTdiKQGPAW98xdXEb4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739701658; c=relaxed/simple;
-	bh=ZJVKciOgP7PmjbwdZRxbXiNIcAo73yiYS1lbDWwoIfY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=D8kQ00jCNwypYdevGyiBb27/Xl5cShgfFfDcALMX3xPQLlYbdeQUsB3BwWT8o79Ct/2xufrUy5flnFavl+vkdfwf3Kt1P9fzrS/Q/9RLfg7/dHpbLqHjPDpQfsSVG0lpb+chApvSaI/oxJZP2DmlXZLhb6LZGM8TRWa0JBEXWro=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iki.fi; spf=pass smtp.mailfrom=iki.fi; dkim=pass (2048-bit key) header.d=iki.fi header.i=@iki.fi header.b=K+An97/r; arc=pass smtp.client-ip=185.185.170.37
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iki.fi
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iki.fi
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4153216E30
+	for <iommu@lists.linux.dev>; Mon, 17 Feb 2025 10:19:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739787543; cv=none; b=SQDdK95wiaGIxnygRcxrgYnmFt4LDTMWHdJSphpWhmnrUg9rCZ8BpXNHpEBQwRfaoSTON+Uza/4L2YZOi0gv7nUmuNBjdJJRQ12RvhYUSxMY+N6JmnYEAv0o6X4PikeQ3X77ROWR0MkeGCWKEp7SgqedXCtvxw7eVLMy/tvTv1I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739787543; c=relaxed/simple;
+	bh=6aGtaVpBLW3kX82mTVYH8G/6ueq7kvdSb7JTLpAZZLc=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=LcEL3ayET0svL1H8rRn2s/BMnNxUjnH/Zzq7oYbVUbOx3QE0XcFq5jYjOLr4ymj+5E4U6uZL3a1xZbjPHdiGJVvxNA2tjRNnsGfraO/L12qbT4iJM61n0KKv0MNwy/SU5YSzTpyVjobREVITExic6luuw+ipDbt+oiAaxwIqv90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=E0Vp8QDq; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=iki.fi header.i=@iki.fi header.b="K+An97/r"
-Received: from hillosipuli.retiisi.eu (2a00-1190-d1dd-0-c641-1eff-feae-163c.v6.cust.suomicom.net [IPv6:2a00:1190:d1dd:0:c641:1eff:feae:163c])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: sailus)
-	by lahtoruutu.iki.fi (Postfix) with ESMTPSA id 4Ywhmz4Kyhz49Pwk;
-	Sun, 16 Feb 2025 12:27:31 +0200 (EET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=lahtoruutu;
-	t=1739701653;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8UDdI7fW/FRxm0SJsuY4wz4Lj3XvYXPcwSHR/kIT/08=;
-	b=K+An97/rQeUnbTmrWPrvvfYWYEb0ba6S0P++RyswK5SuQfvgm3ptDEKeMwntqCAuCHjpEl
-	U17q8hUo8bRKpnVdbJqr+t3yq76iR+EpSg2kk0kEnbb4DM1gYLd+lRWs3ssHf7pUa+mQPT
-	xndl+4EeWuMmGCLN41AIzujd2Ds0DaSwvJG1Qk89L3TATKXW17W6NqGCsX/exoA+37rbgg
-	v4DiGTVcaDbqW36C/fBL0V31iCP98EESFsRzL/7g1ubE3ZQIstdC/9o42TIFbEd4cETOUQ
-	LTHyNXFiZXXdD/8d8GdF7cU7MzzF9ufSdxqpaXlzMd4kTcWEnuQRwWHZOmL5eQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
-	s=lahtoruutu; t=1739701653;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8UDdI7fW/FRxm0SJsuY4wz4Lj3XvYXPcwSHR/kIT/08=;
-	b=VJOMQUOJqf5983pAmXgu3K/uH+noiSsRM2knVL/ON9EbWzS6A6hSQgNFK7l8e9+dvostFq
-	EPmfj7+Mz3OP+2dRWdfP3h0wcqqyXBPuq2w62LRQrFx4EKiGgVHcV290GYmPwsR1m/b+yJ
-	WAYgeO+of8dZ6Qc1ad5OwkFfdIdM79QQgSJGg+M/6JyD0kQ7ZiUtEs0Aw66WYiVUpolagY
-	TTrtRS5YCTrygiy3u9EhqEBWqc/dUbNglQsGvfTU/QGSyy8s506Dkffx/zFvGdH8R+m2uV
-	fylchr+47fBYNb72TEVe3fLxEaMTsBszCvph+JuHlsOSCMfwWP5hEUsrR/fjnQ==
-ARC-Seal: i=1; s=lahtoruutu; d=iki.fi; t=1739701653; a=rsa-sha256;
-	cv=none;
-	b=ZBJ56CB07Z+z1S8bIb+4rr4vRBy8w5OVBoISiy3QMAVjzbBtBLc5Y1soyYHWX8fOb6mCdY
-	jbiZ5urA6n9O3nnnQGXoNeLv8TR3PTkyEQA4rh0DZOZ3v0PQgKLzTOiThP7zB3sZ+nCeYk
-	Xa4cFZEijGV377BvPEslHroBqWnxDMsTLaqGhdsWkl3XJdX9Gr63F4Zq5WRHkjYKhUkJV8
-	KyZCnWKQsA2yN8oIm5dk2UP4KgYwtRJMG3Xq8f8MPnzc1zwww/bql+32zYq+jDnDRQUKFC
-	OLlM+FWzb9oIH6DLu6045YxYhnmbdl58TNcn/MbSxONjf06B1bw5MTRzyNAu/Q==
-ARC-Authentication-Results: i=1;
-	ORIGINATING;
-	auth=pass smtp.auth=sailus smtp.mailfrom=sakari.ailus@iki.fi
-Received: from valkosipuli.retiisi.eu (valkosipuli.localdomain [192.168.4.2])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by hillosipuli.retiisi.eu (Postfix) with ESMTPS id 35F8A634C93;
-	Sun, 16 Feb 2025 12:27:30 +0200 (EET)
-Date: Sun, 16 Feb 2025 10:27:30 +0000
-From: Sakari Ailus <sakari.ailus@iki.fi>
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Sicelo <absicsz@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
-	joro@8bytes.org, will@kernel.org, mchehab@kernel.org,
-	andersson@kernel.org, mathieu.poirier@linaro.org, hns@goldelico.com,
-	b-padhi@ti.com, andreas@kemnade.info, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-remoteproc@vger.kernel.org
-Subject: Re: [PATCH 2/4] media: omap3isp: Handle ARM dma_iommu_mapping
-Message-ID: <Z7G9kkYgvWQu2xPa@valkosipuli.retiisi.eu>
-References: <cover.1730136799.git.robin.murphy@arm.com>
- <34542c9552ce8cd12a5c292e79589acd964075d5.1730136799.git.robin.murphy@arm.com>
- <Z7A61N13dZpu53xI@tp440p.steeds.sam>
- <20250215194328.GF12632@pendragon.ideasonboard.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="E0Vp8QDq"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4398738217aso5019645e9.3
+        for <iommu@lists.linux.dev>; Mon, 17 Feb 2025 02:19:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1739787540; x=1740392340; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:date:message-id:subject
+         :references:in-reply-to:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=I16xu1ecVLtS/758jqaD8vtXmxaLQ5I+Y1leyu/ANx0=;
+        b=E0Vp8QDqSR53AnWSAjxee7iqxhNZq0G+Y1W+ZBWHgA0wHmlgI9nYV9o/Fc3mmBR1dl
+         uQOY/CUVgexMMBDykovU4iHP5j3VwTLtxIkwTtfobLniYoWvIwnoxaAxnsrqAv9jyuv4
+         ZATXgti101wTzeWCWe2f4ATHZ9tqn50RiCqLttn7Bj6Wv6pTC8yH85vsf5iBofVxHJjx
+         ZiG7hj0euHVKR1m/6yyWFuCUUvzl1HC/9pAdMS9juhf54JnpMlnp7XwUPseQS11pzqQW
+         RMgjhdzkTNhdmhWIuhPKc3yMTiST6UJfaV1arj3POK4JDT0+U6T7qVhKlmnroMo5QyBW
+         tHlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739787540; x=1740392340;
+        h=content-transfer-encoding:mime-version:date:message-id:subject
+         :references:in-reply-to:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=I16xu1ecVLtS/758jqaD8vtXmxaLQ5I+Y1leyu/ANx0=;
+        b=BGnxeSnO7wdJ4FL19YA1vw2TsfBEtMr42foq0alcegSBkMgGLtHeNLnmzfWIsXjOOm
+         MBUEzG8oH4lSVmmsinGaDfmyUcq6gRYzvKwNo8UZOwt2DAUaVVvcLVFUIkvT2Gvq7XNA
+         Nr7j0Xlamk+3U7chpb6/B7d0vnf+v8kityLfFxcEmYAE68wUcJLk6oKoDRIVhPolUew0
+         CLOTKNuokYdv/UwmT3DHK5xYmL4Vbd77xVYYfIutNx2T0rLPbfhag+9H6R0433G1CXcJ
+         MxtFdPzage0qujtBuvD60kmL+EuIOdb2ACF4Xrv7W/jl0ZHOwS8tcXJX0E7c7B5BmXCr
+         pn+Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXy/hHgpfbWkElFHAqtw5HlOam8BUSsdyDoHlKiRLzUp6oawzz3UJeWi11RsdolLow6NfaQhw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxG9cE4ewxLvFgwN2K3Bg4gFZsT946JM16pd9frM6L7x8AJat3w
+	SQtLojiLwOBpT2aUBHs1nF/YHehM0FxcN++dGbMxXlEyTz7JQvOmjupfgQ4q1Kk=
+X-Gm-Gg: ASbGnctxOszCLtQ/Imqth9ioBzFHrGSUg8LHT8kvt6/bCnTvJqVdK204/f/AB2vrcNb
+	yJuwWLzedmAslbCO9z6iwZKkIiDOnJuc3lheXZamNwmjnzgVeaVap/+Lu6BAectuaksk2f143VL
+	PsBG0ohtUWZL1NwjTBfw9Z9VLeanCioJbhQZ3SM6V3zZtXacmjV/A8VYTM4zt+LUcNUcOh3Xh/5
+	GJ/MGnfxahEmgzWHxCWhJchvEiYneAYeuCjuZGlPNrZ0vHJoFyT4bzJQd8WvWm5oVCG2HgXEoSh
+	bhkDGnBA+KW/6HFT2r1dyP+wDschU7mkog==
+X-Google-Smtp-Source: AGHT+IHCqlAmBeWIh3RQpDK/wqa/aOOAMFIkBi6CvjLI3mDlej3LMKvDj2NLspjgKzRYrxIEx1isLQ==
+X-Received: by 2002:a05:600c:3b0f:b0:439:8c6d:7ad9 with SMTP id 5b1f17b1804b1-4398c6d7da4mr9647825e9.31.1739787540052;
+        Mon, 17 Feb 2025 02:19:00 -0800 (PST)
+Received: from [192.168.68.111] ([5.133.47.210])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43970c8fed9sm35658385e9.0.2025.02.17.02.18.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Feb 2025 02:18:59 -0800 (PST)
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, 
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
+ Daniil Titov <daniilt971@gmail.com>, Dang Huynh <danct12@riseup.net>
+In-Reply-To: <20250211-msm8937-v1-0-7d27ed67f708@mainlining.org>
+References: <20250211-msm8937-v1-0-7d27ed67f708@mainlining.org>
+Subject: Re: (subset) [PATCH 00/10] Initial support of MSM8937 and Xiaomi
+ Redmi 3S
+Message-Id: <173978753882.27418.10124969396742370731.b4-ty@linaro.org>
+Date: Mon, 17 Feb 2025 10:18:58 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250215194328.GF12632@pendragon.ideasonboard.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.12.2
 
-Hi Laurent, others,
 
-On Sat, Feb 15, 2025 at 09:43:28PM +0200, Laurent Pinchart wrote:
-> CC'ing Sakari.
+On Tue, 11 Feb 2025 23:37:44 +0100, Barnabás Czémán wrote:
+> This patch series add initial support for MSM8937 SoC
+> and Xiaomi Redmi 3S (land).
 > 
-> Sakari, would you pick this patch ?
-
-Thanks! I wonder what happened -- it wasn't visible in Linuxtv.org
-Patchwork but could be found via the message id.
-
-It's in my tree now.
-
+> The series is extending the MSM8917 gcc and pinctrl drivers
+> because they are sibling SoCs.
+> MSM8937 have 4 more A53 cores and have one more dsi port then
+> MSM8917.
+> It implements little-big architecture and uses Adreno 505.
 > 
-> On Sat, Feb 15, 2025 at 08:57:24AM +0200, Sicelo wrote:
-> > On Mon, Oct 28, 2024 at 05:58:36PM +0000, Robin Murphy wrote:
-> > > It's no longer practical for the OMAP IOMMU driver to trick
-> > > arm_setup_iommu_dma_ops() into ignoring its presence, so let's use the
-> > > same tactic as other IOMMU API users on 32-bit ARM and explicitly kick
-> > > the arch code's dma_iommu_mapping out of the way to avoid problems.
-> > > 
-> > > Fixes: 4720287c7bf7 ("iommu: Remove struct iommu_ops *iommu from arch_setup_dma_ops()")
-> > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > > ---
-> > >  drivers/media/platform/ti/omap3isp/isp.c | 7 +++++++
-> > >  1 file changed, 7 insertions(+)
-> > > 
-> > > diff --git a/drivers/media/platform/ti/omap3isp/isp.c b/drivers/media/platform/ti/omap3isp/isp.c
-> > > index 91101ba88ef0..b2210841a320 100644
-> > > --- a/drivers/media/platform/ti/omap3isp/isp.c
-> > > +++ b/drivers/media/platform/ti/omap3isp/isp.c
-> > > @@ -1961,6 +1961,13 @@ static int isp_attach_iommu(struct isp_device *isp)
-> > >  	struct dma_iommu_mapping *mapping;
-> > >  	int ret;
-> > >  
-> > > +	/* We always want to replace any default mapping from the arch code */
-> > > +	mapping = to_dma_iommu_mapping(isp->dev);
-> > > +	if (mapping) {
-> > > +		arm_iommu_detach_device(isp->dev);
-> > > +		arm_iommu_release_mapping(mapping);
-> > > +	}
-> > > +
-> > >  	/*
-> > >  	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
-> > >  	 * VAs. This will allocate a corresponding IOMMU domain.
-> > > -- 
-> > > 2.39.2.101.g768bb238c484.dirty
-> > > 
-> > 
-> > I have finally found time to test this patch on the Nokia N900 and can
-> > confirm it is working fine.
-> > 
-> > I was wondering - is there a reason that it is not merged yet? I tested
-> > on 6.14-rc2, which did not have it, and notice it is also not in
-> > linux-next.
-> > 
-> > If it helps:
-> > 
-> > Tested-by: Sicelo A. Mhlongo <absicsz@gmail.com>
-> 
+> [...]
 
+Applied, thanks!
+
+[06/10] dt-bindings: nvmem: Add compatible for MS8937
+        commit: 07d914dd683f9ccb62a530fad76c36d5d4e6d894
+
+Best regards,
 -- 
-Regards,
+Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-Sakari Ailus
