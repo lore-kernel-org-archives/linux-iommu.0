@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 129611EA73
-	for <iommu@lists.linux.dev>; Mon, 17 Feb 2025 13:52:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87B842222B1
+	for <iommu@lists.linux.dev>; Mon, 17 Feb 2025 15:00:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739800378; cv=none; b=ElCOqNQuwsLy801f4LfRHpJ+prUC417geMOxABCRdnPuYM3yoEXcFIYA1iN4wry8oNsh0kIQqtumnt6pyNiUsV+q0KV0VXZt+Ngxux//o9492rdYFKVnVfypqlXNHToSypexDjvEJB2P94x5e1fLPkFaqKvbzxFEMxY7cZKtNns=
+	t=1739804455; cv=none; b=tQ2Pev6inBm0q2ZwaV7PUg+iq57RxDcOUfH4x2jww03QoBg4C5VYnPvvaPgpYQoDWvuePFYgiI1S/+pOP/Qbkge9VSGF82DPtLv95aTy0ukWFs1N3ZOIrMMkotGZ3oDHqTRjL/D5aezoOfXXU2DMaFW+bcKJRDkzpZc2boKgLus=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739800378; c=relaxed/simple;
-	bh=sdCmF9l7bbBamYYK1Iuac7leIv7bdMqi54XYNTep3vE=;
+	s=arc-20240116; t=1739804455; c=relaxed/simple;
+	bh=jMq0rzaJsv+MpOoTrFRgRWYF77w0q1RbPXY+cKmV/mA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ah5SZ4crHzkaockuNtGuL01xxdS8RYpNFy2O/ohTL1Y0RO41UIm977UfVS7pEKOmkKRMSFGCRjmB18k+UAF/cylYBxZpo9hqE6mx0ULLYbzAKe7GaFgtdmY6FTsGHYXaTGlGuk1lzL6bKlqU9X0FAKchgSU+vLa5QmewjknXe5I=
+	 In-Reply-To:Content-Type; b=l+KxtSd0WdRlO0MjF2ZIijjOwGIaVakXW21rVBO7je+92SrXqQzW+/DxZPCPk1muzUyaYy4Sweq1KO15FGhflpXsgf3Nby5l4LFCBHvUwD3nQyF3P0PUE470gZJYSDqxqoIhoUA4D4eil4luHemUL/K1Wy8tJpMBoaQJRv42hHE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8114313D5;
-	Mon, 17 Feb 2025 05:53:15 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D949C152B;
+	Mon, 17 Feb 2025 07:01:11 -0800 (PST)
 Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 873683F6A8;
-	Mon, 17 Feb 2025 05:52:53 -0800 (PST)
-Message-ID: <dd57c3ba-246e-414d-a9c1-eb2cff032d83@arm.com>
-Date: Mon, 17 Feb 2025 13:52:46 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5CF9D3F6A8;
+	Mon, 17 Feb 2025 07:00:49 -0800 (PST)
+Message-ID: <4a7823b2-2634-4148-8446-ad01a09b6880@arm.com>
+Date: Mon, 17 Feb 2025 15:00:46 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,48 +27,174 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
-To: Daniel Almeida <daniel.almeida@collabora.com>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Cc: rust-for-linux@vger.kernel.org, dakr@kernel.org, aliceryhl@google.com,
- Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
- <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
- <633274AD-E55C-4A90-AB72-33D3E176176F@collabora.com>
+Subject: Re: [PATCH 2/2] iommu: Get DT/ACPI parsing into the proper probe path
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Hanjun Guo <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Danilo Krummrich <dakr@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
+ Laurentiu Tudor <laurentiu.tudor@nxp.com>, Nipun Gupta
+ <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-pci@vger.kernel.org, Charan Teja Kalla <quic_charante@quicinc.com>
+References: <cover.1739486121.git.robin.murphy@arm.com>
+ <c2f0ae276fd5a18e1653bae8bb0c51670e35b283.1739486121.git.robin.murphy@arm.com>
+ <20250214201435.GF3696814@ziepe.ca>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <633274AD-E55C-4A90-AB72-33D3E176176F@collabora.com>
+In-Reply-To: <20250214201435.GF3696814@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 15/02/2025 9:40 pm, Daniel Almeida wrote:
-> Hi Abdiel
+On 14/02/2025 8:14 pm, Jason Gunthorpe wrote:
+> On Thu, Feb 13, 2025 at 11:49:00PM +0000, Robin Murphy wrote:
 > 
-> I noticed that there’s no API to call `dma_set_mask/dma_set_coherent_mask`.
+>> much just calling the same path twice. At client driver probe time,
+>> dev->driver is obviously set; conversely at device_add(), or a
+>> subsequent bus_iommu_probe(), any device waiting for an IOMMU really
 > 
-> This should probably be included, i.e.:
+> Could you put the dev->driver test into iommu_device_use_default_domain()?
 > 
-> ```
-> By default, the kernel assumes that your device can address 32-bits of DMA addressing.
-> For a 64-bit capable device, this needs to be increased, and for a device with limitations,
-> it needs to be decreased.
-> ```
+> It looks like many of the cases are just guarding that call.
+> 
+>> should *not* have a driver already, so we can use that as a condition to
+>> disambiguate the two cases, and avoid recursing back into the IOMMU core
+>> at the wrong times.
+> 
+> Which sounds like this:
+> 
+>> +		mutex_unlock(&iommu_probe_device_lock);
+>> +		dev->bus->dma_configure(dev);
+>> +		mutex_lock(&iommu_probe_device_lock);
+>> +	}
+> 
+> Shouldn't call iommu_device_use_default_domain() ?
 
-Oh, good point (and I'm rather ashamed I missed that!)
+Semantically it shouldn't really be called at this stage, but it won't 
+be anyway since "to_<x>_driver(NULL)->driver_managed_dma" is not false - 
+trouble is it's also not true ;)
 
-FWIW we've been wanting to steer away from relying on the default mask 
-in new code, so it would be quite neat to actually enforce that 
-allocations fail if dma_coherent_mask hasn't been explicitly set 
-(assuming it's sufficiently cheap to keep a flag in the Device handle or 
-something like that - it's not the end of the world if it isn't practical).
+> But... I couldn't guess what the problem with calling it is?
+> 
+> In the not-probed case it will see dev->iommu_group is NULL and succeed.
+> 
+> The probed case could be prevented by checking dev->iommu_group sooner
+> in __iommu_probe_device()?
+> 
+> Anyhow, the approach seems OK
+> 
+>> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+>> index 9f4efa8f75a6..42b8f1833c3c 100644
+>> --- a/drivers/acpi/scan.c
+>> +++ b/drivers/acpi/scan.c
+>> @@ -1619,6 +1619,9 @@ static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
+>>   {
+>>   	int err;
+>>   
+>> +	if (device_iommu_mapped(dev))
+>> +		return 0;
+> 
+> This is unlocked and outside a driver context, it should have a
+> comment explaining why races with probe can't happen?
+
+Sure, for now this is more just an opportunistic thing - since we'll now 
+expect to come through this path twice, if we see a group assigned then 
+we know for sure that someone else already set up the fwspec for that to 
+happen, so there's definitely nothing to do here and we can skip 
+potentially waiting for iommu_probe_device_lock.
+
+>> +	/*
+>> +	 * For FDT-based systems and ACPI IORT/VIOT, the common firmware parsing
+>> +	 * is buried in the bus dma_configure path. Properly unpicking that is
+>> +	 * still a fairly big job, so for now just invoke the whole thing. Our
+>> +	 * bus_iommu_probe() walk may see devices with drivers already bound,
+>> +	 * but that must mean they're already configured - either probed by
+>> +	 * another IOMMU, or there was no IOMMU for iommu_fwspec_init() to wait
+>> +	 * for - so either way we can safely skip this and avoid worrying about
+>> +	 * those recursing back here thinking they need a replay call.
+>> +	 */
+>> +	if (!dev->driver && dev->bus->dma_configure) {
+>> +		mutex_unlock(&iommu_probe_device_lock);
+>> +		dev->bus->dma_configure(dev);
+>> +		mutex_lock(&iommu_probe_device_lock);
+>> +	}
+>> +
+>> +	/*
+>> +	 * At this point, either valid devices now have a fwspec, or we can
+>> +	 * assume that only one of Intel, AMD, s390, PAMU or legacy SMMUv2 can
+>> +	 * be present, and that any of their registered instances has suitable
+>> +	 * ops for probing, and thus cheekily co-opt the same mechanism.
+>> +	 */
+>> +	ops = iommu_fwspec_ops(dev_iommu_fwspec_get(dev));
+>> +	if (!ops)
+>> +		return -ENODEV;
+>> +
+>>   	/* Device is probed already if in a group */
+>>   	if (dev->iommu_group)
+>>   		return 0;
+> 
+> This is the test I mean, if iommu_group is set then
+> dev->iommu->iommu_dev->ops is supposed to be valid too. It seems like
+> it should be done earlier..
+
+Yeah, looking at it now I'm really not sure why this ended up in this 
+order - I guess I was effectively adding the dma_configure() call to the 
+front of the existing iommu_fwspec_ops() check, and then I moved the 
+lockdep_assert() up to make more sense. But then the ops check probably 
+should have been after the group check to begin with, for much the same 
+reasoning as above. I'll sort that out for v2.
+
+>> +	/*
+>> +	 * And if we do now see any replay calls, they would indicate someone
+>> +	 * misusing the dma_configure path outside bus code.
+>> +	 */
+>> +	if (dev_iommu_fwspec_get(dev) && dev->driver)
+>> +		dev_WARN(dev, "late IOMMU probe at driver bind, something fishy here!\n");
+> 
+> WARN_ON_ONCE or dump_stack() to get the stack trace out?
+
+Indeed, hence dev_WARN() (!= dev_warn())
+
+>> @@ -121,6 +121,9 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+>>   	if (!master_np)
+>>   		return -ENODEV;
+>>   
+>> +	if (device_iommu_mapped(dev))
+>> +		return 0;
+> 
+> Same note
+
+Ack.
+
+>> @@ -151,7 +154,12 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+>>   		iommu_fwspec_free(dev);
+>>   	mutex_unlock(&iommu_probe_device_lock);
+>>   
+>> -	if (!err && dev->bus)
+>> +	/*
+>> +	 * If we have reason to believe the IOMMU driver missed the initial
+>> +	 * iommu_probe_device() call for dev, try to fix it up. This should
+>> +	 * no longer happen unless of_dma_configure() is being misused.
+>> +	 */
+>> +	if (!err && dev->driver)
+>>   		err = iommu_probe_device(dev);
+> 
+> This is being conservative? After some time of nobody complaining
+> it can be removed?
+
+Indeed I feel sufficiently confident about the ACPI path (which at the 
+moment is effectively arm64-only) to remove it from there already, but 
+less so about all the assorted DT platforms. That said, I guess adding a 
+new dependency on dev->driver here might still represent a change of 
+behaviour for the sketchy direct calls of of_dma_configure() outside bus 
+code, since in a lot of those the target device doesn't actually have 
+its own driver either. Maybe I need to think about this a bit more...
 
 Thanks,
 Robin.
