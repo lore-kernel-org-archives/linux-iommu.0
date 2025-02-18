@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C07E51E835D;
-	Tue, 18 Feb 2025 20:25:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEB572144C9;
+	Tue, 18 Feb 2025 20:27:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739910353; cv=none; b=LiCWrIFNkGx3hEVyjsXUTUm7e8+vmviaENUrJE5XtR81tZMaJxt+oSy+qoVkbfJXQWb60nVHghxPBw5OaR0YehF4dIvwmSIM8K6Qy+8AirqsWbg4NuCayJ/l38GbIYGCqBcZm5UGqv8wrEjnWAzbBLD2mYGoxE8SygAz4p+6l6w=
+	t=1739910439; cv=none; b=uyinVsH2/LKBJ0hYHbqNaWVrvG/nelesRLNU+4oY3brWEaJ/yu+Vi/3pC1wNGqYOGHg9u+5QPyIvIyupAvBurS48aL+EfrecUyekbog5eF7gXWe/zE/2YCeB97S6Sccf+TMwIDI+2nFxyz+HkdXQhFoislVR2JYxMtg+uA6RHBA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739910353; c=relaxed/simple;
+	s=arc-20240116; t=1739910439; c=relaxed/simple;
 	bh=M0IrEwfhk3Ww4fkOJEqrwcuhSN2tamd0Xb8zp06AIgo=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=PxuYPaUZOuJ1lvKptiKdfCERVnzT0xsvu8XuCJKyUW5zDLW3TFEIIY96qcqspqlrA3unpcnVc6HmPNCUMnmU4Qp7Db0PIyYctSjqeqxBPvyEQ59VZAAKIi4nT9XdeCxcI0fvgmn9G3xyehGHVao/kCH/96E4GgAeZWamOsnSlUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PDPQ7CCx; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=WqeiK/Pc9vm7p/B9h1aXCRXp4IpPZvYLWXK0HrOmXAm+KMUYVIySV0Rhh2v1mu4p5LT8cSECZiecBnLzfPfZt9pPCeqaK2JgwieTi8KptpHiotS2+MSv5wLjwCW0Qt/P+83+elBvD+Md0jIqOYGuIA+H8/HqWSn5iEcl2Ya4xAU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=odgzPJA4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PDPQ7CCx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E57CC4CEE2;
-	Tue, 18 Feb 2025 20:25:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="odgzPJA4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ACA1C4CEE2;
+	Tue, 18 Feb 2025 20:27:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739910353;
+	s=k20201202; t=1739910438;
 	bh=M0IrEwfhk3Ww4fkOJEqrwcuhSN2tamd0Xb8zp06AIgo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=PDPQ7CCxa9k5P0lv6cTWNDDqNSZpvr3ShNfGZ9pr3fV4sdmufjmahrbtrLUrhJkof
-	 fw2E/2ymaUgIIRvM5abUaoiAD5wzgAx8M91+UQh5I3Ay3XIusPevAwdL3DNumpqHoR
-	 BxMQ/W2o1PSyHX7AfBFs0lYm4CZRkcQkFlydKQhafjru2ZLyHfQgLOd6VHeFxausji
-	 dizFkzEG6zpI8+AP7k43QWWXdcJpwyEYxvlhC67PxJ9uFYqJgF41MBZZh20erDBZ5S
-	 b7mrxqbrUPH0xGj/FTaZ89zQFOo8lzgpeAWjL0ypbJlzKl8OpX0LzWkMmRcvo0w4CZ
-	 Up0Y0c6ADrXDQ==
+	b=odgzPJA4hOn4TeEDrEys2logFdXZGa0Y2cgk11TPkdsFzYboiVlJPHaqRXvkMZ/ia
+	 wdTixwikhXfGxxineqcjJrOCG7/TDyfuf8E2vITdZyWqwJeveGs4xXBvilr7q8Q2bx
+	 owcVRcI542xo2Ql4e0UEelcCgXZBJPzZK5Ucu3PGmADI/zcoAp6oZNwb4ngNm03/MF
+	 SORyR1Z1X6Zi+Q2X4ZFUcni61aTqCbglZkGVVlbeHj5j2fNAjLcoDIUIWt3GN78Czd
+	 H77+tsBzDVw8n9EL1GEVIIgR4r6gLTcTLMuYySDEmAohdhA3YAd0h6BD7Xe/POJ6+p
+	 nRMZcJg4jQKHQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -35,12 +35,12 @@ Cc: Jan Beulich <jbeulich@suse.com>,
 	Sasha Levin <sashal@kernel.org>,
 	xen-devel@lists.xenproject.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.13 27/31] Xen/swiotlb: mark xen_swiotlb_fixup() __init
-Date: Tue, 18 Feb 2025 15:24:47 -0500
-Message-Id: <20250218202455.3592096-27-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.12 27/31] Xen/swiotlb: mark xen_swiotlb_fixup() __init
+Date: Tue, 18 Feb 2025 15:26:13 -0500
+Message-Id: <20250218202619.3592630-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250218202455.3592096-1-sashal@kernel.org>
-References: <20250218202455.3592096-1-sashal@kernel.org>
+In-Reply-To: <20250218202619.3592630-1-sashal@kernel.org>
+References: <20250218202619.3592630-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,7 +49,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.13.3
+X-stable-base: Linux 6.12.15
 Content-Transfer-Encoding: 8bit
 
 From: Jan Beulich <jbeulich@suse.com>
