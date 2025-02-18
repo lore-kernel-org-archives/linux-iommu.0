@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 101CC223300;
-	Tue, 18 Feb 2025 20:28:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B11DF274248;
+	Tue, 18 Feb 2025 20:28:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739910496; cv=none; b=F/nyEnWyG26u6MXdHv9xmmhbRtxJPzvslS9Mz8tE6cakEWNxOkNP4zW4saOzrzVRsBWmf0RjvmAliyxPJDhrwojh54NAvOOYYmtQuCy/5anvm3SrKcqtyrKnPw65O+qy0D+4/rIN4TCV4CF1MS+/WDosM35/HJY7aAbinawpNi8=
+	t=1739910526; cv=none; b=dk6/p4+2t8wDpedOSOJpxyKepGmD/NZaiHMRcieaKpnn4vIYBx70Rn1JgM1IaD5/a2rg98BsPZhRa0Mp5trt6eKrMyTlli2kcfdxeHaLCmRRNEngUlMV00OSpS6BonAKm9ouJUh5i0L3aLdNtYcC4wwc4dqwjcBkvHxAaZJTylc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739910496; c=relaxed/simple;
-	bh=psUnPTN5sn4UjiS1mKpHKJxcp9RPSnp/kvkd2uig5vA=;
+	s=arc-20240116; t=1739910526; c=relaxed/simple;
+	bh=bQdm91Yl1iqCE5K3ojwjgZipgckujmqzZusDskuX2rA=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=itorDQ51KQu7GpBq64p+XbOrNt29+/nUSdpzQCFXhu9dDkXhi4AOdvBKYtJj5ojHf3Zbn/7h2hTrZ59qqiaPifDt/OjKogYfH3cCYE8e6qO27LMavDDTo71mNvpRdCWBR5GUDQERE9r4FGyZUsl5EFY2t7NI1pD1AqRfDpilbFk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uGrHFzju; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=ifFPixuhSbHNuh2UBV28Anj6XtSWb/EY9BuhXWPWz8qUaQkQo+dz9ZCVcO0tHD9qUHjlQovIxjbh2qHchBi2wj3G/zf69V4G4KFEiVnBU9LuBl2ehb1og+6J1hmM6Pl9zxxfvug8+P3E2UmdL5PMsmUqipTJ/na72iVZnvCRSGo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i5AHp70j; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uGrHFzju"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08EFDC4CEE4;
-	Tue, 18 Feb 2025 20:28:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i5AHp70j"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1EA5C4CEE4;
+	Tue, 18 Feb 2025 20:28:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739910495;
-	bh=psUnPTN5sn4UjiS1mKpHKJxcp9RPSnp/kvkd2uig5vA=;
+	s=k20201202; t=1739910526;
+	bh=bQdm91Yl1iqCE5K3ojwjgZipgckujmqzZusDskuX2rA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=uGrHFzjuaeR8s1zcNEUGwKsLcraqn9OEfD5Iq+jGEpOPJgb9MX0VCrugtGdLKVQID
-	 BzRw/AotnOZQSvgU9IDFzkz5QS8TqWxUNX4xnA7YJ2PIujXo7GauKiZaoUpKLog+Xx
-	 0YLc7yHEUn6LRmd8OIS+y5wxJfW+3XZEmCEchoiBk52nvri4vTPllvVL63K1SNj/VJ
-	 NomOpYvYEyqBLy2HnnwjOv22xPaX8tg1fI8SZGE+9S9p8DpJSRLeB2PLEPDOwHgNwu
-	 7+UX/AhxcqgGrt0doaL3R6zuNqUlm4kJhCErasUwRn3ui10NA//XAuw5m87R99YSmK
-	 8Lzs40i/ZSOww==
+	b=i5AHp70jgOYoxE505706KtLUT7SOzZzDxz4VaRixpXU5TnXmvJb7cWmPPX7kcxAT1
+	 nadjVDUJk2RQi3OKbzTGUPUpkQb3U0Kxu7Yzi6r+DRkShL5Typsp+BgQk+v8Hh5X1I
+	 tWeAIuDGPp8D7LaS+NKH6+WfW9uxhT1zv4W8Uex3R59asHGJ/KRBZ9OfnrhIUD3g66
+	 jZYXCM7R9RrX6RKR73p8mrGevROdpJ6N0KOyO7vp0TKZWNZSo5Ouwl6RO33Ft8Bb76
+	 OiFI0ZFbgBdZt5o7gVWofEnDPFCwJRlWB+QUex7JU7cnRpCtsmpeKofvihCEr/L6FG
+	 H1w+phMDXjCaw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -35,12 +35,12 @@ Cc: Jan Beulich <jbeulich@suse.com>,
 	Sasha Levin <sashal@kernel.org>,
 	xen-devel@lists.xenproject.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.6 16/17] Xen/swiotlb: mark xen_swiotlb_fixup() __init
-Date: Tue, 18 Feb 2025 15:27:40 -0500
-Message-Id: <20250218202743.3593296-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 13/13] Xen/swiotlb: mark xen_swiotlb_fixup() __init
+Date: Tue, 18 Feb 2025 15:28:17 -0500
+Message-Id: <20250218202819.3593598-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250218202743.3593296-1-sashal@kernel.org>
-References: <20250218202743.3593296-1-sashal@kernel.org>
+In-Reply-To: <20250218202819.3593598-1-sashal@kernel.org>
+References: <20250218202819.3593598-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,7 +49,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.6.78
+X-stable-base: Linux 6.1.128
 Content-Transfer-Encoding: 8bit
 
 From: Jan Beulich <jbeulich@suse.com>
@@ -69,7 +69,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 6d0d1c8a508bf..7f108bef54e64 100644
+index 0451e6ebc21a3..71ce0cd9e83de 100644
 --- a/drivers/xen/swiotlb-xen.c
 +++ b/drivers/xen/swiotlb-xen.c
 @@ -110,7 +110,7 @@ static int is_xen_swiotlb_buffer(struct device *dev, dma_addr_t dma_addr)
