@@ -1,229 +1,209 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CD4426B978;
-	Tue, 18 Feb 2025 14:40:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D45C7211499
+	for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 15:26:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739889610; cv=none; b=mkpDTZcaY/d1+IooUIVXd5Z/PuyA51ptQKDXUU1lf2HgxTR2zqArFzwIC7rRHi8FrrGVtldxW4ribhWtPpEy5haqTUfrC4DsSAQ94KfQTfBKIvDGnjb2NFvvX5j2uxKp5mYIOZPEM/WZbQqGPzeSXMdh1xYSnpQCCz1M7jzHjtE=
+	t=1739892375; cv=none; b=BpHKcy4QHm5Vb2l/QGwpaT0a7c3mrAGFBE0iTbgeqfqUfd1S1OXfuwjPW4D9/7GirGCUQ7U4FzyKaXWnhkU/yP1jV7X9rSsypoiuYT2nrqJu0Qjko8GzMjRv+/Q8yNHXT0lwEw6PossW2KeJMKQvmi9OB6/+KEtu1Y0soEN0er8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739889610; c=relaxed/simple;
-	bh=93gRKWZ9sWNKKYWRsAOLp1himHRHtqXLZ4xduD7iumM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Q/0Z1v+S9g2RGKdLPLGWCDjVG52moQspercLtHJOV94jFgRfY9U2jkemSoOPKpuBPr8fNmv7zUFFR9bMoVFJi3E+PGQNL9R/lvDIDKE3bBzq29QqxkxUit5KXsmtzR/OoHrVnKepN/ZXX05AVnnVB9E1uQUhBl4gGz69R5gBu7c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aOjZYJi/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739892375; c=relaxed/simple;
+	bh=MCi6w4bTzGOR3Wha/BNrzSMV7m4Lutseslj+c3YlFwo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=avPk4k613eUuAOGABvt89/GgfJ7dSaKwF5BxgJBd/+9l345ibA8plaZ+qVSoTtKQd9irEr2+k+xjmb5xuDCV0JGvfcgrP1r4Hkomz7dZ6CyS2JXR8JeP9B9NaevP6zd5HMm8heNWV+jalVqV9IQUYW1OFD3e37J2/rc9J447zyY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=X8Gbop5j; arc=none smtp.client-ip=209.85.167.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aOjZYJi/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4C47C4CEE2;
-	Tue, 18 Feb 2025 14:40:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739889610;
-	bh=93gRKWZ9sWNKKYWRsAOLp1himHRHtqXLZ4xduD7iumM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=aOjZYJi/6jxu4Wz33SZbEiDWRMpgYqj3t0BN62YsObgYRi+v5V9vcmuMdPn000Zmj
-	 CA0qpDJt1s5PD0ZGde96Vi3mcgbXduXyw/UeSCOffLH8RaX1cR6D/zGc7Io8xIth4q
-	 gqC1psROg4g1BA35r/vYrjpUzbUGGvxKS5y74xgOW82Wzjz3h/XwellFHpOglTH8Mu
-	 8FurJJf6AeW2FIOLgCHwmjfGDaxPANXZW7/sM4wvs1QkivBLlcKjKcOiDi+d+w6BcE
-	 la/Yjh5/uLoQz0Z2VK8Geb2DR3SemWh+3x0vQLYr24JuDxpXa0uJBOHKiXYzjuFgbQ
-	 RQpddGOIfMLtw==
-Message-ID: <3e6505a4-ba21-4dd6-8ad2-8e0ef8846fc3@kernel.org>
-Date: Tue, 18 Feb 2025 15:40:05 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="X8Gbop5j"
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-54529eeb38aso4297096e87.2
+        for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 07:26:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1739892372; x=1740497172; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=m5Ga61njTpPCrxXTVKsM0RIsYFLUCCHcjVUbSQ/1z+4=;
+        b=X8Gbop5jxZPXsGGfPdgi//ivMRmEbGz/IYWVoZ9De8rnMvGq/9SjtxreZupYGdNYqY
+         s/0GgmCqYiXRKxhGP78c2fZbYkxwlYGb+LyE80VJqZs4EQyLaPt/HHFpsPpAnV3wd7Wv
+         5j3Z+E5zVQhwu2cQCaggeBQJTk2ztakURNgXnZbgIFhgYLIgq54n/OMTGVy8WaLuTwuI
+         VO1FiAZsBqwsIi8bSpgExuIlK91wwFP8raryYpgTeYpdSUS5qI+jIXAKWvDfMDBJ49bY
+         4kT0mZQioIXKxVV8wJxjJPI/TJkQW0fDpvpMSXH/mh1GxTeNfITnE8p/ulBb+iTy+hna
+         YGVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739892372; x=1740497172;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=m5Ga61njTpPCrxXTVKsM0RIsYFLUCCHcjVUbSQ/1z+4=;
+        b=jBau4XgqdNm4sP/25y55Gpic//yxeFyetwqE4dFFi+wd4EkntlHavb8GQVApsAkbwf
+         m5BEdpV5hOkL7EVNNRE8drr9eQrXMPCEzLCQgReGb9E4qkiEZSCRekkeMEmVKQYWEGMX
+         JQX9pplXIVO6WGtzteYmBX1ObEAah7Y9CgNdieOAy2CWSmJu12wU9r+/+KHPhEBADTBL
+         CQz9xQX5+SR/XLMagjb5wOkYBF1x4M6o+TruETPlGLsHWpwJwHZBPcFSuP6IE/jsl9rR
+         s/djmqOflprjNK9k0y9RVu/NxPtxc1c8kpV1Z6nItyP5rCDGDYro30/SFRX/b80YtN/H
+         eKBw==
+X-Forwarded-Encrypted: i=1; AJvYcCXZbn7nIelunf1eiB24yD9KNdUxMRN2H4sTaHvWuk+qB4+q6bO1MdeWiW4YNWd5vLh2jequOQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyahShTUOzJ4TL7/yVYRRKVkIaRQUrPSG/A2UUteYjMuU0uVAfg
+	DzIpnTquUu59ASK/DvHh8dV/7AcgsTPCSMmowYnJRQU0Be5yoUoFCWQ3Rr+AywoDOZXq1/jpHz7
+	mRBJBoZXB9qC9x7l5157xhk8I+wkcSjir7RmxhA==
+X-Gm-Gg: ASbGncumXv4sHhctHg7xxiq+ad38UPtX528/lwR4FoIJfLAi8o6qkrxP61Z6lcAZAE6
+	gAuHxTi2HPaPhLUXKPnFs0JtBar0Of0ucdqJsVzDqfPeYOg4Ta/dATLqaKyRasuOv9PsT2/7+pK
+	h8Rg==
+X-Google-Smtp-Source: AGHT+IH8pCmfi2PSTZAmBnxMxqqDtBr16ztofGPEUCTYq3P+aAdcKiiIKWURTu/8bUMDz3tTznp1CLomuFw6HzeMo+c=
+X-Received: by 2002:a05:6512:1194:b0:545:102f:8788 with SMTP id
+ 2adb3069b0e04-5452fe485d4mr4931866e87.19.1739892371858; Tue, 18 Feb 2025
+ 07:26:11 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] powerpc/pseries/iommu: Wait until all TCEs are
- unmapped before deleting DDW
-To: Gaurav Batra <gbatra@linux.ibm.com>, maddy@linux.ibm.com
-Cc: linuxppc-dev@lists.ozlabs.org, brking@linux.vnet.ibm.com,
- mpe@ellerman.id.au, iommu@lists.linux.dev, ilias.apalodimas@linaro.org,
- Netdev <netdev@vger.kernel.org>, Yunsheng Lin <linyunsheng@huawei.com>,
- Jakub Kicinski <kuba@kernel.org>, Mina Almasry <almasrymina@google.com>
-References: <20250213171051.63748-1-gbatra@linux.ibm.com>
-Content-Language: en-US
-From: Jesper Dangaard Brouer <hawk@kernel.org>
-In-Reply-To: <20250213171051.63748-1-gbatra@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20250214061104.1959525-1-baolu.lu@linux.intel.com>
+ <CABQgh9FMy7oVt9+enSpJxXvkux+czMFqbsPZVgmBV+rFWWvhGA@mail.gmail.com>
+ <20250214125600.GA3696814@ziepe.ca> <CABQgh9FQYe46hfjcs+o6GfLaS7OfSqrmvXUzOKd6PRK8oBF8Jw@mail.gmail.com>
+ <d578bf4c-f475-42bf-9cb8-21941fc7af88@linux.intel.com> <CABQgh9EG3gjtw19qvr7OhxKmR8E6+xwBf9b3=WPNrXRc-m9DjQ@mail.gmail.com>
+ <59998dcc-9452-4efd-be69-d95754217633@linux.intel.com> <20250218135751.GH3696814@ziepe.ca>
+In-Reply-To: <20250218135751.GH3696814@ziepe.ca>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Tue, 18 Feb 2025 23:25:59 +0800
+X-Gm-Features: AWEUYZlCViN7Fq8OiDjDAR35ARLZ8ZNefZPCAbiMMiPjkQC6-Y46tHYfRJj5JAg
+Message-ID: <CABQgh9F8BJr_bkEQD6s6DSsLw2jwpgq-p73YL=439_WwH8P5zw@mail.gmail.com>
+Subject: Re: [PATCH 00/12] iommu: Remove IOMMU_DEV_FEAT_SVA/_IOPF
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, 
+	Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>, 
+	Zhou Wang <wangzhou1@hisilicon.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, 
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Cc. netdev and Yunsheng Lin
+Hi, Jason
 
-On 13/02/2025 18.10, Gaurav Batra wrote:
-> Some of the network drivers, like Mellanox, use core linux page_pool APIs
-> to manage DMA buffers. These page_pool APIs cache DMA buffers with
-> infrequent map/unmap calls for DMA mappings, thus increasing performance.
-> 
-> When a device is initialized, the drivers makes a call to the page_pool API
-> to create a DMA buffer pool. Hence forth DMA buffers are allocated and
-> freed from this pool by the driver. The DMA map/unmap is done by the core
-> page_pool infrastructure.
-> 
-> These DMA buffers could be allocated for RX/TX buffer rings for the device
-> or could be in-process by the network stack.
-> 
-> When a network device is closed, driver will release all DMA mapped
-> buffers. All the DMA buffers allocated to the RX/TX rings are released back
-> to the page_pool by the driver. Some of the DMA mapped buffers could still
-> be allocated and in-process by the network stack.
-> 
-> DMA buffers that are relased by the Network driver are synchronously
-> unmapped by the page_pool APIs. But, DMA buffers that are passed to the
-> network stack and still in-process are unmapped later asynchronously by the
-> page_pool infrastructure.
-> 
-> This asynchronous unmapping of the DMA buffers, by the page_pool, can lead
-> to issues when a network device is dynamically removed in PowerPC
-> architecture.  When a network device is DLPAR removed, the driver releases
-> all the mapped DMA buffers and stops using the device. Driver returns
-> successfully. But, at this stage there still could be mapped DMA buffers
-> which are in-process by the network stack.
-> 
-> DLPAR code proceeds to remove the device from the device tree, deletes
-> Dynamic DMA Window (DDW) and associated IOMMU tables. DLPAR of the device
-> succeeds.
-> 
-> Later, when network stack release some of the DMA buffers, page_pool
-> proceeds to unmap them. The page_pool relase path calls into PowerPC TCE
-> management to release the TCE. This is where the LPAR OOPses since the DDW
-> and associated resources for the device are already free'ed.
-> 
-> This issue was exposed during (Live Partition Migration) LPM from a Power9
-> to Power10 machine with HNV configuration. The bonding device is Virtual
-> Ethernet with SR-IOV. During LPM, I/O is switched from SR-IOV to passive
-> Virtual Ethernet and DLPAR remove of SR-IOV is initiated. This lead to the
-> above mentioned scenario.
-> 
-> It is possible to hit this issue by just Dynamically removing SR-IOV device
-> which is under heavy I/O load, a scenario where some of the mapped DMA
-> buffers are in-process somewhere in the network stack and not mapped to the
-> RX/TX ring of the device.
-> 
-> The issue is only encountered when TCEs are dynamically managed. In this
-> scenario map/unmap of TCEs goes into the PowerPC TCE management path as and
-> when DMA bufffers are mapped/unmaped and accesses DDW resources. When RAM
-> is directly mapped during device initialization, this dynamic TCE
-> management is by-passed and LPAR doesn't OOPses.
-> 
-> Solution:
-> 
-> During DLPAR remove of the device, before deleting the DDW and associated
-> resources, check to see if there are any outstanding TCEs. If there are
-> outstanding TCEs, sleep for 50ms and check again, until all the TCEs are
-> unmapped.
-> 
-> Once all the TCEs are unmapped, DDW is removed and DLPAR succeeds. This
-> ensures there will be no reference to the DDW after it is deleted.
-> 
-> Here is the stack for reference
-> 
-> [ 3610.403820] tce_freemulti_pSeriesLP: 48 callbacks suppressed
-> [ 3610.403833] tce_freemulti_pSeriesLP: plpar_tce_stuff failed
-> [ 3610.403869]  rc      = -4
-> [ 3610.403872]  index   = 0x70000016
-> [ 3610.403876]  limit     = 0x1
-> [ 3610.403879]  tce       = 0x80000061ee00000
-> [ 3610.403882]  pgshift = 0x10
-> [ 3610.403884]  npages  = 0x1
-> [ 3610.403887]  tbl     = 000000003a6a2145
-> [ 3610.403912] CPU: 86 PID: 97129 Comm: kworker/86:2 Kdump: loaded Tainted: G            E        6.4.0-623164-default #1 SLE15-SP6 763d454e096eda7d91355fd5b171013052d83ed3
-> [ 3610.403928] Hardware name: IBM,9080-M9S POWER9 (raw) 0x4e2101 0xf000005 of:IBM,FW950.80 (VH950_131) hv:phyp pSeries
-> [ 3610.403937] Workqueue: events page_pool_release_retry
-> [ 3610.404003] Call Trace:
-> [ 3610.404006] [c000055034e6bb30] [c000000000f63108] dump_stack_lvl+0x6c/0x9c (unreliable)
-> [ 3610.404039] [c000055034e6bb60] [c000000000101258] tce_freemulti_pSeriesLP+0x1e8/0x1f0
-> [ 3610.404070] [c000055034e6bbf0] [c00000000005d248] __iommu_free+0x118/0x220
-> [ 3610.404086] [c000055034e6bc80] [c00000000005d4e8] iommu_free+0x28/0x70
-> [ 3610.404106] [c000055034e6bcb0] [c00000000005c4b4] dma_iommu_unmap_page+0x24/0x40
-> [ 3610.404113] [c000055034e6bcd0] [c00000000024b56c] dma_unmap_page_attrs+0x1ac/0x1e0
-> [ 3610.404139] [c000055034e6bd30] [c000000000cfa178] page_pool_return_page+0x58/0x1b0
-> [ 3610.404146] [c000055034e6bd60] [c000000000cfb7bc] page_pool_release+0x10c/0x270^
-> [ 3610.404152] [c000055034e6be00] [c000000000cfbb2c] page_pool_release_retry+0x2c/0x110
-> [ 3610.404159] [c000055034e6be70] [c00000000018e294] process_one_work+0x314/0x620
-> [ 3610.404173] [c000055034e6bf10] [c00000000018ee88] worker_thread+0x78/0x620
-> [ 3610.404179] [c000055034e6bf90] [c00000000019b958] kthread+0x148/0x150
-> [ 3610.404188] [c000055034e6bfe0] [c00000000000ded8] start_kernel_thread+0x14/0x18
-> 
-> Signed-off-by: Gaurav Batra <gbatra@linux.ibm.com>
-> ---
->   arch/powerpc/kernel/iommu.c            | 22 ++++++++++++++++++++--
->   arch/powerpc/platforms/pseries/iommu.c |  8 ++++----
->   2 files changed, 24 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
-> index 76381e14e800..af7511a8f480 100644
-> --- a/arch/powerpc/kernel/iommu.c
-> +++ b/arch/powerpc/kernel/iommu.c
-> @@ -14,6 +14,7 @@
->   #include <linux/types.h>
->   #include <linux/slab.h>
->   #include <linux/mm.h>
-> +#include <linux/delay.h>
->   #include <linux/spinlock.h>
->   #include <linux/string.h>
->   #include <linux/dma-mapping.h>
-> @@ -803,6 +804,7 @@ bool iommu_table_in_use(struct iommu_table *tbl)
->   static void iommu_table_free(struct kref *kref)
->   {
->   	struct iommu_table *tbl;
-> +	unsigned long start_time;
->   
->   	tbl = container_of(kref, struct iommu_table, it_kref);
->   
-> @@ -817,8 +819,24 @@ static void iommu_table_free(struct kref *kref)
->   	iommu_debugfs_del(tbl);
->   
->   	/* verify that table contains no entries */
-> -	if (iommu_table_in_use(tbl))
-> -		pr_warn("%s: Unexpected TCEs\n", __func__);
-> +	start_time = jiffies;
-> +	while (iommu_table_in_use(tbl)) {
-> +		int sec;
-> +
-> +		pr_info("%s: Unexpected TCEs, wait for 50ms\n", __func__);
-> +		msleep(50);
-> +
-> +		/* Come out of the loop if we have already waited for 120 seconds
-> +		 * for the TCEs to be free'ed. TCE are being free'ed
-> +		 * asynchronously by some DMA buffer management API - like
-> +		 * page_pool.
-> +		 */
-> +		sec = (s32)((u32)jiffies - (u32)start_time) / HZ;
-> +		if (sec >= 120) {
-> +			pr_warn("%s: TCEs still mapped even after 120 seconds\n", __func__);
-> +			break;
-> +		}
-> +	}
->   
->   	/* free bitmap */
->   	vfree(tbl->it_map);
-> diff --git a/arch/powerpc/platforms/pseries/iommu.c b/arch/powerpc/platforms/pseries/iommu.c
-> index 534cd159e9ab..925494b6fafb 100644
-> --- a/arch/powerpc/platforms/pseries/iommu.c
-> +++ b/arch/powerpc/platforms/pseries/iommu.c
-> @@ -2390,6 +2390,10 @@ static int iommu_reconfig_notifier(struct notifier_block *nb, unsigned long acti
->   
->   	switch (action) {
->   	case OF_RECONFIG_DETACH_NODE:
-> +		if (pci && pci->table_group)
-> +			iommu_pseries_free_group(pci->table_group,
-> +					np->full_name);
-> +
->   		/*
->   		 * Removing the property will invoke the reconfig
->   		 * notifier again, which causes dead-lock on the
-> @@ -2400,10 +2404,6 @@ static int iommu_reconfig_notifier(struct notifier_block *nb, unsigned long acti
->   		if (remove_dma_window_named(np, false, DIRECT64_PROPNAME, true))
->   			remove_dma_window_named(np, false, DMA64_PROPNAME, true);
->   
-> -		if (pci && pci->table_group)
-> -			iommu_pseries_free_group(pci->table_group,
-> -					np->full_name);
-> -
->   		spin_lock(&dma_win_list_lock);
->   		list_for_each_entry(window, &dma_win_list, list) {
->   			if (window->device == np) {
-> 
-> base-commit: 6e4436539ae182dc86d57d13849862bcafaa4709
+On Tue, 18 Feb 2025 at 21:57, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+>
+> On Tue, Feb 18, 2025 at 10:57:30AM +0800, Baolu Lu wrote:
+> > > > > [  304.961340]  __iommu_attach_device+0x2c/0x110
+> > > > > [  304.961343]  __iommu_device_set_domain.isra.0+0x78/0xe0
+> > > > > [  304.961345]  __iommu_group_set_domain_internal+0x78/0x160
+> > > > > [  304.961347]  iommu_replace_group_handle+0x9c/0x150
+> > > > > [  304.961350]  iommufd_fault_domain_replace_dev+0x88/0x120
+> > > > > [  304.961353]  iommufd_device_do_replace+0x190/0x3c0
+> > > > > [  304.961355]  iommufd_device_change_pt+0x270/0x688
+> > > > > [  304.961357]  iommufd_device_replace+0x20/0x38
+> > > > > [  304.961359]  vfio_iommufd_physical_attach_ioas+0x30/0x78
+> > > > > [  304.961363]  vfio_df_ioctl_attach_pt+0xa8/0x188
+> > > > > [  304.961366]  vfio_device_fops_unl_ioctl+0x310/0x990
+> > > > >
+> > > > >
+> > > > > When page fault triggers:
+> > > > >
+> > > > > [ 1016.383578] ------------[ cut here ]-----------
+> > > > > [ 1016.388184] WARNING: CPU: 35 PID: 717 at
+> > > > > drivers/iommu/io-pgfault.c:231 iommu_report_device_fault+0x2c8/0x470
+> > > > It's likely that iopf_queue_add_device() was not called for this device.
+> > > iopf_queue_add_device is called, but quickly iopf_queue_remove_device
+> > > is called during guest bootup.
+> > > Then fault_param is set to NULL.
+> > >
+> > > arm_smmu_attach_commit
+> > > arm_smmu_remove_master_domain
+> > > // newly added in the first patch
+> > >         if (master_domain) {
+> > >                    if (master_domain->using_iopf)
+> >
+> > It seems the above check is incorrect. We only need to disable iopf when
+> > an iopf-capable domain is about to be removed. Will the following
+> > additional change make any difference?
+>
+> The check looks right, it should only disable if it was enabled? The
+> refcounting is what keep track of the 'about to be removed' and it
+> should  be that using_iopf and domain->iopf_handler are mostly the
+> same.
+>
+> Hmm, I think the issue is related to nested
+>
+> to_smmu_domain_devices() returns the S2 parent for the nesting domain
+> always
+>
+> Which means the smmu_domain->devices list (on the s2) will end up with
+> two entries for the same SID during the replace operation at VM boot,
+> one with faulting and one without.
+>
+> I think that arm_smmu_remove_master_domain() will end up removing the
+> wrong master_domain because arm_smmu_find_master_domain() can't tell
+> the two apart.
+>
+> When I wrote this there was no nested and the list devices list was
+> unique to each domain, so everything inside was the same.
+>
+> Like below?
+>
+> Jason
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index b14f1d0ee7076b..dc8708b414468e 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2710,10 +2710,9 @@ static void arm_smmu_disable_pasid(struct arm_smmu_master *master)
+>         pci_disable_pasid(pdev);
+>  }
+>
+> -static struct arm_smmu_master_domain *
+> -arm_smmu_find_master_domain(struct arm_smmu_domain *smmu_domain,
+> -                           struct arm_smmu_master *master,
+> -                           ioasid_t ssid, bool nested_ats_flush)
+> +static struct arm_smmu_master_domain *arm_smmu_find_master_domain(
+> +       struct arm_smmu_domain *smmu_domain, struct iommu_domain *domain,
+> +       struct arm_smmu_master *master, ioasid_t ssid, bool nested_ats_flush)
+>  {
+>         struct arm_smmu_master_domain *master_domain;
+>
+> @@ -2722,6 +2721,7 @@ arm_smmu_find_master_domain(struct arm_smmu_domain *smmu_domain,
+>         list_for_each_entry(master_domain, &smmu_domain->devices,
+>                             devices_elm) {
+>                 if (master_domain->master == master &&
+> +                   master_domain->domain == domain &&
+>                     master_domain->ssid == ssid &&
+>                     master_domain->nested_ats_flush == nested_ats_flush)
+>                         return master_domain;
+> @@ -2812,8 +2812,8 @@ static void arm_smmu_remove_master_domain(struct arm_smmu_master *master,
+>                 nested_ats_flush = to_smmu_nested_domain(domain)->enable_ats;
+>
+>         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> -       master_domain = arm_smmu_find_master_domain(smmu_domain, master, ssid,
+> -                                                   nested_ats_flush);
+> +       master_domain = arm_smmu_find_master_domain(smmu_domain, domain, master,
+> +                                                   ssid, nested_ats_flush);
+>         if (master_domain) {
+>                 list_del(&master_domain->devices_elm);
+>                 if (master->ats_enabled)
+> @@ -2889,6 +2889,7 @@ int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
+>                 master_domain = kzalloc(sizeof(*master_domain), GFP_KERNEL);
+>                 if (!master_domain)
+>                         return -ENOMEM;
+> +               master_domain->domain = new_domain;
+>                 master_domain->master = master;
+>                 master_domain->ssid = state->ssid;
+>                 if (new_domain->type == IOMMU_DOMAIN_NESTED)
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 5653d7417db7d9..fe6b88affa4a60 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -907,6 +907,11 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target,
+>  struct arm_smmu_master_domain {
+>         struct list_head devices_elm;
+>         struct arm_smmu_master *master;
+> +       /*
+> +        * For nested domains the master_domain is threaded onto the S2 parent,
+> +        * this points to the IOMMU_DOMAIN_NESTED to disambiguate the masters.
+> +        */
+> +       struct iommu_domain *domain;
+>         ioasid_t ssid;
+>         bool nested_ats_flush : 1;
+>         bool using_iopf : 1;
+
+I have tested it, and it solved the issue.
+
+Thanks
