@@ -1,169 +1,229 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7F4D266F19
-	for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 14:16:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CD4426B978;
+	Tue, 18 Feb 2025 14:40:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739888199; cv=none; b=NmSSjDJrsAySF+ox+BPP2rRpQmnqfAbzZjFWZ9I4CCZQwjiRJk5LfJ+UL+S05C+4aCxN+W03c5ShOjabnw2cDZXORkjW6rdZrjVoQVbesr01xg6oWTEu5DA/rmDDUq/5+/wR/L4ZMCw5991IWnjqy97Q2G9bdWQNjTekBOUKviE=
+	t=1739889610; cv=none; b=mkpDTZcaY/d1+IooUIVXd5Z/PuyA51ptQKDXUU1lf2HgxTR2zqArFzwIC7rRHi8FrrGVtldxW4ribhWtPpEy5haqTUfrC4DsSAQ94KfQTfBKIvDGnjb2NFvvX5j2uxKp5mYIOZPEM/WZbQqGPzeSXMdh1xYSnpQCCz1M7jzHjtE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739888199; c=relaxed/simple;
-	bh=H5OrTZZF1T4+dJOoCeOR8BRC+wmih1HhO3WIjrfxabQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tg+hR1mS83Kdf4GSirsRR5gTKvPv10jI/nDHzeHxitVtgP9au7byI7N5weBwnD2MXSkRk+AwiQhyXIEPWfhwTYRzggqo/v5uuAnHof3/rmSDzJKrvnXePedei8ML+lXzuZRrX0ldB5GiQa7GgiMKdhS08RIVeiWy+TYc7QB75hk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jrqRGXEb; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1739889610; c=relaxed/simple;
+	bh=93gRKWZ9sWNKKYWRsAOLp1himHRHtqXLZ4xduD7iumM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Q/0Z1v+S9g2RGKdLPLGWCDjVG52moQspercLtHJOV94jFgRfY9U2jkemSoOPKpuBPr8fNmv7zUFFR9bMoVFJi3E+PGQNL9R/lvDIDKE3bBzq29QqxkxUit5KXsmtzR/OoHrVnKepN/ZXX05AVnnVB9E1uQUhBl4gGz69R5gBu7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aOjZYJi/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jrqRGXEb"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7c0a974d433so112956385a.1
-        for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 06:16:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1739888197; x=1740492997; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vW41P4u1zMYmLe3HNGTznFnlXAaZ2jlrVM/2Fm/eU+s=;
-        b=jrqRGXEbtNxi8cmzw/h8+Z2oRI5iMF87Q/Rs9F3mAaG0s7q2sp33m0kDM1/GfuKNpG
-         Mg3osY98vvYmMYhcM5y1f2kliSjg5drCjPFKoc6Re2C8QYZz0QKYgRqiNP9C5hk4UGTo
-         tz5AYGSoj/jViSFhn/+SzncL0fgkIWD46j1YnObAbuLCynnH17ckBZQGWT83LGNY+yZp
-         jKNeOVXmkfuUSlHpqRXaLHofqhkHWi49sC7y532EKEACUnweyDA1xneGD+iOaLaJFIE/
-         FEnHWN8P5psy8eD9+f1GkTmSHi3lheNolAGIerzeCJ48cZvBLVVhDDyvREPM+BSJHTUj
-         rXWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739888197; x=1740492997;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vW41P4u1zMYmLe3HNGTznFnlXAaZ2jlrVM/2Fm/eU+s=;
-        b=GKsFEuVYGDuRl0q1Kr9z3SowMsUMLqFzWY0U7+jQ8u5HnzQnmM6DeA3NvMSDO6RG0T
-         jt/KKj/TKfb8GzoC8gKVvhN1D/XKURY6HOyDd0AvXd3Z0Lo4xKqWfTr0HUzQD1lJjd62
-         50U4iDsNhWU9DnBejbFMIlLD/d0uVLYBN7PhazKFj6a6rmjhTtumzsDtwwFHjsLhvYmJ
-         rktuun75CAbRpliuC2gnkrmI8wmHgvKHVXpXiB4AE/7MQkZdcCLyiXELrCZM1FXXebdc
-         J0Z4rO+q+hrqxXB9XkHxWg4dsEQDfINKArFpgK9P0xiq9FWGk2tY2AXtWcksHVytbIgX
-         T5Ng==
-X-Forwarded-Encrypted: i=1; AJvYcCVO8PSTkSAnrRnRL5ucoB2CTC045XgL2mHXXfnAf4wfMMg2HSJV5qc3XQmxoRmwWEv/WgJS4A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy01NtRhsBNgGHxddjybOijr4AGxGB1KHlvlaSpBztMrAZWDHFa
-	Uw1v/RxCJdNpiYVS0qXgpEBA/DX6P8VIN0rC031I1s8fHelJeS2QDT+wNXXt2/Q=
-X-Gm-Gg: ASbGncvzraoXKsutdXoQa0K+ggdFj2oTUMMVXZpr2hMA/j/PJsF+HIW1xGxbZMn8Dgr
-	26x0lvtRsX/wA+jTdxnqfbIdPC84/bwsXIoUPIOcNltKZU265nlg86uTwkonlZcVAAREq0gez3k
-	BToFhBNtxT5R7gHZfn9Q3OcDr+MeodUR6GXeqfPhVHx3yJ8YccY5Rp0Q7leCGE64PQVn+POMCOX
-	R2X0aTCvEkJD42it11wUCak0Lpuf231IMeTaSiqZFTkJuOMBS9k5br99e57dRn+DWNcorduxKQX
-	BEk0+1mlzGBaYslAqHBvLKAljUoHxZN5SFi7kxCsy7zk2+oke8G7ICTPC0YehB3T
-X-Google-Smtp-Source: AGHT+IHJ10gwa7TkqX4u90KVitfcSqaAYhvBMLdYu0xRO1z75bkcNOGu9RXUBILo5K1eyOZ8Epx6hg==
-X-Received: by 2002:a05:6214:c6c:b0:6e2:3761:71b0 with SMTP id 6a1803df08f44-6e66cfd6c68mr183301176d6.5.1739888196592;
-        Tue, 18 Feb 2025 06:16:36 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e65d779271sm64214796d6.3.2025.02.18.06.16.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2025 06:16:34 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tkOOo-0000000HUGc-0mkn;
-	Tue, 18 Feb 2025 10:16:34 -0400
-Date: Tue, 18 Feb 2025 10:16:34 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Zhi Wang <zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 12/22] iommufd: Allow mapping from guest_memfd
-Message-ID: <20250218141634.GI3696814@ziepe.ca>
-References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-13-aik@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aOjZYJi/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4C47C4CEE2;
+	Tue, 18 Feb 2025 14:40:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739889610;
+	bh=93gRKWZ9sWNKKYWRsAOLp1himHRHtqXLZ4xduD7iumM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=aOjZYJi/6jxu4Wz33SZbEiDWRMpgYqj3t0BN62YsObgYRi+v5V9vcmuMdPn000Zmj
+	 CA0qpDJt1s5PD0ZGde96Vi3mcgbXduXyw/UeSCOffLH8RaX1cR6D/zGc7Io8xIth4q
+	 gqC1psROg4g1BA35r/vYrjpUzbUGGvxKS5y74xgOW82Wzjz3h/XwellFHpOglTH8Mu
+	 8FurJJf6AeW2FIOLgCHwmjfGDaxPANXZW7/sM4wvs1QkivBLlcKjKcOiDi+d+w6BcE
+	 la/Yjh5/uLoQz0Z2VK8Geb2DR3SemWh+3x0vQLYr24JuDxpXa0uJBOHKiXYzjuFgbQ
+	 RQpddGOIfMLtw==
+Message-ID: <3e6505a4-ba21-4dd6-8ad2-8e0ef8846fc3@kernel.org>
+Date: Tue, 18 Feb 2025 15:40:05 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250218111017.491719-13-aik@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] powerpc/pseries/iommu: Wait until all TCEs are
+ unmapped before deleting DDW
+To: Gaurav Batra <gbatra@linux.ibm.com>, maddy@linux.ibm.com
+Cc: linuxppc-dev@lists.ozlabs.org, brking@linux.vnet.ibm.com,
+ mpe@ellerman.id.au, iommu@lists.linux.dev, ilias.apalodimas@linaro.org,
+ Netdev <netdev@vger.kernel.org>, Yunsheng Lin <linyunsheng@huawei.com>,
+ Jakub Kicinski <kuba@kernel.org>, Mina Almasry <almasrymina@google.com>
+References: <20250213171051.63748-1-gbatra@linux.ibm.com>
+Content-Language: en-US
+From: Jesper Dangaard Brouer <hawk@kernel.org>
+In-Reply-To: <20250213171051.63748-1-gbatra@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Feb 18, 2025 at 10:09:59PM +1100, Alexey Kardashevskiy wrote:
-> CoCo VMs get their private memory allocated from guest_memfd
-> ("gmemfd") which is a KVM facility similar to memfd.
-> At the moment gmemfds cannot mmap() so the usual GUP API does
-> not work on these as expected.
+Cc. netdev and Yunsheng Lin
+
+On 13/02/2025 18.10, Gaurav Batra wrote:
+> Some of the network drivers, like Mellanox, use core linux page_pool APIs
+> to manage DMA buffers. These page_pool APIs cache DMA buffers with
+> infrequent map/unmap calls for DMA mappings, thus increasing performance.
 > 
-> Use the existing IOMMU_IOAS_MAP_FILE API to allow mapping from
-> fd + offset. Detect the gmemfd case in pfn_reader_user_pin() and
-> simplified mapping.
+> When a device is initialized, the drivers makes a call to the page_pool API
+> to create a DMA buffer pool. Hence forth DMA buffers are allocated and
+> freed from this pool by the driver. The DMA map/unmap is done by the core
+> page_pool infrastructure.
 > 
-> The long term plan is to ditch this workaround and follow
-> the usual memfd path.
-
-How is that possible though?
-
-> +static struct folio *guest_memfd_get_pfn(struct file *file, unsigned long index,
-> +					 unsigned long *pfn, int *max_order)
-> +{
-> +	struct folio *folio;
-> +	int ret = 0;
+> These DMA buffers could be allocated for RX/TX buffer rings for the device
+> or could be in-process by the network stack.
+> 
+> When a network device is closed, driver will release all DMA mapped
+> buffers. All the DMA buffers allocated to the RX/TX rings are released back
+> to the page_pool by the driver. Some of the DMA mapped buffers could still
+> be allocated and in-process by the network stack.
+> 
+> DMA buffers that are relased by the Network driver are synchronously
+> unmapped by the page_pool APIs. But, DMA buffers that are passed to the
+> network stack and still in-process are unmapped later asynchronously by the
+> page_pool infrastructure.
+> 
+> This asynchronous unmapping of the DMA buffers, by the page_pool, can lead
+> to issues when a network device is dynamically removed in PowerPC
+> architecture.  When a network device is DLPAR removed, the driver releases
+> all the mapped DMA buffers and stops using the device. Driver returns
+> successfully. But, at this stage there still could be mapped DMA buffers
+> which are in-process by the network stack.
+> 
+> DLPAR code proceeds to remove the device from the device tree, deletes
+> Dynamic DMA Window (DDW) and associated IOMMU tables. DLPAR of the device
+> succeeds.
+> 
+> Later, when network stack release some of the DMA buffers, page_pool
+> proceeds to unmap them. The page_pool relase path calls into PowerPC TCE
+> management to release the TCE. This is where the LPAR OOPses since the DDW
+> and associated resources for the device are already free'ed.
+> 
+> This issue was exposed during (Live Partition Migration) LPM from a Power9
+> to Power10 machine with HNV configuration. The bonding device is Virtual
+> Ethernet with SR-IOV. During LPM, I/O is switched from SR-IOV to passive
+> Virtual Ethernet and DLPAR remove of SR-IOV is initiated. This lead to the
+> above mentioned scenario.
+> 
+> It is possible to hit this issue by just Dynamically removing SR-IOV device
+> which is under heavy I/O load, a scenario where some of the mapped DMA
+> buffers are in-process somewhere in the network stack and not mapped to the
+> RX/TX ring of the device.
+> 
+> The issue is only encountered when TCEs are dynamically managed. In this
+> scenario map/unmap of TCEs goes into the PowerPC TCE management path as and
+> when DMA bufffers are mapped/unmaped and accesses DDW resources. When RAM
+> is directly mapped during device initialization, this dynamic TCE
+> management is by-passed and LPAR doesn't OOPses.
+> 
+> Solution:
+> 
+> During DLPAR remove of the device, before deleting the DDW and associated
+> resources, check to see if there are any outstanding TCEs. If there are
+> outstanding TCEs, sleep for 50ms and check again, until all the TCEs are
+> unmapped.
+> 
+> Once all the TCEs are unmapped, DDW is removed and DLPAR succeeds. This
+> ensures there will be no reference to the DDW after it is deleted.
+> 
+> Here is the stack for reference
+> 
+> [ 3610.403820] tce_freemulti_pSeriesLP: 48 callbacks suppressed
+> [ 3610.403833] tce_freemulti_pSeriesLP: plpar_tce_stuff failed
+> [ 3610.403869]  rc      = -4
+> [ 3610.403872]  index   = 0x70000016
+> [ 3610.403876]  limit     = 0x1
+> [ 3610.403879]  tce       = 0x80000061ee00000
+> [ 3610.403882]  pgshift = 0x10
+> [ 3610.403884]  npages  = 0x1
+> [ 3610.403887]  tbl     = 000000003a6a2145
+> [ 3610.403912] CPU: 86 PID: 97129 Comm: kworker/86:2 Kdump: loaded Tainted: G            E        6.4.0-623164-default #1 SLE15-SP6 763d454e096eda7d91355fd5b171013052d83ed3
+> [ 3610.403928] Hardware name: IBM,9080-M9S POWER9 (raw) 0x4e2101 0xf000005 of:IBM,FW950.80 (VH950_131) hv:phyp pSeries
+> [ 3610.403937] Workqueue: events page_pool_release_retry
+> [ 3610.404003] Call Trace:
+> [ 3610.404006] [c000055034e6bb30] [c000000000f63108] dump_stack_lvl+0x6c/0x9c (unreliable)
+> [ 3610.404039] [c000055034e6bb60] [c000000000101258] tce_freemulti_pSeriesLP+0x1e8/0x1f0
+> [ 3610.404070] [c000055034e6bbf0] [c00000000005d248] __iommu_free+0x118/0x220
+> [ 3610.404086] [c000055034e6bc80] [c00000000005d4e8] iommu_free+0x28/0x70
+> [ 3610.404106] [c000055034e6bcb0] [c00000000005c4b4] dma_iommu_unmap_page+0x24/0x40
+> [ 3610.404113] [c000055034e6bcd0] [c00000000024b56c] dma_unmap_page_attrs+0x1ac/0x1e0
+> [ 3610.404139] [c000055034e6bd30] [c000000000cfa178] page_pool_return_page+0x58/0x1b0
+> [ 3610.404146] [c000055034e6bd60] [c000000000cfb7bc] page_pool_release+0x10c/0x270^
+> [ 3610.404152] [c000055034e6be00] [c000000000cfbb2c] page_pool_release_retry+0x2c/0x110
+> [ 3610.404159] [c000055034e6be70] [c00000000018e294] process_one_work+0x314/0x620
+> [ 3610.404173] [c000055034e6bf10] [c00000000018ee88] worker_thread+0x78/0x620
+> [ 3610.404179] [c000055034e6bf90] [c00000000019b958] kthread+0x148/0x150
+> [ 3610.404188] [c000055034e6bfe0] [c00000000000ded8] start_kernel_thread+0x14/0x18
+> 
+> Signed-off-by: Gaurav Batra <gbatra@linux.ibm.com>
+> ---
+>   arch/powerpc/kernel/iommu.c            | 22 ++++++++++++++++++++--
+>   arch/powerpc/platforms/pseries/iommu.c |  8 ++++----
+>   2 files changed, 24 insertions(+), 6 deletions(-)
+> 
+> diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
+> index 76381e14e800..af7511a8f480 100644
+> --- a/arch/powerpc/kernel/iommu.c
+> +++ b/arch/powerpc/kernel/iommu.c
+> @@ -14,6 +14,7 @@
+>   #include <linux/types.h>
+>   #include <linux/slab.h>
+>   #include <linux/mm.h>
+> +#include <linux/delay.h>
+>   #include <linux/spinlock.h>
+>   #include <linux/string.h>
+>   #include <linux/dma-mapping.h>
+> @@ -803,6 +804,7 @@ bool iommu_table_in_use(struct iommu_table *tbl)
+>   static void iommu_table_free(struct kref *kref)
+>   {
+>   	struct iommu_table *tbl;
+> +	unsigned long start_time;
+>   
+>   	tbl = container_of(kref, struct iommu_table, it_kref);
+>   
+> @@ -817,8 +819,24 @@ static void iommu_table_free(struct kref *kref)
+>   	iommu_debugfs_del(tbl);
+>   
+>   	/* verify that table contains no entries */
+> -	if (iommu_table_in_use(tbl))
+> -		pr_warn("%s: Unexpected TCEs\n", __func__);
+> +	start_time = jiffies;
+> +	while (iommu_table_in_use(tbl)) {
+> +		int sec;
 > +
-> +	folio = filemap_grab_folio(file_inode(file)->i_mapping, index);
+> +		pr_info("%s: Unexpected TCEs, wait for 50ms\n", __func__);
+> +		msleep(50);
 > +
-> +	if (IS_ERR(folio))
-> +		return folio;
-> +
-> +	if (folio_test_hwpoison(folio)) {
-> +		folio_unlock(folio);
-> +		folio_put(folio);
-> +		return ERR_PTR(-EHWPOISON);
+> +		/* Come out of the loop if we have already waited for 120 seconds
+> +		 * for the TCEs to be free'ed. TCE are being free'ed
+> +		 * asynchronously by some DMA buffer management API - like
+> +		 * page_pool.
+> +		 */
+> +		sec = (s32)((u32)jiffies - (u32)start_time) / HZ;
+> +		if (sec >= 120) {
+> +			pr_warn("%s: TCEs still mapped even after 120 seconds\n", __func__);
+> +			break;
+> +		}
 > +	}
+>   
+>   	/* free bitmap */
+>   	vfree(tbl->it_map);
+> diff --git a/arch/powerpc/platforms/pseries/iommu.c b/arch/powerpc/platforms/pseries/iommu.c
+> index 534cd159e9ab..925494b6fafb 100644
+> --- a/arch/powerpc/platforms/pseries/iommu.c
+> +++ b/arch/powerpc/platforms/pseries/iommu.c
+> @@ -2390,6 +2390,10 @@ static int iommu_reconfig_notifier(struct notifier_block *nb, unsigned long acti
+>   
+>   	switch (action) {
+>   	case OF_RECONFIG_DETACH_NODE:
+> +		if (pci && pci->table_group)
+> +			iommu_pseries_free_group(pci->table_group,
+> +					np->full_name);
 > +
-> +	*pfn = folio_pfn(folio) + (index & (folio_nr_pages(folio) - 1));
-> +	if (!max_order)
-> +		goto unlock_exit;
-> +
-> +	/* Refs for unpin_user_page_range_dirty_lock->gup_put_folio(FOLL_PIN) */
-> +	ret = folio_add_pins(folio, 1);
-> +	folio_put(folio); /* Drop ref from filemap_grab_folio */
-> +
-> +unlock_exit:
-> +	folio_unlock(folio);
-> +	if (ret)
-> +		folio = ERR_PTR(ret);
-> +
-> +	return folio;
-> +}
-
-Connecting iommufd to guestmemfd through the FD is broadly the right
-idea, but I'm not sure this matches the design of guestmemfd regarding
-pinnability. IIRC they were adamant that the pages would not be
-pinned..
-
-folio_add_pins() just prevents the folio from being freed, it doesn't
-prevent the guestmemfd code from messing with the filemap.
-
-You should separate this from the rest of the series and discuss it
-directly with the guestmemfd maintainers.
- 
-As I understood it the requirement here is to have some kind of
-invalidation callback so that iommufd can drop mappings, but I don't
-really know and AFAIK AMD is special in wanting private pages mapped
-to the hypervisor iommu..
-
-Jason
+>   		/*
+>   		 * Removing the property will invoke the reconfig
+>   		 * notifier again, which causes dead-lock on the
+> @@ -2400,10 +2404,6 @@ static int iommu_reconfig_notifier(struct notifier_block *nb, unsigned long acti
+>   		if (remove_dma_window_named(np, false, DIRECT64_PROPNAME, true))
+>   			remove_dma_window_named(np, false, DMA64_PROPNAME, true);
+>   
+> -		if (pci && pci->table_group)
+> -			iommu_pseries_free_group(pci->table_group,
+> -					np->full_name);
+> -
+>   		spin_lock(&dma_win_list_lock);
+>   		list_for_each_entry(window, &dma_win_list, list) {
+>   			if (window->device == np) {
+> 
+> base-commit: 6e4436539ae182dc86d57d13849862bcafaa4709
