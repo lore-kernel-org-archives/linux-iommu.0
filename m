@@ -1,108 +1,137 @@
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fhigh-a5-smtp.messagingengine.com (fhigh-a5-smtp.messagingengine.com [103.168.172.156])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEFF918E743
-	for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 09:58:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42FE5239578
+	for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 10:14:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.156
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739872719; cv=none; b=SL1HbmX3zjRb36b5FqyWRADz6fbozCtLUdfRrloNGnbRk/JvTUnMFKiKDTwLKVPpxG6oWs9WjkBdcPX5NPl5+WekKh+y7+4UaEaYoE1CQa0FzdDrxd8veKM+Y8XYrEKIum92FBHoIGOjfpiH/U1xGh87BWKj1sJBl0ZnhufsFRM=
+	t=1739873699; cv=none; b=d++f2dg1qxlee1QOg1bd/BjsgAtOwrR+YJwd4JIugMVqalbOavo4D12b5aWRjO6YHNMaJt+8wUr3LTU+O+ye1AZm1RPVyfc1ixhiGP6rEbXbavlHEWITJ71Ou1DB5StTTO/r9kip26rXCPhfPb8fsPc+TyEqTPeIfQdMyoc02YA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739872719; c=relaxed/simple;
-	bh=6cooqqHCoA6P1atL6E2YmZn6GVJWVgjv5JafkIvyAbI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=a0pkbeL53ZgY2Yl/SiQFosWzRmssJQj5jyH+M/6I+CiIITalK2mDfKICg4hCbQh/LvoxzS/iytxgoFdji7tYfHuMl4KqlRrFl20YVFO9BbdNPmm1wGKQiMx+dBa03M5b6e59sueoknCksBE/NgaFckxY36vmpYKhTV+2FXYJC1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=enBlU/wJ; arc=none smtp.client-ip=209.85.167.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1739873699; c=relaxed/simple;
+	bh=iBCQzC+4mpN17iyLXyVxwLHAYW5djzv6zjSai/ZpUZI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WRtbUMvhKuI0wEc6ris2r5uIsZL/mOQ2BZ3gAjUAPppNQS5+sq8kWItoWSIQZOtzM28uksCc3Huv6spntOIi1VFNg63I2oivw7GAWebjB7uMdTkNaRr57WNJptPNFEv/5LfpzXxkmwLIVO9hrqv11x9KOu9pfwSTPhXhjl3H0eI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=idosch.org; spf=none smtp.mailfrom=idosch.org; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=gCpbU/bM; arc=none smtp.client-ip=103.168.172.156
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=idosch.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=idosch.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="enBlU/wJ"
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5452c1daabeso3142365e87.1
-        for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 01:58:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739872716; x=1740477516; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lmts2CcKs4nwISoE8RyWH4djGtBRCn0gg8bpEKNfluA=;
-        b=enBlU/wJxajEVsgnf3voQt5Py50FdzcxdZ5iXsRX9/vvtdWOwOqjqSVBjdd89l7BdJ
-         7pE0ZYGmJtvlojTBbBWw/tTuDqOmgM0T2OKee2yd8FN2CWpa0ITWoKlQbbnAYlVinfA7
-         Xm/MsE8+IERPBGtCFB506f0k1HNWxvyIf+gmm9LYPGKrBBAu1fZ0CAEwTCAWoBm5laxW
-         kniBrgoeRl4aKJzXeGfYyk/T8e8+tmcrXip3yTlaQBFmH+ti9OUc2MQorsatpm+PjPsx
-         cIEDro22yBQ9RNgztcZjrE7vwdtcwhdRUtBIM+1tMtldnIoY2IrICIGeqQ6xhXpyYUSW
-         Nt2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739872716; x=1740477516;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lmts2CcKs4nwISoE8RyWH4djGtBRCn0gg8bpEKNfluA=;
-        b=sIvlJLiaHt8bWldUM/r40NWeyGRosZGlZDbowYyVnmphjqSz+opNZMj0mhER1uMRWO
-         M+R/QnzcOgTViDkQ8qSktfxQYd2u1HdT9E1HNA7sVwPn8/3V7Bss9S2VPk9IjNueKGge
-         WGo90CSc8QSGBchkRYvWDtZINyFIRmM08e76s4d0fcsLFuy7C7SUHQx0k13yReI/nMBl
-         A2xcJjpkfOmRWo2DcaUsC0DgwpBCAcbCEQmox2PzmgEBQe0uOaOndDj9M5SRgns59KV6
-         dv+6H+F/CSTJSMCgVyDpB87On7gI4k4fxUfVqqWD2Xpao7I9KbpwqyNCl93AAnAWoF06
-         MsSw==
-X-Forwarded-Encrypted: i=1; AJvYcCVnkUXSE2ZAwp8svWzBjn+P6aiSyhoyFDpdL+NQSm2kYvsAauI8Zl8fm76PotwSJHjb9uzE2w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwcTVU8+pPGTqIuv2FYu3aED55v9BuECgpAwXs7Vsv8iZ7NJJMY
-	p3438wcXet7ev8IvZw0aqpk8RHlJlWus7ty2gGTqybfOZxhROYfl
-X-Gm-Gg: ASbGncuCPIUQG7XrwSTOGueb/c6TlVpzTRU2OKUVFbQHM9X6hOC0fks0tZznh1b3D3O
-	c8rPHQCDo0imDjBiui2BeV2lNNUjvwHs7mqsuXgJrQg1eV55D5wapFcBVxovM5AAefh0R7Czsbg
-	w39Z9oIq4/W0KuNhikyiiwRCyukz9vJ5QPaRrMDFzz9WkYEAd7Ov1Q8EhLNADjrhTe+NG2aAMPb
-	A6jMFU2rOFwXYEuevq14bXdAUR5Ad1eup8/IPc1XhZsxfa3NnQxNXwurJR9+oMfmb72ZlhrGJ1T
-	F5Jy62imlD4TcOZlwv5KxLObBbg1ig+IrACgU5H6p6RWYSMR2KYwxY03In0jYw==
-X-Google-Smtp-Source: AGHT+IFSgaLtcnavys5mJwrcFVSSqID4HA2Wxm607QSTsSZJ468RX9mWtnC6yEKMzbHenx1fdpwcuA==
-X-Received: by 2002:a05:6512:2398:b0:545:b89:309b with SMTP id 2adb3069b0e04-5452fe955efmr5596497e87.44.1739872715711;
-        Tue, 18 Feb 2025 01:58:35 -0800 (PST)
-Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-30931b895e5sm11078211fa.113.2025.02.18.01.58.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Feb 2025 01:58:35 -0800 (PST)
-Message-ID: <2b019479-2d32-433f-af78-c3378dee4e2b@gmail.com>
-Date: Tue, 18 Feb 2025 11:58:33 +0200
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="gCpbU/bM"
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 3A2E411400A2;
+	Tue, 18 Feb 2025 05:14:57 -0500 (EST)
+Received: from phl-mailfrontend-02 ([10.202.2.163])
+  by phl-compute-10.internal (MEProxy); Tue, 18 Feb 2025 05:14:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1739873697; x=1739960097; bh=z/iU5sPU7OWwLHOvBYdegxpJ93nXBD7FcUj
+	3iXW3bSg=; b=gCpbU/bMcId6lwHXLlryvsafO1uzRhZyRtYS0SVq/RCKnOL+oqH
+	t2jyUKnyz1DfEFNzchMhBAHq/mEhrfcT6e8HZa1CYEbUYs0RwZ2zyWGK7Dd5cNB1
+	dwUaGytpHixTPKX9DaUu79PERP3ikocp5lAxJdELqdTilqG95XiGxXvE+wXXwIia
+	L3+6ZiCmmSSGzJL3RxJeligPj+8UJNvOlyVf3OBmJUmtEJMkeb+Tb1WYCSyA2YNW
+	WyeBbIwf5eZWDT+ca7/WV6PvXHARFpWW1YrsJjQqtw/nYNzgvpQQ747o3tzO/1S1
+	ib/LifpWnMKbBhpsJ+jy2Mc9Sh6FHMThgTg==
+X-ME-Sender: <xms:oF20Z0WnRB0cUsodofqlZ20vwt-ZvIRdUlpTCbx7l7GBV5t4zb_Xyg>
+    <xme:oF20Z4lSFXbIxEYMEDFCOK8jyLeGT-nBjuDN13Hse4Q7--ElE966igRZ5fzvPmTgH
+    cHzXuq4kxoNC_0>
+X-ME-Received: <xmr:oF20Z4aS50rQibsY9QmQsGL0eLmIR-eFhwvq5a7TN5WQLKIed4KJEm7YmK8O>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdeiuddtfecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
+    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
+    hnthhsucdlqddutddtmdenucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddv
+    necuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrd
+    horhhgqeenucggtffrrghtthgvrhhnpeehhfdtjedviefffeduuddvffegteeiieeguefg
+    udffvdfftdefheeijedthfejkeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuve
+    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrghdpnhgspghrtghpthhtohepledpmhhouggvpehsmhhtphhouh
+    htpdhrtghpthhtohepsggrohhluhdrlhhusehlihhnuhigrdhinhhtvghlrdgtohhmpdhr
+    tghpthhtohepjhhorhhoseeksgihthgvshdrohhrghdprhgtphhtthhopeifihhllheskh
+    gvrhhnvghlrdhorhhgpdhrtghpthhtoheprhhosghinhdrmhhurhhphhihsegrrhhmrdgt
+    ohhmpdhrtghpthhtohepkhgvvhhinhdrthhirghnsehinhhtvghlrdgtohhmpdhrtghpth
+    htohepihhomhhmuheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehlihhn
+    uhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehsth
+    grsghlvgesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlvghithgrohes
+    uggvsghirghnrdhorhhg
+X-ME-Proxy: <xmx:oF20ZzUzqX65eFvrbjVkpTDaltaA5xpjivGBahSI71DA9AwOX1qAEA>
+    <xmx:oF20Z-kvLFnRBEIrmXZVxQG2ATaRD27lOYaNPtxJPRGJ4k26BlcQKA>
+    <xmx:oF20Z4dYjmQGd1fJpY5Xlr2EgpmWCKTm9JP5XpapW0QDJZd_iiB3LA>
+    <xmx:oF20ZwGNNtXRWJikLbFXEpI7cZzBgJvfm37W-3hymMja6FmxNg-KVw>
+    <xmx:oV20Z44oWLDnauOHhaEkseg3L4MDekdXcbvZrmMWdPgj1DLXmfXk0lYP>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 18 Feb 2025 05:14:55 -0500 (EST)
+Date: Tue, 18 Feb 2025 12:14:53 +0200
+From: Ido Schimmel <idosch@idosch.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+	leitao@debian.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix suspicious RCU usage
+Message-ID: <Z7RdnR2onJ2AZIJl@shredder>
+References: <20250218022422.2315082-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v11 2/3] rust: add dma coherent allocator abstraction.
-To: Robin Murphy <robin.murphy@arm.com>,
- Daniel Almeida <daniel.almeida@collabora.com>
-Cc: rust-for-linux@vger.kernel.org, dakr@kernel.org, aliceryhl@google.com,
- Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-References: <20250123104333.1340512-1-abdiel.janulgue@gmail.com>
- <20250123104333.1340512-3-abdiel.janulgue@gmail.com>
- <633274AD-E55C-4A90-AB72-33D3E176176F@collabora.com>
- <dd57c3ba-246e-414d-a9c1-eb2cff032d83@arm.com>
-Content-Language: en-US
-From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-In-Reply-To: <dd57c3ba-246e-414d-a9c1-eb2cff032d83@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250218022422.2315082-1-baolu.lu@linux.intel.com>
 
-Hi Robin,
++ Breno who also encountered this issue
 
-On 17/02/2025 15:52, Robin Murphy wrote:
-> FWIW we've been wanting to steer away from relying on the default mask 
-> in new code, so it would be quite neat to actually enforce that 
-> allocations fail if dma_coherent_mask hasn't been explicitly set 
-> (assuming it's sufficiently cheap to keep a flag in the Device handle or 
-> something like that - it's not the end of the world if it isn't practical).
+On Tue, Feb 18, 2025 at 10:24:21AM +0800, Lu Baolu wrote:
+> Commit <d74169ceb0d2> ("iommu/vt-d: Allocate DMAR fault interrupts
+> locally") moved the call to enable_drhd_fault_handling() to a code
+> path that does not hold any lock while traversing the drhd list. Fix
+> it by ensuring the dmar_global_lock lock is held when traversing the
+> drhd list.
+> 
+> Without this fix, the following warning is triggered:
+>  =============================
+>  WARNING: suspicious RCU usage
+>  6.14.0-rc3 #55 Not tainted
+>  -----------------------------
+>  drivers/iommu/intel/dmar.c:2046 RCU-list traversed in non-reader section!!
+>                other info that might help us debug this:
+>                rcu_scheduler_active = 1, debug_locks = 1
+>  2 locks held by cpuhp/1/23:
+>  #0: ffffffff84a67c50 (cpu_hotplug_lock){++++}-{0:0}, at: cpuhp_thread_fun+0x87/0x2c0
+>  #1: ffffffff84a6a380 (cpuhp_state-up){+.+.}-{0:0}, at: cpuhp_thread_fun+0x87/0x2c0
+>  stack backtrace:
+>  CPU: 1 UID: 0 PID: 23 Comm: cpuhp/1 Not tainted 6.14.0-rc3 #55
+>  Call Trace:
+>   <TASK>
+>   dump_stack_lvl+0xb7/0xd0
+>   lockdep_rcu_suspicious+0x159/0x1f0
+>   ? __pfx_enable_drhd_fault_handling+0x10/0x10
+>   enable_drhd_fault_handling+0x151/0x180
+>   cpuhp_invoke_callback+0x1df/0x990
+>   cpuhp_thread_fun+0x1ea/0x2c0
+>   smpboot_thread_fn+0x1f5/0x2e0
+>   ? __pfx_smpboot_thread_fn+0x10/0x10
+>   kthread+0x12a/0x2d0
+>   ? __pfx_kthread+0x10/0x10
+>   ret_from_fork+0x4a/0x60
+>   ? __pfx_kthread+0x10/0x10
+>   ret_from_fork_asm+0x1a/0x30
+>   </TASK>
+> 
+> Simply holding the lock in enable_drhd_fault_handling() will trigger a
+> lock order splat. Avoid holding the dmar_global_lock when calling
+> iommu_device_register(), which starts the device probe process.
+> 
+> Fixes: d74169ceb0d2 ("iommu/vt-d: Allocate DMAR fault interrupts locally")
+> Reported-by: Ido Schimmel <idosch@idosch.org>
+> Closes: https://lore.kernel.org/linux-iommu/Zx9OwdLIc_VoQ0-a@shredder.mtl.com/
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-I just had a quick look on how to possible approach this and indeed 
-would refactor the Device binding a bit. If it is okay with you this 
-could go in a follow-up patch? I was hoping to upstream the initial 
-support first - at least with the dma_set_mask/dma_set_coherent_mask put 
-in place already.
+Thanks for the fix. I tested it and the warning is gone.
 
-Thanks!
-/Abdiel
+Tested-by: Ido Schimmel <idosch@nvidia.com>
