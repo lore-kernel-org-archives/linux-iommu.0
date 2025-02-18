@@ -1,253 +1,150 @@
-Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56A0B238D3B
-	for <iommu@lists.linux.dev>; Mon, 17 Feb 2025 20:59:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6A194315A
+	for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 02:24:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739825960; cv=none; b=pHoe4oodgdTzCkx02p2pRiZFixalDQan4CWxV4sFXgCku7S16MvV5M5Exuc1SNfcV2empxAhzsRggZjeHW0JNqqQDN5Qi4w8q6RCxkhZa1DrJpQkK8rXeHwFVB5uE53efFQlXHxwI9dsvbFaB7ghsr5+heVncPXriCOT373qhOI=
+	t=1739845464; cv=none; b=Pr3K06Llnbrf8T/HSHZu09WsU9G4U4ioo8z0Tp/u2RjZ1b5pRxRxjkZNHTuhKVnlSOhC69OLOpn/jud3Fc5mq9b0xRerO5+rQFObFM1aLrltiKujQE6/Ik1EDVZYTrl4lW9jgmb94xLf5QmEaYsP5RTyQd9KA8uNTmSq5kMd+bk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739825960; c=relaxed/simple;
-	bh=WuU8p6064CgpWvovK2DNE1efAG5dEUZEugUzVJuJNg0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YJU//uTDqXhtxYItFlssE07bdt8iX2HI/MNI6k/0ZcG+8qcwvFWbC0usoLsw/RxqUoqQVMiqspRHr9G3fgUuRJLXjZ0ISdqG/kiJ/4gE8wkqj1AHZrcH9UVrEp74D4ED5X8Gsj8BCIwHT8H8V+gsAxqyYdPRXKy1YzXKO30s5ak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ncBaSJXx; arc=none smtp.client-ip=209.85.217.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1739845464; c=relaxed/simple;
+	bh=7ipJmzLet5YB1c8k2DxOeip5VApJFjbWBfsc/HjE2bA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IPJ1kS3mYSZtBLxttRhV62aiLhCBF3RzkYonVfTAuRBsLzuguTNEVECdRIJyDxCFMi+BOU22kLffvhegI5yEZ+aa8yI35xPjyg29ZEP+CRQVgYrjRIrZNEjfFYs9MsXvT+06O8zhDcume+/9nFf1/FLredywW3+TdARSRQjaFAQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ABoCVgk0; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ncBaSJXx"
-Received: by mail-vs1-f46.google.com with SMTP id ada2fe7eead31-4ba0eb3b0f9so1231618137.0
-        for <iommu@lists.linux.dev>; Mon, 17 Feb 2025 12:59:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739825956; x=1740430756; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gN9C6GJ3vbuBk+DYa6AYbjdNka3yXQK1xjjdcHzYn2Q=;
-        b=ncBaSJXx4p5dlOV+aelmZMhwgs2zBhZ0++bz5ZxCutwWg/+r6MqVGGO/x71UcbavVt
-         qvStqW/vDBKbte5jRLm/Q3XVPGxH2B3OA0LUAKO1s+TAx8HlgK4YeUfKs3gXxaDrii+s
-         ethVIECXkf7erHhQxd8yVt4Nns7WwOWvjGevkRs5czCiRgsrn4mIWutne0YY5jIKZonn
-         CYTjDWlKYCYqz4wftwY6SF/zepMyBtASgtOiL5Zh4S+XyFPxYSUrwDxBo9HObo0qwINg
-         FyIVXkWMLPDWJaru0wSH6nmvJb1o5FgOHVGxmWSgrpPfROpkFEAu00jvDBlZNvUlVr/c
-         QRAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739825956; x=1740430756;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=gN9C6GJ3vbuBk+DYa6AYbjdNka3yXQK1xjjdcHzYn2Q=;
-        b=nNv1y+FCWMpRz2tm0V9VxljsTbJL1iddNyQxkbj7e+PhAnKwQujW8u5JD7+uykxt8g
-         RnJ+McX+NN9M3fJgJsFNF+q5JHsDXi3oYJEYWqbPjySLg6fz4AD9Ph3ZxW7uKJAkroSZ
-         h89hAwsbN86suIJFTXu0Lgdud33xivstf3aBPBRShkisXK14uoXEFFmoH4T1jqLZEkRs
-         uXgd1311bbnvQKk9/hLwVBNKdg6+sKS6Z3QOdPi3CNTze4YazyipMzS9JmRff6GNxBv7
-         SLO/6tNLB96b8ofHEgOEa2tQhK9GNd5tB7Y8ypIyORDRXI1u8gMGCN5gAgQMDniTIWTO
-         326A==
-X-Forwarded-Encrypted: i=1; AJvYcCUjcXX/mnI8lZnogPx5tHpEXt/gv/hDoD6uDpEV+j2wISPJI6snAoqZQhKkD3sCAUNBxJRXqw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwKaYkmnTd/168yAtSazTFrO5J5piNvAT47NFqISG8v8BhZU/6v
-	6apinN4slyJRyI6V7srYzoDP5Ceaeuu2lCqsllk/hUOK17GCVFVBHV05pZLG1GactNvmZqhLeBQ
-	xOdb+NH6ehDZRAyKcfHjdXHAlP/g=
-X-Gm-Gg: ASbGncuJNMfCIX41W/8sCKmN6Fd84V5EkQdM/LjWXHCJwV5RV56wBZS4NwUuKpLVuow
-	sQ3Cp+/GRIs2UtqdidB6ImgOxNqxGWjoIyUzP26pUG5BufdmFmCA9102xKGgKhTgrAZ88fTvy
-X-Google-Smtp-Source: AGHT+IFdaFX0/LJZFrJBYXEwXt2w/+z6Cc+X5KMG6NJcp3HawFYZtb+e5VkrS4tF5/vC93zwML9XTsstZR4xaLqSQxU=
-X-Received: by 2002:a05:6102:26d6:b0:4bb:d7f0:6e70 with SMTP id
- ada2fe7eead31-4bd3fc60789mr4993862137.5.1739825956149; Mon, 17 Feb 2025
- 12:59:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ABoCVgk0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1739845463; x=1771381463;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7ipJmzLet5YB1c8k2DxOeip5VApJFjbWBfsc/HjE2bA=;
+  b=ABoCVgk0nJpkXti4gEneR79MQH+fEweyZqTZxBeuIcjUE021hNXlQ9RS
+   K7hKYSKVmw++ANpSn7HcWTnzxOS6dR1HpBQQODQy43U58nWglrQVFRdGF
+   zGm8kb3XxOp+hBQtyoPVUob5/GsKR73li31K9KimAb7zNyUEUTp1Eeh/R
+   yW7G0vuESIvZLlpE43oVZygz1IMZ1mF8b+uZaGU4ZmUMP4qk+oeZXwlMZ
+   JTTX0gwJjIy+YVPyleilw/L5X0wcNuTLXItW4m+0KOhXJWp2E2qNx08J9
+   t7nnCgKg01OTjiDlefQLCoS2quqWNwWhOlO4TX5YRR5Fw6Sg8C+wJPyNS
+   A==;
+X-CSE-ConnectionGUID: O4Iat02FRfmtxRxwF+auyA==
+X-CSE-MsgGUID: WYwUKy+jTPSZqcdF2zsSkA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11348"; a="44284679"
+X-IronPort-AV: E=Sophos;i="6.13,294,1732608000"; 
+   d="scan'208";a="44284679"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2025 18:24:22 -0800
+X-CSE-ConnectionGUID: vD97ivTsScudIVqP7A+GBA==
+X-CSE-MsgGUID: 2zNvAkghSyW5kn0bTSJyTA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,294,1732608000"; 
+   d="scan'208";a="114769374"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by fmviesa010.fm.intel.com with ESMTP; 17 Feb 2025 18:24:19 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: Ido Schimmel <idosch@idosch.org>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/1] iommu/vt-d: Fix suspicious RCU usage
+Date: Tue, 18 Feb 2025 10:24:21 +0800
+Message-ID: <20250218022422.2315082-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250212022718.1995504-1-xiaqinxin@huawei.com> <20250212022718.1995504-3-xiaqinxin@huawei.com>
-In-Reply-To: <20250212022718.1995504-3-xiaqinxin@huawei.com>
-From: Barry Song <21cnbao@gmail.com>
-Date: Tue, 18 Feb 2025 09:59:05 +1300
-X-Gm-Features: AWEUYZkaz_erMtIH_9ZSRhIBgB5LLNaeOovPv5qkk3rDjQ5IhCT-Wxr4Y907wiM
-Message-ID: <CAGsJ_4yDBT4rJyG4-Ow4T3xLq8VujBjG+-uxjnWUm_vW1nzT_A@mail.gmail.com>
-Subject: Re: [PATCH 2/3] dma-mapping: benchmark: add support for dma_map_sg
-To: Qinxin Xia <xiaqinxin@huawei.com>
-Cc: chenxiang66@hisilicon.com, yangyicong@huawei.com, hch@lst.de, 
-	iommu@lists.linux.dev, jonathan.cameron@huawei.com, prime.zeng@huawei.com, 
-	fanghao11@huawei.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Wed, Feb 12, 2025 at 3:27=E2=80=AFPM Qinxin Xia <xiaqinxin@huawei.com> w=
-rote:
->
-> Support for dma scatter-gather mapping and is intended for testing
-> mapping performance. It achieves by introducing the dma_sg_map_param
-> structure and related functions, which enable the implementation of
-> scatter-gather mapping preparation, mapping, and unmapping operations.
-> Additionally, the dma_map_benchmark_ops array is updated to include
-> operations for scatter-gather mapping. This commit aims to provide
-> a wider range of mapping performance test  to cater to different scenario=
-s.
+Commit <d74169ceb0d2> ("iommu/vt-d: Allocate DMAR fault interrupts
+locally") moved the call to enable_drhd_fault_handling() to a code
+path that does not hold any lock while traversing the drhd list. Fix
+it by ensuring the dmar_global_lock lock is held when traversing the
+drhd list.
 
-This benchmark is mainly designed to debug contention issues, such as IOMMU
-TLB flushes or IOMMU driver bottlenecks. I don't fully understand how SG or
-single will impact the evaluation of the IOMMU driver, making it unclear if=
- the
-added complexity is justified.
+Without this fix, the following warning is triggered:
+ =============================
+ WARNING: suspicious RCU usage
+ 6.14.0-rc3 #55 Not tainted
+ -----------------------------
+ drivers/iommu/intel/dmar.c:2046 RCU-list traversed in non-reader section!!
+               other info that might help us debug this:
+               rcu_scheduler_active = 1, debug_locks = 1
+ 2 locks held by cpuhp/1/23:
+ #0: ffffffff84a67c50 (cpu_hotplug_lock){++++}-{0:0}, at: cpuhp_thread_fun+0x87/0x2c0
+ #1: ffffffff84a6a380 (cpuhp_state-up){+.+.}-{0:0}, at: cpuhp_thread_fun+0x87/0x2c0
+ stack backtrace:
+ CPU: 1 UID: 0 PID: 23 Comm: cpuhp/1 Not tainted 6.14.0-rc3 #55
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0xb7/0xd0
+  lockdep_rcu_suspicious+0x159/0x1f0
+  ? __pfx_enable_drhd_fault_handling+0x10/0x10
+  enable_drhd_fault_handling+0x151/0x180
+  cpuhp_invoke_callback+0x1df/0x990
+  cpuhp_thread_fun+0x1ea/0x2c0
+  smpboot_thread_fn+0x1f5/0x2e0
+  ? __pfx_smpboot_thread_fn+0x10/0x10
+  kthread+0x12a/0x2d0
+  ? __pfx_kthread+0x10/0x10
+  ret_from_fork+0x4a/0x60
+  ? __pfx_kthread+0x10/0x10
+  ret_from_fork_asm+0x1a/0x30
+  </TASK>
 
-Can you add some explanation on why single mode is not sufficient for profi=
-ling
-and improving IOMMU drivers?
+Simply holding the lock in enable_drhd_fault_handling() will trigger a
+lock order splat. Avoid holding the dmar_global_lock when calling
+iommu_device_register(), which starts the device probe process.
 
->
-> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
-> ---
->  include/linux/map_benchmark.h |   1 +
->  kernel/dma/map_benchmark.c    | 102 ++++++++++++++++++++++++++++++++++
->  2 files changed, 103 insertions(+)
->
-> diff --git a/include/linux/map_benchmark.h b/include/linux/map_benchmark.=
-h
-> index 054db02a03a7..a9c1a104ba4f 100644
-> --- a/include/linux/map_benchmark.h
-> +++ b/include/linux/map_benchmark.h
-> @@ -17,6 +17,7 @@
->
->  enum {
->         DMA_MAP_SINGLE_MODE,
-> +       DMA_MAP_SG_MODE,
->         DMA_MAP_MODE_MAX
->  };
->
-> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
-> index d8ec0ce058d8..b5828eeb3db7 100644
-> --- a/kernel/dma/map_benchmark.c
-> +++ b/kernel/dma/map_benchmark.c
-> @@ -17,6 +17,7 @@
->  #include <linux/module.h>
->  #include <linux/pci.h>
->  #include <linux/platform_device.h>
-> +#include <linux/scatterlist.h>
->  #include <linux/slab.h>
->  #include <linux/timekeeping.h>
->
-> @@ -111,8 +112,109 @@ static struct map_benchmark_ops dma_single_map_benc=
-hmark_ops =3D {
->         .do_unmap =3D dma_single_map_benchmark_do_unmap,
->  };
->
-> +struct dma_sg_map_param {
-> +       struct sg_table sgt;
-> +       struct device *dev;
-> +       void **buf;
-> +       u32 npages;
-> +       u32 dma_dir;
-> +};
-> +
-> +static void *dma_sg_map_benchmark_prepare(struct map_benchmark_data *map=
-)
-> +{
-> +       struct scatterlist *sg;
-> +       int i =3D 0;
-> +
-> +       struct dma_sg_map_param *mparam __free(kfree) =3D kzalloc(sizeof(=
-*mparam), GFP_KERNEL);
-> +       if (!mparam)
-> +               return NULL;
-> +
-> +       mparam->npages =3D map->bparam.granule;
-> +       mparam->dma_dir =3D map->bparam.dma_dir;
-> +       mparam->dev =3D map->dev;
-> +       mparam->buf =3D kmalloc_array(mparam->npages, sizeof(*mparam->buf=
-),
-> +                                   GFP_KERNEL);
-> +       if (!mparam->buf)
-> +               goto err1;
-> +
-> +       if (sg_alloc_table(&mparam->sgt, mparam->npages, GFP_KERNEL))
-> +               goto err2;
-> +
-> +       for_each_sgtable_sg(&mparam->sgt, sg, i) {
-> +               mparam->buf[i] =3D (void *)__get_free_page(GFP_KERNEL);
-> +               if (!mparam->buf[i])
-> +                       goto err3;
-> +
-> +               if (mparam->dma_dir !=3D DMA_FROM_DEVICE)
-> +                       memset(mparam->buf[i], 0x66, PAGE_SIZE);
-> +
-> +               sg_set_buf(sg, mparam->buf[i], PAGE_SIZE);
-> +       }
-> +
-> +       return_ptr(mparam);
-> +
-> +err3:
-> +       while (i-- > 0)
-> +               free_page((unsigned long)mparam->buf[i]);
-> +
-> +       pr_err("dma_map_sg failed get free page on %s\n", dev_name(mparam=
-->dev));
-> +       sg_free_table(&mparam->sgt);
-> +err2:
-> +       pr_err("dma_map_sg failed alloc sg table on %s\n", dev_name(mpara=
-m->dev));
-> +       kfree(mparam->buf);
-> +err1:
-> +       pr_err("dma_map_sg failed alloc mparam buf on %s\n", dev_name(mpa=
-ram->dev));
-> +       return NULL;
-> +}
-> +
-> +static void dma_sg_map_benchmark_unprepare(void *arg)
-> +{
-> +       struct dma_sg_map_param *mparam =3D arg;
-> +       int i;
-> +
-> +       for (i =3D 0; i < mparam->npages; i++)
-> +               free_page((unsigned long)mparam->buf[i]);
-> +
-> +       sg_free_table(&mparam->sgt);
-> +
-> +       kfree(mparam->buf);
-> +       kfree(mparam);
-> +}
-> +
-> +static int dma_sg_map_benchmark_do_map(void *arg)
-> +{
-> +       struct dma_sg_map_param *mparam =3D arg;
-> +
-> +       int sg_mapped =3D dma_map_sg(mparam->dev, mparam->sgt.sgl,
-> +                                  mparam->npages, mparam->dma_dir);
-> +       if (!sg_mapped) {
-> +               pr_err("dma_map_sg failed on %s\n", dev_name(mparam->dev)=
-);
-> +               return -ENOMEM;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static int dma_sg_map_benchmark_do_unmap(void *arg)
-> +{
-> +       struct dma_sg_map_param *mparam =3D arg;
-> +
-> +       dma_unmap_sg(mparam->dev, mparam->sgt.sgl, mparam->npages,
-> +                    mparam->dma_dir);
-> +
-> +       return 0;
-> +}
-> +
-> +static struct map_benchmark_ops dma_sg_map_benchmark_ops =3D {
-> +       .prepare =3D dma_sg_map_benchmark_prepare,
-> +       .unprepare =3D dma_sg_map_benchmark_unprepare,
-> +       .do_map =3D dma_sg_map_benchmark_do_map,
-> +       .do_unmap =3D dma_sg_map_benchmark_do_unmap,
-> +};
-> +
->  static struct map_benchmark_ops *dma_map_benchmark_ops[DMA_MAP_MODE_MAX]=
- =3D {
->         [DMA_MAP_SINGLE_MODE] =3D &dma_single_map_benchmark_ops,
-> +       [DMA_MAP_SG_MODE] =3D &dma_sg_map_benchmark_ops,
->  };
->
->  static int map_benchmark_thread(void *data)
-> --
-> 2.33.0
->
+Fixes: d74169ceb0d2 ("iommu/vt-d: Allocate DMAR fault interrupts locally")
+Reported-by: Ido Schimmel <idosch@idosch.org>
+Closes: https://lore.kernel.org/linux-iommu/Zx9OwdLIc_VoQ0-a@shredder.mtl.com/
+Cc: stable@vger.kernel.org
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/dmar.c  | 1 +
+ drivers/iommu/intel/iommu.c | 7 +++++++
+ 2 files changed, 8 insertions(+)
 
-Thanks
-Barry
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 9f424acf474e..e540092d664d 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -2043,6 +2043,7 @@ int enable_drhd_fault_handling(unsigned int cpu)
+ 	/*
+ 	 * Enable fault control interrupt.
+ 	 */
++	guard(rwsem_read)(&dmar_global_lock);
+ 	for_each_iommu(iommu, drhd) {
+ 		u32 fault_status;
+ 		int ret;
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index cc46098f875b..9a1e61b429ca 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3146,7 +3146,14 @@ int __init intel_iommu_init(void)
+ 		iommu_device_sysfs_add(&iommu->iommu, NULL,
+ 				       intel_iommu_groups,
+ 				       "%s", iommu->name);
++		/*
++		 * The iommu device probe is protected by the iommu_probe_device_lock.
++		 * Release the dmar_global_lock before entering the device probe path
++		 * to avoid unnecessary lock order splat.
++		 */
++		up_read(&dmar_global_lock);
+ 		iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
++		down_read(&dmar_global_lock);
+ 
+ 		iommu_pmu_register(iommu);
+ 	}
+-- 
+2.43.0
+
