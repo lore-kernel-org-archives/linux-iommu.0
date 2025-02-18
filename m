@@ -1,59 +1,97 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58F2A243361
-	for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 14:09:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7F4D266F19
+	for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 14:16:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739887780; cv=none; b=SywPTvW1dIf/zJItE6/jIoSdJBXGaDBNZpYgGLwZHPjyRVEKPtPxTd0vyTVEapluGU7XALbMt9J4BvyuzxfYF+JzetXMf0N6OZ6s/xK6AmLcX2XXEIKmalt6LxAjXo307cXCJLRxdLAfM3S5+eTsX/8RL2vWGcj74N0dp1okb+s=
+	t=1739888199; cv=none; b=NmSSjDJrsAySF+ox+BPP2rRpQmnqfAbzZjFWZ9I4CCZQwjiRJk5LfJ+UL+S05C+4aCxN+W03c5ShOjabnw2cDZXORkjW6rdZrjVoQVbesr01xg6oWTEu5DA/rmDDUq/5+/wR/L4ZMCw5991IWnjqy97Q2G9bdWQNjTekBOUKviE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739887780; c=relaxed/simple;
-	bh=LDe4YY/D/KG814sUzaFt57nrvQqaY4+cHfBTOTZhp4M=;
+	s=arc-20240116; t=1739888199; c=relaxed/simple;
+	bh=H5OrTZZF1T4+dJOoCeOR8BRC+wmih1HhO3WIjrfxabQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CCK5CbnYyzXpPSE/lREwqwFvqMdpd7SaruZYQrI02LNEJTohZxIEwkqgnjH2LI+PGczaQwkRZIfprY8aZTdaKUgB9i5YXldBdfJW9el8e8ufP1g8waPrkmjEyNHH+a7tCwGFb3DG/wNhVpRMnf0xli5ynx/pT0iW95tP4eQ+rJU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-5e0505275b7so4106490a12.3
-        for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 06:09:38 -0800 (PST)
+	 Content-Type:Content-Disposition:In-Reply-To; b=Tg+hR1mS83Kdf4GSirsRR5gTKvPv10jI/nDHzeHxitVtgP9au7byI7N5weBwnD2MXSkRk+AwiQhyXIEPWfhwTYRzggqo/v5uuAnHof3/rmSDzJKrvnXePedei8ML+lXzuZRrX0ldB5GiQa7GgiMKdhS08RIVeiWy+TYc7QB75hk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jrqRGXEb; arc=none smtp.client-ip=209.85.222.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jrqRGXEb"
+Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7c0a974d433so112956385a.1
+        for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 06:16:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1739888197; x=1740492997; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=vW41P4u1zMYmLe3HNGTznFnlXAaZ2jlrVM/2Fm/eU+s=;
+        b=jrqRGXEbtNxi8cmzw/h8+Z2oRI5iMF87Q/Rs9F3mAaG0s7q2sp33m0kDM1/GfuKNpG
+         Mg3osY98vvYmMYhcM5y1f2kliSjg5drCjPFKoc6Re2C8QYZz0QKYgRqiNP9C5hk4UGTo
+         tz5AYGSoj/jViSFhn/+SzncL0fgkIWD46j1YnObAbuLCynnH17ckBZQGWT83LGNY+yZp
+         jKNeOVXmkfuUSlHpqRXaLHofqhkHWi49sC7y532EKEACUnweyDA1xneGD+iOaLaJFIE/
+         FEnHWN8P5psy8eD9+f1GkTmSHi3lheNolAGIerzeCJ48cZvBLVVhDDyvREPM+BSJHTUj
+         rXWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739887777; x=1740492577;
+        d=1e100.net; s=20230601; t=1739888197; x=1740492997;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MOqpNPfprzC/VuOUsgbWKiDS4uVsWF0Gzq7YLXne2M0=;
-        b=b/L3VlNhTE/HOFlgKqhBkjZEdYtIUs9XIqXRlplFkt3fxBHmzp0QJ7KOwWVKfjo0BG
-         i2yfiePc7A8ENzrjzQLEsi/g2Vmlz3E3dLbvVOOZKdnlzVsaZVvyH2Fj6MBCRNjwTT1d
-         mB++YDnlD9Lzq9PhTbHYFz22IkFlorloGhOq36VnojC6ZHoPe8H5AFkbK4sWX8o193eb
-         ZuqqhBkaLUxg1skJ5mNvo/QJ7y+rjELLXBq1Ks0rEzUDP4VcgTUNDJeLJLyO7RhXoQvI
-         J8On7kGbxBR+j8EpVFmD33RDXF6MAuIyk65aWmlih7AGw57zpKvzO+/Vq8aYgoMLPKAE
-         wrqQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXG3bZSN1ZNpys9qc44GgH3la4GzOADC7SOv09/uWLjRxvP/LLWyGcSmyrHk8OwlUBADuOXSg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwDRzGVMqdjXKRW+iyVnq9zw2pFwWD10HDFd0MLXLCuoXtRrxYk
-	sSd1mV+nw0218pYLMdw1G8aYFV67+aHFxDBAETxQl2Gc2TDcGHDrvZ6KbA==
-X-Gm-Gg: ASbGncvbQh60Suu/4tP9NTfPKaZGrMfQnme1N9bh1G1tkyRQ4Kd1kUtyHsJTpWKd6cX
-	JqzN1Do5i9T8f160MJcHvUPKjFrEFvy0aJOLL86bNsQ4bfxXDNxTNiOCNL/tl8FCeaTRw16sp4m
-	aExW/r3omEiOtCKbgSayfQiK6joJ1LpBO6waxNjhj/UxW15/oe1zvS+FLv36skagO2th9qA1NhN
-	gW/1C3AwylraKXHWMXmGNSKI0o81ytirqI515oM59damOx/CKcjWGtZOdDe9pcFmGASya8C7cFc
-	EfNPnBo=
-X-Google-Smtp-Source: AGHT+IF5nwrMpEy7s0eR61eGJJWsqTPMythWKfZZ2UKJQmRW6VNlsUYbb7Fb2C34VdjEApYgHubpIQ==
-X-Received: by 2002:a17:907:70d:b0:aba:5e4b:b0b6 with SMTP id a640c23a62f3a-abb70e53b7dmr1229698566b.54.1739887776310;
-        Tue, 18 Feb 2025 06:09:36 -0800 (PST)
-Received: from gmail.com ([2a03:2880:30ff:71::])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-abba4fc0c29sm295532566b.157.2025.02.18.06.09.35
+        bh=vW41P4u1zMYmLe3HNGTznFnlXAaZ2jlrVM/2Fm/eU+s=;
+        b=GKsFEuVYGDuRl0q1Kr9z3SowMsUMLqFzWY0U7+jQ8u5HnzQnmM6DeA3NvMSDO6RG0T
+         jt/KKj/TKfb8GzoC8gKVvhN1D/XKURY6HOyDd0AvXd3Z0Lo4xKqWfTr0HUzQD1lJjd62
+         50U4iDsNhWU9DnBejbFMIlLD/d0uVLYBN7PhazKFj6a6rmjhTtumzsDtwwFHjsLhvYmJ
+         rktuun75CAbRpliuC2gnkrmI8wmHgvKHVXpXiB4AE/7MQkZdcCLyiXELrCZM1FXXebdc
+         J0Z4rO+q+hrqxXB9XkHxWg4dsEQDfINKArFpgK9P0xiq9FWGk2tY2AXtWcksHVytbIgX
+         T5Ng==
+X-Forwarded-Encrypted: i=1; AJvYcCVO8PSTkSAnrRnRL5ucoB2CTC045XgL2mHXXfnAf4wfMMg2HSJV5qc3XQmxoRmwWEv/WgJS4A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy01NtRhsBNgGHxddjybOijr4AGxGB1KHlvlaSpBztMrAZWDHFa
+	Uw1v/RxCJdNpiYVS0qXgpEBA/DX6P8VIN0rC031I1s8fHelJeS2QDT+wNXXt2/Q=
+X-Gm-Gg: ASbGncvzraoXKsutdXoQa0K+ggdFj2oTUMMVXZpr2hMA/j/PJsF+HIW1xGxbZMn8Dgr
+	26x0lvtRsX/wA+jTdxnqfbIdPC84/bwsXIoUPIOcNltKZU265nlg86uTwkonlZcVAAREq0gez3k
+	BToFhBNtxT5R7gHZfn9Q3OcDr+MeodUR6GXeqfPhVHx3yJ8YccY5Rp0Q7leCGE64PQVn+POMCOX
+	R2X0aTCvEkJD42it11wUCak0Lpuf231IMeTaSiqZFTkJuOMBS9k5br99e57dRn+DWNcorduxKQX
+	BEk0+1mlzGBaYslAqHBvLKAljUoHxZN5SFi7kxCsy7zk2+oke8G7ICTPC0YehB3T
+X-Google-Smtp-Source: AGHT+IHJ10gwa7TkqX4u90KVitfcSqaAYhvBMLdYu0xRO1z75bkcNOGu9RXUBILo5K1eyOZ8Epx6hg==
+X-Received: by 2002:a05:6214:c6c:b0:6e2:3761:71b0 with SMTP id 6a1803df08f44-6e66cfd6c68mr183301176d6.5.1739888196592;
+        Tue, 18 Feb 2025 06:16:36 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e65d779271sm64214796d6.3.2025.02.18.06.16.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2025 06:09:35 -0800 (PST)
-Date: Tue, 18 Feb 2025 06:09:33 -0800
-From: Breno Leitao <leitao@debian.org>
-To: Ido Schimmel <idosch@idosch.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix suspicious RCU usage
-Message-ID: <20250218-meaty-clever-buffalo-9ba688@leitao>
-References: <20250218022422.2315082-1-baolu.lu@linux.intel.com>
- <Z7RdnR2onJ2AZIJl@shredder>
+        Tue, 18 Feb 2025 06:16:34 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tkOOo-0000000HUGc-0mkn;
+	Tue, 18 Feb 2025 10:16:34 -0400
+Date: Tue, 18 Feb 2025 10:16:34 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
+	Michael Roth <michael.roth@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Steve Sistare <steven.sistare@oracle.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
+	Zhi Wang <zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>,
+	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
+Subject: Re: [RFC PATCH v2 12/22] iommufd: Allow mapping from guest_memfd
+Message-ID: <20250218141634.GI3696814@ziepe.ca>
+References: <20250218111017.491719-1-aik@amd.com>
+ <20250218111017.491719-13-aik@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,64 +100,70 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Z7RdnR2onJ2AZIJl@shredder>
+In-Reply-To: <20250218111017.491719-13-aik@amd.com>
 
-On Tue, Feb 18, 2025 at 12:14:53PM +0200, Ido Schimmel wrote:
-> + Breno who also encountered this issue
-
-Thanks. Please add the following if you feel appropriate.
-
-Reported-by: Breno Leitao <leitao@debian.org>
-
-> On Tue, Feb 18, 2025 at 10:24:21AM +0800, Lu Baolu wrote:
-> > Commit <d74169ceb0d2> ("iommu/vt-d: Allocate DMAR fault interrupts
-> > locally") moved the call to enable_drhd_fault_handling() to a code
-> > path that does not hold any lock while traversing the drhd list. Fix
-> > it by ensuring the dmar_global_lock lock is held when traversing the
-> > drhd list.
-> > 
-> > Without this fix, the following warning is triggered:
-> >  =============================
-> >  WARNING: suspicious RCU usage
-> >  6.14.0-rc3 #55 Not tainted
-> >  -----------------------------
-> >  drivers/iommu/intel/dmar.c:2046 RCU-list traversed in non-reader section!!
-> >                other info that might help us debug this:
-> >                rcu_scheduler_active = 1, debug_locks = 1
-> >  2 locks held by cpuhp/1/23:
-> >  #0: ffffffff84a67c50 (cpu_hotplug_lock){++++}-{0:0}, at: cpuhp_thread_fun+0x87/0x2c0
-> >  #1: ffffffff84a6a380 (cpuhp_state-up){+.+.}-{0:0}, at: cpuhp_thread_fun+0x87/0x2c0
-> >  stack backtrace:
-> >  CPU: 1 UID: 0 PID: 23 Comm: cpuhp/1 Not tainted 6.14.0-rc3 #55
-> >  Call Trace:
-> >   <TASK>
-> >   dump_stack_lvl+0xb7/0xd0
-> >   lockdep_rcu_suspicious+0x159/0x1f0
-> >   ? __pfx_enable_drhd_fault_handling+0x10/0x10
-> >   enable_drhd_fault_handling+0x151/0x180
-> >   cpuhp_invoke_callback+0x1df/0x990
-> >   cpuhp_thread_fun+0x1ea/0x2c0
-> >   smpboot_thread_fn+0x1f5/0x2e0
-> >   ? __pfx_smpboot_thread_fn+0x10/0x10
-> >   kthread+0x12a/0x2d0
-> >   ? __pfx_kthread+0x10/0x10
-> >   ret_from_fork+0x4a/0x60
-> >   ? __pfx_kthread+0x10/0x10
-> >   ret_from_fork_asm+0x1a/0x30
-> >   </TASK>
-> > 
-> > Simply holding the lock in enable_drhd_fault_handling() will trigger a
-> > lock order splat. Avoid holding the dmar_global_lock when calling
-> > iommu_device_register(), which starts the device probe process.
-> > 
-> > Fixes: d74169ceb0d2 ("iommu/vt-d: Allocate DMAR fault interrupts locally")
-> > Reported-by: Ido Schimmel <idosch@idosch.org>
-> > Closes: https://lore.kernel.org/linux-iommu/Zx9OwdLIc_VoQ0-a@shredder.mtl.com/
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+On Tue, Feb 18, 2025 at 10:09:59PM +1100, Alexey Kardashevskiy wrote:
+> CoCo VMs get their private memory allocated from guest_memfd
+> ("gmemfd") which is a KVM facility similar to memfd.
+> At the moment gmemfds cannot mmap() so the usual GUP API does
+> not work on these as expected.
 > 
-> Thanks for the fix. I tested it and the warning is gone.
+> Use the existing IOMMU_IOAS_MAP_FILE API to allow mapping from
+> fd + offset. Detect the gmemfd case in pfn_reader_user_pin() and
+> simplified mapping.
 > 
-> Tested-by: Ido Schimmel <idosch@nvidia.com>
+> The long term plan is to ditch this workaround and follow
+> the usual memfd path.
 
-Tested-by: Breno Leitao <leitao@debian.org>
+How is that possible though?
+
+> +static struct folio *guest_memfd_get_pfn(struct file *file, unsigned long index,
+> +					 unsigned long *pfn, int *max_order)
+> +{
+> +	struct folio *folio;
+> +	int ret = 0;
+> +
+> +	folio = filemap_grab_folio(file_inode(file)->i_mapping, index);
+> +
+> +	if (IS_ERR(folio))
+> +		return folio;
+> +
+> +	if (folio_test_hwpoison(folio)) {
+> +		folio_unlock(folio);
+> +		folio_put(folio);
+> +		return ERR_PTR(-EHWPOISON);
+> +	}
+> +
+> +	*pfn = folio_pfn(folio) + (index & (folio_nr_pages(folio) - 1));
+> +	if (!max_order)
+> +		goto unlock_exit;
+> +
+> +	/* Refs for unpin_user_page_range_dirty_lock->gup_put_folio(FOLL_PIN) */
+> +	ret = folio_add_pins(folio, 1);
+> +	folio_put(folio); /* Drop ref from filemap_grab_folio */
+> +
+> +unlock_exit:
+> +	folio_unlock(folio);
+> +	if (ret)
+> +		folio = ERR_PTR(ret);
+> +
+> +	return folio;
+> +}
+
+Connecting iommufd to guestmemfd through the FD is broadly the right
+idea, but I'm not sure this matches the design of guestmemfd regarding
+pinnability. IIRC they were adamant that the pages would not be
+pinned..
+
+folio_add_pins() just prevents the folio from being freed, it doesn't
+prevent the guestmemfd code from messing with the filemap.
+
+You should separate this from the rest of the series and discuss it
+directly with the guestmemfd maintainers.
+ 
+As I understood it the requirement here is to have some kind of
+invalidation callback so that iommufd can drop mappings, but I don't
+really know and AFAIK AMD is special in wanting private pages mapped
+to the hypervisor iommu..
+
+Jason
