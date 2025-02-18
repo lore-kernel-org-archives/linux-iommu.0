@@ -1,150 +1,152 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6A194315A
-	for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 02:24:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B7EE14A0B7
+	for <iommu@lists.linux.dev>; Tue, 18 Feb 2025 03:00:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739845464; cv=none; b=Pr3K06Llnbrf8T/HSHZu09WsU9G4U4ioo8z0Tp/u2RjZ1b5pRxRxjkZNHTuhKVnlSOhC69OLOpn/jud3Fc5mq9b0xRerO5+rQFObFM1aLrltiKujQE6/Ik1EDVZYTrl4lW9jgmb94xLf5QmEaYsP5RTyQd9KA8uNTmSq5kMd+bk=
+	t=1739847637; cv=none; b=X+e7wAG7RSNNQkR1GeFhYbjc9K7kW64HJgQ2BZwEn0hj+zTOKNSiDUP7SgwAZawY2si3MFGJ+v9/3kqZ59eqg3mR6YknY25xhCarIN/9c+WSYXgLOSxCO3zqgzNoMHQkxNYJ43pta9UJDsUe4BN2x5HJUKEyUZkkGGVMZkWMaNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739845464; c=relaxed/simple;
-	bh=7ipJmzLet5YB1c8k2DxOeip5VApJFjbWBfsc/HjE2bA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IPJ1kS3mYSZtBLxttRhV62aiLhCBF3RzkYonVfTAuRBsLzuguTNEVECdRIJyDxCFMi+BOU22kLffvhegI5yEZ+aa8yI35xPjyg29ZEP+CRQVgYrjRIrZNEjfFYs9MsXvT+06O8zhDcume+/9nFf1/FLredywW3+TdARSRQjaFAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ABoCVgk0; arc=none smtp.client-ip=198.175.65.14
+	s=arc-20240116; t=1739847637; c=relaxed/simple;
+	bh=vo4iIqOccXJo5BGr+furQ+7eK/ctsfLTpSO/mzH9F9U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YXJAnHrDu4dYyX3UYlnerrQFa6HsbCY5+k6VJodvrbLYfrm5YXxcn3lhVctKg1Zl8unEVFMa7g0AuVtAv1jmh6UKiJ1cmk6e8QpKXx2y6C8gXTUitEr1UuBpU2fUUY1s5RJlr/5WNV4kaQOcbAPxYOdF18IvBI64SqbCXbv52Xo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fM0PmJKM; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ABoCVgk0"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fM0PmJKM"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1739845463; x=1771381463;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7ipJmzLet5YB1c8k2DxOeip5VApJFjbWBfsc/HjE2bA=;
-  b=ABoCVgk0nJpkXti4gEneR79MQH+fEweyZqTZxBeuIcjUE021hNXlQ9RS
-   K7hKYSKVmw++ANpSn7HcWTnzxOS6dR1HpBQQODQy43U58nWglrQVFRdGF
-   zGm8kb3XxOp+hBQtyoPVUob5/GsKR73li31K9KimAb7zNyUEUTp1Eeh/R
-   yW7G0vuESIvZLlpE43oVZygz1IMZ1mF8b+uZaGU4ZmUMP4qk+oeZXwlMZ
-   JTTX0gwJjIy+YVPyleilw/L5X0wcNuTLXItW4m+0KOhXJWp2E2qNx08J9
-   t7nnCgKg01OTjiDlefQLCoS2quqWNwWhOlO4TX5YRR5Fw6Sg8C+wJPyNS
-   A==;
-X-CSE-ConnectionGUID: O4Iat02FRfmtxRxwF+auyA==
-X-CSE-MsgGUID: WYwUKy+jTPSZqcdF2zsSkA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11348"; a="44284679"
+  t=1739847635; x=1771383635;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vo4iIqOccXJo5BGr+furQ+7eK/ctsfLTpSO/mzH9F9U=;
+  b=fM0PmJKMNMn+Fbx7JzTeJWvemZ/TQh+v+eU0FGiAp+qjpDs3KCj1Df6k
+   bfvouWzhLgynzGQZVCyrSOLv/I5JCYFM6lRmLaOCjRUPbb+M7BUd2rCGt
+   fgMqpriciwAqCDRRemyqtfj9bjuYm/SzDzpDgxZ7+9hJXcUcTqSzV4oWf
+   240TvdfwLoQlalP12waBuJVFQZTlS0QPJ3+weVqwicooUtS4CqNpP5EqV
+   KEJaJSHH+nYDNC4odMAR1mfIJCPk8+ZcWvgTxJ5cmC+ITJLq0RcGYC+N9
+   AowoHSozWNeJYnQd9DOIX7ddP0a/yd4SeEc4U6wtdR+CPl8hz7/zIjNPP
+   w==;
+X-CSE-ConnectionGUID: NKf76AgxSJ6KXaS9wJiBvg==
+X-CSE-MsgGUID: nuHcGlIiTQmLCJqNRo0zOg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11348"; a="44457569"
 X-IronPort-AV: E=Sophos;i="6.13,294,1732608000"; 
-   d="scan'208";a="44284679"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2025 18:24:22 -0800
-X-CSE-ConnectionGUID: vD97ivTsScudIVqP7A+GBA==
-X-CSE-MsgGUID: 2zNvAkghSyW5kn0bTSJyTA==
+   d="scan'208";a="44457569"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2025 19:00:35 -0800
+X-CSE-ConnectionGUID: cXOsJFYfSjiWBQAJo3GxvA==
+X-CSE-MsgGUID: a2+gEoMbSGGZbPwOXFtWww==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,294,1732608000"; 
-   d="scan'208";a="114769374"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa010.fm.intel.com with ESMTP; 17 Feb 2025 18:24:19 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: Ido Schimmel <idosch@idosch.org>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: [PATCH 1/1] iommu/vt-d: Fix suspicious RCU usage
-Date: Tue, 18 Feb 2025 10:24:21 +0800
-Message-ID: <20250218022422.2315082-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+   d="scan'208";a="114012065"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2025 19:00:32 -0800
+Message-ID: <59998dcc-9452-4efd-be69-d95754217633@linux.intel.com>
+Date: Tue, 18 Feb 2025 10:57:30 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/12] iommu: Remove IOMMU_DEV_FEAT_SVA/_IOPF
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+ Zhou Wang <wangzhou1@hisilicon.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+References: <20250214061104.1959525-1-baolu.lu@linux.intel.com>
+ <CABQgh9FMy7oVt9+enSpJxXvkux+czMFqbsPZVgmBV+rFWWvhGA@mail.gmail.com>
+ <20250214125600.GA3696814@ziepe.ca>
+ <CABQgh9FQYe46hfjcs+o6GfLaS7OfSqrmvXUzOKd6PRK8oBF8Jw@mail.gmail.com>
+ <d578bf4c-f475-42bf-9cb8-21941fc7af88@linux.intel.com>
+ <CABQgh9EG3gjtw19qvr7OhxKmR8E6+xwBf9b3=WPNrXRc-m9DjQ@mail.gmail.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <CABQgh9EG3gjtw19qvr7OhxKmR8E6+xwBf9b3=WPNrXRc-m9DjQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Commit <d74169ceb0d2> ("iommu/vt-d: Allocate DMAR fault interrupts
-locally") moved the call to enable_drhd_fault_handling() to a code
-path that does not hold any lock while traversing the drhd list. Fix
-it by ensuring the dmar_global_lock lock is held when traversing the
-drhd list.
+On 2/15/25 19:35, Zhangfei Gao wrote:
+> On Sat, 15 Feb 2025 at 18:09, Baolu Lu<baolu.lu@linux.intel.com> wrote:
+>> On 2/15/25 16:11, Zhangfei Gao wrote:
+>>> It does not relate to multi devices, one device also happens when user
+>>> page fault triggers.
+>>>
+>>> iopf_queue_remove_device is called.
+>>> rcu_assign_pointer(param->fault_param, NULL);
+>>>
+>>> call trace
+>>> [  304.961312] Call trace:
+>>> [  304.961314]  show_stack+0x20/0x38 (C)
+>>> [  304.961319]  dump_stack_lvl+0xc0/0xd0
+>>> [  304.961324]  dump_stack+0x18/0x28
+>>> [  304.961327]  iopf_queue_remove_device+0xb0/0x1f0
+>>> [  304.961331]  arm_smmu_remove_master_domain+0x204/0x250
+>>> [  304.961336]  arm_smmu_attach_commit+0x64/0x100
+>>> [  304.961338]  arm_smmu_attach_dev_nested+0x104/0x1a8
+>>> [  304.961340]  __iommu_attach_device+0x2c/0x110
+>>> [  304.961343]  __iommu_device_set_domain.isra.0+0x78/0xe0
+>>> [  304.961345]  __iommu_group_set_domain_internal+0x78/0x160
+>>> [  304.961347]  iommu_replace_group_handle+0x9c/0x150
+>>> [  304.961350]  iommufd_fault_domain_replace_dev+0x88/0x120
+>>> [  304.961353]  iommufd_device_do_replace+0x190/0x3c0
+>>> [  304.961355]  iommufd_device_change_pt+0x270/0x688
+>>> [  304.961357]  iommufd_device_replace+0x20/0x38
+>>> [  304.961359]  vfio_iommufd_physical_attach_ioas+0x30/0x78
+>>> [  304.961363]  vfio_df_ioctl_attach_pt+0xa8/0x188
+>>> [  304.961366]  vfio_device_fops_unl_ioctl+0x310/0x990
+>>>
+>>>
+>>> When page fault triggers:
+>>>
+>>> [ 1016.383578] ------------[ cut here ]-----------
+>>> [ 1016.388184] WARNING: CPU: 35 PID: 717 at
+>>> drivers/iommu/io-pgfault.c:231 iommu_report_device_fault+0x2c8/0x470
+>> It's likely that iopf_queue_add_device() was not called for this device.
+> iopf_queue_add_device is called, but quickly iopf_queue_remove_device
+> is called during guest bootup.
+> Then fault_param is set to NULL.
+> 
+> arm_smmu_attach_commit
+> arm_smmu_remove_master_domain
+> // newly added in the first patch
+>         if (master_domain) {
+>                    if (master_domain->using_iopf)
 
-Without this fix, the following warning is triggered:
- =============================
- WARNING: suspicious RCU usage
- 6.14.0-rc3 #55 Not tainted
- -----------------------------
- drivers/iommu/intel/dmar.c:2046 RCU-list traversed in non-reader section!!
-               other info that might help us debug this:
-               rcu_scheduler_active = 1, debug_locks = 1
- 2 locks held by cpuhp/1/23:
- #0: ffffffff84a67c50 (cpu_hotplug_lock){++++}-{0:0}, at: cpuhp_thread_fun+0x87/0x2c0
- #1: ffffffff84a6a380 (cpuhp_state-up){+.+.}-{0:0}, at: cpuhp_thread_fun+0x87/0x2c0
- stack backtrace:
- CPU: 1 UID: 0 PID: 23 Comm: cpuhp/1 Not tainted 6.14.0-rc3 #55
- Call Trace:
-  <TASK>
-  dump_stack_lvl+0xb7/0xd0
-  lockdep_rcu_suspicious+0x159/0x1f0
-  ? __pfx_enable_drhd_fault_handling+0x10/0x10
-  enable_drhd_fault_handling+0x151/0x180
-  cpuhp_invoke_callback+0x1df/0x990
-  cpuhp_thread_fun+0x1ea/0x2c0
-  smpboot_thread_fn+0x1f5/0x2e0
-  ? __pfx_smpboot_thread_fn+0x10/0x10
-  kthread+0x12a/0x2d0
-  ? __pfx_kthread+0x10/0x10
-  ret_from_fork+0x4a/0x60
-  ? __pfx_kthread+0x10/0x10
-  ret_from_fork_asm+0x1a/0x30
-  </TASK>
+It seems the above check is incorrect. We only need to disable iopf when
+an iopf-capable domain is about to be removed. Will the following
+additional change make any difference?
 
-Simply holding the lock in enable_drhd_fault_handling() will trigger a
-lock order splat. Avoid holding the dmar_global_lock when calling
-iommu_device_register(), which starts the device probe process.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c 
+b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 28e67a9e3861..9b9ef738d070 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2822,7 +2822,7 @@ static void arm_smmu_remove_master_domain(struct 
+arm_smmu_master *master,
+         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
 
-Fixes: d74169ceb0d2 ("iommu/vt-d: Allocate DMAR fault interrupts locally")
-Reported-by: Ido Schimmel <idosch@idosch.org>
-Closes: https://lore.kernel.org/linux-iommu/Zx9OwdLIc_VoQ0-a@shredder.mtl.com/
-Cc: stable@vger.kernel.org
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/dmar.c  | 1 +
- drivers/iommu/intel/iommu.c | 7 +++++++
- 2 files changed, 8 insertions(+)
+         if (master_domain) {
+-               if (master_domain->using_iopf)
++               if (domain->iopf_handler)
+                         arm_smmu_disable_iopf(master);
+                 kfree(master_domain);
+         }
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 9f424acf474e..e540092d664d 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -2043,6 +2043,7 @@ int enable_drhd_fault_handling(unsigned int cpu)
- 	/*
- 	 * Enable fault control interrupt.
- 	 */
-+	guard(rwsem_read)(&dmar_global_lock);
- 	for_each_iommu(iommu, drhd) {
- 		u32 fault_status;
- 		int ret;
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cc46098f875b..9a1e61b429ca 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3146,7 +3146,14 @@ int __init intel_iommu_init(void)
- 		iommu_device_sysfs_add(&iommu->iommu, NULL,
- 				       intel_iommu_groups,
- 				       "%s", iommu->name);
-+		/*
-+		 * The iommu device probe is protected by the iommu_probe_device_lock.
-+		 * Release the dmar_global_lock before entering the device probe path
-+		 * to avoid unnecessary lock order splat.
-+		 */
-+		up_read(&dmar_global_lock);
- 		iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
-+		down_read(&dmar_global_lock);
- 
- 		iommu_pmu_register(iommu);
- 	}
--- 
-2.43.0
+>                            arm_smmu_disable_iopf(master); ->
+> iopf_queue_remove_device
+>                    kfree(master_domain);
+>            }
+> 
+> As a comparison, without this patchset, only iopf_queue_add_device is
+> called, not call iopf_queue_remove_device
 
+Thanks,
+baolu
