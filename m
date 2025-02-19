@@ -1,67 +1,32 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B1291D7E30
-	for <iommu@lists.linux.dev>; Wed, 19 Feb 2025 23:25:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5CDE81CAA68
+	for <iommu@lists.linux.dev>; Wed, 19 Feb 2025 23:52:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740007538; cv=none; b=YQQckWd/ZL7/8JA6FzxFt3xTz5aRL0E64MIenKFyUXqVPG2bOyT36OTSpkxv9UiISpoK35LjJ/oD4XvuMYmAQgllZGauwBtwczwb89SST0/1Z7FBSVpbREMPGmEN38QqGKc8xA+Lx6V8HJ5qfRYkVAvDVDKzYAtyJINRmPCiRhU=
+	t=1740009154; cv=none; b=nTEivRvs37JoqxZlJMyHAw5wN6UiJqNLR2iAisrBcsQVZWfImbdPVXf+FYfIh7AuqeKbW3FSmZFIS0Mav8wUsxymtTB9CSITbaaHcdQfVprHhjiX43iNYLVUZRO2UeZkTuYlopH7KxiG6wWiar9AhbRgF4z2JlHpsSIxE8Uwg/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740007538; c=relaxed/simple;
-	bh=9ohG2QD/tJh3Roiv4JmGmUSY1d2GfUHaKUCFxoZJjrA=;
+	s=arc-20240116; t=1740009154; c=relaxed/simple;
+	bh=uy5hahpZ4+VHhTkwUXGrHQ/cWlIHhiLsB3s1y+oWXqU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aqsvGAXxvPt1mtYtSfMHtPAbrRW45Qaq+OBDrIXFiYG9fllbb4xR2iojNHvySRJ/JWr93FurTjvrFlAoOe1RN6l4kG5Ycsq97xqtWIu0Luw2ntUHiqjp4RbQF4lH2gjlGGt6zhUvehTVnFVwBOf9MezbtruFp7IN9z8cpvPEvWk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=P8h3UOm6; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	 In-Reply-To:Content-Type; b=gf0LTi85WGTkCoGNszQKRMirBIBe18PA45paRtOfEDZJ1Qpz6+jwgiVcZEcTzdOUEmbiNhmPB8Zw/jwee1F9vjFWiBsSSGyGCkdlFb0bo+GCK/pJP3EOhb/8U1dvr5SxKd+DSyzNnADKCvdSI0j+Blj66CQ5clSprmCYRPQGIJg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=p8uhgJHM; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="P8h3UOm6"
-Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51JGt2dL011634;
-	Wed, 19 Feb 2025 23:25:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=MMTase
-	bDCcrtL3CYiVpYsdakTw4gen2R/Jig2+VRt8w=; b=P8h3UOm6wHHQUqlWhYpjck
-	SRaBK7lLML5QkNGHw/UTFymX9Gd0KdW5RoVn0lSVBl543q9c2I2K54owzvTPElMp
-	DMWbWmL3eNYfowgX7j2yH2P6qc4Yh4PSdasn8sG7ulJzKGDG7R4Pn3do1lpOqprN
-	VRgk+xP5xXVCBdjzgAGaWBL1tdO0C4/3qH5/wJtJ8oFDKUpwQ4a++LUdgfb5ey9V
-	TLLj43m6p4Jrc7atmIUnbVphabWTlQ1G0AhrcG3IWpFsUAoll9hQtr4dSOUAO2cj
-	7z2dqSpkxqnnAd3bQT0tPFYAzSXey4+ii1Hp0Hzcvav+jJcmk2W28Ds2fOh1nTlA
-	==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 44w5c9dujp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 19 Feb 2025 23:25:20 +0000 (GMT)
-Received: from m0360083.ppops.net (m0360083.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 51JNGINp011880;
-	Wed, 19 Feb 2025 23:25:19 GMT
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 44w5c9dujm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 19 Feb 2025 23:25:19 +0000 (GMT)
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 51JKmk1I002323;
-	Wed, 19 Feb 2025 23:25:18 GMT
-Received: from smtprelay02.dal12v.mail.ibm.com ([172.16.1.4])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 44w03x6rh9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 19 Feb 2025 23:25:18 +0000
-Received: from smtpav03.dal12v.mail.ibm.com (smtpav03.dal12v.mail.ibm.com [10.241.53.102])
-	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 51JNPHQM51053008
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 19 Feb 2025 23:25:18 GMT
-Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id CAE7D5803F;
-	Wed, 19 Feb 2025 23:25:17 +0000 (GMT)
-Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 833BE5805A;
-	Wed, 19 Feb 2025 23:25:17 +0000 (GMT)
-Received: from [9.61.242.219] (unknown [9.61.242.219])
-	by smtpav03.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 19 Feb 2025 23:25:17 +0000 (GMT)
-Message-ID: <e77b6ea0-7989-4c58-9524-ad8e3941a7a8@linux.ibm.com>
-Date: Wed, 19 Feb 2025 17:25:17 -0600
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="p8uhgJHM"
+Received: from [10.0.0.114] (c-67-182-156-199.hsd1.wa.comcast.net [67.182.156.199])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 822C82043DEB;
+	Wed, 19 Feb 2025 15:52:31 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 822C82043DEB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1740009151;
+	bh=lkjbZIJnId5hXKF47xaevoT9UYXNhNvA9a35Ihx9HVI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=p8uhgJHMJTyLtI9Kj8ip4E+Pz8nIRH/311y4oKUhGRNYJq4YGnP+52cI8mOMXLudW
+	 sd8WuEh4j+1ZNlBrLzloslmqW5Vi33WdQcMRlKYZyXjBj4eZgE4BAE8BdE+sIdKAUV
+	 b/8rSgRNmgU6HOqPCOVA70zlQNUeqsTwQLlQy/nc=
+Message-ID: <1defc59b-3e6c-4023-b57b-d81a4358e69e@linux.microsoft.com>
+Date: Wed, 19 Feb 2025 15:52:30 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,234 +34,588 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] powerpc/pseries/iommu: Wait until all TCEs are
- unmapped before deleting DDW
-To: Yunsheng Lin <linyunsheng@huawei.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>, maddy@linux.ibm.com
-Cc: linuxppc-dev@lists.ozlabs.org, brking@linux.vnet.ibm.com,
-        mpe@ellerman.id.au, iommu@lists.linux.dev, ilias.apalodimas@linaro.org,
-        Netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        Mina Almasry <almasrymina@google.com>
-References: <20250213171051.63748-1-gbatra@linux.ibm.com>
- <3e6505a4-ba21-4dd6-8ad2-8e0ef8846fc3@kernel.org>
- <f45fa065-a72c-46d6-a196-f4bc1d9f395e@huawei.com>
+Subject: Re: [PATCH] hyperv: Add CONFIG_MSHV_ROOT to gate hv_root_partition
+ checks
+To: Michael Kelley <mhklinux@outlook.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Cc: "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+ "wei.liu@kernel.org" <wei.liu@kernel.org>,
+ "decui@microsoft.com" <decui@microsoft.com>,
+ "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+ "will@kernel.org" <will@kernel.org>, "tglx@linutronix.de"
+ <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>,
+ "bp@alien8.de" <bp@alien8.de>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+ "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+ "joro@8bytes.org" <joro@8bytes.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "arnd@arndb.de"
+ <arnd@arndb.de>,
+ "jinankjain@linux.microsoft.com" <jinankjain@linux.microsoft.com>,
+ "muminulrussell@gmail.com" <muminulrussell@gmail.com>,
+ "skinsburskii@linux.microsoft.com" <skinsburskii@linux.microsoft.com>,
+ "mukeshrathor@microsoft.com" <mukeshrathor@microsoft.com>
+References: <1739312515-18848-1-git-send-email-nunodasneves@linux.microsoft.com>
+ <SN6PR02MB4157F396B9FECAD555520DDED4C52@SN6PR02MB4157.namprd02.prod.outlook.com>
 Content-Language: en-US
-From: Gaurav Batra <gbatra@linux.ibm.com>
-In-Reply-To: <f45fa065-a72c-46d6-a196-f4bc1d9f395e@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: H-JTGzv7SVgsEnZfBJ8_wiislZhZzU5q
-X-Proofpoint-GUID: rtK4WXl0ULkdpucHY4-7AjZZYIZa8pVJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-02-19_10,2025-02-19_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 lowpriorityscore=0 suspectscore=0 clxscore=1011 bulkscore=0
- malwarescore=0 phishscore=0 mlxlogscore=999 adultscore=0 impostorscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502100000 definitions=main-2502190169
+From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+In-Reply-To: <SN6PR02MB4157F396B9FECAD555520DDED4C52@SN6PR02MB4157.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-I agree the right fix for this issue would be in the page_pool code. I 
-will see if we can reproduce the issue and try out the patch
+On 2/19/2025 11:46 AM, Michael Kelley wrote:
+> From: Nuno Das Neves <nunodasneves@linux.microsoft.com> Sent: Tuesday, February 11, 2025 2:22 PM
+>>
+>> Introduce CONFIG_MSHV_ROOT as a tristate to enable root partition
+>> booting and future mshv driver functionality.
+> 
+> This statement could use a bit more explanation as to "why".  Something
+> like:
+> 
+> Running in the root partition is a unique and specialized case that requires
+> additional code. The config option allows kernels built to run as a normal
+> Hyper-V guest to exclude this code, which is important since significant
+> additional code specific to the root partition is expected to be added over
+> time.
+> 
 
-Thanks,
+This sounds good to me
 
-Gaurav
+> Related, what's the thinking behind making CONFIG_MSHV_ROOT be
+> tri-state? Obviously, it would allow most of the root partition code
+> to be loaded as a module instead of built-in to the kernel image, but is that
+> a useful scenario given the unique nature of running in the root partition?
+> Since the root partition environment is very specific and constrained,
+> perhaps just always building the root partition code into the kernel
+> makes sense. I'm asking purely as a question because I'm not familiar with
+> the details of how a root partition kernel is likely to be setup & run. If
+> possible, give a short explanation for the "why tri-state" question.
+> Remember, that's what commit message are for -- to answer the "why"
+> question as much as to summarize the "what" question.
+> 
 
-On 2/19/25 5:17 AM, Yunsheng Lin wrote:
-> On 2025/2/18 22:40, Jesper Dangaard Brouer wrote:
->> Cc. netdev and Yunsheng Lin
-> Thanks for Cc'ing.
->
->> On 13/02/2025 18.10, Gaurav Batra wrote:
->>> Some of the network drivers, like Mellanox, use core linux page_pool APIs
->>> to manage DMA buffers. These page_pool APIs cache DMA buffers with
->>> infrequent map/unmap calls for DMA mappings, thus increasing performance.
->>>
->>> When a device is initialized, the drivers makes a call to the page_pool API
->>> to create a DMA buffer pool. Hence forth DMA buffers are allocated and
->>> freed from this pool by the driver. The DMA map/unmap is done by the core
->>> page_pool infrastructure.
->>>
->>> These DMA buffers could be allocated for RX/TX buffer rings for the device
->>> or could be in-process by the network stack.
->>>
->>> When a network device is closed, driver will release all DMA mapped
->>> buffers. All the DMA buffers allocated to the RX/TX rings are released back
->>> to the page_pool by the driver. Some of the DMA mapped buffers could still
->>> be allocated and in-process by the network stack.
->>>
->>> DMA buffers that are relased by the Network driver are synchronously
->>> unmapped by the page_pool APIs. But, DMA buffers that are passed to the
->>> network stack and still in-process are unmapped later asynchronously by the
->>> page_pool infrastructure.
->>>
->>> This asynchronous unmapping of the DMA buffers, by the page_pool, can lead
->>> to issues when a network device is dynamically removed in PowerPC
->>> architecture.  When a network device is DLPAR removed, the driver releases
->>> all the mapped DMA buffers and stops using the device. Driver returns
->>> successfully. But, at this stage there still could be mapped DMA buffers
->>> which are in-process by the network stack.
->>>
->>> DLPAR code proceeds to remove the device from the device tree, deletes
->>> Dynamic DMA Window (DDW) and associated IOMMU tables. DLPAR of the device
->>> succeeds.
->>>
->>> Later, when network stack release some of the DMA buffers, page_pool
->>> proceeds to unmap them. The page_pool relase path calls into PowerPC TCE
->>> management to release the TCE. This is where the LPAR OOPses since the DDW
->>> and associated resources for the device are already free'ed.
-> Yes, the above seems like a similar issue the below patch is trying to
-> fix too. After several iteration of trying to fixing the bug, the generic
-> fix seems to avoid calling the DMA API after driver has unbound, which
-> means page_pool need to keep track of all the inflight pages and do the
-> dma unmapping for all the inflight page when page_pool_destroy() is called.
->
-> It would be good if the below patchset is tested to see if it fix the
-> problem for iommu problem in this patch for powerpc system.
->
-> https://lore.kernel.org/all/20250212092552.1779679-3-linyunsheng@huawei.com/
->
->>> This issue was exposed during (Live Partition Migration) LPM from a Power9
->>> to Power10 machine with HNV configuration. The bonding device is Virtual
->>> Ethernet with SR-IOV. During LPM, I/O is switched from SR-IOV to passive
->>> Virtual Ethernet and DLPAR remove of SR-IOV is initiated. This lead to the
->>> above mentioned scenario.
->>>
->>> It is possible to hit this issue by just Dynamically removing SR-IOV device
->>> which is under heavy I/O load, a scenario where some of the mapped DMA
->>> buffers are in-process somewhere in the network stack and not mapped to the
->>> RX/TX ring of the device.
->>>
->>> The issue is only encountered when TCEs are dynamically managed. In this
->>> scenario map/unmap of TCEs goes into the PowerPC TCE management path as and
->>> when DMA bufffers are mapped/unmaped and accesses DDW resources. When RAM
->>> is directly mapped during device initialization, this dynamic TCE
->>> management is by-passed and LPAR doesn't OOPses.
->>>
->>> Solution:
->>>
->>> During DLPAR remove of the device, before deleting the DDW and associated
->>> resources, check to see if there are any outstanding TCEs. If there are
->>> outstanding TCEs, sleep for 50ms and check again, until all the TCEs are
->>> unmapped.
->>>
->>> Once all the TCEs are unmapped, DDW is removed and DLPAR succeeds. This
->>> ensures there will be no reference to the DDW after it is deleted.
->>>
->>> Here is the stack for reference
->>>
->>> [ 3610.403820] tce_freemulti_pSeriesLP: 48 callbacks suppressed
->>> [ 3610.403833] tce_freemulti_pSeriesLP: plpar_tce_stuff failed
->>> [ 3610.403869]  rc      = -4
->>> [ 3610.403872]  index   = 0x70000016
->>> [ 3610.403876]  limit     = 0x1
->>> [ 3610.403879]  tce       = 0x80000061ee00000
->>> [ 3610.403882]  pgshift = 0x10
->>> [ 3610.403884]  npages  = 0x1
->>> [ 3610.403887]  tbl     = 000000003a6a2145
->>> [ 3610.403912] CPU: 86 PID: 97129 Comm: kworker/86:2 Kdump: loaded Tainted: G            E        6.4.0-623164-default #1 SLE15-SP6 763d454e096eda7d91355fd5b171013052d83ed3
->>> [ 3610.403928] Hardware name: IBM,9080-M9S POWER9 (raw) 0x4e2101 0xf000005 of:IBM,FW950.80 (VH950_131) hv:phyp pSeries
->>> [ 3610.403937] Workqueue: events page_pool_release_retry
->>> [ 3610.404003] Call Trace:
->>> [ 3610.404006] [c000055034e6bb30] [c000000000f63108] dump_stack_lvl+0x6c/0x9c (unreliable)
->>> [ 3610.404039] [c000055034e6bb60] [c000000000101258] tce_freemulti_pSeriesLP+0x1e8/0x1f0
->>> [ 3610.404070] [c000055034e6bbf0] [c00000000005d248] __iommu_free+0x118/0x220
->>> [ 3610.404086] [c000055034e6bc80] [c00000000005d4e8] iommu_free+0x28/0x70
->>> [ 3610.404106] [c000055034e6bcb0] [c00000000005c4b4] dma_iommu_unmap_page+0x24/0x40
->>> [ 3610.404113] [c000055034e6bcd0] [c00000000024b56c] dma_unmap_page_attrs+0x1ac/0x1e0
->>> [ 3610.404139] [c000055034e6bd30] [c000000000cfa178] page_pool_return_page+0x58/0x1b0
->>> [ 3610.404146] [c000055034e6bd60] [c000000000cfb7bc] page_pool_release+0x10c/0x270^
->>> [ 3610.404152] [c000055034e6be00] [c000000000cfbb2c] page_pool_release_retry+0x2c/0x110
->>> [ 3610.404159] [c000055034e6be70] [c00000000018e294] process_one_work+0x314/0x620
->>> [ 3610.404173] [c000055034e6bf10] [c00000000018ee88] worker_thread+0x78/0x620
->>> [ 3610.404179] [c000055034e6bf90] [c00000000019b958] kthread+0x148/0x150
->>> [ 3610.404188] [c000055034e6bfe0] [c00000000000ded8] start_kernel_thread+0x14/0x18
->>>
->>> Signed-off-by: Gaurav Batra <gbatra@linux.ibm.com>
->>> ---
->>>    arch/powerpc/kernel/iommu.c            | 22 ++++++++++++++++++++--
->>>    arch/powerpc/platforms/pseries/iommu.c |  8 ++++----
->>>    2 files changed, 24 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
->>> index 76381e14e800..af7511a8f480 100644
->>> --- a/arch/powerpc/kernel/iommu.c
->>> +++ b/arch/powerpc/kernel/iommu.c
->>> @@ -14,6 +14,7 @@
->>>    #include <linux/types.h>
->>>    #include <linux/slab.h>
->>>    #include <linux/mm.h>
->>> +#include <linux/delay.h>
->>>    #include <linux/spinlock.h>
->>>    #include <linux/string.h>
->>>    #include <linux/dma-mapping.h>
->>> @@ -803,6 +804,7 @@ bool iommu_table_in_use(struct iommu_table *tbl)
->>>    static void iommu_table_free(struct kref *kref)
->>>    {
->>>        struct iommu_table *tbl;
->>> +    unsigned long start_time;
->>>          tbl = container_of(kref, struct iommu_table, it_kref);
->>>    @@ -817,8 +819,24 @@ static void iommu_table_free(struct kref *kref)
->>>        iommu_debugfs_del(tbl);
->>>          /* verify that table contains no entries */
->>> -    if (iommu_table_in_use(tbl))
->>> -        pr_warn("%s: Unexpected TCEs\n", __func__);
->>> +    start_time = jiffies;
->>> +    while (iommu_table_in_use(tbl)) {
->>> +        int sec;
->>> +
->>> +        pr_info("%s: Unexpected TCEs, wait for 50ms\n", __func__);
->>> +        msleep(50);
->>> +
->>> +        /* Come out of the loop if we have already waited for 120 seconds
->>> +         * for the TCEs to be free'ed. TCE are being free'ed
->>> +         * asynchronously by some DMA buffer management API - like
->>> +         * page_pool.
->>> +         */
->>> +        sec = (s32)((u32)jiffies - (u32)start_time) / HZ;
->>> +        if (sec >= 120) {
->>> +            pr_warn("%s: TCEs still mapped even after 120 seconds\n", __func__);
->>> +            break;
->>> +        }
-> As mentioned in the above patch, the delay doesn't really work for the
-> case 2 below:
-> "Currently it seems there are at least two cases that the page
-> is not released fast enough causing dma unmmapping done after
-> driver has already unbound:
-> 1. ipv4 packet defragmentation timeout: this seems to cause
->     delay up to 30 secs.
-> 2. skb_defer_free_flush(): this may cause infinite delay if
->     there is no triggering for net_rx_action()."
->
->
->>> +    }
->>>          /* free bitmap */
->>>        vfree(tbl->it_map);
->>> diff --git a/arch/powerpc/platforms/pseries/iommu.c b/arch/powerpc/platforms/pseries/iommu.c
->>> index 534cd159e9ab..925494b6fafb 100644
->>> --- a/arch/powerpc/platforms/pseries/iommu.c
->>> +++ b/arch/powerpc/platforms/pseries/iommu.c
->>> @@ -2390,6 +2390,10 @@ static int iommu_reconfig_notifier(struct notifier_block *nb, unsigned long acti
->>>          switch (action) {
->>>        case OF_RECONFIG_DETACH_NODE:
->>> +        if (pci && pci->table_group)
->>> +            iommu_pseries_free_group(pci->table_group,
->>> +                    np->full_name);
->>> +
->>>            /*
->>>             * Removing the property will invoke the reconfig
->>>             * notifier again, which causes dead-lock on the
->>> @@ -2400,10 +2404,6 @@ static int iommu_reconfig_notifier(struct notifier_block *nb, unsigned long acti
->>>            if (remove_dma_window_named(np, false, DIRECT64_PROPNAME, true))
->>>                remove_dma_window_named(np, false, DMA64_PROPNAME, true);
->>>    -        if (pci && pci->table_group)
->>> -            iommu_pseries_free_group(pci->table_group,
->>> -                    np->full_name);
->>> -
->>>            spin_lock(&dma_win_list_lock);
->>>            list_for_each_entry(window, &dma_win_list, list) {
->>>                if (window->device == np) {
->>>
->>> base-commit: 6e4436539ae182dc86d57d13849862bcafaa4709
+In the past it enabled quicker development: I would iterate on the driver
+code and just rebuild and reinsert the module. I'll admit I haven't used that
+workflow in a while so I'm not sure how useful it still is.
+
+Is there a *downside* (from upstream perspective) to keeping it a tristate
+that I'm not aware of? e.g. Would it be difficult to change it to a bool in
+future if we decide we really don't need it?
+
+While we're on this topic, do you know if CONFIG_HYPERV=m is ever used, and
+why?
+
+>>
+>> Change hv_root_partition into a function which always returns false
+>> if CONFIG_MSHV_ROOT=n.
+> 
+> Again, help answer the "why" question. I think the goal is related to
+> the above by allowing the compiler to optimize away any "if (root partition)"
+> code when building for a normal Hyper-V guest.
+> 
+>>
+>> Introduce hv_current_partition_type to store the type of partition
+>> (guest, root, or other kinds in future), and hv_identify_partition_type()
+>> to it up early in Hyper-V initialization.
+>>
+>> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+>> ---
+>> Depends on
+>> https://lore.kernel.org/linux-hyperv/1738955002-20821-3-git-send-email-nunodasneves@linux.microsoft.com/
+>>
+>>  arch/arm64/hyperv/mshyperv.c       |  2 ++
+>>  arch/x86/hyperv/hv_init.c          | 10 ++++----
+>>  arch/x86/kernel/cpu/mshyperv.c     | 24 ++----------------
+>>  drivers/clocksource/hyperv_timer.c |  4 +--
+>>  drivers/hv/Kconfig                 | 12 +++++++++
+>>  drivers/hv/Makefile                |  3 ++-
+>>  drivers/hv/hv.c                    | 10 ++++----
+>>  drivers/hv/hv_common.c             | 32 +++++++++++++++++++-----
+>>  drivers/hv/vmbus_drv.c             |  2 +-
+>>  drivers/iommu/hyperv-iommu.c       |  4 +--
+>>  include/asm-generic/mshyperv.h     | 39 +++++++++++++++++++++++++-----
+>>  11 files changed, 92 insertions(+), 50 deletions(-)
+>>
+>> diff --git a/arch/arm64/hyperv/mshyperv.c b/arch/arm64/hyperv/mshyperv.c
+>> index 29fcfd595f48..2265ea5ce5ad 100644
+>> --- a/arch/arm64/hyperv/mshyperv.c
+>> +++ b/arch/arm64/hyperv/mshyperv.c
+>> @@ -61,6 +61,8 @@ static int __init hyperv_init(void)
+>>  		ms_hyperv.features, ms_hyperv.priv_high, ms_hyperv.hints,
+>>  		ms_hyperv.misc_features);
+>>
+>> +	hv_identify_partition_type();
+>> +
+>>  	ret = hv_common_init();
+>>  	if (ret)
+>>  		return ret;
+>> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+>> index 9be1446f5bd3..ddeb40930bc8 100644
+>> --- a/arch/x86/hyperv/hv_init.c
+>> +++ b/arch/x86/hyperv/hv_init.c
+>> @@ -90,7 +90,7 @@ static int hv_cpu_init(unsigned int cpu)
+>>  		return 0;
+>>
+>>  	hvp = &hv_vp_assist_page[cpu];
+>> -	if (hv_root_partition) {
+>> +	if (hv_root_partition()) {
+>>  		/*
+>>  		 * For root partition we get the hypervisor provided VP assist
+>>  		 * page, instead of allocating a new page.
+>> @@ -242,7 +242,7 @@ static int hv_cpu_die(unsigned int cpu)
+>>
+>>  	if (hv_vp_assist_page && hv_vp_assist_page[cpu]) {
+>>  		union hv_vp_assist_msr_contents msr = { 0 };
+>> -		if (hv_root_partition) {
+>> +		if (hv_root_partition()) {
+>>  			/*
+>>  			 * For root partition the VP assist page is mapped to
+>>  			 * hypervisor provided page, and thus we unmap the
+>> @@ -317,7 +317,7 @@ static int hv_suspend(void)
+>>  	union hv_x64_msr_hypercall_contents hypercall_msr;
+>>  	int ret;
+>>
+>> -	if (hv_root_partition)
+>> +	if (hv_root_partition())
+>>  		return -EPERM;
+>>
+>>  	/*
+>> @@ -518,7 +518,7 @@ void __init hyperv_init(void)
+>>  	rdmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
+>>  	hypercall_msr.enable = 1;
+>>
+>> -	if (hv_root_partition) {
+>> +	if (hv_root_partition()) {
+>>  		struct page *pg;
+>>  		void *src;
+>>
+>> @@ -592,7 +592,7 @@ void __init hyperv_init(void)
+>>  	 * If we're running as root, we want to create our own PCI MSI domain.
+>>  	 * We can't set this in hv_pci_init because that would be too late.
+>>  	 */
+>> -	if (hv_root_partition)
+>> +	if (hv_root_partition())
+>>  		x86_init.irqs.create_pci_msi_domain = hv_create_pci_msi_domain;
+>>  #endif
+>>
+>> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+>> index f285757618fc..4f01f424ea5b 100644
+>> --- a/arch/x86/kernel/cpu/mshyperv.c
+>> +++ b/arch/x86/kernel/cpu/mshyperv.c
+>> @@ -33,8 +33,6 @@
+>>  #include <asm/numa.h>
+>>  #include <asm/svm.h>
+>>
+>> -/* Is Linux running as the root partition? */
+>> -bool hv_root_partition;
+>>  /* Is Linux running on nested Microsoft Hypervisor */
+>>  bool hv_nested;
+>>  struct ms_hyperv_info ms_hyperv;
+>> @@ -451,25 +449,7 @@ static void __init ms_hyperv_init_platform(void)
+>>  	pr_debug("Hyper-V: max %u virtual processors, %u logical processors\n",
+>>  		 ms_hyperv.max_vp_index, ms_hyperv.max_lp_index);
+>>
+>> -	/*
+>> -	 * Check CPU management privilege.
+>> -	 *
+>> -	 * To mirror what Windows does we should extract CPU management
+>> -	 * features and use the ReservedIdentityBit to detect if Linux is the
+>> -	 * root partition. But that requires negotiating CPU management
+>> -	 * interface (a process to be finalized). For now, use the privilege
+>> -	 * flag as the indicator for running as root.
+>> -	 *
+>> -	 * Hyper-V should never specify running as root and as a Confidential
+>> -	 * VM. But to protect against a compromised/malicious Hyper-V trying
+>> -	 * to exploit root behavior to expose Confidential VM memory, ignore
+>> -	 * the root partition setting if also a Confidential VM.
+>> -	 */
+>> -	if ((ms_hyperv.priv_high & HV_CPU_MANAGEMENT) &&
+>> -	    !(ms_hyperv.priv_high & HV_ISOLATION)) {
+>> -		hv_root_partition = true;
+>> -		pr_info("Hyper-V: running as root partition\n");
+>> -	}
+>> +	hv_identify_partition_type();
+>>
+>>  	if (ms_hyperv.hints & HV_X64_HYPERV_NESTED) {
+>>  		hv_nested = true;
+>> @@ -618,7 +598,7 @@ static void __init ms_hyperv_init_platform(void)
+>>
+>>  # ifdef CONFIG_SMP
+>>  	smp_ops.smp_prepare_boot_cpu = hv_smp_prepare_boot_cpu;
+>> -	if (hv_root_partition ||
+>> +	if (hv_root_partition() ||
+>>  	    (!ms_hyperv.paravisor_present && hv_isolation_type_snp()))
+>>  		smp_ops.smp_prepare_cpus = hv_smp_prepare_cpus;
+>>  # endif
+>> diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
+>> index f00019b078a7..09549451dd51 100644
+>> --- a/drivers/clocksource/hyperv_timer.c
+>> +++ b/drivers/clocksource/hyperv_timer.c
+>> @@ -582,7 +582,7 @@ static void __init hv_init_tsc_clocksource(void)
+>>  	 * mapped.
+>>  	 */
+>>  	tsc_msr.as_uint64 = hv_get_msr(HV_MSR_REFERENCE_TSC);
+>> -	if (hv_root_partition)
+>> +	if (hv_root_partition())
+>>  		tsc_pfn = tsc_msr.pfn;
+>>  	else
+>>  		tsc_pfn = HVPFN_DOWN(virt_to_phys(tsc_page));
+>> @@ -627,7 +627,7 @@ void __init hv_remap_tsc_clocksource(void)
+>>  	if (!(ms_hyperv.features & HV_MSR_REFERENCE_TSC_AVAILABLE))
+>>  		return;
+>>
+>> -	if (!hv_root_partition) {
+>> +	if (!hv_root_partition()) {
+>>  		WARN(1, "%s: attempt to remap TSC page in guest partition\n",
+>>  		     __func__);
+>>  		return;
+>> diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
+>> index 862c47b191af..aac172942f6c 100644
+>> --- a/drivers/hv/Kconfig
+>> +++ b/drivers/hv/Kconfig
+>> @@ -55,4 +55,16 @@ config HYPERV_BALLOON
+>>  	help
+>>  	  Select this option to enable Hyper-V Balloon driver.
+>>
+>> +config MSHV_ROOT
+>> +	tristate "Microsoft Hyper-V root partition support"
+>> +	depends on HYPERV
+>> +	depends on !HYPERV_VTL_MODE
+>> +	depends on PAGE_SIZE_4KB
+> 
+> Add a comment about why PAGE_SIZE_4KB is a requirement, even on
+> arm64 systems that can support guests with larger page sizes. We
+> discussed why in an earlier email thread, but somebody looking at
+> this in the future might wonder.
+> 
+>> +	default n
+>> +	help
+>> +	  Select this option to enable support for booting and running as root
+>> +	  partition on Microsoft Hyper-V.
+>> +
+>> +	  If unsure, say N.
+>> +
+> 
+> One thing to keep in mind:  Sometimes people build kernels with all
+> config options set to "Y".  We want to make sure that if someone does
+> that, the kernel will still run in a non-Hyper-V environment.  We had this
+> problem with CONFIG_HYPERV_VTL_MODE=y, where a kernel built with
+> that wouldn't run elsewhere, and that had to be fixed.  I don't think the
+> changes in this patch cause a problem in that regard, but it is something
+> to keep in mind for the future.
+> 
+> As I see it, setting CONFIG_MSHV_ROOT=y (or =m) just adds code to> the kernel image or modules list, and enables runtime detection of
+> whether the kernel is actually in the root partition. If not actually in the
+> root partition, the behavior is normal guest behavior. I think that is all good.
+> 
+Yes, agreed. The assumption we are working under is that enabling CONFIG_MSHV_ROOT
+doesn't break any normal guest or non-Hyper-V scenarios.
+
+Of course it's hard to always be certain that our code doesn't break some other
+config option at runtime, but we fix that whenever we see it (or exclude the
+combination via Kconfig).
+
+>>  endmenu
+>> diff --git a/drivers/hv/Makefile b/drivers/hv/Makefile
+>> index 9afcabb3fbd2..2b8dc954b350 100644
+>> --- a/drivers/hv/Makefile
+>> +++ b/drivers/hv/Makefile
+>> @@ -13,4 +13,5 @@ hv_vmbus-$(CONFIG_HYPERV_TESTING)	+= hv_debugfs.o
+>>  hv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_utils_transport.o
+>>
+>>  # Code that must be built-in
+>> -obj-$(subst m,y,$(CONFIG_HYPERV)) += hv_common.o hv_proc.o
+>> +obj-$(subst m,y,$(CONFIG_HYPERV)) += hv_common.o
+>> +obj-$(subst m,y,$(CONFIG_MSHV_ROOT)) += hv_proc.o
+> 
+> OK, so hv_proc.o is always built-in, regardless of whether
+> CONFIG_MSHV_ROOT=y or =m. I think that makes sense. The functions in
+> hv_proc.c are called somewhere in the middle of the kernel boot process,
+> and I'm unsure if the module loading mechanism is fully set up at the point
+> the functions are needed. This approach avoids any risk of not being able
+> to load the module. Presumably still-to-be-added code for the root partition
+> could be built as a module (though see my comment in the commit message).
+> 
+
+Yep, that was the idea.
+
+>> diff --git a/drivers/hv/hv.c b/drivers/hv/hv.c
+>> index 36d9ba097ff5..93d82382351c 100644
+>> --- a/drivers/hv/hv.c
+>> +++ b/drivers/hv/hv.c
+>> @@ -144,7 +144,7 @@ int hv_synic_alloc(void)
+>>  		 * Synic message and event pages are allocated by paravisor.
+>>  		 * Skip these pages allocation here.
+>>  		 */
+>> -		if (!ms_hyperv.paravisor_present && !hv_root_partition) {
+>> +		if (!ms_hyperv.paravisor_present && !hv_root_partition()) {
+>>  			hv_cpu->synic_message_page =
+>>  				(void *)get_zeroed_page(GFP_ATOMIC);
+>>  			if (!hv_cpu->synic_message_page) {
+>> @@ -272,7 +272,7 @@ void hv_synic_enable_regs(unsigned int cpu)
+>>  	simp.as_uint64 = hv_get_msr(HV_MSR_SIMP);
+>>  	simp.simp_enabled = 1;
+>>
+>> -	if (ms_hyperv.paravisor_present || hv_root_partition) {
+>> +	if (ms_hyperv.paravisor_present || hv_root_partition()) {
+>>  		/* Mask out vTOM bit. ioremap_cache() maps decrypted */
+>>  		u64 base = (simp.base_simp_gpa << HV_HYP_PAGE_SHIFT) &
+>>  				~ms_hyperv.shared_gpa_boundary;
+>> @@ -291,7 +291,7 @@ void hv_synic_enable_regs(unsigned int cpu)
+>>  	siefp.as_uint64 = hv_get_msr(HV_MSR_SIEFP);
+>>  	siefp.siefp_enabled = 1;
+>>
+>> -	if (ms_hyperv.paravisor_present || hv_root_partition) {
+>> +	if (ms_hyperv.paravisor_present || hv_root_partition()) {
+>>  		/* Mask out vTOM bit. ioremap_cache() maps decrypted */
+>>  		u64 base = (siefp.base_siefp_gpa << HV_HYP_PAGE_SHIFT) &
+>>  				~ms_hyperv.shared_gpa_boundary;
+>> @@ -367,7 +367,7 @@ void hv_synic_disable_regs(unsigned int cpu)
+>>  	 * addresses.
+>>  	 */
+>>  	simp.simp_enabled = 0;
+>> -	if (ms_hyperv.paravisor_present || hv_root_partition) {
+>> +	if (ms_hyperv.paravisor_present || hv_root_partition()) {
+>>  		iounmap(hv_cpu->synic_message_page);
+>>  		hv_cpu->synic_message_page = NULL;
+>>  	} else {
+>> @@ -379,7 +379,7 @@ void hv_synic_disable_regs(unsigned int cpu)
+>>  	siefp.as_uint64 = hv_get_msr(HV_MSR_SIEFP);
+>>  	siefp.siefp_enabled = 0;
+>>
+>> -	if (ms_hyperv.paravisor_present || hv_root_partition) {
+>> +	if (ms_hyperv.paravisor_present || hv_root_partition()) {
+>>  		iounmap(hv_cpu->synic_event_page);
+>>  		hv_cpu->synic_event_page = NULL;
+>>  	} else {
+>> diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+>> index cb3ea49020ef..d1227e85c5b7 100644
+>> --- a/drivers/hv/hv_common.c
+>> +++ b/drivers/hv/hv_common.c
+>> @@ -34,8 +34,11 @@
+>>  u64 hv_current_partition_id = HV_PARTITION_ID_SELF;
+>>  EXPORT_SYMBOL_GPL(hv_current_partition_id);
+>>
+>> +enum hv_partition_type hv_current_partition_type;
+>> +EXPORT_SYMBOL_GPL(hv_current_partition_type);
+>> +
+>>  /*
+>> - * hv_root_partition, ms_hyperv and hv_nested are defined here with other
+>> + * ms_hyperv and hv_nested are defined here with other
+>>   * Hyper-V specific globals so they are shared across all architectures and are
+>>   * built only when CONFIG_HYPERV is defined.  But on x86,
+>>   * ms_hyperv_init_platform() is built even when CONFIG_HYPERV is not
+>> @@ -43,9 +46,6 @@ EXPORT_SYMBOL_GPL(hv_current_partition_id);
+>>   * here, allowing for an overriding definition in the module containing
+>>   * ms_hyperv_init_platform().
+>>   */
+>> -bool __weak hv_root_partition;
+>> -EXPORT_SYMBOL_GPL(hv_root_partition);
+>> -
+>>  bool __weak hv_nested;
+>>  EXPORT_SYMBOL_GPL(hv_nested);
+>>
+>> @@ -283,7 +283,7 @@ static void hv_kmsg_dump_register(void)
+>>
+>>  static inline bool hv_output_page_exists(void)
+>>  {
+>> -	return hv_root_partition || IS_ENABLED(CONFIG_HYPERV_VTL_MODE);
+>> +	return hv_root_partition() || IS_ENABLED(CONFIG_HYPERV_VTL_MODE);
+>>  }
+>>
+>>  void __init hv_get_partition_id(void)
+>> @@ -594,7 +594,7 @@ EXPORT_SYMBOL_GPL(hv_setup_dma_ops);
+>>
+>>  bool hv_is_hibernation_supported(void)
+>>  {
+>> -	return !hv_root_partition && acpi_sleep_state_supported(ACPI_STATE_S4);
+>> +	return !hv_root_partition() && acpi_sleep_state_supported(ACPI_STATE_S4);
+>>  }
+>>  EXPORT_SYMBOL_GPL(hv_is_hibernation_supported);
+>>
+>> @@ -683,3 +683,23 @@ u64 __weak hv_tdx_hypercall(u64 control, u64 param1, u64 param2)
+>>  	return HV_STATUS_INVALID_PARAMETER;
+>>  }
+>>  EXPORT_SYMBOL_GPL(hv_tdx_hypercall);
+>> +
+>> +void hv_identify_partition_type(void)
+>> +{
+>> +	/*
+>> +	 * Check partition creation and cpu management privileges
+>> +	 *
+>> +	 * Hyper-V should never specify running as root and as a Confidential
+>> +	 * VM. But to protect against a compromised/malicious Hyper-V trying
+>> +	 * to exploit root behavior to expose Confidential VM memory, ignore
+>> +	 * the root partition setting if also a Confidential VM.
+>> +	 */
+>> +	if ((ms_hyperv.priv_high & HV_CREATE_PARTITIONS) &&
+>> +	    (ms_hyperv.priv_high & HV_CPU_MANAGEMENT) &&
+>> +	    !(ms_hyperv.priv_high & HV_ISOLATION)) {
+>> +		hv_current_partition_type = HV_PARTITION_TYPE_ROOT;
+>> +		pr_info("Hyper-V: running as root partition\n");
+>> +	} else {
+>> +		hv_current_partition_type = HV_PARTITION_TYPE_GUEST;
+>> +	}
+> 
+> If the flags indicate running in the root partition, but CONFIG_MSHV_ROOT=n,
+> perhaps that should probably be flagged with an error message. I haven't thought
+> through what to do then: Panic, keep running as a normal guest, or something else?
+> 
+
+If the kernel is run as root partition with CONFIG_MSHV_ROOT=n, I think it will crash
+or hang at some point later in boot.
+
+How about this:
+
+	if ((ms_hyperv.priv_high & HV_CREATE_PARTITIONS) &&
+	    (ms_hyperv.priv_high & HV_CPU_MANAGEMENT) &&
+	    !(ms_hyperv.priv_high & HV_ISOLATION)) {
+		pr_info("Hyper-V: running as root partition\n");
+		if (IS_ENABLED(CONFIG_MSHV_ROOT))
+			hv_current_partition_type = HV_PARTITION_TYPE_ROOT;
+		else
+			pr_crit("Hyper-V: CONFIG_MSHV_ROOT not enabled!\n");
+	}
+
+We could also BUG_ON() since it will almost certainly crash anyway, but maybe just
+letting it continue is ok.
+
+>> +}
+>> diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+>> index 0f6cd44fff29..844eba0429fa 100644
+>> --- a/drivers/hv/vmbus_drv.c
+>> +++ b/drivers/hv/vmbus_drv.c
+>> @@ -2646,7 +2646,7 @@ static int __init hv_acpi_init(void)
+>>  	if (!hv_is_hyperv_initialized())
+>>  		return -ENODEV;
+>>
+>> -	if (hv_root_partition && !hv_nested)
+>> +	if (hv_root_partition() && !hv_nested)
+>>  		return 0;
+>>
+>>  	/*
+>> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+>> index 2a86aa5d54c6..53e4b37716af 100644
+>> --- a/drivers/iommu/hyperv-iommu.c
+>> +++ b/drivers/iommu/hyperv-iommu.c
+>> @@ -130,7 +130,7 @@ static int __init hyperv_prepare_irq_remapping(void)
+>>  	    x86_init.hyper.msi_ext_dest_id())
+>>  		return -ENODEV;
+>>
+>> -	if (hv_root_partition) {
+>> +	if (hv_root_partition()) {
+>>  		name = "HYPERV-ROOT-IR";
+>>  		ops = &hyperv_root_ir_domain_ops;
+>>  	} else {
+>> @@ -151,7 +151,7 @@ static int __init hyperv_prepare_irq_remapping(void)
+>>  		return -ENOMEM;
+>>  	}
+>>
+>> -	if (hv_root_partition)
+>> +	if (hv_root_partition())
+>>  		return 0; /* The rest is only relevant to guests */
+>>
+>>  	/*
+>> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+>> index 7adc10a4fa3e..6f898792fb51 100644
+>> --- a/include/asm-generic/mshyperv.h
+>> +++ b/include/asm-generic/mshyperv.h
+>> @@ -28,6 +28,11 @@
+>>
+>>  #define VTPM_BASE_ADDRESS 0xfed40000
+>>
+>> +enum hv_partition_type {
+>> +	HV_PARTITION_TYPE_GUEST,
+>> +	HV_PARTITION_TYPE_ROOT,
+>> +};
+>> +
+>>  struct ms_hyperv_info {
+>>  	u32 features;
+>>  	u32 priv_high;
+>> @@ -59,6 +64,7 @@ struct ms_hyperv_info {
+>>  extern struct ms_hyperv_info ms_hyperv;
+>>  extern bool hv_nested;
+>>  extern u64 hv_current_partition_id;
+>> +extern enum hv_partition_type hv_current_partition_type;
+>>
+>>  extern void * __percpu *hyperv_pcpu_input_arg;
+>>  extern void * __percpu *hyperv_pcpu_output_arg;
+>> @@ -190,8 +196,6 @@ void hv_remove_crash_handler(void);
+>>  extern int vmbus_interrupt;
+>>  extern int vmbus_irq;
+>>
+>> -extern bool hv_root_partition;
+>> -
+>>  #if IS_ENABLED(CONFIG_HYPERV)
+>>  /*
+>>   * Hypervisor's notion of virtual processor ID is different from
+>> @@ -213,15 +217,12 @@ void __init hv_common_free(void);
+>>  void __init ms_hyperv_late_init(void);
+>>  int hv_common_cpu_init(unsigned int cpu);
+>>  int hv_common_cpu_die(unsigned int cpu);
+>> +void hv_identify_partition_type(void);
+>>
+>>  void *hv_alloc_hyperv_page(void);
+>>  void *hv_alloc_hyperv_zeroed_page(void);
+>>  void hv_free_hyperv_page(void *addr);
+>>
+>> -int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
+>> -int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
+>> -int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flags);
+>> -
+>>  /**
+>>   * hv_cpu_number_to_vp_number() - Map CPU to VP.
+>>   * @cpu_number: CPU number in Linux terms
+>> @@ -309,6 +310,7 @@ void hyperv_cleanup(void);
+>>  bool hv_query_ext_cap(u64 cap_query);
+>>  void hv_setup_dma_ops(struct device *dev, bool coherent);
+>>  #else /* CONFIG_HYPERV */
+>> +static inline void hv_identify_partition_type(void) {}
+>>  static inline bool hv_is_hyperv_initialized(void) { return false; }
+>>  static inline bool hv_is_hibernation_supported(void) { return false; }
+>>  static inline void hyperv_cleanup(void) {}
+>> @@ -320,4 +322,29 @@ static inline enum hv_isolation_type hv_get_isolation_type(void)
+>>  }
+>>  #endif /* CONFIG_HYPERV */
+>>
+>> +#if IS_ENABLED(CONFIG_MSHV_ROOT)
+>> +static inline bool hv_root_partition(void)
+>> +{
+>> +	return	hv_current_partition_type == HV_PARTITION_TYPE_ROOT;
+> 
+> Nit: There's an extra space character after "return".
+> 
+
+Fixed for next version, thanks.
+
+>> +}
+>> +int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
+>> +int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
+>> +int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flags);
+>> +
+>> +#else /* CONFIG_MSHV_ROOT */
+>> +static inline bool hv_root_partition(void) { return false; }
+>> +static inline int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages)
+>> +{
+>> +	return hv_result(U64_MAX);
+>> +}
+>> +static inline int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id)
+>> +{
+>> +	return hv_result(U64_MAX);
+>> +}
+>> +static inline int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flags)
+>> +{
+>> +	return hv_result(U64_MAX);
+>> +}
+>> +#endif /* CONFIG_MSHV_ROOT */
+>> +
+>>  #endif
+>> --
+>> 2.34.1
+
