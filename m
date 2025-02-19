@@ -1,108 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BDCE1DE8A9;
-	Wed, 19 Feb 2025 09:13:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AABE815B971;
+	Wed, 19 Feb 2025 09:39:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739956438; cv=none; b=OoJH4v7XKjWrr/ymTowE5qjvrHvKYXBCzNkPNtuesdoESQUxF+54N8/R+o0nHbr9pQi6a0i4lW1eh14/QA7iHlwHb7yXKMXoeNoRxjhYv1Qc5o4ntojhIcjY5jXUzr0Z7CMoaeBjT6T0Q5ACd13LIxhmld1Mm6eiSXFfWxxBPz0=
+	t=1739957965; cv=none; b=W6qkFoWkEXEwN/ncqrZDsk4TCRLeTa468LkfySfekTYDdptQA4ZoPydxAoFDK2va9FuVJeB+f4+qyTyFjcFhmUCohEk2JfGE3C+s9B6nxnwYXGN8BdiqKqOUUDTh/Dh95ttfqwYC0tgGRIyrh46HChKUQADBa98MREOdRpdSFbY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739956438; c=relaxed/simple;
-	bh=XTPomKjOfo5fAZ/BQxA/LrGkWT2afQunCwLoYv6XiKI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=vEbuEXRDnpOsnDKgWGO3QPYb8qZrxO3L2Xn9/EUUUKzJiJZ8rNYZCICrjpBbipYrNVY24ThddjiY4ydU1HnsZDXMUv9V2iHcxoZrPhC+3XawBWHRRoltbSXDc7SnVkSRiI3vz27P7XQ6x2xXY/0dgfv2Hdt6g1ACgN13hfArZD0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dsBx5Lty; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739957965; c=relaxed/simple;
+	bh=tJqjSoz3iLD6kaQWTxNewmIgpE2tGXmtWnyve+uIREU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=StzgrbxggTtvxC+tPIqCTIanMQTsZi8yVVXjEVqa3riVf5qpCJ3vfobVua7r+qBSlz0MLK4YmUpt2kr13QCwGfVQHpPDzurg2TgN+LWHA+H8+/cNDF4FcFXl8AJ7dVKytW7ytBHX1vIxG2u2buerdMDsqV/tuILt5im0UIJOEIU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=OU+H026F; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dsBx5Lty"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C268BC4CEE7;
-	Wed, 19 Feb 2025 09:13:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739956437;
-	bh=XTPomKjOfo5fAZ/BQxA/LrGkWT2afQunCwLoYv6XiKI=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=dsBx5LtyRMxy0v6pW1s1GfSsluBHyxc2OhwGoiOeYJ5GMVOWsFGDUDEWPExjzfIYR
-	 xIgHJptMDAW6LzBGhbcirhXVghCFTE7KcJZ4etQWjUTb/z6UDSC5STNPlrB8ek4ghC
-	 kBGWacCy7oeRkMnEHyky7BrxPtNzINqNqKKlS8GCUhQbPwKSZa7ONZT7b19d8WW1zf
-	 o2gpGMDo8DR3+L/S1k9m6C6AFzgj4cxpSilGtWzk9OiuScB7WYCsOTD5etBtZKze+Z
-	 JUhtXX3Pk7RqOkYCI4dhyEvId6lF2lz1Jl+FKCdLx54m5x9p833O0NnR0dF0gg7qMe
-	 0FgLjyAlfQbmg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE1BAC021AA;
-	Wed, 19 Feb 2025 09:13:57 +0000 (UTC)
-From: Sasha Finkelstein via B4 Relay <devnull+fnkl.kernel.gmail.com@kernel.org>
-Date: Wed, 19 Feb 2025 10:13:53 +0100
-Subject: [PATCH] iommu/io-pgtable-dart: Only set subpage protection disable
- for DART 1
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="OU+H026F"
+Received: from localhost (unknown [167.220.255.121])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6EF0720376F6;
+	Wed, 19 Feb 2025 01:39:22 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6EF0720376F6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1739957963;
+	bh=K5oyS3pxMbCPBq4OvXI2KxKTpaHciFt4mQwhLdmxf60=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OU+H026FmO5m/NBCd3s2yffKiMHKHN6DYn4Kr3Nw2xEvY/MgLWZDklEWjafD0lvpe
+	 GhW9h8fYbN7EZGnKR5Y2j73UWJ949YD+je2uPgRsQFB0+VBzlyfIuSepFxxObwXGQr
+	 eB1OKHHfF0sIuE/jpgrP0A3VSa6XACeWultZZsHY=
+Date: Wed, 19 Feb 2025 17:39:19 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: jacob.pan@linux.microsoft.com, 
+	Easwar Hariharan <eahariha@linux.microsoft.com>, "zhangyu1@microsoft.com" <zhangyu1@microsoft.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, virtualization@lists.linux.dev, Will Deacon <will@kernel.org>, 
+	Eric Auger <eric.auger@redhat.com>, patches@lists.linux.dev, tina.zhang@intel.com
+Subject: Re: [PATCH 3/5] iommu/virtio: Move to domain_alloc_paging()
+Message-ID: <cu7lznx5bxnqoavt3ri4dtzwt7lu3loitn7a344rbnmahpnc6h@2e2dknchxjmd>
+References: <0-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
+ <3-v1-91eed9c8014a+53a37-iommu_virtio_domains_jgg@nvidia.com>
+ <20250212112235.714b0a14@DESKTOP-0403QTC.>
+ <20250212233053.GV3754072@nvidia.com>
+ <67ad876d.170a0220.3c21dc.85ceSMTPIN_ADDED_BROKEN@mx.google.com>
+ <20250213094601.GA243081@myrica>
+ <5irmuy6xwrjsrdjy7tmfzlnotxqdoqagjdsdtqjrrit673zaka@r43nyvc5gcyf>
+ <20250213180919.GC243081@myrica>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250219-dart2-no-sp-disable-v1-1-9f324cfa4e70@gmail.com>
-X-B4-Tracking: v=1; b=H4sIANCgtWcC/x3MMQqAMAxA0atIZgM1oqJXEYfWRg1IlUZEkN7d4
- viG/19QjsIKQ/FC5FtUjpBRlQXMmw0ro/hsIEONoapHb+NFGA7UE72odTvjUjemo9k537eQyzP
- yIs9/HaeUPitxVDtlAAAA
-X-Change-ID: 20250219-dart2-no-sp-disable-f35072cbbd96
-To: Sven Peter <sven@svenpeter.dev>, 
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, Joerg Roedel <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Hector Martin <marcan@marcan.st>, Rob Herring <robh@kernel.org>, 
- Janne Grunau <j@jannau.net>
-Cc: Joerg Roedel <jroedel@suse.de>, asahi@lists.linux.dev, 
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
- linux-kernel@vger.kernel.org, Asahi Lina <lina@asahilina.net>, 
- Sasha Finkelstein <fnkl.kernel@gmail.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1739956436; l=1398;
- i=fnkl.kernel@gmail.com; s=20241124; h=from:subject:message-id;
- bh=4vIOKtPg+OtkD6k1fuo7D/3yWj1rRgyOMiGeGabXJoQ=;
- b=2XvYZiLPQ55QTshLqUD4aTt/pUSerHvszW6QhuxyTNjK/hq2NYquR+5dssye/dFu6aJEtq/su
- c/ZlgVVyC4ICgNDsQpVVlQtMaUH4ApO55G9hM21HQQvekVzMzpLohQw
-X-Developer-Key: i=fnkl.kernel@gmail.com; a=ed25519;
- pk=aSkp1PdZ+eF4jpMO6oLvz/YfT5XkBUneWwyhQrOgmsU=
-X-Endpoint-Received: by B4 Relay for fnkl.kernel@gmail.com/20241124 with
- auth_id=283
-X-Original-From: Sasha Finkelstein <fnkl.kernel@gmail.com>
-Reply-To: fnkl.kernel@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250213180919.GC243081@myrica>
 
-From: Asahi Lina <lina@asahilina.net>
+On Thu, Feb 13, 2025 at 06:09:19PM +0000, Jean-Philippe Brucker wrote:
+> On Fri, Feb 14, 2025 at 01:03:43AM +0800, Yu Zhang wrote:
+> > On Thu, Feb 13, 2025 at 09:46:01AM +0000, Jean-Philippe Brucker wrote:
+> > > Hi Jacob,
+> > > 
+> > > On Wed, Feb 12, 2025 at 09:47:23PM -0800, Jacob Pan wrote:
+> > > > Our code and backend support are still in the early stages, that is why
+> > > > I am attempting to convert virtio-iommu driver to iommu_pt. Not sure if
+> > > > anyone has done the QEMU part to support VIRTIO_IOMMU_F_ATTACH_TABLE?
+> > > > @Jean @Eric Do you know?
+> > > 
+> > > As far as I know Tina worked on this most recently:
+> > > https://github.com/TinaZhangZW/qemu/commits/virtio-iommu/vt-d-pgtable/
+> > > https://lore.kernel.org/all/20231106071226.9656-1-tina.zhang@intel.com/
+> > 
+> > Thanks a lot for this information, Jean.
+> > IIUC, these patches were trying to add VT-d IO page table support in
+> > virtio-iommu, but it is not based on Jason's generic PT [1]. Just wondering,
+> > does anyone have plan to do the incorporation? 
+> 
+> I'm not aware of anyone working on this at the moment. Something you will
+> need for a portable pviommu is a library that manages PASID tables rather
+> than page tables [1], because the Arm SMMUv3 arch only support assigning
+> PASID tables to the guest. Alternatively you could implement opaque PASID
+> table allocation via host calls, letting the guest allocate GPA space and
+> the host manage the PASID table, but that idea didn't seem very popular at
+> the time.
 
-Subpage protection can't be disabled on t6000-style darts,
-as such the disable flag no longer applies, and probably
-even affects something else.
+Thank you, Jean. Just had a study of the spec. For ARM SMMUv3, letting
+the guest manage the PASID table, and then assigning it directly to the
+backend in ATTACH_TABLE request looks quite resonable. But for VT-d,
+my understanding is the PASID table shall be managed by host. By "that
+idea didn't seem very popular", do you mean that people also want the 
+ATTCH_TABLE request for VT-d also assign the PASID table(an virtual one
+managed by the guest). If yes, why? 
+> 
+> Thanks,
+> Jean
+> 
+> [1] https://lore.kernel.org/all/20210115121342.15093-1-vivek.gautam@arm.com/
+> 
 
-Fixes: dc09fe1c5edd ("iommu/io-pgtable-dart: Add DART PTE support for t6000")
-Signed-off-by: Asahi Lina <lina@asahilina.net>
-Signed-off-by: Sasha Finkelstein <fnkl.kernel@gmail.com>
----
- drivers/iommu/io-pgtable-dart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/io-pgtable-dart.c b/drivers/iommu/io-pgtable-dart.c
-index c004640640ee50d01dd54c38e89162c0fcb1988f..06aca9ab52f9a811a2608ae75155a36919799c74 100644
---- a/drivers/iommu/io-pgtable-dart.c
-+++ b/drivers/iommu/io-pgtable-dart.c
-@@ -135,7 +135,6 @@ static int dart_init_pte(struct dart_io_pgtable *data,
- 	pte |= FIELD_PREP(APPLE_DART_PTE_SUBPAGE_START, 0);
- 	pte |= FIELD_PREP(APPLE_DART_PTE_SUBPAGE_END, 0xfff);
- 
--	pte |= APPLE_DART1_PTE_PROT_SP_DIS;
- 	pte |= APPLE_DART_PTE_VALID;
- 
- 	for (i = 0; i < num_entries; i++)
-@@ -211,6 +210,7 @@ static dart_iopte dart_prot_to_pte(struct dart_io_pgtable *data,
- 	dart_iopte pte = 0;
- 
- 	if (data->iop.fmt == APPLE_DART) {
-+		pte |= APPLE_DART1_PTE_PROT_SP_DIS;
- 		if (!(prot & IOMMU_WRITE))
- 			pte |= APPLE_DART1_PTE_PROT_NO_WRITE;
- 		if (!(prot & IOMMU_READ))
-
----
-base-commit: 2408a807bfc3f738850ef5ad5e3fd59d66168996
-change-id: 20250219-dart2-no-sp-disable-f35072cbbd96
-
-
+B.R.
+Yu
