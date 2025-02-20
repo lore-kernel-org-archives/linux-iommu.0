@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 021E91F3FE5
-	for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 11:38:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89DAE1F190E;
+	Thu, 20 Feb 2025 11:49:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740051506; cv=none; b=C3Zi38FshIvQ2p+b/4HKSHHfyqQJpADa6vvjGzRZ6PjQHZGntAseg+UOTs1SpDPBIpe2q/NpjnHCovUEV++X0oNR9wGN/ZkK/KgJYidptMP9AUAhHTtUzzPyyfOe4tgNJPnhJ0aH6zzpOKOqqpfhEYV3hRO0LJY0BOlhnSfnfP0=
+	t=1740052154; cv=none; b=U6+cFeC2YbUlLJhr/w0nfOCJ+ZmnGDUp5YoJXhJUK3t0iHSPmfs+Krk0lQylKaRxKhnqkHb7ShUa/+X9kfs9AjX9QtewKBAstPhtA6v7FACqegO0uzS+LhdUCqfIPZLaYttehRoSlb/PHJ3XCsuNvlxsI2HLYBaBTb5DVJ+6H5g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740051506; c=relaxed/simple;
-	bh=OW4tV7XHQY75duXBFKoVLdDiJWkwE9tK7bUXvwMMnfc=;
+	s=arc-20240116; t=1740052154; c=relaxed/simple;
+	bh=/wqrT11uk28gB2f6F7P7h24DAJ2UTfq0Tb/FDk+sJtw=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=LkN/JYy3OnYQOMclkTfbzB7nRV4Eu2o13AdfwbW/AyYXIK13n+hurIA2jWakeTrGWG5YDe19voymObAW4ep4zAvy9FUBWTFtKzWL5zZfq/gZMka3UWemk6X3R0RBaCWboGPC+tHhw91Td6uWjv2OriQ+vHq/omUqFTl+hq6Dork=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hp/94yaa; arc=none smtp.client-ip=198.175.65.19
+	 In-Reply-To:Content-Type; b=FWsa8JxGc/nyjUTDGoe3oPqWPvHB0WGUNzO7090H5bQQPrqXDeFE6QsdQKLj7FCiXZVBmEV8gnrES0HINgumEhNAP60UFHCDkf/MaDlFiG88YhGtdRZCPZSy/5CssF0xwK1zAVZ7LyW11/r7oon/3yJPTLbUy1rzSdyeNmCs3qc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PLwi2UjO; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hp/94yaa"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PLwi2UjO"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740051505; x=1771587505;
+  t=1740052153; x=1771588153;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=OW4tV7XHQY75duXBFKoVLdDiJWkwE9tK7bUXvwMMnfc=;
-  b=hp/94yaaTJVa7hRR31/isyBnLIskP5vrRjrjB8gbyWNKdhEYHJ5KzzyO
-   +FC/KQSrTS2fsQtLa3cYvTV2cwYnh6uvyh0pRv4xYSdi26BM03nQVcT4v
-   VgULu9vdFQLlG06rBxTc0x8d7kYnj+Zlrq7SVSic7FrrzAZslqCMMk11I
-   EZ4oVUtcH0hS4s9kpkxIhcHN9xbEi/08C7N53n+IcQGOd/V3wMNHVgLND
-   b79cYGTlcuT8S8tajIgyAgFQKeEbGfBoRnFFwoOgtugYZpVWA18+W/j0+
-   MXABuLDz6H0cSxt6OyYvJlWkxcy70D4Vm51Gog22Zs+YICPHsrNkDoFMd
-   g==;
-X-CSE-ConnectionGUID: DbEGYvKRR2OE7olK869QEQ==
-X-CSE-MsgGUID: nheMz2iPSEGMo2FfshLTIg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11350"; a="40681133"
+  bh=/wqrT11uk28gB2f6F7P7h24DAJ2UTfq0Tb/FDk+sJtw=;
+  b=PLwi2UjOyH4L3sC1kaKjQPq0kOtzeINBYEvAYZ1AeflO3B51vIWFn/+a
+   5rdcv7NBhdHKQebSzM0nWOPSZ64UeT52LyE3oYYo2biaO59fFgMnlhmBW
+   S2H/t06J1GVr4XxD19CcqKppHjDFjNRgmjQczo9ZVTIGSfG6G46dDGuUD
+   4nhXfeFIgn0BEhPaStAERq/ORdAkJx7csN+tFuM6j6cRIMX+jJIuJjGes
+   iyEcOLc0DBoeQ1+QTJ7psu0P23HtIdVpN9SALv7w75NiLsxeV+8ah9DM9
+   NxQcPdj1Uh0KMPs9MiHgw61HTjjjZCfYUw789gpzwg+TlGHLMezZpnMIN
+   Q==;
+X-CSE-ConnectionGUID: sbiuZhR4SHm22GWmBN1eHQ==
+X-CSE-MsgGUID: y2eP34jVQeS2c6RHaD4/Kg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11350"; a="40840583"
 X-IronPort-AV: E=Sophos;i="6.13,301,1732608000"; 
-   d="scan'208";a="40681133"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2025 03:38:24 -0800
-X-CSE-ConnectionGUID: ImoEWPGUT1O38l92vqulmA==
-X-CSE-MsgGUID: JBerQi//ThaorSclckLfxQ==
+   d="scan'208";a="40840583"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2025 03:49:12 -0800
+X-CSE-ConnectionGUID: lBRoIMKBRlCv4wpxJyJpYQ==
+X-CSE-MsgGUID: e1CJ07BvRDSfCLalEtB1Ww==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,301,1732608000"; 
-   d="scan'208";a="138216925"
-Received: from lzhu41-mobl3.ccr.corp.intel.com (HELO [10.124.240.48]) ([10.124.240.48])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2025 03:38:22 -0800
-Message-ID: <7d58c0bd-2828-4adc-8c57-8b359c9f0b9f@linux.intel.com>
-Date: Thu, 20 Feb 2025 19:38:19 +0800
+   d="scan'208";a="120000397"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.48]) ([10.124.240.48])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2025 03:49:04 -0800
+Message-ID: <c57977e2-d109-4a38-903e-8af6a7567a60@linux.intel.com>
+Date: Thu, 20 Feb 2025 19:49:01 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,232 +52,120 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Ido Schimmel <idosch@idosch.org>,
+Cc: baolu.lu@linux.intel.com, Zhangfei Gao <zhangfei.gao@linaro.org>,
+ "acpica-devel@lists.linux.dev" <acpica-devel@lists.linux.dev>,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix suspicious RCU usage
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20250218022422.2315082-1-baolu.lu@linux.intel.com>
- <BN9PR11MB5276EEC28691FD6C77EC493A8CC42@BN9PR11MB5276.namprd11.prod.outlook.com>
+ Joerg Roedel <joro@8bytes.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Len Brown <lenb@kernel.org>,
+ "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ "Moore, Robert" <robert.moore@intel.com>, Robin Murphy
+ <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ Will Deacon <will@kernel.org>, Alex Williamson <alex.williamson@redhat.com>,
+ Donald Dutile <ddutile@redhat.com>, Eric Auger <eric.auger@redhat.com>,
+ Hanjun Guo <guohanjun@huawei.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jerry Snitselaar <jsnitsel@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+ Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ "patches@lists.linux.dev" <patches@lists.linux.dev>,
+ "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v4 00/12] Initial support for SMMUv3 nested translation
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+References: <20241113164316.GL35230@nvidia.com>
+ <6ed97a10-853f-429e-8506-94b218050ad3@linux.intel.com>
+ <20241115175522.GA35230@nvidia.com> <20250122192622.GA965540@nvidia.com>
+ <284dd081-8d53-45ef-ae18-78b0388c98ca@linux.intel.com>
+ <f7b6c833-b6c1-4154-9b77-13553e501f2b@linux.intel.com>
+ <20250213184317.GB3886819@nvidia.com>
+ <bc9f4477-7976-4955-85dc-3e05ebe95ead@linux.intel.com>
+ <20250214124150.GF3886819@nvidia.com>
+ <58e7fbee-6688-4a49-8b7a-f0e81e6562db@linux.intel.com>
+ <20250218130333.GA4099685@nvidia.com>
+ <f7e30bd8-ae1f-42fe-a8a6-2b448a474044@linux.intel.com>
+ <BN9PR11MB5276EAD07C3B32517D339DF28CC52@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <7027fb3a-dfb4-40ae-ac9c-5ea1dcd57746@linux.intel.com>
+ <BN9PR11MB52764E131435DF44370653CD8CC42@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276EEC28691FD6C77EC493A8CC42@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB52764E131435DF44370653CD8CC42@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2025/2/20 15:21, Tian, Kevin wrote:
->> From: Lu Baolu<baolu.lu@linux.intel.com>
->> Sent: Tuesday, February 18, 2025 10:24 AM
+On 2025/2/20 14:51, Tian, Kevin wrote:
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Thursday, February 20, 2025 10:11 AM
 >>
->> Commit <d74169ceb0d2> ("iommu/vt-d: Allocate DMAR fault interrupts
->> locally") moved the call to enable_drhd_fault_handling() to a code
->> path that does not hold any lock while traversing the drhd list. Fix
->> it by ensuring the dmar_global_lock lock is held when traversing the
->> drhd list.
+>> On 2/19/25 16:34, Tian, Kevin wrote:
+>>>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>>>> Sent: Wednesday, February 19, 2025 10:10 AM
+>>>>
+>>>> On 2/18/25 21:03, Jason Gunthorpe wrote:
+>>>>> On Sat, Feb 15, 2025 at 05:53:13PM +0800, Baolu Lu wrote:
+>>>>>> On 2/14/25 20:41, Jason Gunthorpe wrote:
+>>>>>>> On Fri, Feb 14, 2025 at 01:39:52PM +0800, Baolu Lu wrote:
+>>>>>>>
+>>>>>>>> When the IOMMU is working in scalable mode, PASID and PRI are
+>>>> supported.
+>>>>>>>> ATS will always be enabled, even if the identity domain is attached to
+>>>>>>>> the device, because the PASID might use PRI, which depends on ATS
+>>>>>>>> functionality. This might not be the best choice, but it is the
+>>>>>>>> simplest and functional.
+>>>>>>> The arm driver keeps track of things and enables ATS when PASIDs are
+>>>>>>> present
+>>>>>> I am not aware of any VT-d hardware implementation that supports
+>>>>>> scalable mode but not PASID. If there were one, it would be worthwhile
+>>>>>> to add an optimization to avoid enabling ATS during probe if PASID is
+>>>>>> not supported.
+>>>>> I mean domains attached to PASIDs that need PRI/ATS/etc
+>>>> Yeah, that's a better solution. The PCI PRI/ATS features are only
+>>>> enabled when a domain that requires them is attached to it. I will
+>>>> consider it in the Intel driver later.
+>>>>
+>>> I didn't get the connection here. ATS can run w/o PASID per PCIe
+>>> spec. Why do we want to add a dependency on PASID here?
+>> It's due to PRI, which depends on ATS. The original topic is: when an
+>> identity domain is attached to the device and the device has no PASID
+>> support, then ATS might be disabled because ATS isn't supposed to
+>> provide much benefit in this case.
+> PRI depends on ATS but PASID is optional.
+> 
+> ATS has no benefit (or even more cost) with identity domain but again
+> it has nothing to do with PASID.
+> 
+>> Otherwise, ATS should be enabled because:
 >>
->> Without this fix, the following warning is triggered:
->>   =============================
->>   WARNING: suspicious RCU usage
->>   6.14.0-rc3 #55 Not tainted
->>   -----------------------------
->>   drivers/iommu/intel/dmar.c:2046 RCU-list traversed in non-reader section!!
->>                 other info that might help us debug this:
->>                 rcu_scheduler_active = 1, debug_locks = 1
->>   2 locks held by cpuhp/1/23:
->>   #0: ffffffff84a67c50 (cpu_hotplug_lock){++++}-{0:0}, at:
->> cpuhp_thread_fun+0x87/0x2c0
->>   #1: ffffffff84a6a380 (cpuhp_state-up){+.+.}-{0:0}, at:
->> cpuhp_thread_fun+0x87/0x2c0
->>   stack backtrace:
->>   CPU: 1 UID: 0 PID: 23 Comm: cpuhp/1 Not tainted 6.14.0-rc3 #55
->>   Call Trace:
->>    <TASK>
->>    dump_stack_lvl+0xb7/0xd0
->>    lockdep_rcu_suspicious+0x159/0x1f0
->>    ? __pfx_enable_drhd_fault_handling+0x10/0x10
->>    enable_drhd_fault_handling+0x151/0x180
->>    cpuhp_invoke_callback+0x1df/0x990
->>    cpuhp_thread_fun+0x1ea/0x2c0
->>    smpboot_thread_fn+0x1f5/0x2e0
->>    ? __pfx_smpboot_thread_fn+0x10/0x10
->>    kthread+0x12a/0x2d0
->>    ? __pfx_kthread+0x10/0x10
->>    ret_from_fork+0x4a/0x60
->>    ? __pfx_kthread+0x10/0x10
->>    ret_from_fork_asm+0x1a/0x30
->>    </TASK>
+>> - It benefits performance when the domain is a paging domain.
+>> - A domain attached to a PASID might use PRI, thus requiring ATS to be
+>>     on.
+> Above talks about the domain type. Nothing specific to PASID.
+> 
+>> The proposed solution is to use a reference count for ATS enablement,
+>> similar to how we handle iopf in another series. ATS is enabled as long
+>> as any domain requires it and disabled if no domain requires it.
 >>
->> Simply holding the lock in enable_drhd_fault_handling() will trigger a
->> lock order splat. Avoid holding the dmar_global_lock when calling
->> iommu_device_register(), which starts the device probe process.
-> Can you elaborate the splat issue? It's not intuitive to me with a quick
-> read of the code and iommu_device_register() is not occurred in above
-> calling stack.
+> I'm fine with using reference count for ATS enablement based on
+> the domain type, but just didn't get the role of PASID in this discussion.
 
-The lockdep splat looks like below:
+Sorry that I didn't make it clear. Let me try again.
 
-  ======================================================
-  WARNING: possible circular locking dependency detected
-  6.14.0-rc3-00002-g8e4617b46db1 #57 Not tainted
-  ------------------------------------------------------
-  swapper/0/1 is trying to acquire lock:
-  ffffffffa2a67c50 (cpu_hotplug_lock){++++}-{0:0}, at: 
-iova_domain_init_rcaches.part.0+0x1d3/0x210
+PASID is mentioned in this discussion because it makes things different.
 
-  but task is already holding lock:
-  ffff9f4a87b171c8 (&domain->iova_cookie->mutex){+.+.}-{4:4}, at: 
-iommu_dma_init_domain+0x122/0x2e0
+Without PASID support, only a single domain is attached to the device.
+ATS enablement can then be determined based on the domain type.
+Specifically:
 
-  which lock already depends on the new lock.
+- For an identity domain, ATS could be disabled.
+- For other domains, ATS is enabled.
 
-
-  the existing dependency chain (in reverse order) is:
-
-  -> #4 (&domain->iova_cookie->mutex){+.+.}-{4:4}:
-         __lock_acquire+0x4a0/0xb50
-         lock_acquire+0xd1/0x2e0
-         __mutex_lock+0xa5/0xce0
-         iommu_dma_init_domain+0x122/0x2e0
-         iommu_setup_dma_ops+0x65/0xe0
-         bus_iommu_probe+0x100/0x1d0
-         iommu_device_register+0xd6/0x130
-         intel_iommu_init+0x527/0x870
-         pci_iommu_init+0x17/0x60
-         do_one_initcall+0x7c/0x390
-         do_initcalls+0xe8/0x1e0
-         kernel_init_freeable+0x313/0x490
-         kernel_init+0x24/0x240
-         ret_from_fork+0x4a/0x60
-         ret_from_fork_asm+0x1a/0x30
-
-  -> #3 (&group->mutex){+.+.}-{4:4}:
-         __lock_acquire+0x4a0/0xb50
-         lock_acquire+0xd1/0x2e0
-         __mutex_lock+0xa5/0xce0
-         bus_iommu_probe+0x95/0x1d0
-         iommu_device_register+0xd6/0x130
-         intel_iommu_init+0x527/0x870
-         pci_iommu_init+0x17/0x60
-         do_one_initcall+0x7c/0x390
-         do_initcalls+0xe8/0x1e0
-         kernel_init_freeable+0x313/0x490
-         kernel_init+0x24/0x240
-         ret_from_fork+0x4a/0x60
-         ret_from_fork_asm+0x1a/0x30
-
--> #2 (dmar_global_lock){++++}-{4:4}:
-        __lock_acquire+0x4a0/0xb50
-        lock_acquire+0xd1/0x2e0
-        down_read+0x31/0x170
-        enable_drhd_fault_handling+0x27/0x1a0
-        cpuhp_invoke_callback+0x1e2/0x990
-        cpuhp_issue_call+0xac/0x2c0
-        __cpuhp_setup_state_cpuslocked+0x229/0x430
-        __cpuhp_setup_state+0xc3/0x260
-        irq_remap_enable_fault_handling+0x52/0x80
-        apic_intr_mode_init+0x59/0xf0
-        x86_late_time_init+0x29/0x50
-        start_kernel+0x642/0x7f0
-        x86_64_start_reservations+0x18/0x30
-        x86_64_start_kernel+0x91/0xa0
-        common_startup_64+0x13e/0x148
-
--> #1 (cpuhp_state_mutex){+.+.}-{4:4}:
-        __lock_acquire+0x4a0/0xb50
-        lock_acquire+0xd1/0x2e0
-        __mutex_lock+0xa5/0xce0
-        __cpuhp_setup_state_cpuslocked+0x81/0x430
-        __cpuhp_setup_state+0xc3/0x260
-        page_alloc_init_cpuhp+0x2d/0x40
-        mm_core_init+0x1e/0x3a0
-        start_kernel+0x277/0x7f0
-        x86_64_start_reservations+0x18/0x30
-        x86_64_start_kernel+0x91/0xa0
-        common_startup_64+0x13e/0x148
-
--> #0 (cpu_hotplug_lock){++++}-{0:0}:
-        check_prev_add+0xe2/0xc50
-        validate_chain+0x57c/0x800
-        __lock_acquire+0x4a0/0xb50
-        lock_acquire+0xd1/0x2e0
-        __cpuhp_state_add_instance+0x40/0x250
-        iova_domain_init_rcaches.part.0+0x1d3/0x210
-        iova_domain_init_rcaches+0x41/0x60
-        iommu_dma_init_domain+0x1af/0x2e0
-        iommu_setup_dma_ops+0x65/0xe0
-        bus_iommu_probe+0x100/0x1d0
-        iommu_device_register+0xd6/0x130
-        intel_iommu_init+0x527/0x870
-        pci_iommu_init+0x17/0x60
-        do_one_initcall+0x7c/0x390
-        do_initcalls+0xe8/0x1e0
-        kernel_init_freeable+0x313/0x490
-        kernel_init+0x24/0x240
-        ret_from_fork+0x4a/0x60
-        ret_from_fork_asm+0x1a/0x30
-
-  other info that might help us debug this:
-
-  Chain exists of:
-    cpu_hotplug_lock --> &group->mutex --> &domain->iova_cookie->mutex
-
-   Possible unsafe locking scenario:
-
-         CPU0                    CPU1
-         ----                    ----
-    lock(&domain->iova_cookie->mutex);
-                                 lock(&group->mutex);
-                                 lock(&domain->iova_cookie->mutex);
-    rlock(cpu_hotplug_lock);
-
-   *** DEADLOCK ***
-
-  3 locks held by swapper/0/1:
-   #0: ffffffffa6442ab0 (dmar_global_lock){++++}-{4:4}, at: 
-intel_iommu_init+0x42c/0x87
-   #1: ffff9f4a87b11310 (&group->mutex){+.+.}-{4:4}, at: 
-bus_iommu_probe+0x95/0x1d0
-   #2: ffff9f4a87b171c8 (&domain->iova_cookie->mutex){+.+.}-{4:4}, at: 
-iommu_dma_init_d
-
-  stack backtrace:
-  CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted 
-6.14.0-rc3-00002-g8e4617b46db1 #57
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x93/0xd0
-   print_circular_bug+0x133/0x1c0
-   check_noncircular+0x12c/0x150
-   check_prev_add+0xe2/0xc50
-   ? add_chain_cache+0x108/0x460
-   validate_chain+0x57c/0x800
-   __lock_acquire+0x4a0/0xb50
-   lock_acquire+0xd1/0x2e0
-   ? iova_domain_init_rcaches.part.0+0x1d3/0x210
-   ? rcu_is_watching+0x11/0x50
-   __cpuhp_state_add_instance+0x40/0x250
-   ? iova_domain_init_rcaches.part.0+0x1d3/0x210
-   iova_domain_init_rcaches.part.0+0x1d3/0x210
-   iova_domain_init_rcaches+0x41/0x60
-   iommu_dma_init_domain+0x1af/0x2e0
-   iommu_setup_dma_ops+0x65/0xe0
-   bus_iommu_probe+0x100/0x1d0
-   iommu_device_register+0xd6/0x130
-   intel_iommu_init+0x527/0x870
-   ? __pfx_pci_iommu_init+0x10/0x10
-   pci_iommu_init+0x17/0x60
-   do_one_initcall+0x7c/0x390
-   do_initcalls+0xe8/0x1e0
-   kernel_init_freeable+0x313/0x490
-   ? __pfx_kernel_init+0x10/0x10
-   kernel_init+0x24/0x240
-   ? _raw_spin_unlock_irq+0x33/0x50
-   ret_from_fork+0x4a/0x60
-   ? __pfx_kernel_init+0x10/0x10
-   ret_from_fork_asm+0x1a/0x30
-   </TASK>
+With PASID support, multiple domains can be attached to the device, and
+each domain may have different ATS requirements.  Therefore, we cannot
+simply determine the ATS status in the RID domain attach/detach paths. A
+better solution is to use the reference count, as mentioned above.
 
 Thanks,
 baolu
