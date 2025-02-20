@@ -1,272 +1,175 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12olkn2054.outbound.protection.outlook.com [40.92.21.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E6D420B1F1
-	for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 19:22:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.21.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740079376; cv=fail; b=WnLcFv7sSEMCZLw9zM4HGfCMC2IdAcAw+QB1Ak0y/8dBLy4PI1RaoxVUHEQzmLPvNJGbCtbiwS0yGsUdotZhoP9eTBT7xAPdtPbgQhAClwZNguDZfahRhIJlK3dYgWeMEsW9rIWiJWdFeK99aNvS2a2yJbC1OrT4F09PnyNCJm4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740079376; c=relaxed/simple;
-	bh=jz7Ng/+fAEGJXBOU6S0O5Vax5ZQGTdOExGzul8QVh50=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=hjiufXoYkYdjl2fttOw3Qu3/1b5NrlNHq06Stp39s/wmBx3SDK6chrAHKoqLmm61GZ3Xf0sEx8oPkrKkKVhYHF9CEYo2lwOphzAAqKiWDhyUBnsxBeZqjQSLPpvim+CzIlq4Jkhny8r0oNGGCrAtmfkLL7ubt3MJrlOOt2O2/o8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=KZZpm8eL; arc=fail smtp.client-ip=40.92.21.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 564CD264628
+	for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 19:35:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1740080155; cv=none; b=nfaHnusYxIh88UEommOx/ZiWJVxzaJ6lKkeHKk8qNQBVJwS21YHLJHUL6q1wIa1vmYt13yECAV1JhiJZZT9C1aqwngia1q5I++inbpSgjgVBP4rvAACrqcZj6mmtPyXCjTDiHYSKSepM639L10e1ij1on4jmhg+eOmVW3/Ol4c8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1740080155; c=relaxed/simple;
+	bh=Cn4+MbGF93ZPciRW8w9henqPO1354AGpPKF7B/F7T8c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nwLz3ImZPjMlydg3du1a56wPtzbaKilSVHH3pxMhnT3lcdl/lZWSCS5jdES/UWVh6bBN0DWFCVSrV4u/UmZcVrpXU64yunMSDwPTBBIFtv/KgCepKLxR5ZXFyD3h///wIcD1gNMnp3kpD37bbyTzjehblH9ShjaezUVY0KAhIyE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=GG+eyqn7; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="KZZpm8eL"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tWpxmrr3EkELWB4tzuRTbDQZOPGwCMVGLyFdgOK1txU9ptePdsDCv38o/MRsQyf9JCAyuUge7j1dNguxE5Rv85TPj2NBDjVWSgzmoEnKPwPdfq5fhLHDa2N8rqJgk2B1kXSTCqmbnwXHkQ5W7vW5lJ+2r3MIm8nlRT5bQmZ0+HSn/LoZp2vYZUbV1g0J6vXz+gb+ThS2sebhvyTJF4YayDnHsS9u+ffpvCKB88tW4oXVkC95CLNJ8dGysaXjsK6WN7Yr9k2ABNYhwb3/aADbtdhZnXhu1rw42zxKapacfea2nE33ZmDMGr8/tPwJ+UxPr/NWYWwGXiJ78pOH6mygGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P0qS+tGAtZg9AsfLrkKO/GtvvKoL3p3J8XYwDKGzxog=;
- b=mspQYq87CzNAIQHK5ukJp0kHgIhdTUcRzcBYXzig27WPVvybd9gqHjtL+Sq+UcJAU3KepbgrxzM37gNR+C3wWabvAFmu8v9VDwDyW8e3VC143KKBGe/o0cp9VHk9H6S37OQMV3nX++IC5rOWHZawxtTx4Wu/z/KO56auVhwjH0HLvfxijFHRd7etOI5pSuTUiZEg2a4wL9nyHDeHXJjWivBcfawlvgLlWOGvFEi77VPXwJz8/iDMhikem+rnJT+PWF6oUAYth8F+gN/A4UjxNb/kB508QQ1lKoxVv72yh5RdVuLLlkdleZgxK4h87SW6A2KCPKd77aFdcZ2Nphr3lg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P0qS+tGAtZg9AsfLrkKO/GtvvKoL3p3J8XYwDKGzxog=;
- b=KZZpm8eLIGOXz9610uPBjUF8TZwBbWuvgwZyPUjSMOcEL9GC5x12pVLuKL0kEtREtVcnO40EXxpRnADc8xgUtdYU0q1IdGoidY3Kg+E9Cekex9lk58Q7tkSVdwY6QDvl9PLAA810Aki8S330o+z2BIl9vfumZhmu1Dc9rMh960b4ty6nsU6FObxsN/RKT4PhgO0hZINwbVv7h+xi8Uju0SEFMK9cUQZBkngI8cOBif15P7p76Sms3XHpJxAUBl7bBJDBxpBZLyMaAnrefebZ5ANtLSYcqpBuoxtK5jR4a4HTAJrVEH+ooSggj1M2PwAw2SPadFwwD2D7sxF5pabVlQ==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by MWHPR02MB10353.namprd02.prod.outlook.com (2603:10b6:303:285::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.14; Thu, 20 Feb
- 2025 19:22:50 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df%4]) with mapi id 15.20.8466.013; Thu, 20 Feb 2025
- 19:22:50 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Nuno Das Neves <nunodasneves@linux.microsoft.com>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org"
-	<linux-arch@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "eahariha@linux.microsoft.com"
-	<eahariha@linux.microsoft.com>
-CC: "kys@microsoft.com" <kys@microsoft.com>, "haiyangz@microsoft.com"
-	<haiyangz@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>,
-	"decui@microsoft.com" <decui@microsoft.com>, "catalin.marinas@arm.com"
-	<catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>,
-	"tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com"
-	<mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "x86@kernel.org"
-	<x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-	"daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>, "joro@8bytes.org"
-	<joro@8bytes.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"arnd@arndb.de" <arnd@arndb.de>, "jinankjain@linux.microsoft.com"
-	<jinankjain@linux.microsoft.com>, "muminulrussell@gmail.com"
-	<muminulrussell@gmail.com>, "skinsburskii@linux.microsoft.com"
-	<skinsburskii@linux.microsoft.com>, "mukeshrathor@microsoft.com"
-	<mukeshrathor@microsoft.com>
-Subject: RE: [PATCH v2 3/3] hyperv: Add CONFIG_MSHV_ROOT to gate root
- partition support
-Thread-Topic: [PATCH v2 3/3] hyperv: Add CONFIG_MSHV_ROOT to gate root
- partition support
-Thread-Index: AQHbg8X2KgtXuEdR60irnoVh382rZrNQjh4w
-Date: Thu, 20 Feb 2025 19:22:50 +0000
-Message-ID:
- <SN6PR02MB415731B00FF74784141275B1D4C42@SN6PR02MB4157.namprd02.prod.outlook.com>
-References:
- <1740076396-15086-1-git-send-email-nunodasneves@linux.microsoft.com>
- <1740076396-15086-4-git-send-email-nunodasneves@linux.microsoft.com>
-In-Reply-To:
- <1740076396-15086-4-git-send-email-nunodasneves@linux.microsoft.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|MWHPR02MB10353:EE_
-x-ms-office365-filtering-correlation-id: e1d004d0-0962-410e-a35b-08dd51e3f765
-x-microsoft-antispam:
- BCL:0;ARA:14566002|8060799006|19110799003|8062599003|12121999004|461199028|15080799006|3412199025|440099028|12091999003|41001999003|102099032;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?vZKfspKy9FOHwG3lhOe/yIXnSMe8dEGz9G8CDZw3RUpj5YGUXHlMuyCNlHuJ?=
- =?us-ascii?Q?yGJFl65hlRHXHtkp0JytsD3eKz12TlUQuFF6tQTDQESzxa84EZvIYz5muglg?=
- =?us-ascii?Q?1jqIAPsJvqRCr3uqxIgIV09bV54iHrTuYVIN8hzHAM6DjrdWX0V0xylRKgRv?=
- =?us-ascii?Q?hX5IcYrRr+PZAKeoFP0szUPupmCautGANNqoyIb8kERLquEZ8fvrM17aE/JT?=
- =?us-ascii?Q?wugRZS18C0JUlOLfXVz59gk3LgPIWhPxda0qfkRjqije47o7mrqXjc4a3k33?=
- =?us-ascii?Q?sdMSHmzA4hK8pwWwvJN5AK/I30/5ZSIM+r/IgbB1zM8glX4iLPaTJ4PkSSd2?=
- =?us-ascii?Q?kaoZsrtUOm+6asH/h35eX2el6/ERU+gNMzxnsqH/GuKi+/3k01/Bv7o2ej3q?=
- =?us-ascii?Q?WRWu0VBRNRbzvhqeRNyBCnjWZ0HzSWJfi5+vsKm5bYFZ7zI5fip7hxuvkg+g?=
- =?us-ascii?Q?xZ5Z2Q6sxWaPAaLhSuMktnvtha8q76oN3WROOgZOfooHpLEqqlo9ogMvuDvI?=
- =?us-ascii?Q?7HkMvQOj7xP7W9BjQwnYWFjfVk9kQunSQ75Ip44po9WOcWHmXIUpkRfqj2gm?=
- =?us-ascii?Q?GwFP1I6Fe3vTBVt3n0H+YJrUVLC+MC7IllvBJvr6DiSsm3mhPbabLw2HgLmw?=
- =?us-ascii?Q?GuCf9vD2dds5lK6qvIuQ1l9xhPdzEVM1sSj58fWCUb8vZy7gl4meX7XkR/UF?=
- =?us-ascii?Q?H0VBwmyfHy0vcrayLU0v0fcl8cQn44OStxDeluvZBO2FOYHWNVL58PJX+B2F?=
- =?us-ascii?Q?/6KA7H2IObjzl84tWDeB5sky5+YCMjphGCZ9j/UW4TZnTYcptT0YZFh4KVlS?=
- =?us-ascii?Q?vkdyEcaIXmohJ2UknM7qtJm8oJitZREQjI23XRRiKVuUW2OP68k+Ze9K0DAr?=
- =?us-ascii?Q?n2rnOYoiBeJk1PQf/pSaU/vUX2ttwxhkLsM5jNOi4BfHLMru7m/wPSkaXHED?=
- =?us-ascii?Q?1CvVzyAfAM25PKevMCFwjg/zBPmZiAc/OsRNrsCdguckMN6Zu+OEh1Xgv+pE?=
- =?us-ascii?Q?wM0OFGWPAJhGeNgqjN70kDZnfp4f6pbqJ19rL3KfEB7OYdpJSF2VDXG3UOLx?=
- =?us-ascii?Q?3ZEoP5OqIkhvHFAmZf5O8jRoXfOSkGMDzA63z51uLhAw8pjt0S+E+KU7wxx8?=
- =?us-ascii?Q?1HEirVMzICN+3e4OnU+dKADfrm0ECv4YBA=3D=3D?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?+qz6ZREjlMdgRPGHlmx+KZncfhHbDQvnu/kMnekQmEFUtIivuPJZnO/Myzra?=
- =?us-ascii?Q?NzItSwEkVPOWPb5rdUmpYbk6+OK0DiiX3uQ1QLUOOAXsvOJkBp3dzSxW3mk5?=
- =?us-ascii?Q?jLhzW7skz2AF2uha3OBZJdbwjKn25wTd3v+jpAiIjYRBPIpz3h/AUPl8cgFI?=
- =?us-ascii?Q?bT+mEzGvWriwbKuerf5L8peCB7U04ua58dK3pOrm5zx+f2184HbRv/YXqlCY?=
- =?us-ascii?Q?XGgu+euTNE6hDOw0V1FRbBta0l9zTpVP5ACm1dgw+ZNWp2cF/D8KGIx56CVR?=
- =?us-ascii?Q?eGcdrLhI1I/PlajdK0OR2tyySI1dEd7MFO3nDyTRUIrJ+LftHjP4r/cY0KgL?=
- =?us-ascii?Q?RMj5AN/JTrr/kMHxQLYvr3json5h95iSUVuRV6D/kBDScE8utSmhejKWsRkv?=
- =?us-ascii?Q?Zsj2Ha0tCv+FmFYaABut+u/jCgJFYeaqf4SZayCu2NZavN4Fo3ji3ekJcppL?=
- =?us-ascii?Q?UuJVZz03xPpG1vFniQ2xGboP3J8sHW1qU/vjOz5cV4NAw67CFtTC9wVoj1I1?=
- =?us-ascii?Q?hvqnBOyXxutfvuZnQX6HLNej2vfIkzSC86FDDG4DVcPk5AUkFYIOb+wZHbmY?=
- =?us-ascii?Q?qBUztWyGS1/ZPooed0jkTCpJiDsM1OScELzLLpXvmD0xpXTAHgSSG3We1CB8?=
- =?us-ascii?Q?rdpxNhDLEOaLHrn3+ylgw4yZK8LNaCpxsBFJK8ihecUTstFqOjGxoQ68pSNn?=
- =?us-ascii?Q?c6vKtZjI1BGxB+EuDSrhWGftbnr/wWOGSSFLR3wzluAM/MJRq96zI7nl74Wx?=
- =?us-ascii?Q?C42MUxKXGHZukQC/fxejJ7Y+lWfnYigPDnrK13YfYfTWhS9UTeW3r8Jp8QbG?=
- =?us-ascii?Q?gG3qALP1xHnP3wj6DvWKrK0+1oqvvUg5kRa+zWNuVXROI50VC916FCAouYSq?=
- =?us-ascii?Q?J0lUdRjyv3BY4X9/SklOkumtNZrSP9KkMcvHh+90pv3lwOa8NTYgr4TEHyn6?=
- =?us-ascii?Q?+j2YwgNxTwPWx9AF41jP1aH8l3vMuRzlURmubbqEoiatDGM2y67WdRTD2+6F?=
- =?us-ascii?Q?EHIDO0We2NqC5vzvs7w0uhkV50f4ZoCbRy6LDTqmWorRkgQ5NJviqVLm8eJr?=
- =?us-ascii?Q?G2MCB0xsuzkrmg0G55+9Plpr3k5wwl3zGSL2YgZNQHUoiP91e/4Y4OyiQPPR?=
- =?us-ascii?Q?Xz4MQd1a8tiq9Ph2eF8DP+j/HKpVfBZGUzn1DjATPAzzbfLygPFL7HZtUJSO?=
- =?us-ascii?Q?F7G9nFziQC14UQyTMoEYMY0upAjgQrVHLk6Eh+1nY7FwVgKMQbe8nE+pFwA?=
- =?us-ascii?Q?=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="GG+eyqn7"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-220c8eb195aso28181055ad.0
+        for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 11:35:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1740080152; x=1740684952; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=2bN/NPVn1vKfJddb+/MWowQ/DYT7KXXiFwwxB/L9OIQ=;
+        b=GG+eyqn75BtOV3Rg0EYz2+gUe8k+GwvY+uIItjWCLD4kx0IQ75FJAjQc+r+T4+ysC6
+         Odq1nxQE+lBES0Ewk11E4KhYdiDGJGgXkp3dgkSNz0OkkO2PqJmQJ1UgnAIHi9k95ACU
+         b/VbuH6kcf28WUuPRxA6vw6N/xt9PIsPvl+hxAOZhNC7wAgIXQn3WbMjXjUJJejaK2cG
+         E28VZwvw/ZLLSzR9U1Bj/2fKFaPk6RsMIjeyZWNYfxI+I2TEg9FHZ9BDljaUdRmHXxRo
+         dD6kG4L/aBB4Y9rzZCcIP4aB8bkcYAd5FQ71EXup4e9CZKlFO3wWcjWFKLWPWGc/CCve
+         kzXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740080152; x=1740684952;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2bN/NPVn1vKfJddb+/MWowQ/DYT7KXXiFwwxB/L9OIQ=;
+        b=Ec43dWP/n7j+lbAU8XE8A+V2tzhnhV6JrpU+5ASRyy2hso0qvb3oxlKuPhh86ClGEY
+         YYuDWJIF5BFhDO4ibUswwuZPyyyBvOWyTQzV4UkhOGOKQ7zQji+j3KTiGvf0TVrcRhJK
+         PFz78AYINj6eW6Ju6fKzK7aDG6rEvi77/wLPRUMxDuC9jgkORzgO+glYI200RaSz6aUg
+         WvZanNnTsONRIEeko7g9bFOyG0xEsRG0lUJEfK/HY7+CzrpT/evJ7HoNj/t2QzbUM9XU
+         DSNzjxsBiLG5dKDZ7PV9T6zTqyV3LVMDautOaJXyVY9LDn7QWE6/Ra0CCTQ9G4FbnT49
+         I9/w==
+X-Forwarded-Encrypted: i=1; AJvYcCXQYRgivIGwhAdecdytdUAcGG19oRsVm4K0oHJnUD8ifx9v8dkzwdyqloEXjP03YaqcaImtYg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywj2usH+Yd7TsPOaHSfq2vvn47bd4fLOT6kFX1SYPmHyimQFBr9
+	1nGq+EZd3B/ybATeOOjfpDBhhdaYlTmADJ7s757b1nCiVaf04L3RubBQjoYj+II=
+X-Gm-Gg: ASbGncsaValyYcqNwp8IlFesdnF880ACQL/fK0wgFbs8yyNqhn4Q7Ttv9cAks/JVk1C
+	2FKkW2bagOML6B645xhd0SsJymJrnJAYTTXOHDleQvogWX6HSAoSA7xM2NHzhdUeWstlrcYDorF
+	VOGoFYfFBKp7llKYEIMTdm9wq+yTTPfxsQxb9ImQrUEmUeR9vJiroqKsdVwn5V3rE3cfVhCddyP
+	1MqS4kIcHCGdPoODE/Pwmv20tOdAytazKd2TmX0EzVn9z0tL7jZtuInf9xikXVtj7hIQ+oJ71wN
+	lXhDjK95gkhdOaXEChNoOX8MMB+PtcSfdA==
+X-Google-Smtp-Source: AGHT+IFLUZkJqTzzZT+I/M3yqbHhvCV9FHZfFsSF+/uPg4tVfA/GlpswgR4SI57hCH58PcrddckVtQ==
+X-Received: by 2002:a17:902:db07:b0:216:73f0:ef63 with SMTP id d9443c01a7336-2219fff4377mr5157465ad.49.1740080152564;
+        Thu, 20 Feb 2025 11:35:52 -0800 (PST)
+Received: from tjeznach.ba.rivosinc.com ([64.71.180.162])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-220d545c9bbsm123012805ad.127.2025.02.20.11.35.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2025 11:35:52 -0800 (PST)
+Date: Thu, 20 Feb 2025 11:35:49 -0800
+From: Tomasz Jeznach <tjeznach@rivosinc.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alim Akhtar <alim.akhtar@samsung.com>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Hector Martin <marcan@marcan.st>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>, Bagas Sanjaya <bagasdotme@gmail.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	David Rientjes <rientjes@google.com>,
+	Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH v2 19/23] iommu/riscv: Update to use
+ iommu_alloc_pages_node_lg2()
+Message-ID: <Z7eEFagK3xugrkKH@tjeznach.ba.rivosinc.com>
+References: <0-v2-545d29711869+a76b5-iommu_pages_jgg@nvidia.com>
+ <19-v2-545d29711869+a76b5-iommu_pages_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: e1d004d0-0962-410e-a35b-08dd51e3f765
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Feb 2025 19:22:50.6432
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR02MB10353
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <19-v2-545d29711869+a76b5-iommu_pages_jgg@nvidia.com>
 
-From: Nuno Das Neves <nunodasneves@linux.microsoft.com> Sent: Thursday, Feb=
-ruary 20, 2025 10:33 AM
->=20
-> CONFIG_MSHV_ROOT allows kernels built to run as a normal Hyper-V guest
-> to exclude the root partition code, which is expected to grow
-> significantly over time.
->=20
-> This option is a tristate so future driver code can be built as a
-> (m)odule, allowing faster development iteration cycles.
->=20
-> If CONFIG_MSHV_ROOT is disabled, don't compile hv_proc.c, and stub
-> hv_root_partition() to return false unconditionally. This allows the
-> compiler to optimize away root partition code blocks since they will
-> be disabled at compile time.
->=20
-> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+On Fri, Feb 14, 2025 at 01:07:52PM -0400, Jason Gunthorpe wrote:
+> One part of RISCV already has a computed size, however the queue
+> allocation must be aligned to 4k. The other objects are 4k by spec.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/hv/Kconfig             | 16 ++++++++++++++++
->  drivers/hv/Makefile            |  3 ++-
->  include/asm-generic/mshyperv.h | 24 ++++++++++++++++++++----
->  3 files changed, 38 insertions(+), 5 deletions(-)
->=20
-
-This code LGTM, but I'll wait on my Reviewed-by: until the dependency
-with Patch 2 of the series is sorted out.
-
-Michael Kelley
-
-
-> diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
-> index 862c47b191af..794e88e9dc6b 100644
-> --- a/drivers/hv/Kconfig
-> +++ b/drivers/hv/Kconfig
-> @@ -55,4 +55,20 @@ config HYPERV_BALLOON
->  	help
->  	  Select this option to enable Hyper-V Balloon driver.
->=20
-> +config MSHV_ROOT
-> +	tristate "Microsoft Hyper-V root partition support"
-> +	depends on HYPERV
-> +	depends on !HYPERV_VTL_MODE
-> +	# The hypervisor interface operates on 4k pages. Enforcing it here
-> +	# simplifies many assumptions in the root partition code.
-> +	# e.g. When withdrawing memory, the hypervisor gives back 4k pages in
-> +	# no particular order, making it impossible to reassemble larger pages
-> +	depends on PAGE_SIZE_4KB
-> +	default n
-> +	help
-> +	  Select this option to enable support for booting and running as root
-> +	  partition on Microsoft Hyper-V.
-> +
-> +	  If unsure, say N.
-> +
->  endmenu
-> diff --git a/drivers/hv/Makefile b/drivers/hv/Makefile
-> index 9afcabb3fbd2..2b8dc954b350 100644
-> --- a/drivers/hv/Makefile
-> +++ b/drivers/hv/Makefile
-> @@ -13,4 +13,5 @@ hv_vmbus-$(CONFIG_HYPERV_TESTING)	+=3D hv_debugfs.o
->  hv_utils-y :=3D hv_util.o hv_kvp.o hv_snapshot.o hv_utils_transport.o
->=20
->  # Code that must be built-in
-> -obj-$(subst m,y,$(CONFIG_HYPERV)) +=3D hv_common.o hv_proc.o
-> +obj-$(subst m,y,$(CONFIG_HYPERV)) +=3D hv_common.o
-> +obj-$(subst m,y,$(CONFIG_MSHV_ROOT)) +=3D hv_proc.o
-> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyper=
-v.h
-> index d2b1a8fc074c..b29357cff2f7 100644
-> --- a/include/asm-generic/mshyperv.h
-> +++ b/include/asm-generic/mshyperv.h
-> @@ -223,10 +223,6 @@ void *hv_alloc_hyperv_page(void);
->  void *hv_alloc_hyperv_zeroed_page(void);
->  void hv_free_hyperv_page(void *addr);
->=20
-> -int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
-> -int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
-> -int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flag=
-s);
-> -
->  /**
->   * hv_cpu_number_to_vp_number() - Map CPU to VP.
->   * @cpu_number: CPU number in Linux terms
-> @@ -327,9 +323,29 @@ static inline enum hv_isolation_type
-> hv_get_isolation_type(void)
+>  drivers/iommu/riscv/iommu.c | 15 ++++++++-------
+>  1 file changed, 8 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index 2750f2e6e01a2b..8835c82f118db4 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -65,13 +65,14 @@ static int riscv_iommu_devres_pages_match(struct device *dev, void *res, void *p
+>  	return devres->addr == target->addr;
 >  }
->  #endif /* CONFIG_HYPERV */
->=20
-> +#if IS_ENABLED(CONFIG_MSHV_ROOT)
->  static inline bool hv_root_partition(void)
+>  
+> -static void *riscv_iommu_get_pages(struct riscv_iommu_device *iommu, int order)
+> +static void *riscv_iommu_get_pages(struct riscv_iommu_device *iommu,
+> +				   unsigned int size)
 >  {
->  	return hv_current_partition_type =3D=3D HV_PARTITION_TYPE_ROOT;
->  }
-> +int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
-> +int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
-> +int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flag=
-s);
-> +
-> +#else /* CONFIG_MSHV_ROOT */
-> +static inline bool hv_root_partition(void) { return false; }
-> +static inline int hv_call_deposit_pages(int node, u64 partition_id, u32 =
-num_pages)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +static inline int hv_call_add_logical_proc(int node, u32 lp_index, u32 a=
-cpi_id)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +static inline int hv_call_create_vp(int node, u64 partition_id, u32 vp_i=
-ndex, u32 flags)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +#endif /* CONFIG_MSHV_ROOT */
->=20
->  #endif
-> --
-> 2.34.1
+>  	struct riscv_iommu_devres *devres;
+>  	void *addr;
+>  
+> -	addr = iommu_alloc_pages_node(dev_to_node(iommu->dev),
+> -				      GFP_KERNEL_ACCOUNT, order);
+> +	addr = iommu_alloc_pages_node_sz(dev_to_node(iommu->dev),
+> +					 GFP_KERNEL_ACCOUNT, size);
+>  	if (unlikely(!addr))
+>  		return NULL;
+>  
+> @@ -161,9 +162,9 @@ static int riscv_iommu_queue_alloc(struct riscv_iommu_device *iommu,
+>  	} else {
+>  		do {
+>  			const size_t queue_size = entry_size << (logsz + 1);
+> -			const int order = get_order(queue_size);
+>  
+> -			queue->base = riscv_iommu_get_pages(iommu, order);
+> +			queue->base = riscv_iommu_get_pages(
+> +				iommu, max(queue_size, SZ_4K));
+>  			queue->phys = __pa(queue->base);
+>  		} while (!queue->base && logsz-- > 0);
+>  	}
+> @@ -618,7 +619,7 @@ static struct riscv_iommu_dc *riscv_iommu_get_dc(struct riscv_iommu_device *iomm
+>  				break;
+>  			}
+>  
+> -			ptr = riscv_iommu_get_pages(iommu, 0);
+> +			ptr = riscv_iommu_get_pages(iommu, SZ_4K);
+>  			if (!ptr)
+>  				return NULL;
+>  
+> @@ -698,7 +699,7 @@ static int riscv_iommu_iodir_alloc(struct riscv_iommu_device *iommu)
+>  	}
+>  
+>  	if (!iommu->ddt_root) {
+> -		iommu->ddt_root = riscv_iommu_get_pages(iommu, 0);
+> +		iommu->ddt_root = riscv_iommu_get_pages(iommu, SZ_4K);
+>  		iommu->ddt_phys = __pa(iommu->ddt_root);
+>  	}
+>  
+> -- 
+> 2.43.0
+> 
 
+Reviewed-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+
+
+Thanks,
+- Tomasz
