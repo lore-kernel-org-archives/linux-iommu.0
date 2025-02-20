@@ -1,73 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA3E61E5B7F;
-	Thu, 20 Feb 2025 15:18:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D74A212FB8
+	for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 16:15:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740064688; cv=none; b=J/K60W3HGfdte0GJLocQCdntA9omuktwEYs/kA5CZYMo7UScip5gTe7ZHsz8MvQY9bPD7nCFaPWD8oR6nw8c08ZDw64S7oEyTar/K9CgQdqtOSaZ9rkFiHglwDGIOk3pLCmoKX1LDB79r4ZHRf6U0VzDvmTEF9HbaVCipDM/lNs=
+	t=1740068154; cv=none; b=jZvk86QIxHwlYOKZLNySEbsOKhbmmdCs9MjcXlbdTtrSzgPKmfLd/lKV4QEwG0tvK3XKLekmz1wlXti+nD97+RShDpPoBjaaM8493W709VJ4JVCFU/rWmns34y1g6opvPHHVkL44wXHm6PdoVdvAGqQtOA+5lpPP3yqGTHzVTuY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740064688; c=relaxed/simple;
-	bh=ZnaNzN8t662cNw4RKpiVdVtvTtxMXS8tMZ1bItrIqqQ=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=px7at+6/7MEje4QdMlndBS5T8af3Lk89KgJYcy8HsSXx08RZ5URxMY2znJYJWvy9Gk271SNANGmW3AjQNw7j8/nlJ3C0mGEXGhoXkBu8v1rntaS2348KY8CT+jOOqugrKSwsv2xMfW3VzOIGXI7HQ4w0A5d2nBk/KuBSwmaQcTM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UCzR170y; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1740068154; c=relaxed/simple;
+	bh=sefj6hxNE4DKzJ9Uo+g0WJ+GyLGTay+PVJVsLpQlNGY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J/6TsRNJLzDaQDZBpTVNbvMitvmKMKXE0RyKOPy6xHyYuGVMn849uadDPSCwUHZXGNQ+aIf3GGtXK6zFPwTAdHjsHZfCMyRuZwysAzekN+z3G0Y53e2AUh0l69wuQrPgb9k6+jjofiOIiCVTZ33OEq8p8GAknrMa2CUS9XhJW5Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=guyNccts; arc=none smtp.client-ip=209.85.214.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UCzR170y"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714E3C4CED1;
-	Thu, 20 Feb 2025 15:18:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740064687;
-	bh=ZnaNzN8t662cNw4RKpiVdVtvTtxMXS8tMZ1bItrIqqQ=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=UCzR170yfjLMG8S5D0SUT2ScspgvWTdIxWLSdlOAEgbAHISizyWLXzDn0Nc/SM9zv
-	 tP5FbFNxE37YyoKO7zioIbiHzmJVtP0T9qyRnHYdUmwTa2h6DgEhAc/hFHJ2oWeApv
-	 Yyq6wu6ja8UAdPx5gvWDzEDa4RyTHjAieJKi7cpyj0TYWyj/vr5FQgy4CcvAJaaK+f
-	 5XWBmk8EjXapPCfOi+nBngW21GnmKa1eT7T+SJoH5+/v8JuMQaSbUSwASbXusUygSG
-	 jKN7RC8F6qvv0/BUbT+SUey5didbDHTSUe5FEbGWH6mSdcGixO1Gr2nvZNSbn45heU
-	 fLckq+tO+O9Ew==
-From: Lee Jones <lee@kernel.org>
-To: Bjorn Andersson <andersson@kernel.org>, 
- Michael Turquette <mturquette@baylibre.com>, 
- Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>, 
- =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
- Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, 
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
- =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-gpio@vger.kernel.org, iommu@lists.linux.dev
-In-Reply-To: <20250211-msm8937-v1-5-7d27ed67f708@mainlining.org>
-References: <20250211-msm8937-v1-0-7d27ed67f708@mainlining.org>
- <20250211-msm8937-v1-5-7d27ed67f708@mainlining.org>
-Subject: Re: (subset) [PATCH 05/10] dt-bindings: mfd: qcom,tcsr: Add
- compatible for MSM8937
-Message-Id: <174006468317.807943.10112581876441058365.b4-ty@kernel.org>
-Date: Thu, 20 Feb 2025 15:18:03 +0000
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="guyNccts"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-22117c396baso172405ad.1
+        for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 08:15:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1740068152; x=1740672952; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=w9z6CJ8GEmOUY+R90CcF3D8uqozLmZO9LjzSZXbDX8o=;
+        b=guyNcctsrqox2KP8yrGpU+AcrrYAmBxK1eq11pMmVNK+7J/fB6PODgl695j61EHiiv
+         1f6B/2WZg2TbE/RIzLo58A7D16sL3+Qkiwc6TLmK5gxRH/6iThWL5JAdUYB9kKhFL+8X
+         qvs9qHHP84mzDnV0gcKLhV3ixGR2y4tHVj4z5L9cT1TQOdlU+Zp7RWKGlulgqwppgnI+
+         iuDIVrViO9JCfMAIw3ZsJ7G3OAXtEpre7JxyvgZcsZ/QHftK+XUj5QiGU2sAHgR7su7C
+         1zlyzuFOkxJSVt7meAAfGm0vBp4LdnUP5PuNNK20v1Pvon6k7YC54rpfPiwN3xhSh36H
+         zJnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740068152; x=1740672952;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w9z6CJ8GEmOUY+R90CcF3D8uqozLmZO9LjzSZXbDX8o=;
+        b=ZzJhCf1xy/ddu6XyzaroXjmwiBhioKDZ/zi8zGvDTH3LkXs9LQDv4wkfqvBzKqx1lc
+         vAUTxkGfpPFPwIBo9qmSmYOQI4TvSJB+x+QoM+WQI61afse/O77zPuFLD1epnzA0NR0z
+         NVW9QotsYsJHdODeUGPP9dNkSHyoucjWr70EVgaXM49jTGA/3PjrZvHMkoFZQo/FUL1e
+         BcA9FkRbGuqKrQp/qapNfkr/T7S1FsxMyIJ7FHfnBRu4I818SMLwabCXI66N5qet+V2Y
+         x/Lzi5oOEGu/YdOPUn6kehlqRMrlr49Ln/G0R//AtfdCBTZ+HCSNIccgYm0DscSu9dF8
+         jX9Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUaTx9fPVQIbmM01gW8eqjkurByrZ6+X+qKynbEBfickmm0hO1tGxVdMYbUpXMM75wISqsV8w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywtffv14VKjD8ENmZQl3QL1bUKCyBMWhVuXEvGFgbxYJzoZre1n
+	Q+Du1MvscF7cjmyXteoxDLYVe9cPt1dEp6aXqPAIx8XhUSIJTgMAuN7ulUUk5A==
+X-Gm-Gg: ASbGnctLvxYmjUPP4gyfZroAA87fZkBm8N5KFCLpT6WQwHIAowS16ETSl+PWxBtRNMM
+	gUmJRlqIuobizYZUnR0gcnUYMWOqVDHNBFfHBQ9JR7vyrjIrd1WLL/bNSE/kgaM/Cyzdj4A9n5G
+	lUZaJGu3jd8A9DVXQupKDUgN57RLG3uQElNOSVuMMmlTEzuZ/2X7TCdyHqOUXLLPa6UQuclp4qm
+	ZIE/yKTYmHUIPPgNa3WD4J21KSUSM1bRiyEHivLGtdncSKoAGrkKEgRNPQO9RqYe4rxJ5MM3yKs
+	3YeHmrTDvBpH1TqGPu3sLr5NgMqNJ4cL0mrfW/doRe5jDIcNwuZ4
+X-Google-Smtp-Source: AGHT+IEeeNO5YXG4GrTFzHJDa5KXpncdRPcsXRbYIZYGBm4w3MV78t3++PWrZwNmDnY5dth9MgRnnA==
+X-Received: by 2002:a17:902:dacf:b0:21f:3e29:9cd4 with SMTP id d9443c01a7336-2218debe8bamr3119545ad.20.1740068151245;
+        Thu, 20 Feb 2025 08:15:51 -0800 (PST)
+Received: from google.com (169.224.198.35.bc.googleusercontent.com. [35.198.224.169])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2fc7e9325fesm8522382a91.46.2025.02.20.08.15.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2025 08:15:50 -0800 (PST)
+Date: Thu, 20 Feb 2025 16:15:40 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"corbet@lwn.net" <corbet@lwn.net>,
+	"will@kernel.org" <will@kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"dwmw2@infradead.org" <dwmw2@infradead.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"shuah@kernel.org" <shuah@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"mdf@kernel.org" <mdf@kernel.org>,
+	"mshavit@google.com" <mshavit@google.com>,
+	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
+	"smostafa@google.com" <smostafa@google.com>,
+	"ddutile@redhat.com" <ddutile@redhat.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	"patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: Re: [PATCH v6 14/14] iommu/arm-smmu-v3: Set MEV bit in nested STE
+ for DoS mitigations
+Message-ID: <Z7dVLNLhP7VfZ-Ph@google.com>
+References: <cover.1737754129.git.nicolinc@nvidia.com>
+ <436ac2021bb3d75114ca0e45f25a6a8257489d3b.1737754129.git.nicolinc@nvidia.com>
+ <BN9PR11MB5276291C74E2DF0C8821BE718CFA2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Z7TOq-gIGPY_ztW7@google.com>
+ <Z7TXQ9EdyvHp/lmD@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.15-dev-510f9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z7TXQ9EdyvHp/lmD@nvidia.com>
 
-On Tue, 11 Feb 2025 23:37:49 +0100, Barnabás Czémán wrote:
-> Document the qcom,msm8937-tcsr compatible.
+On Tue, Feb 18, 2025 at 10:53:55AM -0800, Nicolin Chen wrote:
+> > > Is MEV available only in nested mode? Otherwise it perhaps makes
+> > > sense to turn it on in all configurations in IOMMUFD paths...
+> > 
+> > I think the arm-smmu-v3's iommufd implementation only supports nested
+> > which could be the reason.
 > 
+> I guess what Kevin says is that non-nested STE should set the MEV
+> as well, e.g. BYPASS and ABORT, and perhaps stage-1-only case too
+> where the attaching domain = UNMANAGED.
 > 
 
-Applied, thanks!
+Ohh okay, got it. Thanks!
 
-[05/10] dt-bindings: mfd: qcom,tcsr: Add compatible for MSM8937
-        commit: c9498d76a96f84a80ca88a862b6112cdc2e7cb64
-
---
-Lee Jones [李琼斯]
-
+Praan
