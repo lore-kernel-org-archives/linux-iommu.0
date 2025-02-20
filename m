@@ -1,127 +1,73 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2BF32862BD;
-	Thu, 20 Feb 2025 12:48:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA3E61E5B7F;
+	Thu, 20 Feb 2025 15:18:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740055712; cv=none; b=gHk0N0/PJMM6Spb1pJwQ7y1LwGYRrKf//nAZdpZHfV4L5iELf5L7wd8lsUKOWnU4D6MmlkH54pxE7oFSBCye7t2kBjGrodl/oO1IwPBfKFIhaO7px2rMIX7bCm6r1Sx+sCVmxQwaX2+Yd/u7Tp9GSxmSca/b87PFOs0H8nPiTT0=
+	t=1740064688; cv=none; b=J/K60W3HGfdte0GJLocQCdntA9omuktwEYs/kA5CZYMo7UScip5gTe7ZHsz8MvQY9bPD7nCFaPWD8oR6nw8c08ZDw64S7oEyTar/K9CgQdqtOSaZ9rkFiHglwDGIOk3pLCmoKX1LDB79r4ZHRf6U0VzDvmTEF9HbaVCipDM/lNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740055712; c=relaxed/simple;
-	bh=1Iv3ATubl6AG/lSG1TPOh5GEc+mnunYnUNognONLHrM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fDbvlA/Jhqg/b8gRMEoTrL3oTYbgsRjfMZE/YO3nb8CejGVbFWT4h8ifkPTH+/CJ1KaVQMEceDysCs09nXK6TgevjGpCh8SqgHjJcE0DWUTZJNaiDwzYrEjp3IVUh6t96GSc9Mgoglod+QzPOUyfWY8/63rebM00fN/e1Iyz8Zo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XhH3Rxw/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1740064688; c=relaxed/simple;
+	bh=ZnaNzN8t662cNw4RKpiVdVtvTtxMXS8tMZ1bItrIqqQ=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=px7at+6/7MEje4QdMlndBS5T8af3Lk89KgJYcy8HsSXx08RZ5URxMY2znJYJWvy9Gk271SNANGmW3AjQNw7j8/nlJ3C0mGEXGhoXkBu8v1rntaS2348KY8CT+jOOqugrKSwsv2xMfW3VzOIGXI7HQ4w0A5d2nBk/KuBSwmaQcTM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UCzR170y; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XhH3Rxw/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C882DC4CED1;
-	Thu, 20 Feb 2025 12:48:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UCzR170y"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714E3C4CED1;
+	Thu, 20 Feb 2025 15:18:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740055711;
-	bh=1Iv3ATubl6AG/lSG1TPOh5GEc+mnunYnUNognONLHrM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=XhH3Rxw/fU4NMM8JUKPDYre9d9LQaru2HtlbuSSUNzkHB8eWhqMM23vtegnTWn+BS
-	 9+H0GOfdzn1LNx9IHcWfvcpB8EXNSp57Achx+q1U7ozbfXzho3FO9ENmdtK+fnEJTx
-	 1mX2B9KcxOTwRBNfDJoEWHPpCPDk48cyZC7xwNx3D4HZ/eDzhk1UYs1ByD6cWBCggg
-	 PbJi1s5B2/FkYeMMfisRgyehbN8fd3in3TvHNeTh17NIjIy8rndGPwyK8hEYOJ4woC
-	 z5Pq6b+6BoM66BA9VpnFOLzal49GAHK/nFhBZx9kerNsCt2/b4psBlXL8nvsynNOoP
-	 upH4tKmvy4K+A==
-Date: Thu, 20 Feb 2025 14:48:27 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Christoph Hellwig <hch@lst.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v7 00/17] Provide a new two step DMA mapping API
-Message-ID: <20250220124827.GR53094@unreal>
-References: <cover.1738765879.git.leonro@nvidia.com>
+	s=k20201202; t=1740064687;
+	bh=ZnaNzN8t662cNw4RKpiVdVtvTtxMXS8tMZ1bItrIqqQ=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=UCzR170yfjLMG8S5D0SUT2ScspgvWTdIxWLSdlOAEgbAHISizyWLXzDn0Nc/SM9zv
+	 tP5FbFNxE37YyoKO7zioIbiHzmJVtP0T9qyRnHYdUmwTa2h6DgEhAc/hFHJ2oWeApv
+	 Yyq6wu6ja8UAdPx5gvWDzEDa4RyTHjAieJKi7cpyj0TYWyj/vr5FQgy4CcvAJaaK+f
+	 5XWBmk8EjXapPCfOi+nBngW21GnmKa1eT7T+SJoH5+/v8JuMQaSbUSwASbXusUygSG
+	 jKN7RC8F6qvv0/BUbT+SUey5didbDHTSUe5FEbGWH6mSdcGixO1Gr2nvZNSbn45heU
+	 fLckq+tO+O9Ew==
+From: Lee Jones <lee@kernel.org>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, 
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, iommu@lists.linux.dev
+In-Reply-To: <20250211-msm8937-v1-5-7d27ed67f708@mainlining.org>
+References: <20250211-msm8937-v1-0-7d27ed67f708@mainlining.org>
+ <20250211-msm8937-v1-5-7d27ed67f708@mainlining.org>
+Subject: Re: (subset) [PATCH 05/10] dt-bindings: mfd: qcom,tcsr: Add
+ compatible for MSM8937
+Message-Id: <174006468317.807943.10112581876441058365.b4-ty@kernel.org>
+Date: Thu, 20 Feb 2025 15:18:03 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1738765879.git.leonro@nvidia.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.15-dev-510f9
 
-On Wed, Feb 05, 2025 at 04:40:20PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Changelog:
-> v7:
->  * Rebased to v6.14-rc1
-
-<...>
-
-> Christoph Hellwig (6):
->   PCI/P2PDMA: Refactor the p2pdma mapping helpers
->   dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
->   iommu: generalize the batched sync after map interface
->   iommu/dma: Factor out a iommu_dma_map_swiotlb helper
->   dma-mapping: add a dma_need_unmap helper
->   docs: core-api: document the IOVA-based API
-> 
-> Leon Romanovsky (11):
->   iommu: add kernel-doc for iommu_unmap and iommu_unmap_fast
->   dma-mapping: Provide an interface to allow allocate IOVA
->   dma-mapping: Implement link/unlink ranges API
->   mm/hmm: let users to tag specific PFN with DMA mapped bit
->   mm/hmm: provide generic DMA managing logic
->   RDMA/umem: Store ODP access mask information in PFN
->   RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page
->     linkage
->   RDMA/umem: Separate implicit ODP initialization from explicit ODP
->   vfio/mlx5: Explicitly use number of pages instead of allocated length
->   vfio/mlx5: Rewrite create mkey flow to allow better code reuse
->   vfio/mlx5: Enable the DMA link API
-> 
->  Documentation/core-api/dma-api.rst   |  70 ++++
->  drivers/infiniband/core/umem_odp.c   | 250 +++++---------
->  drivers/infiniband/hw/mlx5/mlx5_ib.h |  12 +-
->  drivers/infiniband/hw/mlx5/odp.c     |  65 ++--
->  drivers/infiniband/hw/mlx5/umr.c     |  12 +-
->  drivers/iommu/dma-iommu.c            | 468 +++++++++++++++++++++++----
->  drivers/iommu/iommu.c                |  84 ++---
->  drivers/pci/p2pdma.c                 |  38 +--
->  drivers/vfio/pci/mlx5/cmd.c          | 375 +++++++++++----------
->  drivers/vfio/pci/mlx5/cmd.h          |  35 +-
->  drivers/vfio/pci/mlx5/main.c         |  87 +++--
->  include/linux/dma-map-ops.h          |  54 ----
->  include/linux/dma-mapping.h          |  85 +++++
->  include/linux/hmm-dma.h              |  33 ++
->  include/linux/hmm.h                  |  21 ++
->  include/linux/iommu.h                |   4 +
->  include/linux/pci-p2pdma.h           |  84 +++++
->  include/rdma/ib_umem_odp.h           |  25 +-
->  kernel/dma/direct.c                  |  44 +--
->  kernel/dma/mapping.c                 |  18 ++
->  mm/hmm.c                             | 264 +++++++++++++--
->  21 files changed, 1435 insertions(+), 693 deletions(-)
->  create mode 100644 include/linux/hmm-dma.h
-
-Kind reminder.
-
-Thanks
-
-> 
-> -- 
-> 2.48.1
+On Tue, 11 Feb 2025 23:37:49 +0100, Barnabás Czémán wrote:
+> Document the qcom,msm8937-tcsr compatible.
 > 
 > 
+
+Applied, thanks!
+
+[05/10] dt-bindings: mfd: qcom,tcsr: Add compatible for MSM8937
+        commit: c9498d76a96f84a80ca88a862b6112cdc2e7cb64
+
+--
+Lee Jones [李琼斯]
+
