@@ -1,119 +1,100 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 47A552144C3
-	for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 18:33:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2346A263889
+	for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 18:49:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740076426; cv=none; b=lPd0CybKftJcjqP2ZkKbzdykxlwyhS85f3LFUBWmNSzfIiQYrmpsmWY08iad6ZD6gWaomh4GJ8jkgqa/4ZDKPvVKt2klac20Gpdc23Dfq6IfjLkxsMLde79t/iLgxkpp2UeM+dmX13J9Aaddz4EYEr90n8FwwpI7orsqd5eoG8k=
+	t=1740077394; cv=none; b=av3/50Pg40DUFM44QnVyrxyBLKC0o+A91EV6tvagOSoiVL0ulXUUR2FZ04Yris9tixfdvy6PIgDdAYKHRjkqJkAgg/Q7mQFnaMKHc6J7DvRiLxJ4i0gvY7M/cll0UepGEzkcN40YJAsPSbR70+JaKGUT2mRO46Dkndnzu0MVi0E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740076426; c=relaxed/simple;
-	bh=y8op8gMJiSWq38zB64ubHfJyTYIQSUa9uSXp5JC6yZc=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=kjf3KpRRTww5WwNGY8vEld6il8THFdPVCCx1P7/A9VosBWmRMslnl9MWkPnD2V7jWinOTIXKlMciBUNXAJp0lhAb8C5yEl7Ty8y5JiMNno3yQRMWiMjbkCmdFDXGzoiwUdPljhgHBa83gEbE5zps6f2JvFzMCS1JBwpYawL+lwY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=eREcWoQD; arc=none smtp.client-ip=13.77.154.182
+	s=arc-20240116; t=1740077394; c=relaxed/simple;
+	bh=kSCU9+JquK/2OpXpdUctnlfeQrwtWLB/Kldpw5JpKqo=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=F4KMX+Blbu6ggpMTTEzAqLHFi30/lEL0t7VsSpjN1sk8Gsua/6HpJ0G5wpsipY1tO9mqLT3NYmKlnkTFCTMAUXZVmqI0pwl9McyzNpzaiQQw74Z5ekMtYU0Kzlztup9FziKVKUXQJvXA4XvkK7ydRbKVTo/RGeA/vdnmDGwETbY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=D/9s01lZ; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="eREcWoQD"
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-	by linux.microsoft.com (Postfix) with ESMTPSA id C2CE72059190;
-	Thu, 20 Feb 2025 10:33:37 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com C2CE72059190
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="D/9s01lZ"
+Received: from [192.168.35.166] (c-24-22-154-137.hsd1.wa.comcast.net [24.22.154.137])
+	by linux.microsoft.com (Postfix) with ESMTPSA id E8FE220376ED;
+	Thu, 20 Feb 2025 10:49:51 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E8FE220376ED
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1740076417;
-	bh=f+ig3Q6VESYArDvAdBr8s45cHmi1z9IqT8I/IrDLwWo=;
-	h=From:To:Cc:Subject:Date:From;
-	b=eREcWoQDX0aF/mtm+qMUFXwVTYYhadnAuREcLTeteFsSHPZiqup5cmrOo89zcKYGm
-	 9rBebnUAfAqYA854eWWb4zIGWhwOEEkz5onLG2aJv82kdhW6Lebi0chP7mqOyw9hhM
-	 /W+T9/0l/Ybbqhfq/f4ltH0nPNHV9HMnWVpuPk7o=
-From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-To: linux-hyperv@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-arch@vger.kernel.org,
-	iommu@lists.linux.dev,
-	mhklinux@outlook.com,
-	eahariha@linux.microsoft.com
-Cc: kys@microsoft.com,
-	haiyangz@microsoft.com,
-	wei.liu@kernel.org,
-	decui@microsoft.com,
-	catalin.marinas@arm.com,
-	will@kernel.org,
-	tglx@linutronix.de,
-	mingo@redhat.com,
-	bp@alien8.de,
-	dave.hansen@linux.intel.com,
-	x86@kernel.org,
-	hpa@zytor.com,
-	daniel.lezcano@linaro.org,
-	joro@8bytes.org,
-	robin.murphy@arm.com,
-	arnd@arndb.de,
-	jinankjain@linux.microsoft.com,
-	muminulrussell@gmail.com,
-	skinsburskii@linux.microsoft.com,
-	mukeshrathor@microsoft.com
-Subject: [PATCH v2 0/3] Introduce CONFIG_MSHV_ROOT for root partition code
-Date: Thu, 20 Feb 2025 10:33:13 -0800
-Message-Id: <1740076396-15086-1-git-send-email-nunodasneves@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
+	s=default; t=1740077392;
+	bh=44SQwiHPIB0p5JuEwqgKZPx20bgpKG8Sxk5d1VuRkDw=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=D/9s01lZbEfNAXBA6vnFq2qMTsGAlER5Os9YgpIO7tp7mr1gQY4FXKIIfkZS2jFVI
+	 M8OnVSdBMRK0ODt29c883pq0a0EAx2KjQZR7GW2Ax1PoFr2y12hdiAFLxYBNvl135t
+	 KDbIyIeby2C2Myqf4GeidSYulrpOZ0Ziq12ils6I=
+Message-ID: <b4887ddf-a296-4f2b-8fb8-a5f9c681142a@linux.microsoft.com>
+Date: Thu, 20 Feb 2025 10:49:52 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Cc: linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+ iommu@lists.linux.dev, mhklinux@outlook.com, eahariha@linux.microsoft.com,
+ kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, catalin.marinas@arm.com, will@kernel.org,
+ tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ daniel.lezcano@linaro.org, joro@8bytes.org, robin.murphy@arm.com,
+ arnd@arndb.de, jinankjain@linux.microsoft.com, muminulrussell@gmail.com,
+ skinsburskii@linux.microsoft.com, mukeshrathor@microsoft.com
+Subject: Re: [PATCH v2 1/3] hyperv: Convert hypercall statuses to linux error
+ codes
+To: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+References: <1740076396-15086-1-git-send-email-nunodasneves@linux.microsoft.com>
+ <1740076396-15086-2-git-send-email-nunodasneves@linux.microsoft.com>
+From: Easwar Hariharan <eahariha@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <1740076396-15086-2-git-send-email-nunodasneves@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Running in the root partition is a unique and specialized case that
-requires additional code. CONFIG_MSHV_ROOT allows Hyper-V guest kernels
-to exclude this code, which is important since significant additional code
-specific to the root partition is expected to be added over time.
+On 2/20/2025 10:33 AM, Nuno Das Neves wrote:
+> Return linux-friendly error codes from hypercall helper functions,
+> which allows them to be used more flexibly.
+> 
+> Introduce hv_result_to_errno() for this purpose, which also handles
+> the special value U64_MAX returned from hv_do_hypercall().
+> 
+> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+> ---
+>  drivers/hv/hv_common.c         | 34 ++++++++++++++++++++++++++++++++++
+>  drivers/hv/hv_proc.c           |  6 +++---
+>  include/asm-generic/mshyperv.h |  1 +
+>  3 files changed, 38 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+> index ee3083937b4f..2120aead98d9 100644
+> --- a/drivers/hv/hv_common.c
+> +++ b/drivers/hv/hv_common.c
+> @@ -683,3 +683,37 @@ u64 __weak hv_tdx_hypercall(u64 control, u64 param1, u64 param2)
+>  	return HV_STATUS_INVALID_PARAMETER;
+>  }
+>  EXPORT_SYMBOL_GPL(hv_tdx_hypercall);
+> +
+> +/* Convert a hypercall result into a linux-friendly error code. */
+> +int hv_result_to_errno(u64 status)
+> +{
+> +	/* hv_do_hypercall() may return U64_MAX, hypercalls aren't possible */
+> +	if (unlikely(status == U64_MAX))
+> +		return -EOPNOTSUPP;
+> +	/*
+> +	 * A failed hypercall is usually only recoverable (or loggable) near
+> +	 * the call site where the HV_STATUS_* code is known. So the errno
+> +	 * it gets converted to is not too useful further up the stack.
+> +	 * Provice a few mappings that could be useful, and revert to -EIO
 
-To do this, change hv_root_partition to be a function which is stubbed out
-to return false if CONFIG_MSHV_ROOT=n, and don't compile hv_proc.c at all,
-stubbing out those functions with inline versions.
+Typo: Provide
 
-Store the partition type (guest or root) in an enum hv_current_partition_type,
-which can be extended beyond just guest and root partition.
+Otherwise, looks good to me.
 
-While at it, introduce hv_result_to_errno() to convert Hyper-V status codes
-to regular linux errors. This is useful because the caller of a hypercall
-helper function (such as those in hv_proc.c) usually can't and doesn't
-interpret the Hyper-V status, so it is better to convert it to an error code
-and reduce the possibility of misinterpreting it. This also alows the stubbed
-versions of the hv_proc.c functions to just return a linux error code.
+Reviewed-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 
-Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
----
-Changes in v2:
-* Add patch to convert hypercall statuses to linux error codes [Easwar
-  Hariharan]
-* While at it, split the original patch into two logical pieces, one to change
-  hv_root_partition into a function, and one to introduce MSHV_CONFIG_ROOT
-* Improve the clarity of and add an error message to
-  hv_identify_partition_type() [Easwar Hariharan] [Michael Kelley]
-* Better explain *why* the patches are useful, in the commit messages [Michael
-  Kelley]
-* Add a Kconfig comment explaining why PAGE_SIZE_4KB is needed [Michael Kelley]
-* Minor style and typo fixes
-
-Nuno Das Neves (3):
-  hyperv: Convert hypercall statuses to linux error codes
-  hyperv: Change hv_root_partition into a function
-  hyperv: Add CONFIG_MSHV_ROOT to gate root partition support
-
- arch/arm64/hyperv/mshyperv.c       |  2 +
- arch/x86/hyperv/hv_init.c          | 10 ++---
- arch/x86/kernel/cpu/mshyperv.c     | 24 +----------
- drivers/clocksource/hyperv_timer.c |  4 +-
- drivers/hv/Kconfig                 | 16 +++++++
- drivers/hv/Makefile                |  3 +-
- drivers/hv/hv.c                    | 10 ++---
- drivers/hv/hv_common.c             | 69 +++++++++++++++++++++++++++---
- drivers/hv/hv_proc.c               |  6 +--
- drivers/hv/vmbus_drv.c             |  2 +-
- drivers/iommu/hyperv-iommu.c       |  4 +-
- include/asm-generic/mshyperv.h     | 40 ++++++++++++++---
- 12 files changed, 137 insertions(+), 53 deletions(-)
-
--- 
-2.34.1
-
+Thanks,
+Easwar (he/him)
