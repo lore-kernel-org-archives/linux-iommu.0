@@ -1,66 +1,66 @@
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F70428F5
-	for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 01:02:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFE50135A53
+	for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 01:03:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740013375; cv=none; b=Q0dMFJtpF3kDkvpao3d40Lfo8JQgHKdqGGn8w2LVWRCiumOuOyNCBtXztNR8JS4GQP9rmIamzOmR0oUTmdcNF/dwMaXoWi7ofPaEiJNffuak2bYQpWQyE1bIvTkAylVRwp93Cz0dALb/LZob1rtax3dCiVZvLcCSItjzN7E2JC4=
+	t=1740013410; cv=none; b=j4Ip5BFIFjdor/aFkBg8eLJAWfr9bOp8GJe5dkTYYnB1HDCyZvAytF7ekwpgtTSKUROaezU0BqBnWIPZt8TM6OSkwTDvBd/hRH0G8xOrMHMPzUDy148cbju2eQYsUNdjNv1kWM1CWGTlmphISGn7a4keGAyWAXwSdUxx0HdRqNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740013375; c=relaxed/simple;
-	bh=ZhTrlgc+69pvUq4i22CA5jurxLSucq94AvJJuIwOxmo=;
+	s=arc-20240116; t=1740013410; c=relaxed/simple;
+	bh=uoKT8mn2kqsuF35fq8S96ubypduruFZKYY1NqO9aO4w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hTKuDTHdW95Z52EQMwZYTz8He3ikwredTTZOlF6nJ8cBD4CMTIxxa764Q4gXRXyK8pfqclIIPWwZL/rNqygSz3OAYLMLn38QN0ToDziK8wGrFjy1Cpz1Yy14w9qDrnOA0tuq7umQxE8piiOY0cQA6dMf0J2zYKo4K2j0WS+JRUQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=HSHk+Oai; arc=none smtp.client-ip=209.85.219.53
+	 Content-Type:Content-Disposition:In-Reply-To; b=eCKyC+ubqXEIjYpQa5v9/R3fFSIIW6tfEYiWwqoAFqiovTDIIPXT1kZndvQkzp1cvaBaMr1n+L01UGkaZiK+iBK6b+wRXusef7E9mv+Cjn4vbnDx9iGjDsa9UYeoYPYXtdegWM/O6MvYgy/oIU1P9Rrn2FVQQsodpYCdrOhv1lc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=mdnQdsbJ; arc=none smtp.client-ip=209.85.160.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="HSHk+Oai"
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-6e65baef2edso3129976d6.2
-        for <iommu@lists.linux.dev>; Wed, 19 Feb 2025 17:02:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="mdnQdsbJ"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-471f257f763so3897231cf.0
+        for <iommu@lists.linux.dev>; Wed, 19 Feb 2025 17:03:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1740013371; x=1740618171; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1740013407; x=1740618207; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CRs/JKSwsGTXcOODWipBNJ36S3MEcNOB+8tXv5oqvN0=;
-        b=HSHk+OaifPzqIOjy2wPQ8/zYPSas2v+OFH74DODin/h4k1BqQqGk/WZtdaloqv3l6Q
-         QR6g/j/q0YOsh796kKV++hiLAizbJANMAZXK8I54u10omuxMBFBqTaCOf1pRjZpOO0ri
-         47U8w7lDLgypFqJp9xChFILSIyUyq/bFWsNS9WTh8GrUtzXlpB48HQalYATXz0rq4T27
-         vvd8i+l1EvjYiOTPjSQMIS6t3ebJlxqGMVjKvDxoXjPsr+vMTl6PciKjASRLH6D5oSGy
-         qtzwM8AK76Z2XVnbSBxdgdaztCuBqemarxZZ5NVX6D9D8knwhaOKCYigrLInslSqrZ4r
-         lrXQ==
+        bh=OJnHTfhhh5oO/5QVFdYosizxDAfM8S4m8Bge+zqnfMQ=;
+        b=mdnQdsbJvqPwOWtgD9HEuibynHjkGPaJU6pN2VA0OCWIRV6+UZQ8ObZ46mMDMfk5u6
+         AbHPNq4AfC+Xx53pockhgEI+XknsEEHM1XcgS1A9DP8MHN2qzpVXD4XHcgAad9W1eGbx
+         f/mjl9NX4sTrRrdMr7D55fU2G9k5erbBrbQRH4ziABYUX1b8OPhn9WLTEaHaZWCyXPGz
+         hHYemOHwRbg25iwExBS4rPRp4MtlaYnK3iCgYfly9eogWhGbX6UHxkxhN5Xab9V3QcKq
+         2cELcebeY5BDMK0hPJy8uwDtUqbSUtUeDSoT7MTCUuy6z6KmSVajah6Dnjn7SCg+s9gI
+         YKvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740013371; x=1740618171;
+        d=1e100.net; s=20230601; t=1740013407; x=1740618207;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CRs/JKSwsGTXcOODWipBNJ36S3MEcNOB+8tXv5oqvN0=;
-        b=jIA4HNxaGWZzwV7VOQwV6ZYhLUCfdyKpOD/LRdiTE/yhMbAXKUByoMTfgs1USryvPD
-         qyqdP23LHbq7cQnVNr1qZdVkQUEoIuBFunUifcaR8/5NbpeH94urQdGhWp86FqxQazjE
-         3WLTwWIvXb3cvU5lo8fDG1N8Mpe3etxzTJWI8nOgWWA15RGqGxUS6fYVK8OxkSlcbP1j
-         fEQi7gH59fmXahBEPeMdKx5iStJJNesUqMfLbwHBH2YUpZgYrn7gEOn4fNEgy3SuMDn3
-         qBVDHfMwrx/n6eiu12VebZGLEjxv+9Gyex7/EQDLiC8NjOCOnbrryTvwLfVJpMaNAbnx
-         3fWQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUjTiBRJaCBkyByri13iLDUO44NwaZ5YccALrBj5QQUoe5dWEelJ8uALhpnh3bUD/oxd54Hdg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzyif/3x5XSymHh4sbz4Q19J3Kd0yPXfcOujIASnT/TQyJ/wgkE
-	ePRLiZRedthZ5JHiTM3RbH7sazrR98aotCkpgnFCF9XPeX60xuuOfb171AkSHHg=
-X-Gm-Gg: ASbGncsZwVCw7G4djsa7ITMc746RO6oGJJA9RdIxOjtQRK19WDlbc0BWkuSTYcipLpq
-	TF/s7UNy5jb8BqdHUHvULkeDmzxWSW5TrxzxTtWZJu14btPDHwLkNhWAgw2wOvRfyhPf8hR/mbp
-	8cxdZzSndgbEvzqAzj7CQFX/1ySmypL0TlG6gOPbS6QA24TLJvZsZ3ulqFMd1NSUgMXw+3K1xoE
-	eJPOiUExMt0pyQ4n4ixmQWE/zo+ZIAfToFJ5zbqnEhmpLtFSGNufkiduVqjgu0ayCCFjcUo56EM
-	MAtTxn2LRsQIroeGm1CwknZfEFKGLVJtBGcx25eeKMbxJoZHJW3IwyiSKJJ5eqmz
-X-Google-Smtp-Source: AGHT+IELnZYcib0uVQ5YAM0A6QDyvBF/tj8DmFXHYAT7rDf1dWIAeZvN7kiG5K6bL1Spk0FG/2Rv+w==
-X-Received: by 2002:a05:6214:19e8:b0:6e6:6252:ad1d with SMTP id 6a1803df08f44-6e6a4b91dc7mr7604826d6.20.1740013371423;
-        Wed, 19 Feb 2025 17:02:51 -0800 (PST)
+        bh=OJnHTfhhh5oO/5QVFdYosizxDAfM8S4m8Bge+zqnfMQ=;
+        b=TxWSXgYanW7+JVbmt1JhZWWMmGSr/ufN+3A+lyTkbLqgp/m4v/5xzGZmuWqSQriitF
+         hnjg3gU0TfkhLKHHu17bZfLrTXCN9XI9RFPB8ci7d19QcdM/+TkF5on21x3FJr0c3mrs
+         eVjUwKPTYQXnSDj5K8vKrOySX/L9ib38ntsK0vtbeYqECT0EJKazgvaoX3MLTEP0QI0o
+         qIRRXRRQk6DWcDlszKMsqhuaXcCPtbut9mcOWZm5lI2KpFlEbb1D1JXKCxH4NlgK/0c6
+         LjJ0L2ooC72mvLHwmc9km4E/aGy3AgUoh+m066RVx73kIIr5um+QtZbqTdkZXEkzAyWN
+         Zbng==
+X-Forwarded-Encrypted: i=1; AJvYcCVeZbDfTrtNQSMV6B79buaPlaKOTUp1WN/jK2rHMlnJ09jRQsgSYVKTgGLn/QlqEyuUayu+8w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxCaaUWr4p4XQUX27H9vwBpNmIS8oLKTctSIx3RA47q/5K7ralN
+	/6s4KPzP4GOue2vRYmxEVejbRZpjqOQDmMGaFPqM257tJ0LgBj8CLF4sPWsBLPw=
+X-Gm-Gg: ASbGncsgnrH5VOuj/JIikF58xcce59sm0oWKfEH6Rugx0SzeFrZtkYXnIhge8C+8SMe
+	GYRm+4Y1T0wjL6IB3B6SVVLlhuXOvdp0lrHGELr9aQNyPazbVjFe0O2rZ1RNicHAXeIh+UHHfoD
+	vx8Ssz1kjjz4feH1GcNdh94uLxnD4WlUSvyBMg5Rdn/fN3QqB64xCn8ZgdT8BocpunfuYGSK5Bt
+	tJrRTXd4yf0SoTN81j4eZuI6IUVJtZ+r7LxhCH1NNalGHD+gJQVtGRCP7j8/vkmcrGa8u3q706y
+	zEMHYqCuBPe2O9Ffoai6EtyVwuITwRzsdItH6R7t5QwVVFmAW35w9nJJvA2ies+f
+X-Google-Smtp-Source: AGHT+IEP0SznMWngJV+XmUdphWVKwsCLb8oL7y9FuJxNV2MD0qkEQHKc4YBhbpTr5rtelyk7i+YEMg==
+X-Received: by 2002:a05:622a:302:b0:472:5ac:48bb with SMTP id d75a77b69052e-47217372cf5mr6048941cf.29.1740013407667;
+        Wed, 19 Feb 2025 17:03:27 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e65d9f31fdsm80390616d6.69.2025.02.19.17.02.50
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-472069c3482sm18629721cf.20.2025.02.19.17.03.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2025 17:02:50 -0800 (PST)
+        Wed, 19 Feb 2025 17:03:26 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1tkuxm-00000000D72-1DAT;
-	Wed, 19 Feb 2025 21:02:50 -0400
-Date: Wed, 19 Feb 2025 21:02:50 -0400
+	id 1tkuyL-00000000D7S-2awh;
+	Wed, 19 Feb 2025 21:03:25 -0400
+Date: Wed, 19 Feb 2025 21:03:25 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -71,11 +71,11 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Zhangfei Gao <zhangfei.gao@linaro.org>,
 	Zhou Wang <wangzhou1@hisilicon.com>, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 08/12] iommufd/selftest: Put iopf enablement in domain
- attach path
-Message-ID: <20250220010250.GQ3696814@ziepe.ca>
+Subject: Re: [PATCH 09/12] dmaengine: idxd: Remove unnecessary
+ IOMMU_DEV_FEAT_IOPF
+Message-ID: <20250220010325.GR3696814@ziepe.ca>
 References: <20250214061104.1959525-1-baolu.lu@linux.intel.com>
- <20250214061104.1959525-9-baolu.lu@linux.intel.com>
+ <20250214061104.1959525-10-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -84,24 +84,18 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250214061104.1959525-9-baolu.lu@linux.intel.com>
+In-Reply-To: <20250214061104.1959525-10-baolu.lu@linux.intel.com>
 
-On Fri, Feb 14, 2025 at 02:11:00PM +0800, Lu Baolu wrote:
-> @@ -197,11 +201,19 @@ static int mock_domain_nop_attach(struct iommu_domain *domain,
->  	if (domain->dirty_ops && (mdev->flags & MOCK_FLAGS_DEVICE_NO_DIRTY))
->  		return -EINVAL;
->  
-> +	return mock_dev_enable_iopf(dev, domain);
-> +}
+On Fri, Feb 14, 2025 at 02:11:01PM +0800, Lu Baolu wrote:
+> The IOMMU_DEV_FEAT_IOPF implementation in the iommu driver is just a no-op.
+> It will also be removed from the iommu driver in the subsequent patch.
+> Remove it to avoid dead code.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/dma/idxd/init.c | 37 ++++++-------------------------------
+>  1 file changed, 6 insertions(+), 31 deletions(-)
 
-This isn't going to work for a replace type operation? Maybe like:
-
-if (old_domain->iopf_handler && !domain->iopf_handler)
-	return mock_dev_disable_iopf(dev, domain);
-if (old_domain->iopf_handler && domain->iopf_handler)
-        return 0;
-return mock_dev_enable_iopf(dev, domain);
-
-?
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
