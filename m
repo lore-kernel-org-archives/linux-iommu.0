@@ -1,104 +1,283 @@
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com [209.85.217.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67A331F1315
-	for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 10:26:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 021E91F3FE5
+	for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 11:38:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740047211; cv=none; b=ojTKcLeOOwWFUOmaknNGBlp60OvqDhBBLEJcQ5yg1ASG04MyLPdvkk6XfbBq0XJFwyzTG76MrVXXiJQ9uUhnzZ239YyJ6J8xvR0hN/clHlNNsvvDSW8N16Ou3Td4H9HXJbp1lZ9q7gXO9yyah4r3HlD6dqMfAsWFED9jsM3eiT8=
+	t=1740051506; cv=none; b=C3Zi38FshIvQ2p+b/4HKSHHfyqQJpADa6vvjGzRZ6PjQHZGntAseg+UOTs1SpDPBIpe2q/NpjnHCovUEV++X0oNR9wGN/ZkK/KgJYidptMP9AUAhHTtUzzPyyfOe4tgNJPnhJ0aH6zzpOKOqqpfhEYV3hRO0LJY0BOlhnSfnfP0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740047211; c=relaxed/simple;
-	bh=7hCRk/ZZGsREb/zcnks6gWvtIsasTKNvtsrHkWuFWBg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kKllzTNwz442Dpp/bdiIBiaEIEaUzpn7y6+ciFnqngNuj+xdW+Iolr4PxvV3XW7opLBrVtn9YonD7+h6ck1Ya2d46fEkt+yoKLpBn5OqF/MfW0B80y66nYb1s5pXbSPihfH/kGtY2jMDbaQfsCPoNrOdMG/zGB3K0H8hUUoE2Es=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vs1-f48.google.com with SMTP id ada2fe7eead31-4bbbaef28a5so279980137.0
-        for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 02:26:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740047208; x=1740652008;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UXlZkLtFbkOA04y6wqiHk28O5YC4J8t4Yh5yJXv6QnM=;
-        b=lU1iyHMHLzXtKDw70V81dIrpHULEtYaoUSltCpNRh2z4gEucydgJEa2E7At53tSUh7
-         wSuK1URq+38r7Ru4x0x3/OGRraxJudWJ7ckadDe6fzJCWEH7yvE6PzIVpB4+Kvj0ix3V
-         yY23wyCj1jNN4lC1oaigT4Xn97BpBo0jYKxN2beKR/cev2U5BG9GEv9D34u2n9rB32w+
-         j4kgdgTI8tirkcDEOW/nNcDZZvKCEdp9gC/jfOLt8jSpCe2XI2ry5Akd1JZJSBvVSPbp
-         +QrOrEo7TktRpgeA77Bf5O0qaRR1SUr5TZvsi3ylgo4Xoq3R2UgyK3esx5s11RfwzCdZ
-         BfbA==
-X-Forwarded-Encrypted: i=1; AJvYcCUCeqeoOqRsquVjieT7y8njiln1N4rDTg+0d4W30pwFl6obSwvMbsEwTT+Je+fh3Uf6DysMww==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywd6EdZyJUvvJ/28x6KOilp5rpMLVEIsALdsXITmNVbvJ/RCTLt
-	1QjgSpba3DeKkRFH3+RHrcdlH9iLPGbw4SK1kV9oX/oF1YzOpnn2PpIFVx7C
-X-Gm-Gg: ASbGnctTx170fmlLeqTCdeYIyQHd+a9BYo1+LGUqQCUUUPalYWFI/+kUA9g2rJr4NxJ
-	pbRWAj+9ejnhcUZy2pfaaJx+w/eT7UfEJkNiUXAd10mveVErCvdPp22jCYtAOw5+HfpBXyZnrfz
-	YgiRK0GyEktlRrnxtjBerU9ANNS11eOhssejkJnrwy3b0JDT6YX+pGdBnC4ITzUCgmD8piGEhfT
-	9k50URlPlQHMI9qqswB2OXg2fRPs5dP94HgE2z16dJHfw6WeBKIO9Uu5vkAEZ+I/i5xx3ygrwFi
-	6vxpcbHDQe874PRws9uXkpN/t4o38pvZK5ZcfROhP9HwDtzKk4jnM/BQ1Q==
-X-Google-Smtp-Source: AGHT+IGvkvAvDTY2K+JKqMmpBLuxOoPd3RBONznsbUrWKDjj+cX6/f8GHfQDT+3MXwt1hxvpvsaheQ==
-X-Received: by 2002:a05:6102:2910:b0:4bb:d962:62b with SMTP id ada2fe7eead31-4bd3fe38804mr14108965137.24.1740047208358;
-        Thu, 20 Feb 2025 02:26:48 -0800 (PST)
-Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com. [209.85.221.172])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-868e8583c9dsm3316126241.13.2025.02.20.02.26.47
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Feb 2025 02:26:47 -0800 (PST)
-Received: by mail-vk1-f172.google.com with SMTP id 71dfb90a1353d-520b9dc56afso226213e0c.1
-        for <iommu@lists.linux.dev>; Thu, 20 Feb 2025 02:26:47 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVgN1atcc8DWL1PJ+aewR6s9k/ZhrsAwp0R3Xp0j0b2NKfRDJ1fb0DSW7VKHSaT2OBWoErznQ==@lists.linux.dev
-X-Received: by 2002:a05:6122:3d10:b0:51f:4154:c1b2 with SMTP id
- 71dfb90a1353d-5209da3cd8fmr11832934e0c.2.1740047207465; Thu, 20 Feb 2025
- 02:26:47 -0800 (PST)
+	s=arc-20240116; t=1740051506; c=relaxed/simple;
+	bh=OW4tV7XHQY75duXBFKoVLdDiJWkwE9tK7bUXvwMMnfc=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=LkN/JYy3OnYQOMclkTfbzB7nRV4Eu2o13AdfwbW/AyYXIK13n+hurIA2jWakeTrGWG5YDe19voymObAW4ep4zAvy9FUBWTFtKzWL5zZfq/gZMka3UWemk6X3R0RBaCWboGPC+tHhw91Td6uWjv2OriQ+vHq/omUqFTl+hq6Dork=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hp/94yaa; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hp/94yaa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1740051505; x=1771587505;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=OW4tV7XHQY75duXBFKoVLdDiJWkwE9tK7bUXvwMMnfc=;
+  b=hp/94yaaTJVa7hRR31/isyBnLIskP5vrRjrjB8gbyWNKdhEYHJ5KzzyO
+   +FC/KQSrTS2fsQtLa3cYvTV2cwYnh6uvyh0pRv4xYSdi26BM03nQVcT4v
+   VgULu9vdFQLlG06rBxTc0x8d7kYnj+Zlrq7SVSic7FrrzAZslqCMMk11I
+   EZ4oVUtcH0hS4s9kpkxIhcHN9xbEi/08C7N53n+IcQGOd/V3wMNHVgLND
+   b79cYGTlcuT8S8tajIgyAgFQKeEbGfBoRnFFwoOgtugYZpVWA18+W/j0+
+   MXABuLDz6H0cSxt6OyYvJlWkxcy70D4Vm51Gog22Zs+YICPHsrNkDoFMd
+   g==;
+X-CSE-ConnectionGUID: DbEGYvKRR2OE7olK869QEQ==
+X-CSE-MsgGUID: nheMz2iPSEGMo2FfshLTIg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11350"; a="40681133"
+X-IronPort-AV: E=Sophos;i="6.13,301,1732608000"; 
+   d="scan'208";a="40681133"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2025 03:38:24 -0800
+X-CSE-ConnectionGUID: ImoEWPGUT1O38l92vqulmA==
+X-CSE-MsgGUID: JBerQi//ThaorSclckLfxQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,301,1732608000"; 
+   d="scan'208";a="138216925"
+Received: from lzhu41-mobl3.ccr.corp.intel.com (HELO [10.124.240.48]) ([10.124.240.48])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2025 03:38:22 -0800
+Message-ID: <7d58c0bd-2828-4adc-8c57-8b359c9f0b9f@linux.intel.com>
+Date: Thu, 20 Feb 2025 19:38:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <ff5b7c88eea8b126ed76029fb57254f29542aa22.1739976486.git.geert+renesas@glider.be>
- <a88b0a48-f7a0-4791-8ea7-a1e599c3313a@arm.com>
-In-Reply-To: <a88b0a48-f7a0-4791-8ea7-a1e599c3313a@arm.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 20 Feb 2025 11:26:35 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUv=47vMmN1UXzFuPotjLJbHPewmz4Uozm+3DuiFasjFw@mail.gmail.com>
-X-Gm-Features: AWEUYZnwJCxfhi79EJYpNxgj3_us2bimwf87oFgKJ_SuMD0k5ozIi-i-wp2ym30
-Message-ID: <CAMuHMdUv=47vMmN1UXzFuPotjLJbHPewmz4Uozm+3DuiFasjFw@mail.gmail.com>
-Subject: Re: [PATCH] iommu: Spelling s/KConfig/Kconfig/
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Ido Schimmel <idosch@idosch.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix suspicious RCU usage
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+References: <20250218022422.2315082-1-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276EEC28691FD6C77EC493A8CC42@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276EEC28691FD6C77EC493A8CC42@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Robin,
+On 2025/2/20 15:21, Tian, Kevin wrote:
+>> From: Lu Baolu<baolu.lu@linux.intel.com>
+>> Sent: Tuesday, February 18, 2025 10:24 AM
+>>
+>> Commit <d74169ceb0d2> ("iommu/vt-d: Allocate DMAR fault interrupts
+>> locally") moved the call to enable_drhd_fault_handling() to a code
+>> path that does not hold any lock while traversing the drhd list. Fix
+>> it by ensuring the dmar_global_lock lock is held when traversing the
+>> drhd list.
+>>
+>> Without this fix, the following warning is triggered:
+>>   =============================
+>>   WARNING: suspicious RCU usage
+>>   6.14.0-rc3 #55 Not tainted
+>>   -----------------------------
+>>   drivers/iommu/intel/dmar.c:2046 RCU-list traversed in non-reader section!!
+>>                 other info that might help us debug this:
+>>                 rcu_scheduler_active = 1, debug_locks = 1
+>>   2 locks held by cpuhp/1/23:
+>>   #0: ffffffff84a67c50 (cpu_hotplug_lock){++++}-{0:0}, at:
+>> cpuhp_thread_fun+0x87/0x2c0
+>>   #1: ffffffff84a6a380 (cpuhp_state-up){+.+.}-{0:0}, at:
+>> cpuhp_thread_fun+0x87/0x2c0
+>>   stack backtrace:
+>>   CPU: 1 UID: 0 PID: 23 Comm: cpuhp/1 Not tainted 6.14.0-rc3 #55
+>>   Call Trace:
+>>    <TASK>
+>>    dump_stack_lvl+0xb7/0xd0
+>>    lockdep_rcu_suspicious+0x159/0x1f0
+>>    ? __pfx_enable_drhd_fault_handling+0x10/0x10
+>>    enable_drhd_fault_handling+0x151/0x180
+>>    cpuhp_invoke_callback+0x1df/0x990
+>>    cpuhp_thread_fun+0x1ea/0x2c0
+>>    smpboot_thread_fn+0x1f5/0x2e0
+>>    ? __pfx_smpboot_thread_fn+0x10/0x10
+>>    kthread+0x12a/0x2d0
+>>    ? __pfx_kthread+0x10/0x10
+>>    ret_from_fork+0x4a/0x60
+>>    ? __pfx_kthread+0x10/0x10
+>>    ret_from_fork_asm+0x1a/0x30
+>>    </TASK>
+>>
+>> Simply holding the lock in enable_drhd_fault_handling() will trigger a
+>> lock order splat. Avoid holding the dmar_global_lock when calling
+>> iommu_device_register(), which starts the device probe process.
+> Can you elaborate the splat issue? It's not intuitive to me with a quick
+> read of the code and iommu_device_register() is not occurred in above
+> calling stack.
 
-On Wed, 19 Feb 2025 at 16:16, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 2025-02-19 2:48 pm, Geert Uytterhoeven wrote:
-> > Fix two misspellings of "Kconfig".
->
-> Honestly after 6 years and no obvious complaints I'd be inclined to just
-> drop those two paragraphs referring to v4.x kernel behaviour, or indeed
-> maybe make a move on the aforementioned removal of the whole thing....
->
-> Otherwise, frankly when the same thing is referred to 4 different ways
-> in the space of 6 sentences - "this Kconfig", "this config", "this
-> option", "This Kconfig option", "this config" - I would argue that
-> capitalisation is not the biggest issue with this text ;)
+The lockdep splat looks like below:
 
-Note that now commit 0d2cdc35e805eb50 ("io_uring: Rename KConfig to
-Kconfig") is in next-20250220, these are the only misspellings of
-Kconfig in the whole tree. Let's hope they don't spread by copy-'n-paste
-;-)
+  ======================================================
+  WARNING: possible circular locking dependency detected
+  6.14.0-rc3-00002-g8e4617b46db1 #57 Not tainted
+  ------------------------------------------------------
+  swapper/0/1 is trying to acquire lock:
+  ffffffffa2a67c50 (cpu_hotplug_lock){++++}-{0:0}, at: 
+iova_domain_init_rcaches.part.0+0x1d3/0x210
 
-Thanks!
+  but task is already holding lock:
+  ffff9f4a87b171c8 (&domain->iova_cookie->mutex){+.+.}-{4:4}, at: 
+iommu_dma_init_domain+0x122/0x2e0
 
-Gr{oetje,eeting}s,
+  which lock already depends on the new lock.
 
-                        Geert
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+  the existing dependency chain (in reverse order) is:
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+  -> #4 (&domain->iova_cookie->mutex){+.+.}-{4:4}:
+         __lock_acquire+0x4a0/0xb50
+         lock_acquire+0xd1/0x2e0
+         __mutex_lock+0xa5/0xce0
+         iommu_dma_init_domain+0x122/0x2e0
+         iommu_setup_dma_ops+0x65/0xe0
+         bus_iommu_probe+0x100/0x1d0
+         iommu_device_register+0xd6/0x130
+         intel_iommu_init+0x527/0x870
+         pci_iommu_init+0x17/0x60
+         do_one_initcall+0x7c/0x390
+         do_initcalls+0xe8/0x1e0
+         kernel_init_freeable+0x313/0x490
+         kernel_init+0x24/0x240
+         ret_from_fork+0x4a/0x60
+         ret_from_fork_asm+0x1a/0x30
+
+  -> #3 (&group->mutex){+.+.}-{4:4}:
+         __lock_acquire+0x4a0/0xb50
+         lock_acquire+0xd1/0x2e0
+         __mutex_lock+0xa5/0xce0
+         bus_iommu_probe+0x95/0x1d0
+         iommu_device_register+0xd6/0x130
+         intel_iommu_init+0x527/0x870
+         pci_iommu_init+0x17/0x60
+         do_one_initcall+0x7c/0x390
+         do_initcalls+0xe8/0x1e0
+         kernel_init_freeable+0x313/0x490
+         kernel_init+0x24/0x240
+         ret_from_fork+0x4a/0x60
+         ret_from_fork_asm+0x1a/0x30
+
+-> #2 (dmar_global_lock){++++}-{4:4}:
+        __lock_acquire+0x4a0/0xb50
+        lock_acquire+0xd1/0x2e0
+        down_read+0x31/0x170
+        enable_drhd_fault_handling+0x27/0x1a0
+        cpuhp_invoke_callback+0x1e2/0x990
+        cpuhp_issue_call+0xac/0x2c0
+        __cpuhp_setup_state_cpuslocked+0x229/0x430
+        __cpuhp_setup_state+0xc3/0x260
+        irq_remap_enable_fault_handling+0x52/0x80
+        apic_intr_mode_init+0x59/0xf0
+        x86_late_time_init+0x29/0x50
+        start_kernel+0x642/0x7f0
+        x86_64_start_reservations+0x18/0x30
+        x86_64_start_kernel+0x91/0xa0
+        common_startup_64+0x13e/0x148
+
+-> #1 (cpuhp_state_mutex){+.+.}-{4:4}:
+        __lock_acquire+0x4a0/0xb50
+        lock_acquire+0xd1/0x2e0
+        __mutex_lock+0xa5/0xce0
+        __cpuhp_setup_state_cpuslocked+0x81/0x430
+        __cpuhp_setup_state+0xc3/0x260
+        page_alloc_init_cpuhp+0x2d/0x40
+        mm_core_init+0x1e/0x3a0
+        start_kernel+0x277/0x7f0
+        x86_64_start_reservations+0x18/0x30
+        x86_64_start_kernel+0x91/0xa0
+        common_startup_64+0x13e/0x148
+
+-> #0 (cpu_hotplug_lock){++++}-{0:0}:
+        check_prev_add+0xe2/0xc50
+        validate_chain+0x57c/0x800
+        __lock_acquire+0x4a0/0xb50
+        lock_acquire+0xd1/0x2e0
+        __cpuhp_state_add_instance+0x40/0x250
+        iova_domain_init_rcaches.part.0+0x1d3/0x210
+        iova_domain_init_rcaches+0x41/0x60
+        iommu_dma_init_domain+0x1af/0x2e0
+        iommu_setup_dma_ops+0x65/0xe0
+        bus_iommu_probe+0x100/0x1d0
+        iommu_device_register+0xd6/0x130
+        intel_iommu_init+0x527/0x870
+        pci_iommu_init+0x17/0x60
+        do_one_initcall+0x7c/0x390
+        do_initcalls+0xe8/0x1e0
+        kernel_init_freeable+0x313/0x490
+        kernel_init+0x24/0x240
+        ret_from_fork+0x4a/0x60
+        ret_from_fork_asm+0x1a/0x30
+
+  other info that might help us debug this:
+
+  Chain exists of:
+    cpu_hotplug_lock --> &group->mutex --> &domain->iova_cookie->mutex
+
+   Possible unsafe locking scenario:
+
+         CPU0                    CPU1
+         ----                    ----
+    lock(&domain->iova_cookie->mutex);
+                                 lock(&group->mutex);
+                                 lock(&domain->iova_cookie->mutex);
+    rlock(cpu_hotplug_lock);
+
+   *** DEADLOCK ***
+
+  3 locks held by swapper/0/1:
+   #0: ffffffffa6442ab0 (dmar_global_lock){++++}-{4:4}, at: 
+intel_iommu_init+0x42c/0x87
+   #1: ffff9f4a87b11310 (&group->mutex){+.+.}-{4:4}, at: 
+bus_iommu_probe+0x95/0x1d0
+   #2: ffff9f4a87b171c8 (&domain->iova_cookie->mutex){+.+.}-{4:4}, at: 
+iommu_dma_init_d
+
+  stack backtrace:
+  CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted 
+6.14.0-rc3-00002-g8e4617b46db1 #57
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x93/0xd0
+   print_circular_bug+0x133/0x1c0
+   check_noncircular+0x12c/0x150
+   check_prev_add+0xe2/0xc50
+   ? add_chain_cache+0x108/0x460
+   validate_chain+0x57c/0x800
+   __lock_acquire+0x4a0/0xb50
+   lock_acquire+0xd1/0x2e0
+   ? iova_domain_init_rcaches.part.0+0x1d3/0x210
+   ? rcu_is_watching+0x11/0x50
+   __cpuhp_state_add_instance+0x40/0x250
+   ? iova_domain_init_rcaches.part.0+0x1d3/0x210
+   iova_domain_init_rcaches.part.0+0x1d3/0x210
+   iova_domain_init_rcaches+0x41/0x60
+   iommu_dma_init_domain+0x1af/0x2e0
+   iommu_setup_dma_ops+0x65/0xe0
+   bus_iommu_probe+0x100/0x1d0
+   iommu_device_register+0xd6/0x130
+   intel_iommu_init+0x527/0x870
+   ? __pfx_pci_iommu_init+0x10/0x10
+   pci_iommu_init+0x17/0x60
+   do_one_initcall+0x7c/0x390
+   do_initcalls+0xe8/0x1e0
+   kernel_init_freeable+0x313/0x490
+   ? __pfx_kernel_init+0x10/0x10
+   kernel_init+0x24/0x240
+   ? _raw_spin_unlock_irq+0x33/0x50
+   ret_from_fork+0x4a/0x60
+   ? __pfx_kernel_init+0x10/0x10
+   ret_from_fork_asm+0x1a/0x30
+   </TASK>
+
+Thanks,
+baolu
