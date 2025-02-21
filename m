@@ -1,50 +1,50 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BF56A31
-	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 13:03:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40724209F4F
+	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 13:03:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740143004; cv=none; b=bY33tiIf6di5yvOGEX902rFk7guh1PEJS+vQ2k+JlAdxt1hxsUnd3USJSKntPKdszpbSwiQa3NvjLEfjXSVyIPKEJRz/hgaesU+0VmlD2g67E4mL1eCtVHQfmUj1grk831RnbjQL/EffZNsTFxh6yKnSbot8r2OpxgolZe4B6Qc=
+	t=1740143004; cv=none; b=OtoLpFPjy+jobFxvJmOWOJZ30IXkjo5vfNy5UarxFY5PGjsSa1zuCwf2jQ8wowb3T0B3/B25NHCfYqKgI5KkInxepOF7Dlxtcu4ITgbEgthtehECqLChTuMkX8WcUpptDJxhfGuan/61ekjFDxzk7wXDbJKqVn8sVblZDGjFCi0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1740143004; c=relaxed/simple;
-	bh=yD+EXD1xXVashg7JpupC0KbJj2BfCNgFu/clVzVl7Z0=;
+	bh=6C0+ItR47b+/mPZkvM5QEVg1/KyJ/doxGiz7Q4Hn9+o=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=LltnLx/nUu+n9bNS5v0KZ9l8YC+l7PjN8lg3Gstm/hiNZbmWQZzd3PCgrOrZM8EO/nfKwuZEfD/k1UWhHB7lnvihwod8U2ZwN1bpEuGZcX8OTnDdj0YbqDqoiSzlStZm6Gc7vw6EweS3F1kKaroCYMiIWmxHvkJPUoyTjGoHjx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=M3L6a5pi; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:To:CC; b=SUF/UaVg8R5amST9H1vGHj68Rs6TsQXs310xyoNa9Iqr91hlPVRCiZOJvk8ExffWHWc9PaLlTzMBdLIzWqiZY/lO75BRs6F+Rw12GnGHqcxZP2/DbG5RPuo2txtSxqQC5FNQHQHq0uRa4Hqy5HUiHsoC5vB2b1O1OmNYBpNQR/0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=EqwzoOVW; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="M3L6a5pi"
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="EqwzoOVW"
 Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51LBRhUk031994;
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51L5PsTV031809;
 	Fri, 21 Feb 2025 13:02:44 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	yYUb7m4Syk1QFPOkd5eIcMy6e/rrPehTWj3QgofPmaQ=; b=M3L6a5pih9LA6RBA
-	fQe2967MQZzeMl6UdbDIl2fM5qZ0ZXbQhdx7+exfX5pX3MBvvDhUEJYEPhmsbm4X
-	AIPXEowRoE0ktyStZvSRHhE5t9B/x5OCbRMHaEksluUIbbWXU9jszhANyA1XIkiB
-	dlikLBKXKKYhf/ccgMC215QZ9uILlm8pb256MpWst40ecz3v4Djgm12uS7KwraUl
-	x+MgsHqKOQIpoHnbCFnSEkx/I3QBPgcsF1xb+FvaS7xfYISmgQDtcNgiNzpd2s+2
-	4tSI0fPD/4YtgmlnLZuxo01NTd9VJpT+Pmph3X5r6WOjDdYr8cYeY/MMzQSmDw7V
-	KTKX9g==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44vyy5hyhm-1
+	28/OZW/twRq1Jyr1mujPHaoXZGD/StG/YJBp5ydB8fs=; b=EqwzoOVW1K0HLCVt
+	xnGlIKBCdGHlAZN4wpS8MxSFwsWvkdz1TqqlU8YDz/0Wd3MLPWvCIMMj/cRMeSee
+	vlQ2YUv0jSCp6blRQ8fpbh2IH8dMI9Ma2hqrbWvocedXF51/DAh5sRgEDS39dG3z
+	tlHSMCQRG8q7EDcwuRgT3ecWYCv0EeRXn44jVBJSMJXFZiGj7DSRA7eR7H0qru9M
+	5s3sNf/k/4MrApryWN78lrXb2Yn+pvOvCNrmqOa610UMngSugsjhwmhNTLlxxBWn
+	yF3ZCXYQN+QqiHj0ZifFVEZvOXsKJFejoDlECKDBlD9UTNxNc1P1tLLzxR8YQFW4
+	kVUVgw==
+Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44vyy5hyhj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
 	Fri, 21 Feb 2025 13:02:44 +0000 (GMT)
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2VKk015678
+	by NASANPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2Uou014301
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:31 GMT
+	Fri, 21 Feb 2025 13:02:30 GMT
 Received: from hu-zijuhu-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 21 Feb 2025 05:02:30 -0800
+ 15.2.1544.9; Fri, 21 Feb 2025 05:02:29 -0800
 From: Zijun Hu <quic_zijuhu@quicinc.com>
-Date: Fri, 21 Feb 2025 05:02:08 -0800
-Subject: [PATCH *-next 03/18] crypto: api - Remove needless return in void
- API crypto_free_tfm()
+Date: Fri, 21 Feb 2025 05:02:06 -0800
+Subject: [PATCH *-next 01/18] mm/mmu_gather: Remove needless return in void
+ API tlb_remove_page()
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,7 +53,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20250221-rmv_return-v1-3-cc8dff275827@quicinc.com>
+Message-ID: <20250221-rmv_return-v1-1-cc8dff275827@quicinc.com>
 References: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 In-Reply-To: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -109,38 +109,38 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: wTAGG3hwWH4XHW5gP1-P5vkk7hfVjZTp
-X-Proofpoint-GUID: wTAGG3hwWH4XHW5gP1-P5vkk7hfVjZTp
+X-Proofpoint-ORIG-GUID: eJYrddquW1YfMnWMinGwBrgwDzG0fTZp
+X-Proofpoint-GUID: eJYrddquW1YfMnWMinGwBrgwDzG0fTZp
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-02-21_04,2025-02-20_02,2024-11-22_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- mlxlogscore=745 spamscore=0 bulkscore=0 clxscore=1015 suspectscore=0
+ mlxlogscore=851 spamscore=0 bulkscore=0 clxscore=1015 suspectscore=0
  adultscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0 impostorscore=0
  phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2502100000 definitions=main-2502210096
 
-Remove needless 'return' in void API crypto_free_tfm() since
-both the API and crypto_destroy_tfm() are void functions.
+Remove needless 'return' in void API tlb_remove_page() since both the
+API and tlb_remove_page_size() are void functions.
 
 Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 ---
- include/linux/crypto.h | 2 +-
+ include/asm-generic/tlb.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/crypto.h b/include/linux/crypto.h
-index b164da5e129e..90ac1142b1a2 100644
---- a/include/linux/crypto.h
-+++ b/include/linux/crypto.h
-@@ -446,7 +446,7 @@ void crypto_destroy_tfm(void *mem, struct crypto_tfm *tfm);
- 
- static inline void crypto_free_tfm(struct crypto_tfm *tfm)
+diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
+index e402aef79c93..812110813b84 100644
+--- a/include/asm-generic/tlb.h
++++ b/include/asm-generic/tlb.h
+@@ -501,7 +501,7 @@ static __always_inline bool __tlb_remove_page(struct mmu_gather *tlb,
+  */
+ static inline void tlb_remove_page(struct mmu_gather *tlb, struct page *page)
  {
--	return crypto_destroy_tfm(tfm, tfm);
-+	crypto_destroy_tfm(tfm, tfm);
+-	return tlb_remove_page_size(tlb, page, PAGE_SIZE);
++	tlb_remove_page_size(tlb, page, PAGE_SIZE);
  }
  
- /*
+ static inline void tlb_remove_ptdesc(struct mmu_gather *tlb, void *pt)
 
 -- 
 2.34.1
