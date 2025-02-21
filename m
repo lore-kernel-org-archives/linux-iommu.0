@@ -1,50 +1,51 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BE0D1FBEA3;
-	Fri, 21 Feb 2025 11:07:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BA3DC207A2E;
+	Fri, 21 Feb 2025 11:10:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740136048; cv=none; b=BVE0CMqbuyjwe4PTeBYa3ukUjnMQ2Y5CtvhToIu7bs2vfOb7CIp8RXkwCg6IzaVtEOoWCByHlaVrwNhZy9hXxPK5Jw7zm9tBvht5w0M4qxlOtEnVcqjtB1ZQkS+kq2y+GVokTKZ5YoDl52moedyZ4Si+LE2ZiS2qCiLK+M3MMPA=
+	t=1740136251; cv=none; b=u/osOGX6nndCC8UuPALcn4zyTgEwpWNuHhXAPWAPGDANXYDEWYuVQFTBVSFr5Fv2qa5ttvjy9NwPxOI856l2pvHSy5QGf/ALIGXU+dKnrARzXxy7RNdo+p3i1Hj65SusIrz57SqG9K3lsxttJrwOTe3adLh2W4TkPt4L6ddtn5E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740136048; c=relaxed/simple;
-	bh=OrLEWszAt2g2+uaXn+6b7I4pNNFvvjaXQB2Xr3LTA2k=;
+	s=arc-20240116; t=1740136251; c=relaxed/simple;
+	bh=SBubaC/2dyR78TdRAfMdzusbN+238FcRcI5z7z2jjnM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iYfa5T9L6RKsiO47ou+3bT8b3s3/cpJ2qO3XdRM3mZklZDUEqHIdmDB8l4GBwDF2i9VD0DyAiWQzlObmX6ty2X4atHZj0Rb5xNMbhN5eB9VZbV2ZYFJEwfic+4ZhhKKDO0nyRD1JLasMxwb9xRTAr/Z3k70Jl7r2fHE9+HMIju4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=2M5E8KCT; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=ok/Ud/23oEMUgwIk8xjovRHFXSbFEzF7LcusiP1sE14VCDWqoKx+Cezeiw318HrDMx4oZAppsUCKUSGv2QaR2vBsUPi9NbSX/HH56V+JxLmnPh4MgWzRoywpKMoSBsU2IGgG5fRxj25SNHnNeVHq7bK8vkCHFUo43GZ8acREyWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=KBZWlUTW; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="2M5E8KCT"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="KBZWlUTW"
 Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id D0A7843239;
-	Fri, 21 Feb 2025 12:07:24 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 7EEEC42FC0;
+	Fri, 21 Feb 2025 12:10:47 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1740136045;
-	bh=OrLEWszAt2g2+uaXn+6b7I4pNNFvvjaXQB2Xr3LTA2k=;
+	s=default; t=1740136247;
+	bh=SBubaC/2dyR78TdRAfMdzusbN+238FcRcI5z7z2jjnM=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=2M5E8KCTzPNGrxqs18aAYCoIl9eUVImV5UHpfOg207LBMzwJYHq1CoQ+EYEvq/9rO
-	 dpQSRoMk/9zo7qNj8B4FNOZQJNsqmeHj9AWt43J7ZExMLvvPAEQxoKyGzs+K8z9DEx
-	 Ir+VvoMd8L3YLXlACO0Y9QrbmM1CDMUDLzjcp10d18ABnhXJNaqwbabuCruA4iuBJS
-	 X//lPVrj7j8NvfhEOAHJZ367reL5bJfnWXqK19e1vAuErHMMZbkOtyelvTSbJFdyk1
-	 R/Lpd8AvFuDFWxE1g5kxqJ/tXLRBTFoyLqVlGDNlaciO+07SKvzk3FD8T1TTmdDCa7
-	 F/IjpeYoedklA==
-Date: Fri, 21 Feb 2025 12:07:23 +0100
+	b=KBZWlUTWyN5bgQAUNi2L5/qtL/GRXOV7ioh9y/luURzXl3Jphnjyo5x77n0TFLtW1
+	 +wLpgZrvijun/aZq18OwnJLqiHWFd2r1UusVMwKzYPo1YsdbqAXzAHGhVYl/fPP3nt
+	 ZRbqOdbY8qIje9bfWiSu5XCUy1nJH+jq9kLskquTa2Y+oLxKRzvC34BxGY8biv4bKv
+	 EzPoTRApatNO4Gpy/fU1cGfu7lBmdoCa+fijBG2YCR20OYzhRDkWDb7XnLKPdYaJde
+	 +due+eJYRr9mXrDekqseqlJMtQ9oZkDEWO13OjGjhWrGaLOZ1qSV7St+E1WEtmIuCd
+	 RkGna71M/HsLA==
+Date: Fri, 21 Feb 2025 12:10:46 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: fnkl.kernel@gmail.com
-Cc: Sven Peter <sven@svenpeter.dev>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Hector Martin <marcan@marcan.st>, Rob Herring <robh@kernel.org>,
-	Janne Grunau <j@jannau.net>, Joerg Roedel <jroedel@suse.de>,
-	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Asahi Lina <lina@asahilina.net>
-Subject: Re: [PATCH] iommu/io-pgtable-dart: Only set subpage protection
- disable for DART 1
-Message-ID: <Z7hea_LY7u_7_jTw@8bytes.org>
-References: <20250219-dart2-no-sp-disable-v1-1-9f324cfa4e70@gmail.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, jgg@nvidia.com,
+	kevin.tian@intel.com, maz@kernel.org, will@kernel.org,
+	robin.murphy@arm.com, shuah@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kselftest@vger.kernel.org, eric.auger@redhat.com,
+	baolu.lu@linux.intel.com, yi.l.liu@intel.com, yury.norov@gmail.com,
+	jacob.pan@linux.microsoft.com, patches@lists.linux.dev
+Subject: Re: [PATCH v2 1/7] genirq/msi: Store the IOMMU IOVA directly in
+ msi_desc instead of iommu_cookie
+Message-ID: <Z7hfNlnSj8BI6C7l@8bytes.org>
+References: <cover.1740014950.git.nicolinc@nvidia.com>
+ <a4f2cd76b9dc1833ee6c1cf325cba57def22231c.1740014950.git.nicolinc@nvidia.com>
+ <87ldtzhcjv.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,20 +54,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250219-dart2-no-sp-disable-v1-1-9f324cfa4e70@gmail.com>
+In-Reply-To: <87ldtzhcjv.ffs@tglx>
 
-On Wed, Feb 19, 2025 at 10:13:53AM +0100, Sasha Finkelstein via B4 Relay wrote:
-> From: Asahi Lina <lina@asahilina.net>
-> 
-> Subpage protection can't be disabled on t6000-style darts,
-> as such the disable flag no longer applies, and probably
-> even affects something else.
-> 
-> Fixes: dc09fe1c5edd ("iommu/io-pgtable-dart: Add DART PTE support for t6000")
-> Signed-off-by: Asahi Lina <lina@asahilina.net>
-> Signed-off-by: Sasha Finkelstein <fnkl.kernel@gmail.com>
-> ---
->  drivers/iommu/io-pgtable-dart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Nicolin,
 
-Applied, thanks.
+On Fri, Feb 21, 2025 at 10:28:20AM +0100, Thomas Gleixner wrote:
+> On Wed, Feb 19 2025 at 17:31, Nicolin Chen wrote:
+> > Fix the MSI cookie UAF by removing the cookie pointer. The translated IOVA
+> > address is already known during iommu_dma_prepare_msi() and cannot change.
+> > Thus, it can simply be stored as an integer in the MSI descriptor.
+> >
+> > A following patch will fix the other UAF in iommu_get_domain_for_dev(), by
+> > using the IOMMU group mutex.
+> 
+> "A following patch" has no meaning once the current one is
+> applied. Simply say:
+> 
+>   The other UAF in iommu_get_domain_for_dev() will be addressed
+>   seperately, by ....
+> 
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> 
+> With that fixed:
+> 
+> Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+
+Can you please send a v3 with updated commit message and all the
+review/acked tags added? I will pick it up then.
+
+Thanks,
+
+	Joerg
