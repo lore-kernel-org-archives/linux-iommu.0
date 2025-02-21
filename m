@@ -1,151 +1,300 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F36D71F4299
-	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 10:07:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B6302010EE;
+	Fri, 21 Feb 2025 10:13:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740132441; cv=none; b=Fkodxp5FuAgx/8LpzcIdyYORXBfX24vb0CBjFHog/lPumuRSRT7Ru1KZFSRzhFps2U/wEdDQ2KG1IkPPANuIZ6fkRiqd+X4acNXMnVVIJfEgiyXpjzrUBYIQrze+bpvj6ztWXTmWadxN3LJfqS6Qbyel1P/D/FjfAF22hUzF4fg=
+	t=1740132782; cv=none; b=t8udHCHntoMNgpGdZB0kSYuTPluieNuLJR8blvVRC06npxZJFmIoVtXv2ifqHvjz+ww8XUXfycAdnqm7hmkY0XRU7uIcXi+f8Zh4bHiaErkDclOfPiduszlC3dvyeNplHjKQ3U9tvO729EzGKjGSeGHvhRvFCMEjE9mEjzBV1PU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740132441; c=relaxed/simple;
-	bh=2Nm+C7EXfQilANBV3KPmeUoSajCu1VwQBdXheYtZWRg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=nf1ygZscWrnTZ6CMLhN/hrc39Ky9gIUFAs4r1Zri7yLg+ayn2DRLrKdAhQEj9Cp7gvaodeR5OGyrWQHwWQZ7tO2OTr79xpBDfyZb32DCpdIGNJI6JiCRwAwHcdFMSf1Q0s9u07DKysXRVQMP+3bC1AFFKV1NuPQzZj+xGO8B90g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=OR/3orZZ; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1740132782; c=relaxed/simple;
+	bh=GYnWIeFhjAQiDhXS+WrOD/JXnr2uUllAjENAcUll5kM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=d3j+MLR/44HyfvhAn3AjDEwBS5IxLhMaMn5JCzWOcbYuRgGC2xDSQS81w8h05pDrNaVF+AOWTXqvsJcz0bYUK/BloU1/OtuJ99zLgp7W/gM/1ZU2895PBQ19dsx9l+ceBgfEL3s0LdnhVBIP/Ro2mDk3vVPgWZF58fBm2Z1QfPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JXzdiqc8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="OR/3orZZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1740132437;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6foSOg2pfy9gGZuw8NYjJ8ygWH/JG2sfZjN82ttO/gs=;
-	b=OR/3orZZhPdEbrNsHTbQ8gEOp/YN5wH0bSF3tCDM19x6nMFFA2uJgPhoStrRJBrxY2WYnT
-	uaXvJNQpVHbhdVVQYaZE5VW4L5ZxjaBBcXUbuGBmWDnnDzjnJ3RUZk/YlbPC6eCJhgaur6
-	h9QDQzxeLugbbDKupEieyvCIEoNzDTs=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-318-opd1YWcnPgGPd1yp6icX4A-1; Fri, 21 Feb 2025 05:07:16 -0500
-X-MC-Unique: opd1YWcnPgGPd1yp6icX4A-1
-X-Mimecast-MFC-AGG-ID: opd1YWcnPgGPd1yp6icX4A_1740132436
-Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-6e48a052ad6so40649156d6.2
-        for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 02:07:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740132436; x=1740737236;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6foSOg2pfy9gGZuw8NYjJ8ygWH/JG2sfZjN82ttO/gs=;
-        b=E1QJM6yh1WuIeQsfT4MvPToixDzOTU6b/QgexYsR0DZKtfiIuY9kQcFXzoFJpU52gt
-         sCp9DW9nHIxfeAeJhlQbk4zWYNMttJMHRmUMUP9Advhyzg3Sz3pOFTHRagXmLIa/vZUB
-         QcPp97hrKJLi47frLRawQd6xTXvgZPvXrDdHlGCfflCxHvnLwVJKa0o3A9sU37uzhuGt
-         BBua9tUP/KZFt8Xk9UkY8lsKXHBOkC1Ut2AIPbSkaWghf3Iev/9VsV971ObglLxJ02Lr
-         xjy4gGKwqrsi3+r9OgWd5n9gMMRCel2II2I1nOmftgWg9QHgqzva8wgt9tLKqKLhI0kG
-         Gcbg==
-X-Forwarded-Encrypted: i=1; AJvYcCViQHMKhv71MlEKT32geOrbK8cHsQ5P8ThaoqwsM7gzsfy4BR3Yfm1blafY1O8pXaTcdmLuww==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx4zuwn/Yvutr99tW4ZfLPxKDGE1vtZg9gqlzcYCreXSkI/B4EM
-	N/O/fZikmuje1r1BAYJrXPhQw6uJSJxq73Z2qDMlLI7ghZm9EMgYBWhzIUb3OPw/sS3hohWIld/
-	L6oMHO0hYufnXFpQ0AkTppAsJR8dd64Fgls5AANMFdsMQvo3aI5nJN3tIYM7p
-X-Gm-Gg: ASbGnctgsuJkUEKWbNhpku/XCkGR4QBqVhRVz+pJ/Kex36r7Yx8+24umxue7LmbEiZL
-	Re0wM4Vg/vtqhH0W9yATxNfLCVjU6xVyA0wOmsqx7uQEx2bPOIEIhRkxyTPBXwRECdWOn8lw7+V
-	sOfm2c95up0oU50NBH2FClupG+EFpvJKQCMhJRG2gfXvMDZhC20wFDMszAiLLnjF6ttEed++Dz2
-	AkoMQDNVSXnEBk/zkzY25TyoMdP16Cy96lrZa0fcV7rf+G1AZ71G2+B/JeWBgiSQyJCV27vttCP
-	485ZJo6bmnINU8zJFTYA6c9roJHJMGAmc7gyIdYumuVA
-X-Received: by 2002:ad4:5e8a:0:b0:6e4:4484:f34c with SMTP id 6a1803df08f44-6e6b01a7767mr24115046d6.35.1740132435905;
-        Fri, 21 Feb 2025 02:07:15 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IEZcNq29psfWNP7XvrBCeWRpVFeJgLe3D6ybymnRaWLd185tqdKS4nXeiwUxEMeLqwQ4vlSOw==
-X-Received: by 2002:ad4:5e8a:0:b0:6e4:4484:f34c with SMTP id 6a1803df08f44-6e6b01a7767mr24114696d6.35.1740132435531;
-        Fri, 21 Feb 2025 02:07:15 -0800 (PST)
-Received: from localhost (ip70-163-223-251.ph.ph.cox.net. [70.163.223.251])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e6a11624e0sm20637396d6.39.2025.02.21.02.07.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Feb 2025 02:07:14 -0800 (PST)
-Date: Fri, 21 Feb 2025 03:07:13 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev
-Subject: Re: Question on context setup for passthrough
-Message-ID: <x7d3pvynvglmsbst46n6affvryb3d53cifi2nlrymmbdpu5bgo@2fdbi6dlzklw>
-References: <rz4kc2zxi4fritsbmjsa3ekqncguvnmeir5se3fhu7pzhtgipk@2u6ps3q3gsqz>
- <75f4867f-99b9-4ba9-abf4-f0dc29d08fca@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JXzdiqc8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1827FC4CEE6;
+	Fri, 21 Feb 2025 10:12:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1740132781;
+	bh=GYnWIeFhjAQiDhXS+WrOD/JXnr2uUllAjENAcUll5kM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=JXzdiqc8TEYdA/1hLzYh/hgI/9Lkwsr9D2/XCYK2WwIL0fXBZhmcIczI6F8rdlCSA
+	 5IT8V21H5wlQZUwYIAfocpVf/Am2jxRtAX55w3wXVWxFpNvMl82rMWQVj0I63WQABi
+	 FBQVXv+dFOyKudeXrURi55SKH8kOXkzE4X6K6nXbwq8urJrWs6IDNq/4iEGMVHRtvB
+	 HbcssP4ubQSikXz0nxM0/hsfLlOrydWAtqfeWyC6TJkKYe0ZxG/605R31RNZ5BARIK
+	 5Lqn1aOkNpt2LrfdKvuKOAFGDWnhlPE/qmYGBrjqnqBg9tvARAZfQ2TzRNJv7zROy6
+	 0bkHU9BYj8ujg==
+Message-ID: <640946c8-237d-40de-b64e-0f8fd8f1a600@kernel.org>
+Date: Fri, 21 Feb 2025 11:12:55 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <75f4867f-99b9-4ba9-abf4-f0dc29d08fca@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: 6rBHx3Iyoivp96W4trdUf6QlHUbKj3ymrqbbTi6hfig_1740132436
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v9 3/4] page_pool: support unlimited number of
+ inflight pages
+To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+ kuba@kernel.org, pabeni@redhat.com
+Cc: zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com,
+ Robin Murphy <robin.murphy@arm.com>,
+ Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
+ Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20250212092552.1779679-1-linyunsheng@huawei.com>
+ <20250212092552.1779679-4-linyunsheng@huawei.com>
+Content-Language: en-US
+From: Jesper Dangaard Brouer <hawk@kernel.org>
+In-Reply-To: <20250212092552.1779679-4-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Feb 21, 2025 at 04:40:42PM +0800, Baolu Lu wrote:
-> On 2025/2/21 15:16, Jerry Snitselaar wrote:
-> > Hi Baolu,
+
+See below, I request changes to add memory accounting for these item_blocks.
+
+On 12/02/2025 10.25, Yunsheng Lin wrote:
+> Currently a fixed size of pre-allocated memory is used to
+> keep track of the inflight pages, in order to use the DMA
+> API correctly.
 > 
-> Hi Jerry,
+> As mentioned [1], the number of inflight pages can be up to
+> 73203 depending on the use cases. Allocate memory dynamically
+> to keep track of the inflight pages when pre-allocated memory
+> runs out.
 > 
-> > 
-> > In context_setup_pass_through_cb there is a check that bails out
-> > if dev != &pdev->dev which doesn't exist in the code that sets up the
-> > context entries in the dma domain case. Is there a reason this check is
-> > done in the passthrough case?
+> The overhead of using dynamic memory allocation is about 10ns~
+> 20ns, which causes 5%~10% performance degradation for the test
+> case of time_bench_page_pool03_slow() in [2].
 > 
-> The check "dev != &pdev->dev" was added to prevent setting a context for
-> a different device that has its own probe path.
+> 1. https://lore.kernel.org/all/b8b7818a-e44b-45f5-91c2-d5eceaa5dd5b@kernel.org/
+> 2. https://github.com/netoptimizer/prototype-kernel
+> CC: Robin Murphy <robin.murphy@arm.com>
+> CC: Alexander Duyck <alexander.duyck@gmail.com>
+> CC: IOMMU <iommu@lists.linux.dev>
+> Fixes: f71fec47c2df ("page_pool: make sure struct device is stable")
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+>   include/net/page_pool/types.h | 10 +++++
+>   net/core/page_pool.c          | 80 ++++++++++++++++++++++++++++++++++-
+>   2 files changed, 89 insertions(+), 1 deletion(-)
 > 
-> > I've been looking at an issue where a vm is running with an
-> > intel-iommu device, and has a pcie-to-pci bridge with a device behind
-> > it. When running with this commit, and defaulting to passthrough it
-> > gets a DMAR fault for the present bit not being set in the context
-> > entry when the device is coming up, and the rid for the fault is the
-> > rid the bridge will use for transactions coming from the secondary bus.
-> > Without that check the context entry gets set up for that rid, and
-> > it doesn't get the DMAR fault.
-> 
-> This appears to be a bug. Do you have a fix, or can you tell me the
-> process I can use to reproduce this issue with a local setup?
-> 
-> Thanks,
-> baolu
-> 
+> diff --git a/include/net/page_pool/types.h b/include/net/page_pool/types.h
+> index c131e2725e9a..c8c47ca67f4b 100644
+> --- a/include/net/page_pool/types.h
+> +++ b/include/net/page_pool/types.h
+> @@ -103,6 +103,7 @@ struct page_pool_params {
+>    * @waive:	pages obtained from the ptr ring that cannot be added to
+>    *		the cache due to a NUMA mismatch
+>    * @item_fast_empty: pre-allocated item cache is empty
+> + * @item_slow_failed: failed to allocate memory for item_block
+>    */
+>   struct page_pool_alloc_stats {
+>   	u64 fast;
+> @@ -112,6 +113,7 @@ struct page_pool_alloc_stats {
+>   	u64 refill;
+>   	u64 waive;
+>   	u64 item_fast_empty;
+> +	u64 item_slow_failed;
+>   };
+>   
+>   /**
+> @@ -159,9 +161,16 @@ struct page_pool_item {
+>   struct page_pool_item_block {
+>   	struct page_pool *pp;
+>   	struct list_head list;
+> +	unsigned int flags;
+> +	refcount_t ref;
+>   	struct page_pool_item items[];
+>   };
+>   
+> +struct page_pool_slow_item {
+> +	struct page_pool_item_block *block;
+> +	unsigned int next_to_use;
+> +};
+> +
+>   /* Ensure the offset of 'pp' field for both 'page_pool_item_block' and
+>    * 'netmem_item_block' are the same.
+>    */
+> @@ -191,6 +200,7 @@ struct page_pool {
+>   	int cpuid;
+>   	u32 pages_state_hold_cnt;
+>   	struct llist_head hold_items;
+> +	struct page_pool_slow_item slow_items;
+>   
+>   	bool has_init_callback:1;	/* slow::init_callback is set */
+>   	bool dma_map:1;			/* Perform DMA mapping */
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 508dd51b1a9a..3109bf015225 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -64,6 +64,7 @@ static const char pp_stats[][ETH_GSTRING_LEN] = {
+>   	"rx_pp_alloc_refill",
+>   	"rx_pp_alloc_waive",
+>   	"rx_pp_alloc_item_fast_empty",
+> +	"rx_pp_alloc_item_slow_failed",
+>   	"rx_pp_recycle_cached",
+>   	"rx_pp_recycle_cache_full",
+>   	"rx_pp_recycle_ring",
+> @@ -98,6 +99,7 @@ bool page_pool_get_stats(const struct page_pool *pool,
+>   	stats->alloc_stats.refill += pool->alloc_stats.refill;
+>   	stats->alloc_stats.waive += pool->alloc_stats.waive;
+>   	stats->alloc_stats.item_fast_empty += pool->alloc_stats.item_fast_empty;
+> +	stats->alloc_stats.item_slow_failed += pool->alloc_stats.item_slow_failed;
+>   
+>   	for_each_possible_cpu(cpu) {
+>   		const struct page_pool_recycle_stats *pcpu =
+> @@ -144,6 +146,7 @@ u64 *page_pool_ethtool_stats_get(u64 *data, const void *stats)
+>   	*data++ = pool_stats->alloc_stats.refill;
+>   	*data++ = pool_stats->alloc_stats.waive;
+>   	*data++ = pool_stats->alloc_stats.item_fast_empty;
+> +	*data++ = pool_stats->alloc_stats.item_slow_failed;
+>   	*data++ = pool_stats->recycle_stats.cached;
+>   	*data++ = pool_stats->recycle_stats.cache_full;
+>   	*data++ = pool_stats->recycle_stats.ring;
+> @@ -430,6 +433,7 @@ static void page_pool_item_uninit(struct page_pool *pool)
+>   					 struct page_pool_item_block,
+>   					 list);
+>   		list_del(&block->list);
+> +		WARN_ON(refcount_read(&block->ref));
+>   		put_page(virt_to_page(block));
+>   	}
+>   }
+> @@ -513,10 +517,43 @@ static struct page_pool_item *page_pool_fast_item_alloc(struct page_pool *pool)
+>   	return llist_entry(first, struct page_pool_item, lentry);
+>   }
+>   
+> +#define PAGE_POOL_SLOW_ITEM_BLOCK_BIT			BIT(0)
+> +static struct page_pool_item *page_pool_slow_item_alloc(struct page_pool *pool)
+> +{
+> +	if (unlikely(!pool->slow_items.block ||
+> +		     pool->slow_items.next_to_use >= ITEMS_PER_PAGE)) {
+> +		struct page_pool_item_block *block;
+> +		struct page *page;
+> +
+> +		page = alloc_pages_node(pool->p.nid, GFP_ATOMIC | __GFP_NOWARN |
+> +					__GFP_ZERO, 0);
+> +		if (!page) {
+> +			alloc_stat_inc(pool, item_slow_failed);
+> +			return NULL;
+> +		}
 
-This is the qemu command I've been running that is stripped down from the command in the original report:
+We also need stats on how many pages we allocate for these item_blocks
+(and later free). This new scheme of keeping track of all pages
+allocated via page_pool, is obviously going to consume more memory.
 
-/usr/libexec/qemu-kvm \
-    -name guest=test \
-    -machine q35,kernel-irqchip=split \
-    -cpu 'Icelake-Server-v2',+kvm_pv_unhalt \
-    -m size=4194304k \
-    -smp 4,sockets=2,dies=1,clusters=1,cores=2,threads=1 \
-    -nodefaults \
-    -device '{"id": "pcie-root-port-0", "driver": "pcie-root-port", "multifunction": true, "bus": "pcie.0", "addr": "0x2", "chassis": 1}' \
-    -device '{"id": "pcie-pci-bridge-0", "driver": "pcie-pci-bridge", "addr": "0x0", "bus": "pcie-root-port-0"}' \
-    -device '{"driver": "intel-iommu", "intremap": "on", "device-iotlb": true, "eim": "on"}' \
-    -blockdev '{"driver":"file","filename":"/home/jsnitsel/storage/CentOS-Stream-GenericCloud-9-latest.x86_64.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
-    -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage","backing":null}' \
-    -device '{"driver":"virtio-blk-pci","bus":"pcie-pci-bridge-0","addr":"0x1","drive":"libvirt-1-format","id":"virtio-disk0", "bootindex":0, "disable-legacy": "on", "disable-modern": false, "iommu_platform": true}' \
-    -nographic \
-    -rtc base=utc,clock=host,driftfix=slew \
-    -boot order=cdn,strict=off \
-    -enable-kvm \
-    -serial stdio \
-    -net user,hostfwd=tcp::10022-:22 \
-    -net nic \
-    -msg timestamp=on
+I want to be able to find out how much memory a page_pool is consuming.
+(E.g. Kuba added a nice interface for querying inflight packets, even
+though this is kept as two different counters).
+
+What I worry about, is that fragmentation happens inside these
+item_blocks. (I hope you understand what I mean by fragmentation, else
+let me know).
+
+Could you explain how code handles or avoids fragmentation?
 
 
-With the above and 6.14-rc3 I get:
+> +
+> +		block = page_address(page);
+> +		block->pp = pool;
+> +		block->flags |= PAGE_POOL_SLOW_ITEM_BLOCK_BIT;
+> +		refcount_set(&block->ref, ITEMS_PER_PAGE);
+> +		pool->slow_items.block = block;
+> +		pool->slow_items.next_to_use = 0;
+> +
+> +		spin_lock_bh(&pool->item_lock);
+> +		list_add(&block->list, &pool->item_blocks);
+> +		spin_unlock_bh(&pool->item_lock);
+> +	}
+> +
+> +	return &pool->slow_items.block->items[pool->slow_items.next_to_use++];
+> +}
+> +
+>   static bool page_pool_set_item_info(struct page_pool *pool, netmem_ref netmem)
+>   {
+>   	struct page_pool_item *item = page_pool_fast_item_alloc(pool);
+>   
+> +	if (unlikely(!item))
+> +		item = page_pool_slow_item_alloc(pool);
+> +
+>   	if (likely(item)) {
+>   		item->pp_netmem = netmem;
+>   		page_pool_item_set_used(item);
+> @@ -526,6 +563,37 @@ static bool page_pool_set_item_info(struct page_pool *pool, netmem_ref netmem)
+>   	return !!item;
+>   }
+>   
+> +static void __page_pool_slow_item_free(struct page_pool *pool,
+> +				       struct page_pool_item_block *block)
+> +{
+> +	spin_lock_bh(&pool->item_lock);
+> +	list_del(&block->list);
+> +	spin_unlock_bh(&pool->item_lock);
+> +
+> +	put_page(virt_to_page(block));
 
-2025-02-21T10:04:34.182950Z qemu-kvm: vtd_iommu_translate: detected translation failure (dev=02:00:00, iova=0x1091af002)
-2025-02-21T10:04:34.182967Z qemu-kvm: New fault is not recorded due to compression of faults
-[    1.151941] DMAR: DRHD: handling fault status reg 2
-[    1.152212] DMAR: [DMA Read NO_PASID] Request device [02:00.0] fault addr 0x1091af000 [fault reason 0x02] Present bit in context entry is clear
+Also counter for releasing block page here.
 
-The qemu is based on 9.1.0. The important bit is that there is the pcie-pci-bridge, and the device behind it has an addr other than 0x0.
+--Jesper
 
+> +}
+> +
+> +static void page_pool_slow_item_drain(struct page_pool *pool)
+> +{
+> +	struct page_pool_item_block *block = pool->slow_items.block;
+> +
+> +	if (!block || pool->slow_items.next_to_use >= ITEMS_PER_PAGE)
+> +		return;
+> +
+> +	if (refcount_sub_and_test(ITEMS_PER_PAGE - pool->slow_items.next_to_use,
+> +				  &block->ref))
+> +		__page_pool_slow_item_free(pool, block);
+> +}
+> +
+> +static void page_pool_slow_item_free(struct page_pool *pool,
+> +				     struct page_pool_item_block *block)
+> +{
+> +	if (likely(!refcount_dec_and_test(&block->ref)))
+> +		return;
+> +
+> +	__page_pool_slow_item_free(pool, block);
+> +}
+> +
+>   static void page_pool_fast_item_free(struct page_pool *pool,
+>   				     struct page_pool_item *item)
+>   {
+> @@ -535,13 +603,22 @@ static void page_pool_fast_item_free(struct page_pool *pool,
+>   static void page_pool_clear_item_info(struct page_pool *pool, netmem_ref netmem)
+>   {
+>   	struct page_pool_item *item = netmem_get_pp_item(netmem);
+> +	struct page_pool_item_block *block;
+>   
+>   	DEBUG_NET_WARN_ON_ONCE(item->pp_netmem != netmem);
+>   	DEBUG_NET_WARN_ON_ONCE(page_pool_item_is_mapped(item));
+>   	DEBUG_NET_WARN_ON_ONCE(!page_pool_item_is_used(item));
+>   	page_pool_item_clear_used(item);
+>   	netmem_set_pp_item(netmem, NULL);
+> -	page_pool_fast_item_free(pool, item);
+> +
+> +	block = page_pool_item_to_block(item);
+> +	if (likely(!(block->flags & PAGE_POOL_SLOW_ITEM_BLOCK_BIT))) {
+> +		DEBUG_NET_WARN_ON_ONCE(refcount_read(&block->ref));
+> +		page_pool_fast_item_free(pool, item);
+> +		return;
+> +	}
+> +
+> +	page_pool_slow_item_free(pool, block);
+>   }
+>   
+>   /**
+> @@ -1383,6 +1460,7 @@ void page_pool_destroy(struct page_pool *pool)
+>   
+>   	page_pool_disable_direct_recycling(pool);
+>   	page_pool_free_frag(pool);
+> +	page_pool_slow_item_drain(pool);
+>   
+>   	if (!page_pool_release(pool))
+>   		return;
