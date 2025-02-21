@@ -1,167 +1,134 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A5FBA24CEEE
-	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 18:10:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88D801FBCA9
+	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 18:26:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740161406; cv=none; b=FPllPrucTgJL0VNwT10bCFMSOyswg5amMA+aCaouUas8s/mYzm/3+g4sVIAzTaX8almkb4U4u5H+bNWCVfKOe/PxKk08vkJwOMW3aZJyZky4iH/dVBA0etQyZWYDa90384diu5ExMskGkiXj0K/fxaiXHK3SEpXG7TX6Vw2xb+E=
+	t=1740162421; cv=none; b=UzWq1gpMGzd1rpGekKm/C08Qcrx1b2Xh88eQzgCuL7WjvP3oO0bzm3Q5LqerRNZfD5r3vpCh7OqW+gcSz0Gny4Dokdl3Od2mmMNHcVNbpwU2nc4sx/js/1Bi41BgVkX/ATTx9p9BUkG3smp9nWtLHSXywieATzeY45pAr/WekoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740161406; c=relaxed/simple;
-	bh=pRnZuPrU9M8shnH6T9iQhO7+NmgMgoDkb4KpaM3FRxk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PpBnXNiF9HlrzupDB6qVXPxAIGlt21Da+JZ+KGrFi42q/tMrSoyTJAPd/q6MkuqWoz9KBLtMVjyI6TOyFTEx6uEFwadqucqm9t32oicyISH9VVz6jAEoBCyoVjdQVl2jq8pRcRTYLpfx73d0NDBF+Ok2diStCYgZncHrso9PHaM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=pX36bqGy; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1740162421; c=relaxed/simple;
+	bh=x7mvX8+YXRBqkvS5jquND3ZOGEPBEtrQupQnDXQ125E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=SgCtUEil5+rJTcQK7+X8qS7//wJNo3C9nKgU6m9ufB9mZiv4lh6PNA/VFejEWlQBLPxnnhyID3JwQiFHNkmxH5DqqrwmDDSAXSHiwim0L0n7mHdeiYwJD6ZA5xeNx2loacMcNgS/NY0tk1dSt20hHQrs+VgY/yuNJTC0WOGC9Y8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=hw7jsvXJ; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="pX36bqGy"
-Received: from [10.0.0.114] (c-67-182-156-199.hsd1.wa.comcast.net [67.182.156.199])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 8C1B0204E5BD;
-	Fri, 21 Feb 2025 10:10:03 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8C1B0204E5BD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1740161404;
-	bh=ctZGnlszNAEiyGeHFSMVBfLyM+0PtIeMkQSIV0dR0u4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=pX36bqGypY/zOUYlEK9rRUK1oLe1vm52665jNhuvSz5Sa6UbfPh4/CJHKykrsbUiM
-	 rnsa2fU6iBW0LsdcKXvlWU5d0uU9REHty5Tv6nrMy9+tda4Ka3qgpOGpkTlAyGnkmq
-	 pdVs7lrUaUSWdddlBa8cOmnvn1x5zEKi1bApSdP0=
-Message-ID: <5ae3454f-61e4-4739-816c-20525e2087be@linux.microsoft.com>
-Date: Fri, 21 Feb 2025 10:10:02 -0800
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hw7jsvXJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1740162417;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=FLMs7KrtcVuRMuZVLzEEuB9e4YSYJnSqUxaU4NJOSyU=;
+	b=hw7jsvXJgSqf64zyTr6YAUNbVn5b+/IK5eMYQZg26mC5jlhq3IScrDh6llj7NnhU6VuKiW
+	z/nRyk+/2zqimZR9QvRb5Mn8hHWaaGEFtSscSsviLa/bpu5OH2dyvj4vCGp6vMBhX0pV2S
+	D4Oj+vpyBjNbxgvbrl+xvc9Pcoos9wo=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-438-d02SAcfcORar3QMxhd1d_g-1; Fri, 21 Feb 2025 13:26:54 -0500
+X-MC-Unique: d02SAcfcORar3QMxhd1d_g-1
+X-Mimecast-MFC-AGG-ID: d02SAcfcORar3QMxhd1d_g_1740162412
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-5f6e2ef3190so2213151eaf.1
+        for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 10:26:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740162412; x=1740767212;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FLMs7KrtcVuRMuZVLzEEuB9e4YSYJnSqUxaU4NJOSyU=;
+        b=wQqcNSkPN2tPjtQapm8SXV2hMq9uk0/p+lx3hizZcZ4pmfnUbXkHCpAYsFiggawb5Y
+         QJAAgy6Lh0B3GfsJYawFPq/+/6dYvZ3w56iwdo0ZnWjIlCp3SlOY6HHZfv2CauA+TNIO
+         B4HQw8zVcrkhLJhf3TDCH+hXsUKacXzbpushZvozx7rtnpYMs0w/Hldy2Y99QP/4/Z1j
+         LR5GGfiM+0pigDik1dF2Y6sFbHnACuPVeJYvo4X7QxD3zjDMeQjA0GzOmVXV5kuFyFP2
+         nA/OqWiNzV5N7knDJQ9MjCyVIpnGzCgDg7Y/13rln3j1wrG+sS+tRVDnLBiUNeMzfkCf
+         NyNw==
+X-Forwarded-Encrypted: i=1; AJvYcCVRp4e5bcgizL13sPHmKi/zMi5S0IXBT+bQJTMWiaBqyFrDbcJ23L/CdyNID0uITzy3cUhUNA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx4lZ+1uQvAqYk983P8lZ7IgMfMivjXlLYX/PuSLwSnXkd4mIaZ
+	h4td/j4DuqtOIOkfg0sG4RrgOQ5+wQAIE2QQYgbuQjnO8/NKY6dl/ZuUF129c+3UPljN9K+fIMZ
+	jWmXPmyS3aSxa/z0pjNvCuj22MDYa9/wCNGXJcXJDdkaxXH9g2WRt
+X-Gm-Gg: ASbGnctjZQaSUNayNMawGrj1eb/ogR3zv1TLPbhvOCROCn00lgUldCqie7FRJw99utT
+	IXQYKkMFYq2I4ib8w2Pl7Ys9moDstIPDFDnbTWLPtAYRokqLKCyY5vb6XqAhdjW+79M6Mh9ZLBs
+	LibazIFja+8fPUwg07jliGJUcsHeNO6h0/sk0j6p/MELhevJdXcNMIOSkPaP5RJ3J405UDcH79g
+	C95YsRTZD/CRMZ99VeOPCwbpkyTie/vMIDxsttLg33wk1uCSuJZGDnTL6a/EDfydaIXbKKav/EU
+	foaJlGJV4nyht3UvrjDq3YECPOGKsO06exDpyVPz60Qd
+X-Received: by 2002:a05:6820:3284:b0:5fc:f02e:a7bf with SMTP id 006d021491bc7-5fd0af6c89amr8396325eaf.3.1740162412641;
+        Fri, 21 Feb 2025 10:26:52 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IE3a6bIdtzk0jphwQ89Cl0jmjU5SuuvuMlmEJW4bIcbaKaarXMb40kTIk7SnjrTlZHnr7bgjQ==
+X-Received: by 2002:a05:6820:3284:b0:5fc:f02e:a7bf with SMTP id 006d021491bc7-5fd0af6c89amr8396295eaf.3.1740162412249;
+        Fri, 21 Feb 2025 10:26:52 -0800 (PST)
+Received: from localhost (ip70-163-223-251.ph.ph.cox.net. [70.163.223.251])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-5fce7eedd67sm2311357eaf.30.2025.02.21.10.26.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Feb 2025 10:26:51 -0800 (PST)
+Date: Fri, 21 Feb 2025 11:26:50 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev
+Subject: Re: Question on context setup for passthrough
+Message-ID: <v7quonl2qcsweqd4r6e2badd6bdhmzgo4zm4v2k3bxkg4zkffi@zpxi53ai4qme>
+References: <rz4kc2zxi4fritsbmjsa3ekqncguvnmeir5se3fhu7pzhtgipk@2u6ps3q3gsqz>
+ <75f4867f-99b9-4ba9-abf4-f0dc29d08fca@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] hyperv: Change hv_root_partition into a function
-To: MUKESH RATHOR <mukeshrathor@microsoft.com>,
- Easwar Hariharan <eahariha@linux.microsoft.com>
-Cc: "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "mhklinux@outlook.com" <mhklinux@outlook.com>,
- KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
- "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
- "will@kernel.org" <will@kernel.org>, "tglx@linutronix.de"
- <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>,
- "bp@alien8.de" <bp@alien8.de>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
- "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "arnd@arndb.de"
- <arnd@arndb.de>,
- "jinankjain@linux.microsoft.com" <jinankjain@linux.microsoft.com>,
- "muminulrussell@gmail.com" <muminulrussell@gmail.com>,
- "skinsburskii@linux.microsoft.com" <skinsburskii@linux.microsoft.com>
-References: <1740076396-15086-1-git-send-email-nunodasneves@linux.microsoft.com>
- <1740076396-15086-3-git-send-email-nunodasneves@linux.microsoft.com>
- <5980eaf9-2e77-d0ec-e39b-b48913c8b72f@microsoft.com>
- <a29af204-e4a9-4ef2-b5b8-f99f2ac0a836@linux.microsoft.com>
- <f5366d52-1714-87bc-5fa5-94230f2acca1@microsoft.com>
-Content-Language: en-US
-From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-In-Reply-To: <f5366d52-1714-87bc-5fa5-94230f2acca1@microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <75f4867f-99b9-4ba9-abf4-f0dc29d08fca@linux.intel.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: nwCXSmKDCbik8aEEhL6a0mNlTaiWfWR21CWBg6FBS7Y_1740162412
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 2/20/2025 2:59 PM, MUKESH RATHOR wrote:
+On Fri, Feb 21, 2025 at 04:40:42PM +0800, Baolu Lu wrote:
+> On 2025/2/21 15:16, Jerry Snitselaar wrote:
+> > Hi Baolu,
 > 
+> Hi Jerry,
 > 
-> On 2/20/25 14:56, Easwar Hariharan wrote:
->  > On 2/20/2025 1:59 PM, MUKESH RATHOR wrote:
->  >>
->  >>
->  >> On 2/20/25 10:33, Nuno Das Neves wrote:
->  >>   > Introduce hv_current_partition_type to store the partition type
->  >>   > as an enum.
->  >>   >
->  >>   > Right now this is limited to guest or root partition, but there will
->  >>   > be other kinds in future and the enum is easily extensible.
->  >>   >
->  >>   > Set up hv_current_partition_type early in Hyper-V initialization
-> with
->  >>   > hv_identify_partition_type(). hv_root_partition() just queries this
->  >>   > value, and shouldn't be called before that.
->  >>   >
->  >>   > Making this check into a function sets the stage for adding a config
->  >>   > option to gate the compilation of root partition code. In
-> particular,
->  >>   > hv_root_partition() can be stubbed out always be false if root
->  >>   > partition support isn't desired.
->  >>   >
->  >>   > Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
->  >>   > ---
->  >>   >   arch/arm64/hyperv/mshyperv.c       |  2 ++
->  >>   >   arch/x86/hyperv/hv_init.c          | 10 ++++-----
->  >>   >   arch/x86/kernel/cpu/mshyperv.c     | 24 ++------------------
->  >>   >   drivers/clocksource/hyperv_timer.c |  4 ++--
->  >>   >   drivers/hv/hv.c                    | 10 ++++-----
->  >>   >   drivers/hv/hv_common.c             | 35
-> +++++++++++++++++++++++++-----
->  >>   >   drivers/hv/vmbus_drv.c             |  2 +-
->  >>   >   drivers/iommu/hyperv-iommu.c       |  4 ++--
->  >>   >   include/asm-generic/mshyperv.h     | 15 +++++++++++--
->  >>   >   9 files changed, 61 insertions(+), 45 deletions(-)
->  >>   >
->  >
->  > <snip>
->  >
->  >>   > @@ -34,8 +34,11 @@
->  >>   >   u64 hv_current_partition_id = HV_PARTITION_ID_SELF;
->  >>   >   EXPORT_SYMBOL_GPL(hv_current_partition_id);
->  >>   >
->  >>   > +enum hv_partition_type hv_current_partition_type;
->  >>   > +EXPORT_SYMBOL_GPL(hv_current_partition_type);
->  >>   > +
->  >>
->  >> nit: if possible and not too late, can we please use more Unix
->  >> style naming, eg, hv_curr_ptid and hv_curr_pt_type rather than this
->  >> long windows style names that causes unnecessary line wraps/splits.
->  >>
->  >> Thanks,
->  >> -Mukesh
->  >>
->  >
->  > Per
-> https://docs.kernel.org/process/coding-style.html#naming
->  >
->  > GLOBAL variables (to be used only if you really need them) need to
-> have descriptive names,
->  > as do global functions. If you have a function that counts the number
-> of active users,
->  > you should call that count_active_users() or similar, you should not
-> call it cntusr().
+> > 
+> > In context_setup_pass_through_cb there is a check that bails out
+> > if dev != &pdev->dev which doesn't exist in the code that sets up the
+> > context entries in the dma domain case. Is there a reason this check is
+> > done in the passthrough case?
 > 
-> Thant's hardly a fair comparison. Suggestion was NOT hvptid.
+> The check "dev != &pdev->dev" was added to prevent setting a context for
+> a different device that has its own probe path.
+
+Hi Baolu,
+
+Why is it different than what happens in the case with the callback in
+the dma domains case? Shouldn't pci_for_each_dma_alias already be
+deciding which devices get called with the callback?  This seems like
+it will always skip setting up the context entry for an alias when
+there is a pcie to pci bridge.
+
+My initial fix was just the dropping of the check in the callback,
+but I wasn't sure that was correct or not. So I decided to check
+with you, and go back and read some pci spec bits. :)
+
+Regards,
+Jerry
+
+
 > 
-I'm in favor of shortening the names when the abbreviation is common and
-therefore still perfectly clear to anyone reading it - e.g. "curr" is
-a perfectly acceptable abbreviation of "current", in my view.
+> > I've been looking at an issue where a vm is running with an
+> > intel-iommu device, and has a pcie-to-pci bridge with a device behind
+> > it. When running with this commit, and defaulting to passthrough it
+> > gets a DMAR fault for the present bit not being set in the context
+> > entry when the device is coming up, and the rid for the fault is the
+> > rid the bridge will use for transactions coming from the secondary bus.
+> > Without that check the context entry gets set up for that rid, and
+> > it doesn't get the DMAR fault.
+> 
+> This appears to be a bug. Do you have a fix, or can you tell me the
+> process I can use to reproduce this issue with a local setup?
+> 
+> Thanks,
+> baolu
+> 
 
-I think abbreviating "partition" to "pt" is probably not a good fit for
-global variables. Anyone seeing a variable with the word "partition"
-(and hv_ prefix) can go look up what a Hyper-V partition is if they don't
-know, but "pt" would be completely impenetrable without reading through a
-fair amount of the code that uses it to figure out what it refers to.
-
-I think even slightly longer abbreviations like "part", "ptn", "prt", or
-"prtn" are not good enough unfortunately... the word "partition" just
-doesn't lend itself to abbreviation in an obvious way.
-
-So, for this patch I'm fine with changing it to "hv_curr_partition_type"
-which saves a few characters.
-
-Feel free to post a followup for "hv_curr_partition_id" if you like.
-
-Note - For the driver code which isn't as exposed to the rest of the
-kernel, I think we can continue to use "pt" or similar to keep the names
-shorter.
-
-Thanks
-Nuno
