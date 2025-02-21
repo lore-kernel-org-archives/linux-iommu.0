@@ -1,94 +1,82 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E272E201024
-	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 08:40:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B366D200136;
+	Fri, 21 Feb 2025 09:28:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740127248; cv=none; b=EY+UoD04j6u2sCCgIJVbeNQ9Rr4/IT7LszBy4GksZtLivPzop29YwWdncqYmXwTNmhb/VJEvRuCclZCiQ6mzYhJvyu3eoYsAug+9Kb9fqofMOcDRt0SrJ0aa0s+LltenTVvTi2GIinAW5OCZcFX9uYSuVSW361dQZYviI0qbdcs=
+	t=1740130104; cv=none; b=gcA2+OgmDlR0oEXcLfbAclMxpozBU6hczzrE9Cp97Xq4wnoi1b1DsNn8Z9rLKtQDERQ0KJJ0k/rz8wDH+ESuINGtMdYKcqmAsbbXKjqxIh39/kSzahP/vHblc5URDz0TQL/HdqEvNHWtLNmnr5BzKltamV/2cE6DM+RfWF/roW4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740127248; c=relaxed/simple;
-	bh=yK5Yfrdib0jcKY/COjn0ut9/tvqX9q+bVGaIe/MgXDc=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=JkFPC2bfVhrhrIZfbASFxVtQz1K9maEdNklCkXrkV01GV9sYh7KjhbNXgNtec4lqGf2Eq6joZ+YHBhvGH9iJZSaTtt3ZDSYU4BTO3L742y4J+sVSmuWZ/ce++dGNx4SJzN69S8nf7WpT2M7f+/phG8NF9Fnzvut1Ya5i2NUuOTU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SUr9spae; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1740130104; c=relaxed/simple;
+	bh=TFQcaNN4BhjsY8helJtRFXwS8Z3t6w4D7fo6NiCwK1M=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=PCooPulvHzMC7Kx88TtN/HCA7ES+TpXyX7ygt37q+XumCi/Nva4Wd9gZMtLDk9BGTpyrfe5+mAa8lq+KjBCqI3w1+ZuyNg1+4iFV02GfuS7tJ8za0r4gLrbNZSAM3ttX1bDyVeXBKP8gmKFkNo6HU3oUjqy5Eo/L4DKfGPLzw7Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=DOsbBNx1; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=fkGnpwX7; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SUr9spae"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740127247; x=1771663247;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yK5Yfrdib0jcKY/COjn0ut9/tvqX9q+bVGaIe/MgXDc=;
-  b=SUr9spaeLLRlWmzCqj9a1Ld0DGQAVdP74hg6p5smuhfQvzOR6AIxGwr/
-   A+lMjStwXsATK+o94ohug8rBFSibUTObbqB5WTm36Um0eW2xKja7WNr2G
-   2vaLYyjodhCg2BQyp8bsLOm8zJ/JR+yhWrfGhlfqd+R2Mfu00Cu70PGiD
-   TbyGR/Yw+2+5N0jRtOS3G0SHb37oYmt9qmK0opUzMCbK4b+Afq4KT1jdY
-   vXi/CSU4OfOVyrP1j46U5fcwfK4vDT2qAqqXSL6YvJImMStXqhOHAvQsb
-   ywNWSXGeGzloDPFKFhFAa02vjIEnWvIAIfCsBgxQZ0sIgLXVgHi0KZQpU
-   Q==;
-X-CSE-ConnectionGUID: Thxjpwb7QPm7mFd15WZKtw==
-X-CSE-MsgGUID: c16tgtr1SH2dLcOu3OS62w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11351"; a="40166568"
-X-IronPort-AV: E=Sophos;i="6.13,304,1732608000"; 
-   d="scan'208";a="40166568"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2025 00:40:45 -0800
-X-CSE-ConnectionGUID: RVniUFRwQ7Wf3Y+ZMybDPA==
-X-CSE-MsgGUID: Dbg9LY1JTzKkKeUkID8tOw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,304,1732608000"; 
-   d="scan'208";a="119930199"
-Received: from jingxion-mobl.ccr.corp.intel.com (HELO [10.124.240.93]) ([10.124.240.93])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2025 00:40:44 -0800
-Message-ID: <75f4867f-99b9-4ba9-abf4-f0dc29d08fca@linux.intel.com>
-Date: Fri, 21 Feb 2025 16:40:42 +0800
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="DOsbBNx1";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="fkGnpwX7"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1740130101;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=W4RDEkxswbUbhEqdazfb85bOV8IiqvBYeb8Hqd67Gjw=;
+	b=DOsbBNx15V3te3uSwQkkoQh8pumg9j1OQwos8Wq6tlZ1fHlK4USHZhrlj2Z+KFK5EV0a5Y
+	yu52Dt06CaklHEPoASJGAtJs3VJF/LhNhSwM9ytDyySMI/slQ6yiW6DQPj06CrpXvFuR0e
+	kCdlOsJm27epmZUSg5TuYitQKxZj4KdK1Z836JaiLvyqRvw28H1JAA11e9rmygxIO9tmdM
+	gNtFCdP+zzJPnOEhkEPCbdVUaFfmiGjwz1cBHfhKJK7VGDp/4uwMnN2hdD3kw8cqyoeIWi
+	KmcpfKqkKzPbqvV2KvP4UZxdXVq7Kv6mOM/7vIGJQ9wfSspsanV+Z/GUNxn8sQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1740130101;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=W4RDEkxswbUbhEqdazfb85bOV8IiqvBYeb8Hqd67Gjw=;
+	b=fkGnpwX7xaB0MJgMVSfZ73m14LAJWC3zzXp0zNdV5PL7QQKnBMpSPX9LZ/UcxHQpfJkKXk
+	HoZaMLJZAc6KE6DA==
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com,
+ kevin.tian@intel.com, maz@kernel.org
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+ shuah@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kselftest@vger.kernel.org,
+ eric.auger@redhat.com, baolu.lu@linux.intel.com, yi.l.liu@intel.com,
+ yury.norov@gmail.com, jacob.pan@linux.microsoft.com,
+ patches@lists.linux.dev
+Subject: Re: [PATCH v2 1/7] genirq/msi: Store the IOMMU IOVA directly in
+ msi_desc instead of iommu_cookie
+In-Reply-To: <a4f2cd76b9dc1833ee6c1cf325cba57def22231c.1740014950.git.nicolinc@nvidia.com>
+References: <cover.1740014950.git.nicolinc@nvidia.com>
+ <a4f2cd76b9dc1833ee6c1cf325cba57def22231c.1740014950.git.nicolinc@nvidia.com>
+Date: Fri, 21 Feb 2025 10:28:20 +0100
+Message-ID: <87ldtzhcjv.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com
-Subject: Re: Question on context setup for passthrough
-To: Jerry Snitselaar <jsnitsel@redhat.com>, Joerg Roedel <joro@8bytes.org>,
- iommu@lists.linux.dev
-References: <rz4kc2zxi4fritsbmjsa3ekqncguvnmeir5se3fhu7pzhtgipk@2u6ps3q3gsqz>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <rz4kc2zxi4fritsbmjsa3ekqncguvnmeir5se3fhu7pzhtgipk@2u6ps3q3gsqz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 2025/2/21 15:16, Jerry Snitselaar wrote:
-> Hi Baolu,
+On Wed, Feb 19 2025 at 17:31, Nicolin Chen wrote:
+> Fix the MSI cookie UAF by removing the cookie pointer. The translated IOVA
+> address is already known during iommu_dma_prepare_msi() and cannot change.
+> Thus, it can simply be stored as an integer in the MSI descriptor.
+>
+> A following patch will fix the other UAF in iommu_get_domain_for_dev(), by
+> using the IOMMU group mutex.
 
-Hi Jerry,
+"A following patch" has no meaning once the current one is
+applied. Simply say:
 
-> 
-> In context_setup_pass_through_cb there is a check that bails out
-> if dev != &pdev->dev which doesn't exist in the code that sets up the
-> context entries in the dma domain case. Is there a reason this check is
-> done in the passthrough case?
+  The other UAF in iommu_get_domain_for_dev() will be addressed
+  seperately, by ....
 
-The check "dev != &pdev->dev" was added to prevent setting a context for
-a different device that has its own probe path.
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 
-> I've been looking at an issue where a vm is running with an
-> intel-iommu device, and has a pcie-to-pci bridge with a device behind
-> it. When running with this commit, and defaulting to passthrough it
-> gets a DMAR fault for the present bit not being set in the context
-> entry when the device is coming up, and the rid for the fault is the
-> rid the bridge will use for transactions coming from the secondary bus.
-> Without that check the context entry gets set up for that rid, and
-> it doesn't get the DMAR fault.
+With that fixed:
 
-This appears to be a bug. Do you have a fix, or can you tell me the
-process I can use to reproduce this issue with a local setup?
-
-Thanks,
-baolu
-
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
