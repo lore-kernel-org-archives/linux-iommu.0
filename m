@@ -1,50 +1,50 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C29D920B7FB
-	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 13:03:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BF56A31
+	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 13:03:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740143002; cv=none; b=txPDWWpxAvFeQzVHc7+z98xycaYChA19AXt9MQRMiezDMmBDWxpRk9hMaXVrzS7RJ9V0l+P1pik6OH9S9fjDrOklLlJs4O3Wc2XS6baOI1g0bHe3UMzFaOfHL2Lo8An1m0rdF5fi1NgCFHJiH45YQDwtdOl333Dlc/UkqZGhttQ=
+	t=1740143004; cv=none; b=bY33tiIf6di5yvOGEX902rFk7guh1PEJS+vQ2k+JlAdxt1hxsUnd3USJSKntPKdszpbSwiQa3NvjLEfjXSVyIPKEJRz/hgaesU+0VmlD2g67E4mL1eCtVHQfmUj1grk831RnbjQL/EffZNsTFxh6yKnSbot8r2OpxgolZe4B6Qc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740143002; c=relaxed/simple;
-	bh=UqvytLdopItWGXyDMaFScrdLk0zpyWJi+0VnlcphEQ4=;
+	s=arc-20240116; t=1740143004; c=relaxed/simple;
+	bh=yD+EXD1xXVashg7JpupC0KbJj2BfCNgFu/clVzVl7Z0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=dw2oo7m71WgHKANOaGD7Cmb4OCxulSuH4EDLCNSko/qvELWxogA/znUamKvXXgpojBljhht+Ih0kXz1IXWPiMxbBhtf4oATk/l0GVjSJFyKruZBRx2IhEuHgLffchXpYmwYdqI3NPBR9AfRLajDHHdvz75mycaP7XJcTh6nAwqo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=LPO9aBDD; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:To:CC; b=LltnLx/nUu+n9bNS5v0KZ9l8YC+l7PjN8lg3Gstm/hiNZbmWQZzd3PCgrOrZM8EO/nfKwuZEfD/k1UWhHB7lnvihwod8U2ZwN1bpEuGZcX8OTnDdj0YbqDqoiSzlStZm6Gc7vw6EweS3F1kKaroCYMiIWmxHvkJPUoyTjGoHjx0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=M3L6a5pi; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="LPO9aBDD"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51LBulhk008309;
-	Fri, 21 Feb 2025 13:02:41 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="M3L6a5pi"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51LBRhUk031994;
+	Fri, 21 Feb 2025 13:02:44 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	a3BtQIhlA8aAG89uR+C8DMvJdtYemVsNlnwoCtpLicg=; b=LPO9aBDDMsxB31dw
-	WyjEK3CLUErmibrT9lWzXMKIOlj9scR21l/EvLCqI1iE+F6d7ajSGM1Q7o7/UTva
-	d6BCo5GfnagS3ZlFBms2f+vn949oTKynvFtUIgGlvTucQIzBAPCpUtJJ7kyNxIls
-	gp2VHXA0pCLqa69VB1ozNks7kF5WZb0sVY3fIhvMfxrNG/9yv9mwvqsZokftd1GN
-	2nTbNp4amwmIW1yvtDpVUeXeW2HKIdUTXbDD+E/BaCPpa8tR4lGMcaskaUE7xURJ
-	tBul1zdDWMev8T8r9cAZcCIQWRVn7cSKVD/7UYWMHBDw1IOKOUSMC6HEBlauMjmc
-	aIzqRQ==
-Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44vyy3j2mu-1
+	yYUb7m4Syk1QFPOkd5eIcMy6e/rrPehTWj3QgofPmaQ=; b=M3L6a5pih9LA6RBA
+	fQe2967MQZzeMl6UdbDIl2fM5qZ0ZXbQhdx7+exfX5pX3MBvvDhUEJYEPhmsbm4X
+	AIPXEowRoE0ktyStZvSRHhE5t9B/x5OCbRMHaEksluUIbbWXU9jszhANyA1XIkiB
+	dlikLBKXKKYhf/ccgMC215QZ9uILlm8pb256MpWst40ecz3v4Djgm12uS7KwraUl
+	x+MgsHqKOQIpoHnbCFnSEkx/I3QBPgcsF1xb+FvaS7xfYISmgQDtcNgiNzpd2s+2
+	4tSI0fPD/4YtgmlnLZuxo01NTd9VJpT+Pmph3X5r6WOjDdYr8cYeY/MMzQSmDw7V
+	KTKX9g==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44vyy5hyhm-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:41 +0000 (GMT)
+	Fri, 21 Feb 2025 13:02:44 +0000 (GMT)
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2Whs027840
+	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2VKk015678
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:32 GMT
+	Fri, 21 Feb 2025 13:02:31 GMT
 Received: from hu-zijuhu-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 21 Feb 2025 05:02:31 -0800
+ 15.2.1544.9; Fri, 21 Feb 2025 05:02:30 -0800
 From: Zijun Hu <quic_zijuhu@quicinc.com>
-Date: Fri, 21 Feb 2025 05:02:09 -0800
-Subject: [PATCH *-next 04/18] crypto: scomp - Remove needless return in
- void API crypto_scomp_free_ctx()
+Date: Fri, 21 Feb 2025 05:02:08 -0800
+Subject: [PATCH *-next 03/18] crypto: api - Remove needless return in void
+ API crypto_free_tfm()
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,7 +53,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20250221-rmv_return-v1-4-cc8dff275827@quicinc.com>
+Message-ID: <20250221-rmv_return-v1-3-cc8dff275827@quicinc.com>
 References: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 In-Reply-To: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -109,38 +109,38 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: oXrPtGt6iYym3jCKcWCq-N451L8zfZaz
-X-Proofpoint-GUID: oXrPtGt6iYym3jCKcWCq-N451L8zfZaz
+X-Proofpoint-ORIG-GUID: wTAGG3hwWH4XHW5gP1-P5vkk7hfVjZTp
+X-Proofpoint-GUID: wTAGG3hwWH4XHW5gP1-P5vkk7hfVjZTp
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-02-21_04,2025-02-20_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1011
- phishscore=0 adultscore=0 lowpriorityscore=0 bulkscore=0 impostorscore=0
- priorityscore=1501 malwarescore=0 spamscore=0 mlxlogscore=812 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2502100000
- definitions=main-2502210096
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ mlxlogscore=745 spamscore=0 bulkscore=0 clxscore=1015 suspectscore=0
+ adultscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0 impostorscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502100000 definitions=main-2502210096
 
-Remove needless 'return' in void API crypto_scomp_free_ctx() since both
-the API and crypto_scomp_alg(@tfm)->free_ctx() are void functions.
+Remove needless 'return' in void API crypto_free_tfm() since
+both the API and crypto_destroy_tfm() are void functions.
 
 Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 ---
- include/crypto/internal/scompress.h | 2 +-
+ include/linux/crypto.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/crypto/internal/scompress.h b/include/crypto/internal/scompress.h
-index 07a10fd2d321..44130680dc0a 100644
---- a/include/crypto/internal/scompress.h
-+++ b/include/crypto/internal/scompress.h
-@@ -79,7 +79,7 @@ static inline void *crypto_scomp_alloc_ctx(struct crypto_scomp *tfm)
- static inline void crypto_scomp_free_ctx(struct crypto_scomp *tfm,
- 					 void *ctx)
+diff --git a/include/linux/crypto.h b/include/linux/crypto.h
+index b164da5e129e..90ac1142b1a2 100644
+--- a/include/linux/crypto.h
++++ b/include/linux/crypto.h
+@@ -446,7 +446,7 @@ void crypto_destroy_tfm(void *mem, struct crypto_tfm *tfm);
+ 
+ static inline void crypto_free_tfm(struct crypto_tfm *tfm)
  {
--	return crypto_scomp_alg(tfm)->free_ctx(tfm, ctx);
-+	crypto_scomp_alg(tfm)->free_ctx(tfm, ctx);
+-	return crypto_destroy_tfm(tfm, tfm);
++	crypto_destroy_tfm(tfm, tfm);
  }
  
- static inline int crypto_scomp_compress(struct crypto_scomp *tfm,
+ /*
 
 -- 
 2.34.1
