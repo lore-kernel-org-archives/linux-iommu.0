@@ -1,50 +1,50 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0ADE20B800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B1F20B811
 	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 13:03:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740143007; cv=none; b=lkbeRbPS7+lDrvkdFTqCIco9foFIIraxZLdtkK6RQ5qnaL+bIH6lsX8AhIhVskf+Gk9AmhiW7vwiUdANAVWCeTAuX1pqp+x87De33xl1/7SpbUs6yWAxRi9RYyO/5tjDY79YnnDnVbVyr4R7niZnDZScFpGOo2m6tHaHcJAmis4=
+	t=1740143007; cv=none; b=YfRUiK1JGBPcOLmLY943oc5sI1GwyN6SdjUD1sepHNK5DT6QK4R88Nt1HkHcsS8eIdEEn6ktMNjgV/NlxbqTQvjAjhrsDtGYW8nfPjnlY69K7MEoNQ6ljVsGfSBial4/OXmK9XEhhb8v4CMVACkfSQwhae5LoUE7YkW/cdKq89w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1740143007; c=relaxed/simple;
-	bh=zqlWaKAWU1Ac/7pcuOoreqMY8Y+5EsisBSF0qB3tzDQ=;
+	bh=d/y3uD6NR6ku4wGAdC+kZEJU/mnBsqGv4nI8GEFhe/o=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=Fxf4NPgmEgIVY/WBxQyzHpmxcUg5PuGK9bi18mDZcQ6yb0UcWUE6CeKeGHmsdQWkBuSqC0hcAylAPjiWt31mK0CaBPWzJNXOBOexeFU1SwQhmpjnQJU86Xdhzutc64WpkOjKNE95Pe2y0U/9QOfHZJj/ZVzxl3hbrITThFAyjhc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=e2ALmXzt; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:To:CC; b=uIM2+4Duappz8dARSISd7pW9kiwdX95OP+YE45PD2U0+Tewq+TmfRuCMsCMsBebPrRrflIKbMig1OkT8snFRD4YvqdW6BMjI37EYvRqJbCQabYEERgX5gIF/cVwphDTXwFdeKXeEwzzVSHjvOQzmZe2NUDNrtgvSWlUPTczozc4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=INf48+qw; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="e2ALmXzt"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51L5kJ3h011654;
-	Fri, 21 Feb 2025 13:02:43 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="INf48+qw"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51L603lr016207;
+	Fri, 21 Feb 2025 13:02:52 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	JTYq6GLYbyjWCpZOBvzAKYBa3FWEQNkwL+TuIPTmGnA=; b=e2ALmXztII+drsoG
-	nEEBqIeFku6TjQT7FJq+O2Vngclyf+h1QcC9PgUSQ2P06qiaf3fifXtwdsE0BRmk
-	MovLqWKxgMS3rH1uAoXkwRhNnI+tMX7uJxCyEyK51Rg9ukmrw0Z80Pg/1rLj01Pq
-	NAQikpvcggOR59HE/qSGarjpDju6tr0tsSz9aS5DvI8qbHTFnvg95mUO6tDFtuIo
-	Qh0lJoeu3OCDkA2duJntBljCJ35knK19/12Ox2dj/3n84NqO7a5xJQ0k9ggk00LL
-	bvRMCYcf3iyJEihlhFZdvgIHhe8aIbhxvOUbWvSV987/djgmjVyn2CAqAlXvwHTp
-	jSOb/Q==
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44vyy3sys1-1
+	hDfWtNTdbaSs92T18904n8pbiB3wRUppd+SKmscGAlk=; b=INf48+qwdFqvjkyp
+	hr9FZ0HQLyNg4hcmSyTZNhBw4yXREh3pOc0jXnfrkIo2KSet8sVR2NT+eMvstrd1
+	QgIClbFUMlhYyV+yOrPSSx84dqMVISE+v0x2ZkchXsZk72MZ9TgvGRGmx8AF8+54
+	wT64OU5DrVYBsD2bvtGe7zdA6esj3sY0s05oEQCJ6VIjL/+LkM8VAXvn7JianplY
+	qqJVRrKRyhBgdM6L/otz/CY4O63/6dzAi6e1yktYQ5sIp9uoV2GYQd2wcA2P4HXQ
+	KYlfDcMeFbK049HxNCeabb/d2EddFjgDD/5D+oJuDwGdMO2d6fCIUEXFGpNluzua
+	AtDIxw==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44xku6scbv-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:43 +0000 (GMT)
+	Fri, 21 Feb 2025 13:02:36 +0000 (GMT)
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2fJg020335
+	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2YTj015730
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:41 GMT
+	Fri, 21 Feb 2025 13:02:35 GMT
 Received: from hu-zijuhu-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 21 Feb 2025 05:02:40 -0800
+ 15.2.1544.9; Fri, 21 Feb 2025 05:02:34 -0800
 From: Zijun Hu <quic_zijuhu@quicinc.com>
-Date: Fri, 21 Feb 2025 05:02:20 -0800
-Subject: [PATCH *-next 15/18] mfd: db8500-prcmu: Remove needless return in
- three void APIs
+Date: Fri, 21 Feb 2025 05:02:12 -0800
+Subject: [PATCH *-next 07/18] wifi: mac80211: Remove needless return in
+ void API _ieee80211_hw_set()
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,7 +53,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20250221-rmv_return-v1-15-cc8dff275827@quicinc.com>
+Message-ID: <20250221-rmv_return-v1-7-cc8dff275827@quicinc.com>
 References: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 In-Reply-To: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -109,61 +109,38 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: kDlPpVuo82Hyjkqx4P3EIG9D67W7lqTY
-X-Proofpoint-GUID: kDlPpVuo82Hyjkqx4P3EIG9D67W7lqTY
+X-Proofpoint-ORIG-GUID: gFqBDpJVue8M_4g_3XIvrl5JrEzUCHjB
+X-Proofpoint-GUID: gFqBDpJVue8M_4g_3XIvrl5JrEzUCHjB
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-02-21_04,2025-02-20_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- impostorscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0 spamscore=0
- lowpriorityscore=0 phishscore=0 priorityscore=1501 clxscore=1015
- malwarescore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2502100000 definitions=main-2502210096
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 spamscore=0 impostorscore=0 suspectscore=0 clxscore=1011
+ mlxscore=0 bulkscore=0 phishscore=0 mlxlogscore=743 lowpriorityscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502100000 definitions=main-2502210096
 
-Remove needless 'return' in the following void APIs:
-
- prcmu_early_init()
- prcmu_system_reset()
- prcmu_modem_reset()
-
-Since both the API and callee involved are void functions.
+Remove needless 'return' in void API _ieee80211_hw_set()
+since both the API and __set_bit() are void functions.
 
 Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 ---
- include/linux/mfd/dbx500-prcmu.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/net/mac80211.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/mfd/dbx500-prcmu.h b/include/linux/mfd/dbx500-prcmu.h
-index dd0fc891b228..98567623c9df 100644
---- a/include/linux/mfd/dbx500-prcmu.h
-+++ b/include/linux/mfd/dbx500-prcmu.h
-@@ -215,7 +215,7 @@ struct prcmu_fw_version {
- 
- static inline void prcmu_early_init(void)
+diff --git a/include/net/mac80211.h b/include/net/mac80211.h
+index c3ed2fcff8b7..3a654e9f41db 100644
+--- a/include/net/mac80211.h
++++ b/include/net/mac80211.h
+@@ -3091,7 +3091,7 @@ static inline bool _ieee80211_hw_check(struct ieee80211_hw *hw,
+ static inline void _ieee80211_hw_set(struct ieee80211_hw *hw,
+ 				     enum ieee80211_hw_flags flg)
  {
--	return db8500_prcmu_early_init();
-+	db8500_prcmu_early_init();
+-	return __set_bit(flg, hw->flags);
++	__set_bit(flg, hw->flags);
  }
+ #define ieee80211_hw_set(hw, flg)	_ieee80211_hw_set(hw, IEEE80211_HW_##flg)
  
- static inline int prcmu_set_power_state(u8 state, bool keep_ulp_clk,
-@@ -302,7 +302,7 @@ static inline int prcmu_request_ape_opp_100_voltage(bool enable)
- 
- static inline void prcmu_system_reset(u16 reset_code)
- {
--	return db8500_prcmu_system_reset(reset_code);
-+	db8500_prcmu_system_reset(reset_code);
- }
- 
- static inline u16 prcmu_get_reset_code(void)
-@@ -314,7 +314,7 @@ int prcmu_ac_wake_req(void);
- void prcmu_ac_sleep_req(void);
- static inline void prcmu_modem_reset(void)
- {
--	return db8500_prcmu_modem_reset();
-+	db8500_prcmu_modem_reset();
- }
- 
- static inline bool prcmu_is_ac_wake_requested(void)
 
 -- 
 2.34.1
