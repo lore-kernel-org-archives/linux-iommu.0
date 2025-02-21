@@ -1,50 +1,50 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABAAB2010F6
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18A01202F99
 	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 13:03:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740142999; cv=none; b=AE0AHMPxxTg6lEoR1FgiVZOUe/66BSGLe5YVlGeB66PPZmoXyfYGXYEzxNpjdyUJg96FvxUjgXtbiQF6HZ7d+haY7e1bNwr5DNQMmJDs27Lq9OUoYzsJwFvrHINXVbjzkctdldrVGYAHZEDFRQlmy4bJwfSqdXP0Tjf6ScT7K3M=
+	t=1740142999; cv=none; b=PwGk6LVQv2ujaCNQJqlAsJ07RbOuZck9YTSsfELm2SxFOh9w/Sgvx7CwdtWqH2v49QvVOgUygHbA5qbXvp9oRrWGOW8UseJDw3BiOMW3COtxk3HzmBx7vROmdp5Yq35Kxzbcv6v8BkFEi+zYMlU0EmHvPvV7OsVzgWrXF6JBvTI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1740142999; c=relaxed/simple;
-	bh=EhT2PNH7LIbQVW1etTbZoQcaNDfVTa2NpNh+myh3094=;
+	bh=YFQGHQHEVWREtFfoPBas1ZphEeEkrv/cYduerf3nQfI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=nzTb2/bBqU1Cvejm8Dm1DcIrGTAoKMUNQl3NSTbP/oqGpJW1wpM/iAlA25xkXsudWINDCnAsUt9xg2Grl46SJUO21sCPn35Hi3rFGwWd0u6RAVI18aCp1lSPaYk0PkO7D9LSD9UCnxM60HNHIhdqL2uV5Ck0hu5iShY2DPTZVdA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=CUwUZJsl; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:To:CC; b=qKuINW9YCQcWHzZtbwOzT5UFUtGhEuJLYAAQkKOnhBIRapjfHSVsrn7FaIT8+7Y3Z0KmSTyl/uHD6G1bQPkZCmE9jsZOSdofxOKgiLvlb3bZ38bUlTKPmdaparUieZlLwU9ImlWelhIkbupbivTUzK4DO9BwrzvVoKRbNAKtwAY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Xx+pZRdn; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="CUwUZJsl"
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Xx+pZRdn"
 Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51L6ILqX018822;
-	Fri, 21 Feb 2025 13:02:40 GMT
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51L6IYHq018868;
+	Fri, 21 Feb 2025 13:02:44 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	VXe5BH0CLWb34FDh3mku8unL00+Sgymv2t8WSQkUd70=; b=CUwUZJslP/4ngj7Y
-	gXYIMQOVcCgLwUNeDGzGlJRCS9L8HcSKvayznht2VrEd/lL1fg3hOBL361D7oM02
-	2qGwYY8Gpl4eBINWBd2Gzl9UWVpDjia4Fek9Y31Tn7wB5reYP+eENeh3FyX3rBvi
-	rJ0mQFyxs61ir3KJiLOV0jjvZ22Hl1Z5qwxKnVSjbJlvZezOJdlxHJc9cskZSeRA
-	L6q7Tnsox4XAYrdkKjBV9TLHzwj2FvwxhbHJyr4pUEgTgpQtFqdSFXsb3eVk4nH4
-	XGWv6G+MiGUMIj7hZ/pJoP+6UUof5bbVDgNfdMiSaMyBgM3+Hrf2JPK941Dg4mq0
-	RzN1dA==
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44xm3rhaa6-1
+	/Q9qz3ZZdoCTR7XNck0p4FMWguo74EqG/wO/FOpmnuA=; b=Xx+pZRdnAp2LVSgV
+	CoFPMlTIj6Ajqn8dgmuN++Pj/UUnZY5QhY35b/F4eLgFsFyndQrmr6Q/XtZU6j81
+	nwBvNsxIMiIT9zuaXujzuha6irHDvR8JQi91YYZpYjPS7vMSLtSgCUmhPJpgTojZ
+	SihrwsUWsi+Li/9nDL+M8IrpVsPGg5cL/zrFefccd/5sgHQdnCzjsCUu1E37KKjJ
+	LvvNZ6BBKe9+mDhm8/2RyksgNeFwVdO0k2248vU01eYDO7iHQus+cU0NYDSWJIBa
+	SWT6FRzB8bKJKYIgCKQI/w86ajbsm+E5Uteb/ANM1SMNG9DpYqV/GH4b15VmTvCf
+	kellyw==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44xm3rhaag-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:40 +0000 (GMT)
+	Fri, 21 Feb 2025 13:02:43 +0000 (GMT)
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2cra020298
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2gur028017
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:38 GMT
+	Fri, 21 Feb 2025 13:02:42 GMT
 Received: from hu-zijuhu-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 21 Feb 2025 05:02:37 -0800
+ 15.2.1544.9; Fri, 21 Feb 2025 05:02:41 -0800
 From: Zijun Hu <quic_zijuhu@quicinc.com>
-Date: Fri, 21 Feb 2025 05:02:17 -0800
-Subject: [PATCH *-next 12/18] siox: Remove needless return in void API
- siox_driver_unregister()
+Date: Fri, 21 Feb 2025 05:02:22 -0800
+Subject: [PATCH *-next 17/18] dma-mapping: Remove needless return in five
+ void APIs
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,7 +53,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20250221-rmv_return-v1-12-cc8dff275827@quicinc.com>
+Message-ID: <20250221-rmv_return-v1-17-cc8dff275827@quicinc.com>
 References: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 In-Reply-To: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -109,38 +109,81 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: EBB6WKKcc5YXKjfEU7ajz-2xvo9w9S3v
-X-Proofpoint-GUID: EBB6WKKcc5YXKjfEU7ajz-2xvo9w9S3v
+X-Proofpoint-ORIG-GUID: IV7B4yMbMqYcwBNPpAuc_lo8ao45zX7c
+X-Proofpoint-GUID: IV7B4yMbMqYcwBNPpAuc_lo8ao45zX7c
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-02-21_04,2025-02-20_02,2024-11-22_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- suspectscore=0 mlxlogscore=761 phishscore=0 bulkscore=0 lowpriorityscore=0
+ suspectscore=0 mlxlogscore=750 phishscore=0 bulkscore=0 lowpriorityscore=0
  impostorscore=0 malwarescore=0 priorityscore=1501 adultscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2502100000 definitions=main-2502210095
 
-Remove needless 'return' in void API siox_driver_unregister()
-since both the API and driver_unregister() are void functions.
+Remove needless 'return' in the following void APIs:
+
+ dma_unmap_single_attrs()
+ dma_sync_single_range_for_cpu()
+ dma_sync_single_range_for_device()
+ dma_free_coherent()
+ dma_free_wc()
+
+Since both the API and callee involved are void functions.
 
 Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 ---
- include/linux/siox.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/dma-mapping.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/siox.h b/include/linux/siox.h
-index 6bfbda3f634c..31a20ba03d3a 100644
---- a/include/linux/siox.h
-+++ b/include/linux/siox.h
-@@ -70,7 +70,7 @@ static inline int siox_driver_register(struct siox_driver *sdriver)
- 
- static inline void siox_driver_unregister(struct siox_driver *sdriver)
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index b79925b1c433..a5de6ecaace3 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -388,21 +388,21 @@ static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
+ static inline void dma_unmap_single_attrs(struct device *dev, dma_addr_t addr,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
  {
--	return driver_unregister(&sdriver->driver);
-+	driver_unregister(&sdriver->driver);
+-	return dma_unmap_page_attrs(dev, addr, size, dir, attrs);
++	dma_unmap_page_attrs(dev, addr, size, dir, attrs);
  }
  
- /*
+ static inline void dma_sync_single_range_for_cpu(struct device *dev,
+ 		dma_addr_t addr, unsigned long offset, size_t size,
+ 		enum dma_data_direction dir)
+ {
+-	return dma_sync_single_for_cpu(dev, addr + offset, size, dir);
++	dma_sync_single_for_cpu(dev, addr + offset, size, dir);
+ }
+ 
+ static inline void dma_sync_single_range_for_device(struct device *dev,
+ 		dma_addr_t addr, unsigned long offset, size_t size,
+ 		enum dma_data_direction dir)
+ {
+-	return dma_sync_single_for_device(dev, addr + offset, size, dir);
++	dma_sync_single_for_device(dev, addr + offset, size, dir);
+ }
+ 
+ /**
+@@ -478,7 +478,7 @@ static inline void *dma_alloc_coherent(struct device *dev, size_t size,
+ static inline void dma_free_coherent(struct device *dev, size_t size,
+ 		void *cpu_addr, dma_addr_t dma_handle)
+ {
+-	return dma_free_attrs(dev, size, cpu_addr, dma_handle, 0);
++	dma_free_attrs(dev, size, cpu_addr, dma_handle, 0);
+ }
+ 
+ 
+@@ -606,8 +606,8 @@ static inline void *dma_alloc_wc(struct device *dev, size_t size,
+ static inline void dma_free_wc(struct device *dev, size_t size,
+ 			       void *cpu_addr, dma_addr_t dma_addr)
+ {
+-	return dma_free_attrs(dev, size, cpu_addr, dma_addr,
+-			      DMA_ATTR_WRITE_COMBINE);
++	dma_free_attrs(dev, size, cpu_addr, dma_addr,
++		       DMA_ATTR_WRITE_COMBINE);
+ }
+ 
+ static inline int dma_mmap_wc(struct device *dev,
 
 -- 
 2.34.1
