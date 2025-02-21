@@ -1,141 +1,151 @@
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE50820409F
-	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 09:46:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F36D71F4299
+	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 10:07:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740131202; cv=none; b=ZEjDpuie+TRmprkeWqY4KlXhwJLYbWN4CTmWfuYPWjrP8Au6SHIdh9vd+sgZpvt25BUSomxqH3SYfSHefHig6BFuNo+NKHbM3qeiGAAQ/mNWrPAkx2hWCqkEfZmpW/saI1WG6RYWf+yOCYJf0WIVpRc7R0w7NDh7rPJ5vNimNmU=
+	t=1740132441; cv=none; b=Fkodxp5FuAgx/8LpzcIdyYORXBfX24vb0CBjFHog/lPumuRSRT7Ru1KZFSRzhFps2U/wEdDQ2KG1IkPPANuIZ6fkRiqd+X4acNXMnVVIJfEgiyXpjzrUBYIQrze+bpvj6ztWXTmWadxN3LJfqS6Qbyel1P/D/FjfAF22hUzF4fg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740131202; c=relaxed/simple;
-	bh=eQJL+meMUpiM4NI7kP2j/MMgufqHNxN/rIC7ZWyqMl8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=W9J/tRcdUd6Vi77H8JUFhEiMDKDkA9dlqCZ892fzwTpjOCJBhfkH1cjGBQuBe4hk5iRvsI0ohxARTBDPPpPEdVavgxPTTlRUWERDBKtu8O4fmgZ9hLobEG7AMsbyQ4qDSSJdxxOppOgSXp7iER2xzMoV41tStKeDU7kZA/vjm88=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=PiOWwb/U; arc=none smtp.client-ip=209.85.167.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1740132441; c=relaxed/simple;
+	bh=2Nm+C7EXfQilANBV3KPmeUoSajCu1VwQBdXheYtZWRg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=nf1ygZscWrnTZ6CMLhN/hrc39Ky9gIUFAs4r1Zri7yLg+ayn2DRLrKdAhQEj9Cp7gvaodeR5OGyrWQHwWQZ7tO2OTr79xpBDfyZb32DCpdIGNJI6JiCRwAwHcdFMSf1Q0s9u07DKysXRVQMP+3bC1AFFKV1NuPQzZj+xGO8B90g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=OR/3orZZ; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="PiOWwb/U"
-Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-3f40a38cb6bso849414b6e.1
-        for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 01:46:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1740131199; x=1740735999; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FK9YWaslx6HNqwJPESJVhu2TqR0s7ppmYvVLNX5onZk=;
-        b=PiOWwb/UDVQbnAHLEfSfbss7h92DoAY/IuAasysCmYQUd2QIBvLhs/In5GuVJ7TKXV
-         AyYH6k3gM+mDO0KWv5/oJWk6HWtVcfI7xriX7vu+zZWwOIHLjCT15zL+rvOwUE2TjYPV
-         hPEbhb0qrVvh5Ha2Q1Z5de4PgHe9CWVZhsYqc41WbZUJmoyi6E3TTK47hrwnCZjvfuLD
-         SKg/u0ebszhQUWsEr2wH6nIKD6+adW4YvJu0xhYUrTz7Sqm+RYnb4AXvE6WCaZzkTXTJ
-         aYUQD5omxEFi5AIzntgqtvj6hlTJWcQZSO5rdvV8zYaqLL7xRpiYhe4c8DA25DdXIvT9
-         j1dQ==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="OR/3orZZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1740132437;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6foSOg2pfy9gGZuw8NYjJ8ygWH/JG2sfZjN82ttO/gs=;
+	b=OR/3orZZhPdEbrNsHTbQ8gEOp/YN5wH0bSF3tCDM19x6nMFFA2uJgPhoStrRJBrxY2WYnT
+	uaXvJNQpVHbhdVVQYaZE5VW4L5ZxjaBBcXUbuGBmWDnnDzjnJ3RUZk/YlbPC6eCJhgaur6
+	h9QDQzxeLugbbDKupEieyvCIEoNzDTs=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-318-opd1YWcnPgGPd1yp6icX4A-1; Fri, 21 Feb 2025 05:07:16 -0500
+X-MC-Unique: opd1YWcnPgGPd1yp6icX4A-1
+X-Mimecast-MFC-AGG-ID: opd1YWcnPgGPd1yp6icX4A_1740132436
+Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-6e48a052ad6so40649156d6.2
+        for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 02:07:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740131199; x=1740735999;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FK9YWaslx6HNqwJPESJVhu2TqR0s7ppmYvVLNX5onZk=;
-        b=RlGszGBuSr0e5Iha1c8KR6axJ5bbUsJwuLXAzv3X3vIRUcNOE8S3npMYisGz8fWAUR
-         Y3E5fbrdrb5kcwMTodf6vhnnhhdvfHtgqdhhd9zjFCsAHmqrJZVGG7G8npdsRjM1tM4+
-         kWBQwtTBMeSNVstJVPvsYCxXo38zauXMxFVuL/L87vgtpmUKSSOcLd95yK/8wMmC0FKM
-         Mb6h4Q2vtdN8TIQhOtNKeP+hURAAJvOE2myIF2rIhhAw+4C/obWCIeDsFP55mfOj4oRB
-         3vVsbAAjuedO8mjvHbsa0scsuLqcV9w6PnyqJQlffPKavakoyTxxIqAz/aoLdK4HpABW
-         XWVw==
-X-Forwarded-Encrypted: i=1; AJvYcCU1XVMoKQDo+/JL+cdRsw9TFbHpOG2ofYLf4jiglbsC6uFdtbf+rQlW7OLdvGyu/KW0VXByHQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzIFzOS+coIQ+HzwLqojF9cpjepO8AocjighUgjeBzHGqYnGr+N
-	Nm2aDPTIwElcxZtQ7b905aUJqge/EH6zHWwPzLwB8Hr4JlDuJ4TYrejppOSwCg8R7tgeUI+05E5
-	uwOQFLIAtL11srUKOfLE8+fzmyGUdDiiJ+pLoMA==
-X-Gm-Gg: ASbGnctI3hz3FLZA/66NO7Yur8FYDmDZZAwXQSEgo3zVCBwJKXr/twWeppgUGYaOpkE
-	UEgBRjaz9gFcUE2PTDkTIIwU0qiGK+inOWv5VP1srpCN5m3YROZurkgqxQ1AIxJmd8MwbkCL1CH
-	bVywd3JDUBhA==
-X-Google-Smtp-Source: AGHT+IGKyiCnfDfAcOf96/Pz2fYUxZ2ya298ZCqluJV66qLCCSHa32SRsS9lfGx93hGxLg3TS7OQXnUDo/JPgXH6CeY=
-X-Received: by 2002:a05:6808:15a8:b0:3f4:ed9:d4c1 with SMTP id
- 5614622812f47-3f4246e1bfbmr2178808b6e.22.1740131198879; Fri, 21 Feb 2025
- 01:46:38 -0800 (PST)
+        d=1e100.net; s=20230601; t=1740132436; x=1740737236;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6foSOg2pfy9gGZuw8NYjJ8ygWH/JG2sfZjN82ttO/gs=;
+        b=E1QJM6yh1WuIeQsfT4MvPToixDzOTU6b/QgexYsR0DZKtfiIuY9kQcFXzoFJpU52gt
+         sCp9DW9nHIxfeAeJhlQbk4zWYNMttJMHRmUMUP9Advhyzg3Sz3pOFTHRagXmLIa/vZUB
+         QcPp97hrKJLi47frLRawQd6xTXvgZPvXrDdHlGCfflCxHvnLwVJKa0o3A9sU37uzhuGt
+         BBua9tUP/KZFt8Xk9UkY8lsKXHBOkC1Ut2AIPbSkaWghf3Iev/9VsV971ObglLxJ02Lr
+         xjy4gGKwqrsi3+r9OgWd5n9gMMRCel2II2I1nOmftgWg9QHgqzva8wgt9tLKqKLhI0kG
+         Gcbg==
+X-Forwarded-Encrypted: i=1; AJvYcCViQHMKhv71MlEKT32geOrbK8cHsQ5P8ThaoqwsM7gzsfy4BR3Yfm1blafY1O8pXaTcdmLuww==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx4zuwn/Yvutr99tW4ZfLPxKDGE1vtZg9gqlzcYCreXSkI/B4EM
+	N/O/fZikmuje1r1BAYJrXPhQw6uJSJxq73Z2qDMlLI7ghZm9EMgYBWhzIUb3OPw/sS3hohWIld/
+	L6oMHO0hYufnXFpQ0AkTppAsJR8dd64Fgls5AANMFdsMQvo3aI5nJN3tIYM7p
+X-Gm-Gg: ASbGnctgsuJkUEKWbNhpku/XCkGR4QBqVhRVz+pJ/Kex36r7Yx8+24umxue7LmbEiZL
+	Re0wM4Vg/vtqhH0W9yATxNfLCVjU6xVyA0wOmsqx7uQEx2bPOIEIhRkxyTPBXwRECdWOn8lw7+V
+	sOfm2c95up0oU50NBH2FClupG+EFpvJKQCMhJRG2gfXvMDZhC20wFDMszAiLLnjF6ttEed++Dz2
+	AkoMQDNVSXnEBk/zkzY25TyoMdP16Cy96lrZa0fcV7rf+G1AZ71G2+B/JeWBgiSQyJCV27vttCP
+	485ZJo6bmnINU8zJFTYA6c9roJHJMGAmc7gyIdYumuVA
+X-Received: by 2002:ad4:5e8a:0:b0:6e4:4484:f34c with SMTP id 6a1803df08f44-6e6b01a7767mr24115046d6.35.1740132435905;
+        Fri, 21 Feb 2025 02:07:15 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IEZcNq29psfWNP7XvrBCeWRpVFeJgLe3D6ybymnRaWLd185tqdKS4nXeiwUxEMeLqwQ4vlSOw==
+X-Received: by 2002:ad4:5e8a:0:b0:6e4:4484:f34c with SMTP id 6a1803df08f44-6e6b01a7767mr24114696d6.35.1740132435531;
+        Fri, 21 Feb 2025 02:07:15 -0800 (PST)
+Received: from localhost (ip70-163-223-251.ph.ph.cox.net. [70.163.223.251])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e6a11624e0sm20637396d6.39.2025.02.21.02.07.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Feb 2025 02:07:14 -0800 (PST)
+Date: Fri, 21 Feb 2025 03:07:13 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev
+Subject: Re: Question on context setup for passthrough
+Message-ID: <x7d3pvynvglmsbst46n6affvryb3d53cifi2nlrymmbdpu5bgo@2fdbi6dlzklw>
+References: <rz4kc2zxi4fritsbmjsa3ekqncguvnmeir5se3fhu7pzhtgipk@2u6ps3q3gsqz>
+ <75f4867f-99b9-4ba9-abf4-f0dc29d08fca@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250220101511.37602-1-cuiyunhui@bytedance.com> <ba2a6295-7983-4701-8c42-797efe22ecb7@linux.intel.com>
-In-Reply-To: <ba2a6295-7983-4701-8c42-797efe22ecb7@linux.intel.com>
-From: yunhui cui <cuiyunhui@bytedance.com>
-Date: Fri, 21 Feb 2025 17:46:27 +0800
-X-Gm-Features: AWEUYZkJqSgMY7u4dhOrvQExbs4Qf6MpItdHGfjihq8Thi_KuEFs--dsdZv-1_4
-Message-ID: <CAEEQ3wkygXexsu9x16Q+6yMtmtM+9aD=-DH1tMVNq1yuyZ7Dcg@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] iommu/vt-d: fix system hang on reboot -f
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>
-Cc: dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org, 
-	will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <75f4867f-99b9-4ba9-abf4-f0dc29d08fca@linux.intel.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: 6rBHx3Iyoivp96W4trdUf6QlHUbKj3ymrqbbTi6hfig_1740132436
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hi Ethan,
-
-On Fri, Feb 21, 2025 at 4:40=E2=80=AFPM Ethan Zhao <haifeng.zhao@linux.inte=
-l.com> wrote:
->
->
-> =E5=9C=A8 2025/2/20 18:15, Yunhui Cui =E5=86=99=E9=81=93:
-> > When entering intel_iommu_shutdown, system interrupts are disabled,
->
-> System interrupts were disabled ? you mean all interrupts were disabled
-> when entering intel_iommu_shutdown(), perhaps it is not true, at least
-> for upstream latest code.
->
-> > and the reboot process might be scheduled out by down_write(). If the
-> > scheduled process does not yield (e.g., while(1)), the system will hang=
-.
->
-> No NMI lockup watchdog jumping out here ?
-
-Steps to reproduce:
-
-1. Avoid return in:
-if (no_iommu || dmar_disabled)
-    return;
-
-2. Write a.out with while(1).
-
-3. ./a.out &; reboot -f.
-
-4. Observe. Send NMI via BIOS to check system response.
-
-5. Add console=3DttyS0,115200 to cmdline to increase reproduction chance.
-
-Let's continue discussing based on the above.
-
->
+On Fri, Feb 21, 2025 at 04:40:42PM +0800, Baolu Lu wrote:
+> On 2025/2/21 15:16, Jerry Snitselaar wrote:
+> > Hi Baolu,
+> 
+> Hi Jerry,
+> 
+> > 
+> > In context_setup_pass_through_cb there is a check that bails out
+> > if dev != &pdev->dev which doesn't exist in the code that sets up the
+> > context entries in the dma domain case. Is there a reason this check is
+> > done in the passthrough case?
+> 
+> The check "dev != &pdev->dev" was added to prevent setting a context for
+> a different device that has its own probe path.
+> 
+> > I've been looking at an issue where a vm is running with an
+> > intel-iommu device, and has a pcie-to-pci bridge with a device behind
+> > it. When running with this commit, and defaulting to passthrough it
+> > gets a DMAR fault for the present bit not being set in the context
+> > entry when the device is coming up, and the rid for the fault is the
+> > rid the bridge will use for transactions coming from the secondary bus.
+> > Without that check the context entry gets set up for that rid, and
+> > it doesn't get the DMAR fault.
+> 
+> This appears to be a bug. Do you have a fix, or can you tell me the
+> process I can use to reproduce this issue with a local setup?
+> 
 > Thanks,
-> Ethan
->
-> >
-> > Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
-> > ---
-> >   drivers/iommu/intel/iommu.c | 3 ++-
-> >   1 file changed, 2 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > index cc46098f875b..76a1d83b46bf 100644
-> > --- a/drivers/iommu/intel/iommu.c
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -2871,7 +2871,8 @@ void intel_iommu_shutdown(void)
-> >       if (no_iommu || dmar_disabled)
-> >               return;
-> >
-> > -     down_write(&dmar_global_lock);
-> > +     if (!down_write_trylock(&dmar_global_lock))
-> > +             return;
-> >
-> >       /* Disable PMRs explicitly here. */
-> >       for_each_iommu(iommu, drhd)
->
-> --
-> "firm, enduring, strong, and long-lived"
->
+> baolu
+> 
 
-Thanks,
-Yunhui
+This is the qemu command I've been running that is stripped down from the command in the original report:
+
+/usr/libexec/qemu-kvm \
+    -name guest=test \
+    -machine q35,kernel-irqchip=split \
+    -cpu 'Icelake-Server-v2',+kvm_pv_unhalt \
+    -m size=4194304k \
+    -smp 4,sockets=2,dies=1,clusters=1,cores=2,threads=1 \
+    -nodefaults \
+    -device '{"id": "pcie-root-port-0", "driver": "pcie-root-port", "multifunction": true, "bus": "pcie.0", "addr": "0x2", "chassis": 1}' \
+    -device '{"id": "pcie-pci-bridge-0", "driver": "pcie-pci-bridge", "addr": "0x0", "bus": "pcie-root-port-0"}' \
+    -device '{"driver": "intel-iommu", "intremap": "on", "device-iotlb": true, "eim": "on"}' \
+    -blockdev '{"driver":"file","filename":"/home/jsnitsel/storage/CentOS-Stream-GenericCloud-9-latest.x86_64.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+    -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage","backing":null}' \
+    -device '{"driver":"virtio-blk-pci","bus":"pcie-pci-bridge-0","addr":"0x1","drive":"libvirt-1-format","id":"virtio-disk0", "bootindex":0, "disable-legacy": "on", "disable-modern": false, "iommu_platform": true}' \
+    -nographic \
+    -rtc base=utc,clock=host,driftfix=slew \
+    -boot order=cdn,strict=off \
+    -enable-kvm \
+    -serial stdio \
+    -net user,hostfwd=tcp::10022-:22 \
+    -net nic \
+    -msg timestamp=on
+
+
+With the above and 6.14-rc3 I get:
+
+2025-02-21T10:04:34.182950Z qemu-kvm: vtd_iommu_translate: detected translation failure (dev=02:00:00, iova=0x1091af002)
+2025-02-21T10:04:34.182967Z qemu-kvm: New fault is not recorded due to compression of faults
+[    1.151941] DMAR: DRHD: handling fault status reg 2
+[    1.152212] DMAR: [DMA Read NO_PASID] Request device [02:00.0] fault addr 0x1091af000 [fault reason 0x02] Present bit in context entry is clear
+
+The qemu is based on 9.1.0. The important bit is that there is the pcie-pci-bridge, and the device behind it has an addr other than 0x0.
+
