@@ -1,50 +1,50 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2290F1EB2F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F1EF18641
 	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 13:03:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740142998; cv=none; b=O+FHB2G63iH3TPmQi2aRmCXrqSzQ5X+OVn/+d5cqoZNYq6vjSPSsyNAG7IqiYaRmiqzkzSPYHVCCJqZ+Qa/b2xpei7RG1RNIk3ZzuWo7NTParhhNNDav9cTftKpzG+RUTT/ijVyFT8CH0fsgpyh5NH1ej7hew7MwkMRZr/bmXhg=
+	t=1740142998; cv=none; b=Jzcam8ZSNqY/4ChZtHN8qWhwhKvQ0i/F+WcJ8iknTpba063MTYz9oZifpoaE/IW/ih8dlv0qS280JtN77lWUEV6sgdmRhBsB+WJvCNr07IwxoKEGwv6+BUeCO9KAcO4MAfs/BjUCgR9vvbtWpF+yvKhmfcSOPWs6ohVZtSYHV8c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1740142998; c=relaxed/simple;
-	bh=gUqNfzXfUBw+v3B/iigi0I3IDZ3P55iGFuYcmGFjbOw=;
+	bh=SjrBiqduqIxqddiOrJnxIokKsbPXiMMvHw/PQKdm4Sg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=GzyEmHv1kCl+Fk1Fk253JgUHiSFBHQiYIRW2yFXnF3LqZTF2G5zL5FXjsYqXPG+7Ta33V1/nA5YTino3qc+8AiVzORvdEMqFsX/pA/jsv40i79Ed6/0k4sz9jZed+VsQYIVZIEHETXoMtaSKzFs4GzCTTmlgYMTFskxKbBtS7lE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=R14Aws2n; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:To:CC; b=BwhegQm0WcF8nAfFRI7UV4VUJiapx0eiMA0v5mY/u7gUghzZ0G8IT3H13pJ5XfH8DSHuKAh7w8jZT9vHkkzyWyi3H2Ombu1NS1gGRlJjGRFqsE8UcYVav5pRhhyDAiC06IXPflijKwEgNiuk4Qx+z6DnhetfDW2cGvoomeKcjYo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Vv9C/lZK; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="R14Aws2n"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51L60Fcc016303;
-	Fri, 21 Feb 2025 13:02:32 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Vv9C/lZK"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51L6ICQi018511;
+	Fri, 21 Feb 2025 13:02:38 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	aYJWksJhCP2gg/nuehuRkZ2u4aVszNfi4BQv6ColURc=; b=R14Aws2nqCbf6aIg
-	WzxYSkmWIlPdMHkn/HT/KCim5LfFEB+1ejUQfpIW23hb7Pyuh67/AhQW/Uv0zGfX
-	SBt+lwfGrovHuSqwbhtUo/YCX9+bfuUJED9+d3NwKgHcShOX8s1szwyViIszv96k
-	1rv/220SHA4figWo1YZo+DQfJkzySRSnJDYDsk0MlrPCVCVz3M6eE+1i4AeE1x+O
-	tVK6bX2s/2ggewzZZVkg9dcLzY4XnD6pCaX0tKW9po43olpXMlmKZo1LRJQ2qbvH
-	bcII9k1z+boWY0C0VH7hi3mZSafwe3wkPNDFFxeSOfxZ54lgez+s6g5A9NJwVT37
-	K6rakQ==
+	lUSYuimjFgBOZ+5LbmrEdoztDXbjvvCtO0iTjddDz9Q=; b=Vv9C/lZKbOXC3Lov
+	D6zFwIA4TCaLN+ksHf/JWWvqymTyhM13aNfdh4UzaKYvENj9LLogfHz8dT93P5DF
+	Hctb9h6YB96Wq+Z3r0Ag0kwD1IoB22Gcb7MR+WYdPdjUDOT2hak6LOFf2tIZRXvZ
+	18Knu/WdVbNfDb7HTXDn6dZGDOumJw2doygZmOn3dlpp8f86uRYnlOenrw9oAqqz
+	zDc9YWb9U7eetDlTZRMiK/WMh2BzOfa1E+aKANCslbKgNW7/uSTU/BYG4R79fSWI
+	BAxgkhtH0wbuhZUNVzWD2sL0xtjNLosGlj8kN6WB0Vi1WAY3H+1zgEJpDIj8yI7c
+	qkx5dg==
 Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44xku6scbr-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44xm3rha9x-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:32 +0000 (GMT)
+	Fri, 21 Feb 2025 13:02:37 +0000 (GMT)
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2VHT016729
+	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2aP1016849
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:31 GMT
+	Fri, 21 Feb 2025 13:02:36 GMT
 Received: from hu-zijuhu-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 21 Feb 2025 05:02:30 -0800
+ 15.2.1544.9; Fri, 21 Feb 2025 05:02:35 -0800
 From: Zijun Hu <quic_zijuhu@quicinc.com>
-Date: Fri, 21 Feb 2025 05:02:07 -0800
-Subject: [PATCH *-next 02/18] cpu: Remove needless return in void API
- suspend_enable_secondary_cpus()
+Date: Fri, 21 Feb 2025 05:02:14 -0800
+Subject: [PATCH *-next 09/18] ipv4/igmp: Remove needless return in void API
+ ip_mc_dec_group()
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,7 +53,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20250221-rmv_return-v1-2-cc8dff275827@quicinc.com>
+Message-ID: <20250221-rmv_return-v1-9-cc8dff275827@quicinc.com>
 References: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 In-Reply-To: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -109,38 +109,38 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: tuNGTOD3cGVV9vtQL6zpF8ZKXkpwMoIo
-X-Proofpoint-GUID: tuNGTOD3cGVV9vtQL6zpF8ZKXkpwMoIo
+X-Proofpoint-ORIG-GUID: e_ftKL5t6hyRk0sfETgy8f1gwBiK1Tiw
+X-Proofpoint-GUID: e_ftKL5t6hyRk0sfETgy8f1gwBiK1Tiw
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-02-21_04,2025-02-20_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 spamscore=0 impostorscore=0 suspectscore=0 clxscore=1011
- mlxscore=0 bulkscore=0 phishscore=0 mlxlogscore=772 lowpriorityscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
+ suspectscore=0 mlxlogscore=677 phishscore=0 bulkscore=0 lowpriorityscore=0
+ impostorscore=0 malwarescore=0 priorityscore=1501 adultscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2502100000 definitions=main-2502210095
 
-Remove needless 'return' in void API suspend_enable_secondary_cpus()
-since both the API and thaw_secondary_cpus() are void functions.
+Remove needless 'return' in void API ip_mc_dec_group() since
+both the API and __ip_mc_dec_group() are void functions.
 
 Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 ---
- include/linux/cpu.h | 2 +-
+ include/linux/igmp.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/cpu.h b/include/linux/cpu.h
-index 6a0a8f1c7c90..e3049543008b 100644
---- a/include/linux/cpu.h
-+++ b/include/linux/cpu.h
-@@ -148,7 +148,7 @@ static inline int suspend_disable_secondary_cpus(void)
- }
- static inline void suspend_enable_secondary_cpus(void)
+diff --git a/include/linux/igmp.h b/include/linux/igmp.h
+index 073b30a9b850..dddf90c55215 100644
+--- a/include/linux/igmp.h
++++ b/include/linux/igmp.h
+@@ -135,7 +135,7 @@ extern void ip_mc_remap(struct in_device *);
+ extern void __ip_mc_dec_group(struct in_device *in_dev, __be32 addr, gfp_t gfp);
+ static inline void ip_mc_dec_group(struct in_device *in_dev, __be32 addr)
  {
--	return thaw_secondary_cpus();
-+	thaw_secondary_cpus();
+-	return __ip_mc_dec_group(in_dev, addr, GFP_KERNEL);
++	__ip_mc_dec_group(in_dev, addr, GFP_KERNEL);
  }
- 
- #else /* !CONFIG_PM_SLEEP_SMP */
+ extern void __ip_mc_inc_group(struct in_device *in_dev, __be32 addr,
+ 			      gfp_t gfp);
 
 -- 
 2.34.1
