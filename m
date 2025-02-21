@@ -1,50 +1,50 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A79F2080ED
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CDFC18641
 	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 13:03:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740142999; cv=none; b=Hao7x66Y5/H+DlIY0DMlU3iE8ztzttHR2bTG8hJw0f8Nci36ndMExt9iT6pNt/kkEYAH8mGjMlNq+M0MJOFSIy8NZR0CiSMBqZPWPU8+5SeqKNJkydQxxym1A1j88qTn3VQPHsygVpXXx/+CfL5Jz+4h5vyXKdsRy60Vql8NLmM=
+	t=1740143000; cv=none; b=joKCRRLu1jxMDxWR9kLADgy/MgRpUDl8tllsXP98DSwLao9Ogz4B1wCA19OsV2uPKmoLY0CNquvKStubfhUAYrryNc5PVhL/gQr94+kgC14MAlFXBi3C2bfRMd0y7KqO1wjzxQ8LRcZTkU5jTivCzz2/EcJZD5WPJlsD5Wz2lr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740142999; c=relaxed/simple;
-	bh=onJ0ReHOq8brft03T40e0ect6uFDmdS5HJX9a4Bo7F8=;
+	s=arc-20240116; t=1740143000; c=relaxed/simple;
+	bh=qDiZvTOKywyLq6EJtNz3N1981EYfNJZQzjSEtl9+57s=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=XkEJW2to7wDfn3FmEOQcViCSlhu96sLjTvMkGEHD2D6bZrwiT7qXHp82LPgSgqQGkJM/25mAWiZc3/EnFgmaUUupE+DChnIBW2Py47ed4sTBTK5l7nR3CjyPaqwlVlv5OBVGwiHUx1yAQ/Q6uLJ2nqRp2+5QwAJwb5qO+8rk7wI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=JrxFvFyV; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:To:CC; b=u5S31HE4CDFXo8tIjWleilNJEblSDjRMoN1P1W9nEkSxsIZsDHVwc8J5YMoWvyPF7Wv161qUdwth40wfu1THz4CYPL4Ht4fYRBALzBu5U36lALJhHFzb+YlrUeOVHjpUkxXhF8fRYIB5Ren8U03DNGrVWJTmMT7TMKddtImfQRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=GsTJM4Ts; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="JrxFvFyV"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51LCth5u031375;
-	Fri, 21 Feb 2025 13:02:44 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="GsTJM4Ts"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51LAUNTq015154;
+	Fri, 21 Feb 2025 13:02:43 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	23zc97bNEojfrf7Aepw+jdTM5CqbRIhKkZBo1Y/VTQA=; b=JrxFvFyVLAAmqDKi
-	kYNLIHhaxo8Cj8UC54UO9/6+ZuVk4NreclcfZq+TrIuZaRffyaKLEcUKEuZYCNMu
-	IbCa5Rgtk6JDT+yOvT3Y72tw8T03ns/DAHOpxJw21tYT6ZuogrjcAeMRitkbBCTz
-	anJ0Cu/VNeW5s6pGTMisxOj3M58PgS9BTI+iwDpgE8PFnOyxUvFl7Zl1LTffAfG1
-	n3fBwWEXNU2IVIsgJ2oUh1Z2gwNYGBbKwRQduSCYSWOJmb8zhIY68a3L3IvAW1v9
-	YAOarG/pJMYc3tjovzowrAMT873PWtsFJ4QMv33RaCzl0pZ2YnKbkDnNgU676BUl
-	SiwSkA==
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44vyy5hyj0-1
+	2oIbv7Mr1JJLwuqm+zLPquvOUGffIsbDY4gkPIr24vw=; b=GsTJM4Ts5MybFu4q
+	Wt2WPfdrHPkEW42XovxMyAL7UGWeOS/oIg1RemtDqXJNsE/rfnliZuMiNmEbM3Cf
+	nkuCNBwt6pLxLaal2yy7EHMtyRXMJKvd+zEUYo9C5KDDiWIlXYQSSZCgRTf4T9ib
+	Dx1LPk7HwpjAvSOMgnnunqqiwAfEMKiz5Ua4etrwP5CwhG7DqcToUxcSuwg+wk9M
+	ZHV6tLj04HNEGnUcN/TlL+x9HTY3LD6Uqolu3Zsw/CLbb4AstqZh4ONptI2c9yLk
+	/UjVx4voH+RwStNrrns9qQEY5cRMdmJ5hB8QXLbT2pxLpspnYrwiC6ADPlU/F+RK
+	+6ee1w==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44vyy4j2xq-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:44 +0000 (GMT)
+	Fri, 21 Feb 2025 13:02:42 +0000 (GMT)
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2gWn020361
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2bi9027924
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:42 GMT
+	Fri, 21 Feb 2025 13:02:37 GMT
 Received: from hu-zijuhu-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 21 Feb 2025 05:02:41 -0800
+ 15.2.1544.9; Fri, 21 Feb 2025 05:02:36 -0800
 From: Zijun Hu <quic_zijuhu@quicinc.com>
-Date: Fri, 21 Feb 2025 05:02:21 -0800
-Subject: [PATCH *-next 16/18] rhashtable: Remove needless return in three
- void APIs
+Date: Fri, 21 Feb 2025 05:02:15 -0800
+Subject: [PATCH *-next 10/18] IB/rdmavt: Remove needless return in void API
+ rvt_mod_retry_timer()
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,7 +53,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20250221-rmv_return-v1-16-cc8dff275827@quicinc.com>
+Message-ID: <20250221-rmv_return-v1-10-cc8dff275827@quicinc.com>
 References: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 In-Reply-To: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -109,58 +109,38 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: mXmn2OcLX0UFAdy8phFaZcXV3YHhHqOj
-X-Proofpoint-GUID: mXmn2OcLX0UFAdy8phFaZcXV3YHhHqOj
+X-Proofpoint-GUID: a6Gp8hVCE9ISdL4io0m663YnpWaxWQsL
+X-Proofpoint-ORIG-GUID: a6Gp8hVCE9ISdL4io0m663YnpWaxWQsL
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-02-21_04,2025-02-20_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- mlxlogscore=619 spamscore=0 bulkscore=0 clxscore=1015 suspectscore=0
- adultscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0 impostorscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ priorityscore=1501 malwarescore=0 bulkscore=0 suspectscore=0 clxscore=1011
+ lowpriorityscore=0 mlxlogscore=850 spamscore=0 adultscore=0 phishscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2502100000 definitions=main-2502210096
 
-Remove needless 'return' in the following void APIs:
-
- rhltable_walk_enter()
- rhltable_free_and_destroy()
- rhltable_destroy()
-
-Since both the API and callee involved are void functions.
+Remove needless 'return' in void API rvt_mod_retry_timer() since
+both the API and rvt_mod_retry_timer_ext() are void functions.
 
 Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 ---
- include/linux/rhashtable.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/rdma/rdmavt_qp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/rhashtable.h b/include/linux/rhashtable.h
-index 8463a128e2f4..6c85b28ea30b 100644
---- a/include/linux/rhashtable.h
-+++ b/include/linux/rhashtable.h
-@@ -1259,7 +1259,7 @@ static inline int rhashtable_replace_fast(
- static inline void rhltable_walk_enter(struct rhltable *hlt,
- 				       struct rhashtable_iter *iter)
+diff --git a/include/rdma/rdmavt_qp.h b/include/rdma/rdmavt_qp.h
+index d67892944193..6b9ee610168c 100644
+--- a/include/rdma/rdmavt_qp.h
++++ b/include/rdma/rdmavt_qp.h
+@@ -735,7 +735,7 @@ static inline void rvt_mod_retry_timer_ext(struct rvt_qp *qp, u8 shift)
+ 
+ static inline void rvt_mod_retry_timer(struct rvt_qp *qp)
  {
--	return rhashtable_walk_enter(&hlt->ht, iter);
-+	rhashtable_walk_enter(&hlt->ht, iter);
+-	return rvt_mod_retry_timer_ext(qp, 0);
++	rvt_mod_retry_timer_ext(qp, 0);
  }
  
  /**
-@@ -1275,12 +1275,12 @@ static inline void rhltable_free_and_destroy(struct rhltable *hlt,
- 							     void *arg),
- 					     void *arg)
- {
--	return rhashtable_free_and_destroy(&hlt->ht, free_fn, arg);
-+	rhashtable_free_and_destroy(&hlt->ht, free_fn, arg);
- }
- 
- static inline void rhltable_destroy(struct rhltable *hlt)
- {
--	return rhltable_free_and_destroy(hlt, NULL, NULL);
-+	rhltable_free_and_destroy(hlt, NULL, NULL);
- }
- 
- #endif /* _LINUX_RHASHTABLE_H */
 
 -- 
 2.34.1
