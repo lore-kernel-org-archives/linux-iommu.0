@@ -1,50 +1,50 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B1F20B811
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0529E20B20C
 	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 13:03:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740143007; cv=none; b=YfRUiK1JGBPcOLmLY943oc5sI1GwyN6SdjUD1sepHNK5DT6QK4R88Nt1HkHcsS8eIdEEn6ktMNjgV/NlxbqTQvjAjhrsDtGYW8nfPjnlY69K7MEoNQ6ljVsGfSBial4/OXmK9XEhhb8v4CMVACkfSQwhae5LoUE7YkW/cdKq89w=
+	t=1740143007; cv=none; b=OgcxzrHVKb6b+yP5LqE3S4SBN4n80+1dBrTLJ5oSddI+XKy4EtVD68yKZFdRyKhbnqHt6h2zAXQeVVfN6xmEYCMfxoOIsnLKucWPV5ofkzW5f7PucHLtTtU55o9D4mBOSO0W1z0+b7gYAgS71MKlkuGyR3iCx2xitR1j4wHPdV0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1740143007; c=relaxed/simple;
-	bh=d/y3uD6NR6ku4wGAdC+kZEJU/mnBsqGv4nI8GEFhe/o=;
+	bh=vXqo1279T2TWyqMw/aJUcNnqCI/fKXiOLUqyZRPLpQY=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=uIM2+4Duappz8dARSISd7pW9kiwdX95OP+YE45PD2U0+Tewq+TmfRuCMsCMsBebPrRrflIKbMig1OkT8snFRD4YvqdW6BMjI37EYvRqJbCQabYEERgX5gIF/cVwphDTXwFdeKXeEwzzVSHjvOQzmZe2NUDNrtgvSWlUPTczozc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=INf48+qw; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:To:CC; b=m+F7oCGk7ylr80hBGcMZoiWecJ1FeFemsylQX3/jMIW2rEL+F6se3HJpcSWk0Ws1iRPrVEAytTxEgxdz+v7RDrBMjkCu0gr6IJgpznyL4KaqFIzPtveCg8Yffvj1gZf0nI8dpzR20a+0oP5PXGaTZLa+U0mBM9J9IfFvOwSy61A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=F09fhhVL; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="INf48+qw"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51L603lr016207;
-	Fri, 21 Feb 2025 13:02:52 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="F09fhhVL"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51L67gkD015230;
+	Fri, 21 Feb 2025 13:02:43 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	hDfWtNTdbaSs92T18904n8pbiB3wRUppd+SKmscGAlk=; b=INf48+qwdFqvjkyp
-	hr9FZ0HQLyNg4hcmSyTZNhBw4yXREh3pOc0jXnfrkIo2KSet8sVR2NT+eMvstrd1
-	QgIClbFUMlhYyV+yOrPSSx84dqMVISE+v0x2ZkchXsZk72MZ9TgvGRGmx8AF8+54
-	wT64OU5DrVYBsD2bvtGe7zdA6esj3sY0s05oEQCJ6VIjL/+LkM8VAXvn7JianplY
-	qqJVRrKRyhBgdM6L/otz/CY4O63/6dzAi6e1yktYQ5sIp9uoV2GYQd2wcA2P4HXQ
-	KYlfDcMeFbK049HxNCeabb/d2EddFjgDD/5D+oJuDwGdMO2d6fCIUEXFGpNluzua
-	AtDIxw==
+	mRfKT70Ezs8q0qhdGvMiCvQAOV6qwoDo1+5Ib36go70=; b=F09fhhVLSzIi15CQ
+	IL6+5XUhYyBwdHwPDZw9n8y/a9sAUWqMvHCsZiIotghB+PRZmNjfhrRbG/+MwaqO
+	Actq4Ux+Wuq1a3K8iiLUHxUkEHOhKl7Hs0BS6hEU9gsfOoipCfdcn7bRko6R26ag
+	qxKKFL2g+xjAWJiRtPTfaLZPS8vlj2gryN7OMg4SD32RHPxQBHjq4Q2aJyYIK96V
+	okmb6m2GM25GUgLtpS3JHU9Rcv+vYSap9MYccB2TUEvstRNr38zJYRr5s4YnRdWF
+	FKEd4Zsj8RXhV1+H8pzbDNnl/NDVwue+KZ3GQitzGonbkrI6D7JfJXNIaeG7w4dt
+	+Zdkgw==
 Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44xku6scbv-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44vyy4j2xm-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:36 +0000 (GMT)
+	Fri, 21 Feb 2025 13:02:43 +0000 (GMT)
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2YTj015730
+	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51LD2YfU015719
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Feb 2025 13:02:35 GMT
+	Fri, 21 Feb 2025 13:02:34 GMT
 Received: from hu-zijuhu-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 21 Feb 2025 05:02:34 -0800
+ 15.2.1544.9; Fri, 21 Feb 2025 05:02:33 -0800
 From: Zijun Hu <quic_zijuhu@quicinc.com>
-Date: Fri, 21 Feb 2025 05:02:12 -0800
-Subject: [PATCH *-next 07/18] wifi: mac80211: Remove needless return in
- void API _ieee80211_hw_set()
+Date: Fri, 21 Feb 2025 05:02:11 -0800
+Subject: [PATCH *-next 06/18] skbuff: Remove needless return in void API
+ consume_skb()
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,7 +53,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20250221-rmv_return-v1-7-cc8dff275827@quicinc.com>
+Message-ID: <20250221-rmv_return-v1-6-cc8dff275827@quicinc.com>
 References: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 In-Reply-To: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -109,37 +109,37 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: gFqBDpJVue8M_4g_3XIvrl5JrEzUCHjB
-X-Proofpoint-GUID: gFqBDpJVue8M_4g_3XIvrl5JrEzUCHjB
+X-Proofpoint-GUID: urWADDcjG-dh6i35dktiR-RaZVgKAGCS
+X-Proofpoint-ORIG-GUID: urWADDcjG-dh6i35dktiR-RaZVgKAGCS
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-02-21_04,2025-02-20_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 spamscore=0 impostorscore=0 suspectscore=0 clxscore=1011
- mlxscore=0 bulkscore=0 phishscore=0 mlxlogscore=743 lowpriorityscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ priorityscore=1501 malwarescore=0 bulkscore=0 suspectscore=0 clxscore=1015
+ lowpriorityscore=0 mlxlogscore=789 spamscore=0 adultscore=0 phishscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2502100000 definitions=main-2502210096
 
-Remove needless 'return' in void API _ieee80211_hw_set()
-since both the API and __set_bit() are void functions.
+Remove needless 'return' in void API consume_skb() since
+both the API and kfree_skb() are void functions.
 
 Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 ---
- include/net/mac80211.h | 2 +-
+ include/linux/skbuff.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/mac80211.h b/include/net/mac80211.h
-index c3ed2fcff8b7..3a654e9f41db 100644
---- a/include/net/mac80211.h
-+++ b/include/net/mac80211.h
-@@ -3091,7 +3091,7 @@ static inline bool _ieee80211_hw_check(struct ieee80211_hw *hw,
- static inline void _ieee80211_hw_set(struct ieee80211_hw *hw,
- 				     enum ieee80211_hw_flags flg)
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index bb2b751d274a..33bf30bc16f5 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1296,7 +1296,7 @@ void consume_skb(struct sk_buff *skb);
+ #else
+ static inline void consume_skb(struct sk_buff *skb)
  {
--	return __set_bit(flg, hw->flags);
-+	__set_bit(flg, hw->flags);
+-	return kfree_skb(skb);
++	kfree_skb(skb);
  }
- #define ieee80211_hw_set(hw, flg)	_ieee80211_hw_set(hw, IEEE80211_HW_##flg)
+ #endif
  
 
 -- 
