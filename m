@@ -1,50 +1,31 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 414C0204693
-	for <iommu@lists.linux.dev>; Sat, 22 Feb 2025 07:28:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9F57205E3F
+	for <iommu@lists.linux.dev>; Sat, 22 Feb 2025 08:11:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740209336; cv=none; b=VJ/ZFaIJkwdVIlHXl1VW4EF+LqLZcofHrbAeSdKmOZTjwHx1qqncL64fqbpGoP9L+G3/AdGs1XhXQLxJAAv0Q/Xove0jlotSfZcg+VB/6S61Xx1i5q4AEaEALluFYBkFB18cV7PpycUyAV6x1/5NnTGUkJMyLwl36aUWnVHt//s=
+	t=1740211917; cv=none; b=G1r3vRR19jv43ZB7E9Yz229W8s/oXaLvR0Ec7KlF4aHIUitczS2kH8Vn39nC1yl+UJ8YWZ2+BwxXZmR2MOUTMN4BkhQGXtLADQpYt0NqqOAvzQwF+auoL8ksm7zjFxq05h+4YVY/CJTYjH8pezXY7Gj7SdudvIFKE49UcnhAC6w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740209336; c=relaxed/simple;
-	bh=hKWnYqDVibXovKSxdxiJl5vEV8dexi/H8/6jyPb+cnc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=q5qNrT7jXTW1lWKNeh2ZqCQXKwN3WtBKX/LERwBNO7/Igzn83AZweU5ods6TJ7mJDR50ENIFXUf5Cz2psW3FfQ4p6Xx8HCTvAsy3/s6K/u0/u/0UK9dxCa6drbfW0S804jGVnPY9OVrnAsvlJ+Buv5BoRL+3lQKQXg97yxcZsJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KNfq9KbC; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KNfq9KbC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740209335; x=1771745335;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=hKWnYqDVibXovKSxdxiJl5vEV8dexi/H8/6jyPb+cnc=;
-  b=KNfq9KbCAKQVJzw2ge5PUG6LYyhCDztzObl8vkplFBR2PgQxHPxViBg3
-   o1HwYLvCHnRfNgGQY1fQ7gOdyvfHb2TcqZZFXUjnZ8Gs6YzZ3j1qwAlMH
-   8QU6EPSUVhHb24D9HH17IYIRr7WmNmPH/9kuDZ6AW7WVFnXFlsoNRbGHD
-   A+7An54RZ0bAfaNoSsT5tSGZ1Ki7Xv5HYTEE62XnzDUJzghgf4TZ35gr3
-   LVRczSwJe3R/JX+CrskeO60Y93Knd5WdUr4lGCHM8Qs30LrmOlAMTQEJO
-   9CdaHKKmvOzWSFvnbfWop6gkqsuHH6pqFk8FnkAKQOSctxoXesQ3hJxsP
-   w==;
-X-CSE-ConnectionGUID: TWsBIohaQLeoAdgoi2WzoA==
-X-CSE-MsgGUID: qN5AHFQdSdy5u3yS4vh4CA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11352"; a="40742277"
-X-IronPort-AV: E=Sophos;i="6.13,307,1732608000"; 
-   d="scan'208";a="40742277"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2025 23:28:54 -0800
-X-CSE-ConnectionGUID: 371ayz7cT/aPqhHbAcbXTQ==
-X-CSE-MsgGUID: 85UYNrxHTcmNBhsBWT9s3w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,307,1732608000"; 
-   d="scan'208";a="120490527"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2025 23:28:52 -0800
-Message-ID: <682b5b61-e556-479e-b641-3c987360d87b@linux.intel.com>
-Date: Sat, 22 Feb 2025 15:25:43 +0800
+	s=arc-20240116; t=1740211917; c=relaxed/simple;
+	bh=4m8KhPfmPys8alzz58S3fE6vnQq0+jk5CAly0Nr2FN4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=AX7L+qSKGmnc2JWAWMGhriEvgURdn7pug2iN/WwUzPzspH7W/B0LuQzTkUkQR8W95DlopwoDzN5/P9o1j6l8WXYsiKOo+2b3qneAuz4dNljajkEgp14fGBaa4JS/bzrovlizRmBemS2awY0zIFFZVIRBSllyRvkUDiSUUOEN/qU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.187
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.194])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Z0KNH6gM6zdb8k;
+	Sat, 22 Feb 2025 16:07:11 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 0428B1400CF;
+	Sat, 22 Feb 2025 16:11:52 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Sat, 22 Feb 2025 16:11:51 +0800
+Message-ID: <24321916-549d-4b76-8ca5-a268432f54e7@huawei.com>
+Date: Sat, 22 Feb 2025 16:11:51 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,66 +33,100 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 08/12] iommufd/selftest: Put iopf enablement in domain
- attach path
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
- Zhangfei Gao <zhangfei.gao@linaro.org>, Zhou Wang <wangzhou1@hisilicon.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20250214061104.1959525-1-baolu.lu@linux.intel.com>
- <20250214061104.1959525-9-baolu.lu@linux.intel.com>
- <20250220010250.GQ3696814@ziepe.ca>
- <d93c8cc9-77a5-4b78-85d2-6b4601f52266@linux.intel.com>
- <20250220180004.GX3696814@ziepe.ca>
- <6754e308-d2ee-4389-9dcd-c2a5bbb16c48@linux.intel.com>
- <20250221150401.GY3696814@ziepe.ca>
+Subject: Re: [PATCH net-next v9 3/4] page_pool: support unlimited number of
+ inflight pages
+To: Jesper Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>,
+	<kuba@kernel.org>, <pabeni@redhat.com>
+CC: <zhangkun09@huawei.com>, <liuyonglong@huawei.com>,
+	<fanghaiqing@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
+ Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Ilias
+ Apalodimas <ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>,
+	Simon Horman <horms@kernel.org>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+References: <20250212092552.1779679-1-linyunsheng@huawei.com>
+ <20250212092552.1779679-4-linyunsheng@huawei.com>
+ <640946c8-237d-40de-b64e-0f8fd8f1a600@kernel.org>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250221150401.GY3696814@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <640946c8-237d-40de-b64e-0f8fd8f1a600@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On 2/21/25 23:04, Jason Gunthorpe wrote:
->> -       return mock_dev_enable_iopf(dev, domain);
->> +       if (mdev->domain)
->> +               mock_dev_disable_iopf(dev, mdev->domain);
+On 2025/2/21 18:12, Jesper Dangaard Brouer wrote:
+
+...
+
+>> @@ -513,10 +517,43 @@ static struct page_pool_item *page_pool_fast_item_alloc(struct page_pool *pool)
+>>       return llist_entry(first, struct page_pool_item, lentry);
+>>   }
+>>   +#define PAGE_POOL_SLOW_ITEM_BLOCK_BIT            BIT(0)
+>> +static struct page_pool_item *page_pool_slow_item_alloc(struct page_pool *pool)
+>> +{
+>> +    if (unlikely(!pool->slow_items.block ||
+>> +             pool->slow_items.next_to_use >= ITEMS_PER_PAGE)) {
+>> +        struct page_pool_item_block *block;
+>> +        struct page *page;
 >> +
->> +       ret = mock_dev_enable_iopf(dev, domain);
->> +       if (ret)
-> Though here the domain is disabled but not removed from mdev->domain,
-> is it OK?
+>> +        page = alloc_pages_node(pool->p.nid, GFP_ATOMIC | __GFP_NOWARN |
+>> +                    __GFP_ZERO, 0);
+>> +        if (!page) {
+>> +            alloc_stat_inc(pool, item_slow_failed);
+>> +            return NULL;
+>> +        }
+> 
+> We also need stats on how many pages we allocate for these item_blocks
+> (and later free). This new scheme of keeping track of all pages
+> allocated via page_pool, is obviously going to consume more memory.
+> 
+> I want to be able to find out how much memory a page_pool is consuming.
+> (E.g. Kuba added a nice interface for querying inflight packets, even
+> though this is kept as two different counters).
 
-That's not okay. I can make it like below:
+Does additional stats is needed? as I was thinking list_for_each_entry()
+for pool->item_blocks might be used to tell how much memory it is used
+for slow item, and how much each item_block is fragmented by looking at
+the block->ref with the protection of pool->item_lock if needed.
 
-static int mock_domain_nop_attach(struct iommu_domain *domain,
-                                   struct device *dev)
-{
-         struct mock_dev *mdev = to_mock_dev(dev);
-         int ret;
+> 
+> What I worry about, is that fragmentation happens inside these
+> item_blocks. (I hope you understand what I mean by fragmentation, else
+> let me know).
+> 
+> Could you explain how code handles or avoids fragmentation?
 
-         if (domain->dirty_ops && (mdev->flags & 
-MOCK_FLAGS_DEVICE_NO_DIRTY))
-                 return -EINVAL;
+Currently fragmentation is not handled or avoided yet.
+For inflight pages which are using slow item, it seems there is hardly
+anything we can do about that.
 
-         ret = mock_dev_enable_iopf(dev, domain);
-         if (ret)
-                 return ret;
+For pages which sit in the page_pool, it seems possible to change
+the pages using slow item to use fast item when they are allocated
+from or recycled back into page_pool if fast item is available, or
+those pages are simply disconnected from page_pool by calling
+page_pool_return_page() when page_pool_put_unrefed_netmem() is
+called?
 
-         mock_dev_disable_iopf(dev, mdev->domain);
-         mdev->domain = domain;
+I am not sure how severe the fragmentation problem might become and
+which way to handle it is better, maybe add interface to query the
+fragmentation info as mentioned above first, and deal with it when
+it does become a severe problem?
 
-         return 0;
-}
-
-Both mock_dev_enable/disable_iopf() will be a no-op if domain or
-domain's iopf handler is empty:
-
-         if (!domain || !domain->iopf_handler)
-                 return;
-
-Does it work for you?
-
-Thanks,
-baolu
+> 
+> 
+>> +
+>> +        block = page_address(page);
+>> +        block->pp = pool;
+>> +        block->flags |= PAGE_POOL_SLOW_ITEM_BLOCK_BIT;
+>> +        refcount_set(&block->ref, ITEMS_PER_PAGE);
+>> +        pool->slow_items.block = block;
+>> +        pool->slow_items.next_to_use = 0;
+>> +
+>> +        spin_lock_bh(&pool->item_lock);
+>> +        list_add(&block->list, &pool->item_blocks);
+>> +        spin_unlock_bh(&pool->item_lock);
+>> +    }
+>> +
+>> +    return &pool->slow_items.block->items[pool->slow_items.next_to_use++];
+>> +}
+>> +
