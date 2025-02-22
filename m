@@ -1,31 +1,35 @@
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+Received: from pv50p00im-ztdg10012001.me.com (pv50p00im-ztdg10012001.me.com [17.58.6.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9F57205E3F
-	for <iommu@lists.linux.dev>; Sat, 22 Feb 2025 08:11:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D18612080C1
+	for <iommu@lists.linux.dev>; Sat, 22 Feb 2025 10:39:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=17.58.6.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740211917; cv=none; b=G1r3vRR19jv43ZB7E9Yz229W8s/oXaLvR0Ec7KlF4aHIUitczS2kH8Vn39nC1yl+UJ8YWZ2+BwxXZmR2MOUTMN4BkhQGXtLADQpYt0NqqOAvzQwF+auoL8ksm7zjFxq05h+4YVY/CJTYjH8pezXY7Gj7SdudvIFKE49UcnhAC6w=
+	t=1740220781; cv=none; b=aT9OqjzqLMfQUnNLNwZFJhtEmumut1VN2os0gXh9XYLH7SUvcCu6KKX7+nHdozw2JVwvq6fVICU5V/dvbZcOwT3TyWswGxElgxY8aJONIxcbWY3pD0nPrSzHwt7GhG/wHozqa6wcSDIbzr5TX+x1VbxG7aLx2sk4vjzBnYfV4cI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740211917; c=relaxed/simple;
-	bh=4m8KhPfmPys8alzz58S3fE6vnQq0+jk5CAly0Nr2FN4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=AX7L+qSKGmnc2JWAWMGhriEvgURdn7pug2iN/WwUzPzspH7W/B0LuQzTkUkQR8W95DlopwoDzN5/P9o1j6l8WXYsiKOo+2b3qneAuz4dNljajkEgp14fGBaa4JS/bzrovlizRmBemS2awY0zIFFZVIRBSllyRvkUDiSUUOEN/qU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.187
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.194])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Z0KNH6gM6zdb8k;
-	Sat, 22 Feb 2025 16:07:11 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id 0428B1400CF;
-	Sat, 22 Feb 2025 16:11:52 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Sat, 22 Feb 2025 16:11:51 +0800
-Message-ID: <24321916-549d-4b76-8ca5-a268432f54e7@huawei.com>
-Date: Sat, 22 Feb 2025 16:11:51 +0800
+	s=arc-20240116; t=1740220781; c=relaxed/simple;
+	bh=+MM+Sj3Py0FG+77MBxvX9ur6eehoj2ClCYpV/HT4iwI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=k1mg1Ec8Q82HQHFGCBJ72IkFlZC2eOiMsZNFJXIB/MMGYu862+7Dqzs6n/zghuxpOEDNLU+I5ULUTW1XMNv7xtSdrkGvsiJkOybFq0DeqNTCkzFrjXkYTbjLOOv65e7IHlz3IyrU3O/r95YI+XhD3V7GoSTX5GIpIYp/LzEm+JI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=yYDN+E04; arc=none smtp.client-ip=17.58.6.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="yYDN+E04"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
+	s=1a1hai; bh=mbxficQPTzs09LWwBbFhdunStNbxz1Db5LUu+U2NlSw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type:x-icloud-hme;
+	b=yYDN+E04f3AdizaUiroUuQGY41SPVVZcRqALdOpH6NFQhX3QCjWpHGcmHdHvZgXyw
+	 lY1ddO0XjuI5jwoyQLYS2xsXRa555rOew3qMgB02ajNFY2naY0JiMg3EzOtw/vDBsm
+	 rNcbU3RkjyAdmQBUnnLpBha3Hg45RvWSCLNO8oK0o5dE+ouOgYdV9O7OaddprvalcC
+	 F7e6FcKQyQxquf6C4CR09WnXr4uHh4OXsP+wDyxaBcn55oVkRsljjd3IOmoDXx5njY
+	 kMIwNWVp9xmRX9kyVkPTFuHEolnlCaw5jRp5Hj9sFk69BnUaESstfS78tB+JnoKuuq
+	 DJolzLt315u8g==
+Received: from [192.168.1.26] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
+	by pv50p00im-ztdg10012001.me.com (Postfix) with ESMTPSA id 00694A0092;
+	Sat, 22 Feb 2025 10:38:11 +0000 (UTC)
+Message-ID: <732f9f29-f794-4491-b942-45ad01b01db5@icloud.com>
+Date: Sat, 22 Feb 2025 18:38:06 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,100 +37,101 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v9 3/4] page_pool: support unlimited number of
- inflight pages
-To: Jesper Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>,
-	<kuba@kernel.org>, <pabeni@redhat.com>
-CC: <zhangkun09@huawei.com>, <liuyonglong@huawei.com>,
-	<fanghaiqing@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
- Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>,
-	Simon Horman <horms@kernel.org>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-References: <20250212092552.1779679-1-linyunsheng@huawei.com>
- <20250212092552.1779679-4-linyunsheng@huawei.com>
- <640946c8-237d-40de-b64e-0f8fd8f1a600@kernel.org>
+Subject: Re: [PATCH *-next 00/18] Remove weird and needless 'return' for void
+ APIs
+To: Arnd Bergmann <arnd@arndb.de>, Zijun Hu <quic_zijuhu@quicinc.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Will Deacon <will@kernel.org>, "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Nicholas Piggin <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ "David S . Miller" <davem@davemloft.net>,
+ "Rafael J . Wysocki" <rafael@kernel.org>, Danilo Krummrich
+ <dakr@kernel.org>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Simon Horman <horms@kernel.org>, Johannes Berg <johannes@sipsolutions.net>,
+ Jamal Hadi Salim <jhs@mojatatu.com>, Cong Wang <xiyou.wangcong@gmail.com>,
+ Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Leon Romanovsky <leon@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
+ Bartosz Golaszewski <brgl@bgdev.pl>, Lee Jones <lee@kernel.org>,
+ Thomas Graf <tgraf@suug.ch>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Miquel Raynal <miquel.raynal@bootlin.com>,
+ Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>
+Cc: Linux-Arch <linux-arch@vger.kernel.org>, linux-mm@kvack.org,
+ linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+ Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+ linux-rdma@vger.kernel.org,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ linux-pm@vger.kernel.org, iommu@lists.linux.dev,
+ linux-mtd@lists.infradead.org
+References: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
+ <5d662c4c-76f7-4e5c-82f3-2aeeaf9e3311@app.fastmail.com>
 Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <640946c8-237d-40de-b64e-0f8fd8f1a600@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+From: Zijun Hu <zijun_hu@icloud.com>
+In-Reply-To: <5d662c4c-76f7-4e5c-82f3-2aeeaf9e3311@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: 5BaBpFy7OfeZq74ITSrzTheUfV5JFE1_
+X-Proofpoint-ORIG-GUID: 5BaBpFy7OfeZq74ITSrzTheUfV5JFE1_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-22_04,2025-02-20_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adultscore=0
+ mlxlogscore=999 suspectscore=0 bulkscore=0 clxscore=1011 phishscore=0
+ malwarescore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2308100000 definitions=main-2502220085
 
-On 2025/2/21 18:12, Jesper Dangaard Brouer wrote:
+On 2025/2/21 23:40, Arnd Bergmann wrote:
+>> This patch series is to remove weird and needless 'return' for
+>> void APIs under include/ with the following pattern:
+>>
+>> api_header.h:
+>>
+>> void api_func_a(...);
+>>
+>> static inline void api_func_b(...)
+>> {
+>> 	return api_func_a(...);
+>> }
+>>
+>> Remove the needless 'return' in api_func_b().
+>>
+>> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+> I have no objection to the changes, but I think you should
+> describe the motivation for them beyond them being 'weird'.
+> 
 
+yes. C spec such as C17 have this description about return
+statement:
+
+6.8.6.4:
+A return statement with an expression shall not appear in a function
+whose return type is void. A return statement without an expression
+shall only appear in a function whose return type is void.
+
+do we need to treat below return statement as bad code style ?
+
+void api_func_a(...);
+void api_func_b(...) {
 ...
+	return api_func_a(...); // return void function in void func
+...
+}
 
->> @@ -513,10 +517,43 @@ static struct page_pool_item *page_pool_fast_item_alloc(struct page_pool *pool)
->>       return llist_entry(first, struct page_pool_item, lentry);
->>   }
->>   +#define PAGE_POOL_SLOW_ITEM_BLOCK_BIT            BIT(0)
->> +static struct page_pool_item *page_pool_slow_item_alloc(struct page_pool *pool)
->> +{
->> +    if (unlikely(!pool->slow_items.block ||
->> +             pool->slow_items.next_to_use >= ITEMS_PER_PAGE)) {
->> +        struct page_pool_item_block *block;
->> +        struct page *page;
->> +
->> +        page = alloc_pages_node(pool->p.nid, GFP_ATOMIC | __GFP_NOWARN |
->> +                    __GFP_ZERO, 0);
->> +        if (!page) {
->> +            alloc_stat_inc(pool, item_slow_failed);
->> +            return NULL;
->> +        }
-> 
-> We also need stats on how many pages we allocate for these item_blocks
-> (and later free). This new scheme of keeping track of all pages
-> allocated via page_pool, is obviously going to consume more memory.
-> 
-> I want to be able to find out how much memory a page_pool is consuming.
-> (E.g. Kuba added a nice interface for querying inflight packets, even
-> though this is kept as two different counters).
+> Do these 'return' statements get in the way of some other
+> work you are doing? Is there a compiler warning you want
+> to enable to ensure they don't come back? Is this all of
+> the instances in the kernel or just the ones you found by
+> inspection?
 
-Does additional stats is needed? as I was thinking list_for_each_entry()
-for pool->item_blocks might be used to tell how much memory it is used
-for slow item, and how much each item_block is fragmented by looking at
-the block->ref with the protection of pool->item_lock if needed.
+actually, i find this weird return usage by reading code by accident
+in driver core firstly:
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git/commit/?h=driver-core-testing&id=a44073c28bc6d4118891d61e31c9fa9dc4333dc0
 
-> 
-> What I worry about, is that fragmentation happens inside these
-> item_blocks. (I hope you understand what I mean by fragmentation, else
-> let me know).
-> 
-> Could you explain how code handles or avoids fragmentation?
+then i check folder include/ and work out this patch series.
 
-Currently fragmentation is not handled or avoided yet.
-For inflight pages which are using slow item, it seems there is hardly
-anything we can do about that.
+not sure if there are still such instances in current kernel tree.
 
-For pages which sit in the page_pool, it seems possible to change
-the pages using slow item to use fast item when they are allocated
-from or recycled back into page_pool if fast item is available, or
-those pages are simply disconnected from page_pool by calling
-page_pool_return_page() when page_pool_put_unrefed_netmem() is
-called?
-
-I am not sure how severe the fragmentation problem might become and
-which way to handle it is better, maybe add interface to query the
-fragmentation info as mentioned above first, and deal with it when
-it does become a severe problem?
-
-> 
-> 
->> +
->> +        block = page_address(page);
->> +        block->pp = pool;
->> +        block->flags |= PAGE_POOL_SLOW_ITEM_BLOCK_BIT;
->> +        refcount_set(&block->ref, ITEMS_PER_PAGE);
->> +        pool->slow_items.block = block;
->> +        pool->slow_items.next_to_use = 0;
->> +
->> +        spin_lock_bh(&pool->item_lock);
->> +        list_add(&block->list, &pool->item_blocks);
->> +        spin_unlock_bh(&pool->item_lock);
->> +    }
->> +
->> +    return &pool->slow_items.block->items[pool->slow_items.next_to_use++];
->> +}
->> +
