@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8B6670820;
-	Sat, 22 Feb 2025 07:16:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 414C0204693
+	for <iommu@lists.linux.dev>; Sat, 22 Feb 2025 07:28:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740208605; cv=none; b=uhG+YoegmaBitFII4gCdWoIMmFLp7ZSEYB4ScRMK7rYuErUwJqxOMW7J8wnu3PkS6BtgYfRFa+J+PFnyIcouezT+2raHRorjWwZqB3bM0wz1mUMrLSUb1frH/XrT4zUeBuirBvDQ4rCP6jpZmhZFOLjB5fZ4H4tFo60m1J+SbsI=
+	t=1740209336; cv=none; b=VJ/ZFaIJkwdVIlHXl1VW4EF+LqLZcofHrbAeSdKmOZTjwHx1qqncL64fqbpGoP9L+G3/AdGs1XhXQLxJAAv0Q/Xove0jlotSfZcg+VB/6S61Xx1i5q4AEaEALluFYBkFB18cV7PpycUyAV6x1/5NnTGUkJMyLwl36aUWnVHt//s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740208605; c=relaxed/simple;
-	bh=ZM7H4zpo4oPld8ul0n31itvGzUfHuxoBESuSPa+QMS4=;
+	s=arc-20240116; t=1740209336; c=relaxed/simple;
+	bh=hKWnYqDVibXovKSxdxiJl5vEV8dexi/H8/6jyPb+cnc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cplEmyHej7aY9ppaffed6AErZIw+eSFTeAuvKLJAMwx1I8beBDMmR+DkCAfPLXlsobJckUK5EB7XD0lqbCq8JSmMcICPPz1FGd9IUfSOsVdJJtA4AVikYdmmHo2NvkCidScJpYR9hIVZpY2hVD6Aa+0aFelLTbSSZv0GC5m9Jos=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ShIdCDXL; arc=none smtp.client-ip=192.198.163.12
+	 In-Reply-To:Content-Type; b=q5qNrT7jXTW1lWKNeh2ZqCQXKwN3WtBKX/LERwBNO7/Igzn83AZweU5ods6TJ7mJDR50ENIFXUf5Cz2psW3FfQ4p6Xx8HCTvAsy3/s6K/u0/u/0UK9dxCa6drbfW0S804jGVnPY9OVrnAsvlJ+Buv5BoRL+3lQKQXg97yxcZsJQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KNfq9KbC; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ShIdCDXL"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KNfq9KbC"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740208604; x=1771744604;
+  t=1740209335; x=1771745335;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=ZM7H4zpo4oPld8ul0n31itvGzUfHuxoBESuSPa+QMS4=;
-  b=ShIdCDXLumsPrkUHvHUJmEqZ8YpD06pAcG39q+NwyJ3Rd4ZJKaSX1t7p
-   a1FZkZ5ulsng2hIBDyGazrD1csLmr34V51yCao3n1H4BVMPvfG2yB8r+G
-   1AKUYHa9U0b+3T92RfhAj/jHM38rTCj+otuMJT5pu9uuJvvgq9UYXj36K
-   zNxYr6u00r8EJoCDC2GM8ePomkZq9jv2jD+K+N5cgY9rYjRhCHPlO6uaw
-   /SFLgx5kqqxtX0tpy/kM7ShvXa7ACkzD4NI31kzysYkoloFoEFdeBA8j+
-   /MVrRVgBQilbtNJxi7E6my9pucA5iKq/UitZ9JkCbcgNSB486VOV4rEPv
+  bh=hKWnYqDVibXovKSxdxiJl5vEV8dexi/H8/6jyPb+cnc=;
+  b=KNfq9KbCAKQVJzw2ge5PUG6LYyhCDztzObl8vkplFBR2PgQxHPxViBg3
+   o1HwYLvCHnRfNgGQY1fQ7gOdyvfHb2TcqZZFXUjnZ8Gs6YzZ3j1qwAlMH
+   8QU6EPSUVhHb24D9HH17IYIRr7WmNmPH/9kuDZ6AW7WVFnXFlsoNRbGHD
+   A+7An54RZ0bAfaNoSsT5tSGZ1Ki7Xv5HYTEE62XnzDUJzghgf4TZ35gr3
+   LVRczSwJe3R/JX+CrskeO60Y93Knd5WdUr4lGCHM8Qs30LrmOlAMTQEJO
+   9CdaHKKmvOzWSFvnbfWop6gkqsuHH6pqFk8FnkAKQOSctxoXesQ3hJxsP
    w==;
-X-CSE-ConnectionGUID: 72jOdkzvQZi03OvmS+hCLg==
-X-CSE-MsgGUID: awpQBCR1Rq+/imkCEl5NSA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11352"; a="44941339"
+X-CSE-ConnectionGUID: TWsBIohaQLeoAdgoi2WzoA==
+X-CSE-MsgGUID: qN5AHFQdSdy5u3yS4vh4CA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11352"; a="40742277"
 X-IronPort-AV: E=Sophos;i="6.13,307,1732608000"; 
-   d="scan'208";a="44941339"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2025 23:16:43 -0800
-X-CSE-ConnectionGUID: /ptGdvWFQeWGeHLVxpGlKg==
-X-CSE-MsgGUID: iQrwTD+nRputVAuyNG/vJA==
+   d="scan'208";a="40742277"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2025 23:28:54 -0800
+X-CSE-ConnectionGUID: 371ayz7cT/aPqhHbAcbXTQ==
+X-CSE-MsgGUID: 85UYNrxHTcmNBhsBWT9s3w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,307,1732608000"; 
-   d="scan'208";a="146417233"
+   d="scan'208";a="120490527"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2025 23:16:37 -0800
-Message-ID: <ff5ecf47-75ce-4c8b-a8f5-94ea8ec7ad87@linux.intel.com>
-Date: Sat, 22 Feb 2025 15:13:28 +0800
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2025 23:28:52 -0800
+Message-ID: <682b5b61-e556-479e-b641-3c987360d87b@linux.intel.com>
+Date: Sat, 22 Feb 2025 15:25:43 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,75 +52,66 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 00/12] Initial support for SMMUv3 nested translation
-To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Zhangfei Gao <zhangfei.gao@linaro.org>,
- "acpica-devel@lists.linux.dev" <acpica-devel@lists.linux.dev>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Joerg Roedel <joro@8bytes.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Len Brown <lenb@kernel.org>,
- "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- "Moore, Robert" <robert.moore@intel.com>, Robin Murphy
- <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
- Will Deacon <will@kernel.org>, Alex Williamson <alex.williamson@redhat.com>,
- Donald Dutile <ddutile@redhat.com>, Eric Auger <eric.auger@redhat.com>,
- Hanjun Guo <guohanjun@huawei.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Jerry Snitselaar <jsnitsel@redhat.com>, Moritz Fischer <mdf@kernel.org>,
- Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
- "patches@lists.linux.dev" <patches@lists.linux.dev>,
- "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Mostafa Saleh <smostafa@google.com>
-References: <bc9f4477-7976-4955-85dc-3e05ebe95ead@linux.intel.com>
- <20250214124150.GF3886819@nvidia.com>
- <58e7fbee-6688-4a49-8b7a-f0e81e6562db@linux.intel.com>
- <20250218130333.GA4099685@nvidia.com>
- <f7e30bd8-ae1f-42fe-a8a6-2b448a474044@linux.intel.com>
- <BN9PR11MB5276EAD07C3B32517D339DF28CC52@BN9PR11MB5276.namprd11.prod.outlook.com>
- <7027fb3a-dfb4-40ae-ac9c-5ea1dcd57746@linux.intel.com>
- <BN9PR11MB52764E131435DF44370653CD8CC42@BN9PR11MB5276.namprd11.prod.outlook.com>
- <c57977e2-d109-4a38-903e-8af6a7567a60@linux.intel.com>
- <BN9PR11MB527644D4478318D4DE0E027A8CC72@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250221130457.GI50639@nvidia.com>
+Subject: Re: [PATCH 08/12] iommufd/selftest: Put iopf enablement in domain
+ attach path
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhou Wang <wangzhou1@hisilicon.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20250214061104.1959525-1-baolu.lu@linux.intel.com>
+ <20250214061104.1959525-9-baolu.lu@linux.intel.com>
+ <20250220010250.GQ3696814@ziepe.ca>
+ <d93c8cc9-77a5-4b78-85d2-6b4601f52266@linux.intel.com>
+ <20250220180004.GX3696814@ziepe.ca>
+ <6754e308-d2ee-4389-9dcd-c2a5bbb16c48@linux.intel.com>
+ <20250221150401.GY3696814@ziepe.ca>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250221130457.GI50639@nvidia.com>
+In-Reply-To: <20250221150401.GY3696814@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2/21/25 21:04, Jason Gunthorpe wrote:
-> On Fri, Feb 21, 2025 at 04:28:50AM +0000, Tian, Kevin wrote:
->>> With PASID support, multiple domains can be attached to the device, and
->>> each domain may have different ATS requirements.  Therefore, we cannot
->>> simply determine the ATS status in the RID domain attach/detach paths. A
->>> better solution is to use the reference count, as mentioned above.
->>>
->> Okay, that helps connect the dots and makes sense to me. Thanks!
-> I also have this general feeling that using ATS or not should be some
-> user policy (ie with sysfs or something) not just always automatic..
+On 2/21/25 23:04, Jason Gunthorpe wrote:
+>> -       return mock_dev_enable_iopf(dev, domain);
+>> +       if (mdev->domain)
+>> +               mock_dev_disable_iopf(dev, mdev->domain);
+>> +
+>> +       ret = mock_dev_enable_iopf(dev, domain);
+>> +       if (ret)
+> Though here the domain is disabled but not removed from mdev->domain,
+> is it OK?
 
-Agreed. ATS is inherently insecure because it allows a device to
-directly access system memory using translated requests. A malicious
-device could exploit this to compromise the system. Currently, Linux
-prevents ATS from being enabled on devices with pci_dev->untrusted set.
-But this seems insufficient, as only devices connected to external-
-facing ports are currently marked as untrusted. It would be preferable
-to allow the user to determine which devices are trusted and, therefore,
-permitted to use ATS.
+That's not okay. I can make it like below:
 
-Some IOMMU architectures have introduced new features to enhance the
-security of ATS, such as the host permission table in VT-d v5.0. This
-could be an interesting topic when considering its implementation in the
-Linux kernel.
+static int mock_domain_nop_attach(struct iommu_domain *domain,
+                                   struct device *dev)
+{
+         struct mock_dev *mdev = to_mock_dev(dev);
+         int ret;
 
-> Right now on our devices there is a firmware config that hides the ATS
-> support from PCI config space and the general guidance is to only turn
-> it on in very specific situations.
+         if (domain->dirty_ops && (mdev->flags & 
+MOCK_FLAGS_DEVICE_NO_DIRTY))
+                 return -EINVAL;
+
+         ret = mock_dev_enable_iopf(dev, domain);
+         if (ret)
+                 return ret;
+
+         mock_dev_disable_iopf(dev, mdev->domain);
+         mdev->domain = domain;
+
+         return 0;
+}
+
+Both mock_dev_enable/disable_iopf() will be a no-op if domain or
+domain's iopf handler is empty:
+
+         if (!domain || !domain->iopf_handler)
+                 return;
+
+Does it work for you?
 
 Thanks,
 baolu
