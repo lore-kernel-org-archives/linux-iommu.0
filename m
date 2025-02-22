@@ -1,459 +1,295 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E8F8A944
-	for <iommu@lists.linux.dev>; Fri, 21 Feb 2025 22:38:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740177484; cv=none; b=hQ93S5If4cx4E8UE3GtcyhsWu366LIu2ATiHBKBumm0jOZHsl2P0kU3p515XJADAEph6KnfpUkNZahIkqI+h6i+CIbbiByuPUJTbtU2zzgg0tPMOo5LWiJ65xeNl6+T4ghfbKXAPDSFMNoYiHngc1c+V2AltwP7id7BWQG/j8I8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740177484; c=relaxed/simple;
-	bh=87+G+isEcmWiVoVNIUsuYZU/8OKHmoTe5KPcaPzxpFA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UfoSqdf1ZoGggR5kVkOwIPhhuAtin5OK2+2MCpUACS7TObYqFfdSgQmGLIfockRa0/UT+haIQfj124ntP+slOUnVlTp2Y/fgPVdzivA8+5gVD5tkZuYNB9f1Y8B+gnl8pZlAA/dKo9hqzHJH97kTLs/eBjhldRmdRVFKpCHD1WU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=fU9edqL7; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1125218EAD
+	for <iommu@lists.linux.dev>; Sat, 22 Feb 2025 01:53:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.20
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1740189232; cv=fail; b=oV/fiZ3vOOp9tO2ptn5SsTyFbtm/CD7rgolTGXnGvW8kXT+0T9pfaSS/YtoHbeEo40owvJjHFOePa7Q0a5obBZ8WcUxGQzLd4kvYkwtKDY2kD16o9lcuFXSHG2qoizv6VhUnmt06VE6h0VjZxJ2G0KSRNIw7iodXxPDZbDvkzSg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1740189232; c=relaxed/simple;
+	bh=GZ1q/B9a4NYFmThHDdZ6mDnrN5Xxj8Zy+kiYrMQil+E=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=KtdXr1EcECZPpOdnVP/EOwwZX3xxeYz6gPDicOm0kqta4+pyXdMH9oaO9JSYgxeHeN105nZ4HoWHKaubRR0S+jEwH7IO5hNY43h6sURQzSPdcPZ9cEN/teVKvi6snYnGLKBlpItfW3jlNyiUZbn4dQ8yYAA6rxc71cHC+rQP2pI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HtpfiJTZ; arc=fail smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="fU9edqL7"
-Received: from [10.0.0.114] (c-67-182-156-199.hsd1.wa.comcast.net [67.182.156.199])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 5ACBD205367B;
-	Fri, 21 Feb 2025 14:38:01 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5ACBD205367B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1740177481;
-	bh=MsnDGeKem9oAJ4DfbJ9EzNxL83lm0NuBxOZDlGaPaqk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=fU9edqL79t+eGspse/e4ixw5dyOyLAf5eqSqt9JUdxYuwOEBfznV08RmUoLlItO02
-	 GJOHiiV+FSHJR0sU6V0dRdFyiwiejebWvBi0lH0rg+CbePqitsUjAOUZ1c6Fz4eCZb
-	 JiWvXzn/WoyQyhJZm7beLkhPDnySYxcS7qX7IXhI=
-Message-ID: <39b25002-f380-426b-ba18-9276d143a0db@linux.microsoft.com>
-Date: Fri, 21 Feb 2025 14:38:00 -0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HtpfiJTZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1740189230; x=1771725230;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=GZ1q/B9a4NYFmThHDdZ6mDnrN5Xxj8Zy+kiYrMQil+E=;
+  b=HtpfiJTZADLbcunCFperlLI+vIXoxlb4oHdhKqepqJ/EKOAl9a/YzEiI
+   QMZcHR6+AhoXjDq2fcXhimcAAN6l7OHt5gL3QgFMHws3kZByn7AV/j9L5
+   T/jA9bUdgdxEFtX736G926KDXk5RRekAXrI5Kcj/sHAm/Vhrh9LFqnox5
+   EGYc//R+2Ov9ye9NjTfExltD2WJVF31WYTIhknACRTsQxOna632xo9rhl
+   Qw3YqRMKmt0ihTjNBXmodr2z3wzALNaGIhhscGCiRGurXZjk6cOmo+g8H
+   NnL16fzBDbAdlFImiq6Ry9cPRai4X5JiC+j9jRr6sCTwx54Tr96d3YnW2
+   Q==;
+X-CSE-ConnectionGUID: xRAlbIO6SVKiyDPtXoh3Dg==
+X-CSE-MsgGUID: bZEJ/nuaRVy9u5lsx/XuBA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11352"; a="40733069"
+X-IronPort-AV: E=Sophos;i="6.13,306,1732608000"; 
+   d="scan'208";a="40733069"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2025 17:53:49 -0800
+X-CSE-ConnectionGUID: QErK9OjMRwqeQWXl2wecHA==
+X-CSE-MsgGUID: T37A558ZTrW9pcvnH4TB9Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="116446436"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2025 17:53:49 -0800
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Fri, 21 Feb 2025 17:53:48 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Fri, 21 Feb 2025 17:53:48 -0800
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.42) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Fri, 21 Feb 2025 17:53:48 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dHiO6AZ5KI65iArwp859RFdLcl7geM762et+/EY7J3T2H8sC7NWzhxAIZiqLlG23VY41m8nfGCw0CLLMRsCkxi7t4SQ+tx+t30V5Oy4cqDvciQ16kN7WsSJ7U65b5dSfWLAeYTNd5bQhmsEVc1aLEwdzU80Sam0gHw99ZzuLetUeD3b0W/wvCU97Vt1tqIIVklNRcU+/oxa9cfUHvySe/9N48ymxlXJxookEDzLW3rkNISa7arPW5nuvEj4zd+/AcWCJdvyDe+Nib5t3dbwUKqp1TC0IPV0Z0VC6dhKVRIH+leyGlpeyPc0q7r5WfDHSde2UvVhfKce5wefmxvLF2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mmeVXbeFmPmz5irrHFBC3ObrJbtCcHpUC6RUMvYcq5o=;
+ b=ZgfrTXo16zKq4RPtCMDD4Dfx/oTRbbjOqgkZbBDD98jG0Rta0+XMcXYufEjrlFyr4fmLg0nJgRsmz++JRm8GENBycj5a9LK1270+pnGepFu5wH5akeZYSqwijFaYDZOVZ3+Xa3s6E8bqXJ0DuW75qIyCQ0cr9j+y7nAEOWGnGuCDpOgazK/zCrr0HxdZ1Xthb2wYSSCJtWCwWG3F20dkdSTCY/Xe1ipMfyLZh/hh71RHonA4hbpx4xlWT4JmKzgEDE4zxp85XF4KuaGRgt8XALw/Ru8JEUr/hLRNEZbhBS4jwRQnMPz/uGf9QAFryEYH5QmG3E8/RYh7joDrCdSNNQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by DS7PR11MB7930.namprd11.prod.outlook.com (2603:10b6:8:da::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8466.14; Sat, 22 Feb 2025 01:53:41 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a%4]) with mapi id 15.20.8445.013; Sat, 22 Feb 2025
+ 01:53:41 +0000
+Message-ID: <ceb475fa-dfdf-4bcb-a4ba-8128ba86a39a@intel.com>
+Date: Sat, 22 Feb 2025 09:59:05 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/4] iommu: Swap the order of setting
+ group->pasid_array and calling attach op of iommu drivers
+To: Nicolin Chen <nicolinc@nvidia.com>
+CC: <joro@8bytes.org>, <jgg@nvidia.com>, <kevin.tian@intel.com>,
+	<baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>, <robin.murphy@arm.com>,
+	<will@kernel.org>
+References: <20250221143335.49874-1-yi.l.liu@intel.com>
+ <20250221143335.49874-5-yi.l.liu@intel.com> <Z7i3dvyA/opurciP@Asurada-Nvidia>
+Content-Language: en-US
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <Z7i3dvyA/opurciP@Asurada-Nvidia>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SI2PR01CA0052.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:193::11) To DS0PR11MB7529.namprd11.prod.outlook.com
+ (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/3] hyperv: Change hv_root_partition into a function
-To: Michael Kelley <mhklinux@outlook.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "eahariha@linux.microsoft.com" <eahariha@linux.microsoft.com>,
- "mukeshrathor@microsoft.com" <mukeshrathor@microsoft.com>
-Cc: "kys@microsoft.com" <kys@microsoft.com>,
- "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>,
- "decui@microsoft.com" <decui@microsoft.com>,
- "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
- "will@kernel.org" <will@kernel.org>, "tglx@linutronix.de"
- <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>,
- "bp@alien8.de" <bp@alien8.de>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
- "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "arnd@arndb.de"
- <arnd@arndb.de>,
- "jinankjain@linux.microsoft.com" <jinankjain@linux.microsoft.com>,
- "muminulrussell@gmail.com" <muminulrussell@gmail.com>,
- "skinsburskii@linux.microsoft.com" <skinsburskii@linux.microsoft.com>
-References: <1740167795-13296-1-git-send-email-nunodasneves@linux.microsoft.com>
- <1740167795-13296-3-git-send-email-nunodasneves@linux.microsoft.com>
- <SN6PR02MB41571DC572600680E3527DA0D4C72@SN6PR02MB4157.namprd02.prod.outlook.com>
-Content-Language: en-US
-From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-In-Reply-To: <SN6PR02MB41571DC572600680E3527DA0D4C72@SN6PR02MB4157.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|DS7PR11MB7930:EE_
+X-MS-Office365-Filtering-Correlation-Id: 25f7b876-7fec-4a7d-df41-08dd52e3bb54
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016|7053199007;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?eElPUGk0bVQxdHZna3Z1d3dPdmJueXIycmRYYjdZRW5zbmZDS00wM2NKaGRP?=
+ =?utf-8?B?S1pubGxTWVYzU3FtVzRsdERYTm9kTVdmRlJPWVY0STZBc3dPVm5wekZXODc0?=
+ =?utf-8?B?KytsN2pXZVJPaVljVzM3SCtKWjI2R00zUjJkb3ZNYXdsKzhKWVQyMFg0UHJZ?=
+ =?utf-8?B?MitpN0hwdis0Rm85Nk5ER042alg3WWtZNDVxY1pmSDM4MDM2eGd2ZnAxT3JR?=
+ =?utf-8?B?dlFZZzhIWG1PSkx6YWNMU09iWDZFV2o0cGlNL2I1NkZOOXZvZHBodk1DR0ky?=
+ =?utf-8?B?ZkVNR3h5K0o0VWxucTFFTXhNV2dHejV5VXhhMU9obUVOc2NkcWZYMlVOOGtl?=
+ =?utf-8?B?ZTNvdFU4bFVEV1g3cmZHTVNmNVBWZEo4YzR4MGI3YWlWeXA2d0pLbjdrQzBR?=
+ =?utf-8?B?cUV3SXdDb1ZjOTdMQS9SSTVQa1dQQUxzaHhBRzVFeFJieUZ3MWVZSVF2c2Qx?=
+ =?utf-8?B?RFg0M0JYU1RxR2NGN1YxcWtuL2RkUEN3Mm00bk41dStyOGNsVzdWTlBQRkYw?=
+ =?utf-8?B?MVdscWJheS94NlptZ2RtK2V0RXlxdko0eUNpYXNDeXlRc2E2bitxZDQxZkh3?=
+ =?utf-8?B?d2UzamFxeTdxeHlzZ2ozUnh3RElqVzVIYWxsUVNBc21wanV1eXVaTk5KU2Uv?=
+ =?utf-8?B?T0YrOXlEaHRKbHlCWWpUWVFLc3ZRUVlGSktkT3ZMb01WbHgyQTluVEVyM08x?=
+ =?utf-8?B?c3k3djVySkFyWGxmUFdpU28vV3VnZUtuOUZ2YlBuOHU1WFhWNXJwUkFWNmt1?=
+ =?utf-8?B?TVN1bk10UCtQT1NHN3F5MDlzdlVJTjc3TUVPdVhEUkFlejNYQ0JCTFBSV3h0?=
+ =?utf-8?B?OXROZzNlUHkrY3I0TUxPY1BLa0ZzdE1kTDdRenErMG5QTlp3T2o3OXl2cFlW?=
+ =?utf-8?B?YU95Q1BLRWZQMytnL3pWcXNBbWc5ZmxrMHVYOGpWdUF0b2VyNjFERnZxUkpv?=
+ =?utf-8?B?VWVwMkpRY2dRdkxFVTBSTHI2Y2d1aFJjYm0rY2UwRml1cmVSS29KRFo5SDBL?=
+ =?utf-8?B?blJIUGZieEVHZ0NYSHZwaFlJTVFYbXcyUlhCanBFR1hJbElLS1htdkFvNTdr?=
+ =?utf-8?B?Sm1ZOGRMRFY4Qmh6WWtTZkpuS2pXR2hWcEVCei9WUm80UTZrRG14UU9lb05h?=
+ =?utf-8?B?RnBYaDh3c1M3Qmpxa29WbXNyanhRRTJPQmdxT2ZWUG9kV21iaUpUQkl0T01s?=
+ =?utf-8?B?YTc3Y3ZUTWtyTURTQ3Rkem0yLzlGaUlCQlBVditkMkhJVUpubWlKL3hrZ3My?=
+ =?utf-8?B?b0xTTi9GVkJISlF1Q2t1aVF2NFlZR1YvcSt2UlpuaTYwSFNwbzdKTlRsZUV6?=
+ =?utf-8?B?VzlZMkNXUGVTWnpYL3ZZRExUZ0hReDRRaFRrY3JVVmttOWJOWFdFQThBZzdQ?=
+ =?utf-8?B?a25CZmsrOHc3NVdKNE05Z0NjdVZkRTRoVi9SNDJIU08yT1ZGajVZYVBpYWVn?=
+ =?utf-8?B?K1pZMHlPSTA3cmxuQUZSV1pZUkY2WDB1S2Fmei9lQWlIS052NU0wZFZkMkpq?=
+ =?utf-8?B?ZUswaWkybFVRZUpFVHVPOXVBdEl0V3lJc3pYZHlnV0RFK3hTUnZaejhUc0VC?=
+ =?utf-8?B?Sm5RN0gwbDMwOGdSd1ducU4vYVh3akEzUTBMS1JDQ2p4SGVRZUxURDJnT3NG?=
+ =?utf-8?B?REVTZXlKRzBXYUdTcExVVkhlLytMNGJBaWV0SUlOcnBTVjRvc2xJMi83MTFJ?=
+ =?utf-8?B?SEhEV0h1VENvUXdDaEYrN1M5cFAwYWFyTUduczNVbm8rVmFycVJxNmllYmtS?=
+ =?utf-8?B?c1lTOEo4MFhmbkRpV0RuV3YzK2JLclJaSjdxeDZKTTJ2YjRmZDhFR1ZXTVVH?=
+ =?utf-8?B?U09KMUZuM2U1WjZicGh0UEFabzVsTGZLL0Z2V1c5OWpzWHFyV1dObmNteldX?=
+ =?utf-8?Q?cZ4X2a88zrNmI?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?b1BLTnpHOGZsdjVpdy9hb25CdUp3Unl1M2tUaUlOYVJkT2huNi9NRWR0RStE?=
+ =?utf-8?B?d3pEdHV6cEl2c1BKVHdLWm5WeXdNSHVHOVdMd3FENHN4eWg2ajhlVkV4T0hT?=
+ =?utf-8?B?aWY0Q2hOelR3NFlKMTZBUTJpVlJIc2JtSGN4NmxlT3FEVlVlZ3FBWlQ2K250?=
+ =?utf-8?B?MlpYQUZuck9aNW1WUGpRbFJJRmw0WDIzQjlrNnRKMFlSQXZoQ1Vpa0pjdERy?=
+ =?utf-8?B?M0svT3d1dXN5anByRm5HNHQ1UWVrSGRUeWY0QkRjRkRuSzdsSXAwZlloQ1ZJ?=
+ =?utf-8?B?QWpscUgwSFZtSXkzdHlxQ25hTkZqRzZqdzJZQW9lQTZMWUtEOG0xMG10MStr?=
+ =?utf-8?B?VWRCZUFBc2wwSlRCT1o0V05xZ3BRN0wwTDFrYjFYL01GYlNCcEpKaHRYaHcw?=
+ =?utf-8?B?TU1KcGtITGtkalZ4MFNQSUZCOFdkRzAzRDhwOEJZWTY3UG1HSVFFdE80SGhz?=
+ =?utf-8?B?cFJwUGpKR2pMRFRmSGNXaWZJYSsxOTJEWndJc0JHcXR6Q2J2SHVHM0hDSVQ3?=
+ =?utf-8?B?YU5aRDJpaVVaRmdpYXpsV0ZOaThZU3BpNEl3T2w0Yzk4S09SUmhvTmlxWFlT?=
+ =?utf-8?B?NDdrNzZaMDI1VDFWRGZ5cmVkME51aCszU1hORndMSjRoejZQTHZFT0ZNNzFt?=
+ =?utf-8?B?NGhOam94K0cxRXpyWCs1ODh2c0dWbHU3Wk9CeFFDUlpPaGpNSWtIa1B4Wjlv?=
+ =?utf-8?B?dWhJa0hPVW1EYlZ6clR2cGt4Qkh0SDhwamE2ZXl1cDg5b2pwbDZabzF1RW1N?=
+ =?utf-8?B?L1lWKzlVZGhiMXBTQ2pTdWNvaWlpL1l0MERvakNIQUNKUm1RTVErVWhsaVFR?=
+ =?utf-8?B?VkQvUkhpWjRLeTNnbnF5QUhsMHA5Y0hzNGV4OHdFaU1rS25XZW84VnNxOGl5?=
+ =?utf-8?B?RkhJKzY5LzNhVTJ6TTJWVVlhZXkzS01meVdUWkJlb2RiditBODl0OUltRFpp?=
+ =?utf-8?B?a1AzSldoOUNGVVpZYXVOUGEvRENQMXJXVHEvM0pNcVVjbVlZTFBBTENjZ051?=
+ =?utf-8?B?SUk5R0xZdHlDczFIdWVMaGJDU2krUHcxYW9qMzV1SkR3cXFlVmZtU1BGbWts?=
+ =?utf-8?B?Y05Ua0QzSlJlNk93Y3F1b0JvdkFQRXVZWUZEWXJsK0VhaFFaemxxUm5qS05W?=
+ =?utf-8?B?ZnNqV1l1N25sYjdBaSs0bjFvNUtJN1B3a3ZsTmNQQk00bkdZY2RrYVlHcStJ?=
+ =?utf-8?B?UUdvUG5EUTZBUndLM1ZITkd5UWJiRUhvWkpMMTZSSUVZMkkzYnZ6RS9ZNkdN?=
+ =?utf-8?B?a1JvamN0bkZ3eVArd3BFYmQ5VDAvR2tON0FFbU0rTS9aYjRYMU4waDN3QkJZ?=
+ =?utf-8?B?Y2Y1aHVUU2dSSXV1NG1halJVQzk1TzNBNnV6YkJ2eVo1VW82R1I4TllzR2tH?=
+ =?utf-8?B?YlM5MzhPQmZwWGFDbHRJSHlPU3FCK0tmTHZNNmlydHVGZi9GOFFHNllKSHZB?=
+ =?utf-8?B?dTQ2WDFLS05TbkFWTkx6VERHV2dZNDR1TVY1UnBlMDlzS21jSHN6Vkt6eVUv?=
+ =?utf-8?B?TEExaTNNQWVkS3ljd2JSYTRpam1PZWF4Z1k4dUJLYloyZnkyMVpkamN3bVNK?=
+ =?utf-8?B?VVFJWVcxcGVPOHRzV25nRVRHakEvNW1hSVdBUWk2N2JYM2tUQ1lLSnhQN1Ey?=
+ =?utf-8?B?SjRRQk5pd0dBbWE3bWF2ZTBzWnYyZzhRNjQ5eERPTTRvWjJucjRxSFpFU1ZJ?=
+ =?utf-8?B?RkRwMmlWS21RNDV2ZlZ1WW96VWVXQkM4WUg0UTE4RzduQ0dhdEgzUzJCRzUw?=
+ =?utf-8?B?VzRCTUpJeUQzNHVkRUl3bkF5cHBTN1F4d254UWdkcTZRQXh0UThQcThTZFg2?=
+ =?utf-8?B?OThDK0JWQ3VFYk94am9ZbVRKNE91UVRhVEd6UzRPWGxYYlFZbEgvNjYzbnJQ?=
+ =?utf-8?B?T1FPR0FjZzlZOG4zRTl5NGsvdjVpS3FUQm5iWkU4NTd6YnpieXBXNTN1aUth?=
+ =?utf-8?B?RjFaeks0U2NwdWxmQUF4V29Wa1NpUU43eXNYcCtxV29ZaFd5Rzc5a1d1Z0xN?=
+ =?utf-8?B?aFBYQkJYZkdXLzVhTUZ2SkVSOHpWS0pDeUFoT3hGNG5PeEVMOWN0NFFyNDQ2?=
+ =?utf-8?B?OHFxekRNTnErdWtDUFZxN2cycURvNk02QWVkS2JwZkdwU0lXNVIySmozdzN0?=
+ =?utf-8?Q?2UB5B0cU5smecvIeAcO4RSw8Y?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25f7b876-7fec-4a7d-df41-08dd52e3bb54
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2025 01:53:41.3424
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fWRFON1c3/ivol+GjXpDQY92qK6M3IISNdQxHC0WG0IXgtMdfAK/vhlVkowIyekvo31vojJcQBwmGyVQOsQxgQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR11MB7930
+X-OriginatorOrg: intel.com
 
-On 2/21/2025 12:58 PM, Michael Kelley wrote:
-> From: Nuno Das Neves <nunodasneves@linux.microsoft.com> Sent: Friday, February 21, 2025 11:57 AM
+On 2025/2/22 01:27, Nicolin Chen wrote:
+> On Fri, Feb 21, 2025 at 06:33:35AM -0800, Yi Liu wrote:
+>> The current implementation stores entry to the group->pasid_array before
+>> the underlying iommu driver has successfully set the new domain. This can
+>> lead to issues where PRIs are received on the new domain before the attach
+>> operation is completed.
 >>
->> Introduce hv_curr_partition_type to store the partition type
->> as an enum.
+>> This patch swaps the order of operations to ensure that the domain is set
+>> in the underlying iommu driver before updating the group->pasid_array.
 >>
->> Right now this is limited to guest or root partition, but there will
->> be other kinds in future and the enum is easily extensible.
->>
->> Set up hv_curr_partition_type early in Hyper-V initialization with
->> hv_identify_partition_type(). hv_root_partition() just queries this
->> value, and shouldn't be called before that.
->>
->> Making this check into a function sets the stage for adding a config
->> option to gate the compilation of root partition code. In particular,
->> hv_root_partition() can be stubbed out always be false if root
->> partition support isn't desired.
->>
->> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
->> Reviewed-by: Easwar Hariharan <eahariha@linux.microsoft.com>
+>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+>> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> 
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> 
+> A nit:
+> 
 >> ---
->>  arch/arm64/hyperv/mshyperv.c       |  2 ++
->>  arch/x86/hyperv/hv_init.c          | 10 +++++-----
->>  arch/x86/kernel/cpu/mshyperv.c     | 24 ++--------------------
->>  drivers/clocksource/hyperv_timer.c |  4 ++--
->>  drivers/hv/hv.c                    | 10 +++++-----
->>  drivers/hv/hv_common.c             | 32 ++++++++++++++++++++++++------
->>  drivers/hv/vmbus_drv.c             |  2 +-
->>  drivers/iommu/hyperv-iommu.c       |  4 ++--
->>  include/asm-generic/mshyperv.h     | 15 ++++++++++++--
->>  9 files changed, 58 insertions(+), 45 deletions(-)
+>>   drivers/iommu/iommu.c | 44 +++++++++++++++++++++++++++++++------------
+>>   1 file changed, 32 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index eff5f678883b..73555e1cf016 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -3388,13 +3388,25 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+>>   
+>>   	entry = iommu_make_pasid_array_entry(domain, handle);
+>>   
+>> -	ret = xa_insert(&group->pasid_array, pasid, entry, GFP_KERNEL);
+>> +	ret = xa_insert(&group->pasid_array, pasid, XA_ZERO_ENTRY, GFP_KERNEL);
 > 
-> Reviewed-by: Michael Kelley <mhklinux@outlook.com>
-> 
+> Maybe xa_reserve() pairing xa_release()? Same thing though..
 
-Thank you!
+there is slight difference. xa_reserve() will return 0 if there is already
+a valid entry. xa_insert() shall fail with EBUSY. We want to catch such
+failures here. You may notice that the replace function uses xa_reserve()
+as it intend to replace existing entry.
 
->>
->> diff --git a/arch/arm64/hyperv/mshyperv.c b/arch/arm64/hyperv/mshyperv.c
->> index 29fcfd595f48..2265ea5ce5ad 100644
->> --- a/arch/arm64/hyperv/mshyperv.c
->> +++ b/arch/arm64/hyperv/mshyperv.c
->> @@ -61,6 +61,8 @@ static int __init hyperv_init(void)
->>  		ms_hyperv.features, ms_hyperv.priv_high, ms_hyperv.hints,
->>  		ms_hyperv.misc_features);
->>
->> +	hv_identify_partition_type();
->> +
->>  	ret = hv_common_init();
->>  	if (ret)
->>  		return ret;
->> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
->> index 9be1446f5bd3..ddeb40930bc8 100644
->> --- a/arch/x86/hyperv/hv_init.c
->> +++ b/arch/x86/hyperv/hv_init.c
->> @@ -90,7 +90,7 @@ static int hv_cpu_init(unsigned int cpu)
->>  		return 0;
->>
->>  	hvp = &hv_vp_assist_page[cpu];
->> -	if (hv_root_partition) {
->> +	if (hv_root_partition()) {
->>  		/*
->>  		 * For root partition we get the hypervisor provided VP assist
->>  		 * page, instead of allocating a new page.
->> @@ -242,7 +242,7 @@ static int hv_cpu_die(unsigned int cpu)
->>
->>  	if (hv_vp_assist_page && hv_vp_assist_page[cpu]) {
->>  		union hv_vp_assist_msr_contents msr = { 0 };
->> -		if (hv_root_partition) {
->> +		if (hv_root_partition()) {
->>  			/*
->>  			 * For root partition the VP assist page is mapped to
->>  			 * hypervisor provided page, and thus we unmap the
->> @@ -317,7 +317,7 @@ static int hv_suspend(void)
->>  	union hv_x64_msr_hypercall_contents hypercall_msr;
->>  	int ret;
->>
->> -	if (hv_root_partition)
->> +	if (hv_root_partition())
->>  		return -EPERM;
->>
->>  	/*
->> @@ -518,7 +518,7 @@ void __init hyperv_init(void)
->>  	rdmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
->>  	hypercall_msr.enable = 1;
->>
->> -	if (hv_root_partition) {
->> +	if (hv_root_partition()) {
->>  		struct page *pg;
->>  		void *src;
->>
->> @@ -592,7 +592,7 @@ void __init hyperv_init(void)
->>  	 * If we're running as root, we want to create our own PCI MSI domain.
->>  	 * We can't set this in hv_pci_init because that would be too late.
->>  	 */
->> -	if (hv_root_partition)
->> +	if (hv_root_partition())
->>  		x86_init.irqs.create_pci_msi_domain = hv_create_pci_msi_domain;
->>  #endif
->>
->> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
->> index f285757618fc..4f01f424ea5b 100644
->> --- a/arch/x86/kernel/cpu/mshyperv.c
->> +++ b/arch/x86/kernel/cpu/mshyperv.c
->> @@ -33,8 +33,6 @@
->>  #include <asm/numa.h>
->>  #include <asm/svm.h>
->>
->> -/* Is Linux running as the root partition? */
->> -bool hv_root_partition;
->>  /* Is Linux running on nested Microsoft Hypervisor */
->>  bool hv_nested;
->>  struct ms_hyperv_info ms_hyperv;
->> @@ -451,25 +449,7 @@ static void __init ms_hyperv_init_platform(void)
->>  	pr_debug("Hyper-V: max %u virtual processors, %u logical processors\n",
->>  		 ms_hyperv.max_vp_index, ms_hyperv.max_lp_index);
->>
->> -	/*
->> -	 * Check CPU management privilege.
->> -	 *
->> -	 * To mirror what Windows does we should extract CPU management
->> -	 * features and use the ReservedIdentityBit to detect if Linux is the
->> -	 * root partition. But that requires negotiating CPU management
->> -	 * interface (a process to be finalized). For now, use the privilege
->> -	 * flag as the indicator for running as root.
->> -	 *
->> -	 * Hyper-V should never specify running as root and as a Confidential
->> -	 * VM. But to protect against a compromised/malicious Hyper-V trying
->> -	 * to exploit root behavior to expose Confidential VM memory, ignore
->> -	 * the root partition setting if also a Confidential VM.
->> -	 */
->> -	if ((ms_hyperv.priv_high & HV_CPU_MANAGEMENT) &&
->> -	    !(ms_hyperv.priv_high & HV_ISOLATION)) {
->> -		hv_root_partition = true;
->> -		pr_info("Hyper-V: running as root partition\n");
->> -	}
->> +	hv_identify_partition_type();
->>
->>  	if (ms_hyperv.hints & HV_X64_HYPERV_NESTED) {
->>  		hv_nested = true;
->> @@ -618,7 +598,7 @@ static void __init ms_hyperv_init_platform(void)
->>
->>  # ifdef CONFIG_SMP
->>  	smp_ops.smp_prepare_boot_cpu = hv_smp_prepare_boot_cpu;
->> -	if (hv_root_partition ||
->> +	if (hv_root_partition() ||
->>  	    (!ms_hyperv.paravisor_present && hv_isolation_type_snp()))
->>  		smp_ops.smp_prepare_cpus = hv_smp_prepare_cpus;
->>  # endif
->> diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
->> index f00019b078a7..09549451dd51 100644
->> --- a/drivers/clocksource/hyperv_timer.c
->> +++ b/drivers/clocksource/hyperv_timer.c
->> @@ -582,7 +582,7 @@ static void __init hv_init_tsc_clocksource(void)
->>  	 * mapped.
->>  	 */
->>  	tsc_msr.as_uint64 = hv_get_msr(HV_MSR_REFERENCE_TSC);
->> -	if (hv_root_partition)
->> +	if (hv_root_partition())
->>  		tsc_pfn = tsc_msr.pfn;
->>  	else
->>  		tsc_pfn = HVPFN_DOWN(virt_to_phys(tsc_page));
->> @@ -627,7 +627,7 @@ void __init hv_remap_tsc_clocksource(void)
->>  	if (!(ms_hyperv.features & HV_MSR_REFERENCE_TSC_AVAILABLE))
->>  		return;
->>
->> -	if (!hv_root_partition) {
->> +	if (!hv_root_partition()) {
->>  		WARN(1, "%s: attempt to remap TSC page in guest partition\n",
->>  		     __func__);
->>  		return;
->> diff --git a/drivers/hv/hv.c b/drivers/hv/hv.c
->> index fab0690b5c41..a38f84548bc2 100644
->> --- a/drivers/hv/hv.c
->> +++ b/drivers/hv/hv.c
->> @@ -144,7 +144,7 @@ int hv_synic_alloc(void)
->>  		 * Synic message and event pages are allocated by paravisor.
->>  		 * Skip these pages allocation here.
->>  		 */
->> -		if (!ms_hyperv.paravisor_present && !hv_root_partition) {
->> +		if (!ms_hyperv.paravisor_present && !hv_root_partition()) {
->>  			hv_cpu->synic_message_page =
->>  				(void *)get_zeroed_page(GFP_ATOMIC);
->>  			if (!hv_cpu->synic_message_page) {
->> @@ -272,7 +272,7 @@ void hv_synic_enable_regs(unsigned int cpu)
->>  	simp.as_uint64 = hv_get_msr(HV_MSR_SIMP);
->>  	simp.simp_enabled = 1;
->>
->> -	if (ms_hyperv.paravisor_present || hv_root_partition) {
->> +	if (ms_hyperv.paravisor_present || hv_root_partition()) {
->>  		/* Mask out vTOM bit. ioremap_cache() maps decrypted */
->>  		u64 base = (simp.base_simp_gpa << HV_HYP_PAGE_SHIFT) &
->>  				~ms_hyperv.shared_gpa_boundary;
->> @@ -291,7 +291,7 @@ void hv_synic_enable_regs(unsigned int cpu)
->>  	siefp.as_uint64 = hv_get_msr(HV_MSR_SIEFP);
->>  	siefp.siefp_enabled = 1;
->>
->> -	if (ms_hyperv.paravisor_present || hv_root_partition) {
->> +	if (ms_hyperv.paravisor_present || hv_root_partition()) {
->>  		/* Mask out vTOM bit. ioremap_cache() maps decrypted */
->>  		u64 base = (siefp.base_siefp_gpa << HV_HYP_PAGE_SHIFT) &
->>  				~ms_hyperv.shared_gpa_boundary;
->> @@ -367,7 +367,7 @@ void hv_synic_disable_regs(unsigned int cpu)
->>  	 * addresses.
->>  	 */
->>  	simp.simp_enabled = 0;
->> -	if (ms_hyperv.paravisor_present || hv_root_partition) {
->> +	if (ms_hyperv.paravisor_present || hv_root_partition()) {
->>  		iounmap(hv_cpu->synic_message_page);
->>  		hv_cpu->synic_message_page = NULL;
->>  	} else {
->> @@ -379,7 +379,7 @@ void hv_synic_disable_regs(unsigned int cpu)
->>  	siefp.as_uint64 = hv_get_msr(HV_MSR_SIEFP);
->>  	siefp.siefp_enabled = 0;
->>
->> -	if (ms_hyperv.paravisor_present || hv_root_partition) {
->> +	if (ms_hyperv.paravisor_present || hv_root_partition()) {
->>  		iounmap(hv_cpu->synic_event_page);
->>  		hv_cpu->synic_event_page = NULL;
->>  	} else {
->> diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
->> index 5cf9894b9e79..3d9cfcfbc854 100644
->> --- a/drivers/hv/hv_common.c
->> +++ b/drivers/hv/hv_common.c
->> @@ -34,8 +34,11 @@
->>  u64 hv_current_partition_id = HV_PARTITION_ID_SELF;
->>  EXPORT_SYMBOL_GPL(hv_current_partition_id);
->>
->> +enum hv_partition_type hv_curr_partition_type;
->> +EXPORT_SYMBOL_GPL(hv_curr_partition_type);
->> +
->>  /*
->> - * hv_root_partition, ms_hyperv and hv_nested are defined here with other
->> + * ms_hyperv and hv_nested are defined here with other
->>   * Hyper-V specific globals so they are shared across all architectures and are
->>   * built only when CONFIG_HYPERV is defined.  But on x86,
->>   * ms_hyperv_init_platform() is built even when CONFIG_HYPERV is not
->> @@ -43,9 +46,6 @@ EXPORT_SYMBOL_GPL(hv_current_partition_id);
->>   * here, allowing for an overriding definition in the module containing
->>   * ms_hyperv_init_platform().
->>   */
->> -bool __weak hv_root_partition;
->> -EXPORT_SYMBOL_GPL(hv_root_partition);
->> -
->>  bool __weak hv_nested;
->>  EXPORT_SYMBOL_GPL(hv_nested);
->>
->> @@ -283,7 +283,7 @@ static void hv_kmsg_dump_register(void)
->>
->>  static inline bool hv_output_page_exists(void)
->>  {
->> -	return hv_root_partition || IS_ENABLED(CONFIG_HYPERV_VTL_MODE);
->> +	return hv_root_partition() || IS_ENABLED(CONFIG_HYPERV_VTL_MODE);
->>  }
->>
->>  void __init hv_get_partition_id(void)
->> @@ -594,7 +594,7 @@ EXPORT_SYMBOL_GPL(hv_setup_dma_ops);
->>
->>  bool hv_is_hibernation_supported(void)
->>  {
->> -	return !hv_root_partition && acpi_sleep_state_supported(ACPI_STATE_S4);
->> +	return !hv_root_partition() && acpi_sleep_state_supported(ACPI_STATE_S4);
->>  }
->>  EXPORT_SYMBOL_GPL(hv_is_hibernation_supported);
->>
->> @@ -717,3 +717,23 @@ int hv_result_to_errno(u64 status)
->>  	}
->>  	return -EIO;
->>  }
->> +
->> +void hv_identify_partition_type(void)
->> +{
->> +	/* Assume guest role */
->> +	hv_curr_partition_type = HV_PARTITION_TYPE_GUEST;
->> +	/*
->> +	 * Check partition creation and cpu management privileges
->> +	 *
->> +	 * Hyper-V should never specify running as root and as a Confidential
->> +	 * VM. But to protect against a compromised/malicious Hyper-V trying
->> +	 * to exploit root behavior to expose Confidential VM memory, ignore
->> +	 * the root partition setting if also a Confidential VM.
->> +	 */
->> +	if ((ms_hyperv.priv_high & HV_CREATE_PARTITIONS) &&
->> +	    (ms_hyperv.priv_high & HV_CPU_MANAGEMENT) &&
->> +	    !(ms_hyperv.priv_high & HV_ISOLATION)) {
->> +		pr_info("Hyper-V: running as root partition\n");
->> +		hv_curr_partition_type = HV_PARTITION_TYPE_ROOT;
+>>   	if (ret)
+>>   		goto out_unlock;
+>>   
+>>   	ret = __iommu_set_group_pasid(domain, group, pasid);
+>> -	if (ret)
+>> -		xa_erase(&group->pasid_array, pasid);
+>> +	if (ret) {
+>> +		xa_release(&group->pasid_array, pasid);
+>> +		goto out_unlock;
 >> +	}
->> +}
->> diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
->> index 75eb1390b45c..22afebfc28ff 100644
->> --- a/drivers/hv/vmbus_drv.c
->> +++ b/drivers/hv/vmbus_drv.c
->> @@ -2656,7 +2656,7 @@ static int __init hv_acpi_init(void)
->>  	if (!hv_is_hyperv_initialized())
->>  		return -ENODEV;
->>
->> -	if (hv_root_partition && !hv_nested)
->> +	if (hv_root_partition() && !hv_nested)
->>  		return 0;
->>
->>  	/*
->> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
->> index 2a86aa5d54c6..53e4b37716af 100644
->> --- a/drivers/iommu/hyperv-iommu.c
->> +++ b/drivers/iommu/hyperv-iommu.c
->> @@ -130,7 +130,7 @@ static int __init hyperv_prepare_irq_remapping(void)
->>  	    x86_init.hyper.msi_ext_dest_id())
->>  		return -ENODEV;
->>
->> -	if (hv_root_partition) {
->> +	if (hv_root_partition()) {
->>  		name = "HYPERV-ROOT-IR";
->>  		ops = &hyperv_root_ir_domain_ops;
->>  	} else {
->> @@ -151,7 +151,7 @@ static int __init hyperv_prepare_irq_remapping(void)
->>  		return -ENOMEM;
->>  	}
->>
->> -	if (hv_root_partition)
->> +	if (hv_root_partition())
->>  		return 0; /* The rest is only relevant to guests */
->>
->>  	/*
->> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
->> index 3f115e2bcdaa..54ebd630e72c 100644
->> --- a/include/asm-generic/mshyperv.h
->> +++ b/include/asm-generic/mshyperv.h
->> @@ -28,6 +28,11 @@
->>
->>  #define VTPM_BASE_ADDRESS 0xfed40000
->>
->> +enum hv_partition_type {
->> +	HV_PARTITION_TYPE_GUEST,
->> +	HV_PARTITION_TYPE_ROOT,
->> +};
 >> +
->>  struct ms_hyperv_info {
->>  	u32 features;
->>  	u32 priv_high;
->> @@ -59,6 +64,7 @@ struct ms_hyperv_info {
->>  extern struct ms_hyperv_info ms_hyperv;
->>  extern bool hv_nested;
->>  extern u64 hv_current_partition_id;
->> +extern enum hv_partition_type hv_curr_partition_type;
->>
->>  extern void * __percpu *hyperv_pcpu_input_arg;
->>  extern void * __percpu *hyperv_pcpu_output_arg;
->> @@ -190,8 +196,6 @@ void hv_remove_crash_handler(void);
->>  extern int vmbus_interrupt;
->>  extern int vmbus_irq;
->>
->> -extern bool hv_root_partition;
->> -
->>  #if IS_ENABLED(CONFIG_HYPERV)
->>  /*
->>   * Hypervisor's notion of virtual processor ID is different from
->> @@ -213,6 +217,7 @@ void __init hv_common_free(void);
->>  void __init ms_hyperv_late_init(void);
->>  int hv_common_cpu_init(unsigned int cpu);
->>  int hv_common_cpu_die(unsigned int cpu);
->> +void hv_identify_partition_type(void);
->>
->>  void *hv_alloc_hyperv_page(void);
->>  void *hv_alloc_hyperv_zeroed_page(void);
->> @@ -310,6 +315,7 @@ void hyperv_cleanup(void);
->>  bool hv_query_ext_cap(u64 cap_query);
->>  void hv_setup_dma_ops(struct device *dev, bool coherent);
->>  #else /* CONFIG_HYPERV */
->> +static inline void hv_identify_partition_type(void) {}
->>  static inline bool hv_is_hyperv_initialized(void) { return false; }
->>  static inline bool hv_is_hibernation_supported(void) { return false; }
->>  static inline void hyperv_cleanup(void) {}
->> @@ -321,4 +327,9 @@ static inline enum hv_isolation_type
->> hv_get_isolation_type(void)
->>  }
->>  #endif /* CONFIG_HYPERV */
->>
->> +static inline bool hv_root_partition(void)
->> +{
->> +	return hv_curr_partition_type == HV_PARTITION_TYPE_ROOT;
->> +}
+>> +	/*
+>> +	 * The xa_insert() above reserved the memory, and the group->mutex is
+> 
+> Just in case we would like update the patch, reword "xa_insert".
+> 
+>> +	 * held, this cannot fail. The new domain cannot be visible until the
+>> +	 * operation succeeds as we cannot tolerate PRIs becoming concurrently
+>> +	 * queued and then failing attach.
+>> +	 */
+>> +	WARN_ON(xa_is_err(xa_store(&group->pasid_array,
+>> +				   pasid, entry, GFP_KERNEL)));
 >> +
->>  #endif
->> --
->> 2.34.1
+>>   out_unlock:
+>>   	mutex_unlock(&group->mutex);
+>>   	return ret;
+>> @@ -3509,19 +3521,27 @@ int iommu_attach_group_handle(struct iommu_domain *domain,
+>>   
+>>   	mutex_lock(&group->mutex);
+>>   	entry = iommu_make_pasid_array_entry(domain, handle);
+>> -	ret = xa_insert(&group->pasid_array, IOMMU_NO_PASID, entry, GFP_KERNEL);
+>> +	ret = xa_insert(&group->pasid_array,
+>> +			IOMMU_NO_PASID, XA_ZERO_ENTRY, GFP_KERNEL);
+> 
+> Ditto.
+> 
+>>   	if (ret)
+>> -		goto err_unlock;
+>> +		goto out_unlock;
+>>   
+>>   	ret = __iommu_attach_group(domain, group);
+>> -	if (ret)
+>> -		goto err_erase;
+>> -	mutex_unlock(&group->mutex);
+>> +	if (ret) {
+>> +		xa_release(&group->pasid_array, IOMMU_NO_PASID);
+>> +		goto out_unlock;
+>> +	}
+>>   
+>> -	return 0;
+>> -err_erase:
+>> -	xa_erase(&group->pasid_array, IOMMU_NO_PASID);
+>> -err_unlock:
+>> +	/*
+>> +	 * The xa_insert() above reserved the memory, and the group->mutex is
+> 
+> "xa_insert" here too.
+> 
+> Thanks
+> Nicolin
+> 
 
+-- 
+Regards,
+Yi Liu
