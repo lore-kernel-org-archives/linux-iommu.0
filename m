@@ -1,102 +1,144 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C39D418EA2
-	for <iommu@lists.linux.dev>; Sun, 23 Feb 2025 14:24:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50E4188704
+	for <iommu@lists.linux.dev>; Sun, 23 Feb 2025 18:58:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740320669; cv=none; b=fssnY+PJSJ05Ohr+XrmPP/XzKkhDIYhxyzMu7on+39TeooihUv6So9fIParvUSy0hPCAGnphsWTib0oA3Q+7sl0AhhvpryYcil57x6gHIGa5TYuOe9JI0kAkkJSDCs3mOyd9jxTWsp9sz25xi1WD1Jweioe9vD1OOy8mQ93qvAo=
+	t=1740337131; cv=none; b=fY+aF1kwSEBqYCT+BXuKEsDbqEhI5BtVxWlMhGkBJR2sSmQc/2FCXpfhFDuc5NpcnlhjffvERaBEFfIVP3UzMmWE1GK8LjqDsRbYEc+TKY8U02YwU+DLkwQTTFjSy/nOsx4h4EGBHdbX2NP1uaidztKIOEgHZcad+IIpHTXKzUE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740320669; c=relaxed/simple;
-	bh=3jEPQtafbljSOcGs+AcqPyVavr/lR+evcKVRQcWnLHk=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=OlN9ryvP5mvt8HJNXgsHRFfshRAWGhV21YZe2GHP4w8ow3yDERv3d48xNM8E8HhIk2OYcX/KfxyfbVcMwAG/7SGJcUUtdxw0mNwx2jh7ED4cbjISe19C4ya17vkgULvqiG3ZBzZbHMSm85tJSUPKqgxw0ekVkw1wl44rRKmjl4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OptkVnYH; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1740337131; c=relaxed/simple;
+	bh=T/i0wd7pY9AM9U2Gjkvm6/4Px9O+/PKhiATyW2/HyO4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=u7kTkX3vy1MnF5NHUYjMSxRlPH/i1j3fTsNRAzyLyrqJtlHXRB2W6NqV8s7v07qi4WqCws7uqOoFQEFur1s7iifyB+imOK9gAchl1D4KFZwY0pQ+HNpEs7tdTTly/Cnnd5sGG5NoHdzLGoTFoOCSdG1rvZePIHsGloYUnza05x0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=L5U9B+/d; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OptkVnYH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740320668; x=1771856668;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=3jEPQtafbljSOcGs+AcqPyVavr/lR+evcKVRQcWnLHk=;
-  b=OptkVnYH3dyZXwNpj9u9uXfd2h1i+01ImNvgTmxhJlzwf8DEXl/RxKLq
-   5UNIGDcSv8yv4aheEk+3gduB+W3sF/yjtBybCmfIqcpL03yPaiSVr3W8d
-   M9UPJREgu//xZuLZAOKiVd2TFiONRXdOkY7FqKjdNEXRsHo7WedqDZ6Ug
-   +rM5L+VxzINrV40mEd4lrFKkfwBnT8BiuUGuVU6ZbgRyECUOajkVeTz3D
-   nBKMWjI2WMZS7F+6rhxw+2fydftkqtxqhupj4Lu/Uu2O0/DVYuoVHfvjM
-   o5U7T+J8uMZsck0i5FlAJx4Luat9XDw6QGBzyrGv+KsQ7IHNiapo7X0eX
-   A==;
-X-CSE-ConnectionGUID: g8rZ27ckTRS+y9QmbcwJwQ==
-X-CSE-MsgGUID: HcENP6+5RcKIKCwYcTsk3A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11354"; a="44863873"
-X-IronPort-AV: E=Sophos;i="6.13,309,1732608000"; 
-   d="scan'208";a="44863873"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 06:24:27 -0800
-X-CSE-ConnectionGUID: 27A9Sw/HS96B/FIwTKoR3w==
-X-CSE-MsgGUID: gcHFmGRqRGKYA6vaXfq9Cw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,309,1732608000"; 
-   d="scan'208";a="115792235"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.93]) ([10.124.240.93])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 06:24:26 -0800
-Message-ID: <82499eb6-00b7-4f83-879a-e97b4144f576@linux.intel.com>
-Date: Sun, 23 Feb 2025 22:24:23 +0800
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="L5U9B+/d"
+Received: from [192.168.34.162] (254C2546.nat.pool.telekom.hu [37.76.37.70])
+	by mail.mainlining.org (Postfix) with ESMTPSA id 4A0A1BBAA8;
+	Sun, 23 Feb 2025 18:58:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1740337122;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=zaXf5MCmGpuyyWzfFp16biEz+9yDLux8KpdR9j4m6Jo=;
+	b=L5U9B+/dapPQYi4n0ioQ37XJFWPJh304l4WLy0WPkbM4lbSZMcSDJnpVlrmkpR3FGCb+Fz
+	utf7zFSz5qpCh7pH4mbN/Ea2j1gtjaFacnDjr3pquRU52Ut7xrjtnNPYBjsWmmAR3rGJYP
+	K/R0kvtq07edKKr0dybTkkjmFVQizi+sfZbQiVr/ztmIVS+JOqmEx/ekKVHEmqTEqaaV6i
+	vDvNFz7Blov2tY/wBJCHTOU8raH8/g7T0HzIA66z22mYxzUBovhNvp7tHnx+222vefSDgz
+	4eTsAcxU7bz99gruVQbFB3z7+JDRV0sH+RIAr0skgEOR1uBi0q2373L4sI8qSw==
+From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+Subject: [PATCH v2 0/8] Initial support of MSM8937 and Xiaomi Redmi 3S
+Date: Sun, 23 Feb 2025 19:57:45 +0100
+Message-Id: <20250223-msm8937-v2-0-b99722363ed3@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- iommu@lists.linux.dev
-Subject: Re: Question on context setup for passthrough
-To: Jerry Snitselaar <jsnitsel@redhat.com>
-References: <rz4kc2zxi4fritsbmjsa3ekqncguvnmeir5se3fhu7pzhtgipk@2u6ps3q3gsqz>
- <75f4867f-99b9-4ba9-abf4-f0dc29d08fca@linux.intel.com>
- <v7quonl2qcsweqd4r6e2badd6bdhmzgo4zm4v2k3bxkg4zkffi@zpxi53ai4qme>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <v7quonl2qcsweqd4r6e2badd6bdhmzgo4zm4v2k3bxkg4zkffi@zpxi53ai4qme>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAKlvu2cC/z3MQQrCMBCF4auUWRtJpmhaV95DuijJpB0wiSQSl
+ JK7Gwu6/B+Pb4NMiSnDpdsgUeHMMbTAQwdmncNCgm1rQIkniUoKn/0w9logDuSkNT2ZEdr7kcj
+ xa5duU+uV8zOm9w4X9V1/hvobRQkptEVN9qydlsPVzxzuHDgsx5gWmGqtHwxwOV2jAAAA
+X-Change-ID: 20250210-msm8937-228ef0dc3ec9
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, 
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
+ Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>, 
+ Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
+ Daniil Titov <daniilt971@gmail.com>, Dang Huynh <danct12@riseup.net>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Adam Skladowski <a39.skl@gmail.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1740337120; l=2490;
+ i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
+ bh=T/i0wd7pY9AM9U2Gjkvm6/4Px9O+/PKhiATyW2/HyO4=;
+ b=Ja7IFMF2IgPzZfg01b6Q//9RwjfYAB1g/J8vWC2E37bbxEosbYVQPXM1amALNgJ8YjTAFL0jd
+ irC6xuog25IAJd2mbAInnQW9h3f7PIEcTclZrYKQSNHWoc2BrCZWPST
+X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
+ pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-On 2025/2/22 2:26, Jerry Snitselaar wrote:
-> On Fri, Feb 21, 2025 at 04:40:42PM +0800, Baolu Lu wrote:
->> On 2025/2/21 15:16, Jerry Snitselaar wrote:
->>> Hi Baolu,
->> Hi Jerry,
->>
->>> In context_setup_pass_through_cb there is a check that bails out
->>> if dev != &pdev->dev which doesn't exist in the code that sets up the
->>> context entries in the dma domain case. Is there a reason this check is
->>> done in the passthrough case?
->> The check "dev != &pdev->dev" was added to prevent setting a context for
->> a different device that has its own probe path.
-> Hi Baolu,
-> 
-> Why is it different than what happens in the case with the callback in
-> the dma domains case? Shouldn't pci_for_each_dma_alias already be
-> deciding which devices get called with the callback?  This seems like
-> it will always skip setting up the context entry for an alias when
-> there is a pcie to pci bridge.
+This patch series add initial support for MSM8937 SoC
+and Xiaomi Redmi 3S (land).
 
-This appears to be a regression introduced by commit <2031c469f816>
-('iommu/vt-d: Add support for static identity domain'). Previously, the
-context setup for both identity and DMA domains was handled in a single
-path, where the condition 'dev != &pdev->dev' did not cause an early
-exit. This check was newly added by the commit.
+The series is extending the MSM8917 gcc and pinctrl drivers
+because they are sibling SoCs.
+MSM8937 have 4 more A53 cores and have one more dsi port then
+MSM8917.
+It implements little-big architecture and uses Adreno 505.
 
-> 
-> My initial fix was just the dropping of the check in the callback,
-> but I wasn't sure that was correct or not. So I decided to check
-> with you, and go back and read some pci spec bits. 🙂
+Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+---
+Changes in v2:
+- drop applied patches
+- drop gcc schema commits infavor of a new schema for gcc-msm8937
+- document always on clock for adreno 505/506/510
+- msm8937:
+  - set cache size
+  - rename cpu labels
+  - fix style issues addressed by review
+- msm8937-xiaom-land:
+  - remove unused serial0 alias
+  - remove regulator-always-on from pm8937_l6
+  - add blue indicator led for aw2013
+- Link to v1: https://lore.kernel.org/r/20250211-msm8937-v1-0-7d27ed67f708@mainlining.org
 
-Can you please post a fix for this?
+---
+Adam Skladowski (1):
+      dt-bindings: drm/msm/gpu: Document AON clock for A505/A506/A510
 
-Thanks,
-baolu
+Barnabás Czémán (4):
+      dt-bindings: clock: qcom: Add MSM8937 Global Clock Controller
+      dt-bindings: iommu: qcom,iommu: Add MSM8937 IOMMU to SMMUv1 compatibles
+      dt-bindings: arm: qcom: Add Xiaomi Redmi 3S
+      arm64: dts: qcom: Add Xiaomi Redmi 3S
+
+Dang Huynh (2):
+      pinctrl: qcom: msm8917: Add MSM8937 wsa_reset pin
+      arm64: dts: qcom: Add initial support for MSM8937
+
+Daniil Titov (1):
+      clk: qcom: gcc: Add support for Global Clock controller found on MSM8937
+
+ Documentation/devicetree/bindings/arm/qcom.yaml    |    7 +
+ .../bindings/clock/qcom,gcc-msm8937.yaml           |   73 +
+ .../devicetree/bindings/display/msm/gpu.yaml       |    6 +-
+ .../devicetree/bindings/iommu/qcom,iommu.yaml      |    1 +
+ arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+ arch/arm64/boot/dts/qcom/msm8937-xiaomi-land.dts   |  408 ++++
+ arch/arm64/boot/dts/qcom/msm8937.dtsi              | 2149 ++++++++++++++++++++
+ drivers/clk/qcom/Kconfig                           |    6 +-
+ drivers/clk/qcom/gcc-msm8917.c                     |  617 +++++-
+ drivers/pinctrl/qcom/Kconfig.msm                   |    4 +-
+ drivers/pinctrl/qcom/pinctrl-msm8917.c             |    8 +-
+ include/dt-bindings/clock/qcom,gcc-msm8917.h       |   17 +
+ 12 files changed, 3285 insertions(+), 12 deletions(-)
+---
+base-commit: d4b0fd87ff0d4338b259dc79b2b3c6f7e70e8afa
+change-id: 20250210-msm8937-228ef0dc3ec9
+
+Best regards,
+-- 
+Barnabás Czémán <barnabas.czeman@mainlining.org>
+
