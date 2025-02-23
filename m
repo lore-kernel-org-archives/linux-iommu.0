@@ -1,40 +1,40 @@
 Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 897E11607B7
-	for <iommu@lists.linux.dev>; Sun, 23 Feb 2025 18:58:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE01418D649
+	for <iommu@lists.linux.dev>; Sun, 23 Feb 2025 18:58:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740337133; cv=none; b=u5dMCkBF0Xgy7zEC2W65IOPXaHVJWMIvm70ktJ5ADipDY1LaUe7Dai/z0ZgdChEjxaS14THsjLFC8BflA48XOf4d2zJcdrEA41kuvtX0zOieEV0nzdgxih0wKFpfXeYGin1yKPaTJXz6SRu+8fs294U0Ujy3ykCyvGOwwqWVmxQ=
+	t=1740337134; cv=none; b=Z5+BQWZR1KvCruS4C+V/AXURTwzZfzmh7oXKXU4+Ebg5Hs0PqSUQze2g0lawZeVJGSwN9gJSZTFrPYvnT2kuVhGIxqifnOOrt1YnZ5AB+45KmYRLUAE5KH2BKeoTLuYfrIU4u5PVOb8+N6kY9s08cVyH8ZsPRJJ7ybeBqWMXqxw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740337133; c=relaxed/simple;
-	bh=0V9CjYxXnrRBEUshRpcDmP3eMGTQc3zVHiqNZi7gAfM=;
+	s=arc-20240116; t=1740337134; c=relaxed/simple;
+	bh=LjF/wuS0Kp0a3fx8BedXAUUREYCxLDlQzoS7oLz29U4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=LJPU8yWQwXzODTMaZQkDl/XHSDHbCPCQ4vUx35RTuWIhuepEkQmfuoHurOQe1HRvAiNt8cTF8otBZnavEsTZMmbXBDVJyDAlQTNTFrbT53rF9Rq521LBjzFj/BFc1UmsnGLryAwzQNtQ0qYLZc70UHXS+VwuRFbXg7ONP5mwpO0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=S3gXPL4Z; arc=none smtp.client-ip=5.75.144.95
+	 In-Reply-To:To:Cc; b=EGBuVc5bzKltrDmeHz6bPF5oiKTJ7IQ+J4D8wvJAPjgZ/3LOpc9tA2YaFdFj57wKSyLt5wmSlSL78xvuzJ1QKRUcyidsYb4eao20Ac5upaerpgbrQjLFi/U+3PZQEx1m96wlT+yfbaSfz88I0A5vfF63Be4TWyDnbhNFE8m5Kgc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=CfnqB93i; arc=none smtp.client-ip=5.75.144.95
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="S3gXPL4Z"
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="CfnqB93i"
 Received: from [192.168.34.162] (254C2546.nat.pool.telekom.hu [37.76.37.70])
-	by mail.mainlining.org (Postfix) with ESMTPSA id 737BEBBAA9;
-	Sun, 23 Feb 2025 18:58:42 +0000 (UTC)
+	by mail.mainlining.org (Postfix) with ESMTPSA id 1E07DBBAB3;
+	Sun, 23 Feb 2025 18:58:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1740337124;
+	s=psm; t=1740337130;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=9VcVl5gDRjTYO2Qp8w2oBbNAaPcpyo8+xli8CUCQTSU=;
-	b=S3gXPL4Z4xx6HFQGTWeejTR4mdQAVDX9oTzJqlUdCDXwJLjPgZcrfZLAjm6VLieNy80sfz
-	uWrYhjJ5tmenmscAKSSG0PqIxCE1a2PNRfoFlNxSRpvPKjP7mmEM4Qx1ywRqi8Kv98fPdl
-	Rs/mNoBzQvbGiuRPvzeDv/cboGIWLlZ1myRts10NGcqb2BA1ZsQ3r4xOB+WiqhCWujpB9H
-	0srWj+MP/nKbEPwWKLvy04E0XRzT4MGR+eTm1uOWq+6TaMp4kl/RVe0Vgti6cfLDlgJXzr
-	fO/ClUnY6ig+Wg87umJ8SasPbCZ4G0+YDQ4p39/OcwH0yd4sVzfBM6ULqXJfkA==
+	bh=z246zezQsbXmW6ySsE8/P5ydLD0Q9o6QEpyka1CHFOY=;
+	b=CfnqB93izEdU4jARJBRhbMPT9DqN+iSCXqPHaW6WB4Mgtj2ngXultM+5YlemV4XATjNsNq
+	i5XUwfSwa14QrUQXUe5eTShBVAhUfOrSRYzG6yoYU3fFiw0/gAtrJZ57w773tHVs3STSFw
+	NfpOD1wdghEk2BZf1WLyMVkspscBjX+Cr0GAFoG8d2joYywBTdVvnReOxbqRpGElH5p2WP
+	kHCmLuWuchReKOU6/z8v0qJ1PoKjvoeTlno3z5waLSIsdUhsZ+VNjvYCCJ/Nt3gygW3XeO
+	5Kywk7dXYfQV1bqHFXAlrPABnT6gwGa8A72SJKDV8AdnR0lAb9LoHQJBxoduiA==
 From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Sun, 23 Feb 2025 19:57:46 +0100
-Subject: [PATCH v2 1/8] dt-bindings: clock: qcom: Add MSM8937 Global Clock
- Controller
+Date: Sun, 23 Feb 2025 19:57:49 +0100
+Subject: [PATCH v2 4/8] dt-bindings: iommu: qcom,iommu: Add MSM8937 IOMMU
+ to SMMUv1 compatibles
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,7 +43,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20250223-msm8937-v2-1-b99722363ed3@mainlining.org>
+Message-Id: <20250223-msm8937-v2-4-b99722363ed3@mainlining.org>
 References: <20250223-msm8937-v2-0-b99722363ed3@mainlining.org>
 In-Reply-To: <20250223-msm8937-v2-0-b99722363ed3@mainlining.org>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -67,138 +67,39 @@ Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
  dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
- =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1740337120; l=3862;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1740337120; l=1026;
  i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=0V9CjYxXnrRBEUshRpcDmP3eMGTQc3zVHiqNZi7gAfM=;
- b=o6lX4x1gXRTdusiAZwyGDZZZGrKFV+7MGeIEQm3MXpRtk1l/iy98tQSeDsK+f7AEId118M1CC
- hrBFuOpM8lPDtv0+q5/uk/8R5CQF6rLfQHUvSqM0T+zeM2EuGKIiXyg
+ bh=LjF/wuS0Kp0a3fx8BedXAUUREYCxLDlQzoS7oLz29U4=;
+ b=DPw8gGt0BLfs0MdMDjNrvXdyN745W57lQLjm9Yg8tSdya+PNLz5DqzyaqOSJMO2ofNOGfNXna
+ k+wGGgnM1RmA/5Y0h1oMUpv7IpFI1jh5/n1ZnmZp+VMEkpvh9sna5KY
 X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
  pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-Add device tree bindings for the global clock controller on Qualcomm
-MSM8937 platform.
+Add MSM8937 compatible string with "qcom,msm-iommu-v1" as fallback
+for the MSM8937 IOMMU which is compatible with Qualcomm's secure
+fw "SMMU v1" implementation.
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 ---
- .../bindings/clock/qcom,gcc-msm8937.yaml           | 73 ++++++++++++++++++++++
- include/dt-bindings/clock/qcom,gcc-msm8917.h       | 17 +++++
- 2 files changed, 90 insertions(+)
+ Documentation/devicetree/bindings/iommu/qcom,iommu.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-msm8937.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8937.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..c169bc3e350da6da906d90e6632836ba7f591d49
---- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8937.yaml
-@@ -0,0 +1,73 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/clock/qcom,gcc-msm8937.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm Global Clock & Reset Controller on MSM8937
-+
-+maintainers:
-+  - Barnabas Czeman <barnabas.czeman@mainlining.org>
-+
-+description: |
-+  Qualcomm global clock control module provides the clocks, resets and power
-+  domains on MSM8937.
-+
-+  See also::
-+    include/dt-bindings/clock/qcom,gcc-msm8917.h
-+
-+properties:
-+  compatible:
-+    const: qcom,gcc-msm8937
-+
-+  clocks:
-+    items:
-+      - description: XO source
-+      - description: Sleep clock source
-+      - description: DSI phy instance 0 dsi clock
-+      - description: DSI phy instance 0 byte clock
-+      - description: DSI phy instance 1 dsi clock
-+      - description: DSI phy instance 1 byte clock
-+
-+  clock-names:
-+    items:
-+      - const: xo
-+      - const: sleep_clk
-+      - const: dsi0pll
-+      - const: dsi0pllbyte
-+      - const: dsi1pll
-+      - const: dsi1pllbyte
-+
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - '#power-domain-cells'
-+
-+allOf:
-+  - $ref: qcom,gcc.yaml#
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    gcc: clock-controller@1800000 {
-+      compatible = "qcom,gcc-msm8937";
-+      reg = <0x01800000 0x80000>;
-+      #clock-cells = <1>;
-+      #reset-cells = <1>;
-+      #power-domain-cells = <1>;
-+      clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
-+               <&sleep_clk>,
-+               <&dsi0_phy 1>,
-+               <&dsi0_phy 0>;
-+               <&dsi1_phy 1>,
-+               <&dsi1_phy 0>;
-+      clock-names = "xo",
-+                    "sleep_clk",
-+                    "dsi0pll",
-+                    "dsi0pllbyte",
-+                    "dsi1pll",
-+                    "dsi1pllbyte";
-+    };
-+...
-diff --git a/include/dt-bindings/clock/qcom,gcc-msm8917.h b/include/dt-bindings/clock/qcom,gcc-msm8917.h
-index 4b421e7414b50bef2e2400f868ae5b7212a427bb..ec1f0b261dd5ccfe4896a00ffa9cf86de98b9cb3 100644
---- a/include/dt-bindings/clock/qcom,gcc-msm8917.h
-+++ b/include/dt-bindings/clock/qcom,gcc-msm8917.h
-@@ -170,6 +170,22 @@
- #define VFE1_CLK_SRC				163
- #define VSYNC_CLK_SRC				164
- #define GPLL0_SLEEP_CLK_SRC			165
-+#define BLSP1_QUP1_I2C_APPS_CLK_SRC		166
-+#define BLSP1_QUP1_SPI_APPS_CLK_SRC		167
-+#define BLSP2_QUP4_I2C_APPS_CLK_SRC		168
-+#define BLSP2_QUP4_SPI_APPS_CLK_SRC		169
-+#define BYTE1_CLK_SRC				170
-+#define ESC1_CLK_SRC				171
-+#define PCLK1_CLK_SRC				172
-+#define GCC_BLSP1_QUP1_I2C_APPS_CLK		173
-+#define GCC_BLSP1_QUP1_SPI_APPS_CLK		174
-+#define GCC_BLSP2_QUP4_I2C_APPS_CLK		175
-+#define GCC_BLSP2_QUP4_SPI_APPS_CLK		176
-+#define GCC_MDSS_BYTE1_CLK			177
-+#define GCC_MDSS_ESC1_CLK			178
-+#define GCC_MDSS_PCLK1_CLK			179
-+#define GCC_OXILI_AON_CLK			180
-+#define GCC_OXILI_TIMER_CLK			181
- 
- /* GCC block resets */
- #define GCC_CAMSS_MICRO_BCR			0
-@@ -187,5 +203,6 @@
- #define VENUS_GDSC				5
- #define VFE0_GDSC				6
- #define VFE1_GDSC				7
-+#define OXILI_CX_GDSC				8
- 
- #endif
+diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
+index 5ae9a628261fd251c1e991a70662c6d37ef2c4e3..3e5623edd207abbfbd2ba80f51db7829f02eb7b5 100644
+--- a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
+@@ -22,6 +22,7 @@ properties:
+           - enum:
+               - qcom,msm8916-iommu
+               - qcom,msm8917-iommu
++              - qcom,msm8937-iommu
+               - qcom,msm8953-iommu
+           - const: qcom,msm-iommu-v1
+       - items:
 
 -- 
 2.48.1
