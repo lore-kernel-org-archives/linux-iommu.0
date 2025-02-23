@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45714156F41
-	for <iommu@lists.linux.dev>; Sun, 23 Feb 2025 13:18:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57A9C1C84B4
+	for <iommu@lists.linux.dev>; Sun, 23 Feb 2025 13:22:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740316718; cv=none; b=tCU8P+nDfxK5pec0GOHfRLUrCVHfJJyytvWqeECx96CafKEq2o6Cg6jlud2dZlZZ84ZtdPG8KBZlG5NGpUsiS7eB4zFt+QcWt7skgRwHPbWy4jpjaFdzmPAAE0eks7TmeR72VTWpplyX7bYcUmdYEIp2CnkuD8t2aCkqTAF3y38=
+	t=1740316964; cv=none; b=keaqeeS3N1z9Ti4o/vvQ7n+b9ceofsmcdy6iBRme9FtK5MapJ2Z6RUGs2ju9gjE5BtO0Z3bXkepyeZsYUMAqs80bMl017esREblA09qzPwNaARAT5Qmt67KM/QK/JOtkH/Y7GTvzl0zWtHBzr0LC58b0br1vRTPUMqyG5H/f/zw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740316718; c=relaxed/simple;
-	bh=zhofopF9lAae3SzVMhV6xvL91LmD3RIHuRhrRtfZ8eY=;
+	s=arc-20240116; t=1740316964; c=relaxed/simple;
+	bh=7mYfwDO+ZB7ecmf29ndZ5ZaBLa1mkXh6Ad2w3T0AzFw=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=f8kk2QpUeAJKd9Iw/g3M5Zwm6uB6Eodwy+aPDCigqwLQih+bykzbV4Xr2SDNR6grNOSrlH9G50SNNxWho1SNQqIBTh3nFQgp/fiBeKfa3BFOEkCzXCoYXT3BdhIr8baMy7VJ3pDxY3H+WfYsurfzySTklSdzrJNJ9sBZERz7r/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b2VU5kuc; arc=none smtp.client-ip=192.198.163.18
+	 In-Reply-To:Content-Type; b=VD53SWvfb6GVsQy8bfAy96/6dFwoUZSzcbnspbhwCiS2BA4EKDxo1rA8uWAXOz9vOLl5MGbx2HD/ivpFR7pcQ1hRn2/XehTYdRk/wMazezb7kSQoxuJO/7WnnMMZYNgbKfw3jynmUTHgk0snR9spnWB27cYV/n2htfsUZOlZVHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hNfUfP2z; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b2VU5kuc"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hNfUfP2z"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740316717; x=1771852717;
+  t=1740316963; x=1771852963;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=zhofopF9lAae3SzVMhV6xvL91LmD3RIHuRhrRtfZ8eY=;
-  b=b2VU5kucM7I9qqUMIaWKSvImvnXuEU4YbjhxAEdwgLsmsIZSx1kvJD8X
-   FPgCXTRKJxMJ5EMQb0Bk0Dnp/sNDXT14Arzyo1RTRy501jqDZ0ZZCq9tD
-   JHjc51AOjKGjJSLd7olq47sYQtpH3Bx+2I68YdJkoGSXq9Z/TglwEuy6f
-   pL3B4wLGiFuS6U0zTLXiO98XUGtGLbJZiBOUe6ZgavGjczitzrtfUTqJi
-   02SirQ7NGzLuGKUwlYIP7YV33L5951DRNS6pkJ8q1ZA2wpm+VShnUlOoV
-   C3Xgc+MnpX7jl3f4CMXYIZl1A8Iqxh26b9mZn8EHUkH9kjfTC6gA2kl36
+  bh=7mYfwDO+ZB7ecmf29ndZ5ZaBLa1mkXh6Ad2w3T0AzFw=;
+  b=hNfUfP2zLMXiDT5F74dj0nqhRAusT3GFCy0jqkYymX0ORwkTBqy8UXIA
+   Qiah8iqNeDeaZVxl2w3sTIBDXt1SJjeans3tRvYQU62FdrIsWKBXwZAvA
+   P5tZxElBJJdZ52vXfIUK7/8vjIypM3R4Zk0IsRxwS9nGLz8XHlAitsuZ0
+   ipetgycWPx3dFlkFZQCQNhToVDtUR928vTIOPYnlQi5DPzahUsTiolnNO
+   YDb89pScGoOvxk5nkEcMqQoZbv+I7Bqpri2acSx2r2YtgwYyvlU+Py4r/
+   Lx1n7mglbvL9cNG5NKM9bqnoo+CezyJ5+WwEBduIGlnjIw6K74v5pQHtN
    g==;
-X-CSE-ConnectionGUID: 2oTda4tCQs+4S9lMp4DNeg==
-X-CSE-MsgGUID: bBVvjtRiTHS2oCzDn8KhqQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11354"; a="40317628"
+X-CSE-ConnectionGUID: mpJ4qA5hTaCD8AuS3t1I9Q==
+X-CSE-MsgGUID: /jIXyDRnTYCmMh6XsQ+0lA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11354"; a="40317717"
 X-IronPort-AV: E=Sophos;i="6.13,309,1732608000"; 
-   d="scan'208";a="40317628"
+   d="scan'208";a="40317717"
 Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 05:18:37 -0800
-X-CSE-ConnectionGUID: RbnFCCRBTRaTqX7yBHkH8w==
-X-CSE-MsgGUID: Uh+0nPNaT/uOleg8Em6xRw==
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 05:22:43 -0800
+X-CSE-ConnectionGUID: GZWxEpx/TJ2QTy/oGDNOrA==
+X-CSE-MsgGUID: F4qvyveSTHWbQD/P7cx14Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,309,1732608000"; 
-   d="scan'208";a="139048842"
+   d="scan'208";a="139049433"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.93]) ([10.124.240.93])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 05:18:34 -0800
-Message-ID: <0998ec60-9b91-4d81-b45f-1d0a5db02bee@linux.intel.com>
-Date: Sun, 23 Feb 2025 21:18:32 +0800
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 05:22:40 -0800
+Message-ID: <a4a1e65e-3614-419c-a5e3-6ff2aa4f1369@linux.intel.com>
+Date: Sun, 23 Feb 2025 21:22:38 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,44 +54,43 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Cc: baolu.lu@linux.intel.com, kevin.tian@intel.com, iommu@lists.linux.dev,
  robin.murphy@arm.com, nicolinc@nvidia.com, will@kernel.org
-Subject: Re: [PATCH v2 2/4] iommu: Drop iommu_group_replace_domain()
+Subject: Re: [PATCH v2 3/4] iommu: Store either domain or handle in
+ group->pasid_array
 To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com
 References: <20250221143335.49874-1-yi.l.liu@intel.com>
- <20250221143335.49874-3-yi.l.liu@intel.com>
+ <20250221143335.49874-4-yi.l.liu@intel.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250221143335.49874-3-yi.l.liu@intel.com>
+In-Reply-To: <20250221143335.49874-4-yi.l.liu@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2025/2/21 22:33, Yi Liu wrote:
-> iommufd does not use it now, so drop it.
+> @@ -3454,13 +3468,17 @@ struct iommu_attach_handle *
+>   iommu_attach_handle_get(struct iommu_group *group, ioasid_t pasid, unsigned int type)
+>   {
+>   	struct iommu_attach_handle *handle;
+> +	void *entry;
+>   
+>   	xa_lock(&group->pasid_array);
+> -	handle = xa_load(&group->pasid_array, pasid);
+> -	if (!handle)
+> +	entry = xa_load(&group->pasid_array, pasid);
 
-iommufd still uses iommu_group_replace_domain() in Joerg's tree. This
-could cause compiling issues if this series goes through the iommu tree.
+Could entry be NULL? If so, a null check might be needed here.
 
-$ git grep  iommu_group_replace_domain
-drivers/iommu/iommu-priv.h:int iommu_group_replace_domain(struct 
-iommu_group *group,
-drivers/iommu/iommu.c: * iommu_group_replace_domain - replace the domain 
-that a group is attached to
-drivers/iommu/iommu.c:int iommu_group_replace_domain(struct iommu_group 
-*group,
-drivers/iommu/iommu.c:EXPORT_SYMBOL_NS_GPL(iommu_group_replace_domain, 
-"IOMMUFD_INTERNAL");
-drivers/iommu/iommu.c: * This is a variant of 
-iommu_group_replace_domain(). It allows the caller to
-drivers/iommu/iommufd/iommufd_private.h:        return 
-iommu_group_replace_domain(idev->igroup->group, hwpt->domain);
-
-> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
-> Reviewed-by: Nicolin Chen<nicolinc@nvidia.com>
-> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
-> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
-> ---
->   drivers/iommu/iommu-priv.h |  3 ---
->   drivers/iommu/iommu.c      | 35 ++++++-----------------------------
->   2 files changed, 6 insertions(+), 32 deletions(-)
+> +	if (xa_pointer_tag(entry) == IOMMU_PASID_ARRAY_HANDLE) {
+> +		handle = xa_untag_pointer(entry);
+> +		if (type && handle->domain->type != type)
+> +			handle = ERR_PTR(-EBUSY);
+> +	} else {
+>   		handle = ERR_PTR(-ENOENT);
+> -	else if (type && handle->domain->type != type)
+> -		handle = ERR_PTR(-EBUSY);
+> +	}
+>   	xa_unlock(&group->pasid_array);
+>   
+>   	return handle;
 
 Thanks,
 baolu
