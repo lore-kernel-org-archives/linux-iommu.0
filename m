@@ -1,339 +1,103 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A42EA1DD88B
-	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 21:35:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99A87469D
+	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 21:40:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740432928; cv=none; b=MNfmaiAnyyYhoIfMpFKLw5GdE1ZxEig1uNcT6rG0kbCbCSQoSJfNlyYOf6KJ2eoik0qDu7awVy4j5RH2qkFAEzYO6NEutSEpn2Hufs2xJGfJg+W7jqcpSFiXsSy1l3HISxd3+MfhjU2igRrXAXXxwvFZImqIMzxbbyFlaBJm0AY=
+	t=1740433229; cv=none; b=XiHrXuesj7CIRdaos4793vGjDkNcJ4n+Z8Z/fJU1FrIdZf4xrUEpKNxvIzhQJ2c7VgehG/i3svhKqT5DAJWs064OvOFwBgFpX4B91iyaQsDLToN+iVMqgzYG7OlSnKroegQPQ5jFf1wIifYL1vfjPpds0ES4uZ/cWl3GhfyA8nw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740432928; c=relaxed/simple;
-	bh=CklY92L/luBbyXKHUyxRozag9ZBDMc/0NOvwGO8rZRE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OionDXTWMMh4vkv9fvOPGxoK8eXv6RrKi/HTaOZj8RLpJoJFbRwlhWAwax9I/vv5BtwffVAi9shC8D45aLYtPBmUNPWI75tWspHkOOuZkZTCEbgrXQjzEj0oHPsKinP1DpZMzUjqNixoSiQCcA2oKCM+2vCa9FNJcTByNqaDz8I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fTtSOr5p; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1740433229; c=relaxed/simple;
+	bh=j4TJr5pgfQZCXoZ395gNyQ2FKYY1YCKyx0JpsbK9COw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=f/LdsVe0X72siOLWHbZOscOhoDiy+XR2ZbfDVddmPLcDTe7ZdM9kG0170Tu2p8fujmsE24XUKA3WAYN+ldPUZ9VYMNR7UJYhM9+tGcSCNU/6a7yVq2Rr3JxkZOYAftiibrKAJF/doWZPynVtH2llnTizE3kgIkRd4lbIZU8GqRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dX9vxFqO; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fTtSOr5p"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-22117c396baso12575ad.1
-        for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 13:35:26 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dX9vxFqO"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-216513f8104so11737665ad.2
+        for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 13:40:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1740432926; x=1741037726; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=B6MDLYjLn+ocuz7r4vs09MXpA233UNWx/xCnRJqXepo=;
-        b=fTtSOr5pv/w1E34p+jjEFjkODC0KJa+msiMaQwu6pEkKxZbX2CNqpH94De2ckT3c/v
-         PW0ZAH8OG8e2+6M6XLnwzcfwbjBCrp/5+sN+RVeKU0J9e5taaXdlofp8HHghzE1JBqtq
-         Gpdw9iZt1duydjgtT4+4J5Vkj9liGsCpbAbHgIi+QZvJ2TgM0x8eux6cspl524qGtd0Z
-         8/ED15/Mi/T+owkMsJqkPjp160gGQ0QN6CLh0rZ6XYjSRjc/ItOYxoFkNB1RR3qnPVdT
-         cHogWapK7g0zbSIimaFkwXY/Ib0KFYlc/hkNjuJoIAnBSa+9R+7ftiNP7c0IMlt46QLh
-         wOIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740432926; x=1741037726;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1740433227; x=1741038027; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=B6MDLYjLn+ocuz7r4vs09MXpA233UNWx/xCnRJqXepo=;
-        b=LXminAjdymuK9GDZVeengsjMmVeTC88T5INxXzjAYiglz/WlNnEY1I6AxhCHBtIJ6R
-         I1b67jYa8Lqe/rKxzgBUttOhZylP3q5JHvcNvIbuyansG7cez7H31yQmmHQV3sDXTpaE
-         emEktROZGqiDQmV8QcyOQIGJbZX5PJzGodiA8b1Qx0SuWLrZYG78NJ/Gke+1Er7e/kDs
-         3yHfmn7ljiJK9RuMubKWemjk+DCtlIZpLgY75ZsmjRUJ2EwlWAoMj38Oo456rLJ8oAWY
-         sp1jytmpFJVgMmhRJX/ZFkuTyp2ioZAf7yxvdoGH+rBhtFb1zACz+ALtNU9m0l1y31As
-         SyAw==
-X-Forwarded-Encrypted: i=1; AJvYcCWbnjpNeelvyYbZgzboICpw0TmBsSbHQGQCygrz62dQ/oYYam3KCGakA5E/oIF+fuYkaxqQ4w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxg0jeyp1X7oHdU/ffDhiuitJIwhTTrL40f8NvkGzgvFUMtHkHF
-	Cxo/ysFwmRpB4gl3WCONDAHp/8ux1He+hYMiiiaMdMBMd8LK0SaJj95V6r5L/w==
-X-Gm-Gg: ASbGncuVM4Vjoh1izleRj9QJH+hOC6GEPE0YhnNNBWE/3LD0WML00ANm57EP8RIpnOh
-	aM8S/+JO5ni4G39d8Kl7YDlL44o+UTU3aVCVh196RIaC9vo0kxvX8flRguk1mnpNFzU9t438qON
-	zXfVXOi0CWtKE8/rN41Swrf/0r3cs5OGK3GPZHM9YYGz2YVhBOncSEztagAuZv8qpC3LONVWMfb
-	6H89t1Oh2Qhz11qY1SbgjbGtIj/zt33ELPaytwI93pyO5NTQkCI5JADLueSf3EvZhq6oWTo/r45
-	Xosf6AOTA9rl6xYK55WWDPyGbSfMQPh58ckHo8Srhtf8ociF5jnrKPPP7R1oQG8=
-X-Google-Smtp-Source: AGHT+IEvbtSCavbWzJzTUhgymYrP41u+KdaH4TpPZexQDV04gmMsaPcW7ZdSgqeE7hyABwizrzsr3A==
-X-Received: by 2002:a17:903:234c:b0:21f:2ded:bfc5 with SMTP id d9443c01a7336-22307aab886mr1036055ad.28.1740432925555;
-        Mon, 24 Feb 2025 13:35:25 -0800 (PST)
-Received: from google.com (169.224.198.35.bc.googleusercontent.com. [35.198.224.169])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2230a0a3ca8sm730145ad.169.2025.02.24.13.35.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Feb 2025 13:35:25 -0800 (PST)
-Date: Mon, 24 Feb 2025 21:35:14 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
-	joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	shuah@kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
-	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
-	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
-	patches@lists.linux.dev
-Subject: Re: [PATCH v7 13/14] iommu/arm-smmu-v3: Report events that belong to
- devices attached to vIOMMU
-Message-ID: <Z7zmErar4YvQSSxw@google.com>
-References: <cover.1740238876.git.nicolinc@nvidia.com>
- <b1930038cf828dc13c080e2b46b3003a8c98ef24.1740238876.git.nicolinc@nvidia.com>
+        bh=j4TJr5pgfQZCXoZ395gNyQ2FKYY1YCKyx0JpsbK9COw=;
+        b=dX9vxFqOGCz7NqZr5+lXO5cM0JjmPvKqH8iaPjgn9yxIiZXtDnJyh2wJLBo4gGRdyM
+         8qj3YhlHGC81cWvlXJ7WNSwo8UDzBr7BDgIWobwcTFcd3cp/5bJs9KcumoA1FKesQe3e
+         7WQFsGG+9mQ4aNLuJY0/k79yuHFzNvMYxAHSWcfDy3ghELiQ8Ehss167UiQUOfMDIYTn
+         tRC8IYKXdQNMZvrVt3pfUk9cuUAqgtAoR8zvaX3SjiK3lKJXJ27N1EddML45HgOUUW7p
+         nenb9MAc0HxHMqUCWHnSYJ2g4rTGHe/weDbiB+L5THwOa3dSQwxtAJ0B62fKVsdAF7N+
+         3dLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740433227; x=1741038027;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=j4TJr5pgfQZCXoZ395gNyQ2FKYY1YCKyx0JpsbK9COw=;
+        b=ZHhBFG8rXB8CduvIzBIYvSDtBpJXyppjsxSYEfn9qPrJ/MUalwd6c6a8qh1ai2BKoY
+         lvqeIvNntVuXo3RMc5+R464HPQkozlgkbmkU4VR6dYehbED9Mia7NngoRn3rEkQTAaNn
+         +nmtS2arSWjD8j3SfsGC2G4Z/sn7DYLGgSvsMQ0L6eOb1QhrFP/WN7PEV0qEeVtJR7JS
+         JbqKqnx1usoT1haoO+G8w4T59qRDc1xFD5pWcPnHng9jVAaymcLVjKrfKlqql2/zix5h
+         aX+nVrOq+5ZevKMW/GmEyHnfb2Q7C50Mcm69gHFLQ/42Ed66YyJTx84Ndi5ETQ26ILnI
+         RReQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVo0fMDJAeFT+tLTHR1BbFGgaSf6mKUo7tvYDLC/g2ryH1pPDyqOzn5ll6WYLr+rbE+ubMpqw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyn/aoGu6rUAFxCe/SlZMdIBmPYbgKqAE8u3TRVFR8mhx1LJoxx
+	ftLkgaybFy5U++GOLoDudHZsYSjySL+x8YSYNi7LwKhYzYcYTvaCRWxliNkcYx3hh0xnCzdi+Vz
+	2zSZqlhU3lY07Tq9UmGL6Znx9h90=
+X-Gm-Gg: ASbGncvsfUSYzeGWKfb8exx86bOjHu0yX7FFWLFOsc/h4nCYvYZVmyw9PgDTpcpFViW
+	MYwWS53rjCSf8xODwa/RDRdUAIv75A4K2qS9zqbnG9JrPelDy1BrphSe2MHM073ltiIdo5EVI6E
+	l1PvwsVFs=
+X-Google-Smtp-Source: AGHT+IHKDKiWOu9mfM3EVB8u36Wl3Xtr59WcmIKE2AHgqhD/LAO8Qf2aJ9d3eAU1EfdN4ESJVQm8a1hvFMfytorfMdg=
+X-Received: by 2002:a17:90b:3848:b0:2ee:cbc9:d50b with SMTP id
+ 98e67ed59e1d1-2fce7aef973mr9796954a91.4.1740433226744; Mon, 24 Feb 2025
+ 13:40:26 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b1930038cf828dc13c080e2b46b3003a8c98ef24.1740238876.git.nicolinc@nvidia.com>
+References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
+ <20250224115007.2072043-3-abdiel.janulgue@gmail.com> <6dea7b6a-1534-47e7-94d2-d67417c3d4c1@proton.me>
+In-Reply-To: <6dea7b6a-1534-47e7-94d2-d67417c3d4c1@proton.me>
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date: Mon, 24 Feb 2025 22:40:14 +0100
+X-Gm-Features: AWEUYZnNdDuBJ43hafoBhgYQAc3j-7xzFPpaDmZnJug_jBLZKCQgmTEDfn3yz6k
+Message-ID: <CANiq72k07kN+x1MV=isMm-WUYrYd4O=6Zc3uACPp_r4JE63t8w@mail.gmail.com>
+Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
+To: Benno Lossin <benno.lossin@proton.me>
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>, aliceryhl@google.com, dakr@kernel.org, 
+	robin.murphy@arm.com, daniel.almeida@collabora.com, 
+	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, 
+	Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>, 
+	Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
+	Valentin Obst <kernel@valentinobst.de>, linux-kernel@vger.kernel.org, 
+	Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
+	iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Feb 22, 2025 at 07:54:10AM -0800, Nicolin Chen wrote:
-> Aside from the IOPF framework, iommufd provides an additional pathway to
-> report hardware events, via the vEVENTQ of vIOMMU infrastructure.
-> 
-> Define an iommu_vevent_arm_smmuv3 uAPI structure, and report stage-1 events
-> in the threaded IRQ handler. Also, add another four event record types that
-> can be forwarded to a VM.
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  7 +++
->  include/uapi/linux/iommufd.h                  | 23 +++++++
->  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 17 ++++++
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 60 +++++++++++--------
->  4 files changed, 82 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 85352504343b..c8574969e700 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -1067,6 +1067,7 @@ int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
->  				    struct iommu_domain *domain);
->  void arm_smmu_attach_commit_vmaster(struct arm_smmu_attach_state *state);
->  void arm_smmu_master_clear_vmaster(struct arm_smmu_master *master);
-> +int arm_vmaster_report_event(struct arm_smmu_vmaster *vmaster, u64 *evt);
->  #else
->  #define arm_smmu_hw_info NULL
->  #define arm_vsmmu_alloc NULL
-> @@ -1085,6 +1086,12 @@ arm_smmu_attach_commit_vmaster(struct arm_smmu_attach_state *state)
->  static inline void arm_smmu_master_clear_vmaster(struct arm_smmu_master *master)
->  {
->  }
-> +
-> +static inline int arm_vmaster_report_event(struct arm_smmu_vmaster *vmaster,
-> +					   u64 *evt)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
->  #endif /* CONFIG_ARM_SMMU_V3_IOMMUFD */
->  
->  #endif /* _ARM_SMMU_V3_H */
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 2ade4839880d..5fc7e27804b7 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -1054,9 +1054,32 @@ struct iommufd_vevent_header {
->  /**
->   * enum iommu_veventq_type - Virtual Event Queue Type
->   * @IOMMU_VEVENTQ_TYPE_DEFAULT: Reserved for future use
-> + * @IOMMU_VEVENTQ_TYPE_ARM_SMMUV3: ARM SMMUv3 Virtual Event Queue
->   */
->  enum iommu_veventq_type {
->  	IOMMU_VEVENTQ_TYPE_DEFAULT = 0,
-> +	IOMMU_VEVENTQ_TYPE_ARM_SMMUV3 = 1,
-> +};
-> +
-> +/**
-> + * struct iommu_vevent_arm_smmuv3 - ARM SMMUv3 Virtual Event
-> + *                                  (IOMMU_VEVENTQ_TYPE_ARM_SMMUV3)
-> + * @evt: 256-bit ARM SMMUv3 Event record, little-endian.
-> + *       Reported event records: (Refer to "7.3 Event records" in SMMUv3 HW Spec)
-> + *       - 0x04 C_BAD_STE
-> + *       - 0x06 F_STREAM_DISABLED
-> + *       - 0x08 C_BAD_SUBSTREAMID
-> + *       - 0x0a C_BAD_CD
-> + *       - 0x10 F_TRANSLATION
-> + *       - 0x11 F_ADDR_SIZE
-> + *       - 0x12 F_ACCESS
-> + *       - 0x13 F_PERMISSION
-> + *
-> + * StreamID field reports a virtual device ID. To receive a virtual event for a
-> + * device, a vDEVICE must be allocated via IOMMU_VDEVICE_ALLOC.
-> + */
-> +struct iommu_vevent_arm_smmuv3 {
-> +	__aligned_le64 evt[4];
->  };
->  
->  /**
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> index 364d8469a480..42c7daf4c8c7 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> @@ -445,4 +445,21 @@ struct iommufd_viommu *arm_vsmmu_alloc(struct device *dev,
->  	return &vsmmu->core;
->  }
->  
-> +int arm_vmaster_report_event(struct arm_smmu_vmaster *vmaster, u64 *evt)
-> +{
-> +	struct iommu_vevent_arm_smmuv3 vevt;
-> +	int i;
-> +
-> +	lockdep_assert_held(&vmaster->vsmmu->smmu->streams_mutex);
-> +
-> +	vevt.evt[0] = cpu_to_le64((evt[0] & ~EVTQ_0_SID) |
-> +				  FIELD_PREP(EVTQ_0_SID, vmaster->vsid));
-> +	for (i = 1; i < EVTQ_ENT_DWORDS; i++)
-> +		vevt.evt[i] = cpu_to_le64(evt[i]);
+On Mon, Feb 24, 2025 at 9:07=E2=80=AFPM Benno Lossin <benno.lossin@proton.m=
+e> wrote:
+>
+> I don't think this is good documentation style. I think copy-pasting the
+> first line and second paragraph is better.
 
-Just thinking out loud here:
-I understand the goal here is to "emulate" an IOMMU. But I'm just
-wondering if we could report struct events instead of the raw event?
+Yeah, sometimes a bit of duplication is OK.
 
-For example, can't we have something like arm_smmu_event here with the
-sid changed to vsid? 
+Now, even if we wanted to do something like this, then at the very
+least intra-doc links should be used properly so that people can
+actually jump to the right place in the generated ones.
 
-Are we taking the raw event since we want to keep the `u64 event_data[]`
-field within `struct iommufd_vevent` generic to all architectures?
+Abdiel: in general, please use intra-doc links everywhere where they
+may work -- the patch is missing almost all of them. It helps not just
+readers, but also to keep docs in sync with each other, since you will
+get diagnostics if `rustdoc` finds broken links.
 
-> +
-> +	return iommufd_viommu_report_event(&vmaster->vsmmu->core,
-> +					   IOMMU_VEVENTQ_TYPE_ARM_SMMUV3, &vevt,
-> +					   sizeof(vevt));
-> +}
-> +
->  MODULE_IMPORT_NS("IOMMUFD");
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 9e50bcee69d1..fdf8bba14303 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1813,8 +1813,8 @@ static void arm_smmu_decode_event(struct arm_smmu_device *smmu, u64 *raw,
->  	mutex_unlock(&smmu->streams_mutex);
->  }
->  
-> -static int arm_smmu_handle_event(struct arm_smmu_device *smmu,
-> -			       struct arm_smmu_event *event)
-> +static int arm_smmu_handle_event(struct arm_smmu_device *smmu, u64 *evt,
-> +				 struct arm_smmu_event *event)
->  {
->  	int ret = 0;
->  	u32 perm = 0;
-> @@ -1823,6 +1823,10 @@ static int arm_smmu_handle_event(struct arm_smmu_device *smmu,
->  	struct iommu_fault *flt = &fault_evt.fault;
->  
->  	switch (event->id) {
-> +	case EVT_ID_BAD_STE_CONFIG:
-> +	case EVT_ID_STREAM_DISABLED_FAULT:
-> +	case EVT_ID_BAD_SUBSTREAMID_CONFIG:
-> +	case EVT_ID_BAD_CD_CONFIG:
->  	case EVT_ID_TRANSLATION_FAULT:
->  	case EVT_ID_ADDR_SIZE_FAULT:
->  	case EVT_ID_ACCESS_FAULT:
-> @@ -1832,31 +1836,30 @@ static int arm_smmu_handle_event(struct arm_smmu_device *smmu,
->  		return -EOPNOTSUPP;
->  	}
->  
-> -	if (!event->stall)
-> -		return -EOPNOTSUPP;
-> -
-> -	if (event->read)
-> -		perm |= IOMMU_FAULT_PERM_READ;
-> -	else
-> -		perm |= IOMMU_FAULT_PERM_WRITE;
-> +	if (event->stall) {
-> +		if (event->read)
-> +			perm |= IOMMU_FAULT_PERM_READ;
-> +		else
-> +			perm |= IOMMU_FAULT_PERM_WRITE;
->  
-> -	if (event->instruction)
-> -		perm |= IOMMU_FAULT_PERM_EXEC;
-> +		if (event->instruction)
-> +			perm |= IOMMU_FAULT_PERM_EXEC;
->  
-> -	if (event->privileged)
-> -		perm |= IOMMU_FAULT_PERM_PRIV;
-> +		if (event->privileged)
-> +			perm |= IOMMU_FAULT_PERM_PRIV;
->  
-> -	flt->type = IOMMU_FAULT_PAGE_REQ;
-> -	flt->prm = (struct iommu_fault_page_request) {
-> -		.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
-> -		.grpid = event->stag,
-> -		.perm = perm,
-> -		.addr = event->iova,
-> -	};
-> +		flt->type = IOMMU_FAULT_PAGE_REQ;
-> +		flt->prm = (struct iommu_fault_page_request){
-> +			.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
-> +			.grpid = event->stag,
-> +			.perm = perm,
-> +			.addr = event->iova,
-> +		};
->  
-> -	if (event->ssv) {
-> -		flt->prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-> -		flt->prm.pasid = event->ssid;
-> +		if (event->ssv) {
-> +			flt->prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-> +			flt->prm.pasid = event->ssid;
-> +		}
->  	}
->  
->  	mutex_lock(&smmu->streams_mutex);
-> @@ -1866,7 +1869,14 @@ static int arm_smmu_handle_event(struct arm_smmu_device *smmu,
->  		goto out_unlock;
->  	}
->  
-> -	ret = iommu_report_device_fault(master->dev, &fault_evt);
-> +	if (event->stall) {
-> +		ret = iommu_report_device_fault(master->dev, &fault_evt);
-> +	} else {
-> +		if (master->vmaster && !event->s2)
-> +			ret = arm_vmaster_report_event(master->vmaster, evt);
-> +		else
-> +			ret = -EFAULT; /* Unhandled events should be pinned */
-> +	}
+Thanks!
 
-Nit:
-I don't see the `arm_smmu_handle_event` being called elsewhere, is there
-a reason to return -EFAULT instead of -EOPNOTSUPP here?
-
-I think the current behavior here is to return -EOPNOTSUPP if (!event->stall).
-Whereas, what we're doing here is:
-	if (event->stall) {
-	...
-	/* do legacy stuff */
-	...
-	}
-
-	else {
-		if (master->vmaster && !event->s2)
-			arm_vmaster_report_event(vmaster, evt);
-		else
-			ret = -EFAULT
-	}
-
-	mutex_unlock(&smmu->streams_mutex);
-	return ret;
-
-Thus, we end up returning -EFAULT instead of -EOPNOTSUPP in case
-event->stall == false. I agree that we aren't really checking the return
-value in the evtq_thread handler, but I'm wondering if we should ensure
-that we end up retaining the same behaviour as we have right now?
-
->  out_unlock:
->  	mutex_unlock(&smmu->streams_mutex);
->  	return ret;
-> @@ -1944,7 +1954,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
->  	do {
->  		while (!queue_remove_raw(q, evt)) {
->  			arm_smmu_decode_event(smmu, evt, &event);
-> -			if (arm_smmu_handle_event(smmu, &event))
-> +			if (arm_smmu_handle_event(smmu, evt, &event))
->  				arm_smmu_dump_event(smmu, evt, &event, &rs);
->  
->  			put_device(event.dev);
-> -- 
-> 2.43.0
-> 
-
-Thanks,
-Praan
+Cheers,
+Miguel
