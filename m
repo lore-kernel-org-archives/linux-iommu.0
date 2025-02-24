@@ -1,118 +1,149 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD81F7E0ED
-	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 01:06:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A6195227
+	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 01:56:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740359162; cv=none; b=F6/0qz6VhoB6KZTA42hoJuBMm8BRIf1YdRvKtvmOtpbruxsksdwamYQcvwSDNYQwac9nkbJmHZ43KoIY5Nf52zFPpEGslSDg5/gOCqPhFz079BsZZiql8AsB1+vmGjTna8+7iEtEqGb16H/RNYmrjlu7czvg2thPP9MjFsV8iCA=
+	t=1740362188; cv=none; b=N5bpqELfDED5PkZD0gXiAHS44jP2CyK6uhRDvgPKGDcIiQVnHHC7kR4Xi0jvSqDMjYXWeMBQBOMlUz2xP/7MREvWJ0tvghh1RmZZi5xL2UQFmo84OJsyutGo2y4gJkYyvyco6MVhc0syipDZDjLEyTGEBMmdTi3IglKFN61JPx0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740359162; c=relaxed/simple;
-	bh=oD3Vv1xLKSqblwXCvn7mLey5f49zi8MvqKFaIX/dRQg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=MxKy6wyUl2BehSmyjuxJO6Dpojd6mSMEXs6MUfgCg3PH3jAX2k3luzPApXM4K+DcouNjcjguI6VrZDc3KRC1XS2KpnWv9VlCGY4ICX3P34e7fqEyVPYqjq03xNv9bnYcCmfxw51U6Lfcg9IpgyHwhyMo3Mr69lkx3bvZXdaZL6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WcWh1/27; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1740362188; c=relaxed/simple;
+	bh=39Uf86IT8UF4N2Vx5vcprNQTR3BbrL/jvdHL965ABuc=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=m843wQse2bujQDQAl19yPy1FnkwXPMKFqFPCVVlD2s4+wFzXq0G+bvcM96oKULNrCGizaCM62cPQcscxdPFNtZ6n5gfIU3DxAk0ukJcZpscG3LXtG7HTEY2KWEzxOWOFEvC1c3My6nyCDANGy9NEKQTaho6Qnm8RZShj8UO0Lyg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=vUWC3Dgv; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WcWh1/27"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740359160; x=1771895160;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=oD3Vv1xLKSqblwXCvn7mLey5f49zi8MvqKFaIX/dRQg=;
-  b=WcWh1/275rvOMQc33x+B+DGR4moJjBa5zOrnX22lLtBGCCGJzMsjDiJC
-   q5E9EMBK+o01BQz+epM11X42sJaeBLoZyJPTmNdW/K7DlvPHsXquB5f68
-   Ot9e7esetZH14MxI7eZPZEqSQ98SrP/+a0vkOJImAIm/xKl5yjMyTDbT9
-   tmE5GqvTWSRMs3dQJVnt5efKJwDcptbBYxFabn758ioO9VVv1u0lxjxbT
-   zCrwWMJJwHfU7yKtw55aiDAHaOuSsRcJmdrAv8hpnv4vl+nGVxWNxYOZv
-   Rv64HmyA5Ag49dotSD1h5Vzlk+ly3NlBFpJHFc6Ug9ZHwp/oWnELxLOXi
-   g==;
-X-CSE-ConnectionGUID: vowzhlPRTaiyz2g5Ohiltg==
-X-CSE-MsgGUID: Tpnu8EyAQpKG6vMLDx/4Hg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11354"; a="44882017"
-X-IronPort-AV: E=Sophos;i="6.13,309,1732608000"; 
-   d="scan'208";a="44882017"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 17:06:00 -0800
-X-CSE-ConnectionGUID: Epy8D3qSQWC3bRgDSjLA2Q==
-X-CSE-MsgGUID: b+C6eWWSRRKUQWmH0oINsQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,309,1732608000"; 
-   d="scan'208";a="115887458"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 17:05:59 -0800
-Message-ID: <622aa790-6560-4be9-bfb4-736809a249bc@linux.intel.com>
-Date: Mon, 24 Feb 2025 09:02:47 +0800
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="vUWC3Dgv"
+Received: from [192.168.34.162] (254C2546.nat.pool.telekom.hu [37.76.37.70])
+	by mail.mainlining.org (Postfix) with ESMTPSA id E0D92BBAA8;
+	Mon, 24 Feb 2025 01:56:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1740362183;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=EeWF7qvyGL3cKqaH36H4ZYKJfxDKcwMXmA2Q9/6WF7o=;
+	b=vUWC3Dgvz/Qcmo7z5YOqSE1Px0lihfOQEyxwThU7Cyyg+EpT6I9/12w8DAy3wLIxnIlByT
+	dEAn3vUHyUxzxqI0L4Cpnw9GKulPB6eV0kSXyJ0T1Oqyt4vLQXXcGqQjKCCCKqpJmlpmRW
+	4sex6Bugyomo629RS2SKA9/+x1H2q235gO6+MbXVO7ncHD/UFWqI0Ntcx15eWUaPOLIJ4j
+	ocaZO3MX80T6egu07ywBpGty1siY4zbT6sBXYZZPyAdOZwFpRkqw3kcEHwVNARz+wSEn5Z
+	3RMqKrAQzeXHtY4ohwUvfDG6msepI7u5v1UbBYhfCGaWJVHyxSNpHLr8IjnUVQ==
+From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+Subject: [PATCH v3 0/8] Initial support of MSM8937 and Xiaomi Redmi 3S
+Date: Mon, 24 Feb 2025 02:56:15 +0100
+Message-Id: <20250224-msm8937-v3-0-dad7c182cccb@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/vt-d: fix system hang on reboot -f
-To: Yunhui Cui <cuiyunhui@bytedance.com>, dwmw2@infradead.org,
- joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20250220101511.37602-1-cuiyunhui@bytedance.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250220101511.37602-1-cuiyunhui@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAL/Ru2cC/2WMywqDMBBFf0Vm3ZRkQo3pqv9RurBm1IEaJSmhR
+ fz3RqEP6PJc7jkzRApMEY7FDIESRx59Br0roOlr35FglxlQ4kGikmKIQ2W1EYgVtdI1mhoL+T0
+ Favmxlc6XzD3H+xieWzipdX031KeRlJDCODTkStMaWZ2Gmv2NPftuP4YO1lDCHxn1V8YsX601e
+ Sw1Of0nL8vyArnkN8XgAAAA
+X-Change-ID: 20250210-msm8937-228ef0dc3ec9
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, 
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
+ Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>, 
+ Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
+ Daniil Titov <daniilt971@gmail.com>, Dang Huynh <danct12@riseup.net>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Adam Skladowski <a39.skl@gmail.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1740362181; l=2642;
+ i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
+ bh=39Uf86IT8UF4N2Vx5vcprNQTR3BbrL/jvdHL965ABuc=;
+ b=DGnjk8uWs3nhnJlH5Lm9Ib3OhsX7hivrg8dhP+ylonwxTUz9rpRv0ZMBprDyQYkpcBnRYbInp
+ aVHI0g3q0b0C5X4+XvdwlSByVYHddozxk3iuzr08JpnLubW3HzP6veA
+X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
+ pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-On 2/20/25 18:15, Yunhui Cui wrote:
-> When entering intel_iommu_shutdown, system interrupts are disabled,
-> and the reboot process might be scheduled out by down_write(). If the
-> scheduled process does not yield (e.g., while(1)), the system will hang.
-> 
-> Signed-off-by: Yunhui Cui<cuiyunhui@bytedance.com>
-> ---
->   drivers/iommu/intel/iommu.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index cc46098f875b..76a1d83b46bf 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -2871,7 +2871,8 @@ void intel_iommu_shutdown(void)
->   	if (no_iommu || dmar_disabled)
->   		return;
->   
-> -	down_write(&dmar_global_lock);
-> +	if (!down_write_trylock(&dmar_global_lock))
-> +		return;
+This patch series add initial support for MSM8937 SoC
+and Xiaomi Redmi 3S (land).
 
-If system interrupts are disabled here, locking is unnecessary. Hotplug
-operations depend on interrupt events, so it's better to remove the
-lock. The shutdown helper then appears like this:
+The series is extending the MSM8917 gcc and pinctrl drivers
+because they are sibling SoCs.
+MSM8937 have 4 more A53 cores and have one more dsi port then
+MSM8917.
+It implements little-big architecture and uses Adreno 505.
 
-void intel_iommu_shutdown(void)
-{
-         struct dmar_drhd_unit *drhd;
-         struct intel_iommu *iommu = NULL;
+Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+---
+Changes in v3:
+- Fix qcom,gcc-msm8937 dtbinding example 
+- Link to v2: https://lore.kernel.org/r/20250223-msm8937-v2-0-b99722363ed3@mainlining.org
 
-         if (no_iommu || dmar_disabled)
-                 return;
+Changes in v2:
+- drop applied patches
+- drop gcc schema commits infavor of a new schema for gcc-msm8937
+- document always on clock for adreno 505/506/510
+- msm8937:
+  - set cache size
+  - rename cpu labels
+  - fix style issues addressed by review
+- msm8937-xiaom-land:
+  - remove unused serial0 alias
+  - remove regulator-always-on from pm8937_l6
+  - add blue indicator led for aw2013
+- Link to v1: https://lore.kernel.org/r/20250211-msm8937-v1-0-7d27ed67f708@mainlining.org
 
-         /*
-          * System interrupts are disabled when it reaches here. Locking
-          * is unnecessary when iterating the IOMMU list.
-          */
-         list_for_each_entry(drhd, &dmar_drhd_units, list) {
-                 if (drhd->ignored)
-                         continue;
+---
+Adam Skladowski (1):
+      dt-bindings: drm/msm/gpu: Document AON clock for A505/A506/A510
 
-                 iommu = drhd->iommu;
-                 /* Disable PMRs explicitly here. */
-                 iommu_disable_protect_mem_regions(iommu);
-                 iommu_disable_translation(iommu);
-         }
-}
+Barnabás Czémán (4):
+      dt-bindings: clock: qcom: Add MSM8937 Global Clock Controller
+      dt-bindings: iommu: qcom,iommu: Add MSM8937 IOMMU to SMMUv1 compatibles
+      dt-bindings: arm: qcom: Add Xiaomi Redmi 3S
+      arm64: dts: qcom: Add Xiaomi Redmi 3S
 
-Does it work for you?
+Dang Huynh (2):
+      pinctrl: qcom: msm8917: Add MSM8937 wsa_reset pin
+      arm64: dts: qcom: Add initial support for MSM8937
 
-Thanks,
-baolu
+Daniil Titov (1):
+      clk: qcom: gcc: Add support for Global Clock controller found on MSM8937
+
+ Documentation/devicetree/bindings/arm/qcom.yaml    |    7 +
+ .../bindings/clock/qcom,gcc-msm8937.yaml           |   73 +
+ .../devicetree/bindings/display/msm/gpu.yaml       |    6 +-
+ .../devicetree/bindings/iommu/qcom,iommu.yaml      |    1 +
+ arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+ arch/arm64/boot/dts/qcom/msm8937-xiaomi-land.dts   |  408 ++++
+ arch/arm64/boot/dts/qcom/msm8937.dtsi              | 2149 ++++++++++++++++++++
+ drivers/clk/qcom/Kconfig                           |    6 +-
+ drivers/clk/qcom/gcc-msm8917.c                     |  617 +++++-
+ drivers/pinctrl/qcom/Kconfig.msm                   |    4 +-
+ drivers/pinctrl/qcom/pinctrl-msm8917.c             |    8 +-
+ include/dt-bindings/clock/qcom,gcc-msm8917.h       |   17 +
+ 12 files changed, 3285 insertions(+), 12 deletions(-)
+---
+base-commit: d4b0fd87ff0d4338b259dc79b2b3c6f7e70e8afa
+change-id: 20250210-msm8937-228ef0dc3ec9
+
+Best regards,
+-- 
+Barnabás Czémán <barnabas.czeman@mainlining.org>
+
