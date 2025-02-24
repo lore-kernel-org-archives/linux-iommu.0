@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 987851E5B94
-	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 05:16:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E38B51EDA10
+	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 05:16:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740374202; cv=none; b=tMeWQebpAFkmyVEFNC5UYyT9tUh6Uk1DhiQ4MaZetYMXl/WI+Z1cyKa1g2R7CrVRWw/t6tk0tpiZzvCieD94N1IZc4/3/U5EgDesHRu+7chPXecQcvT+YoBu56Vq41HH/uLRXAMU8xzp/FISd+CB4uLNbqPWyLWZ52Rc89RKvfs=
+	t=1740374204; cv=none; b=edbQTdx08QtExETX2mdIpMg7xi8MDk2UPKgMGs2MmKfBYHmvidrVw7XQhhK0CPY/Qixb4QELHzUkoJaamkpKa1rQfadOqupYVRYKDKtR6Yd7hgR9tosdH4Pe8dhvvqzQU4YuzGsvp3wtx08Jl6GgHOzaLD5d6lUDKFCeafrgxrc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740374202; c=relaxed/simple;
-	bh=7BqROg7flfKZSHF40dyhcy1MLUmAqDfo6NpaN5vQ7/A=;
+	s=arc-20240116; t=1740374204; c=relaxed/simple;
+	bh=WH8Sh6k+wR2mFocNNDMzXcNLMpGaPtVWIrSa7fLjAfM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=djISenignjEGjXxFiEyNj6AoCEc+8ENfkASgXxajUOSbPerWF7DCdIU9Z5MX6UXlrMW8kGd8vxvFt6rQ/qoPzJRoKC7BgIi8UnQ0JENkArkN118obvAkvXkUSuNoJ2Nde058Z/4CQJXDWI97yl/7AX5hfYMG24sZgNFMR45ynGw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Z6iN6HYg; arc=none smtp.client-ip=192.198.163.12
+	 MIME-Version; b=fatugvd03DulUFnnG/sUmV+xX+W/uyRDcSjUVeH/BbzNgyDupZOGF3V93xtKmemNC7P43KOxOn0q2kxuPBUk/ad4fLYuZuhS6c9mK7lUIfjndsvAusvHxTH0ku6+KnpCc50wFMH/5wJ9QIRup4QUT/l44EMzMZuSsXiT6SIPFKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QnXOkzaq; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Z6iN6HYg"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QnXOkzaq"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740374200; x=1771910200;
+  t=1740374203; x=1771910203;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7BqROg7flfKZSHF40dyhcy1MLUmAqDfo6NpaN5vQ7/A=;
-  b=Z6iN6HYgmA3VGacNiw5u1/BxJ3do332ACTRCuHo4P6Ktc/yBgmHuJFwa
-   /MgADDHRDNDXLIXOXsXFy/vK12YEg/JLfUnFqDOOyEAhZwHJPOb0a+1Bw
-   9eu+UCsyU+x5F8TIFuWPGAJapQs7Oq+onEq1dsa2d2P5wlKty7WHAqpNe
-   V4zL+u+i4ttnop3J5H1BRLoaNakK3Dh7/C2NYqmBU7iJl+reimoIf4UOP
-   HvxvxgYNQ5qjSRL3R0bTh3R5ZHRIWjjGaFz4k8UShtTuze+tRkhzzmPSa
-   58hnVYmcmTVhTQc8YOADaGfyr2f0ZHJOh+DeMIKrZ1/3cG6SS3lynMnec
-   Q==;
-X-CSE-ConnectionGUID: 0SEpTPFuTnCHpVbePdymHA==
-X-CSE-MsgGUID: sXtoT0DhTIOnD2sjvwjSBw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11354"; a="45024237"
+  bh=WH8Sh6k+wR2mFocNNDMzXcNLMpGaPtVWIrSa7fLjAfM=;
+  b=QnXOkzaqBitR3d+4z/xaWfm2p2sVjuLYDngX0HW43NAKmYzMxFxru0cV
+   ZUMgoPaaXbdn/F88V6uokiZBpzL/zoH5iWLKOnjUIKj6sQIimbuhzSGK6
+   EH5G5Mdco6gB3bYRkBEsj/t2ucz5kXWkiiuAz3GhpAX5l92OPdYHv6vMB
+   dn396AT8hE6LLHwWsh5goJmxUZE2+Ejkooz/Oh6NERO1iCbLlPX/Z5Swn
+   g0e/iwC5fqJpdAFKprE6NABqLjYP/j3Ui0vSusi/SeNe8q9Qsw1+x0SRL
+   WskYE1VCoHJmcI14XCN4y+STSt3AFVQ6YNxjIbXbqJ4+QxbGY0l313lUF
+   w==;
+X-CSE-ConnectionGUID: +9s3u1cbSByfC/JAt/gi8A==
+X-CSE-MsgGUID: UgK0jBGjS8SsGHbnKxIhlg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11354"; a="45024248"
 X-IronPort-AV: E=Sophos;i="6.13,309,1732608000"; 
-   d="scan'208";a="45024237"
+   d="scan'208";a="45024248"
 Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 21:16:39 -0800
-X-CSE-ConnectionGUID: dLmlLoIZTT63hiDeUeWETg==
-X-CSE-MsgGUID: azYWJ8wGTZSpxfyrbepajA==
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 21:16:43 -0800
+X-CSE-ConnectionGUID: /LHh0gvNSqCFI3lkeC5g0g==
+X-CSE-MsgGUID: OqMGkf73QdG6UAOYgG05zA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,309,1732608000"; 
-   d="scan'208";a="116143408"
+   d="scan'208";a="116143411"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa008.fm.intel.com with ESMTP; 23 Feb 2025 21:16:36 -0800
+  by fmviesa008.fm.intel.com with ESMTP; 23 Feb 2025 21:16:39 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -57,9 +57,9 @@ Cc: Dave Jiang <dave.jiang@intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 06/12] iommu/vt-d: Cleanup intel_context_flush_present()
-Date: Mon, 24 Feb 2025 13:16:20 +0800
-Message-ID: <20250224051627.2956304-7-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 07/12] iommu/vt-d: Put iopf enablement in domain attach path
+Date: Mon, 24 Feb 2025 13:16:21 +0800
+Message-ID: <20250224051627.2956304-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250224051627.2956304-1-baolu.lu@linux.intel.com>
 References: <20250224051627.2956304-1-baolu.lu@linux.intel.com>
@@ -71,113 +71,291 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The intel_context_flush_present() is called in places where either the
-scalable mode is disabled, or scalable mode is enabled but all PASID
-entries are known to be non-present. In these cases, the flush_domains
-path within intel_context_flush_present() will never execute. This dead
-code is therefore removed.
+Update iopf enablement in the driver to use the new method, similar to
+the arm-smmu-v3 driver. Enable iopf support when any domain with an
+iopf_handler is attached, and disable it when the domain is removed.
+
+Place all the logic for controlling the PRI and iopf queue in the domain
+set/remove/replace paths. Keep track of the number of domains set to the
+device and PASIDs that require iopf. When the first domain requiring iopf
+is attached, add the device to the iopf queue and enable PRI. When the
+last domain is removed, remove it from the iopf queue and disable PRI.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c |  2 +-
- drivers/iommu/intel/iommu.h |  3 +--
- drivers/iommu/intel/pasid.c | 39 ++++++-------------------------------
- 3 files changed, 8 insertions(+), 36 deletions(-)
+ drivers/iommu/intel/iommu.c  | 42 ++++++++++++++++++++++++++++++-----
+ drivers/iommu/intel/iommu.h  | 43 ++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel/nested.c | 16 ++++++++++++--
+ drivers/iommu/intel/svm.c    |  9 ++++++--
+ 4 files changed, 100 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 91d49e2cea34..1d564240c977 100644
+index 1d564240c977..20d07f5fea85 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1730,7 +1730,7 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
- 	context_clear_entry(context);
- 	__iommu_flush_cache(iommu, context, sizeof(*context));
- 	spin_unlock(&iommu->lock);
--	intel_context_flush_present(info, context, did, true);
-+	intel_context_flush_present(info, context, did);
+@@ -3223,6 +3223,9 @@ void device_block_translation(struct device *dev)
+ static int blocking_domain_attach_dev(struct iommu_domain *domain,
+ 				      struct device *dev)
+ {
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
++
++	iopf_for_domain_remove(info->domain ? &info->domain->domain : NULL, dev);
+ 	device_block_translation(dev);
+ 	return 0;
+ }
+@@ -3432,7 +3435,15 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 	if (ret)
+ 		return ret;
+ 
+-	return dmar_domain_attach_device(to_dmar_domain(domain), dev);
++	ret = iopf_for_domain_set(domain, dev);
++	if (ret)
++		return ret;
++
++	ret = dmar_domain_attach_device(to_dmar_domain(domain), dev);
++	if (ret)
++		iopf_for_domain_remove(domain, dev);
++
++	return ret;
  }
  
- int __domain_setup_first_level(struct intel_iommu *iommu,
+ static int intel_iommu_map(struct iommu_domain *domain,
+@@ -3878,6 +3889,8 @@ int intel_iommu_enable_iopf(struct device *dev)
+ 	if (!info->pri_enabled)
+ 		return -ENODEV;
+ 
++	/* pri_enabled is protected by the group mutex. */
++	iommu_group_mutex_assert(dev);
+ 	if (info->iopf_refcount) {
+ 		info->iopf_refcount++;
+ 		return 0;
+@@ -3900,6 +3913,7 @@ void intel_iommu_disable_iopf(struct device *dev)
+ 	if (WARN_ON(!info->pri_enabled))
+ 		return;
+ 
++	iommu_group_mutex_assert(dev);
+ 	if (--info->iopf_refcount)
+ 		return;
+ 
+@@ -3911,8 +3925,7 @@ intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
+ {
+ 	switch (feat) {
+ 	case IOMMU_DEV_FEAT_IOPF:
+-		return intel_iommu_enable_iopf(dev);
+-
++		return 0;
+ 	default:
+ 		return -ENODEV;
+ 	}
+@@ -3923,7 +3936,6 @@ intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
+ {
+ 	switch (feat) {
+ 	case IOMMU_DEV_FEAT_IOPF:
+-		intel_iommu_disable_iopf(dev);
+ 		return 0;
+ 
+ 	default:
+@@ -4004,6 +4016,7 @@ static int blocking_domain_set_dev_pasid(struct iommu_domain *domain,
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 
++	iopf_for_domain_remove(old, dev);
+ 	intel_pasid_tear_down_entry(info->iommu, dev, pasid, false);
+ 	domain_remove_dev_pasid(old, dev, pasid);
+ 
+@@ -4077,6 +4090,10 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+ 	if (IS_ERR(dev_pasid))
+ 		return PTR_ERR(dev_pasid);
+ 
++	ret = iopf_for_domain_replace(domain, old, dev);
++	if (ret)
++		goto out_remove_dev_pasid;
++
+ 	if (dmar_domain->use_first_level)
+ 		ret = domain_setup_first_level(iommu, dmar_domain,
+ 					       dev, pasid, old);
+@@ -4084,7 +4101,7 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+ 		ret = domain_setup_second_level(iommu, dmar_domain,
+ 						dev, pasid, old);
+ 	if (ret)
+-		goto out_remove_dev_pasid;
++		goto out_unwind_iopf;
+ 
+ 	domain_remove_dev_pasid(old, dev, pasid);
+ 
+@@ -4092,6 +4109,8 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+ 
+ 	return 0;
+ 
++out_unwind_iopf:
++	iopf_for_domain_replace(old, domain, dev);
+ out_remove_dev_pasid:
+ 	domain_remove_dev_pasid(domain, dev, pasid);
+ 	return ret;
+@@ -4309,6 +4328,11 @@ static int identity_domain_attach_dev(struct iommu_domain *domain, struct device
+ 	if (dev_is_real_dma_subdevice(dev))
+ 		return 0;
+ 
++	/*
++	 * No PRI support with the global identity domain. No need to enable or
++	 * disable PRI in this path as the iommu has been put in the blocking
++	 * state.
++	 */
+ 	if (sm_supported(iommu))
+ 		ret = intel_pasid_setup_pass_through(iommu, dev, IOMMU_NO_PASID);
+ 	else
+@@ -4328,9 +4352,15 @@ static int identity_domain_set_dev_pasid(struct iommu_domain *domain,
+ 	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
+ 		return -EOPNOTSUPP;
+ 
++	ret = iopf_for_domain_replace(domain, old, dev);
++	if (ret)
++		return ret;
++
+ 	ret = domain_setup_passthrough(iommu, dev, pasid, old);
+-	if (ret)
++	if (ret) {
++		iopf_for_domain_replace(old, domain, dev);
+ 		return ret;
++	}
+ 
+ 	domain_remove_dev_pasid(old, dev, pasid);
+ 	return 0;
 diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index f7d78cf0778c..754f6d7ade26 100644
+index 754f6d7ade26..dfb0628fabf8 100644
 --- a/drivers/iommu/intel/iommu.h
 +++ b/drivers/iommu/intel/iommu.h
-@@ -1306,8 +1306,7 @@ void cache_tag_flush_range_np(struct dmar_domain *domain, unsigned long start,
- 			      unsigned long end);
+@@ -1317,6 +1317,49 @@ void intel_iommu_drain_pasid_prq(struct device *dev, u32 pasid);
+ int intel_iommu_enable_iopf(struct device *dev);
+ void intel_iommu_disable_iopf(struct device *dev);
  
- void intel_context_flush_present(struct device_domain_info *info,
--				 struct context_entry *context,
--				 u16 did, bool affect_domains);
-+				 struct context_entry *context, u16 did);
++static inline int iopf_for_domain_set(struct iommu_domain *domain,
++				      struct device *dev)
++{
++	if (!domain || !domain->iopf_handler)
++		return 0;
++
++	return intel_iommu_enable_iopf(dev);
++}
++
++static inline void iopf_for_domain_remove(struct iommu_domain *domain,
++					  struct device *dev)
++{
++	if (!domain || !domain->iopf_handler)
++		return;
++
++	intel_iommu_disable_iopf(dev);
++}
++
++static inline int iopf_for_domain_replace(struct iommu_domain *new,
++					  struct iommu_domain *old,
++					  struct device *dev)
++{
++	if (!old)
++		return iopf_for_domain_set(new, dev);
++
++	if (!new) {
++		iopf_for_domain_remove(old, dev);
++		return 0;
++	}
++
++	/*
++	 * Replace a non-iopf-capable domain with an iopf-capable one requires
++	 * to enable PRI on the device. On the contrary, disable it.
++	 */
++	if (new->iopf_handler && !old->iopf_handler)
++		return intel_iommu_enable_iopf(dev);
++
++	if (!new->iopf_handler && old->iopf_handler)
++		intel_iommu_disable_iopf(dev);
++
++	return 0;
++}
++
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ void intel_svm_check(struct intel_iommu *iommu);
+ struct iommu_domain *intel_svm_domain_alloc(struct device *dev,
+diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+index aba92c00b427..ad307248bcae 100644
+--- a/drivers/iommu/intel/nested.c
++++ b/drivers/iommu/intel/nested.c
+@@ -56,10 +56,14 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
+ 	if (ret)
+ 		goto detach_iommu;
  
- int intel_iommu_enable_prq(struct intel_iommu *iommu);
- int intel_iommu_finish_prq(struct intel_iommu *iommu);
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index c2742e256552..a2c6be624dbf 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -932,7 +932,7 @@ static void device_pasid_table_teardown(struct device *dev, u8 bus, u8 devfn)
- 	context_clear_entry(context);
- 	__iommu_flush_cache(iommu, context, sizeof(*context));
- 	spin_unlock(&iommu->lock);
--	intel_context_flush_present(info, context, did, false);
-+	intel_context_flush_present(info, context, did);
- }
++	ret = iopf_for_domain_set(domain, dev);
++	if (ret)
++		goto unassign_tag;
++
+ 	ret = intel_pasid_setup_nested(iommu, dev,
+ 				       IOMMU_NO_PASID, dmar_domain);
+ 	if (ret)
+-		goto unassign_tag;
++		goto disable_iopf;
  
- static int pci_pasid_table_teardown(struct pci_dev *pdev, u16 alias, void *data)
-@@ -1119,17 +1119,15 @@ static void __context_flush_dev_iotlb(struct device_domain_info *info)
+ 	info->domain = dmar_domain;
+ 	spin_lock_irqsave(&dmar_domain->lock, flags);
+@@ -67,6 +71,8 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
+ 	spin_unlock_irqrestore(&dmar_domain->lock, flags);
  
- /*
-  * Cache invalidations after change in a context table entry that was present
-- * according to the Spec 6.5.3.3 (Guidance to Software for Invalidations). If
-- * IOMMU is in scalable mode and all PASID table entries of the device were
-- * non-present, set flush_domains to false. Otherwise, true.
-+ * according to the Spec 6.5.3.3 (Guidance to Software for Invalidations).
-+ * This helper can only be used when IOMMU is working in the legacy mode or
-+ * IOMMU is in scalable mode but all PASID table entries of the device are
-+ * non-present.
-  */
- void intel_context_flush_present(struct device_domain_info *info,
--				 struct context_entry *context,
--				 u16 did, bool flush_domains)
-+				 struct context_entry *context, u16 did)
- {
- 	struct intel_iommu *iommu = info->iommu;
--	struct pasid_entry *pte;
--	int i;
+ 	return 0;
++disable_iopf:
++	iopf_for_domain_remove(domain, dev);
+ unassign_tag:
+ 	cache_tag_unassign_domain(dmar_domain, dev, IOMMU_NO_PASID);
+ detach_iommu:
+@@ -166,14 +172,20 @@ static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
+ 	if (IS_ERR(dev_pasid))
+ 		return PTR_ERR(dev_pasid);
  
- 	/*
- 	 * Device-selective context-cache invalidation. The Domain-ID field
-@@ -1152,30 +1150,5 @@ void intel_context_flush_present(struct device_domain_info *info,
- 		return;
- 	}
+-	ret = domain_setup_nested(iommu, dmar_domain, dev, pasid, old);
++	ret = iopf_for_domain_replace(domain, old, dev);
+ 	if (ret)
+ 		goto out_remove_dev_pasid;
  
--	/*
--	 * For scalable mode:
--	 * - Domain-selective PASID-cache invalidation to affected domains
--	 * - Domain-selective IOTLB invalidation to affected domains
--	 * - Global Device-TLB invalidation to affected functions
--	 */
--	if (flush_domains) {
--		/*
--		 * If the IOMMU is running in scalable mode and there might
--		 * be potential PASID translations, the caller should hold
--		 * the lock to ensure that context changes and cache flushes
--		 * are atomic.
--		 */
--		assert_spin_locked(&iommu->lock);
--		for (i = 0; i < info->pasid_table->max_pasid; i++) {
--			pte = intel_pasid_get_entry(info->dev, i);
--			if (!pte || !pasid_pte_is_present(pte))
--				continue;
++	ret = domain_setup_nested(iommu, dmar_domain, dev, pasid, old);
++	if (ret)
++		goto out_unwind_iopf;
++
+ 	domain_remove_dev_pasid(old, dev, pasid);
+ 
+ 	return 0;
+ 
++out_unwind_iopf:
++	iopf_for_domain_replace(old, domain, dev);
+ out_remove_dev_pasid:
+ 	domain_remove_dev_pasid(domain, dev, pasid);
+ 	return ret;
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index ba93123cb4eb..f3da596410b5 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -164,18 +164,23 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
+ 	if (IS_ERR(dev_pasid))
+ 		return PTR_ERR(dev_pasid);
+ 
++	ret = iopf_for_domain_replace(domain, old, dev);
++	if (ret)
++		goto out_remove_dev_pasid;
++
+ 	/* Setup the pasid table: */
+ 	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
+ 	ret = __domain_setup_first_level(iommu, dev, pasid,
+ 					 FLPT_DEFAULT_DID, mm->pgd,
+ 					 sflags, old);
+ 	if (ret)
+-		goto out_remove_dev_pasid;
++		goto out_unwind_iopf;
+ 
+ 	domain_remove_dev_pasid(old, dev, pasid);
+ 
+ 	return 0;
 -
--			did = pasid_get_domain_id(pte);
--			qi_flush_pasid_cache(iommu, did, QI_PC_ALL_PASIDS, 0);
--			iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
--		}
--	}
--
- 	__context_flush_dev_iotlb(info);
- }
++out_unwind_iopf:
++	iopf_for_domain_replace(old, domain, dev);
+ out_remove_dev_pasid:
+ 	domain_remove_dev_pasid(domain, dev, pasid);
+ 	return ret;
 -- 
 2.43.0
 
