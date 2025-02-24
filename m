@@ -1,174 +1,144 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5ECF3FB31
-	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 03:21:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4851B1A7044
+	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 03:43:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740367294; cv=none; b=tTDwZdYP3djbdR2W+PYrtUtX+v53WP2YDFIWfFOmtYXmwD7YLVClLBfz90KRC8I8dN/pEyS9ane7MPfy2wqqHMoTnrEu8TGXmG42Kbtw+zWrsIG5bi4WdcjwD3noaf3CHRf44pPjTMW+SGCXhMRJljqZCmRb8C4/VYoOcFnBvz0=
+	t=1740368586; cv=none; b=XTwSCxev97IlpSFc+1AYNR1PiltiMPSVVtr2dIkPb0+OtOFIzvJTdEvbspJranmqhAqZFnfeC1h+DwQIJkc8A8LQjLrW6lSjhlias3zyEV9gORXBFLSqIjzeuQxg0sRTc9AZ5VcEuA4Qx5gBGlzZrSnbpISt5TGscrPjTfxVIIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740367294; c=relaxed/simple;
-	bh=Rtkwit+ODzXSrct8uYhM6vK2d46Vf/IvqhJSrypKVZE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Jlt4v8ULyGxiQ34r+zd6HNVQ6aVvTB46JCHa7kjf9SoeS4zKxJFSSQzbDvhnFwnRtBBJ+me01shCH5CzF/Hr7nHnVldEmD66RxstZNeP7aItFiWbuWHz8GkM2GYFTuFOR1aUDCPTZKs6yUlpmn2UYDJ+PT1T1p3O5IZxlcYDRWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JRN5MAaR; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1740368586; c=relaxed/simple;
+	bh=2brXvbSRhDKTumjWNgVlgfbHMSBx/NsSwwhkUiBUAi4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=RMPS3j7RVCEGUTb+j6mxAo3LXgcPrUaKAx26sCZXoSSG21cw3JIo4R9HUpiHiZBVI+8y3cOBNuCa6gO8ejWH+lxPuYcsDfccO8t3tM99C5p1yABXXQlyVX58CXRcpf+ZpIGELwqbwBIam/XxfMqNM6TEntp5YVkSPX8lwVO1e+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=Ylbd7Onb; arc=none smtp.client-ip=209.85.160.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JRN5MAaR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740367292; x=1771903292;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Rtkwit+ODzXSrct8uYhM6vK2d46Vf/IvqhJSrypKVZE=;
-  b=JRN5MAaRp40Dyp4PVxebuA2wY+BSrC/UVhpzeQ0Rj4ZSvFUjJ9aMX+0C
-   Nhn+c5vuVhcf8U9gLeSBZ1dwSeV47pu3b5xxMfE6G7zH/p+dePg8xXZad
-   S89l50/D05OoGExQwXx2S+LM4sWdRX54Ou14bw8a/n68oLJDdk726kspe
-   qKYRIbhPUGDJEjdXIAbbVqi8mgBtKyHJtWa73946Y936VJZiyiJXTKrmh
-   79PZXi392OwKVQUglmrFMCdaorfhRQe+P3Ju3OLth0fx9Iq636f2ZQgmI
-   lse7BQlfgaATK5yaBk/0eLR+3qATHY+L2n2pVd1m+ZGO00U34afksFEqP
-   Q==;
-X-CSE-ConnectionGUID: 95ESl+xMQIuagxbG5V4dDA==
-X-CSE-MsgGUID: G3Sd1L4QRlK6AA1OCU5t0Q==
-X-IronPort-AV: E=McAfee;i="6700,10204,11354"; a="44889691"
-X-IronPort-AV: E=Sophos;i="6.13,309,1732608000"; 
-   d="scan'208";a="44889691"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 19:21:31 -0800
-X-CSE-ConnectionGUID: SO/Mc3uHTdK2B8HlADSqfg==
-X-CSE-MsgGUID: jIqyrmXkQ964zyZpVA0acA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="121195979"
-Received: from zhaohaif-mobl1.ccr.corp.intel.com (HELO [10.124.242.192]) ([10.124.242.192])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 19:21:28 -0800
-Message-ID: <5df89435-49fb-4bdd-8034-af0b6acc69bc@linux.intel.com>
-Date: Mon, 24 Feb 2025 11:21:25 +0800
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="Ylbd7Onb"
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-2bc66e26179so561632fac.2
+        for <iommu@lists.linux.dev>; Sun, 23 Feb 2025 19:43:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1740368583; x=1740973383; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EWmyrx22D4RyR4VCDSIk++RqfnUE4ZQz7ryWsBjsG1U=;
+        b=Ylbd7OnbUaaogS/fX4Xux3dwq+Qpxd+XgsR1MebMAWuDsJPUMjxkvDWUp/zWXs0abs
+         rrMiirDDDJz4hYBE5d/l+wz+R+R6UEEIZjzULwh72F52jjTeLZCbiRODk1mynYxGBkrd
+         4xX2EHrSTc3j7veKYTKNHbnhQ1pkmV08GRRNQtEj7psj9Sk5X+kv37uoixQ8j3BlMh+X
+         cUi3WbRIcIvCP+E/FvLUhOp/TjRjuzQR7ilhoq9O7guB8y+s8IDP6OAL6IIo0NJfsUdN
+         c+2Tkkf9RumuvF9WjLA+OILp28apmZsWHpT8o0Ona7RheBZzwYlNU/+Q2iRblhSCAZVM
+         rUeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740368583; x=1740973383;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EWmyrx22D4RyR4VCDSIk++RqfnUE4ZQz7ryWsBjsG1U=;
+        b=S+rD9C0oQ+hMEEI5SCgyrYKorgVhAMR5i3tsN9zx69IzillusSbQhWwkVB4RyPUGQC
+         ZBzBLmJ/tl+oKz3Onc+59YrP6I1G9xUHMaXIensEpgbb9EUAEBvYweiT8Cj9YFmiYw7q
+         cQBpxZ0hFW0+zlm2tJSdN6J/F/if+/a7v6OKe1zRNtdDhJRdKVh3jIVQ79z6PKOcPoZC
+         N+Syfd6ohOfbnV97NemeLHAKWvwEahzKkRbMiNlRsL5H1TF701QmXyz4tPHxoz+P8PXx
+         s++EKoEi4lG0i0hBVtKejFwpE/DEldGIGfBT9apKYXMB7OzZk+IyNUZTlpE+WTsWkn72
+         EhXg==
+X-Forwarded-Encrypted: i=1; AJvYcCUypdMLPppa8VsZUHk03znc12k19C57IHjVA22455I7EhByDlDm5df7D2z5BDSPa5dHpiJ2wQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyyZPVPgxvf010KotBKy4Mmxy4zaYYBdxalv+VvWH2OPLsYCVoX
+	pcurk/7xVeGJkUtUWFjdrwYPpKxtxMc1Hx108ErVWSMJYEl5ycYibosXDT263/p75Iu65Cio29n
+	qAM+E8nN7fmn08+0aHscR0s2+ubQvRT2Z0tFZTQ==
+X-Gm-Gg: ASbGncuIX6lNvgmUQmrdbKp+8rch7uod/0xVftuPftlP+F+SMPLcPfVFqv15ocUnAJv
+	A6l3BNEk4UmpACrfgnwCV5xCM1pDvm2Gn0ydzY4+QVyKzYiZH6pZnnV9/ebHslfEdoCUWDnDu+z
+	e3Yb+vbf1SEA==
+X-Google-Smtp-Source: AGHT+IGv99EkJ7MMHfoGHA1P2RRAdF3geIY8k8jLdJmdUqKUmwxzj8cPjmtTfekpYtzSV93z/z3S2U1jmWSLvf+eA2Q=
+X-Received: by 2002:a05:6871:d104:b0:29e:5c94:5b10 with SMTP id
+ 586e51a60fabf-2bd50fa5b9cmr9369042fac.34.1740368583214; Sun, 23 Feb 2025
+ 19:43:03 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
+References: <20250220101511.37602-1-cuiyunhui@bytedance.com> <622aa790-6560-4be9-bfb4-736809a249bc@linux.intel.com>
+In-Reply-To: <622aa790-6560-4be9-bfb4-736809a249bc@linux.intel.com>
+From: yunhui cui <cuiyunhui@bytedance.com>
+Date: Mon, 24 Feb 2025 11:42:52 +0800
+X-Gm-Features: AWEUYZnZAgZWgpT1jq430siBo66BfD-b8aN1SXFV2Q6cuPz2z7re5pNq-FV4LMY
+Message-ID: <CAEEQ3wm019hEGK=2i+2KF7LVcWr8y9N2uGzF65pfQLurroa+YA@mail.gmail.com>
 Subject: Re: [External] Re: [PATCH] iommu/vt-d: fix system hang on reboot -f
-To: yunhui cui <cuiyunhui@bytedance.com>
-Cc: dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20250220101511.37602-1-cuiyunhui@bytedance.com>
- <ba2a6295-7983-4701-8c42-797efe22ecb7@linux.intel.com>
- <CAEEQ3wkygXexsu9x16Q+6yMtmtM+9aD=-DH1tMVNq1yuyZ7Dcg@mail.gmail.com>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-Autocrypt: addr=haifeng.zhao@linux.intel.com; keydata=
- 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
- 8TCx1OJHpvWFmL4Deq8=
-In-Reply-To: <CAEEQ3wkygXexsu9x16Q+6yMtmtM+9aD=-DH1tMVNq1yuyZ7Dcg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: dwmw2@infradead.org, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+Hi Baolu,
 
-在 2025/2/21 17:46, yunhui cui 写道:
-> Hi Ethan,
+On Mon, Feb 24, 2025 at 9:06=E2=80=AFAM Baolu Lu <baolu.lu@linux.intel.com>=
+ wrote:
 >
-> On Fri, Feb 21, 2025 at 4:40 PM Ethan Zhao <haifeng.zhao@linux.intel.com> wrote:
->>
->> 在 2025/2/20 18:15, Yunhui Cui 写道:
->>> When entering intel_iommu_shutdown, system interrupts are disabled,
->> System interrupts were disabled ? you mean all interrupts were disabled
->> when entering intel_iommu_shutdown(), perhaps it is not true, at least
->> for upstream latest code.
->>
->>> and the reboot process might be scheduled out by down_write(). If the
->>> scheduled process does not yield (e.g., while(1)), the system will hang.
->> No NMI lockup watchdog jumping out here ?
-> Steps to reproduce:
+> On 2/20/25 18:15, Yunhui Cui wrote:
+> > When entering intel_iommu_shutdown, system interrupts are disabled,
+> > and the reboot process might be scheduled out by down_write(). If the
+> > scheduled process does not yield (e.g., while(1)), the system will hang=
+.
+> >
+> > Signed-off-by: Yunhui Cui<cuiyunhui@bytedance.com>
+> > ---
+> >   drivers/iommu/intel/iommu.c | 3 ++-
+> >   1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> > index cc46098f875b..76a1d83b46bf 100644
+> > --- a/drivers/iommu/intel/iommu.c
+> > +++ b/drivers/iommu/intel/iommu.c
+> > @@ -2871,7 +2871,8 @@ void intel_iommu_shutdown(void)
+> >       if (no_iommu || dmar_disabled)
+> >               return;
+> >
+> > -     down_write(&dmar_global_lock);
+> > +     if (!down_write_trylock(&dmar_global_lock))
+> > +             return;
 >
-> 1. Avoid return in:
-> if (no_iommu || dmar_disabled)
->      return;
+> If system interrupts are disabled here, locking is unnecessary. Hotplug
+> operations depend on interrupt events, so it's better to remove the
+> lock. The shutdown helper then appears like this:
+
+Currently, intel_iommu_shutdown() is only called by
+native_machine_shutdown(). The down_write/up operations can be
+removed. Even if there's a hardware access error, IOMMU_WAIT_OP() will
+trigger a panic().
+
 >
-> 2. Write a.out with while(1).
+> void intel_iommu_shutdown(void)
+> {
+>          struct dmar_drhd_unit *drhd;
+>          struct intel_iommu *iommu =3D NULL;
 >
-> 3. ./a.out &; reboot -f.
+>          if (no_iommu || dmar_disabled)
+>                  return;
 >
-> 4. Observe. Send NMI via BIOS to check system response.
+>          /*
+>           * System interrupts are disabled when it reaches here. Locking
+>           * is unnecessary when iterating the IOMMU list.
+>           */
+>          list_for_each_entry(drhd, &dmar_drhd_units, list) {
+>                  if (drhd->ignored)
+>                          continue;
+>
+>                  iommu =3D drhd->iommu;
+>                  /* Disable PMRs explicitly here. */
+>                  iommu_disable_protect_mem_regions(iommu);
+>                  iommu_disable_translation(iommu);
+>          }
+> }
+>
+> Does it work for you?
+Yes.
 
-Via BMC ? There is 'NMI' hardware physical button on some machines to trigger
-
-NMI to OS for diagnostic purpose, you could check your box for that. but no luck,
-
-there is no NMI trigger in my GNR BMC.
-
+>
+> Thanks,
+> baolu
 
 Thanks,
-Ethan
-
->
-> 5. Add console=ttyS0,115200 to cmdline to increase reproduction chance.
->
-> Let's continue discussing based on the above.
->
->> Thanks,
->> Ethan
->>
->>> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
->>> ---
->>>    drivers/iommu/intel/iommu.c | 3 ++-
->>>    1 file changed, 2 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>> index cc46098f875b..76a1d83b46bf 100644
->>> --- a/drivers/iommu/intel/iommu.c
->>> +++ b/drivers/iommu/intel/iommu.c
->>> @@ -2871,7 +2871,8 @@ void intel_iommu_shutdown(void)
->>>        if (no_iommu || dmar_disabled)
->>>                return;
->>>
->>> -     down_write(&dmar_global_lock);
->>> +     if (!down_write_trylock(&dmar_global_lock))
->>> +             return;
->>>
->>>        /* Disable PMRs explicitly here. */
->>>        for_each_iommu(iommu, drhd)
->> --
->> "firm, enduring, strong, and long-lived"
->>
-> Thanks,
-> Yunhui
-
--- 
-"firm, enduring, strong, and long-lived"
-
+Yunhui
