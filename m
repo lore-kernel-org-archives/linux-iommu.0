@@ -1,264 +1,177 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2050.outbound.protection.outlook.com [40.107.95.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A67414A4E9
-	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 23:12:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30ACF1C8602;
+	Mon, 24 Feb 2025 23:35:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.50
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740438763; cv=pass; b=qgixPPWSYMiD7LSFpCy5oui9As7o/Myurkpknjh7ZjxuGgcqcUqUFPJ7yx+Xxru83dEY2/G9zb6ElsIaXNKy31m/1eqk5klJOYCJanp8Qf14WLPq8VnrTMhuIj4Q3EGXShYw1HGEp1yQtixHdoJf1qQ6uIbyUhvkbuM9dEezsF4=
+	t=1740440115; cv=fail; b=Rj8fiT1A7ZMDOqSDc0epvdcly0uIcYkMFSz0VFRH+ei7RkNycErJRbCYLg7lOo2xdpOGnpH2bx4gtWGzcycek56vX3exyCZZzFrLL7eRqtDeYP4mqPpUvOdgQUb979a5ZfjRI4CFaVpkF0X9J2Qc1V1x8q8AZ4WBvipUBQcVYpY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740438763; c=relaxed/simple;
-	bh=XXWEC2LqLJIv0MKv58pUZk0CKwpxlzBRzGseoopbZqw=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=JX3rwiz2EqgD+CMlO7Jc9uIkjZ57Su0wQy7VtgnAvB+RGtV+xTWKtxY3QV+9ij/+sTcbkd7NgS1fFITWPTd0eqqipI0DS7iZQBjTl0zYR/jCJDTeT3yQrksAB/MjqzgraISt+t98IM3ciy/Pc2JvF8YUOlyqgmOLwkPh3UZlnvM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=HHxaMDRl; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1740440115; c=relaxed/simple;
+	bh=aJNEJQreLs49SNjDG4As4xXnuCYktfgTQqsWWKPPZPs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=e2gM0IVbs4EKHSJ148ycMYoDV/9R+pB4NYxBsAaGBYshE9PnP+oB2GUXW68wITVZFVqMCjB58xwiGnTq95jBUBxpPbwC6UKKAW52/K6mOUn1WxKRO1WAcxONly4NvzFr3aMHDQ0ygSAdcbQJkcw+Cv4Xa++o66xvrkNwqUtuxO8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=umuuZ1wC; arc=fail smtp.client-ip=40.107.95.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="HHxaMDRl"
-ARC-Seal: i=1; a=rsa-sha256; t=1740438745; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=PgU9Mm6RT7uuCN862cQr8qLNQ285guHKqyOoMNUV9P7h1iGWyW1SesCfskDE92aoUJjtbtfn7axNKQIU+gdNOOj0yCwRo2Qaxzl4RSQpRS+cVmx/XHLv1tRt14hYcMYbZW+f+bNVehe8w9sPK2zjeQXaRDtXbgO7tWA0/37JupI=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1740438745; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=bO9uZfn8SM1Jv2su8dWyJGrswvnxZaC5Z+EMWGYE4uY=; 
-	b=abm72LkhKE2k+l84SADs9WnPM2jxW49yfJz1w/KJisvMvpZhCJyUBThg/2Ev52AzZ/mk30nUcR/Eeuk8UTfc4unTL9ItcWIMkGIculPplX0kCeRrHvK/q7E0MfGowgeMAZc/n1TBz5OpTqfzQMsSq7Uinvx9KLGd56F7O64O0U8=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
-	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1740438745;
-	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
-	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
-	bh=bO9uZfn8SM1Jv2su8dWyJGrswvnxZaC5Z+EMWGYE4uY=;
-	b=HHxaMDRlmysoXNfGvP4Qgk8queEmuYFMHF0MeIe7JUf4THVo241qcT3h3mC4rAbt
-	stYCQ1bRF081kb+J1Cvu7Q4LIsFLGyL7z49uxSnS4SRbVDAnyuJCN4Z0KW4nbXBvcBe
-	lLx87+OwaYJRM9jZKNyhr9leWPlV3/S1CNR0f+DY=
-Received: by mx.zohomail.com with SMTPS id 1740438743258548.6806747875588;
-	Mon, 24 Feb 2025 15:12:23 -0800 (PST)
-Content-Type: text/plain;
-	charset=utf-8
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="umuuZ1wC"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=XdqCNAwWi7arUy+2oQVojRzUTtb81h00jg+uDQ7htpblMXhYxxagHwJnYo0PuNOxgoUnsSLNOBNzzynJ778p1M5VgB5dug1eirZ5hjMHCfGIXx+YoZaAO+KBUXbbZFMtW6xr/caOVhPbUJuSTJ7jTSARCcJ/NReZASIK0LJqngbR5slUQkf6Yh2Qb3MxlteLxD8Xbbz529J0psMt7rUb8ynumpTg23UMdAz0nmsUpmykgBx2oamFlmshGPtDrZADZyY3li/djONlMUEyNQGRWtpmTTtIm3zbz8BNP9W69LAoltra8C71MXVnQRHLhBtiA4bFzQ1vgIZ5eAcPD7gyvw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Gu9j43OOTQcwct3Jmzmd7WVfClwmVmUuuzlBwEXTvo4=;
+ b=DJZPRobw2LRZWwlfYSznl1e+FPL155oyW9gWlVjCY4LPpbGccYNmW7ZQykJwFNAaeLtbNID/We4mn7SMMXjtc4Y6y+NTUMp0F7mXkfk+sSSOduJNDp7zzu9GKviTvbk2vYYKF2aiRd3LLFpzSphXk5a7Wz+nJxaQGQWPHAyCS1sNCGaH7xMOC+Q4HobaIgPRgasBsfSeAweahggG9uXkXBaSqSy0BTgzCEwI250ib9m2t5ZEUzAxkCSKe5PAQBdfuzUmazPPmSw8Ul6zn7ZO8UTi/Qefs1ZSWnxNiT1eIUqBojUn+rxd5baJQuLldaXCUtVEdhZKxFrGlEDzGusVuA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Gu9j43OOTQcwct3Jmzmd7WVfClwmVmUuuzlBwEXTvo4=;
+ b=umuuZ1wCG7AyWq59APhe79OSRY2DxBcVvxS/bpYRTOfNPBTaPSROjak5j/sxYnLIYB2yhst0p+nkNn/TVhZNVrLiAm44B/eudICydUqI4uHT/g6l5Gi/XNs3GT2kQu9mqcB14roZ3JKkbcwj9TP/qvr+TcwZBbNzjKpcyGZyoOzSHMz0kOg5mbQrriYZkklOZZkN5H6QpvcQlbZtUc93HhjjjshjyKo788UikYZlg44097PK0YCmVyl+FdH7mBhL5DjkoRVIP3Hxy2yREBptxBrMSepXcbubXEhKnUR+iks36cqWPt9L6GWTJCU0g0hDSO21P1mPlD20Lfqit4a5Tg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by CYYPR12MB8938.namprd12.prod.outlook.com (2603:10b6:930:c7::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.20; Mon, 24 Feb
+ 2025 23:35:07 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8466.016; Mon, 24 Feb 2025
+ 23:35:07 +0000
+Date: Mon, 24 Feb 2025 19:35:05 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Pranjal Shrivastava <praan@google.com>, kevin.tian@intel.com,
+	corbet@lwn.net, will@kernel.org, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com, shuah@kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
+	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
+	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
+	patches@lists.linux.dev
+Subject: Re: [PATCH v7 13/14] iommu/arm-smmu-v3: Report events that belong to
+ devices attached to vIOMMU
+Message-ID: <20250224233505.GF520155@nvidia.com>
+References: <cover.1740238876.git.nicolinc@nvidia.com>
+ <b1930038cf828dc13c080e2b46b3003a8c98ef24.1740238876.git.nicolinc@nvidia.com>
+ <Z7zmErar4YvQSSxw@google.com>
+ <Z7zrHn3tPBD5chv1@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z7zrHn3tPBD5chv1@Asurada-Nvidia>
+X-ClientProxiedBy: YQBPR0101CA0333.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c01:6b::26) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.300.87.4.3\))
-Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
-From: Daniel Almeida <daniel.almeida@collabora.com>
-In-Reply-To: <6dea7b6a-1534-47e7-94d2-d67417c3d4c1@proton.me>
-Date: Mon, 24 Feb 2025 20:12:05 -0300
-Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
- aliceryhl@google.com,
- dakr@kernel.org,
- robin.murphy@arm.com,
- rust-for-linux@vger.kernel.org,
- Miguel Ojeda <ojeda@kernel.org>,
- Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>,
- Gary Guo <gary@garyguo.net>,
- =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Andreas Hindborg <a.hindborg@kernel.org>,
- Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- linux-kernel@vger.kernel.org,
- Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- airlied@redhat.com,
- iommu@lists.linux.dev
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <3202F69F-397E-4BC4-8DD8-E2D4B0AB056F@collabora.com>
-References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
- <20250224115007.2072043-3-abdiel.janulgue@gmail.com>
- <6dea7b6a-1534-47e7-94d2-d67417c3d4c1@proton.me>
-To: Benno Lossin <benno.lossin@proton.me>
-X-Mailer: Apple Mail (2.3826.300.87.4.3)
-X-ZohoMailClient: External
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CYYPR12MB8938:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3d7f9295-cd4c-4f0a-6afe-08dd552bdf05
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?LCLu43u8NqdBzWrDvNw4/yut8Bc8dmvCcvQH1UaxRZ/BBwr9oSJt1iZt6hLQ?=
+ =?us-ascii?Q?fuxcDrEMdz71e59JP9DUUR8lybdvZgQ4lMjJnHB8khDzRGWhXucTSA8em0Ec?=
+ =?us-ascii?Q?4ywSsdxDJj4egduwrKh9thvu4T5OhTYkHtBpPE4iD+U7JahEbTkxN4vz5Rfq?=
+ =?us-ascii?Q?hELskMoz1Vf/FZeC3WqY8ngGhxeUwu4xhajuKdVVq2dkGred727zT4n7M97R?=
+ =?us-ascii?Q?V0qaDpDt3NNUkoTnU/K/8b1mK7Mibab1lQOj8hXsf+62DgkoPvY9bx10vB6u?=
+ =?us-ascii?Q?avUnCC29NTJlu7YtN3dT+j1lB9iKZas5N7O7unOGtxqqomg3w1GJ+R0L3/HI?=
+ =?us-ascii?Q?Hh+/Alotw5S/Uptpo5rYaGWXnNhPjiHSe4dyLcpwYKC/IvGk6Qr26Fd3G/zV?=
+ =?us-ascii?Q?5+63WWtvRabBnSVqEmqSGHZ36ExcChTgjorLDuTg7C1t4zlJ6X9ZEtMtzOBW?=
+ =?us-ascii?Q?8it7jJb1kQyC7UrjnJ+r0cUTDdVX9lvNSxmE1bmpTbFmpBjXZVyxG4fhZOiH?=
+ =?us-ascii?Q?F48DotoEF/iSbm0xAgPfvft7A4fVvzPlaHzDUFWKMIqeAnV8wOZeKYH+gNQ9?=
+ =?us-ascii?Q?KJ/D9RPwmRQf+J64L97Drbz/fkbHqs4THSY19cEM4oVoIM38v6H3Kd1WPYVM?=
+ =?us-ascii?Q?CQx5sqAQktPmRrKYcm0ua4K0PCNBdrC+eRrTh/1UL+rjm2Hb832meAkl8abW?=
+ =?us-ascii?Q?LpCRXahj0qVkD27Lk1+0iJHxEHPNRHRQYZHpXv7D72BqaUPlCXW27153loXn?=
+ =?us-ascii?Q?RB2jEaCn5wRg5wH5EMt1625iekvXH26+r8+Gk7B9u612wSBs90+/ramu5vEk?=
+ =?us-ascii?Q?hDA1ZEXM63Sm5HFuoW4kDEhXMi+1kmxHeVcvkV7rY80eBPAAotqRFs1B08ua?=
+ =?us-ascii?Q?GEN+0teqrwwb5UReWBd3cG3aBmYG37QBw1sxdKU0wIyDJ+gkQY0TOjFadBSQ?=
+ =?us-ascii?Q?qB7AMqqt3a4rw54MKTiMQh095KG35GJ4R1ef0pJGdRhbSTqxkmCIejeuCCR1?=
+ =?us-ascii?Q?TuFnTtS7mjVbCEBpiO0g2B3Y161OTj0iQsYvNuum92u7Bc5VHeI1yLxkGZNr?=
+ =?us-ascii?Q?5Ocd8QVgXtB/EjcbQBe41lvBey12btrKj4uLdiWBeMtFtA6deHfg6CMKuwiY?=
+ =?us-ascii?Q?hv6MXiA74CmjW5/hVtTLvYYjIShygM6+DsldwOjvzlCO43Hq4BlhHAnAtshd?=
+ =?us-ascii?Q?FxQfEffSzHhLNQmAjnxy8afvchMni4/dByRIpd3xeAlR3p5Oqe4WWfpMI1Bo?=
+ =?us-ascii?Q?m7WCTFHmesMJv2TR4QkzRMt+/tCne45RgDBNXCbdINhNnUpnIyI+ETzZLKVf?=
+ =?us-ascii?Q?zsE6mUv9Jg8KpgNlPPitWEDqnsVQ+xVErDjNE+Hm+/1Y4LKDzY4QLtcinlMh?=
+ =?us-ascii?Q?UAQZCm4Xdk3IKquc3beufhz1Pp8u?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?rwtzBgKQKHq15yxRcj07N8oWr0foKLf9rT/pC1bEbADVniEf76Du0YCB2zwN?=
+ =?us-ascii?Q?mgnVufdoPNZQ0yjjP8IbFRxEfEsTLMBJDOQ5Iz19hHJPDtz1Ohu5zhE4i/ay?=
+ =?us-ascii?Q?owd4xGWyoKrhW5idMtw3b+B74YnZBrbyEdDYuxedZTFnvl6PmezYLG9JTSjd?=
+ =?us-ascii?Q?/1ygw+BAyHcFkyLGWGcmwSSVtSNpIQZaiQqkdJe99Vs8pYY01AoSHAr6fOhA?=
+ =?us-ascii?Q?9cobwdv+BQ+fHCz6NOvRrbUqv2fh2rS3rSF7SXyhbuI2ygqDW+vBm9hYXalz?=
+ =?us-ascii?Q?GXd4dY1aod+IFqDKO8f6Siar+h2+pXvLMBDgP3tUlw4NroXrVsPy2s9Db8BB?=
+ =?us-ascii?Q?UF0PElVPRA/LiESC6PBaKd2qWJi41v5fc9ILPw3ZpGysr/2BHr5iUlsAK8jV?=
+ =?us-ascii?Q?Hj4Le8Bbefv03nzrU69XXedbnEIMtswYuBimmOi/9cVg6F4Q+7QlziJPxnMR?=
+ =?us-ascii?Q?7jGBGsD841NnEVMzqeV4T64/KW1zEVGB8ZPGUvzbL1pQHHTQJ28mWMz+J1YF?=
+ =?us-ascii?Q?O0ywg8bfCEE3IXxYCFEc5GKhh6y/ylPosA11Evng25ngV8FD1MYXhAHfjjmx?=
+ =?us-ascii?Q?HEQQRzEic0Z0GSM53938HtT3YT3fy4FdQ11pMc4/66y8Hnh+C3A3ui5ocBiw?=
+ =?us-ascii?Q?6gGOgXq3WxS9hcxqB/uMPxScpmpao8pFxe1gu8PlMctbz8mEBOR1ujBShPEH?=
+ =?us-ascii?Q?c7W/3jxFwGOA9oDpjNjHyaJwcD73aPMJ0JudUwzvvrtm9xW/Eok7ke8lRRTM?=
+ =?us-ascii?Q?UofmmdRC6LZimS1V4Ph6L6rexmpZ0eWgL3tSS9PGV05T1hi/wc+YdtAqpsEd?=
+ =?us-ascii?Q?PbDbfunV3Lr/i/7tWVaZ6bRA1NlbpsC/KZ6c49hC2x0RMvB2JbZJxBqOFJ9u?=
+ =?us-ascii?Q?z7OT8gIEvD4z9hWQZosBSu0pkFwwmpoDleyxmR1j7zlJn9nIAg0rvXHbMrQs?=
+ =?us-ascii?Q?kNbMICas4Z0hsA2egFIpLxTcEqSqxD8MKiLuZJqGJDvsrdJ7hpz//HzgZKpD?=
+ =?us-ascii?Q?yJlXDdo5mZ7CT30Ouofjf99Yujzz0Wo5BzpJUT14dMUyRJskLaMCoHH4yxgl?=
+ =?us-ascii?Q?pqnBGb0u4zZJsYqsK8v/kJZHZfpeOIa8QG1T2sdcC7/O1vSIZqgXUHTLTxW/?=
+ =?us-ascii?Q?00YKnuCFHXGpWRF5qKCsekTuaKCxWonrwJKorMoQDwTCjMgCx3eJds4WkZo0?=
+ =?us-ascii?Q?WwzBJlhJaetITh1E4hNBNH+G85kJgfQCTsMW14J4k4IR+odhO/R26m73iWA3?=
+ =?us-ascii?Q?NPlGOTUT9ZPKW0QCaVBpuCDRR0d6AF7kvsMvVtXVkKvH5eFgyc1OffWc7Qxd?=
+ =?us-ascii?Q?oIxKbBtbbZBTzSXxmiJcxwnQbJFTg5YJrQLIbFqLJVhlyNVCYD+AHY8GgfGT?=
+ =?us-ascii?Q?QoQKV+BLdQtmMMXkugmL3CS1XR8g3QddlBkGBOh9qLXeFQZayvd/XcZorGmk?=
+ =?us-ascii?Q?U8uN4XoS/3nydBMC723C0xRDqSZXkht/wgOixXtvNuSnrvubq1zZRw2bN2K+?=
+ =?us-ascii?Q?GE6Ajh9RrM4/mlN80oVU1gwkdFG/Z2SGGFfSxPeNkd3OF90HJJyly2AF6tIm?=
+ =?us-ascii?Q?GNcLtlaYFBihD5W/2Jwr6rGZqqJOyv4vot5Mt9EC?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d7f9295-cd4c-4f0a-6afe-08dd552bdf05
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2025 23:35:07.1821
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kFLlIGNGiVFfpXjLvOKOMgSzrQO7RlMp2i7+kXVzO1pEYwHoNW+YiZb7+kp5Okhf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8938
 
-Hi Benno,
+On Mon, Feb 24, 2025 at 01:56:46PM -0800, Nicolin Chen wrote:
 
->> +pub struct CoherentAllocation<T: AsBytes + FromBytes> {
->> +    dev: ARef<Device>,
->> +    dma_handle: bindings::dma_addr_t,
->> +    count: usize,
->> +    cpu_addr: *mut T,
->> +    dma_attrs: Attrs,
->> +}
->> +
->> +impl<T: AsBytes + FromBytes> CoherentAllocation<T> {
->> +    /// Allocates a region of `size_of::<T> * count` of consistent =
-memory.
->> +    ///
->> +    /// # Examples
->> +    ///
->> +    /// ```
->> +    /// use kernel::device::Device;
->> +    /// use kernel::dma::{attrs::*, CoherentAllocation};
->> +    ///
->> +    /// # fn test(dev: &Device) -> Result {
->> +    /// let c: CoherentAllocation<u64> =3D =
-CoherentAllocation::alloc_attrs(dev.into(), 4, GFP_KERNEL,
->> +    ///                                                              =
-    DMA_ATTR_NO_WARN)?;
->> +    /// # Ok::<(), Error>(()) }
->> +    /// ```
->> +    pub fn alloc_attrs(
->> +        dev: ARef<Device>,
->> +        count: usize,
->> +        gfp_flags: kernel::alloc::Flags,
->> +        dma_attrs: Attrs,
->> +    ) -> Result<CoherentAllocation<T>> {
->> +        build_assert!(
->> +            core::mem::size_of::<T>() > 0,
->> +            "It doesn't make sense for the allocated type to be a =
-ZST"
->> +        );
->=20
-> Is this a safety requirement? I.e. the `dma_alloc_attrs` function =
-cannot
-> handle a size of 0?
+> > Just thinking out loud here:
+> > I understand the goal here is to "emulate" an IOMMU. But I'm just
+> > wondering if we could report struct events instead of the raw event?
+> > 
+> > For example, can't we have something like arm_smmu_event here with the
+> > sid changed to vsid? 
+> > 
+> > Are we taking the raw event since we want to keep the `u64 event_data[]`
+> > field within `struct iommufd_vevent` generic to all architectures?
+> 
+> The ABIs for vSMMU are defined in the HW languange, e.g. cmd, ste.
+> Thus, here evt in raw too.
 
-It doesn=E2=80=99t make any sense to have a ZST here. At the very =
-minimum we want to be able to read and
-write bytes using this code, or preferably some larger T if applicable. =
-The region also has to be allocated and we
-need a size for that too.
+Right, the point is that it gives as a safe uABI that is effectively
+being managed by ARM.
 
-This was discussed in an early iteration of this patch. I think a build =
-failure is warranted.
+If we make our own thing then we have to take the responsiblity to
+make it safe and extensible. I don't see a justification to do that..
 
->=20
->> +    /// r/w access or use-cases where the pointer to the live data =
-is needed, `start_ptr()` or
->> +    /// `start_ptr_mut()` could be used instead.
->> +    ///
->> +    /// # Safety
->> +    ///
->> +    /// Callers must ensure that no hardware operations that involve =
-the buffer are currently
->> +    /// taking place while the returned slice is live.
->> +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> =
-Result<&[T]> {
->> +        let end =3D offset.checked_add(count).ok_or(EOVERFLOW)?;
->> +        if end >=3D self.count {
->> +            return Err(EINVAL);
->> +        }
->> +        // SAFETY:
->> +        // - The pointer is valid due to type invariant on =
-`CoherentAllocation`,
->> +        // we've just checked that the range and index is within =
-bounds. The immutability of the
->> +        // of data is also guaranteed by the safety requirements of =
-the function.
->> +        // - `offset` can't overflow since it is smaller than =
-`self.count` and we've checked
->> +        // that `self.count` won't overflow early in the =
-constructor.
->> +        Ok(unsafe { =
-core::slice::from_raw_parts(self.cpu_addr.add(offset), count) })
->> +    }
->> +
->> +    /// Performs the same functionality as `as_slice`, except that a =
-mutable slice is returned.
->> +    /// See that method for documentation and safety requirements.
->=20
-> I don't think this is good documentation style. I think copy-pasting =
-the
-> first line and second paragraph is better.
->=20
->> +    ///
->> +    /// # Safety
->> +    ///
->> +    /// It is the callers responsibility to avoid separate read and =
-write accesses to the region
->> +    /// while the returned slice is live.
->=20
-> This safety requirement is worded quite differently compared to the =
-one
-> on `as_slice`, why?
+It is the same discussion we had around the vSTE as input, the raw
+invalidation command and the IDRs. Since we've already done 'follow
+the SMMU spec' so many times already now we should keep doing it.
 
-This was discussed in an earlier iteration of this patch too. If you =
-call this function, you must make
-sure that some hw doesn=E2=80=99t change the memory contents while the =
-slice is alive.
-
-This is device-specific. e.g.: I know that for video codecs this is =
-possible. Therefore this API
-can be used there.
-
-On the other hand, some people may use the API to share ring buffers =
-with the hw or even implement
-some polling logic where the CPU is waiting for a given memory location =
-to be written by the HW.=20
-
-If you=E2=80=99re trying to do this, you cannot use this API, that=E2=80=99=
-s what the safety requirement is about.
-
-Although I=E2=80=99d word this differently to be honest, i.e.:
-
- /// It is the callers responsibility to avoid concurrent access to the =
-region by the CPU and any other device
- /// while the slice is alive.
-
-This is also needs a bit of work, but at least it makes the point =
-clearer.
-
->=20
->> +    pub unsafe fn as_slice_mut(&self, offset: usize, count: usize) =
--> Result<&mut [T]> {
->> +        let end =3D offset.checked_add(count).ok_or(EOVERFLOW)?;
->> +        if end >=3D self.count {
->> +            return Err(EINVAL);
->> +        }
->> +        // SAFETY:
->> +        // - The pointer is valid due to type invariant on =
-`CoherentAllocation`,
->> +        // we've just checked that the range and index is within =
-bounds. The immutability of the
->> +        // of data is also guaranteed by the safety requirements of =
-the function.
->> +        // - `offset` can't overflow since it is smaller than =
-`self.count` and we've checked
->> +        // that `self.count` won't overflow early in the =
-constructor.
->> +        Ok(unsafe { =
-core::slice::from_raw_parts_mut(self.cpu_addr.add(offset), count) })
->> +    }
->> +
->> +    /// Writes data to the region starting from `offset`. `offset` =
-is in units of `T`, not the
->> +    /// number of bytes.
->> +    ///
->> +    /// # Examples
->> +    ///
->> +    /// ```
->> +    /// # fn test(alloc: &mut kernel::dma::CoherentAllocation<u8>) =
--> Result {
->> +    /// let somedata: [u8; 4] =3D [0xf; 4];
->> +    /// let buf: &[u8] =3D &somedata;
->> +    /// alloc.write(buf, 0)?;
->> +    /// # Ok::<(), Error>(()) }
->> +    /// ```
->> +    pub fn write(&self, src: &[T], offset: usize) -> Result {
->> +        let end =3D offset.checked_add(src.len()).ok_or(EOVERFLOW)?;
->> +        if end >=3D self.count {
->> +            return Err(EINVAL);
->> +        }
->> +        // SAFETY:
->> +        // - The pointer is valid due to type invariant on =
-`CoherentAllocation`
->> +        // and we've just checked that the range and index is within =
-bounds.
->> +        // - `offset` can't overflow since it is smaller than =
-`self.count` and we've checked
->> +        // that `self.count` won't overflow early in the =
-constructor.
->> +        unsafe {
->> +            core::ptr::copy_nonoverlapping(src.as_ptr(), =
-self.cpu_addr.add(offset), src.len())
->=20
-> Why are there no concurrent write or read operations on `cpu_addr`?
-
-Sorry, can you rephrase this question?
-
-=E2=80=94 Daniel=
+Jason
