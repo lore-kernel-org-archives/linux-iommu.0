@@ -1,211 +1,207 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2067.outbound.protection.outlook.com [40.107.243.67])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D62A19ABB6;
-	Mon, 24 Feb 2025 21:57:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.67
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740434239; cv=fail; b=nZ0A8/+s2hHJkxLPEjXqyveYz0PRmWdyiub9rk95YSukHDwswFfMyCYHcR/ZFc34QLzNwU82JqSS/u5vB/NTd5XxtiSp9SxpML+YJ90krhu8Zt0aVjI+ICD2xp4kp1X7zLHAox1EjgKhZTaxVn2on8EYED/6cfet0w05oLvnwqw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740434239; c=relaxed/simple;
-	bh=eWVo3/g4vPrjU2f98WpeCgdIeKAboa/AKCODd5Lcwfg=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BmODSaWJhGU+Jpyk+OhF24zvtEG1CNXqVHW0zhyYVoY5QyyU0dU93+XEwf5HCauivKs6sO+4zgIZjgtcZzQabqQ7crUP3n3u4ClVYjfo7RqRDOI2yA1a6gF96KBe4Dz5smdGzR+mJdGC8DCdSlmmzo8DEaF9MT62hdWmRUA0ZyY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=IY+QAU9A; arc=fail smtp.client-ip=40.107.243.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6956F1DDA15
+	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 22:05:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1740434754; cv=none; b=EKSy13Cej5NYnTDNyh4rii9u7qOhuJO/acGJUKRuUCyrXM25n2adno2TVjohSsPjAzSEe3THKfX1/5FeoWDw1NT9idgetlgv9UIU5163U/pm1OKND/se0j7exJEFAXZD2mL0gZDCK79zkTNyacU8AHbbaO8hlI4t+N9AI6z54Ks=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1740434754; c=relaxed/simple;
+	bh=BkBtXHdVcPv6/CA4W328niK4o+qOe4q15XUIuFlL33Y=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=KzpNAE7IBlhpLNQ5pYmAf5FRTc/JG1AJWqDXe8sgWb9omH1ZP8oMZxYgw7JsYOXhLgox4tj8nF7OBFabokzc+ZlHw0RFQ/Z3LsPfcV/+T6Ny7miup0VCsVfGPZjWztPY5+94avCTIufnQEbSg28BKfcgzrK8iHqfNh3lNMQ0olk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iNdGdfyI; arc=none smtp.client-ip=209.85.216.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="IY+QAU9A"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lx1bVKufpbdP7YhOwVHO23vRHq5OtjpPS3hnac70/N+738n5Mao8Hh7/NMEhBC/kglgFpxDpiJiqKwx1b2nERyBowYM2NgupLvv3uwEL6igXyv56o6VKyYh2M/3syBHZuF9OCv4VxAUolL7tsddrv1aRUiJuOVaWEpLwuLw3mPeyncE4XS7t51b0incX7H+BMFzgqlrHAxmAs2LnGALRLJI14BiUYrybc10CcFB20BEBfISN5NVn0aeFDWuqmZaAwCUqy9oD82FLjNevb/DwHTVhDgmV58gJomwvzQzVH5ky1VBZoDrzHK95qRq/dnnwBHhbUERihdZvmLlTbG4Sew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/w9wmPYJ4/zUGRKnQUg5+CSOB178spTQyF5++IXmd14=;
- b=etw5eo44ICSGsRBbQPUVXRPeCBrdCTDnjSf7zeKISYWw0RuAmVTOqHnWJuqjW1OH5a08jsIkB4/q4y6S274JZYVEXSYzVIBYarwlt21egu0IK7zJb7uz46iDewCV2hmKBCTeXzRZwAAio7m8CRZv00xOuv3l39l7xuHRR+IXusYvXAz/dhDy9IpHLf9wJu/w1J3pQ075LUb1cebPmOcn7o931wudHMBKgbxnK1L0yvVipKEOK3mvMwxwdE8+Eln017cNQtary1DzLAOOWuD8HT87WFqefFd8zjMDyupl7+nCCLHlaCEsWL4i0kuc8Mc1MrSxGha+XGEs5ZwhYoodlA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/w9wmPYJ4/zUGRKnQUg5+CSOB178spTQyF5++IXmd14=;
- b=IY+QAU9Af0iHHWqDKp6hFbiyud8n+GUpyygi6SKVk6sU/NLSjHxWfOv1UFOXa+KgFCdrJgcQDuAKgbWJS2huAuzLoP+19t7Gv/qfklXvpb2xWlNHx11SUZjKegm+jqPWCsb1d2Q2N7GMKIkJMWzU+n9VFg2q9w4KKSgHZPV/fT+32qJj+6cMGmQIYhef3w1IR8v42oUOmatYkv4Jq4TRBMarqpZnQ3iSgr14Y5JG61DEGHLim5I4/dty2kBms7d/IzaEWUkZx25eVEHgU8YKO0PIAzJBiAolL9yk2P+uIv5Ld7eXn0ka72KWlJphR/KknpeAoO8Xhxbj+J86msafEg==
-Received: from DM5PR07CA0069.namprd07.prod.outlook.com (2603:10b6:4:ad::34) by
- SA3PR12MB7902.namprd12.prod.outlook.com (2603:10b6:806:305::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.15; Mon, 24 Feb
- 2025 21:57:08 +0000
-Received: from DS3PEPF000099E0.namprd04.prod.outlook.com
- (2603:10b6:4:ad:cafe::36) by DM5PR07CA0069.outlook.office365.com
- (2603:10b6:4:ad::34) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8466.21 via Frontend Transport; Mon,
- 24 Feb 2025 21:57:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DS3PEPF000099E0.mail.protection.outlook.com (10.167.17.203) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8489.16 via Frontend Transport; Mon, 24 Feb 2025 21:57:07 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 24 Feb
- 2025 13:56:49 -0800
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 24 Feb
- 2025 13:56:48 -0800
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Mon, 24 Feb 2025 13:56:47 -0800
-Date: Mon, 24 Feb 2025 13:56:46 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <corbet@lwn.net>,
-	<will@kernel.org>, <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>,
-	<robin.murphy@arm.com>, <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>,
-	<shuah@kernel.org>, <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>, <eric.auger@redhat.com>,
-	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>,
-	<ddutile@redhat.com>, <yi.l.liu@intel.com>, <patches@lists.linux.dev>
-Subject: Re: [PATCH v7 13/14] iommu/arm-smmu-v3: Report events that belong to
- devices attached to vIOMMU
-Message-ID: <Z7zrHn3tPBD5chv1@Asurada-Nvidia>
-References: <cover.1740238876.git.nicolinc@nvidia.com>
- <b1930038cf828dc13c080e2b46b3003a8c98ef24.1740238876.git.nicolinc@nvidia.com>
- <Z7zmErar4YvQSSxw@google.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iNdGdfyI"
+Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-2fd02536660so741840a91.2
+        for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 14:05:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1740434753; x=1741039553; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rHIcNsleTwWKuMXlMG/3febKszSx8ZfGtr3TPtrffRI=;
+        b=iNdGdfyIObfPVRE6HJZszuvuAR0p8IdVWahTfwiDZZ8hvYgrbpWHmcbKvc/4/BPeB6
+         wP8OiPZz0xGbBhJjEIyuHv1zEHIJBAp0464bfu9GXmx8yGhcD3ee5AnFMv/ucndzRttV
+         oKFqlaDwlgFpjzqdqc5Fi4k2FBEzIDuUg1Wl2jV0qh0UAwRuWO6p2LqxXB+IASIA/tO6
+         8zYGpC95DjuDiQKy9l1fjuUZTqlPhhrbcbp6/FD2rXlVRvIKe8pBNoGpOiae3Rm3j7Mq
+         t8TtpyUyqgzwropx1Ba9sDN0+nxnEnd3Lnxy7BtZRavqbcsRcke/Uts2H98LiS3VHT39
+         dx1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740434753; x=1741039553;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rHIcNsleTwWKuMXlMG/3febKszSx8ZfGtr3TPtrffRI=;
+        b=iCl35FU7cSdjPUsuPWA4LgMgdbI786pTHLB7nxgkve4wYHVPN17DoUqGoJVJN8ibiF
+         UAXAolyUSlFMNzQqKG66K1O7au2i65rFmAv7pHZsIogQDG12gRtkgPU71KgsiKn8Kjrh
+         cp/iB2OyCS74q6t3CCiS83GvED/16AUnJuht37JUMyIiZ+FHSCcGzePizURjzO5ol6+p
+         3IS4aupfquptNnEVIL1IqgmsLlhmlYGeAn7Ow/4jO65j9VCpu7WueeP7dmah6vTvCaiw
+         hua1/qcx/tPEJCS8pzhp0SDkr/hQIvajY21FJD6w+NZjEtgqAtKUih+hOBGxvJOD2TYX
+         XHFg==
+X-Forwarded-Encrypted: i=1; AJvYcCWH8LHUJ3iBABTR7qXuvLmw7SvPVfN25R6vbVI9wnk8Rg0dDBwZ2AnVcYIf/oDee8pFybBAKQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyTblSn0ZwLjBfGo6Jhs1Y/s39mLTEl7iZZ0P1rKeCgNAJFlwv/
+	alBXs8Rlp/jNq3iL8UGtmSupKnA6H75XSwkxSTNwfs09MZXWyZmhuw6o92d4eyFA1NY243gnLdq
+	9VyZSHJdgU0U+yvjTlo4EVo4+smk=
+X-Gm-Gg: ASbGncuqjVS26e1jeP8yytchjAWrZrB6RZ8zPV6xEPOxKoDote/TUpX/ut9CrApsY7l
+	SYPP0zfe2vDU1/uK6sMQz35ZFpGPsJobXfhdKg3cZenU6WYJKMdv+jm+lHm2D1a5V6UbWAYTBhE
+	N77x9oOfA=
+X-Google-Smtp-Source: AGHT+IEHRJCdPVay7C8B4eRlDOna0GkWz3nnyAQV6jsCpnvpaPryAQnVfEQ0QZ0vR4GuW9WBJTXPkr8gK0uiKNIyLgM=
+X-Received: by 2002:a17:90b:3a81:b0:2ee:b665:12ce with SMTP id
+ 98e67ed59e1d1-2fce789cc70mr9658756a91.1.1740434752565; Mon, 24 Feb 2025
+ 14:05:52 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Z7zmErar4YvQSSxw@google.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF000099E0:EE_|SA3PR12MB7902:EE_
-X-MS-Office365-Filtering-Correlation-Id: 41997a08-81ab-41d2-9b33-08dd551e2e8e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|82310400026|1800799024|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?XPhQ1dW2rS1Kix9KJkv2zNfu2PpyOwTEXrnZeB8oqAo+dOwMkUWUyI3Nt9gV?=
- =?us-ascii?Q?qdwHNIn0ceh8+e3dUlJrdB3A3zOiX+TyzU3pMqM6zaXZE7w5I7LmgxoWOfjs?=
- =?us-ascii?Q?/wBnGoe44fNl8Gb0jFOjUpZ2c1MRD4tT//YCe8jZL5CtS/ALxQdmvQTCBzfR?=
- =?us-ascii?Q?nF9I8S0LPrGvve1cK9tWKoyD1W7RfVrg2TPQ42ORYorbuNS0HnIaAeFDKqD8?=
- =?us-ascii?Q?ofskMwGknFKAuUoDkoBOBWCzxSwaUPpgrFjfxqQnItoAksb9LLAogNxEkNL0?=
- =?us-ascii?Q?83R84L1JrUAzBJ3xWKh7jdLlXX4GBN6VNxnBk6ZzQqSxwFTaOOnTUf2fyvwu?=
- =?us-ascii?Q?wtlj2I1lGwgc1K8bOwGkXnd48zKN63l3jd1FEWqQVMkex2utA0hpwgt/0vBK?=
- =?us-ascii?Q?pBx7jFYpv3+flisuZi54zCIvb6zZPgaixfkwWJkvks6rfknBI43Y3h1Ls+TP?=
- =?us-ascii?Q?RcjSEEohd5L77O4ifOGKeu/NIuHfdIOeEdXxQ73BXs/0EBs7k+mq8GOVIvhr?=
- =?us-ascii?Q?bVMQ37UXArE5bEHlAZiZn/dExN7TNzDwFufcZy+ESWbmYTjq9uHGRUtS5mVT?=
- =?us-ascii?Q?Q8Tr5LXREC0JpuSAlzDXCzFwEIKiWFFr6yFdNP4KwvV+ysNQtIPvAVuXveER?=
- =?us-ascii?Q?HKb8ARXua9lcwg4HCI/tEbnRGlzPu7i+keChW2DpMiq1XVjlhIh+jYdDFgsL?=
- =?us-ascii?Q?f1n1Ka0TpbCBuH3NYbqEYfvkOBgN7AS6FxnZVDm+laVfCdWKSUsZWZ6PAm+L?=
- =?us-ascii?Q?UY8yW7Ji2mEBnTbEW1IGZQyDMKhpR+FO+cpf4GWOhMMun6DZAb8JuKSyAh3f?=
- =?us-ascii?Q?/rRezNUuNKiRWtHUC+xHuhp76sRVhycDBFHDjWALjjzcpNVbqXzJD/omyFVr?=
- =?us-ascii?Q?QNEx1daAMSBRG2C6w0pe5hoYoMCGO4KZT6TJQzWc+oi/X70g70Ak5vv/z81x?=
- =?us-ascii?Q?ZIsXKnLq0XU2fCoVsIi2/L+8pomsny3tOG4shqYChsNgDCOv58nMZP7IMDDS?=
- =?us-ascii?Q?qe5My1yOikV5FaFnGXbVnDyJjStq0qQU08ZrJAE4v5lZmX81mB3QcDqRpwBC?=
- =?us-ascii?Q?1ie6wdAbiz6JKzbG9Cf98B7wMJffZpzn+8tnoeQUR1j+p1HUaq3gEpou+UNd?=
- =?us-ascii?Q?OfCubQZk5AtOCnRK5szcgjTb5nud3s/5tBfMXazNh0tBjoHabyvEDvsL+Kw8?=
- =?us-ascii?Q?IVfbnbeJZ8PewezRuyudZZRHGNTvh3DoD9TMj3fZZ5Tgq8GPl4Chhqnz8lC1?=
- =?us-ascii?Q?pIMFlbxM0IB4/qSqQe/wbYfZuzic0W4+HbNOwOI689ICaueL/NS9KuYhxHlO?=
- =?us-ascii?Q?rYwK+J06nMsGcjT2dK3C8PL/57GT7lz45X51186NlUk92ZGY243ZKnMD9dZk?=
- =?us-ascii?Q?ZytoO8kVoNct/mczsOYvVcWt/NeHQ/anAi36JnNScNXs+yMHdjAaJlMlhJfx?=
- =?us-ascii?Q?BqE1K26OGxcUq0XMD7A/ExxA3ODJaR6v2oWW9jQZ8RjwiXcJRN984CJ64yqC?=
- =?us-ascii?Q?NIVTnv0crdNLaO0=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(1800799024)(7416014)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2025 21:57:07.3549
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 41997a08-81ab-41d2-9b33-08dd551e2e8e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF000099E0.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7902
+References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com> <20250224115007.2072043-3-abdiel.janulgue@gmail.com>
+In-Reply-To: <20250224115007.2072043-3-abdiel.janulgue@gmail.com>
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date: Mon, 24 Feb 2025 23:05:40 +0100
+X-Gm-Features: AWEUYZl9ZKbchwRuutSwEDDiVUkfsWiO5zHcHT16MwA4Q6ucCw9hz2sOiVVW5cQ
+Message-ID: <CANiq72mMKx3kD5KEcT0gOa1zkCt-VXxTEhnDa3feq0H7AttUGw@mail.gmail.com>
+Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Cc: aliceryhl@google.com, dakr@kernel.org, robin.murphy@arm.com, 
+	daniel.almeida@collabora.com, rust-for-linux@vger.kernel.org, 
+	Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, 
+	open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 24, 2025 at 09:35:14PM +0000, Pranjal Shrivastava wrote:
-> On Sat, Feb 22, 2025 at 07:54:10AM -0800, Nicolin Chen wrote:
-> > +int arm_vmaster_report_event(struct arm_smmu_vmaster *vmaster, u64 *evt)
-> > +{
-> > +	struct iommu_vevent_arm_smmuv3 vevt;
-> > +	int i;
-> > +
-> > +	lockdep_assert_held(&vmaster->vsmmu->smmu->streams_mutex);
-> > +
-> > +	vevt.evt[0] = cpu_to_le64((evt[0] & ~EVTQ_0_SID) |
-> > +				  FIELD_PREP(EVTQ_0_SID, vmaster->vsid));
-> > +	for (i = 1; i < EVTQ_ENT_DWORDS; i++)
-> > +		vevt.evt[i] = cpu_to_le64(evt[i]);
-> 
-> Just thinking out loud here:
-> I understand the goal here is to "emulate" an IOMMU. But I'm just
-> wondering if we could report struct events instead of the raw event?
-> 
-> For example, can't we have something like arm_smmu_event here with the
-> sid changed to vsid? 
-> 
-> Are we taking the raw event since we want to keep the `u64 event_data[]`
-> field within `struct iommufd_vevent` generic to all architectures?
+Hi Abdiel,
 
-The ABIs for vSMMU are defined in the HW languange, e.g. cmd, ste.
-Thus, here evt in raw too.
+Some quick doc-related nits -- please take them as a general guide for
+potential improvements in newer versions etc., given there are still
+other comments that could change the contents.
 
-> > -	ret = iommu_report_device_fault(master->dev, &fault_evt);
-> > +	if (event->stall) {
-> > +		ret = iommu_report_device_fault(master->dev, &fault_evt);
-> > +	} else {
-> > +		if (master->vmaster && !event->s2)
-> > +			ret = arm_vmaster_report_event(master->vmaster, evt);
-> > +		else
-> > +			ret = -EFAULT; /* Unhandled events should be pinned */
-> > +	}
-> 
-> Nit:
-> I don't see the `arm_smmu_handle_event` being called elsewhere, is there
-> a reason to return -EFAULT instead of -EOPNOTSUPP here?
-> 
-> I think the current behavior here is to return -EOPNOTSUPP if (!event->stall).
-> Whereas, what we're doing here is:
-> 	if (event->stall) {
-> 	...
-> 	/* do legacy stuff */
-> 	...
-> 	}
-> 
-> 	else {
-> 		if (master->vmaster && !event->s2)
-> 			arm_vmaster_report_event(vmaster, evt);
-> 		else
-> 			ret = -EFAULT
-> 	}
-> 
-> 	mutex_unlock(&smmu->streams_mutex);
-> 	return ret;
-> 
-> Thus, we end up returning -EFAULT instead of -EOPNOTSUPP in case
-> event->stall == false. I agree that we aren't really checking the return
-> value in the evtq_thread handler, but I'm wondering if we should ensure
-> that we end up retaining the same behaviour as we have right now?
+On Mon, Feb 24, 2025 at 12:50=E2=80=AFPM Abdiel Janulgue
+<abdiel.janulgue@gmail.com> wrote:
+>
+> +/// Inform the kernel about the device's DMA addressing capabilities. Th=
+is will set the mask for
+> +/// both streaming and coherent APIs together.
 
-Oh, it looks like -EOPNOTSUPP should be returned here. Will fix.
+This comment differs from the C side one -- that is OK, but just
+wondering if there was a strong reason for that.
 
-Thanks
-Nicolin
+> +pub fn dma_set_mask_and_coherent(dev: &Device, mask: u64) -> i32 {
+
+This returns `i32` -- I have not read the users of this, but should we
+take the chance to have a `Result` already here? Same below for the
+other one.
+
+> +    // SAFETY: device pointer is guaranteed as valid by invariant on `De=
+vice`.
+
+To keep things consistent, please start comments with uppercase, i.e.
+"SAFETY: Device pointer ..."
+
+It may also be clearer to say "by the type invariant on".
+
+> +/// Possible attributes associated with a DMA mapping.
+> +///
+> +/// They can be combined with the operators `|`, `&`, and `!`.
+
+Even if it may be trivial, a small example could be nice here (when I
+see a sentence like "This can be used ...", I typically consider
+whether it is a good place to show how).
+
+> +/// DMA mapping attrributes.
+
+Typo: attributes.
+
+> +    /// let c: CoherentAllocation<u64> =3D CoherentAllocation::alloc_att=
+rs(dev.into(), 4, GFP_KERNEL,
+> +    ///                                                                 =
+ DMA_ATTR_NO_WARN)?;
+
+Please try to format the code as `rustfmt` would normally do it. I
+know it is a pain to do it manually -- hopefully
+`format_code_in_doc_comments` will eventually be stable.
+
+> +        // We ensure that we catch the failure on this function and thro=
+w an ENOMEM
+
+Apart from what Benno said, please try to use Markdown in all comments.
+
+> +    /// Performs the same functionality as `alloc_attrs`, except the `dm=
+a_attrs` is 0 by default.
+
+Intra-doc links (I will mark a few more that I think may work).
+
+> +    /// Create a duplicate of the `CoherentAllocation` object but preven=
+t it from being dropped.
+
+Intra-doc link.
+
+> +    /// r/w access or use-cases where the pointer to the live data is ne=
+eded, `start_ptr()` or
+> +    /// `start_ptr_mut()` could be used instead.
+
+Intra-doc links.
+
+> +    /// Performs the same functionality as `as_slice`, except that a mut=
+able slice is returned.
+
+Intra-doc link.
+
+> +    /// Reads the value of `field` and ensures that its type is `FromByt=
+es`
+
+Intra-doc link.
+
+> +    /// # Safety:
+
+Typo: no colon. Also another one below.
+
+> +    /// This must be called from the `dma_read` macro which ensures that=
+ the `field` pointer is
+> +    /// validated beforehand.
+> +    ///
+> +    /// Public but hidden since it should only be used from `dma_read` m=
+acro.
+
+Intra-doc links -- even if they are not rendered because it is hidden
+(also even if it were a private item).
+
+> +    #[doc(hidden)]
+> +    pub unsafe fn field_read<F: FromBytes>(&self, field: *const F) -> F =
+{
+> +        // SAFETY: By the safety requirements field is valid
+
+Markdown; and please end the sentence with a period for consistency.
+
+> +    /// Writes a value to `field` and ensures that its type is `AsBytes`
+
+Intra-doc link, and period at the end (same below too).
+
+> +/// Reads a field of an item from an allocated region of structs.
+> +/// # Examples
+
+Newline between these two lines. Also for the write equivalent one below.
+
+> +/// struct MyStruct { field: u32, }
+> +/// // SAFETY: All bit patterns are acceptable values for MyStruct.
+
+Newline between these two, also Markdown. Same below and in the write
+equivalent.
+
+I think it is fairly important to have clean examples, since people
+will learn from and follow them!
+
+Thanks!
+
+Cheers,
+Miguel
