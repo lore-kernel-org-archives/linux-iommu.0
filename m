@@ -1,40 +1,39 @@
 Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4311A3031
-	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 01:56:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D82E419CC1F
+	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 01:56:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740362199; cv=none; b=lQPr4iTxhPbJO+bRnsuvkHNF+4cpYIKP5fePL31q4Kn6KNaHt2g5c+3pmkXgdeqVLlj2QHg5AslTc52eWd0DEzP0Tbhjmt5S0hIoSQLaNHteG+UVvNeLLUxMfiEPpNj1/iGq7lnelpm2kVOA7Z/VempeyFXPYMR9qSzIhvkyiv0=
+	t=1740362203; cv=none; b=UlwYfiF4tRqMLxq/gGonwYunJd6b4PExk0GRssjxEY79Z/Y0tWXItxeE20P2zfdBQ8t9VGBcRyZ1l7yyALqqdqoXZW9LdCA16hgQPMp4o9ia1Vym6CTOd5clEQttfZoP9HTvBbJ08CSErEjVDRL0oy6tgNQk30dZmZjYCAaRdHY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740362199; c=relaxed/simple;
-	bh=nZMJlngEiotXw2FTtCXnq1VSwlgSDbVBsuztBbtsXLI=;
+	s=arc-20240116; t=1740362203; c=relaxed/simple;
+	bh=7gteflxmVPmIbj4NGKsgGXs/abIMpX6wEsN9a9Luobg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=uXvikBRD5bGYN4Pm6a4uaY5bFD7hLzqaJqiimhmi9yj5VR2TlDzOEgGUc7qxvx/qKQY3ZLAxEqZXhUd64VdQd6hmTev4wwXrjgtXEJLr5azuOumFFnVTVVQVcgz4w7/EyuMSzyEm62Xdh5qMk5H6z3TUb6CsANgExgxaE2j1B0Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=QTYVaGFd; arc=none smtp.client-ip=5.75.144.95
+	 In-Reply-To:To:Cc; b=Bav24xekYzoPsvw6rYnTTqGWOYzJ9TcgHPI31H79E7ObselZFAmizClTOZYPvLkuz8Qd8znWSKQ9dGfFmlibznWIdbzaraYy4cS889bcYMMvjf0p9//35q3gxuIU1qgA9Ai6kqEcpS044M1BOuHrABcD4RU4dHOV+pus5cZ7+Xs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=m+MVlUUR; arc=none smtp.client-ip=5.75.144.95
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="QTYVaGFd"
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="m+MVlUUR"
 Received: from [192.168.34.162] (254C2546.nat.pool.telekom.hu [37.76.37.70])
-	by mail.mainlining.org (Postfix) with ESMTPSA id A51DDBB83C;
-	Mon, 24 Feb 2025 01:56:33 +0000 (UTC)
+	by mail.mainlining.org (Postfix) with ESMTPSA id 0564DBBAAE;
+	Mon, 24 Feb 2025 01:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1740362195;
+	s=psm; t=1740362199;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=J3WiKNi0MIshObrUkPnMHrbIdV3GvCNsZBMA8goXVDc=;
-	b=QTYVaGFdXT/fa75dfqHX1JxHPKmXxL4yUxRdNntTKwsIZ+4nC3/8d+PfI4tsYp/t7YL8bG
-	Rv/dxVgJgaxy5XNVrBG8j881iDqf27wahVou23AkxivqKgocWh8LBMPl1aezFELbscQu8O
-	3rN3YVQpL1AUEZ5hENgBuP+rbAO6H1aLJmwknqxY6gtWnvMVxan28YF5/Lf0skpKEmYw5Q
-	f1IlSKfyRYQaQmV8g+mE/R/nEoI5UdIz6u5FAe5EkGq8kKtsepVZSNAk9EZDzILDrtcj+C
-	kUnCMQlT/8uhP2nT9kjPvlDadEJHhC7pOFdFHm4ukQTYqrAsBuc9cWCKV4csoA==
+	bh=0FrRCBL3fnGY2sDlC6e7VGyzyNksljZ8CHpblowajqU=;
+	b=m+MVlUURDLGrXvXqX2z3aNGbSiAOqHWMvOtsOZcdcsWRWdX2Cb4zoAcJJMLj5aq0KJmhcX
+	kPAWmdNmqnyShjtSJGaZiHB45nFY7rf0qkKxuIAJVoOEbD57QaSQNEIC60z3ub+nzeSmal
+	snE/z+pGNkhs+o6aa1Ts3XV7HLhGsdq5kbwdAVJR/51g+DWzskisBQwi5X0XEfRUfNCZrF
+	P1hNqrQzfKYTXVmFzRt4h0VPDjXJcPN4RsFdeEKSum0lglhDidZ4oNemtVMm1bvBj93GtV
+	oaEMkYK/n5v46gVpAMUYDYltXzkmhe0k7r/eGemziJpLfxYf6WdCk3wjaQ13IA==
 From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Mon, 24 Feb 2025 02:56:20 +0100
-Subject: [PATCH v3 5/8] dt-bindings: drm/msm/gpu: Document AON clock for
- A505/A506/A510
+Date: Mon, 24 Feb 2025 02:56:22 +0100
+Subject: [PATCH v3 7/8] dt-bindings: arm: qcom: Add Xiaomi Redmi 3S
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,7 +42,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20250224-msm8937-v3-5-dad7c182cccb@mainlining.org>
+Message-Id: <20250224-msm8937-v3-7-dad7c182cccb@mainlining.org>
 References: <20250224-msm8937-v3-0-dad7c182cccb@mainlining.org>
 In-Reply-To: <20250224-msm8937-v3-0-dad7c182cccb@mainlining.org>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -68,56 +67,57 @@ Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
  linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
  dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
  =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
- Adam Skladowski <a39.skl@gmail.com>
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1740362181; l=1421;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1740362181; l=1339;
  i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=JwsrQQ1h4foaqssnMVZ2dfrZxb+bgTSu50bLlQR5yv0=;
- b=RCsJKsH4OapMutoK9pfPNKYER6Zs5gC2KpQEgCTJ0KM+ZF/InlYisjN0cpVia3UtHoq242Hx+
- DlNg280xWXRCpRJImRGYC1zv5WEW4/Lo6EhHnog6UbdqkMVk5fx+yA+
+ bh=7gteflxmVPmIbj4NGKsgGXs/abIMpX6wEsN9a9Luobg=;
+ b=X8LOOrJVwoZsEY4cZR8Rv65XrrLxYvKmga7XZ5my6ggLhi8WXjFZg4RKIopD7Bw/tO1s3YLLd
+ Lg5fTDRIWliAAblPnC9g+5KoMr4aXypIqOoFU4h7s9kEE17WWrZ/O4p
 X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
  pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-From: Adam Skladowski <a39.skl@gmail.com>
+Document Xiaomi Redmi 3S (land).
+Add qcom,msm8937 for msm-id, board-id allow-list.
 
-Adreno 505 (MSM8937), Adreno 506(MSM8953) and Adreno 510(MSM8976)
-require Always-on branch clock to be enabled, describe it.
-
-Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
-[reword commit, move alwayson on the first place]
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 ---
- Documentation/devicetree/bindings/display/msm/gpu.yaml | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/arm/qcom.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/display/msm/gpu.yaml b/Documentation/devicetree/bindings/display/msm/gpu.yaml
-index 6ddc72fd85b04537ea270754a897b4e7eb269641..5028398cc3b517e404a92a2c30688f72eab4c1b3 100644
---- a/Documentation/devicetree/bindings/display/msm/gpu.yaml
-+++ b/Documentation/devicetree/bindings/display/msm/gpu.yaml
-@@ -152,11 +152,13 @@ allOf:
-       properties:
-         clocks:
-           minItems: 2
--          maxItems: 7
-+          maxItems: 8
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index 618a87693ac1dc32b40a2201bc219a4f12e9f3e8..d082c1a2c8b3cdb36caf511840bf217f1175cde8 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -38,6 +38,7 @@ description: |
+         msm8660
+         msm8916
+         msm8917
++        msm8937
+         msm8926
+         msm8929
+         msm8939
+@@ -272,6 +273,11 @@ properties:
+               - xiaomi,riva
+           - const: qcom,msm8917
  
-         clock-names:
-           items:
-             anyOf:
-+              - const: alwayson
-+                description: GPU Always-On clock
-               - const: core
-                 description: GPU Core clock
-               - const: iface
-@@ -174,7 +176,7 @@ allOf:
-               - const: rbcpr
-                 description: GPU RB Core Power Reduction clock
-           minItems: 2
--          maxItems: 7
-+          maxItems: 8
- 
-       required:
-         - clocks
++      - items:
++          - enum:
++              - xiaomi,land
++          - const: qcom,msm8937
++
+       - items:
+           - enum:
+               - motorola,potter
+@@ -1222,6 +1228,7 @@ allOf:
+               - qcom,apq8094
+               - qcom,apq8096
+               - qcom,msm8917
++              - qcom,msm8937
+               - qcom,msm8939
+               - qcom,msm8953
+               - qcom,msm8956
 
 -- 
 2.48.1
