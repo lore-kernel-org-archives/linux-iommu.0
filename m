@@ -1,144 +1,108 @@
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4851B1A7044
-	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 03:43:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C66038DE3;
+	Mon, 24 Feb 2025 03:45:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740368586; cv=none; b=XTwSCxev97IlpSFc+1AYNR1PiltiMPSVVtr2dIkPb0+OtOFIzvJTdEvbspJranmqhAqZFnfeC1h+DwQIJkc8A8LQjLrW6lSjhlias3zyEV9gORXBFLSqIjzeuQxg0sRTc9AZ5VcEuA4Qx5gBGlzZrSnbpISt5TGscrPjTfxVIIc=
+	t=1740368744; cv=none; b=TB9+Zdku2kiQ92NQGuvvsQ1Cr/xJ0K05h6yQVuVbt5QfiyglOFOpswdSbZIMnEGYkSBubaVvNL/OR/vu0T9SRXf+HYXYyhdozHUi55ZvrYUHZWpfO/MS8hwafIVeopR07uAYTom9ohddUXvYAcvV9SpTVmjcm/B6R4TTBETI9kk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740368586; c=relaxed/simple;
-	bh=2brXvbSRhDKTumjWNgVlgfbHMSBx/NsSwwhkUiBUAi4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RMPS3j7RVCEGUTb+j6mxAo3LXgcPrUaKAx26sCZXoSSG21cw3JIo4R9HUpiHiZBVI+8y3cOBNuCa6gO8ejWH+lxPuYcsDfccO8t3tM99C5p1yABXXQlyVX58CXRcpf+ZpIGELwqbwBIam/XxfMqNM6TEntp5YVkSPX8lwVO1e+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=Ylbd7Onb; arc=none smtp.client-ip=209.85.160.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1740368744; c=relaxed/simple;
+	bh=x36eM8I9mvfh06MWtqJiRZWuU4kR0fM4aRJdD6U8/3A=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=AxaFl9s2iz6Nr0XDZRpNkHKXJmkm90WJuHth6awGfLL3K/alVqG3lpYrKg0JtKfThLVu9fk1NZI7tKlfEPP1Fij8kUTBTryONJG/CcqiJ6ATC8LbKJZW5g7OmUyT96sPnuBUkkJEFaWov+VOdpCeejYfVUZBI19xi1YlF5ImsdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dZ66Gnkx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="Ylbd7Onb"
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-2bc66e26179so561632fac.2
-        for <iommu@lists.linux.dev>; Sun, 23 Feb 2025 19:43:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1740368583; x=1740973383; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EWmyrx22D4RyR4VCDSIk++RqfnUE4ZQz7ryWsBjsG1U=;
-        b=Ylbd7OnbUaaogS/fX4Xux3dwq+Qpxd+XgsR1MebMAWuDsJPUMjxkvDWUp/zWXs0abs
-         rrMiirDDDJz4hYBE5d/l+wz+R+R6UEEIZjzULwh72F52jjTeLZCbiRODk1mynYxGBkrd
-         4xX2EHrSTc3j7veKYTKNHbnhQ1pkmV08GRRNQtEj7psj9Sk5X+kv37uoixQ8j3BlMh+X
-         cUi3WbRIcIvCP+E/FvLUhOp/TjRjuzQR7ilhoq9O7guB8y+s8IDP6OAL6IIo0NJfsUdN
-         c+2Tkkf9RumuvF9WjLA+OILp28apmZsWHpT8o0Ona7RheBZzwYlNU/+Q2iRblhSCAZVM
-         rUeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740368583; x=1740973383;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EWmyrx22D4RyR4VCDSIk++RqfnUE4ZQz7ryWsBjsG1U=;
-        b=S+rD9C0oQ+hMEEI5SCgyrYKorgVhAMR5i3tsN9zx69IzillusSbQhWwkVB4RyPUGQC
-         ZBzBLmJ/tl+oKz3Onc+59YrP6I1G9xUHMaXIensEpgbb9EUAEBvYweiT8Cj9YFmiYw7q
-         cQBpxZ0hFW0+zlm2tJSdN6J/F/if+/a7v6OKe1zRNtdDhJRdKVh3jIVQ79z6PKOcPoZC
-         N+Syfd6ohOfbnV97NemeLHAKWvwEahzKkRbMiNlRsL5H1TF701QmXyz4tPHxoz+P8PXx
-         s++EKoEi4lG0i0hBVtKejFwpE/DEldGIGfBT9apKYXMB7OzZk+IyNUZTlpE+WTsWkn72
-         EhXg==
-X-Forwarded-Encrypted: i=1; AJvYcCUypdMLPppa8VsZUHk03znc12k19C57IHjVA22455I7EhByDlDm5df7D2z5BDSPa5dHpiJ2wQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyyZPVPgxvf010KotBKy4Mmxy4zaYYBdxalv+VvWH2OPLsYCVoX
-	pcurk/7xVeGJkUtUWFjdrwYPpKxtxMc1Hx108ErVWSMJYEl5ycYibosXDT263/p75Iu65Cio29n
-	qAM+E8nN7fmn08+0aHscR0s2+ubQvRT2Z0tFZTQ==
-X-Gm-Gg: ASbGncuIX6lNvgmUQmrdbKp+8rch7uod/0xVftuPftlP+F+SMPLcPfVFqv15ocUnAJv
-	A6l3BNEk4UmpACrfgnwCV5xCM1pDvm2Gn0ydzY4+QVyKzYiZH6pZnnV9/ebHslfEdoCUWDnDu+z
-	e3Yb+vbf1SEA==
-X-Google-Smtp-Source: AGHT+IGv99EkJ7MMHfoGHA1P2RRAdF3geIY8k8jLdJmdUqKUmwxzj8cPjmtTfekpYtzSV93z/z3S2U1jmWSLvf+eA2Q=
-X-Received: by 2002:a05:6871:d104:b0:29e:5c94:5b10 with SMTP id
- 586e51a60fabf-2bd50fa5b9cmr9369042fac.34.1740368583214; Sun, 23 Feb 2025
- 19:43:03 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dZ66Gnkx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98399C4CEDD;
+	Mon, 24 Feb 2025 03:45:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1740368743;
+	bh=x36eM8I9mvfh06MWtqJiRZWuU4kR0fM4aRJdD6U8/3A=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
+	b=dZ66Gnkx4ceRLCODpuOct/FlYIgHKqs09y3VyEDNYAeha11wFWePwaaELtFepl9+4
+	 jHgmYb1wgobZRs68fx2xUSo42mlGXp5LeZdbA7pATs9awNxbbS/uxz1ztkFYUTN4oj
+	 PnprRGqYhqO2eefvXY+Z0u0lZ78dy2w14Iw0W2KSSgNO816Gi2Tum51Ve1u1uQP7BO
+	 nujq0yaUYUivZXPjg0DV+Gh7ujILbkVD3/6JFA27qQnmbnoxooiI3JN4esbPZ4X9y+
+	 wlKpoWNBvVA8QtFog4fqlNwBGOSMDhftxLpAs+Zbz7K+VdV9iHxLyOGM2MKd9L6SBE
+	 7aPO9gLogFY+Q==
+Date: Sun, 23 Feb 2025 21:45:42 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250220101511.37602-1-cuiyunhui@bytedance.com> <622aa790-6560-4be9-bfb4-736809a249bc@linux.intel.com>
-In-Reply-To: <622aa790-6560-4be9-bfb4-736809a249bc@linux.intel.com>
-From: yunhui cui <cuiyunhui@bytedance.com>
-Date: Mon, 24 Feb 2025 11:42:52 +0800
-X-Gm-Features: AWEUYZnZAgZWgpT1jq430siBo66BfD-b8aN1SXFV2Q6cuPz2z7re5pNq-FV4LMY
-Message-ID: <CAEEQ3wm019hEGK=2i+2KF7LVcWr8y9N2uGzF65pfQLurroa+YA@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] iommu/vt-d: fix system hang on reboot -f
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: dwmw2@infradead.org, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Conor Dooley <conor+dt@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, dri-devel@lists.freedesktop.org, 
+ freedreno@lists.freedesktop.org, Maxime Ripard <mripard@kernel.org>, 
+ linux-clk@vger.kernel.org, Will Deacon <will@kernel.org>, 
+ Stephen Boyd <sboyd@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Simona Vetter <simona@ffwll.ch>, Stephan Gerhold <stephan@gerhold.net>, 
+ Linus Walleij <linus.walleij@linaro.org>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Sean Paul <sean@poorly.run>, 
+ David Airlie <airlied@gmail.com>, Lee Jones <lee@kernel.org>, 
+ Rob Clark <robdclark@gmail.com>, 
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
+ Bjorn Andersson <andersson@kernel.org>
+To: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+In-Reply-To: <20250224-msm8937-v3-1-dad7c182cccb@mainlining.org>
+References: <20250224-msm8937-v3-0-dad7c182cccb@mainlining.org>
+ <20250224-msm8937-v3-1-dad7c182cccb@mainlining.org>
+Message-Id: <174036873937.769195.3244673416189974329.robh@kernel.org>
+Subject: Re: [PATCH v3 1/8] dt-bindings: clock: qcom: Add MSM8937 Global
+ Clock Controller
 
-Hi Baolu,
 
-On Mon, Feb 24, 2025 at 9:06=E2=80=AFAM Baolu Lu <baolu.lu@linux.intel.com>=
- wrote:
->
-> On 2/20/25 18:15, Yunhui Cui wrote:
-> > When entering intel_iommu_shutdown, system interrupts are disabled,
-> > and the reboot process might be scheduled out by down_write(). If the
-> > scheduled process does not yield (e.g., while(1)), the system will hang=
-.
-> >
-> > Signed-off-by: Yunhui Cui<cuiyunhui@bytedance.com>
-> > ---
-> >   drivers/iommu/intel/iommu.c | 3 ++-
-> >   1 file changed, 2 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > index cc46098f875b..76a1d83b46bf 100644
-> > --- a/drivers/iommu/intel/iommu.c
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -2871,7 +2871,8 @@ void intel_iommu_shutdown(void)
-> >       if (no_iommu || dmar_disabled)
-> >               return;
-> >
-> > -     down_write(&dmar_global_lock);
-> > +     if (!down_write_trylock(&dmar_global_lock))
-> > +             return;
->
-> If system interrupts are disabled here, locking is unnecessary. Hotplug
-> operations depend on interrupt events, so it's better to remove the
-> lock. The shutdown helper then appears like this:
+On Mon, 24 Feb 2025 02:56:16 +0100, Barnabás Czémán wrote:
+> Add device tree bindings for the global clock controller on Qualcomm
+> MSM8937 platform.
+> 
+> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+> ---
+>  .../bindings/clock/qcom,gcc-msm8937.yaml           | 73 ++++++++++++++++++++++
+>  include/dt-bindings/clock/qcom,gcc-msm8917.h       | 17 +++++
+>  2 files changed, 90 insertions(+)
+> 
 
-Currently, intel_iommu_shutdown() is only called by
-native_machine_shutdown(). The down_write/up operations can be
-removed. Even if there's a hardware access error, IOMMU_WAIT_OP() will
-trigger a panic().
+My bot found errors running 'make dt_binding_check' on your patch:
 
->
-> void intel_iommu_shutdown(void)
-> {
->          struct dmar_drhd_unit *drhd;
->          struct intel_iommu *iommu =3D NULL;
->
->          if (no_iommu || dmar_disabled)
->                  return;
->
->          /*
->           * System interrupts are disabled when it reaches here. Locking
->           * is unnecessary when iterating the IOMMU list.
->           */
->          list_for_each_entry(drhd, &dmar_drhd_units, list) {
->                  if (drhd->ignored)
->                          continue;
->
->                  iommu =3D drhd->iommu;
->                  /* Disable PMRs explicitly here. */
->                  iommu_disable_protect_mem_regions(iommu);
->                  iommu_disable_translation(iommu);
->          }
-> }
->
-> Does it work for you?
-Yes.
+yamllint warnings/errors:
 
->
-> Thanks,
-> baolu
+dtschema/dtc warnings/errors:
+Error: Documentation/devicetree/bindings/clock/qcom,gcc-msm8937.example.dts:24.28-29 syntax error
+FATAL ERROR: Unable to parse input tree
+make[2]: *** [scripts/Makefile.dtbs:131: Documentation/devicetree/bindings/clock/qcom,gcc-msm8937.example.dtb] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [/builds/robherring/dt-review-ci/linux/Makefile:1511: dt_binding_check] Error 2
+make: *** [Makefile:251: __sub-make] Error 2
 
-Thanks,
-Yunhui
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20250224-msm8937-v3-1-dad7c182cccb@mainlining.org
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
