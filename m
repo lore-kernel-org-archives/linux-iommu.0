@@ -1,112 +1,147 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EDB61A0BF8
-	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 04:38:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D619EEEA8
+	for <iommu@lists.linux.dev>; Mon, 24 Feb 2025 05:10:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740371912; cv=none; b=OF9apL4IPkMi0n8eLHYdTh10YqjExpdxtxXGXiMuKGA2Xkk4NEZYHaXPhx6/6dQ9xHYPQPBu+qegoM8bCudIe/j/4z9BvBEXpkjuR/4E9BRLxPjaYK8T76TuQUYvluhTwPR+3UZfuMtmTAG8uLtpzRYLKQXdusmM1PEssKTx6fM=
+	t=1740373838; cv=none; b=q12c0+DHfsseDqPml1iTjfdXYn/aDQGma/oIGnwzuHqXgj5lhnROqXW22htiy9HaiTE/GxT+VDyy7i/KHnpPr9fupx/EbSrIOKQQTO+r14ArsYkE68I570bP5vYn+il/1SC8uhj+w8Vjxv0jNqRbKBTRAVas/SRlEVSaeWUBGPE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740371912; c=relaxed/simple;
-	bh=Kxoqux8ig1bneZc8TPbOtwtdCXGrWd1siptghYniyZ8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lKF/pLECdDnVJM88qIogWq60+Vw10iUYUOOgWaRG7HedtLDyOlngMv5z2dmNdA5kNwfiJnOltkl5XNlBKYubgpLTA+a6Y7p6cVjUzOjpS/Tfq/3RL21+exJcvtfKfxzTZ8DM4diyEuotbSt0137HheDG1DlVEv/UAw89VeARj7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nE18YxXO; arc=none smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1740373838; c=relaxed/simple;
+	bh=GRQJmCpDLaPovwIoPmtEmVbVYVG865oJ3j5l6e3Xu+Q=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=mkj0rihczco2GcVFSI+5o8V30Ug2vjmSWuoPcwpgse5IPPNPQ+U3t4KQJ8EnaLg+lk4SlcJ7KfS37gKWdQ/2KYrtmM+46lNf3C3QzVvXAlKavYTltHWoO7TOoaiXAb60wbCvBiIF4FubDLEWtXjXpdn6iHf210Et6VDavFaR1pw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MLExIcDX; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nE18YxXO"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-220e0575f5bso256135ad.0
-        for <iommu@lists.linux.dev>; Sun, 23 Feb 2025 20:38:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1740371911; x=1740976711; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=QXOPbjowj6Hzwuap/XS84BFQBW4l8rdr65xne9mv6JE=;
-        b=nE18YxXOOaC8szMw2NnJoM85RcvyV0EpGhFAqyYpNxBuD4VKy23Z+92Fwn9AlFR3lv
-         yAAUzXZ4ZPFLv3R0gj4/YV3mBaAmxAmHWSVpWpAEWje1ydqz3vEbGkdBgGrwI0SJm/Ch
-         5HMfJfCbZKm/aC8klXSM2n9Yt+mnlp86Oy7kjHB8026Z8hBX8p0F36tsj323r0FuqqN7
-         TJL3Qe6p7thihKHfCVZbATP0nFd2bhCLarrbfeQgWcdmowUd+TnJr0rNyQmL4SLoo21c
-         VdhMDrbNDDBtMtVsoKG6QOpSesk1F6cH+kmbz9q/pPLxnBAhr2bY8/BJ8UrnCX9g3n8q
-         vtsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740371911; x=1740976711;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QXOPbjowj6Hzwuap/XS84BFQBW4l8rdr65xne9mv6JE=;
-        b=dp/czJYTgM3L118GHWgRbr+LuF84S6AJuAKA0C00e/tbQSnnMjcD/wsAmFAL9/DoZ8
-         J4ZhX8+VPhUxNeq9A45whnenxWU+z+jCLFftDp9cYH9/CzzRDQ448hky0Q5mRUl3OCxD
-         FbrM554oj6r6SZHT5HWsDJTxJ1BTPeLqSVZEACwMYnoHO1LY5yQsCXwI2mSwMb6SkjeU
-         EnEuodVJASVOSrlwGbAfmvBRhiT/ZBq05GC3N3xSjS+rI74yY62NiOexhDS2ma1UEa5p
-         /VumpSWl9j+Iq3CtWRmaBRhTDcUP0Dn3n1KzNUYSKbCcSAMmoxoOnG8vXsByrxFBM3z2
-         0b0Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWKIBxM7yWaj7lRPAA1j8lSZghJ8IEXB42ngMCxMqtXWiwlkNEUkxkvX1mbnhedSTVQeVQgHQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywis5K/5pSnNAlVUJYTaCef47l2b0UWGgd+d6MZjClyVFarjuhr
-	UvnYQBDspK3zOHfDXDHU42qhWiqJ5K2a5YbQVyIleIprhcwpkkhkm2JxKXNzlg==
-X-Gm-Gg: ASbGncs3bWg8oiO/nfHu9oP5nZ7+lSnqjX4IMWwWRQTNxsQEaH0KDom8S5IB3hEzqL1
-	Yy4JYK9I5l+ZuuR6M5czleYWxCGjLsN82VzwZbmfIm2fc+B+abNigS6458Jmcsupd01iFciYcnA
-	qpbwVL5J0DK5x8ApWCvhpMrzXu1eYIVbwFEyRQ1ahNJyX7lyyCuz7hB07xmbEwBoYnDBDCrKIPT
-	eEjEsazxiO5J7Ykkm8bBS92eac5vH3N7GU8wLrUTusPBa7SUn9KQWUCeEdBL8VaeO7p4/GseZba
-	Coau9DFYZN4/wp1BXOk/bTHbsdTH4jykWvuvICXo0Xyn61673vE/Xqa51rxjIwY=
-X-Google-Smtp-Source: AGHT+IEdLGzG2X3YEfsIyog+f9j0aXsArsFeUuMcB+n8G7DuxjBKyqLer9ZGTISS6pMA8Im0wRP9Ug==
-X-Received: by 2002:a17:902:da8c:b0:216:21cb:2e14 with SMTP id d9443c01a7336-2226cc46c3amr2333105ad.21.1740371910429;
-        Sun, 23 Feb 2025 20:38:30 -0800 (PST)
-Received: from google.com (169.224.198.35.bc.googleusercontent.com. [35.198.224.169])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-add540f75f7sm15349070a12.46.2025.02.23.20.38.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Feb 2025 20:38:29 -0800 (PST)
-Date: Mon, 24 Feb 2025 04:38:19 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
-	joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	shuah@kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
-	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
-	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
-	patches@lists.linux.dev
-Subject: Re: [PATCH v7 14/14] iommu/arm-smmu-v3: Set MEV bit in nested STE
- for DoS mitigations
-Message-ID: <Z7v3u55JNDqveAuD@google.com>
-References: <cover.1740238876.git.nicolinc@nvidia.com>
- <2b088fe8d2c7e692426b0d1f58d4f2c12ecb907e.1740238876.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MLExIcDX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1740373837; x=1771909837;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=GRQJmCpDLaPovwIoPmtEmVbVYVG865oJ3j5l6e3Xu+Q=;
+  b=MLExIcDXkTB7nmf2ZaeONnRyqEur0LD9dDkC2PBQ63OP3bBsuQBrnoQh
+   tiBFe4feDENgS/trSn8Gju2mc7l83xM66iUe0fhRa8G8ezvYg1yiYa8xU
+   POTqhtjYADWwBb5uiu6zOYxx98NaHTF6g8zDrybE2+UWRXav3YD45UyoY
+   m4Wb7lw5rwiRl25xSDpvn1YlzHutT8P17aZcDbeqoKG6D6JxevB2iCpY6
+   ry/xSrd4evbnNUdhJFU6sqtPuOiiVyyyxdkpz2hdwLiB29PqpZAQnDYlW
+   8uRcNYx/WmIsWvUiDJMzR/l5iKksSfOydeflbWR+KqubBT7phis3ekD3p
+   A==;
+X-CSE-ConnectionGUID: NgsWN+ilRF+BBVsx6rO80Q==
+X-CSE-MsgGUID: wfQgl0WGSmCm7Ell5uA56w==
+X-IronPort-AV: E=McAfee;i="6700,10204,11354"; a="44894565"
+X-IronPort-AV: E=Sophos;i="6.13,309,1732608000"; 
+   d="scan'208";a="44894565"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 21:10:36 -0800
+X-CSE-ConnectionGUID: hkiyoaDbSoC8nlzU+rLPcA==
+X-CSE-MsgGUID: ATq6Lo42QEyrxLHULBpcjA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="121220258"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2025 21:10:34 -0800
+Message-ID: <2dccba8b-5f98-4d08-a3ca-b9028fe5d03a@linux.intel.com>
+Date: Mon, 24 Feb 2025 13:07:22 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2b088fe8d2c7e692426b0d1f58d4f2c12ecb907e.1740238876.git.nicolinc@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/4] iommu: Swap the order of setting
+ group->pasid_array and calling attach op of iommu drivers
+To: Yi Liu <yi.l.liu@intel.com>, Nicolin Chen <nicolinc@nvidia.com>
+Cc: joro@8bytes.org, jgg@nvidia.com, kevin.tian@intel.com,
+ iommu@lists.linux.dev, robin.murphy@arm.com, will@kernel.org
+References: <20250221143335.49874-1-yi.l.liu@intel.com>
+ <20250221143335.49874-5-yi.l.liu@intel.com> <Z7i3dvyA/opurciP@Asurada-Nvidia>
+ <ceb475fa-dfdf-4bcb-a4ba-8128ba86a39a@intel.com>
+ <9ad4766e-e37b-4310-acec-dc8eb91dde64@linux.intel.com>
+ <c71cb2bc-e1f0-4d42-a695-026a996e8f6e@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <c71cb2bc-e1f0-4d42-a695-026a996e8f6e@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Sat, Feb 22, 2025 at 07:54:11AM -0800, Nicolin Chen wrote:
-> There is a DoS concern on the shared hardware event queue among devices
-> passed through to VMs, that too many translation failures that belong to
-> VMs could overflow the shared hardware event queue if those VMs or their
-> VMMs don't handle/recover the devices properly.
+On 2/24/25 12:38, Yi Liu wrote:
+> On 2025/2/23 21:32, Baolu Lu wrote:
+>> On 2025/2/22 9:59, Yi Liu wrote:
+>>> On 2025/2/22 01:27, Nicolin Chen wrote:
+>>>> On Fri, Feb 21, 2025 at 06:33:35AM -0800, Yi Liu wrote:
+>>>>> The current implementation stores entry to the group->pasid_array 
+>>>>> before
+>>>>> the underlying iommu driver has successfully set the new domain. 
+>>>>> This can
+>>>>> lead to issues where PRIs are received on the new domain before the 
+>>>>> attach
+>>>>> operation is completed.
+>>>>>
+>>>>> This patch swaps the order of operations to ensure that the domain 
+>>>>> is set
+>>>>> in the underlying iommu driver before updating the group->pasid_array.
+>>>>>
+>>>>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+>>>>> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+>>>>> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+>>>>
+>>>> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+>>>>
+>>>> A nit:
+>>>>
+>>>>> ---
+>>>>>   drivers/iommu/iommu.c | 44 ++++++++++++++++++++++++++++++ 
+>>>>> +------------
+>>>>>   1 file changed, 32 insertions(+), 12 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>>>> index eff5f678883b..73555e1cf016 100644
+>>>>> --- a/drivers/iommu/iommu.c
+>>>>> +++ b/drivers/iommu/iommu.c
+>>>>> @@ -3388,13 +3388,25 @@ int iommu_attach_device_pasid(struct 
+>>>>> iommu_domain *domain,
+>>>>>       entry = iommu_make_pasid_array_entry(domain, handle);
+>>>>> -    ret = xa_insert(&group->pasid_array, pasid, entry, GFP_KERNEL);
+>>>>> +    ret = xa_insert(&group->pasid_array, pasid, XA_ZERO_ENTRY, 
+>>>>> GFP_KERNEL);
+>>>>
+>>>> Maybe xa_reserve() pairing xa_release()? Same thing though..
+>>>
+>>> there is slight difference. xa_reserve() will return 0 if there is 
+>>> already
+>>> a valid entry. xa_insert() shall fail with EBUSY. We want to catch such
+>>> failures here. You may notice that the replace function uses 
+>>> xa_reserve()
+>>> as it intend to replace existing entry.
+>>
+>> Do you mind adding some comments around the code explaining why
+>> xa_insert() is used instead of xa_reserve() here? This will make the
+>> code easier to understand without needing to refer to this discussion.
 > 
-> The MEV bit in the STE allows to configure the SMMU HW to merge similar
-> event records, though there is no guarantee. Set it in a nested STE for
-> DoS mitigations.
+> hmmm. do you think it is enough when referring to the kdoc of xa_insert()?
+> It notes it acts just like xa_reserve() when no stored or reserved entry.
+> It fails if there is another present entry, and this suits the need here
+> since it does not intend to replace existing entry.
 > 
-> In the future, we might want to enable the MEV for non-nested cases too
-> such as domain->type == IOMMU_DOMAIN_UNMANAGED or even IOMMU_DOMAIN_DMA.
 > 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h         | 1 +
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 2 ++
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c         | 4 ++--
->  3 files changed, 5 insertions(+), 2 deletions(-)
+>    * Inserting a NULL entry will store a reserved entry (like xa_reserve())
+>    * if no entry is present.  Inserting will fail if a reserved entry is
+>    * present, even though loading from this index will return NULL.
 > 
+>    * Return: 0 if the store succeeded.  -EBUSY if another entry was 
+> present.
+>    * -ENOMEM if memory could not be allocated.
 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+I feel that it's enough if we add something like:
+
+	/*
+	 * Entry present is a failure case. Use xa_insert() instead of
+	 * xa_reserve().
+	 */
 
 Thanks,
-Praan
+baolu
