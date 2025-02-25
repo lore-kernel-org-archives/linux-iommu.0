@@ -1,83 +1,86 @@
 Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E570192B75
-	for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 16:50:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 719C7192590
+	for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 17:08:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740502253; cv=none; b=N2Qe9ivc4QaUGCUrgv5I6/9gmT3mHuslLcSFkmKi1qgTd5ZOUzcbHWADcLpAfIQNvFq21w+MwymaFqcvarUm8BMug+cYCVVC4ylIJWX9yYva9PupJG7w68TNc+Q3Eq92uvO8eZ1NvjAB6h8N0doRXPjgsLbsZcQLnVyhnNfn/TY=
+	t=1740503311; cv=none; b=nnOTjtAFfucvAAVaPmZtHwuCkexewiSZAF0BJxsqDZu8BpRGzPD11GwU4fM9FHcZN8DS5rXbpq9TkoMBy95VScMPGGPlgWSUayn/twFyYk6WWBtxHt4r33CIgPPHHO4XKHPXyWMkiVE9cRpz/Wy/pAaMfky9WXgvKFv662tKcfE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740502253; c=relaxed/simple;
-	bh=UG8eZltknvJ/8A9quAvUC0yykW+VaqkKlyJxmauyfV0=;
+	s=arc-20240116; t=1740503311; c=relaxed/simple;
+	bh=SS9kgyaImj6RHK5LJn7d2R6kJ3V1FoRJ0mFcyFKs1aQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k0mwSG4emGFIUDAsh32AeJ4greHJl9wXQ8KG8H1zicfJZmwWNhZUlIObqa5oW2BkFO+li35m0+JD6/b4rlv9Ch8KUelz5cDWoxEmHveJytllNJULze5tRfNoocW1PwY6ktd82pPf5MaQG1FuIGvXKxpXe2i7WDry2Si1BTFRR/0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=llyvn5bL; arc=none smtp.client-ip=209.85.214.174
+	 Content-Type:Content-Disposition:In-Reply-To; b=Q6bBSVp5ox5Ak6aQLxYDcYSeZz3X6GZ9/yqpBZQFFIyrvIUT2O5USSWx5ZZoSxUH2Q+LOXZwx9mj+wrU4hqEMrFzzsgyQsNNC2miQ2ezWFInOCY8cXF2AdHuNaKOrXvhYqDxrjUp4wSBINwRaITp6gyNghi3m/OdUKaSzjExt5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=O3iaL4uF; arc=none smtp.client-ip=209.85.214.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="llyvn5bL"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2212222d4cdso173525ad.0
-        for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 08:50:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="O3iaL4uF"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-22117c396baso201275ad.1
+        for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 09:08:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1740502251; x=1741107051; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1740503309; x=1741108109; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lk6iw51fgW1qWU/03VHRsVVbj/sa5vR8EbwmDP3cjSY=;
-        b=llyvn5bL5cAqCD+EOv4Y5+oJvWFycVB5/XVG9AQLY/Yh51aj5g9VR6u78So46RvALo
-         geQ3yJ6UqJCvZSwZLPykQ2L18muMw2kaN1RQLejDk9FqOheFyRVAp50wrZmjKCt3HYjF
-         Ac93W53z1EMy5f+LhaZdR5k2+ingzUhEe7Dpuv/NJWAeGeZ3CVjmMCn7RWQUNJiSwvBE
-         BYKDvxfFkOjwv64/qA1KqwSTfC3lD80fea1/GetJVMWacfhMzKi2d754pp61eAMLXaKv
-         stle3a96FwwmHz1DjgPi/zCVUPxP4uPQvWu6tvXGVTa6N2xQ1UYujdjZC+hGZ8cVMPhV
-         CasQ==
+        bh=1QM6kau2iQ4j6ZEaDdmG4fMZZFTf4UoSv3ypQuKbFJw=;
+        b=O3iaL4uFDRGcCvSYZLuOo9PNbc+aHxAOh6dQaw1C1JydpznkroDD5+PW/6W+AESS3S
+         dl3jKVs3bpEaXLgQPeuQQ3a1DDUzWqsIYcJbmp0e3aofNSwwUdh/5dzUeTbDnC6AryRY
+         me3RnxqC715oJjOpRa3Vk+A7bDXjIfgNhxMqFHpQziU/g3JPyojQZGzd4GbM5obOwrVb
+         H+XCqARg01thMY20aSeZGXg1Z98e1yrrKME5i3Wb+2ou1jOrhitf6dgTGTLkR3k2Zkbc
+         2yLt4W4Izsuvg3QsJgo/Tv+FfLJMen2Ayql6SZ0i6PElJZw4qSMzvjQVfeYXCFO9jHxF
+         P5gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740502251; x=1741107051;
+        d=1e100.net; s=20230601; t=1740503309; x=1741108109;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lk6iw51fgW1qWU/03VHRsVVbj/sa5vR8EbwmDP3cjSY=;
-        b=T6WO0WCLHzNi7qcbTt5VrKjLaNmEqETZJA3xLc/LSJA98yEYbI6biHcU71WP2dMms2
-         06cNpSgZIv/6/Zgw3Q4ECzVL6X8MfBFYjiYoO/afL7KHDzT3xrq0VcnXjUYFAyg+zO5E
-         qAeQqql4sMAXKEKEyvX0pnGObURM/3ceGFJLl5SN0qs+wE2ngWpKoD0jFvmzVGmLu5dl
-         XQ9cagda51HWpE8ipVov32lfifCvJbt8yLPmYwWou5CvXxB3XEF1FwFUA78Pj1eCD/R3
-         ntBXnF+hi76yICEI2t11NaTnbl/a4sG/NjY5aUfMZbRXrY+yECKlvM9YAtx2YzWp8e/X
-         V36g==
-X-Forwarded-Encrypted: i=1; AJvYcCUFfDFtLnV+F2bG4Sw7CLXVlJXoBKvSOQk5Xs8F+qL1UFrJWWnsOzFOuhpOmsQaHfYDyEJDfQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxm7N8/rpFJzpiMJbW0Jsv4MAHGtpuvIcD7DWbbRN4Eo6Bb3IJU
-	c5+fF/bvk/ygxqui24BWsxr06w4Fja9YPpX8KiEnFPT5kGxSzxnySTvLJaLwYw==
-X-Gm-Gg: ASbGncuguUOGCnogQUXmTS9o926Byvu+NJazl9d2WhaowgJSRPDXpm9zJPkKIo5xEEH
-	DwgkhVPlPDpq1HQRxx+5se/sJTIG+TPc+ISmAXAZKCX6GcE+yC2FqKayVpmh0FJKCHLws3QKwMB
-	grK6b4NB5eUaE5yFPRcC+ZISvf1bE2INUjFJYPjH755RuP/Hf43xvZL+bfSnlqJrzcHkC3/cIqN
-	24bsQ36qiCuaqEmcl6fszhlB1KKCfhCNecnKhDs3dMjY+huGOXj7DkLO3FCYvjPMfMkiBi283iS
-	5OZLsW/aL61vnU2KBfcRLhVFOHXeG/uRG27QK6LQI9dLBSt6dmGAjc6VtF+z3BU=
-X-Google-Smtp-Source: AGHT+IERMuVCVd7U6MTOmNpPqxv55xXM3OvnM1bfuQpjOxFQC3PAJTJoQU8Phr6vdg5p0sFS6cHxBQ==
-X-Received: by 2002:a17:902:fc8f:b0:215:42a3:e844 with SMTP id d9443c01a7336-22307a60a10mr3635965ad.17.1740502251142;
-        Tue, 25 Feb 2025 08:50:51 -0800 (PST)
+        bh=1QM6kau2iQ4j6ZEaDdmG4fMZZFTf4UoSv3ypQuKbFJw=;
+        b=YcjPhpaAHwUyzUDJUwBm+qLBY4O5cqAH040og35PerfqpDD5qoeCarYwPD6LCqi6ub
+         K8x7exhizBxtDtouhWyAKPSxuEcV+XZRcFgA1ocmsPtZ4PAN48LB3mDPmxE+ZtMJthk7
+         QGts27FAP6XjuJ5uw1cj99934EDZAQz9oDalydvO8oLFrujl6orXESQooXl28YQHlUo1
+         zLFrGmrfx5EFqaxrSwuJpF9e6bnbdjN0rcS75oP5Q0hDCoaOWbx3bmQOcAAS1jB/0j7p
+         FVeCvWDW6o5dBgXtO+pVuBAwof4IWKwE1UkPQ3UBmkuyTIJPEkQSYJJMdMl2UeGRY86k
+         WK7Q==
+X-Forwarded-Encrypted: i=1; AJvYcCU3GkJ5AySg2GPIcxhJO7zhU+fOZoxoeS6zA+b3x13yMjxdBdLTwZIgj1/bixZT3tnKY33V9A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzz03jISzulddIbDWtz7B4/J7GmyCTqKbTR9tn3/37yYKrwZ4ND
+	darmubF3+ffpAlHYPEJAyfS4LR9FzHiyTtR6khDmct7oGlov5kYMyfKpqCTeCA==
+X-Gm-Gg: ASbGncsAlDpOr0gk5AYSNZi+BB+qoWgTYLhc0Sso9vEBROp1Q2Ac5VoPVTE2JcJ17jp
+	LsoA3ruexL+hoYiwCjbDUTPpA1eZFSlE0F8gemeb1+30zLhuLnKgSeFx5P/RNW0f5hYsVZLLRZX
+	Od0wyrZC7zQYRwkhU0ofQtgj7SNd6LmK7ieBHo0JrvFzmMxApADw8nqUednYT8qDkIUd8N+/njN
+	iZ4gZYBlXvYyHckUDb3NYIFp39mYbcAhy+nA6EcGOxRmSRtLowEEqCDfLIJ37C474d85FK8U0nA
+	VBukENEWE9KjTENjSWak3/11v5jmIvUzT2SFcp5VoDVlaEF5Yn9iEOYMh+455rY=
+X-Google-Smtp-Source: AGHT+IHxrabWDtym7s/ddOkqBHoBfq1ZqP6yAIbeWpN90fX7xeP+90KuPUzmekpH3adGkKddVDiEdg==
+X-Received: by 2002:a17:902:ec90:b0:216:607d:c867 with SMTP id d9443c01a7336-22307aabb1cmr3599065ad.29.1740503308535;
+        Tue, 25 Feb 2025 09:08:28 -0800 (PST)
 Received: from google.com (169.224.198.35.bc.googleusercontent.com. [35.198.224.169])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7347a81eb0dsm1772166b3a.141.2025.02.25.08.50.46
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7347a7f9ae8sm1757069b3a.120.2025.02.25.09.08.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2025 08:50:50 -0800 (PST)
-Date: Tue, 25 Feb 2025 16:50:40 +0000
+        Tue, 25 Feb 2025 09:08:27 -0800 (PST)
+Date: Tue, 25 Feb 2025 17:08:16 +0000
 From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
-	corbet@lwn.net, will@kernel.org, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, shuah@kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, kevin.tian@intel.com, corbet@lwn.net,
+	will@kernel.org, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	shuah@kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
 	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
 	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
 	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
 	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
 	patches@lists.linux.dev
-Subject: Re: [PATCH v7 13/14] iommu/arm-smmu-v3: Report events that belong to
- devices attached to vIOMMU
-Message-ID: <Z7304KKv2c1pOhj2@google.com>
+Subject: Re: [PATCH v7 12/14] iommu/arm-smmu-v3: Introduce struct
+ arm_smmu_vmaster
+Message-ID: <Z735AMlhP29YEndU@google.com>
 References: <cover.1740238876.git.nicolinc@nvidia.com>
- <b1930038cf828dc13c080e2b46b3003a8c98ef24.1740238876.git.nicolinc@nvidia.com>
- <Z7zmErar4YvQSSxw@google.com>
- <Z7zrHn3tPBD5chv1@Asurada-Nvidia>
- <20250224233505.GF520155@nvidia.com>
+ <be799951a817557ac093ac3e18d02a631306aa35.1740238876.git.nicolinc@nvidia.com>
+ <Z7zYLBLZGKim-5UL@google.com>
+ <Z7zlH74/orq9HF7Q@Asurada-Nvidia>
+ <Z7zqdrQn7Q8yXfcn@google.com>
+ <Z7zxsbJsOFp41Dzd@Asurada-Nvidia>
+ <Z70EnQ5CXacc4ysT@Asurada-Nvidia>
+ <20250225160225.GA593877@nvidia.com>
+ <Z73yt4r0iDFwbty2@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,34 +89,89 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250224233505.GF520155@nvidia.com>
+In-Reply-To: <Z73yt4r0iDFwbty2@Asurada-Nvidia>
 
-On Mon, Feb 24, 2025 at 07:35:05PM -0400, Jason Gunthorpe wrote:
-> On Mon, Feb 24, 2025 at 01:56:46PM -0800, Nicolin Chen wrote:
-> 
-> > > Just thinking out loud here:
-> > > I understand the goal here is to "emulate" an IOMMU. But I'm just
-> > > wondering if we could report struct events instead of the raw event?
-> > > 
-> > > For example, can't we have something like arm_smmu_event here with the
-> > > sid changed to vsid? 
-> > > 
-> > > Are we taking the raw event since we want to keep the `u64 event_data[]`
-> > > field within `struct iommufd_vevent` generic to all architectures?
+On Tue, Feb 25, 2025 at 08:41:27AM -0800, Nicolin Chen wrote:
+> On Tue, Feb 25, 2025 at 12:02:25PM -0400, Jason Gunthorpe wrote:
+> > On Mon, Feb 24, 2025 at 03:45:33PM -0800, Nicolin Chen wrote:
 > > 
-> > The ABIs for vSMMU are defined in the HW languange, e.g. cmd, ste.
-> > Thus, here evt in raw too.
+> > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> > > @@ -95,8 +95,6 @@ int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
+> > >  
+> > >  	iommu_group_mutex_assert(state->master->dev);
+> > >  
+> > > -	if (domain->type != IOMMU_DOMAIN_NESTED)
+> > > -		return 0;
+> > >  	nested_domain = to_smmu_nested_domain(domain);
+> > >  
+> > >  	/* Skip invalid vSTE */
+> > > @@ -122,19 +120,9 @@ void arm_smmu_attach_commit_vmaster(struct arm_smmu_attach_state *state)
+> > >  {
+> > >  	struct arm_smmu_master *master = state->master;
+> > >  
+> > > -	mutex_lock(&master->smmu->streams_mutex);
+> > > -	if (state->vmaster != master->vmaster) {
+> > > -		kfree(master->vmaster);
+> > > -		master->vmaster = state->vmaster;
+> > > -	}
+> > > -	mutex_unlock(&master->smmu->streams_mutex);
+> > > -}
+> > > -
+> > > -void arm_smmu_master_clear_vmaster(struct arm_smmu_master *master)
+> > > -{
+> > >  	mutex_lock(&master->smmu->streams_mutex);
+> > >  	kfree(master->vmaster);
+> > > -	master->vmaster = NULL;
+> > > +	master->vmaster = state->vmaster;
+> > >  	mutex_unlock(&master->smmu->streams_mutex);
+> > >  }
+> > 
+> > I'd leave the clear_vmaster just for clarity. Commit should not be
+> > unpaired with prepare in the other functions.
+> > 
+> > It looks fine with this on top too
+> > 
+> > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> Right, the point is that it gives as a safe uABI that is effectively
-> being managed by ARM.
+> Ack. I added it back and a #ifdef to the vmaster: 
 > 
-> If we make our own thing then we have to take the responsiblity to
-> make it safe and extensible. I don't see a justification to do that..
+> +void arm_smmu_master_clear_vmaster(struct arm_smmu_master *master)
+> +{
+> +       struct arm_smmu_attach_state state = { .master = master };
+> +
+> +       arm_smmu_attach_commit_vmaster(&state);
+> +}
+> [...]
+> @@ -824,6 +829,9 @@ struct arm_smmu_master {
+>         struct arm_smmu_device          *smmu;
+>         struct device                   *dev;
+>         struct arm_smmu_stream          *streams;
+> +#ifdef CONFIG_ARM_SMMU_V3_IOMMUFD
+> +       struct arm_smmu_vmaster         *vmaster; /* use smmu->streams_mutex */
+> +#endif
+>         /* Locked by the iommu core using the group mutex */
+>         struct arm_smmu_ctx_desc_cfg    cd_table;
+>         unsigned int                    num_streams;
+> @@ -972,6 +980,9 @@ struct arm_smmu_attach_state {
+>         bool disable_ats;
+>         ioasid_t ssid;
+>         /* Resulting state */
+> +#ifdef CONFIG_ARM_SMMU_V3_IOMMUFD
+> +       struct arm_smmu_vmaster *vmaster;
+> +#endif
+>         bool ats_enabled;
+>  };
 > 
-> It is the same discussion we had around the vSTE as input, the raw
-> invalidation command and the IDRs. Since we've already done 'follow
-> the SMMU spec' so many times already now we should keep doing it.
 
-Ack. Undertsood. Thanks for the explanation :)
+Umm.. I'm not too sure how I feel about these #ifdefs _between_ a struct
+definition. Given that currently, the arm_smmu_v3.h file doesn't have
+such `#ifdef CONFIG`s between structs. I'd say, in case
+CONFIG_ARM_SMMU_V3_IOMMUFD is turned off, we can simply leave the
+vmaster ptr NULL?
+
 
 -Praan
+
+
+
