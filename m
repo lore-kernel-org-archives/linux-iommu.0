@@ -1,86 +1,81 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69E7018DB1E
-	for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 16:46:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3764C1A238F
+	for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 16:47:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740501961; cv=none; b=X2YemEO28cEnVlkdG016R51ws+97KFPiQ4wTDDbu1L77CXI7zpdd2g+zmrXKKuyqwJWAXpqk7Cn/BwIDO+OxAyS+JRIFna9OWRh39yb6xzKbR+rTYo/pg+QQYKN4uXtmyr3mZkdL83SCHXpI/0dj6/t1QB1GItl6kHzhH4Nvcvg=
+	t=1740502080; cv=none; b=kBJEwJwIKaiBNlY0FtzE7r2GOvdKaVF15fjpNEqhcd8u11IPY66ne60uepl4DJoQ1trkLLVSLlyzo4wr+sn9ZZKCQ+hQahBPDBKnpevNj4ofL9cGTqOH7d/blkF66DLpn8pzn5Btv6fDAVd5DgPyJ00Xrb1KhsxknmUVUYkvb9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740501961; c=relaxed/simple;
-	bh=3pkC9Zan/5soR9iiYT3dS1raXOelzZooR8jSMhW1DW4=;
+	s=arc-20240116; t=1740502080; c=relaxed/simple;
+	bh=6iPgSZh+iO33nHQzseddwrKUrNhaFUNY8ua+PPksf0A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WjNDs/VrSB8Z/lvgecQb9RqNxVbFrhfVPxE6/EzwGc6xFEretD9tQSjxfLpa9fpRP6M5Ai6ds25tl8w+LRpCHaZ15J5oYhLz4ZA3NPNDkIeWZi2p4Ajkw5z1Mv/tXH2PynJSgT0FHs0Zo8cflIsg/MzT6kzCpCZTpq/QqfYWjys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wSb0bCg1; arc=none smtp.client-ip=209.85.214.170
+	 Content-Type:Content-Disposition:In-Reply-To; b=DhoHKXlN4Gr0WhPzvGEGMgSXbbYz2Q3MZJ234h8Ajji8KxpYMkQDm4Egtflzx+ns7x1QYMht3X6epB9elGTYA7yYcsgmdcGTa7U3LrYrc3gtoxgGsl5eH3a/RTKwDWAQ5UMs4Au7eGgxLkm3OJujsNnkSWFCF64JwXJKXzs01QE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mw8O0HKE; arc=none smtp.client-ip=209.85.214.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wSb0bCg1"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-22117c396baso194535ad.1
-        for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 08:46:00 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mw8O0HKE"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-220e0575f5bso216655ad.0
+        for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 08:47:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1740501960; x=1741106760; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1740502078; x=1741106878; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DvJy2eU2NKOX06+H5Vs2S45nqKcJ32b1n8dkLQorqiw=;
-        b=wSb0bCg1e93HySdMHiwDl0dVSGfx5fSazmyQmNOELU03fGSoOaCUtb7nLg8VyB3wAh
-         p/jI/WB3Eeo3YVNTfzrW3CVdEIjj/SMcWSXmWa7ykbHhYPcfMD6/E8dvJemJ5YMfiMI2
-         +69taLUTQU0j/hvOPtuELSZJ1GXTnHkgVUN1GYtnSa66XLa1SIBSHX3jzTZ8POHRLkuJ
-         n5bMTj4VHxfDSWUAkSJPi/pTJtE3F7s2emXY41V2yl6KiadSpuUdmKJ3umDyVWz8qqfb
-         vZ8qV9fkw2Ic/1h1uJ4Wif4RCW4oCHeznlLyki9FeFxUDHQehaHi6lfLzmaC19sbfURE
-         et5Q==
+        bh=6TXPG1g3tHBq7F0JV2QmBmMxnoyZNN73F2qMEQ/D5jc=;
+        b=mw8O0HKEMX6YHbpThlLM4B6yNPpkW0gkHJTEj8Nl1TtaNvOqk2ZHn5dP5L/zk4TCa9
+         /AAQwlVTJTFBqjP1EQsDQSZwlpdc2iBZ4KIundajGYQ9KnebMYoJL/AemFvEVcSwyGa6
+         qymr7yriJ+hUQNmxpfD0BqhFKdu85w0muEsmP+geUGdCvFp+oQwjw0iM0HKR1v8ipYTP
+         8YygV/TbTUEgYGLygy+P8+RzGp9Wb7Keu9Dk6lRB0s7rO/QGKbh+JUQBJg3F6jzbz1nV
+         J1yhN6QTVFMDLcE43nwkDiOjh7yp/CcLaLSvR+O81DBThPLU2NK2MGzUFm12EM4DOLJB
+         6Yaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740501960; x=1741106760;
+        d=1e100.net; s=20230601; t=1740502078; x=1741106878;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DvJy2eU2NKOX06+H5Vs2S45nqKcJ32b1n8dkLQorqiw=;
-        b=VKT/qV5esS8NPled4oMSeNr7RiSbL1BupDZ4jQbjt+hO2Ni7zj+AktYdCq4qDa1BuQ
-         ppvpNU8Wf+GDJJppFg6Vosh4fEc4SqV/hdgiCP1JfNXWEa43da/sJ9hKCglnKrCPAn2K
-         9OMGzevwqTcWx+OmqG3FAIprMXWnbCLUcDN/tPQk1E/K0j4v4Ye+jqkM9UvIsQRT7tMk
-         X/dpGw8TldyP6vAicua6x1pLCIhsfh05twyZkGjF05rbX3FSoRKQgb5IBGFsevo4sdGt
-         TsJw/hng29SzQs4y9MnNbsaYfz9FrBPZne86wXmSP1gXIdsRq5UEI/kF+55Nwhe9AEM6
-         Ve6Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUz58abEc49tJfE/9RuzqXoNOl39Hd7ekD17fM/U0zpD5r34EIURPWZlHM0K7ZWfelAkHXkDQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx+3Z2styx5iLaRK7eNVTxF9WsyrWLgZfvs4NuSXrj0RJ/RL+xk
-	wJE8TX3KyZIMXlzkajpOe4iekRZqK4816Sp1401O8SI4zCHF5B1pPRc8F5UKvw==
-X-Gm-Gg: ASbGncs0SCmTVEUXLBdA/OnVhWSw8YCxyceh3uI1TsebtLHP41Qiop/NwxXOXZm6Q3u
-	AXlhwaWyCIqJI45OZDCrZGM4/fw34VoTcyFCNbuUjPrwvhxOxoNQdDT59tPgsee7WXfmUwUtXbS
-	bAwjCfcZjmk31ZotdtPS7BLTli+P6B0sklLEvjGwaAgeaYvId6yjanazrHcRVOq6oiPQ0U9iHYv
-	jvvoCQrZSCeoRaCcT9dtc6Q5ypd/Fa+Sgw3Xw7JOsh5kHFW4InTjdrAKkKoLDOK72BC5cQiCS9f
-	8e+IH10VLLBqYD3sNc1nkr/XBHDs0NTlldis6hnzgcbpeHGlwNg5zqmAHvi+qeY=
-X-Google-Smtp-Source: AGHT+IEN5DYqq3Kc3cWdCDht37pR+ox7Pyn1fNUO9eOSCsjsyhHHqegeAVtSYgiTkCHpwG2cFWbA4w==
-X-Received: by 2002:a17:903:2445:b0:215:9ab0:402 with SMTP id d9443c01a7336-22307a98a03mr3458305ad.18.1740501959581;
-        Tue, 25 Feb 2025 08:45:59 -0800 (PST)
+        bh=6TXPG1g3tHBq7F0JV2QmBmMxnoyZNN73F2qMEQ/D5jc=;
+        b=mk0D/44dCFI1xneAPCKIsyRAfohMH6QIl7KTbZ46QoDZMfVkXzwGaV4AgZYNYsGzty
+         cYWOJEZCwZ6fee8K4KwM3lCUGrVp8xE3zD7pqk3sjs2n770/V9MNo9n4CHjEG+2jbBY8
+         maeYKCvQS9lFFITIW5UgxWz+wO26hfFnnIx0btpYD+9Q/7QFxJ3WvioB5X+cAfffKG+g
+         eD3X2+2igTznR+e4PPcJ4WPrK2Ccsdk43PQrNMmMZSX/vBYBUHXcTru5ARvxlqBc5zAx
+         qSv51ahzICFTiBXKOpuEpNEAwKv7IEhPo8sVCmhOz3BBtyjo0Q6vjAR9zQf88TiHJnvG
+         o0DQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV0lvDZb5pFgw0Z0UpYf+oJ6htPnIDVwm7X86fCLsRfbd26/eNEdQ0ADqwK0wovsvyal4xwtA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwofF7tAqz4dqwFBnnIfKSlNIWNztmE1+YMGvOWJqgI/n/+zy22
+	Ibt6GbE5z7sS0LN9ecXG5whGJNguj60NTN085KxM6xAt9n3npIptF7pQqBpkPA==
+X-Gm-Gg: ASbGncsx7LC7BK4nuL60GVUHF7oHFDU63Jgn4B1kJU9MZgUf1DPUKXqvlD35tzxWwI/
+	f4wJ39u+rsMWrGmkbfq8KgW4A9PO9cVCklSTUgz/wD883QsvfQ5KSL04/3EflzVXUI+77QYVC0G
+	W9D+sYA1U2dAX3+DrlURLuFgYFVheqO+T1dQk1acBrHb0GaDDRxJf8vfU09M+g6rqhWy+gFBQnJ
+	Chj/d5dnZGFAuD5mD/vPyulz2qVI/vxDLec9AVJed2WTGDKZhCoqsV7Yvk1lDJ1xN57x7Fj6CgT
+	PrKzBSS1RPjh/gkA3zyPG0aU6XvlVfwE6HFwUpqERfOxrVQZAJBXFgoe/K5YTSU=
+X-Google-Smtp-Source: AGHT+IFvXw+OvC4N/IKxwnR5Ayk0dG/Aagp8HSvp5fGkA6z7Brsy0CGy7v+QNECgYTSPzGrZqtSVWw==
+X-Received: by 2002:a17:902:ce91:b0:21f:465d:c588 with SMTP id d9443c01a7336-22307a60c47mr3818095ad.14.1740502078043;
+        Tue, 25 Feb 2025 08:47:58 -0800 (PST)
 Received: from google.com (169.224.198.35.bc.googleusercontent.com. [35.198.224.169])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7347a6fa230sm1709220b3a.70.2025.02.25.08.45.54
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2230a095f02sm16558235ad.152.2025.02.25.08.47.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2025 08:45:58 -0800 (PST)
-Date: Tue, 25 Feb 2025 16:45:48 +0000
+        Tue, 25 Feb 2025 08:47:57 -0800 (PST)
+Date: Tue, 25 Feb 2025 16:47:47 +0000
 From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
-	corbet@lwn.net, will@kernel.org, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, shuah@kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
+	joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	shuah@kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
 	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
 	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
 	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
 	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
 	patches@lists.linux.dev
-Subject: Re: [PATCH v7 12/14] iommu/arm-smmu-v3: Introduce struct
- arm_smmu_vmaster
-Message-ID: <Z73zvIbsXzJMCaNt@google.com>
+Subject: Re: [PATCH v7 13/14] iommu/arm-smmu-v3: Report events that belong to
+ devices attached to vIOMMU
+Message-ID: <Z730M3XptvDRObBp@google.com>
 References: <cover.1740238876.git.nicolinc@nvidia.com>
- <be799951a817557ac093ac3e18d02a631306aa35.1740238876.git.nicolinc@nvidia.com>
- <Z7zYLBLZGKim-5UL@google.com>
- <Z7zlH74/orq9HF7Q@Asurada-Nvidia>
- <Z7zqdrQn7Q8yXfcn@google.com>
- <Z7zxsbJsOFp41Dzd@Asurada-Nvidia>
- <Z70EnQ5CXacc4ysT@Asurada-Nvidia>
- <20250225160225.GA593877@nvidia.com>
+ <b1930038cf828dc13c080e2b46b3003a8c98ef24.1740238876.git.nicolinc@nvidia.com>
+ <Z7zmErar4YvQSSxw@google.com>
+ <Z7zrHn3tPBD5chv1@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,55 +84,82 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250225160225.GA593877@nvidia.com>
+In-Reply-To: <Z7zrHn3tPBD5chv1@Asurada-Nvidia>
 
-On Tue, Feb 25, 2025 at 12:02:25PM -0400, Jason Gunthorpe wrote:
-> On Mon, Feb 24, 2025 at 03:45:33PM -0800, Nicolin Chen wrote:
+On Mon, Feb 24, 2025 at 01:56:46PM -0800, Nicolin Chen wrote:
+> On Mon, Feb 24, 2025 at 09:35:14PM +0000, Pranjal Shrivastava wrote:
+> > On Sat, Feb 22, 2025 at 07:54:10AM -0800, Nicolin Chen wrote:
+> > > +int arm_vmaster_report_event(struct arm_smmu_vmaster *vmaster, u64 *evt)
+> > > +{
+> > > +	struct iommu_vevent_arm_smmuv3 vevt;
+> > > +	int i;
+> > > +
+> > > +	lockdep_assert_held(&vmaster->vsmmu->smmu->streams_mutex);
+> > > +
+> > > +	vevt.evt[0] = cpu_to_le64((evt[0] & ~EVTQ_0_SID) |
+> > > +				  FIELD_PREP(EVTQ_0_SID, vmaster->vsid));
+> > > +	for (i = 1; i < EVTQ_ENT_DWORDS; i++)
+> > > +		vevt.evt[i] = cpu_to_le64(evt[i]);
+> > 
+> > Just thinking out loud here:
+> > I understand the goal here is to "emulate" an IOMMU. But I'm just
+> > wondering if we could report struct events instead of the raw event?
+> > 
+> > For example, can't we have something like arm_smmu_event here with the
+> > sid changed to vsid? 
+> > 
+> > Are we taking the raw event since we want to keep the `u64 event_data[]`
+> > field within `struct iommufd_vevent` generic to all architectures?
 > 
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> > @@ -95,8 +95,6 @@ int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
-> >  
-> >  	iommu_group_mutex_assert(state->master->dev);
-> >  
-> > -	if (domain->type != IOMMU_DOMAIN_NESTED)
-> > -		return 0;
-> >  	nested_domain = to_smmu_nested_domain(domain);
-> >  
-> >  	/* Skip invalid vSTE */
-> > @@ -122,19 +120,9 @@ void arm_smmu_attach_commit_vmaster(struct arm_smmu_attach_state *state)
-> >  {
-> >  	struct arm_smmu_master *master = state->master;
-> >  
-> > -	mutex_lock(&master->smmu->streams_mutex);
-> > -	if (state->vmaster != master->vmaster) {
-> > -		kfree(master->vmaster);
-> > -		master->vmaster = state->vmaster;
-> > -	}
-> > -	mutex_unlock(&master->smmu->streams_mutex);
-> > -}
-> > -
-> > -void arm_smmu_master_clear_vmaster(struct arm_smmu_master *master)
-> > -{
-> >  	mutex_lock(&master->smmu->streams_mutex);
-> >  	kfree(master->vmaster);
-> > -	master->vmaster = NULL;
-> > +	master->vmaster = state->vmaster;
-> >  	mutex_unlock(&master->smmu->streams_mutex);
-> >  }
-> 
-> I'd leave the clear_vmaster just for clarity. Commit should not be
-> unpaired with prepare in the other functions.
+> The ABIs for vSMMU are defined in the HW languange, e.g. cmd, ste.
+> Thus, here evt in raw too.
 > 
 
-Ack. I'd like to pair prepare and commit as well. I'm just confused
-about the check if (state->vmaster != master->vmaster). Maybe a helpful
-comment about what are we checking for would make things cleaner.
+Ack. Makes sense.
 
-With this nit:
+> > > -	ret = iommu_report_device_fault(master->dev, &fault_evt);
+> > > +	if (event->stall) {
+> > > +		ret = iommu_report_device_fault(master->dev, &fault_evt);
+> > > +	} else {
+> > > +		if (master->vmaster && !event->s2)
+> > > +			ret = arm_vmaster_report_event(master->vmaster, evt);
+> > > +		else
+> > > +			ret = -EFAULT; /* Unhandled events should be pinned */
+> > > +	}
+> > 
+> > Nit:
+> > I don't see the `arm_smmu_handle_event` being called elsewhere, is there
+> > a reason to return -EFAULT instead of -EOPNOTSUPP here?
+> > 
+> > I think the current behavior here is to return -EOPNOTSUPP if (!event->stall).
+> > Whereas, what we're doing here is:
+> > 	if (event->stall) {
+> > 	...
+> > 	/* do legacy stuff */
+> > 	...
+> > 	}
+> > 
+> > 	else {
+> > 		if (master->vmaster && !event->s2)
+> > 			arm_vmaster_report_event(vmaster, evt);
+> > 		else
+> > 			ret = -EFAULT
+> > 	}
+> > 
+> > 	mutex_unlock(&smmu->streams_mutex);
+> > 	return ret;
+> > 
+> > Thus, we end up returning -EFAULT instead of -EOPNOTSUPP in case
+> > event->stall == false. I agree that we aren't really checking the return
+> > value in the evtq_thread handler, but I'm wondering if we should ensure
+> > that we end up retaining the same behaviour as we have right now?
+> 
+> Oh, it looks like -EOPNOTSUPP should be returned here. Will fix.
+> 
 
-Reviewed-by: Pranjal Shrivastavat <praan@google.com>
+With the fix to return `-EOPNOTSUPP`:
+
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
 Thanks,
 Praan
-
