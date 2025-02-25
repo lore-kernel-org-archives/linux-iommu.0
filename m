@@ -1,197 +1,213 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBBE325C6FA
-	for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 08:02:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740470557; cv=fail; b=MLavQ3Dx/+5Y1vsleS5ink1mfX3Y5g6Hs6X3bCKMGeU6+dhopzSWAojfHUX1805FK0rKh+Q7/eLqTflMCI2ekcoXDe7XwRIQ8xe+gUBxtuHZxwCkokxTt1aoPZZcNlzYSPYxgGPAVfTpYZSPXYbYq3NWszRAjIztA99S4ceWITk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740470557; c=relaxed/simple;
-	bh=zyfG1pA+YfYHv3EhtH5yuQiKn33MvDuXSfeH5DZSRas=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=JVk1CTBs+N3pycDE85cFSYlXKjRAjSsNUCUNyBBQMi6MOr7zD0k373vNGRhDzt5MUoNlw3rd11ofMXWqayYL30eZXhno0rOF1dJxqFpQPT+5Gycy4TtRuXjx9vsTjriUXV7MekDTdO4LSf3hO9L6jQOcfVcwDUmosRt0QuilZ8g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GuMz0m3t; arc=fail smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 151A11C7017
+	for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 08:15:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1740471330; cv=none; b=lyutIucY05hjpz/PLJxOwP6OODKV2avEInUwWxSChORERvCs55YalX9GIZDIE3m20w3vYRlpLaBI8Muobe3DtX1fkrnZMa0w+pqp+rMtkHr3/cNh9eXrOrO4Ylk9m51jkF8NaPRfnA30A5NRPSnt9OMlGUHDdF/f239PnYVYg2k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1740471330; c=relaxed/simple;
+	bh=yfrc+7kKphVxlnTfTwdmOQSoM2uXrBV0C9JkubOhMh8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=o42qPcUCJluz+uH/DFu5RVLfCbhh3JAfSYp/zKSIMY0FohhYFv/QJkXFYvmDXCea4X/J8rqfJTnKo29Yfsaq1x2nW7PaR1EOXoOWyE6RDWF573NT7FUJbsc5N+tMlolHTRDq00jviXPA2OQJUKXrrcx2n58xU0ql4nd+8A0n49o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eYsbvwHc; arc=none smtp.client-ip=209.85.208.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GuMz0m3t"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740470556; x=1772006556;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=zyfG1pA+YfYHv3EhtH5yuQiKn33MvDuXSfeH5DZSRas=;
-  b=GuMz0m3tV5KBlH7AY7QfoMUZbG0fsveEzqRPzY3QFEh5MkEgY3nuIg5W
-   18luxPVaSuZrlfG+t3FLZLFHQQ79MQBRGlkzW2XQEbAYTA5HROdJ33NUU
-   kfqbyEcdQ6QP7sPQMwQPHFwJW2/wAup+XwtCUHJ+c3nE/p8cRfjRqLu84
-   6RTEu1Z7p8hZddRZqJt48+tkcLOEkKh1VeMGDt1zzzi7yA86QX84wW+M1
-   6DiqpmsZkwgQNIz/LlsiSVZupnzwjus6KryKgeWhBdymO8WUFnWOc6vPA
-   QrJWe7MRhTriyxUmKW2xm9WtbKb0l8SuN8yHr814XZh3NxvmrjDhza0Zw
-   Q==;
-X-CSE-ConnectionGUID: rjUiEqfnR1a0YBMYvEE2AA==
-X-CSE-MsgGUID: 2WD1Rkg6QqSoxQroAHj1Dw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11355"; a="66633461"
-X-IronPort-AV: E=Sophos;i="6.13,313,1732608000"; 
-   d="scan'208";a="66633461"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2025 00:02:35 -0800
-X-CSE-ConnectionGUID: N1quOYTdSG2GkkxdcHVnxQ==
-X-CSE-MsgGUID: V2TRDNE+TDuaXCa8T+MeFg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,313,1732608000"; 
-   d="scan'208";a="116516301"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Feb 2025 00:02:34 -0800
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Tue, 25 Feb 2025 00:02:33 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14 via Frontend Transport; Tue, 25 Feb 2025 00:02:33 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.176)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Tue, 25 Feb 2025 00:02:32 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tc49u2SoJsKHBSsS/fwou5NBYUGLtNxpk0D0M9Zugi5ze/EznCKwT1IfF9VwWDUP59fr44yHCnAnAL2UH0RmYGgDdSUw2YohLjz4g2WeBJeHT2Ah1SgogzYwhFh1UVO/1gi9/qQeYwhy2/nPtojNdn6lzhNeqD75ob24djO4A0q5aSWvU5uZVwp4xpIeIVwoFBsJsttiyfXls1ezdXXETWEMDsbqcUldgfWhydW5LCTfBgwYiCkF9SiZZJOJeUhijiwB8csyTNwxc9unKdO++bt2cIy+HAjOVniTpVXAmVBl7kk7Gzog5uGBarAki4SKyv6LwefMt3pUAetozQi7NA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zyfG1pA+YfYHv3EhtH5yuQiKn33MvDuXSfeH5DZSRas=;
- b=oNNjA42451KK6mp79ZG6WYmuoORqfxyeKRa+BQwKQxnJmOmGMhIu1dIEngrJ4nG3ewdkSXXeTqmHyPZzviV9Dst2ccRvZcYly30XJPIH0pLGot+rZdbcCjtu32zS+VLHVtepfwWtcQssQHh3hxfi5nWPiQPqCSWSY9qy4PNzJcu1WIVTNLtvcwawALSEXzYIcFj5OMBVCapI2cjqtGdNkWauvPLNkdQQuNlibocOef+6SNlomVRr0rqoUQJpiSGPMYQ2WgxB4aTUR2SCJdnlAzr4RPymV7lg088/5YmAGOA1tFoLgEh+eVTmw0WZ3gInk5BrZ2XwV4csXu+J1eh0Jw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CH3PR11MB7721.namprd11.prod.outlook.com (2603:10b6:610:12b::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.20; Tue, 25 Feb
- 2025 08:02:26 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1%6]) with mapi id 15.20.8466.020; Tue, 25 Feb 2025
- 08:02:26 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
- Gunthorpe" <jgg@ziepe.ca>
-CC: "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
-	Fenghua Yu <fenghuay@nvidia.com>, Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Zhou Wang <wangzhou1@hisilicon.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 07/12] iommu/vt-d: Put iopf enablement in domain attach
- path
-Thread-Topic: [PATCH v2 07/12] iommu/vt-d: Put iopf enablement in domain
- attach path
-Thread-Index: AQHbhntN7Oo1cfGE80+F16YGgB56D7NXqimg
-Date: Tue, 25 Feb 2025 08:02:26 +0000
-Message-ID: <BN9PR11MB527621531383D5AA5824D3358CC32@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20250224051627.2956304-1-baolu.lu@linux.intel.com>
- <20250224051627.2956304-8-baolu.lu@linux.intel.com>
-In-Reply-To: <20250224051627.2956304-8-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CH3PR11MB7721:EE_
-x-ms-office365-filtering-correlation-id: e8986246-8728-4d6f-e6bd-08dd5572be1a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024|38070700018;
-x-microsoft-antispam-message-info: =?us-ascii?Q?3CeYzFE5zwTQOoMBJIuLxyiBZNorY+fvr8TViCnF+r5qjdHl1BWfPjGUcYly?=
- =?us-ascii?Q?hvnNLfc6mEayHRZRtVblhkQowgRtGmYYP8fk9Xdrq2Dkvg0EXXb0/Ekko13V?=
- =?us-ascii?Q?73LNiBiNHJ7/ZDY8BCJ2644IyLxlYqE/07lTVQMmbErDysJtXGUXqJThoNHK?=
- =?us-ascii?Q?QpFPnRihDmahI17NAcHqIx8wWt3gs+Aj+FTHFIII2pYbM5ypaW4upqMBx+oN?=
- =?us-ascii?Q?8eBn1E3hG+tgfOz+X/7f0E7g+uCa+b+99nnNP33HJc3idBwFRRea/SCO5iI7?=
- =?us-ascii?Q?/jMeyMOBmSXb8xOV6m2TibhXeLWwFyGy8OpxvKyoMJhgMKS2Y5caROjNBJh0?=
- =?us-ascii?Q?kB5Ka4cIx8pymj0rjDZ0aoDkcZd1qTHbH0lVIvebmTJpWf10s0PH5IaNoDBD?=
- =?us-ascii?Q?QHUEB4NZoEensL40HqB2qBOyJ9OOpbD2RXzrU2x7YzehvsZpl0+OjRL62U4e?=
- =?us-ascii?Q?OQ5/xi3qaaTL8OfRI/0wEzxwTo76mGBkGaNi6aksoiFx1ggs6Ffz7xt3/yXP?=
- =?us-ascii?Q?CXOUM/LQEquvQ8dZgdZ3dSnKKDawQxcxUHRf6RPCT2tk1X1LHzZhkhOQEGcX?=
- =?us-ascii?Q?M73SAvWzr2K9AYopK1iyKKvHvYXZBr3mxMBAGiipz13tCe75iqK6go49WV8C?=
- =?us-ascii?Q?dHlHr/BlCCrJtjjeF8WFxCs0exkn7ESkiLgzGe6itMwI+nb7eWXw1DxDf1hu?=
- =?us-ascii?Q?8XZbq34k1RLUO8+u4Gwrx2hiyDNMF0bKB/9b4lmO6R84ftYaON563no3AArd?=
- =?us-ascii?Q?kizLk5biLRT/aWDHW1YVBqiw51twNxIYoYtwdKWC6ysQmOrNCLzCDKh+N/II?=
- =?us-ascii?Q?oWsWqWAKVxy9WPuKY3qjIn4h2ljf7mV3AP6hR9wt6ntf1qLndXj1VGimIzCu?=
- =?us-ascii?Q?/NejWikpxmB/Ndtc4644aPCN7v1Ili618L90tSDUkbq0o96g1e6xu4Dozgio?=
- =?us-ascii?Q?xdvUCiZK8xi6BqivsvpG8mJxKJbnzvuIDXTX6VKjphAjKFtyj9f6zToQ21ek?=
- =?us-ascii?Q?B150Mn1AgJDN8xcgcZ58iYzTsyviSLanCrdg0TWVwokkbHJu5SKVnt+MXQjT?=
- =?us-ascii?Q?kOzUP90Q8rlmobRqVEjHPxPltnLkyAYzOdMvPn7buyoauor8eJVlIkLHhfSX?=
- =?us-ascii?Q?etfXF9ThLE+M1K8QoFz0w2nH6CWyD57jR8LOxaGjHYenSPtIH+FY3tbhKGm5?=
- =?us-ascii?Q?1g7Mlw1Ai2S+CSeZDVa0vmMixuKNgvvuDsKEHztsyO+peHweiGYlpijguwvF?=
- =?us-ascii?Q?FsgLqWMR1i0Sog7FzEtWFc7fBmy0lTzZru0ltmV0ttdgoFODP6ligC8qBujH?=
- =?us-ascii?Q?XmYp5P+Bb3NzU61/w7aRUi9NAZDt4mCr4H0DCnkCvpgGKmpkTKQ6cNRDXHYu?=
- =?us-ascii?Q?BlGkvdw2ggetAs8ckqxhD66Tge4hH+MNKJi2xiQOp0j+FNQ8Ih6Ss6lVHSgm?=
- =?us-ascii?Q?h3XgkMDnPxHhrAtrkQlsu4n2+Jw7XVfG?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ge/JfY9Ng+lQQiGGTVeLOfXypdEQHmPVMgw06HSKf+C67Cz8e5ikJr2dn6Op?=
- =?us-ascii?Q?j+zPokS+RNOHMhbYVjWsS8evOM43x7AmXmcXTLNVZ3iOTV8bcq2wLxtrs6+s?=
- =?us-ascii?Q?u2dc/qteLt8i1q563QfJpH7bwnCdwgFasY9DD4Uyg+HfGMHb4sQxPptL1jVt?=
- =?us-ascii?Q?3jiVutDkbN6E8YPYpA7Wm2jgWeCdLXvy2dR3/38iU7ghWzGfqcJeKeMUAa5b?=
- =?us-ascii?Q?NpQujMyDO1zFDCCfO4KNTh2U1JOC4cE9a5uNz7FywLtaR40Jm08hL/NCwXJ7?=
- =?us-ascii?Q?6RfWElpanLQkITYebD7F39ruaIDoqgfe7t8dQZhra0zovejnwflSYUegGRGJ?=
- =?us-ascii?Q?mhEBTJEMJjb2EXJaokBGdS97+425gklxZXZ1noWYgVPVCfrqpqU3iIQ2Wo/+?=
- =?us-ascii?Q?jknW7BK21O0CMXq5jLOYXzU/T92NjEE/wuJqT/FiGBZsdDJeuCQXZdsYb5yi?=
- =?us-ascii?Q?KPmjHW7fpoD5+ZNmTTlVqqGKv6Dtn89JyxM1Vv0p74MgDGvTsGHJWrjQ52f0?=
- =?us-ascii?Q?d9QwmXv6VUlAFykpovTo3vIHAtAsKYhMZP/ox4KBP58UtnU3FxAkdz/TxWpl?=
- =?us-ascii?Q?gBNJPoazJ+kHf8LH2P1He+TvtyxqHanYeqFI1m/m+WBQ+OT5KUg8JxfdkW7K?=
- =?us-ascii?Q?YgsmAhciiFJj6Hz/cTWyo9dxvCtEUG9z+4gWJ+MlhQDhkH/Up7gEFYG8zGah?=
- =?us-ascii?Q?MUdZWNLOu38cy5EhNdDzuJhMaCbXfShXgsjVex3sIemWxlSA5nj3INq6pF2W?=
- =?us-ascii?Q?f45Id1t0csmvqk1ev/QVi9JM1mf+TOaK/zc2eSW1gwKqPIsfANglGjIFviw5?=
- =?us-ascii?Q?hQz8U6o51gLxFcJG9l3MivfXYPKMS5UKFTIG0THsIzRw7yNpHINccdMZWRiX?=
- =?us-ascii?Q?zy2HemWWX4cWcYfvlTpHkuMxPw/gkzb0zq4c+MOKRZkoAV9WAeEV0mPyXzrm?=
- =?us-ascii?Q?BQQr8HACR2AkxicLLIHyu6/yM+5BplbeL2tV2wZvho48sLfFxDIvALnB6r25?=
- =?us-ascii?Q?FqPrRFP+/QIYLIENrv7zsWllgqFAOYqeaQE1k9+dIbhnl5AFtWUE6b5BhXdH?=
- =?us-ascii?Q?QyLJnS1ZvH/vDyP1FQRmEZc1ApwNBxfIzhEeHVsJG6ROF9XJx9TqdeJD7pFw?=
- =?us-ascii?Q?MoCcCL3cMoAbZKAN/gQoYlJ89nep1yJeBrA9YfmIRv9yvbIykkaUtAYkqVVS?=
- =?us-ascii?Q?aDT8aeiATyuYSkrlWVXjJJRYImY1ifGAJDq6c+0XoABE9h31RQv44KfxCl/Q?=
- =?us-ascii?Q?N5H5CLMcJ00fmkT83mwVrI4W4wvbMbjUvcE9cuz7DBB5SjYXhHXvQje7PzL+?=
- =?us-ascii?Q?PupA5KoOHD0tP8JVaKl82SAi1fOapB34P240x2nMajLS4CHtULJB74h0E2z0?=
- =?us-ascii?Q?lOiup1fLH+I3LMfonmCbhtBXzy27EXgCxGP9zZpRbXt4bw6vg6rYukRvr3UM?=
- =?us-ascii?Q?SxFn2XponeO5cWfxkRSL4Y2uyX8ARhMP7NA+4FP+gh8rU3duG3y27f/lQaeI?=
- =?us-ascii?Q?OXIORlue3eXx/7HlD/nolmWra0JDvAMvIpYTROc5VR1MIg3dv7vpqeLh3ZNQ?=
- =?us-ascii?Q?l1aGJujnm3kl/ZassAa8sJyErJ71lUZWVFB2YOuM?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eYsbvwHc"
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-30a317e4c27so45655431fa.2
+        for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 00:15:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1740471327; x=1741076127; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=RdqAlLkZmfy0CFMV99JGfChSVQKpEGqALN/Yz7FEnLI=;
+        b=eYsbvwHcbPTiRSwwX7KkAvZsJQqz0bEBHIryZPuQLWm6sujUq0QHBEBE6nzTvtD7XD
+         ZITWJoa+qcnnQalII2g8CTiyfpykbr8Ge31ieFCFRSkTqr1lElVB7bqpzWQdzplf0VEn
+         gQZravfAEqn4nfkSJG5CqFPRum5+T8bNGdjZ45QNUCudoJ0meAzcezYPayH4TTTWRaWg
+         AZsUvEZDEMGiFsXvZr0pcesezjydsRFtn+busU0gcllBLTJOZ56yGyDSUhpgG+F5jDF8
+         3kWK6lf6jr/0c3bwks6w4Xf/z0xf+jCpc7q5C3h2wWrLB7Z4nNYPuxYo9lGcmDE1w8kU
+         Tq1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740471327; x=1741076127;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RdqAlLkZmfy0CFMV99JGfChSVQKpEGqALN/Yz7FEnLI=;
+        b=aKD2ULkKf9atpU9mV8YIhpbpZi84B+gXSFB3cOgBgNeWgqhVlXgg1Fy0hyPvz33K7n
+         WGYM0SvsDytcvUsYG36CWlWqkwlgGYb1rfFN+yPoeC3v4FMHT0l1m6eLF1+3NRdBpJiC
+         wERf1yV8wvjL1oi8N4fIgHFFvqY2mhoBJTS/oxWqBj40wXmR4RwTmIIQMldR/x6HL8XP
+         XxPb3XgahzvjfTocrAwi9Me7t2pRjHmnHIbApHnjza9xBlj01NJWbXkF39URhzThkg7L
+         DFep6GJ28yI1RnD85q06x29cx1Q668SsS5zBdxQMJ8OnMQ8vrxjoxvN2AxnlqaW2gDsx
+         Z03Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVtQIi7g5+i7Nzlu0HgsUXDRTj2q5E6QimaenhYDMNNb+gSOQycwsrokau2HZZ1xCnRDvK2iw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwIq9VmCCvbr+L4LJXCtTYKgA0mAIs6hOS/DMVzix4nqZvdONmZ
+	/AEnyW4HDyUl1D+GSwfYx6CS5U8c6tHh9AmAXwz6BCwrGD8vkWEh
+X-Gm-Gg: ASbGncun16TyRzyehRfrVrak1jFk8DWf1FTzZiEykkyBGKUDZX7CARjkg3loykQ7Rie
+	gCded+Gn4Z7M1lwbtkac/83MzfSHviwoEXke6G56+QTY9LGTv8QFufV5mv2oxHpGGq39yQx/Ql0
+	UpMmL76I77dEL4tlh4c7oVCXsEoSsoH24ZrMSmtg2SeU2xWVML8Oz6/BmANr4Qm8TVHdqhSyrfY
+	umi67KgtM2VUyfDSsszAcZcVkGHHABUEmgBYgYDvNzzGXybVhgUp2fVHa3X3uwrViVxPqLI5NwO
+	VLn0mAz/tX1UWZmeRFMLvTxnINfJelKpsUAFxdLP9ti2g1hIq05SQ4weqDMEq8e/R0w4PLAC
+X-Google-Smtp-Source: AGHT+IF8UCoR+9ygGt6igUqdFrgSG5IAVYIl2IQ/fAb9S/8z9eTyoWb0Ux422EVvUx9jjVWOj8wKnA==
+X-Received: by 2002:a05:6512:239b:b0:546:2ea4:8e72 with SMTP id 2adb3069b0e04-548510ed685mr958741e87.49.1740471326562;
+        Tue, 25 Feb 2025 00:15:26 -0800 (PST)
+Received: from [192.168.1.146] (87-94-132-183.rev.dnainternet.fi. [87.94.132.183])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-548514efc28sm116034e87.151.2025.02.25.00.15.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Feb 2025 00:15:25 -0800 (PST)
+Message-ID: <02911a6d-e17a-4d17-b060-83c96732003f@gmail.com>
+Date: Tue, 25 Feb 2025 10:15:23 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e8986246-8728-4d6f-e6bd-08dd5572be1a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Feb 2025 08:02:26.0462
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: a7cPB04M86BQudHvHTqRilspgdu75SAVin2gbdh8RX2mg0qz7T5qbIRKwPQwVqZJIC8ZZKVF0TGplkSwI0zpWg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7721
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
+To: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc: aliceryhl@google.com, dakr@kernel.org, robin.murphy@arm.com,
+ daniel.almeida@collabora.com, rust-for-linux@vger.kernel.org,
+ Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+ =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
+ Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
+ <20250224115007.2072043-3-abdiel.janulgue@gmail.com>
+ <CANiq72mMKx3kD5KEcT0gOa1zkCt-VXxTEhnDa3feq0H7AttUGw@mail.gmail.com>
+Content-Language: en-US
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+In-Reply-To: <CANiq72mMKx3kD5KEcT0gOa1zkCt-VXxTEhnDa3feq0H7AttUGw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Monday, February 24, 2025 1:16 PM
->=20
-> Update iopf enablement in the driver to use the new method, similar to
-> the arm-smmu-v3 driver. Enable iopf support when any domain with an
-> iopf_handler is attached, and disable it when the domain is removed.
->=20
-> Place all the logic for controlling the PRI and iopf queue in the domain
-> set/remove/replace paths. Keep track of the number of domains set to the
-> device and PASIDs that require iopf. When the first domain requiring iopf
-> is attached, add the device to the iopf queue and enable PRI. When the
-> last domain is removed, remove it from the iopf queue and disable PRI.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+On 25/02/2025 00:05, Miguel Ojeda wrote:
+> Hi Abdiel,
+> 
+> Some quick doc-related nits -- please take them as a general guide for
+> potential improvements in newer versions etc., given there are still
+> other comments that could change the contents.
+> 
+> On Mon, Feb 24, 2025 at 12:50 PM Abdiel Janulgue
+> <abdiel.janulgue@gmail.com> wrote:
+>>
+>> +/// Inform the kernel about the device's DMA addressing capabilities. This will set the mask for
+>> +/// both streaming and coherent APIs together.
+> 
+> This comment differs from the C side one -- that is OK, but just
+> wondering if there was a strong reason for that.
+> 
+>> +pub fn dma_set_mask_and_coherent(dev: &Device, mask: u64) -> i32 {
+> 
+> This returns `i32` -- I have not read the users of this, but should we
+> take the chance to have a `Result` already here? Same below for the
+> other one.
+> 
+>> +    // SAFETY: device pointer is guaranteed as valid by invariant on `Device`.
+> 
+> To keep things consistent, please start comments with uppercase, i.e.
+> "SAFETY: Device pointer ..."
+> 
+> It may also be clearer to say "by the type invariant on".
+> 
+>> +/// Possible attributes associated with a DMA mapping.
+>> +///
+>> +/// They can be combined with the operators `|`, `&`, and `!`.
+> 
+> Even if it may be trivial, a small example could be nice here (when I
+> see a sentence like "This can be used ...", I typically consider
+> whether it is a good place to show how).
+> 
+>> +/// DMA mapping attrributes.
+> 
+> Typo: attributes.
+> 
+>> +    /// let c: CoherentAllocation<u64> = CoherentAllocation::alloc_attrs(dev.into(), 4, GFP_KERNEL,
+>> +    ///                                                                  DMA_ATTR_NO_WARN)?;
+> 
+> Please try to format the code as `rustfmt` would normally do it. I
+> know it is a pain to do it manually -- hopefully
+> `format_code_in_doc_comments` will eventually be stable.
+> 
+>> +        // We ensure that we catch the failure on this function and throw an ENOMEM
+> 
+> Apart from what Benno said, please try to use Markdown in all comments.
+> 
+>> +    /// Performs the same functionality as `alloc_attrs`, except the `dma_attrs` is 0 by default.
+> 
+> Intra-doc links (I will mark a few more that I think may work).
+> 
+>> +    /// Create a duplicate of the `CoherentAllocation` object but prevent it from being dropped.
+> 
+> Intra-doc link.
+> 
+>> +    /// r/w access or use-cases where the pointer to the live data is needed, `start_ptr()` or
+>> +    /// `start_ptr_mut()` could be used instead.
+> 
+> Intra-doc links.
+> 
+>> +    /// Performs the same functionality as `as_slice`, except that a mutable slice is returned.
+> 
+> Intra-doc link.
+> 
+>> +    /// Reads the value of `field` and ensures that its type is `FromBytes`
+> 
+> Intra-doc link.
+> 
+>> +    /// # Safety:
+> 
+> Typo: no colon. Also another one below.
+> 
+>> +    /// This must be called from the `dma_read` macro which ensures that the `field` pointer is
+>> +    /// validated beforehand.
+>> +    ///
+>> +    /// Public but hidden since it should only be used from `dma_read` macro.
+> 
+> Intra-doc links -- even if they are not rendered because it is hidden
+> (also even if it were a private item).
+> 
+>> +    #[doc(hidden)]
+>> +    pub unsafe fn field_read<F: FromBytes>(&self, field: *const F) -> F {
+>> +        // SAFETY: By the safety requirements field is valid
+> 
+> Markdown; and please end the sentence with a period for consistency.
+> 
+>> +    /// Writes a value to `field` and ensures that its type is `AsBytes`
+> 
+> Intra-doc link, and period at the end (same below too).
+> 
+>> +/// Reads a field of an item from an allocated region of structs.
+>> +/// # Examples
+> 
+> Newline between these two lines. Also for the write equivalent one below.
+> 
+>> +/// struct MyStruct { field: u32, }
+>> +/// // SAFETY: All bit patterns are acceptable values for MyStruct.
+> 
+> Newline between these two, also Markdown. Same below and in the write
+> equivalent.
+> 
+> I think it is fairly important to have clean examples, since people
+> will learn from and follow them!
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Hi Miguel,
+
+Thanks for the valuable feedback. Still learning the ropes at this 
+point, but will further improve this. :)
+
+Regards,
+Abdiel
+
+> 
+> Thanks!
+> 
+> Cheers,
+> Miguel
+
