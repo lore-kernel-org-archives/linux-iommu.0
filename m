@@ -1,143 +1,82 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43E6F21ABC6
-	for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 14:55:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0144821ABD3;
+	Tue, 25 Feb 2025 14:55:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740495324; cv=none; b=L4ULFux+HDcfUVGG6JX86I+cE2pbJpa5GHZfQVxS9uEfAZcEkAXxyKt27xPOOfNaq6gYnZePbwVCdG7uKps6LDztIcKaIgKRUDT5neh2YWLJ3FBkOqdotqvH1yRqRas/k3rJ2/Ne8J3gngAVx5j+1L7VEr4AXhOgCGg4vpqOp7I=
+	t=1740495360; cv=none; b=EX0oD9poMhTPdWtCe+SBvSV6eUA6CZo/YAtdoJVLGo3C/Dd8ROrxsbkO+bFCYVsTJR9qMlv3dp+MEYKSXzWq3v9FsKE38OQr4CmxfJcmk5DgkXJohgkVByVTEt4lI/0/fdXAMIhtlaHTys+AnNnqP/R2R0C4x5Imwe5xY2nuHSM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740495324; c=relaxed/simple;
-	bh=onjBfFA3vs+h8jsW1wHNipSTaY269JGX52paPqC84sM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TfSmYgaoA5Z+MIrvpzDdmOVyzMxepWhY6wSJUz/o+VLiUmc2CLOwkBWrRA3eKMf/lU/Rm0y+NP65IQipL4llNJ78A6Km6w0yUlfnB35kUZHIa6EzRrRLMfLcb2LpFa103TtqobA6ZJoUm/k0V/JNMYgPpU2SZ60eg1xm1bGnFyc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=pPWoqTm+; arc=none smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1740495360; c=relaxed/simple;
+	bh=iDV8+th/bSY9p5jEqNotgzA6sD0P1WAXqJW+aq8n/08=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=FC0RQaPx2+aEfihXJEXD3MdLOJz8ghLAcLdrueA3PesZNLQoac23wNISA9xQW00O4UkXDrNVkNm1w6YX4jjENQ7Hsh886v8jorapag2nhIwadSGE4xJjHJlwt9fj2OC7r5/0U/RH/HI/o0RsIwuN9GdtmdOBNZAtopUgDdymGKw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xrm5YkDU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="pPWoqTm+"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-472242b0da5so44311221cf.1
-        for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 06:55:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1740495320; x=1741100120; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=bosqxcSmmC4GveC7OEeUwI81FhDRyiKizzXCIKhl/mI=;
-        b=pPWoqTm+9817a5lgMH07Ny4rD3O49AyEC/6bUQ2eh20Hb9CH29zJUgU/kGwRHNF9nU
-         5R6EyX8CqTj7kHNEArElx7MGfqk2z4lrQaE3sEfVLVYFivJl/kvsnnt3PyOAs5Wfdn2q
-         JmmhE/DGts33dX7eak8qHAoCLYHS4Sx0c25QM6DNq7L3aoIMihxGnYG0aCxh6B1s4zt5
-         UWIIh856mKukzUU/psoNuVWuW++6Pt9Z2IYRtbGfZyt7bpdpz2DVwEw6cpXs8LxAVSDd
-         nnh/ZCdMhHRbYIeqAffQH6R3eq12hqFHSsndYf8KpZkb6TDY/cTbabHvwaOaZ3gSLbuA
-         jKoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740495320; x=1741100120;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bosqxcSmmC4GveC7OEeUwI81FhDRyiKizzXCIKhl/mI=;
-        b=qc5iHU/a10D/9bDzXLhcgkykV1WTBnmdxqfGZ4lLvmKXlYBHx7lgzjV4f/a4RGzphh
-         05UhxgWGQyPwvBT1il+awAQa8BnyekRjHqn2Huvcdd2aM7SNecVCwXCq935Pek/TswH6
-         NaFpiJzzKw1k5oGIFTZkBDuiLUIKp6K4dqw7YpXJCgbuGWrZnmR1mDyU1DqE0Mhhjxf4
-         S8dEICoBKluTokduokQJAqYKvyc7w7olNFfVFaUWCZOer7yXrI7aXP4VlX3angAhXEyH
-         ATaeCODo3lqiLukqUk+bdSwFDBFT9o8pwbGGUW/jKDxBIhdKtR/oJcEDHzC3X1LnatFh
-         U6bw==
-X-Forwarded-Encrypted: i=1; AJvYcCWJtby4/SpmJjWXMb2Iv2CgO2DchLV9s0tERMUpYRd7iHoWPJkvcuqbiUWpHVYUXKyEdXsp2A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzdFYjvixnxF2a58cZkGW/m0m3QGo4icpeF115Ixi+rvA/zCXaq
-	NVQeF4KPKzsQ3Ratj+K/i4xbufqvz+6Azq7kza/6yEdM+p+shf0J52kQumXC0dY=
-X-Gm-Gg: ASbGncvvA+mkSIINcGdPvkcAip1NBfXjtaXz97iApj2DLiUQgqKnwVpPIn3BkaBmTvj
-	DVlVKDH5+FQ/EeifO6UwM5UU6EjCyNoPK7iLHnHQiK0+9bpQN2hcgZqMVEDpKcPjOjL5XgFKLU3
-	YE4ATjRw0W8o70mh96b+jBlkZp/ze6b9F83bTls4UeZTMxOtuuvF7spX27d7kz1S+nPNxyv4dvA
-	oPQgo6ZV0Y6CulG6cmYcOBpIWtmZkao/NsTCGQVRMhZTy2wSUqein2XYyb5RxT3cC7hIjZf2bpC
-X-Google-Smtp-Source: AGHT+IHIL01W/2vYUVSHaOWdZoeBBiJZPt1GZrLObQLTJLcyGS+crik1zB/2wbSJS1MzmMrhNP650w==
-X-Received: by 2002:a05:622a:a19:b0:471:fb5f:4393 with SMTP id d75a77b69052e-472228c8d61mr218303421cf.22.1740495320124;
-        Tue, 25 Feb 2025 06:55:20 -0800 (PST)
-Received: from ziepe.ca ([130.41.10.206])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-47377e15431sm10832771cf.20.2025.02.25.06.55.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2025 06:55:19 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tmwL8-00000002TG6-3Ugj;
-	Tue, 25 Feb 2025 10:55:18 -0400
-Date: Tue, 25 Feb 2025 10:55:18 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
-	suravee.suthikulpanit@amd.com
-Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
-Message-ID: <20250225145518.GJ545008@ziepe.ca>
-References: <20250225105829.52223-1-vasant.hegde@amd.com>
- <be9d2ad2-0f9e-4d06-952b-4cfd6ae53447@intel.com>
- <ce86ff90-377e-49fe-9c4e-d2ad7abeeec8@arm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xrm5YkDU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF9A6C4CEDD;
+	Tue, 25 Feb 2025 14:55:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1740495359;
+	bh=iDV8+th/bSY9p5jEqNotgzA6sD0P1WAXqJW+aq8n/08=;
+	h=From:To:Cc:Subject:Date:From;
+	b=Xrm5YkDU5NCTI29lrs5s77q1QKEQ0SJc1pvsXAP7DpIxBwgZgAvDO+VONxb4ttu7Z
+	 nBj28s6rQWGIPBCqxN2JG+wRidkcJnm8qS6+RkYr4I/7OWoUuCCY2J6MDQpdmhxpgY
+	 1vf+FplB+xjeyjeKSLs4ENU3B1hlQbKlHtSuuwj0mfd29UgGCmtaWF1tL5UqOi0kMT
+	 cDLv30JoXB1QPmLnT4AYWpeNo0ubBxG6EdRkxMUAEbS8+KnNtG4EN1t8nQmU3xigs8
+	 qNsowrW343rqu7hRVOcCxHGfysqi8dSy5OyZIKSqx85Mm8+cLX03cjwrKhT37s87tO
+	 eiu5OsdOexkNA==
+From: Arnd Bergmann <arnd@kernel.org>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Michal Nazarewicz <mina86@mina86.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] [v2] dma/congiuous: avoid warning about unused size_bytes
+Date: Tue, 25 Feb 2025 15:55:43 +0100
+Message-Id: <20250225145555.1163596-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ce86ff90-377e-49fe-9c4e-d2ad7abeeec8@arm.com>
 
-On Tue, Feb 25, 2025 at 01:18:43PM +0000, Robin Murphy wrote:
+From: Arnd Bergmann <arnd@arndb.de>
 
-> > My thought is to add a flag in iommufd_hw_capabilities to report the
-> > capability, and add a flag in iommufd_hwpt_alloc_flags to let iommu driver
-> > know if HPT is needed when allocating S2 domain. Userspace attaches the
-> > un-trusted devices to the domains with HPT. While trusted devices can be
-> > attached to 'normal' S2 domains.  Will to send it out soon.:)
-> > 
-> > > With Secure ATS, for ATS requests IOMMU return GPA to device instead
-> > > of SPA.
-> > 
-> > I suppose AMD Secure ATS only works under nested translation configuration.
-> > is it? I guess admin may want some flexibility to opt-in it. :)
-> 
-> Heh, and in SMMUv3 we have both options, with split-stage ATS for nested
-> translation, and our Device Permission Table for full ATS, so it seems like
-> there should be room for some kind of generalised capability.
+When building with W=1, this variable is unused for configs with
+CONFIG_CMA_SIZE_SEL_PERCENTAGE=y:
 
-Yes, lets not have another driver-only command line parameter but
-somthing global managed by the core code.
+kernel/dma/contiguous.c:67:26: error: 'size_bytes' defined but not used [-Werror=unused-const-variable=]
 
-What are the options here?
- 1) Translated Address (TA) is a full physical address and IOMMU does
-    do anything (today)
+Mark it as __maybe_unused to avoid the warning without adding more
+ifdef checks to this file.
 
- 2) IOMMU converts a S1 IOVA into a TA as a S2 IOVA address and the
-    IOMMU runs it through the S2 to validate it. (ARM calls this
-    split-stage). Requires nesting
+Fixes: c64be2bb1c6e ("drivers: add Contiguous Memory Allocator")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+v2: fix spelling mistake.
+---
+ kernel/dma/contiguous.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- 3) TA is an IOVA and the IOMMU runs it through the full translation
-    to validate it. ATS is just used to signal non-present
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 055da410ac71..c53f4f633f7f 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -64,7 +64,7 @@ struct cma *dma_contiguous_default_area;
+  * Users, who want to set the size of global CMA area for their system
+  * should use cma= kernel parameter.
+  */
+-static const phys_addr_t size_bytes __initconst =
++static const phys_addr_t size_bytes __initconst __maybe_unused =
+ 	(phys_addr_t)CMA_SIZE_MBYTES * SZ_1M;
+ static phys_addr_t  size_cmdline __initdata = -1;
+ static phys_addr_t base_cmdline __initdata;
+-- 
+2.39.5
 
- 4) TA is an full physical address and the IOMMU validates the full
-    physical using some kind of permission structure (ARM calls this
-    Device Permission Table)
-
-What are the three HWs doing? 
-
-I see #2 and #4 clearly in the SMM spec. Is #3 a special case of #2 (a
-STE with a S2 and S1DSS bypass)?
-
-I think AMD is doing #3 from the docs.
-
-What is Intel doing?
-
-A domain alloc flag to put the domain into #3 mode seems like a good
-start to me. The core code can decide to activate the flag for the
-default domain. Suggest starting from pci->untrusted.
-
-Also, #3 requires PCI topology support, the ACS flags need to be set
-to route all TA's to the host. The core code should check and validate
-this before turning it on.
-
-I think #2 can be requested through the vSTE on ARM?
-
-Not sure how to setup #4? The core code also needs to detect coherent
-systems (ie CXL/etc) and refuse to do anything other than #1/#4..
-
-Jason
