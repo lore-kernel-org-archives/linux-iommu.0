@@ -1,62 +1,62 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF40B19A298
-	for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 17:57:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EF7C1FC7D5
+	for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 17:59:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740506242; cv=none; b=TSQa46xYUYrSl9rKvwo+CdX5dwF3XN8/A/UF1Bo9zF8VXs2XCVM40oT4ZiQTJldDBnnHuaYD89QMDdoqT/gAVv4V01xJKs8Fch30zDhNQ/n3UX3SY89RoNVrZLpQfTlRGaHMwHqUdx/eVEdIgF3Knfzxtmy22J75w/oEEJOl1ic=
+	t=1740506395; cv=none; b=W3pIyxEu+DmUai16Vku49T308+pUkNhIcaxcs/1q/9iRSegK7SNCnZTY4NHi7PX9TK8YGpaHZiLN69f3gG4S3u+vjJTqj3o9AyrQt8ypF1ZFzHelvGNBUI7NIlddPWH6i+bIqKnJUFpOvIbWvkvgKrz6EsgirbfotOLwmyqCr7w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740506242; c=relaxed/simple;
-	bh=31zc1XueM/rGKJ6c+/BQITCsz1wXw3/IbeSan2eXnK8=;
+	s=arc-20240116; t=1740506395; c=relaxed/simple;
+	bh=t+3/xgTztA90riGckbgrI9IzG66KkbXPYhDKFDRxAeM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J4K4ZzTFlgulGOtPpOdn7zB4OM5E0PJSAV6XDXMww/djCCyze7nhyKqzbKkTIwwAymECYvVMb3MXAjVbW8Uyxmtxb5Ln8pzENaSbLSsBOvUwZm8EncJyaLwR1c51maKFbtC53UATtMnkHHa/CwTHMzZQmkXA1x2w2TKpuHQ9Al8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mUs5SVvs; arc=none smtp.client-ip=209.85.214.180
+	 Content-Type:Content-Disposition:In-Reply-To; b=pnqt5QYvU8CFjUJZeDyqyAaQ0EJc9hpGrrKNU3yWOl8JIYI7ptUSGJc40w7cql16Wp4aCKJxh7HghzJDrVb5NQ6GniNEPXQpRoM1hstTnurklk1nfb4qVPipq9fryi/kDWwj+xqWES4PgYWsD6IrfJmXHrceMYmAqO7Cf4ImKa4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=omoHpupr; arc=none smtp.client-ip=209.85.214.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mUs5SVvs"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-221ac1f849fso3025ad.1
-        for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 09:57:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="omoHpupr"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-221ac1f849fso3705ad.1
+        for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 09:59:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1740506240; x=1741111040; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1740506392; x=1741111192; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=zHaAT6T+XlWe+89P2zugxKrlYk7TledH0w0ahGQr4YM=;
-        b=mUs5SVvsnqk8wviZoULcNjcroikzNcAuKBy7qgLeVSvxzZK5nKQBOiUPlIOvQ5sRe6
-         pT3+hKsZDROgqY/zS6jisslw34RJv3Khcx/kFafoeJ1A3NvmjJbZSi/Z9VqT5mkBQz5R
-         /wUUBWJsLUg35eGcXxGOJF8f5CBUf/fxMVcGqfBj/uGUlDrkrj+NjTah54OskgeydowN
-         9qN7ZDMPb5X0jEQKL3f/oCBf3c+k9oWm86uPoypYbKVoF5hEThSQjDMd074vi3f1Mhqu
-         7wunBd6EIstWHaXD9egXWy3G3e+NBsMGppk6jCD8i5B+CST/48cX5X+3YKbRfryDs7Ss
-         9m5w==
+        bh=zet+c1c4ONj7xvmenDNyn9l5ztIYraYudvekwtRFR4g=;
+        b=omoHpupru8f9xcVj4QPXcpFIlP5h8TLFOaRkqRC83hq4Bi2NSXAwu4AQh4pb61ZN1h
+         Xx6ly2m8+7rvP5/CPAQm8bA4nzTqmF9ReyuF7Ey6r+4/IxXMQ/NovqwCQSDVg3rnVONu
+         Q4UV4oHp5BcmJEqHZKairm3lXmQ1j0St8/pobLCGg30+5uItq9UqzZkYTemDufLZa2Aj
+         AfdnfCRfMAsMSBRS+g9T7PSakf+XrGjjw7YUQs16iMBJq36TfVti2CGSRxcS737OUw1x
+         VwW5HCaPvV9hfFRf49MFwiJ47so8fH7QoZTjcvvZOm92a1E+UzAPVGXnqMnsvn+TJm5L
+         zyxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740506240; x=1741111040;
+        d=1e100.net; s=20230601; t=1740506392; x=1741111192;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zHaAT6T+XlWe+89P2zugxKrlYk7TledH0w0ahGQr4YM=;
-        b=vSUMz1u6p54oIMIP0ukGTEuOFNFHtz3TalefKXRmOGy+AzQnfOQ/wbLM7a4WvePX9a
-         wDnBDpEUVFnQSkPOJRsvICq76UL0caSaHOdzXkpQp2Gl6e7IfWfCY/91elHBINkU01M2
-         utPNqeyloOlIHPn9UYVkrTHUiYe67d2Wc1AZ/GicByAPjFMTThwoXI2wPoGw5hLYHYBg
-         +/r7bxjJNBM6mKcndPYR7Tb1a+VtsIM3/xvtdFICs8g4fDWjJuUcI0eVgs8Kzv0YX5H2
-         JTwXgGe68B9otrMUd+pQdQm28CQ+Pz/scW1b6PQoSkkPqm9VZZvoAAj5qyxZHgr3k72b
-         99SQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVzkctp1qAvliOlggJJWZyCUot6R06S0217YYRZsumpJjaENd2IM+mxLB/ZhT7/qMmNqcRn6w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzdHzM5oCLBf5CiJS3SmvelZXvA+EyLpQ6zs6nNk60CgMse3wFq
-	wLrLdqxyTviuEEo0btzfHvGYpAZlR4NPsdPELZgaRZi43jyWdEADR+Ox2BCI4w==
-X-Gm-Gg: ASbGncsQoXkhxleWQoFP5zY6/kItL3xqaoPQK4/NI2RY7+i2W0dcHzYjkn96cJA9v5V
-	b+GAzXnT489pQKDdMH/RLYF4g5m+v3InE2n7qrwSCUD0kls/Kl6JLU5/Owhtk7BhJuHFAUeZz8l
-	4Bw++V6qZbdjJLgNNJcwTxPI3BjqwCM6PknGISSMl7MO4cbqCawoeMTC0K6AqMs3KmyzI5/gk1K
-	jErxQ/65116fakKHT++IwW5gtXKl7zutG0oXDYWrM9K4yE8FHSbBrWpu2LcTMBx5w8QvMK2VjoG
-	AM/YLvf/FhKku8K52OS8gMeiRhGrim2odjBDH+WFJU6acCL341ntDkeCudhEWEY=
-X-Google-Smtp-Source: AGHT+IG02bNp0tkxmXxczB6ZSntt4wfTEWTePiQeT76QafmUXS7ThOKjH22xno2GMa6y5FkJX+V2yA==
-X-Received: by 2002:a17:902:c40d:b0:220:c905:68a2 with SMTP id d9443c01a7336-22307a2c777mr3852445ad.5.1740506240014;
-        Tue, 25 Feb 2025 09:57:20 -0800 (PST)
+        bh=zet+c1c4ONj7xvmenDNyn9l5ztIYraYudvekwtRFR4g=;
+        b=CwkdvhiE6G9ztTHXcbdjt10CsmZ6Px5rGm7g2UnrM20MMlqpeWY+rbxO6T2yEWBZEC
+         QolqPXGxrmso0ge8FxerPAFSTDrixh76e3zlbYdcO601BgeSbVa2whXB/nNrUPn6ao7F
+         IhBtjqyk6N0n3r/f5Ni1KCzN+VY6aMnQCB2p2SRmwnOQrFD7SdfGnuw4YqJePap396ko
+         DcpBbQcsKnIBe6kON9Q+62DjTBD9pwJqEOEHQWuT6kSIHTn1uDgbVsbkGLPECUehk4Kw
+         jTexzz5221tg2mFvzSRf+6EUdAFJwXF/Z4LVE+9M8tZhugWbgh9D+YVZZeP9wUaIHP4b
+         qTpw==
+X-Forwarded-Encrypted: i=1; AJvYcCXZZdNKZ3GlY0Ce0IJ1Bv9ny1/wklFtY2Y1ta6UhSU/xrBlbpslp23x/YQL/EW6TqUt3/aT7Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw6TUC9e8ZMVdDS7BQFe6wBpRNpbG/kLpk1bw9RPvpWFumH3g0G
+	CmKP8OZWpYRSfu3DynxpYzMMRnuKkQ18HAP2lU4fPnMXQIG1LFeJ0S95Nxq57w==
+X-Gm-Gg: ASbGnctUCPhl/190IcgKxuHdfpSbO2Fe/R5kXImtlDOKtDG9VKm6LCjR5fqraJPgz/t
+	xRrr4dvo/QvegwZnZA07wC/79ZwaKUt+ftZhg1SQTaByH5YqAEQPrvgyBLoN5F4V6rDs7I+gUeP
+	9VF0EJvd9TGuQXkwZWWIWaC3/qU2bKOFyYtAaWJix5VwIqH5pmL1zmcCLhVxo8P+Cu1Jm+EhCvn
+	dKoqzPcQCcCPQm2c91Lkz7Z7zMM5y+MAF4ravJVUaW/uS3fQOFalR7X9krxrxCdT59DgzDJm/kr
+	/c+NhoocYsEzQhLBXQTlXaRDqzc+uEhIjQH0/+O3sXfGpbU4/rQArZDR2yQ/q7Q=
+X-Google-Smtp-Source: AGHT+IHt1jR5XD9845sVRfVXJk9oOqx4VZihn8kcHDN1a+U5MuzF3NMe86gHqr8wYv7wnn00ZADsGQ==
+X-Received: by 2002:a17:902:ec85:b0:21f:631c:7fc9 with SMTP id d9443c01a7336-2230798c8c9mr3956505ad.0.1740506392319;
+        Tue, 25 Feb 2025 09:59:52 -0800 (PST)
 Received: from google.com (169.224.198.35.bc.googleusercontent.com. [35.198.224.169])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2230a0a61fcsm17251405ad.191.2025.02.25.09.57.15
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7347a6f8ec9sm1867028b3a.53.2025.02.25.09.59.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2025 09:57:19 -0800 (PST)
-Date: Tue, 25 Feb 2025 17:57:09 +0000
+        Tue, 25 Feb 2025 09:59:51 -0800 (PST)
+Date: Tue, 25 Feb 2025 17:59:41 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
@@ -69,11 +69,11 @@ Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
 	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
 	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
 	patches@lists.linux.dev
-Subject: Re: [PATCH v8 13/14] iommu/arm-smmu-v3: Report events that belong to
- devices attached to vIOMMU
-Message-ID: <Z74EdXC5YzvmJokk@google.com>
+Subject: Re: [PATCH v8 14/14] iommu/arm-smmu-v3: Set MEV bit in nested STE
+ for DoS mitigations
+Message-ID: <Z74FDTtZkjwrjv29@google.com>
 References: <cover.1740504232.git.nicolinc@nvidia.com>
- <7f6813dc2b62f5f396ac3172dc2a7d9bf3b47536.1740504232.git.nicolinc@nvidia.com>
+ <f465dd9defdc0fc748c2fa2cfc829e37778a4ced.1740504232.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,28 +82,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7f6813dc2b62f5f396ac3172dc2a7d9bf3b47536.1740504232.git.nicolinc@nvidia.com>
+In-Reply-To: <f465dd9defdc0fc748c2fa2cfc829e37778a4ced.1740504232.git.nicolinc@nvidia.com>
 
-On Tue, Feb 25, 2025 at 09:25:41AM -0800, Nicolin Chen wrote:
-> Aside from the IOPF framework, iommufd provides an additional pathway to
-> report hardware events, via the vEVENTQ of vIOMMU infrastructure.
+On Tue, Feb 25, 2025 at 09:25:42AM -0800, Nicolin Chen wrote:
+> There is a DoS concern on the shared hardware event queue among devices
+> passed through to VMs, that too many translation failures that belong to
+> VMs could overflow the shared hardware event queue if those VMs or their
+> VMMs don't handle/recover the devices properly.
 > 
-> Define an iommu_vevent_arm_smmuv3 uAPI structure, and report stage-1 events
-> in the threaded IRQ handler. Also, add another four event record types that
-> can be forwarded to a VM.
+> The MEV bit in the STE allows to configure the SMMU HW to merge similar
+> event records, though there is no guarantee. Set it in a nested STE for
+> DoS mitigations.
 > 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> In the future, we might want to enable the MEV for non-nested cases too
+> such as domain->type == IOMMU_DOMAIN_UNMANAGED or even IOMMU_DOMAIN_DMA.
+> 
 > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 > Reviewed-by: Pranjal Shrivastavat <praan@google.com>
 > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  7 +++
->  include/uapi/linux/iommufd.h                  | 23 +++++++
->  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 17 ++++++
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 60 +++++++++++--------
->  4 files changed, 82 insertions(+), 25 deletions(-)
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h         | 1 +
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 2 ++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c         | 4 ++--
+>  3 files changed, 5 insertions(+), 2 deletions(-)
 > 
-
 Apologies for my spelling error in [1]. It's supposed to be:
 
 Reviewed-by: Pranjal Shrivastava <praan@google.com>
