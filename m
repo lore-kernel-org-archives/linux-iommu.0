@@ -1,84 +1,85 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86B8B258CD1
-	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 12:58:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7317C21B9C5
+	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 13:01:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740574711; cv=none; b=FzGyQ/soB6aQ8QruRIBkHEUlcTpqSDP8TlkANitI7IFRmDVmMcg3szpGe90axnkiXfU6H3BDTKZogS7QSmxajxbf2OCaTqzCIgS8IQDPBslbrktpmC+ciQygvC5Kv3hoXxCh3k6H/aLZvG0tbcU9hgImatNqau2pp5ql7hyxDLg=
+	t=1740574909; cv=none; b=iJVP4Jk+np1j1Z8icqgfKxy1T8RPz1uWXFxNYb6CJVUqs/0AAt081fitL2F+gYbWSVoyCaHo9kKvcwWSBDGi61+4Aj8+VU+m0WDAFPDNbVM7UvJ6n3pHcUh16pLAPxH05B9DiEqlL+PouWbfd3d+K5vU5G/NL5Z8rk9OfUQlD04=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740574711; c=relaxed/simple;
-	bh=GHkOOUwBgKvlRX8cnP/xmtvgNBEsxAGHQdUOMxEvwfE=;
+	s=arc-20240116; t=1740574909; c=relaxed/simple;
+	bh=92Z9v+FLz3iTFKqi11NEu/EOAuseUTOKMZtf4ib2DU4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WsnZ745pqie4ORxnFaOiSy7/a2DHxAOyjosZ966lZA+Fm8Ifuto6UfRIeXHhXk12gts0cfbKXhZfDD+RwnXlk/jZoAvgh08YwqQWcGBmdmVnExHyvSDlZKkH2P6JF9ZhUj2WQ5Z6Cbnt4J7uBD6sv2hev13FoGKEQvPo94rrt24=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JBrvYSbt; arc=none smtp.client-ip=209.85.222.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=ADNUlZryYeWoJ7strhBoWska5XFmuh9DIn0prDLltmOYopJwaYcfwsSkFX9RdvurZdJHT5apB0zOYoTriXzchOnzVyPiS0K8/jLIvhq+eng73ZqIYcyoiU6eR3Cm7Ru4F/aBtV/AL4ftMQiV3jkKCkliuspS5lvDtniETYnrHMc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=cKY/UUat; arc=none smtp.client-ip=209.85.219.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JBrvYSbt"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-7c0a1677aebso612204585a.0
-        for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 04:58:29 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="cKY/UUat"
+Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-6e67bc04a3bso73721656d6.3
+        for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 05:01:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1740574708; x=1741179508; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1740574906; x=1741179706; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ebgSjMdNuO5SJT8PtvFYTNz88NoQMc8Rf0MgoywjYjY=;
-        b=JBrvYSbtOcnWM96Y7inTeBaWaSpTCssQhfsaXeu5hw1JluQ1BZ368iUgnXL1qvbofo
-         i9ah+NMOW3ZO0JDcD9WifFXy98ler0tpmsT8ti5+qCBBJxN/lt05KysnoIc+OrEH91hZ
-         g8ADeiVFHEflOyjNCIYJ8uRWmyqaOI+mc/AFXVDuNqKWQtt+9m0cj9KKb6e/VwYDQRvE
-         rzgHVW3ynIqP8INsV2VBEmL98KzLunK5AdCEDMPscZ9mFpuIZS1arKbtIR7s6y9nAN/B
-         9Lpux3R9E97CuA/PWyVWWzfvnLQc9L9ZRfo3js3EagUskJA7eNqbdEi226R1+SJQCTAv
-         Swng==
+        bh=U1OJEsJ85iudSEMsKBGGptZhNT773gneYq2Cu5+D0SI=;
+        b=cKY/UUatCYWaUhLhKXMLk+5RPof4kDMNWm16CEhMl623R0mMiYxRIcX+vKgoU15Rrr
+         ysWwZ3vIlC4IF8AI7nof23ssCF2OPUrgo4DMz8oUD8egV67SiANPdup3C9Gg7gjrlWon
+         eNumI++Ucf3w2OxJKaPMMYjkBXBqRFlrDRdi6bcTkoQgo7YatU11cTrd2CfK8PCmo4eF
+         K+1g5SiHWGA6AcrRZ8kopaewj47/RpEcMHKOWgAz6pQyWxErgRcUi6/cxryhRfYs8fIK
+         GLYIekzO4XtJln5UESR4B3rWHYQ1G+SW/BsVncB+4rRPXCw/GLXvt/VZ25P1g1eEzwks
+         1fUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740574708; x=1741179508;
+        d=1e100.net; s=20230601; t=1740574906; x=1741179706;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ebgSjMdNuO5SJT8PtvFYTNz88NoQMc8Rf0MgoywjYjY=;
-        b=iqQf22WUHHTHx5scVO9gszb/mTnvL4VGhHYNrwJFzN5G3CP8rm6QcWIjHof0Drc35D
-         gN9IbYQ4/LmhzUay3vumUWEceRN2s3UCe2mMTzx6qXIZaivDEP6eyR9JlePl+oCeEda8
-         CyGoVAjFMpaI9fAlL8gAZz64cjxwgn7vntmKlbv6cHM9ux+Oh18y/0Csa+Gc/vbY+fuc
-         Rm0QB4GKKe0j530psvnrDVf9KEOORJfhVyBFnV2DHsTRCrPE4kbiUZc949aQe4ok2QO1
-         v4v5zWXyb8/Vi+S2Z3P2r0M9QvPOXnE2GaJ0K+hiP7dF2Dqw2z1InbKDiK7m2tEXn3Zl
-         FtIA==
-X-Forwarded-Encrypted: i=1; AJvYcCWq/7qu1Bsjhi7deLzEIpdS2iMsXwlRNfncxTt+nV/xrEjM7DX9AIIGD4Pn9T4VZsvS3Lo2Lw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz6QrvoZ3mJ9lCzNccNjw29SYqP88+4muFhcM670SkQEoYwP8kM
-	iMVD5wJYnaRfaUEkz27+GjMZAWK4s/9kC7zKhY+LEgKAD+xNMq112e7TthFOmUs=
-X-Gm-Gg: ASbGncsgdm8Hit0m/LmRIezsCmXspMRlHUhR0Pt607MaGj/+4CABfqCsWeSnRvxavkN
-	hCZmlaD8Qe37tCGu/d9iDHBr0j+AJz62iNh38kuA9UdL1Ho+kEW7RpqxnPZt9udSV6iiT/Z40d1
-	R/MFtECB/bPT2HT94oXzWBEE0M8tsaE1SqL9TgZC+D4frd27x6Bg9Mvw7jaOVeBLETAqBqWWuvP
-	gCAn3PcdciXW4ZUaVht1fA5J7jbiRhPIpf0vRLjI6ZTFVGuslG7mCFb/+1xicl9Uxj/DguJddnX
-	XoEZuaTiLRcIEMKxXVybu/AMvWsZFSqDRzZ8OPmrh3jXzsARcjWhr+VU0wWDfksdu3DgWq9EblM
+        bh=U1OJEsJ85iudSEMsKBGGptZhNT773gneYq2Cu5+D0SI=;
+        b=GX7TWW95oiyiEYLLJ+6VkW/Ay3+nysS3ISW/t5gMeMdpeeRwHHRUY4gGBctrAEeMLV
+         6lkCIFMz1QYjtmsOmcH1vXj94pOCkMRzU7jphsLAn3yc1arBSCNxJcGQxSphvd/nIOZM
+         FNRTb/cg9tXFm4cB2ya+s8GHVdsJg9gQHgPCZhX+QJG/P+FvEp1v3K2vyxiR1y2fU6uB
+         4Q5wnFo8PhiWcj90Hm/CntCiA687Bp7ReXCzL1qnRkDoPUEF2M80FBCW/6ZtnYSaxv64
+         gN92Vpl4krjOYoU9HNCMvn3ci37Z9+WRHYppjxo3KH+bKSwhEq9u0EwJHEfyqxn2eEa2
+         Y6mA==
+X-Forwarded-Encrypted: i=1; AJvYcCWWSHYRpa5gzAoYy2Ua39N0Wvjfi/+XUoMbyzvoQQN2Ij4I2OJ4ikx+zHhc+X+q5z8Zd2monw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzIVJU4Pr8d8eOTQKN7lY1XP59CF3WweFRkT9y5/nPyGLDOiTKQ
+	6zwlzwx6KEloB1gflhngVD0ClhnOvC4fyRbaAy2O2a4TmwNuO25RxX4+qEEZpSrMmTX1MIK5i7C
+	4
+X-Gm-Gg: ASbGncvlSXMV3M5WEIv7UJDMiqFToT5ODR6dxcdy8MI574yu7qOlvQwPqtzhwgWtsb7
+	1j+pEfmOXJIM9ObLBKkhJQ64fAm2xGRwTOty9QvAvHf9SI4YdZAs2/l5loFwqnMcdajJ3XZVaRx
+	f20sds/jP6+Bf+/RT/X4Oj8Lvwe07uZLobgxwo6eoPJlwMkSxNsUDDvygGTygNhX+hJvlG+TNlE
+	G+O/aridivrItUxkwKdrnFQa0lV6/LbE+5mQ0+lJvQs0CR4Zx+XClMv+8NiO938WkEeNspyqQO8
+	rTc2lR1dFA/mrnm8MOtnBmtCT9V1iB/qNJtw4gosiInv7b7SE3X2sGEa1PXahyfckoIXUZ2b0Zg
 	=
-X-Google-Smtp-Source: AGHT+IGrg8acDr41m7WytDFwUFYiiPcoTPoOr7QAtzOcdoaXCpi5CYhpf/4+E6m1CwiS4lcjtHCXgA==
-X-Received: by 2002:a05:620a:270b:b0:7c0:bb63:5377 with SMTP id af79cd13be357-7c0cf953f06mr2705312285a.39.1740574708319;
-        Wed, 26 Feb 2025 04:58:28 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFnshQ9Jnhe/llR3pmflQNhFNl8LePUT0anoKEPfTifcA6wwmexPymMhLKL82jbf5C91V8iDw==
+X-Received: by 2002:a05:6214:2264:b0:6e4:42c2:dd91 with SMTP id 6a1803df08f44-6e87abafb11mr91215506d6.37.1740574906076;
+        Wed, 26 Feb 2025 05:01:46 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c23c2a6b59sm237415585a.45.2025.02.26.04.58.27
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e87b086e18sm21713286d6.44.2025.02.26.05.01.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2025 04:58:27 -0800 (PST)
+        Wed, 26 Feb 2025 05:01:45 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1tnGzb-000000007FB-1V5z;
-	Wed, 26 Feb 2025 08:58:27 -0400
-Date: Wed, 26 Feb 2025 08:58:27 -0400
+	id 1tnH2m-000000007Hf-3lRD;
+	Wed, 26 Feb 2025 09:01:44 -0400
+Date: Wed, 26 Feb 2025 09:01:44 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
+Cc: Vasant Hegde <vasant.hegde@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	"joro@8bytes.org" <joro@8bytes.org>,
 	"will@kernel.org" <will@kernel.org>,
 	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
 Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
-Message-ID: <20250226125827.GD5011@ziepe.ca>
+Message-ID: <20250226130144.GE5011@ziepe.ca>
 References: <20250225105829.52223-1-vasant.hegde@amd.com>
  <be9d2ad2-0f9e-4d06-952b-4cfd6ae53447@intel.com>
  <ce86ff90-377e-49fe-9c4e-d2ad7abeeec8@arm.com>
  <20250225145518.GJ545008@ziepe.ca>
- <BN9PR11MB527624C1DED16B3C049D13438CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250226011750.GB5011@ziepe.ca>
- <BN9PR11MB5276B3E410FD336A3062FA5E8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <b630b6c0-a25c-4230-8abd-a48b7dc27216@amd.com>
+ <BN9PR11MB5276B090C61D1F059538AF7B8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,20 +88,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276B3E410FD336A3062FA5E8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB5276B090C61D1F059538AF7B8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On Wed, Feb 26, 2025 at 07:05:06AM +0000, Tian, Kevin wrote:
-> > Not exactly. They are functionally different but serving the same purpose
-> > to the user. From user p.o.v. it's sufficient to have a general flag for sats
-> > when allocating a domain. The underlying driver decides whether such
-> > flag is supported based on the domain type and the associated device,
-> > just like checks on other existing flags.
+On Wed, Feb 26, 2025 at 07:10:20AM +0000, Tian, Kevin wrote:
+> > From: Vasant Hegde <vasant.hegde@amd.com>
+> > Sent: Wednesday, February 26, 2025 12:47 PM
+> >
+> > >
+> > >  3) TA is an IOVA and the IOMMU runs it through the full translation
+> > >     to validate it. ATS is just used to signal non-present
+> > 
+> > Yes. AMD does this when Host page table is configured.
 > 
-> Chatted with Yi offline. Having untrusted user control a security 
-> feature doesn't make much sense. Probably what we really require
-> is:
+> Here 'signal non-present' implies to support PRI.
+> 
+> But...
+> 
+> > We need to consider various scenarios. For AMD:
+> >   - Currently on baremetal, we cannot enable SVA and Secure ATS
+> 
+> ... here it says SVA/SATS are incompatible. Any more background?
 
-So you don't want iommufd users to be able to opt out of it? That
-makes sense to me
+Yeah, +1. I don't know of use cases for #2/#3 without PRI. Why do you
+want it?
 
 Jason
