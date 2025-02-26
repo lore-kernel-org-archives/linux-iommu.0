@@ -1,253 +1,156 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2073.outbound.protection.outlook.com [40.107.101.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f66.google.com (mail-ej1-f66.google.com [209.85.218.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A7BE23BB;
-	Wed, 26 Feb 2025 00:12:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.73
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740528773; cv=fail; b=BFSEkS4nnDkhb7BsoSNbfjSvH+6zRxoz6O39A6ZJXBH/Jrngr1Mpxs6R+H8b7y4p/C6uRDOqOG/R1++Tc/s/7U2Q0DMzKP0QsQZuqBh6cpsz35ylyPErspE3eHmR4I7weut3gqpx8yUwVPM9ol5/TiNguk9j/ppMEiBrwqYUy2g=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740528773; c=relaxed/simple;
-	bh=qYMfh90x5xV8DdfK2/ixsgsyeMaMKlDQA6Ev+H0Trjc=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=fPB97z8SxJ93EE/8Qgcpi1LmcIdWUyZ2+/iD2q3XinNlU9JZ5G6/cKX/dPto8384wDwj4s2ClYzeFnx7ebdHPOi8tuqMTJvuvIoPoKaVFj5XHER5M9V4FWPYB8DbQ4g65l7elxP+vPDrnKCT6YIqXkCFy5YDiApo956VPm557ck=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=AQJoskzQ; arc=fail smtp.client-ip=40.107.101.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47B3E219FF
+	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 00:35:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.66
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1740530125; cv=none; b=BbCT2+wTlr8P5Luc2sNdvgwQltl2Y3XIvJ4+tlTzDRj8dm5Szlkt0AH8nNmbCeBFQccew/W1dJmc4tEkolU6YiRwCv03XIZGqlyg1Z6pOVmzbTwEC3DR3iBu+ZeffOKMmSelLsOVl+rUojoTVPKUmbULUU4NHCXNy8iJG+BmxBg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1740530125; c=relaxed/simple;
+	bh=WXk+NSNdAwFqqx+MVizfGGgWgwuhd31Tk8ZujVhcpSU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=l3LL6MFOEYYYT56/JxgDV848vioFf2CICBLiZXKKrfx96MHqr59wztWIXuJTv1PhVP+yzg2EwRIffh2EWFfm5imBzlx+FW73cLRbP7VjMR5vr3cR5ayiv+pe4piFf19IKrw7UGGo4DvXzLaHk4dGWk138itpGFvpNQqxYH6xRNY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YySzhMxM; arc=none smtp.client-ip=209.85.218.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="AQJoskzQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vl9yTLWCMx3ywdPRuK/ABAKGHWRA508n/jK3X3+2wWgwRP0thFD8nae8QVvUnci5jKJXnWmb3MYYzuVaWf4QY/WvOLtlGJUaV2vze8v2H/3/TNZrRpzKOjvWC8YqrpbcpZbOSP0MlR7DdLC/7YiAeRiSxK4RRr4iiOP52QEdcCWKlp3FPoDjzQ5jF5KegOzUpmZE+H+t85R5fbQWznHtvZjkTQ77YA9mwsM2zYLrUjx50hlmP+nHwdYHO5ebJIz9TsgicOskCJshRDnPWJBg0hxeFVeUESMU/dyMIdrNjfHoq0Us7wMja7MP3BuArs6dBw6F3giBNY7bqOcNcLYTTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FKNvpc6QTlrSNBcHgSy+9CV1GtLEpgtaGB0G3dLwzII=;
- b=elTpJWdGGP6v+xu6/Py3xIQt2wuFduWvepGK3RFV0fJL2zD/lEbCKAa5Vr/lHzEsnbegycI9XcTyEQyobrFr2e7ys0njJfBxgG8+/oASZYIG+ljOTPNFLiHslb/r3G/fpjTdyIBuGqgVBC4G7rcQuoak0D2WHujQoeieM2BAJKp3BZjiN5FFl+f+viihPomzCDb4cnfigaKeqUKGLQgBzKgcfqeswCBE+RwQITfMOOx3Dfp+vcoK/1G8JaubFBba4jNF6telxw6wmfsvAHzgub5yq8IFsJkEhYgK2DcukNHCe07MEJWuN2NHZ421wFmec9sT8xPlnz+7rWoCMNj62Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FKNvpc6QTlrSNBcHgSy+9CV1GtLEpgtaGB0G3dLwzII=;
- b=AQJoskzQKJYmqXN0GPuiF+V9ze/wcbI6ZrGHWnrnsRJG7ZkTJyyhzOoB1PXlLeSQucoegCKYjWEUNxxXJvp7W44tUa4EyyttqfwEWiQXCP4DKtQG/r/DDD1z1p7+qVki2VhyzZgbnB1yv/SMGp9Vay2rMfGBgL19xib8KYIDySA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
- by DS0PR12MB9057.namprd12.prod.outlook.com (2603:10b6:8:c7::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.20; Wed, 26 Feb
- 2025 00:12:47 +0000
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::53fb:bf76:727f:d00f]) by CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::53fb:bf76:727f:d00f%5]) with mapi id 15.20.8466.016; Wed, 26 Feb 2025
- 00:12:47 +0000
-Message-ID: <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
-Date: Wed, 26 Feb 2025 11:12:32 +1100
-User-Agent: Mozilla Thunderbird Beta
-Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
-Content-Language: en-US
-To: Xu Yilun <yilun.xu@linux.intel.com>
-Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
- linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
- Sean Christopherson <seanjc@google.com>, Paolo Bonzini
- <pbonzini@redhat.com>, Tom Lendacky <thomas.lendacky@amd.com>,
- Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Dan Williams <dan.j.williams@intel.com>, Christoph Hellwig <hch@lst.de>,
- Nikunj A Dadhania <nikunj@amd.com>, Michael Roth <michael.roth@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Joao Martins
- <joao.m.martins@oracle.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Lu Baolu <baolu.lu@linux.intel.com>,
- Steve Sistare <steven.sistare@oracle.com>, Lukas Wunner <lukas@wunner.de>,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
- iommu@lists.linux.dev, linux-coco@lists.linux.dev, Zhi Wang
- <zhiw@nvidia.com>, "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-15-aik@amd.com>
- <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
-From: Alexey Kardashevskiy <aik@amd.com>
-In-Reply-To: <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: ME3PR01CA0026.ausprd01.prod.outlook.com
- (2603:10c6:220:19f::20) To CH3PR12MB9194.namprd12.prod.outlook.com
- (2603:10b6:610:19f::7)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YySzhMxM"
+Received: by mail-ej1-f66.google.com with SMTP id a640c23a62f3a-aaec111762bso441644766b.2
+        for <iommu@lists.linux.dev>; Tue, 25 Feb 2025 16:35:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1740530122; x=1741134922; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2sWr60tesWUFRYFPqf/atpsmtwt+NxovXy8XB/PMBUs=;
+        b=YySzhMxMQYbMkDD3GPf0IH1gS+L6/HRpbXO9LGDcKeHtFlUIf5cSCDO6KOMgoXd4zU
+         LeMnV08UZ9BX6Pc2cfABEb9mzHpWrjB1QJ11J3OicV4ERIfDqGsDGxKhb5bF7etc7nu5
+         XkWeIEwV00V41UM4XGAecFYYUpngjy+OS7kJp8fgkEZwTMRcDeVYKNpRRxuYskNxQsXD
+         8YQv1MswgG7KrSB75iyfWfQgHL05obExhc/NPcycD1Uq28i0IRGUjcGCfCsyOWAxSBkU
+         QXSMkNywH41+EQAvvE2EaPIv9AqCTPDBDgd4hp8Sr8hIrHnr5a0k0KrPW/4MthCmc5Mt
+         mIUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740530122; x=1741134922;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2sWr60tesWUFRYFPqf/atpsmtwt+NxovXy8XB/PMBUs=;
+        b=Xa+JeYScdRVnqDJfG+nppc0+rzAmvHkLy51MXwqGpiVrpqUV9G1uLScPq4eF8kidYg
+         fUvxszahV1rPoF/+bUaIWea9FasCSniAHcawjGUKOEhlpnmo7/m4NggJkCf8pDFdrZDF
+         R0zfY8YB7V107U2aBxeeETigP3lGmhR8o5G0BCrR9air+vQpJem+fNwq8vcjLfxqq0d8
+         cq9nrVQ6hS6qxomMVmq+IlOLFcl6awiFdfbsf5i/+aV3vJKhJqDXs5SPRQ2f2xWI5v3R
+         cyhXrsdqR7ySqR0wPMi08pOGemCfvBDsEtFW40Jcn8lmu3Y+aJ5/pBPp3Q4F8WKgblGl
+         HYQA==
+X-Forwarded-Encrypted: i=1; AJvYcCUEQvjH1fnS794cPQ7AGVeNXMfsY4r/wUrnTtUAJmUxLagkt16ensBQT8eBpjMWuHOwXXjkvA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw7btCC/8b1D7mzLHoK+vMSCx8P2GM+hxyopCcIahjfJ0zNx+3q
+	1Sr6Rxu4/jN9Zyxs+qVllDHEb6BofijTaIDXo73FdG8bWkHCZUnC
+X-Gm-Gg: ASbGncsrKEc3jGmnGXZ+YGsQJBEBQije9RVhmJqciqSXlICBrEqlQduxOrhX7f42wvk
+	XPAC9oyzp60YktW/XCoq90e3JP0HM19moxJo4wHc3VVFs4M3EEeg5bhHVGOKZittChcEcuYv2j8
+	Q7jS+Tis9ekUZEvhNwfaJVCKYVghP2n7rkvXroGZLuPfdEsUJuKSbMbO5i2EUgDRGM/bhvXBrIT
+	lVB7DZq+b9QW2YgyZWzJcLOecScofgExa/YxCGaQHji9RuZWLxjoCnPSqTc6xMjW0NjmQQAtrGg
+	jLIjqC+23OW8vu01hhXeewx+jAvvDce7kO+6s9/1ZIbEjL69byZpP1oeeBkUCdXQxGGrg5+K5N0
+	8tsQDLMPAY+QSfV0WMyGblD7FdVU1V/7gXFLsuexJEIoVaDHu0pr6HkY=
+X-Google-Smtp-Source: AGHT+IF3XIr+VPlmtfyD5U0Gg/aRmrzOoS9BOhDrJkrfSsducyRIXJb03Wm06EbWrn1gJBz30qxBmA==
+X-Received: by 2002:a17:907:d8a:b0:abb:aef3:6052 with SMTP id a640c23a62f3a-abeeef81b5emr99428266b.55.1740530122412;
+        Tue, 25 Feb 2025 16:35:22 -0800 (PST)
+Received: from [26.26.26.1] (ec2-3-73-218-181.eu-central-1.compute.amazonaws.com. [3.73.218.181])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-abed20b5cc5sm226238966b.168.2025.02.25.16.35.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Feb 2025 16:35:21 -0800 (PST)
+Message-ID: <f77cc212-deb0-47a7-90fa-8d76bc891564@gmail.com>
+Date: Wed, 26 Feb 2025 08:35:17 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|DS0PR12MB9057:EE_
-X-MS-Office365-Filtering-Correlation-Id: c6204de1-57a0-49e6-154e-08dd55fa4c7c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|1800799024|376014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?VFdxdDlMbHFlUUNWVGhhekFWNm5KWWlaZmFBcGMrOUF4UUJ5Y3BURTIzS3J1?=
- =?utf-8?B?NzNyWUtjVncydjZqejZhVG41MW44b0N5V3NJdERybkQrTEJNUkF6M3lZeC9N?=
- =?utf-8?B?S2VOSkV1Rnc3Nm1oVWRjZVR1SU1UQy9rKzYzclFWamQzL0JVRzF1UFZkU1BK?=
- =?utf-8?B?QWZTOVUyTHVFcEVQQVVRdURaSXdoOSs3NjlLMlFldlFJdU1PRTYwbWNycGN2?=
- =?utf-8?B?SnluaU4xQkhBeXlzcEdZWTlVeThhV2w1ZGRaK3Irc0V2NFR5NXdMUUhqaThH?=
- =?utf-8?B?bzZrbzFpOU5MVy81WENYM21HQk0yVUx2Q1ZpY3pOd2M4QzhSSEdYZlJCeDIr?=
- =?utf-8?B?Q3ptWFc4Q3QzcittV3VTaDBPUEZybzQzQ1o1YkxhalVUdWs5MTR2ZlRBUVpN?=
- =?utf-8?B?M1l6b0MvSEpzQWZWeGlIUEhWZ0ZzbDdlSzlRV05tMW9pMVl2WVhnWDlpTjV5?=
- =?utf-8?B?bXJlWlZtdjlkMFpkZ3hvNzNPMi9KODFONWNlMjg0djJRb1JSTmE1eWlGMDA4?=
- =?utf-8?B?RGswZHpNcnBLUEQwMEJCR1pNcE0xWGpSNThjdndlajV4SWlwOVkzRFc0OHVj?=
- =?utf-8?B?dnRkOWJKN1ZjUWU2b1NWc0pIazFEWnZFVmNNNW1lYi9DOElnZ2lKajVvSXF2?=
- =?utf-8?B?dWQ0QzIzK0xrd2F0TkphczU1OG5QdURSSmhDQkQ2di9qSDZhMEMzTjFjRUlB?=
- =?utf-8?B?WnBlMlFTamlIcEtLbkRBRGNpUUhCQUFGc3UrUjdQSW9wYnRrK2NWYlhEWVZw?=
- =?utf-8?B?QWRlbkgyTGRFZjY0bGJ0TTFFUkdCVFczb1luT1VUY3lyRkRBTVI5WjNOQTg4?=
- =?utf-8?B?MFdFNkx5QVloZGZDdURqaEhIT1pZYTFlT202NnVaa0ZmK2JFWGN4dlQ2L2sw?=
- =?utf-8?B?WTA2Vi9FdmJnWFI5QmpFSmJDMUpxTFRRTDJ5UVRsOWFNT1BxRUpMUGhqNkUy?=
- =?utf-8?B?dGE4cjNESTRwZktKazhFQzRjY005SjlNZFlJckhnNWI3U3hrZS9yNXQxdCti?=
- =?utf-8?B?N0tNOHRya3ZPekIwYk1KQnVvcEgwVkUwcW9ZWVV0Y3laaVJvWjdqK3k5Z0V6?=
- =?utf-8?B?aU5IMUUwNlpHMUhLbmxFejgrQ2ExRmxreFYzQTF3dThSenlFZU9IVEs0amRV?=
- =?utf-8?B?SzF0MDNFR2h1dHUzWW1PU3dKWElyT0J4U0F5YTBjb28zeTEvOWlxcWIyZzA4?=
- =?utf-8?B?T2NsOE5acldHZHJGcStJL0JWRVA2d3NLWUZielB5M3ZHTEpXSnRCTHNVVFla?=
- =?utf-8?B?OVdlZ2xYazhYenY4amc2NHhBVHFNT09oOWV5N3dWMVkwYWVBMjR1VnhaNXVr?=
- =?utf-8?B?UnQvdHExVTljZ3FqRkJzbzVOQVRhV2pORzk1aTJ0ODIrVGkreHp5WFZER0kr?=
- =?utf-8?B?TkNqd2ZHbFlOZzZTM2NJWVN3c2hMaUk0c2RweFROa09uaW5sL0FOVlhYNEhq?=
- =?utf-8?B?Nk5talZ4a2xrUmFxUlJkUUpGTDF6Y0lNR0N5ZE8zMEFRdlJjZlRTVzBXaGNp?=
- =?utf-8?B?N2djNUI1YURURE1UU1lLSHA1TXdib1FTOU1wbzJuSGhFUlhOMWhBY3FDWDJy?=
- =?utf-8?B?TDVjTER3VHQ1Tm5zc3BhUUlVblAzN1BTTlFhNWkyVjdZNjUzcStkQkNIZk84?=
- =?utf-8?B?azJ4TnlHUTNBczhlS1MwVEl5K2dXbWRSekpJZ0RCY05UcllXK0ZXcnkwTmFn?=
- =?utf-8?B?YVZ5ZEM1KzdVOS85cHR5NnFDZW9xYUc1YmJSN0ZFZjVyZE5qRzNmTk14U1h4?=
- =?utf-8?B?Z1ZrRzh4Wi9DR05IVTZxWi8wRVY2U1dzSytlQnhCTlBCbDNkNExxS21mQWYw?=
- =?utf-8?B?c0V6NWtZRmxCdHF3OTZLVGg1TENxVmhqdG5pMmczRTBXREFwVzRwV1JrcEM2?=
- =?utf-8?Q?P4fqvM5GkG4CI?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?emNTeStkUzh3TDNZVkxyck5lWlpza0lEc2M0TjQzcmEwTlVZYlg4Qy9VdFVU?=
- =?utf-8?B?Z09vVU5UYWJITnVLMTBvWWR6bWgwVEVRVGVqV0FlTkQ3MVRrUXhuZjI2Z2Fu?=
- =?utf-8?B?S0NmR2dOMEVWOGorTWdnZVlqRDFOZmd3alVuSzdQNDRyS09nTDVCc3pYNDd6?=
- =?utf-8?B?NXlvWGJSRXZiSlgwaHpVaHVxSWZENkhuS1RscndGUC9USjNCN1hCZEJtdDd4?=
- =?utf-8?B?V05VNG1TbkZOSk5oVnBmajRKRndFeURyM1JYV2hzWkJKTndXNjFIMitXdk9V?=
- =?utf-8?B?aEpEeFZxZUwrVlozL1Jlek50emkxZEJwWnB5RXBWcHhCSFluc2NYSDZEVWY3?=
- =?utf-8?B?M29ieFpCYXRYeTdSNi9BaGxMQUlUTFhYcjlnbUVQcXZrVUJxaFp0K0dUSFBV?=
- =?utf-8?B?byt2aS9pNTM1M1hMUndINXQxVVRlNUZxWSs4bDY0U0dIdkZqbmsrbDFZNG5G?=
- =?utf-8?B?MU5SSm9mb1gwaGprem50dGN2RUFWbEhkZzFOTHFNSTltMGtRYlFNRytHRUJR?=
- =?utf-8?B?eVBnQUxKOERYMTIvN2I3OC9aTy9hNE9PaGpPNDk5Wk10TWtFaFlUbVU1WFo2?=
- =?utf-8?B?a0R0NUVST3gva09wV2VPV2lla1E3ZjJEaC9IdmVXSVVET2FHMHVpYjdqNDlS?=
- =?utf-8?B?VHUrb1EveThTakh0dktYQ2xMZjBRd1AzM25YWkZaSGV3eVNvK1NYbDVlV1FC?=
- =?utf-8?B?R3VNRkg2ck5JemVoVVMyR0dhbnpuYTJld0lsdTQrNmtHUVk5YWxhQTNVaFpV?=
- =?utf-8?B?dEpSSGNqN3BEdWVyNHNCTyt0eFhYazV1VlU2TTZvekIrVzdHd0VQcXZ1UlBC?=
- =?utf-8?B?WVhRekkwR1pCa3l5OWFaTDg3eWZSM09VUXZIeFFXbnZoS2d1WEVDQ3VJdEJE?=
- =?utf-8?B?aTliVGNvQmlNZmtHdU1BaS82bElsNU4yR3dpM2ZpNFZmZFBmTkRXTDg0UHh2?=
- =?utf-8?B?dWtWRnorNVZZd1lmUWpSTmVHVjJXdmdKdFZYN29zUjJQeUFuWHQ3akRoUXZ6?=
- =?utf-8?B?M1FmUGkzekVVU1d4aDVkZEJaUWdvU2l6N3NVT2VucCtlTzFZSWFTalVNQktF?=
- =?utf-8?B?djgvRDNhTkwycWV4b0Z0Y09ONEJlc3gxc0ROaURheEdRMnJNb3l4K3BzVFhV?=
- =?utf-8?B?NkExNjE4MkVzcHZ5TkI2NHdYaWt3SDY1MjAxckM0WnJSNXl4dWxKZXJHMXJU?=
- =?utf-8?B?VFVrVzJVZ0JrVXhXajdlMzNHK3RZWnhWSHpGeCt1SEw2MU5XZTcyUjRaUWtY?=
- =?utf-8?B?V0xmaDUrNSswUmdodUkwOTErbVBTUzVFTGh1Tk1uRk5EWWVxY0tDYkVsNkc2?=
- =?utf-8?B?TDZTRm1kanpCYjBCYVV5NmJaa1dOR3BlaXlqdXk1YkVaRVFJZStRQU1jWHhJ?=
- =?utf-8?B?Qmk2aVByNndyeExvQ1JzQ1ZDSzdrejJiTDFIcmczcnk0UnlxYnN5RmFkSURy?=
- =?utf-8?B?d1hNOFYzUlJpdmZPOFd4ZUpmQnV2WEZWNFJvcWlqalR3SmhpUnRmcFFQcGVC?=
- =?utf-8?B?bEhjZlZFSnB3dXlJcWlFOGoxVVd0bkp2SHRjbm5pNDNSbXVmM3hNa0ZLYmJn?=
- =?utf-8?B?Vmt4VFFDcy9ESFR1N1RzaW04cHI3Wmxtck9LY0pBVXVmUTVKVDFlTXB6UnBx?=
- =?utf-8?B?M0N5bW9ZRU5zNkYzM0d5MitmelF5RTVZNTdGWFdzMGdaanNqczhTL2krZTdC?=
- =?utf-8?B?YTk1cHVCekRBQ0toQVZsQmtMZTJaRS9SVzRPWHFTMU1SWk53aXFsaFpIMkRB?=
- =?utf-8?B?eXU5VEhsejIwWTI3cHpJSXFTakdsbE9vSmcvYlhGdXpNMWE4VU93RE92NVpJ?=
- =?utf-8?B?c0dOT1pTVHFQQmhvL0RvZC9ydlRxS2pzZE5uaUwreW11andDY1V2bEpEVmlz?=
- =?utf-8?B?Wnd1OW5qQk0zM2s0am5kS3pNUkQ1cDBycDZFRlN0TWZ2NU5aTm44ZFNzVmVx?=
- =?utf-8?B?eDRSQnRkYVdRZFpIMFZNSGpFQWdkWXVEQTRiZ0RnMWlpL01VZW9xRThicUlW?=
- =?utf-8?B?bE1DRzBYNHVxVmp2NkJCVmhZLzJZbGJ6Q3U4TW5JZlVaMXU4RmVoMWplbTFh?=
- =?utf-8?B?d1Z5elprd3FIeXBWOFluRy81WGROK0Z4RDNiNHovQWluRXdDMjY1aGFaODFO?=
- =?utf-8?Q?IihUNCeHOR0L2zBsqQl0UduEj?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c6204de1-57a0-49e6-154e-08dd55fa4c7c
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2025 00:12:47.4196
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Iv9nzcqui3z1RYj15dmT6awlHox96/OYqmD05N0dlgQ2rgJKlY+IaL/AAnpBrLiaY4vwPa+sKpKzABuTVq1xTA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB9057
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu/vt-d: fix system hang on reboot -f
+To: Jason Gunthorpe <jgg@ziepe.ca>, Ethan Zhao <haifeng.zhao@linux.intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Yunhui Cui
+ <cuiyunhui@bytedance.com>, dwmw2@infradead.org, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20250225064831.63348-1-cuiyunhui@bytedance.com>
+ <0691a295-0883-47b3-84a6-47d9a94af69a@linux.intel.com>
+ <c059fb19-9e03-426c-a06a-41f46a07b30a@linux.intel.com>
+ <20250225142610.GB545008@ziepe.ca>
+Content-Language: en-US
+From: Ethan Zhao <etzhao1900@gmail.com>
+In-Reply-To: <20250225142610.GB545008@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+On 2/25/2025 10:26 PM, Jason Gunthorpe wrote:
+> On Tue, Feb 25, 2025 at 04:54:54PM +0800, Ethan Zhao wrote:
+>>> On 2025/2/25 14:48, Yunhui Cui wrote:
+>>>> We found that executing the command ./a.out &;reboot -f (where a.out
+>>>> is a
+>>>> program that only executes a while(1) infinite loop) can
+>>>> probabilistically
+>>>> cause the system to hang in the intel_iommu_shutdown() function,
+>>>> rendering
+>>>> it unresponsive. Through analysis, we identified that the factors
+>>>> contributing to this issue are as follows:
+>>>>
+>>>> 1. The reboot -f command does not prompt the kernel to notify the
+>>>> application layer to perform cleanup actions, allowing the
+>>>> application to
+>>>> continue running.
+>>>>
+>>>> 2. When the kernel reaches the intel_iommu_shutdown() function, only the
+>>>> BSP (Bootstrap Processor) CPU is operational in the system.
+>>>>
+>>>> 3. During the execution of intel_iommu_shutdown(), the function
+>>>> down_write
+>>>> (&dmar_global_lock) causes the process to sleep and be scheduled out.
+> Why does this happen? If the kernel has shutdown other CPUs then what
+> thread is holding the other side of this lock and why?
 
+The down_write() actually executes might_sleep()->might_resched()->__cond_resched()->
 
-On 25/2/25 20:00, Xu Yilun wrote:
-> On Tue, Feb 18, 2025 at 10:10:01PM +1100, Alexey Kardashevskiy wrote:
->> When a TDISP-capable device is passed through, it is configured as
->> a shared device to begin with. Later on when a VM probes the device,
->> detects its TDISP capability (reported via the PCIe ExtCap bit
->> called "TEE-IO"), performs the device attestation and transitions it
->> to a secure state when the device can run encrypted DMA and respond
->> to encrypted MMIO accesses.
->>
->> Since KVM is out of the TCB, secure enablement is done in the secure
->> firmware. The API requires PCI host/guest BDFns, a KVM id hence such
->> calls are routed via IOMMUFD, primarily because allowing secure DMA
->> is the major performance bottleneck and it is a function of IOMMU.
-> 
-> I still have concern about the vdevice interface for bind. Bind put the
-> device to LOCKED state, so is more of a device configuration rather
-> than an iommu configuration. So seems more reasonable put the API in VFIO?
+__schedule() first before acquiring the lock, thus there is change to got scheduled out.
 
-IOMMUFD means pretty much VFIO (in the same way "VFIO means KVM" as 95+% 
-of VFIO users use it from KVM, although VFIO works fine without KVM) so 
-not much difference where to put this API and can be done either way. 
-VFIO is reasonable, the immediate problem is that IOMMUFD's vIOMMU knows 
-the guest BDFn (well, for AMD) and VFIO PCI does not.
+The caller is scheduled out due to voluntary sleep or because its time slice is exhausted,
 
+not because the lock is held by other processes here.
 
->> Add TDI bind to do the initial binding of a passed through PCI
->> function to a VM. Add a forwarder for TIO GUEST REQUEST. These two
->> call into the TSM which forwards the calls to the PSP.
->>
->> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
->> ---
->>
->> Both enabling secure DMA (== "SDTE Write") and secure MMIO (== "MMIO
->> validate") are TIO GUEST REQUEST messages. These are encrypted and
->> the HV (==IOMMUFD or KVM or VFIO) cannot see them unless the guest
->> shares some via kvm_run::kvm_user_vmgexit (and then QEMU passes those
->> via ioctls).
->>
->> This RFC routes all TIO GUEST REQUESTs via IOMMUFD which arguably should
->> only do so only for "SDTE Write" and leave "MMIO validate" for VFIO.
-> 
-> The fact is HV cannot see the guest requests, even I think HV never have
-> to care about the guest requests. HV cares until bind, then no HV side
-> MMIO & DMA access is possible, any operation/state after bind won't
-> affect HV more. And HV could always unbind to rollback guest side thing.
-> 
-> That said guest requests are nothing to do with any host side component,
-> iommu or vfio. It is just the message posting between VM & firmware. I
-> suppose KVM could directly do it by calling TSM driver API.
+>>>> 4. At this point, though the processor's interrupt flag is not cleared,
+>>>>    allowing interrupts to be accepted. However, only legacy devices
+>>>> and NMI
+>>>> (Non-Maskable Interrupt) interrupts could come in, as other interrupts
+>>>> routing have already been disabled. If no legacy or NMI interrupts occur
+>>>> at this stage, the scheduler will not be able to run.
+>>>> 5. If the application got scheduled at this time is executing a
+>>>> while(1)-
+>>>> type loop, it will be unable to be preempted, leading to an infinite
+>>>> loop
+>>>> and causing the system to become unresponsive.
+> If the schedular doesn't run how did we get from 4 -> 5?
 
-No, it could not as the HV needs to add the host BDFn to the guest's 
-request before calling the firmware and KVM does not have that knowledge.
+We got from 4-->5 because caller thread's voluntary invocation of the scheduler.
 
-These guest requests are only partly encrypted as the guest needs 
-cooperation from the HV. The guest BDFn comes unencrypted from the VM to 
-let the HV find the host BDFn and do the bind.
+>
+> Maybe the issue is the shutdown handler here is running in the wrong
+> time and it should not be running after the scheduler has been shut
+> down.
 
-Also, say, in order to enable MMIO range, the host needs to "rmpupdate" 
-MMIOs first (and then the firmware does "pvalidate") so it needs to know 
-the range which is in unencrypted part of guest request.
+Move thex86_platform.iommu_shutdown() before hpet_disable() ?
 
-Here is a rough idea: https://github.com/aik/qemu/commit/f804b65aff5b
+I didn't figure out why we need scheduler is active when we execute
 
-A TIO Guest request is made of:
-- guest page with unencrypted header (msg type is essential) and 
-encrypted body for consumption by the firmware;
-- a couple of 64bit bit fields and RAX/RBX/... in shared GHCB page.
+iommu_shutdown(), or the reason to keep this pair of down_write()/
+
+up_write(). could you help to shed light ?
 
 Thanks,
+Ethan
 
-> Thanks,
-> Yilun
-
--- 
-Alexey
-
+>
+> I don't think removing the lock is a great idea without more
+> explanation.
+>
+> Jason
+>
