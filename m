@@ -1,131 +1,227 @@
-Received: from pv50p00im-ztdg10011301.me.com (pv50p00im-ztdg10011301.me.com [17.58.6.40])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98E3B21507D
-	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 11:30:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=17.58.6.40
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E50D6215050
+	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 11:40:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740569439; cv=none; b=FqHAyGEP8Drhq0zo8nGU6SlhoIWq+FbuzAtEkQIl/voEyDnUUqcjHOqN7wzwMn1hw6nlogFuWGE8vsd6qxKrjOzdxmhck5Mwv46SCCR7tvSQMp3OygyA+wZd30c8IkCqYPmiMbbj5XQBYdFl3D31Krw4KAE6T8o0adxIxTqN+CU=
+	t=1740570037; cv=none; b=NFlWi2bbvN55KB9/cyYMHG7BUrzgtg5DBKJs4610DeUvrwoBXq+oeZkCu+1wRIsAa2iZcrPgkCzZ79u1Y2e+gsPDBJmMHbDVBH27//t8RT8kWwrx53lG+XS/U/UnEackg/xD0PBkraKOuyNcxE+m7jGNZL8a/gFShzZkSGAmpBo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740569439; c=relaxed/simple;
-	bh=SNcREccD3RAme9xYt3R+kilxl7SAdbri9ontWGXnon8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NATwmVanCs5baVK1/l8S0p3WIm48X6Se3M3TuL+tlPtnraRmF931pCL2aMWQwSe9vqJrPLCmJx0/Zi9JXc8jioWVX03fNH3wPZNG9GQRtgTKZNBTH4ik0dJK9xF3fHxW3YOGNm4YwsYVh0ANh1xNqZWlZfnAhvqryHoWMPwSq/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=rWtw35VN; arc=none smtp.client-ip=17.58.6.40
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
+	s=arc-20240116; t=1740570037; c=relaxed/simple;
+	bh=n4AqpTTORWeYv/AXnsauUf5eDQuFzongVKro8HhUcy8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=XKSnOhAFht4pWFkikbmjyP6p+8OzDF5xOnqgWa1YxVhllmEu3xD2Bcng28SGFY9X6fzd/XoKSOMwZboTCOqpzzwhn176f1mNf7UUSZ6dDOWGO3vnA5Dy3ff7tZqQD8VdsyZoKpjVr0hIp7CSXGmNCFdTNPCx29IYamoAydDs+Cw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g/Zh/3uU; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="rWtw35VN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
-	s=1a1hai; bh=SOdlXl7RXO630hj2D8KbTA/iuYN0f3n9ChpjV2oMRbU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type:x-icloud-hme;
-	b=rWtw35VN5C7ebUryxGYabBiGNkfRxevNXaKu3lmmbcfRwCfqvGmsARTKGVlEDc3vJ
-	 IUw+i/jF2/O7wPykYL7GtrScwR7YHPk2KZArZBlYEByVg4HG2euMsCf4SLAhxqqINe
-	 T4aLRNRVMNlFJyn+/hO3Lmf6LkZiGLt8eWLCMvUUCNYIgCuhqhS16/5+FYQBrqDBv9
-	 cTNT5EvlskIwUWEEZthrUNkKMbaMBoPHtGY9C1f3/Wkj+mhDFLP1F1CqAqbIZvoN+x
-	 V8XpPNLsrc2QkugOEEdKPXC0Zg7dBaQpmDQ+gMVmCM7ShlzUTzFJzMqx6xBRgIBMy+
-	 ioIbkere3zE9w==
-Received: from [192.168.1.26] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-	by pv50p00im-ztdg10011301.me.com (Postfix) with ESMTPSA id EAC1C18036A;
-	Wed, 26 Feb 2025 11:30:23 +0000 (UTC)
-Message-ID: <d70d059e-37aa-431d-986c-5666f006d610@icloud.com>
-Date: Wed, 26 Feb 2025 19:30:20 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g/Zh/3uU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1740570036; x=1772106036;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=n4AqpTTORWeYv/AXnsauUf5eDQuFzongVKro8HhUcy8=;
+  b=g/Zh/3uUbFSsn3uo4nt8mO80ekENLQBemzxXnZG6BlclEiPXiQYeXn4+
+   /tK+X30lWO94V72prWT/Heh4IPUiMDfC1ewOdtZ9RNWFMqnPnD1FjdyOL
+   RjBoOP+JSXS54Loiy1Xw7e3LQfFR8w2cEil0EbqNFkUKjDA3XYiDpqX25
+   ybCJuN2/OEqhwsg/gwK7otLXrtbGKNj7gm4VH7UP0LEm09lxDs9DJ355l
+   8cvT+p/JTRDN3VJAUoblMiP2xnBHpsJ7lQTM2vk8G3Sqv2Vv1ehQKbeZ1
+   qqlVywJz02364u7Z42KxjCmrL78F/1R1UWxT1O9Fh7nUnWeYpQVuMqrq6
+   g==;
+X-CSE-ConnectionGUID: ua7R8CPOSDe4gyPFsqTxsg==
+X-CSE-MsgGUID: NZ9Q8SzkTAygwr/vHGPwww==
+X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="52827076"
+X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
+   d="scan'208";a="52827076"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 03:40:34 -0800
+X-CSE-ConnectionGUID: /DLs4nc+QFuC0Agg51fFaw==
+X-CSE-MsgGUID: YraHlBIeRxSBG4s0gF9ESw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="117171571"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orviesa007.jf.intel.com with ESMTP; 26 Feb 2025 03:40:34 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: kevin.tian@intel.com,
+	jgg@nvidia.com
+Cc: joro@8bytes.org,
+	baolu.lu@linux.intel.com,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	nicolinc@nvidia.com
+Subject: [PATCH v8 00/12] iommufd support pasid attach/replace
+Date: Wed, 26 Feb 2025 03:40:20 -0800
+Message-Id: <20250226114032.4591-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH *-next 01/18] mm/mmu_gather: Remove needless return in
- void API tlb_remove_page()
-To: Przemek Kitszel <przemyslaw.kitszel@intel.com>
-Cc: Zijun Hu <quic_zijuhu@quicinc.com>, Peter Zijlstra
- <peterz@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Will Deacon <will@kernel.org>, "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
- Andrew Morton <akpm@linux-foundation.org>, Nick Piggin <npiggin@gmail.com>,
- Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>,
- Herbert Xu <herbert@gondor.apana.org.au>,
- "David S. Miller" <davem@davemloft.net>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
- Johannes Berg <johannes@sipsolutions.net>,
- Jamal Hadi Salim <jhs@mojatatu.com>, Cong Wang <xiyou.wangcong@gmail.com>,
- Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
- Leon Romanovsky <leon@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Lee Jones <lee@kernel.org>,
- Thomas Graf <tgraf@suug.ch>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Miquel Raynal <miquel.raynal@bootlin.com>,
- Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>,
- linux-arch@vger.kernel.org, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
- netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
- linux-rdma@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-pm@vger.kernel.org, iommu@lists.linux.dev,
- linux-mtd@lists.infradead.org
-References: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
- <20250221-rmv_return-v1-1-cc8dff275827@quicinc.com>
- <20250221200137.GH7373@noisy.programming.kicks-ass.net>
- <8f36be7c-6052-4c5d-85ff-0eed27cf1456@icloud.com>
- <20250224132354.GC11590@noisy.programming.kicks-ass.net>
- <a28f04e5-ccde-4a08-b8fa-a9fa685240b1@icloud.com>
- <15c121c7-aeed-480e-8b1a-8ff23b4a3654@intel.com>
-Content-Language: en-US
-From: Zijun Hu <zijun_hu@icloud.com>
-In-Reply-To: <15c121c7-aeed-480e-8b1a-8ff23b4a3654@intel.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: BXt7ADwYEBiuzX8MsPltF1M0d6Q_8HN4
-X-Proofpoint-ORIG-GUID: BXt7ADwYEBiuzX8MsPltF1M0d6Q_8HN4
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-02-26_02,2025-02-26_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0 phishscore=0
- clxscore=1015 suspectscore=0 mlxscore=0 adultscore=0 mlxlogscore=993
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2308100000 definitions=main-2502260092
 
-On 2025/2/26 01:27, Przemek Kitszel wrote:
->>>>> It might not be your preferred coding style, but it is not completely
->>>>> pointless.
->>>>
->>>> based on below C spec such as C17 description. i guess language C does
->>>> not like this usage "return void function in void function";
->>>
->>> This is GNU extension IIRC. Note kernel uses GNU11, not C11
->>
->> any link to share about GNU11's description for this aspect ? (^^)
-> this is new for C17 or was there for long time?
-> 
+PASID (Process Address Space ID) is a PCIe extension that tags the DMA
+transactions from a physical device. Most modern IOMMU hardware supports
+PASID-granular address translation. This allows a PASID-capable device
+to be attached to multiple hardware page tables (hwpts, also known as
+domains), with each attachment tagged by a PASID.
 
-Standard C spec has that description for long time.
-Standard C11 spec also has that description.
+This series builds on previous series [1] [2]. It begins by adding a missing
+IOMMU API to replace the domain for a PASID. Utilizing the IOMMU PASID
+attach/replace/detach APIs, this series introduces iommufd APIs for device
+drivers to attach, replace, or detach PASIDs to/from hwpts at the request
+of userspace. It also enforces PASID compatibility with domain requirements,
+allocates PASID-compatible hwpts in iommufd, and includes self-tests to
+validate the iommufd APIs.
 
-> even if this is an extension, it is very nice for generating locked
-> wrappers, so you don't have to handle void case specially
-> 
-> void foo_bar(...)
-> {
->     lockdep_assert_held(&a_lock);
->     /// ...
-> }
-> 
-> // generated
-> void foo_bar_lock(...)
-> {
->     scoped_guard(mutex, &a_lock)
->         return foo_bar(...);
+The complete code is available at the following link [3]. Please note that
+the existing iommufd self-test was broken, and a temporary fix patch is at
+the top of the branch [3]. If you wish to run the iommufd self-test, please
+apply that fix. We apologize for any inconvenience.
 
-above is able to be written as below:
-      scoped_guard(mutex, &a_lock) {
-	foo_bar(...);
-	return;
-      }
-> }
-i will list my reasons why this usage "return void function in void
-function" is not good in cover letter [00/18] of this series.
+[1] https://lore.kernel.org/linux-iommu/20250226011849.5102-1-yi.l.liu@intel.com/
+[2] https://lore.kernel.org/linux-iommu/20250226050130.5814-1-yi.l.liu@intel.com/
+[3] https://github.com/yiliu1765/iommufd/tree/iommufd_pasid
 
+Change log:
+
+v8:
+ - Rebase on top of the dependency patch series
+ - Check both handle and domain in the iommu_replace_device_pasid_handle()
+   to support replace between domain and handle.
+ - Fix a typo in patch 02 of v7 (Kevin)
+ - Dropped patch 11 0f v7 as it is included in a series to add iommufd
+   selftest to cover replace between domain and handle.
+ - r-b tag on patch 01 of v7 (Kevin)
+ - Add selftest for replace between handle and non-handle case
+
+v7: https://lore.kernel.org/linux-iommu/20250216035228.23831-1-yi.l.liu@intel.com/
+ - Remove the iommu_attach_handle related refactors, as they have been addressed
+   by Nic's series.
+ - Address the comments on patch 01 of v6 in a separate series [1]. Store either
+   the domain or handle in group->pasid_array, and swap the order of setting
+   group->pasid_array and invoking the attach operation of IOMMU drivers.
+ - Introduce iommu_attach_device_pasid_handle() and iommu_replace_device_pasid_handle(),
+   and remove iommu_replace_device_pasid() since iommufd consistently uses the
+   _handle() API.
+ - Add patch 04 to include reserved_iova only for the RID path, as the underlying
+   helpers are shared by both the RID and PASID paths, but only the RID path needs
+   to add reserved_iova.
+ - Remove the iommu_dev.max_pasids check in patch 11 of v6. The mock IOMMU always
+   supports 20-bit PASIDs, so there is no need to verify PASID support in the mock
+   IOMMU driver. Additionally, the IOMMU_HWPT_ALLOC_PASID flag does not imply PASID
+   support, so it should be removed to avoid misleading IOMMU driver programming.
+
+v6: https://lore.kernel.org/linux-iommu/20241219132746.16193-1-yi.l.liu@intel.com/
+ - Add kdoc to iommufd_device_get_attach_handle() to note the returned handle
+   should be used with care. (Baolu)
+ - Reworked the patch 07 and 08 of v5 to avoid domain allocation failure on VT-d
+   after applying patch 07 of v5.
+     1) Split out the intel iommu driver IOMMU_HWPT_ALLOC_PASID support out of
+	patch 08
+     2) Rework the PASID-compatible domain enforcement by checking the RID domain
+	and idev->pasid_hwpts under the idev->igroup->lock.
+ - iommufd_device_pasid_do_attach() returns -EINVAL if there is old hwpt and it's
+   not the same with new hwpt. This aligns with how the iommufd_device_do_attach()
+   deals it. Otherwise, attaching the same pasid to the same ioas is going to fail
+   before the auto_domain loop goes to the correct hwpt. Thsi is not reasonable. So
+   make this change.
+ - Enhanced the pasid selftest to have non-pasid-capable device and pasid-capable
+   device.
+ - The order of the series is tweaked to be prepare the iommufd for pasid attach,
+   add pasid attach, add PASID-compat domain enforcement and then add the PASID-compat
+   hwpt allocation.
+ - Rebased on top of 6.13-rc3 and some already applied patches.
+
+v5: https://lore.kernel.org/linux-iommu/20241104132513.15890-1-yi.l.liu@intel.com/
+ - Fix a mistake in patch 02 of v4 (Kevin)
+ - Move the iommufd_handle helpers to device.c
+ - Add IOMMU_HWPT_ALLOC_PASID check to enforce pasid-compatible domain for pasid
+   capable device in iommufd
+ - Update the iommufd selftest to use IOMMU_HWPT_ALLOC_PASID
+
+v4: https://lore.kernel.org/linux-iommu/20240912131255.13305-1-yi.l.liu@intel.com/
+ - Replace remove_dev_pasid() by supporting set_dev_pasid() for blocking domain (Kevin)
+	- This is done by the preparation series "Support attaching PASID to the blocked_domain"
+ - Misc tweaks to foil the merging of the iommufd iopf series. Three new patches are added:
+	- iommufd: Always pass iommu_attach_handle to iommu core
+	- iommufd: Move the iommufd_handle helpers to iommufd_private.h
+	- iommufd: Refactor __fault_domain_replace_dev() to be a wrapper of iommu_replace_group_handle()
+ - Renmae patch 03 of v3 to be "iommufd: Support pasid attach/replace"
+ - Add test case for attaching/replacing iopf-capable hwpt to pasid
+
+v3: https://lore.kernel.org/kvm/20240628090557.50898-1-yi.l.liu@intel.com/
+ - Split the set_dev_pasid op enhancements for domain replacement to be a
+   separate series "Make set_dev_pasid op supportting domain replacement" [1].
+   The below changes are made in the separate series.
+   *) set_dev_pasid() callback should keep the old config if failed to attach to
+      a domain. This simplifies the caller a lot as caller does not need to attach
+      it back to old domain explicitly. This also avoids some corner cases in which
+      the core may do duplicated domain attachment as described in below link (Jason)
+      https://lore.kernel.org/linux-iommu/BN9PR11MB52768C98314A95AFCD2FA6478C0F2@BN9PR11MB5276.namprd11.prod.outlook.com/
+   *) Drop patch 10 of v2 as it's a bug fix and can be submitted separately (Kevin)
+   *) Rebase on top of Baolu's domain_alloc_paging refactor series (Jason)
+ - Drop the attach_data which includes attach_fn and pasid, insteadly passing the
+   pasid through the device attach path. (Jason)
+ - Add a pasid-num-bits property to mock dev to make pasid selftest work (Kevin)
+
+v2: https://lore.kernel.org/linux-iommu/20240412081516.31168-1-yi.l.liu@intel.com/
+ - Domain replace for pasid should be handled in set_dev_pasid() callbacks
+   instead of remove_dev_pasid and call set_dev_pasid afteward in iommu
+   layer (Jason)
+ - Make xarray operations more self-contained in iommufd pasid attach/replace/detach
+   (Jason)
+ - Tweak the dev_iommu_get_max_pasids() to allow iommu driver to populate the
+   max_pasids. This makes the iommufd selftest simpler to meet the max_pasids
+   check in iommu_attach_device_pasid()  (Jason)
+
+v1: https://lore.kernel.org/kvm/20231127063428.127436-1-yi.l.liu@intel.com/#r
+ - Implemnet iommu_replace_device_pasid() to fall back to the original domain
+   if this replacement failed (Kevin)
+ - Add check in do_attach() to check corressponding attach_fn per the pasid value.
+
+rfc: https://lore.kernel.org/linux-iommu/20230926092651.17041-1-yi.l.liu@intel.com/
+
+Regards,
+	Yi Liu
+
+Yi Liu (12):
+  iommu: Add iommu_attach_device_pasid_handle()
+  iommu: Introduce a replace API for device pasid
+  iommufd: Pass @pasid through the device attach/replace path
+  iommufd/device: Only add reserved_iova in non-pasid path
+  iommufd: Mark PASID-compatible domain
+  iommufd: Support pasid attach/replace
+  iommufd: Enforce PASID-compatible domain for RID
+  iommu/vt-d: Add IOMMU_HWPT_ALLOC_PASID support
+  iommufd: Allow allocating PASID-compatible domain
+  iommufd/selftest: Add set_dev_pasid in mock iommu
+  iommufd/selftest: Add test ops to test pasid attach/detach
+  iommufd/selftest: Add coverage for iommufd pasid attach/detach
+
+ drivers/dma/idxd/init.c                       |   2 +-
+ drivers/iommu/intel/iommu.c                   |   3 +-
+ drivers/iommu/intel/nested.c                  |   2 +-
+ drivers/iommu/iommu-priv.h                    |   4 +
+ drivers/iommu/iommu-sva.c                     |  10 +-
+ drivers/iommu/iommu.c                         | 121 +++++-
+ drivers/iommu/iommufd/Makefile                |   1 +
+ drivers/iommu/iommufd/device.c                | 139 ++++---
+ drivers/iommu/iommufd/hw_pagetable.c          |  15 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  32 +-
+ drivers/iommu/iommufd/iommufd_test.h          |  37 ++
+ drivers/iommu/iommufd/pasid.c                 | 155 ++++++++
+ drivers/iommu/iommufd/selftest.c              | 238 +++++++++++-
+ include/linux/iommu.h                         |  34 +-
+ include/linux/iommufd.h                       |   7 +
+ tools/testing/selftests/iommu/iommufd.c       | 350 ++++++++++++++++++
+ .../selftests/iommu/iommufd_fail_nth.c        |  46 ++-
+ tools/testing/selftests/iommu/iommufd_utils.h | 123 ++++++
+ 18 files changed, 1230 insertions(+), 89 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/pasid.c
+
+-- 
+2.34.1
 
