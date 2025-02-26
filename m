@@ -1,47 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EFF14A21
-	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 01:18:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B944032C8B
+	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 01:18:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740532733; cv=none; b=rIvqWsAhNdGgzWYyuT1e3paK3FegU1bElrlauwiZDpFCpmQEFEsm13CYNI6GaKmOOe/0snI5j8XWumWU1o+vaSw0XUBO0HfiMjWZosFcAPy+n/48SyUbk8o9sPTZhetbdpFVWLZtUltQdP+SdTwxJiRro94R5k7XgJaHqLzVK74=
+	t=1740532734; cv=none; b=o8VzS62W4hQNSWhLtPuGnDE8fLWfyFZa7cafW4XCkOBQerG6ZZ2RYen4IIy5YLxF0I5wJOdRU42lCQmm8/tpdbiDGeSKSzUQzjXB4bcjHiqab14W6BzZLPBX+hqC6P4KIptqfVcWoLlaQXPH4GkHzIvObO2S96LEsrDUZS9IrVM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740532733; c=relaxed/simple;
-	bh=xI3+lP0+x6N0tCgXxzXZHSssPG9C7gh3XR0xzKwKi7w=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=KUNXa2v0d8Sb3gRrhI8AOTNiTtMAOLfXY+I2VyIA8u2567fXjGjgrPVB8Ip2ZE9kyq5H7hOjPN5xaXmvwN+06jwr5OiN2SDwngi+uVo9FGHPV2SZZz1KfDblQis5+S7O2ugJQtWZ4+yu5z8hxeLdkIMOTsUFT5sWP2r4HVpdiXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ky1z9oxK; arc=none smtp.client-ip=198.175.65.15
+	s=arc-20240116; t=1740532734; c=relaxed/simple;
+	bh=+LsfqUDiJzon8KRS007gdndgpyMsWqiFGKf123XdQJs=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=hb3de75pmpLvr6Bnc2Yeq2P/HMYl5NM4JYXiYDWuBxSPWy1WLqzjYg7ydyXkQXB9GDZ2YyVE+e1jw3O1CjKDpvGjQZLBwYvfKg7WSxxoSXJ/qtOJPqZr2yR9D3MuBTfwNLcvNL34Hu6u4LVg/qj8nCOVHBgvLX5NNnmFfY6FhuA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=F5uHSnV5; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ky1z9oxK"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F5uHSnV5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740532731; x=1772068731;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xI3+lP0+x6N0tCgXxzXZHSssPG9C7gh3XR0xzKwKi7w=;
-  b=ky1z9oxKlhWM/MGpJAhbtm0Aln0DBpNTtQmki4xtFYbA/DjAbiCsKHVt
-   xQfjmIKlLSHrtSIsAvwc6YyV+TAuQJ0M0SoKSvDuuxx9K2pVLbSqDJdy9
-   bkpOFqIblhuNNO3IOiksZxErq8T3dJ8eV/b8+00Pl3D5vVyDhi0ap7mrJ
-   GEgGiRVtih4PoUDcGvBEcVBS+Fq68Xrspky/LUfnIB5yzfONjmcyXrNZB
-   ztWY4eHBOHns7Kotd6HjDEYg88wDpd25duyE5s9VeAz/cecbweAQZxRmy
-   8E9+9vYf0FT28eKhoG3ZJPR+R3/937YXee9cu3Nrp2K7OM6z/kHWJRKcn
-   g==;
-X-CSE-ConnectionGUID: 0DYThWKBRv+AthzYJ8fZHA==
-X-CSE-MsgGUID: 3aG6rcZZQSKKs7AxV5AZTg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11356"; a="45015857"
+  t=1740532733; x=1772068733;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+LsfqUDiJzon8KRS007gdndgpyMsWqiFGKf123XdQJs=;
+  b=F5uHSnV5hns4i3bA/N1sTtnWuG/Z8E1pCHH601C/467Ny+yqNXZ0udYC
+   rZkaAiTFa/Q1/IR00p1wPdzbPkySSLzSK6bYQtclLdzSEBIK9iya6b+J6
+   vl+yzB0s+nTkLehM4/wPbtkEgg/mrOFc396M09DMOrhmjHzeB/ZNLxvX3
+   7N49h67lLuXUF5Chr9tY8Twpxzc4cqevtqea6+FSE4lTO4sZwMDZaKaC9
+   kALDZAUvK3amEqZitJJeQz5VtnAXR4OgWW5/Zytnh1+EwnUmmg8KOWRuw
+   mnKe2/7AU6JO1/Fq/3gQjfJEyOSr2OUgUk/fhxGRzb+oFoS4WIfxHHJdS
+   w==;
+X-CSE-ConnectionGUID: XkRAlmFRQCmG4mZ/TrhwZQ==
+X-CSE-MsgGUID: xDlv08i3T7CRfmBp/bj0WQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11356"; a="45015862"
 X-IronPort-AV: E=Sophos;i="6.13,316,1732608000"; 
-   d="scan'208";a="45015857"
+   d="scan'208";a="45015862"
 Received: from orviesa006.jf.intel.com ([10.64.159.146])
   by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2025 17:18:51 -0800
-X-CSE-ConnectionGUID: qMkMTYirRpuM3KuJeYqcFg==
-X-CSE-MsgGUID: YIekbMwaTmGT/heV6qLEwA==
+X-CSE-ConnectionGUID: TqGIso0kQrqjA4GJ3XoJhg==
+X-CSE-MsgGUID: guzlFdioQCyV6X5YtnDsgg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,316,1732608000"; 
-   d="scan'208";a="116563249"
+   d="scan'208";a="116563252"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa006.jf.intel.com with ESMTP; 25 Feb 2025 17:18:51 -0800
+  by orviesa006.jf.intel.com with ESMTP; 25 Feb 2025 17:18:52 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	jgg@nvidia.com
@@ -52,10 +53,12 @@ Cc: kevin.tian@intel.com,
 	robin.murphy@arm.com,
 	nicolinc@nvidia.com,
 	will@kernel.org
-Subject: [PATCH v3 0/4] Misc iommu_attach_handle enhancements in iommu core
-Date: Tue, 25 Feb 2025 17:18:45 -0800
-Message-Id: <20250226011849.5102-1-yi.l.liu@intel.com>
+Subject: [PATCH v3 1/4] iommu: Make @handle mandatory in iommu_{attach|replace}_group_handle()
+Date: Tue, 25 Feb 2025 17:18:46 -0800
+Message-Id: <20250226011849.5102-2-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20250226011849.5102-1-yi.l.liu@intel.com>
+References: <20250226011849.5102-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,51 +67,59 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This patch series aims to enhance the iommu_attach_handle-related APIs
-in the IOMMU core. The changes build upon Nic's previous series[1], which
-ensured that users of the attach/replace handle APIs always provide a
-valid handle. With this foundation, the series refactors the IOMMU core
-to share code between the normal attach/replace APIs and the
-handle-supporting APIs. Additionally, it seeks to avoid processing Page
-Request Interrupts (PRIs) before the attach operation succeeds.
+Caller of the two APIs always provide a valid handle, make @handle as
+mandatory parameter. Take this chance incoporate the handle->domain
+set under the protection of group->mutex in iommu_attach_group_handle().
 
-This series also covers the prior series[2] which only takes care of the
-iommu_attach_device_pasid().
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+ drivers/iommu/iommu.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-[1] https://lore.kernel.org/linux-iommu/cover.1738645017.git.nicolinc@nvidia.com/
-[2] https://lore.kernel.org/linux-iommu/20250120030840.4171-1-yi.l.liu@intel.com/
-
-Base: https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/commit/?h=for-next&id=dc10ba25d43f433ad5d9e8e6be4f4d2bb3cd9ddb
-
-Change log:
-
-v3:
- - Refine iommu_attach_handle_get() (Baolu)
- - More r-b tags
-
-v2: https://lore.kernel.org/linux-iommu/20250221143335.49874-1-yi.l.liu@intel.com/
- - Move handl->domain under group->mutex protect (Nic)
- - Refine the patch 04 per the model of reserve xa first and then xa_store in
-   the end which does not suppose to fail (Jason)
- - Drop the patch 05 of v1 as retire group->domain requires further effort
- - Add r-b tags
-
-v1: https://lore.kernel.org/linux-iommu/20250212060540.261436-1-yi.l.liu@intel.com/
-
-Regards,
-	Yi Liu
-
-Yi Liu (4):
-  iommu: Make @handle mandatory in iommu_{attach|replace}_group_handle()
-  iommu: Drop iommu_group_replace_domain()
-  iommu: Store either domain or handle in group->pasid_array
-  iommu: Swap the order of setting group->pasid_array and calling attach
-    op of iommu drivers
-
- drivers/iommu/iommu-priv.h |   3 -
- drivers/iommu/iommu.c      | 135 +++++++++++++++++++++----------------
- 2 files changed, 77 insertions(+), 61 deletions(-)
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 870c3cdbd0f6..715bdb8af31b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3511,10 +3511,11 @@ int iommu_attach_group_handle(struct iommu_domain *domain,
+ {
+ 	int ret;
+ 
+-	if (handle)
+-		handle->domain = domain;
++	if (!handle)
++		return -EINVAL;
+ 
+ 	mutex_lock(&group->mutex);
++	handle->domain = domain;
+ 	ret = xa_insert(&group->pasid_array, IOMMU_NO_PASID, handle, GFP_KERNEL);
+ 	if (ret)
+ 		goto err_unlock;
+@@ -3568,16 +3569,14 @@ int iommu_replace_group_handle(struct iommu_group *group,
+ 	void *curr;
+ 	int ret;
+ 
+-	if (!new_domain)
++	if (!new_domain || !handle)
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&group->mutex);
+-	if (handle) {
+-		ret = xa_reserve(&group->pasid_array, IOMMU_NO_PASID, GFP_KERNEL);
+-		if (ret)
+-			goto err_unlock;
+-		handle->domain = new_domain;
+-	}
++	handle->domain = new_domain;
++	ret = xa_reserve(&group->pasid_array, IOMMU_NO_PASID, GFP_KERNEL);
++	if (ret)
++		goto err_unlock;
+ 
+ 	ret = __iommu_group_set_domain(group, new_domain);
+ 	if (ret)
 -- 
 2.34.1
 
