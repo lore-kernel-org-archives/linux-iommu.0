@@ -1,121 +1,276 @@
-Received: from pv50p00im-ztdg10011301.me.com (pv50p00im-ztdg10011301.me.com [17.58.6.40])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155C4216612
-	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 11:45:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=17.58.6.40
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2354B21C9E0
+	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 11:50:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740570352; cv=none; b=Ec4JVy73scdWIifLT++EwLI6CFMth4lNTynX6bDZdUzElTLandZZaUwrPg8ZKObEHxfE8QyuXG1QlhCHTIbMCVJ5dj7CVs9C8aAwcmBoJhl/H6RHUBukmOcZoj/tOfKST61lskKVU5VYky6f3xVRzkGia5ZpUL/TARiqjo9DzgE=
+	t=1740570655; cv=none; b=LJ2VG05TjDzxnEjMFL/hDuLDuHd6OdIVQPJJQWXEDQWm7ROaEMFevh4O7LOBF8+l5yNTWI4Yc43GZ1gJf497ik3KFTnqqeWhsk1AElflF0tfHlz3V/relbK6+W0WmYqs8cwGVKrMFB4XIsMUCSbQ3DltueJYXjq/qEPpdrdEG9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740570352; c=relaxed/simple;
-	bh=C0kSWoh3LIV+HuMudMUFcqmX7KtzIL+dLkLS0LuQI+w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QsKUqtVIXtWmp1ohXb4gQJgO+Cy24MPZPYuRtCvg46J6Aht4vKD/ccVRmjg5dr1F0rEwItpZNwRNbTLCdMviGOd4tBu6amQxULSzRBz8bZrFc8dmgw9oxVO47O6Ry5hWjO/V1ut2fLUj/4Lggb5f6fAGFYGKd2q80WYjQpCkImc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=f8lZWyvS; arc=none smtp.client-ip=17.58.6.40
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="f8lZWyvS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
-	s=1a1hai; bh=UlmH7lnQ/SSIrKM5aMl2BHpkT+fwdodZZLv8W8GXIsc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type:x-icloud-hme;
-	b=f8lZWyvSDPQwKr7SDXIE6VdW5kZrI22cRU+v86cMZBg8M63ib8K+MKQDsZPYVZ+Mz
-	 VIc01nNZYPIWEtaq9AznMiQTF7n48OFpxRM5YhSgpY2okVb9cwuvzP1KIikiB+2fRu
-	 d+7AduZcNoirLHLK7K4h8pgvS0d1L0tQbLrFrF/Od88tDX/EZXod457QB5bg4qbmFp
-	 DbogBPgs3Q7iQQ0mZfmhQRiw2/P900rSG5OeZM5GDf/tYeCwP0bcGCpZ97ZFFl8n8G
-	 biW93Aup+84jC3T2ck5W5lDGV0KXW+sjwetmqndyZG8OIOv24PsphQXGiGBlN7Elxi
-	 r4aI2TycTa3Rw==
-Received: from [192.168.1.26] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-	by pv50p00im-ztdg10011301.me.com (Postfix) with ESMTPSA id 5CEAB180350;
-	Wed, 26 Feb 2025 11:45:37 +0000 (UTC)
-Message-ID: <a6dfff9c-ab0e-4308-81e7-62d8ea04d62b@icloud.com>
-Date: Wed, 26 Feb 2025 19:45:34 +0800
+	s=arc-20240116; t=1740570655; c=relaxed/simple;
+	bh=Egxyts38uhbzI5cTqjv6hFuVzM23SG1kUUM0YXjMQEg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pk3iWFUDL3qC79W/eElokgIMU77zUD7xzKhIpv9ikuv1g26eXAFTTvaEhcsC4oOgzDY15Sl4T8jIcA0mDqvLCCIgPhVHoMb4NH8qs8YfPHes4JePQoQTVzn1R7+GmQQ/vRDAOB/a+bqnS61s5ERib3KNk+xtCALeb06eGh/xWQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1tnFw7-0001NV-6m; Wed, 26 Feb 2025 12:50:47 +0100
+Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1tnFw4-002wSZ-28;
+	Wed, 26 Feb 2025 12:50:44 +0100
+Received: from mfe by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1tnFw4-001Xwx-1i;
+	Wed, 26 Feb 2025 12:50:44 +0100
+Date: Wed, 26 Feb 2025 12:50:44 +0100
+From: Marco Felsch <m.felsch@pengutronix.de>
+To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+Cc: robh@kernel.org, aisheng.dong@nxp.com, andy@black.fi.intel.com,
+	catalin.marinas@arm.com, devicetree@vger.kernel.org, hch@lst.de,
+	iommu@lists.linux.dev, kernel@quicinc.com, klarasmodin@gmail.com,
+	linux-kernel@vger.kernel.org, m.szyprowski@samsung.com,
+	quic_ninanaik@quicinc.com, robin.murphy@arm.com,
+	saravanak@google.com, will@kernel.org, stable@vger.kernel.org,
+	kernel@pengutronix.de, sashal@kernel.org
+Subject: Re: [PATCH v10 1/2] of: reserved_mem: Restruture how the reserved
+ memory regions are processed
+Message-ID: <20250226115044.zw44p5dxlhy5eoni@pengutronix.de>
+References: <20241008220624.551309-1-quic_obabatun@quicinc.com>
+ <20241008220624.551309-2-quic_obabatun@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH *-next 01/18] mm/mmu_gather: Remove needless return in
- void API tlb_remove_page()
-To: David Howells <dhowells@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Will Deacon <will@kernel.org>, "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
- Andrew Morton <akpm@linux-foundation.org>, Nick Piggin <npiggin@gmail.com>,
- Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>,
- Herbert Xu <herbert@gondor.apana.org.au>,
- "David S. Miller" <davem@davemloft.net>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
- Johannes Berg <johannes@sipsolutions.net>,
- Jamal Hadi Salim <jhs@mojatatu.com>, Cong Wang <xiyou.wangcong@gmail.com>,
- Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
- Leon Romanovsky <leon@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Lee Jones <lee@kernel.org>,
- Thomas Graf <tgraf@suug.ch>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Miquel Raynal <miquel.raynal@bootlin.com>,
- Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>,
- linux-arch@vger.kernel.org, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
- netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
- linux-rdma@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-pm@vger.kernel.org, iommu@lists.linux.dev,
- linux-mtd@lists.infradead.org
-References: <8f36be7c-6052-4c5d-85ff-0eed27cf1456@icloud.com>
- <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
- <20250221-rmv_return-v1-1-cc8dff275827@quicinc.com>
- <20250221200137.GH7373@noisy.programming.kicks-ass.net>
- <2298251.1740496596@warthog.procyon.org.uk>
-Content-Language: en-US
-From: Zijun Hu <zijun_hu@icloud.com>
-In-Reply-To: <2298251.1740496596@warthog.procyon.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: iqw5w_RmeMXu0iJloMXtrzoP0X8vVIzf
-X-Proofpoint-ORIG-GUID: iqw5w_RmeMXu0iJloMXtrzoP0X8vVIzf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-02-26_02,2025-02-26_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=985
- malwarescore=0 clxscore=1011 phishscore=0 bulkscore=0 adultscore=0
- spamscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2308100000 definitions=main-2502260094
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241008220624.551309-2-quic_obabatun@quicinc.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: iommu@lists.linux.dev
 
-On 2025/2/25 23:16, David Howells wrote:
-> Zijun Hu <zijun_hu@icloud.com> wrote:
+Hi,
+
+On 24-10-08, Oreoluwa Babatunde wrote:
+> Reserved memory regions defined in the devicetree can be broken up into
+> two groups:
+> i) Statically-placed reserved memory regions
+> i.e. regions defined with a static start address and size using the
+>      "reg" property.
+> ii) Dynamically-placed reserved memory regions.
+> i.e. regions defined by specifying an address range where they can be
+>      placed in memory using the "alloc_ranges" and "size" properties.
 > 
->>>>  static inline void tlb_remove_page(struct mmu_gather *tlb, struct page *page)
->>>>  {
->>>> -	return tlb_remove_page_size(tlb, page, PAGE_SIZE);
->>>> +	tlb_remove_page_size(tlb, page, PAGE_SIZE);
->>>>  }
->>> So I don't mind removing it, but note that that return enforces
->>> tlb_remove_page_size() has void return type.
->>>
->>
->> tlb_remove_page_size() is void function already. (^^)
+> These regions are processed and set aside at boot time.
+> This is done in two stages as seen below:
 > 
-> That may be true... for now.  But if that is changed in the future, then you
-> will get an error indicating something you need to go and look at... so in
-> that regard, it's *better* to do this ;-)
+> Stage 1:
+> At this stage, fdt_scan_reserved_mem() scans through the child nodes of
+> the reserved_memory node using the flattened devicetree and does the
+> following:
 > 
-
-i understand your point.
-
-if the callee tlb_remove_page_size() is in the same module with the
-caller tlb_remove_page. it is meaningless to watch the callee's return type.
-
-otherwise, provided the callee is a API which is provided by other
-module author. once the author changes the API's return type, he/she
-must take effort to cleanup this weird and lots of usages, that is not
-nice for API provider.
-
-this is a common issue. i will list my reasons why this usage is not
-good in cover letter of this series
-> David
+> 1) If the node represents a statically-placed reserved memory region,
+>    i.e. if it is defined using the "reg" property:
+>    - Call memblock_reserve() or memblock_mark_nomap() as needed.
+>    - Add the information for that region into the reserved_mem array
+>      using fdt_reserved_mem_save_node().
+>      i.e. fdt_reserved_mem_save_node(node, name, base, size).
 > 
+> 2) If the node represents a dynamically-placed reserved memory region,
+>    i.e. if it is defined using "alloc-ranges" and "size" properties:
+>    - Add the information for that region to the reserved_mem array with
+>      the starting address and size set to 0.
+>      i.e. fdt_reserved_mem_save_node(node, name, 0, 0).
+>    Note: This region is saved to the array with a starting address of 0
+>    because a starting address is not yet allocated for it.
+> 
+> Stage 2:
+> After iterating through all the reserved memory nodes and storing their
+> relevant information in the reserved_mem array,fdt_init_reserved_mem() is
+> called and does the following:
+> 
+> 1) For statically-placed reserved memory regions:
+>    - Call the region specific init function using
+>      __reserved_mem_init_node().
+> 2) For dynamically-placed reserved memory regions:
+>    - Call __reserved_mem_alloc_size() which is used to allocate memory
+>      for each of these regions, and mark them as nomap if they have the
+>      nomap property specified in the DT.
+>    - Call the region specific init function.
+> 
+> The current size of the resvered_mem array is 64 as is defined by
+> MAX_RESERVED_REGIONS. This means that there is a limitation of 64 for
+> how many reserved memory regions can be specified on a system.
+> As systems continue to grow more and more complex, the number of
+> reserved memory regions needed are also growing and are starting to hit
+> this 64 count limit, hence the need to make the reserved_mem array
+> dynamically sized (i.e. dynamically allocating memory for the
+> reserved_mem array using membock_alloc_*).
+> 
+> On architectures such as arm64, memory allocated using memblock is
+> writable only after the page tables have been setup. This means that if
+> the reserved_mem array is going to be dynamically allocated, it needs to
+> happen after the page tables have been setup, not before.
+> 
+> Since the reserved memory regions are currently being processed and
+> added to the array before the page tables are setup, there is a need to
+> change the order in which some of the processing is done to allow for
+> the reserved_mem array to be dynamically sized.
+> 
+> It is possible to process the statically-placed reserved memory regions
+> without needing to store them in the reserved_mem array until after the
+> page tables have been setup because all the information stored in the
+> array is readily available in the devicetree and can be referenced at
+> any time.
+> Dynamically-placed reserved memory regions on the other hand get
+> assigned a start address only at runtime, and hence need a place to be
+> stored once they are allocated since there is no other referrence to the
+> start address for these regions.
+> 
+> Hence this patch changes the processing order of the reserved memory
+> regions in the following ways:
+> 
+> Step 1:
+> fdt_scan_reserved_mem() scans through the child nodes of
+> the reserved_memory node using the flattened devicetree and does the
+> following:
+> 
+> 1) If the node represents a statically-placed reserved memory region,
+>    i.e. if it is defined using the "reg" property:
+>    - Call memblock_reserve() or memblock_mark_nomap() as needed.
+> 
+> 2) If the node represents a dynamically-placed reserved memory region,
+>    i.e. if it is defined using "alloc-ranges" and "size" properties:
+>    - Call __reserved_mem_alloc_size() which will:
+>      i) Allocate memory for the reserved region and call
+>      memblock_mark_nomap() as needed.
+>      ii) Call the region specific initialization function using
+>      fdt_init_reserved_mem_node().
+>      iii) Save the region information in the reserved_mem array using
+>      fdt_reserved_mem_save_node().
+> 
+> Step 2:
+> 1) This stage of the reserved memory processing is now only used to add
+>    the statically-placed reserved memory regions into the reserved_mem
+>    array using fdt_scan_reserved_mem_reg_nodes(), as well as call their
+>    region specific initialization functions.
+> 
+> 2) This step has also been moved to be after the page tables are
+>    setup. Moving this will allow us to replace the reserved_mem
+>    array with a dynamically sized array before storing the rest of
+>    these regions.
+> 
+> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+> ---
+>  drivers/of/fdt.c             |   5 +-
+>  drivers/of/of_private.h      |   3 +-
+>  drivers/of/of_reserved_mem.c | 168 ++++++++++++++++++++++++-----------
+>  3 files changed, 122 insertions(+), 54 deletions(-)
 
+this patch got into stable kernel 6.12.13++ as part of Stable-dep-of.
+The stable kernel commit is: 9a0fe62f93ede02c27aaca81112af1e59c8c0979.
+
+With the patch applied I see that the cma area pool is misplaced which
+cause my 4G device to fail to activate the cma pool. Below are some
+logs:
+
+*** Good case (6.12)
+
+root@test:~# dmesg|grep -i cma
+[    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
+[    0.000000] OF: reserved mem: 0x0000000044200000..0x00000000541fffff (262144 KiB) map reusable linux,cma
+[    0.056915] Memory: 3695024K/4194304K available (15552K kernel code, 2510K rwdata, 5992K rodata, 6016K init, 489K bss, 231772K reserved, 262144K cma-reserved)
+
+*** Bad (6.12.16)
+
+root@test:~# dmesg|grep -i cma
+[    0.000000] Reserved memory: created CMA memory pool at 0x00000000f2000000, size 256 MiB
+[    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
+[    0.000000] OF: reserved mem: 0x00000000f2000000..0x0000000101ffffff (262144 KiB) map reusable linux,cma
+[    0.056968] Memory: 3694896K/4194304K available (15616K kernel code, 2512K rwdata, 6012K rodata, 6080K init, 491K bss, 231900K reserved, 262144K cma-reserved)
+[    0.116920] cma: CMA area linux,cma could not be activated
+
+*** Good (6.12.16, revert 9a0fe62f93ed)
+
+root@test:~# dmesg|grep -i cma
+[    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
+[    0.000000] OF: reserved mem: 0x0000000044200000..0x00000000541fffff (262144 KiB) map reusable linux,cma
+[    0.060976] Memory: 3694896K/4194304K available (15616K kernel code, 2512K rwdata, 6012K rodata, 6080K init, 491K bss, 231900K reserved, 262144K cma-reserved)
+
+Below is our reserved-memory dts node:
+
+reserved-memory {
+	#address-cells = <2>; 
+	#size-cells = <2>; 
+	ranges;
+
+	linux,cma {
+		compatible = "shared-dma-pool";
+		reusable;
+		/*
+		 * The CMA area must be in the lower 32-bit address range.
+		 */
+		alloc-ranges = <0x0 0x42000000 0 0xc0000000>;
+		size = <0x0 0x10000000>;
+		alignment = <0 0x2000>;
+		linux,cma-default;
+	};
+
+	optee-core@40000000 {
+		reg = <0 0x40000000 0 0x1e00000>;
+		no-map;
+	};
+
+	optee-shm@41e00000 {
+		reg = <0 0x41e00000 0 0x200000>;
+		no-map;
+	};
+
+	m7_reserved: m7@80000000 {
+		reg = <0 0x80000000 0 0x1000000>;
+		no-map;
+	};
+
+	vdev0vring0: vdev0vring0@55000000 {
+		reg = <0 0x55000000 0 0x8000>;
+		no-map;
+	};
+
+	vdev0vring1: vdev0vring1@55008000 {
+		reg = <0 0x55008000 0 0x8000>;
+		no-map;
+	};
+
+	rsc_table: rsc-table@550ff000 {
+		reg = <0 0x550ff000 0 0x1000>;
+		no-map;
+	};
+
+	ram_console_buffer: ram-console-buffer@55100000 {
+		reg = <0 0x55100000 0 0x1000>;
+		no-map;
+	};
+
+	vdev0buffer: vdev0buffer@55400000 {
+		compatible = "shared-dma-pool";
+		reg = <0 0x55400000 0 0x100000>;
+		no-map;
+	};
+};
+
+My current workaround is to revert commit 9a0fe62f93ed and the
+dep-chain: 2d1d620ff27b444 8de4e5a92282. But I would like to get a
+proper solution without having revert commits in my downstream
+patchstack.
+
+Regards,
+  Marco
