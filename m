@@ -1,116 +1,247 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 248C9238170
-	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 10:40:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F6C920E70A;
+	Wed, 26 Feb 2025 10:51:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740566415; cv=none; b=W/Dwp0xbBSyJNQpqHYaQw7bq4kJJbpK1KMsSbtaoZ0y7tEfxYf7sUcotiEMGQYEhvG960SrmwyUwpmexxJ5FYSv0nsd0WJzekalAG+j5luFnSB5F9TrFnWXgjeQ7QtYNPvMoGnh/i8706HmwE/w/jil++zQxxamXhvQ7c33/F0M=
+	t=1740567082; cv=none; b=fIaWjmOOJdQEkybwVL+SewQ22bV3yanhWFHf1DLcutg7A6P01E4g3XkVNarLc6/KPfJgYIK/f1jLyrM5v7ASFwyHv/1Uaz9VI+dJ7AKX8GYw54T/qSNoKK3dy195WcECVrNpk1nGTQ3mbs9tM0iKO7OcCnt/1Sm5b4bTiPD2W9Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740566415; c=relaxed/simple;
-	bh=z0T94MCtuZ9Ka74GRYcZWqcJ4grGB701ipHV5/PghRs=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=B3lCDCy6+Ht1WRi8q0+KidGmLWPFyh/ZB/0Dn48rKjnE5JNgjatvpEkS5rxzQSY0+vRS6mLWwgAzhRyFuY0ko3usUMoB4OjmRrPR9r1I4M2flLPlOob/H7fL675X+/UCLF2sI5WnfYqkQtb5/YZew95bUDSMmtbGItMRVzQqkZ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h/sZQdLC; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1740567082; c=relaxed/simple;
+	bh=EJRmzJTFJ8NjApj/tf5SNaCRDGeunDMttv5+CnuEb8g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uoFco4GgTu18Hx10XZtGs2rLCUSrCy2wiE0IrtiGRcpbBJGaMX7o/kDYfDf5K+oM+OysTY651/LzzdVGSnyK73UF4NMxMO1qDr0+dyzSbEMMxh0vJstVZtlXRFNn5yf7E/FWyg1pxqfMs+OZC43sKzeG477JGhcUMe6iAUNTy+g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k5cPrCQt; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h/sZQdLC"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k5cPrCQt"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740566414; x=1772102414;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=z0T94MCtuZ9Ka74GRYcZWqcJ4grGB701ipHV5/PghRs=;
-  b=h/sZQdLCjPaB353Psf+QlP0GYtU9XNGlVUVQcIJ5MV8/3dOjiVJa9N0l
-   eZb06TngzAIWkfKINupL7b1pge5eBb07swl4EdBdUY14ukuN7T3oa+VV7
-   /hbEoqcaxe5xckTcGPpsisBDaMrhNm+1UmB9CAea1iZA7q4FebSNmX5oo
-   sQxglwOg6wcnQF03mhiS+R69znG4nHzRqXvO3e0h5CsOslPs9gOIaOXEI
-   6ba1ho7EJrqNlnvNGNnttqguW6M17YSRa5LA7YC76cklev6unfkPhe6c7
-   V19BDMgfxE93ZufAz8obKseJai7XmB3yWyWla8s7fJGbodtWEZeEEP3Bf
-   A==;
-X-CSE-ConnectionGUID: YL0xJYEAROiVQBeuy13a9A==
-X-CSE-MsgGUID: kRpeNT4RQ5mlhnoEkJwwYA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11356"; a="52798215"
-X-IronPort-AV: E=Sophos;i="6.13,316,1732608000"; 
-   d="scan'208";a="52798215"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 02:40:14 -0800
-X-CSE-ConnectionGUID: oPNpqiZBT5u/+heCmFV7dw==
-X-CSE-MsgGUID: 5iFfsfl6QX+IDOAk0dbDlA==
+  t=1740567079; x=1772103079;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EJRmzJTFJ8NjApj/tf5SNaCRDGeunDMttv5+CnuEb8g=;
+  b=k5cPrCQtbm/jffIW3KDqHF/oyqzlqS5GXl8q3iie70T7++8LodS10O3Q
+   oYsr34fgxZZQIqDnRh4QWyo9XakHu/KQYx0JjkJ56I5D57Xn6IzR7wqR5
+   1hstTm2rC9S7D96IlS6gPnppzM9aEkE4gpggZla6US7YuHkYHPUd96Fos
+   MNWTigfFc3AooKSEnPNPdR9rvZ0+WF0ptfRyMfjv5xx8KdU65YsvDjWci
+   XRDv4yvD8zzb/zsFPYIkCloe0O231gvULdg6uvlBZcL5xaTNG5tWupQT/
+   5WGhond0wxkp6ZYqBs92QF6f29ihW7fOKAWtMgi5Aa8yQ094ylSXPGJ6y
+   Q==;
+X-CSE-ConnectionGUID: cWA6IKRfTVarq1MFCJ8SLQ==
+X-CSE-MsgGUID: jkeoh7jHREuNM85vMqiVZg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="41603140"
+X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
+   d="scan'208";a="41603140"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 02:51:18 -0800
+X-CSE-ConnectionGUID: Sp/DqdCSR8Glw85ZGwduvg==
+X-CSE-MsgGUID: ixcL/gLGQqim/7ZZJYfvsQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,316,1732608000"; 
-   d="scan'208";a="116680257"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa006.jf.intel.com with ESMTP; 26 Feb 2025 02:40:13 -0800
-From: Yi Liu <yi.l.liu@intel.com>
-To: kevin.tian@intel.com,
-	jgg@nvidia.com
-Cc: baolu.lu@linux.intel.com,
-	yi.l.liu@intel.com,
-	iommu@lists.linux.dev,
-	robin.murphy@arm.com,
-	nicolinc@nvidia.com,
-	will@kernel.org,
-	joro@8bytes.org,
-	vasant.hegde@amd.com
-Subject: [PATCH] iommufd: Disallow allocating nested parent domain with fault ID
-Date: Wed, 26 Feb 2025 02:40:12 -0800
-Message-Id: <20250226104012.82079-1-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
+   d="scan'208";a="147490774"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by orviesa002.jf.intel.com with ESMTP; 26 Feb 2025 02:51:09 -0800
+Date: Wed, 26 Feb 2025 18:49:18 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
+	Michael Roth <michael.roth@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Steve Sistare <steven.sistare@oracle.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
+	Zhi Wang <zhiw@nvidia.com>,
+	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
+Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
+Message-ID: <Z77xrqLtJfB84dJF@yilunxu-OptiPlex-7050>
+References: <20250218111017.491719-1-aik@amd.com>
+ <20250218111017.491719-15-aik@amd.com>
+ <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
+ <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
 
-Allocating a domain with a fault ID indicates that the domain is faultable.
-However, there is a gap for the nested parent domain to support PRI. Some
-hardware lacks the capability to distinguish whether PRI occurs at stage 1
-or stage 2. This limitation may require software-based page table walking
-to resolve. Since no in-tree IOMMU driver currently supports this
-functionality, it is disallowed. For more details, refer to the related
-discussion at [1].
+On Wed, Feb 26, 2025 at 11:12:32AM +1100, Alexey Kardashevskiy wrote:
+> 
+> 
+> On 25/2/25 20:00, Xu Yilun wrote:
+> > On Tue, Feb 18, 2025 at 10:10:01PM +1100, Alexey Kardashevskiy wrote:
+> > > When a TDISP-capable device is passed through, it is configured as
+> > > a shared device to begin with. Later on when a VM probes the device,
+> > > detects its TDISP capability (reported via the PCIe ExtCap bit
+> > > called "TEE-IO"), performs the device attestation and transitions it
+> > > to a secure state when the device can run encrypted DMA and respond
+> > > to encrypted MMIO accesses.
+> > > 
+> > > Since KVM is out of the TCB, secure enablement is done in the secure
+> > > firmware. The API requires PCI host/guest BDFns, a KVM id hence such
+> > > calls are routed via IOMMUFD, primarily because allowing secure DMA
+> > > is the major performance bottleneck and it is a function of IOMMU.
+> > 
+> > I still have concern about the vdevice interface for bind. Bind put the
+> > device to LOCKED state, so is more of a device configuration rather
+> > than an iommu configuration. So seems more reasonable put the API in VFIO?
+> 
+> IOMMUFD means pretty much VFIO (in the same way "VFIO means KVM" as 95+% of
+> VFIO users use it from KVM, although VFIO works fine without KVM) so not
+> much difference where to put this API and can be done either way. VFIO is
 
-[1] https://lore.kernel.org/linux-iommu/bd1655c6-8b2f-4cfa-adb1-badc00d01811@intel.com/
+Er... I cannot agree. There are clear responsibilities for
+VFIO/IOMMUFD/KVM each. They don't overlap each other. So I don't think
+either way is OK. VFIO still controls the overall device behavior
+and it is VFIO's decision to hand over user DMA setup to IOMMUFD. IIUC
+that's why VFIO_DEVICE_ATTACH_IOMMUFD_PT should be a VFIO API.
 
-Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/iommufd/hw_pagetable.c    | 3 +++
- tools/testing/selftests/iommu/iommufd.c | 4 ++++
- 2 files changed, 7 insertions(+)
+E.g. I don't think VFIO driver would expect its MMIO access suddenly
+failed without knowing what happened.
 
-diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index 598be26a14e2..9b5b0b852229 100644
---- a/drivers/iommu/iommufd/hw_pagetable.c
-+++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -126,6 +126,9 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
- 	if ((flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING) &&
- 	    !device_iommu_capable(idev->dev, IOMMU_CAP_DIRTY_TRACKING))
- 		return ERR_PTR(-EOPNOTSUPP);
-+	if ((flags & IOMMU_HWPT_FAULT_ID_VALID) &&
-+	    (flags & IOMMU_HWPT_ALLOC_NEST_PARENT))
-+		return ERR_PTR(-EOPNOTSUPP);
- 
- 	hwpt_paging = __iommufd_object_alloc(
- 		ictx, hwpt_paging, IOMMUFD_OBJ_HWPT_PAGING, common.obj);
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 8d8ce97b53ee..35c5f1ad482a 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -439,6 +439,10 @@ TEST_F(iommufd_ioas, alloc_hwpt_nested)
- 				    &test_hwpt_id);
- 		test_err_hwpt_alloc(EINVAL, self->device_id, self->device_id, 0,
- 				    &test_hwpt_id);
-+		test_err_hwpt_alloc(EOPNOTSUPP, self->device_id, self->ioas_id,
-+				    IOMMU_HWPT_ALLOC_NEST_PARENT |
-+						IOMMU_HWPT_FAULT_ID_VALID,
-+				    &test_hwpt_id);
- 
- 		test_cmd_hwpt_alloc(self->device_id, self->ioas_id,
- 				    IOMMU_HWPT_ALLOC_NEST_PARENT,
--- 
-2.34.1
+> reasonable, the immediate problem is that IOMMUFD's vIOMMU knows the guest
+> BDFn (well, for AMD) and VFIO PCI does not.
 
+For Intel, it is host BDF. But I think this is TSM architecture
+difference that could be hidden in TSM framework. From TSM caller's POV,
+it could just be a magic number identifying the TDI.
+
+Back to your concern, I don't think it is a problem. From your patch,
+vIOMMU doesn't know the guest BDFn by nature, it is just the user
+stores the id in vdevice via iommufd_vdevice_alloc_ioctl(). A proper
+VFIO API could also do this work.
+
+I'm suggesting a VFIO API:
+
+/*
+ * @tdi_id: A TSM recognizable TDI identifier
+ *	    On input, user suggests the TDI identifier number for TSM.
+ *	    On output, TSM's decision of the TDI identifier number.
+ */
+struct vfio_pci_tsm_bind {
+	__u32 argsz;
+	__u32 flags;
+	__u32 tdi_id;
+	__u32 pad;
+};
+
+#define VFIO_DEVICE_TSM_BIND		_IO(VFIO_TYPE, VFIO_BASE + 22)
+
+I need the tdi_id as output cause I don't want any outside TSM user and
+Guest to assume what the TDI id should be.
+
+static int vfio_pci_ioctl_tsm_bind(struct vfio_pci_core_device *vdev,
+				   void __user *arg)
+{
+	unsigned long minsz = offsetofend(struct vfio_pci_tsm_bind, tdi_id);
+	struct pci_dev *pdev = vdev->pdev;
+	struct kvm *kvm = vdev->vdev.kvm;
+	struct vfio_pci_tsm_bind bind;
+
+	if (copy_from_user(&bind, arg, minsz))
+		return -EFAULT;
+
+	ret = pci_tsm_dev_bind(pdev, kvm, &bind.tdi_id);
+
+}
+
+A call to TSM makes TSM driver know the tdi_id and could find the real
+device inside TSM via tdi_id. Following TSM call could directly use
+tdi_id as parameter.
+
+The implementation is basically no difference from:
+
++       vdev = container_of(iommufd_get_object(ucmd->ictx, cmd->vdevice_id,
++                                              IOMMUFD_OBJ_VDEVICE),
+
+The real concern is the device owner, VFIO, should initiate the bind.
+
+> 
+> 
+> > > Add TDI bind to do the initial binding of a passed through PCI
+> > > function to a VM. Add a forwarder for TIO GUEST REQUEST. These two
+> > > call into the TSM which forwards the calls to the PSP.
+> > > 
+> > > Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+> > > ---
+> > > 
+> > > Both enabling secure DMA (== "SDTE Write") and secure MMIO (== "MMIO
+> > > validate") are TIO GUEST REQUEST messages. These are encrypted and
+> > > the HV (==IOMMUFD or KVM or VFIO) cannot see them unless the guest
+> > > shares some via kvm_run::kvm_user_vmgexit (and then QEMU passes those
+> > > via ioctls).
+> > > 
+> > > This RFC routes all TIO GUEST REQUESTs via IOMMUFD which arguably should
+> > > only do so only for "SDTE Write" and leave "MMIO validate" for VFIO.
+> > 
+> > The fact is HV cannot see the guest requests, even I think HV never have
+> > to care about the guest requests. HV cares until bind, then no HV side
+> > MMIO & DMA access is possible, any operation/state after bind won't
+> > affect HV more. And HV could always unbind to rollback guest side thing.
+> > 
+> > That said guest requests are nothing to do with any host side component,
+> > iommu or vfio. It is just the message posting between VM & firmware. I
+> > suppose KVM could directly do it by calling TSM driver API.
+> 
+> No, it could not as the HV needs to add the host BDFn to the guest's request
+> before calling the firmware and KVM does not have that knowledge.
+
+I think if TSM has knowledge about tdi_id, KVM doesn't have to know host BDFn.
+Just let TSM handle the vendor difference. Not sure if this solves all
+the problem.
+
+> 
+> These guest requests are only partly encrypted as the guest needs
+> cooperation from the HV. The guest BDFn comes unencrypted from the VM to let
+> the HV find the host BDFn and do the bind.
+
+It is not about HV never touch any message content. It is about HV
+doesn't (and shouldn't, since some info is encrypted) influence any host
+behavior by executing guest request, so no need to route to any other
+component.
+
+Thanks,
+Yilun
+
+> 
+> Also, say, in order to enable MMIO range, the host needs to "rmpupdate"
+> MMIOs first (and then the firmware does "pvalidate") so it needs to know the
+> range which is in unencrypted part of guest request.
+> 
+> Here is a rough idea: https://github.com/aik/qemu/commit/f804b65aff5b
+> 
+> A TIO Guest request is made of:
+> - guest page with unencrypted header (msg type is essential) and encrypted
+> body for consumption by the firmware;
+> - a couple of 64bit bit fields and RAX/RBX/... in shared GHCB page.
+> 
+> Thanks,
+> 
+> > Thanks,
+> > Yilun
+> 
+> -- 
+> Alexey
+> 
