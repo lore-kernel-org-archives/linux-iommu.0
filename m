@@ -1,117 +1,120 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D29892153FD;
-	Wed, 26 Feb 2025 12:42:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 104DE258CD1
+	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 12:57:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740573756; cv=none; b=atzVotXv8mIB5r4JSiscJwvLNojGSV7LUkjtI9TKhIYX0zCtC0AhGqqXLVMh81hIHg33V/feYz0+3dG8ou3hqEskXJyt1nZqJ92DS5PDsHSeSvhMVrcx2TXD4/Oi56rra/1STKx8AHVehgcD2l7fxG9wJ9Ec+5MoOPyDMpT68eI=
+	t=1740574634; cv=none; b=JoyjYwhwKA2Yrz5XDff3Jxl6CLhaBhO07JE9yKeIp3bH4yNc5R7c+K5lvXtKBaAk8BzBoDZ6E+hOjRUHDyMk4BuKWSh12/l/g3dzAUe6D7JxPKWySINSzs6QL0NG33IODHJmtWmcBiv5ieXSLfuaeXxIc112Yed5qPxw56mEiaY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740573756; c=relaxed/simple;
-	bh=WkXc7BocQbpip7ciVHNFAiTeTqJtNYIch4zaYSdoITI=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=i1Dcud8CmP3A1muf2FwVvrKJv9c9wwpuCQbeMH1/qYK9Ms9msih/HDVRd6PVtXst5Dom7erMg1tLQWNtXGo7hh5V7c8LV9xRBJBLdKyXo5BxlpiSjwN1R/AfijdW6DZ17WArCNz/ePWUpM5bok1vUF2XFpBSBdbfIFR/uqF2d9s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GdDlRf/X; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1740574634; c=relaxed/simple;
+	bh=e6N1kqBBB03/a7RSy4itFy2VWC8aQrb3QZgFv6Ka0EQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Qr5fqHVQXh6ZCGvD19w6luFzv5MvPc85DU7+h1UYC7kZWExfTqpzrQMARt4LjVZCSQHNbALJBu00+kWE1Urp7uIioB2fch705hpmcRjCTxJUmAkaQZQaCt8vxPaGJfSK3WEOhgu4Nl43rfgL3jBPt3hWLCui9KMjaDdjgbT025c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MIJ6205Q; arc=none smtp.client-ip=209.85.219.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GdDlRf/X"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740573755; x=1772109755;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=WkXc7BocQbpip7ciVHNFAiTeTqJtNYIch4zaYSdoITI=;
-  b=GdDlRf/XjPticAJwwgcqbdBEQ5Te2mca7GqASFuXGS1goojPEH0Tl+o4
-   MEdviSXqHTj8Tc93z4vC8Xm8swYScjQoGAtX2Mx5xATHkOsotl5i26uGj
-   br92FvPj+USmO8e1O1RhLtfm3raFGw6kjYXfbTmp5S6pHPVjZh9ya3wx8
-   O8vBaBT70jJN0VOM10JxDV1n/PkXCutmqZsV1DFV17oCGfNk9/swkrrZ1
-   VWw8BD5WFVctU1jGxPUVmoKX7vtCfMmvNLRiNkIegC3wXLAbProZRiFRU
-   la582XF9fDZ4iE08PGIbO7gOTtuoQfEE8k+3DlyqRv7Zh5LxkYUyDixeM
-   A==;
-X-CSE-ConnectionGUID: aF90sED1Rf6gxw9U25AQGg==
-X-CSE-MsgGUID: V87YsNbCSVW/40WRSR8v7g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11357"; a="41543448"
-X-IronPort-AV: E=Sophos;i="6.13,317,1732608000"; 
-   d="scan'208";a="41543448"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 04:42:34 -0800
-X-CSE-ConnectionGUID: qzXgd/NORXi327/S3f15AA==
-X-CSE-MsgGUID: bn1g+MruTuG+TRPKXFaDnA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,317,1732608000"; 
-   d="scan'208";a="139911002"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.105]) ([10.124.240.105])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 04:42:26 -0800
-Message-ID: <fafdcc71-b246-4855-a088-24854b124b21@linux.intel.com>
-Date: Wed, 26 Feb 2025 20:42:23 +0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MIJ6205Q"
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-6e6846bcde2so53024196d6.1
+        for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 04:57:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1740574631; x=1741179431; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=JOwFrRPYSumuOWhH0i7DGjm7VkpC1RlcluvHuhl9kV8=;
+        b=MIJ6205QY6oXXU1xRonX1QiOhkjdR0HPbxqgAzeEi/KCp6Er20UjXhx0xyY476JU+r
+         BNMEiobfqg5PkiJNaaP8xOfaPz3w246S7a83XzNNXYZIDFCJDw8pYIq7bU36fBd+iaGF
+         SpbWCucwW6ZlZV7tmPzLP7s4716z8g5XJ4KKkktRJC9gku/5d21mLRvW5LMgokRH2Ybp
+         p2+s3NiwLTtvam5wKmxOhpI6XOGxyf94Dgq6u+gEz73VBu6oFpvBVuoG7mEGz+nrJVH9
+         MhPy88t32VRxeEhjzln1GKBCvtQdlvzkvY8nKfJ3/RQI/34u7IykSwuTsGEp6zj/fX7u
+         Q+9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740574631; x=1741179431;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JOwFrRPYSumuOWhH0i7DGjm7VkpC1RlcluvHuhl9kV8=;
+        b=Sn3OlPLnuwZGXvfOVW7I3Ep16fbF3uX4N3IaBxGgGTiJ3bODXwC9OCZ5dTKJjxgFEA
+         q16rHg7E222Y73ZFgeTqTYTXrjNJ9z3n2phV+iPQDJHeqwswbjMkFRPw7U5XYSnUT22p
+         4uZIr9+rDqZI6cUSjAVcYRvgkRATKOaILsoTQD6OZbvdOaqmT5lNDruRNobTgpZUwfSP
+         2j7evASzw9UwdALx+QLpVvd/Q/9u/NLEsWJzUs2J4chjrK+vgB79SKTpU3caD5EoRpWL
+         4rjiIpkK//Eq0B2XirllyUhV4sqiiXU7as8SFYCIrJl/Ca1oWmX8x7gaqKad8C/1qAfp
+         R6gA==
+X-Forwarded-Encrypted: i=1; AJvYcCXAOTVtURxhhxjpt/6ovF6M09eqQaGudr51ZzirUX9uapvETUqkCxyw62w89hXps1nNbhy8WQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxh8tLHt8IVQFI5hGeqR/nZ2hJRMMipBZFm5XND660rd4HXuCdl
+	fDJC/F5azT7/gY0OotaZfKm8t2OBwViydoKsUHMLBBot4YRDE0otV4XmNk4fQ/E=
+X-Gm-Gg: ASbGncszYtsn1+Bk1oOE5fWBenkzh502jowpCCQlMWf4Ueog1/nNOztXezA2Iwk9hBC
+	Be+1kQVBdG68/dOTrDeNH6tnWbpmpzC5ptQvKYCPHYuFzVZunAZh6uWT70r/KOOExEvmFU54d2X
+	trQQteoa+TMwLgzzf/eS0f+eIq+oN/uB4X1u7vZoYxtNgQYp7RQ6rcXsv3Ol9TuBnh9BGA/U1vr
+	Vghvt496aDRLvd7enODzIlSp248bvuGSXMHMol7qU3cGnqYRU4NwoKOB1wg3gtNdFlfAajb1RtP
+	9uzuE7D3IdBQ1QkyNqktCqYryCNeivIrBh5hC9zSi9LZk0CQ6zZHn+mUzZBDorAiVvIQAZhr7L4
+	=
+X-Google-Smtp-Source: AGHT+IEJ7sLncHIpIXgTAx+IOx8NnCEC7G9sEdO1RRJXJoDmgqZJft89zwy+s0ue6Cf0SqVHKj6FsA==
+X-Received: by 2002:a05:6214:2261:b0:6e4:3fa5:46b with SMTP id 6a1803df08f44-6e87abace9bmr109048786d6.35.1740574630979;
+        Wed, 26 Feb 2025 04:57:10 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e87b153fcesm21581766d6.88.2025.02.26.04.57.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Feb 2025 04:57:10 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tnGyL-000000007Ei-2Ic4;
+	Wed, 26 Feb 2025 08:57:09 -0400
+Date: Wed, 26 Feb 2025 08:57:09 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
+Message-ID: <20250226125709.GC5011@ziepe.ca>
+References: <20250225105829.52223-1-vasant.hegde@amd.com>
+ <be9d2ad2-0f9e-4d06-952b-4cfd6ae53447@intel.com>
+ <ce86ff90-377e-49fe-9c4e-d2ad7abeeec8@arm.com>
+ <20250225145518.GJ545008@ziepe.ca>
+ <BN9PR11MB527624C1DED16B3C049D13438CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250226011750.GB5011@ziepe.ca>
+ <BN9PR11MB5276B36ED43DF6289EE6C3C38CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Bagas Sanjaya <bagasdotme@gmail.com>,
- Joerg Roedel <jroedel@suse.de>, Pasha Tatashin <pasha.tatashin@soleen.com>,
- patches@lists.linux.dev, David Rientjes <rientjes@google.com>,
- Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH v3 14/23] iommu/pages: Move from struct page to struct
- ioptdesc and folio
-To: Jason Gunthorpe <jgg@nvidia.com>, Alim Akhtar <alim.akhtar@samsung.com>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, Albert Ou <aou@eecs.berkeley.edu>,
- asahi@lists.linux.dev, David Woodhouse <dwmw2@infradead.org>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
- linux-tegra@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>,
- Hector Martin <marcan@marcan.st>, Palmer Dabbelt <palmer@dabbelt.com>,
- Paul Walmsley <paul.walmsley@sifive.com>, Robin Murphy
- <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>, Krishna Reddy <vdumpa@nvidia.com>,
- Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>
-References: <14-v3-e797f4dc6918+93057-iommu_pages_jgg@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <14-v3-e797f4dc6918+93057-iommu_pages_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276B36ED43DF6289EE6C3C38CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On 2025/2/26 3:39, Jason Gunthorpe wrote:
-> This brings the iommu page table allocator into the modern world of having
-> its own private page descriptor and not re-using fields from struct page
-> for its own purpose. It follows the basic pattern of struct ptdesc which
-> did this transformation for the CPU page table allocator.
+On Wed, Feb 26, 2025 at 02:50:57AM +0000, Tian, Kevin wrote:
+> > Maybe it is both 2 and 3 if the GCR3 PASID 0 is setup to not translate
+> > but do identity?
 > 
-> Currently iommu-pages is pretty basic so this isn't a huge benefit,
-> however I see a coming need for features that CPU allocator has, like sub
-> PAGE_SIZE allocations, and RCU freeing. This provides the base
-> infrastructure to implement those cleanly.
+> yes but conceptually it's still more a #2 thing from host p.o.v. The host
+> still sees a nested configuration no matter how the guest configures
+> each GCR3 entry.
 
-I understand that this is intended as the start point of having private
-descriptors for folios allocated to iommu drivers. But I don't believe
-this is currently the case after this patch, as the underlying memory
-remains a struct folio. This patch merely uses an iommu-pages specific
-structure pointer to reference it.
+AMD doesn't even support nesting now, so if this patch works it means
+it is scenario #2.
 
-Could you please elaborate a bit on the future plans that would make it
-a true implementation of iommu private page descriptors?
+> Not exactly. They are functionally different but serving the same purpose
+> to the user. From user p.o.v. it's sufficient to have a general flag for sats
+> when allocating a domain. The underlying driver decides whether such
+> flag is supported based on the domain type and the associated device,
+> just like checks on other existing flags.
 
-> 
-> Remove numa_node_id() calls from the inlines and instead use NUMA_NO_NODE
-> which will get switched to numa_mem_id(), which seems to be the right ID
-> to use for memory allocations.
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
-> ---
->   drivers/iommu/iommu-pages.c | 54 ++++++++++++++++++++++++++-----------
->   drivers/iommu/iommu-pages.h | 43 ++++++++++++++++++++++++++---
->   2 files changed, 78 insertions(+), 19 deletions(-)
+We already discussed that #4 works with CXL and #2/#3 don't. They also
+tolerate different PCI topology settings. The core code needs to know
+what it is getting into and in the case of ARM it needs to instruct
+the driver which of the two options to use.
 
-Thanks,
-baolu
+#2/#3 seems to be prefered when possible because it uses less memory,
+has less invalidation overhead, and apparently about the same
+performance according to the SMMU spec.
+
+So I think two flags is the right starting point..
+
+Jason
