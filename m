@@ -1,141 +1,82 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E914221C160
-	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 13:12:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 461A4217F5D
+	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 13:49:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740575526; cv=none; b=QB/IrYvslzltyvttwfW3iZUeYxZ4QyFm73qwMDcoxmp4Wdy6bbhddJkZbw9pPNqRpunKzhypqC8TrC1kStq4fh88i0iYkfJq+Fhp1+kL6IwH8oy+Idhmwsr0elgMu5XhHQaLDDnuHRZkoCqlRhqv82ULDesT8uB1gcsyqC63BJo=
+	t=1740577759; cv=none; b=SMTuvxr2tgY+N6qSEpuKa3ysiXDFPnLs/0dtqh9FsZVlXKWZEJYUD9l+HIljOPpfz4KkdnNFHjud7A6iolBiJfgK7W0RYo6wNW+ZCZCt2Lf0HLgCbHcjZ6EDoebv3gn6UZDIl79RAeWMHGcn5d4lZ2uHhefNqrANPeOORaTG6jI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740575526; c=relaxed/simple;
-	bh=UcN+Yc8/BXf/BDVbG/QiIbLhSfNGYB+VDmHOpxILJEU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FKrkVN+UWjyv1fM5r98sIYRG+wowCsoR5c2fdT9Q0ALi7I83MYmJPtOM63goIP1z/6QrVqnZkX/YmLhYuA6bGsWmy8NLqtkzEvTAfOfWPsbh6tYRvols2pZUA2n+BCqmuf7ciMCaHvTrbSiMpwi9h7kanok0mMviVI0Ad9xtZA8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=TXmOdZV7; arc=none smtp.client-ip=209.85.222.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1740577759; c=relaxed/simple;
+	bh=ogBovnddapZBBMQp+oqs7dCukwN2p//glvOycR/yIK0=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=J850xL6dIT94iFXrrNgA9E6SVt3/eVpV5PDug+pc2sn5r2jpoOSKOCqmLm+gdJqm1B/FoJHRj9Z6MtcvHglflW5z5qy9Qwq7i0Dq004hL6YItWFAdPSVdaPGjjM4bJSNua+i2N9pN9UrUQkhF3JB0GMuiBqEgLFEkUg2Mxr+Qro=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mgcN8API; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="TXmOdZV7"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7c0970e2e79so1240160185a.3
-        for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 05:12:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1740575524; x=1741180324; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=m6Xk4LHq+vuxMrWb9QEhIjcrWUMHuvgAEq1BuTfNkWI=;
-        b=TXmOdZV7mbSQxOi0t5SmHpwZposQlX3dLoTnfAGtdjUDO2qJnX8bwJqVDzxgzHvP+r
-         J3J4wtJXgfe1nVIUMp12Ck9stYqwPVJ7m1Vm4/4AyBZSzt3NEW0MZC3EuKtWVc1LJYJ8
-         jFjLgsWRZxElwiJH4oBy8Ybxaz8ty+ZQG61BdSlZq+ERA2+EimPK488o3rVOW3fr3o3o
-         xZY70UugOJC3WhFpr0NrS939wdksGf28M4ofvaEvmDP9vRgQxY1OQ4TGF9xCUpQVz5TL
-         Xw2VoyMzfEV9ku07cg0i2mlb8g9yEjk6QASBUUaaudbX8gKlRxYwcf/RqpC8qZGfhGlm
-         vedA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740575524; x=1741180324;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=m6Xk4LHq+vuxMrWb9QEhIjcrWUMHuvgAEq1BuTfNkWI=;
-        b=aCNI+u25QcArLT9YfgzBKTB1MPPQaRbFCk1FbXYpdBhlS8jdRzG4IbMWqnbHzutez6
-         K28Yhbm0V+3PR/AuPlxyeTErlL3qgzG1ilX+3gW8XuIpYjSt9p1W0uXGFMYJHF4+Ks9w
-         c+/S2o4j6M0+4uQztTU3p6TrMt7ENc0GeuDEfm+QXwEJGV/96cmzrHFjYZ/Twa/yTloE
-         UBELGm2jEkiDp8ZWFdVZvbNXsO7tuftLN8zgOVkBN3aVwNX55WXOc4Ln3bN/VuP1iGqg
-         A9CbaxZ3PrQHrVMII0v/krk/ciFuiqJJYlbQMqXH4QgmfTYFAhbA18YwxuXNvPK/8BJM
-         3jqw==
-X-Forwarded-Encrypted: i=1; AJvYcCWxuiSjc3Gfv6kq4FWaleK4PfotBe9Rr1k74rRy3hYXo+Dn6oR09aZrTOPuQWQPxiQOz11XRg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyXASDTWF8rrT8wOMfxjTKxcxB0KSXRQsyilQLkHn5tF4lwY9lv
-	0y7MzhqUTMED6BPAz9H3T0caBBkRnnD6Gg5xK+VWEbcu3OUatdunL/KiMoAu+r0=
-X-Gm-Gg: ASbGnctO93iWLb4AYSESNUYwsEdID6WV/IhPQzRjFCuBXrK/ESUn90chUNY2wBRkkCc
-	yIE6hWx19v1cA512L47jyLHgY35xClePkotB6X5/sX6KSVqpHXSWs4XShlaHvuC9iWrQ47bqDBP
-	KkrQ1QlhZAwI5UWJcyQMc6xk8pIUj1dGokRHdvM1k9BeCHfE1WFmuSozYQKS5wdjO50jUWSpdHV
-	+D1ME7BWJSJu0KJghrYEOeHgNRPU90a7kMegvBdT7BpT5S9IsUYRPXmjwIs2z9Wp806B4WUj67w
-	E9k02otZkgNPNo3vJDPnwfKJACMb83FXBWoDK+fV/ZDUxetMN6+2/9i2RdRHlEFA/UFZvAQ9d7k
-	=
-X-Google-Smtp-Source: AGHT+IEEfwlXAvWZ2xNGVxvzUGP6nDfT13h++oyNBWTrRPp0M1zvh40QuIYqQQDMaC1/myckxEJxtw==
-X-Received: by 2002:a05:622a:13ce:b0:471:f619:db45 with SMTP id d75a77b69052e-4737725caa7mr88331981cf.42.1740575523795;
-        Wed, 26 Feb 2025 05:12:03 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-47377e21fcdsm23423041cf.39.2025.02.26.05.12.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2025 05:12:02 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tnHCk-000000007O6-0KPx;
-	Wed, 26 Feb 2025 09:12:02 -0400
-Date: Wed, 26 Feb 2025 09:12:02 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Xu Yilun <yilun.xu@linux.intel.com>
-Cc: Alexey Kardashevskiy <aik@amd.com>, x86@kernel.org, kvm@vger.kernel.org,
-	linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Zhi Wang <zhiw@nvidia.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
-Message-ID: <20250226131202.GH5011@ziepe.ca>
-References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-15-aik@amd.com>
- <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
- <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
- <Z77xrqLtJfB84dJF@yilunxu-OptiPlex-7050>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mgcN8API"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1740577758; x=1772113758;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ogBovnddapZBBMQp+oqs7dCukwN2p//glvOycR/yIK0=;
+  b=mgcN8API62cjk0smMg/pw42kX0Wymoy5PiOYi6NugMgrCG95aIdEMm9Q
+   XkdzcOFUY7y09YMS2g+IfUPPiQzFdUJfaUUaYL9QCjepjfqS3dAaZZl6u
+   6Z+ZQo2njaEJHpAUnrNnGLAbT2O0q+vLigG910rFLNk65+VrPc3DGi6CT
+   oJ1wxOCL9vPtsDhZ4X8OGol4DNLRucyr8Mk9FN6du8EeDEJ+5a/eqLCMy
+   GRnezym6MNzsuyu4mGpg/ARu6vxE6ifSBK850hksmq10N+67BQJz2sRZ6
+   z4kUEKcFYoWnsw1s9LszoenyNTEwGW9RWG4btG5u7nto4z2lAVaBBF1il
+   Q==;
+X-CSE-ConnectionGUID: zOct0l+rRyGlLgPxql23kw==
+X-CSE-MsgGUID: gCK2S3Y4SJe8AYVBW5t59Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11357"; a="29015846"
+X-IronPort-AV: E=Sophos;i="6.13,317,1732608000"; 
+   d="scan'208";a="29015846"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 05:49:17 -0800
+X-CSE-ConnectionGUID: F0kjfIdyS4mzNDXjoTtASg==
+X-CSE-MsgGUID: k4qsKWhfRXi9InQ4n9Rcow==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,317,1732608000"; 
+   d="scan'208";a="116716280"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.105]) ([10.124.240.105])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 05:49:15 -0800
+Message-ID: <4caac118-8a30-4340-b2e6-ee9934f58a7e@linux.intel.com>
+Date: Wed, 26 Feb 2025 21:49:12 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z77xrqLtJfB84dJF@yilunxu-OptiPlex-7050>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, robin.murphy@arm.com,
+ nicolinc@nvidia.com, will@kernel.org, joro@8bytes.org, vasant.hegde@amd.com
+Subject: Re: [PATCH] iommufd: Disallow allocating nested parent domain with
+ fault ID
+To: Yi Liu <yi.l.liu@intel.com>, kevin.tian@intel.com, jgg@nvidia.com
+References: <20250226104012.82079-1-yi.l.liu@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250226104012.82079-1-yi.l.liu@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Feb 26, 2025 at 06:49:18PM +0800, Xu Yilun wrote:
-
-> E.g. I don't think VFIO driver would expect its MMIO access suddenly
-> failed without knowing what happened.
-
-What do people expect to happen here anyhow? Do you still intend to
-mmap any of the MMIO into the hypervisor? No, right? It is all locked
-down?
-
-So perhaps the answer is that the VFIO side has to put the device into
-CC mode which disables MMAP/etc, then the viommu/vdevice iommufd
-object can control it.
-
-> Back to your concern, I don't think it is a problem. From your patch,
-> vIOMMU doesn't know the guest BDFn by nature, it is just the user
-> stores the id in vdevice via iommufd_vdevice_alloc_ioctl(). A proper
-> VFIO API could also do this work.
-
-We don't want duplication though. If the viommu/vdevice/vbdf are owned
-and lifecycle controlled by iommufd then the operations against them
-must go through iommufd and through it's locking regime.
+On 2025/2/26 18:40, Yi Liu wrote:
+> Allocating a domain with a fault ID indicates that the domain is faultable.
+> However, there is a gap for the nested parent domain to support PRI. Some
+> hardware lacks the capability to distinguish whether PRI occurs at stage 1
+> or stage 2. This limitation may require software-based page table walking
+> to resolve. Since no in-tree IOMMU driver currently supports this
+> functionality, it is disallowed. For more details, refer to the related
+> discussion at [1].
 > 
-> The implementation is basically no difference from:
+> [1]https://lore.kernel.org/linux-iommu/bd1655c6-8b2f-4cfa-adb1- 
+> badc00d01811@intel.com/
 > 
-> +       vdev = container_of(iommufd_get_object(ucmd->ictx, cmd->vdevice_id,
-> +                                              IOMMUFD_OBJ_VDEVICE),
-> 
-> The real concern is the device owner, VFIO, should initiate the bind.
+> Suggested-by: Lu Baolu<baolu.lu@linux.intel.com>
+> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
 
-There is a big different, the above has correct locking, the other
-does not :)
-
-Jason
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
