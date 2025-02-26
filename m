@@ -1,46 +1,46 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 905D62153E9
-	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 11:40:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A8222153F0
+	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 11:40:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740570044; cv=none; b=sVBcalBJdQQpdMmRVgD0vIgNVO2qdWTtBuk2KtlEUHRfKYt3ts9y6OOoXRdlNzD3wwZ7gZKK0zyW8Ieefc5sNqZK2PKkhpJQ2+20DryID9n1Pfs426rJ9NDt9elr8Ji/qDMy9Lxwv/Ot5clEWnVkkIZZ7r6A8a66nNWnDQpS7K4=
+	t=1740570046; cv=none; b=X/nSUq2QgpzeeDrnlzzSqFGQhZdCx+uQCANGVh7mRGcRStsbFrte0uBTNZzRUaA1h0DxwrvZ/7blyfJdmUFvsEfXang4zCTD1TIf6ioRpRH5CBwLx+C+qkamOQ79aG/SOt0/eWKC7eW7tXWB0XFa4PWnp2+4tPX86tGfLLk9fDA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740570044; c=relaxed/simple;
-	bh=Ik1KRcPcv/7hHx5afwifoehJUAXtVKFZMxBEVQmpcHM=;
+	s=arc-20240116; t=1740570046; c=relaxed/simple;
+	bh=b1Mr9dLCyUl/YLz7+yQ+aHoTR6vxDUoouXdXS8HcXuQ=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=IOY1MsKBUMqv+NA5giSiEq98yc4rci7rxur3MZH9Ffkgl2gFlJvPLzLMAfeTFUCZyZL5X36lOOo9Tv0MgaS5IxU78zwyXJiho4HrBKWgXzqbYRasEE9wCpOvMFuphsbq92919KkAhvwNiZB3BfoWOrE7AVi+RTQRbUduam3381U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nZCnX/qB; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version; b=MOS4b33Ck0C4L0xJgI+MC6f76q7x+s4epTwHDIlmiU2trcXN6mmc//8vwUVtkuyViEP2ElW+dYqAXZhBkN17kfMmQw4E2UhNB/c3uTYp7a96o7G3zkvaymp06Jqc2rPQ5BlKz6H2yEwIlbWZWePs0qbbZsoFpGxeyOA+QiWcoTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KkdY9ic6; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nZCnX/qB"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KkdY9ic6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740570043; x=1772106043;
+  t=1740570044; x=1772106044;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ik1KRcPcv/7hHx5afwifoehJUAXtVKFZMxBEVQmpcHM=;
-  b=nZCnX/qBlFKJSxmY6T/sib7ia8EqvBi4P0xzqk3dMK18dBl2nxXWg08v
-   vskM/UIbNNSkMWXpzkrV9jA+TuFAQux59vJw78kVwqqPptvdhJvEx3K7s
-   fSj4KAA+K0vm3hVPpQTc8REICqGkmgWX9ffLcE7iiAQRFX/NTY3GeLCXp
-   PFPCQQ5+IYkf6fVAc1JIekzhLWobUndKram3conCl2dhtfCYjBCodArWp
-   dbifM0yV1rx7W8BfzRqFmmCb64DKRKd/PRi5hmGXdNCIzdt2p0jBpStrt
-   G53n+I2hv0CKVVJt5AfMQuxUgHVXA74D542jgks1P2Xeu1VSIYZnDwqne
-   A==;
-X-CSE-ConnectionGUID: LKRA56yGSp+VRv43/Ao8ig==
-X-CSE-MsgGUID: 3GQ/rPvhT5CcfvsdO6I48Q==
-X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="52827108"
+  bh=b1Mr9dLCyUl/YLz7+yQ+aHoTR6vxDUoouXdXS8HcXuQ=;
+  b=KkdY9ic6XDA1YqBbMzi8qIT1lLFnKVjhjVSfblqUyRvQHyYsV+/7NuNL
+   z7KOlAE4paqYcgCsRuY0SNU6yiua2wNmyqoc0gC0mX52eOGq0cJK51VIj
+   fc97Zcc/GRDVwG4bAOEGoubx+l9cVImJ8xVuFuFwsPWo9iL8xhfPFuOTm
+   qZkQr3Z3NCGDyHYmkgvlXDWlN7Mu31u4hjqi8Pfd/u0kp60qq7+UWT9SG
+   wJtHXbUVl7irWjhBM6quYjC2BexYExR4Ri2KQZb3yv3PcAFzTyrzrma8l
+   mvnePFYpwLXyRKV000rfVZgWD1ON2QPo49HjGIDmWuZ0joOoZanR+snfZ
+   w==;
+X-CSE-ConnectionGUID: Hl5+u2MiSj+UXmx4cFeHRw==
+X-CSE-MsgGUID: BDllvcyDRkqzpKR7q26MUQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="52827111"
 X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
-   d="scan'208";a="52827108"
+   d="scan'208";a="52827111"
 Received: from orviesa007.jf.intel.com ([10.64.159.147])
   by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 03:40:36 -0800
-X-CSE-ConnectionGUID: KVMSl8fBQFGWhGR8kNjc2Q==
-X-CSE-MsgGUID: Ahd8Phr2Q+a6lJGdbxW/DA==
+X-CSE-ConnectionGUID: JEWvHqsGT6mgN2jiILlwJg==
+X-CSE-MsgGUID: NG0l97iqT3GireD0H/Moaw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="117171615"
+   d="scan'208";a="117171618"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
   by orviesa007.jf.intel.com with ESMTP; 26 Feb 2025 03:40:37 -0800
 From: Yi Liu <yi.l.liu@intel.com>
@@ -51,9 +51,9 @@ Cc: joro@8bytes.org,
 	yi.l.liu@intel.com,
 	iommu@lists.linux.dev,
 	nicolinc@nvidia.com
-Subject: [PATCH v8 11/12] iommufd/selftest: Add test ops to test pasid attach/detach
-Date: Wed, 26 Feb 2025 03:40:31 -0800
-Message-Id: <20250226114032.4591-12-yi.l.liu@intel.com>
+Subject: [PATCH v8 12/12] iommufd/selftest: Add coverage for iommufd pasid attach/detach
+Date: Wed, 26 Feb 2025 03:40:32 -0800
+Message-Id: <20250226114032.4591-13-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250226114032.4591-1-yi.l.liu@intel.com>
 References: <20250226114032.4591-1-yi.l.liu@intel.com>
@@ -65,328 +65,611 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This adds 5 test ops for pasid attach/replace/detach testing. There are
-ops to attach/detach pasid, and also op to check the attached domain of
-a pasid.
+This tests iommufd pasid attach/replace/detach.
 
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/iommufd_test.h |  36 +++++
- drivers/iommu/iommufd/selftest.c     | 205 ++++++++++++++++++++++++++-
- 2 files changed, 238 insertions(+), 3 deletions(-)
+ tools/testing/selftests/iommu/iommufd.c       | 350 ++++++++++++++++++
+ .../selftests/iommu/iommufd_fail_nth.c        |  46 ++-
+ tools/testing/selftests/iommu/iommufd_utils.h | 123 ++++++
+ 3 files changed, 511 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
-index a4306d5f4b7e..85715c17b2df 100644
---- a/drivers/iommu/iommufd/iommufd_test.h
-+++ b/drivers/iommu/iommufd/iommufd_test.h
-@@ -25,6 +25,11 @@ enum {
- 	IOMMU_TEST_OP_TRIGGER_IOPF,
- 	IOMMU_TEST_OP_DEV_CHECK_CACHE,
- 	IOMMU_TEST_OP_MIX_REPLACE_HANDLE,
-+	IOMMU_TEST_OP_PASID_ATTACH,
-+	IOMMU_TEST_OP_PASID_REPLACE,
-+	IOMMU_TEST_OP_PASID_MIX_REPLACE_HANDLE,
-+	IOMMU_TEST_OP_PASID_DETACH,
-+	IOMMU_TEST_OP_PASID_CHECK_DOMAIN,
- };
- 
- enum {
-@@ -151,6 +156,37 @@ struct iommu_test_cmd {
- 			__u32 pt_id;
- 			/* @id is stdev_id */
- 		} mix_replace_handle;
-+		struct {
-+			__u32 pasid;
-+			__u32 pt_id;
-+			/* @id is stdev_id
-+			 * pasid#1024 is for special test, do not use it
-+			 * in normal case.
-+			 */
-+		} pasid_attach;
-+		struct {
-+			__u32 pasid;
-+			__u32 pt_id;
-+			/* @id is stdev_id
-+			 * pasid#1024 is for special test, do not use it
-+			 * in normal case.
-+			 */
-+		} pasid_replace;
-+		struct {
-+			__u32 pasid;
-+			__u32 pt_id;
-+			/* @id is stdev_id */
-+		} pasid_mix_replace_handle;
-+		struct {
-+			__u32 pasid;
-+			/* @id is stdev_id */
-+		} pasid_detach;
-+		struct {
-+			__u32 pasid;
-+			__u32 hwpt_id;
-+			__u64 out_result_ptr;
-+			/* @id is stdev_id */
-+		} pasid_check;
- 	};
- 	__u32 last;
- };
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 8ed1ee129584..056a97a0b50a 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -200,10 +200,29 @@ static int mock_domain_nop_attach(struct iommu_domain *domain,
- 	return 0;
+diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
+index 35c5f1ad482a..0ddcf31ae0e4 100644
+--- a/tools/testing/selftests/iommu/iommufd.c
++++ b/tools/testing/selftests/iommu/iommufd.c
+@@ -2962,4 +2962,354 @@ TEST_F(iommufd_viommu, vdevice_cache)
+ 	}
  }
  
-+static bool pasid_1024_attached;
++FIXTURE(iommufd_device_pasid)
++{
++	int fd;
++	uint32_t ioas_id;
++	uint32_t hwpt_id;
++	uint32_t stdev_id;
++	uint32_t device_id;
++	uint32_t no_pasid_stdev_id;
++	uint32_t no_pasid_device_id;
++};
 +
- static int mock_domain_set_dev_pasid_nop(struct iommu_domain *domain,
- 					 struct device *dev, ioasid_t pasid,
- 					 struct iommu_domain *old)
- {
-+	/*
-+	 * First attach with pasid 1024 succ, second attach would fail.
-+	 * This is helpful to test the case in which the iommu core needs
-+	 * to rollback to old domain due to driver failure.
-+	 */
-+	if (pasid == 1024) {
-+		if (domain->type == IOMMU_DOMAIN_BLOCKED) {
-+			pasid_1024_attached = false;
-+		} else if (pasid_1024_attached) {
-+			pasid_1024_attached = false;
-+			// Fake an error to fail the replacement
-+			return -ENOMEM;
-+		} else {
-+			pasid_1024_attached = true;
-+		}
++FIXTURE_VARIANT(iommufd_device_pasid)
++{
++	bool pasid_capable;
++};
++
++FIXTURE_SETUP(iommufd_device_pasid)
++{
++	self->fd = open("/dev/iommu", O_RDWR);
++	ASSERT_NE(-1, self->fd);
++	test_ioctl_ioas_alloc(&self->ioas_id);
++
++	test_cmd_mock_domain_flags(self->ioas_id,
++				   MOCK_FLAGS_DEVICE_PASID,
++				   &self->stdev_id, &self->hwpt_id,
++				   &self->device_id);
++	if (!variant->pasid_capable)
++		test_cmd_mock_domain_flags(self->ioas_id, 0,
++					   &self->no_pasid_stdev_id, NULL,
++					   &self->no_pasid_device_id);
++}
++
++FIXTURE_TEARDOWN(iommufd_device_pasid)
++{
++	teardown_iommufd(self->fd, _metadata);
++}
++
++FIXTURE_VARIANT_ADD(iommufd_device_pasid, no_pasid)
++{
++	.pasid_capable = false,
++};
++
++FIXTURE_VARIANT_ADD(iommufd_device_pasid, has_pasid)
++{
++	.pasid_capable = true,
++};
++
++TEST_F(iommufd_device_pasid, pasid_attach)
++{
++	struct iommu_hwpt_selftest data = {
++		.iotlb =  IOMMU_TEST_IOTLB_DEFAULT,
++	};
++	uint32_t nested_hwpt_id[3] = {};
++	uint32_t parent_hwpt_id = 0;
++	uint32_t fault_id, fault_fd;
++	uint32_t s2_hwpt_id = 0;
++	uint32_t iopf_hwpt_id;
++	uint32_t pasid = 100;
++	uint32_t auto_hwpt;
++	uint32_t viommu_id;
++	bool result;
++
++	/* Allocate two nested hwpts sharing one common parent hwpt */
++	test_cmd_hwpt_alloc(self->device_id, self->ioas_id,
++			    IOMMU_HWPT_ALLOC_NEST_PARENT,
++			    &parent_hwpt_id);
++	test_cmd_hwpt_alloc_nested(self->device_id, parent_hwpt_id,
++				   IOMMU_HWPT_ALLOC_PASID,
++				   &nested_hwpt_id[0],
++				   IOMMU_HWPT_DATA_SELFTEST,
++				   &data, sizeof(data));
++	test_cmd_hwpt_alloc_nested(self->device_id, parent_hwpt_id,
++				   IOMMU_HWPT_ALLOC_PASID,
++				   &nested_hwpt_id[1],
++				   IOMMU_HWPT_DATA_SELFTEST,
++				   &data, sizeof(data));
++
++	/* Faulte related preparation */
++	test_ioctl_fault_alloc(&fault_id, &fault_fd);
++	test_cmd_hwpt_alloc_iopf(self->device_id, parent_hwpt_id, fault_id,
++				 IOMMU_HWPT_FAULT_ID_VALID | IOMMU_HWPT_ALLOC_PASID,
++				 &iopf_hwpt_id,
++				 IOMMU_HWPT_DATA_SELFTEST, &data,
++				 sizeof(data));
++
++	/* Allocate a regular nested hwpt based on viommu */
++	test_cmd_viommu_alloc(self->device_id, parent_hwpt_id,
++			      IOMMU_VIOMMU_TYPE_SELFTEST,
++			      &viommu_id);
++	test_cmd_hwpt_alloc_nested(self->device_id, viommu_id,
++				   IOMMU_HWPT_ALLOC_PASID,
++				   &nested_hwpt_id[2],
++				   IOMMU_HWPT_DATA_SELFTEST, &data,
++				   sizeof(data));
++
++	test_cmd_hwpt_alloc(self->device_id, self->ioas_id,
++			    IOMMU_HWPT_ALLOC_PASID,
++			    &s2_hwpt_id);
++
++	/* Attach RID to non-pasid compat domain, */
++	test_cmd_mock_domain_replace(self->stdev_id, parent_hwpt_id);
++	/* then attach to pasid should fail */
++	test_err_pasid_attach(EINVAL, pasid, s2_hwpt_id, NULL);
++
++	/* Attach RID to pasid compat domain, */
++	test_cmd_mock_domain_replace(self->stdev_id, s2_hwpt_id);
++	/* then attach to pasid should succeed, */
++	test_cmd_pasid_attach(pasid, nested_hwpt_id[0], NULL);
++	/* but attach RID to non-pasid compat domain should fail now. */
++	test_err_mock_domain_replace(EINVAL, self->stdev_id, parent_hwpt_id);
++	test_cmd_pasid_detach(pasid);
++
++	if (!variant->pasid_capable) {
++		/*
++		 * PASID-compatible domain can be used by non-PASID-capable
++		 * device.
++		 */
++		test_cmd_mock_domain_replace(self->no_pasid_stdev_id, nested_hwpt_id[0]);
++		test_cmd_mock_domain_replace(self->no_pasid_stdev_id, self->ioas_id);
++		/*
++		 * Attach hwpt to pasid#100 of non-PASID-capable device,
++		 * should fail, no matter domain is pasid-comapt or not.
++		 */
++		EXPECT_ERRNO(EINVAL,
++			     _test_cmd_pasid_attach(self->fd, self->no_pasid_stdev_id,
++						    pasid, parent_hwpt_id, NULL));
++		EXPECT_ERRNO(EINVAL,
++			     _test_cmd_pasid_attach(self->fd, self->no_pasid_stdev_id,
++						    pasid, s2_hwpt_id, NULL));
 +	}
 +
++	/*
++	 * Attach non pasid compat hwpt to pasid-capable device, should
++	 * fail, and have null domain.
++	 */
++	test_err_pasid_attach(EINVAL, pasid, parent_hwpt_id, NULL);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, 0, &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Attach ioas to pasid 100, should succeed, domain should
++	 * be valid.
++	 */
++	test_cmd_pasid_attach(pasid, self->ioas_id, &auto_hwpt);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, auto_hwpt, &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Attach same ioas to pasid 100, should succeed.
++	 */
++	test_cmd_pasid_attach(pasid, self->ioas_id, &auto_hwpt);
++
++	/*
++	 * Try attach pasid 100 with another hwpt, should FAIL
++	 * as attach does not allow overwrite, use REPLACE instead.
++	 */
++	test_err_pasid_attach(EINVAL, pasid, nested_hwpt_id[0], NULL);
++
++	/*
++	 * Detach hwpt from pasid 100, and check if the pasid 100
++	 * has null domain. Should be done before the next attach.
++	 */
++	test_cmd_pasid_detach(pasid);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, 0, &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Attach nested hwpt to pasid 100, should succeed, domain
++	 * should be valid.
++	 */
++	test_cmd_pasid_attach(pasid, nested_hwpt_id[0], NULL);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, nested_hwpt_id[0],
++					      &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Try attach pasid 100 to same nested_hwpt_id[0], should succeed.
++	 */
++	test_cmd_pasid_attach(pasid, nested_hwpt_id[0], NULL);
++
++	/*
++	 * Detach hwpt from pasid 100, and check if the pasid 100
++	 * has null domain
++	 */
++	test_cmd_pasid_detach(pasid);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, 0, &result));
++	EXPECT_EQ(1, result);
++
++	/* Replace tests */
++
++	pasid = 200;
++	/*
++	 * Replace pasid 200 without attaching it first, should
++	 * fail with -EINVAL.
++	 */
++	test_err_cmd_pasid_replace(EINVAL, pasid, s2_hwpt_id, NULL);
++
++	/*
++	 * Attach a s2 hwpt to pasid 200, should succeed, domain should
++	 * be valid.
++	 */
++	test_cmd_pasid_attach(pasid, s2_hwpt_id, NULL);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, s2_hwpt_id,
++					      &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Replace pasid 200 with self->ioas_id, should succeed,
++	 * and have valid domain.
++	 */
++	test_cmd_pasid_replace(pasid, self->ioas_id, &auto_hwpt);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, auto_hwpt,
++					      &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Replace a nested hwpt for pasid 200, should succeed,
++	 * and have valid domain.
++	 */
++	test_cmd_pasid_replace(pasid, nested_hwpt_id[0], NULL);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, nested_hwpt_id[0],
++					      &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Replace with another nested hwpt for pasid 200, should
++	 * succeed, and have valid domain.
++	 */
++	test_cmd_pasid_replace(pasid, nested_hwpt_id[1], NULL);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, nested_hwpt_id[1],
++					      &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Detach hwpt from pasid 200, and check if the pasid 200
++	 * has null domain.
++	 */
++	test_cmd_pasid_detach(pasid);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, 0, &result));
++	EXPECT_EQ(1, result);
++
++	/* Negative Tests for pasid replace, use pasid 1024 */
++
++	/*
++	 * Attach a s2 hwpt to pasid 1024, should succeed, domain should
++	 * be valid.
++	 */
++	pasid = 1024;
++	test_cmd_pasid_attach(pasid, s2_hwpt_id, NULL);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, s2_hwpt_id,
++					      &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Replace pasid 1024 with self->ioas_id, should fail,
++	 * but have the old valid domain. This is a designed
++	 * negative case, normally replace with self->ioas_id
++	 * could succeed.
++	 */
++	test_err_cmd_pasid_replace(ENOMEM, pasid, self->ioas_id, NULL);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, s2_hwpt_id,
++					      &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Detach hwpt from pasid 1024, and check if the pasid 1024
++	 * has null domain.
++	 */
++	test_cmd_pasid_detach(pasid);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, 0, &result));
++	EXPECT_EQ(1, result);
++
++	/* Attach to iopf-capable hwpt */
++
++	/*
++	 * Attach an iopf hwpt to pasid 2048, should succeed, domain should
++	 * be valid.
++	 */
++	pasid = 2048;
++	test_cmd_pasid_attach(pasid, iopf_hwpt_id, NULL);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, iopf_hwpt_id,
++					      &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Replace with s2_hwpt_id for pasid 2048, should
++	 * succeed, and have valid domain.
++	 */
++	test_cmd_pasid_replace(pasid, s2_hwpt_id, NULL);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, s2_hwpt_id,
++					      &result));
++	EXPECT_EQ(1, result);
++
++	/*
++	 * Detach hwpt from pasid 2048, and check if the pasid 2048
++	 * has null domain.
++	 */
++	test_cmd_pasid_detach(pasid);
++	ASSERT_EQ(0,
++		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
++					      pasid, 0, &result));
++	EXPECT_EQ(1, result);
++
++	test_ioctl_destroy(iopf_hwpt_id);
++	close(fault_fd);
++	test_ioctl_destroy(fault_id);
++
++	test_cmd_pasid_mixed_replace(4096, s2_hwpt_id);
++
++	/* Detach the s2_hwpt_id from RID */
++	test_cmd_mock_domain_replace(self->stdev_id, self->ioas_id);
++
++	test_ioctl_destroy(nested_hwpt_id[0]);
++	test_ioctl_destroy(nested_hwpt_id[1]);
++	test_ioctl_destroy(nested_hwpt_id[2]);
++	test_ioctl_destroy(viommu_id);
++	test_ioctl_destroy(parent_hwpt_id);
++	test_ioctl_destroy(s2_hwpt_id);
++}
++
+ TEST_HARNESS_MAIN
+diff --git a/tools/testing/selftests/iommu/iommufd_fail_nth.c b/tools/testing/selftests/iommu/iommufd_fail_nth.c
+index fa6d8cbbe6e1..a08b8012120c 100644
+--- a/tools/testing/selftests/iommu/iommufd_fail_nth.c
++++ b/tools/testing/selftests/iommu/iommufd_fail_nth.c
+@@ -209,12 +209,16 @@ FIXTURE(basic_fail_nth)
+ {
+ 	int fd;
+ 	uint32_t access_id;
++	uint32_t stdev_id;
++	uint32_t pasid;
+ };
+ 
+ FIXTURE_SETUP(basic_fail_nth)
+ {
+ 	self->fd = -1;
+ 	self->access_id = 0;
++	self->stdev_id = 0;
++	self->pasid = 0; //test should use a non-zero value
+ }
+ 
+ FIXTURE_TEARDOWN(basic_fail_nth)
+@@ -226,6 +230,8 @@ FIXTURE_TEARDOWN(basic_fail_nth)
+ 		rc = _test_cmd_destroy_access(self->access_id);
+ 		assert(rc == 0);
+ 	}
++	if (self->pasid && self->stdev_id)
++		_test_cmd_pasid_detach(self->fd, self->stdev_id, self->pasid);
+ 	teardown_iommufd(self->fd, _metadata);
+ }
+ 
+@@ -623,7 +629,6 @@ TEST_FAIL_NTH(basic_fail_nth, device)
+ 	uint32_t fault_hwpt_id;
+ 	uint32_t ioas_id;
+ 	uint32_t ioas_id2;
+-	uint32_t stdev_id;
+ 	uint32_t idev_id;
+ 	uint32_t hwpt_id;
+ 	uint32_t viommu_id;
+@@ -654,28 +659,32 @@ TEST_FAIL_NTH(basic_fail_nth, device)
+ 
+ 	fail_nth_enable();
+ 
+-	if (_test_cmd_mock_domain(self->fd, ioas_id, &stdev_id, NULL,
+-				  &idev_id))
++	if (_test_cmd_mock_domain_flags(self->fd, ioas_id,
++					MOCK_FLAGS_DEVICE_PASID,
++					&self->stdev_id, NULL, &idev_id))
+ 		return -1;
+ 
+ 	if (_test_cmd_get_hw_info(self->fd, idev_id, &info, sizeof(info), NULL))
+ 		return -1;
+ 
+-	if (_test_cmd_hwpt_alloc(self->fd, idev_id, ioas_id, 0, 0, &hwpt_id,
++	if (_test_cmd_hwpt_alloc(self->fd, idev_id, ioas_id, 0,
++				 IOMMU_HWPT_ALLOC_PASID, &hwpt_id,
+ 				 IOMMU_HWPT_DATA_NONE, 0, 0))
+ 		return -1;
+ 
+-	if (_test_cmd_mixed_replace(self->fd, stdev_id, hwpt_id))
++	if (_test_cmd_mixed_replace(self->fd, self->stdev_id, hwpt_id))
+ 		return -1;
+ 
+-	if (_test_cmd_mock_domain_replace(self->fd, stdev_id, ioas_id2, NULL))
++	if (_test_cmd_mock_domain_replace(self->fd, self->stdev_id, ioas_id2, NULL))
+ 		return -1;
+ 
+-	if (_test_cmd_mock_domain_replace(self->fd, stdev_id, hwpt_id, NULL))
++	if (_test_cmd_mock_domain_replace(self->fd, self->stdev_id, hwpt_id, NULL))
+ 		return -1;
+ 
+ 	if (_test_cmd_hwpt_alloc(self->fd, idev_id, ioas_id, 0,
+-				 IOMMU_HWPT_ALLOC_NEST_PARENT, &hwpt_id,
++				 IOMMU_HWPT_ALLOC_NEST_PARENT |
++						IOMMU_HWPT_ALLOC_PASID,
++				 &hwpt_id,
+ 				 IOMMU_HWPT_DATA_NONE, 0, 0))
+ 		return -1;
+ 
+@@ -695,6 +704,27 @@ TEST_FAIL_NTH(basic_fail_nth, device)
+ 				 IOMMU_HWPT_DATA_SELFTEST, &data, sizeof(data)))
+ 		return -1;
+ 
++	self->pasid = 200;
++
++	/* Tests for pasid attach/replace/detach */
++	if (_test_cmd_pasid_attach(self->fd, self->stdev_id,
++				   self->pasid, ioas_id, NULL)) {
++		self->pasid = 0;
++		return -1;
++	}
++
++	if (_test_cmd_pasid_replace(self->fd, self->stdev_id,
++				    self->pasid, ioas_id2, NULL))
++		return -1;
++
++	if (_test_cmd_pasid_detach(self->fd, self->stdev_id, self->pasid))
++		return -1;
++
++	if (_test_cmd_pasid_mixed_replace(self->fd, self->stdev_id, 10, hwpt_id))
++		return -1;
++
++	self->pasid = 0;
++
  	return 0;
  }
  
-@@ -1697,9 +1716,61 @@ static int iommufd_test_mixed_group_replace(struct iommufd_device *idev,
- 	return ret;
- }
+diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
+index 27d51f880369..b7a39fe12873 100644
+--- a/tools/testing/selftests/iommu/iommufd_utils.h
++++ b/tools/testing/selftests/iommu/iommufd_utils.h
+@@ -954,3 +954,126 @@ static int _test_cmd_mixed_replace(int fd, __u32 stdev_id, __u32 pt_id)
  
-+static int iommufd_test_mixed_pasid_replace(struct iommu_domain *domain,
-+					    struct iommufd_device *idev,
-+					    ioasid_t pasid)
+ #define test_cmd_mixed_replace(stdev_id, hwpt_id)                         \
+ 	ASSERT_EQ(0, _test_cmd_mixed_replace(self->fd, stdev_id, hwpt_id))
++
++static int _test_cmd_pasid_attach(int fd, __u32 stdev_id, __u32 pasid,
++				  __u32 pt_id, __u32 *out_pt_id)
 +{
-+	struct iommu_group *group = idev->igroup->group;
-+	struct iommu_attach_handle *handle;
-+	struct device *dev = idev->dev;
++	struct iommu_test_cmd test_attach = {
++		.size = sizeof(test_attach),
++		.op = IOMMU_TEST_OP_PASID_ATTACH,
++		.id = stdev_id,
++		.pasid_attach = {
++			.pasid = pasid,
++			.pt_id = pt_id,
++		},
++	};
 +	int ret;
 +
-+	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
-+	if (!handle)
-+		return -ENOMEM;
-+
-+	mutex_lock(&idev->igroup->lock);
-+	/* should fail as no previous attached handle or domain */
-+	ret = iommu_replace_device_pasid_handle(domain, dev, pasid, handle);
-+	if (ret != -EINVAL)
-+		goto out_unlock;
-+
-+	ret = iommu_attach_device_pasid(domain, dev, pasid);
++	ret = ioctl(fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_PASID_ATTACH),
++		    &test_attach);
 +	if (ret)
-+		goto out_unlock;
++		return ret;
 +
-+	if (PTR_ERR(iommu_attach_handle_get(group, pasid, 0)) != -ENOENT) {
-+		ret = -ENODEV;
-+		goto out_detach;
-+	}
-+
-+	ret = iommu_replace_device_pasid_handle(domain, dev, pasid, handle);
-+	if (ret)
-+		goto out_detach;
-+
-+	if (handle != iommu_attach_handle_get(group, pasid, 0)) {
-+		ret = -ENOENT;
-+		goto out_detach;
-+	}
-+
-+	ret = iommu_replace_device_pasid_handle(domain, dev, pasid, handle);
-+	if (ret)
-+		goto out_detach;
-+
-+	if (handle != iommu_attach_handle_get(group, pasid, 0))
-+		ret = -ENOENT;
-+
-+out_detach:
-+	iommu_detach_device_pasid(domain, dev, pasid);
-+out_unlock:
-+	mutex_unlock(&idev->igroup->lock);
-+	kfree(handle);
-+	return ret;
-+}
-+
- static int iommufd_test_mixed_handle_replace(struct iommufd_ucmd *ucmd,
- 					     unsigned int device_id,
--					     u32 pt_id)
-+					     ioasid_t pasid, u32 pt_id)
- {
- 	struct iommufd_hw_pagetable *hwpt;
- 	struct iommufd_device *idev;
-@@ -1722,14 +1793,127 @@ static int iommufd_test_mixed_handle_replace(struct iommufd_ucmd *ucmd,
- 	domain = hwpt->domain;
- 
- 	rc = iommufd_test_mixed_group_replace(idev, domain);
-+	if (rc)
-+		goto out_put_hwpt;
-+
-+	if (pasid != IOMMU_NO_PASID)
-+		rc = iommufd_test_mixed_pasid_replace(domain, idev, pasid);
- 
-+out_put_hwpt:
- 	iommufd_put_object(ucmd->ictx, &hwpt->obj);
-+out_dev_obj:
-+	iommufd_put_object(ucmd->ictx, &sobj->obj);
-+	return rc;
-+}
-+
-+static int iommufd_test_pasid_check_domain(struct iommufd_ucmd *ucmd,
-+					   struct iommu_test_cmd *cmd)
-+{
-+	struct iommu_domain *attached_domain, *expect_domain = NULL;
-+	struct iommufd_hw_pagetable *hwpt = NULL;
-+	struct iommu_attach_handle *handle;
-+	struct selftest_obj *sobj;
-+	struct mock_dev *mdev;
-+	bool result;
-+	int rc = 0;
-+
-+	sobj = iommufd_test_get_self_test_device(ucmd->ictx, cmd->id);
-+	if (IS_ERR(sobj))
-+		return PTR_ERR(sobj);
-+
-+	mdev = sobj->idev.mock_dev;
-+
-+	handle = iommu_attach_handle_get(mdev->dev.iommu_group,
-+					 cmd->pasid_check.pasid, 0);
-+	if (IS_ERR(handle))
-+		attached_domain = NULL;
-+	else
-+		attached_domain = handle->domain;
-+
-+	if (cmd->pasid_check.hwpt_id) {
-+		hwpt = iommufd_get_hwpt(ucmd, cmd->pasid_check.hwpt_id);
-+		if (IS_ERR(hwpt)) {
-+			rc = PTR_ERR(hwpt);
-+			goto out_put_dev;
-+		}
-+		expect_domain = hwpt->domain;
-+	}
-+
-+	result = (attached_domain == expect_domain) ? 1 : 0;
-+	if (copy_to_user(u64_to_user_ptr(cmd->pasid_check.out_result_ptr),
-+			 &result, sizeof(result)))
-+		rc = -EFAULT;
-+	if (hwpt)
-+		iommufd_put_object(ucmd->ictx, &hwpt->obj);
-+out_put_dev:
-+	iommufd_put_object(ucmd->ictx, &sobj->obj);
-+	return rc;
-+}
-+
-+static int iommufd_test_pasid_attach(struct iommufd_ucmd *ucmd,
-+				     struct iommu_test_cmd *cmd)
-+{
-+	struct selftest_obj *sobj;
-+	int rc;
-+
-+	sobj = iommufd_test_get_self_test_device(ucmd->ictx, cmd->id);
-+	if (IS_ERR(sobj))
-+		return PTR_ERR(sobj);
-+
-+	rc = iommufd_device_pasid_attach(sobj->idev.idev,
-+					 cmd->pasid_attach.pasid,
-+					 &cmd->pasid_attach.pt_id);
-+	if (rc)
-+		goto out_dev_obj;
-+
-+	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-+	if (rc)
-+		iommufd_device_pasid_detach(sobj->idev.idev,
-+					    cmd->pasid_attach.pasid);
-+
-+out_dev_obj:
-+	iommufd_put_object(ucmd->ictx, &sobj->obj);
-+	return rc;
-+}
-+
-+static int iommufd_test_pasid_replace(struct iommufd_ucmd *ucmd,
-+				      struct iommu_test_cmd *cmd)
-+{
-+	struct selftest_obj *sobj;
-+	int rc;
-+
-+	sobj = iommufd_test_get_self_test_device(ucmd->ictx, cmd->id);
-+	if (IS_ERR(sobj))
-+		return PTR_ERR(sobj);
-+
-+	rc = iommufd_device_pasid_replace(sobj->idev.idev,
-+					  cmd->pasid_attach.pasid,
-+					  &cmd->pasid_attach.pt_id);
-+	if (rc)
-+		goto out_dev_obj;
-+
-+	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
- 
- out_dev_obj:
- 	iommufd_put_object(ucmd->ictx, &sobj->obj);
- 	return rc;
- }
- 
-+static int iommufd_test_pasid_detach(struct iommufd_ucmd *ucmd,
-+				     struct iommu_test_cmd *cmd)
-+{
-+	struct selftest_obj *sobj;
-+
-+	sobj = iommufd_test_get_self_test_device(ucmd->ictx, cmd->id);
-+	if (IS_ERR(sobj))
-+		return PTR_ERR(sobj);
-+
-+	iommufd_device_pasid_detach(sobj->idev.idev,
-+				    cmd->pasid_detach.pasid);
-+	iommufd_put_object(ucmd->ictx, &sobj->obj);
++	if (out_pt_id)
++		*out_pt_id = test_attach.pasid_attach.pt_id;
 +	return 0;
 +}
 +
- void iommufd_selftest_destroy(struct iommufd_object *obj)
- {
- 	struct selftest_obj *sobj = to_selftest_obj(obj);
-@@ -1812,8 +1996,22 @@ int iommufd_test(struct iommufd_ucmd *ucmd)
- 	case IOMMU_TEST_OP_TRIGGER_IOPF:
- 		return iommufd_test_trigger_iopf(ucmd, cmd);
- 	case IOMMU_TEST_OP_MIX_REPLACE_HANDLE:
--		return iommufd_test_mixed_handle_replace(ucmd, cmd->id,
--						cmd->mix_replace_handle.pt_id);
-+		return iommufd_test_mixed_handle_replace(
-+			ucmd, cmd->id, IOMMU_NO_PASID,
-+			cmd->mix_replace_handle.pt_id);
-+	case IOMMU_TEST_OP_PASID_ATTACH:
-+		return iommufd_test_pasid_attach(ucmd, cmd);
-+	case IOMMU_TEST_OP_PASID_REPLACE:
-+		return iommufd_test_pasid_replace(ucmd, cmd);
-+	case IOMMU_TEST_OP_PASID_MIX_REPLACE_HANDLE:
-+		return iommufd_test_mixed_handle_replace(
-+			ucmd, cmd->id,
-+			cmd->pasid_mix_replace_handle.pasid,
-+			cmd->pasid_mix_replace_handle.pt_id);
-+	case IOMMU_TEST_OP_PASID_DETACH:
-+		return iommufd_test_pasid_detach(ucmd, cmd);
-+	case IOMMU_TEST_OP_PASID_CHECK_DOMAIN:
-+		return iommufd_test_pasid_check_domain(ucmd, cmd);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -1861,6 +2059,7 @@ int __init iommufd_test_init(void)
- 
- 	mock_iommu_iopf_queue = iopf_queue_alloc("mock-iopfq");
- 	mock_iommu.iommu_dev.max_pasids = (1 << 20);
-+	pasid_1024_attached = false;
- 
- 	return 0;
- 
++#define test_cmd_pasid_attach(pasid, hwpt_id, out_pt_id) \
++	ASSERT_EQ(0, _test_cmd_pasid_attach(self->fd, self->stdev_id, \
++					    pasid, hwpt_id, out_pt_id))
++
++#define test_err_pasid_attach(_errno, pasid, hwpt_id, out_pt_id) \
++	EXPECT_ERRNO(_errno, \
++		     _test_cmd_pasid_attach(self->fd, self->stdev_id, \
++					    pasid, hwpt_id, out_pt_id))
++
++static int _test_cmd_pasid_replace(int fd, __u32 stdev_id, __u32 pasid,
++				   __u32 pt_id, __u32 *out_pt_id)
++{
++	struct iommu_test_cmd test_replace = {
++		.size = sizeof(test_replace),
++		.op = IOMMU_TEST_OP_PASID_REPLACE,
++		.id = stdev_id,
++		.pasid_replace = {
++			.pasid = pasid,
++			.pt_id = pt_id,
++		},
++	};
++	int ret;
++
++	ret = ioctl(fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_PASID_REPLACE),
++		    &test_replace);
++	if (ret)
++		return ret;
++
++	if (out_pt_id)
++		*out_pt_id = test_replace.pasid_replace.pt_id;
++	return 0;
++}
++
++static int _test_cmd_pasid_mixed_replace(int fd, __u32 stdev_id,
++					 __u32 pasid, __u32 pt_id)
++{
++	struct iommu_test_cmd test_mixed_replace = {
++		.size = sizeof(test_mixed_replace),
++		.op = IOMMU_TEST_OP_PASID_MIX_REPLACE_HANDLE,
++		.id = stdev_id,
++		.pasid_mix_replace_handle = {
++			.pasid = pasid,
++			.pt_id = pt_id,
++		},
++	};
++
++	return ioctl(fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_PASID_MIX_REPLACE_HANDLE),
++		     &test_mixed_replace);
++}
++
++#define test_cmd_pasid_replace(pasid, hwpt_id, out_pt_id) \
++	ASSERT_EQ(0, _test_cmd_pasid_replace(self->fd, self->stdev_id, \
++					     pasid, hwpt_id, out_pt_id))
++
++#define test_err_cmd_pasid_replace(_errno, pasid, hwpt_id, out_pt_id) \
++	EXPECT_ERRNO(_errno, \
++		     _test_cmd_pasid_replace(self->fd, self->stdev_id, \
++					     pasid, hwpt_id, out_pt_id))
++
++#define test_cmd_pasid_mixed_replace(pasid, hwpt_id)                          \
++	ASSERT_EQ(0, _test_cmd_pasid_mixed_replace(self->fd, self->stdev_id,  \
++						   pasid, hwpt_id))
++
++static int _test_cmd_pasid_detach(int fd, __u32 stdev_id, __u32 pasid)
++{
++	struct iommu_test_cmd test_detach = {
++		.size = sizeof(test_detach),
++		.op = IOMMU_TEST_OP_PASID_DETACH,
++		.id = stdev_id,
++		.pasid_detach = {
++			.pasid = pasid,
++		},
++	};
++
++	return ioctl(fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_PASID_DETACH),
++		     &test_detach);
++}
++
++#define test_cmd_pasid_detach(pasid) \
++	ASSERT_EQ(0, _test_cmd_pasid_detach(self->fd, self->stdev_id, pasid))
++
++static int test_cmd_pasid_check_domain(int fd, __u32 stdev_id, __u32 pasid,
++				       __u32 hwpt_id, bool *result)
++{
++	struct iommu_test_cmd test_pasid_check = {
++		.size = sizeof(test_pasid_check),
++		.op = IOMMU_TEST_OP_PASID_CHECK_DOMAIN,
++		.id = stdev_id,
++		.pasid_check = {
++			.pasid = pasid,
++			.hwpt_id = hwpt_id,
++			.out_result_ptr = (__u64)result,
++		},
++	};
++
++	return ioctl(fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_PASID_CHECK_DOMAIN),
++		     &test_pasid_check);
++}
 -- 
 2.34.1
 
