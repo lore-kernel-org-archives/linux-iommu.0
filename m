@@ -1,247 +1,218 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F6C920E70A;
-	Wed, 26 Feb 2025 10:51:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA0F51A7044
+	for <iommu@lists.linux.dev>; Wed, 26 Feb 2025 11:11:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740567082; cv=none; b=fIaWjmOOJdQEkybwVL+SewQ22bV3yanhWFHf1DLcutg7A6P01E4g3XkVNarLc6/KPfJgYIK/f1jLyrM5v7ASFwyHv/1Uaz9VI+dJ7AKX8GYw54T/qSNoKK3dy195WcECVrNpk1nGTQ3mbs9tM0iKO7OcCnt/1Sm5b4bTiPD2W9Q=
+	t=1740568277; cv=none; b=tywrTti1mMKaGNRnd7b4Jus8NypjMtG7mP+sQ7SvM2/L/yle9zOqYnDmfxNVOLRUlh1B/D6RUvv4Z+yLAf+jOqpuSlIrRp4K+yW3xkHtqKakH5SioDQVOzBR2PXaQhbUrAD7zOsXkhoLIAUYx161rXINDX4QCtAyWzD6qqIQSC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740567082; c=relaxed/simple;
-	bh=EJRmzJTFJ8NjApj/tf5SNaCRDGeunDMttv5+CnuEb8g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uoFco4GgTu18Hx10XZtGs2rLCUSrCy2wiE0IrtiGRcpbBJGaMX7o/kDYfDf5K+oM+OysTY651/LzzdVGSnyK73UF4NMxMO1qDr0+dyzSbEMMxh0vJstVZtlXRFNn5yf7E/FWyg1pxqfMs+OZC43sKzeG477JGhcUMe6iAUNTy+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k5cPrCQt; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k5cPrCQt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740567079; x=1772103079;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EJRmzJTFJ8NjApj/tf5SNaCRDGeunDMttv5+CnuEb8g=;
-  b=k5cPrCQtbm/jffIW3KDqHF/oyqzlqS5GXl8q3iie70T7++8LodS10O3Q
-   oYsr34fgxZZQIqDnRh4QWyo9XakHu/KQYx0JjkJ56I5D57Xn6IzR7wqR5
-   1hstTm2rC9S7D96IlS6gPnppzM9aEkE4gpggZla6US7YuHkYHPUd96Fos
-   MNWTigfFc3AooKSEnPNPdR9rvZ0+WF0ptfRyMfjv5xx8KdU65YsvDjWci
-   XRDv4yvD8zzb/zsFPYIkCloe0O231gvULdg6uvlBZcL5xaTNG5tWupQT/
-   5WGhond0wxkp6ZYqBs92QF6f29ihW7fOKAWtMgi5Aa8yQ094ylSXPGJ6y
-   Q==;
-X-CSE-ConnectionGUID: cWA6IKRfTVarq1MFCJ8SLQ==
-X-CSE-MsgGUID: jkeoh7jHREuNM85vMqiVZg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="41603140"
-X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
-   d="scan'208";a="41603140"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 02:51:18 -0800
-X-CSE-ConnectionGUID: Sp/DqdCSR8Glw85ZGwduvg==
-X-CSE-MsgGUID: ixcL/gLGQqim/7ZZJYfvsQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,316,1732608000"; 
-   d="scan'208";a="147490774"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa002.jf.intel.com with ESMTP; 26 Feb 2025 02:51:09 -0800
-Date: Wed, 26 Feb 2025 18:49:18 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Zhi Wang <zhiw@nvidia.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
-Message-ID: <Z77xrqLtJfB84dJF@yilunxu-OptiPlex-7050>
-References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-15-aik@amd.com>
- <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
- <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
+	s=arc-20240116; t=1740568277; c=relaxed/simple;
+	bh=wWD2tZa/klVgH2MM/wWGbtZUpbPR49qn1Dj9rD0e90A=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=g3GQQqIQIKi9/WR07+SMC+WtNQ6WMmDdCep9EmjNANkE1wErGO9LmUsWBXKmWb6o0aNKImd4140f0XFgljDVyLpxVx+VvY+3aA+tDauLeA+5BNWPVLO9Iz6wBETbFv1B4+fOjYoZ5A9FcXvv/7/RMzI0oTOxaji/P1k9fTYjBGE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.163])
+	by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4Z2s9y354mzJ1Fl;
+	Wed, 26 Feb 2025 19:07:02 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id BEBBB18001B;
+	Wed, 26 Feb 2025 19:11:06 +0800 (CST)
+Received: from localhost.localdomain (10.90.30.45) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Wed, 26 Feb 2025 19:11:06 +0800
+From: Yunsheng Lin <linyunsheng@huawei.com>
+To: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC: <zhangkun09@huawei.com>, <liuyonglong@huawei.com>,
+	<fanghaiqing@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>, Alexander
+ Lobakin <aleksander.lobakin@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+	Alexander Duyck <alexander.duyck@gmail.com>, Andrew Morton
+	<akpm@linux-foundation.org>, Gaurav Batra <gbatra@linux.ibm.com>, Matthew
+ Rosato <mjrosato@linux.ibm.com>, IOMMU <iommu@lists.linux.dev>, MM
+	<linux-mm@kvack.org>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
+	<daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, John
+ Fastabend <john.fastabend@gmail.com>, Matthias Brugger
+	<matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>, <netdev@vger.kernel.org>,
+	<intel-wired-lan@lists.osuosl.org>, <bpf@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-mediatek@lists.infradead.org>
+Subject: [PATCH net-next v10 0/4] fix the DMA API misuse problem for page_pool
+Date: Wed, 26 Feb 2025 19:03:35 +0800
+Message-ID: <20250226110340.2671366-1-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.30.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On Wed, Feb 26, 2025 at 11:12:32AM +1100, Alexey Kardashevskiy wrote:
-> 
-> 
-> On 25/2/25 20:00, Xu Yilun wrote:
-> > On Tue, Feb 18, 2025 at 10:10:01PM +1100, Alexey Kardashevskiy wrote:
-> > > When a TDISP-capable device is passed through, it is configured as
-> > > a shared device to begin with. Later on when a VM probes the device,
-> > > detects its TDISP capability (reported via the PCIe ExtCap bit
-> > > called "TEE-IO"), performs the device attestation and transitions it
-> > > to a secure state when the device can run encrypted DMA and respond
-> > > to encrypted MMIO accesses.
-> > > 
-> > > Since KVM is out of the TCB, secure enablement is done in the secure
-> > > firmware. The API requires PCI host/guest BDFns, a KVM id hence such
-> > > calls are routed via IOMMUFD, primarily because allowing secure DMA
-> > > is the major performance bottleneck and it is a function of IOMMU.
-> > 
-> > I still have concern about the vdevice interface for bind. Bind put the
-> > device to LOCKED state, so is more of a device configuration rather
-> > than an iommu configuration. So seems more reasonable put the API in VFIO?
-> 
-> IOMMUFD means pretty much VFIO (in the same way "VFIO means KVM" as 95+% of
-> VFIO users use it from KVM, although VFIO works fine without KVM) so not
-> much difference where to put this API and can be done either way. VFIO is
+This patchset fix the dma API misuse problem as below:
+Networking driver with page_pool support may hand over page
+still with dma mapping to network stack and try to reuse that
+page after network stack is done with it and passes it back
+to page_pool to avoid the penalty of dma mapping/unmapping.
+With all the caching in the network stack, some pages may be
+held in the network stack without returning to the page_pool
+soon enough, and with VF disable causing the driver unbound,
+the page_pool does not stop the driver from doing it's
+unbounding work, instead page_pool uses workqueue to check
+if there is some pages coming back from the network stack
+periodically, if there is any, it will do the dma unmmapping
+related cleanup work.
 
-Er... I cannot agree. There are clear responsibilities for
-VFIO/IOMMUFD/KVM each. They don't overlap each other. So I don't think
-either way is OK. VFIO still controls the overall device behavior
-and it is VFIO's decision to hand over user DMA setup to IOMMUFD. IIUC
-that's why VFIO_DEVICE_ATTACH_IOMMUFD_PT should be a VFIO API.
+As mentioned in [1], attempting DMA unmaps after the driver
+has already unbound may leak resources or at worst corrupt
+memory. Fundamentally, the page pool code cannot allow DMA
+mappings to outlive the driver they belong to.
 
-E.g. I don't think VFIO driver would expect its MMIO access suddenly
-failed without knowing what happened.
+By using the 'struct page_pool_item' referenced by page->pp_item,
+page_pool is not only able to keep track of the inflight page to
+do dma unmmaping if some pages are still handled in networking
+stack when page_pool_destroy() is called, and networking stack is
+also able to find the page_pool owning the page when returning
+pages back into page_pool:
+1. When a page is added to the page_pool, an item is deleted from
+   pool->hold_items and set the 'pp_netmem' pointing to that page
+   and set item->state and item->pp_netmem accordingly in order to
+   keep track of that page, refill from pool->release_items when
+   pool->hold_items is empty or use the item from pool->slow_items
+   when fast items run out.
+2. When a page is released from the page_pool, it is able to tell
+   which page_pool this page belongs to by masking off the lower
+   bits of the pointer to page_pool_item *item, as the 'struct
+   page_pool_item_block' is stored in the top of a struct page.
+   And after clearing the pp_item->state', the item for the
+   released page is added back to pool->release_items so that it
+   can be reused for new pages or just free it when it is from the
+   pool->slow_items.
+3. When page_pool_destroy() is called, item->state is used to tell
+   if a specific item is being used/dma mapped or not by scanning
+   all the item blocks in pool->item_blocks, then item->netmem can
+   be used to do the dma unmmaping if the corresponding inflight
+   page is dma mapped.
 
-> reasonable, the immediate problem is that IOMMUFD's vIOMMU knows the guest
-> BDFn (well, for AMD) and VFIO PCI does not.
+From the below performance data, the overhead is not so obvious
+due to performance variations in arm64 server and less than 1
+ns in x86 server for time_bench_page_pool01_fast_path() and
+time_bench_page_pool02_ptr_ring, and there is about 10~20ns
+overhead for time_bench_page_pool03_slow(), see more detail in
+[2].
 
-For Intel, it is host BDF. But I think this is TSM architecture
-difference that could be hidden in TSM framework. From TSM caller's POV,
-it could just be a magic number identifying the TDI.
+arm64 server:
+Before this patchset:
+              fast_path              ptr_ring            slow
+1.         31.171 ns               60.980 ns          164.917 ns
+2.         28.824 ns               60.891 ns          170.241 ns
+3.         14.236 ns               60.583 ns          164.355 ns
 
-Back to your concern, I don't think it is a problem. From your patch,
-vIOMMU doesn't know the guest BDFn by nature, it is just the user
-stores the id in vdevice via iommufd_vdevice_alloc_ioctl(). A proper
-VFIO API could also do this work.
+With patchset:
+6.         26.163 ns               53.781 ns          189.450 ns
+7.         26.189 ns               53.798 ns          189.466 ns
 
-I'm suggesting a VFIO API:
+X86 server:
+| Test name  |Cycles |   1-5 |    | Nanosec |    1-5 |        |      % |
+| (tasklet_*)|Before | After |diff|  Before |  After |   diff | change |
+|------------+-------+-------+----+---------+--------+--------+--------|
+| fast_path  |    19 |    19 |   0|   5.399 |  5.492 |  0.093 |    1.7 |
+| ptr_ring   |    54 |    57 |   3|  15.090 | 15.849 |  0.759 |    5.0 |
+| slow       |   238 |   284 |  46|  66.134 | 78.909 | 12.775 |   19.3 |
 
-/*
- * @tdi_id: A TSM recognizable TDI identifier
- *	    On input, user suggests the TDI identifier number for TSM.
- *	    On output, TSM's decision of the TDI identifier number.
- */
-struct vfio_pci_tsm_bind {
-	__u32 argsz;
-	__u32 flags;
-	__u32 tdi_id;
-	__u32 pad;
-};
+And about 16 bytes of memory is also needed for each page_pool owned
+page to fix the dma API misuse problem
 
-#define VFIO_DEVICE_TSM_BIND		_IO(VFIO_TYPE, VFIO_BASE + 22)
+1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
+2. https://lore.kernel.org/all/f558df7a-d983-4fc5-8358-faf251994d23@kernel.org/
 
-I need the tdi_id as output cause I don't want any outside TSM user and
-Guest to assume what the TDI id should be.
+CC: Alexander Lobakin <aleksander.lobakin@intel.com>
+CC: Robin Murphy <robin.murphy@arm.com>
+CC: Alexander Duyck <alexander.duyck@gmail.com>
+CC: Andrew Morton <akpm@linux-foundation.org>
+CC: Gaurav Batra <gbatra@linux.ibm.com>
+CC: Matthew Rosato <mjrosato@linux.ibm.com>
+CC: IOMMU <iommu@lists.linux.dev>
+CC: MM <linux-mm@kvack.org>
 
-static int vfio_pci_ioctl_tsm_bind(struct vfio_pci_core_device *vdev,
-				   void __user *arg)
-{
-	unsigned long minsz = offsetofend(struct vfio_pci_tsm_bind, tdi_id);
-	struct pci_dev *pdev = vdev->pdev;
-	struct kvm *kvm = vdev->vdev.kvm;
-	struct vfio_pci_tsm_bind bind;
+Change log:
+V10:
+  1. Add nl API to dump item memory usage.
+  2. Use __acquires() and __releases() to avoid 'context imbalance'
+     warning.
 
-	if (copy_from_user(&bind, arg, minsz))
-		return -EFAULT;
+V9.
+  1. Drop the fix of a possible time window problem for NPAI recycling.
+  2. Add design description for the fix in patch 2.
 
-	ret = pci_tsm_dev_bind(pdev, kvm, &bind.tdi_id);
+V8:
+  1. Drop last 3 patch as it causes observable performance degradation
+     for x86 system.
+  2. Remove rcu read lock in page_pool_napi_local().
+  3. Renaming item function more consistently.
 
-}
+V7:
+  1. Fix a used-after-free bug reported by KASAN as mentioned by Jakub.
+  2. Fix the 'netmem' variable not setting up correctly bug as mentioned
+     by Simon.
 
-A call to TSM makes TSM driver know the tdi_id and could find the real
-device inside TSM via tdi_id. Following TSM call could directly use
-tdi_id as parameter.
+V6:
+  1. Repost based on latest net-next.
+  2. Rename page_pool_to_pp() to page_pool_get_pp().
 
-The implementation is basically no difference from:
+V5:
+  1. Support unlimit inflight pages.
+  2. Add some optimization to avoid the overhead of fixing bug.
 
-+       vdev = container_of(iommufd_get_object(ucmd->ictx, cmd->vdevice_id,
-+                                              IOMMUFD_OBJ_VDEVICE),
+V4:
+  1. use scanning to do the unmapping
+  2. spilt dma sync skipping into separate patch
 
-The real concern is the device owner, VFIO, should initiate the bind.
+V3:
+  1. Target net-next tree instead of net tree.
+  2. Narrow the rcu lock as the discussion in v2.
+  3. Check the ummapping cnt against the inflight cnt.
 
-> 
-> 
-> > > Add TDI bind to do the initial binding of a passed through PCI
-> > > function to a VM. Add a forwarder for TIO GUEST REQUEST. These two
-> > > call into the TSM which forwards the calls to the PSP.
-> > > 
-> > > Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
-> > > ---
-> > > 
-> > > Both enabling secure DMA (== "SDTE Write") and secure MMIO (== "MMIO
-> > > validate") are TIO GUEST REQUEST messages. These are encrypted and
-> > > the HV (==IOMMUFD or KVM or VFIO) cannot see them unless the guest
-> > > shares some via kvm_run::kvm_user_vmgexit (and then QEMU passes those
-> > > via ioctls).
-> > > 
-> > > This RFC routes all TIO GUEST REQUESTs via IOMMUFD which arguably should
-> > > only do so only for "SDTE Write" and leave "MMIO validate" for VFIO.
-> > 
-> > The fact is HV cannot see the guest requests, even I think HV never have
-> > to care about the guest requests. HV cares until bind, then no HV side
-> > MMIO & DMA access is possible, any operation/state after bind won't
-> > affect HV more. And HV could always unbind to rollback guest side thing.
-> > 
-> > That said guest requests are nothing to do with any host side component,
-> > iommu or vfio. It is just the message posting between VM & firmware. I
-> > suppose KVM could directly do it by calling TSM driver API.
-> 
-> No, it could not as the HV needs to add the host BDFn to the guest's request
-> before calling the firmware and KVM does not have that knowledge.
+V2:
+  1. Add a item_full stat.
+  2. Use container_of() for page_pool_to_pp().
 
-I think if TSM has knowledge about tdi_id, KVM doesn't have to know host BDFn.
-Just let TSM handle the vendor difference. Not sure if this solves all
-the problem.
+Yunsheng Lin (4):
+  page_pool: introduce page_pool_get_pp() API
+  page_pool: fix IOMMU crash when driver has already unbound
+  page_pool: support unlimited number of inflight pages
+  page_pool: skip dma sync operation for inflight pages
 
-> 
-> These guest requests are only partly encrypted as the guest needs
-> cooperation from the HV. The guest BDFn comes unencrypted from the VM to let
-> the HV find the host BDFn and do the bind.
+ Documentation/netlink/specs/netdev.yaml       |  16 +
+ drivers/net/ethernet/freescale/fec_main.c     |   8 +-
+ .../ethernet/google/gve/gve_buffer_mgmt_dqo.c |   2 +-
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c   |   6 +-
+ drivers/net/ethernet/intel/idpf/idpf_txrx.c   |  14 +-
+ drivers/net/ethernet/intel/libeth/rx.c        |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |   3 +-
+ drivers/net/netdevsim/netdev.c                |   6 +-
+ drivers/net/wireless/mediatek/mt76/mt76.h     |   2 +-
+ include/linux/mm_types.h                      |   2 +-
+ include/linux/skbuff.h                        |   1 +
+ include/net/libeth/rx.h                       |   3 +-
+ include/net/netmem.h                          |  31 +-
+ include/net/page_pool/helpers.h               |  15 +
+ include/net/page_pool/memory_provider.h       |   2 +-
+ include/net/page_pool/types.h                 |  46 +-
+ include/uapi/linux/netdev.h                   |   2 +
+ net/core/devmem.c                             |   6 +-
+ net/core/netmem_priv.h                        |   5 +-
+ net/core/page_pool.c                          | 423 ++++++++++++++++--
+ net/core/page_pool_priv.h                     |  12 +-
+ net/core/page_pool_user.c                     |  39 +-
+ tools/net/ynl/samples/page-pool.c             |  11 +
+ 23 files changed, 570 insertions(+), 87 deletions(-)
 
-It is not about HV never touch any message content. It is about HV
-doesn't (and shouldn't, since some info is encrypted) influence any host
-behavior by executing guest request, so no need to route to any other
-component.
+-- 
+2.33.0
 
-Thanks,
-Yilun
-
-> 
-> Also, say, in order to enable MMIO range, the host needs to "rmpupdate"
-> MMIOs first (and then the firmware does "pvalidate") so it needs to know the
-> range which is in unencrypted part of guest request.
-> 
-> Here is a rough idea: https://github.com/aik/qemu/commit/f804b65aff5b
-> 
-> A TIO Guest request is made of:
-> - guest page with unencrypted header (msg type is essential) and encrypted
-> body for consumption by the firmware;
-> - a couple of 64bit bit fields and RAX/RBX/... in shared GHCB page.
-> 
-> Thanks,
-> 
-> > Thanks,
-> > Yilun
-> 
-> -- 
-> Alexey
-> 
