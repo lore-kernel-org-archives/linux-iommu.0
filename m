@@ -1,172 +1,236 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 452C3253341
-	for <iommu@lists.linux.dev>; Thu, 27 Feb 2025 14:47:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740667680; cv=none; b=u+XeS0ysiDCLncUttkXHzThijClZL+ht/BU7EJKaPOVSd/5qjcrbmbcFVVkl+ca6fVe1ha1/Y6Oi/IfsPlA8XNAujlVerZqA5aTIKGAJTP+ebttzbaOReKdD/yC7Oqg9k+z1pQnErRcNLZcGNAWzlWlOZMrtvrreFc8Cfycceew=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740667680; c=relaxed/simple;
-	bh=ahm4ULTHZk3ce8g1tbySE6GSite6cauCJ1wPb9/Zujc=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=W5bD3qXkXOJqkphU+K4uPtlpgp42wONVL1qfJaSQj8Kf3PzNqwxjiySZQWBWcyQGz34kkxNDXFk52s0vbZQcTGNZlyJZkaNiEFGK/mBpapLWJHzWgmp+UTcraLh81jWyBx2IVt5guRv8CI4mjuk6UO47oUcRtPnl+3dwC3YUIQ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 181032BCA;
-	Thu, 27 Feb 2025 06:48:12 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 69F4D3F673;
-	Thu, 27 Feb 2025 06:47:55 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Cc: iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	yong.wu@mediatek.com,
-	thierry.reding@gmail.com,
-	vdumpa@nvidia.com
-Subject: [PATCH] iommu: Unexport iommu_fwspec_free()
-Date: Thu, 27 Feb 2025 14:47:47 +0000
-Message-Id: <36e245489361de2d13db22a510fa5c79e7126278.1740667667.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2050.outbound.protection.outlook.com [40.107.94.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EA0225742F
+	for <iommu@lists.linux.dev>; Thu, 27 Feb 2025 15:27:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1740670078; cv=fail; b=WLuNM31YDtMaULiMX6CBNaG7MJwDkOEOWbl2ZQ9jy7+doyugca/zqWyqUcn8ZwT/fC7OaBb8P9QA+dOPiwSkvcBxKOp6qTIdW5dUxzz5nPRR8j09QZQZob6DPCRgek+kJP0WHUET/rpJ5Z5UzpIlxQwOWzz5gvv8c9M6G/TscX4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1740670078; c=relaxed/simple;
+	bh=e6Oet9klaAVKCoBYYcGpMZPN6xR6hsrtS5oAIn7RbCE=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=LjaZAWjPXd0McN07jJev8M+ZV4zDIAjK5cBb874SUAgslptJCHFMheFQFDPrdVLTQNxoCt1z3zOzCm/YWVKFsZVzrelC3t48iOhVn7Da6zUsKfHSG1i6NYtRTNBPiqBw2t6f1Z0v59XrJm15wicPSRqBcr7spXwftWKazWUOtAQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=q6lQFpmd; arc=fail smtp.client-ip=40.107.94.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="q6lQFpmd"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Xl8JoYm0iu0st99VveFn4HemxOKMezZvqRPNRKZcB5iXP/J6hn12GJ5B59FnPP5UrYb2TyAk2r7oYV72qb+5IMZ1TktPaUgv9bI87Lw5BgVhNXHXe2OBBxkM3MIAtKAiijDBQi5zddNeG2BdhokVH2G+Uh56sByAelhhf4iNWj8zp0fji6DP8UEcklx2wjL4yNDT5wNTKdqvvJucS+y2m9iChonRrOBNopmzSR1w+nxzVicAGIrnpSf7ChbMtVDlvhZ7S7GXv/8sqD0m5vP5tljxLSZaU0NnYzQ4F/iUZLscGb0BHj13tTBZL8DMHpP4+5edc7Iw5kreGIc4Roo4YQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WBxWoiuD3qFDilsgvYzAX1gb5B7CCgvvt70mMTNiYHY=;
+ b=G1/IXfiPMRYYxXnsnSBYZCsL6rotmixHSoDJ2lHcDj0w3GLZhjlJqOok87wNynoFpxlYMxh9qu9y9RpScGDjRT7NtRV4Z6hw3Assd+wDf+AcDhguHqljXLd4uHinlcSCgv5lMDJoRdUkt3L7cz1TEcfBN74BKc0y9UHjXHTn9onbW+4jVL5aoy5KB9c54s9Iic79FykAp5MHYZZb+Dz9lBO0nQ7x7BO7XQq9ZVCBxQDMe/ogumKSulb3GBZPUVrCX+ALQmipZDEmgq4/Mg8i7kKWDXMRENVBHZCZCoOnXQEg3O6FhKrltnKpExtrW3l5wLNI8c0K6BzoLc7nOLBa/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WBxWoiuD3qFDilsgvYzAX1gb5B7CCgvvt70mMTNiYHY=;
+ b=q6lQFpmdGFix7gWfCGNT8ZxteTlI0CGfLcY2Hu0We4qrq7H6RyW0looIhJs8DfCqRoGRglSDPIuPvxC8A/1e58szt5Z4ZoH/gTJDAKwrELLFwddVrLR+NUPwYVW/UCuF9xRzjVa3D4+l0aKT4hx0eNiBA01EL+jnB/hFbxeHZ5k=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ SN7PR12MB7180.namprd12.prod.outlook.com (2603:10b6:806:2a8::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8489.18; Thu, 27 Feb 2025 15:27:54 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%6]) with mapi id 15.20.8489.018; Thu, 27 Feb 2025
+ 15:27:53 +0000
+Message-ID: <4fba254e-ca47-4e7b-baf3-0228d9605c2b@amd.com>
+Date: Thu, 27 Feb 2025 20:57:45 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
+References: <20250225105829.52223-1-vasant.hegde@amd.com>
+ <be9d2ad2-0f9e-4d06-952b-4cfd6ae53447@intel.com>
+ <ce86ff90-377e-49fe-9c4e-d2ad7abeeec8@arm.com>
+ <20250225145518.GJ545008@ziepe.ca>
+ <BN9PR11MB527624C1DED16B3C049D13438CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250226011750.GB5011@ziepe.ca>
+ <BN9PR11MB5276B3E410FD336A3062FA5E8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <BN9PR11MB5276B3E410FD336A3062FA5E8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0162.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:26::17) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SN7PR12MB7180:EE_
+X-MS-Office365-Filtering-Correlation-Id: cf341a13-45f3-4cae-1dd1-08dd57434dae
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?YVYxcE50azZXYlo3enpjSGczRklKTEh4ZWd0emwrbkZXLzNLSHlaNG16enE1?=
+ =?utf-8?B?QjdUYTh2SnJaUkRCU3JxWnZZV3NCK3ArUGplL3VJMHR5MGJENGZMUHNSVExJ?=
+ =?utf-8?B?N3FWdDM0d3VoSzhLZGptVk8wK3RVbmRocFluNTdDRnIzVjlJZUFyYUsvRm5C?=
+ =?utf-8?B?K0gwU2JIaldZT1QzbitvSkNkQXFkY2MzMXFZZGJxSlJUOVpTNTkvbi9WTzZB?=
+ =?utf-8?B?MUhPTDBNMVlvcmMyTm02UjV2RjJrL1NsRFp4UzNkS2dDK2o1MmZ6aG4zVU04?=
+ =?utf-8?B?U3U2WHBBb0VCV3F1YjhPdjJEVllOVmVEWTBCTGFDdUdTUnpRSXIzQU15R3Jq?=
+ =?utf-8?B?NlE1WTdkWk85ckNCV2ZCY3pXbUwwVmZQeExGbFQ1dTFOZFpoUCtESk83aXhq?=
+ =?utf-8?B?K20yYXZlcXo5UDlzRTRvdjhwSG5QaEEwYUJGTGZHQzBheE5yWlViOUFsYmNE?=
+ =?utf-8?B?SGt5bG9mNVMwVEdXc2t0dmM1OXhFS21BMjNwR0hRTzZOMjhoS205UlYvcVlq?=
+ =?utf-8?B?cFhQQ2k3U2hIaXZRak5IZWxtNndmYnpUNGRZNmVGOHpkMi92blh1ZE9hRHB6?=
+ =?utf-8?B?dm1LZHlDMks1bVhRb1c0Smp3elY5dURpWjlkWXVTRXlud0I2Nm1HVkFXWEw4?=
+ =?utf-8?B?eVIvUkVRQVRHeFZaS1FZTUF5cTQ3UnJxTTBpNnBsSkM1V0x0ZmI0NVNJZ1NO?=
+ =?utf-8?B?dk1DSGwrT1BVdUprak1BRzhGRG1rTjhNRks1ZUNwQjRDalpOaFNIS0ViVVhX?=
+ =?utf-8?B?UnB5ekRxenhKbS9HVDhGM3FYaTNldlo3eVRDWmNhV2t4bDRNNW1BZDhhazhx?=
+ =?utf-8?B?eVN3K3RQVE1vNmU4MENTQVduZ2RqT3JpSTJNeHZkdjM2VG1DUHZSaUtvbVlo?=
+ =?utf-8?B?T0NmcmFrWVRWbVcxc2RwMnR2NzNrckgwNzYwSzgxVHFFbThkbjcvNjFPbStJ?=
+ =?utf-8?B?UWkvZDhYN0tTeG9ibVFJeEdWaWtrVUxFeGZxM3J5TmRSMURJZkcrdmdvWVBx?=
+ =?utf-8?B?cEVKYUhYMmNsM3ozcmY4QnJyK2E4ZnlCNTRCMlE0a0xVdk5iQWNLa0l5R3Fl?=
+ =?utf-8?B?QWZKM281ZTZPQ2ZxTTZKQzMyK2QrWnQrNEhoQ2xGaGhJKzgweThOTGpLY0Jj?=
+ =?utf-8?B?Q2Z2VlZidjd2RFBEc2QycWtPMEFlZ2QyMUwvZW1VOXZpL1pMOVZGVll1SHpv?=
+ =?utf-8?B?UTF5YnVZOXE5ekRJQkZBNFJhWkZ0VUJrSm80K290NWNsRnFqeEVvUTF4aGlr?=
+ =?utf-8?B?UHNwK3EwYmc2KzlROHRIMVo2K3NGYUppcXZXNlVrZjJrOEpULzIwZU1qYzZH?=
+ =?utf-8?B?bVJRR2o2OHk4ZmFwR3djYUIza0xjMmtqNVc5ZXNsQzJrcGUwL1hVUGZEdHdI?=
+ =?utf-8?B?b0ZxdEYxK3I3REs1UDE0WkxGWlRyT0xSUGZaU2lKNjgrZCtqWS8wNXQ4YzBJ?=
+ =?utf-8?B?ZFk1UkR5TEtvbkNIZXVDQUpBNjlscXRWclVVS2RRanZMaGttNmora3R5MCtG?=
+ =?utf-8?B?VUhnNEQwcE5XNG80N2F0QjRyT0VZSWNZOHgxVzBsVkMwOXJLUUxseVF0cE12?=
+ =?utf-8?B?NWw4Ukh4N0ZDUmZFdW05ZkoxNHQvL1JhZnhIR04xanVKa2RXdUx3cndMaWQ1?=
+ =?utf-8?B?VWJUVUJvVDk0OHU2dWJHdWFGZUhJRDhWUzlGbTkvZThNcXlHN2NWd29LYkJY?=
+ =?utf-8?B?S3V5b0d2WDdraStxa1dJNUhwYlluM3RkZ2hLb1BibEkrZGE0aStXRjU5V2lS?=
+ =?utf-8?B?K3JQOEEyMVNSSlNNaHpVM1F6VDZkNkk3SWplVXFtTkM1REtua3MwRStPNVlS?=
+ =?utf-8?B?WEVXZkpYRzdadXlvYmdpS2xOMDFIWVR2M1hJb2JPbjd5bGdWTXZvOW1YNm9z?=
+ =?utf-8?Q?a5Ns00SljKMiT?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SnBNb0lSdHlycVE5K0w3Z3VCaWhpd3JPZDV0V0J1U09PaG5Yc2pSOFhZSURE?=
+ =?utf-8?B?MWJaSTVRMTNycW1hb09mdWVMR3N0NG9IbVR6dk9jWDE2UUN5alBZQ0JyTVJa?=
+ =?utf-8?B?MzdXVU8wSUoxVDQ2YWp1WlhJWTFmeGJRR1BrL3pIa2c2cXNLV1QxZUtSWTVK?=
+ =?utf-8?B?SHpRY25wTWhUZVJ2a2libWU0UkUxbHZqYXFmOEZFb0M1Y3NSeGpPajZLTmtZ?=
+ =?utf-8?B?eXB2UkNKTnRHdEg4RXpSYUtGbFVTYzhkM29obG45QmxpaGhtYmVSQXdRK3Vr?=
+ =?utf-8?B?eHliK3dUVzJKWVFTc25aSVNzdklNTlVobGlJSXkzY1NTWnNRZFJ0OFlRWWJN?=
+ =?utf-8?B?SUxUdWo4K21rZGdwbk5WZFlNekhCUWJwSTB2WjlGS2R4VWxzS1JhdkZnRTVt?=
+ =?utf-8?B?UXJpdDFtRkVPYk1vRDN3RUJZL2RRSEZnSklpU3B0QVUyVVdSdmthZHN2U1l2?=
+ =?utf-8?B?U0pPNWdhN2VRVGFIdWxwN3NONENvSllEWjJCYzNrdnJSSG1lblh5R2FkQ3Zp?=
+ =?utf-8?B?OUd4ZmwzYmJGTHNKSzdiK3RFaGIyb1gzWDdpczJtVm5xUmg5WlpNOUY4dTVS?=
+ =?utf-8?B?QzdrWWtQUjlvbzZzdHpoVHlmQThaK2N6ZUZDcSs4bUs0cEg0SlRiZy96OHVk?=
+ =?utf-8?B?MFNHNlR3dTBpU1dJTHk0T211b2tHeXRJOVNuV1Z5WnJTSXM5Y0RuN1ZYYzBm?=
+ =?utf-8?B?eWFPdXJRL0lTVi84ZzE2SVRmVG5jdE5Edk1sYzZXcGwvY0hVait1RjMwS0hx?=
+ =?utf-8?B?ZDY4cEhUdTU1MTBTMzdSS2NDMTVTZVRvbGdQSTZOY3ozbzIzTEZoQTNoR1JN?=
+ =?utf-8?B?VVdnUUJON0cxa3BOWk51TjVSWmVhTnFyb2FBTVdmNGxMTFdLTk5iQ1BGeDhy?=
+ =?utf-8?B?MVA0RGU3VzVwNEdYNVVadCtJcnloell1aFdvVUdIYXpEZC9HaU5WZTBLRzZN?=
+ =?utf-8?B?a0xtd0prYXFmYUU5bDJscHgweEtSQXZxTUNXTldvVUZoTksveFNJVDlEbUtI?=
+ =?utf-8?B?bERvbUVNWTRTVVBxRTh3cDY1WnMxYVE3NmxaTmQvZEJyRW5mT3J1Q0JLVGEz?=
+ =?utf-8?B?a1pTd1N2U1FRMmpSb1NlS1pGK25rMVE3N3prZlltM0JvWHRYc09GcCsyY2RT?=
+ =?utf-8?B?Y3d1OEdmSFNYRUl6NFVHTzl2MXVrUnoydTl0VTNKdUwwTjN5MGdON0IvM0Jo?=
+ =?utf-8?B?b0hMNXBXeFZEbzRVcnd3K1lmYllUWVF6emN0VTR5QTdUWXNZNStES3dhd01y?=
+ =?utf-8?B?ZXBBZjhVS3pFZHZhbGN1SGpDUGQvMEhWZllpN3Rhdi8rSldxZ1VDai9lS0oz?=
+ =?utf-8?B?RWZJc2E3SHlKZFJTU2xGcjV6Wm5NeWFaQTBoU1h2YjJKVFdLUmFhZXZpNlZX?=
+ =?utf-8?B?UzhXeUJ6UUVTeWdSejluN1A2dEY3TlUxY3pIYW0yZjc5VXMvN0RvT3c0ajE5?=
+ =?utf-8?B?NEZHVEw0MlFWV2dqQzNoQWRIWFAzM2VQOU9DY0xiTFVVVHJVUDB5WTU2OTl5?=
+ =?utf-8?B?Z1JCR3gyR3cxSjQ3VTF3ZXpHNkNTNDdoQ3o5YzFoMnczTVlrZUh4U1NzWmdL?=
+ =?utf-8?B?NExjcnFDVWpWZnE2NXErS3p2cHhEQ2JDNUthc3ZNcnNkT1hoTCtYcGFhQ0tq?=
+ =?utf-8?B?K21uKzg1MGxuYXBTSUtFdC9mcmhxcThPWU9NY3JMWHJ3bU1xdWw4UU44MXpu?=
+ =?utf-8?B?aHpRVWJLZVNhbjVTZW5vTkVQQi8yT1ZEUkhHYUN0bVVzMnNXZC9zVC9DT1FJ?=
+ =?utf-8?B?OUNyVFg4VDhrN2kvWmRHdENGNlFkMGxRMWxmSFpPRjlUSExhNHg0NkFVNHpi?=
+ =?utf-8?B?aG9ZNE42UDFxNnZMTFVIWi84akt4STFCRWtVWVd3d1EvTUYzSllwbHdnSjVp?=
+ =?utf-8?B?d0RhWXYxTGRHVVRRbDRITTRnMkN4bFpaRnVXa2xWd0piZytoSFJ1MkhmL1N5?=
+ =?utf-8?B?NUFaNlhrYUV4aUFiQnpLOWEzR2srSkwwTnpXYUlMSWltM3oxWVNzNEorbTRN?=
+ =?utf-8?B?N2VXWVVxaWxLV2ZxcE00RTZYaGhGOTlqTkpnb0ljZ3p6VXdrTk5KV04yTWZQ?=
+ =?utf-8?B?MWtFUDVwQWwyaWlvY01YOTZ3MWNJdTg2SnJYamdlLzdBZXlwcWZVMjRiZWg0?=
+ =?utf-8?Q?wtcmkpdVPTVkv01e7VYqf2OtD?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf341a13-45f3-4cae-1dd1-08dd57434dae
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Feb 2025 15:27:53.7971
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: v7+ELrt25+Ils6UwS8DZdlIEocLzfO7tjvhQG2hQrlWxQ7RRLGao35tOL0ClUss8/fVuxx8LhNTNrHDu08s3vA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7180
 
-The drivers doing their own fwspec parsing have no need to call
-iommu_fwspec_free() since fwspecs were moved into dev_iommu, as
-returning an error from .probe_device will tear down the whole lot
-anyway. Move it into the private interface now that it only serves
-for of_iommu to clean up in an error case.
+Hi Kevin,
 
-I have no idea what mtk_v1 was doing in effectively guaranteeing
-a NULL fwspec would be dereferenced if no "iommus" DT property was
-found, so add a check for that to at least make the code look sane.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu.c |  1 -
- drivers/iommu/iommu-priv.h            |  2 ++
- drivers/iommu/iommu.c                 |  1 -
- drivers/iommu/mtk_iommu_v1.c          | 14 ++++----------
- drivers/iommu/tegra-smmu.c            |  1 -
- include/linux/iommu.h                 |  5 -----
- 6 files changed, 6 insertions(+), 18 deletions(-)
+On 2/26/2025 12:35 PM, Tian, Kevin wrote:
+>> From: Tian, Kevin
+>> Sent: Wednesday, February 26, 2025 10:51 AM
+>>
+>>> From: Jason Gunthorpe <jgg@ziepe.ca>
+>>> Sent: Wednesday, February 26, 2025 9:18 AM
+>>>
+>>> On Wed, Feb 26, 2025 at 01:12:38AM +0000, Tian, Kevin wrote:
+>>>> If above understanding is true, my preference is to support a sats flag
+>>>> in domain alloc (nested_parent only and PCI/CXL.io only, as the start). For
+>>>> AMD it turns on the sats bit in the DTE. for Intel/ARM the permission
+>>>> structure is created and updated according to the map/unmap calls
+>>>> on the parent S2.
+>>>
+>>> They are functionally different things, and have different
+>>> requirements on the PCI topologies supported (eg CXL.cache vs no
+>>> CXL.cache)
+>>>
+>>> I think they need to be different flags
+>>>
+>>
+>> Not exactly. They are functionally different but serving the same purpose
+>> to the user. From user p.o.v. it's sufficient to have a general flag for sats
+>> when allocating a domain. The underlying driver decides whether such
+>> flag is supported based on the domain type and the associated device,
+>> just like checks on other existing flags.
+>>
+> 
+> Chatted with Yi offline. Having untrusted user control a security 
+> feature doesn't make much sense. Probably what we really require
+> is:
+> 
+> - IOMMU core exposes a separate sats knob per probed device, 
+>   allowing the administrator to manage the sats policy which could
+>   be no ats, unsecure ats and secure ats (might be further set per
+>   domain type in case the hw doesn't support sats for all types or
+>   the driver doesn't support all hw-supported types in one batch).
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index de205a34ffc6..ea9f8e484e35 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1486,7 +1486,6 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- out_cfg_free:
- 	kfree(cfg);
- out_free:
--	iommu_fwspec_free(dev);
- 	return ERR_PTR(ret);
- }
- 
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index de5b54eaa8bf..17e245cf17bb 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -24,6 +24,8 @@ static inline const struct iommu_ops *iommu_fwspec_ops(struct iommu_fwspec *fwsp
- 	return iommu_ops_from_fwnode(fwspec ? fwspec->iommu_fwnode : NULL);
- }
- 
-+void iommu_fwspec_free(struct device *dev);
-+
- int iommu_group_replace_domain(struct iommu_group *group,
- 			       struct iommu_domain *new_domain);
- 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 60aed01e54f2..0fce7a1677e6 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2849,7 +2849,6 @@ void iommu_fwspec_free(struct device *dev)
- 		dev_iommu_fwspec_set(dev, NULL);
- 	}
- }
--EXPORT_SYMBOL_GPL(iommu_fwspec_free);
- 
- int iommu_fwspec_add_ids(struct device *dev, const u32 *ids, int num_ids)
- {
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index a565b9e40f4a..09676bd7cb9c 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -446,22 +446,13 @@ static int mtk_iommu_v1_create_mapping(struct device *dev,
- 
- static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
- {
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct iommu_fwspec *fwspec = NULL
- 	struct of_phandle_args iommu_spec;
- 	struct mtk_iommu_v1_data *data;
- 	int err, idx = 0, larbid, larbidx;
- 	struct device_link *link;
- 	struct device *larbdev;
- 
--	/*
--	 * In the deferred case, free the existed fwspec.
--	 * Always initialize the fwspec internally.
--	 */
--	if (fwspec) {
--		iommu_fwspec_free(dev);
--		fwspec = dev_iommu_fwspec_get(dev);
--	}
--
- 	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
- 					   "#iommu-cells",
- 					   idx, &iommu_spec)) {
-@@ -476,6 +467,9 @@ static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
- 		idx++;
- 	}
- 
-+	if (!fwspec)
-+		return -ENODEV;
-+
- 	data = dev_iommu_priv_get(dev);
- 
- 	/* Link the consumer device with the smi-larb device(supplier) */
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 7f633bb5efef..69d353e1df84 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -846,7 +846,6 @@ static int tegra_smmu_configure(struct tegra_smmu *smmu, struct device *dev,
- 	err = ops->of_xlate(dev, args);
- 	if (err < 0) {
- 		dev_err(dev, "failed to parse SW group ID: %d\n", err);
--		iommu_fwspec_free(dev);
- 		return err;
- 	}
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 38c65e92ecd0..446ca5a5af35 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1079,7 +1079,6 @@ struct iommu_mm_data {
- };
- 
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode);
--void iommu_fwspec_free(struct device *dev);
- int iommu_fwspec_add_ids(struct device *dev, const u32 *ids, int num_ids);
- 
- static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
-@@ -1390,10 +1389,6 @@ static inline int iommu_fwspec_init(struct device *dev,
- 	return -ENODEV;
- }
- 
--static inline void iommu_fwspec_free(struct device *dev)
--{
--}
--
- static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
- 				       int num_ids)
- {
--- 
-2.39.2.101.g768bb238c484.dirty
+When you say "sats knob", you mean sysfs interface?
+
+> 
+>   It's also checked against the device type e.x. CXL.cache.
+> 
+> - Then when enabling ats for a given domain type and device, follow
+>   the policy set by administrator: ats disabled, ats enabled as today,
+>   ats enabled with hw enforced security;
+> 
+> - Optionally iommufd may support a domain alloc flag for ats,
+>   which alone is a performance or functional dependency (by PRI), 
+>   hence better to let the user opt. If opted, again follow the
+>   admin policy whether it's allowed and requires sats.
+> 
+> Is this way reasonable?
+> 
+
+What I am really thinking is :
+  - If HW has a enforcement required (like AMD SNP case where Secure ATS is
+must), enable secure ATS. But do we need some way to inform core layer? If yes,
+may be have an domain ops similar to def_domain_type() ?
+
+  - For untrusted devices,  by default enforce Secure ATS (may be a domain flag)
+
+  - Have a command line option, so that if administrator wants to enforce secure
+ATS for all devices, he can do that.
+
+-Vasant
+
+
+
 
