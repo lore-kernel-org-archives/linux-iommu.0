@@ -1,154 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63260A59;
-	Thu, 27 Feb 2025 04:01:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0312A59
+	for <iommu@lists.linux.dev>; Thu, 27 Feb 2025 04:03:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740628879; cv=none; b=auZhcbYP/KuDtPbjDJrFW/Hjc9C/uGn+fLF6dhMvAyncA8etykoGrIOKJyWIBu5c1H2At1JkE/+lJDrttvk8c67miyclfjnE0YoOSnlSrU+5cKllwe7BGfVHtAv4GxhEltyKlR/Yy5xloiF8018qujmjEiklaXrArdbrcRxP1BQ=
+	t=1740629018; cv=none; b=ESjkOkhGYLK2lTOUwp3Nqesue4TEa35rhl/hHUjSp/+V3QQrzw5+l0aRS9jgTnXd/EEyB8HNNNfMdiG+wSvxFUsqj1Wlpt+czScVrEUKnyIVHF8gPgZsi/cJtJ2L8J9aS6rBP/OWuZLUSaiIZ1Ebdd4JOHCwCL39ZOTuDhSeM9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740628879; c=relaxed/simple;
-	bh=IEjTmlHtu/G6YONIHp7Nc7Bjed+wo/mNljfTGEMgYoU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Cf/ADUtpFTbKXGWi+64014aaIzxWC0yjw2JYA1XfVq0jbwL/WHeWvvkiWuNHg25RGRa/uJvX3Nf9QVVkhi6NJFL2j1Y+8Ho+ftSMB4osm88tIYKl5TmJXpkf2PdyuEU8oT61upZvY7KXbcVMHMIMpKIBSn1NgeDlT1PNFjAN22I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Pd9X2fgw; arc=none smtp.client-ip=192.198.163.8
+	s=arc-20240116; t=1740629018; c=relaxed/simple;
+	bh=2bbTH6f1f9kGNQ+GLtPcoWsOeY6gNXU6UGy4sy5Wrlw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lpyqypzYcsa0xEz4VfNyLdXRLyZSrSkKHGwI9Dh+RLnEhZlWL4e7THeMxX9bJXAgVrx4BcNQMLZKDa4gtCkuvZjfeCtkw0alaN+4rMT+cGSkFsxHu8+XLWrIUQjl8fwosbTACdQj9ThXxsuszpMX2Kdo3G0TW3Ft1d4posl5Ya4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ix2SB7Wm; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Pd9X2fgw"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ix2SB7Wm"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740628878; x=1772164878;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IEjTmlHtu/G6YONIHp7Nc7Bjed+wo/mNljfTGEMgYoU=;
-  b=Pd9X2fgwid4qKtl0iI2E/iRAqmnOmn+3x5xPGvTWN2R6nzmHr296/85n
-   Iik76mRPuhyb2W1PUFsUIPFiJn5wGvALoXHhAXu14heH35hm48Y7hc5J7
-   0PY0eEHJmekgymiXLCJOZlPpleYv0KFbmkyW9UQItSKFccl2vG0rui9Gd
-   cPiBlFvqogNyB+/VoMIzwBlJssOVfxZjUhEZTyLAYVlrhCWXGvS2mDlXX
-   XNYWKJ0c+CX81emJ1Jc98fbW9CPh+HkIeZNMq5e4P+j5LmsJjCb0Ve4JQ
-   oBJwxWoPwlBkanLlos+TxTsSs7ZPzzfa0Q9Xo76O0LWAVokazAOAKkRGW
-   A==;
-X-CSE-ConnectionGUID: CoAiXe3xTMGg37aZvCoFkg==
-X-CSE-MsgGUID: KE/YmcQDSD6Kw9fxowuQdg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11357"; a="59039516"
+  t=1740629017; x=1772165017;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=2bbTH6f1f9kGNQ+GLtPcoWsOeY6gNXU6UGy4sy5Wrlw=;
+  b=Ix2SB7Wml4AQnpbdMGdl0C6p0JwQmtYUr0zkbAyMrTLWnWy+4NQhdC1g
+   Nqf+xlgu8RjyNIig922wwjbwjeYgbaGEU//bs+o0a31BbA/KlhiL0vOVT
+   uSzARgzIcVaglhN9G1LCoWMtljJBpf1iYW+pmV01mz9Cpw7cm/JTifN9l
+   pmgIkIBqhGiA9Le76Aw7RvvlebWctOTiDb2dTYAGyQ0ydpcRiQDow1hFS
+   f0jLQYuUv5ER1MynIutbLnjwgsrhJRSPhDIjP61EGENkjqrEyBco2Htsp
+   OIcNNU9mrjmWIrGnxxwR+wgGVqij1+T6Ruttw1SS7xwk1Jd0VMy47RMaF
+   g==;
+X-CSE-ConnectionGUID: hKtkNBW2S1Cwt+d5tlrQsg==
+X-CSE-MsgGUID: Y6Dd1/10RO2YLle26ci+VQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11357"; a="41425886"
 X-IronPort-AV: E=Sophos;i="6.13,319,1732608000"; 
-   d="scan'208";a="59039516"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 20:01:17 -0800
-X-CSE-ConnectionGUID: 28vhRiITRbmufxYLAhfSWw==
-X-CSE-MsgGUID: Lc4yBGteRBCDAlNlAOIahA==
+   d="scan'208";a="41425886"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 20:03:37 -0800
+X-CSE-ConnectionGUID: NOS4BGbyRZmy7i5LP+BZhg==
+X-CSE-MsgGUID: lwa7GDYOSzyp6DyiPADhpg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,319,1732608000"; 
-   d="scan'208";a="117075567"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmviesa008.fm.intel.com with ESMTP; 26 Feb 2025 20:01:10 -0800
-Date: Thu, 27 Feb 2025 11:59:18 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Alexey Kardashevskiy <aik@amd.com>, x86@kernel.org, kvm@vger.kernel.org,
-	linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Zhi Wang <zhiw@nvidia.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
-Message-ID: <Z7/jFhlsBrbrloia@yilunxu-OptiPlex-7050>
-References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-15-aik@amd.com>
- <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
- <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
- <Z77xrqLtJfB84dJF@yilunxu-OptiPlex-7050>
- <20250226131202.GH5011@ziepe.ca>
+   d="scan'208";a="116676306"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 20:03:34 -0800
+Message-ID: <2c03eeaa-d9c9-4b4a-bf15-c1d1c2a79b36@linux.intel.com>
+Date: Thu, 27 Feb 2025 12:00:18 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250226131202.GH5011@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 09/12] iommufd: Allow allocating PASID-compatible
+ domain
+To: Yi Liu <yi.l.liu@intel.com>, kevin.tian@intel.com, jgg@nvidia.com
+Cc: joro@8bytes.org, iommu@lists.linux.dev, nicolinc@nvidia.com
+References: <20250226114032.4591-1-yi.l.liu@intel.com>
+ <20250226114032.4591-10-yi.l.liu@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250226114032.4591-10-yi.l.liu@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Feb 26, 2025 at 09:12:02AM -0400, Jason Gunthorpe wrote:
-> On Wed, Feb 26, 2025 at 06:49:18PM +0800, Xu Yilun wrote:
+On 2/26/25 19:40, Yi Liu wrote:
+> The underlying infrastructure has supported the PASID attach and related
+> enforcement per the requirement of the IOMMU_HWPT_ALLOC_PASID flag. This
+> extends iommufd to support PASID compatible domain requested by userspace
+> or the PASID compatible domain allocated in the auto_domain path.
 > 
-> > E.g. I don't think VFIO driver would expect its MMIO access suddenly
-> > failed without knowing what happened.
+> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
+> ---
+>   drivers/iommu/iommufd/device.c       | 4 +++-
+>   drivers/iommu/iommufd/hw_pagetable.c | 7 ++++---
+>   2 files changed, 7 insertions(+), 4 deletions(-)
 > 
-> What do people expect to happen here anyhow? Do you still intend to
-> mmap any of the MMIO into the hypervisor? No, right? It is all locked
+> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+> index e0f097b04467..afba66211b11 100644
+> --- a/drivers/iommu/iommufd/device.c
+> +++ b/drivers/iommu/iommufd/device.c
+> @@ -735,7 +735,9 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev, ioasid_t pasid,
+>   		goto out_unlock;
+>   	}
+>   
+> -	hwpt_paging = iommufd_hwpt_paging_alloc(idev->ictx, ioas, idev, 0,
+> +	hwpt_paging = iommufd_hwpt_paging_alloc(idev->ictx, ioas, idev,
+> +						pasid != IOMMU_NO_PASID ?
+> +						IOMMU_HWPT_ALLOC_PASID : 0,
+>   						immediate_attach, NULL);
 
-Not expecting mmap the MMIO, but I switched to another way. VFIO doesn't
-disallow mmap until bind, and if there is mmap on bind, bind failed.
-That's my understanding of your comments.
+I still don't have a complete understanding of PASID-compatible domains
+and the appropriate policies for attach/detach/replacing. I understand
+that it is for the AMD IOMMU, but the AMD iommu driver doesn't yet
+support attaching domains other than SVA to a device's PASID.
 
-https://lore.kernel.org/kvm/Z4Hp9jvJbhW0cqWY@yilunxu-OptiPlex-7050/#t
-
-
-Another concern is about dma-buf importer (e.g. KVM) mapping the MMIO.
-Recall we are working on the VFIO dma-buf solution, on bind/unbind the
-MMIO accessibility is being changed and importers should be notified to
-remove their mapping beforehand, and rebuild later if possible.
-An immediate requirement for Intel TDX is, KVM should remove secure EPT
-mapping for MMIO before unbind.
-
-So I think device is all locked down into CC mode AFTER bind and BEFORE
-unbind. It doesn't seems viommu/vdevice could control bind/unbind.
-
-There are other bus error handling cases, like AER when TDISP/SPDM/IDE
-state broken, that I don't have a clear solution now. But I cannot
-imagine they could be correctly handled without pci_driver support.
-
-> down?
-> 
-> So perhaps the answer is that the VFIO side has to put the device into
-> CC mode which disables MMAP/etc, then the viommu/vdevice iommufd
-> object can control it.
-> 
-> > Back to your concern, I don't think it is a problem. From your patch,
-> > vIOMMU doesn't know the guest BDFn by nature, it is just the user
-> > stores the id in vdevice via iommufd_vdevice_alloc_ioctl(). A proper
-> > VFIO API could also do this work.
-> 
-> We don't want duplication though. If the viommu/vdevice/vbdf are owned
-> and lifecycle controlled by iommufd then the operations against them
-> must go through iommufd and through it's locking regime.
-> > 
-> > The implementation is basically no difference from:
-> > 
-> > +       vdev = container_of(iommufd_get_object(ucmd->ictx, cmd->vdevice_id,
-> > +                                              IOMMUFD_OBJ_VDEVICE),
-> > 
-> > The real concern is the device owner, VFIO, should initiate the bind.
-> 
-> There is a big different, the above has correct locking, the other
-> does not :)
-
-Could you elaborate more on that? Any locking problem if we implement
-bind/unbind outside iommufd. Thanks in advance.
+If that's the case, wouldn't the PASID-compatible domain logic
+introduced here a dead code? Why not placing it in a separate series and
+test it on real hardware before merging?
 
 Thanks,
-Yilun
-
-> 
-> Jason
+baolu
