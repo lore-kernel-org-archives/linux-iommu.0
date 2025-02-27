@@ -1,192 +1,344 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2088.outbound.protection.outlook.com [40.107.102.88])
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA20D140E30;
-	Thu, 27 Feb 2025 15:32:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.88
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740670369; cv=fail; b=tvneAVQMNMOhrHpJhtEL6dssjTg/0UrMCBBK9IU/1DrVXvubDqTCRuoDzF6T/8OfAwaypjnfq/iea99ieTb7Z/mTAwhMBiY8SZziBTT+8FmFoS8vvVejQKVClzQ62S3C2s/NYM0Z/S34XIpgOLHC3l2gTyk1z3gbU4iex0G+bbk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740670369; c=relaxed/simple;
-	bh=9Zh6XMyampM+o+7OhrMM0i3Ot1PlX/e2mMFn4n+hEzM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=W0yxPx7/2fd0nrtt+pZ0+oeqeIGINLKk5gcnuBU97wDwwwwIjfRqn0VcJFgO5p5D8alsjsTO/GklpATW+Xpr1a1C5OS3ZDWuutv5Edpoyubww+tFj1IC0m/juPgB8re7z1mt+EOr3j26cLIZbluWzzAFKJeFVJzIzWWmK0j2Evw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=dFDuJiN/; arc=fail smtp.client-ip=40.107.102.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66E9B18C32C;
+	Thu, 27 Feb 2025 15:48:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1740671333; cv=none; b=JtD50AGjgFYGdWVcCcdriM4rBj8au+4PY1Uujs1xsSNL27NVQnje33xZI+QEbfYRsB8/bX/k4/kezKAfZcisqvoY2vTNxLfAyDdicrr9aovn6X6uHJqN3oq1QFE9Tj8NisFw6LLL1s6i47E7u0HFnisJaRS1HIsqpMhiIo/9ZSQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1740671333; c=relaxed/simple;
+	bh=0wcPQPb2fNJUO+Eb0zzXVRSq1giqQ/8OloyEuJ66EuU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=d4deXHDcFBpobp+/StatMmZjnBOLpFE/aEKX46eMczNJJ9fuK4mYMEGut+Et+yivvdkt/9Ku+fUymKa7/gCDggnBADcFA/K0LAcwR6NRR9KtsBhyvrwgkVxqIq/NfLO4YSeBla6LLjNwixPeSJQdpj0P037FsTplzZZoUm2fJWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=bhB7HFJJ; arc=none smtp.client-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="dFDuJiN/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=t+GcWN10KOeD8/YPlYYoqHfZVUyVD2wLp4i8RoyAHacRKtzVFxYYPZ0YPpOiSPIA80F3tvTu0g7OZWiw/sAp+tNK16lbe2nCPJFKLkfGGBxK6ELZDJDs1MnCoqH9Xxy1fQRFDlVV0pGFvvgCgQwCI/GU7d+aoD6a1y5ZdVPI01RTYCSwlC81AF95RVY8GZqbEdd5by8bVdFzhulVV496SQFLudaIBociE8MhjVMAZyIra2CjFJQKu3qPwN7GfZTuqSuH8bms5LE2mXh4tnPFVkhDOyhEI263ZsJuVMHVkoF+hbEmLAtFCqKk3rt6UQdpay6/YYIk77mZofptpLgrHQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9Zh6XMyampM+o+7OhrMM0i3Ot1PlX/e2mMFn4n+hEzM=;
- b=P2MUdjua7+im7uDoO+4YDW51m4hlLLIq9O4aqvzNKH0FALTyANcBu6fqxb8L2S4sDxuxrWjgbNepXWQdrNB8ZIE7okwaTCyfpzvxsfsRTtPwCLQ67d2gSO1q1F9o+CPRC53JcB8iFpgDjtP+v+AkHv/20z1MEYwnrSNFXKLkxhO0kiBppT2rxv3ucrY+5P+V1cDaOYqXIunlPBJ6Oro0nkZaSasObnyMeKq+oNvQA/LAiuy+ivlC1CXi2OD9TOTuTJkywxQEhrcU5xkHjaYL97Nkhcym3LuDnbPlzl8ObBYp7PjkhIs13LTEPNyqOSL0eHz3GEqphRqrXbFOcxCKrQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9Zh6XMyampM+o+7OhrMM0i3Ot1PlX/e2mMFn4n+hEzM=;
- b=dFDuJiN/fmsLtftrQePiE3VaQT9y8fc4oxTJ4G74gGfY1cVBAUBgoAsfUi8gY5a7WK7M5o5UDicj4ESh/7yHEGBLCL1Ad9mX0DfduVGaiiuTvEYrnzufIzVNeHm+y0ByUDVRee3Ux+13b6WDkEgZEgRyOvZ6ukKmS6+Rn+hQ6z8LVXpmS4/dWDLWoCr/H48wY+NgfkKPIYLjLBEB8tg0CAjYcfX2rkpH28PaC7JELyKb1Esex4gdYBCoiI/ULs3ZUm9zuPv220fUpb1QMjDqg4aEvVwy7ifKrDtNNsYIJX1q77/Byn9jKy6p2rwRU5fnVR9/0lRhmpcD8uZ5DD/01w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MW6PR12MB8663.namprd12.prod.outlook.com (2603:10b6:303:240::9)
- by SN7PR12MB6909.namprd12.prod.outlook.com (2603:10b6:806:263::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.25; Thu, 27 Feb
- 2025 15:32:44 +0000
-Received: from MW6PR12MB8663.namprd12.prod.outlook.com
- ([fe80::594:5be3:34d:77f]) by MW6PR12MB8663.namprd12.prod.outlook.com
- ([fe80::594:5be3:34d:77f%2]) with mapi id 15.20.8489.018; Thu, 27 Feb 2025
- 15:32:44 +0000
-Date: Thu, 27 Feb 2025 11:32:42 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
-	tglx@linutronix.de, maz@kernel.org, joro@8bytes.org,
-	will@kernel.org, shuah@kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, eric.auger@redhat.com,
-	baolu.lu@linux.intel.com, yi.l.liu@intel.com, yury.norov@gmail.com,
-	jacob.pan@linux.microsoft.com, patches@lists.linux.dev
-Subject: Re: [PATCH v2 3/7] iommu: Make iommu_dma_prepare_msi() into a
- generic operation
-Message-ID: <20250227153242.GG39591@nvidia.com>
-References: <cover.1740014950.git.nicolinc@nvidia.com>
- <4ca696150d2baee03af27c4ddefdb7b0b0280e7b.1740014950.git.nicolinc@nvidia.com>
- <5b9e15e1-8081-46ef-b9db-3872e98a6f35@arm.com>
- <20250221164400.GN50639@nvidia.com>
- <634c60ea-fec3-43ad-923a-cf9ba5e76065@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <634c60ea-fec3-43ad-923a-cf9ba5e76065@arm.com>
-X-ClientProxiedBy: BL1PR13CA0404.namprd13.prod.outlook.com
- (2603:10b6:208:2c2::19) To MW6PR12MB8663.namprd12.prod.outlook.com
- (2603:10b6:303:240::9)
+	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="bhB7HFJJ"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id C698740E0202;
+	Thu, 27 Feb 2025 15:48:47 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id BNABbrUU7UVH; Thu, 27 Feb 2025 15:48:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1740671322; bh=RfLqHPbgshcEvdoRTouaG0WtklGb1Cpk3e2N6dqyufI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=bhB7HFJJTzYFiNtEQ7Ry4AOSt+vubFQzRFpl8pLH6lPdQY/vQZbECcxmJVRXwDmP+
+	 Ty0v2D0PZSVvAiKSlknFOnYeY6hmAdymwquUcvE8s+lnlKzU5oN6xiCKrGigmQHZlA
+	 HUKlzBCh2DSBLhqseypFt3nfP87QHViv09pPRZ9cStHVwu9Ra7yxH0iUukeCynPVfu
+	 pE0hWYT3MCM8WDmTZNIZ0pGVkm0lIbvDE+kkqcjQyVp3Q+8NOl6yqga2XySI3G2d8d
+	 Hk0iNfyWnrbHCnkOEWfR5Zo7Jgk0tbkq6z34pfF5c6TYjT3xUD+aZKxjk+XKGlnJtS
+	 F507b++2ioSacDGZCMftapo8KZpR9qMEs8SaaLG+bm2KBuqO1tJBr9kHV3xAJXLhGU
+	 MjN69DOjsUWpB369Cg+waI3WeAJbXZLnmOjtn1OwfrU9zgtbmwJmAv++V62xOSjkWu
+	 FzpO1lFiY2aGpM9CKQt/N1KqdBR7XbmF7R6/Qwrp3Oaz6e+cJUIMKND2uwUfkzvWgx
+	 F8mCAiny/KwMv+psAH0hvJIKcvgFo+z4ic3PdzQtIdB8K8LZy49D2Qdu5hBzdb22m7
+	 dL77myrMRKlvcfeXqdmanb+iCtPV1R+CJeNIDaG59kRGo9BR0uzrxrPQOuxkN0HhFH
+	 7ihXLCSdSnOlQm3BClQguJvM=
+Received: from zn.tnic (pd95303ce.dip0.t-ipconnect.de [217.83.3.206])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id EBBA240E01A3;
+	Thu, 27 Feb 2025 15:48:06 +0000 (UTC)
+Date: Thu, 27 Feb 2025 16:48:00 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
+	Michael Roth <michael.roth@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Steve Sistare <steven.sistare@oracle.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
+	Zhi Wang <zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>,
+	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
+Subject: Re: [RFC PATCH v2 00/22] TSM: Secure VFIO, TDISP, SEV TIO
+Message-ID: <20250227154800.GBZ8CJMCH9wIptw1jd@fat_crate.local>
+References: <20250218111017.491719-1-aik@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW6PR12MB8663:EE_|SN7PR12MB6909:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5b050f2c-fd06-475d-0742-08dd5743faab
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?OKn1r7/8vOGoJ1nkN3BHg/PP2nTBr/H13fwaJRfhyyUL+jPo8yN17LWaE+ib?=
- =?us-ascii?Q?7GYhk0zntWXjv12VrQH6Y/vAvkU7FmhGlI6JfyjV0Trsoo2hYFPX3SBqry7u?=
- =?us-ascii?Q?CweIWGiS9ImOT5XruJ2IuJxvno/52L/1eOWQKi7ekq8hNxCfjBFEyUDbaY2+?=
- =?us-ascii?Q?kUzzHcjHHRQGEXrNshfDwOvtlmrnVOXBF415OfpHDnogkjcuZ8g4Map2YbYz?=
- =?us-ascii?Q?TOHMwOR4OhwWorqNNGIa92zQaEiHH1+/ubWlgRuAN+GPUF6b32YllIli3FTS?=
- =?us-ascii?Q?qXURMKqBPJvODSEU8XKZ3BD8kcOjKINRbgqaaSNs5SFTozwyUlEvj32lbVre?=
- =?us-ascii?Q?Ha2DWoMyTL1SVBI+LTR9i/ebGwMDmi0FzQMN9PUi2CLiBjHokWi2BqKnReM6?=
- =?us-ascii?Q?2dTf6EVCS1DKHdKk5lDZZtxEbODN5tnJRfJs7lxBsRouOV8lCTW1SmlgozPD?=
- =?us-ascii?Q?wSQmUOQdn4hY3KNh6R7Wn+XvqEuPMtkZSeWPWx7sy5nyuv/dhxXD1+8Lhaa1?=
- =?us-ascii?Q?9eBlsmAh2QcMccUKf5GylDjWL4N2aOX0F8fNZSDSX8+aIjvJw1wpESa1wFJW?=
- =?us-ascii?Q?PFL3Uykb4gqMqYb1iQkpHjgJszPZElD7UnViflBIR2BKgxACMYS7xAvCAH0P?=
- =?us-ascii?Q?59nXmdnxXgoQ8/aI1+i1ec1gcjClowlH6vjAQO96ih4J3MdvGOfhplZLI7aM?=
- =?us-ascii?Q?z22Bq6AQ12BYuQrBR4XW/0qDbwuOgqcSeedcSba73L/J1rswtlreRV9p7n1u?=
- =?us-ascii?Q?X6qGfFc45Xiu58GQXZIJ16R00Nfxc4Joreerhnpa5u8m2qq+8yrBBfzkVMgP?=
- =?us-ascii?Q?L/6r1OJg9CODaI21ghRQB0qw7oagri2KfJ10V8uOsNCZnuG7ogEo4Nawb594?=
- =?us-ascii?Q?mz+2MAtB3na7slliPE7jIt1fiSzTihKw/Xb6Ay2+PXxQ0SHXXXQ3XrHvvn12?=
- =?us-ascii?Q?AS3reWrLUdQ4zFp+Hk6yXmNR9Tyj1GlUZJr+68BVLNcEqVDq6f5ocTH71Pre?=
- =?us-ascii?Q?Kbu0uwM6FfB9CFSj7q64EbBtbKNSEt76daSJqKubuq/ryNjkLV6vMNDrFe6D?=
- =?us-ascii?Q?4LR0jvJC2mlFst2GvABh5kzNTXpPcogkoo87QK6QplqTHq7b6+QAEkQgRE5H?=
- =?us-ascii?Q?LTVJI5prrp7sBiz8h/hpFeOjcFMBwn2XpZDnhYDEWzb59auMRE7qiQQM7HD3?=
- =?us-ascii?Q?D2Rg56lotIltO3MmILqXkOi7YuRCYMDqwqnHAbOLB8UprmAPsjJbiGI5krY7?=
- =?us-ascii?Q?FnfbMLnpqwjNdQpTgr4lDDHPI29HL+r3dpE27tttczlh+E08w1OT4KitG0P0?=
- =?us-ascii?Q?RTBVQRNdndszRn4CX1jhnvpDU8CK/ib5ag0f45++C70XarDUM6X6GzE3l6QC?=
- =?us-ascii?Q?6vgHMg8eS+uNAUFOaoVJ11zp8+8q?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW6PR12MB8663.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?nhxSyEfNBsD2t9L8dYKGVJqj1uPO7oRxkxmL19bDRQudisfs1ERwnHZ2TUZL?=
- =?us-ascii?Q?FMNiCXyELp4BFjpbdM71b/BHwnfOlso/q5NwJmjEt15qAwakDQNNupCWGC5C?=
- =?us-ascii?Q?r0lPzJLCVhEYdfT8Kt+Whu0YMHvG3lXHJKfOdxMOJ8UI+7x5UCat/5erwRfl?=
- =?us-ascii?Q?XXcwsUUqGvWSuF5i/c/xPNES5jgnqBjTivMCn451MnMPKHG/dOFXDzzXN8RM?=
- =?us-ascii?Q?1KOFyFIpTij62DN81AejxKM2XsAJp0JZBREBz36ZLUPXSmndy+JytYL0rP8H?=
- =?us-ascii?Q?lbVLpBRx4cg972s9r+ue8y0bGeg5Cl0VAo3D3FGpo6h2EYU1PWtuMwWC0D0t?=
- =?us-ascii?Q?YEkXpOYhgwK2fBBP6bUI2LAm2HJdvO6MELe9pT4BlVgkMhAsaDD5IKU6YeDM?=
- =?us-ascii?Q?FcHomvyiJe2BylTUaMjM8aqjkkPMTIsxlF+Bi2zCgVtnkk/E+bqOlfTRFHq3?=
- =?us-ascii?Q?GBw8ee5wrYo/Pih/GbqrWgMR3gIakbxrDKdSC0/ZPKSscNGbgLa76mpq4s/2?=
- =?us-ascii?Q?+kNp7cjLoz1eCNvvuP9DwIEj5hnCIaBWIx9R5W4Z3oPVLiOtaU0wLbSS3LGT?=
- =?us-ascii?Q?/8gI6Fbw25Q6A0e+1002pdQigspVUr6S1Kkz2sVSHSivtHfARip3qhZMwmkR?=
- =?us-ascii?Q?osmbfdujsdXVhNcW6GcbzsZdTg9m+uxHdEoZIoDrgVdSCNIOoImy8xurP+2C?=
- =?us-ascii?Q?fGbWnM7K8RHW5j98C5/ZPoF38hJQyHv6W80II0S4FW7Lf34EeHDuCwG91+G8?=
- =?us-ascii?Q?dFfNshs29cMCQiL8tErN6ZAilXs1mAJIdQFBhOcr52qPSd7NI+gf+SxnsfDR?=
- =?us-ascii?Q?ZdGHls22EESCNVu5tJl3vDjfsm60883DfbjkdCFmucuVKdclAOHsLhBDXIjB?=
- =?us-ascii?Q?SDtj9qrxroY0Mq/jZ1dhqfuYEoarslxg/z5oGzFA2LzSBJSS1i3TLgd1mGoQ?=
- =?us-ascii?Q?rTGkhgcoBPNqXLFRL2wnEQ2OrYbx0eMC6n51oaCEEu+GkMd4zw7ovKg2j25W?=
- =?us-ascii?Q?EmhUL8SvgT86se4Digi8gpmUXiYMIVu45ZJqrb9QzLj+S4lbHZqOobVZDmh+?=
- =?us-ascii?Q?90cpxd3bBPBZpFOm2nPXf3aA8BVnQpqgq3djG8+TidP9rhEEq/CnkKuszd5q?=
- =?us-ascii?Q?uj+XNqjOc2oJYbnwaPZi2I67YQgTN3hksv+QkyUdKILM6SuNjnZFrapBr9oV?=
- =?us-ascii?Q?ws6C0toJOiCHFmkh3ztuDXrj6Y9ctHpUIjPCE7Ujy94iqvBKEk7JeokKEv9S?=
- =?us-ascii?Q?V5es/54Fs25IgHXsqdxECc4BgB5dMjM8QJUSIaAqsw6Qsy0xmr7uV8VmQPlT?=
- =?us-ascii?Q?kAdjohqf2zppXdhh1c6fCDNYblnRKRG3VDcjJ0TytSkpgupJDbwu2ioTu0sc?=
- =?us-ascii?Q?V0+ajTmh/og2dn3tVkIt2CUPYbedAEMzr4w4vhv/WLrvhoUXlg6N1Y9P6a9A?=
- =?us-ascii?Q?J6JZI/hgrwq1SolxDSYvELPB+weRF6qUftcUndeUe3ONTOYdww6HRwzSYXDo?=
- =?us-ascii?Q?mxqQcKuiT9j42pOyb/tl9r2C/ptg4lm9nW2RnvXn4g7aFqLdmBFTZxajqPxd?=
- =?us-ascii?Q?NOaelLXjHKCoAL1FbXJYI57sw9QgElSx3S9bUq4a?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b050f2c-fd06-475d-0742-08dd5743faab
-X-MS-Exchange-CrossTenant-AuthSource: MW6PR12MB8663.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Feb 2025 15:32:43.8622
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: l9r9e+NRf0+UkhnobGoCCpnXISXiWHJilEyOl70Z8pbuhyDNLdhCLk7qksOm/EJY
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6909
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20250218111017.491719-1-aik@amd.com>
 
-On Thu, Feb 27, 2025 at 11:21:28AM +0000, Robin Murphy wrote:
+FWIW,
 
-> It wouldn't need a hard dependency, it's easy to have a trivial built-in
-> stub function which becomes valid once the module loads - you literally have
-> the iommufd_driver infrastructure for precisely that sort of thing already.
+I really appreciate this mail which explains to unenlightened people like me
+what this is all about.
 
-Yes, but I also kinda dislike using it because it bloats the built in
-kernel for a narrow use case..
+Especially the Acronyms, Flow, Specs pointers etc. I wish I could see this
+type of writeups in all patchsets' 0th messages, leading in the reader into
+the topic while not expecting the latter to actually *know* all those things
+because, d0h, it is obvious. You can read my mind, right? :-)
 
-> All I'm saying is to hide the callback detail in the IOMMUFD code because
-> being IOMMUFD modular is unique to IOMMUFD and not the rest of the core
-> code's problem.
+So thanks for taking the time - it is very helpful!
 
-Maybe we could use a global function pointer set/cleared on iommufd
-module load?
+On Tue, Feb 18, 2025 at 10:09:47PM +1100, Alexey Kardashevskiy wrote:
+> Here are some patches to enable SEV-TIO on AMD Turin. It's been a while
+> and got quiet and I kept fixing my tree and wondering if I am going in
+> the right direction.
+> 
+> SEV-TIO allow a guest to establish trust in a device that supports TEE
+> Device Interface Security Protocol (TDISP, defined in PCIe r6.0+) and
+> then interact with the device via private memory.
+> 
+> These include both guest and host support. QEMU also requires changes.
+> This is more to show what it takes on AMD EPYC to pass through TDISP
+> devices, hence "RFC".
+> 
+> Components affected:
+> KVM
+> IOMMUFD
+> CCP (AMD)
+> SEV-GUEST (AMD)
+> 
+> New components:
+> PCI IDE
+> PCI TSM
+> VIRT CoCo TSM
+> VIRT CoCo TSM-HOST
+> VIRT CoCo TSM-GUEST
+> 
+> 
+> This is based on a merge of Lukas'es CMA and 1 week old upstream + some of Dan's patches:
+> 
+> https://github.com/aik/linux/tree/tsm
+> https://github.com/aik/qemu/tree/tsm
+> 
+> Not using "[PATCH 03/11] coco/tsm: Introduce a class device for TEE Security Managers"
+> yet as may be (may be) my approach makes sense too. Tried to stick to the terminology.
+> I have done some changes on top of that, these are on github, not posting here as
+> I expect those to be addressed in that thread:
+> https://lore.kernel.org/linux-coco/173343739517.1074769.13134786548545925484.stgit@dwillia2-xfh.jf.intel.com/T/
+> 
+> 
+> SEV TIO spec:
+> https://www.amd.com/content/dam/amd/en/documents/epyc-technical-docs/specifications/58271_0_70.pdf
+> Whitepaper:
+> https://www.amd.com/content/dam/amd/en/documents/epyc-business-docs/white-papers/sev-tio-whitepaper.pdf
+> 
+> 
+> Acronyms:
+> 
+> TEE - Trusted Execution Environments, a concept of managing trust between the host
+> 	and devices
+> TSM - TEE Security Manager (TSM), an entity which ensures security on the host
+> PSP - AMD platform secure processor (also "ASP", "AMD-SP"), acts as TSM on AMD.
+> SEV TIO - the TIO protocol implemented by the PSP and used by the host
+> GHCB - guest/host communication block - a protocol for guest-to-host communication
+> 	via a shared page
+> TDISP - TEE Device Interface Security Protocol (PCIe).
+> 
+> 
+> Flow:
+> 
+> - Boot host OS, load CCP and PCI TSM (they will load TSM-HOST too)
+> - PCI TSM creates sysfs nodes in "coco/tsm: Add tsm and tsm-host modules" for all TDISP-capable devices
+> - Enable IDE via "echo 0 > /sys/bus/pci/devices/0000:e1:00.0/tsm-dev/tdev:0000:e1:00.0/tsm_dev_connect"
+> - Examine certificates/measurements/status via sysfs
+> 
+> - run an SNP VM _without_ VFIO PCI device, wait till it is booted
+> - hotplug a TDISP-capable PCI function, IOMMUFD must be used (not a VFIO container)
+> - QEMU pins all guest memory via IOMMUFD map-from-fd ioctl()
+> - the VM detects a TDISP-capable device, creates sysfs nodes in "coco/tsm: Add tsm-guest module"
+> - the VM loads the device driver which goes as usual till enabling bus master (for convinience)
+> - TSM-GUEST modules listens for bus master event (hacked in "pci: Add BUS_NOTIFY_PCI_BUS_MASTER event")
+> - TSM-GUEST requests TDI ("trusted PCI VF") info, traps into QEMU
+> - QEMU binds the VF to the Coco VM in the secure fw (AMD PSP) via IOMMUFD ioctl
+> - QEMU reads certificates/measurements/interface report from the hosts sysfs and writes to the guest memory
+> - the guest receives all the data, examines it (not in this series though)
+> - the guest enables secure DMA and MMIO by calling GHCB which traps into QEMU
+> - QEMU calls IOMMUFD ioctl to enable secure DMA and MMIO
+> - the guest can now stop sharing memory for DMA (and expect DMA to encrypted memory to work) and
+> start accessing validated MMIO with Cbit set.
+> 
+> 
+> 
+> Assumptions
+> 
+> This requires hotpligging into the VM vs passing the device via the command line as
+> VFIO maps all guest memory as the device init step which is too soon as
+> SNP LAUNCH UPDATE happens later and will fail if VFIO maps private memory before that.
+> 
+> This requires the BME hack as MMIO and BusMaster enable bits cannot be 0 after MMIO
+> validation is done and there are moments in the guest OS booting process when this
+> appens.
+> 
+> SVSM could help addressing these (not implemented).
+> 
+> QEMU advertises TEE-IO capability to the VM. An additional x-tio flag is added to
+> vfio-pci.
+> 
+> Trying to avoid the device driver modification as much as possible at
+> the moment as my test devices already exist in non-TDISP form and need to work without
+> modification. Arguably this may not be always the case.
+> 
+> 
+> TODOs
+> 
+> Deal with PCI reset. Hot unplug+plug? Power states too.
+> Actually collaborate with CMA.
+> Other tons of things.
+> 
+> 
+> The previous conversation is here:
+> https://lore.kernel.org/r/20240823132137.336874-1-aik@amd.com
+> 
+> 
+> Changes:
+> v2:
+> * redid the whole thing pretty much
+> * RMPUPDATE API for QEMU
+> * switched to IOMMUFD
+> * mapping guest memory via IOMMUFD map-from-fd
+> * marking resouces as validated
+> * more modules
+> * moved tons to the userspace (QEMU), such as TDI bind and GHCB guest requests
+> 
+> 
+> Sean, get_maintainer.pl produced more than 100 emails for the entire
+> patchset, should I have posted them all anyway?
+> 
+> Please comment. Thanks.
+> 
+> 
+> 
+> Alexey Kardashevskiy (22):
+>   pci/doe: Define protocol types and make those public
+>   PCI/IDE: Fixes to make it work on AMD SNP-SEV
+>   PCI/IDE: Init IDs on all IDE streams beforehand
+>   iommu/amd: Report SEV-TIO support
+>   crypto: ccp: Enable SEV-TIO feature in the PSP when supported
+>   KVM: X86: Define tsm_get_vmid
+>   coco/tsm: Add tsm and tsm-host modules
+>   pci/tsm: Add PCI driver for TSM
+>   crypto/ccp: Implement SEV TIO firmware interface
+>   KVM: SVM: Add uAPI to change RMP for MMIO
+>   KVM: SEV: Add TIO VMGEXIT
+>   iommufd: Allow mapping from guest_memfd
+>   iommufd: amd-iommu: Add vdevice support
+>   iommufd: Add TIO calls
+>   KVM: X86: Handle private MMIO as shared
+>   coco/tsm: Add tsm-guest module
+>   resource: Mark encrypted MMIO resource on validation
+>   coco/sev-guest: Implement the guest support for SEV TIO
+>   RFC: pci: Add BUS_NOTIFY_PCI_BUS_MASTER event
+>   sev-guest: Stop changing encrypted page state for TDISP devices
+>   pci: Allow encrypted MMIO mapping via sysfs
+>   pci: Define pci_iomap_range_encrypted
+> 
+>  drivers/crypto/ccp/Makefile                 |   13 +
+>  drivers/pci/Makefile                        |    3 +
+>  drivers/virt/coco/Makefile                  |    2 +
+>  drivers/virt/coco/guest/Makefile            |    3 +
+>  drivers/virt/coco/host/Makefile             |    6 +
+>  drivers/virt/coco/sev-guest/Makefile        |    2 +-
+>  arch/x86/include/asm/kvm-x86-ops.h          |    1 +
+>  arch/x86/include/asm/kvm_host.h             |    2 +
+>  arch/x86/include/asm/sev.h                  |   31 +
+>  arch/x86/include/uapi/asm/kvm.h             |   11 +
+>  arch/x86/include/uapi/asm/svm.h             |    2 +
+>  drivers/crypto/ccp/sev-dev-tio.h            |  111 ++
+>  drivers/crypto/ccp/sev-dev.h                |   19 +
+>  drivers/iommu/amd/amd_iommu_types.h         |    3 +
+>  drivers/iommu/iommufd/iommufd_private.h     |    3 +
+>  include/asm-generic/pci_iomap.h             |    4 +
+>  include/linux/amd-iommu.h                   |    2 +
+>  include/linux/device.h                      |    4 +
+>  include/linux/device/bus.h                  |    3 +
+>  include/linux/dma-direct.h                  |    8 +
+>  include/linux/ioport.h                      |    2 +
+>  include/linux/kvm_host.h                    |    2 +
+>  include/linux/pci-doe.h                     |    4 +
+>  include/linux/pci-ide.h                     |   19 +-
+>  include/linux/pci.h                         |    2 +-
+>  include/linux/psp-sev.h                     |   61 +-
+>  include/linux/swiotlb.h                     |    8 +
+>  include/linux/tsm.h                         |  315 ++++
+>  include/uapi/linux/iommufd.h                |   26 +
+>  include/uapi/linux/kvm.h                    |   24 +
+>  include/uapi/linux/pci_regs.h               |    5 +-
+>  include/uapi/linux/psp-sev.h                |    6 +-
+>  include/uapi/linux/sev-guest.h              |   39 +
+>  arch/x86/coco/sev/core.c                    |   19 +-
+>  arch/x86/kvm/mmu/mmu.c                      |    6 +-
+>  arch/x86/kvm/svm/sev.c                      |  205 +++
+>  arch/x86/kvm/svm/svm.c                      |   12 +
+>  arch/x86/mm/ioremap.c                       |    2 +
+>  arch/x86/mm/mem_encrypt.c                   |    6 +
+>  arch/x86/virt/svm/sev.c                     |   34 +-
+>  drivers/crypto/ccp/sev-dev-tio.c            | 1664 ++++++++++++++++++++
+>  drivers/crypto/ccp/sev-dev-tsm.c            |  709 +++++++++
+>  drivers/crypto/ccp/sev-dev.c                |   94 +-
+>  drivers/iommu/amd/init.c                    |    9 +
+>  drivers/iommu/amd/iommu.c                   |   60 +-
+>  drivers/iommu/iommufd/main.c                |    6 +
+>  drivers/iommu/iommufd/pages.c               |   88 +-
+>  drivers/iommu/iommufd/viommu.c              |  112 ++
+>  drivers/pci/doe.c                           |    2 -
+>  drivers/pci/ide.c                           |  103 +-
+>  drivers/pci/iomap.c                         |   24 +
+>  drivers/pci/mmap.c                          |   11 +-
+>  drivers/pci/pci-sysfs.c                     |   27 +-
+>  drivers/pci/pci.c                           |    3 +
+>  drivers/pci/proc.c                          |    2 +-
+>  drivers/pci/tsm.c                           |  233 +++
+>  drivers/virt/coco/guest/tsm-guest.c         |  326 ++++
+>  drivers/virt/coco/host/tsm-host.c           |  551 +++++++
+>  drivers/virt/coco/sev-guest/sev_guest.c     |   10 +
+>  drivers/virt/coco/sev-guest/sev_guest_tio.c |  738 +++++++++
+>  drivers/virt/coco/tsm.c                     |  638 ++++++++
+>  kernel/resource.c                           |   48 +
+>  virt/kvm/kvm_main.c                         |    6 +
+>  Documentation/virt/coco/tsm.rst             |  132 ++
+>  drivers/crypto/ccp/Kconfig                  |    2 +
+>  drivers/pci/Kconfig                         |   15 +
+>  drivers/virt/coco/Kconfig                   |   14 +
+>  drivers/virt/coco/guest/Kconfig             |    3 +
+>  drivers/virt/coco/host/Kconfig              |    6 +
+>  drivers/virt/coco/sev-guest/Kconfig         |    1 +
+>  70 files changed, 6614 insertions(+), 53 deletions(-)
+>  create mode 100644 drivers/virt/coco/host/Makefile
+>  create mode 100644 drivers/crypto/ccp/sev-dev-tio.h
+>  create mode 100644 drivers/crypto/ccp/sev-dev-tio.c
+>  create mode 100644 drivers/crypto/ccp/sev-dev-tsm.c
+>  create mode 100644 drivers/pci/tsm.c
+>  create mode 100644 drivers/virt/coco/guest/tsm-guest.c
+>  create mode 100644 drivers/virt/coco/host/tsm-host.c
+>  create mode 100644 drivers/virt/coco/sev-guest/sev_guest_tio.c
+>  create mode 100644 drivers/virt/coco/tsm.c
+>  create mode 100644 Documentation/virt/coco/tsm.rst
+>  create mode 100644 drivers/virt/coco/host/Kconfig
+> 
+> -- 
+> 2.47.1
+> 
 
-Regardless, we need to first find a way for the core code to tell if
-the domain is iommufd owned or not.
+-- 
+Regards/Gruss,
+    Boris.
 
-We should also make it so we can tell if dma-iommu.c is linked to that
-domain (eg vfio or the default_domain), then we can do the iova_cookie
-move without changing the destruction flows. This would be the missing
-union struct tag you mentioned in the other email.
-
-What I've been thinking of is changing type into flags. I think we
-have now removed type from all drivers so this should be a small
-enough work.
-
-Nicolin should be able to look into some followup here, it is not a
-small change.
-
-> And frankly otherwise, what even is the benefit of moving the iova_cookie
-> pointer into the union if we have to replace it with another whole pointer
-> to make it work?
-
-It makes a lot more semantic sense that the domain owners all share a
-single "private data" pointer.
-
-> This is just adding more code and more complexity in in
-> order to make struct iommu_domain... the same size it already is :/
-
-That we get back the space we spent on sw_msi is a nice bonus.
-
-Jason
+https://people.kernel.org/tglx/notes-about-netiquette
