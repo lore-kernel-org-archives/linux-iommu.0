@@ -1,167 +1,109 @@
-Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA6DC347B4
-	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 02:18:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF3CE191F94
+	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 03:16:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740709097; cv=none; b=KEws6rwuNfqSskKbkUpole7VVwF6U4I94VA1HxIB+vAgY1w7wyrHJqxgrGh0eyA7fWn4M2aqpaEYzmOpPAgib9W5OeJeJ5Fvq0X11CpJkWGM7AJheHE3DuyAI3XjOQwd5LUe7lPQ7cpAC9Hw7uRno57Bq9Bc8fDpxLZ0WTgN2N0=
+	t=1740712605; cv=none; b=crVsPfGhBqCygopWApPu85H6p1XH6Pp8nyPPuX3XXyqO1FMTDy7f6eIgXs5G1FQrelbTRtVZA2UD2a0ZPVsOGbDm3+wJhbHX+tzU9oNbDl8P6iPQ3SgT+nhrBNV5DAzAOicDDC7Adeltyc5rhIqd+MIqctylu7BD1jjtSMBUKBg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740709097; c=relaxed/simple;
-	bh=9I2BO1z48IQWxNX0txc+oqBikBJBOzio/TgbiFEkiPI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=T/NmSDmTQwZWFDPAwJcs2G8xkJj4nAbXyYQerJ6Psq2owpdDU+YPnMAt2/HLgM5624l9I0WDT0l3Vxh3GwXYB9GXJx1NZx59W7Hu78YWpEkm6xMNiz2HVdFGly22+Ah3bE9/eVjgJaCEFXpia21lnWWd0rEVRTnMmgtCYG/MSDc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=D07aunMQ; arc=none smtp.client-ip=209.85.161.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1740712605; c=relaxed/simple;
+	bh=945iZjBC6be0i+7TRujKrgv5Y70HZgVmXmfGIOQ7IZk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=RP4WmRIe/aTO/GgK72pDB6eq0nCG7b9cx/B7TfCuFmGrbdxDdSwykneDYvZxu31U7/HGdiJULPNwvHy8wmX7JGaXSCt6iulAKkO7iyeGtcraqwZTcUpMiGL/2nq2f+hInA5pGe2LMGOjCcaGvgZfn0ZcnrnsP+01s0AP5GG4nyQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lqQYjhqT; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="D07aunMQ"
-Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-5fcef5dc742so396490eaf.1
-        for <iommu@lists.linux.dev>; Thu, 27 Feb 2025 18:18:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1740709095; x=1741313895; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9I2BO1z48IQWxNX0txc+oqBikBJBOzio/TgbiFEkiPI=;
-        b=D07aunMQ+K7giIVxPVUA51snPgiNkWK9w4Cn4cxtVKTchDm1Ectn1/Seoez42ZmgW6
-         1MFZNlAroDzrt/DOeChU5FXe2L//DBrtmUIpCOOLFib1Rn7Q9RvZ7khNIMSHHtVGz1Wf
-         7569xCyOkz4mOzpI9fadZfE6py7tUA4nln+2BUv6pNRnX2DGLe5HBO2lcdhQ0aD1yrn6
-         Qp2nkYcKNRHKVqr5OYuaHrcIMPSLPofnyw0GLoJaA1pmFsdtdWfe7Fl0bRdcFGo0YYRN
-         ogM14d/KwdYO3U/cfwtAqD+Xc5W5TLHHn7DFizDKo08MGK4BuDvpyWZFd2RmN2azLnkY
-         Lngg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740709095; x=1741313895;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9I2BO1z48IQWxNX0txc+oqBikBJBOzio/TgbiFEkiPI=;
-        b=vEJGHJHfu+tTorurvGQBcD0pytCAeBIoaFvK4uGBvFNLFTMImnRGpMmkTgGQTd90zq
-         G5lHPQSGg0k5oJt2/HMvZhiEGffqOOsi48QOy67ZTC1hn1mak3l5Ay8HgxVzFw6J6gs4
-         WMtOoXL9oUhvcltROmCavdUh/qDkBXheLm0IryWe8NjuCUmCxmx1I4o/lhCgEWbK7Snc
-         4vqao1a0CaGqfBmnVGreqLlqj6KDmXOiaN2tL4hZXf0/MtmsR0ucKsKBKCfQfKsRtmNJ
-         YrnKGB5f1nPY4O0AR8OMybvp1kWUPqRKWh4kJ/UArHXJFXSsPXnXo7hPf1Fe+gIq8PtO
-         7KLA==
-X-Forwarded-Encrypted: i=1; AJvYcCWg/mDcppdN2ph3QETQrhRNgZ87bVb40qTUKo42/OjN89ODyCTBqkYTtcVN0D6nmIBZifAftw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwkDhPFWAiudllb5WUURsAOJn9C/tQO6b00eQmIGbBe7798Ecqu
-	xkRMHf7yyQmogmD1Ivfxtb4/a3B0iA9/b4E4hbPGGC5ghA4OlpGWJvIAfYUINhsvR5umFaKSJAC
-	aBt/KzZNoOLE0/XmVoEG/PUftglkMI3lLnlDSCQ==
-X-Gm-Gg: ASbGncvDZQzzEuC34IXrdFc/5c6mURlkHqjM03PvD8X0/Js+fwjhm71XUc5Cn+04w6X
-	IH+DeoD5fDV8vqWZEvv4R2qve4yBz8AKITFUG4rJPpMNANQ1k1JK+raGCKmzor1BsV80JZ1bAXx
-	FtEJkpzR+hHG8Q/bcQEDqv
-X-Google-Smtp-Source: AGHT+IFT/QnwoDQvtYuT7m4lvtyEAzFxYBM3HOFpWcJkIVa+DG02d0v1yu8bwqEDMtcanFsHk2vuA7kNme21ha5fMks=
-X-Received: by 2002:a05:6870:793:b0:29e:2caf:8cc with SMTP id
- 586e51a60fabf-2c1787befc0mr744505fac.37.1740709094796; Thu, 27 Feb 2025
- 18:18:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lqQYjhqT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1740712604; x=1772248604;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=945iZjBC6be0i+7TRujKrgv5Y70HZgVmXmfGIOQ7IZk=;
+  b=lqQYjhqT6DIcwDxUxZAVGgt3GMaXXeaPHJi8Ct60n7uY2khhC7FZpQwl
+   zOwb0Gx/88ifdRz1d1iiy+GWr3fRRQl0K3+BSdT/59gcRznu32xGXL3Jq
+   wNUVq0LsDpmRB0cjU/MAboXkosEODvC2B7Sbl0Mqek0rLLKfHkb3QFNNr
+   s3vk/AQpcikLm745AR+Hqp0W/lGTVTSKSd34YeYQDWwrzmDdEivJ41nzF
+   4aVsrF10tZ/PpdK6KxPM6yFmTdjMSdoTr+2lyZc+54Wv8PuaN4sY4ZQHS
+   KKTzVtFcJnRVadbqLcg+3L7XejqxUsf8ZG3r6In72CVpcUkOI50hpQxfl
+   g==;
+X-CSE-ConnectionGUID: aCeqjXcYTta8I47uuBFbqQ==
+X-CSE-MsgGUID: JA83l6cIRpalngfIVsxM8w==
+X-IronPort-AV: E=McAfee;i="6700,10204,11358"; a="40876277"
+X-IronPort-AV: E=Sophos;i="6.13,321,1732608000"; 
+   d="scan'208";a="40876277"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2025 19:16:43 -0800
+X-CSE-ConnectionGUID: lnBAp3OeSsGMY8TYtxyRqw==
+X-CSE-MsgGUID: 8DUBKbovT824AL+9mZx9xA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="154397759"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2025 19:16:41 -0800
+Message-ID: <f6d0fcb1-b974-440f-9208-257422bc01a6@linux.intel.com>
+Date: Fri, 28 Feb 2025 11:13:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250225064831.63348-1-cuiyunhui@bytedance.com>
- <0691a295-0883-47b3-84a6-47d9a94af69a@linux.intel.com> <c059fb19-9e03-426c-a06a-41f46a07b30a@linux.intel.com>
- <20250225142610.GB545008@ziepe.ca> <888f41b7-dac6-4faf-9f71-4d7bea050e41@linux.intel.com>
- <33c4755d-6a0f-4734-88e0-84f0de67b652@linux.intel.com> <83039906-77f7-4318-94bf-4c98bb3f0e32@linux.intel.com>
- <20250226130423.GF5011@ziepe.ca> <f29818dc-a0a7-46c4-b541-1b469a6b3304@gmail.com>
- <20250227203855.GI5011@ziepe.ca> <7bafd132-6a82-4313-b25f-92fc16faf917@gmail.com>
-In-Reply-To: <7bafd132-6a82-4313-b25f-92fc16faf917@gmail.com>
-From: yunhui cui <cuiyunhui@bytedance.com>
-Date: Fri, 28 Feb 2025 10:18:03 +0800
-X-Gm-Features: AQ5f1JpaPQbUQXoxOSSLzPZKwS5b9QorWs5Qrw6FpWVvDUtkbOCPSMcOEeJSFoQ
-Message-ID: <CAEEQ3w=1H7o7G56hYmwEGErfuFX-2nG=wesJYL7p0dDqLv_rpw@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH v2] iommu/vt-d: fix system hang on reboot -f
-To: Ethan Zhao <etzhao1900@gmail.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Ethan Zhao <haifeng.zhao@linux.intel.com>, 
-	Baolu Lu <baolu.lu@linux.intel.com>, dwmw2@infradead.org, joro@8bytes.org, 
-	will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/4] iommu: Add private_data_owner to iommu_domain
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, kevin.tian@intel.com,
+ robin.murphy@arm.com, joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <cover.1740705776.git.nicolinc@nvidia.com>
+ <45c03a1bc86528c9194589cc3a5afe3eb2a15c9e.1740705776.git.nicolinc@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <45c03a1bc86528c9194589cc3a5afe3eb2a15c9e.1740705776.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi All,
+On 2/28/25 09:31, Nicolin Chen wrote:
+> Steal two bits from the 32-bit "type" in struct iommu_domain to store a
+> new tag for private data owned by either dma-iommu or iommufd.
+> 
+> Set the domain->private_data_owner in dma-iommu and iommufd. These will
+> be used to replace the sw_msi function pointer.
+> 
+> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
+> ---
+>   include/linux/iommu.h                | 7 ++++++-
+>   drivers/iommu/dma-iommu.c            | 2 ++
+>   drivers/iommu/iommufd/hw_pagetable.c | 3 +++
+>   3 files changed, 11 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index e93d2e918599..4f2774c08262 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -209,8 +209,13 @@ struct iommu_domain_geometry {
+>   #define IOMMU_DOMAIN_PLATFORM	(__IOMMU_DOMAIN_PLATFORM)
+>   #define IOMMU_DOMAIN_NESTED	(__IOMMU_DOMAIN_NESTED)
+>   
+> +#define IOMMU_DOMAIN_DATA_OWNER_NONE (0U)
+> +#define IOMMU_DOMAIN_DATA_OWNER_DMA (1U)
+> +#define IOMMU_DOMAIN_DATA_OWNER_IOMMUFD (2U)
+> +
+>   struct iommu_domain {
+> -	unsigned type;
+> +	u32 type : 30;
+> +	u32 private_data_owner : 2;
 
-On Fri, Feb 28, 2025 at 8:51=E2=80=AFAM Ethan Zhao <etzhao1900@gmail.com> w=
-rote:
->
->
-> On 2/28/2025 4:38 AM, Jason Gunthorpe wrote:
-> > On Thu, Feb 27, 2025 at 08:40:31AM +0800, Ethan Zhao wrote:
-> >> On 2/26/2025 9:04 PM, Jason Gunthorpe wrote:
-> >>> On Wed, Feb 26, 2025 at 01:55:28PM +0800, Ethan Zhao wrote:
-> >>>>> Provided the system does not respond to those events when this func=
-tion
-> >>>>> is called, it's fine to remove the lock.
-> >>>> I agree.
-> >>> I think it is running the destruction of the iommu far too late in th=
-e
-> >>> process. IMHO it should be done after all the drivers have been
-> >>> shutdown, before the CPUs go single threaded.
-> >> Hmm... so far it is fine, the iommu_shutdown only has a little work to
-> >> do, disable the translation, the PMR disabling is just backward compat=
-ible,
-> >> was deprecated already. if we move it to one position where all CPUs a=
-re
-> >> cycling, we don't know what kind of user-land tasks left there (i.e. r=
-eboot -f
-> >> case), it would be hard to full-fill the requirement of Intel VT-d, no=
- ongoing
-> >> transaction there on hardware when issue the translation disabling com=
-mand.
-> > There is no guarentee device dma is halted anyhow at this point either.
->
-> The -f option to reboot command, suggests data corruption possibility.alt=
-hough
->
-> the IOMMU strives not to cross the transaction boundaries of its address
-> translation.
->
-> over all, we should make the reboot -f function works. not to hang
-> there. meanwhile
->
-> it doesn't break anything else so far.
+Is there any special consideration for reserving only 2 bits for the
+private data owner? Is it possible to allocate more bits so that it
+could be more extensible for the future?
 
-patch v1:
-if (!down_write_trylock(&dmar_global_lock))
-return;
-
- patch v3:
-/* All other CPUs were brought down, hotplug interrupts were disabled,
-no lock and RCU checking needed anymore*/
-list_for_each_entry(drhd, &dmar_drhd_units, list) {
-iommu =3D drhd->iommu;
-/* Disable PMRs explicitly here. */
-iommu_disable_protect_mem_regions(iommu);
-iommu_disable_translation(iommu);
-}
-
-Since we can remove down_write/up_write, it indicates that during the
-IOMMU shutdown process, we are not particularly concerned about
-whether others are accessing the critical section. Therefore, it can
-be understood that Patch v1 can successfully acquire the lock and
-proceed with subsequent operations. From this perspective, Patch v1 is
-reasonable and can prevent situations where there is an actual owner
-of dmar_global_lock, even though it does not perform a real IOMMU
-shutdown.
-
-However, if the IOMMU shutdown truly fails, IOMMU_WAIT_OP will trigger
-a panic(). Removing down_write/up_write offers better maintainability
-than Patch v1 (as we can retrieve the cause from the vmcore). But this
-might not be significant, since the reboot could have been completed
-successfully, and the occurrence of panic() might instead cause
-confusion.
-
-In summary, it is essential to complete the reboot action here rather
-than causing the system to hang. So, which do you prefer, v1 or v3?
-
-
->
-> Thanks,
->
-> Ethan
->
-> >
-> > Jason
+For example, current iommu core allows a kernel device driver to
+allocate a paging domain and replace the default domain for kernel DMA.
+This suggests the private data owner bits may be needed beyond iommu-dma
+and iommufd.
 
 Thanks,
-Yunhui
+baolu
