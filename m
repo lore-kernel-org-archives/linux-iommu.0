@@ -1,99 +1,71 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2959A25E47E
-	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 10:27:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC7E0849C
+	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 11:18:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740738435; cv=none; b=QyF9CM9y7f3uvSTbE5R+K7KYrQl6hlS1R+90Qy83MCbwiIyqFezrZBJZcukR8BgULZyb+JsFQ0KiGDGFeILIGqGQcx5urrWMgMNF5sNov0FlA9cS/5K7XwCJKbhupARb9eZDiZBMNr+5cuH80bmu3rhhzpFJ/9bgCQ7Fk73vDj4=
+	t=1740741505; cv=none; b=kDfJrqUk/TKl8iGsvc4+lCno2MyesaL5RmXro4j1rnoJmBXN2elRPvloPppTRAQeXhh75df+mT30wGamc2X6NXf23t9wzes9JfWYbdLF8I7MvV29bcPAXL2FmInEk70q26kIskn5BsRqN4IXiDNycF2EBuu8y8EcZEldXZGnaUM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740738435; c=relaxed/simple;
-	bh=Om3oLCN05RWCtxtm4YrmzKGpCrmY1yzTB9fpPxmib3g=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KqJOCz+SAPJb7XvPdO/4nSDeyTeU5xt/rSAnmdSSO6VW/HmmpLOQ/2W8Loo/m++1uIRxASyUzwdqpvDFTdk2DDyuN2nom13+7XQ+dr38e/gxhiEMz63DwjiveNVxmJhlpdBV91xTIAqvzfHlPrYWiQX5VXSF9uIFUOPas9Dip8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bmQwvXUG; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1740741505; c=relaxed/simple;
+	bh=uQTgHoCFKtedWfTENTgJ6xsrJTdimOdPQ9eKGGYbtac=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=F85JZ7g39wnk3/LqbEDmnvYxWP//hZB4uelphRegBTZV9kHGzzaaCWqw+WGXeOE+jyGq+DJFceiRm0mXEBeZK7cr3WfqIzwzK4/tiKL3wFXFZALy2DpZzSc0KZhwXsxhLwqe/Zjh9/JMiyh/KmzkjJOw0heXq2951JqZwFqf/sI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=bMM5WSxf; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bmQwvXUG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740738433; x=1772274433;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Om3oLCN05RWCtxtm4YrmzKGpCrmY1yzTB9fpPxmib3g=;
-  b=bmQwvXUGedZvaABVlE1KmHm15gpX9Wv7CAccheViUPep+3eTou16rs7h
-   2FibWEVPIwiobLSsKTVLcEjjWntK69GitZKYsVuM2c/sB5S5SBjdJ8JXg
-   s+ZX/TFzULeZH7W+BuH2ZnZfBA6xT7j1+wYQENC1UopFHFRShjMBj4BXn
-   iU9/INZOcUnk4Ll7zlen2kBPlc4YhCZifTTm4/7ETrv1gAI9bm61LyNmv
-   xcqd989bHSZylA6z3cKmNq18TUXJfHMVYP03GUGA2uU+4+JJl6BCTQX/0
-   v1lEsggjJuMBEus7/PPCoDDz8w3OCdbPd45C3DKktftdCxN2GWjYKq018
-   w==;
-X-CSE-ConnectionGUID: 5iHoXYlIRZavv8DteYHPAw==
-X-CSE-MsgGUID: Um0PMO7TTSu2bRI/SwkiaA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11358"; a="45313083"
-X-IronPort-AV: E=Sophos;i="6.13,322,1732608000"; 
-   d="scan'208";a="45313083"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2025 02:27:13 -0800
-X-CSE-ConnectionGUID: zD8sAYRQQfS1sHkhXnmZYw==
-X-CSE-MsgGUID: cwHuX5xzSg2CQAT9yIKvcg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,322,1732608000"; 
-   d="scan'208";a="121909451"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa005.fm.intel.com with ESMTP; 28 Feb 2025 02:27:11 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Jerry Snitselaar <jsnitsel@redhat.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] iommu/vt-d: Remove device comparison in context_setup_pass_through_cb
-Date: Fri, 28 Feb 2025 18:27:25 +0800
-Message-ID: <20250228102726.3429268-2-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250228102726.3429268-1-baolu.lu@linux.intel.com>
-References: <20250228102726.3429268-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="bMM5WSxf"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 1D3EF43F38;
+	Fri, 28 Feb 2025 12:18:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1740741501;
+	bh=uQTgHoCFKtedWfTENTgJ6xsrJTdimOdPQ9eKGGYbtac=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=bMM5WSxfMbP5DxeYOoJyeh3mcuXzOULdqMS4orWV7Rw/71rP+bvOOP3HHn+bymIyV
+	 dt5bkiM/AG/7EWRqLur8/SGMCugfhsvPuc1mzQm6ki8PLUQFx1uKbgGKru09H/ekyh
+	 QMRuQn44p53JAQQ0BYCO0kn4/XskQv6nSz1Pzb5IFAkPnsP5aJSfUEQncaTzcnqvmi
+	 rI3nOQW7rCjH7Ab9QNldvHHKpJPYj7+nod7E2eqkWAluWMERutzv2+O6PLyoap5pjo
+	 JeXPPWpk7K+7Vt/IEZn/FRb5ttDL4JdZaeGRuITeFPdI76997NdJXOGcaIeYxFDfaP
+	 ZmpQnuY2CJKIw==
+Date: Fri, 28 Feb 2025 12:18:19 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
+	will@kernel.org, jgg@nvidia.com, joao.m.martins@oracle.com,
+	boris.ostrovsky@oracle.com
+Subject: Re: [PATCH 1/1] iommu/amd: Preserve default DTE fields when updating
+ Host Page Table Root
+Message-ID: <Z8Gbe6InZ862dn6E@8bytes.org>
+References: <20250106191413.3107140-1-alejandro.j.jimenez@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250106191413.3107140-1-alejandro.j.jimenez@oracle.com>
 
-From: Jerry Snitselaar <jsnitsel@redhat.com>
+On Mon, Jan 06, 2025 at 07:14:13PM +0000, Alejandro Jimenez wrote:
+> When updating the page table root field on the DTE, avoid overwriting any
+> bits that are already set. The earlier call to make_clear_dte() writes
+> default values that all DTEs must have set (currently DTE[V]), and those
+> must be preserved.
+> 
+> Currently this doesn't cause problems since the page table root update is
+> the first field that is set after make_clear_dte() is called, and
+> DTE_FLAG_V is set again later along with the permission bits (IR/IW).
+> Remove this redundant assignment too.
+> 
+> Fixes: fd5dff9de4be ("iommu/amd: Modify set_dte_entry() to use 256-bit DTE helpers")
+> Signed-off-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+> ---
+>  drivers/iommu/amd/iommu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Remove the device comparison check in context_setup_pass_through_cb.
-pci_for_each_dma_alias already makes a decision on whether the
-callback function should be called for a device. With the check
-in place it will fail to create context entries for aliases as
-it walks up to the root bus.
-
-Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
-Closes: https://lore.kernel.org/linux-iommu/82499eb6-00b7-4f83-879a-e97b4144f576@linux.intel.com/
-Cc: stable@vger.kernel.org
-Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Link: https://lore.kernel.org/r/20250224180316.140123-1-jsnitsel@redhat.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cc46098f875b..4d8d4593c9c8 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4378,9 +4378,6 @@ static int context_setup_pass_through_cb(struct pci_dev *pdev, u16 alias, void *
- {
- 	struct device *dev = data;
- 
--	if (dev != &pdev->dev)
--		return 0;
--
- 	return context_setup_pass_through(dev, PCI_BUS_NUM(alias), alias & 0xff);
- }
- 
--- 
-2.43.0
-
+Applied, thanks.
