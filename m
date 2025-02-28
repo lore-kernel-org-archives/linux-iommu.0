@@ -1,94 +1,115 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B68691EF395
-	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 15:58:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C270B1607AC
+	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 16:01:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740758292; cv=none; b=E346eEwrTZmlToNrg7V6gIu6rvWinUQdWFIjaYk5pgAxrw6tqmcZS08n6Sg/aXblid4wsMsrU76am1NJ7O9hwXXAEMyXRPsX3Yxg4kmWkBx60jBQKSaPfeb8S5/3KkUU5CF6q3rjBLi8L6asMMcZu+kUluSmSKii09C/aWCy9Is=
+	t=1740758507; cv=none; b=kMfQtR+yjWn/CW/Gp1EEG85k8kpuX8ehhvmowGF5BfkEdjCkYqwq7/+xRXZES2F7u3zw4XZxg+VO+j/+Td3LKwrZUNqJx3qRlofSkapTWt4k/ksrBN1Jwowd0WIz2DwP193iww9XlYrZXSi3V3kTVkcKN0EcD2QZQuU+zNiFPPM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740758292; c=relaxed/simple;
-	bh=w7UwFFDfTzn/blFmQltq0BDs2swJG9iTW4bJSf2HOh4=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=plEN0qac1rBhHwXnhYu5TO26tB1xAfKEwTLm4gJd5ddLk8Q9mPqjkgCs9NquWm8QYbF0DUZKNMUi6ai8qH28Z83aZluvWoYoWUr4Ir/wYgR4pPdUeGlFV796ceHyP++oplc7UON5nRNwjwvotMjXHuS03+Z4R0RHk810ZQThRm4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=Z+R3T1B+; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="Z+R3T1B+"
-Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 75FA741861;
-	Fri, 28 Feb 2025 16:58:08 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1740758288;
-	bh=w7UwFFDfTzn/blFmQltq0BDs2swJG9iTW4bJSf2HOh4=;
-	h=Date:From:To:Cc:Subject:From;
-	b=Z+R3T1B+b1y7VOEIn/9Ik1CyvsARwovuLlCE9onxwNRT5WnZE7gR7ubS4ZynjFKk+
-	 Eu3k4t8SHatp8qq/aV+EproFOsEKzxecbAWx/d4wWMqX20iyZUJh0UwoDOKUNCVzM+
-	 KtF2dU/nVBOFcp8wTmskA7GaKWB6k/lHhLdDJe8F2vgcaSJABW4VdppfAHrUuyZYie
-	 OxZhHcSNw9+NldsimQww0ZiAjd73GYMKEKI28u6HS4huBzLJtducQNzcKHdgm+H3Pw
-	 bQIden6ANlGo9q/HtB499+rSX+SaTKtC77PyQ7237JXE5fwTCZKmFaW1Jk1V+5U2Zi
-	 uGVMWVz7JIu7w==
-Date: Fri, 28 Feb 2025 16:58:07 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fixes for Linux v6.14-rc4
-Message-ID: <Z8HdD3MdUViUc0eo@8bytes.org>
+	s=arc-20240116; t=1740758507; c=relaxed/simple;
+	bh=pUJ30oFhCo48SwV5aqPFurAK6czgannmXiqE8JlUSCU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=VjUQfRgiEB1WfX5lvIRpUX7UHrNihJEI/K5DGG9oadIbnK2IgVFbwYzfNrpbL3MF6IqKoJsQM3aNcbjCBU9kgDnzO2e31SU9Vzix3+1qRGjJPNCUNXm47eJEXvy/mZAfxo+2mn+Rh62eH4XKcicNwBCmjqmeN9li3qepGfDAeCg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A411150C;
+	Fri, 28 Feb 2025 08:02:00 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6A87B3F5A1;
+	Fri, 28 Feb 2025 08:01:44 -0800 (PST)
+Message-ID: <9ee55e38-b92d-45e1-80df-a6d08c9baccc@arm.com>
+Date: Fri, 28 Feb 2025 16:01:43 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [GIT PULL] Please pull IOMMUFD shared branch
+To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>
+References: <20250228142933.GA105053@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250228142933.GA105053@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Linus,
+On 28/02/2025 2:29 pm, Jason Gunthorpe wrote:
+> Hi Joerg,
+> 
+> As discussed here is the shared branch with the three series.
+> 
+> Thanks,
+> Jason
+> 
+> The following changes since commit a64dcfb451e254085a7daee5fe51bf22959d52d3:
+> 
+>    Linux 6.14-rc2 (2025-02-09 12:45:03 -0800)
+> 
+> are available in the Git repository at:
+> 
+>    git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-joerg
+> 
+> for you to fetch changes up to 5e9f822c9c683ae884fa5e71df41d1647b2876c6:
+> 
+>    iommu: Swap the order of setting group->pasid_array and calling attach op of iommu drivers (2025-02-28 10:07:14 -0400)
+> 
+> ----------------------------------------------------------------
+> iommu shared branch with iommufd
+> 
+> The three dependent series on a shared branch:
+> 
+> - Change the iommufd fault handle into an always present hwpt handle in
+>    the domain
+> 
+> - Give iommufd its own SW_MSI implementation along with some IRQ layer
+>    rework
+> 
+> - Improvements to the handle attach API
+> 
+> ----------------------------------------------------------------
+> Jason Gunthorpe (5):
+>        genirq/msi: Store the IOMMU IOVA directly in msi_desc instead of iommu_cookie
+>        genirq/msi: Refactor iommu_dma_compose_msi_msg()
+>        iommu: Make iommu_dma_prepare_msi() into a generic operation
 
-The following changes since commit d082ecbc71e9e0bf49883ee4afd435a77a5101b6:
+So we're just merging this anyway despite it getting no review other 
+than my objection to it? Oh well...
 
-  Linux 6.14-rc4 (2025-02-23 12:32:57 -0800)
+Robin.
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v6.14-rc4
-
-for you to fetch changes up to b150654f74bf0df8e6a7936d5ec51400d9ec06d8:
-
-  iommu/vt-d: Fix suspicious RCU usage (2025-02-28 12:19:01 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v6.14-rc4:
-
-Including:
-
-	- Intel VT-d fixes:
-	  - Fix suspicious RCU usage splat.
-	  - Fix passthrough for devices under PCIe-PCI bridge.
-
-	- AMD-Vi fix:
-	  - Fix to preserve bits when updating device table entries.
-
-----------------------------------------------------------------
-Alejandro Jimenez (1):
-      iommu/amd: Preserve default DTE fields when updating Host Page Table Root
-
-Jerry Snitselaar (1):
-      iommu/vt-d: Remove device comparison in context_setup_pass_through_cb
-
-Lu Baolu (1):
-      iommu/vt-d: Fix suspicious RCU usage
-
- drivers/iommu/amd/iommu.c   |  4 ++--
- drivers/iommu/intel/dmar.c  |  1 +
- drivers/iommu/intel/iommu.c | 10 +++++++---
- 3 files changed, 10 insertions(+), 5 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
+>        irqchip: Have CONFIG_IRQ_MSI_IOMMU be selected by irqchips that need it
+>        iommufd: Implement sw_msi support natively
+> 
+> Nicolin Chen (3):
+>        iommufd: Make attach_handle generic than fault specific
+>        iommufd/fault: Remove iommufd_fault_domain_attach/detach/replace_dev()
+>        iommu: Turn fault_data to iommufd private pointer
+> 
+> Yi Liu (4):
+>        iommu: Make @handle mandatory in iommu_{attach|replace}_group_handle()
+>        iommu: Drop iommu_group_replace_domain()
+>        iommu: Store either domain or handle in group->pasid_array
+>        iommu: Swap the order of setting group->pasid_array and calling attach op of iommu drivers
+> 
+>   drivers/iommu/Kconfig                   |   1 -
+>   drivers/iommu/dma-iommu.c               |  65 +++-----
+>   drivers/iommu/iommu-priv.h              |   3 -
+>   drivers/iommu/iommu.c                   | 164 +++++++++++++-------
+>   drivers/iommu/iommufd/device.c          | 266 +++++++++++++++++++++++++++++---
+>   drivers/iommu/iommufd/fault.c           | 130 +---------------
+>   drivers/iommu/iommufd/hw_pagetable.c    |   5 +-
+>   drivers/iommu/iommufd/iommufd_private.h |  64 ++++----
+>   drivers/iommu/iommufd/main.c            |   9 ++
+>   drivers/irqchip/Kconfig                 |   4 +
+>   drivers/irqchip/irq-gic-v2m.c           |   5 +-
+>   drivers/irqchip/irq-gic-v3-its.c        |  13 +-
+>   drivers/irqchip/irq-gic-v3-mbi.c        |  12 +-
+>   drivers/irqchip/irq-ls-scfg-msi.c       |   5 +-
+>   include/linux/iommu.h                   |  56 ++++---
+>   include/linux/msi.h                     |  55 ++++---
+>   kernel/irq/Kconfig                      |   1 +
+>   17 files changed, 501 insertions(+), 357 deletions(-)
