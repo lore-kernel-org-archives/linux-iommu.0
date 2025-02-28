@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFE7A33E7;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 513AF26AAA3;
 	Fri, 28 Feb 2025 16:32:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740760329; cv=none; b=Jg+NbnjMMP+m+e//p1HbntrZQeHClaeaKXhXIzmi9KmgwdnSOlpbR4q2XusVGdHN4PI4xNlYP9s+NeNPAlqYriN+KU/M1cTA1PxEqo4giKNDridMKd0LOdB8Fj1KYC4xgQD6M4zroLr67A1XzB+P1JUBrRO2gVE8S2gIEQhxp6Q=
+	t=1740760329; cv=none; b=Nwo2hyPn9RTMar81BxCH5I5lMhY+krDZA6Y/q/0ojyKNWYy7mC/zF2RjhiukjocwbXjqnvIt46Ph7wnpt7sTP1lMNXLXO0nLADBaBaAUvcbs8pZMc6v0HRPIxSGMNi2fScp6FlPs5wA1+wEzbcNivETpes5sS/I9vnccc/OJDzc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1740760329; c=relaxed/simple;
-	bh=IbehU3J+OYsV0YR19msdwmo9VEnGilX4b2l/J/pWEKE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ibt0CaBJ9qUSQofKlJet7EZfvSyRuVlKwvXun4/oRG3VrSdMaYaLfa0rC8GkR8kReTMf7gibmfPyUgtP/xJckbmj3JoFQyZBRlVgPemWnvmUPd+rMCpliRhvck+YHa5aKkxbXEeIq0arrgvtb0lIFqr//JMcBy8o9CM/WZzotWI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TmXHIIuM; arc=none smtp.client-ip=10.30.226.201
+	bh=QxKE/vnJMWgW3Fp9S6RUPUhxvfrYA/OhRaJWoXg5OT0=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ZsEIvhfejwR2Ote/YPRPj0WG/4IaXKjxxlQuuVEajVEvWX3Pvy00u0bI9dDw5BCr/B4sTMuOoEQnROoBX70sInCZMsUOgx2Cq31+OCIRxKu9MsUXsPiLV7cIPE7u9UOob8OFv427isY3kGOlE5rZ93uwqPiee4H/a97DPA2wX9g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E5/ReRPm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TmXHIIuM"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CB02AC4CEE2;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E5/ReRPm"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BB783C4CED6;
 	Fri, 28 Feb 2025 16:32:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1740760328;
-	bh=IbehU3J+OYsV0YR19msdwmo9VEnGilX4b2l/J/pWEKE=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=TmXHIIuMbkmQ1XYD/WDnmG2toGxcQgUsC0tlH/Q2rAlfQ31uDUBa3MkGANGzLAjH0
-	 4aN2p0mvuSNgb7uOp9s8ht1JxgBUXMU7KQIu24dwXJib4qMpwR5xoqO1SBPyUWYaLO
-	 BQShG+qTimycwaldYMwXsXqvqq/DywDcuP+Kb+U51ROfOyQVW9FJFgs9GOqlDkdiXN
-	 GY6ErfSLPC9YQfA0sU/vEwteWlOUQOts6fgawvsGSspHaiYc8aZQEtyg7e8QU6QkNP
-	 i7pLpQ4/tpqwQ1YQJjWLZGle9dpMCDyQLYwpQO/K/UX3K+s7J3Xk8dmvCiQON+ejoV
-	 +7K/QqXXj3mvg==
+	bh=QxKE/vnJMWgW3Fp9S6RUPUhxvfrYA/OhRaJWoXg5OT0=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=E5/ReRPm3Hx56j0Y7VqvCQBpbaRGUJITQD3WoknMWBf0wvJkoloKeklZwhdIDfo2p
+	 LtWbj134LSWzcyvZpjbeMNKg1uEpkzpp45OzzNgmSoMpaPftc2iC4AVraoBiV6J3Vd
+	 VoWEyfKcPSrZR/l/Jg9VOAfWzjNd1htHqXQMKjcD0zF+ehx4fiof/Orou/vj2E6D5n
+	 yr1tZELClvsO7uj3gpY3oWTmCICE0XKeqG2+gOywuZYfdmdNwGtQzs0r+QB20s/5c0
+	 +V09pCNaGYb0nITGTPH2lizR4o622/1T4TVnlmAsQx8eRooKfUoWSCh8JneNxx9w+b
+	 IiGoQezo2Dt1g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB9EC282D0;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABBF1C282C1;
 	Fri, 28 Feb 2025 16:32:08 +0000 (UTC)
 From: Sasha Finkelstein via B4 Relay <devnull+fnkl.kernel.gmail.com@kernel.org>
-Date: Fri, 28 Feb 2025 17:32:07 +0100
-Subject: [PATCH v2 1/2] iommu: apple-dart: Increase MAX_DARTS_PER_DEVICE to
- 3
+Subject: [PATCH v2 0/2] iommu: apple-dart: Support the ISP DART
+Date: Fri, 28 Feb 2025 17:32:06 +0100
+Message-Id: <20250228-isp-dart-v2-0-0ead81a90e2d@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,9 +40,10 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250228-isp-dart-v2-1-0ead81a90e2d@gmail.com>
-References: <20250228-isp-dart-v2-0-0ead81a90e2d@gmail.com>
-In-Reply-To: <20250228-isp-dart-v2-0-0ead81a90e2d@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAblwWcC/23MQQ6CMBCF4auQWVvTqViFlfcwLEqZwiRCSUsaD
+ endraxd/i8v3w6RAlOEttohUOLIfimhThXYySwjCR5Kg5LqKpW6CY6rGEzYhLtfdNMbQ7ZHKPc
+ 1kOP3QT270hPHzYfPISf8rX+QhEIK1EgNkqtdrR/jbPh1tn6GLuf8BTf5WjagAAAA
+X-Change-ID: 20250227-isp-dart-f8369baaecb1
 To: Sven Peter <sven@svenpeter.dev>, Janne Grunau <j@jannau.net>, 
  Alyssa Rosenzweig <alyssa@rosenzweig.io>, Joerg Roedel <joro@8bytes.org>, 
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
@@ -51,11 +51,11 @@ Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
  Sasha Finkelstein <fnkl.kernel@gmail.com>, Hector Martin <marcan@marcan.st>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1740760327; l=698;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1740760327; l=820;
  i=fnkl.kernel@gmail.com; s=20241124; h=from:subject:message-id;
- bh=lnQqB1BR4mWIGODXOGI5G9lt91LbhceR/0LaO+MRnP8=;
- b=S06jxQ7AYreCqafQAUkk1RbVxcL4tN9dIdffKsqJUcXn9Y6vwsP8LtxfP1nNmIV4pa79FE9S0
- ndH2BkZx621DgfmBLn9vvS2e3dDYhQIoXOHwK0Q9zdQXq83cKazxu68
+ bh=QxKE/vnJMWgW3Fp9S6RUPUhxvfrYA/OhRaJWoXg5OT0=;
+ b=NkWNCpfcMNwzWsbnSKE+X1A1U4WmVG9Nd2rgKOi5zpr713ES47sa+Vb6FYzPoD6/JrAn/oHg5
+ H7rwQkMQBQiB4NsAeu4cBz9ysy5g2QqS+7KaiGZ/StIiAE3RJ4QPQ1R
 X-Developer-Key: i=fnkl.kernel@gmail.com; a=ed25519;
  pk=aSkp1PdZ+eF4jpMO6oLvz/YfT5XkBUneWwyhQrOgmsU=
 X-Endpoint-Received: by B4 Relay for fnkl.kernel@gmail.com/20241124 with
@@ -63,32 +63,27 @@ X-Endpoint-Received: by B4 Relay for fnkl.kernel@gmail.com/20241124 with
 X-Original-From: Sasha Finkelstein <fnkl.kernel@gmail.com>
 Reply-To: fnkl.kernel@gmail.com
 
-From: Hector Martin <marcan@marcan.st>
+The ISP block has 3 linked DARTs with mismatched bypass support.
+This series adds support for this setup.
 
-ISP needs this.
+(The ISP driver itself is sent as a separate series
+https://lore.kernel.org/asahi/20250219-isp-v1-0-6d3e89b67c31@gmail.com/T/ )
 
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Reviewed-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
 Signed-off-by: Sasha Finkelstein <fnkl.kernel@gmail.com>
 ---
- drivers/iommu/apple-dart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v2:
+- Made comments and code a closer match for each other
+- Link to v1: https://lore.kernel.org/r/20250227-isp-dart-v1-0-161e91ef4f46@gmail.com
 
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 95ba3caeb40177901086076416874b9905a1f40a..edb2fb22333506d7c64ad1b6321df00ebfd07747 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -36,7 +36,7 @@
- 
- #define DART_MAX_STREAMS 256
- #define DART_MAX_TTBR 4
--#define MAX_DARTS_PER_DEVICE 2
-+#define MAX_DARTS_PER_DEVICE 3
- 
- /* Common registers */
- 
+---
+Hector Martin (2):
+      iommu: apple-dart: Increase MAX_DARTS_PER_DEVICE to 3
+      iommu: apple-dart: Allow mismatched bypass support
 
--- 
-2.48.1
+ drivers/iommu/apple-dart.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+---
+base-commit: dd83757f6e686a2188997cb58b5975f744bb7786
+change-id: 20250227-isp-dart-f8369baaecb1
 
 
