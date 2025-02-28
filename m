@@ -1,178 +1,129 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2044.outbound.protection.outlook.com [40.107.236.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6062E276D19
-	for <iommu@lists.linux.dev>; Thu, 27 Feb 2025 23:32:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740699150; cv=fail; b=I0xSnjNZE4CWBGlP8B4P+73QUfIm+Y4KjJ3d1A8f3zL93O+1+i+TKsM0M3kfsw8rChGpCt+2ymvcrTovRbX/2svUQtypccVrLG0XHAe8U/VPsef5QxKpaidLQJokdqpFmM/zsFKIWNGAGUyzTJi9dwwyHTCKYH0ktXi2Rhy+fp4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740699150; c=relaxed/simple;
-	bh=oceikjqQ8Ih/wTQ5F+yrSKyWYGiqHQbjJKVnQB3Jwuk=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eTR/q2IA3vzaocnjBj6AIKq113lyFaZp3Gp2DDkbGb3d0KOOa6QpnUOqT8XLCedoDSh09fHBCCtE3jtY8/YhLAJVWXu/1xCKHzuI9iGXQwPFoRK4iDzhf15wSGqx/N5ESpdwuJr8mItzBfRHhKliZ/lcGQNOyGIYTWttguvpAzk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Uq4ok4Uh; arc=fail smtp.client-ip=40.107.236.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9AC233E1
+	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 00:04:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1740701069; cv=none; b=jjK9wjVtc27YMvSLo4CBavI5r2Amy+LrJbcjBuk4zE9CtgGDHNX0VrPzcuP6rqGVjAdqt8c7GTlQB0nOV7qeCTUyZxqBoMQR/uhdGGxRM69rf7ZDEbBjl7AqoYD7k8VjlmaJOqiRZP/8/V0QF8515qWQ7zJUbZNIzaCcmN9CyG4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1740701069; c=relaxed/simple;
+	bh=+c7ZTY0eX09YtuOLIqBK86udGzH+wzh+HvljoISOS3I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QTLoo9MOU2wHAyH2AAGtm1p0MTlATniFIYbAghm5yCKrsGJpnfmvVJhBXnWiyBzNgDrpSgY3xkyavgxH8E0gQLDvk24iq4F4cIwmVYk+6X4NVVQBkI6Yr+NylwnEKWD/CVh9PHOWhCugWz86nmGR/+zcZwSZTdr/v/w9Idi05NM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=XlkVLU1I; arc=none smtp.client-ip=209.85.219.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Uq4ok4Uh"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ix7JHH1oDu0uwT5nbXhBn8OATLAKG+CWUvK6SmOOzXKqTPpwyvqRldFKxAVFwXmEJgzENrQesB8cWU3LZmrX/dhPVQtE8UJB1DaJvW7TPYa92yZMoOu62iS31GWMl6CkO2Wt07VcevTdrHmO7OdWcVdLSmb21WMDhc7+ExyXpf19wycgaTudbZ5G64SM5O1EtM6ckaJKEqQXwZeBatJBV8hNsVLIQZkafWhrYBpL6ab3kddb557cW3Gst487tsAVygxssB/C2F0e1xMxdyJxar3STW78/4CSV23C+6S/XAlEssCTYiNArVUiOMp4R1Y6u6s6YiayS0YJTUkhbT/OCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EF4JZF6kcM2dZTCgTIZoVaR+s2zyR5W9HaElTnkmI5E=;
- b=jv2ZyFPTU95G3fdN3Rz3+/1wfUQ6UFSGNCK54W6LPfiVddJ9dpfaSj4m1kONscLAo/e376vg2J4sSIwFPBRm3wlBhXYTp4ZNUEO/N4miS9bd/4JR2ziyLebNvYCPoJf4DWKN4ZRukWJTWe2Z4Ni/ev6B6aLkTRLDRPSKkW0fwB1csaWZ7/F0dHJZyxAyqDAguaLVSvIaR4wfoF+nZ0LHZ5N9oAROlp3po16JBD+wkFaVpmfDLa5awTOdrV8TEvJCg50XLs3KuXRoWWaVstCkRKwI6DE3Yjp5SojHwwd+hamviSaQrqL9GBnYzouodUDZRVdLAZct5stSdSBpXheKjQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EF4JZF6kcM2dZTCgTIZoVaR+s2zyR5W9HaElTnkmI5E=;
- b=Uq4ok4UhcroFFSmZbHYsfiFNx+RbAd/ABFshrEAptf4o1/+9AGTmJ0QXcKgZwv0cdt//Hy450KD7WkcDeVVbeU5qSBRPhyycq9qXYEyqgL2L03XskLo+6uXL1QyiDvC7V9dISY0OrZCwcUdrt3ucv49EWQFDZTswGN183BmWYpOId4H+2n1OzgYOMgECJsa7Gm91UtlA+b1IlffYm0jpwiKlMn4+hmAL2sSg65QjLlX9P9z5Yov30RBo6NWuS9CP5GNsKyTQlp69+j4+uPnWMQfIjO23+LZPk06GWxsAJpPWYyUymvJ/rur4Qzt1s3w+ZCvyUIpMUFIYFxBrg6mxmA==
-Received: from MW4PR03CA0170.namprd03.prod.outlook.com (2603:10b6:303:8d::25)
- by SA1PR12MB8741.namprd12.prod.outlook.com (2603:10b6:806:378::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.21; Thu, 27 Feb
- 2025 23:32:26 +0000
-Received: from SN1PEPF00036F3D.namprd05.prod.outlook.com
- (2603:10b6:303:8d:cafe::76) by MW4PR03CA0170.outlook.office365.com
- (2603:10b6:303:8d::25) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8489.22 via Frontend Transport; Thu,
- 27 Feb 2025 23:32:25 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SN1PEPF00036F3D.mail.protection.outlook.com (10.167.248.21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8489.16 via Frontend Transport; Thu, 27 Feb 2025 23:32:25 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 27 Feb
- 2025 15:32:14 -0800
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 27 Feb
- 2025 15:32:14 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Thu, 27 Feb 2025 15:32:13 -0800
-Date: Thu, 27 Feb 2025 15:32:12 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<alex.williamson@redhat.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
-Subject: Re: [PATCH v1 2/4] iommu: Add iommu_default_domain_free helper
-Message-ID: <Z8D1/BWdTY4TtoB3@Asurada-Nvidia>
-References: <cover.1740600272.git.nicolinc@nvidia.com>
- <64511b5e5b2771e223799b92db40bee71e962b56.1740600272.git.nicolinc@nvidia.com>
- <20250227195036.GK39591@nvidia.com>
- <Z8DSGF0tGgvkJh41@Asurada-Nvidia>
- <20250227210336.GP39591@nvidia.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XlkVLU1I"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6e892e0eb74so12380826d6.3
+        for <iommu@lists.linux.dev>; Thu, 27 Feb 2025 16:04:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1740701066; x=1741305866; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rXTeuzJuD507zck95F3w0cU1wpQQ7qF2hl1bxyIuJbI=;
+        b=XlkVLU1IwDZ9LGNmOkdULRI5YU79odcUbNYz60E5nYj7b+0ZbPkXsc+aE0K+gx28dp
+         ciwGD1+n3ubQ3kypo6H6C8EpnsCCHWa0c/EEWtdwJa+zjbuDuBkpK188dgkVcD16nqmM
+         MnE1Niwa7qsQEDQLnC8enjl12UidmVtru0lAYuCjRwt6bi/5RTLxcm+4bfrTpO842MUc
+         WvQfrOawo+rPLjMbxJA7M1DRFDjRwuZfp2KsayMTP1EdKvOzyAOjNSxXsVVXmnoVo0GK
+         yiFPtpFf7W271bC7w08slHgkLrRHodalL0OByObZqrLt4I07jUECMTtvFxvHOiuXQyYu
+         RUpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740701066; x=1741305866;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rXTeuzJuD507zck95F3w0cU1wpQQ7qF2hl1bxyIuJbI=;
+        b=iU6QFTUBjnEZGEBRufWdtU6qKdLm4ciGqei8SAfH8HOQbLd0AFouT72ZiqE0SVx17p
+         HSyI2t1HMyq4TAZIhwhdYdkoNvU9vbVdJL6fP1CYFOrMvr9bqEuEu7EIqyizZwI7zaJF
+         9m/0z8Yr2lM+K6n7+aq9BbRM0drbWIPDsG3YiErr5MOhPHDsgTA/mJBqAHlTvdJQrqVV
+         IFM/ajzzWT+rOPomv3vbtSsMJ2lmc1CEsupqidcZqHrS5YkKnX6ubDLZRuj4hnSdQCfv
+         U1ovknHizsnIn5n76gklUQC7Irqn9WefVwLbReUTZ9fJ4L4WCVl1FUFcaykR7qxkecwH
+         y4zg==
+X-Forwarded-Encrypted: i=1; AJvYcCXn3VfU3p2KJJ3Z3KyYzm+1K5ymZvya8WyAlaAh2gysJxaErAqAHE52YzxxV+ogwVBEy02pWg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyaZEHcaD2Qox9MEyaWMCvPrFyW85n58K0DeQiVqrDeUt214Kpa
+	es9lAR/35fPxGrWR+jhdT51ROYmrFGOpHCB86iKJofY6JPXQH1sNl6H8PgxEWOw=
+X-Gm-Gg: ASbGnctR2gI5VnnigqegSHrxvpeW/HjFWTTddVpZGQuPNSyv8L5TQUJhXDzbTZBSOQD
+	R+wVFfxqwvzbwkJIMIXwrF1TpwlRTkLk++ivbq6hEbfu2Zna4tiL+wxoCU747B9iPrS7U0Vb8xN
+	NzUbdxXB3x6QrXB891FiKSFL4SqCtMHJc6VNUp23WhJT6ZXBBFtUtxNb/zQsA06+ZXdQI2ezpMo
+	IrD6vLhc+57RaSs9MnDkd4C7OdZyqniaD3MzYyCJxWX7eXNTYtQmezpaDqhXPbYSsheaI/E0Y7I
+	nZVbon6ISplAUrPC1wEbWtJRxOsuiuqgsAGH3E1QjPsvFhyAS9I+BRsFrCOlRp87BbieFCV9cMc
+	=
+X-Google-Smtp-Source: AGHT+IHEpNsFHgABSo+1vDVk/nA6uN3JjPpOGZ7DWAhu2Jw8+62PtOnjjqyOiJakQW9tqkFXGGw2eA==
+X-Received: by 2002:ad4:5f0a:0:b0:6e8:9444:7ac8 with SMTP id 6a1803df08f44-6e8a0d093a0mr22256876d6.17.1740701065716;
+        Thu, 27 Feb 2025 16:04:25 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e8976ec158sm15488476d6.119.2025.02.27.16.04.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Feb 2025 16:04:25 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tnnrc-00000000LJS-1AwV;
+	Thu, 27 Feb 2025 20:04:24 -0400
+Date: Thu, 27 Feb 2025 20:04:24 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
+Message-ID: <20250228000424.GJ5011@ziepe.ca>
+References: <20250225105829.52223-1-vasant.hegde@amd.com>
+ <be9d2ad2-0f9e-4d06-952b-4cfd6ae53447@intel.com>
+ <ce86ff90-377e-49fe-9c4e-d2ad7abeeec8@arm.com>
+ <20250225145518.GJ545008@ziepe.ca>
+ <b630b6c0-a25c-4230-8abd-a48b7dc27216@amd.com>
+ <BN9PR11MB5276B090C61D1F059538AF7B8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <cc4cf4ae-2d29-4747-b655-df841661b82a@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250227210336.GP39591@nvidia.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF00036F3D:EE_|SA1PR12MB8741:EE_
-X-MS-Office365-Filtering-Correlation-Id: 32424fb7-603a-4600-e66c-08dd5786fdfd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|36860700013|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?B6QAg3t72xHOkhuaRJBSinu9v1ylHh29GdUwJDfVPyv8cmSKq/W5tWagjVcD?=
- =?us-ascii?Q?NjMribnhNlBkcU04HrDCaOtt6ZADA1Lwons0LmyEw8VQG6nm7tMN9PV1iAUI?=
- =?us-ascii?Q?Sn8bCRDyi7KFNAgOFWh8c0071wtHBvJesi7HhwJiqWwIVecAZQRDIAWNllaj?=
- =?us-ascii?Q?+xtNg26JCIX6Dum+fmloWNODOS6eHaFE9V12dBIppAJRLCkJ2g5jEO1icgkK?=
- =?us-ascii?Q?GrVG0z4Aud4MYLf559yUa7yYDQRl/JfJYVY+FYiQ3Rge70qo7eQgPksxldQP?=
- =?us-ascii?Q?c+iKegRrD5K/6ME+arK8W1u92I2K3Ej1TkCeXo3WSbsUzuIc0PP8e/orJxRS?=
- =?us-ascii?Q?trrcrZ/cWIYIIpzIHZMO9D8Qp2UyJAnNZ1W87IldKszV4O1Z6/PwNhRq+4VG?=
- =?us-ascii?Q?H0wYyfcjtoLB0nfaLkDmalC+QOEXAeKh1Cu+llIGNHdNDaHGl8LfXjZxAxMv?=
- =?us-ascii?Q?Lq1tJgy6x1YI/pgAMq29S9RrygYGHbBoPeJfCcJ/U1Vpm4Q7OY+mwEhyhpXl?=
- =?us-ascii?Q?RcdKd/ixwFmthQBvdOdk7sy3MSdKmCqr7y6hVRcYINXgx7m9pzoqKXS91uaS?=
- =?us-ascii?Q?vyIiZqGD4l3g/nVMZnQ3GoR52IpxvEZt7KPzBtZB9ubcoFg4PLAP6MhoHIDB?=
- =?us-ascii?Q?YirzLRIbcXa7r5tUWcOsezz5aX8Pi2B8Pr1woWibvLr92aLy7Ir3cZi37ml9?=
- =?us-ascii?Q?CVgpkGnOm8jCFHmjeA+hRv+8NnCFgH7oeWDY5BTY8VgFCdqoVuhXi09T05rm?=
- =?us-ascii?Q?viIa21nNFWRy7lIwmpNG528ivIQVCfdhttyKbHbIW8W9p6PtT5oFSrr1pFje?=
- =?us-ascii?Q?rd2Wy1GHpBIIWSTc/uZOXEleRt7BwHXaiBtaNTP3u6fVaqWMgM0MH6O6yofC?=
- =?us-ascii?Q?91q+r3XKCbHREBMcO2hYmKXN62+7/rIMiiqhSb5YLT0zw7m1jEIYks5HE2rd?=
- =?us-ascii?Q?n2nt3osnkGNWFzS+gkSG6MPvozXRGPH9kNOKZ+EKOpPns91k0UbVmcEZUaEv?=
- =?us-ascii?Q?+JPAwt+fD0sXN3Oi9iU6xDPb7AGLjdnsAmK20VLN4E2Qp+mp8RuHqmf/UPAa?=
- =?us-ascii?Q?Z1XpaM3cTe5cZSaemsdmFSwD9J3ex1wkTmdLJFxOghiPZKdLIQl/7e9+0tQd?=
- =?us-ascii?Q?ydK3+eQ7OQNNBxMKNGX07ofJje+MGr1M3xWWFrTCc7m+a+MGEuYkPS4R4Lo0?=
- =?us-ascii?Q?GFb1E8M+cywpzx5sbxIBPs2R+vdXcNeqewqWFdwqrEdQB4MIG4i/PiTvTiWs?=
- =?us-ascii?Q?UMmNY2ViPz+riKc1XwDrWfsKajccKF9uZDiu6cCIahOrsu0HlzobAIkmlpyp?=
- =?us-ascii?Q?Sg+YLAuL7kVM/b7MLQLfNoRWcUI8X+b2OzHUBvSqynQzv80Ii5jjnXvRpwiI?=
- =?us-ascii?Q?Z5uai/yTdGU/gqkwnrGSNgetIsJU60p3zEzinv73Dt8cQn0EiZNPmyYT4UER?=
- =?us-ascii?Q?VM/50vmqUCfFjycv5W/SET+t4CdOJxj1L9R8a42p4S1p27RJHkfFQ4lhAthj?=
- =?us-ascii?Q?Dkv5UTv4la8qdso=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700013)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Feb 2025 23:32:25.3425
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32424fb7-603a-4600-e66c-08dd5786fdfd
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF00036F3D.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8741
+In-Reply-To: <cc4cf4ae-2d29-4747-b655-df841661b82a@amd.com>
 
-On Thu, Feb 27, 2025 at 05:03:36PM -0400, Jason Gunthorpe wrote:
-> On Thu, Feb 27, 2025 at 12:59:04PM -0800, Nicolin Chen wrote:
-> > On Thu, Feb 27, 2025 at 03:50:36PM -0400, Jason Gunthorpe wrote:
-> > > On Wed, Feb 26, 2025 at 12:16:05PM -0800, Nicolin Chen wrote:
-> > > > The iommu_put_dma_cookie() will be moved out of iommu_domain_free(). For a
-> > > > default domain, iommu_put_dma_cookie() can be simply added to this helper.
-> > > > 
-> > > > Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > > > ---
-> > > >  drivers/iommu/iommu.c | 11 ++++++++---
-> > > >  1 file changed, 8 insertions(+), 3 deletions(-)
-> > > 
-> > > Let's try to do what Robin suggested and put a private_data_owner
-> > > value in the struct then this patch isn't used, we'd just do
-> > > 
-> > >       if (domain->private_data_owner == DMA)
-> > > 	iommu_put_dma_cookie(domain);
-> > > 
-> > > Instead of this change and the similar VFIO change
+On Thu, Feb 27, 2025 at 09:34:01PM +0530, Vasant Hegde wrote:
+> Kevin, Jason,
+> 
+> On 2/26/2025 12:40 PM, Tian, Kevin wrote:
+> >> From: Vasant Hegde <vasant.hegde@amd.com>
+> >> Sent: Wednesday, February 26, 2025 12:47 PM
+> >>
+> >>>
+> >>>  3) TA is an IOVA and the IOMMU runs it through the full translation
+> >>>     to validate it. ATS is just used to signal non-present
+> >>
+> >> Yes. AMD does this when Host page table is configured.
 > > 
-> > Ack. I assume I should go with a smaller series starting with this
-> > "private_data_owner", and then later a bigger series for the other
-> > bits like translation_type that you mentioned in the other thread.
+> > Here 'signal non-present' implies to support PRI.
+> > 
+> > But...
+> > 
+> >>
+> >> We need to consider various scenarios. For AMD:
+> >>   - Currently on baremetal, we cannot enable SVA and Secure ATS
+> > 
+> > ... here it says SVA/SATS are incompatible. Any more background?
 > 
-> That could work, you could bitfiled type and steal a few bits for
-> "private_data_owner" ?
+> Sorry. I should have explained it better.
 > 
-> Then try the sw_msi removal at the same time too?
+> To support SVA (PASID/PRI), we have to configure domain with AMD Guest (v2) Page
+> table and host page table will not be set (DTE[Mode]=0).
+> 
+>   GVA -> GPA contains translation and GPA = SPA.
+> 
+> On ATS request it will send GPA back to device (which is actually a SPA). We can
+> support secure ATS, but ATS response will contain the SPA.
 
-Ack. I drafted four patches:
-  iommu: Add private_data_owner to iommu_domain_free
-  iommu: Turn iova_cookie to dma-iommu private pointer
-  iommufd: Move iommufd_sw_msi and related functions to driver.c
-  iommu: Drop sw_msi from iommu_domain
+I see, that makes sense. The TA is not tagged with a PASID on the wire
+so no iommu can support the #2 form with PASID.
 
-Will do some proper build tests and then wrap them up.
-
-Thanks
-Nicolin
+Jason
