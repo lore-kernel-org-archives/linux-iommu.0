@@ -1,229 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8533626D5DB
-	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 14:34:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC9F22702BE
+	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 14:53:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740753251; cv=none; b=R2jttrpK+zIaEBNWbHJJQn3kTiH1gxv2XhUuERLel98FYEaEnU+3bvIZx89KaM1AlZBNORpvHPlJ9fDyxuMk3BCIQS4/xcFqjXpwBt6rNRRibbe8nuXFWtk0sw4vv1h8WfBLwLfG3MNP7PxCcGzxZ6/nYgCv/acKGyx4G1JRLqw=
+	t=1740754410; cv=none; b=YFnYkEvC9J1GdhjT9wQwvBESJM7NKJ8+yrqOOtJ2gxD/b6iMKU3C1IRuKYCDJJkgUT2U5UuTMYOIEueNjEkM9C0swGnL7euKLpG5uyfD7zDEx6Jo+uHgUExFE/uqbHKLPwfZRCuspBd+BiFzsB+B4NgR7uU0DiqkJsZwOdq2KVA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740753251; c=relaxed/simple;
-	bh=CzIbW0o33OzQ/dvtghW+Ev6TO3WApyZt22MutK31V7U=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Hhm6y4nUu7XM1e6ByHqey22L+9ZRaWBC7vyox+M+JWZJ+DxW7YF7XXLfD5Gj6CPxbNzUbxp083u8z0LFLQWJ5XgsDfjlNONJn3TQbrsREZF9L6nEmAgvBkfl+IQU5O7SstIjUwWFULNlJSuArpsOFgkyd6scuS6pEqLIjmBULPY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VAHIOvNY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1740754410; c=relaxed/simple;
+	bh=XSRTflYJlO9ufw6eKV6i1+wRhdzV3taMrYfr1kX97SQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=L+NUg1AS/3vQcyVNdUHsf4mTF6QlMOUQrMhYB7KczlcUmTqrZDPalEyvtdBl8lPLQGp+naRij6KEUC4q9kVyVQUlWBF0VzWNJuD4LDlOo4RpeYD5iTdWgjiHpCIdiinndrHBAfPGj7Z8YtBvprH8y5bz/CZgi7fpOXv2fBRX6Dk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=cNnUcvCn; arc=none smtp.client-ip=209.85.222.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VAHIOvNY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09D85C4CEE2
-	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 14:34:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740753251;
-	bh=CzIbW0o33OzQ/dvtghW+Ev6TO3WApyZt22MutK31V7U=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=VAHIOvNYdMIAEn2JDo6OfpohcWKWwLEvVeJ432gTT1s/5jXAKnhcciSJ3sow/SsdA
-	 IQgfOvmVs6qm3vI0vVgCOlkqIEn9ZSItUDZIc1NJ8PhE8Ph5rCk3jxOCIDW513mEXJ
-	 6EHCA9lLHAGrhIIdiS/f5ZtY0upFYxzSYw5QXYCYL+aGBUEmqm2/KXHg8XX3C3JXi0
-	 M8EWNKWKhDwLqzDKmk7uCqk+sVyQJEn9K2YhZD/9f0U99xAoqz6bU9BUYiGcprNjF+
-	 eifmBl8eEGpichwcjoC4l+ECCGh6i9xnczCQTbOGMlq22DqOj9ki2D5r/Y1qL95+B7
-	 qtt19AknrlNTw==
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-5e095d47a25so3648272a12.0
-        for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 06:34:10 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUvr404+pRoa2SehF0ZlvIExmcqeCZuR+ALvd2mR4zJ0K4g1IBZNF1rCZsMLCIPCBNicEnVXg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxsPK/fNuofqiOSSgCCKGUfjqahsNcQAWdsaDZcX9+2TtJSFQiJ
-	IskEBrL0uDKg+eUd/ivB06nHJrmYtFfmLIQNjIwKRR6OI9PCIJNvs1Z2256Rj5MLv55D5L/sfLV
-	vf9c3af+EWfHf6PMdomweR5S6dA==
-X-Google-Smtp-Source: AGHT+IG31uJKnlHKhPFsag5MHSdByYhINhrZhKlmGSnjI3Xy2zVPMvBXVlqCu3vFyWFZ2V7qRG6b611uun2gLaCfG9o=
-X-Received: by 2002:a05:6402:5247:b0:5db:e7eb:1b34 with SMTP id
- 4fb4d7f45d1cf-5e4d6ae14a1mr3066052a12.13.1740753249564; Fri, 28 Feb 2025
- 06:34:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="cNnUcvCn"
+Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-7c0a5aa0f84so192121985a.1
+        for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 06:53:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1740754407; x=1741359207; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=XSRTflYJlO9ufw6eKV6i1+wRhdzV3taMrYfr1kX97SQ=;
+        b=cNnUcvCnRZC6TnZ2BF4F9zeapoDH3zYy1lkui7UNJihN+wnhvVigsixqIErojyZi1+
+         pHE5DbxcZFbGLnT0e0Yjvgz1vMIiaGoMWcu+xeARmWvtE1HiK6iyzEreK6frc1sPr5aN
+         p37YNbR5NCA9VH/xSENs/W8tpZZABnO7JZSjg4qYHbfvq+TxLP+/n7iE5MFIL7O6IL8s
+         p+oKd0nLuuq0YycwntgPBwNbjUgbajErzRbh56moV0FRFMjT+tqC8jNBFx+raRGSEqiZ
+         vKV7eE/mY9AXXr/om9XgcMgmIXzapWUVze6j72Q036AsTg0OCtmmwHJTVRqE0C1V2sz+
+         Rhfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740754407; x=1741359207;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=XSRTflYJlO9ufw6eKV6i1+wRhdzV3taMrYfr1kX97SQ=;
+        b=QeDVBGDHzzmFNRcj8xIRj5FQ9orUtx7EyPc7dcGbhRR27uyOszxIoYE3pbOAKey0An
+         4PiaC7x4hv8xKCnU0yLqVnHS7sSBpmVLXN7tctYc8GHD4NH95blDFwfnJL7X4CRJBUPf
+         N1vHNhwMwrsn+1BM0S1qKwMv1SXox/Oy2Klo4WdGJnVui3ZxNJtXztlSvKzMuZXugZct
+         SkneqxS7Mw5ry00SZLveVCZI2g0bDMIVTJ9FAbN0iEAgrxxw7M4O27Cx55Y9dBHCHu6x
+         yKJYvm2rbDE1Un+XrkJd44rkn/SHzdldNfmUtfWtSoecYj5vIXnWjawBXob0ggr7B+8f
+         lR4g==
+X-Forwarded-Encrypted: i=1; AJvYcCXIYX6oknIZZB9bOHXijZVHHs8TKtB6sxBeLznGu2lNLpOaOyoZJXZh0qw67uK3+4X9aRppZg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxwkbHeTIpRrZM9SlFDYIhNfDG8J1MtXVYKssm3S5Prna0TI9yd
+	+wd74iB7cOkhyA5jIvIxEQQNRM2vwu4NCjs0LLk2woKIhfS9BGyhWyWpZf//7uo=
+X-Gm-Gg: ASbGncvX+b/hlAiCFrKEKDTDNuq2WY0QB4B54X3WLqFtaG1ezxnNApADEO87DYD1dAL
+	OmwamtUQEEFkUGNzL75OVistzra3tADjysrqzSfnAQuL06i3aZiUfBVwwGn++qQkDdK1S6tc4bR
+	X6UIAZDGpbAAQDPcXTMVWrXBuZDu55JIV1q5ewkvSUXGaox8beXTYy3ay9WKy+xx4C4jnHQ7CHR
+	fgKN7T2Y+2FVhqGiW5W8AdV/X6nEWdILU+I682Q+2XaSiyLx55wlBpafgZcLd9ge15ggz6SpdKO
+	yNz2NkHlSmA8mQ0raUGYgsRREP1VPU65WyUELW/F7d+OIDUnSom1cQ1E0biTv4gkJx0uoQnovSM
+	=
+X-Google-Smtp-Source: AGHT+IGk3CeR8TzEwSP2lRQTLBbATO8V8fiGviRPoAOAw1TFjW1bPmufjtonpFmz2n+TrN3pRkeuPg==
+X-Received: by 2002:a05:620a:3d96:b0:7c3:9c48:bf4d with SMTP id af79cd13be357-7c39c48bfb1mr346586385a.1.1740754407651;
+        Fri, 28 Feb 2025 06:53:27 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c36fef4638sm256646585a.25.2025.02.28.06.53.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Feb 2025 06:53:27 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1to1jx-00000000Rdk-40J0;
+	Fri, 28 Feb 2025 10:53:25 -0400
+Date: Fri, 28 Feb 2025 10:53:25 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
+Message-ID: <20250228145325.GK5011@ziepe.ca>
+References: <20250225105829.52223-1-vasant.hegde@amd.com>
+ <be9d2ad2-0f9e-4d06-952b-4cfd6ae53447@intel.com>
+ <ce86ff90-377e-49fe-9c4e-d2ad7abeeec8@arm.com>
+ <20250225145518.GJ545008@ziepe.ca>
+ <b630b6c0-a25c-4230-8abd-a48b7dc27216@amd.com>
+ <BN9PR11MB5276B090C61D1F059538AF7B8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <cc4cf4ae-2d29-4747-b655-df841661b82a@amd.com>
+ <26fa08c1-4a3c-44a6-aba6-a35a0f308bc8@linux.intel.com>
+ <BN9PR11MB5276D09A00E44AE7D220D7C18CCC2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241008220624.551309-1-quic_obabatun@quicinc.com>
- <20241008220624.551309-2-quic_obabatun@quicinc.com> <20250226115044.zw44p5dxlhy5eoni@pengutronix.de>
-In-Reply-To: <20250226115044.zw44p5dxlhy5eoni@pengutronix.de>
-From: Rob Herring <robh@kernel.org>
-Date: Fri, 28 Feb 2025 08:33:57 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKvRQdbBOsz4_mWAJ+MDcM+6hdhgyT6hd22z7Oi9bGAkA@mail.gmail.com>
-X-Gm-Features: AQ5f1JqbbdBcDaexIIwlgZLPXjCHtCF0EsZOabXXIFNikLd4BEgsDUlAYiFa0bM
-Message-ID: <CAL_JsqKvRQdbBOsz4_mWAJ+MDcM+6hdhgyT6hd22z7Oi9bGAkA@mail.gmail.com>
-Subject: Re: [PATCH v10 1/2] of: reserved_mem: Restruture how the reserved
- memory regions are processed
-To: Marco Felsch <m.felsch@pengutronix.de>
-Cc: Oreoluwa Babatunde <quic_obabatun@quicinc.com>, aisheng.dong@nxp.com, 
-	andy@black.fi.intel.com, catalin.marinas@arm.com, devicetree@vger.kernel.org, 
-	hch@lst.de, iommu@lists.linux.dev, kernel@quicinc.com, klarasmodin@gmail.com, 
-	linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, 
-	quic_ninanaik@quicinc.com, robin.murphy@arm.com, saravanak@google.com, 
-	will@kernel.org, stable@vger.kernel.org, kernel@pengutronix.de, 
-	sashal@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276D09A00E44AE7D220D7C18CCC2@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On Wed, Feb 26, 2025 at 5:51=E2=80=AFAM Marco Felsch <m.felsch@pengutronix.=
-de> wrote:
->
-> Hi,
->
-> On 24-10-08, Oreoluwa Babatunde wrote:
-> > Reserved memory regions defined in the devicetree can be broken up into
-> > two groups:
-> > i) Statically-placed reserved memory regions
-> > i.e. regions defined with a static start address and size using the
-> >      "reg" property.
-> > ii) Dynamically-placed reserved memory regions.
-> > i.e. regions defined by specifying an address range where they can be
-> >      placed in memory using the "alloc_ranges" and "size" properties.
-> >
-> > These regions are processed and set aside at boot time.
-> > This is done in two stages as seen below:
-> >
-> > Stage 1:
-> > At this stage, fdt_scan_reserved_mem() scans through the child nodes of
-> > the reserved_memory node using the flattened devicetree and does the
-> > following:
-> >
-> > 1) If the node represents a statically-placed reserved memory region,
-> >    i.e. if it is defined using the "reg" property:
-> >    - Call memblock_reserve() or memblock_mark_nomap() as needed.
-> >    - Add the information for that region into the reserved_mem array
-> >      using fdt_reserved_mem_save_node().
-> >      i.e. fdt_reserved_mem_save_node(node, name, base, size).
-> >
-> > 2) If the node represents a dynamically-placed reserved memory region,
-> >    i.e. if it is defined using "alloc-ranges" and "size" properties:
-> >    - Add the information for that region to the reserved_mem array with
-> >      the starting address and size set to 0.
-> >      i.e. fdt_reserved_mem_save_node(node, name, 0, 0).
-> >    Note: This region is saved to the array with a starting address of 0
-> >    because a starting address is not yet allocated for it.
-> >
-> > Stage 2:
-> > After iterating through all the reserved memory nodes and storing their
-> > relevant information in the reserved_mem array,fdt_init_reserved_mem() =
-is
-> > called and does the following:
-> >
-> > 1) For statically-placed reserved memory regions:
-> >    - Call the region specific init function using
-> >      __reserved_mem_init_node().
-> > 2) For dynamically-placed reserved memory regions:
-> >    - Call __reserved_mem_alloc_size() which is used to allocate memory
-> >      for each of these regions, and mark them as nomap if they have the
-> >      nomap property specified in the DT.
-> >    - Call the region specific init function.
-> >
-> > The current size of the resvered_mem array is 64 as is defined by
-> > MAX_RESERVED_REGIONS. This means that there is a limitation of 64 for
-> > how many reserved memory regions can be specified on a system.
-> > As systems continue to grow more and more complex, the number of
-> > reserved memory regions needed are also growing and are starting to hit
-> > this 64 count limit, hence the need to make the reserved_mem array
-> > dynamically sized (i.e. dynamically allocating memory for the
-> > reserved_mem array using membock_alloc_*).
-> >
-> > On architectures such as arm64, memory allocated using memblock is
-> > writable only after the page tables have been setup. This means that if
-> > the reserved_mem array is going to be dynamically allocated, it needs t=
-o
-> > happen after the page tables have been setup, not before.
-> >
-> > Since the reserved memory regions are currently being processed and
-> > added to the array before the page tables are setup, there is a need to
-> > change the order in which some of the processing is done to allow for
-> > the reserved_mem array to be dynamically sized.
-> >
-> > It is possible to process the statically-placed reserved memory regions
-> > without needing to store them in the reserved_mem array until after the
-> > page tables have been setup because all the information stored in the
-> > array is readily available in the devicetree and can be referenced at
-> > any time.
-> > Dynamically-placed reserved memory regions on the other hand get
-> > assigned a start address only at runtime, and hence need a place to be
-> > stored once they are allocated since there is no other referrence to th=
-e
-> > start address for these regions.
-> >
-> > Hence this patch changes the processing order of the reserved memory
-> > regions in the following ways:
-> >
-> > Step 1:
-> > fdt_scan_reserved_mem() scans through the child nodes of
-> > the reserved_memory node using the flattened devicetree and does the
-> > following:
-> >
-> > 1) If the node represents a statically-placed reserved memory region,
-> >    i.e. if it is defined using the "reg" property:
-> >    - Call memblock_reserve() or memblock_mark_nomap() as needed.
-> >
-> > 2) If the node represents a dynamically-placed reserved memory region,
-> >    i.e. if it is defined using "alloc-ranges" and "size" properties:
-> >    - Call __reserved_mem_alloc_size() which will:
-> >      i) Allocate memory for the reserved region and call
-> >      memblock_mark_nomap() as needed.
-> >      ii) Call the region specific initialization function using
-> >      fdt_init_reserved_mem_node().
-> >      iii) Save the region information in the reserved_mem array using
-> >      fdt_reserved_mem_save_node().
-> >
-> > Step 2:
-> > 1) This stage of the reserved memory processing is now only used to add
-> >    the statically-placed reserved memory regions into the reserved_mem
-> >    array using fdt_scan_reserved_mem_reg_nodes(), as well as call their
-> >    region specific initialization functions.
-> >
-> > 2) This step has also been moved to be after the page tables are
-> >    setup. Moving this will allow us to replace the reserved_mem
-> >    array with a dynamically sized array before storing the rest of
-> >    these regions.
-> >
-> > Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-> > ---
-> >  drivers/of/fdt.c             |   5 +-
-> >  drivers/of/of_private.h      |   3 +-
-> >  drivers/of/of_reserved_mem.c | 168 ++++++++++++++++++++++++-----------
-> >  3 files changed, 122 insertions(+), 54 deletions(-)
->
-> this patch got into stable kernel 6.12.13++ as part of Stable-dep-of.
-> The stable kernel commit is: 9a0fe62f93ede02c27aaca81112af1e59c8c0979.
->
-> With the patch applied I see that the cma area pool is misplaced which
-> cause my 4G device to fail to activate the cma pool. Below are some
-> logs:
->
-> *** Good case (6.12)
->
-> root@test:~# dmesg|grep -i cma
-> [    0.000000] OF: reserved mem: initialized node linux,cma, compatible i=
-d shared-dma-pool
-> [    0.000000] OF: reserved mem: 0x0000000044200000..0x00000000541fffff (=
-262144 KiB) map reusable linux,cma
-> [    0.056915] Memory: 3695024K/4194304K available (15552K kernel code, 2=
-510K rwdata, 5992K rodata, 6016K init, 489K bss, 231772K reserved, 262144K =
-cma-reserved)
->
-> *** Bad (6.12.16)
->
-> root@test:~# dmesg|grep -i cma
-> [    0.000000] Reserved memory: created CMA memory pool at 0x00000000f200=
-0000, size 256 MiB
-> [    0.000000] OF: reserved mem: initialized node linux,cma, compatible i=
-d shared-dma-pool
-> [    0.000000] OF: reserved mem: 0x00000000f2000000..0x0000000101ffffff (=
-262144 KiB) map reusable linux,cma
+On Fri, Feb 28, 2025 at 06:15:32AM +0000, Tian, Kevin wrote:
 
->                 /*
->                  * The CMA area must be in the lower 32-bit address range=
-.
->                  */
->                 alloc-ranges =3D <0x0 0x42000000 0 0xc0000000>;
+> scenarios. Probably good for prototype development but no
+> real value given it loses all perf benefit from ATS or even worse
+> perf compared to no ats due to double walking.
 
-Are you expecting that 0xc0000000 is the end address rather than the
-size? Because your range ends at 0x1_0200_0000. Looks to me like the
-kernel correctly followed what the DT said was allowed. Why it moved,
-I don't know. If you change 0xc0000000 to 0xbe000000, does it work?
+ARM's docs noted they expect about the same IO performance between #3
+and #4 methods. Both are walking tables to validate the TA. The main
+value of ATS here is not for performance but it supports a non-present
+result.
 
-Rob
+So I thik given the choice we should prefer #3 over #4.
+
+You must switch to #4 for CXL/etc/etc.
+
+Jason
