@@ -1,55 +1,94 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 31ED91EF399
-	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 15:36:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81940270EB9
+	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 15:46:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740756968; cv=none; b=djgN7dOssO49yjtVXqm704Xv5xZBP5R3tr90CN2BMlA9IIJHa0wjNhM1ujbZR7fcJvSvQqPllGyxbnFQqUNUbM8+fW4xpcmgoVu257lbL7DQ5K4yL3O610Z/H4sK41aDbDVuCBTORNbxqnag5OCnq+76zEXEtnNbiS9CNcMjut4=
+	t=1740757609; cv=none; b=qUB0QjZm45+oF91cxalYA0IR0ZZownmNvsYg9IqKDDLX7aBlLYtb68SwIGkSz8N/CtTuViLj9ezSFWngD6C+FOep5N0EDg7jhyItblqOG1jMTWWZAF9cF8IUnj11KFAMSuPFuPRTfXV3dgsW9wZEZlU7OMyTGRCyA37WKj+jhd8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740756968; c=relaxed/simple;
-	bh=mq8LIxjSNPZQfQe8nHzbKlJqYlSqAK6mbdKyPNRn5e0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CrV+S7nUbJoOI0Isg1GIOvOi43RHUdCrxvED/yaRKGbWWY5qER4FHUXltXyYVAaHlpUaTZUIX9whToyEh5HO1nV0jkTzAfR1tIHVqVDRNF8oHhC38JQ7KD9Us+nWXjLK9H8GfX4I0AjHtHNLpGxwWwRtwyfDqGuTwMJkQc6+MzM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=tQQilXxN; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="tQQilXxN"
-Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id CBD0A4408B;
-	Fri, 28 Feb 2025 16:36:04 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1740756964;
-	bh=mq8LIxjSNPZQfQe8nHzbKlJqYlSqAK6mbdKyPNRn5e0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=tQQilXxNDvz4hRVoQMXQP9EEpdAm4fxF0VayGhvPVnLbTuzUbOBNZAur/n3zjIBRU
-	 EUShpncu4bfyKu3P03AQendQ7h9OPKumbJqtWEltHt//d2ljExYoE9me/fm9B/zsNU
-	 EjU6WgfxkMMbInDejvHClUxHNtv7C9S1R4gi5p7Qw7h1s4feZqY49XLyAek5Rz58DV
-	 cjbIXpTruurPhrvkIP9JRPOsr4rA8QtJXbCpydUhrkdhi+O6xkc3P04LIOgfFtoGpL
-	 aYsIMCaPCLlBLJg6pJqcA0a/el0xvl2N5QksWPvmuT94S5ZOoOGC5o0Ka24T7sMsMW
-	 FuIrj+6JvOKtw==
-Date: Fri, 28 Feb 2025 16:36:03 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>
-Subject: Re: [GIT PULL] Please pull IOMMUFD shared branch
-Message-ID: <Z8HX43k1VkoVfEXR@8bytes.org>
-References: <20250228142933.GA105053@nvidia.com>
+	s=arc-20240116; t=1740757609; c=relaxed/simple;
+	bh=Co92DQrOkxarOUPPnw+47Twq9u95xJbT1q0NnKciIpI=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=XA9blO8YA7sCLi7R81tEaRS12EMxF4A5CLfc+IAAAMbBTxs00FR2CPg6NfRfFxhIe6gNkeWsM0AqxPYjVB2S9eKpXQHnGhzURxy0YbY9R1L9wRBF52VxK9D3yixal3iT9svXH3E4/3nPRLHY5bkoWKF+ScQA6nHSNHf+zU5rIc0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CF239150C;
+	Fri, 28 Feb 2025 07:46:59 -0800 (PST)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 64CB43F5A1;
+	Fri, 28 Feb 2025 07:46:41 -0800 (PST)
+From: Robin Murphy <robin.murphy@arm.com>
+To: Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Stuart Yoder <stuyoder@gmail.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	Charan Teja Kalla <quic_charante@quicinc.com>
+Subject: [PATCH v2 0/4] iommu: Fix the longstanding probe issues
+Date: Fri, 28 Feb 2025 15:46:29 +0000
+Message-Id: <cover.1740753261.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250228142933.GA105053@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 28, 2025 at 10:29:33AM -0400, Jason Gunthorpe wrote:
-> Hi Joerg,
-> 
-> As discussed here is the shared branch with the three series.
+v1: https://lore.kernel.org/linux-iommu/cover.1739486121.git.robin.murphy@arm.com/
 
-Pulled into core branch, thanks Jason.
+Hi all,
+
+This spin irons out a couple of issues which v1 had. Firstly there
+should now be no change in behaviour for the weird of_dma_configure()
+calls, other than possibly getting the warning if they deserve it.
+Secondly I think there was still a possibility for probe to run via
+the replay path while its "real" probe was waiting to reacquire the
+lock; this is now solved by making dev->iommu a reliable indicator of
+the probe lifecycle, with a couple more prep patches.
+
+Thanks,
+Robin.
+
+
+Robin Murphy (4):
+  iommu: Handle race with default domain setup
+  iommu: Resolve ops in iommu_init_device()
+  iommu: Keep dev->iommu state consistent
+  iommu: Get DT/ACPI parsing into the proper probe path
+
+ drivers/acpi/arm64/dma.c        |  5 +++
+ drivers/acpi/scan.c             |  7 -----
+ drivers/amba/bus.c              |  3 +-
+ drivers/base/platform.c         |  3 +-
+ drivers/bus/fsl-mc/fsl-mc-bus.c |  3 +-
+ drivers/cdx/cdx.c               |  3 +-
+ drivers/iommu/iommu-priv.h      |  2 ++
+ drivers/iommu/iommu.c           | 55 ++++++++++++++++++++++++---------
+ drivers/iommu/of_iommu.c        | 13 ++++++--
+ drivers/of/device.c             |  7 ++++-
+ drivers/pci/pci-driver.c        |  3 +-
+ 11 files changed, 74 insertions(+), 30 deletions(-)
+
+-- 
+2.39.2.101.g768bb238c484.dirty
+
