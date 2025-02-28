@@ -1,115 +1,234 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C270B1607AC
-	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 16:01:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BB28188CCA
+	for <iommu@lists.linux.dev>; Fri, 28 Feb 2025 16:13:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740758507; cv=none; b=kMfQtR+yjWn/CW/Gp1EEG85k8kpuX8ehhvmowGF5BfkEdjCkYqwq7/+xRXZES2F7u3zw4XZxg+VO+j/+Td3LKwrZUNqJx3qRlofSkapTWt4k/ksrBN1Jwowd0WIz2DwP193iww9XlYrZXSi3V3kTVkcKN0EcD2QZQuU+zNiFPPM=
+	t=1740759191; cv=none; b=AKdRce8dK1FlB6C7mnPO4C86mkBDafO4Hy4GIIsrTfGMiRN9pCnqgLM/o1meBdadtb0c6Qbv1d5JcEohMdcjeGINAGUsRKVt/Nghs1KDK3lp3jDrg12dyT30FB7/EIPRsMhlsI4hNDOA+cGW8kz+UCQCfG2yO10b9UUhAvIwpsU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740758507; c=relaxed/simple;
-	bh=pUJ30oFhCo48SwV5aqPFurAK6czgannmXiqE8JlUSCU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VjUQfRgiEB1WfX5lvIRpUX7UHrNihJEI/K5DGG9oadIbnK2IgVFbwYzfNrpbL3MF6IqKoJsQM3aNcbjCBU9kgDnzO2e31SU9Vzix3+1qRGjJPNCUNXm47eJEXvy/mZAfxo+2mn+Rh62eH4XKcicNwBCmjqmeN9li3qepGfDAeCg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A411150C;
-	Fri, 28 Feb 2025 08:02:00 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6A87B3F5A1;
-	Fri, 28 Feb 2025 08:01:44 -0800 (PST)
-Message-ID: <9ee55e38-b92d-45e1-80df-a6d08c9baccc@arm.com>
-Date: Fri, 28 Feb 2025 16:01:43 +0000
+	s=arc-20240116; t=1740759191; c=relaxed/simple;
+	bh=OricpVIncJC0ieP9+duPGCaBtyVw/RdQoIOpd5NTvwU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kZZoUQ7gpfTfvrrg8k7wxCgGyXle9bBJ4weBjR0X4+L5wTQTMLKrTAeAE86pF+gnaDUiK4zqQvbgrMMTfot4T/9QZKr1s1eb5YJ46dLX9r/E8jexl9yEQkOuRtZX1YBDQQAbaA6H8VJCvdllPDmNbIZKZ1g3c7po9JZfV4DKkM0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1to2yu-000117-VL; Fri, 28 Feb 2025 17:12:56 +0100
+Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1to2yr-003KBR-04;
+	Fri, 28 Feb 2025 17:12:53 +0100
+Received: from mfe by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1to2yq-005N7q-2s;
+	Fri, 28 Feb 2025 17:12:52 +0100
+Date: Fri, 28 Feb 2025 17:12:52 +0100
+From: Marco Felsch <m.felsch@pengutronix.de>
+To: Rob Herring <robh@kernel.org>
+Cc: Oreoluwa Babatunde <quic_obabatun@quicinc.com>, aisheng.dong@nxp.com,
+	andy@black.fi.intel.com, catalin.marinas@arm.com,
+	devicetree@vger.kernel.org, hch@lst.de, iommu@lists.linux.dev,
+	kernel@quicinc.com, klarasmodin@gmail.com,
+	linux-kernel@vger.kernel.org, m.szyprowski@samsung.com,
+	quic_ninanaik@quicinc.com, robin.murphy@arm.com,
+	saravanak@google.com, will@kernel.org, stable@vger.kernel.org,
+	kernel@pengutronix.de, sashal@kernel.org
+Subject: Re: [PATCH v10 1/2] of: reserved_mem: Restruture how the reserved
+ memory regions are processed
+Message-ID: <20250228161252.jbo5lp5iuvrpqi57@pengutronix.de>
+References: <20241008220624.551309-1-quic_obabatun@quicinc.com>
+ <20241008220624.551309-2-quic_obabatun@quicinc.com>
+ <20250226115044.zw44p5dxlhy5eoni@pengutronix.de>
+ <CAL_JsqKvRQdbBOsz4_mWAJ+MDcM+6hdhgyT6hd22z7Oi9bGAkA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [GIT PULL] Please pull IOMMUFD shared branch
-To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>
-References: <20250228142933.GA105053@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250228142933.GA105053@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAL_JsqKvRQdbBOsz4_mWAJ+MDcM+6hdhgyT6hd22z7Oi9bGAkA@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: iommu@lists.linux.dev
 
-On 28/02/2025 2:29 pm, Jason Gunthorpe wrote:
-> Hi Joerg,
+On 25-02-28, Rob Herring wrote:
+> On Wed, Feb 26, 2025 at 5:51 AM Marco Felsch <m.felsch@pengutronix.de> wrote:
+> >
+> > Hi,
+> >
+> > On 24-10-08, Oreoluwa Babatunde wrote:
+> > > Reserved memory regions defined in the devicetree can be broken up into
+> > > two groups:
+> > > i) Statically-placed reserved memory regions
+> > > i.e. regions defined with a static start address and size using the
+> > >      "reg" property.
+> > > ii) Dynamically-placed reserved memory regions.
+> > > i.e. regions defined by specifying an address range where they can be
+> > >      placed in memory using the "alloc_ranges" and "size" properties.
+> > >
+> > > These regions are processed and set aside at boot time.
+> > > This is done in two stages as seen below:
+> > >
+> > > Stage 1:
+> > > At this stage, fdt_scan_reserved_mem() scans through the child nodes of
+> > > the reserved_memory node using the flattened devicetree and does the
+> > > following:
+> > >
+> > > 1) If the node represents a statically-placed reserved memory region,
+> > >    i.e. if it is defined using the "reg" property:
+> > >    - Call memblock_reserve() or memblock_mark_nomap() as needed.
+> > >    - Add the information for that region into the reserved_mem array
+> > >      using fdt_reserved_mem_save_node().
+> > >      i.e. fdt_reserved_mem_save_node(node, name, base, size).
+> > >
+> > > 2) If the node represents a dynamically-placed reserved memory region,
+> > >    i.e. if it is defined using "alloc-ranges" and "size" properties:
+> > >    - Add the information for that region to the reserved_mem array with
+> > >      the starting address and size set to 0.
+> > >      i.e. fdt_reserved_mem_save_node(node, name, 0, 0).
+> > >    Note: This region is saved to the array with a starting address of 0
+> > >    because a starting address is not yet allocated for it.
+> > >
+> > > Stage 2:
+> > > After iterating through all the reserved memory nodes and storing their
+> > > relevant information in the reserved_mem array,fdt_init_reserved_mem() is
+> > > called and does the following:
+> > >
+> > > 1) For statically-placed reserved memory regions:
+> > >    - Call the region specific init function using
+> > >      __reserved_mem_init_node().
+> > > 2) For dynamically-placed reserved memory regions:
+> > >    - Call __reserved_mem_alloc_size() which is used to allocate memory
+> > >      for each of these regions, and mark them as nomap if they have the
+> > >      nomap property specified in the DT.
+> > >    - Call the region specific init function.
+> > >
+> > > The current size of the resvered_mem array is 64 as is defined by
+> > > MAX_RESERVED_REGIONS. This means that there is a limitation of 64 for
+> > > how many reserved memory regions can be specified on a system.
+> > > As systems continue to grow more and more complex, the number of
+> > > reserved memory regions needed are also growing and are starting to hit
+> > > this 64 count limit, hence the need to make the reserved_mem array
+> > > dynamically sized (i.e. dynamically allocating memory for the
+> > > reserved_mem array using membock_alloc_*).
+> > >
+> > > On architectures such as arm64, memory allocated using memblock is
+> > > writable only after the page tables have been setup. This means that if
+> > > the reserved_mem array is going to be dynamically allocated, it needs to
+> > > happen after the page tables have been setup, not before.
+> > >
+> > > Since the reserved memory regions are currently being processed and
+> > > added to the array before the page tables are setup, there is a need to
+> > > change the order in which some of the processing is done to allow for
+> > > the reserved_mem array to be dynamically sized.
+> > >
+> > > It is possible to process the statically-placed reserved memory regions
+> > > without needing to store them in the reserved_mem array until after the
+> > > page tables have been setup because all the information stored in the
+> > > array is readily available in the devicetree and can be referenced at
+> > > any time.
+> > > Dynamically-placed reserved memory regions on the other hand get
+> > > assigned a start address only at runtime, and hence need a place to be
+> > > stored once they are allocated since there is no other referrence to the
+> > > start address for these regions.
+> > >
+> > > Hence this patch changes the processing order of the reserved memory
+> > > regions in the following ways:
+> > >
+> > > Step 1:
+> > > fdt_scan_reserved_mem() scans through the child nodes of
+> > > the reserved_memory node using the flattened devicetree and does the
+> > > following:
+> > >
+> > > 1) If the node represents a statically-placed reserved memory region,
+> > >    i.e. if it is defined using the "reg" property:
+> > >    - Call memblock_reserve() or memblock_mark_nomap() as needed.
+> > >
+> > > 2) If the node represents a dynamically-placed reserved memory region,
+> > >    i.e. if it is defined using "alloc-ranges" and "size" properties:
+> > >    - Call __reserved_mem_alloc_size() which will:
+> > >      i) Allocate memory for the reserved region and call
+> > >      memblock_mark_nomap() as needed.
+> > >      ii) Call the region specific initialization function using
+> > >      fdt_init_reserved_mem_node().
+> > >      iii) Save the region information in the reserved_mem array using
+> > >      fdt_reserved_mem_save_node().
+> > >
+> > > Step 2:
+> > > 1) This stage of the reserved memory processing is now only used to add
+> > >    the statically-placed reserved memory regions into the reserved_mem
+> > >    array using fdt_scan_reserved_mem_reg_nodes(), as well as call their
+> > >    region specific initialization functions.
+> > >
+> > > 2) This step has also been moved to be after the page tables are
+> > >    setup. Moving this will allow us to replace the reserved_mem
+> > >    array with a dynamically sized array before storing the rest of
+> > >    these regions.
+> > >
+> > > Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+> > > ---
+> > >  drivers/of/fdt.c             |   5 +-
+> > >  drivers/of/of_private.h      |   3 +-
+> > >  drivers/of/of_reserved_mem.c | 168 ++++++++++++++++++++++++-----------
+> > >  3 files changed, 122 insertions(+), 54 deletions(-)
+> >
+> > this patch got into stable kernel 6.12.13++ as part of Stable-dep-of.
+> > The stable kernel commit is: 9a0fe62f93ede02c27aaca81112af1e59c8c0979.
+> >
+> > With the patch applied I see that the cma area pool is misplaced which
+> > cause my 4G device to fail to activate the cma pool. Below are some
+> > logs:
+> >
+> > *** Good case (6.12)
+> >
+> > root@test:~# dmesg|grep -i cma
+> > [    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
+> > [    0.000000] OF: reserved mem: 0x0000000044200000..0x00000000541fffff (262144 KiB) map reusable linux,cma
+> > [    0.056915] Memory: 3695024K/4194304K available (15552K kernel code, 2510K rwdata, 5992K rodata, 6016K init, 489K bss, 231772K reserved, 262144K cma-reserved)
+> >
+> > *** Bad (6.12.16)
+> >
+> > root@test:~# dmesg|grep -i cma
+> > [    0.000000] Reserved memory: created CMA memory pool at 0x00000000f2000000, size 256 MiB
+> > [    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
+> > [    0.000000] OF: reserved mem: 0x00000000f2000000..0x0000000101ffffff (262144 KiB) map reusable linux,cma
 > 
-> As discussed here is the shared branch with the three series.
+> >                 /*
+> >                  * The CMA area must be in the lower 32-bit address range.
+> >                  */
+> >                 alloc-ranges = <0x0 0x42000000 0 0xc0000000>;
 > 
-> Thanks,
-> Jason
-> 
-> The following changes since commit a64dcfb451e254085a7daee5fe51bf22959d52d3:
-> 
->    Linux 6.14-rc2 (2025-02-09 12:45:03 -0800)
-> 
-> are available in the Git repository at:
-> 
->    git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-joerg
-> 
-> for you to fetch changes up to 5e9f822c9c683ae884fa5e71df41d1647b2876c6:
-> 
->    iommu: Swap the order of setting group->pasid_array and calling attach op of iommu drivers (2025-02-28 10:07:14 -0400)
-> 
-> ----------------------------------------------------------------
-> iommu shared branch with iommufd
-> 
-> The three dependent series on a shared branch:
-> 
-> - Change the iommufd fault handle into an always present hwpt handle in
->    the domain
-> 
-> - Give iommufd its own SW_MSI implementation along with some IRQ layer
->    rework
-> 
-> - Improvements to the handle attach API
-> 
-> ----------------------------------------------------------------
-> Jason Gunthorpe (5):
->        genirq/msi: Store the IOMMU IOVA directly in msi_desc instead of iommu_cookie
->        genirq/msi: Refactor iommu_dma_compose_msi_msg()
->        iommu: Make iommu_dma_prepare_msi() into a generic operation
+> Are you expecting that 0xc0000000 is the end address rather than the
+> size? Because your range ends at 0x1_0200_0000. Looks to me like the
+> kernel correctly followed what the DT said was allowed. Why it moved,
+> I don't know. If you change 0xc0000000 to 0xbe000000, does it work?
 
-So we're just merging this anyway despite it getting no review other 
-than my objection to it? Oh well...
+Argh.. you're absolutely right, we had the wrong size specified and
+didn't noticed it till the kernel update :/ I don't know why I didn't
+noticed this earlier.
 
-Robin.
+With the length/size set to 0xbe000000, the cma is now allocated
+correctly:
 
->        irqchip: Have CONFIG_IRQ_MSI_IOMMU be selected by irqchips that need it
->        iommufd: Implement sw_msi support natively
-> 
-> Nicolin Chen (3):
->        iommufd: Make attach_handle generic than fault specific
->        iommufd/fault: Remove iommufd_fault_domain_attach/detach/replace_dev()
->        iommu: Turn fault_data to iommufd private pointer
-> 
-> Yi Liu (4):
->        iommu: Make @handle mandatory in iommu_{attach|replace}_group_handle()
->        iommu: Drop iommu_group_replace_domain()
->        iommu: Store either domain or handle in group->pasid_array
->        iommu: Swap the order of setting group->pasid_array and calling attach op of iommu drivers
-> 
->   drivers/iommu/Kconfig                   |   1 -
->   drivers/iommu/dma-iommu.c               |  65 +++-----
->   drivers/iommu/iommu-priv.h              |   3 -
->   drivers/iommu/iommu.c                   | 164 +++++++++++++-------
->   drivers/iommu/iommufd/device.c          | 266 +++++++++++++++++++++++++++++---
->   drivers/iommu/iommufd/fault.c           | 130 +---------------
->   drivers/iommu/iommufd/hw_pagetable.c    |   5 +-
->   drivers/iommu/iommufd/iommufd_private.h |  64 ++++----
->   drivers/iommu/iommufd/main.c            |   9 ++
->   drivers/irqchip/Kconfig                 |   4 +
->   drivers/irqchip/irq-gic-v2m.c           |   5 +-
->   drivers/irqchip/irq-gic-v3-its.c        |  13 +-
->   drivers/irqchip/irq-gic-v3-mbi.c        |  12 +-
->   drivers/irqchip/irq-ls-scfg-msi.c       |   5 +-
->   include/linux/iommu.h                   |  56 ++++---
->   include/linux/msi.h                     |  55 ++++---
->   kernel/irq/Kconfig                      |   1 +
->   17 files changed, 501 insertions(+), 357 deletions(-)
+root@test:~# dmesg|grep cma
+[    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
+[    0.000000] OF: reserved mem: 0x00000000f0000000..0x00000000ffffffff (262144 KiB) map reusable linux,cma
+[    0.060910] Memory: 3694896K/4194304K available (15616K kernel code, 2512K rwdata, 6016K rodata, 6080K init, 491K bss, 231900K reserved, 262144K cma-reserved)
+
+As you said the the placing was changed too, not sure why but that's
+okay. To be honest, placing it at the end and not somewhere in between
+sounds far more reasonable to me.
+
+Thanks for the support,
+Marco
