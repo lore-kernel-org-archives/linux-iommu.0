@@ -1,173 +1,160 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6001E23BE;
-	Mon,  3 Mar 2025 05:34:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3899E18DB0B
+	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 06:24:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740980100; cv=none; b=nn5EVYStP4eQFrhrhQhcEy13qsDQBdK17PBQ8TaFcrc8CIpnq0ySGGSmb/qQdQuAhk7ZpAwyzJjuJ2H2hvaXN3JG0dz3UaPbC3nup2VLdYw9vF+0QwrF4hEJCnDD27wjJvZjALp77hjmQG21s0DnnwaSSe92incjThgFZFJ0upo=
+	t=1740983078; cv=none; b=R7B6TlDi3jJbZy2ubP4qO0sbzSbvuDvFV3kRhV3tL1QdlyXfjPSMAu0w4LXBuM65T8EHb+UZiOiqa9QiaqGbIKh9180IVdUN7TmziNkVg2mfQV1MWaf4+QCGNPWLMiK7YgT/LGZ9u6g5mxmkSGlRNfqOT4jrVcnwt7kJq+3neTM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740980100; c=relaxed/simple;
-	bh=hD6xzP3FpFewH9I665wRKi/LE9Ov9GLuAPFoz3tFtBo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KraR2gLMV8PV1LbFyZkr2yKr4tQbIiwbcMn4APrYZNcqmTjL87J630oBUUhcEz1vXW8y0nyvJ9k6BDVpDrwUuzyXymP7Q/z0991USx1lyrBFSKmqZfzJWuHlnR8mvakQ1WDO7EXABvVQ2kN/Zm6pgVTtNIuJDewspPF7kAkaZvk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dqzVwvQM; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1740983078; c=relaxed/simple;
+	bh=EFHcnY604PxZcDX9hfXViUWhnTcEbotkGUIzzO6QMHA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=DxXK1wNv0gFfiEcoU0S82RUp2Cbvmrj5Wn+W04fVdJosWDgC3RcIERlE3M2WKV9JJ+7bVg8KG8lFSoDfvMEPSWrttlGZTDxIvMvzPIRXVGfeGSsdnev5pStNv7Jq0DbYhI5W+p33zGw8iXMtqktGeC9YqKrr4NECETMWRMQetxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=hQ+V+jBc; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dqzVwvQM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740980100; x=1772516100;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hD6xzP3FpFewH9I665wRKi/LE9Ov9GLuAPFoz3tFtBo=;
-  b=dqzVwvQMVEaBYLAiIyDrTH5mmjTlFFLLhGUp08JyFIyzPnB5AZlarXUe
-   Ng7761e37Ln2bmPINWx9mpE7tJ39EeVy2lrSms/YgKsU3arWTjcXZsJM9
-   KYh7XSSUlBrGgk6/4tmT/xgQdSYbJ0hoOmP3ekZFVb1bNhDyXCOOSMCYm
-   eu8xnbA2EZjrQFavAWd2D6LuLoF43uZqw8hsmbydMOVou9GNdBR7/uNV7
-   Rdqf1DFj7kUlodfDm8lb/YWICXNdVgqQcd0LNTLb2QCs+XUKTgSJdIt9P
-   xDWBEacXwWBfCkXIebAvVrSJGWLuQm4PDJezTdS0EWS1Z79Iz0Su6eumE
-   g==;
-X-CSE-ConnectionGUID: xXx6PnFpQmuDcWSnzlINBg==
-X-CSE-MsgGUID: N6+a8MB9TSiC12uqvXNiUQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11361"; a="64301588"
-X-IronPort-AV: E=Sophos;i="6.13,328,1732608000"; 
-   d="scan'208";a="64301588"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2025 21:34:59 -0800
-X-CSE-ConnectionGUID: 0DG/Qx3+S8OpHKZszWb+pg==
-X-CSE-MsgGUID: kxKYVUmhSwaPW7RpjZz9WQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,328,1732608000"; 
-   d="scan'208";a="122499750"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmviesa005.fm.intel.com with ESMTP; 02 Mar 2025 21:34:51 -0800
-Date: Mon, 3 Mar 2025 13:32:47 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Alexey Kardashevskiy <aik@amd.com>, x86@kernel.org, kvm@vger.kernel.org,
-	linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Zhi Wang <zhiw@nvidia.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
-Message-ID: <Z8U+/0IYyn7XX3ao@yilunxu-OptiPlex-7050>
-References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-15-aik@amd.com>
- <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
- <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
- <Z77xrqLtJfB84dJF@yilunxu-OptiPlex-7050>
- <20250226131202.GH5011@ziepe.ca>
- <Z7/jFhlsBrbrloia@yilunxu-OptiPlex-7050>
- <20250301003711.GR5011@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="hQ+V+jBc"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2238e884f72so18584755ad.3
+        for <iommu@lists.linux.dev>; Sun, 02 Mar 2025 22:24:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1740983075; x=1741587875; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=FRPqvj/QlUv2dtShmOMDUHzRRPiCU0B09cpBuKE4KUk=;
+        b=hQ+V+jBcE2kTaFoHfh89OIb/PuuW1rG/rw/DrLUP7u1rkRQAodMHJ8mKK2UjTgxtry
+         Kt9NReKSL/yJuZP2D7+q0hJuGLJkPCVWB1V9wiLFkQrCDmwxyxlLp0rHIIqPLLN8qd41
+         y/3zA+xVevY15Wcym/d+C1jAhejFJqyko0ZipgrObQFcKhQGsmzohYMyJ+SkPMF0ISph
+         ouoKqSYfiEkKfChr5nr3TWkmfBfCn/+hZMKpEgaVpVCyL6t7WSXqA7pqvmUNn/Xoy9BH
+         6Yhx5QF1/h67F57YVWvF67mSn2I+VDW8uXPHOBoLB+mR3bFeEamA0fNZbweZidTN8TnY
+         nqqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740983075; x=1741587875;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FRPqvj/QlUv2dtShmOMDUHzRRPiCU0B09cpBuKE4KUk=;
+        b=nCE70r4eFS2yO8B/1wZgmfds3i3/pOWXo1ZcuHviJVZMfm35vPEAOdsZZogmXa9nEn
+         FG9iPamKjh5PNs6jRmnpkizkekQGEdZFe8J3/hB6TDJ5Rii/kycFbX2VTrJTuByGDDth
+         rNyvj3NQJh1Q/yGxkfDuh1t2mx82fnT8RdH1jNutg46DZiPfzxpsd6vF4YoagVIC9tTp
+         +Mj5uvERlmupZrCQLQyBzLFVGVDPZqjzzUQzQ9Nk+viNePabRvB2ezJewQCNiRZtgulJ
+         EsfXaR6/ZyX7EpodETYYiVqS/5tPlC3WyDwser33M0l7b8+4DCOt03EbnOmMZWOZ6a3l
+         dKEg==
+X-Forwarded-Encrypted: i=1; AJvYcCUz7vDbNJLcZX+m7ByHq9ywwRNVPa8Xj5uG35Xp5GZVPhwHRH4Nb3hJCOA5Dj0Fw56r400J6g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxQsZSQQ3kLn6n5p+9EXi4ezhRwPt8P5JDbY3mFEcM1//+Rg63l
+	lYUHwDR0ggiWJM2G5i4cpsyAoZsXhKotUaMUBrBpKD/BtFxchcm4DwI/LQ5qF7I=
+X-Gm-Gg: ASbGncuh2Cu1hNxUcs4JifWJAcZGDocjVkmmDVbWRgOFq99/reQZlNUM1cZ4pwoRVOB
+	puky2FK4lzkrW1sOU/Z+X2i23poDJCKypX4k7R1w3y2txrC4iLvW5IB8pk469AmmXEmksWpO1fE
+	VEF1dKSZcI9nFhyzae6ryFZqPMMKxICDElnHwNg7YaC7iYzg0fk3/lrxLscS3o2c4bFXdp4w86t
+	VHlXIXCLdmS5PMj13BJCzD2V9cxViZoM+IDs4snV9G5iCBkwx1a+cdtIb2Pv5/rAaZ2/t+/Th/C
+	Z9wx/A0c+M/oUIoQA0IZhys6tlKQ3reZb68nXjIdqQ+jN34qciaqQjwudm79ljgnMbKDgGEgSt9
+	Snva+5SKy
+X-Google-Smtp-Source: AGHT+IESh4grNErcs4++ANOa0SJQc7p6X5v8H9Dq1ufSFbL0K9GWmhRDomZrzfEl3a6jzkJkwrNomg==
+X-Received: by 2002:a17:902:e752:b0:21f:45d:21fb with SMTP id d9443c01a7336-22368f61965mr152240345ad.3.1740983075253;
+        Sun, 02 Mar 2025 22:24:35 -0800 (PST)
+Received: from L6YN4KR4K9.bytedance.net ([139.177.225.249])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-223501d329dsm69791145ad.27.2025.03.02.22.24.30
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 02 Mar 2025 22:24:34 -0800 (PST)
+From: Yunhui Cui <cuiyunhui@bytedance.com>
+To: dwmw2@infradead.org,
+	baolu.lu@linux.intel.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Yunhui Cui <cuiyunhui@bytedance.com>,
+	Ethan Zhao <haifeng.zhao@linux.intel.com>
+Subject: [PATCH v3] iommu/vt-d: fix system hang on reboot -f
+Date: Mon,  3 Mar 2025 14:24:21 +0800
+Message-Id: <20250303062421.17929-1-cuiyunhui@bytedance.com>
+X-Mailer: git-send-email 2.39.2 (Apple Git-143)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250301003711.GR5011@ziepe.ca>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 28, 2025 at 08:37:11PM -0400, Jason Gunthorpe wrote:
-> On Thu, Feb 27, 2025 at 11:59:18AM +0800, Xu Yilun wrote:
-> > On Wed, Feb 26, 2025 at 09:12:02AM -0400, Jason Gunthorpe wrote:
-> > > On Wed, Feb 26, 2025 at 06:49:18PM +0800, Xu Yilun wrote:
-> > > 
-> > > > E.g. I don't think VFIO driver would expect its MMIO access suddenly
-> > > > failed without knowing what happened.
-> > > 
-> > > What do people expect to happen here anyhow? Do you still intend to
-> > > mmap any of the MMIO into the hypervisor? No, right? It is all locked
-> > 
-> > Not expecting mmap the MMIO, but I switched to another way. VFIO doesn't
-> > disallow mmap until bind, and if there is mmap on bind, bind failed.
-> > That's my understanding of your comments.
-> 
-> That seems reasonable
-> 
-> > Another concern is about dma-buf importer (e.g. KVM) mapping the MMIO.
-> > Recall we are working on the VFIO dma-buf solution, on bind/unbind the
-> > MMIO accessibility is being changed and importers should be notified to
-> > remove their mapping beforehand, and rebuild later if possible.
-> > An immediate requirement for Intel TDX is, KVM should remove secure EPT
-> > mapping for MMIO before unbind.
-> 
-> dmabuf can do that..
+We found that executing the command ./a.out &;reboot -f (where a.out is a
+program that only executes a while(1) infinite loop) can probabilistically
+cause the system to hang in the intel_iommu_shutdown() function, rendering
+it unresponsive. Through analysis, we identified that the factors
+contributing to this issue are as follows:
 
-Yes, dmabuf can do that via notify. dmabuf is implemented in VFIO,
-so iommufd/vdevice couldn't operate on dmabuf and send the notify.
+1. The reboot -f command does not prompt the kernel to notify the
+application layer to perform cleanup actions, allowing the application to
+continue running.
 
-> 
-> > > > The implementation is basically no difference from:
-> > > > 
-> > > > +       vdev = container_of(iommufd_get_object(ucmd->ictx, cmd->vdevice_id,
-> > > > +                                              IOMMUFD_OBJ_VDEVICE),
-> > > > 
-> > > > The real concern is the device owner, VFIO, should initiate the bind.
-> > > 
-> > > There is a big different, the above has correct locking, the other
-> > > does not :)
-> > 
-> > Could you elaborate more on that? Any locking problem if we implement
-> > bind/unbind outside iommufd. Thanks in advance.
-> 
-> You will be unable to access any information iommufd has in the viommu
-> and vdevice objects. So you will not be able to pass a viommu ID or
-> vBDF to the secure world unless you enter through an iommufd path, and
-> use iommufd_get_object() to obtain the required locks.
->  
-> I don't know what the API signatures are for all three platforms to
-> tell if this is a problem or not.
+2. When the kernel reaches the intel_iommu_shutdown() function, only the
+BSP (Bootstrap Processor) CPU is operational in the system.
 
-Seems not a problem for Intel TDX. Basically secure DMA settings for TDX
-is just to build the secure IOMMUPT, only need host BDF. Also secure
-device setting needs no secure DMA info.
+3. During the execution of intel_iommu_shutdown(), the function down_write
+(&dmar_global_lock) causes the process to sleep and be scheduled out.
 
-All these settings cannot really take function until guest verifies them
-and does TDISP start. Guest verification does not (should not) need host
-awareness.
+4. At this point, though the processor's interrupt flag is not cleared,
+ allowing interrupts to be accepted. However, only legacy devices and NMI
+(Non-Maskable Interrupt) interrupts could come in, as other interrupts
+routing have already been disabled. If no legacy or NMI interrupts occur
+at this stage, the scheduler will not be able to run.
 
-Our solution is, separate the secure DMA setting and secure device setting
-in different components, iommufd & vfio.
+5. If the application got scheduled at this time is executing a while(1)-
+type loop, it will be unable to be preempted, leading to an infinite loop
+and causing the system to become unresponsive.
 
-Guest require bind:
-  - ioctl(iommufd, IOMMU_VIOMMU_ALLOC, {.type = IOMMU_VIOMMU_TYPE_KVM_VALID,
-					.kvm_fd = kvm_fd,
-					.out_viommu_id = &viommu_id});
-  - ioctl(iommufd, IOMMU_HWPT_ALLOC, {.flag = IOMMU_HWPT_ALLOC_TRUSTED,
-				      .pt_id = viommu_id,
-				      .out_hwpt_id = &hwpt_id});
-  - ioctl(vfio_fd, VFIO_DEVICE_ATTACH_IOMMUFD_PT, {.pt_id = hwpt_id})
-    - do secure DMA setting in Intel iommu driver.
+To resolve this issue, the intel_iommu_shutdown() function should not
+execute down_write(), which can potentially cause the process to be
+scheduled out. Furthermore, since only the BSP is running during the later
+stages of the reboot, there is no need for protection against parallel
+access to the DMAR (DMA Remapping) unit. Therefore, the following lines
+could be removed:
 
-  - ioctl(vfio_fd, VFIO_DEVICE_TSM_BIND, ...)
-    - do bind in Intel TSM driver.
+down_write(&dmar_global_lock);
+up_write(&dmar_global_lock);
 
-Thanks,
-Yilun
+After testing, the issue has been resolved.
 
-> 
-> Jason
+Fixes: 6c3a44ed3c55 ("iommu/vt-d: Turn off translations at shutdown")
+Co-developed-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
+---
+ drivers/iommu/intel/iommu.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index cc46098f875b..47c74b20d342 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2871,16 +2871,19 @@ void intel_iommu_shutdown(void)
+ 	if (no_iommu || dmar_disabled)
+ 		return;
+ 
+-	down_write(&dmar_global_lock);
++	/*
++	 * All other CPUs were brought down, hotplug interrupts were disabled,
++	 * no lock and RCU checking needed anymore
++	 */
++	list_for_each_entry(drhd, &dmar_drhd_units, list) {
++		iommu = drhd->iommu;
+ 
+-	/* Disable PMRs explicitly here. */
+-	for_each_iommu(iommu, drhd)
++		/* Disable PMRs explicitly here. */
+ 		iommu_disable_protect_mem_regions(iommu);
+ 
+-	/* Make sure the IOMMUs are switched off */
+-	intel_disable_iommus();
+-
+-	up_write(&dmar_global_lock);
++		/* Make sure the IOMMUs are switched off */
++		iommu_disable_translation(iommu);
++	}
+ }
+ 
+ static struct intel_iommu *dev_to_intel_iommu(struct device *dev)
+-- 
+2.39.2
+
