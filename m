@@ -1,28 +1,28 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2086.outbound.protection.outlook.com [40.107.94.86])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2067.outbound.protection.outlook.com [40.107.236.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 689322376FA
-	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 20:53:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.86
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6871238D49
+	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 20:53:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.67
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741035204; cv=fail; b=gZx/fkX0eXUx+pXpUwEqmrwERVQsG0QTvEMRh3AoIMNbsXECU/Gud7YuRK03emZbftwDzZk1d8dN/hrpOOr9UO34ttxjIhmLQVc2XmUptsTUGk5EpGQQzCHtM8nR1XxCp5aWnb8FJyX3NppH6ND9Z7FaUFy00Dwzr6zgNbUk32I=
+	t=1741035207; cv=fail; b=S33joHkwryZtZ/RM6lydTw3d+eZ1fauACen6icR4N/+X6tv51j2s7IxQ2iPcveGwTMLglg2VXOixTx29diQpueZ4KhV1JZ3VkrmQjHCnc+wKWm8Me5u+muN1eOrYrZIT65J3kmdH7ud/2ugbruqtW0VB4EfkERrwz9Jp7wL1FAA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741035204; c=relaxed/simple;
-	bh=bHpO2bfgXwR1rVZZlPxpGWM59g/Ro4XgBbKzcxAbwSI=;
+	s=arc-20240116; t=1741035207; c=relaxed/simple;
+	bh=BFCBgBppE/mW58ItAEowCNQNdpOE26zdSCGzfSNCg74=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZjcaJKahsYNoJTtMapsACJOC1ykun01OvQ6kwFHXAHt7Ewo6GY+SoHxhhvj3HiD5nlrpVcYUUkbAdOTw8yzy3mfOCBDG1tBd2UfP+dYYl/o/2FeD/mH8tUj22AyoNjq6HeqG434LXHd59VIAkm0QPvzr0h0csuJPETCTb4/gxxU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=EeWTowOO; arc=fail smtp.client-ip=40.107.94.86
+	 MIME-Version:Content-Type; b=RvCu7woVz4vd5gIKj7qY7fgU5NFgj8WaBhlRWGGfZryKbSPp6vOGT3A6AMYwOCkgHb5q0RWq5J3W+PUu/JJMvQ8mrecIYGMQYdq9OTD8Y3DRSC1b2EfruWEjl+CFMEqIFH2rRp+hib26Xt688G23wlbM864VWpkv8rp3eMpsS70=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cCyThRpz; arc=fail smtp.client-ip=40.107.236.67
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="EeWTowOO"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cCyThRpz"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Tj5DM3MHg5bdAA4J9CNECcgWSW81kYgdqIvyMuGmdulnWRJJqSXC5daLYy1SPTx7W/vlnn4uEVukwOTaxjWdL1bP3Wggv2x1M42nM9KZsbnPsC68scAoxLrAY7OutAQkvfsWszKuprZOVDq6Ejtbd7xCrOh/XwDgaOR4r0LbZNxybLVOYNYlCiFMI276RWLKeQcJuDXDe3Ribu6H7Idtfhxt/zmc01Vzgaqc2BnBFT0cxuKs0oPGeukVEokrclCgJWvPWnvgdCSt5uqAW9yfqySO1IFJMNjlN1pCFNSvaZcyYzf9c1A/XYaldRLll5IquVXPaQcVz9rJM4dFByqVOw==
+ b=zOmHtlGNLO050mZS7by8WvsEjErR6OPtYfLvjWxulszs24clwYefUa7KJZ7REOzYSDky7ssC9lT45og8dtGeGpTSXtd2oi1gfdBvLhQUTiMR+yDgGqGL9Y500DVfAUUfHm8UttJSbuasEYo9zzKVoWUKAA3Rm6KUJgzDjApui1vKfb177pVQJJ0zdBpWruwQuHJXqT+PrtpmHLjTjfQSzTZyZaHqn64EiepCHdF7RHhUAGG9cSUcpZr3/wua9O5pq+IuHRQR6n2VuFqTUksw5Qxj5M3z6yNn7jXfBTiHFix3h/UCcyie7rpPYaXOsfmf/Xc3WIhjj7RiCe53hBE3YQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MDk+wx+4Rea0tlhg8TW5HMeZBDZphUtMqMLlUArG6Gk=;
- b=O7cpGGPSvz1jtLVbKuDko2wm6ZwRyPILFxhl/aNvLaZbgwZqF5TTpZ3hBGlgcUl9KeZobgYr5RBw8EtSTFMcD+OH/YKDVtjDMn3UB9nULgvdpylQ1QwFoQVAC8Yxa8Zrb94k8GK6VHdqiZ9p5Lc7xBYbycZsUJR8oUyeKI8sg49282XN4MkiRaxZxiVuS4hiBCL7mXSUxk8EUccX0xtxieCdgySlDLfvZJi9Iu7WtbwKxwWxseSsM3bTydDJQz8lOtza7IBS3UsZyX0qXv5nO6BYugn+GmdVNcF7nkGdbpr+7wBqWLiT8M21AIPeH6LIFBzoB9obFtixJ5SltF9eEg==
+ bh=SNaIAZYFuU6j7JOmcXOK7GZZ02/RKpa/b8pH+6T/Ffg=;
+ b=hc7q1yRCX0NpxvypGO+QceOzjB5q4TNTnrT0pkL0nRk+gziudpliQZ/xMW8XyAmrx74DS6ZKx5UbDac3cRDdhlJxotrZk6NKo9NZCS7SgmFno4WA76Rj1c5C8Qx9A7XoV4SLijs2BjnJfgypRH7HxPr/Uez9RA0I7qSDJ/fOh9uMp4st+ENDuei7TCssnrBAeRe3avY5TLbGzH9VoAoJbLfauL9h5dgMU0klvKMv38YmYY9dVb6lzfJSaJKx+wsGOd86619wLvfUzfXfC+2ljokGRKYYLtXlZeDNLPAwSTLpgWm1t9g8fjTqD6KNqQt1xJCTC0pgLBtc0p3MTenyFA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -30,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MDk+wx+4Rea0tlhg8TW5HMeZBDZphUtMqMLlUArG6Gk=;
- b=EeWTowOONrsfUYoe8VwnJlDQP1VttY6dxSfdFujp9Xr6cZqQH45MbgsaiutsghpQMqZ8EP/KXHk9tdkidoCLlfV+6kvNthuRxzVl98+W1AFwk4DmhzFKZeOhkyGXdvj21omu0b0Xg8kGpDnCGw1fZsaBOJv7kj3hlcFiXFV5vAa019BOAC6hHKwZHU2n6k+p98Kd3GonYBzYr/Zj0jj9SvChHOHKil+Esi1/tZVHAsYU5gKLhiSuvOQGuSXq3Q45eZR5kZT5+FpBapkh9h0NkFpLIqyybXXdz+tWsBwnTXZ92UiZnv6n2xJuC6THwWFlaXi9Wwm0GDkez8afBzcnTw==
-Received: from SJ0PR13CA0066.namprd13.prod.outlook.com (2603:10b6:a03:2c4::11)
- by SN7PR12MB6691.namprd12.prod.outlook.com (2603:10b6:806:271::9) with
+ bh=SNaIAZYFuU6j7JOmcXOK7GZZ02/RKpa/b8pH+6T/Ffg=;
+ b=cCyThRpzhGNyHc2MqeDwsRPIiASaiR9i4EIjToSe07H8muXS65t7XzfYHdXuYM95GaYgOrEDLGZJ8Yeb3XCv77hD0ltZ1XXA8A6auRewYfjw1gEKsuT7996Ksko6DKh4pnzC+VwxXqiQQLcZP9Nw3rtWUxM83TrnrPea5b5oxtW0t59RfO3oGi+1Yg2+IwufCgx6xwuOrLFV0GN8+axOpgf009XqUg7ZMolD3RYjc63XZGg/UYNJ5BzbGMK/HF1ittZtrMmnR39gwwUjp2xZ1x/9HyY8Riela4rrvkZ4TyufMwUUbXZo7PjRXLENVZi7JZDthocTLanG+CuBpqXmew==
+Received: from MW4PR03CA0262.namprd03.prod.outlook.com (2603:10b6:303:b4::27)
+ by MW3PR12MB4492.namprd12.prod.outlook.com (2603:10b6:303:57::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8489.25; Mon, 3 Mar
- 2025 20:53:15 +0000
-Received: from SJ1PEPF00001CE8.namprd03.prod.outlook.com
- (2603:10b6:a03:2c4:cafe::a3) by SJ0PR13CA0066.outlook.office365.com
- (2603:10b6:a03:2c4::11) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8489.19 via Frontend Transport; Mon,
- 3 Mar 2025 20:53:15 +0000
+ 2025 20:53:16 +0000
+Received: from SJ1PEPF00001CE7.namprd03.prod.outlook.com
+ (2603:10b6:303:b4:cafe::26) by MW4PR03CA0262.outlook.office365.com
+ (2603:10b6:303:b4::27) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8489.28 via Frontend Transport; Mon,
+ 3 Mar 2025 20:53:16 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -49,27 +49,27 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- SJ1PEPF00001CE8.mail.protection.outlook.com (10.167.242.24) with Microsoft
+ SJ1PEPF00001CE7.mail.protection.outlook.com (10.167.242.23) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8511.15 via Frontend Transport; Mon, 3 Mar 2025 20:53:15 +0000
+ 15.20.8511.15 via Frontend Transport; Mon, 3 Mar 2025 20:53:16 +0000
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 3 Mar 2025
- 12:53:05 -0800
+ 12:53:06 -0800
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 3 Mar
  2025 12:53:05 -0800
 Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
- Transport; Mon, 3 Mar 2025 12:53:04 -0800
+ Transport; Mon, 3 Mar 2025 12:53:05 -0800
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: <jgg@nvidia.com>, <kevin.tian@intel.com>, <robin.murphy@arm.com>,
 	<joro@8bytes.org>, <will@kernel.org>
 CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 2/3] iommufd: Move iommufd_sw_msi and related functions to driver.c
-Date: Mon, 3 Mar 2025 12:52:51 -0800
-Message-ID: <01eef75aaf5326067d8a237496ca67395994760a.1741034886.git.nicolinc@nvidia.com>
+Subject: [PATCH v3 3/3] iommu: Drop sw_msi from iommu_domain
+Date: Mon, 3 Mar 2025 12:52:52 -0800
+Message-ID: <17eead28dcf8ae6b246471c05c2cf1eb0774236b.1741034886.git.nicolinc@nvidia.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1741034885.git.nicolinc@nvidia.com>
 References: <cover.1741034885.git.nicolinc@nvidia.com>
@@ -84,418 +84,244 @@ Content-Type: text/plain
 X-NV-OnPremToCloud: AnonymousSubmission
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE8:EE_|SN7PR12MB6691:EE_
-X-MS-Office365-Filtering-Correlation-Id: 649acad5-1b39-42f2-d05e-08dd5a956b9d
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE7:EE_|MW3PR12MB4492:EE_
+X-MS-Office365-Filtering-Correlation-Id: f8ec5269-5494-4916-83c0-08dd5a956c14
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700013|1800799024|376014;
+	BCL:0;ARA:13230040|376014|36860700013|1800799024|82310400026;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Uo0g3pdnugK+RX7y9ROssPX5y5ETBtmfCfvLkAtgtjuEMdS9IQfBLCKxuNpy?=
- =?us-ascii?Q?7fNWpAzITaMrxlFJWCd5GqwssdWjuougUtW214G3pqIjP7dV15SXv1wjcuqy?=
- =?us-ascii?Q?SKXvq6DUXBa4sVurwoE5leqF2FmIvsENu0The9ZnCGzNemas66bUax4KJGM8?=
- =?us-ascii?Q?P+U2RwcsQAm9h7XB6A1mPz8TYwAKTuRM/nO5zExzmjO/LIU71awB/Tk9mDpS?=
- =?us-ascii?Q?+VumoeS+fdr5sWYl7J470NXHzmB2Rn7/2+EKcHJc901OvPqBILu64VhXfJVn?=
- =?us-ascii?Q?8NNlXyE1GrYacJxRD0XCdQzUDGqkqbuC1KhXqdphQeUnHPnPDc/U34qq2Xg+?=
- =?us-ascii?Q?ItVTsIKs3/Oz5G5BQvO29se2kvhIwEuEoN1p8r2m8C4Uvr+PNv64Vn1g9nFl?=
- =?us-ascii?Q?cgKObqf89wbg+cYvLK/JDeRfQVCf1Z35iR3tTnNhuSPTPReiNNaY99RGy/pE?=
- =?us-ascii?Q?if7Z/ATrKI+cfgJiyH4v/txGtmcRfbM3YN7OY5S5dmGIfzkTUw/Z0x8NYYgd?=
- =?us-ascii?Q?ltD1xl3ci13H8kQ3Do1Q+k00YxdQu1b7rUmuJjXbajE1rXxKGMnH67xKHven?=
- =?us-ascii?Q?Qnu4TP4IJAkGXymVkGqunxm0pgNHwkDaF0waxTsTJELc7WGc3opaQPQ5S1AG?=
- =?us-ascii?Q?N0fiwUKoj67p7bXYWhtxNxtNk48Jr8hr17MSn/BYzdCZj45LHD1zZqQJ0pRf?=
- =?us-ascii?Q?/VQSIYro7yp5ad+FgpPh2PJgPsQhmrDZ73EOm6Y2cGqdk1uX07Wuw8yO0PRi?=
- =?us-ascii?Q?4UiftCDEtnPo8uNCvQZRutlzWPWRkNpIUUPliJfBzvwXdmecDCCkr4G5VG0L?=
- =?us-ascii?Q?jXVJRJjICgazXLr6N1pMMwF7CJMHJjwNepumeoSyNrUTyxQMXJN95ZP3dZRY?=
- =?us-ascii?Q?XIrjskZLUfWTFF4IVhLmV6aiRSosGuH1XCN8D/Z7SBp22YhnSLSkQIfcz3e2?=
- =?us-ascii?Q?mcpx9i3Yx+YvuJwGgyoz5Tqoiy0HUHrgHeVFwOH1vRQBsi4DbiCNFJJWo5EP?=
- =?us-ascii?Q?BLSJFv8SyiSqr7lBwqUG8vMk+8pHUGBHDc+1Qd/jlam4qw+S6lfS67ZHJjBp?=
- =?us-ascii?Q?nnKClmRdYyidi0cLXAcTJwTKLhfVa+WIzm152mLC//VUA7748g7DFCdZpo0r?=
- =?us-ascii?Q?zOHMe2FQ+oipWJVqumP1W2rfw7wMTVjKgU/DbkvMD7cPZXv/tBL6IwO/zsvQ?=
- =?us-ascii?Q?WTkR0EAA2DQoZgi+nHzliv+DYoJabLl1N7urYCo+6wRFQGvc5W4oFQPdgaLr?=
- =?us-ascii?Q?WZ9fjVrg17b2RYFLmFBorHTTnKvE6DQw5lvTEN+leqbp2QfhdOElr9v0U0Ya?=
- =?us-ascii?Q?GUfcjEjIuYVl1COCgMUsgOz+BMkReJfc+zW850wzkFC4xq3ZOwskylTWUlNa?=
- =?us-ascii?Q?JnO10h1kb2sa3c8ZnluZvICc7Ben9sx7lQYpjusv4AsipPv3EARlFi3QYlul?=
- =?us-ascii?Q?QFV/cbGLz4DD16smUg32WUmt2IiWnNm8yPyRp/49q5F4Q8Sn4MdpfI0vlnTI?=
- =?us-ascii?Q?/SaOhuDr164C/Mk=3D?=
+	=?us-ascii?Q?ptdHpK7a0x02d50XWM0vJzwInRkq2evM9zqTuQSdjwywrcbYYpfqTWhfgLdR?=
+ =?us-ascii?Q?fiO5hH6FdQHqKu2Pamb5GldJnex2bL/Ub+w8II8pUq/7ltUGoeroSzsnvhC0?=
+ =?us-ascii?Q?GWkRFcZmCMbJdy54HEfp2rGpVHzGWaRJuWwFQRw5yg2/3ISGrhE/JWuqc9Ij?=
+ =?us-ascii?Q?ZS0VOibMw0C+XQLApri+hidt+pAWVzJHRKafIxvwLo3vYjkNeaYn5mpEmEmI?=
+ =?us-ascii?Q?K45u9Bac2MrM2ltpEOHgbaTboS+5t4JTyfaFZUjYC83SDZ8mLOtPhH244Dhh?=
+ =?us-ascii?Q?+x7MhSJlYA9bIpy510Ekm4VECZ3zYhL7eTrzKlZUwvLIcae+gGMG1f1IPPLO?=
+ =?us-ascii?Q?Zj0E+/SQLN7bmUROxEJS8fMeZLyYecJNAxhcxxopg2oezwIeYISSoIwlDYfd?=
+ =?us-ascii?Q?9YscTeLWuIOfUt1DBDTOuzRfQwubkuZ7gQILH7sCNyy+8V+cdWB3ZGJc1AD2?=
+ =?us-ascii?Q?zH/EBEFOK8XYwdlMciXuizo72ziwTtPFLEQCW2rOPS2bgBrq/TKRxCyh5yvf?=
+ =?us-ascii?Q?YtJnKyQb+IRk/RptWzmHY+EDE0VJak8TzGt3CIGdP41+k74V6eVl8o91/6tq?=
+ =?us-ascii?Q?CTgnFuQK3eh/D4KBncrPxffQwSyO663z11QA+GqGo2KLrEfRjJnMlIGGjSZ+?=
+ =?us-ascii?Q?jODfBdAPcVJJqMccQO+PsPwqS5HIRq6G3Q4+P/paVrA1Ii9RvLe9u8E0BZh0?=
+ =?us-ascii?Q?ff+TdJrQTrIFt44JwHLT1GyjwemaL2iE9QVATf/FRyIg2IB9eqRrLti3J8Mp?=
+ =?us-ascii?Q?fCVKyxRm3qsSPABhfdWuCvR5LSXfNsuWuxznF3cHYu6+5Js7zW1UvOdfI4PN?=
+ =?us-ascii?Q?sEr0uiXGvEFFoM5VfHNbEop9DFw3BwmBN6Fi6FUJN2x2NAYVCbRMXKfWyA9r?=
+ =?us-ascii?Q?gRXxDZ6M4tl5af18Y+x/hEZ203+vJBE8DdQ3m9rA5nTuO4GwItMyEuA0A0J9?=
+ =?us-ascii?Q?SuD7pQ2Iw8UojIoobs9UFwMljUDDSo1FJIxi+F7NFppmPLma7jAQO0t8ZcI+?=
+ =?us-ascii?Q?7uNcDr+KdPfzgnDep3CvpAd1YpddBXSC4oFH/UoXDTxjkFqbQK1ilGIGCcSF?=
+ =?us-ascii?Q?zt1tqsymBz86lwg5DUj1/BmDIJRy9ePfhdPPZbUReFJCrd1XndP3wf6qmkfy?=
+ =?us-ascii?Q?9xEbbjVaN64/fetVtp0bPuj+3xH/bbbIIpWS2QtLO9N1n0jcmXgesS8h1yQy?=
+ =?us-ascii?Q?TnTwF0EhZICpNPtnfCKuekBNvgEEd/x/QIJFqh9LeriI3nWInJYU71uodToC?=
+ =?us-ascii?Q?V/7gd/nWQJIaxlx8hIkcGJaJvtPqHvp89urmxTfyGClsJGZC0CuLU/PHGJsW?=
+ =?us-ascii?Q?CzoBHN9i7CYH/bOzfe7BP9NOWKF1WxWXRuyWP3Udw4DFlJb25xvCzSLv8gnA?=
+ =?us-ascii?Q?BVbWuX15kgKDPiXV03+jCkXiXxU4l3gkREvffjPoklmVcErkqQi9VOMhSMwz?=
+ =?us-ascii?Q?6M30/86x6p8veKBZ95OpB6dBJfFCS1IPSrwUhqEgOhaSi71wRJenvws+AS5e?=
+ =?us-ascii?Q?7i7KYUO6wKadrK0=3D?=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(1800799024)(376014);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(36860700013)(1800799024)(82310400026);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2025 20:53:15.8297
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2025 20:53:16.5920
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 649acad5-1b39-42f2-d05e-08dd5a956b9d
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8ec5269-5494-4916-83c0-08dd5a956c14
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00001CE8.namprd03.prod.outlook.com
+	SJ1PEPF00001CE7.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6691
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4492
 
-To provide the iommufd_sw_msi() to the iommu core that is under a different
-Kconfig, move it and its related functions to driver.c. Then, stub it into
-the iommu-priv header. The iommufd_sw_msi_install() continues to be used by
-iommufd internal, so put it in the private header.
+There are only two sw_msi implementations in the entire system, thus it's
+not very necessary to have an sw_msi pointer.
 
+Instead, check domain->private_data_owner to call the two implementations
+directly from the core code.
+
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 ---
- drivers/iommu/iommu-priv.h              |  13 +++
- drivers/iommu/iommufd/iommufd_private.h |   7 +-
- drivers/iommu/iommufd/device.c          | 127 +-----------------------
- drivers/iommu/iommufd/driver.c          | 125 +++++++++++++++++++++++
- 4 files changed, 148 insertions(+), 124 deletions(-)
+ drivers/iommu/dma-iommu.h            |  9 +++++++++
+ include/linux/iommu.h                | 15 ---------------
+ drivers/iommu/dma-iommu.c            | 14 ++------------
+ drivers/iommu/iommu.c                | 17 +++++++++++++++--
+ drivers/iommu/iommufd/hw_pagetable.c |  3 ---
+ 5 files changed, 26 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index b4508423e13b..c74fff25be78 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -5,6 +5,7 @@
- #define __LINUX_IOMMU_PRIV_H
+diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
+index 9cca11806e5d..eca201c1f963 100644
+--- a/drivers/iommu/dma-iommu.h
++++ b/drivers/iommu/dma-iommu.h
+@@ -19,6 +19,9 @@ int iommu_dma_init_fq(struct iommu_domain *domain);
  
- #include <linux/iommu.h>
-+#include <linux/msi.h>
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
  
- static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
++int iommu_dma_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
++		     phys_addr_t msi_addr);
++
+ extern bool iommu_dma_forcedac;
+ 
+ #else /* CONFIG_IOMMU_DMA */
+@@ -49,5 +52,11 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
  {
-@@ -43,4 +44,16 @@ void iommu_detach_group_handle(struct iommu_domain *domain,
- int iommu_replace_group_handle(struct iommu_group *group,
- 			       struct iommu_domain *new_domain,
- 			       struct iommu_attach_handle *handle);
-+
-+#if IS_ENABLED(CONFIG_IOMMUFD_DRIVER_CORE) && IS_ENABLED(CONFIG_IRQ_MSI_IOMMU)
-+int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
-+		   phys_addr_t msi_addr);
-+#else /* !CONFIG_IOMMUFD_DRIVER_CORE || !CONFIG_IRQ_MSI_IOMMU */
-+static inline int iommufd_sw_msi(struct iommu_domain *domain,
-+				 struct msi_desc *desc, phys_addr_t msi_addr)
-+{
-+	return -EOPNOTSUPP;
-+}
-+#endif /* CONFIG_IOMMUFD_DRIVER_CORE && CONFIG_IRQ_MSI_IOMMU */
-+
- #endif /* __LINUX_IOMMU_PRIV_H */
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 246297452a44..b6897a9991ee 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -32,8 +32,11 @@ struct iommufd_sw_msi_maps {
- 	DECLARE_BITMAP(bitmap, 64);
- };
- 
--int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
--		   phys_addr_t msi_addr);
-+#ifdef CONFIG_IRQ_MSI_IOMMU
-+int iommufd_sw_msi_install(struct iommufd_ctx *ictx,
-+			   struct iommufd_hwpt_paging *hwpt_paging,
-+			   struct iommufd_sw_msi_map *msi_map);
-+#endif
- 
- struct iommufd_ctx {
- 	struct file *file;
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 4e107f69f951..ca17c2b7f455 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -294,129 +294,7 @@ u32 iommufd_device_to_id(struct iommufd_device *idev)
  }
- EXPORT_SYMBOL_NS_GPL(iommufd_device_to_id, "IOMMUFD");
  
--/*
-- * Get a iommufd_sw_msi_map for the msi physical address requested by the irq
-- * layer. The mapping to IOVA is global to the iommufd file descriptor, every
-- * domain that is attached to a device using the same MSI parameters will use
-- * the same IOVA.
-- */
--static __maybe_unused struct iommufd_sw_msi_map *
--iommufd_sw_msi_get_map(struct iommufd_ctx *ictx, phys_addr_t msi_addr,
--		       phys_addr_t sw_msi_start)
--{
--	struct iommufd_sw_msi_map *cur;
--	unsigned int max_pgoff = 0;
--
--	lockdep_assert_held(&ictx->sw_msi_lock);
--
--	list_for_each_entry(cur, &ictx->sw_msi_list, sw_msi_item) {
--		if (cur->sw_msi_start != sw_msi_start)
--			continue;
--		max_pgoff = max(max_pgoff, cur->pgoff + 1);
--		if (cur->msi_addr == msi_addr)
--			return cur;
--	}
--
--	if (ictx->sw_msi_id >=
--	    BITS_PER_BYTE * sizeof_field(struct iommufd_sw_msi_maps, bitmap))
--		return ERR_PTR(-EOVERFLOW);
--
--	cur = kzalloc(sizeof(*cur), GFP_KERNEL);
--	if (!cur)
--		return ERR_PTR(-ENOMEM);
--
--	cur->sw_msi_start = sw_msi_start;
--	cur->msi_addr = msi_addr;
--	cur->pgoff = max_pgoff;
--	cur->id = ictx->sw_msi_id++;
--	list_add_tail(&cur->sw_msi_item, &ictx->sw_msi_list);
--	return cur;
--}
--
--static int iommufd_sw_msi_install(struct iommufd_ctx *ictx,
--				  struct iommufd_hwpt_paging *hwpt_paging,
--				  struct iommufd_sw_msi_map *msi_map)
--{
--	unsigned long iova;
--
--	lockdep_assert_held(&ictx->sw_msi_lock);
--
--	iova = msi_map->sw_msi_start + msi_map->pgoff * PAGE_SIZE;
--	if (!test_bit(msi_map->id, hwpt_paging->present_sw_msi.bitmap)) {
--		int rc;
--
--		rc = iommu_map(hwpt_paging->common.domain, iova,
--			       msi_map->msi_addr, PAGE_SIZE,
--			       IOMMU_WRITE | IOMMU_READ | IOMMU_MMIO,
--			       GFP_KERNEL_ACCOUNT);
--		if (rc)
--			return rc;
--		__set_bit(msi_map->id, hwpt_paging->present_sw_msi.bitmap);
--	}
--	return 0;
--}
--
--/*
-- * Called by the irq code if the platform translates the MSI address through the
-- * IOMMU. msi_addr is the physical address of the MSI page. iommufd will
-- * allocate a fd global iova for the physical page that is the same on all
-- * domains and devices.
-- */
- #ifdef CONFIG_IRQ_MSI_IOMMU
--int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
--		   phys_addr_t msi_addr)
--{
--	struct device *dev = msi_desc_to_dev(desc);
--	struct iommufd_hwpt_paging *hwpt_paging;
--	struct iommu_attach_handle *raw_handle;
--	struct iommufd_attach_handle *handle;
--	struct iommufd_sw_msi_map *msi_map;
--	struct iommufd_ctx *ictx;
--	unsigned long iova;
--	int rc;
--
--	/*
--	 * It is safe to call iommu_attach_handle_get() here because the iommu
--	 * core code invokes this under the group mutex which also prevents any
--	 * change of the attach handle for the duration of this function.
--	 */
--	iommu_group_mutex_assert(dev);
--
--	raw_handle =
--		iommu_attach_handle_get(dev->iommu_group, IOMMU_NO_PASID, 0);
--	if (IS_ERR(raw_handle))
--		return 0;
--	hwpt_paging = find_hwpt_paging(domain->iommufd_hwpt);
--
--	handle = to_iommufd_handle(raw_handle);
--	/* No IOMMU_RESV_SW_MSI means no change to the msi_msg */
--	if (handle->idev->igroup->sw_msi_start == PHYS_ADDR_MAX)
--		return 0;
--
--	ictx = handle->idev->ictx;
--	guard(mutex)(&ictx->sw_msi_lock);
--	/*
--	 * The input msi_addr is the exact byte offset of the MSI doorbell, we
--	 * assume the caller has checked that it is contained with a MMIO region
--	 * that is secure to map at PAGE_SIZE.
--	 */
--	msi_map = iommufd_sw_msi_get_map(handle->idev->ictx,
--					 msi_addr & PAGE_MASK,
--					 handle->idev->igroup->sw_msi_start);
--	if (IS_ERR(msi_map))
--		return PTR_ERR(msi_map);
--
--	rc = iommufd_sw_msi_install(ictx, hwpt_paging, msi_map);
--	if (rc)
--		return rc;
--	__set_bit(msi_map->id, handle->idev->igroup->required_sw_msi.bitmap);
--
--	iova = msi_map->sw_msi_start + msi_map->pgoff * PAGE_SIZE;
--	msi_desc_set_iommu_msi_iova(desc, iova, PAGE_SHIFT);
--	return 0;
--}
++static inline int iommu_dma_sw_msi(struct iommu_domain *domain,
++				   struct msi_desc *desc, phys_addr_t msi_addr)
++{
++	return -ENODEV;
++}
++
+ #endif	/* CONFIG_IOMMU_DMA */
+ #endif	/* __DMA_IOMMU_H */
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 06cc14e9993d..e01c855ae8a7 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -229,11 +229,6 @@ struct iommu_domain {
+ 	struct iommu_domain_geometry geometry;
+ 	int (*iopf_handler)(struct iopf_group *group);
+ 
+-#if IS_ENABLED(CONFIG_IRQ_MSI_IOMMU)
+-	int (*sw_msi)(struct iommu_domain *domain, struct msi_desc *desc,
+-		      phys_addr_t msi_addr);
 -#endif
 -
- static int iommufd_group_setup_msi(struct iommufd_group *igroup,
- 				   struct iommufd_hwpt_paging *hwpt_paging)
+ 	union { /* cookie */
+ 		struct iommu_dma_cookie *iova_cookie;
+ 		struct iommu_dma_msi_cookie *msi_cookie;
+@@ -254,16 +249,6 @@ struct iommu_domain {
+ 	};
+ };
+ 
+-static inline void iommu_domain_set_sw_msi(
+-	struct iommu_domain *domain,
+-	int (*sw_msi)(struct iommu_domain *domain, struct msi_desc *desc,
+-		      phys_addr_t msi_addr))
+-{
+-#if IS_ENABLED(CONFIG_IRQ_MSI_IOMMU)
+-	domain->sw_msi = sw_msi;
+-#endif
+-}
+-
+ static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
  {
-@@ -443,6 +321,7 @@ static int iommufd_group_setup_msi(struct iommufd_group *igroup,
- 	}
- 	return 0;
+ 	return domain->type & __IOMMU_DOMAIN_DMA_API;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index bc9bb9cb70c8..96e9f8d0a4f6 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -94,9 +94,6 @@ static int __init iommu_dma_forcedac_setup(char *str)
  }
-+#endif
+ early_param("iommu.forcedac", iommu_dma_forcedac_setup);
  
- static int
- iommufd_device_attach_reserved_iova(struct iommufd_device *idev,
-@@ -458,6 +337,7 @@ iommufd_device_attach_reserved_iova(struct iommufd_device *idev,
- 	if (rc)
- 		return rc;
+-static int iommu_dma_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
+-			    phys_addr_t msi_addr);
+-
+ /* Number of entries per flush queue */
+ #define IOVA_DEFAULT_FQ_SIZE	256
+ #define IOVA_SINGLE_FQ_SIZE	32768
+@@ -377,7 +374,6 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
  
-+#ifdef CONFIG_IRQ_MSI_IOMMU
- 	if (list_empty(&idev->igroup->device_list)) {
- 		rc = iommufd_group_setup_msi(idev->igroup, hwpt_paging);
- 		if (rc) {
-@@ -466,6 +346,7 @@ iommufd_device_attach_reserved_iova(struct iommufd_device *idev,
- 			return rc;
+ 	mutex_init(&cookie->mutex);
+ 	INIT_LIST_HEAD(&cookie->msi_page_list);
+-	iommu_domain_set_sw_msi(domain, iommu_dma_sw_msi);
+ 	domain->cookie_type = IOMMU_COOKIE_DMA_IOVA;
+ 	domain->iova_cookie = cookie;
+ 	return 0;
+@@ -411,7 +407,6 @@ int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
+ 
+ 	cookie->msi_iova = base;
+ 	INIT_LIST_HEAD(&cookie->msi_page_list);
+-	iommu_domain_set_sw_msi(domain, iommu_dma_sw_msi);
+ 	domain->cookie_type = IOMMU_COOKIE_DMA_MSI;
+ 	domain->msi_cookie = cookie;
+ 	return 0;
+@@ -427,11 +422,6 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+ 	struct iommu_dma_msi_page *msi, *tmp;
+ 
+-#if IS_ENABLED(CONFIG_IRQ_MSI_IOMMU)
+-	if (domain->sw_msi != iommu_dma_sw_msi)
+-		return;
+-#endif
+-
+ 	if (cookie->iovad.granule) {
+ 		iommu_dma_free_fq(cookie);
+ 		put_iova_domain(&cookie->iovad);
+@@ -1825,8 +1815,8 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+ 	return NULL;
+ }
+ 
+-static int iommu_dma_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
+-			    phys_addr_t msi_addr)
++int iommu_dma_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
++		     phys_addr_t msi_addr)
+ {
+ 	struct device *dev = msi_desc_to_dev(desc);
+ 	const struct iommu_dma_msi_page *msi_page;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 8b9423340221..c1c0656f41ef 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -18,6 +18,7 @@
+ #include <linux/errno.h>
+ #include <linux/host1x_context_bus.h>
+ #include <linux/iommu.h>
++#include <linux/iommufd.h>
+ #include <linux/idr.h>
+ #include <linux/err.h>
+ #include <linux/pci.h>
+@@ -3649,8 +3650,20 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+ 		return 0;
+ 
+ 	mutex_lock(&group->mutex);
+-	if (group->domain && group->domain->sw_msi)
+-		ret = group->domain->sw_msi(group->domain, desc, msi_addr);
++	if (group->domain) {
++		switch (group->domain->cookie_type) {
++		case IOMMU_COOKIE_DMA_MSI:
++		case IOMMU_COOKIE_DMA_IOVA:
++			ret = iommu_dma_sw_msi(group->domain, desc, msi_addr);
++			break;
++		case IOMMU_COOKIE_IOMMUFD:
++			ret = iommufd_sw_msi(group->domain, desc, msi_addr);
++			break;
++		default:
++			ret = -EOPNOTSUPP;
++			break;
++		}
++	}
+ 	mutex_unlock(&group->mutex);
+ 	return ret;
+ }
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index 227514030655..98aecf904902 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -156,7 +156,6 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 			goto out_abort;
  		}
  	}
-+#endif
- 	return 0;
- }
+-	iommu_domain_set_sw_msi(hwpt->domain, iommufd_sw_msi);
  
-@@ -682,9 +563,11 @@ iommufd_group_do_replace_reserved_iova(struct iommufd_group *igroup,
- 		}
+ 	/*
+ 	 * Set the coherency mode before we do iopt_table_add_domain() as some
+@@ -252,7 +251,6 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+ 		goto out_abort;
  	}
+ 	hwpt->domain->owner = ops;
+-	iommu_domain_set_sw_msi(hwpt->domain, iommufd_sw_msi);
  
-+#ifdef CONFIG_IRQ_MSI_IOMMU
- 	rc = iommufd_group_setup_msi(igroup, hwpt_paging);
- 	if (rc)
- 		goto err_unresv;
-+#endif
- 	return 0;
+ 	if (WARN_ON_ONCE(hwpt->domain->type != IOMMU_DOMAIN_NESTED)) {
+ 		rc = -EINVAL;
+@@ -309,7 +307,6 @@ iommufd_viommu_alloc_hwpt_nested(struct iommufd_viommu *viommu, u32 flags,
+ 		goto out_abort;
+ 	}
+ 	hwpt->domain->owner = viommu->iommu_dev->ops;
+-	iommu_domain_set_sw_msi(hwpt->domain, iommufd_sw_msi);
  
- err_unresv:
-diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
-index 2d98b04ff1cb..386953c510b3 100644
---- a/drivers/iommu/iommufd/driver.c
-+++ b/drivers/iommu/iommufd/driver.c
-@@ -49,5 +49,130 @@ struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
- }
- EXPORT_SYMBOL_NS_GPL(iommufd_viommu_find_dev, "IOMMUFD");
- 
-+#ifdef CONFIG_IRQ_MSI_IOMMU
-+/*
-+ * Get a iommufd_sw_msi_map for the msi physical address requested by the irq
-+ * layer. The mapping to IOVA is global to the iommufd file descriptor, every
-+ * domain that is attached to a device using the same MSI parameters will use
-+ * the same IOVA.
-+ */
-+static struct iommufd_sw_msi_map *
-+iommufd_sw_msi_get_map(struct iommufd_ctx *ictx, phys_addr_t msi_addr,
-+		       phys_addr_t sw_msi_start)
-+{
-+	struct iommufd_sw_msi_map *cur;
-+	unsigned int max_pgoff = 0;
-+
-+	lockdep_assert_held(&ictx->sw_msi_lock);
-+
-+	list_for_each_entry(cur, &ictx->sw_msi_list, sw_msi_item) {
-+		if (cur->sw_msi_start != sw_msi_start)
-+			continue;
-+		max_pgoff = max(max_pgoff, cur->pgoff + 1);
-+		if (cur->msi_addr == msi_addr)
-+			return cur;
-+	}
-+
-+	if (ictx->sw_msi_id >=
-+	    BITS_PER_BYTE * sizeof_field(struct iommufd_sw_msi_maps, bitmap))
-+		return ERR_PTR(-EOVERFLOW);
-+
-+	cur = kzalloc(sizeof(*cur), GFP_KERNEL);
-+	if (!cur)
-+		return ERR_PTR(-ENOMEM);
-+
-+	cur->sw_msi_start = sw_msi_start;
-+	cur->msi_addr = msi_addr;
-+	cur->pgoff = max_pgoff;
-+	cur->id = ictx->sw_msi_id++;
-+	list_add_tail(&cur->sw_msi_item, &ictx->sw_msi_list);
-+	return cur;
-+}
-+
-+int iommufd_sw_msi_install(struct iommufd_ctx *ictx,
-+			   struct iommufd_hwpt_paging *hwpt_paging,
-+			   struct iommufd_sw_msi_map *msi_map)
-+{
-+	unsigned long iova;
-+
-+	lockdep_assert_held(&ictx->sw_msi_lock);
-+
-+	iova = msi_map->sw_msi_start + msi_map->pgoff * PAGE_SIZE;
-+	if (!test_bit(msi_map->id, hwpt_paging->present_sw_msi.bitmap)) {
-+		int rc;
-+
-+		rc = iommu_map(hwpt_paging->common.domain, iova,
-+			       msi_map->msi_addr, PAGE_SIZE,
-+			       IOMMU_WRITE | IOMMU_READ | IOMMU_MMIO,
-+			       GFP_KERNEL_ACCOUNT);
-+		if (rc)
-+			return rc;
-+		__set_bit(msi_map->id, hwpt_paging->present_sw_msi.bitmap);
-+	}
-+	return 0;
-+}
-+EXPORT_SYMBOL_NS_GPL(iommufd_sw_msi_install, "IOMMUFD");
-+
-+/*
-+ * Called by the irq code if the platform translates the MSI address through the
-+ * IOMMU. msi_addr is the physical address of the MSI page. iommufd will
-+ * allocate a fd global iova for the physical page that is the same on all
-+ * domains and devices.
-+ */
-+int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
-+		   phys_addr_t msi_addr)
-+{
-+	struct device *dev = msi_desc_to_dev(desc);
-+	struct iommufd_hwpt_paging *hwpt_paging;
-+	struct iommu_attach_handle *raw_handle;
-+	struct iommufd_attach_handle *handle;
-+	struct iommufd_sw_msi_map *msi_map;
-+	struct iommufd_ctx *ictx;
-+	unsigned long iova;
-+	int rc;
-+
-+	/*
-+	 * It is safe to call iommu_attach_handle_get() here because the iommu
-+	 * core code invokes this under the group mutex which also prevents any
-+	 * change of the attach handle for the duration of this function.
-+	 */
-+	iommu_group_mutex_assert(dev);
-+
-+	raw_handle =
-+		iommu_attach_handle_get(dev->iommu_group, IOMMU_NO_PASID, 0);
-+	if (IS_ERR(raw_handle))
-+		return 0;
-+	hwpt_paging = find_hwpt_paging(domain->iommufd_hwpt);
-+
-+	handle = to_iommufd_handle(raw_handle);
-+	/* No IOMMU_RESV_SW_MSI means no change to the msi_msg */
-+	if (handle->idev->igroup->sw_msi_start == PHYS_ADDR_MAX)
-+		return 0;
-+
-+	ictx = handle->idev->ictx;
-+	guard(mutex)(&ictx->sw_msi_lock);
-+	/*
-+	 * The input msi_addr is the exact byte offset of the MSI doorbell, we
-+	 * assume the caller has checked that it is contained with a MMIO region
-+	 * that is secure to map at PAGE_SIZE.
-+	 */
-+	msi_map = iommufd_sw_msi_get_map(handle->idev->ictx,
-+					 msi_addr & PAGE_MASK,
-+					 handle->idev->igroup->sw_msi_start);
-+	if (IS_ERR(msi_map))
-+		return PTR_ERR(msi_map);
-+
-+	rc = iommufd_sw_msi_install(ictx, hwpt_paging, msi_map);
-+	if (rc)
-+		return rc;
-+	__set_bit(msi_map->id, handle->idev->igroup->required_sw_msi.bitmap);
-+
-+	iova = msi_map->sw_msi_start + msi_map->pgoff * PAGE_SIZE;
-+	msi_desc_set_iommu_msi_iova(desc, iova, PAGE_SHIFT);
-+	return 0;
-+}
-+EXPORT_SYMBOL_NS_GPL(iommufd_sw_msi, "IOMMUFD");
-+#endif
-+
- MODULE_DESCRIPTION("iommufd code shared with builtin modules");
- MODULE_LICENSE("GPL");
+ 	if (WARN_ON_ONCE(hwpt->domain->type != IOMMU_DOMAIN_NESTED)) {
+ 		rc = -EINVAL;
 -- 
 2.43.0
 
