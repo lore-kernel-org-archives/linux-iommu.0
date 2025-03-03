@@ -1,254 +1,200 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB26C1D516A
-	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 15:22:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECB62165F1F
+	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 15:45:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741015342; cv=none; b=Y+z7bImu5wArtbq0zFoUhm2h6LuUrfKQyk4rIV/3jLZpiK7/B/XXeubdR99M5NpY+o4Lqf62mbF0iL1FJCt8GGbyDwnVeYww/TY0OgUFf2MdaGCQ+RXcDGG2fCvb+1l5eq11p6Fljh8RqCHczhpu7VMudSozASBW3RQ+L9RVvNo=
+	t=1741016707; cv=none; b=N913R/6UHR68x5tWdLw36x/bcSAANWqXtD+qEfxeu0XdvW++u/vGJ8elC8Grynlk9fu3uQPj/R5nG0E6a0mnNvfMv6QnAVvIgDO0Iz45hpoPtWLC0/LnfgKcf+U9jPfgAYU8Yh1hMmjiPb0GuapCmhYAKCmY6eQshP3gUKbzke8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741015342; c=relaxed/simple;
-	bh=KeAOhF/tSRbbUNCZ1cXZMEVaaaHzf0ZSwQV/BU3ATG8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QejvoDQP3fRRUqmPCMfuv61hXu4WG+7T45TNPbEvGmCqRjYjrUldRks/suPyUH99YylJYBMawbGpE1W+le9Mv4YnAfUV+xwoIjVJJMjQ/ERQM9DWoNqOgS0LAhRKcUirTDB6CNzwsopTQVX+/AJb547xE9phcgqn4DHYHeEkyUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=kAeTMZDO; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1741016707; c=relaxed/simple;
+	bh=TvEt7HL2f2+ZiPYpZgA9Wv//CyB2sGr83sClfxce/Js=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=uxNT5No9+3nnrqFOt0xyJP7pJJblAw9Adomy7YXCDGuTvmT3Gu9YOqgq7g0gdOGMtYOznQtspDud03zPHREhwTilCzshbjUS0Bc99HopxWB20OTJ+fg+FMtcOsWgD9SiesjGJ0BmfkGEmuejAAzP4xWbjDWNzky4hc3RTtlyrTo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=o6tZF8wy; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="kAeTMZDO"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-39104c1cbbdso694535f8f.3
-        for <iommu@lists.linux.dev>; Mon, 03 Mar 2025 07:22:18 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="o6tZF8wy"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-439ac3216dcso31762035e9.1
+        for <iommu@lists.linux.dev>; Mon, 03 Mar 2025 07:45:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1741015337; x=1741620137; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DcZCKiDmcDV+Zl6nxjCvDXnjag3dxzpo0yD3ZrEqp+8=;
-        b=kAeTMZDOKQt0VRrL4DwG3ZV3G/7B0v3T2OIoDGpdEbZBOOF3LrrI7qn5k6mv9tn+N0
-         14NijCrQ058cGJuqDvnBJA+b8UPNTR/cIMrMckqIf8vesBZ69u9VBCW/kF6h3GRL+h2o
-         FRbO0FAdOm5R8iGl57tmxzOLFmIceevu3DIVJevj66rMntsyKCo0ljSoQBSxAFvSdbLc
-         mpn3WWy1oh24Yu5+DqOcRjLOrVSFexrRlVaFceSwVXTBvbeoB51n9DzrwKpnRXnDQ+zN
-         xH0uNp7kIXQAQgFqEDcgUJTQ9jLzgsSXkOvB7spZomWELNl08j4kHyBOLk8z6jTyoV3V
-         TxVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741015337; x=1741620137;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20230601; t=1741016704; x=1741621504; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DcZCKiDmcDV+Zl6nxjCvDXnjag3dxzpo0yD3ZrEqp+8=;
-        b=Nh96DXwoev3S8XY2XR23PmnZDvvj7/ufAhmOu2aoyrbeiBZRMEQgSrBI2E3KAiZYDz
-         bvsZHm0jlKiiv2aDgXT4R7T5cPBUNBWwi7TFjNiIQhXU+4yj24TACJK+xr7qXjn7/chw
-         rHUqkgjUzL1EInorBPpYvMwpibvJYMRjg/64skaO3RdodGk9H8hynYIHX9L7ipe9S5Ug
-         v5XYSRx6cbVcbi4QsJnBHOQN9yUR3PDowcl8SPWUvw5FpbZfMfIuA+yuw+RHgfezhewp
-         50uFFtNfGpTE2eLrjL1/z0rYiUDt4MoqvqD4tK2WYdZ2gXafYpUlg8HuCsHq6bHYCYjG
-         cO/A==
-X-Gm-Message-State: AOJu0YzpQoNxTkllPBAvZ+vKeengwK5eqi7Notn2/hXRLViS3zmk+jsK
-	DDFLQUkgzf6KrgExTSEpN3CnnjUSa+NOhT5hxp0HEHfeuCKazjwD7bAAgPQRbns=
-X-Gm-Gg: ASbGncuYOAytk6sDTCx7jpZLDPcb2F9ZB3OtQgp8rl2Vj16YhvQPsmctvtOLAFHwKCh
-	jRz5AHPHKgtoWdsWNZcj3JRIB4XDo+1MSCIyIEonBaQHuzSqJDnRN40vH8fad7kqlLk6We1sKTc
-	E4g1cPBvp++0k8Ze5i/rrUe+dvzxjJp9A9lQe5qu1kvjc8Umc+TwxPhSTA0Y4S4BHnIhtq/SYS0
-	JMlbN6BtOliIX7GA3E+HI4uWAoLwtA6bfyh2jpo+iLRuBudKWigz2DrncXU8lCKrVn3FdZxK+XJ
-	wfiJ2iM0i8f9P2nAMFxCBaN8HE22C1GTZeqavZ2Umd8=
-X-Google-Smtp-Source: AGHT+IF2RZ18jiutaNwmQgyXw9Sya7CxFe3BwwYu1EQNCljMSVJq5RUCGSWLg0nAeTOJ0v5+o9CEEA==
-X-Received: by 2002:a05:6000:280f:b0:390:e84f:c594 with SMTP id ffacd0b85a97d-390eca41cffmr7152457f8f.37.1741015337171;
-        Mon, 03 Mar 2025 07:22:17 -0800 (PST)
-Received: from myrica ([2.221.137.100])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-390e485dcc1sm14481904f8f.87.2025.03.03.07.22.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Mar 2025 07:22:16 -0800 (PST)
-Date: Mon, 3 Mar 2025 15:22:43 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>, virtualization@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>,
-	patches@lists.linux.dev
-Subject: Re: [PATCH v2 1/5] iommu/virtio: Break out bypass identity support
- into a global static
-Message-ID: <20250303152243.GB2083810@myrica>
-References: <0-v2-a3b72fd4b99a+1b6-iommu_virtio_domains_jgg@nvidia.com>
- <1-v2-a3b72fd4b99a+1b6-iommu_virtio_domains_jgg@nvidia.com>
+        bh=3kow4xuk+1mNeQ4oexSjSmUNlEIdhe4RIwb0wGDmCC8=;
+        b=o6tZF8wypNqCsWmSDROyi/NbB6iRJbSyK9Aqq2fiyRsMimHga25FKmab5Pma9PlQAM
+         A3r3QGGyz665IPlbsJuikl+1Zhqjj9ppzK89fCC5c6mL2Cn+Sw0DamBunTNeXTfdKbXp
+         d8buaywnqJjjW6cikKvMMfqx+LK1RLUTIvYlORWetN3XNOtV+eoc7ApaTZKjQv+nTUUO
+         IWQewZW4+HQRi/GYm9BuJyWReei29UtaFmDCek0A3vXlZzlfbtFLtNwD9wuY06WCzMqk
+         fdRMecP7lGp3u5UYe1av/qCO/BwpFzAGZxCCnGSyuu/bqN3yE971xjGHvVRtpCugfaS3
+         TXCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741016704; x=1741621504;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3kow4xuk+1mNeQ4oexSjSmUNlEIdhe4RIwb0wGDmCC8=;
+        b=KTWRzfngNnFm3Xm770F0qDbpRnxZA9HPaDLXPI45avfX/sXaJ+EU3aa9YGE1i2C3H8
+         3SpRLqeRBiFADHA7z8W0x4M7Mc0ZTBMbrC8PdTCgGJz2tZgqeGLTm7KA3F1h4xTdZR6I
+         Rpo6cuzxra84J1D3mW0TjlkN2QaKH8cZl3FpOEvNx4S2aXfP6yXoDXfjpL8U2R49bE5n
+         uBSU/N0RVAeiLPSXEDKHRt+XZ58FgOVxPTzW4lYW3RCqg/OjMD9O5B2vMQU+jTIMnvcT
+         51KhrfGYabNXz72bEC7HU9x58xL9omvrrzlmWlW23x7SeZdvCNXA7LK297WZgNeKxzoe
+         c5+A==
+X-Forwarded-Encrypted: i=1; AJvYcCUwBhdP+fYX1xVALwkljyyLuicRYDelRKVrwzJTUTYbptdUo0md4K1gjdQnjgoXOwEhy8c/oQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz/YJkrfLeZEIuB15+QUt6F9iVvx/9uVAYWAyXbrGMvRgKmkhU4
+	uT57eIDhn5J+0qD9b83sVY09+5zM/yHTdM+qzdsAboB4jVj7HpFO/2cOO/gIe9nRDgaZrcCbCzi
+	sCUqqz7dv5l1WHPsPmu3oTIqkTuNF+02CMaSE
+X-Gm-Gg: ASbGncuJIXU1tWVg9NFBVUppLXCqqUFKcWRHNs/6sqd2q4Qi0A3/62EgadJjWCGFWoD
+	IJkgAKUtxPuo4xD1rihQ86DBG38xBIm0Cf12ogcTe0RqHi8AW7J7wJ0g5hihcmEQ+ah8jsYEeVA
+	1CRvBqpqo8f7eyW8tFCzQMXly1ijR2ubMstVEkDjWqRBhyW5QcOtZf2VcC
+X-Google-Smtp-Source: AGHT+IHXXQ7buQBEorS4efQ1j2iNuWmeS1bZKP0/m94hhxiT8OFf6H7yU2EGk9/SwAGsuWxPOOcRN2PU93WYRcIT0a8=
+X-Received: by 2002:a05:6000:270f:b0:390:dfe0:1320 with SMTP id
+ ffacd0b85a97d-390ec9c1bddmr8951802f8f.33.1741016704234; Mon, 03 Mar 2025
+ 07:45:04 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1-v2-a3b72fd4b99a+1b6-iommu_virtio_domains_jgg@nvidia.com>
+References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
+ <20250224115007.2072043-3-abdiel.janulgue@gmail.com> <6dea7b6a-1534-47e7-94d2-d67417c3d4c1@proton.me>
+ <tnwDK3QN_Xr0Yoa3U8HVxS5OqjvxIhgmmO_ifTGJR_EtIzjoxawOHtnbOJ9yChsUWXyFPcU9beIdrgbpfGZI8w==@protonmail.internalid>
+ <3202F69F-397E-4BC4-8DD8-E2D4B0AB056F@collabora.com> <87bjuil15w.fsf@kernel.org>
+ <t4HxdvR7WBX_861hiTXo72jqC9F9oRpIzgA_dD2yhcSuLISEkC-shMfSgllrFPpnkSZXGfRcc47keudMooNiIQ==@protonmail.internalid>
+ <CAH5fLgg5MuUu=TX8mMsPf5RcLhMLHSU4Vct=h8rFX6Z7HjPxeA@mail.gmail.com> <87ikoqjg1n.fsf@kernel.org>
+In-Reply-To: <87ikoqjg1n.fsf@kernel.org>
+From: Alice Ryhl <aliceryhl@google.com>
+Date: Mon, 3 Mar 2025 16:44:51 +0100
+X-Gm-Features: AQ5f1JpQwVPMNAtyLQEi5zozvB7zbblDDYl0-W2nDZDSA_G1jc6Lh4mO8DNqPys
+Message-ID: <CAH5fLgh6ubawHh76wq7JPbcuBCWhm91m7Rc01MVsX-a3C6qaVA@mail.gmail.com>
+Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
+To: Andreas Hindborg <a.hindborg@kernel.org>
+Cc: Daniel Almeida <daniel.almeida@collabora.com>, Benno Lossin <benno.lossin@proton.me>, 
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>, dakr@kernel.org, robin.murphy@arm.com, 
+	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, 
+	Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>, 
+	Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, linux-kernel@vger.kernel.org, 
+	Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
+	iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 27, 2025 at 08:19:59PM -0400, Jason Gunthorpe wrote:
-> To make way for a domain_alloc_paging conversion add the typical global
-> static IDENTITY domain. This supports VMMs that have a
-> VIRTIO_IOMMU_F_BYPASS_CONFIG config.
-> 
-> If the VMM does not have support then the domain_alloc path is still used,
-> which creates an IDENTITY domain out of a paging domain.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+On Mon, Mar 3, 2025 at 4:21=E2=80=AFPM Andreas Hindborg <a.hindborg@kernel.=
+org> wrote:
+>
+> "Alice Ryhl" <aliceryhl@google.com> writes:
+>
+> > On Mon, Mar 3, 2025 at 2:00=E2=80=AFPM Andreas Hindborg <a.hindborg@ker=
+nel.org> wrote:
+> >>
+> >> "Daniel Almeida" <daniel.almeida@collabora.com> writes:
+> >>
+> >> > Hi Benno,
+> >> >
+> >>
+> >> [...]
+> >>
+> >> >>> +    /// Writes data to the region starting from `offset`. `offset=
+` is in units of `T`, not the
+> >> >>> +    /// number of bytes.
+> >> >>> +    ///
+> >> >>> +    /// # Examples
+> >> >>> +    ///
+> >> >>> +    /// ```
+> >> >>> +    /// # fn test(alloc: &mut kernel::dma::CoherentAllocation<u8>=
+) -> Result {
+> >> >>> +    /// let somedata: [u8; 4] =3D [0xf; 4];
+> >> >>> +    /// let buf: &[u8] =3D &somedata;
+> >> >>> +    /// alloc.write(buf, 0)?;
+> >> >>> +    /// # Ok::<(), Error>(()) }
+> >> >>> +    /// ```
+> >> >>> +    pub fn write(&self, src: &[T], offset: usize) -> Result {
+> >> >>> +        let end =3D offset.checked_add(src.len()).ok_or(EOVERFLOW=
+)?;
+> >> >>> +        if end >=3D self.count {
+> >> >>> +            return Err(EINVAL);
+> >> >>> +        }
+> >> >>> +        // SAFETY:
+> >> >>> +        // - The pointer is valid due to type invariant on `Coher=
+entAllocation`
+> >> >>> +        // and we've just checked that the range and index is wit=
+hin bounds.
+> >> >>> +        // - `offset` can't overflow since it is smaller than `se=
+lfcount` and we've checked
+> >> >>> +        // that `self.count` won't overflow early in the construc=
+tor.
+> >> >>> +        unsafe {
+> >> >>> +            core::ptr::copy_nonoverlapping(src.as_ptr(), self.cpu=
+_addr.add(offset), src.len())
+> >> >>
+> >> >> Why are there no concurrent write or read operations on `cpu_addr`?
+> >> >
+> >> > Sorry, can you rephrase this question?
+> >>
+> >> This write is suffering the same complications as discussed here [1].
+> >> There are multiple issues with this implementation.
+> >>
+> >> 1) `write` takes a shared reference and thus may be called concurrentl=
+y.
+> >> There is no synchronization, so `copy_nonoverlapping` could be called
+> >> concurrently on the same address. The safety requirements for
+> >> `copy_nonoverlapping` state that the destination must be valid for
+> >> write. Alice claims in [1] that any memory area that experience data
+> >> races are not valid for writes. So the safety requirement of
+> >> `copy_nonoverlapping` is violated and this call is potential UB.
+> >>
+> >> 2) The destination of this write is DMA memory. It could be concurrent=
+ly
+> >> modified by hardware, leading to the same issues as 1). Thus the
+> >> function cannot be safe if we cannot guarantee hardware will not write
+> >> to the region while this function is executing.
+> >>
+> >> Now, I don't think that these _should_ be issues, but according to our
+> >> Rust language experts they _are_.
+> >>
+> >> I really think that copying data through a raw pointer to or from a
+> >> place that experiences data races, should _not_ be UB if the data is n=
+ot
+> >> interpreted in any way, other than moving it.
+> >>
+> >>
+> >> Best regards,
+> >> Andreas Hindborg
+> >
+> > We need to make progress on this series, and it's starting to get late
+> > in the cycle. I suggest we:
+>
+> There is always another cycle.
+>
+> >
+> > 1. Delete as_slice, as_slice_mut, write, and skip_drop.
+> > 2. Change field_read/field_write to use a volatile read/write.
+>
+> Volatile reads/writes that race are OK?
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+I will not give a blanket yes to that. If you read their docs, you
+will find that they claim to not allow it. But they are the correct
+choice for DMA memory, and there's no way in practice to get
+miscompilations on memory locations that are only accessed with
+volatile operations, and never have references to them created.
 
-> ---
->  drivers/iommu/virtio-iommu.c | 86 ++++++++++++++++++++++++++++--------
->  1 file changed, 67 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> index b85ce6310ddbda..55a2188197c621 100644
-> --- a/drivers/iommu/virtio-iommu.c
-> +++ b/drivers/iommu/virtio-iommu.c
-> @@ -48,6 +48,7 @@ struct viommu_dev {
->  	u64				pgsize_bitmap;
->  	u32				first_domain;
->  	u32				last_domain;
-> +	u32				identity_domain_id;
->  	/* Supported MAP flags */
->  	u32				map_flags;
->  	u32				probe_size;
-> @@ -70,7 +71,6 @@ struct viommu_domain {
->  	struct rb_root_cached		mappings;
->  
->  	unsigned long			nr_endpoints;
-> -	bool				bypass;
->  };
->  
->  struct viommu_endpoint {
-> @@ -305,6 +305,22 @@ static int viommu_send_req_sync(struct viommu_dev *viommu, void *buf,
->  	return ret;
->  }
->  
-> +static int viommu_send_attach_req(struct viommu_dev *viommu, struct device *dev,
-> +				  struct virtio_iommu_req_attach *req)
-> +{
-> +	int ret;
-> +	unsigned int i;
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +
-> +	for (i = 0; i < fwspec->num_ids; i++) {
-> +		req->endpoint = cpu_to_le32(fwspec->ids[i]);
-> +		ret = viommu_send_req_sync(viommu, req, sizeof(*req));
-> +		if (ret)
-> +			return ret;
-> +	}
-> +	return 0;
-> +}
-> +
->  /*
->   * viommu_add_mapping - add a mapping to the internal tree
->   *
-> @@ -687,12 +703,6 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
->  	vdomain->viommu		= viommu;
->  
->  	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
-> -		if (virtio_has_feature(viommu->vdev,
-> -				       VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
-> -			vdomain->bypass = true;
-> -			return 0;
-> -		}
-> -
->  		ret = viommu_domain_map_identity(vdev, vdomain);
->  		if (ret) {
->  			ida_free(&viommu->domain_ids, vdomain->id);
-> @@ -719,10 +729,8 @@ static void viommu_domain_free(struct iommu_domain *domain)
->  
->  static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  {
-> -	int i;
->  	int ret = 0;
->  	struct virtio_iommu_req_attach req;
-> -	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
->  	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
->  	struct viommu_domain *vdomain = to_viommu_domain(domain);
->  
-> @@ -761,16 +769,9 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  		.domain		= cpu_to_le32(vdomain->id),
->  	};
->  
-> -	if (vdomain->bypass)
-> -		req.flags |= cpu_to_le32(VIRTIO_IOMMU_ATTACH_F_BYPASS);
-> -
-> -	for (i = 0; i < fwspec->num_ids; i++) {
-> -		req.endpoint = cpu_to_le32(fwspec->ids[i]);
-> -
-> -		ret = viommu_send_req_sync(vdomain->viommu, &req, sizeof(req));
-> -		if (ret)
-> -			return ret;
-> -	}
-> +	ret = viommu_send_attach_req(vdomain->viommu, dev, &req);
-> +	if (ret)
-> +		return ret;
->  
->  	if (!vdomain->nr_endpoints) {
->  		/*
-> @@ -788,6 +789,40 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  	return 0;
->  }
->  
-> +static int viommu_attach_identity_domain(struct iommu_domain *domain,
-> +					 struct device *dev)
-> +{
-> +	int ret = 0;
-> +	struct virtio_iommu_req_attach req;
-> +	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
-> +	struct viommu_domain *vdomain = to_viommu_domain(domain);
-> +
-> +	req = (struct virtio_iommu_req_attach) {
-> +		.head.type	= VIRTIO_IOMMU_T_ATTACH,
-> +		.domain		= cpu_to_le32(vdev->viommu->identity_domain_id),
-> +		.flags          = cpu_to_le32(VIRTIO_IOMMU_ATTACH_F_BYPASS),
-> +	};
-> +
-> +	ret = viommu_send_attach_req(vdev->viommu, dev, &req);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (vdev->vdomain)
-> +		vdev->vdomain->nr_endpoints--;
-> +	vdomain->nr_endpoints++;
-> +	vdev->vdomain = vdomain;
-> +	return 0;
-> +}
-> +
-> +static struct viommu_domain viommu_identity_domain = {
-> +	.domain = {
-> +		.type = IOMMU_DOMAIN_IDENTITY,
-> +		.ops = &(const struct iommu_domain_ops) {
-> +			.attach_dev = viommu_attach_identity_domain,
-> +		},
-> +	},
-> +};
-> +
->  static void viommu_detach_dev(struct viommu_endpoint *vdev)
->  {
->  	int i;
-> @@ -1061,6 +1096,7 @@ static bool viommu_capable(struct device *dev, enum iommu_cap cap)
->  }
->  
->  static struct iommu_ops viommu_ops = {
-> +	.identity_domain	= &viommu_identity_domain.domain,
->  	.capable		= viommu_capable,
->  	.domain_alloc		= viommu_domain_alloc,
->  	.probe_device		= viommu_probe_device,
-> @@ -1184,6 +1220,18 @@ static int viommu_probe(struct virtio_device *vdev)
->  	if (virtio_has_feature(vdev, VIRTIO_IOMMU_F_MMIO))
->  		viommu->map_flags |= VIRTIO_IOMMU_MAP_F_MMIO;
->  
-> +	/* Reserve an ID to use as the bypass domain */
-> +	if (virtio_has_feature(viommu->vdev, VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
-> +		viommu->identity_domain_id = viommu->first_domain;
-> +		viommu->first_domain++;
-> +	} else {
-> +		/*
-> +		 * Assume the VMM is sensible and it either supports bypass on
-> +		 * all instances or no instances.
-> +		 */
-> +		viommu_ops.identity_domain = NULL;
-> +	}
-> +
->  	viommu_ops.pgsize_bitmap = viommu->pgsize_bitmap;
->  
->  	virtio_device_ready(vdev);
-> -- 
-> 2.43.0
-> 
-> 
+In general, this will fall into the exception that we've been given
+from the Rust people. In cases such as this where the Rust language
+does not give us the operation we want, do it like you do in C. Since
+Rust uses LLVM which does not miscompile the C part of the kernel, it
+should not miscompile the Rust part either.
+
+> > This will let us make progress now and sidestep this discussion. The
+> > deleted methods can happen in a follow-up.
+>
+> `item_from_index`, the `dma_read` and `dma_write` macros as well, I would=
+ think?
+
+Those are necessary to use field_read/field_write, so I think it's
+fine to keep those.
+
+Alice
