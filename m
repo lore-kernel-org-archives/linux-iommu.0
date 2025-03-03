@@ -1,132 +1,135 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D6DA1EF0AA
-	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 10:56:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 519961F791C;
+	Mon,  3 Mar 2025 11:30:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740999364; cv=none; b=rqyAgrvbTeg+faAUqe3Mi2AUIPzGvd89ssWSfU8pSnjNHwnlz3BHYbshSxFmBVZY8ZfCo+LxT/ntOXYA8vlVw97I4i3ETD2sFe+GEUzVZl1XJQcIOU2K9zyoHsC3GzNxv8Ipu0eGOG2Qz6brb1BmC5D9SXdXTx3hPBMwRyskD80=
+	t=1741001415; cv=none; b=LG8jMEMGOrBTFKeEVIzVIxBGu9OTx7ROArMBTHIRKQyycOhTsil/2HeD6HgxLAgUgk1r9Oc8QRkWwnhIVwcVrsyxN/HHau2oSHJY+kwThVviOPnudcwH1wGOK4HbziCh8d9fNVkj+OciXgWRXzpZL2T+Rcne8FLFBg+qP1QIq2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740999364; c=relaxed/simple;
-	bh=FlxgyLo4pSK6DnDRMZ2Gy02rNuDZ9j7QbXDlKG6JUnk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LX/AcuF6FYKboydsv5s+PIS1MDyyGFP68/Lxap2YOxnreBSoQrjsmaC4j8Lf8s4XlbtgKq90VWTwCsZZEWyEJcXiVCU4yNwO7VW7J9LK7t4kIUqzMPvgqAHJKGzhJfp54j6f+fZ2tHLc8DKUnRlJGHzYitLkfg49iTB9B+kK7h4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 836CD113E;
-	Mon,  3 Mar 2025 02:56:16 -0800 (PST)
-Received: from e133081.arm.com (unknown [10.57.37.136])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 77DE73F673;
-	Mon,  3 Mar 2025 02:55:58 -0800 (PST)
-Date: Mon, 3 Mar 2025 10:55:47 +0000
-From: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
-To: David Hildenbrand <david@redhat.com>
-Cc: ryan.roberts@arm.com, suzuki.poulose@arm.com,
-	yang@os.amperecomputing.com, catalin.marinas@arm.com,
-	will@kernel.org, joro@8bytes.org, jean-philippe@linaro.org,
-	mark.rutland@arm.com, joey.gouly@arm.com, oliver.upton@linux.dev,
-	james.morse@arm.com, broonie@kernel.org, maz@kernel.org,
-	akpm@linux-foundation.org, jgg@ziepe.ca, nicolinc@nvidia.com,
-	mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v2 3/4] arm64/mm: Elide tlbi in contpte_convert() under
- BBML2
-Message-ID: <20250303105539.GA74129@e133081.arm.com>
-References: <20250228182403.6269-2-miko.lenczewski@arm.com>
- <20250228182403.6269-5-miko.lenczewski@arm.com>
- <f270bb5d-aa54-45d3-89ed-2b757ab3a4b0@redhat.com>
- <20250303094947.GB13345@e133081.arm.com>
- <7e987f17-ffcb-45e0-8588-2d569d90f776@redhat.com>
+	s=arc-20240116; t=1741001415; c=relaxed/simple;
+	bh=QSfb1tEP+GCrXu68ufVQ5P6AVc/pou71CBN+bmPdXeE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=gZugCqOESqUxw5LDVLjD9jncbwpU5M/IxZoBRvuz02XdSG1EvJwuToOid8zE8ZOmlPIooIP74KyYWnuxwzNIOc0cRUsSt63EVHDQO4NlUlMnY9Ey5+yX6biWU0nSHS/UqDwqnXJUCVS2IaZTQFedU5YRBrsJlh+MQ5NkZJX2uZc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uyJRODCf; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uyJRODCf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81D3DC4CED6;
+	Mon,  3 Mar 2025 11:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741001414;
+	bh=QSfb1tEP+GCrXu68ufVQ5P6AVc/pou71CBN+bmPdXeE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=uyJRODCfavQFKwjL4D3k4Oo6IqxlxFb4bNZ+lGS31+PMGDqw64PSES87DnogF8Rcq
+	 2OaBf2L+wW4eDpJfvf5ekwmsX7+lCP1NDFQ37BHIVLIgxOuxYZLp/CbgUbaopZryJu
+	 dugWbrY81yMTB22kqvuHVBEXgZvayBJZA3ofpSCrdPbLyyfshwlbN+W4Jv15Rp8YpK
+	 7p8CeE41XKJ3TaYIQmDb1ixaYJrup5fdwK8GbVzvyJsDigxzuUvB8NzJDeC2EO5orb
+	 /pcrnkIqpauuDZosLnFPgxJl9eX8eax16PCr9sRYpFuJOtvJYNtW9ZabhwOKnRdXW1
+	 o+fsuqdaQ3Fjw==
+From: Andreas Hindborg <a.hindborg@kernel.org>
+To: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>
+Cc: <aliceryhl@google.com>,  <dakr@kernel.org>,  <robin.murphy@arm.com>,
+  <daniel.almeida@collabora.com>,  <rust-for-linux@vger.kernel.org>,
+  "Miguel Ojeda" <ojeda@kernel.org>,  "Alex Gaynor"
+ <alex.gaynor@gmail.com>,  "Boqun Feng" <boqun.feng@gmail.com>,  "Gary Guo"
+ <gary@garyguo.net>,  =?utf-8?Q?Bj=C3=B6rn?= Roy Baron
+ <bjorn3_gh@protonmail.com>,  "Benno
+ Lossin" <benno.lossin@proton.me>,  "Trevor Gross" <tmgross@umich.edu>,
+  "Valentin Obst" <kernel@valentinobst.de>,
+  <linux-kernel@vger.kernel.org>,  "Christoph Hellwig" <hch@lst.de>,
+  "Marek Szyprowski" <m.szyprowski@samsung.com>,  <airlied@redhat.com>,
+  <iommu@lists.linux.dev>
+Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
+In-Reply-To: <20250224115007.2072043-3-abdiel.janulgue@gmail.com> (Abdiel
+	Janulgue's message of "Mon, 24 Feb 2025 13:49:06 +0200")
+References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
+	<k3GMnfXzzvUVOgSnuMlEq3eVRyq1qjcf_tDtILRbOwj08EIQpwQ4bGtGhwWufr8lUn-VlHnNjP8FxIA48Jv-Ug==@protonmail.internalid>
+	<20250224115007.2072043-3-abdiel.janulgue@gmail.com>
+User-Agent: mu4e 1.12.7; emacs 29.4
+Date: Mon, 03 Mar 2025 12:30:01 +0100
+Message-ID: <87h64al5c6.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7e987f17-ffcb-45e0-8588-2d569d90f776@redhat.com>
+Content-Type: text/plain
 
-On Mon, Mar 03, 2025 at 10:57:21AM +0100, David Hildenbrand wrote:
-> On 03.03.25 10:49, Mikołaj Lenczewski wrote:
-> > Hi David,
-> > 
-> > Thanks for taking the time to review.
-> > 
-> > On Mon, Mar 03, 2025 at 10:17:12AM +0100, David Hildenbrand wrote:
-> > > On 28.02.25 19:24, Mikołaj Lenczewski wrote:
-> > > > If we support bbml2 without conflict aborts, we can avoid the final
-> > > > flush and have hardware manage the tlb entries for us. Avoiding flushes
-> > > > is a win.
-> > > > 
-> > > > Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
-> > > > Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
-> > > > ---
-> > > >    arch/arm64/mm/contpte.c | 3 ---
-> > > >    1 file changed, 3 deletions(-)
-> > > > 
-> > > > diff --git a/arch/arm64/mm/contpte.c b/arch/arm64/mm/contpte.c
-> > > > index 145530f706a9..77ed03b30b72 100644
-> > > > --- a/arch/arm64/mm/contpte.c
-> > > > +++ b/arch/arm64/mm/contpte.c
-> > > > @@ -72,9 +72,6 @@ static void contpte_convert(struct mm_struct *mm, unsigned long addr,
-> > > >    		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
-> > > >    	__set_ptes(mm, start_addr, start_ptep, pte, CONT_PTES);
-> > > > -
-> > > > -	if (system_supports_bbml2_noabort())
-> > > > -		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
-> > > >    }
-> > > >    void __contpte_try_fold(struct mm_struct *mm, unsigned long addr,
-> > > 
-> > > What's the point of not squashing this into #2? :)
-> > > 
-> > > If this split was requested during earlier review, at least seeing patch #2
-> > > on its own confused me.
-> > 
-> > This split is a holdover from an earlier patchset, where it was still
-> > unknown whether the removal of the second flush was permitted with
-> > BBML2. Partly this was due to us being worried about conflict aborts
-> > after the removal, and partly this was because the "delay" is a separate
-> > optimisation that we could apply even if it turned out the final patch
-> > was not architecturally sound.
-> > 
-> > Now that we do not handle conflict aborts (preferring only systems that
-> > handle BBML2 without ever raising aborts), the first issue is not a
-> > problem. The reasoning behind the second patch is also a little bit
-> > outdated, but I can see the logical split between a tlbi reorder, and
-> > the removal of the tlbi. If this is truly redundant though, I would be
-> > happy to squash the two into a single patch.
-> 
-> Thanks for the information.
-> 
-> Does patch #2 (reordering the tlbi) have any benefit on its own? I read
-> "other threads will not see an invalid pagetable entry", but I am not sure
-> that is correct. A concurrent HW page table walker would still find the
-> invalid PTE? It's just a matter of TLB state.
+"Abdiel Janulgue" <abdiel.janulgue@gmail.com> writes:
 
-I think I understand what you mean. I agree that it is possible for a
-concurrent walk to see an invalid TLBI state, if it is on the same TLB
-that the repaint is happening on. For other TLBs, the flush has not yet
-propagated our invalidated PTEs (from `__ptep_get_and_clear()`) though?
-That invalidation will only be seen by other TLBs after the
-`__flush_tlb_range()`, so we should save a few faults because only
-"local" threads will ever see the invalid entry, as opposed to all
-threads that try to read our modified range? Or it is the case that I
-have misunderstood something basic here, or that I have misinterpreted
-what you have written?
+> Add a simple dma coherent allocator rust abstraction. Based on
+> Andreas Hindborg's dma abstractions from the rnvme driver, which
+> was also based on earlier work by Wedson Almeida Filho.
+>
+> Nacked-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+[...]
 
-> If there is no benefit in having patch #2 independently, I'd just squash
-> them. Reordering to then remove is more complicated than just removing it
-> IMHO.
-> 
-> -- 
-> Cheers,
-> 
-> David / dhildenb
-> 
+> diff --git a/rust/helpers/helpers.c b/rust/helpers/helpers.c
+> index 0640b7e115be..8f3808c8b7fe 100644
+> --- a/rust/helpers/helpers.c
+> +++ b/rust/helpers/helpers.c
+> @@ -13,6 +13,7 @@
+>  #include "build_bug.c"
+>  #include "cred.c"
+>  #include "device.c"
+> +#include "dma.c"
+>  #include "err.c"
+>  #include "fs.c"
+>  #include "io.c"
+> diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
+> new file mode 100644
+> index 000000000000..b4dd5d411711
+> --- /dev/null
+> +++ b/rust/kernel/dma.rs
+> @@ -0,0 +1,421 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +//! Direct memory access (DMA).
+> +//!
+> +//! C header: [`include/linux/dma-mapping.h`](srctree/include/linux/dma-mapping.h)
+> +
+> +use crate::{
+> +    bindings, build_assert,
+> +    device::Device,
+> +    error::code::*,
+> +    error::Result,
+> +    transmute::{AsBytes, FromBytes},
+> +    types::ARef,
+> +};
+> +
+> +/// Inform the kernel about the device's DMA addressing capabilities. This will set the mask for
+> +/// both streaming and coherent APIs together.
+> +pub fn dma_set_mask_and_coherent(dev: &Device, mask: u64) -> i32 {
+> +    // SAFETY: device pointer is guaranteed as valid by invariant on `Device`.
+> +    unsafe { bindings::dma_set_mask_and_coherent(dev.as_raw(), mask) }
+> +}
+> +
+> +/// Same as `dma_set_mask_and_coherent`, but set the mask only for streaming mappings.
+> +pub fn dma_set_mask(dev: &Device, mask: u64) -> i32 {
+> +    // SAFETY: device pointer is guaranteed as valid by invariant on `Device`.
+> +    unsafe { bindings::dma_set_mask(dev.as_raw(), mask) }
+> +}
 
--- 
-Kind regards,
-Mikołaj Lenczewski
+I'm rebasing some of the dma pool code I'm using for NVMe on top of
+these patches, and I notice that these methods in the original code from
+way back (besides being on Device) has these methods return `Result`:
+
+    pub fn dma_set_mask(&self, mask: u64) -> Result {
+        let dev = self.as_raw();
+        let ret = unsafe { bindings::dma_set_mask(dev as _, mask) };
+        if ret != 0 {
+            Err(Error::from_errno(ret))
+        } else {
+            Ok(())
+        }
+    }
+
+Is there a reason for not returning a `Result` in this series?
+
+
+Best regards,
+Andreas Hindborg
+
+
