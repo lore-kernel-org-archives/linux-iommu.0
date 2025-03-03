@@ -1,240 +1,310 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2078.outbound.protection.outlook.com [40.107.220.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C958E202C2A
-	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 11:42:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741002145; cv=none; b=OgXQdFnoEZd2VH1KLqQnP7Cf2noj9goxnesyzJR5zhJLRsEiwP2BCJ584ZahSGpejVXKSnEYzdrKPwJAZrgmGbr8cQgR8o2BeoKHH1fzFE43qYoB7aQfCX5XOQxgRzNttTUA0YcXzED5jyhU6KQSpNShgviUgBcTuiI55SKm91c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741002145; c=relaxed/simple;
-	bh=oyoGpoAogNlFLsEfP7tF62uwgGj7bpQ4UrXetHF74oc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jJC25dbNpGxAANiETrXfF/s+o4eOckEJUTOenUmxnw6veaUDTSvkOUWVBE13PVIqp8hrXQv4GqS/CvbXFPwTVFraAOUsacfCuwBPdiH9CCyU9jgTtOzTAprZ0l2GLK+3QQph3+sBkisvwIEawi3hUBsbqHSpr/TL4yedwK2tQFA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=akC5UaNe; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 504511F5433
+	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 11:42:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.78
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741002159; cv=fail; b=RF31mlr3QHGrgWupxcbj5srgyIR6KQfhAOsvcng2f6hiXptIMhdssfc8r+GqnBfIHYbV5YIp80PJFV+oa29i3xAEA28rcYkFRh6O+kawzwN2rj9lqoYdqExQ8XIFfFNtnfItr70qsIIInGuG+cm7TeOf6mPsPQTMMxrTye20WQM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741002159; c=relaxed/simple;
+	bh=EWUuOG15CKPUceCUfoyk2lwqSGHldca9LxLqlzjRMO8=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Hoekrb4WP37S7OcEiGyU31G3kJy0vnveKwGF0txLZQga7orcqYJ+h6JnpiBrTWS/GHSpEAsAUOfb8bEw+j+rCmjekA1F6HwMYwtTB3i65r+4n6h0jOR5CAmk2M3BuVw6PA2ETAn1/Tsr5qSUPp7buO4AqyK43NHohAWdPSGryFE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=4GRoDjLL; arc=fail smtp.client-ip=40.107.220.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="akC5UaNe"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1741002142;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=GK+r8CB/zopdHXRJVOxigdSQmwtLGrthh+WgPUejIE4=;
-	b=akC5UaNe5NQOWWzUjkwHR05Jx0f8UfCv8O5kzpOtqltjhv3/eJdsMJA7r8cnFIKmDXP+ow
-	U3IPoSOe2oIiUPRT3hb2E+9+yptcyU+cKDfQcxEXYcq4IKKjtC/Z8Xcn5KLWS/0paEvgH8
-	pPHp+DPIdv1pSFXjZ0P6DnrsjZJroLM=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-577-tNFEs5RYM8eVoNqgXmRI8g-1; Mon, 03 Mar 2025 06:42:19 -0500
-X-MC-Unique: tNFEs5RYM8eVoNqgXmRI8g-1
-X-Mimecast-MFC-AGG-ID: tNFEs5RYM8eVoNqgXmRI8g_1741002138
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-4399a5afc72so19149095e9.3
-        for <iommu@lists.linux.dev>; Mon, 03 Mar 2025 03:42:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741002138; x=1741606938;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=GK+r8CB/zopdHXRJVOxigdSQmwtLGrthh+WgPUejIE4=;
-        b=RWl8B3q6QdF0d+4PgtzDeIfDONmVWCxpXE7EE/mcpf+LwSoUggn+zx8IfzfRsR8Rpb
-         nMeVCPsksgYqHnWPmvQCGLXfdCl8oh9mNj+1WR8JqAb+kcG04CtF6e1s0T7oNNUyJJ/N
-         nzQXM3zStelt5HQC3g2Z+XT/3+uPAYf0N4kep2wfXWhjmlJKWthi5MtgS3I5A8DZCWuX
-         TddwRNmx6MjV7kOUwOffDbDIEUedR26oryDpWTKvTsWdySSlFW7Uhw7NS3JUnKWakUG7
-         S0VcAuZqyg6zbQ+EaeFdvLPG2rjwIgrYPXf/9tDCaep37pMJnbMRLzl2MdMQ5pktuhQI
-         tujg==
-X-Forwarded-Encrypted: i=1; AJvYcCWnEf9PDXB5TQJVgSO+6H4xdfIrzw4dNU6k91vrpMIjivyzJuT0fraQA7M3v4wk2qLrfJq3XQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzLo+YSMOiowCi/0H34EiTE/ojbZEr7X4HVypCQYL4edLIgZ3EH
-	kS0hjFoEMfn/vQMfKq3xWOToOWuZJ8OQa9EpAr6xe5FzZE50Uv3nUoKKeyiEmUDllHNipTQABa9
-	IT4py95PS3bA/CNXIEwyg5Q33lj5QM5k/oiJBnWivU/W5MQ913yc7
-X-Gm-Gg: ASbGnctM5ZxeD9JdPp+82uisV22YWd1LvkpqcVYUCQadqQwbfStMcTB0peGzaYnsv/Z
-	X57YLCCY5/6wavs13DjGt4n9YuRWqM7UKPdf+Nipu6+J4z0fDqu506zSKjwZa+zfoUv6g24CarF
-	x0HfMCqhELQx226UkqhggkZdERf9nfLqptBQlIWEFFmlVwFfDt51KsCgZSUJSsYWlPaSldSerGZ
-	pDXdd8ka3CkC/yaZaE6Za4A+UgwUP+N9akOmEYXXitOSWf3+mpw/07RwH6OHm/rNJOzzYe7u870
-	rH8N6OiLsRIzR/T6SJcRJnkJtIMjm9XaEeihU3TEUU8F2vXN4v8eG8FMeh8i525wR/cdo2DBJKa
-	ctW5RD8TQ9LPfhdLgEMEKYIq4+XGg8KSxKIfZIPRCw78=
-X-Received: by 2002:a05:600c:3506:b0:439:8e46:ee73 with SMTP id 5b1f17b1804b1-43ba6704446mr119492835e9.15.1741002138251;
-        Mon, 03 Mar 2025 03:42:18 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IEe6WbxcsGzXZWMC0pjNXpsivZUSmi+rYJFcr/S86qicmIKfyXyNyDXrqfgaMGgOQqTiegQEw==
-X-Received: by 2002:a05:600c:3506:b0:439:8e46:ee73 with SMTP id 5b1f17b1804b1-43ba6704446mr119492405e9.15.1741002137875;
-        Mon, 03 Mar 2025 03:42:17 -0800 (PST)
-Received: from ?IPV6:2003:cb:c734:9600:af27:4326:a216:2bfb? (p200300cbc7349600af274326a2162bfb.dip0.t-ipconnect.de. [2003:cb:c734:9600:af27:4326:a216:2bfb])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43aba532ba6sm186494095e9.12.2025.03.03.03.42.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Mar 2025 03:42:17 -0800 (PST)
-Message-ID: <0ff27dbb-401b-4793-be70-1ff9c8010e4a@redhat.com>
-Date: Mon, 3 Mar 2025 12:42:11 +0100
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="4GRoDjLL"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=s2E1ctdGAm3jkgMIuazX9fv0P1VmSPZczgywn4eDwFEOEqwFxndW4L7Yi2Of2zxsj3RNUzs6NkzLOjAnf0qlF2jd5l26A53R4yiGIBPUQwj3K7zEMwfsBb13GpuJL5k+in5PEcV42ROs71RmZoa3LAcPrC7zNAS/CSXOzfBq/pOsQ/U9tWtE9EGiUtKYxNaMggyNSzJEL+PNd1iCvSlwLNKSp9BJKaYYJb1KboAgDPJv4fXHq3jGlqf/eFeDvtCPJw9nevHV2QRwbPA+Ums40VVdjuQRd20Psvx6AD9pjYuAttD/7m044fCUXDu7irRa+UvwSovPNpMEkqifNar7ug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kR0WFoyXXgIBHtyr0gkMhW+FAfI9h4vpVOXpSrt5Hwc=;
+ b=o6Gpr+SaZjf0Ibsa8IFjBnK3sWv+pQGu3p3HuNZU+sWqw/YmUqpR9SYyvgJ0a75W9yF51H6NBGIeSC0Hw0iFrH/uehYzPGJik1JtqQS+dcIRIP/TDN2Dp6Bz3x8NQLRf2+yOZNJJ5yuBt0cq+8G5OaaAWkDAGPRPTSdq3IUZQdTE8BFDancQxk9HVgtcsFRlAcurupEiNmBxGTNYKSRL3/cx2n3SGqBeEN1dGhK/37lfmjMsBKdxcSA+/GF39Xr+hn+yoVTGV95jhLgar6t86fMnVlek+mFkDFrr60PfY6iXIUQBcBwQiz3Ye6CwZnBMdnRtlzTi+/Z+suZDxuLyIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kR0WFoyXXgIBHtyr0gkMhW+FAfI9h4vpVOXpSrt5Hwc=;
+ b=4GRoDjLLW/msxZOzm391BYYieUwRiebExYXHWYD0HWcOenc5FFPte7EYkhOdp1mGpkEWE2GeCzo2yVtJRLm6vzVY6/T8e58RbL8rO9pLHTgZHdQjP7+6zF75TEXCmN9dylFs5yKJiWu/TV4Djin/I9npLGQ3AepoW2rocC7y458=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ IA1PR12MB6091.namprd12.prod.outlook.com (2603:10b6:208:3ed::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.22; Mon, 3 Mar
+ 2025 11:42:34 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%6]) with mapi id 15.20.8489.025; Mon, 3 Mar 2025
+ 11:42:34 +0000
+Message-ID: <4a0e64e9-57c5-4f30-97bf-00c3eafe0b8f@amd.com>
+Date: Mon, 3 Mar 2025 17:12:25 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
+To: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
+References: <20250225105829.52223-1-vasant.hegde@amd.com>
+ <be9d2ad2-0f9e-4d06-952b-4cfd6ae53447@intel.com>
+ <ce86ff90-377e-49fe-9c4e-d2ad7abeeec8@arm.com>
+ <20250225145518.GJ545008@ziepe.ca>
+ <BN9PR11MB527624C1DED16B3C049D13438CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250226011750.GB5011@ziepe.ca>
+ <BN9PR11MB5276B3E410FD336A3062FA5E8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <4fba254e-ca47-4e7b-baf3-0228d9605c2b@amd.com>
+ <BN9PR11MB52763A8885AF1678E05E8B528CCC2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <942a1a66-5c18-43e2-886e-df38cb3e7258@intel.com>
+ <54db17d7-b150-4579-a33d-f1b5cc8943bc@amd.com>
+ <6eb0ec90-5859-4605-8a2e-657f6f711d61@intel.com>
+ <825ddadd-6770-46b5-936e-f17988534984@amd.com>
+ <13e1e1d8-5870-44ea-a800-e5b25bafd344@intel.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <13e1e1d8-5870-44ea-a800-e5b25bafd344@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SGAP274CA0021.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::33)
+ To DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/4] arm64/mm: Elide tlbi in contpte_convert() under
- BBML2
-To: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>
-Cc: ryan.roberts@arm.com, suzuki.poulose@arm.com,
- yang@os.amperecomputing.com, catalin.marinas@arm.com, will@kernel.org,
- joro@8bytes.org, jean-philippe@linaro.org, mark.rutland@arm.com,
- joey.gouly@arm.com, oliver.upton@linux.dev, james.morse@arm.com,
- broonie@kernel.org, maz@kernel.org, akpm@linux-foundation.org, jgg@ziepe.ca,
- nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com,
- smostafa@google.com, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-References: <20250228182403.6269-2-miko.lenczewski@arm.com>
- <20250228182403.6269-5-miko.lenczewski@arm.com>
- <f270bb5d-aa54-45d3-89ed-2b757ab3a4b0@redhat.com>
- <20250303094947.GB13345@e133081.arm.com>
- <7e987f17-ffcb-45e0-8588-2d569d90f776@redhat.com>
- <20250303105539.GA74129@e133081.arm.com>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- WNyWQQ==
-Organization: Red Hat
-In-Reply-To: <20250303105539.GA74129@e133081.arm.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: rEA-Y_DiCTTe-3AhO_5tp9-T29Cj1Mpl2TQhg1Q8FDM_1741002138
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|IA1PR12MB6091:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6fcf19c8-30f2-4c89-8a1f-08dd5a487cfd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?YlBIdGRMNjF4WWNid2tzZ0ZQNEdZNFd1VWZzcUNHMm9wVHVmUTRKV3pHVmlY?=
+ =?utf-8?B?SlZ0K1BBaUU2UnpwZGZBdGRhTXhKYnRoQndDR2VSanM2ZFdKREtYMEszNFJq?=
+ =?utf-8?B?ZDVYZEJFbC9KYnBSSjlGNERxalB3TEE5WmYyVE1tM0p0dUg2VFhLOUFVNzdm?=
+ =?utf-8?B?amZsMlZBSzFzTldxL1phcmh6MFl0cmVUQms1djhta2lOWTdWTTNubHhCSXZp?=
+ =?utf-8?B?enc5MUI1TXpabEpSSERvTE9QRW9MUXNqckJEd0JPYXlQRjJtMFRxTWpoR3V5?=
+ =?utf-8?B?WGhPNk5yblJDYnJtWFZ2U1kyMkpjc2VxaDBSQlloVE02MzB2bFJHUTR1azl6?=
+ =?utf-8?B?RHVxL2ZjRDB3NUxoOEZhS0ZhR1pJSGJlQXBIZUdyaEh1TVNxR1NwaGJYWGZX?=
+ =?utf-8?B?RmZObVhCS0NtU3hRY3JiTDNRNTJiQkkxL29VUEIzUzQrb0p5eEtpbHdOeVpy?=
+ =?utf-8?B?VlE5eHlYb2Fvb283K1dhbS9mSDQzZEs1UWh6M2YzOE1md2YrWW1Xc1oxZzZV?=
+ =?utf-8?B?MCt3cGNEUTM1MDIycnZKNlMvTnZWcUdpdDIyZmdrOU5SeVJvaGd1Ri80M2x3?=
+ =?utf-8?B?S2NSQmxTNHZxdGVDa0RoZE1EMkY0MklyVGV5Y0Y5WmZiTVkzRVhSalQva2pL?=
+ =?utf-8?B?cFp1NUhla3JKeVl3MWNCN2hSUjJabWZFdnhSMytMcTAxTktRU0hRRnlOWUpn?=
+ =?utf-8?B?aUJETUoxdXdEK2ZuRnhoblJiZ1E1clo3ZDg3K0FrbllkQWxpQkRwWTFUY0Q5?=
+ =?utf-8?B?bUUxcy92dGoxWTdjZ2pXWEp6K2VBa3FFeFl5enEvZzYzUU12SWptc3RXc3B3?=
+ =?utf-8?B?VlJhTlc1V0U4d1VOK0E1aEwyayswOVlLQ0F3UEpveHpUQWdVakw1S1RMYXhp?=
+ =?utf-8?B?SitncHN6d00yS2ZMbzBvcHg1ejNsbUFxVXdpb3FCWHhGN043cXpCUmJRVWlZ?=
+ =?utf-8?B?Y0lvY1JMNFp1dGlSdU85OFh5eEk5SWNJZnhBRTNOVlBkRWpMQlh0S3ZsNWRi?=
+ =?utf-8?B?UVNQS3hDK1h4N2hBOFJHUDk4dXhLZExpMTBxaTRsSXBrekJ3bjNiMTErNndP?=
+ =?utf-8?B?MXpzWDQ5a3JoZTdLeURFSXQ0Zis3SXFjN2NrV0VwbldoeFJRRUd2U2xQUGRy?=
+ =?utf-8?B?N0RlMFNmMEdkNHVzL1VjYlkzWkxoc2lkNjBCUW9oWjJyOURVdzhkbEsrbU1m?=
+ =?utf-8?B?dWhwSlB2RXBRbzVVM2ZqWElaN0R5akhSdytmYlh0aXl3M3ZVMUd0RXpRTjZ1?=
+ =?utf-8?B?eE52Y2gwWFdsR0ZxdmVKZHlMS09qSC9CYmxEU21BQ3JWbmtId05qbkgxRnVr?=
+ =?utf-8?B?QXVGRExZR3dNMFZCUEg0RXAzU21QdjBEMUl4WEJWT1BYZ2NkRzd6VkRvMS91?=
+ =?utf-8?B?REkxc0R2YzBGQUhEeDVKR0JpSnY3aXA1Y3RtRmpCaGVkSDQzTXNqK3A2TDdL?=
+ =?utf-8?B?L1FGYzUvSkJRZFg4UWgvcnZZWDRSeFVqTDFiNXBaRXFpUSt1SEgrQXZCdG9n?=
+ =?utf-8?B?VVBTS0RZUVN1aTVpLzJ1VGlyNHByMktyUjFVKzZvN01lbklFWEhvV0VPMmhZ?=
+ =?utf-8?B?TFJHSmZabzNmbC90OTBpVERKUUo4b3J3eEJ4UjFYSHl1VXVSblRDbWFIWFN3?=
+ =?utf-8?B?MGwyWWJ1V0lIei9mRnc4LzY4VEZjRm1xb0ZGWXYwbmh0UUI0WlFQUWFyMEFj?=
+ =?utf-8?B?QmhWZVp0ZTB4VFh5dlJWbjdud3Zwd2xJckIrVGErZjA0NFdDY3NiTzJETzBS?=
+ =?utf-8?B?Zjh3UG5mZWxJb29tY2R0K3ZWL25SRVlIQzVLWmM5QzIzTHZmTUM4bEVxckE2?=
+ =?utf-8?B?dTJiMmVzRzhkMzA0SUs5bHpJcTlMb2Z5UG13TmFodUdYc0kzTHNHZmRZa0E4?=
+ =?utf-8?Q?3fDE2ozLbmFSO?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SU9qSFFYYVBNYmJQY3d5bC9rMmJCSlU5d3ZYeTdGYWs1V3pnQ1VBWHNRNjIr?=
+ =?utf-8?B?M2J0NnJHZmh1MFd5MXZUWHcyblRJcTZXRDVrS3JEdEhjdEEvOHFUVHprbVNZ?=
+ =?utf-8?B?OHNQNmU0NzE5dG9GMnpUc0dZWUJrc2Q3M3drTXpTT1pMN1JuNEhKQ1ZBRExX?=
+ =?utf-8?B?bGQ5ZFVUTXBHQUNKSEZxQ0JQZllRMThNNUVYejZpUzNPbUYxaGhEcWV4bFBu?=
+ =?utf-8?B?dFBWTUNtV2JqRWttUXhTOGtsYW1FbEpJRkNHU3ZRRFlvcWhIVXU4em9FanFP?=
+ =?utf-8?B?Y0RrNFhhN3NPbVIwRGtvUG04NnRJTlpjamIxTUhpZmJpNEVkem1qQys1ZlRV?=
+ =?utf-8?B?Qi9HTDVwWmRaSnN1WFhVK09XdVdpZ1BmbnpPYSsrRWFsTU5kd091NFBTMktL?=
+ =?utf-8?B?Vy9aNjlCZHB2cnJkcE5vMG8rOU05WVcxTHVqS293ZmRKdmFYNUNMdlRxY1FG?=
+ =?utf-8?B?Q2ZzUXhBNVNEbUFCc2J5azJNdzhjR0NJSlRaZzM2RkhrZ1BheTVjMTZPaGVk?=
+ =?utf-8?B?S21pckJ3VDZKS3FMYjdhRkNZQ2hiR1lldk1EL0doeEZ1bVpMNkVmbVZFb0dZ?=
+ =?utf-8?B?cThZWDNscy9sZ2orVXlvcG1WbTBIc2RxTWJWRE5Tc3VNaHRrOXYvdGNHcUJN?=
+ =?utf-8?B?ZTBaL3NTUnBhenVLN3VZN3lDUU8wNkdhaVRlcnhVdjQ5dFJnMDlKNVY0dkda?=
+ =?utf-8?B?d0NkajlZaGo4bmZNMVJRU3B5citTenRxSEg1Nm11RitoUFRpQVJ2YnNPWm1l?=
+ =?utf-8?B?R0ZXTmc3eFNmdzF6R1E5Mlc5SDg1VGtkeWZveVhDTVljRk9TVTR4TFlqR1RO?=
+ =?utf-8?B?TFZqaXFSTWtvc0V6UWFtYjM2QzFwbEpzQ003VkJralVTS0lZMTArNDJSZ0l5?=
+ =?utf-8?B?MGJMVU5QWTJaNVU4REI5WFFrK0M5MEdXY214WW8wS05RUDg1OGVNNUYrWTVh?=
+ =?utf-8?B?YnU0OGFBeVhZcVBGbGNEdDB4clBpN3VVNGp1eGtYdXJ1dSszRlpVQnpVNU9Q?=
+ =?utf-8?B?R1U5SUU5YmE4RHRtWmFyb1Nmem03SUowcFMvYkVJL0g5eEF0R2RFQnBCQWw2?=
+ =?utf-8?B?NGNVQkd1VjB4TXVUVXQ0ajZVckFRV2hxLzd5UDFEOVpCV212T24wQ0ZuQ09Q?=
+ =?utf-8?B?akNPenpUY1dSaFByejF6Z2V6YWZtbEd1SlBrbTBKK2k4Q2Y5dnh1K1d2b3Na?=
+ =?utf-8?B?b202emFaejI2NFpLcm9JZ0VSQTNlUitndFE2ZW56Zmo0S2ZHQU82blgzRXRC?=
+ =?utf-8?B?YVU3TSt4d3hvNU5teDRObDhGMFRmUHhYSFh6eHpLL3lmVVJldnpUNjh3cUEx?=
+ =?utf-8?B?SEJkRDNRSUFMd0tJRnphTjlOR1VFdUJJL09tQmtFUWZXYUZTWG9uaGthb3pt?=
+ =?utf-8?B?bkFRTnRrVVVDdkRZL2x2b0E5ak5oeGlVZ3QxdHhnRzVPaEI1UlgwUEVWOUxz?=
+ =?utf-8?B?STZNSlliSG95UUJWS3czQWswek1IYWdibWJlbU1wRTRXODlvUVRKTDh3T1Vn?=
+ =?utf-8?B?RjdmcXV4d29TUk03bktzZGxoaE9PeDk2V1dNOVdiTy9MS0U2SzBHNkdQTGRu?=
+ =?utf-8?B?WjU5QSsvZWtXY1k3enVLUklUVmpGUGN5SWYxRDFXRWNDczVqdXY0TnVKK05Z?=
+ =?utf-8?B?b0xvRDMwUDNBZVNxZ1BQMmxFMGduS2VPejlHRGFaRytxT2lTYVJob0ZrTTJr?=
+ =?utf-8?B?OUN1NU4xbEgyTGFuMHBQeEJSWFRlOG5yQUtVM1pDdm1LTkFqQ3B3ZlFFTm4v?=
+ =?utf-8?B?NlQwZ3VUSWZzNExqNVg4cE1PYnh0Y3ZYYVhzdFpOTE03NzJYLzlVZXR2TGlw?=
+ =?utf-8?B?NFVyMTgrUGNLYlBldmdOSGpwSG1ncm44RGF0RTJ5WFdrT3JPRTB5ZWdKbGpv?=
+ =?utf-8?B?dzdGcytWMGUvQll4NGxEZUVpbFdHY0M1WWlMNkZ5Y1AySmthRjFkOHVSblJ4?=
+ =?utf-8?B?b1VCM3dUdDlYbWFMWmhmL2F0Y1pyV3M1eE4rRG5XbC95MDEyZEQ2WEphaWND?=
+ =?utf-8?B?b2pCQ0N6NkRrZFZ5aXA2bVlhS0owc3YrUjVCVFl2Snl0VlhxSXNDRXd3R2l6?=
+ =?utf-8?B?ekMxZW9jTUdROXhreHM0N3MxMVpDaWcrNzJSd0dKNnZDNzhZaE01OU9yL1Jl?=
+ =?utf-8?Q?Q4IKlqeFCoCe4T15dFueyy5Ba?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6fcf19c8-30f2-4c89-8a1f-08dd5a487cfd
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2025 11:42:34.0984
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eigJF9K3gavkSgGQl9IimZw1uE67kZFxd4HJSsPYuUMZXgJJbH9ryx5iLp6AVNPn2xSu75aAmhG48VDQngtv5g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6091
 
-On 03.03.25 11:55, Mikołaj Lenczewski wrote:
-> On Mon, Mar 03, 2025 at 10:57:21AM +0100, David Hildenbrand wrote:
->> On 03.03.25 10:49, Mikołaj Lenczewski wrote:
->>> Hi David,
->>>
->>> Thanks for taking the time to review.
->>>
->>> On Mon, Mar 03, 2025 at 10:17:12AM +0100, David Hildenbrand wrote:
->>>> On 28.02.25 19:24, Mikołaj Lenczewski wrote:
->>>>> If we support bbml2 without conflict aborts, we can avoid the final
->>>>> flush and have hardware manage the tlb entries for us. Avoiding flushes
->>>>> is a win.
->>>>>
->>>>> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
->>>>> Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
->>>>> ---
->>>>>     arch/arm64/mm/contpte.c | 3 ---
->>>>>     1 file changed, 3 deletions(-)
->>>>>
->>>>> diff --git a/arch/arm64/mm/contpte.c b/arch/arm64/mm/contpte.c
->>>>> index 145530f706a9..77ed03b30b72 100644
->>>>> --- a/arch/arm64/mm/contpte.c
->>>>> +++ b/arch/arm64/mm/contpte.c
->>>>> @@ -72,9 +72,6 @@ static void contpte_convert(struct mm_struct *mm, unsigned long addr,
->>>>>     		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
->>>>>     	__set_ptes(mm, start_addr, start_ptep, pte, CONT_PTES);
->>>>> -
->>>>> -	if (system_supports_bbml2_noabort())
->>>>> -		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
->>>>>     }
->>>>>     void __contpte_try_fold(struct mm_struct *mm, unsigned long addr,
->>>>
->>>> What's the point of not squashing this into #2? :)
->>>>
->>>> If this split was requested during earlier review, at least seeing patch #2
->>>> on its own confused me.
->>>
->>> This split is a holdover from an earlier patchset, where it was still
->>> unknown whether the removal of the second flush was permitted with
->>> BBML2. Partly this was due to us being worried about conflict aborts
->>> after the removal, and partly this was because the "delay" is a separate
->>> optimisation that we could apply even if it turned out the final patch
->>> was not architecturally sound.
->>>
->>> Now that we do not handle conflict aborts (preferring only systems that
->>> handle BBML2 without ever raising aborts), the first issue is not a
->>> problem. The reasoning behind the second patch is also a little bit
->>> outdated, but I can see the logical split between a tlbi reorder, and
->>> the removal of the tlbi. If this is truly redundant though, I would be
->>> happy to squash the two into a single patch.
+Hi Yi, Kevin, Jason,
+
+
+On 3/2/2025 1:40 PM, Yi Liu wrote:
+> On 2025/2/28 16:47, Vasant Hegde wrote:
+>> Hi Yi,
 >>
->> Thanks for the information.
 >>
->> Does patch #2 (reordering the tlbi) have any benefit on its own? I read
->> "other threads will not see an invalid pagetable entry", but I am not sure
->> that is correct. A concurrent HW page table walker would still find the
->> invalid PTE? It's just a matter of TLB state.
+>> On 2/28/2025 2:17 PM, Yi Liu wrote:
+>>> On 2025/2/28 16:30, Vasant Hegde wrote:
+>>>> Hi Yi,
+>>>>
+>>>>
+>>>> On 2/28/2025 1:13 PM, Yi Liu wrote:
+>>>>> On 2025/2/28 14:32, Tian, Kevin wrote:
+>>>>>>> From: Vasant Hegde <vasant.hegde@amd.com>
+>>>>>>> Sent: Thursday, February 27, 2025 11:28 PM
+>>>>>>>
+>>>>>>> Hi Kevin,
+>>>>>>>
+>>>>>>>
+>>>>>>> On 2/26/2025 12:35 PM, Tian, Kevin wrote:
+>>>>>>>>> From: Tian, Kevin
+>>>>>>>>> Sent: Wednesday, February 26, 2025 10:51 AM
+>>>>>>>>>
+>>>>>>>>>> From: Jason Gunthorpe <jgg@ziepe.ca>
+>>>>>>>>>> Sent: Wednesday, February 26, 2025 9:18 AM
+>>>>>>>>>>
+>>>>>>>>>> On Wed, Feb 26, 2025 at 01:12:38AM +0000, Tian, Kevin wrote:
+>>>>>>>>>>> If above understanding is true, my preference is to support a sats flag
+>>>>>>>>>>> in domain alloc (nested_parent only and PCI/CXL.io only, as the start).
+>>>>>>> For
+>>>>>>>>>>> AMD it turns on the sats bit in the DTE. for Intel/ARM the permission
+>>>>>>>>>>> structure is created and updated according to the map/unmap calls
+>>>>>>>>>>> on the parent S2.
+>>>>>>>>>>
+>>>>>>>>>> They are functionally different things, and have different
+>>>>>>>>>> requirements on the PCI topologies supported (eg CXL.cache vs no
+>>>>>>>>>> CXL.cache)
+>>>>>>>>>>
+>>>>>>>>>> I think they need to be different flags
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Not exactly. They are functionally different but serving the same purpose
+>>>>>>>>> to the user. From user p.o.v. it's sufficient to have a general flag for
+>>>>>>>>> sats
+>>>>>>>>> when allocating a domain. The underlying driver decides whether such
+>>>>>>>>> flag is supported based on the domain type and the associated device,
+>>>>>>>>> just like checks on other existing flags.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Chatted with Yi offline. Having untrusted user control a security
+>>>>>>>> feature doesn't make much sense. Probably what we really require
+>>>>>>>> is:
+>>>>>>>>
+>>>>>>>> - IOMMU core exposes a separate sats knob per probed device,
+>>>>>>>>      allowing the administrator to manage the sats policy which could
+>>>>>>>>      be no ats, unsecure ats and secure ats (might be further set per
+>>>>>>>>      domain type in case the hw doesn't support sats for all types or
+>>>>>>>>      the driver doesn't support all hw-supported types in one batch).
+>>>>>>>
+>>>>>>> When you say "sats knob", you mean sysfs interface?
+>>>>>>
+>>>>>> yes
+>>>>>
+>>>>> in case this is the direction. This might be a per iommu_group knob. do we
+>>>>
+>>>>
+>>>>> want a default value per some info that can be probed by kernel?
+>>>>
+>>>> I prefer kernel probe/setting default values so that we can enforce HW
+>>>> restrictions (like SNP, untrusted device etc) and then....
+>>>
+>>> I got untrusted device. How is SNP probed? Is there any bit for it?
+>>
+>> Yes. There is a IOMMU feature bit. see iommu_snp_enable().
 > 
-> I think I understand what you mean. I agree that it is possible for a
-> concurrent walk to see an invalid TLBI state, if it is on the same TLB
-> that the repaint is happening on. For other TLBs, the flush has not yet
-> propagated our invalidated PTEs (from `__ptep_get_and_clear()`) though?
+> sure.
+> 
+> I'm also thinking about the impact of such a knob. How should we define
+> this knob. Should we allow it to disable/enable ATS? Especially in runtime.
+> e.g. if the device is identified to be ATS untrusted by the admin, while> the
+hw does not support SATS, it seems reasonable to disable ATS for
+> such device. This might change the driver behavior on ATS enabling. Intel
+> iommu driver enables ATS as long as it's available in the probe_device()
+> op. What about AMD and ARM?
 
-What I am saying is: if there is no TLB entry yet, HW will walk the page 
-table to find no present PTE and trigger a fault.
+Currently AMD driver enables device ATS and configures IOMMU DTE (per device
+setup) during attach_device() path. There was a discussion to move device ATS
+enablement to probe() path. We will move it to probe() path soon.
 
-> That invalidation will only be seen by other TLBs after the
-> `__flush_tlb_range()`, so we should save a few faults because only
-> "local" threads will ever see the invalid entry, as opposed to all
-> threads that try to read our modified range?
 
-So what you say is, that deferring the flush means that if there is 
-already a TLB entry, flushing deferred reduces the likelihood that a 
-page table walk is triggered that could find no present PTE: 
-consequently, reducing the likelihood that a page fault is triggered.
+> 
+> On the other hand, we may just define the knob as sats required or not.
+> This is just a knob to let kernel know if the iommu driver needs to enable
+> sats or not. While leave the ATS enabling policy unchanged. This means
+> we need to probe the sats capability of iommu hw before creating the knob
+> in sysfs.
 
-(I use the word likelihood, because I assume other action could result 
-in a TLB entry getting flushed in the meantime, such as TLB entry reuse)
+Right. Lets see if below flow covers all the requirement
+  - Define new flags
+    IOMMU_HWPT_FLAGS_SATS / IOMMU_HWPT_FLAGS_ATS
 
-Correct?
+  - Enhance 'struct iommu_device' to include ATS flags (NO ATS, ATS, SECURE ATS)
+    iommu_device->ats_flag
 
-Or it is the case that I
-> have misunderstood something basic here, or that I have misinterpreted
-> what you have written?
+  - During probe() driver will update this field (similar to max_pasids)
+    If (IOMMU needs Secure ATS always)
+	iommu_device->ats_flag = IOMMU_HWPT_FLAGS_SATS
+    else if (device supports ATS and IOMMU supports Secure ATS)
+	iommu_device->ats_flag = IOMMU_HWPT_FLAGS_SATS | IOMMU_HWPT_FLAGS_ATS
+    else if (device supports ATS and IOMMU supports ATS)
+	iommu_device->ats_flag = IOMMU_HWPT_FLAGS_ATS
+    else
+	iommu_device->ats_flag = <NO FLAGS> (May be have one more flag
+IOMMU_HWPT_FLAGS_NO_ATS) ?
 
-No, that makes it clearer, thanks.
 
--- 
-Cheers,
+  - Based on default setting, kernel command line option and probe() data, core
+layer can adjust ATS capability. i. e.
+     - If we have kernel command line (say iommu.ats=<x>), use that data for all
+ATS capable device.
+     - If not, apply default
+      untrusted device -> force secure ATS or no ats
+      If HW needs Secure ATS always , enable Secure ATS
+      For all other cases use ATS
 
-David / dhildenb
+   - For domain_alloc_paging_flags(), send appropriate ATS flags
+
+     Q : We need to find a way to send this info to identity domain?
+
+   - sysfs knob : core layer knows supported ATS flags. We can expose them via
+sysfs. Then as Kevin mentioned, we can make sure changes happens only when
+device in unbind to domain.
+
+Does this flow works fine?
+
+-Vasant
 
