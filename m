@@ -1,73 +1,25 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD6F11F0E5A
-	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 09:57:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3264F1EC01F
+	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 10:17:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740995859; cv=none; b=f35BUdzGHBTThU9eUMv2q0P+Uog6FBAlNbzq0iPz7VmfNjRDNAkvQez8SbCNh3a5iUatRItth+MX7PGQzWMWfhZzLThG/L7LJjucowHwYW1w/FTrMg3CSK2bwl4yM7cLRxIjdhsWNCvlfazOllVEvkZvWw3zm4KjizoSh8DJFEg=
+	t=1740997056; cv=none; b=SHxdQ0uoI+uIvnGngEM2FJQz//aHjUF0Yv9sEbC6bUwDkJJNkglmVMkIJASd96CM1/D37O8jwZptp1OCX9/rHGyxWbsXTKjO+idOVgJfsY979U9ByOa1GmVZlKQovbz5/GjuJtRt4q1ncBrzaPFKyB+ZJe4WHozgwDHD9PDu84M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740995859; c=relaxed/simple;
-	bh=OlfOKlRc1CiBZb5Ud3wlY9YTANw9SXSmmOkIniwxfkk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MgjIGU5/fW1HppL2PqO1ipaxLSIwFANBOZYsekL9uuILzcZKhJUj4s02hYGjUpKZ9wrYyaFP7siF3zVFR5Tefs/2Hte7guaulNkk0ENCPsQ5LS3ZkNge1fNU+wz8TQLigr5h6LcQWkNuyZL6KPFNuHB5rYcTMf3lIJVC4wUyrYA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Ev+4igjO; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Ev+4igjO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1740995855;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=ykua7q7gnustm8lPrA9ZG6NARq70FXycw/3eNBtt0hs=;
-	b=Ev+4igjOAV2dZVTkYAenuccUQUPIn7GAD2BN8FUqVIdvUYxQs7Ouv4iPEphnkz4RBhGn5+
-	k0Mipjdj++jEWS62Jl4ZhLyFRsHF1hFmnocDHb/UP85BAptmEPeY/UKed7Z3VlIw9PF/iG
-	tj/zSukQMVkLahR8ClOjfago7lQPJuk=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-83-aSOcDiNzP_2mTuSVe63UPA-1; Mon, 03 Mar 2025 04:57:24 -0500
-X-MC-Unique: aSOcDiNzP_2mTuSVe63UPA-1
-X-Mimecast-MFC-AGG-ID: aSOcDiNzP_2mTuSVe63UPA_1740995844
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-390f729efacso665640f8f.0
-        for <iommu@lists.linux.dev>; Mon, 03 Mar 2025 01:57:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740995843; x=1741600643;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=ykua7q7gnustm8lPrA9ZG6NARq70FXycw/3eNBtt0hs=;
-        b=t0gtewo5li+oiNNwL8bfaB8Qph4151nxzYUOVhBmaBGLqc4NsazUvXtagdKqlDX6D5
-         NebOs+2fb0oAnqXUtuv5HLK47JjSKZXT8tqK1vnsEtadUxhvM1ruArAjyqou2U9755rn
-         1NjxGAXuzCcQ9VHimmQ8LrJv9T5UBz9g7/rgPreJf4eV8js/B2EAc6keB65hXbcMuHD/
-         GCB5iuwRks8WqM8pTXtgXDIFVKwXQYJq8QQVUvMYZOQSplBGIBk5xLi+fS7MdKx8OqgX
-         x30QCYHbJHfLkzKul6udhOZYEfnA6x9nOLxzlp6O2Ip3Dldr8dqeFioZCQhixIe2seYc
-         Tjhw==
-X-Forwarded-Encrypted: i=1; AJvYcCVcO2iAApXlNv5M06iINc5WMuR/fDQTYqESdAJFMvYJpHSrTTDUDY5qyJtCF+pIEGOV4SzVpw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxdlcqHUT3cTdEPRAs5wH5JLWYql2J0UC6voWfJhP9LnQgrvDID
-	a1k859e593o7ilCzoXgaqTjPTaM1ME5jv+UQ1LgGIB249pmBZ4qysEYVTCT8IOnHsVO/xV0rBoz
-	0lusgP+tZ1bLwyhrYL7AqtH/eeZ3X3RCY6QFI/nXcZfaXIHttyBEU
-X-Gm-Gg: ASbGncvUvrpYf7mio8NiEoobOyBMitCtwUhWLxSluMoMdgo0lVKmVf1w38/OjKxvAz+
-	mRL4ftS14lkDDt9B/OlALWHFCW12raop1FLCC4856/206P0KQW6atj2mqcTnLJPWfq0OJr0BKXy
-	Jz7KDyVsjBbmFnWsN7u2csPYj1Cvfp/Y79qG4T8lEIZAXrWit4SoL8rGPCXwOOgyDYHIU1vH8dS
-	LwhSNijLWyoR+RQWB80j8uEBQz9Ej1eI4ArxJ1QdWAFkvL//b7DzcxA8sNmrDlI3GL58s+B27LU
-	vumrVrlorCry6duamfuKn8sTT3uCdIMvc/KyLvjGDMfv2NECmh6WnHygRah9hJYtU92grF460LZ
-	ENrqwJ8VY8rRBeOZELDATabs5e2IY1z2WjTzHOkm2uMo=
-X-Received: by 2002:a05:6000:178b:b0:390:e7c1:59d3 with SMTP id ffacd0b85a97d-390ec7c6abamr9721373f8f.2.1740995843561;
-        Mon, 03 Mar 2025 01:57:23 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IHyA1rt+UhzjYjejJGIWpt5BNfcz7BL9jMerlSYdXlUaUi7HhGoy2uwdvEypDw3lLTiKoqZLw==
-X-Received: by 2002:a05:6000:178b:b0:390:e7c1:59d3 with SMTP id ffacd0b85a97d-390ec7c6abamr9721350f8f.2.1740995843219;
-        Mon, 03 Mar 2025 01:57:23 -0800 (PST)
-Received: from ?IPV6:2003:cb:c734:9600:af27:4326:a216:2bfb? (p200300cbc7349600af274326a2162bfb.dip0.t-ipconnect.de. [2003:cb:c734:9600:af27:4326:a216:2bfb])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-390e4795da5sm14193732f8f.15.2025.03.03.01.57.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Mar 2025 01:57:22 -0800 (PST)
-Message-ID: <7e987f17-ffcb-45e0-8588-2d569d90f776@redhat.com>
-Date: Mon, 3 Mar 2025 10:57:21 +0100
+	s=arc-20240116; t=1740997056; c=relaxed/simple;
+	bh=tD7KmWzNrrhlb8AecHmy9QUshQYB3sQ/X/8bHcRCAqo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=YQPXb+qmh+L8b2DWsWevjCojdpKfySMsWcEYoYLpT/+ZpMRrXtZOtmq0Hc81yAX7bKs3NYSpkiaG9+oBn29lFl8YMxDnKf6hZmhu78gXO79XOAV5OFDsl4ignPeJdafwwRljHk76W68aQjpjSqsEb8FSJhV32XvX5ZhCaon55+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4DA02113E;
+	Mon,  3 Mar 2025 02:17:47 -0800 (PST)
+Received: from [10.1.26.155] (XHFQ2J9959.cambridge.arm.com [10.1.26.155])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 110033F66E;
+	Mon,  3 Mar 2025 02:17:29 -0800 (PST)
+Message-ID: <43732270-8fd0-4a18-abec-096e383a6a4d@arm.com>
+Date: Mon, 3 Mar 2025 10:17:28 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,137 +27,146 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/4] arm64/mm: Elide tlbi in contpte_convert() under
- BBML2
-To: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>
-Cc: ryan.roberts@arm.com, suzuki.poulose@arm.com,
- yang@os.amperecomputing.com, catalin.marinas@arm.com, will@kernel.org,
+Subject: Re: [PATCH v2 4/4] iommu/arm: Add BBM Level 2 smmu feature
+Content-Language: en-GB
+To: Yang Shi <yang@os.amperecomputing.com>,
+ =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
+ suzuki.poulose@arm.com, catalin.marinas@arm.com, will@kernel.org,
  joro@8bytes.org, jean-philippe@linaro.org, mark.rutland@arm.com,
  joey.gouly@arm.com, oliver.upton@linux.dev, james.morse@arm.com,
- broonie@kernel.org, maz@kernel.org, akpm@linux-foundation.org, jgg@ziepe.ca,
- nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com,
- smostafa@google.com, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+ broonie@kernel.org, maz@kernel.org, david@redhat.com,
+ akpm@linux-foundation.org, jgg@ziepe.ca, nicolinc@nvidia.com,
+ mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
 References: <20250228182403.6269-2-miko.lenczewski@arm.com>
- <20250228182403.6269-5-miko.lenczewski@arm.com>
- <f270bb5d-aa54-45d3-89ed-2b757ab3a4b0@redhat.com>
- <20250303094947.GB13345@e133081.arm.com>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- WNyWQQ==
-Organization: Red Hat
-In-Reply-To: <20250303094947.GB13345@e133081.arm.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: Vd9ut4ugjfjsOeUZukX0HDkUwWl7Lls6SO9dpUs8Vic_1740995844
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ <20250228182403.6269-6-miko.lenczewski@arm.com>
+ <b46dc626-edc9-4d20-99d2-6cd08a01346c@os.amperecomputing.com>
+From: Ryan Roberts <ryan.roberts@arm.com>
+In-Reply-To: <b46dc626-edc9-4d20-99d2-6cd08a01346c@os.amperecomputing.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 03.03.25 10:49, Mikołaj Lenczewski wrote:
-> Hi David,
+On 01/03/2025 01:32, Yang Shi wrote:
 > 
-> Thanks for taking the time to review.
 > 
-> On Mon, Mar 03, 2025 at 10:17:12AM +0100, David Hildenbrand wrote:
->> On 28.02.25 19:24, Mikołaj Lenczewski wrote:
->>> If we support bbml2 without conflict aborts, we can avoid the final
->>> flush and have hardware manage the tlb entries for us. Avoiding flushes
->>> is a win.
->>>
->>> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
->>> Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
->>> ---
->>>    arch/arm64/mm/contpte.c | 3 ---
->>>    1 file changed, 3 deletions(-)
->>>
->>> diff --git a/arch/arm64/mm/contpte.c b/arch/arm64/mm/contpte.c
->>> index 145530f706a9..77ed03b30b72 100644
->>> --- a/arch/arm64/mm/contpte.c
->>> +++ b/arch/arm64/mm/contpte.c
->>> @@ -72,9 +72,6 @@ static void contpte_convert(struct mm_struct *mm, unsigned long addr,
->>>    		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
->>>    	__set_ptes(mm, start_addr, start_ptep, pte, CONT_PTES);
->>> -
->>> -	if (system_supports_bbml2_noabort())
->>> -		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
->>>    }
->>>    void __contpte_try_fold(struct mm_struct *mm, unsigned long addr,
+> 
+> On 2/28/25 10:24 AM, Mikołaj Lenczewski wrote:
+>> For supporting BBM Level 2 for userspace mappings, we want to ensure
+>> that the smmu also supports its own version of BBM Level 2. Luckily, the
+>> smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
+>> 0487K.a D8.16.2), so already guarantees that no aborts are raised when
+>> BBM level 2 is claimed.
 >>
->> What's the point of not squashing this into #2? :)
+>> Add the feature and testing for it under arm_smmu_sva_supported().
 >>
->> If this split was requested during earlier review, at least seeing patch #2
->> on its own confused me.
+>> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+>> ---
+>>   arch/arm64/kernel/cpufeature.c                  | 7 +++----
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 3 +++
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 4 ++++
+>>   4 files changed, 13 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+>> index 63f6d356dc77..1022c63f81b2 100644
+>> --- a/arch/arm64/kernel/cpufeature.c
+>> +++ b/arch/arm64/kernel/cpufeature.c
+>> @@ -2223,8 +2223,6 @@ static bool has_bbml2_noabort(const struct
+>> arm64_cpu_capabilities *caps, int sco
+>>               if (!cpu_has_bbml2_noabort(__cpu_read_midr(cpu)))
+>>                   return false;
+>>           }
+>> -
+>> -        return true;
+>>       } else if (scope & SCOPE_LOCAL_CPU) {
+>>           /* We are a hot-plugged CPU, so only need to check our MIDR.
+>>            * If we have the correct MIDR, but the kernel booted on an
+>> @@ -2232,10 +2230,11 @@ static bool has_bbml2_noabort(const struct
+>> arm64_cpu_capabilities *caps, int sco
+>>            * we have an incorrect MIDR, but the kernel booted on a
+>>            * sufficient CPU, we will not bring up this CPU.
+>>            */
+>> -        return cpu_has_bbml2_noabort(read_cpuid_id());
+>> +        if (!cpu_has_bbml2_noabort(read_cpuid_id()))
+>> +            return false;
+>>       }
+>>   -    return false;
+>> +    return has_cpuid_feature(caps, scope);
 > 
-> This split is a holdover from an earlier patchset, where it was still
-> unknown whether the removal of the second flush was permitted with
-> BBML2. Partly this was due to us being worried about conflict aborts
-> after the removal, and partly this was because the "delay" is a separate
-> optimisation that we could apply even if it turned out the final patch
-> was not architecturally sound.
+> Do we really need this? IIRC, it means the MIDR has to be in the allow list
+> *AND* MMFR2 register has to be set too. AmpereOne doesn't have MMFR2 register set.
+
+Miko, I think this should have been squashed into patch #1? It doesn't belong in
+this patch.
+
+Yang, we discussed this internally and decided that we thought it was best to
+still require BBML2 being advertised in the feature register. That way if trying
+to use KVM to emulate a CPU that is in the allow list but doesn't really support
+BBML2, we won't try to use it.
+
+But we still end up with the same problem if running on a physical CPU that
+supports BBML2 with conflict aborts, but emulating a CPU in the allow list. So
+given AmpereOne doesn't advertise BBML2 but does support it, I'd be happy to
+remove this check.
+
+Thanks,
+Ryan
+
+
 > 
-> Now that we do not handle conflict aborts (preferring only systems that
-> handle BBML2 without ever raising aborts), the first issue is not a
-> problem. The reasoning behind the second patch is also a little bit
-> outdated, but I can see the logical split between a tlbi reorder, and
-> the removal of the tlbi. If this is truly redundant though, I would be
-> happy to squash the two into a single patch.
-
-Thanks for the information.
-
-Does patch #2 (reordering the tlbi) have any benefit on its own? I read 
-"other threads will not see an invalid pagetable entry", but I am not 
-sure that is correct. A concurrent HW page table walker would still find 
-the invalid PTE? It's just a matter of TLB state.
-
-If there is no benefit in having patch #2 independently, I'd just squash 
-them. Reordering to then remove is more complicated than just removing 
-it IMHO.
-
--- 
-Cheers,
-
-David / dhildenb
+> Thanks,
+> Yang
+> 
+>>   }
+>>     #ifdef CONFIG_ARM64_PAN
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/
+>> arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> index 9ba596430e7c..6ba182572788 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> @@ -222,6 +222,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+>>           feat_mask |= ARM_SMMU_FEAT_VAX;
+>>       }
+>>   +    if (system_supports_bbml2_noabort())
+>> +        feat_mask |= ARM_SMMU_FEAT_BBML2;
+>> +
+>>       if ((smmu->features & feat_mask) != feat_mask)
+>>           return false;
+>>   diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/
+>> arm/arm-smmu-v3/arm-smmu-v3.c
+>> index 358072b4e293..dcee0bdec924 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -4406,6 +4406,9 @@ static int arm_smmu_device_hw_probe(struct
+>> arm_smmu_device *smmu)
+>>       if (FIELD_GET(IDR3_RIL, reg))
+>>           smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
+>>   +    if (FIELD_GET(IDR3_BBML, reg) == IDR3_BBML2)
+>> +        smmu->features |= ARM_SMMU_FEAT_BBML2;
+>> +
+>>       /* IDR5 */
+>>       reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
+>>   diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/
+>> arm/arm-smmu-v3/arm-smmu-v3.h
+>> index bd9d7c85576a..85eaf3ab88c2 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> @@ -60,6 +60,9 @@ struct arm_smmu_device;
+>>   #define ARM_SMMU_IDR3            0xc
+>>   #define IDR3_FWB            (1 << 8)
+>>   #define IDR3_RIL            (1 << 10)
+>> +#define IDR3_BBML            GENMASK(12, 11)
+>> +#define IDR3_BBML1            (1 << 11)
+>> +#define IDR3_BBML2            (2 << 11)
+>>     #define ARM_SMMU_IDR5            0x14
+>>   #define IDR5_STALL_MAX            GENMASK(31, 16)
+>> @@ -754,6 +757,7 @@ struct arm_smmu_device {
+>>   #define ARM_SMMU_FEAT_HA        (1 << 21)
+>>   #define ARM_SMMU_FEAT_HD        (1 << 22)
+>>   #define ARM_SMMU_FEAT_S2FWB        (1 << 23)
+>> +#define ARM_SMMU_FEAT_BBML2        (1 << 24)
+>>       u32                features;
+>>     #define ARM_SMMU_OPT_SKIP_PREFETCH    (1 << 0)
+> 
 
