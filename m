@@ -1,306 +1,187 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2082.outbound.protection.outlook.com [40.107.243.82])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64FB423237A;
-	Mon,  3 Mar 2025 20:09:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741032591; cv=none; b=oV0my8wpbj8buZawfOplEZozT9EQRoWNdGy0/DPbPDcJCjLEq+/LDDP4kt0VGqhniAJQc4brPF5laDPOAtcE/BAQK/OUqXNmVOZye3ahjtFxQAkbtKauxAxPV91s6zqFMsKyf38BlW2Q9qpIC+mjgE9TT29ZLdltNjpV+oOndp4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741032591; c=relaxed/simple;
-	bh=ak0uLAYOdPdOsOHTGiLI6WF/evbmhtkJgkzO+RvCUSI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Zb+b2dOTuf8dGMG5zDYd7IswG7JmzTWWcQ4a0BQFOBICFwhIYq9KWp6AGWptSqb6tpCaXBk1h7RilklieJaZiuz2hUnPqhhuUFv0h63ZFbCap7WNIP0UHBNS7oW1tI4XovclTjmgE7/4hsb+rDXisefKruQdsf7Jq6bytQYPE/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=amv3xpDo; arc=none smtp.client-ip=209.85.160.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D87523645F
+	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 20:53:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.82
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741035198; cv=fail; b=Ufl8GO5BvVS3fDLrySGOfDbfWwSu6l0TDDBjQ407gpalNJh4VV7aVihwpZmHmmn++WuRlPbxgvuwEcepsnLH0SL8zUDhhHlRQ799SA2ZIm7q01QEladtXgHIACOpFYVn4iOAgodKo9YhNbeMRBCVtllFerci2IXYxRqFzmpstFc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741035198; c=relaxed/simple;
+	bh=1lt1VLTBojY/8O3vRC1xc8FeT5cUi+lolEEJUBR+R4U=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=BuEfZOpbY4e2meUiNXmAH9XoOzE1VZWs6Og+0kRm8QdsJLwcC7fZ6x8s41fkyZQkKHS26p+KxPJWdvH0t3+Nb/hitpvp2ePChzuVvIX1mfAPLK1qhBs7rs/niI7EnUg56R9twQjPDIEzQjU1OWxhXF2eof0vkUDz6outzmjUNR8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=k9eOo8eD; arc=fail smtp.client-ip=40.107.243.82
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="amv3xpDo"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-471f9d11176so52675771cf.0;
-        Mon, 03 Mar 2025 12:09:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741032588; x=1741637388; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :feedback-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=db22fiEi+hGGRsW4Uw3D7Qv3wZB3dOWlWmyWq/YDVS8=;
-        b=amv3xpDoOYA3P73S2pR70GB0wKMfe4uj/Qj+nzpL1NgdXmDM8myzo5oIxEXrY+o0vy
-         Rlc3ZZsd9fk6NnqddaeOyot0h8qJumAGvZYDUmS0yj19trxzrEcVJLa/BxS9BMgbDu5m
-         wgbXtdqxZnHc1fB5yMqsAvy5EAdit3WyZjYVQL8/d7y9EytTOuplX4ZaKFCdiep7+kMr
-         KrNS/I0PQIxoBsqX7HLDDXND2N8XihWSm+D+gd78rl62BP5UXYnaJOQ7rn4ogaJGP8Zo
-         AQ1+IWMRECLavKCJHxjfB9rDsiCPSMII9sME4FDAMG0l8wz1+CttSJwo1SiQBthHehhZ
-         tbXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741032588; x=1741637388;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :feedback-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=db22fiEi+hGGRsW4Uw3D7Qv3wZB3dOWlWmyWq/YDVS8=;
-        b=ITPZZAKGozPuumC6xtSbLqPOi1VE38exH5Zrl0SEpuey3Nb0dPeADNOVrOinMjaduZ
-         Sd3YvHTLxNuOjwt0ZPeabzAOPr8g0IFTe6y47hse6BS4TdJhbv1+/GagnNubzSQrdgkI
-         ZaCup8RB/ManGoBdsb8tFwVgxbvA2J4xBlcW9mTK3juZvXv+NFu3ZNtgYRjYC3BX/AZW
-         t7he7P7sWrQDN1t+QwZpZvewBiwGDsA4x2iCg9RJVu2GwMV9yqtGmp/01uG0hsFnC1MD
-         sbo0n3SLxtIObxD9bQFDJDgayi6Eu//TzhKBOcMexr/b8mHZ2v4DWp8nD3/twmmM7zZg
-         JyFg==
-X-Forwarded-Encrypted: i=1; AJvYcCVRZwNndH9RGWj+53ahIK63Q6mJjDx6ghYi9N+PVtdnnDuBw2/EX7qjgPb6M3yds4oFQjWwzA==@lists.linux.dev, AJvYcCXwnYEVQyoRGxUyOdToYoyUqYDDb0MhG4Isr7fZE/HLlscZedi42UuN4uUUHknZvCZUW08bRQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyf8Vlhg9NlP4IQHbiQf7UOgpOngAOZJadaRLwK1lrDS82B1bmS
-	p+LASE1u/XUCu8L2Wst3vbGqsIiRFX7etpoN3ghk9M+SGJA1xRyq
-X-Gm-Gg: ASbGncuFMVl52xCEYonCctu3D8dQrx+H5lMqjI11J94L71B3QWILdH4TjX8HMO6qciP
-	jveqNLy46X/1snU9EUnFv9oNQG+q+ziJCH2JFJvpI98YwpBr4TOd8GENZ7gJhhvPQ9zGZWqa+Fe
-	EyvCTQHStrca46ITyq/gMUJzOj9+6GI9rMrQttj1up4tNsm0STx9Jx15m+sKTtnudnUigIPcYo7
-	KiNIwC7RZMFJ3COqvvVSOWSY95NZIt+VJ+ISWcha6O8lDYWxZAIT0biaykvZOG8gL4LsYKbjIwX
-	iJrO7yC9R1W16LqvlYC/ui+9b4iO1iDeg9WH00FEf4zMuPBVN3fgSc06o7kCMDlD9GpSqOg8+kS
-	hhnHxjJjrqCcRJn5BxD9fqXVX1QA0lanxwJA=
-X-Google-Smtp-Source: AGHT+IEGE3tL8GklgaxBgKCmuvBxSl98F8xYTsuVaIP68aXbDef7LLSQMRDFdPvP3NnT2UnrWW+Ktw==
-X-Received: by 2002:ac8:7fcb:0:b0:472:13f8:a974 with SMTP id d75a77b69052e-474bc0ff398mr193507931cf.41.1741032588072;
-        Mon, 03 Mar 2025 12:09:48 -0800 (PST)
-Received: from fauth-a1-smtp.messagingengine.com (fauth-a1-smtp.messagingengine.com. [103.168.172.200])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-474efb85808sm12724511cf.38.2025.03.03.12.09.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Mar 2025 12:09:47 -0800 (PST)
-Received: from phl-compute-07.internal (phl-compute-07.phl.internal [10.202.2.47])
-	by mailfauth.phl.internal (Postfix) with ESMTP id CA2B21200069;
-	Mon,  3 Mar 2025 15:09:46 -0500 (EST)
-Received: from phl-mailfrontend-02 ([10.202.2.163])
-  by phl-compute-07.internal (MEProxy); Mon, 03 Mar 2025 15:09:46 -0500
-X-ME-Sender: <xms:igzGZ6BHVTIavAAf-qxVp9Tb3sKXVHPK2nT33JWA4s4zcqKoJYreIA>
-    <xme:igzGZ0hbHxwLGhUy-G6d_nJy2HJuH723qw3j_mgLQRADpm8Xv4GNhqUZMdThie85V
-    iRBV5KUGSA6k23BfA>
-X-ME-Received: <xmr:igzGZ9nlHLO-dl590YhcRN33K4iXnPvRBTNqIYYfGSknE5A9TGUJBMybO7Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddutddttdegucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
-    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnecujfgurhepfffhvfevuffkfhggtggugfgjsehtkeertddt
-    tdejnecuhfhrohhmpeeuohhquhhnucfhvghnghcuoegsohhquhhnrdhfvghnghesghhmrg
-    hilhdrtghomheqnecuggftrfgrthhtvghrnhepgffhudfhieeggfffleevvedvieettddv
-    veetfeejjeffjefftdefieffgeetgfehnecuffhomhgrihhnpehgihhthhhusgdrtghomh
-    dpiihulhhiphgthhgrthdrtghomhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgr
-    mhepmhgrihhlfhhrohhmpegsohhquhhnodhmvghsmhhtphgruhhthhhpvghrshhonhgrlh
-    hithihqdeiledvgeehtdeigedqudejjeekheehhedvqdgsohhquhhnrdhfvghngheppehg
-    mhgrihhlrdgtohhmsehfihigmhgvrdhnrghmvgdpnhgspghrtghpthhtohepvdefpdhmoh
-    guvgepshhmthhpohhuthdprhgtphhtthhopegrrdhhihhnuggsohhrgheskhgvrhhnvghl
-    rdhorhhgpdhrtghpthhtoheprghlihgtvghrhihhlhesghhoohhglhgvrdgtohhmpdhrtg
-    hpthhtohepuggrnhhivghlrdgrlhhmvghiuggrsegtohhllhgrsghorhgrrdgtohhmpdhr
-    tghpthhtohepsggvnhhnohdrlhhoshhsihhnsehprhhothhonhdrmhgvpdhrtghpthhtoh
-    eprggsughivghlrdhjrghnuhhlghhuvgesghhmrghilhdrtghomhdprhgtphhtthhopegu
-    rghkrheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprhhosghinhdrmhhurhhphhihse
-    grrhhmrdgtohhmpdhrtghpthhtoheprhhushhtqdhfohhrqdhlihhnuhigsehvghgvrhdr
-    khgvrhhnvghlrdhorhhgpdhrtghpthhtohepohhjvggurgeskhgvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:igzGZ4w_vpCqjZEgLzu-3YYDC80mEYkATCCm5BtwEAwJxXK9zuUMlg>
-    <xmx:igzGZ_SabMcg403MF9xDW-r-7c8elq1CwKxZxNzOI9SI1oW1Wgq3Uw>
-    <xmx:igzGZzbOS24mlcxS0ZYffeiNB_iQ0F2iXRQtwVgn0RFX4JkbnLQ4_g>
-    <xmx:igzGZ4Ti8HHrgKkEeB8JIIZOCAZdQXfgM_c1mSDlkL26sr19hmj7eQ>
-    <xmx:igzGZxDXc0HG1fhA41rf8gQR_gSoy-8YafdVh7iCFkSrAm3ygQ-gDpiE>
-Feedback-ID: iad51458e:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 3 Mar 2025 15:09:45 -0500 (EST)
-Date: Mon, 3 Mar 2025 12:08:46 -0800
-From: Boqun Feng <boqun.feng@gmail.com>
-To: Andreas Hindborg <a.hindborg@kernel.org>
-Cc: Alice Ryhl <aliceryhl@google.com>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, dakr@kernel.org,
-	robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	iommu@lists.linux.dev, Ralf Jung <post@ralfj.de>,
-	comex <comexk@gmail.com>, lkmm@lists.linux.dev
-Subject: Re: Allow data races on some read/write operations
-Message-ID: <Z8YMTiKS4T9wC4t_@boqun-archlinux>
-References: <6dea7b6a-1534-47e7-94d2-d67417c3d4c1@proton.me>
- <tnwDK3QN_Xr0Yoa3U8HVxS5OqjvxIhgmmO_ifTGJR_EtIzjoxawOHtnbOJ9yChsUWXyFPcU9beIdrgbpfGZI8w==@protonmail.internalid>
- <3202F69F-397E-4BC4-8DD8-E2D4B0AB056F@collabora.com>
- <87bjuil15w.fsf@kernel.org>
- <t4HxdvR7WBX_861hiTXo72jqC9F9oRpIzgA_dD2yhcSuLISEkC-shMfSgllrFPpnkSZXGfRcc47keudMooNiIQ==@protonmail.internalid>
- <CAH5fLgg5MuUu=TX8mMsPf5RcLhMLHSU4Vct=h8rFX6Z7HjPxeA@mail.gmail.com>
- <87ikoqjg1n.fsf@kernel.org>
- <KpWTCfIlcLYFBpSvWPfALJ9VQn5a99_RAvxgMBc1aCrSalPB-qaW9IhXyaDG7HM1AcFPX5chj_Yr7IQp3F7UqA==@protonmail.internalid>
- <CAH5fLgh6ubawHh76wq7JPbcuBCWhm91m7Rc01MVsX-a3C6qaVA@mail.gmail.com>
- <87mse2hrd8.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="k9eOo8eD"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vWPP585vm6hKTgwxj61NZlq81KThLYP27arrRyRaboJuJ3ssDE8inNP4ftMz2GeeaZQYr3t67/PWwtXU68sZcKRhENrsfG3jyWmNsEgiRwDcouXpXGzh/HlogiZPGY/vcqYX/dgXU7XnseiBM7ApKX07lIRLjfcbgkdbeZgIP+NuAHZzBsBhAzh3EeEz522z2YuEKnhbqS6U3edk4qsHFD0jy0mXYHdl0NQJOKjnOUDw9UkQe17ZOG8nF+FlThOa9/R/ZNDVi9pA8eQuiRxsdie4homkBJbaiEpdNWM8X0nksBhtduOtj4txDbANZ37vEu4eFh82P0A4AfEhOUox4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gJfTUk5At8jqOLiem5U/lJN25OidUdxLoqk5UGBk+Fs=;
+ b=pdLluKtiSJY+WLvo9NXk1seogkQPAUa49i7PyNDgosH6+24ZyGC2TPO1niHZ4j4AwQxmhhPx7dKIIyAHsRNBfWB/xKlpoY6cqaeT88AqCHj3z8pPft0M0GohkmQ4KijIys30E3Hod67UvbRG0S4kMgpRtGz9BQu78GyJ7CQDnnvef/hj7NwS7/MAQIRxcb5HVleffjpWHkdnS/H2kQ8NAfd4LTXUG4jqlAVNf9YL37qsjDvOQQ9V9H5w4s0j2ZvIegH4sT9eAs1dbgQA5ADKQJYKA4Y32l6pfsgWDFdDhauIkApjXLlth8WrGN7xseAnzSHnqrAGsZ8PNx+qa5cmMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gJfTUk5At8jqOLiem5U/lJN25OidUdxLoqk5UGBk+Fs=;
+ b=k9eOo8eDjnqcqg3BcOSl9fHDK9l9OJnel2yNmO/YV0UUooDVJd3PA5214BEcUsIGNflKVl5EXkIRwLROkrqUryz+k4xDOvaT7RF+KDe8MMl8WuN2vYlGnGUqUDSNK8Db61J8igYjHeahKUVeWqnxxnhmse/M/UbH1eOx1v+nKF56I0C0U0VnLeKkZUyFMNlh1oQXkwU2BShYgCJzMXzJrbqRpC/kre5BMjXwQwc57V4qYwB1+1THn3AIMO1qg1gysy+ysp6p1cVmhlZWPixqkRxOZWCGcfmXF88cAGOSQ98b59znrerKAx/k3DNNJxBLbvEGF6ewZvxfJJPORTvwNQ==
+Received: from CH2PR18CA0008.namprd18.prod.outlook.com (2603:10b6:610:4f::18)
+ by PH7PR12MB7985.namprd12.prod.outlook.com (2603:10b6:510:27b::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8489.25; Mon, 3 Mar
+ 2025 20:53:12 +0000
+Received: from CH1PEPF0000AD7B.namprd04.prod.outlook.com
+ (2603:10b6:610:4f:cafe::cb) by CH2PR18CA0008.outlook.office365.com
+ (2603:10b6:610:4f::18) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8489.27 via Frontend Transport; Mon,
+ 3 Mar 2025 20:53:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CH1PEPF0000AD7B.mail.protection.outlook.com (10.167.244.58) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8511.15 via Frontend Transport; Mon, 3 Mar 2025 20:53:11 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 3 Mar 2025
+ 12:53:03 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 3 Mar
+ 2025 12:53:03 -0800
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
+ Transport; Mon, 3 Mar 2025 12:53:03 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@nvidia.com>, <kevin.tian@intel.com>, <robin.murphy@arm.com>,
+	<joro@8bytes.org>, <will@kernel.org>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 0/3] iommu: Clean up cookie and sw_msi in struct iommu_domain
+Date: Mon, 3 Mar 2025 12:52:49 -0800
+Message-ID: <cover.1741034885.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87mse2hrd8.fsf@kernel.org>
+Content-Type: text/plain
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH1PEPF0000AD7B:EE_|PH7PR12MB7985:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6dddafc2-1cdb-4c3d-faa5-08dd5a95694b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|376014|1800799024|36860700013|13003099007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?sCY6nBaUFvOeqe81IhIuAb9YoR/vElFampxj8cliPnvmxsSpwbDyDe3W9Hhh?=
+ =?us-ascii?Q?T/GB701Q29F8jVS8zo+gaPIU18m3b75Nb7MIm1hTNX3HzgeTCGoIGVap76XX?=
+ =?us-ascii?Q?hsy4zUOr4g8BVpN9V7oigEsCKVjcI1Lp6taHJxyHlmWD+aw9gr4eBtzOnTxI?=
+ =?us-ascii?Q?1S3ob6ImOeiBjBJN/NKV0KTpLvo3SvOSQ8vpc3It82lW4mdamIkPQp/CQLM/?=
+ =?us-ascii?Q?NKnwoaoNz5AeOKxKdUBmLQjmpx9EdxckW86jb+bYIVHmPo+xKLvUbd2Sk9Po?=
+ =?us-ascii?Q?jQMqx55EtvYYQntoFCEJeRh6MinY0fSldSiJ1YGgNFQvl0m3je26vZTbKGX2?=
+ =?us-ascii?Q?W/ckgnRRU9ZST2BjHcYA8fyI0auv1gkObPvN7tkr7KMD//soDKU0csTy1wrD?=
+ =?us-ascii?Q?yC95wQhLFw2du4xgGgtT1r2BgFsR9ieNmFfyqtYTsbmvg8VvUjsss4OdlBcG?=
+ =?us-ascii?Q?nRZ+WvN4HceNJXou1l/E2coy4B7II3jN9WXhnJi1p6OHN/rRlLHATD2nR5BL?=
+ =?us-ascii?Q?qEt6DUPik+V7edfsCZR3kVMIA30CZQyFC8t4NcAghhJwhXbo9//aJfBGVFBx?=
+ =?us-ascii?Q?l+91WhPVmvDnravHRszX/7ldHzXdkdKrjNKM6kincsR4t/YM6UOhHBBDDEcG?=
+ =?us-ascii?Q?gj5o7NUKOtkh89tuy/Wma7H6kaWYMbUerKx1QOJkTCKbYSmM1a22UsJc1uQV?=
+ =?us-ascii?Q?HYZRWY8yMPR8d7Qc/fr9MvUnt0h+YcQgYbIl22Ev6JvLPe9+zuDJnJGdXn/F?=
+ =?us-ascii?Q?aZWMPDeXT6fivm4KrH5T+LeMI+3PxdbYzcbrbvDhx+SOCAE5NJ0JbuWldi7X?=
+ =?us-ascii?Q?9JeOzs5Zq08rKjrlu2FgpyaR7tQPdRef+EP6qv1wfh0bcGOZFPk5h6ghJqBs?=
+ =?us-ascii?Q?/pSEJQ6pm7C/Nfbo14o8kjFWySn+mWXJU2KGBduG1baGLeM2n/cVYidMlJcG?=
+ =?us-ascii?Q?hljEsvLiX20rLfC5x5QKFtyMLpIUsUWV6hQAcGenaP+FQ2hv6Xnd1aq+/sJa?=
+ =?us-ascii?Q?qpFMExe0zs7kNQYLZ+5fEvUQJ2WNJCk3ksgcfnNLOwUJw6BAJ1l/DHZ8+lIS?=
+ =?us-ascii?Q?PbD0a1x0twkYak9ZOsVtY5H6SyMCoIImWHHsvZK3iM/a+6iGm6WvocEa3hqL?=
+ =?us-ascii?Q?gKglPGB8x2fU/DKPR1jUqMLWpG10PRmYku7NHg+DcjeygFJj/sDYOR0Scadb?=
+ =?us-ascii?Q?oSZy5DKXFSUFuaYNNJwq7A/rOcQ3KCQaj+oBfwZrsXTZuYinzAEiVQU3t8FK?=
+ =?us-ascii?Q?RSO7TYi+4MEe9zbGGiHJHLCkmF1FNzYRomxJLfTUppj0NuH5UX9Z2PiN69Gq?=
+ =?us-ascii?Q?z22GCP5q/XEc9ULgQ3seG80gwr0ZwmsjWCLKPBd7X3zDSVk6TuQ4Vphzdz6r?=
+ =?us-ascii?Q?2CKzvyvxUPsXef/0+p12yRzCDbRS3YSBF3V3hZvmM1G5VOCwosC/AciVX28V?=
+ =?us-ascii?Q?4wzgK6nN1Su3G0YZi4XFQdWxCVY6N/jTyT29s38rJ954ohOuIiOldDYxG7yR?=
+ =?us-ascii?Q?NYtGIV5aVIgKzXQ=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(1800799024)(36860700013)(13003099007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2025 20:53:11.8442
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6dddafc2-1cdb-4c3d-faa5-08dd5a95694b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH1PEPF0000AD7B.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7985
 
-On Mon, Mar 03, 2025 at 08:00:03PM +0100, Andreas Hindborg wrote:
-> 
-> [New subject, was: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction]
-> 
-> "Alice Ryhl" <aliceryhl@google.com> writes:
-> 
-> > On Mon, Mar 3, 2025 at 4:21 PM Andreas Hindborg <a.hindborg@kernel.org> wrote:
-> >>
-> >> "Alice Ryhl" <aliceryhl@google.com> writes:
-> >>
-> >> > On Mon, Mar 3, 2025 at 2:00 PM Andreas Hindborg <a.hindborg@kernel.org> wrote:
-> >> >>
-> >> >> "Daniel Almeida" <daniel.almeida@collabora.com> writes:
-> >> >>
-> >> >> > Hi Benno,
-> >> >> >
-> >> >>
-> >> >> [...]
-> >> >>
-> >> >> >>> +    /// Writes data to the region starting from `offset`. `offset` is in units of `T`, not the
-> >> >> >>> +    /// number of bytes.
-> >> >> >>> +    ///
-> >> >> >>> +    /// # Examples
-> >> >> >>> +    ///
-> >> >> >>> +    /// ```
-> >> >> >>> +    /// # fn test(alloc: &mut kernel::dma::CoherentAllocation<u8>) -> Result {
-> >> >> >>> +    /// let somedata: [u8; 4] = [0xf; 4];
-> >> >> >>> +    /// let buf: &[u8] = &somedata;
-> >> >> >>> +    /// alloc.write(buf, 0)?;
-> >> >> >>> +    /// # Ok::<(), Error>(()) }
-> >> >> >>> +    /// ```
-> >> >> >>> +    pub fn write(&self, src: &[T], offset: usize) -> Result {
-> >> >> >>> +        let end = offset.checked_add(src.len()).ok_or(EOVERFLOW)?;
-> >> >> >>> +        if end >= self.count {
-> >> >> >>> +            return Err(EINVAL);
-> >> >> >>> +        }
-> >> >> >>> +        // SAFETY:
-> >> >> >>> +        // - The pointer is valid due to type invariant on `CoherentAllocation`
-> >> >> >>> +        // and we've just checked that the range and index is within bounds.
-> >> >> >>> +        // - `offset` can't overflow since it is smaller than `selfcount` and we've checked
-> >> >> >>> +        // that `self.count` won't overflow early in the constructor.
-> >> >> >>> +        unsafe {
-> >> >> >>> +            core::ptr::copy_nonoverlapping(src.as_ptr(), self.cpu_addr.add(offset), src.len())
-> >> >> >>
-> >> >> >> Why are there no concurrent write or read operations on `cpu_addr`?
-> >> >> >
-> >> >> > Sorry, can you rephrase this question?
-> >> >>
-> >> >> This write is suffering the same complications as discussed here [1].
-> >> >> There are multiple issues with this implementation.
-> >> >>
-> >> >> 1) `write` takes a shared reference and thus may be called concurrently.
-> >> >> There is no synchronization, so `copy_nonoverlapping` could be called
-> >> >> concurrently on the same address. The safety requirements for
-> >> >> `copy_nonoverlapping` state that the destination must be valid for
-> >> >> write. Alice claims in [1] that any memory area that experience data
-> >> >> races are not valid for writes. So the safety requirement of
-> >> >> `copy_nonoverlapping` is violated and this call is potential UB.
-> >> >>
-> >> >> 2) The destination of this write is DMA memory. It could be concurrently
-> >> >> modified by hardware, leading to the same issues as 1). Thus the
-> >> >> function cannot be safe if we cannot guarantee hardware will not write
-> >> >> to the region while this function is executing.
-> >> >>
-> >> >> Now, I don't think that these _should_ be issues, but according to our
-> >> >> Rust language experts they _are_.
-> >> >>
-> >> >> I really think that copying data through a raw pointer to or from a
-> >> >> place that experiences data races, should _not_ be UB if the data is not
-> >> >> interpreted in any way, other than moving it.
-> >> >>
-> >> >>
-> >> >> Best regards,
-> >> >> Andreas Hindborg
-> >> >
-> >> > We need to make progress on this series, and it's starting to get late
-> >> > in the cycle. I suggest we:
-> >>
-> >> There is always another cycle.
-> >>
-> >> >
-> >> > 1. Delete as_slice, as_slice_mut, write, and skip_drop.
-> >> > 2. Change field_read/field_write to use a volatile read/write.
-> >>
-> >> Volatile reads/writes that race are OK?
-> >
-> > I will not give a blanket yes to that. If you read their docs, you
-> > will find that they claim to not allow it. But they are the correct
-> > choice for DMA memory, and there's no way in practice to get
-> > miscompilations on memory locations that are only accessed with
-> > volatile operations, and never have references to them created.
-> >
-> > In general, this will fall into the exception that we've been given
-> > from the Rust people. In cases such as this where the Rust language
-> > does not give us the operation we want, do it like you do in C. Since
-> > Rust uses LLVM which does not miscompile the C part of the kernel, it
-> > should not miscompile the Rust part either.
-> 
-> This exception we got for `core::ptr::{read,write}_volatile`, did we
-> document that somewhere?
-> 
+A few things in iommu_domain structure (such as iova_cookie, iommufd_hwpt,
+fault handler, and etc) are exclusive to certain types of iommu_domains.
+So, all of them can be seen as domain cookies in different cookie types.
 
-[Cc Ralf, comex and LKMM list]
+Furthermore, iova_cookie is shared with the msi_cookie use case. It could
+be cleaner by decoupling these too.
 
-Some related discussions:
+Define an enum iommu_domain_cookie_type to fit all those cookies in.
 
-* https://github.com/rust-lang/unsafe-code-guidelines/issues/476
-* https://github.com/rust-lang/unsafe-code-guidelines/issues/348#issuecomment-1221376388
-  
-  particularly Ralf's comment on comex's message:
+Since there are only two sw_msi implementations, check domain->cookie_type
+in iommu_dma_prepare_msi() to call the corresponding sw_msi function.
 
-  """
-  @comex
+This is a clean-up series for the previous sw_msi Part-1 core series. It's
+on github:
+https://github.com/nicolinc/iommufd/commits/iommufd_msi_cleanup-v3
 
-  > First, keep in mind that you could simply transliterate the C
-  > versions of READ_ONCE/WRITE_ONCE, barriers, etc. directly to Rust,
-  > using ptr::read_volatile/ptr::write_volatile in place of C volatile
-  > loads and stores, and asm! in place of C asm blocks. If you do,
-  > you'll end up with the same LLVM IR instructions (or GCC equivalent
-  > with rustc_codegen_gcc), which will get passed to the same
-  > optimizer, and which ultimately will work or not work to the same
-  > extent as the C versions.
+Changelog
+v3
+ * Integrate Robin's patch
+   https://lore.kernel.org/linux-iommu/4e68d5820be06adc1b34fc0d1c9399481151daee.1740742271.git.robin.murphy@arm.com/
+   replacing private_data_owner with the new cookie_type
+ * Move iommu_sw_msi stub from the public header to iommu-priv.h
+v2
+ https://lore.kernel.org/all/cover.1740705776.git.nicolinc@nvidia.com/
+ * Drop sw_msi function pointer
+ * Add a new private_data_owner tag in iommu_domain
+ * Let iommu core call the two sw_msi implementations directly
+v1
+ https://lore.kernel.org/all/cover.1740600272.git.nicolinc@nvidia.com/
 
-  Indeed I think that is probably the best approach.
-  """
+Thanks
+Nicolin
 
-* A LONG thread of the discussion:
+Nicolin Chen (2):
+  iommufd: Move iommufd_sw_msi and related functions to driver.c
+  iommu: Drop sw_msi from iommu_domain
 
-  https://rust-lang.zulipchat.com/#narrow/channel/136281-t-opsem/topic/UB.20caused.20by.20races.20on.20.60.7Bread.2Cwrite.7D_volatile.60/near/399343771
+Robin Murphy (1):
+  iommu: Sort out domain user data
 
-In general, the rationale is if Rust code could generate the same LLVM
-IR as C code, then if it's not data race per LKMM, then it's not treated
-as data race in Rust as well. But this is not a "get-out-of-UB" free
-card IMO:
+ drivers/iommu/dma-iommu.h               |  14 ++
+ drivers/iommu/iommu-priv.h              |  13 ++
+ drivers/iommu/iommufd/iommufd_private.h |   7 +-
+ include/linux/iommu.h                   |  35 ++--
+ drivers/iommu/dma-iommu.c               | 207 ++++++++++++------------
+ drivers/iommu/iommu-sva.c               |   1 +
+ drivers/iommu/iommu.c                   |  34 +++-
+ drivers/iommu/iommufd/device.c          | 127 +--------------
+ drivers/iommu/iommufd/driver.c          | 125 ++++++++++++++
+ drivers/iommu/iommufd/hw_pagetable.c    |   4 +-
+ 10 files changed, 313 insertions(+), 254 deletions(-)
 
-* If both sides of the racing are Rust code, we should avoid using
-  {read,write}_volatile(), and use proper synchronization.
 
-* If atomicity is also required, we should use Atomic::from_ptr()
-  instead of {read,write}_volatile().
+base-commit: 5e9f822c9c683ae884fa5e71df41d1647b2876c6
+-- 
+2.43.0
 
-> I feel slightly lost when trying to figure out what fits under this
-> exception and what is UB. I think that fist step to making this more
-> straight forward is having clear documentation.
-> 
-
-I agree, and I'm happy to help on this.
-
-> For cases where we need to do the equivalent of `memmove`/`memcpy`, what
-> are is our options?
-> 
-
-Seems we need "volatile" memmove and memcpy in Rust?
-
-> In case we have no options, do you know who would be the right people on
-> the Rust Project side to contact about getting an exception for this
-> case?
-> 
-
-I will say it'll be t-opsem.
-
-Regards,
-Boqun
-
-> 
-> Best regards,
-> Andreas Hindborg
-> 
-> 
