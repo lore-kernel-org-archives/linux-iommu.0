@@ -1,172 +1,157 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3264F1EC01F
-	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 10:17:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E0C3F1F4622
+	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 10:31:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740997056; cv=none; b=SHxdQ0uoI+uIvnGngEM2FJQz//aHjUF0Yv9sEbC6bUwDkJJNkglmVMkIJASd96CM1/D37O8jwZptp1OCX9/rHGyxWbsXTKjO+idOVgJfsY979U9ByOa1GmVZlKQovbz5/GjuJtRt4q1ncBrzaPFKyB+ZJe4WHozgwDHD9PDu84M=
+	t=1740997870; cv=none; b=bCnNbu+xA0XWixAYGXZsz9dknLmK99KE/7gC9LtI5A75a127x9lGQcFjN8ewLOy9haIL9sm72Kf9ty98YUuoVaQakJa7Q98iNUgGXhts1n4wO8v+n1rqdlIaH7fS8TQ5l5b4lpKrwxcC/1//sW17fsY3YNOmC4S3stRSdZRu0NY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740997056; c=relaxed/simple;
-	bh=tD7KmWzNrrhlb8AecHmy9QUshQYB3sQ/X/8bHcRCAqo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=YQPXb+qmh+L8b2DWsWevjCojdpKfySMsWcEYoYLpT/+ZpMRrXtZOtmq0Hc81yAX7bKs3NYSpkiaG9+oBn29lFl8YMxDnKf6hZmhu78gXO79XOAV5OFDsl4ignPeJdafwwRljHk76W68aQjpjSqsEb8FSJhV32XvX5ZhCaon55+c=
+	s=arc-20240116; t=1740997870; c=relaxed/simple;
+	bh=rgzwGH5cEjTRq3vGnAFZZRUFPP20k51i8X7R7tFsVDg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CzJ1se8xL5dmVmBa+HXwze5aB5YwuBBXKmCTLJuoYtbZdJdcSHnMNl78KYkz8bmCFeFfMNbNi5SfzNrCVX+aG8rKRq2+7oB/JF66CVPAO5jWFsq6iBiw/vFHo7CEg7ecm5m35dp+P1JSjrv5Vx2NIvdL4TNjJv2UISXYx7yv26Y=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4DA02113E;
-	Mon,  3 Mar 2025 02:17:47 -0800 (PST)
-Received: from [10.1.26.155] (XHFQ2J9959.cambridge.arm.com [10.1.26.155])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 110033F66E;
-	Mon,  3 Mar 2025 02:17:29 -0800 (PST)
-Message-ID: <43732270-8fd0-4a18-abec-096e383a6a4d@arm.com>
-Date: Mon, 3 Mar 2025 10:17:28 +0000
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6621C113E;
+	Mon,  3 Mar 2025 02:31:22 -0800 (PST)
+Received: from e133081.arm.com (unknown [10.57.37.136])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E3C423F66E;
+	Mon,  3 Mar 2025 02:31:04 -0800 (PST)
+Date: Mon, 3 Mar 2025 10:31:02 +0000
+From: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Cc: "ryan.roberts@arm.com" <ryan.roberts@arm.com>,
+	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+	"yang@os.amperecomputing.com" <yang@os.amperecomputing.com>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"mark.rutland@arm.com" <mark.rutland@arm.com>,
+	"joey.gouly@arm.com" <joey.gouly@arm.com>,
+	"oliver.upton@linux.dev" <oliver.upton@linux.dev>,
+	"james.morse@arm.com" <james.morse@arm.com>,
+	"broonie@kernel.org" <broonie@kernel.org>,
+	"maz@kernel.org" <maz@kernel.org>,
+	"david@redhat.com" <david@redhat.com>,
+	"akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"mshavit@google.com" <mshavit@google.com>,
+	"jsnitsel@redhat.com" <jsnitsel@redhat.com>,
+	"smostafa@google.com" <smostafa@google.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v2 4/4] iommu/arm: Add BBM Level 2 smmu feature
+Message-ID: <20250303103102.GC13345@e133081.arm.com>
+References: <20250228182403.6269-2-miko.lenczewski@arm.com>
+ <20250228182403.6269-6-miko.lenczewski@arm.com>
+ <20250228193221.GM5011@ziepe.ca>
+ <b23aa37f8e864dea82a6143bece912d6@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] iommu/arm: Add BBM Level 2 smmu feature
-Content-Language: en-GB
-To: Yang Shi <yang@os.amperecomputing.com>,
- =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
- suzuki.poulose@arm.com, catalin.marinas@arm.com, will@kernel.org,
- joro@8bytes.org, jean-philippe@linaro.org, mark.rutland@arm.com,
- joey.gouly@arm.com, oliver.upton@linux.dev, james.morse@arm.com,
- broonie@kernel.org, maz@kernel.org, david@redhat.com,
- akpm@linux-foundation.org, jgg@ziepe.ca, nicolinc@nvidia.com,
- mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <20250228182403.6269-2-miko.lenczewski@arm.com>
- <20250228182403.6269-6-miko.lenczewski@arm.com>
- <b46dc626-edc9-4d20-99d2-6cd08a01346c@os.amperecomputing.com>
-From: Ryan Roberts <ryan.roberts@arm.com>
-In-Reply-To: <b46dc626-edc9-4d20-99d2-6cd08a01346c@os.amperecomputing.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <b23aa37f8e864dea82a6143bece912d6@huawei.com>
 
-On 01/03/2025 01:32, Yang Shi wrote:
+Hi Both,
+
+Thanks for review and for checking other implementations for this
+discrepancy.
+
+On Mon, Mar 03, 2025 at 08:49:02AM +0000, Shameerali Kolothum Thodi wrote:
 > 
 > 
+> > -----Original Message-----
+> > From: Jason Gunthorpe <jgg@ziepe.ca>
+> > Sent: Friday, February 28, 2025 7:32 PM
+> > To: Mikołaj Lenczewski <miko.lenczewski@arm.com>; Shameerali Kolothum
+> > Thodi <shameerali.kolothum.thodi@huawei.com>
+> > Cc: ryan.roberts@arm.com; suzuki.poulose@arm.com;
+> > yang@os.amperecomputing.com; catalin.marinas@arm.com;
+> > will@kernel.org; joro@8bytes.org; jean-philippe@linaro.org;
+> > mark.rutland@arm.com; joey.gouly@arm.com; oliver.upton@linux.dev;
+> > james.morse@arm.com; broonie@kernel.org; maz@kernel.org;
+> > david@redhat.com; akpm@linux-foundation.org; nicolinc@nvidia.com;
+> > mshavit@google.com; jsnitsel@redhat.com; smostafa@google.com; linux-
+> > arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
+> > iommu@lists.linux.dev
+> > Subject: Re: [PATCH v2 4/4] iommu/arm: Add BBM Level 2 smmu feature
+> > 
+> > On Fri, Feb 28, 2025 at 06:24:04PM +0000, Mikołaj Lenczewski wrote:
+> > > For supporting BBM Level 2 for userspace mappings, we want to ensure
+> > > that the smmu also supports its own version of BBM Level 2. Luckily, the
+> > > smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
+> > > 0487K.a D8.16.2), so already guarantees that no aborts are raised when
+> > > BBM level 2 is claimed.
+> > >
+> > > Add the feature and testing for it under arm_smmu_sva_supported().
+> > >
+> > > Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+> > > ---
+> > >  arch/arm64/kernel/cpufeature.c                  | 7 +++----
+> > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
+> > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 3 +++
+> > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 4 ++++
+> > >  4 files changed, 13 insertions(+), 4 deletions(-)
+> > 
+> > This patch looks good, for what it does. However for bisection safety
+> > it should be earlier, before the patches that change the page table
+> > algorithms to be unsafe for the SMMU.
+
+Right, I should have noticed this earlier. Will reorder the patch.
+
+> > However, I've heard people talking about shipping chips that have CPUs
+> > with BBML2 but SMMUs without.
+> > 
+> > On such a system it seems like your series would break previously
+> > working SVA support because this patch will end up disabling it?
+
+Perhaps my understanding is flawed here, but I was under the impression
+that with SVA both the core and smmu MUST support BBML2 to use it safely
+for core translations? Otherwise the smmu might experience page faults
+when it touches pages from the core that use BBML2, if it does not
+support BBML2 itself? Again, I could very well be wrong, will double
+check with the reference manuals.
+
+> > Though I see your MIDR_REV list is limited, so perhaps that worry
+> > doesn't effect any real chips made with those families? I am trying to
+> > check some NVIDIA products against this list..
+
+Hopefully, as you say, the MIDR list restricts the breakage to a limited
+(ideally, zero-size) set of implementations which advertise BBML2
+without conflict aborts, but which do not support BBML2 on the smmu.
+
+However, if my understanding of the BBML2 feature and how it interacts
+with SVA is flawed, this will obviously be something for me to fix.
+
+> We do have implementations that support CPUs with BBLM2 with TLB
+> conflict aborts and SMMUv3 with BBML2.  So don't think those platforms
+> be affected by this.  Will check with our hardware folks if there is
+> anything that will be affected by this.
 > 
-> On 2/28/25 10:24 AM, Mikołaj Lenczewski wrote:
->> For supporting BBM Level 2 for userspace mappings, we want to ensure
->> that the smmu also supports its own version of BBM Level 2. Luckily, the
->> smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
->> 0487K.a D8.16.2), so already guarantees that no aborts are raised when
->> BBM level 2 is claimed.
->>
->> Add the feature and testing for it under arm_smmu_sva_supported().
->>
->> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
->> ---
->>   arch/arm64/kernel/cpufeature.c                  | 7 +++----
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 3 +++
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 4 ++++
->>   4 files changed, 13 insertions(+), 4 deletions(-)
->>
->> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
->> index 63f6d356dc77..1022c63f81b2 100644
->> --- a/arch/arm64/kernel/cpufeature.c
->> +++ b/arch/arm64/kernel/cpufeature.c
->> @@ -2223,8 +2223,6 @@ static bool has_bbml2_noabort(const struct
->> arm64_cpu_capabilities *caps, int sco
->>               if (!cpu_has_bbml2_noabort(__cpu_read_midr(cpu)))
->>                   return false;
->>           }
->> -
->> -        return true;
->>       } else if (scope & SCOPE_LOCAL_CPU) {
->>           /* We are a hot-plugged CPU, so only need to check our MIDR.
->>            * If we have the correct MIDR, but the kernel booted on an
->> @@ -2232,10 +2230,11 @@ static bool has_bbml2_noabort(const struct
->> arm64_cpu_capabilities *caps, int sco
->>            * we have an incorrect MIDR, but the kernel booted on a
->>            * sufficient CPU, we will not bring up this CPU.
->>            */
->> -        return cpu_has_bbml2_noabort(read_cpuid_id());
->> +        if (!cpu_has_bbml2_noabort(read_cpuid_id()))
->> +            return false;
->>       }
->>   -    return false;
->> +    return has_cpuid_feature(caps, scope);
-> 
-> Do we really need this? IIRC, it means the MIDR has to be in the allow list
-> *AND* MMFR2 register has to be set too. AmpereOne doesn't have MMFR2 register set.
-
-Miko, I think this should have been squashed into patch #1? It doesn't belong in
-this patch.
-
-Yang, we discussed this internally and decided that we thought it was best to
-still require BBML2 being advertised in the feature register. That way if trying
-to use KVM to emulate a CPU that is in the allow list but doesn't really support
-BBML2, we won't try to use it.
-
-But we still end up with the same problem if running on a physical CPU that
-supports BBML2 with conflict aborts, but emulating a CPU in the allow list. So
-given AmpereOne doesn't advertise BBML2 but does support it, I'd be happy to
-remove this check.
-
-Thanks,
-Ryan
-
-
+> Also we  have plans to try to use SMMUv3 BBML2 during VM live migration
+> to split block pages to 4K. I guess, in that case we can enable SMMU BBML2
+> independent of CPU side.
 > 
 > Thanks,
-> Yang
-> 
->>   }
->>     #ifdef CONFIG_ARM64_PAN
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/
->> arm/arm-smmu-v3/arm-smmu-v3-sva.c
->> index 9ba596430e7c..6ba182572788 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->> @@ -222,6 +222,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
->>           feat_mask |= ARM_SMMU_FEAT_VAX;
->>       }
->>   +    if (system_supports_bbml2_noabort())
->> +        feat_mask |= ARM_SMMU_FEAT_BBML2;
->> +
->>       if ((smmu->features & feat_mask) != feat_mask)
->>           return false;
->>   diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/
->> arm/arm-smmu-v3/arm-smmu-v3.c
->> index 358072b4e293..dcee0bdec924 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> @@ -4406,6 +4406,9 @@ static int arm_smmu_device_hw_probe(struct
->> arm_smmu_device *smmu)
->>       if (FIELD_GET(IDR3_RIL, reg))
->>           smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
->>   +    if (FIELD_GET(IDR3_BBML, reg) == IDR3_BBML2)
->> +        smmu->features |= ARM_SMMU_FEAT_BBML2;
->> +
->>       /* IDR5 */
->>       reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
->>   diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/
->> arm/arm-smmu-v3/arm-smmu-v3.h
->> index bd9d7c85576a..85eaf3ab88c2 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
->> @@ -60,6 +60,9 @@ struct arm_smmu_device;
->>   #define ARM_SMMU_IDR3            0xc
->>   #define IDR3_FWB            (1 << 8)
->>   #define IDR3_RIL            (1 << 10)
->> +#define IDR3_BBML            GENMASK(12, 11)
->> +#define IDR3_BBML1            (1 << 11)
->> +#define IDR3_BBML2            (2 << 11)
->>     #define ARM_SMMU_IDR5            0x14
->>   #define IDR5_STALL_MAX            GENMASK(31, 16)
->> @@ -754,6 +757,7 @@ struct arm_smmu_device {
->>   #define ARM_SMMU_FEAT_HA        (1 << 21)
->>   #define ARM_SMMU_FEAT_HD        (1 << 22)
->>   #define ARM_SMMU_FEAT_S2FWB        (1 << 23)
->> +#define ARM_SMMU_FEAT_BBML2        (1 << 24)
->>       u32                features;
->>     #define ARM_SMMU_OPT_SKIP_PREFETCH    (1 << 0)
-> 
+> Shameer
 
+On independently enabling BBML2 on the smmu but not the CPU, this should
+be possible. My check was intended to catch the case where the CPU is on
+the MIDR allowlist, but the smmu does not support the feature. Whilst
+this might still be bad logic, if it is correct, then as long as the CPU
+is not in the allowlist sva should not be affected. And bbml2 itself on
+the smmu should be safe regardless, as it is stricted than the
+corresponding cpu-side feature.
+
+-- 
+Kind regards,
+Mikołaj Lenczewski
