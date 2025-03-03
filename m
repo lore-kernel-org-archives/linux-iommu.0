@@ -1,160 +1,121 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3899E18DB0B
-	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 06:24:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51BEA1EFFB9
+	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 08:49:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740983078; cv=none; b=R7B6TlDi3jJbZy2ubP4qO0sbzSbvuDvFV3kRhV3tL1QdlyXfjPSMAu0w4LXBuM65T8EHb+UZiOiqa9QiaqGbIKh9180IVdUN7TmziNkVg2mfQV1MWaf4+QCGNPWLMiK7YgT/LGZ9u6g5mxmkSGlRNfqOT4jrVcnwt7kJq+3neTM=
+	t=1740991753; cv=none; b=aWhjwuxqw4epwVFhRRM8gMVCU8nfXcjqAatDR9MHgeZFLlZqeCBAdvK9kM6fgxeO8OmoLHfnRaBIfPeLMsdMTnujSt9cM6bblDWO3QZuLD1dqOKyHqICXStyDeyU62lMGgCveIgnIFR2hjcHd30CiqOAvfy2u3Uq/Si5dwwRD6k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740983078; c=relaxed/simple;
-	bh=EFHcnY604PxZcDX9hfXViUWhnTcEbotkGUIzzO6QMHA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=DxXK1wNv0gFfiEcoU0S82RUp2Cbvmrj5Wn+W04fVdJosWDgC3RcIERlE3M2WKV9JJ+7bVg8KG8lFSoDfvMEPSWrttlGZTDxIvMvzPIRXVGfeGSsdnev5pStNv7Jq0DbYhI5W+p33zGw8iXMtqktGeC9YqKrr4NECETMWRMQetxY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=hQ+V+jBc; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="hQ+V+jBc"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2238e884f72so18584755ad.3
-        for <iommu@lists.linux.dev>; Sun, 02 Mar 2025 22:24:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1740983075; x=1741587875; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=FRPqvj/QlUv2dtShmOMDUHzRRPiCU0B09cpBuKE4KUk=;
-        b=hQ+V+jBcE2kTaFoHfh89OIb/PuuW1rG/rw/DrLUP7u1rkRQAodMHJ8mKK2UjTgxtry
-         Kt9NReKSL/yJuZP2D7+q0hJuGLJkPCVWB1V9wiLFkQrCDmwxyxlLp0rHIIqPLLN8qd41
-         y/3zA+xVevY15Wcym/d+C1jAhejFJqyko0ZipgrObQFcKhQGsmzohYMyJ+SkPMF0ISph
-         ouoKqSYfiEkKfChr5nr3TWkmfBfCn/+hZMKpEgaVpVCyL6t7WSXqA7pqvmUNn/Xoy9BH
-         6Yhx5QF1/h67F57YVWvF67mSn2I+VDW8uXPHOBoLB+mR3bFeEamA0fNZbweZidTN8TnY
-         nqqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740983075; x=1741587875;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FRPqvj/QlUv2dtShmOMDUHzRRPiCU0B09cpBuKE4KUk=;
-        b=nCE70r4eFS2yO8B/1wZgmfds3i3/pOWXo1ZcuHviJVZMfm35vPEAOdsZZogmXa9nEn
-         FG9iPamKjh5PNs6jRmnpkizkekQGEdZFe8J3/hB6TDJ5Rii/kycFbX2VTrJTuByGDDth
-         rNyvj3NQJh1Q/yGxkfDuh1t2mx82fnT8RdH1jNutg46DZiPfzxpsd6vF4YoagVIC9tTp
-         +Mj5uvERlmupZrCQLQyBzLFVGVDPZqjzzUQzQ9Nk+viNePabRvB2ezJewQCNiRZtgulJ
-         EsfXaR6/ZyX7EpodETYYiVqS/5tPlC3WyDwser33M0l7b8+4DCOt03EbnOmMZWOZ6a3l
-         dKEg==
-X-Forwarded-Encrypted: i=1; AJvYcCUz7vDbNJLcZX+m7ByHq9ywwRNVPa8Xj5uG35Xp5GZVPhwHRH4Nb3hJCOA5Dj0Fw56r400J6g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxQsZSQQ3kLn6n5p+9EXi4ezhRwPt8P5JDbY3mFEcM1//+Rg63l
-	lYUHwDR0ggiWJM2G5i4cpsyAoZsXhKotUaMUBrBpKD/BtFxchcm4DwI/LQ5qF7I=
-X-Gm-Gg: ASbGncuh2Cu1hNxUcs4JifWJAcZGDocjVkmmDVbWRgOFq99/reQZlNUM1cZ4pwoRVOB
-	puky2FK4lzkrW1sOU/Z+X2i23poDJCKypX4k7R1w3y2txrC4iLvW5IB8pk469AmmXEmksWpO1fE
-	VEF1dKSZcI9nFhyzae6ryFZqPMMKxICDElnHwNg7YaC7iYzg0fk3/lrxLscS3o2c4bFXdp4w86t
-	VHlXIXCLdmS5PMj13BJCzD2V9cxViZoM+IDs4snV9G5iCBkwx1a+cdtIb2Pv5/rAaZ2/t+/Th/C
-	Z9wx/A0c+M/oUIoQA0IZhys6tlKQ3reZb68nXjIdqQ+jN34qciaqQjwudm79ljgnMbKDgGEgSt9
-	Snva+5SKy
-X-Google-Smtp-Source: AGHT+IESh4grNErcs4++ANOa0SJQc7p6X5v8H9Dq1ufSFbL0K9GWmhRDomZrzfEl3a6jzkJkwrNomg==
-X-Received: by 2002:a17:902:e752:b0:21f:45d:21fb with SMTP id d9443c01a7336-22368f61965mr152240345ad.3.1740983075253;
-        Sun, 02 Mar 2025 22:24:35 -0800 (PST)
-Received: from L6YN4KR4K9.bytedance.net ([139.177.225.249])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-223501d329dsm69791145ad.27.2025.03.02.22.24.30
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 02 Mar 2025 22:24:34 -0800 (PST)
-From: Yunhui Cui <cuiyunhui@bytedance.com>
-To: dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: Yunhui Cui <cuiyunhui@bytedance.com>,
-	Ethan Zhao <haifeng.zhao@linux.intel.com>
-Subject: [PATCH v3] iommu/vt-d: fix system hang on reboot -f
-Date: Mon,  3 Mar 2025 14:24:21 +0800
-Message-Id: <20250303062421.17929-1-cuiyunhui@bytedance.com>
-X-Mailer: git-send-email 2.39.2 (Apple Git-143)
+	s=arc-20240116; t=1740991753; c=relaxed/simple;
+	bh=HnzYFezVB5tVeSDfNBT9n44hastY2MKg1+ROV6aoAxk=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=PBvCr72IKplKIJHowsmE+bs5+hYJR/Q0UhmwtLBO7YYbAVvqoURCBODiTyr+DvcTG00V7bxoNY8paaHFJAsYyIDsxxitIz5LnHDLD8mk30iZZqgGfcVgj6E3IUySBYTe3t6nJVo47Se21jTRVzWz0DMaY9Xes3ZPKyoS8ZUa75s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.31])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Z5sqx1jRcz6K98L;
+	Mon,  3 Mar 2025 16:46:53 +0800 (CST)
+Received: from frapeml500006.china.huawei.com (unknown [7.182.85.219])
+	by mail.maildlp.com (Postfix) with ESMTPS id 6D8B6140442;
+	Mon,  3 Mar 2025 16:49:02 +0800 (CST)
+Received: from frapeml500008.china.huawei.com (7.182.85.71) by
+ frapeml500006.china.huawei.com (7.182.85.219) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Mon, 3 Mar 2025 09:49:02 +0100
+Received: from frapeml500008.china.huawei.com ([7.182.85.71]) by
+ frapeml500008.china.huawei.com ([7.182.85.71]) with mapi id 15.01.2507.039;
+ Mon, 3 Mar 2025 09:49:02 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>, =?utf-8?B?TWlrb8WCYWogTGVuY3pld3NraQ==?=
+	<miko.lenczewski@arm.com>
+CC: "ryan.roberts@arm.com" <ryan.roberts@arm.com>, "suzuki.poulose@arm.com"
+	<suzuki.poulose@arm.com>, "yang@os.amperecomputing.com"
+	<yang@os.amperecomputing.com>, "catalin.marinas@arm.com"
+	<catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>, "jean-philippe@linaro.org"
+	<jean-philippe@linaro.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>,
+	"joey.gouly@arm.com" <joey.gouly@arm.com>, "oliver.upton@linux.dev"
+	<oliver.upton@linux.dev>, "james.morse@arm.com" <james.morse@arm.com>,
+	"broonie@kernel.org" <broonie@kernel.org>, "maz@kernel.org" <maz@kernel.org>,
+	"david@redhat.com" <david@redhat.com>, "akpm@linux-foundation.org"
+	<akpm@linux-foundation.org>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"mshavit@google.com" <mshavit@google.com>, "jsnitsel@redhat.com"
+	<jsnitsel@redhat.com>, "smostafa@google.com" <smostafa@google.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+Subject: RE: [PATCH v2 4/4] iommu/arm: Add BBM Level 2 smmu feature
+Thread-Topic: [PATCH v2 4/4] iommu/arm: Add BBM Level 2 smmu feature
+Thread-Index: AQHbig5Aoe4VsuxA9kWqieCP4z67+bNdChiAgAQQylA=
+Date: Mon, 3 Mar 2025 08:49:02 +0000
+Message-ID: <b23aa37f8e864dea82a6143bece912d6@huawei.com>
+References: <20250228182403.6269-2-miko.lenczewski@arm.com>
+ <20250228182403.6269-6-miko.lenczewski@arm.com>
+ <20250228193221.GM5011@ziepe.ca>
+In-Reply-To: <20250228193221.GM5011@ziepe.ca>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-We found that executing the command ./a.out &;reboot -f (where a.out is a
-program that only executes a while(1) infinite loop) can probabilistically
-cause the system to hang in the intel_iommu_shutdown() function, rendering
-it unresponsive. Through analysis, we identified that the factors
-contributing to this issue are as follows:
-
-1. The reboot -f command does not prompt the kernel to notify the
-application layer to perform cleanup actions, allowing the application to
-continue running.
-
-2. When the kernel reaches the intel_iommu_shutdown() function, only the
-BSP (Bootstrap Processor) CPU is operational in the system.
-
-3. During the execution of intel_iommu_shutdown(), the function down_write
-(&dmar_global_lock) causes the process to sleep and be scheduled out.
-
-4. At this point, though the processor's interrupt flag is not cleared,
- allowing interrupts to be accepted. However, only legacy devices and NMI
-(Non-Maskable Interrupt) interrupts could come in, as other interrupts
-routing have already been disabled. If no legacy or NMI interrupts occur
-at this stage, the scheduler will not be able to run.
-
-5. If the application got scheduled at this time is executing a while(1)-
-type loop, it will be unable to be preempted, leading to an infinite loop
-and causing the system to become unresponsive.
-
-To resolve this issue, the intel_iommu_shutdown() function should not
-execute down_write(), which can potentially cause the process to be
-scheduled out. Furthermore, since only the BSP is running during the later
-stages of the reboot, there is no need for protection against parallel
-access to the DMAR (DMA Remapping) unit. Therefore, the following lines
-could be removed:
-
-down_write(&dmar_global_lock);
-up_write(&dmar_global_lock);
-
-After testing, the issue has been resolved.
-
-Fixes: 6c3a44ed3c55 ("iommu/vt-d: Turn off translations at shutdown")
-Co-developed-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
-Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
-Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
----
- drivers/iommu/intel/iommu.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cc46098f875b..47c74b20d342 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2871,16 +2871,19 @@ void intel_iommu_shutdown(void)
- 	if (no_iommu || dmar_disabled)
- 		return;
- 
--	down_write(&dmar_global_lock);
-+	/*
-+	 * All other CPUs were brought down, hotplug interrupts were disabled,
-+	 * no lock and RCU checking needed anymore
-+	 */
-+	list_for_each_entry(drhd, &dmar_drhd_units, list) {
-+		iommu = drhd->iommu;
- 
--	/* Disable PMRs explicitly here. */
--	for_each_iommu(iommu, drhd)
-+		/* Disable PMRs explicitly here. */
- 		iommu_disable_protect_mem_regions(iommu);
- 
--	/* Make sure the IOMMUs are switched off */
--	intel_disable_iommus();
--
--	up_write(&dmar_global_lock);
-+		/* Make sure the IOMMUs are switched off */
-+		iommu_disable_translation(iommu);
-+	}
- }
- 
- static struct intel_iommu *dev_to_intel_iommu(struct device *dev)
--- 
-2.39.2
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFzb24gR3VudGhvcnBl
+IDxqZ2dAemllcGUuY2E+DQo+IFNlbnQ6IEZyaWRheSwgRmVicnVhcnkgMjgsIDIwMjUgNzozMiBQ
+TQ0KPiBUbzogTWlrb8WCYWogTGVuY3pld3NraSA8bWlrby5sZW5jemV3c2tpQGFybS5jb20+OyBT
+aGFtZWVyYWxpIEtvbG90aHVtDQo+IFRob2RpIDxzaGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1
+YXdlaS5jb20+DQo+IENjOiByeWFuLnJvYmVydHNAYXJtLmNvbTsgc3V6dWtpLnBvdWxvc2VAYXJt
+LmNvbTsNCj4geWFuZ0Bvcy5hbXBlcmVjb21wdXRpbmcuY29tOyBjYXRhbGluLm1hcmluYXNAYXJt
+LmNvbTsNCj4gd2lsbEBrZXJuZWwub3JnOyBqb3JvQDhieXRlcy5vcmc7IGplYW4tcGhpbGlwcGVA
+bGluYXJvLm9yZzsNCj4gbWFyay5ydXRsYW5kQGFybS5jb207IGpvZXkuZ291bHlAYXJtLmNvbTsg
+b2xpdmVyLnVwdG9uQGxpbnV4LmRldjsNCj4gamFtZXMubW9yc2VAYXJtLmNvbTsgYnJvb25pZUBr
+ZXJuZWwub3JnOyBtYXpAa2VybmVsLm9yZzsNCj4gZGF2aWRAcmVkaGF0LmNvbTsgYWtwbUBsaW51
+eC1mb3VuZGF0aW9uLm9yZzsgbmljb2xpbmNAbnZpZGlhLmNvbTsNCj4gbXNoYXZpdEBnb29nbGUu
+Y29tOyBqc25pdHNlbEByZWRoYXQuY29tOyBzbW9zdGFmYUBnb29nbGUuY29tOyBsaW51eC0NCj4g
+YXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
+b3JnOw0KPiBpb21tdUBsaXN0cy5saW51eC5kZXYNCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2MiA0
+LzRdIGlvbW11L2FybTogQWRkIEJCTSBMZXZlbCAyIHNtbXUgZmVhdHVyZQ0KPiANCj4gT24gRnJp
+LCBGZWIgMjgsIDIwMjUgYXQgMDY6MjQ6MDRQTSArMDAwMCwgTWlrb8WCYWogTGVuY3pld3NraSB3
+cm90ZToNCj4gPiBGb3Igc3VwcG9ydGluZyBCQk0gTGV2ZWwgMiBmb3IgdXNlcnNwYWNlIG1hcHBp
+bmdzLCB3ZSB3YW50IHRvIGVuc3VyZQ0KPiA+IHRoYXQgdGhlIHNtbXUgYWxzbyBzdXBwb3J0cyBp
+dHMgb3duIHZlcnNpb24gb2YgQkJNIExldmVsIDIuIEx1Y2tpbHksIHRoZQ0KPiA+IHNtbXUgc3Bl
+YyAoSUhJIDAwNzBHIDMuMjEuMS4zKSBpcyBzdHJpY3RlciB0aGFuIHRoZSBhYXJjaDY0IHNwZWMg
+KERESQ0KPiA+IDA0ODdLLmEgRDguMTYuMiksIHNvIGFscmVhZHkgZ3VhcmFudGVlcyB0aGF0IG5v
+IGFib3J0cyBhcmUgcmFpc2VkIHdoZW4NCj4gPiBCQk0gbGV2ZWwgMiBpcyBjbGFpbWVkLg0KPiA+
+DQo+ID4gQWRkIHRoZSBmZWF0dXJlIGFuZCB0ZXN0aW5nIGZvciBpdCB1bmRlciBhcm1fc21tdV9z
+dmFfc3VwcG9ydGVkKCkuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBNaWtvxYJhaiBMZW5jemV3
+c2tpIDxtaWtvLmxlbmN6ZXdza2lAYXJtLmNvbT4NCj4gPiAtLS0NCj4gPiAgYXJjaC9hcm02NC9r
+ZXJuZWwvY3B1ZmVhdHVyZS5jICAgICAgICAgICAgICAgICAgfCA3ICsrKy0tLS0NCj4gPiAgZHJp
+dmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMtc3ZhLmMgfCAzICsrKw0KPiA+
+ICBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jICAgICB8IDMgKysr
+DQo+ID4gIGRyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmggICAgIHwg
+NCArKysrDQo+ID4gIDQgZmlsZXMgY2hhbmdlZCwgMTMgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlv
+bnMoLSkNCj4gDQo+IFRoaXMgcGF0Y2ggbG9va3MgZ29vZCwgZm9yIHdoYXQgaXQgZG9lcy4gSG93
+ZXZlciBmb3IgYmlzZWN0aW9uIHNhZmV0eQ0KPiBpdCBzaG91bGQgYmUgZWFybGllciwgYmVmb3Jl
+IHRoZSBwYXRjaGVzIHRoYXQgY2hhbmdlIHRoZSBwYWdlIHRhYmxlDQo+IGFsZ29yaXRobXMgdG8g
+YmUgdW5zYWZlIGZvciB0aGUgU01NVS4NCj4gDQo+IEhvd2V2ZXIsIEkndmUgaGVhcmQgcGVvcGxl
+IHRhbGtpbmcgYWJvdXQgc2hpcHBpbmcgY2hpcHMgdGhhdCBoYXZlIENQVXMNCj4gd2l0aCBCQk1M
+MiBidXQgU01NVXMgd2l0aG91dC4NCj4gDQo+IE9uIHN1Y2ggYSBzeXN0ZW0gaXQgc2VlbXMgbGlr
+ZSB5b3VyIHNlcmllcyB3b3VsZCBicmVhayBwcmV2aW91c2x5DQo+IHdvcmtpbmcgU1ZBIHN1cHBv
+cnQgYmVjYXVzZSB0aGlzIHBhdGNoIHdpbGwgZW5kIHVwIGRpc2FibGluZyBpdD8NCj4gDQo+IFRo
+b3VnaCBJIHNlZSB5b3VyIE1JRFJfUkVWIGxpc3QgaXMgbGltaXRlZCwgc28gcGVyaGFwcyB0aGF0
+IHdvcnJ5DQo+IGRvZXNuJ3QgZWZmZWN0IGFueSByZWFsIGNoaXBzIG1hZGUgd2l0aCB0aG9zZSBm
+YW1pbGllcz8gSSBhbSB0cnlpbmcgdG8NCj4gY2hlY2sgc29tZSBOVklESUEgcHJvZHVjdHMgYWdh
+aW5zdCB0aGlzIGxpc3QuLg0KDQpXZSBkbyBoYXZlIGltcGxlbWVudGF0aW9ucyB0aGF0IHN1cHBv
+cnQgQ1BVcyB3aXRoIEJCTE0yIHdpdGggVExCDQpjb25mbGljdCBhYm9ydHMgYW5kIFNNTVV2MyB3
+aXRoIEJCTUwyLiAgU28gZG9uJ3QgdGhpbmsgdGhvc2UgcGxhdGZvcm1zDQpiZSBhZmZlY3RlZCBi
+eSB0aGlzLiAgV2lsbCBjaGVjayB3aXRoIG91ciBoYXJkd2FyZSBmb2xrcyBpZiB0aGVyZSBpcw0K
+YW55dGhpbmcgdGhhdCB3aWxsIGJlIGFmZmVjdGVkIGJ5IHRoaXMuDQoNCkFsc28gd2UgIGhhdmUg
+cGxhbnMgdG8gdHJ5IHRvIHVzZSBTTU1VdjMgQkJNTDIgZHVyaW5nIFZNIGxpdmUgbWlncmF0aW9u
+DQp0byBzcGxpdCBibG9jayBwYWdlcyB0byA0Sy4gSSBndWVzcywgaW4gdGhhdCBjYXNlIHdlIGNh
+biBlbmFibGUgU01NVSBCQk1MMg0KaW5kZXBlbmRlbnQgb2YgQ1BVIHNpZGUuIA0KDQpUaGFua3Ms
+DQpTaGFtZWVyDQo=
