@@ -1,73 +1,73 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F4B21DE3A4
-	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 09:14:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C6E21A254C
+	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 09:17:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740993268; cv=none; b=cG3EgnfdzcVGYK3KnO3HxqeJRhA7KtjVW24nssRsKB9nPW0KX/teoypRtj90YvSK+rRwY63MDWJTv0qd5adpYxmwKBm5b1tWd84UdWu3ySXEkx5+2h1PFhijsrr78L6fFWHnIRBUwTS8xLGX02sH2V0r60Nl8jR9sYNR0g/G5/w=
+	t=1740993444; cv=none; b=hYpeZY9i2cPiDAq98MT8YFBOUVb+wob0qkw6YxSINcmbr0mGpAmJqpUtvyI8CyPsCmxjKNPN18BLydFeMRVXO+ii8/sDM6CZZ62NN/1vm1I5oJOvLuDik2fmxxPd0zadWjWf3VSwdh1H0q7KhKN8N8hT1+DHLVBVR8JVzrOXccs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740993268; c=relaxed/simple;
-	bh=mCZCBgNa4JfBeO+UdN202MOC0dBcErDpaZ9+i6y6j4M=;
+	s=arc-20240116; t=1740993444; c=relaxed/simple;
+	bh=c3vGuDJXQVWUN1IGO9z1SkJ1yh0RjQwZFlMIfuF2kZo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=OR9J2XqjOWOfyiXjhwXrAyJO5nGUoxqSRuLboBD8/wDXnMWnVm7pIWyF1enPbaA9qI95QckCxsBMjTiF5MdK+zSSF66QBp/orn/54qxsMcm0UEH1OCS1UfgWVoDv2BvZLvED5dmhunvycu3qmGtB1cBtGMRph9C2JzsQE1+DNK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=IWL6HwQE; arc=none smtp.client-ip=170.10.133.124
+	 In-Reply-To:Content-Type; b=SYAaKr4ACJ/rdlrAnkS9tKaM9Exv/0NdO/roVWAdlubSnTFcqBhvB8irmqwJSsSFJSvX9XiBi/tBwwbqfzgho1Bpf2Ejv/G2mYeC4FVsww6gGOm4np0KOlrBmstcrJsizLcqavVadYh81bEQGQ3x2QRAYYZw4ybYeEoswJhmJhw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=J5sgXg/t; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IWL6HwQE"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="J5sgXg/t"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1740993265;
+	s=mimecast20190719; t=1740993442;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=JQw2p5k8tqJ4bzlOs89ns2VtMHVE85d061ZtoKnG6Lk=;
-	b=IWL6HwQEXW9SaRT0noxbqvrvnKqXKJfaHUwOe/ya0r5ZRyTJ4ZByNxSljj9zhl+jC3ysYP
-	tcJvHybLzMF6+xedt1Pyt+MME7E+WDfraLQPpi9c3UO4rs62/BIkzLEcbPRg+oHznmuS7/
-	AmGrxrXiBSsPD8nEmRtK/s3BbD3MX8U=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=ug6PDHjZqZOZtfI1AtH5/y1/S7T0/8vlvgF54X+kceo=;
+	b=J5sgXg/tAbyjMOYMwk4tI1yDEyZeLoSQTBH/fkeV8N2OkxyeElVZ2N9BI/X3NVxjUoshAH
+	pO2XM/xId0OGpLyIHNkr/Cul1JML1FbbENsZfdjpPZXe+OFjeTndZORN4J4I6Cf1/zT38Z
+	aCTNDFXJb3eyjtH0oFnEr1HTrH5oxMI=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-590-v3k1c_g-NC6LuNeNTaOVoQ-1; Mon, 03 Mar 2025 04:14:24 -0500
-X-MC-Unique: v3k1c_g-NC6LuNeNTaOVoQ-1
-X-Mimecast-MFC-AGG-ID: v3k1c_g-NC6LuNeNTaOVoQ_1740993263
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-43988b9ecfbso18841645e9.0
-        for <iommu@lists.linux.dev>; Mon, 03 Mar 2025 01:14:24 -0800 (PST)
+ us-mta-197-2hW2OhAQPa2FjXQhj-UbdA-1; Mon, 03 Mar 2025 04:17:15 -0500
+X-MC-Unique: 2hW2OhAQPa2FjXQhj-UbdA-1
+X-Mimecast-MFC-AGG-ID: 2hW2OhAQPa2FjXQhj-UbdA_1740993434
+Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-390f729efacso647438f8f.0
+        for <iommu@lists.linux.dev>; Mon, 03 Mar 2025 01:17:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740993263; x=1741598063;
+        d=1e100.net; s=20230601; t=1740993434; x=1741598234;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :content-language:from:references:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=JQw2p5k8tqJ4bzlOs89ns2VtMHVE85d061ZtoKnG6Lk=;
-        b=aWCO5PvHUaXx3FmIOHMuXLYr7w+RFoVQODMm/ZAHuOPneD/SAvFnF5q7WtRyxmUkiv
-         JcsA9zmXOTyprNof25DFdfqQElNqkbyEpvTYQJ+8Om4/N0bcDArbLgEN+De+dooQdpIR
-         elsqAZXv2Ip9sWRG2I+MQOpelyHj4sURyQqqLnsYZJLdO5yj2sG+IE7CRDqmsiG/gKR6
-         M1kEX+sfs+mqrG2ZryVsRlXDJ+PMcZfhwO6JAXyt2/JwgQREjGi9TNQHlZdhVWl/Rw6s
-         wCQegEJ2YRs4B5oW3nGyq9ANwYGcuj8SVHpZCXe7fUR9WSz5d1lDM4VDQ0KWhvqdXe8Z
-         MCkA==
-X-Forwarded-Encrypted: i=1; AJvYcCUiihRiedxhhVMUdk0KEzu3xqb7frBkSPOUiCG8bDILFd870TCgVIESHhhG19zajMa2eAb7mQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwYoTMEs65rYSP+7Oy0PGdsazxxxrrqkK9qpoC5xyGHMl26h3o0
-	b02G10gqRRzNYKRU2pBwbSDW7nd21W2kP49Lrit57omJTAbRgPGOPBvshKBIRDfcWFQANNGKT1D
-	Zkl1yMFzxlsY9XsIiHyVItyLaoYekMBMB/8ZYBp77g7kcGTfwlh5H
-X-Gm-Gg: ASbGncs4csZxSQr8kQSeYmaVBPPVR/JMm998kOBmP0Ccgw5qoveVB+KnSf2w3GzgbRe
-	UElpP+OvkSHX6bnRphX4v//0jsNJCvIORU7kB47LQ8vtqDYUa5ykPW4Mf7sH9hfVLPXuHi/W6m3
-	bQizZAi38bNcp2ZMydb+/Fqu1HHGeuxXZTxeMmT2h/nk12lyQ3HFRhFW8ucWIl9LzLAGFq9gxz3
-	XTbJn+p74Cfng3lhRXG1AhlJk01ZklYvhSM63sQlxwQharsCXI3gB54WylIBXjJXbKdeJyBAB83
-	DBfl6CpqkgX97VobjG5Ltd6MPqfQU5kzWg/rADaLbUSvbnHYtCzutZDuUviuwPdS0DSfkElOWUQ
-	u3BiRzf5Fl/Z7hWDXa/8iLADmRKkgaLjntezvGHNE7Fw=
-X-Received: by 2002:a05:600c:45d0:b0:43b:a412:d39a with SMTP id 5b1f17b1804b1-43ba8368a6dmr102314005e9.0.1740993263144;
-        Mon, 03 Mar 2025 01:14:23 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IEBk2txAHyLgtnxudgOZTIcyeZpAosbYSo1SOfl6vxw93VKcatMetKhoauJTs0xjcyLQ0p8Vg==
-X-Received: by 2002:a05:600c:45d0:b0:43b:a412:d39a with SMTP id 5b1f17b1804b1-43ba8368a6dmr102313675e9.0.1740993262815;
-        Mon, 03 Mar 2025 01:14:22 -0800 (PST)
+        bh=ug6PDHjZqZOZtfI1AtH5/y1/S7T0/8vlvgF54X+kceo=;
+        b=c95VSQEUOKkpkrVzZii7F3nOBzhdrvws0Z+8HBoMye18oDGldx9v84f5Fk1o48t/oX
+         mS+gBnzlzTKXYCHPFBZbawhuzA6mvkgpZoFwqD8cuqvf+ZGSdbtM5XEc9kmDG27yd8g8
+         pTN0yKF7Li2dwm3GvxPLLPGvAmQ0YrS2Yib6girjWhO/nHqEI9LozhMQKM/5TXpqt6JJ
+         veKzJvTxUzHIxMSzu+LfnOxI3SLk2zZnFFcsCoxailkwBYlXyru6bdv3/TbGcyXGf0+R
+         b09uCJa8WSJBN94z05kDsrtVxo7G34ZiI5c6mmnZJCwsUh+5sl8Ij2NnFcccZa6TnIzV
+         OrcA==
+X-Forwarded-Encrypted: i=1; AJvYcCUKZUJZNO7kJ88qxkcim8E5EMs0q5NKjhIqpsxHyIvO/Xkd9k10KLKT2RmjuCNUXTNkTIT8HQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzX4mOABZaYYQxh9s4ToCvuqokn4alXjsg5wqxQzh3fQniits2t
+	ITVQ1tDbRmUe8eyG9Ou2p3UQahrc2YP8UsLHWSIrgLbQCXnegxOZB7gmvF26u6vk2nZ89nFDj+u
+	6MyAs6yz1zmAWIP7rUaQlxLZKwugBsK3wXzrx+fHk0cbdCb89z1V8
+X-Gm-Gg: ASbGncvuDtSVeygw6ZfoYHfgIhdVxjgNiLKaxFrJK7IGt1Uoyu147eSugALvN3A/I9Q
+	CaXAGLMNkl1xZqwgb9vDaBCOjCmdlJJHu5XYenWiWlVTiOwnv+5x9sfKRddm9E6W5towZCdF66z
+	LjiAfHjS+kYWPhFTv6si32Ze3YHbOZfZBbtUDWZ55ObrUU+0eH+yDc7J6y9AfsXvu4N+KQHpxYm
+	qpvZ10JYqiQyQw5f+y5P1XZJriF2yaCKULSaRRKXbalrzjomly/vPAE+hdvSFRETH98nYX91Cgo
+	VFiY4rgjSOuEG7o37YEWKP3FLAe7B3E1y+az2TFWJ0DrObKSCv4wMch/8AuEnigr+vr9cyE2qcr
+	eqT8ugqzMc8L0SbwuQKYhNRUYroJgavBnGioexsqfiPM=
+X-Received: by 2002:a05:6000:1866:b0:391:5f:fa47 with SMTP id ffacd0b85a97d-391005fffc5mr4077640f8f.55.1740993434184;
+        Mon, 03 Mar 2025 01:17:14 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IE51baowC1VpSwd3Tw1Mohl/fQPY43ZcoLesvTW+DDs3LlvAj1x8rHXqPyfJEGN/yGq/5lR9g==
+X-Received: by 2002:a05:6000:1866:b0:391:5f:fa47 with SMTP id ffacd0b85a97d-391005fffc5mr4077617f8f.55.1740993433851;
+        Mon, 03 Mar 2025 01:17:13 -0800 (PST)
 Received: from ?IPV6:2003:cb:c734:9600:af27:4326:a216:2bfb? (p200300cbc7349600af274326a2162bfb.dip0.t-ipconnect.de. [2003:cb:c734:9600:af27:4326:a216:2bfb])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43bbfece041sm28684095e9.1.2025.03.03.01.14.21
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-390e47a6d17sm13644614f8f.28.2025.03.03.01.17.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Mar 2025 01:14:22 -0800 (PST)
-Message-ID: <8609f693-0786-40bd-9136-3a8f9ee9304b@redhat.com>
-Date: Mon, 3 Mar 2025 10:14:21 +0100
+        Mon, 03 Mar 2025 01:17:13 -0800 (PST)
+Message-ID: <f270bb5d-aa54-45d3-89ed-2b757ab3a4b0@redhat.com>
+Date: Mon, 3 Mar 2025 10:17:12 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,7 +75,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/4] Initial BBML2 support for contpte_convert()
+Subject: Re: [PATCH v2 3/4] arm64/mm: Elide tlbi in contpte_convert() under
+ BBML2
 To: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
  ryan.roberts@arm.com, suzuki.poulose@arm.com, yang@os.amperecomputing.com,
  catalin.marinas@arm.com, will@kernel.org, joro@8bytes.org,
@@ -86,6 +87,7 @@ To: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
  smostafa@google.com, linux-arm-kernel@lists.infradead.org,
  linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 References: <20250228182403.6269-2-miko.lenczewski@arm.com>
+ <20250228182403.6269-5-miko.lenczewski@arm.com>
 From: David Hildenbrand <david@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
@@ -132,28 +134,44 @@ Autocrypt: addr=david@redhat.com; keydata=
  jPrnvUsUUsjRoRNJjKKA/REq+sAnhkNPPZ/NNMjaZ5b8Tovi8C0tmxiCHaQYqj7G2rgnT0kt
  WNyWQQ==
 Organization: Red Hat
-In-Reply-To: <20250228182403.6269-2-miko.lenczewski@arm.com>
+In-Reply-To: <20250228182403.6269-5-miko.lenczewski@arm.com>
 X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: PGj3vR4gDi8o2Z-5EDUtCp1F-OYSJwPutvPTq_P30SE_1740993263
+X-Mimecast-MFC-PROC-ID: nqjC4lCahHNIGUXQ4aRsqfInTIoQZWhM2foRyZBVCYQ_1740993434
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
 On 28.02.25 19:24, Mikołaj Lenczewski wrote:
-> Hi All,
+> If we support bbml2 without conflict aborts, we can avoid the final
+> flush and have hardware manage the tlb entries for us. Avoiding flushes
+> is a win.
 > 
-> This patch series adds adding initial support for eliding
-> break-before-make requirements on systems that support BBML2 and
-> additionally guarantee to never raise a conflict abort.
+> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+> Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+> ---
+>   arch/arm64/mm/contpte.c | 3 ---
+>   1 file changed, 3 deletions(-)
 > 
-> This support reorders and optionally elides a TLB invalidation in
-> contpte_convert(). The elision of said invalidation leads to a 12%
-> improvement when executing a microbenchmark designed to force the
-> pathological path where contpte_convert() gets called. This
-> represents an 80% reduction in the cost of calling contpte_convert().
+> diff --git a/arch/arm64/mm/contpte.c b/arch/arm64/mm/contpte.c
+> index 145530f706a9..77ed03b30b72 100644
+> --- a/arch/arm64/mm/contpte.c
+> +++ b/arch/arm64/mm/contpte.c
+> @@ -72,9 +72,6 @@ static void contpte_convert(struct mm_struct *mm, unsigned long addr,
+>   		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
+>   
+>   	__set_ptes(mm, start_addr, start_ptep, pte, CONT_PTES);
+> -
+> -	if (system_supports_bbml2_noabort())
+> -		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
+>   }
+>   
+>   void __contpte_try_fold(struct mm_struct *mm, unsigned long addr,
 
-Just a general comment: Nice! :)
+What's the point of not squashing this into #2? :)
+
+If this split was requested during earlier review, at least seeing patch 
+#2 on its own confused me.
 
 -- 
 Cheers,
