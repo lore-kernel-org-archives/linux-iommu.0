@@ -1,46 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711FF185E4A;
-	Mon,  3 Mar 2025 19:00:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01C6D185E4A;
+	Mon,  3 Mar 2025 19:00:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741028419; cv=none; b=H7yds8SDqAr0ReOfi+nad71KkD/MmJTGtqhbp0gHiB+Xw1TOHoBtD89ks51kNTZc36CE8VwIXB5vnRhJbG0isqQWWFStcHIAbF8LeHRJ9QqK44pMlnerhMzAcohsPXDDfW7Wq5q0bMCdNztTVtzEL+m4J0sj4pgHzthrDa+vIa8=
+	t=1741028425; cv=none; b=rPwcWvXYYaQfFnykT0KHeiHt5eSlTIUaE/CPWWmpurwQ2a68gjEcvy+tHaA9aUFsaDBLCxJAOaVOKZYlCBAT6iX4MRX2q9+Iy17Mhe10V5S5IvXitvvqkiPTeOEV9ArFarYCsd08c9hVu+dnrOyWOYqCg7I9qvK/smdHfZQGFYA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741028419; c=relaxed/simple;
-	bh=WnvKPZ0Oo7kUydTf7iYJkS5mw9NzxcUP7F/J0sWZKPc=;
+	s=arc-20240116; t=1741028425; c=relaxed/simple;
+	bh=6IoETAqf1lYNIxpmSknIVtPc1X/HzcvHZY26hv7+H9Q=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=IWvq1/eaHDnDwl+QK8uwU6djQ6xzLsx+ou0zbHF1ZjLClUjrSbYy6PCl3JIFikz+j8mT2F8Su+pdXxHXvpvbeuknowPcrCrISRQzyl8oCM60u+8rDgczLhvEHLUYWmTmUlT6BHGHrxlw09gzeFQ2/63EHt6iqi29OIJsaL5ceFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UYN/Jfi0; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=fwJb2G9Gv2RK7wz86+iel6ZUneBYii5qA+OW/cRCbzKQnZ/vdVILRYAICc/AF4wcgPvL++JYP/EG+nVV8fZVY14MkamZCu9fAEShNP+qNBHCJcviKnJ9Ij2rHLSyMU+A3ETy7QWhWTIFqSRxYF8SWiiznj62SYsrs9o6pKziB7Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ic/HTaWU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UYN/Jfi0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E733CC4CED6;
-	Mon,  3 Mar 2025 19:00:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ic/HTaWU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A14AC4CEE5;
+	Mon,  3 Mar 2025 19:00:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741028419;
-	bh=WnvKPZ0Oo7kUydTf7iYJkS5mw9NzxcUP7F/J0sWZKPc=;
+	s=k20201202; t=1741028424;
+	bh=6IoETAqf1lYNIxpmSknIVtPc1X/HzcvHZY26hv7+H9Q=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=UYN/Jfi0KDZ09gScm/TPeU4GKRwyVpT2oPgl4UQreDJWZq8OVebvC6M8kbVNKrWOk
-	 eEFklE8X1QSo8oztC5hQY7uXs5Zu4GO6AzQLwwESxzeHuBVTGx3tOeoMF4TySoksid
-	 xqsik2lFFQB2voxb5tu/SCJuVGZh1LIOKFUyHu8MEYnsw7Wxb4qvokQr/TKhOx56zU
-	 eZcc4cS1QhRyavJNYamgSGecanY6k6hgMuEno7wkpnKTXstAsZ5HATX/CSZ9GEqxSo
-	 at3ZkOzerB4hiri97Pm//wNLA/2/qnRPxLz3SCZqZCr2EBpo19f9SCTOZp4I3UqJ+2
-	 NQ1giRAyOjKcQ==
+	b=ic/HTaWUYKVCi3lcR8Y2tV5gLg6T2u6m2YHcJzUomTnDUggcBW0QpL0TUI9ca1Z47
+	 nnjmszrpNn582cC6Ht6hjQrK3M+hBouKmeBmpEOauEenygEHwY3/U37eEWFPQ3DqLL
+	 sqOA7llucXzCODTFlsDL6M0iqrg7WynjT7xbjyu8tKFZTZ2eJ+VnPJPklxsRUfVnFO
+	 E9m6nxn9a3Orr2OVPqbuD79YeMraBbUl+JM2hFACWznQP+j86EhpRDydEt21U1Lbma
+	 RtwRwzTqK6EpNg7uoUqSpXQWqq8cMa8dbjrQGWngI8GDyDvXDNtAZFHcfIUiDiGW5q
+	 5mic3BumcxwmQ==
 From: Andreas Hindborg <a.hindborg@kernel.org>
 To: "Alice Ryhl" <aliceryhl@google.com>
-Cc: "Daniel Almeida" <daniel.almeida@collabora.com>,
-	"Benno Lossin" <benno.lossin@proton.me>,
-	"Abdiel Janulgue" <abdiel.janulgue@gmail.com>,  <dakr@kernel.org>,
-	<robin.murphy@arm.com>,  <rust-for-linux@vger.kernel.org>,
-	"Miguel Ojeda" <ojeda@kernel.org>,  "Alex Gaynor" <alex.gaynor@gmail.com>,
-	"Boqun Feng" <boqun.feng@gmail.com>,  "Gary Guo" <gary@garyguo.net>,
-	=?utf-8?Q?Bj=C3=B6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	"Trevor Gross" <tmgross@umich.edu>,
-	"Valentin Obst" <kernel@valentinobst.de>,  <linux-kernel@vger.kernel.org>,
-	"Christoph Hellwig" <hch@lst.de>,
-	"Marek Szyprowski" <m.szyprowski@samsung.com>,  <airlied@redhat.com>,
-	<iommu@lists.linux.dev>
-Subject: Allow data races on some read/write operations
+Cc: "Daniel Almeida" <daniel.almeida@collabora.com>,  "Benno Lossin"
+ <benno.lossin@proton.me>,  "Abdiel Janulgue" <abdiel.janulgue@gmail.com>,
+  <dakr@kernel.org>,  <robin.murphy@arm.com>,
+  <rust-for-linux@vger.kernel.org>,  "Miguel Ojeda" <ojeda@kernel.org>,
+  "Alex Gaynor" <alex.gaynor@gmail.com>,  "Boqun Feng"
+ <boqun.feng@gmail.com>,  "Gary Guo" <gary@garyguo.net>,  =?utf-8?Q?Bj?=
+ =?utf-8?Q?=C3=B6rn?= Roy Baron
+ <bjorn3_gh@protonmail.com>,  "Trevor Gross" <tmgross@umich.edu>,
+  "Valentin Obst" <kernel@valentinobst.de>,
+  <linux-kernel@vger.kernel.org>,  "Christoph Hellwig" <hch@lst.de>,
+  "Marek Szyprowski" <m.szyprowski@samsung.com>,  <airlied@redhat.com>,
+  <iommu@lists.linux.dev>
+Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
 In-Reply-To: <CAH5fLgh6ubawHh76wq7JPbcuBCWhm91m7Rc01MVsX-a3C6qaVA@mail.gmail.com>
  (Alice
 	Ryhl's message of "Mon, 03 Mar 2025 16:44:51 +0100")
@@ -56,8 +56,8 @@ References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
 	<KpWTCfIlcLYFBpSvWPfALJ9VQn5a99_RAvxgMBc1aCrSalPB-qaW9IhXyaDG7HM1AcFPX5chj_Yr7IQp3F7UqA==@protonmail.internalid>
 	<CAH5fLgh6ubawHh76wq7JPbcuBCWhm91m7Rc01MVsX-a3C6qaVA@mail.gmail.com>
 User-Agent: mu4e 1.12.7; emacs 29.4
-Date: Mon, 03 Mar 2025 20:00:03 +0100
-Message-ID: <87mse2hrd8.fsf@kernel.org>
+Date: Mon, 03 Mar 2025 19:45:21 +0100
+Message-ID: <87senuhs1q.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,10 +66,6 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-
-
-[New subject, was: Re: [PATCH v12 2/3] rust: add dma coherent allocator abs=
-traction]
 
 "Alice Ryhl" <aliceryhl@google.com> writes:
 
@@ -177,20 +173,19 @@ not
 > does not give us the operation we want, do it like you do in C. Since
 > Rust uses LLVM which does not miscompile the C part of the kernel, it
 > should not miscompile the Rust part either.
+>
+>> > This will let us make progress now and sidestep this discussion. The
+>> > deleted methods can happen in a follow-up.
+>>
+>> `item_from_index`, the `dma_read` and `dma_write` macros as well, I woul=
+d think?
+>
+> Those are necessary to use field_read/field_write, so I think it's
+> fine to keep those.
 
-This exception we got for `core::ptr::{read,write}_volatile`, did we
-document that somewhere?
+I misread `item_from_index` as returning a value, but it's just pointer
+arithmetic, so that is fine =F0=9F=91=8D
 
-I feel slightly lost when trying to figure out what fits under this
-exception and what is UB. I think that fist step to making this more
-straight forward is having clear documentation.
-
-For cases where we need to do the equivalent of `memmove`/`memcpy`, what
-are is our options?
-
-In case we have no options, do you know who would be the right people on
-the Rust Project side to contact about getting an exception for this
-case?
 
 
 Best regards,
