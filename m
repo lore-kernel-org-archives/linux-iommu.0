@@ -1,41 +1,43 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7C43623F383
-	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 10:32:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D6DA1EF0AA
+	for <iommu@lists.linux.dev>; Mon,  3 Mar 2025 10:56:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740997933; cv=none; b=mRslhluF18N7rF6Iqkj9PywEIz/f3Rw5mw7GgYV0WpMrWo0i8gcS2SqHtLdqR2VWWuGGhcrr0KVrtPvjtWZcX5BLhbPfW5fxcLgrWFX11rlu7T+m2rEaH0+at3ZgltO12k/k6avcdO+ftUBIJoaSoW2YVMH/KR6KdGh+e3jvtTM=
+	t=1740999364; cv=none; b=rqyAgrvbTeg+faAUqe3Mi2AUIPzGvd89ssWSfU8pSnjNHwnlz3BHYbshSxFmBVZY8ZfCo+LxT/ntOXYA8vlVw97I4i3ETD2sFe+GEUzVZl1XJQcIOU2K9zyoHsC3GzNxv8Ipu0eGOG2Qz6brb1BmC5D9SXdXTx3hPBMwRyskD80=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740997933; c=relaxed/simple;
-	bh=cfjZTAA3wFI4kmuYmgNO61aNSEGKpej4JaJFeqP9wPU=;
+	s=arc-20240116; t=1740999364; c=relaxed/simple;
+	bh=FlxgyLo4pSK6DnDRMZ2Gy02rNuDZ9j7QbXDlKG6JUnk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nXr1lvISF0TyFeYDeX6gdcefVab/U3WS0qaO+ST5+MwSKfPuZWJlbLO9CL3S6LyTt1J/1aqPUNVQ94eka8MRGSdPyBs54KyfFk4N0TdjmQ0DU6zO9BkFvq18Q66Xe/dVHN6P+pIvQshkTIwBjNujYpfHCs6sBaxMXcJWD61twhE=
+	 Content-Type:Content-Disposition:In-Reply-To; b=LX/AcuF6FYKboydsv5s+PIS1MDyyGFP68/Lxap2YOxnreBSoQrjsmaC4j8Lf8s4XlbtgKq90VWTwCsZZEWyEJcXiVCU4yNwO7VW7J9LK7t4kIUqzMPvgqAHJKGzhJfp54j6f+fZ2tHLc8DKUnRlJGHzYitLkfg49iTB9B+kK7h4=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 092C1113E;
-	Mon,  3 Mar 2025 02:32:25 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 836CD113E;
+	Mon,  3 Mar 2025 02:56:16 -0800 (PST)
 Received: from e133081.arm.com (unknown [10.57.37.136])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9AC8F3F66E;
-	Mon,  3 Mar 2025 02:32:03 -0800 (PST)
-Date: Mon, 3 Mar 2025 10:32:01 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 77DE73F673;
+	Mon,  3 Mar 2025 02:55:58 -0800 (PST)
+Date: Mon, 3 Mar 2025 10:55:47 +0000
 From: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
-To: Ryan Roberts <ryan.roberts@arm.com>
-Cc: Yang Shi <yang@os.amperecomputing.com>, suzuki.poulose@arm.com,
-	catalin.marinas@arm.com, will@kernel.org, joro@8bytes.org,
-	jean-philippe@linaro.org, mark.rutland@arm.com, joey.gouly@arm.com,
-	oliver.upton@linux.dev, james.morse@arm.com, broonie@kernel.org,
-	maz@kernel.org, david@redhat.com, akpm@linux-foundation.org,
-	jgg@ziepe.ca, nicolinc@nvidia.com, mshavit@google.com,
-	jsnitsel@redhat.com, smostafa@google.com,
+To: David Hildenbrand <david@redhat.com>
+Cc: ryan.roberts@arm.com, suzuki.poulose@arm.com,
+	yang@os.amperecomputing.com, catalin.marinas@arm.com,
+	will@kernel.org, joro@8bytes.org, jean-philippe@linaro.org,
+	mark.rutland@arm.com, joey.gouly@arm.com, oliver.upton@linux.dev,
+	james.morse@arm.com, broonie@kernel.org, maz@kernel.org,
+	akpm@linux-foundation.org, jgg@ziepe.ca, nicolinc@nvidia.com,
+	mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev
-Subject: Re: [PATCH v2 4/4] iommu/arm: Add BBM Level 2 smmu feature
-Message-ID: <20250303103201.GD13345@e133081.arm.com>
+Subject: Re: [PATCH v2 3/4] arm64/mm: Elide tlbi in contpte_convert() under
+ BBML2
+Message-ID: <20250303105539.GA74129@e133081.arm.com>
 References: <20250228182403.6269-2-miko.lenczewski@arm.com>
- <20250228182403.6269-6-miko.lenczewski@arm.com>
- <b46dc626-edc9-4d20-99d2-6cd08a01346c@os.amperecomputing.com>
- <43732270-8fd0-4a18-abec-096e383a6a4d@arm.com>
+ <20250228182403.6269-5-miko.lenczewski@arm.com>
+ <f270bb5d-aa54-45d3-89ed-2b757ab3a4b0@redhat.com>
+ <20250303094947.GB13345@e133081.arm.com>
+ <7e987f17-ffcb-45e0-8588-2d569d90f776@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,60 +47,86 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <43732270-8fd0-4a18-abec-096e383a6a4d@arm.com>
+In-Reply-To: <7e987f17-ffcb-45e0-8588-2d569d90f776@redhat.com>
 
-On Mon, Mar 03, 2025 at 10:17:28AM +0000, Ryan Roberts wrote:
-> On 01/03/2025 01:32, Yang Shi wrote:
+On Mon, Mar 03, 2025 at 10:57:21AM +0100, David Hildenbrand wrote:
+> On 03.03.25 10:49, Mikołaj Lenczewski wrote:
+> > Hi David,
 > > 
+> > Thanks for taking the time to review.
 > > 
+> > On Mon, Mar 03, 2025 at 10:17:12AM +0100, David Hildenbrand wrote:
+> > > On 28.02.25 19:24, Mikołaj Lenczewski wrote:
+> > > > If we support bbml2 without conflict aborts, we can avoid the final
+> > > > flush and have hardware manage the tlb entries for us. Avoiding flushes
+> > > > is a win.
+> > > > 
+> > > > Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+> > > > Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+> > > > ---
+> > > >    arch/arm64/mm/contpte.c | 3 ---
+> > > >    1 file changed, 3 deletions(-)
+> > > > 
+> > > > diff --git a/arch/arm64/mm/contpte.c b/arch/arm64/mm/contpte.c
+> > > > index 145530f706a9..77ed03b30b72 100644
+> > > > --- a/arch/arm64/mm/contpte.c
+> > > > +++ b/arch/arm64/mm/contpte.c
+> > > > @@ -72,9 +72,6 @@ static void contpte_convert(struct mm_struct *mm, unsigned long addr,
+> > > >    		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
+> > > >    	__set_ptes(mm, start_addr, start_ptep, pte, CONT_PTES);
+> > > > -
+> > > > -	if (system_supports_bbml2_noabort())
+> > > > -		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
+> > > >    }
+> > > >    void __contpte_try_fold(struct mm_struct *mm, unsigned long addr,
+> > > 
+> > > What's the point of not squashing this into #2? :)
+> > > 
+> > > If this split was requested during earlier review, at least seeing patch #2
+> > > on its own confused me.
 > > 
-> > On 2/28/25 10:24 AM, Mikołaj Lenczewski wrote:
-> >> For supporting BBM Level 2 for userspace mappings, we want to ensure
-> >> that the smmu also supports its own version of BBM Level 2. Luckily, the
-> >> smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
-> >> 0487K.a D8.16.2), so already guarantees that no aborts are raised when
-> >> BBM level 2 is claimed.
-> >>
-> >> Add the feature and testing for it under arm_smmu_sva_supported().
-> >>
-> >> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
-> >> ---
-> >>   arch/arm64/kernel/cpufeature.c                  | 7 +++----
-> >>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
-> >>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 3 +++
-> >>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 4 ++++
-> >>   4 files changed, 13 insertions(+), 4 deletions(-)
-> >>
-> >> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-> >> index 63f6d356dc77..1022c63f81b2 100644
-> >> --- a/arch/arm64/kernel/cpufeature.c
-> >> +++ b/arch/arm64/kernel/cpufeature.c
-> >> @@ -2223,8 +2223,6 @@ static bool has_bbml2_noabort(const struct
-> >> arm64_cpu_capabilities *caps, int sco
-> >>               if (!cpu_has_bbml2_noabort(__cpu_read_midr(cpu)))
-> >>                   return false;
-> >>           }
-> >> -
-> >> -        return true;
-> >>       } else if (scope & SCOPE_LOCAL_CPU) {
-> >>           /* We are a hot-plugged CPU, so only need to check our MIDR.
-> >>            * If we have the correct MIDR, but the kernel booted on an
-> >> @@ -2232,10 +2230,11 @@ static bool has_bbml2_noabort(const struct
-> >> arm64_cpu_capabilities *caps, int sco
-> >>            * we have an incorrect MIDR, but the kernel booted on a
-> >>            * sufficient CPU, we will not bring up this CPU.
-> >>            */
-> >> -        return cpu_has_bbml2_noabort(read_cpuid_id());
-> >> +        if (!cpu_has_bbml2_noabort(read_cpuid_id()))
-> >> +            return false;
-> >>       }
-> >>   -    return false;
-> >> +    return has_cpuid_feature(caps, scope);
+> > This split is a holdover from an earlier patchset, where it was still
+> > unknown whether the removal of the second flush was permitted with
+> > BBML2. Partly this was due to us being worried about conflict aborts
+> > after the removal, and partly this was because the "delay" is a separate
+> > optimisation that we could apply even if it turned out the final patch
+> > was not architecturally sound.
 > > 
-> > Do we really need this? IIRC, it means the MIDR has to be in the allow list
-> > *AND* MMFR2 register has to be set too. AmpereOne doesn't have MMFR2 register set.
+> > Now that we do not handle conflict aborts (preferring only systems that
+> > handle BBML2 without ever raising aborts), the first issue is not a
+> > problem. The reasoning behind the second patch is also a little bit
+> > outdated, but I can see the logical split between a tlbi reorder, and
+> > the removal of the tlbi. If this is truly redundant though, I would be
+> > happy to squash the two into a single patch.
 > 
-> Miko, I think this should have been squashed into patch #1? It doesn't belong in
-> this patch.
+> Thanks for the information.
+> 
+> Does patch #2 (reordering the tlbi) have any benefit on its own? I read
+> "other threads will not see an invalid pagetable entry", but I am not sure
+> that is correct. A concurrent HW page table walker would still find the
+> invalid PTE? It's just a matter of TLB state.
 
-Yes, 100%. Missed this, will put into patch #1.
+I think I understand what you mean. I agree that it is possible for a
+concurrent walk to see an invalid TLBI state, if it is on the same TLB
+that the repaint is happening on. For other TLBs, the flush has not yet
+propagated our invalidated PTEs (from `__ptep_get_and_clear()`) though?
+That invalidation will only be seen by other TLBs after the
+`__flush_tlb_range()`, so we should save a few faults because only
+"local" threads will ever see the invalid entry, as opposed to all
+threads that try to read our modified range? Or it is the case that I
+have misunderstood something basic here, or that I have misinterpreted
+what you have written?
+
+> If there is no benefit in having patch #2 independently, I'd just squash
+> them. Reordering to then remove is more complicated than just removing it
+> IMHO.
+> 
+> -- 
+> Cheers,
+> 
+> David / dhildenb
+> 
+
+-- 
+Kind regards,
+Mikołaj Lenczewski
