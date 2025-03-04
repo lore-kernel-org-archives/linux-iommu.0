@@ -1,491 +1,220 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2063.outbound.protection.outlook.com [40.107.243.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4EAB20126A;
-	Tue,  4 Mar 2025 09:25:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741080353; cv=none; b=KVJLw5e47tPZhPZ9eSOBGJddPsIwqp9blrTEfF2aWSKtrjKXasuYOA7Hwe1Oe38FC7fXG7+FDm7I0U8eeKoB8aOe1tJ1RhXGZpfgapZjJTrxT4T7EWRLJIiZIoJSjAZ13fYnOlSWK/wrroGiT/h9EFwQYyb4d+WpZNebqzjYMQc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741080353; c=relaxed/simple;
-	bh=IYGGzd2iv7ffriZYtqfCxV0m2FT/feC0iBGQEH0feac=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Th8/zrwEGRzJ70ubpOZrgKrCJBsrsmkNMtxHTHDS0NHiQ1FYgAJBEGnp19mk0YZ9ay68JE4Y137QM5GDO0UUpPnjCvQjVumcrI4MyvILa6jJ7qE55DeaSSh8o5btb4ca2dPsqHSgB5hZM3qZdAKSCXVd0e3NHEdTSarEU3vk+sA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rphXP1ni; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC8BF1FCFCB
+	for <iommu@lists.linux.dev>; Tue,  4 Mar 2025 10:16:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.63
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741083368; cv=fail; b=hxwNrfEM9+Vxztvi/lwTFC6Wm+J7RXIlS2TRJ7A0V+GOPsEDgEXXU306r6C3/VzHoVb3tQNmRH/rOeGogAZeZw8/Kvu89z5quvFg1VfRFnI74Mao1rPO9MkZ3YxYT5PBTcJje++iFtcJOA8rjApN22k8jY5WjNXW8JM5aL5uBU4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741083368; c=relaxed/simple;
+	bh=h+c2Z9/JA+EuF3r3g8c43R8MkQGX1XjnM/E4D9AIZRU=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=JspZCcrq7a1H6JjPQbQ/69ZUHQmfxh56Z+1Q1Ke8yhIjInBHc21W5fwjaL5Y7LfvYuS6fXIpLdYlZXI2jV5dLcUOVRxTgEp3YYpRhVYU0R+yNyxlG1DiTAq9Mtnn7dWIbOe08Zxe7iN1QxPBBvUYVMfGQkCu1ISZsGJcKNxBGY8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=M7EeSOnT; arc=fail smtp.client-ip=40.107.243.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rphXP1ni"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81DEEC4CEEF;
-	Tue,  4 Mar 2025 09:25:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741080352;
-	bh=IYGGzd2iv7ffriZYtqfCxV0m2FT/feC0iBGQEH0feac=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=rphXP1niKEtij+m65KQ/s0IEFyhpQy7BEQU6Y98xxVrnbyUZ6EABXhz0rFZ/DlvrL
-	 2+7woXJRBTK6uJsYWhuMWeehX+r+8StvWU7bir4Oes2HhTbBKlrCBzrZK1dvYp2qBY
-	 Djk4UpyiTv8FoaYGmN1AQNAu+ISKiqzXVfl05JGLO9lr0+q8s7SxhwrJw4VsOFqlWk
-	 yrKEV2riVjDpHMXavpZZiWa5SSzsdx0p0RF21CzmPiay63ha9sZ+ivMEI1NwNjKLfR
-	 NVzk1TgMznSLa08iovVUPYGXmQ5uUrM+Ujbl4iG1ZRnpNecdXTyec/mvnzZ7YgOlvk
-	 AT+ip6OUfYrkg==
-Message-ID: <d3c7d421-566f-4007-b272-650294edd019@kernel.org>
-Date: Tue, 4 Mar 2025 10:25:46 +0100
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="M7EeSOnT"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=i3Up7SIBk2BScTCh3+GEnwEUPEXMA01SZE0/d24lJmUUw3ARxe+NqT6wcCkCwnIkv72NNgS7yGaPC2nIF23TFOaVXCrp8/gnQkSZ1wGCKhvj4xQSzsUMwiPIyhjM4iP7XgG6V7MNJJHpnqnsx9GKTqbcAt84pr9ulB+dSnAq2Ffpn7zsaSPzZ4MGG4A+53ATmx2ajVz+alKrFYDYWMlnEEG6BrgmgwuLxhjy92XpuNUVwOSUbdu6lQLnt9G88GYp8GpOeA0ZMvF28rcJqfCcWGjA5z5SaNS/dT3y+DPQBj0k5b8jy9mq2aRa+nFsHXn0bn70G5oDRTEtQ9i8kpZiLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CsuLEoNnnz/ks0P2FhjTVSOMGjPBqsJlE62jzalUDeY=;
+ b=XxL9gft+B4aQoKc769ugWYshxGvKDxe2VBhNcqwaimLd3TK3nibtiqalYqY405qAdfXehYq89fSf3cy5LLBWkj6I8D+euyDkgR8NHjwql0u6YiD02kiOspF9Sn2p7yd/yYp0dF+Sm1ddak6oSG6OV3dudR7fuoe3imfMgetf3pNaWgVZkwn12oafvVggYGBzfzBdOqksN8ZB3oHvaaM/+zwwt+bBqWvvO9ILd5BCoRBvtEwHv/HMzvXsM/eNXqxwuO1ONkjVrdmdIoWoo0WCnT13m+Mo4FTTg4jqHE+AIBLMPgzFzACkUBehbbZ6gcv7OXaB3YnzPUq+S3T7t03LDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CsuLEoNnnz/ks0P2FhjTVSOMGjPBqsJlE62jzalUDeY=;
+ b=M7EeSOnTmS/mVrfT83B85Qa61nI/MXVaxJnIs/P+wguYzss2IbvWyajIYLsF5E+zcu4i5F2PTLsv3Mz+nGg6eJGwHx6tmyfO3Bgfp+wsCujfPRMxKFRfXJ0yL4OSajjWSYOqtBV/mPjcQhGvVqzPM/uzMGivx1VUwdMOTQaiH3c=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ SA1PR12MB8945.namprd12.prod.outlook.com (2603:10b6:806:375::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8489.29; Tue, 4 Mar
+ 2025 10:16:03 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%6]) with mapi id 15.20.8489.025; Tue, 4 Mar 2025
+ 10:16:02 +0000
+Message-ID: <391a2333-0373-4cd3-a858-349230bc7c90@amd.com>
+Date: Tue, 4 Mar 2025 15:45:54 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
+To: Jason Gunthorpe <jgg@ziepe.ca>, Yi Liu <yi.l.liu@intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Robin Murphy
+ <robin.murphy@arm.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
+References: <BN9PR11MB527624C1DED16B3C049D13438CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250226011750.GB5011@ziepe.ca>
+ <BN9PR11MB5276B3E410FD336A3062FA5E8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <4fba254e-ca47-4e7b-baf3-0228d9605c2b@amd.com>
+ <BN9PR11MB52763A8885AF1678E05E8B528CCC2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <942a1a66-5c18-43e2-886e-df38cb3e7258@intel.com>
+ <54db17d7-b150-4579-a33d-f1b5cc8943bc@amd.com>
+ <6eb0ec90-5859-4605-8a2e-657f6f711d61@intel.com>
+ <825ddadd-6770-46b5-936e-f17988534984@amd.com>
+ <13e1e1d8-5870-44ea-a800-e5b25bafd344@intel.com>
+ <20250303183801.GW5011@ziepe.ca>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20250303183801.GW5011@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BMXP287CA0011.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:b00:2c::21) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v10 3/4] page_pool: support unlimited number of
- inflight pages
-To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
- kuba@kernel.org, pabeni@redhat.com
-Cc: zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
- Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>,
- Donald Hunter <donald.hunter@gmail.com>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- Andrew Lunn <andrew+netdev@lunn.ch>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, kernel-team <kernel-team@cloudflare.com>,
- Yan Zhai <yan@cloudflare.com>
-References: <20250226110340.2671366-1-linyunsheng@huawei.com>
- <20250226110340.2671366-4-linyunsheng@huawei.com>
-Content-Language: en-US
-From: Jesper Dangaard Brouer <hawk@kernel.org>
-In-Reply-To: <20250226110340.2671366-4-linyunsheng@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SA1PR12MB8945:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0dae37c1-b36c-48ed-ef78-08dd5b059092
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?eU02OGxldWJkV2ZXQS9USk1HUXFpanhYbGY3Nk93aVduV2FPQS9aeUU2VDdr?=
+ =?utf-8?B?M1JSSUpTQWhHemx3TloxbHkxcW95dTB3cUJCYTJMS1BuekFJY0poU2lVN2tN?=
+ =?utf-8?B?eW1sUlVlR1dwREdGWHJYR0ZGOUk4cFJwZUFKSXZ3dG9QOEZVN2dFTlh0NnJC?=
+ =?utf-8?B?YWxlbHJPN2xyMytQMXdHVVVmRE5FRitJcFMwSXZoRERCdWN5TkZ4dlYyTzds?=
+ =?utf-8?B?Yk5iTG9qWm96NGNiNG5VM3cvNDNVTStPeC9sSGIrVkQ4WjdUb3ZUajJCUitl?=
+ =?utf-8?B?UXgwVVdsMkZ1ZUNtY0UzdFI0ck9SV0NFclZYdy80Nm0rNUJVdlN5MXZvdm9G?=
+ =?utf-8?B?dUltL2RKNGIvZ2ZTamJia1A0anR3LzFFTnNIcU9nTW1CUnZMY0dlaW5xdFpU?=
+ =?utf-8?B?ZEFPSWx1R2VJY3VUeTlOYnd1dmZvY0NpZE1kcnA2ZVNrRlhGcXMxd2hrQzJL?=
+ =?utf-8?B?VVN4Ykl2TkhtUU9IcmYrdGxlaFpKYmtJeTVwN3Nud2t1Z0hTVHhBMWR5eWdW?=
+ =?utf-8?B?M3hRdjdNSUdwT3JxTTUrNlVUN0srM3c1WitxOG5ET3dhWFczajBVSS9yNTBh?=
+ =?utf-8?B?U0lnZ0M5MEVFWFZ0eVhUaHZTbGZPZGJoZWhNQ1dsRGx3V2dNQXRGZU5RWm9i?=
+ =?utf-8?B?ZVpzT1dURy9CVXRBVCt4TVNUNHBjY25YWjE2M0JCenVIZWhRZmVxMEhMUnIz?=
+ =?utf-8?B?a3Y2UTFiUkkybTNSVnNITStWYlV2ZzNpMXpDVG9jbERXczBRY1lFNVFLbEhO?=
+ =?utf-8?B?bkwwejV3K2E4TUFMMEdWNnU5bWhEVFdmNk1QazZuQWJJMW1XSHdEK2d5V0lm?=
+ =?utf-8?B?QWlzM0hRUjEyN2hRam50TGJqSUNnZGJNa1ovbDJWQzdpS1ljQWNrKzdNZ1pj?=
+ =?utf-8?B?U1k5Qk45WUZmU0NhNERlUXFtM1NvblJrbjBjRG9UaFRJSkVoYURMU0FBNnR6?=
+ =?utf-8?B?QWtBRUFxYWluTUhaSHE0dE1BOVRTQWlBazlENXV4RjBzaXhPTGErN2ZNSHFL?=
+ =?utf-8?B?RXFTT3kxT1lPbzhNcjZkdzdhaXdrZEFiOXlGaWVkQ2dDM2dPemJpTmk1MEJK?=
+ =?utf-8?B?ZW5PTDBpTUFHVk8xL2RwZlVnNStFVVBuUXg4UEROdTNUVGJVd1pYN0NBRGNa?=
+ =?utf-8?B?a3p5d3c5ODl3YUZNcFp5OC9nZHZyaGpkc0NaOUJIaHlIRzBCTHpMcFNZV2Nx?=
+ =?utf-8?B?NXY3L0wzNHpQei81YUV3c0laeE1TNUdWTWpzaHZuQ0pBMFpPS3VySDNkc3lR?=
+ =?utf-8?B?dlZEVWVsRjM0Z3JLcHVJVmF3WEw4eUU0cUVEeU5YWXUwdTZrVEpFcDdzaHdQ?=
+ =?utf-8?B?YXQwdmlMVkxIT2FkSlVabm1pdE9mUDk1MEloZExoSHA2Tnk1ZER3UXVWeE9r?=
+ =?utf-8?B?bjloQ29vTEFZdE1mTHk1SitMM1lza0lHeExyd1B0NHNnUFVueFN0Nnh2R0hq?=
+ =?utf-8?B?d2NGdFlyeEw1WDZxWHZ0Y0Z0cFBESmRwM2NsU1pSYUJpcjBvR1F6cFAxaXhS?=
+ =?utf-8?B?L0xBay9BaHladmdod1k1a1VuZll0MDN4Skw2ays4bGJYYS9ISWUvUHk1QTV6?=
+ =?utf-8?B?RUtBTm54ZFNJV3RCdThNV1VHaGNYUEVNWGZST0JweWtqUEJFSVBhVy9jZHJK?=
+ =?utf-8?B?MzdGTWRwdFNiMkU1TEZmZFQ4M0VMdWtDd0l3OGZ6QndpNitZYXhHellQNUp2?=
+ =?utf-8?B?V2I3T3lMSFZhUlV3SlRnZkNJL25lY3MzeTZuT2hTV1BXNTJpN3JDMzdvOHlP?=
+ =?utf-8?B?ZmpURXNKa28xMUlwMjY0SytoZW9sbFhyd0haMWxrTDk0RzZJY3JQVEpmdnh1?=
+ =?utf-8?B?Q1hZMU5YRlI4RzNSUkkvSWNRZkxCdXJGSTBEdDBrMWR0Vm9HWXdoUk9oMGpn?=
+ =?utf-8?Q?icsgqHbgLpXLz?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bHRuUi9hZ3NzSDJnWTM5ZHhDU0V6VTNZWDY4Wm54NmpmVG82ZEFPVHh2Q2dm?=
+ =?utf-8?B?aUJVcXAvbG1WY3Y1SWFFV1lkRWxSQUMyZWR5REQ0SlE3Zk1YOW14djNFOUFu?=
+ =?utf-8?B?cnRVaTlYRGtXL0FnL3cyVlZ2SzhUN0l3VzBKU1lHQzFIUkVsVEd5VTZ6aEZM?=
+ =?utf-8?B?Vm1QaWx1TExzR2xWYkhvUFloQlBxOEV2b0RXZi9LMlU4WEVaUE5BdGlDaG4z?=
+ =?utf-8?B?Ris3M3VZVmg1SUtZai9OelR5VGtzcFF0Zkpjd3hVV2p1cDB6Uk5jaVRsTDVx?=
+ =?utf-8?B?QjJvcm1aRjZ1TjhiREl1OVpDZUQwTVdxYkEyMTFRTjFkOURmTFRjQnBERGZu?=
+ =?utf-8?B?ZGY5T0Y0REdGaHg0TnlZWkJBRWpyOVpuQjN2NWdnME01ZlhLYlB2YXEzeVNu?=
+ =?utf-8?B?WktxbFlFREdxRjZ0WlBFQkNHRHlXekZZNXhWL1dHbkFsUGZsRExKek1mVUVm?=
+ =?utf-8?B?ZGZOTEJsa0QwcU9yZk5TL0g0cjBYeDFFaWJzQ2Yrd3dOa1BxN1BmYTdKaG5T?=
+ =?utf-8?B?UFl0bXBvbGxnbWRXVTFISVZmbWNCeDU0enpMWTllRVpGODNEMmhXQkw2UDJT?=
+ =?utf-8?B?d0pGYnNFSXJnUGFYWDFtRkpRdGNBYTdKT3d5MEpkdzJ1NlRla0lydHlkbXpv?=
+ =?utf-8?B?Z0FaZ2dEakVlbTB0cTQyUGZBUW83VldRWDdacjlLNGVHTG9jK1hmeVNLb3RV?=
+ =?utf-8?B?SUxyalJFeFBwVG95TXhCeWk4b09HUWhZdmxKdnh1dU5oTFBMWTRKMU43M2xo?=
+ =?utf-8?B?WkNObHc1ZXZiUjRZWnZ1Y1JWZGhzS2lvVzZqTUZLVU52YXM0UlBKYUFLc2cr?=
+ =?utf-8?B?cTdsNGJsVklEZTRJb0hVNmtEKzU4d05Qb2JtdDljQ3JDNnZnOHozOHdhUzIw?=
+ =?utf-8?B?dHgwYkgvMEdpNG4ycndJSWlEcXBKcldpdDJpUndBSUNHcjNhMUh2dlJGTFdu?=
+ =?utf-8?B?amVEMnVMSUlOQit2NWFHanBGa2xNRDdNaXhVTnZTQjlsY3dvKzMwZVo1aWd5?=
+ =?utf-8?B?b2VSS3pyYWYzTzdFd1J0WHZ5TGhBc0h0R2o0ZFVsL1J4SEpaUHJZL3lPYkQx?=
+ =?utf-8?B?QVhaMXhHTUcvYlRoelJjeHp1ZnpXcFlQMnJmbU04VmpybGpxMXVBSVNRc2ZU?=
+ =?utf-8?B?SGhnWDZWeUZjZjM4VlZFbG1Yb3BoNkIyUnhONzJVZmxpSHBBU283Z05XWkVh?=
+ =?utf-8?B?d0NGRVVNbmdqd1FQbzBTUDJwMnRZV0xrYkdVQ1BHVHZnVnBvV3JDNG1Tb0xa?=
+ =?utf-8?B?cXcrOUFjSVdhMjB1WWNORXNMbUJibG1mSi93am9Wc2VNT2N5aEJyOHduR2pI?=
+ =?utf-8?B?Q2phcjltOWY2Sy9jOFFJdWZIRzJaVDNWQnhFY2JWYXpWbUZEcHdqU2JVK2Z4?=
+ =?utf-8?B?bkgvVHZaa2xKOGhabS82Q1lORXVsZHlWcjdOaEZ1d0hPMHFhY1RuV2IzSmNI?=
+ =?utf-8?B?dnlZWXVTR3l5cDBpaHp3b2djL0tHRUpkQ0V6bU1Fajk5OTI3em85dHlMZ1Yw?=
+ =?utf-8?B?WlJ0aGFTWTl4VDg5U05sQmJlTklLeWtmNlBuSXRZRDNsVEJQQWE2Zlg5ZTh4?=
+ =?utf-8?B?OTFYMTV5VzFiNXExZWZCYnFaMWJzb2Q0d0ZMeEVHODJvZDJSRXVtdVh0L1dF?=
+ =?utf-8?B?QlFKTk8wa0tDRUZwTG9WUDc4TDdwY3dZbXNqL0ExM3lLSjRpMGdocFpBaitT?=
+ =?utf-8?B?QThQUlg4a2dMMndndE5tNFFuWWQwVGRaZGVRMXJzYllVM0VYTWJZNmsrbDBQ?=
+ =?utf-8?B?aGpSQmFtQ3hVMk9oUEp3b0syWWJ2QXJyN2hjbEJFRFNIZk5DV3hLaXIrK1Ft?=
+ =?utf-8?B?OGRFT2VIaUhqaEZpMjlWSGkwbGxNcExUTGhHWEI4dG5ieHhUZXZrUWFNalN2?=
+ =?utf-8?B?Wm5POVI2MWNuMGpyTWY2ajFJWTIvNjBCV2x5S3plZENSdVVWS2E0Z3VvNlZU?=
+ =?utf-8?B?WC8rWkJSdW5wejBzMmxDbk1JVHVYSFpwWGZJRFJWVnVoZGRTNnpNeVUxdGsz?=
+ =?utf-8?B?L1ZWNHI1cEp4djkraFZVY3l6Nlc4T2dUQzNxeWpualI0UHpKekJyNWkvQ0tH?=
+ =?utf-8?B?STJaMTdXL1ZhWVl1MllrcFM4TXVyNWJrb2Y4QmlYdyt2RXVVS2k3RjhvRHpB?=
+ =?utf-8?Q?u5sdcdNmTirNUvJSZTwOoQICR?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0dae37c1-b36c-48ed-ef78-08dd5b059092
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2025 10:16:01.8763
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yyCFnFurj8zlNqxOmIL2nMObFnBHRQOsbwsE6FsKUqEFy2ho99i36eKsYC/lklVJIE8bTTueak+XUQYhVAKfQQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8945
 
-(comments requesting changes inlined below)
+Jason,
 
-On 26/02/2025 12.03, Yunsheng Lin wrote:
-> Currently a fixed size of pre-allocated memory is used to
-> keep track of the inflight pages, in order to use the DMA
-> API correctly.
+
+On 3/4/2025 12:08 AM, Jason Gunthorpe wrote:
+> On Sun, Mar 02, 2025 at 04:10:46PM +0800, Yi Liu wrote:
+>> I'm also thinking about the impact of such a knob. How should we define
+>> this knob. Should we allow it to disable/enable ATS? Especially in runtime.
+>> e.g. if the device is identified to be ATS untrusted by the admin, while
+>> the hw does not support SATS, it seems reasonable to disable ATS for
+>> such device. This might change the driver behavior on ATS enabling. Intel
+>> iommu driver enables ATS as long as it's available in the probe_device()
+>> op. What about AMD and ARM?
 > 
-> As mentioned [1], the number of inflight pages can be up to
-> 73203 depending on the use cases. Allocate memory dynamically
-> to keep track of the inflight pages when pre-allocated memory
-> runs out.
+> ARM enables ATS when a PAGING translation is set on the RID or any
+> PASID is used. Otherwise it is off, eg for RID = IDENTITY
 > 
-> The overhead of using dynamic memory allocation is about 10ns~
-> 20ns, which causes 5%~10% performance degradation for the test
-> case of time_bench_page_pool03_slow() in [2].
+> This seems like a reasonable thing to do to me..
 > 
-> 1. https://lore.kernel.org/all/b8b7818a-e44b-45f5-91c2-d5eceaa5dd5b@kernel.org/
-> 2. https://github.com/netoptimizer/prototype-kernel
-> CC: Robin Murphy <robin.murphy@arm.com>
-> CC: Alexander Duyck <alexander.duyck@gmail.com>
-> CC: IOMMU <iommu@lists.linux.dev>
-> Fixes: f71fec47c2df ("page_pool: make sure struct device is stable")
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> ---
->   Documentation/netlink/specs/netdev.yaml | 16 +++++
->   include/net/page_pool/types.h           | 10 ++++
->   include/uapi/linux/netdev.h             |  2 +
->   net/core/page_pool.c                    | 79 ++++++++++++++++++++++++-
->   net/core/page_pool_priv.h               |  2 +
->   net/core/page_pool_user.c               | 39 ++++++++++--
->   tools/net/ynl/samples/page-pool.c       | 11 ++++
->   7 files changed, 154 insertions(+), 5 deletions(-)
+>> On the other hand, we may just define the knob as sats required or not.
+>> This is just a knob to let kernel know if the iommu driver needs to enable
+>> sats or not. While leave the ATS enabling policy unchanged. This means
+>> we need to probe the sats capability of iommu hw before creating the knob
+>> in sysfs.
 > 
-> diff --git a/Documentation/netlink/specs/netdev.yaml b/Documentation/netlink/specs/netdev.yaml
-> index 36f1152bfac3..7c121d0a5d15 100644
-> --- a/Documentation/netlink/specs/netdev.yaml
-> +++ b/Documentation/netlink/specs/netdev.yaml
-> @@ -162,6 +162,20 @@ attribute-sets:
->           type: uint
->           doc: |
->             Amount of memory held by inflight pages.
-> +      -
-> +        name: item_mem_resident
-> +        type: uint
-> +        doc: |
-> +          Amount of actual memory allocated to track inflight pages.
-> +          memory fragmentation ratio for item memory can be calculated
-> +          using item_mem_resident / item_mem_used.
-> +      -
-> +        name: item_mem_used
-> +        type: uint
-> +        doc: |
-> +          Amount of actual memory used to track inflight pages.
-> +          memory fragmentation ratio for item memory can be calculated
-> +          using item_mem_resident / item_mem_used.
->         -
->           name: detach-time
->           type: uint
-> @@ -602,6 +616,8 @@ operations:
->               - detach-time
->               - dmabuf
->               - io-uring
-> +            - item_mem_resident
-> +            - item_mem_used
->         dump:
->           reply: *pp-reply
->         config-cond: page-pool
-> diff --git a/include/net/page_pool/types.h b/include/net/page_pool/types.h
-> index c131e2725e9a..c8c47ca67f4b 100644
-> --- a/include/net/page_pool/types.h
-> +++ b/include/net/page_pool/types.h
-> @@ -103,6 +103,7 @@ struct page_pool_params {
->    * @waive:	pages obtained from the ptr ring that cannot be added to
->    *		the cache due to a NUMA mismatch
->    * @item_fast_empty: pre-allocated item cache is empty
-> + * @item_slow_failed: failed to allocate memory for item_block
->    */
->   struct page_pool_alloc_stats {
->   	u64 fast;
-> @@ -112,6 +113,7 @@ struct page_pool_alloc_stats {
->   	u64 refill;
->   	u64 waive;
->   	u64 item_fast_empty;
-> +	u64 item_slow_failed;
->   };
->   
->   /**
-> @@ -159,9 +161,16 @@ struct page_pool_item {
->   struct page_pool_item_block {
->   	struct page_pool *pp;
->   	struct list_head list;
-> +	unsigned int flags;
-> +	refcount_t ref;
->   	struct page_pool_item items[];
->   };
->   
-> +struct page_pool_slow_item {
-> +	struct page_pool_item_block *block;
-> +	unsigned int next_to_use;
-> +};
-> +
->   /* Ensure the offset of 'pp' field for both 'page_pool_item_block' and
->    * 'netmem_item_block' are the same.
->    */
-> @@ -191,6 +200,7 @@ struct page_pool {
->   	int cpuid;
->   	u32 pages_state_hold_cnt;
->   	struct llist_head hold_items;
-> +	struct page_pool_slow_item slow_items;
->   
->   	bool has_init_callback:1;	/* slow::init_callback is set */
->   	bool dma_map:1;			/* Perform DMA mapping */
-> diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
-> index 7600bf62dbdf..9309cbfeb8d2 100644
-> --- a/include/uapi/linux/netdev.h
-> +++ b/include/uapi/linux/netdev.h
-> @@ -103,6 +103,8 @@ enum {
->   	NETDEV_A_PAGE_POOL_DETACH_TIME,
->   	NETDEV_A_PAGE_POOL_DMABUF,
->   	NETDEV_A_PAGE_POOL_IO_URING,
-> +	NETDEV_A_PAGE_POOL_ITEM_MEM_RESIDENT,
-> +	NETDEV_A_PAGE_POOL_ITEM_MEM_USED,
->   
->   	__NETDEV_A_PAGE_POOL_MAX,
->   	NETDEV_A_PAGE_POOL_MAX = (__NETDEV_A_PAGE_POOL_MAX - 1)
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index d927c468bc1b..dc9574bd129b 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -64,6 +64,7 @@ static const char pp_stats[][ETH_GSTRING_LEN] = {
->   	"rx_pp_alloc_refill",
->   	"rx_pp_alloc_waive",
->   	"rx_pp_alloc_item_fast_empty",
-> +	"rx_pp_alloc_item_slow_failed",
->   	"rx_pp_recycle_cached",
->   	"rx_pp_recycle_cache_full",
->   	"rx_pp_recycle_ring",
-> @@ -98,6 +99,7 @@ bool page_pool_get_stats(const struct page_pool *pool,
->   	stats->alloc_stats.refill += pool->alloc_stats.refill;
->   	stats->alloc_stats.waive += pool->alloc_stats.waive;
->   	stats->alloc_stats.item_fast_empty += pool->alloc_stats.item_fast_empty;
-> +	stats->alloc_stats.item_slow_failed += pool->alloc_stats.item_slow_failed;
->   
->   	for_each_possible_cpu(cpu) {
->   		const struct page_pool_recycle_stats *pcpu =
-> @@ -144,6 +146,7 @@ u64 *page_pool_ethtool_stats_get(u64 *data, const void *stats)
->   	*data++ = pool_stats->alloc_stats.refill;
->   	*data++ = pool_stats->alloc_stats.waive;
->   	*data++ = pool_stats->alloc_stats.item_fast_empty;
-> +	*data++ = pool_stats->alloc_stats.item_slow_failed;
->   	*data++ = pool_stats->recycle_stats.cached;
->   	*data++ = pool_stats->recycle_stats.cache_full;
->   	*data++ = pool_stats->recycle_stats.ring;
-> @@ -431,6 +434,7 @@ static void page_pool_item_uninit(struct page_pool *pool)
->   					 struct page_pool_item_block,
->   					 list);
->   		list_del(&block->list);
-> +		WARN_ON(refcount_read(&block->ref));
->   		put_page(virt_to_page(block));
->   	}
->   }
-> @@ -514,10 +518,42 @@ static struct page_pool_item *page_pool_fast_item_alloc(struct page_pool *pool)
->   	return llist_entry(first, struct page_pool_item, lentry);
->   }
->   
-> +static struct page_pool_item *page_pool_slow_item_alloc(struct page_pool *pool)
-> +{
-> +	if (unlikely(!pool->slow_items.block ||
-> +		     pool->slow_items.next_to_use >= ITEMS_PER_PAGE)) {
-> +		struct page_pool_item_block *block;
-> +		struct page *page;
-> +
-> +		page = alloc_pages_node(pool->p.nid, GFP_ATOMIC | __GFP_NOWARN |
-> +					__GFP_ZERO, 0);
-> +		if (!page) {
-> +			alloc_stat_inc(pool, item_slow_failed);
-> +			return NULL;
-> +		}
+> If we add some ATS control knob then maybe it should be able to
+> disable/enable normal ATS as well?
 
-I'm missing a counter that I can use to monitor the rate of page
-allocations for these "item" block's.
-In production want to have a metric that shows me a sudden influx of
-that cause code to hit this "item_slow_alloc" case (inflight_slow_alloc)
+Yes. If we are dong knob then we should support normal ATS as well.
 
-BTW should this be called "inflight_block" instead of "item_block"?
+> 
+>  never
+>  always
+>  paging-only
+>  secure-always
+>  secure-paging-only
+
+Why not just expose supported modes (No ATS, ATS, Secure ATS) per group and
+allow admin to select within supported modes?  We may have to add more logic in
+sysfs store/show code path. But user will know what is supported and what they
+can pick.
+
+Also sysfs knob needs new domain ops to communicate changes to indivisual
+driver. Like in store path
+  - validate the input
+  - make sure driver is unbond so that its safe to modify the
+  - New ops to communicate to indivisual driver
+	 something like ops->set_ats_mode(dev, mode)
 
 
-> +
-> +		block = page_address(page);
-> +		block->pp = pool;
-> +		block->flags |= PAGE_POOL_SLOW_ITEM_BLOCK_BIT;
-> +		refcount_set(&block->ref, ITEMS_PER_PAGE);
-> +		pool->slow_items.block = block;
-> +		pool->slow_items.next_to_use = 0;
-> +
-> +		spin_lock_bh(&pool->item_lock);
-> +		list_add(&block->list, &pool->item_blocks);
-> +		spin_unlock_bh(&pool->item_lock);
-> +	}
-> +
-> +	return &pool->slow_items.block->items[pool->slow_items.next_to_use++];
-> +}
-> +
->   static bool page_pool_set_item_info(struct page_pool *pool, netmem_ref netmem)
->   {
->   	struct page_pool_item *item = page_pool_fast_item_alloc(pool);
->   
-> +	if (unlikely(!item))
-> +		item = page_pool_slow_item_alloc(pool);
-> +
->   	if (likely(item)) {
->   		item->pp_netmem = netmem;
->   		page_pool_item_set_used(item);
-> @@ -527,6 +563,37 @@ static bool page_pool_set_item_info(struct page_pool *pool, netmem_ref netmem)
->   	return !!item;
->   }
->   
-> +static void __page_pool_slow_item_free(struct page_pool *pool,
-> +				       struct page_pool_item_block *block)
-> +{
-> +	spin_lock_bh(&pool->item_lock);
-> +	list_del(&block->list);
-> +	spin_unlock_bh(&pool->item_lock);
-> +
-> +	put_page(virt_to_page(block));
 
-Here again I'm missing a counter that I can use to monitor the rate of
-page free events.
+-Vasant
 
-In production I want a metric (e.g inflight_slow_free_block) that
-together with "item_slow_alloc" (perhaps named
-inflight_slow_alloc_block), show me if this code path is creating churn,
-that I can correlate/explain some other influx event on the system.
-
-BTW subtracting these (alloc - free) counters gives us the memory used.
-
-> +}
-> +
-> +static void page_pool_slow_item_drain(struct page_pool *pool)
-> +{
-> +	struct page_pool_item_block *block = pool->slow_items.block;
-> +
-> +	if (!block || pool->slow_items.next_to_use >= ITEMS_PER_PAGE)
-> +		return;
-> +
-> +	if (refcount_sub_and_test(ITEMS_PER_PAGE - pool->slow_items.next_to_use,
-> +				  &block->ref))
-> +		__page_pool_slow_item_free(pool, block);
-> +}
-> +
-> +static void page_pool_slow_item_free(struct page_pool *pool,
-> +				     struct page_pool_item_block *block)
-> +{
-> +	if (likely(!refcount_dec_and_test(&block->ref)))
-> +		return;
-> +
-> +	__page_pool_slow_item_free(pool, block);
-> +}
-> +
->   static void page_pool_fast_item_free(struct page_pool *pool,
->   				     struct page_pool_item *item)
->   {
-> @@ -536,13 +603,22 @@ static void page_pool_fast_item_free(struct page_pool *pool,
->   static void page_pool_clear_item_info(struct page_pool *pool, netmem_ref netmem)
->   {
->   	struct page_pool_item *item = netmem_get_pp_item(netmem);
-> +	struct page_pool_item_block *block;
->   
->   	DEBUG_NET_WARN_ON_ONCE(item->pp_netmem != netmem);
->   	DEBUG_NET_WARN_ON_ONCE(page_pool_item_is_mapped(item));
->   	DEBUG_NET_WARN_ON_ONCE(!page_pool_item_is_used(item));
->   	page_pool_item_clear_used(item);
->   	netmem_set_pp_item(netmem, NULL);
-> -	page_pool_fast_item_free(pool, item);
-> +
-> +	block = page_pool_item_to_block(item);
-> +	if (likely(!(block->flags & PAGE_POOL_SLOW_ITEM_BLOCK_BIT))) {
-> +		DEBUG_NET_WARN_ON_ONCE(refcount_read(&block->ref));
-> +		page_pool_fast_item_free(pool, item);
-> +		return;
-> +	}
-> +
-> +	page_pool_slow_item_free(pool, block);
->   }
->   
->   /**
-> @@ -1390,6 +1466,7 @@ void page_pool_destroy(struct page_pool *pool)
->   
->   	page_pool_disable_direct_recycling(pool);
->   	page_pool_free_frag(pool);
-> +	page_pool_slow_item_drain(pool);
->   
->   	if (!page_pool_release(pool))
->   		return;
-> diff --git a/net/core/page_pool_priv.h b/net/core/page_pool_priv.h
-> index a5df5ab14ead..37adfc766c12 100644
-> --- a/net/core/page_pool_priv.h
-> +++ b/net/core/page_pool_priv.h
-> @@ -7,6 +7,8 @@
->   
->   #include "netmem_priv.h"
->   
-> +#define PAGE_POOL_SLOW_ITEM_BLOCK_BIT		BIT(0)
-> +
->   extern struct mutex page_pools_lock;
->   
->   s32 page_pool_inflight(const struct page_pool *pool, bool strict);
-> diff --git a/net/core/page_pool_user.c b/net/core/page_pool_user.c
-> index c82a95beceff..0dc0090257ae 100644
-> --- a/net/core/page_pool_user.c
-> +++ b/net/core/page_pool_user.c
-> @@ -33,7 +33,7 @@ DEFINE_MUTEX(page_pools_lock);
->    *    - user.list: unhashed, netdev: unknown
->    */
->   
-> -typedef int (*pp_nl_fill_cb)(struct sk_buff *rsp, const struct page_pool *pool,
-> +typedef int (*pp_nl_fill_cb)(struct sk_buff *rsp, struct page_pool *pool,
->   			     const struct genl_info *info);
->   
->   static int
-> @@ -111,7 +111,7 @@ netdev_nl_page_pool_get_dump(struct sk_buff *skb, struct netlink_callback *cb,
->   }
->   
->   static int
-> -page_pool_nl_stats_fill(struct sk_buff *rsp, const struct page_pool *pool,
-> +page_pool_nl_stats_fill(struct sk_buff *rsp, struct page_pool *pool,
->   			const struct genl_info *info)
->   {
->   #ifdef CONFIG_PAGE_POOL_STATS
-> @@ -212,8 +212,36 @@ int netdev_nl_page_pool_stats_get_dumpit(struct sk_buff *skb,
->   	return netdev_nl_page_pool_get_dump(skb, cb, page_pool_nl_stats_fill);
->   }
->   
-> +static int page_pool_nl_fill_item_mem_info(struct page_pool *pool,
-> +					   struct sk_buff *rsp)
-> +{
-> +	struct page_pool_item_block *block;
-> +	size_t resident = 0, used = 0;
-> +	int err;
-> +
-> +	spin_lock_bh(&pool->item_lock);
-> +
-> +	list_for_each_entry(block, &pool->item_blocks, list) {
-> +		resident += PAGE_SIZE;
-> +
-> +		if (block->flags & PAGE_POOL_SLOW_ITEM_BLOCK_BIT)
-> +			used += (PAGE_SIZE - sizeof(struct page_pool_item) *
-> +				 refcount_read(&block->ref));
-> +		else
-> +			used += PAGE_SIZE;
-> +	}
-> +
-> +	spin_unlock_bh(&pool->item_lock);
-
-Holding a BH spin_lock can easily create production issues.
-I worry how long time it will take to traverse these lists.
-
-We (Cc Yan) are currently hunting down a number of real production issue
-due to different cases of control-path code querying the kernel that
-takes a _bh lock to read data, hurting the data-path processing.
-
-If we had the stats counters, then this would be less work, right?
-
-
-> +
-> +	err = nla_put_uint(rsp, NETDEV_A_PAGE_POOL_ITEM_MEM_RESIDENT, resident);
-> +	if (err)
-> +		return err;
-> +
-> +	return nla_put_uint(rsp, NETDEV_A_PAGE_POOL_ITEM_MEM_USED, used);
-> +}
-> +
->   static int
-> -page_pool_nl_fill(struct sk_buff *rsp, const struct page_pool *pool,
-> +page_pool_nl_fill(struct sk_buff *rsp, struct page_pool *pool,
->   		  const struct genl_info *info)
->   {
->   	size_t inflight, refsz;
-> @@ -251,6 +279,9 @@ page_pool_nl_fill(struct sk_buff *rsp, const struct page_pool *pool,
->   	if (pool->mp_ops && pool->mp_ops->nl_fill(pool->mp_priv, rsp, NULL))
->   		goto err_cancel;
->   
-> +	if (page_pool_nl_fill_item_mem_info(pool, rsp))
-> +		goto err_cancel;
-> +
->   	genlmsg_end(rsp, hdr);
->   
->   	return 0;
-> @@ -259,7 +290,7 @@ page_pool_nl_fill(struct sk_buff *rsp, const struct page_pool *pool,
->   	return -EMSGSIZE;
->   }
->   
-> -static void netdev_nl_page_pool_event(const struct page_pool *pool, u32 cmd)
-> +static void netdev_nl_page_pool_event(struct page_pool *pool, u32 cmd)
->   {
->   	struct genl_info info;
->   	struct sk_buff *ntf;
-> diff --git a/tools/net/ynl/samples/page-pool.c b/tools/net/ynl/samples/page-pool.c
-> index e5d521320fbf..16c48b6d3c2c 100644
-> --- a/tools/net/ynl/samples/page-pool.c
-> +++ b/tools/net/ynl/samples/page-pool.c
-> @@ -16,6 +16,7 @@ struct stat {
->   	struct {
->   		unsigned int cnt;
->   		size_t refs, bytes;
-> +		size_t item_mem_resident, item_mem_used;
->   	} live[2];
->   
->   	size_t alloc_slow, alloc_fast, recycle_ring, recycle_cache;
-> @@ -52,6 +53,12 @@ static void count(struct stat *s, unsigned int l,
->   		s->live[l].refs += pp->inflight;
->   	if (pp->_present.inflight_mem)
->   		s->live[l].bytes += pp->inflight_mem;
-> +
-> +	if (pp->_present.item_mem_resident)
-> +		s->live[l].item_mem_resident += pp->item_mem_resident;
-> +
-> +	if (pp->_present.item_mem_used)
-> +		s->live[l].item_mem_used += pp->item_mem_used;
->   }
->   
->   int main(int argc, char **argv)
-> @@ -127,6 +134,10 @@ int main(int argc, char **argv)
->   		       s->live[1].refs, s->live[1].bytes,
->   		       s->live[0].refs, s->live[0].bytes);
->   
-> +		printf("\t\titem_mem_resident: %zu item_mem_used: %zu (item_mem_resident: %zu item_mem_used: %zu)\n",
-> +		       s->live[1].item_mem_resident, s->live[1].item_mem_used,
-> +		       s->live[0].item_mem_resident, s->live[0].item_mem_used);
-> +
->   		/* We don't know how many pages are sitting in cache and ring
->   		 * so we will under-count the recycling rate a bit.
->   		 */
