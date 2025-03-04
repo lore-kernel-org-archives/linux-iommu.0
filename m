@@ -1,129 +1,126 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A23942080F4
-	for <iommu@lists.linux.dev>; Tue,  4 Mar 2025 14:24:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B2EC24BD1C
+	for <iommu@lists.linux.dev>; Tue,  4 Mar 2025 14:26:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741098246; cv=none; b=lXZIfxGFxaVdnoPfExgBAguQOqZVSJJJG0ZPgfW6ZY6+c/MskIch24QlwQ/AfUUJ7hEcnryZTx7+uXu/b2TMS1tLRdUyDd6AD+F8DOxtd+oaS1pD+GPDJ4Z3/iFWTAqJGHGFKeEMjwbSoFMa9806GmnT/37EyjlDLT4Jip5JuUw=
+	t=1741098398; cv=none; b=Q75yXUIEWzb6vqsOUMmY+2Gpu/ULrWzNL20az+hr8jwydo9JVZlivUuhlQG/+mEpF3o/GCZrwqmaSsATrjrH/PShbEzlWunb6SKZQXj7eGGxURVvZXhokc07eAKw5GoBUOSb/bBHzM2vcmx8yeAVyn7+4E2sUWcG9TQC0a2PeVA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741098246; c=relaxed/simple;
-	bh=NfrvOM3JSjvqZQHaPLKmuVA5RDCX8LPUZHQJfhqbhKE=;
+	s=arc-20240116; t=1741098398; c=relaxed/simple;
+	bh=ZZ7KMHGJDKL1wdw85tJIpxyh4i61E6zj6IeC9gOCMHg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JZz+SaNhf5+5womKCRtNIgRvmLwG0C2zntlRNHZOl612P/DfXM9UZ/SbYMhw4oL5tYUtfZRe8HdRNl7/CNtBXZw5vtDYV3JwDEeL/GR2mVqgbw1OGmwPG6Hg4kjtujoaJ9pcIjJXr7J+q2WudLK2UryvdDOAXn7+ATrIqvYOom8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=gLgVeVaD; arc=none smtp.client-ip=209.85.222.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=LLeBqEB1qXNZWF8msCiJiejJWpJVcwBZbyU1z0gA4YpElILsQ+C7smAZUlz/49F/Z99Q/jIFN7To8KynNwPVY/04M7JRbZK0YgrZEcX0mQKA4HiS9PxZXX6kskTzWiv9iTaEGD98bsWiFcKR2MFeSP+lJ6tOsXQu9bOu8A1xJMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=nyKSrRxy; arc=none smtp.client-ip=209.85.160.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="gLgVeVaD"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7c08f9d0ef3so307629485a.2
-        for <iommu@lists.linux.dev>; Tue, 04 Mar 2025 06:24:04 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="nyKSrRxy"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-475038900b4so3478141cf.0
+        for <iommu@lists.linux.dev>; Tue, 04 Mar 2025 06:26:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1741098243; x=1741703043; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=iU0p2/jZSpnk5i7o9MxVf1ZWl6fXEOixJES6cFrUjaQ=;
-        b=gLgVeVaDMne2TbXuqXF6Gr63jl17MLU+H4Rd8Yqe8UURLn2m6BwZ0cCkG0OtwsTJnr
-         EprxUKWPd9utVZvxvVZYkVDtsCvmj0cn7NEk8RXspaTS/vcbQTF29HIT1cvCBe8rdgcu
-         RRBmcpZOnWRqpvIDGQET/4vIIW/bHRvNP86a5FGOS+68WsumRJh53IcXeXtEt41yXh+g
-         T85Y2l8RzJT6IMh5QQ23Vpx7iXvfTywoNLS/d3/NkJr9sX4V4JXZJRzYvl7TzFo+S7Ca
-         ejBd/AebYgl0zDXpVSCALaXYS1IEW1uGpE+3GZcLnPWghBpyFvr25ANmtEzeDz7cfxMh
-         AUMA==
+        d=ziepe.ca; s=google; t=1741098396; x=1741703196; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ZZ7KMHGJDKL1wdw85tJIpxyh4i61E6zj6IeC9gOCMHg=;
+        b=nyKSrRxyHMMkoH0b0YMd5DgsFY6Ee9tokdL7t2AmD7UdlgZJONnFx9uoFcPxQTTJc2
+         wBSo2H6GGdAqkiijM/qB5VN9TwicLXqsTvBTvjHkvM7OWr0vIJ009zAZOpiUifSaBamm
+         RAyMzM8wtsBjGSv/8qo9QFCrirH7YaX18XPIe8t1UrMRaKo9GmX0ZL/oqTLXJ7sTmXNZ
+         AZDXuqI9O+Rf7oTKWRc/YEumOISrI8zO3oXtJXxn5L1z37YLGYDUJaWBRhHpNgN7B+//
+         gzvLH41yPfIRXM+RfG9QAp2Id9w3TGTVFPwKdt7Uk3Qam3yUEIcOsHj9CsvyDvcuH3eR
+         xfEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741098243; x=1741703043;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iU0p2/jZSpnk5i7o9MxVf1ZWl6fXEOixJES6cFrUjaQ=;
-        b=TU45c1/Dh/w2qL6gV7Uw7xGKhAwECX5yYotg9CPUAJpggwJ/qx723ADcTh30iI/3Sz
-         sYiIfH9Q7L4oaoIe+VvqYheBSTqGPzEMeo/2y1TxbQ6hMQFnrcxRXhIuQzgmpPR+JRm2
-         qIeSqEosV+w74K0xkCF+8CjJPi4fQElGQ28pga/6mharcVTNMx+L5l+G5yx3M6vdyfK/
-         BYUZRYMzjsL9fI4WoSaXvO/Zz2P7Q36VCbRUTDRxTwd2zqxQ/9Gf/Btj+dn9ia4Gsvyr
-         mw+PHfRUlFvkObieK3F+CiDo2SlalRrDFuIEapq2tneENzfGMLjD0YNUcadXYmMz1BjB
-         Mj4Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVSRS2E0o1gy6WNBHD+tBZpJmUBeSQ663d9f/1OOUJRs/DhAcIBcYgicXTjwlW0NeATLmdHTQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YypX/2eXbxBYkS5WJoJTLB23Yjb/UsW7lbTi38aQ1etpxEzQM6G
-	d9+OuSlx9PymgARX9Rdw3YbIsgfdrNKvhbqGanGJ1RMsz5flGnpK5RTPNTjwkSE=
-X-Gm-Gg: ASbGncvxENgdpKZBV0EO8oV5hb1ODUR7v60/HxKcYRDZKC/daKgI6+H6ZDfgVoWz8hE
-	Y94yITea2sC2gE7rWv5j7MVstn2XHxBsFUbHGwjQxafSuhUHDMRwKoJPya40Qbiz1vKmrXqsFp0
-	Z8wzRVxW2WmNUzM4cGYeYshpqk8heEgoChSgb6quIqWZJnihaHhk9sVY9gDrQRN/YGn4NTG5OLl
-	M6OF5Kzs6tkarYI1v+XsCeRQCv3nD3x3QV1V8N5WC18f/uYgTzLfVFqsYolzZUV/eNpKfbZmYcU
-	hAuH5slGdXalAwfJaC7CP5MuezBMir9QPt/wB6f7jZnj5/FEeyH3vLedIgTTDr7qLC5bzAzOrUW
-	0S+OgGeKvEPe1Eek7IA==
-X-Google-Smtp-Source: AGHT+IHYQ/yyO+RRSArx4BQKRcY9KQsHE0gb+ob6fhbI9OjQhD3xMdjqMioTe2k/ZlXEWcQ5Mf/3GA==
-X-Received: by 2002:a05:620a:8213:b0:7c3:9dd7:99c9 with SMTP id af79cd13be357-7c39dd79e9bmr1851586785a.26.1741098243398;
-        Tue, 04 Mar 2025 06:24:03 -0800 (PST)
+        d=1e100.net; s=20230601; t=1741098396; x=1741703196;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZZ7KMHGJDKL1wdw85tJIpxyh4i61E6zj6IeC9gOCMHg=;
+        b=OvphSjzqCULFKs3Ncr+N/AQXISgi0VwJpoPuqEtKPqu5Iaj8t0MRmvrHfOdcbrzfSp
+         EeGPuZHFleMVktzKHiL3bzCJwyg6xEm9qSSy5QdETjADz5vdJzb8y4TsIIt+aO8PRowR
+         6K5eT2GYdhTv/kVPZ5mGK7oTfVatqOuWMgyjKFyF0RB42T4dKFUsPDRHB17CxGDjNMx5
+         kXjUFmIf9lRz/VTXOFiJmzDy+vnTAWdboIRsIUCgkteWLVbM9fC3S+sE83ExwjTlhmMg
+         n3j0gbAZX1AjBu0CValodTlMmVN1jSJ4AcKBzbS/B/J6cWgjPUuWcCX97Zw5MbaCJIsx
+         lr6g==
+X-Forwarded-Encrypted: i=1; AJvYcCX5Jki9EQ+bY2y5Q1G6go2b6swW+dvdh6qWhy0Uj6Sfo6S2pZnBV0+FItZrMCC/HQ4lnQfx3g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzLlQ2cQ3EDVeuMWkMR3GA6xezC1kobuMox4cLnuYVHXK/K5L5Q
+	22afxKbYCFifm13oEIr6bBpdZRW5J93t4lnzPyTuYxex3tv0bMZq+m6mlmxCw08=
+X-Gm-Gg: ASbGncua5bbgqBW9trnBu3tD0bp3jOWyEDrcyN+Yuu4TK8imx8sAtCVJFDNMxDHWVvr
+	Ak++612uZH7r5ZKgV+aPl/ABiZ40C8Xpvzj2J/v3/M1tq+um1ypPL5yrSOzb5ymn551lk6xoQ8m
+	XmThWj2RWLcJgofiuPDfzuE3ja37JdcW3rddghxfYtlanAPYxMsTgRqWvGnPLgTAUQ4kcTQfFr7
+	hZXVB038Dj/0VbSxg7rEQY0kEcyBhnS3qTa5940T/ZL+D9uyVD1tQT1pqdn5S0a0tm9tZEmquUr
+	zsOMwVHeSj5XI3JmTM+sW06T+2juZMcziZd+SZxLhpr7vH7yBc6vuSjWGTj4GIUWRpgLtnfPZoD
+	0/q3LG+FKXvuZCbnmYw==
+X-Google-Smtp-Source: AGHT+IGpGwzh4Elz0HvbqFWhkWlBebcf1jH6YCXchA+m15FaB7zfVQNpWK5QB2cePx+kDOFF5fxCRg==
+X-Received: by 2002:ac8:57c2:0:b0:471:f482:bba7 with SMTP id d75a77b69052e-474fbd559afmr45366221cf.22.1741098395939;
+        Tue, 04 Mar 2025 06:26:35 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c3cc0c20ffsm132915085a.91.2025.03.04.06.24.02
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-474f2875726sm21811991cf.8.2025.03.04.06.26.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Mar 2025 06:24:02 -0800 (PST)
+        Tue, 04 Mar 2025 06:26:35 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1tpTBi-00000001785-1n8f;
-	Tue, 04 Mar 2025 10:24:02 -0400
-Date: Tue, 4 Mar 2025 10:24:02 -0400
+	id 1tpTEA-0000000179G-3zqe;
+	Tue, 04 Mar 2025 10:26:34 -0400
+Date: Tue, 4 Mar 2025 10:26:34 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"joro@8bytes.org" <joro@8bytes.org>,
+To: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
+Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	"ryan.roberts@arm.com" <ryan.roberts@arm.com>,
+	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+	"yang@os.amperecomputing.com" <yang@os.amperecomputing.com>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
 	"will@kernel.org" <will@kernel.org>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
-Message-ID: <20250304142402.GB5011@ziepe.ca>
-References: <BN9PR11MB5276B3E410FD336A3062FA5E8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
- <4fba254e-ca47-4e7b-baf3-0228d9605c2b@amd.com>
- <BN9PR11MB52763A8885AF1678E05E8B528CCC2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <942a1a66-5c18-43e2-886e-df38cb3e7258@intel.com>
- <54db17d7-b150-4579-a33d-f1b5cc8943bc@amd.com>
- <6eb0ec90-5859-4605-8a2e-657f6f711d61@intel.com>
- <825ddadd-6770-46b5-936e-f17988534984@amd.com>
- <13e1e1d8-5870-44ea-a800-e5b25bafd344@intel.com>
- <20250303183801.GW5011@ziepe.ca>
- <391a2333-0373-4cd3-a858-349230bc7c90@amd.com>
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"mark.rutland@arm.com" <mark.rutland@arm.com>,
+	"joey.gouly@arm.com" <joey.gouly@arm.com>,
+	"oliver.upton@linux.dev" <oliver.upton@linux.dev>,
+	"james.morse@arm.com" <james.morse@arm.com>,
+	"broonie@kernel.org" <broonie@kernel.org>,
+	"maz@kernel.org" <maz@kernel.org>,
+	"david@redhat.com" <david@redhat.com>,
+	"akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"mshavit@google.com" <mshavit@google.com>,
+	"jsnitsel@redhat.com" <jsnitsel@redhat.com>,
+	"smostafa@google.com" <smostafa@google.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v2 4/4] iommu/arm: Add BBM Level 2 smmu feature
+Message-ID: <20250304142634.GC5011@ziepe.ca>
+References: <20250228182403.6269-2-miko.lenczewski@arm.com>
+ <20250228182403.6269-6-miko.lenczewski@arm.com>
+ <20250228193221.GM5011@ziepe.ca>
+ <b23aa37f8e864dea82a6143bece912d6@huawei.com>
+ <20250303103102.GC13345@e133081.arm.com>
+ <20250303165255.GS5011@ziepe.ca>
+ <20250303190330.GA426248@e133081.arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <391a2333-0373-4cd3-a858-349230bc7c90@amd.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250303190330.GA426248@e133081.arm.com>
 
-On Tue, Mar 04, 2025 at 03:45:54PM +0530, Vasant Hegde wrote:
-> >  never
-> >  always
-> >  paging-only
-> >  secure-always
-> >  secure-paging-only
-> 
-> Why not just expose supported modes (No ATS, ATS, Secure ATS) per group and
-> allow admin to select within supported modes?  We may have to add more logic in
-> sysfs store/show code path. But user will know what is supported and what they
-> can pick.
+On Mon, Mar 03, 2025 at 07:03:42PM +0000, Mikołaj Lenczewski wrote:
 
-A sysfs type thing is what I'm thinking
+> For example, if we use BBML2 for kernel mappings, does that require us
+> to repaint all kernel mappings when disabling BBML2 on smmu attach? I
+> am not sure, but definitely something to be worked out.
 
-Just trying to understand what options we should be providing to
-userspace..
+No, it would be a per-mm_struct basis only if we did something like
+that
 
-I am sensitive that we'd like to disble ATS for identity modes in many
-common cases and we get that implicitly today.
+When the SMMU driver puts a SVA on top of the mm_struct it would
+disable BBML2 usage only for that mm_struct and it's contained VMAs.
 
-> Also sysfs knob needs new domain ops to communicate changes to indivisual
-> driver. Like in store path
->   - validate the input
->   - make sure driver is unbond so that its safe to modify the
->   - New ops to communicate to indivisual driver
-> 	 something like ops->set_ats_mode(dev, mode)
-
-Yeah this needs to be considered.. I wonder if a flags input to attach
-is the right way to go.
-
-That would be convenient for how SMMUv3 is structued now as it can just
-switch modes hitlessly with its existing logic. I think all drivers
-should have a similar design.
+Kernel mappings are never made into a SVA so are not effected.
+Userspace only.
 
 Jason
