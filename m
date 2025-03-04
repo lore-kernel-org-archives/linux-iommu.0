@@ -1,138 +1,143 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 936C120299D
-	for <iommu@lists.linux.dev>; Tue,  4 Mar 2025 12:07:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0743220298A
+	for <iommu@lists.linux.dev>; Tue,  4 Mar 2025 12:25:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741090079; cv=none; b=nM7+sZThSFc3bmSBp+4j+f6gpMQ6+q8aXdzQARsACl0Z6gTfnl5BnntCfk0Fynfo3wkKrpGicbelqOrQ5/Pw7kEdHeGHPv6SKW8FuQmi9uO3j/SlV3IoX1SprwGeI7ZRJxMNjcvQVYRH0TINhlYLI0G5SrlctH5OW/HvEeDIE/E=
+	t=1741091133; cv=none; b=p6Nr5xzYFqgKIL+GUPTUQ5IlutGY2vEBM+cnbdzH+gnQzhgEdp5MziiGwj6UL0TnWAMz9tWodYJZZEWwwJ2Mt7wUm1fvkhWHQ4IEoIlFZUkOjKvRhV10qY/5Etc8C9rgXsyov7Ebp0u3QgP9SuxqB7HOIHP3UN6cIODVAVI6eag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741090079; c=relaxed/simple;
-	bh=uL7yoeNqWc6wnZL0QrwyAbrV/oRZxgpFmnqD8MjHmzY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=EixkdopifVwei9iREs5aK9HXpCYhgcn4YiBv7+XAKVPSOmtQWWjFhMjb7Fopk+FBIa1j9OFGtPPKkk8IOmiKu9fkLQXoeKcEu40+8etrmGuJFzrl0kMMQcRjsMID1wtJuFswAN4yVz1jT4NdEZyK/QBRKYfjF83nfDlI8Yz8ihk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y2FJQ6i7; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y2FJQ6i7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741090078; x=1772626078;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=uL7yoeNqWc6wnZL0QrwyAbrV/oRZxgpFmnqD8MjHmzY=;
-  b=Y2FJQ6i7NUf40AyFr30KowamcGvu9j4U4zl5UA5lXUWc7lfE8ID5AE52
-   r1SL1QrOW/ULJlVszEaze+cznrOHnbB/hM/Ps/5H/bquIEoND08hESiGu
-   r+lyQMqure4MR62mHqrmnM22ytxfh5VoFsJ/6BbHBk1My6TcJqZjXJZeJ
-   p9cageUqsb1vMJl6OYxAI6xTr2lRYODW6eztDLlYDVEtwltlH3FvVCPs3
-   To7ZuiBfk2Dbxkp9s1PQxbnQZK9icokBgBgEEzRPQL9uNlWzU/akOIHRZ
-   Uk2vGFhaEzjRLQw1YIFeVtVT1ok6AYuNX4lQGvU/YK7uEgURFvbenKxAl
-   w==;
-X-CSE-ConnectionGUID: B1G6GrdmTtqd9FHtlqTh5Q==
-X-CSE-MsgGUID: u6tHejVdTWqzYuLTJveC+g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11362"; a="53407308"
-X-IronPort-AV: E=Sophos;i="6.13,331,1732608000"; 
-   d="scan'208";a="53407308"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2025 04:07:56 -0800
-X-CSE-ConnectionGUID: datQde5CQX67RrfBaf76kw==
-X-CSE-MsgGUID: VBSlZVhiR4mBbIIeiBRu6w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,331,1732608000"; 
-   d="scan'208";a="118514918"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmviesa008.fm.intel.com with ESMTP; 04 Mar 2025 04:07:55 -0800
-From: Yi Liu <yi.l.liu@intel.com>
-To: kevin.tian@intel.com,
-	jgg@nvidia.com
-Cc: joro@8bytes.org,
-	baolu.lu@linux.intel.com,
-	yi.l.liu@intel.com,
-	iommu@lists.linux.dev,
-	nicolinc@nvidia.com
-Subject: [PATCH] iommufd: Fail replace if device has not been attached
-Date: Tue,  4 Mar 2025 04:07:54 -0800
-Message-Id: <20250304120754.12450-1-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1741091133; c=relaxed/simple;
+	bh=MB1CADvdS6O0JIq3O56tt7iMaZRBTkfdTpP8VouXJEE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=G3RwJkubQOqZwrCiG2qoNn/hs9nJc7IUiy4Z7Ewe29oa2aKt5Cc+bq8gHzlRq8M5ppPkyjULoTluwhUr4mkTw384oEk3uplPFGKKu0yf6LrqgmFN5LxN4Gh5cDiAlApI4nm198/GVpTeMDrtgiN9Sp/p4XWY4ot0G6uNqcVEbX0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.194])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Z6ZYg3PJYzCs78;
+	Tue,  4 Mar 2025 20:21:59 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id C9BB4140156;
+	Tue,  4 Mar 2025 20:25:28 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Tue, 4 Mar 2025 20:25:28 +0800
+Message-ID: <b67798cf-17e0-444d-be9f-00071c3e32b4@huawei.com>
+Date: Tue, 4 Mar 2025 20:25:28 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v10 3/4] page_pool: support unlimited number of
+ inflight pages
+To: Simon Horman <horms@kernel.org>
+CC: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+	<zhangkun09@huawei.com>, <liuyonglong@huawei.com>, <fanghaiqing@huawei.com>,
+	Robin Murphy <robin.murphy@arm.com>, Alexander Duyck
+	<alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Eric Dumazet
+	<edumazet@google.com>, Donald Hunter <donald.hunter@gmail.com>, Jesper
+ Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas
+	<ilias.apalodimas@linaro.org>, Andrew Lunn <andrew+netdev@lunn.ch>,
+	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20250226110340.2671366-1-linyunsheng@huawei.com>
+ <20250226110340.2671366-4-linyunsheng@huawei.com>
+ <20250303175940.GW1615191@kernel.org>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <20250303175940.GW1615191@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-The current implementation of iommufd_device_do_replace() implicitly
-assumes that the input device has already been attached. However, there
-is no explicit check to verify this assumption. If another device within
-the same group has been attached, the replace operation might succeed,
-but the input device itself may not have been attached yet.
+On 2025/3/4 1:59, Simon Horman wrote:
+> On Wed, Feb 26, 2025 at 07:03:38PM +0800, Yunsheng Lin wrote:
+>> Currently a fixed size of pre-allocated memory is used to
+>> keep track of the inflight pages, in order to use the DMA
+>> API correctly.
+>>
+>> As mentioned [1], the number of inflight pages can be up to
+>> 73203 depending on the use cases. Allocate memory dynamically
+>> to keep track of the inflight pages when pre-allocated memory
+>> runs out.
+>>
+>> The overhead of using dynamic memory allocation is about 10ns~
+>> 20ns, which causes 5%~10% performance degradation for the test
+>> case of time_bench_page_pool03_slow() in [2].
+>>
+>> 1. https://lore.kernel.org/all/b8b7818a-e44b-45f5-91c2-d5eceaa5dd5b@kernel.org/
+>> 2. https://github.com/netoptimizer/prototype-kernel
+>> CC: Robin Murphy <robin.murphy@arm.com>
+>> CC: Alexander Duyck <alexander.duyck@gmail.com>
+>> CC: IOMMU <iommu@lists.linux.dev>
+>> Fixes: f71fec47c2df ("page_pool: make sure struct device is stable")
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>>  Documentation/netlink/specs/netdev.yaml | 16 +++++
+>>  include/net/page_pool/types.h           | 10 ++++
+>>  include/uapi/linux/netdev.h             |  2 +
+>>  net/core/page_pool.c                    | 79 ++++++++++++++++++++++++-
+>>  net/core/page_pool_priv.h               |  2 +
+>>  net/core/page_pool_user.c               | 39 ++++++++++--
+>>  tools/net/ynl/samples/page-pool.c       | 11 ++++
+>>  7 files changed, 154 insertions(+), 5 deletions(-)
+> 
+> Hi,
+> 
+> It looks like the header changes in this patch don't quite
+> correspond to the spec changes.
+> 
+> But if so, perhaps the spec update needs to change,
+> because adding values to an enum, other than at the end,
+> feels like UAPI breakage to me.
+> 
+> I see this:
+> 
+> $ ./tools/net/ynl/ynl-regen.sh -f
 
-As a result, the input device might not be tracked in the
-igroup->device_list, and its reserved IOVA might not be added. Despite
-this, the caller might incorrectly assume that the device has been
-successfully replaced, which could lead to unexpected behavior or errors.
+Yes, It seems I only tested the tools/net/ynl/samples/page-pool, which
+doesn't seems to catch the above problem.
 
-To address this issue, add a check to ensure that the input device has
-been attached before proceeding with the replace operation. This check
-will help maintain the integrity of the device tracking system and prevent
-potential issues arising from incorrect assumptions about the device's
-attachment status.
+Will update the spec changes to the the header changes and update
+tools/include/uapi/linux/netdev.h accordingly too.
 
-Fixes: e88d4ec154a8 ("iommufd: Add iommufd_device_replace()")
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
-Hi All,
+Thanks for the reporting.
 
-Alternative may be just allow caller to replace device even if only its
-alias has been attached. This can be done by a few line of codes. But it
-seems more reasonable to fail it. So I chose to detect and fail it. However,
-let me know if you have different thought.
-
-Regards,
-	Yi Liu
----
- drivers/iommu/iommufd/device.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 4e107f69f951..c66bb9ef5465 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -471,6 +471,17 @@ iommufd_device_attach_reserved_iova(struct iommufd_device *idev,
- 
- /* The device attach/detach/replace helpers for attach_handle */
- 
-+/* Check if idev is attached to igroup->hwpt */
-+static bool iommufd_device_attached(struct iommufd_device *idev)
-+{
-+	struct iommufd_device *cur;
-+
-+	list_for_each_entry(cur, &idev->igroup->device_list, group_item)
-+		if (cur == idev)
-+			return true;
-+	return false;
-+}
-+
- static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 				      struct iommufd_device *idev)
- {
-@@ -705,6 +716,15 @@ iommufd_device_do_replace(struct iommufd_device *idev,
- 
- 	mutex_lock(&idev->igroup->lock);
- 
-+	/*
-+	 * Device has not been attached yet, replace such a device is not
-+	 * supported. Fail it to prompt caller to use the correct API.
-+	 */
-+	if (!iommufd_device_attached(idev)) {
-+		rc = -EINVAL;
-+		goto err_unlock;
-+	}
-+
- 	if (igroup->hwpt == NULL) {
- 		rc = -EINVAL;
- 		goto err_unlock;
--- 
-2.34.1
-
+> $ git diff
+> diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
+> index 9309cbfeb8d2..9e02f6190b07 100644
+> --- a/include/uapi/linux/netdev.h
+> +++ b/include/uapi/linux/netdev.h
+> @@ -100,11 +100,11 @@ enum {
+>  	NETDEV_A_PAGE_POOL_NAPI_ID,
+>  	NETDEV_A_PAGE_POOL_INFLIGHT,
+>  	NETDEV_A_PAGE_POOL_INFLIGHT_MEM,
+> +	NETDEV_A_PAGE_POOL_ITEM_MEM_RESIDENT,
+> +	NETDEV_A_PAGE_POOL_ITEM_MEM_USED,
+>  	NETDEV_A_PAGE_POOL_DETACH_TIME,
+>  	NETDEV_A_PAGE_POOL_DMABUF,
+>  	NETDEV_A_PAGE_POOL_IO_URING,
+> -	NETDEV_A_PAGE_POOL_ITEM_MEM_RESIDENT,
+> -	NETDEV_A_PAGE_POOL_ITEM_MEM_USED,
+>  
+>  	__NETDEV_A_PAGE_POOL_MAX,
+>  	NETDEV_A_PAGE_POOL_MAX = (__NETDEV_A_PAGE_POOL_MAX - 1)
+> diff --git a/tools/include/uapi/linux/netdev.h b/tools/include/uapi/linux/netdev.h
+> index 7600bf62dbdf..9e02f6190b07 100644
+> --- a/tools/include/uapi/linux/netdev.h
+> +++ b/tools/include/uapi/linux/netdev.h
+> @@ -100,6 +100,8 @@ enum {
+>  	NETDEV_A_PAGE_POOL_NAPI_ID,
+>  	NETDEV_A_PAGE_POOL_INFLIGHT,
+>  	NETDEV_A_PAGE_POOL_INFLIGHT_MEM,
+> +	NETDEV_A_PAGE_POOL_ITEM_MEM_RESIDENT,
+> +	NETDEV_A_PAGE_POOL_ITEM_MEM_USED,
+>  	NETDEV_A_PAGE_POOL_DETACH_TIME,
+>  	NETDEV_A_PAGE_POOL_DMABUF,
+>  	NETDEV_A_PAGE_POOL_IO_URING,
+> 
