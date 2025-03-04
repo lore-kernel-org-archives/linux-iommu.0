@@ -1,48 +1,50 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAFF81A260
-	for <iommu@lists.linux.dev>; Tue,  4 Mar 2025 01:59:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D870A73176
+	for <iommu@lists.linux.dev>; Tue,  4 Mar 2025 02:20:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741053559; cv=none; b=uWTGdNZAxny6ZiBa0vvOQlYv+gn6JZBepoHPxbSQEuhZ1eC06DFw/IjeH2b271+1yNUxn0/Pfz0lr0e2BCrTBbpnJPzsFEPsUukae2AK+hgCCOQeRgMOSR1k3PlDij4bUiZn98fTYrJNZcwSduSJ0pwQGezUSXDY8rP1kH1Wq9A=
+	t=1741054814; cv=none; b=YzBjJordTklsD37ZWR1drnhXph0vnxva6AWphZQokdFj0uLu0bqjHgdWw58Uea1xUwYnn0sdOT2YcM+nFiWJBUk3aiJI1RkoGQDcNTbmuTecQIi8AAk7brVLPAQ9jP9FNFMkimQSnI2zeyHixGAOd1+/C/A4Sj7MS8jzBOCyMDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741053559; c=relaxed/simple;
-	bh=+eKW9YtFgqPdr8yCi7iqp1u4e74jYUkY3/atIlM+fck=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=UoeGBfvKGCjNfxie5pUvm2w0AV0jrwZ38Uxa/w2i7y1dsbQ73d4cUHAjvAAEjaSoJDKiS7jYNHerQ/Pq649r2M7eT0Hze5lGX/Xn4TkfF9iTauLQWC2JOBYX+6LQZLdZOK4oYdMKjbQSdJOGXwizCw7AsqXEjoAd9BMfkrhjsxQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Qc/zYV5B; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1741054814; c=relaxed/simple;
+	bh=BXAEpURS+SeypUNBeC0r7+4WyjBAo6C076oCfUEC5uQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WKcQ2b3QarObrWBfErSruKuVBmbjhryADIIwlfH767rMWuI12Iz5lVVLl+MegFql6EEHYS851wZxQjLEtto+n1CgA5wBVQdOQqH4EPl1jMiTRzNeo2NOQqcgH2/Z4EJ4ccLOidfqmCXXGeKCC52Ijr/xxdDpJ9glZMtkzHI6uPA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TOweQJn+; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Qc/zYV5B"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 523NXEna017316;
-	Tue, 4 Mar 2025 01:59:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	nNIHjfWsRbNt9JjstR0UJh4fwEbVP/kXISqApq2/zLo=; b=Qc/zYV5BF0oNrHey
-	RDFFSJmR2u3gRBdO1xsniCstS/ND4oBiyZFWyHoo1vTYgZeDL7vND7qNF1RPg/kS
-	Lg0B4ho/RQVxK0xtUZU5vvyTZ+nEyFJeS8YIA1e16/yFyXNmpOPFgmpUs9VX+dmv
-	z/I4OnbS+JBcE1Zo+IMKObH1mon3uIudXo+7zQOaZE+Tdo8xvqFUyhgwzLZlQI4O
-	l93hSGC9l8yeKXGYPAVVuwrOk9I8hhoVNqFgnxhFCnmBFYLtKy0pvL/EwIROql0u
-	4gKGV+BHIovPcUcVxgGwe19WoyJqS9jHCb8FkMpWwCpGDef5QCdWiaaWcVTWrEBv
-	/gPYPw==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 455p6tg8vs-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 04 Mar 2025 01:59:13 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5241xDke005908
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 4 Mar 2025 01:59:13 GMT
-Received: from [10.231.195.67] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 3 Mar 2025
- 17:59:11 -0800
-Message-ID: <83cec3f0-0c11-47bc-8a8d-517e2d0ead8c@quicinc.com>
-Date: Tue, 4 Mar 2025 09:59:10 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TOweQJn+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1741054813; x=1772590813;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=BXAEpURS+SeypUNBeC0r7+4WyjBAo6C076oCfUEC5uQ=;
+  b=TOweQJn+eeeAsGTPLGgACRhpzVzFSfRylbGEAkJqDrIgZiku2/dS8Rdy
+   e6nzOw8NaclP2moddDQD7QNVmk2AhAF24rTnf3xy02gI2vmBbQwHpN4+P
+   +pS4bEbxFu0SOoCCTvxzjmikEKNRGYxxGcr0UxEef2EZJpZaC4+XPn+3y
+   gdfIpNuON8AEPxIJXvmouvCuy2emhvNxZfj7jtD7ODunQ1LM6BzauuxPP
+   Qxgf50qGWV8vpoQxQIrvyPfVV4oYuozFdcPRfWnL+shIW0cFPlvTEjAg2
+   RlN3fA7L69x6f/fY1rdaYdOLsLvNgJzFfJBQW/kMG3zmUoDCiW+1W30Db
+   Q==;
+X-CSE-ConnectionGUID: rUn2qpVpQFa12OrwQJiPmQ==
+X-CSE-MsgGUID: ErWx7gA0Qx2cmOvZ17a1yA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11362"; a="44763746"
+X-IronPort-AV: E=Sophos;i="6.13,331,1732608000"; 
+   d="scan'208";a="44763746"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2025 18:20:12 -0800
+X-CSE-ConnectionGUID: U45R9KtVQ6eG7P16MW5Hsw==
+X-CSE-MsgGUID: f7hTfwgyRXGXjjupV7QRhQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,331,1732608000"; 
+   d="scan'208";a="118023191"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2025 18:20:10 -0800
+Message-ID: <24d8234b-ad59-4b7f-b210-b97d7b5dd998@linux.intel.com>
+Date: Tue, 4 Mar 2025 10:16:45 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,117 +52,103 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: missing clear bdr in check_ram_in_range_map()?
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-        Christoph Hellwig
-	<hch@lst.de>
-CC: Robin Murphy <robin.murphy@arm.com>,
-        linux-kernel
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-References: <64931fac-085b-4ff3-9314-84bac2fa9bdb@quicinc.com>
- <20241212071418.GA6638@lst.de>
- <CGME20241220032532eucas1p2fafa0cbfde87d8dae47caa42c45d7ae4@eucas1p2.samsung.com>
- <b84c1485-de8f-4888-bed6-3690ed108a46@quicinc.com>
- <8045065f-723a-4b1f-bd89-23a1ab98ec7a@samsung.com>
+Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
+To: Jason Gunthorpe <jgg@ziepe.ca>, Yi Liu <yi.l.liu@intel.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
+References: <BN9PR11MB527624C1DED16B3C049D13438CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250226011750.GB5011@ziepe.ca>
+ <BN9PR11MB5276B3E410FD336A3062FA5E8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <4fba254e-ca47-4e7b-baf3-0228d9605c2b@amd.com>
+ <BN9PR11MB52763A8885AF1678E05E8B528CCC2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <942a1a66-5c18-43e2-886e-df38cb3e7258@intel.com>
+ <54db17d7-b150-4579-a33d-f1b5cc8943bc@amd.com>
+ <6eb0ec90-5859-4605-8a2e-657f6f711d61@intel.com>
+ <825ddadd-6770-46b5-936e-f17988534984@amd.com>
+ <13e1e1d8-5870-44ea-a800-e5b25bafd344@intel.com>
+ <20250303183801.GW5011@ziepe.ca>
 Content-Language: en-US
-From: Baochen Qiang <quic_bqiang@quicinc.com>
-In-Reply-To: <8045065f-723a-4b1f-bd89-23a1ab98ec7a@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250303183801.GW5011@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Authority-Analysis: v=2.4 cv=PMb1+eqC c=1 sm=1 tr=0 ts=67c65e71 cx=c_pps a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17 a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=Vs1iUdzkB0EA:10 a=V9amP9qfx3iXDtfjYI0A:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: CgvxSXCc-Vm78mo_N0ZBq14JihDr79wX
-X-Proofpoint-GUID: CgvxSXCc-Vm78mo_N0ZBq14JihDr79wX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-04_01,2025-03-03_04,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=999
- phishscore=0 lowpriorityscore=0 malwarescore=0 priorityscore=1501
- mlxscore=0 adultscore=0 spamscore=0 suspectscore=0 impostorscore=0
- clxscore=1011 classifier=spam authscore=0 adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502100000 definitions=main-2503040015
 
-
-
-On 2/28/2025 9:22 PM, Marek Szyprowski wrote:
-> Hi,
+On 3/4/25 02:38, Jason Gunthorpe wrote:
+> On Sun, Mar 02, 2025 at 04:10:46PM +0800, Yi Liu wrote:
+>> I'm also thinking about the impact of such a knob. How should we define
+>> this knob. Should we allow it to disable/enable ATS? Especially in runtime.
+>> e.g. if the device is identified to be ATS untrusted by the admin, while
+>> the hw does not support SATS, it seems reasonable to disable ATS for
+>> such device. This might change the driver behavior on ATS enabling. Intel
+>> iommu driver enables ATS as long as it's available in the probe_device()
+>> op. What about AMD and ARM?
+> ARM enables ATS when a PAGING translation is set on the RID or any
+> PASID is used. Otherwise it is off, eg for RID = IDENTITY
 > 
-> On 20.12.2024 04:25, Baochen Qiang wrote:
->> On 12/12/2024 3:14 PM, Christoph Hellwig wrote:
->>> On Mon, Dec 09, 2024 at 06:50:06PM +0800, Baochen Qiang wrote:
->>>> Hi,
->>>>
->>>> while checking check_ram_in_range_map() I am confused by the condition set/check on bdr.
->>>> If I am reading the code correctly, if bdr is set once, it would never get cleared, hence
->>>> that function will always returns 0.
->>>>
->>>> should we clear bdr before each new iteration?
->>> I think so.  Even better refactor the code so that the non-NULL bdr
->>> doesn't leak out:
->>>
->>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
->>> index 5b4e6d3bf7bc..181e244f410a 100644
->>> --- a/kernel/dma/direct.c
->>> +++ b/kernel/dma/direct.c
->>> @@ -584,6 +584,22 @@ int dma_direct_supported(struct device *dev, u64 mask)
->>>   	return mask >= phys_to_dma_unencrypted(dev, min_mask);
->>>   }
->>>   
->>> +static const struct bus_dma_region *dma_find_range(struct device *dev,
->>> +		unsigned long start_pfn)
->>> +{
->>> +	const struct bus_dma_region *m;
->>> +
->>> +	for (m = dev->dma_range_map; PFN_DOWN(m->size); m++) {
->>> +		unsigned long cpu_start_pfn = PFN_DOWN(m->cpu_start);
->>> +
->>> +		if (start_pfn >= cpu_start_pfn &&
->>> +		    start_pfn - cpu_start_pfn < PFN_DOWN(m->size))
->>> +			return m;
->>> +	}
->>> +
->>> +	return NULL;
->>> +}
->>> +
->>>   /*
->>>    * To check whether all ram resource ranges are covered by dma range map
->>>    * Returns 0 when further check is needed
->>> @@ -593,23 +609,14 @@ static int check_ram_in_range_map(unsigned long start_pfn,
->>>   				  unsigned long nr_pages, void *data)
->>>   {
->>>   	unsigned long end_pfn = start_pfn + nr_pages;
->>> -	const struct bus_dma_region *bdr = NULL;
->>> -	const struct bus_dma_region *m;
->>>   	struct device *dev = data;
->>>   
->>>   	while (start_pfn < end_pfn) {
->>> -		for (m = dev->dma_range_map; PFN_DOWN(m->size); m++) {
->>> -			unsigned long cpu_start_pfn = PFN_DOWN(m->cpu_start);
->>> +		const struct bus_dma_region *bdr;
->>>   
->>> -			if (start_pfn >= cpu_start_pfn &&
->>> -			    start_pfn - cpu_start_pfn < PFN_DOWN(m->size)) {
->>> -				bdr = m;
->>> -				break;
->>> -			}
->>> -		}
->>> +		bdr = dma_find_range(dev, start_pfn);
->>>   		if (!bdr)
->>>   			return 1;
->>> -
->>>   		start_pfn = PFN_DOWN(bdr->cpu_start) + PFN_DOWN(bdr->size);
->>>   	}
->>>   
->> looks better. thanks for reply.
+> This seems like a reasonable thing to do to me..
 > 
-> Could you send a formal patch with this fix, description and 
-> 'Suggested-by: Christoph Hellwig' tag?
-
-sure, will submit soon.
-
+>> On the other hand, we may just define the knob as sats required or not.
+>> This is just a knob to let kernel know if the iommu driver needs to enable
+>> sats or not. While leave the ATS enabling policy unchanged. This means
+>> we need to probe the sats capability of iommu hw before creating the knob
+>> in sysfs.
+> If we add some ATS control knob then maybe it should be able to
+> disable/enable normal ATS as well?
 > 
-> Best regards
+>   never
+>   always
+>   paging-only
+>   secure-always
+>   secure-paging-only
+> 
+> ?
 
+My two cents' worth.
+
+We could separate ATS security and enablement. ATS security is a
+security policy that should be opt-in by the user through something like
+sysfs nodes. We can follow what we have done for the default domain
+type: identity domain (non-secure) and paging domain (secure with some
+extra performance overhead). Users can specify the static default domain
+type and tweak it in a per-iommu_group manner through sysfs nodes.
+
+For ATS security, we can probably define two levels:
+
+- Relaxed ATS: ATS could be enabled as long as the IOMMU supports the
+   ATS service and the device supports ATC. This matches what most IOMMU
+   drivers currently do.
+
+- Secure ATS: ATS could only be enabled if the platform provides
+   enumerable capabilities that can disallow arbitrary translated DMA
+   requests. We need to let the user know that once ATS security is set
+   to this level, some features like host SVA won't be supported
+   currently.
+
+For ATS enablement, I believe we have already reached some agreement
+that ATS enablement is in an on-demand manner. ATS is enabled when the
+first domain that requires ATS is attached and disabled when the last
+domain is detached. That matches what we are doing for PRI.
+
+When a domain attachment triggers ATS to be on, there might be some
+cases:
+
+- ATS does not impact functionality. For example, ATS could be enabled
+   for the DMA domain for better performance. In this case, it's a
+   successful case if the device supports ATS but the platform can't
+   provide the secure ATS that is demanded by the user's ATS security
+   level. ATS will not be enabled but attach returns success.
+
+- ATS impacts functionality. For example, the domain requires PRI. In
+   this case, it's a failure case when the device does not support ATS or
+   the ATS security is insufficient.
+
+- ATS compatibility should also be checked in domain attach path. If ATS
+   policy between attaching domain and the device does not match, an
+   -EINVAL should be returned to inform the caller that "domain is not
+   compatible, suggest to allocate a dedicated domain for this device".
+
+Thanks,
+baolu
