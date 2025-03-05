@@ -1,103 +1,165 @@
-Received: from r-passerv.ralfj.de (r-passerv.ralfj.de [109.230.236.95])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2061.outbound.protection.outlook.com [40.107.93.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC4EF78F3A;
-	Wed,  5 Mar 2025 19:42:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.230.236.95
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741203736; cv=none; b=XCT/hzDYuVDOMbUn0d5gFtDsC4AcPNBP7eDcAbpoVQYwjVXo+5s7tXpW14dIpBqOaBXSxPw3LSmhRZhhoTB2tpVGVwfPZo5NdmEKyXzrfxpD4n2cH5vuubwgTzY959sCBQOqSt2Rtog2xsJGiQVrKloHPyX6IU/4vUGxCdpjPSM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741203736; c=relaxed/simple;
-	bh=jvgDE48yAFQRM5GDptUv9cYZLwD0HT8HVoLIV3xxIss=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YcFl46kKrt/8BQ8yvYANhv/Cr+zukmmSM8AFhDviUbM0Iu3Ew4Lb6/K2x96zFNDJ1nCdy+XmnpiGWEi25cVGj3SiT8A75i7UtqfkVz+voalyzKGDgGFw+MI4TsPhROeAiBoHBUgag5WIYB+fO6G7M2ZQSfqHYvRySdBj9bpyriA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ralfj.de; spf=pass smtp.mailfrom=ralfj.de; dkim=pass (1024-bit key) header.d=ralfj.de header.i=@ralfj.de header.b=FOd0Hne9; arc=none smtp.client-ip=109.230.236.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ralfj.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ralfj.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5F1E6FC3
+	for <iommu@lists.linux.dev>; Wed,  5 Mar 2025 19:46:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741204002; cv=fail; b=EvknZxYDXtjQW38cTJMnyNmMRkRQ1nz2CbZqIeaRPEjqpxZSBujE3jbrG4fCDB+yCHzfqxJbuBwEnx8XoX+ykNPz+wmjJvo2Ywys1vRPyqUIm4bdBI566tmwKLbQMDGsRTy2RAVTcmDOuk6nj0TpVqrJgfKovOnIYDoLXjtr1QY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741204002; c=relaxed/simple;
+	bh=3jQf2TkhKJMeFfDGX3ny6kQNpvdXikgh7rDSQAqUxng=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=k5tUmWsjO4YNIWGRb9G6JBQFc0/yi8oNvpvXbhE3udo3Khxy3bw7gHHUyadVHLG0uPXeXNtwXgeSVFC/YpmjnZTCQsYZLpjwFagS+ntObH97yn7mHJglWoggp2dVTUA5tPMlMF9tHa7HD3ipmPiVozk/ZQMjJsQWGV+ILnN2xQ4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=qq3kj7Pt; arc=fail smtp.client-ip=40.107.93.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ralfj.de header.i=@ralfj.de header.b="FOd0Hne9"
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=ralfj.de; s=mail;
-	t=1741203727; bh=jvgDE48yAFQRM5GDptUv9cYZLwD0HT8HVoLIV3xxIss=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=FOd0Hne964De2cbX/O5PqOkWir9XktbgHn7/3cLuvwXfbfAd3Jo/qAKckE5sG4VxJ
-	 6mhvJClqCvWSrNTN7fszGMzxRK/v+NRyFGI8w//o55T1gEzr2cVkIG+Nv4yvsCzeXt
-	 CVX4hzl/lQ7OYRGk//vFDxx05u5BPNfjdedKSHPs=
-Received: from [IPV6:2001:8e0:207e:3500:4ab6:48fe:df57:b084] (2001-8e0-207e-3500-4ab6-48fe-df57-b084.ewm.ftth.ip6.as8758.net [IPv6:2001:8e0:207e:3500:4ab6:48fe:df57:b084])
-	by r-passerv.ralfj.de (Postfix) with ESMTPSA id 1ABFA2052A89;
-	Wed,  5 Mar 2025 20:42:07 +0100 (CET)
-Message-ID: <915eacce-cfd8-4bed-a407-32513e43978f@ralfj.de>
-Date: Wed, 5 Mar 2025 20:42:05 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="qq3kj7Pt"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=AOQYGCUwvGo4cC7Qlk3Ew4I8mS8WVUTNn1xP1Wa1xIwA8IYFc4vO6YDHKtvuX6hiM+Bq5JxhZDjUpjEcLHeID6s/47PJOX4XtqQkNQN320+3abs0rXuMPhxDcBjrDytPLXL6uZScEE93irdZDbqDv2lvp9RoNfr7HwEWaxtqaa6wYYTXlyJxk6IWqIc7EqZ8CoFqaz/Tq7+lc6lIoowvpWQAts2jTINsEsBFm8R7+SDk+CIG0d0Az1ZAETBXAX17tq+bsB8YRIWo/YNJGFkPa7xvtu2bwnFtD5ykC/0r9boc56J0rxLoCMBlpMW8meSapnwJeoLG8GhHIiRw7LJ/Zg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=L/QTa2tRzjTsRK+rDfj4YO0c0vZaK0hr1T6XotcHvoc=;
+ b=j8dOtOeQDBkLX0dqgh+YjnbZuzpF4fzmFAQX0fuX0bGG+0nb0uNjsAKV9OU09xzubBoGiNFlWRg8D+55msXtbl3JNBba9U3cTA6OT58uP8Qyxgw/Y+HK3SNvQXECtesBdG0sjIXVq58qyawTgSjy/8R8H3Uo5UXcc8u7bk+O+kcNy7ZMTbXtJb9rC6lR9SyEgpFTcu98+nR9K6lhf39t+WX2BbixkCmz0tvDLWkklnwuD+iEst8fAB49vvEUGtyHOptrJL2CvLDVnLDDCnFwQQwCVfyXuzSjNfMLF6A2fJLJFZ6kwvDUL1p/8OdfnsdAcqAY4HgygkBrpEwKSYqJHg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L/QTa2tRzjTsRK+rDfj4YO0c0vZaK0hr1T6XotcHvoc=;
+ b=qq3kj7PtTeYH/elOVoV6ZImX1IltHPhnjvLNrLuAUSNtSLk5PE4iSqdkv6lltDx59XR70nKXiU1QyWiGrsRcH8httuVU1NEWVfYyIyn7HprzewpLr4EyzSDmtFz8Pkh2z18D97z+5porCdRg6AlEcUJ2AcDO6bT9tWZqf2VFSZAzGiBeDdcHorF4RKiyadJ77vGHs1P4S2Znob851ADt81DsnWEjewjjb0+ZgAWYKLueyOt5bh7buDpw0ftvVRXwAR4tXE32bKDJdn0DIglD8BX4kbimsNefilg2V4C0Z1tR66usPgp3w/zHzDEeyfq2Iqg5FEBUuPrxgRH+Y/RO+A==
+Received: from CH5PR04CA0020.namprd04.prod.outlook.com (2603:10b6:610:1f4::21)
+ by CH1PPFC8B3B7859.namprd12.prod.outlook.com (2603:10b6:61f:fc00::622) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8489.25; Wed, 5 Mar
+ 2025 19:46:37 +0000
+Received: from DS3PEPF000099E0.namprd04.prod.outlook.com
+ (2603:10b6:610:1f4:cafe::e3) by CH5PR04CA0020.outlook.office365.com
+ (2603:10b6:610:1f4::21) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8511.16 via Frontend Transport; Wed,
+ 5 Mar 2025 19:46:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ DS3PEPF000099E0.mail.protection.outlook.com (10.167.17.203) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8511.15 via Frontend Transport; Wed, 5 Mar 2025 19:46:36 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 5 Mar 2025
+ 11:46:26 -0800
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Wed, 5 Mar 2025 11:46:25 -0800
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Wed, 5 Mar 2025 11:46:25 -0800
+Date: Wed, 5 Mar 2025 11:46:18 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v1 0/4] iommu/arm-smmu-v3: Allocate vmid per vsmmu
+ instead of s2_parent
+Message-ID: <Z8iqCpGo1Kx4TAvQ@Asurada-Nvidia>
+References: <cover.1741150594.git.nicolinc@nvidia.com>
+ <20250305165452.GY133783@nvidia.com>
+ <Z8iWqOBga8Xdunac@Asurada-Nvidia>
+ <20250305183151.GE133783@nvidia.com>
+ <Z8idOr67A0EG1/PN@Asurada-Nvidia>
+ <20250305192950.GA354511@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Allow data races on some read/write operations
-To: Andreas Hindborg <a.hindborg@kernel.org>
-Cc: Alice Ryhl <aliceryhl@google.com>, Boqun Feng <boqun.feng@gmail.com>,
- comex <comexk@gmail.com>, Daniel Almeida <daniel.almeida@collabora.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>, dakr@kernel.org,
- robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
- Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?=
- <bjorn3_gh@protonmail.com>, Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>, linux-kernel@vger.kernel.org,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- airlied@redhat.com, iommu@lists.linux.dev, lkmm@lists.linux.dev
-References: <87bjuil15w.fsf@kernel.org>
- <t4HxdvR7WBX_861hiTXo72jqC9F9oRpIzgA_dD2yhcSuLISEkC-shMfSgllrFPpnkSZXGfRcc47keudMooNiIQ==@protonmail.internalid>
- <CAH5fLgg5MuUu=TX8mMsPf5RcLhMLHSU4Vct=h8rFX6Z7HjPxeA@mail.gmail.com>
- <87ikoqjg1n.fsf@kernel.org>
- <KpWTCfIlcLYFBpSvWPfALJ9VQn5a99_RAvxgMBc1aCrSalPB-qaW9IhXyaDG7HM1AcFPX5chj_Yr7IQp3F7UqA==@protonmail.internalid>
- <CAH5fLgh6ubawHh76wq7JPbcuBCWhm91m7Rc01MVsX-a3C6qaVA@mail.gmail.com>
- <87mse2hrd8.fsf@kernel.org> <Z8YMTiKS4T9wC4t_@boqun-archlinux>
- <ae8ac31f-c6ad-46ae-80dd-10ec081a16d1@ralfj.de>
- <88456D33-C5CA-4F4F-990E-8C5F2AF7EAF9@gmail.com>
- <hkhgihg4fjkg7zleqnumuj65dfvmxa5rzawkiafrf4kn5ss6nw@o7kc6xe2bmuj>
- <25e7e425-ae72-4370-ae95-958882a07df9@ralfj.de>
- <CAH5fLgidPHQzdUORNpNhtRFsKPU1T-0xdn5OSwYYZh3BgOVRQA@mail.gmail.com>
- <18cmxblLU2QAa4YP25RWCKEnxuonOwWXavYmSsS4C5D40o8RaCkIXo0UDZ2SPnksk5nWYB29Y4zHkjQeOgd4ng==@protonmail.internalid>
- <3aabca39-4658-454a-b0e3-e946e72977e1@ralfj.de> <87eczb71xs.fsf@kernel.org>
-Content-Language: en-US, de-DE
-From: Ralf Jung <post@ralfj.de>
-In-Reply-To: <87eczb71xs.fsf@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250305192950.GA354511@nvidia.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF000099E0:EE_|CH1PPFC8B3B7859:EE_
+X-MS-Office365-Filtering-Correlation-Id: b7f96686-3290-4cdd-c595-08dd5c1e70f8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|36860700013|376014|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?mcNIUgMRv4vDLfJZqVzEwP1ViNC1TytvkcqcN65OpNLInSDdzXrbQPdzw1Rw?=
+ =?us-ascii?Q?K+yQ7uQM33mlcV5gaViHh4tcW01tGmwu5X95CpaYnxnWtMeNk9JZ862Q4deM?=
+ =?us-ascii?Q?P2XxKN1tjakGC9mlc0g6lvb+wN04GiZe1mkw10guUA+rggYWsiy8cdm9wUrj?=
+ =?us-ascii?Q?KquoPS8WZPAX7qm9DjYfiAugLT/DGA7DVElJ1lQZq/AWyh3bSBN/EaCZftvw?=
+ =?us-ascii?Q?hmmopbKIJblPzgqzhWBhekahJKSoTbl8JNwLOnDZXMd6xYrt2PbIJ9+mwxqZ?=
+ =?us-ascii?Q?rREUvUnu03EF5pZND7kWJuSdvfMB5EJN7RGzH/3eiOB2qTMmVc+U0ClqRI2q?=
+ =?us-ascii?Q?0tfyNaFiFn4HNgXpDdgBBSjq4QJ1x0b8UH+tHiGUDjJl/g6h1+BJod3KG0vO?=
+ =?us-ascii?Q?booyhdiTbB/dQa4HGx7ZCekCLaNTRV1NuJUOyuJJYghzv2U8IArBLJw8Wc7F?=
+ =?us-ascii?Q?zcdwOuOM0nHjV2vbCCJI3fKNmDlTfefH/hbJoEI/dRD/1kIR5LWX6sf02lAx?=
+ =?us-ascii?Q?mpCbmMIHjDRH+WcZLW8gsDEs4HRu3MotHKY26Oroz3i+dGikWsNGWGgYcyV7?=
+ =?us-ascii?Q?oXXozNAIXrWBHOAQp+uH3d/LG1goG0aj6ajatP1Au6Nxfroz16zv8rJqTNdX?=
+ =?us-ascii?Q?vWmeU9LcnvnKuPZGiApbrU/n8SfFvxnzelBW2KOT1zGYzidH7dAchsvIt5gN?=
+ =?us-ascii?Q?fyo9zcRXH/kiQqXOOlAzp2Huc9WUut5x2KXgPawrc2N6MsbcF3PawTQhuzYS?=
+ =?us-ascii?Q?mj21pnjaE0fDn/CP+wmMIu36bihnj2EeNhs75HKmoh3TkUOt5fJlZaWTaBZS?=
+ =?us-ascii?Q?H3UANDOfXB5zQRuA2GBWYlWvbwpKodkxXGmf4oP3jT5qfjqxC2DpQZ26xJpc?=
+ =?us-ascii?Q?rj5C/Hs6PkFgs6H7HtinlY9rGABwNm07+1AichCnqZf3so6qRlyNTM99Icga?=
+ =?us-ascii?Q?cGy5uvIoZ7qSLZ6xZh/4GRWD+Hc3J0Nbxd2rd+BIUdTuh46bcnGQSyMzeqrc?=
+ =?us-ascii?Q?/86c/xHEwsmwqWJSZQ43nyAknTWmI+O5SMSII1IOxpO5rqX8TKcvHYFFNhAT?=
+ =?us-ascii?Q?OX7gmLzgB6FMcXj/8MzhbRjcjaIkiAaoSU34XqTF5t9mtktGpglpuEs3VKhh?=
+ =?us-ascii?Q?sJ/fiiJZkMJZQtq1v6263tUt9On2CFjN82iHlHWNKW2sbqcFRb3BXP4KVoI3?=
+ =?us-ascii?Q?VKnnGgYSaYMR+NlUZCBVd8zfpqeWBTUZTKKybvuytie/unRbE8LgyuhoIjP5?=
+ =?us-ascii?Q?6EV5K7to9teZ7YFPEoIIKnLlSE4X2WJFFFyEMhMvRlckrXLVry1vZb/MLOZk?=
+ =?us-ascii?Q?8VoIMrKHoeq+HiW+h3ozmi1JBvAw6Mcuu0s1aIAbqoTYVDWSebRboQtWGuvk?=
+ =?us-ascii?Q?H7qlVBmSojMIVznkb0orgvw9jSkf8ksJsL9AJuttxRAokKgxecKWI9hM5/vC?=
+ =?us-ascii?Q?wDzRH0YUwjgjO6xRqz2ok3weYptEbqr/qgvwgbe4w2GC7vyjsjAZhY0IzYvx?=
+ =?us-ascii?Q?N9Bt3/yIZgzRpiM=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(376014)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2025 19:46:36.9041
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7f96686-3290-4cdd-c595-08dd5c1e70f8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF000099E0.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH1PPFC8B3B7859
 
-Hi all,
-
->>> For some kinds of hardware, we might not want to trust the hardware.
->>> I.e., there is no race under normal operation, but the hardware could
->>> have a bug or be malicious and we might not want that to result in UB.
->>> This is pretty similar to syscalls that take a pointer into userspace
->>> memory and read it - userspace shouldn't modify that memory during the
->>> syscall, but it can and if it does, that should be well-defined.
->>> (Though in the case of userspace, the copy happens in asm since it
->>> also needs to deal with virtual memory and so on.)
->>
->> Wow you are really doing your best to combine all the hard problems at the same
->> time. ;)
->> Sharing memory with untrusted parties is another tricky issue, and even leaving
->> aside all the theoretical trouble, practically speaking you'll want to
->> exclusively use atomic accesses to interact with such memory. So doing this
->> properly requires atomic memcpy. I don't know what that is blocked on, but it is
->> good to know that it would help the kernel.
+On Wed, Mar 05, 2025 at 03:29:50PM -0400, Jason Gunthorpe wrote:
+> On Wed, Mar 05, 2025 at 10:51:38AM -0800, Nicolin Chen wrote:
 > 
-> I am sort of baffled by this, since the C kernel has no such thing and
-> has worked fine for a few years. Is it a property of Rust that causes us
-> to need atomic memcpy, or is what the C kernel is doing potentially dangerous?
+> > > I mean a normal S2 domain attaching to multiple devices on multiple
+> > > instances.
+> > 
+> > Oh, I haven't thought about a !nest_parent S2 case.
+> > 
+> > A nest_parent case will not allow devices to attach the S2 but
+> > always to a proxy nested S1 as we discussed previously. So, I
+> > think the implementation could be very different?
+> 
+> It could, and that is what you show here
+> 
+> But also, it could be the same implementation.
 
-It's the same in C: a memcpy is a non-atomic access. If something else 
-concurrently mutates the memory you are copying from, or something else 
-concurrently reads/writes the memory you are copying two, that is UB.
-This is not specific to memcpy; it's the same for regular pointer loads/stores. 
-That's why you need READ_ONCE and WRITE_ONCE to specifically indicate to the 
-compiler that these are special accesses that need to be treated differently. 
-Something similar is needed for memcpy.
+OK.
 
-Kind regards,
-Ralf
+Obviously I underestimated this part of work.
 
+Implementation aside, this at lease needs some assessment of any
+invalidation impact. I should do some extra tracing.
+
+Thanks
+Nicolin
