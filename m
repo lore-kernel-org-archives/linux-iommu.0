@@ -1,403 +1,194 @@
-Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2056.outbound.protection.outlook.com [40.107.223.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA427254B08
-	for <iommu@lists.linux.dev>; Wed,  5 Mar 2025 19:56:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741204601; cv=none; b=NyRz3hzLI56ymYWM4fH8OvnjP0FFQ82YSBAK1ISZ1kic9GYTN4F34C5ny/1hT8VS9/TrMpQxXaWigrVhkywq8aQ0NRlr5ZfipIJGHMj8A1QRJyVvCYEGZ2yj6k81kdzjhxp/uvzyhUB8KxicFYnJ0v3gN65a9aIWSapMsB2hZw4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741204601; c=relaxed/simple;
-	bh=vPKwmRBDuYNlnHu6MdvlFAx7nsBZcVUDCDuQp98rhTQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=HLJJ4vPBGF/3FM41TeiA003sz6TiktLV1SVYfEE8hxXERKhO/DuY04rnZJERPG56kK7IrtlCDN0d/v7CxB62sXp89pO4JQRZiH/frUxjFv8l3nVBEVvhcKyVUaPYyLfQlbfYL8I8ET96r30HvhTSZO2GNEH44fP/oRx9F/PBmmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lVpXWsmM; arc=none smtp.client-ip=209.85.166.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 716C91917E4
+	for <iommu@lists.linux.dev>; Wed,  5 Mar 2025 21:19:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.56
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741209577; cv=fail; b=reX5KhiHT6R7CPAdZfbBSiofVJR/HlGJQnekg3ai1EsPWDamvkJ49NRyOh8N8Q5VrMIbRIm+OKMat+VdKhzvDlXoeTv2yvSWL8ivfnSGeJWSt2RpBX4sEUiQUekk5F9Qk5c5A9UXU4/z2Ib4p4EzdtkN9frEVwy5EAPS3XRKpEg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741209577; c=relaxed/simple;
+	bh=X/e89u0GFFA3FqxA4WvfBI2j0VFcioFCcbLbvyvMnk4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=b9ISHjV7myxj+3+jeCl8eFrZIhvqNBj8oMDMRKRnqQtBRv7+ciqV9GsIHNr49PQpvv+llwYWnDSwFYVREaGa4JXTFL0n3rh8s4NXB2mKeQYY+OCjCANV/qxgVSCuW0y+Y7Bo6tE/Zl5pUQmCjHaIGfwuoQh1qs1Uqcq2IAUYUnM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pnrxn/5G; arc=fail smtp.client-ip=40.107.223.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lVpXWsmM"
-Received: by mail-il1-f171.google.com with SMTP id e9e14a558f8ab-3d0465a8d34so63291415ab.0
-        for <iommu@lists.linux.dev>; Wed, 05 Mar 2025 11:56:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741204599; x=1741809399; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EK4b3HyJgM3hGDfJ0A/txTzVctgiGO140h7Vyc0X/Ho=;
-        b=lVpXWsmMk80UafM99fnE4D8Iv//YfmnoE1PPNuqiVFd32kmx076YV1YLwaqON3bOWZ
-         i0mmVjvPZoXP1c7nxBUy5wk7hkvbiIgZbaM/2J5rssX046zC+6DF1gaBdJ3coaWd/M5P
-         Ha/m8KiTJemJp91auxGxckL0yBCzkwU+NpQ4+upiWDBTGDhlpW66tmSKmLAN6Sm8qmTb
-         +ck43tYPFmpRNs9qDZnNN8qFZC+zym76gCfM0FqA7TX3P7xb+lzv9rpnlErRSHID1MKx
-         oBG8pvFK5qWOLBssteg2cFUQgQhRyeOmUOjWyQp/oqY6IFgibX3qGZZE5OK2URef4/7q
-         mKYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741204599; x=1741809399;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EK4b3HyJgM3hGDfJ0A/txTzVctgiGO140h7Vyc0X/Ho=;
-        b=E7uo2d/6S+7gl4Qs4dqSw8G+SKeB+cSoWjAdKbh22LnVXRqmO55sAM1cTwB8q9cyx/
-         Jl7l7rdEbp++ceeLZN9UkWLR1wzI3mN2QeSD4VQrNpjIH4hwiCwjIWFBZb9zZprlqC1U
-         XbPlqZBMyeyRREwUvcd4NX9uUYO3zTyT1tmeXy2DjQObWYHS2AZzsmG56Q3QB2Y06Q5d
-         9lZWoXSRa3jEyogoOJj+WtD2RD9RdzC+I4ZJZpv/z/tX4QeQAdKUSCWMsIdW62YBN16v
-         43jqfJsFyVvNBd66PyD70fitup6gmlWr2OcTvT0/8fk2R5mGvgMQkNGzx37UPYg9E3Hh
-         7XrQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWAbc3h8KHEZwjBkdIdQDhRnhJLQxG2UETECHWBTUQ28/JJ/ph3OLa5bHVRaHWd5RksXPAW9w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwMoSXcdL5tTbpL23cVEADMbSydIL4cYzurBa0v38zn1md4Lz2F
-	eHRdAokQVhfMjWzOKwnxs6Vl726ZbfSD87WbT3y3KIY2B2xUfJUjCdErEvRf9ci3YSV7rR8mpLv
-	tCNmhMIva+pzQRwDHfnrPc0bFLL0=
-X-Gm-Gg: ASbGncsNHrfNhECQix39gCmP3Qe1CxchqT0/MDUnResSGYlpwVsQjYAnmQX7lCtuRJg
-	2DfulSTIdF6n3gBULNSltFsiOYHMEMTlP3fKXxWLNXV5WQ7vJCBWFh6ul5fTQ8AH3sVPvkQvo2t
-	c1ltI6N25xQGzmFYG0zqnkzOxA3A==
-X-Google-Smtp-Source: AGHT+IEvt+UeE/beJRdg2VM3BUepDP4RJEo89AbGQ5rVgDSPcu2ds6I3XEN68wZm8UcUBUrYG/0mZAlqvUDAOGYFzYg=
-X-Received: by 2002:a05:6e02:216d:b0:3d1:9999:4f62 with SMTP id
- e9e14a558f8ab-3d42b873b43mr55740585ab.2.1741204598734; Wed, 05 Mar 2025
- 11:56:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pnrxn/5G"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=h6zFzqg9qoD/A/T7NS0vmb1e9Z70M5fAgdBGxGiyFpjpBtY5fEMVnl9KugtbfrCD4rwF8/MXe8/8ZWeIXLXVm4obGZlKgqaimVE2o15Ijad3c3BKRGwZQP8f3RI7vp+lUI3xr580hReOa1XFjUgn1lEJ41w9Vn2mTpXOnTJIqvmtTJHylQHkdV9D/biR+VOp0tHJqKNcUhgqoiVGptuE1BtXcjWI6cijdpQaPEJDcmiPjEq7c2vAYsx1anB9joqALbUYCUfV6r4auxrQsZ1ODJIbfb0cGlHqvQgopRA2KNbo6rsjw8xg7QQis3drTE+Nbm0F9HVRSAmVh0aj0dZ0xg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MTrX+v2ufu21pC5T9+JXX7Mh94AZHwvQ4M8AVKKgv04=;
+ b=Cc/uYhuBQ0Om06E+xR9gvq7qmSLu4+2G+mUrHUq4dmRNOYK9zTSNVD3lfx4oli50B597TgY3dQDMfJIltWmA3A5PKNN74onWk9Z1w0zUUz43Za8FZn2P3FfktsBhiJBYBPhN+ybOu0c1tD+qFL8HDWYf1s9hTXnMqo7TRyhdxeUEIYQANZHTkPUmIVPgI0x4VbivjQ9h1FhkNS+mJO1gEpTO6/pTRCH7XhbSR41Xbpxi+54fsyWoQrOS91yNLdns+7g75SClYtM1wF6/j1WPGttl91QYtZ+z+L5i3dDpHI60yDPqzYoN6Zy4Um2CEjTC15Vi40LOlmqIl5o3niOzJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MTrX+v2ufu21pC5T9+JXX7Mh94AZHwvQ4M8AVKKgv04=;
+ b=pnrxn/5G87Rm7CQszD0qK+c4SX9Zep/T/sThk4HHZnefr37y/WuRs3DxUcpo+d2nkFA38Uu8TlraVgsoJYb2eH3+fHusWEg2hd8oA7uYZMC+YKFbZK3IB2mCy3/R5w7T9xMNrp8KTs2V6UKeDzsMk51kAqmoeqzB3w+J4k0VGs7YNVbgYGgF5mmUhqQGWUKYflNKOGqSCxJQgyB1F/B/mBMuCWcAmpEZUbj14FwvNAxf+8EXuYqJLXDcamPdr7whC62feRRlNJDZZqnVoFJ+byw8OMCcHJsJOHnfHwYakmuO4KSOmi4RWvukPH5F6NgHfOO7a8A/qJZgIr0ClOEuDA==
+Received: from SJ2PR07CA0023.namprd07.prod.outlook.com (2603:10b6:a03:505::9)
+ by DM6PR12MB4202.namprd12.prod.outlook.com (2603:10b6:5:219::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.17; Wed, 5 Mar
+ 2025 21:19:32 +0000
+Received: from MWH0EPF000989E9.namprd02.prod.outlook.com
+ (2603:10b6:a03:505:cafe::c0) by SJ2PR07CA0023.outlook.office365.com
+ (2603:10b6:a03:505::9) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8489.29 via Frontend Transport; Wed,
+ 5 Mar 2025 21:19:32 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ MWH0EPF000989E9.mail.protection.outlook.com (10.167.241.136) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8511.15 via Frontend Transport; Wed, 5 Mar 2025 21:19:31 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 5 Mar 2025
+ 13:19:19 -0800
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Wed, 5 Mar 2025 13:19:19 -0800
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
+ Transport; Wed, 5 Mar 2025 13:19:18 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@nvidia.com>, <kevin.tian@intel.com>
+CC: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <ankita@nvidia.com>
+Subject: [PATCH] iommufd: Set domain->iommufd_hwpt in all hwpt->domain allocators
+Date: Wed, 5 Mar 2025 13:18:00 -0800
+Message-ID: <20250305211800.229465-1-nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250304-msm-gpu-fault-fixes-next-v4-0-be14be37f4c3@gmail.com>
- <20250304-msm-gpu-fault-fixes-next-v4-5-be14be37f4c3@gmail.com>
- <CAF6AEGufRP9NuqC1gYy6jrQ9z+XqGFd7KNsbQw8C8NscSOJnJQ@mail.gmail.com> <CACu1E7FPO253T+EvdJdaBuqh3kb7H_r7WhBE+bVxSHMPq6ixEg@mail.gmail.com>
-In-Reply-To: <CACu1E7FPO253T+EvdJdaBuqh3kb7H_r7WhBE+bVxSHMPq6ixEg@mail.gmail.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Wed, 5 Mar 2025 11:56:27 -0800
-X-Gm-Features: AQ5f1Jo3pnEpBqQToA3LD72hOF_KzihlX-Y2K6yNJMcq_UDDF0AT1ChF9aDzUjw
-Message-ID: <CAF6AEGu+eHBzSu-4vsGJEcJtDhOV=LnDM1xMZJVK3=1o71B0KQ@mail.gmail.com>
-Subject: Re: [PATCH v4 5/5] drm/msm: Temporarily disable stall-on-fault after
- a page fault
-To: Connor Abbott <cwabbott0@gmail.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>, 
-	Konrad Dybcio <konradybcio@kernel.org>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	freedreno@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000989E9:EE_|DM6PR12MB4202:EE_
+X-MS-Office365-Filtering-Correlation-Id: 16c272dd-2e5b-4503-7946-08dd5c2b6bf1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|82310400026|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?GfwB/XLeqQ7wZLQxPnpRWbiEJERaEF2I8MkyY4kQwbV9a4NyrxHsFXiQDhKc?=
+ =?us-ascii?Q?1kSsXuSx56n7WZb977NQVHEtfEgYERrSwdjYuKkWrU569eg+YU1yLY8nbPJL?=
+ =?us-ascii?Q?lE7lCB9mwwQlqXoRCPaesWeBRLObH3qyb/hRaJi9hoHybJLFDV8MN9MyWkKr?=
+ =?us-ascii?Q?gkOafHmCLCdibK8jSPI0Mxmcz7aurEby1v4+vgToIYwRh/bTAj8KdD32F4+5?=
+ =?us-ascii?Q?EkcA2KZR0UzLqN8dmm41Urs5hz0KsgwrmCRq30me1KEZmkbgYTK3pVXsVNek?=
+ =?us-ascii?Q?yYVcNVT0K/lRJPpfW3TcPAqIq48sxX/nQiTVi5l8ZpVFeSXuHIqolyjCHReG?=
+ =?us-ascii?Q?VRQ8jDwsUcvn1A9VlO/w5Bu/mq5UuBfDCAm2L7hR5e4qSe6y4AQJeanyf7SC?=
+ =?us-ascii?Q?4iQBXKDdWC1C4RwUBJRrXgMA4HtmkU2MAzmQea0akA3Zg0OQm8mut4q9YcNu?=
+ =?us-ascii?Q?GqBPp6ueVl+Wj02N3tmvGd7wa+wdfZbTCFykUpx1vkNl9UPzYW/HnrgzyFlT?=
+ =?us-ascii?Q?YZh1+2OLh2I0pXYb72bPtcaR41vwKNRQ5Dpr40PGhUU4NKr99cWstsptTViy?=
+ =?us-ascii?Q?YF8igrIfUpD7fsFgh3A6N1pL5Nfqg1WQJDbwW2fUolwIyT2AUF5RjtP/IKWg?=
+ =?us-ascii?Q?7MbNTHQ1mq0zJ4NsHBKWynsHk6ULOxH1WegfLJKv0IcrYvJBLgJhKb5N9hi4?=
+ =?us-ascii?Q?rAO1o4oJRaYpcz3QxvbvowvDj8C2EZrGVLEB6G5/1QRqMgzStYHqhSkhIh+m?=
+ =?us-ascii?Q?146ntzz0u06PplJOp+0s2ymYpt8/no5yKjf7MhUotGYgveJFHhD+aqKo+qaA?=
+ =?us-ascii?Q?PI1DUv8LHbxELbmfjtzcjVMrh+rqc3cNG+wamsXTjjh7lzU/Wu+H3ywUOKJq?=
+ =?us-ascii?Q?iCHEDxBFCaZmopXxeqIgSk9ui640E+vpQB6wZVDfHX1sxasQuqkKoAWkTGUH?=
+ =?us-ascii?Q?5rGlV5TA073x7qr+HZolAiOiSRjDMOV9KzNLzN7ZQBRjQbZNs90HgBd5/laW?=
+ =?us-ascii?Q?c0jyTRNgBYhGiHwGhm91asjGLgr1rMvk/C8YSvlgqAVAzmFSFRx5dmMYr0se?=
+ =?us-ascii?Q?L3XjpFU8YW9DLmJEqP2ES+CP8HIJ+IkMy587z5WfjXpsJtNvApPAJnuOxq4T?=
+ =?us-ascii?Q?22xjz1Fb+oWWUrZqNz1m1FR+N5Fi+TP+qvWSwC39N+m75cSjL8qiQ8Cx4O+V?=
+ =?us-ascii?Q?6KAA/TUadJJb0J1yEwrVV2L7HTKBytY9ZMY6ZmjlMnuZ4aLQzYKvuRtmLgm8?=
+ =?us-ascii?Q?hVrDE996qis5WWldiffcBm7pzLi5Rz3RdO3hnp4lchCvvoennak4WTW15VFD?=
+ =?us-ascii?Q?cK+Uji8oKpjUdqJrFJ+biOmJkm+89w7LxbTAXx1E3+M9o1dzXSFHYq3kDXwA?=
+ =?us-ascii?Q?x+NTnOMMJohz1MGSMGuoVtf2dh/0sr9yWn4LBlmOVOIZ0c0+9Qb1R+6wDM3E?=
+ =?us-ascii?Q?rDkcNLqtoioKhlXt06w7rhN5V8JDQKWNvxSl15nOpTjZDI879DNJHmfc99cY?=
+ =?us-ascii?Q?ym5nlxF4HcXBlEg=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2025 21:19:31.9877
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16c272dd-2e5b-4503-7946-08dd5c2b6bf1
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000989E9.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4202
 
-On Wed, Mar 5, 2025 at 11:38=E2=80=AFAM Connor Abbott <cwabbott0@gmail.com>=
- wrote:
->
-> On Wed, Mar 5, 2025 at 2:07=E2=80=AFPM Rob Clark <robdclark@gmail.com> wr=
-ote:
-> >
-> > On Tue, Mar 4, 2025 at 8:57=E2=80=AFAM Connor Abbott <cwabbott0@gmail.c=
-om> wrote:
-> > >
-> > > When things go wrong, the GPU is capable of quickly generating millio=
-ns
-> > > of faulting translation requests per second. When that happens, in th=
-e
-> > > stall-on-fault model each access will stall until it wins the race to
-> > > signal the fault and then the RESUME register is written. This slows
-> > > processing page faults to a crawl as the GPU can generate faults much
-> > > faster than the CPU can acknowledge them. It also means that all
-> > > available resources in the SMMU are saturated waiting for the stalled
-> > > transactions, so that other transactions such as transactions generat=
-ed
-> > > by the GMU, which shares a context bank with the GPU, cannot proceed.
-> >
-> > Nit, the GMU does not actually share a cb.. looking on x1e80100.dtsi,
-> > the GMU has cb 5 and gpu has 0 and 1.  (Currently we just use the
-> > first, but I guess the 2nd would be used if we supported protected
-> > content?)
->
-> Yeah, I realized after writing this that's the case. But I guess the
-> QoS issues happen even with separate context banks due to the way they
-> allocate translation units?
+Setting domain->iommufd_hwpt in iommufd_hwpt_alloc() only covers the HWPT
+allocations from user space, but not for an auto domain. This resulted in
+a NULL pointer access in the auto domain pathway:
+ Unable to handle kernel NULL pointer dereference at
+ 	virtual address 0000000000000008
+ pc : iommufd_sw_msi+0x54/0x2b0
+ lr : iommufd_sw_msi+0x40/0x2b0
+ Call trace:
+  iommufd_sw_msi+0x54/0x2b0 (P)
+  iommu_dma_prepare_msi+0x64/0xa8
+  its_irq_domain_alloc+0xf0/0x2c0
+  irq_domain_alloc_irqs_parent+0x2c/0xa8
+  msi_domain_alloc+0xa0/0x1a8
 
-Right, however resources are allocated to track pending translations
-seems to be shared across CBs
+Since iommufd_sw_msi() requires to access the domain->iommufd_hwpt, it is
+better to set that explicitly prior to calling iommu_domain_set_sw_msi().
 
-BR,
--R
+Fixes: 748706d7ca06 ("iommu: Turn fault_data to iommufd private pointer")
+Reported-by: Ankit Agrawal <ankita@nvidia.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/iommu/iommufd/hw_pagetable.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
->
-> Connor
->
-> >
-> > fwiw, you can read this from dtsi, ie. in the GMU node, "iommus =3D
-> > <&adreno_smmu 5 0x0>;"
-> >
-> > > This causes a GMU watchdog timeout, which leads to a failed reset
-> > > because GX cannot collapse when there is a transaction pending and a
-> > > permanently hung GPU.
-> > >
-> > > On older platforms with qcom,smmu-v2, it seems that when one transact=
-ion
-> > > is stalled subsequent faulting transactions are terminated, which avo=
-ids
-> > > this problem, but the MMU-500 follows the spec here.
-> > >
-> > > To work around these problem, disable stall-on-fault as soon as we ge=
-t a
-> > > page fault until a cooldown period after pagefaults stop. This allows
-> > > the GMU some guaranteed time to continue working. We only use
-> > > stall-on-fault to halt the GPU while we collect a devcoredump and we
-> > > always terminate the transaction afterward, so it's fine to miss some
-> > > subsequent page faults. We also keep it disabled so long as the curre=
-nt
-> > > devcoredump hasn't been deleted, because in that case we likely won't
-> > > capture another one if there's a fault.
-> > >
-> > > After this commit HFI messages still occasionally time out, because t=
-he
-> > > crashdump handler doesn't run fast enough to let the GMU resume, but =
-the
-> > > driver seems to recover from it. This will probably go away after the
-> > > HFI timeout is increased.
-> > >
-> > > Signed-off-by: Connor Abbott <cwabbott0@gmail.com>
-> > > ---
-> > >  drivers/gpu/drm/msm/adreno/a5xx_gpu.c   |  2 ++
-> > >  drivers/gpu/drm/msm/adreno/a6xx_gpu.c   |  4 ++++
-> > >  drivers/gpu/drm/msm/adreno/adreno_gpu.c | 42 +++++++++++++++++++++++=
-+++++++++-
-> > >  drivers/gpu/drm/msm/adreno/adreno_gpu.h | 24 +++++++++++++++++++
-> > >  drivers/gpu/drm/msm/msm_iommu.c         |  9 +++++++
-> > >  drivers/gpu/drm/msm/msm_mmu.h           |  1 +
-> > >  6 files changed, 81 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c b/drivers/gpu/drm/=
-msm/adreno/a5xx_gpu.c
-> > > index 71dca78cd7a5324e9ff5b14f173e2209fa42e196..670141531112c9d29cef8=
-ef1fd51b74759fdd6d2 100644
-> > > --- a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-> > > +++ b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-> > > @@ -131,6 +131,8 @@ static void a5xx_submit(struct msm_gpu *gpu, stru=
-ct msm_gem_submit *submit)
-> > >         struct msm_ringbuffer *ring =3D submit->ring;
-> > >         unsigned int i, ibs =3D 0;
-> > >
-> > > +       adreno_check_and_reenable_stall(adreno_gpu);
-> > > +
-> > >         if (IS_ENABLED(CONFIG_DRM_MSM_GPU_SUDO) && submit->in_rb) {
-> > >                 ring->cur_ctx_seqno =3D 0;
-> > >                 a5xx_submit_in_rb(gpu, submit);
-> > > diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/=
-msm/adreno/a6xx_gpu.c
-> > > index 0ae29a7c8a4d3f74236a35cc919f69d5c0a384a0..5a34cd2109a2d74c92841=
-448a61ccb0d4f34e264 100644
-> > > --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> > > +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> > > @@ -212,6 +212,8 @@ static void a6xx_submit(struct msm_gpu *gpu, stru=
-ct msm_gem_submit *submit)
-> > >         struct msm_ringbuffer *ring =3D submit->ring;
-> > >         unsigned int i, ibs =3D 0;
-> > >
-> > > +       adreno_check_and_reenable_stall(adreno_gpu);
-> > > +
-> > >         a6xx_set_pagetable(a6xx_gpu, ring, submit);
-> > >
-> > >         get_stats_counter(ring, REG_A6XX_RBBM_PERFCTR_CP(0),
-> > > @@ -335,6 +337,8 @@ static void a7xx_submit(struct msm_gpu *gpu, stru=
-ct msm_gem_submit *submit)
-> > >         struct msm_ringbuffer *ring =3D submit->ring;
-> > >         unsigned int i, ibs =3D 0;
-> > >
-> > > +       adreno_check_and_reenable_stall(adreno_gpu);
-> > > +
-> > >         /*
-> > >          * Toggle concurrent binning for pagetable switch and set the=
- thread to
-> > >          * BR since only it can execute the pagetable switch packets.
-> > > diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/dr=
-m/msm/adreno/adreno_gpu.c
-> > > index 1238f326597808eb28b4c6822cbd41a26e555eb9..bac586101dc0494f46b06=
-9a8440a45825dfe9b5e 100644
-> > > --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> > > +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> > > @@ -246,16 +246,53 @@ u64 adreno_private_address_space_size(struct ms=
-m_gpu *gpu)
-> > >         return SZ_4G;
-> > >  }
-> > >
-> > > +void adreno_check_and_reenable_stall(struct adreno_gpu *adreno_gpu)
-> > > +{
-> > > +       struct msm_gpu *gpu =3D &adreno_gpu->base;
-> > > +       unsigned long flags;
-> > > +
-> > > +       /*
-> > > +        * Wait until the cooldown period has passed and we would act=
-ually
-> > > +        * collect a crashdump to re-enable stall-on-fault.
-> > > +        */
-> > > +       spin_lock_irqsave(&adreno_gpu->fault_stall_lock, flags);
-> > > +       if (!adreno_gpu->stall_enabled &&
-> > > +                       ktime_after(ktime_get(), adreno_gpu->stall_re=
-enable_time) &&
-> > > +                       !READ_ONCE(gpu->crashstate)) {
-> > > +               adreno_gpu->stall_enabled =3D true;
-> > > +
-> > > +               gpu->aspace->mmu->funcs->set_stall(gpu->aspace->mmu, =
-true);
-> > > +       }
-> > > +       spin_unlock_irqrestore(&adreno_gpu->fault_stall_lock, flags);
-> > > +}
-> > > +
-> > >  #define ARM_SMMU_FSR_TF                 BIT(1)
-> > >  #define ARM_SMMU_FSR_PF                        BIT(3)
-> > >  #define ARM_SMMU_FSR_EF                        BIT(4)
-> > > +#define ARM_SMMU_FSR_SS                        BIT(30)
-> > >
-> > >  int adreno_fault_handler(struct msm_gpu *gpu, unsigned long iova, in=
-t flags,
-> > >                          struct adreno_smmu_fault_info *info, const c=
-har *block,
-> > >                          u32 scratch[4])
-> > >  {
-> > > +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
-> > >         const char *type =3D "UNKNOWN";
-> > > -       bool do_devcoredump =3D info && !READ_ONCE(gpu->crashstate);
-> > > +       bool do_devcoredump =3D info && (info->fsr & ARM_SMMU_FSR_SS)=
- &&
-> > > +               !READ_ONCE(gpu->crashstate);
-> > > +       unsigned long irq_flags;
-> > > +
-> > > +       /*
-> > > +        * In case there is a subsequent storm of pagefaults, disable
-> > > +        * stall-on-fault for at least half a second.
-> > > +        */
-> > > +       spin_lock_irqsave(&adreno_gpu->fault_stall_lock, irq_flags);
-> > > +       if (adreno_gpu->stall_enabled) {
-> > > +               adreno_gpu->stall_enabled =3D false;
-> > > +
-> > > +               gpu->aspace->mmu->funcs->set_stall(gpu->aspace->mmu, =
-false);
-> > > +       }
-> > > +       adreno_gpu->stall_reenable_time =3D ktime_add_ms(ktime_get(),=
- 500);
-> > > +       spin_unlock_irqrestore(&adreno_gpu->fault_stall_lock, irq_fla=
-gs);
-> > >
-> > >         /*
-> > >          * If we aren't going to be resuming later from fault_worker,=
- then do
-> > > @@ -1143,6 +1180,9 @@ int adreno_gpu_init(struct drm_device *drm, str=
-uct platform_device *pdev,
-> > >                 adreno_gpu->info->inactive_period);
-> > >         pm_runtime_use_autosuspend(dev);
-> > >
-> > > +       spin_lock_init(&adreno_gpu->fault_stall_lock);
-> > > +       adreno_gpu->stall_enabled =3D true;
-> > > +
-> > >         return msm_gpu_init(drm, pdev, &adreno_gpu->base, &funcs->bas=
-e,
-> > >                         gpu_name, &adreno_gpu_config);
-> > >  }
-> > > diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.h b/drivers/gpu/dr=
-m/msm/adreno/adreno_gpu.h
-> > > index dcf454629ce037b2a8274a6699674ad754ce1f07..a528036b46216bd898f6d=
-48c5fb0555c4c4b053b 100644
-> > > --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-> > > +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-> > > @@ -205,6 +205,28 @@ struct adreno_gpu {
-> > >         /* firmware: */
-> > >         const struct firmware *fw[ADRENO_FW_MAX];
-> > >
-> > > +       /**
-> > > +        * fault_stall_lock:
-> >
-> > nit, @fault_stall_lock:  And for
-> > fault_stall_reenable_time/stall_enabled, it wouldn't hurt to add
-> > something along the lines of "Protected by @fault_stall_lock".  I've
-> > been slowly trying to improve the comment docs over time, I have some
-> > of that in my vmbind patchset.
-> >
-> > Anyways, with those nits addressed, r-b
-> >
-> > BR,
-> > -R
-> >
-> > > +        *
-> > > +        * Serialize changes to stall-on-fault state.
-> > > +        */
-> > > +       spinlock_t fault_stall_lock;
-> > > +
-> > > +       /**
-> > > +        * fault_stall_reenable_time:
-> > > +        *
-> > > +        * if stall_enabled is false, when to reenable stall-on-fault=
-.
-> > > +        */
-> > > +       ktime_t stall_reenable_time;
-> > > +
-> > > +       /**
-> > > +        * stall_enabled:
-> > > +        *
-> > > +        * Whether stall-on-fault is currently enabled.
-> > > +        */
-> > > +       bool stall_enabled;
-> > > +
-> > > +
-> > >         struct {
-> > >                 /**
-> > >                  * @rgb565_predicator: Unknown, introduced with A650 =
-family,
-> > > @@ -629,6 +651,8 @@ int adreno_fault_handler(struct msm_gpu *gpu, uns=
-igned long iova, int flags,
-> > >                          struct adreno_smmu_fault_info *info, const c=
-har *block,
-> > >                          u32 scratch[4]);
-> > >
-> > > +void adreno_check_and_reenable_stall(struct adreno_gpu *gpu);
-> > > +
-> > >  int adreno_read_speedbin(struct device *dev, u32 *speedbin);
-> > >
-> > >  /*
-> > > diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/ms=
-m_iommu.c
-> > > index 2a94e82316f95c5f9dcc37ef0a4664a29e3492b2..8d5380e6dcc217c7c209b=
-51527bf15748b3ada71 100644
-> > > --- a/drivers/gpu/drm/msm/msm_iommu.c
-> > > +++ b/drivers/gpu/drm/msm/msm_iommu.c
-> > > @@ -351,6 +351,14 @@ static void msm_iommu_resume_translation(struct =
-msm_mmu *mmu)
-> > >                 adreno_smmu->resume_translation(adreno_smmu->cookie, =
-true);
-> > >  }
-> > >
-> > > +static void msm_iommu_set_stall(struct msm_mmu *mmu, bool enable)
-> > > +{
-> > > +       struct adreno_smmu_priv *adreno_smmu =3D dev_get_drvdata(mmu-=
->dev);
-> > > +
-> > > +       if (adreno_smmu->set_stall)
-> > > +               adreno_smmu->set_stall(adreno_smmu->cookie, enable);
-> > > +}
-> > > +
-> > >  static void msm_iommu_detach(struct msm_mmu *mmu)
-> > >  {
-> > >         struct msm_iommu *iommu =3D to_msm_iommu(mmu);
-> > > @@ -399,6 +407,7 @@ static const struct msm_mmu_funcs funcs =3D {
-> > >                 .unmap =3D msm_iommu_unmap,
-> > >                 .destroy =3D msm_iommu_destroy,
-> > >                 .resume_translation =3D msm_iommu_resume_translation,
-> > > +               .set_stall =3D msm_iommu_set_stall,
-> > >  };
-> > >
-> > >  struct msm_mmu *msm_iommu_new(struct device *dev, unsigned long quir=
-ks)
-> > > diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_=
-mmu.h
-> > > index 88af4f490881f2a6789ae2d03e1c02d10046331a..2694a356a17904e7572b7=
-67b16ed0cee806406cf 100644
-> > > --- a/drivers/gpu/drm/msm/msm_mmu.h
-> > > +++ b/drivers/gpu/drm/msm/msm_mmu.h
-> > > @@ -16,6 +16,7 @@ struct msm_mmu_funcs {
-> > >         int (*unmap)(struct msm_mmu *mmu, uint64_t iova, size_t len);
-> > >         void (*destroy)(struct msm_mmu *mmu);
-> > >         void (*resume_translation)(struct msm_mmu *mmu);
-> > > +       void (*set_stall)(struct msm_mmu *mmu, bool enable);
-> > >  };
-> > >
-> > >  enum msm_mmu_type {
-> > >
-> > > --
-> > > 2.47.1
-> > >
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index 268315b1d8bc..1d4cfe3677dc 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -159,6 +159,7 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 			goto out_abort;
+ 		}
+ 	}
++	hwpt->domain->iommufd_hwpt = hwpt;
+ 	iommu_domain_set_sw_msi(hwpt->domain, iommufd_sw_msi);
+ 
+ 	/*
+@@ -255,6 +256,7 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+ 		goto out_abort;
+ 	}
+ 	hwpt->domain->owner = ops;
++	hwpt->domain->iommufd_hwpt = hwpt;
+ 	iommu_domain_set_sw_msi(hwpt->domain, iommufd_sw_msi);
+ 
+ 	if (WARN_ON_ONCE(hwpt->domain->type != IOMMU_DOMAIN_NESTED)) {
+@@ -311,6 +313,7 @@ iommufd_viommu_alloc_hwpt_nested(struct iommufd_viommu *viommu, u32 flags,
+ 		hwpt->domain = NULL;
+ 		goto out_abort;
+ 	}
++	hwpt->domain->iommufd_hwpt = hwpt;
+ 	hwpt->domain->owner = viommu->iommu_dev->ops;
+ 	iommu_domain_set_sw_msi(hwpt->domain, iommufd_sw_msi);
+ 
+@@ -415,7 +418,6 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
+ 		refcount_inc(&fault->obj.users);
+ 		iommufd_put_object(ucmd->ictx, &fault->obj);
+ 	}
+-	hwpt->domain->iommufd_hwpt = hwpt;
+ 
+ 	cmd->out_hwpt_id = hwpt->obj.id;
+ 	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+-- 
+2.43.0
+
