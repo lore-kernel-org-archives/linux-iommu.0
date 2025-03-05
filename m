@@ -1,118 +1,124 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 256CB1D7985
-	for <iommu@lists.linux.dev>; Wed,  5 Mar 2025 05:39:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B444155342
+	for <iommu@lists.linux.dev>; Wed,  5 Mar 2025 08:50:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741153171; cv=none; b=MJQXAwNRIXFhayVpRDO2LWNY3fxaHay7LwY88/V5DMKN1jsYfur5Nyt04SRSVk8OYPXRUej5tP6qwGPHTYe4FBVCcHsIwyG45IbXw9SkxnsSThhECK88xHcZbYy5cKNsVgVpMl0JnWZgg94RtJXsktnDKbPetXpTHDyVztAu/1s=
+	t=1741164629; cv=none; b=ba7GJFbjOKlcvxP4eVuKHIxPhapwa14pJjO+JaLI/7DL6UFAGg0GuMi0ILzfv9pmQObnrlsPCfE2saHRoNSuIjcqGs2nHlHk05YBaxxrpuJOyKMUfNDA4mnc8ayunqhwM08ktcDfIdsd/boNoR9921rKb93AqEeok+w+5SXZn7U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741153171; c=relaxed/simple;
-	bh=AmrnCmsQvKDavdaqMUpAgT8D+53xpeBI3PNIM0WAudY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hXoZw56SFRqC1tMkG8oUc76b8Idt7NE5veGFRCNTkaCMps9gu8u+gqPvDjD8OsreoXTHi9mzYrLiAJEo9o9/y3tKWvAGUrMnTufHoPOxRLDKgr7Ds+pRCrwbiYWZquWd1HkZ2MDp3c51yzLsqlR2jaFxYrH5eGS05xiK+KrZeSQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gWI0k/hh; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gWI0k/hh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741153170; x=1772689170;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AmrnCmsQvKDavdaqMUpAgT8D+53xpeBI3PNIM0WAudY=;
-  b=gWI0k/hhDaG9IeeRZKqjophgBNqKqgTDOYzrQmQqlQuh4h28dGR0O75h
-   SYs0kxRZHjTG8zTG4ejHzLiO/N+NbInasZnZGTUbpJHh+EKY8mj+N5FDJ
-   ABLO5Mblz07PqhvfgW0So7NMvhPjaqBZdBRyeHTEVowWNRrdsXoiW8nw8
-   GcsTURLmZAZEfeytW6qJ01Gh2KB1Yr2ZsMH16KguKHj10/QsxDynwOt8o
-   x4ATY8bJXTrITir+XVi/NUWjCsoY5Xp/TWRQWlKyqLpzLMPTDhnKOPAeM
-   Q4RNiBb225gYeqHFm9/OaYAW1OcvzPIyey1n0xS6SkhkTcJAztGzxNERT
-   A==;
-X-CSE-ConnectionGUID: /nztIT2aSvi703YvHOmhlw==
-X-CSE-MsgGUID: mVea7/hBTM+dbq/gXRZBCA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11363"; a="41349597"
-X-IronPort-AV: E=Sophos;i="6.14,222,1736841600"; 
-   d="scan'208";a="41349597"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2025 21:39:29 -0800
-X-CSE-ConnectionGUID: sJmDI49ERvKccI/5alj7UQ==
-X-CSE-MsgGUID: E7UbQgR4QI6+MASRlWaZFg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,222,1736841600"; 
-   d="scan'208";a="118736138"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2025 21:39:26 -0800
-Message-ID: <c6d20839-f4c1-429c-b12c-c8d06ae0ce03@linux.intel.com>
-Date: Wed, 5 Mar 2025 13:36:00 +0800
+	s=arc-20240116; t=1741164629; c=relaxed/simple;
+	bh=9yMqqJpFRl1mhJQIRFycG3q2J7bCAVjeeOJl0b7GFFg=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=c8Hwd6FJpevEV4OtXX5MJ69PiXcHtCTy+uv/8z66VnihSFU24WSfGDYvQjFX4lISS7xeuVyzYEPF7qwWuhhjkW6KS0WIEKNwfYiTzC9c7FjWds64Kn/AhnuQbdUVCOfOHouVMjGeuDxOSaEdYrgX51vUQ/hFMjZ1nmdhD0fUjtA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.31])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Z75mV2Phgz6K9RV;
+	Wed,  5 Mar 2025 16:48:10 +0800 (CST)
+Received: from frapeml100008.china.huawei.com (unknown [7.182.85.131])
+	by mail.maildlp.com (Postfix) with ESMTPS id 3AECE14011D;
+	Wed,  5 Mar 2025 16:50:25 +0800 (CST)
+Received: from frapeml500008.china.huawei.com (7.182.85.71) by
+ frapeml100008.china.huawei.com (7.182.85.131) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Wed, 5 Mar 2025 09:50:17 +0100
+Received: from frapeml500008.china.huawei.com ([7.182.85.71]) by
+ frapeml500008.china.huawei.com ([7.182.85.71]) with mapi id 15.01.2507.039;
+ Wed, 5 Mar 2025 09:50:17 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "jgg@nvidia.com"
+	<jgg@nvidia.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v1 1/4] iommu/arm-smmu-v3: Pass in vmid to
+ arm_smmu_make_s2_domain_ste()
+Thread-Topic: [PATCH v1 1/4] iommu/arm-smmu-v3: Pass in vmid to
+ arm_smmu_make_s2_domain_ste()
+Thread-Index: AQHbjYw6xgWAQwMkG0OYeMfm+TEXTLNkOtMw
+Date: Wed, 5 Mar 2025 08:50:17 +0000
+Message-ID: <a95b39a55c324907a7001d3a2cdf076b@huawei.com>
+References: <cover.1741150594.git.nicolinc@nvidia.com>
+ <214b10db02f1046efdc70e2c4803111357f60070.1741150594.git.nicolinc@nvidia.com>
+In-Reply-To: <214b10db02f1046efdc70e2c4803111357f60070.1741150594.git.nicolinc@nvidia.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 06/12] iommu/vt-d: Cleanup
- intel_context_flush_present()
-To: Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
-Cc: Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
- Fenghua Yu <fenghuay@nvidia.com>, Zhangfei Gao <zhangfei.gao@linaro.org>,
- Zhou Wang <wangzhou1@hisilicon.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20250224051627.2956304-1-baolu.lu@linux.intel.com>
- <20250224051627.2956304-7-baolu.lu@linux.intel.com>
- <f7d84e3d-a648-4292-a652-408f704411c7@intel.com>
- <51cb2ef8-3cce-4af7-b6ce-c3e3d490e6a3@linux.intel.com>
- <338ee285-ae28-4e3f-a7de-57205d9e9873@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <338ee285-ae28-4e3f-a7de-57205d9e9873@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 3/5/25 11:34, Yi Liu wrote:
-> On 2025/3/5 10:21, Baolu Lu wrote:
->> On 3/4/25 16:43, Yi Liu wrote:
->>> On 2025/2/24 13:16, Lu Baolu wrote:
->>>> The intel_context_flush_present() is called in places where either the
->>>> scalable mode is disabled, or scalable mode is enabled but all PASID
->>>> entries are known to be non-present. In these cases, the flush_domains
->>>> path within intel_context_flush_present() will never execute. This dead
->>>> code is therefore removed.
->>>
->>> The reason for this path is the remaining caller of
->>> intel_context_flush_present() is only the domain_context_clear_one() 
->>> which
->>> is called in legacy mode path. Is it?
->>> If so, it seems unnecessary to keep __context_flush_dev_iotlb(info); 
->>> in the
->>> end of the new intel_context_flush_present(). Also, since this helper 
->>> is more for legacy mode, might be good to move it out of pasid.c.:)
->>
->> This helper is for invalidating various caches when a context entry is
->> present and certain fields are changed. It is used in both legacy and
->> scalable modes.
-> 
-> hmmm. the kdoc says all the pasid entries are non-present, is it necessary
-> to flush dev_tlb in such scenario? I suppose no present pasid entry means
-> no pagetable as well.
+Hi Nicolin,
 
-The spec has defined the software behavior for cache invalidation in
-"Table 28: Guidance to Software for Invalidations". This helper was
-written according to it.
+Thanks for sending out this series. This might as well help me to rework my=
+ pinned KVM
+VMID series here,
+https://lore.kernel.org/linux-iommu/20240208151837.35068-1-shameerali.kolot=
+hum.thodi@huawei.com/
 
-> 
->> In the past, this helper would work even if some PASIDs were still in
->> use. After the changes introduced in this series, this PASID-in-use case
->> is removed. So remove the dead code.
-> 
-> yeah, I got this part. As I mentioned, the only caller now is the
-> domain_context_clear_one() which is used in the legacy path. That's why I
-> feel like it is now more for legacy mode path now after this series.
 
-It's also called by device_pasid_table_teardown().
+> -----Original Message-----
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Wednesday, March 5, 2025 5:04 AM
+> To: will@kernel.org; robin.murphy@arm.com; jgg@nvidia.com
+> Cc: joro@8bytes.org; linux-arm-kernel@lists.infradead.org;
+> iommu@lists.linux.dev; linux-kernel@vger.kernel.org; Shameerali Kolothum
+> Thodi <shameerali.kolothum.thodi@huawei.com>
+> Subject: [PATCH v1 1/4] iommu/arm-smmu-v3: Pass in vmid to
+> arm_smmu_make_s2_domain_ste()
+>=20
+> An stage-2 STE requires a vmid that has been so far allocated per domain,
+> so arm_smmu_make_s2_domain_ste() has been extracting the vmid from
+> the S2
+> domain.
+>=20
+> To share an S2 parent domain across vSMMUs in the same VM, a vmid will
+> be
+> no longer allocated for nor stored in the S2 domain, but per vSMMU, which
+> means the arm_smmu_make_s2_domain_ste() can get a vmid either from
+> an S2
+> domain (non nesting parent) or a vSMMU.
+>=20
+> Allow to pass in vmid explicitly to arm_smmu_make_s2_domain_ste(),
+> giving
+> its callers a chance to pick the vmid between a domain or a vSMMU.
+>=20
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h         | 2 +-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 6 ++++--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c    | 3 ++-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c         | 6 +++---
+>  4 files changed, 10 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index bd9d7c85576a..e08c4ede4b2d 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -887,7 +887,7 @@ struct arm_smmu_entry_writer_ops {
+>  void arm_smmu_make_abort_ste(struct arm_smmu_ste *target);
+>  void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+>  				 struct arm_smmu_master *master,
+> -				 struct arm_smmu_domain *smmu_domain,
+> +				 struct arm_smmu_domain *smmu_domain,
+> u16 vmid,
+>  				 bool ats_enabled);
+
+Now that vmid is an input, do we need some kind of validation here as
+at least vmid =3D 0 is reserved I guess for bypass STEs.
 
 Thanks,
-baolu
+Shameer
+
