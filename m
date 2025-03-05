@@ -1,76 +1,46 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DFF62451F3;
-	Wed,  5 Mar 2025 14:26:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741184807; cv=pass; b=cfAevzMD4spI4WKPpnrlq99dfg2df/LnAtfdY3h+dsl80q/5FUimwHBzoC3HEXRWzckjo+9KWBMjW8bBWzEj2MyWEvmIK4ic1fpkCwucqrf4LacpVakDTfyryHC3LfF3an6Prgqt7b1FPXR6W8erjSYTSMwU49whJf36xU4tO0s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741184807; c=relaxed/simple;
-	bh=/Z9S0QzKDsuLG0+3X3XdL82r5DXrvOFAaAskQNYSId4=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=SDYoJHYnqPZj6Vioegbf4xWFKt6cWDTlGUY3d5HF7omOtgs2ROo+AeGOnYm9zkbIEtlr961CtHMo99cC8ZD+yUhVBvztZH/pQ+ItD0OKBwaWgx9m9grYDe7AaWe7sF3k+c/wSV9oB6VSwY9RuCBzCKqhrIk6y1o4RTTtX7IBQvg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=RekStM0K; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="RekStM0K"
-ARC-Seal: i=1; a=rsa-sha256; t=1741184778; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=UNe32RR04FyEtxJr78wuwJoPPVIRQJ/9ZZVrbt8MSyvtwmPpfoQlWjDO6l2ibYVqLMdcFelA5vds3leEP0F4NFkbOsjRHu644aLrsSDHwUqcVpCxiBw+TcvbQiSsdvHSKyjUJ8yT5kBIJNwtauWVdquf8RomVTEXIOlT4r6jhjA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1741184778; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=AdsW+1At4dzqwKDMRG+xhUkB9QjIq0jRnj5pAKgqr7Q=; 
-	b=OXt96sUQvHVTNUyBiyYNSAjazgswZrJYRHmjY537bKwCQcl0w9CKzRYO8t+/3+mybKlS8XOrrCs07zXBl49bjHw/UaNji5pvZOAaPeZFYpFsFLjIrwNGMNFx3iVf0jAhjXGOyu1By8r0WaIxSmTvp25Qh0mFTJcXDH3keQzF110=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
-	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1741184778;
-	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
-	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
-	bh=AdsW+1At4dzqwKDMRG+xhUkB9QjIq0jRnj5pAKgqr7Q=;
-	b=RekStM0KWIrf2d7tmLV0YwK/ffv+lYmKJenAW06PEzAbke5LQEb7vHepf7wdPP2M
-	0LQHWJwHa7RIV1CF5IIDXBR5jwGf6ItIj9K5PdOa/rrvdeLJBjPIWKrwnne+CqyK30v
-	qHIWs7N7ed3dkSwT0fr3oZuRjxhJ8KCNhXT8lm/k=
-Received: by mx.zohomail.com with SMTPS id 1741184776075416.8048596435848;
-	Wed, 5 Mar 2025 06:26:16 -0800 (PST)
-Content-Type: text/plain;
-	charset=utf-8
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3ECF424BC1D;
+	Wed,  5 Mar 2025 14:40:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741185658; cv=none; b=BoWo+KD/9P8P4YARcoDUlK94bdxa5kz2LoklO/CFA9DTlGwxalmuMORxncU46twcquNoL4LwJ5HvLZRXLsXpmhZEAJOtKcBTAv8W2VkCRjOnS4CnLYev5sw/kpMllNFWxudPtw/cTdjZMEc8DQ5pHmAUstxzsIeLjVcNqfFJQIU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741185658; c=relaxed/simple;
+	bh=5U/l8tp3eXkOkoO0GNc25qWdsPJ4RZ44ItczgZrbGDQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=u1e1tf+/e5lSk3G4PP+d5/PQFLxPvNkSZNvkScT7l8ZBsJkyKXLMmZaxZ3ee2PEHvE/3dpuWoRh0hMeJyyPhlz2hrZpnpvJ/89DdtU3XclWOVQyHIXXcCIp8Pli5mR+Xab+sSge+9FSfLEC1G9QNTq+knoEQqirNUleTNzPhSio=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AA650FEC;
+	Wed,  5 Mar 2025 06:41:09 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 725733F673;
+	Wed,  5 Mar 2025 06:40:53 -0800 (PST)
+Message-ID: <39aa741e-8522-497d-a8f2-d43bc93fb29f@arm.com>
+Date: Wed, 5 Mar 2025 14:40:51 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.300.87.4.3\))
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
 Subject: Re: Allow data races on some read/write operations
-From: Daniel Almeida <daniel.almeida@collabora.com>
-In-Reply-To: <25e7e425-ae72-4370-ae95-958882a07df9@ralfj.de>
-Date: Wed, 5 Mar 2025 11:25:58 -0300
-Cc: Boqun Feng <boqun.feng@gmail.com>,
- comex <comexk@gmail.com>,
+To: Ralf Jung <post@ralfj.de>, Alice Ryhl <aliceryhl@google.com>
+Cc: Boqun Feng <boqun.feng@gmail.com>, comex <comexk@gmail.com>,
  Andreas Hindborg <a.hindborg@kernel.org>,
- Alice Ryhl <aliceryhl@google.com>,
+ Daniel Almeida <daniel.almeida@collabora.com>,
  Benno Lossin <benno.lossin@proton.me>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>,
- dakr@kernel.org,
- robin.murphy@arm.com,
- rust-for-linux@vger.kernel.org,
- Miguel Ojeda <ojeda@kernel.org>,
- Alex Gaynor <alex.gaynor@gmail.com>,
- Gary Guo <gary@garyguo.net>,
- =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Trevor Gross <tmgross@umich.edu>,
- Valentin Obst <kernel@valentinobst.de>,
- linux-kernel@vger.kernel.org,
- Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- airlied@redhat.com,
- iommu@lists.linux.dev,
- lkmm@lists.linux.dev
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <23E19975-0AF5-4223-B05D-4891747B7C15@collabora.com>
+ Abdiel Janulgue <abdiel.janulgue@gmail.com>, dakr@kernel.org,
+ rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+ Alex Gaynor <alex.gaynor@gmail.com>, Gary Guo <gary@garyguo.net>,
+ =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>,
+ linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+ iommu@lists.linux.dev, lkmm@lists.linux.dev
 References: <87bjuil15w.fsf@kernel.org>
  <t4HxdvR7WBX_861hiTXo72jqC9F9oRpIzgA_dD2yhcSuLISEkC-shMfSgllrFPpnkSZXGfRcc47keudMooNiIQ==@protonmail.internalid>
  <CAH5fLgg5MuUu=TX8mMsPf5RcLhMLHSU4Vct=h8rFX6Z7HjPxeA@mail.gmail.com>
@@ -82,115 +52,103 @@ References: <87bjuil15w.fsf@kernel.org>
  <88456D33-C5CA-4F4F-990E-8C5F2AF7EAF9@gmail.com>
  <hkhgihg4fjkg7zleqnumuj65dfvmxa5rzawkiafrf4kn5ss6nw@o7kc6xe2bmuj>
  <25e7e425-ae72-4370-ae95-958882a07df9@ralfj.de>
-To: Ralf Jung <post@ralfj.de>
-X-Mailer: Apple Mail (2.3826.300.87.4.3)
-X-ZohoMailClient: External
+ <CAH5fLgidPHQzdUORNpNhtRFsKPU1T-0xdn5OSwYYZh3BgOVRQA@mail.gmail.com>
+ <3aabca39-4658-454a-b0e3-e946e72977e1@ralfj.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <3aabca39-4658-454a-b0e3-e946e72977e1@ralfj.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Rafl,
-
-> On 5 Mar 2025, at 10:10, Ralf Jung <post@ralfj.de> wrote:
->=20
+On 05/03/2025 1:27 pm, Ralf Jung wrote:
 > Hi,
->=20
-> On 05.03.25 04:24, Boqun Feng wrote:
->> On Tue, Mar 04, 2025 at 12:18:28PM -0800, comex wrote:
->>>=20
->>>> On Mar 4, 2025, at 11:03=E2=80=AFAM, Ralf Jung <post@ralfj.de> =
-wrote:
->>>>=20
->>>> Those already exist in Rust, albeit only unstably:
->>>> =
-<https://doc.rust-lang.org/nightly/std/intrinsics/fn.volatile_copy_memory.=
-html>.
->>>> However, I am not sure how you'd even generate such a call in C? =
-The
->>>> standard memcpy function is not doing volatile accesses, to my
->>>> knowledge.
->>>=20
->>> The actual memcpy symbol that exists at runtime is written in
->>> assembly, and should be valid to treat as performing volatile
->>> accesses.
->=20
-> memcpy is often written in C... and AFAIK compilers understand what =
-that function does and will, for instance, happily eliminate the call if =
-they can prove that the destination memory is not being read from again. =
-So, it doesn't behave like a volatile access at all.
->=20
->>> But both GCC and Clang special-case the memcpy function.  For =
-example,
->>> if you call memcpy with a small constant as the size, the optimizer
->>> will transform the call into one or more regular loads/stores, which
->>> can then be optimized mostly like any other loads/stores (except for
->>> opting out of alignment and type-based aliasing assumptions).  Even =
-if
->>> the call isn=E2=80=99t transformed, the optimizer will still make =
-assumptions.
->>> LLVM will automatically mark memcpy `nosync`, which makes it =
-undefined
->>> behavior if the function =E2=80=9Ccommunicate[s] (synchronize[s]) =
-with another
->>> thread=E2=80=9D, including through =E2=80=9Cvolatile accesses=E2=80=9D=
-. [1]
->=20
-> The question is more,  what do clang and GCC document / guarantee in a =
-stable way regarding memcpy? I have not seen any indication so far that =
-a memcpy call would ever be considered volatile, so we have to treat it =
-like a non-volatile non-atomic operation.
->=20
->>> However, these optimizations should rarely trigger misbehavior in
->>> practice, so I wouldn=E2=80=99t be surprised if Linux had some code =
-that
->>> expected memcpy to act volatile=E2=80=A6
->>>=20
->> Also in this particular case we are discussing [1], it's a memcpy =
-(from
->> or to) a DMA buffer, which means the device can also read or write =
-the
->> memory, therefore the content of the memory may be altered outside =
-the
->> program (the kernel), so we cannot use copy_nonoverlapping() I =
-believe.
->> [1]: =
-https://lore.kernel.org/rust-for-linux/87bjuil15w.fsf@kernel.org/
->=20
-> Is there actually a potential for races (with reads by hardware, not =
-other threads) on the memcpy'd memory? Or is this the pattern where you =
-copy some data somewhere and then set a flag in an MMIO register to =
-indicate that the data is ready and the device can start reading it? In =
-the latter case, the actual data copy does not race with anything, so it =
-can be a
+> 
+> On 05.03.25 14:23, Alice Ryhl wrote:
+>> On Wed, Mar 5, 2025 at 2:10 PM Ralf Jung <post@ralfj.de> wrote:
+>>>
+>>> Hi,
+>>>
+>>> On 05.03.25 04:24, Boqun Feng wrote:
+>>>> On Tue, Mar 04, 2025 at 12:18:28PM -0800, comex wrote:
+>>>>>
+>>>>>> On Mar 4, 2025, at 11:03 AM, Ralf Jung <post@ralfj.de> wrote:
+>>>>> However, these optimizations should rarely trigger misbehavior in
+>>>>> practice, so I wouldn’t be surprised if Linux had some code that
+>>>>> expected memcpy to act volatile…
+>>>>>
+>>>>
+>>>> Also in this particular case we are discussing [1], it's a memcpy (from
+>>>> or to) a DMA buffer, which means the device can also read or write the
+>>>> memory, therefore the content of the memory may be altered outside the
+>>>> program (the kernel), so we cannot use copy_nonoverlapping() I believe.
+>>>>
+>>>> [1]: https://lore.kernel.org/rust-for-linux/87bjuil15w.fsf@kernel.org/
+>>>
+>>> Is there actually a potential for races (with reads by hardware, not 
+>>> other
+>>> threads) on the memcpy'd memory? Or is this the pattern where you 
+>>> copy some data
+>>> somewhere and then set a flag in an MMIO register to indicate that 
+>>> the data is
+>>> ready and the device can start reading it? In the latter case, the 
+>>> actual data
+>>> copy does not race with anything, so it can be a regular non-atomic 
+>>> non-volatile
+>>> memcpy. The flag write *should* be a release write, and release 
+>>> volatile writes
+>>> do not exist, so that is a problem, but it's a separate problem from 
+>>> volatile
+>>> memcpy. One can use a release fence followed by a relaxed write instead.
+>>> Volatile writes do not currently act like relaxed writes, but you 
+>>> need that
+>>> anyway for WRITE_ONCE to make sense so it seems fine to rely on that 
+>>> here as well.
+>>>
+>>> Rust should have atomic volatile accesses, and various ideas have 
+>>> been proposed
+>>> over the years, but sadly nobody has shown up to try and push this 
+>>> through.
+>>>
+>>> If the memcpy itself can indeed race, you need an atomic volatile 
+>>> memcpy --
+>>> which neither C nor Rust have, though there are proposals for atomic 
+>>> memcpy (and
+>>> arguably, there should be a way to interact with a device using 
+>>> non-volatile
+>>> atomics... but anyway in the LKMM, atomics are modeled with volatile, 
+>>> so things
+>>> are even more entangled than usual ;).
+>>
+>> For some kinds of hardware, we might not want to trust the hardware.
+>> I.e., there is no race under normal operation, but the hardware could
+>> have a bug or be malicious and we might not want that to result in UB.
+>> This is pretty similar to syscalls that take a pointer into userspace
+>> memory and read it - userspace shouldn't modify that memory during the
+>> syscall, but it can and if it does, that should be well-defined.
+>> (Though in the case of userspace, the copy happens in asm since it
+>> also needs to deal with virtual memory and so on.)
+> 
+> Wow you are really doing your best to combine all the hard problems at 
+> the same time. ;)
+> Sharing memory with untrusted parties is another tricky issue, and even 
+> leaving aside all the theoretical trouble, practically speaking you'll 
+> want to exclusively use atomic accesses to interact with such memory. So 
+> doing this properly requires atomic memcpy. I don't know what that is 
+> blocked on, but it is good to know that it would help the kernel.
 
-This is device-specific.
+If you don't trust the device then I wouldn't think it actually matters 
+what happens at this level - the higher-level driver is already going to 
+have to carefully check and sanitise whatever data it reads back from 
+the buffer before consuming it, at which point reading a torn value due 
+to a race would be essentially indistinguishable from if the device had 
+gone wrong and simply written that nonsense value itself.
 
-e.g.: for video codecs, if you don=E2=80=99t set a bit that starts the =
-decode or
-encode process for the current frame, everything remains as-is, i.e.: =
-untouched
-by the hardware. I can=E2=80=99t vouch for all other devices, and people =
-have
-already chimed in to say this is not necessarily the case for some of =
-them.
+I think the more significant case is when polling for the device to 
+write back some kind of status word, where in C code the driver would 
+use READ_ONCE() to ensure a single-copy-atomic read of the same size the 
+device is going to write - sticking a regular memcpy() into the middle 
+of that can't necessarily be trusted to work correctly (even if it may 
+appear to 99% of the time).
 
-> regular non-atomic non-volatile memcpy. The flag write *should* be a =
-release write, and release volatile writes do not exist, so that is a =
-problem, but it's a separate problem from volatile memcpy. One can use a =
-release fence followed by a relaxed write instead. Volatile writes do =
-not currently act like relaxed writes, but you need that anyway for =
-WRITE_ONCE to make sense so it seems fine to rely on that here as well.
->=20
-> Rust should have atomic volatile accesses, and various ideas have been =
-proposed over the years, but sadly nobody has shown up to try and push =
-this through.
->=20
-> If the memcpy itself can indeed race, you need an atomic volatile =
-memcpy -- which neither C nor Rust have, though there are proposals for =
-atomic memcpy (and arguably, there should be a way to interact with a =
-device using non-volatile atomics... but anyway in the LKMM, atomics are =
-modeled with volatile, so things are even more entangled than usual ;).
->=20
-> Kind regards,
-> Ralf
->=20
-
-=E2=80=94 Daniel
-
+Thanks,
+Robin.
