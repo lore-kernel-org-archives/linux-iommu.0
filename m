@@ -1,72 +1,72 @@
-Received: from mail-il1-f172.google.com (mail-il1-f172.google.com [209.85.166.172])
+Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 371E216426
-	for <iommu@lists.linux.dev>; Wed,  5 Mar 2025 19:09:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50AFB2E339F
+	for <iommu@lists.linux.dev>; Wed,  5 Mar 2025 19:10:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741201764; cv=none; b=Bh6eBbjLTP97vouGVPshux5llZxeIjjnWTRZVvIJZRHRotOHVIog+g7Rpa1CZUunFeTQ0siD2lf6DDnI64rAiqhUFb7X8vM+dP1UaZx4yj2lsrCLl3sYzhE7Z3M6mpJcHeC2c6ThN9iKfi0OzZCBqTDPm9aX9IBO/pkLqgtCDU4=
+	t=1741201807; cv=none; b=trPU8zLaH/z0KJXXQs3/crTysd9pZ8SwQWGAAe9Cs3mzYc/h0/gQirv1zL244wG0ULfR+UpdU3BRCV9HRFY+mwN0sCUjlkXE3WpC+DSvrtZt08Kgwyr79sJZ6UGWX/bOiLXH6qWdYb+0glHzcMjKkeGmlWK23uZKiRVOoMPaxfA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741201764; c=relaxed/simple;
-	bh=KoCOx8tGVU+Ild3WgNfYOoj4eT9QRnRz/1/DrWsauic=;
+	s=arc-20240116; t=1741201807; c=relaxed/simple;
+	bh=9sg2W0Xm8LswKwh5NENYu0yag2aaKtRAfhaYjEk0Giw=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ce2VcWzgplu+YyTV40/PnYx7as19woQoDCIsxKqK+HGDvbucQyYyfb1JAX8ohUVT9USq8LZiP5SECtuJ/o08fcih7ltfHBNjrB4zuCjGllm0sCqQLuUZrS1QCydVeDbpcTKIEDK/kt17WS/BQz2OBnOv5edOMEMwjmAXEHPW2aI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=I2S6erDV; arc=none smtp.client-ip=209.85.166.172
+	 To:Cc:Content-Type; b=uPAQQzHhijie5i1Uyu8jB7Zust8aKRHaGhBL3fiDBYg0m/L12HpYZOpcCuEhnUs3h8PoNF0vfoSEE7DhUUZmku84JI2hUDBx+h1xpQX5YeqqZl9UileeVAbHcpSCE2jR5H8UW53mfDa0S9a3PMpsrWaEMZjQbOm75ynb2RdKQPk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KbxdFtez; arc=none smtp.client-ip=209.85.166.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I2S6erDV"
-Received: by mail-il1-f172.google.com with SMTP id e9e14a558f8ab-3cfeff44d94so23566545ab.0
-        for <iommu@lists.linux.dev>; Wed, 05 Mar 2025 11:09:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KbxdFtez"
+Received: by mail-il1-f179.google.com with SMTP id e9e14a558f8ab-3d3e25323cfso56646705ab.3
+        for <iommu@lists.linux.dev>; Wed, 05 Mar 2025 11:10:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741201762; x=1741806562; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1741201805; x=1741806605; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/iKupqP90kjHe611IT/Qp+RTzNpRKLP4Ly+rzhT8HFQ=;
-        b=I2S6erDV5Y5LChHPSEBKL8Cq0XbMKmYhDcBIidLLCoOWsC44BIXdZLkIqjpXyXkKOd
-         oQ6xn38x9f8epWyEnk+SsHPCzLG2b7iO99cm5rA36ZBVMyyuzqOqOb2tGEp0HQ6w4xLi
-         Jq7Tj5MphbQcBmYrOGAEf5hVMidTTlCOQFvAHQw5Sk9FyFrKGCSKSWlipjRzAuY/ZSGF
-         px/rgrCiyaRoHyd/MS3ET2opHGk03EnNkSiXz78OQaNddT73St5dH2XaldQHFh1NVRWE
-         ee//6QGK6eOvb5ymPdsVsbGh8E17D7en3/V3VuJVleGIuPQwSnjCfS0mGp8BiL85EBa5
-         1aww==
+        bh=MaiMyt+dgXQn1FXtXZ4qzvS0McmvnfMbhAjNl5s0fqs=;
+        b=KbxdFtez8kTKCPtBVznGQ6VJyoX2CjcaTOKiGWpHFvoV0TfDpDZJv3CwLBhzbTdzXB
+         uNFR2pDQRrJQ+vSUvmocdPABmYGGdYDUh3Zbrqb59OE7gPj3kU0wrJ7tMMbv7Tc1/V4M
+         o0wfKHC8HCUouvinN/ki9XNDV45/ptkr07+MKVWWNXUJU4p2rwG8Saks7l8huh3qjAgL
+         94P8U8L80Z3RTHvtXsyHjClA+JIfOHKDMh7q1w8AYf3rPWv2oVn3Md6cwydMv2TvX5/c
+         tbLvkXYTdgHJ/HG+H3Ms75152JMTgvU1rG2K5/L21n7qgjS6fmFyB1lh18JXhbF4MCuw
+         E7jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741201762; x=1741806562;
+        d=1e100.net; s=20230601; t=1741201805; x=1741806605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=/iKupqP90kjHe611IT/Qp+RTzNpRKLP4Ly+rzhT8HFQ=;
-        b=bSPNG5AtAXzEhq17ATqesZKoX3AFplPTDcTreuM+yDpc9XQ4xJnvBuMLjUmnoHBSrA
-         n7vIBN4WziHjjATCqH3NP44USYQDhXnKw4kLbkZXUEOHSBoazl8SY9uVQ6EoYd68VSpg
-         SyfbOYpDXrJt6OeF8k46MC2YeOE3JYIgMA52aeFoWe41TfFKMGqkzPrL+F0Rx6I9peOL
-         zx99zzpqp5NDxkAr2LEljelnKThE3JuLNQscWxQdJtMqLyfiJysbUhj+mHpIEVFL+lit
-         6/D9x4kHhH5wKtdgv2mWGMimVFJEz5mCyc4NxzsCGYk4hf+I6ismZX9cBq/B2yTC9Gjs
-         ENWQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUrhMZpCZR952BzxDYdIvoPEpGmp52vVi8obAcD/aPS7xKKFHeb47tNXVhuaaCLrh5mIsbIbA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzd0F8Ti/HGjH7z8QMacXot/UQuhcUQcXKKbvrFjeGC3z1jDAi6
-	ovLcJa0uV7x8eeGZb+jDIXbNf4h87xT/Ph0qIEFR+2Q3Yd2ob9uylW2tgEeogJsG3FmkZO5aon+
-	WvRb74LqM9hdCMqSOc7A0Ccle1WmTeg==
-X-Gm-Gg: ASbGncu9KUP8uScDJr8GaBpHhqpM4ZgLOy2Gvv2JStB2V7RDkKrtK/aLp4bUIJjOdsp
-	BKR85VjojPeLMqoi5/YpWY7+fRlcNLyy5ui2ZHGrOKTIT7pBhyTmhL+3FdTW+qEbBx9eeJygAQ/
-	g25mgK53I6aFyrEEFBIZfBT/q6QQ==
-X-Google-Smtp-Source: AGHT+IHXSq8mWw3KY8YoLCBCIFRQJmRjg67dMe+0ZPdRqaHGrvPtLaHOP4skAGzoNpcXGSt7lkAets5eLSq4yACekVE=
-X-Received: by 2002:a05:6e02:1a6b:b0:3d1:78f1:8a9e with SMTP id
- e9e14a558f8ab-3d42b9aca8dmr52094955ab.20.1741201762171; Wed, 05 Mar 2025
- 11:09:22 -0800 (PST)
+        bh=MaiMyt+dgXQn1FXtXZ4qzvS0McmvnfMbhAjNl5s0fqs=;
+        b=l9HykYNDcFFymhXVlJa2SfzBGgc/MxuepCUujPReXsvedsDJZZzDXhNcSCrFzpTfUT
+         gdssNbWdnv0c/W23EsgWPFxod3+WvJBOql7PV7wuSD5QTFZY1QPvnHXANAa05XkJAohW
+         ZAjlr1963au05PMOBRgq7usYdzfzudqgnxRWyQXjs+2empncEMBDcK5Dry2KLWzbcl+P
+         Jc6UoOq5Mv2EVVRUqiFjAoUi3HFUYwa2fLZ38K+oG5YEP1vX17n9WJv+sKJGjO0S3FFO
+         xJjiilzWaCzr+x+WkWRMQ+01RQMC2yc6h5LHvKiIQShJNVnTC9bz6sD+vmgZReMk3UmL
+         9SDw==
+X-Forwarded-Encrypted: i=1; AJvYcCVxQMu3fS5RVKsdT4Ly0ee7BWdCLFyUa9p8zLWP6bu1T/nc0YLmP1YUXtuNjBk6RLMgkuzIww==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyvBD3wXHqnZokWGhw8ptik/h88KMaV1ZcBht1ptGRFRKBfx3OF
+	9JdDYFXqJPSmA0W8UJ2CzIzmNnZqeOfLq7CVcYxcug8uX0kGtSVxjd7x7x88lBwCwKR/VanMvyz
+	ipmsEfdKIAsa+8yLBeqEIxboSFdA=
+X-Gm-Gg: ASbGncuxJ/r63m4sYJ56AzhMAR9qNoiFhPb0nI1ZspOWGKkrmtrVyAYnynovAheoZXT
+	FE0JLFOtwEMS4oJjuNT2TMJ6JLCiTVgjYZeSOosphzWGT7us9jUVOSZo6j/V+7PucUzdX6MoFcX
+	GCX6P9OjbxyBVw6i/BQ10Dk7S3Bg==
+X-Google-Smtp-Source: AGHT+IHwXUPkcwmz1dEZv6qs1mqFyRbKWhc6VLppFLp13raa+hash9p1l8om7PD+XzyVVCshzoOtuLCzkfE1/WnrK9s=
+X-Received: by 2002:a92:c54e:0:b0:3d3:dfc2:912f with SMTP id
+ e9e14a558f8ab-3d42b8a6723mr65466505ab.7.1741201805384; Wed, 05 Mar 2025
+ 11:10:05 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250304-msm-gpu-fault-fixes-next-v4-0-be14be37f4c3@gmail.com> <20250304-msm-gpu-fault-fixes-next-v4-1-be14be37f4c3@gmail.com>
-In-Reply-To: <20250304-msm-gpu-fault-fixes-next-v4-1-be14be37f4c3@gmail.com>
+References: <20250304-msm-gpu-fault-fixes-next-v4-0-be14be37f4c3@gmail.com> <20250304-msm-gpu-fault-fixes-next-v4-4-be14be37f4c3@gmail.com>
+In-Reply-To: <20250304-msm-gpu-fault-fixes-next-v4-4-be14be37f4c3@gmail.com>
 From: Rob Clark <robdclark@gmail.com>
-Date: Wed, 5 Mar 2025 11:09:10 -0800
-X-Gm-Features: AQ5f1Jq4dtaQy1zNSNrep0WaI-YiXYB1_xIUUY21RnpPU0GevSqQZgpgVwJN9cQ
-Message-ID: <CAF6AEGvPvQuptuA07kDYdUDQh4iQA=g+c3t0OCjR1HfWZ6mSbg@mail.gmail.com>
-Subject: Re: [PATCH v4 1/5] iommu/arm-smmu: Save additional information on
- context fault
+Date: Wed, 5 Mar 2025 11:09:52 -0800
+X-Gm-Features: AQ5f1JraaawwkUmCt4yL_sk7YXrsKqREgeX17Qs1rzauOQ1SG0Q4PNOpFqsI15E
+Message-ID: <CAF6AEGszbZ_2J_LkkPMuCeQwma1xtO2=ZwWQcyrsxb+=qb-koQ@mail.gmail.com>
+Subject: Re: [PATCH v4 4/5] iommu/arm-smmu-qcom: Make set_stall work when the
+ device is on
 To: Connor Abbott <cwabbott0@gmail.com>
 Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
 	Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>, 
@@ -81,151 +81,72 @@ Content-Transfer-Encoding: quoted-printable
 On Tue, Mar 4, 2025 at 8:57=E2=80=AFAM Connor Abbott <cwabbott0@gmail.com> =
 wrote:
 >
-> This will be used by drm/msm for GPU page faults, replacing the manual
-> register reading it does.
+> Up until now we have only called the set_stall callback during
+> initialization when the device is off. But we will soon start calling it
+> to temporarily disable stall-on-fault when the device is on, so handle
+> that by checking if the device is on and writing SCTLR.
 >
 > Signed-off-by: Connor Abbott <cwabbott0@gmail.com>
 
 Reviewed-by: Rob Clark <robdclark@gmail.com>
 
 > ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c |  4 ++--
->  drivers/iommu/arm/arm-smmu/arm-smmu.c            | 27 +++++++++++++-----=
-------
->  drivers/iommu/arm/arm-smmu/arm-smmu.h            |  5 ++++-
->  3 files changed, 21 insertions(+), 15 deletions(-)
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 30 ++++++++++++++++++++++++=
++++---
+>  1 file changed, 27 insertions(+), 3 deletions(-)
 >
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c b/drivers/i=
-ommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-> index 548783f3f8e89fd978367afa65c473002f66e2e7..ae4fdbbce6ba80440f539557a=
-39866a932360d4e 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-> @@ -400,7 +400,7 @@ irqreturn_t qcom_smmu_context_fault(int irq, void *de=
-v)
->
->         if (list_empty(&tbu_list)) {
->                 ret =3D report_iommu_fault(&smmu_domain->domain, NULL, cf=
-i.iova,
-> -                                        cfi.fsynr & ARM_SMMU_CB_FSYNR0_W=
-NR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
-> +                                        cfi.fsynr0 & ARM_SMMU_CB_FSYNR0_=
-WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
->
->                 if (ret =3D=3D -ENOSYS)
->                         arm_smmu_print_context_fault_info(smmu, idx, &cfi=
-);
-> @@ -412,7 +412,7 @@ irqreturn_t qcom_smmu_context_fault(int irq, void *de=
-v)
->         phys_soft =3D ops->iova_to_phys(ops, cfi.iova);
->
->         tmp =3D report_iommu_fault(&smmu_domain->domain, NULL, cfi.iova,
-> -                                cfi.fsynr & ARM_SMMU_CB_FSYNR0_WNR ? IOM=
-MU_FAULT_WRITE : IOMMU_FAULT_READ);
-> +                                cfi.fsynr0 & ARM_SMMU_CB_FSYNR0_WNR ? IO=
-MMU_FAULT_WRITE : IOMMU_FAULT_READ);
->         if (!tmp || tmp =3D=3D -EBUSY) {
->                 ret =3D IRQ_HANDLED;
->                 resume =3D ARM_SMMU_RESUME_TERMINATE;
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/ar=
-m-smmu/arm-smmu.c
-> index ade4684c14c9b2724a71e2457288dbfaf7562c83..a9213e0f1579d1e3be0bfba75=
-eea1d5de23117de 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -409,9 +409,12 @@ void arm_smmu_read_context_fault_info(struct arm_smm=
-u_device *smmu, int idx,
->                                       struct arm_smmu_context_fault_info =
-*cfi)
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/a=
+rm/arm-smmu/arm-smmu-qcom.c
+> index a428e53add08d451fb2152e3ab80e0fba936e214..d34a0d917013bb3d5a24b3ce7=
+2f48e3b38474da2 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -77,12 +77,36 @@ static void qcom_adreno_smmu_set_stall(const void *co=
+okie, bool enabled)
 >  {
->         cfi->iova =3D arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_FAR);
-> +       cfi->ttbr0 =3D arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_TTBR0);
->         cfi->fsr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
-> -       cfi->fsynr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
-> +       cfi->fsynr0 =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
-> +       cfi->fsynr1 =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR1);
->         cfi->cbfrsynra =3D arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA=
-(idx));
-> +       cfi->contextidr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_CONTE=
-XTIDR);
+>         struct arm_smmu_domain *smmu_domain =3D (void *)cookie;
+>         struct arm_smmu_cfg *cfg =3D &smmu_domain->cfg;
+> -       struct qcom_smmu *qsmmu =3D to_qcom_smmu(smmu_domain->smmu);
+> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
+> +       struct qcom_smmu *qsmmu =3D to_qcom_smmu(smmu);
+> +       u32 mask =3D BIT(cfg->cbndx);
+> +       bool stall_changed =3D !!(qsmmu->stall_enabled & mask) !=3D enabl=
+ed;
+> +       unsigned long flags;
+>
+>         if (enabled)
+> -               qsmmu->stall_enabled |=3D BIT(cfg->cbndx);
+> +               qsmmu->stall_enabled |=3D mask;
+>         else
+> -               qsmmu->stall_enabled &=3D ~BIT(cfg->cbndx);
+> +               qsmmu->stall_enabled &=3D ~mask;
+> +
+> +       /*
+> +        * If the device is on and we changed the setting, update the reg=
+ister.
+> +        */
+> +       if (stall_changed && pm_runtime_get_if_active(smmu->dev) > 0) {
+> +               spin_lock_irqsave(&smmu_domain->cb_lock, flags);
+> +
+> +               u32 reg =3D arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_C=
+B_SCTLR);
+> +
+> +               if (enabled)
+> +                       reg |=3D ARM_SMMU_SCTLR_CFCFG;
+> +               else
+> +                       reg &=3D ~ARM_SMMU_SCTLR_CFCFG;
+> +
+> +               arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR, re=
+g);
+> +
+> +               spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
+> +
+> +               pm_runtime_put_autosuspend(smmu->dev);
+> +       }
 >  }
 >
->  void arm_smmu_print_context_fault_info(struct arm_smmu_device *smmu, int=
- idx,
-> @@ -419,7 +422,7 @@ void arm_smmu_print_context_fault_info(struct arm_smm=
-u_device *smmu, int idx,
->  {
->         dev_err(smmu->dev,
->                 "Unhandled context fault: fsr=3D0x%x, iova=3D0x%08lx, fsy=
-nr=3D0x%x, cbfrsynra=3D0x%x, cb=3D%d\n",
-> -               cfi->fsr, cfi->iova, cfi->fsynr, cfi->cbfrsynra, idx);
-> +               cfi->fsr, cfi->iova, cfi->fsynr0, cfi->cbfrsynra, idx);
->
->         dev_err(smmu->dev, "FSR    =3D %08x [%s%sFormat=3D%u%s%s%s%s%s%s%=
-s%s], SID=3D0x%x\n",
->                 cfi->fsr,
-> @@ -437,15 +440,15 @@ void arm_smmu_print_context_fault_info(struct arm_s=
-mmu_device *smmu, int idx,
->                 cfi->cbfrsynra);
->
->         dev_err(smmu->dev, "FSYNR0 =3D %08x [S1CBNDX=3D%u%s%s%s%s%s%s PLV=
-L=3D%u]\n",
-> -               cfi->fsynr,
-> -               (u32)FIELD_GET(ARM_SMMU_CB_FSYNR0_S1CBNDX, cfi->fsynr),
-> -               (cfi->fsynr & ARM_SMMU_CB_FSYNR0_AFR) ? " AFR" : "",
-> -               (cfi->fsynr & ARM_SMMU_CB_FSYNR0_PTWF) ? " PTWF" : "",
-> -               (cfi->fsynr & ARM_SMMU_CB_FSYNR0_NSATTR) ? " NSATTR" : ""=
-,
-> -               (cfi->fsynr & ARM_SMMU_CB_FSYNR0_IND) ? " IND" : "",
-> -               (cfi->fsynr & ARM_SMMU_CB_FSYNR0_PNU) ? " PNU" : "",
-> -               (cfi->fsynr & ARM_SMMU_CB_FSYNR0_WNR) ? " WNR" : "",
-> -               (u32)FIELD_GET(ARM_SMMU_CB_FSYNR0_PLVL, cfi->fsynr));
-> +               cfi->fsynr0,
-> +               (u32)FIELD_GET(ARM_SMMU_CB_FSYNR0_S1CBNDX, cfi->fsynr0),
-> +               (cfi->fsynr0 & ARM_SMMU_CB_FSYNR0_AFR) ? " AFR" : "",
-> +               (cfi->fsynr0 & ARM_SMMU_CB_FSYNR0_PTWF) ? " PTWF" : "",
-> +               (cfi->fsynr0 & ARM_SMMU_CB_FSYNR0_NSATTR) ? " NSATTR" : "=
-",
-> +               (cfi->fsynr0 & ARM_SMMU_CB_FSYNR0_IND) ? " IND" : "",
-> +               (cfi->fsynr0 & ARM_SMMU_CB_FSYNR0_PNU) ? " PNU" : "",
-> +               (cfi->fsynr0 & ARM_SMMU_CB_FSYNR0_WNR) ? " WNR" : "",
-> +               (u32)FIELD_GET(ARM_SMMU_CB_FSYNR0_PLVL, cfi->fsynr0));
->  }
->
->  static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
-> @@ -464,7 +467,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, vo=
-id *dev)
->                 return IRQ_NONE;
->
->         ret =3D report_iommu_fault(&smmu_domain->domain, NULL, cfi.iova,
-> -               cfi.fsynr & ARM_SMMU_CB_FSYNR0_WNR ? IOMMU_FAULT_WRITE : =
-IOMMU_FAULT_READ);
-> +               cfi.fsynr0 & ARM_SMMU_CB_FSYNR0_WNR ? IOMMU_FAULT_WRITE :=
- IOMMU_FAULT_READ);
->
->         if (ret =3D=3D -ENOSYS && __ratelimit(&rs))
->                 arm_smmu_print_context_fault_info(smmu, idx, &cfi);
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/ar=
-m-smmu/arm-smmu.h
-> index e2aeb511ae903302e3c15d2cf5f22e2a26ac2346..d3bc77dcd4d40f25bc70f3289=
-616fb866649b022 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> @@ -543,9 +543,12 @@ int arm_mmu500_reset(struct arm_smmu_device *smmu);
->
->  struct arm_smmu_context_fault_info {
->         unsigned long iova;
-> +       u64 ttbr0;
->         u32 fsr;
-> -       u32 fsynr;
-> +       u32 fsynr0;
-> +       u32 fsynr1;
->         u32 cbfrsynra;
-> +       u32 contextidr;
->  };
->
->  void arm_smmu_read_context_fault_info(struct arm_smmu_device *smmu, int =
-idx,
+>  static void qcom_adreno_smmu_resume_translation(const void *cookie, bool=
+ terminate)
 >
 > --
 > 2.47.1
