@@ -1,213 +1,138 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from r-passerv.ralfj.de (r-passerv.ralfj.de [109.230.236.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 232ED2475F2
-	for <iommu@lists.linux.dev>; Wed,  5 Mar 2025 13:04:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 973D52475C2;
+	Wed,  5 Mar 2025 13:10:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.230.236.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741179847; cv=none; b=adhjbnqiuWqt7hdCxVtcKGp5/QWI/hUB83Mv7PdNiy7NUDCVedag4k/CFYDgiwB045zp6RtZn5gyeJwlbGx6EW5DQwge6wQTAD8Fqj5hKgHZ4s1uJelbRI1H+6lxfIsfI5FRGcBtK+o2JDFTGmto4qncHzCmIVBy/MdAh1qhHDw=
+	t=1741180232; cv=none; b=EJAZgap2wukeuZ9KFgD3yYZ3Ir7pXQpOi3Vd5BmUow6m3YX1e6I2v3okd6GrjlE+2UDMeSKeYr2dH5aBjJANplY5s41C6j6raK5UQlM9IyIGlk5UPYNsyVnwBarPWTABygwiO2yqGj0c1z3XfrQcJCB4WMb7UWVdb8IYcY8NyvI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741179847; c=relaxed/simple;
-	bh=Oys6ui/2ehjiPYtdZB78KvK8zQxSP1E/BexVYXKJIcM=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=FA9n2V10TMlNG5LCORxrkW8ng/Dpo/jbAIanwZ4BaNY9LdMzePf1yxNtMihJOj5maoocOHfPIHcW6ld3huh5fXy4OkrbdSrpGGfMjYhWiJilYrzOHN93dM9tYIiGExHzD9EcWSVXDQ3i5twvELF54w8QFEvmhGGNOSul1GJBTDs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nYX4RT6V; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1741180232; c=relaxed/simple;
+	bh=MLh2QFr7rGTwa5f2sq8RD9fMY5NELA+8OS3W5Af0sKY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MaqlPqhrVV0RGjFTWJzfoJ4QaoKWJ1ZakEGXLhrdHaHwj/xs9em+dhhClpnVA1s9hhJp6OpW02EcHuCLWUt0LG0TIlqIfwVUjMoV+MOuCJLCg6Hkkvj9iGY6d2I3847/uz4o9ZxzZqRezKnSRJLQIRqrFDfprog5NCajPDnFLxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ralfj.de; spf=pass smtp.mailfrom=ralfj.de; dkim=pass (1024-bit key) header.d=ralfj.de header.i=@ralfj.de header.b=Kc/c8pyd; arc=none smtp.client-ip=109.230.236.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ralfj.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ralfj.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nYX4RT6V"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741179847; x=1772715847;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Oys6ui/2ehjiPYtdZB78KvK8zQxSP1E/BexVYXKJIcM=;
-  b=nYX4RT6VJvkFyxdXQKvwBv5GV3P5IsEJkyEfdu+WPmi8IzdRNEEBkS9S
-   iVhIxih9tj8Vmq7H707WFfjOYJ9nqiJWfM3EMcWQOFm4hcPs6wsul0ELn
-   LgWiPjaFLVjkOQRFJS43xtMqUtxGNSFwLTBQIS87R/fYMvDZ9F1MPF5gB
-   YOPrb+uyg7uFSvY43SGhFkhY7rA+Lf2MdTw/yckifw6BXGWwo+gzBF6rp
-   bL1xn0QpkVbRVgdCA2bIg3GbyoSkq5WVG5ltHwV7Coc9FiTY0+FGHzyWf
-   Z6iMooxrV4oblK4POmxhpv8gJRB92DjpVTD9QqbGntfSqROjV6aA0Aw3U
-   g==;
-X-CSE-ConnectionGUID: IxhpDvn8Q+yllGwZdKhEmQ==
-X-CSE-MsgGUID: I6z9A4fGR4m/FT+OPvotKg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11363"; a="64582866"
-X-IronPort-AV: E=Sophos;i="6.14,223,1736841600"; 
-   d="scan'208";a="64582866"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2025 05:03:59 -0800
-X-CSE-ConnectionGUID: LzTqUjaSRsi4m8/70owBnQ==
-X-CSE-MsgGUID: psJyTMnVTeGngV2NHgrWCA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,223,1736841600"; 
-   d="scan'208";a="123725967"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa004.jf.intel.com with ESMTP; 05 Mar 2025 05:03:59 -0800
-From: Yi Liu <yi.l.liu@intel.com>
-To: kevin.tian@intel.com,
-	baolu.lu@linux.intel.com,
-	jgg@nvidia.com
-Cc: yi.l.liu@intel.com,
-	iommu@lists.linux.dev
-Subject: [RFC] iommufd: Use accurate dev_id in the PRI forwarding path
-Date: Wed,  5 Mar 2025 05:03:56 -0800
-Message-Id: <20250305130356.126424-1-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (1024-bit key) header.d=ralfj.de header.i=@ralfj.de header.b="Kc/c8pyd"
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=ralfj.de; s=mail;
+	t=1741180228; bh=MLh2QFr7rGTwa5f2sq8RD9fMY5NELA+8OS3W5Af0sKY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Kc/c8pydRbdIH1lS8LP9ZwHDA0GcibFlib19ZzRsj7Pa+6munRpDCrtdi+rZ3tA0Q
+	 U4WM6tebrX1VZIh9r6zZCS6I+rYbTG+niEQ6g3VP4E8iIsteKnfcyPa2VBZlw8vDUH
+	 TP6zvPWvZc6s/0vLeBWrbb8kG3cATIMvDrG8lyUY=
+Received: from [IPV6:2001:67c:10ec:5784:8000::12e7] (2001-67c-10ec-5784-8000--12e7.net6.ethz.ch [IPv6:2001:67c:10ec:5784:8000::12e7])
+	by r-passerv.ralfj.de (Postfix) with ESMTPSA id B57AE2052A89;
+	Wed,  5 Mar 2025 14:10:27 +0100 (CET)
+Message-ID: <25e7e425-ae72-4370-ae95-958882a07df9@ralfj.de>
+Date: Wed, 5 Mar 2025 14:10:22 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: Allow data races on some read/write operations
+To: Boqun Feng <boqun.feng@gmail.com>, comex <comexk@gmail.com>
+Cc: Andreas Hindborg <a.hindborg@kernel.org>,
+ Alice Ryhl <aliceryhl@google.com>,
+ Daniel Almeida <daniel.almeida@collabora.com>,
+ Benno Lossin <benno.lossin@proton.me>,
+ Abdiel Janulgue <abdiel.janulgue@gmail.com>, dakr@kernel.org,
+ robin.murphy@arm.com, rust-for-linux@vger.kernel.org,
+ Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
+ Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, Trevor Gross <tmgross@umich.edu>,
+ Valentin Obst <kernel@valentinobst.de>, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ airlied@redhat.com, iommu@lists.linux.dev, lkmm@lists.linux.dev
+References: <87bjuil15w.fsf@kernel.org>
+ <t4HxdvR7WBX_861hiTXo72jqC9F9oRpIzgA_dD2yhcSuLISEkC-shMfSgllrFPpnkSZXGfRcc47keudMooNiIQ==@protonmail.internalid>
+ <CAH5fLgg5MuUu=TX8mMsPf5RcLhMLHSU4Vct=h8rFX6Z7HjPxeA@mail.gmail.com>
+ <87ikoqjg1n.fsf@kernel.org>
+ <KpWTCfIlcLYFBpSvWPfALJ9VQn5a99_RAvxgMBc1aCrSalPB-qaW9IhXyaDG7HM1AcFPX5chj_Yr7IQp3F7UqA==@protonmail.internalid>
+ <CAH5fLgh6ubawHh76wq7JPbcuBCWhm91m7Rc01MVsX-a3C6qaVA@mail.gmail.com>
+ <87mse2hrd8.fsf@kernel.org> <Z8YMTiKS4T9wC4t_@boqun-archlinux>
+ <ae8ac31f-c6ad-46ae-80dd-10ec081a16d1@ralfj.de>
+ <88456D33-C5CA-4F4F-990E-8C5F2AF7EAF9@gmail.com>
+ <hkhgihg4fjkg7zleqnumuj65dfvmxa5rzawkiafrf4kn5ss6nw@o7kc6xe2bmuj>
+Content-Language: en-US, de-DE
+From: Ralf Jung <post@ralfj.de>
+In-Reply-To: <hkhgihg4fjkg7zleqnumuj65dfvmxa5rzawkiafrf4kn5ss6nw@o7kc6xe2bmuj>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-Hi Jason, Kevin, Baolu,
+Hi,
 
-This is more a query, the patch here does not really work as there
-is locking issue. So I'd like to hear from you if any good idea.
+On 05.03.25 04:24, Boqun Feng wrote:
+> On Tue, Mar 04, 2025 at 12:18:28PM -0800, comex wrote:
+>>
+>>> On Mar 4, 2025, at 11:03 AM, Ralf Jung <post@ralfj.de> wrote:
+>>>
+>>> Those already exist in Rust, albeit only unstably:
+>>> <https://doc.rust-lang.org/nightly/std/intrinsics/fn.volatile_copy_memory.html>.
+>>> However, I am not sure how you'd even generate such a call in C? The
+>>> standard memcpy function is not doing volatile accesses, to my
+>>> knowledge.
+>>
+>> The actual memcpy symbol that exists at runtime is written in
+>> assembly, and should be valid to treat as performing volatile
+>> accesses.
 
-Detail as below:
+memcpy is often written in C... and AFAIK compilers understand what that 
+function does and will, for instance, happily eliminate the call if they can 
+prove that the destination memory is not being read from again. So, it doesn't 
+behave like a volatile access at all.
 
-Existing code has a problem when the PRI happens on a device that has
-alias. The PRI reporting path uses the idev stored in the handle. While
-this idev is the first idev that attachs to the domain.  If the PRI
-happens on devices other than the first attached device, then the idev
-stored in handle does not match.
+>> But both GCC and Clang special-case the memcpy function.  For example,
+>> if you call memcpy with a small constant as the size, the optimizer
+>> will transform the call into one or more regular loads/stores, which
+>> can then be optimized mostly like any other loads/stores (except for
+>> opting out of alignment and type-based aliasing assumptions).  Even if
+>> the call isn’t transformed, the optimizer will still make assumptions.
+>> LLVM will automatically mark memcpy `nosync`, which makes it undefined
+>> behavior if the function “communicate[s] (synchronize[s]) with another
+>> thread”, including through “volatile accesses”. [1]
 
-To solve it, the PRI reporting path needs to loop the attached devices
-to get the correct idev and its dev_id. The trouble is that the device_list
-is protected by igroup->lock. While the PRI path hold the fault->mutex
-lock. This fault->mutex lock might be used in the attach path or the
-replace path. Both path would hold igroup->lock first, and then the
-fault->mutex if auto_response needed. This will have A-B-B-A locking
-issue.
+The question is more,  what do clang and GCC document / guarantee in a stable 
+way regarding memcpy? I have not seen any indication so far that a memcpy call 
+would ever be considered volatile, so we have to treat it like a non-volatile 
+non-atomic operation.
 
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/iommufd/device.c          | 31 +++++++++++++++++++------
- drivers/iommu/iommufd/fault.c           |  4 +++-
- drivers/iommu/iommufd/iommufd_private.h |  5 +++-
- 3 files changed, 31 insertions(+), 9 deletions(-)
+>> However, these optimizations should rarely trigger misbehavior in
+>> practice, so I wouldn’t be surprised if Linux had some code that
+>> expected memcpy to act volatile…
+>>
+> 
+> Also in this particular case we are discussing [1], it's a memcpy (from
+> or to) a DMA buffer, which means the device can also read or write the
+> memory, therefore the content of the memory may be altered outside the
+> program (the kernel), so we cannot use copy_nonoverlapping() I believe.
+> 
+> [1]: https://lore.kernel.org/rust-for-linux/87bjuil15w.fsf@kernel.org/
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index bd50146e2ad0..586d008d6bac 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -390,26 +390,26 @@ int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
- 
- 	handle = to_iommufd_handle(raw_handle);
- 	/* No IOMMU_RESV_SW_MSI means no change to the msi_msg */
--	if (handle->idev->igroup->sw_msi_start == PHYS_ADDR_MAX)
-+	if (handle->igroup->sw_msi_start == PHYS_ADDR_MAX)
- 		return 0;
- 
--	ictx = handle->idev->ictx;
-+	ictx = handle->igroup->ictx;
- 	guard(mutex)(&ictx->sw_msi_lock);
- 	/*
- 	 * The input msi_addr is the exact byte offset of the MSI doorbell, we
- 	 * assume the caller has checked that it is contained with a MMIO region
- 	 * that is secure to map at PAGE_SIZE.
- 	 */
--	msi_map = iommufd_sw_msi_get_map(handle->idev->ictx,
-+	msi_map = iommufd_sw_msi_get_map(ictx,
- 					 msi_addr & PAGE_MASK,
--					 handle->idev->igroup->sw_msi_start);
-+					 handle->igroup->sw_msi_start);
- 	if (IS_ERR(msi_map))
- 		return PTR_ERR(msi_map);
- 
- 	rc = iommufd_sw_msi_install(ictx, hwpt_paging, msi_map);
- 	if (rc)
- 		return rc;
--	__set_bit(msi_map->id, handle->idev->igroup->required_sw_msi.bitmap);
-+	__set_bit(msi_map->id, handle->igroup->required_sw_msi.bitmap);
- 
- 	iova = msi_map->sw_msi_start + msi_map->pgoff * PAGE_SIZE;
- 	msi_desc_set_iommu_msi_iova(desc, iova, PAGE_SHIFT);
-@@ -482,6 +482,26 @@ static bool iommufd_device_is_attached(struct iommufd_device *idev)
- 	return false;
- }
- 
-+struct iommufd_device *
-+iommufd_group_find_device(struct iommufd_group *igroup, struct device *dev)
-+{
-+	struct iommufd_device *cur, *idev = NULL;
-+
-+	/* !!! Headsup !!!
-+	 * taking igroup->lock has dead lock with fault->mutex
-+	 */
-+	mutex_lock(&igroup->lock);
-+	list_for_each_entry(cur, &igroup->device_list, group_item) {
-+		if (cur->dev == dev) {
-+			idev = cur;
-+			break;
-+		}
-+	}
-+	mutex_unlock(&igroup->lock);
-+
-+	return idev;
-+}
-+
- static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 				      struct iommufd_device *idev)
- {
-@@ -500,7 +517,7 @@ static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 			goto out_free_handle;
- 	}
- 
--	handle->idev = idev;
-+	handle->igroup = idev->igroup;
- 	rc = iommu_attach_group_handle(hwpt->domain, idev->igroup->group,
- 				       &handle->handle);
- 	if (rc)
-@@ -562,7 +579,7 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
- 			goto out_free_handle;
- 	}
- 
--	handle->idev = idev;
-+	handle->igroup = idev->igroup;
- 	rc = iommu_replace_group_handle(idev->igroup->group, hwpt->domain,
- 					&handle->handle);
- 	if (rc)
-diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
-index c48d72c9668c..b7e0283d024a 100644
---- a/drivers/iommu/iommufd/fault.c
-+++ b/drivers/iommu/iommufd/fault.c
-@@ -168,7 +168,11 @@ static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
- 			break;
- 		}
--		idev = to_iommufd_handle(group->attach_handle)->idev;
-+		/* Or just add a WARN_ON if the idev->dev does not match
-+		   group->fault_param->dev ?*/
-+		idev = iommufd_group_find_device(
-+				to_iommufd_handle(group->attach_handle)->igroup,
-+				group->fault_param->dev);
- 		list_for_each_entry(iopf, &group->faults, list) {
- 			iommufd_compose_fault_message(&iopf->fault,
- 						      &data, idev,
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 246297452a44..df0db45deac0 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -433,6 +433,9 @@ iommufd_get_device(struct iommufd_ucmd *ucmd, u32 id)
- 			    struct iommufd_device, obj);
- }
- 
-+struct iommufd_device *
-+iommufd_group_find_device(struct iommufd_group *igroup, struct device *dev);
-+
- void iommufd_device_destroy(struct iommufd_object *obj);
- int iommufd_get_hw_info(struct iommufd_ucmd *ucmd);
- 
-@@ -499,7 +502,7 @@ static inline void iommufd_fault_deliver_restore(struct iommufd_fault *fault,
- 
- struct iommufd_attach_handle {
- 	struct iommu_attach_handle handle;
--	struct iommufd_device *idev;
-+	struct iommufd_group *igroup;
- };
- 
- /* Convert an iommu attach handle to iommufd handle. */
--- 
-2.34.1
+Is there actually a potential for races (with reads by hardware, not other 
+threads) on the memcpy'd memory? Or is this the pattern where you copy some data 
+somewhere and then set a flag in an MMIO register to indicate that the data is 
+ready and the device can start reading it? In the latter case, the actual data 
+copy does not race with anything, so it can be a regular non-atomic non-volatile 
+memcpy. The flag write *should* be a release write, and release volatile writes 
+do not exist, so that is a problem, but it's a separate problem from volatile 
+memcpy. One can use a release fence followed by a relaxed write instead. 
+Volatile writes do not currently act like relaxed writes, but you need that 
+anyway for WRITE_ONCE to make sense so it seems fine to rely on that here as well.
+
+Rust should have atomic volatile accesses, and various ideas have been proposed 
+over the years, but sadly nobody has shown up to try and push this through.
+
+If the memcpy itself can indeed race, you need an atomic volatile memcpy -- 
+which neither C nor Rust have, though there are proposals for atomic memcpy (and 
+arguably, there should be a way to interact with a device using non-volatile 
+atomics... but anyway in the LKMM, atomics are modeled with volatile, so things 
+are even more entangled than usual ;).
+
+Kind regards,
+Ralf
 
