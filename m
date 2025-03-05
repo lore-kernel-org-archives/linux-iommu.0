@@ -1,154 +1,122 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3ECF424BC1D;
-	Wed,  5 Mar 2025 14:40:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2D061632E4;
+	Wed,  5 Mar 2025 15:08:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741185658; cv=none; b=BoWo+KD/9P8P4YARcoDUlK94bdxa5kz2LoklO/CFA9DTlGwxalmuMORxncU46twcquNoL4LwJ5HvLZRXLsXpmhZEAJOtKcBTAv8W2VkCRjOnS4CnLYev5sw/kpMllNFWxudPtw/cTdjZMEc8DQ5pHmAUstxzsIeLjVcNqfFJQIU=
+	t=1741187335; cv=none; b=Mp6S9R1wtXz44s01ZdY0Iwy8G/zolfpVjmWXlRykGryUXWIPit3ScVCII/JHXjspUPhg6U8w0gG+16i8iNKyj2hBvJgH/yCnKkCL0gL4tOeuYlO9Gp/3e6D02XtY5uv62RUPABQcEjx7cmkyMDa6ZyxLv6xxtcWtVhokIUeC/y0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741185658; c=relaxed/simple;
-	bh=5U/l8tp3eXkOkoO0GNc25qWdsPJ4RZ44ItczgZrbGDQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=u1e1tf+/e5lSk3G4PP+d5/PQFLxPvNkSZNvkScT7l8ZBsJkyKXLMmZaxZ3ee2PEHvE/3dpuWoRh0hMeJyyPhlz2hrZpnpvJ/89DdtU3XclWOVQyHIXXcCIp8Pli5mR+Xab+sSge+9FSfLEC1G9QNTq+knoEQqirNUleTNzPhSio=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AA650FEC;
-	Wed,  5 Mar 2025 06:41:09 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 725733F673;
-	Wed,  5 Mar 2025 06:40:53 -0800 (PST)
-Message-ID: <39aa741e-8522-497d-a8f2-d43bc93fb29f@arm.com>
-Date: Wed, 5 Mar 2025 14:40:51 +0000
+	s=arc-20240116; t=1741187335; c=relaxed/simple;
+	bh=P97unTsYBrzFpLCQPC7HD7BnygqZcNRa+0uClEv2C7I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tarVl5Cl7cFgfcK2WOowAukOS7+ZCLjPgC77HXS2k1KyKK5YAXHA0PU+6FW9898kUEla8jlgtF+adSnnCmaL7HSFlLzgiiY5JlnSWaxqgbVKg/YH2jnGVTzO+7ChdTijDVvhuZPg3ziap3VpFHB0mqIQBZYUC9zzO6nNoka4P1g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cN0KULXL; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cN0KULXL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1741187334; x=1772723334;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=P97unTsYBrzFpLCQPC7HD7BnygqZcNRa+0uClEv2C7I=;
+  b=cN0KULXLctFxXjNCyHkpoEfFMsiwkIP2l35xk3wVJjwJKF91FlRtrnYC
+   wVGVK5gfStfQreO1RYLA1spc1i9UPPBrTkPy0MXRLnGFhwTixDR8Nv+4Q
+   iCgnKc3dcztSyce/I24n32czcpN8DmdGXsNoOnmoRITc83v+0GpdZ7dGz
+   TfLQl6QgC+l8WZm7mrTrpIehERRjSI04aEEPkDq3L/IrjE71Bc8Ikhjzf
+   x1Il0eMwz0rkHDn9AEn4Nq5kiuAU8JjjqxmnPX2XaSEsqnaFkUBWowMl5
+   Iq09J3Lj6c1z4obABvBtcAPXSUDD9beC42Ng5zvFrpTf97dKgXWES2fIC
+   g==;
+X-CSE-ConnectionGUID: 3fOkDaUDROCufSvlEgGwxg==
+X-CSE-MsgGUID: uDtbOFO7QpGAwqh8HXhQ0Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11363"; a="52797057"
+X-IronPort-AV: E=Sophos;i="6.14,223,1736841600"; 
+   d="scan'208";a="52797057"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2025 07:08:53 -0800
+X-CSE-ConnectionGUID: ZCoGvxanS6ecmauRis3jOQ==
+X-CSE-MsgGUID: 9MxfVJqSTHK6Bz0QnCuqbw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,223,1736841600"; 
+   d="scan'208";a="118732078"
+Received: from lkp-server02.sh.intel.com (HELO 76cde6cc1f07) ([10.239.97.151])
+  by fmviesa007.fm.intel.com with ESMTP; 05 Mar 2025 07:08:49 -0800
+Received: from kbuild by 76cde6cc1f07 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1tpqMa-000L7o-1i;
+	Wed, 05 Mar 2025 15:08:48 +0000
+Date: Wed, 5 Mar 2025 23:08:21 +0800
+From: kernel test robot <lkp@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com,
+	kevin.tian@intel.com, robin.murphy@arm.com, joro@8bytes.org,
+	will@kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] iommu: Sort out domain user data
+Message-ID: <202503052232.H3gZRJRp-lkp@intel.com>
+References: <74a3bf91b52563faaf7ef7de065931e4df47e63f.1741034886.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Allow data races on some read/write operations
-To: Ralf Jung <post@ralfj.de>, Alice Ryhl <aliceryhl@google.com>
-Cc: Boqun Feng <boqun.feng@gmail.com>, comex <comexk@gmail.com>,
- Andreas Hindborg <a.hindborg@kernel.org>,
- Daniel Almeida <daniel.almeida@collabora.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>, dakr@kernel.org,
- rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
- Alex Gaynor <alex.gaynor@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>,
- linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
- iommu@lists.linux.dev, lkmm@lists.linux.dev
-References: <87bjuil15w.fsf@kernel.org>
- <t4HxdvR7WBX_861hiTXo72jqC9F9oRpIzgA_dD2yhcSuLISEkC-shMfSgllrFPpnkSZXGfRcc47keudMooNiIQ==@protonmail.internalid>
- <CAH5fLgg5MuUu=TX8mMsPf5RcLhMLHSU4Vct=h8rFX6Z7HjPxeA@mail.gmail.com>
- <87ikoqjg1n.fsf@kernel.org>
- <KpWTCfIlcLYFBpSvWPfALJ9VQn5a99_RAvxgMBc1aCrSalPB-qaW9IhXyaDG7HM1AcFPX5chj_Yr7IQp3F7UqA==@protonmail.internalid>
- <CAH5fLgh6ubawHh76wq7JPbcuBCWhm91m7Rc01MVsX-a3C6qaVA@mail.gmail.com>
- <87mse2hrd8.fsf@kernel.org> <Z8YMTiKS4T9wC4t_@boqun-archlinux>
- <ae8ac31f-c6ad-46ae-80dd-10ec081a16d1@ralfj.de>
- <88456D33-C5CA-4F4F-990E-8C5F2AF7EAF9@gmail.com>
- <hkhgihg4fjkg7zleqnumuj65dfvmxa5rzawkiafrf4kn5ss6nw@o7kc6xe2bmuj>
- <25e7e425-ae72-4370-ae95-958882a07df9@ralfj.de>
- <CAH5fLgidPHQzdUORNpNhtRFsKPU1T-0xdn5OSwYYZh3BgOVRQA@mail.gmail.com>
- <3aabca39-4658-454a-b0e3-e946e72977e1@ralfj.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <3aabca39-4658-454a-b0e3-e946e72977e1@ralfj.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <74a3bf91b52563faaf7ef7de065931e4df47e63f.1741034886.git.nicolinc@nvidia.com>
 
-On 05/03/2025 1:27 pm, Ralf Jung wrote:
-> Hi,
-> 
-> On 05.03.25 14:23, Alice Ryhl wrote:
->> On Wed, Mar 5, 2025 at 2:10 PM Ralf Jung <post@ralfj.de> wrote:
->>>
->>> Hi,
->>>
->>> On 05.03.25 04:24, Boqun Feng wrote:
->>>> On Tue, Mar 04, 2025 at 12:18:28PM -0800, comex wrote:
->>>>>
->>>>>> On Mar 4, 2025, at 11:03 AM, Ralf Jung <post@ralfj.de> wrote:
->>>>> However, these optimizations should rarely trigger misbehavior in
->>>>> practice, so I wouldn’t be surprised if Linux had some code that
->>>>> expected memcpy to act volatile…
->>>>>
->>>>
->>>> Also in this particular case we are discussing [1], it's a memcpy (from
->>>> or to) a DMA buffer, which means the device can also read or write the
->>>> memory, therefore the content of the memory may be altered outside the
->>>> program (the kernel), so we cannot use copy_nonoverlapping() I believe.
->>>>
->>>> [1]: https://lore.kernel.org/rust-for-linux/87bjuil15w.fsf@kernel.org/
->>>
->>> Is there actually a potential for races (with reads by hardware, not 
->>> other
->>> threads) on the memcpy'd memory? Or is this the pattern where you 
->>> copy some data
->>> somewhere and then set a flag in an MMIO register to indicate that 
->>> the data is
->>> ready and the device can start reading it? In the latter case, the 
->>> actual data
->>> copy does not race with anything, so it can be a regular non-atomic 
->>> non-volatile
->>> memcpy. The flag write *should* be a release write, and release 
->>> volatile writes
->>> do not exist, so that is a problem, but it's a separate problem from 
->>> volatile
->>> memcpy. One can use a release fence followed by a relaxed write instead.
->>> Volatile writes do not currently act like relaxed writes, but you 
->>> need that
->>> anyway for WRITE_ONCE to make sense so it seems fine to rely on that 
->>> here as well.
->>>
->>> Rust should have atomic volatile accesses, and various ideas have 
->>> been proposed
->>> over the years, but sadly nobody has shown up to try and push this 
->>> through.
->>>
->>> If the memcpy itself can indeed race, you need an atomic volatile 
->>> memcpy --
->>> which neither C nor Rust have, though there are proposals for atomic 
->>> memcpy (and
->>> arguably, there should be a way to interact with a device using 
->>> non-volatile
->>> atomics... but anyway in the LKMM, atomics are modeled with volatile, 
->>> so things
->>> are even more entangled than usual ;).
->>
->> For some kinds of hardware, we might not want to trust the hardware.
->> I.e., there is no race under normal operation, but the hardware could
->> have a bug or be malicious and we might not want that to result in UB.
->> This is pretty similar to syscalls that take a pointer into userspace
->> memory and read it - userspace shouldn't modify that memory during the
->> syscall, but it can and if it does, that should be well-defined.
->> (Though in the case of userspace, the copy happens in asm since it
->> also needs to deal with virtual memory and so on.)
-> 
-> Wow you are really doing your best to combine all the hard problems at 
-> the same time. ;)
-> Sharing memory with untrusted parties is another tricky issue, and even 
-> leaving aside all the theoretical trouble, practically speaking you'll 
-> want to exclusively use atomic accesses to interact with such memory. So 
-> doing this properly requires atomic memcpy. I don't know what that is 
-> blocked on, but it is good to know that it would help the kernel.
+Hi Nicolin,
 
-If you don't trust the device then I wouldn't think it actually matters 
-what happens at this level - the higher-level driver is already going to 
-have to carefully check and sanitise whatever data it reads back from 
-the buffer before consuming it, at which point reading a torn value due 
-to a race would be essentially indistinguishable from if the device had 
-gone wrong and simply written that nonsense value itself.
+kernel test robot noticed the following build warnings:
 
-I think the more significant case is when polling for the device to 
-write back some kind of status word, where in C code the driver would 
-use READ_ONCE() to ensure a single-copy-atomic read of the same size the 
-device is going to write - sticking a regular memcpy() into the middle 
-of that can't necessarily be trusted to work correctly (even if it may 
-appear to 99% of the time).
+[auto build test WARNING on 5e9f822c9c683ae884fa5e71df41d1647b2876c6]
 
-Thanks,
-Robin.
+url:    https://github.com/intel-lab-lkp/linux/commits/Nicolin-Chen/iommu-Sort-out-domain-user-data/20250304-045529
+base:   5e9f822c9c683ae884fa5e71df41d1647b2876c6
+patch link:    https://lore.kernel.org/r/74a3bf91b52563faaf7ef7de065931e4df47e63f.1741034886.git.nicolinc%40nvidia.com
+patch subject: [PATCH v3 1/3] iommu: Sort out domain user data
+config: hexagon-randconfig-002-20250305 (https://download.01.org/0day-ci/archive/20250305/202503052232.H3gZRJRp-lkp@intel.com/config)
+compiler: clang version 18.1.8 (https://github.com/llvm/llvm-project 3b5b5c1ec4a3095ab096dd780e84d7ab81f3d7ff)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250305/202503052232.H3gZRJRp-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202503052232.H3gZRJRp-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/iommu/iommu.c:2040:2: warning: label at end of compound statement is a C23 extension [-Wc23-extensions]
+    2040 |         }
+         |         ^
+   1 warning generated.
+
+
+vim +2040 drivers/iommu/iommu.c
+
+  2026	
+  2027	void iommu_domain_free(struct iommu_domain *domain)
+  2028	{
+  2029		switch (domain->cookie_type) {
+  2030		case IOMMU_COOKIE_DMA_IOVA:
+  2031			iommu_put_dma_cookie(domain);
+  2032			break;
+  2033		case IOMMU_COOKIE_DMA_MSI:
+  2034			iommu_put_msi_cookie(domain);
+  2035			break;
+  2036		case IOMMU_COOKIE_SVA:
+  2037			mmdrop(domain->mm);
+  2038			break;
+  2039		default:
+> 2040		}
+  2041		if (domain->ops->free)
+  2042			domain->ops->free(domain);
+  2043	}
+  2044	EXPORT_SYMBOL_GPL(iommu_domain_free);
+  2045	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
