@@ -1,86 +1,82 @@
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AEBB567D
-	for <iommu@lists.linux.dev>; Wed,  5 Mar 2025 17:22:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DC2824C07D
+	for <iommu@lists.linux.dev>; Wed,  5 Mar 2025 17:29:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741195347; cv=none; b=foBFx4CrEY5AwuPswUTVP38ESsX3as7197oRqCXXrsFrRiuZ7UNm+4uPZivuwpMq+RKp9zSLvYilTlbDFasjcZr9zpJdUGoSkeyDELW5fMyFad0z56n28xg2G5wY+mrSGkEGLMAO7RgjtSZW7P2FQyDqR1D0s9l/xZ+gY1U3o1A=
+	t=1741195751; cv=none; b=P7RxfCPllF+YL8JQAtgyti+jhQFlOWIZbujMEXgnJq4m7AEcu+s4xId3sGAztNk7pUNDdOijzYd0zWUKGQsDcwcDYtefDv7Qx1aHUl+zUOtHYnSYWFmd0An0cx5x4gkegyou67oid6KJI12JXZ7jTjWPLxnxfBiLvenqmQ0fU10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741195347; c=relaxed/simple;
-	bh=EJF56/ISeByhv3eQoUmgdSH1qz0eL3urzM/CwsD4n+w=;
+	s=arc-20240116; t=1741195751; c=relaxed/simple;
+	bh=B1wNsGRlbNuh23FquOiVRPjfZ7QTWBC3oKDQKjyCdJQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C1UGKdvby7Gidi7D7JsJvqBV1n6J0+m1kfRO/UqcG8FI6892zpOqnJ9YBvJ+p5ZYjRY/TJFIoYyuo828jKYYTT0Bo+WGC9JNwh94vBjwaZmFV6xndQfZn2Xvi2qkfPEzTBKGyCuBB7x2E7u8de+9vFlytILDVrVq4jo1qqepsNE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=aF8JOMY+; arc=none smtp.client-ip=209.85.219.48
+	 Content-Type:Content-Disposition:In-Reply-To; b=lYtZK9BmSYLJfNzH3ga82wvRd3sRrQsVSLyLb0AZD3rKc2lHIR6Kf3x3GyUXkCkDYFrrwiQlk23SUGl3mtWUslGm2yKyQ73wG6psdLmyMuw9m5bp4CA2WkpLpdbOtM1UF2yLH977srOgKGXH8ec+hVvduYiho08loRrq1fBnpoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=SSaeIXgE; arc=none smtp.client-ip=209.85.219.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="aF8JOMY+"
-Received: by mail-qv1-f48.google.com with SMTP id 6a1803df08f44-6e89959f631so55375226d6.3
-        for <iommu@lists.linux.dev>; Wed, 05 Mar 2025 09:22:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SSaeIXgE"
+Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-6e8e8da098eso7532136d6.3
+        for <iommu@lists.linux.dev>; Wed, 05 Mar 2025 09:29:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1741195341; x=1741800141; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1741195748; x=1741800548; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=EJF56/ISeByhv3eQoUmgdSH1qz0eL3urzM/CwsD4n+w=;
-        b=aF8JOMY+XRYyvTEYlQ7QW1vXySHus4lWkqCCIE5bWyxiTPx+wTSEuPdPJIKKSmofwD
-         L64I5aw78qHbkYdEsyLVzT2AwC+jaoZ8vc3AAfyZh0k3Un3EAl/S0nFiCQ47N+ggS9mL
-         CNFuHEqtLuiEbmWzBXc0qSd6+/LImkIvBbqFFW8cBnBrN3G1BwhfYIOYfjKaXeUpeldA
-         t/jrklVNRf1TMyqG0yx7pLIkwJIYbnDDT4rQ4DxrPbDA2/G/mO1uzz0AsaoHS4d576V+
-         es163Pu5kd5ejYqRQVlO+Fg77FKE9fycxi+PyNU0YRB+GMdDWSl9ZbSCauQKaKskq6Bk
-         czDg==
+        bh=c907La5P+bJluU/LHcR6Es6yd6jk3jgKb5ChVAM4Ut4=;
+        b=SSaeIXgE/v6hKCvfl+8b7lSqrZfT03kOvst7/qvAD34+KC8y6CINl/u/C1a6HMUKKi
+         Mg6z87U1eDEOB/pFymsUWoq9YucgjPSqYx7fvqwEQcNlTnwoECjOZ4TG7Nw2BLcPxu5y
+         IVPCtVByMgpSqUm3xbmy3hUTZlEXBlcGKGfEFMTKLsTWMMNzNjqNq7CLV8k1+fJL1dlM
+         lKhrj2wBN6VHePtXHRzfF6rDxM0QZBSMl1KjFfFjcvai4WMQUGrn3ONs6sMaIc3/EEVQ
+         4HlrNBZ1zMaWdmlDh5+7ecAmou/BaBYJzu9J8jCi7I4303skVs6VPKZ9ar+Ap4GFgMNz
+         Ze0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741195341; x=1741800141;
+        d=1e100.net; s=20230601; t=1741195748; x=1741800548;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EJF56/ISeByhv3eQoUmgdSH1qz0eL3urzM/CwsD4n+w=;
-        b=RgBsco4o37AVt72SuuT8+8aiYul+a0Sbl6/41hGmYt4xfpMh2wPkLh6be8gOgZVrNr
-         YPAAApu7VSyEoYJKurssCCRxj2DvhpaoRoQYtg2O0W9YK3k21uIom7HwJGB8BX10K7u8
-         EgIRfoXg/XH4R8TtN2U/zpVhqmEp+mHfxslI4tBAIzg/gtRPgtz/lOfCe70nBDLsXfdZ
-         XwwGFjLUxZTOQxW2N9yVf/2VwevRqVp+CDDuHkiJ+vv/5z3C91TTu/a96uLgF/RxH961
-         FE4HpRrWRr1g1uEFBacA83BjptZFgSdDPe+NOMzxKLv2mIwavLhBPR1r/C0iXtzsWcp2
-         KdZw==
-X-Forwarded-Encrypted: i=1; AJvYcCX1OimNwdHwZB2FgT/IvwqVwOYy3ODrNKlJsPp7KSFfzrWmj1obP6Hh4QhWgB82NuAwQK/pLA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzdrZ6/eOeVU9TIj2lI4+QH9jkatxMdjRmS9Md9NPQJIjJIiRne
-	gfZL0TLMkAUSXDrrsaxSwTOhYTIV51+3fAnN4yWHs41LWKyeFRObMjo3D35QmGw=
-X-Gm-Gg: ASbGncsQsXiLkjdoDIsqw2VU4Wkt6jj7rf4Dr5tbhvHYoVNQSMHxDrG8Mduv+blBAI4
-	239x96GwNB1+96YrA/ytAFFR4sPIccaC+URez+bR9+TNiPtbwLLaPO+V0Ngnrl0l2Yb/pPMrawj
-	kT44GfqjQSrLBdQ96gx44dRQlkJeZJ+o4DsnJOjillHEgsoEAukxqy3I0Z5neFE5yEix/+cqo1g
-	5vNGwpOcKlE4y2Wb0w8959sFMCmRnVN8RYVBGd1/weQ7tmiPQX1Rg//6FmLhREwAmY4AivFJVvN
-	z77ZouMpeK4n5b/BSjA=
-X-Google-Smtp-Source: AGHT+IFfmyk/kAeiUI1mC6yszgQXNi2xEnOtqQE+yyb3TZN+rIbWYNGbgphdyvlYK33T7Qn3QP8Eyw==
-X-Received: by 2002:a05:6214:21cc:b0:6d8:9872:adc1 with SMTP id 6a1803df08f44-6e8e6dd876emr70457746d6.38.1741195341033;
-        Wed, 05 Mar 2025 09:22:21 -0800 (PST)
+        bh=c907La5P+bJluU/LHcR6Es6yd6jk3jgKb5ChVAM4Ut4=;
+        b=Dg/dnBx+xdqd1epBzKPItzAmtWQPPHotA3lvGav+BP8/mcCnbTZEWO63U4AVpHFEg2
+         2jEn8fWlnUkSXFvnIVxoBr2uLVAxm3TedgKX+W6RSnbyI3475jv6N87DTIAovm8i0+se
+         TJPGvHniPhA7B2AKorPkGwTUSUrWXkc4lA3usouiR4vkN91gcgPOSC+QeSOnCXbjLlrC
+         5EwtsW46cwzYsjG66GBXGGFZbl1P6VMrsuKG56qjPn+VssSVBJC4KL39haxEYQZLSKAx
+         QvHRljiuWp1UHnctELJpT6W+8oEDiR7IuVkDHInnQJZ9ArYM/jNmiArFQnJB3AkKxk9E
+         GpcQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX8r1kVfhMuiRLan7+Ww2EgWdeqlLz4zeSBunZ2cF1bJcHAb/17mBKT1iTZKuJKeHXqb5wlGw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz2ypD8frUVrsMqwayebLrrzg+i01EvIerHStiqL11amafH6AhB
+	HeSqvoxerde3AGSLKc/45NgKmHSO242JjM5FA8+ZfYTg/WuXM8X8hBqFID7ZKQE=
+X-Gm-Gg: ASbGnctrRwPpdygSi7Okhn9+xktXChDkJZQFIGC+pr4ViGQo+tiC5OOXR2MRV/lLwEl
+	vDehCqkW1M0BeBerBrY2+kL3FKvRy7XQDjo4XaX0tBmk26KL8sQEukG8bDOfYjweN3QBJlTX8ID
+	vSQV0YB2dP5iiO7fTbAkp+t5QQ82PWqiFo2MfBCGIlsHltsCH9vhBH3xY0Cu6Dl3gYLFiDhUXbH
+	THY69A3UgwWQYLcZ0iRJlGgd4ei7tTxfc252EVY3D/B2yxiAtJ+EPZ4ljErAi3pyhCYtO6thpPS
+	PN3ub9s0eggAQE0TinY=
+X-Google-Smtp-Source: AGHT+IF4HNniD3vBEgV7Gc4XgcYAVaPywo5omCnN6AqAFGgL1Wjv+qwspVU+lTzqtNoHgcoOul5LVg==
+X-Received: by 2002:a05:6214:2525:b0:6e1:6c94:b5c5 with SMTP id 6a1803df08f44-6e8e6d144c4mr53580176d6.4.1741195748275;
+        Wed, 05 Mar 2025 09:29:08 -0800 (PST)
 Received: from ziepe.ca ([130.41.10.206])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e897634a77sm81344856d6.16.2025.03.05.09.22.19
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e89765364esm81249136d6.35.2025.03.05.09.29.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Mar 2025 09:22:20 -0800 (PST)
+        Wed, 05 Mar 2025 09:29:07 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1tpsRn-00000001TCX-0nZL;
-	Wed, 05 Mar 2025 13:22:19 -0400
-Date: Wed, 5 Mar 2025 13:22:19 -0400
+	id 1tpsYM-00000001TIk-3gw4;
+	Wed, 05 Mar 2025 13:29:06 -0400
+Date: Wed, 5 Mar 2025 13:29:06 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH] iommu/amd: Add Secure ATS support
-Message-ID: <20250305172219.GF5011@ziepe.ca>
-References: <BN9PR11MB52763A8885AF1678E05E8B528CCC2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <942a1a66-5c18-43e2-886e-df38cb3e7258@intel.com>
- <54db17d7-b150-4579-a33d-f1b5cc8943bc@amd.com>
- <6eb0ec90-5859-4605-8a2e-657f6f711d61@intel.com>
- <825ddadd-6770-46b5-936e-f17988534984@amd.com>
- <13e1e1d8-5870-44ea-a800-e5b25bafd344@intel.com>
- <20250303183801.GW5011@ziepe.ca>
- <2c9ef073-fee5-43c6-8932-a8cae677970e@intel.com>
- <20250304142030.GA5011@ziepe.ca>
- <BN9PR11MB52769EFA077B3E552DA4235A8CCB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+	zhangkun09@huawei.com, liuyonglong@huawei.com,
+	fanghaiqing@huawei.com, Robin Murphy <robin.murphy@arm.com>,
+	Alexander Duyck <alexander.duyck@gmail.com>,
+	IOMMU <iommu@lists.linux.dev>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	Eric Dumazet <edumazet@google.com>, Simon Horman <horms@kernel.org>,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v10 4/4] page_pool: skip dma sync operation for
+ inflight pages
+Message-ID: <20250305172906.GG5011@ziepe.ca>
+References: <20250226110340.2671366-1-linyunsheng@huawei.com>
+ <20250226110340.2671366-5-linyunsheng@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,20 +85,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52769EFA077B3E552DA4235A8CCB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <20250226110340.2671366-5-linyunsheng@huawei.com>
 
-On Wed, Mar 05, 2025 at 02:50:38AM +0000, Tian, Kevin wrote:
+On Wed, Feb 26, 2025 at 07:03:39PM +0800, Yunsheng Lin wrote:
+> Skip dma sync operation for inflight pages before the
+> sync operation in page_pool_item_unmap() as DMA API
+> expects to be called with a valid device bound to a
+> driver as mentioned in [1].
+> 
+> After page_pool_destroy() is called, the page is not
+> expected to be recycled back to pool->alloc cache and
+> dma sync operation is not needed when the page is not
+> recyclable or pool->ring is full, so only skip the dma
+> sync operation for the infilght pages by clearing the
+> pool->dma_sync, as rcu sync operation in
+> page_pool_destroy() is paired with rcu lock in
+> page_pool_recycle_in_ring() to ensure that there is no
+> dma sync operation called after rcu sync operation.
 
-> Probably we may also need separate policy between unmanaged and
-> dma types. In some scenarios the user may care more about potential
-> ATS attacks from userspace drivers but not kernel drivers. In that case
-> disabling secure ats for kernel drivers would avoid unnecessary cost
-> of address audit.
-
-That would be some specific iommufd/vfio policy IMHO
-
-But really, if the device is being used by iommufd or not is well
-known by the admin, they could set the general ATS to secure prior to
-binding vfio and just be done with it. No need for more automation?
+Are you guaranteeing that the cache is made consistent before freeing
+the page back to the mm? That is required..
 
 Jason
