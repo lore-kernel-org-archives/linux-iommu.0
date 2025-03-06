@@ -1,88 +1,38 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05D2436D;
-	Thu,  6 Mar 2025 06:49:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBA5819DF4D;
+	Thu,  6 Mar 2025 07:02:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741243787; cv=none; b=JjAsez+ZEfT62mXQeI4W9UnPdfvw/7it1QFaVmI978TKRWU4p/W2cQ/+duZhRaQy58ms3McI09zrbZFR0ANwncJxP///mCIDADD30r9McFTK/Uif1QZKP5Pp0N3ucAqhhPv0SJ7sxJRWAGF13+Xz45nxpU6XeSFiZXE9az+V5AU=
+	t=1741244546; cv=none; b=jA+A6hIGLhjGgJkOfMAGn89NY+Nr7KjpdcCsEThK+vPKM9XIoofrWXf6cb6L6vfMeefphynt+9dSALs9vQy1prfLQwYGgiuO8DuaxToPLC3bjVhzCnwKTauSE8x9dPiU31rRycttBHAKysDASE0z7WKhhp9QPDuT3FpZaFVenuE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741243787; c=relaxed/simple;
-	bh=nihPbFWpYPqsBosZAhoIw4NpSVYZ7ujfvelE5cg2qlQ=;
+	s=arc-20240116; t=1741244546; c=relaxed/simple;
+	bh=Zg6JBzN0mj2pZVjDAg7PAPRHG1G0yRHfC36Vs3T6Or0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lSK/mmRjUfX+psHW+FPPQ9FW/ppqceTvMRA79uGjWAhiQOl4R2QawoWzztRkayvdk2xDCCszLFDw/zuA3T4JKSNMq+5TluIYgGpUXy9wUXgEsnpZS77oibaB9zEo1lutLEew56vub1lCpGj92ZcTDaCfishNqmEReebvloXSavE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=l8cJypSN; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=TI5diJP6uV5b1Xhd1/Uq4/Ot8kck05SQh4CeY2EpYBiqbRhp7/kareFSdl8fthjuuIooGuUxTcFx4v5a2dXNAlYSjaltz+Z90NyXSrM9tMLUMvGO2DQGNH4yxnCn1KkXY8/lAsWiqZEf6gIPUA+IShn876+qMNib5FLVM0ZWOzw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=RdmqlPGo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l8cJypSN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741243786; x=1772779786;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nihPbFWpYPqsBosZAhoIw4NpSVYZ7ujfvelE5cg2qlQ=;
-  b=l8cJypSNKs+Tt3tSJtZPaE1YYYsmzOBytiKizccEkjQFmDJHR/rjR9SL
-   71G4THNnbki4NNOPFeHrJW5UAjNwbSC53xOhvIaHeTcKdhwgTbTHGHYnD
-   JQs3IMrVqcDB4TVDr51aKKLSgdR8BeZ1vAbLKL3E1YXXlAmHIbcLTkHMN
-   Z6aVq3pr/UpzhYnJsbieCcAuknUNmPARYLjCLVy9XAzHL24OrP0Re7OdJ
-   4u3b62gbTbqutW7A1r8O65HGaMZh47gUX16DaHSCK+x4QNuFvdMfzNYeS
-   I09Piene9hR96XNdARYyTLqxcqubMici7vMo6r5HZ95NFa4asf6lUQ41E
-   A==;
-X-CSE-ConnectionGUID: KIW218sMTvKSjAu0ddISzA==
-X-CSE-MsgGUID: V2/1ABVYROmL6vLM0X8sPA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11363"; a="41488717"
-X-IronPort-AV: E=Sophos;i="6.14,225,1736841600"; 
-   d="scan'208";a="41488717"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2025 22:49:45 -0800
-X-CSE-ConnectionGUID: 0YQ+ToHsQFqTfy8LYBXmaA==
-X-CSE-MsgGUID: eXWNYvDpQmebOFbpoNF84w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,225,1736841600"; 
-   d="scan'208";a="123948108"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa004.jf.intel.com with ESMTP; 05 Mar 2025 22:49:37 -0800
-Date: Thu, 6 Mar 2025 14:47:23 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Alexey Kardashevskiy <aik@amd.com>, x86@kernel.org, kvm@vger.kernel.org,
-	linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Zhi Wang <zhiw@nvidia.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
-Message-ID: <Z8lE+5OpqZc746mT@yilunxu-OptiPlex-7050>
-References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-15-aik@amd.com>
- <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
- <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
- <Z77xrqLtJfB84dJF@yilunxu-OptiPlex-7050>
- <20250226131202.GH5011@ziepe.ca>
- <Z7/jFhlsBrbrloia@yilunxu-OptiPlex-7050>
- <20250301003711.GR5011@ziepe.ca>
- <Z8U+/0IYyn7XX3ao@yilunxu-OptiPlex-7050>
- <20250305192842.GE354403@ziepe.ca>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="RdmqlPGo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C415EC4CEE4;
+	Thu,  6 Mar 2025 07:02:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1741244545;
+	bh=Zg6JBzN0mj2pZVjDAg7PAPRHG1G0yRHfC36Vs3T6Or0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=RdmqlPGoNu+0Mc88XT7qAyuQrCqZ1aC/UhucS5XyFW/vzGavy0WV7NE8kc3DRN3KH
+	 JIKY18q65cPMMrb26LGsTa1NHEtdpi5mekzCUTge00GC5NhoUoGlAi8AfAONQ5xHmL
+	 6h2gmJzfP4WdP+uX2SS/zbIZtweF92HSTMJ/FsS4=
+Date: Thu, 6 Mar 2025 08:01:10 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Siddharth Chintamaneni <sidchintamaneni@gmail.com>
+Cc: stable@vger.kernel.org, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, wei.huang2@amd.com,
+	apais@microsoft.com
+Subject: Re: [PATCH 6.6.y] iommu/amd: Fixes refcount bug in iommu_v2 driver
+Message-ID: <2025030602-trowel-cartridge-fbf0@gregkh>
+References: <20250306051822.4267-1-sidchintamaneni@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,90 +41,50 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250305192842.GE354403@ziepe.ca>
+In-Reply-To: <20250306051822.4267-1-sidchintamaneni@gmail.com>
 
-On Wed, Mar 05, 2025 at 03:28:42PM -0400, Jason Gunthorpe wrote:
-> On Mon, Mar 03, 2025 at 01:32:47PM +0800, Xu Yilun wrote:
-> > All these settings cannot really take function until guest verifies them
-> > and does TDISP start. Guest verification does not (should not) need host
-> > awareness.
-> > 
-> > Our solution is, separate the secure DMA setting and secure device setting
-> > in different components, iommufd & vfio.
-> > 
-> > Guest require bind:
-> >   - ioctl(iommufd, IOMMU_VIOMMU_ALLOC, {.type = IOMMU_VIOMMU_TYPE_KVM_VALID,
-> > 					.kvm_fd = kvm_fd,
-> > 					.out_viommu_id = &viommu_id});
-> >   - ioctl(iommufd, IOMMU_HWPT_ALLOC, {.flag = IOMMU_HWPT_ALLOC_TRUSTED,
-> > 				      .pt_id = viommu_id,
-> > 				      .out_hwpt_id = &hwpt_id});
-> >   - ioctl(vfio_fd, VFIO_DEVICE_ATTACH_IOMMUFD_PT, {.pt_id = hwpt_id})
-> >     - do secure DMA setting in Intel iommu driver.
-> > 
-> >   - ioctl(vfio_fd, VFIO_DEVICE_TSM_BIND, ...)
-> >     - do bind in Intel TSM driver.
+On Thu, Mar 06, 2025 at 05:18:22AM +0000, Siddharth Chintamaneni wrote:
+> This fix addresses a refcount bug where the reference count was not
+> properly decremented due to the mmput function not being called when
+> mmu_notifier_register fails.
 > 
-> Except what do command do you issue to the secure world for TSM_BIND
-> and what are it's argument? Again you can't include the vBDF or vIOMMU
-> ID here.
-
-Bind for TDX doesn't require vBDF or vIOMMU ID. The seamcall is like:
-
-u64 tdh_devif_create(u64 stream_id,     // IDE stream ID, PF0 stuff
-                     u64 devif_id,      // TDI ID, it is the host BDF
-                     u64 tdr_pa,        // TDX VM core metadate page, TDX Connect uses it as CoCo-VM ID
-                     u64 devifcs_pa)    // metadate page provide to firmware
-
-While for AMD:
-        ...
-        b.guest_device_id = guest_rid;  //TDI ID, it is the vBDF
-        b.gctx_paddr = gctx_paddr;      //AMDs CoCo-VM ID
-
-        ret = sev_tio_do_cmd(SEV_CMD_TIO_TDI_BIND, &b, ...
-
-
-Neither of them use vIOMMU ID or any IOMMU info, so the only concern is
-vBDF.
-
-Basically from host POV the two interfaces does the same thing, connect
-the CoCo-VM ID with the TDI ID, for which Intel uses host BDF while AMD
-uses vBDF. But AMD firmware cannot know anything meaningful about the
-vBDF, it is just a magic number to index TDI metadata.
-
-So I don't think we have to introduce vBDF concept in kernel. AMD uses
-QEMU created vBDF as TDI ID, that's fine, QEMU should ensure the
-validity of the vBDF.
-
+> Signed-off-by: Siddharth Chintamaneni <sidchintamaneni@gmail.com>
+> ---
+>  drivers/iommu/amd/iommu_v2.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> vfio also can't validate that the hwpt is in the right state when it
-> executes this function.
-
-Not sure if VFIO has to validate, or is there a requirement that
-secure DMA should be in right state before bind. TDX doesn't require
-this, and I didn't see the requirement in SEV-TIO spec. I.e. the
-bind firmware calls don't check DMA state.
-
-In my opinion, TDI bind means put device in LOCKED state and related
-metadate management in firmware. After bind the DMA cannot work. It
-is the guest's resposibility to validate everything (including DMA)
-is in the right state, then issues RUN, then DMA works. I.e. guest tsm
-calls check DMA state.  That's why I think Secure DMA configuration
-on host could be in a separated flow from bind.
-
+> diff --git a/drivers/iommu/amd/iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
+> index 57c2fb1146e2..bce21e266d64 100644
+> --- a/drivers/iommu/amd/iommu_v2.c
+> +++ b/drivers/iommu/amd/iommu_v2.c
+> @@ -645,7 +645,7 @@ int amd_iommu_bind_pasid(struct pci_dev *pdev, u32 pasid,
+>  
+>  	ret = mmu_notifier_register(&pasid_state->mn, mm);
+>  	if (ret)
+> -		goto out_free;
+> +		goto out_mmput;
+>  
+>  	ret = set_pasid_state(dev_state, pasid_state, pasid);
+>  	if (ret)
+> @@ -673,6 +673,8 @@ int amd_iommu_bind_pasid(struct pci_dev *pdev, u32 pasid,
+>  
+>  out_unregister:
+>  	mmu_notifier_unregister(&pasid_state->mn, mm);
+> +
+> +out_mmput:
+>  	mmput(mm);
+>  
+>  out_free:
+> -- 
+> 2.43.0
 > 
-> You could also issue the TSM bind against the idev on the iommufd
-> side..
-
-But I cannot figure out how idev could ensure no mmap on VFIO, and how
-idev could call dma_buf_move_notify.
-
-Thanks,
-Yilun
-
 > 
-> Part of my problem here is I don't see anyone who seems to have read
-> all three specs and is trying to mush them together. Everyone is
-> focused on their own spec. I know there are subtle differences :\
-> 
-> Jason
+
+<formletter>
+
+This is not the correct way to submit patches for inclusion in the
+stable kernel tree.  Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for how to do this properly.
+
+</formletter>
