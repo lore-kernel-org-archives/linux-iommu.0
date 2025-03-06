@@ -1,34 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C3FA17BEBF;
-	Thu,  6 Mar 2025 15:49:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED6738DE0;
+	Thu,  6 Mar 2025 15:54:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741276159; cv=none; b=rv9VGs5bguSUmMuoKFd1X1qARQ2PYmTimUTXbQdccloU20X4JDxadcmH/pGKkaH8Yd4rFCRy5oaVQlPOReF18SMhPhOHIFC99WnAgyJ7qwJFY5pWJg8q7v9E/fX8tS5YvaQwOI1Y6G8aNSJM5MEAgYHmtLyDQuAcjBaTp8wdVvA=
+	t=1741276462; cv=none; b=MPElo0sxl2S3J8wkxo9Lkzp1aqf7RlN2n5dwgUONZ/3rr8X4EvLwmZ1lk25feEmDVdBdIaf0WoxcpPoAvr+FFktayz56QvtPnDfyyjgi3wP8WcG3qMejWNh+Erh08ucobSGweOI5XWeJgCa5C5fn9YUXXxq4tfHkgQqeE5voBtI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741276159; c=relaxed/simple;
-	bh=V8m7lTHXESyngTkQx4PrrLs0arK+hpFdrsu8fI4KcGc=;
-	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PvHnOSIc/mBzWG1IErEqSw7jv2O6kbB5E6ka24u9OXOH91cQ1ICXiZU5c1Ug8CHwMDhjhu1k5b6/xbxj+5eqe0SKPDwyZ1h6vIAQaJJg1GSIO/hSmctEs7qi4DHxeFNb2yskcktCS66/nn68UzLX18y9uU1CVICZePOfdo/VNp8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SD3nG1NI; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1741276462; c=relaxed/simple;
+	bh=mVOUoMC1bk4HTH++GmpfTH/JOD2CG3MVZY69+6D4SNY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O3CFalHL2sQ2s9u9cZFXoeqk1grt7qTEbZNvUT5OupkeJA29je4yoGCUlTdLMCzjeMDyVcTzllgfjbFYLBlgHXrS9NTDJL3GLy6xz1JwVhAg+vTOKWsH17wFSXZa5BIkD02TbyyWkG30GbUF76DoZuMGRjIefhpDUhOS4A3Obno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GHTpIO49; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SD3nG1NI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89313C4CEE0;
-	Thu,  6 Mar 2025 15:49:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GHTpIO49"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B5C4C4CEE4;
+	Thu,  6 Mar 2025 15:54:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741276157;
-	bh=V8m7lTHXESyngTkQx4PrrLs0arK+hpFdrsu8fI4KcGc=;
-	h=Date:From:To:Subject:References:In-Reply-To:From;
-	b=SD3nG1NIjcZx2ZSpK9j4AqGIWemIYjlZ/zI48eCe/GiQHF5fTt4KOODVAK74LI4Ym
-	 59tpOXNF2ZQg/xBHFwIzqtRPOCnjnE3p1N7CviyOSrzRSbXC8voTdN59Q/ZEE+XaUo
-	 5BFrzI2/8RMbYf93LGTvzEEwyjJP4TLGyGbNy8ZtLjXuSG2quQDQL7kb5RlIcxDYK+
-	 1vVln/tvr8uZpwlU7MoPac3tr8FkpedmEJqHpSXuP4NgMe+u5bjPfrrk8aRvAb4/lu
-	 LGMw7m5Z4YAGjCD2ar5yMZd3eS+MgMdfec+nk4gHmTwwr2CUmk05rc/wil/Tedg5pE
-	 hEIiL3s/REI6A==
-Date: Thu, 6 Mar 2025 16:49:10 +0100
+	s=k20201202; t=1741276461;
+	bh=mVOUoMC1bk4HTH++GmpfTH/JOD2CG3MVZY69+6D4SNY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GHTpIO49taIrevs/bg/xVv81jeyXDNxsjmc2g8dKNw0iDMt52tvZuzRSnxesJnQtP
+	 B2RG7DnhIS1EgJGr5s2ByecjoIBOi1sV/U0hHdCUqVE34MwfiLiWtybXHrwcieCvHZ
+	 aurvm/f39VmvDESM1Y+fIW8/kzd/oyGoYZCkQ84182P/TbtMKZzK5+jeNYMs87I0Dx
+	 skiijTuC+/IQJSmMV7idaSwMgtpK1M3l/qMWycTNm/HlI61bnafXyQ8dCfTG9S6v5+
+	 KMh22HAR2KVaUhK/jzbFo1JNeSpSz+GF/nTPcRWxQReIw75SNS36dP9D+woC9XfhHx
+	 a5a12fos4oabQ==
+Date: Thu, 6 Mar 2025 16:54:14 +0100
 From: Danilo Krummrich <dakr@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>,
+To: Simona Vetter <simona.vetter@ffwll.ch>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>, aliceryhl@google.com,
 	robin.murphy@arm.com, daniel.almeida@collabora.com,
 	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
@@ -44,7 +45,7 @@ To: Jason Gunthorpe <jgg@nvidia.com>,
 	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
 	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
 Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
-Message-ID: <Z8nD9iJanaXTHjUh@cassiopeiae>
+Message-ID: <Z8nFJjb30_Wm3cJJ@cassiopeiae>
 References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
  <20250224115007.2072043-3-abdiel.janulgue@gmail.com>
  <20250305174118.GA351188@nvidia.com>
@@ -59,6 +60,9 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <Z8m9j3SwWHqaCTXo@phenom.ffwll.local>
+
+(For some reason, when replying to this mail, mutt removed Sima from To: and
+instead switched Cc: to To:, hence resending.)
 
 On Thu, Mar 06, 2025 at 04:21:51PM +0100, Simona Vetter wrote:
 > On Thu, Mar 06, 2025 at 02:37:07PM +0100, Danilo Krummrich wrote:
