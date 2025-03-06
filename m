@@ -1,185 +1,165 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79BBF188A3A
-	for <iommu@lists.linux.dev>; Thu,  6 Mar 2025 15:21:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE6218DF89
+	for <iommu@lists.linux.dev>; Thu,  6 Mar 2025 15:25:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741274518; cv=none; b=Xxve4FBKx4Ol2/c1wla1GZoNHVKN9Nw5S26UUIu5fW2P4+EBS5IdFf7fW58K6lglBCisQdPdSY6M8M/2G9R779mCSCEJfxuPZBsRzX5UcifLNNvcwqdx27b2Ezh/wRjXopgvc0UZuTMdAdrjdbnt2GqD5R9xmXExnjOlR9pItJs=
+	t=1741274747; cv=none; b=kU01P1fWsUwQ5/Bj+RoZ6nahj1HZrUACBVWf2GhkeU88VvGuMWFeGR1zj6D8NQEuY1W09TdXHZWAr8GnOSC/VYmLDD+Kgyw2j7dlSX0FLAihyvukHx1SEY68oDGbDzuAyUFMJXz85TVYwDO/krIx9AGqL2ADKAAnnFoIT+VQvhA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741274518; c=relaxed/simple;
-	bh=EdN0VfRiLaP8GeWKHc+lgGNZOvZkv7fLwPA3HeulF5s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HVP7XbNqlR8I8JBRIc+rqf5NTj6fuZAwfIsToixseg87Ra1GgO3aCtcYnuBwwR6NsNwR6BXXdE2PignXHb8LsLZBGGpAk505PBldsit+v8Rhm543g5AS5zsRUS4Pq80jab1L65BYBWZ++OODSVJYS9LzKd5ghovJQLltNl1a+y4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch; spf=none smtp.mailfrom=ffwll.ch; dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b=OY342o7q; arc=none smtp.client-ip=209.85.221.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ffwll.ch
+	s=arc-20240116; t=1741274747; c=relaxed/simple;
+	bh=zeiNMfzgxo99+vnMw5coyNY4NMGJVNsOq+fXyJY/CCk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Nytio5CDPJutotGpJKCS4F6hQJKQnLqbY7NMBuu/ZIXF1JTQkf0NYg7knTOg6mLZ8VZct698vEwkoZPQJYhBUFaeM+GLT8EU/+oTjSL8pB+w3Ac+0IQxR66gmWWL6O+nLmstc4X99w1gVEVnZd+LRbNODd7Pkr1fMlSouR75KYI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=nVW6BriQ; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b="OY342o7q"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-390f5f48eafso511039f8f.0
-        for <iommu@lists.linux.dev>; Thu, 06 Mar 2025 07:21:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google; t=1741274515; x=1741879315; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rUIQRY5ggQHjo8gysw5lOG5VBOgp6tSwFo7rmrZogFY=;
-        b=OY342o7q0mEULVgT9tZ+TZrAoIo0DWSP6aUhrJBzECTYW8rWPSbPqRMKiDJJDbLVSr
-         UPLLiD2Op6DTyT5WvW06iaXi9ZKmCy1/N7uWFd65q3RYMLjgVJGQ83zCyoAMPW0nLAK1
-         m09i/Qan0YOifi+fSXmY0j541B//OZ90RnBnU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741274515; x=1741879315;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rUIQRY5ggQHjo8gysw5lOG5VBOgp6tSwFo7rmrZogFY=;
-        b=fuX0WMgsKjbX1vtf/OrSf1OdTsyq/IMgXjM61owGL9eUeCq5m1/1zayi+O+FbMqyom
-         JN9D0GaGVfWAlwtpFenTQbbkYD3+drlhigGKhSSgyjq3z6TeiNBpW1X7hBwQuGOxtt9l
-         1fjezWZd+0kS2mG9jlqfBf7VVCISUKVhPBta58k8QWDV8pfVCPBTsYJU0u9aTvZFiL80
-         h0Lfno5DxnnVK0LKukER5jx+Gm+ZBX7PZkH+4YXcBJndjDaBMla8uZisgoMLODusfhJD
-         9H8iWtZeqG4wNdeb2Y5zvy/EWfyRaNvl45L2BjIqRjnzg2U905rj3Iz/T7EyU15rBixv
-         Zj8A==
-X-Forwarded-Encrypted: i=1; AJvYcCVi8Ms/FQaNoSTDYHidC2owy4t2JkRbdy4XA74em0WJsATyB+t5w5aEB8YMoWTx2BD7z1n7og==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwkmLbXvqjVVlrkh5b1VpK2iDCxI3y17fMtxL8vwWPIgmgYWt3o
-	e4b4FixI9bLGA9zf2K+BWjAnzjFxTccJti1C0klyTUxgasf54fRs9a/0DRwlaKI=
-X-Gm-Gg: ASbGncvKmbM3BabFH+jA/s7AhJ+L7nwXKXIzz4zway5aAcKf4cLAQtgtSg45d03qjRu
-	DTcmydDL8L2D7ZTkJf7xlFk7EPYt6NWEHO31lMZ5m89n5We3zc9Iq71u24Urm4YmTVNB4hzCm1w
-	5woi0UayWBWiHjv3SRvE+OLF7FBJH2klYlVY+aMzFpakvXnED9/Tzac8zY9E20HA3mVV7fqbL3h
-	4kHcSxTw6GW7QKAiUvNja8PPatZ0EVNoggbmkk2/8h6NoQhQOvgvKUtWK9s8/fo/y25F3yoDd1E
-	pZ+hu987afPooBSVnsvOkEKXWYqJmCE6ApRLX61BBAoUzw7SsRwI6t0R
-X-Google-Smtp-Source: AGHT+IFHSu82OIcV4B4prnyg0yYTWbl5AOcN6VHMFLiws9/wvV5+cQH2RTXob/35Jef1SQ43EjXiQQ==
-X-Received: by 2002:a05:6000:4020:b0:391:2e0f:efed with SMTP id ffacd0b85a97d-3912e0ff34dmr1744779f8f.47.1741274514436;
-        Thu, 06 Mar 2025 07:21:54 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:5485:d4b2:c087:b497])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3912c019557sm2433645f8f.50.2025.03.06.07.21.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Mar 2025 07:21:53 -0800 (PST)
-Date: Thu, 6 Mar 2025 16:21:51 +0100
-From: Simona Vetter <simona.vetter@ffwll.ch>
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, aliceryhl@google.com,
-	robin.murphy@arm.com, daniel.almeida@collabora.com,
-	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
-Message-ID: <Z8m9j3SwWHqaCTXo@phenom.ffwll.local>
-Mail-Followup-To: Danilo Krummrich <dakr@kernel.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, aliceryhl@google.com,
-	robin.murphy@arm.com, daniel.almeida@collabora.com,
-	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
- <20250224115007.2072043-3-abdiel.janulgue@gmail.com>
- <20250305174118.GA351188@nvidia.com>
- <Z8mlAxsszdOH-ow8@cassiopeiae>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="nVW6BriQ"
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5268cFK6001014;
+	Thu, 6 Mar 2025 15:25:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=pp1; bh=+9o3XrsSCsDhK59r5sKdttZWDrBO
+	VOhUkaFANJsL9n4=; b=nVW6BriQBFr/6MaSgpszG0ssXQ0liQUzTL9WYY2wkkf5
+	LrBry7GDAJeBqqf4kpt/5coVIuJEd8NEHrADyF+eu06OEw3LFqWJ7ZdzhY8Aa7Tm
+	4Y9+4pSyJHTY0qR9TRECyDdMmvbhTll4yapjuf4MjiiqrXUEc7sHNUq4Hti6dqHw
+	GAdIoiCsNn4lQzedBs2opXG5MG5TldCIf30QCJKtTrQkrV4tCQJbIJydlJ+N/O3H
+	9wflNVNabSNpm1ygV7B7x9Undcs6m9PWiDVTs1G47+MwmbfVCnPv+x9bF6xHXxZq
+	nINFdfoXbE46DNKEd+j6P4+yTQ3WOsS8ngEMMenusQ==
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 456wspmmb2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 06 Mar 2025 15:25:40 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 526F18BW008958;
+	Thu, 6 Mar 2025 15:25:39 GMT
+Received: from smtprelay03.wdc07v.mail.ibm.com ([172.16.1.70])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 454cxyshkk-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 06 Mar 2025 15:25:39 +0000
+Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
+	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 526FPbPc6816440
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 6 Mar 2025 15:25:37 GMT
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C10B358054;
+	Thu,  6 Mar 2025 15:25:38 +0000 (GMT)
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1CF0C5804E;
+	Thu,  6 Mar 2025 15:25:36 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Thu,  6 Mar 2025 15:25:35 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+Date: Thu, 06 Mar 2025 16:25:29 +0100
+Subject: [PATCH] s390/pci: Fix dev.dma_range_map missing sentinel element
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z8mlAxsszdOH-ow8@cassiopeiae>
-X-Operating-System: Linux phenom 6.12.11-amd64 
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250306-fix_dma_map_alloc-v1-1-b4fa44304eac@linux.ibm.com>
+X-B4-Tracking: v=1; b=H4sIAGi+yWcC/x2MSQqAMBDAviJztjBaFPQrIqXLqANdpAURxL9bP
+ AaSPFAoMxWYmwcyXVw4xQpd24A9dNxJsKsMPfYDShzFxrdyQaugT6W9T1YYaXCYUDq7Gajdmal
+ K/3NZ3/cDUnlEmmMAAAA=
+X-Change-ID: 20250306-fix_dma_map_alloc-b3b05903dcfb
+To: Matthew Rosato <mjrosato@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>,
+        Will Deacon <will@kernel.org>, Gerd Bayer <gbayer@linux.ibm.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        Niklas Schnelle <schnelle@linux.ibm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2211;
+ i=schnelle@linux.ibm.com; h=from:subject:message-id;
+ bh=zeiNMfzgxo99+vnMw5coyNY4NMGJVNsOq+fXyJY/CCk=;
+ b=owGbwMvMwCX2Wz534YHOJ2GMp9WSGNJP7ss/oL897u6/0AWynRbX3k2I//WT43iLmRPbxtObx
+ E5vEXwk01HKwiDGxSArpsiyqMvZb13BFNM9Qf0dMHNYmUCGMHBxCsBE9LYz/OHSllw5b2Nm3Ju/
+ TNUNHZ11Ob0aXRr8R2v67S9vNk/ZYMTIMPld/6tukUeTl+slsNbvft5xQ9Hw7PNfJ2U2q8oHcZd
+ 2cgMA
+X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
+ fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: h9s9tDUV-G7nmXUHTpACtrSWzqyPSNKY
+X-Proofpoint-ORIG-GUID: h9s9tDUV-G7nmXUHTpACtrSWzqyPSNKY
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-06_05,2025-03-06_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
+ mlxlogscore=999 clxscore=1011 priorityscore=1501 phishscore=0
+ impostorscore=0 malwarescore=0 lowpriorityscore=0 mlxscore=0
+ suspectscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502100000 definitions=main-2503060114
 
-On Thu, Mar 06, 2025 at 02:37:07PM +0100, Danilo Krummrich wrote:
-> On Wed, Mar 05, 2025 at 01:41:19PM -0400, Jason Gunthorpe wrote:
-> > On Mon, Feb 24, 2025 at 01:49:06PM +0200, Abdiel Janulgue wrote:
-> > 
-> > > +impl<T: AsBytes + FromBytes> Drop for CoherentAllocation<T> {
-> > > +    fn drop(&mut self) {
-> > > +        let size = self.count * core::mem::size_of::<T>();
-> > > +        // SAFETY: the device, cpu address, and the dma handle is valid due to the
-> > > +        // type invariants on `CoherentAllocation`.
-> > > +        unsafe {
-> > > +            bindings::dma_free_attrs(
-> > > +                self.dev.as_raw(),
-> > > +                size,
-> > > +                self.cpu_addr as _,
-> > > +                self.dma_handle,
-> > > +                self.dma_attrs.as_raw(),
-> > > +            )
-> > 
-> > I mentioned this in another thread..
-> > 
-> > There is an additional C API restriction here that the DMA API
-> > functions may only be called by a driver after probe() starts and
-> > before remove() completes. This applies to dma_free_attrs().
-> > 
-> > It is not enough that a refcount is held on device.
-> > 
-> > Otherwise the kernel may crash as the driver core allows resources
-> > used by the DMA API to be changed once the driver is removed.
-> > 
-> > See the related discussion here, with an example of what the crash can
-> > look like:
-> > 
-> > https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/#m0c7dda0fb5981240879c5ca489176987d688844c
-> > 
-> >  > a device with no driver bound should not be passed to the DMA API,
-> >  > much less a dead device that's already been removed from its parent
-> >  > bus.
-> 
-> Thanks for bringing this up!
-> 
-> I assume that's because of potential iommu mappings, the memory itself should
-> not be critical.
-> 
-> > 
-> > My rust is non-existent, but I did not see anything about this
-> > point.
-> 
-> Indeed, this needs to be fixed. It means that a CoherentAllocation also needs to
-> be embedded in a Devres container.
-> 
-> > 
-> > Also note that any HW configured to do DMA must be halted before the
-> > free is allowed otherwise it is a UAF bug. It is worth mentioning that
-> > in the documentation.
-> 
-> Agreed, makes sense to document. For embedding the CoherentAllocation into
-> Devres this shouldn't be an issue, since a driver must stop operating the device
-> in remove() by definition.
+The fixed commit sets up dev.dma_range_map but missed that this is
+supposed to be an array of struct bus_dma_region with a sentinel element
+with the size field set to 0 at the end. This would lead to overruns in
+e.g. dma_range_map_min(). It could also result in wrong translations
+instead of DMA_MAPPIN_ERROR in translate_phys_to_dma() if the paddr were
+to not fit in the aperture. Fix this by using the dma_direct_set_offset()
+helper which creates a sentinel for us.
 
-I think for basic driver allocations that you just need to run the device
-stuffing it all into devres is ok. But for dma mappings at runtime this
-will be too slow, so I guess we'll need subsystem specific abstractions
-which guarantee that all dma-api mappings have disappared when device
-removal finishes. For drm I guess this means the gpuvm bindings would need
-to take care of dma-api mapping (at least as an optional extension), and
-you can only get at the dma-api addresses within revoceable critical
-sections. Similar for any other subsytem that shovely substantial amounts
-of data around. For some this might already be solved entirely at the C
-level, if the subsystem already tracks all buffers allocated to a device
-(media might work like that at least if you use videobuf helpers, but not
-sure).
+Fixes: d236843a6964 ("s390/pci: store DMA offset in bus_dma_region")
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+This is based on iommu/next which contains the fixed commit
+---
+ arch/s390/pci/pci_bus.c | 24 +++++++++++-------------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
 
-So lots of good fun here, but I not unsurmountable.
--Sima
+diff --git a/arch/s390/pci/pci_bus.c b/arch/s390/pci/pci_bus.c
+index 0e725039861f92925a38f7ff7cb6de6b0d965ac3..14310c3b48860a16de13536adf95ef99e6af21cc 100644
+--- a/arch/s390/pci/pci_bus.c
++++ b/arch/s390/pci/pci_bus.c
+@@ -287,23 +287,21 @@ static struct zpci_bus *zpci_bus_alloc(int topo, bool topo_is_tid)
+ static void pci_dma_range_setup(struct pci_dev *pdev)
+ {
+ 	struct zpci_dev *zdev = to_zpci(pdev);
+-	struct bus_dma_region *map;
+-	u64 aligned_end;
++	u64 aligned_end, size;
++	dma_addr_t dma_start;
++	int ret;
+ 
+-	map = kzalloc(sizeof(*map), GFP_KERNEL);
+-	if (!map)
+-		return;
+-
+-	map->cpu_start = 0;
+-	map->dma_start = PAGE_ALIGN(zdev->start_dma);
++	dma_start = PAGE_ALIGN(zdev->start_dma);
+ 	aligned_end = PAGE_ALIGN_DOWN(zdev->end_dma + 1);
+-	if (aligned_end >= map->dma_start)
+-		map->size = aligned_end - map->dma_start;
++	if (aligned_end >= dma_start)
++		size = aligned_end - dma_start;
+ 	else
+-		map->size = 0;
+-	WARN_ON_ONCE(map->size == 0);
++		size = 0;
++	WARN_ON_ONCE(size == 0);
+ 
+-	pdev->dev.dma_range_map = map;
++	ret = dma_direct_set_offset(&pdev->dev, 0, dma_start, size);
++	if (ret)
++		pr_err("Failed to allocate DMA range map for %s\n", pci_name(pdev));
+ }
+ 
+ void pcibios_bus_add_device(struct pci_dev *pdev)
+
+---
+base-commit: e840414e5a73ac02ffba6299b46f535a0b7cba98
+change-id: 20250306-fix_dma_map_alloc-b3b05903dcfb
+
+Best regards,
 -- 
-Simona Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Niklas Schnelle
+
