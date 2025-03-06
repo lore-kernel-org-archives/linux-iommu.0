@@ -1,112 +1,110 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2180238382;
-	Thu,  6 Mar 2025 16:34:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24757269AE8;
+	Thu,  6 Mar 2025 18:11:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741278869; cv=none; b=iTEixzXKpN5IBcV6BET9vAj/WqWcWSpf/AABuZ5Wg4GaRbbf+G7HOYH3KsQqzk8xJpVsgdr3oRsmw+NAu+aWZw0fMyncrhlrVVV1OCF84gvil1zYGJ7J7cLSlf7uTFLSvQIiWv/Sj7GDKMrGeR5VLbkcC9ZFOOoMYfMm4YiFh7Y=
+	t=1741284689; cv=none; b=uhdTVlYBIbvx26rCSJcdbpds8+coluMK5vFarz16sQLlohgldg0fUD1Fg0wbSurez1iolwUH8ni70MnyBwmH7ieOio1AlKJ+q3yQW+hxp0UzyDBr0B/zzGmwAhjpNxqFmr/2nJCg5iXCE3mmbIEdN5l5KqV7rjvnqrsrwIeozfo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741278869; c=relaxed/simple;
-	bh=y8w9Z5XBGvuLTNVCiYL3sVM/L5ZsatxzgXTOSmbh1dY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CIP7X3m4qedK230Tmfs83M2r7v1ixD2768aJ7Ow/yHOP8gfZbMd6Ibm3DYKxe3hMokjYLevFgrVtXn1Xq8xF/lyiJCGavfVxgVSYkVGiSdnB3pCvis9beb77ubxHpaVTKxRVMynqDw6YJ9gF3Gk499ZShA8McS/jcV6TI69wTIQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VlLxC4Wb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1741284689; c=relaxed/simple;
+	bh=bU5AMb4R/DshyEbA+d2oRecQTp/i83dn8rpMf9Jrb6A=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ZMiV8SK1Lf2koSe9TGA2JktdwmTlT+8RIrn/DGr8LkJ6yGT77UqFjaXKSP+KJiNsjnDncxuRMFM0luC4CeedFZe4cMBw+aDZqvK4PFNQCbZnK7I+fpvgxAXQaCMvGF2y1r9wlAOAqnnA6aIipoTygljWETMku1bB1db2kL8EoO4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nbs7AZZC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VlLxC4Wb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E4BC4CEE4;
-	Thu,  6 Mar 2025 16:34:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nbs7AZZC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E160C4AF09;
+	Thu,  6 Mar 2025 18:11:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741278868;
-	bh=y8w9Z5XBGvuLTNVCiYL3sVM/L5ZsatxzgXTOSmbh1dY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=VlLxC4Wbu1cdNhjxZzjiVL/C5tkGwZlf23bdXVa3qCrhfN8CmtftVb20j29BCf5LK
-	 Y/sCfElxHHfVikbYUa0e/0j7g2tgVXcml3GmVrK+8ujY+bKTwyyDOkpIcVRf1jMvZd
-	 99WDtUreuEkMqxYlOBhNkc6rNSRpulykPMZi+jf0hHbBPlZvfkVM0dO3Ywphir7eun
-	 q/xsNHIvW8ZxKWwLCQ1YKqjbfOA1Lwa6Jevn6uzKx3nuSgsV/ofiNou+XNm2v7aWmj
-	 olBAhlmIn+u0d0pDU/N7HUZl91u0pODjgWjo3oBGF4APSlsZsI1L/H/BILmh4/oBlr
-	 KwXleXLvWhoVg==
-Date: Thu, 6 Mar 2025 17:34:21 +0100
-From: Danilo Krummrich <dakr@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Simona Vetter <simona.vetter@ffwll.ch>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, aliceryhl@google.com,
-	robin.murphy@arm.com, daniel.almeida@collabora.com,
-	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
-Message-ID: <Z8nOjV5CoUfq6ogU@cassiopeiae>
-References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
- <20250224115007.2072043-3-abdiel.janulgue@gmail.com>
- <20250305174118.GA351188@nvidia.com>
- <Z8mlAxsszdOH-ow8@cassiopeiae>
- <Z8m9j3SwWHqaCTXo@phenom.ffwll.local>
- <Z8nFJjb30_Wm3cJJ@cassiopeiae>
- <20250306161818.GG354511@nvidia.com>
+	s=k20201202; t=1741284688;
+	bh=bU5AMb4R/DshyEbA+d2oRecQTp/i83dn8rpMf9Jrb6A=;
+	h=From:Subject:Date:To:Cc:From;
+	b=nbs7AZZCIkCccljjMQDL/BvTJZTZy6Ke5hFijBsumz7BWz7iuuJxLEnp/DFPoo0El
+	 onvgGJxI6I0pEhgCx31vb/4yhxmUE3+fYLnMYSxo3UYeaFBHIZEwtpsx3t3ZuSUgbp
+	 8CGszMKKT/mTgc0AWFEa4bIoUdM9wKvUg0ovVzSfOVCh2OqUNNcfN/nRVw6NY+2/AC
+	 2rRRlPrD1pnfhqNpkv25bXQnW8pZc9Aaw7CCB2xMtYqVJ6jzXqOyO620TQQ5S7DmZh
+	 dZX4wVQmnEpFuXJugOoJBHd5Ex/9DBc9S/YyRnwSJd9WNEmhJHJmwZ/8+31oPVB8XA
+	 qzVDw6YroewUA==
+From: Konrad Dybcio <konradybcio@kernel.org>
+Subject: [PATCH 00/11] Various dt-bindings fixes
+Date: Thu, 06 Mar 2025 19:11:12 +0100
+Message-Id: <20250306-topic-dt_bindings_fixups-v1-0-0c84aceb0ef9@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250306161818.GG354511@nvidia.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAEDlyWcC/x2MQQqAIBAAvxJ7TjBNg74SEaWb7cXErQiivycdh
+ 2HmAcZMyNBXD2S8iGmPBZq6ArfNMaAgXxiUVEZqacWxJ3LCH9NC0VMMPK10n4mFlcq3ndNOWwM
+ lTxmL+dfD+L4fgdDHYmoAAAA=
+X-Change-ID: 20250306-topic-dt_bindings_fixups-602d47c3c365
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+ Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Robert Foss <rfoss@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Wesley Cheng <quic_wcheng@quicinc.com>, 
+ Christian Marangi <ansuelsmth@gmail.com>, 
+ Bjorn Andersson <andersson@kernel.org>, 
+ Rohit Agarwal <quic_rohiagar@quicinc.com>, 
+ Kyle Deng <quic_chunkaid@quicinc.com>, Vinod Koul <vkoul@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
+ linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ linux-usb@vger.kernel.org, Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1741284679; l=1852;
+ i=konrad.dybcio@oss.qualcomm.com; s=20230215; h=from:subject:message-id;
+ bh=bU5AMb4R/DshyEbA+d2oRecQTp/i83dn8rpMf9Jrb6A=;
+ b=Rbjc8lynnoqJxMnMySspJrBir6TO0ftRb/hlYhjDyLT0lbuTVzPYrkP9kJkNdvrmrF5sSirOY
+ OpJClHeQ7/8BgUFoYoOiD3hVI7w1qyfUua0bCJfHAswnznxd0oDPZ94
+X-Developer-Key: i=konrad.dybcio@oss.qualcomm.com; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-On Thu, Mar 06, 2025 at 12:18:18PM -0400, Jason Gunthorpe wrote:
-> On Thu, Mar 06, 2025 at 04:54:14PM +0100, Danilo Krummrich wrote:
-> > (For some reason, when replying to this mail, mutt removed Sima from To: and
-> > instead switched Cc: to To:, hence resending.)
-> 
-> It is normal, Simona's mail client is setup to do that.
+A set of not quite related bindings warnings fixes.
 
-Huh! Never noticed that in the past.
+Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+---
+Konrad Dybcio (11):
+      dt-bindings: iommu: qcom,iommu: Add optional TBU clock
+      dt-bindings: display: msm: sm8350-mdss: Describe the CPU-CFG icc path
+      dt-bindings: power: qcom,kpss-acc-v2: Add MSM8916 compatible
+      arm64: dts: qcom: msm8916: Fix KPSS ACC compatible
+      arm64: dts: qcom: sdx75: Fix up the USB interrupt description
+      arm64: dts: qcom: sdx75: Rename AOSS_QMP to power-management
+      arm64: dts: qcom: qcs615: Rename AOSS_QMP to power-management
+      arm64: dts: qcom: sc8180x: Rename AOSS_QMP to power-management
+      arm64: dts: qcom: x1e80100-dell-xps13-9345: Drop clock-names from PS8830
+      arm64: dts: qcom: x1e80100-romulus: Drop clock-names from PS8830
+      arm64: dts: qcom: x1e001de-devkit: Drop clock-names from PS8830
 
-> 
-> > > I think for basic driver allocations that you just need to run the device
-> > > stuffing it all into devres is ok.
-> > 
-> > What exactly do you mean with that? DMA memory allocations or "normal" memory
-> > allocations?
-> 
-> Simona means things like a coherent allocation backing something
-> allocated once like a global queue for talking to the device.
+ .../bindings/display/msm/qcom,sm8350-mdss.yaml           |  6 +++++-
+ Documentation/devicetree/bindings/iommu/qcom,iommu.yaml  |  4 ++++
+ .../devicetree/bindings/power/qcom,kpss-acc-v2.yaml      |  4 +++-
+ arch/arm64/boot/dts/qcom/msm8916.dtsi                    |  8 ++++----
+ arch/arm64/boot/dts/qcom/qcs615.dtsi                     |  2 +-
+ arch/arm64/boot/dts/qcom/sc8180x.dtsi                    |  2 +-
+ arch/arm64/boot/dts/qcom/sdx75.dtsi                      | 16 +++++++++-------
+ arch/arm64/boot/dts/qcom/x1e001de-devkit.dts             |  3 ---
+ arch/arm64/boot/dts/qcom/x1e80100-dell-xps13-9345.dts    |  2 --
+ arch/arm64/boot/dts/qcom/x1e80100-microsoft-romulus.dtsi |  2 --
+ 10 files changed, 27 insertions(+), 22 deletions(-)
+---
+base-commit: 565351ae7e0cee80e9b5ed84452a5b13644ffc4d
+change-id: 20250306-topic-dt_bindings_fixups-602d47c3c365
 
-Yeah, that's what I propose then.
+Best regards,
+-- 
+Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 
-> 
-> Ie DMA API usage that is not on the performance path.
-> 
-> > > But for dma mappings at runtime this will be too slow.
-> > 
-> > What exactly do you mean with "DMA mappings at runtime"? What to you think is
-> > is slow in this aspect?
-> 
-> Things like dma_map_sg(), dma_map_page(), etc, etc.
-> 
-> You cannot propose to add any runtime overhead to those paths and get
-> any support from the kernel community. They are performance paths
-> optimized to be fast.
-
-Oh, I didn't do that. How could I, since I did not knew what was referred
-to? :-)
-
-Quite the opposite, I fully agree with that.
-
-I think for this we need higher level abstraction (which now that I know what
-was meant I know Sima proposed already), or maybe provide an API that can
-consolidate single operations for a single Devres container, etc.
-
-But that's out of scope for this series.
-
-- Danilo
