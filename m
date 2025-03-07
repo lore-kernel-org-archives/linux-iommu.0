@@ -1,65 +1,65 @@
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D636F1C27
-	for <iommu@lists.linux.dev>; Fri,  7 Mar 2025 05:51:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA606192D76
+	for <iommu@lists.linux.dev>; Fri,  7 Mar 2025 05:52:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741326675; cv=none; b=W3UAywhBe1i9UUgKkqlUelfL7lbccOnQ3QkXoZg1sVHmHja2M8Ao7qBDovgeQkP4iAWXlr8zAMo+ljTtR+0VJi8tOhwixIhdXl/3Ndr+s3SDjllog8PzfyaT4hJn9zI//GzYksdVox6BmJ9GiE28ePxfTY97/JYG5t1wMST9F8w=
+	t=1741326732; cv=none; b=P4gZUmRpzSRVhfEThWCoIbdqaOViQLseBYAww6nNNC44abbGVXTDXpr7ZzO+2ydvT/itqipcvKNj1afInod/Xc2cGeX5mtxPIzGQVN6ESqQEmVqSKAtWO8R86YqTn58OWgHsCIngcfHh4gj1fFwhqfxkEs1Z8xIa3NNrBs0ycDg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741326675; c=relaxed/simple;
-	bh=i0+vWPXN2cdkzD1NTQZZWBolbNXz27fwbs3BiMXdQ9M=;
+	s=arc-20240116; t=1741326732; c=relaxed/simple;
+	bh=YJnxjBOJNGJpsAtvdYJofjwEZlD5vwrDmuoRdMrN4PU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NWr/4FQBtqjA0dsYcX2t5gJPKVBaCPLLPa5m+LwFfNEIGK4CWG/24A41eJmFkFNwUkkMiGwfh677mEYfO5xHzOMAPsh70UnHQpriudJEG7P+8Rvla3InEK08jOFumQV+XnBm7+HGQPo8ealdWHiIiuw7dWpV45slykrNA5YJe4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=nQWaJtlM; arc=none smtp.client-ip=209.85.208.177
+	 Content-Type:Content-Disposition:In-Reply-To; b=GFkS6GdF3NQkVVjl2UbMKdl8mAqnCGJEXnvPp4Jm9jL0Ng/Ba/HgT/2ODt1dA9GMd507wg9yub15ZSd4z1vEs5vY7vXhOVu5fBR9MXsfUgkFt/Jh85kkcmfZMbeJHKIbtoa60AxV7w/eIUQzIWAuf6xBKscfdMGj97/T1AeBCv8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Lw6yAgMA; arc=none smtp.client-ip=209.85.167.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="nQWaJtlM"
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-30797730cbdso13909601fa.3
-        for <iommu@lists.linux.dev>; Thu, 06 Mar 2025 21:51:13 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Lw6yAgMA"
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-54965898051so1459104e87.2
+        for <iommu@lists.linux.dev>; Thu, 06 Mar 2025 21:52:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1741326672; x=1741931472; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1741326729; x=1741931529; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tXmSK8/WMVoYp/YH6Up96+HRQthxxadTxRUuQDlSb80=;
-        b=nQWaJtlMlSdn5CQJ0H/NjxwIhRaWXkWwgJhBRd+GdFmmtnE1XzVJdY9bxjuemQIdS7
-         LZZtE7yShG6mdSn7iRahg6SG+9mY4pN9skhRZ2v3nrNNvmVtu7jWJENAKcFtRaQWKkpL
-         uulqwXREslZqb1iBnFzaeCvuBamVN+/3flP9FkGcmMFQ2l3F+tw9sCat9v0Cs0/s704q
-         kw3d4ys2ZXHlzpBwEp/COKA18TZjxJRQO8QU/He4F8vuv5gdSwj03qjrgeji9cCrGaib
-         /FWOt42lEiHb0dNuRyikifecoZ+iWoJadi46k057vI7rlFMi+MwC1dl/2/u4UQRypVTR
-         a8nA==
+        bh=97xCV+Gvyecw927R3SbsNwJBWiMKRLeo3l2nPZL/r98=;
+        b=Lw6yAgMAdIiuYGSdDMqUF2w8u8fQx3/AB3WUz7PG7C5SHxOOAhjlf425tjYBMbERpT
+         qAVDZ7ITKp9qZ2RqNEJoASlJtcjS3l6hHVexUh1dFfnGXNwu5BSF1naS0I+Wp6Xoh69U
+         SqLmiA/DcBuI/+Xyoiba1qNikwUVdiL84puFi357dLETm7fbXSHSqbVUmJs5M+JZlzbU
+         zdNG3cJeBSWlVj5737b39WI8U9kwIBzsJh1RWyujnfCuJtcedwPeKMmL443wQAdgolAV
+         IIyNbNPAUk4C6w4dgtTeF2CY2V4MSdgOL4iDTpgheRwJfj/GBB2ZtEqqH/SZWPF+XVKI
+         FOUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741326672; x=1741931472;
+        d=1e100.net; s=20230601; t=1741326729; x=1741931529;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tXmSK8/WMVoYp/YH6Up96+HRQthxxadTxRUuQDlSb80=;
-        b=bvPSZV7XOTqLB2T7ELvyDf1pBrKUkahtLdc5K63i0KQInF2FcVamfX4xWS0j/vnLPq
-         1FvcgA50/t0XQsseYQyRBSvS6i1tTxcZRhckbcmGEVQorSY90NDETI2BajlBopdzQOAO
-         Wfvx22I+IjIx0bKPb8GkC4tI9sfb7d7bVLWui0KzrVvr0X6b4+WCrGS8T9hdp7IrtXxB
-         yQ2clH/ZOuygYsBzJoG78pEFPimmHIJbgcYW6oHoHGv69OJ10AVlpm7Q0+lhgLXEJKZ2
-         bZkkx/3Szs7wH38vus6kqNNo5mh8gAmUtmRGEMR+L+nSt67v9Q2WaSkP4GiCsccIbT9V
-         EkCw==
-X-Forwarded-Encrypted: i=1; AJvYcCVBjyrETi/ZCqD1j9Rs6H1eYfW6FSH4or9t8g5X5v6NvlnrUT/L7YMZLRP7+tRPQNVeNVXcqA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwZEtROMWyPqX14n504V8/79Cd+kNtj57nP8V1SAJpuV30qOx/T
-	cm/+iCFbqXSvPhLuV00iux+Eio5egtZDHCcq4D01OtuzFlqzKogZCcXSo4CqSqA=
-X-Gm-Gg: ASbGnctFNlIOehRcGi+sRC2WfQV78B7uHNwynVtOjwv2SmlcTtDaJ8VrRbiMGcSImys
-	IgWt4d66fEJ8uxuELx6IMxdO3DnLvxEcPq3T9rlG4SP9KHGh3E6m6JTDm4tf+ZUPN7Vwo6f+2Pu
-	Di0i9N5TnxNoxDUCaU2wYyTL+hcLpi457G8NwZotkEV4N6jODJyJ+nkEFEZTrajXK961Qmv0ZFF
-	2PN5nnr1jh9vvOAXyQR0NRsQOq0AiEmUGCNtJOa7/i05B7Ae7tnIApNXedwrLYqlER2afWHASKp
-	L2naQIB6PXa7Q4Oe83xa+5o5GNotMCSR+6prmUZ/B8PS4JPWOYaG9y+A9dOtvBvgyvhPOibmooW
-	RurLG9+0jJJNTu/JwMp1ZzXfR
-X-Google-Smtp-Source: AGHT+IGZcu2fypEgK7clxXmR93TzJ7unEXU/+kahsKp0+Qev+odXPrrlaC4iINRI4Yd2AzKHpypLwQ==
-X-Received: by 2002:a2e:330e:0:b0:30b:eb08:53e3 with SMTP id 38308e7fff4ca-30bf45360acmr4804561fa.17.1741326672025;
-        Thu, 06 Mar 2025 21:51:12 -0800 (PST)
+        bh=97xCV+Gvyecw927R3SbsNwJBWiMKRLeo3l2nPZL/r98=;
+        b=grHy6RLRHEnWKoD+a0Di9dsuMTKNtkRmbKdKutOJ3hFEIP5FNIYbRMP9UU/B72iYrI
+         QPi5cZXKqS05sBUwCbLxcxD15HE3/9I2/nROUjJIwLhJxu+FdkhOtBBNt9sjddt/fC+H
+         hIlRQ5i1Do1Ud1K3qNSrMHdzew/DFMMdH9cJW7bl0L3Ds/X18smTUyMFrCyNkkmrLBQK
+         gHwW2qbsyVAF4DaVxombnZW5ZdJr9zF9ka5a5MdzyZbpSWoxy4pNnSFu3+hBvMfKZC2m
+         1TK2jrV3ZzX9th5zl07KGB3RG1yKL0O4QtgpOrVWEWaI/2M49hOD41Ukb531cx+K2AyY
+         MlrQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVAEh0RNamRvTpofAisXq/DFPOQcitT1e+M+CyDWxihuNeLzcrH8+ovXqLivaDeqLRsUdoN/A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxt2zVD/dhbuRsieZAIEkcSstYlgIhcF+RzTeD7LJLvZBxQEWT3
+	wFx2jyjBGYWKz+Eef8KyuTcb8mruLVyj5Lpe80rYMPZAqbfH9X2/M0p+DejrZzk=
+X-Gm-Gg: ASbGncudE8mjornsMKyX4oi4dv1Mayie5GZoeFzw8psRUZmYFZdtrb9bskVEAOS5kE+
+	/Ljlr0ko9dnYFBCL0X1uGspdYv3mGA8of4zpGfO3/YyuddGRBI0IXW1TJpXA90iuBABJDj+ZE4k
+	nrZxnR/cSetMyd1xrI6Rg8deBj5FIvei5mBGI3l4+1TnDc0rs4oozulL5qPttTCWIZmXFw1Eq9a
+	DcInAUTEjsiqldinV1/szr4qYHJy+bMTYqEVHI0m6g2awQ3Y06SrnPOoNP6q4BXrniMvYjWOz+C
+	ArbQwEcTkwUPLJnSwdlhQ7RNlhBBdcWKTZnRncFaO0aCb0nYIfs2lnV7u3ty9usicFokD62dAgS
+	WQaVvQJtIguvFcEn658k7VC17
+X-Google-Smtp-Source: AGHT+IHunk8+MpzZDHTJkBgYb12y6m7jhuOmcjA3ogw1gP8DkwdgKWszNP4J5Id48vGNdylVuIQYaw==
+X-Received: by 2002:a05:6512:2342:b0:549:4de9:22df with SMTP id 2adb3069b0e04-54990da2057mr687182e87.0.1741326729036;
+        Thu, 06 Mar 2025 21:52:09 -0800 (PST)
 Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-30be9a073d0sm4291591fa.112.2025.03.06.21.51.09
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5498ae45f8dsm384613e87.34.2025.03.06.21.52.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Mar 2025 21:51:10 -0800 (PST)
-Date: Fri, 7 Mar 2025 07:51:08 +0200
+        Thu, 06 Mar 2025 21:52:07 -0800 (PST)
+Date: Fri, 7 Mar 2025 07:52:05 +0200
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Konrad Dybcio <konradybcio@kernel.org>, g@eriador.lumag.spb.ru
+To: Konrad Dybcio <konradybcio@kernel.org>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
 	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
 	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
@@ -75,11 +75,11 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
 	freedreno@lists.freedesktop.org, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
 	linux-usb@vger.kernel.org, Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Subject: Re: [PATCH 09/11] arm64: dts: qcom: x1e80100-dell-xps13-9345: Drop
- clock-names from PS8830
-Message-ID: <bth4rfqqu2bat24avosimvxuqmruc52taues4wljnhfcmxnx7m@zkjvf32oiogt>
+Subject: Re: [PATCH 03/11] dt-bindings: power: qcom,kpss-acc-v2: Add MSM8916
+ compatible
+Message-ID: <nolgnvhb4ipmt64bhy3swibrjb5cxncz7nwk56osn7bkbrsy2b@6ntbn5pk22gf>
 References: <20250306-topic-dt_bindings_fixups-v1-0-0c84aceb0ef9@oss.qualcomm.com>
- <20250306-topic-dt_bindings_fixups-v1-9-0c84aceb0ef9@oss.qualcomm.com>
+ <20250306-topic-dt_bindings_fixups-v1-3-0c84aceb0ef9@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,24 +88,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250306-topic-dt_bindings_fixups-v1-9-0c84aceb0ef9@oss.qualcomm.com>
+In-Reply-To: <20250306-topic-dt_bindings_fixups-v1-3-0c84aceb0ef9@oss.qualcomm.com>
 
-On Thu, Mar 06, 2025 at 07:11:21PM +0100, Konrad Dybcio wrote:
+On Thu, Mar 06, 2025 at 07:11:15PM +0100, Konrad Dybcio wrote:
 > From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 > 
-> The preemptively-merged node contains a property absent from the final
-> bindings. Remove it.
+> MSM8916 seems to reuse the same hardware as MSM8974 and friends (for
+> whom this binding document was created). Add a new compatible for it.
+
+Ok, I should have read dt-bindigns before sending a comment. But this
+commit doesn't explain, why do you need an extra compat string.
+
 > 
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 > ---
->  arch/arm64/boot/dts/qcom/x1e80100-dell-xps13-9345.dts | 2 --
->  1 file changed, 2 deletions(-)
+>  Documentation/devicetree/bindings/power/qcom,kpss-acc-v2.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-
-Fixes: bd2dbbb1f35a ("arm64: dts: qcom: x1e80100-dell-xps13-9345: Introduce retimer support")
-
-
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> diff --git a/Documentation/devicetree/bindings/power/qcom,kpss-acc-v2.yaml b/Documentation/devicetree/bindings/power/qcom,kpss-acc-v2.yaml
+> index 202a5d51ee88c7190805efe8f1bf493bdb69ec45..27dae49163fa0790ceb6fda8a5c674f739d4a41a 100644
+> --- a/Documentation/devicetree/bindings/power/qcom,kpss-acc-v2.yaml
+> +++ b/Documentation/devicetree/bindings/power/qcom,kpss-acc-v2.yaml
+> @@ -18,7 +18,9 @@ description:
+>  
+>  properties:
+>    compatible:
+> -    const: qcom,kpss-acc-v2
+> +    enum:
+> +      - qcom,msm8916-kpss-acc
+> +      - qcom,kpss-acc-v2
+>  
+>    reg:
+>      items:
+> 
+> -- 
+> 2.48.1
+> 
 
 -- 
 With best wishes
