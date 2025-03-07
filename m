@@ -1,206 +1,170 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB63039ACC
-	for <iommu@lists.linux.dev>; Fri,  7 Mar 2025 13:16:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E92A220764E
+	for <iommu@lists.linux.dev>; Fri,  7 Mar 2025 14:15:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741353377; cv=none; b=qyuh2FcalNFkqMGjFf+mneavFvcTFgR17mt8IrgY448J7xJzXKhDotFHjWnboXKxzZ/kap6jxOAcMpMOzSj0xpP7WmIInCAHBk38i0XLoGVR9zhlFT+Mbg8yqsouzytEOr6WjnSTVh8/6beP/QUU7yt6/2PlNSeU/TXko4hLSIU=
+	t=1741356931; cv=none; b=YZw8WFcAAbicVUn8C3tqiHh/mw/IF6QQMEQQ6/uNOfYw6YaFOXc8CMjQei4OZoEJjk2kjRTkU5UWdkrIY1m/XokFCmyBdL7JXhXSUc07nLGjas1kLrHY5Fht2VU46NPNKFkQEHbr3GWr0Cxg+djO8QN6TPudtqitrDGCV0M53tI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741353377; c=relaxed/simple;
-	bh=hZd3zDcuxytIUObsUdBqQhBZTsjVdEjxbPyYWVGizxs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MDXTN90sIZ9uTh8LF6rWP4lTbbZGkFKU9v2SYTji3lU2i4VBYyUUaTm9pcbYbOkWyapX+hW+w+5LUY1HjN0A9gW9PMWWbXwdlXSBfqcXC4nEtJCBrNdlXRtPCa7DJCYtn55RXGtkzYMkLMMG9EDf5x9G70GCPBGN54ex70E63B4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch; spf=none smtp.mailfrom=ffwll.ch; dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b=IYkpGL84; arc=none smtp.client-ip=209.85.218.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ffwll.ch
+	s=arc-20240116; t=1741356931; c=relaxed/simple;
+	bh=ORlXqKH59TAvqyZ696RW4rdKfXnYfX3Dj6nxXbH2qsY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=qkqI5jSXBhr4AcjcOrsAnW1rWmznueNyEYLidRccC1hd9TvJBMLVBvwtQ8qI3MTjte47/pASwpfSdRCGrBjwuEztgR4/pJHEUGrHPwYDmYH8MtUkzP3Jxni60hkfzB4id6Naxd10cFJLNOss1ygrywPqo86PnASe8ZSvxc+0qtw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=cfnaHWqT; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b="IYkpGL84"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-abf5f4e82caso359422766b.1
-        for <iommu@lists.linux.dev>; Fri, 07 Mar 2025 05:16:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google; t=1741353374; x=1741958174; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=G8f2sytBVf6nQXJURXlsjCA27TJ+V7rR1VMxVWEgKQo=;
-        b=IYkpGL84wAeSnefeCfHFws8Ic4ZEMl6qJIDrvkXR454DZK1An0WuAHlzzlksUX+3X8
-         u2i+MZCEXSj/Dzzy+O9bffm6ImW8tcpMocYS2r0tc4nz/8HoYHBb7tKh5E2MrA/fw93i
-         AewyRLv4YTdBh9zg321TSjDb1PPJOUndFQKRQ=
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cfnaHWqT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1741356928;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3O3AnmpQI3jBSfzVaFR0gisRYPo1AftdSa2GSlKHZsw=;
+	b=cfnaHWqTYy/EwlluAIJkTzfOyvI3cxT9/zynGveLQJGUofxU0lmNzsasATVtFllCB45uVc
+	nfLatL3fCRG6wW+HbfrdvphwD4Sq90Q5Ts0FRXQlOr4crE23URb1xmkooUXNQROQLJ5yZ8
+	36Wtj6FIMk6zPud0cM4jC6p+3HLzqsY=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-250-EHxEOjppObufHo1YtnVcUQ-1; Fri, 07 Mar 2025 09:15:27 -0500
+X-MC-Unique: EHxEOjppObufHo1YtnVcUQ-1
+X-Mimecast-MFC-AGG-ID: EHxEOjppObufHo1YtnVcUQ_1741356926
+Received: by mail-lj1-f198.google.com with SMTP id 38308e7fff4ca-30bf67adf33so4078971fa.0
+        for <iommu@lists.linux.dev>; Fri, 07 Mar 2025 06:15:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741353374; x=1741958174;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=G8f2sytBVf6nQXJURXlsjCA27TJ+V7rR1VMxVWEgKQo=;
-        b=gO3da0eGwVGafboO6iKaGixrRMcrOomLpfqlS1jl4ynhbW1MNH9N5hxkuDKIhoC90g
-         RCUeaJJIJzUrqbA0nbev3cZi0Zyg4iQo4UYDBuzxNPhviQbLdTKF7IghalNFVSoP8Z54
-         UHGkPmSGedGM+a8AsRC/pNGUCJ2MnYclfJNuFIRrBPU2f7lvJRPoQxzBmRGgBNZUQ/Mb
-         Rld4pvfMhdkEnmPpBxNpfPikxCJw7TwKwqB/FZqpElakcs3MWeEilZUVWJbozETv/pu0
-         MYLYcmF2Y7FLa0ajWCGrnD238+We6w5I/6iO9WYrf8gkrUyrDAgmK2rmk04nUZZK+dyY
-         JRjA==
-X-Forwarded-Encrypted: i=1; AJvYcCWs0npp7I9w/QvmtjYPisgBAI4X62K8Ad1r5GKLV1iuA+6EL2ZE5cheleUxjnB7VrH5b4ww+Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwXN/miVyT3NWofnDSOBMtpwD71GDwiEY2eC+n8majVTp2ahi6e
-	YBddefq7U7qHxEoHJ3oyX2LSi0CBI71L/igNWXdl7YQBqzQPKegqLSvsUvANVqI=
-X-Gm-Gg: ASbGncv2JPEtwfF7/C/pPe89QvmSfQzbXm7rcuL1ZbjnPnnYI3szQZ2CknN5qCfhU7F
-	HGTyJrO9WVSkmJ4UownJlX3yZ61+caj0Wf3if81ZS+WNDIZsiN/Bfg+PUjkhN9coPMVSDts9v59
-	p5+Inq7sAJMkpUAvuZxwm0o2N+sJHP1Y6eg2vf9evQUxxdrb4RiGklK3hjC1lb+Weau8CkLIrWg
-	sud6Gj40IbxgKJ8Xq83AGVf6wt5HDTYhqqgPeNhCH0m1em51nz/MynLMZC1QV2JwruVNt79V4W7
-	mnur0eGHYJmdL4jRK7Lks7BRhS8WL1qHmPxT3Cx80j3WN7OQdNlPdyQ+
-X-Google-Smtp-Source: AGHT+IEBr6qwJM6+7eURCpwowuxB3sHU4SE5NlnG84DUfQ8ELCKEuO9h6jhEzjJAVdDNsT77fkD+OA==
-X-Received: by 2002:a17:907:1b16:b0:ac2:1c64:b0a with SMTP id a640c23a62f3a-ac252a8827cmr340387366b.14.1741353373823;
-        Fri, 07 Mar 2025 05:16:13 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:5485:d4b2:c087:b497])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ac23988af19sm278685266b.136.2025.03.07.05.16.12
+        d=1e100.net; s=20230601; t=1741356926; x=1741961726;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3O3AnmpQI3jBSfzVaFR0gisRYPo1AftdSa2GSlKHZsw=;
+        b=VlVXep2eGMplstEd3DeiNHkV+B9fcq0Bu/ne1XtU27uqWH/XuJ5TBTaUgFwQPqQbY2
+         ZlHTPqlcipBGPx496Hli6ihX/mkr8l2hWVGPkF+atIrtoP+lHTAe9iOrSOHUrI9ys8tR
+         7Kxx28ElzoofUwJa+Yc1gSHFXD/LK0iaYp36LcQeP/3ZprVPOj1mzG7/DFiX26s+pPti
+         RQ3MnChtRPDejviBtwPecbs8GWUgi9UyTuMSkjnvutkJk9wBBMzpBpmjPz5O/xbuvGKR
+         Pxic6BS0JpbDCSpbiDDA0ApY1mlrUUJx3+ngwBNMYNLUlsdhVJi7NPl0nULMcGdymtFC
+         btmQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX8MF9GSPp28AeteHqGBSBKLFYUOAfiKBHRv4hA2ygXB8ZKbS2kljATWPRvIA+LJoWfQ97Ejw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyg2HoYEYjyUMlRMize+Sl4lOYI3xzqy4wTLvv2B0I3ZGykY0RG
+	5PTE7Vl4XVGh/2Cj+6oGBbXkslPdZi3gW5yjuEip729b+HysMmzp2jJo3GSdYM1Mol+UcfR/CBV
+	/AX3A+5eN6Nh+KgsHELBWLkNS1Aca0oeh7tqJboBuDBZPP28zhGY/
+X-Gm-Gg: ASbGncu22mIJb4h5JVIpL8H+fHWwrOL7CORkmzi18fCSGo5RUp7AkdOKCyE8oPjjAcr
+	sWxlG662NLXd6zfbIkD/0odXoxXlGags5jWZFRK8jCVU6KiKby7NsAEsTZgl16gZgqLNJA3+GVp
+	rwcDa7IH5zcYypL2mQKoKwe5m2wqyowr0JPKkNd+Kkg7ffjZyiVHKDN1BcBtArKvFnhGSbeYeO9
+	CjLxGWeKK1niThKtOZuZyzlvK5zbHa2swphyflXj8WPqRW7E4UWIXS+H956juL+pWJtKPSAxR4y
+	4aYKrPHzrrD3
+X-Received: by 2002:a05:6512:3e08:b0:549:8c0c:f059 with SMTP id 2adb3069b0e04-549903f7501mr1328600e87.10.1741356925927;
+        Fri, 07 Mar 2025 06:15:25 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IE3xCZIBKOSDK+lcZFrDyk8zQiKyadlLEz2VUX4gZrVM2Ry982AQyl3kHsVBYxqC5TNxfqK0A==
+X-Received: by 2002:a05:6512:3e08:b0:549:8c0c:f059 with SMTP id 2adb3069b0e04-549903f7501mr1328584e87.10.1741356925465;
+        Fri, 07 Mar 2025 06:15:25 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5498ae58e4fsm500345e87.82.2025.03.07.06.15.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Mar 2025 05:16:13 -0800 (PST)
-Date: Fri, 7 Mar 2025 14:16:11 +0100
-From: Simona Vetter <simona.vetter@ffwll.ch>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Danilo Krummrich <dakr@kernel.org>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, aliceryhl@google.com,
-	robin.murphy@arm.com, daniel.almeida@collabora.com,
-	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
-Message-ID: <Z8rxm-BHldKqEwyp@phenom.ffwll.local>
-Mail-Followup-To: Jason Gunthorpe <jgg@nvidia.com>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, aliceryhl@google.com,
-	robin.murphy@arm.com, daniel.almeida@collabora.com,
-	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
- <20250224115007.2072043-3-abdiel.janulgue@gmail.com>
- <20250305174118.GA351188@nvidia.com>
- <Z8mlAxsszdOH-ow8@cassiopeiae>
- <Z8m9j3SwWHqaCTXo@phenom.ffwll.local>
- <20250306160907.GF354511@nvidia.com>
- <Z8qzP3CR8Quhp87Z@pollux>
- <20250307124809.GL354511@nvidia.com>
+        Fri, 07 Mar 2025 06:15:24 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+	id C544C18B8B34; Fri, 07 Mar 2025 15:15:22 +0100 (CET)
+From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+ kuba@kernel.org, pabeni@redhat.com
+Cc: zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com,
+ Yunsheng Lin <linyunsheng@huawei.com>, Alexander Lobakin
+ <aleksander.lobakin@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+ Alexander Duyck <alexander.duyck@gmail.com>, Andrew Morton
+ <akpm@linux-foundation.org>, Gaurav Batra <gbatra@linux.ibm.com>, Matthew
+ Rosato <mjrosato@linux.ibm.com>, IOMMU <iommu@lists.linux.dev>, MM
+ <linux-mm@kvack.org>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
+ <daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, John
+ Fastabend <john.fastabend@gmail.com>, Matthias Brugger
+ <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
+ intel-wired-lan@lists.osuosl.org, bpf@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net-next v11 0/4] fix the DMA API misuse problem for
+ page_pool
+In-Reply-To: <20250307092356.638242-1-linyunsheng@huawei.com>
+References: <20250307092356.638242-1-linyunsheng@huawei.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date: Fri, 07 Mar 2025 15:15:22 +0100
+Message-ID: <87v7slvsed.fsf@toke.dk>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250307124809.GL354511@nvidia.com>
-X-Operating-System: Linux phenom 6.12.11-amd64 
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: AT7Exvs3wsBSE_XcNnonL_sOCE2P2X8BolVoswXiSIM_1741356926
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain
 
-On Fri, Mar 07, 2025 at 08:48:09AM -0400, Jason Gunthorpe wrote:
-> On Fri, Mar 07, 2025 at 09:50:07AM +0100, Danilo Krummrich wrote:
-> > > Technically it is unsafe and oopsable to call the allocation API as
-> > > well on a device that has no driver. This issue is also ignored in
-> > > these bindings and cannot be solved with revoke.
-> > 
-> > This is correct, and I am well aware of it. I brought this up once when working
-> > on the initial device / driver, devres and I/O abstractions.
-> 
-> Yes it is also incorrect to call any devm function on an unprobed
-> driver.
+Yunsheng Lin <linyunsheng@huawei.com> writes:
 
-You can, devm groups nest, and I think by default (might misremember)
-there's 3:
+> This patchset fix the dma API misuse problem as below:
+> Networking driver with page_pool support may hand over page
+> still with dma mapping to network stack and try to reuse that
+> page after network stack is done with it and passes it back
+> to page_pool to avoid the penalty of dma mapping/unmapping.
+> With all the caching in the network stack, some pages may be
+> held in the network stack without returning to the page_pool
+> soon enough, and with VF disable causing the driver unbound,
+> the page_pool does not stop the driver from doing it's
+> unbounding work, instead page_pool uses workqueue to check
+> if there is some pages coming back from the network stack
+> periodically, if there is any, it will do the dma unmmapping
+> related cleanup work.
+>
+> As mentioned in [1], attempting DMA unmaps after the driver
+> has already unbound may leak resources or at worst corrupt
+> memory. Fundamentally, the page pool code cannot allow DMA
+> mappings to outlive the driver they belong to.
+>
+> By using the 'struct page_pool_item' referenced by page->pp_item,
+> page_pool is not only able to keep track of the inflight page to
+> do dma unmmaping if some pages are still handled in networking
+> stack when page_pool_destroy() is called, and networking stack is
+> also able to find the page_pool owning the page when returning
+> pages back into page_pool:
+> 1. When a page is added to the page_pool, an item is deleted from
+>    pool->hold_items and set the 'pp_netmem' pointing to that page
+>    and set item->state and item->pp_netmem accordingly in order to
+>    keep track of that page, refill from pool->release_items when
+>    pool->hold_items is empty or use the item from pool->slow_items
+>    when fast items run out.
+> 2. When a page is released from the page_pool, it is able to tell
+>    which page_pool this page belongs to by masking off the lower
+>    bits of the pointer to page_pool_item *item, as the 'struct
+>    page_pool_item_block' is stored in the top of a struct page.
+>    And after clearing the pp_item->state', the item for the
+>    released page is added back to pool->release_items so that it
+>    can be reused for new pages or just free it when it is from the
+>    pool->slow_items.
+> 3. When page_pool_destroy() is called, item->state is used to tell
+>    if a specific item is being used/dma mapped or not by scanning
+>    all the item blocks in pool->item_blocks, then item->netmem can
+>    be used to do the dma unmmaping if the corresponding inflight
+>    page is dma mapped.
 
-- probe/remove i.e. driver bound lifetime
-- up to device_del in case you've called devm outside of a driver being
-  bound.
-- Final kref_put on the device.
+You are making this incredibly complicated. You've basically implemented
+a whole new slab allocator for those page_pool_item objects, and you're
+tracking every page handed out by the page pool instead of just the ones
+that are DMA-mapped. None of this is needed.
 
-For added fun, you can create your own nested groups within this and nuke
-them as needed. component.c does some of that, which is why I regretfully
-know about this stuff.
+I took a stab at implementing the xarray-based tracking first suggested
+by Mina[0]:
 
-> > It's on my list to make the creation of the Devres container fallible in this
-> > aspect, which would prevent this issue.
-> 
-> I expect that will require new locking.
-> 
-> > > The actual critical region extends into the HW itself, it is not
-> > > simple to model this with a pure SW construct of bracketing some
-> > > allocation. You need to bracket the *entire lifecycle* of the
-> > > dma_addr_t that has been returned and passed into HW, until the
-> > > dma_addr_t is removed from HW.
-> > 
-> > Devres callbacks run after remove(). It's the drivers job to stop operating the
-> > device latest in remove(). Which means that the design is correct.
-> 
-> It could be the drivers job to unmap the dma as well if you take that
-> logic.
-> 
-> You still didn't answer the question, what is the critical region of
-> the DevRes for a dma_alloc_coherent() actually going to protect?
-> 
-> You also have to urgently fix the synchronize_rcu() repitition of you
-> plan to do this.
-> 
-> > Now, you ask for a step further, i.e. make it that we can enforce that a driver
-> > actually stopped the device in remove().
-> 
-> So where do you draw the line on bugs Rust should prevent and bugs
-> Rust requires the programmer to fix?
-> 
-> Allow UAF from forgetting to shutdown DMA, but try to mitigate UAF
-> from failing to call a dma unmap function. It is the *very same*
-> driver bug: incorrect shutdown of DMA activity.
-> 
-> I said this for MMIO, and I say it more strongly here. The correct
-> thing is to throw a warning if the driver has malfunctioned and leaked
-> a DMA Mapping. This indicates a driver bug. Silently fixing the issue
-> does nothing to help driver writers make correct drivers. It may even
-> confuse authors as to what their responsiblities are since so much is
-> handled "magically".
+https://git.kernel.org/toke/c/e87e0edf9520
 
-I think thus far the guideline is that software uaf should be impossible.
-So calling dma_* functions on deleted devices should not be doable (or
-result in runtime failures on the rust side).
+And, well, it's 50 lines of extra code, none of which are in the fast
+path.
 
-I think for the actual hw uaf if you leak dma_addr_t that are unmapped in
-hw device tables that would need to be outside of the scope of what rust
-can prevent. Simply because rust doesn't know about how the hw works.
+Jesper has kindly helped with testing that it works for normal packet
+processing, but I haven't yet verified that it resolves the original
+crash. Will post the patch to the list once I have verified this (help
+welcome!).
 
-Wrt magically cleaning up, that is generally the preferred rust approach
-with the Drop trait. But there are special traits where you _must_
-manually clean up an object with a call that consumes its reference, and
-the compiler will fail if you just leak a reference somewhere because it
-knows it's not allowed to automatically drop that object. So both patterns
-are possible, but rust has a very strong preference for the automagic
-approach, unlike C. So there will be somewhat of a style different here in
-what a native-feeling api looks like in C or rust.
+-Toke
 
-> > Having that said, it doesn't need to be an "all or nothing", let's catch the
-> > ones we can actually catch.
-> 
-> Well, that's refreshing. Maybe it would be nice to have an agreed
-> binding design policy on what is wortwhile to catch with runtime
-> overhead and what is not.
+[0] https://lore.kernel.org/all/CAHS8izPg7B5DwKfSuzz-iOop_YRbk3Sd6Y4rX7KBG9DcVJcyWg@mail.gmail.com/
 
-Yeah clarifying this stuff is probably a good idea.
-
-Cheers, Sima
--- 
-Simona Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
