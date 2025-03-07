@@ -1,63 +1,64 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 365E3214212
-	for <iommu@lists.linux.dev>; Fri,  7 Mar 2025 10:18:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 913F4211474
+	for <iommu@lists.linux.dev>; Fri,  7 Mar 2025 10:20:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741342700; cv=none; b=VrjntbMzfkktibfaoYnlkDR008RVVhEwtcku8ZlwEbkLTkiPD/Q3X/tShUUAjU5mHxj8Y017qjJF6f+Zdcus1DNX1Y5S3LildmfXs9+NcMUovb8VHTuQf/oQqVAGNmYKFzuSXwCrrUaJNW/UjuROZimA57VOVcwvk6wVkmjSGc0=
+	t=1741342812; cv=none; b=ZJunXAIvFHTeGzOXNbkBtM6x7LrCSoD5C/62DBB+18F7dm0JtKRsTJoNuRRnEHnYe1nvggj9x7gTesIluiYs5RGJXPSgtvv/gAo4Dbr8rW9XNVBwI/fHB9lVhqDE8dX7CnxQZHyUTRqstEISk7yBv/5SG4yIdrpXnkoVVZEcBiE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741342700; c=relaxed/simple;
-	bh=A2ngPlxsViHeU++f/T0fHfvoDhTTkba+2oBbb7Nj+nI=;
+	s=arc-20240116; t=1741342812; c=relaxed/simple;
+	bh=79LSSp/0eeR8AeePtwzHkpxVlnVAzHXOhFEG9XSuVcw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nQlYHb6bzQARgUrGOR3/MS5fg8WaduS5jJpdI249dIsZWSbNXEuIDxb9DlVfMJ78ccXjtkybiUoZSs8ppbWGzVOVfrQDoyl8U6vK1cyYpjGc32hv0WzhwEJMDeYnoqT/Ow/U1MiAg5y1UA8+ew9og5wnMlHKRrOY8j8Zm9WZv4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch; spf=none smtp.mailfrom=ffwll.ch; dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b=CI3x9ls1; arc=none smtp.client-ip=209.85.221.50
+	 Content-Type:Content-Disposition:In-Reply-To; b=h7VK/HxLH4d4PkW2onjR31I9MKUrAIzOj4e3GL8/ZG1VF8A7K/SJJca0GeizaQu/qgnj76za5mhMPuazB4KZSaXPGgCx83h9G0HxiLm+96YXu60r97lYGwYAbdlRpIoJhiEIb8CIgcaPK6+mxR73BjHfiR5K+RzUAxUCsPzhCtA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch; spf=none smtp.mailfrom=ffwll.ch; dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b=ZWM2SfMO; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ffwll.ch
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b="CI3x9ls1"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-391342fc0b5so655574f8f.3
-        for <iommu@lists.linux.dev>; Fri, 07 Mar 2025 02:18:16 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b="ZWM2SfMO"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4394036c0efso9380125e9.2
+        for <iommu@lists.linux.dev>; Fri, 07 Mar 2025 02:20:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google; t=1741342695; x=1741947495; darn=lists.linux.dev;
+        d=ffwll.ch; s=google; t=1741342809; x=1741947609; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references
          :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=eriVuZyAjeW4XZxzbs/VYx0wmamknYVQrCt+Q1+FUXw=;
-        b=CI3x9ls1vNo0wMddyXT6KrPdC8dNe4Cd439pIdaMkfayVqsVaUTzxAFQgxZgvz6hTD
-         xKrk9D0/ZQtKNYbAdNjLzVnGpvHwIa2zZBG13bsd4GA/uRRsZr2AjK5LVbzGE/gQ3/PA
-         uPzxzwlDbkML557qbxFJNRktIDqJ208552PLk=
+        bh=QZvaNwCaRfuC9eejyQ8YerbsFpOq+0SleVUFJwnjazQ=;
+        b=ZWM2SfMOg5HQ2fgznrHwhGjQFkS6W/kPT7o25+WBtcHiE3xhyYAJL422fT0M1zrH7F
+         c7xt3UZiHLycwtV14Id+PTJXs9BQrKE0utMoCi51pjsbNFTy7ANqlYa7PhLw1cNbifr7
+         hh9MLyH4xAQUBa7HfFndDWrnmYCB/tMW14duY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741342695; x=1741947495;
+        d=1e100.net; s=20230601; t=1741342809; x=1741947609;
         h=in-reply-to:content-disposition:mime-version:references
          :mail-followup-to:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=eriVuZyAjeW4XZxzbs/VYx0wmamknYVQrCt+Q1+FUXw=;
-        b=YVwSRrtC0M5Q23656YzznwpZbS3ai854Sqe2srZPSOOUmTM4/XToLd6KHGOMoOAq+M
-         QfGGv40JI5o1FG7lj14r+q3wpCSp5Ni7pb8PIM7N+r236MPhn0WI1UWwU2hGX6KcD/PE
-         8oXIrBAD6r6czgEyS6DGzZhQGUMnfkiev+kbecIb407PM6MWEOWLEx6ZSmgpmkSkzFIy
-         MOxVp57RVgtk94aKpejjR2uL30cyw+Y7VNrCsONPFvgM4avaQ2StvO6UBADbaWLW3IT3
-         h9ZXXKI5zwMCCVoKtvkbo3cSA7pp43j8FKz23JBh7YtgAX22pZ4a9vOZIUWPdKu5tYms
-         2ZrA==
-X-Forwarded-Encrypted: i=1; AJvYcCUNOjebVPWHCSrVGfcvpgniCCUOO2aigfsPM0LLC73FtHgJaqVRvTV6kiddPU6aSYo6ORG50Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzU2i42UOjqJ1clhNiNiGQf1jQitsdWa5uoAo4rlfeWddajKQ5Y
-	7MBELNXhguIcL3PvQEFMXuzuXvwWx1NnJ7ffl5FVu+Dyk7lLcliz/FFt/EGerYg=
-X-Gm-Gg: ASbGncvq2xmqckIonUsoK2fgf3WPmKV6kNYgJEqjTAOCQ7Rzx96YsF3VFSOfBmmIwgA
-	jT7gHOExL1c/FM2+NfdigRLVdP+t69x0otuYT0Fpxjgn9noMLZRT5VVEh2SiytsABYM3zzOu0PK
-	MRbmEhxMRw+r+Zm01X3FsTxEeC5Z24jD8RNTNSfh69VxW9aBNPG25zlGckAEzSIigbsyiahG4VB
-	t50Yutb262lWBAOyuylk0kQ/WfHUSE9y+Eec8SwuLjNklSdOEvT60M3+Q0aeSCkuAHKZNiHb0Yd
-	vn7NEZDYH56dmSexgn1PgAkCxBAB/YMRVH2OTTLC4mFGS3ZUnEmF88qD
-X-Google-Smtp-Source: AGHT+IEAZISqACsxvEE8pMsJbbIN/kzp1kRyxcTMswdSMukChQqkklpQTvMwVWdtKsOw5sLVVDQLwg==
-X-Received: by 2002:a5d:584f:0:b0:391:2e7:67ff with SMTP id ffacd0b85a97d-39132d090fbmr2149096f8f.10.1741342695383;
-        Fri, 07 Mar 2025 02:18:15 -0800 (PST)
+        bh=QZvaNwCaRfuC9eejyQ8YerbsFpOq+0SleVUFJwnjazQ=;
+        b=VsmLJTP4ABXMYU0lQulW+OyS4hCAI5tkUVEIe1lCUNtFIPYUbiePwSi4I5o8Yweulj
+         EF9qF3uFBeeRlz9d2Uy0AKfUKsUGjYMV1ltboIZ5i0SlKsebHDbDuS2Nc1yyYdSV3TNi
+         PHghaeVcpWB7+zzK7jcikoVokdO2UTskVhn6+F4ficCijAWzLGQymWdRRsr2Gl5ROS/s
+         tzAjWxHmR6/W2ADUj1ZZLtaVmfO4ESxV3tSd4uEHs4hMXXg+4sQNFAcyd/PBb99sSgYj
+         bzj2KKEz8tSKpIB/0tmJY41ZImwlNa4VZD33bkLPQnbrKWXFY96jw7TVOmTDlHY6JZC9
+         hJ3g==
+X-Forwarded-Encrypted: i=1; AJvYcCVIPeE5ZACKrO3qgVc6erhcSOrL0RhK3uY1JM0P/WIALI2UjweedRYF+7vHZVnFAq2HeJV27A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyTY5935H4mOcvl71sUAFpFUnEEK4ycw2rBfCg5bOvVZvZtnq2E
+	jN/pgjL9sekv3kxwleyn75etjg67GzeXPONe6OK1GZWvYFIDJ4kGG7H5TwyOUuU=
+X-Gm-Gg: ASbGnctYSeqTrsqjGJFXxURotAXmkD/TvsWwUTTPrG5e9LN7lHXeZQvBpBTbshDjwiO
+	lPm7ri3NfVMMoKgiB673KOz3oz8+Sqpz/1OzoYPM0oc5f5uBXbV+4kNm5aAfrdyGzammTsLQo97
+	3jKayoyFxd0wtOiG/BmczDijVUtxspbmbHfp0Cbdg73C6lReJP4HwI2G3h6EDSwcWPis0UUbVzq
+	zCneficyd/ZIFbNbZXbRc5RaOZRmrL9VT1znPj6FxTf6NP6IYxPFK6p1Q4Rh8XDzyQTBqaeDCN+
+	rwaHcHyzieotIHpX6pHb7p6bnLpFMvHv2LqLv1qzsjcDYndZsQKP0BZI
+X-Google-Smtp-Source: AGHT+IEPRCaRwwby9REx68urow5tcgId19HYNZtfxn60gWBti42p1dhExwqD/ktCzPXjJr3OxDEBmg==
+X-Received: by 2002:a05:600c:3b92:b0:43b:c7ad:55c2 with SMTP id 5b1f17b1804b1-43c5a5e9853mr18146135e9.6.1741342808680;
+        Fri, 07 Mar 2025 02:20:08 -0800 (PST)
 Received: from phenom.ffwll.local ([2a02:168:57f4:0:5485:d4b2:c087:b497])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3912bfdfcdasm4798966f8f.23.2025.03.07.02.18.13
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43bdd8da097sm47877475e9.17.2025.03.07.02.20.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Mar 2025 02:18:14 -0800 (PST)
-Date: Fri, 7 Mar 2025 11:18:12 +0100
+        Fri, 07 Mar 2025 02:20:08 -0800 (PST)
+Date: Fri, 7 Mar 2025 11:20:05 +0100
 From: Simona Vetter <simona.vetter@ffwll.ch>
 To: Danilo Krummrich <dakr@kernel.org>
 Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Simona Vetter <simona.vetter@ffwll.ch>,
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>, aliceryhl@google.com,
 	robin.murphy@arm.com, daniel.almeida@collabora.com,
 	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
@@ -73,7 +74,7 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>,
 	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
 	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
 Subject: Re: [PATCH v12 2/3] rust: add dma coherent allocator abstraction.
-Message-ID: <Z8rH5D5S7QzyJo1D@phenom.ffwll.local>
+Message-ID: <Z8rIVQV0GYqGUYbh@phenom.ffwll.local>
 Mail-Followup-To: Danilo Krummrich <dakr@kernel.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>, aliceryhl@google.com,
@@ -95,8 +96,9 @@ References: <20250224115007.2072043-1-abdiel.janulgue@gmail.com>
  <20250305174118.GA351188@nvidia.com>
  <Z8mlAxsszdOH-ow8@cassiopeiae>
  <Z8m9j3SwWHqaCTXo@phenom.ffwll.local>
- <20250306160907.GF354511@nvidia.com>
- <Z8qzP3CR8Quhp87Z@pollux>
+ <Z8nFJjb30_Wm3cJJ@cassiopeiae>
+ <20250306161818.GG354511@nvidia.com>
+ <Z8nOjV5CoUfq6ogU@cassiopeiae>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -105,87 +107,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Z8qzP3CR8Quhp87Z@pollux>
+In-Reply-To: <Z8nOjV5CoUfq6ogU@cassiopeiae>
 X-Operating-System: Linux phenom 6.12.11-amd64 
 
-On Fri, Mar 07, 2025 at 09:50:07AM +0100, Danilo Krummrich wrote:
-> On Thu, Mar 06, 2025 at 12:09:07PM -0400, Jason Gunthorpe wrote:
-> > On Thu, Mar 06, 2025 at 04:21:51PM +0100, Simona Vetter wrote:
-> > > > >  > a device with no driver bound should not be passed to the DMA API,
-> > > > >  > much less a dead device that's already been removed from its parent
-> > > > >  > bus.
-> > > > 
-> > > > Thanks for bringing this up!
-> > > > 
-> > > > I assume that's because of potential iommu mappings, the memory itself should
-> > > > not be critical.
+On Thu, Mar 06, 2025 at 05:34:21PM +0100, Danilo Krummrich wrote:
+> On Thu, Mar 06, 2025 at 12:18:18PM -0400, Jason Gunthorpe wrote:
+> > On Thu, Mar 06, 2025 at 04:54:14PM +0100, Danilo Krummrich wrote:
+> > > (For some reason, when replying to this mail, mutt removed Sima from To: and
+> > > instead switched Cc: to To:, hence resending.)
 > > 
-> > There is a lot of state tied to the struct device lifecycle that the
-> > DMA API and iommu implicitly manages. It is not just iommu mappings.
+> > It is normal, Simona's mail client is setup to do that.
+> 
+> Huh! Never noticed that in the past.
+> 
 > > 
-> > It is incorrect to view the struct device as a simple refcount object
-> > where holding the refcount means it is alive and safe to use. There
-> > are three broad substates (No Driver, Driver Attached, Zombie) that
-> > the struct device can be in that are relevant.
+> > > > I think for basic driver allocations that you just need to run the device
+> > > > stuffing it all into devres is ok.
+> > > 
+> > > What exactly do you mean with that? DMA memory allocations or "normal" memory
+> > > allocations?
 > > 
-> > Technically it is unsafe and oopsable to call the allocation API as
-> > well on a device that has no driver. This issue is also ignored in
-> > these bindings and cannot be solved with revoke.
+> > Simona means things like a coherent allocation backing something
+> > allocated once like a global queue for talking to the device.
 > 
-> This is correct, and I am well aware of it. I brought this up once when working
-> on the initial device / driver, devres and I/O abstractions.
+> Yeah, that's what I propose then.
 > 
-> It's on my list to make the creation of the Devres container fallible in this
-> aspect, which would prevent this issue.
-> 
-> For now it's probably not too critical; we never hand out device references
-> before probe(). The only source of error is when a driver tries to create new
-> device resources after the device has been unbound.
-> 
-> > IOW I do not belive you can create bindings here that are truely safe
-> > without also teaching rust to understand the concept of a scope
-> > guaranteed to be within a probed driver's lifetime.
 > > 
-> > > > > Also note that any HW configured to do DMA must be halted before the
-> > > > > free is allowed otherwise it is a UAF bug. It is worth mentioning that
-> > > > > in the documentation.
-> > > > 
-> > > > Agreed, makes sense to document. For embedding the CoherentAllocation into
-> > > > Devres this shouldn't be an issue, since a driver must stop operating the device
-> > > > in remove() by definition.
-> > >
-> > > I think for basic driver allocations that you just need to run the device
-> > > stuffing it all into devres is ok. 
+> > Ie DMA API usage that is not on the performance path.
 > > 
-> > What exactly will this revokable critical region protect?
+> > > > But for dma mappings at runtime this will be too slow.
+> > > 
+> > > What exactly do you mean with "DMA mappings at runtime"? What to you think is
+> > > is slow in this aspect?
 > > 
-> > The actual critical region extends into the HW itself, it is not
-> > simple to model this with a pure SW construct of bracketing some
-> > allocation. You need to bracket the *entire lifecycle* of the
-> > dma_addr_t that has been returned and passed into HW, until the
-> > dma_addr_t is removed from HW.
+> > Things like dma_map_sg(), dma_map_page(), etc, etc.
+> > 
+> > You cannot propose to add any runtime overhead to those paths and get
+> > any support from the kernel community. They are performance paths
+> > optimized to be fast.
 > 
-> Devres callbacks run after remove(). It's the drivers job to stop operating the
-> device latest in remove(). Which means that the design is correct.
+> Oh, I didn't do that. How could I, since I did not knew what was referred
+> to? :-)
 > 
-> Now, you ask for a step further, i.e. make it that we can enforce that a driver
-> actually stopped the device in remove().
+> Quite the opposite, I fully agree with that.
 > 
-> But that's just impossible, because obviously no one else than the driver knows
-> the semantics of the devicei; it's the whole purpose of the driver. So, this is
-> one of the exceptions where just have to trust the driver doing the correct
-> thing.
+> I think for this we need higher level abstraction (which now that I know what
+> was meant I know Sima proposed already), or maybe provide an API that can
+> consolidate single operations for a single Devres container, etc.
 
-In general it's impossible, but I think for specific cases like pci we can
-enforce that bus mastering/interrupt generation/whatever else might cause
-havoc is force-disabled after ->remove finishes. For platform devices this
-is more annoying, but then it's much harder to physically yank a platform
-devices. So I'm less worried about that being a practical concern there.
+Apologies for creating a confusion here, and thanks for Jason for
+explaining what I really meant :-)
 
-> Having that said, it doesn't need to be an "all or nothing", let's catch the
-> ones we can actually catch.
+> But that's out of scope for this series.
 
-Yeah, agreed.
+Yeah I think for coherent allocations we can get away for now by making
+sure you can only get it in safe rust code wrapped in a DevRes. I think
+that's solid enough, everything else is for later.
 -Sima
 -- 
 Simona Vetter
