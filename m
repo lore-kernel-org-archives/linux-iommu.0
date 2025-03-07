@@ -1,209 +1,145 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FA702E406
-	for <iommu@lists.linux.dev>; Fri,  7 Mar 2025 02:31:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CD848624B
+	for <iommu@lists.linux.dev>; Fri,  7 Mar 2025 03:04:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741314693; cv=none; b=NpFLj7d9kaRsfhTZ2mxG0hd2DjFTHjkUJXextczMoWIkaTWzq5TaGH/S3Xah2HeNQf0eUPSg3+BLx/MOt/UpfS7wV+WTcYVf1D+9RWk9ak6DKGc1D5VGkKf+LnehxxH/joxBnBFyp96yHt/P60cM5L63YmKlhNfn4MpsvqV1Ybk=
+	t=1741316649; cv=none; b=Z+fJNFM40j/o7hudWUKX49mfuh8099Z572hBBQZjw1udJ1OXaLBc19p/M0E7Je60G6rjgXK8qKcAPkPpZmghgjO9LbWw+tgIF2VaweMKfEL20qlNvhBUU/2FhY29VZt98dhlJWnAmIeCxMX0Cm/E2wnzasl4rOYnzMxV3O9vS+0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741314693; c=relaxed/simple;
-	bh=33xmGYM9rKfYOIraEg//ke1v96sAZt3vXnoJsFqpgMo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=U0veQSgJ4WDt5Fs5BHQB4MpsRQAXBrAA8fYOII1Ou54CZT1SFMJo2OTZHgIzp4NZLlxg+QblQSG32aNTxd6V0pbQn8V2s+tf7ZvOsRMaVOeofO14ToaGGRasvSj+URn1M2bluVtukE7bZrokyeSu5fbRUtyQVHSKOWCvwewV8tQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jTUkeSaL; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1741316649; c=relaxed/simple;
+	bh=XCP9kwKztjB5aMRSK3OlQNdJX12K71O8wDs8oAclikE=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=NWKTbswSSlu/5hnxzlhtUUgdvazI7zedfJTPyphK3ean5b67FqTCXMiqkgsyOHVMeWXKtbjsrmGVcN6JRolkEw1JbQ3ysoZfCWYl6ZO/HYZ+mbdCuJN7gPvXkF+UnAJsep2Jt5WxZED8OAw8HGgXoODEH4O9sabgFDC/fzf5W6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=PCxkC9Dl; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jTUkeSaL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741314692; x=1772850692;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=33xmGYM9rKfYOIraEg//ke1v96sAZt3vXnoJsFqpgMo=;
-  b=jTUkeSaLX58XIdGSFtTC8LWWkqJ/GSOfAF/Rx5rQS5fWU6NAd8z/umqs
-   W441qqkxHVywrVyS+w/iyleZqtpPZXAL7/ZSRvlK4DnX88JDbS5WBxycd
-   XWTH/fan6e0rocB42FSNg3FqQolrXLHbC6AZWuE16ds8ljIrC8sOl0e+O
-   P14MR7MYrkHkVvhEj+u9c/IAGvQ5Dzge1arDqBvx0qjgwi+tkcOYorj81
-   qzIpqeoNWCR8UlUMxLBlvujUoD498COKvEawxpxu3gm92UqAeTeuJtnfb
-   4CAnSBN8xm3MQ2o8DWAchd0nbW3oUuPQghJgfuQGDXIO4Wg6WT/ArcSoT
-   Q==;
-X-CSE-ConnectionGUID: FTFbaPvLSOaaNjdEuDx4JQ==
-X-CSE-MsgGUID: 7dcFae+6TiSXZ4d89BLNfQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11365"; a="41604273"
-X-IronPort-AV: E=Sophos;i="6.14,227,1736841600"; 
-   d="scan'208";a="41604273"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2025 18:31:30 -0800
-X-CSE-ConnectionGUID: 9EccSzcPTaqVd9I/FVNy2A==
-X-CSE-MsgGUID: EY/03IJQTyq/FCNMrf6jDw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,227,1736841600"; 
-   d="scan'208";a="124230492"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2025 18:31:27 -0800
-Message-ID: <fabd6483-af48-4893-b539-2835640c5316@linux.intel.com>
-Date: Fri, 7 Mar 2025 10:28:20 +0800
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="PCxkC9Dl"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 526FYWPh017935;
+	Fri, 7 Mar 2025 03:04:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=IEawcTkCI3WN0tBwh7VLst
+	cfdDPbM0A0inPDwTtdLlo=; b=PCxkC9Dl73FlMap8NTr17C4MOwX8bvU2wk+ESb
+	oDFQbnCddwvn/W5ChLbZIUgCxUwo/wKl3UJMxUMv+VHtVx+utt5Zhvte5uYHw3m/
+	ReGUQ25ElHiTu14zANCqEVYu58UhX+ZXlFxsvNPkz+jMku+caRD0ZaPVxzCkFhSZ
+	xjHzYmJ7y9qjyLbcxLhLUMfmLCiZY6nbavMFKc83+jTNcC+6RRz88FpUXkNwJzX7
+	deJqYTQj1XJZN+FvmLrlbNvbHWNHShZCr8YV4y+UPpPNdeARMUPCqH/4Yc/x6goe
+	/sP3/bq9itBVWHwBKaj1m8KcP9iwg+Nn1D56J1zXKHZxs4tA==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45778tb0x4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 07 Mar 2025 03:04:03 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 527342ks011599
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 7 Mar 2025 03:04:02 GMT
+Received: from Z2G9.lan (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 6 Mar 2025
+ 19:04:00 -0800
+From: Baochen Qiang <quic_bqiang@quicinc.com>
+To: <m.szyprowski@samsung.com>, <robin.murphy@arm.com>, <justin.he@arm.com>,
+        <hch@lst.de>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <quic_bqiang@quicinc.com>
+Subject: [PATCH] dma-mapping: fix missing clear bdr in check_ram_in_range_map()
+Date: Fri, 7 Mar 2025 11:03:50 +0800
+Message-ID: <20250307030350.69144-1-quic_bqiang@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/3] iommu: Sort out domain user data
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, kevin.tian@intel.com,
- robin.murphy@arm.com, joro@8bytes.org, will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1741294235.git.nicolinc@nvidia.com>
- <da7cc6d365ec6a77f6e6007f898eb3de2e581f80.1741294235.git.nicolinc@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <da7cc6d365ec6a77f6e6007f898eb3de2e581f80.1741294235.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: IA4xNB-LbgoUeq15A9bmdWCUt3KXcaLk
+X-Authority-Analysis: v=2.4 cv=U5poDfru c=1 sm=1 tr=0 ts=67ca6223 cx=c_pps a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17 a=GEpy-HfZoHoA:10 a=Vs1iUdzkB0EA:10 a=VwQbUJbxAAAA:8 a=COk6AnOGAAAA:8 a=6YtNXFjIWaMwA3fUu04A:9
+ a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-GUID: IA4xNB-LbgoUeq15A9bmdWCUt3KXcaLk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-07_01,2025-03-06_04,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ impostorscore=0 phishscore=0 lowpriorityscore=0 suspectscore=0 spamscore=0
+ mlxlogscore=999 adultscore=0 clxscore=1011 malwarescore=0 bulkscore=0
+ mlxscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.19.0-2502100000
+ definitions=main-2503070018
 
-On 3/7/25 05:00, Nicolin Chen wrote:
-> From: Robin Murphy<robin.murphy@arm.com>
-> 
-> When DMA/MSI cookies were made first-class citizens back in commit
-> 46983fcd67ac ("iommu: Pull IOVA cookie management into the core"), there
-> was no real need to further expose the two different cookie types.
-> However, now that IOMMUFD wants to add a third type of MSI-mapping
-> cookie, we do have a nicely compelling reason to properly dismabiguate
-> things at the domain level beyond just vaguely guessing from the domain
-> type.
-> 
-> Meanwhile, we also effectively have another "cookie" in the form of the
-> anonymous union for other user data, which isn't much better in terms of
-> being vague and unenforced. The fact is that all these cookie types are
-> mutually exclusive, in the sense that combining them makes zero sense
-> and/or would be catastrophic (iommu_set_fault_handler() on an SVA
-> domain, anyone?) - the only combination which*might* be reasonable is
-> perhaps a fault handler and an MSI cookie, but nobody's doing that at
-> the moment, so let's rule it out as well for the sake of being clear and
-> robust. To that end, we pull DMA and MSI cookies apart a little more,
-> mostly to clear up the ambiguity at domain teardown, then for clarity
-> (and to save a little space), move them into the union, whose ownership
-> we can then properly describe and enforce entirely unambiguously.
-> 
-> Signed-off-by: Robin Murphy<robin.murphy@arm.com>
-> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
-> [nicolinc: rebase on latest tree; use prefix IOMMU_COOKIE_; merge unions
->             in iommu_domain; add IOMMU_COOKIE_IOMMUFD for iommufd_hwpt]
-> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
-> ---
->   drivers/iommu/dma-iommu.h            |   5 +
->   include/linux/iommu.h                |  20 ++-
->   drivers/iommu/dma-iommu.c            | 194 ++++++++++++++-------------
->   drivers/iommu/iommu-sva.c            |   1 +
->   drivers/iommu/iommu.c                |  18 ++-
->   drivers/iommu/iommufd/hw_pagetable.c |   3 +
->   6 files changed, 143 insertions(+), 98 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
-> index c12d63457c76..9cca11806e5d 100644
-> --- a/drivers/iommu/dma-iommu.h
-> +++ b/drivers/iommu/dma-iommu.h
-> @@ -13,6 +13,7 @@ void iommu_setup_dma_ops(struct device *dev);
->   
->   int iommu_get_dma_cookie(struct iommu_domain *domain);
->   void iommu_put_dma_cookie(struct iommu_domain *domain);
-> +void iommu_put_msi_cookie(struct iommu_domain *domain);
->   
->   int iommu_dma_init_fq(struct iommu_domain *domain);
->   
-> @@ -40,6 +41,10 @@ static inline void iommu_put_dma_cookie(struct iommu_domain *domain)
->   {
->   }
->   
-> +static inline void iommu_put_msi_cookie(struct iommu_domain *domain)
-> +{
-> +}
-> +
->   static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
->   {
->   }
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index e93d2e918599..06cc14e9993d 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -41,6 +41,7 @@ struct iommu_dirty_ops;
->   struct notifier_block;
->   struct iommu_sva;
->   struct iommu_dma_cookie;
-> +struct iommu_dma_msi_cookie;
->   struct iommu_fault_param;
->   struct iommufd_ctx;
->   struct iommufd_viommu;
-> @@ -165,6 +166,15 @@ struct iommu_domain_geometry {
->   	bool force_aperture;       /* DMA only allowed in mappable range? */
->   };
->   
-> +enum iommu_domain_cookie_type {
-> +	IOMMU_COOKIE_NONE,
-> +	IOMMU_COOKIE_DMA_IOVA,
-> +	IOMMU_COOKIE_DMA_MSI,
-> +	IOMMU_COOKIE_FAULT_HANDLER,
-> +	IOMMU_COOKIE_SVA,
-> +	IOMMU_COOKIE_IOMMUFD,
-> +};
-> +
->   /* Domain feature flags */
->   #define __IOMMU_DOMAIN_PAGING	(1U << 0)  /* Support for iommu_map/unmap */
->   #define __IOMMU_DOMAIN_DMA_API	(1U << 1)  /* Domain for use in DMA-API
-> @@ -211,12 +221,12 @@ struct iommu_domain_geometry {
->   
->   struct iommu_domain {
->   	unsigned type;
-> +	enum iommu_domain_cookie_type cookie_type;
->   	const struct iommu_domain_ops *ops;
->   	const struct iommu_dirty_ops *dirty_ops;
->   	const struct iommu_ops *owner; /* Whose domain_alloc we came from */
->   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
->   	struct iommu_domain_geometry geometry;
-> -	struct iommu_dma_cookie *iova_cookie;
->   	int (*iopf_handler)(struct iopf_group *group);
->   
->   #if IS_ENABLED(CONFIG_IRQ_MSI_IOMMU)
-> @@ -224,10 +234,10 @@ struct iommu_domain {
->   		      phys_addr_t msi_addr);
->   #endif
->   
-> -	union { /* Pointer usable by owner of the domain */
-> -		struct iommufd_hw_pagetable *iommufd_hwpt; /* iommufd */
-> -	};
-> -	union { /* Fault handler */
-> +	union { /* cookie */
-> +		struct iommu_dma_cookie *iova_cookie;
-> +		struct iommu_dma_msi_cookie *msi_cookie;
-> +		struct iommufd_hw_pagetable *iommufd_hwpt;
->   		struct {
->   			iommu_fault_handler_t handler;
->   			void *handler_token;
+As discussed in [1], if 'bdr' is set once, it would never get
+cleared, hence 0 is always returned.
 
-My feeling is that IOMMU_COOKIE_FAULT_HANDLER isn't exclusive to
-IOMMU_COOKIE_DMA_IOVA; both might be used for kernel DMA with a paging
-domain.
+Refactor the range check hunk into a new helper dma_find_range(),
+which allows 'bdr' to be cleared in each iteration.
 
-I am afraid that iommu_set_fault_handler() doesn't work anymore as the
-domain's cookie type has already been set to IOMMU_COOKIE_DMA_IOVA.
+Link: https://lore.kernel.org/all/64931fac-085b-4ff3-9314-84bac2fa9bdb@quicinc.com/ # [1]
+Fixes: a409d9600959 ("dma-mapping: fix dma_addressing_limited() if dma_range_map can't cover all system RAM")
+Suggested-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Baochen Qiang <quic_bqiang@quicinc.com>
+---
+ kernel/dma/direct.c | 28 ++++++++++++++++++----------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
 
-void iommu_set_fault_handler(struct iommu_domain *domain,
-                                         iommu_fault_handler_t handler,
-                                         void *token)
-{
-         if (WARN_ON(!domain || domain->cookie_type != IOMMU_COOKIE_NONE))
-                 return;
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 5b4e6d3bf7bc..b8fe0b3d0ffb 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -584,6 +584,22 @@ int dma_direct_supported(struct device *dev, u64 mask)
+ 	return mask >= phys_to_dma_unencrypted(dev, min_mask);
+ }
+ 
++static const struct bus_dma_region *dma_find_range(struct device *dev,
++						   unsigned long start_pfn)
++{
++	const struct bus_dma_region *m;
++
++	for (m = dev->dma_range_map; PFN_DOWN(m->size); m++) {
++		unsigned long cpu_start_pfn = PFN_DOWN(m->cpu_start);
++
++		if (start_pfn >= cpu_start_pfn &&
++		    start_pfn - cpu_start_pfn < PFN_DOWN(m->size))
++			return m;
++	}
++
++	return NULL;
++}
++
+ /*
+  * To check whether all ram resource ranges are covered by dma range map
+  * Returns 0 when further check is needed
+@@ -593,20 +609,12 @@ static int check_ram_in_range_map(unsigned long start_pfn,
+ 				  unsigned long nr_pages, void *data)
+ {
+ 	unsigned long end_pfn = start_pfn + nr_pages;
+-	const struct bus_dma_region *bdr = NULL;
+-	const struct bus_dma_region *m;
+ 	struct device *dev = data;
+ 
+ 	while (start_pfn < end_pfn) {
+-		for (m = dev->dma_range_map; PFN_DOWN(m->size); m++) {
+-			unsigned long cpu_start_pfn = PFN_DOWN(m->cpu_start);
++		const struct bus_dma_region *bdr;
+ 
+-			if (start_pfn >= cpu_start_pfn &&
+-			    start_pfn - cpu_start_pfn < PFN_DOWN(m->size)) {
+-				bdr = m;
+-				break;
+-			}
+-		}
++		bdr = dma_find_range(dev, start_pfn);
+ 		if (!bdr)
+ 			return 1;
+ 
 
-         domain->cookie_type = IOMMU_COOKIE_FAULT_HANDLER;
-         domain->handler = handler;
-         domain->handler_token = token;
-}
-EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
+base-commit: 7eb172143d5508b4da468ed59ee857c6e5e01da6
+-- 
+2.34.1
 
-Anybody has a chance to test whether above WARN_ON will be triggered?
-
-Thanks,
-baolu
