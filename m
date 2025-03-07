@@ -1,91 +1,120 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E26C183CB0
-	for <iommu@lists.linux.dev>; Fri,  7 Mar 2025 20:20:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B23B183CB0;
+	Fri,  7 Mar 2025 20:40:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741378824; cv=none; b=n74GpCv6yx1k+W/GYBwJvSx8FwTMR6z/mwxaOE5/Tb7D9FFEKasuuebxYtUC9qLPCLiUC2aiAHVYKixnlwWw7ePis7XBQc4/Mh7Ykk1etaliKAgS8gHblYHA6o3582ByMxlrKy2hSZHwZydPQw2LQtlDfaUqGSyyBUt7oG+ZunU=
+	t=1741380042; cv=none; b=IJqDGjSDfQ9IT4GjHW6FXSd9E0UDdqes7w2PJuGrux/t+t1vn10Q6+I/HJ23dAEPwjznRmDf6g3Drh+lCbOGJfZBk/sUKGCncxkK9BFFx0GVV0MLmlS8nH2h6ytqpbelVqcNa+ON/1//MuG7p3drSYcVcXz1mExOKM1rQFs/hoE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741378824; c=relaxed/simple;
-	bh=JpJH0rWkOmn0NClRLdATD4XUL+hcKgZciootdkF/49Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ivTePREIJ5F3MiEQrPfZM3tDe9plLxMksGc+nuL9rJnhqESbWFSEnAudfnt9aVmgDVCHhcvzr4JPte8yYhExJTA3uaP61XfLWZCZYvgx8N3PTAGWWT8BoQWUVVfwg0CrOIrGW0jF5eiv4s2nDvitTtXJWYkMTAIAydb4WCZfYJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 55B7413D5;
-	Fri,  7 Mar 2025 12:20:34 -0800 (PST)
-Received: from [10.57.37.135] (unknown [10.57.37.135])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A666F3F5A1;
-	Fri,  7 Mar 2025 12:20:17 -0800 (PST)
-Message-ID: <ea78c21b-db4a-4144-b1b5-b1a37e1ed51c@arm.com>
-Date: Fri, 7 Mar 2025 20:20:15 +0000
+	s=arc-20240116; t=1741380042; c=relaxed/simple;
+	bh=EVxChS+74swYadRrkHg1iNrCXtQarsnTlJJNN+38/gU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=nY+hVY0xdKj49/+vd0OrWvmuptqkhYNqz0YsNNY9NEqoYqNmIWQDsqC6cVCz2AK4UioJfv+KmfUzOvv0fjeAbZeBkE2ajEwqmD1rBQxFxE/HIlIXbvoIGe5I2KrRw4bBxSfddwvWEtUEic5XT87muGQ01WdtVgiT+3feAY0rMrg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QjAEZBeN; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QjAEZBeN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE97CC4CED1;
+	Fri,  7 Mar 2025 20:40:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741380042;
+	bh=EVxChS+74swYadRrkHg1iNrCXtQarsnTlJJNN+38/gU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=QjAEZBeNLkVr4V628qfMuGWLsQSE/m9kEDOICsGpltkgQCC3t0kqVfyeHSREQt52K
+	 hWwIn21kTYPa31ChCJP/wa8a6pgPUAVOO/zm96qdowu0efHGrDthMPMjGUIQ4uS8gv
+	 SjOGbYKqc292K4+ADYBhmuIKcEDrvLjxcRJaMyznuixseEvDyq4YGAkruJEHRhUgL9
+	 7N/7YaEPM1+pUea/CkZB5WWv0S8UTi530TfEIzvAGth8yUAD++IcgInA26zWq6k5dl
+	 3k7Q720K9yvJUNv6Y7nA++ACQuj2/5pvR4K4P9ih8egiz1x53lJSHxo5DUN4hdRZML
+	 D9+8Qz4Il+usA==
+From: Andreas Hindborg <a.hindborg@kernel.org>
+To: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>
+Cc: <rust-for-linux@vger.kernel.org>,  <daniel.almeida@collabora.com>,
+  <dakr@kernel.org>,  <robin.murphy@arm.com>,  <aliceryhl@google.com>,
+  "Miguel Ojeda" <ojeda@kernel.org>,  "Alex Gaynor"
+ <alex.gaynor@gmail.com>,  "Boqun Feng" <boqun.feng@gmail.com>,  "Gary Guo"
+ <gary@garyguo.net>,  =?utf-8?Q?Bj=C3=B6rn?= Roy Baron
+ <bjorn3_gh@protonmail.com>,  "Benno
+ Lossin" <benno.lossin@proton.me>,  "Trevor Gross" <tmgross@umich.edu>,
+  "Valentin Obst" <kernel@valentinobst.de>,
+  <linux-kernel@vger.kernel.org>,  "Christoph Hellwig" <hch@lst.de>,
+  "Marek Szyprowski" <m.szyprowski@samsung.com>,  <airlied@redhat.com>,
+  <iommu@lists.linux.dev>
+Subject: Re: [PATCH v13 2/7] rust: add dma coherent allocator abstraction.
+In-Reply-To: <20250307110821.1703422-3-abdiel.janulgue@gmail.com> (Abdiel
+	Janulgue's message of "Fri, 07 Mar 2025 13:06:19 +0200")
+References: <20250307110821.1703422-1-abdiel.janulgue@gmail.com>
+	<ON3xPFZKwDe669Eic3fleeCuj2PZ8YyJQY9XrhmZgeKr3QzeQaObo4o4af-hJmU9RCrKn6zui34cF4M3P4bSAw==@protonmail.internalid>
+	<20250307110821.1703422-3-abdiel.janulgue@gmail.com>
+User-Agent: mu4e 1.12.7; emacs 29.4
+Date: Fri, 07 Mar 2025 21:40:30 +0100
+Message-ID: <871pv8377l.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
- path
-To: Lorenzo Pieralisi <lpieralisi@kernel.org>
-Cc: Hanjun Guo <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Danilo Krummrich <dakr@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
- Laurentiu Tudor <laurentiu.tudor@nxp.com>, Nipun Gupta
- <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>,
- Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-pci@vger.kernel.org, Charan Teja Kalla <quic_charante@quicinc.com>
-References: <cover.1740753261.git.robin.murphy@arm.com>
- <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
- <Z8sBuzx6sGq24n0g@lpieralisi>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <Z8sBuzx6sGq24n0g@lpieralisi>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 2025-03-07 2:24 pm, Lorenzo Pieralisi wrote:
-[...]
->> diff --git a/drivers/acpi/arm64/dma.c b/drivers/acpi/arm64/dma.c
->> index 52b2abf88689..f30f138352b7 100644
->> --- a/drivers/acpi/arm64/dma.c
->> +++ b/drivers/acpi/arm64/dma.c
->> @@ -26,6 +26,11 @@ void acpi_arch_dma_setup(struct device *dev)
->>   	else
->>   		end = (1ULL << 32) - 1;
->>   
->> +	if (dev->dma_range_map) {
->> +		dev_dbg(dev, "dma_range_map already set\n");
->> +		return;
->> +	}
->> +
-> 
-> Why are we checking that dev->dma_range_map exists here rather than
-> at function entry ? Is that because we want to run the previous code
-> for some reasons even if dev->dma_range_map is already set ?
-> 
-> Just noticed, the OF counterpart does not seem to take the same
-> approach, so I am just flagging this up if it matters at all.
+"Abdiel Janulgue" <abdiel.janulgue@gmail.com> writes:
 
-The intent is just to ensure it's safe to come through this path more 
-than once for the time being - it doesn't really matter whether or not 
-we repeat anything apart from allocating and assigning dma_range_map, 
-since that leaks the previous allocation. Thus this check is logically 
-guarding the acpi_dma_get_range() call in this path, and the 
-of_dma_get_range() call in the other.
+> Add a simple dma coherent allocator rust abstraction. Based on
+> Andreas Hindborg's dma abstractions from the rnvme driver, which
+> was also based on earlier work by Wedson Almeida Filho.
+>
+> A CoherentAllocation is wrapped in Devres which basically guarantees
+> that a driver can't make a CoherentAllocation out-live driver unbind.
+> This is needed, since DMA allocations potentially also result in
+> programming of the IOMMU. IOMMU mappings are device resources and
+> hence the device / driver lifecycle needs to be enforced.
+>
+> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+> ---
+> +
+> +    /// Reads the value of `field` and ensures that its type is [`FromBytes`].
+> +    ///
+> +    /// # Safety
+> +    ///
+> +    /// This must be called from the [`dma_read`] macro which ensures that the `field` pointer is
+> +    /// validated beforehand.
+> +    ///
+> +    /// Public but hidden since it should only be used from [`dma_read`] macro.
+> +    #[doc(hidden)]
+> +    pub unsafe fn field_read<F: FromBytes>(&self, field: *const F) -> F {
+> +        // SAFETY: By the safety requirements field is valid.
+> +        unsafe { field.read_volatile() }
 
-> Other than that, for acpi/arm64:
-> 
-> Reviewed-by: Lorenzo Pieralisi <lpieralisi@kernel.org>
+From the docs of `read_volatile`:
 
-Thanks!
+   Just like in C, whether an operation is volatile has no bearing
+   whatsoever on questions involving concurrent access from multiple
+   threads. Volatile accesses behave exactly like non-atomic accesses in
+   that regard. In particular, a race between a read_volatile and any
+   write operation to the same location is undefined behavior.
 
-Robin.
+So the safety requirement is not sufficient. Alice responded to my
+question on v12:
+
+   > Volatile reads/writes that race are OK?
+
+   I will not give a blanket yes to that. If you read their docs, you
+   will find that they claim to not allow it. But they are the correct
+   choice for DMA memory, and there's no way in practice to get
+   miscompilations on memory locations that are only accessed with
+   volatile operations, and never have references to them created.
+
+   In general, this will fall into the exception that we've been given
+   from the Rust people. In cases such as this where the Rust language
+   does not give us the operation we want, do it like you do in C. Since
+   Rust uses LLVM which does not miscompile the C part of the kernel, it
+   should not miscompile the Rust part either.
+
+Since we have an exception for the safety requirements in the
+documentation, we should make that clear in the safety comment at the
+call site.
+
+
+Best regards,
+Andreas Hindborg
+
+
