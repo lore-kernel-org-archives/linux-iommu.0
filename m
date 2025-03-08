@@ -1,172 +1,125 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30231A3177
-	for <iommu@lists.linux.dev>; Fri,  7 Mar 2025 22:30:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB5F61F95C;
+	Sat,  8 Mar 2025 01:42:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741386657; cv=none; b=XmTTMGq518VsLe+nq26leBy41W6mIV6nnZUZn1pVwmSpruyyhNh8U5BDzuZIgfnTHnv2EQmQkGU6uEeWgPeJ6+hcPvMFYveVaVrO7lVlDfQUYVbQt6QiEV3uBkF+bXa+06IAXxpjmNIl0QCQIZcxcEj/4vDFPedHUDZBZj+kvUs=
+	t=1741398150; cv=none; b=FEl6b/RSJcOCculPV59SDgpvSLwp/BUtkDqb1a6zQ+qOQhFoIEvfBwfJ4G5lJMFXY/8DcNPR8F7TuQfq7AhQ99t8mBWYK8K8jvUiDPFLEL5MMHKfSnpAA4NIjyg8BfsZCeUmSaooXCjtqMQ84nZ2VRY28DAPqRoMN1RtM60oVKU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741386657; c=relaxed/simple;
-	bh=bCNAocCazVKoVFzq/ND5cjZiWr84ZC7bmNadsW1yn9E=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=E1pPsBjSAJF8B9skkhl2pKXQiEDTOcltGmpffoDzgGXCYxlZraxOc8y32tBjPPHAdljz61Q+PFLr/oSAXC2LzXXNdB9sDqjNJ2OBugv+QFeyvlbS9BOW89ahaF3jOV7qSv2isfyKO2ANxjGRYAH5d3cOCoChAbVSMjwm0T+Xfyk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=lGGTuGf1; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1741398150; c=relaxed/simple;
+	bh=0xzbMLIyrzOvtrnxOzYygHtiJhTxXWscGZfJynbxvwE=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Tks1jU5oF15Io7+MtKrDmWOopbJnouhb91uRpwWTDGG4ZRo4xLyDjvf73o4HnNSts503/XL3KWNR77DPBE7raS+d/TkY5OevGMKU4NE/JuQl/K9yzf1QiXJFB532r92E8AR4YO02VrEEVX80PUp/hAp2f4bRJEBglHcde3eh1dA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QJ5pZUKb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="lGGTuGf1"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 527E0553032643
-	for <iommu@lists.linux.dev>; Fri, 7 Mar 2025 22:30:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Ak5fxQibEzWrpDH5Ilc3caDZL5F6Fyf98J8EyekNGds=; b=lGGTuGf1QBsFhqug
-	y+AEq/fVLBCpxKJm3ESO4Rvq2CZtwXrkJuhtDQdP0pG5sS8ajLzMcRwILll9t9yg
-	YoSWcjftY1G5rPqvIyCFWFVmHWwAq2GQXewt+gwjSrtKe03ehTw7LGxnw+YOzhV5
-	DpDYXs4DaTqJH8EJPqbzUvsTWsNVxgt2uy+L2REzy9LZhdYN5W+o/42CcKxuRBX/
-	1CIMD98qNhDLmvwELoICplAHgIIc8XEGTrUkBPPD/yyrynfAw2jIKwoaUd0b9AP7
-	ZaelTsOEIe8u8wG9VI60tKaeb+cqTJktAZDh5E7GbF1CegKbFe7cbhvr5iLmovMO
-	KsRB6g==
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com [209.85.219.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 457aghmth8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 07 Mar 2025 22:30:48 +0000 (GMT)
-Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-6e8fd4ef023so4303586d6.2
-        for <iommu@lists.linux.dev>; Fri, 07 Mar 2025 14:30:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741386647; x=1741991447;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ak5fxQibEzWrpDH5Ilc3caDZL5F6Fyf98J8EyekNGds=;
-        b=fu9cP4cKbltM1xYVU3O3njaTe+zyNwy1BZH1XeRf6C1pbPqd46bQO2BGRtR9hzJlB6
-         /QTn25RCw2uj+Lshz5KSHmHKunC6qt4IYX8kwfBcniv3Hml1AJ+irDDDmTBkSL/46X5x
-         VeQWuiCWlNLa3ycCT2p0v/wZKeF3tKW+RjNdb+iiTnaXnn+9UKkVIuoU5Eas+FqfTi6a
-         5EdZ6MUDFZ/NFTo5Tbi6eCbkeqAf/t8LDBBBBD5b97wNRrcx+MFySrGZuGs4IsflqHMt
-         GrVbq5XkoGTaoVjC+o3VzRgphbM5X4/rxAXjQyNZk83vki6b20gIFL5h5Wjm1TFgKHOE
-         DjVw==
-X-Forwarded-Encrypted: i=1; AJvYcCX9LBcVAZZnVM5D5c9QYwgVpp1lhZeOLANT2cUoqJNGbVAGEu94JyEYolYIc3FulndbbJW3qw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzUjay2nA9LTSgT+9WrNKFak8P0mB449RCUo8YMuqm406Iufe37
-	WrfBZpNlw+C3SB9cGthtb1lR0HijMyR2L4vpEw9wo2KOER7he/LZgGb59Sd0qh3/0+NhT14WQh5
-	zr1a3yJPiQGtpDEh1tDhG0Cwm2HEFptc250xY8jQOEw3n7ZpvZ615NQ==
-X-Gm-Gg: ASbGnctTGZ/Iba/6wdV2zmKXYJeYd3CXM3mv38pXbd8LADCgIYa7uy4m2GJ8KXNnV+5
-	rhp96RaCdicdTdU+M0+Zr75TY4EB0RKUFRaOHwE6SvxH2+alXN4UmLQMPgkNkihWFebA0qxPbsQ
-	IG48cZrZYhgFF1iVQcAvwtkmzn9AED11MWomHYBTJUtOSgylxYgfs2yQc5JgR/VLBSKcUa1TO2t
-	6EiiClwMqUikvV2/TxwmBroTKBj59QtlLHtFaE5GOE1OP9IHxJWoMzwDRwAtTzIym3l1psFX8Za
-	/zu3ynZPFO/EHLBfjS77++RY6F9AX+f+5PFw9C3BH5SlhEeHoTFtfcnuh+Ih4+RLvFgfeQ==
-X-Received: by 2002:a05:6214:ac1:b0:6e8:f645:2639 with SMTP id 6a1803df08f44-6e908cd150fmr4825256d6.5.1741386647150;
-        Fri, 07 Mar 2025 14:30:47 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IHiC4koxcJVdaUrklQtVOopVLiy0hknFp7oOAgVhzdT3gbIZwIK648n2T72jt6jEmVlQvFqKQ==
-X-Received: by 2002:a05:6214:ac1:b0:6e8:f645:2639 with SMTP id 6a1803df08f44-6e908cd150fmr4824846d6.5.1741386646742;
-        Fri, 07 Mar 2025 14:30:46 -0800 (PST)
-Received: from [192.168.65.90] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5e5c74a6af7sm3083132a12.33.2025.03.07.14.30.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Mar 2025 14:30:46 -0800 (PST)
-Message-ID: <d0d6feb9-e89d-49c3-8569-91591eae6161@oss.qualcomm.com>
-Date: Fri, 7 Mar 2025 23:30:40 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QJ5pZUKb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E758EC4CED1;
+	Sat,  8 Mar 2025 01:42:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741398150;
+	bh=0xzbMLIyrzOvtrnxOzYygHtiJhTxXWscGZfJynbxvwE=;
+	h=From:Subject:Date:To:Cc:From;
+	b=QJ5pZUKbRsqvbYz/lq9JxpxMM0rzw4BP0U3hvqByTUqqfWq4I7vgoOZlhe6BmDanN
+	 bO0P0K5+BXoyPKc+2JlRUgTNIDuhKONbNV2ccbADr+rm3RChmQtaI2xzr6f2LZQUJJ
+	 PvjpbED9drEJjfGoYIoJxR+96D8L0vx5jY42PdS5hcb2TxWUyq51daID/23iwWRJr6
+	 zSvSx9banYT2m5WKSY70oj/X1hBPPwo+sQ4dQ8gohCwwS0CqCjeDoptJA7l+CTSt7K
+	 35MQjJRA3JvzrX/nl3mIG7MQyjdNxaZRHKeK9RxnTIDwvRy61lNZdHYA0DHcdpHVu2
+	 WyW1llAYfADaA==
+From: Dmitry Baryshkov <lumag@kernel.org>
+Subject: [PATCH 00/10] drm/msm: add support for SAR2130P
+Date: Sat, 08 Mar 2025 03:42:18 +0200
+Message-Id: <20250308-sar2130p-display-v1-0-1d4c30f43822@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 03/11] dt-bindings: power: qcom,kpss-acc-v2: Add MSM8916
- compatible
-To: Stephan Gerhold <stephan.gerhold@linaro.org>,
-        Konrad Dybcio <konradybcio@kernel.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>, Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
-        Simona Vetter <simona@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Robert Foss <rfoss@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wesley Cheng <quic_wcheng@quicinc.com>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Rohit Agarwal <quic_rohiagar@quicinc.com>,
-        Kyle Deng <quic_chunkaid@quicinc.com>, Vinod Koul <vkoul@kernel.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-usb@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-References: <20250306-topic-dt_bindings_fixups-v1-0-0c84aceb0ef9@oss.qualcomm.com>
- <20250306-topic-dt_bindings_fixups-v1-3-0c84aceb0ef9@oss.qualcomm.com>
- <Z8rTW3fQObiZ7del@linaro.org>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <Z8rTW3fQObiZ7del@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: t18MNI2Cac0kxD4uSgHZ-9-cXFSstb67
-X-Authority-Analysis: v=2.4 cv=R5D5GcRX c=1 sm=1 tr=0 ts=67cb7398 cx=c_pps a=UgVkIMxJMSkC9lv97toC5g==:117 a=FpWmc02/iXfjRdCD7H54yg==:17 a=IkcTkHD0fZMA:10 a=Vs1iUdzkB0EA:10 a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8 a=EUspDBNiAAAA:8 a=2aLQLXHzPMxx44zPxJMA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=1HOtulTD9v-eNWfpl4qZ:22 a=cvBusfyB2V15izCimMoJ:22
-X-Proofpoint-GUID: t18MNI2Cac0kxD4uSgHZ-9-cXFSstb67
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-07_08,2025-03-07_03,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
- suspectscore=0 phishscore=0 mlxscore=0 priorityscore=1501 clxscore=1015
- spamscore=0 mlxlogscore=999 malwarescore=0 bulkscore=0 lowpriorityscore=0
- classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2502100000
- definitions=main-2503070170
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAHqgy2cC/z2OQW7DIBBFr2KxLurA2GD7KlUWMMw0SLXjAq1SR
+ bl7aSJ1+b70nv5NVS6Zq1qHmyr8nWu+7B3My6DoHPZ31jl1VhbsBAizrqFYg3DolOvxEX50BAd
+ GSDgiqK4dhSVfH8m305MLf371cnuO6giNzr27DjEIOeJkR2fF2wURxcwilnyC2QVvowE/jo/uv
+ +VQfMCpy/0JxdktAinSQuAoTSNGTwEF7Z8VQ2VNl23LbR12vrbXLdTGRZ3u91/lDYi6/QAAAA=
+ =
+X-Change-ID: 20250308-sar2130p-display-b0601fcfeb30
+To: Rob Clark <robdclark@gmail.com>, 
+ Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Dmitry Baryshkov <lumag@kernel.org>, Sean Paul <sean@poorly.run>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Kuogee Hsieh <quic_khsieh@quicinc.com>, 
+ Krishna Manikandan <quic_mkrishn@quicinc.com>, 
+ Jonathan Marek <jonathan@marek.ca>, Bjorn Andersson <andersson@kernel.org>, 
+ Neil Armstrong <neil.armstrong@linaro.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2348;
+ i=dmitry.baryshkov@linaro.org; h=from:subject:message-id;
+ bh=0xzbMLIyrzOvtrnxOzYygHtiJhTxXWscGZfJynbxvwE=;
+ b=owEBbAGT/pANAwAKAYs8ij4CKSjVAcsmYgBny6B+rPiCzDjdVbOKP2y8wSLBqEba+tnYtIVmQ
+ /BQyLQBNAqJATIEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCZ8ugfgAKCRCLPIo+Aiko
+ 1dKsB/jpWhfIyF/tcV2lxgpDgnw8y1WeevEZbOVeV6M6hr/dE0v+HYy5JSfJH0SYh/d4kpmaBgu
+ q2lvDQQ6dOLnvyE66RdOK25xRXmKKEhS74IB7vlf9Gdi9ZPUZkIY4aMhApDoME5n9wDQ9nkXYXV
+ munhewHGKbi1hb3gSvLdQtc49VswONOmX4bGR56E/mdIOF6HHglpV27/FAisCkJjRdB9V8ou0Zi
+ myamgawXe81BJWb5X2RCdz4KOw4ef8Sn23aueGrwrTyTuHSmKVVNVHk8/3xIBdB1SxTivTNvvLZ
+ BOYhKeLuhUSkKxH9fvghEFZHjsQDM2pIlopMOAEK/G+I5uM=
+X-Developer-Key: i=dmitry.baryshkov@linaro.org; a=openpgp;
+ fpr=8F88381DD5C873E4AE487DA5199BF1243632046A
 
-On 7.03.2025 12:07 PM, Stephan Gerhold wrote:
-> On Thu, Mar 06, 2025 at 07:11:15PM +0100, Konrad Dybcio wrote:
->> From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
->>
->> MSM8916 seems to reuse the same hardware as MSM8974 and friends (for
->> whom this binding document was created). Add a new compatible for it.
->>
->> Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
->> ---
->>  Documentation/devicetree/bindings/power/qcom,kpss-acc-v2.yaml | 4 +++-
->>  1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/devicetree/bindings/power/qcom,kpss-acc-v2.yaml b/Documentation/devicetree/bindings/power/qcom,kpss-acc-v2.yaml
->> index 202a5d51ee88c7190805efe8f1bf493bdb69ec45..27dae49163fa0790ceb6fda8a5c674f739d4a41a 100644
->> --- a/Documentation/devicetree/bindings/power/qcom,kpss-acc-v2.yaml
->> +++ b/Documentation/devicetree/bindings/power/qcom,kpss-acc-v2.yaml
->> @@ -18,7 +18,9 @@ description:
->>  
->>  properties:
->>    compatible:
->> -    const: qcom,kpss-acc-v2
->> +    enum:
->> +      - qcom,msm8916-kpss-acc
-> 
-> Hm, MSM8916 doesn't have a *K*PSS (Krait Processor SubSystem), it has an
-> *A*PSS (ARM Cortex – A53 SubSystem, or Application Processor SubSystem).
+Add support for the Mobile Display SubSystem (MDSS) device present on
+the Qualcomm SAR2130P platform. The MDSS device is similar to SM8550, it
+features two MIPI DSI controllers, two MIPI DSI PHYs and one DisplayPort
+controller.
 
-You would think that, but actually it's still called KPSS internally..
+Note, due to the technical limitations DP controller wasn't completely
+evaluated.
 
-> 
-> I think this should be either qcom,msm8916-apss-acc, or you just keep
-> the qcom,msm8916-acc we already use. I'm guessing ACC stands for
-> "Application Clock Controller", so it would be unique enough already.
-> 
-> There is actually a patch from Rayyan already with a R-b from Krzysztof.
-> Maybe you, or whoever is responsible, can pick it up?
-> 
-> https://lore.kernel.org/linux-arm-msm/20240710155226.130086-1-rayyan.ansari@linaro.org/
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+Dmitry Baryshkov (10):
+      dt-bindings: display/msm: dp-controller: describe SAR2130P
+      dt-bindings: display/msm: dsi-controller-main: describe SAR2130P
+      dt-bindings: display/msm: dsi-phy-7nm: describe SAR2130P
+      dt-bindings: display/msm: qcom,sc7280-dpu: describe SAR2130P
+      dt-bindings: display/msm: Add Qualcomm SAR2130P
+      drm/msm/mdss: add SAR2130P device configuration
+      drm/msm/dsi/phy: add configuration for SAR2130P
+      drm/msm/dpu: add catalog entry for SAR2130P
+      iommu/arm-smmu-qcom: Add SAR2130P MDSS compatible
+      arm64: dts: qcom: sar2130p: add display nodes
 
-I'm not opposed to this either
+ .../bindings/display/msm/dp-controller.yaml        |   1 +
+ .../bindings/display/msm/dsi-controller-main.yaml  |   2 +
+ .../bindings/display/msm/dsi-phy-7nm.yaml          |   1 +
+ .../bindings/display/msm/qcom,sar2130p-mdss.yaml   | 445 +++++++++++++++++++++
+ .../bindings/display/msm/qcom,sc7280-dpu.yaml      |   1 +
+ arch/arm64/boot/dts/qcom/sar2130p.dtsi             | 394 ++++++++++++++++++
+ .../drm/msm/disp/dpu1/catalog/dpu_9_1_sar2130p.h   | 434 ++++++++++++++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   2 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy.c              |   2 +
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy.h              |   1 +
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c          |  23 ++
+ drivers/gpu/drm/msm/msm_mdss.c                     |  11 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   1 +
+ 15 files changed, 1319 insertions(+), 1 deletion(-)
+---
+base-commit: 0a2f889128969dab41861b6e40111aa03dc57014
+change-id: 20250308-sar2130p-display-b0601fcfeb30
+prerequisite-patch-id: bafc6ced2462f729333f18ff2c7d086a72b10744
+prerequisite-patch-id: 63f7a35baf213cb869f0dbc9c06cd543b7ca3f32
 
-Looks like Sebastian Reichel and/or Ulf pick up power dt-bindings patches
+Best regards,
+-- 
+Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Konrad
