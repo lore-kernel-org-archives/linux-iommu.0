@@ -1,152 +1,120 @@
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fhigh-a6-smtp.messagingengine.com (fhigh-a6-smtp.messagingengine.com [103.168.172.157])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CAAE17A311
-	for <iommu@lists.linux.dev>; Sat,  8 Mar 2025 05:09:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60BF6BE4F;
+	Sat,  8 Mar 2025 09:54:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.157
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741410559; cv=none; b=Lh1nk9qWYiN2KV1LDRzGcIDXVbwcII/Aujj2dIguX0nrh45nuBp5BYRmZ5I4DowKWztkXCYF1pgVAVlKyxdcmE5kIIZXZlEZtk8fo1oI3G39+sNpacGNpa9dQYnm+fHYbc08Z/gFSApQYROyFvNUjeILjgVd/R3Mn4rT5B/MrcQ=
+	t=1741427693; cv=none; b=G18wZb6tf5aNH5G7xdcEKjiK7/NLXePbcICR66Vye545+WXJPxkf/cTaVFJUPeyggRxTP0FVNulh1ZUOWYXeGd6SLWo4Uwu/ELIchqAnOcWpyHvYpyjyxCZARXM/9QvOEWI/vKt0QtDbhnFzU1xHYFvfm2EIZZU8QGc9toJLZ+c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741410559; c=relaxed/simple;
-	bh=ptCcDRtuDzbTjjE4m2PHHQvXnqToeWz1+GhetT24juk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rPknMX1s/w0edSvlo8qAm+Zt9yyFejPWV8wi0BSSu6WxS4DKHRni03+/Fdy2uh6DgL4VPXc0ucyVGHm+Ds+y7QstCCifm0hj9zzMA3dRuEG9jOWRhU6+gVyfMQy6lTQ7SeFZlpTfYVLlzjkSx89jY0uofEJlrXoKO4ckbNrN3vs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=k7PCo+2U; arc=none smtp.client-ip=209.85.208.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1741427693; c=relaxed/simple;
+	bh=hzhNcRtCfxWSACKC/UtPCa8G/XdJxqGyTmH3V+EynZw=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=WQ3Kn4g3867hbZOG5YGTtLQMZR3MkovTl/vpyn7GQrZdc7TSCDfK4I2p9nWUY2p4ZpPaqT6G8dwZlBmg8+1GzJ4tnpXZ+jbiYUy+79IarZzfMFGDsHe74cuEuPkD2lvgX9zAqhHbPd+GfKAP44HPo1h1r4pql2JkcAfLgO7nGnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svenpeter.dev; spf=pass smtp.mailfrom=svenpeter.dev; dkim=pass (2048-bit key) header.d=svenpeter.dev header.i=@svenpeter.dev header.b=GY34UcPa; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=QlmGl2AW; arc=none smtp.client-ip=103.168.172.157
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svenpeter.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=svenpeter.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="k7PCo+2U"
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-307c13298eeso30219621fa.0
-        for <iommu@lists.linux.dev>; Fri, 07 Mar 2025 21:09:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1741410555; x=1742015355; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ulAMfJbRFBT/fSAG0Qg9z+1DBNf6VyZHT1tEXJwkloQ=;
-        b=k7PCo+2UT4pLmO+PPueFJqu9LDGkqu8uY5v45yr3ddxwZSPP9RQil5NhfytBJC5AE1
-         7nUXqab+lAn4Sp5ej4nJbygZm0P918F3G/BHB7HZ3HF36V/v/798a1/i7ycMbzxpqCNE
-         i6WgNC0BA890rOmr4CHixzBbaY0w0fxOeF7l60q+B4sfdzFTdeRHoUu+zrAErn6tQBqM
-         aPfIOsuQ2TMqLz/ymsgsFOlx/xUhOGLqL2sI3bISMLyvg7g91cWiMyIMdkOAsrL5JLSl
-         BsTeXVSYfDElNtu6FYw4xo2e7GJMC7KJZ9AeS5fUnYYopdKLlHUWZOoZ3PkfdcjUYFb7
-         9/oQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741410555; x=1742015355;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ulAMfJbRFBT/fSAG0Qg9z+1DBNf6VyZHT1tEXJwkloQ=;
-        b=TPKw1RoeJBswyduqpJYL9FnVqr2qRM85Mv2mwm2KYwXeViC0sY9KB2y+etM9JnMics
-         7EMkDdhQRMqQCr7f5mLrMMksu/pdX40bgnuve9WjoXGy/xxC2tmNNxZC7veiMNw7G3av
-         wIdCwyuIh5ti4WGtJAWlcApoKidxyFqH2W5CuT2MzPkt0T/gAKbmxGZO1n1FgJcngMu0
-         ycvN6RradzWFpsU4Oe75pP84THL6YUwIXZ68dKmmSv6P6hPXkPVSqqYtydkEszOr2qD6
-         GthuQDtbK8SbwqF00dx6D8Aykh+Ki7GGjskA3glIYTWOYde8Y/3nxJvAFKb3NTXfPk/x
-         7nkw==
-X-Forwarded-Encrypted: i=1; AJvYcCUIt5XFzFNWS1AXsM8emxzJW8dPJRtwCbfB3r/u3Sv1U7OmD/T/2kU1eODZlG62FIPqox5h+Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzbrA55786EK6ekd4haRWBnBLlaD9+q5QmP6Q2NkB2JX5gDuua/
-	A/pOhQQHcgmcAhgj3U1ElWtte4haRM8YgtqeMRw9raG+LKBSij6Z0CXKvOLnO9g=
-X-Gm-Gg: ASbGnct77jwVCumAm9Fbxa46gPD6iCVeg6+3YDDJeszPLkYBn6M/3c0nsfUr+dkMiXq
-	iqloPe6QcSM6j8MihnJu4ZG07esStbtB7UEDbaczao+zo26QsZM6NnM34Dw6g9qEc/7ZK/BCMDY
-	Uw8bDCGVWyBCF2H/pda2+q9mIvwq5YALdc426UiC+XWfgRxQf9SrSXtV0qeVjFd1cJS/7HDCU2C
-	8vzTP6TRISUsHbBl1D/XamvuoeqJKB8dNOQO5BEKQN2GWU/sXrzStjdlIPP0XOqZ+P3bAtwByt+
-	8pWvOEb5R2FnC69uD5Zjdpr1zVEVUlyntCzT2AEWcP3btvN1ZTSLhi4FT85pf6cwQUFLklAFfZB
-	u63NbwBCP+xAiZUwUqiMg+hJL
-X-Google-Smtp-Source: AGHT+IF7bjBB5aMjSIOWPIZXx3se8ZXwg6KEPXnQgNtkefZ48n8buFCzC0ExNuYMF9We4+jwIP9GuA==
-X-Received: by 2002:a2e:be91:0:b0:30b:c608:22bf with SMTP id 38308e7fff4ca-30bfe429ce8mr7170571fa.9.1741410555213;
-        Fri, 07 Mar 2025 21:09:15 -0800 (PST)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-30be98d0bf3sm7872791fa.8.2025.03.07.21.09.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Mar 2025 21:09:13 -0800 (PST)
-Date: Sat, 8 Mar 2025 07:09:11 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Dmitry Baryshkov <lumag@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, Sean Paul <sean@poorly.run>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Conor Dooley <conor+dt@kernel.org>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, dri-devel@lists.freedesktop.org, 
-	David Airlie <airlied@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Abhinav Kumar <quic_abhinavk@quicinc.com>, devicetree@vger.kernel.org, 
-	Neil Armstrong <neil.armstrong@linaro.org>, Rob Clark <robdclark@gmail.com>, 
-	Kuogee Hsieh <quic_khsieh@quicinc.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Simona Vetter <simona@ffwll.ch>, freedreno@lists.freedesktop.org, 
-	Bjorn Andersson <andersson@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Jonathan Marek <jonathan@marek.ca>, 
-	Maxime Ripard <mripard@kernel.org>, iommu@lists.linux.dev, 
-	Krishna Manikandan <quic_mkrishn@quicinc.com>, linux-arm-kernel@lists.infradead.org, 
-	Will Deacon <will@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>
-Subject: Re: [PATCH 05/10] dt-bindings: display/msm: Add Qualcomm SAR2130P
-Message-ID: <nddxntwmiyurqew75gc6yoj2dcinhjqu36cdujhruqyrz62ry5@4e2y76ghmo4h>
-References: <20250308-sar2130p-display-v1-0-1d4c30f43822@linaro.org>
- <20250308-sar2130p-display-v1-5-1d4c30f43822@linaro.org>
- <174140525677.1770282.3232695979994091275.robh@kernel.org>
+	dkim=pass (2048-bit key) header.d=svenpeter.dev header.i=@svenpeter.dev header.b="GY34UcPa";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="QlmGl2AW"
+Received: from phl-compute-12.internal (phl-compute-12.phl.internal [10.202.2.52])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 70CA811400E9;
+	Sat,  8 Mar 2025 04:54:50 -0500 (EST)
+Received: from phl-imap-07 ([10.202.2.97])
+  by phl-compute-12.internal (MEProxy); Sat, 08 Mar 2025 04:54:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+	 h=cc:cc:content-transfer-encoding:content-type:content-type
+	:date:date:from:from:in-reply-to:in-reply-to:message-id
+	:mime-version:references:reply-to:subject:subject:to:to; s=fm2;
+	 t=1741427690; x=1741514090; bh=hzhNcRtCfxWSACKC/UtPCa8G/XdJxqGy
+	TmH3V+EynZw=; b=GY34UcPab4q4u3ZgyuiiGOEBSe3ZPRyWzfdIxpiwvo5BS173
+	ir5jRDTAaColjSQLgxNwYuDzg4xh7xq2AejMaJGYhIGfMxwvvALMmbKnUioFuMCo
+	UY58TxowS1hLBvYL9wX320hQW18ab2OeyA2T2kqKUMXMIJ2lYiy8JTnxZBi83Tea
+	mqD89GA6oSgLJmiCJtu4r0+CwAZTlw2xcmM0UCAhs504zZ7qn8YDkjEcXwdqEncQ
+	r380D5nXlMHCWO6uVCyfjxaZvvqa31FHpDgWPAR3fbgXEicZDpUGKnygwEYRq2w9
+	cdyI4HoaXrCFKhfvKfsSkYHqw9iKLrALwIe1CA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1741427690; x=
+	1741514090; bh=hzhNcRtCfxWSACKC/UtPCa8G/XdJxqGyTmH3V+EynZw=; b=Q
+	lmGl2AWfK3CdyaBWVbRyKwtEcE7mhb/dqOjAbSBGiWo0GOTspQwWM8YapI4UhapM
+	82D9ac4aTO/vZMlVCScjxBKl+JjqN53LxovpTOo0Sn+lTicVIB/0yecHV/fnBHoA
+	QYyi+pwOxA75THCqSb6iYeuPoNAmCVPxeku+v2F422SeK58NAh1kSrV94MW/jH29
+	fugfc9GVfzCkn2EzIiuGDqM8aHyF03LWm2UyzE+EyOP8LEQ3MCMwq3qjJpXHDyJL
+	8gN1MDM+lm6G6GmPeiEnoBbi1qKHvep4fkPNg3sxMcUwMU063tEvz5MzXvXRfu2x
+	Eb0pO1Mq04PV34D0Ffr6A==
+X-ME-Sender: <xms:6RPMZw4BfUqZC77eEAGwtL2yvomJMkDMYVLEeR4W0Bgo0akQtAqZxA>
+    <xme:6RPMZx4jCmuQlxFJL0VGNNjhSPYiw5Ywrwkk5vPdRsWBu5xw3sR2vBvDn_8f48bVF
+    Q_3OxldQym_QqFvXO8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdduudefvdegucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
+    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
+    gvnhhtshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertder
+    tddtnecuhfhrohhmpedfufhvvghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvth
+    gvrhdruggvvheqnecuggftrfgrthhtvghrnhepueettdelieeugfejvdfgjeevffdtkeel
+    ieeggfffhfehheekteelhefgteegtddvnecuffhomhgrihhnpehkvghrnhgvlhdrohhrgh
+    enucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgv
+    nhesshhvvghnphgvthgvrhdruggvvhdpnhgspghrtghpthhtohepuddupdhmohguvgepsh
+    hmthhpohhuthdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhgpdhrtghpthht
+    oheprhhosghinhdrmhhurhhphhihsegrrhhmrdgtohhmpdhrtghpthhtohepfhhnkhhlrd
+    hkvghrnhgvlhesghhmrghilhdrtghomhdprhgtphhtthhopehjsehjrghnnhgruhdrnhgv
+    thdprhgtphhtthhopeifihhllheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinh
+    hugidqrghrmhdqkhgvrhhnvghlsehlihhsthhsrdhinhhfrhgruggvrggurdhorhhgpdhr
+    tghpthhtoheprghsrghhiheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhope
+    hiohhmmhhusehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepmhgrrhgtrghn
+    sehmrghrtggrnhdrshht
+X-ME-Proxy: <xmx:6RPMZ_c_5gmt1HFlshi0xWf9s2bh3HDRNENfG9l9jj5bZYh6rJ46kQ>
+    <xmx:6RPMZ1KSGIOo2_lpOS4FDWX0eoKJHLOy1mR6QSO00BPjzTWBlra-7Q>
+    <xmx:6RPMZ0K9xyDF6pFF2XHGO3psVn4SI4dXT2KT3C7UXEAqIvCyPF8U4g>
+    <xmx:6RPMZ2x9057KKDUqC78QsVxDJA-UQcq4_qeyBEgdgUEd3Ki102EoYQ>
+    <xmx:6hPMZxAkgPTxMSm3WFjAdmZdQYMZ4EnQjFSGZ7PO4cb6ZMV0S0tepZD4>
+Feedback-ID: i51094778:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 83546BA006F; Sat,  8 Mar 2025 04:54:49 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <174140525677.1770282.3232695979994091275.robh@kernel.org>
+Date: Sat, 08 Mar 2025 10:54:26 +0100
+From: "Sven Peter" <sven@svenpeter.dev>
+To: "Sasha Finkelstein" <fnkl.kernel@gmail.com>,
+ "Janne Grunau" <j@jannau.net>, "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
+ "Joerg Roedel" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>,
+ "Robin Murphy" <robin.murphy@arm.com>
+Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ "Hector Martin" <marcan@marcan.st>
+Message-Id: <baaf111d-78ff-445a-bad0-277895b34144@app.fastmail.com>
+In-Reply-To: <20250307-isp-dart-v3-0-684fe4489591@gmail.com>
+References: <20250307-isp-dart-v3-0-684fe4489591@gmail.com>
+Subject: Re: [PATCH v3 0/2] iommu: apple-dart: Support the ISP DART
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Fri, Mar 07, 2025 at 09:40:56PM -0600, Rob Herring (Arm) wrote:
-> 
-> On Sat, 08 Mar 2025 03:42:23 +0200, Dmitry Baryshkov wrote:
-> > From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > 
-> > Describe the Mobile Display SubSystem (MDSS) device present on the
-> > Qualcomm SAR2130P platform. It looks pretty close to SM8550 on the
-> > system level. SAR2130P features two DSI hosts and single DisplayPort
-> > controller.
-> > 
-> > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > ---
-> >  .../bindings/display/msm/qcom,sar2130p-mdss.yaml   | 445 +++++++++++++++++++++
-> >  1 file changed, 445 insertions(+)
-> > 
-> 
-> My bot found errors running 'make dt_binding_check' on your patch:
-> 
-> yamllint warnings/errors:
-> 
-> dtschema/dtc warnings/errors:
-> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sar2130p-mdss.example.dtb: dsi@ae94000: compatible: 'oneOf' conditional failed, one must be fixed:
-> 	['qcom,sar2130p-dsi-ctrl', 'qcom,mdss-dsi-ctrl'] is too long
-> 	'qcom,sar2130p-dsi-ctrl' is not one of ['qcom,apq8064-dsi-ctrl', 'qcom,msm8226-dsi-ctrl', 'qcom,msm8916-dsi-ctrl', 'qcom,msm8953-dsi-ctrl', 'qcom,msm8974-dsi-ctrl', 'qcom,msm8976-dsi-ctrl', 'qcom,msm8996-dsi-ctrl', 'qcom,msm8998-dsi-ctrl', 'qcom,qcm2290-dsi-ctrl', 'qcom,sc7180-dsi-ctrl', 'qcom,sc7280-dsi-ctrl', 'qcom,sdm660-dsi-ctrl', 'qcom,sdm670-dsi-ctrl', 'qcom,sdm845-dsi-ctrl', 'qcom,sm6115-dsi-ctrl', 'qcom,sm6125-dsi-ctrl', 'qcom,sm6150-dsi-ctrl', 'qcom,sm6350-dsi-ctrl', 'qcom,sm6375-dsi-ctrl', 'qcom,sm7150-dsi-ctrl', 'qcom,sm8150-dsi-ctrl', 'qcom,sm8250-dsi-ctrl', 'qcom,sm8350-dsi-ctrl', 'qcom,sm8450-dsi-ctrl', 'qcom,sm8550-dsi-ctrl', 'qcom,sm8650-dsi-ctrl']
-> 	'qcom,sar2130p-dsi-ctrl' is not one of ['qcom,dsi-ctrl-6g-qcm2290', 'qcom,mdss-dsi-ctrl']
-> 	from schema $id: http://devicetree.org/schemas/display/msm/dsi-controller-main.yaml#
+Hi,
 
-It looks like the patch 2 could not be applied and was skipped. Is the
-bot parsing the dependencies from the cover letter?
 
-> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sar2130p-mdss.example.dtb: dsi@ae94000: Unevaluated properties are not allowed ('compatible' was unexpected)
-> 	from schema $id: http://devicetree.org/schemas/display/msm/dsi-controller-main.yaml#
-> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sar2130p-mdss.example.dtb: dsi@ae96000: compatible: 'oneOf' conditional failed, one must be fixed:
-> 	['qcom,sar2130p-dsi-ctrl', 'qcom,mdss-dsi-ctrl'] is too long
-> 	'qcom,sar2130p-dsi-ctrl' is not one of ['qcom,apq8064-dsi-ctrl', 'qcom,msm8226-dsi-ctrl', 'qcom,msm8916-dsi-ctrl', 'qcom,msm8953-dsi-ctrl', 'qcom,msm8974-dsi-ctrl', 'qcom,msm8976-dsi-ctrl', 'qcom,msm8996-dsi-ctrl', 'qcom,msm8998-dsi-ctrl', 'qcom,qcm2290-dsi-ctrl', 'qcom,sc7180-dsi-ctrl', 'qcom,sc7280-dsi-ctrl', 'qcom,sdm660-dsi-ctrl', 'qcom,sdm670-dsi-ctrl', 'qcom,sdm845-dsi-ctrl', 'qcom,sm6115-dsi-ctrl', 'qcom,sm6125-dsi-ctrl', 'qcom,sm6150-dsi-ctrl', 'qcom,sm6350-dsi-ctrl', 'qcom,sm6375-dsi-ctrl', 'qcom,sm7150-dsi-ctrl', 'qcom,sm8150-dsi-ctrl', 'qcom,sm8250-dsi-ctrl', 'qcom,sm8350-dsi-ctrl', 'qcom,sm8450-dsi-ctrl', 'qcom,sm8550-dsi-ctrl', 'qcom,sm8650-dsi-ctrl']
-> 	'qcom,sar2130p-dsi-ctrl' is not one of ['qcom,dsi-ctrl-6g-qcm2290', 'qcom,mdss-dsi-ctrl']
-> 	from schema $id: http://devicetree.org/schemas/display/msm/dsi-controller-main.yaml#
-> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sar2130p-mdss.example.dtb: dsi@ae96000: Unevaluated properties are not allowed ('compatible' was unexpected)
-> 	from schema $id: http://devicetree.org/schemas/display/msm/dsi-controller-main.yaml#
-> 
-> doc reference errors (make refcheckdocs):
-> 
-> See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20250308-sar2130p-display-v1-5-1d4c30f43822@linaro.org
-> 
-> The base for the series is generally the latest rc1. A different dependency
-> should be noted in *this* patch.
-> 
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> date:
-> 
-> pip3 install dtschema --upgrade
-> 
-> Please check and re-submit after running the above command yourself. Note
-> that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-> your schema. However, it must be unset to test all examples with your schema.
-> 
+On Fri, Mar 7, 2025, at 21:07, Sasha Finkelstein via B4 Relay wrote:
+> The ISP block has 3 linked DARTs with mismatched bypass support.
+> This series adds support for this setup.
+>
+> (The ISP driver itself is sent as a separate series
+> https://lore.kernel.org/asahi/20250219-isp-v1-0-6d3e89b67c31@gmail.com/T/ )
+>
+> Signed-off-by: Sasha Finkelstein <fnkl.kernel@gmail.com>
+> ---
 
--- 
-With best wishes
-Dmitry
+For the entire series:
+
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
+
+
+Thanks,
+
+Sven
