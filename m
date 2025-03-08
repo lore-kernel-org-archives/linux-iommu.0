@@ -1,65 +1,72 @@
-Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com [209.85.214.196])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A518E1465AE
-	for <iommu@lists.linux.dev>; Sat,  8 Mar 2025 12:33:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFBF316C850
+	for <iommu@lists.linux.dev>; Sat,  8 Mar 2025 14:17:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741437238; cv=none; b=k94SHrYWl1uKgLNpMk1WT79WzLaNU9zsJaeDNuR21Q+g/WAfc19lETZmUOs59h39djSLsSGk/4187Yo8DqK+sHuToJLP1uqQcWXE+T+g5wH2kAq9+fEQiOFxMH9fDCdcNC6O1Upb8PYBr79kCVt2LTj8ybh90NHkNMjmh5c8CA4=
+	t=1741443463; cv=none; b=FoXNbdxLUPn3ipU6izha1dpKv7sz7YnlHqop9TMoxD42lal28/li7olKkr2g2eI4yCDheNSl9D88dIya6WztaFOgKzjT2kyPtj5Yb54aHUxdaC99eZRT/NIUNxDv5YOCt7lSWAkNEFNGkoK8sFfYO0FYSduaQHi2Xsor6UIqI6I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741437238; c=relaxed/simple;
-	bh=V/0SqlQacp+h4g7KCVIboICK9m0VGNB0L46HL+T24OU=;
+	s=arc-20240116; t=1741443463; c=relaxed/simple;
+	bh=VHhYh29HAmnBbgx55i+6SXtV+sSpE13dSW2GVjGVlrE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HmERDbmTjlLoc2HkkB64h1FMcCuDwlrUml2BPxzRORYfDwjkOrZMKTQjqJH6dSWh2tpUIIIUomM4cKTDM4NZLgWeCt84Ctxu1MD72f/6k9iCV+p2BnFJMMudTs7U2a4mdcWWsAbxNcuElUathKl+LbDO7hNHJNdXLzZaR2Gr3m0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LgeadG5R; arc=none smtp.client-ip=209.85.214.196
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 In-Reply-To:Content-Type; b=XPR2MbT4ndZYYXiBb//iOkDS6GQSQ6z0WQb3mtLsx4fBGJtLiPfT4vcEx3+O516Eaq9nK932/AZ29RC8TYqI5shhAVL5pGrAn6lqWXIR3cQJ5m+JOpRNLVnZQFFdMw3gh0ntOAQ6g5kuxji5CG5UWsKuCsJ2jIxegEDKMjax+cM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=IoxtfEpz; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LgeadG5R"
-Received: by mail-pl1-f196.google.com with SMTP id d9443c01a7336-22185cddbffso70967175ad.1
-        for <iommu@lists.linux.dev>; Sat, 08 Mar 2025 04:33:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741437236; x=1742042036; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=xrHqPe4qI/nAbruW3F2vRPvWp4Qoww7mexetKwU+H74=;
-        b=LgeadG5RKp7U2O46dG07Ehs8zQ0HXOGoyJTsavd1C0zs6cEul7xXP9yrixk4MGhtgM
-         tnZE598X2k9sq0+C9Qrx4/LAQFbIisKGwyvOnBmXj6XMO14S45CTjtkpv/iTVb11SdCN
-         v+hQiHk/w75ZaA7/3AwclL2DveDwSmAPvQpWhEj76XstjY0gKO8tWXv+6vq99DvqUZ0H
-         ckqDTW9ooqiWtd9hgp0gSdCuzUStZGUJDiKdR1/G1C03jg864459dl8uWytJ1dcKJLuY
-         /Kxv59ZmL7K99kIUvmqiKgV9rzyhltIMyR5ZxPNIy9H1APYKoKqai8YNGLR+6Yd90TKR
-         bQ8Q==
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="IoxtfEpz"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 528Be3et006147
+	for <iommu@lists.linux.dev>; Sat, 8 Mar 2025 14:17:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	D1//V6hw7ZeJCpBe534PNy3XxpjNRBUsFUM+ImnjOdk=; b=IoxtfEpzYKF+eVbu
+	g/Up9NSNM3H0qu2+btdGjoL3d3q6dfAswAlRe64+JUfRwPPKCF15lAjCS7H3eCp0
+	VRT87TWNlZzejd3XV0gGfUxLVVW2X9D1PwWmCphVTFwWKLAXID3DAzYgyEbXvoZd
+	1UL6Lhm+DTq9Co8FYVe0Gf1bH2YESK+lS9O0Aq7dDPm+/9WxS4okIWkMekqpbr0A
+	Smmz1kKpPOrO5NKkTaoPt0fPm7OCTSP9KTQQdEY+luYYKu94ABSZdmVADwRiMHzD
+	gz4iir8+Jjl+B3FE7AkMfuHvtUg4sI8qRrnKnsLHWKPRfl1Q2RM2NbTukxFIHOzN
+	Ytgknw==
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com [209.85.219.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 458f2m8nkn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Sat, 08 Mar 2025 14:17:39 +0000 (GMT)
+Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-6e8fec7ab4dso5606006d6.3
+        for <iommu@lists.linux.dev>; Sat, 08 Mar 2025 06:17:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741437236; x=1742042036;
+        d=1e100.net; s=20230601; t=1741443450; x=1742048250;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xrHqPe4qI/nAbruW3F2vRPvWp4Qoww7mexetKwU+H74=;
-        b=Cr4be1mCviTrvD0QE+C5RhIwnhuYntT1fOTrZ7FqnDbnRaj8J8PQrWVnTl+sTq/nZr
-         MrnO0zStMhJMWB5cADqhlEh0tD6LvKYHze2fLsEU1JbaxDagAs9i1/Y/4xjfkA7B31Hc
-         MnkUCYn4XKAq4IqCCdT6x1HK3fETzPEE+a/tQqfKBD4H32KtW1+2ltHtf8G/5KJ95ZfV
-         DNuYB0PfxP+9XItzEW1siu+YN4wclT6Sz/rXrfqgNGjSMbeC5r/Zfe5jWJPo7Z+DnruN
-         ExX0BkgBb7q2OOIKg+Bjz6HoE/v99mAIo7iTHvsWQJfBmkL6krFkEvwmLGF8toLFFWoF
-         58jw==
-X-Forwarded-Encrypted: i=1; AJvYcCUSZl5jxRe7dJg2W/06F+ucwR6YsKCd6siL285jebspr0BdywbR5kf1RWmLUjOSeYiuxN4IgA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz+x5I0Sp6B475R3yOeanXIFKg/jjy+2I4HDGViAU+opWlHukaH
-	ar7+SWZCYAh3z3UQrcVsQKAEDK7V5Vl8NDBsaTw1lXa68Z2a5Lac
-X-Gm-Gg: ASbGncu30aEQg0WTY4yzwKrk2QUTSd3nX0F16B2f0KS5WI/JZI9aVuIZkfdipm03vQ6
-	rSmLdNt425IM8FVn1EJbyTfZ8cH8AsurT12b6WtLyhGS3o5btAcwg7lstu4D5g4UOS3haYfEBsk
-	+akv3ZEbI+DkF7jjsmjBSJHDSTgYHakzu2bmZ4oJzopcJaNIQGV70LTHiqEp1jCQPTAHXwPOSZa
-	ciZQ3FtSvIA2Z7Cyk5oE3vHgzMMwG6VU0e64R9wafLeiSPUk2YRfmbbLrgVCiHycZ2ZHcjzA1f5
-	Oa/SDsHJX+NaU3CAMIaZMtnJd6liJ+TuUoxoJNa2mwBczAL++TAOW0vSndP6f/eijpwFoDrGv39
-	X5Ixqjg842ENhlZauf6CTTvbyMaxYs06+
-X-Google-Smtp-Source: AGHT+IEq4oVqwhl+HcBlEEt5O5mLwczA0MCHU/VL6TVKG4WcVGMzJn/E2qe19p7uaCmDiiGmZcFF6w==
-X-Received: by 2002:a05:6a00:816:b0:736:aea8:c9b7 with SMTP id d2e1a72fcca58-736bbf4af5dmr6123665b3a.2.1741437235636;
-        Sat, 08 Mar 2025 04:33:55 -0800 (PST)
-Received: from ?IPV6:2409:8a55:301b:e120:9c19:1482:d401:437c? ([2409:8a55:301b:e120:9c19:1482:d401:437c])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73698450244sm4918282b3a.80.2025.03.08.04.33.49
+        bh=D1//V6hw7ZeJCpBe534PNy3XxpjNRBUsFUM+ImnjOdk=;
+        b=bfTwOk4juQadSd9Rk+PlbWVVavPXuonDHevZnMRvpBPyYQv0Md1lkN70FRkuUIhgN9
+         5J8z7GL24p1t6fuDvuzbvAEf/IuErhRGJw/+n0/0dsaCEWaO/VM3F/uvqiPIs1OLRmqF
+         Nayyjmhvrh/uLJxkb2x/0zz+wB4SOd/HEAbbK5nviGVklHEeVGfQTiZgaR7/An8Xzet3
+         TL6oGL2Deq4JrB8/p6aoN6rm6lvnCzwmzX54ueoSI1Yp9xOXq7REeLWpfUswyhKWShA7
+         93+SmiW2JuirmAdRF18SzMe2i6AGR4igppcCbfKM+GGQPlsF5xssAnrglg8sa5jGmtru
+         scrg==
+X-Forwarded-Encrypted: i=1; AJvYcCWqQsM8SCGTfo2+NXzSP/xwdgIZK8pTJZ0GvYt/zkjp7/5aNX35JRYZXpP3nLlUK7CABHIn0A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy+CzVdYALwyR667jZ2TVDAFGtZUNJkzjnF6UFTaBa1fEFV2SGt
+	HjQebMuBUuLhBD0d+VZCDKAee/1Lvx8QU1YLYEQF8sz2ImqPfTMAunwH7KulZBhqkY1EEV1DaRZ
+	2ozOuAUD8CJtG2Lhx0fPNgy9ypkNrAse2cHn/YFQ99CyzoFCR2KreSw==
+X-Gm-Gg: ASbGncsdaGxXeQhk1QY5wwTfpXWPwg8JUJrm2MggqYWNsaH3IYIvvFSnFLl0T1PUnle
+	qFHFAPdDiNJoLRI9FDOoL8gYApYSiNug8jTPfaiR+Nc/tfXpyhoGP32R9/sH55WTZ4upopaiTx+
+	Xb86g7WVQWyyWsrdBstV+pD96Q2VpHQrxVQPbUSXEvtlZSenM4ltxza8UmECd7W7zKA3Z5KZuVd
+	FBHDA+uJCOGztwzxkE5+sfuLogTuIMNI1arxpoS3bZq/QYsSA7zEJ6T5RRhMnTt6jZ2VEYkTulT
+	pPa4CZ4A1hUhuT6SnebdhDGH9dVm13MpdGOHey+mL7OvLHJDaDXUxtYB0T8F+V3k2adBvg==
+X-Received: by 2002:ad4:5d63:0:b0:6e8:9c91:227a with SMTP id 6a1803df08f44-6e908a8299emr17047616d6.0.1741443449927;
+        Sat, 08 Mar 2025 06:17:29 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFn+apy78yObNDX132VCgoB+/Ws3nmpk1YJl8IUzHLq1owpnyugCLpRkOWW986ipasi3vQVoA==
+X-Received: by 2002:ad4:5d63:0:b0:6e8:9c91:227a with SMTP id 6a1803df08f44-6e908a8299emr17047406d6.0.1741443449547;
+        Sat, 08 Mar 2025 06:17:29 -0800 (PST)
+Received: from [192.168.65.90] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ac23973810csm439279366b.118.2025.03.08.06.17.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 08 Mar 2025 04:33:55 -0800 (PST)
-Message-ID: <40b33879-509a-4c4a-873b-b5d3573b6e14@gmail.com>
-Date: Sat, 8 Mar 2025 20:33:44 +0800
+        Sat, 08 Mar 2025 06:17:29 -0800 (PST)
+Message-ID: <53c3d2c3-2bfb-43f9-ad25-0d1fdd96f19f@oss.qualcomm.com>
+Date: Sat, 8 Mar 2025 15:17:23 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,91 +74,119 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v11 0/4] fix the DMA API misuse problem for
- page_pool
-To: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
- Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net, kuba@kernel.org,
- pabeni@redhat.com
-Cc: zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com,
- Alexander Lobakin <aleksander.lobakin@intel.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Gaurav Batra <gbatra@linux.ibm.com>, Matthew Rosato
- <mjrosato@linux.ibm.com>, IOMMU <iommu@lists.linux.dev>,
- MM <linux-mm@kvack.org>, Alexei Starovoitov <ast@kernel.org>,
- Daniel Borkmann <daniel@iogearbox.net>,
- Jesper Dangaard Brouer <hawk@kernel.org>,
- John Fastabend <john.fastabend@gmail.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
- bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- Eric Dumazet <edumazet@google.com>
-References: <20250307092356.638242-1-linyunsheng@huawei.com>
- <87v7slvsed.fsf@toke.dk>
+Subject: Re: [PATCH 07/10] drm/msm/dsi/phy: add configuration for SAR2130P
+To: Dmitry Baryshkov <lumag@kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Krishna Manikandan <quic_mkrishn@quicinc.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org
+References: <20250308-sar2130p-display-v1-0-1d4c30f43822@linaro.org>
+ <20250308-sar2130p-display-v1-7-1d4c30f43822@linaro.org>
 Content-Language: en-US
-From: Yunsheng Lin <yunshenglin0825@gmail.com>
-In-Reply-To: <87v7slvsed.fsf@toke.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <20250308-sar2130p-display-v1-7-1d4c30f43822@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: b1jfO5OApiKflRvdA12crN24gtCCap_X
+X-Proofpoint-ORIG-GUID: b1jfO5OApiKflRvdA12crN24gtCCap_X
+X-Authority-Analysis: v=2.4 cv=ab+bnQot c=1 sm=1 tr=0 ts=67cc5184 cx=c_pps a=UgVkIMxJMSkC9lv97toC5g==:117 a=FpWmc02/iXfjRdCD7H54yg==:17 a=IkcTkHD0fZMA:10 a=Vs1iUdzkB0EA:10 a=KKAkSRfTAAAA:8 a=WWvJJprN3eueWNfT7O0A:9 a=QEXdDO2ut3YA:10
+ a=jpH7HpYVSZo6v3SV3j0F:22 a=1HOtulTD9v-eNWfpl4qZ:22 a=cvBusfyB2V15izCimMoJ:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-08_05,2025-03-07_03,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=999 priorityscore=1501 lowpriorityscore=0 bulkscore=0
+ mlxscore=0 impostorscore=0 phishscore=0 clxscore=1015 spamscore=0
+ adultscore=0 suspectscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502100000
+ definitions=main-2503080107
 
-On 3/7/2025 10:15 PM, Toke Høiland-Jørgensen wrote:
-
-...
-
+On 8.03.2025 2:42 AM, Dmitry Baryshkov wrote:
+> From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 > 
-> You are making this incredibly complicated. You've basically implemented
-> a whole new slab allocator for those page_pool_item objects, and you're
-> tracking every page handed out by the page pool instead of just the ones
-> that are DMA-mapped. None of this is needed.
- > > I took a stab at implementing the xarray-based tracking first suggested
-> by Mina[0]:
-
-I did discuss Mina' suggestion with Ilias below in case you didn't
-notice:
-https://lore.kernel.org/all/0ef315df-e8e9-41e8-9ba8-dcb69492c616@huawei.com/
-
-Anyway, It is great that you take the effort to actually implement
-the idea to have some more concrete comparison here.
-
+> Qualcomm SAR2130P requires slightly different setup for the DSI PHY. It
+> is a 5nm PHY (like SM8450), so supplies are the same, but the rest of
+> the configuration is the same as SM8550 DSI PHY.
 > 
-> https://git.kernel.org/toke/c/e87e0edf9520
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  drivers/gpu/drm/msm/dsi/phy/dsi_phy.c     |  2 ++
+>  drivers/gpu/drm/msm/dsi/phy/dsi_phy.h     |  1 +
+>  drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c | 23 +++++++++++++++++++++++
+>  3 files changed, 26 insertions(+)
 > 
-> And, well, it's 50 lines of extra code, none of which are in the fast
-> path.
+> diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
+> index c0bcc68289633fd7506ce4f1f963655d862e8f08..a58bafe9fe8635730cb82e8c82ec1ded394988cd 100644
+> --- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
+> +++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
+> @@ -581,6 +581,8 @@ static const struct of_device_id dsi_phy_dt_match[] = {
+>  	  .data = &dsi_phy_7nm_cfgs },
+>  	{ .compatible = "qcom,dsi-phy-7nm-8150",
+>  	  .data = &dsi_phy_7nm_8150_cfgs },
+> +	{ .compatible = "qcom,sar2130p-dsi-phy-5nm",
+> +	  .data = &dsi_phy_5nm_sar2130p_cfgs },
+>  	{ .compatible = "qcom,sc7280-dsi-phy-7nm",
+>  	  .data = &dsi_phy_7nm_7280_cfgs },
+>  	{ .compatible = "qcom,sm6375-dsi-phy-7nm",
+> diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.h b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.h
+> index 1925418d9999a24263d6621299cae78f1fb9455c..1ed08b56e056094bc0096d07d4470b89d9824060 100644
+> --- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.h
+> +++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.h
+> @@ -59,6 +59,7 @@ extern const struct msm_dsi_phy_cfg dsi_phy_7nm_8150_cfgs;
+>  extern const struct msm_dsi_phy_cfg dsi_phy_7nm_7280_cfgs;
+>  extern const struct msm_dsi_phy_cfg dsi_phy_5nm_8350_cfgs;
+>  extern const struct msm_dsi_phy_cfg dsi_phy_5nm_8450_cfgs;
+> +extern const struct msm_dsi_phy_cfg dsi_phy_5nm_sar2130p_cfgs;
+>  extern const struct msm_dsi_phy_cfg dsi_phy_4nm_8550_cfgs;
+>  extern const struct msm_dsi_phy_cfg dsi_phy_4nm_8650_cfgs;
+>  
+> diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
+> index a92decbee5b5433853ed973747f7705d9079068d..cad55702746b8d35949d22090796cca60f03b9e1 100644
+> --- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
+> +++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
+> @@ -1289,6 +1289,29 @@ const struct msm_dsi_phy_cfg dsi_phy_5nm_8450_cfgs = {
+>  	.quirks = DSI_PHY_7NM_QUIRK_V4_3,
+>  };
+>  
+> +const struct msm_dsi_phy_cfg dsi_phy_5nm_sar2130p_cfgs = {
+> +	.has_phy_lane = true,
+> +	.regulator_data = dsi_phy_7nm_97800uA_regulators,
+> +	.num_regulators = ARRAY_SIZE(dsi_phy_7nm_97800uA_regulators),
+> +	.ops = {
+> +		.enable = dsi_7nm_phy_enable,
+> +		.disable = dsi_7nm_phy_disable,
+> +		.pll_init = dsi_pll_7nm_init,
+> +		.save_pll_state = dsi_7nm_pll_save_state,
+> +		.restore_pll_state = dsi_7nm_pll_restore_state,
+> +		.set_continuous_clock = dsi_7nm_set_continuous_clock,
+> +	},
+> +	.min_pll_rate = 600000000UL,
+> +#ifdef CONFIG_64BIT
+> +	.max_pll_rate = 5000000000UL,
+> +#else
+> +	.max_pll_rate = ULONG_MAX,
+> +#endif
+> +	.io_start = { 0xae95000, 0xae97000 },
+> +	.num_dsi_phy = 2,
+> +	.quirks = DSI_PHY_7NM_QUIRK_V5_2,
+> +};
 
-I wonder what is the overhead for the xarray idea regarding the
-time_bench_page_pool03_slow() testcase before we begin to discuss
-if xarray idea is indeed possible.
+I'm squinting very very hard and can't tell how this is different from
+dsi_phy_4nm_8550_cfgs
 
-> 
-> Jesper has kindly helped with testing that it works for normal packet
-> processing, but I haven't yet verified that it resolves the original
-> crash. Will post the patch to the list once I have verified this (help
-> welcome!).
-
-RFC seems like a good way to show and discuss the basic idea.
-
-I only took a glance at git code above, it seems reusing the
-_pp_mapping_pad for pp_dma_index seems like a wrong direction
-as mentioned in discussion with Ilias above as the field might
-be used when a page is mmap'ed to user space, and reusing that
-field in 'struct page' seems to disable the tcp_zerocopy feature,
-see the below commit from Eric:
-https://github.com/torvalds/linux/commit/577e4432f3ac810049cb7e6b71f4d96ec7c6e894
-
-Also, I am not sure if a page_pool owned page can be spliced into the fs
-subsystem yet, but if it does, I am not sure how is reusing the
-page->mapping possible if that page is called in __filemap_add_folio()?
-
-https://elixir.bootlin.com/linux/v6.14-rc5/source/mm/filemap.c#L882
-
-> 
-> -Toke
-> 
-> [0] https://lore.kernel.org/all/CAHS8izPg7B5DwKfSuzz-iOop_YRbk3Sd6Y4rX7KBG9DcVJcyWg@mail.gmail.com/
-> 
-> 
-
+Konrad
