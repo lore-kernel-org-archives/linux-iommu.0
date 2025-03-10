@@ -1,42 +1,42 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 028C4224224
-	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 08:30:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EB126F9CB
+	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 08:31:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741595425; cv=none; b=CmMVrgZ4nJZaI/bwh03MwgkVd5xBUK8FwqMVTfQrNlcq3zBsvAAbZQeEDf4lcAKDzUzOYfVtuPSl7c5nb/snLoB8dBLy0bPh3QFchxFivqCK7/4BliGbX/TdV5KSWYKTvegni3kMUxy8lf/a7uVMXlDZNIBBYRgKS9LOhlNHmMs=
+	t=1741595509; cv=none; b=nmP+tavtdoHFtGm4DDobRs8eXjzAGyBLsyHNiHgXKH+syVuWEx/Mprk8h8ql2/1TSvkrS5+LO57tcZD32k12qp7IO/f9J1h9leHHTKJBPUqZJ6PqNR6jPBJqvRCR7eBo4VoP//88/nEn+gy83nDGG03aNbulBOAuLm72NgnEcnA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741595425; c=relaxed/simple;
-	bh=HwN+dMCIV2g3/Ee1xnAmiVbSX//TRUMM3eFefYG1bBA=;
+	s=arc-20240116; t=1741595509; c=relaxed/simple;
+	bh=3vl10KU33CDG6uF+Ma1XE6fxWf0kXpX43klRjqGvjF8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k4FJYR6AIOKO+BP9GmGyN+IZ44f9d7VHhH9cLMxYeiozkGRaeWciLOnDMtUqhIjElkL2ziO8/QFs4zh9HmML112Lhsu7FQFVp+1wPJVPvVgfZUFgzIUCqygsA3+fy7tkLU567oO9dmQEPw4tZrUD+FCWYndD+rGtRRbsOWo2DIQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=iN7qCdT3; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=lUafGPWz2RTII5ErV21erxFPutaE+tKgn5EaLsB2l/FtRQgghOzOW0BVZ0pov8zdxUU0talfQoinY0niQqZGI8vPGrqIJ1njZ1qwTr82eTpEnS1SeEMHjnx7N51sp/L8QlGQxnBrUTVi6KwUnMPfMRspe3Bxd1Sc1wuUeqYZfYo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=ikXX1Iyt; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="iN7qCdT3"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="ikXX1Iyt"
 Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 0F430451A7;
-	Mon, 10 Mar 2025 09:24:24 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 3ACA144C5C;
+	Mon, 10 Mar 2025 09:31:47 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1741595064;
-	bh=HwN+dMCIV2g3/Ee1xnAmiVbSX//TRUMM3eFefYG1bBA=;
+	s=default; t=1741595507;
+	bh=3vl10KU33CDG6uF+Ma1XE6fxWf0kXpX43klRjqGvjF8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iN7qCdT3QAh3ubv3XH5W2RW8LFNumIbzQ0iAUeAltlJ/sHFGBue9nz54CE1xCkvfZ
-	 Td0sAlwGt/WP7ba9RK7yusVD8pVG/9FTZM6uhcwGTKH8lfL8tSXUo9ZPPLYUAA/I4D
-	 MpxCijiHKywv/L3I9QfIKoCV1rDaAfUEFpQVtrXBebQXbCmu/aD2KgbNGymSy8oGNr
-	 IV2IiFkHQd3H2c+Rnlmz2WIwNh+132+V0o1FEXFGIf6XArjRp0yJC6G6mvoFupzCky
-	 GdZIV2LQHUa45YoGZGm0CCXF0lpahbfa5Fe9JCUgPYaaV06+jYbq+eDz5zDTpVhDTs
-	 lawg6FmPVzm3w==
-Date: Mon, 10 Mar 2025 09:24:22 +0100
+	b=ikXX1Iyti49HeA5hJ4hkLsG11glf2mTTE7Ixs3lnPZEcgpgUO2ac4yC/SdgZa2YYr
+	 VGWTrtotRfrEZMZ4lTjMkO138ke6bSjgm6y0PFtrNhtl694qotEDm9qTihXGcJnwBc
+	 viuR+D+csfcsnnNrPg4N69DPgxhmvXg7WCjvT0usF61AtxHrB6zuMxkgTQdHA67WVO
+	 A/EW1TB6vZylRm4h5SLUUsh9Ntp/UKtN8L/tCxMtezrfVV7Tmjy52/420kkGpJsYLB
+	 lQuWNxCl0dHs806ODt5BMv8GvIKpnn//Q7UlGYd2VunlVEm/gm4NkzJVojENPis2i2
+	 Nzgh0vq79DoCQ==
+Date: Mon, 10 Mar 2025 09:31:46 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: will@kernel.org, iommu@lists.linux.dev, yf.wang@mediatek.com
-Subject: Re: [PATCH] iommu/dma: Remove redundant locking
-Message-ID: <Z86htswCMoruhkSC@8bytes.org>
-References: <a943d4c198e6a1fffe998337d577dc3aa7f660a9.1740585469.git.robin.murphy@arm.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/6] [PULL REQUEST] Intel IOMMU updates for v6.15
+Message-ID: <Z86jcijk6U-3Li5G@8bytes.org>
+References: <20250310024749.3702681-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,18 +45,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a943d4c198e6a1fffe998337d577dc3aa7f660a9.1740585469.git.robin.murphy@arm.com>
+In-Reply-To: <20250310024749.3702681-1-baolu.lu@linux.intel.com>
 
-On Wed, Feb 26, 2025 at 03:57:49PM +0000, Robin Murphy wrote:
-> This reverts commit ac9a5d522bb80be50ea84965699e1c8257d745ce.
+On Mon, Mar 10, 2025 at 10:47:43AM +0800, Lu Baolu wrote:
+> Hi Joerg,
 > 
-> iommu_dma_init_domain() is now only called under the group mutex, as it
-> should be given that that the default domain belongs to the group, so
-> the additional internal locking is no longer needed.
+> The following changes have been queued for v6.15-rc1. They are about new
+> features and code refactoring, including:
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/dma-iommu.c | 17 ++++-------------
->  1 file changed, 4 insertions(+), 13 deletions(-)
+>  - Checking for SVA support in domain allocation and attach paths
+>  - Move PCI ATS and PRI configuration into probe paths
+>  - Fix a pentential hang on reboot -f
+>  - Miscellaneous cleanups
+> 
+> These patches are based on v6.14-rc6. Please consider them for the
+> iommu/vt-d branch.
+> 
+> Best regards,
+> baolu
+> 
+> Jason Gunthorpe (2):
+>   iommu/vt-d: Use virt_to_phys()
+>   iommu/vt-d: Check if SVA is supported when attaching the SVA domain
+> 
+> Lu Baolu (3):
+>   iommu/vt-d: Move scalable mode ATS enablement to probe path
+>   iommu/vt-d: Move PRI enablement in probe path
+>   iommu/vt-d: Cleanup intel_context_flush_present()
+> 
+> Yunhui Cui (1):
+>   iommu/vt-d: Fix system hang on reboot -f
+> 
+>  drivers/iommu/intel/iommu.c | 237 +++++++++++++-----------------------
+>  drivers/iommu/intel/iommu.h |  28 +----
+>  drivers/iommu/intel/pasid.c |  43 ++-----
+>  drivers/iommu/intel/prq.c   |   2 +-
+>  drivers/iommu/intel/svm.c   |  43 +++++++
+>  5 files changed, 143 insertions(+), 210 deletions(-)
 
-Applied, thanks.
+Applied, thanks Baolu.
