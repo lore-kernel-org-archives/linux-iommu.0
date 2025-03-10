@@ -1,55 +1,55 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E295D1B0F20
-	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 02:47:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D88141B4257
+	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 02:47:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741574865; cv=none; b=V1nUE23uYVrxBmcyZVu6j2CQNqCf2hsMY5aG8wl2EMVe7O+I7OXeiXh6kCUSskL+ZbdU2zmyJCKIcsIZb5/1YKB0O9KGoAqDebWOA0m2cmKIRgjdI9SnxRualxDAnQq9lw+cohA9a+4oSW4tbrM30aCv+b1hkxRMYI/bTQ7QjqQ=
+	t=1741574866; cv=none; b=eIie/pAOrvuR2nzHZwozZtnDlKvWlJO1sFN/PoTyWpcz/EptyiXRQeIVgbM2ShuUS1wNRaK5EL9BLQWYAMGK1Or2vt3wuyuL/sGXarPJNoYcj4M+1mdZnF+h+VrlAUgB2w1bH6zR6kCL3+XrVEyB1TiW/2m+Z5nMMfj1CJl2Mas=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741574865; c=relaxed/simple;
-	bh=eRLZCAOXumm8xciIXwNBy9yoUgyMWxGZG1wMruoGihQ=;
+	s=arc-20240116; t=1741574866; c=relaxed/simple;
+	bh=e8N98miGjhZxcY9cjAV3CsYuZfyz+ZbDyvNfXdF6jbU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=g23mmqVONg9nVms0JVsbkOSVx9Wpo0uSyeIXFuUrz50WrojcrEAs6E6lvVilNOG6k+WmhVqvT5b7JMdR99uV8pZRIEqfh0wfDbYzLAtDTocUWkCzvzGT6sSD8McT4xFkETX/wTDa5jCm+QNeevG7qsHoid1Hpu35EcSb90u6/CI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZCGlxPxv; arc=none smtp.client-ip=198.175.65.19
+	 MIME-Version; b=e8I0z2qvEbBKJZv69eSXSAdLl0rLfCmVWD44hqGXKC55Eppw9ogA9lQ9rPVY5Yn7y/tMuGZxEZ0UHVIKgdn/c8c59nNxM1HCg3A1BIwWPPan+yg9bNO5FSomFPy9duDQsAbnYKqPXWGJm1tdSUGpx4nYxYSqQazr1sgfGmF/3is=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Bmb7fxw/; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZCGlxPxv"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Bmb7fxw/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741574864; x=1773110864;
+  t=1741574865; x=1773110865;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=eRLZCAOXumm8xciIXwNBy9yoUgyMWxGZG1wMruoGihQ=;
-  b=ZCGlxPxvEivXQ48GrOSRcj7vak4sqhpErWC37xMKMe5fsbl/tac9m71m
-   7AxkYcZvvTtuu0yXS4Lq/EjBKdowUy2dcX5Cz4pWDinJh5+EPCrxzG1zk
-   6lVwZzs5hM7ULCeFBdI+2qXXiUBOFv9smcNVb5Dc9dolH+NWryS7DXdGu
-   oF2u7B79GHj4XFS981SbRJ4noFQWGkOilKU90yult03vJLgIAV3WRm8lL
-   9SHbft+nvTH5ZHFcLaKSg7wmNphN6jDW9d+20dkVw4j2EXq+CCr3Wbxx7
-   X7Qs+us6YlhNWP4z/7A1YoEbtcrdL6K0ka0iQodfta7zYn0RC07JkGdTV
-   Q==;
-X-CSE-ConnectionGUID: /U3s8g4ISxuCSj7vUI153Q==
-X-CSE-MsgGUID: Lwin+wz0SauS5OF5QJ6rig==
-X-IronPort-AV: E=McAfee;i="6700,10204,11368"; a="42401603"
+  bh=e8N98miGjhZxcY9cjAV3CsYuZfyz+ZbDyvNfXdF6jbU=;
+  b=Bmb7fxw/dg7bQjAhGKqvm0Sb/YmKNR24MTJr96mwhDrG/ANxMpThIpPF
+   LLcQjQqY4i9ORK0HT0jN8l3mL9+rDGE8qS3wfssH68+1TOaxcIs+Z7aln
+   xfrAQ+7ksn2ZwHTeWNnpRS18Y9I/Mr1f+23qeITjv0X2xBlqvfFTxhv9G
+   mfa9oBRh9h7c00eFBeN+wxJOmtx+lmmONL//3l9Ga0IwURpoe07BoOCxZ
+   IPj7sanEsjHg3702tWJhir3nVQdRXkXHCGTNG075ncamiBXtoF9e1jcmD
+   EE2TV+V1MuptyRF8kkxFIstN2MgB1XaGPrtos31jnzhVnWrf5duCSz5Zy
+   A==;
+X-CSE-ConnectionGUID: ZDSlJLwnRsyaTugnxuRCKw==
+X-CSE-MsgGUID: bLXf1FclRKi/dK3uCUGFVQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11368"; a="42401609"
 X-IronPort-AV: E=Sophos;i="6.14,235,1736841600"; 
-   d="scan'208";a="42401603"
+   d="scan'208";a="42401609"
 Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2025 19:47:39 -0700
-X-CSE-ConnectionGUID: A/PkadB7QAW0CFl7ygzhuw==
-X-CSE-MsgGUID: pnw+4NfiQiyn+0r25QAzTw==
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2025 19:47:40 -0700
+X-CSE-ConnectionGUID: vrTO/rQeQsyjEJ9fd13EOg==
+X-CSE-MsgGUID: Fk5YOvyMSqqlKPGkn9k/5w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.14,235,1736841600"; 
-   d="scan'208";a="143079231"
+   d="scan'208";a="143079235"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa002.fm.intel.com with ESMTP; 09 Mar 2025 19:47:37 -0700
+  by fmviesa002.fm.intel.com with ESMTP; 09 Mar 2025 19:47:38 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 3/6] iommu/vt-d: Check if SVA is supported when attaching the SVA domain
-Date: Mon, 10 Mar 2025 10:47:46 +0800
-Message-ID: <20250310024749.3702681-4-baolu.lu@linux.intel.com>
+Subject: [PATCH 4/6] iommu/vt-d: Move scalable mode ATS enablement to probe path
+Date: Mon, 10 Mar 2025 10:47:47 +0800
+Message-ID: <20250310024749.3702681-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250310024749.3702681-1-baolu.lu@linux.intel.com>
 References: <20250310024749.3702681-1-baolu.lu@linux.intel.com>
@@ -61,147 +61,157 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+Device ATS is currently enabled when a domain is attached to the device
+and disabled when the domain is detached. This creates a limitation:
+when the IOMMU is operating in scalable mode and IOPF is enabled, the
+device's domain cannot be changed.
 
-Attach of a SVA domain should fail if SVA is not supported, move the check
-for SVA support out of IOMMU_DEV_FEAT_SVA and into attach.
+The previous code enables ATS when a domain is set to a device's RID and
+disables it during RID domain switch. So, if a PASID is set with a
+domain requiring PRI, ATS should remain enabled until the domain is
+removed. During the PASID domain's lifecycle, if the RID's domain
+changes, PRI will be disrupted because it depends on ATS, which is
+disabled when the blocking domain is set for the device's RID.
 
-Also check when allocating a SVA domain to match other drivers.
+Remove this limitation by moving ATS enablement to the device probe path.
 
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Yi Liu <yi.l.liu@intel.com>
 Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Link: https://lore.kernel.org/r/20250228092631.3425464-3-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20250228092631.3425464-5-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/iommu.c | 37 +------------------------------
- drivers/iommu/intel/svm.c   | 43 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 44 insertions(+), 36 deletions(-)
+ drivers/iommu/intel/iommu.c | 51 ++++++++++++++++++++-----------------
+ 1 file changed, 27 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e7152ea77393..58bff6fe3a93 100644
+index 58bff6fe3a93..1c8724cd2ddc 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -3862,41 +3862,6 @@ static struct iommu_group *intel_iommu_device_group(struct device *dev)
- 	return generic_device_group(dev);
+@@ -1173,32 +1173,28 @@ static bool dev_needs_extra_dtlb_flush(struct pci_dev *pdev)
+ 	return true;
  }
  
--static int intel_iommu_enable_sva(struct device *dev)
--{
--	struct device_domain_info *info = dev_iommu_priv_get(dev);
--	struct intel_iommu *iommu;
--
--	if (!info || dmar_disabled)
--		return -EINVAL;
--
--	iommu = info->iommu;
--	if (!iommu)
--		return -EINVAL;
--
--	if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
--		return -ENODEV;
--
--	if (!info->pasid_enabled || !info->ats_enabled)
--		return -EINVAL;
--
--	/*
--	 * Devices having device-specific I/O fault handling should not
--	 * support PCI/PRI. The IOMMU side has no means to check the
--	 * capability of device-specific IOPF.  Therefore, IOMMU can only
--	 * default that if the device driver enables SVA on a non-PRI
--	 * device, it will handle IOPF in its own way.
--	 */
--	if (!info->pri_supported)
--		return 0;
--
--	/* Devices supporting PRI should have it enabled. */
--	if (!info->pri_enabled)
--		return -EINVAL;
--
--	return 0;
--}
--
- static int context_flip_pri(struct device_domain_info *info, bool enable)
+-static void iommu_enable_pci_caps(struct device_domain_info *info)
++static void iommu_enable_pci_ats(struct device_domain_info *info)
  {
+ 	struct pci_dev *pdev;
+ 
+-	if (!dev_is_pci(info->dev))
++	if (!info->ats_supported)
+ 		return;
+ 
+ 	pdev = to_pci_dev(info->dev);
+-	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
+-	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT))
++	if (!pci_ats_page_aligned(pdev))
++		return;
++
++	if (!pci_enable_ats(pdev, VTD_PAGE_SHIFT))
+ 		info->ats_enabled = 1;
+ }
+ 
+-static void iommu_disable_pci_caps(struct device_domain_info *info)
++static void iommu_disable_pci_ats(struct device_domain_info *info)
+ {
+-	struct pci_dev *pdev;
+-
+-	if (!dev_is_pci(info->dev))
++	if (!info->ats_enabled)
+ 		return;
+ 
+-	pdev = to_pci_dev(info->dev);
+-
+-	if (info->ats_enabled) {
+-		pci_disable_ats(pdev);
+-		info->ats_enabled = 0;
+-	}
++	pci_disable_ats(to_pci_dev(info->dev));
++	info->ats_enabled = 0;
+ }
+ 
+ static void intel_flush_iotlb_all(struct iommu_domain *domain)
+@@ -1557,12 +1553,19 @@ domain_context_mapping(struct dmar_domain *domain, struct device *dev)
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
  	struct intel_iommu *iommu = info->iommu;
-@@ -4017,7 +3982,7 @@ intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
- 		return intel_iommu_enable_iopf(dev);
+ 	u8 bus = info->bus, devfn = info->devfn;
++	int ret;
  
- 	case IOMMU_DEV_FEAT_SVA:
--		return intel_iommu_enable_sva(dev);
-+		return 0;
+ 	if (!dev_is_pci(dev))
+ 		return domain_context_mapping_one(domain, iommu, bus, devfn);
  
- 	default:
- 		return -ENODEV;
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index f5569347591f..ba93123cb4eb 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -110,6 +110,41 @@ static const struct mmu_notifier_ops intel_mmuops = {
- 	.free_notifier = intel_mm_free_notifier,
- };
- 
-+static int intel_iommu_sva_supported(struct device *dev)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct intel_iommu *iommu;
-+
-+	if (!info || dmar_disabled)
-+		return -EINVAL;
-+
-+	iommu = info->iommu;
-+	if (!iommu)
-+		return -EINVAL;
-+
-+	if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
-+		return -ENODEV;
-+
-+	if (!info->pasid_enabled || !info->ats_enabled)
-+		return -EINVAL;
-+
-+	/*
-+	 * Devices having device-specific I/O fault handling should not
-+	 * support PCI/PRI. The IOMMU side has no means to check the
-+	 * capability of device-specific IOPF.  Therefore, IOMMU can only
-+	 * default that if the device driver enables SVA on a non-PRI
-+	 * device, it will handle IOPF in its own way.
-+	 */
-+	if (!info->pri_supported)
-+		return 0;
-+
-+	/* Devices supporting PRI should have it enabled. */
-+	if (!info->pri_enabled)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
- static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 				   struct device *dev, ioasid_t pasid,
- 				   struct iommu_domain *old)
-@@ -121,6 +156,10 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 	unsigned long sflags;
- 	int ret = 0;
- 
-+	ret = intel_iommu_sva_supported(dev);
+-	return pci_for_each_dma_alias(to_pci_dev(dev),
+-				      domain_context_mapping_cb, domain);
++	ret = pci_for_each_dma_alias(to_pci_dev(dev),
++				     domain_context_mapping_cb, domain);
 +	if (ret)
 +		return ret;
 +
- 	dev_pasid = domain_add_dev_pasid(domain, dev, pasid);
- 	if (IS_ERR(dev_pasid))
- 		return PTR_ERR(dev_pasid);
-@@ -161,6 +200,10 @@ struct iommu_domain *intel_svm_domain_alloc(struct device *dev,
- 	struct dmar_domain *domain;
- 	int ret;
- 
-+	ret = intel_iommu_sva_supported(dev);
-+	if (ret)
-+		return ERR_PTR(ret);
++	iommu_enable_pci_ats(info);
 +
- 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
- 	if (!domain)
- 		return ERR_PTR(-ENOMEM);
++	return 0;
+ }
+ 
+ /* Return largest possible superpage level for a given mapping */
+@@ -1844,8 +1847,6 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 	if (ret)
+ 		goto out_block_translation;
+ 
+-	iommu_enable_pci_caps(info);
+-
+ 	ret = cache_tag_assign_domain(domain, dev, IOMMU_NO_PASID);
+ 	if (ret)
+ 		goto out_block_translation;
+@@ -3209,6 +3210,7 @@ static void domain_context_clear(struct device_domain_info *info)
+ 
+ 	pci_for_each_dma_alias(to_pci_dev(info->dev),
+ 			       &domain_context_clear_one_cb, info);
++	iommu_disable_pci_ats(info);
+ }
+ 
+ /*
+@@ -3225,7 +3227,6 @@ void device_block_translation(struct device *dev)
+ 	if (info->domain)
+ 		cache_tag_unassign_domain(info->domain, dev, IOMMU_NO_PASID);
+ 
+-	iommu_disable_pci_caps(info);
+ 	if (!dev_is_real_dma_subdevice(dev)) {
+ 		if (sm_supported(iommu))
+ 			intel_pasid_tear_down_entry(iommu, dev,
+@@ -3760,6 +3761,9 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 	    !pci_enable_pasid(pdev, info->pasid_supported & ~1))
+ 		info->pasid_enabled = 1;
+ 
++	if (sm_supported(iommu))
++		iommu_enable_pci_ats(info);
++
+ 	return &iommu->iommu;
+ free_table:
+ 	intel_pasid_free_table(dev);
+@@ -3776,6 +3780,8 @@ static void intel_iommu_release_device(struct device *dev)
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu = info->iommu;
+ 
++	iommu_disable_pci_ats(info);
++
+ 	if (info->pasid_enabled) {
+ 		pci_disable_pasid(to_pci_dev(dev));
+ 		info->pasid_enabled = 0;
+@@ -4379,13 +4385,10 @@ static int identity_domain_attach_dev(struct iommu_domain *domain, struct device
+ 	if (dev_is_real_dma_subdevice(dev))
+ 		return 0;
+ 
+-	if (sm_supported(iommu)) {
++	if (sm_supported(iommu))
+ 		ret = intel_pasid_setup_pass_through(iommu, dev, IOMMU_NO_PASID);
+-		if (!ret)
+-			iommu_enable_pci_caps(info);
+-	} else {
++	else
+ 		ret = device_setup_pass_through(dev);
+-	}
+ 
+ 	return ret;
+ }
 -- 
 2.43.0
 
