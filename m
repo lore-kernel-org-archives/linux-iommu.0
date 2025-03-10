@@ -1,179 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C5491ADC8D
-	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 02:47:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E825134CF5;
+	Mon, 10 Mar 2025 06:12:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741574867; cv=none; b=MK81ALBvB3uGsdtbpg6EPCAeREkHOhm6Dm2v86+F98OLsyvR/kC7NmWgA4l1k2xSaPntUMguQore3xjPhnGzY548tRlXlCGhoVQVljriLdGTpRI2+XA9DVFL/5FC9m2LqQSKiE9QVJuiLCzjxMsy93db/qpwOaDZOvJ/oMPesJM=
+	t=1741587176; cv=none; b=SEpWImlioOlG/JHCOXwRnfF/Yztaa5hGw1Hfcb7JYdXfvRCkk1+l0tk+clWCfYMM7PyAPb0oApsYhVXsHxnkiFNEUB0Ub4BTJGtMnQiND1lyUjFYWOn6vQeClUCO238VrKsKinfGIYBXEDThciswBcaJhKertpWBHGrPgU9TEow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741574867; c=relaxed/simple;
-	bh=uvmDMhSJxXxzxnFDExTRka6WtW0ou5h0o0fSWRSjBJ8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=tN2UfwqFew/a9nC1+gLCevpeRpdrcy+4VE6w/89Rui7x5dkfF3uDvtQ+TDEclGUjzzud9g3RR0McD6SKihD9z11LWwKKz/0M/ZFwM7JPfd5VjkyIuZwDBNRHBy9gyU/qL0eqkBnkbgU8AuHNa4kx3MeXi3TzixuA3z/QHasNJuM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VpSCP4PY; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1741587176; c=relaxed/simple;
+	bh=IwqHQDBwSuTVidoWpcAHGXgI2bJZGWVRqXPAmGK7cIo=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=RsA8Zd/ljoDPcgLZ/FrL7QfXbFni2lCmR8AocaU2tSa9oLXKHP7IyH78W3IqxrXGhmLSfQX5sSE98XizwUpQ1pl6+UszWy8vZGOr1o8z9dF2KCOb3ilHpedlFpX5JpL12J4D12F/TG+dy3d0junIP6ovIZuGjgd4qudPZvq4avY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gTBMEWx3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VpSCP4PY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741574865; x=1773110865;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uvmDMhSJxXxzxnFDExTRka6WtW0ou5h0o0fSWRSjBJ8=;
-  b=VpSCP4PYXMbxwZIFlmtFbjc2g8HdFyh4uoZAyK4UBdzYNAZO0UNGSKJz
-   eqjTezKHSogmKHF1jodJzkGVzWZcwsjztOGKf9Un3Cei29GorAlcT8ZJd
-   R0SoQo0vHmyIYbqLeD2KIq5TZaruZmOWA1DqsqvbZrzv27dSu+JyqVTtD
-   Vuz7uBCZNzfWypW4YGgnws28Vgg+9ordiHs+zAkTzCoLGeqB/V8da/oW+
-   phS7BiW0owJOR3fouthaFJdgbsvxPIz3elqmnwcAasnJtk99OmC33DfL8
-   eic+BOAvln18rqvge1lowXjpIicPGConDT9QED4uj/32dB+cmTH+Ga+LT
-   g==;
-X-CSE-ConnectionGUID: lAZyIMq7RbeYkdt8+DbgHQ==
-X-CSE-MsgGUID: AQ8RxrezShWc+6/LpKX9ow==
-X-IronPort-AV: E=McAfee;i="6700,10204,11368"; a="42401616"
-X-IronPort-AV: E=Sophos;i="6.14,235,1736841600"; 
-   d="scan'208";a="42401616"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2025 19:47:43 -0700
-X-CSE-ConnectionGUID: j1Ok4pvtS4OLAQxoGLZd0w==
-X-CSE-MsgGUID: jDwWRNNARRultASU9+vMAQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,235,1736841600"; 
-   d="scan'208";a="143079239"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa002.fm.intel.com with ESMTP; 09 Mar 2025 19:47:41 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 6/6] iommu/vt-d: Cleanup intel_context_flush_present()
-Date: Mon, 10 Mar 2025 10:47:49 +0800
-Message-ID: <20250310024749.3702681-7-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250310024749.3702681-1-baolu.lu@linux.intel.com>
-References: <20250310024749.3702681-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gTBMEWx3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A5F55C4CEE5;
+	Mon, 10 Mar 2025 06:12:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741587175;
+	bh=IwqHQDBwSuTVidoWpcAHGXgI2bJZGWVRqXPAmGK7cIo=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=gTBMEWx36xc2YFJBnkNLat0KBIILM1y6h0CQvnJ+9k8YdNiSuZVI7Oiw/sCq954y/
+	 EViDe1VT51nmMmHXWUgpgxfGQWVhUlu+i1hQQWHKPSPAM46SMPFGKHUzYGlpbq7DWc
+	 lmhJroREzgjtOOBe9MyZiqnknNaleSHEsPrZv+tV45Z81Q8E/MiB0UgHNozfGCtxek
+	 qoBzEl/Ns8YOxTxeagFD2C4FlQT4EwYVJRKH8SV6LyxcKVYgGMAMIDQeftz0yvc5rU
+	 2l/j7OJUsOJ7MQUrk80dIBGSExB1d44aacj4J7qm/yyTYCpKt0BXnv05wjZ5fwUVje
+	 5XpmRtkg94KBg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A46C282DE;
+	Mon, 10 Mar 2025 06:12:55 +0000 (UTC)
+From: Aaron Kling via B4 Relay <devnull+webgeek1234.gmail.com@kernel.org>
+Date: Mon, 10 Mar 2025 01:11:58 -0500
+Subject: [PATCH] iommu/arm: Allow disabling Qualcomm support in arm_smmu_v3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250310-b4-qcom-smmu-v1-1-733a1398ff85@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAK2CzmcC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDI1MDY0MD3SQT3cLk/Fzd4tzcUt0Uk+TkxDQzs0TD5FQloJaCotS0zAqwcdG
+ xtbUAKo+Rtl4AAAA=
+X-Change-ID: 20250310-b4-qcom-smmu-d4ccaf66a1ce
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ stable@vger.kernel.org, Aaron Kling <webgeek1234@gmail.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1741587175; l=992;
+ i=webgeek1234@gmail.com; s=20250217; h=from:subject:message-id;
+ bh=8mZdDIMzM15RJAJ2ViAymKW4I/RyQ463WLVTHNvdOss=;
+ b=VxZlCVYBtjNtBkmmPUW9Cq2dx3v6oxhk7wRY+57QD7wraDxUu2bicinn3sWO5zq0hNa5Bto0T
+ /dYzcsQuL2KB5bhHQ8pQL52WvdFKE00bBofObUCQcIpLBHOGJxLGeDO
+X-Developer-Key: i=webgeek1234@gmail.com; a=ed25519;
+ pk=TQwd6q26txw7bkK7B8qtI/kcAohZc7bHHGSD7domdrU=
+X-Endpoint-Received: by B4 Relay for webgeek1234@gmail.com/20250217 with
+ auth_id=342
+X-Original-From: Aaron Kling <webgeek1234@gmail.com>
+Reply-To: webgeek1234@gmail.com
 
-The intel_context_flush_present() is called in places where either the
-scalable mode is disabled, or scalable mode is enabled but all PASID
-entries are known to be non-present. In these cases, the flush_domains
-path within intel_context_flush_present() will never execute. This dead
-code is therefore removed.
+From: Aaron Kling <webgeek1234@gmail.com>
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Link: https://lore.kernel.org/r/20250228092631.3425464-7-baolu.lu@linux.intel.com
+If ARCH_QCOM is enabled when building arm_smmu_v3, a dependency on
+qcom-scm is added, which currently cannot be disabled. Add a prompt to
+ARM_SMMU_QCOM to allow disabling this dependency.
+
+Fixes: 0f0f80d9d5db ("iommu/arm: fix ARM_SMMU_QCOM compilation")
+Cc: stable@vger.kernel.org
+Signed-off-by: Aaron Kling <webgeek1234@gmail.com>
 ---
- drivers/iommu/intel/iommu.c |  2 +-
- drivers/iommu/intel/iommu.h |  5 ++---
- drivers/iommu/intel/pasid.c | 41 +++++++------------------------------
- 3 files changed, 10 insertions(+), 38 deletions(-)
+ drivers/iommu/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 6a6c271ef7e6..85aa66ef4d61 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1783,7 +1783,7 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
- 	context_clear_entry(context);
- 	__iommu_flush_cache(iommu, context, sizeof(*context));
- 	spin_unlock(&iommu->lock);
--	intel_context_flush_present(info, context, did, true);
-+	intel_context_flush_no_pasid(info, context, did);
- }
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index ec1b5e32b9725bc1104d10e5d7a32af7b211b50a..cca0825551959e3f37cc2ea41aeae526fdb73312 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -381,6 +381,7 @@ config ARM_SMMU_MMU_500_CPRE_ERRATA
  
- int __domain_setup_first_level(struct intel_iommu *iommu,
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 42b4e500989b..c4916886da5a 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -1286,9 +1286,8 @@ void cache_tag_flush_all(struct dmar_domain *domain);
- void cache_tag_flush_range_np(struct dmar_domain *domain, unsigned long start,
- 			      unsigned long end);
- 
--void intel_context_flush_present(struct device_domain_info *info,
--				 struct context_entry *context,
--				 u16 did, bool affect_domains);
-+void intel_context_flush_no_pasid(struct device_domain_info *info,
-+				  struct context_entry *context, u16 did);
- 
- int intel_iommu_enable_prq(struct intel_iommu *iommu);
- int intel_iommu_finish_prq(struct intel_iommu *iommu);
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index c2742e256552..7ee18bb48bd4 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -932,7 +932,7 @@ static void device_pasid_table_teardown(struct device *dev, u8 bus, u8 devfn)
- 	context_clear_entry(context);
- 	__iommu_flush_cache(iommu, context, sizeof(*context));
- 	spin_unlock(&iommu->lock);
--	intel_context_flush_present(info, context, did, false);
-+	intel_context_flush_no_pasid(info, context, did);
- }
- 
- static int pci_pasid_table_teardown(struct pci_dev *pdev, u16 alias, void *data)
-@@ -1119,17 +1119,15 @@ static void __context_flush_dev_iotlb(struct device_domain_info *info)
- 
- /*
-  * Cache invalidations after change in a context table entry that was present
-- * according to the Spec 6.5.3.3 (Guidance to Software for Invalidations). If
-- * IOMMU is in scalable mode and all PASID table entries of the device were
-- * non-present, set flush_domains to false. Otherwise, true.
-+ * according to the Spec 6.5.3.3 (Guidance to Software for Invalidations).
-+ * This helper can only be used when IOMMU is working in the legacy mode or
-+ * IOMMU is in scalable mode but all PASID table entries of the device are
-+ * non-present.
-  */
--void intel_context_flush_present(struct device_domain_info *info,
--				 struct context_entry *context,
--				 u16 did, bool flush_domains)
-+void intel_context_flush_no_pasid(struct device_domain_info *info,
-+				  struct context_entry *context, u16 did)
- {
- 	struct intel_iommu *iommu = info->iommu;
--	struct pasid_entry *pte;
--	int i;
- 
- 	/*
- 	 * Device-selective context-cache invalidation. The Domain-ID field
-@@ -1152,30 +1150,5 @@ void intel_context_flush_present(struct device_domain_info *info,
- 		return;
- 	}
- 
--	/*
--	 * For scalable mode:
--	 * - Domain-selective PASID-cache invalidation to affected domains
--	 * - Domain-selective IOTLB invalidation to affected domains
--	 * - Global Device-TLB invalidation to affected functions
--	 */
--	if (flush_domains) {
--		/*
--		 * If the IOMMU is running in scalable mode and there might
--		 * be potential PASID translations, the caller should hold
--		 * the lock to ensure that context changes and cache flushes
--		 * are atomic.
--		 */
--		assert_spin_locked(&iommu->lock);
--		for (i = 0; i < info->pasid_table->max_pasid; i++) {
--			pte = intel_pasid_get_entry(info->dev, i);
--			if (!pte || !pasid_pte_is_present(pte))
--				continue;
--
--			did = pasid_get_domain_id(pte);
--			qi_flush_pasid_cache(iommu, did, QI_PC_ALL_PASIDS, 0);
--			iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
--		}
--	}
--
- 	__context_flush_dev_iotlb(info);
- }
+ config ARM_SMMU_QCOM
+ 	def_tristate y
++	prompt "Qualcomm SMMUv3 Support"
+ 	depends on ARM_SMMU && ARCH_QCOM
+ 	select QCOM_SCM
+ 	help
+
+---
+base-commit: 1110ce6a1e34fe1fdc1bfe4ad52405f327d5083b
+change-id: 20250310-b4-qcom-smmu-d4ccaf66a1ce
+
+Best regards,
 -- 
-2.43.0
+Aaron Kling <webgeek1234@gmail.com>
+
 
