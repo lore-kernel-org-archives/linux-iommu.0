@@ -1,120 +1,280 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E0FF1D432D;
-	Mon, 10 Mar 2025 07:40:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8860B223320
+	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 08:14:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741592428; cv=none; b=cJFRuQVZgN96jNlv70Joa1n9T3KnCkzUvzH54PtN9PVI41nvqpbOscMdkCj6SGi5YSBQ3cTDDKK1sSpvFavI2EdffXmhCb5v1i16Rr47CNp05bXbspad2x9qnzHGMpPsTrgltodF3DZW63BjDwgyn+lyXfd5WyFKOJOzmrnGOY4=
+	t=1741594497; cv=none; b=cChb2DNhZBwUJRhsckgg2y6xKcnxv4ZYgXuLCSJ++Zl0x98oA06xBroIAZyhm8WkXLSR7k/Zp2jOVuOyaLe8Q6743UxxyrLC//bwHfsYPcdUzfjVeiyvE2DC170D/slkiPxjYxMlRzEBvzjZ9llJazNIAmQRQEmkyZVM9PlTC20=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741592428; c=relaxed/simple;
-	bh=A1+vd1+iI7U2juLRNkQfIRGQ+caFncDP5Th5PCoA3dA=;
+	s=arc-20240116; t=1741594497; c=relaxed/simple;
+	bh=ieOnLpKZdMXwTRsppKzD3lKC3vFircXxUr3yv6CciMo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IY1AOarcQL0VF8FjbQmVN/hcalQe5UYitnaTJveNIMStbKGJtTecWPkVy1AYn9I2wNkiS5nSwTBuyPLFiF/nR/jEUaPr7vT3ovU15ZiPW8f9eRDJ0bycxoe+uNgQ27VmTcQe6jCsruH/FO02eASlb4pkQ/NIWzHJxmTVezaFYlI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MLLZEVEG; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=awv9BcHg7s0/KK50061FQKCQ0oteZV9Wc0E5A7BjV6/Z7aG0sXNhdQebK3wg8QBEIbE2Rv66yZiZ2yp3W3gwo9dJsq/DmdAOb3QVBYZ976TNJODeIxOJ04mJcYoqpFhRpWsfmo/SUnL7Ju5rajBhtnSeemg7OfgOG8/JiAZFynU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Gp78hMvK; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MLLZEVEG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23303C4CEE5;
-	Mon, 10 Mar 2025 07:40:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741592428;
-	bh=A1+vd1+iI7U2juLRNkQfIRGQ+caFncDP5Th5PCoA3dA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=MLLZEVEGzufs0VlS6qieY+pMhoUDMxcouSNcWPOVrGjQx1+BmVdccK1B31g4zgat+
-	 S9t+CMks5K+WhoLTpoMllIS9jxMDecewNqkeTry3J7MakMz75SFX8FcMghXi9kWwe2
-	 zasatPj38fuVJw5Y0DyKT93QDXjrJAsokH92ZYbWZKtJDWadI05auP+gsW0ntdETMp
-	 tUbEVpawx/nm2mYD23HNeUigHTu5sAsLfltu4Z5t2rYDgYfXK/RNWoDfOPB/E8pCx7
-	 lqUncZbsrTer3uvAWWEbtP0sXsfjpqQJ/RIejBYs++63rs2P/+NPR6I/rg9lTWSI8Y
-	 QJC0gyvxVCyHQ==
-Date: Mon, 10 Mar 2025 08:40:24 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Dmitry Baryshkov <lumag@kernel.org>
-Cc: Rob Clark <robdclark@gmail.com>, 
-	Abhinav Kumar <quic_abhinavk@quicinc.com>, Sean Paul <sean@poorly.run>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Kuogee Hsieh <quic_khsieh@quicinc.com>, 
-	Krishna Manikandan <quic_mkrishn@quicinc.com>, Jonathan Marek <jonathan@marek.ca>, 
-	Bjorn Andersson <andersson@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 05/10] dt-bindings: display/msm: Add Qualcomm SAR2130P
-Message-ID: <20250310-impressive-cherry-bullfrog-cbd8fd@krzk-bin>
-References: <20250308-sar2130p-display-v1-0-1d4c30f43822@linaro.org>
- <20250308-sar2130p-display-v1-5-1d4c30f43822@linaro.org>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Gp78hMvK"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-43cebe06e9eso7507735e9.3
+        for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 01:14:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1741594493; x=1742199293; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=8KkC1l654ivSQJHfpAMIQ+ZSAHbGtBz6q5j4dS4aJJk=;
+        b=Gp78hMvKKVOi7AuX33ZpNST/RRjJ+4AxjeZwgXR0SOHNf0HXzDBubz83u38OS1bAUR
+         kJNwrTWfuera28hxrHNxOfS1LutEpWILchA5yLhdBqszJUI8MY/Pf3uJoTFy9Y6U8EOx
+         RQBjzPCvon64iioekZWSYWXatBoBiNKMaJVO8KpeGsDKJ9B5MlkAITd1ngD7C7HRCA9d
+         x41EUHuxWg4/R/x2tE8K7PSW11E52t5jCO1iDzpIjgnqXIqEwarpVLuOrtrWwuRjsx9v
+         mLBZXr1MtxKq/ux6XWaopmM2KVVlmu8J2gEbI6S27r9xKiAgDnEOfnXSPtzW0Ztz1JPk
+         KR1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741594493; x=1742199293;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8KkC1l654ivSQJHfpAMIQ+ZSAHbGtBz6q5j4dS4aJJk=;
+        b=F9M9e+HAD6MAVIsH4YWP66PRQ1Xk1I5hQDBVbB4ZYkWio1eq8ihOvjaaqIvXf6Zdsa
+         NU/SdML5De/ndbGviqAWlw4C2YOufSdMjRpyvlNq4r2zsc2p4x5NRrW+a89QgJkrU97v
+         s5uxmT385ErvPxcaZ/XEYMNWL6SIwo8Fr7abETS0vamURe0ub/+pu4d975rBUCq2iVAV
+         G5CBgXn2CNpftt/1k7+LeI6roLMzLUyf8mLg6zan7tG7GTYYovjtkKW6t5j84znt6KbX
+         ATm8cg8ToRv9jWsx/5xBY9c0fA+mSZrvdaix3mCkBTtUyOoohMj4TH0EYuHru8sl4ILR
+         FV8g==
+X-Forwarded-Encrypted: i=1; AJvYcCURTRWVVBmCj22SX+LQ2fmVTXqs5ENC5tpYVmz+4y+iqRx2LR9karylCl4SvtQYa2U8E83stw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyWVdDFchn+UzkFNz38mbZf5070uziXA2QhRhf//bFyaKolIMwR
+	3t9heL0wljwqcShqGu5ArhLp6dPwUGGAABNKYnsHpoUF6b1U0NIPzAJsMolRgFU=
+X-Gm-Gg: ASbGnctKt5Sd95POAlxoDUjw/UBJc3O5oleYuMJEiA23H7Q6A5/q8BykH1Q1p1O4PNG
+	pF6X44U/XHhQzpRGbPTh4Kd2mSNgyUYsfBndIiIwrpJQgCdZT1GXsIvZpzQDgq9WxyfZ3vKA6i2
+	E1Ix30MK3cRyOrNapyBBmOInW04QKPNg0Dr0UpFEpQxa5bqIujWtgdT7F/8cYhdM/X57woMmfrz
+	FcH/YIYj+a9UtyxpBHgGPDBm9gAqv/2v3DuBIV7NT5/9Tmc76HL16RbRXEPeSjfr7btyfaa8xdm
+	xd6080bXnqvm/18pIHDrCr825wyUXhrZtXvqIAZeNKqBeiQ4Kg==
+X-Google-Smtp-Source: AGHT+IGAuAAY07Q8AHFN3C6TD8HtaPVPa6Tfe7wsUJ+gFJZ+qrYDD1atk9hsCbpXzVbCKHdNzeFEDw==
+X-Received: by 2002:a05:600c:3b1f:b0:43c:f6c6:578c with SMTP id 5b1f17b1804b1-43cf6c6588bmr17772455e9.15.1741594492829;
+        Mon, 10 Mar 2025 01:14:52 -0700 (PDT)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-43bd91338cesm156803745e9.7.2025.03.10.01.14.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Mar 2025 01:14:52 -0700 (PDT)
+Date: Mon, 10 Mar 2025 11:14:48 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Aditya Garg <gargaditya08@live.com>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>,
+	"linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Aun-Ali Zaidi <admin@kodeit.net>, "paul@mrarm.io" <paul@mrarm.io>,
+	Orlando Chamberlain <orlandoch.dev@gmail.com>
+Subject: Re: [PATCH RFC] staging: Add driver to communicate with the T2
+ Security Chip
+Message-ID: <f483ac12-c731-4dc8-9de5-059e07ff2c85@stanley.mountain>
+References: <1A12CB39-B4FD-4859-9CD7-115314D97C75@live.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250308-sar2130p-display-v1-5-1d4c30f43822@linaro.org>
+In-Reply-To: <1A12CB39-B4FD-4859-9CD7-115314D97C75@live.com>
 
-On Sat, Mar 08, 2025 at 03:42:23AM +0200, Dmitry Baryshkov wrote:
-> +patternProperties:
-> +  "^display-controller@[0-9a-f]+$":
-> +    type: object
-> +    additionalProperties: true
+On Sun, Mar 09, 2025 at 08:40:31AM +0000, Aditya Garg wrote:
+> diff --git a/drivers/staging/apple-bce/apple_bce.c b/drivers/staging/apple-bce/apple_bce.c
+> new file mode 100644
+> index 000000000..c66e0c8d5
+> --- /dev/null
+> +++ b/drivers/staging/apple-bce/apple_bce.c
+> @@ -0,0 +1,448 @@
+> +// SPDX-License-Identifier: GPL-2.0+
 > +
-
-Drop blank line
-
-> +    properties:
-> +      compatible:
-> +        const: qcom,sar2130p-dpu
+> +#include "apple_bce.h"
+> +#include <linux/module.h>
+> +#include <linux/crc32.h>
+> +#include "audio/audio.h"
+> +#include <linux/version.h>
 > +
-> +  "^displayport-controller@[0-9a-f]+$":
-> +    type: object
-> +    additionalProperties: true
+> +static dev_t bce_chrdev;
+> +static struct class *bce_class;
 > +
-
-Drop blank line
-
-> +    properties:
-> +      compatible:
-> +        items:
-> +          - const: qcom,sar2130p-dp
-> +          - const: qcom,sm8350-dp
+> +struct apple_bce_device *global_bce;
 > +
-> +  "^dsi@[0-9a-f]+$":
-> +    type: object
-> +    additionalProperties: true
+> +static int bce_create_command_queues(struct apple_bce_device *bce);
+> +static void bce_free_command_queues(struct apple_bce_device *bce);
+> +static irqreturn_t bce_handle_mb_irq(int irq, void *dev);
+> +static irqreturn_t bce_handle_dma_irq(int irq, void *dev);
+> +static int bce_fw_version_handshake(struct apple_bce_device *bce);
+> +static int bce_register_command_queue(struct apple_bce_device *bce, struct bce_queue_memcfg *cfg, int is_sq);
 > +
+> +static int apple_bce_probe(struct pci_dev *dev, const struct pci_device_id *id)
+> +{
+> +	struct apple_bce_device *bce = NULL;
+> +	int status = 0;
+> +	int nvec;
+> +
+> +	pr_info("apple-bce: capturing our device\n");
+> +
+> +	if (pci_enable_device(dev))
+> +		return -ENODEV;
 
-Drop blank line
+	ret = pci_enable_device(dev);
+	if (ret)
+		return ret;
 
-> +    properties:
-> +      compatible:
-> +        items:
-> +          - const: qcom,sar2130p-dsi-ctrl
-> +          - const: qcom,mdss-dsi-ctrl
+> +	if (pci_request_regions(dev, "apple-bce")) {
 
-Drop last compatible here and use contains (see v3 of my sm8750)
+Same everywhere.  Propagate the error code.
+
+> +		status = -ENODEV;
+> +		goto fail;
+
+Instead of "goto fail;" it's better to use a full unwind ladder
+with better label names.
+https://staticthinking.wordpress.com/2022/04/28/free-the-last-thing-style/
+
+> +	}
+> +	pci_set_master(dev);
+> +	nvec = pci_alloc_irq_vectors(dev, 1, 8, PCI_IRQ_MSI);
+> +	if (nvec < 5) {
+> +		status = -EINVAL;
+> +		goto fail;
+> +	}
+> +
+> +	bce = kzalloc(sizeof(struct apple_bce_device), GFP_KERNEL);
+
+	bce = kzalloc(sizeof(*bce), GFP_KERNEL);
+
+> +	if (!bce) {
+> +		status = -ENOMEM;
+> +		goto fail;
+> +	}
+> +
+> +	bce->pci = dev;
+> +	pci_set_drvdata(dev, bce);
+> +
+> +	bce->devt = bce_chrdev;
+> +	bce->dev = device_create(bce_class, &dev->dev, bce->devt, NULL, "apple-bce");
+> +	if (IS_ERR_OR_NULL(bce->dev)) {
+> +		status = PTR_ERR(bce_class);
+
+
+device_create() can't return NULL.
+https://staticthinking.wordpress.com/2022/08/01/mixing-error-pointers-and-null/
+
+> +		goto fail;
+> +	}
+> +
+> +	bce->reg_mem_mb = pci_iomap(dev, 4, 0);
+> +	bce->reg_mem_dma = pci_iomap(dev, 2, 0);
+> +
+> +	if (IS_ERR_OR_NULL(bce->reg_mem_mb) || IS_ERR_OR_NULL(bce->reg_mem_dma)) {
+> +		dev_warn(&dev->dev, "apple-bce: Failed to pci_iomap required regions\n");
+> +		goto fail;
+> +	}
+> +
+> +	bce_mailbox_init(&bce->mbox, bce->reg_mem_mb);
+> +	bce_timestamp_init(&bce->timestamp, bce->reg_mem_mb);
+> +
+> +	spin_lock_init(&bce->queues_lock);
+> +	ida_init(&bce->queue_ida);
+> +
+> +	if ((status = pci_request_irq(dev, 0, bce_handle_mb_irq, NULL, dev, "bce_mbox")))
+
+I think checkpatch will complain about this.  Do it as.
+
+	status = pci_request_irq(dev, 0, bce_handle_mb_irq, NULL, dev, "bce_mbox");
+	if (status)
+
+> +		goto fail;
+> +	if ((status = pci_request_irq(dev, 4, NULL, bce_handle_dma_irq, dev, "bce_dma")))
+> +		goto fail_interrupt_0;
+> +
+> +	if ((status = dma_set_mask_and_coherent(&dev->dev, DMA_BIT_MASK(37)))) {
+> +		dev_warn(&dev->dev, "dma: Setting mask failed\n");
+> +		goto fail_interrupt;
+> +	}
+> +
+> +	/* Gets the function 0's interface. This is needed because Apple only accepts DMA on our function if function 0
+> +	   is a bus master, so we need to work around this. */
+> +	bce->pci0 = pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
+> +#ifndef WITHOUT_NVME_PATCH
+
+Delete dead code?
+
+> +	if ((status = pci_enable_device_mem(bce->pci0))) {
+> +		dev_warn(&dev->dev, "apple-bce: failed to enable function 0\n");
+> +		goto fail_dev0;
+> +	}
+> +#endif
+> +	pci_set_master(bce->pci0);
+> +
+> +	bce_timestamp_start(&bce->timestamp, true);
+> +
+> +	if ((status = bce_fw_version_handshake(bce)))
+> +		goto fail_ts;
+> +	pr_info("apple-bce: handshake done\n");
+> +
+> +	if ((status = bce_create_command_queues(bce))) {
+> +		pr_info("apple-bce: Creating command queues failed\n");
+> +		goto fail_ts;
+> +	}
+> +
+> +	global_bce = bce;
+
+Do this right before the "return 0;"?
 
 > +
-> +  "^phy@[0-9a-f]+$":
-> +    type: object
-> +    additionalProperties: true
+> +	bce_vhci_create(bce, &bce->vhci);
+
+Check for errors.
+
 > +
-
-Drop blank line
-
-> +    properties:
-> +      compatible:
-> +        const: qcom,sar2130p-dsi-phy-5nm
+> +	return 0;
 > +
-> +required:
-> +  - compatible
+> +fail_ts:
+> +	bce_timestamp_stop(&bce->timestamp);
+> +#ifndef WITHOUT_NVME_PATCH
+> +	pci_disable_device(bce->pci0);
+> +fail_dev0:
+> +#endif
+> +	pci_dev_put(bce->pci0);
+> +fail_interrupt:
+> +	pci_free_irq(dev, 4, dev);
+> +fail_interrupt_0:
+> +	pci_free_irq(dev, 0, dev);
+> +fail:
+> +	if (bce && bce->dev) {
+> +		device_destroy(bce_class, bce->devt);
+> +
+> +		if (!IS_ERR_OR_NULL(bce->reg_mem_mb))
+> +			pci_iounmap(dev, bce->reg_mem_mb);
+> +		if (!IS_ERR_OR_NULL(bce->reg_mem_dma))
+> +			pci_iounmap(dev, bce->reg_mem_dma);
+> +
+> +		kfree(bce);
+> +	}
+> +
+> +	pci_free_irq_vectors(dev);
+> +	pci_release_regions(dev);
+> +	pci_disable_device(dev);
+> +
+> +	if (!status)
+> +		status = -EINVAL;
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+This is like saying "if the code is buggy then fix it" but it's better to
+just not introduce bugs.  Which sounds difficult and unreliable, but it's
+even more difficult and unreliable to predict which bugs people will add
+and fix them correctly.
 
-Best regards,
-Krzysztof
+> +	return status;
+> +}
+
+regards,
+dan carpenter
 
