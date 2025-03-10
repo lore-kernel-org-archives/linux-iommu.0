@@ -1,43 +1,59 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 33C532153D6
-	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 08:27:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5629D1D54FA
+	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 08:29:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741595260; cv=none; b=EgPNdDlMdE11/6cv1ssa9+nnC1wXRT5/tsLaRbJmvl9dlPfChd2mKAi6PpvicGBWwke+KdNkaHL6/piOj1YpNgU+1nG4Lq8QQ3bcbR6WGYA508vqjJ2Lqx0SML7uVzfHMJAnFeY80tJdOtdIuE9y8iEj+Qmx8lUNNQ6GtNHvqic=
+	t=1741595356; cv=none; b=rbXr/zlr9fgo4e42zx2FpAXLjm/f5IRshe7z2RxL3YIF2sn6QCc2ooes1HHtxtaDefOkxztXbZmOGFaqP5dlp7HgLV9iE6hrCE4VV1m9XxtqogMpp8eAn+F0wDSvw2G0q1SkPwmb85bkKNkWSKXgtdalir05A8a27aFK+d0sRm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741595260; c=relaxed/simple;
-	bh=1o+7ggk9WDZWvfla43JRTpkQ3w/evmZjcXwD4DtKZ70=;
+	s=arc-20240116; t=1741595356; c=relaxed/simple;
+	bh=frX4G4i69BdoHfaR05B7WfBtiGFjU59BqKAKCBlX6vc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tes2ZkV8Bik8+35GjdeVhyB0e1mJuXYnAwB8M4YEiFV0zpgKtL+M42GF7a5q+YjdhzmQrt3+ObVnqNaa1I+LMpJbzEPogwLdCs797clFTivorodURIRwjGyOM0qI2w8Id2sW+R7t3YRgQWgvnDuixsfNeHU1IzzbyvNN6p/z4aI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=ilhlr305; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=SbSz67TQy1Z4PYTp3PSvPeWyH8R5k89QNLFZpU84Qv9U1NPloTgax8nuPxINsI9l1lIvnNd89rG31HULscJjcZW0swCDFQzfg6sR3I/mVepeyzLmyRpjUTreLdN1tyRgXRCqhIDn9iIgJoxfMBlriVryN1CywDkAFZWTN4O78ww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=pLvQJdim; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="ilhlr305"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="pLvQJdim"
 Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 1DC8945229;
-	Mon, 10 Mar 2025 09:27:37 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 1364A45229;
+	Mon, 10 Mar 2025 09:29:14 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1741595257;
-	bh=1o+7ggk9WDZWvfla43JRTpkQ3w/evmZjcXwD4DtKZ70=;
+	s=default; t=1741595354;
+	bh=frX4G4i69BdoHfaR05B7WfBtiGFjU59BqKAKCBlX6vc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ilhlr305aJ+jSOqwC6m+9AL/BJRtDbHhDaCJszSvjdmHDVfAuEf51P9V9QqI12ChE
-	 yXkzwDAWjiqNS/LDZwPWndESaOA14rHjqHwP4RWsItYOY+jGw1iZ6T/yDkny4odYBR
-	 vFG+wV6TaQcUPNseMkGmOWDfMrk6inhtLD7hv0p+cVSPNlB/CuzKfXsYCqnZnEFtj9
-	 wMbbWyVn6/5IgA7tLpjtZEY9bDjSKblyh6LIdibMa94r1zATO+oangQUuDuMM/OQ26
-	 E+H8bFuGlNs44CZ7apjaUuIf8rL/jlH7iBVAu44uMDQO32AsKxcZcOVYYMVehs57JA
-	 WhOPBPmZtlT2A==
-Date: Mon, 10 Mar 2025 09:27:36 +0100
+	b=pLvQJdim6IyNh9OflrLb5oh+e8PpvuLCM7gou4Gbs0/mv/l0Y/CTYc5KJYczw60zh
+	 tyB81d0pFn7H4QWWzddDp47l9aIy2fBqzokWlz0g3XJfyBzaHLj7Cw/XF+dOnvcUgx
+	 ltV0QEF5YEldt6xlVgABrLyQ8mNC66Vlbe9G+8u9THehDW1Rde0MdBuqOWbjX1VyNw
+	 rqWATAisQ6IvQiG29+Xa3szaWqDZjlEB62Nqd/BeNV2EBXhGcEyXVkAdSJvBAaYkOy
+	 u8HEDFkVKAkbbvlEbGh0YDF5gu1Oor0qHpQjrXpS2vPEDIswU1Ee60j+y7dGCO00PP
+	 lG20mHqj4VUaA==
+Date: Mon, 10 Mar 2025 09:29:12 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com,
-	suravee.suthikulpanit@amd.com, jgg@nvidia.com
-Subject: Re: [PATCH v2 0/7] iommu/amd: Trivial fixes
-Message-ID: <Z86ieFUA6Fj6emdU@8bytes.org>
-References: <20250227162320.5805-1-vasant.hegde@amd.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Russell King <linux@armlinux.org.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Stuart Yoder <stuyoder@gmail.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	Charan Teja Kalla <quic_charante@quicinc.com>
+Subject: Re: [PATCH v2 0/4] iommu: Fix the longstanding probe issues
+Message-ID: <Z86i2BHhmAINErv_@8bytes.org>
+References: <cover.1740753261.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,36 +62,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250227162320.5805-1-vasant.hegde@amd.com>
+In-Reply-To: <cover.1740753261.git.robin.murphy@arm.com>
 
-On Thu, Feb 27, 2025 at 04:23:13PM +0000, Vasant Hegde wrote:
-> This series contains minor cleanup and trivial fixes.
+On Fri, Feb 28, 2025 at 03:46:29PM +0000, Robin Murphy wrote:
+> This spin irons out a couple of issues which v1 had. Firstly there
+> should now be no change in behaviour for the weird of_dma_configure()
+> calls, other than possibly getting the warning if they deserve it.
+> Secondly I think there was still a possibility for probe to run via
+> the replay path while its "real" probe was waiting to reacquire the
+> lock; this is now solved by making dev->iommu a reliable indicator of
+> the probe lifecycle, with a couple more prep patches.
 > 
-> Changes from v1 -> v2:
->   - Consolidated protection domain free code and removed
->     protection_domain_free()
->   - Added Reviewed-by tags
+> Thanks,
+> Robin.
 > 
 > 
-> v1: https://lore.kernel.org/linux-iommu/20250225105345.52143-1-vasant.hegde@amd.com/T/#t
+> Robin Murphy (4):
+>   iommu: Handle race with default domain setup
+>   iommu: Resolve ops in iommu_init_device()
+>   iommu: Keep dev->iommu state consistent
+>   iommu: Get DT/ACPI parsing into the proper probe path
 > 
-> 
-> Vasant Hegde (7):
->   iommu/amd: Log IOMMU control register in event log path
->   iommu/amd: Remove unused variable
->   iommu/amd/pgtbl_v2: Improve error handling
->   iommu/amd: Remove outdated comment
->   iommu/amd: Fix header file
->   iommu/amd: Remove unused forward declaration
->   iommu/amd: Consolidate protection domain free code
-> 
->  drivers/iommu/amd/amd_iommu.h       |  8 +++-----
->  drivers/iommu/amd/amd_iommu_types.h |  3 ---
->  drivers/iommu/amd/init.c            |  1 -
->  drivers/iommu/amd/io_pgtable.c      |  7 -------
->  drivers/iommu/amd/io_pgtable_v2.c   |  2 +-
->  drivers/iommu/amd/iommu.c           | 19 ++++++++-----------
->  drivers/iommu/amd/pasid.c           |  2 +-
->  7 files changed, 13 insertions(+), 29 deletions(-)
+>  drivers/acpi/arm64/dma.c        |  5 +++
+>  drivers/acpi/scan.c             |  7 -----
+>  drivers/amba/bus.c              |  3 +-
+>  drivers/base/platform.c         |  3 +-
+>  drivers/bus/fsl-mc/fsl-mc-bus.c |  3 +-
+>  drivers/cdx/cdx.c               |  3 +-
+>  drivers/iommu/iommu-priv.h      |  2 ++
+>  drivers/iommu/iommu.c           | 55 ++++++++++++++++++++++++---------
+>  drivers/iommu/of_iommu.c        | 13 ++++++--
+>  drivers/of/device.c             |  7 ++++-
+>  drivers/pci/pci-driver.c        |  3 +-
+>  11 files changed, 74 insertions(+), 30 deletions(-)
 
-Applied, thanks Vasant.
+Applied, thanks Robin.
