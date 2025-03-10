@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11CD31D5AAD;
-	Mon, 10 Mar 2025 07:22:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A37A81D5CDB;
+	Mon, 10 Mar 2025 07:22:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741591338; cv=none; b=mWjQvF7mT4W8gYNnef4/ApE3+os1oC9ZjKZ1/1ZQFFoRJlf/1/N7fL2Fi8xU6TKgwokd+SinGYKpCgK9q1tSdOU3PTSP7bYqVrcql8VxAP2ry5k/LlO2PIQRpKrH55XoGDJTjiMV/3IkjEtovTHa+VqKv46xduZ3DVRzWQ4XfyA=
+	t=1741591367; cv=none; b=roVTsfNydqytK3yq1sdI39368rS0TCQTAZCvZFvt20y4eWcZIc09W6t7UJd37qcjLcPzwH0eB6T50vQClBaHetXMkkYW2Wxyerk6lipkQcQPwo4SKwiegqVTsD7C8MQWkqRzOZ1gAPOorjG/nRXkKER9ZsC5kdVbsINjDNAgAsk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741591338; c=relaxed/simple;
-	bh=n5EJYANlraVMEy+z1CBmSc7C+ttH7vkN8CorsyFAuIk=;
+	s=arc-20240116; t=1741591367; c=relaxed/simple;
+	bh=Od8L1z8gpGuI01Q46FCrk/dgTluhyNxz/YRj8wTeP4I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ddlX0zCr2G4Zqt+JADexcaS86zuVVMA28okB/+eE1AXeCHL/biMbrroQW6HaSSzHGpXrXmKFxKC5ednCk+AX5TnyWRzeY8yzUAG/UhhCcRGOi4BjLsEHbG7bW4a4La4ay0ImkEbq1xDC414sywTB3xRPS2sZqNkmzr75/u7MHzo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SGWqhLCy; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=cRD1KqRAvmorBtwnueOEiZsRkLayZvSEqFNDpV8z4qIlM2cGCBWGYw8XQKmxyLq+wH7m6ziCu2JaHsXsRsqml2q75Lr5BwXSFZN/TdFiwWNeYOvxBd9cDajWBkqJOdTLrlYrFPfBI29ftAkaD5NNnWBj9NlGQg/Ii7ixa0Meo24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RUc4q3Gd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SGWqhLCy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 739DEC4CEE5;
-	Mon, 10 Mar 2025 07:22:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RUc4q3Gd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D291C4CEEC;
+	Mon, 10 Mar 2025 07:22:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741591337;
-	bh=n5EJYANlraVMEy+z1CBmSc7C+ttH7vkN8CorsyFAuIk=;
+	s=k20201202; t=1741591367;
+	bh=Od8L1z8gpGuI01Q46FCrk/dgTluhyNxz/YRj8wTeP4I=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=SGWqhLCyHfViKVUDQ0jzJVcUDm1jsoJM5JnDqfJcZojKRbq7vNU+vCgInlkqWwyIO
-	 gRoT7KuGYicBeb9fB7YOiZcrL1ksNwYXxjq4mVly2MhjuFkQYHamsY6eZ1/Tsw+RGI
-	 tz28itcBfaVrsBedxosouyOT5zCcHb1Dsx6hh1Eoprrbz9HknvikhcQo0EKq9lx6dz
-	 HSM969yK4eZT4TZG8Can+YSyIijegAX++6/y+hFi1G/2xY+Yh25LLE4G7bW7b2ajyE
-	 aD9WlibTu1ig4095nGNzz7t2iZB1KU+2FCMlqC8dWOXlY7BX+r9bG/jNJuDDRRzMrT
-	 +4iLxrs2cfxeg==
-Date: Mon, 10 Mar 2025 08:22:13 +0100
+	b=RUc4q3GdNN+6ts/tAqY680p2XE7YKchNwjX3K8gVj7z0To82usUJf6QbgxHL16oTC
+	 2uNsjiDTH9d/fy9Y431E8JtXL7h9i6Wup3Sp/zrYSul273raYEowyy1X4U+j7CmvL4
+	 aVDTcmOU5yOBBVZaAzKmznQJpkzM67qmY+IWu279KU2ckDT7DGKrGvQrFOi3izceGK
+	 dZFdyod48PZ+tN34na43hFAzeZkl3xXbMorWV2Hhag67SCnA44FotBRDf2o5qIEQNh
+	 BXSFoFpqDyBaI0hOkYW5zqM1NeC5trbydPMJ1Et0Jn7DuvIap30ME0gn0XHKhlmHkD
+	 UVhlOCV7C1xtw==
+Date: Mon, 10 Mar 2025 08:22:43 +0100
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Dmitry Baryshkov <lumag@kernel.org>
 Cc: Rob Clark <robdclark@gmail.com>, 
@@ -43,11 +43,11 @@ Cc: Rob Clark <robdclark@gmail.com>,
 	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
 	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 01/10] dt-bindings: display/msm: dp-controller: describe
- SAR2130P
-Message-ID: <20250310-adamant-wildcat-of-order-8efdda@krzk-bin>
+Subject: Re: [PATCH 02/10] dt-bindings: display/msm: dsi-controller-main:
+ describe SAR2130P
+Message-ID: <20250310-wise-jumping-moose-b45f1b@krzk-bin>
 References: <20250308-sar2130p-display-v1-0-1d4c30f43822@linaro.org>
- <20250308-sar2130p-display-v1-1-1d4c30f43822@linaro.org>
+ <20250308-sar2130p-display-v1-2-1d4c30f43822@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,17 +56,17 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250308-sar2130p-display-v1-1-1d4c30f43822@linaro.org>
+In-Reply-To: <20250308-sar2130p-display-v1-2-1d4c30f43822@linaro.org>
 
-On Sat, Mar 08, 2025 at 03:42:19AM +0200, Dmitry Baryshkov wrote:
+On Sat, Mar 08, 2025 at 03:42:20AM +0200, Dmitry Baryshkov wrote:
 > From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 > 
-> Describe DisplayPort controller present on Qualcomm SAR2130P platform.
+> Describe MIPI DSI controller present on Qualcomm SAR2130P platform.
 > 
 > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 > ---
->  Documentation/devicetree/bindings/display/msm/dp-controller.yaml | 1 +
->  1 file changed, 1 insertion(+)
+>  Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
