@@ -1,98 +1,75 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E825134CF5;
-	Mon, 10 Mar 2025 06:12:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11CD31D5AAD;
+	Mon, 10 Mar 2025 07:22:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741587176; cv=none; b=SEpWImlioOlG/JHCOXwRnfF/Yztaa5hGw1Hfcb7JYdXfvRCkk1+l0tk+clWCfYMM7PyAPb0oApsYhVXsHxnkiFNEUB0Ub4BTJGtMnQiND1lyUjFYWOn6vQeClUCO238VrKsKinfGIYBXEDThciswBcaJhKertpWBHGrPgU9TEow=
+	t=1741591338; cv=none; b=mWjQvF7mT4W8gYNnef4/ApE3+os1oC9ZjKZ1/1ZQFFoRJlf/1/N7fL2Fi8xU6TKgwokd+SinGYKpCgK9q1tSdOU3PTSP7bYqVrcql8VxAP2ry5k/LlO2PIQRpKrH55XoGDJTjiMV/3IkjEtovTHa+VqKv46xduZ3DVRzWQ4XfyA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741587176; c=relaxed/simple;
-	bh=IwqHQDBwSuTVidoWpcAHGXgI2bJZGWVRqXPAmGK7cIo=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=RsA8Zd/ljoDPcgLZ/FrL7QfXbFni2lCmR8AocaU2tSa9oLXKHP7IyH78W3IqxrXGhmLSfQX5sSE98XizwUpQ1pl6+UszWy8vZGOr1o8z9dF2KCOb3ilHpedlFpX5JpL12J4D12F/TG+dy3d0junIP6ovIZuGjgd4qudPZvq4avY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gTBMEWx3; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1741591338; c=relaxed/simple;
+	bh=n5EJYANlraVMEy+z1CBmSc7C+ttH7vkN8CorsyFAuIk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ddlX0zCr2G4Zqt+JADexcaS86zuVVMA28okB/+eE1AXeCHL/biMbrroQW6HaSSzHGpXrXmKFxKC5ednCk+AX5TnyWRzeY8yzUAG/UhhCcRGOi4BjLsEHbG7bW4a4La4ay0ImkEbq1xDC414sywTB3xRPS2sZqNkmzr75/u7MHzo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SGWqhLCy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gTBMEWx3"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A5F55C4CEE5;
-	Mon, 10 Mar 2025 06:12:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SGWqhLCy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 739DEC4CEE5;
+	Mon, 10 Mar 2025 07:22:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741587175;
-	bh=IwqHQDBwSuTVidoWpcAHGXgI2bJZGWVRqXPAmGK7cIo=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=gTBMEWx36xc2YFJBnkNLat0KBIILM1y6h0CQvnJ+9k8YdNiSuZVI7Oiw/sCq954y/
-	 EViDe1VT51nmMmHXWUgpgxfGQWVhUlu+i1hQQWHKPSPAM46SMPFGKHUzYGlpbq7DWc
-	 lmhJroREzgjtOOBe9MyZiqnknNaleSHEsPrZv+tV45Z81Q8E/MiB0UgHNozfGCtxek
-	 qoBzEl/Ns8YOxTxeagFD2C4FlQT4EwYVJRKH8SV6LyxcKVYgGMAMIDQeftz0yvc5rU
-	 2l/j7OJUsOJ7MQUrk80dIBGSExB1d44aacj4J7qm/yyTYCpKt0BXnv05wjZ5fwUVje
-	 5XpmRtkg94KBg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A46C282DE;
-	Mon, 10 Mar 2025 06:12:55 +0000 (UTC)
-From: Aaron Kling via B4 Relay <devnull+webgeek1234.gmail.com@kernel.org>
-Date: Mon, 10 Mar 2025 01:11:58 -0500
-Subject: [PATCH] iommu/arm: Allow disabling Qualcomm support in arm_smmu_v3
+	s=k20201202; t=1741591337;
+	bh=n5EJYANlraVMEy+z1CBmSc7C+ttH7vkN8CorsyFAuIk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=SGWqhLCyHfViKVUDQ0jzJVcUDm1jsoJM5JnDqfJcZojKRbq7vNU+vCgInlkqWwyIO
+	 gRoT7KuGYicBeb9fB7YOiZcrL1ksNwYXxjq4mVly2MhjuFkQYHamsY6eZ1/Tsw+RGI
+	 tz28itcBfaVrsBedxosouyOT5zCcHb1Dsx6hh1Eoprrbz9HknvikhcQo0EKq9lx6dz
+	 HSM969yK4eZT4TZG8Can+YSyIijegAX++6/y+hFi1G/2xY+Yh25LLE4G7bW7b2ajyE
+	 aD9WlibTu1ig4095nGNzz7t2iZB1KU+2FCMlqC8dWOXlY7BX+r9bG/jNJuDDRRzMrT
+	 +4iLxrs2cfxeg==
+Date: Mon, 10 Mar 2025 08:22:13 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Dmitry Baryshkov <lumag@kernel.org>
+Cc: Rob Clark <robdclark@gmail.com>, 
+	Abhinav Kumar <quic_abhinavk@quicinc.com>, Sean Paul <sean@poorly.run>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Kuogee Hsieh <quic_khsieh@quicinc.com>, 
+	Krishna Manikandan <quic_mkrishn@quicinc.com>, Jonathan Marek <jonathan@marek.ca>, 
+	Bjorn Andersson <andersson@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 01/10] dt-bindings: display/msm: dp-controller: describe
+ SAR2130P
+Message-ID: <20250310-adamant-wildcat-of-order-8efdda@krzk-bin>
+References: <20250308-sar2130p-display-v1-0-1d4c30f43822@linaro.org>
+ <20250308-sar2130p-display-v1-1-1d4c30f43822@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250310-b4-qcom-smmu-v1-1-733a1398ff85@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAK2CzmcC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDI1MDY0MD3SQT3cLk/Fzd4tzcUt0Uk+TkxDQzs0TD5FQloJaCotS0zAqwcdG
- xtbUAKo+Rtl4AAAA=
-X-Change-ID: 20250310-b4-qcom-smmu-d4ccaf66a1ce
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- stable@vger.kernel.org, Aaron Kling <webgeek1234@gmail.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1741587175; l=992;
- i=webgeek1234@gmail.com; s=20250217; h=from:subject:message-id;
- bh=8mZdDIMzM15RJAJ2ViAymKW4I/RyQ463WLVTHNvdOss=;
- b=VxZlCVYBtjNtBkmmPUW9Cq2dx3v6oxhk7wRY+57QD7wraDxUu2bicinn3sWO5zq0hNa5Bto0T
- /dYzcsQuL2KB5bhHQ8pQL52WvdFKE00bBofObUCQcIpLBHOGJxLGeDO
-X-Developer-Key: i=webgeek1234@gmail.com; a=ed25519;
- pk=TQwd6q26txw7bkK7B8qtI/kcAohZc7bHHGSD7domdrU=
-X-Endpoint-Received: by B4 Relay for webgeek1234@gmail.com/20250217 with
- auth_id=342
-X-Original-From: Aaron Kling <webgeek1234@gmail.com>
-Reply-To: webgeek1234@gmail.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20250308-sar2130p-display-v1-1-1d4c30f43822@linaro.org>
 
-From: Aaron Kling <webgeek1234@gmail.com>
+On Sat, Mar 08, 2025 at 03:42:19AM +0200, Dmitry Baryshkov wrote:
+> From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> 
+> Describe DisplayPort controller present on Qualcomm SAR2130P platform.
+> 
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/display/msm/dp-controller.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-If ARCH_QCOM is enabled when building arm_smmu_v3, a dependency on
-qcom-scm is added, which currently cannot be disabled. Add a prompt to
-ARM_SMMU_QCOM to allow disabling this dependency.
-
-Fixes: 0f0f80d9d5db ("iommu/arm: fix ARM_SMMU_QCOM compilation")
-Cc: stable@vger.kernel.org
-Signed-off-by: Aaron Kling <webgeek1234@gmail.com>
----
- drivers/iommu/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index ec1b5e32b9725bc1104d10e5d7a32af7b211b50a..cca0825551959e3f37cc2ea41aeae526fdb73312 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -381,6 +381,7 @@ config ARM_SMMU_MMU_500_CPRE_ERRATA
- 
- config ARM_SMMU_QCOM
- 	def_tristate y
-+	prompt "Qualcomm SMMUv3 Support"
- 	depends on ARM_SMMU && ARCH_QCOM
- 	select QCOM_SCM
- 	help
-
----
-base-commit: 1110ce6a1e34fe1fdc1bfe4ad52405f327d5083b
-change-id: 20250310-b4-qcom-smmu-d4ccaf66a1ce
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Best regards,
--- 
-Aaron Kling <webgeek1234@gmail.com>
-
+Krzysztof
 
