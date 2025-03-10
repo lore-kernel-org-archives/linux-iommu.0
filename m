@@ -1,123 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE820846D
-	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 13:30:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4B47722ACF1;
+	Mon, 10 Mar 2025 13:49:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741613456; cv=none; b=J95Q8QEhe/6CobVdGA9Od4YO3DmjDZCXk4rWnyO3e+a9VZNVnRrqQk0H493bdatwY76eb87uk6QFOlG2ynCAMswVTdbJVjzWZgdR3lTv1xAJ0aJc3jbe3WgcP3hNF56kEwDKBnYDuuSF87kDLC4hV7GJhnPJTVGQFrBSrP92nok=
+	t=1741614559; cv=none; b=sihKpmNwreD5MqNjsx/brM9D2kQr6Gw0eoD6PcMOuFXrQMsdJ5BRXQBYuIwgWA9erkqvd4WWFVu0mOxOt2GhPS43LWgU34I94hP+A+kpcLiozP1kmAwNuQuGn6MIYXXTfn02qgKwmYcwjlk5aVYjXoujqLVQm0wBNL2kfjs/GYY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741613456; c=relaxed/simple;
-	bh=7DK+rBnIB6+gK5GprT7obsuYQKNEBuzPpYg+bZU61VM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NVFbtPCeseo39M2plLenNuJp51gEReGqhByzob4KVwYhX1fpXMia2Az9jTIwK/j2XzEIJcnnykD77Fsg2kKknb/Jrstvd9ZsYzIPmO8I0BiIjuRc7HrM+/wQRx2a9Xfq7Li1rF580a/GKCeIFiB5gyMEeyfK+5cRjKPnmVOHR/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N6gaNjDS; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N6gaNjDS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 257C2C4CEF9
-	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 13:30:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741613455;
-	bh=7DK+rBnIB6+gK5GprT7obsuYQKNEBuzPpYg+bZU61VM=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=N6gaNjDSopjXklq/smuCritonxIFRZcviors5Z6GWB5x2DpMe9pO4/a1jaWMwCMRO
-	 XKM0+fEzSCVucV5ScvQoQ4r3iOQZWQMoaLcQwNYuCYgYOPHTldegww1SII5Cau6QnD
-	 Ju03QmZ8EZu0/Et5J9/gLX9NlW2ViKuUxQAbeyiJOzIgHK/EPz0Rs0AsEuTpPIuBkf
-	 s7vhEeKFI5S7yvD9DwzksfDuNkTyjBrUjAYlCAPqeey+zdk2sx/hHA0zHc9pJZtbEU
-	 VDn34iKB3dun0ff6ieYvPwjaWIEv4a1r+crojlHQkLeNctJcxqWBGH9useMMIp3X/m
-	 2Nxnwt4X2GZBw==
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5e5dce099f4so5392815a12.1
-        for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 06:30:55 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCV1y76RcnSzXqYXzjteVwSVyUEAxnV1YcPg4oHlJa+9qgXWYdggDyI5WONvHyye9wkoGKdISw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzUHCBMu/Na+sskijHsh3eO308lc0GSht7VEoGZa4pUQeu7ICBX
-	oleC9DofDx5T2fWGnxDTbuIVBcdt3s0C1R+Edli4qjLRSK9gsq7zIkseQJOr2BHGN1+vFOYyW1Z
-	8wbkgluzDjBhfwx4MkyYFkyCN7g==
-X-Google-Smtp-Source: AGHT+IHQqQev9Mt/kBzD3p7JhI6eC5lr1d6ht0exKs8fcQ7bw7GOc5LSSjJJgeGQCo3IH1yYOPaQ4qbZnGMKJ40RyrI=
-X-Received: by 2002:a05:6402:4409:b0:5e7:110a:c55 with SMTP id
- 4fb4d7f45d1cf-5e7110a0c6dmr3695220a12.18.1741613453358; Mon, 10 Mar 2025
- 06:30:53 -0700 (PDT)
+	s=arc-20240116; t=1741614559; c=relaxed/simple;
+	bh=xxjqROJ5NoqPCw4FvlDpsExVDNSnd34Bn+fRqX582rg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PxcGrFAxNT1b+fxbZBk4DQleCbd48EMjUmHMRMdh1GQ3b8f5vavV4tQxk2XDDsqkJnvexxUIDHFdAXBQkWHm76ktDVbiJ9949BRIqp8IqsLrgHSlnInEKbSWJlmYNwU8eSts8gLzEIx5PJBj2geHd8RZer8BJZk4SFFwePl0MFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A86C153B;
+	Mon, 10 Mar 2025 06:49:29 -0700 (PDT)
+Received: from [10.57.39.174] (unknown [10.57.39.174])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 749533F673;
+	Mon, 10 Mar 2025 06:49:15 -0700 (PDT)
+Message-ID: <ef8dcf7a-34ed-4b27-a154-e01bc167d4e6@arm.com>
+Date: Mon, 10 Mar 2025 13:49:13 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250308-sar2130p-display-v1-0-1d4c30f43822@linaro.org>
- <20250308-sar2130p-display-v1-5-1d4c30f43822@linaro.org> <174140525677.1770282.3232695979994091275.robh@kernel.org>
- <nddxntwmiyurqew75gc6yoj2dcinhjqu36cdujhruqyrz62ry5@4e2y76ghmo4h>
-In-Reply-To: <nddxntwmiyurqew75gc6yoj2dcinhjqu36cdujhruqyrz62ry5@4e2y76ghmo4h>
-From: Rob Herring <robh@kernel.org>
-Date: Mon, 10 Mar 2025 08:30:41 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJ6iYm-8BF+4QwimAX69jmivpCNqKbD_AtWkKDtAn_Wgw@mail.gmail.com>
-X-Gm-Features: AQ5f1JqRkP_MsxtbTrRXJIVMatqOMN_D3NTt1ZS-seDKkCW2KxLIXoxniVXXOnU
-Message-ID: <CAL_JsqJ6iYm-8BF+4QwimAX69jmivpCNqKbD_AtWkKDtAn_Wgw@mail.gmail.com>
-Subject: Re: [PATCH 05/10] dt-bindings: display/msm: Add Qualcomm SAR2130P
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Dmitry Baryshkov <lumag@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, Sean Paul <sean@poorly.run>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Conor Dooley <conor+dt@kernel.org>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, dri-devel@lists.freedesktop.org, 
-	David Airlie <airlied@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Abhinav Kumar <quic_abhinavk@quicinc.com>, devicetree@vger.kernel.org, 
-	Neil Armstrong <neil.armstrong@linaro.org>, Rob Clark <robdclark@gmail.com>, 
-	Kuogee Hsieh <quic_khsieh@quicinc.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Simona Vetter <simona@ffwll.ch>, freedreno@lists.freedesktop.org, 
-	Bjorn Andersson <andersson@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Jonathan Marek <jonathan@marek.ca>, Maxime Ripard <mripard@kernel.org>, 
-	iommu@lists.linux.dev, Krishna Manikandan <quic_mkrishn@quicinc.com>, 
-	linux-arm-kernel@lists.infradead.org, Will Deacon <will@kernel.org>, 
-	Konrad Dybcio <konradybcio@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC] staging: Add driver to communicate with the T2
+ Security Chip
+To: Aditya Garg <gargaditya08@live.com>,
+ "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+ "bhelgaas@google.com" <bhelgaas@google.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
+Cc: "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Aun-Ali Zaidi <admin@kodeit.net>, "paul@mrarm.io" <paul@mrarm.io>,
+ Orlando Chamberlain <orlandoch.dev@gmail.com>
+References: <1A12CB39-B4FD-4859-9CD7-115314D97C75@live.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <1A12CB39-B4FD-4859-9CD7-115314D97C75@live.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Mar 7, 2025 at 11:09=E2=80=AFPM Dmitry Baryshkov
-<dmitry.baryshkov@linaro.org> wrote:
->
-> On Fri, Mar 07, 2025 at 09:40:56PM -0600, Rob Herring (Arm) wrote:
-> >
-> > On Sat, 08 Mar 2025 03:42:23 +0200, Dmitry Baryshkov wrote:
-> > > From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > >
-> > > Describe the Mobile Display SubSystem (MDSS) device present on the
-> > > Qualcomm SAR2130P platform. It looks pretty close to SM8550 on the
-> > > system level. SAR2130P features two DSI hosts and single DisplayPort
-> > > controller.
-> > >
-> > > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > > ---
-> > >  .../bindings/display/msm/qcom,sar2130p-mdss.yaml   | 445 +++++++++++=
-++++++++++
-> > >  1 file changed, 445 insertions(+)
-> > >
-> >
-> > My bot found errors running 'make dt_binding_check' on your patch:
-> >
-> > yamllint warnings/errors:
-> >
-> > dtschema/dtc warnings/errors:
-> > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings=
-/display/msm/qcom,sar2130p-mdss.example.dtb: dsi@ae94000: compatible: 'oneO=
-f' conditional failed, one must be fixed:
-> >       ['qcom,sar2130p-dsi-ctrl', 'qcom,mdss-dsi-ctrl'] is too long
-> >       'qcom,sar2130p-dsi-ctrl' is not one of ['qcom,apq8064-dsi-ctrl', =
-'qcom,msm8226-dsi-ctrl', 'qcom,msm8916-dsi-ctrl', 'qcom,msm8953-dsi-ctrl', =
-'qcom,msm8974-dsi-ctrl', 'qcom,msm8976-dsi-ctrl', 'qcom,msm8996-dsi-ctrl', =
-'qcom,msm8998-dsi-ctrl', 'qcom,qcm2290-dsi-ctrl', 'qcom,sc7180-dsi-ctrl', '=
-qcom,sc7280-dsi-ctrl', 'qcom,sdm660-dsi-ctrl', 'qcom,sdm670-dsi-ctrl', 'qco=
-m,sdm845-dsi-ctrl', 'qcom,sm6115-dsi-ctrl', 'qcom,sm6125-dsi-ctrl', 'qcom,s=
-m6150-dsi-ctrl', 'qcom,sm6350-dsi-ctrl', 'qcom,sm6375-dsi-ctrl', 'qcom,sm71=
-50-dsi-ctrl', 'qcom,sm8150-dsi-ctrl', 'qcom,sm8250-dsi-ctrl', 'qcom,sm8350-=
-dsi-ctrl', 'qcom,sm8450-dsi-ctrl', 'qcom,sm8550-dsi-ctrl', 'qcom,sm8650-dsi=
--ctrl']
-> >       'qcom,sar2130p-dsi-ctrl' is not one of ['qcom,dsi-ctrl-6g-qcm2290=
-', 'qcom,mdss-dsi-ctrl']
-> >       from schema $id: http://devicetree.org/schemas/display/msm/dsi-co=
-ntroller-main.yaml#
->
-> It looks like the patch 2 could not be applied and was skipped. Is the
-> bot parsing the dependencies from the cover letter?
+On 2025-03-09 8:40 am, Aditya Garg wrote:
+> From: Paul Pawlowski <paul@mrarm.io>
+> 
+> This patch adds a driver named apple-bce, to add support for the T2
+> Security Chip found on certain Macs.
+> 
+> The driver has 3 main components:
+> 
+> BCE (Buffer Copy Engine) - this is what the files in the root directory
+> are for. This estabilishes a basic communication channel with the T2.
+> VHCI and Audio both require this component.
+> 
+> VHCI - this is a virtual USB host controller; keyboard, mouse and
+> other system components are provided by this component (other
+> drivers use this host controller to provide more functionality).
+> 
+> Audio - a driver for the T2 audio interface, currently only audio
+> output is supported.
+> 
+> Currently, suspend and resume for VHCI is broken after a firmware
+> update in iBridge since macOS Sonoma.
+> 
+> Signed-off-by: Paul Pawlowski <paul@mrarm.io>
+> Signed-off-by: Aditya Garg <gargaditya08@live.com>
+> ---
+> drivers/staging/Kconfig                       |   2 +
+> drivers/staging/Makefile                      |   1 +
+> drivers/staging/apple-bce/Kconfig             |  18 +
+> drivers/staging/apple-bce/Makefile            |  28 +
+> drivers/staging/apple-bce/apple_bce.c         | 448 ++++++++++
+> drivers/staging/apple-bce/apple_bce.h         |  44 +
+> drivers/staging/apple-bce/audio/audio.c       | 714 ++++++++++++++++
+> drivers/staging/apple-bce/audio/audio.h       | 128 +++
+> drivers/staging/apple-bce/audio/description.h |  45 ++
+> drivers/staging/apple-bce/audio/pcm.c         | 311 +++++++
+> drivers/staging/apple-bce/audio/pcm.h         |  19 +
+> drivers/staging/apple-bce/audio/protocol.c    | 350 ++++++++
+> drivers/staging/apple-bce/audio/protocol.h    | 148 ++++
+> .../staging/apple-bce/audio/protocol_bce.c    | 229 ++++++
+> .../staging/apple-bce/audio/protocol_bce.h    |  75 ++
+> drivers/staging/apple-bce/mailbox.c           | 154 ++++
+> drivers/staging/apple-bce/mailbox.h           |  56 ++
+> drivers/staging/apple-bce/queue.c             | 393 +++++++++
+> drivers/staging/apple-bce/queue.h             | 180 +++++
+> drivers/staging/apple-bce/queue_dma.c         | 223 +++++
+> drivers/staging/apple-bce/queue_dma.h         |  53 ++
+> drivers/staging/apple-bce/vhci/command.h      | 207 +++++
+> drivers/staging/apple-bce/vhci/queue.c        | 271 +++++++
+> drivers/staging/apple-bce/vhci/queue.h        |  79 ++
+> drivers/staging/apple-bce/vhci/transfer.c     | 664 +++++++++++++++
+> drivers/staging/apple-bce/vhci/transfer.h     |  76 ++
+> drivers/staging/apple-bce/vhci/vhci.c         | 764 ++++++++++++++++++
+> drivers/staging/apple-bce/vhci/vhci.h         |  55 ++
+> 28 files changed, 5735 insertions(+)
 
-No, it's not that smart. I need to move it to using b4 though that has
-its own quirks when no dependencies are given.
+I'm slightly puzzled why this was sent to the IOMMU maintainers when it 
+doesn't touch any IOMMU code, nor even contain any reference to the 
+IOMMU API at all...
 
-Rob
+Since I don't know enough about audio or USB code, all I can really say 
+here is to echo Greg's comment that, judging by that diffstat alone, 
+this probably wants to be at least 3-5 separate patches, adding each 
+functional piece in manageable chunks.
+
+Thanks,
+Robin.
