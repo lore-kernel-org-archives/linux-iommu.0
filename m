@@ -1,118 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 544E8A935
-	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 02:36:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3566F2AE66
+	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 02:47:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741574216; cv=none; b=VTILXTSZHyds+5eOj/09CVk8LvvB00QLTfIjkIGsbHtB48dlZx6ln20oA97StL5+emvj/W3PtC9FfAGMFxsHOlPnV7IN/b23d2aLk17ADXwT5IbqbGTMEjqptRTxT1u7rEVRZMMGS+1vn5eL41Z/KmwHtF7IIlTfmk2SpEPl0Pg=
+	t=1741574860; cv=none; b=f5oqXbMqntvzWTWS7VmOE5bMgy40q2Knn0HmdXVveGICV33XMo0AmazjP0LRv/Sx9L0uwHETtNvJChFruj9gj/E/IXPhJVgsGeYRpOEQCROPZOh/mq7pdELt9LajGEUWFCrt6J0SJmVb3utr4WapZNApN+aCIBbOJVR+j+cUYYA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741574216; c=relaxed/simple;
-	bh=cdiX3h1BvqRWr2Z/qviPc8TG9q68mLEhMJAyJY6ZZwY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ewtrUawbnD36qH4MWvX4GMSI+xsfKNepv+RPtLEf3typygzkgUAtu2fyhrFSEaZYACpLPXaWXrZtIUJdroBdWqA4vvMDI0qO/1ebLd9oXCix4Wk0qD1HoHOArAEz01DdHWCOuBG544SruuWRvYIwHG4w0JvoNAJOqsV6s9zj7JY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GJSks8Ir; arc=none smtp.client-ip=198.175.65.14
+	s=arc-20240116; t=1741574860; c=relaxed/simple;
+	bh=uWl8lEs66r2zt6UYtOrOYf0q0rOgE1dREivc2Z1GCd0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=FgBmHQoX8aWP4mJzvgBojwxn2SItvQsJZwGw/Bino9Jw5gcE8wZzeSev8NDvDXsNKAdLTAkFkNtfaLIbNEOP+DMS8phXafuceixNjpOCY9LSqb0wOgsNtGyHQB3VxPmYqfTqnBYSa9AMurNshhUhLNgaJfI7FMOVx+BaD85cJP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ClYqhjyR; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GJSks8Ir"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ClYqhjyR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741574215; x=1773110215;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=cdiX3h1BvqRWr2Z/qviPc8TG9q68mLEhMJAyJY6ZZwY=;
-  b=GJSks8Ir5i8A6kkQOEAifVN9Ct1Bfkmsb7GgTj/7A24pZotgneon+Fwt
-   R8DjpghVfS2Dl1hDPuE98XbuenG/DyhfDYdQLcHZ5FCynTeY/Fr8EaIMk
-   82b1j/RW7hXOzQ2/lMktZJWcVI56+w0L5NJoQmUm6gWodUouJqyFLgUav
-   XaZXsFdiwZ/JFHLUddGO1LeRt7jy6HmZaqU+hGPQh4UsM7TmQ8UKr3IJB
-   dhU/OLw0mqE5KdUmePrXOPpMpEDJ0bHB48qcibAKqkWqWr3OcEouPVBOa
-   DCKo7u7ReBhfp6T9l8AyFjgYrBGUcW8Xlfgt/+2xMzVj4jHNfW+v5sD2c
-   g==;
-X-CSE-ConnectionGUID: /nC2s7rlQIOiN1ZWJPkWSA==
-X-CSE-MsgGUID: 1EOVVWXCR2C/U12gE1G63Q==
-X-IronPort-AV: E=McAfee;i="6700,10204,11368"; a="46337297"
+  t=1741574859; x=1773110859;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=uWl8lEs66r2zt6UYtOrOYf0q0rOgE1dREivc2Z1GCd0=;
+  b=ClYqhjyRSqt3942oz2Z9QOVwvZNZZR4OHvuY9oTOW3XCLp5gPTfkETTl
+   asDPqwwpqliFNikJAEqFs/UGWlE9ITmyg+Z5bDT/xzrIAGGxC9Hkmo3uL
+   1tLZoGE5+UOu9R2YLgujWenPbdh3OY+OFligAlOP9A/cEmXZKBLNki5Ym
+   1gRw2+zwO0/WGUpqq/f53kwnGHcnlFYt/KvY6AueMZ8gjPtB/6E3RbJIX
+   FKRXcWMFE//B1aR7bCZZ+b9huHJoJg9qMnuQEzeaJbmIHS6fihTqQ7jWF
+   7UEVbrCV/DgCyUt6Uwxa5yqGIM2u9zgLfhREYJz8Xae3pCctKmD2S93gl
+   Q==;
+X-CSE-ConnectionGUID: BIMhmDk+QuOE2nAcV030DA==
+X-CSE-MsgGUID: 04W81gvuREmUMqu0cR7ZUg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11368"; a="42401584"
 X-IronPort-AV: E=Sophos;i="6.14,235,1736841600"; 
-   d="scan'208";a="46337297"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2025 19:36:55 -0700
-X-CSE-ConnectionGUID: CsuFhw/VQI2OJ4dK/s+sGA==
-X-CSE-MsgGUID: oQNSaZhoSF61LWjx5eoRzg==
+   d="scan'208";a="42401584"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2025 19:47:38 -0700
+X-CSE-ConnectionGUID: 9bls0p6TTdyZIQjcriywhA==
+X-CSE-MsgGUID: biCQtQOOTeyDIdg2jKDt7A==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="119802310"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2025 19:36:53 -0700
-Message-ID: <8e021997-3d79-4506-9905-e32631104a81@linux.intel.com>
-Date: Mon, 10 Mar 2025 10:33:41 +0800
+X-IronPort-AV: E=Sophos;i="6.14,235,1736841600"; 
+   d="scan'208";a="143079224"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by fmviesa002.fm.intel.com with ESMTP; 09 Mar 2025 19:47:33 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/6] [PULL REQUEST] Intel IOMMU updates for v6.15
+Date: Mon, 10 Mar 2025 10:47:43 +0800
+Message-ID: <20250310024749.3702681-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] iommu/vt-d: fix system hang on reboot -f
-To: Yunhui Cui <cuiyunhui@bytedance.com>, dwmw2@infradead.org,
- joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Ethan Zhao <haifeng.zhao@linux.intel.com>
-References: <20250303062421.17929-1-cuiyunhui@bytedance.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250303062421.17929-1-cuiyunhui@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 3/3/25 14:24, Yunhui Cui wrote:
-> We found that executing the command ./a.out &;reboot -f (where a.out is a
-> program that only executes a while(1) infinite loop) can probabilistically
-> cause the system to hang in the intel_iommu_shutdown() function, rendering
-> it unresponsive. Through analysis, we identified that the factors
-> contributing to this issue are as follows:
-> 
-> 1. The reboot -f command does not prompt the kernel to notify the
-> application layer to perform cleanup actions, allowing the application to
-> continue running.
-> 
-> 2. When the kernel reaches the intel_iommu_shutdown() function, only the
-> BSP (Bootstrap Processor) CPU is operational in the system.
-> 
-> 3. During the execution of intel_iommu_shutdown(), the function down_write
-> (&dmar_global_lock) causes the process to sleep and be scheduled out.
-> 
-> 4. At this point, though the processor's interrupt flag is not cleared,
->   allowing interrupts to be accepted. However, only legacy devices and NMI
-> (Non-Maskable Interrupt) interrupts could come in, as other interrupts
-> routing have already been disabled. If no legacy or NMI interrupts occur
-> at this stage, the scheduler will not be able to run.
-> 
-> 5. If the application got scheduled at this time is executing a while(1)-
-> type loop, it will be unable to be preempted, leading to an infinite loop
-> and causing the system to become unresponsive.
-> 
-> To resolve this issue, the intel_iommu_shutdown() function should not
-> execute down_write(), which can potentially cause the process to be
-> scheduled out. Furthermore, since only the BSP is running during the later
-> stages of the reboot, there is no need for protection against parallel
-> access to the DMAR (DMA Remapping) unit. Therefore, the following lines
-> could be removed:
-> 
-> down_write(&dmar_global_lock);
-> up_write(&dmar_global_lock);
-> 
-> After testing, the issue has been resolved.
-> 
-> Fixes: 6c3a44ed3c55 ("iommu/vt-d: Turn off translations at shutdown")
-> Co-developed-by: Ethan Zhao<haifeng.zhao@linux.intel.com>
-> Signed-off-by: Ethan Zhao<haifeng.zhao@linux.intel.com>
-> Signed-off-by: Yunhui Cui<cuiyunhui@bytedance.com>
-> ---
->   drivers/iommu/intel/iommu.c | 17 ++++++++++-------
->   1 file changed, 10 insertions(+), 7 deletions(-)
+Hi Joerg,
 
-Queued this as a quick fix for iommu/vt-d branch. Should follow up to
-consider the intel_iommu_shutdown() timing issue later.
+The following changes have been queued for v6.15-rc1. They are about new
+features and code refactoring, including:
 
-Thanks,
+ - Checking for SVA support in domain allocation and attach paths
+ - Move PCI ATS and PRI configuration into probe paths
+ - Fix a pentential hang on reboot -f
+ - Miscellaneous cleanups
+
+These patches are based on v6.14-rc6. Please consider them for the
+iommu/vt-d branch.
+
+Best regards,
 baolu
+
+Jason Gunthorpe (2):
+  iommu/vt-d: Use virt_to_phys()
+  iommu/vt-d: Check if SVA is supported when attaching the SVA domain
+
+Lu Baolu (3):
+  iommu/vt-d: Move scalable mode ATS enablement to probe path
+  iommu/vt-d: Move PRI enablement in probe path
+  iommu/vt-d: Cleanup intel_context_flush_present()
+
+Yunhui Cui (1):
+  iommu/vt-d: Fix system hang on reboot -f
+
+ drivers/iommu/intel/iommu.c | 237 +++++++++++++-----------------------
+ drivers/iommu/intel/iommu.h |  28 +----
+ drivers/iommu/intel/pasid.c |  43 ++-----
+ drivers/iommu/intel/prq.c   |   2 +-
+ drivers/iommu/intel/svm.c   |  43 +++++++
+ 5 files changed, 143 insertions(+), 210 deletions(-)
+
+-- 
+2.43.0
+
