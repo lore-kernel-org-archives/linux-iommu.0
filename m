@@ -1,156 +1,164 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C537139E
-	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 20:15:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43AFA1DEFE4
+	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 20:40:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741637750; cv=none; b=rt5uno0wNLJRBOMOr25SycWCnhEwZasWk6BTqy4eNDxCU4LBET7WLRhDhGKgTV/66cvUhXo3OpLkjTPla8t/Kts0ZT+z2vT83sFuXJL9XiZ3KSl3wJfRc0etx3EYyyeMjs1jLY6BZdm++BcVMnig8pQJWpd0hzmfX+eREQManqM=
+	t=1741639256; cv=none; b=O+iOUmMyAYS0q+mzhDuTyAeNuFTXbOtdR+fJS2CK0gY+pyPuGeCjqLmZwL2P8B24mGoAJo01tPgXfYBpcohfa3tGzFjjXz/IztHQavRXxybkJOB/Eze61rNSHdYva6HUfTPt1nblo9ZDxHT7OU6W6mxzQqbwyl/1Y5xNZkqw8Ek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741637750; c=relaxed/simple;
-	bh=hANOivVIYR7EShD/fOlaDcQiemx66hUbCeB5UoCLsXI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pYr3OHQJN1SywYa62usOXO5ByHIiQRD40EuVP9dTraa3d8sKFhm6m8faNSWYIex72mQxrgVeOBXeIrWCQmit1KgZDh4qXiSzlf9cPADBG3ruv7oIh/aQYclpOi1Yj52ZKjqmJTrJ+kcmuUJz4fAcPqKDvdyebN9VQbiwfLJZYk8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PlHEq5+1; arc=none smtp.client-ip=209.85.167.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1741639256; c=relaxed/simple;
+	bh=p7FT2wD3WZKNMVQnP49Wzu1EdaqUzeZXhk1DDsgTN+I=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=eEdeBavIStL2Rz3kNbNrmqco29t1QmZWVfrpjsTsR/tT21g9tFLN+jI7xe3pGgysqGaNEkjSOVhXki1qXVK5qiJoTgafl5mXWyE6YG6kAQSK0m9vmlpIdbDQ6FSFlq8QsZhYtz8GqF+f9XiHunE56i3kBmBn4ODOpaCml0zI2nc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=KLSBTZ4K; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PlHEq5+1"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-543e4bbcd86so5567573e87.1
-        for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 13:15:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741637747; x=1742242547; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hANOivVIYR7EShD/fOlaDcQiemx66hUbCeB5UoCLsXI=;
-        b=PlHEq5+1rrGk2KRuhLvQOqkVXKJX6HxXMzoNLxizm5vtrH/eZfcF9bFJLa9HbtHe4D
-         0Hhf3IDDZmMgyrICUdAYLFkdiabC4uUSmDE0FGhwSncCVs4Y2pB+GBqoYp9xL3idGBmN
-         pdBH4NnrbKFuLsZJLKL60EbI1Pa7o1EWfXTpDefw2vu44k5FQS6iuxbD+qnkMEQXkXmp
-         yuBmWwgbyM8bacGBujbQnTLO2ABJOzWl2/57yAC7WaiOqxeR4vx/dPeJhieRPe4sgKo7
-         i86aVYc791BMm8Cgi75cw5DHWyUDiMlzQ+1VnnnbHVloWTAowmfZNKofR8u16aDtALjF
-         wG3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741637747; x=1742242547;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hANOivVIYR7EShD/fOlaDcQiemx66hUbCeB5UoCLsXI=;
-        b=XWnNtyRt+G+p6tmaTE1BM8l/HtLx41EcKEvsdwSXgYAZ1EeOwpjv0BQc8uLt3Gwr4B
-         y210GqT8mEYIc7QbDuv+NgaKJvM9s1zH1XCdZEVrip1FXXSET2IJaH772v+D+FPp1m8d
-         8A78pcxfup3685fKiVFT/iZHeD2I43U2OcXHodqNwHILiRhsJV0bMtrXPVzsT1URnFqU
-         9Fjjic660R+n117nQafreefcsJZKMfLaYm1+vrMhUkbpNMhBTgBwndcfdX1x3J6Gl1Xb
-         0LnGaK93SIsuj9eTExM/QeyGpTXCgG8uEw5K+Jx9XJhEERNU7cqRdnBqb0VyOZBi6UUe
-         pgKQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXtcxh6tey9/JBSO/XZC5w8FAbYgaG7uYa0e+TaoOItHCPfmKrrqi81Rh+M+cNf0JAJruQ+Ng==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxha2Ggf5J78TxLWD3z6acg99sF7itays2YAoP/dQ3aYuu12/Fw
-	te1gAzbXcndwIATIZ+TIMl2FibgpIMUlkqXKB+LLYbq2suO3NQlQ4itg6WwLBPEXAiuW4TEC7wZ
-	WKGcYW15uFBaYN7OrV7KLnigyulI=
-X-Gm-Gg: ASbGncsB7mGGWxakPuOtOTNlanslT3Ru0Aire8ZLxPiDU/uG5iuGgh1W/7eEVbK4zXc
-	zpHlcOYRGOiuCJPeddyZ8E0XW7fjUZyzLdM7gxbNZLHOrfFrV/a88iiPlDS4yDAV6nCehuLojH1
-	0DukAMZlo4QYWDzfDRIFdC7pKDxImYjUubhaRsjEQfQumsjmKda8ThMCRHLn8=
-X-Google-Smtp-Source: AGHT+IGwbzDVrXV70eVmsdOraqUbyJCccW/7i4feXqbhKMbNHq3VJ3UtgTJDZtW8NLFupCXRRUQ0/OJpixF6VaKoHRw=
-X-Received: by 2002:a05:6512:281b:b0:545:eef:83f1 with SMTP id
- 2adb3069b0e04-54990e5e126mr5308092e87.17.1741637746856; Mon, 10 Mar 2025
- 13:15:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="KLSBTZ4K"
+Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52AKFZbd012622;
+	Mon, 10 Mar 2025 20:40:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=W9YuYK
+	qO6w28khy+jb3BDttjVL1yDkzw2RZ/N4axoRo=; b=KLSBTZ4Kd0n2+aXrsgXbOJ
+	xPicY7lYsjGAsY6LMaVj09lNRZUOGpGI0sTby/ypWJYxvcoIuonqgZZlFYVj/i45
+	rpflT//Z0+G61ZRIUgqtxuIIn0xG+i6teLC3DWxTMiRb3W4O3Es62k0AzjHeORxY
+	xJa2Htatu2N/uw+8DgfXEyZK1GT2XM1FAoiiAee79ISuRsfmO2etz97y0QP80oRh
+	woqJq70wcn2B3bfYYImFaJrcqLebHOgqQ7SUkl+dwHjptqExj4L9m6IHjm5ViuAA
+	YAGL+gBjOkVe+sl3pn0zyaZfK+yoKF8vKDTRSlSyMJ2wnS7Mbn6sC4jJ5XKwIDKA
+	==
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 459rf94y47-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 10 Mar 2025 20:40:52 +0000 (GMT)
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 52AIj3Dc014921;
+	Mon, 10 Mar 2025 20:40:51 GMT
+Received: from smtprelay03.dal12v.mail.ibm.com ([172.16.1.5])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 4592ek8anm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 10 Mar 2025 20:40:51 +0000
+Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
+	by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 52AKeogr30671556
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 10 Mar 2025 20:40:50 GMT
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id ABE8E58052;
+	Mon, 10 Mar 2025 20:40:50 +0000 (GMT)
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BF8D558056;
+	Mon, 10 Mar 2025 20:40:49 +0000 (GMT)
+Received: from [9.61.55.227] (unknown [9.61.55.227])
+	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 10 Mar 2025 20:40:49 +0000 (GMT)
+Message-ID: <4a32f00e-a79b-457d-8789-597b9a0e6c9b@linux.ibm.com>
+Date: Mon, 10 Mar 2025 16:40:49 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250310-b4-qcom-smmu-v1-1-733a1398ff85@gmail.com>
- <6f5f2047-b315-440b-b57d-2ed0dd7395f6@arm.com> <CALHNRZ87t7eXohTcpFnejFAPDsyE_1g0aPsASuQ7y5c_zxnLUw@mail.gmail.com>
- <c99db1aa-8b3e-4a8d-8cee-b9574686cb7f@arm.com>
-In-Reply-To: <c99db1aa-8b3e-4a8d-8cee-b9574686cb7f@arm.com>
-From: Aaron Kling <webgeek1234@gmail.com>
-Date: Mon, 10 Mar 2025 15:15:33 -0500
-X-Gm-Features: AQ5f1JoVCp031Gb_geASbG5I-LIXlAD9YBo601M-R75x92j2OnP9rX5cIKHcrko
-Message-ID: <CALHNRZ884fF4kpM_=N4d1vR27-9BOeaS7_cN_JhKN0S6MYQVQw@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm: Allow disabling Qualcomm support in arm_smmu_v3
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] s390/pci: Fix dev.dma_range_map missing sentinel element
+To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>,
+        Will Deacon <will@kernel.org>, Gerd Bayer <gbayer@linux.ibm.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+References: <20250306-fix_dma_map_alloc-v1-1-b4fa44304eac@linux.ibm.com>
+Content-Language: en-US
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20250306-fix_dma_map_alloc-v1-1-b4fa44304eac@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: H3MptcF8lDlYcW0Cz2Rw9oJlNh-9qJ5V
+X-Proofpoint-GUID: H3MptcF8lDlYcW0Cz2Rw9oJlNh-9qJ5V
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-10_07,2025-03-07_03,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=999
+ phishscore=0 bulkscore=0 mlxscore=0 suspectscore=0 impostorscore=0
+ lowpriorityscore=0 priorityscore=1501 malwarescore=0 adultscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502100000 definitions=main-2503100158
 
-On Mon, Mar 10, 2025 at 2:52=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
- wrote:
->
-> On 2025-03-10 4:45 pm, Aaron Kling wrote:
-> > On Mon, Mar 10, 2025 at 7:42=E2=80=AFAM Robin Murphy <robin.murphy@arm.=
-com> wrote:
-> >>
-> >> On 2025-03-10 6:11 am, Aaron Kling via B4 Relay wrote:
-> >>> From: Aaron Kling <webgeek1234@gmail.com>
-> >>>
-> >>> If ARCH_QCOM is enabled when building arm_smmu_v3,
-> >>
-> >> This has nothing to do with SMMUv3, though?
-> >>
-> >>> a dependency on
-> >>> qcom-scm is added, which currently cannot be disabled. Add a prompt t=
-o
-> >>> ARM_SMMU_QCOM to allow disabling this dependency.
-> >>
-> >> Why is that an issue - what problem arises from having the SCM driver
-> >> enabled? AFAICS it's also selected by plenty of other drivers includin=
-g
-> >> pretty fundamental ones like pinctrl. If it is somehow important to
-> >> exclude the SCM driver, then I can't really imagine what the use-case
-> >> would be for building a kernel which won't work on most Qualcomm
-> >> platforms but not simply disabling ARCH_QCOM...
-> >>
-> >
-> > I am working with the android kernel. The more recent setup enables a
-> > minimal setup of configs in a core kernel that works across all
-> > supported arch's, then requires further support to all be modules. I
-> > specifically am working with tegra devices. But as ARCH_QCOM is
-> > enabled in the core defconfig, when I build smmuv3 as a module, I end
-> > up with a dependency on qcom-scm which gets built as an additional
-> > module. And it would be preferable to not require qcom modules to boot
-> > a tegra device.
->
-> That just proves my point though - if you disable ARM_SMMU_QCOM in that
-> context then you've got a kernel which won't work properly on Qualcomm
-> platforms, so you may as well have just disabled ARCH_QCOM anyway. In
-> fact the latter is objectively better since it then would not break the
-> fundamental premise of "a core kernel that works across all supported
-> arch's" :/
+On 3/6/25 10:25 AM, Niklas Schnelle wrote:
+> The fixed commit sets up dev.dma_range_map but missed that this is
+> supposed to be an array of struct bus_dma_region with a sentinel element
+> with the size field set to 0 at the end. This would lead to overruns in
+> e.g. dma_range_map_min(). It could also result in wrong translations
+> instead of DMA_MAPPIN_ERROR in translate_phys_to_dma() if the paddr were
 
-I'm not sure this is entirely true. Google's GKI mandates a fixed core
-kernel Image. This has the minimal configs that can't be built as
-modules. Then each device build is supposed to build independent sets
-of modules via defconfig snippets that support the rest of the
-hardware. Then what gets booted on a device is a prebuilt core kernel
-image provided by Google, plus the modules built by the vendor. In
-this setup, qcom-scm and ARM_SMMU_QCOM are modules and not part of the
-core kernel. For a qcom target, arm_smmu_v3 would be built with
-ARM_SMMU_QCOM. But then any non-qcom target that needs arm_smmu_v3
-currently builds and deps qcom-scm. But there's no technical reason
-they need that dep.
->
-> Maybe if you can find a viable way to separate out all the arm-smmu-qcom
-> stuff into its own sub-module which only loads when needed, or possibly
-> make SCM a soft-dep (given that we already have to cope with it being
-> loaded but not initialised yet) then that might be a reasonable change
-> to make; as it stands, I don't think this patch is. And it's definitely
-> not a stable "fix" either way.
+Typo, DMA_MAPPING_ERROR
 
-The cc stable could be dropped. But I'm working with android forks of
-6.6 and 6.12 currently, so I was hoping to get this pushed back to
-stable, which would eventually filter its way over there.
+> to not fit in the aperture. Fix this by using the dma_direct_set_offset()
+> helper which creates a sentinel for us.
+> 
+> Fixes: d236843a6964 ("s390/pci: store DMA offset in bus_dma_region")
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 
->
-> But frankly, weird modules happen. Why the heck is parport_pc currently
-> loaded on my AArch64 workstation!? I can't even begin to imagine, but
-> I'll live...
+Thanks for looking into this while I was out.  I confirmed that I can reproduce the potential issue by forcing codepaths - and that your proposed fix also resolves it (by forcing a DMA mapping error instead of using random values for a bus_dma_region).
 
-This is fair. But I've got to try at least to make the module
-spaghetti make sense. If no one tries, it just gets worse.
->
-> Thanks,
-> Robin.
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
 
-Sincerely,
-Aaron
+
+> ---
+> This is based on iommu/next which contains the fixed commit
+> ---
+>  arch/s390/pci/pci_bus.c | 24 +++++++++++-------------
+>  1 file changed, 11 insertions(+), 13 deletions(-)
+> 
+> diff --git a/arch/s390/pci/pci_bus.c b/arch/s390/pci/pci_bus.c
+> index 0e725039861f92925a38f7ff7cb6de6b0d965ac3..14310c3b48860a16de13536adf95ef99e6af21cc 100644
+> --- a/arch/s390/pci/pci_bus.c
+> +++ b/arch/s390/pci/pci_bus.c
+> @@ -287,23 +287,21 @@ static struct zpci_bus *zpci_bus_alloc(int topo, bool topo_is_tid)
+>  static void pci_dma_range_setup(struct pci_dev *pdev)
+>  {
+>  	struct zpci_dev *zdev = to_zpci(pdev);
+> -	struct bus_dma_region *map;
+> -	u64 aligned_end;
+> +	u64 aligned_end, size;
+> +	dma_addr_t dma_start;
+> +	int ret;
+>  
+> -	map = kzalloc(sizeof(*map), GFP_KERNEL);
+> -	if (!map)
+> -		return;
+> -
+> -	map->cpu_start = 0;
+> -	map->dma_start = PAGE_ALIGN(zdev->start_dma);
+> +	dma_start = PAGE_ALIGN(zdev->start_dma);
+>  	aligned_end = PAGE_ALIGN_DOWN(zdev->end_dma + 1);
+> -	if (aligned_end >= map->dma_start)
+> -		map->size = aligned_end - map->dma_start;
+> +	if (aligned_end >= dma_start)
+> +		size = aligned_end - dma_start;
+>  	else
+> -		map->size = 0;
+> -	WARN_ON_ONCE(map->size == 0);
+> +		size = 0;
+> +	WARN_ON_ONCE(size == 0);
+>  
+> -	pdev->dev.dma_range_map = map;
+> +	ret = dma_direct_set_offset(&pdev->dev, 0, dma_start, size);
+> +	if (ret)
+> +		pr_err("Failed to allocate DMA range map for %s\n", pci_name(pdev));
+>  }
+>  
+>  void pcibios_bus_add_device(struct pci_dev *pdev)
+> 
+> ---
+> base-commit: e840414e5a73ac02ffba6299b46f535a0b7cba98
+> change-id: 20250306-fix_dma_map_alloc-b3b05903dcfb
+> 
+> Best regards,
+
