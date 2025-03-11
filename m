@@ -1,94 +1,85 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 325DD2627F3
-	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 17:55:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D287262D11;
+	Tue, 11 Mar 2025 17:55:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741715725; cv=none; b=ciLYZ4elkZpdv8IWnbrNBTiUR6+E0LQWVIK45PZEIt0jkK5fNGfgjPS1qb3aBgjp+yim240sVXo4s5Dsm7uG4ojTBjWLahV8hRP3YguV8m9uv6OVRu1K3jwoyHTCwcxfHFIKaAlPHefJZOhmb8Kk+Vu+yII/y0QTGAoSq0zvRs0=
+	t=1741715736; cv=none; b=dzLKrDVzByZLmJFbFbvv6WBEXrq8SIJPWqW4JzJOnub9IYnHk6GeWbyAFLyYR0SPWREWMpBtfLX60YjboVIR8dAvECuVBXPCJthDDLzx9zKuZ9/i9D2MjijTSZNq7PfRBYpj4CSUy5009dEWlMATYfQKQT4Tv6yXrMhrxu+4WNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741715725; c=relaxed/simple;
-	bh=mIjUexkbM9coqCh0GSL4O85/rHY5aGj04usaPjJ5KJI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FHIPkUqJAIMKDfGspZvV8C8tSCA+8UZXSAwT0MHxuQMnFNzEfhcaHnkGESnshU7HP6iIz+ukU0loumwtnK9FeVRlLQV3O+1WrG+qjePrgVaLq7q2IGku2LVkT9hJX0TmK5ryBBlurcDYrHfV16sIJASjbZ7n2MEi5L7ZD81qQ/A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OMycoYyb; arc=none smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1741715736; c=relaxed/simple;
+	bh=8u4pLdHTIPFDK61uW8Pwmuh4P/pSUrHF80u1BGQPw1w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rxNu9fn1/PYqpEsbg3Km9VKtoRUhOG4sGOZ35ldInTy1yfjVPekmqORNO0dgJvwmsYybFzcnY4jPs7xhvzjN9bfSh+JYf8jdcm+bhBjf0iDRDd8DJqYDhLBpXAyPiD8Hh58APYwt/sPoe8Cu/iqs9mZ1fg8tvW4Tm3bUQUrPvNc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hPM+UPYp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OMycoYyb"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5dbfc122b82so1626a12.0
-        for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 10:55:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1741715722; x=1742320522; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mIjUexkbM9coqCh0GSL4O85/rHY5aGj04usaPjJ5KJI=;
-        b=OMycoYybMWqWrqT6O8hkbkmy0XFzo7obdnAfj6rlDPhMr721YGAdxs/y7QOZq3G/7y
-         hyWbMg33c4wV+mFLmoDPCW+qY0NF83GYIMG7EYIZwLqoIDdD7TGzCqlbBaeq6o5m9W46
-         NVPqOveUhgE1vHYoKlAX8lgWzcD+wdViBAWDOaYKg++LGwIUOuLmEzGmtUW5J0tMlXiZ
-         ytL+sg0f+YAG5I/BLJ8mOLEQZWRuakG6c4X7vM1mjP0WfOSR5iE5ah1zCfd5RGgj/Q14
-         U00d5b47m5P0MeBMxiLjB1unUodgZeLDeMEcTRJHcO1NVHN2qfjJKRq/obNxXT4VMI5w
-         GfgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741715722; x=1742320522;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mIjUexkbM9coqCh0GSL4O85/rHY5aGj04usaPjJ5KJI=;
-        b=WBHgIOlCILzkIPDGlo3S/tMEY5FhRy7AXA0XBCr7L8r3bMrwBAhX6M6wEV6fDcxQrN
-         EjS/Lt01r3HrspK71V77vvF7903/CEIA2pt6jgMmckDlXnj4pI2hE8eA3Q4QissuaCo+
-         X38hoG36oGlaaJUkdtSj3LVHK/zA9alAcCXSto+VWo/zWXuazkdxMBfRFNVoy1drPjXJ
-         gW1CzliFBjWLj07j+QtqeWTYPhPldfap2cIq52GM0zeMyJ745gyIe8mhu4nkb+JlFWZK
-         h5OMbDNXjQgv7jZuOZKzso7DW+w7w+WRyRFJQWn0i4BIXV2QeSwatCrxt/ZiiMQhq49x
-         qDCw==
-X-Forwarded-Encrypted: i=1; AJvYcCVQJFtauJ+rGifk65GGafepHeMVSRfAnWYkVGnr/fiVJzkugEKtn0dYMobvHPfqvUO9xG010Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzUiHaO0zEdIW54owPyrewU+9qGn8SoZR1PaPRFjRz4NrZ2iQZ3
-	P/h3dLPFVuLgAXL75Sw/Q1QrYOPC5yt7BudOZSeqQl/ypXP8jzvjQcKFggOn+SQllF2Ng2ikBsZ
-	pNX8j8isXleQbDLWiovlpw/x5y7L8d4n7h2qG
-X-Gm-Gg: ASbGncvPlmdwmoDKBDdtSlX1odRuxyu8njG1zaFZT7WI3vgsggkTgerJu70L7SSSP+5
-	0875f/8kaWwebtOPBuTnaVf9HYzwLRsYuUxnXh+5HLxBAKwhiMtulHPEQ1qNbRkejo9Os5wbGS9
-	fwPFSTuKs0A7PL1HVvIbFxiCgFpNcF5Q4eCShEThpEf2207i337H1emTSMLtLw
-X-Google-Smtp-Source: AGHT+IHBou0AMnOc1wlERmQEiByjC9z6tx0SCc40GDDV97vQKc68PhQO6ik31ktuvMGhrIBUoFtdSF1c+d39GaMkrhc=
-X-Received: by 2002:a05:6402:2048:b0:5e5:ba42:80a9 with SMTP id
- 4fb4d7f45d1cf-5e7b2684877mr140a12.1.1741715722207; Tue, 11 Mar 2025 10:55:22
- -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hPM+UPYp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A55C4CEE9;
+	Tue, 11 Mar 2025 17:55:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741715736;
+	bh=8u4pLdHTIPFDK61uW8Pwmuh4P/pSUrHF80u1BGQPw1w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hPM+UPYp+Dl9QmdvLVZP8/GlmuodV3AIhgCje1OSt7+3NoWS+fJHPJy17889lPa3a
+	 CG84EdQhEZW3BwePkfymcv95wgGXaD1vtQUdwOXMmhEqCV5hgxiikHjRjYJ2Y/v0E9
+	 WM5i/vw30jFFELw59CjhpP80sFQIfNiklgei14DqpgQQCn2/tpFtaGukHDvxOiTBLe
+	 DMewDLdlM8KBeWnfPKcatcsXN489qLe4brSdeMrSfrB2G9Yp2l6TmfciXHC8RSWi4H
+	 t5sU0vqoglfhHOiANV51YkT5bvJLYhIMPKAShrzcy9iUeCxVwEHSgFY+wVO8jfoSNg
+	 O4YnIeQ0R3Eyw==
+Date: Tue, 11 Mar 2025 17:55:30 +0000
+From: Will Deacon <will@kernel.org>
+To: robdclark@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+	jgg@ziepe.ca, jsnitsel@redhat.com, robh@kernel.org,
+	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
+	dmitry.baryshkov@linaro.org,
+	Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Cc: catalin.marinas@arm.com, kernel-team@android.com, iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v18 0/5] iommu/arm-smmu: introduction of ACTLR
+ implementation for Qualcomm SoCs
+Message-ID: <20250311175528.GA5216@willie-the-truck>
+References: <20241212151402.159102-1-quic_bibekkum@quicinc.com>
+ <173625436399.258197.10961901698600591079.b4-ty@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250310-b4-qcom-smmu-v1-1-733a1398ff85@gmail.com>
- <6f5f2047-b315-440b-b57d-2ed0dd7395f6@arm.com> <CALHNRZ87t7eXohTcpFnejFAPDsyE_1g0aPsASuQ7y5c_zxnLUw@mail.gmail.com>
-In-Reply-To: <CALHNRZ87t7eXohTcpFnejFAPDsyE_1g0aPsASuQ7y5c_zxnLUw@mail.gmail.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Tue, 11 Mar 2025 10:55:11 -0700
-X-Gm-Features: AQ5f1JoKKBbJ5USMaxKYhA8jhl8TuOZ3b3iaSIOxkea3mVVta9KFMFOusPuFh1Y
-Message-ID: <CAE2F3rB-ACt2rdVFYSpSap=t_poTi0-PxhgrYGg4vzjfic7vqA@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm: Allow disabling Qualcomm support in arm_smmu_v3
-To: Aaron Kling <webgeek1234@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Arnd Bergmann <arnd@arndb.de>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <173625436399.258197.10961901698600591079.b4-ty@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Mon, Mar 10, 2025 at 9:51=E2=80=AFAM Aaron Kling <webgeek1234@gmail.com>=
- wrote:
-> I am working with the android kernel. The more recent setup enables a
-> minimal setup of configs in a core kernel that works across all
-> supported arch's, then requires further support to all be modules. I
-> specifically am working with tegra devices. But as ARCH_QCOM is
-> enabled in the core defconfig, when I build smmuv3 as a module, I end
-> up with a dependency on qcom-scm which gets built as an additional
-> module. And it would be preferable to not require qcom modules to boot
-> a tegra device.
+On Tue, Jan 07, 2025 at 04:42:39PM +0000, Will Deacon wrote:
+> On Thu, 12 Dec 2024 20:43:57 +0530, Bibek Kumar Patro wrote:
+> > This patch series consist of six parts and covers the following:
+> > 
+> > 1. Provide option to re-enable context caching to retain prefetcher
+> >    settings during reset and runtime suspend.
+> > 
+> > 2. Remove cfg inside qcom_smmu structure and replace it with single
+> >    pointer to qcom_smmu_match_data avoiding replication of multiple
+> >    members from same.
+> > 
+> > [...]
+> 
+> Applied to iommu (arm/smmu/updates), thanks!
+> 
+> [1/5] iommu/arm-smmu: Re-enable context caching in smmu reset operation
+>       https://git.kernel.org/iommu/c/ef4144b1b47d
+> [2/5] iommu/arm-smmu: Refactor qcom_smmu structure to include single pointer
+>       https://git.kernel.org/iommu/c/445d7a8ed90e
+> [3/5] iommu/arm-smmu: Add support for PRR bit setup
+>       https://git.kernel.org/iommu/c/7f2ef1bfc758
+> [4/5] iommu/arm-smmu: Introduce ACTLR custom prefetcher settings
+>       https://git.kernel.org/iommu/c/9fe18d825a58
+> [5/5] iommu/arm-smmu: Add ACTLR data and support for qcom_smmu_500
+>       https://git.kernel.org/iommu/c/3e35c3e725de
 
-If you want to build arm_smmu_v3.ko, you'd have
+Hrm. I'm not seeing any user of the new ->set_prr*_() functions in
+linux-next yet. Is there something under review, or should I revert this
+for now?
 
-# CONFIG_ARM_SMMU is not set
-CONFIG_ARM_SMMU_V3=3Dm
-
-in your .config. I don't see how this would enable ARM_SMMU_QCOM or QCOM_SC=
-M.
+Will
