@@ -1,83 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35A4878F52;
-	Tue, 11 Mar 2025 13:13:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 119B35680
+	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 13:15:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741698830; cv=none; b=DOz2826sb7LImiW0qt/1dzQp67QRpoQDlFzjsWi0rO0Q0In1djMFjmn9aqiPh2yqE9sTOJFjvdPUqk12DwBzRva1KDBGtNCPCEcziRxIdfqMF0V+vLPpcTw0HwgLs1nkqU676shKxQ7SEcXRtj6KAnjo7otXZ1ErdMrlkmuDmJg=
+	t=1741698915; cv=none; b=QZiDuVj3Mo0Rsepn2r4Nf+/aG4HyCUg0TlBSk46Uy3yRQcA9BLvcG21QP6ebG/pAL3RhaKDFOuGHZx6c/50G0enfRBPgM4KQ1cdsqawTpd6EK3/1N4pIUh8Y/7MvkWqew7q62LCOvMsKVyqxf48BQGx7PeKXa6XSE80UcUH0/qc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741698830; c=relaxed/simple;
-	bh=W5TW3ItKe0zCXjEoHNcQyGj1KCK/QSQc7spLlCVjgow=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gkbc41CZE2vAsoslzFzRZg3huXh41ulKWUTOS441U0N90CJChuxE6m3oYRmWHaqQct0ByNyF2Asm0aWwM/j1BNRlKdp+B8Vg5tkNbTi7LBymj3FeIVPJMzfPH7OD0tOXNUmkvheEPtLqCuK3+icRTmiabPnsqUthaCy66TCdNLw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WQrtOQMY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1741698915; c=relaxed/simple;
+	bh=5rBouzA5ngZzdOL7plSCJDVP3pR56/JX8o/OYsWjk84=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JMaDyMT+WAe2od7gi+y6Ql6GPi4naxuz9IciSGai1EXuqscAKsePUzV3jAMwxs8pVgPXBxMZj1jS4Fz+cygCifoFv2xQtCBUOXH0747Z9O1EnVpjHhazG7gAplFt8Kr4qTBpyetZQcLZrPu27/XqrZUHojo3yMBhawv4tqsNyKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=UdWpvjhu; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WQrtOQMY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0536C4CEEC;
-	Tue, 11 Mar 2025 13:13:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741698829;
-	bh=W5TW3ItKe0zCXjEoHNcQyGj1KCK/QSQc7spLlCVjgow=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=WQrtOQMYMPMYlS/buZhQKhd0yPkZTs6SrqVzwdmGj4OUORYyFjIwCtSkrmyNRkxaU
-	 hwTij4rzs46Ky1AOTB8HpRT2IG/XT7zsP/KijrhWYiRhHQ93n+jSnglTaRa93MPQEW
-	 G/Qf5R2NSma/6n+KVhg0dt3fRdBTCUw2kubMbukoUaL4cUixdk0itiwLmVzWs3VVC0
-	 S0qyqOhcGAN4haUtooV0AcirdKVCHJRI4FtYz3jj/ny+jfq6b9B0FJpU+fbNnaC2mL
-	 oHXR8OKBUdbo/KWOKbg7E1N0EFLcYDw1ik86bkNGCLXLSDUqgSEQK8m8uQLVpmyQT2
-	 8ns50s61k3GAA==
-From: Will Deacon <will@kernel.org>
-To: Catalin Marinas <catalin.marinas@arm.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Piotr Jaroszynski <pjaroszynski@nvidia.com>
-Cc: kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Raghavendra Rao Ananta <rananta@google.com>,
-	SeongJae Park <sj@kernel.org>,
-	John Hubbard <jhubbard@nvidia.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	iommu@lists.linux.dev,
-	linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH] [arm64/tlb] Fix mmu notifiers for range-based invalidates
-Date: Tue, 11 Mar 2025 13:13:36 +0000
-Message-Id: <174169306404.278141.17801949874773526998.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20250304085127.2238030-1-pjaroszynski@nvidia.com>
-References: <20250304085127.2238030-1-pjaroszynski@nvidia.com>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="UdWpvjhu"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 362FD4507E;
+	Tue, 11 Mar 2025 14:15:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1741698906;
+	bh=5rBouzA5ngZzdOL7plSCJDVP3pR56/JX8o/OYsWjk84=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=UdWpvjhuSPUTc99yhcU6GjBIpOCU9aP+9cfG9gLhEumyfid+90D4p713r3tRAFjYq
+	 IY+aHO7tp8T0bAUxfRkKPJYFlS4wT+Hexz+SVpIkCWcUhvlWnIfWvECzbBzv67To2z
+	 mzvGeXrX+n9WvnDkJSOpS9ruDWNZz3GB09jKD5yMHoSetJOTbKicxSyFtx4XqoOPO8
+	 nks0QZPUrRZ7e3Cuojv58dRazmW90XQWHeHm+B0PXC444kWWaViUnI0nX3qrKX6emI
+	 joE42xEnS7afPMd98FhM0QVnGa1QmAHC6Gp+giqLMlMb/l1g9agIwfEApnWqIDCuf/
+	 6sZTaBSSzwZog==
+Date: Tue, 11 Mar 2025 14:15:04 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, yong.wu@mediatek.com,
+	thierry.reding@gmail.com, vdumpa@nvidia.com
+Subject: Re: [PATCH] iommu: Unexport iommu_fwspec_free()
+Message-ID: <Z9A3WJSgUPjROev6@8bytes.org>
+References: <36e245489361de2d13db22a510fa5c79e7126278.1740667667.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <36e245489361de2d13db22a510fa5c79e7126278.1740667667.git.robin.murphy@arm.com>
 
-On Tue, 04 Mar 2025 00:51:27 -0800, Piotr Jaroszynski wrote:
-> Update the __flush_tlb_range_op macro not to modify its parameters as
-> these are unexepcted semantics. In practice, this fixes the call to
-> mmu_notifier_arch_invalidate_secondary_tlbs() in
-> __flush_tlb_range_nosync() to use the correct range instead of an empty
-> range with start=end. The empty range was (un)lucky as it results in
-> taking the invalidate-all path that doesn't cause correctness issues,
-> but can certainly result in suboptimal perf.
-> 
-> [...]
+This patch triggered two compile issues on ARM32, which I fixed up in my
+tree:
 
-Applied to arm64 (for-next/fixes), thanks!
+On Thu, Feb 27, 2025 at 02:47:47PM +0000, Robin Murphy wrote:
+>  static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
+>  {
+> -	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct iommu_fwspec *fwspec = NULL
 
-[1/1] Fix mmu notifiers for range-based invalidates
-      https://git.kernel.org/arm64/c/f7edb07ad7c6
+Missing semicolon here.
 
-Cheers,
--- 
-Will
+>  	struct of_phandle_args iommu_spec;
+>  	struct mtk_iommu_v1_data *data;
+>  	int err, idx = 0, larbid, larbidx;
+>  	struct device_link *link;
+>  	struct device *larbdev;
+>  
+> -	/*
+> -	 * In the deferred case, free the existed fwspec.
+> -	 * Always initialize the fwspec internally.
+> -	 */
+> -	if (fwspec) {
+> -		iommu_fwspec_free(dev);
+> -		fwspec = dev_iommu_fwspec_get(dev);
+> -	}
+> -
+>  	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
+>  					   "#iommu-cells",
+>  					   idx, &iommu_spec)) {
+> @@ -476,6 +467,9 @@ static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
+>  		idx++;
+>  	}
+>  
+> +	if (!fwspec)
+> +		return -ENODEV;
+> +
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+Wrong return type here.
+
+Please be more cautious next time and make sure to compile-test all
+changed files of a patch.
+
+Thanks,
+
+	Joerg
