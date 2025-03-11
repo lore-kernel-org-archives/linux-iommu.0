@@ -1,25 +1,71 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B8D76256C84
-	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 12:16:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 653123D3B8
+	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 13:08:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741695381; cv=none; b=I2V0SxyWcrBer0eOoWEr+oBtR4UGS2qvC/4OwuKsMnZTyge+gd6w36qF8M+iKmFMA6Zx7hV94itbEUwP+ibB/uRnHDiYtfo7YOAAHN449znRG2j1vn3boKyogqcCcODHHDk6qkdpEfi0XWcOZnTUzbgXyEhsWsAG/Q9uT2vXWBA=
+	t=1741698535; cv=none; b=awuvDaKRKJjWE3C4abAGbxMgBeukM6tha+ZNCYBkHwsEyXkYNO8GQLJHn969ivPWc2SOS+Qn9qczO2plo/6JyHlWXF4OEbLPvhdQAjDcjPLFR8JaYiqpBEgNE0/GtBuzQGZ2hPRwxXss9OOZpwIZCi243FkffEnDlmut6IqqAfg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741695381; c=relaxed/simple;
-	bh=Ar2cJr3FYM+YA0cBeFq7bf+EFgQEVYzNAHoHBA6A8HM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=iQlZydB4XUkgfiE++7pXBzasg47HU5bbcp1khrdGSa2G5mBAPx/lut8vIZqZyidyb2A2gIW+D1jYX6jhETdd7QMVDIxX1+7NmphYE1nt8QMZy9tQiXfCAnxSetEy5B4RQemmSQrq5SFP6ilJB0uPJXR6H/oo3TEn+5ua8dxzIOo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 06A4F152B;
-	Tue, 11 Mar 2025 05:16:30 -0700 (PDT)
-Received: from [10.57.40.127] (unknown [10.57.40.127])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0D6B13F7BD;
-	Tue, 11 Mar 2025 05:16:14 -0700 (PDT)
-Message-ID: <0ac0f1f5-e4a0-46ae-8ea0-2eba7e21a7e1@arm.com>
-Date: Tue, 11 Mar 2025 12:16:14 +0000
+	s=arc-20240116; t=1741698535; c=relaxed/simple;
+	bh=NY1wpa0KtsBaIPbsx0L2RVvkqMHjLmULXkYd5FOpTXg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=el1OClrU1wCM1qUUOUu7IF2uO9bIvoxuWAVwOSCOMyByoFOZafFgDCRUgcyqGhVcqrDXoCfZ9DiNQS3tKYHWEDUvsBd+QVPCJ50ZqsMuf0QBhzsZUAmDWudWKFIBIC5OcDqXO2bq/eoRQstFtIVotlWlKoJe4hVpvMGrk/rBKfU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=iJWA/FpL; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="iJWA/FpL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1741698532;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pSr0TDQLJaYD83EU6zHlB1nKsxywhTiBP95UqC0cvIM=;
+	b=iJWA/FpLY4ALcVQWvmhM7z571xx3XbxbOnBN7Y62P8yNIYMvQRYnDRlPns1aGrgAtc6Sw2
+	YNFuBqw12QjDYf2iCprl2fHokKe7bnCjYBnoWlU8+zDlVo5FDn2SK9XYNKCjS/ugeRIDab
+	cg64px5RP0SXe6TaHgiKgjSa7/komIU=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-221--BP_ykByOvmCXw9YsAWAPw-1; Tue, 11 Mar 2025 09:08:50 -0400
+X-MC-Unique: -BP_ykByOvmCXw9YsAWAPw-1
+X-Mimecast-MFC-AGG-ID: -BP_ykByOvmCXw9YsAWAPw_1741698529
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-43d08915f61so549325e9.2
+        for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 06:08:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741698529; x=1742303329;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pSr0TDQLJaYD83EU6zHlB1nKsxywhTiBP95UqC0cvIM=;
+        b=We1GUHr4KGuHcS+C/koA4/wYARee4MGdTb31mHA5epyN2HWa2ZlSj9bEPQyn5JWJal
+         QUQS8FZ2PNMW4kdU0Gvrj68dIX8IWlie29qAa8wJ19651UDoHODfpktypksq/hfT2/3v
+         xuyGU0xzye4v6eiUp+UUk2y/SpqtGige/0euI2QKzzHXzW8oRL2P2M9Be+Du8eLk1R9z
+         haoh9PJn2vijb9MTyuVZ/dGxWJJzLnmXDvMs5EhquTaSmajyb1jMCIDYIhtlEfuFMPut
+         Ro4Etv4p8Nv8HCjQ3zenCaJr+f54St6Gsv3JKjgq6+AF2d46lZkyW+E8cWfKdS+b1m4i
+         6DQA==
+X-Forwarded-Encrypted: i=1; AJvYcCUYCBsL3KfEuK/vJlzGBnS2qzcuwRkWq7G2ERc99IehYxoT7Qt39mnyMNwj93wUj1nV/SvDtw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyiOWLPkQWAIMd2W1VW2tnbnC5boQRIadnFhAqcNHWfk7hMUR4o
+	UaA1XpsZwuQFGNGG4U4JG70gj/ZzjfZQBck1uRucyNyVMloddIv1alamJWtL4LGAOK983V6tEsE
+	FpKYHWgwTMNty0fl7LsdZsrTRYmJkPpsLL8i7SrMK9pvcYcOxML9A
+X-Gm-Gg: ASbGncuStvZSdKWpOstUtZpRw82AcLMlRa+o/LKdiLc66XGVTihuQUJap3Sq+q/i8VB
+	zb8227u9RlX8jjDlW9Gv5JypmSChr69/eeK5uWmqXcD2cMSSw/d6+0Uua7hjNALRL7zrEoaBDbB
+	3JMFhOO6gQFuwCXDAbsyeSiAGQT9c04/+yeL2EGIxroITlsEG0vGYfYDMw5ccOFoMayJAaAV0tM
+	PZMH/+PZ13F0qp6aiTPQHX4MW0TEEyClmVe6SSq/+FNr0VwRod2g3746AKS2id87eDbgNMUary3
+	CXiiEiAw3Wq8BxgOMFCT3r7Xu+ncxP1vl50KurX7wkuBiA==
+X-Received: by 2002:a05:600c:3b04:b0:43c:f44c:72b7 with SMTP id 5b1f17b1804b1-43cf44c7703mr98398975e9.14.1741698528859;
+        Tue, 11 Mar 2025 06:08:48 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGHg2xJEtdcFy90P2VzdKFh3p/fCZJcgu7H/volTSsPrNEA8I4PMuG+4jYjYdTWL3xOUsvL7A==
+X-Received: by 2002:a05:600c:3b04:b0:43c:f44c:72b7 with SMTP id 5b1f17b1804b1-43cf44c7703mr98398315e9.14.1741698528418;
+        Tue, 11 Mar 2025 06:08:48 -0700 (PDT)
+Received: from [192.168.88.253] (146-241-12-146.dyn.eolo.it. [146.241.12.146])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43cf3ca4f5asm82801875e9.12.2025.03.11.06.08.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Mar 2025 06:08:47 -0700 (PDT)
+Message-ID: <72cd7f5a-ab92-494c-b7f8-4696d23ed4b1@redhat.com>
+Date: Tue, 11 Mar 2025 14:08:45 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,230 +73,75 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] iommu/arm: Add BBM Level 2 smmu feature
-Content-Language: en-GB
-To: Ryan Roberts <ryan.roberts@arm.com>,
- Yang Shi <yang@os.amperecomputing.com>,
- =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
- catalin.marinas@arm.com, will@kernel.org, joro@8bytes.org,
- jean-philippe@linaro.org, mark.rutland@arm.com, joey.gouly@arm.com,
- oliver.upton@linux.dev, james.morse@arm.com, broonie@kernel.org,
- maz@kernel.org, david@redhat.com, akpm@linux-foundation.org, jgg@ziepe.ca,
- nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com,
- smostafa@google.com, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-References: <20250228182403.6269-2-miko.lenczewski@arm.com>
- <20250228182403.6269-6-miko.lenczewski@arm.com>
- <b46dc626-edc9-4d20-99d2-6cd08a01346c@os.amperecomputing.com>
- <43732270-8fd0-4a18-abec-096e383a6a4d@arm.com>
- <5ff34bd0-7823-4f31-9f13-bf60d3345b99@arm.com>
- <7cca1edf-fd1b-4622-999e-8e0ca098dfe2@arm.com>
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <7cca1edf-fd1b-4622-999e-8e0ca098dfe2@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [Intel-wired-lan] [PATCH net-next v11 0/4] fix the DMA API misuse
+ problem for page_pool
+To: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+ Yunsheng Lin <yunshenglin0825@gmail.com>,
+ Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net, kuba@kernel.org
+Cc: zhangkun09@huawei.com, liuyonglong@huawei.com, fanghaiqing@huawei.com,
+ Alexander Lobakin <aleksander.lobakin@intel.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Alexander Duyck <alexander.duyck@gmail.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Gaurav Batra <gbatra@linux.ibm.com>, Matthew Rosato
+ <mjrosato@linux.ibm.com>, IOMMU <iommu@lists.linux.dev>,
+ MM <linux-mm@kvack.org>, Alexei Starovoitov <ast@kernel.org>,
+ Daniel Borkmann <daniel@iogearbox.net>,
+ Jesper Dangaard Brouer <hawk@kernel.org>,
+ John Fastabend <john.fastabend@gmail.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+ bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ Eric Dumazet <edumazet@google.com>
+References: <20250307092356.638242-1-linyunsheng@huawei.com>
+ <87v7slvsed.fsf@toke.dk> <40b33879-509a-4c4a-873b-b5d3573b6e14@gmail.com>
+ <875xkj1t70.fsf@toke.dk>
+From: Paolo Abeni <pabeni@redhat.com>
+In-Reply-To: <875xkj1t70.fsf@toke.dk>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: fvcWYJNqzCRR9VFbV9pVXBBlXHrLEf1JdbjIb-K7jao_1741698529
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 11/03/2025 10:58, Ryan Roberts wrote:
-> On 11/03/2025 10:17, Suzuki K Poulose wrote:
->> On 03/03/2025 10:17, Ryan Roberts wrote:
->>> On 01/03/2025 01:32, Yang Shi wrote:
->>>>
->>>>
->>>>
->>>> On 2/28/25 10:24 AM, Mikołaj Lenczewski wrote:
->>>>> For supporting BBM Level 2 for userspace mappings, we want to ensure
->>>>> that the smmu also supports its own version of BBM Level 2. Luckily, the
->>>>> smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
->>>>> 0487K.a D8.16.2), so already guarantees that no aborts are raised when
->>>>> BBM level 2 is claimed.
->>>>>
->>>>> Add the feature and testing for it under arm_smmu_sva_supported().
->>>>>
->>>>> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
->>>>> ---
->>>>>     arch/arm64/kernel/cpufeature.c                  | 7 +++----
->>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
->>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 3 +++
->>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 4 ++++
->>>>>     4 files changed, 13 insertions(+), 4 deletions(-)
->>>>>
->>>>> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
->>>>> index 63f6d356dc77..1022c63f81b2 100644
->>>>> --- a/arch/arm64/kernel/cpufeature.c
->>>>> +++ b/arch/arm64/kernel/cpufeature.c
->>>>> @@ -2223,8 +2223,6 @@ static bool has_bbml2_noabort(const struct
->>>>> arm64_cpu_capabilities *caps, int sco
->>>>>                 if (!cpu_has_bbml2_noabort(__cpu_read_midr(cpu)))
->>>>>                     return false;
->>>>>             }
->>>>> -
->>>>> -        return true;
->>>>>         } else if (scope & SCOPE_LOCAL_CPU) {
->>>>>             /* We are a hot-plugged CPU, so only need to check our MIDR.
->>>>>              * If we have the correct MIDR, but the kernel booted on an
->>>>> @@ -2232,10 +2230,11 @@ static bool has_bbml2_noabort(const struct
->>>>> arm64_cpu_capabilities *caps, int sco
->>>>>              * we have an incorrect MIDR, but the kernel booted on a
->>>>>              * sufficient CPU, we will not bring up this CPU.
->>>>>              */
->>>>> -        return cpu_has_bbml2_noabort(read_cpuid_id());
->>>>> +        if (!cpu_has_bbml2_noabort(read_cpuid_id()))
->>>>> +            return false;
->>>>>         }
->>>>>     -    return false;
->>>>> +    return has_cpuid_feature(caps, scope);
->>>>
->>>> Do we really need this? IIRC, it means the MIDR has to be in the allow list
->>>> *AND* MMFR2 register has to be set too. AmpereOne doesn't have MMFR2 register
->>>> set.
->>>
->>> Miko, I think this should have been squashed into patch #1? It doesn't belong in
->>> this patch.
->>>
->>> Yang, we discussed this internally and decided that we thought it was best to
->>> still require BBML2 being advertised in the feature register. That way if trying
->>> to use KVM to emulate a CPU that is in the allow list but doesn't really support
->>> BBML2, we won't try to use it.
->>>
->>> But we still end up with the same problem if running on a physical CPU that
->>> supports BBML2 with conflict aborts, but emulating a CPU in the allow list. So
+On 3/8/25 3:40 PM, Toke Høiland-Jørgensen wrote:
+> Yunsheng Lin <yunshenglin0825@gmail.com> writes:
+>> I only took a glance at git code above, it seems reusing the
+>> _pp_mapping_pad for pp_dma_index seems like a wrong direction
+>> as mentioned in discussion with Ilias above as the field might
+>> be used when a page is mmap'ed to user space, and reusing that
+>> field in 'struct page' seems to disable the tcp_zerocopy feature,
+>> see the below commit from Eric:
+>> https://github.com/torvalds/linux/commit/577e4432f3ac810049cb7e6b71f4d96ec7c6e894
 >>
->> I don't understand the problem here ? In the worst case, if we want to disable
->> the BBML2 feature on a given CPU, we could provide an id-
->> override to reset the value of BBML2. Or provide a kernel parameter to
->> disable this in case we want to absolutely disable the feature on a
->> "distro" kernel.
-> 
-> Hi Suzuki,
-> 
-> Sorry perhaps I'm confusing everyone; As I recall, we had a conversation before
-> Miko posted this series where you were suggesting we should check BOTH that all
-> the CPUs' MIDRs are in the allow list AND that BBML2 is advertised in MMFR2 in
-> order to decide to enable the CPU feature. My understanding was that without the
-> MMFR2 check, you were concerned that in a virtualization scenario, a CPU's MIDR
-> could be overridden to emulate a CPU that is in the allow list, but in reality
-> the CPU does not support BBML2. We would then enable BBML2 and BadThings (TM)
-> will happen. So additionally checking the MMFR2 would solve this.
-> 
-> But Yang is saying that he plans to add the AmpereOne to the allow list because
-> it does support BBML2+NOCONFLICT semantics and we want to benefit from that. But
-> AmpereOne does not advertise BBML2 in it's MMFR2. So with the current approach,
-> adding AmpereOne to the allow list is not sufficient to enable the feature.
-> 
-> But back to your original justification for checking the MMFR2; I don't think
-> that really solves the problem in general, because we don't just require BBML2,
-> we require BBML2+NOCONFLICT. And we can only determine that from the MIDR. So
-> why bother checking MMFR2?
-
-My concerns are not around enabling a CPU, but having a damage control 
-with a "kernel" that a user has no control over (Read, standard 
-distribution kernel).
-
-1. If the combination of the above causes problem (in Virtualization)
-2. If the combination of the above is detected to have problems in 
-baremetal.
-
-In (1), VMM could control the ID register and disable the feature.
-
-For (2) we could provide an id-override on command line to disable it in
-the worst case.
-
-So, having the id register case is a good way to get the system running
-with a given kernel (in either world). Without that, we don't have a 
-tunable to control the behavior at runtime.
-
-May be I am being over paranoid about this.
-
-> 
-> I guess we could provide an id-override on the kernel command line to *enable*
-> BBML2 for AmpereOne, but that's not going to be suitable for mass deployment, I
-
-Unfortunately, we can't override to provide the "feature" that is 
-missing (at least today).
-
-One option is, run with a whitelist, but provide a kernel parameter to 
-disable bbml2 feature.
-
-Something like, arm64.bbml2=0
-
-So the decision is based on the parameter && MIDR list.
-
-
-Cheers
-Suzuki
-
-> don't think?
-> 
-> Thanks,
-> Ryan
-> 
+>> Also, I am not sure if a page_pool owned page can be spliced into the fs
+>> subsystem yet, but if it does, I am not sure how is reusing the
+>> page->mapping possible if that page is called in __filemap_add_folio()?
 >>
->> Suzuki
->>
->>
->>> given AmpereOne doesn't advertise BBML2 but does support it, I'd be happy to
->>> remove this check.
->>>
->>> Thanks,
->>> Ryan
->>>
->>>
->>>>
->>>> Thanks,
->>>> Yang
->>>>
->>>>>     }
->>>>>       #ifdef CONFIG_ARM64_PAN
->>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/
->>>>> arm/arm-smmu-v3/arm-smmu-v3-sva.c
->>>>> index 9ba596430e7c..6ba182572788 100644
->>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->>>>> @@ -222,6 +222,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
->>>>>             feat_mask |= ARM_SMMU_FEAT_VAX;
->>>>>         }
->>>>>     +    if (system_supports_bbml2_noabort())
->>>>> +        feat_mask |= ARM_SMMU_FEAT_BBML2;
->>>>> +
->>>>>         if ((smmu->features & feat_mask) != feat_mask)
->>>>>             return false;
->>>>>     diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/
->>>>> arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> index 358072b4e293..dcee0bdec924 100644
->>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> @@ -4406,6 +4406,9 @@ static int arm_smmu_device_hw_probe(struct
->>>>> arm_smmu_device *smmu)
->>>>>         if (FIELD_GET(IDR3_RIL, reg))
->>>>>             smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
->>>>>     +    if (FIELD_GET(IDR3_BBML, reg) == IDR3_BBML2)
->>>>> +        smmu->features |= ARM_SMMU_FEAT_BBML2;
->>>>> +
->>>>>         /* IDR5 */
->>>>>         reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
->>>>>     diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/
->>>>> arm/arm-smmu-v3/arm-smmu-v3.h
->>>>> index bd9d7c85576a..85eaf3ab88c2 100644
->>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
->>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
->>>>> @@ -60,6 +60,9 @@ struct arm_smmu_device;
->>>>>     #define ARM_SMMU_IDR3            0xc
->>>>>     #define IDR3_FWB            (1 << 8)
->>>>>     #define IDR3_RIL            (1 << 10)
->>>>> +#define IDR3_BBML            GENMASK(12, 11)
->>>>> +#define IDR3_BBML1            (1 << 11)
->>>>> +#define IDR3_BBML2            (2 << 11)
->>>>>       #define ARM_SMMU_IDR5            0x14
->>>>>     #define IDR5_STALL_MAX            GENMASK(31, 16)
->>>>> @@ -754,6 +757,7 @@ struct arm_smmu_device {
->>>>>     #define ARM_SMMU_FEAT_HA        (1 << 21)
->>>>>     #define ARM_SMMU_FEAT_HD        (1 << 22)
->>>>>     #define ARM_SMMU_FEAT_S2FWB        (1 << 23)
->>>>> +#define ARM_SMMU_FEAT_BBML2        (1 << 24)
->>>>>         u32                features;
->>>>>       #define ARM_SMMU_OPT_SKIP_PREFETCH    (1 << 0)
->>>>
->>>
->>
+>> https://elixir.bootlin.com/linux/v6.14-rc5/source/mm/filemap.c#L882
 > 
+> Hmm, so I did look at the mapping field, but concluded using it wouldn't
+> interfere with anything relevant as long as it's reset back to zero
+> before the page is returned to the page allocator. However, I definitely
+> missed the TCP zero-copy thing, and other things as well, it would seem
+> (cf the discussion you referred to above).
+> 
+> However, I did consider alternatives: AFAICT there should be space in
+> the pp_magic field (used for the PP_SIGNATURE), so that with a bit of
+> care we can stick an ID into the upper bits and still avoid ending up
+> with a value that could look like a valid pointer.
+> 
+> I didn't implement that initially because I wasn't sure it was
+> necessary, but seeing as it is, I will take another look at it. I have
+> one or two other ideas if this turns out not to pan out.
+
+Another dumb option would be storing directly the page address in the
+xarray, and avoid entirely going through an ID. I guess it will use more
+memory (the array will be more sparse) and will have more overhead, but
+could be possibly simpler?
+
+/P
 
