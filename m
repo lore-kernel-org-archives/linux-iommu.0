@@ -1,67 +1,64 @@
 Received: from mx1.emlix.com (mx1.emlix.com [178.63.209.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4734233145
-	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 10:15:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6129B23237C
+	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 10:16:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.209.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741688159; cv=none; b=mc92R9YmQKzL8jNJo2sXKhdncVhnp1yq4IboqrbLQ5/2VK5sn/hms/d1uBS+BGG9OqTgUO3UPzEduOSp2p5jIT9mI0GRAr2Wisf4HU5OcS6F3wvo+pko21/kPOIiR7C2KkeFmoPHt8ZYUykl0Y8s5guJApaVF9PMmDoZru4FfF8=
+	t=1741688167; cv=none; b=FrGp4AToL38vqoSudt9Qr9iS6KkJzXZWGrpsvAQJZLgEZ+JP9WatvfX6u+nQ3WjtLlg1ppPLva+jfUXiRb4bhrfy/heNtXejIK/AVP5PHnVcqgViMtl13U0OjGDyT0ho1s3MQHDNHeFSTwvD191CEAMHwLeqowVuSN5l9sgq6vY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741688159; c=relaxed/simple;
-	bh=3z92NOgOTTQQWHcSlS7PdzZy6VlnQaGrUiQQFjm1O4M=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Of3quno4mQL7NZ/284eZ55lYx+hbYTmIBvHxno7VMeLoL7ToHqQVNzguNhYGv42glixmp/Fk34I91vFvsLf0bUtjOSD3h9S7q0IkXVMbXyd3jmW621TMmXRLDvpufYlioUVhIHlQ8slR28cUTnR8t0QExIQJmBU0ZBM4VGqp0Sg=
+	s=arc-20240116; t=1741688167; c=relaxed/simple;
+	bh=l7N3lIPhG6mdsLNH9OgsXxQwn7RtsJGYnICoz2Cvqyw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=om/YKNj2Do8MIo6zAN6EJnAAJM/4H1FW/i4TQ1FestVi47tlAHtxHQM93n8RiBisHVrp8AhOu09dTRrZRxAVkvgCeWSkVdlF5f+9AgqyDeKQamvVBqe9kLwnrtKmNYmhk1S+UgvC6Ruqe75SXtNq4lMuZ05b4t3ETXfsWQbUNR8=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com; spf=pass smtp.mailfrom=emlix.com; arc=none smtp.client-ip=178.63.209.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=emlix.com
 Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
 	(using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mx1.emlix.com (Postfix) with ESMTPS id 657885FE1E;
+	by mx1.emlix.com (Postfix) with ESMTPS id A91915FFD3;
 	Tue, 11 Mar 2025 11:15:26 +0100 (CET)
 From: Rolf Eike Beer <eb@emlix.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Bert Karwatzki <spasswolf@web.de>, Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/4] iommu: remove duplicate selection of DMAR_TABLE
-Date: Tue, 11 Mar 2025 11:07:03 +0100
-Message-ID: <3865592.kQq0lBPeGt@devpool47.emlix.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/4] make vendor specific subdirectory inclusion conditional
+Date: Tue, 11 Mar 2025 11:04:31 +0100
+Message-ID: <2301497.iZASKD2KPV@devpool47.emlix.com>
 Organization: emlix GmbH
-In-Reply-To: <2301497.iZASKD2KPV@devpool47.emlix.com>
-References: <2301497.iZASKD2KPV@devpool47.emlix.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="nextPart1996534.PYKUYFuaPT";
+ micalg="pgp-sha256"; protocol="application/pgp-signature"
+
+--nextPart1996534.PYKUYFuaPT
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
+From: Rolf Eike Beer <eb@emlix.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Date: Tue, 11 Mar 2025 11:04:31 +0100
+Message-ID: <2301497.iZASKD2KPV@devpool47.emlix.com>
+Organization: emlix GmbH
+MIME-Version: 1.0
 
-This is already done in intel/Kconfig.
+I found it strange that the vendor specific subdirectories were uncondition=
+ally=20
+added. Everything in these directories obviously depends on the specific Kc=
+onfig=20
+option. This series cleans this up by making the directory itself depend on=
+=20
+the respective option which looks more natural to me.
 
-=46ixes: 70bad345e622 ("iommu: Fix compilation without CONFIG_IOMMU_INTEL")
-Signed-off-by: Rolf Eike Beer <eb@emlix.com>
-=2D--
- drivers/iommu/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+I must confess that I am too lazy to find a good solution for the "arm/"=20
+directory, so I left it as is.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index ec1b5e32b972..fceea41b7f58 100644
-=2D-- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -200,7 +200,6 @@ source "drivers/iommu/riscv/Kconfig"
- config IRQ_REMAP
- 	bool "Support for Interrupt Remapping"
- 	depends on X86_64 && X86_IO_APIC && PCI_MSI && ACPI
-=2D	select DMAR_TABLE if INTEL_IOMMU
- 	help
- 	  Supports Interrupt remapping for IO-APIC and MSI devices.
- 	  To use x2apic mode in the CPU's which support x2APIC enhancements or
-=2D-=20
-2.48.1
+Regards,
 
-
+Eike
 =2D-=20
 Rolf Eike Beer
 
@@ -80,5 +77,21 @@ Office Bonn: Bachstr. 6, 53115 Bonn, Germany
 http://www.emlix.com
 
 emlix - your embedded Linux partner
+--nextPart1996534.PYKUYFuaPT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iLMEAAEIAB0WIQQ/Uctzh31xzAxFCLur5FH7Xu2t/AUCZ9AKrwAKCRCr5FH7Xu2t
+/JcNA/4t/tbF7kSeUHSlwCGN4/iZKNe0z7438EMg8dahTOCx+Y2B4NfrRo1+ax8Z
+D8+3DWeiQh+X119CEQinAZDCBMhBdwL0UIHwYmQBczZrTk21BXn9+iUzNlfYsnqA
+hUuedlulFcM6VNoF/1q9rz4/dgJ84FlKCHiJCEWm40yZhkRlVQ==
+=gkz6
+-----END PGP SIGNATURE-----
+
+--nextPart1996534.PYKUYFuaPT--
+
 
 
