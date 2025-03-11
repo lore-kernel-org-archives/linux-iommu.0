@@ -1,175 +1,116 @@
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E00AC1A5BA4
-	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 18:13:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 479771DE3CE
+	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 18:17:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741716832; cv=none; b=VdtLkaTCafOmOMNa15Cg/Frar0TKuQwp46u0OCUZBU0N9B3amIKQTrvMrQwF55WneNS/ArPdTaR17p9kadqbjos9OQs/RxwsxoDjSQcibl0WzztjLDQ86Joykw2p/K6+TAyRrP3KITPbzFPT3rCYCkIDJFHnOnn/UuHCT2si4+A=
+	t=1741717069; cv=none; b=ZxJ/o8zrj1gCQBPrh4niV9nSBpHd+6OSKuNe7OwWotq8TugWUi0zbwdYpHFshavOs8H9CyNOFJXz+KW4qZ3icgqH4iYAjRJsratMzqYpgwXoZ1c4Ou0yhTWb5QUm63icu4x2dViRMHLzT5ojp8XIHJgehSwLJXRMtbHrTkEkWaA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741716832; c=relaxed/simple;
-	bh=9m9qnAFjRPZmuEIFsmWAz+dfmmyZZkKzpyFeZwHGM8M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AwjK5mP7C42BzRG+Go2mZ+S5/gJT/Rer4F1G4tdpOgpsHRoKdwfCxwlpICNUJYjZMbEhKCtmMK7CUeZIcO7CbVM/TW1uSiKDrpGbqpRSMK+ULSnrl2en8siqYJon2DBQfmiiPDmKwoI49A9JDeafF/O82AOGd8RMM67e0bDn34o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RruVZN3q; arc=none smtp.client-ip=209.85.222.174
+	s=arc-20240116; t=1741717069; c=relaxed/simple;
+	bh=amzaeUHYPxdXfgE5dqqUKy6QdRie3H51MlqUc45Ro3w=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=aFa7HnywXIWRghPL9eTs0uDC6oC8LE7yrbNoaszEss1BCF0a8xDIpekq2ReJl7nZqQAo6qXyjAeLyIwRViWg5sGahxicZkcGBUNuYZZw9nmzXQNhD8LYR1GykiOb5Twadn60/mwW9EdVs2NxJaxz3UxT0z4gsjnSxGU3RSXj8+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UsxMz+gq; arc=none smtp.client-ip=209.85.167.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RruVZN3q"
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-7c24ae82de4so640330985a.1
-        for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 11:13:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UsxMz+gq"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-549644ae382so6935424e87.1
+        for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 11:17:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741716830; x=1742321630; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:feedback-id:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1741717065; x=1742321865; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lDEhMmQUxmOxo689QhSb5GTtdGxxmyO1TdT2sutKhIU=;
-        b=RruVZN3q1igZmVobtexVTHggVPwfobbS14+Bm3WwFEqvMAkcYstfHMGWyq/qD7sEfj
-         vBQcx7FXwkMLfZO5ovk0TewthSu6zE9ZZCr0CHGSJmDgJSDPNfSanHnRmeIRgQsfZ308
-         Y1uudNgYFqPY1tp/v/CAVGlw9xBJTy4/7SVk5lrGxEUfJgxdZX1vJVvsF8WG3I/yNUPr
-         R/h9b4l/c0dCl92iReeNulaRqovHfHTdBPadJCh/Ur60rLeCUGwLnas4CH551dTCZcFx
-         CczmEEqRNPwM6RxuwQ2ajfpvn74C6pi5793UFUD4Kqt0B/XpwQwqWCdExsrkjF05gtnl
-         XrMA==
+        bh=amzaeUHYPxdXfgE5dqqUKy6QdRie3H51MlqUc45Ro3w=;
+        b=UsxMz+gq9yIm/dFiHyN8ugrRor7scDQziv3pJmHfLtY9wetMhxyIX6lzZiUknPJRbn
+         w6emJCyf3BE4brKiB/FczgPXHxW78Hzv3t0jEmLK5ogAQaBHXRYrvtzA8Z5XRA+CU2zU
+         zUoapwDJqL8RJEfFEnH/xCMpgtWUDyE/luDSoD5ORoq/AWsK6JYnqnVxarAUu5E1VpU6
+         S97vgZdKYP3OruamVOA5vDvTaCZr7Rd1tJgGwDAve7YK1EKrdtAvgcVR/sQKVFKl2DVw
+         47NoJYFnJhZjQ+xqPkeFW/XIGZLyRSRlt1qIpAl6ECnM06P5KoD1e+n95G6wuALYACEz
+         K6JQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741716830; x=1742321630;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:feedback-id:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1741717065; x=1742321865;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lDEhMmQUxmOxo689QhSb5GTtdGxxmyO1TdT2sutKhIU=;
-        b=EfFlerx2yesIt7dktPIkTpq5KsZW3Vyh/O8q71b8JiNsgzBLk1Vd6OVip4YQuqsLyQ
-         PGmiIyiChbWnXXgZWa/tBjyQMb6Bes6VsgQ4A/D86QLLA5/cN30l7bZkQvDMVcn0tVh+
-         TqrTox2k/glRf+l58qrktTmf+GKlqX7J8OlYQDBhguP0Y5MjoQzRHpsCPAYGOCU1id7j
-         +TWHGiHLVCq3ug6DubAVST+o37uXcLJ/hPffdwBJya+shNL4PIG/X7Xm0NFxOdBrrRCD
-         0IwQYfAB6vlBS4rUGwVz1tJm57tqKpY8pg1WT5Z2AaeWGMr7lr61xFlbXex9IHqEgOC+
-         r5DQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWyPcikGRhVMABZT/M4xGd4UXLwXCAer1GChEojwf44R1Dx9is3dtuESyeetTt9hxj78JiL5g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzqGa6xjHxOWcLSpJo5XdR3JU6Q7a66LcsK7N9CnU2enJze7l2C
-	/c9mKsr9cBbuREF/COyoVmPR7KTr2wAKQZmodwWqOfBjAt4LAvVi
-X-Gm-Gg: ASbGncvh/FmHhslExaLiZsWU3Ka5OgOj/NLEI3ADIthEDqZWDM2qY4kGpe5RwVKdRfu
-	Af3zBIhNth4a9khSAIFr29fPXDk/THr/TysCCB4HAkdsCdyyPyeECrnjh5WjWmQQEnvwB/7kaM2
-	ZasExdBvAqmtQkJ0FhOeOI9R7Atulb9GEmcgRAkU1tSIfjoJJF3gkQrF/NXsaN0oqoMbUp2KVRU
-	kzsgGKsj6hNp8Ye7G42yZCtGzGgDbjYJ/zW2HqU44XWbMk6ApCtTNatDye1TCqk4QSs3Um5A3IB
-	z31Wj9JFqNwpEpRQFbOil3FL4dyyOJ0nTrJRz2WIououXhXtRwyfRzFZSnpeXK5rHQ6Xc1RXNbd
-	g7B1Ihr/wfUJ58H8rI39luoiaWAtPczQwTic=
-X-Google-Smtp-Source: AGHT+IGV5qUTHMkgjUEPn2/eKhIVvHOorUKXCES2+LeLdAqsZ2U/IXaPlqtaVS6mO9jhfs6UoSNQZA==
-X-Received: by 2002:a05:620a:24c5:b0:7c5:5ebc:392f with SMTP id af79cd13be357-7c55ebc39a6mr561247785a.0.1741716829592;
-        Tue, 11 Mar 2025 11:13:49 -0700 (PDT)
-Received: from fauth-a1-smtp.messagingengine.com (fauth-a1-smtp.messagingengine.com. [103.168.172.200])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c55b4ab89esm231025685a.17.2025.03.11.11.13.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Mar 2025 11:13:49 -0700 (PDT)
-Received: from phl-compute-07.internal (phl-compute-07.phl.internal [10.202.2.47])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 55633120006E;
-	Tue, 11 Mar 2025 14:13:48 -0400 (EDT)
-Received: from phl-mailfrontend-01 ([10.202.2.162])
-  by phl-compute-07.internal (MEProxy); Tue, 11 Mar 2025 14:13:48 -0400
-X-ME-Sender: <xms:XH3QZ6R6dlme6g7Si5SkgC8t4r6U4nUwYNlVmZLBGT66fXLYZIGnVg>
-    <xme:XH3QZ_yrxxibrMYWi29hxXWQxENgZ6Q7SDQc3kwBgfDE6Isq6Qip8r0Yppb8QT9gy
-    0xmddFzDon9EDAzyg>
-X-ME-Received: <xmr:XH3QZ336OP3qiqC1URlPz1CqrIMayero0mrcd2EfAHDYRmyY-PNEFpAq3hE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdduvddvledvucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
-    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnecujfgurhepfffhvfevuffkfhggtggujgesthdtredttddt
-    vdenucfhrhhomhepuehoqhhunhcuhfgvnhhguceosghoqhhunhdrfhgvnhhgsehgmhgrih
-    hlrdgtohhmqeenucggtffrrghtthgvrhhnpeehudfgudffffetuedtvdehueevledvhfel
-    leeivedtgeeuhfegueevieduffeivdenucevlhhushhtvghrufhiiigvpedtnecurfgrrh
-    grmhepmhgrihhlfhhrohhmpegsohhquhhnodhmvghsmhhtphgruhhthhhpvghrshhonhgr
-    lhhithihqdeiledvgeehtdeigedqudejjeekheehhedvqdgsohhquhhnrdhfvghngheppe
-    hgmhgrihhlrdgtohhmsehfihigmhgvrdhnrghmvgdpnhgspghrtghpthhtohepvddtpdhm
-    ohguvgepshhmthhpohhuthdprhgtphhtthhopegrsgguihgvlhdrjhgrnhhulhhguhgvse
-    hgmhgrihhlrdgtohhmpdhrtghpthhtoheprhhushhtqdhfohhrqdhlihhnuhigsehvghgv
-    rhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepuggrnhhivghlrdgrlhhmvghiuggrse
-    gtohhllhgrsghorhgrrdgtohhmpdhrtghpthhtohepuggrkhhrsehkvghrnhgvlhdrohhr
-    ghdprhgtphhtthhopehrohgsihhnrdhmuhhrphhhhiesrghrmhdrtghomhdprhgtphhtth
-    hopegrlhhitggvrhihhhhlsehgohhoghhlvgdrtghomhdprhgtphhtthhopehojhgvuggr
-    sehkvghrnhgvlhdrohhrghdprhgtphhtthhopegrlhgvgidrghgrhihnohhrsehgmhgrih
-    hlrdgtohhmpdhrtghpthhtohepghgrrhihsehgrghrhihguhhordhnvght
-X-ME-Proxy: <xmx:XH3QZ2BhbphbYZK7sD9DZqF2ODhUZ5dJU0uI_WxbwrlR54Cur3j96Q>
-    <xmx:XH3QZzh6P1MioxmPF4eQk3IQV1yBy1F8Swe-dFJ2SF9xhbmzI_sWSA>
-    <xmx:XH3QZyr2Wzbxs6MH3Zgzfpf9V2VdL0e7NZgy8P_fDl504ETVY9Lyvw>
-    <xmx:XH3QZ2gdp5GF4QtBYta1qj1aY85Jd9HHhbn69y69ysm8lsUVn3DuLg>
-    <xmx:XH3QZyTCI30w-PDqu9Wk4GpK6UAVgeiVtbArRsWdU9ER4cw_2m6VYV_k>
-Feedback-ID: iad51458e:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 11 Mar 2025 14:13:47 -0400 (EDT)
-Date: Tue, 11 Mar 2025 11:12:24 -0700
-From: Boqun Feng <boqun.feng@gmail.com>
-To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Cc: rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com,
-	dakr@kernel.org, robin.murphy@arm.com, aliceryhl@google.com,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v14 02/11] rust: add dma coherent allocator abstraction.
-Message-ID: <Z9B9CNRatBtyAO8Q@boqun-archlinux>
-References: <20250311174930.2348813-1-abdiel.janulgue@gmail.com>
- <20250311174930.2348813-3-abdiel.janulgue@gmail.com>
+        bh=amzaeUHYPxdXfgE5dqqUKy6QdRie3H51MlqUc45Ro3w=;
+        b=ObPMEzI9BO2AMlQVKfoCJQBuKlDAlPp8TbnyLmzpYwuyXDNcGcTs5T5KbkrYEGvaWs
+         xn6goJ4remGzlpdCsBjiGLIEr+8KfdG6hZ1KO78LiQJHzzxsDSzyLojWBqwh1cpsoITu
+         SU0zFuCwjnsKbF1yls06kgUO2i2S3maiwRVB9Y2KpU6EtKeL39a9dQ9pKi7hJPOxTvof
+         AE18k6xLggfhyCUTLQNpkRysuy3pHM117fHnmJ7lpXXz19icNCCyEvvtTYYAyPQowT+1
+         xfXLcPPw/gxkmQsb3v9+oVgttz7B99eIYCncVugMiDBrOoJEx0T99d6KKajyyACYHJI/
+         CadQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX3QeugTAlFd+H4RFhgjHonDI5J+nEwqZgt8uHyCWp0I1lSoVUk0szpDrTmvEN9dxt3jMh7sg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx69Ra+IjAAvW05AremdTYyP4spLqJfqmqGZ1okGBlIyOe5G92R
+	4aCKz4cXQqNxBdCKmabWmME5IsLP7p7cCQuZfmkpS3DOAh2tZzQ/0bK7Z2y8mmnNsAoo3km0Hoq
+	Z9h6gm9zb52/a+MfhnGKpyYe89Wc=
+X-Gm-Gg: ASbGncubHM+S8BnLUwG60ovLG9zE0bExvLWizs0z4nbR73DtNUPONoOTS//g7s31Ika
+	1cUdydBzwDpHEdL120cqeeX5AJJXroRvybF21flYeZzD9RO48eXenDsQlSDJqkRXg9aB0sRDoXB
+	+/J5slFzHiHid5/SmHuiwq3mEseA==
+X-Google-Smtp-Source: AGHT+IEYrR3iuVb9k7bTT8zIzdeCEs1XeQqQDE64pk/im8l6F+pZMmJa1FuK6qJVeCb7epxnxpHYTAZTWwaqAKTXhR4=
+X-Received: by 2002:a05:6512:2386:b0:545:60b:f381 with SMTP id
+ 2adb3069b0e04-54990e6764cmr5155120e87.29.1741717065084; Tue, 11 Mar 2025
+ 11:17:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250311174930.2348813-3-abdiel.janulgue@gmail.com>
+References: <20250310-b4-qcom-smmu-v1-1-733a1398ff85@gmail.com>
+ <6f5f2047-b315-440b-b57d-2ed0dd7395f6@arm.com> <CALHNRZ87t7eXohTcpFnejFAPDsyE_1g0aPsASuQ7y5c_zxnLUw@mail.gmail.com>
+ <CAE2F3rB-ACt2rdVFYSpSap=t_poTi0-PxhgrYGg4vzjfic7vqA@mail.gmail.com>
+In-Reply-To: <CAE2F3rB-ACt2rdVFYSpSap=t_poTi0-PxhgrYGg4vzjfic7vqA@mail.gmail.com>
+From: Aaron Kling <webgeek1234@gmail.com>
+Date: Tue, 11 Mar 2025 13:17:33 -0500
+X-Gm-Features: AQ5f1Jotsyx4CiMaVUlC-vkoovHyzT3WerEGqfj6ILGnt1v6WPD-tu9VOLKyoNc
+Message-ID: <CALHNRZ8YUjMq0NfAT10wajFJGWaxGWarn-z2C=1Obf0ewT13gQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm: Allow disabling Qualcomm support in arm_smmu_v3
+To: Daniel Mentz <danielmentz@google.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Arnd Bergmann <arnd@arndb.de>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 11, 2025 at 07:47:58PM +0200, Abdiel Janulgue wrote:
-[...]
-> +    /// Reads the value of `field` and ensures that its type is [`FromBytes`].
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// This must be called from the [`dma_read`] macro which ensures that the `field` pointer is
-> +    /// validated beforehand.
-> +    ///
-> +    /// Public but hidden since it should only be used from [`dma_read`] macro.
-> +    #[doc(hidden)]
-> +    pub unsafe fn field_read<F: FromBytes>(&self, field: *const F) -> F {
-> +        // SAFETY: By the safety requirements field is valid.
-> +        unsafe { field.read_volatile() }
+On Tue, Mar 11, 2025 at 12:55=E2=80=AFPM Daniel Mentz <danielmentz@google.c=
+om> wrote:
+>
+> On Mon, Mar 10, 2025 at 9:51=E2=80=AFAM Aaron Kling <webgeek1234@gmail.co=
+m> wrote:
+> > I am working with the android kernel. The more recent setup enables a
+> > minimal setup of configs in a core kernel that works across all
+> > supported arch's, then requires further support to all be modules. I
+> > specifically am working with tegra devices. But as ARCH_QCOM is
+> > enabled in the core defconfig, when I build smmuv3 as a module, I end
+> > up with a dependency on qcom-scm which gets built as an additional
+> > module. And it would be preferable to not require qcom modules to boot
+> > a tegra device.
+>
+> If you want to build arm_smmu_v3.ko, you'd have
+>
+> # CONFIG_ARM_SMMU is not set
+> CONFIG_ARM_SMMU_V3=3Dm
+>
+> in your .config. I don't see how this would enable ARM_SMMU_QCOM or QCOM_=
+SCM.
 
-I agree with Andreas that we should document the exception of usage on
-{read,write}_volatile() here. How about:
+I went and double checked my defconfig snippet and I have to
+apologize. I put the wrong thing in the commit message and caused
+confusion to myself and the entire discussion. This is what I've got:
 
-When dealing with a potential race from a hardware or code outside
-kernel (e.g. user-space program), we need that read and write on a valid
-memory are not UBs. Currently {read,write}_volatile() are used for this,
-and the rationale behind is that they should generate the same code as
-READ_ONCE() and WRITE_ONCE() which kernel already relies on to avoid UBs
-on data races. Note that the usage of {read,write}_volatile() is limited
-to this particular case, they cannot be used to emit the UBs caused by
-racing between two kernel functions nor do they provide atomicity.
+# MMU
+CONFIG_ARM_SMMU=3Dm
+# CONFIG_ARM_SMMU_QCOM is not set
 
-Thoughts? One problem is that I don't know where to put this document
-:-( Any suggestion?
+Tegra186, tegra194, and tegra234 are supported by arm-smmu, not by
+arm-smmu-v3. And these are the relevant archs I'm trying to work on.
 
-Regards,
-Boqun
+Having the extra dep doesn't break anything, so worst case I continue
+to carry the extra dep or this as a downstream patch. But I had to at
+least try to decouple unnecessary dep.
 
-> +    }
-> +
-> +    /// Writes a value to `field` and ensures that its type is [`AsBytes`].
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// This must be called from the [`dma_write`] macro which ensures that the `field` pointer is
-> +    /// validated beforehand.
-> +    ///
-> +    /// Public but hidden since it should only be used from [`dma_write`] macro.
-> +    #[doc(hidden)]
-> +    pub unsafe fn field_write<F: AsBytes>(&self, field: *mut F, val: F) {
-> +        // SAFETY: By the safety requirements field is valid.
-> +        unsafe { field.write_volatile(val) }
-> +    }
-> +}
-[...]
+Sincerely,
+Aaron
