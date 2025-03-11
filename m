@@ -1,218 +1,215 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C08E7250BFF
-	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 10:58:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8736724169E
+	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 11:50:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741690742; cv=none; b=tBv5meD2YoHfcv5PM8u1W1TyyuzOZ/hYqjSw6RZoafz/MbocbPtwqCBGL0YC/jrZvB+LgqyLX90tw2oiUvdGMbSns0mkuGhW8JNgVm/NRfJ99rDIo2t4MmKCzXaSPgaPRLNWA11ZkxN1ejBxuGicyXOhn6KJxgUEAI7qvm192FI=
+	t=1741693809; cv=none; b=GL2xBFB1uegR3hrBn990eoIM1q0Qvn3tYXTjuijTr1F8GSRRzSlRtWwO4cuhcEJkeMN7nSxkc8l8pGTKaJ+3e+82b0EoMmwH+jt2WrU0KSMmXiOT1tmoYaewskleWVMiajOg+nps+/9JVzdq0TpqJ7481Lk2rJsMyDELmgBBuZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741690742; c=relaxed/simple;
-	bh=XVzqMHkJc4JT2E7A6VzB/d4ACXN8tfVE4I1WavXkVKM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=UAbmO+B8eXeTnuAk49drXIfsA2xVmDmfiBqstNhDt+ET3frTWTvsulVSVgR4vDhz6+z4eMCBLLKSIMgt6i+CmwrUvLUTlL/X+B+o5HC+4Oz1MVwHfRa2s4VuKNW7u5eHTDqHTXLmQb0ee0srgeZRn2/hAT7u+sj9Pti+FaUkq3U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 37B411762;
-	Tue, 11 Mar 2025 03:59:10 -0700 (PDT)
-Received: from [10.1.30.125] (XHFQ2J9959.cambridge.arm.com [10.1.30.125])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EEE1B3F673;
-	Tue, 11 Mar 2025 03:58:55 -0700 (PDT)
-Message-ID: <7cca1edf-fd1b-4622-999e-8e0ca098dfe2@arm.com>
-Date: Tue, 11 Mar 2025 10:58:54 +0000
+	s=arc-20240116; t=1741693809; c=relaxed/simple;
+	bh=PejEe9Hq+/PS1WTUZpwGXmx1LA02P0ivc394B0Pbuaw=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=txMjeNdD5qkZx9UTcMJyylJPY7nA3Sg619/D06styp3sXZAvhEh2vrO7NpxtvCXrUs5oBd6nERtNYU1LyCzyR3glMv4C9OdpScF24MWgHtyVMhtQgcJsXmf4ym4a3I4IxZhelCQ3B3pCi0RbXdQ/Yyzg+JccSMqGX5JB5em4Tro=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Aqb89V5f; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Aqb89V5f"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52B8XRBx028885;
+	Tue, 11 Mar 2025 11:49:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=ik+BSx
+	IB/P5NqaZz/H3eSgDxwIr4r2BXmrU4xZdNFuA=; b=Aqb89V5fv0eTSYMebOmgZk
+	zHi1i+Saix2Ps5S+ereRy9yJR/+FtFrspmM+zZMrmZUqRyfhFGnekMQrrp8berId
+	XceIWXhgXvKGW8NfxKuVEviBxrufLQCjFwClUh2LMujQqP+zb4ClE22xaEJKtqWo
+	5TBvzGtP9zQoyBz+EQbJbKixS/G/ZAX6NhxAFWRI9nnueIcyXp8zWnWiNKcmnsdy
+	kua5UiXrl2wsIX2/JvR7MwrdGnHtrcfALWsImNMVTefLfUrjoLmZR0Ok3Zs6+54R
+	NcztWmgE+bI5GxfP1lrhGyVf6spEEwAvxuDZxuUrlEWRx1sTKnWSuWs+ZYCGRNVQ
+	==
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 45a042x9yh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 11 Mar 2025 11:49:59 +0000 (GMT)
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 52B9vbnp027494;
+	Tue, 11 Mar 2025 11:49:58 GMT
+Received: from smtprelay06.dal12v.mail.ibm.com ([172.16.1.8])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4591qkkw35-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 11 Mar 2025 11:49:58 +0000
+Received: from smtpav02.dal12v.mail.ibm.com (smtpav02.dal12v.mail.ibm.com [10.241.53.101])
+	by smtprelay06.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 52BBnv0F64553368
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 11 Mar 2025 11:49:57 GMT
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3EB275805E;
+	Tue, 11 Mar 2025 11:49:57 +0000 (GMT)
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 363725805A;
+	Tue, 11 Mar 2025 11:49:55 +0000 (GMT)
+Received: from [9.152.212.232] (unknown [9.152.212.232])
+	by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 11 Mar 2025 11:49:55 +0000 (GMT)
+Message-ID: <196e9ec24f59bd419abab314c41f95f1cb8b9545.camel@linux.ibm.com>
+Subject: Re: [PATCH v3 1/5] iommu/s390: set appropriate IOTA region type
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Matthew Rosato <mjrosato@linux.ibm.com>, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, gerald.schaefer@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, borntraeger@linux.ibm.com, clg@redhat.com,
+        iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Date: Tue, 11 Mar 2025 12:49:54 +0100
+In-Reply-To: <20250228214456.440641-2-mjrosato@linux.ibm.com>
+References: <20250228214456.440641-1-mjrosato@linux.ibm.com>
+	 <20250228214456.440641-2-mjrosato@linux.ibm.com>
+Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
+ keydata=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
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.3 (3.54.3-1.fc41) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] iommu/arm: Add BBM Level 2 smmu feature
-Content-Language: en-GB
-To: Suzuki K Poulose <suzuki.poulose@arm.com>,
- Yang Shi <yang@os.amperecomputing.com>,
- =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
- catalin.marinas@arm.com, will@kernel.org, joro@8bytes.org,
- jean-philippe@linaro.org, mark.rutland@arm.com, joey.gouly@arm.com,
- oliver.upton@linux.dev, james.morse@arm.com, broonie@kernel.org,
- maz@kernel.org, david@redhat.com, akpm@linux-foundation.org, jgg@ziepe.ca,
- nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com,
- smostafa@google.com, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-References: <20250228182403.6269-2-miko.lenczewski@arm.com>
- <20250228182403.6269-6-miko.lenczewski@arm.com>
- <b46dc626-edc9-4d20-99d2-6cd08a01346c@os.amperecomputing.com>
- <43732270-8fd0-4a18-abec-096e383a6a4d@arm.com>
- <5ff34bd0-7823-4f31-9f13-bf60d3345b99@arm.com>
-From: Ryan Roberts <ryan.roberts@arm.com>
-In-Reply-To: <5ff34bd0-7823-4f31-9f13-bf60d3345b99@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: pyNlFmh3YKlXh1BB06NFBPf1u1R0JdVZ
+X-Proofpoint-ORIG-GUID: pyNlFmh3YKlXh1BB06NFBPf1u1R0JdVZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-11_01,2025-03-11_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=999
+ impostorscore=0 clxscore=1011 mlxscore=0 priorityscore=1501 spamscore=0
+ adultscore=0 phishscore=0 malwarescore=0 lowpriorityscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2502100000
+ definitions=main-2503110075
 
-On 11/03/2025 10:17, Suzuki K Poulose wrote:
-> On 03/03/2025 10:17, Ryan Roberts wrote:
->> On 01/03/2025 01:32, Yang Shi wrote:
->>>
->>>
->>>
->>> On 2/28/25 10:24 AM, Mikołaj Lenczewski wrote:
->>>> For supporting BBM Level 2 for userspace mappings, we want to ensure
->>>> that the smmu also supports its own version of BBM Level 2. Luckily, the
->>>> smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
->>>> 0487K.a D8.16.2), so already guarantees that no aborts are raised when
->>>> BBM level 2 is claimed.
->>>>
->>>> Add the feature and testing for it under arm_smmu_sva_supported().
->>>>
->>>> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
->>>> ---
->>>>    arch/arm64/kernel/cpufeature.c                  | 7 +++----
->>>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
->>>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 3 +++
->>>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 4 ++++
->>>>    4 files changed, 13 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
->>>> index 63f6d356dc77..1022c63f81b2 100644
->>>> --- a/arch/arm64/kernel/cpufeature.c
->>>> +++ b/arch/arm64/kernel/cpufeature.c
->>>> @@ -2223,8 +2223,6 @@ static bool has_bbml2_noabort(const struct
->>>> arm64_cpu_capabilities *caps, int sco
->>>>                if (!cpu_has_bbml2_noabort(__cpu_read_midr(cpu)))
->>>>                    return false;
->>>>            }
->>>> -
->>>> -        return true;
->>>>        } else if (scope & SCOPE_LOCAL_CPU) {
->>>>            /* We are a hot-plugged CPU, so only need to check our MIDR.
->>>>             * If we have the correct MIDR, but the kernel booted on an
->>>> @@ -2232,10 +2230,11 @@ static bool has_bbml2_noabort(const struct
->>>> arm64_cpu_capabilities *caps, int sco
->>>>             * we have an incorrect MIDR, but the kernel booted on a
->>>>             * sufficient CPU, we will not bring up this CPU.
->>>>             */
->>>> -        return cpu_has_bbml2_noabort(read_cpuid_id());
->>>> +        if (!cpu_has_bbml2_noabort(read_cpuid_id()))
->>>> +            return false;
->>>>        }
->>>>    -    return false;
->>>> +    return has_cpuid_feature(caps, scope);
->>>
->>> Do we really need this? IIRC, it means the MIDR has to be in the allow list
->>> *AND* MMFR2 register has to be set too. AmpereOne doesn't have MMFR2 register
->>> set.
->>
->> Miko, I think this should have been squashed into patch #1? It doesn't belong in
->> this patch.
->>
->> Yang, we discussed this internally and decided that we thought it was best to
->> still require BBML2 being advertised in the feature register. That way if trying
->> to use KVM to emulate a CPU that is in the allow list but doesn't really support
->> BBML2, we won't try to use it.
->>
->> But we still end up with the same problem if running on a physical CPU that
->> supports BBML2 with conflict aborts, but emulating a CPU in the allow list. So
-> 
-> I don't understand the problem here ? In the worst case, if we want to disable
-> the BBML2 feature on a given CPU, we could provide an id-
-> override to reset the value of BBML2. Or provide a kernel parameter to
-> disable this in case we want to absolutely disable the feature on a
-> "distro" kernel.
+On Fri, 2025-02-28 at 16:44 -0500, Matthew Rosato wrote:
+> When registering the I/O Translation Anchor, use the current table type
+> stored in the s390_domain to set the appropriate region type
+> indication.  For the moment, the table type will always be stored as
+> region third.
+>=20
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>  drivers/iommu/s390-iommu.c | 19 ++++++++++++++++++-
+>  1 file changed, 18 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index e1c76e0f9c2b..cad032d4c9a6 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -31,6 +31,7 @@ struct s390_domain {
+>  	unsigned long		*dma_table;
+>  	spinlock_t		list_lock;
+>  	struct rcu_head		rcu;
+> +	u8			origin_type;
+>  };
+> =20
+>  static struct iommu_domain blocking_domain;
+> @@ -345,6 +346,7 @@ static struct iommu_domain *s390_domain_alloc_paging(=
+struct device *dev)
+>  	s390_domain->domain.geometry.force_aperture =3D true;
+>  	s390_domain->domain.geometry.aperture_start =3D 0;
+>  	s390_domain->domain.geometry.aperture_end =3D ZPCI_TABLE_SIZE_RT - 1;
+> +	s390_domain->origin_type =3D ZPCI_TABLE_TYPE_RTX;
+> =20
+>  	spin_lock_init(&s390_domain->list_lock);
+>  	INIT_LIST_HEAD_RCU(&s390_domain->devices);
+> @@ -381,6 +383,21 @@ static void zdev_s390_domain_update(struct zpci_dev =
+*zdev,
+>  	spin_unlock_irqrestore(&zdev->dom_lock, flags);
+>  }
+> =20
+> +static u64 get_iota_region_flag(struct s390_domain *domain)
+> +{
+> +	switch (domain->origin_type) {
+> +	case ZPCI_TABLE_TYPE_RTX:
+> +		return ZPCI_IOTA_RTTO_FLAG;
+> +	case ZPCI_TABLE_TYPE_RSX:
+> +		return ZPCI_IOTA_RSTO_FLAG;
+> +	case ZPCI_TABLE_TYPE_RFX:
+> +		return ZPCI_IOTA_RFTO_FLAG;
+> +	default:
+> +		WARN_ONCE(1, "Invalid IOMMU table (%x)\n", domain->origin_type);
+> +		return 0;
+> +	}
+> +}
+> +
+>  static int s390_iommu_domain_reg_ioat(struct zpci_dev *zdev,
+>  				      struct iommu_domain *domain, u8 *status)
+>  {
+> @@ -399,7 +416,7 @@ static int s390_iommu_domain_reg_ioat(struct zpci_dev=
+ *zdev,
+>  	default:
+>  		s390_domain =3D to_s390_domain(domain);
+>  		iota =3D virt_to_phys(s390_domain->dma_table) |
+> -		       ZPCI_IOTA_RTTO_FLAG;
+> +		       get_iota_region_flag(s390_domain);
+>  		rc =3D zpci_register_ioat(zdev, 0, zdev->start_dma,
+>  					zdev->end_dma, iota, status);
+>  	}
 
-Hi Suzuki,
+Thanks for moving the table type into struct s390_domain I like how
+this fits together with the identity domain support and overall
+responsibilities now!
 
-Sorry perhaps I'm confusing everyone; As I recall, we had a conversation before
-Miko posted this series where you were suggesting we should check BOTH that all
-the CPUs' MIDRs are in the allow list AND that BBML2 is advertised in MMFR2 in
-order to decide to enable the CPU feature. My understanding was that without the
-MMFR2 check, you were concerned that in a virtualization scenario, a CPU's MIDR
-could be overridden to emulate a CPU that is in the allow list, but in reality
-the CPU does not support BBML2. We would then enable BBML2 and BadThings (TM)
-will happen. So additionally checking the MMFR2 would solve this.
-
-But Yang is saying that he plans to add the AmpereOne to the allow list because
-it does support BBML2+NOCONFLICT semantics and we want to benefit from that. But
-AmpereOne does not advertise BBML2 in it's MMFR2. So with the current approach,
-adding AmpereOne to the allow list is not sufficient to enable the feature.
-
-But back to your original justification for checking the MMFR2; I don't think
-that really solves the problem in general, because we don't just require BBML2,
-we require BBML2+NOCONFLICT. And we can only determine that from the MIDR. So
-why bother checking MMFR2?
-
-I guess we could provide an id-override on the kernel command line to *enable*
-BBML2 for AmpereOne, but that's not going to be suitable for mass deployment, I
-don't think?
-
-Thanks,
-Ryan
-
-> 
-> Suzuki
-> 
-> 
->> given AmpereOne doesn't advertise BBML2 but does support it, I'd be happy to
->> remove this check.
->>
->> Thanks,
->> Ryan
->>
->>
->>>
->>> Thanks,
->>> Yang
->>>
->>>>    }
->>>>      #ifdef CONFIG_ARM64_PAN
->>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/
->>>> arm/arm-smmu-v3/arm-smmu-v3-sva.c
->>>> index 9ba596430e7c..6ba182572788 100644
->>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->>>> @@ -222,6 +222,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
->>>>            feat_mask |= ARM_SMMU_FEAT_VAX;
->>>>        }
->>>>    +    if (system_supports_bbml2_noabort())
->>>> +        feat_mask |= ARM_SMMU_FEAT_BBML2;
->>>> +
->>>>        if ((smmu->features & feat_mask) != feat_mask)
->>>>            return false;
->>>>    diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/
->>>> arm/arm-smmu-v3/arm-smmu-v3.c
->>>> index 358072b4e293..dcee0bdec924 100644
->>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>> @@ -4406,6 +4406,9 @@ static int arm_smmu_device_hw_probe(struct
->>>> arm_smmu_device *smmu)
->>>>        if (FIELD_GET(IDR3_RIL, reg))
->>>>            smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
->>>>    +    if (FIELD_GET(IDR3_BBML, reg) == IDR3_BBML2)
->>>> +        smmu->features |= ARM_SMMU_FEAT_BBML2;
->>>> +
->>>>        /* IDR5 */
->>>>        reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
->>>>    diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/
->>>> arm/arm-smmu-v3/arm-smmu-v3.h
->>>> index bd9d7c85576a..85eaf3ab88c2 100644
->>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
->>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
->>>> @@ -60,6 +60,9 @@ struct arm_smmu_device;
->>>>    #define ARM_SMMU_IDR3            0xc
->>>>    #define IDR3_FWB            (1 << 8)
->>>>    #define IDR3_RIL            (1 << 10)
->>>> +#define IDR3_BBML            GENMASK(12, 11)
->>>> +#define IDR3_BBML1            (1 << 11)
->>>> +#define IDR3_BBML2            (2 << 11)
->>>>      #define ARM_SMMU_IDR5            0x14
->>>>    #define IDR5_STALL_MAX            GENMASK(31, 16)
->>>> @@ -754,6 +757,7 @@ struct arm_smmu_device {
->>>>    #define ARM_SMMU_FEAT_HA        (1 << 21)
->>>>    #define ARM_SMMU_FEAT_HD        (1 << 22)
->>>>    #define ARM_SMMU_FEAT_S2FWB        (1 << 23)
->>>> +#define ARM_SMMU_FEAT_BBML2        (1 << 24)
->>>>        u32                features;
->>>>      #define ARM_SMMU_OPT_SKIP_PREFETCH    (1 << 0)
->>>
->>
-> 
-
+Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
