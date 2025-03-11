@@ -1,116 +1,93 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 479771DE3CE
-	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 18:17:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE6FC25DCFE
+	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 18:36:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741717069; cv=none; b=ZxJ/o8zrj1gCQBPrh4niV9nSBpHd+6OSKuNe7OwWotq8TugWUi0zbwdYpHFshavOs8H9CyNOFJXz+KW4qZ3icgqH4iYAjRJsratMzqYpgwXoZ1c4Ou0yhTWb5QUm63icu4x2dViRMHLzT5ojp8XIHJgehSwLJXRMtbHrTkEkWaA=
+	t=1741718163; cv=none; b=bI1pJdPJl6ShA8KlsdLAl/NNs87E/nn4DzrChD4JI9z/YNZQJvRjj5WRigNdD5OM1tmfMsbqLdbR+D1cVOQAcnuCoGp8Z64M5FUY9p+rwM+TBFPVDTOPFvH/tCjKqg5n3umNkOEE2GQUC91l2WRh4nZfvuYGLUR3yh+UCesJLSY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741717069; c=relaxed/simple;
-	bh=amzaeUHYPxdXfgE5dqqUKy6QdRie3H51MlqUc45Ro3w=;
+	s=arc-20240116; t=1741718163; c=relaxed/simple;
+	bh=mbgW0kUEsZezmUj5Gi6W94Hy08T0mYNvtx4ZiLvWeKc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aFa7HnywXIWRghPL9eTs0uDC6oC8LE7yrbNoaszEss1BCF0a8xDIpekq2ReJl7nZqQAo6qXyjAeLyIwRViWg5sGahxicZkcGBUNuYZZw9nmzXQNhD8LYR1GykiOb5Twadn60/mwW9EdVs2NxJaxz3UxT0z4gsjnSxGU3RSXj8+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UsxMz+gq; arc=none smtp.client-ip=209.85.167.53
+	 To:Cc:Content-Type; b=fB4w14iO1vhtw38x4e/R35HQpmXhQi0aYL7JVQzkB7hIAtQSy/TaBIeljl2hg1+U1cI+Br3HyLREVOjQ+SaVpiEt5Eu9gtynQLwvt2V5keZ5+3Yie3fOX9A9SR0EP6xOXbq8q1W8g26MtPKY8VJ0DrMe4N5DeHNM2xq6jrsdnHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KStS5CJH; arc=none smtp.client-ip=209.85.216.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UsxMz+gq"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-549644ae382so6935424e87.1
-        for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 11:17:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KStS5CJH"
+Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-2f74e6c6cbcso1524511a91.2
+        for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 11:36:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741717065; x=1742321865; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1741718161; x=1742322961; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=amzaeUHYPxdXfgE5dqqUKy6QdRie3H51MlqUc45Ro3w=;
-        b=UsxMz+gq9yIm/dFiHyN8ugrRor7scDQziv3pJmHfLtY9wetMhxyIX6lzZiUknPJRbn
-         w6emJCyf3BE4brKiB/FczgPXHxW78Hzv3t0jEmLK5ogAQaBHXRYrvtzA8Z5XRA+CU2zU
-         zUoapwDJqL8RJEfFEnH/xCMpgtWUDyE/luDSoD5ORoq/AWsK6JYnqnVxarAUu5E1VpU6
-         S97vgZdKYP3OruamVOA5vDvTaCZr7Rd1tJgGwDAve7YK1EKrdtAvgcVR/sQKVFKl2DVw
-         47NoJYFnJhZjQ+xqPkeFW/XIGZLyRSRlt1qIpAl6ECnM06P5KoD1e+n95G6wuALYACEz
-         K6JQ==
+        bh=mbgW0kUEsZezmUj5Gi6W94Hy08T0mYNvtx4ZiLvWeKc=;
+        b=KStS5CJHAj/Q14hF8LVfxOD9xrQDY4OANPTCMg7sjWN2Yd4LCqLt5DOsv+TlhOZzht
+         LWtvs5P10QRQb3vvxD6oLMbWuNZjs4ToLHG+kCAQnJ2LaC0yuNkn7HeActwnrZ6h2bEh
+         FGuxXiQc2q1XavrDuPV254I098QGSYJuGRj4vqzoAHRq7HbKK9B2VCjDOnJckVe8kEgV
+         s12TTNUcclx8VjKczVSZUqb19HrCHjsQz7JMpL3kZ56ijuJKlAEjIfpmmJcen72olTeu
+         AHpgFKm83FscBck2vz8jd8XYKZ9wWdhJZHIW2yMw7xn9S9i4rRzl7JWJ9mF4RL0SoIsd
+         TAYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741717065; x=1742321865;
+        d=1e100.net; s=20230601; t=1741718161; x=1742322961;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=amzaeUHYPxdXfgE5dqqUKy6QdRie3H51MlqUc45Ro3w=;
-        b=ObPMEzI9BO2AMlQVKfoCJQBuKlDAlPp8TbnyLmzpYwuyXDNcGcTs5T5KbkrYEGvaWs
-         xn6goJ4remGzlpdCsBjiGLIEr+8KfdG6hZ1KO78LiQJHzzxsDSzyLojWBqwh1cpsoITu
-         SU0zFuCwjnsKbF1yls06kgUO2i2S3maiwRVB9Y2KpU6EtKeL39a9dQ9pKi7hJPOxTvof
-         AE18k6xLggfhyCUTLQNpkRysuy3pHM117fHnmJ7lpXXz19icNCCyEvvtTYYAyPQowT+1
-         xfXLcPPw/gxkmQsb3v9+oVgttz7B99eIYCncVugMiDBrOoJEx0T99d6KKajyyACYHJI/
-         CadQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX3QeugTAlFd+H4RFhgjHonDI5J+nEwqZgt8uHyCWp0I1lSoVUk0szpDrTmvEN9dxt3jMh7sg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx69Ra+IjAAvW05AremdTYyP4spLqJfqmqGZ1okGBlIyOe5G92R
-	4aCKz4cXQqNxBdCKmabWmME5IsLP7p7cCQuZfmkpS3DOAh2tZzQ/0bK7Z2y8mmnNsAoo3km0Hoq
-	Z9h6gm9zb52/a+MfhnGKpyYe89Wc=
-X-Gm-Gg: ASbGncubHM+S8BnLUwG60ovLG9zE0bExvLWizs0z4nbR73DtNUPONoOTS//g7s31Ika
-	1cUdydBzwDpHEdL120cqeeX5AJJXroRvybF21flYeZzD9RO48eXenDsQlSDJqkRXg9aB0sRDoXB
-	+/J5slFzHiHid5/SmHuiwq3mEseA==
-X-Google-Smtp-Source: AGHT+IEYrR3iuVb9k7bTT8zIzdeCEs1XeQqQDE64pk/im8l6F+pZMmJa1FuK6qJVeCb7epxnxpHYTAZTWwaqAKTXhR4=
-X-Received: by 2002:a05:6512:2386:b0:545:60b:f381 with SMTP id
- 2adb3069b0e04-54990e6764cmr5155120e87.29.1741717065084; Tue, 11 Mar 2025
- 11:17:45 -0700 (PDT)
+        bh=mbgW0kUEsZezmUj5Gi6W94Hy08T0mYNvtx4ZiLvWeKc=;
+        b=PrxK8OubDfjfOxnoqi45k5jAhaUjwlkDizaXhtz33QqJTKgOS6HX/AwVvcs93GqZKx
+         +PpB1l/S7wdIwgDMSZpK1nTDxa33nckUJfLQC7F9/2AhbFNFXYBknMsf3nrKFYzzGW/v
+         M2Q/SoxL8nKowqDjmmsPch7NMfiwJXt8fDN2dH0wJDX3mFBvYTk4vV28XoynC/WA0zKs
+         IVgEl28GfEhjFOCbkhBcpTsiVAOT93Oyzp6S9WCm2Uk4P9YSL/frHCZoKF2F0jVh24q6
+         WKdp8CfZ0mT8gTfOhPZwilT9mcu96NiEGW0MA9cA37zeTZW0pWzhgghtcgt7JqEoQ89s
+         YN3Q==
+X-Forwarded-Encrypted: i=1; AJvYcCW//gJ/ZiFDN9j8j5+ROSZ99/9uLZvlRunhVbRRDAH9X6geEenznbOIpuQpOUrX/VGZhpIaZw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzUvm6MueB4r52sHOrfRGwYqvAeEXqzQDc1yFbTzjE8tLZwcBhC
+	jbiI5xPUp+IgwQOIHCfb4Y34WpOIxt13/w+RL67e2Kj+bajJq/EgqA5tNioB3DEfGsTX2i/l9qr
+	AkYDYLvN4ke9FdQZMUkHzXiqrG2g=
+X-Gm-Gg: ASbGncvGJx+oS1Hf54ETzY7iwlUBVy/PFs+POmZ9wvZVckq8RNcIRQI5wKJKjKTTxyt
+	iHNg/kQs6HPuG8wdgKZs/9jfus8swqMhe7n58GEPrOqaQ3bp9R3DL6e15jjUqd7Tgjb6XjykgEv
+	mvy1oIurKuWnKqkqxyAibY6P3G3Q==
+X-Google-Smtp-Source: AGHT+IH2cmOQn/pJuzKnwPkPIwdfjpLEtIQAgPQbajD24xzlPRIR8bojQrzEWciYOytCML/zIjTHthACjDXzOuP0bg4=
+X-Received: by 2002:a17:90b:224d:b0:2ff:4e90:3c47 with SMTP id
+ 98e67ed59e1d1-300ff897fd9mr2311534a91.4.1741718160973; Tue, 11 Mar 2025
+ 11:36:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250310-b4-qcom-smmu-v1-1-733a1398ff85@gmail.com>
- <6f5f2047-b315-440b-b57d-2ed0dd7395f6@arm.com> <CALHNRZ87t7eXohTcpFnejFAPDsyE_1g0aPsASuQ7y5c_zxnLUw@mail.gmail.com>
- <CAE2F3rB-ACt2rdVFYSpSap=t_poTi0-PxhgrYGg4vzjfic7vqA@mail.gmail.com>
-In-Reply-To: <CAE2F3rB-ACt2rdVFYSpSap=t_poTi0-PxhgrYGg4vzjfic7vqA@mail.gmail.com>
-From: Aaron Kling <webgeek1234@gmail.com>
-Date: Tue, 11 Mar 2025 13:17:33 -0500
-X-Gm-Features: AQ5f1Jotsyx4CiMaVUlC-vkoovHyzT3WerEGqfj6ILGnt1v6WPD-tu9VOLKyoNc
-Message-ID: <CALHNRZ8YUjMq0NfAT10wajFJGWaxGWarn-z2C=1Obf0ewT13gQ@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm: Allow disabling Qualcomm support in arm_smmu_v3
-To: Daniel Mentz <danielmentz@google.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Arnd Bergmann <arnd@arndb.de>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	stable@vger.kernel.org
+References: <20250307110821.1703422-1-abdiel.janulgue@gmail.com>
+ <nxaaNW1XIbhf7dSf8aRLVF5Se-0maF6BhX8GaUXlsOL-QOste8OMQxtmhYe_BYI6FYFEMeHEzy1s4OEy7PdGKw==@protonmail.internalid>
+ <20250307110821.1703422-5-abdiel.janulgue@gmail.com> <877c5038i1.fsf@kernel.org>
+ <902d6f21-a6c9-4776-9e55-26f089acd0da@gmail.com>
+In-Reply-To: <902d6f21-a6c9-4776-9e55-26f089acd0da@gmail.com>
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date: Tue, 11 Mar 2025 19:35:48 +0100
+X-Gm-Features: AQ5f1Jr5sFbT-pH3JLPyk4NOyAg6b8WWNgBaCLmj8KNaO5CgUCk4fq4OzPnifXc
+Message-ID: <CANiq72njoQbMrBioohDQaUHixLa4u+1PKpQCoDPWTw0X5EhmAw@mail.gmail.com>
+Subject: Re: [PATCH v13 4/7] rust: device: add dma addressing capabilities
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Cc: Andreas Hindborg <a.hindborg@kernel.org>, rust-for-linux@vger.kernel.org, 
+	daniel.almeida@collabora.com, dakr@kernel.org, robin.murphy@arm.com, 
+	aliceryhl@google.com, Miguel Ojeda <ojeda@kernel.org>, 
+	Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>, 
+	Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <benno.lossin@proton.me>, Trevor Gross <tmgross@umich.edu>, 
+	Valentin Obst <kernel@valentinobst.de>, linux-kernel@vger.kernel.org, 
+	Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com, 
+	iommu@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 11, 2025 at 12:55=E2=80=AFPM Daniel Mentz <danielmentz@google.c=
-om> wrote:
+On Tue, Mar 11, 2025 at 6:45=E2=80=AFPM Abdiel Janulgue
+<abdiel.janulgue@gmail.com> wrote:
 >
-> On Mon, Mar 10, 2025 at 9:51=E2=80=AFAM Aaron Kling <webgeek1234@gmail.co=
-m> wrote:
-> > I am working with the android kernel. The more recent setup enables a
-> > minimal setup of configs in a core kernel that works across all
-> > supported arch's, then requires further support to all be modules. I
-> > specifically am working with tegra devices. But as ARCH_QCOM is
-> > enabled in the core defconfig, when I build smmuv3 as a module, I end
-> > up with a dependency on qcom-scm which gets built as an additional
-> > module. And it would be preferable to not require qcom modules to boot
-> > a tegra device.
->
-> If you want to build arm_smmu_v3.ko, you'd have
->
-> # CONFIG_ARM_SMMU is not set
-> CONFIG_ARM_SMMU_V3=3Dm
->
-> in your .config. I don't see how this would enable ARM_SMMU_QCOM or QCOM_=
-SCM.
+> This already uses `Error::from_errno`?
 
-I went and double checked my defconfig snippet and I have to
-apologize. I put the wrong thing in the commit message and caused
-confusion to myself and the entire discussion. This is what I've got:
+Maybe Andreas meant `to_result`?
 
-# MMU
-CONFIG_ARM_SMMU=3Dm
-# CONFIG_ARM_SMMU_QCOM is not set
-
-Tegra186, tegra194, and tegra234 are supported by arm-smmu, not by
-arm-smmu-v3. And these are the relevant archs I'm trying to work on.
-
-Having the extra dep doesn't break anything, so worst case I continue
-to carry the extra dep or this as a downstream patch. But I had to at
-least try to decouple unnecessary dep.
-
-Sincerely,
-Aaron
+Cheers,
+Miguel
