@@ -1,164 +1,87 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mx1.emlix.com (mx1.emlix.com [178.63.209.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43AFA1DEFE4
-	for <iommu@lists.linux.dev>; Mon, 10 Mar 2025 20:40:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDC5C22D7BE
+	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 10:15:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.209.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741639256; cv=none; b=O+iOUmMyAYS0q+mzhDuTyAeNuFTXbOtdR+fJS2CK0gY+pyPuGeCjqLmZwL2P8B24mGoAJo01tPgXfYBpcohfa3tGzFjjXz/IztHQavRXxybkJOB/Eze61rNSHdYva6HUfTPt1nblo9ZDxHT7OU6W6mxzQqbwyl/1Y5xNZkqw8Ek=
+	t=1741688141; cv=none; b=MyDubTt65d+soI0hN4wXpob7wrDAeL5AQ5IQGUKL7JrtsCaZS+sE0k+r4CTWU/MuiduOdnXqwD6mrgvbUulvi2eE4bWIlLRDqRapHLvGWvQnwXIlUisxk+MHxgETDFS4yKoLdRfmyv4kly6nYxpGwI7nfFAU5kQvR4O0oCLrqzs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741639256; c=relaxed/simple;
-	bh=p7FT2wD3WZKNMVQnP49Wzu1EdaqUzeZXhk1DDsgTN+I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eEdeBavIStL2Rz3kNbNrmqco29t1QmZWVfrpjsTsR/tT21g9tFLN+jI7xe3pGgysqGaNEkjSOVhXki1qXVK5qiJoTgafl5mXWyE6YG6kAQSK0m9vmlpIdbDQ6FSFlq8QsZhYtz8GqF+f9XiHunE56i3kBmBn4ODOpaCml0zI2nc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=KLSBTZ4K; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="KLSBTZ4K"
-Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52AKFZbd012622;
-	Mon, 10 Mar 2025 20:40:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=W9YuYK
-	qO6w28khy+jb3BDttjVL1yDkzw2RZ/N4axoRo=; b=KLSBTZ4Kd0n2+aXrsgXbOJ
-	xPicY7lYsjGAsY6LMaVj09lNRZUOGpGI0sTby/ypWJYxvcoIuonqgZZlFYVj/i45
-	rpflT//Z0+G61ZRIUgqtxuIIn0xG+i6teLC3DWxTMiRb3W4O3Es62k0AzjHeORxY
-	xJa2Htatu2N/uw+8DgfXEyZK1GT2XM1FAoiiAee79ISuRsfmO2etz97y0QP80oRh
-	woqJq70wcn2B3bfYYImFaJrcqLebHOgqQ7SUkl+dwHjptqExj4L9m6IHjm5ViuAA
-	YAGL+gBjOkVe+sl3pn0zyaZfK+yoKF8vKDTRSlSyMJ2wnS7Mbn6sC4jJ5XKwIDKA
-	==
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 459rf94y47-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 10 Mar 2025 20:40:52 +0000 (GMT)
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 52AIj3Dc014921;
-	Mon, 10 Mar 2025 20:40:51 GMT
-Received: from smtprelay03.dal12v.mail.ibm.com ([172.16.1.5])
-	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 4592ek8anm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 10 Mar 2025 20:40:51 +0000
-Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
-	by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 52AKeogr30671556
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 10 Mar 2025 20:40:50 GMT
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id ABE8E58052;
-	Mon, 10 Mar 2025 20:40:50 +0000 (GMT)
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id BF8D558056;
-	Mon, 10 Mar 2025 20:40:49 +0000 (GMT)
-Received: from [9.61.55.227] (unknown [9.61.55.227])
-	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 10 Mar 2025 20:40:49 +0000 (GMT)
-Message-ID: <4a32f00e-a79b-457d-8789-597b9a0e6c9b@linux.ibm.com>
-Date: Mon, 10 Mar 2025 16:40:49 -0400
+	s=arc-20240116; t=1741688141; c=relaxed/simple;
+	bh=KrTHk7G1jAf3iel+oX8YasSxz1Z8g51fCS0gDqSk1qo=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FWUJQy4EbeYwvxg0w1k/AlL6R2HTtLlwRmIXgd9bl716/6rhBGD7eAWjijnrYOrcragy4XaBKq1VBTY0ys6R2vzrSBVDeL39HQEbM96lOB7uYuCZyji+bqHVSNNqTpNDcn25s9K15WHeQ/Fv0XF30WJo93JpAX7EiS/RcRtGZfk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com; spf=pass smtp.mailfrom=emlix.com; arc=none smtp.client-ip=178.63.209.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=emlix.com
+Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
+	(using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mx1.emlix.com (Postfix) with ESMTPS id C28D25FC0B;
+	Tue, 11 Mar 2025 11:15:25 +0100 (CET)
+From: Rolf Eike Beer <eb@emlix.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Jerry Snitselaar <jsnitsel@redhat.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH 3/4] iommu: make inclusion of amd directory conditional
+Date: Tue, 11 Mar 2025 11:12:35 +0100
+Message-ID: <1819907.VLH7GnMWUR@devpool47.emlix.com>
+Organization: emlix GmbH
+In-Reply-To: <2301497.iZASKD2KPV@devpool47.emlix.com>
+References: <2301497.iZASKD2KPV@devpool47.emlix.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] s390/pci: Fix dev.dma_range_map missing sentinel element
-To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>,
-        Will Deacon <will@kernel.org>, Gerd Bayer <gbayer@linux.ibm.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-References: <20250306-fix_dma_map_alloc-v1-1-b4fa44304eac@linux.ibm.com>
-Content-Language: en-US
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20250306-fix_dma_map_alloc-v1-1-b4fa44304eac@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: H3MptcF8lDlYcW0Cz2Rw9oJlNh-9qJ5V
-X-Proofpoint-GUID: H3MptcF8lDlYcW0Cz2Rw9oJlNh-9qJ5V
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-10_07,2025-03-07_03,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=999
- phishscore=0 bulkscore=0 mlxscore=0 suspectscore=0 impostorscore=0
- lowpriorityscore=0 priorityscore=1501 malwarescore=0 adultscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502100000 definitions=main-2503100158
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 
-On 3/6/25 10:25 AM, Niklas Schnelle wrote:
-> The fixed commit sets up dev.dma_range_map but missed that this is
-> supposed to be an array of struct bus_dma_region with a sentinel element
-> with the size field set to 0 at the end. This would lead to overruns in
-> e.g. dma_range_map_min(). It could also result in wrong translations
-> instead of DMA_MAPPIN_ERROR in translate_phys_to_dma() if the paddr were
+Nothing in there is active if CONFIG_AMD_IOMMU is not enabled, so the whole
+directory can depend on that switch as well.
 
-Typo, DMA_MAPPING_ERROR
+=46ixes: cbe94c6e1a7d ("iommu/amd: Move Kconfig and Makefile bits down into=
+ amd directory")
+Signed-off-by: Rolf Eike Beer <eb@emlix.com>
+=2D--
+ drivers/iommu/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> to not fit in the aperture. Fix this by using the dma_direct_set_offset()
-> helper which creates a sentinel for us.
-> 
-> Fixes: d236843a6964 ("s390/pci: store DMA offset in bus_dma_region")
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-
-Thanks for looking into this while I was out.  I confirmed that I can reproduce the potential issue by forcing codepaths - and that your proposed fix also resolves it (by forcing a DMA mapping error instead of using random values for a bus_dma_region).
-
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index ed673c8fd056..41b00cdc8621 100644
+=2D-- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+=2Dobj-y +=3D amd/ arm/ iommufd/ riscv/
++obj-y +=3D arm/ iommufd/ riscv/
++obj-$(CONFIG_AMD_IOMMU) +=3D amd/
+ obj-$(CONFIG_INTEL_IOMMU) +=3D intel/
+ obj-$(CONFIG_IOMMU_API) +=3D iommu.o
+ obj-$(CONFIG_IOMMU_API) +=3D iommu-traces.o
+=2D-=20
+2.48.1
 
 
-> ---
-> This is based on iommu/next which contains the fixed commit
-> ---
->  arch/s390/pci/pci_bus.c | 24 +++++++++++-------------
->  1 file changed, 11 insertions(+), 13 deletions(-)
-> 
-> diff --git a/arch/s390/pci/pci_bus.c b/arch/s390/pci/pci_bus.c
-> index 0e725039861f92925a38f7ff7cb6de6b0d965ac3..14310c3b48860a16de13536adf95ef99e6af21cc 100644
-> --- a/arch/s390/pci/pci_bus.c
-> +++ b/arch/s390/pci/pci_bus.c
-> @@ -287,23 +287,21 @@ static struct zpci_bus *zpci_bus_alloc(int topo, bool topo_is_tid)
->  static void pci_dma_range_setup(struct pci_dev *pdev)
->  {
->  	struct zpci_dev *zdev = to_zpci(pdev);
-> -	struct bus_dma_region *map;
-> -	u64 aligned_end;
-> +	u64 aligned_end, size;
-> +	dma_addr_t dma_start;
-> +	int ret;
->  
-> -	map = kzalloc(sizeof(*map), GFP_KERNEL);
-> -	if (!map)
-> -		return;
-> -
-> -	map->cpu_start = 0;
-> -	map->dma_start = PAGE_ALIGN(zdev->start_dma);
-> +	dma_start = PAGE_ALIGN(zdev->start_dma);
->  	aligned_end = PAGE_ALIGN_DOWN(zdev->end_dma + 1);
-> -	if (aligned_end >= map->dma_start)
-> -		map->size = aligned_end - map->dma_start;
-> +	if (aligned_end >= dma_start)
-> +		size = aligned_end - dma_start;
->  	else
-> -		map->size = 0;
-> -	WARN_ON_ONCE(map->size == 0);
-> +		size = 0;
-> +	WARN_ON_ONCE(size == 0);
->  
-> -	pdev->dev.dma_range_map = map;
-> +	ret = dma_direct_set_offset(&pdev->dev, 0, dma_start, size);
-> +	if (ret)
-> +		pr_err("Failed to allocate DMA range map for %s\n", pci_name(pdev));
->  }
->  
->  void pcibios_bus_add_device(struct pci_dev *pdev)
-> 
-> ---
-> base-commit: e840414e5a73ac02ffba6299b46f535a0b7cba98
-> change-id: 20250306-fix_dma_map_alloc-b3b05903dcfb
-> 
-> Best regards,
+=2D-=20
+Rolf Eike Beer
+
+We are nominated for the embedded award Visit us at the embedded=20
+world 2025 March 11th to 13th, 2025 | Nuremberg Find us in hall 4 at=20
+booth 336
+
+emlix GmbH
+Headquarters: Berliner Str. 12, 37073 G=C3=B6ttingen, Germany
+Phone +49 (0)551 30664-0, e-mail info@emlix.com
+District Court of G=C3=B6ttingen, Registry Number HR B 3160
+Managing Directors: Heike Jordan, Dr. Uwe Kracke
+VAT ID No. DE 205 198 055
+Office Berlin: Panoramastr. 1, 10178 Berlin, Germany
+Office Bonn: Bachstr. 6, 53115 Bonn, Germany
+http://www.emlix.com
+
+emlix - your embedded Linux partner
+
 
