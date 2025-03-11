@@ -1,63 +1,63 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CEBD111A8
-	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 17:49:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF2DE2638AD
+	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 17:49:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741715394; cv=none; b=p+95l7XrnkDxie/U4w5xSjsPCV0sDGZ9m4G1gJA3kJBZAi2cfyyNnm3fnl4IIzYNTsdMSl44vY+u1fM77bVZHdvM5/uLo+bM2NfT7dQHuME/TrfTE2pxRouEhF7tskEpGB9CdKsKyRZPlH82pNw849p31Cw9hZNX8UwkpC/Gf2w=
+	t=1741715395; cv=none; b=g3rxzHV6l00YrhSasC2RK1mSdx/gOh4a2QJxTV495y4gui3QXQkeNHqJxoFj5lSOUnLuhcGwiQS7WzRK2bBnpLjc4bgDSX2FDXotoQfflSH/J+y9thGP4iCYNBETlAxK7HAKVkh5Agcvj2xvtmtL3g9iMmKzkGp5vw58ssO4v/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741715394; c=relaxed/simple;
-	bh=NPurUptvYolnP+zwLTc8xyODM40c1STXAevHbBUYyUM=;
+	s=arc-20240116; t=1741715395; c=relaxed/simple;
+	bh=kcqiy6qGt4Y+kxGncSLGf72ytPK9edLXcjO1O4LH7hE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=P7cxaq+gn0VKfOeaQE4aey0k0osW2Jd7gnHaesXP5+xLMvDblLoNQeDi3JiyczH43uuNGWCsywUrB5rTOaDKv3uHpNHJJOo5SETa0w1gev3w1nriVYOe+qyUBY5BKoJfwTrocKZ1fQ590hnB0LDBavO4tmlzqSSy5tV6Lu3/NOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LMZZERMF; arc=none smtp.client-ip=209.85.167.43
+	 MIME-Version; b=e0hbd2xAkcG1fJBbEI2vosghdbhVxoEhavaE/P8cOX113/haXRM8W31ihZxho6vPRfKvW7s6/gQUKK6hxTTWO1Fb9+1HDmWtnzf0n2mK1ROJzKkrke4n+MqRw9MNjtIhcrqyE5tJsXiq7NjItbZ1PcCK6HEMvpKdeAXJxOgsThk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Mlgliwoi; arc=none smtp.client-ip=209.85.208.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LMZZERMF"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5498c742661so6225123e87.1
-        for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 10:49:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Mlgliwoi"
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-30c0517142bso31359951fa.1
+        for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 10:49:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741715390; x=1742320190; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1741715392; x=1742320192; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HY0a+7Bd76kNssAI216pzAYL/YAAvUS9w1O5DEvCouw=;
-        b=LMZZERMFp/6BMZ7ZYocFtFQwXCOLJBwCLRP3TJEQg+t+CwnqLbXvqL/BgnIwLupfj1
-         nw4zTeiCGU/R8alyPP+CenXK+LqRtPIk+GiVSIyD58fuYPt8ln+2v4B8YrX4z6LCH7hE
-         OitoNyJzB3bJzKmfWwgWdKWU6lwt4RsK0ILmySkNFsTAfc2FNHtKl5//3WrcGPUFUqlE
-         BkV/c/uZp/MUUY61OvLZFvuAjKhllvYTj84XA61O8R3C5WSBbjXwb7IFHLQ4PmlVCsWK
-         q53mh5g05KLurVeXIC6rmyAW2nV9vn1t7GZIe+4KW/v6QqyPGkn+sVt3bBd2zZfpOFfc
-         kGdA==
+        bh=14YkA0wGL7fYnkvOubGO+Rkt0qCHzCYEIoKnBb0OOUg=;
+        b=MlgliwoiG2RnK4+BPjIrbw8LeG3QeFPnYrZgVcNfHfzzVC7U06JO0XZEaGb/lX//CW
+         LdizclZbxbq7vR76Wov+uusqVJ4qiiOYaTVVc8BRfsAZLF0kFZp5GzVJo7hcPzVJ0EQV
+         /OvI5+AUlFZZBl19GZ8C+Ukzq4xzSu3+19ie1bdqPizzFLfJTnobayZdQ/3EqWjpHzHE
+         eVLBeHRLz54oZYtQzniZDU1AAQLsVxZgTFE1tAKG1fRm6yqc/WkzPnK9Z1JhmTi55ln9
+         wy+WrY2CAbxLXn5eoli0uoZ3Vq5BsY22W8+CF0ZTmsbmROqXpkUIL1WhG/n6/PdXwAMJ
+         miCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741715390; x=1742320190;
+        d=1e100.net; s=20230601; t=1741715392; x=1742320192;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=HY0a+7Bd76kNssAI216pzAYL/YAAvUS9w1O5DEvCouw=;
-        b=okIzeUjdLsJupD820k1xKSUyZMyXIL9DNyCif2m3W065Jn7lAWT6Y/IEPXa5ZJDBta
-         jVZ3zbHZKyFjeM/o87KkX+Z6f9Ykz/nYqhDw2H8Wn1gNyXKBODViUDkPAxvEBk1PUd7T
-         GHGA2yb2hnBOOjS8dnFSVU+0b9Clpd9KK0mVaF3Xy/U/GgqO2A3K+YKnOTDGJ5v4me8Y
-         XyaqiBYE5l19QR64LHSwIDX1ZMfLjH0GAJkm7JiJvvEAJGEowHi2tPpmOq4Lr75PSY9f
-         L7zJkc2osY5ejHwMmLCqK4y85QdxqN6NqxwH89D8EGiY+iBpehClXaGF0WXIFW9ppiJC
-         POVA==
-X-Forwarded-Encrypted: i=1; AJvYcCXqckowYSaOi13MeBUlgpdABHuVH6FgOL4GkCUXXDTcbMLG1FYezNOMG8jQav5OJsQpSRe1cg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw3mKNR/gSjkUeRYJeyo75kKZuPv3XR3pcNEcSGN3YUKzhBRWs8
-	AEc0X0WqnYNM1IHfncWxJupkKK61Txlpoy+b6efWS//jZxXX7Bqn
-X-Gm-Gg: ASbGnctjLZXMGKopJgqBXkvUJvCHFCTCgRj7EfVsEH1dgeaKCHHQs4NUMbrlBHkbZqw
-	iQdGYrUjBKzq2F2QYHIjsz3W4f2x7tBC6cVGglvHG0DT6sLsq7UNP4pMFmjCprSG5RGBq47x20y
-	Da1V0IScsY+Vzr2bx2fTasBk8QG2kswJZgJnwMbRp5v2pO9Rku4ExMN25Gk+lxVaUcxqE8Tdbjq
-	HaSy0CZ4J57vydbzdQNZTo80Wp5zvAynjnXfjg53wSl0iUdcdjgjZfKJxKlJUQgwE6z3+J/E99m
-	16i+j03kZft4qqo8Q5j2F9k3ivk4XikDuXtXuO/1GSs8xCksAFpBuudL+iyRree1qLdVFKXlVi2
-	3wZ3rNj5PvbahmvfHxY6usw==
-X-Google-Smtp-Source: AGHT+IHwItuL4p8GEONkja8pXnOCoaN6KKG1lPFxAT9W4J2iw1+SfhfJZwRqf3e2PLRMhwdeW6DL/Q==
-X-Received: by 2002:a05:6512:3d8f:b0:549:9044:94b3 with SMTP id 2adb3069b0e04-54990e67285mr5883924e87.29.1741715390119;
-        Tue, 11 Mar 2025 10:49:50 -0700 (PDT)
+        bh=14YkA0wGL7fYnkvOubGO+Rkt0qCHzCYEIoKnBb0OOUg=;
+        b=dTghV7CO+Po57N/IK+UWErwR0O+TAEkCw333cByQFGA7pYn3SBQqNuS/3vQ7QqSvyz
+         qs9ncyx5CBZgfPiyUEr7yiinQFjR1AQOPB1UNIaB7hlwMYhOg0EteaPWdm0SnU0MwUqu
+         7Vy3GU5bmU5YX74LeUWQgYcNRAt+TtvuHcEvwldX+uEdUEpBSuWl6sWLfUXkfE3n0bIA
+         U+3zSg5ZgGZYWaP6HfRy4Se4C7R+1xoQbfgI5NAAof7BRfJ6RhEzzUS7RFCfDLoZH4MS
+         M1jKguQgDx8XjcuXpziHi907MsjzTpcHN8rBgxQ0rmBxPZB0660XXn1CFC4i5r82BxgU
+         l+sw==
+X-Forwarded-Encrypted: i=1; AJvYcCWDHMkRThUBrUHzqQ8NAD1L0RrkzHf7PKLjFXvxeLXyKpga42pZwcXILkxErVl0L6cqAYkqjQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywf8ZdWJNlRp5zCBTC2Aq2ggxISLESXMhWHlvcWGq2/kKSeI0jJ
+	nP1hF7ecc3v6S5rxGNIUBb380lJcDUKi16mmPbGSswPFRzT2KO+Z
+X-Gm-Gg: ASbGncvd09hRK5srxRImcvhDj2ZabWLEt0u+GNOAzeIDifMbprSQjFWLOxbaY5YwwpI
+	pCkwhh9WXMLNevPrIin9sVZwTg6uWuSoWnaCR3sXGora2FX0ICQ+OtyfD1Gc/Efw2HwoeeTUOUq
+	OqQ9MtNVOPazvY4GdIH24IXzWOcuGmUVHYicsQokdVW0jTco+UCUc3M5+nX+R7xp9eEhzz50oXV
+	S9gPrJaupXTF/y5VQ+X3Sy7rI8983p1FooXkLLTPh/z8BtT0Ey2U1eFwRWHGtA2CrWe5+3DdeSO
+	ZGwAgLfKS2oRrxvHqIOakoi60uiEFm+zYVkZkua0fXthy0zKFBWdaXjJs6ZBP9FcUcnug73ovmK
+	GJZY1zyK165CikNMq1s6qTQ==
+X-Google-Smtp-Source: AGHT+IHOS3hlQgJU64hUJKXadQ+ab5L4zyh26dMc/jdCYKiPNtOWkm2Ahv2s8J3tE0GaKNyF1kyskg==
+X-Received: by 2002:a05:6512:6d6:b0:549:8d2a:8820 with SMTP id 2adb3069b0e04-549ababf0ccmr1847721e87.17.1741715391892;
+        Tue, 11 Mar 2025 10:49:51 -0700 (PDT)
 Received: from abj-NUC9VXQNX.. (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5498ae4465fsm1921728e87.26.2025.03.11.10.49.47
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5498ae4465fsm1921728e87.26.2025.03.11.10.49.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Mar 2025 10:49:48 -0700 (PDT)
+        Tue, 11 Mar 2025 10:49:51 -0700 (PDT)
 From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 To: rust-for-linux@vger.kernel.org,
 	daniel.almeida@collabora.com,
@@ -79,9 +79,9 @@ Cc: Miguel Ojeda <ojeda@kernel.org>,
 	airlied@redhat.com,
 	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: [PATCH v14 03/11] samples: rust: add Rust dma test sample driver
-Date: Tue, 11 Mar 2025 19:47:59 +0200
-Message-ID: <20250311174930.2348813-4-abdiel.janulgue@gmail.com>
+Subject: [PATCH v14 04/11] MAINTAINERS: add entry for Rust dma mapping helpers device driver API
+Date: Tue, 11 Mar 2025 19:48:00 +0200
+Message-ID: <20250311174930.2348813-5-abdiel.janulgue@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250311174930.2348813-1-abdiel.janulgue@gmail.com>
 References: <20250311174930.2348813-1-abdiel.janulgue@gmail.com>
@@ -93,153 +93,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a simple driver to excercise the basics of the Rust DMA
-coherent allocator bindings.
+Add an entry for the Rust dma mapping helpers abstractions.
 
-Suggested-by: Danilo Krummrich <dakr@kernel.org>
+Nacked-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Danilo Krummrich <dakr@kernel.org>
+Acked-by: Andreas Hindborg <a.hindborg@kernel.org>
 Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 ---
- samples/rust/Kconfig     | 11 +++++
- samples/rust/Makefile    |  1 +
- samples/rust/rust_dma.rs | 97 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 109 insertions(+)
- create mode 100644 samples/rust/rust_dma.rs
+ MAINTAINERS | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/samples/rust/Kconfig b/samples/rust/Kconfig
-index 3b6eae84b297..e2d14aa6beec 100644
---- a/samples/rust/Kconfig
-+++ b/samples/rust/Kconfig
-@@ -78,4 +78,15 @@ config SAMPLE_RUST_HOSTPROGS
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 007ca67cc830..aa49c551fbec 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6902,6 +6902,19 @@ F:	include/linux/dma-mapping.h
+ F:	include/linux/swiotlb.h
+ F:	kernel/dma/
  
- 	  If unsure, say N.
- 
-+config SAMPLE_RUST_DRIVER_DMA
-+	tristate "DMA Test Driver"
-+	depends on PCI
-+	help
-+	  This option builds the Rust dma test driver sample.
++DMA MAPPING HELPERS DEVICE DRIVER API [RUST]
++M:	Abdiel Janulgue <abdiel.janulgue@gmail.com>
++M:	Danilo Krummrich <dakr@kernel.org>
++R:	Daniel Almeida <daniel.almeida@collabora.com>
++R:	Robin Murphy <robin.murphy@arm.com>
++R:	Andreas Hindborg <a.hindborg@kernel.org>
++L:	rust-for-linux@vger.kernel.org
++S:	Supported
++W:	https://rust-for-linux.com
++T:	git https://github.com/Rust-for-Linux/linux.git alloc-next
++F:	rust/kernel/dma.rs
++F:	samples/rust/rust_dma.rs
 +
-+	  To compile this as a module, choose M here:
-+	  the module will be called dma.
-+
-+	  If unsure, say N.
-+
- endif # SAMPLES_RUST
-diff --git a/samples/rust/Makefile b/samples/rust/Makefile
-index 0dbc6d90f1ef..1a9aff6e8d6a 100644
---- a/samples/rust/Makefile
-+++ b/samples/rust/Makefile
-@@ -7,6 +7,7 @@ obj-$(CONFIG_SAMPLE_RUST_PRINT)			+= rust_print.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_PCI)		+= rust_driver_pci.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_PLATFORM)	+= rust_driver_platform.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_FAUX)		+= rust_driver_faux.o
-+obj-$(CONFIG_SAMPLE_RUST_DRIVER_DMA)		+= rust_dma.o
- 
- rust_print-y := rust_print_main.o rust_print_events.o
- 
-diff --git a/samples/rust/rust_dma.rs b/samples/rust/rust_dma.rs
-new file mode 100644
-index 000000000000..1740140faba6
---- /dev/null
-+++ b/samples/rust/rust_dma.rs
-@@ -0,0 +1,97 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Rust DMA api test (based on QEMU's `pci-testdev`).
-+//!
-+//! To make this driver probe, QEMU must be run with `-device pci-testdev`.
-+
-+use kernel::{bindings, dma::CoherentAllocation, pci, prelude::*};
-+
-+struct DmaSampleDriver {
-+    pdev: pci::Device,
-+    ca: CoherentAllocation<MyStruct>,
-+}
-+
-+const TEST_VALUES: [(u32, u32); 5] = [
-+    (0xa, 0xb),
-+    (0xc, 0xd),
-+    (0xe, 0xf),
-+    (0xab, 0xba),
-+    (0xcd, 0xef),
-+];
-+
-+struct MyStruct {
-+    h: u32,
-+    b: u32,
-+}
-+
-+impl MyStruct {
-+    fn new(h: u32, b: u32) -> Self {
-+        Self { h, b }
-+    }
-+}
-+// SAFETY: All bit patterns are acceptable values for `MyStruct`.
-+unsafe impl kernel::transmute::AsBytes for MyStruct {}
-+// SAFETY: Instances of `MyStruct` have no uninitialized portions.
-+unsafe impl kernel::transmute::FromBytes for MyStruct {}
-+
-+kernel::pci_device_table!(
-+    PCI_TABLE,
-+    MODULE_PCI_TABLE,
-+    <DmaSampleDriver as pci::Driver>::IdInfo,
-+    [(
-+        pci::DeviceId::from_id(bindings::PCI_VENDOR_ID_REDHAT, 0x5),
-+        ()
-+    )]
-+);
-+
-+impl pci::Driver for DmaSampleDriver {
-+    type IdInfo = ();
-+    const ID_TABLE: pci::IdTable<Self::IdInfo> = &PCI_TABLE;
-+
-+    fn probe(pdev: &mut pci::Device, _info: &Self::IdInfo) -> Result<Pin<KBox<Self>>> {
-+        dev_info!(pdev.as_ref(), "Probe DMA test driver.\n");
-+
-+        let ca: CoherentAllocation<MyStruct> =
-+            CoherentAllocation::alloc_coherent(pdev.as_ref(), TEST_VALUES.len(), GFP_KERNEL)?;
-+
-+        || -> Result {
-+            for (i, value) in TEST_VALUES.into_iter().enumerate() {
-+                kernel::dma_write!(ca[i] = MyStruct::new(value.0, value.1));
-+            }
-+
-+            Ok(())
-+        }()?;
-+
-+        let drvdata = KBox::new(
-+            Self {
-+                pdev: pdev.clone(),
-+                ca,
-+            },
-+            GFP_KERNEL,
-+        )?;
-+
-+        Ok(drvdata.into())
-+    }
-+}
-+
-+impl Drop for DmaSampleDriver {
-+    fn drop(&mut self) {
-+        dev_info!(self.pdev.as_ref(), "Unload DMA test driver.\n");
-+
-+        let _ = || -> Result {
-+            for (i, value) in TEST_VALUES.into_iter().enumerate() {
-+                assert_eq!(kernel::dma_read!(self.ca[i].h), value.0);
-+                assert_eq!(kernel::dma_read!(self.ca[i].b), value.1);
-+            }
-+            Ok(())
-+        }();
-+    }
-+}
-+
-+kernel::module_pci_driver! {
-+    type: DmaSampleDriver,
-+    name: "rust_dma",
-+    author: "Abdiel Janulgue",
-+    description: "Rust DMA test",
-+    license: "GPL v2",
-+}
+ DMA-BUF HEAPS FRAMEWORK
+ M:	Sumit Semwal <sumit.semwal@linaro.org>
+ R:	Benjamin Gaignard <benjamin.gaignard@collabora.com>
 -- 
 2.43.0
 
