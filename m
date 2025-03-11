@@ -1,83 +1,82 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DCA7625E81B
-	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 15:19:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E289226158C;
+	Tue, 11 Mar 2025 15:56:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741706375; cv=none; b=lTDkeG4Ob5Ae82F5OgJg1W5XL++IabBIIgIekFULq6uBd8XowJWFkRPEu7jCqe+j/8GGbdnApZ7nC8j3Tt7ni1ZAGwxU/sb5V8fxyjHMY7eZyxhStZ7M3ZlBY5Jc6QGCN2ZliieF7HiE9ZJuW9VE3bsAeKOC/mfjtU+NP4jY3Vw=
+	t=1741708572; cv=none; b=Fa+d1UfSuJq1ueakiMCvo6YUXFvTL9fWWU3JfkzQYGnZv7HFGIPQGrQ6j0eQe9zkE1CyJAla69b9/3vA9afoKgzqJGwXlOhr1kiUrKNylY8Q+5jFlB7x7g+XLyc/j3JudJltcUJD6H34u681qU1GQMp10ffcKZyXEXG5dCw9SC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741706375; c=relaxed/simple;
-	bh=gJWQfmISO6ERM+tVeKhihrJylxXq8bhx0BWJ8FnYsqg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=RS+uflEqGx29gK+SQIAxL9/S+OJH9KKY0J6hh9e8/70LWdiwx+rNgyPPNvjSKhcYua1ePRLFqLpU0j/UmjckKy3aJaGcb8Y/cnv1TicPyGXX4FZMQ2iPnWQU5Q/+kCJs0pQaB2F2ovFJJ3MbPBYn3nRfpBhqMlARQJsYREiKR1M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3D4CE152B;
-	Tue, 11 Mar 2025 08:19:43 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 49C043F694;
-	Tue, 11 Mar 2025 08:19:31 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH] iommu: Avoid introducing more races
-Date: Tue, 11 Mar 2025 15:19:25 +0000
-Message-Id: <09d901ad11b3a410fbb6e27f7d04ad4609c3fe4a.1741706365.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+	s=arc-20240116; t=1741708572; c=relaxed/simple;
+	bh=WOD9YXSZJSsUah42YQG9e0FFUMU6LOcUUbHhH1HrEIw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OU7k9n2uLv5h9ciB3l+6uXBxEQtYKWvA5hnxZKuL+J4pxNovCjTLL7rVqTUnA2FB8f2A5Z3htBwkNyKIYlx0jL1mY2BgugSIjg7/Jxow4TW0AXaSrw38eKbyBwjtlDcMBoH9yi3xrgayx7r21uN9IUndtTJzwsSOPdRVYu1m5t0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rBQQntQA; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rBQQntQA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23E2BC4CEF8;
+	Tue, 11 Mar 2025 15:56:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741708570;
+	bh=WOD9YXSZJSsUah42YQG9e0FFUMU6LOcUUbHhH1HrEIw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=rBQQntQA1R+j3qafaEL1jZtkhTsmjlsv/zv9uSVqkUw1X4hLlQ6kBf3bRWEozlIUa
+	 EqR9O4ZIdtinIIaddOnR7M0YqWEv+rU84w9pt6dTQUk/2XLLJngY7q5T1x7Us8h+gq
+	 b1IR6RNoH9miWzGOEAujHc5vw8Bd6f4KxN4x6//ID1kvPRHeYHUG+9Je48tSpohuLb
+	 1UmgashYH4PzfVY6JMn1V/1RymsT2SRu9SoWM0G1N1rv8ksb5I8QEXsq2hBLG6GRSH
+	 bbPTRAlXtTOMYZv9u4O7lsmj/lzHhvaMA0Tem6wlMiPFfNVEfOzTa9kdlJlkfa7aG+
+	 9Ad00t9hyTP7A==
+Date: Tue, 11 Mar 2025 15:56:02 +0000
+From: Will Deacon <will@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
+	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
+	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
+	praan@google.com, patches@lists.linux.dev
+Subject: Re: [PATCH v8 14/14] iommu/arm-smmu-v3: Set MEV bit in nested STE
+ for DoS mitigations
+Message-ID: <20250311155602.GA5138@willie-the-truck>
+References: <cover.1740504232.git.nicolinc@nvidia.com>
+ <f465dd9defdc0fc748c2fa2cfc829e37778a4ced.1740504232.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f465dd9defdc0fc748c2fa2cfc829e37778a4ced.1740504232.git.nicolinc@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Although the lock-juggling is only a temporary workaround, we don't want
-it to make things avoidably worse. Jason was right to be nervous, since
-bus_iommu_probe() doesn't care *which* IOMMU instance it's probing for,
-so it probably is possible for one walk to finish a probe which a
-different walk started, thus we do want to check for that.
+On Tue, Feb 25, 2025 at 09:25:42AM -0800, Nicolin Chen wrote:
+> There is a DoS concern on the shared hardware event queue among devices
+> passed through to VMs, that too many translation failures that belong to
+> VMs could overflow the shared hardware event queue if those VMs or their
+> VMMs don't handle/recover the devices properly.
+> 
+> The MEV bit in the STE allows to configure the SMMU HW to merge similar
+> event records, though there is no guarantee. Set it in a nested STE for
+> DoS mitigations.
+> 
+> In the future, we might want to enable the MEV for non-nested cases too
+> such as domain->type == IOMMU_DOMAIN_UNMANAGED or even IOMMU_DOMAIN_DMA.
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Pranjal Shrivastavat <praan@google.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h         | 1 +
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 2 ++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c         | 4 ++--
+>  3 files changed, 5 insertions(+), 2 deletions(-)
 
-Also there's no need to drop the lock just to have of_iommu_configure()
-do nothing when a fwspec already exists; check that directly and avoid
-opening a window at all in that (still somewhat likely) case.
+Acked-by: Will Deacon <will@kernel.org>
 
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
-I was rather expecting to send a v3 of "iommu: Get DT/ACPI parsing into
-the proper probe path", so I'm grateful that v2 was picked up, thanks!
-This is the difference as a fix/squash commit instead.
----
- drivers/iommu/iommu.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d824fa5166e3..c6d40abe577e 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -415,13 +415,15 @@ static int iommu_init_device(struct device *dev)
- 	 * is buried in the bus dma_configure path. Properly unpicking that is
- 	 * still a big job, so for now just invoke the whole thing. The device
- 	 * already having a driver bound means dma_configure has already run and
--	 * either found no IOMMU to wait for, or we're in its replay call right
--	 * now, so either way there's no point calling it again.
-+	 * found no IOMMU to wait for, so there's no point calling it again.
- 	 */
--	if (!dev->driver && dev->bus->dma_configure) {
-+	if (!dev->iommu->fwspec && !dev->driver && dev->bus->dma_configure) {
- 		mutex_unlock(&iommu_probe_device_lock);
- 		dev->bus->dma_configure(dev);
- 		mutex_lock(&iommu_probe_device_lock);
-+		/* If another instance finished the job for us, skip it */
-+		if (!dev->iommu || dev->iommu_group)
-+			return -ENODEV;
- 	}
- 	/*
- 	 * At this point, relevant devices either now have a fwspec which will
--- 
-2.39.2.101.g768bb238c484.dirty
-
+Will
