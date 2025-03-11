@@ -1,49 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3203BE67;
-	Tue, 11 Mar 2025 15:57:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E9681EB9E3;
+	Tue, 11 Mar 2025 16:13:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741708643; cv=none; b=oJt630bvsM/dfK4G+Wup5I2ssXDhMB51+qwuZ68zU7He9A9vwJNTPr8CJ0iz2w85Zn7B7JfQGxzBmqORSboZjthWqlPhQEN/A0RHcMfzzH0BSPvfOBpZ5OcqpaTmTgF7xnrnf/y9rX9tw0sc6/RmanVKshiJjIhx26n79ihu4TI=
+	t=1741709624; cv=none; b=prZZsj+bJD45RIJ602aBdjscLs0JxW3Qw23bnkzxvTMbOqQZLldX9PUqTOzhaoIr82vDkiz6OhbBkt3hcLNGZnQS+tV8EkRBfHhSAX4WbMyIxCdJ7xvtIrbjND46H5rX5LGVGhC6yX9ItKUoNhyCzahf0shl1M/tqBtNUdLSGYo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741708643; c=relaxed/simple;
-	bh=BZTxXXA67zvcYZUPAms2o1IQhwkgm/4LnFmDVxI2ONs=;
+	s=arc-20240116; t=1741709624; c=relaxed/simple;
+	bh=Q72aDixIkaux456M7FZBKvpgHRVOfglTKc9SKUy0GkE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JYr2aIlSTN/o94qzp9Rn4W0d1sHMmab2lCeBi5Z9jMR6tiuuE4yuIkSfgICtV3+OFV4a8OsfOKKu3+MBMfHHpQgsAnC6RcNoz9RKWA3zPoOYLxY/EU9K2w5lmQgId9TMuiz4JQk8nRjlnYKlvzZd5a5LZGsIBoHGJMYMhWmboGY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NYrFmUvf; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=RG4+caQpsDi/uHmpk2nLtYHV/c7NkPncnZL5sFroYjsw90ypMyHACAjJzAc394P3GxAOibEQ9161nn1AwM7/B0zzxKjeVgUe/HVdUyGV5ME4kvlFS7doLx/ZtLSdR+j36LxkI3rVh4pOtLPN7xV+MxJw/QGToz/eBNV1zRwUQQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ub0Og0TP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NYrFmUvf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D941C4CEEC;
-	Tue, 11 Mar 2025 15:57:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ub0Og0TP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9D00C4CEE9;
+	Tue, 11 Mar 2025 16:13:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741708643;
-	bh=BZTxXXA67zvcYZUPAms2o1IQhwkgm/4LnFmDVxI2ONs=;
+	s=k20201202; t=1741709624;
+	bh=Q72aDixIkaux456M7FZBKvpgHRVOfglTKc9SKUy0GkE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NYrFmUvfLJTnTAUuNsvf7jl110FlX1XQjHYJv6UtMkxM487T1UwPjrJnb/KFOOXDY
-	 4c/FTYEtU3qswKyPGejNRtq9L4QnNxy+rDETa8i1IAL2MhiMEW+6PJnE6ajqGYLfL8
-	 JHDnS7kP7oW2bNHPkridid0tOs53GJHG9msqCSX/ReUA415polcodWwWksAHJXoQwk
-	 Q7zbpaLmB369VDgojkiXPq1kNn+gICyoTQ0g91wrOQkty74sa2qKd3by0RjZGS6WNw
-	 fqrMTu3Rb7/NHMMay2gFyahQ3CSkmM+sNuZejCnSqzmPMrrEf+Q4+Prhg3OjPWvlZH
-	 XOobXYZ3D+D9g==
-Date: Tue, 11 Mar 2025 15:57:16 +0000
+	b=Ub0Og0TPVcpoP7rNq+fKRAsbnps8GFpaAAmIp1FHpKsPO07iwVHp5pZew2lRHcaAZ
+	 WKSGAeQLOTNuX3/fQAAdfsiZdHl7ejsEprfdociAmDDyLTjA7bMGp8bNdMxuaHdD9L
+	 ABn9UQhqR9dnhNw7WWce7CbGSQOzu8GNRxdxnJTPGyY0UjfYccCT5MlehahNPoYSTz
+	 UxNmJQ8H16OLIRGWyV5zg+t4MsOdgeFSV0Yry4ysyiMkjhPr9JxJ6Er4CnUeoxBb5C
+	 qCcXnUNzZsf1r2OMW7LEx/P5r1+Mqotb8z7KaB5vZGIB3BobqhlRjK3kSkWTBSYoXA
+	 o+E7CSYV4VJog==
+Date: Tue, 11 Mar 2025 16:13:38 +0000
 From: Will Deacon <will@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
-	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
-	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
-	praan@google.com, patches@lists.linux.dev
-Subject: Re: [PATCH v8 12/14] iommu/arm-smmu-v3: Introduce struct
- arm_smmu_vmaster
-Message-ID: <20250311155714.GC5138@willie-the-truck>
-References: <cover.1740504232.git.nicolinc@nvidia.com>
- <f205a4e2f5971cd4b1033d7cac41683e10ebabfb.1740504232.git.nicolinc@nvidia.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+	Fenghua Yu <fenghuay@nvidia.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>,
+	Zhou Wang <wangzhou1@hisilicon.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v3 01/12] iommu/arm-smmu-v3: Put iopf enablement in the
+ domain attach path
+Message-ID: <20250311161337.GD5138@willie-the-truck>
+References: <20250228092631.3425464-1-baolu.lu@linux.intel.com>
+ <20250228092631.3425464-2-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,90 +49,102 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f205a4e2f5971cd4b1033d7cac41683e10ebabfb.1740504232.git.nicolinc@nvidia.com>
+In-Reply-To: <20250228092631.3425464-2-baolu.lu@linux.intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, Feb 25, 2025 at 09:25:40AM -0800, Nicolin Chen wrote:
-> Use it to store all vSMMU-related data. The vsid (Virtual Stream ID) will
-> be the first use case. Since the vsid reader will be the eventq handler
-> that already holds a streams_mutex, reuse that to fenche the vmaster too.
-
-"fenche"?
-
-> Also add a pair of arm_smmu_attach_prepare/commit_vmaster helpers to set
-> or unset the master->vmaster point. Put these helpers inside the existing
-
-s/point/pointer/
-
-> arm_smmu_attach_prepare/commit().
+On Fri, Feb 28, 2025 at 05:26:20PM +0800, Lu Baolu wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> For identity/blocked ops that don't call arm_smmu_attach_prepare/commit(),
-> add a simpler arm_smmu_master_clear_vmaster helper to unset the vmaster.
+> SMMUv3 co-mingles FEAT_IOPF and FEAT_SVA behaviors so that fault reporting
+> doesn't work unless both are enabled. This is not correct and causes
+> problems for iommufd which does not enable FEAT_SVA for it's fault capable
+> domains.
 > 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Pranjal Shrivastavat <praan@google.com>
-
-(per Pranjal: please fix his mis-spelling of his own name here and in
-the other patches too!)
-
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> These APIs are both obsolete, update SMMUv3 to use the new method like AMD
+> implements.
+> 
+> A driver should enable iopf support when a domain with an iopf_handler is
+> attached, and disable iopf support when the domain is removed.
+> 
+> Move the fault support logic to sva domain allocation and to domain
+> attach, refusing to create or attach fault capable domains if the HW
+> doesn't support it.
+> 
+> Move all the logic for controlling the iopf queue under
+> arm_smmu_attach_prepare(). Keep track of the number of domains on the
+> master (over all the SSIDs) that require iopf. When the first domain
+> requiring iopf is attached create the iopf queue, when the last domain is
+> detached destroy it.
+> 
+> Turn FEAT_IOPF and FEAT_SVA into no ops.
+> 
+> Remove the sva_lock, this is all protected by the group mutex.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 28 ++++++++++++
->  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 45 +++++++++++++++++++
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 18 +++++++-
->  3 files changed, 90 insertions(+), 1 deletion(-)
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  86 +-------------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 105 +++++++++++++-----
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  39 ++-----
+>  3 files changed, 91 insertions(+), 139 deletions(-)
 
 [...]
 
-> @@ -1055,9 +1062,30 @@ struct iommufd_viommu *arm_vsmmu_alloc(struct device *dev,
->  				       struct iommu_domain *parent,
->  				       struct iommufd_ctx *ictx,
->  				       unsigned int viommu_type);
-> +int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
-> +				    struct arm_smmu_nested_domain *nested_domain);
-> +void arm_smmu_attach_commit_vmaster(struct arm_smmu_attach_state *state);
-> +void arm_smmu_master_clear_vmaster(struct arm_smmu_master *master);
->  #else
->  #define arm_smmu_hw_info NULL
->  #define arm_vsmmu_alloc NULL
-> +
-> +static inline int
-> +arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
-> +				struct arm_smmu_nested_domain *nested_domain)
-> +{
-> +	return 0; /* NOP */
-> +}
-
-Please drop this comment.
-
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> index 5aa2e7af58b4..6b712b1ab429 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> @@ -85,6 +85,51 @@ static void arm_smmu_make_nested_domain_ste(
->  	}
+> @@ -2748,6 +2750,54 @@ to_smmu_domain_devices(struct iommu_domain *domain)
+>  	return NULL;
 >  }
 >  
-> +int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
-> +				    struct arm_smmu_nested_domain *nested_domain)
+> +static int arm_smmu_enable_iopf(struct arm_smmu_master *master,
+> +				struct arm_smmu_master_domain *master_domain)
 > +{
-> +	struct arm_smmu_vmaster *vmaster;
-> +	unsigned long vsid;
 > +	int ret;
 > +
-> +	iommu_group_mutex_assert(state->master->dev);
+> +	iommu_group_mutex_assert(master->dev);
 > +
-> +	/* Skip invalid vSTE */
-> +	if (!(nested_domain->ste[0] & cpu_to_le64(STRTAB_STE_0_V)))
+> +	if (!IS_ENABLED(CONFIG_ARM_SMMU_V3_SVA))
+> +		return -EOPNOTSUPP;
+> +
+> +	/*
+> +	 * Drivers for devices supporting PRI or stall require iopf others have
+> +	 * device-specific fault handlers and don't need IOPF, so this is not a
+> +	 * failure.
+> +	 */
+> +	if (!master->stall_enabled)
 > +		return 0;
+> +
+> +	/* We're not keeping track of SIDs in fault events */
+> +	if (master->num_streams != 1)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (master->iopf_refcount) {
+> +		master->iopf_refcount++;
+> +		master_domain->using_iopf = true;
+> +		return 0;
+> +	}
+> +
+> +	ret = iopf_queue_add_device(master->smmu->evtq.iopf, master->dev);
+> +	if (ret)
+> +		return ret;
+> +	master->iopf_refcount = 1;
+> +	master_domain->using_iopf = true;
+> +	return 0;
+> +}
+> +
+> +static void arm_smmu_disable_iopf(struct arm_smmu_master *master)
+> +{
+> +	iommu_group_mutex_assert(master->dev);
+> +
+> +	if (!IS_ENABLED(CONFIG_ARM_SMMU_V3_SVA))
+> +		return;
 
-Ok, and we don't need to set 'state->vmaster' in this case because we
-only report stage-1 faults back to the vSMMU?
+I think it would be a little cleaner to push the '->using_iopf' check
+in here rather than have the callers check it. Then the SVA check above
+makes more sense and I think the enable/disable paths are a bit more
+symmetric.
 
-With the nits fixed:
+With that:
 
 Acked-by: Will Deacon <will@kernel.org>
-
-Thanks,
 
 Will
