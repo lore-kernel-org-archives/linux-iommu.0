@@ -1,176 +1,179 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B7651E5706;
-	Wed, 12 Mar 2025 19:32:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C14D91F461D
+	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 19:34:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741807975; cv=none; b=F0XfPkYpX0uuFdH4R9rum6ItrRxdHzoo6Mv3zY6ByUgjHtVaJ5Ipq6qwo9uyZIfGNAeyltX8xuMKgYZlFc3GyWgaQqd490JOvWjDSp9DA3w1IMmzRWBfTtm3olZ2voLlWZH4EveXiisO3vxuQZ/A/YVGcm5YJagzCfHJqPVb9JM=
+	t=1741808050; cv=none; b=HqiyzAGzODXiKiU8+Dkzgvpje9Kg6mcvPUSi8qi1P5kfii33FPEC9EFZX2vrqJca2LclQYlnFzRoHPOwqiHIsUpxhkPsZIXfsHaaHCTEwqgcj156VAa4i359GZOROI7aP4ePOk/w4ZVGGAZCfOIZyfLWabL1PdIYuiju/mltZ9M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741807975; c=relaxed/simple;
-	bh=UqymYCmygChHTPDYtRXKIe/SXjDPGE2/pDiLoxPaWuE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cEVOohhjBrLAK/i9NT698SIveSUsHhUPiZ9TcU4TQ4HoWLNQ5m65DN343kguEBSmjDioshmFIKawnkHz1VanYnuV0CASO7I9dLOmLTFcYmvgxc5MIJWHwHZqFjsPn8RQZgnQ5vTU02WVmYqcVa/dHQ9eINtHBj18hkeCHXearlQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b+Uk3+ue; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1741808050; c=relaxed/simple;
+	bh=Ep5/iwIKtz83wbr+l1tXH/EaFMFIpc/0ZBreY41zrOs=;
+	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=U96K7aQhroOYVoXG8I5Qei5ipV+nYtT/8s/P4o+QPLdETLkAOuNf7BxijfpAmiaf05KAFqi8MaTQZL5WCAsNLWm/+wMw+Pj6mg38BTfsplA6sjuVWx7iquj1fGBqSnyj5H+UOlRemOT2ub6ILZKxPqpd5pE4omT0DfL76NcSUfo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ALR4lIs3; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b+Uk3+ue"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10277C4CEDD;
-	Wed, 12 Mar 2025 19:32:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741807973;
-	bh=UqymYCmygChHTPDYtRXKIe/SXjDPGE2/pDiLoxPaWuE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=b+Uk3+ueemhPDieKQx1nZ/0T/AxEPOxYIBTKKZu8d1FoyzOFJ2KMESVuqAJNe8KXO
-	 lPvJ3iwuw2HcCXBIuKgsjNyo/2cqjf8Jop9pQY7LvExmkjK5VQ2tPUtrcbiV3P0ASH
-	 IYBEgv5p8zecYfDaGdbOOAKD9I4sD8DqvB+8A/zcDu1qLHTqXjdRmMZ8Z606DedjEH
-	 z1azm63C7XF2PUIgn/hPn3OfaqKFeeH1obyQ47S5CRNm+ClQQ8oMrtBYnWFPs3mBKy
-	 LtdGBSZ3zpQjDdqi56DXmuUpg730oss4lY71gok4/eHccCcea6u0LtXsrNvTOrgrNG
-	 ex/5JVMLQJT6g==
-Date: Wed, 12 Mar 2025 21:32:49 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v7 00/17] Provide a new two step DMA mapping API
-Message-ID: <20250312193249.GI1322339@unreal>
-References: <cover.1738765879.git.leonro@nvidia.com>
- <20250220124827.GR53094@unreal>
- <CGME20250228195423eucas1p221736d964e9aeb1b055d3ee93a4d2648@eucas1p2.samsung.com>
- <1166a5f5-23cc-4cce-ba40-5e10ad2606de@arm.com>
- <d408b1c7-eabf-4a1e-861c-b2ddf8bf9f0e@samsung.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ALR4lIs3"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-43d0359b1fcso1802275e9.0
+        for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 12:34:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1741808047; x=1742412847; darn=lists.linux.dev;
+        h=content-transfer-encoding:autocrypt:subject:from:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rTgrJR7s4L4KINuRwMZAFzbNYQLSAhE3kZkfVn2zcvY=;
+        b=ALR4lIs3FkSRzzkUWkQIKp1d0cIzeABZyVmxHdRevUibG+jCNDes0tGq7oXcXLiD8y
+         fo97JWdWixJqW2+iPoi1toTYnVh7Z9vFfwvf61k4e6+62QI8OLfFWTXqZ4WwbTz15pOV
+         4RX3pzZTJ97wtOayqy538c/kgXF4iISD9VUBTdQi8OLFuOlD8SPPE4kaXrw1+gLG8Lxe
+         fVhOGqCffog5k4sb36Oi+yznJL+EuSpxATroRKVpvav3kjKr2qO5jEgJQceNIHOnh34i
+         GSBkSI5PxbKuEW1l0RVj2ATyhgdM3yjCUtOKiH8eNMzN4bulH0XlsfAgIlpjTuT0Tz1D
+         P6bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741808047; x=1742412847;
+        h=content-transfer-encoding:autocrypt:subject:from:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=rTgrJR7s4L4KINuRwMZAFzbNYQLSAhE3kZkfVn2zcvY=;
+        b=W4Q13FIBqQ2F0wskmmfGaavTqDhxglkHTYCIui9DkdFrVu43xa0eUjxgMCrcQwMdB7
+         40SUvXx9NI2KLmix5Jlz3qGYFRiYmpsi+VTMj2T+qr6OAsAYhqy4O2ZIJs8HhHqXCA4G
+         CyZxuw0qvyoNJAe3krLZhNsmnoOWKM2cnON8YNKpXHZQOoIuHTitVAjQFPC8Da8an7eV
+         I3NPqhZpkH2q86amDO19eimMydrjEaPAaXe9qu4Sj//fYcboi6wQMb8k/nvS4ewyUXjH
+         h8w1YKjAEeQ1FquSL9WnGgiCnpOgrejr4X2I9vQ6XkLIiqjaSJjQK9a1pJDaWUiKgoj5
+         xLoA==
+X-Forwarded-Encrypted: i=1; AJvYcCU/SCGtRsRVPCUOJpL5ApkmVAPgmBGR9rIiV8Ca74nrUSCD3NCpzooJp7KmUDYhdF6OgCRr/Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxjPNVF/BjlLTo7xu+sUvZRI/arn11ci1DO4W9C0oYhxuaGjYOJ
+	pQjmE4SGJFNQqFbr+PnkMb/BOV3KIb+TBnVkQbvg+K2ObYNKpxAR
+X-Gm-Gg: ASbGncv4olrBOH1msgjsgoizRtMXjRNTn481PK8svnkgUAczdL6vIF5ztY7r9CsO6z3
+	s1fWx6FMqCuuqCIBKC0uiD37SNpnCwGGzCYts/YUGBV8OyXbS5L9Xt24/ODGDqzYpFR4Cf4LHXW
+	YFZo+MMw+9gRrn9Gdk8s6Lhu8tDJcDJim6D+q03fXZTMsxWX5685HuNCM6KBpaQ1XmoI7ZYJ2DI
+	pK0IC7ZT4VYXCn5IiwLRFDtK0/EGZCFYYrh/ZWjht5RJg0G6O/PtqMn5idOxB9EWG81SJ1aRgMv
+	wRlHupfN77MPPEhUNgcHsihpVsEnXu28fCoL6E2PjYD5Ii7kcnKJCE4svZX0vcSSyfHl2JOk/Fb
+	/j1CktHNhUcz9KAfFQYEsCo1gAM/F51oISLfpSPEXJx93tQfKw8MX/80a3jUmMbn1BDoW8yb5hu
+	PV1hMfo6x05dXOcF8mCmHJL3131mwW4Up0QiUg
+X-Google-Smtp-Source: AGHT+IH/qyTbHk8CA+Ny/Co69+nnbQh9rmNffjJe2Y2GyTKO0EtiXN5+XtyWghkg62cAjWIz4hF+GQ==
+X-Received: by 2002:a05:600c:444c:b0:439:5f04:4f8d with SMTP id 5b1f17b1804b1-43d161bb744mr5479385e9.12.1741808046787;
+        Wed, 12 Mar 2025 12:34:06 -0700 (PDT)
+Received: from ?IPV6:2a02:3100:a4d2:5c00:ad7a:ba59:161c:c724? (dynamic-2a02-3100-a4d2-5c00-ad7a-ba59-161c-c724.310.pool.telefonica.de. [2a02:3100:a4d2:5c00:ad7a:ba59:161c:c724])
+        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-43d0a73127esm31013925e9.8.2025.03.12.12.34.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Mar 2025 12:34:06 -0700 (PDT)
+Message-ID: <3046c6a2-72a0-412e-a865-48dc129be0df@gmail.com>
+Date: Wed, 12 Mar 2025 20:34:12 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <d408b1c7-eabf-4a1e-861c-b2ddf8bf9f0e@samsung.com>
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: linux-acpi@vger.kernel.org, iommu@lists.linux.dev
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Subject: New "something fishy here" warning fires
+Autocrypt: addr=hkallweit1@gmail.com; keydata=
+ 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
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Mar 12, 2025 at 10:28:32AM +0100, Marek Szyprowski wrote:
-> Hi Robin
-> 
-> On 28.02.2025 20:54, Robin Murphy wrote:
-> > On 20/02/2025 12:48 pm, Leon Romanovsky wrote:
-> >> On Wed, Feb 05, 2025 at 04:40:20PM +0200, Leon Romanovsky wrote:
-> >>> From: Leon Romanovsky <leonro@nvidia.com>
-> >>>
-> >>> Changelog:
-> >>> v7:
-> >>>   * Rebased to v6.14-rc1
-> >>
-> >> <...>
-> >>
-> >>> Christoph Hellwig (6):
-> >>>    PCI/P2PDMA: Refactor the p2pdma mapping helpers
-> >>>    dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
-> >>>    iommu: generalize the batched sync after map interface
-> >>>    iommu/dma: Factor out a iommu_dma_map_swiotlb helper
-> >>>    dma-mapping: add a dma_need_unmap helper
-> >>>    docs: core-api: document the IOVA-based API
-> >>>
-> >>> Leon Romanovsky (11):
-> >>>    iommu: add kernel-doc for iommu_unmap and iommu_unmap_fast
-> >>>    dma-mapping: Provide an interface to allow allocate IOVA
-> >>>    dma-mapping: Implement link/unlink ranges API
-> >>>    mm/hmm: let users to tag specific PFN with DMA mapped bit
-> >>>    mm/hmm: provide generic DMA managing logic
-> >>>    RDMA/umem: Store ODP access mask information in PFN
-> >>>    RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page
-> >>>      linkage
-> >>>    RDMA/umem: Separate implicit ODP initialization from explicit ODP
-> >>>    vfio/mlx5: Explicitly use number of pages instead of allocated 
-> >>> length
-> >>>    vfio/mlx5: Rewrite create mkey flow to allow better code reuse
-> >>>    vfio/mlx5: Enable the DMA link API
-> >>>
-> >>>   Documentation/core-api/dma-api.rst   |  70 ++++
-> >>   drivers/infiniband/core/umem_odp.c   | 250 +++++---------
-> >>>   drivers/infiniband/hw/mlx5/mlx5_ib.h |  12 +-
-> >>>   drivers/infiniband/hw/mlx5/odp.c     |  65 ++--
-> >>>   drivers/infiniband/hw/mlx5/umr.c     |  12 +-
-> >>>   drivers/iommu/dma-iommu.c            | 468 
-> >>> +++++++++++++++++++++++----
-> >>>   drivers/iommu/iommu.c                |  84 ++---
-> >>>   drivers/pci/p2pdma.c                 |  38 +--
-> >>>   drivers/vfio/pci/mlx5/cmd.c          | 375 +++++++++++----------
-> >>>   drivers/vfio/pci/mlx5/cmd.h          |  35 +-
-> >>>   drivers/vfio/pci/mlx5/main.c         |  87 +++--
-> >>>   include/linux/dma-map-ops.h          |  54 ----
-> >>>   include/linux/dma-mapping.h          |  85 +++++
-> >>>   include/linux/hmm-dma.h              |  33 ++
-> >>>   include/linux/hmm.h                  |  21 ++
-> >>>   include/linux/iommu.h                |   4 +
-> >>>   include/linux/pci-p2pdma.h           |  84 +++++
-> >>>   include/rdma/ib_umem_odp.h           |  25 +-
-> >>>   kernel/dma/direct.c                  |  44 +--
-> >>>   kernel/dma/mapping.c                 |  18 ++
-> >>>   mm/hmm.c                             | 264 +++++++++++++--
-> >>>   21 files changed, 1435 insertions(+), 693 deletions(-)
-> >>>   create mode 100644 include/linux/hmm-dma.h
-> >>
-> >> Kind reminder.
+Since "iommu: Get DT/ACPI parsing into the proper probe path" I get the following
+on a N100-based mini pc. The warning pops up 4 times, for:
 
-<...>
+PNP0C14:00
+PNP0C14:01
+PNP0C14:00
+PNP0C14:01
 
-> Removing the need for scatterlists was advertised as the main goal of 
-> this new API, but it looks that similar effects can be achieved with 
-> just iterating over the pages and calling page-based DMA API directly.
+Any other info you'd be interested in?
 
-Such iteration can't be enough because P2P pages don't have struct pages,
-so you can't use reliably and efficiently dma_map_page_attrs() call.
-
-The only way to do so is to use dma_map_sg_attrs(), which relies on SG
-(the one that we want to remove) to map P2P pages.
-
-> Maybe I missed something. I still see some advantages in this DMA API 
-> extension, but I would also like to see the clear benefits from 
-> introducing it, like perf logs or other benchmark summary.
-
-We didn't focus yet on performance, however Christoph mentioned in his
-block RFC [1] that even simple conversion should improve performance as
-we are performing one P2P lookup per-bio and not per-SG entry as was
-before [2]. In addition it decreases memory [3] too.
-
-[1] https://lore.kernel.org/all/cover.1730037261.git.leon@kernel.org/
-[2] https://lore.kernel.org/all/34d44537a65aba6ede215a8ad882aeee028b423a.1730037261.git.leon@kernel.org/
-[3] https://lore.kernel.org/all/383557d0fa1aa393dbab4e1daec94b6cced384ab.1730037261.git.leon@kernel.org/
-
-So clear benefits are:
-1. Ability to use native for subsystem structure, e.g. bio for block,
-umem for RDMA, dmabuf for DRM, e.t.c. It removes current wasteful
-conversions from and to SG in order to work with DMA API.
-2. Batched request and iotlb sync optimizations (perform only once).
-3. Avoid very expensive call to pgmap pointer.
-4. Expose MMIO over VFIO without hacks (PCI BAR doesn't have struct pages).
-See this series for such a hack
-https://lore.kernel.org/all/20250307052248.405803-1-vivek.kasireddy@intel.com/
-
-Thanks
-
-> 
-> 
-> Best regards
-> -- 
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
-> 
-> 
+[  +0.000139] Unpacking initramfs...
+[  +0.000690] ------------[ cut here ]------------
+[  +0.000028] acpi-wmi PNP0C14:00: late IOMMU probe at driver bind, something fishy here!
+[  +0.000041] WARNING: CPU: 1 PID: 1 at drivers/iommu/iommu.c:449 __iommu_probe_device+0x12b/0x530
+[  +0.000034] Modules linked in:
+[  +0.000024] CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc6-next-20250312+ #2
+[  +0.000029] Hardware name: Default string Default string/Default string, BIOS ADLN.M6.SODIMM.ZB.CY.015 08/08/2023
+[  +0.000032] RIP: 0010:__iommu_probe_device+0x12b/0x530
+[  +0.000019] Code: 68 00 74 28 4c 8b 73 50 4d 85 f6 75 03 4c 8b 33 48 89 df e8 d7 ec 00 00 4c 89 f2 48 c7 c7 b8 91 7b 9e 48 89 c6 e8 f5 3e 96 ff >
+[  +0.000055] RSP: 0000:ffffb031c006fc98 EFLAGS: 00010282
+[  +0.000021] RAX: 0000000000000000 RBX: ffff9469416c5010 RCX: 0000000000000000
+[  +0.000023] RDX: 0000000000000002 RSI: 0000000000000003 RDI: 00000000ffffffff
+[  +0.000023] RBP: ffffb031c006fcd8 R08: 0000000000000000 R09: ffffb031c006fae8
+[  +0.000023] R10: ffffffff9eb1ea68 R11: 0000000000000003 R12: ffffffff9e485280
+[  +0.000023] R13: ffffb031c006fd70 R14: ffff946940bb8ec0 R15: 0000000000000000
+[  +0.000023] FS:  0000000000000000(0000) GS:ffff946b18bec000(0000) knlGS:0000000000000000
+[  +0.000037] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  +0.000020] CR2: 0000000000000000 CR3: 000000016c650001 CR4: 0000000000770ef0
+[  +0.000023] PKRU: 55555554
+[  +0.000012] Call Trace:
+[  +0.000010]  <TASK>
+[  +0.000011]  ? show_regs.part.0+0x1d/0x30
+[  +0.000019]  ? show_regs.cold+0x8/0xd
+[  +0.000016]  ? __iommu_probe_device+0x12b/0x530
+[  +0.000017]  ? __warn.cold+0xc2/0x15e
+[  +0.000018]  ? __iommu_probe_device+0x12b/0x530
+[  +0.000017]  ? report_bug+0xe3/0x170
+[  +0.000016]  ? console_unlock+0x7d/0x110
+[  +0.000018]  ? __iommu_probe_device+0x12b/0x530
+[  +0.000016]  ? __iommu_probe_device+0x12d/0x530
+[  +0.000017]  ? handle_bug+0x116/0x170
+[  +0.000018]  ? exc_invalid_op+0x18/0x70
+[  +0.000017]  ? asm_exc_invalid_op+0x1b/0x20
+[  +0.000022]  ? __iommu_probe_device+0x12b/0x530
+[  +0.000018]  ? __iommu_probe_device+0x12b/0x530
+[  +0.000019]  ? __pfx_probe_iommu_group+0x10/0x10
+[  +0.000017]  probe_iommu_group+0x26/0x50
+[  +0.000016]  bus_for_each_dev+0x79/0xd0
+[  +0.000020]  iommu_device_register+0xbe/0x230
+[  +0.000021]  intel_iommu_init+0xd76/0xf40
+[  +0.000016]  ? _raw_spin_unlock_irqrestore+0x55/0x80
+[  +0.000022]  ? __this_cpu_preempt_check+0x13/0x20
+[  +0.000018]  ? lockdep_hardirqs_on+0x7d/0x110
+[  +0.000018]  ? trace_hardirqs_on+0x5b/0xd0
+[  +0.000017]  ? _raw_spin_unlock_irqrestore+0x3c/0x80
+[  +0.000020]  ? __pfx_pci_iommu_init+0x10/0x10
+[  +0.000021]  pci_iommu_init+0xd/0x40
