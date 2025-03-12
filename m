@@ -1,139 +1,229 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80AFB3595E;
-	Wed, 12 Mar 2025 01:13:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E276A258A
+	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 03:13:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741742029; cv=none; b=q6LncpD+fZ2iDOG2wSeRTAXj9R9IDqSOwUrCkQ4jAZPzhRv4esh3hBP+lcO4Wxp9+/M5X7CnxXjQDJpAW3FvFFWCFwUDDRfGdsJqhEL6//hu7Uj1fXs09QTgbBlciSugeRmp0ArwpJgKC5brYQ73ubh6cBEsVpNOZUDoSzHRPxo=
+	t=1741749234; cv=none; b=DzlkjxBQWmz3us9dLvQHUM/7NmN8O0v/OcbWhGuwKmuXK5dOpliOronlNk6LxVjiCwosveT0vXjq5pVq7FvUF+ru/v/f6MvCRtneeJHlpGiTaDEtgJDMPe/s+678QatCipmOat/C//9WRLqgSERm7hLVihtGfE1ZBhHtW8gyv3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741742029; c=relaxed/simple;
-	bh=+RZZ7dldifWWO9KJpQQJzaN1oqzmUvwKYrniOyXt/Dc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A18X1o3AyxnEKZyZnFay1BSgyBgsk2xxAN6LOKs23nZx3W4xhPoa1dnObn6D10gs9koBEkAXzY06eUtINWJOHXWVQpnKB8YRqtLXoN+dvKw0dFw0+M5izUTUbrx/NjlTJz85YAqmAEjm2zHWmfjxjptUXfNBNqx6Y3VQ2tUi6YE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dQ5xbV8u; arc=none smtp.client-ip=192.198.163.15
+	s=arc-20240116; t=1741749234; c=relaxed/simple;
+	bh=vZP/OWilNqRz2nLVUrTXlm3X/gTdpyOvbDwZjv28q3g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Uw80MD+yR6bOkvIBiSq1RN+O9TdtcSFUBwudRcBnzwTDG8PV0FaLX89PgPasCNn/Maax1hppfRTA3aXHnvroIs9jI+8ghqBA3kjTla1PMQ4BY1/uCo7aS4G+Jd7slbpiZMdgW14MNHzPwiqQT8PMrzGz09G8DWipmW79n7PBVgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aT++cAfr; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dQ5xbV8u"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aT++cAfr"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741742028; x=1773278028;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+RZZ7dldifWWO9KJpQQJzaN1oqzmUvwKYrniOyXt/Dc=;
-  b=dQ5xbV8ul0YjycD+MymH6UJ5uHbNo+3HUvSxDhhgyPEDzPLFsP9Ll7H1
-   6HRqJG53EJTiGtfn2ascqjlWdK1aC5tQtC++eVK5KXIZmkQdJk1Or5M7V
-   jHp+hA4inmQQQayIPiZVE/3cqq5GR5YqSdLTOQwrbGI7uJfvWXVROGM5c
-   JSQ0BYiGa+Uad2hfULiTdrPyvPCPVA05p4uZWxptuOywQTn0b8t5E6Hs4
-   iXnHD2SO92ls4bg4jFl6K3PnKJHO/A0M3SRLf7uimH+3DYQLnzoQwmWjT
-   uHnE67gC/87fuYLaVAVaLksn+YGOBZ76NJlIDNVWsxMOJQZwxjhRrK9x8
-   g==;
-X-CSE-ConnectionGUID: QpGmr0fqQDi0X/4Z+9Py+Q==
-X-CSE-MsgGUID: c1yKkK7YTfedNExRlKRmNA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11370"; a="42936204"
+  t=1741749233; x=1773285233;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vZP/OWilNqRz2nLVUrTXlm3X/gTdpyOvbDwZjv28q3g=;
+  b=aT++cAfrtruT/+lI07axUPEB3dK8kEPbOmwDpZjJ3nyiVagfKWpuyaoG
+   v0u2wHKW1eYLjQIB+B215dXI2fm+tT9W60FZiYzRvnXZbvIcM+bnkbh7u
+   JYEgH62VDWcyPzB4JXR0GEHsmj9KkMAfQ2yiVK9gYKYez1ujRnkPQ/cYY
+   80cVtlDiUH6VRdAfAzsdCLFtfySWygIY8TEo3jvGPyQJ/kO7cx58DEUxe
+   AdgvZ56rycGsdC3nzNviZB6xpPRRal5kPvXbHJscZDGTQmv3uksm0Lmtx
+   8Hb3UAZN/WhswVVoZ5f4R7xzeBDhYDYlZyOzQhck5wUdjMrFVauCFGY8f
+   Q==;
+X-CSE-ConnectionGUID: Vhc8M+HxSHqVuHdcC6e/vw==
+X-CSE-MsgGUID: 7WwofHoATG+/B0L5ikBkUw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11370"; a="42993199"
 X-IronPort-AV: E=Sophos;i="6.14,240,1736841600"; 
-   d="scan'208";a="42936204"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2025 18:13:47 -0700
-X-CSE-ConnectionGUID: u38PE43hRciZlNtVu9D/dQ==
-X-CSE-MsgGUID: eMPyhx1JRFGVHJBvNOHpgQ==
+   d="scan'208";a="42993199"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2025 20:13:52 -0700
+X-CSE-ConnectionGUID: sdPyfKAJSrOBnZj8nds3Uw==
+X-CSE-MsgGUID: 3bjCZga+R2ytTNiActIz+g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.14,240,1736841600"; 
-   d="scan'208";a="151443309"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmviesa001.fm.intel.com with ESMTP; 11 Mar 2025 18:13:39 -0700
-Date: Wed, 12 Mar 2025 09:11:09 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, x86@kernel.org, kvm@vger.kernel.org,
-	linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Zhi Wang <zhiw@nvidia.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
-Message-ID: <Z9DfLQtmq7GGXlBb@yilunxu-OptiPlex-7050>
-References: <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
- <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
- <Z77xrqLtJfB84dJF@yilunxu-OptiPlex-7050>
- <20250226131202.GH5011@ziepe.ca>
- <Z7/jFhlsBrbrloia@yilunxu-OptiPlex-7050>
- <20250301003711.GR5011@ziepe.ca>
- <Z8U+/0IYyn7XX3ao@yilunxu-OptiPlex-7050>
- <20250305192842.GE354403@ziepe.ca>
- <Z8lE+5OpqZc746mT@yilunxu-OptiPlex-7050>
- <c5c31890-14fc-4fab-8cd4-d4dcfdecdd2d@amd.com>
+   d="scan'208";a="120458319"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2025 20:13:50 -0700
+Message-ID: <b1625daf-b77a-4838-8fed-f5ee2233fd2a@linux.intel.com>
+Date: Wed, 12 Mar 2025 11:10:34 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c5c31890-14fc-4fab-8cd4-d4dcfdecdd2d@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 01/12] iommu/arm-smmu-v3: Put iopf enablement in the
+ domain attach path
+To: Will Deacon <will@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+ Fenghua Yu <fenghuay@nvidia.com>, Zhangfei Gao <zhangfei.gao@linaro.org>,
+ Zhou Wang <wangzhou1@hisilicon.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
+References: <20250228092631.3425464-1-baolu.lu@linux.intel.com>
+ <20250228092631.3425464-2-baolu.lu@linux.intel.com>
+ <20250311161337.GD5138@willie-the-truck>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250311161337.GD5138@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Mar 07, 2025 at 01:19:11PM +1100, Alexey Kardashevskiy wrote:
+On 3/12/25 00:13, Will Deacon wrote:
+> On Fri, Feb 28, 2025 at 05:26:20PM +0800, Lu Baolu wrote:
+>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>
+>> SMMUv3 co-mingles FEAT_IOPF and FEAT_SVA behaviors so that fault reporting
+>> doesn't work unless both are enabled. This is not correct and causes
+>> problems for iommufd which does not enable FEAT_SVA for it's fault capable
+>> domains.
+>>
+>> These APIs are both obsolete, update SMMUv3 to use the new method like AMD
+>> implements.
+>>
+>> A driver should enable iopf support when a domain with an iopf_handler is
+>> attached, and disable iopf support when the domain is removed.
+>>
+>> Move the fault support logic to sva domain allocation and to domain
+>> attach, refusing to create or attach fault capable domains if the HW
+>> doesn't support it.
+>>
+>> Move all the logic for controlling the iopf queue under
+>> arm_smmu_attach_prepare(). Keep track of the number of domains on the
+>> master (over all the SSIDs) that require iopf. When the first domain
+>> requiring iopf is attached create the iopf queue, when the last domain is
+>> detached destroy it.
+>>
+>> Turn FEAT_IOPF and FEAT_SVA into no ops.
+>>
+>> Remove the sva_lock, this is all protected by the group mutex.
+>>
+>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+>> ---
+>>   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  86 +-------------
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 105 +++++++++++++-----
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  39 ++-----
+>>   3 files changed, 91 insertions(+), 139 deletions(-)
 > 
+> [...]
 > 
-> On 6/3/25 17:47, Xu Yilun wrote:
-> > On Wed, Mar 05, 2025 at 03:28:42PM -0400, Jason Gunthorpe wrote:
-> > > On Mon, Mar 03, 2025 at 01:32:47PM +0800, Xu Yilun wrote:
-> > > > All these settings cannot really take function until guest verifies them
-> > > > and does TDISP start. Guest verification does not (should not) need host
-> > > > awareness.
-> > > > 
-> > > > Our solution is, separate the secure DMA setting and secure device setting
-> > > > in different components, iommufd & vfio.
-> > > > 
-> > > > Guest require bind:
-> > > >    - ioctl(iommufd, IOMMU_VIOMMU_ALLOC, {.type = IOMMU_VIOMMU_TYPE_KVM_VALID,
-> > > > 					.kvm_fd = kvm_fd,
-> > > > 					.out_viommu_id = &viommu_id});
-> > > >    - ioctl(iommufd, IOMMU_HWPT_ALLOC, {.flag = IOMMU_HWPT_ALLOC_TRUSTED,
-> > > > 				      .pt_id = viommu_id,
-> > > > 				      .out_hwpt_id = &hwpt_id});
-> > > >    - ioctl(vfio_fd, VFIO_DEVICE_ATTACH_IOMMUFD_PT, {.pt_id = hwpt_id})
-> > > >      - do secure DMA setting in Intel iommu driver.
-> > > > 
-> > > >    - ioctl(vfio_fd, VFIO_DEVICE_TSM_BIND, ...)
-> > > >      - do bind in Intel TSM driver.
-> > > 
-> > > Except what do command do you issue to the secure world for TSM_BIND
-> > > and what are it's argument? Again you can't include the vBDF or vIOMMU
-> > > ID here.
-> > 
-> > Bind for TDX doesn't require vBDF or vIOMMU ID. The seamcall is like:
-> > 
-> > u64 tdh_devif_create(u64 stream_id,     // IDE stream ID, PF0 stuff
-> >                       u64 devif_id,      // TDI ID, it is the host BDF
-> >                       u64 tdr_pa,        // TDX VM core metadate page, TDX Connect uses it as CoCo-VM ID
-> >                       u64 devifcs_pa)    // metadate page provide to firmware
+>> @@ -2748,6 +2750,54 @@ to_smmu_domain_devices(struct iommu_domain *domain)
+>>   	return NULL;
+>>   }
+>>   
+>> +static int arm_smmu_enable_iopf(struct arm_smmu_master *master,
+>> +				struct arm_smmu_master_domain *master_domain)
+>> +{
+>> +	int ret;
+>> +
+>> +	iommu_group_mutex_assert(master->dev);
+>> +
+>> +	if (!IS_ENABLED(CONFIG_ARM_SMMU_V3_SVA))
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	/*
+>> +	 * Drivers for devices supporting PRI or stall require iopf others have
+>> +	 * device-specific fault handlers and don't need IOPF, so this is not a
+>> +	 * failure.
+>> +	 */
+>> +	if (!master->stall_enabled)
+>> +		return 0;
+>> +
+>> +	/* We're not keeping track of SIDs in fault events */
+>> +	if (master->num_streams != 1)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	if (master->iopf_refcount) {
+>> +		master->iopf_refcount++;
+>> +		master_domain->using_iopf = true;
+>> +		return 0;
+>> +	}
+>> +
+>> +	ret = iopf_queue_add_device(master->smmu->evtq.iopf, master->dev);
+>> +	if (ret)
+>> +		return ret;
+>> +	master->iopf_refcount = 1;
+>> +	master_domain->using_iopf = true;
+>> +	return 0;
+>> +}
+>> +
+>> +static void arm_smmu_disable_iopf(struct arm_smmu_master *master)
+>> +{
+>> +	iommu_group_mutex_assert(master->dev);
+>> +
+>> +	if (!IS_ENABLED(CONFIG_ARM_SMMU_V3_SVA))
+>> +		return;
 > 
-> 
-> (offtopic) is there a public spec with this command defined?
+> I think it would be a little cleaner to push the '->using_iopf' check
+> in here rather than have the callers check it. Then the SVA check above
+> makes more sense and I think the enable/disable paths are a bit more
+> symmetric.
 
-Sorry, there is no public TDX Connect SPEC yet.
+Yes, sure. I will address it like this,
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c 
+b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 4aaf9b7bf862..a519854b3798 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2786,13 +2786,17 @@ static int arm_smmu_enable_iopf(struct 
+arm_smmu_master *master,
+         return 0;
+  }
+
+-static void arm_smmu_disable_iopf(struct arm_smmu_master *master)
++static void arm_smmu_disable_iopf(struct arm_smmu_master *master,
++                                 struct arm_smmu_master_domain 
+*master_domain)
+  {
+         iommu_group_mutex_assert(master->dev);
+
+         if (!IS_ENABLED(CONFIG_ARM_SMMU_V3_SVA))
+                 return;
+
++       if (!master_domain || !master_domain->using_iopf)
++               return;
++
+         master->iopf_refcount--;
+         if (master->iopf_refcount == 0)
+                 iopf_queue_remove_device(master->smmu->evtq.iopf, 
+master->dev);
+@@ -2823,11 +2827,8 @@ static void arm_smmu_remove_master_domain(struct 
+arm_smmu_master *master,
+         }
+         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+
+-       if (master_domain) {
+-               if (master_domain->using_iopf)
+-                       arm_smmu_disable_iopf(master);
+-               kfree(master_domain);
+-       }
++       arm_smmu_disable_iopf(master, master_domain);
++       kfree(master_domain);
+  }
+
+  /*
+@@ -2945,8 +2946,7 @@ int arm_smmu_attach_prepare(struct 
+arm_smmu_attach_state *state,
+         return 0;
+
+  err_iopf:
+-       if (master_domain && master_domain->using_iopf)
+-               arm_smmu_disable_iopf(master);
++       arm_smmu_disable_iopf(master);
+  err_free_master_domain:
+         kfree(master_domain);
+         return ret;
+
+> 
+> With that:
+> 
+> Acked-by: Will Deacon <will@kernel.org>
+> 
+> Will
 
 Thanks,
-Yilun
+baolu
