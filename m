@@ -1,129 +1,176 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 153598635C
-	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 18:01:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B7651E5706;
+	Wed, 12 Mar 2025 19:32:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741802492; cv=none; b=EZTQeiVwxmF9dpUjxAYHjGCRMn1rLpy7gR+EsOUNhqt/LOMaT+P/k+ip9TZ6l8z5bW+99bWrI/X9PjofTCtlup791YPRZXK9q/OZoJJ4Kg15bw2a1PLyaDsgsQvn/1+LSEkmhKsywFKqenLVk6tRd9OHyyBXjd5b+S2DDKsvQG0=
+	t=1741807975; cv=none; b=F0XfPkYpX0uuFdH4R9rum6ItrRxdHzoo6Mv3zY6ByUgjHtVaJ5Ipq6qwo9uyZIfGNAeyltX8xuMKgYZlFc3GyWgaQqd490JOvWjDSp9DA3w1IMmzRWBfTtm3olZ2voLlWZH4EveXiisO3vxuQZ/A/YVGcm5YJagzCfHJqPVb9JM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741802492; c=relaxed/simple;
-	bh=uRflT48LDo87dXTO3uCvWWt1Fp9+tNIQrODhVV9dMWo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tKtKioyzYKLwFP196AciJZYPO6/FTpUBHUE5Zzwxx9lKL8f+/lXI1+uMzbsEFVOYX6TW/j3dm+P8X2F8z3s16mGm8YhZWveN//m5wrwnd3NZMjgO1+ZZC+yPwiW9KUC92jQ2HODG1zZ4d/WcgVL66lPhFcwC4AR6TvpYPz9fiW4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C93D41515;
-	Wed, 12 Mar 2025 11:01:39 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5FE553F5A1;
-	Wed, 12 Mar 2025 11:01:27 -0700 (PDT)
-Message-ID: <2d47815d-6bee-4d1f-8b60-854763794bf6@arm.com>
-Date: Wed, 12 Mar 2025 18:01:25 +0000
+	s=arc-20240116; t=1741807975; c=relaxed/simple;
+	bh=UqymYCmygChHTPDYtRXKIe/SXjDPGE2/pDiLoxPaWuE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cEVOohhjBrLAK/i9NT698SIveSUsHhUPiZ9TcU4TQ4HoWLNQ5m65DN343kguEBSmjDioshmFIKawnkHz1VanYnuV0CASO7I9dLOmLTFcYmvgxc5MIJWHwHZqFjsPn8RQZgnQ5vTU02WVmYqcVa/dHQ9eINtHBj18hkeCHXearlQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b+Uk3+ue; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b+Uk3+ue"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10277C4CEDD;
+	Wed, 12 Mar 2025 19:32:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741807973;
+	bh=UqymYCmygChHTPDYtRXKIe/SXjDPGE2/pDiLoxPaWuE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=b+Uk3+ueemhPDieKQx1nZ/0T/AxEPOxYIBTKKZu8d1FoyzOFJ2KMESVuqAJNe8KXO
+	 lPvJ3iwuw2HcCXBIuKgsjNyo/2cqjf8Jop9pQY7LvExmkjK5VQ2tPUtrcbiV3P0ASH
+	 IYBEgv5p8zecYfDaGdbOOAKD9I4sD8DqvB+8A/zcDu1qLHTqXjdRmMZ8Z606DedjEH
+	 z1azm63C7XF2PUIgn/hPn3OfaqKFeeH1obyQ47S5CRNm+ClQQ8oMrtBYnWFPs3mBKy
+	 LtdGBSZ3zpQjDdqi56DXmuUpg730oss4lY71gok4/eHccCcea6u0LtXsrNvTOrgrNG
+	 ex/5JVMLQJT6g==
+Date: Wed, 12 Mar 2025 21:32:49 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v7 00/17] Provide a new two step DMA mapping API
+Message-ID: <20250312193249.GI1322339@unreal>
+References: <cover.1738765879.git.leonro@nvidia.com>
+ <20250220124827.GR53094@unreal>
+ <CGME20250228195423eucas1p221736d964e9aeb1b055d3ee93a4d2648@eucas1p2.samsung.com>
+ <1166a5f5-23cc-4cce-ba40-5e10ad2606de@arm.com>
+ <d408b1c7-eabf-4a1e-861c-b2ddf8bf9f0e@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/5] iommu/arm-smmu: Save additional information on
- context fault
-To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>
-Cc: Connor Abbott <cwabbott0@gmail.com>, Joerg Roedel <joro@8bytes.org>,
- Sean Paul <sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>,
- Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Marijn Suijten <marijn.suijten@somainline.org>, iommu@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- freedreno@lists.freedesktop.org
-References: <20250304-msm-gpu-fault-fixes-next-v4-0-be14be37f4c3@gmail.com>
- <20250304-msm-gpu-fault-fixes-next-v4-1-be14be37f4c3@gmail.com>
- <20250311180553.GB5216@willie-the-truck>
- <CACu1E7GzCiO2b7AFJSDC+pN2VD9VaD2aYz_GGymM3-xAUqd__A@mail.gmail.com>
- <20250312130525.GC6181@willie-the-truck>
- <CAF6AEGvqYithLFAKpfdkw35DEsUZ8rBt25-oWz3r=kaLt+RbQw@mail.gmail.com>
- <20250312164735.GA6561@willie-the-truck>
- <CAF6AEGskyoemQDrTXh=ewf61e-hVzWMjmqe=nX2J-65W5-M6Zw@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <CAF6AEGskyoemQDrTXh=ewf61e-hVzWMjmqe=nX2J-65W5-M6Zw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <d408b1c7-eabf-4a1e-861c-b2ddf8bf9f0e@samsung.com>
 
-On 12/03/2025 5:23 pm, Rob Clark wrote:
-> On Wed, Mar 12, 2025 at 9:47â€¯AM Will Deacon <will@kernel.org> wrote:
->>
->> On Wed, Mar 12, 2025 at 07:59:52AM -0700, Rob Clark wrote:
->>> On Wed, Mar 12, 2025 at 6:05â€¯AM Will Deacon <will@kernel.org> wrote:
->>>> On Tue, Mar 11, 2025 at 06:36:38PM -0400, Connor Abbott wrote:
->>>>> On Tue, Mar 11, 2025 at 2:06â€¯PM Will Deacon <will@kernel.org> wrote:
->>>>>> On Tue, Mar 04, 2025 at 11:56:47AM -0500, Connor Abbott wrote:
->>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>>>>>> index ade4684c14c9b2724a71e2457288dbfaf7562c83..a9213e0f1579d1e3be0bfba75eea1d5de23117de 100644
->>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>>>>>> @@ -409,9 +409,12 @@ void arm_smmu_read_context_fault_info(struct arm_smmu_device *smmu, int idx,
->>>>>>>                                      struct arm_smmu_context_fault_info *cfi)
->>>>>>>   {
->>>>>>>        cfi->iova = arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_FAR);
->>>>>>> +     cfi->ttbr0 = arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_TTBR0);
->>>>>>>        cfi->fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
->>>>>>> -     cfi->fsynr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
->>>>>>> +     cfi->fsynr0 = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
->>>>>>> +     cfi->fsynr1 = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR1);
->>>>>>
->>>>>> We already have an implementation hook (->get_fault_info()) which the
->>>>>> qcom SMMU driver can override with qcom_adreno_smmu_get_fault_info().
->>>>>> That thing dumps these registers already so if we're moving that into
->>>>>> the core SMMU driver, let's get rid of the hook and move everybody over
->>>>>> rather than having it done in both places.
->>>>>
->>>>> As you probably saw, the next commit moves over
->>>>> qcom_adreno_smmu_get_fault_info() to use this. The current back door
->>>>> used by drm/msm to access these functions is specific to adreno_smmu
->>>>> and there isn't an equivalent interface to allow it to call a generic
->>>>> SMMU function so it isn't possible to move it entirely to the core. At
->>>>> least not without a bigger refactoring that isn't justified for this
->>>>> series that is just trying to fix things.
->>>>
->>>> Ok :(
->>>>
->>>>>>>        cfi->cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(idx));
->>>>>>> +     cfi->contextidr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_CONTEXTIDR);
->>>>>>
->>>>>> I think the CONTEXTIDR register is stage-1 only, so we shouldn't dump
->>>>>> it for stage-2 domains.
->>>>>>
->>>>> Does it matter if we read the register though, as long as users are
->>>>> aware of this and don't use its value for anything?
->>>>
->>>> I think the contents are "UNKNOWN", so it could be hugely confusing even
->>>> if they just got logged someplace. Why is it difficult to avoid touching
->>>> it for stage-2?
->>>>
->>> Fwiw, we are only ever using stage-1
->>
->> Sure, but this is in arm-smmu.c which is used by other people and supports
->> both stages.
+On Wed, Mar 12, 2025 at 10:28:32AM +0100, Marek Szyprowski wrote:
+> Hi Robin
 > 
-> Sure, but no one else is using this field in the fault-info.  So maybe
-> the addition of a comment in the struct would be enough if it isn't
-> going to cause an SError/etc to read it for S2 cb?
+> On 28.02.2025 20:54, Robin Murphy wrote:
+> > On 20/02/2025 12:48 pm, Leon Romanovsky wrote:
+> >> On Wed, Feb 05, 2025 at 04:40:20PM +0200, Leon Romanovsky wrote:
+> >>> From: Leon Romanovsky <leonro@nvidia.com>
+> >>>
+> >>> Changelog:
+> >>> v7:
+> >>>   * Rebased to v6.14-rc1
+> >>
+> >> <...>
+> >>
+> >>> Christoph Hellwig (6):
+> >>>    PCI/P2PDMA: Refactor the p2pdma mapping helpers
+> >>>    dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
+> >>>    iommu: generalize the batched sync after map interface
+> >>>    iommu/dma: Factor out a iommu_dma_map_swiotlb helper
+> >>>    dma-mapping: add a dma_need_unmap helper
+> >>>    docs: core-api: document the IOVA-based API
+> >>>
+> >>> Leon Romanovsky (11):
+> >>>    iommu: add kernel-doc for iommu_unmap and iommu_unmap_fast
+> >>>    dma-mapping: Provide an interface to allow allocate IOVA
+> >>>    dma-mapping: Implement link/unlink ranges API
+> >>>    mm/hmm: let users to tag specific PFN with DMA mapped bit
+> >>>    mm/hmm: provide generic DMA managing logic
+> >>>    RDMA/umem: Store ODP access mask information in PFN
+> >>>    RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page
+> >>>      linkage
+> >>>    RDMA/umem: Separate implicit ODP initialization from explicit ODP
+> >>>    vfio/mlx5: Explicitly use number of pages instead of allocated 
+> >>> length
+> >>>    vfio/mlx5: Rewrite create mkey flow to allow better code reuse
+> >>>    vfio/mlx5: Enable the DMA link API
+> >>>
+> >>>   Documentation/core-api/dma-api.rst   |  70 ++++
+> >>   drivers/infiniband/core/umem_odp.c   | 250 +++++---------
+> >>>   drivers/infiniband/hw/mlx5/mlx5_ib.h |  12 +-
+> >>>   drivers/infiniband/hw/mlx5/odp.c     |  65 ++--
+> >>>   drivers/infiniband/hw/mlx5/umr.c     |  12 +-
+> >>>   drivers/iommu/dma-iommu.c            | 468 
+> >>> +++++++++++++++++++++++----
+> >>>   drivers/iommu/iommu.c                |  84 ++---
+> >>>   drivers/pci/p2pdma.c                 |  38 +--
+> >>>   drivers/vfio/pci/mlx5/cmd.c          | 375 +++++++++++----------
+> >>>   drivers/vfio/pci/mlx5/cmd.h          |  35 +-
+> >>>   drivers/vfio/pci/mlx5/main.c         |  87 +++--
+> >>>   include/linux/dma-map-ops.h          |  54 ----
+> >>>   include/linux/dma-mapping.h          |  85 +++++
+> >>>   include/linux/hmm-dma.h              |  33 ++
+> >>>   include/linux/hmm.h                  |  21 ++
+> >>>   include/linux/iommu.h                |   4 +
+> >>>   include/linux/pci-p2pdma.h           |  84 +++++
+> >>>   include/rdma/ib_umem_odp.h           |  25 +-
+> >>>   kernel/dma/direct.c                  |  44 +--
+> >>>   kernel/dma/mapping.c                 |  18 ++
+> >>>   mm/hmm.c                             | 264 +++++++++++++--
+> >>>   21 files changed, 1435 insertions(+), 693 deletions(-)
+> >>>   create mode 100644 include/linux/hmm-dma.h
+> >>
+> >> Kind reminder.
 
-Any worthwhile comment isn't going to be significantly shorter or 
-clearer than 1 extra line of "if (smmu_domain->stage == 
-ARM_SMMU_DOMAIN_S1)"...
+<...>
 
-TBH it's the Qualcomm register-middle-man firmware I'd be more worried 
-about than real hardware, given how touchy it can be even with register 
-accesses which *should* be well defined. But then I guess it also has 
-the habit of killing the system if anything other than the GPU dares 
-cause a fault in the first place, so maybe it OK?
+> Removing the need for scatterlists was advertised as the main goal of 
+> this new API, but it looks that similar effects can be achieved with 
+> just iterating over the pages and calling page-based DMA API directly.
 
-If anyone still uses Arm Fast Models SMMUv1/2 components it'll probably 
-squawk an annoying warning there too - ISTR I had at least one patch 
-motivated by that in the past.
+Such iteration can't be enough because P2P pages don't have struct pages,
+so you can't use reliably and efficiently dma_map_page_attrs() call.
 
-Thanks,
-Robin.
+The only way to do so is to use dma_map_sg_attrs(), which relies on SG
+(the one that we want to remove) to map P2P pages.
+
+> Maybe I missed something. I still see some advantages in this DMA API 
+> extension, but I would also like to see the clear benefits from 
+> introducing it, like perf logs or other benchmark summary.
+
+We didn't focus yet on performance, however Christoph mentioned in his
+block RFC [1] that even simple conversion should improve performance as
+we are performing one P2P lookup per-bio and not per-SG entry as was
+before [2]. In addition it decreases memory [3] too.
+
+[1] https://lore.kernel.org/all/cover.1730037261.git.leon@kernel.org/
+[2] https://lore.kernel.org/all/34d44537a65aba6ede215a8ad882aeee028b423a.1730037261.git.leon@kernel.org/
+[3] https://lore.kernel.org/all/383557d0fa1aa393dbab4e1daec94b6cced384ab.1730037261.git.leon@kernel.org/
+
+So clear benefits are:
+1. Ability to use native for subsystem structure, e.g. bio for block,
+umem for RDMA, dmabuf for DRM, e.t.c. It removes current wasteful
+conversions from and to SG in order to work with DMA API.
+2. Batched request and iotlb sync optimizations (perform only once).
+3. Avoid very expensive call to pgmap pointer.
+4. Expose MMIO over VFIO without hacks (PCI BAR doesn't have struct pages).
+See this series for such a hack
+https://lore.kernel.org/all/20250307052248.405803-1-vivek.kasireddy@intel.com/
+
+Thanks
+
+> 
+> 
+> Best regards
+> -- 
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+> 
+> 
