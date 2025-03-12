@@ -1,172 +1,88 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1525A15A858
-	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 10:32:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 73D521E9B35;
+	Wed, 12 Mar 2025 10:41:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741775559; cv=none; b=bfGwWo0VGOwYC+S66uYjgbNqG+AMXkXXZbYeZb4CmAXmzHZlXN0s5o4//O9+9B7Vy8q/GK+ugPDOl7xrzsYdYlledwn6XYTlNcyUxepuvfx/Q+DN1uxXvIhW6sgNfcQTPOq5Rgxvd3kUQJwtOtCeP1Cmlw09cNg+hmEYbsqEVzg=
+	t=1741776103; cv=none; b=kcW4QFlUxdCRDflDSEsjsipZiP9TExovnwuTwPv/TLxInIxipTScUucYuasajrxm8Hem+jUjmcEdaAbGIGrGV5RlEr0IOvgzL2Jv+sXVEzUsueA4RU8EShOaCk6n3uFd9L+9YVTvVSGiS21MdUGz03RexT6qug6bwcJoUbNzUEU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741775559; c=relaxed/simple;
-	bh=1Zrl7XJlODTMn2xzf0QDsKnwExXLa7Dq6fAETI8+/Q4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=ldv5mGSIzUQXsyrT8wQvAYFZscBNtJCxI9GvDxBT1Nd3O+2Slkr1obFA40q999EUed9O+N9zks2r+AHTq2RuieD4blO9dT0RFEQUNaRbJHAwpKxT3AKQk8/K3CL9Ez5G2Ex8lnEuelIzDsGOm1+a/m/H+88C1Zwjxmt/2ca0K9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=pAZAZIst; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="pAZAZIst"
-Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52C7vF5A008923;
-	Wed, 12 Mar 2025 10:32:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=pp1; bh=UWvIREE7AL/FzZAsFF7hbrg0uAsb
-	UXJLdwxTI53a890=; b=pAZAZIstYQRwNWY+v8x/SOnEwcQpIWndlG3I0WD53TFm
-	qjwagVGIBe9cuU3Cy6ZkF4ZNe749v+SMI/qWaC76GUHepWUalJgHS4uqvpOarqIx
-	znC04KN697imJeBqDL41pCvo7MYVRAdGTD4OIZaaP78WHRn5FYrVPATARd8osfuH
-	1C9RwI1OgXIgZWeEX+ksk98GyDBNOb3w+6T+rktM0gIzoyDx7ACFeRhJCvRv/dzk
-	N+S7aEpbyQMuVPe0X8FIW8xda9xdcxJvLjmfKO/a/NgsEeTXeXqK0rqG3Lp7fXmE
-	jIlJOoXQ0askq5dcww8RcnUpUW1URxWJ8dUUjw82vw==
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 45avk4b3x6-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 12 Mar 2025 10:32:34 +0000 (GMT)
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 52CAF22l003141;
-	Wed, 12 Mar 2025 10:32:31 GMT
-Received: from smtprelay03.wdc07v.mail.ibm.com ([172.16.1.70])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 45atstkjyf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 12 Mar 2025 10:32:31 +0000
-Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
-	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 52CAWSHC25559688
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 12 Mar 2025 10:32:28 GMT
-Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 02207580AF;
-	Wed, 12 Mar 2025 10:32:30 +0000 (GMT)
-Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 5D6F9580AC;
-	Wed, 12 Mar 2025 10:32:27 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 12 Mar 2025 10:32:27 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-Date: Wed, 12 Mar 2025 11:32:18 +0100
-Subject: [PATCH v2] s390/pci: Fix dev.dma_range_map missing sentinel
- element
+	s=arc-20240116; t=1741776103; c=relaxed/simple;
+	bh=S0/erJR7OiK5XuFErK4Gt2I/j6hMmBsrwV74ohG4DAA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HM0KqEiFylwMuactYyZs1ZmUAs1NjbdBRvhUQjXenEdqcqgaFhV95j5AhuIff2TCe+fA6fM+2SwRTyoAuG0cAuF3ujMVai+gTXvLaxiybMDVn2+NpfgDwdO4SniFQZjmZbIhlGgcHQdU01JW54OzRGb0RwBkDlwUBOKQkxjdKrM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8C99E13D5;
+	Wed, 12 Mar 2025 03:41:51 -0700 (PDT)
+Received: from [10.1.197.1] (ewhatever.cambridge.arm.com [10.1.197.1])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0DA1A3F5A1;
+	Wed, 12 Mar 2025 03:41:36 -0700 (PDT)
+Message-ID: <cf640953-bed0-42d0-8c64-5680c68ee4a6@arm.com>
+Date: Wed, 12 Mar 2025 10:41:35 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
+To: Jason Gunthorpe <jgg@ziepe.ca>, Alexey Kardashevskiy <aik@amd.com>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>, x86@kernel.org, kvm@vger.kernel.org,
+ linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+ Paolo Bonzini <pbonzini@redhat.com>, Tom Lendacky <thomas.lendacky@amd.com>,
+ Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams
+ <dan.j.williams@intel.com>, Christoph Hellwig <hch@lst.de>,
+ Nikunj A Dadhania <nikunj@amd.com>, Michael Roth <michael.roth@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Joao Martins
+ <joao.m.martins@oracle.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>,
+ Steve Sistare <steven.sistare@oracle.com>, Lukas Wunner <lukas@wunner.de>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
+ iommu@lists.linux.dev, linux-coco@lists.linux.dev, Zhi Wang
+ <zhiw@nvidia.com>, "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
+References: <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
+ <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
+ <Z77xrqLtJfB84dJF@yilunxu-OptiPlex-7050> <20250226131202.GH5011@ziepe.ca>
+ <Z7/jFhlsBrbrloia@yilunxu-OptiPlex-7050> <20250301003711.GR5011@ziepe.ca>
+ <Z8U+/0IYyn7XX3ao@yilunxu-OptiPlex-7050> <20250305192842.GE354403@ziepe.ca>
+ <Z8lE+5OpqZc746mT@yilunxu-OptiPlex-7050>
+ <c5c31890-14fc-4fab-8cd4-d4dcfdecdd2d@amd.com>
+ <20250307151745.GH354403@ziepe.ca>
+Content-Language: en-US
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20250307151745.GH354403@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250312-fix_dma_map_alloc-v2-1-530108d9de21@linux.ibm.com>
-X-B4-Tracking: v=1; b=H4sIALFi0WcC/32NWwrDIBREtxLudw1GTaH96j5CCGpMc8FH0FZSg
- nuvzQL6eYaZMwckE9EkuDcHRJMxYfAV2KUBvUr/NATnysAo6ymnV7LgPs1OTk5uk7Q2aKK4ov2
- N8lkvCupui6aWTucwVl4xvUL8nBe5+6X/bLkjHVFikUJwKozUD4v+vbeoXKuDg7GU8gXxzattt
- gAAAA==
-X-Change-ID: 20250306-fix_dma_map_alloc-b3b05903dcfb
-To: Matthew Rosato <mjrosato@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>,
-        Will Deacon <will@kernel.org>, Gerd Bayer <gbayer@linux.ibm.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        Niklas Schnelle <schnelle@linux.ibm.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2375;
- i=schnelle@linux.ibm.com; h=from:subject:message-id;
- bh=1Zrl7XJlODTMn2xzf0QDsKnwExXLa7Dq6fAETI8+/Q4=;
- b=owGbwMvMwCX2Wz534YHOJ2GMp9WSGNIvJu3aEiNxcX/wHY4nb2fISMeUbI6xUNhu0qAbeWq/T
- ZDCrJr3HaUsDGJcDLJiiiyLupz91hVMMd0T1N8BM4eVCWQIAxenAEzk1kWG/5XTWZZ9D2g43jAv
- w4uB8ZW/5xunty+se83d9apuKsh+DGdkuHLBaIrXx8Xe+9nEA1L3SDc/WNA451mPSuA1XcOOK7k
- LuAE=
-X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
- fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 6y4N96oHAM06SXiSsYvxVeXjOfJeGrWo
-X-Proofpoint-GUID: 6y4N96oHAM06SXiSsYvxVeXjOfJeGrWo
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-12_04,2025-03-11_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- clxscore=1015 impostorscore=0 phishscore=0 mlxscore=0 mlxlogscore=999
- lowpriorityscore=0 spamscore=0 malwarescore=0 adultscore=0 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502280000 definitions=main-2503120072
 
-The fixed commit sets up dev.dma_range_map but missed that this is
-supposed to be an array of struct bus_dma_region with a sentinel element
-with the size field set to 0 at the end. This would lead to overruns in
-e.g. dma_range_map_min(). It could also result in wrong translations
-instead of DMA_MAPPING_ERROR in translate_phys_to_dma() if the paddr
-were to not fit in the aperture. Fix this by using the
-dma_direct_set_offset() helper which creates a sentinel for us.
+On 07/03/2025 15:17, Jason Gunthorpe wrote:
+> On Fri, Mar 07, 2025 at 01:19:11PM +1100, Alexey Kardashevskiy wrote:
+>>>> Part of my problem here is I don't see anyone who seems to have read
+>>>> all three specs and is trying to mush them together. Everyone is
+>>>> focused on their own spec. I know there are subtle differences :\
+>>
+>> One is SEV TIO (earlier version published), another one TDX Connect (which I
+>> do not have and asked above) and what is the third one here? Or is it 4 as
+>> ARM and RiscV both doing this now? Thanks,
+> 
+> ARM will come with a spec someday, I don't know about RISCV. Maybe it
+> is 4..
 
-Fixes: d236843a6964 ("s390/pci: store DMA offset in bus_dma_region")
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
-Note: Based on iommu/next
+The Arm CCA DA (Device Assignment, as we call it) specs are available in 
+Alpha stage here, under "Future version" section.
 
-v1 -> v2:
-- Fixed typo, added trailers
-- Link to v1: https://lore.kernel.org/r/20250306-fix_dma_map_alloc-v1-1-b4fa44304eac@linux.ibm.com
----
- arch/s390/pci/pci_bus.c | 24 +++++++++++-------------
- 1 file changed, 11 insertions(+), 13 deletions(-)
+https://developer.arm.com/documentation/den0137/latest/
 
-diff --git a/arch/s390/pci/pci_bus.c b/arch/s390/pci/pci_bus.c
-index 0e725039861f92925a38f7ff7cb6de6b0d965ac3..14310c3b48860a16de13536adf95ef99e6af21cc 100644
---- a/arch/s390/pci/pci_bus.c
-+++ b/arch/s390/pci/pci_bus.c
-@@ -287,23 +287,21 @@ static struct zpci_bus *zpci_bus_alloc(int topo, bool topo_is_tid)
- static void pci_dma_range_setup(struct pci_dev *pdev)
- {
- 	struct zpci_dev *zdev = to_zpci(pdev);
--	struct bus_dma_region *map;
--	u64 aligned_end;
-+	u64 aligned_end, size;
-+	dma_addr_t dma_start;
-+	int ret;
- 
--	map = kzalloc(sizeof(*map), GFP_KERNEL);
--	if (!map)
--		return;
--
--	map->cpu_start = 0;
--	map->dma_start = PAGE_ALIGN(zdev->start_dma);
-+	dma_start = PAGE_ALIGN(zdev->start_dma);
- 	aligned_end = PAGE_ALIGN_DOWN(zdev->end_dma + 1);
--	if (aligned_end >= map->dma_start)
--		map->size = aligned_end - map->dma_start;
-+	if (aligned_end >= dma_start)
-+		size = aligned_end - dma_start;
- 	else
--		map->size = 0;
--	WARN_ON_ONCE(map->size == 0);
-+		size = 0;
-+	WARN_ON_ONCE(size == 0);
- 
--	pdev->dev.dma_range_map = map;
-+	ret = dma_direct_set_offset(&pdev->dev, 0, dma_start, size);
-+	if (ret)
-+		pr_err("Failed to allocate DMA range map for %s\n", pci_name(pdev));
- }
- 
- void pcibios_bus_add_device(struct pci_dev *pdev)
+Cheers
+Suzuki
 
----
-base-commit: e840414e5a73ac02ffba6299b46f535a0b7cba98
-change-id: 20250306-fix_dma_map_alloc-b3b05903dcfb
 
-Best regards,
--- 
-Niklas Schnelle
+> 
+> Jason
 
