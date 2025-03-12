@@ -1,463 +1,165 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B1CD241678
-	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 11:44:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64DF5242917
+	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 12:21:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741779869; cv=none; b=usMt6cjdkOusHWFclM1wFhcEbBesE3kv/Ldnn3DX3LNEbexHmKL/bCMaR1qudRghTieMjewHfNl8Zg7OF1UQGmJFEr49Bt2cqJHEb7VbLMh80q8NPilPfVBOj+hiZ81Dur4IR9ri3KDCxT8w0cfNaVEGakDfumeV2/WlMDyKdOE=
+	t=1741782064; cv=none; b=gZfRCvWYzZ68aRQ/5zMxJ77N2JRKN/+w65kokptTzLLt0BKVq47/dKdJhXDaeHI3uVAE0s4loc0ZtfMKcBqglXqL3YX5RuiN6jo8O9tOemSV9WdO4y7p5gc/pM7nKfo8LfR0JJX1oXq80FIlksBWuwNMyeUh82rYuclbOnC5GeM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741779869; c=relaxed/simple;
-	bh=P0NPEuvXehyb3R0NE0N+AWhENmnBjnIVY29yhuJ+xh4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bigaREsq8sywzXi6ZxQt22mUaChW7tmuyfzhXA6fGzgXVA95NKYUviF3j0EKqwMyIPFcTU1b5fjcfkgfMYMA9dLavkutWMtiww+L4Q+0ubY1MPCnGZf7Y8zTran4clt6F2EzvZq4dpKFgLsA4Gq+8R0vccNXC9EVUZy6lHfvBbg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ZLimvH4y; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1741782064; c=relaxed/simple;
+	bh=iJ09daJ53HVao8dsXzATElDT5mJiZPGmcb3ZXQbducM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=E0mBk75GdM/+J+RYgrXUuflMznnKCQnsM62pDIbb1YOcOeeZ+QhHs/I8bD+vgE4YnSCBhNL2UE3COOq3NRdKmVFWAH3oxKVs6iOmBpp4J1Gi2TGzJej/QxlgRrFFI/g2seVW6Anpk06TS72d2RSdnAbQxBHsKoKWiMJiX6IlQJw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=tLQ5xmDh; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ZLimvH4y"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-438d9c391fcso40975e9.0
-        for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 04:44:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1741779865; x=1742384665; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ztC6TyGPn8HN7qvx3r0adwSfOw9X1SdqpmyY8+RWC3k=;
-        b=ZLimvH4yCJV06ZcqeIwxMQdLpqgXp/nXLtFif+s7Wma3HaK7tMSI6j+vWt6GyRwtd2
-         /H8YCWvqZtR31PrUn7t6lwILqKIPUVNOgmdAiY8jwjGCpc1JX9pQ04eXb9QXFt7zmxr1
-         f84irVVk65Q+1YEiTYeRhkq3m+8r4DwuJw9RvrsLMgII+HpYOgKc/lXGfoCtmkgdo9Zd
-         PcxcdblwnqJpvSONuAQYxuyu7ukK+5SwYaw4zIsGKV0/h++4V98WZTg2E+2IHoYB8b59
-         HvU0VIIrvKgq0u44dcJVCj0YLZ9Jx6qRxlh1JioreeujFfh0SZy+wvvYJgxUvbfLp92r
-         0hkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741779865; x=1742384665;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ztC6TyGPn8HN7qvx3r0adwSfOw9X1SdqpmyY8+RWC3k=;
-        b=PWUpCH9/C/7M+XGl75edBPrULQcvaXB1cPxEaCH5daf+NZdpbjoY22Qz62YOUeHTTK
-         oFfqVmtXgEQrO0qntD5WRfImlkV7LG/8YOnEZ9o9GYq/W0g10bimHDFAokqAIFXKIH7Z
-         lYAHKvRfpHRBSDZO3d6WW/vCi76jLaeS27GmGByLhYAD2NuwRdDLkGmZcBnMpJYe1pqL
-         9C867P8/QiYavliZdkkyuN1OzGpcuMZSscHHkHgyBl1Ot3cCCMOmxveN19LYjeccuhly
-         X/0G1b5FTlMW56PFoDiNyacJgIBIwFzZd1xirAfIOviPAQWYJ1M+os4yp+dEQhAODuGQ
-         Q5dQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW72ILrkTNzQEdjlcQ7d+Ve1X2kAYmbq29Um6hm7U+/UfbMwxp9aNX5VVjdhztFt9IsYrb+pA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwcVlxFiBFauu8UKw6LYJMDUNlV+R6fk0QfOOCHlc8RWzXZgCfK
-	Pvpl9qzFWFMTyNQj8RzThYc7S9z8Iqb3SF71s4J3JsFHiwjN8yGMM+XgriX1xg==
-X-Gm-Gg: ASbGncspH0GlyHUYRcXmDDGJ9VOzaWmJstGs79lSCd3anfQyRkAHiwom8AWID2jmkU5
-	l4bYD25DVjVZFiYtZUqhPnW6OBAf3eo1xyTKGVHZwSUFPQ75RFVtNnxcNu9FOeMJygN/kQATGvv
-	vT/T6RiRRXjs6b7rGX7kr7hOtnbypnIPUv7PLKxFRrFuaW2R91D1lCFeijfBAgSmt+nD4aX8Pbv
-	SBR5ZeLT1pPrYeIU603+ufnklOApn/pjRZ7lDP7qWKKx8oWN+SfdaeYmfGOaUkhwypMNi7zh2cb
-	Kgv7NPvoQERQ8iEoleUSf8fGA/QaA62/TJ3syAsLE/rB4oKEgA7Sn4VzUszarlnw39N940+yypp
-	Pi3Op
-X-Google-Smtp-Source: AGHT+IFOC+WzkzIkaDYmFvYURyzlmZIIdd06+VT8kwhTpj+efwMx5qrVlyUWLRP/E95iBlLvUPXLVA==
-X-Received: by 2002:a05:600c:c84:b0:43b:c396:7405 with SMTP id 5b1f17b1804b1-43d0a5fd606mr1026575e9.7.1741779865249;
-        Wed, 12 Mar 2025 04:44:25 -0700 (PDT)
-Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43d0a72ea88sm19001575e9.7.2025.03.12.04.44.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Mar 2025 04:44:24 -0700 (PDT)
-Date: Wed, 12 Mar 2025 11:44:20 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alim Akhtar <alim.akhtar@samsung.com>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Hector Martin <marcan@marcan.st>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Sven Peter <sven@svenpeter.dev>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>, Bagas Sanjaya <bagasdotme@gmail.com>,
-	Joerg Roedel <jroedel@suse.de>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	David Rientjes <rientjes@google.com>,
-	Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH v3 06/23] iommu/pages: Remove iommu_free_page()
-Message-ID: <Z9FzlCfkRzDnvHuJ@google.com>
-References: <0-v3-e797f4dc6918+93057-iommu_pages_jgg@nvidia.com>
- <6-v3-e797f4dc6918+93057-iommu_pages_jgg@nvidia.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="tLQ5xmDh"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250312122058euoutp01bcc5f69a8519a76df2ead8c12f85272b~sDY3MOCPT2989929899euoutp01D
+	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 12:20:58 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250312122058euoutp01bcc5f69a8519a76df2ead8c12f85272b~sDY3MOCPT2989929899euoutp01D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1741782058;
+	bh=+U1ynJkxs2rGYQERoW3bytPpZBMbqPPqILrXXy8wEWA=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=tLQ5xmDhNpqb78RxNAcjwYDwld7bKlN7yP1iFcCY9pmdfHiy0TaS8ecATzVaa3rcl
+	 RyI/wn8E8EJyC22G7wtynrgavQjj/5GdYCMVaJfe7cgWURc4EuLOMzhm/wArUQCeGc
+	 hY2USVuWH2R5er1qRtGU5p6rmxAXCMMFgwpDVKs4=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20250312122058eucas1p29d64d763baf1f7b57e36a091fbe5e333~sDY2xd78G1865118651eucas1p2C;
+	Wed, 12 Mar 2025 12:20:58 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+	eusmges2new.samsung.com (EUCPMTA) with SMTP id F7.94.20409.92C71D76; Wed, 12
+	Mar 2025 12:20:58 +0000 (GMT)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20250312122057eucas1p134f18b01c48b270f92ac83607985f955~sDY2aHmLw2919029190eucas1p1t;
+	Wed, 12 Mar 2025 12:20:57 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+	20250312122057eusmtrp2333279830b6c2c5302fd5582b343f803~sDY2YNiTa3255432554eusmtrp2g;
+	Wed, 12 Mar 2025 12:20:57 +0000 (GMT)
+X-AuditID: cbfec7f4-c39fa70000004fb9-7b-67d17c298937
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id DD.D0.19654.92C71D76; Wed, 12
+	Mar 2025 12:20:57 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20250312122055eusmtip137065b8ad4bc171cbe646c9c8d98ce8e~sDY0vAs5s3094130941eusmtip1b;
+	Wed, 12 Mar 2025 12:20:55 +0000 (GMT)
+Message-ID: <4a0350b7-9b82-48e1-9d8a-04a8fed072c7@samsung.com>
+Date: Wed, 12 Mar 2025 13:20:54 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6-v3-e797f4dc6918+93057-iommu_pages_jgg@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v14 04/11] MAINTAINERS: add entry for Rust dma mapping
+ helpers device driver API
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com,
+	dakr@kernel.org, robin.murphy@arm.com, aliceryhl@google.com
+Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, Benno Lossin
+	<benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@kernel.org>, Trevor
+	Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, open list
+	<linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
+	airlied@redhat.com, "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20250311174930.2348813-5-abdiel.janulgue@gmail.com>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Sf0xTVxjdfe/1tWUpPooLd/4YSxdnUEFgLLvJxMzEzLc5EnESMxPBCm8F
+	1wJp6TYJ0a7bFDqnCCptQWmmWYdt7VIQENxYwbVUhVU3UAqkLjbjR1cpPwJbV2W0Tzf+O9/5
+	zj3f951cHi5Uk6t4RcVljLxYLBWRMUSr4+/+5A0VdySp6ioMjXh9HGT03wJowGPA0OP6Ni7q
+	vacmUHBQzUH33V04Mrd8hiH/uSCJdGMOAt257QeoyfQzhkJzCJkGXTj6taOBRE2NRoDswSU7
+	6x89OOprvcl9K542XzADun30EqAvVYUw+pp+lEsbbEradrmKpMebdYDuHFKR9MLx6yR94pgN
+	o6d+HCDpQO9JDt1wcSM9a3tpV+y+mC0FjLToY0a+eeuBmMKg2s4tbRF86uizABW4+7wG8HiQ
+	yoCGCVoDYnhC6jsAvx6YIjWAv1TMAdg9XMHiWQD77iU90y9ohKzeCGB/ZRhjNdMAPjQVRLCA
+	2gpd9nEigglqHdQ+smAsHwddOl+Uf4FKhF6PlhvB8dSHcOD2AzxiupK6AqC71oxFCpz6nIC6
+	xZvRjXAqAXp8jVEnkkqDmoAmyvOpbfB37SOM1STCtkBD1AlS83yom7FyIg1IbYcLQ86nOB5O
+	Olu4LF4DF681YuyD4wAa/vE+LaoBVI15AKt6E470h8hIADiVBK0dm1l6Gwz/5MfYXGLh/UAc
+	u0QsrGmtw1laACuPCVn1q1DvvPLfWLv7Ll4NRPplweiXnalfdo7+/7kGQFwGCYxSIZMwivRi
+	5pMUhVimUBZLUvJLZDaw9E1vPXHOtQPj5HRKN8B4oBtAHi5aKTBluiVCQYH4cDkjL8mTK6WM
+	ohus5hGiBME3XV9KhJREXMZ8xDCljPxZF+PxV6mwjPTt13e7T1il2U86y39ZLzhleT00a7BB
+	87v2g4ec68ceNv9WyX+HW7hvMQlmln9hyj0o7sgLcXqnq9XJ4QRNj+xCaxNz7ofVFVm8Ldl5
+	B4jnBuvfr9t7quS80ni48OyMtR31xDole86cGT6U9pp/4oOrZ1/umKk7WnbkFeKvnHCuNcd4
+	Na52R7pDeyPxvdPjQ0e1nS+m3djZmJKzUbpftmu/e752/nzRCnmzKilj8vsF3GP5M9mSuRbR
+	+eWMIzBUIjBWurKCX63wVmdgm6RrsnNz8nfUpD7eW8YtnZhyPvAOu+a0w/7do2HfG76undya
+	rJP1obUt674NnJZtSh15+0ibiFAUitM24HKF+F9DM5X0FQQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprOKsWRmVeSWpSXmKPExsVy+t/xu7qaNRfTDV5OV7a4c/8Jq8Xy16cZ
+	La7eWsBk8Xf2dnaLE9ebWCw+XGtitbhxYT+zxZotjUwWr6d9YLOY+fwYi8XFM68ZLVauPspk
+	8euLhcXqayeZLS7vmsNmsXL+ckaLgx+Axq1/dpjZ4uy2U+wOwh5r5q1h9Nhxdwmjx5LOX0we
+	O2fdZfdYsKnUY9OqTjaPF5tnMnrsvtnA5vG9fQ+bR0/bJiaP9/uusnm8PdHH6jFnsbbH501y
+	AXxRejZF+aUlqQoZ+cUltkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZZalF+nYJehkf
+	mg6yF2zhrTh2di1jA+Ml7i5GDg4JAROJ711CXYxcHEICSxkltnVtYO1i5ASKy0icnNYAZQtL
+	/LnWxQZiCwm8Z5TY840JxOYVsJM4efAFC4jNIqAqMePdWqi4oMTJmU/A4qIC8hL3b81gB7GF
+	BdIkrp55wAyyTERgHaPEs879rCAOs0Ari8Sbm/MZIc44zSixZc0BsBZmAXGJW0/mg41lEzCU
+	6HoLcQangKPEwxnvmCBqzCS6tnYxQtjyEtvfzmGewCg0C8kls5CMmoWkZRaSlgWMLKsYRVJL
+	i3PTc4uN9IoTc4tL89L1kvNzNzECU8i2Yz+37GBc+eqj3iFGJg7GQ4wSHMxKIryrbS+kC/Gm
+	JFZWpRblxxeV5qQWH2I0BQbHRGYp0eR8YBLLK4k3NDMwNTQxszQwtTQzVhLnZbtyPk1IID2x
+	JDU7NbUgtQimj4mDU6qBafmxXjbWDZ8dJ4q+SrF4XJ9zL7fNc26WUYi3w5wlWyeYbNe8uFSr
+	s0/pjEKEwRMd7XvfZgv+lEroX91/s6FPoPn39TD+7Os/I+fvylKIX3I73cW6w3LrxHWdJRtU
+	JhbkFdx4c6TISkqqw+8Ys4uoYNo9qeBnRhN4I8+WT34+O3FH2R3etzfKv50u8vzY/1pr6vMr
+	zw8dYtD0l5+ktMzStD1g3Qp7y/VPLFRmlMUpWf99uu7wgakfuY9YVK6N/BSxxvLPIpaWMzpF
+	m1guFi9kkd7m/T+7Xob38c6zRhf+vj3x9edRJfH1zz7Hyt1UDz+guWf2lhs/eJfxOIp5bdc4
+	vkdwzXFVU5Ukh7LiRrOeNiWW4oxEQy3mouJEAAUKpFSqAwAA
+X-CMS-MailID: 20250312122057eucas1p134f18b01c48b270f92ac83607985f955
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250311174958eucas1p1e058930ad5271dc5fbce58660952e68c
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20250311174958eucas1p1e058930ad5271dc5fbce58660952e68c
+References: <20250311174930.2348813-1-abdiel.janulgue@gmail.com>
+	<CGME20250311174958eucas1p1e058930ad5271dc5fbce58660952e68c@eucas1p1.samsung.com>
+	<20250311174930.2348813-5-abdiel.janulgue@gmail.com>
 
-On Tue, Feb 25, 2025 at 03:39:23PM -0400, Jason Gunthorpe wrote:
-> Use iommu_free_pages() instead.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
-
+On 11.03.2025 18:48, Abdiel Janulgue wrote:
+> Add an entry for the Rust dma mapping helpers abstractions.
+>
+> Nacked-by: Christoph Hellwig <hch@lst.de>
+> Acked-by: Danilo Krummrich <dakr@kernel.org>
+> Acked-by: Andreas Hindborg <a.hindborg@kernel.org>
+> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 > ---
->  drivers/iommu/amd/init.c          |  2 +-
->  drivers/iommu/amd/io_pgtable.c    |  4 ++--
->  drivers/iommu/amd/io_pgtable_v2.c |  8 ++++----
->  drivers/iommu/amd/iommu.c         |  4 ++--
->  drivers/iommu/intel/dmar.c        |  4 ++--
->  drivers/iommu/intel/iommu.c       | 12 ++++++------
->  drivers/iommu/intel/pasid.c       |  4 ++--
->  drivers/iommu/iommu-pages.h       |  9 ---------
->  drivers/iommu/riscv/iommu.c       |  6 +++---
->  drivers/iommu/rockchip-iommu.c    |  8 ++++----
->  drivers/iommu/tegra-smmu.c        | 12 ++++++------
->  11 files changed, 32 insertions(+), 41 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index f47ff0e0c75f4e..73ebcb958ad864 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -955,7 +955,7 @@ static int __init alloc_cwwb_sem(struct amd_iommu *iommu)
->  static void __init free_cwwb_sem(struct amd_iommu *iommu)
->  {
->  	if (iommu->cmd_sem)
-> -		iommu_free_page((void *)iommu->cmd_sem);
-> +		iommu_free_pages((void *)iommu->cmd_sem);
->  }
->  
->  static void iommu_enable_xt(struct amd_iommu *iommu)
-> diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
-> index f3399087859fd1..025d8a3fe9cb78 100644
-> --- a/drivers/iommu/amd/io_pgtable.c
-> +++ b/drivers/iommu/amd/io_pgtable.c
-> @@ -153,7 +153,7 @@ static bool increase_address_space(struct amd_io_pgtable *pgtable,
->  
->  out:
->  	spin_unlock_irqrestore(&domain->lock, flags);
-> -	iommu_free_page(pte);
-> +	iommu_free_pages(pte);
->  
->  	return ret;
->  }
-> @@ -229,7 +229,7 @@ static u64 *alloc_pte(struct amd_io_pgtable *pgtable,
->  
->  			/* pte could have been changed somewhere. */
->  			if (!try_cmpxchg64(pte, &__pte, __npte))
-> -				iommu_free_page(page);
-> +				iommu_free_pages(page);
->  			else if (IOMMU_PTE_PRESENT(__pte))
->  				*updated = true;
->  
-> diff --git a/drivers/iommu/amd/io_pgtable_v2.c b/drivers/iommu/amd/io_pgtable_v2.c
-> index c616de2c5926ec..cce3fc9861ef77 100644
-> --- a/drivers/iommu/amd/io_pgtable_v2.c
-> +++ b/drivers/iommu/amd/io_pgtable_v2.c
-> @@ -121,10 +121,10 @@ static void free_pgtable(u64 *pt, int level)
->  		if (level > 2)
->  			free_pgtable(p, level - 1);
->  		else
-> -			iommu_free_page(p);
-> +			iommu_free_pages(p);
->  	}
->  
-> -	iommu_free_page(pt);
-> +	iommu_free_pages(pt);
->  }
->  
->  /* Allocate page table */
-> @@ -159,7 +159,7 @@ static u64 *v2_alloc_pte(int nid, u64 *pgd, unsigned long iova,
->  			__npte = set_pgtable_attr(page);
->  			/* pte could have been changed somewhere. */
->  			if (!try_cmpxchg64(pte, &__pte, __npte))
-> -				iommu_free_page(page);
-> +				iommu_free_pages(page);
->  			else if (IOMMU_PTE_PRESENT(__pte))
->  				*updated = true;
->  
-> @@ -181,7 +181,7 @@ static u64 *v2_alloc_pte(int nid, u64 *pgd, unsigned long iova,
->  		if (pg_size == IOMMU_PAGE_SIZE_1G)
->  			free_pgtable(__pte, end_level - 1);
->  		else if (pg_size == IOMMU_PAGE_SIZE_2M)
-> -			iommu_free_page(__pte);
-> +			iommu_free_pages(__pte);
->  	}
->  
->  	return pte;
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index b48a72bd7b23df..e23d104d177ad9 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -1812,7 +1812,7 @@ static void free_gcr3_tbl_level1(u64 *tbl)
->  
->  		ptr = iommu_phys_to_virt(tbl[i] & PAGE_MASK);
->  
-> -		iommu_free_page(ptr);
-> +		iommu_free_pages(ptr);
->  	}
->  }
->  
-> @@ -1845,7 +1845,7 @@ static void free_gcr3_table(struct gcr3_tbl_info *gcr3_info)
->  	/* Free per device domain ID */
->  	pdom_id_free(gcr3_info->domid);
->  
-> -	iommu_free_page(gcr3_info->gcr3_tbl);
-> +	iommu_free_pages(gcr3_info->gcr3_tbl);
->  	gcr3_info->gcr3_tbl = NULL;
->  }
->  
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index 9f424acf474e94..c812c83d77da10 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -1187,7 +1187,7 @@ static void free_iommu(struct intel_iommu *iommu)
->  	}
->  
->  	if (iommu->qi) {
-> -		iommu_free_page(iommu->qi->desc);
-> +		iommu_free_pages(iommu->qi->desc);
->  		kfree(iommu->qi->desc_status);
->  		kfree(iommu->qi);
->  	}
-> @@ -1714,7 +1714,7 @@ int dmar_enable_qi(struct intel_iommu *iommu)
->  
->  	qi->desc_status = kcalloc(QI_LENGTH, sizeof(int), GFP_ATOMIC);
->  	if (!qi->desc_status) {
-> -		iommu_free_page(qi->desc);
-> +		iommu_free_pages(qi->desc);
->  		kfree(qi);
->  		iommu->qi = NULL;
->  		return -ENOMEM;
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index cc46098f875b16..1e73bfa00329ae 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -571,17 +571,17 @@ static void free_context_table(struct intel_iommu *iommu)
->  	for (i = 0; i < ROOT_ENTRY_NR; i++) {
->  		context = iommu_context_addr(iommu, i, 0, 0);
->  		if (context)
-> -			iommu_free_page(context);
-> +			iommu_free_pages(context);
->  
->  		if (!sm_supported(iommu))
->  			continue;
->  
->  		context = iommu_context_addr(iommu, i, 0x80, 0);
->  		if (context)
-> -			iommu_free_page(context);
-> +			iommu_free_pages(context);
->  	}
->  
-> -	iommu_free_page(iommu->root_entry);
-> +	iommu_free_pages(iommu->root_entry);
->  	iommu->root_entry = NULL;
->  }
->  
-> @@ -744,7 +744,7 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
->  			tmp = 0ULL;
->  			if (!try_cmpxchg64(&pte->val, &tmp, pteval))
->  				/* Someone else set it while we were thinking; use theirs. */
-> -				iommu_free_page(tmp_page);
-> +				iommu_free_pages(tmp_page);
->  			else
->  				domain_flush_cache(domain, pte, sizeof(*pte));
->  		}
-> @@ -857,7 +857,7 @@ static void dma_pte_free_level(struct dmar_domain *domain, int level,
->  		      last_pfn < level_pfn + level_size(level) - 1)) {
->  			dma_clear_pte(pte);
->  			domain_flush_cache(domain, pte, sizeof(*pte));
-> -			iommu_free_page(level_pte);
-> +			iommu_free_pages(level_pte);
->  		}
->  next:
->  		pfn += level_size(level);
-> @@ -881,7 +881,7 @@ static void dma_pte_free_pagetable(struct dmar_domain *domain,
->  
->  	/* free pgd */
->  	if (start_pfn == 0 && last_pfn == DOMAIN_MAX_PFN(domain->gaw)) {
-> -		iommu_free_page(domain->pgd);
-> +		iommu_free_pages(domain->pgd);
->  		domain->pgd = NULL;
->  	}
->  }
-> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index 00da94b1c4c907..4249f12db7fc43 100644
-> --- a/drivers/iommu/intel/pasid.c
-> +++ b/drivers/iommu/intel/pasid.c
-> @@ -96,7 +96,7 @@ void intel_pasid_free_table(struct device *dev)
->  	max_pde = pasid_table->max_pasid >> PASID_PDE_SHIFT;
->  	for (i = 0; i < max_pde; i++) {
->  		table = get_pasid_table_from_pde(&dir[i]);
-> -		iommu_free_page(table);
-> +		iommu_free_pages(table);
->  	}
->  
->  	iommu_free_pages(pasid_table->table);
-> @@ -160,7 +160,7 @@ static struct pasid_entry *intel_pasid_get_entry(struct device *dev, u32 pasid)
->  		tmp = 0ULL;
->  		if (!try_cmpxchg64(&dir[dir_index].val, &tmp,
->  				   (u64)virt_to_phys(entries) | PASID_PTE_PRESENT)) {
-> -			iommu_free_page(entries);
-> +			iommu_free_pages(entries);
->  			goto retry;
->  		}
->  		if (!ecap_coherent(info->iommu->ecap)) {
-> diff --git a/drivers/iommu/iommu-pages.h b/drivers/iommu/iommu-pages.h
-> index 88587da1782b94..fcd17b94f7b830 100644
-> --- a/drivers/iommu/iommu-pages.h
-> +++ b/drivers/iommu/iommu-pages.h
-> @@ -122,15 +122,6 @@ static inline void iommu_free_pages(void *virt)
->  	put_page(page);
->  }
->  
-> -/**
-> - * iommu_free_page - free page
-> - * @virt: virtual address of the page to be freed.
-> - */
-> -static inline void iommu_free_page(void *virt)
-> -{
-> -	iommu_free_pages(virt);
-> -}
-> -
->  /**
->   * iommu_put_pages_list - free a list of pages.
->   * @page: the head of the lru list to be freed.
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index 1868468d018a28..4fe07343d84e61 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -1105,7 +1105,7 @@ static void riscv_iommu_pte_free(struct riscv_iommu_domain *domain,
->  	if (freelist)
->  		list_add_tail(&virt_to_page(ptr)->lru, freelist);
->  	else
-> -		iommu_free_page(ptr);
-> +		iommu_free_pages(ptr);
->  }
->  
->  static unsigned long *riscv_iommu_pte_alloc(struct riscv_iommu_domain *domain,
-> @@ -1148,7 +1148,7 @@ static unsigned long *riscv_iommu_pte_alloc(struct riscv_iommu_domain *domain,
->  			old = pte;
->  			pte = _io_pte_entry(virt_to_pfn(addr), _PAGE_TABLE);
->  			if (cmpxchg_relaxed(ptr, old, pte) != old) {
-> -				iommu_free_page(addr);
-> +				iommu_free_pages(addr);
->  				goto pte_retry;
->  			}
->  		}
-> @@ -1393,7 +1393,7 @@ static struct iommu_domain *riscv_iommu_alloc_paging_domain(struct device *dev)
->  	domain->pscid = ida_alloc_range(&riscv_iommu_pscids, 1,
->  					RISCV_IOMMU_MAX_PSCID, GFP_KERNEL);
->  	if (domain->pscid < 0) {
-> -		iommu_free_page(domain->pgd_root);
-> +		iommu_free_pages(domain->pgd_root);
->  		kfree(domain);
->  		return ERR_PTR(-ENOMEM);
->  	}
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 323cc665c35703..798e85bd994d56 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -737,7 +737,7 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
->  	pt_dma = dma_map_single(dma_dev, page_table, SPAGE_SIZE, DMA_TO_DEVICE);
->  	if (dma_mapping_error(dma_dev, pt_dma)) {
->  		dev_err(dma_dev, "DMA mapping error while allocating page table\n");
-> -		iommu_free_page(page_table);
-> +		iommu_free_pages(page_table);
->  		return ERR_PTR(-ENOMEM);
->  	}
->  
-> @@ -1086,7 +1086,7 @@ static struct iommu_domain *rk_iommu_domain_alloc_paging(struct device *dev)
->  	return &rk_domain->domain;
->  
->  err_free_dt:
-> -	iommu_free_page(rk_domain->dt);
-> +	iommu_free_pages(rk_domain->dt);
->  err_free_domain:
->  	kfree(rk_domain);
->  
-> @@ -1107,13 +1107,13 @@ static void rk_iommu_domain_free(struct iommu_domain *domain)
->  			u32 *page_table = phys_to_virt(pt_phys);
->  			dma_unmap_single(dma_dev, pt_phys,
->  					 SPAGE_SIZE, DMA_TO_DEVICE);
-> -			iommu_free_page(page_table);
-> +			iommu_free_pages(page_table);
->  		}
->  	}
->  
->  	dma_unmap_single(dma_dev, rk_domain->dt_dma,
->  			 SPAGE_SIZE, DMA_TO_DEVICE);
-> -	iommu_free_page(rk_domain->dt);
-> +	iommu_free_pages(rk_domain->dt);
->  
->  	kfree(rk_domain);
->  }
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index c134647292fb22..844682a41afa66 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -303,7 +303,7 @@ static struct iommu_domain *tegra_smmu_domain_alloc_paging(struct device *dev)
->  
->  	as->count = kcalloc(SMMU_NUM_PDE, sizeof(u32), GFP_KERNEL);
->  	if (!as->count) {
-> -		iommu_free_page(as->pd);
-> +		iommu_free_pages(as->pd);
->  		kfree(as);
->  		return NULL;
->  	}
-> @@ -311,7 +311,7 @@ static struct iommu_domain *tegra_smmu_domain_alloc_paging(struct device *dev)
->  	as->pts = kcalloc(SMMU_NUM_PDE, sizeof(*as->pts), GFP_KERNEL);
->  	if (!as->pts) {
->  		kfree(as->count);
-> -		iommu_free_page(as->pd);
-> +		iommu_free_pages(as->pd);
->  		kfree(as);
->  		return NULL;
->  	}
-> @@ -608,14 +608,14 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
->  		dma = dma_map_single(smmu->dev, pt, SMMU_SIZE_PT,
->  				     DMA_TO_DEVICE);
->  		if (dma_mapping_error(smmu->dev, dma)) {
-> -			iommu_free_page(pt);
-> +			iommu_free_pages(pt);
->  			return NULL;
->  		}
->  
->  		if (!smmu_dma_addr_valid(smmu, dma)) {
->  			dma_unmap_single(smmu->dev, dma, SMMU_SIZE_PT,
->  					 DMA_TO_DEVICE);
-> -			iommu_free_page(pt);
-> +			iommu_free_pages(pt);
->  			return NULL;
->  		}
->  
-> @@ -656,7 +656,7 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
->  
->  		dma_unmap_single(smmu->dev, pte_dma, SMMU_SIZE_PT,
->  				 DMA_TO_DEVICE);
-> -		iommu_free_page(pt);
-> +		iommu_free_pages(pt);
->  		as->pts[pde] = NULL;
->  	}
->  }
-> @@ -707,7 +707,7 @@ static struct tegra_pt *as_get_pde_page(struct tegra_smmu_as *as,
->  	 */
->  	if (as->pts[pde]) {
->  		if (pt)
-> -			iommu_free_page(pt);
-> +			iommu_free_pages(pt);
->  
->  		pt = as->pts[pde];
->  	}
-> -- 
-> 2.43.0
-> 
+>   MAINTAINERS | 13 +++++++++++++
+>   1 file changed, 13 insertions(+)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 007ca67cc830..aa49c551fbec 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -6902,6 +6902,19 @@ F:	include/linux/dma-mapping.h
+>   F:	include/linux/swiotlb.h
+>   F:	kernel/dma/
+>   
+> +DMA MAPPING HELPERS DEVICE DRIVER API [RUST]
+> +M:	Abdiel Janulgue <abdiel.janulgue@gmail.com>
+> +M:	Danilo Krummrich <dakr@kernel.org>
+> +R:	Daniel Almeida <daniel.almeida@collabora.com>
+> +R:	Robin Murphy <robin.murphy@arm.com>
+> +R:	Andreas Hindborg <a.hindborg@kernel.org>
+> +L:	rust-for-linux@vger.kernel.org
+> +S:	Supported
+> +W:	https://protect2.fireeye.com/v1/url?k=1b4a7c0e-7a31d687-1b4bf741-74fe48600034-417eb4ae60eba6df&q=1&e=37329b17-9a96-47f7-91f4-e1d88bf7cd47&u=https%3A%2F%2Frust-for-linux.com%2F
+> +T:	git https://protect2.fireeye.com/v1/url?k=243e8bac-45452125-243f00e3-74fe48600034-05e697d1fbece59e&q=1&e=37329b17-9a96-47f7-91f4-e1d88bf7cd47&u=https%3A%2F%2Fgithub.com%2FRust-for-Linux%2Flinux.git alloc-next
+> +F:	rust/kernel/dma.rs
+> +F:	samples/rust/rust_dma.rs
+> +
+>   DMA-BUF HEAPS FRAMEWORK
+>   M:	Sumit Semwal <sumit.semwal@linaro.org>
+>   R:	Benjamin Gaignard <benjamin.gaignard@collabora.com>
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
