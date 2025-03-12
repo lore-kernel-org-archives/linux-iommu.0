@@ -1,175 +1,266 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 715F5265CA4
-	for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 22:36:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AC161EDA09
+	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 00:00:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741732612; cv=none; b=fkQ07SkIbwlJmRHQUtvgW5I5aSq4gBEXO/eAdx2u36dDviwLMYBHloiZrLv3DqzTyveYUVIZra2jOQvRIK3MLMZq7DXEijYLyyuYud9E5R9hwIuuEQiOLjVdxCHkp/uMa7/8X0sb9tNP2QjRB9VsQ8qUfxrDTm4O5kW8k2TUA1E=
+	t=1741737621; cv=none; b=ZXJH96XkbHdDlAv/pMl9nNb/r86STjP+ZJGdIcJQTWHWbTb08GqDBfHzd4EjEzeGZWVD+GlODN2rBhD9fdOSSo2d84utlbBkzPgDEIIU4M4CRLQPF7hpZAMuCO6r+5N7KP15b+tVlHpoQ+4ViyISMqGSGSpWDDOwhm+jcEG2Vws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741732612; c=relaxed/simple;
-	bh=stGKqEUr4q8JKAOwejt7cWzSSykKFgW9stzYakf8cZo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QeOcmURZaTpylJqTRqeP48qpo8rrVOfN7r3NVkA7buqF2ux4xzF482wD0iPyRrrUxCj48tdowDwXOcwmYYfQZGGHzB/5+y1gTyPGQ2ujmyuocHhEneGcNqAFrx4rD9kEiAaCaBrZRGqS0Sp01w6f3gzMEwy36TM9xz2lBv2do2w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MXlxEsY2; arc=none smtp.client-ip=209.85.216.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1741737621; c=relaxed/simple;
+	bh=LzSGWoUrmA9F7GdxXElYNI9zttTk0B3+Dt7+nD6DobY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=mYcw5o7iKTt9qX5D+pDbKr0OHdwm74Bxtm9LvhcPK7IbYJszoEAoqlz6iBfmDm4BNuNl38lO/gfBGibTMQ0d490hsanRzWCRUFhxfC7xGXT+Bf3WlIUGKHoLeCKQPWuwpTPYF4wIBhCIYVwFlo+YQovA8PIdb6krLASB1PKW9/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=OzSLwJH7; arc=none smtp.client-ip=209.85.210.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MXlxEsY2"
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-2f9b8ef4261so1577769a91.1
-        for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 15:36:50 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="OzSLwJH7"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-72b82c8230aso719566a34.2
+        for <iommu@lists.linux.dev>; Tue, 11 Mar 2025 17:00:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741732610; x=1742337410; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=75JlrEnI8tdqw5rkhyab++osfwTd4EpAvf26QJsRa+Q=;
-        b=MXlxEsY2AY3K5KFHHrIY8eB+4isYm0Rq2lzK2KFpv2p1GqM6JkSWUI3FMJzTmIO54q
-         jT8gn+fXklfOw5/ciSkyXQamtdbUe2bN51XeiQJ0Hm+27PGUEvOt4fIZmw9wyZq0xHP/
-         FKx7+y7rOyPdvYm5SVE1A2+uHf0uMbXBWXgCn/Hkb0VecTVCNN3M0of2aOuHfDexAqwA
-         u7X+gCpLq205o7miJaqvDvKxLMnH6P3SLq2HZRsAQCACiXhL7qhIJtcvuJnxr8YBsm2j
-         8Py37+wLaa0CljyUxK4ZjETpOSi3ZVsHMWcpgRaU2NoEf1B9400z/DuIlKdDLARNJeO5
-         Ufdg==
+        d=broadcom.com; s=google; t=1741737618; x=1742342418; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7L/tvJCTiuEQ7q495gZao+1PMe6JjH/RxapbsOLxMlM=;
+        b=OzSLwJH7IMdamFbK6g1aBiUInFfhLdzZ+3wu2eSdjUyPUAEiyeJS2yKzvBVFf2zvl2
+         7vyw4ev+F/UvGt3E7Y/REGuafvux5nK/J0lZkZblkusvVTZGLoOka1Ibf0ZLREDoF9oj
+         U51u8+jEpZAA8v4BjB5czIX4vbISOaKlyXefY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741732610; x=1742337410;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=75JlrEnI8tdqw5rkhyab++osfwTd4EpAvf26QJsRa+Q=;
-        b=W7DThwX5cUsXs9lN6trI9DyEwUUQvS7AMdBsouFyXCp5E31O11Rpj2jduMmSWETM9G
-         hVYdSaA3dSoFzG3zQviCMSxWSxACkrsk6BWVxTM9mFW4p58d3HcNMQnM0xS3udZEpupv
-         4F5C6+sgJ59qxvBEbFqYTM7zlGCHuN1zVKVtMEKPTxg6cftH6w0moEpFx6vzFftgkfp5
-         hP0V38UoAqhMZBwDUbEzIASVAlTzCZDkoPgg3VbuRZdxaHBT2ns7Uj4QuXFMDEXDpiTV
-         ZDqL1dPtAjSCtw9ZA6GJTq7rTl/UghVTCkjXwVTzwiDPQ+QuRJeZkDLTgt3gzXDSEEih
-         XJBw==
-X-Forwarded-Encrypted: i=1; AJvYcCWOUi5UU8C1GBZh6LAwSyuZinO1tSWDY0qEO75B2ynoWGlIKTEL/dtUTC/kotMvv++VxHz8pg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzuudfuJCpToDejA5q+JmwJvIuk+0NZuw9bVbAoWtgpRYB4zKvl
-	Z7QusHbbP6M77xvDFy44miita35JFUnXk3Lw/IEyZk2q+38X5smf1T1I4isyQKsKhlyniB7+rUh
-	yBCSjt3lVI5ggVWWLHYMI/KS7NR0=
-X-Gm-Gg: ASbGncv3Nh3ufyncV7WGPjosshOrMvS4v+WktZ1NvSqD8a8XbD8W1wjd9BPz8nnLUSR
-	wEQm1kMpCKr37GA3MKXL18cwPglNXIGV6+nOKkt7HifrwK4+eqyeJMVkB81nRbylLkTcEsKe/7f
-	LftbOh1a8/7d+BDX1O69BLU9Slbw==
-X-Google-Smtp-Source: AGHT+IE2yP0Oqp5icApOYEeT5S9ryMzCphdSruIQb+pyZ1tL48mZ6lOK0AKajCd16hcESy+fMFtcVCe/Z6YypMdt4rI=
-X-Received: by 2002:a17:90b:4a81:b0:2ee:f59a:94d3 with SMTP id
- 98e67ed59e1d1-300a2891c23mr8155406a91.0.1741732609220; Tue, 11 Mar 2025
- 15:36:49 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1741737618; x=1742342418;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7L/tvJCTiuEQ7q495gZao+1PMe6JjH/RxapbsOLxMlM=;
+        b=KhFF6zgaF5GitPV3W7FnCI3nH6tAWk6uUsvWXyAb5JASJnCgQ9ED78e3RpKKFak88B
+         gQFPGU5J5zesAedZymuLRee+FwhUqSBrrCUYxTEWqLii0O3ZTOUyinq4znKASsyjnF77
+         3lQFV+OzylE8EK7hfw6v9/VV45a+hNJUlanjeSxdqHxQeXvyjnJUdDZJNPUrJ/6EyUTw
+         EkQ50z7KwVSABnkVYUrXmQpsaJxIjEGkhFxyEnBFV1b8K7PZJZKP+MZaIm5lKRXnP1iN
+         xxVsiHoBUoGSDlgXNWhAf1UfJ4Oouioln1vrkjSMSjiTfNBHBLaSrlHS5XLLYxgENySm
+         UipA==
+X-Forwarded-Encrypted: i=1; AJvYcCWk1CxHwoFIDCvKbYdZyZF2KsEaHf9d/AXK+V3EPd6f1Q07uotJS3g8eSU36BKRjRYFLEBY0Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyxBMO51y78kS6TTcXyYi0QAuOLK4YwXUaX5zjJW1mCRxSkvYIe
+	ssSXtHMn+domH36wxNtwGj0L7zUAlskUq+czOsEmIJALYt7c/vwGGecnjII0bA==
+X-Gm-Gg: ASbGncsL6OuVMWnYVMQ4fm3tyeCo7jkyWUBI+5HBzcwp7B8wbxP3tzESzVuuOaFqcEg
+	2zFEnQY0Q6wc1gyngvVnSf+VqfxzvlBFJrzhz26ZHhHWRKJzVbTOUusPyMm5SPnb7tvgJi27pns
+	rLehC1RuLwePCdMOQVsA1C7LRpxBFTRZBHGVvwhfvmU7Ft0F+8Ca4zJmvB4SSNiG6vivTfWPvow
+	7mezS8mLci4GCfaZKWm4jKtq4kXHIt63W20SxwsYle8WDpSzrQo6s5y/DkzFZUKuPPCDjBQLljH
+	HcGNi/uOyQp6pWF7dIX0X8qHXGuo0hvNX6mOQKr2IMitUHj1mCS4WnmgnpFAI+PryLPU3zWRfAo
+	TIVHM6iSolAka0w==
+X-Google-Smtp-Source: AGHT+IH8+DQmUpgMOetDvZc19e+qs53cnjmVRH4SEyeU5jv8b9vCklQxjRT6Gf6qE603U+ZssGc7/A==
+X-Received: by 2002:a05:6830:3693:b0:72b:938e:31cb with SMTP id 46e09a7af769-72b9b4a42f6mr3225979a34.7.1741737618123;
+        Tue, 11 Mar 2025 17:00:18 -0700 (PDT)
+Received: from [10.69.79.211] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-72b7c8e98dasm1543776a34.56.2025.03.11.17.00.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Mar 2025 17:00:17 -0700 (PDT)
+Message-ID: <cf6a5ec7-b7cf-4ac6-91ed-5543477d4e30@broadcom.com>
+Date: Tue, 11 Mar 2025 17:00:15 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250304-msm-gpu-fault-fixes-next-v4-0-be14be37f4c3@gmail.com>
- <20250304-msm-gpu-fault-fixes-next-v4-1-be14be37f4c3@gmail.com> <20250311180553.GB5216@willie-the-truck>
-In-Reply-To: <20250311180553.GB5216@willie-the-truck>
-From: Connor Abbott <cwabbott0@gmail.com>
-Date: Tue, 11 Mar 2025 18:36:38 -0400
-X-Gm-Features: AQ5f1Jpps08fowB20qui8teO0kCK3_0sMgX__rQse3av3tUA4enIqUvNjCSXypk
-Message-ID: <CACu1E7GzCiO2b7AFJSDC+pN2VD9VaD2aYz_GGymM3-xAUqd__A@mail.gmail.com>
-Subject: Re: [PATCH v4 1/5] iommu/arm-smmu: Save additional information on
- context fault
-To: Will Deacon <will@kernel.org>
-Cc: Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>, 
-	Konrad Dybcio <konradybcio@kernel.org>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	freedreno@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] swiotlb: Introduce DMA_ATTR_SKIP_DEVICE_SYNC
+To: Florian Fainelli <florian.fainelli@broadcom.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
+Cc: bcm-kernel-feedback-list@broadcom.com, Jonathan Corbet <corbet@lwn.net>,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
+ <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Petr Tesarik <petr@tesarici.cz>, Michael Kelley <mhklinux@outlook.com>,
+ Lukas Bulwahn <lukas.bulwahn@redhat.com>,
+ Bagas Sanjaya <bagasdotme@gmail.com>, Eder Zulian <ezulian@redhat.com>,
+ Sean Anderson <sean.anderson@linux.dev>,
+ "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ "open list:TRACING" <linux-trace-kernel@vger.kernel.org>
+References: <20250115194659.618438-1-florian.fainelli@broadcom.com>
+ <9582878b-1ce7-4fc4-9b45-b72bba722f49@arm.com>
+ <ecf3d8db-8533-4b0d-ab49-3543a766fd99@broadcom.com>
+Content-Language: en-US
+From: Justin Chen <justin.chen@broadcom.com>
+In-Reply-To: <ecf3d8db-8533-4b0d-ab49-3543a766fd99@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Mar 11, 2025 at 2:06=E2=80=AFPM Will Deacon <will@kernel.org> wrote=
-:
->
-> On Tue, Mar 04, 2025 at 11:56:47AM -0500, Connor Abbott wrote:
-> > This will be used by drm/msm for GPU page faults, replacing the manual
-> > register reading it does.
-> >
-> > Signed-off-by: Connor Abbott <cwabbott0@gmail.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c |  4 ++--
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.c            | 27 +++++++++++++---=
---------
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.h            |  5 ++++-
-> >  3 files changed, 21 insertions(+), 15 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c b/drivers=
-/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-> > index 548783f3f8e89fd978367afa65c473002f66e2e7..ae4fdbbce6ba80440f53955=
-7a39866a932360d4e 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-> > @@ -400,7 +400,7 @@ irqreturn_t qcom_smmu_context_fault(int irq, void *=
-dev)
-> >
-> >       if (list_empty(&tbu_list)) {
-> >               ret =3D report_iommu_fault(&smmu_domain->domain, NULL, cf=
-i.iova,
-> > -                                      cfi.fsynr & ARM_SMMU_CB_FSYNR0_W=
-NR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
-> > +                                      cfi.fsynr0 & ARM_SMMU_CB_FSYNR0_=
-WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
-> >
-> >               if (ret =3D=3D -ENOSYS)
-> >                       arm_smmu_print_context_fault_info(smmu, idx, &cfi=
-);
-> > @@ -412,7 +412,7 @@ irqreturn_t qcom_smmu_context_fault(int irq, void *=
-dev)
-> >       phys_soft =3D ops->iova_to_phys(ops, cfi.iova);
-> >
-> >       tmp =3D report_iommu_fault(&smmu_domain->domain, NULL, cfi.iova,
-> > -                              cfi.fsynr & ARM_SMMU_CB_FSYNR0_WNR ? IOM=
-MU_FAULT_WRITE : IOMMU_FAULT_READ);
-> > +                              cfi.fsynr0 & ARM_SMMU_CB_FSYNR0_WNR ? IO=
-MMU_FAULT_WRITE : IOMMU_FAULT_READ);
-> >       if (!tmp || tmp =3D=3D -EBUSY) {
-> >               ret =3D IRQ_HANDLED;
-> >               resume =3D ARM_SMMU_RESUME_TERMINATE;
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/=
-arm-smmu/arm-smmu.c
-> > index ade4684c14c9b2724a71e2457288dbfaf7562c83..a9213e0f1579d1e3be0bfba=
-75eea1d5de23117de 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > @@ -409,9 +409,12 @@ void arm_smmu_read_context_fault_info(struct arm_s=
-mmu_device *smmu, int idx,
-> >                                     struct arm_smmu_context_fault_info =
-*cfi)
-> >  {
-> >       cfi->iova =3D arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_FAR);
-> > +     cfi->ttbr0 =3D arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_TTBR0);
-> >       cfi->fsr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
-> > -     cfi->fsynr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
-> > +     cfi->fsynr0 =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
-> > +     cfi->fsynr1 =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR1);
->
-> We already have an implementation hook (->get_fault_info()) which the
-> qcom SMMU driver can override with qcom_adreno_smmu_get_fault_info().
-> That thing dumps these registers already so if we're moving that into
-> the core SMMU driver, let's get rid of the hook and move everybody over
-> rather than having it done in both places.
 
-As you probably saw, the next commit moves over
-qcom_adreno_smmu_get_fault_info() to use this. The current back door
-used by drm/msm to access these functions is specific to adreno_smmu
-and there isn't an equivalent interface to allow it to call a generic
-SMMU function so it isn't possible to move it entirely to the core. At
-least not without a bigger refactoring that isn't justified for this
-series that is just trying to fix things.
 
->
-> >       cfi->cbfrsynra =3D arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA=
-(idx));
-> > +     cfi->contextidr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_CONTE=
-XTIDR);
->
-> I think the CONTEXTIDR register is stage-1 only, so we shouldn't dump
-> it for stage-2 domains.
->
-> Will
+On 1/15/25 2:16 PM, Florian Fainelli wrote:
+> On 1/15/25 12:12, Robin Murphy wrote:
+>> On 2025-01-15 7:46 pm, Florian Fainelli wrote:
+>>> From: Justin Chen <justin.chen@broadcom.com>
+>>>
+>>> Network device driver's receive path typically do the following:
+>>>
+>>> - dma_map_single(.., DMA_FROM_DEVICE)
+>>> - dma_sync_single_for_cpu() to allow the CPU to inspect packet
+>>>    descriptors
+>>> - dma_unmap_single(.., DMA_FROM_DEVICE) when releasing the buffer
+>>>
+>>> Each of those operations incurs a copy from the original buffer to the
+>>> TLB buffer, even if the device is known to be writing full buffers.
+>>>
+>>> Add a DMA_ATTR_SKIP_DEVICE_SYNC flag which can be set by device drivers
+>>> to skip the copy at dma_map_single() to speed up the RX path when the
+>>> device is known to be doing full buffer writes.
+>>>
+>>> This has been seen to provide a 20% speedup for Wi-Fi RX throughput
+>>> testing.
+>>>
+>>> Signed-off-by: Justin Chen <justin.chen@broadcom.com>
+>>> [florian: commit message, add DMA-API attribute flag]
+>>> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
+>>> ---
+>>>   Documentation/core-api/dma-attributes.rst | 9 +++++++++
+>>>   Documentation/core-api/swiotlb.rst        | 4 +++-
+>>>   include/linux/dma-mapping.h               | 6 ++++++
+>>>   include/trace/events/dma.h                | 3 ++-
+>>>   kernel/dma/swiotlb.c                      | 8 ++++++++
+>>>   5 files changed, 28 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/Documentation/core-api/dma-attributes.rst b/ 
+>>> Documentation/core-api/dma-attributes.rst
+>>> index 1887d92e8e92..ccd9c1891200 100644
+>>> --- a/Documentation/core-api/dma-attributes.rst
+>>> +++ b/Documentation/core-api/dma-attributes.rst
+>>> @@ -130,3 +130,12 @@ accesses to DMA buffers in both privileged 
+>>> "supervisor" and unprivileged
+>>>   subsystem that the buffer is fully accessible at the elevated 
+>>> privilege
+>>>   level (and ideally inaccessible or at least read-only at the
+>>>   lesser-privileged levels).
+>>> +
+>>> +DMA_ATTR_SKIP_DEVICE_SYNC
+>>> +-------------------------
+>>> +
+>>> +Device drivers can set DMA_ATTR_SKIP_DEVICE_SYNC in order to avoid 
+>>> doing a copy
+>>> +from the original buffer to the TLB buffer for dma_map_single() with a
+>>> +DMA_FROM_DEVICE direction. This can be used to save an extra copy in 
+>>> a device
+>>> +driver's data path when using swiotlb bounce buffering.
+>>> +
+>>> diff --git a/Documentation/core-api/swiotlb.rst b/Documentation/core- 
+>>> api/swiotlb.rst
+>>> index 9e0fe027dd3b..3bc1f9ba67b2 100644
+>>> --- a/Documentation/core-api/swiotlb.rst
+>>> +++ b/Documentation/core-api/swiotlb.rst
+>>> @@ -67,7 +67,9 @@ to the driver for programming into the device. If a 
+>>> DMA operation specifies
+>>>   multiple memory buffer segments, a separate bounce buffer must be 
+>>> allocated for
+>>>   each segment. swiotlb_tbl_map_single() always does a "sync" 
+>>> operation (i.e., a
+>>>   CPU copy) to initialize the bounce buffer to match the contents of 
+>>> the original
+>>> -buffer.
+>>> +buffer, except if DMA_ATTR_SKIP_DEVICE_SYNC is specified and the 
+>>> direction is
+>>> +DMA_FROM_DEVICE. This is a performance optimization that may not be 
+>>> suitable for
+>>> +all platforms.
+>>>   swiotlb_tbl_unmap_single() does the reverse. If the DMA operation 
+>>> might have
+>>>   updated the bounce buffer memory and DMA_ATTR_SKIP_CPU_SYNC is not 
+>>> set, the
+>>> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+>>> index b79925b1c433..bfdaa65f8e9d 100644
+>>> --- a/include/linux/dma-mapping.h
+>>> +++ b/include/linux/dma-mapping.h
+>>> @@ -58,6 +58,12 @@
+>>>    */
+>>>   #define DMA_ATTR_PRIVILEGED        (1UL << 9)
+>>> +/*
+>>> + * DMA_ATTR_SKIP_DEVICE_SYNC: used to indicate that the buffer does 
+>>> not need to
+>>> + * be synchronized to the device.
+>>> + */
+>>> +#define DMA_ATTR_SKIP_DEVICE_SYNC    (1UL << 10)
+>>> +
+>>>   /*
+>>>    * A dma_addr_t can hold any valid DMA or bus address for the 
+>>> platform.  It can
+>>>    * be given to a device to use as a DMA source or target.  It is 
+>>> specific to a
+>>> diff --git a/include/trace/events/dma.h b/include/trace/events/dma.h
+>>> index d8ddc27b6a7c..6eb8fd7e3515 100644
+>>> --- a/include/trace/events/dma.h
+>>> +++ b/include/trace/events/dma.h
+>>> @@ -31,7 +31,8 @@ TRACE_DEFINE_ENUM(DMA_NONE);
+>>>           { DMA_ATTR_FORCE_CONTIGUOUS, "FORCE_CONTIGUOUS" }, \
+>>>           { DMA_ATTR_ALLOC_SINGLE_PAGES, "ALLOC_SINGLE_PAGES" }, \
+>>>           { DMA_ATTR_NO_WARN, "NO_WARN" }, \
+>>> -        { DMA_ATTR_PRIVILEGED, "PRIVILEGED" })
+>>> +        { DMA_ATTR_PRIVILEGED, "PRIVILEGED" }, \
+>>> +        { DMA_ATTR_SKIP_DEVICE_SYNC, "SKIP_DEVICE_SYNC" })
+>>>   DECLARE_EVENT_CLASS(dma_map,
+>>>       TP_PROTO(struct device *dev, phys_addr_t phys_addr, dma_addr_t 
+>>> dma_addr,
+>>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>>> index abcf3fa63a56..8dab89bf5e33 100644
+>>> --- a/kernel/dma/swiotlb.c
+>>> +++ b/kernel/dma/swiotlb.c
+>>> @@ -1435,8 +1435,16 @@ phys_addr_t swiotlb_tbl_map_single(struct 
+>>> device *dev, phys_addr_t orig_addr,
+>>>        * the original data, even if it's garbage, is necessary to match
+>>>        * hardware behavior.  Use of swiotlb is supposed to be 
+>>> transparent,
+>>>        * i.e. swiotlb must not corrupt memory by clobbering unwritten 
+>>> bytes.
+>>> +     *
+>>> +     * Setting DMA_ATTR_SKIP_DEVICE_SYNC will negate the behavior 
+>>> described
+>>> +     * before and avoid the copy from the original buffer to the TLB
+>>> +     * buffer.
+>>>        */
+>>> +    if (dir == DMA_FROM_DEVICE && (attrs & DMA_ATTR_SKIP_DEVICE_SYNC))
+>>> +        goto out;
+>>
+>> Nope, we still need to initialise the SWIOTLB slot with *something*, 
+>> or we're just reintroducing the same data leakage issue again. The 
+>> whole deal with that was that the caller *did* expect the entire 
+>> buffer to be written, but the device had an error, and thus the 
+>> subsequent unmap bounced out whatever data was in SWIOTLB before.
+> 
+> Do you know how common that assumption is within drivers? Could that 
+> behavior been hidden behind a flag, sort of like what is being done here?
+> 
+>>
+>> A memset is hopefully at least a bit faster than a copy, so maybe 
+>> there is still some life in this idea, but the semantic is not "skip 
+>> sync", it's "I'm OK with this entire buffer getting scribbled even my 
+>> device ends up never touching it".
+> 
+> Sure, let me test with a memset(), any suggestion on a name that carries 
+> better semantics, I do agree that "skip sync" is not quite descriptive 
+> enough.
 
-Does it matter if we read the register though, as long as users are
-aware of this and don't use its value for anything?
+I ran some more test and see minimal improvement from memset. I ran an 
+isolated test of using one 4k page buffer.
 
-Connor
+Average time per RX packet:
+NO SWIOTLB: 2.111 us
+SWIOTLB without bounce: 4.937 us
+SWIOTLB with bounce: 6.631 us
+SWIOTLB with memset: 6.506 us
+
+I understand this introduces potential data leakage, but the 25% 
+improvement is quite significant. The percentage will increase with 
+bigger buffers. Is there anyway we can find a compromise here? What if 
+we hid this behind the swiotlb flag?
+
+@@ -176,8 +176,9 @@ setup_io_tlb_npages(char *str)
+                 swiotlb_force_bounce = true;
+         else if (!strcmp(str, "noforce"))
+                 swiotlb_force_disable = true;
++       else if (!strcmp(str, "leakDMAbuffer"))
++               swiotlb_leak_dma_buffer = true;
+
+Thanks,
+Justin
+
+
