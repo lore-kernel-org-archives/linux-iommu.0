@@ -1,179 +1,199 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C14D91F461D
-	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 19:34:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E55A1EB1AF
+	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 20:20:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741808050; cv=none; b=HqiyzAGzODXiKiU8+Dkzgvpje9Kg6mcvPUSi8qi1P5kfii33FPEC9EFZX2vrqJca2LclQYlnFzRoHPOwqiHIsUpxhkPsZIXfsHaaHCTEwqgcj156VAa4i359GZOROI7aP4ePOk/w4ZVGGAZCfOIZyfLWabL1PdIYuiju/mltZ9M=
+	t=1741810860; cv=none; b=Dvl6sjerFb65VEHKNTfB3D//QjNa8gfVRT0ZHFN7SFlnMeXGk4tpyLYJvp6nv5q6NSQvd4pPC0kgpNj6CX8JFSQw58Pbb+RoSZcb06XnF+eXSQlu9qBv6uL9qyhzdwJXPWnxAzpcQNnqT9gDr0kN0k6mg1XpuXaMnZ6cgxXuG+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741808050; c=relaxed/simple;
-	bh=Ep5/iwIKtz83wbr+l1tXH/EaFMFIpc/0ZBreY41zrOs=;
-	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=U96K7aQhroOYVoXG8I5Qei5ipV+nYtT/8s/P4o+QPLdETLkAOuNf7BxijfpAmiaf05KAFqi8MaTQZL5WCAsNLWm/+wMw+Pj6mg38BTfsplA6sjuVWx7iquj1fGBqSnyj5H+UOlRemOT2ub6ILZKxPqpd5pE4omT0DfL76NcSUfo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ALR4lIs3; arc=none smtp.client-ip=209.85.128.43
+	s=arc-20240116; t=1741810860; c=relaxed/simple;
+	bh=5y+PS9g0veYlrmU3sAeXgsPE1r2J3D9roA4qZSKQFZc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Q2OkC7+khCZmKRvaF78Qv64URt5AoVqzYl1ZY7/8LolwHLuYrRsZy/YPldMJL3/ii0PnME2f9IrNExO+xCes60vK+aabwfJFGX4C6bPC7paYY7FGF1RZ/EMDB3FWrp67agjjY5jsRwPbY5WlxjBnXHq/ddoVQst3aNm7TAxNDzU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SPwCp7c3; arc=none smtp.client-ip=209.85.166.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ALR4lIs3"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-43d0359b1fcso1802275e9.0
-        for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 12:34:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SPwCp7c3"
+Received: by mail-il1-f176.google.com with SMTP id e9e14a558f8ab-3d450154245so1713435ab.2
+        for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 13:20:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741808047; x=1742412847; darn=lists.linux.dev;
-        h=content-transfer-encoding:autocrypt:subject:from:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rTgrJR7s4L4KINuRwMZAFzbNYQLSAhE3kZkfVn2zcvY=;
-        b=ALR4lIs3FkSRzzkUWkQIKp1d0cIzeABZyVmxHdRevUibG+jCNDes0tGq7oXcXLiD8y
-         fo97JWdWixJqW2+iPoi1toTYnVh7Z9vFfwvf61k4e6+62QI8OLfFWTXqZ4WwbTz15pOV
-         4RX3pzZTJ97wtOayqy538c/kgXF4iISD9VUBTdQi8OLFuOlD8SPPE4kaXrw1+gLG8Lxe
-         fVhOGqCffog5k4sb36Oi+yznJL+EuSpxATroRKVpvav3kjKr2qO5jEgJQceNIHOnh34i
-         GSBkSI5PxbKuEW1l0RVj2ATyhgdM3yjCUtOKiH8eNMzN4bulH0XlsfAgIlpjTuT0Tz1D
-         P6bw==
+        d=gmail.com; s=20230601; t=1741810858; x=1742415658; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=leDzS7eIFvtHXIQQ9eglVb87YCz9EMBQq+7ox6gc9Qk=;
+        b=SPwCp7c3Tgw6ukwB3IF9Se4qfap4iogCsNp1t1909CrBo9vvYJ6fg30euMOgye7a3L
+         5LFfZ8bZGsAKDdQ6h04+d3ys8M/FD+uCncpKXEsEqAHH3G439M1ZTlZF9RTOgBdP07dZ
+         fIARweiipaNss5LOAZ6DPfpRBCsE38wFyFfsoCYS2fLHsgztWXVDaCf8PTdk/jbCOU2X
+         VZ/cAyLFZXL1DdiiFe6zoNE30J9CywtvFYhac0pxDUhkdh6swTNLyoeGxEgpXsN+U+LU
+         xpmymDKB+3wbWRIDYh9iGIkPLyO5gheOmoWIlKkAPTB2g8kDDiyigGytpbXAAYLMOxrm
+         7Gaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741808047; x=1742412847;
-        h=content-transfer-encoding:autocrypt:subject:from:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rTgrJR7s4L4KINuRwMZAFzbNYQLSAhE3kZkfVn2zcvY=;
-        b=W4Q13FIBqQ2F0wskmmfGaavTqDhxglkHTYCIui9DkdFrVu43xa0eUjxgMCrcQwMdB7
-         40SUvXx9NI2KLmix5Jlz3qGYFRiYmpsi+VTMj2T+qr6OAsAYhqy4O2ZIJs8HhHqXCA4G
-         CyZxuw0qvyoNJAe3krLZhNsmnoOWKM2cnON8YNKpXHZQOoIuHTitVAjQFPC8Da8an7eV
-         I3NPqhZpkH2q86amDO19eimMydrjEaPAaXe9qu4Sj//fYcboi6wQMb8k/nvS4ewyUXjH
-         h8w1YKjAEeQ1FquSL9WnGgiCnpOgrejr4X2I9vQ6XkLIiqjaSJjQK9a1pJDaWUiKgoj5
-         xLoA==
-X-Forwarded-Encrypted: i=1; AJvYcCU/SCGtRsRVPCUOJpL5ApkmVAPgmBGR9rIiV8Ca74nrUSCD3NCpzooJp7KmUDYhdF6OgCRr/Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxjPNVF/BjlLTo7xu+sUvZRI/arn11ci1DO4W9C0oYhxuaGjYOJ
-	pQjmE4SGJFNQqFbr+PnkMb/BOV3KIb+TBnVkQbvg+K2ObYNKpxAR
-X-Gm-Gg: ASbGncv4olrBOH1msgjsgoizRtMXjRNTn481PK8svnkgUAczdL6vIF5ztY7r9CsO6z3
-	s1fWx6FMqCuuqCIBKC0uiD37SNpnCwGGzCYts/YUGBV8OyXbS5L9Xt24/ODGDqzYpFR4Cf4LHXW
-	YFZo+MMw+9gRrn9Gdk8s6Lhu8tDJcDJim6D+q03fXZTMsxWX5685HuNCM6KBpaQ1XmoI7ZYJ2DI
-	pK0IC7ZT4VYXCn5IiwLRFDtK0/EGZCFYYrh/ZWjht5RJg0G6O/PtqMn5idOxB9EWG81SJ1aRgMv
-	wRlHupfN77MPPEhUNgcHsihpVsEnXu28fCoL6E2PjYD5Ii7kcnKJCE4svZX0vcSSyfHl2JOk/Fb
-	/j1CktHNhUcz9KAfFQYEsCo1gAM/F51oISLfpSPEXJx93tQfKw8MX/80a3jUmMbn1BDoW8yb5hu
-	PV1hMfo6x05dXOcF8mCmHJL3131mwW4Up0QiUg
-X-Google-Smtp-Source: AGHT+IH/qyTbHk8CA+Ny/Co69+nnbQh9rmNffjJe2Y2GyTKO0EtiXN5+XtyWghkg62cAjWIz4hF+GQ==
-X-Received: by 2002:a05:600c:444c:b0:439:5f04:4f8d with SMTP id 5b1f17b1804b1-43d161bb744mr5479385e9.12.1741808046787;
-        Wed, 12 Mar 2025 12:34:06 -0700 (PDT)
-Received: from ?IPV6:2a02:3100:a4d2:5c00:ad7a:ba59:161c:c724? (dynamic-2a02-3100-a4d2-5c00-ad7a-ba59-161c-c724.310.pool.telefonica.de. [2a02:3100:a4d2:5c00:ad7a:ba59:161c:c724])
-        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-43d0a73127esm31013925e9.8.2025.03.12.12.34.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Mar 2025 12:34:06 -0700 (PDT)
-Message-ID: <3046c6a2-72a0-412e-a865-48dc129be0df@gmail.com>
-Date: Wed, 12 Mar 2025 20:34:12 +0100
+        d=1e100.net; s=20230601; t=1741810858; x=1742415658;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=leDzS7eIFvtHXIQQ9eglVb87YCz9EMBQq+7ox6gc9Qk=;
+        b=YbAlGZpOF3uDaINAUxS0v3PEwUjFsrZkOusrzBEBbYfg+hl0JIZ6fYwvb0FmhSfzSs
+         e2smWkDeqGiaE3rczBt0aUHVUf/4pOB931b1EFPDGe1C2mtrjtb0EPc3Ki8BualmX9I5
+         XU+EsWzk4SVvVogj1BXHubzuUjiOk3YlAT/UnOcDBsYZ1KBMfdUZ7LBaaMssdBu1mu88
+         1hIbNzsDRJz7uJp17iRpF6fzR4Tg33rZ00RubCrPsFVryumPOrvfbrFTHymB0YOlQkNC
+         Bc1r+GKGWxr7/FU+a+4W/ry64oaXlt28hZe0R/12ALimKO4Q29xeVBAgMuptZxzE8kyk
+         URKw==
+X-Forwarded-Encrypted: i=1; AJvYcCUS/ZT9AvKWMdYRDywJgHKaMGHc/EISjYWUsrlW+aVh4xrTY23X20A/mYotyzg1aRj7seu1Sg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx9oNyeY8EQEZC952f4gN+sSYLCBG8sg4teFwS8j63+5W1anJdt
+	tovvJVJ2cQJW986DNdOK/24NZ3f1FMKeCxoMAzxbQpj+oqE5wcj5CX/ryeXh8r8p+TmxSY/PEPG
+	d6mC9k3jCzqhDTh1dJZv+H00jmpc=
+X-Gm-Gg: ASbGncvvz7BOoOvmFvpY8cO/LRxcc0tDZUOo9gXQY+eBFDBSPc0mb932IOw0zwrefJO
+	ayIrfVTpPKipO4l4CuwM8fri+4VB6Sn7koardeVL3KVtAYbH4k1cW5JExKoudVCAEEetmRO2o8J
+	j9UDcwLBTFEqeARiuzBAQGGRIFc2rd53yl5HMnAAEyWxzKLe5GVho1XG0=
+X-Google-Smtp-Source: AGHT+IED4T6DLDIo3SmEhvYjhrVEJRweu80/CkvzBfXjIoBQfKIpAoBxfGcLmBmU9mYcxJ7671LtEDQ7s45JySuNKLY=
+X-Received: by 2002:a05:6e02:5a1:b0:3d4:700f:67e7 with SMTP id
+ e9e14a558f8ab-3d4700f6b02mr43315405ab.17.1741810857983; Wed, 12 Mar 2025
+ 13:20:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-acpi@vger.kernel.org, iommu@lists.linux.dev
-From: Heiner Kallweit <hkallweit1@gmail.com>
-Subject: New "something fishy here" warning fires
-Autocrypt: addr=hkallweit1@gmail.com; keydata=
- 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
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20250304-msm-gpu-fault-fixes-next-v4-0-be14be37f4c3@gmail.com>
+ <20250304-msm-gpu-fault-fixes-next-v4-1-be14be37f4c3@gmail.com>
+ <20250311180553.GB5216@willie-the-truck> <CACu1E7GzCiO2b7AFJSDC+pN2VD9VaD2aYz_GGymM3-xAUqd__A@mail.gmail.com>
+ <20250312130525.GC6181@willie-the-truck> <CAF6AEGvqYithLFAKpfdkw35DEsUZ8rBt25-oWz3r=kaLt+RbQw@mail.gmail.com>
+ <20250312164735.GA6561@willie-the-truck> <CAF6AEGskyoemQDrTXh=ewf61e-hVzWMjmqe=nX2J-65W5-M6Zw@mail.gmail.com>
+ <2d47815d-6bee-4d1f-8b60-854763794bf6@arm.com>
+In-Reply-To: <2d47815d-6bee-4d1f-8b60-854763794bf6@arm.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Wed, 12 Mar 2025 13:20:45 -0700
+X-Gm-Features: AQ5f1Jr0TpL3RJwurfnQxJV3DndqXaN2cYc9nQyOJQLHZCc7asLNsX0jHJOoZ20
+Message-ID: <CAF6AEGvhixYvXghvD+itnSDjr7bO4i3Ls0Y-kXC-ohFN=CS0PQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/5] iommu/arm-smmu: Save additional information on
+ context fault
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will@kernel.org>, Connor Abbott <cwabbott0@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
+	Sean Paul <sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>, 
+	Abhinav Kumar <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, iommu@lists.linux.dev, 
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	freedreno@lists.freedesktop.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Since "iommu: Get DT/ACPI parsing into the proper probe path" I get the following
-on a N100-based mini pc. The warning pops up 4 times, for:
+On Wed, Mar 12, 2025 at 11:01=E2=80=AFAM Robin Murphy <robin.murphy@arm.com=
+> wrote:
+>
+> On 12/03/2025 5:23 pm, Rob Clark wrote:
+> > On Wed, Mar 12, 2025 at 9:47=E2=80=AFAM Will Deacon <will@kernel.org> w=
+rote:
+> >>
+> >> On Wed, Mar 12, 2025 at 07:59:52AM -0700, Rob Clark wrote:
+> >>> On Wed, Mar 12, 2025 at 6:05=E2=80=AFAM Will Deacon <will@kernel.org>=
+ wrote:
+> >>>> On Tue, Mar 11, 2025 at 06:36:38PM -0400, Connor Abbott wrote:
+> >>>>> On Tue, Mar 11, 2025 at 2:06=E2=80=AFPM Will Deacon <will@kernel.or=
+g> wrote:
+> >>>>>> On Tue, Mar 04, 2025 at 11:56:47AM -0500, Connor Abbott wrote:
+> >>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iomm=
+u/arm/arm-smmu/arm-smmu.c
+> >>>>>>> index ade4684c14c9b2724a71e2457288dbfaf7562c83..a9213e0f1579d1e3b=
+e0bfba75eea1d5de23117de 100644
+> >>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> >>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> >>>>>>> @@ -409,9 +409,12 @@ void arm_smmu_read_context_fault_info(struct=
+ arm_smmu_device *smmu, int idx,
+> >>>>>>>                                      struct arm_smmu_context_faul=
+t_info *cfi)
+> >>>>>>>   {
+> >>>>>>>        cfi->iova =3D arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_FAR=
+);
+> >>>>>>> +     cfi->ttbr0 =3D arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_TTB=
+R0);
+> >>>>>>>        cfi->fsr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
+> >>>>>>> -     cfi->fsynr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYN=
+R0);
+> >>>>>>> +     cfi->fsynr0 =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSY=
+NR0);
+> >>>>>>> +     cfi->fsynr1 =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSY=
+NR1);
+> >>>>>>
+> >>>>>> We already have an implementation hook (->get_fault_info()) which =
+the
+> >>>>>> qcom SMMU driver can override with qcom_adreno_smmu_get_fault_info=
+().
+> >>>>>> That thing dumps these registers already so if we're moving that i=
+nto
+> >>>>>> the core SMMU driver, let's get rid of the hook and move everybody=
+ over
+> >>>>>> rather than having it done in both places.
+> >>>>>
+> >>>>> As you probably saw, the next commit moves over
+> >>>>> qcom_adreno_smmu_get_fault_info() to use this. The current back doo=
+r
+> >>>>> used by drm/msm to access these functions is specific to adreno_smm=
+u
+> >>>>> and there isn't an equivalent interface to allow it to call a gener=
+ic
+> >>>>> SMMU function so it isn't possible to move it entirely to the core.=
+ At
+> >>>>> least not without a bigger refactoring that isn't justified for thi=
+s
+> >>>>> series that is just trying to fix things.
+> >>>>
+> >>>> Ok :(
+> >>>>
+> >>>>>>>        cfi->cbfrsynra =3D arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CB=
+FRSYNRA(idx));
+> >>>>>>> +     cfi->contextidr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB=
+_CONTEXTIDR);
+> >>>>>>
+> >>>>>> I think the CONTEXTIDR register is stage-1 only, so we shouldn't d=
+ump
+> >>>>>> it for stage-2 domains.
+> >>>>>>
+> >>>>> Does it matter if we read the register though, as long as users are
+> >>>>> aware of this and don't use its value for anything?
+> >>>>
+> >>>> I think the contents are "UNKNOWN", so it could be hugely confusing =
+even
+> >>>> if they just got logged someplace. Why is it difficult to avoid touc=
+hing
+> >>>> it for stage-2?
+> >>>>
+> >>> Fwiw, we are only ever using stage-1
+> >>
+> >> Sure, but this is in arm-smmu.c which is used by other people and supp=
+orts
+> >> both stages.
+> >
+> > Sure, but no one else is using this field in the fault-info.  So maybe
+> > the addition of a comment in the struct would be enough if it isn't
+> > going to cause an SError/etc to read it for S2 cb?
+>
+> Any worthwhile comment isn't going to be significantly shorter or
+> clearer than 1 extra line of "if (smmu_domain->stage =3D=3D
+> ARM_SMMU_DOMAIN_S1)"...
 
-PNP0C14:00
-PNP0C14:01
-PNP0C14:00
-PNP0C14:01
+Just that smmu_domain isn't passed to
+arm_smmu_read_context_fault_info(), so it would add some extra churn
+on top of that one extra line
 
-Any other info you'd be interested in?
+> TBH it's the Qualcomm register-middle-man firmware I'd be more worried
+> about than real hardware, given how touchy it can be even with register
+> accesses which *should* be well defined. But then I guess it also has
+> the habit of killing the system if anything other than the GPU dares
+> cause a fault in the first place, so maybe it OK?
 
-[  +0.000139] Unpacking initramfs...
-[  +0.000690] ------------[ cut here ]------------
-[  +0.000028] acpi-wmi PNP0C14:00: late IOMMU probe at driver bind, something fishy here!
-[  +0.000041] WARNING: CPU: 1 PID: 1 at drivers/iommu/iommu.c:449 __iommu_probe_device+0x12b/0x530
-[  +0.000034] Modules linked in:
-[  +0.000024] CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc6-next-20250312+ #2
-[  +0.000029] Hardware name: Default string Default string/Default string, BIOS ADLN.M6.SODIMM.ZB.CY.015 08/08/2023
-[  +0.000032] RIP: 0010:__iommu_probe_device+0x12b/0x530
-[  +0.000019] Code: 68 00 74 28 4c 8b 73 50 4d 85 f6 75 03 4c 8b 33 48 89 df e8 d7 ec 00 00 4c 89 f2 48 c7 c7 b8 91 7b 9e 48 89 c6 e8 f5 3e 96 ff >
-[  +0.000055] RSP: 0000:ffffb031c006fc98 EFLAGS: 00010282
-[  +0.000021] RAX: 0000000000000000 RBX: ffff9469416c5010 RCX: 0000000000000000
-[  +0.000023] RDX: 0000000000000002 RSI: 0000000000000003 RDI: 00000000ffffffff
-[  +0.000023] RBP: ffffb031c006fcd8 R08: 0000000000000000 R09: ffffb031c006fae8
-[  +0.000023] R10: ffffffff9eb1ea68 R11: 0000000000000003 R12: ffffffff9e485280
-[  +0.000023] R13: ffffb031c006fd70 R14: ffff946940bb8ec0 R15: 0000000000000000
-[  +0.000023] FS:  0000000000000000(0000) GS:ffff946b18bec000(0000) knlGS:0000000000000000
-[  +0.000037] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  +0.000020] CR2: 0000000000000000 CR3: 000000016c650001 CR4: 0000000000770ef0
-[  +0.000023] PKRU: 55555554
-[  +0.000012] Call Trace:
-[  +0.000010]  <TASK>
-[  +0.000011]  ? show_regs.part.0+0x1d/0x30
-[  +0.000019]  ? show_regs.cold+0x8/0xd
-[  +0.000016]  ? __iommu_probe_device+0x12b/0x530
-[  +0.000017]  ? __warn.cold+0xc2/0x15e
-[  +0.000018]  ? __iommu_probe_device+0x12b/0x530
-[  +0.000017]  ? report_bug+0xe3/0x170
-[  +0.000016]  ? console_unlock+0x7d/0x110
-[  +0.000018]  ? __iommu_probe_device+0x12b/0x530
-[  +0.000016]  ? __iommu_probe_device+0x12d/0x530
-[  +0.000017]  ? handle_bug+0x116/0x170
-[  +0.000018]  ? exc_invalid_op+0x18/0x70
-[  +0.000017]  ? asm_exc_invalid_op+0x1b/0x20
-[  +0.000022]  ? __iommu_probe_device+0x12b/0x530
-[  +0.000018]  ? __iommu_probe_device+0x12b/0x530
-[  +0.000019]  ? __pfx_probe_iommu_group+0x10/0x10
-[  +0.000017]  probe_iommu_group+0x26/0x50
-[  +0.000016]  bus_for_each_dev+0x79/0xd0
-[  +0.000020]  iommu_device_register+0xbe/0x230
-[  +0.000021]  intel_iommu_init+0xd76/0xf40
-[  +0.000016]  ? _raw_spin_unlock_irqrestore+0x55/0x80
-[  +0.000022]  ? __this_cpu_preempt_check+0x13/0x20
-[  +0.000018]  ? lockdep_hardirqs_on+0x7d/0x110
-[  +0.000018]  ? trace_hardirqs_on+0x5b/0xd0
-[  +0.000017]  ? _raw_spin_unlock_irqrestore+0x3c/0x80
-[  +0.000020]  ? __pfx_pci_iommu_init+0x10/0x10
-[  +0.000021]  pci_iommu_init+0xd/0x40
+If we have qc hyp, then we don't get S2 in the first place ;-)
+
+BR,
+-R
+
+> If anyone still uses Arm Fast Models SMMUv1/2 components it'll probably
+> squawk an annoying warning there too - ISTR I had at least one patch
+> motivated by that in the past.
+>
+> Thanks,
+> Robin.
