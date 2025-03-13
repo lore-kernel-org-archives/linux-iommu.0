@@ -1,119 +1,149 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E3101F151E
-	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 11:39:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90909266597
+	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 11:49:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741865950; cv=none; b=YxmUITgy0iUhOc7DKQispMwDekOlZl5cGFGM6hZyTudm1IZlj7U3a9HEJwwqNZNskzsRkHdX+BjypVu2LlHYBSMNlu92MKAvUmCE4f85N7gHu0MTv94b/ptwsLyTIHF2XCOkVRr/8w5DWvujlu7c1Mu5o3so5wTJDhg3Sk/CNes=
+	t=1741866577; cv=none; b=p3sht4K+cDwHx54zWwPJnBuTOrxiEd3tZ5d5xWkFVlwMgq0If+/VZW9D8llRbjRyh0F4pOAGqAUkksc/CDwYYrYqy8h5iEe2S907P+rNsXLxSv/cJ8M0RprWm32irhnhy+KORRsYXEfb/4pt2wZsLv1keheqQXkwYFhoceRdk78=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741865950; c=relaxed/simple;
-	bh=lazMAEs4AUA7A2gPWgWo4ogZfmQ9zGu6hGcN2wilfWc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=IAKzdwobGJny+cG4OciMg3Zt3Lw4mj4khzfGvLa29i7HHL6qO2PIlIRN0acFl+OlFXV+Aub+YMZ0HNu3WFIMNfK+rkkKdxDnJ4xC1PWYTw5fDfGyQPVyN0o9bye2x6mhScGCUaG9U3DpOiT2mJB0fI62tlH9dst09lO4BXJ6+vE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F20581C00;
-	Thu, 13 Mar 2025 04:39:17 -0700 (PDT)
-Received: from [10.57.40.246] (unknown [10.57.40.246])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 95B703F673;
-	Thu, 13 Mar 2025 04:39:02 -0700 (PDT)
-Message-ID: <880d8d7d-cd83-4e39-a0de-e278187b7a36@arm.com>
-Date: Thu, 13 Mar 2025 11:39:00 +0000
+	s=arc-20240116; t=1741866577; c=relaxed/simple;
+	bh=ymVbr09/+0eQx25LnG7+hQQo99jgTHBhAsaViFfXSQg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=f11e1okcw9tkXU8ZxFq8Dy6AJCifE6XgLvIJJXnmsoEp+X1/cAPf8JrJvBO+CzE6rWkpONsXtjxtx9E7LQ4bOdaqpuUyUq2vBqhB7+zsjND/+fKmTVAf9rY+yt9n/cUoucYrxkvb/Zoz+0XL04ilU7ZrwXqvGjt1OxL+glNeD4U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=jQy7T0Aq; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=pYqsEwNo; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=jQy7T0Aq; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=pYqsEwNo; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="jQy7T0Aq";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="pYqsEwNo";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="jQy7T0Aq";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="pYqsEwNo"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 76ECD21162;
+	Thu, 13 Mar 2025 11:49:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1741866573; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Yd8mYvTj9OAsmQlhNdKxRmv6VZmC7TaYNFRo1sXHwS4=;
+	b=jQy7T0AqJzHjE/IrWInaqE/w92Sr5WcizvSyZ2neuI9vLuC/oXxOP6QlVvZ8I2wSuSjZVV
+	thRebrTjHwiafOYzdmoARVGdhNwRbcS7x2Hl5pgOMSwX/JMSI65sOpwqBZt8vyI4SZfCeM
+	BklrEOw7R+GmxQkiF18GBLTwUDLjq3k=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1741866573;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Yd8mYvTj9OAsmQlhNdKxRmv6VZmC7TaYNFRo1sXHwS4=;
+	b=pYqsEwNoQHU5tf/T7W6HxNI5BKSc1bp6tnZnczPGaecOi8p+sMx0zETbUdPeLSc4RhOQAT
+	6TExC6t0uAMkcyBA==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1741866573; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Yd8mYvTj9OAsmQlhNdKxRmv6VZmC7TaYNFRo1sXHwS4=;
+	b=jQy7T0AqJzHjE/IrWInaqE/w92Sr5WcizvSyZ2neuI9vLuC/oXxOP6QlVvZ8I2wSuSjZVV
+	thRebrTjHwiafOYzdmoARVGdhNwRbcS7x2Hl5pgOMSwX/JMSI65sOpwqBZt8vyI4SZfCeM
+	BklrEOw7R+GmxQkiF18GBLTwUDLjq3k=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1741866573;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Yd8mYvTj9OAsmQlhNdKxRmv6VZmC7TaYNFRo1sXHwS4=;
+	b=pYqsEwNoQHU5tf/T7W6HxNI5BKSc1bp6tnZnczPGaecOi8p+sMx0zETbUdPeLSc4RhOQAT
+	6TExC6t0uAMkcyBA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 3D31B137BA;
+	Thu, 13 Mar 2025 11:49:33 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id 2UFpDU3G0mfcXgAAD6G6ig
+	(envelope-from <jroedel@suse.de>); Thu, 13 Mar 2025 11:49:33 +0000
+Date: Thu, 13 Mar 2025 12:49:23 +0100
+From: Joerg Roedel <jroedel@suse.de>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Jason Gunthorpe <jgg@nvidia.com>, linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: New "something fishy here" warning fires
+Message-ID: <Z9LGQ8h-I8c4igfr@suse.de>
+References: <3046c6a2-72a0-412e-a865-48dc129be0df@gmail.com>
+ <09bc17bd-4d25-4afd-8f6c-56707ea9bc92@linux.intel.com>
+ <73e4c6fc-bc41-452b-8af5-9653436d8ba7@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/3] iommu/arm: Add BBM Level 2 smmu feature
-To: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
- ryan.roberts@arm.com, suzuki.poulose@arm.com, yang@os.amperecomputing.com,
- corbet@lwn.net, catalin.marinas@arm.com, will@kernel.org,
- jean-philippe@linaro.org, joro@8bytes.org, akpm@linux-foundation.org,
- mark.rutland@arm.com, joey.gouly@arm.com, maz@kernel.org,
- james.morse@arm.com, broonie@kernel.org, anshuman.khandual@arm.com,
- oliver.upton@linux.dev, ioworker0@gmail.com, baohua@kernel.org,
- david@redhat.com, jgg@ziepe.ca, shameerali.kolothum.thodi@huawei.com,
- nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com,
- smostafa@google.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20250313104111.24196-2-miko.lenczewski@arm.com>
- <20250313104111.24196-4-miko.lenczewski@arm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250313104111.24196-4-miko.lenczewski@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <73e4c6fc-bc41-452b-8af5-9653436d8ba7@arm.com>
+X-Spam-Score: -4.30
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	MISSING_XM_UA(0.00)[];
+	ARC_NA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCPT_COUNT_SEVEN(0.00)[8];
+	MID_RHS_MATCH_FROM(0.00)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[linux.intel.com,gmail.com,google.com,kernel.org,nvidia.com,vger.kernel.org,lists.linux.dev];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.de:mid,suse.de:email,suse.com:url]
+X-Spam-Flag: NO
+X-Spam-Level: 
 
-On 2025-03-13 10:41 am, Miko≈Çaj Lenczewski wrote:
-> For supporting BBM Level 2 for userspace mappings, we want to ensure
-> that the smmu also supports its own version of BBM Level 2. Luckily, the
-> smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
-> 0487K.a D8.16.2), so already guarantees that no aborts are raised when
-> BBM level 2 is claimed.
+On Thu, Mar 13, 2025 at 11:09:37AM +0000, Robin Murphy wrote:
+> > The fix is here.
+> > 
+> > https://lore.kernel.org/linux- iommu/72a4853e7ef36e7c1c4ca171ed4ed8e1a463a61a.1741791691.git.robin.murphy@arm.com/
 > 
-> Add the feature and testing for it under arm_smmu_sva_supported().
+> Indeed, and I see Joerg has updated the iommu/next branch already, so
+> hopefully today's -next will be OK again. Sorry for the false positives!
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Yes, the fix is part of iommu/next as of this (european) morning.
 
-> Signed-off-by: Miko≈Çaj Lenczewski <miko.lenczewski@arm.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 3 +++
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 4 ++++
->   3 files changed, 10 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index 9ba596430e7c..6ba182572788 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -222,6 +222,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
->   		feat_mask |= ARM_SMMU_FEAT_VAX;
->   	}
->   
-> +	if (system_supports_bbml2_noabort())
-> +		feat_mask |= ARM_SMMU_FEAT_BBML2;
-> +
->   	if ((smmu->features & feat_mask) != feat_mask)
->   		return false;
->   
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 358072b4e293..dcee0bdec924 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -4406,6 +4406,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
->   	if (FIELD_GET(IDR3_RIL, reg))
->   		smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
->   
-> +	if (FIELD_GET(IDR3_BBML, reg) == IDR3_BBML2)
-> +		smmu->features |= ARM_SMMU_FEAT_BBML2;
-> +
->   	/* IDR5 */
->   	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
->   
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index bd9d7c85576a..85eaf3ab88c2 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -60,6 +60,9 @@ struct arm_smmu_device;
->   #define ARM_SMMU_IDR3			0xc
->   #define IDR3_FWB			(1 << 8)
->   #define IDR3_RIL			(1 << 10)
-> +#define IDR3_BBML			GENMASK(12, 11)
-> +#define IDR3_BBML1			(1 << 11)
-> +#define IDR3_BBML2			(2 << 11)
->   
->   #define ARM_SMMU_IDR5			0x14
->   #define IDR5_STALL_MAX			GENMASK(31, 16)
-> @@ -754,6 +757,7 @@ struct arm_smmu_device {
->   #define ARM_SMMU_FEAT_HA		(1 << 21)
->   #define ARM_SMMU_FEAT_HD		(1 << 22)
->   #define ARM_SMMU_FEAT_S2FWB		(1 << 23)
-> +#define ARM_SMMU_FEAT_BBML2		(1 << 24)
->   	u32				features;
->   
->   #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+Regards,
 
+-- 
+Jˆrg Rˆdel
+jroedel@suse.de
+
+SUSE Software Solutions Germany GmbH
+Frankenstraﬂe 146
+90461 N¸rnberg
+Germany
+https://www.suse.com/
+
+Gesch‰ftsf¸hrer: Ivo Totev, Andrew McDonald, Werner Knoblich
+(HRB 36809, AG N¸rnberg)
