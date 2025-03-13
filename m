@@ -1,302 +1,271 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFD471EEA27;
-	Thu, 13 Mar 2025 19:09:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741892971; cv=fail; b=O3PG+pPQ2mK/FVoK7eU4sNizvCLT6Q7oi7R1vkYk15g5vaK7j9MDuRWquXBz1g+urLEAOimn9nK5cOCsznCKISKzyrHYz4qe8HYMYLCZVQI/z550NKKLZpPPPIS6G2oqnKJHV6p0hWqUbyd8Pj7G8D+UkuDMScYBSbtFcxRVUWI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741892971; c=relaxed/simple;
-	bh=R2BfbirKiwSynoK4nD4EXCBFsqSFVW+q5yMZEg521/M=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=D5WWiJdlcfqpKTAcGzGx+Ex3vcRsjVHIKjzOP9KS8QBuX2Q1wZAvflnEdvpiSdOPu7z5wUkYNWYUwqGI1Jkel7fTulv4r3Y+TKDw7w95Ei3PzkrtQeiJWBWbsb2oKX70ErEI3/nBXJskHmi7gPp5PChR/cBeV6J3p3po9hCbSVg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EMGYvs4G; arc=fail smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F83C78C9C;
+	Thu, 13 Mar 2025 19:19:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741893573; cv=none; b=GT6WvK9yNaWX7IL4otkfixSC2dlGK6heuiuuWfbuFbeyP9RQKe2R3tAdh5aLG02BhqqF6Jw/3oyqANAaZ8AAOffHGkSRHIgBW++Ykq5VjM+7fZhNOQaeHP4PnvymBH4NI7S6AYJtdzhfTuU2TTomrpHaH4XHIevoTL8CqO/xKsY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741893573; c=relaxed/simple;
+	bh=i2dExGBiGztfRucK1j5kvt0qdYteBRU8zw51sR2GPxA=;
+	h=From:Date:MIME-Version:Content-Type:To:Message-ID:In-Reply-To:
+	 References:Subject; b=KiKGBGMvw2sgPZ+7qv8K7x8qrypkmjpN2WXfdno8N2v1ye3NAqG15Z4b8TqMb2dZxUavh40+QdgTnwRTujvNMH+pE91YcvnCv+YV7QS4RKwTlNCIFeWry4g0RW3r0wKBmR6EEOZkHU0zLhn2FgEFK2+Y0A+x2knZ4TAbhfDhxKw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Aqdlsgwi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EMGYvs4G"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741892970; x=1773428970;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=R2BfbirKiwSynoK4nD4EXCBFsqSFVW+q5yMZEg521/M=;
-  b=EMGYvs4G8hOl5XniFHrHQYicHCogSXiQmakJ+vPdDm1EXNP7apbYwkLm
-   xwUe+Y1nagJU7cOKwlJi+KutZITPCIeaArB142umD2fllwpR3em3rcT95
-   0CuDGU3By01zVuBIpyscvaz7NCCBbHMOJ4G3JFux9M9N+aMV4OtOwRn+N
-   B2rhDqnNSOqE60NxUkzhY7R10b528jQutCNcQ3HGcuJlQJogmY/xGXf7t
-   XoIm5dtqwL4udxKtWxA2zUMG8mDCon4QkhGrfXFqdGsio1+r4qmipf660
-   ynnsvTJN7fJplvHFot1KLCYVkpvOT/s/wtGxXyuZ7kbUF6eLJhZTLJlzw
-   w==;
-X-CSE-ConnectionGUID: zdtudR+9T7qenoYVxxQ6CQ==
-X-CSE-MsgGUID: AXIOcru9SEmcyyThI0L6lQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11372"; a="60432643"
-X-IronPort-AV: E=Sophos;i="6.14,245,1736841600"; 
-   d="scan'208";a="60432643"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2025 12:09:29 -0700
-X-CSE-ConnectionGUID: 7A7zNTOwTeWVPiGmCmlLSw==
-X-CSE-MsgGUID: OA90VCHZQDyCbqXMPEQ8jw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,245,1736841600"; 
-   d="scan'208";a="126091618"
-Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
-  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2025 12:09:29 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.1544.14; Thu, 13 Mar 2025 12:09:28 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44 via Frontend Transport; Thu, 13 Mar 2025 12:09:28 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.170)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Thu, 13 Mar 2025 12:09:27 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FCtjrDVqLfd4T/TKAyzs8CVxhjn88hZ4buG/0BAnDmO5Yzeztmci0dh+o4CkEIauxFnuaNCnL3eBr24ToqtPcxSgZ6oZWTdkOur+0xsifhVOlMVKp7qM9QpLORaOpAVqq/V5ION2WKo/SX0evJIV7J5z6kDGGq7f9fnoSHNOxSYMu2X2K/7V9AAIbi7kg/I9shiw6JgQXnEX8AGQ6lliJXka5UoLH0ASMYQ+e5nbhpTHBlnYKV9AH+2yqVZD9eiEz+gk8bP4K74uM9utu1htCSaxrSY+U0VCrCOgSGjQdeTQG8B/Sm7zkLbztuFTfAPeejylVy/5PrQc4eA7AYrmmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CHrcVssxYu1BFhUPVRywLBBc28BDEO6ZfnU4knmY8lM=;
- b=QSkhXwDHPnxn8DU+iV6TKYCKETmNs3p1DD/Sj5jCZyi01Wn4FoZYt2t40Lj/G/CP9o0kvJoIlsJI6fDK0rWQHQw0/W4hxK9ayQK50opxe6wntrltGDvTFy+JUvdRMhZKeFBmOoTcsqym+rr4gf2/MmZAu0q0OA1QmGfgBe4dKPusMcB769D6bJ23TB17Dvc1W9btoxRYoCS0FvN4BpS2kbSRi0rNPj+tPTgtl+6N85Hl/4CJcAoqgBs3jzvvsSWStqW/JnCyF/vFFCz5/vg267he3zcE3rR61zyFqPE6g18U2SS3PJDKctHsO+XYp/o2s8FPMcjciEMVDtzLxKouxQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB8107.namprd11.prod.outlook.com (2603:10b6:510:256::6)
- by DM4PR11MB6504.namprd11.prod.outlook.com (2603:10b6:8:8d::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8511.27; Thu, 13 Mar 2025 19:09:25 +0000
-Received: from PH8PR11MB8107.namprd11.prod.outlook.com
- ([fe80::6b05:74cf:a304:ecd8]) by PH8PR11MB8107.namprd11.prod.outlook.com
- ([fe80::6b05:74cf:a304:ecd8%4]) with mapi id 15.20.8534.027; Thu, 13 Mar 2025
- 19:09:25 +0000
-Date: Thu, 13 Mar 2025 12:09:20 -0700
-From: Dan Williams <dan.j.williams@intel.com>
-To: Alexey Kardashevskiy <aik@amd.com>, Dan Williams
-	<dan.j.williams@intel.com>, <x86@kernel.org>
-CC: <kvm@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <linux-arch@vger.kernel.org>, "Sean
- Christopherson" <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>,
-	"Tom Lendacky" <thomas.lendacky@amd.com>, Ashish Kalra
-	<ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Robin Murphy <robin.murphy@arm.com>, "Jason
- Gunthorpe" <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Bjorn Helgaas
-	<bhelgaas@google.com>, Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania
-	<nikunj@amd.com>, Michael Roth <michael.roth@amd.com>, Vasant Hegde
-	<vasant.hegde@amd.com>, Joao Martins <joao.m.martins@oracle.com>, "Nicolin
- Chen" <nicolinc@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, "Steve
- Sistare" <steven.sistare@oracle.com>, Lukas Wunner <lukas@wunner.de>,
-	"Jonathan Cameron" <Jonathan.Cameron@huawei.com>, Suzuki K Poulose
-	<suzuki.poulose@arm.com>, Dionna Glaze <dionnaglaze@google.com>, Yi Liu
-	<yi.l.liu@intel.com>, <iommu@lists.linux.dev>, <linux-coco@lists.linux.dev>,
-	Zhi Wang <zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>, "Aneesh
- Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 06/22] KVM: X86: Define tsm_get_vmid
-Message-ID: <67d32d60bf4f4_1198729418@dwillia2-xfh.jf.intel.com.notmuch>
-References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-7-aik@amd.com>
- <67d23a3e6667_201f0294ed@dwillia2-xfh.jf.intel.com.notmuch>
- <7719c1ad-84b8-40e2-9ce7-93248a410ebd@amd.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <7719c1ad-84b8-40e2-9ce7-93248a410ebd@amd.com>
-X-ClientProxiedBy: MW4PR03CA0209.namprd03.prod.outlook.com
- (2603:10b6:303:b8::34) To PH8PR11MB8107.namprd11.prod.outlook.com
- (2603:10b6:510:256::6)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Aqdlsgwi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0F5EC4CEDD;
+	Thu, 13 Mar 2025 19:19:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741893572;
+	bh=i2dExGBiGztfRucK1j5kvt0qdYteBRU8zw51sR2GPxA=;
+	h=From:Date:To:In-Reply-To:References:Subject:From;
+	b=Aqdlsgwi5fIF4zoSRxhBrV36RlKv2QOJApdsCRnh+LKcI2Y1g2JSc4zKOMAJn26h/
+	 wzOUf4CW0DEgYwCIqyVv0slU4ea9Mmn7HibPd7dWKcaphk0LxUHE97UGAzkCVhT0Dy
+	 B0In1Voqk1HerrfpDaUCoMnIk1gbSXurFzw3wb0C0/yq31O92/5pVnR1mRyT3cqskN
+	 X31oMIPCKtpZ83vv63R/CpcVlarcu3saJ5izb3hJgiQXG0ZCK10FGA5wW+GJ06HsMF
+	 KeemtOhsf4NG+uzLp2OsMNmWxSgpoEADQYdAnAB75ze12nDz2jwgjmdtT17FQ2L44v
+	 y2fibzls+i8pA==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 3E6083806651;
+	Thu, 13 Mar 2025 19:20:08 +0000 (UTC)
+From: Lucas via Bugspray Bot <bugbot@kernel.org>
+Date: Thu, 13 Mar 2025 19:20:06 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB8107:EE_|DM4PR11MB6504:EE_
-X-MS-Office365-Filtering-Correlation-Id: a03ad3fd-34d6-4226-dcb7-08dd626291dd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014|7053199007;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?8ujD0d7yD0uFS3TTf/SrIL2N4Q6TWWfRPtjKp/LsXukDbpUGbf3AljeyyyDZ?=
- =?us-ascii?Q?ZHMCmOc3/YuDfQMqCxATMMv3BIyQqv8aY7DSPQBKXduBzSaL6AEugB0K/UQp?=
- =?us-ascii?Q?cEI8DXr6HSF7MQiT4FaZaUMwgmUNW7dc643/GZvJTrBonU0JCTGi7Pplcf2g?=
- =?us-ascii?Q?mGNG27hgCs/HvUCIGH+yN4K6Gg6txepuBgHPaDPv/e/sRp+IUZSdxaaEAxFe?=
- =?us-ascii?Q?QTN1fz4Xah69AfussyCNrAAVA71GMun1yAgYwJFLmoO6qKQMd0dVpgs45L9l?=
- =?us-ascii?Q?V93sBYEbWOFIUW/P3m3ILaeFlXC6NlezBymkalmvoweHXUj2yQPmC7uXZTLd?=
- =?us-ascii?Q?+72nz4JAkxh2vq97ZpAMtVfx/aHH+y+9PoXCYyCWrPqMriX6uvNDGHejNcHd?=
- =?us-ascii?Q?t84RbSt5ZZMnEqDoABGYOIEGs8iQGuUsI+z2u2OUAYJviWT4j7rRD8jB1BSn?=
- =?us-ascii?Q?uL7ldgRvdBFe70lUCjAd+2UUbaAGLCiA3oHxNoLFfS6H7Dp8q6ZXRFE4sey8?=
- =?us-ascii?Q?hVdIJkHQRRbvjHov9YaljXlsxSd2W74K1o2wB92CnB6rdyfUuh3QRMMvH67a?=
- =?us-ascii?Q?gA5H9MppkiUAa9a3JkpHp8FHBPvnzG+RVhpMgmBcQvRWopBIhpShSir1qIC5?=
- =?us-ascii?Q?b9+YaW1/DrAi8pNNX/a9ewsE5IlAuFgnQLs8obwitZe7imDt6zNZqb0vDaXo?=
- =?us-ascii?Q?M/kz4LZWsENbV/Zqb4Wqkk7vuzfuEQCje0E7+JTr19B3PV7eSex3sZRVIy94?=
- =?us-ascii?Q?LoonBUNuKF2WqHYhj4GyFwPRt3KixWabiqA2UmsqNGAQ1R9nmew87kShs/6a?=
- =?us-ascii?Q?HBu1rhMhQcDO8BpdCUjj/tsbt+JlTzba4z5KeOW+PChtu2AScFvSyuO8FkIn?=
- =?us-ascii?Q?0WP3CyKkRksDcWCuqr3xk9HFXeiBLFf7SrI/TT9NtrLg7GEXpoh8s8o8sljr?=
- =?us-ascii?Q?zgjxHcnw5gZDeWirBdQItJ2xOAKn4LWbviA0W5amp9yWRtGSjzrGIfJ4EAP4?=
- =?us-ascii?Q?S+Ql1J++7EM+ZQK92C6Lzn7OtB8xU1Ruige1GE74gs/wRl5rsrHgPpw2YRbf?=
- =?us-ascii?Q?yn765R4h/58Yroj+s/LVJBjDOJH936QtA5mHm9ef1v7AgnUh569MufQ/RHB3?=
- =?us-ascii?Q?aHIe3fa00EE04fY24H2QLtz3D5hyIBlbkV9mqXQF9I5CLDGMcbk02yFnn8Tq?=
- =?us-ascii?Q?dncBfBqDwbPJ1kRaW+i9hV1bPlTeb64bnWeW0H0y9s33C00xx+FRUCIs2laU?=
- =?us-ascii?Q?pk5p3eug2hc6aHWZoZlEA3rzZcbCG0SD9SJtqkyUnfJqzA8La3mUQW4ytujF?=
- =?us-ascii?Q?HbFPXNTHfiok+fIL9kQeIWI+O3+rwonPv8Iavw6dWHDTtHfzg4PUq2WTCgVc?=
- =?us-ascii?Q?6eADZ54QiaaJfzZaqh6BYYaqXMLA?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB8107.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?R1A+guZrrXbEpcQx+8wKLp5fDJFl9Pu4bg8/ui6bG6lbZPKBysI8bOgRuIZc?=
- =?us-ascii?Q?R/HYc2mLosfefAuHX3ns3bB7YdeJ2phSBguC4KJ6PBg+ewlGlbma88+ukQSM?=
- =?us-ascii?Q?2Qt7rmP6xpFU1Gfzs//wdzYiqoNSxwt8B9rxGUObwGPQpXbsO/NG4r74sxdH?=
- =?us-ascii?Q?qkNvrjxoQkaf8pQfXGCF25R16xs52tAhYe0xHPg13fFcjKeiG/qHRn1/B5wp?=
- =?us-ascii?Q?WR8V3DDT5POGPRl3sxw+r2+2cnvPDQVIzj4GqhR5jdYc47NrVF5qUOHHmmit?=
- =?us-ascii?Q?5eAsN4eJ661baDVLz+FMF4mkhqMJcNleXNXcuu0ke6ppJ96+CtLc30F9f362?=
- =?us-ascii?Q?2FTsKgvZ22QxzMqwVm/AYd7xltcuKy1a5kpy3QmBYTzRr3arLpYMkPNb4slD?=
- =?us-ascii?Q?RkbT0hJ8UO8YenpSfermwB1n6+sWEfnsGW3nMj7oAEc/AJLCeVcJNyI7tK+q?=
- =?us-ascii?Q?o+miAmw72LXyl47umI00sHi6NOduf/f9UqbsEcDFETNOgmPLx+NC0accxDq9?=
- =?us-ascii?Q?MwxfaPUJLV1Ln0fvS18+e7Aa+gU7fRfjJg5GHkZuJj2Yy3fM+tU23b/GcPPk?=
- =?us-ascii?Q?jPn0HJ/oMwAb4FE8BGpkOdMA6fEo8ejinSc76JaqI/FrApJ2DTU2Cx4SMERE?=
- =?us-ascii?Q?k4fR/7IOyG7ZHH+qhY/kegnDdkfPFQHz/mXGw1IhoQJLFpQVdCQSEufwLQyz?=
- =?us-ascii?Q?PnqHWiQNhUNh6nnqYwvF1aDGq6sI0J88gBL2cubVnQL9H8lg+/CBcRq63sPR?=
- =?us-ascii?Q?ri8riqKnEcXqBTMYFJ7MMBo82YUhYVTbIKm21VUS7Nr4+/UX83s5OwY7hZa4?=
- =?us-ascii?Q?agaJLSTzpD4buRh7lJ43cO7l44OGg3CYora0mo0+WKl+u0Q/cbOmyVlLaaYy?=
- =?us-ascii?Q?/Zw0TAwG/LAx6A4oUSW/0r2wmydbUgsJNhreA7AKQ5IH0jNjM9WUrPSqQFmD?=
- =?us-ascii?Q?sP2DfWhViKJ7nxv0KC+zcOiYzN1tww4gi0/x1//3MnXaql+Wv+G6VrbCmWRD?=
- =?us-ascii?Q?nliy4PCCof1KaOrnD7BTu8jX5vFUSpSYz7m2CgHIecQWVP3NiZ+EZbVpRSlL?=
- =?us-ascii?Q?fWep/Yto2Z1mPKsohjakP0iT63Wx3BsKLtv6nS571vQ5EdGI1RMbDy9Di6CU?=
- =?us-ascii?Q?vLNbvinkRTO/vS6vXRP+CyZ6jhv+Bb1ahaNjaqcDSvcTJf7mFaaWJMsWt9Dr?=
- =?us-ascii?Q?JtT7WBPP4sVKIvsP1wTzfDLK05iWr724FGp7Ymn8SVcfna7SiMu4751JB229?=
- =?us-ascii?Q?lfcKcXVlcczVdMNsZBx/pT+jb/4sN3uiqXH2rIVJ8103ZgsG9Futw+znJhYH?=
- =?us-ascii?Q?cLx9uu6EtPICh5BSnAj9kdZkYwzRyZWAQohOLETZO0VFklr23CN4MKha/16A?=
- =?us-ascii?Q?Gb/dYbJAcQbMoRoQ0msJX/Xcat75uuHcgg457uKnYUutClrqDfxuRLTyC0hs?=
- =?us-ascii?Q?2IwQ+6FvSfMB2+3ImTKTbMwD3oHO4axXXUnIdKYCBlyHKWlbUBlVRAvsKbmD?=
- =?us-ascii?Q?9sU85UOQeF+D0XC5RPsd56XehkaqD161X36XPtKAe6EgauL+fzK10trwr6rQ?=
- =?us-ascii?Q?Uw2eYstUbzg/oEiY0s97aavJihTPF14v6JPkJ+Kq0uBw74w0GoyODviH2u+l?=
- =?us-ascii?Q?6A=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a03ad3fd-34d6-4226-dcb7-08dd626291dd
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB8107.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2025 19:09:25.1432
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3BVIJv/g0yBUgH2a5dR1lHLwCJDaMupHSPUH8wqXqnS3bjH0goUic+V4IUQWCgVoIHLjG5+q3EYCBqAfMUD5b4wpLC1TU3gJcEWXJ+4NYdI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6504
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: jlayton@kernel.org, chuck.lever@oracle.com, linux-nfs@vger.kernel.org, 
+ iommu@lists.linux.dev, cel@kernel.org, trondmy@kernel.org, anna@kernel.org
+Message-ID: <20250313-b219865c2-ff4305a1f238@bugzilla.kernel.org>
+In-Reply-To: <7285c885-f998-410a-b6a6-f743328bf0b8@oracle.com>
+References: <7285c885-f998-410a-b6a6-f743328bf0b8@oracle.com>
+Subject: Re: NFS Server Issues with RDMA in Kernel 6.13.6
+X-Bugzilla-Product: File System
+X-Bugzilla-Component: NFSD
+X-Mailer: bugspray 0.1-dev
 
-Alexey Kardashevskiy wrote:
+Lucas writes via Kernel.org Bugzilla:
+
+(In reply to Bugspray Bot from comment #1)
+> Chuck Lever <chuck.lever@oracle.com> writes:
 > 
-> 
-> On 13/3/25 12:51, Dan Williams wrote:
-> > Alexey Kardashevskiy wrote:
-> >> In order to add a PCI VF into a secure VM, the TSM module needs to
-> >> perform a "TDI bind" operation. The secure module ("PSP" for AMD)
-> >> reuqires a VM id to associate with a VM and KVM has it. Since
-> >> KVM cannot directly bind a TDI (as it does not have all necesessary
-> >> data such as host/guest PCI BDFn). QEMU and IOMMUFD do know the BDFns
-> >> but they do not have a VM id recognisable by the PSP.
-> >>
-> >> Add get_vmid() hook to KVM. Implement it for AMD SEV to return a sum
-> >> of GCTX (a private page describing secure VM context) and ASID
-> >> (required on unbind for IOMMU unfencing, when needed).
-> >>
-> >> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
-> >> ---
-> >>   arch/x86/include/asm/kvm-x86-ops.h |  1 +
-> >>   arch/x86/include/asm/kvm_host.h    |  2 ++
-> >>   include/linux/kvm_host.h           |  2 ++
-> >>   arch/x86/kvm/svm/svm.c             | 12 ++++++++++++
-> >>   virt/kvm/kvm_main.c                |  6 ++++++
-> >>   5 files changed, 23 insertions(+)
-> >>
-> >> diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-> >> index c35550581da0..63102a224cd7 100644
-> >> --- a/arch/x86/include/asm/kvm-x86-ops.h
-> >> +++ b/arch/x86/include/asm/kvm-x86-ops.h
-> >> @@ -144,6 +144,7 @@ KVM_X86_OP_OPTIONAL(alloc_apic_backing_page)
-> >>   KVM_X86_OP_OPTIONAL_RET0(gmem_prepare)
-> >>   KVM_X86_OP_OPTIONAL_RET0(private_max_mapping_level)
-> >>   KVM_X86_OP_OPTIONAL(gmem_invalidate)
-> >> +KVM_X86_OP_OPTIONAL(tsm_get_vmid)
-> >>   
-> >>   #undef KVM_X86_OP
-> >>   #undef KVM_X86_OP_OPTIONAL
-> >> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> >> index b15cde0a9b5c..9330e8d4d29d 100644
-> >> --- a/arch/x86/include/asm/kvm_host.h
-> >> +++ b/arch/x86/include/asm/kvm_host.h
-> >> @@ -1875,6 +1875,8 @@ struct kvm_x86_ops {
-> >>   	int (*gmem_prepare)(struct kvm *kvm, kvm_pfn_t pfn, gfn_t gfn, int max_order);
-> >>   	void (*gmem_invalidate)(kvm_pfn_t start, kvm_pfn_t end);
-> >>   	int (*private_max_mapping_level)(struct kvm *kvm, kvm_pfn_t pfn);
-> >> +
-> >> +	u64 (*tsm_get_vmid)(struct kvm *kvm);
-> >>   };
-> >>   
-> >>   struct kvm_x86_nested_ops {
-> >> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> >> index f34f4cfaa513..6cd351edb956 100644
-> >> --- a/include/linux/kvm_host.h
-> >> +++ b/include/linux/kvm_host.h
-> >> @@ -2571,4 +2571,6 @@ long kvm_arch_vcpu_pre_fault_memory(struct kvm_vcpu *vcpu,
-> >>   				    struct kvm_pre_fault_memory *range);
-> >>   #endif
-> >>   
-> >> +u64 kvm_arch_tsm_get_vmid(struct kvm *kvm);
-> >> +
-> >>   #endif
-> >> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> >> index 7640a84e554a..0276d60c61d6 100644
-> >> --- a/arch/x86/kvm/svm/svm.c
-> >> +++ b/arch/x86/kvm/svm/svm.c
-> >> @@ -4998,6 +4998,16 @@ static void *svm_alloc_apic_backing_page(struct kvm_vcpu *vcpu)
-> >>   	return page_address(page);
-> >>   }
-> >>   
-> >> +static u64 svm_tsm_get_vmid(struct kvm *kvm)
-> >> +{
-> >> +	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
-> >> +
-> >> +	if (!sev->es_active)
-> >> +		return 0;
-> >> +
-> >> +	return ((u64) sev->snp_context) | sev->asid;
-> >> +}
-> >> +
+> On 3/13/25 2:35 PM, Lucas via Bugspray Bot wrote:
+> > Lucas added an attachment on Kernel.org Bugzilla:
 > > 
-> > Curious why KVM needs to be bothered by a new kvm_arch_tsm_get_vmid()
-> > and a vendor specific cookie "vmid" concept. In other words KVM never
-> > calls kvm_arch_tsm_get_vmid(), like other kvm_arch_*() support calls.
+> > Created attachment 307819 [details]
+> > NFS over RDMA - Watchdog detected hard LOCKUP on cpu
 > > 
-> > Is this due to a restriction that something like tsm_tdi_bind() is
-> > disallowed from doing to_kvm_svm() on an opaque @kvm pointer? Or
-> > otherwise asking an arch/x86/kvm/svm/svm.c to do the same?
+> > Hi
+> > 
+> > I am experiencing stability and performance issues when using NFS (kernel
+> > 6.13.6) over rdma protocol.
+> > All what I need to do to trigger the issue is connect client and start read
+> /
+> > write operations.
+> > 
+> > Fastest way to reproduce issue is by running fio job:
+> > 
+> > fio --name=test --rw=randwrite --bs=4k --filename=/mnt/nfs/test.io
+> --size=40G
+> > --direct=1 --numjobs=18 --iodepth=24 --exitall --group_reporting
+> > --ioengine=libaio --time_based --runtime=300
+> > 
+> > Dmesg says: "watchdog: Watchdog detected hard LOCKUP on cpu "
+> > 
+> > [  976.676922] watchdog: Watchdog detected hard LOCKUP on cpu 182
+> > [  976.676931] Modules linked in: xfs(E) brd(E) nft_chain_nat(E)
+> > xt_MASQUERADE(E) nf_nat(E) nf_conntrack_netlink(E) xfrm_user(E)
+> xfrm_algo(E)
+> > br_netfilter(E) nfsd(E) auth_rpcgss(E) nfs_acl(E) lockd(E) grace(E)
+> > xt_recent(E) null_blk(E) nvme_fabrics(E) nvme(E) nvme_core(E) overlay(E)
+> > ip6t_REJECT(E) nf_reject_ipv6(E) xt_hl(E) ip6t_rt(E) ipt_REJECT(E)
+> > nf_reject_ipv4(E) xt_LOG(E) nf_log_syslog(E) xt_multiport(E) nft_limit(E)
+> > xt_limit(E) xt_addrtype(E) xt_tcpudp(E) xt_conntrack(E) nf_conntrack(E)
+> > nf_defrag_ipv6(E) nf_defrag_ipv4(E) nft_compat(E) nf_tables(E)
+> binfmt_misc(E)
+> > nfnetlink(E) nls_iso8859_1(E) rpcrdma(E) amd_atl(E) intel_rapl_msr(E)
+> > intel_rapl_common(E) amd64_edac(E) edac_mce_amd(E) sunrpc(E) rdma_ucm(E)
+> > ib_iser(E) libiscsi(E) ipmi_ssif(E) scsi_transport_iscsi(E) rdma_cm(E)
+> > ib_umad(E) kvm_amd(E) ib_ipoib(E) iw_cm(E) kvm(E) ib_cm(E) rapl(E)
+> bridge(E)
+> > stp(E) llc(E) joydev(E) input_leds(E) ccp(E) ee1004(E) ptdma(E) k10temp(E)
+> > acpi_ipmi(E) ipmi_si(E) ipmi_devintf(E) ipmi_msghandler(E)
+> >   mac_hid(E) sch_fq_codel(E) bonding(E)
+> > [  976.677035]  efi_pstore(E) ip_tables(E) x_tables(E) autofs4(E) btrfs(E)
+> > blake2b_generic(E) raid10(E) raid456(E) async_raid6_recov(E)
+> async_memcpy(E)
+> > async_pq(E) async_xor(E) async_tx(E) xor(E) raid6_pq(E) libcrc32c(E)
+> raid1(E)
+> > raid0(E) mlx5_ib(E) ib_uverbs(E) ib_core(E) ast(E) drm_client_lib(E)
+> > drm_shmem_helper(E) hid_generic(E) mlx5_core(E) mpt3sas(E) rndis_host(E)
+> > igb(E) raid_class(E) drm_kms_helper(E) usbhid(E) cdc_ether(E) dca(E)
+> mlxfw(E)
+> > crct10dif_pclmul(E) crc32_pclmul(E) polyval_clmulni(E) polyval_generic(E)
+> > ghash_clmulni_intel(E) sha512_ssse3(E) sha256_ssse3(E) sha1_ssse3(E)
+> > usbnet(E) psample(E) i2c_algo_bit(E) scsi_transport_sas(E) ahci(E) drm(E)
+> > mii(E) hid(E) libahci(E) i2c_piix4(E) tls(E) i2c_smbus(E)
+> pci_hyperv_intf(E)
+> > aesni_intel(E) crypto_simd(E) cryptd(E)
+> > [  976.677112] CPU: 182 UID: 0 PID: 20143 Comm: nfsd Kdump: loaded Tainted:
+> G
+> >            E      6.13.6+ #1
+> > [  976.677118] Tainted: [E]=UNSIGNED_MODULE
+> > [  976.677120] Hardware name: Supermicro AS -4124GS-TNR/H12DSG-O-CPU, BIOS
+> > 2.8 01/26/2024
+> > [  976.677123] RIP: 0010:native_queued_spin_lock_slowpath+0x244/0x320
+> > [  976.677138] Code: ff ff 41 83 c6 01 41 c1 e5 10 41 c1 e6 12 45 09 ee 44
+> 89
+> > f0 c1 e8 10 66 41 87 44 24 02 89 c2 c1 e2 10 75 5f 31 d2 eb 02 f3 90 <41>
+> 8b
+> > 04 24 66 85 c0 75 f5 89 c1 66 31 c9 44 39 f1 0f 84 97 00 00
+> > [  976.677141] RSP: 0018:ffffa16f2de8b948 EFLAGS: 00000002
+> > [  976.677145] RAX: 0000000001d00001 RBX: ffff8bfa8e937bc0 RCX:
+> > 0000000000000001
+> > [  976.677147] RDX: ffff8bfa8bd37bc0 RSI: 0000000003340000 RDI:
+> > ffff8bfb9fffbe08
+> > [  976.677149] RBP: ffffa16f2de8b970 R08: 0000000000000000 R09:
+> > 0000000000000000
+> > [  976.677151] R10: 0000000000000001 R11: 0000000000000000 R12:
+> > ffff8bfb9fffbe08
+> > [  976.677153] R13: ffff8c3a8e037bc0 R14: 0000000002dc0000 R15:
+> > 00000000000000cc
+> > [  976.677155] FS:  0000000000000000(0000) GS:ffff8bfa8e900000(0000)
+> > knlGS:0000000000000000
+> > [  976.677158] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [  976.677160] CR2: 00007fb9b1da66b0 CR3: 00000003e84bc000 CR4:
+> > 0000000000350ef0
+> > [  976.677162] Call Trace:
+> > [  976.677166]  <NMI>
+> > [  976.677172]  ? show_regs+0x71/0x90
+> > [  976.677182]  ? watchdog_hardlockup_check+0x1ac/0x380
+> > [  976.677189]  ? srso_return_thunk+0x5/0x5f
+> > [  976.677194]  ? watchdog_overflow_callback+0x69/0x80
+> > [  976.677198]  ? __perf_event_overflow+0x153/0x450
+> > [  976.677206]  ? srso_return_thunk+0x5/0x5f
+> > [  976.677211]  ? perf_event_overflow+0x19/0x30
+> > [  976.677215]  ? x86_pmu_handle_irq+0x189/0x210
+> > [  976.677225]  ? srso_return_thunk+0x5/0x5f
+> > [  976.677228]  ? flush_tlb_one_kernel+0xe/0x40
+> > [  976.677234]  ? srso_return_thunk+0x5/0x5f
+> > [  976.677237]  ? set_pte_vaddr_p4d+0x58/0x80
+> > [  976.677244]  ? srso_return_thunk+0x5/0x5f
+> > [  976.677247]  ? set_pte_vaddr+0x89/0xc0
+> > [  976.677250]  ? cc_platform_has+0x30/0x40
+> > [  976.677256]  ? srso_return_thunk+0x5/0x5f
+> > [  976.677259]  ? native_set_fixmap+0x6b/0xa0
+> > [  976.677262]  ? srso_return_thunk+0x5/0x5f
+> > [  976.677265]  ? ghes_copy_tofrom_phys+0x7c/0x130
+> > [  976.677274]  ? srso_return_thunk+0x5/0x5f
+> > [  976.677277]  ? __ghes_peek_estatus.isra.0+0x4e/0xd0
+> > [  976.677282]  ? amd_pmu_handle_irq+0x48/0xc0
+> > [  976.677287]  ? perf_event_nmi_handler+0x2d/0x60
+> > [  976.677290]  ? nmi_handle+0x67/0x190
+> > [  976.677295]  ? default_do_nmi+0x45/0x150
+> > [  976.677301]  ? exc_nmi+0x13e/0x1e0
+> > [  976.677304]  ? end_repeat_nmi+0xf/0x53
+> > [  976.677313]  ? native_queued_spin_lock_slowpath+0x244/0x320
+> > [  976.677317]  ? native_queued_spin_lock_slowpath+0x244/0x320
+> > [  976.677322]  ? native_queued_spin_lock_slowpath+0x244/0x320
+> > [  976.677325]  </NMI>
+> > [  976.677326]  <TASK>
+> > [  976.677329]  _raw_spin_lock_irqsave+0x5c/0x80
+> > [  976.677334]  alloc_iova+0x92/0x290
+> > [  976.677341]  ? current_time+0x2d/0x120
+> > [  976.677348]  alloc_iova_fast+0x1fb/0x400
+> > [  976.677351]  ? srso_return_thunk+0x5/0x5f
+> > [  976.677354]  ? touch_atime+0x1f/0x110
+> > [  976.677360]  iommu_dma_alloc_iova+0xa2/0x190
+> > [  976.677365]  iommu_dma_map_sg+0x447/0x4e0
 > 
-> I saw someone already doing some sort of VMID thing
-
-Reference?
-
-> and thought it is a good way of not spilling KVM details outside KVM.
-
-...but it is not a KVM detail. It is an arch specific TSM cookie derived
-from arch specific data that wraps 'struct kvm'. Now if the rationale is
-some least privelege concern about what code can have a container_of()
-relationship with an opaque 'struct kvm *' pointer, let's have that
-discussion.  As it stands nothing in KVM cares about
-kvm_arch_tsm_get_vmid(), and I expect 'vmid' does not cover all the ways
-in which modular TSM drivers may interact with arch/.../kvm/ code.
-
-For example TDX Connect needs to share some data from 'struct kvm_tdx',
-and it does that with an export from arch/x86/kvm/vmx/tdx.c, not an
-indirection through virt/kvm/kvm_main.c.
-
-> > Effectively low level TSM drivers are extensions of arch code that
-> > routinely performs "container_of(kvm, struct kvm_$arch, kvm)".
+> I'm assuming you have IOMMU enabled on the boot command line.
 > 
-> The arch code is CCP and so far it avoided touching KVM, KVM calls CCP 
-> when it needs but not vice versa. Thanks,
+> Can you share your hardware configuration and RDMA NIC?
+> 
+> 
 
-Right, and the observation is that you don't need to touch
-virt/kvm/kvm_main.c at all to meet this data sharing requirement.
+system: Suermicro AS-4124GS-TNR
+cpu: AMD EPYC 7H12 64-Core Processor
+ram: 512G
+rdma nic: Mellanox Technologies MT2910 Family [ConnectX-7]
+
+
+> > [  976.677373]  __dma_map_sg_attrs+0x139/0x1b0
+> > [  976.677380]  dma_map_sgtable+0x21/0x50
+> 
+> So, here (and above) is where we leave the NFS server and venture into
+> the IOMMU layer. Adding the I/O folks for additional eyes.
+> 
+> Can you give us the output of:
+> 
+>   $ scripts/faddr2line drivers/iommu/iova.o alloc_iova+0x92
+> 
+
+
+root@test:/usr/src/linux-6.13.6# scripts/faddr2line drivers/iommu/iova.o alloc_iova+0x92
+alloc_iova+0x92/0x290:
+__alloc_and_insert_iova_range at /usr/src/linux-6.13.6/drivers/iommu/iova.c:180
+(inlined by) alloc_iova at /usr/src/linux-6.13.6/drivers/iommu/iova.c:263
+root@test:/usr/src/linux-6.13.6#
+
+
+> Should look something like:
+> 
+> alloc_iova+0x92/0x1d0:
+> __get_cached_rbnode at
+> /home/cel/src/linux/server-development/drivers/iommu/iova.c:68
+> (inlined by) __alloc_and_insert_iova_range at
+> /home/cel/src/linux/server-development/drivers/iommu/iova.c:184
+> (inlined by) alloc_iova at
+> /home/cel/src/linux/server-development/drivers/iommu/iova.c:263
+> 
+> 
+> > [  976.677386]  rdma_rw_ctx_init+0x6c/0x820 [ib_core]
+> > [  976.677525]  ? common_perm_cond+0x4d/0x210
+> > [  976.677532]  ? srso_return_thunk+0x5/0x5f
+> > [  976.677538]  ? xfs_vn_getattr+0xe2/0x3c0 [xfs]
+> > [  976.677700]  svc_rdma_rw_ctx_init+0x49/0xf0 [rpcrdma]
+> > [  976.677725]  svc_rdma_build_writes+0xa5/0x210 [rpcrdma]
+> > [  976.677746]  ? __pfx_svc_rdma_pagelist_to_sg+0x10/0x10 [rpcrdma]
+> > [  976.677767]  ? svc_rdma_send_write_list+0xf4/0x290 [rpcrdma]
+> > [  976.677790]  svc_rdma_xb_write+0x7d/0xb0 [rpcrdma]
+> > [  976.677811]  svc_rdma_send_write_list+0x144/0x290 [rpcrdma]
+> > [  976.677834]  ? nfsd_cache_update+0x57/0x2c0 [nfsd]
+> > [  976.677889]  svc_rdma_sendto+0x99/0x510 [rpcrdma]
+> > [  976.677912]  ? svcauth_unix_release+0x1e/0x80 [sunrpc]
+> > [  976.677968]  svc_send+0x49/0x140 [sunrpc]
+> > [  976.678013]  svc_process+0x166/0x200 [sunrpc]
+> > [  976.678058]  svc_recv+0x8a1/0xaa0 [sunrpc]
+> > [  976.678101]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+> > [  976.678144]  nfsd+0xa7/0x110 [nfsd]
+> > [  976.678183]  kthread+0xe4/0x120
+> > [  976.678188]  ? __pfx_kthread+0x10/0x10
+> > [  976.678192]  ret_from_fork+0x46/0x70
+> > [  976.678197]  ? __pfx_kthread+0x10/0x10
+> > [  976.678200]  ret_from_fork_asm+0x1a/0x30
+> > [  976.678210]  </TASK>
+> > 
+> > 
+> > 
+> > Full log attached.
+> > 
+> > File: dmesg-6.13.6.log (text/plain)
+> > Size: 407.10 KiB
+> > Link: https://bugzilla.kernel.org/attachment.cgi?id=307819
+> > ---
+> > NFS over RDMA - Watchdog detected hard LOCKUP on cpu
+> > 
+> > You can reply to this message to join the discussion.
+> 
+> (via https://msgid.link/7285c885-f998-410a-b6a6-f743328bf0b8@oracle.com)
+
+View: https://bugzilla.kernel.org/show_bug.cgi?id=219865#c2
+You can reply to this message to join the discussion.
+-- 
+Deet-doot-dot, I am a bot.
+Kernel.org Bugzilla (bugspray 0.1-dev)
+
