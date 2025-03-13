@@ -1,232 +1,264 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F5C71EE7A8
-	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 12:23:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE371E4A4
+	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 12:35:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741868593; cv=none; b=E7IJGs94MQrOv8Xnh5Apdjwjju5I9YCXSiVLXPu7m0pYrj3ZS8qpOgmMybPzun8pw81YXZvAAoy2izrFfHpbnUEV+73ZST69WPOIW8XN88ATeE3P5dhUrr+0NHuFrg/lBmu683VxgHtkItM41UwHOblMHgXNvuYOPXUTIB4YVlQ=
+	t=1741869348; cv=none; b=CgMdnu/BzxYl0NVMv6ngUmEq1HDJ/jyq+A0E9AHgCiqdlbTNCI61O0szYR9M16JYq21OLVS0AQR1thvOyohUbIqHngPc7o0qqHgwxYAtSowOEBuiHNdRu2dDN5YTDU1V2VxD3wop4/kGumAe4+2M7pa0+5fAc+z99sYTRgINdss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741868593; c=relaxed/simple;
-	bh=mcPJXBSTtSrp14iFEKn4WCHM0U1Sm8bBMOiy1wa4/tY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=tzN8bm040Ig3iAFxFvdF1f2+rfFbDQMjUPZOhAAY/qj+0aGyJQvre5t11HUti4kHhxpkV0ALafFd1u29ffwPoVj8h6rLPZ0pMqLZFMKp0twOuZyaEoOWEyoskv6ZkW8jk9zeJmP0B/IH4sriL3AMCrb4R7Ka05Ii944q/0SvJpI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=ncVqIfMA; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1741869348; c=relaxed/simple;
+	bh=9H1vP8ZryUBfI1vWiB2jX7vO7FnFh4cP3rcT6DRiL6Q=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=u34OZOcaMMSk995tsmcREiInQ/jxJ035YVDOTJmlg97h/p1tU8Cjy6XM3IeeZsXOAZNKLEYQwb/evQyCs42VV+LdCuNtj0/o0nJ00KrbR/4xJ7tahIuZoosrs2cUbnf7OwMrysus6RpMOuSPMq04igV3JlvQ1jAlxDxFPykDzxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZesW7e0d; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ncVqIfMA"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250313122307euoutp02b364b28477ecd94eb5c61c8947408879~sXEBcNjCC1660616606euoutp02p
-	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 12:23:07 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250313122307euoutp02b364b28477ecd94eb5c61c8947408879~sXEBcNjCC1660616606euoutp02p
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1741868587;
-	bh=qIrd9kTdaGksR+OaXikozpxmp9lFlYZnRIjjmUZsYSY=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=ncVqIfMAINE+TA71Brea12OaCm6nBglZPAc5NalanEPQutFUq3WVO3zvC0fdamruE
-	 wc45FVJbyYwI2nQx5qwAzw/3UPddym1UVpzEaJ6FCPPq34I7+Xp+shB4zVu2jj+QOX
-	 YOOtgI+L+qbOktQdqzcl8z9L+JCdYJV3wmVg9/Ps=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20250313122306eucas1p2f9144caaeaff5f66d77c8defde5a0afe~sXEBBFb0-2324023240eucas1p2L;
-	Thu, 13 Mar 2025 12:23:06 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id 91.5C.20821.A2EC2D76; Thu, 13
-	Mar 2025 12:23:06 +0000 (GMT)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20250313122306eucas1p10f67da8328fdf9bfc4590d972e794b8f~sXEAoAej12870728707eucas1p1K;
-	Thu, 13 Mar 2025 12:23:06 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20250313122306eusmtrp26de00c6b81f1b8d1f7a2f1d1f844ed06~sXEAnDFFy2795227952eusmtrp2O;
-	Thu, 13 Mar 2025 12:23:06 +0000 (GMT)
-X-AuditID: cbfec7f2-b09c370000005155-9a-67d2ce2ae064
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id 8D.88.19654.A2EC2D76; Thu, 13
-	Mar 2025 12:23:06 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20250313122303eusmtip208566caf51a9af37bcc7d3ec7315a939~sXD92k4wN2925829258eusmtip2E;
-	Thu, 13 Mar 2025 12:23:03 +0000 (GMT)
-Message-ID: <bf2adf5d-1432-4bb7-846c-e1bcfa84858b@samsung.com>
-Date: Thu, 13 Mar 2025 13:23:02 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZesW7e0d"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1741869346; x=1773405346;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9H1vP8ZryUBfI1vWiB2jX7vO7FnFh4cP3rcT6DRiL6Q=;
+  b=ZesW7e0dcsWqsD5+uW48SPP498kJddPOa6JSwT86+DoHMgN4mW+0kjQs
+   zgMBcdAgVUFHyCkNYLGoi2MmiYbwUvC8Iy33C4cF3PZxGzwl8hsKO5UDs
+   FJxBHsMuCl+cazzU17UMb3RDiV6XweBJacSS+Ks6zm9yd4Nt05B6pbOV1
+   9RkblaCJf7Sm8oX1uHVsV1+XxR4Zc/bD8Hjb24+DFywAK8vzCCS8BIVDh
+   xCZklpgWFe97PEnfP6hcgm3I+Y2QXRF2KYG42WxpQUEaGySAlQrPnLuV2
+   dlHJarsAgAVz0z7UzghOfaP1TiSZoGAQ+LXXHci6SkybYgHz9jG8/DZW/
+   Q==;
+X-CSE-ConnectionGUID: aRrtG/1YTiqQWgVQ3AYHyQ==
+X-CSE-MsgGUID: GsFqof94T+6MsprZ+qpPlQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11372"; a="42863927"
+X-IronPort-AV: E=Sophos;i="6.14,244,1736841600"; 
+   d="scan'208";a="42863927"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2025 05:35:34 -0700
+X-CSE-ConnectionGUID: 8FsAMOKJSNaENHto8qS38g==
+X-CSE-MsgGUID: moBsKVP7QXqfA3pbrZe+bw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,244,1736841600"; 
+   d="scan'208";a="126005480"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orviesa004.jf.intel.com with ESMTP; 13 Mar 2025 05:35:34 -0700
+From: Yi Liu <yi.l.liu@intel.com>
+To: kevin.tian@intel.com,
+	jgg@nvidia.com
+Cc: joro@8bytes.org,
+	baolu.lu@linux.intel.com,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	nicolinc@nvidia.com
+Subject: [PATCH v9 00/21] iommufd support pasid attach/replace
+Date: Thu, 13 Mar 2025 05:35:11 -0700
+Message-Id: <20250313123532.103522-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
- path
-To: Robin Murphy <robin.murphy@arm.com>, Lorenzo Pieralisi
-	<lpieralisi@kernel.org>, Hanjun Guo <guohanjun@huawei.com>, Sudeep Holla
-	<sudeep.holla@arm.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown
-	<lenb@kernel.org>, Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Danilo Krummrich <dakr@kernel.org>, Stuart
-	Yoder <stuyoder@gmail.com>, Laurentiu Tudor <laurentiu.tudor@nxp.com>, Nipun
-	Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>, Joerg
-	Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Rob Herring
-	<robh@kernel.org>, Saravana Kannan <saravanak@google.com>, Bjorn Helgaas
-	<bhelgaas@google.com>
-Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-pci@vger.kernel.org, Charan Teja Kalla
-	<quic_charante@quicinc.com>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <417d6f59-0d78-4e81-ad0b-e06846f786b0@arm.com>
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA01SfVCTdRzvt+fZs7G7weOA2y+DvFuvyoGSUr8LIy2y57iyLrrLg7tyxcPm
-	tQ1uYxlcEfEa84ChjrbhYIecEJKwGTREQHbg1AEqxIsT5CBsCQHSJh4okttjxX+fz+f7+b7e
-	l4sJqojN3EOKDFqpEMtEBA9vvbhyNXLbwKBkx3DvTlSbK0VzFXcJVN0zwEZ5J5sI1N1m4KBV
-	L0LFlc0c5NU6cdQ2NU+gus4ygKy/j7DR0LkTBOqvchDIrusAKP9hPo70tih0704Fjpqq5cjk
-	1WFo/byNg7rvzrCRxr72uKzFhaG6KzYc5Y/H7HmamumuYlEFg2sE1VjVCKihkesY1Wac4FBm
-	q5rK75lnU9aGYoLqMjVyqLO131F/njUAyrJgY1Hl57Mpj/XZDwOTeLtTaNmhr2jl9riDPOml
-	rkI83Rr+ddHPa0QOOAI1gMuF5C5YYnhTA3hcAVkPoKe0kmCIF0DHyB+AIR4AF2/cwzQgwJ+x
-	XNuL+7CArAPwVFkyY1oCsL/iAvAF+GQctLpy/SacfAHq1idZjL4JXjbM+PVQcgucdOk5PhxM
-	JsIFzbS/WwhpZcPRgj62j2DkbQCbh8cInwsjhdA1U+2vRJDRUDOv8esBZCxsmHWzGM8WmNdS
-	ifmSIWniwdPTcwQzdzxcbC1nMzgYzjp+4TA4DK63+Yr6EooAND+YfEK0AOa4XYBxxcLxgVXC
-	dzOM3Aqbzm1n5L1Q49FhzCkD4dj8JmaIQHi09ccnMh/+UChg3C9Co+PMf227rw1iWiAybjiM
-	ccOaxg3rGP/vawZ4AxDSapVcQquiFfThKJVYrlIrJFFfpMmt4PELOx85/rYB0+xSlB2wuMAO
-	IBcThfBPv3FNIuCniDOzaGXaZ0q1jFbZwTNcXCTk13QVSASkRJxBf0nT6bTy3yiLG7A5h5Vg
-	M33rLBze95Ez1b03oLzjWHDJ0aCPD56U9WKcmuekR3oXImI+0PPYi2FTnT9hv65e+e1U8rtl
-	nx7fd2L3yxkT0bdSZ5sSX7rero18GJpaqH6f58qxGA7sNwOZ0Ph6qc37dm6K8EZE9mvT9a/0
-	HD4evDTEip+6sPL8OyVy/S7N1viim3EtjpWx+wn1n+clJLenZYJPbBcn7DX39+gsQRng1YTL
-	XfqY9KCR0czSA5yQO7fyUCS2fxn3mJJCvx/qV4Q1r7oXDTsot/uSJSKLmLsa/sAVv3N8NDzx
-	PadANxpZQP21/Faft73C9FS2gLytjf0mNPvmI7O0pbGzL6ujuCTpTKsIV0nF0dswpUr8D68a
-	GnExBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrEKsWRmVeSWpSXmKPExsVy+t/xe7pa5y6lG3RfEbVY0pRh8XraBzaL
-	+UfOsVo0L17PZnFw50x2i19fLCw6Z29gt/gy4TSLxc6Hb9kslu/rZ7TY9Pgaq8XlXXPYLM7O
-	O85mcWjqXkaLlj8tLBYzduhZfH05jcVi/fxci7lfpjJb/N+zg93i4IcnrBZdh/4Cjd14i9li
-	+akdLBYtd0wdJD2eHJzH5NF66S+bx5p5axg9Ll+7yOyxc9Zddo8Fm0o9Wo68ZfXYtKqTzWP/
-	3DXsHpuX1Hu82DyT0WPjux1MHhP31Hl83iQXwBelZ1OUX1qSqpCRX1xiqxRtaGGkZ2hpoWdk
-	YqlnaGwea2VkqqRvZ5OSmpNZllqkb5egl3FifxtLwSbZiva1f9kaGLsluhg5OSQETCS+LTnK
-	0sXIxSEksJRRom3eajaIhIzEyWkNrBC2sMSfa11sEEXvGSV2Tv7BDpLgFbCT2HSriQXEZhFQ
-	lZj6/z4TRFxQ4uTMJ2BxUQF5ifu3ZoDVCwsES7zresQIMkhEYBurxLV5O5lBHGaBp4wSX84/
-	Y4VYcYhJYu2aRrB2ZgFxiVtP5oONZRMwlOh62wV2H6eAtcSqV8+ZIGrMJLq2djFC2PISzVtn
-	M09gFJqF5JJZSEbNQtIyC0nLAkaWVYwiqaXFuem5xUZ6xYm5xaV56XrJ+bmbGIGJZ9uxn1t2
-	MK589VHvECMTB+MhRgkOZiUR3tW2F9KFeFMSK6tSi/Lji0pzUosPMZoCg2Mis5Rocj4w9eWV
-	xBuaGZgamphZGphamhkrifOyXTmfJiSQnliSmp2aWpBaBNPHxMEp1cDEsmTxo4tLa+xFF6yS
-	+Ky5eu6iMwodN9/+mMvCxqJwvcPdPna7TNPz4/4HDZzz6iXPzr//y5WrQOBWmLu9jVJIR9Sq
-	Vw+TtRrP9/tfLi+qjzIwiueSuSVwjD1H3m6jTX8345re46v7y0V1XUMkRS/s4pz73P7Pj6d3
-	aieHvWoL+BVRttxnspjSF9HLF2c1fuZUN3mgnn7pjZPXsU2OR48bWlcuODTDpyt2SZDBwklf
-	PjwxaNitH8B14uNnnUdv17wSrnWd2fr54STFOIs/OxhCHSI5fBhu9dTpC7eyG5gt0H8Rsrdp
-	6fJdk5a/4AtldGlmPqg4WWlO6o/HQsU5b/98k7GXcV++6V7u/h6reVJKLMUZiYZazEXFiQCr
-	NHxfxQMAAA==
-X-CMS-MailID: 20250313122306eucas1p10f67da8328fdf9bfc4590d972e794b8f
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250313095633eucas1p29cb55f2504b4bcf67c16b3bd3fa9b8cd
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20250313095633eucas1p29cb55f2504b4bcf67c16b3bd3fa9b8cd
-References: <cover.1740753261.git.robin.murphy@arm.com>
-	<e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
-	<CGME20250313095633eucas1p29cb55f2504b4bcf67c16b3bd3fa9b8cd@eucas1p2.samsung.com>
-	<9b358d68-332e-404e-9a75-740297f7b28d@samsung.com>
-	<417d6f59-0d78-4e81-ad0b-e06846f786b0@arm.com>
 
-On 13.03.2025 12:01, Robin Murphy wrote:
-> On 2025-03-13 9:56 am, Marek Szyprowski wrote:
-> [...]
->> This patch landed in yesterday's linux-next as commit bcb81ac6ae3c
->> ("iommu: Get DT/ACPI parsing into the proper probe path"). In my tests I
->> found it breaks booting of ARM64 RK3568-based Odroid-M1 board
->> (arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts). Here is the
->> relevant kernel log:
->
-> ...and the bug-flushing-out begins!
->
->> Unable to handle kernel NULL pointer dereference at virtual address
->> 00000000000003e8
->> Mem abort info:
->>     ESR = 0x0000000096000004
->>     EC = 0x25: DABT (current EL), IL = 32 bits
->>     SET = 0, FnV = 0
->>     EA = 0, S1PTW = 0
->>     FSC = 0x04: level 0 translation fault
->> Data abort info:
->>     ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
->>     CM = 0, WnR = 0, TnD = 0, TagAccess = 0
->>     GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
->> [00000000000003e8] user address but active_mm is swapper
->> Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
->> Modules linked in:
->> CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc3+ #15533
->> Hardware name: Hardkernel ODROID-M1 (DT)
->> pstate: 00400009 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->> pc : devm_kmalloc+0x2c/0x114
->> lr : rk_iommu_of_xlate+0x30/0x90
->> ...
->> Call trace:
->>    devm_kmalloc+0x2c/0x114 (P)
->>    rk_iommu_of_xlate+0x30/0x90
->
-> Yeah, looks like this is doing something a bit questionable which can't
-> work properly. TBH the whole dma_dev thing could probably be cleaned up
-> now that we have proper instances, but for now does this work?
+PASID (Process Address Space ID) is a PCIe extension that tags the DMA
+transactions from a physical device. Most modern IOMMU hardware supports
+PASID-granular address translation. This allows a PASID-capable device
+to be attached to multiple hardware page tables (hwpts, also known as
+domains), with each attachment tagged by a PASID.
 
-Yes, this patch fixes the problem I've observed.
+This series builds on previous series [1]. It begins by adding a missing
+IOMMU API to replace the domain for a PASID. Utilizing the IOMMU PASID
+attach/replace/detach APIs, this series introduces iommufd APIs for device
+drivers to attach, replace, or detach PASIDs to/from hwpts at the request
+of userspace. It also enforces PASID compatibility with domain requirements,
+allocates PASID-compatible hwpts in iommufd, and includes self-tests to
+validate the iommufd APIs.
 
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+The complete code is available at the following link [2]. Please note that
+the existing iommufd self-test was broken, and a temporary fix patch is at
+the top of the branch [2]. If you wish to run the iommufd self-test, please
+apply that fix. We apologize for any inconvenience.
 
-BTW, this dma_dev idea has been borrowed from my exynos_iommu driver and 
-I doubt it can be cleaned up.
+The series is based on Jason's for-next branch plus one more patch [3].
 
+https://web.git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/commit/?h=for-next&id=a05df03a88bc1088be8e9d958f208d6484691e43
 
->
-> (annoyingly none of my Rockchip boards are set up for testing right 
-> now, but I might have time to dig one out later)
->
-> Thanks,
-> Robin.
->
-> ----->8-----
->
-> Subject: [PATCH] iommu/rockchip: Allocate per-device data sensibly
->
-> Now that DT-based probing is finally happening in the right order again,
-> it reveals an issue in Rockchip's of_xlate, which can now be called
-> during registration, but is using the global dma_dev which is only
-> assigned later. However, this makes little sense when we're already
-> looking up the correct IOMMU device, who should logically be the owner
-> of the devm allocation anyway.
->
-> Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe 
-> path")
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/rockchip-iommu.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/rockchip-iommu.c 
-> b/drivers/iommu/rockchip-iommu.c
-> index 323cc665c357..48826d1ccfd8 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -1148,12 +1148,12 @@ static int rk_iommu_of_xlate(struct device *dev,
->      struct platform_device *iommu_dev;
->      struct rk_iommudata *data;
->
-> -    data = devm_kzalloc(dma_dev, sizeof(*data), GFP_KERNEL);
-> +    iommu_dev = of_find_device_by_node(args->np);
-> +
-> +    data = devm_kzalloc(&iommu_dev->dev, sizeof(*data), GFP_KERNEL);
->      if (!data)
->          return -ENOMEM;
->
-> -    iommu_dev = of_find_device_by_node(args->np);
-> -
->      data->iommu = platform_get_drvdata(iommu_dev);
->      data->iommu->domain = &rk_identity_domain;
->      dev_iommu_priv_set(dev, data);
+[1] https://lore.kernel.org/linux-iommu/20250226011849.5102-1-yi.l.liu@intel.com/
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_pasid
+[3] https://lore.kernel.org/linux-iommu/20250306034842.5950-1-yi.l.liu@intel.com/
 
-Best regards
+Change log:
+
+v9:
+ - Drop patch 01 of v8 (Nic)
+ - Add patch 01 and 02 to support reusing iommufd_attach_handle
+ - Pass @pasid to iommufd_hwpt_paging_alloc() instead of passing IOMMU_NO_PASID
+   when calling iommufd_hw_pagetable_attach()
+ - Consolidate the RID and PASID path. The RID and PASID path shares almost all
+   the path from driver facing API to the place invoking underlying iommu driver
+   callback. (Jason)
+   *) Add patch 06, 07, 08, 09, 10 and 11 to use iommufd_attach_handle track
+      attached hwpt and devices of a group.
+   *) Patch 11 adds pasid_attach array to track iommufd_attach_handles used in
+      the RID path and PASID path.
+   *) Extend the existing attach/detach/replace API to support a pasid parameter
+      to support PASID.
+ - Rename "PATCH v8 05/12] iommufd: Mark PASID-compatible domain" to be
+   "[PATCH v9 13/21] iommufd: Enforce PASID-compatible domain in PASID path"
+   as this patch now adds pasid_compat flag and its check followed by Jason's
+   remark.
+ - Add description that the user that wants to use PASID should first attach
+   its RID path to pasid-compatible domain.
+ - Add back patch 11 0f v7 as it not included in any other series now
+ - Drop the mixed_replace tests of v8 as it is not considered to be iommufd
+   selftest
+ - Add r-b tags got in v8. For the patches that have minor changes, I kept the
+   r-b tags with a "v8 - v9" change log in individual patches. For the patches
+   that have non-trivial change, I dropped the r-b tags to get more attention
+   from reviewers.
+
+v8: https://lore.kernel.org/linux-iommu/20250226114032.4591-1-yi.l.liu@intel.com/
+ - Rebase on top of the dependency patch series
+ - Check both handle and domain in the iommu_replace_device_pasid_handle()
+   to support replace between domain and handle.
+ - Fix a typo in patch 02 of v7 (Kevin)
+ - r-b tag on patch 01 of v7 (Kevin)
+ - Add selftest for replace between handle and non-handle case
+
+v7: https://lore.kernel.org/linux-iommu/20250216035228.23831-1-yi.l.liu@intel.com/
+ - Remove the iommu_attach_handle related refactors, as they have been addressed
+   by Nic's series.
+ - Address the comments on patch 01 of v6 in a separate series [1]. Store either
+   the domain or handle in group->pasid_array, and swap the order of setting
+   group->pasid_array and invoking the attach operation of IOMMU drivers.
+ - Introduce iommu_attach_device_pasid_handle() and iommu_replace_device_pasid_handle(),
+   and remove iommu_replace_device_pasid() since iommufd consistently uses the
+   _handle() API.
+ - Add patch 04 to include reserved_iova only for the RID path, as the underlying
+   helpers are shared by both the RID and PASID paths, but only the RID path needs
+   to add reserved_iova.
+ - Remove the iommu_dev.max_pasids check in patch 11 of v6. The mock IOMMU always
+   supports 20-bit PASIDs, so there is no need to verify PASID support in the mock
+   IOMMU driver. Additionally, the IOMMU_HWPT_ALLOC_PASID flag does not imply PASID
+   support, so it should be removed to avoid misleading IOMMU driver programming.
+
+v6: https://lore.kernel.org/linux-iommu/20241219132746.16193-1-yi.l.liu@intel.com/
+ - Add kdoc to iommufd_device_get_attach_handle() to note the returned handle
+   should be used with care. (Baolu)
+ - Reworked the patch 07 and 08 of v5 to avoid domain allocation failure on VT-d
+   after applying patch 07 of v5.
+     1) Split out the intel iommu driver IOMMU_HWPT_ALLOC_PASID support out of
+	patch 08
+     2) Rework the PASID-compatible domain enforcement by checking the RID domain
+	and idev->pasid_hwpts under the idev->igroup->lock.
+ - iommufd_device_pasid_do_attach() returns -EINVAL if there is old hwpt and it's
+   not the same with new hwpt. This aligns with how the iommufd_device_do_attach()
+   deals it. Otherwise, attaching the same pasid to the same ioas is going to fail
+   before the auto_domain loop goes to the correct hwpt. Thsi is not reasonable. So
+   make this change.
+ - Enhanced the pasid selftest to have non-pasid-capable device and pasid-capable
+   device.
+ - The order of the series is tweaked to be prepare the iommufd for pasid attach,
+   add pasid attach, add PASID-compat domain enforcement and then add the PASID-compat
+   hwpt allocation.
+ - Rebased on top of 6.13-rc3 and some already applied patches.
+
+v5: https://lore.kernel.org/linux-iommu/20241104132513.15890-1-yi.l.liu@intel.com/
+ - Fix a mistake in patch 02 of v4 (Kevin)
+ - Move the iommufd_handle helpers to device.c
+ - Add IOMMU_HWPT_ALLOC_PASID check to enforce pasid-compatible domain for pasid
+   capable device in iommufd
+ - Update the iommufd selftest to use IOMMU_HWPT_ALLOC_PASID
+
+v4: https://lore.kernel.org/linux-iommu/20240912131255.13305-1-yi.l.liu@intel.com/
+ - Replace remove_dev_pasid() by supporting set_dev_pasid() for blocking domain (Kevin)
+	- This is done by the preparation series "Support attaching PASID to the blocked_domain"
+ - Misc tweaks to foil the merging of the iommufd iopf series. Three new patches are added:
+	- iommufd: Always pass iommu_attach_handle to iommu core
+	- iommufd: Move the iommufd_handle helpers to iommufd_private.h
+	- iommufd: Refactor __fault_domain_replace_dev() to be a wrapper of iommu_replace_group_handle()
+ - Renmae patch 03 of v3 to be "iommufd: Support pasid attach/replace"
+ - Add test case for attaching/replacing iopf-capable hwpt to pasid
+
+v3: https://lore.kernel.org/kvm/20240628090557.50898-1-yi.l.liu@intel.com/
+ - Split the set_dev_pasid op enhancements for domain replacement to be a
+   separate series "Make set_dev_pasid op supportting domain replacement" [1].
+   The below changes are made in the separate series.
+   *) set_dev_pasid() callback should keep the old config if failed to attach to
+      a domain. This simplifies the caller a lot as caller does not need to attach
+      it back to old domain explicitly. This also avoids some corner cases in which
+      the core may do duplicated domain attachment as described in below link (Jason)
+      https://lore.kernel.org/linux-iommu/BN9PR11MB52768C98314A95AFCD2FA6478C0F2@BN9PR11MB5276.namprd11.prod.outlook.com/
+   *) Drop patch 10 of v2 as it's a bug fix and can be submitted separately (Kevin)
+   *) Rebase on top of Baolu's domain_alloc_paging refactor series (Jason)
+ - Drop the attach_data which includes attach_fn and pasid, insteadly passing the
+   pasid through the device attach path. (Jason)
+ - Add a pasid-num-bits property to mock dev to make pasid selftest work (Kevin)
+
+v2: https://lore.kernel.org/linux-iommu/20240412081516.31168-1-yi.l.liu@intel.com/
+ - Domain replace for pasid should be handled in set_dev_pasid() callbacks
+   instead of remove_dev_pasid and call set_dev_pasid afteward in iommu
+   layer (Jason)
+ - Make xarray operations more self-contained in iommufd pasid attach/replace/detach
+   (Jason)
+ - Tweak the dev_iommu_get_max_pasids() to allow iommu driver to populate the
+   max_pasids. This makes the iommufd selftest simpler to meet the max_pasids
+   check in iommu_attach_device_pasid()  (Jason)
+
+v1: https://lore.kernel.org/kvm/20231127063428.127436-1-yi.l.liu@intel.com/#r
+ - Implemnet iommu_replace_device_pasid() to fall back to the original domain
+   if this replacement failed (Kevin)
+ - Add check in do_attach() to check corressponding attach_fn per the pasid value.
+
+rfc: https://lore.kernel.org/linux-iommu/20230926092651.17041-1-yi.l.liu@intel.com/
+
+Regards,
+	Yi Liu
+
+Yi Liu (21):
+  iommu: Clear handle->domain in detach
+  iommu: Wrap pasid_array entry creation and setting
+  iommu: Introduce a replace API for device pasid
+  iommufd: Pass @pasid through the device attach/replace path
+  iommufd/device: Only add reserved_iova in non-pasid path
+  iommufd/device: Replace idev->igroup with local variable
+  iommufd/device: Check !igroup->hwpt in
+    iommufd_device_attach_reserved_iova()
+  iommufd/device: Lift iommufd_attach_handle handling to upper level
+    helpers
+  iommufd/device: Use iommufd_attach_handle track attachment
+  iommufd/device: Replace device_list with device_array
+  iommufd/device: Move attached device tracking to handle
+  iommufd/device: Add pasid_attach array to track per-PASID attach
+  iommufd: Enforce PASID-compatible domain in PASID path
+  iommufd: Support pasid attach/replace
+  iommufd: Enforce PASID-compatible domain for RID
+  iommu/vt-d: Add IOMMU_HWPT_ALLOC_PASID support
+  iommufd: Allow allocating PASID-compatible domain
+  iommufd/selftest: Add set_dev_pasid in mock iommu
+  iommufd/selftest: Add a helper to get test device
+  iommufd/selftest: Add test ops to test pasid attach/detach
+  iommufd/selftest: Add coverage for iommufd pasid attach/detach
+
+ drivers/iommu/intel/iommu.c                   |   3 +-
+ drivers/iommu/intel/nested.c                  |   2 +-
+ drivers/iommu/iommu-priv.h                    |   4 +
+ drivers/iommu/iommu.c                         | 153 +++++++-
+ drivers/iommu/iommufd/device.c                | 364 ++++++++++++------
+ drivers/iommu/iommufd/hw_pagetable.c          |  23 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  14 +-
+ drivers/iommu/iommufd/iommufd_test.h          |  32 ++
+ drivers/iommu/iommufd/selftest.c              | 228 ++++++++++-
+ drivers/vfio/iommufd.c                        |  10 +-
+ include/linux/iommufd.h                       |   9 +-
+ include/uapi/linux/iommufd.h                  |   3 +
+ tools/testing/selftests/iommu/iommufd.c       | 344 +++++++++++++++++
+ .../selftests/iommu/iommufd_fail_nth.c        |  41 +-
+ tools/testing/selftests/iommu/iommufd_utils.h | 102 +++++
+ 15 files changed, 1136 insertions(+), 196 deletions(-)
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.34.1
 
