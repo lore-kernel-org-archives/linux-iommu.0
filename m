@@ -1,93 +1,120 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 920BA267B13;
-	Thu, 13 Mar 2025 13:03:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F345267707
+	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 13:07:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741871024; cv=none; b=Xa2vtqLJL5L+pnMi7JHf0IOiLX2IiVTj/mgyh+ANN2sFRaCMn3Hfoi17oAfhPR4B2JpM3iEpERUUBEYyh8XCwigfw8gjjNxLxqI21UZkMh3Uo6caTwO1XXMMR4W+Gq/tYZC8OKyzfZXZXmFme6JlXQGbnXb4plDmTNmO4Tpbg/s=
+	t=1741871228; cv=none; b=ozry4DfbTMSGaZr4T+S1SjB9KZIzKj3iVVSI3492MxUbBlcbr6UxJAzKzhrU+NgrxGHz4/6t23CZMEhs42Q5y3l4G5mKO7p+ZgrNinmjW+biQqzzzNjiM2gvkSIRXoNFo5w4sQgkpCoADsnoKDX3g7cBoVawcablIBvT3bSKit4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741871024; c=relaxed/simple;
-	bh=cSyffy+PWmVQesGeNOfjRD3854cMxOy2XIo3+guxtEk=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=nSpF6ydcVzqrFewG8iJvKy9K8bXE5fSTuSU9I7GhLr1wVttOh9vJaA/UASPTIrXtWw7sGDB6+K00BVcMisNgVbooyyuVjwEj2ObwvlhsVOZLDVg6Wi0IBJpcVzWLYhYzshzmjypd4aMwBlI86rEX5kLgJSx41Bzxgjr3CrFXRMQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W3n7WI2+; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W3n7WI2+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D6E8C4CEDD;
-	Thu, 13 Mar 2025 13:03:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741871024;
-	bh=cSyffy+PWmVQesGeNOfjRD3854cMxOy2XIo3+guxtEk=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=W3n7WI2+kNBRhRstzjeL3M06/rCnf1LzWx2YyBLD01j8VmFJANn56CrImwA8yW2+T
-	 S0sch8ELktEv1lgKKdJE8batVk23w+yl7Go8YUO4NPYFP3oR+x6ZlO7uJb/jlanFvX
-	 S7ZjZTXv/idYIrZSik396jx+G+Yrzt4aKXk/agPeTHfga4jUvCgUIBaYVPj9qEB7u9
-	 zFE7QK8bZEplyvWlCoOpYD10A3xrxtVXiRkIZRvB6lxI7GnFZqr67QFT9R/jWP/dS4
-	 BRO2/qxom67N+cLtVTodyDfZllKLzMgiaZThXp0n9imUIQcuY7xDNHmMOvwHFRcqNF
-	 SCzy9gFfTB/iA==
-From: Lee Jones <lee@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Will Deacon <will@kernel.org>, "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
- Andrew Morton <akpm@linux-foundation.org>, Nick Piggin <npiggin@gmail.com>, 
- Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, 
- Thomas Gleixner <tglx@linutronix.de>, 
- Herbert Xu <herbert@gondor.apana.org.au>, 
- "David S. Miller" <davem@davemloft.net>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
- Johannes Berg <johannes@sipsolutions.net>, 
- Jamal Hadi Salim <jhs@mojatatu.com>, Cong Wang <xiyou.wangcong@gmail.com>, 
- Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>, 
- Leon Romanovsky <leon@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, 
- Bartosz Golaszewski <brgl@bgdev.pl>, Lee Jones <lee@kernel.org>, 
- Thomas Graf <tgraf@suug.ch>, Christoph Hellwig <hch@lst.de>, 
- Marek Szyprowski <m.szyprowski@samsung.com>, 
- Robin Murphy <robin.murphy@arm.com>, 
- Miquel Raynal <miquel.raynal@bootlin.com>, 
- Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>, 
- Zijun Hu <quic_zijuhu@quicinc.com>
-Cc: Zijun Hu <zijun_hu@icloud.com>, linux-arch@vger.kernel.org, 
- linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
- linux-crypto@vger.kernel.org, netdev@vger.kernel.org, 
- linux-wireless@vger.kernel.org, linux-rdma@vger.kernel.org, 
- linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
- linux-mtd@lists.infradead.org
-In-Reply-To: <20250221-rmv_return-v1-15-cc8dff275827@quicinc.com>
-References: <20250221-rmv_return-v1-0-cc8dff275827@quicinc.com>
- <20250221-rmv_return-v1-15-cc8dff275827@quicinc.com>
-Subject: Re: (subset) [PATCH *-next 15/18] mfd: db8500-prcmu: Remove
- needless return in three void APIs
-Message-Id: <174187101580.3629935.6842247156301298100.b4-ty@kernel.org>
-Date: Thu, 13 Mar 2025 13:03:35 +0000
+	s=arc-20240116; t=1741871228; c=relaxed/simple;
+	bh=IZFUBqt/PcENGjFiftwrfryoSFoDuDYzzj7uu2pIxSE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Gy32PlCxANmJ9Od1IDnvIlLOUwoXilajtToqv78JDrv/zcIkiV0B3FIhTrTQ9xxtRiKJgVdVj0jR5Tz4nqsV3UNPshw75W60Y0JIQznX8Sw2wv5qLxRxbLTigbeA32a8hafefR34UW5Mbp8QQYIhm2IR7rahqVZgc/9QmEKkXe0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EE6571C00;
+	Thu, 13 Mar 2025 06:07:15 -0700 (PDT)
+Received: from [10.57.40.246] (unknown [10.57.40.246])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AA07C3F673;
+	Thu, 13 Mar 2025 06:07:01 -0700 (PDT)
+Message-ID: <016bb7ca-f0d3-464e-ac74-46e6f78e90d7@arm.com>
+Date: Thu, 13 Mar 2025 13:06:59 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
+ path
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Danilo Krummrich <dakr@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
+ Laurentiu Tudor <laurentiu.tudor@nxp.com>, Nipun Gupta
+ <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>,
+ Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+ Charan Teja Kalla <quic_charante@quicinc.com>
+References: <cover.1740753261.git.robin.murphy@arm.com>
+ <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
+ <CGME20250313095633eucas1p29cb55f2504b4bcf67c16b3bd3fa9b8cd@eucas1p2.samsung.com>
+ <9b358d68-332e-404e-9a75-740297f7b28d@samsung.com>
+ <417d6f59-0d78-4e81-ad0b-e06846f786b0@arm.com>
+ <bf2adf5d-1432-4bb7-846c-e1bcfa84858b@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <bf2adf5d-1432-4bb7-846c-e1bcfa84858b@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.15-dev-510f9
 
-On Fri, 21 Feb 2025 05:02:20 -0800, Zijun Hu wrote:
-> Remove needless 'return' in the following void APIs:
+On 2025-03-13 12:23 pm, Marek Szyprowski wrote:
+> On 13.03.2025 12:01, Robin Murphy wrote:
+>> On 2025-03-13 9:56 am, Marek Szyprowski wrote:
+>> [...]
+>>> This patch landed in yesterday's linux-next as commit bcb81ac6ae3c
+>>> ("iommu: Get DT/ACPI parsing into the proper probe path"). In my tests I
+>>> found it breaks booting of ARM64 RK3568-based Odroid-M1 board
+>>> (arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts). Here is the
+>>> relevant kernel log:
+>>
+>> ...and the bug-flushing-out begins!
+>>
+>>> Unable to handle kernel NULL pointer dereference at virtual address
+>>> 00000000000003e8
+>>> Mem abort info:
+>>>      ESR = 0x0000000096000004
+>>>      EC = 0x25: DABT (current EL), IL = 32 bits
+>>>      SET = 0, FnV = 0
+>>>      EA = 0, S1PTW = 0
+>>>      FSC = 0x04: level 0 translation fault
+>>> Data abort info:
+>>>      ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
+>>>      CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+>>>      GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+>>> [00000000000003e8] user address but active_mm is swapper
+>>> Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
+>>> Modules linked in:
+>>> CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc3+ #15533
+>>> Hardware name: Hardkernel ODROID-M1 (DT)
+>>> pstate: 00400009 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>>> pc : devm_kmalloc+0x2c/0x114
+>>> lr : rk_iommu_of_xlate+0x30/0x90
+>>> ...
+>>> Call trace:
+>>>     devm_kmalloc+0x2c/0x114 (P)
+>>>     rk_iommu_of_xlate+0x30/0x90
+>>
+>> Yeah, looks like this is doing something a bit questionable which can't
+>> work properly. TBH the whole dma_dev thing could probably be cleaned up
+>> now that we have proper instances, but for now does this work?
 > 
->  prcmu_early_init()
->  prcmu_system_reset()
->  prcmu_modem_reset()
+> Yes, this patch fixes the problem I've observed.
 > 
-> Since both the API and callee involved are void functions.
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 > 
-> [...]
+> BTW, this dma_dev idea has been borrowed from my exynos_iommu driver and
+> I doubt it can be cleaned up.
 
-Applied, thanks!
+On the contrary I suspect they both can - it all dates back to when we 
+had the single global platform bus iommu_ops and the SoC drivers were 
+forced to bodge their own notion of multiple instances, but with the 
+modern core code, ops are always called via a valid IOMMU instance or 
+domain, so in principle it should always be possible to get at an 
+appropriate IOMMU device now. IIRC it was mostly about allocating and 
+DMA-mapping the pagetables in domain_alloc, where the private notion of 
+instances didn't have enough information, but domain_alloc_paging solves 
+that.
 
-[15/18] mfd: db8500-prcmu: Remove needless return in three void APIs
-        commit: ccf5c7a8e5b9fe7c36d8c384f8f7c495f45c63a0
-
---
-Lee Jones [李琼斯]
-
+Cheers,
+Robin.
