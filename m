@@ -1,161 +1,144 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 755451EE028
-	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 10:58:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 65FBD1EE7A7
+	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 11:01:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741863489; cv=none; b=fd3BS09cMOOJMiGcZY3qxFyFszsSUImTyc47snePX1hqVz9G8GLe1+ViBn/D+t934q9IwbA3Um+/t87zde9JyyL3WjaffqH68/TLNbuxPZhji1fSh4yPSXfcqUVHxpfW3SL/IpTQ+XYnDGBYFwF6Uo6eC5t3o21VcYGz/tkc9lQ=
+	t=1741863702; cv=none; b=nu0w+C1zMK4Av52TTrCN+All5roBil9U6UaphAKv1zzyCqJAcTL6t8Di606B62myCxfj0uIjI44hPlFd5fm/P1Z16ZL3XRDZ3rKXxtbdD7Vs5dkM2yqZ5Jo5mXeU0DdF6PXHCk7fjFzi6nLLce98Jj3IS67DQimqW6DUb7nq9GE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741863489; c=relaxed/simple;
-	bh=18a6aB3ysXITDtqLaWnoSIFBLyGi0m4WbEg/Q5ny3J8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MW8RQpUAiPXU1goRBQzCAdqrbXZxeYZENRQarXTYbrIEAsn5iGJMSC2/wzobIBx7+rvHkVi4FYa8gsmBW0IleoyVj/ZA0dU61N7ZznAdSjj4vHjG9UaXfIEOEu+z3tRDphnoEszCtwvdHWvxiQGZPErEF38ekGzR20KyhpqMr4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=V2O1RLCL; arc=none smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="V2O1RLCL"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-54298ec925bso1270331e87.3
-        for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 03:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1741863485; x=1742468285; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=nfraL4ls4afXFZxrK0JTl5qc8dinoEXS1gCWnzcYrdw=;
-        b=V2O1RLCLWAjiZiyStSp4QABHLruDEV/sbhMrWkdD3AOHiGs4+oNb8Kv3hKLYlFRlH3
-         RnjScdxH0VR1v+18s5BSubLPEbQj7/O1r2skURWvfxWHteMyNJvil92jJDWmno6qts6H
-         aX13VqehfuTQjvG+PeeljSD7r+Eq3VLFK/1g8lvTEpYefLLv91Dp/ayzLSoT195E3X2U
-         Wp6xJt0OzayMXcYwaDBPDnQZAClYkW9T8gw8k+zMSaLS+W308V4668cV6oKz/lJ6D0iI
-         WJpJld7ge5CyPf7PkYVuOATv39qQSSXxU0VrJeRUQy5aI4b/qKrrBVw8q81zkjBneaXy
-         cNrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741863485; x=1742468285;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nfraL4ls4afXFZxrK0JTl5qc8dinoEXS1gCWnzcYrdw=;
-        b=Cy0vC+GAAyYEVBHqzTozacgi1Rg4dg+a34PM6OwsUblNUTDd6Tl/DQDNOUWGL8nBJx
-         dpsBndFBUp5UpppUkcFjV1BurUliQzbCSbxpBChBbahtx5zMAlJfhaoBtgr4sNIcoK5e
-         udBJEt88YTi2FA99z88JY5ttLIrYftL8QImdRaS6A4pCmX1s7tBdyQVy8+247F7+tTrV
-         XXRzHiNa337IXX0/JHM3M9IC3qoYtU/sB06+J4oM3GSsG/rkyoIKAxGBjEfNTY5c0QRu
-         a48oqedbXyBr+0W/pLUl6hXTIDHHj8rB5jGQ5wAA8m62Q6QRqR/mu74FPkOm2DFCgHwz
-         zuvg==
-X-Forwarded-Encrypted: i=1; AJvYcCXB2RBe3Kr9ypaFvX5BvVmrWMS27uXZfFKI/PhQGu5f3Jn9H1vu0GsSXJT5kLEfFffBtoJ3qw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy4bhaOtPA3jegDdZzlW8+kJl919ccSq6YhxPkhrP+FfqLgxBl4
-	Y1N/dyo/QajLaE/8PYGEu/BDvjTbpXI0iDI/BzO2EEYLKWXCL6P6k0nF4OVRXbig5MzUHBvm7mX
-	8zQX94tTUgs17qOQPwjmvS7egXweg5OZq2E+2nQ==
-X-Gm-Gg: ASbGncue/459TeP/LBCHlV/bFOevdv6D/5JqrbBnrkrbgJHEs/Fd6naVORf/cRk18+K
-	I8NShG0XnAz6Pxdif/Pcmt0kjmkL/xmuOPG0eVN71lzBI5Fuybv741Kj27JapUlhshCJy/KXPVj
-	trcdULmmslwFLvXIKfdMurfKQmE8/dgyI=
-X-Google-Smtp-Source: AGHT+IFnBWuCgWpM4+ZNcUZn/hTAnsFOuA7LoK2vMek+02/ml9yd7xOrqc8RyImF6BLtOSo2zjib5D/ShTEGIZst4OQ=
-X-Received: by 2002:a05:6512:ad1:b0:545:48c:6352 with SMTP id
- 2adb3069b0e04-549910cc141mr9841158e87.43.1741863485303; Thu, 13 Mar 2025
- 03:58:05 -0700 (PDT)
+	s=arc-20240116; t=1741863702; c=relaxed/simple;
+	bh=XefTSzn/nQqjD6JMR5JYpIY4KIl/yqcRheoDY2b+ilE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SWJggU+BI5x5FzF8dySMseJiNiSdVvnBDWWisLiGCKxzdIh5wZEut4gIvHGD2eRo5qsqHDSpr0RT60EO/iecNHSQdZ3G78lxBtAzFissZYg6aqnraswrels4schCNLx664w/WD3DUpZcFw7QSCS14hJOZxg7TGaXsARMLWeJlr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 21D5E1516;
+	Thu, 13 Mar 2025 04:01:50 -0700 (PDT)
+Received: from [10.57.40.246] (unknown [10.57.40.246])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C60353F673;
+	Thu, 13 Mar 2025 04:01:35 -0700 (PDT)
+Message-ID: <417d6f59-0d78-4e81-ad0b-e06846f786b0@arm.com>
+Date: Thu, 13 Mar 2025 11:01:33 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250313051953.4064532-1-baolu.lu@linux.intel.com> <CABQgh9HKaDyDQXGB5ZEGg5q4a9ak_8OB9XQ+TpUNcZd_ZMeCAQ@mail.gmail.com>
-In-Reply-To: <CABQgh9HKaDyDQXGB5ZEGg5q4a9ak_8OB9XQ+TpUNcZd_ZMeCAQ@mail.gmail.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Thu, 13 Mar 2025 18:57:54 +0800
-X-Gm-Features: AQ5f1JovvZMXW9DEK2jouMs3ywPla5tfQLVxQ45E7WGPoXzvDONCBJ637fQc5_g
-Message-ID: <CABQgh9G=7q+FQ0ECZ60UjawgkAM2aeNEb6hXgndEv8S9_4CuPw@mail.gmail.com>
-Subject: Re: [PATCH v4 0/8] iommu: Remove IOMMU_DEV_FEAT_SVA/_IOPF
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
-	Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>, 
-	Fenghua Yu <fenghuay@nvidia.com>, Zhou Wang <wangzhou1@hisilicon.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
+ path
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Danilo Krummrich <dakr@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
+ Laurentiu Tudor <laurentiu.tudor@nxp.com>, Nipun Gupta
+ <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>,
+ Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+ Charan Teja Kalla <quic_charante@quicinc.com>
+References: <cover.1740753261.git.robin.murphy@arm.com>
+ <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
+ <CGME20250313095633eucas1p29cb55f2504b4bcf67c16b3bd3fa9b8cd@eucas1p2.samsung.com>
+ <9b358d68-332e-404e-9a75-740297f7b28d@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <9b358d68-332e-404e-9a75-740297f7b28d@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, 13 Mar 2025 at 17:51, Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
->
-> Hi, Baolu
->
-> On Thu, 13 Mar 2025 at 13:19, Lu Baolu <baolu.lu@linux.intel.com> wrote:
-> >
-> > The new method for driver fault reporting support relies on the domain
-> > to specify a iopf_handler. The driver should detect this and setup the
-> > HW when fault capable domains are attached.
-> >
-> > Move SMMUv3 to use this method and have VT-D validate support during
-> > attach so that all three fault capable drivers have a no-op FEAT_SVA and
-> > _IOPF. Then remove them.
-> >
-> > This was initiated by Jason. I'm following up to remove FEAT_IOPF and
-> > further clean up.
-> >
-> > The whole series is also available at github:
-> > https://github.com/LuBaolu/intel-iommu/commits/iommu_no_feat-v4
->
-> I got an issue on this branch.
->
-> Linux 6.14-rc4 + iommu_no_feat-v2
-> drivers/pci/quirks.c
-> quirk_huawei_pcie_sva will set dma-can-stall first
-> arm_smmu_probe_device will check dma-can-stall and set stall_enabled
-> accordingly.
+On 2025-03-13 9:56 am, Marek Szyprowski wrote:
+[...]
+> This patch landed in yesterday's linux-next as commit bcb81ac6ae3c
+> ("iommu: Get DT/ACPI parsing into the proper probe path"). In my tests I
+> found it breaks booting of ARM64 RK3568-based Odroid-M1 board
+> (arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts). Here is the
+> relevant kernel log:
 
-This working branch arm_smmu_probe_device is called from pci_bus_add_device
-So pci_fixup_device is called first
+...and the bug-flushing-out begins!
 
-[ 1121.314405]  arm_smmu_probe_device+0x48/0x450
-[ 1121.314410]  __iommu_probe_device+0xc4/0x3c8
-[ 1121.314412]  iommu_probe_device+0x40/0x90
-[ 1121.314414]  acpi_dma_configure_id+0xb4/0x100
-[ 1121.314417]  pci_dma_configure+0xf8/0x108
-[ 1121.314421]  really_probe+0x78/0x278
-[ 1121.314425]  __driver_probe_device+0x80/0x140
-[ 1121.314427]  driver_probe_device+0x48/0x130
-[ 1121.314430]  __device_attach_driver+0xc0/0x108
-[ 1121.314432]  bus_for_each_drv+0x8c/0xf8
-[ 1121.314435]  __device_attach+0x104/0x1a0
-[ 1121.314437]  device_attach+0x1c/0x30
-[ 1121.314440]  pci_bus_add_device+0xb8/0x1f0
-[ 1121.314442]  pci_iov_add_virtfn+0x2ac/0x300
-[ 1121.314446]  sriov_enable+0x204/0x468
-[ 1121.314447]  pci_enable_sriov+0x20/0x40
+> Unable to handle kernel NULL pointer dereference at virtual address
+> 00000000000003e8
+> Mem abort info:
+>     ESR = 0x0000000096000004
+>     EC = 0x25: DABT (current EL), IL = 32 bits
+>     SET = 0, FnV = 0
+>     EA = 0, S1PTW = 0
+>     FSC = 0x04: level 0 translation fault
+> Data abort info:
+>     ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
+>     CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+>     GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+> [00000000000003e8] user address but active_mm is swapper
+> Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
+> Modules linked in:
+> CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc3+ #15533
+> Hardware name: Hardkernel ODROID-M1 (DT)
+> pstate: 00400009 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> pc : devm_kmalloc+0x2c/0x114
+> lr : rk_iommu_of_xlate+0x30/0x90
+> ...
+> Call trace:
+>    devm_kmalloc+0x2c/0x114 (P)
+>    rk_iommu_of_xlate+0x30/0x90
+
+Yeah, looks like this is doing something a bit questionable which can't
+work properly. TBH the whole dma_dev thing could probably be cleaned up
+now that we have proper instances, but for now does this work?
+
+(annoyingly none of my Rockchip boards are set up for testing right now, 
+but I might have time to dig one out later)
+
+Thanks,
+Robin.
+
+----->8-----
+
+Subject: [PATCH] iommu/rockchip: Allocate per-device data sensibly
+
+Now that DT-based probing is finally happening in the right order again,
+it reveals an issue in Rockchip's of_xlate, which can now be called
+during registration, but is using the global dma_dev which is only
+assigned later. However, this makes little sense when we're already
+looking up the correct IOMMU device, who should logically be the owner
+of the devm allocation anyway.
+
+Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe 
+path")
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+  drivers/iommu/rockchip-iommu.c | 6 +++---
+  1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 323cc665c357..48826d1ccfd8 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1148,12 +1148,12 @@ static int rk_iommu_of_xlate(struct device *dev,
+  	struct platform_device *iommu_dev;
+  	struct rk_iommudata *data;
+
+-	data = devm_kzalloc(dma_dev, sizeof(*data), GFP_KERNEL);
++	iommu_dev = of_find_device_by_node(args->np);
++
++	data = devm_kzalloc(&iommu_dev->dev, sizeof(*data), GFP_KERNEL);
+  	if (!data)
+  		return -ENOMEM;
+
+-	iommu_dev = of_find_device_by_node(args->np);
+-
+  	data->iommu = platform_get_drvdata(iommu_dev);
+  	data->iommu->domain = &rk_identity_domain;
+  	dev_iommu_priv_set(dev, data);
+-- 
+2.39.2.101.g768bb238c484.dirty
 
 
->
-> This branch
-> arm_smmu_probe_device happens first, when dma-can-stall = 0, so
-> stall_enabled =0.
-> Then drivers/pci/quirks.c: quirk_xxx happens
-
-This not working branch: Linux 6.14-rc6 + iommu_no_feat-v4
-arm_smmu_probe_device is called by pci_device_add
-Then call pci_bus_add_device -> pci_fixup_device
-
-  215.072859]  arm_smmu_probe_device+0x48/0x450
-[  215.072871]  __iommu_probe_device+0xc0/0x468
-[  215.072875]  iommu_probe_device+0x40/0x90
-[  215.072877]  iommu_bus_notifier+0x38/0x68
-[  215.072879]  notifier_call_chain+0x80/0x148
-[  215.072886]  blocking_notifier_call_chain+0x50/0x80
-[  215.072889]  bus_notify+0x44/0x68
-[  215.072896]  device_add+0x580/0x768
-[  215.072898]  pci_device_add+0x1e8/0x568
-[  215.072906]  pci_iov_add_virtfn+0x198/0x300
-[  215.072910]  sriov_enable+0x204/0x468
-[  215.072912]  pci_enable_sriov+0x20/0x40
-
-pci_iov_add_virtfn:
-pci_device_add(virtfn, virtfn->bus);
-pci_bus_add_device(virtfn); -> pci_fixup_device(pci_fixup_final, dev);
-
-
-
->
-> Still in checking.
->
-> And this branch does not need these two patches, right?
-> c7b1397bef3c iommu/arm-smmu-v3: Implement arm_smmu_get_msi_mapping_domain
-> 5cd34634a73e iommu/dma: Support MSIs through nested domains
->
-> Thanks
