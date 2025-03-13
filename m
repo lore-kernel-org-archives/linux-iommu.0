@@ -1,133 +1,244 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2052.outbound.protection.outlook.com [40.107.100.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8592014900B
-	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 04:41:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741840899; cv=none; b=GAqaOxbsvuN8vQDvCSn3wmA46/B+fVdUnHgj7kK0weufVCkEwwFhqihG4fAaEalUbeNs8X67bZxLVN+zGbrWOXuNLoKt5JUs5WgWqEFR4kKmC/qjtjt/X9pak/s5JCSf24bw3/oAh/cZmJ4HOUWcXspnSukC4q6ENxNa/WVQmKY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741840899; c=relaxed/simple;
-	bh=Wle22tZSAFmAzKxY8o9ipcjC+ePXQMqlBb+yFuLJYOE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gngu/F5CIYub9WxY/q43BGwxspzN9Cv1xXw/5M6emp/IssIf0Rz2Oc7qaisCJArphhrxm1Fd6ESglCAsYT7aNlWz3yArkCmeyFZT/jyT4QCcTjJu6U7/gj0861kd4jE+dbRQVG7gA7LX39Pu/kOUwxJHBbOacFuBovvCvyYd8oU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=M5kOhxSh; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35A971F4C95;
+	Thu, 13 Mar 2025 04:51:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741841491; cv=fail; b=TYOspiv3t/WQspMSe7ZjPnPHGMPBc/J25TzUdPsEsWk623lkOovzjlhoUL2UmvmwKaSVpp7oB3hWfDInvB0+Hj2w1ZaWE0k8npxxIiX9zON3sQErjRmS1AGfqXhseKRu/ZlFxh+VE62NOjV3eE5eBU5V4oiiKSxENs5tsWtEEUM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741841491; c=relaxed/simple;
+	bh=SbbNXMYZ3tMlc2I+eHx6qL1lVOeh7bOnjr0b0n+B9LE=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=VKFlBb4deUoIiQmCc9o/N333yvx99RIB3nGBpZPFPbr3XPxe6QkBD+KNSGXPRN14+TV7Lkgn9lt3HOyUi20jqacZWlNig042/IZlqLk/WA6mL4XyG780nxDH4GeGYCjEM1KJ0/B3xkgt+ERGwGjzyfm/xQRgUvHP6ldWhLruoqI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=E5thj+Ng; arc=fail smtp.client-ip=40.107.100.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="M5kOhxSh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741840899; x=1773376899;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Wle22tZSAFmAzKxY8o9ipcjC+ePXQMqlBb+yFuLJYOE=;
-  b=M5kOhxShg0Q+XbUigASgY7yk77T0tguup12ZEtJaqDRF2Y/1TMhPc3sT
-   XRl6557s3K3LjdDjtC9aS4WwJVTdjQtV2KtDSYygoquQyst9RB3JEi6RH
-   66n4H5jzClQ236qUfiKkpPZKZXuHkMMzMMmIsOJLRVy+rYl/dpKIZqOEN
-   hPkDaO2o7OQXa/OCVSjnHvxSSTRSpq+IT6JdqWpfUXdVQxRbeFjqJUnUH
-   GmsimjAyZ84FWesPRxzRdhJFORFGhJxBYHR30vsEHxuqtJIoCZWXson1J
-   klM1oVvB0Ye/ZPDhFt8TybxSP0YNrSSVDeMi09eVprgonM36HQnUBEjkC
-   w==;
-X-CSE-ConnectionGUID: y0OoIZ75QZWl1VA2wxly4Q==
-X-CSE-MsgGUID: ekIWAP5WQeioHaoL+T5KZg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11371"; a="54321220"
-X-IronPort-AV: E=Sophos;i="6.14,243,1736841600"; 
-   d="scan'208";a="54321220"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2025 21:41:38 -0700
-X-CSE-ConnectionGUID: 5D08BRhbQ7SjD1g/iDzl1A==
-X-CSE-MsgGUID: oIAy1V01R8GioUDGL9Dwfw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,243,1736841600"; 
-   d="scan'208";a="121330917"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2025 21:41:35 -0700
-Message-ID: <09bc17bd-4d25-4afd-8f6c-56707ea9bc92@linux.intel.com>
-Date: Thu, 13 Mar 2025 12:38:18 +0800
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="E5thj+Ng"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=bKNhwpEGmrdjM9Qkomc2r079i1RaWVmGJ78kx3Y+1eDCm3h63e5kv16H9CNBJzSxhqoSvaVQHqAM8TRecKfQkV3fPjHcB48/vSKboTAYIMJESXaWZK+Em1cv0oU6C+YFL8JcHa15OpPo7+ulyKxxBK68n9Ycj3jG4ByZWYWJDcbUXjlAgGBaVpZOrNVvoJ1iLVZ65k/wLZHE8AzWf1/3MdT49/4EncV55RT9I4mACm8jcAjPfJz7sOwMD3sfsPwK0v7pS73d2ec5j0H7JTnyIXjm+aXFfsmx7HOyIL1gU0iAL0PU6IBRzj5YSGgnLXdlscgGcFUlS8k4DpWp/Am6Yw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lWY05qHi7vDahlXEHrvEzjkBL/2fL38Qw3357gbx+9U=;
+ b=GxflD97pQzDU937pPDGUHY/30wpeqxaAauEwbAFueg82pxsbfStLlL4Fs1GM3jhkjvVewMw39phVgTNbIJ5ELkUA9dcDZzn0HkzmGbSaLueio1Z4CBtW4ZUA0Qyog/+Df8/21E0XtOmrnVgQ4Plea/kYxyfvHZhS4X5xB1gR33qEZKJuU5UtoB5P2HBM9bh9UiUrwwVtb3zOwUq5qnhcrmC2JVJJU3CnVVYr/jQfEgUG4mJy54g2BuxmR8Y0vKD06mpWvUYOU8xYtYBxzE9z0HrieH5NPCJ0/PSOHQPi9V6arr2aQorP5YQ47vBTvZvEIAG7FFCBGMNIwfWx8Hy1Wg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lWY05qHi7vDahlXEHrvEzjkBL/2fL38Qw3357gbx+9U=;
+ b=E5thj+Ng4zxgxRfi8hj9csVvxx/QYHPlPn/yjzmt1KYIKDIG544YQFsALc2Krbr2GA8YZlVw59RlZHOYUfzkQPb5k839F/D9maFiLglLC09/KzuC6yM8WRngYPQ7VisSoLswpulPK+gTeLtjVqUL/yYPZkjUnaMOplaI50L2Ivg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
+ by SA3PR12MB8021.namprd12.prod.outlook.com (2603:10b6:806:305::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.27; Thu, 13 Mar
+ 2025 04:51:27 +0000
+Received: from CH3PR12MB9194.namprd12.prod.outlook.com
+ ([fe80::53fb:bf76:727f:d00f]) by CH3PR12MB9194.namprd12.prod.outlook.com
+ ([fe80::53fb:bf76:727f:d00f%3]) with mapi id 15.20.8511.026; Thu, 13 Mar 2025
+ 04:51:26 +0000
+Message-ID: <604c0d0e-048f-402a-893a-62e1ce8d24ba@amd.com>
+Date: Thu, 13 Mar 2025 15:51:13 +1100
+User-Agent: Mozilla Thunderbird Beta
+Subject: Re: [RFC PATCH v2 12/22] iommufd: Allow mapping from guest_memfd
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>, Michael Roth <michael.roth@amd.com>
+Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
+ linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+ Sean Christopherson <seanjc@google.com>, Paolo Bonzini
+ <pbonzini@redhat.com>, Tom Lendacky <thomas.lendacky@amd.com>,
+ Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams
+ <dan.j.williams@intel.com>, Christoph Hellwig <hch@lst.de>,
+ Nikunj A Dadhania <nikunj@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Joao Martins <joao.m.martins@oracle.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Steve Sistare <steven.sistare@oracle.com>, Lukas Wunner <lukas@wunner.de>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
+ iommu@lists.linux.dev, linux-coco@lists.linux.dev, Zhi Wang
+ <zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>,
+ "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
+References: <20250218111017.491719-1-aik@amd.com>
+ <20250218111017.491719-13-aik@amd.com> <20250218141634.GI3696814@ziepe.ca>
+ <340d8dba-1b09-4875-8604-cd9f66ca1407@amd.com>
+ <20250218235105.GK3696814@ziepe.ca>
+ <06b850ab-5321-4134-9b24-a83aaab704bf@amd.com>
+ <20250219133516.GL3696814@ziepe.ca> <20250219202324.uq2kq27kmpmptbwx@amd.com>
+ <20250219203708.GO3696814@ziepe.ca>
+From: Alexey Kardashevskiy <aik@amd.com>
+In-Reply-To: <20250219203708.GO3696814@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: ME2P282CA0014.AUSP282.PROD.OUTLOOK.COM
+ (2603:10c6:220:4d::26) To CH3PR12MB9194.namprd12.prod.outlook.com
+ (2603:10b6:610:19f::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: New "something fishy here" warning fires
-To: Heiner Kallweit <hkallweit1@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-acpi@vger.kernel.org, iommu@lists.linux.dev
-References: <3046c6a2-72a0-412e-a865-48dc129be0df@gmail.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3046c6a2-72a0-412e-a865-48dc129be0df@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|SA3PR12MB8021:EE_
+X-MS-Office365-Filtering-Correlation-Id: 82c70527-a688-4dad-80b1-08dd61eab643
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?SmhOai82Z2pWZnRQM1FHUXVDVStPMWpqRFh4eGpDRGRMRTYrbE5HVTE1WFZ4?=
+ =?utf-8?B?VmwySCtWSXFIZ3B3TFRFcmFCRHdLQnhQN1picWRLTFNzS0hDQ0ErZmp5eXE3?=
+ =?utf-8?B?K1ZZaG1RbmJEeGxJZXViYWdONjVrc0xLU1pBNkVIalNMSGt2ZFRONWJzdmJR?=
+ =?utf-8?B?Ylowa2tXYkxlb1JlTUtvVmRzaFJVRTlSbnVxR0ZJclZTSTk3OXRsOWx3YnVL?=
+ =?utf-8?B?WWxIUjFUR09YT3hBUHRaVStQeWdKNVI5NkJ2L1pKam81UmZwN2VtWEkzUWZB?=
+ =?utf-8?B?a29uY3hZUUR4Ump3cVRTT2hvY1NjY3NlRnQ2WkxQWVl5WWk2WWp5ZmdvYUtr?=
+ =?utf-8?B?ekhjUUN6c2YwNmR5dEJ2eU5KMk9Fb3BBVDBZY1lodWJQQ0J0Nmh0WFRtRTU1?=
+ =?utf-8?B?QUFHKzhCS2VoNUFMcUwyeURRNXRIa0loY3B6ZDB1UzhIWlh0eVRTQVlZM0Jy?=
+ =?utf-8?B?c0k1OUl4bWJjdEZPc1FpYjU3eDRQbGwreEdMc2pCc2FlNmZYWVVqNTg5TjdM?=
+ =?utf-8?B?M0VzWXZwbFJ5VFNWNkRQRmhObG93eVk2cWJDZFlIMjlJcE43ZVVQb3FqRzA3?=
+ =?utf-8?B?WG1PYWxRQ0dNUFBITTZFR01TQ0RHelI2TDNrL3BRTEcxc3dkSnVXN2dPQ2Jl?=
+ =?utf-8?B?bjM4OEg0eFlMYlowMkEvOG9HMXhPdWtXS2hNU2pEcVM0YlBObU9ZU24zVzBh?=
+ =?utf-8?B?VEhEUWplUXBwWHMyckthV0llNFpEeUVoUXFUQyt1OHAyT2hOT2RjQUEwMUpw?=
+ =?utf-8?B?YllvTDhmYXFzdzVJSEMrWlhUbGJjRHRPdWVUQ3BEeXJQSEsvaDdhRzVtUlZ4?=
+ =?utf-8?B?N0VweDdhd0ZGamdsS255RHhvSWd6b0cyWnlDUkxhWEQvNi9qMTdNTjJ6SmY0?=
+ =?utf-8?B?S0E4dVVFYWR6alNxTVBCQTd4NWpZMnNMZVYzNWdnaGZzK0EvOWNNTjRzSGRT?=
+ =?utf-8?B?aFdaSjgzdEdJUHlmanEzT1ZpTU96VUFnZ3NORUNNU0g1ekI2M2dVSFZqdWN0?=
+ =?utf-8?B?R0J1Q1gxTFdkMUZ0L2Z3OTVBeDdJbnFjcStrOHZlN3RtNWVRWEdYU2w1eGxF?=
+ =?utf-8?B?NDNnY1U4V25ndzdabEc1SWx0ZEtldkM4S1l0ZnR3V21kaGlFa0pyQUUrb0ly?=
+ =?utf-8?B?UjhhcFZtd3lHY3Q4OXBieVlWYVc3eHVncWNsblNFNWlGTjRZUWxmdCt2djJk?=
+ =?utf-8?B?RHpJaDE3aGdaOCt2U2JRRUMraEVMZ2dpVTV4RGlGb056U1NROUxhUHZ5cWZR?=
+ =?utf-8?B?SVNwQm5yNy9QY2JHSFBjL2szYWN6VDNPekw3SldFcThxZFV6TVpjL2JCTi9P?=
+ =?utf-8?B?MDBsOTcrRDB1a05tZkJkSXppV2d5RUVXUFdEUHJoajlEMDcxRTVHZUZXQUkx?=
+ =?utf-8?B?d0VndUhUcjVHbGg2ZjhCVnVsc1VXWitpVlhPUDMrM0RHY3hSNjB0QmJjanZR?=
+ =?utf-8?B?ejJ3cjRoY1FkM0c2TWROK0FFa0ptTzlPdTc3QVc5S1hGU0dES015MVFqZ3ZC?=
+ =?utf-8?B?Tk02NTc0VlNxVzFEcGpHZEFLK1JWekRjL0gzTjc5ZkY3ZXBaM2NtTThTQkNK?=
+ =?utf-8?B?MlVVZG1CTWJaT3BZY3laMFBBRWNya1MrdEZsMkRtNk4wK1dSZXoxeDNWV21t?=
+ =?utf-8?B?ZW01YVcyQ1p6KzUydmFmWWxNVWNQQVY3bW5hUFhrQnVhOCtzN2ZGeFhwVUVC?=
+ =?utf-8?B?ajBWcGxZNEZpNHBFLzhOcXZZSWo4UUNoQ0RmWnp3cUdQd2kwOEZkOGFsTUhE?=
+ =?utf-8?B?ZlpraDZ6TTBmc1J5VDEwYzRVYzA4SUZzSGxPZ1U0WUxRT2o2a0s5M2hNTm80?=
+ =?utf-8?B?QkVlVVQ2U0tvWHVqN2huT0w2WTJUWWZHbWtvL3FOWEpSd2ZPZERTSVN5bS9R?=
+ =?utf-8?Q?uGOkmsDEx7iPs?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?S09OYzR1Zy95UXhBQjJ5K0x2UnNHbFVjb1dvd1o5b2s5N21sUTFDc3NLTDJL?=
+ =?utf-8?B?bGlvRm1sTm5HZDl5ZWhQcmpJT1BVZ2wzVUxENFI2S1A4dkloaHhmRlFndEw0?=
+ =?utf-8?B?OHF6TEZjSUVnMzFMejUrbWkzdkhsbE84UFZRd1RNeGU4T1BpS0NWanNwMURU?=
+ =?utf-8?B?Mmp5S1llUmFXL09sNGZCWkdEdnVmWG56RjBxMVRTbU9idmQ5bmJRcVhvNmxk?=
+ =?utf-8?B?Z1RCSEZHYzh6M1M5SVRWUFZlMTZ1MUw4NFFOTmZrc2kvbldDUDF0azlLNXdH?=
+ =?utf-8?B?cHBzcU5oNjVqajhVSGxvRmsxb1hhWDBqZzRQQ0JqSWJNUUpBU29mTU1xWXdi?=
+ =?utf-8?B?VjREUlJRUGEyVi9jMDdzWjJwT210T2ZHb1lPelQ4UmVqWEhoZ0s0UWdsZGZ1?=
+ =?utf-8?B?MkNCSWRzSDArOGx2N0RlMkdTNThTOGsvSmlOemR2aWFHSmI5a21SZTRBWmx2?=
+ =?utf-8?B?RzlWUCtITGJtOHIvTzRtN29jOEswSlpnMlN2YlVFUVY3aUNPWmdLNDhTd0Rw?=
+ =?utf-8?B?SVZPTVFEUjh2TDg5UG5CNkQxUUYvbU5scmFRNklkWTVlb3hhWk1mWTd0bXdk?=
+ =?utf-8?B?cDZ1VTdTZW5IYWl2NklkN3lMTzB4dkVKTnpXYzlRbG4vOFhUZG40UDNJaE5P?=
+ =?utf-8?B?d2lHN3B4Tnc0VGtJczJ1d054VndZc29VdEhScG8zbG5DWHpEajFITVhjaVkr?=
+ =?utf-8?B?K2ROd0ZOZnZPdURzejlKZnBVckJSUEdHQ05jMEtoY0QxdnZobmI4SzYrN25E?=
+ =?utf-8?B?c1lBNmFpOVpCdkZ2NEZmanZpOVNTblBEUzJyUjVzMzFQVFVOUW1zckQ3cG9i?=
+ =?utf-8?B?bTRtSC9DcmsvNktCeE5yVndIa0w5Q1cvRHdTY1pTMnV4TnNONWVIbUhTdk4z?=
+ =?utf-8?B?aDF5dVgxMlFucFJpZlY2SmJRT3ljckFrRXZBVkxzVmF1ZTFIbTZVTFFzT3Mw?=
+ =?utf-8?B?T01KS3pHTHdmbTI1QkptSktKamJTVTErQ2I3VW9DL3hLWUkrTElWZVFqZjB4?=
+ =?utf-8?B?bUVjWXVWVmlEa2N5ZE9MWmkwVGI0SGh5NnR6aDRBeW5qUGNac1p0djh4a3Vk?=
+ =?utf-8?B?Q2F5RXQ5eXd2b28zY3dBdS8rWmVJYTZBRi9KQWU1elRpSlBiK2g5STQrdTFl?=
+ =?utf-8?B?WlA2TXlBYzFHM1ZIR28vUWwrVmtjblA5dGtyMTUrNUU1YThGWHYxZi9aL0xq?=
+ =?utf-8?B?N3RzR1UvZC9LY0lNZlRhNGlCLzR2VFpmajJDYkFHc1ZFS2RNc0gyNzRMaUt4?=
+ =?utf-8?B?cW8yS3VMbHYvY2tVQzZja0xlTzV1Uzgxek5HQmE3NVVLS1FRVGdyN2lSV3V0?=
+ =?utf-8?B?S2x0NW9Ga2llZHhOTTJBMUFSSFNIZXAzT3Z3ODFnR1lIcmhsQUNpK3l0NWZh?=
+ =?utf-8?B?d2c1eGE1c3ZvTTZQMXRuR1hiaTE2TThqM0VJdXFBZmFkbDc5S0dhbTJTR2ZR?=
+ =?utf-8?B?R1Q4TVlBRDdxOWx6WVAvekhyWEJ5WW5tZytsTGp4UUhXeDJPQlFMVkpTNnFa?=
+ =?utf-8?B?bVdYSUpZa0t2MWN2VjhuNE9Gbjd3cGFVcWdJYmlHclNwTjM2VmJqOWlGOXEv?=
+ =?utf-8?B?VVczZkJ4Sm92TXpzVjc3L1Q1ek1SUGxYSDI1R1ZUcWNJYWxrQ2ZJL095RG1X?=
+ =?utf-8?B?bHdpS2pLc3lPMDBqYkh2TWMwK01aZ1BjRU1RQ2VNVkVFUUpBY3RORFFhcFZh?=
+ =?utf-8?B?NXVqYUVsdUYyT0J6WEt5bEJYR3ozZUgvem13cnk1WUJBanZ2aWpMdXF5c20x?=
+ =?utf-8?B?aFZSVitPaTBLK2dNM2JuR3dneDkrOXRpVU5ObGwvUmZNN1k2dG9jVVlqNW43?=
+ =?utf-8?B?K1NsYnVCV2d4eWszaUVseUZ4aUMyOU1CVmJVbFBFdENqUW4reHRDbHFDaXpJ?=
+ =?utf-8?B?RUtSRXJ3NzFXY2g2dUEwT2g5WGdCNDR1TExzRHo5alJ3eC9rR3ZQVWc4V0Z2?=
+ =?utf-8?B?bjhOUDd4RXYzbytUM1c3c3pTMlNDS20zc29OK05KSHAzSGxRM2JpbzZiNCtP?=
+ =?utf-8?B?ZThnZmZta2tNSXUxZUJ1RVFJMkxJaUtxUnh1SkowTTF5WmZkOW1lVmhLQlBN?=
+ =?utf-8?B?VlMvVmljMVZEclUyTlRBclpleCtKQVVqTFVFc2tsVFJWS2VOREJ3TnBoY2Qr?=
+ =?utf-8?Q?HOPi2VXwWkgeu/6Go0Hr43Vmn?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 82c70527-a688-4dad-80b1-08dd61eab643
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2025 04:51:26.7876
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZwJ6NKimU2JrUaXs1gy3hbcKzNrhksTaHtSXFHWblLs+26eoD6/LRi18mzjh4uSTCAzhoj6gC45KsJ5Gp3oc6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8021
 
-On 3/13/25 03:34, Heiner Kallweit wrote:
-> Since "iommu: Get DT/ACPI parsing into the proper probe path" I get the following
-> on a N100-based mini pc. The warning pops up 4 times, for:
-> 
-> PNP0C14:00
-> PNP0C14:01
-> PNP0C14:00
-> PNP0C14:01
-> 
-> Any other info you'd be interested in?
-> 
-> [  +0.000139] Unpacking initramfs...
-> [  +0.000690] ------------[ cut here ]------------
-> [  +0.000028] acpi-wmi PNP0C14:00: late IOMMU probe at driver bind, something fishy here!
-> [  +0.000041] WARNING: CPU: 1 PID: 1 at drivers/iommu/iommu.c:449 __iommu_probe_device+0x12b/0x530
-> [  +0.000034] Modules linked in:
-> [  +0.000024] CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc6-next-20250312+ #2
-> [  +0.000029] Hardware name: Default string Default string/Default string, BIOS ADLN.M6.SODIMM.ZB.CY.015 08/08/2023
-> [  +0.000032] RIP: 0010:__iommu_probe_device+0x12b/0x530
-> [  +0.000019] Code: 68 00 74 28 4c 8b 73 50 4d 85 f6 75 03 4c 8b 33 48 89 df e8 d7 ec 00 00 4c 89 f2 48 c7 c7 b8 91 7b 9e 48 89 c6 e8 f5 3e 96 ff >
-> [  +0.000055] RSP: 0000:ffffb031c006fc98 EFLAGS: 00010282
-> [  +0.000021] RAX: 0000000000000000 RBX: ffff9469416c5010 RCX: 0000000000000000
-> [  +0.000023] RDX: 0000000000000002 RSI: 0000000000000003 RDI: 00000000ffffffff
-> [  +0.000023] RBP: ffffb031c006fcd8 R08: 0000000000000000 R09: ffffb031c006fae8
-> [  +0.000023] R10: ffffffff9eb1ea68 R11: 0000000000000003 R12: ffffffff9e485280
-> [  +0.000023] R13: ffffb031c006fd70 R14: ffff946940bb8ec0 R15: 0000000000000000
-> [  +0.000023] FS:  0000000000000000(0000) GS:ffff946b18bec000(0000) knlGS:0000000000000000
-> [  +0.000037] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  +0.000020] CR2: 0000000000000000 CR3: 000000016c650001 CR4: 0000000000770ef0
-> [  +0.000023] PKRU: 55555554
-> [  +0.000012] Call Trace:
-> [  +0.000010]  <TASK>
-> [  +0.000011]  ? show_regs.part.0+0x1d/0x30
-> [  +0.000019]  ? show_regs.cold+0x8/0xd
-> [  +0.000016]  ? __iommu_probe_device+0x12b/0x530
-> [  +0.000017]  ? __warn.cold+0xc2/0x15e
-> [  +0.000018]  ? __iommu_probe_device+0x12b/0x530
-> [  +0.000017]  ? report_bug+0xe3/0x170
-> [  +0.000016]  ? console_unlock+0x7d/0x110
-> [  +0.000018]  ? __iommu_probe_device+0x12b/0x530
-> [  +0.000016]  ? __iommu_probe_device+0x12d/0x530
-> [  +0.000017]  ? handle_bug+0x116/0x170
-> [  +0.000018]  ? exc_invalid_op+0x18/0x70
-> [  +0.000017]  ? asm_exc_invalid_op+0x1b/0x20
-> [  +0.000022]  ? __iommu_probe_device+0x12b/0x530
-> [  +0.000018]  ? __iommu_probe_device+0x12b/0x530
-> [  +0.000019]  ? __pfx_probe_iommu_group+0x10/0x10
-> [  +0.000017]  probe_iommu_group+0x26/0x50
-> [  +0.000016]  bus_for_each_dev+0x79/0xd0
-> [  +0.000020]  iommu_device_register+0xbe/0x230
-> [  +0.000021]  intel_iommu_init+0xd76/0xf40
-> [  +0.000016]  ? _raw_spin_unlock_irqrestore+0x55/0x80
-> [  +0.000022]  ? __this_cpu_preempt_check+0x13/0x20
-> [  +0.000018]  ? lockdep_hardirqs_on+0x7d/0x110
-> [  +0.000018]  ? trace_hardirqs_on+0x5b/0xd0
-> [  +0.000017]  ? _raw_spin_unlock_irqrestore+0x3c/0x80
-> [  +0.000020]  ? __pfx_pci_iommu_init+0x10/0x10
-> [  +0.000021]  pci_iommu_init+0xd/0x40
-> 
 
-The fix is here.
 
-https://lore.kernel.org/linux-iommu/72a4853e7ef36e7c1c4ca171ed4ed8e1a463a61a.1741791691.git.robin.murphy@arm.com/
+On 20/2/25 07:37, Jason Gunthorpe wrote:
+> On Wed, Feb 19, 2025 at 02:23:24PM -0600, Michael Roth wrote:
+>> Just for clarity: at least for normal/nested page table (but I'm
+>> assuming the same applies to IOMMU mappings), 1G mappings are
+>> handled similarly as 2MB mappings as far as RMP table checks are
+>> concerned: each 2MB range is checked individually as if it were
+>> a separate 2MB mapping:
+> 
+> Well, IIRC we are dealing with the AMDv1 IO page table here which
+> supports more sizes than 1G and we likely start to see things like 4M
+> mappings and the like. So maybe there is some issue if the above
+> special case really only applies to 1G and only 1G.
+> 
+>> But the point still stands for 4K RMP entries and 2MB mappings: a 2MB
+>> mapping either requires private page RMP entries to be 2MB, or in the
+>> case of 2MB mapping of shared pages, every page in the range must be
+>> shared according to the corresponding RMP entries.
+> 
+>   Is 4k RMP what people are running?
+> 
+>> I think, for the non-SEV-TIO use-case, it had more to do with inability
+>> to unmap a 4K range once a particular 4K page has been converted
+> 
+> Yes, we don't support unmap or resize. The entire theory of operation
+> has the IOPTEs cover the guest memory and remain static at VM boot
+> time. The RMP alone controls access and handles the static/private.
+> 
+> Assuming the host used 2M pages the IOPTEs in an AMDv1 table will be
+> sized around 2M,4M,8M just based around random luck.
+> 
+> So it sounds like you can get to a situation with a >=2M mapping in
+> the IOPTE but the guest has split it into private/shared at lower
+> granularity and the HW cannot handle this?
+> 
+>> from shared to private if it was originally installed via a 2MB IOPTE,
+>> since the guest could actively be DMA'ing to other shared pages in
+>> the 2M range (but we can be assured it is not DMA'ing to a particular 4K
+>> page it has converted to private), and the IOMMU doesn't (AFAIK) have
+>> a way to atomically split an existing 2MB IOPTE to avoid this.
+> 
+> The iommu can split it (with SW help), I'm working on that
+> infrastructure right now..
+> 
+> So you will get a notification that the guest has made a
+> private/public split and the iommu page table can be atomically
+> restructured to put an IOPTE boundary at the split.
 
-Thanks,
-baolu
+About this atomical restructure - I looked at yours iommu-pt branch on 
+github but  __cut_mapping()->pt_table_install64() only atomically swaps 
+the PDE but it does not do IOMMU TLB invalidate, have I missed it? And 
+if it did so, that would not be atomic but it won't matter as long as we 
+do not destroy the old PDE before invalidating IOMMU TLB, is this the 
+idea? Thanks,
+
+> 
+> Then the HW will not see IOPTEs that exceed the shared/private
+> granularity of the VM.
+> 
+> Jason
+
+-- 
+Alexey
+
