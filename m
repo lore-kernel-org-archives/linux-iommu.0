@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE650266F1D
-	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 12:35:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CED2266F1B
+	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 12:35:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741869357; cv=none; b=f573WqldT/bBn1qR/IqCTy1Kj8BbyeekKuhHsMsUozTw5H4jLZwdqwgFPmQqQWM3WakAzg+Sy+D90bW9IuaHrP6WM/gN8+vXS5f7xkOXeAVB+37AaDn3g2x7vO9G7ecK/9NFH2EQl/f+YzRD5qCg2/93YXmiMJqQsrRen7lkEr8=
+	t=1741869357; cv=none; b=iYRhtAmtEbH8ANA957A8YgMnHz6ipRcLo0SRKJV4wSDvUvyx5chpWN1ZBBvfMFHASrRVp2iVIKjUMy4hMPjGZE8vQsFu2AYY2iUZ+goHPmDItLAega2EEEE5zSS9iC6qrTlf2TnniHyXi6wB7yoUfeTynID1vYQRP8bD/UyXDL8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1741869357; c=relaxed/simple;
-	bh=M5Zr38+tTxkt5GEEd2gHvKTk+ysA3UvqLTbPXcT33eo=;
+	bh=NtrMpO1QtWbF9+2TkatKORlT2i0d3ZYFoaRl58+RNt8=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=pRL9kKO6B7cmmPbM7t6UMn84wR5/bjsCMfGvKVtL3Mb9GJAbA0b0WYF9lx4lGftvtp0giIz2GV/DpFJtY/5Qyn3GJj0rMKtRbhGdg8CGj+yQnWY4kNHeNvNTku1mF0C/XF0xS0pA8KWZ5mcWB88IzWb0NwHdR7ALO4+FPwYjdV8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i2hjWhzo; arc=none smtp.client-ip=192.198.163.17
+	 MIME-Version; b=Ix2SPrlx6vpkdqQn+0jVbGYlCcKGPmUYvwMNwvEVq9pf5HmQOiwMxJh/H0n7UcoFKCME1MrQNlaA+ayyABjS+MY/sfTGKRzYsBHphSu345AaFoHl4HU8oitnufT5mF56Ts4ZPrF8F4hrbLujEDuXmv8EmL+jIhuDOD/CqdqSNZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XAU87JZN; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i2hjWhzo"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XAU87JZN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1741869356; x=1773405356;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=M5Zr38+tTxkt5GEEd2gHvKTk+ysA3UvqLTbPXcT33eo=;
-  b=i2hjWhzoqrHVT62sOmVJS6CPtpgA/G/RR6Vy+CMKR2EX331r8jplrd5/
-   0+MLwI0LzGrinOHi01XsaJZJl+kHLx0W7hBfhILgicmBlk6fFpRpIcSDn
-   XAGBqaLiP8NTJsYqnjtyB7WZdFkQjQtxjV4Qhh391SFxW64TorhpcS2jk
-   wyH5f4i5NBfVnT8QU0RuvGOeOCFwCx60P7NTV4TWgwEbWKz2PNpwnfwWO
-   rVTEjHhVZ7rRzOcJWefVu7u1X5cDwxI23ut7PZczw9ax/RRj+HX6vNVVt
-   BvhEhPCOIjnI9plC9yUhS6XEhC/T2CmiajfcUqD0jdD3fHzkLbPh/BpMy
-   Q==;
-X-CSE-ConnectionGUID: VKql12HaQxO5YSRIMo1+RA==
-X-CSE-MsgGUID: H3YCnCUHTvykv7903aDSmA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11372"; a="42863978"
+  bh=NtrMpO1QtWbF9+2TkatKORlT2i0d3ZYFoaRl58+RNt8=;
+  b=XAU87JZNrYb43glKOwquRu7RXvGjj8mzyo7qjpaDdguMnIcuEGu/Woq6
+   8HjA3vbsDfjL3/QrCfUAzEVcx1/BajbOvZ6sSXeKjl3w4wNEnPkyJ+z8g
+   KHU1UvQrd02DyEqxhLQIEh4ksujuqmX9mYFgGsIrK6lzaWYaJnhMCWK1p
+   YSlBfHPzNdxuVSQal+j7NQNdVZSU6zH+IjdMDk34Ifg9Zuj5V2oHnsSej
+   Q34K+DhjLhnUTnakqCedlR+DhODi9l0jtrwm1lcax6AQTaxM5I0rpzK2s
+   fLfhVWNe5nAZ3kGHrme/8c8xTJLcUJ+yWP32IesHYKQgsVThY6ZKQzl9v
+   A==;
+X-CSE-ConnectionGUID: fS44XJ7pSrujURzjjvUuCA==
+X-CSE-MsgGUID: XG0N0Ff+QraHlsIvQkEGeg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11372"; a="42863981"
 X-IronPort-AV: E=Sophos;i="6.14,244,1736841600"; 
-   d="scan'208";a="42863978"
+   d="scan'208";a="42863981"
 Received: from orviesa004.jf.intel.com ([10.64.159.144])
   by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2025 05:35:39 -0700
-X-CSE-ConnectionGUID: LUYBuQzpQniI/M/qmyUmVg==
-X-CSE-MsgGUID: 52DT2Zy6TWeajxcdpPHEcw==
+X-CSE-ConnectionGUID: ho18GmahS2qKYH+RQIXdpA==
+X-CSE-MsgGUID: jf5nvwVzRBuJ2Vqp3wPPYQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.14,244,1736841600"; 
-   d="scan'208";a="126005536"
+   d="scan'208";a="126005540"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa004.jf.intel.com with ESMTP; 13 Mar 2025 05:35:39 -0700
+  by orviesa004.jf.intel.com with ESMTP; 13 Mar 2025 05:35:40 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: kevin.tian@intel.com,
 	jgg@nvidia.com
@@ -51,9 +51,9 @@ Cc: joro@8bytes.org,
 	yi.l.liu@intel.com,
 	iommu@lists.linux.dev,
 	nicolinc@nvidia.com
-Subject: [PATCH v9 14/21] iommufd: Support pasid attach/replace
-Date: Thu, 13 Mar 2025 05:35:25 -0700
-Message-Id: <20250313123532.103522-15-yi.l.liu@intel.com>
+Subject: [PATCH v9 15/21] iommufd: Enforce PASID-compatible domain for RID
+Date: Thu, 13 Mar 2025 05:35:26 -0700
+Message-Id: <20250313123532.103522-16-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250313123532.103522-1-yi.l.liu@intel.com>
 References: <20250313123532.103522-1-yi.l.liu@intel.com>
@@ -65,278 +65,70 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This extends the below APIs to support PASID. Device drivers to manage pasid
-attach/replace/detach.
+Per the definition of IOMMU_HWPT_ALLOC_PASID, iommufd needs to enforce
+the RID to use PASID-compatible domain if PASID has been attached, and
+vice versa. The PASID path has already enforced it. This adds the
+enforcement in the RID path.
 
-    int iommufd_device_attach(struct iommufd_device *idev,
-			      ioasid_t pasid, u32 *pt_id);
-    int iommufd_device_replace(struct iommufd_device *idev,
-			       ioasid_t pasid, u32 *pt_id);
-    void iommufd_device_detach(struct iommufd_device *idev,
-			       ioasid_t pasid);
+This enforcement requires a lock across the RID and PASID attach path,
+the idev->igroup->lock is used as both the RID and the PASID path holds
+it.
 
-The pasid operations share underlying attach/replace/detach infrastructure
-with the device operations, but still have some different implications:
-
- - no reserved region per pasid otherwise SVA architecture is already
-   broken (CPU address space doesn't count device reserved regions);
-
- - accordingly no sw_msi trick;
-
-Cache coherency enforcement is still applied to pasid operations since
-it is about memory accesses post page table walking (no matter the walk
-is per RID or per PASID).
-
-Signed-off-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/device.c   | 57 ++++++++++++++++++++------------
- drivers/iommu/iommufd/selftest.c |  8 ++---
- drivers/vfio/iommufd.c           | 10 +++---
- include/linux/iommufd.h          |  9 +++--
- 4 files changed, 52 insertions(+), 32 deletions(-)
+v8 -> v9: iommufd_hwpt_pasid_compat() is moved to prior patch
+	  I didn't include r-b from Kevin and Jason as this patch has
+	  quite a few change compared with v8. It's mainly due to the
+	  introduction of pasid_attach for both RID and PASID path.
+---
+ drivers/iommu/iommufd/device.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index adeeb0145184..bceaee7376c2 100644
+index bceaee7376c2..5db6dc705d44 100644
 --- a/drivers/iommu/iommufd/device.c
 +++ b/drivers/iommu/iommufd/device.c
-@@ -527,9 +527,12 @@ static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 			return rc;
- 	}
- 
--	WARN_ON(pasid != IOMMU_NO_PASID);
--	rc = iommu_attach_group_handle(hwpt->domain, idev->igroup->group,
--				       &handle->handle);
-+	if (pasid == IOMMU_NO_PASID)
-+		rc = iommu_attach_group_handle(hwpt->domain, idev->igroup->group,
-+					       &handle->handle);
-+	else
-+		rc = iommu_attach_device_pasid(hwpt->domain, idev->dev, pasid,
-+					       &handle->handle);
- 	if (rc)
- 		goto out_disable_iopf;
- 
-@@ -546,9 +549,11 @@ static void iommufd_hwpt_detach_device(struct iommufd_hw_pagetable *hwpt,
- 				       ioasid_t pasid,
- 				       struct iommufd_attach_handle *handle)
+@@ -503,8 +503,29 @@ static int iommufd_hwpt_pasid_compat(struct iommufd_hw_pagetable *hwpt,
+ 				     struct iommufd_device *idev,
+ 				     ioasid_t pasid)
  {
--	WARN_ON(pasid != IOMMU_NO_PASID);
-+	if (pasid == IOMMU_NO_PASID)
-+		iommu_detach_group_handle(hwpt->domain, idev->igroup->group);
-+	else
-+		iommu_detach_device_pasid(hwpt->domain, idev->dev, pasid);
+-	if (pasid != IOMMU_NO_PASID && !hwpt->pasid_compat)
+-		return -EINVAL;
++	struct iommufd_group *igroup = idev->igroup;
++
++	lockdep_assert_held(&igroup->lock);
++
++	if (pasid == IOMMU_NO_PASID) {
++		unsigned long start = IOMMU_NO_PASID;
++
++		if (!hwpt->pasid_compat &&
++		    xa_find_after(&igroup->pasid_attach,
++				  &start, UINT_MAX, XA_PRESENT))
++			return -EINVAL;
++	}
++
++	if (pasid != IOMMU_NO_PASID) {
++		struct iommufd_attach_handle *handle;
++
++		handle = xa_load(&igroup->pasid_attach, IOMMU_NO_PASID);
++
++		if (!hwpt->pasid_compat ||
++		    (handle && handle->hwpt && !handle->hwpt->pasid_compat))
++			return -EINVAL;
++	}
++
+ 	return 0;
+ }
  
--	iommu_detach_group_handle(hwpt->domain, idev->igroup->group);
- 	if (hwpt->fault) {
- 		iommufd_auto_response_faults(hwpt, handle);
- 		iommufd_fault_iopf_disable(idev);
-@@ -563,8 +568,6 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
+@@ -515,8 +536,6 @@ static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
  {
  	int rc;
  
--	WARN_ON(pasid != IOMMU_NO_PASID);
+-	lockdep_assert_held(&idev->igroup->lock);
 -
  	rc = iommufd_hwpt_pasid_compat(hwpt, idev, pasid);
  	if (rc)
  		return rc;
-@@ -575,8 +578,12 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
- 			return rc;
- 	}
- 
--	rc = iommu_replace_group_handle(idev->igroup->group, hwpt->domain,
--					&handle->handle);
-+	if (pasid == IOMMU_NO_PASID)
-+		rc = iommu_replace_group_handle(idev->igroup->group,
-+						hwpt->domain, &handle->handle);
-+	else
-+		rc = iommu_replace_device_pasid(hwpt->domain, idev->dev,
-+						pasid, &handle->handle);
- 	if (rc)
- 		goto out_disable_iopf;
- 
-@@ -981,22 +988,25 @@ static int iommufd_device_change_pt(struct iommufd_device *idev,
- }
- 
- /**
-- * iommufd_device_attach - Connect a device to an iommu_domain
-+ * iommufd_device_attach - Connect a device/pasid to an iommu_domain
-  * @idev: device to attach
-+ * @pasid: pasid to attach
-  * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HWPT_PAGING
-  *         Output the IOMMUFD_OBJ_HWPT_PAGING ID
-  *
-- * This connects the device to an iommu_domain, either automatically or manually
-- * selected. Once this completes the device could do DMA.
-+ * This connects the device/pasid to an iommu_domain, either automatically
-+ * or manually selected. Once this completes the device could do DMA with
-+ * @pasid. @pasid is IOMMU_NO_PASID if this attach is for no pasid usage.
-  *
-  * The caller should return the resulting pt_id back to userspace.
-  * This function is undone by calling iommufd_device_detach().
-  */
--int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
-+int iommufd_device_attach(struct iommufd_device *idev, ioasid_t pasid,
-+			  u32 *pt_id)
- {
- 	int rc;
- 
--	rc = iommufd_device_change_pt(idev, IOMMU_NO_PASID, pt_id,
-+	rc = iommufd_device_change_pt(idev, pasid, pt_id,
- 				      &iommufd_device_do_attach);
- 	if (rc)
- 		return rc;
-@@ -1011,8 +1021,9 @@ int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
- EXPORT_SYMBOL_NS_GPL(iommufd_device_attach, "IOMMUFD");
- 
- /**
-- * iommufd_device_replace - Change the device's iommu_domain
-+ * iommufd_device_replace - Change the device/pasid's iommu_domain
-  * @idev: device to change
-+ * @pasid: pasid to change
-  * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HWPT_PAGING
-  *         Output the IOMMUFD_OBJ_HWPT_PAGING ID
-  *
-@@ -1023,27 +1034,31 @@ EXPORT_SYMBOL_NS_GPL(iommufd_device_attach, "IOMMUFD");
-  *
-  * If it fails then no change is made to the attachment. The iommu driver may
-  * implement this so there is no disruption in translation. This can only be
-- * called if iommufd_device_attach() has already succeeded.
-+ * called if iommufd_device_attach() has already succeeded. @pasid is
-+ * IOMMU_NO_PASID for no pasid usage.
-  */
--int iommufd_device_replace(struct iommufd_device *idev, u32 *pt_id)
-+int iommufd_device_replace(struct iommufd_device *idev, ioasid_t pasid,
-+			   u32 *pt_id)
- {
--	return iommufd_device_change_pt(idev, IOMMU_NO_PASID, pt_id,
-+	return iommufd_device_change_pt(idev, pasid, pt_id,
- 					&iommufd_device_do_replace);
- }
- EXPORT_SYMBOL_NS_GPL(iommufd_device_replace, "IOMMUFD");
- 
- /**
-- * iommufd_device_detach - Disconnect a device to an iommu_domain
-+ * iommufd_device_detach - Disconnect a device/device to an iommu_domain
-  * @idev: device to detach
-+ * @pasid: pasid to detach
-  *
-  * Undo iommufd_device_attach(). This disconnects the idev from the previously
-  * attached pt_id. The device returns back to a blocked DMA translation.
-+ * @pasid is IOMMU_NO_PASID for no pasid usage.
-  */
--void iommufd_device_detach(struct iommufd_device *idev)
-+void iommufd_device_detach(struct iommufd_device *idev, ioasid_t pasid)
- {
- 	struct iommufd_hw_pagetable *hwpt;
- 
--	hwpt = iommufd_hw_pagetable_detach(idev, IOMMU_NO_PASID);
-+	hwpt = iommufd_hw_pagetable_detach(idev, pasid);
- 	iommufd_hw_pagetable_put(idev->ictx, hwpt);
- 	refcount_dec(&idev->obj.users);
- }
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index d40deb0a4f06..84ad7b639fb3 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -921,7 +921,7 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
- 	}
- 	sobj->idev.idev = idev;
- 
--	rc = iommufd_device_attach(idev, &pt_id);
-+	rc = iommufd_device_attach(idev, IOMMU_NO_PASID, &pt_id);
- 	if (rc)
- 		goto out_unbind;
- 
-@@ -936,7 +936,7 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
- 	return 0;
- 
- out_detach:
--	iommufd_device_detach(idev);
-+	iommufd_device_detach(idev, IOMMU_NO_PASID);
- out_unbind:
- 	iommufd_device_unbind(idev);
- out_mdev:
-@@ -970,7 +970,7 @@ static int iommufd_test_mock_domain_replace(struct iommufd_ucmd *ucmd,
- 		goto out_dev_obj;
- 	}
- 
--	rc = iommufd_device_replace(sobj->idev.idev, &pt_id);
-+	rc = iommufd_device_replace(sobj->idev.idev, IOMMU_NO_PASID, &pt_id);
- 	if (rc)
- 		goto out_dev_obj;
- 
-@@ -1603,7 +1603,7 @@ void iommufd_selftest_destroy(struct iommufd_object *obj)
- 
- 	switch (sobj->type) {
- 	case TYPE_IDEV:
--		iommufd_device_detach(sobj->idev.idev);
-+		iommufd_device_detach(sobj->idev.idev, IOMMU_NO_PASID);
- 		iommufd_device_unbind(sobj->idev.idev);
- 		mock_dev_destroy(sobj->idev.mock_dev);
- 		break;
-diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
-index 516294fd901b..37e1efa2c7bf 100644
---- a/drivers/vfio/iommufd.c
-+++ b/drivers/vfio/iommufd.c
-@@ -128,7 +128,7 @@ void vfio_iommufd_physical_unbind(struct vfio_device *vdev)
- 	lockdep_assert_held(&vdev->dev_set->lock);
- 
- 	if (vdev->iommufd_attached) {
--		iommufd_device_detach(vdev->iommufd_device);
-+		iommufd_device_detach(vdev->iommufd_device, IOMMU_NO_PASID);
- 		vdev->iommufd_attached = false;
- 	}
- 	iommufd_device_unbind(vdev->iommufd_device);
-@@ -146,9 +146,11 @@ int vfio_iommufd_physical_attach_ioas(struct vfio_device *vdev, u32 *pt_id)
- 		return -EINVAL;
- 
- 	if (vdev->iommufd_attached)
--		rc = iommufd_device_replace(vdev->iommufd_device, pt_id);
-+		rc = iommufd_device_replace(vdev->iommufd_device,
-+					    IOMMU_NO_PASID, pt_id);
- 	else
--		rc = iommufd_device_attach(vdev->iommufd_device, pt_id);
-+		rc = iommufd_device_attach(vdev->iommufd_device,
-+					   IOMMU_NO_PASID, pt_id);
- 	if (rc)
- 		return rc;
- 	vdev->iommufd_attached = true;
-@@ -163,7 +165,7 @@ void vfio_iommufd_physical_detach_ioas(struct vfio_device *vdev)
- 	if (WARN_ON(!vdev->iommufd_device) || !vdev->iommufd_attached)
- 		return;
- 
--	iommufd_device_detach(vdev->iommufd_device);
-+	iommufd_device_detach(vdev->iommufd_device, IOMMU_NO_PASID);
- 	vdev->iommufd_attached = false;
- }
- EXPORT_SYMBOL_GPL(vfio_iommufd_physical_detach_ioas);
-diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-index 11110c749200..604241ed9cb2 100644
---- a/include/linux/iommufd.h
-+++ b/include/linux/iommufd.h
-@@ -8,6 +8,7 @@
- 
- #include <linux/err.h>
- #include <linux/errno.h>
-+#include <linux/iommu.h>
- #include <linux/refcount.h>
- #include <linux/types.h>
- #include <linux/xarray.h>
-@@ -52,9 +53,11 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
- 					   struct device *dev, u32 *id);
- void iommufd_device_unbind(struct iommufd_device *idev);
- 
--int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id);
--int iommufd_device_replace(struct iommufd_device *idev, u32 *pt_id);
--void iommufd_device_detach(struct iommufd_device *idev);
-+int iommufd_device_attach(struct iommufd_device *idev, ioasid_t pasid,
-+			  u32 *pt_id);
-+int iommufd_device_replace(struct iommufd_device *idev, ioasid_t pasid,
-+			   u32 *pt_id);
-+void iommufd_device_detach(struct iommufd_device *idev, ioasid_t pasid);
- 
- struct iommufd_ctx *iommufd_device_to_ictx(struct iommufd_device *idev);
- u32 iommufd_device_to_id(struct iommufd_device *idev);
 -- 
 2.34.1
 
