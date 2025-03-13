@@ -1,46 +1,46 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37EE1266B71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65AFC1E4A4
 	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 12:35:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741869350; cv=none; b=Xp5MOFT57afbixOSymt15S7AVz30o1maQGWsb95llIbesBFv3hgjiXzr1NlLbz6JNp4QQYYjhF78/JsvsU1sy9Z4RomCWNXfrcWDDV+eWHBbkpDrvZw85MZ7n8q4W3mzTn+0yRDsLeFh9u/iapXAlA8/jPC7z+2q1+/4K3m7DZI=
+	t=1741869350; cv=none; b=OHbi3Ro4Tu3XRc2WKKoX2Q7yxyD2nSEh8v9wPolaTMzH9ejyAXBSn3UTfdahuEO3GwNWPMzJcXDEyALA/AcjmwzrY0OD132c7I3i5AvWUsdwlN7bHVhviA48og5dvfoldkqKK6HnAQnYh3U7GbrmA4xFUn91341/qakut86YQ0U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1741869350; c=relaxed/simple;
-	bh=7B/VqXhvmPIjVnSGliCdA8yXM3HhosGkoFL4PtC3GQQ=;
+	bh=xtLk9HWdG7jgZDutSdkKdZxFmqV2jRXK/oJ1JuKa98Y=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=H5RuqiGPApyRmygRhK3jf3Y2gLoTn+7a7v8FiSFLIUu7sBQTOXyVoTLIH9c5BHIlql9SbD70wgNStd35LkIdA99QTwkExcHDYNdch1WGfa9oW4ZS+5el9tYzcgMUnMXBRx/eky7fDE8WkVJqV7I7TV6HGrxILX4FHuZMu3lANPE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RmAeZfOX; arc=none smtp.client-ip=192.198.163.17
+	 MIME-Version; b=bfO/OvKN7SUv9L2Q9rAELw2pHPmWrh7xdEc8tOvfcXiuvlZWMWECJPPlB/zhO6+12Z8HUm9KjnB/YHcYrrAlqPvm6LMozim8IADeI3S/QmTt1wIjPXGrLxO/crGavc5vVC2IfQtt8I0i7EvhSo80/fSB9F57znNmBLYeTDPGG30=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NwCyaX2r; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RmAeZfOX"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NwCyaX2r"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1741869348; x=1773405348;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7B/VqXhvmPIjVnSGliCdA8yXM3HhosGkoFL4PtC3GQQ=;
-  b=RmAeZfOX9dDbo54I3qPAgxQ+CAVXOZANEbESVgClrl18XH2rADTNmiej
-   k/RWc8Io3uLJwPcPdyoV2HNMKSWKe4jNWHbkts/zLISauXwLl6aP026+w
-   2OnjMdnmhx69BEETBPTq4urVQxnzAu+R8J73FAn4L5oF+sC5agicjqToy
-   Onj2apQQT1nPLc9iGBtIn8lPrVJ7bXVWbMZHCBgVow0ZRwwOxXrsEnIN3
-   CNTfY+I3BlN5JKBV4PQgMMq5EGesY10MxRSXE2BFimfwdF7viMGox/+O6
-   vGzidquCy4unq/1R6pWRLE6G8is2RjX4l3GkMjBKvBeJt6BGkGH0d2Q4T
-   w==;
-X-CSE-ConnectionGUID: LyHCSEyHQXuasAxqp+nWQQ==
-X-CSE-MsgGUID: OhAGGDelQtScwSCsmXtjYg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11372"; a="42863939"
+  bh=xtLk9HWdG7jgZDutSdkKdZxFmqV2jRXK/oJ1JuKa98Y=;
+  b=NwCyaX2r0hUOStQ8cy870dtTNOZu2KTn0m+wfXXwRETNw9mr0ywCUzSe
+   LyMFxoe0haTLg6bt6iK31FQz7CpyBgHYPgHSTScMroI5SC6mU/MNaTXBb
+   gO8xUAGfk566xmW60Y5vaSiVF6WKVJ91JTcVYF8P1OgQ1h0RozrI+gLv2
+   GPPTHo/aIxHT2a5Xawnw6qPJGu2EgH+Afj+5xzPxbfvmeG66hwXmarbbS
+   n/9cHwGUkURfnu9rsEOGsOh3RCi5ux/HtLN0QvDZwY0kEEadX6Hq6d9SK
+   +p5p6WrS/g4M109elHyQcjxg6uRKvq6oMb6fy0OjlR41AJBf8CieGN83E
+   Q==;
+X-CSE-ConnectionGUID: OVPeMSLzT6ahpjSgisRnGA==
+X-CSE-MsgGUID: VSio7VuxTPi32+8IBVDaZA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11372"; a="42863936"
 X-IronPort-AV: E=Sophos;i="6.14,244,1736841600"; 
-   d="scan'208";a="42863939"
+   d="scan'208";a="42863936"
 Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2025 05:35:35 -0700
-X-CSE-ConnectionGUID: YayeqfNdQwiM65hu4npILA==
-X-CSE-MsgGUID: b7yag+1QQSSP19o415JCCg==
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2025 05:35:34 -0700
+X-CSE-ConnectionGUID: esaZBH8BT+yfB0LFeohifA==
+X-CSE-MsgGUID: FrS9M2s7SPS2mZKU5j5bOw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.14,244,1736841600"; 
-   d="scan'208";a="126005489"
+   d="scan'208";a="126005486"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
   by orviesa004.jf.intel.com with ESMTP; 13 Mar 2025 05:35:35 -0700
 From: Yi Liu <yi.l.liu@intel.com>
@@ -51,9 +51,9 @@ Cc: joro@8bytes.org,
 	yi.l.liu@intel.com,
 	iommu@lists.linux.dev,
 	nicolinc@nvidia.com
-Subject: [PATCH v9 03/21] iommu: Introduce a replace API for device pasid
-Date: Thu, 13 Mar 2025 05:35:14 -0700
-Message-Id: <20250313123532.103522-4-yi.l.liu@intel.com>
+Subject: [PATCH v9 02/21] iommu: Wrap pasid_array entry creation and setting
+Date: Thu, 13 Mar 2025 05:35:13 -0700
+Message-Id: <20250313123532.103522-3-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250313123532.103522-1-yi.l.liu@intel.com>
 References: <20250313123532.103522-1-yi.l.liu@intel.com>
@@ -65,227 +65,125 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Provide a high-level API to allow replacements of one domain with another
-for specific pasid of a device. This is similar to
-iommu_replace_group_handle() and it is expected to be used only by IOMMUFD.
+The IOMMU core does not mandate that callers must always provide a new
+handle, allowing for the possibility of handle reuse. In the replace
+path, the existing handle can be reused. To facilitate this, the core
+must ensure that the pasid_array entry is made or updated under xa_lock
+to prevent race conditions with callers of iommu_attach_handle_get().
+Additionally, this operation should be performed only after the underlying
+IOMMU driver has successfully set the domain. This precaution is necessary
+to prevent forwarding PRIs to the new domain before it is fully prepared.
 
-Co-developed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+To streamline this process, the creation of the pasid_array entry and the
+__xa_store() operation are encapsulated into a helper, which is invoked at
+the end of the replace operation.
+
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
---
-v8 -> v9: Adapted this patch to use iommu_group_pasid_store() which checks
-	  the current pasid array entry and change the handle->domain under
-	  xa_lock().
---
- drivers/iommu/iommu-priv.h |   4 ++
- drivers/iommu/iommu.c      | 111 ++++++++++++++++++++++++++++++++++---
- 2 files changed, 107 insertions(+), 8 deletions(-)
+---
+ drivers/iommu/iommu.c | 32 +++++++++++++++++++-------------
+ 1 file changed, 19 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index b4508423e13b..2985f05d699f 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -43,4 +43,8 @@ void iommu_detach_group_handle(struct iommu_domain *domain,
- int iommu_replace_group_handle(struct iommu_group *group,
- 			       struct iommu_domain *new_domain,
- 			       struct iommu_attach_handle *handle);
-+
-+int iommu_replace_device_pasid(struct iommu_domain *domain,
-+			       struct device *dev, ioasid_t pasid,
-+			       struct iommu_attach_handle *handle);
- #endif /* __LINUX_IOMMU_PRIV_H */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 6a314122a9da..a828c96ad6c5 100644
+index 332ecb20c385..6a314122a9da 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -513,6 +513,13 @@ static void iommu_deinit_device(struct device *dev)
- 	dev_iommu_free(dev);
+@@ -2168,6 +2168,22 @@ static void iommu_pasid_array_entry_clear_handle(void *entry)
+ 		 xa_untag_pointer(entry))->domain = NULL;
  }
  
-+static inline struct iommu_domain *pasid_array_entry_to_domain(void *entry)
++/* Caller should have reserved memory for __xa_store() */
++static void iommu_group_pasid_store(struct iommu_group *group, ioasid_t pasid,
++				    struct iommu_domain *domain,
++				    struct iommu_attach_handle *handle)
 +{
-+	if (xa_pointer_tag(entry) == IOMMU_PASID_ARRAY_DOMAIN)
-+		return xa_untag_pointer(entry);
-+	return ((struct iommu_attach_handle *)xa_untag_pointer(entry))->domain;
++	void *entry;
++
++	lockdep_assert_held(&group->mutex);
++
++	xa_lock(&group->pasid_array);
++	entry = iommu_make_pasid_array_entry(domain, handle);
++	WARN_ON(xa_is_err(__xa_store(&group->pasid_array, pasid, entry,
++				     GFP_KERNEL)));
++	xa_unlock(&group->pasid_array);
 +}
 +
- DEFINE_MUTEX(iommu_probe_device_lock);
- 
- static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
-@@ -2170,7 +2177,7 @@ static void iommu_pasid_array_entry_clear_handle(void *entry)
- 
- /* Caller should have reserved memory for __xa_store() */
- static void iommu_group_pasid_store(struct iommu_group *group, ioasid_t pasid,
--				    struct iommu_domain *domain,
-+				    void *curr, struct iommu_domain *domain,
- 				    struct iommu_attach_handle *handle)
+ static int __iommu_attach_group(struct iommu_domain *domain,
+ 				struct iommu_group *group)
  {
- 	void *entry;
-@@ -2179,8 +2186,13 @@ static void iommu_group_pasid_store(struct iommu_group *group, ioasid_t pasid,
- 
- 	xa_lock(&group->pasid_array);
- 	entry = iommu_make_pasid_array_entry(domain, handle);
-+	if (curr == entry)
-+		goto out_unlock;
-+
- 	WARN_ON(xa_is_err(__xa_store(&group->pasid_array, pasid, entry,
- 				     GFP_KERNEL)));
-+
-+out_unlock:
- 	xa_unlock(&group->pasid_array);
- }
- 
-@@ -3334,14 +3346,15 @@ static void iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
- }
- 
- static int __iommu_set_group_pasid(struct iommu_domain *domain,
--				   struct iommu_group *group, ioasid_t pasid)
-+				   struct iommu_group *group, ioasid_t pasid,
-+				   struct iommu_domain *old)
- {
- 	struct group_device *device, *last_gdev;
+@@ -3369,7 +3385,6 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 	struct iommu_group *group = dev->iommu_group;
+ 	struct group_device *device;
+ 	const struct iommu_ops *ops;
+-	void *entry;
  	int ret;
  
- 	for_each_group_device(group, device) {
- 		ret = domain->ops->set_dev_pasid(domain, device->dev,
--						 pasid, NULL);
-+						 pasid, old);
- 		if (ret)
- 			goto err_revert;
+ 	if (!group)
+@@ -3393,8 +3408,6 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 		}
  	}
-@@ -3353,7 +3366,15 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
- 	for_each_group_device(group, device) {
- 		if (device == last_gdev)
- 			break;
--		iommu_remove_dev_pasid(device->dev, pasid, domain);
-+		/*
-+		 * If no old domain, undo the succeeded devices/pasid.
-+		 * Otherwise, rollback the succeeded devices/pasid to the old
-+		 * domain. And it is a driver bug to fail attaching with a
-+		 * previously good domain.
-+		 */
-+		if (!old || WARN_ON(old->ops->set_dev_pasid(old, device->dev,
-+							    pasid, domain)))
-+			iommu_remove_dev_pasid(device->dev, pasid, domain);
- 	}
- 	return ret;
- }
-@@ -3416,7 +3437,7 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 
+-	entry = iommu_make_pasid_array_entry(domain, handle);
+-
+ 	/*
+ 	 * Entry present is a failure case. Use xa_insert() instead of
+ 	 * xa_reserve().
+@@ -3415,8 +3428,7 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 	 * operation succeeds as we cannot tolerate PRIs becoming concurrently
+ 	 * queued and then failing attach.
+ 	 */
+-	WARN_ON(xa_is_err(xa_store(&group->pasid_array,
+-				   pasid, entry, GFP_KERNEL)));
++	iommu_group_pasid_store(group, pasid, domain, handle);
+ 
+ out_unlock:
+ 	mutex_unlock(&group->mutex);
+@@ -3527,14 +3539,12 @@ int iommu_attach_group_handle(struct iommu_domain *domain,
+ 			      struct iommu_group *group,
+ 			      struct iommu_attach_handle *handle)
+ {
+-	void *entry;
+ 	int ret;
+ 
+ 	if (!handle)
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&group->mutex);
+-	entry = iommu_make_pasid_array_entry(domain, handle);
+ 	ret = xa_insert(&group->pasid_array,
+ 			IOMMU_NO_PASID, XA_ZERO_ENTRY, GFP_KERNEL);
  	if (ret)
- 		goto out_unlock;
- 
--	ret = __iommu_set_group_pasid(domain, group, pasid);
-+	ret = __iommu_set_group_pasid(domain, group, pasid, NULL);
- 	if (ret) {
- 		xa_release(&group->pasid_array, pasid);
- 		goto out_unlock;
-@@ -3428,7 +3449,7 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+@@ -3552,8 +3562,7 @@ int iommu_attach_group_handle(struct iommu_domain *domain,
  	 * operation succeeds as we cannot tolerate PRIs becoming concurrently
  	 * queued and then failing attach.
  	 */
--	iommu_group_pasid_store(group, pasid, domain, handle);
-+	iommu_group_pasid_store(group, pasid, NULL, domain, handle);
+-	WARN_ON(xa_is_err(xa_store(&group->pasid_array,
+-				   IOMMU_NO_PASID, entry, GFP_KERNEL)));
++	iommu_group_pasid_store(group, IOMMU_NO_PASID, domain, handle);
  
  out_unlock:
  	mutex_unlock(&group->mutex);
-@@ -3436,6 +3457,79 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
+@@ -3600,14 +3609,12 @@ int iommu_replace_group_handle(struct iommu_group *group,
+ 			       struct iommu_domain *new_domain,
+ 			       struct iommu_attach_handle *handle)
+ {
+-	void *curr, *entry;
+ 	int ret;
  
-+/**
-+ * iommu_replace_device_pasid - Replace the domain that a pasid
-+ *                              is attached to
-+ * @domain: the new iommu domain
-+ * @dev: the attached device.
-+ * @pasid: the pasid of the device.
-+ * @handle: the attach handle.
-+ *
-+ * This API allows the pasid to switch domains. The @pasid should have been
-+ * attached. Otherwise, this fails.
-+ * The pasid will keep the old configuration if replacement failed.
-+ * Return 0 on success, or an error.
-+ */
-+int iommu_replace_device_pasid(struct iommu_domain *domain,
-+			       struct device *dev, ioasid_t pasid,
-+			       struct iommu_attach_handle *handle)
-+{
-+	/* Caller must be a probed driver on dev */
-+	struct iommu_group *group = dev->iommu_group;
-+	struct iommu_domain *curr_domain;
-+	void *curr;
-+	int ret;
-+
-+	if (!group)
-+		return -ENODEV;
-+
-+	if (!domain->ops->set_dev_pasid)
-+		return -EOPNOTSUPP;
-+
-+	if (dev_iommu_ops(dev) != domain->owner ||
-+	    pasid == IOMMU_NO_PASID || !handle)
-+		return -EINVAL;
-+
-+	mutex_lock(&group->mutex);
-+	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL,
-+			  XA_ZERO_ENTRY, GFP_KERNEL);
-+	if (xa_is_err(curr)) {
-+		ret = xa_err(curr);
-+		goto out_unlock;
-+	}
-+
-+	/*
-+	 * No domain (with or without handle) attached, hence not
-+	 * a replace case.
-+	 */
-+	if (!curr) {
-+		xa_release(&group->pasid_array, pasid);
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
-+	curr_domain = pasid_array_entry_to_domain(curr);
-+	ret = 0;
-+
-+	if (curr_domain != domain) {
-+		ret = __iommu_set_group_pasid(domain, group,
-+					      pasid, curr_domain);
-+		if (ret)
-+			goto out_unlock;
-+	}
-+
-+	/*
-+	 * The above xa_cmpxchg() reserved the memory, and the
-+	 * group->mutex is held, this cannot fail.
-+	 */
-+	iommu_group_pasid_store(group, pasid, curr, domain, handle);
-+
-+out_unlock:
-+	mutex_unlock(&group->mutex);
-+	return ret;
-+}
-+EXPORT_SYMBOL_NS_GPL(iommu_replace_device_pasid, "IOMMUFD_INTERNAL");
-+
- /*
-  * iommu_detach_device_pasid() - Detach the domain from pasid of device
-  * @domain: the iommu domain.
-@@ -3562,7 +3656,7 @@ int iommu_attach_group_handle(struct iommu_domain *domain,
- 	 * operation succeeds as we cannot tolerate PRIs becoming concurrently
- 	 * queued and then failing attach.
- 	 */
--	iommu_group_pasid_store(group, IOMMU_NO_PASID, domain, handle);
-+	iommu_group_pasid_store(group, IOMMU_NO_PASID, NULL, domain, handle);
+ 	if (!new_domain || !handle)
+ 		return -EINVAL;
  
- out_unlock:
- 	mutex_unlock(&group->mutex);
-@@ -3623,7 +3717,8 @@ int iommu_replace_group_handle(struct iommu_group *group,
+ 	mutex_lock(&group->mutex);
+-	entry = iommu_make_pasid_array_entry(new_domain, handle);
+ 	ret = xa_reserve(&group->pasid_array, IOMMU_NO_PASID, GFP_KERNEL);
+ 	if (ret)
+ 		goto err_unlock;
+@@ -3616,8 +3623,7 @@ int iommu_replace_group_handle(struct iommu_group *group,
  	if (ret)
  		goto err_release;
  
--	iommu_group_pasid_store(group, IOMMU_NO_PASID, new_domain, handle);
-+	iommu_group_pasid_store(group, IOMMU_NO_PASID, NULL,
-+				new_domain, handle);
+-	curr = xa_store(&group->pasid_array, IOMMU_NO_PASID, entry, GFP_KERNEL);
+-	WARN_ON(xa_is_err(curr));
++	iommu_group_pasid_store(group, IOMMU_NO_PASID, new_domain, handle);
  
  	mutex_unlock(&group->mutex);
  
