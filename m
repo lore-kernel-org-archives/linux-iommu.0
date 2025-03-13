@@ -1,128 +1,65 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15C10265CCA
-	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 11:09:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4079C1D7984
+	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 11:15:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741864185; cv=none; b=ELIF+h+bIeVNNgMkWCdQUL9beEnaxrjPnCARMUc0AOAaVj0/IdZYIXlzYmQteUMB2o6r0Kkf8klkjjW1nJqTl8LhwOXPg99dF7pEHvylBFoo7wpLqog7oo57y9sqpkPHh7UUjJZemMoHw9HdB1WjsmBJySvAwJXGPsE24dgcaL4=
+	t=1741864556; cv=none; b=jiPr888yt+qR5x06SIMU/5tNYzH4ITqfY7KR3W13A151G7mFnzeRZJrlSpE4t8swmTJFrWDEKgn2ukdbFibMCD5skytOfVw5EcSW+2yS4fm867FTt4FWxafZMs9G3j8xMuxrdAoQJmDp29i+UYlwU+Rj57XwvE/NBIe2BVA76mY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741864185; c=relaxed/simple;
-	bh=f4fz3Nm5tn0/pWMG6A0J0GUka5+BD9q8elvMNaTG+TQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cDlrx+6MBxA+nOU5QN7eK1+dEpeDmIX0rCHMOXwgdAv6PA1sH+D9etwaT/vWhucmyHP0Vvcz6chr5IUn8dFC2kojkH0ydU/7lVKj5vH0yUt3K7A8UyQeUxNJLI2hCAGJhvlXWw9YkdzzhZlEfb9heb7lBknaWd+eLSBtSu0q1g0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9AF5D1516;
-	Thu, 13 Mar 2025 04:09:51 -0700 (PDT)
-Received: from [10.57.40.246] (unknown [10.57.40.246])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9C2503F673;
-	Thu, 13 Mar 2025 04:09:39 -0700 (PDT)
-Message-ID: <73e4c6fc-bc41-452b-8af5-9653436d8ba7@arm.com>
-Date: Thu, 13 Mar 2025 11:09:37 +0000
+	s=arc-20240116; t=1741864556; c=relaxed/simple;
+	bh=FzTrLc2om9+1l5jtnWbTspGkiMVBW06XTiqacFk1Xxk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GnVjekInxE5/vCbsAg+TN1MuUCKN//3HmMRzczOwlw9QJH3O8hbwbYXk8kVG+OukYaUQD0LwQHlfG9lR7XiPSsNTeZvT4jnGRCbbOKb9MGHkxCq2eJfCHBzWEiP6s2LF9IvZxwI6csPhkCFhS2QKf/TmGlE3sW3WpoOXbxSthJI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=VSBbzOTk; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="VSBbzOTk"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id C7DDE458E7;
+	Thu, 13 Mar 2025 12:15:52 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1741864552;
+	bh=FzTrLc2om9+1l5jtnWbTspGkiMVBW06XTiqacFk1Xxk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VSBbzOTkAExwQaMqe8V2djsDFie6qGO4SpzAhwxEfyfrXfVjZiiOlq5x9D5XNkszZ
+	 dUki4rWoeB47V8XavnKRXQm1oH9ufWAfBunkYrk/vHTweEgECWVKezCIxLtYhOTS5b
+	 kxWpp3wOPRT2CpidXpMJ8QYA3Al5sBzIlQ5/VTcf2HTmeJXWMraDwVZAog4TKtdHVk
+	 UjMpAcBbnxqlAcF+fX+rS3+MVWJI5c+1rzpF03oKA2NYe1ZOFbrUZq4WFcrbhGHldZ
+	 4VUzc6bEKopt5eC6IRNUy1Wl9ysw3ilZMRfVOnuws+YJUv6AunVCPp/8Gl6zR2q0ok
+	 bA7kHFMie19NA==
+Date: Thu, 13 Mar 2025 12:15:51 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Sairaj Kodilkar <sarunkod@amd.com>
+Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com, will@kernel.org,
+	robin.murphy@arm.com, vasant.hegde@amd.com
+Subject: Re: [PATCH 0/4] iommu/amd: Enable support for up to 2K interrupts per
+Message-ID: <Z9K-ZwK1JzoJ1lZ4@8bytes.org>
+References: <20250307095822.2274-1-sarunkod@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: New "something fishy here" warning fires
-To: Baolu Lu <baolu.lu@linux.intel.com>,
- Heiner Kallweit <hkallweit1@gmail.com>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-acpi@vger.kernel.org, iommu@lists.linux.dev
-References: <3046c6a2-72a0-412e-a865-48dc129be0df@gmail.com>
- <09bc17bd-4d25-4afd-8f6c-56707ea9bc92@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <09bc17bd-4d25-4afd-8f6c-56707ea9bc92@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250307095822.2274-1-sarunkod@amd.com>
 
-On 2025-03-13 4:38 am, Baolu Lu wrote:
-> On 3/13/25 03:34, Heiner Kallweit wrote:
->> Since "iommu: Get DT/ACPI parsing into the proper probe path" I get 
->> the following
->> on a N100-based mini pc. The warning pops up 4 times, for:
->>
->> PNP0C14:00
->> PNP0C14:01
->> PNP0C14:00
->> PNP0C14:01
->>
->> Any other info you'd be interested in?
->>
->> [  +0.000139] Unpacking initramfs...
->> [  +0.000690] ------------[ cut here ]------------
->> [  +0.000028] acpi-wmi PNP0C14:00: late IOMMU probe at driver bind, 
->> something fishy here!
->> [  +0.000041] WARNING: CPU: 1 PID: 1 at drivers/iommu/iommu.c:449 
->> __iommu_probe_device+0x12b/0x530
->> [  +0.000034] Modules linked in:
->> [  +0.000024] CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0- 
->> rc6-next-20250312+ #2
->> [  +0.000029] Hardware name: Default string Default string/Default 
->> string, BIOS ADLN.M6.SODIMM.ZB.CY.015 08/08/2023
->> [  +0.000032] RIP: 0010:__iommu_probe_device+0x12b/0x530
->> [  +0.000019] Code: 68 00 74 28 4c 8b 73 50 4d 85 f6 75 03 4c 8b 33 48 
->> 89 df e8 d7 ec 00 00 4c 89 f2 48 c7 c7 b8 91 7b 9e 48 89 c6 e8 f5 3e 
->> 96 ff >
->> [  +0.000055] RSP: 0000:ffffb031c006fc98 EFLAGS: 00010282
->> [  +0.000021] RAX: 0000000000000000 RBX: ffff9469416c5010 RCX: 
->> 0000000000000000
->> [  +0.000023] RDX: 0000000000000002 RSI: 0000000000000003 RDI: 
->> 00000000ffffffff
->> [  +0.000023] RBP: ffffb031c006fcd8 R08: 0000000000000000 R09: 
->> ffffb031c006fae8
->> [  +0.000023] R10: ffffffff9eb1ea68 R11: 0000000000000003 R12: 
->> ffffffff9e485280
->> [  +0.000023] R13: ffffb031c006fd70 R14: ffff946940bb8ec0 R15: 
->> 0000000000000000
->> [  +0.000023] FS:  0000000000000000(0000) GS:ffff946b18bec000(0000) 
->> knlGS:0000000000000000
->> [  +0.000037] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [  +0.000020] CR2: 0000000000000000 CR3: 000000016c650001 CR4: 
->> 0000000000770ef0
->> [  +0.000023] PKRU: 55555554
->> [  +0.000012] Call Trace:
->> [  +0.000010]  <TASK>
->> [  +0.000011]  ? show_regs.part.0+0x1d/0x30
->> [  +0.000019]  ? show_regs.cold+0x8/0xd
->> [  +0.000016]  ? __iommu_probe_device+0x12b/0x530
->> [  +0.000017]  ? __warn.cold+0xc2/0x15e
->> [  +0.000018]  ? __iommu_probe_device+0x12b/0x530
->> [  +0.000017]  ? report_bug+0xe3/0x170
->> [  +0.000016]  ? console_unlock+0x7d/0x110
->> [  +0.000018]  ? __iommu_probe_device+0x12b/0x530
->> [  +0.000016]  ? __iommu_probe_device+0x12d/0x530
->> [  +0.000017]  ? handle_bug+0x116/0x170
->> [  +0.000018]  ? exc_invalid_op+0x18/0x70
->> [  +0.000017]  ? asm_exc_invalid_op+0x1b/0x20
->> [  +0.000022]  ? __iommu_probe_device+0x12b/0x530
->> [  +0.000018]  ? __iommu_probe_device+0x12b/0x530
->> [  +0.000019]  ? __pfx_probe_iommu_group+0x10/0x10
->> [  +0.000017]  probe_iommu_group+0x26/0x50
->> [  +0.000016]  bus_for_each_dev+0x79/0xd0
->> [  +0.000020]  iommu_device_register+0xbe/0x230
->> [  +0.000021]  intel_iommu_init+0xd76/0xf40
->> [  +0.000016]  ? _raw_spin_unlock_irqrestore+0x55/0x80
->> [  +0.000022]  ? __this_cpu_preempt_check+0x13/0x20
->> [  +0.000018]  ? lockdep_hardirqs_on+0x7d/0x110
->> [  +0.000018]  ? trace_hardirqs_on+0x5b/0xd0
->> [  +0.000017]  ? _raw_spin_unlock_irqrestore+0x3c/0x80
->> [  +0.000020]  ? __pfx_pci_iommu_init+0x10/0x10
->> [  +0.000021]  pci_iommu_init+0xd/0x40
->>
+On Fri, Mar 07, 2025 at 03:28:18PM +0530, Sairaj Kodilkar wrote:
+> Kishon Vijay Abraham I (1):
+>   iommu/amd: Enable support for up to 2K interrupts per function
 > 
-> The fix is here.
+> Sairaj Kodilkar (3):
+>   iommu/amd: Introduce generic function to set multibit feature value
+>   iommu/amd: Replace slab cache allocator with page allocator
+>   iommu/amd: Rename DTE_INTTABLEN* and MAX_IRQS_PER_TABLE macro
 > 
-> https://lore.kernel.org/linux- 
-> iommu/72a4853e7ef36e7c1c4ca171ed4ed8e1a463a61a.1741791691.git.robin.murphy@arm.com/
+>  drivers/iommu/amd/amd_iommu_types.h | 27 ++++++-----
+>  drivers/iommu/amd/init.c            | 65 +++++++++++---------------
+>  drivers/iommu/amd/iommu.c           | 72 +++++++++++++++++++++--------
+>  3 files changed, 94 insertions(+), 70 deletions(-)
 
-Indeed, and I see Joerg has updated the iommu/next branch already, so 
-hopefully today's -next will be OK again. Sorry for the false positives!
-
-Thanks,
-Robin.
+Applied, thanks.
