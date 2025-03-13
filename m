@@ -1,160 +1,144 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E66B2AC17
-	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 17:31:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4590514386D;
+	Thu, 13 Mar 2025 17:34:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741887080; cv=none; b=RvUzVTIMtEbQrY9cJyjKgD8L7nOqai6m8Ehe2RJuYAz+wCBh573q98jxwwSVIegwupLv7rVJz+vAnWL7NCcaDxNk8m5ZrKL5kUyiuskPhvSIGMSqJksgIvL23AGMZH+uXFKvm8GQFnIXFdoVHOeoEyCtdOyhP8w5ELNNiHuxfsg=
+	t=1741887290; cv=none; b=GJErdFHPvtD4HSGVNIDl0olPMVlTvVnspaz/MnC25+L2fASURAGn9+Jamq9viDw82U+Xr05FxjuYMYmqyO7SSssL7vSyU1fDsRkYU4J4wz5c5hyiPJU5WqQ++HapcDStNkWWH2oKFaxpDAaG0vLVpA5k2hRHD4RVWZsXdmXNrHg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741887080; c=relaxed/simple;
-	bh=0DAipLEJJlhBYylnF8GJ7cIrLYFdroQgBl55hy3VyRQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Y0dD1S8WEX1FCZ2O9zNNz+57bfcEB6SJnn1qZ2eJoVAYc4gqObD0jW5xm7W17HdAACxYiby/nzMkza8jQuYi4PEbRP7QpoLJ2W6w2IzozaxJCcRo/3x7WidgUM9YK6TOHj7ovZgP2KU+WtWqk1rbJQBS18QCBIX2Yyeif5nCh+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 65DEE1A2D;
-	Thu, 13 Mar 2025 10:31:28 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1F9283F673;
-	Thu, 13 Mar 2025 10:31:17 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Cc: iommu@lists.linux.dev,
-	linux-rockchip@lists.infradead.org,
+	s=arc-20240116; t=1741887290; c=relaxed/simple;
+	bh=OoAvfSAO5M3PHg1qgT00ibdT5WETqpo45KH3DuoIfjE=;
+	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jwQrJOBkl4kLo9sPaxrhgdY/8Dbo39d7uSvcXl5HwHIXt6fSF7pTIOBLNfduuaK/29XckIuN9uDHW//8/UyacH6YaMDqOW67rUIP2DGixdwC4ECHzTs99koMhjoP5ynO4JiPcSmK3Fu4mH3tv5yHRfgKbqnYXrrvIxybWr9+J9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VVQyU8mB; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VVQyU8mB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7B6BC4CEEA;
+	Thu, 13 Mar 2025 17:34:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741887289;
+	bh=OoAvfSAO5M3PHg1qgT00ibdT5WETqpo45KH3DuoIfjE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=VVQyU8mBAHNp06f4PUy8OQ441a3jzB0w7cdr7DECxbtEliMh01cQUWRWvFYU3Jez5
+	 RkdnI1LCoaG7yppGd9vje1fEdUoHzs3A5HH0zBqE+yFMcbOswaG7PGNAVDbtVbGQuG
+	 rHqqNwL2pbQFRBc4kq3PgxHk6Gd6btpLtWNO3AMV9bD1DfPOaerkp3DgRE1PuAxdTW
+	 18+vvZB5PhAsHJrLYHTMEzzeCEOV2/D+wJby5pXwes6nzXzoOmetd5UFctZLD4jsNu
+	 0SiX1C1WDorGyJZy5/32/g2HlM+ZisCfcYi5uy3ilNb6Go6TvGn3h39aDHO31lyI43
+	 8eQsG2/A/ZsFw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <maz@kernel.org>)
+	id 1tsmSE-00DJ4E-TQ;
+	Thu, 13 Mar 2025 17:34:47 +0000
+Date: Thu, 13 Mar 2025 17:34:46 +0000
+Message-ID: <86ikocomvd.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: =?UTF-8?B?TWlrb8WCYWo=?= Lenczewski <miko.lenczewski@arm.com>
+Cc: ryan.roberts@arm.com,
+	suzuki.poulose@arm.com,
+	yang@os.amperecomputing.com,
+	corbet@lwn.net,
+	catalin.marinas@arm.com,
+	will@kernel.org,
+	jean-philippe@linaro.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	akpm@linux-foundation.org,
+	mark.rutland@arm.com,
+	joey.gouly@arm.com,
+	james.morse@arm.com,
+	broonie@kernel.org,
+	anshuman.khandual@arm.com,
+	oliver.upton@linux.dev,
+	ioworker0@gmail.com,
+	baohua@kernel.org,
+	david@redhat.com,
+	jgg@ziepe.ca,
+	shameerali.kolothum.thodi@huawei.com,
+	nicolinc@nvidia.com,
+	mshavit@google.com,
+	jsnitsel@redhat.com,
+	smostafa@google.com,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
-	heiko@sntech.de
-Subject: [PATCH 3/3] iommu/rockchip: Retire global dma_dev workaround
-Date: Thu, 13 Mar 2025 17:31:06 +0000
-Message-Id: <25dc948a7d35c8142c5719ac22bc523f8524d006.1741886382.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
-In-Reply-To: <cover.1741886382.git.robin.murphy@arm.com>
-References: <cover.1741886382.git.robin.murphy@arm.com>
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v3 1/3] arm64: Add BBM Level 2 cpu feature
+In-Reply-To: <20250313104111.24196-3-miko.lenczewski@arm.com>
+References: <20250313104111.24196-2-miko.lenczewski@arm.com>
+	<20250313104111.24196-3-miko.lenczewski@arm.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/29.4
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: miko.lenczewski@arm.com, ryan.roberts@arm.com, suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net, catalin.marinas@arm.com, will@kernel.org, jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org, mark.rutland@arm.com, joey.gouly@arm.com, james.morse@arm.com, broonie@kernel.org, anshuman.khandual@arm.com, oliver.upton@linux.dev, ioworker0@gmail.com, baohua@kernel.org, david@redhat.com, jgg@ziepe.ca, shameerali.kolothum.thodi@huawei.com, nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-The global dma_dev trick was mostly because the old domain_alloc op
-provided no context, so no way to know which IOMMU was to own the
-pagetable, or if a suitable one even existed at all. In the new
-multi-instance world with domain_alloc_paging this is no longer a
-concern - now we know that the given device must be associated with a
-valid IOMMU instance which provided the op to call in the first place,
-and therefore that instance can and should be the pagetable owner. To
-avoid worrying about the lifetime and stability of the rk_domain->iommus
-list, and keep the lookups simple and efficient, we'll still stash a
-dma_dev pointer, but now it's accurately per-domain.
+On Thu, 13 Mar 2025 10:41:10 +0000,
+Miko=C5=82aj Lenczewski <miko.lenczewski@arm.com> wrote:
+>=20
+> diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel/pi=
+/idreg-override.c
+> index c6b185b885f7..9728faa10390 100644
+> --- a/arch/arm64/kernel/pi/idreg-override.c
+> +++ b/arch/arm64/kernel/pi/idreg-override.c
+> @@ -209,6 +209,7 @@ static const struct ftr_set_desc sw_features __prel64=
+_initconst =3D {
+>  		FIELD("nokaslr", ARM64_SW_FEATURE_OVERRIDE_NOKASLR, NULL),
+>  		FIELD("hvhe", ARM64_SW_FEATURE_OVERRIDE_HVHE, hvhe_filter),
+>  		FIELD("rodataoff", ARM64_SW_FEATURE_OVERRIDE_RODATA_OFF, NULL),
+> +		FIELD("nobbml2", ARM64_SW_FEATURE_OVERRIDE_NOBBML2, NULL),
+>  		{}
+>  	},
+>  };
+> @@ -246,6 +247,7 @@ static const struct {
+>  	{ "rodata=3Doff",			"arm64_sw.rodataoff=3D1" },
+>  	{ "arm64.nolva",		"id_aa64mmfr2.varange=3D0" },
+>  	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=3D1" },
+> +	{ "arm64.nobbml2",		"arm64_sw.nobbml2=3D1" },
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/rockchip-iommu.c | 34 +++++++++++++---------------------
- 1 file changed, 13 insertions(+), 21 deletions(-)
+Why is that a SW feature? This looks very much like a HW feature to
+me, and you should instead mask out ID_AA64MMFR2_EL1.BBM, and be done
+with it. Something like:
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 9d2120a9232a..af4cc91b2bbf 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -88,6 +88,7 @@ struct rk_iommu_domain {
- 	dma_addr_t dt_dma;
- 	spinlock_t iommus_lock; /* lock for iommus list */
- 	spinlock_t dt_lock; /* lock for modifying page directory table */
-+	struct device *dma_dev;
- 
- 	struct iommu_domain domain;
+diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel/pi/i=
+dreg-override.c
+index c6b185b885f70..803a0c99f7b46 100644
+--- a/arch/arm64/kernel/pi/idreg-override.c
++++ b/arch/arm64/kernel/pi/idreg-override.c
+@@ -102,6 +102,7 @@ static const struct ftr_set_desc mmfr2 __prel64_initcon=
+st =3D {
+ 	.override	=3D &id_aa64mmfr2_override,
+ 	.fields		=3D {
+ 		FIELD("varange", ID_AA64MMFR2_EL1_VARange_SHIFT, mmfr2_varange_filter),
++		FIELD("bbm", ID_AA64MMFR2_EL1_BBM_SHIFT, NULL),
+ 		{}
+ 	},
  };
-@@ -123,7 +124,6 @@ struct rk_iommudata {
- 	struct rk_iommu *iommu;
+@@ -246,6 +247,7 @@ static const struct {
+ 	{ "rodata=3Doff",			"arm64_sw.rodataoff=3D1" },
+ 	{ "arm64.nolva",		"id_aa64mmfr2.varange=3D0" },
+ 	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=3D1" },
++	{ "arm64.nobbml2",		"id_aa64mmfr2.bbm=3D0" },
  };
- 
--static struct device *dma_dev;
- static const struct rk_iommu_ops *rk_ops;
- static struct iommu_domain rk_identity_domain;
- 
-@@ -132,7 +132,7 @@ static inline void rk_table_flush(struct rk_iommu_domain *dom, dma_addr_t dma,
- {
- 	size_t size = count * sizeof(u32); /* count of u32 entry */
- 
--	dma_sync_single_for_device(dma_dev, dma, size, DMA_TO_DEVICE);
-+	dma_sync_single_for_device(dom->dma_dev, dma, size, DMA_TO_DEVICE);
- }
- 
- static struct rk_iommu_domain *to_rk_domain(struct iommu_domain *dom)
-@@ -734,9 +734,9 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
- 	if (!page_table)
- 		return ERR_PTR(-ENOMEM);
- 
--	pt_dma = dma_map_single(dma_dev, page_table, SPAGE_SIZE, DMA_TO_DEVICE);
--	if (dma_mapping_error(dma_dev, pt_dma)) {
--		dev_err(dma_dev, "DMA mapping error while allocating page table\n");
-+	pt_dma = dma_map_single(rk_domain->dma_dev, page_table, SPAGE_SIZE, DMA_TO_DEVICE);
-+	if (dma_mapping_error(rk_domain->dma_dev, pt_dma)) {
-+		dev_err(rk_domain->dma_dev, "DMA mapping error while allocating page table\n");
- 		iommu_free_page(page_table);
- 		return ERR_PTR(-ENOMEM);
- 	}
-@@ -1051,9 +1051,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
- static struct iommu_domain *rk_iommu_domain_alloc_paging(struct device *dev)
- {
- 	struct rk_iommu_domain *rk_domain;
--
--	if (!dma_dev)
--		return NULL;
-+	struct rk_iommu *iommu;
- 
- 	rk_domain = kzalloc(sizeof(*rk_domain), GFP_KERNEL);
- 	if (!rk_domain)
-@@ -1068,10 +1066,12 @@ static struct iommu_domain *rk_iommu_domain_alloc_paging(struct device *dev)
- 	if (!rk_domain->dt)
- 		goto err_free_domain;
- 
--	rk_domain->dt_dma = dma_map_single(dma_dev, rk_domain->dt,
-+	iommu = rk_iommu_from_dev(dev);
-+	rk_domain->dma_dev = iommu->dev;
-+	rk_domain->dt_dma = dma_map_single(rk_domain->dma_dev, rk_domain->dt,
- 					   SPAGE_SIZE, DMA_TO_DEVICE);
--	if (dma_mapping_error(dma_dev, rk_domain->dt_dma)) {
--		dev_err(dma_dev, "DMA map error for DT\n");
-+	if (dma_mapping_error(rk_domain->dma_dev, rk_domain->dt_dma)) {
-+		dev_err(rk_domain->dma_dev, "DMA map error for DT\n");
- 		goto err_free_dt;
- 	}
- 
-@@ -1105,13 +1105,13 @@ static void rk_iommu_domain_free(struct iommu_domain *domain)
- 		if (rk_dte_is_pt_valid(dte)) {
- 			phys_addr_t pt_phys = rk_ops->pt_address(dte);
- 			u32 *page_table = phys_to_virt(pt_phys);
--			dma_unmap_single(dma_dev, pt_phys,
-+			dma_unmap_single(rk_domain->dma_dev, pt_phys,
- 					 SPAGE_SIZE, DMA_TO_DEVICE);
- 			iommu_free_page(page_table);
- 		}
- 	}
- 
--	dma_unmap_single(dma_dev, rk_domain->dt_dma,
-+	dma_unmap_single(rk_domain->dma_dev, rk_domain->dt_dma,
- 			 SPAGE_SIZE, DMA_TO_DEVICE);
- 	iommu_free_page(rk_domain->dt);
- 
-@@ -1256,14 +1256,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
--	/*
--	 * Use the first registered IOMMU device for domain to use with DMA
--	 * API, since a domain might not physically correspond to a single
--	 * IOMMU device..
--	 */
--	if (!dma_dev)
--		dma_dev = &pdev->dev;
--
- 	pm_runtime_enable(dev);
- 
- 	for (i = 0; i < iommu->num_irq; i++) {
--- 
-2.39.2.101.g768bb238c484.dirty
+=20
+ static int __init parse_hexdigit(const char *p, u64 *v)
 
+
+Thanks,
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
