@@ -1,144 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4590514386D;
-	Thu, 13 Mar 2025 17:34:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D349D12F399
+	for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 18:08:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741887290; cv=none; b=GJErdFHPvtD4HSGVNIDl0olPMVlTvVnspaz/MnC25+L2fASURAGn9+Jamq9viDw82U+Xr05FxjuYMYmqyO7SSssL7vSyU1fDsRkYU4J4wz5c5hyiPJU5WqQ++HapcDStNkWWH2oKFaxpDAaG0vLVpA5k2hRHD4RVWZsXdmXNrHg=
+	t=1741889323; cv=none; b=If96l41iofBvI6BMtAsfL1FQ40E3KjtzPcx2/K6PRr1T4/cHWcknCA0d61XZNRymoQYdkK7gqfvDclWiIfAuSok3gZKduDYlLoxDWyS6ox02PQJuJmdLRXJ6hOy3qVdNZP/uED9cZ3cxHLZb00rmqlawABtOL2s14ftW2pyyVC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741887290; c=relaxed/simple;
-	bh=OoAvfSAO5M3PHg1qgT00ibdT5WETqpo45KH3DuoIfjE=;
-	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jwQrJOBkl4kLo9sPaxrhgdY/8Dbo39d7uSvcXl5HwHIXt6fSF7pTIOBLNfduuaK/29XckIuN9uDHW//8/UyacH6YaMDqOW67rUIP2DGixdwC4ECHzTs99koMhjoP5ynO4JiPcSmK3Fu4mH3tv5yHRfgKbqnYXrrvIxybWr9+J9E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VVQyU8mB; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VVQyU8mB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7B6BC4CEEA;
-	Thu, 13 Mar 2025 17:34:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741887289;
-	bh=OoAvfSAO5M3PHg1qgT00ibdT5WETqpo45KH3DuoIfjE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=VVQyU8mBAHNp06f4PUy8OQ441a3jzB0w7cdr7DECxbtEliMh01cQUWRWvFYU3Jez5
-	 RkdnI1LCoaG7yppGd9vje1fEdUoHzs3A5HH0zBqE+yFMcbOswaG7PGNAVDbtVbGQuG
-	 rHqqNwL2pbQFRBc4kq3PgxHk6Gd6btpLtWNO3AMV9bD1DfPOaerkp3DgRE1PuAxdTW
-	 18+vvZB5PhAsHJrLYHTMEzzeCEOV2/D+wJby5pXwes6nzXzoOmetd5UFctZLD4jsNu
-	 0SiX1C1WDorGyJZy5/32/g2HlM+ZisCfcYi5uy3ilNb6Go6TvGn3h39aDHO31lyI43
-	 8eQsG2/A/ZsFw==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
-	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.95)
-	(envelope-from <maz@kernel.org>)
-	id 1tsmSE-00DJ4E-TQ;
-	Thu, 13 Mar 2025 17:34:47 +0000
-Date: Thu, 13 Mar 2025 17:34:46 +0000
-Message-ID: <86ikocomvd.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: =?UTF-8?B?TWlrb8WCYWo=?= Lenczewski <miko.lenczewski@arm.com>
-Cc: ryan.roberts@arm.com,
-	suzuki.poulose@arm.com,
-	yang@os.amperecomputing.com,
-	corbet@lwn.net,
-	catalin.marinas@arm.com,
-	will@kernel.org,
-	jean-philippe@linaro.org,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	akpm@linux-foundation.org,
-	mark.rutland@arm.com,
-	joey.gouly@arm.com,
-	james.morse@arm.com,
-	broonie@kernel.org,
-	anshuman.khandual@arm.com,
-	oliver.upton@linux.dev,
-	ioworker0@gmail.com,
-	baohua@kernel.org,
-	david@redhat.com,
-	jgg@ziepe.ca,
-	shameerali.kolothum.thodi@huawei.com,
-	nicolinc@nvidia.com,
-	mshavit@google.com,
-	jsnitsel@redhat.com,
-	smostafa@google.com,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
+	s=arc-20240116; t=1741889323; c=relaxed/simple;
+	bh=pQGtB9l33v5PfLU1rNDNQq3i+W59p2jIMsURHN1eO7M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SwDuI6+t2g9LBhgPl3hpf8Zruc8CfF4L16D4rkrhi3Uge5Dm6HymEJhtjQ8uk+TfmYTiK4edYUgDHU5javCN/Z5gYN13XCwE3rfgYKa3HP8Gyik9AlzXOoOFOzmcmk6tXM7dagqdtJkN0tbEEsIBFxsl4m6b3SBW7YnMkFZyf7A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 472DD1477;
+	Thu, 13 Mar 2025 11:08:50 -0700 (PDT)
+Received: from mazurka.cambridge.arm.com (mazurka.cambridge.arm.com [10.2.80.18])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id ECDD53F694;
+	Thu, 13 Mar 2025 11:08:35 -0700 (PDT)
+Date: Thu, 13 Mar 2025 18:08:33 +0000
+From: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
+To: Ryan Roberts <ryan.roberts@arm.com>
+Cc: suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net,
+	catalin.marinas@arm.com, will@kernel.org, jean-philippe@linaro.org,
+	robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org,
+	mark.rutland@arm.com, joey.gouly@arm.com, maz@kernel.org,
+	james.morse@arm.com, broonie@kernel.org, anshuman.khandual@arm.com,
+	oliver.upton@linux.dev, ioworker0@gmail.com, baohua@kernel.org,
+	david@redhat.com, jgg@ziepe.ca,
+	shameerali.kolothum.thodi@huawei.com, nicolinc@nvidia.com,
+	mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
 Subject: Re: [PATCH v3 1/3] arm64: Add BBM Level 2 cpu feature
-In-Reply-To: <20250313104111.24196-3-miko.lenczewski@arm.com>
+Message-ID: <20250313180833.GA40525@mazurka.cambridge.arm.com>
 References: <20250313104111.24196-2-miko.lenczewski@arm.com>
-	<20250313104111.24196-3-miko.lenczewski@arm.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/29.4
- (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+ <20250313104111.24196-3-miko.lenczewski@arm.com>
+ <ea10caee-59ef-4a00-9b61-37cb0a379411@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: miko.lenczewski@arm.com, ryan.roberts@arm.com, suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net, catalin.marinas@arm.com, will@kernel.org, jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org, mark.rutland@arm.com, joey.gouly@arm.com, james.morse@arm.com, broonie@kernel.org, anshuman.khandual@arm.com, oliver.upton@linux.dev, ioworker0@gmail.com, baohua@kernel.org, david@redhat.com, jgg@ziepe.ca, shameerali.kolothum.thodi@huawei.com, nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ea10caee-59ef-4a00-9b61-37cb0a379411@arm.com>
 
-On Thu, 13 Mar 2025 10:41:10 +0000,
-Miko=C5=82aj Lenczewski <miko.lenczewski@arm.com> wrote:
->=20
-> diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel/pi=
-/idreg-override.c
-> index c6b185b885f7..9728faa10390 100644
-> --- a/arch/arm64/kernel/pi/idreg-override.c
-> +++ b/arch/arm64/kernel/pi/idreg-override.c
-> @@ -209,6 +209,7 @@ static const struct ftr_set_desc sw_features __prel64=
-_initconst =3D {
->  		FIELD("nokaslr", ARM64_SW_FEATURE_OVERRIDE_NOKASLR, NULL),
->  		FIELD("hvhe", ARM64_SW_FEATURE_OVERRIDE_HVHE, hvhe_filter),
->  		FIELD("rodataoff", ARM64_SW_FEATURE_OVERRIDE_RODATA_OFF, NULL),
-> +		FIELD("nobbml2", ARM64_SW_FEATURE_OVERRIDE_NOBBML2, NULL),
->  		{}
->  	},
->  };
-> @@ -246,6 +247,7 @@ static const struct {
->  	{ "rodata=3Doff",			"arm64_sw.rodataoff=3D1" },
->  	{ "arm64.nolva",		"id_aa64mmfr2.varange=3D0" },
->  	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=3D1" },
-> +	{ "arm64.nobbml2",		"arm64_sw.nobbml2=3D1" },
+On Thu, Mar 13, 2025 at 04:13:22PM +0000, Ryan Roberts wrote:
+> On 13/03/2025 10:41, Mikołaj Lenczewski wrote: 
+> > diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+> > index d561cf3b8ac7..b936e0805161 100644
+> > --- a/arch/arm64/kernel/cpufeature.c
+> > +++ b/arch/arm64/kernel/cpufeature.c
+> > @@ -2176,6 +2176,76 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
+> >  	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
+> >  }
+> >  
+> > +static inline bool bbml2_possible(void)
+> > +{
+> > +	return !arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_NOBBML2);
+> 
+> If you're going to keep this helper, I think it really needs to be:
+> 
+> return IS_ENABLED(CONFIG_ARM64_BBML2_NOABORT) &&
+>        !arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_NOBBML2);
+> 
+> Then you would simplify the caller to remove it's own
+> IS_ENABLED(CONFIG_ARM64_BBML2_NOABORT) check.
+> 
+> But personally I would remove the helper and just fold the test into
+> has_bbml2_noabort().
+> 
+> Thanks,
+> Ryan
 
-Why is that a SW feature? This looks very much like a HW feature to
-me, and you should instead mask out ID_AA64MMFR2_EL1.BBM, and be done
-with it. Something like:
+I was debating folding it into has_bbml2_noabort(), but went ahead and
+implemented it separately to match hvhe_possible(), which was another sw
+feature helper.
 
-diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel/pi/i=
-dreg-override.c
-index c6b185b885f70..803a0c99f7b46 100644
---- a/arch/arm64/kernel/pi/idreg-override.c
-+++ b/arch/arm64/kernel/pi/idreg-override.c
-@@ -102,6 +102,7 @@ static const struct ftr_set_desc mmfr2 __prel64_initcon=
-st =3D {
- 	.override	=3D &id_aa64mmfr2_override,
- 	.fields		=3D {
- 		FIELD("varange", ID_AA64MMFR2_EL1_VARange_SHIFT, mmfr2_varange_filter),
-+		FIELD("bbm", ID_AA64MMFR2_EL1_BBM_SHIFT, NULL),
- 		{}
- 	},
- };
-@@ -246,6 +247,7 @@ static const struct {
- 	{ "rodata=3Doff",			"arm64_sw.rodataoff=3D1" },
- 	{ "arm64.nolva",		"id_aa64mmfr2.varange=3D0" },
- 	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=3D1" },
-+	{ "arm64.nobbml2",		"id_aa64mmfr2.bbm=3D0" },
- };
-=20
- static int __init parse_hexdigit(const char *p, u64 *v)
+But I agree, folding it will be simpler and read just as easily (if not
+easier). Will do so.
 
+> > +}
+> > +
+> > +static bool cpu_has_bbml2_noabort(unsigned int cpu_midr)
+> > +{
+> > +	/* We want to allow usage of bbml2 in as wide a range of kernel contexts
+> > +	 * as possible. This list is therefore an allow-list of known-good
+> > +	 * implementations that both support bbml2 and additionally, fulfill the
+> > +	 * extra constraint of never generating TLB conflict aborts when using
+> > +	 * the relaxed bbml2 semantics (such aborts make use of bbml2 in certain
+> > +	 * kernel contexts difficult to prove safe against recursive aborts).
+> > +	 *
+> > +	 * Note that implementations can only be considered "known-good" if their
+> > +	 * implementors attest to the fact that the implementation never raises
+> > +	 * TLBI conflict aborts for bbml2 mapping granularity changes.
+> > +	 */
+> > +	static const struct midr_range supports_bbml2_noabort_list[] = {
+> > +		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
+> > +		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
+> > +		{}
+> > +	};
+> > +
+> > +	return is_midr_in_range_list(cpu_midr, supports_bbml2_noabort_list);
+> > +}
+> > +
+> > +static inline unsigned int __cpu_read_midr(int cpu)
+> 
+> nit: why the double underscrore prefix?
 
-Thanks,
+Again copying other helpers I saw that seemed to do similar things.
+Didn't know if this was the expected style, so did as other helpers did.
+Will remove.
 
-	M.
+Thank you for the review.
 
---=20
-Without deviation from the norm, progress is not possible.
+-- 
+Kind regards,
+Mikołaj Lenczewski
