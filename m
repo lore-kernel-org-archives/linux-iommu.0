@@ -1,86 +1,113 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C1A1DB54C;
-	Thu, 13 Mar 2025 18:44:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFD471EEA27;
+	Thu, 13 Mar 2025 19:09:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741891462; cv=fail; b=DXQPaYMj8ZTJjO3PSQFl2X/OOZL7cUpKwBWfd2k2p4tGWbOQOgM+7YPVxDlWaAyxF3TTXtXOhcSYkZSVIRO8uJXLKmYE4yxONO8Cm3rvojJz15z92qR2FIMP9q2/AE2lu2bliYLoJXfh3JzTbpcZnIeGu8sNGXKiL00lAEItt48=
+	t=1741892971; cv=fail; b=O3PG+pPQ2mK/FVoK7eU4sNizvCLT6Q7oi7R1vkYk15g5vaK7j9MDuRWquXBz1g+urLEAOimn9nK5cOCsznCKISKzyrHYz4qe8HYMYLCZVQI/z550NKKLZpPPPIS6G2oqnKJHV6p0hWqUbyd8Pj7G8D+UkuDMScYBSbtFcxRVUWI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741891462; c=relaxed/simple;
-	bh=PiuCRdo2y8/+eppAyBIELHqU4UnXF035seSiizCvLG0=;
-	h=Message-ID:Date:Subject:To:References:Cc:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=AJKlsMLT32XkA/Y+lFEnArI2ImAmLzygubWtBH0eTApZWeVlyeUr7OrUFJsMbaLXeJ+htzWudcNdGOlSiGw/WHvnw+Ym6cC7LA41bWabl3T82jWGyVLNdSt9ZgFO0a9/+uw2GPVDunGPOoDBHPMzm78BgPced8+MLzbL0VIbGek=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=bDnfLhhi; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=dlM4rcCV; arc=fail smtp.client-ip=205.220.165.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1741892971; c=relaxed/simple;
+	bh=R2BfbirKiwSynoK4nD4EXCBFsqSFVW+q5yMZEg521/M=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=D5WWiJdlcfqpKTAcGzGx+Ex3vcRsjVHIKjzOP9KS8QBuX2Q1wZAvflnEdvpiSdOPu7z5wUkYNWYUwqGI1Jkel7fTulv4r3Y+TKDw7w95Ei3PzkrtQeiJWBWbsb2oKX70ErEI3/nBXJskHmi7gPp5PChR/cBeV6J3p3po9hCbSVg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EMGYvs4G; arc=fail smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="bDnfLhhi";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="dlM4rcCV"
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52DIfliZ025031;
-	Thu, 13 Mar 2025 18:44:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2023-11-20; bh=tSdFI+O7PXoYl4bP/KNJEubeOWo8t5Vi7a32BTkVbC4=; b=
-	bDnfLhhitKRnoljDTkYN2rVyyUYUtlEiDP5v9OkqVlzsvIPndSIH2dJdOIF3O7Hf
-	T2jyHd3YOVDVsZ86tFqQhn/tvaXQTaHehvgt8nOX9/QMbTF6Pxt+9aajoH7FtFW+
-	UYIuS49wMgiOHGYOfMHVcH2gZlOH4o/tlG6Y31P1CkWYqhSEBVd1hbiDCJEvL+0/
-	ZdcUN+zrQBirXx/MWf9s/20g4CEXIGnIp5J1EZj+50jVQzLwy4hPOex0OeYPzVmN
-	3bxM1o4EBvqUaQ6CmCLTcucph/kAvWlR/gPq2wuIGkQn/6lNEHIjtcwpdgFff2x6
-	39MwNwXQRTY0Nso6Qi7DJg==
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 45au4dmy4p-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 13 Mar 2025 18:44:17 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 52DHQugS008618;
-	Thu, 13 Mar 2025 18:44:16 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2170.outbound.protection.outlook.com [104.47.55.170])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 45atn53n9m-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 13 Mar 2025 18:44:16 +0000
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EMGYvs4G"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1741892970; x=1773428970;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=R2BfbirKiwSynoK4nD4EXCBFsqSFVW+q5yMZEg521/M=;
+  b=EMGYvs4G8hOl5XniFHrHQYicHCogSXiQmakJ+vPdDm1EXNP7apbYwkLm
+   xwUe+Y1nagJU7cOKwlJi+KutZITPCIeaArB142umD2fllwpR3em3rcT95
+   0CuDGU3By01zVuBIpyscvaz7NCCBbHMOJ4G3JFux9M9N+aMV4OtOwRn+N
+   B2rhDqnNSOqE60NxUkzhY7R10b528jQutCNcQ3HGcuJlQJogmY/xGXf7t
+   XoIm5dtqwL4udxKtWxA2zUMG8mDCon4QkhGrfXFqdGsio1+r4qmipf660
+   ynnsvTJN7fJplvHFot1KLCYVkpvOT/s/wtGxXyuZ7kbUF6eLJhZTLJlzw
+   w==;
+X-CSE-ConnectionGUID: zdtudR+9T7qenoYVxxQ6CQ==
+X-CSE-MsgGUID: AXIOcru9SEmcyyThI0L6lQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11372"; a="60432643"
+X-IronPort-AV: E=Sophos;i="6.14,245,1736841600"; 
+   d="scan'208";a="60432643"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2025 12:09:29 -0700
+X-CSE-ConnectionGUID: 7A7zNTOwTeWVPiGmCmlLSw==
+X-CSE-MsgGUID: OA90VCHZQDyCbqXMPEQ8jw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,245,1736841600"; 
+   d="scan'208";a="126091618"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2025 12:09:29 -0700
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.1544.14; Thu, 13 Mar 2025 12:09:28 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44 via Frontend Transport; Thu, 13 Mar 2025 12:09:28 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.170)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Thu, 13 Mar 2025 12:09:27 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=j3G7E+zH+nI4MCpt0oKPT8+y5tSbL8X/Aw8zxnVuRDImBOKe1YONSpYNixRuH9L1se0iW7w8AD9IvB0bCnOW/uCeDI9xHy/GNM2xqaj4HnT8tihjSShwYOMFI3Xf/HCuusG6Pk1sfqtvPNpB2soRjxbU51MMeatjGU3LdtTXThGP5Ssv2cviWzQsZKyPBFqW0Cno+5cAUuZc9CZxYAekCSGj7z4XBkokm7PtR91NZV7bN9gLDYexLpEqIPAsoT6y1WAfp+R8oYjacxuh82tu0HIHes3glUhIzICAvwWu/tUJBEq0KystRsZhzlQQiySsKGnfOhTSGSZ2svpLbiShwA==
+ b=FCtjrDVqLfd4T/TKAyzs8CVxhjn88hZ4buG/0BAnDmO5Yzeztmci0dh+o4CkEIauxFnuaNCnL3eBr24ToqtPcxSgZ6oZWTdkOur+0xsifhVOlMVKp7qM9QpLORaOpAVqq/V5ION2WKo/SX0evJIV7J5z6kDGGq7f9fnoSHNOxSYMu2X2K/7V9AAIbi7kg/I9shiw6JgQXnEX8AGQ6lliJXka5UoLH0ASMYQ+e5nbhpTHBlnYKV9AH+2yqVZD9eiEz+gk8bP4K74uM9utu1htCSaxrSY+U0VCrCOgSGjQdeTQG8B/Sm7zkLbztuFTfAPeejylVy/5PrQc4eA7AYrmmw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tSdFI+O7PXoYl4bP/KNJEubeOWo8t5Vi7a32BTkVbC4=;
- b=TczVVBTfTPyv5msiQ6gga/lHYEJYmWoyx4bdsZNEPixQOSxMDlECzuRbxqqGJaqo4hEKclFoSATfjL8GoazHA2ZABxA2IOsA2oOxV1EVg5gk+ZkZhu703xfPU5udpulrz8cpD6//DRm2SaHgM+f1UXPw9QVGCvbNdRTdemsXPA65eyxqK7euGzzjFtNxfAalEusd33c8K2sePtKQVkkSjiuSor7j1upMzta9mIslQ9USy0AgX2uBKbkXUSjpkCiFZV73sI3eByQbd933uqFAPf3w+4o09sKHj+DikVUTtCAOfwT0u8SgJA+1xBlrT+T5XctC7V0jFZLxvhz2gy3Pog==
+ bh=CHrcVssxYu1BFhUPVRywLBBc28BDEO6ZfnU4knmY8lM=;
+ b=QSkhXwDHPnxn8DU+iV6TKYCKETmNs3p1DD/Sj5jCZyi01Wn4FoZYt2t40Lj/G/CP9o0kvJoIlsJI6fDK0rWQHQw0/W4hxK9ayQK50opxe6wntrltGDvTFy+JUvdRMhZKeFBmOoTcsqym+rr4gf2/MmZAu0q0OA1QmGfgBe4dKPusMcB769D6bJ23TB17Dvc1W9btoxRYoCS0FvN4BpS2kbSRi0rNPj+tPTgtl+6N85Hl/4CJcAoqgBs3jzvvsSWStqW/JnCyF/vFFCz5/vg267he3zcE3rR61zyFqPE6g18U2SS3PJDKctHsO+XYp/o2s8FPMcjciEMVDtzLxKouxQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tSdFI+O7PXoYl4bP/KNJEubeOWo8t5Vi7a32BTkVbC4=;
- b=dlM4rcCV8vSZiORNEtgc/mCrSXsMlDxSX+2m1VW+f7ORZ9MFW/dlWn1So3qithBzr3CUUWIfwDHdfL8PMST98/3ewXeAwM+gZjwwxoz9r1dA3pOkqTqGaiA6+/Cu1kCFW6/9ZxFUZZ53i+VxfnoMBjj/5+4snBmidEaqOn/mcaU=
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
- by CY8PR10MB7147.namprd10.prod.outlook.com (2603:10b6:930:75::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.28; Thu, 13 Mar
- 2025 18:44:14 +0000
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::743a:3154:40da:cf90]) by BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::743a:3154:40da:cf90%4]) with mapi id 15.20.8511.026; Thu, 13 Mar 2025
- 18:44:14 +0000
-Message-ID: <7285c885-f998-410a-b6a6-f743328bf0b8@oracle.com>
-Date: Thu, 13 Mar 2025 14:44:12 -0400
-User-Agent: Mozilla Thunderbird
-Subject: Re: NFS Server Issues with RDMA in Kernel 6.13.6
-To: Lucas via Bugspray Bot <bugbot@kernel.org>, jlayton@kernel.org,
-        trondmy@kernel.org, anna@kernel.org, cel@kernel.org
-References: <20250313-b219865c0-2a34cbc6e249@bugzilla.kernel.org>
-Content-Language: en-US
-Cc: iommu@lists.linux.dev, linux-nfs@vger.kernel.org
-From: Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <20250313-b219865c0-2a34cbc6e249@bugzilla.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: CH0P220CA0022.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:610:ef::24) To BN0PR10MB5128.namprd10.prod.outlook.com
- (2603:10b6:408:117::24)
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH8PR11MB8107.namprd11.prod.outlook.com (2603:10b6:510:256::6)
+ by DM4PR11MB6504.namprd11.prod.outlook.com (2603:10b6:8:8d::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8511.27; Thu, 13 Mar 2025 19:09:25 +0000
+Received: from PH8PR11MB8107.namprd11.prod.outlook.com
+ ([fe80::6b05:74cf:a304:ecd8]) by PH8PR11MB8107.namprd11.prod.outlook.com
+ ([fe80::6b05:74cf:a304:ecd8%4]) with mapi id 15.20.8534.027; Thu, 13 Mar 2025
+ 19:09:25 +0000
+Date: Thu, 13 Mar 2025 12:09:20 -0700
+From: Dan Williams <dan.j.williams@intel.com>
+To: Alexey Kardashevskiy <aik@amd.com>, Dan Williams
+	<dan.j.williams@intel.com>, <x86@kernel.org>
+CC: <kvm@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+	<linux-pci@vger.kernel.org>, <linux-arch@vger.kernel.org>, "Sean
+ Christopherson" <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>,
+	"Tom Lendacky" <thomas.lendacky@amd.com>, Ashish Kalra
+	<ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Robin Murphy <robin.murphy@arm.com>, "Jason
+ Gunthorpe" <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Bjorn Helgaas
+	<bhelgaas@google.com>, Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania
+	<nikunj@amd.com>, Michael Roth <michael.roth@amd.com>, Vasant Hegde
+	<vasant.hegde@amd.com>, Joao Martins <joao.m.martins@oracle.com>, "Nicolin
+ Chen" <nicolinc@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, "Steve
+ Sistare" <steven.sistare@oracle.com>, Lukas Wunner <lukas@wunner.de>,
+	"Jonathan Cameron" <Jonathan.Cameron@huawei.com>, Suzuki K Poulose
+	<suzuki.poulose@arm.com>, Dionna Glaze <dionnaglaze@google.com>, Yi Liu
+	<yi.l.liu@intel.com>, <iommu@lists.linux.dev>, <linux-coco@lists.linux.dev>,
+	Zhi Wang <zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>, "Aneesh
+ Kumar K . V" <aneesh.kumar@kernel.org>
+Subject: Re: [RFC PATCH v2 06/22] KVM: X86: Define tsm_get_vmid
+Message-ID: <67d32d60bf4f4_1198729418@dwillia2-xfh.jf.intel.com.notmuch>
+References: <20250218111017.491719-1-aik@amd.com>
+ <20250218111017.491719-7-aik@amd.com>
+ <67d23a3e6667_201f0294ed@dwillia2-xfh.jf.intel.com.notmuch>
+ <7719c1ad-84b8-40e2-9ce7-93248a410ebd@amd.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <7719c1ad-84b8-40e2-9ce7-93248a410ebd@amd.com>
+X-ClientProxiedBy: MW4PR03CA0209.namprd03.prod.outlook.com
+ (2603:10b6:303:b8::34) To PH8PR11MB8107.namprd11.prod.outlook.com
+ (2603:10b6:510:256::6)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,287 +115,188 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN0PR10MB5128:EE_|CY8PR10MB7147:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3620ac20-b1c0-48ab-c8e5-08dd625f0d4f
+X-MS-TrafficTypeDiagnostic: PH8PR11MB8107:EE_|DM4PR11MB6504:EE_
+X-MS-Office365-Filtering-Correlation-Id: a03ad3fd-34d6-4226-dcb7-08dd626291dd
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?RjV5OWxselAxclRSajYwdGttbFo1TDNKOEhFc3h1L3gzTzBjVDlpUENkT0VE?=
- =?utf-8?B?QjRVclU5OVJhUmJZU1M5dys1dzB6Q29LVVhkVU0xNjlsa2FLeFgwUHl5YjdT?=
- =?utf-8?B?QzNiL0o0YjBXZFFCUzNCdDhDeENkbEdpSjNkcmNFRXI2blZtS3JvQkNkWGlI?=
- =?utf-8?B?WVhqRU50ejloM3pPd0ZPdTNVaDJ3S1l2cHhncHVlNG45b2lSaVhDcEFDV2dJ?=
- =?utf-8?B?eWhJLyt1Q1E1WmdMR205bEdpQ3AvTGFZRWhGem9SMGtZMkFoRGNGSmdzVUhL?=
- =?utf-8?B?UngzSTh6SUJ1WnZLTHRBdFgyOEU2TUROQUJDbnowQXpZVWh6aHVZdVVmeU13?=
- =?utf-8?B?ck1XVy9EQ0F5SXJkdGtoUlBZOVh0MXpuK1JpbEhCNWpGWVlvOHJhVjREWGRv?=
- =?utf-8?B?RjVPeU9aaVI0OElmSExiV0RqRHhFekpjUmcvL3pBcWRlZ2RjalU1cG9XWThO?=
- =?utf-8?B?M2hLdExMcnY2SkJRR2hSckhxMnVMc1Y2SzdXT2w1eFRKcUpSdE15ZWo3Vm9n?=
- =?utf-8?B?dVV2WFdqOFBaMWxjbkNnTVlJTHRXUjBLOFlPdlhvbGgxWVJjMFc3V2pwOFNC?=
- =?utf-8?B?aVlPYlhnNzdXMXNrTnRrKy9Ya3EyY01FNExic3duMlpOaGZjWnZUZmdSTkpO?=
- =?utf-8?B?Sk1aOU5QeGZUTCtYL3llV3dMa1hWNlloM1J2ajRoMHo3aFVHME9UcTlqK2RU?=
- =?utf-8?B?TnNQUDdtVEt4NWV5ZU00M3ozVDdhSVVNT3NqMFh3K2YzTUhqNkVrZ3ZzRmtw?=
- =?utf-8?B?SmYvRWtvcXFGNVA3Y25KQ004eVVEbVpHZFZtZmkvRUF3MUpnTDJaZHE1UTlm?=
- =?utf-8?B?T1pYaHBkaVYvbGJCcFlnMklCT3FkWEJkQmFtbW9idE9yY1lSa04wcFU0bTFG?=
- =?utf-8?B?bnRiUGllRExlbWRCdlkvSHo3dExnVVNhMUVKbE5ic3luOWNsUUY3d0xjNHhL?=
- =?utf-8?B?OXhFWjhmYzFsTENPQmV3KzB2cHR0RVdVSjBFVTFjdXNIYkJCRnVzVVQ4SUlR?=
- =?utf-8?B?UVp5c0dHYy81SEpOVUI3TVJTYjJ5YlQzMmpqRnVIZ2dsUys4SS9TQ0haZk5a?=
- =?utf-8?B?NVhMVjdPTHEwb1VnaG14OXhMdnc4ajAzVkpPb29NVU5EZzlDRllKTlhIbzlL?=
- =?utf-8?B?U1FwdWRET0hUdCsyVWxnNTdSNlpCSnRRUUNBUCt3SU1hVU1QQlVRUDZzRG82?=
- =?utf-8?B?YWR0bHErQ2E3M21GZzJUK1Vuc1NySGRoYUxtRmlkcUJyUFhlV1lwNk1nSnZH?=
- =?utf-8?B?NkVLVTh6eFRXaHlubFY0QkRzeU1NakpjMStlb2p1bENZYk5BdFJYUXJwMDR1?=
- =?utf-8?B?enVNMkZyQ0hrYUc2T2czWmNIWURlMG02VWMwMHU3NGFIRG5QMklCOGZkRFZ6?=
- =?utf-8?B?ZEU4WUFibzgrWEVWbHVNRWY0aTRmU3NoemVjN2Q3ejc5T1ZqME1ZbzB1NWNP?=
- =?utf-8?B?eVA3WmZScGJUQ1ZTNkdhdlIxT2M4YStGZ3NJMXFXK2JwZTA1YVI4MlF2OUht?=
- =?utf-8?B?VUh5Q0ZnN21Nc01zQ3JkV3FqbXV5VlZZMWtrVHhzYWtnU1Y5V2RjUkdHRnRN?=
- =?utf-8?B?YUpudnVjdVROWkhxWWxhNTAxWloyZzVtSkhaZ0FNT3JHeWxUejV1dVdDT3VF?=
- =?utf-8?B?WUY1bGhvVG9KWHUvSlN1TUd4Qnl6MVAvR3BrMjNmQnExQWJXa1dXNk15dVNB?=
- =?utf-8?B?S2dwa2R4MmlkUjdyRU5XNVBPSjJ3ZW9oUHZSNTczMHN2a1JJNkdaQkZnMVAv?=
- =?utf-8?B?MFErMVd1di9LTkpHZWFqSlkyRHpRVVZFN0ZtQ28reVlQWEdNRGZSeHZkN2ky?=
- =?utf-8?B?endTVmtVZm5qbzBDTUdVeXFZYVVMQnlHRnR6elNtMWFtZUZTTnFiQUd6L2xk?=
- =?utf-8?Q?CJACqaK8+x8B7?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014|7053199007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?8ujD0d7yD0uFS3TTf/SrIL2N4Q6TWWfRPtjKp/LsXukDbpUGbf3AljeyyyDZ?=
+ =?us-ascii?Q?ZHMCmOc3/YuDfQMqCxATMMv3BIyQqv8aY7DSPQBKXduBzSaL6AEugB0K/UQp?=
+ =?us-ascii?Q?cEI8DXr6HSF7MQiT4FaZaUMwgmUNW7dc643/GZvJTrBonU0JCTGi7Pplcf2g?=
+ =?us-ascii?Q?mGNG27hgCs/HvUCIGH+yN4K6Gg6txepuBgHPaDPv/e/sRp+IUZSdxaaEAxFe?=
+ =?us-ascii?Q?QTN1fz4Xah69AfussyCNrAAVA71GMun1yAgYwJFLmoO6qKQMd0dVpgs45L9l?=
+ =?us-ascii?Q?V93sBYEbWOFIUW/P3m3ILaeFlXC6NlezBymkalmvoweHXUj2yQPmC7uXZTLd?=
+ =?us-ascii?Q?+72nz4JAkxh2vq97ZpAMtVfx/aHH+y+9PoXCYyCWrPqMriX6uvNDGHejNcHd?=
+ =?us-ascii?Q?t84RbSt5ZZMnEqDoABGYOIEGs8iQGuUsI+z2u2OUAYJviWT4j7rRD8jB1BSn?=
+ =?us-ascii?Q?uL7ldgRvdBFe70lUCjAd+2UUbaAGLCiA3oHxNoLFfS6H7Dp8q6ZXRFE4sey8?=
+ =?us-ascii?Q?hVdIJkHQRRbvjHov9YaljXlsxSd2W74K1o2wB92CnB6rdyfUuh3QRMMvH67a?=
+ =?us-ascii?Q?gA5H9MppkiUAa9a3JkpHp8FHBPvnzG+RVhpMgmBcQvRWopBIhpShSir1qIC5?=
+ =?us-ascii?Q?b9+YaW1/DrAi8pNNX/a9ewsE5IlAuFgnQLs8obwitZe7imDt6zNZqb0vDaXo?=
+ =?us-ascii?Q?M/kz4LZWsENbV/Zqb4Wqkk7vuzfuEQCje0E7+JTr19B3PV7eSex3sZRVIy94?=
+ =?us-ascii?Q?LoonBUNuKF2WqHYhj4GyFwPRt3KixWabiqA2UmsqNGAQ1R9nmew87kShs/6a?=
+ =?us-ascii?Q?HBu1rhMhQcDO8BpdCUjj/tsbt+JlTzba4z5KeOW+PChtu2AScFvSyuO8FkIn?=
+ =?us-ascii?Q?0WP3CyKkRksDcWCuqr3xk9HFXeiBLFf7SrI/TT9NtrLg7GEXpoh8s8o8sljr?=
+ =?us-ascii?Q?zgjxHcnw5gZDeWirBdQItJ2xOAKn4LWbviA0W5amp9yWRtGSjzrGIfJ4EAP4?=
+ =?us-ascii?Q?S+Ql1J++7EM+ZQK92C6Lzn7OtB8xU1Ruige1GE74gs/wRl5rsrHgPpw2YRbf?=
+ =?us-ascii?Q?yn765R4h/58Yroj+s/LVJBjDOJH936QtA5mHm9ef1v7AgnUh569MufQ/RHB3?=
+ =?us-ascii?Q?aHIe3fa00EE04fY24H2QLtz3D5hyIBlbkV9mqXQF9I5CLDGMcbk02yFnn8Tq?=
+ =?us-ascii?Q?dncBfBqDwbPJ1kRaW+i9hV1bPlTeb64bnWeW0H0y9s33C00xx+FRUCIs2laU?=
+ =?us-ascii?Q?pk5p3eug2hc6aHWZoZlEA3rzZcbCG0SD9SJtqkyUnfJqzA8La3mUQW4ytujF?=
+ =?us-ascii?Q?HbFPXNTHfiok+fIL9kQeIWI+O3+rwonPv8Iavw6dWHDTtHfzg4PUq2WTCgVc?=
+ =?us-ascii?Q?6eADZ54QiaaJfzZaqh6BYYaqXMLA?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB8107.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(7053199007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MVZSbWZMV0ZIZ0FSSVNwS2MwcHR5diswT05NQjVtTjdjeWJPcDN3aE16Rm92?=
- =?utf-8?B?VklNa2hQM090ZHJyQnFDaENiZjE4YWhsUWorNi9BUTg0RmN0UVNSME9lN0l1?=
- =?utf-8?B?UEVQK1FBMm1BTE1YNEt0Z1pzUUR1eWRkUmlvUTBPMTNJcWNLRDFtNGw3elBy?=
- =?utf-8?B?Z0ltWWpnUTUwQTJpOHd1ZzRSd1B0bmFSSFI4NXZlMkhzZU1mdzcxYTZTZ1NE?=
- =?utf-8?B?R2hHVWhiTXBXdUJOVFRTOXJLM1V5NEVUQlFvWnEvRUV0WEkwUzdGN292cGF3?=
- =?utf-8?B?UFFYb2xTdHRicXBWL0c0cXRCSGYxWEJSZ3BYTXloTWhjRVlFRUFjRjhraFkr?=
- =?utf-8?B?S0MycjhJQ0xaYStmZWt4ZHZ3VEZaY0t6UXF1MnFiNjhxdzNqQkZHcTgvTkw5?=
- =?utf-8?B?UVo5aEl3TkZlMVlvNWpQSzl5Y09GNnpPNUFTSW4xK3NjU3ZEOGdUS1JFVEpJ?=
- =?utf-8?B?MjRyYThiOGVRdHlmSGhGczhuRDJNTWVzbjM5eWRORmx1bW9jQ0xCKyt6KzN6?=
- =?utf-8?B?VG4rTmNrb1NiT2VNdEJzQ3dTRFdDRUlWTk9tcFZnMHMxL1AxVWZRZGo1Z1po?=
- =?utf-8?B?WnF3RWZQcDkzRkJmTHd2cDdVcDlXVGdyLzdBbDFDRnBFcHhGOVNoa25wY1lN?=
- =?utf-8?B?SFRpOEJDY1BFamJ6cHB4WVV3akYvTFc1WVpnbW5DU3VmbkJMSFg4ejJNSkFJ?=
- =?utf-8?B?T1Z4OHNUbWQrSUxPcCswNTR1VnhVRy91TWR0QkY2V0VJOFllTGJ5aFVoL1VV?=
- =?utf-8?B?MnUrRDM5T283emFZUWRKOEh1KzQyK3krdmRycERSOEU1TGhPUDNjUXpUblQ0?=
- =?utf-8?B?YjAzTTRUaXdZVkRZRFgzSzNzZzcwYnFwTUtPem42NUR3akZyRFJmdVYrcUx5?=
- =?utf-8?B?WHh6TnpQM1g3eVRNVXVqaU5SN0xpRnNSWnQrNWk1NlY0NDM2UXhkSjEvRnNC?=
- =?utf-8?B?cFdDNGZLcU9hdHFwOEVnSVRLUzNFdFZKanYzT3dmMlZBVFlXVURTSTkzL0s5?=
- =?utf-8?B?Mjk0RGwwYStNOTQwNU5YV2xDZ0w2VXNUSUs0a2RyQUFiZm5OVDF3MXVTT1Rh?=
- =?utf-8?B?M1JXZjlGWEJtdXBrQ0U2R2ZkNmF1WXFqUHJvWUREdlFMNnBFTk05TFh4VjFL?=
- =?utf-8?B?czR5bjFjZkp2Wjlpa01rSGVMQk1ZRWFKeGxOM2hXR0w4b3h6UVo1MEZKZ21i?=
- =?utf-8?B?KzY1VDF5WWx5eGdSdnA3OW9wT0J1TTQ2bGhKbjZ5clc1b3lHR1A0UEMzcm9m?=
- =?utf-8?B?UTVOOVljUllkTWFVWlh6aVZ6UERHalI4ZmVHenJtekd6WDErVUFlYU5zUEdm?=
- =?utf-8?B?Mkw3WHRMOEVqOTdUT1U0QmNTVlBUc0cxS3F6MHlXTkdDOVhLSFloY09MQzVG?=
- =?utf-8?B?eGRLV0FEbVRHT0tYSkZRdFVWeERMSFVYWXNmTzhkN2NJekdHZHkzVVkwNVZV?=
- =?utf-8?B?YjlpODcwU3ZFbklSZFdxU2RUVlFhK0w2Zk1yWmQrbEdnNS83V0RBa3pNR2hH?=
- =?utf-8?B?dVdjQTJ5NkRQMXh3N2hpRElCYXhLSWV4VCtkZnBSTjFyc1VzUk9OaktpNDM4?=
- =?utf-8?B?MTBDN3Bub0FVL3UxNVB6dW9zY2ZPaVlCOG14SGRXU2d1MllrekNzNmR4cWdH?=
- =?utf-8?B?VUNLNWNPcWcrVk1XaTJvY1RJYlZxcjRxdjA2U2sxNUlqUWxwMmRCemdic0My?=
- =?utf-8?B?em5iajhSS3d4VDZlQTM5TkEvN25PMEM5S2hBcEM5aUxnakdVUElQU0QzSHpJ?=
- =?utf-8?B?RGhuOUl3VTZnSXo3UDNaMGk1NTVxTjNkSlFtM0oxRnBQVjdsNHJyRUJUMVF5?=
- =?utf-8?B?TUxwZ1RJdVVNV1g5Smc0c3M0ZGpCYnBnbFBpcXB5OFo5ZnhIUmhkUU1lZDlP?=
- =?utf-8?B?c2E4SHNxcmRxN0l0STlUNUNHTnhNcnFPRXpWRXZUWmNBQU5nMUdJWGp1ekFE?=
- =?utf-8?B?Z1NST0haekZGUlk4dmFMVjBNL1ppWmZYeUh6dkxZYWhkZ0VsUG0vVzZqTmVR?=
- =?utf-8?B?eHRrb2lLeXY4RzJIekNNckszcWFPYWZBQ3ZFcUJsWDBYSWpEVkdTTHNSZ1pI?=
- =?utf-8?B?M3BoZTE0ejUrZFEyRldUQ0h6ekduZXBsK1pSRWRtNkNRKzVPNWUycHZYZnNy?=
- =?utf-8?Q?Ou0xuODhaIkHeynypqCwuS0VH?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	DyrwKLryHk6X9xKeLGnmLwIGcGMx5I9QZAsF7rXB/v2OTSrkefcKlXUl8DQ/C0cSbQ7ytebxrCkrhDx+L9m3CfYfsjhSRRqWIeMfZtXCwZYdJsn/r/5hzr/yT18iDETqXF5zy/9rWSvgQq16dlLWKQlFuYk3nx7KEc67uAxFfItHVCIp6VNmZcMU/EwSyVFgsao1I05Tgaen7Sgw1gdxDyu94YSrlSIV7i55QxC5cWNAdJOaELbQEdYq/rjir4Yjfs9P/1ueazGmjCn2lK/z1fw78jzN/zi0XUV9uMoH+BqFR3P+mMIW8PMVG1t0qvPsC6dwacjHWYbhW/HvjS6jypQocp3pupM5BV8dDlhP9fJZK9ZsoRELAit70yhVwf0FCyB2AaL5cG0oQ9qzR/B92I0e6VOueImT/E9hFdyNJwP+WuNJ6It0B1DFOKX1FVRqvHgonoVkZBJfWUZanePNOblVOUYoKg/p/uJ+inI0T4f3lMr+/Y3VMepn9BHMZ/IxFPZMSQlGt7PvLUTxpu/ZtUlyA7TRzUukJ31+KVU1Au3Kw+aGy2W/FTIDfLCG6NNlOsxsyq2fsfypGeyJY/xehDl2nCoO/Dn+UsnPov0ht8U=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3620ac20-b1c0-48ab-c8e5-08dd625f0d4f
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?R1A+guZrrXbEpcQx+8wKLp5fDJFl9Pu4bg8/ui6bG6lbZPKBysI8bOgRuIZc?=
+ =?us-ascii?Q?R/HYc2mLosfefAuHX3ns3bB7YdeJ2phSBguC4KJ6PBg+ewlGlbma88+ukQSM?=
+ =?us-ascii?Q?2Qt7rmP6xpFU1Gfzs//wdzYiqoNSxwt8B9rxGUObwGPQpXbsO/NG4r74sxdH?=
+ =?us-ascii?Q?qkNvrjxoQkaf8pQfXGCF25R16xs52tAhYe0xHPg13fFcjKeiG/qHRn1/B5wp?=
+ =?us-ascii?Q?WR8V3DDT5POGPRl3sxw+r2+2cnvPDQVIzj4GqhR5jdYc47NrVF5qUOHHmmit?=
+ =?us-ascii?Q?5eAsN4eJ661baDVLz+FMF4mkhqMJcNleXNXcuu0ke6ppJ96+CtLc30F9f362?=
+ =?us-ascii?Q?2FTsKgvZ22QxzMqwVm/AYd7xltcuKy1a5kpy3QmBYTzRr3arLpYMkPNb4slD?=
+ =?us-ascii?Q?RkbT0hJ8UO8YenpSfermwB1n6+sWEfnsGW3nMj7oAEc/AJLCeVcJNyI7tK+q?=
+ =?us-ascii?Q?o+miAmw72LXyl47umI00sHi6NOduf/f9UqbsEcDFETNOgmPLx+NC0accxDq9?=
+ =?us-ascii?Q?MwxfaPUJLV1Ln0fvS18+e7Aa+gU7fRfjJg5GHkZuJj2Yy3fM+tU23b/GcPPk?=
+ =?us-ascii?Q?jPn0HJ/oMwAb4FE8BGpkOdMA6fEo8ejinSc76JaqI/FrApJ2DTU2Cx4SMERE?=
+ =?us-ascii?Q?k4fR/7IOyG7ZHH+qhY/kegnDdkfPFQHz/mXGw1IhoQJLFpQVdCQSEufwLQyz?=
+ =?us-ascii?Q?PnqHWiQNhUNh6nnqYwvF1aDGq6sI0J88gBL2cubVnQL9H8lg+/CBcRq63sPR?=
+ =?us-ascii?Q?ri8riqKnEcXqBTMYFJ7MMBo82YUhYVTbIKm21VUS7Nr4+/UX83s5OwY7hZa4?=
+ =?us-ascii?Q?agaJLSTzpD4buRh7lJ43cO7l44OGg3CYora0mo0+WKl+u0Q/cbOmyVlLaaYy?=
+ =?us-ascii?Q?/Zw0TAwG/LAx6A4oUSW/0r2wmydbUgsJNhreA7AKQ5IH0jNjM9WUrPSqQFmD?=
+ =?us-ascii?Q?sP2DfWhViKJ7nxv0KC+zcOiYzN1tww4gi0/x1//3MnXaql+Wv+G6VrbCmWRD?=
+ =?us-ascii?Q?nliy4PCCof1KaOrnD7BTu8jX5vFUSpSYz7m2CgHIecQWVP3NiZ+EZbVpRSlL?=
+ =?us-ascii?Q?fWep/Yto2Z1mPKsohjakP0iT63Wx3BsKLtv6nS571vQ5EdGI1RMbDy9Di6CU?=
+ =?us-ascii?Q?vLNbvinkRTO/vS6vXRP+CyZ6jhv+Bb1ahaNjaqcDSvcTJf7mFaaWJMsWt9Dr?=
+ =?us-ascii?Q?JtT7WBPP4sVKIvsP1wTzfDLK05iWr724FGp7Ymn8SVcfna7SiMu4751JB229?=
+ =?us-ascii?Q?lfcKcXVlcczVdMNsZBx/pT+jb/4sN3uiqXH2rIVJ8103ZgsG9Futw+znJhYH?=
+ =?us-ascii?Q?cLx9uu6EtPICh5BSnAj9kdZkYwzRyZWAQohOLETZO0VFklr23CN4MKha/16A?=
+ =?us-ascii?Q?Gb/dYbJAcQbMoRoQ0msJX/Xcat75uuHcgg457uKnYUutClrqDfxuRLTyC0hs?=
+ =?us-ascii?Q?2IwQ+6FvSfMB2+3ImTKTbMwD3oHO4axXXUnIdKYCBlyHKWlbUBlVRAvsKbmD?=
+ =?us-ascii?Q?9sU85UOQeF+D0XC5RPsd56XehkaqD161X36XPtKAe6EgauL+fzK10trwr6rQ?=
+ =?us-ascii?Q?Uw2eYstUbzg/oEiY0s97aavJihTPF14v6JPkJ+Kq0uBw74w0GoyODviH2u+l?=
+ =?us-ascii?Q?6A=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a03ad3fd-34d6-4226-dcb7-08dd626291dd
+X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB8107.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2025 18:44:14.2708
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2025 19:09:25.1432
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: noOtwl8VOpppzBTRGxwEOm/seyKxOKEPHNULEuRyuw/qZXMAZwpuwmaDKlc9ehtbcsvrWUA4JB+GeYD0caUmJQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR10MB7147
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-13_08,2025-03-13_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- mlxlogscore=999 mlxscore=0 adultscore=0 phishscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2502280000 definitions=main-2503130143
-X-Proofpoint-GUID: 8NryZNQ1yOrrTL_D9tuC4SACL6AhuhAt
-X-Proofpoint-ORIG-GUID: 8NryZNQ1yOrrTL_D9tuC4SACL6AhuhAt
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3BVIJv/g0yBUgH2a5dR1lHLwCJDaMupHSPUH8wqXqnS3bjH0goUic+V4IUQWCgVoIHLjG5+q3EYCBqAfMUD5b4wpLC1TU3gJcEWXJ+4NYdI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6504
+X-OriginatorOrg: intel.com
 
-On 3/13/25 2:35 PM, Lucas via Bugspray Bot wrote:
-> Lucas added an attachment on Kernel.org Bugzilla:
->=20
-> Created attachment 307819
-> NFS over RDMA - Watchdog detected hard LOCKUP on cpu
->=20
-> Hi
->=20
-> I am experiencing stability and performance issues when using NFS (kernel=
- 6.13.6) over rdma protocol.
-> All what I need to do to trigger the issue is connect client and start re=
-ad / write operations.
->=20
-> Fastest way to reproduce issue is by running fio job:
->=20
-> fio --name=3Dtest --rw=3Drandwrite --bs=3D4k --filename=3D/mnt/nfs/test.i=
-o --size=3D40G --direct=3D1 --numjobs=3D18 --iodepth=3D24 --exitall --group=
-_reporting --ioengine=3Dlibaio --time_based --runtime=3D300
->=20
-> Dmesg says: "watchdog: Watchdog detected hard LOCKUP on cpu "
->=20
-> [  976.676922] watchdog: Watchdog detected hard LOCKUP on cpu 182
-> [  976.676931] Modules linked in: xfs(E) brd(E) nft_chain_nat(E) xt_MASQU=
-ERADE(E) nf_nat(E) nf_conntrack_netlink(E) xfrm_user(E) xfrm_algo(E) br_net=
-filter(E) nfsd(E) auth_rpcgss(E) nfs_acl(E) lockd(E) grace(E) xt_recent(E) =
-null_blk(E) nvme_fabrics(E) nvme(E) nvme_core(E) overlay(E) ip6t_REJECT(E) =
-nf_reject_ipv6(E) xt_hl(E) ip6t_rt(E) ipt_REJECT(E) nf_reject_ipv4(E) xt_LO=
-G(E) nf_log_syslog(E) xt_multiport(E) nft_limit(E) xt_limit(E) xt_addrtype(=
-E) xt_tcpudp(E) xt_conntrack(E) nf_conntrack(E) nf_defrag_ipv6(E) nf_defrag=
-_ipv4(E) nft_compat(E) nf_tables(E) binfmt_misc(E) nfnetlink(E) nls_iso8859=
-_1(E) rpcrdma(E) amd_atl(E) intel_rapl_msr(E) intel_rapl_common(E) amd64_ed=
-ac(E) edac_mce_amd(E) sunrpc(E) rdma_ucm(E) ib_iser(E) libiscsi(E) ipmi_ssi=
-f(E) scsi_transport_iscsi(E) rdma_cm(E) ib_umad(E) kvm_amd(E) ib_ipoib(E) i=
-w_cm(E) kvm(E) ib_cm(E) rapl(E) bridge(E) stp(E) llc(E) joydev(E) input_led=
-s(E) ccp(E) ee1004(E) ptdma(E) k10temp(E) acpi_ipmi(E) ipmi_si(E) ipmi_devi=
-ntf(E) ipmi_msghandler(E)
->   mac_hid(E) sch_fq_codel(E) bonding(E)
-> [  976.677035]  efi_pstore(E) ip_tables(E) x_tables(E) autofs4(E) btrfs(E=
-) blake2b_generic(E) raid10(E) raid456(E) async_raid6_recov(E) async_memcpy=
-(E) async_pq(E) async_xor(E) async_tx(E) xor(E) raid6_pq(E) libcrc32c(E) ra=
-id1(E) raid0(E) mlx5_ib(E) ib_uverbs(E) ib_core(E) ast(E) drm_client_lib(E)=
- drm_shmem_helper(E) hid_generic(E) mlx5_core(E) mpt3sas(E) rndis_host(E) i=
-gb(E) raid_class(E) drm_kms_helper(E) usbhid(E) cdc_ether(E) dca(E) mlxfw(E=
-) crct10dif_pclmul(E) crc32_pclmul(E) polyval_clmulni(E) polyval_generic(E)=
- ghash_clmulni_intel(E) sha512_ssse3(E) sha256_ssse3(E) sha1_ssse3(E) usbne=
-t(E) psample(E) i2c_algo_bit(E) scsi_transport_sas(E) ahci(E) drm(E) mii(E)=
- hid(E) libahci(E) i2c_piix4(E) tls(E) i2c_smbus(E) pci_hyperv_intf(E) aesn=
-i_intel(E) crypto_simd(E) cryptd(E)
-> [  976.677112] CPU: 182 UID: 0 PID: 20143 Comm: nfsd Kdump: loaded Tainte=
-d: G            E      6.13.6+ #1
-> [  976.677118] Tainted: [E]=3DUNSIGNED_MODULE
-> [  976.677120] Hardware name: Supermicro AS -4124GS-TNR/H12DSG-O-CPU, BIO=
-S 2.8 01/26/2024
-> [  976.677123] RIP: 0010:native_queued_spin_lock_slowpath+0x244/0x320
-> [  976.677138] Code: ff ff 41 83 c6 01 41 c1 e5 10 41 c1 e6 12 45 09 ee 4=
-4 89 f0 c1 e8 10 66 41 87 44 24 02 89 c2 c1 e2 10 75 5f 31 d2 eb 02 f3 90 <=
-41> 8b 04 24 66 85 c0 75 f5 89 c1 66 31 c9 44 39 f1 0f 84 97 00 00
-> [  976.677141] RSP: 0018:ffffa16f2de8b948 EFLAGS: 00000002
-> [  976.677145] RAX: 0000000001d00001 RBX: ffff8bfa8e937bc0 RCX: 000000000=
-0000001
-> [  976.677147] RDX: ffff8bfa8bd37bc0 RSI: 0000000003340000 RDI: ffff8bfb9=
-fffbe08
-> [  976.677149] RBP: ffffa16f2de8b970 R08: 0000000000000000 R09: 000000000=
-0000000
-> [  976.677151] R10: 0000000000000001 R11: 0000000000000000 R12: ffff8bfb9=
-fffbe08
-> [  976.677153] R13: ffff8c3a8e037bc0 R14: 0000000002dc0000 R15: 000000000=
-00000cc
-> [  976.677155] FS:  0000000000000000(0000) GS:ffff8bfa8e900000(0000) knlG=
-S:0000000000000000
-> [  976.677158] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  976.677160] CR2: 00007fb9b1da66b0 CR3: 00000003e84bc000 CR4: 000000000=
-0350ef0
-> [  976.677162] Call Trace:
-> [  976.677166]  <NMI>
-> [  976.677172]  ? show_regs+0x71/0x90
-> [  976.677182]  ? watchdog_hardlockup_check+0x1ac/0x380
-> [  976.677189]  ? srso_return_thunk+0x5/0x5f
-> [  976.677194]  ? watchdog_overflow_callback+0x69/0x80
-> [  976.677198]  ? __perf_event_overflow+0x153/0x450
-> [  976.677206]  ? srso_return_thunk+0x5/0x5f
-> [  976.677211]  ? perf_event_overflow+0x19/0x30
-> [  976.677215]  ? x86_pmu_handle_irq+0x189/0x210
-> [  976.677225]  ? srso_return_thunk+0x5/0x5f
-> [  976.677228]  ? flush_tlb_one_kernel+0xe/0x40
-> [  976.677234]  ? srso_return_thunk+0x5/0x5f
-> [  976.677237]  ? set_pte_vaddr_p4d+0x58/0x80
-> [  976.677244]  ? srso_return_thunk+0x5/0x5f
-> [  976.677247]  ? set_pte_vaddr+0x89/0xc0
-> [  976.677250]  ? cc_platform_has+0x30/0x40
-> [  976.677256]  ? srso_return_thunk+0x5/0x5f
-> [  976.677259]  ? native_set_fixmap+0x6b/0xa0
-> [  976.677262]  ? srso_return_thunk+0x5/0x5f
-> [  976.677265]  ? ghes_copy_tofrom_phys+0x7c/0x130
-> [  976.677274]  ? srso_return_thunk+0x5/0x5f
-> [  976.677277]  ? __ghes_peek_estatus.isra.0+0x4e/0xd0
-> [  976.677282]  ? amd_pmu_handle_irq+0x48/0xc0
-> [  976.677287]  ? perf_event_nmi_handler+0x2d/0x60
-> [  976.677290]  ? nmi_handle+0x67/0x190
-> [  976.677295]  ? default_do_nmi+0x45/0x150
-> [  976.677301]  ? exc_nmi+0x13e/0x1e0
-> [  976.677304]  ? end_repeat_nmi+0xf/0x53
-> [  976.677313]  ? native_queued_spin_lock_slowpath+0x244/0x320
-> [  976.677317]  ? native_queued_spin_lock_slowpath+0x244/0x320
-> [  976.677322]  ? native_queued_spin_lock_slowpath+0x244/0x320
-> [  976.677325]  </NMI>
-> [  976.677326]  <TASK>
-> [  976.677329]  _raw_spin_lock_irqsave+0x5c/0x80
-> [  976.677334]  alloc_iova+0x92/0x290
-> [  976.677341]  ? current_time+0x2d/0x120
-> [  976.677348]  alloc_iova_fast+0x1fb/0x400
-> [  976.677351]  ? srso_return_thunk+0x5/0x5f
-> [  976.677354]  ? touch_atime+0x1f/0x110
-> [  976.677360]  iommu_dma_alloc_iova+0xa2/0x190
-> [  976.677365]  iommu_dma_map_sg+0x447/0x4e0
+Alexey Kardashevskiy wrote:
+> 
+> 
+> On 13/3/25 12:51, Dan Williams wrote:
+> > Alexey Kardashevskiy wrote:
+> >> In order to add a PCI VF into a secure VM, the TSM module needs to
+> >> perform a "TDI bind" operation. The secure module ("PSP" for AMD)
+> >> reuqires a VM id to associate with a VM and KVM has it. Since
+> >> KVM cannot directly bind a TDI (as it does not have all necesessary
+> >> data such as host/guest PCI BDFn). QEMU and IOMMUFD do know the BDFns
+> >> but they do not have a VM id recognisable by the PSP.
+> >>
+> >> Add get_vmid() hook to KVM. Implement it for AMD SEV to return a sum
+> >> of GCTX (a private page describing secure VM context) and ASID
+> >> (required on unbind for IOMMU unfencing, when needed).
+> >>
+> >> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+> >> ---
+> >>   arch/x86/include/asm/kvm-x86-ops.h |  1 +
+> >>   arch/x86/include/asm/kvm_host.h    |  2 ++
+> >>   include/linux/kvm_host.h           |  2 ++
+> >>   arch/x86/kvm/svm/svm.c             | 12 ++++++++++++
+> >>   virt/kvm/kvm_main.c                |  6 ++++++
+> >>   5 files changed, 23 insertions(+)
+> >>
+> >> diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+> >> index c35550581da0..63102a224cd7 100644
+> >> --- a/arch/x86/include/asm/kvm-x86-ops.h
+> >> +++ b/arch/x86/include/asm/kvm-x86-ops.h
+> >> @@ -144,6 +144,7 @@ KVM_X86_OP_OPTIONAL(alloc_apic_backing_page)
+> >>   KVM_X86_OP_OPTIONAL_RET0(gmem_prepare)
+> >>   KVM_X86_OP_OPTIONAL_RET0(private_max_mapping_level)
+> >>   KVM_X86_OP_OPTIONAL(gmem_invalidate)
+> >> +KVM_X86_OP_OPTIONAL(tsm_get_vmid)
+> >>   
+> >>   #undef KVM_X86_OP
+> >>   #undef KVM_X86_OP_OPTIONAL
+> >> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> >> index b15cde0a9b5c..9330e8d4d29d 100644
+> >> --- a/arch/x86/include/asm/kvm_host.h
+> >> +++ b/arch/x86/include/asm/kvm_host.h
+> >> @@ -1875,6 +1875,8 @@ struct kvm_x86_ops {
+> >>   	int (*gmem_prepare)(struct kvm *kvm, kvm_pfn_t pfn, gfn_t gfn, int max_order);
+> >>   	void (*gmem_invalidate)(kvm_pfn_t start, kvm_pfn_t end);
+> >>   	int (*private_max_mapping_level)(struct kvm *kvm, kvm_pfn_t pfn);
+> >> +
+> >> +	u64 (*tsm_get_vmid)(struct kvm *kvm);
+> >>   };
+> >>   
+> >>   struct kvm_x86_nested_ops {
+> >> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> >> index f34f4cfaa513..6cd351edb956 100644
+> >> --- a/include/linux/kvm_host.h
+> >> +++ b/include/linux/kvm_host.h
+> >> @@ -2571,4 +2571,6 @@ long kvm_arch_vcpu_pre_fault_memory(struct kvm_vcpu *vcpu,
+> >>   				    struct kvm_pre_fault_memory *range);
+> >>   #endif
+> >>   
+> >> +u64 kvm_arch_tsm_get_vmid(struct kvm *kvm);
+> >> +
+> >>   #endif
+> >> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> >> index 7640a84e554a..0276d60c61d6 100644
+> >> --- a/arch/x86/kvm/svm/svm.c
+> >> +++ b/arch/x86/kvm/svm/svm.c
+> >> @@ -4998,6 +4998,16 @@ static void *svm_alloc_apic_backing_page(struct kvm_vcpu *vcpu)
+> >>   	return page_address(page);
+> >>   }
+> >>   
+> >> +static u64 svm_tsm_get_vmid(struct kvm *kvm)
+> >> +{
+> >> +	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
+> >> +
+> >> +	if (!sev->es_active)
+> >> +		return 0;
+> >> +
+> >> +	return ((u64) sev->snp_context) | sev->asid;
+> >> +}
+> >> +
+> > 
+> > Curious why KVM needs to be bothered by a new kvm_arch_tsm_get_vmid()
+> > and a vendor specific cookie "vmid" concept. In other words KVM never
+> > calls kvm_arch_tsm_get_vmid(), like other kvm_arch_*() support calls.
+> > 
+> > Is this due to a restriction that something like tsm_tdi_bind() is
+> > disallowed from doing to_kvm_svm() on an opaque @kvm pointer? Or
+> > otherwise asking an arch/x86/kvm/svm/svm.c to do the same?
+> 
+> I saw someone already doing some sort of VMID thing
 
-I'm assuming you have IOMMU enabled on the boot command line.
+Reference?
 
-Can you share your hardware configuration and RDMA NIC?
+> and thought it is a good way of not spilling KVM details outside KVM.
 
+...but it is not a KVM detail. It is an arch specific TSM cookie derived
+from arch specific data that wraps 'struct kvm'. Now if the rationale is
+some least privelege concern about what code can have a container_of()
+relationship with an opaque 'struct kvm *' pointer, let's have that
+discussion.  As it stands nothing in KVM cares about
+kvm_arch_tsm_get_vmid(), and I expect 'vmid' does not cover all the ways
+in which modular TSM drivers may interact with arch/.../kvm/ code.
 
-> [  976.677373]  __dma_map_sg_attrs+0x139/0x1b0
-> [  976.677380]  dma_map_sgtable+0x21/0x50
+For example TDX Connect needs to share some data from 'struct kvm_tdx',
+and it does that with an export from arch/x86/kvm/vmx/tdx.c, not an
+indirection through virt/kvm/kvm_main.c.
 
-So, here (and above) is where we leave the NFS server and venture into
-the IOMMU layer. Adding the I/O folks for additional eyes.
+> > Effectively low level TSM drivers are extensions of arch code that
+> > routinely performs "container_of(kvm, struct kvm_$arch, kvm)".
+> 
+> The arch code is CCP and so far it avoided touching KVM, KVM calls CCP 
+> when it needs but not vice versa. Thanks,
 
-Can you give us the output of:
-
-  $ scripts/faddr2line drivers/iommu/iova.o alloc_iova+0x92
-
-Should look something like:
-
-alloc_iova+0x92/0x1d0:
-__get_cached_rbnode at
-/home/cel/src/linux/server-development/drivers/iommu/iova.c:68
-(inlined by) __alloc_and_insert_iova_range at
-/home/cel/src/linux/server-development/drivers/iommu/iova.c:184
-(inlined by) alloc_iova at
-/home/cel/src/linux/server-development/drivers/iommu/iova.c:263
-
-
-> [  976.677386]  rdma_rw_ctx_init+0x6c/0x820 [ib_core]
-> [  976.677525]  ? common_perm_cond+0x4d/0x210
-> [  976.677532]  ? srso_return_thunk+0x5/0x5f
-> [  976.677538]  ? xfs_vn_getattr+0xe2/0x3c0 [xfs]
-> [  976.677700]  svc_rdma_rw_ctx_init+0x49/0xf0 [rpcrdma]
-> [  976.677725]  svc_rdma_build_writes+0xa5/0x210 [rpcrdma]
-> [  976.677746]  ? __pfx_svc_rdma_pagelist_to_sg+0x10/0x10 [rpcrdma]
-> [  976.677767]  ? svc_rdma_send_write_list+0xf4/0x290 [rpcrdma]
-> [  976.677790]  svc_rdma_xb_write+0x7d/0xb0 [rpcrdma]
-> [  976.677811]  svc_rdma_send_write_list+0x144/0x290 [rpcrdma]
-> [  976.677834]  ? nfsd_cache_update+0x57/0x2c0 [nfsd]
-> [  976.677889]  svc_rdma_sendto+0x99/0x510 [rpcrdma]
-> [  976.677912]  ? svcauth_unix_release+0x1e/0x80 [sunrpc]
-> [  976.677968]  svc_send+0x49/0x140 [sunrpc]
-> [  976.678013]  svc_process+0x166/0x200 [sunrpc]
-> [  976.678058]  svc_recv+0x8a1/0xaa0 [sunrpc]
-> [  976.678101]  ? __pfx_nfsd+0x10/0x10 [nfsd]
-> [  976.678144]  nfsd+0xa7/0x110 [nfsd]
-> [  976.678183]  kthread+0xe4/0x120
-> [  976.678188]  ? __pfx_kthread+0x10/0x10
-> [  976.678192]  ret_from_fork+0x46/0x70
-> [  976.678197]  ? __pfx_kthread+0x10/0x10
-> [  976.678200]  ret_from_fork_asm+0x1a/0x30
-> [  976.678210]  </TASK>
->=20
->=20
->=20
-> Full log attached.
->=20
-> File: dmesg-6.13.6.log (text/plain)
-> Size: 407.10 KiB
-> Link: https://bugzilla.kernel.org/attachment.cgi?id=3D307819
-> ---
-> NFS over RDMA - Watchdog detected hard LOCKUP on cpu
->=20
-> You can reply to this message to join the discussion.
-
-
---=20
-Chuck Lever
+Right, and the observation is that you don't need to touch
+virt/kvm/kvm_main.c at all to meet this data sharing requirement.
