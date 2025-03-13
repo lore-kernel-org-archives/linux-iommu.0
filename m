@@ -1,199 +1,273 @@
-Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E55A1EB1AF
-	for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 20:20:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.176
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741810860; cv=none; b=Dvl6sjerFb65VEHKNTfB3D//QjNa8gfVRT0ZHFN7SFlnMeXGk4tpyLYJvp6nv5q6NSQvd4pPC0kgpNj6CX8JFSQw58Pbb+RoSZcb06XnF+eXSQlu9qBv6uL9qyhzdwJXPWnxAzpcQNnqT9gDr0kN0k6mg1XpuXaMnZ6cgxXuG+k=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741810860; c=relaxed/simple;
-	bh=5y+PS9g0veYlrmU3sAeXgsPE1r2J3D9roA4qZSKQFZc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Q2OkC7+khCZmKRvaF78Qv64URt5AoVqzYl1ZY7/8LolwHLuYrRsZy/YPldMJL3/ii0PnME2f9IrNExO+xCes60vK+aabwfJFGX4C6bPC7paYY7FGF1RZ/EMDB3FWrp67agjjY5jsRwPbY5WlxjBnXHq/ddoVQst3aNm7TAxNDzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SPwCp7c3; arc=none smtp.client-ip=209.85.166.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B706D179BD;
+	Thu, 13 Mar 2025 01:52:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.8
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741830728; cv=fail; b=aFF4yvEkk4/kNgKnjOetadV7CL6W4ogL4PfKDli4aHK4rozWt5UcDbkd6jKJF/JAJFku3c/K7gDtIJ35YVPD+bQB35oQ0ea5RwmRxRh069kjKCZxsjQK9yH6fvsQcBgrHCcZrB9rWTYsdwMQhh8WQVVayk8nrjnG2Iu02MSMswg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741830728; c=relaxed/simple;
+	bh=PzFmJ6VS+xtrPGvGN9F9icu8NZYRQDGJpvXx89kQ8zE=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=bEP/Czu9V5rOUr3oFE1wJ83sE4IFCeJ/kJz1bDeET42/MovpKdXZYz3QSvORwWol2Ol9N4+uurn7fyDCZQvR03jbO/sSDD/58JJ2zHMheG1FHR6C03Mu9OMED4bwEhE8ysYSWFyshblqcZqt/mboMDE7BSYwa684w8rWEg97eVA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QsVL51oP; arc=fail smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SPwCp7c3"
-Received: by mail-il1-f176.google.com with SMTP id e9e14a558f8ab-3d450154245so1713435ab.2
-        for <iommu@lists.linux.dev>; Wed, 12 Mar 2025 13:20:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741810858; x=1742415658; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=leDzS7eIFvtHXIQQ9eglVb87YCz9EMBQq+7ox6gc9Qk=;
-        b=SPwCp7c3Tgw6ukwB3IF9Se4qfap4iogCsNp1t1909CrBo9vvYJ6fg30euMOgye7a3L
-         5LFfZ8bZGsAKDdQ6h04+d3ys8M/FD+uCncpKXEsEqAHH3G439M1ZTlZF9RTOgBdP07dZ
-         fIARweiipaNss5LOAZ6DPfpRBCsE38wFyFfsoCYS2fLHsgztWXVDaCf8PTdk/jbCOU2X
-         VZ/cAyLFZXL1DdiiFe6zoNE30J9CywtvFYhac0pxDUhkdh6swTNLyoeGxEgpXsN+U+LU
-         xpmymDKB+3wbWRIDYh9iGIkPLyO5gheOmoWIlKkAPTB2g8kDDiyigGytpbXAAYLMOxrm
-         7Gaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741810858; x=1742415658;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=leDzS7eIFvtHXIQQ9eglVb87YCz9EMBQq+7ox6gc9Qk=;
-        b=YbAlGZpOF3uDaINAUxS0v3PEwUjFsrZkOusrzBEBbYfg+hl0JIZ6fYwvb0FmhSfzSs
-         e2smWkDeqGiaE3rczBt0aUHVUf/4pOB931b1EFPDGe1C2mtrjtb0EPc3Ki8BualmX9I5
-         XU+EsWzk4SVvVogj1BXHubzuUjiOk3YlAT/UnOcDBsYZ1KBMfdUZ7LBaaMssdBu1mu88
-         1hIbNzsDRJz7uJp17iRpF6fzR4Tg33rZ00RubCrPsFVryumPOrvfbrFTHymB0YOlQkNC
-         Bc1r+GKGWxr7/FU+a+4W/ry64oaXlt28hZe0R/12ALimKO4Q29xeVBAgMuptZxzE8kyk
-         URKw==
-X-Forwarded-Encrypted: i=1; AJvYcCUS/ZT9AvKWMdYRDywJgHKaMGHc/EISjYWUsrlW+aVh4xrTY23X20A/mYotyzg1aRj7seu1Sg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx9oNyeY8EQEZC952f4gN+sSYLCBG8sg4teFwS8j63+5W1anJdt
-	tovvJVJ2cQJW986DNdOK/24NZ3f1FMKeCxoMAzxbQpj+oqE5wcj5CX/ryeXh8r8p+TmxSY/PEPG
-	d6mC9k3jCzqhDTh1dJZv+H00jmpc=
-X-Gm-Gg: ASbGncvvz7BOoOvmFvpY8cO/LRxcc0tDZUOo9gXQY+eBFDBSPc0mb932IOw0zwrefJO
-	ayIrfVTpPKipO4l4CuwM8fri+4VB6Sn7koardeVL3KVtAYbH4k1cW5JExKoudVCAEEetmRO2o8J
-	j9UDcwLBTFEqeARiuzBAQGGRIFc2rd53yl5HMnAAEyWxzKLe5GVho1XG0=
-X-Google-Smtp-Source: AGHT+IED4T6DLDIo3SmEhvYjhrVEJRweu80/CkvzBfXjIoBQfKIpAoBxfGcLmBmU9mYcxJ7671LtEDQ7s45JySuNKLY=
-X-Received: by 2002:a05:6e02:5a1:b0:3d4:700f:67e7 with SMTP id
- e9e14a558f8ab-3d4700f6b02mr43315405ab.17.1741810857983; Wed, 12 Mar 2025
- 13:20:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QsVL51oP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1741830727; x=1773366727;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=PzFmJ6VS+xtrPGvGN9F9icu8NZYRQDGJpvXx89kQ8zE=;
+  b=QsVL51oPSUPPBTIG+rUKkl19QWi8BFE9yp9DmFHBAMDS0w8fChi40PYx
+   Nzi6YSyWS6XlMbHet24/L66lXDf7N61/5687uLPVMYvE84Ay5FdzUgy73
+   v838NAwLTf/CLFOW6TzuXQ4v3Z9Agt0hSnPvIZ5cGLwEXPI/PbuhSsr9P
+   SE54X6q2sMcRCgVZ0tJHOGW6bhJpPuxk3R6bbS69lHJ7Zc65EOV6Y90Hr
+   rMPLsPKTE71jRhXdsAiyIz9rXQkyIEDHg2QTL7EjQm93PG53102ooqA4M
+   MN7s7gFJVAPporjHVYVs1JPumGlKectrqtM7Tm63ZTiXxHZ6XsobXGMVl
+   Q==;
+X-CSE-ConnectionGUID: HP/FfOJYQMSTbj0fthZ14g==
+X-CSE-MsgGUID: Je0RGeFURCWwcfvD4g/njw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11371"; a="60473417"
+X-IronPort-AV: E=Sophos;i="6.14,243,1736841600"; 
+   d="scan'208";a="60473417"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2025 18:52:06 -0700
+X-CSE-ConnectionGUID: Iax6tnZ+Sf6GH4kpQyuEjg==
+X-CSE-MsgGUID: F9qzUElmRPaRTNIMaZQRRQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,243,1736841600"; 
+   d="scan'208";a="125680671"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2025 18:52:05 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Wed, 12 Mar 2025 18:52:05 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Wed, 12 Mar 2025 18:52:05 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.47) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Wed, 12 Mar 2025 18:52:05 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=S61gjNkEW3ByxMpxvaXmImx3h2ta5Txnih2DZozYcAqL2eLqUnUhF0TYyXzt34Bx6TwsBx8xdrvMJrmnHlgRVY+xRSn+45WKZvbA3s9w7oX6GMMM5KErTeefsniaaHjS3jNoToiWpjo2lJ8Km53c8xPvjQMYqdfNU0lNlKxvM64y5yn8HJ/Y7QLri5busy4+hGtDzkrafBgMqlsitgnk0IEGPw6Df5SGuBK/rlsJ2grTFTg8FmHCnQ/O6NzUvQtjYiBt/cEEhY31cypeEMSQ60MqKIEoR2TMKI88dHcAr/f/LPlpUMGAqJgWF6GUdGwdydv0ba9QWasAIGOVdCKFkQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=N92Uhwxduc17jaelL64DhUPIypmGVNLXLO9gmHwIzbE=;
+ b=tQpHcC0rB3HdX530xhxqM3W035i4ww+8RuJ6fenUn8wEa9ZghfWCUt7ejD/bNF0UBB4v6UVM0A9qTXEz/D7XuHRyppTVP/nD87XYZYCCnCNzUAdhBgVjT/6oI2AF2TP2vJyau/P+StmHpX1+EzedMkSvLnUrhxsNn8+eINQHZ7zWhvaHuQFMO8X+aCSt2kEuq5ZHyjfReCf3ecswXsympony2xdsx/PfUX+EJOO7EwsJJD11hEWPQjVAF+H8Z+U3a2AzwYBIC2M3oJl7Ohs2MSX28fauqyfXYBcDreguAwr92agvZmVoz9iw11WBRBth0Zz/U9A8t7PZ05ANBJRUCQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH8PR11MB8107.namprd11.prod.outlook.com (2603:10b6:510:256::6)
+ by MW4PR11MB6864.namprd11.prod.outlook.com (2603:10b6:303:21b::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.26; Thu, 13 Mar
+ 2025 01:52:03 +0000
+Received: from PH8PR11MB8107.namprd11.prod.outlook.com
+ ([fe80::6b05:74cf:a304:ecd8]) by PH8PR11MB8107.namprd11.prod.outlook.com
+ ([fe80::6b05:74cf:a304:ecd8%4]) with mapi id 15.20.8511.026; Thu, 13 Mar 2025
+ 01:52:02 +0000
+Date: Wed, 12 Mar 2025 18:51:58 -0700
+From: Dan Williams <dan.j.williams@intel.com>
+To: Alexey Kardashevskiy <aik@amd.com>, <x86@kernel.org>
+CC: <kvm@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+	<linux-pci@vger.kernel.org>, <linux-arch@vger.kernel.org>, "Sean
+ Christopherson" <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>,
+	"Tom Lendacky" <thomas.lendacky@amd.com>, Ashish Kalra
+	<ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Robin Murphy <robin.murphy@arm.com>, "Jason
+ Gunthorpe" <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Bjorn Helgaas
+	<bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, "Christoph
+ Hellwig" <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>, Michael Roth
+	<michael.roth@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, Joao Martins
+	<joao.m.martins@oracle.com>, Nicolin Chen <nicolinc@nvidia.com>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Steve Sistare <steven.sistare@oracle.com>, "Lukas
+ Wunner" <lukas@wunner.de>, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>, Dionna Glaze
+	<dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
+	<iommu@lists.linux.dev>, <linux-coco@lists.linux.dev>, Zhi Wang
+	<zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>, "Aneesh Kumar K . V"
+	<aneesh.kumar@kernel.org>, Alexey Kardashevskiy <aik@amd.com>
+Subject: Re: [RFC PATCH v2 06/22] KVM: X86: Define tsm_get_vmid
+Message-ID: <67d23a3e6667_201f0294ed@dwillia2-xfh.jf.intel.com.notmuch>
+References: <20250218111017.491719-1-aik@amd.com>
+ <20250218111017.491719-7-aik@amd.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250218111017.491719-7-aik@amd.com>
+X-ClientProxiedBy: MW4PR03CA0085.namprd03.prod.outlook.com
+ (2603:10b6:303:b6::30) To PH8PR11MB8107.namprd11.prod.outlook.com
+ (2603:10b6:510:256::6)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250304-msm-gpu-fault-fixes-next-v4-0-be14be37f4c3@gmail.com>
- <20250304-msm-gpu-fault-fixes-next-v4-1-be14be37f4c3@gmail.com>
- <20250311180553.GB5216@willie-the-truck> <CACu1E7GzCiO2b7AFJSDC+pN2VD9VaD2aYz_GGymM3-xAUqd__A@mail.gmail.com>
- <20250312130525.GC6181@willie-the-truck> <CAF6AEGvqYithLFAKpfdkw35DEsUZ8rBt25-oWz3r=kaLt+RbQw@mail.gmail.com>
- <20250312164735.GA6561@willie-the-truck> <CAF6AEGskyoemQDrTXh=ewf61e-hVzWMjmqe=nX2J-65W5-M6Zw@mail.gmail.com>
- <2d47815d-6bee-4d1f-8b60-854763794bf6@arm.com>
-In-Reply-To: <2d47815d-6bee-4d1f-8b60-854763794bf6@arm.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Wed, 12 Mar 2025 13:20:45 -0700
-X-Gm-Features: AQ5f1Jr0TpL3RJwurfnQxJV3DndqXaN2cYc9nQyOJQLHZCc7asLNsX0jHJOoZ20
-Message-ID: <CAF6AEGvhixYvXghvD+itnSDjr7bO4i3Ls0Y-kXC-ohFN=CS0PQ@mail.gmail.com>
-Subject: Re: [PATCH v4 1/5] iommu/arm-smmu: Save additional information on
- context fault
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will@kernel.org>, Connor Abbott <cwabbott0@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
-	Sean Paul <sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Abhinav Kumar <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	freedreno@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH8PR11MB8107:EE_|MW4PR11MB6864:EE_
+X-MS-Office365-Filtering-Correlation-Id: 607cc6a1-4ffc-400f-72bd-08dd61d1a664
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014|7053199007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?bYx6Wa8kItd/kMfeZqj3vL1Ks9MjmPNB1aQbWAIo7iCeIvKqbeZgDsLtzUz+?=
+ =?us-ascii?Q?/CQiXcOlNucEhR+uu6vxIR0stfzylju7j0n7dODBEXhVWO4t7ef4pkvAf+wt?=
+ =?us-ascii?Q?N1+59UjpmsBEXNV1VxD6yViGsD7GkBX3j4a7Yb3AbJPJxKOGaMhpvhFD6e3M?=
+ =?us-ascii?Q?FMGoDMt4t+pI9fwi3WO98dtaX12YOWev0CkcMlBTtiG7JwuQVpaetbldLZqj?=
+ =?us-ascii?Q?FdmXt98dphSPIusg+tphoJUoJhDlNf/d1rq73xXgWHHabIp9em1e2okYxqtC?=
+ =?us-ascii?Q?/bKM4ud+GQFWWm+Ktz2dpPSsXzcYpl4DCq2tIacvgA0r4yWP6loH5F17RMl9?=
+ =?us-ascii?Q?61dHmYFUZl4EW+/glwB+LnskQYsBIR05zacAprfFYgqrpg2p4/TxHSrJnRGa?=
+ =?us-ascii?Q?TE4y9qMJV/2AKi3f35oYQFpdQ67/XGPMK3/Z+5SGvGVT78BBQlVugbDCaWFg?=
+ =?us-ascii?Q?hNxO5FuojCU1m3MjhFG3muLOwBLTJgt7rxObwZC31P+Mad1UojiH+ZKWbv2p?=
+ =?us-ascii?Q?foo3esGDvjGS1q7wWx1xXs4A1uslntJ7LMgghXfyFCSEaES4n+UrfaAB34Bk?=
+ =?us-ascii?Q?1eDcdFKbd6cLZ5XcoPNZjh2MsdOmOQW+gkjzLx3RuREVZxfjzcX3TFBeKx+4?=
+ =?us-ascii?Q?QKriMxadNYf51DXbJBnuluf3wHnrMUSq1eDVKlOPfMMIr05KeLpyJoFVau3K?=
+ =?us-ascii?Q?pLOEApW24f/yJMY4YpHVYijj/ZH7Zy0GyCWImWWcK4VSXw3EMyze+Xu9p9TM?=
+ =?us-ascii?Q?xxS0x8LqXr6w3tHPZxikwwbEhWR6ETDQwgeMBc8Xu9kYe+ZFgdaSqRpnHB/K?=
+ =?us-ascii?Q?pKvA7QHt6LyonW3nd5UwqBo8bvfgdRcR4EUiJQ/j4Hl/6JYEw8XWYi4v+uLg?=
+ =?us-ascii?Q?PTWWv2+mPbxOKeAJLP33aox3fmYtgmPLk7LMk/psm+/1Q6QeFi8d0d1QNSYn?=
+ =?us-ascii?Q?F/OJO+v2i/cjxuGmUNVfiyzefwzO+48yehE3k46AT2pTY1KlhnmRvrH08bvM?=
+ =?us-ascii?Q?EfmdgDW3Az2XomZZ7PJNC3pKVxiHl0gWDaSPDlWqf6Of9jj8iFtAvMme6/yY?=
+ =?us-ascii?Q?1zfGrMFvPCXZe46xKG5Z0TlT4OYrredLc3oJ+5lw3ikx5XSAxresJeP1Saw8?=
+ =?us-ascii?Q?gzjDvPN4E5Bn1uYbG+POkqKGWhufKhts3qVCDPGDkSLZmlAUW2+UIBJAF80R?=
+ =?us-ascii?Q?utNOveO2RSpBU78Recz7WY8vSMUNljkQeKEYxn68KW8V8bnihUsXFxqsf9JY?=
+ =?us-ascii?Q?rIy6Fzzl1uMXxjt2tv8ZpWwZecj0sOqSsN+TWGnRDZPkT3h3M4HFhhehbnD2?=
+ =?us-ascii?Q?UEbKwaVW5hSwUffo4MF6dyR+g9KB8RWoEzR5a6QgYbD5iaBPb8DEjzEcOzll?=
+ =?us-ascii?Q?2SfOtnBRXi3XSib5rshLSxWARJIF?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB8107.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hOICFFbLmQsdvrR07FIRf8ZaHDvNREjj+QWZtfhedp0GM6sK3q03Bve+oO/6?=
+ =?us-ascii?Q?Icqthwj4/noHvkmFRXqm/aBcyEoPmkOF0KdaUcfW+HFSdRy16jbnEdEOLSWe?=
+ =?us-ascii?Q?YmtgLWCcWhOz0ehrKBwOmJzWpQKH9PKeU80M3mAbnhqXsj6MwOXlcP25ebfc?=
+ =?us-ascii?Q?tCT/AlY3wG00FbqrrSF106HVWY6F2f9zJKjq+wGeU0m1ee9TxayxlIgEPRYG?=
+ =?us-ascii?Q?rVcUR+Y6UE+24GrEHDMysx75jTptRjR1cXPFNcsAq7K7j7OsQaqlfB/IONgb?=
+ =?us-ascii?Q?shi6xlY3S3+waydvHjtRKoptm93szVLtQt977bZE+yxXcirlMIJHjeAFNE+V?=
+ =?us-ascii?Q?u9bBqaGt0Hpg7QacAXjpzlKNqx0BRIqgVGM1s5thoYkFn/U7FY8mkTcYILWw?=
+ =?us-ascii?Q?agu2zfjVHv+xdAIrjzNGwJWnCN0TK6mWXSxlOgGYnXdhUTmE+v7QOBIhmfL7?=
+ =?us-ascii?Q?3QJ9Pqfe8WLD3DnbXio2iP5Y5JddyO6ZHEjF+RC5c+x7P71J59Xu58BxR/pW?=
+ =?us-ascii?Q?CDy4Q1xyMBhfaOHTtkpckhZcS5sx2S2qA8aSiQMYKnJLQVs4qC5uEdSEH948?=
+ =?us-ascii?Q?0xHeMnCscdLZivYKu7vg+8Piq3lM2fL2Hq8VlHCyCorUesinAMh0wwDajK3Q?=
+ =?us-ascii?Q?tMwatvvIAfJ/Sppj+nZyYqnkJqVeXl74PhYwR5P/oE/BUzIWtoVNWy/rnay5?=
+ =?us-ascii?Q?8idRBFE+QCcRj7yH6TmZGL8+Tz3OcD9kmbwATdko5pYlTe8tMijRoDaMxIlJ?=
+ =?us-ascii?Q?xddpHtJbQV8KnThxBsCfVPRc0W91hxnRSN5xKvbSEx5XO+sOGiNKYymiwIfP?=
+ =?us-ascii?Q?BxfmFhij/6yOXgTmK1R8ulMfxkh174x6qC+8rZnHt/V92E4F6qELJqTS8tbp?=
+ =?us-ascii?Q?advynvUocjE3yYhijhdIuabS4jWAY7fBFXd+IIpqroXS1OZ1zKx1EOQNEcgO?=
+ =?us-ascii?Q?LAp/C+Y5/KJk2aR17XCNuY0uw8vktMDU7mLArSZskAjP3Y5l2RJUBSLPW6J4?=
+ =?us-ascii?Q?QTtUsIfZ/ZHAc3kpb68VPKkDxgobAy2UwfkOKj7OY3RxUfkcx+9KEaSk+PIS?=
+ =?us-ascii?Q?Io1f3hRpYZiGvyMSi/HVMweUGLtNJZpgpZLGT7hJ5c6G+SJszlS4ERhrNB5i?=
+ =?us-ascii?Q?LQif7gkyU1bGxqxE9GxNn5/CQvhuKhj38+SJxZKXxmoJp4IL+6FXH8hjMsyl?=
+ =?us-ascii?Q?TV+jRrIcIdKgyX36J7jv+diNDw06qcltKQFIappYtnMW8IrZnFc2gQJtE3vZ?=
+ =?us-ascii?Q?/kC7op44tjXJ1V4VFqMoLUSkM6L2STGutwHOuHDKXcd2HdeMfTqP+5pQRgKy?=
+ =?us-ascii?Q?oO3EiHmD5/VApOfAsX4qIa90UVSscaSVbb+5Oa0tYEKQbti3AUvgqjVcfoYw?=
+ =?us-ascii?Q?2wEC7pAYkexJtJ2bRUGeaxh1bEJoFWAasqfn2Nm41linzzMD0lrCsW6UOGrQ?=
+ =?us-ascii?Q?sF8KItnE8OKI89O0yWF5I60xwLmLbeXUOKRdIXbqfSncgmocPHGiTbXQ+wWF?=
+ =?us-ascii?Q?eAIJ4oTmAEX7J+GAIr9HzsNprUiVDoIThWUA26CRpgVG/ZsJcJmnwppYgCDd?=
+ =?us-ascii?Q?XAl4ZwABtqFVnsQ5qPLFkvRNqT825BbPXYJ0M5Hszvfx+fEOtMsTBBUKxXGn?=
+ =?us-ascii?Q?5A=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 607cc6a1-4ffc-400f-72bd-08dd61d1a664
+X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB8107.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2025 01:52:02.6052
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EmSQJBf8sM7bqtr9OaP6wlb7o7q0x5LS3Fb3Cw9CmRWVaQJFjV2a7lCsS6a6aHxokodGPirch5We3X6ghe6tNY9x/KqjURbZXg2lBkYNWEU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6864
+X-OriginatorOrg: intel.com
 
-On Wed, Mar 12, 2025 at 11:01=E2=80=AFAM Robin Murphy <robin.murphy@arm.com=
-> wrote:
->
-> On 12/03/2025 5:23 pm, Rob Clark wrote:
-> > On Wed, Mar 12, 2025 at 9:47=E2=80=AFAM Will Deacon <will@kernel.org> w=
-rote:
-> >>
-> >> On Wed, Mar 12, 2025 at 07:59:52AM -0700, Rob Clark wrote:
-> >>> On Wed, Mar 12, 2025 at 6:05=E2=80=AFAM Will Deacon <will@kernel.org>=
- wrote:
-> >>>> On Tue, Mar 11, 2025 at 06:36:38PM -0400, Connor Abbott wrote:
-> >>>>> On Tue, Mar 11, 2025 at 2:06=E2=80=AFPM Will Deacon <will@kernel.or=
-g> wrote:
-> >>>>>> On Tue, Mar 04, 2025 at 11:56:47AM -0500, Connor Abbott wrote:
-> >>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iomm=
-u/arm/arm-smmu/arm-smmu.c
-> >>>>>>> index ade4684c14c9b2724a71e2457288dbfaf7562c83..a9213e0f1579d1e3b=
-e0bfba75eea1d5de23117de 100644
-> >>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> >>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> >>>>>>> @@ -409,9 +409,12 @@ void arm_smmu_read_context_fault_info(struct=
- arm_smmu_device *smmu, int idx,
-> >>>>>>>                                      struct arm_smmu_context_faul=
-t_info *cfi)
-> >>>>>>>   {
-> >>>>>>>        cfi->iova =3D arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_FAR=
-);
-> >>>>>>> +     cfi->ttbr0 =3D arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_TTB=
-R0);
-> >>>>>>>        cfi->fsr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
-> >>>>>>> -     cfi->fsynr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYN=
-R0);
-> >>>>>>> +     cfi->fsynr0 =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSY=
-NR0);
-> >>>>>>> +     cfi->fsynr1 =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSY=
-NR1);
-> >>>>>>
-> >>>>>> We already have an implementation hook (->get_fault_info()) which =
-the
-> >>>>>> qcom SMMU driver can override with qcom_adreno_smmu_get_fault_info=
-().
-> >>>>>> That thing dumps these registers already so if we're moving that i=
-nto
-> >>>>>> the core SMMU driver, let's get rid of the hook and move everybody=
- over
-> >>>>>> rather than having it done in both places.
-> >>>>>
-> >>>>> As you probably saw, the next commit moves over
-> >>>>> qcom_adreno_smmu_get_fault_info() to use this. The current back doo=
-r
-> >>>>> used by drm/msm to access these functions is specific to adreno_smm=
-u
-> >>>>> and there isn't an equivalent interface to allow it to call a gener=
-ic
-> >>>>> SMMU function so it isn't possible to move it entirely to the core.=
- At
-> >>>>> least not without a bigger refactoring that isn't justified for thi=
-s
-> >>>>> series that is just trying to fix things.
-> >>>>
-> >>>> Ok :(
-> >>>>
-> >>>>>>>        cfi->cbfrsynra =3D arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CB=
-FRSYNRA(idx));
-> >>>>>>> +     cfi->contextidr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB=
-_CONTEXTIDR);
-> >>>>>>
-> >>>>>> I think the CONTEXTIDR register is stage-1 only, so we shouldn't d=
-ump
-> >>>>>> it for stage-2 domains.
-> >>>>>>
-> >>>>> Does it matter if we read the register though, as long as users are
-> >>>>> aware of this and don't use its value for anything?
-> >>>>
-> >>>> I think the contents are "UNKNOWN", so it could be hugely confusing =
-even
-> >>>> if they just got logged someplace. Why is it difficult to avoid touc=
-hing
-> >>>> it for stage-2?
-> >>>>
-> >>> Fwiw, we are only ever using stage-1
-> >>
-> >> Sure, but this is in arm-smmu.c which is used by other people and supp=
-orts
-> >> both stages.
-> >
-> > Sure, but no one else is using this field in the fault-info.  So maybe
-> > the addition of a comment in the struct would be enough if it isn't
-> > going to cause an SError/etc to read it for S2 cb?
->
-> Any worthwhile comment isn't going to be significantly shorter or
-> clearer than 1 extra line of "if (smmu_domain->stage =3D=3D
-> ARM_SMMU_DOMAIN_S1)"...
+Alexey Kardashevskiy wrote:
+> In order to add a PCI VF into a secure VM, the TSM module needs to
+> perform a "TDI bind" operation. The secure module ("PSP" for AMD)
+> reuqires a VM id to associate with a VM and KVM has it. Since
+> KVM cannot directly bind a TDI (as it does not have all necesessary
+> data such as host/guest PCI BDFn). QEMU and IOMMUFD do know the BDFns
+> but they do not have a VM id recognisable by the PSP.
+> 
+> Add get_vmid() hook to KVM. Implement it for AMD SEV to return a sum
+> of GCTX (a private page describing secure VM context) and ASID
+> (required on unbind for IOMMU unfencing, when needed).
+> 
+> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+> ---
+>  arch/x86/include/asm/kvm-x86-ops.h |  1 +
+>  arch/x86/include/asm/kvm_host.h    |  2 ++
+>  include/linux/kvm_host.h           |  2 ++
+>  arch/x86/kvm/svm/svm.c             | 12 ++++++++++++
+>  virt/kvm/kvm_main.c                |  6 ++++++
+>  5 files changed, 23 insertions(+)
+> 
+> diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+> index c35550581da0..63102a224cd7 100644
+> --- a/arch/x86/include/asm/kvm-x86-ops.h
+> +++ b/arch/x86/include/asm/kvm-x86-ops.h
+> @@ -144,6 +144,7 @@ KVM_X86_OP_OPTIONAL(alloc_apic_backing_page)
+>  KVM_X86_OP_OPTIONAL_RET0(gmem_prepare)
+>  KVM_X86_OP_OPTIONAL_RET0(private_max_mapping_level)
+>  KVM_X86_OP_OPTIONAL(gmem_invalidate)
+> +KVM_X86_OP_OPTIONAL(tsm_get_vmid)
+>  
+>  #undef KVM_X86_OP
+>  #undef KVM_X86_OP_OPTIONAL
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index b15cde0a9b5c..9330e8d4d29d 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -1875,6 +1875,8 @@ struct kvm_x86_ops {
+>  	int (*gmem_prepare)(struct kvm *kvm, kvm_pfn_t pfn, gfn_t gfn, int max_order);
+>  	void (*gmem_invalidate)(kvm_pfn_t start, kvm_pfn_t end);
+>  	int (*private_max_mapping_level)(struct kvm *kvm, kvm_pfn_t pfn);
+> +
+> +	u64 (*tsm_get_vmid)(struct kvm *kvm);
+>  };
+>  
+>  struct kvm_x86_nested_ops {
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index f34f4cfaa513..6cd351edb956 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -2571,4 +2571,6 @@ long kvm_arch_vcpu_pre_fault_memory(struct kvm_vcpu *vcpu,
+>  				    struct kvm_pre_fault_memory *range);
+>  #endif
+>  
+> +u64 kvm_arch_tsm_get_vmid(struct kvm *kvm);
+> +
+>  #endif
+> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> index 7640a84e554a..0276d60c61d6 100644
+> --- a/arch/x86/kvm/svm/svm.c
+> +++ b/arch/x86/kvm/svm/svm.c
+> @@ -4998,6 +4998,16 @@ static void *svm_alloc_apic_backing_page(struct kvm_vcpu *vcpu)
+>  	return page_address(page);
+>  }
+>  
+> +static u64 svm_tsm_get_vmid(struct kvm *kvm)
+> +{
+> +	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
+> +
+> +	if (!sev->es_active)
+> +		return 0;
+> +
+> +	return ((u64) sev->snp_context) | sev->asid;
+> +}
+> +
 
-Just that smmu_domain isn't passed to
-arm_smmu_read_context_fault_info(), so it would add some extra churn
-on top of that one extra line
+Curious why KVM needs to be bothered by a new kvm_arch_tsm_get_vmid()
+and a vendor specific cookie "vmid" concept. In other words KVM never
+calls kvm_arch_tsm_get_vmid(), like other kvm_arch_*() support calls.
 
-> TBH it's the Qualcomm register-middle-man firmware I'd be more worried
-> about than real hardware, given how touchy it can be even with register
-> accesses which *should* be well defined. But then I guess it also has
-> the habit of killing the system if anything other than the GPU dares
-> cause a fault in the first place, so maybe it OK?
+Is this due to a restriction that something like tsm_tdi_bind() is
+disallowed from doing to_kvm_svm() on an opaque @kvm pointer? Or
+otherwise asking an arch/x86/kvm/svm/svm.c to do the same?
 
-If we have qc hyp, then we don't get S2 in the first place ;-)
-
-BR,
--R
-
-> If anyone still uses Arm Fast Models SMMUv1/2 components it'll probably
-> squawk an annoying warning there too - ISTR I had at least one patch
-> motivated by that in the past.
->
-> Thanks,
-> Robin.
+Effectively low level TSM drivers are extensions of arch code that
+routinely performs "container_of(kvm, struct kvm_$arch, kvm)".
