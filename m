@@ -1,58 +1,76 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 268191EBA09;
-	Thu, 13 Mar 2025 18:36:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89AA215539A;
+	Thu, 13 Mar 2025 18:39:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741890975; cv=none; b=QTilHRp82VTImzZU0l9vSEjA6oTjiV+9FmpdIZVeelWx2v63271ZCpAZSaMdqr2eNaC3S+SwvdJk1KmYd7YKTc643ZPpW659Whf9eo5VxF3Acrx7zqEttITa39dbPgDx6gcYBYp8k9VNVxNji3fImBFkhaQHjxJaGKmnrTNI6hQ=
+	t=1741891191; cv=none; b=YfzAYLU7QlzDgqqXZWeYHPXzpj/9UtpAe36KzE+sB9kKgb2FZ3thb6h4anLJsd0K4l7JDSXjXG9pGA42H6JCvVO5IbuiNDP8BUKdTa4BXusrWePqEkUKTSCHQDI5f+7iQKd3McZhaGchb73qsztUBByZowuI0Yy9ygzPSn36EG4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741890975; c=relaxed/simple;
-	bh=noNqbEqWozEmWb8r+oEsKLOqlleIkAazUiumENMSLF0=;
+	s=arc-20240116; t=1741891191; c=relaxed/simple;
+	bh=kIkQaPZ9LaF/0ujXnF4WzyuxIHtkF7tmzmaoCMQRocI=;
 	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ACYZEjPixhbApy7aYWrfe/R0ZqEQcVXzNdwX4ziTGR2EFDZimrGtC+FrJ0dsKDw54MOwmw02ebBetr/vC0hzHbHxwoA05EEwJ8kPwRLNrKcq0Gkpvt47dkqCwXNOT3AAGEqQtfnfHEvThCAKRmthooPyk4ig8/RzB128HBz1eXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h/HNnNqr; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=AdxFHDEuI3tXl0hQAv4PNZjBu1ZDYhOMGnFsHmadNUef3f3ry8FfpUREg83W2tt4X+LL+IOlSMoCRGmFvI41DEc1/Eve/8+lvpJ1Pc1FecC4uZhM5weNKC60iykFr/WgNocvl2zWvtfqaqw6WR1+/6aE6nS9u4ej2W0s5O0ghGo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=crRHUmJs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h/HNnNqr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FAEBC4CEE3;
-	Thu, 13 Mar 2025 18:36:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="crRHUmJs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05F44C4CEDD;
+	Thu, 13 Mar 2025 18:39:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741890974;
-	bh=noNqbEqWozEmWb8r+oEsKLOqlleIkAazUiumENMSLF0=;
+	s=k20201202; t=1741891191;
+	bh=kIkQaPZ9LaF/0ujXnF4WzyuxIHtkF7tmzmaoCMQRocI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=h/HNnNqra92rwOtBSLrZYKtv3i4wYf3e0w1wkpDU+50RtKRiaiHiK99B01QMkiV26
-	 4vWx7Bsfkl6b1D2c+z/Q/61EFzU8MmxNMbhxdIxefn0yyO9QogszYYj7RcTNWPHMjV
-	 qIprYoFVtNk7kt1Y5ToOA9NWDet7gBIDZTdeF2zQIgRWciKmbieoXlgZ9f6qwA8N+J
-	 8CrEpbGixi5fOo2MN0WrcUiIjSHYERG06Te4Jo/2VM46BydjX3ntLSE5sbwIqEBpPc
-	 uMOJAfbxtltCqjC3ZlX7TNNh2gpwRMgNN7jSG3TK6iDp0C/NYwLtuptXKQUuQLUeK0
-	 WjRSaEhsPKQCg==
+	b=crRHUmJsyyTm/0gxcFpH38mFYe/K37F23Wur1AA6SNOOMMtc4LdvyUwYEJeKqQy+d
+	 fzMFCs1gw4esrxCVrZcbUPnXo8lq6e2l/3KLmBAD3EOqkPT6CkBxbRpBV5UwUpBWJm
+	 wgK3VoxyTdooHwjDGgEGoDJU2f+nQclqw3isCJr6O/kdb2FrqKvcx0xkxlZvoGZ4xA
+	 niBNKasEtGGfBY9GMIDp6iTdzNSeu3WujgBCXYQWpDy1em0XOLfrsXeWFO12XSraIf
+	 F5HVNTSiNVJ3zt0IP6FLkq8xvfsck5K6n73RoocpCNci6rnPl02y2gfvO7J/yRGIbo
+	 irPCvOhLakY8w==
 Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
 	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.95)
 	(envelope-from <maz@kernel.org>)
-	id 1tsnPg-00DK9R-1h;
-	Thu, 13 Mar 2025 18:36:12 +0000
-Date: Thu, 13 Mar 2025 18:36:10 +0000
-Message-ID: <86h63wok11.wl-maz@kernel.org>
+	id 1tsnTA-00DKDm-RA;
+	Thu, 13 Mar 2025 18:39:48 +0000
+Date: Thu, 13 Mar 2025 18:39:48 +0000
+Message-ID: <86frjgojuz.wl-maz@kernel.org>
 From: Marc Zyngier <maz@kernel.org>
-To: Ryan Roberts <ryan.roberts@arm.com>
-Cc: =?UTF-8?B?TWlrb8WCYWo=?= Lenczewski <miko.lenczewski@arm.com>,
-	suzuki.poulose@arm.com,	yang@os.amperecomputing.com,	corbet@lwn.net,
-	catalin.marinas@arm.com,	will@kernel.org,	jean-philippe@linaro.org,
-	robin.murphy@arm.com,	joro@8bytes.org,	akpm@linux-foundation.org,
-	mark.rutland@arm.com,	joey.gouly@arm.com,	james.morse@arm.com,
-	broonie@kernel.org,	anshuman.khandual@arm.com,	oliver.upton@linux.dev,
-	ioworker0@gmail.com,	baohua@kernel.org,	david@redhat.com,	jgg@ziepe.ca,
-	shameerali.kolothum.thodi@huawei.com,	nicolinc@nvidia.com,
-	mshavit@google.com,	jsnitsel@redhat.com,	smostafa@google.com,
-	linux-doc@vger.kernel.org,	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,	iommu@lists.linux.dev
+To: =?UTF-8?B?TWlrb8WCYWo=?= Lenczewski <miko.lenczewski@arm.com>
+Cc: ryan.roberts@arm.com,
+	suzuki.poulose@arm.com,
+	yang@os.amperecomputing.com,
+	corbet@lwn.net,
+	catalin.marinas@arm.com,
+	will@kernel.org,
+	jean-philippe@linaro.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	akpm@linux-foundation.org,
+	mark.rutland@arm.com,
+	joey.gouly@arm.com,
+	james.morse@arm.com,
+	broonie@kernel.org,
+	anshuman.khandual@arm.com,
+	oliver.upton@linux.dev,
+	ioworker0@gmail.com,
+	baohua@kernel.org,
+	david@redhat.com,
+	jgg@ziepe.ca,
+	shameerali.kolothum.thodi@huawei.com,
+	nicolinc@nvidia.com,
+	mshavit@google.com,
+	jsnitsel@redhat.com,
+	smostafa@google.com,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
 Subject: Re: [PATCH v3 1/3] arm64: Add BBM Level 2 cpu feature
-In-Reply-To: <f244c20e-e11c-477b-9487-cb6738c028ca@arm.com>
+In-Reply-To: <20250313182026.GC40525@mazurka.cambridge.arm.com>
 References: <20250313104111.24196-2-miko.lenczewski@arm.com>
 	<20250313104111.24196-3-miko.lenczewski@arm.com>
 	<86ikocomvd.wl-maz@kernel.org>
-	<f244c20e-e11c-477b-9487-cb6738c028ca@arm.com>
+	<20250313182026.GC40525@mazurka.cambridge.arm.com>
 User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
  FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/29.4
  (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
@@ -65,64 +83,94 @@ MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: ryan.roberts@arm.com, miko.lenczewski@arm.com, suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net, catalin.marinas@arm.com, will@kernel.org, jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org, mark.rutland@arm.com, joey.gouly@arm.com, james.morse@arm.com, broonie@kernel.org, anshuman.khandual@arm.com, oliver.upton@linux.dev, ioworker0@gmail.com, baohua@kernel.org, david@redhat.com, jgg@ziepe.ca, shameerali.kolothum.thodi@huawei.com, nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+X-SA-Exim-Rcpt-To: miko.lenczewski@arm.com, ryan.roberts@arm.com, suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net, catalin.marinas@arm.com, will@kernel.org, jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org, mark.rutland@arm.com, joey.gouly@arm.com, james.morse@arm.com, broonie@kernel.org, anshuman.khandual@arm.com, oliver.upton@linux.dev, ioworker0@gmail.com, baohua@kernel.org, david@redhat.com, jgg@ziepe.ca, shameerali.kolothum.thodi@huawei.com, nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
 X-SA-Exim-Mail-From: maz@kernel.org
 X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-On Thu, 13 Mar 2025 18:22:00 +0000,
-Ryan Roberts <ryan.roberts@arm.com> wrote:
+On Thu, 13 Mar 2025 18:20:26 +0000,
+Miko=C5=82aj Lenczewski <miko.lenczewski@arm.com> wrote:
 >=20
-> On 13/03/2025 17:34, Marc Zyngier wrote:
+> On Thu, Mar 13, 2025 at 05:34:46PM +0000, Marc Zyngier wrote:
 > > On Thu, 13 Mar 2025 10:41:10 +0000,
 > > Miko=C5=82aj Lenczewski <miko.lenczewski@arm.com> wrote:
-> >>
-> >> diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel=
-/pi/idreg-override.c
-> >> index c6b185b885f7..9728faa10390 100644
-> >> --- a/arch/arm64/kernel/pi/idreg-override.c
-> >> +++ b/arch/arm64/kernel/pi/idreg-override.c
-> >> @@ -209,6 +209,7 @@ static const struct ftr_set_desc sw_features __pre=
-l64_initconst =3D {
-> >>  		FIELD("nokaslr", ARM64_SW_FEATURE_OVERRIDE_NOKASLR, NULL),
-> >>  		FIELD("hvhe", ARM64_SW_FEATURE_OVERRIDE_HVHE, hvhe_filter),
-> >>  		FIELD("rodataoff", ARM64_SW_FEATURE_OVERRIDE_RODATA_OFF, NULL),
-> >> +		FIELD("nobbml2", ARM64_SW_FEATURE_OVERRIDE_NOBBML2, NULL),
-> >>  		{}
-> >>  	},
-> >>  };
-> >> @@ -246,6 +247,7 @@ static const struct {
-> >>  	{ "rodata=3Doff",			"arm64_sw.rodataoff=3D1" },
-> >>  	{ "arm64.nolva",		"id_aa64mmfr2.varange=3D0" },
-> >>  	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=3D1" },
-> >> +	{ "arm64.nobbml2",		"arm64_sw.nobbml2=3D1" },
+> > >=20
+> > > diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kerne=
+l/pi/idreg-override.c
+> > > index c6b185b885f7..9728faa10390 100644
+> > > --- a/arch/arm64/kernel/pi/idreg-override.c
+> > > +++ b/arch/arm64/kernel/pi/idreg-override.c
+> > > @@ -209,6 +209,7 @@ static const struct ftr_set_desc sw_features __pr=
+el64_initconst =3D {
+> > >  		FIELD("nokaslr", ARM64_SW_FEATURE_OVERRIDE_NOKASLR, NULL),
+> > >  		FIELD("hvhe", ARM64_SW_FEATURE_OVERRIDE_HVHE, hvhe_filter),
+> > >  		FIELD("rodataoff", ARM64_SW_FEATURE_OVERRIDE_RODATA_OFF, NULL),
+> > > +		FIELD("nobbml2", ARM64_SW_FEATURE_OVERRIDE_NOBBML2, NULL),
+> > >  		{}
+> > >  	},
+> > >  };
+> > > @@ -246,6 +247,7 @@ static const struct {
+> > >  	{ "rodata=3Doff",			"arm64_sw.rodataoff=3D1" },
+> > >  	{ "arm64.nolva",		"id_aa64mmfr2.varange=3D0" },
+> > >  	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=3D1" },
+> > > +	{ "arm64.nobbml2",		"arm64_sw.nobbml2=3D1" },
 > >=20
 > > Why is that a SW feature? This looks very much like a HW feature to
 > > me, and you should instead mask out ID_AA64MMFR2_EL1.BBM, and be done
 > > with it. Something like:
+> >=20
+> > diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel/=
+pi/idreg-override.c
+> > index c6b185b885f70..803a0c99f7b46 100644
+> > --- a/arch/arm64/kernel/pi/idreg-override.c
+> > +++ b/arch/arm64/kernel/pi/idreg-override.c
+> > @@ -102,6 +102,7 @@ static const struct ftr_set_desc mmfr2 __prel64_ini=
+tconst =3D {
+> >  	.override	=3D &id_aa64mmfr2_override,
+> >  	.fields		=3D {
+> >  		FIELD("varange", ID_AA64MMFR2_EL1_VARange_SHIFT, mmfr2_varange_filte=
+r),
+> > +		FIELD("bbm", ID_AA64MMFR2_EL1_BBM_SHIFT, NULL),
+> >  		{}
+> >  	},
+> >  };
+> > @@ -246,6 +247,7 @@ static const struct {
+> >  	{ "rodata=3Doff",			"arm64_sw.rodataoff=3D1" },
+> >  	{ "arm64.nolva",		"id_aa64mmfr2.varange=3D0" },
+> >  	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=3D1" },
+> > +	{ "arm64.nobbml2",		"id_aa64mmfr2.bbm=3D0" },
+> >  };
+> > =20
+> >  static int __init parse_hexdigit(const char *p, u64 *v)
+> >=20
+> >=20
+> > Thanks,
+> >=20
+> > 	M.
+> >=20
+> > --=20
+> > Without deviation from the norm, progress is not possible.
 >=20
-> I think this implies that we would expect the BBM field to be advertising=
- BBML2
-> support normally and we would check for that as part of the cpufeature
-> detection. That's how Miko was doing it in v2, but Yang pointed out that
-> AmpereOne, which supports BBML2+NOABORT semantics, doesn't actually adver=
-tise
-> BBML2 in its MMFR2. So we don't want to check that field, and instead rely
-> solely on the MIDR allow-list + a command line override. It was me that
-> suggested putting that in the SW feature register, and I think that still=
- sounds
-> like the right solution for this situation?
+> Thanks for the review.
+>=20
+> I think part of this confusion is due to me not including a changelog
+> (definitely something for the next respin!), but the discussion this
+> change is based on is found here:
+>=20
+> https://lore.kernel.org/all/b46dc626-edc9-4d20-99d2-6cd08a01346c@os.amper=
+ecomputing.com/
+>=20
+> Essentially, this is a SW feature because we do not check the
+> id_aa64mmfr2.bbm register as part of the has_bbml2_noabort() cpucap
+> matches filter. This is because certain hardware implementations
+> do not actually declare bbml2 via the hardware feature register, despite
+> implementing our bbml2_noabort feature, and certain hypervisor setups
+> might result in issues so we want to have an override to allow
+> potentially disabling the feature for generic kernels.
 
-I think this is mixing two different things:
-
-- preventing BBM-L2 from being visible to the kernel: this is what my
-  suggestion is doing by nuking an architectural feature in the
-  relevant register
-
-- random HW not correctly advertising what they are doing: this is an
-  erratum workaround
-
-I'd rather we don't conflate the two things, and make them very
-explicitly distinct.
+I replied to Ryan on the same subject: not advertising a feature that
+is actually supported is very much an erratum, and we should not
+conflate feature control of an architecture feature (which is what the
+ID override horror is doing) with implementation-specific workarounds.
 
 Thanks,
 
