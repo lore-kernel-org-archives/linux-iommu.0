@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 59C8E19F42D
-	for <iommu@lists.linux.dev>; Fri, 14 Mar 2025 09:18:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35A6D1C861D
+	for <iommu@lists.linux.dev>; Fri, 14 Mar 2025 09:27:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741943932; cv=none; b=cDo5RCQJzPS6qTTx2mhYjPFm0+9/rE+sqVUKwnmVIZ2fm3Jlz+VH7tE4NHOuvVBnzznxoOGyMvCAGmeWH1C3yYO/CzKCUPIs/RylY00HnE9f5j5SwisMHtzLZnXxLP5x2A1aZ0pOBMhMY1BlJF6TcHoDqmADE2mTWMKUexQXKLU=
+	t=1741944423; cv=none; b=jPfRFdUEsBpJ1gThwHW1uVfDdAAdnndZ2J9VCTlQoh98wzkre4ywgQlI0pfXOe0LR40wkvSQL1p3MIBuVYmhtYrDAJR7MR3p5MI8BqBEyoo9dwtxRMjOL5VaIgGjUkc3LIehWHPMHMvHLoO/RelYxrWmZK2bpK7AsZxL/0hwCg8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741943932; c=relaxed/simple;
-	bh=4mrGHHJmJH5JJr+dUgq2oV94DzI0QIq5Tw+QFE6F8K4=;
+	s=arc-20240116; t=1741944423; c=relaxed/simple;
+	bh=JcldlY/ETPmR3IenknhNxPNgRcWA0ROHMHWWITDho/I=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dMnoHzALTMZNgCv4UA9TUKc4HkpPs57ECvgNfHFLXBzaHYa7OEEKPh39RfSQtKCx1hKfuquCm7yb2CsfuJBj/pwT7K7XM4BKMdJlQP+TH0manCVeDhCkjdynHiwOY2x/9a1QmnKOVJNvG8ZLKZGF4nX+1t6TqXK3bxAEy4N5zY4=
+	 In-Reply-To:Content-Type; b=BqtDtBIi8pw7nja+MEluEiSLuSWQoEw7Sb1w/8jK4z9ZIo5h4UwKZPNr/sUMrjMlhTa/6cDhu6VLnpsC4eB5UXpIkLOnJ8pnW+TpyMBtx11f+J7WFYeuFsO72ywSeNlFsyu7NlHTPonOkLn1cXtsQsTO+C6LMOeRsIecR8vXz5c=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 969441424;
-	Fri, 14 Mar 2025 02:18:59 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 549631424;
+	Fri, 14 Mar 2025 02:27:11 -0700 (PDT)
 Received: from [10.57.85.159] (unknown [10.57.85.159])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3012C3F673;
-	Fri, 14 Mar 2025 02:18:45 -0700 (PDT)
-Message-ID: <4998dd9b-106d-4ca7-be88-5330429dcfe8@arm.com>
-Date: Fri, 14 Mar 2025 09:18:43 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 73EA03F673;
+	Fri, 14 Mar 2025 02:26:57 -0700 (PDT)
+Message-ID: <d3a15aaf-16a6-4a88-a6c5-9b9afaa5f370@arm.com>
+Date: Fri, 14 Mar 2025 09:26:56 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -29,95 +29,114 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v3 1/3] arm64: Add BBM Level 2 cpu feature
 Content-Language: en-GB
-To: Marc Zyngier <maz@kernel.org>
-Cc: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
- suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net,
+To: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>
+Cc: suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net,
  catalin.marinas@arm.com, will@kernel.org, jean-philippe@linaro.org,
  robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org,
- mark.rutland@arm.com, joey.gouly@arm.com, james.morse@arm.com,
- broonie@kernel.org, anshuman.khandual@arm.com, oliver.upton@linux.dev,
- ioworker0@gmail.com, baohua@kernel.org, david@redhat.com, jgg@ziepe.ca,
- shameerali.kolothum.thodi@huawei.com, nicolinc@nvidia.com,
- mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+ mark.rutland@arm.com, joey.gouly@arm.com, maz@kernel.org,
+ james.morse@arm.com, broonie@kernel.org, anshuman.khandual@arm.com,
+ oliver.upton@linux.dev, ioworker0@gmail.com, baohua@kernel.org,
+ david@redhat.com, jgg@ziepe.ca, shameerali.kolothum.thodi@huawei.com,
+ nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com,
+ smostafa@google.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
 References: <20250313104111.24196-2-miko.lenczewski@arm.com>
  <20250313104111.24196-3-miko.lenczewski@arm.com>
- <86ikocomvd.wl-maz@kernel.org> <f244c20e-e11c-477b-9487-cb6738c028ca@arm.com>
- <86h63wok11.wl-maz@kernel.org>
+ <ea10caee-59ef-4a00-9b61-37cb0a379411@arm.com>
+ <20250313180833.GA40525@mazurka.cambridge.arm.com>
 From: Ryan Roberts <ryan.roberts@arm.com>
-In-Reply-To: <86h63wok11.wl-maz@kernel.org>
+In-Reply-To: <20250313180833.GA40525@mazurka.cambridge.arm.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 13/03/2025 18:36, Marc Zyngier wrote:
-> On Thu, 13 Mar 2025 18:22:00 +0000,
-> Ryan Roberts <ryan.roberts@arm.com> wrote:
+On 13/03/2025 18:08, Mikołaj Lenczewski wrote:
+> On Thu, Mar 13, 2025 at 04:13:22PM +0000, Ryan Roberts wrote:
+>> On 13/03/2025 10:41, Mikołaj Lenczewski wrote: 
+>>> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+>>> index d561cf3b8ac7..b936e0805161 100644
+>>> --- a/arch/arm64/kernel/cpufeature.c
+>>> +++ b/arch/arm64/kernel/cpufeature.c
+>>> @@ -2176,6 +2176,76 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
+>>>  	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
+>>>  }
+>>>  
+>>> +static inline bool bbml2_possible(void)
+>>> +{
+>>> +	return !arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_NOBBML2);
 >>
->> On 13/03/2025 17:34, Marc Zyngier wrote:
->>> On Thu, 13 Mar 2025 10:41:10 +0000,
->>> Mikołaj Lenczewski <miko.lenczewski@arm.com> wrote:
->>>>
->>>> diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel/pi/idreg-override.c
->>>> index c6b185b885f7..9728faa10390 100644
->>>> --- a/arch/arm64/kernel/pi/idreg-override.c
->>>> +++ b/arch/arm64/kernel/pi/idreg-override.c
->>>> @@ -209,6 +209,7 @@ static const struct ftr_set_desc sw_features __prel64_initconst = {
->>>>  		FIELD("nokaslr", ARM64_SW_FEATURE_OVERRIDE_NOKASLR, NULL),
->>>>  		FIELD("hvhe", ARM64_SW_FEATURE_OVERRIDE_HVHE, hvhe_filter),
->>>>  		FIELD("rodataoff", ARM64_SW_FEATURE_OVERRIDE_RODATA_OFF, NULL),
->>>> +		FIELD("nobbml2", ARM64_SW_FEATURE_OVERRIDE_NOBBML2, NULL),
->>>>  		{}
->>>>  	},
->>>>  };
->>>> @@ -246,6 +247,7 @@ static const struct {
->>>>  	{ "rodata=off",			"arm64_sw.rodataoff=1" },
->>>>  	{ "arm64.nolva",		"id_aa64mmfr2.varange=0" },
->>>>  	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=1" },
->>>> +	{ "arm64.nobbml2",		"arm64_sw.nobbml2=1" },
->>>
->>> Why is that a SW feature? This looks very much like a HW feature to
->>> me, and you should instead mask out ID_AA64MMFR2_EL1.BBM, and be done
->>> with it. Something like:
+>> If you're going to keep this helper, I think it really needs to be:
 >>
->> I think this implies that we would expect the BBM field to be advertising BBML2
->> support normally and we would check for that as part of the cpufeature
->> detection. That's how Miko was doing it in v2, but Yang pointed out that
->> AmpereOne, which supports BBML2+NOABORT semantics, doesn't actually advertise
->> BBML2 in its MMFR2. So we don't want to check that field, and instead rely
->> solely on the MIDR allow-list + a command line override. It was me that
->> suggested putting that in the SW feature register, and I think that still sounds
->> like the right solution for this situation?
+>> return IS_ENABLED(CONFIG_ARM64_BBML2_NOABORT) &&
+>>        !arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_NOBBML2);
+>>
+>> Then you would simplify the caller to remove it's own
+>> IS_ENABLED(CONFIG_ARM64_BBML2_NOABORT) check.
+>>
+>> But personally I would remove the helper and just fold the test into
+>> has_bbml2_noabort().
+>>
+>> Thanks,
+>> Ryan
 > 
-> I think this is mixing two different things:
-> 
-> - preventing BBM-L2 from being visible to the kernel: this is what my
->   suggestion is doing by nuking an architectural feature in the
->   relevant register
-> 
-> - random HW not correctly advertising what they are doing: this is an
->   erratum workaround
-> 
-> I'd rather we don't conflate the two things, and make them very
-> explicitly distinct.
+> I was debating folding it into has_bbml2_noabort(), but went ahead and
+> implemented it separately to match hvhe_possible(), which was another sw
+> feature helper.
 
-It all sounds so obvious when you put it like that! :)
+hvhe_possible() is a .matches function, so there is nothing to fold it into.
 
-I'm guessing there is a layer where the workaround can be applied to the
-sanitised feature registers on a per-cpu basis and that won't affect this global
-override which will remain as an overlay on top? If so then that sounds perfect
-(you can probably tell I find the whole feature management framework rather
-inpeneterable). That workaround would be added as part of Yang's series anyway.
+> 
+> But I agree, folding it will be simpler and read just as easily (if not
+> easier). Will do so.
+> 
+>>> +}
+>>> +
+>>> +static bool cpu_has_bbml2_noabort(unsigned int cpu_midr)
+>>> +{
+>>> +	/* We want to allow usage of bbml2 in as wide a range of kernel contexts
+>>> +	 * as possible. This list is therefore an allow-list of known-good
+>>> +	 * implementations that both support bbml2 and additionally, fulfill the
+>>> +	 * extra constraint of never generating TLB conflict aborts when using
+>>> +	 * the relaxed bbml2 semantics (such aborts make use of bbml2 in certain
+>>> +	 * kernel contexts difficult to prove safe against recursive aborts).
+>>> +	 *
+>>> +	 * Note that implementations can only be considered "known-good" if their
+>>> +	 * implementors attest to the fact that the implementation never raises
+>>> +	 * TLBI conflict aborts for bbml2 mapping granularity changes.
+>>> +	 */
+>>> +	static const struct midr_range supports_bbml2_noabort_list[] = {
+>>> +		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
+>>> +		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
+>>> +		{}
+>>> +	};
+>>> +
+>>> +	return is_midr_in_range_list(cpu_midr, supports_bbml2_noabort_list);
+>>> +}
+>>> +
+>>> +static inline unsigned int __cpu_read_midr(int cpu)
+>>
+>> nit: why the double underscrore prefix?
+> 
+> Again copying other helpers I saw that seemed to do similar things.
+> Didn't know if this was the expected style, so did as other helpers did.
+> Will remove.
 
-So sounds like we are back to testing MMFR2.BBM in the matches function, with
-the addition of Maz's proposal above. Sorry for sending you round the houses, Miko.
+Often those double underscores are used when you have a public function wrapping
+into a private function, like this:
+
+static void __do_a_thing(bool modify_behaviour_in_some_way);
+
+void do_a_thing(void)
+{
+	__do_a_thing(false);
+}
+
+I'm sure the coding style offers a better explanation.
 
 Thanks,
 Ryan
 
 > 
-> Thanks,
-> 
-> 	M.
+> Thank you for the review.
 > 
 
