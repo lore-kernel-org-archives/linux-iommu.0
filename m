@@ -1,161 +1,160 @@
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 957B11F03C7
-	for <iommu@lists.linux.dev>; Fri, 14 Mar 2025 09:48:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92FE41F4261;
+	Fri, 14 Mar 2025 10:11:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741945704; cv=none; b=IzHZd+zllgtREHuBZ1xMArK93MhasxC6QST83LMqgVR9EZMD2t9QiYaiES6lJgFjJBgrHBqFRQs5saQHCAVvwr7tIy0QcJhnW703FlGD1FiDGQHjYzXTGLvpkodIGCp0uAnuqwOEFA66ebYBmQZ9AZGCTKXI5pDt8S7kvuP39g8=
+	t=1741947072; cv=none; b=EEBteKwUujqHPkuD0bsIGqN8nFak9lQLyIi9oiwdQcrpIDdc2kubKPXeWAteeIcZx9V64wj0wPwvB55yVmUaVdsbkv3AeMBuZF8+wmXzjUVkluZrXpgCUuPBEU0GG1m9TEKHgqzL9DeJf9WDdpMunxStkszV896NhP2/AtrWhOU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741945704; c=relaxed/simple;
-	bh=ntrXBr+INEaTdjjIuTH+2ThTesvG7vd12dHm2Z44+kE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TtFN2z6OG13sOVfST9GwchI7xmMxpivz95naQohILTZcN+94+BtTqpwBfDOb7OgDVuU6CoBc06MufRDj5xkalI0RGxdfQ04rIQER5jhQMNNJrMkndlvme3JJo8xgaGKqLF8azrroUZYo/FUrb65hFby21smvX0MoUt3FACBygxc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=j21qaANG; arc=none smtp.client-ip=209.85.208.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1741947072; c=relaxed/simple;
+	bh=tDstaa/o6sUBQipm+8mIlCkuic6AshHp3d0i/s0EITM=;
+	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=RIKG5yKLTyVU4HV8zMYNNAGKrlAh12S3X1Eq0SoJuC1ZwOufyAzi7ILDHfK+rFNR7B2ThhI6tQh/AhuoScF36dJZDk/mMeagDeUHgQQAXZMZ2C62qs1uwpkaeFSItYlzAIV/h/w4TGbhpmNZEJP6PLsN9Nyfanojw0dWkVgN7OA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M74ckQG0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="j21qaANG"
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-30bfc79ad97so30830601fa.1
-        for <iommu@lists.linux.dev>; Fri, 14 Mar 2025 02:48:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1741945701; x=1742550501; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=FD6bznsu01iYGcm6ewJe4RuYE462CwiH5xGheRZGZw0=;
-        b=j21qaANG5SZdofVddCMVlte/vSk3pJ8KF7udwOTjLH9HZDQNs/7K4Qt1fSMnuw6MGS
-         ivUKBLBO/xeIXtQEmn821ZlKybx0WGxTtvg1NMAhdj+7EelXkkDoNbaoJu+n4XbCG0tV
-         QD7IlEXB2qJQ/HD871WegsZkj2UnsoiNcTnlGaGu7lf1JtTe+CefocdcY2Rn6dK9oL4Y
-         JAGjuj0MqW1nZ6FtjUoOGjMZhMI5lGjp5k+UVRY7eivYPETS9LUiE8BMrJZednd+5d1h
-         2lIqS3Ibq8J7JRVCj3sHTk2S8tc0b/OckFLG3pHnlrYShoIAGLP9jOAORGWYUsE7JAQz
-         R9Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741945701; x=1742550501;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FD6bznsu01iYGcm6ewJe4RuYE462CwiH5xGheRZGZw0=;
-        b=GOCve4JG0YVYLQ1h+kiAfzQBWB1mtdwKlTWDfJ28U0q2glWPMnVO1ZiTgg4aMEJyWF
-         rXCICJ2XfRDFJE4yde4b6AJ6ZCwZNRuT1kIRiWCypFK1OOlWrq0J6pZhfCMokEsWbCq7
-         sR+rObgsrDXiWC7lm0PwW19qONDOSlkfYZnEzdm2iHdVbb5sKU+jAXh9I6Ib4G7mc4zb
-         idppxh+L10QIAsO1L75dFRpVuhQWNFCQZUxSn7AOl72Zju4Gkt4umAUrJVyM9yqQr1T9
-         JDPEPxhdtqzP+gegLq5MhM0z77EyCMPuXETvHqG5a/URo73tI0UHY1qPfxkCjiccHsDq
-         vCZg==
-X-Forwarded-Encrypted: i=1; AJvYcCV6+gtqUsGgwYcuZEgWv4ugC7QGTl/nsnddYjdOkdnyOTGOThMyos5ki+QbcnqWury7QLedyg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxZGRhOOelqRqcOxUTkuxStSOLBLRlcz+cu8ugXhlFaNCqkZ4yy
-	wfb6wyyrkhyiCsgvUTVwGKzg7heY2driELCruRzoSqC1I/cIu7Y+kyOQoj2Sve3JfUSr2eMfJUJ
-	QIyWTZfv7fSm6cpLYZZJbIKK7OMVdCaSfWR3GGg==
-X-Gm-Gg: ASbGncsX1K5mmNL0EriP2t6vjjKQxWOCeW9lMJJXlZ2HBLId7ZvvEA9KRkL05qG8G53
-	BB3nSbt0hf5NyKkxI1UERKLzgQaGW2rQaiJdOtYDfNeVobZdWaYfn/WZvJnSkfZy5QM+4Id1O6Z
-	s2DIaq1+1d240u/Mqt7+fiQSmfMImjIqo=
-X-Google-Smtp-Source: AGHT+IF+BXUJPCiL1c7sbvSs4gfqol1v20qox8jtJslAuMcy8M2YGJF8kQcGGVoAZtCirbS3VlFVKlXtncaYF36CYig=
-X-Received: by 2002:a05:6512:ba8:b0:549:7145:5d2d with SMTP id
- 2adb3069b0e04-549c3f97f37mr544029e87.16.1741945700612; Fri, 14 Mar 2025
- 02:48:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M74ckQG0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F422DC4CEE3;
+	Fri, 14 Mar 2025 10:11:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741947072;
+	bh=tDstaa/o6sUBQipm+8mIlCkuic6AshHp3d0i/s0EITM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=M74ckQG0sfvECxcaXf8Tl8WoWWhi4VT0YPYkXgn/QrpSQ5sg/X2u5ixhpCg99qZ92
+	 yJYOHdeJao8AqwcLwQCD4g0MlEnSjubhKT9LCyazptQa/koISoX3njO/nrKiQB4W5G
+	 X13YnXU0g5T9erpPZhALc3PWY7OlKct8dJCXG8XAXiLLSBhb1fvezOKgJ5+Wgm0maO
+	 PsxXQuZA7FB6TBsHmnHIRhKa+IYLhCIB/04KlUd3ALJxUcayMa2+9HfPyGBMWpfV1+
+	 XtQae7eE0BBFynLsY29h7JG092I7A2tuVFXm9wj/tGtN6dAykI3tODuqQeo3eBrdFY
+	 SRvU1zcD2guQg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <maz@kernel.org>)
+	id 1tt20T-00DVK5-Fo;
+	Fri, 14 Mar 2025 10:11:09 +0000
+Date: Fri, 14 Mar 2025 10:11:08 +0000
+Message-ID: <86ecyzorb7.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: Ryan Roberts <ryan.roberts@arm.com>
+Cc: =?UTF-8?B?TWlrb8WCYWo=?= Lenczewski <miko.lenczewski@arm.com>,
+	suzuki.poulose@arm.com,	yang@os.amperecomputing.com,	corbet@lwn.net,
+	catalin.marinas@arm.com,	will@kernel.org,	jean-philippe@linaro.org,
+	robin.murphy@arm.com,	joro@8bytes.org,	akpm@linux-foundation.org,
+	mark.rutland@arm.com,	joey.gouly@arm.com,	james.morse@arm.com,
+	broonie@kernel.org,	anshuman.khandual@arm.com,	oliver.upton@linux.dev,
+	ioworker0@gmail.com,	baohua@kernel.org,	david@redhat.com,	jgg@ziepe.ca,
+	shameerali.kolothum.thodi@huawei.com,	nicolinc@nvidia.com,
+	mshavit@google.com,	jsnitsel@redhat.com,	smostafa@google.com,
+	linux-doc@vger.kernel.org,	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,	iommu@lists.linux.dev
+Subject: Re: [PATCH v3 1/3] arm64: Add BBM Level 2 cpu feature
+In-Reply-To: <4998dd9b-106d-4ca7-be88-5330429dcfe8@arm.com>
+References: <20250313104111.24196-2-miko.lenczewski@arm.com>
+	<20250313104111.24196-3-miko.lenczewski@arm.com>
+	<86ikocomvd.wl-maz@kernel.org>
+	<f244c20e-e11c-477b-9487-cb6738c028ca@arm.com>
+	<86h63wok11.wl-maz@kernel.org>
+	<4998dd9b-106d-4ca7-be88-5330429dcfe8@arm.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/29.4
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <SJ1PR11MB61295DE21A1184AEE0786E25B9D22@SJ1PR11MB6129.namprd11.prod.outlook.com>
-In-Reply-To: <SJ1PR11MB61295DE21A1184AEE0786E25B9D22@SJ1PR11MB6129.namprd11.prod.outlook.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Fri, 14 Mar 2025 17:48:09 +0800
-X-Gm-Features: AQ5f1Jp8h2KQrj8cXSVVa65hkY1o46EVlIPZXIQrn2pTPHmKX_laXhYL3waLDDA
-Message-ID: <CABQgh9HBqbJYnUqJzG+nOY=B8nQ-8Scy8i0ctszBm8rzpocNFw@mail.gmail.com>
-Subject: Re: Regression on linux-next (next-20250312)
-To: "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>
-Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>, 
-	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>, 
-	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>, 
-	"Kurmi, Suresh Kumar" <suresh.kumar.kurmi@intel.com>, "Saarinen, Jani" <jani.saarinen@intel.com>, 
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: ryan.roberts@arm.com, miko.lenczewski@arm.com, suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net, catalin.marinas@arm.com, will@kernel.org, jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org, mark.rutland@arm.com, joey.gouly@arm.com, james.morse@arm.com, broonie@kernel.org, anshuman.khandual@arm.com, oliver.upton@linux.dev, ioworker0@gmail.com, baohua@kernel.org, david@redhat.com, jgg@ziepe.ca, shameerali.kolothum.thodi@huawei.com, nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-Hi, Borah
+On Fri, 14 Mar 2025 09:18:43 +0000,
+Ryan Roberts <ryan.roberts@arm.com> wrote:
+>=20
+> On 13/03/2025 18:36, Marc Zyngier wrote:
+> > On Thu, 13 Mar 2025 18:22:00 +0000,
+> > Ryan Roberts <ryan.roberts@arm.com> wrote:
+> >>
+> >> On 13/03/2025 17:34, Marc Zyngier wrote:
+> >>> On Thu, 13 Mar 2025 10:41:10 +0000,
+> >>> Miko=C5=82aj Lenczewski <miko.lenczewski@arm.com> wrote:
+> >>>>
+> >>>> diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kern=
+el/pi/idreg-override.c
+> >>>> index c6b185b885f7..9728faa10390 100644
+> >>>> --- a/arch/arm64/kernel/pi/idreg-override.c
+> >>>> +++ b/arch/arm64/kernel/pi/idreg-override.c
+> >>>> @@ -209,6 +209,7 @@ static const struct ftr_set_desc sw_features __p=
+rel64_initconst =3D {
+> >>>>  		FIELD("nokaslr", ARM64_SW_FEATURE_OVERRIDE_NOKASLR, NULL),
+> >>>>  		FIELD("hvhe", ARM64_SW_FEATURE_OVERRIDE_HVHE, hvhe_filter),
+> >>>>  		FIELD("rodataoff", ARM64_SW_FEATURE_OVERRIDE_RODATA_OFF, NULL),
+> >>>> +		FIELD("nobbml2", ARM64_SW_FEATURE_OVERRIDE_NOBBML2, NULL),
+> >>>>  		{}
+> >>>>  	},
+> >>>>  };
+> >>>> @@ -246,6 +247,7 @@ static const struct {
+> >>>>  	{ "rodata=3Doff",			"arm64_sw.rodataoff=3D1" },
+> >>>>  	{ "arm64.nolva",		"id_aa64mmfr2.varange=3D0" },
+> >>>>  	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=3D1" },
+> >>>> +	{ "arm64.nobbml2",		"arm64_sw.nobbml2=3D1" },
+> >>>
+> >>> Why is that a SW feature? This looks very much like a HW feature to
+> >>> me, and you should instead mask out ID_AA64MMFR2_EL1.BBM, and be done
+> >>> with it. Something like:
+> >>
+> >> I think this implies that we would expect the BBM field to be advertis=
+ing BBML2
+> >> support normally and we would check for that as part of the cpufeature
+> >> detection. That's how Miko was doing it in v2, but Yang pointed out th=
+at
+> >> AmpereOne, which supports BBML2+NOABORT semantics, doesn't actually ad=
+vertise
+> >> BBML2 in its MMFR2. So we don't want to check that field, and instead =
+rely
+> >> solely on the MIDR allow-list + a command line override. It was me that
+> >> suggested putting that in the SW feature register, and I think that st=
+ill sounds
+> >> like the right solution for this situation?
+> >=20
+> > I think this is mixing two different things:
+> >=20
+> > - preventing BBM-L2 from being visible to the kernel: this is what my
+> >   suggestion is doing by nuking an architectural feature in the
+> >   relevant register
+> >=20
+> > - random HW not correctly advertising what they are doing: this is an
+> >   erratum workaround
+> >=20
+> > I'd rather we don't conflate the two things, and make them very
+> > explicitly distinct.
+>=20
+> It all sounds so obvious when you put it like that! :)
+>=20
+> I'm guessing there is a layer where the workaround can be applied to the
+> sanitised feature registers on a per-cpu basis and that won't affect this=
+ global
+> override which will remain as an overlay on top? If so then that sounds p=
+erfect
+> (you can probably tell I find the whole feature management framework rath=
+er
+> inpeneterable).
 
-On Fri, 14 Mar 2025 at 17:18, Borah, Chaitanya Kumar
-<chaitanya.kumar.borah@intel.com> wrote:
->
-> Hello Robin,
->
-> Hope you are doing well. I am Chaitanya from the linux graphics team in Intel.
->
-> This mail is regarding a regression we are seeing in our CI runs[1] on linux-next repository.
->
-> Since the version next-20250312 [2], we are seeing the following regression
->
-> `````````````````````````````````````````````````````````````````````````````````
-> <4>[    6.246790] reg-dummy reg-dummy: late IOMMU probe at driver bind, something fishy here!
-> <4>[    6.246812] WARNING: CPU: 0 PID: 1 at drivers/iommu/iommu.c:449 __iommu_probe_device+0x140/0x570
-> <4>[    6.246822] Modules linked in:
-> <4>[    6.246830] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc6-next-20250312-next-20250312-g9fbcd7b32bf7+ #1
-> <4>[    6.246838] Hardware name: Intel Corporation Arrow Lake Client Platform/MTL-S UDIMM 2DPC EVCRB, BIOS MTLSFWI1.R00.4400.D85.2410100007 10/10/2024
-> <4>[    6.246847] RIP: 0010:__iommu_probe_device+0x140/0x570
-> `````````````````````````````````````````````````````````````````````````````````
-> Details log can be found in [3].
->
-> After bisecting the tree, the following patch [4] seems to be the first "bad" commit
->
-> `````````````````````````````````````````````````````````````````````````````````````````````````````````
-> commit bcb81ac6ae3c2ef95b44e7b54c3c9522364a245c
-> Author: Robin Murphy mailto:robin.murphy@arm.com
-> Date:   Fri Feb 28 15:46:33 2025 +0000
->
->     iommu: Get DT/ACPI parsing into the proper probe path
->
-> `````````````````````````````````````````````````````````````````````````````````````````````````````````
->
-> We also verified that if we revert the patch the issue is not seen.
->
-> Could you please check why the patch causes this regression and provide a fix if necessary?
+You and I, brother... The only person who actually understands what's
+in that file is Suzuki.
 
-I just send one fix caused by this patch
-Just FYI
+> That workaround would be added as part of Yang's series anyway.
 
-[PATCH] PCI: declare quirk_huawei_pcie_sva as FIXUP_HEADER
+Yup, that's what I'd expect. Ideally tied to an erratum number so that
+we have an actual promise from the vendor that their implementation is
+actually BBM-L2 compliant despite the idreg breakage.
 
-"bcb81ac6ae3c iommu: Get DT/ACPI parsing into the proper probe path"
-changes arm_smmu_probe_device sequence.
+Thanks,
 
-From
-pci_bus_add_device(virtfn)
--> pci_fixup_device(pci_fixup_final, dev)
--> arm_smmu_probe_device
+	M.
 
-To
-pci_device_add(virtfn, virtfn->bus)
--> pci_fixup_device(pci_fixup_header, dev)
--> arm_smmu_probe_device
-
-So declare the fixup as pci_fixup_header to take effect
-before arm_smmu_probe_device.
-
-If your system has fixup, it may need a change '
-from
-DECLARE_PCI_FIXUP_FINAL
-to
-DECLARE_PCI_FIXUP_HEADER
-
-Thanks
-
-
->
-> Thank you.
->
-> Regards
->
-> Chaitanya
->
-> [1] https://intel-gfx-ci.01.org/tree/linux-next/combined-alt.html?
-> [2] https://web.git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20250312
-> [3] https://intel-gfx-ci.01.org/tree/linux-next/next-20250312/bat-arls-6/boot0.txt
-> [4] https://web.git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20250312&id=bcb81ac6ae3c2ef95b44e7b54c3c9522364a245c
->
->
+--=20
+Without deviation from the norm, progress is not possible.
