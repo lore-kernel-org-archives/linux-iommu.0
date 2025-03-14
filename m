@@ -1,186 +1,185 @@
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0FDA32C85
-	for <iommu@lists.linux.dev>; Fri, 14 Mar 2025 04:05:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B98614A09A
+	for <iommu@lists.linux.dev>; Fri, 14 Mar 2025 06:09:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741925108; cv=none; b=j7C0jhYY0WelaPJvgqjuLmKTuD4wCKWqMkp8w6FF3y7vE5b3jmPpQc/B9Lap5yvs7a6vZYLhwHddauca6AcF6ynrT6ejRQxzrIxInvqoUbGttA9LpcGsDi5zhE/yXgUswpCHEi3OrLACc3S03Oa4JZPqolbeUYVqGZ6Ztoca4tI=
+	t=1741932561; cv=none; b=P6u3Vp+42ZX9uvAaRLD2PYwQxRitUDNtevTUXdV5ExLKSja5jbr+pTcfsjT+gD2O6NafxwfRcJ0I9N15E/WDcYsoGRX0J/4Ljhh8yQJFalVylu4sQx5782uBmSTm1gpouSHjiwaw7cUka2ZmVwN0aWJNFZ983UT4fCI2cbohA10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741925108; c=relaxed/simple;
-	bh=XU7FdM3Ffg6QP05RRUEg+NX4qxvK9dQAgJRWFzfE7Os=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MbDN8ceReGxrJ7qawH5ATh6bnz6fki7tm59zCDGOyH2FPynA2zgBG1aBAjS79T5aX4dwUO5FYOcBY1dPXJJZHSYOzz+9Tw+0iKrxIMrqJYM+DkB3PFHU1ucYDskm7PEjCWjZSjflecBaEze3F+ktymV6wlaNxRRV4U7MI1BjxAw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=VTVI3piH; arc=none smtp.client-ip=209.85.208.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1741932561; c=relaxed/simple;
+	bh=JcgEM0xedYxu5bYof0Ovcu0EaEeskIX5tXdtwYapZDI=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=GtrHQcxN9UVi0YSYdueF0rhn74rp6501N0YaDZRaEmgsv6mh8NOYxghGVhgXiA0/mR+IXGwaCnrM/NVk/A7nk/jRmYzBOdg/Ql9Y/si8Wvmb8g+R3CAmGXKrGsXrLmR/8bV7dxomJ/IHlWLlZavSSrXGRX9V1HJEh4lK7fOX2Ec=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=KR17KZ1j; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VTVI3piH"
-Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-30bf8632052so16612491fa.0
-        for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 21:05:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1741925104; x=1742529904; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=h//ATjia85HEojScqbuknPiD1067XRlRwJ315LGwuuA=;
-        b=VTVI3piHUSs/2f8YOE3VOtgoexsyNqjkQiaus2PrKAiwogoZgHK+fXrvmpVC59YPT7
-         Gt4/jjDMJNy5e1cFyrBRyZzvXlD8EPqxGhIgvUTeieU5omAZLpcubWabReouT7SIYWR9
-         yq3zpjAEPFihqm532wznGlM96SDXx2P9qXwjRBKqmUqnecd0J8nCbv1r/VmuGrkogVMe
-         CR2LSEZU2c2Mzvd2zK09G3OgCstGTKbuHCFHbzexwSFxEFYNRU3H+PzBm99c8jX5cmd8
-         lTcOMxHzTApC/4eSHOzcWZGkzh64GINVWrejpvwxn+3hA/x/tZy/bzNOQVzdCRJWRI4J
-         Lk4w==
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="KR17KZ1j"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52DF8mAp020990
+	for <iommu@lists.linux.dev>; Fri, 14 Mar 2025 06:09:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=aPJH6AMt3R+0o42l1hNuer
+	OXIrFuPaoPXNlRFcEX02M=; b=KR17KZ1jGpoMMw+0ZRHfo83sMMfmCxecGflW5R
+	aoSc+1xcAPkgZ193ocpHsQy/3zlSQe/xP+KvW4Op2x9ZNkxbQIa4nCMwkLmxokEG
+	IegdU5EJumfyzxOM8TiUDr/99yhI63v8l2xXv6Ewb5+UU/1XRfxM5YZK+zT2VpXX
+	8nXboHXvmhC5z9MnHEiz2bMHYW78GP8i2icmHURyon8ZyoXMwtcgR4vj21ys3acy
+	U38YZD/MFLsi5T8XE4cqaQa10pXSTgFWxo4dUH4Sigc7EyZ27dBHHfUDjReG5P9y
+	Ybre4wHP/mS3ml7fxqVVxwtpyu8mIGcXtqiC804lGOurNvgg==
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45au2q06h2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 14 Mar 2025 06:09:17 +0000 (GMT)
+Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-7c5750ca8b2so229572985a.0
+        for <iommu@lists.linux.dev>; Thu, 13 Mar 2025 23:09:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741925104; x=1742529904;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20230601; t=1741932556; x=1742537356;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=h//ATjia85HEojScqbuknPiD1067XRlRwJ315LGwuuA=;
-        b=YsmBDbiZRrpCpkGCJV37ORTMvtYYMZ3amg+gYENJIHfpUkNMPkplX7inzmeYRjAWdW
-         nim86vpfLB9i8hlhFGOTB6WKG60fMAxd+GPiEjpKP2A4yEJTYy3kwxHz10IYAoRK82iS
-         HD3QCQjWTgKH4QnXEbD/vh31Anc2PHuQQJVW/zhKc7k5L326OOa6C+hpigdbvzi0jeUs
-         psSgwO6HCO53yuY0JEX63VvtES+o/xtrw1ebSS8Wg3dO4vKrdWSa3+ZWhrRg0j3NkdLX
-         Scz0YRkSYuJ/dzVuHxH+3hYUjDxWNSimnkVuy89BAzWQcygmbUYAl5t/sTfMo/9uWlb9
-         noqA==
-X-Forwarded-Encrypted: i=1; AJvYcCWQJv2OoJ5FfvBTEuEza8UtnTf6JH2YF4lmyQKeJBzTrdxvzJNDMEVuJWJKBDL9eKAeVL3bYw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz9kahGyQNP9I+nWQMz7G7VHzoGvRj3nIy2JigQRzzuLcyjIeHP
-	bNlI+ma4TuF54NzMaUVBmaId/ApFmJrIgDcXaVw2CzoS8PRhpODO8O3gM0aUPeIAGvH7OxcUXQy
-	Ef0jI9tQ6GjKYw0vLqqSl+3AHzCWRppC95zYf5A==
-X-Gm-Gg: ASbGncuEwxQ7J20krzlkQ8NMXH1YdBEj+0t6y/gGxm9L/wY0yi4ejOYs0K8u/aKoAdq
-	y0ZQxcxsTP63MQo7cn9OpNjzYXm146GV5mHosdmACqC9YHdOZthPwHT43WoYuaM/E0JHg1P3/79
-	eCIe6mC2BuoOQttkYGjaANx7jrWg==
-X-Google-Smtp-Source: AGHT+IH+6Ak42L7Q+3G3rk/KoaIGmKV0+96j6H68eEIV5uqgLh6/zhd3gN2T37mcOBFNf/ch/w9xuC3da1CZk34tKc0=
-X-Received: by 2002:a05:651c:1a0a:b0:30b:ef3d:88bb with SMTP id
- 38308e7fff4ca-30c4a8e52femr3174581fa.32.1741925103879; Thu, 13 Mar 2025
- 21:05:03 -0700 (PDT)
+        bh=aPJH6AMt3R+0o42l1hNuerOXIrFuPaoPXNlRFcEX02M=;
+        b=AeqVNIOvS86wrEUj+WiFbdzAwdTj3OnttzHHsIJ7MYAxDVIC3dchB1akwYd9halBFm
+         3UkdyXLPRiXBnnoEKJIP0p2nsXdG+FTX4Rj1fo7LmN29HuiTFLcj28I5qect5A21ciJ9
+         CzJC5jXa6Us80VEmqv5jRPUsvVQcV5w0plD2Ktp6VycIOy3eXYTVlGDqYOZ41O3adj2f
+         4mRHk7yF18j8zDywocmqjZ0i+cO7z/uZUl0Awf/PQKIbwy8Fbm58Uwrlh2yttnqGQi75
+         RJtjjtYRBZKrmDx1FIYBzJekHa1jp8soqiCg7z2wKAnquQsIDX6g+eKblJHHa0uQ7AHq
+         Wg/A==
+X-Forwarded-Encrypted: i=1; AJvYcCWIyBIS5qg45rJyt/z8SFEO9D6MFLzgoGaE8AiZl02Wa8egMWhWN+GB0aW/Kon6voGqcqDM8A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzeRQylpSlssjUqMhoMj82XrmrulARDJzP8Dnj9LglWiDOinoGf
+	KBs+WwSk2smoEHaRaLyZLgHf0nZMn0AxzeqR9urQeN8kqizOfFIC7szyVtSyPKFxtLKax72ZF65
+	5idfVFhEKf3eY1xdRbSBQVjfGzQdmcli4SUzdAUMmLVorNMagC9If6Q==
+X-Gm-Gg: ASbGncsxZTQr3Vf8AkCwkIxv0TWjmXxtYLGvgn6ACNqzuti4aomyukVEzUmmvJSp0+W
+	2+gUSfsom6OIYTYPLF4i0yRtorPpk1BcfMZpN4MEpHh6YAzREE7hZ4HRZVwZwUB9Q3UuVefx+MJ
+	TwSgPmIkc7zNMdIbYduXcBmoNl6Knsw+ROlNIRIMeJT/b0HLNFOTXD+4xZ+aVubn47Um+dkhK3+
+	JgDIs7bUfFoODtAbB1lflPpSitXIKD0OqKjv3UTiRXPzjJtCpvDMbu6JBPf27JyW/RDSS/kzLzl
+	/Sh722YaTycKUhqcGd4Kst2SOJ2Z3XVMubO1TvWf3P15CWSexJc32LBWKo2/bvlpzHLdkp71FzI
+	VgAvUlylp6Wc2nijvhA5ZdtsZndwg
+X-Received: by 2002:a05:620a:4387:b0:7c0:c469:d651 with SMTP id af79cd13be357-7c57c8f2fafmr153254185a.57.1741932555838;
+        Thu, 13 Mar 2025 23:09:15 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGU2fdH1nYknRxmyE0Pv1gs73Y7wtDiY6qmVkZjEOFWyyh/E2KJTtu6R4id2U1COR7/iYgZsw==
+X-Received: by 2002:a05:620a:4387:b0:7c0:c469:d651 with SMTP id af79cd13be357-7c57c8f2fafmr153249585a.57.1741932555466;
+        Thu, 13 Mar 2025 23:09:15 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-549ba864fc9sm416071e87.140.2025.03.13.23.09.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Mar 2025 23:09:13 -0700 (PDT)
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Subject: [PATCH v2 00/10] drm/msm: add support for SAR2130P
+Date: Fri, 14 Mar 2025 08:09:04 +0200
+Message-Id: <20250314-sar2130p-display-v2-0-31fa4502a850@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250313051953.4064532-1-baolu.lu@linux.intel.com>
- <CABQgh9HKaDyDQXGB5ZEGg5q4a9ak_8OB9XQ+TpUNcZd_ZMeCAQ@mail.gmail.com>
- <CABQgh9G=7q+FQ0ECZ60UjawgkAM2aeNEb6hXgndEv8S9_4CuPw@mail.gmail.com>
- <b85990db-41f4-41cc-ab5c-0b952becdde7@linux.intel.com> <CABQgh9FGS4aug9aRH4ddgwStpVpEAOKMmJ_aDHcdYrUR3eLSOg@mail.gmail.com>
-In-Reply-To: <CABQgh9FGS4aug9aRH4ddgwStpVpEAOKMmJ_aDHcdYrUR3eLSOg@mail.gmail.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Fri, 14 Mar 2025 12:04:52 +0800
-X-Gm-Features: AQ5f1JpbGhPHF3BB0AZ3jd2ZvOtpiI9SVmgWjv3sWTyjDpPVVEZSzTxjIevp0G4
-Message-ID: <CABQgh9H=415-V3qfFBn4PuCyuHO5cO_i4vnPTuxBZ9bkSU+eXQ@mail.gmail.com>
-Subject: Re: [PATCH v4 0/8] iommu: Remove IOMMU_DEV_FEAT_SVA/_IOPF
-To: Baolu Lu <baolu.lu@linux.intel.com>, Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>, 
-	Vinod Koul <vkoul@kernel.org>, Fenghua Yu <fenghuay@nvidia.com>, 
-	Zhou Wang <wangzhou1@hisilicon.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAADI02cC/3WOTQ6CMBCFr0JmbXXaojGuvIdhUWCKk0iL00o0h
+ LuLsHb5vby/CRIJU4JLMYHQyIljWMDsCmjuLnSkuF0YDJojWjyr5MRoi4NqOQ0P91E1nlD7xlN
+ tEZbYIOT5vVbeqo2Fnq+lOW8i1C6RamLfc74Ugd750LuUSeBnv3PKUT7roVGv/v/bo1aodFs2F
+ n1pz8ZcHxycxH2UDqp5nr/LdYw04AAAAA==
+X-Change-ID: 20250308-sar2130p-display-b0601fcfeb30
+To: Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <lumag@kernel.org>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Krishna Manikandan <quic_mkrishn@quicinc.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2518;
+ i=dmitry.baryshkov@oss.qualcomm.com; h=from:subject:message-id;
+ bh=JcgEM0xedYxu5bYof0Ovcu0EaEeskIX5tXdtwYapZDI=;
+ b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBn08gGsPRmM7wX4zdSQvNqp8Q+K5YNl0IUjqldp
+ 1a8iYn/lUyJATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCZ9PIBgAKCRCLPIo+Aiko
+ 1fvtCACoM5/p8j/jiu1MRW5fm7gny1R4+IwOUzJ3uIj1j5bnsUYdAGdgeJdtDhX24RsqIWpk1U+
+ Me5C1z+Bp953zcjJx8/lOJFsjdZV5hOAqQjeNkTeFgFpMtT0fyAzzL1jycxmXWGy9XgIB/Z/bMd
+ soyL74eqB6Dad2frQ+7rs3SJNZZhQt+Aab4+RrTpmpSp8EeiC5nndVMn8ZJrGiZvcha6hoxI8Do
+ +FHJP7cgHGqFPBSNasJ3TQl0pxVqosTAgBKBNU1Ec0UtmUwVpy1BvjmZov7f3jBB3Gc/Ur00VSF
+ Q9ws5Dmd1JPROErmBHfToVHVPPUHi5O2BWiIFOFdqco7LRcd
+X-Developer-Key: i=dmitry.baryshkov@oss.qualcomm.com; a=openpgp;
+ fpr=8F88381DD5C873E4AE487DA5199BF1243632046A
+X-Authority-Analysis: v=2.4 cv=P506hjAu c=1 sm=1 tr=0 ts=67d3c80d cx=c_pps a=HLyN3IcIa5EE8TELMZ618Q==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=Vs1iUdzkB0EA:10 a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8 a=EUspDBNiAAAA:8 a=qnNoV65vq9fCYBTq3NIA:9 a=QEXdDO2ut3YA:10
+ a=bTQJ7kPSJx9SKPbeHEYW:22 a=cvBusfyB2V15izCimMoJ:22
+X-Proofpoint-GUID: dxw11ZyFc0plErkZnthxf2YfUG_oMN9Q
+X-Proofpoint-ORIG-GUID: dxw11ZyFc0plErkZnthxf2YfUG_oMN9Q
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-14_02,2025-03-13_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 phishscore=0
+ mlxscore=0 spamscore=0 bulkscore=0 priorityscore=1501 impostorscore=0
+ suspectscore=0 malwarescore=0 mlxlogscore=999 lowpriorityscore=0
+ adultscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2503140047
 
-On Thu, 13 Mar 2025 at 19:37, Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
->
-> On Thu, 13 Mar 2025 at 19:20, Baolu Lu <baolu.lu@linux.intel.com> wrote:
-> >
-> > On 2025/3/13 18:57, Zhangfei Gao wrote:
-> > > On Thu, 13 Mar 2025 at 17:51, Zhangfei Gao<zhangfei.gao@linaro.org> wrote:
-> > >> Hi, Baolu
-> > >>
-> > >> On Thu, 13 Mar 2025 at 13:19, Lu Baolu<baolu.lu@linux.intel.com> wrote:
-> > >>> The new method for driver fault reporting support relies on the domain
-> > >>> to specify a iopf_handler. The driver should detect this and setup the
-> > >>> HW when fault capable domains are attached.
-> > >>>
-> > >>> Move SMMUv3 to use this method and have VT-D validate support during
-> > >>> attach so that all three fault capable drivers have a no-op FEAT_SVA and
-> > >>> _IOPF. Then remove them.
-> > >>>
-> > >>> This was initiated by Jason. I'm following up to remove FEAT_IOPF and
-> > >>> further clean up.
-> > >>>
-> > >>> The whole series is also available at github:
-> > >>> https://github.com/LuBaolu/intel-iommu/commits/iommu_no_feat-v4
-> > >> I got an issue on this branch.
-> > >>
-> > >> Linux 6.14-rc4 + iommu_no_feat-v2
-> > >> drivers/pci/quirks.c
-> > >> quirk_huawei_pcie_sva will set dma-can-stall first
-> > >> arm_smmu_probe_device will check dma-can-stall and set stall_enabled
-> > >> accordingly.
-> > > This working branch arm_smmu_probe_device is called from pci_bus_add_device
-> > > So pci_fixup_device is called first
-> > >
-> > > [ 1121.314405]  arm_smmu_probe_device+0x48/0x450
-> > > [ 1121.314410]  __iommu_probe_device+0xc4/0x3c8
-> > > [ 1121.314412]  iommu_probe_device+0x40/0x90
-> > > [ 1121.314414]  acpi_dma_configure_id+0xb4/0x100
-> > > [ 1121.314417]  pci_dma_configure+0xf8/0x108
-> > > [ 1121.314421]  really_probe+0x78/0x278
-> > > [ 1121.314425]  __driver_probe_device+0x80/0x140
-> > > [ 1121.314427]  driver_probe_device+0x48/0x130
-> > > [ 1121.314430]  __device_attach_driver+0xc0/0x108
-> > > [ 1121.314432]  bus_for_each_drv+0x8c/0xf8
-> > > [ 1121.314435]  __device_attach+0x104/0x1a0
-> > > [ 1121.314437]  device_attach+0x1c/0x30
-> > > [ 1121.314440]  pci_bus_add_device+0xb8/0x1f0
-> > > [ 1121.314442]  pci_iov_add_virtfn+0x2ac/0x300
-> > > [ 1121.314446]  sriov_enable+0x204/0x468
-> > > [ 1121.314447]  pci_enable_sriov+0x20/0x40
-> > >
-> > >
-> > >> This branch
-> > >> arm_smmu_probe_device happens first, when dma-can-stall = 0, so
-> > >> stall_enabled =0.
-> > >> Then drivers/pci/quirks.c: quirk_xxx happens
-> > > This not working branch: Linux 6.14-rc6 + iommu_no_feat-v4
-> > > arm_smmu_probe_device is called by pci_device_add
-> > > Then call pci_bus_add_device -> pci_fixup_device
-> > >
-> > >    215.072859]  arm_smmu_probe_device+0x48/0x450
-> > > [  215.072871]  __iommu_probe_device+0xc0/0x468
-> > > [  215.072875]  iommu_probe_device+0x40/0x90
-> > > [  215.072877]  iommu_bus_notifier+0x38/0x68
-> > > [  215.072879]  notifier_call_chain+0x80/0x148
-> > > [  215.072886]  blocking_notifier_call_chain+0x50/0x80
-> > > [  215.072889]  bus_notify+0x44/0x68
-> > > [  215.072896]  device_add+0x580/0x768
-> > > [  215.072898]  pci_device_add+0x1e8/0x568
-> > > [  215.072906]  pci_iov_add_virtfn+0x198/0x300
-> > > [  215.072910]  sriov_enable+0x204/0x468
-> > > [  215.072912]  pci_enable_sriov+0x20/0x40
-> > >
-> > > pci_iov_add_virtfn:
-> > > pci_device_add(virtfn, virtfn->bus);
-> > > pci_bus_add_device(virtfn); -> pci_fixup_device(pci_fixup_final, dev);
-> >
-> > This probably is not caused by this patch series. Can you please have a
-> > try with the next branch of iommu tree? Or the latest linux-next tree?
-> >
-> > https://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
->
->
-> Ok, will try.
->
-> Though still not finding which patch caused the problem, will do more
-> investigation.
->
-> The issue is arm_smmu_probe_device is changed
-> from
-> pci_bus_add_device(virtfn); -> pci_fixup_device(pci_fixup_final, dev);
-> to
-> pci_device_add(virtfn, virtfn->bus) ->  pci_fixup_device(pci_fixup_header, dev);
+Add support for the Mobile Display SubSystem (MDSS) device present on
+the Qualcomm SAR2130P platform. The MDSS device is similar to SM8550, it
+features two MIPI DSI controllers, two MIPI DSI PHYs and one DisplayPort
+controller.
 
-Update:
+Note, due to the technical limitations DP controller wasn't completely
+evaluated.
 
-This sequence change  is caused by
-bcb81ac6ae3c iommu: Get DT/ACPI parsing into the proper probe path
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+---
+Changes in v2:
+- In MDSS schema switched from list items to contains: (Krzyztof)
+- In MDSS schema dropped extra empty lines (Krzysztof)
+- Fixed .ubwc_bank_spread in msm_mdss. (LKP)
+- Link to v1: https://lore.kernel.org/r/20250308-sar2130p-display-v1-0-1d4c30f43822@linaro.org
 
-The probe is put in earlier so we have to make fixup earlier as well.
-DECLARE_PCI_FIXUP_FINAL -> DECLARE_PCI_FIXUP_HEADER
+---
+Dmitry Baryshkov (10):
+      dt-bindings: display/msm: dp-controller: describe SAR2130P
+      dt-bindings: display/msm: dsi-controller-main: describe SAR2130P
+      dt-bindings: display/msm: dsi-phy-7nm: describe SAR2130P
+      dt-bindings: display/msm: qcom,sc7280-dpu: describe SAR2130P
+      dt-bindings: display/msm: Add Qualcomm SAR2130P
+      drm/msm/mdss: add SAR2130P device configuration
+      drm/msm/dsi/phy: add configuration for SAR2130P
+      drm/msm/dpu: add catalog entry for SAR2130P
+      iommu/arm-smmu-qcom: Add SAR2130P MDSS compatible
+      arm64: dts: qcom: sar2130p: add display nodes
 
-Thanks
+ .../bindings/display/msm/dp-controller.yaml        |   1 +
+ .../bindings/display/msm/dsi-controller-main.yaml  |   2 +
+ .../bindings/display/msm/dsi-phy-7nm.yaml          |   1 +
+ .../bindings/display/msm/qcom,sar2130p-mdss.yaml   | 439 +++++++++++++++++++++
+ .../bindings/display/msm/qcom,sc7280-dpu.yaml      |   1 +
+ arch/arm64/boot/dts/qcom/sar2130p.dtsi             | 394 ++++++++++++++++++
+ .../drm/msm/disp/dpu1/catalog/dpu_9_1_sar2130p.h   | 434 ++++++++++++++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   2 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy.c              |   2 +
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy.h              |   1 +
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c          |  23 ++
+ drivers/gpu/drm/msm/msm_mdss.c                     |  11 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   1 +
+ 15 files changed, 1313 insertions(+), 1 deletion(-)
+---
+base-commit: 613af589b566093ce7388bf3202fca70d742c166
+change-id: 20250308-sar2130p-display-b0601fcfeb30
 
->
-> And the issue can be solved by
-> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa250, quirk_huawei_pcie_sva);
-> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa250, quirk_huawei_pcie_sva);
->
-> Thanks
+Best regards,
+-- 
+Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+
