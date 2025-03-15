@@ -1,151 +1,157 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCF092E3377
-	for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 10:04:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5229E1E1C1A
+	for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 10:10:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742033091; cv=none; b=p93fMY9Z7mDhlDFm0jj2VPfSryf2kIsoIBjE/25GyI17djwOTPFt1WTkJqFEtwOoLa/GT3OzGPOgtgZHElHJ7f+bHsMORyCenxMmHFg+c+4cBmavx9Wm4XtIV9226uDbaRg3gCoJpGZHQ6T0E613TYZN+FbNhU9CkWvHvr7e6yM=
+	t=1742033448; cv=none; b=GKHKXwCra/X+GcW6lVc1mRVVi0Q37i1PYYVlxj8Tkxxk8YoHHLQ9n+9QZQijVuoHBO3i1dtxsoL2ersP6T865m0YSCZHVXRGs2aZQKKejM52DoaWXzcDSZ5Q/eSayND6Jwez8caiGcIOmwR67rldCLalSFXiQ9n37jRdDGXGKHM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742033091; c=relaxed/simple;
-	bh=N8MbLgv1165dTpEcNGiSnLvHm8DcmgUZHKAqaUTWEPg=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=aV598uazEJ5m4/u14udCV+HmpEQQXbtnTRziK/XfwAA+nQ/o9XhAXwiaz9UR47a16AO20ZiS5CFQ3/nJLTUllcfOR/Y4MVdKjOEeIvyxxfB3AdgIoORQPf4OKVxCCDT40sMHVZEglwi9qNUA/9tj7ipTSrupjsL3HeX8U4U2R/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=tbeAvMdU; arc=none smtp.client-ip=209.85.221.45
+	s=arc-20240116; t=1742033448; c=relaxed/simple;
+	bh=vo1Ew4aLSrrge0Lgz3BYM6r54y2dPTj2RJNNDXpsAMc=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UNFP7jglAEb9Dxl3EaNth0d0nTtgUBo6DAqSWeXlUgUD1A/oL1dxGUmI3EWPfuId1x34O/vgJ2JYg0LqV45EgpuKCAQZOoCIrvPaMCmBd/ifYtgCwPOfdv8EWqxj35VKIkUlIfHhzNwO7OWt9HzY5S58mcA9W5BIdvgxXJlL0BI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=qZ3HTHZh; arc=none smtp.client-ip=209.85.214.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tbeAvMdU"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-390cf7458f5so2390328f8f.2
-        for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 03:04:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qZ3HTHZh"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2243803b776so79543515ad.0
+        for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 03:10:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1742033088; x=1742637888; darn=lists.linux.dev;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=rYtGuETeT4N2PxyqinXijL5UhCOCxSCo7J87TR1Pzdc=;
-        b=tbeAvMdUO9yT/939M1Ze6ahpGewPiybDV24TQ9O6/UpvYAVOdMliKL4ZyEwJJ0sC8g
-         Hc16Zf4IENx1S9bK2FNpSyAObeRALowjyzyhNuCIqVO8pltp0WwUBs+1Qe3Ts+WO4nf8
-         orU1CDU8LPKHWjY904qP9KwVu4N/AR2cqQujXfmW5fgfNRL6kI/3m3QpVlcc8UeFFlFv
-         +MU5WgLylEvLcOgBPqq600RvpkurgChDiuPOcjinjGFrsjiYsrTcYCHhKVp7MqrXrSJU
-         I1Fn74P9nt3T2NBvUQWd4YSNllMv5LJUyamKOcie6JkGAj+/qdIjmzJBjKKn0D3Tx4Dl
-         YJNA==
+        d=linaro.org; s=google; t=1742033446; x=1742638246; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yyw0PGKWLV1nMfM+kNzqLLYQtPTsmeX5w4ikFyh9R7s=;
+        b=qZ3HTHZhhMEkoI6OVayMiIIYT+pIAYuYPUchOCPWLzCS4GPaQsZu5geNxGG2Ui/JTa
+         CDCdOuIZqpiN/XUhio6JmLV00zDVSPRsBepKeTL/GKP9NuwvAZbIJwH61xPkWvSiIwm1
+         Dw+y0U7m/I4ElHbZaq+HFV2RQ+hRDQo/sIF4GSAd4FTzrioEBUS/ULL4emmasl8tAx0v
+         75r5sQ+z0i2364CyW+k3O0Zj2RDN0m1MZ1STLRWNE6E2PaC+axFOupU5J1E5O4Fqe8WU
+         gPfG4g/Id+kHScN1nixLXx29ncI0GOcfOyFthxCJsVl1/x+He3D8Wsimx8DoKqi1n5LE
+         adqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742033088; x=1742637888;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rYtGuETeT4N2PxyqinXijL5UhCOCxSCo7J87TR1Pzdc=;
-        b=eu20Asxf3mwtJilIBBmeWIxeN5iRQnxr8DwqJgA+2d5g3Ci3/TJ9IALSh0xyM9za3Q
-         y5OBSzoska++qYGG3YvIO+Wl0Klc/rulvDficCMszY5bHliExLET/2VEggoDd/NRD6dI
-         Z0IUp9vrupaqE+dcPWNKxAfzFh01Vip+cHX+Am8IomAqefc6MPlgxD3gtyclFXpiwxJh
-         hq/PHfYnwhpG7sxtTaWeZ4BlOa9cKlPzks6OeDt75vzKODCmu5FPPeuETq4hbfjnAzQI
-         WWjVdaGfEfEzlEW1WOAoAg2S4GhZB0+WcKejb3q+8wkSquug+BeDHiphZOiMqtEemrQd
-         1PVA==
-X-Gm-Message-State: AOJu0Yy2bmvxnf/MbLDCdsp9bjl0OFNKp6kupwrYZ0POoLwgUff+Oo3t
-	3Xm3PFdZ6I2GWM8f3pWvfyuqcrNsvVDHQHpG+tfUaDWCZIiUMvom52I/SaFv8F6MFz/pTCq8fCY
-	B
-X-Gm-Gg: ASbGncsDww1dx2nDfsYjJcAMhmBHZ+i3zfUVbZjFjEInVyknj3qjSq5/rPYTzPlCdAe
-	C7BjrJuLI7HBpMM4951BthbJ1ghcP89UnNsWfQlCXkmqXgeFbVOow+l7O0Ew5QcJUshFiZHb216
-	iMst2lh0/wVfzY5ctbKlt+wUKt7UjqxvDPzUCRWTdfqCpFm4C0mSBjPTsPtVGC8NSvw5vRjBpzj
-	2+B1IhbgvDmZwHp82YMLsgS+yQvJQgndqBRCAvLJ2x8Sc8qSRzTZHfCJtXPyCRI3qK0juXcqDkw
-	zaMo3Moq3pZN9/3eIjY53HF7s0wVhS2BAe2h8UWLnV6geQ4hvw==
-X-Google-Smtp-Source: AGHT+IFJFQUtxayqTwvpvd1/q8vl1EtfUpPoFoaqanvwZkb7kXmvkywZIzxcelzMgJ54aqVjtBO6kQ==
-X-Received: by 2002:a5d:6d8a:0:b0:391:255a:748b with SMTP id ffacd0b85a97d-397202a1884mr9539850f8f.39.1742033088205;
-        Sat, 15 Mar 2025 03:04:48 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-395cb40fab8sm8758294f8f.63.2025.03.15.03.04.47
+        d=1e100.net; s=20230601; t=1742033446; x=1742638246;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yyw0PGKWLV1nMfM+kNzqLLYQtPTsmeX5w4ikFyh9R7s=;
+        b=qRS6ebBCCRVNDuSi/WTmcINECIcxh7V4YxSuEdEgO3HrkyLgzKX61OFBsRFBRW35MN
+         FkMEFsyBo1vl+AVy/IaVi/5pRdVyHKMAb6M7+lX4Dr9Td4n7/BEGOV4mLfjkV6mp5k1f
+         NzkbjgGojT2IQXs25k4N6YKd3sW5+9Y/5+nATnvVg2HDB510BFDvW0MNq8afwyKdz55N
+         cogod0MKicYrzpbCi2g6N6mYnWa1xYrhm46/QvoPDQWFiH6OUZQW3HBL9vh/uTHdYmte
+         88eVIDVnFJZcaE18n1u/d891F6rQJ9vrwCpFHbBPzI+LeJmzcIk56j8svI4SeZMakE88
+         KF0g==
+X-Gm-Message-State: AOJu0YxVIMfAgFW/XTGwQ5zk09aBLr+RFvVGIOGmfBd33Zc+dxfEbKw2
+	dcilLY0IyPITOMA9Etn8+fMsoZ1lxt09ajjUjBekU68uguiOYVTOqvqQ5JiVuXs=
+X-Gm-Gg: ASbGncvkah04uaOXLk/gOaxXyXRlLEHQg2z/qKrw1GW4bHfQuyLKFfrp+XV3+iY5KWf
+	N8zVtDJp+iFhTF3p8a27xydY2vb62I3WJul8lHVwxxRbodwjw7yA2Qm8ypjTpBSFJ+7qt/Y70dp
+	+vrkU3210wwtkOsp6d04BJbm82j27ZEFK+DJRsM8N/z0GX+YJXAZsPk3PEHFyrbbW+hi1IGmcI8
+	u/MsaG/SC/k05M5lMvPVdwA7cO/7D/X9A2JFJsCj/Hb+qjdi2qh4rIulPxv8tXteNBerxX1Oe03
+	JQRQIXcyrzcZ8YlhBcg2S7njk8ip6mKnJC2H96YGqujQNA==
+X-Google-Smtp-Source: AGHT+IHosIY5bP7h7ArQEoRLmL4SQpY/tfLFxgPSITUzhMnagdaeGJGiz8uq3+AHPbKPkmPtW1BXFw==
+X-Received: by 2002:a05:6a00:a27:b0:736:4644:86ee with SMTP id d2e1a72fcca58-7372235af19mr6775218b3a.14.1742033446613;
+        Sat, 15 Mar 2025 03:10:46 -0700 (PDT)
+Received: from gmail.com ([121.37.54.139])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-737115511dasm4305588b3a.60.2025.03.15.03.10.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Mar 2025 03:04:47 -0700 (PDT)
-Date: Sat, 15 Mar 2025 13:04:29 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Kishon Vijay Abraham I <kvijayab@amd.com>
-Cc: iommu@lists.linux.dev
-Subject: [bug report] iommu/amd: Enable support for up to 2K interrupts per
- function
-Message-ID: <d3c8141a-0052-4f04-9df2-0604eeb352d8@stanley.mountain>
+        Sat, 15 Mar 2025 03:10:45 -0700 (PDT)
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+To: Bjorn Helgaas <bhelgaas@google.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>
+Cc: iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org,
+	llinux-kernel@vger.kernel.org,
+	Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: [PATCH v2] PCI: Declare quirk_huawei_pcie_sva() as pci_fixup_header
+Date: Sat, 15 Mar 2025 10:10:32 +0000
+Message-Id: <20250315101032.5152-1-zhangfei.gao@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20250314071058.6713-1-zhangfei.gao@linaro.org>
+References: <20250314071058.6713-1-zhangfei.gao@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hello Kishon Vijay Abraham I,
+The commit bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper
+probe path") changes the arm_smmu_probe_device() sequence.
 
-Commit 19e5cc156cbc ("iommu/amd: Enable support for up to 2K
-interrupts per function") from Mar 7, 2025 (linux-next), leads to the
-following Smatch static checker warning:
+The arm_smmu_probe_device() is now called earlier via pci_device_add(),
+which calls pci_fixup_device() at the "pci_fixup_header" phase, while
+originally it was called from the pci_bus_add_device(), which called
+pci_fixup_device() at the "pci_fixup_final" phase.
 
-	drivers/iommu/amd/iommu.c:2401 amd_iommu_probe_device()
-	error: uninitialized symbol 'dev_data'.
+The callstack before:
+[ 1121.314405]  arm_smmu_probe_device+0x48/0x450
+[ 1121.314410]  __iommu_probe_device+0xc4/0x3c8
+[ 1121.314412]  iommu_probe_device+0x40/0x90
+[ 1121.314414]  acpi_dma_configure_id+0xb4/0x100
+[ 1121.314417]  pci_dma_configure+0xf8/0x108
+[ 1121.314421]  really_probe+0x78/0x278
+[ 1121.314425]  __driver_probe_device+0x80/0x140
+[ 1121.314427]  driver_probe_device+0x48/0x130
+[ 1121.314430]  __device_attach_driver+0xc0/0x108
+[ 1121.314432]  bus_for_each_drv+0x8c/0xf8
+[ 1121.314435]  __device_attach+0x104/0x1a0
+[ 1121.314437]  device_attach+0x1c/0x30
+[ 1121.314440]  pci_bus_add_device+0xb8/0x1f0
+[ 1121.314442]  pci_iov_add_virtfn+0x2ac/0x300
 
-drivers/iommu/amd/iommu.c
-    2353 static struct iommu_device *amd_iommu_probe_device(struct device *dev)
-    2354 {
-    2355         struct iommu_device *iommu_dev;
-    2356         struct amd_iommu *iommu;
-    2357         struct iommu_dev_data *dev_data;
-    2358         int ret;
-    2359 
-    2360         if (!check_device(dev))
-    2361                 return ERR_PTR(-ENODEV);
-    2362 
-    2363         iommu = rlookup_amd_iommu(dev);
-    2364         if (!iommu)
-    2365                 return ERR_PTR(-ENODEV);
-    2366 
-    2367         /* Not registered yet? */
-    2368         if (!iommu->iommu.ops)
-    2369                 return ERR_PTR(-ENODEV);
-    2370 
-    2371         if (dev_iommu_priv_get(dev))
-    2372                 return &iommu->iommu;
-    2373 
-    2374         ret = iommu_init_device(iommu, dev);
-    2375         if (ret) {
-    2376                 dev_err(dev, "Failed to initialize - trying to proceed anyway\n");
-    2377                 iommu_dev = ERR_PTR(ret);
-    2378                 iommu_ignore_device(iommu, dev);
-    2379                 goto out_err;
+And after:
+[  215.072859]  arm_smmu_probe_device+0x48/0x450
+[  215.072871]  __iommu_probe_device+0xc0/0x468
+[  215.072875]  iommu_probe_device+0x40/0x90
+[  215.072877]  iommu_bus_notifier+0x38/0x68
+[  215.072879]  notifier_call_chain+0x80/0x148
+[  215.072886]  blocking_notifier_call_chain+0x50/0x80
+[  215.072889]  bus_notify+0x44/0x68
+[  215.072896]  device_add+0x580/0x768
+[  215.072898]  pci_device_add+0x1e8/0x568
+[  215.072906]  pci_iov_add_virtfn+0x198/0x300
 
-dev_data isn't initialized.
+Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+[kwilczynski: commit log]
+Signed-off-by: Krzysztof Wilczyński <kwilczynski@kernel.org>
+---
 
-    2380         }
-    2381 
-    2382         amd_iommu_set_pci_msi_domain(dev, iommu);
-    2383         iommu_dev = &iommu->iommu;
-    2384 
-    2385         /*
-    2386          * If IOMMU and device supports PASID then it will contain max
-    2387          * supported PASIDs, else it will be zero.
-    2388          */
-    2389         dev_data = dev_iommu_priv_get(dev);
-    2390         if (amd_iommu_pasid_supported() && dev_is_pci(dev) &&
-    2391             pdev_pasid_supported(dev_data)) {
-    2392                 dev_data->max_pasids = min_t(u32, iommu->iommu.max_pasids,
-    2393                                              pci_max_pasids(to_pci_dev(dev)));
-    2394         }
-    2395 
-    2396 out_err:
-    2397 
-    2398         iommu_completion_wait(iommu);
-    2399 
-    2400         if (FEATURE_NUM_INT_REMAP_SUP_2K(amd_iommu_efr2))
---> 2401                 dev_data->max_irqs = MAX_IRQS_PER_TABLE_2K;
-                         ^^^^^^^^^
+v2: Modify commit log
 
-    2402         else
-    2403                 dev_data->max_irqs = MAX_IRQS_PER_TABLE_512;
-                         ^^^^^^^^^^
-Dead.
+ drivers/pci/quirks.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-    2404 
-    2405         if (dev_is_pci(dev))
-    2406                 pci_prepare_ats(to_pci_dev(dev), PAGE_SHIFT);
-    2407 
-    2408         return iommu_dev;
-    2409 }
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index f840d611c450..a9759889ff5e 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -1991,12 +1991,12 @@ static void quirk_huawei_pcie_sva(struct pci_dev *pdev)
+ 	    device_create_managed_software_node(&pdev->dev, properties, NULL))
+ 		pci_warn(pdev, "could not add stall property");
+ }
+-DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa250, quirk_huawei_pcie_sva);
+-DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa251, quirk_huawei_pcie_sva);
+-DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa255, quirk_huawei_pcie_sva);
+-DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa256, quirk_huawei_pcie_sva);
+-DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa258, quirk_huawei_pcie_sva);
+-DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa259, quirk_huawei_pcie_sva);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa250, quirk_huawei_pcie_sva);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa251, quirk_huawei_pcie_sva);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa255, quirk_huawei_pcie_sva);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa256, quirk_huawei_pcie_sva);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa258, quirk_huawei_pcie_sva);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa259, quirk_huawei_pcie_sva);
+ 
+ /*
+  * It's possible for the MSI to get corrupted if SHPC and ACPI are used
+-- 
+2.25.1
 
-regards,
-dan carpenter
