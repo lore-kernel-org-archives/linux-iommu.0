@@ -1,104 +1,90 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07236A32
-	for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 03:21:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE8241401C
+	for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 04:22:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742008913; cv=none; b=LqS3F8YQMn7yEFe4QOzEgDvZS/co5zASuGDXjGxGH04fLeZEljC9MJkbvMCVWiCkH1c1ZarcbvqWq0Hu3+/aCEktTxWKmrG+uOsiRMTcW0q38eRd7bDFU27XCKFEVuuU6cmyBoR5UxAi9iNF6SITcqVE+3DRIm11q+kAiua+lpQ=
+	t=1742012580; cv=none; b=cYH9WRt6bg4+ZThcdiNzQw1nPnZr3zbx2dDgepul3G54IGPRJ45vbZfZgNvqNq6JhxU3Py7MBa3C13prapH9683AEc9I8Ww5YlkcB1059IgTIskrDawznxRMqE1OoYgxc4PfjUf5SUHZ1Jguq02wi3/0EonRMnrQ7jWzXYlhgBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742008913; c=relaxed/simple;
-	bh=58Kkdy1QlvdfBEuLJA2KBjrWGtga1wrtrRCSqTVz2ZY=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=i8+6e9aLQjjm1npD6rF+0lE2dDDMxwLMbzp9atuiqEs1AkfkbbptSW3+OLX7azBa3K+Jky4WTgK+X5rvpmhdlRVSjs94/6R9qchNBsP1wiFM9f6NwlzEtjzyGnHF7K0PPt3ybyBlUFHUkK/RcwTsgy30gViqfhGE9ZduR8cZYNc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=U+E1UU1O; arc=none smtp.client-ip=209.85.216.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="U+E1UU1O"
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-2ff6167e9ccso852779a91.1
-        for <iommu@lists.linux.dev>; Fri, 14 Mar 2025 20:21:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1742008910; x=1742613710; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:reply-to:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CVCPNlPV716eA7La4uOIv6jwtGosj4v+uOcJZBxhxmM=;
-        b=U+E1UU1OmYnQIPCctxb13OC+sop1XV7Gvi8H0aPXhhDsitue7Wu91NlTTdMmI42yOa
-         9ZyM2MHksk0uzlogYOZjgzFNld3h4C1HFzrme6DIqLMnLAroXEsO/kTyymFtmD3lVW+t
-         A8OsDmRHp3aMGN9KTyyHErocu02dbVRxoUnHXFp9/2+Bhu8OeViykw7btLmVG5FPwNwf
-         Xx4YYLsONoFn2+zoQUIDVQoPjbgMufCA0xWeFfghzLVFPA06sENBtUqGYDzU5TvldmPL
-         anACFRgfbpflFVtkqyppi9C7GtCfR3Gj3fAQtsbmw7pfoQ/VKtB6UfmRk2LpIX3bJWUl
-         qL+Q==
+	s=arc-20240116; t=1742012580; c=relaxed/simple;
+	bh=62cAPYMM7McY+lfAzPASnTQs7MNpD7FPMLJg83ACISA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Jn8fVP0tczBsXeRnP80/2eysFbNYg9L+AtmiYZGdjOk4uOmia5JOGVwZeun4RV00AIS5k9PwrsTtXmETXEZIOGM1S+6ClGwCQwM4mI3c5AIJAHn4+60b3IK1C7tEOp8Cfauhkm5jgJeF22W8lUtXYDj9dQLX0Z3FEAk9H24vjxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-22355618fd9so55019735ad.3
+        for <iommu@lists.linux.dev>; Fri, 14 Mar 2025 21:22:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742008910; x=1742613710;
-        h=cc:to:from:subject:message-id:mime-version:date:reply-to
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CVCPNlPV716eA7La4uOIv6jwtGosj4v+uOcJZBxhxmM=;
-        b=BQs2M4oq5gZOqqflehFarqjoYz+X9VoE+QXyPvdKGcrOl6GH7VIkcwv7BoACmNB0qi
-         GG5qMWJnyCPEhg+UXI87aCdyw9wycDERIxb+4aXvic6n3QXTH3AT/beiRUQwAxkaqN1q
-         Ujfl6FUGopa8TB6dXVPPomBNGvTSZW0j2J3ydaqobeDhmc7+hlpVUN4bPceCb6ExdGdp
-         BnwCyBkDPdEhAE3fWuXzOe714LsEWViRUALgwRv3r8/S5l1AKxnYakQOCcAdK4u4MrEi
-         4W3ptWPNnuNxjIhV1mIJWrxse0KivM1u2QifZVYWT+RKdAAzhxz2BxM+ie0d+wshsp5i
-         YbTg==
-X-Gm-Message-State: AOJu0YxpNZH4dNGV3y0k4H9Cxz2wrG4NChabfteWYrh+C1QNKLOJ0jq/
-	dVXDVW8yypZT7SoEHXBQtTqla11Vf45XEpq609an3qrBwd4Ki6OSW9xtS38v3RsywfV4QiBksml
-	Mmw==
-X-Google-Smtp-Source: AGHT+IGW8BzaRRhRtE1NpejkWAjQCEpQYH7Vd03oALl0yO1WNIEFXABlD9h6ktTlwxQxaDA8jNMrdESFAOo=
-X-Received: from pjbpw13.prod.google.com ([2002:a17:90b:278d:b0:2fa:284f:adb2])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90a:d64f:b0:2ff:69d4:6fe2
- with SMTP id 98e67ed59e1d1-30151cff09bmr6553454a91.16.1742008910387; Fri, 14
- Mar 2025 20:21:50 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Fri, 14 Mar 2025 20:21:48 -0700
+        d=1e100.net; s=20230601; t=1742012578; x=1742617378;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=S8U0K9FXB2qvtYU3gfOpe3vKzPjFe6pziSzCUKKq8Ck=;
+        b=HQ/57nrMr5C6AaiOI+EeFFH2o/8bPovdJhWhmcXILK/m5jTDBM8YZG9MLoKQw/9PFQ
+         skQqOHfSpU9PhlhUcON+WIV6DDpbYwkW4OVL0Jl0hGUFEnyAFmCvE3wg5aBKY0Hst541
+         4+txlh0xdt5ui4VqXkDOPmBpYQ3YCXFbyxyHn7nNYRdpFzreEEduCsy0ez7tFcp4IJXO
+         52L2N6Ikef9LDbKiV8zqoJrjAF/ul6sa8OBynd8av1IR+kpd1FoxlQrf/tn9wU11CGx8
+         C3Pqiab5jrgyDmpGTj/gTSeSJNT5gqja2Rkx3nz+bTlmOb4se4OTyTApuBOYNxMEalTh
+         KT3Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXYF/a5fNjRVqDHB6KEl/sBAcBUZ17kj3SU1OB45aDnN4LbPMgCk8bzp62TLaLYBOaS1KHo2w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy8PRx/q4AxXHEiuk0cFBdXL7/3Vowo8rUxA4rBHqx5MuJQ1axz
+	FzBwhRu1q2c9uKnFkQXi0JgIGihIJ7QqNcMN+vjIoISgFW+rPq4pz2u0OZQROB0=
+X-Gm-Gg: ASbGncuMg0IWox+pZDKVTGROY7KZuzbTmD0g7iUGyXGZPMwK51lSV+mSlUwA7QSRNbs
+	2xyQntgC5H31LIKEYbKxnKuskDX1SLm/fk83NSg47/cyYyfLMqMr7Jk+GscB/N9yfKuQVmIGH4V
+	LgBuridxERuOrcs1z/Dz97u+WfXwGxYpeDln73DTkDKSwj8XCpImwjP/0DqIIMBQKwvlc4uYDDz
+	iV9vBC4/ulPeBOJNFktjtQBbcOml8wvRb66e2JL+TlF3/cY6RrPSWZUztQXhWCn6/1NUmhcU0Cy
+	Kj2+w34i554rayDAbIlPYAu5f03V/WozC/lQxbyerO8QkSUGyg7L/JC8ItLqIac0PM73Mm8g7ta
+	AmNw=
+X-Google-Smtp-Source: AGHT+IFtwnMOAfhZFXJUuPvRbPNil1y66u0LQojOfo9xwTKXhrNxUpg+Jt9bo+ursNMjjPZwyt/xsw==
+X-Received: by 2002:a05:6a00:21d3:b0:736:6ecd:8e32 with SMTP id d2e1a72fcca58-73722470508mr6460907b3a.21.1742012578020;
+        Fri, 14 Mar 2025 21:22:58 -0700 (PDT)
+Received: from localhost (fpd11144dd.ap.nuro.jp. [209.17.68.221])
+        by smtp.gmail.com with UTF8SMTPSA id d2e1a72fcca58-737115293desm3673106b3a.9.2025.03.14.21.22.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Mar 2025 21:22:57 -0700 (PDT)
+Date: Sat, 15 Mar 2025 13:22:56 +0900
+From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Cc: Bjorn Helgaas <helgaas@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org
+Subject: Re: [PATCH] PCI: declare quirk_huawei_pcie_sva as FIXUP_HEADER
+Message-ID: <20250315042256.GB167520@rocinante>
+References: <20250314071058.6713-1-zhangfei.gao@linaro.org>
+ <20250314162838.GA781747@bhelgaas>
+ <CABQgh9H_vGTPfB_dY+fT9gsWw5K53o0MBXf25LamaxBfVc2-Qw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.49.0.rc1.451.g8f38331e32-goog
-Message-ID: <20250315032148.2377902-1-seanjc@google.com>
-Subject: [PATCH] iommu/amd: Fix a stale comment about which legacy mode is
- user visible
-From: Sean Christopherson <seanjc@google.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Sean Christopherson <seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABQgh9H_vGTPfB_dY+fT9gsWw5K53o0MBXf25LamaxBfVc2-Qw@mail.gmail.com>
 
-Update a stale comment about which of the legacy modes is visible to the
-user, i.e. can be forced via amd_iommu_intr=legacy.
+Hello,
 
-Fixes: b74aa02d7a30 ("iommu/amd: Fix legacy interrupt remapping for x2APIC-enabled system")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- drivers/iommu/amd/amd_iommu_types.h | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+> > bcb81ac6ae3c is not a valid upstream commit.  It does appear in
+> > next-20250314, incorporated via f5a5f66e2791 ("Merge branches
+> > 'apple/dart', 'arm/smmu/updates', 'arm/smmu/bindings', 's390', 'core',
+> > 'intel/vt-d' and 'amd/amd-vi' into next") from
+> > git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git.
+> >
+> > I think there's some value in keeping fixes close to whatever needs to
+> > be fixed, so since bcb81ac6ae3c came via the iommu tree, I would tend
+> > to merge the fix the same way.
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 23caea22f8dc..f7877abd0091 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -968,12 +968,13 @@ static inline int get_hpet_devid(int id)
- }
- 
- enum amd_iommu_intr_mode_type {
-+	/*
-+	 * The legacy format mode is not visible to users to prevent the user
-+	 * from crashing x2APIC systems, which for all intents and purposes
-+	 * require 128-bit IRTEs.   The legacy format will be forced as needed
-+	 * when hardware doesn't support 128-bit IRTEs.
-+	 */
- 	AMD_IOMMU_GUEST_IR_LEGACY,
--
--	/* This mode is not visible to users. It is used when
--	 * we cannot fully enable vAPIC and fallback to only support
--	 * legacy interrupt remapping via 128-bit IRTE.
--	 */
- 	AMD_IOMMU_GUEST_IR_LEGACY_GA,
- 	AMD_IOMMU_GUEST_IR_VAPIC,
- };
+I will drop this patch then.
 
-base-commit: ea9bd29a9c0d757b3384ae3e633e6bbaddf00725
--- 
-2.49.0.rc1.451.g8f38331e32-goog
+Old commit from the PCI tree for reference:
 
+  https://web.git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git/commit/?h=quirks&id=0cc24e705588325583f2b77662de61339548c39c
+
+Thank you!
+
+	Krzysztof
