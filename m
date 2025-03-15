@@ -1,61 +1,61 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5229E1E1C1A
-	for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 10:10:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57BA21F4701
+	for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 10:13:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742033448; cv=none; b=GKHKXwCra/X+GcW6lVc1mRVVi0Q37i1PYYVlxj8Tkxxk8YoHHLQ9n+9QZQijVuoHBO3i1dtxsoL2ersP6T865m0YSCZHVXRGs2aZQKKejM52DoaWXzcDSZ5Q/eSayND6Jwez8caiGcIOmwR67rldCLalSFXiQ9n37jRdDGXGKHM=
+	t=1742033615; cv=none; b=I1IdlBdRfT23/fkNI6VOOdtgqAuFsYNuP9LFJvL1FHuxCu2g0gY855uYqCYIHIOEmnKObFov6MSM1w4zwJdXm0lBB9SICvyazYAtuOw/cDpwQLFxOFFw1iQZx7dlOkM9HUAph6P++6ZSkx6IHZDzqhVWXA3xbH3YmfAFcPMeYdw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742033448; c=relaxed/simple;
+	s=arc-20240116; t=1742033615; c=relaxed/simple;
 	bh=vo1Ew4aLSrrge0Lgz3BYM6r54y2dPTj2RJNNDXpsAMc=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UNFP7jglAEb9Dxl3EaNth0d0nTtgUBo6DAqSWeXlUgUD1A/oL1dxGUmI3EWPfuId1x34O/vgJ2JYg0LqV45EgpuKCAQZOoCIrvPaMCmBd/ifYtgCwPOfdv8EWqxj35VKIkUlIfHhzNwO7OWt9HzY5S58mcA9W5BIdvgxXJlL0BI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=qZ3HTHZh; arc=none smtp.client-ip=209.85.214.172
+	 MIME-Version:Content-Type; b=DKn8bq8kYo1+LwsqyX12XL5DA+54LSWc1XEJNdnIk2ObU2PikBC2golVTrLdCiIdStrNm7UPRKZT3kdr668Zxw0yqX80SU2uXHxRUHBZCvfrAqxdhg5Omz6X1bRO/vQOam+ZbGzJMKWcRJj9Ld53TxEvsVm27sNQo5aYBuSaS6Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=NMvQ3229; arc=none smtp.client-ip=209.85.214.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qZ3HTHZh"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2243803b776so79543515ad.0
-        for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 03:10:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NMvQ3229"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-223fb0f619dso49686685ad.1
+        for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 03:13:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1742033446; x=1742638246; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1742033612; x=1742638412; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
         bh=yyw0PGKWLV1nMfM+kNzqLLYQtPTsmeX5w4ikFyh9R7s=;
-        b=qZ3HTHZhhMEkoI6OVayMiIIYT+pIAYuYPUchOCPWLzCS4GPaQsZu5geNxGG2Ui/JTa
-         CDCdOuIZqpiN/XUhio6JmLV00zDVSPRsBepKeTL/GKP9NuwvAZbIJwH61xPkWvSiIwm1
-         Dw+y0U7m/I4ElHbZaq+HFV2RQ+hRDQo/sIF4GSAd4FTzrioEBUS/ULL4emmasl8tAx0v
-         75r5sQ+z0i2364CyW+k3O0Zj2RDN0m1MZ1STLRWNE6E2PaC+axFOupU5J1E5O4Fqe8WU
-         gPfG4g/Id+kHScN1nixLXx29ncI0GOcfOyFthxCJsVl1/x+He3D8Wsimx8DoKqi1n5LE
-         adqQ==
+        b=NMvQ3229iIuD/2hHtqmr68UzlUAChnO2TcAGDpFQ4N2r4jw7zc9Cwmouwro/WYaH/Z
+         CvwzIXsQU5jewJPobElesrtlD7gsW8a6JzBbP5WQ7Sa8AaDKMvSdKxX3p01EGKq9dF6b
+         Wuq/sk5gf5Wez4Ni72MzpVj9N7fRG6NJ4OGRdf93CW3YDHlAvQSaSArz2Es34HSYcTgZ
+         p7uyN5tHhQDydSC0go9+y63eHPlBm61X3wyx89rFafJN5oVkYSk8ysqDWh858bwHneQk
+         PxdA8O6dKedhBSybG0fDQS3SUnSgeSoVixvO0OJ1q/ttbSFKFeIyIIVS5oD33KI+f44i
+         tfog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742033446; x=1742638246;
+        d=1e100.net; s=20230601; t=1742033612; x=1742638412;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
         bh=yyw0PGKWLV1nMfM+kNzqLLYQtPTsmeX5w4ikFyh9R7s=;
-        b=qRS6ebBCCRVNDuSi/WTmcINECIcxh7V4YxSuEdEgO3HrkyLgzKX61OFBsRFBRW35MN
-         FkMEFsyBo1vl+AVy/IaVi/5pRdVyHKMAb6M7+lX4Dr9Td4n7/BEGOV4mLfjkV6mp5k1f
-         NzkbjgGojT2IQXs25k4N6YKd3sW5+9Y/5+nATnvVg2HDB510BFDvW0MNq8afwyKdz55N
-         cogod0MKicYrzpbCi2g6N6mYnWa1xYrhm46/QvoPDQWFiH6OUZQW3HBL9vh/uTHdYmte
-         88eVIDVnFJZcaE18n1u/d891F6rQJ9vrwCpFHbBPzI+LeJmzcIk56j8svI4SeZMakE88
-         KF0g==
-X-Gm-Message-State: AOJu0YxVIMfAgFW/XTGwQ5zk09aBLr+RFvVGIOGmfBd33Zc+dxfEbKw2
-	dcilLY0IyPITOMA9Etn8+fMsoZ1lxt09ajjUjBekU68uguiOYVTOqvqQ5JiVuXs=
-X-Gm-Gg: ASbGncvkah04uaOXLk/gOaxXyXRlLEHQg2z/qKrw1GW4bHfQuyLKFfrp+XV3+iY5KWf
-	N8zVtDJp+iFhTF3p8a27xydY2vb62I3WJul8lHVwxxRbodwjw7yA2Qm8ypjTpBSFJ+7qt/Y70dp
-	+vrkU3210wwtkOsp6d04BJbm82j27ZEFK+DJRsM8N/z0GX+YJXAZsPk3PEHFyrbbW+hi1IGmcI8
-	u/MsaG/SC/k05M5lMvPVdwA7cO/7D/X9A2JFJsCj/Hb+qjdi2qh4rIulPxv8tXteNBerxX1Oe03
-	JQRQIXcyrzcZ8YlhBcg2S7njk8ip6mKnJC2H96YGqujQNA==
-X-Google-Smtp-Source: AGHT+IHosIY5bP7h7ArQEoRLmL4SQpY/tfLFxgPSITUzhMnagdaeGJGiz8uq3+AHPbKPkmPtW1BXFw==
-X-Received: by 2002:a05:6a00:a27:b0:736:4644:86ee with SMTP id d2e1a72fcca58-7372235af19mr6775218b3a.14.1742033446613;
-        Sat, 15 Mar 2025 03:10:46 -0700 (PDT)
+        b=dShn+XZStP1qyHg4umLp7YZIz3LmNEIiFBw89OreqPlulX/baW34q9o3TX0+yCKjQC
+         DGYYi54vcaFeH6u1BqyD9Cz5xkIv4UibaR6GY7Y4698ZMejCAOg8mu2HP/CBsMNKkhxF
+         gfn+nE3aR9T4EteNH0TU6vXm6u9y1HFQ9CtnnujNtJNsspgDR/E1InOBSvDUr4ruZvnv
+         8g27mmaG0gsXcIrLs3JHWEI3XC/i9qne45SBPb3Gjf/0wtNtfcS9hHAjBj1toViMVfKo
+         ToGEjB90HGaKHs4ATxze+c4Agj7phspKSxEQJOAQfAIWVRM2XrYSEA5nhXsKtiXK6kWL
+         ckHA==
+X-Gm-Message-State: AOJu0YzjSPgQWRzQsctuKvsbGMho5sIz6FfMRRwMhSlwGPf5y1Shu37n
+	cwPj3PtXEvPMWCPI9oDFcD3nNIutFr+cx48mqEGtAXiG2FIw8+he9qXNaE6+hw8=
+X-Gm-Gg: ASbGncv4hCWe69K+9EzZsueD7x37Od9YyqQuP/T1Uwpb52kgejQXJYDASqVE1yhPDUM
+	4Bt6youw+mVV78lqVZmq+j0rZFL1WXMlqN168rGHDmHFAic4mGCd122qbUdg+Q96W7kpDqgxbOn
+	PO6n1lSLmBwqM9lSUWrs1gPAODMmx26WtH3cY4qpLLc/qMFsZQm/YHBbKHj+GOp3uudIMDKg2ZR
+	Jqv1dBVwkkjAH+T8RGMIZBpvPxMxL084JYKHgExCUZsEDvLd+RDV7tMwvK8ymF1g11OTm6Vanpa
+	fhF6FewBWDMo1IOJH80KBJFyP4a9PONvHGnGTDSiTJATpw==
+X-Google-Smtp-Source: AGHT+IHc+zbfLPsEbvvVLayren4erBe1Dj0SSg+NK2HsIPUFW6sh7RHagO+DW1A24D8x9HdCwjeFHQ==
+X-Received: by 2002:a17:903:3c50:b0:224:1579:5e8e with SMTP id d9443c01a7336-225e0a3635emr76218415ad.1.1742033612590;
+        Sat, 15 Mar 2025 03:13:32 -0700 (PDT)
 Received: from gmail.com ([121.37.54.139])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-737115511dasm4305588b3a.60.2025.03.15.03.10.39
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-225c688846csm41957545ad.33.2025.03.15.03.13.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Mar 2025 03:10:45 -0700 (PDT)
+        Sat, 15 Mar 2025 03:13:32 -0700 (PDT)
 From: Zhangfei Gao <zhangfei.gao@linaro.org>
 To: Bjorn Helgaas <bhelgaas@google.com>,
 	Baolu Lu <baolu.lu@linux.intel.com>,
@@ -65,11 +65,11 @@ To: Bjorn Helgaas <bhelgaas@google.com>,
 	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>
 Cc: iommu@lists.linux.dev,
 	linux-pci@vger.kernel.org,
-	llinux-kernel@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
 	Zhangfei Gao <zhangfei.gao@linaro.org>
 Subject: [PATCH v2] PCI: Declare quirk_huawei_pcie_sva() as pci_fixup_header
-Date: Sat, 15 Mar 2025 10:10:32 +0000
-Message-Id: <20250315101032.5152-1-zhangfei.gao@linaro.org>
+Date: Sat, 15 Mar 2025 10:13:19 +0000
+Message-Id: <20250315101319.5269-1-zhangfei.gao@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20250314071058.6713-1-zhangfei.gao@linaro.org>
 References: <20250314071058.6713-1-zhangfei.gao@linaro.org>
