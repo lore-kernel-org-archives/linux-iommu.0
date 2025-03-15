@@ -1,68 +1,67 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 527651A2388
-	for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 10:04:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCF092E3377
+	for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 10:04:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742033084; cv=none; b=PXnE+51B/LleBCb0MSe4229W3dq9zxKv+yf9qbz7tE4R0xe5v44rSq/y5zESmcSzzMB+b+D3/sXD7vzIJmyl56FCiarGhXM2BOYDmRslLe7HBtlgFrK830EZ3kTe4ieldaVo01FX3rOPobFE9wQv/VpJlvwSOALFIktaPHQV8HU=
+	t=1742033091; cv=none; b=p93fMY9Z7mDhlDFm0jj2VPfSryf2kIsoIBjE/25GyI17djwOTPFt1WTkJqFEtwOoLa/GT3OzGPOgtgZHElHJ7f+bHsMORyCenxMmHFg+c+4cBmavx9Wm4XtIV9226uDbaRg3gCoJpGZHQ6T0E613TYZN+FbNhU9CkWvHvr7e6yM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742033084; c=relaxed/simple;
-	bh=eaF1RIBovEKvVXPWzZ7TlXNhzC0kXsTK6g8OrWH4b5U=;
+	s=arc-20240116; t=1742033091; c=relaxed/simple;
+	bh=N8MbLgv1165dTpEcNGiSnLvHm8DcmgUZHKAqaUTWEPg=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=UYBZcNyGxiV29dCpe6U9aEIeeeIOSbcT6V/AFHUGKPcYKdsUwREkTCYQYKQ837Au/6W4lkVC3erbZC9hz3URaDd9FvFDW33DLl4w59qytKM1asyUYnv8g04u75OleOc86ICSaSIQ83fHucuSvS3c0soxaJaAS9JnnOkYUEANTjU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=srplhT4E; arc=none smtp.client-ip=209.85.128.49
+	 Content-Disposition; b=aV598uazEJ5m4/u14udCV+HmpEQQXbtnTRziK/XfwAA+nQ/o9XhAXwiaz9UR47a16AO20ZiS5CFQ3/nJLTUllcfOR/Y4MVdKjOEeIvyxxfB3AdgIoORQPf4OKVxCCDT40sMHVZEglwi9qNUA/9tj7ipTSrupjsL3HeX8U4U2R/w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=tbeAvMdU; arc=none smtp.client-ip=209.85.221.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="srplhT4E"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4394a0c65fcso4774775e9.1
-        for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 03:04:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tbeAvMdU"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-390cf7458f5so2390328f8f.2
+        for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 03:04:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1742033078; x=1742637878; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1742033088; x=1742637888; darn=lists.linux.dev;
         h=content-disposition:mime-version:message-id:subject:cc:to:from:date
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=AYtI8yv5BP0Nx1Vm1uo2TMPV81NdclSbubQ1z6aKrXg=;
-        b=srplhT4EYf4sdPK22AxiqIP66kMFCfh95BanIvCpTp41c9RBBSmbWWHdYvb3l6/Aev
-         zLYAU/YZxURg8g0rzGVWhTHJMix5IwUz5BnAhtD7ulR9cFp3Ir+FyPIQqfBQ4QKVYghB
-         ofxazJ8Ycmv0AhmIIBS5RBQ6GMtJPb82CD+q8Cexj94Dh+l7KeCks+MUG6fErK5djU7Y
-         nTjgNoyUF1o4213y6S53zBLpsQemHZ2YBdcHkDQBVUjfXTkVoXhGcEqlfVot2IWB4vwT
-         1Fpp1vW/qVjdwHDfcluE31gb3XfX4VIXTS/p5Rg1cKpgvH61n0nE6HthoLuf561oQxMr
-         o71w==
+        bh=rYtGuETeT4N2PxyqinXijL5UhCOCxSCo7J87TR1Pzdc=;
+        b=tbeAvMdUO9yT/939M1Ze6ahpGewPiybDV24TQ9O6/UpvYAVOdMliKL4ZyEwJJ0sC8g
+         Hc16Zf4IENx1S9bK2FNpSyAObeRALowjyzyhNuCIqVO8pltp0WwUBs+1Qe3Ts+WO4nf8
+         orU1CDU8LPKHWjY904qP9KwVu4N/AR2cqQujXfmW5fgfNRL6kI/3m3QpVlcc8UeFFlFv
+         +MU5WgLylEvLcOgBPqq600RvpkurgChDiuPOcjinjGFrsjiYsrTcYCHhKVp7MqrXrSJU
+         I1Fn74P9nt3T2NBvUQWd4YSNllMv5LJUyamKOcie6JkGAj+/qdIjmzJBjKKn0D3Tx4Dl
+         YJNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742033078; x=1742637878;
+        d=1e100.net; s=20230601; t=1742033088; x=1742637888;
         h=content-disposition:mime-version:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AYtI8yv5BP0Nx1Vm1uo2TMPV81NdclSbubQ1z6aKrXg=;
-        b=Rx6WFt+cGawQ2pGmpePf/2eq8/DONzIYKBtubLMjLUeam2Ngp28MmHMJE5jBxwqv/x
-         ONGWWmnkkqz/lPfKYh8thK60DfOPmm0AE5BRb2Rhd7fWwgxZ6RNDtqABOESPAb5axUsU
-         jHb8+7mojEe0ueCDcU+6/h/vKfwDsxzpeKesWNidzaHAnh0xG86QZWfigpJPVNnXDQnC
-         HXoxY60cbPeeDWTHOBuu3sqymS1sDFkOI40tm8LMJPLUSYSPPT3dIz3EM+zR/IhuLGaz
-         KZUalYgtSMolXQdMb90uWjjThvZ976gN2WdOAeo4VZK434smOXQO/RgIP/GMYX2d0/pM
-         IZYQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUE7Co03SxzZnEFCZ4qW8MEVJiLrx2KDa0h1LMmBWCcSZulCNMPoWE5WObA05LoszXXXW7Vzg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxbHaGwC+wrtHCvYndC0661GrPdXvb4AFHTyY2IxFGcDbrTxYr1
-	GepdrmLdQVUMEI4Q7V6zC/xaRb4uTaMi5KqYNobckMPhhyE+RhyEc9Bq3CmMF64=
-X-Gm-Gg: ASbGncvwJPLGT7ofyO5ShVjT/9c9aSCkkXj3LDUS9GF0XIt5hvMR2fyrh8geqTzY8IH
-	NEMoDMA+305UOMIP16GoV6CJY2w37VrpVVZHeGnWCzDZywB6CVqhkkb+jqKjXyVF1pjKe57Qm7S
-	vwz9sgzhVMQwmk8b2ziJP5TIYE2TiqdDLSB5dBW3ayTUHdirQQ8jiQRsoO/9uIRRsoISFbyO0TB
-	Ytwq9YeRUmMBVsgeCNQWKtyILnRJpvQVJrlTv7/CCNqExO2/PGGDS5yCYWUci21aJkplY4WyhdG
-	Z9NE2Rmy8+AEt97oPV87ZKSkdq0Fhhyi9oIB+rbT976RShzJIw==
-X-Google-Smtp-Source: AGHT+IEt9zEGxqZg2ROZ/j88ZO5jwrU97jppzYLNW0cANVVWvXJgNkpyPkHeWb49BXRPjir2xNC9vg==
-X-Received: by 2002:a05:6000:1846:b0:392:bf8:fc96 with SMTP id ffacd0b85a97d-3971ddd5714mr5968309f8f.4.1742033078591;
-        Sat, 15 Mar 2025 03:04:38 -0700 (PDT)
+        bh=rYtGuETeT4N2PxyqinXijL5UhCOCxSCo7J87TR1Pzdc=;
+        b=eu20Asxf3mwtJilIBBmeWIxeN5iRQnxr8DwqJgA+2d5g3Ci3/TJ9IALSh0xyM9za3Q
+         y5OBSzoska++qYGG3YvIO+Wl0Klc/rulvDficCMszY5bHliExLET/2VEggoDd/NRD6dI
+         Z0IUp9vrupaqE+dcPWNKxAfzFh01Vip+cHX+Am8IomAqefc6MPlgxD3gtyclFXpiwxJh
+         hq/PHfYnwhpG7sxtTaWeZ4BlOa9cKlPzks6OeDt75vzKODCmu5FPPeuETq4hbfjnAzQI
+         WWjVdaGfEfEzlEW1WOAoAg2S4GhZB0+WcKejb3q+8wkSquug+BeDHiphZOiMqtEemrQd
+         1PVA==
+X-Gm-Message-State: AOJu0Yy2bmvxnf/MbLDCdsp9bjl0OFNKp6kupwrYZ0POoLwgUff+Oo3t
+	3Xm3PFdZ6I2GWM8f3pWvfyuqcrNsvVDHQHpG+tfUaDWCZIiUMvom52I/SaFv8F6MFz/pTCq8fCY
+	B
+X-Gm-Gg: ASbGncsDww1dx2nDfsYjJcAMhmBHZ+i3zfUVbZjFjEInVyknj3qjSq5/rPYTzPlCdAe
+	C7BjrJuLI7HBpMM4951BthbJ1ghcP89UnNsWfQlCXkmqXgeFbVOow+l7O0Ew5QcJUshFiZHb216
+	iMst2lh0/wVfzY5ctbKlt+wUKt7UjqxvDPzUCRWTdfqCpFm4C0mSBjPTsPtVGC8NSvw5vRjBpzj
+	2+B1IhbgvDmZwHp82YMLsgS+yQvJQgndqBRCAvLJ2x8Sc8qSRzTZHfCJtXPyCRI3qK0juXcqDkw
+	zaMo3Moq3pZN9/3eIjY53HF7s0wVhS2BAe2h8UWLnV6geQ4hvw==
+X-Google-Smtp-Source: AGHT+IFJFQUtxayqTwvpvd1/q8vl1EtfUpPoFoaqanvwZkb7kXmvkywZIzxcelzMgJ54aqVjtBO6kQ==
+X-Received: by 2002:a5d:6d8a:0:b0:391:255a:748b with SMTP id ffacd0b85a97d-397202a1884mr9539850f8f.39.1742033088205;
+        Sat, 15 Mar 2025 03:04:48 -0700 (PDT)
 Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-43d1fe292d0sm44964185e9.20.2025.03.15.03.04.37
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-395cb40fab8sm8758294f8f.63.2025.03.15.03.04.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Mar 2025 03:04:38 -0700 (PDT)
-Date: Sat, 15 Mar 2025 13:04:34 +0300
+        Sat, 15 Mar 2025 03:04:47 -0700 (PDT)
+Date: Sat, 15 Mar 2025 13:04:29 +0300
 From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Sairaj Kodilkar <sarunkod@amd.com>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	iommu@lists.linux.dev
-Subject: [bug report] iommu/amd: Replace slab cache allocator with page
- allocator
-Message-ID: <bc412a4f-5031-4c6c-a1ef-8bce170afbc9@stanley.mountain>
+To: Kishon Vijay Abraham I <kvijayab@amd.com>
+Cc: iommu@lists.linux.dev
+Subject: [bug report] iommu/amd: Enable support for up to 2K interrupts per
+ function
+Message-ID: <d3c8141a-0052-4f04-9df2-0604eeb352d8@stanley.mountain>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,42 +71,81 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-Hello Sairaj Kodilkar,
+Hello Kishon Vijay Abraham I,
 
-Commit eaf717fa1c3f ("iommu/amd: Replace slab cache allocator with
-page allocator") from Mar 7, 2025 (linux-next), leads to the
+Commit 19e5cc156cbc ("iommu/amd: Enable support for up to 2K
+interrupts per function") from Mar 7, 2025 (linux-next), leads to the
 following Smatch static checker warning:
 
-	drivers/iommu/amd/iommu.c:3200 alloc_irq_table()
-	error: we previously assumed 'iommu' could be null (see line 3195)
+	drivers/iommu/amd/iommu.c:2401 amd_iommu_probe_device()
+	error: uninitialized symbol 'dev_data'.
 
 drivers/iommu/amd/iommu.c
-    3186 static struct irq_remap_table *alloc_irq_table(struct amd_iommu *iommu,
-    3187                                                u16 devid, struct pci_dev *pdev,
-    3188                                                unsigned int max_irqs)
-    3189 {
-    3190         struct irq_remap_table *table = NULL;
-    3191         struct irq_remap_table *new_table = NULL;
-    3192         struct amd_iommu_pci_seg *pci_seg;
-    3193         unsigned long flags;
-    3194         int order = get_order(get_irq_table_size(max_irqs));
-    3195         int nid = iommu && iommu->dev ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
-                           ^^^^^^^^
-This check can hopefully be deleted?
+    2353 static struct iommu_device *amd_iommu_probe_device(struct device *dev)
+    2354 {
+    2355         struct iommu_device *iommu_dev;
+    2356         struct amd_iommu *iommu;
+    2357         struct iommu_dev_data *dev_data;
+    2358         int ret;
+    2359 
+    2360         if (!check_device(dev))
+    2361                 return ERR_PTR(-ENODEV);
+    2362 
+    2363         iommu = rlookup_amd_iommu(dev);
+    2364         if (!iommu)
+    2365                 return ERR_PTR(-ENODEV);
+    2366 
+    2367         /* Not registered yet? */
+    2368         if (!iommu->iommu.ops)
+    2369                 return ERR_PTR(-ENODEV);
+    2370 
+    2371         if (dev_iommu_priv_get(dev))
+    2372                 return &iommu->iommu;
+    2373 
+    2374         ret = iommu_init_device(iommu, dev);
+    2375         if (ret) {
+    2376                 dev_err(dev, "Failed to initialize - trying to proceed anyway\n");
+    2377                 iommu_dev = ERR_PTR(ret);
+    2378                 iommu_ignore_device(iommu, dev);
+    2379                 goto out_err;
 
-    3196         u16 alias;
-    3197 
-    3198         spin_lock_irqsave(&iommu_table_lock, flags);
-    3199 
---> 3200         pci_seg = iommu->pci_seg;
-                           ^^^^^^^
-Otherwise it will crash here.
+dev_data isn't initialized.
 
-    3201         table = pci_seg->irq_lookup_table[devid];
-    3202         if (table)
-    3203                 goto out_unlock;
-    3204 
-    3205         alias = pci_seg->alias_table[devid];
+    2380         }
+    2381 
+    2382         amd_iommu_set_pci_msi_domain(dev, iommu);
+    2383         iommu_dev = &iommu->iommu;
+    2384 
+    2385         /*
+    2386          * If IOMMU and device supports PASID then it will contain max
+    2387          * supported PASIDs, else it will be zero.
+    2388          */
+    2389         dev_data = dev_iommu_priv_get(dev);
+    2390         if (amd_iommu_pasid_supported() && dev_is_pci(dev) &&
+    2391             pdev_pasid_supported(dev_data)) {
+    2392                 dev_data->max_pasids = min_t(u32, iommu->iommu.max_pasids,
+    2393                                              pci_max_pasids(to_pci_dev(dev)));
+    2394         }
+    2395 
+    2396 out_err:
+    2397 
+    2398         iommu_completion_wait(iommu);
+    2399 
+    2400         if (FEATURE_NUM_INT_REMAP_SUP_2K(amd_iommu_efr2))
+--> 2401                 dev_data->max_irqs = MAX_IRQS_PER_TABLE_2K;
+                         ^^^^^^^^^
+
+    2402         else
+    2403                 dev_data->max_irqs = MAX_IRQS_PER_TABLE_512;
+                         ^^^^^^^^^^
+Dead.
+
+    2404 
+    2405         if (dev_is_pci(dev))
+    2406                 pci_prepare_ats(to_pci_dev(dev), PAGE_SHIFT);
+    2407 
+    2408         return iommu_dev;
+    2409 }
 
 regards,
 dan carpenter
