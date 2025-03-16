@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08F7F18B476;
-	Sun, 16 Mar 2025 08:04:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6B8A1953AD;
+	Sun, 16 Mar 2025 08:06:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742112254; cv=none; b=aEnEXuPTXBtEGLe3edKe2qtWVMwXJvUsTtoenqnC82oSXjAyyzKLfz58/t2jWR6Y4DsQGIUnHKKquD3t5KzyyT7xvQqqtSrAezqB7Ya7kagfVYjTci0/cVqSqQVNSJVeiFgEmKX5Coo81oyrx6IdQBh5ylbQhDjMXNyk8fjznv0=
+	t=1742112405; cv=none; b=lYeIxsqZuHh4bdoHLUXnWQoHS3o8KHe5Nkt9YcKpJBcJ4jafBAMLOM9wMY0BaBOMmyIsV0srxiv/a9usQvxtbV8tdiS2Wnof4QnFrYY1mVwbICLISK7WhUx68nd3Nko17Ug7ViflS7KnC2al2qi/6ljlTwe2jdu2IgB5NOwhh+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742112254; c=relaxed/simple;
-	bh=qVy5NOTwJcQ1MJ4GLjQJ2T48TMRnNvNf0Pndm6ouJK4=;
-	h=Subject:To:Cc:From:Date:Message-ID:MIME-Version:Content-Type; b=bqQiXxoJKCkpiufVl6soZ/seR9TPHQwUeaZNPcVAjX7vnJdMDzC2kl7R/pW3H31VWB9uVK+w39nInMf7kXYPBQML0etIlN5BtGyAEmB3rL55+W36vaZjdSNVLHWCsC0hpepGimVG+zwlcXzp1tSFI6tYG2ikVZBnpziSSH8YRPY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=15eLF/bQ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1742112405; c=relaxed/simple;
+	bh=27+d26U2EgjkRb+/BT+lpoDb+IcFbQOkCFlWNoVpp8k=;
+	h=Subject:To:Cc:From:Date:Message-ID:MIME-Version:Content-Type; b=sx6CZd9hOqA3bPgxCqnBenwCbv2R7nZngR96jS8IWj30+Yfab7dZQUK/AkNxOwtRgSxsKIDNhniEi4Iys+mk7t4WhZ9dfSpkCUxPxqaSV4LoXQvSkvrGNI0K4HkkuRERmKnYt+SXjA5TYIYpw+pRcnPVWXqzmY4fw0+QrwwXyWA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=yTsydWov; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="15eLF/bQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AE36C4CEDD;
-	Sun, 16 Mar 2025 08:04:13 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="yTsydWov"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 442FAC4CEDD;
+	Sun, 16 Mar 2025 08:06:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1742112253;
-	bh=qVy5NOTwJcQ1MJ4GLjQJ2T48TMRnNvNf0Pndm6ouJK4=;
+	s=korg; t=1742112405;
+	bh=27+d26U2EgjkRb+/BT+lpoDb+IcFbQOkCFlWNoVpp8k=;
 	h=Subject:To:Cc:From:Date:From;
-	b=15eLF/bQpivx1P1HrDkdqK51Fud3/Bj+JbYTzT0c2727iqGQq1GgI3ZBwfv1rHPqR
-	 2zaXZ9W0zPmfjglo0AjDK3l4krhtnlPNpIgboARPnotenzOSS/7OkUL9B5EcEJ/Szb
-	 5DpyXz3LfFUTakLB8dwpgwRPKU7j0WL8LT/GJRek=
-Subject: Patch "Fix mmu notifiers for range-based invalidates" has been added to the 6.12-stable tree
+	b=yTsydWovv4as9xpofeKGiUxd2SQNB6E/ZpLTfcH+rM70JM1xdsxNPh+EAEp95zfPj
+	 nABNoxMV+bl5ND7gx6lFQa1bbqxYlTckmGdmKZw/ZW6LNKaFsLy8FQcsqiBJD+u568
+	 hqjjqD1s3b5E3BoyEzne1JWKCfz3c2sP4V2XrGiE=
+Subject: Patch "Fix mmu notifiers for range-based invalidates" has been added to the 6.13-stable tree
 To: apopple@nvidia.com,catalin.marinas@arm.com,gregkh@linuxfoundation.org,iommu@lists.linux.dev,jgg@nvidia.com,jhubbard@nvidia.com,linux-arm-kernel@lists.infradead.org,linux-mm@kvack.org,nicolinc@nvidia.com,pjaroszynski@nvidia.com,rananta@google.com,robin.murphy@arm.com,sj@kernel.org,will@kernel.org
 Cc: <stable-commits@vger.kernel.org>
 From: <gregkh@linuxfoundation.org>
-Date: Sun, 16 Mar 2025 09:02:06 +0100
-Message-ID: <2025031606-duh-scanning-bea0@gregkh>
+Date: Sun, 16 Mar 2025 09:02:17 +0100
+Message-ID: <2025031617-swept-encounter-c305@gregkh>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,12 +44,12 @@ This is a note to let you know that I've just added the patch titled
 
     Fix mmu notifiers for range-based invalidates
 
-to the 6.12-stable tree which can be found at:
+to the 6.13-stable tree which can be found at:
     http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
 
 The filename of the patch is:
      fix-mmu-notifiers-for-range-based-invalidates.patch
-and it can be found in the queue-6.12 subdirectory.
+and it can be found in the queue-6.13 subdirectory.
 
 If you, or anyone else, feels it should not be added to the stable tree,
 please let <stable@vger.kernel.org> know about it.
@@ -157,4 +157,4 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 Patches currently in stable-queue which might be from pjaroszynski@nvidia.com are
 
-queue-6.12/fix-mmu-notifiers-for-range-based-invalidates.patch
+queue-6.13/fix-mmu-notifiers-for-range-based-invalidates.patch
