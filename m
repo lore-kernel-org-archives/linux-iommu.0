@@ -1,166 +1,182 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9369839ACC
-	for <iommu@lists.linux.dev>; Sun, 16 Mar 2025 02:36:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA2B2DF49
+	for <iommu@lists.linux.dev>; Sun, 16 Mar 2025 04:15:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742092618; cv=none; b=JuNjpxZdyM2efOZxHgeKGqnGYPhSdPmK7EFow2kcI3a0OfbucjSaUrj4itVYAqlmClABbRQ7U24EpWonPEPfB3tEHXPqrhanrvQn8wezWRM5aJ+4KteySh2LOe09gJUudgYXU02HruBBb+Ao2y3eAT6pMjizCTZyjrs4SpDGh7g=
+	t=1742098544; cv=none; b=cFlIeGKg4zt0THs1zaPjMmDwNAvWkSnd36KCaQV+OK9T1e7E/bbw4FlgYAWnIdmxG4p/Vw4Msu6r0dmSuyIsf3M4KZ1uM4VTNT3oM5zJq46M1G8qa8QUuGKk8ros8ExBVD07pgb5QcuKlE/vx8klDPpyH0a3p/StXqvtxhuWQLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742092618; c=relaxed/simple;
-	bh=otsR9NvXZuAsfzL0AifKh/SLKbS6GcELgn6XttISFJU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mzcFbAaPDzy2HG7zUdVbiuhRq9DKXODZFUE8nZvf1LZQwMetMQPMDY/WjqzFPhhVA3rErUoHjIvsX5JrBVyDdV1HC30s/fpeMOx5i2jPbyvu6QNKbjDVnIKegCAqCpHbPPDAiE0gQIKK9F6ujeuC2XQTJV5o+wSR+b1jILBFov4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LhvNm9cn; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1742098544; c=relaxed/simple;
+	bh=m7IGz1Su6f3WyaLHo4IduccdGORIbl0HNVhX7LjFWSk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VpCKT5Y7YI/c5CxgyCUMJJTzV48VUjsMMoH7vVtFwAnD3DfzixhbHsdx+FxwynF48zxy8La9uveILTidU/i5l6yE4xpIZDqJCHkzcRVQwVjAkjzbQ+kxNZk1LpLhjE2T1VjT1ElB84olvDxTMUstoPdJDkeSCWKr+IR20GlCt3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=zKh/S+RR; arc=none smtp.client-ip=209.85.167.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LhvNm9cn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1742092616; x=1773628616;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=otsR9NvXZuAsfzL0AifKh/SLKbS6GcELgn6XttISFJU=;
-  b=LhvNm9cnPX3aElQheNUuOxfoJJwEG3PVidkqstl54Yl+2iMK+kOkEGC/
-   unx0WCKOiNkIn9OsvJgksQfgsq6YLfbLolTjO+7hR+nMVH95swrElOIAH
-   zKXbBx09hEL0lKA1V4wLG2HxzZzcF7TMgvTjjn8Ixv2TkOzLAqmFQxISy
-   tI7QxzOUpUHkTneibOUySMwdeEJQ3ylc+7t1rMvHswzr7dEg8n+rXb7Lv
-   zVVhrsmP1f72OkNgfBVgDxcH8Npcvs1C1GepixJ+WGwdEB/pcJBZ1N4FO
-   sBVWJFHQtKEMHQBwfhEPKcjzKQxok7JsWrASHQC45rlCUfch5IV1fznTp
-   g==;
-X-CSE-ConnectionGUID: EPIHpCd8R7agrJlgvWFhbQ==
-X-CSE-MsgGUID: rWikstKMSwagF0XxYiksRQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11374"; a="53875897"
-X-IronPort-AV: E=Sophos;i="6.14,251,1736841600"; 
-   d="scan'208";a="53875897"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2025 19:36:56 -0700
-X-CSE-ConnectionGUID: zClBcTayTFKC/YOGbpMhEw==
-X-CSE-MsgGUID: H4rZ3c0/So6Ff86aXBYRfA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,251,1736841600"; 
-   d="scan'208";a="122561626"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2025 19:36:52 -0700
-Message-ID: <5e6d65b6-4f9a-4d23-925c-75be7c4bd561@linux.intel.com>
-Date: Sun, 16 Mar 2025 10:33:31 +0800
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zKh/S+RR"
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-549b12ad16eso3498085e87.0
+        for <iommu@lists.linux.dev>; Sat, 15 Mar 2025 21:15:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1742098541; x=1742703341; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UM1L2R64O8F7JlGmLCnfToZ8ny94Rpb02pePzSUOCDQ=;
+        b=zKh/S+RRfx7DzDBr3NPrQPLXQbCCqDrMISfx1NyOpbmkS6hK2qly/S51doxZbbtyMe
+         FjU9WxPCaJVz82BLlGe0KVf8BQvydyXDu21WT7TD5KoefYwm4w/KhQcc10l8qu6vE6V2
+         UTiGejzn/Cj2dS7lU3d91RTCfhme/R7wBpH50hUkFQJkdVzxjOuYnY6PKieHXnQvI6pe
+         +9z17Gp292GlMhVG73/K5O3DN9rmeq8kQtfUhTGmSRTyUWvSuRxLO4aQuUYbzq7htIA7
+         zK3GLmH85wx1l7VdmOEp9l7boTYtuYaH+knItAooVSYixL32OyAJx+uaQ1I+MfHqDLZi
+         2e1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742098541; x=1742703341;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UM1L2R64O8F7JlGmLCnfToZ8ny94Rpb02pePzSUOCDQ=;
+        b=wLt31+b6qyZUSLOhUR1ybztVeAFTWI7O1AbxXH7iwyhUHntelqGoanS40wjo3bK18Y
+         NAO128H82W6I+wdau5guEWPc6sztE8nTqbHOamkfcD4CLE00xvJB+9jUuHV7SMlwZQht
+         AVanQtoBNhD4eDj+8oBe16PVEZZ+LUm9QW9S9Eczj6C90Df5UMLWiTW1zFjWpoeoAQmc
+         3UBEvMM0GJH3jE7KJN3BgPo/Q8k0Ts4tMvD94TBGzr0NoLbaWPFpbas+y0JtPTTVn73z
+         rhCD+vv903aASyLeG3NNFpxSMaaU/SmeM0HZ7DhoWL4LEjFVybH3Gel6CWAbRwycOb+N
+         pNvw==
+X-Forwarded-Encrypted: i=1; AJvYcCUiwAYWkQRq3iDl7uXobuPCFfhShSE/GWu0yLM1WEknREebl2yAL4JiXQeZYwfNxJ/TprPkng==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyDxvu5gmz1MqzCgDy/WVz7+Mk51+fLoOc/iBj5+cbbHtCvsvXO
+	KpsCNKCjcFBtEExNn/LsP68lQJjr80CjpnEGvUEUrJuc7ugDSW9in+IRPcbE/t0dRupEu8NdQVG
+	DRJztKJCeXcFF43r+QwVdGZiClpBQbU8P2ROnbg==
+X-Gm-Gg: ASbGnctscFh9ggLHZ0bcR6P4AYFBXZAYX4OLUj1aHaykBLgQVdJsFvIPIDgaIJz9mG9
+	JWWOn31eXMMM2x56qk+ytUA6WGwzFsHHbhzcnmqMb5s5bQ/S7HZOsiwnJI3Vjg8lRHjCQSVjhM0
+	eJUKE6QYSdSE/WQvlFjkK/GOfMlwPCK8E=
+X-Google-Smtp-Source: AGHT+IH/A1bDu+ZfR2zvqow6IEEeruRcPFjB/u+4/oPSeeNjvl37vt/MG/IPQnpIeLwVaSqEfw8ri/ih3A9wXOYJg1k=
+X-Received: by 2002:a05:6512:6d6:b0:549:4b8c:a118 with SMTP id
+ 2adb3069b0e04-549c3900385mr2453886e87.17.1742098540708; Sat, 15 Mar 2025
+ 21:15:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Regression on drm-tip
-To: "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>
-Cc: "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
- "intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <SJ1PR11MB612953431F94F18C954C4A9CB9D32@SJ1PR11MB6129.namprd11.prod.outlook.com>
- <4951eb3c-aa2b-46cf-87bd-37b09447748d@linux.intel.com>
- <SJ1PR11MB6129AAF87542D06B7A23C0FCB9D22@SJ1PR11MB6129.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <SJ1PR11MB6129AAF87542D06B7A23C0FCB9D22@SJ1PR11MB6129.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20250315101319.5269-1-zhangfei.gao@linaro.org> <20250315184523.GA848225@bhelgaas>
+In-Reply-To: <20250315184523.GA848225@bhelgaas>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Sun, 16 Mar 2025 12:15:29 +0800
+X-Gm-Features: AQ5f1JqAU9NOtpVBFyhTYYvnRxSZUPako8sV1dSH2-zJnWm6JJHjU4CXdg9YkTg
+Message-ID: <CABQgh9E=z9SqbbnLfqQrSX8XqGMooz3EvUescpRY1XYQgvnHjA@mail.gmail.com>
+Subject: Re: [PATCH v2] PCI: Declare quirk_huawei_pcie_sva() as pci_fixup_header
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 3/14/25 17:04, Borah, Chaitanya Kumar wrote:
-> 
-> 
->> -----Original Message-----
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Thursday, March 13, 2025 7:53 PM
->> To: Borah, Chaitanya Kumar <chaitanya.kumar.borah@intel.com>
->> Cc: baolu.lu@linux.intel.com; intel-gfx@lists.freedesktop.org; intel-
->> xe@lists.freedesktop.org; iommu@lists.linux.dev
->> Subject: Re: Regression on drm-tip
->>
->> On 2025/3/13 16:51, Borah, Chaitanya Kumar wrote:
->>> Hello Lu,
->>>
->>> Hope you are doing well. I am Chaitanya from the linux graphics team in
->> Intel.
->>>
->>> This mail is regarding a regression we are seeing in our CI runs[1] on drm-tip
->> repository.
->>>
->>> ``````````````````````````````````````````````````````````````````````
->>> ``````````` <4>[    2.856622] WARNING: possible circular locking
->>> dependency detected <4>[    2.856631]
->>> 6.14.0-rc5-CI_DRM_16217-gc55ef90b69d3+ #1 Tainted: G          I <4>[
->>> 2.856642] ------------------------------------------------------
->>> <4>[    2.856650] swapper/0/1 is trying to acquire lock:
->>> <4>[    2.856657] ffffffff8360ecc8
->>> (iommu_probe_device_lock){+.+.}-{3:3}, at:
->>> iommu_probe_device+0x1d/0x70 <4>[    2.856679]
->>>                     but task is already holding lock:
->>> <4>[    2.856686] ffff888102ab6fa8
->>> (&device->physical_node_lock){+.+.}-{3:3}, at:
->>> intel_iommu_init+0xea1/0x1220
->>> ``````````````````````````````````````````````````````````````````````
->>> ```````````
->>> Details log can be found in [2].
->>>
->>> After bisecting the tree, the following patch [3] seems to be the
->>> first "bad" commit
->>>
->>> ``````````````````````````````````````````````````````````````````````
->>> ```````````````````````````````````
->>> commit b150654f74bf0df8e6a7936d5ec51400d9ec06d8
->>> Author: Lu Baolumailto:baolu.lu@linux.intel.com
->>> Date:   Fri Feb 28 18:27:26 2025 +0800
->>>
->>>       iommu/vt-d: Fix suspicious RCU usage
->>>
->>> ``````````````````````````````````````````````````````````````````````
->>> ```````````````````````````````````
->>>
->>> We also verified that if we revert the patch the issue is not seen.
->>>
->>> Could you please check why the patch causes this regression and provide a
->> fix if necessary?
->>
->> Can you please take a quick test to check if the following fix works?
->>
->> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c index
->> e540092d664d..06debeaec643 100644
->> --- a/drivers/iommu/intel/dmar.c
->> +++ b/drivers/iommu/intel/dmar.c
->> @@ -2051,8 +2051,13 @@ int enable_drhd_fault_handling(unsigned int cpu)
->>                   if (iommu->irq || iommu->node != cpu_to_node(cpu))
->>                           continue;
->>
->> +               /*
->> +                * Call dmar_alloc_hwirq() with dmar_global_lock held,
->> +                * could cause possible lock race condition.
->> +                */
->> +               up_read(&dmar_global_lock);
->>                   ret = dmar_set_interrupt(iommu);
->> -
->> +               down_read(&dmar_global_lock);
->>                   if (ret) {
->>                           pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
->>                                  (unsigned long long)drhd->reg_base_addr, ret);
->>
->> Thanks,
->> baolu
-> 
-> We still see the issue with this change.
+On Sun, 16 Mar 2025 at 02:45, Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Sat, Mar 15, 2025 at 10:13:19AM +0000, Zhangfei Gao wrote:
+> > The commit bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper
+> > probe path") changes the arm_smmu_probe_device() sequence.
+>
+> > The arm_smmu_probe_device() is now called earlier via pci_device_add(),
+> > which calls pci_fixup_device() at the "pci_fixup_header" phase, while
+> > originally it was called from the pci_bus_add_device(), which called
+> > pci_fixup_device() at the "pci_fixup_final" phase.
+> >
+> > The callstack before:
+> > [ 1121.314405]  arm_smmu_probe_device+0x48/0x450
+> > [ 1121.314410]  __iommu_probe_device+0xc4/0x3c8
+> > [ 1121.314412]  iommu_probe_device+0x40/0x90
+> > [ 1121.314414]  acpi_dma_configure_id+0xb4/0x100
+> > [ 1121.314417]  pci_dma_configure+0xf8/0x108
+> > [ 1121.314421]  really_probe+0x78/0x278
+> > [ 1121.314425]  __driver_probe_device+0x80/0x140
+> > [ 1121.314427]  driver_probe_device+0x48/0x130
+> > [ 1121.314430]  __device_attach_driver+0xc0/0x108
+> > [ 1121.314432]  bus_for_each_drv+0x8c/0xf8
+> > [ 1121.314435]  __device_attach+0x104/0x1a0
+> > [ 1121.314437]  device_attach+0x1c/0x30
+> > [ 1121.314440]  pci_bus_add_device+0xb8/0x1f0
+> > [ 1121.314442]  pci_iov_add_virtfn+0x2ac/0x300
+> >
+> > And after:
+> > [  215.072859]  arm_smmu_probe_device+0x48/0x450
+> > [  215.072871]  __iommu_probe_device+0xc0/0x468
+> > [  215.072875]  iommu_probe_device+0x40/0x90
+> > [  215.072877]  iommu_bus_notifier+0x38/0x68
+> > [  215.072879]  notifier_call_chain+0x80/0x148
+> > [  215.072886]  blocking_notifier_call_chain+0x50/0x80
+> > [  215.072889]  bus_notify+0x44/0x68
+> > [  215.072896]  device_add+0x580/0x768
+> > [  215.072898]  pci_device_add+0x1e8/0x568
+> > [  215.072906]  pci_iov_add_virtfn+0x198/0x300
+>
+> The stacktraces definitely help connect the dots but don't integrate
+> the fixup phases and the timestamps are unnecessary distraction.
+>
+> I would omit all the above except the first paragraph and include
+> something like this instead, which shows how arm_smmu_probe_device()
+> was previously after final fixups and is now between header and final
+> fixups:
+>
+>   pci_iov_add_virtfn
+>     pci_device_add
+>       pci_fixup_device(pci_fixup_header)      <--
+>       device_add
+>         bus_notify
+>           iommu_bus_notifier
+>   +         iommu_probe_device
+>   +           arm_smmu_probe_device
+>     pci_bus_add_device
+>       pci_fixup_device(pci_fixup_final)       <--
+>       device_attach
+>         driver_probe_device
+>           really_probe
+>             pci_dma_configure
+>               acpi_dma_configure_id
+>   -             iommu_probe_device
+>   -               arm_smmu_probe_device
+>
+> This is the pci_iov_add_virtfn().  The non-SR-IOV case is similar in
+> that pci_device_add() is called from pci_scan_single_device() in the
+> generic enumeration path, and pci_bus_add_device() is called later,
+> after all a host bridge has been enumerated.
 
-I am attempting to reproduce this issue with my MTL machine. I pulled
-the test branch from:
+Thanks Bjorn
 
-https://anongit.freedesktop.org/git/drm-tip.git
+Will update in v3.
 
-and built the test kernel image using the configuration file from:
+One thing is the probe sequence change is the fixing result, not newly adde=
+d.
+iommu_bus_notifier
+    iommu_probe_device
+        __iommu_probe_device
+            ops =3D iommu_fwspec_ops(dev_iommu_fwspec_get(dev));
+             if (!ops)
+                 return -ENODEV;
+This calling sequence existed before but returned here since ops =3D NULL.
+It is fixed in the commit bcb81ac6ae3c, so arm_smmu_probe_device
+happens earlier and quicker.
 
-https://intel-gfx-ci.01.org/tree/drm-tip/CI_DRM_16217/kconfig.txt
+>
+> > Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe =
+path")
+> > Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> > [kwilczynski: commit log]
+> > Signed-off-by: Krzysztof Wilczy=C5=84ski <kwilczynski@kernel.org>
+>
+> You should never include somebody else's Signed-off-by below yours.
+> You should only add *your own* Signed-off-by:
 
-But I did not observe the lockdep splat mentioned above after booting.
+OK
 
-Is there anything I might have missed?
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/D=
+ocumentation/process/submitting-patches.rst?id=3Dv6.13#n396
+>
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
-Thanks,
-baolu
+Thanks
