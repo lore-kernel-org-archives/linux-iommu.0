@@ -1,170 +1,262 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2045.outbound.protection.outlook.com [40.107.94.45])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3F0F241689
-	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 14:15:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742220908; cv=fail; b=MuD5bf0waw4gzoxSHy0I1nh1vtUXU3M5QlABrLo+tTMS8tRoBGAEV8xIPKI0OMaevSUcU8FZrbeg7MBZHiX+PmVhrUlzPKDpeNAjLhTRtDq+kayEQgknf1bi3ocflaCI6XZNulY6YKgF3rqh8UMM0nL4ajBvmql7mv+IfBp/DBw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742220908; c=relaxed/simple;
-	bh=4PQ2GbV2p07CYeaJLkR0lG76uc5m+P3sjCROpssnHSo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=B0ZHptTmPysyWLPjTX+IEHnhL9r2USUqRpfnMCQExIwlnoX3etNfUDpZzCPeGGCwcwzBgduTyfD/S/mmZeUZk9u2mXAZ21ruTFoTEpdRgqm2u4r+TlidFP7Ex9DEex0myN9TMIFY0LAXB8mS7yvh0kPduM1scbpiSmg858+aM5g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=npvSq0+a; arc=fail smtp.client-ip=40.107.94.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5FFE42070;
+	Mon, 17 Mar 2025 15:10:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742224229; cv=none; b=qgOzKnJ+Il0a5fSF50jxNeFOySpOc79fvOC3wTIQU7eNYrH9yFM3vVWL63QJzbOFY5IFVM+Vojs8+rj8JrFwOjqxbMtdtaRi9wRPjFxC7JZT0naIJ7HGt2zg+yTQ+VRZAe48C2V/X4f2g3ohlxDaIh7P0VXaJlo1TrURt9ScPFU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742224229; c=relaxed/simple;
+	bh=kqYx6b0Q2AbSrlMWtByIV/qXFsF3L/buRpNOgC/su3w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=aKDc1tKQXmWRjDtJexiaAFpTJ9OQA0vZNPyElVksiCoW6BtGYNzwnE/kFQ/VpvyPhvrQrdSkxitQbQpvN8kYIZz0GCUudrBFXTqPjRqwODI0xq43DlM2DsCbf34Y+gS6oeifkrMu41DrHwWlriAa9B6nRXwLiHfrt3Ia5KUId/I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q/VXCgWB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="npvSq0+a"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=iv1rAhyngBd3GSeV8fJlHRXDOc+60RjoCM2YKNL6a9683lwUcOHiTBmSZeTs+FZ5jfkWz0bUPYpjCIqb5JPDw4C3Z6tOrM/LA/gD5gd9EnovyS4f0aEoXBlqnOF9A3USMVSsiMsxO9Q/O1FqgEFK9OCYmMBlyhSJbyCRSM65b9suSE+fJN8iRlZTZZwHP5rKYnpkiizijaIztICreAgg7wWv4lBNqM6QCnX/v757QT/QzW2e15900zCefUXsLXYKbfw1peI+HD9pYtOFSgZZEIF8E3Qg3Mb0plS3ktF/EQ8Nt/6ND1/AMBHvhNzyZBUXOBj8Il8IHnbDnz1OIERzpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZRynE3I/ELT1hXL5o8pRk0G/AjPPzsx4dTOdLHUREzg=;
- b=NcQsMAyhvlVca9NSqcP0F9+wMMqRQa+QPGgaC7gTiG/h0tGoITeSjqB5pxtIRlvL63GuCKPCYOJwqWn7Nns0asJy9gDf/YvsoK4VF27ORrcI3KxlH2fkismFuP0QGBFl2atOU9FclDoRZ4A7/eVwfNk+d1faf6tUdwdc5BYJwQrp+aK5RynLQSXa0GvH2qS0VT7iWSfI6RnVFtF57DfKzq4JjGuTT0hzXakw7AKWJYrtlwSFnAz4oLQBt+xyuoxgHwvFNNZppja6YhS9WeFKZokMavHA8cNBne/RX5+C2dLz/bImxAehob4O4+yUm80dt2bz8WA/pDfWhSp5FUQSlg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZRynE3I/ELT1hXL5o8pRk0G/AjPPzsx4dTOdLHUREzg=;
- b=npvSq0+aS0N/d2EGogrC7af8ay+4AeX7eTRtdE8adIrtEdgTjGFzXWMl+Zfke2wWyC3KIpmENq3YNPRRadJFCJbCXQJG5jWlmbfGARtye1WrXZ1+4mRhHSAX8dQY/AadPvGW135UJV6ssso5HDCiAmTe6Tv57P64AAFpGbX2oRBDMlIyqpqVX0KRb/IplNjl57ekwDfcs95R917JMlIATiPm3VBz6giEqEqUY6q3hFthp2OCeUAx5Fodw0thCEMRZTLOkgoOHIJyEuYSAxED3MwqPrSuS7nVX4EoYZDfK5ONIL8Mt3U6QjHb9fly89kqXZ5pdpXLiCbnCIoVfs/GJw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by CH3PR12MB7668.namprd12.prod.outlook.com (2603:10b6:610:14d::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.33; Mon, 17 Mar
- 2025 14:15:02 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8534.031; Mon, 17 Mar 2025
- 14:15:02 +0000
-Date: Mon, 17 Mar 2025 11:15:01 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
-	Fenghua Yu <fenghuay@nvidia.com>,
-	Zhou Wang <wangzhou1@hisilicon.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/8] iommu: Remove IOMMU_DEV_FEAT_SVA/_IOPF
-Message-ID: <20250317141501.GE9311@nvidia.com>
-References: <20250313051953.4064532-1-baolu.lu@linux.intel.com>
- <CABQgh9G2kTqWvjDTMupCJ_YNMxTg75PwgooMSsvEuT_hvemvDw@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABQgh9G2kTqWvjDTMupCJ_YNMxTg75PwgooMSsvEuT_hvemvDw@mail.gmail.com>
-X-ClientProxiedBy: BN7PR06CA0051.namprd06.prod.outlook.com
- (2603:10b6:408:34::28) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q/VXCgWB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF97C4CEE3;
+	Mon, 17 Mar 2025 15:10:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1742224228;
+	bh=kqYx6b0Q2AbSrlMWtByIV/qXFsF3L/buRpNOgC/su3w=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Q/VXCgWBx9flKktGMWIUTFGlAe43G0ITwTm7+0NelEZG76xYgZqJyluVWVCJVk7tE
+	 K1E+OxKUIQqjySmc3D438fVyvypZCX1Q0jscm1dzhcwRoCpFZzDwhD88BINihbXO8D
+	 PPhmj8kmp5T3LQNe+8EObPRuIea+viUFvZN3PFWBAFx83tbhhmK5bYOoRZ2kpMJQGP
+	 E7moIz8VDvJbBMhb7L/5BcI0zXnyFJ1PcsUo7HpKJbYDP4SmIx7/nlrAVqrSVdVVQm
+	 1Rt5bhjooZG+GQtq04zSV8oxTpr4eqSm3/FFcsRKsGx0xy13LipZV45MRZQokn2+6S
+	 D05sCT7Zle3nA==
+Message-ID: <1b8228df-e007-4ecf-92b7-d4833efbc765@kernel.org>
+Date: Mon, 17 Mar 2025 16:10:13 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CH3PR12MB7668:EE_
-X-MS-Office365-Filtering-Correlation-Id: fa8f6788-0826-412c-2025-08dd655e1bb2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?lBOerByUd6tgW+olNbtc+5e7QF0jzME5vDghgoY1cbHYMK50d+cUq6/KepB4?=
- =?us-ascii?Q?YtmVq5CzYA3b8zmmsW90UAHL3ZhM/Sj31qvNJWKPEJdXCg3AhOkkfkfsEhai?=
- =?us-ascii?Q?sd3RwMEZMMUFZiqzppbSo0pckgjRcWrUJzfWlilJ7A9ZlPyT5gsCa1f0QkGU?=
- =?us-ascii?Q?TRtQXGAPuLGXkWUQPnPJZfH3lfECqWjTXb+HWIGSw4nApspx2pZ71M5A8NAQ?=
- =?us-ascii?Q?yzUjiOGHyfDQyfMFKV6EkIpHZ27Uwfiv7nmrtOvpqDtzaF3Zx8+lDNDOdJRj?=
- =?us-ascii?Q?sHBbvE1RZr8Ef+ZR35SS2fn3kDb1rtugh+8eqyW0C3tf2wzh/CzQz2yn7kO0?=
- =?us-ascii?Q?pFHx2clVo6VtSoSGndMjfgAYYcD2oD+JKlaULzIjTboSFNy3+uvFf23NP58k?=
- =?us-ascii?Q?ghycCVTtcMlsM3g4AyVog4qHExBUaLe2+Sccu9OzJt34sef5AIADJx0qdlU0?=
- =?us-ascii?Q?JO2lTIoClX4s9UcJtd38a4tyEaBUrpeSMtM+kdq6+Pp8w+mu2fLsWIHr4irM?=
- =?us-ascii?Q?GTTLanJw/3lPt+Ig8sz45rbaOct6zlmiq6kb9DEpLhtlkq2tdaI7nd3er4n6?=
- =?us-ascii?Q?437EODRK564c2UeUm5o4p+jZkENDzTQjrrXsbwVIUvU95qankzGxzjZcTVFt?=
- =?us-ascii?Q?kPCLpLuu8SmHD+T38bEfy3Xt0eRkTTvlrdsouR5axTxijti5Hf4G9Wpp6w1p?=
- =?us-ascii?Q?Vcw4TOgYjmeW/k8oZQJPhcDLGPMIWmxJUwiS3uSUbE00Lem/Cb+rVA+H30wL?=
- =?us-ascii?Q?Y2HsTX6CVfLHbfB0IbSkKDDaW+aqKT+IjBD7djSvKV3IoraHettq+rbzEhQI?=
- =?us-ascii?Q?4BdA8zH2vF+q8V7QetbFPoj+ohpP4znI67z7oZibdYmzMj8joO5neFJmLXDM?=
- =?us-ascii?Q?E8yaFKjNSzJA6tHVcYlTzioDZ5t/vg/Kb6BsJEFd+DcxCUNLqa2TvQO2RhFa?=
- =?us-ascii?Q?kvxzlMEjItgAwdEinQ471MBcu5sc8/m4I8mLJw12bxrpr6qhvDGCrowzhbMu?=
- =?us-ascii?Q?+kH2j30m/XrAC+1+ihVYqt0FZBfIzYzIZVETFB/rzCBFlLK7eHUC95L5QSSB?=
- =?us-ascii?Q?tfzdwMF0bSjpOcRceURX1TFssazoKW/XXPDMmHQ8v45USUX3N8rH4TlMwPZn?=
- =?us-ascii?Q?7kAXtwejyKOFhR/oFKUr4iaMugjnkZ4itgYtRyks8LYQm8NilZV9nOREJxwx?=
- =?us-ascii?Q?2hDOO7HrNJw65auPPrkjNiiHfvpQ3Xrci1jgXEYFt00Wsky97JLB0cYCqgms?=
- =?us-ascii?Q?JfXBfrM8eH5wDSE50B4kLN2BAzaKPSj9BdtG0fxANMk6jCrE+DT2hEItBV3n?=
- =?us-ascii?Q?eH4qmrikEuTJF/jfwhqbxX+Y1yKFA0AF64mWfImCCW1ScV/BxASw+I+WjzoV?=
- =?us-ascii?Q?ui29iWrHgTZX7w70tQ7xwquhHRrhqLvXeYbG2MHBcZVYd7b2hA=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ALgrLnGVRV1R+qS0p2FEm/LUsf3UZvpL6jkyS8hc4MoLHmdMATq704KLcPz7?=
- =?us-ascii?Q?EM4I0JQ+Z83Y29x9Z8RaVgjfDXG8CvzygW6tX/8MNKybKlWkZ1FA9SQ+Ul4j?=
- =?us-ascii?Q?ODt6pre9bpGrG7ndr56aFQfhb3eANDMxWKQso5f3qQgUZ0usygLktrhJWx6V?=
- =?us-ascii?Q?yw8rA3u/sdGHzNVy8Sp8bDc712Pm/aVcQ2H7GuZFcHtxevm3MPGmwfK6zomT?=
- =?us-ascii?Q?PjN/FvwO78P52QzqA3wqifnVAOqUoET9cGAKrtHxM48cNkXjfFN16Lb1Ap6+?=
- =?us-ascii?Q?6R8+YKnelbBqjiW0HP1lY/vw6DULVZvOwmwXizbdmweLoJafcfw+tf7Rw1vs?=
- =?us-ascii?Q?VCLvdeMualIVOdVa7I0PW4DKy3xT3nZ7WLooj6RVWDrssc0ET0vWSMULVKT1?=
- =?us-ascii?Q?ch7wtFAxTYSdZs4BI/a+vvZFb5bO+fE15u3H9/v83vIVNQsufYd/3MmgVWP+?=
- =?us-ascii?Q?k7W+Q1pN167DfOfB/xTcLRou26RZBUQw7MmZzaqmXITdOeeAP1zlga8bCjJz?=
- =?us-ascii?Q?XfDqyLpXXbjOVrNCTOxUgPodBAaZGgfu9Ql0ITGp/cC4wtaG4FlZ/IntOM1A?=
- =?us-ascii?Q?9vzFKqRe0r+QMmlYYaUxKDng3MX2OxJqO9pLv3murk10Pu1+8T6a6yKpQ6z2?=
- =?us-ascii?Q?H6ny2S89eFQqzkaRJuPYXskMsQeM/lu/ZyUiOrj88/b2SmtAtMfTf/Z6VISc?=
- =?us-ascii?Q?49jhs0qhhOFpu8lEtew7zqq0+eAFYE/micPCsfAgkcNbZirq7ARJGoVpRMoU?=
- =?us-ascii?Q?F1H4WTBD/zvAmcLl9TcfkN/umuaQMDjw0OxfTHIwmmTk0vMGEaaj0e1lT/6r?=
- =?us-ascii?Q?9/bsRzNi4n3KquFAsLUBYt7D/PpoVObSFC7KaVF4+/MnWiCFKftq3ptU3vus?=
- =?us-ascii?Q?bLl+2RNJmdxlVnaOLYwoaHfsvSIJdT7m3XHhV2NJmd803qEmAfjBpL70HTXP?=
- =?us-ascii?Q?d2cYkHUzxvXG/qzIv6Gx99oCTfQ/BAtEfYeZP1DckRpqEUXt0O1x8tdtS7/B?=
- =?us-ascii?Q?EwhR2s8cam0goBUlgLhmzcUrKEWpaxqL9vJPFQ81OaW8Iu86Q/tTZgcH7qqf?=
- =?us-ascii?Q?umI/NlTFvzZZWLcCQKYIskSWemB0ABSPbNibFCipJO4bTnmyYY2uePshCmLM?=
- =?us-ascii?Q?cDh3nVGVLdyFwAjl2pH4KaDdU0AB74otNmYt2hb+Nfz+JR2t+KOrC96TAUgl?=
- =?us-ascii?Q?6Kh3yJmFqRDDAM9ibhUtwealpx3OBiGr/fTdelj6Xjh9JBBAKZW9Fe29LBv8?=
- =?us-ascii?Q?wWDyOm0K3nt0y5YU++otd56/KeYcMr4nH3BcjVdtky97YFC8CNIxW3N3dz0y?=
- =?us-ascii?Q?20ni3+1I1WnId1q7+Xxjyw0XyeanD5WH+91O1tXJwyd6+07R2saFApkEo6kQ?=
- =?us-ascii?Q?w+yMCm4lQ+HruXIl9mxIHqdjQl5JOdQeZd8CFIuKPC9UYWLRlZOCGDuyXmrh?=
- =?us-ascii?Q?pZisKcoMTZ76eNPFs23qrZA8yHw6OzY0z24o805HNr8EPgDe8kXiH/rEvX6A?=
- =?us-ascii?Q?cAl0Zp2ZM3dLITIAuGt1+AjBF3BosTKX93C34FALQ8aodmuiqTO5AO4xqI05?=
- =?us-ascii?Q?sXrfRQ5Mbq5IZmc/pVg=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa8f6788-0826-412c-2025-08dd655e1bb2
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2025 14:15:02.5883
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BdY0pprngh0hI5oa5tOnxxt0QcPTQ8VkwdzOHCi/pWOeCZ5jikphNefj0NrRGmZ6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7668
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/6] dt-bindings: clock: qcom: Add MSM8937 Global Clock
+ Controller
+To: =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>,
+ =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>,
+ Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>,
+ Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+ Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Dmitry Baryshkov <lumag@kernel.org>, linux-arm-msm@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, phone-devel@vger.kernel.org,
+ ~postmarketos/upstreaming@lists.sr.ht, linux@mainlining.org
+References: <20250315-msm8937-v4-0-1f132e870a49@mainlining.org>
+ <20250315-msm8937-v4-1-1f132e870a49@mainlining.org>
+ <20250317-hot-obedient-sturgeon-394cb8@krzk-bin>
+ <11695D76-7CBE-41CE-A8DD-D6845D01670C@mainlining.org>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <11695D76-7CBE-41CE-A8DD-D6845D01670C@mainlining.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, Mar 14, 2025 at 04:11:56PM +0800, Zhangfei Gao wrote:
-> Hi, Baolu
+On 17/03/2025 10:57, Barnabás Czémán wrote:
 > 
-> On Thu, 13 Mar 2025 at 13:19, Lu Baolu <baolu.lu@linux.intel.com> wrote:
-> >
-> > The new method for driver fault reporting support relies on the domain
-> > to specify a iopf_handler. The driver should detect this and setup the
-> > HW when fault capable domains are attached.
-> >
-> > Move SMMUv3 to use this method and have VT-D validate support during
-> > attach so that all three fault capable drivers have a no-op FEAT_SVA and
-> > _IOPF. Then remove them.
-> >
-> > This was initiated by Jason. I'm following up to remove FEAT_IOPF and
-> > further clean up.
-> >
-> > The whole series is also available at github:
-> > https://github.com/LuBaolu/intel-iommu/commits/iommu_no_feat-v4
 > 
-> I retested this branch, and it works
-> 
-> https://github.com/Linaro/linux-kernel-uadk/tree/iommu_no_feat-v4
+> On March 17, 2025 10:17:46 AM GMT+01:00, Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>> On Sat, Mar 15, 2025 at 03:57:35PM +0100, Barnabás Czémán wrote:
+>>> Add device tree bindings for the global clock controller on Qualcomm
+>>> MSM8937 platform.
+>>>
+>>> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>>> ---
+>>>  .../bindings/clock/qcom,gcc-msm8937.yaml           | 75 ++++++++++++++++++++++
+>>>  include/dt-bindings/clock/qcom,gcc-msm8917.h       | 17 +++++
+>>>  2 files changed, 92 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-msm8937.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8937.yaml
+>>> new file mode 100644
+>>> index 0000000000000000000000000000000000000000..3c3f6756048e195671f542b3a6cd09057558eafa
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8937.yaml
+>>> @@ -0,0 +1,75 @@
+>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/clock/qcom,gcc-msm8937.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: Qualcomm Global Clock & Reset Controller on MSM8937
+>>> +
+>>> +maintainers:
+>>> +  - Barnabas Czeman <barnabas.czeman@mainlining.org>
+>>> +
+>>> +description: |
+>>> +  Qualcomm global clock control module provides the clocks, resets and power
+>>> +  domains on MSM8937.
+>>
+>> This is exactly like msm8953, so why it cannot be there?
+>>
+> Not exactly clock names are different, msm8953 have sleep msm8937 have sleep_clk.
 
-Thanks!
+But this is the same clock, isn't it?
 
-Jason
+And while we are at this: fix the name, so "sleep" because there is no
+point to write that an entry in clock-names is a clock. There is no
+"_clk" anywhere else.
+
+
+>>> +
+>>> +  See also::
+>>> +    include/dt-bindings/clock/qcom,gcc-msm8917.h
+>>
+>> typo, 8937
+>>
+> No
+
+Ack
+
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    const: qcom,gcc-msm8937
+>>> +
+>>> +  clocks:
+>>> +    items:
+>>> +      - description: XO source
+>>> +      - description: Sleep clock source
+>>> +      - description: DSI phy instance 0 dsi clock
+>>> +      - description: DSI phy instance 0 byte clock
+>>> +      - description: DSI phy instance 1 dsi clock
+>>> +      - description: DSI phy instance 1 byte clock
+>>> +
+>>> +  clock-names:
+>>> +    items:
+>>> +      - const: xo
+>>> +      - const: sleep_clk
+>>> +      - const: dsi0pll
+>>> +      - const: dsi0pllbyte
+>>> +      - const: dsi1pll
+>>> +      - const: dsi1pllbyte
+>>> +
+>>> +required:
+>>> +  - compatible
+>>> +  - clocks
+>>> +  - clock-names
+>>> +  - '#power-domain-cells'
+>>> +
+>>> +allOf:
+>>> +  - $ref: qcom,gcc.yaml#
+>>> +
+>>> +unevaluatedProperties: false
+>>> +
+>>> +examples:
+>>> +  - |
+>>> +    #include <dt-bindings/clock/qcom,rpmcc.h>
+>>> +
+>>> +    clock-controller@1800000 {
+>>> +      compatible = "qcom,gcc-msm8937";
+>>> +      reg = <0x01800000 0x80000>;
+>>> +      #clock-cells = <1>;
+>>> +      #reset-cells = <1>;
+>>> +      #power-domain-cells = <1>;
+>>> +      clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
+>>> +               <&sleep_clk>,
+>>> +               <&dsi0_phy 1>,
+>>> +               <&dsi0_phy 0>,
+>>> +               <&dsi1_phy 1>,
+>>> +               <&dsi1_phy 0>;
+>>> +      clock-names = "xo",
+>>> +                    "sleep_clk",
+>>> +                    "dsi0pll",
+>>> +                    "dsi0pllbyte",
+>>> +                    "dsi1pll",
+>>> +                    "dsi1pllbyte";
+>>> +    };
+>>> +...
+>>> diff --git a/include/dt-bindings/clock/qcom,gcc-msm8917.h b/include/dt-bindings/clock/qcom,gcc-msm8917.h
+>>> index 4b421e7414b50bef2e2400f868ae5b7212a427bb..ec1f0b261dd5ccfe4896a00ffa9cf86de98b9cb3 100644
+>>> --- a/include/dt-bindings/clock/qcom,gcc-msm8917.h
+>>> +++ b/include/dt-bindings/clock/qcom,gcc-msm8917.h
+>>> @@ -170,6 +170,22 @@
+>>>  #define VFE1_CLK_SRC				163
+>>>  #define VSYNC_CLK_SRC				164
+>>>  #define GPLL0_SLEEP_CLK_SRC			165
+>>> +#define BLSP1_QUP1_I2C_APPS_CLK_SRC		166
+>>> +#define BLSP1_QUP1_SPI_APPS_CLK_SRC		167
+>>> +#define BLSP2_QUP4_I2C_APPS_CLK_SRC		168
+>>> +#define BLSP2_QUP4_SPI_APPS_CLK_SRC		169
+>>
+>> Why are you adding bindings to 8917? Nothing in commit msg explains
+>> that.
+> Because msm8917 driver was expanded with 8937 bits, i will expand the commit message.
+
+
+But this is about hardware, not driver. If you want to combine in one
+bindings devices from the same family (which I doubt these are, too many
+differences), then make it clear with prefixes, see
+61b17d072d811df5733a1570889b8c6fa6834bf8
+
+If they are not that related, then a separate file.
+
+>>
+>> Best regards,
+>> Krzysztof
+>>
+
+
+Best regards,
+Krzysztof
