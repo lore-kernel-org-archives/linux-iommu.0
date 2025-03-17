@@ -1,236 +1,196 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2086.outbound.protection.outlook.com [40.107.236.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47FC928E8
-	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 04:08:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742184489; cv=none; b=fSSvDYQpMb+7E4T0IeKg+8Zu+uVJtm6XYnrvMStGaw0MV0HgsHvxZjHjCMHGNWg5Ku7h4981mgPgDeiCgA6BBiniEjiJ93u0DjqPD/Zw4NF2QurKEFh2Gdpiwx/3jfgFmj4jna4FSIkrvLU+BtfXq7Zv6LCF0BH+BrgcZ9tMGoY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742184489; c=relaxed/simple;
-	bh=Q+NFRkJhdROpPNZnI+Lvy+dWL8oooEG2BSiN8YH993s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uKSdux1lOM4/SYPnyOfGEMWFWLaCIIo4p3jMMIHVpQivKbEdkWp6eEwcnZDZRfd1M5P37IM9z0kygbFSHgzwc7q4LLiaf/p3gvoa1nkAXwG6x/3AjAkUAJ1EdcxwMAgb9hq2Vn8ZHrtxDMvEWA5NmtnPqJDalt6ilhXTnhU0vnU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hQstjRSh; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9715879D2
+	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 05:50:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.86
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742190648; cv=fail; b=D0NFGbfHnW1zaGNN5Mhb+A7E6L6GPogUHWydUqmwyRcV7mwcawOamN61/go2XIiREqULUkGTYxobwcXSP+fMu1602842+GoTFBicRZ/yyWbByZyqpGQ3a4It7QjWUCyR8m9fZMpeW2oYdT3bujdCTOtvWZWrvSK5PgzDFx9tumw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742190648; c=relaxed/simple;
+	bh=jYWFaVwdJLuiwoiM0/3YQQ/3tvnPsSf3fv1aU51v9EY=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=r7qF21nmxMWF7OR2wzLrMOuoKq/MPeX6E0/uyhFlzdc3S/XTXMbUoudfX35mjZv3p0nwnpEFgheTfghO7m2EL9ynJclu9gIYByxzkVV9HnCqQnjon6aIxnx5F8KStvQU7wtHm0BC+FUIcnqYdpd5OaSjFh5p8shKLN+oyYEq3bI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=UaN7Vi0i; arc=fail smtp.client-ip=40.107.236.86
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hQstjRSh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1742184488; x=1773720488;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Q+NFRkJhdROpPNZnI+Lvy+dWL8oooEG2BSiN8YH993s=;
-  b=hQstjRShONWVQblOZhhS5AsUnt+m52QVLJ/OeaZmuU/rNTb04C3QxA3x
-   059IPsSH4Eeq/uaFn5rvx1g1hQAhYdaFQTwDCK7ykSlUQkIUIbyyYNDDr
-   jJeILTxXl//sEM1PzfRdX+JbVoJ6vsuubU9Bqe5KVBAngtLlELpSpKzwj
-   O1ReCX6O5aMGmNJj8lOc4GWQa5bRKeJssHU8hTQNpGpwgEw+zIFg7Zpz1
-   cUmxlMP79IqSiSquEdN2wpizZIybl3W9wnBs1jcQZYLX/DMKd/6iOkjDI
-   PQvkx3JsjZoJTI1FlLKFjeQ5b2gigOmTZjWQDE4w6S6v67Tm+09dSBJ8h
-   Q==;
-X-CSE-ConnectionGUID: QQY5UHujTPCjwEIkLU2wnw==
-X-CSE-MsgGUID: TaOf5wARRJ25W59TyEyQ3Q==
-X-IronPort-AV: E=McAfee;i="6700,10204,11375"; a="43365381"
-X-IronPort-AV: E=Sophos;i="6.14,253,1736841600"; 
-   d="scan'208";a="43365381"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2025 21:08:07 -0700
-X-CSE-ConnectionGUID: Wz67EZ8bQ7+NZTALdMTNNg==
-X-CSE-MsgGUID: q6h9fHPSQ5Gaix7CJLfECw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,253,1736841600"; 
-   d="scan'208";a="121848156"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2025 21:08:04 -0700
-Message-ID: <ec6e3bb6-8093-4082-b09f-26068693b83c@linux.intel.com>
-Date: Mon, 17 Mar 2025 12:04:40 +0800
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="UaN7Vi0i"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=k67sKkXihT6qsjwh02tNjp2SwOb4cOspXlh3d+4fTsqChFVwCHHRPFpdV5g47AtLf0q5PeP/lG3OeA6zEcGylFi5Zx7XlpUgAEzfglBwPFq6ce3ufIF6CEqM/esCXAfA8j/VYnJkXqhOZAVTAqYh58PnRnrrwA2vNtQaJEL2FELAgazlPUoepyFtNtTookOdXzfovOspy8nAwLg39xnDjFFXiMDq75myhWdGIf1gDEY6B++GfUo8+ECkUOoqI4RCMX8HYvHQQUuvrvN0OwIa3aRZSmv8w+62+NxPpmTD8LTT4DQaAtBCCx6raILZJmEbiW8LOSg6kY5w4ry7MygwxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BjvxiGWbsx5NrovU2qPgNIp0MRVnZU8nuonUhNGrbgI=;
+ b=jiBi4AHB1+ZesUpNBUTd4x4Nmyfv+4HAKygoxtnrTkarFr7mY48/wAOOvwq4Xr4JhSmSjYKlkRrSlb3kOXKdu4AoOesjh2Y/rRnVeA+zAmNFV1whgO0YxpDzPyPEhZyzpGhreJuDJD4PAsgkBEb9WIuSPyJE/YBCVS4g6ek6QzqDCRFJyEHVOKWnT8Xj2Ldo1t6wV47BJQdhOoh/EV2hCoGRYaAhGPnA0rqmerSFhRHkpF3UAJuy5YNibmn1MFmqvsksEdozBCbq3QhUb2d49vnxY96vz8DL8kW2ARLqRz0f5NwoiuoRF28lZKiccn1vTRfyMfmnDj181gKMNRvAEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BjvxiGWbsx5NrovU2qPgNIp0MRVnZU8nuonUhNGrbgI=;
+ b=UaN7Vi0i5L0/IiqfpU6BK7LwMEZ9C2NFfRjgaxrc9dTyd5eGjTwXxplLPEkeyFeiIp+5VOh+FbuoID6pAM8QejWsEeloVT9K25JAZupndaLJdl4dtnf2HvfHevt508EMGaGt7EzwLPExP0fG2SszuKzrhIdi28y6fg4xiUSlzZw=
+Received: from PH8PR02CA0043.namprd02.prod.outlook.com (2603:10b6:510:2da::12)
+ by DS0PR12MB7771.namprd12.prod.outlook.com (2603:10b6:8:138::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.33; Mon, 17 Mar
+ 2025 05:50:40 +0000
+Received: from MWH0EPF000A6733.namprd04.prod.outlook.com
+ (2603:10b6:510:2da:cafe::35) by PH8PR02CA0043.outlook.office365.com
+ (2603:10b6:510:2da::12) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8534.31 via Frontend Transport; Mon,
+ 17 Mar 2025 05:50:40 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ MWH0EPF000A6733.mail.protection.outlook.com (10.167.249.25) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8534.20 via Frontend Transport; Mon, 17 Mar 2025 05:50:39 +0000
+Received: from BLR-L1-SARUNKOD.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 17 Mar
+ 2025 00:50:34 -0500
+From: Sairaj Kodilkar <sarunkod@amd.com>
+To: <joro@8bytes.org>, <iommu@lists.linux.dev>
+CC: <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <vasant.hegde@amd.com>, <sarunkod@amd.com>
+Subject: [PATCH] iommu/amd: Add support for HTRangeIgnore feature
+Date: Mon, 17 Mar 2025 11:20:20 +0530
+Message-ID: <20250317055020.25214-1-sarunkod@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Regression on drm-tip
-To: "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>
-Cc: "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
- "intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "Kurmi, Suresh Kumar" <suresh.kumar.kurmi@intel.com>,
- "Saarinen, Jani" <jani.saarinen@intel.com>,
- "De Marchi, Lucas" <lucas.demarchi@intel.com>
-References: <SJ1PR11MB612953431F94F18C954C4A9CB9D32@SJ1PR11MB6129.namprd11.prod.outlook.com>
- <4951eb3c-aa2b-46cf-87bd-37b09447748d@linux.intel.com>
- <SJ1PR11MB6129AAF87542D06B7A23C0FCB9D22@SJ1PR11MB6129.namprd11.prod.outlook.com>
- <5e6d65b6-4f9a-4d23-925c-75be7c4bd561@linux.intel.com>
- <SJ1PR11MB61299D9421F7B3DEA6424389B9DC2@SJ1PR11MB6129.namprd11.prod.outlook.com>
- <7db3b702-51e1-4c0d-8e0a-578239247587@linux.intel.com>
- <SJ1PR11MB6129A28720CF33982397E777B9DC2@SJ1PR11MB6129.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <SJ1PR11MB6129A28720CF33982397E777B9DC2@SJ1PR11MB6129.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000A6733:EE_|DS0PR12MB7771:EE_
+X-MS-Office365-Filtering-Correlation-Id: d1db9cfc-6876-43b7-aaef-08dd6517a5e9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|36860700013|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?dl+VD50/BhGqzYnsQQOaHwkhnwYSiYe6MkJ4x1ZO1jZ4MgY9gUdz5LWK07l1?=
+ =?us-ascii?Q?Gnfuu7rAOfd3l3bMXnM05DzbBAtzlPiBCvYnDwM3bUfOD2B6vyiq2uML3QAx?=
+ =?us-ascii?Q?7wh8CUpRugtUfJKCJKoFr3DvaJsKPTffOfhmKA6jIHWvu1JGT6wPCug+1atD?=
+ =?us-ascii?Q?qJNgXBSuWwJ4QFlz1sADuFNeSgufVWz7BYCqeNd8nsc9r1qH4ZPfTmJ52WE0?=
+ =?us-ascii?Q?0HT5mhgo+mvNkxBj/qnn8JFy69pepYO5+7G2ujZg9FttJpPNspt+mJ/EgfVu?=
+ =?us-ascii?Q?VvctqUBN/uMKBhjxGwpHF2N7JliXZD9NWkab3Xi3oaRG+Zd7yDTIBOk9LDJK?=
+ =?us-ascii?Q?WTdE7UOP905hwM2PlB4I8LyJwK8xaf9ypFhdgUB+lwI/nXK+y848uN93BSRM?=
+ =?us-ascii?Q?rZJnFsi2biRzgIiGmF9V6UpMi6JVJhBn9mjD/AIY8MseIUiSLxwA0UFI+HjD?=
+ =?us-ascii?Q?BhJzWig2gZD7crSosFn1p9/GPBLddzs+sNAxly41IBiiGKcbLld/XxmvtsLI?=
+ =?us-ascii?Q?odknxx5bTKVJVSfLfqWi4S7W3DWJxwwS0q1fiOnbG/yutIG+3S57uSC+D+Rn?=
+ =?us-ascii?Q?d5oF0yuXAaLYX4WbwEWTMsgKFCfAoKLUCdWKGh3SJPHQVJRSulSux58hmLlj?=
+ =?us-ascii?Q?A2TvwOHOI1ZKVodf7MI6OZrqhv4gEImL6Ipvaliz+kkOVBvwOA66t2O28jc5?=
+ =?us-ascii?Q?A7holmNChByRHhxVOGBDi8CsDIWqJmazrwOc4v5vl1w7ONpAwEfQoaXS2vhy?=
+ =?us-ascii?Q?O1L7SnXSEwoU/9iIKcuvVeHK5wLCY8W5ckN4708XdsJUn8hBDAmC022kqDTY?=
+ =?us-ascii?Q?mLhutxulVlRILoHFBttnxoPZdpf+T2yQKMem/hvj1ajI5ZeoA2GDF4Frlt9d?=
+ =?us-ascii?Q?ZbdppZBmoxVJVPdpiYDIkFt7EgfbmnL0gF16xs0+0ZwOxGiVu5id/A5lvq8e?=
+ =?us-ascii?Q?undwCVF7otoynsgzqM1/sw8JEsXEoS4N4cC/Dz989qs1ilJt0g0AWpnVlsxd?=
+ =?us-ascii?Q?Upvow/ycXZha7uaIWIWYJWAlpfJ5OmoYcH6aHgtVoA+ro85t8GTxq3B5AMrh?=
+ =?us-ascii?Q?FS0ntTHTodHRbzAQcJJ7qQqtvyOqdZWlahlgsKCdj1Aosa63UrlMVfN6YY/E?=
+ =?us-ascii?Q?LXqdLcKNQJfmWyK73nkaZY8fC57p9Xh/cfFUh+YeTUfa2jbXdB/WTHYCH1md?=
+ =?us-ascii?Q?rPn1aSO5CIjLNYI51guQ08GBFsRmUI/fErU0nsFIvmeJBk2Utjf6aEbZZx6l?=
+ =?us-ascii?Q?TIvJzYtuVLCDYdZK9eEcHdbEEmL2QYZPVMXKeQiMkqZv1vKQ8pgF4XDhk7qj?=
+ =?us-ascii?Q?FNrKKoFyA9OALi968sOOtT772O8Y3XJPiRWjY+VFmKEtbF5XuvUUpPeCNsyV?=
+ =?us-ascii?Q?YfpNBnwAtMnrD2ZNwfU7WEBlJsrmzt+bUCeT0Ackf/ljWKO06Gqmw+IIozna?=
+ =?us-ascii?Q?MdPskNelMZTIH2FMXWb1fvvr8/XIcFBbdDv74gNW6xiVOTeW2clwi4jHtTrR?=
+ =?us-ascii?Q?7qBOMwvMsIr0BGA=3D?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2025 05:50:39.7123
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1db9cfc-6876-43b7-aaef-08dd6517a5e9
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000A6733.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7771
 
-On 3/16/25 18:01, Borah, Chaitanya Kumar wrote:
-> 
->> -----Original Message-----
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Sunday, March 16, 2025 1:33 PM
->> To: Borah, Chaitanya Kumar<chaitanya.kumar.borah@intel.com>
->> Cc:intel-gfx@lists.freedesktop.org;intel-xe@lists.freedesktop.org;
->> iommu@lists.linux.dev; Kurmi, Suresh Kumar
->> <suresh.kumar.kurmi@intel.com>; Saarinen, Jani<jani.saarinen@intel.com>;
->> De Marchi, Lucas<lucas.demarchi@intel.com>
->> Subject: Re: Regression on drm-tip
->>
->> On 3/16/25 15:27, Borah, Chaitanya Kumar wrote:
->>>> -----Original Message-----
->>>> From: Baolu Lu<baolu.lu@linux.intel.com>
->>>> Sent: Sunday, March 16, 2025 8:04 AM
->>>> To: Borah, Chaitanya Kumar<chaitanya.kumar.borah@intel.com>
->>>> Cc:intel-gfx@lists.freedesktop.org;intel-xe@lists.freedesktop.org;
->>>> iommu@lists.linux.dev
->>>> Subject: Re: Regression on drm-tip
->>>>
->>>> On 3/14/25 17:04, Borah, Chaitanya Kumar wrote:
->>>>>> -----Original Message-----
->>>>>> From: Baolu Lu<baolu.lu@linux.intel.com>
->>>>>> Sent: Thursday, March 13, 2025 7:53 PM
->>>>>> To: Borah, Chaitanya Kumar<chaitanya.kumar.borah@intel.com>
->>>>>> Cc:baolu.lu@linux.intel.com;intel-gfx@lists.freedesktop.org; intel-
->>>>>> xe@lists.freedesktop.org;iommu@lists.linux.dev
->>>>>> Subject: Re: Regression on drm-tip
->>>>>>
->>>>>> On 2025/3/13 16:51, Borah, Chaitanya Kumar wrote:
->>>>>>> Hello Lu,
->>>>>>>
->>>>>>> Hope you are doing well. I am Chaitanya from the linux graphics
->>>>>>> team in
->>>>>> Intel.
->>>>>>> This mail is regarding a regression we are seeing in our CI
->>>>>>> runs[1] on drm-tip
->>>>>> repository.
->>>>>>> ``````````````````````````````````````````````````````````````````
->>>>>>> `` `` ``````````` <4>[    2.856622] WARNING: possible circular
->>>>>>> locking dependency detected <4>[    2.856631]
->>>>>>> 6.14.0-rc5-CI_DRM_16217-gc55ef90b69d3+ #1 Tainted: G          I
->>>>>>> <4>[ 2.856642]
->>>>>>> ------------------------------------------------------
->>>>>>> <4>[    2.856650] swapper/0/1 is trying to acquire lock:
->>>>>>> <4>[    2.856657] ffffffff8360ecc8
->>>>>>> (iommu_probe_device_lock){+.+.}-{3:3}, at:
->>>>>>> iommu_probe_device+0x1d/0x70 <4>[    2.856679]
->>>>>>>                       but task is already holding lock:
->>>>>>> <4>[    2.856686] ffff888102ab6fa8
->>>>>>> (&device->physical_node_lock){+.+.}-{3:3}, at:
->>>>>>> intel_iommu_init+0xea1/0x1220
->>>>>>> ``````````````````````````````````````````````````````````````````
->>>>>>> ``
->>>>>>> ``
->>>>>>> ```````````
->>>>>>> Details log can be found in [2].
->>>>>>>
->>>>>>> After bisecting the tree, the following patch [3] seems to be the
->>>>>>> first "bad" commit
->>>>>>>
->>>>>>> ``````````````````````````````````````````````````````````````````
->>>>>>> ``
->>>>>>> ``
->>>>>>> ```````````````````````````````````
->>>>>>> commit b150654f74bf0df8e6a7936d5ec51400d9ec06d8
->>>>>>> Author:LuBaolumailto:baolu.lu@linux.intel.com
->>>>>>> Date:   Fri Feb 28 18:27:26 2025 +0800
->>>>>>>
->>>>>>>         iommu/vt-d: Fix suspicious RCU usage
->>>>>>>
->>>>>>> ``````````````````````````````````````````````````````````````````
->>>>>>> ``
->>>>>>> ``
->>>>>>> ```````````````````````````````````
->>>>>>>
->>>>>>> We also verified that if we revert the patch the issue is not seen.
->>>>>>>
->>>>>>> Could you please check why the patch causes this regression and
->>>>>>> provide a
->>>>>> fix if necessary?
->>>>>>
->>>>>> Can you please take a quick test to check if the following fix works?
->>>>>>
->>>>>> diff --git a/drivers/iommu/intel/dmar.c
->>>>>> b/drivers/iommu/intel/dmar.c index
->>>>>> e540092d664d..06debeaec643 100644
->>>>>> --- a/drivers/iommu/intel/dmar.c
->>>>>> +++ b/drivers/iommu/intel/dmar.c
->>>>>> @@ -2051,8 +2051,13 @@ int enable_drhd_fault_handling(unsigned int
->>>> cpu)
->>>>>>                     if (iommu->irq || iommu->node != cpu_to_node(cpu))
->>>>>>                             continue;
->>>>>>
->>>>>> +               /*
->>>>>> +                * Call dmar_alloc_hwirq() with dmar_global_lock held,
->>>>>> +                * could cause possible lock race condition.
->>>>>> +                */
->>>>>> +               up_read(&dmar_global_lock);
->>>>>>                     ret = dmar_set_interrupt(iommu);
->>>>>> -
->>>>>> +               down_read(&dmar_global_lock);
->>>>>>                     if (ret) {
->>>>>>                             pr_err("DRHD %Lx: failed to enable
->>>>>> fault, interrupt, ret
->>>> %d\n",
->>>>>>                                    (unsigned long
->>>>>> long)drhd->reg_base_addr, ret);
->>>>>>
->>>>>> Thanks,
->>>>>> baolu
->>>>> We still see the issue with this change.
->>>> I am attempting to reproduce this issue with my MTL machine. I pulled
->>>> the test branch from:
->>>>
->>>> https://anongit.freedesktop.org/git/drm-tip.git
->>>>
->>>> and built the test kernel image using the configuration file from:
->>>>
->>>> https://intel-gfx-ci.01.org/tree/drm-tip/CI_DRM_16217/kconfig.txt
->>>>
->>>> But I did not observe the lockdep splat mentioned above after booting.
->>>>
->>>> Is there anything I might have missed?
->>>>
->>> +Suresh, Jani, Lucas
->>>
->>> We are seeing this only the skykale and kabylake on our CI runs.
->> If so, will below change make any difference?
->>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 85aa66ef4d61..ec2f385ae25b 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -3049,6 +3049,7 @@ static int __init
->> probe_acpi_namespace_devices(void)
->>                           if (dev->bus != &acpi_bus_type)
->>                                   continue;
->>
->> +                       up_read(&dmar_global_lock);
->>                           adev = to_acpi_device(dev);
->>                           mutex_lock(&adev->physical_node_lock);
->>                           list_for_each_entry(pn, @@ -3058,6 +3059,7 @@ static int __init
->> probe_acpi_namespace_devices(void)
->>                                           break;
->>                           }
->>                           mutex_unlock(&adev->physical_node_lock);
->> +                       down_read(&dmar_global_lock);
->>
->>                           if (ret)
->>                                   return ret;
->>
-> Thank you for the change. This seems to be working. Can we expect a fix patch soon?
+AMD IOMMU reserves the address range 0xfd00000000-0xffffffffff for
+the hypertransport protocol (HT) and has special meaning. Hence devices
+cannot use this address range for the DMA. However on some AMD platforms
+this HT range is shifted to the very top of the address space and new
+feature bit `HTRangeIgnore` is introduced. When this feature bit is on,
+IOMMU treats the GPA access to the legacy HT range as regular GPA access.
 
-Sure. I have posted a fix patch here,
+Signed-off-by: Sairaj Kodilkar <sarunkod@amd.com>
+---
+ drivers/iommu/amd/amd_iommu.h       | 2 ++
+ drivers/iommu/amd/amd_iommu_types.h | 1 +
+ drivers/iommu/amd/init.c            | 5 +++++
+ drivers/iommu/amd/iommu.c           | 3 +++
+ 4 files changed, 11 insertions(+)
 
-https://lore.kernel.org/linux-iommu/20250317035714.1041549-1-baolu.lu@linux.intel.com/
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 68debf5ee2d7..156eb66caca1 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -148,6 +148,8 @@ static inline int get_pci_sbdf_id(struct pci_dev *pdev)
+ 	return PCI_SEG_DEVID_TO_SBDF(seg, devid);
+ }
+ 
++bool amd_iommu_ht_range_ignore(void);
++
+ /*
+  * This must be called after device probe completes. During probe
+  * use rlookup_amd_iommu() get the iommu.
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 23caea22f8dc..1b3fc25bcdbf 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -111,6 +111,7 @@
+ #define FEATURE_SNPAVICSUP	GENMASK_ULL(7, 5)
+ #define FEATURE_SNPAVICSUP_GAM(x) \
+ 	(FIELD_GET(FEATURE_SNPAVICSUP, x) == 0x1)
++#define FEATURE_HT_RANGE_IGNORE		BIT_ULL(11)
+ 
+ /* Note:
+  * The current driver only support 16-bit PASID.
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index cb536d372b12..538af5a7418f 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -258,6 +258,11 @@ int amd_iommu_get_num_iommus(void)
+ 	return amd_iommus_present;
+ }
+ 
++bool amd_iommu_ht_range_ignore(void)
++{
++	return check_feature2(FEATURE_HT_RANGE_IGNORE);
++}
++
+ /*
+  * Iterate through all the IOMMUs to get common EFR
+  * masks among all IOMMUs and warn if found inconsistency.
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index cd5116d8c3b2..4985855914a3 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2907,6 +2907,9 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+ 		return;
+ 	list_add_tail(&region->list, head);
+ 
++	if (amd_iommu_ht_range_ignore())
++		return;
++
+ 	region = iommu_alloc_resv_region(HT_RANGE_START,
+ 					 HT_RANGE_END - HT_RANGE_START + 1,
+ 					 0, IOMMU_RESV_RESERVED, GFP_KERNEL);
+-- 
+2.34.1
 
-Thanks,
-baolu
