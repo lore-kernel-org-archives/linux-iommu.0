@@ -1,63 +1,63 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B5B0200BB3
-	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 18:54:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 784661E5B60
+	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 18:54:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742237663; cv=none; b=TXqZT6TAZgkRSVp8q5PgMbLPDFn/jIGU2GFQPgCXIRP7JBLMLRhEdNLnJ3BFD4rDRZbnE9BG4OQZEJlb2mxdq7GJn9LJR9/HuXRSOoqUbVJNjO6+ZxyrA5M/i6Kp1LXVabXFovgH2RZoDN1wplwBsWJLCcatcqaxwZt9cMmkoJE=
+	t=1742237665; cv=none; b=R/SjXe3++Fb7W6W9dmkoY4DoyQ4IWwhGSxjhAap3O/dM8HTXi3ycdKcOpgwDS7IOqw5L6JsPOLemkY6i6DQLQ5ZBXd1Rho1fq6PoI5Kg51UpGxyvHHUwI0hlO5vhNv+Xk2GjBi91R0HCgXpH1Jm/pkOqZHsTILQB5jtpw5C86so=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742237663; c=relaxed/simple;
-	bh=DhrwcCKAPl4wQYbKHYYSepNVPu31+4xtNNYqjdxy+Ig=;
+	s=arc-20240116; t=1742237665; c=relaxed/simple;
+	bh=AFXc+JDAFlfaLW6k8nRKqG1H7IeQzzuskvkR8ls2d24=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pBa7DsiKzTRks/1VALoRV9yHHe59zUB2xjfG8V3Ndzkf57REfMbgUqRV+zL+5SnbJlVvqJyjDbd8YRtpKCte3zPOwhaG4c3aUvwXGfVAjilhq9zkXjiC7P9Gd8Y8paSyOShTXDBwpGofaSeWaEzVOrQQalH9HWVjQ6LWT2+wSPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DxtrIN3r; arc=none smtp.client-ip=209.85.167.44
+	 MIME-Version; b=tllymchJfFQZh75pAO9QxRpUvRSuvpssnf4cG+O/hm3RNkTlcgW56e4KS0WG6Tt7ZJEm66R9Q/TULgAk58iFEVWNOn/hVpNLoMFhiEcNNLR+jagCOcot0UDXxB+QWHbzbMXV50npCWdbgPTJwHMYntubPJzkgpTwZYr/Sqi45i0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FsZOf1AB; arc=none smtp.client-ip=209.85.167.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DxtrIN3r"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5499bd3084aso4842287e87.0
-        for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 11:54:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FsZOf1AB"
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-54963160818so5865896e87.2
+        for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 11:54:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1742237659; x=1742842459; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1742237661; x=1742842461; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bITllDD7zuDX+leMoEvJ9eOhvzTi6bzqiRqTzF92s50=;
-        b=DxtrIN3r8WZtTGZod5QYomW7IvMrmhPCuuaiwx/khjxT4X4Zfbl20cNMOWBllkYGje
-         9T0WI6SsAau5EliQqL4pHbGLIUORyU2H8K7NhsrufA9JxTL5VXIyDbXtoNObmbHIPDzN
-         ya1VhH+pGSIKyOk8jC6ezqhifblpPhVWcb4Rn35d7Lc+u5RAo1jQAThGS3gjiQL12WX0
-         7pM3bDD+AVgcJ5cPCOFTyHLjrnQxXE4+2Kd7AqTVC8AIlKaIW/vHOzRIxTMVQBqu0K8E
-         +7jf2/ksPbLdhtLq26WfFQ1uLoTk9CVptFAFSRU1JcdsfJt1+yh6no6doOt6e0A7wsKb
-         JW9g==
+        bh=thgHd6wCi9ljuTgZv1q/rgFzzZU0rxSovW0BQEj3yDA=;
+        b=FsZOf1ABOqoFbMa3dXFtddigPsPQgYgv9x5wORUvBoAGt7SpuMekBq2XSVXFdi6cOD
+         Ojo6uPlGOpdx6hW0fDAAOlzsZTaP62lY6WMNlX5s4Hm/Q7UqhLBnBbIOr2S/uYGqbuZf
+         FMvfUpdQpQN11xRSFcmR3T7SkUrOTsmzM74BNi0yWaECccD0P5cYkckhIrGTNAN2gtZR
+         4tY4vY8DDtt0cwv0XnzCdq+6xjXcv4DummSi5jmF8pygmIVCKaGz49HpAXmJDszh/gcC
+         QxmAPFjw9J9oh55l7jvHB8+B/1s2vrHmxSjrq0magydFVqDzwOESfk5zhCvnDg5QnmBr
+         mWWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742237659; x=1742842459;
+        d=1e100.net; s=20230601; t=1742237661; x=1742842461;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=bITllDD7zuDX+leMoEvJ9eOhvzTi6bzqiRqTzF92s50=;
-        b=v8gZLywysTm9ahtAtQWo5JVLpMt+Dh81BoCFydU+umzAhPUmJEPI4Pism7MCy7e1yZ
-         aJfaNFWHkVhQCMGsllVsN85iVZyaLJIy2BkR49ZMjdBWIApk3GHu7wyyq3f78jCkcX1Y
-         4VFCQ+FfjQP+FNP3r1CzMqMawjUF8ijpcJHW1Q0Cfr+7rSWyQMHahWKG1OD9f2mzjI21
-         r34rZRKdfCW5XMH1fWJJlMvXkAJXg8x/galxiB6J9rCTEuTeXx/nNooQTpHzdSaZTUdl
-         9FjumCAdioHmY6HNl0kt1M5FlzvB+9H66T8kB+t7LJitL04tSd4l/uipFYZ6wY3zs/Ob
-         aPmA==
-X-Forwarded-Encrypted: i=1; AJvYcCUHJ1TpO61Hc0L/2K6Uo6O2NMCyus+ycb0tUnsJ3+ljB4fqSIRxs1rvJPzvcYb4mrcFbGAvfg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzkmVhLBnIwUfPU+XYbaMCvTBdX1PLxFIwhF2jVmeL4axSd+OtY
-	40YWfx9hfGAbfnCztIMO1Ik93yt7NDzGm1RxcCiyo5+1KWXHL0H2
-X-Gm-Gg: ASbGnctBaUqvvs9z8mGKpAWKrPbMl9AU1+EUVQgDqHGNSbpp3t6HXEIHwBDl83KYb68
-	Th4uLWzOf3nOl1PXj6vyzGIWq4wYTU7kvK6Sq3cJ+LfZLm8+B9xYbgF8sLnH8MstBPrTiTaa7Ao
-	+OkThhhPcPHkCHmo8Vg5Td/45eQXGOeLViS+jC+1GdtDvVkmUYfIPda1IB8uExy62egDSRdQ9sw
-	i2u3RrL2VoNg8tykE/OEGYfCAOstE5IcB6Prxy3LFtI+HKkp/dIP8Xt6m4XrSeY5VoCgG20ysKM
-	22iAXoAkSIbomxX9tYn9OImLEqDYHFCJdGsuT70D9FulLnry/oDqJvEfdbnXJwJeDFyB+g0ij8H
-	UsTFB2YuN+1juepgAsGtr3w==
-X-Google-Smtp-Source: AGHT+IFbyIHdySxokOsAc7slyf+TNhJ4gkPo4Mto9tNnD3n0AVBHi4ObetvBIzaq8zw+2DhtUo3BVA==
-X-Received: by 2002:a05:6512:1247:b0:545:ae6:d73f with SMTP id 2adb3069b0e04-549c394fb49mr7047143e87.46.1742237659278;
-        Mon, 17 Mar 2025 11:54:19 -0700 (PDT)
+        bh=thgHd6wCi9ljuTgZv1q/rgFzzZU0rxSovW0BQEj3yDA=;
+        b=Se/aeRmtP2myOmoRzMzBh8RJy2PnRB5rXSKP+Wubu/77pC6V3eWn0WexEqkSmA0E5k
+         rq4ijOI9DvqxWc/k4WzBv8/3UYVVlpEMffkXP1naiY554uP2K4bloz+IGFBNtN2vNWGU
+         OsQ2iQwdhkUscrqW1399DlxOCydhuwaAqOmP+J0bsysRx0Ogyig9TsOVzq7h5OizzaEH
+         IJV5+VMsda8+pODGco74EpCrKBe73Zjs8EeWxnzbUdL2TEwwzlIpBPoTqyRY+9aaFOwW
+         y7yEYxuw8NIapfsve4wUeL7ca5y6eHBIsbGMrSu9pmMTkXbtUcf8sD2gOyZfyepUGMDe
+         mJZg==
+X-Forwarded-Encrypted: i=1; AJvYcCUBKg49+l0rJZZSeY63YxqMPbrl02u9L88RygjIqqqEJzYhf//7MMbb+529o8k2FGtko9YzkA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzkFHDWkAvmXmrahR7yJ5etX82URM8CRiQsgfrY7q/GTchIcPgn
+	P2vJqArblu0ESgROHWkKRehJFstdqpGuE9Pjj7TZ+3Mta4lurrnS
+X-Gm-Gg: ASbGncuXlFhzSDWvGZayn8WC6o2UmyTEucjmMzfCjli+u5En66XnKaxWJkLxHo7Bs1D
+	NOm/u3pmWHoqDHXWND4pxEH6/rUtMEoJviLlAquw+YjW0EfujoKZ9dLX3RBPBOAsnXNMME6kIHo
+	Vr8b7Pj/lX0gjr5UX+aJhP7uhFTGpitjsHa8xU/ytkx8sdxYK2AaA6TZv2qGxEyybmUbkxOGNYd
+	rw3SeV6o9mSwcLrQg/Wx9VOYhQiPXqnbiBGMPDLec5ppZSW1otuak19G/hFnPd2lGy+EzkcCnRA
+	863EBGlpJgCCh6Y8AYHFGhBuEcNaYv98DYnGJnzOTACuT2T6cnFZ5MKT+aNraT/62VBkW7cDIEn
+	qJEheozi5u2g/HYT7Ac6p8A==
+X-Google-Smtp-Source: AGHT+IEzcHIx5VvRKJa7vTMmQW77VymKl7dWS5EAvgPjCayjuDwj//mTZSHgbw6h1YANjwJF/oLHJQ==
+X-Received: by 2002:a05:6512:3ba4:b0:549:b13a:5d7f with SMTP id 2adb3069b0e04-549c39905d3mr7606610e87.41.1742237661377;
+        Mon, 17 Mar 2025 11:54:21 -0700 (PDT)
 Received: from abj-NUC9VXQNX.. (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-549ba865024sm1387506e87.123.2025.03.17.11.54.18
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-549ba865024sm1387506e87.123.2025.03.17.11.54.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Mar 2025 11:54:18 -0700 (PDT)
+        Mon, 17 Mar 2025 11:54:20 -0700 (PDT)
 From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 To: rust-for-linux@vger.kernel.org,
 	daniel.almeida@collabora.com,
@@ -79,9 +79,9 @@ Cc: Miguel Ojeda <ojeda@kernel.org>,
 	airlied@redhat.com,
 	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: [PATCH v15 08/11] rust: platform: implement the `dma::Device` trait
-Date: Mon, 17 Mar 2025 20:52:15 +0200
-Message-ID: <20250317185345.2608976-9-abdiel.janulgue@gmail.com>
+Subject: [PATCH v15 09/11] rust: dma: use `dma::Device` in `CoherentAllocation`
+Date: Mon, 17 Mar 2025 20:52:16 +0200
+Message-ID: <20250317185345.2608976-10-abdiel.janulgue@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250317185345.2608976-1-abdiel.janulgue@gmail.com>
 References: <20250317185345.2608976-1-abdiel.janulgue@gmail.com>
@@ -95,25 +95,85 @@ Content-Transfer-Encoding: 8bit
 
 From: Danilo Krummrich <dakr@kernel.org>
 
-The platform bus is potentially capable of performing DMA, hence implement
-the `dma:Device` trait for `platform::Device`.
+Require a `&dyn dma::Device` in `CoherentAllocation`, such that DMA
+memory can only be allocated with devices on potentially DMA capable
+busses.
 
 Signed-off-by: Danilo Krummrich <dakr@kernel.org>
 Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 ---
- rust/kernel/platform.rs | 2 ++
- 1 file changed, 2 insertions(+)
+ rust/kernel/dma.rs       | 16 ++++++++--------
+ samples/rust/rust_dma.rs |  2 +-
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/rust/kernel/platform.rs b/rust/kernel/platform.rs
-index 1297f5292ba9..a7bf3525313e 100644
---- a/rust/kernel/platform.rs
-+++ b/rust/kernel/platform.rs
-@@ -198,3 +198,5 @@ fn as_ref(&self) -> &device::Device {
-         &self.0
-     }
- }
+diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
+index fc66f1764c31..6d7aff6b360a 100644
+--- a/rust/kernel/dma.rs
++++ b/rust/kernel/dma.rs
+@@ -57,10 +57,9 @@ fn dma_set_mask(&mut self, mask: u64) -> Result {
+ /// # Examples
+ ///
+ /// ```
+-/// use kernel::device::Device;
+-/// use kernel::dma::{attrs::*, CoherentAllocation};
++/// use kernel::dma::{attrs::*, Device, CoherentAllocation};
+ ///
+-/// # fn test(dev: &Device) -> Result {
++/// # fn test(dev: &dyn Device) -> Result {
+ /// let attribs = DMA_ATTR_FORCE_CONTIGUOUS | DMA_ATTR_NO_WARN;
+ /// let c: CoherentAllocation<u64> =
+ ///     CoherentAllocation::alloc_attrs(dev, 4, GFP_KERNEL, attribs)?;
+@@ -178,16 +177,15 @@ impl<T: AsBytes + FromBytes> CoherentAllocation<T> {
+     /// # Examples
+     ///
+     /// ```
+-    /// use kernel::device::Device;
+-    /// use kernel::dma::{attrs::*, CoherentAllocation};
++    /// use kernel::dma::{attrs::*, Device, CoherentAllocation};
+     ///
+-    /// # fn test(dev: &Device) -> Result {
++    /// # fn test(dev: &dyn Device) -> Result {
+     /// let c: CoherentAllocation<u64> =
+     ///     CoherentAllocation::alloc_attrs(dev, 4, GFP_KERNEL, DMA_ATTR_NO_WARN)?;
+     /// # Ok::<(), Error>(()) }
+     /// ```
+     pub fn alloc_attrs(
+-        dev: &device::Device,
++        dev: &dyn Device,
+         count: usize,
+         gfp_flags: kernel::alloc::Flags,
+         dma_attrs: Attrs,
+@@ -197,6 +195,8 @@ pub fn alloc_attrs(
+             "It doesn't make sense for the allocated type to be a ZST"
+         );
+ 
++        let dev = dev.as_ref();
 +
-+impl crate::dma::Device for Device {}
+         let size = count
+             .checked_mul(core::mem::size_of::<T>())
+             .ok_or(EOVERFLOW)?;
+@@ -229,7 +229,7 @@ pub fn alloc_attrs(
+     /// Performs the same functionality as [`CoherentAllocation::alloc_attrs`], except the
+     /// `dma_attrs` is 0 by default.
+     pub fn alloc_coherent(
+-        dev: &device::Device,
++        dev: &dyn Device,
+         count: usize,
+         gfp_flags: kernel::alloc::Flags,
+     ) -> Result<CoherentAllocation<T>> {
+diff --git a/samples/rust/rust_dma.rs b/samples/rust/rust_dma.rs
+index 1740140faba6..4c7ebf66647a 100644
+--- a/samples/rust/rust_dma.rs
++++ b/samples/rust/rust_dma.rs
+@@ -52,7 +52,7 @@ fn probe(pdev: &mut pci::Device, _info: &Self::IdInfo) -> Result<Pin<KBox<Self>>
+         dev_info!(pdev.as_ref(), "Probe DMA test driver.\n");
+ 
+         let ca: CoherentAllocation<MyStruct> =
+-            CoherentAllocation::alloc_coherent(pdev.as_ref(), TEST_VALUES.len(), GFP_KERNEL)?;
++            CoherentAllocation::alloc_coherent(pdev, TEST_VALUES.len(), GFP_KERNEL)?;
+ 
+         || -> Result {
+             for (i, value) in TEST_VALUES.into_iter().enumerate() {
 -- 
 2.43.0
 
