@@ -1,151 +1,222 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2070.outbound.protection.outlook.com [40.107.237.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8668DC13D
-	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 01:14:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742174049; cv=none; b=EqrVBG6TI6Lz5kXGGfgHdeaxj7G00Dv0AtUqtibCCxheSTJTkBrE9N0ahfs92SMua/E5YvsnP3QSDeQSrm+Mh1skEu0hgKKOkYQzxcO0cSPs22v8Hue3TWt3eIvVGW1eoQFiVovaxW8dxXMGZVNbz5yvMtUPshA+hD3eDbkik2w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742174049; c=relaxed/simple;
-	bh=HBdNRz7NWotgzuk+x/kxszEOIgphn0BH0jzSWHy0fPM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=bnLq0oMaf+sm99tLBFp4weLoDfdTIJK2zFq5FQMxvThLIIoWUA+4pjZRfEaSJgeHbm9P1CaDtYYGM+8DB8YPdKGkX97/ATHI0QOIBE/WcyIc35wUmn0f+7boMHpSeu18PwbpYAdJmdspmJZGKtD1vUt2+zWbFrvxwYvmjaXo+RI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=a1aRV4XZ; arc=none smtp.client-ip=209.85.216.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE13518E20;
+	Mon, 17 Mar 2025 02:32:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742178770; cv=fail; b=KOm44h+EL82lIF45HYrvndh7LjtSBKu3rFqF6H8iLK7d0a8+B67A6zFXcMel29aAEHHGStu9MuWtLaqlLfYnRVVYA4v3Qjh0LR9dYSGUMJ+87xkP0Si7WWScxhiaNREba1G4RB4V4gv7ECiEotYqKyTNANWs/kAaD0PoMFIgdME=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742178770; c=relaxed/simple;
+	bh=/ENpvmfreqy+pD8Iwbx84I5ElPxglW/z7FTBtS/CVwc=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=UMKsLtKsc4wWXMyOn2MKn2xKPpZYmYh+ZHmoMfKAMwzrpiqADUAz5h/J8DgDVUZvK5G4tSkFbJrohP4gOr926xBjr+PTmS0AC6MvtbrXPs+JnbkJk+rOws61/9wrDJzaV0Mxfq73mZtQ9R78b5TyVP4NF5+ONGJhwkKYu4e2mfo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=DcCcWoc6; arc=fail smtp.client-ip=40.107.237.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="a1aRV4XZ"
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-2fa8ada6662so3125118a91.1
-        for <iommu@lists.linux.dev>; Sun, 16 Mar 2025 18:14:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1742174047; x=1742778847; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cXru3TCUuPTakrv/YVRqLX7LKq46qhiQdzkoohXODxU=;
-        b=a1aRV4XZeNyfnudbJ0/Jr+QA2KOrCx9GtzB8uu6CSpBsNELnlfM8Ya8l1SpdAX6unK
-         4ZmyNDUmZoj/AbKGa3TtKD3YjoGWggsV4xvQK8CwllyWcTk3D4Rhf6wexiJ8XA6/7lxX
-         MjDcu/SRlsmoAKv2IPy+A1dIyc3KhpDEZ+wo9OzJElpclN5l1wzJxqi1bMPaiFCH4utD
-         B15L9FmnORJJh5F14buHdgWSzWaNkvFZi2nOlhhYf5e1LaOHLyS05pfjOgh9ncaR8l7a
-         /zFuUxFptv+o3U25TA1CwKMtmC8V3eBKmHo10GdTfF0K3XrFUmFH599Jt7OFwKYfk/JL
-         40ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742174047; x=1742778847;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cXru3TCUuPTakrv/YVRqLX7LKq46qhiQdzkoohXODxU=;
-        b=WucWST8ATM5QhvyrhOtQhYKXqtPLdv8Tpsq6OdOjY/mx/APtME1zgns4RBJ9yddYI3
-         VTqvnkE+AvIomswqQLHIhU9kDyZoT3MIHCgIT3zg3JRolIAZQh8ViGHTbYWB08c5Nw3V
-         yjXUK8hYfOB4X7DfpJa5Mu0e/ZkDVDNNyCF519sNpYVvcckYJdMYrKJ/fMDg3sV0YZv7
-         y4cm4/sEUWATA52+sp/VwoFz0DD0suXS60RpQKbHkXoRljlRE1Zy1x8MjCAxMKEJKxIP
-         CWYZjwDRtBdp0/PdySiQlAcOV25Ej0UuQL4GIF9Ia09WXJklCUMmvAv4rLWLvZL/PV1p
-         LGyw==
-X-Gm-Message-State: AOJu0Yysie+Xuf85ljWTvN/QTbhUYrPEjpMdv2EB6ymdHiH8WlUe3umo
-	1+y1aNeP4XA9VQ0/j5xfeuP5P1tgbYoV0rpgvpdHD/uFtvsGTFedEyWoz9ipqjM=
-X-Gm-Gg: ASbGncsH4iHzfrrbX7s4J8RXMMqO0rfT5NvmvpKI9EqfPjr9lIU9Y53Nt8x4RPxoKcD
-	AHYWHOEpZLs5d2JeB6O+krBTCOcBxCbB1wEPJA4eDyM9VVBpEt1x4FQVFxNiLOQZ/weu4EHL22e
-	K21zicRzZITxE/ka7d6YDxwSiRGilQiOV4wSA1gTgzZHNyi6vkgdeWmODRDUrAl4xDByDD0ZwqY
-	vInS388SZOQVv+xoBXNROnu/E8FpQDocWEW3jPRkNdlx9d6ltcf3dNViqLirr6Rlm6S8hnjGuNe
-	68BOPFVehlvqpDfb5BalltUM2cuI3K2ebcJu3p7pUoojGg==
-X-Google-Smtp-Source: AGHT+IGOmbtA4Nm1nxJHb0yeQ9L0e+qEg9pRtI7VVMCpHNpNnF2DyuK2Y2lCTtT06AGryzfhV/6wQw==
-X-Received: by 2002:a17:90b:5201:b0:2ff:5750:7a34 with SMTP id 98e67ed59e1d1-30151d81d60mr10497286a91.34.1742174046713;
-        Sun, 16 Mar 2025 18:14:06 -0700 (PDT)
-Received: from gmail.com ([121.37.54.139])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-30153bb94e2sm4756494a91.45.2025.03.16.18.14.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Mar 2025 18:14:06 -0700 (PDT)
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-To: Bjorn Helgaas <bhelgaas@google.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>
-Cc: iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: [PATCH v3] PCI: Declare quirk_huawei_pcie_sva() as pci_fixup_header
-Date: Mon, 17 Mar 2025 01:13:52 +0000
-Message-Id: <20250317011352.5806-1-zhangfei.gao@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20250315101032.5152-1-zhangfei.gao@linaro.org>
-References: <20250315101032.5152-1-zhangfei.gao@linaro.org>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="DcCcWoc6"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=kp83hslFDmqWH7/LoWVXN+bU4LkvfJ4e1mjp2UhKTmYD39foWZOpgZHEtPeDyumMcpilGo/pv7LB2icYH6Q0qE8Ha4jPtzVJHP0zFJjbPcD2cmmkl4q86+DiXX1JMtI46XHz2d6+0f2HzOgzNz4TWPpo7y3s1dr2zmkXf/9mkYOErBq7ZPxkIotWP234jpHXkJgvz9BtAgh/DwLm32KfwvM7+y7619q2i2m5hg2A2Gnkk95F4sD+5w0gMnbVx+ad/LeSBlJqiptueRu5fyZTXiuyxnd5Z2VFyFj2qRGw5Ar8+oAUOsHzCMoREp+AdP8mHdCGF6Zzbb86TOufvOAIGA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nJdEpLiEY7nTKsjJE1A9+4+BHy16EYzdsnlTH+4b8cs=;
+ b=lMqe4He41JtoCp4ON46rf5NYxlkFuhhoYsDtxeqdwR3JSWn1voKTQozdNRqWaRlRNsi6D9TnnpuUXNt0LppE3jdwnBhrukruQhsJSSv+9OZZ2Z8/Qg3DrNKTF9WcPcXmlIPVNgm4qYtSPTpHm79fVakt4D1x1w+E/UyBceGPqAxrH0cbG0u1hLfGZ4/A/k/SC1WogwXlaYy46yIkbu0rqX2rD49JLSU2jUioVJKX4r+i3WkDRunaCdg+eDz3tCvwf1Oqsf9z2UWD2qXUg22xswUT+uKWq7FSqiqDu0NwuSsXD1GbpY2fllGFye/22JXcHNz2sSl9Y1gPcRcgiM347Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nJdEpLiEY7nTKsjJE1A9+4+BHy16EYzdsnlTH+4b8cs=;
+ b=DcCcWoc6slDQAX4FmWV/F3ye2CaiL5uC+8yiS0P/o1WwAGMWXHwEl96XaM4JSTXoC3S8QuiaDDsdYBiudV36zrXIv6jJ23+FzETvXIdzVJzLlZlI+k5m+KdYEZ7zfmUnBeoM/wiT2A5C92rmCh/gOeHFx8a2limyZTKyTl1fIg0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
+ by SA1PR12MB8886.namprd12.prod.outlook.com (2603:10b6:806:375::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.28; Mon, 17 Mar
+ 2025 02:32:45 +0000
+Received: from CH3PR12MB9194.namprd12.prod.outlook.com
+ ([fe80::53fb:bf76:727f:d00f]) by CH3PR12MB9194.namprd12.prod.outlook.com
+ ([fe80::53fb:bf76:727f:d00f%4]) with mapi id 15.20.8534.031; Mon, 17 Mar 2025
+ 02:32:45 +0000
+Message-ID: <926022a3-3985-4971-94bd-05c09e40c404@amd.com>
+Date: Mon, 17 Mar 2025 13:32:31 +1100
+User-Agent: Mozilla Thunderbird Beta
+Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
+Content-Language: en-US
+To: Dan Williams <dan.j.williams@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>, x86@kernel.org, kvm@vger.kernel.org,
+ linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+ Paolo Bonzini <pbonzini@redhat.com>, Tom Lendacky <thomas.lendacky@amd.com>,
+ Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Christoph Hellwig <hch@lst.de>,
+ Nikunj A Dadhania <nikunj@amd.com>, Michael Roth <michael.roth@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Joao Martins
+ <joao.m.martins@oracle.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>,
+ Steve Sistare <steven.sistare@oracle.com>, Lukas Wunner <lukas@wunner.de>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
+ iommu@lists.linux.dev, linux-coco@lists.linux.dev, Zhi Wang
+ <zhiw@nvidia.com>, "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
+References: <20250218111017.491719-1-aik@amd.com>
+ <20250218111017.491719-15-aik@amd.com>
+ <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
+ <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
+ <20250226130804.GG5011@ziepe.ca>
+ <67d4d3a5622f9_12e3129480@dwillia2-xfh.jf.intel.com.notmuch>
+From: Alexey Kardashevskiy <aik@amd.com>
+In-Reply-To: <67d4d3a5622f9_12e3129480@dwillia2-xfh.jf.intel.com.notmuch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: ME0P300CA0037.AUSP300.PROD.OUTLOOK.COM
+ (2603:10c6:220:20b::21) To CH3PR12MB9194.namprd12.prod.outlook.com
+ (2603:10b6:610:19f::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|SA1PR12MB8886:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1daf6fd5-43f6-486a-7fed-08dd64fbffae
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|7416014|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?ZTdwSWpLWVFGL0hBUU0zMVNnZnIySHZpek1uM2ZNTTBaZEpvdVlBcFI3bktI?=
+ =?utf-8?B?R3BEczJmOForRzhIT3dFbUZFOUdnKzI3Q1JDRnhOajdlS2NQUUMzbDJEcjdZ?=
+ =?utf-8?B?aVBBQmJiUU5pZjUwWEd1OG1WUTU5Y3I3WEhFT0FScm5rWUIzWUIvMDBQc3RR?=
+ =?utf-8?B?YVBSTno0dTgyZG0wY0VMeXA3cUdDSnR5WG80UVJ2NEN6SUxYN01tUnE5R01N?=
+ =?utf-8?B?QmR2QmlKMENsbW9RcmhNbWFGNjFsd1NCc3ZqM2NpQnBZQWxrNG1IaDBxaGRG?=
+ =?utf-8?B?NkRVYXc5TjRQR3dtazFkVXRUYk1NaFFUc25seU03cktPc2Vzb29lQjBYV3F0?=
+ =?utf-8?B?eUdUUVdMUzJZWWh1ZklGd0xwd2VzdkVTaVhIWG1JL1ZDajdLNDllZisvNlJU?=
+ =?utf-8?B?TVJ1bTFyeXJPVVJpUmZ5bmZlYmxaeTJDdEMzRGw0YmhGNUVFQzUyOVlZY0tY?=
+ =?utf-8?B?bEJQcnVhaUtrQUR5M2ExYjJnREFERnpUaTEvOGpqMWR5UlVKR0MvNnZXam1D?=
+ =?utf-8?B?SVFoaXpTVnZrZGxiTDVrSzlnOXJMRStnN1BrT3J0bDdTRkJXYXRDNmtIZnJU?=
+ =?utf-8?B?MTY4aCtMSmxMRnk3elpTSm1RQWVUOHdpVDltTE1pMUJlK09aOEVoV3EzS3JK?=
+ =?utf-8?B?L1BueGlKb3FiZGpqU3NWbEFFcWVXUVplZnRDcFBCckQxL3BwK0paUzc5UnBa?=
+ =?utf-8?B?cUl5NS9SREhOVFIvbGJMbjdBeW1XRlBtSkI4VDdGVnFPZ2kzSE5JUGRYOC9r?=
+ =?utf-8?B?Z3RlTGMremYrbHZjeDlrOHFjTnpFNEVyWm9kbHM3UzVVN0RJcW9ML3QwbVZh?=
+ =?utf-8?B?YXNGRnpXQ1R1Q0hoaWRWMnk5YTBteCtmNTVVejhFenVoTW41Rlk3YzlFdncv?=
+ =?utf-8?B?TU03TFFKSVF5MXJuRDZBWFBqcXNHT3Y3YmYvMGF3Qml0UlRQTG9ndk1OUS9C?=
+ =?utf-8?B?MUVRNUg3aVlTM3c4ZXVGdmdJVDB3cnQrZzhWZjMrVDhKN2t5RFQrdUt6bytH?=
+ =?utf-8?B?SksvVVRxY0lqVFhkcnprYkFPcDVmZ1hoNnhYMitwd0ZYTlB3VGpZcEN5SCtq?=
+ =?utf-8?B?VnpmSXdVUzRyQUpTSkFBOURmZkh4OHBwN1Fnc2FtaThIWHppN1JwTlRXVEN5?=
+ =?utf-8?B?Nlg4T3dxTWdySHUxRVZJN2dkOEZrMDRLU2NuT2NnVndtcEp2U0EzWk5wc25U?=
+ =?utf-8?B?OWVPVDBjSmpYY3hsMXhzc3QweWozdzMrNVJ4SDJKYk9aY21qUmlKV05URlhP?=
+ =?utf-8?B?TmhTc1VyZnZ3RW03a2FmNDk4K2ZGWnkzK095YTJLcEdNUGVHcndCU3NKWWpY?=
+ =?utf-8?B?cFg5S3ZQQVROVVBKNTRucGhLRGFndGQ5aGpYZ3p6UkRvTUdRYTBnQ3BXZ3NB?=
+ =?utf-8?B?TGkzZVd6azE0eFhQY21qWmpPZlpBWlRURlg5NkROODkvVmQzN0JyckUyMXUz?=
+ =?utf-8?B?ZGZTMjg5eXBwSEpvQUhpbmZid3dFbW1LOHJFTWFLbWlkNWFkRyt3RlFGTlZP?=
+ =?utf-8?B?NXo4Tnl6c2d0c2wyTzBaWnpQdkQzd0FwS3BYTis3clBTMHRTbXYrVVI3cERu?=
+ =?utf-8?B?Q1JybWZyTFBsT2FPT3RJY1N3VFZrTGoyUE1EODJnbk5jTGhITU14aFE1WjBS?=
+ =?utf-8?B?dXNudU5XbXlBVXBnaTFpbEYwcURxZGZSRWwyUnpQT2hCenFjYk9OTXF1NXFI?=
+ =?utf-8?B?S3Ixb200bkhCU2hRNWQrK0ZjeVBqUnJvZWlCbmg5UWU4endGbm5wbWZ1bFFY?=
+ =?utf-8?B?MUNtaXJxdXdQSENnd0MvbENlTE1CVVJEMkIvQldqcDQrR0FJOEVEZ3V5MTIz?=
+ =?utf-8?B?QkJZTnI4V283dzlhMEF4d3pZVktKL1lWd0NCZWkwQnMzdmRuanpLUlBEVHpN?=
+ =?utf-8?Q?1LwSAZf3C9RyA?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TUpsRVhkY0xoeW5GS3pNUmRtRU1VR3kvdzIwb29RVXZLejlHVWRWaks2YVpP?=
+ =?utf-8?B?UnFYTmJxREtUU01QOWhvN2piVm5kNjE1R3ZVeUpGZkQwWmlFOHpZOEd4bVBj?=
+ =?utf-8?B?WklLZTJmbU5ZdHd1eEk4R3ZhdEd6R05WQnB0anN6MUtsbXB3RjAzY0ZtZ3dC?=
+ =?utf-8?B?SFFnOVl4ODIrcHVYdVR5QzgxVnRNdk9DclBENFZFZkJxemJpZFJrL1RUUnhJ?=
+ =?utf-8?B?OVd6QVNxTEdJQ1RUcDcwaTZscFNPTXVUMHlhQkR6L0NaZzN0U01WTytJOEdp?=
+ =?utf-8?B?T2lqVUZ1ei9TenQ2L2NYYlhZaFdVZUFmalJRUHFPN0ZOelMwaDVzZUJOcFYr?=
+ =?utf-8?B?UE5jYUltOE0xVG5ITHZPSWdXamV0QXgrRzk5K2ZiTC9hZmpDR2M3SDk4Q2N0?=
+ =?utf-8?B?cU1DT0t3V2psdzEra3Y4Sk84ZzlkU2hEb0tnalJ5YWhMZ1dIVWoxR3pLWktG?=
+ =?utf-8?B?NEdyQVlzam40MExhT1A2djIzL0FNWUZmTU96Vm40MUZIZUx0K0ljNjQvQzFE?=
+ =?utf-8?B?djlEUGpFcWx5Z0F6cUlBV0E3RmR3ZU1vam9oZ1pWaHVzUmYxSCtxYklqQ3BI?=
+ =?utf-8?B?QzJ0TlpBR0xRcW9FTXRDaGJUSTVrL3hUclJiQnJLL0JDV285QUpvK011Mm14?=
+ =?utf-8?B?ZnFTd0VCN2hVNXNHRXIrZVZJMzR5WXBkVURDZHJRTjZBbkxOWXVmdG9RNkZa?=
+ =?utf-8?B?Rmg3WWF0amloY2RtMEcyaTdtM0I3bFUxT0E1QmF4clczUHFnQ0xsbisvR3lL?=
+ =?utf-8?B?YkRmRlUvc2JQU0ZyN2xuc0tVVHpSRVprWXRNSmwyTjN2VXZTRUJNcVIvL3FU?=
+ =?utf-8?B?UEs4Y2tmMkhhNFhtTi8vS2RjbldKU1N3SllVM25MeE1OVC9rK2lkTjBlK0dB?=
+ =?utf-8?B?aEdDMlA1T1kxRnpVSWQvK0Iyb3k4Y21ieWRCUlRhVTIxRlVYUVBQU0ZhR3Ru?=
+ =?utf-8?B?L0hvWmUzNTVDbENONk9IV2taZ1RyY2dvSzh1T0krclVGdDBXVDBxQlk4YzhD?=
+ =?utf-8?B?dXc0TC9YaW1QWTdjRENKNFZRTFBaMVJ4QklSdU1RZVowMzF5ZHB2c1dOeWNo?=
+ =?utf-8?B?KzhzQnJRQkFBL0MydDN3WTdhTUk0aEhDTGkzR3o0U3YvUEVvVFFZN0JlbW9k?=
+ =?utf-8?B?QXFjdEFkWVFUM2VGN2RjdkdjQzQ1c25DR09MenJ3UnVEbmJMbEs4M2Q3czhH?=
+ =?utf-8?B?OUNVcVRnOVFROXpoaElEdlN2N3I4R2NXUmRLSXpJMDhnSFEyb0tHSndjanFu?=
+ =?utf-8?B?c0ZwSXE2M1VrR011NWhWRmcwY1diSVhYZG5tY3RUb1QrUG5wSFEreVhTUGdP?=
+ =?utf-8?B?Q0htZ3Q4bTNJNlcySXkrMXBqSk82dmZ0QUFFL3hkOE9TR3lWZE9XUGZxcTJr?=
+ =?utf-8?B?alE5WDVUZ2NvTDdXQWROdFRqdkdxaVRhTmJ1N2x5OGlFODNON2U2bUthSFJn?=
+ =?utf-8?B?bjlIWG5BaTdPc25EdFd3KzRyb1puTWpITHRqZGoxWXV3cit6dEhITTM4b0hk?=
+ =?utf-8?B?K2lRVW0wN0hoczZPc1ZVOVJka0pFVnZMNkN3bTZmbERhV1VNMzRkb2ZWYVdv?=
+ =?utf-8?B?YjRKbk93NStDYk5uSW9oS3BjU2dmUDcwS2gvVGpoR2tyQTlPbzZOaDVQSTRU?=
+ =?utf-8?B?MWxwU1prVER6WXJKeWRuWktGeHUrdlRhNW9selN6SHNkNXBnUU1vOW5rNWpG?=
+ =?utf-8?B?dUhOSEl0dTgyQTFnb0xlZkF3b01JRDRtWHo0SWoyUUU1cHIwbVlRYW1EL0FU?=
+ =?utf-8?B?RFRSbzJSaGFyTkZnWXZvc1AvWUllVFpHcE9hclh6Y3l0VkJpN1M1Q1lZM2xa?=
+ =?utf-8?B?VThHVDNZd2RiTFR6N0NZeDZKcWdKUE1EMzA0czN0bDZQbmhZcEJDZXBqcm5h?=
+ =?utf-8?B?MmZGTkk2WVBmVVNXdDdMS1dhZ212dzF6RzBqT3BRQmFCd3RadGhzVWh1Qlk3?=
+ =?utf-8?B?aHR6SlJ3NlhlRFg0bXNRbDh1blJoKzdkZU5OcDBsek9TL1ZYanRrbTk4ZWJL?=
+ =?utf-8?B?dXpvZE9vbWx0bWtVREEyRXZoeEU2QUtrWmRwTk8zU0hMMGZtR0d0eHM5Tkhp?=
+ =?utf-8?B?V2Z1S3ppVXQxK21YL0tIdnpISFliWEtJVzY0RS9oRnJNV01ucFdidVFFcTJT?=
+ =?utf-8?Q?1+2dhBsHtk3tLzLsH/kNjhN/Q?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1daf6fd5-43f6-486a-7fed-08dd64fbffae
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2025 02:32:44.9273
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YM4HfNxUGWenIqEaPQlQpvA3s6pzdkzWLPcSPl4vRsA2icC7oS/oGi4LX4QMVDHBCOYFSL/pIVKfDkkDm0/yvQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8886
 
-The commit bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper
-probe path") fixed the iommu_probe_device() flow to correctly initialize
-firmware operations, allowing arm_smmu_probe_device() to be invoked
-earlier. This changes the invocation timing of arm_smmu_probe_device
-from the final fixup phase to the header fixup phase.
 
-pci_iov_add_virtfn
-    pci_device_add
-      pci_fixup_device(pci_fixup_header)      <--
-      device_add
-        bus_notify
-          iommu_bus_notifier
-  +         iommu_probe_device
-  +           arm_smmu_probe_device
-    pci_bus_add_device
-      pci_fixup_device(pci_fixup_final)       <--
-      device_attach
-        driver_probe_device
-          really_probe
-            pci_dma_configure
-              acpi_dma_configure_id
-  -             iommu_probe_device
-  -               arm_smmu_probe_device
 
-This is the pci_iov_add_virtfn().  The non-SR-IOV case is similar in
-that pci_device_add() is called from pci_scan_single_device() in the
-generic enumeration path, and pci_bus_add_device() is called later,
-after all a host bridge has been enumerated.
+On 15/3/25 12:11, Dan Williams wrote:
+> Jason Gunthorpe wrote:
+>> On Wed, Feb 26, 2025 at 11:12:32AM +1100, Alexey Kardashevskiy wrote:
+>>>> I still have concern about the vdevice interface for bind. Bind put the
+>>>> device to LOCKED state, so is more of a device configuration rather
+>>>> than an iommu configuration. So seems more reasonable put the API in VFIO?
+>>>
+>>> IOMMUFD means pretty much VFIO (in the same way "VFIO means KVM" as 95+% of
+>>> VFIO users use it from KVM, although VFIO works fine without KVM) so not
+>>> much difference where to put this API and can be done either way. VFIO is
+>>> reasonable, the immediate problem is that IOMMUFD's vIOMMU knows the guest
+>>> BDFn (well, for AMD) and VFIO PCI does not.
+>>
+>> I would re-enforce what I said before, VFIO & iommufd alone should be
+>> able to operate a TDISP device and get device encrpytion without
+>> requiring KVM.
+> 
+> Without requiring KVM, but still requiring a TVM context per TDISP
+> expectations?
+> 
+> I.e. I am still trying to figure out if you are talking about
+> device-authentication and encryption without KVM, TDISP without a
+> TVM (not sure what that is), 
 
-Declare the fixup as pci_fixup_header to ensure the configuration
-happens before arm_smmu_probe_device.
+It is about accessing MMIO with Cbit set, and running DMA to/from 
+private memory, in DPDK. On AMD, if we want the PCI's Tbit in MMIO, the 
+Cbit needs to be set in some page table. "TVM" in this case is a few 
+private pages (+ bunch of PSP calls to bring to the right state) 
+pretending to be a CVM which does not need to run. Thanks,
 
-Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
----
-v3: modify commit msg, add Acked-by
-v2: modify commit msg
 
- drivers/pci/quirks.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+> or TDISP state management relative to a
+> shared concept of a "TVM context" that KVM also references.
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index f840d611c450..a9759889ff5e 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -1991,12 +1991,12 @@ static void quirk_huawei_pcie_sva(struct pci_dev *pdev)
- 	    device_create_managed_software_node(&pdev->dev, properties, NULL))
- 		pci_warn(pdev, "could not add stall property");
- }
--DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa250, quirk_huawei_pcie_sva);
--DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa251, quirk_huawei_pcie_sva);
--DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa255, quirk_huawei_pcie_sva);
--DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa256, quirk_huawei_pcie_sva);
--DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa258, quirk_huawei_pcie_sva);
--DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa259, quirk_huawei_pcie_sva);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa250, quirk_huawei_pcie_sva);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa251, quirk_huawei_pcie_sva);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa255, quirk_huawei_pcie_sva);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa256, quirk_huawei_pcie_sva);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa258, quirk_huawei_pcie_sva);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa259, quirk_huawei_pcie_sva);
- 
- /*
-  * It's possible for the MSI to get corrupted if SHPC and ACPI are used
+>> It makes sense that if the secure firmware object handles (like the
+>> viommu, vdevice, vBDF) are accessed through iommufd then iommufd will
+>> relay operations against those handles.
+> 
+> Yes, that tracks.
+
 -- 
-2.25.1
+Alexey
 
