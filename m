@@ -1,63 +1,63 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAFC81E5B85
-	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 18:54:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF56D204C2A
+	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 18:54:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742237666; cv=none; b=j0aEA1IZ9Yntw6XiwDvZfqC3GPYsC9aXtDTX8yXgpPXzY6T3m7X0Dpba1bCOEDz1tIAdOTHBoVXhayJJx0uBkZ4EHcw+q84yvi0j7obRdBRSUGqu7LTlv8cv3AcrhNj6iwL7nyAtha981zNLUgx+i+RCmRjVXL09mUvT6xBj4JQ=
+	t=1742237669; cv=none; b=bjhtph7n0ls+uKSDF+stCQLW6eQ1uXEDGaqbkzUnMc1W0zNj+nWMzlynrTR6a/mxrO181wBlnev6UaUpteHWCkRsg+zqhcjXhQYJVGtcexxnX7xoQj7e+V3ngSmhlmNh+1z08GY5T1ZlroYfUgK6RkombRDKFE3zeoyCnzIpab4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742237666; c=relaxed/simple;
-	bh=TcpoD/AzioVcQ+RFPHlw+D3njSBh1aynVEy/vrcfm3c=;
+	s=arc-20240116; t=1742237669; c=relaxed/simple;
+	bh=/7wFbnKC/IXue+Ku51P5u/UhRTtbHQI319bGUuW1U8E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=A1ycokRMEG2mXefLJIRuCfOOcjaNWNEZiO3n2o/VV9EPrB/SNX2cendR6jn9FTwFgKGhgJRp/SEOOGpOdJK0uemDbO17rFNrs55ZmaoNl5+5hTFa+oarELpeYRsIdYlXzatMDql+2o7NM7n+9b87HL9fgSyGUK90YAF9Jj6s7WI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OCL/DwJO; arc=none smtp.client-ip=209.85.167.41
+	 MIME-Version; b=NAimXsrBbkGU8c7AxUBpQHB9D9T5Hlh3ZcJGk2NkOZYYbEDq5lv7sxjwh/Gd9eNDORCyCucatilbqTqzdv0JEzZWGtfd7CVqRerlkuRUzeEBsKNeZNWyVT1UvL7j2qD4A40SBW9h/81GJz1rp+xKTnt5mXG9dc4+xTqRcQDhtQc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hxD3Yae1; arc=none smtp.client-ip=209.85.208.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OCL/DwJO"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-54957f0c657so4973273e87.0
-        for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 11:54:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hxD3Yae1"
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-30762598511so50328091fa.0
+        for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 11:54:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1742237663; x=1742842463; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1742237666; x=1742842466; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=c6wjTKcHZVvHIKO2S7cxVflMybOF64R/jyjw4en16rI=;
-        b=OCL/DwJOK+x6los03rN7B/nv8aFlT/CZwZscLBjl5i/J/gQ14sOuojJyc4/act/dSX
-         lmf0iNqdMB/LlmlBWGtAs57CK0SbZ3HxAuotAReqWlSJha+OTsZhon/xVedGxeloptiY
-         1OybBoLCsGs4LpVKWX4xhc7YpWKmsFwkVKsMoaPQ8mLyzl4V/fyoqcf3Ug/E7wuoVojY
-         w6hQhr9vfRJnvJ1csoV+Y78QcGnLjDPWNtoDBNv98FlAknYFzp6D6AE5jOyvG2AprmNF
-         4T+vkqf69bMsEA7XTJllIcwmtldP9bt4tomfsyO+swNehFIROjxiV/FPuCqSrj3ODV04
-         izUA==
+        bh=rTtaX3vhSb5G36KvfqVCTP+WKBznUgLh6K0dIke/e54=;
+        b=hxD3Yae1FxvJ1sc3PG3+ZhQbePxWuqhPkAKjrX+3UtJvDHLZVoaAzmPmjQO3EN72mv
+         HlNhOIr9TrqwsZiZ1PZADYMzSUtUJj+3iihSQ4yahFnSFqV0geealNwd0S9R5TYmXJPv
+         61u4NPugy6xz1NGYmbSkzrQFtBgMxUVMB9kidgbeMRZiFnf/BrkUb/3DoMMdQAZm8iVw
+         2nzAMAhCZHc9U/8q1YfBIDkP8X1hFRbXiQovbzNYLEx+E7op86VU+L0RQVs50G7J90Lc
+         1G5CwuhJb4DY48ZBmS+paasqoCG0BKbPPu5OTLNXQUlEwXHXkDqrgKPS+gtkBIokAtN7
+         IALA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742237663; x=1742842463;
+        d=1e100.net; s=20230601; t=1742237666; x=1742842466;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=c6wjTKcHZVvHIKO2S7cxVflMybOF64R/jyjw4en16rI=;
-        b=WphklUrkTW6t2JieNhAaMNvq/TpHP5y8mJPBDgHbfSGVZ70DZCipugjZsZ7SArMfeF
-         zLqokiOTNS0ZfsCXFAt5wgaFN44osFjESx3J0/cfToE+EkdN4F2/jaccWRBpoar0WMhx
-         4EU1eXo6rSVbBRI09fV4QY++4FPPJNRJpI7DBSAR7rR21Y7oPtNmFciAff3U4ZcB5DWd
-         Rd0lE4GaJN29sRGEQ4UElPJWnQygJJZTn2BDIBJzGGhGvwuPg1LRTdK0SUOjs98mNUUA
-         3iNOxYMIHsn0NTC6eprfkvHD+nUBXI6u50AJVB1H8W168YXya8mGxk4aZYB2dTp0MVq+
-         sYgQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVeCf9JMEg9vW0a9WdVCdlimVkEr9vUROGA9drkOF59Qs8+iP9agb1QsPZ5YWHuX8S3ltia8Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxYTQXDy+6nP1j/o/5P/hOjIPOevzrT2jaG9WiTvqEyfiRgy7G3
-	eFv11AvLqL8ngRkxWbyP2kZiWpt4nEOLoxYkdrSThLTlxKts/ZE5
-X-Gm-Gg: ASbGncsM60tUA5PiE+9iUbs8ZNV41xioszvA0uM2vdFE1GvlcSpfDy75j1woq6hXaDc
-	tfw4nDH1Vp1MJqLPQE2V90xFZw8zvLNYsAeySNJbgUeQiwHrxkNHZ0xSrkc2fVNa3xIR1QTogIf
-	DmjSdPf3kyqxyhbDE43k6idIMgAXrDoj8RDY0Y63WQcuouKR9n5BbNAKKyq2kvn+6Zjgi3dq22h
-	SLaMHDM218es3+skAmeZTx4WZ0xhKxGE8p3nhhVkK/FhEof55prPoL/DkWKzgVLav15HLNz11sV
-	n5pMNCdnsZvG05bYot6ww1BAGbJh1h1TjK5zCeGosVFyL3Jj+yvO4HYl4dBTxnPgzumgDp+iOrw
-	j0igCnmFOPAN+0zIna2lyQ5fNjylQO38G
-X-Google-Smtp-Source: AGHT+IEP/PtVThPCG47TCqBvS5ALN6nZRdODEw6SF73CDXB1BtRyV/+bQ0SZ49Nqf98pxWHzMjB8AA==
-X-Received: by 2002:a05:6512:ad0:b0:549:5dcf:a5b with SMTP id 2adb3069b0e04-54a3046a9bamr523713e87.4.1742237662590;
-        Mon, 17 Mar 2025 11:54:22 -0700 (PDT)
+        bh=rTtaX3vhSb5G36KvfqVCTP+WKBznUgLh6K0dIke/e54=;
+        b=bX61LRlSrRWsae94TRme5+Gq2AOPk9PbBQc2gHTXM+BPEheXJ5a7O8AMTcjs1FhLl5
+         LgyYXgskv1oqzBmJfG6ESe6wYjW0TKbSWJwCtI6ALfm+cx7nFQvBZkcyi7V/Xg59yv5C
+         06S10AQyiVBBxFj1BwLkvqRSOwSgornzet6Yc8PZJn10fOTW57bEKKrgyUVNBZzDlxvr
+         JQZbiMNSgHDyexCZf5ebWt7liB9THrGG8jDjP/gFw06sfWNAwu7Iql8IDPxd98JlXIkg
+         uYrWP3WDbh1g2/IOc7qrrR7yClJL+i/3wPxdcX2YAQmt2iKK7S0qC2yGyjJ54HolgFj8
+         CHtA==
+X-Forwarded-Encrypted: i=1; AJvYcCXgBxIIwWJb4vhZ9oW3gfnSH9fyowOkSIu90hScTueAs3hEG5W0lGv7D3+D68NVjhe4DmnMTw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx726lcactd8pSSj6GcBePH1i8e/+jq0CN+ftBSj+cawBh/42Lq
+	SLKZDyhdFBEP7d+ZZksKcKLdTxZN5RQg5/ZggvbbCxBx254f39cn
+X-Gm-Gg: ASbGncuCe4FtDv+mrbhTG0eRfSl686zW76oN1HPaQ3olesAp2+m1xq0uomh0s4spJUH
+	rjiwe7hfIUd+yzxcRozHPFtR2kNV7kYo5XMU5N6q5T16nB5MkQ2OJFcAqW1iE5ndwt3flOjNJ6o
+	Ww8D3QpntaJRVQktZetQsyaR+7l5pVs/BN2aNGCUSfO4ixRs5o0kWQ4Gcj/ET46KacYX/cJXqca
+	uMScGRf+rpyQYNRtUXqJeVKiN7PzDkNh+VEcgKWIbbE0qel5zov+BmUiLaYx1k0Lmyf7uPgatYr
+	m46MtZ/vdmSshgf7Vr/7ZrZNWIEdfxftU0lfVh1f3BiXEhjkzXKSQ8/i9RR43Zg0/efsK4W7ycO
+	i2cN1d7TEqosMsGNQ5Dw9zVgPvWicaavY
+X-Google-Smtp-Source: AGHT+IFLi8eIWmNCR26IQ1ZzNqzF+yX5evRGaLB3kNs6XdGjVB80bX12ukMhk1Sq94RJg91f1Bo3PQ==
+X-Received: by 2002:a05:6512:31c3:b0:549:8f06:8225 with SMTP id 2adb3069b0e04-549c39507ebmr7288403e87.53.1742237665546;
+        Mon, 17 Mar 2025 11:54:25 -0700 (PDT)
 Received: from abj-NUC9VXQNX.. (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-549ba865024sm1387506e87.123.2025.03.17.11.54.21
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-549ba865024sm1387506e87.123.2025.03.17.11.54.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Mar 2025 11:54:22 -0700 (PDT)
+        Mon, 17 Mar 2025 11:54:24 -0700 (PDT)
 From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 To: rust-for-linux@vger.kernel.org,
 	daniel.almeida@collabora.com,
@@ -79,9 +79,9 @@ Cc: Miguel Ojeda <ojeda@kernel.org>,
 	airlied@redhat.com,
 	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: [PATCH v15 10/11] rust: samples: dma: set DMA mask
-Date: Mon, 17 Mar 2025 20:52:17 +0200
-Message-ID: <20250317185345.2608976-11-abdiel.janulgue@gmail.com>
+Subject: [PATCH v15 11/11] rust: dma: add as_slice/write functions for CoherentAllocation
+Date: Mon, 17 Mar 2025 20:52:18 +0200
+Message-ID: <20250317185345.2608976-12-abdiel.janulgue@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250317185345.2608976-1-abdiel.janulgue@gmail.com>
 References: <20250317185345.2608976-1-abdiel.janulgue@gmail.com>
@@ -93,43 +93,112 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Danilo Krummrich <dakr@kernel.org>
+Add unsafe accessors for the region for reading or writing large
+blocks of data.
 
-Set a DMA mask for the `pci::Device` in the Rust DMA sample driver.
-
-Signed-off-by: Danilo Krummrich <dakr@kernel.org>
 Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 ---
- samples/rust/rust_dma.rs | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ rust/kernel/dma.rs | 87 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 87 insertions(+)
 
-diff --git a/samples/rust/rust_dma.rs b/samples/rust/rust_dma.rs
-index 4c7ebf66647a..39b6050aa3b6 100644
---- a/samples/rust/rust_dma.rs
-+++ b/samples/rust/rust_dma.rs
-@@ -4,7 +4,12 @@
- //!
- //! To make this driver probe, QEMU must be run with `-device pci-testdev`.
+diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
+index 6d7aff6b360a..027ef75a461a 100644
+--- a/rust/kernel/dma.rs
++++ b/rust/kernel/dma.rs
+@@ -253,6 +253,93 @@ pub fn dma_handle(&self) -> bindings::dma_addr_t {
+         self.dma_handle
+     }
  
--use kernel::{bindings, dma::CoherentAllocation, pci, prelude::*};
-+use kernel::{
-+    bindings,
-+    dma::{CoherentAllocation, Device},
-+    pci,
-+    prelude::*,
-+};
- 
- struct DmaSampleDriver {
-     pdev: pci::Device,
-@@ -51,6 +56,8 @@ impl pci::Driver for DmaSampleDriver {
-     fn probe(pdev: &mut pci::Device, _info: &Self::IdInfo) -> Result<Pin<KBox<Self>>> {
-         dev_info!(pdev.as_ref(), "Probe DMA test driver.\n");
- 
-+        pdev.dma_set_mask_and_coherent(kernel::dma::dma_bit_mask(64))?;
++    /// Returns the data from the region starting from `offset` as a slice.
++    /// `offset` and `count` are in units of `T`, not the number of bytes.
++    ///
++    /// Due to the safety requirements of slice, the caller should consider that the region could
++    /// be modified by the device at anytime. For ringbuffer type of r/w access or use-cases where
++    /// the pointer to the live data is needed, `start_ptr()` or `start_ptr_mut()` could be
++    /// used instead.
++    ///
++    /// # Safety
++    ///
++    /// * Callers must ensure that no hardware operations that involve the buffer are currently
++    ///   taking place while the returned slice is live.
++    /// * Callers must ensure that this call does not race with a write to the same region while
++    ///   while the returned slice is live.
++    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Result<&[T]> {
++        let end = offset.checked_add(count).ok_or(EOVERFLOW)?;
++        if end >= self.count {
++            return Err(EINVAL);
++        }
++        // SAFETY:
++        // - The pointer is valid due to type invariant on `CoherentAllocation`,
++        // we've just checked that the range and index is within bounds. The immutability of the
++        // of data is also guaranteed by the safety requirements of the function.
++        // - `offset` can't overflow since it is smaller than `self.count` and we've checked
++        // that `self.count` won't overflow early in the constructor.
++        Ok(unsafe { core::slice::from_raw_parts(self.cpu_addr.add(offset), count) })
++    }
 +
-         let ca: CoherentAllocation<MyStruct> =
-             CoherentAllocation::alloc_coherent(pdev, TEST_VALUES.len(), GFP_KERNEL)?;
- 
++    /// Performs the same functionality as [`CoherentAllocation::as_slice`], except that a mutable
++    /// slice is returned.
++    ///
++    /// # Safety
++    ///
++    /// * Callers must ensure that no hardware operations that involve the buffer are currently
++    ///   taking place while the returned slice is live.
++    /// * Callers must ensure that this call does not race with a read or write to the same region
++    ///   while the returned slice is live.
++    pub unsafe fn as_slice_mut(&self, offset: usize, count: usize) -> Result<&mut [T]> {
++        let end = offset.checked_add(count).ok_or(EOVERFLOW)?;
++        if end >= self.count {
++            return Err(EINVAL);
++        }
++        // SAFETY:
++        // - The pointer is valid due to type invariant on `CoherentAllocation`,
++        // we've just checked that the range and index is within bounds. The immutability of the
++        // of data is also guaranteed by the safety requirements of the function.
++        // - `offset` can't overflow since it is smaller than `self.count` and we've checked
++        // that `self.count` won't overflow early in the constructor.
++        Ok(unsafe { core::slice::from_raw_parts_mut(self.cpu_addr.add(offset), count) })
++    }
++
++    /// Writes data to the region starting from `offset`. `offset` is in units of `T`, not the
++    /// number of bytes.
++    ///
++    /// # Safety
++    ///
++    /// * Callers must ensure that no hardware operations that involve the buffer overlaps with
++    ///   this write.
++    /// * Callers must ensure that this call does not race with a read or write to the same region
++    ///   that overlaps with this write.
++    ///
++    /// # Examples
++    ///
++    /// ```
++    /// # fn test(alloc: &mut kernel::dma::CoherentAllocation<u8>) -> Result {
++    /// let somedata: [u8; 4] = [0xf; 4];
++    /// let buf: &[u8] = &somedata;
++    /// // SAFETY: No hw operation on the device and no other r/w access to the region at this point.
++    /// unsafe { alloc.write(buf, 0)?; }
++    /// # Ok::<(), Error>(()) }
++    /// ```
++    pub unsafe fn write(&self, src: &[T], offset: usize) -> Result {
++        let end = offset.checked_add(src.len()).ok_or(EOVERFLOW)?;
++        if end >= self.count {
++            return Err(EINVAL);
++        }
++        // SAFETY:
++        // - The pointer is valid due to type invariant on `CoherentAllocation`
++        // and we've just checked that the range and index is within bounds.
++        // - `offset` can't overflow since it is smaller than `self.count` and we've checked
++        // that `self.count` won't overflow early in the constructor.
++        unsafe {
++            core::ptr::copy_nonoverlapping(src.as_ptr(), self.cpu_addr.add(offset), src.len())
++        };
++        Ok(())
++    }
++
+     /// Returns a pointer to an element from the region with bounds checking. `offset` is in
+     /// units of `T`, not the number of bytes.
+     ///
 -- 
 2.43.0
 
