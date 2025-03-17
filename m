@@ -1,204 +1,217 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2087.outbound.protection.outlook.com [40.107.244.87])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF56D204C2A
-	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 18:54:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742237669; cv=none; b=bjhtph7n0ls+uKSDF+stCQLW6eQ1uXEDGaqbkzUnMc1W0zNj+nWMzlynrTR6a/mxrO181wBlnev6UaUpteHWCkRsg+zqhcjXhQYJVGtcexxnX7xoQj7e+V3ngSmhlmNh+1z08GY5T1ZlroYfUgK6RkombRDKFE3zeoyCnzIpab4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742237669; c=relaxed/simple;
-	bh=/7wFbnKC/IXue+Ku51P5u/UhRTtbHQI319bGUuW1U8E=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=NAimXsrBbkGU8c7AxUBpQHB9D9T5Hlh3ZcJGk2NkOZYYbEDq5lv7sxjwh/Gd9eNDORCyCucatilbqTqzdv0JEzZWGtfd7CVqRerlkuRUzeEBsKNeZNWyVT1UvL7j2qD4A40SBW9h/81GJz1rp+xKTnt5mXG9dc4+xTqRcQDhtQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hxD3Yae1; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F66E450EE;
+	Mon, 17 Mar 2025 19:27:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.87
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742239640; cv=fail; b=OFGPGMK9WMdhF6Pf9mgaj9/OUDqWBMdCdYcJYqJt5X+yVgClQaWgYRVM7PdAyaZscOe8bjvPMBR1vRUFXYxpBUB0ot9DqhN19gxB0thzKv+611OpUbu9apAlIL5+Pi24wOYJeqfnPdT6m4k2Biv5d9YrN49c/v5BgcX7Li5gj3c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742239640; c=relaxed/simple;
+	bh=scTn3LX0ydaflqL9KdWaaccLtyE0rHY1cx8lQHcucVs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=o6Acux5H83aAMU8DM73VvADgXSrJj5A76NkQteTSPFmbzOqyoyUI9gRFTPy02eDuVc2eacbOf4085cyizNRVBbZm+41CCGugZx0XrHkkeLfnYcEkQhJei78HOH6bnBV/Us7cxr1t1mTBmNHFSyPE71HGvgKikf0yvfUDMMyIWfM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Xp/opmnk; arc=fail smtp.client-ip=40.107.244.87
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hxD3Yae1"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-30762598511so50328091fa.0
-        for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 11:54:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1742237666; x=1742842466; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rTtaX3vhSb5G36KvfqVCTP+WKBznUgLh6K0dIke/e54=;
-        b=hxD3Yae1FxvJ1sc3PG3+ZhQbePxWuqhPkAKjrX+3UtJvDHLZVoaAzmPmjQO3EN72mv
-         HlNhOIr9TrqwsZiZ1PZADYMzSUtUJj+3iihSQ4yahFnSFqV0geealNwd0S9R5TYmXJPv
-         61u4NPugy6xz1NGYmbSkzrQFtBgMxUVMB9kidgbeMRZiFnf/BrkUb/3DoMMdQAZm8iVw
-         2nzAMAhCZHc9U/8q1YfBIDkP8X1hFRbXiQovbzNYLEx+E7op86VU+L0RQVs50G7J90Lc
-         1G5CwuhJb4DY48ZBmS+paasqoCG0BKbPPu5OTLNXQUlEwXHXkDqrgKPS+gtkBIokAtN7
-         IALA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742237666; x=1742842466;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rTtaX3vhSb5G36KvfqVCTP+WKBznUgLh6K0dIke/e54=;
-        b=bX61LRlSrRWsae94TRme5+Gq2AOPk9PbBQc2gHTXM+BPEheXJ5a7O8AMTcjs1FhLl5
-         LgyYXgskv1oqzBmJfG6ESe6wYjW0TKbSWJwCtI6ALfm+cx7nFQvBZkcyi7V/Xg59yv5C
-         06S10AQyiVBBxFj1BwLkvqRSOwSgornzet6Yc8PZJn10fOTW57bEKKrgyUVNBZzDlxvr
-         JQZbiMNSgHDyexCZf5ebWt7liB9THrGG8jDjP/gFw06sfWNAwu7Iql8IDPxd98JlXIkg
-         uYrWP3WDbh1g2/IOc7qrrR7yClJL+i/3wPxdcX2YAQmt2iKK7S0qC2yGyjJ54HolgFj8
-         CHtA==
-X-Forwarded-Encrypted: i=1; AJvYcCXgBxIIwWJb4vhZ9oW3gfnSH9fyowOkSIu90hScTueAs3hEG5W0lGv7D3+D68NVjhe4DmnMTw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx726lcactd8pSSj6GcBePH1i8e/+jq0CN+ftBSj+cawBh/42Lq
-	SLKZDyhdFBEP7d+ZZksKcKLdTxZN5RQg5/ZggvbbCxBx254f39cn
-X-Gm-Gg: ASbGncuCe4FtDv+mrbhTG0eRfSl686zW76oN1HPaQ3olesAp2+m1xq0uomh0s4spJUH
-	rjiwe7hfIUd+yzxcRozHPFtR2kNV7kYo5XMU5N6q5T16nB5MkQ2OJFcAqW1iE5ndwt3flOjNJ6o
-	Ww8D3QpntaJRVQktZetQsyaR+7l5pVs/BN2aNGCUSfO4ixRs5o0kWQ4Gcj/ET46KacYX/cJXqca
-	uMScGRf+rpyQYNRtUXqJeVKiN7PzDkNh+VEcgKWIbbE0qel5zov+BmUiLaYx1k0Lmyf7uPgatYr
-	m46MtZ/vdmSshgf7Vr/7ZrZNWIEdfxftU0lfVh1f3BiXEhjkzXKSQ8/i9RR43Zg0/efsK4W7ycO
-	i2cN1d7TEqosMsGNQ5Dw9zVgPvWicaavY
-X-Google-Smtp-Source: AGHT+IFLi8eIWmNCR26IQ1ZzNqzF+yX5evRGaLB3kNs6XdGjVB80bX12ukMhk1Sq94RJg91f1Bo3PQ==
-X-Received: by 2002:a05:6512:31c3:b0:549:8f06:8225 with SMTP id 2adb3069b0e04-549c39507ebmr7288403e87.53.1742237665546;
-        Mon, 17 Mar 2025 11:54:25 -0700 (PDT)
-Received: from abj-NUC9VXQNX.. (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-549ba865024sm1387506e87.123.2025.03.17.11.54.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Mar 2025 11:54:24 -0700 (PDT)
-From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-To: rust-for-linux@vger.kernel.org,
-	daniel.almeida@collabora.com,
-	dakr@kernel.org,
-	robin.murphy@arm.com,
-	aliceryhl@google.com
-Cc: Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>,
-	Gary Guo <gary@garyguo.net>,
-	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	linux-kernel@vger.kernel.org (open list),
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	airlied@redhat.com,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: [PATCH v15 11/11] rust: dma: add as_slice/write functions for CoherentAllocation
-Date: Mon, 17 Mar 2025 20:52:18 +0200
-Message-ID: <20250317185345.2608976-12-abdiel.janulgue@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250317185345.2608976-1-abdiel.janulgue@gmail.com>
-References: <20250317185345.2608976-1-abdiel.janulgue@gmail.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Xp/opmnk"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Ihsr+03IH52ESHwV4kq204IXNp57kaFY2QDChhQysDQOCBEvOlr+CySQTVffBOqtFBqrkzuiCq36gcN6H4OsWgz9DoaOCnN/j1S8n2HK0d5n5aUb89REAMIKO4iUGhLA4VZ/zdAIwTjKXbbh473ddUWPa1HGB3NLVuCc9MlaYDCUDRzPsxP92WZwiYZ7aXN/EN4PyTeKS0zywbUwjQH8oUQ3egDGmR/4KmPe+KL+yHKUecfsqO1uhoe+ph+gMic/TjrCMVcs/Xr/tPRZl626bgo19KIdVXL5RfOa6TE4iX9NMh9ekCzHcb94YPHnNbwmepc3xFjRKwMmR3/SCapGcg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OCISel3hkwiVaJS3a/reiyc9jqJDCVc+lNGcKizqMfg=;
+ b=rnRG9dZNtneTBVLwnT2/qZ/ETOdVwRRfCc1ubLDf+cW9cb6ZA6p5r+apAn7o1JSPkTrpvCl1u6Y52r6l0So9iw25jzk5J12/1VicBpM1xRsxNgxoPGAKnNWy1b3ipRUKFXqTCrd9dURtg7Sv2wKypMS7HwAH77qHRtpx1fZerTMF0+8HnGBLe/fUvhw1ocR8lCve2PDf9IUOKIWcMI75CWoEATW9g5KiJiQD0mftwIiOgSX7zTUYRu6O6HlCu4/VNV+vV9ppOEUs3hxoG4Nw7jTlw3utSkXN4MrraDMCGstS46TCErPQh+rxSMGLZHMKEPEjDYEPCyYr+ZcKBqHzGg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OCISel3hkwiVaJS3a/reiyc9jqJDCVc+lNGcKizqMfg=;
+ b=Xp/opmnkZInS0EjLmFD/J5uLmIL9BSzO2PANHU56xNX96tFR/+S9nYMpnguxWPSOeBVKQ7+YbWSLKNt2lOTTmmY0xmMLGk+tpJFy1HQs+qwFNfMSd+2GgepO2LTA5WhQX//lKQ8HeNY3WB5qEZOkJkYTLGtDAoxUghN28V1vWXChN2g4VDls7cbKDfUub9nUQNbje+nkabDTz6/8Ica/xVl2U0PXCAhFhVn01D1kupTvUHsSwEseUg4oTgfIhzjsA0mBKty0uZVubDO1IcwSHNkmpoaFVMlFdKyTToLNxa1vzfnQ4S3ePO6l6ZC2yl9udPOWB0JAykchuYeWj4fdrA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by DM4PR12MB6327.namprd12.prod.outlook.com (2603:10b6:8:a2::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8511.28; Mon, 17 Mar 2025 19:27:14 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8534.031; Mon, 17 Mar 2025
+ 19:27:14 +0000
+Date: Mon, 17 Mar 2025 16:27:13 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, kevin.tian@intel.com, corbet@lwn.net,
+	joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
+	mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
+	smostafa@google.com, ddutile@redhat.com, yi.l.liu@intel.com,
+	praan@google.com, patches@lists.linux.dev
+Subject: Re: [PATCH v8 12/14] iommu/arm-smmu-v3: Introduce struct
+ arm_smmu_vmaster
+Message-ID: <20250317192713.GS9311@nvidia.com>
+References: <cover.1740504232.git.nicolinc@nvidia.com>
+ <f205a4e2f5971cd4b1033d7cac41683e10ebabfb.1740504232.git.nicolinc@nvidia.com>
+ <20250311155714.GC5138@willie-the-truck>
+ <Z9B2LMIi+88hlfza@Asurada-Nvidia>
+ <20250317154423.GI9311@nvidia.com>
+ <Z9huquCf7YuzIjqx@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z9huquCf7YuzIjqx@Asurada-Nvidia>
+X-ClientProxiedBy: BL0PR01CA0027.prod.exchangelabs.com (2603:10b6:208:71::40)
+ To CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DM4PR12MB6327:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8a99180d-1cd4-40cf-fd57-08dd6589b8e8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?zOKeFSYGbrsg10BCaHKXI4x6IbhfB3AklnWwdMzzq5sqIP8uiPInemDJRwxu?=
+ =?us-ascii?Q?YJyJQ/u3vTegr8x4VDmCp9ahFxW2GBHudwxAAhQQyuUPEtZejQbFidmzAndT?=
+ =?us-ascii?Q?3dI7eXZtBo1bncvDr5e6CP/GufUpF6YpKdFfta8ofq2ch02jjssQ6eP1rglr?=
+ =?us-ascii?Q?VUgdkM4RotK3UcIBQ9jSckkA4jy6svL5hQ/nSyQUnjc6Cn4SetwHRJNDeMXQ?=
+ =?us-ascii?Q?SidjupZyHXZ8hJcbxTZKBz6PhpWfFb/Taxx4XsLdry4eBhAZ+mqkbdrJA2C7?=
+ =?us-ascii?Q?1JyQ2/zP7dWKgM7FC3q47e4ibKvZxHDu9X7gpTlIAVN6+EgtEVJadlefHWO3?=
+ =?us-ascii?Q?didj1MKiJ6JNYFUiLcg4DYl3Tj4tVBWEm5/FZt7Nwg9A5PsTgKf0CTwFblME?=
+ =?us-ascii?Q?ugd0s5nQQmF4pujPMCdXlQnahcJ4Hkfxl6+oFl3IuEwFudGqbphEJAr7SI0f?=
+ =?us-ascii?Q?gqwZKviVp9GBPMd5TjlmhfN/UZpZQD7zQLkvW7L12jrVH5KADq0dHyqdiozo?=
+ =?us-ascii?Q?JQ5pYee2PwKvune2R8bKYNQxslZ38N4tufm68PKoqw4V/qLTHxeS1ZnGDqzK?=
+ =?us-ascii?Q?g0J9OUA0Z3aHcGJ/P+syzF7HMbIKr0nNOStfaYaY4AlaLMAZyEIeoi1PysfN?=
+ =?us-ascii?Q?YfkL3Owt+i71yITwHCNiW/QnbjbLJcrN4/7wwrRcexHFZrlgodw9TQ3WoW0j?=
+ =?us-ascii?Q?EAENayXzyIZFCCVFH2mdF57urBoRNibmiqIfD6pWd24A3n5z59LNQvHK7tGv?=
+ =?us-ascii?Q?xTbaLxt3Ap5m8LzNdQ+Fm/terBmXPbFltK5RHdyEfX4+/aBVNTsxs1IIq2Kp?=
+ =?us-ascii?Q?6ckSsEdkxMbGeI/tLHkt7NeCQZDby8QtI2r2yVJm/MXKViTw0jjeOzOPdXZ1?=
+ =?us-ascii?Q?GNoqZW9mDxuU3wXeDi/UwFIbJMO0i3ebLSjCSYWfqaW3KBj3W86W7V6Brolx?=
+ =?us-ascii?Q?ZAUqyHbkn46MqdsP7WEsrOfdAM/aJFUUcArl3Pu8kZkreg64rh/Qg1MD65Xf?=
+ =?us-ascii?Q?po1D3DH0YzOiCvdtKiWIp3uGeRe77miqs6sC9B5GrOS/63zGa9idAMQgFt1K?=
+ =?us-ascii?Q?F3ZX9rgjS7anaMX0VJGK6eFMYnPnjFWFI4C+iEzg5ZlfEJ078QgjbIGMzYT8?=
+ =?us-ascii?Q?rpcF6dKL/K+JRw5gGdpQJMKFGfkXmy1WDMST9TKf3N0GezRwzjZoZXro4vC3?=
+ =?us-ascii?Q?8xFiLGEbCvDZuDWrNT/7nDfYbxNBi/kpCavGaUMU2mOEmoFdjm+iBAYdn0e4?=
+ =?us-ascii?Q?oW+Cjt+jiPRB1LZmsSiKqxsowK6poYtAowCl1xg03c7n1VTd/zFuzw409Uj+?=
+ =?us-ascii?Q?JuTLUcb+t03KEVFANQ7gTqKDbjg0zm0LYtb/2kUXSmrk4Bnizwyb6O5zoRJx?=
+ =?us-ascii?Q?D3pJeFctOEvbe5IHhIodGn0qt5Jh?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?kGOlxqFF5e2QA+AdVJPCqdzbNscnCalPhq25r8Q5UYZEp1Iw/DhuUo9aXQn6?=
+ =?us-ascii?Q?obgZD3v2PLyACybmfEGlfGFvdNfBYwfKPbtt+mpfzlu5g03ZqT9AUfH0rjr9?=
+ =?us-ascii?Q?4x2Xe9zs5u/aDxyM/ojPWC2po4D7yuWkrN8+wsgwNZPHZE4Op02jncgfsEiJ?=
+ =?us-ascii?Q?JbB1Ga22ebEPy5w83D4Nq/uY/LkzjqDNU7B6daP41i81zbl7S72B9eckPOWS?=
+ =?us-ascii?Q?1j1We73aKANOF3hMRCxlTEqDnWWcB6cd14+HgGsFgMZ9UEi9jLlBjJAKdN1E?=
+ =?us-ascii?Q?QnjOfR1AE8p21grD5Wh3bCTdf+G2TP7x0/UJVGFBzH7LTDqnukK0yB736r8p?=
+ =?us-ascii?Q?J/nIZcCD5kDYPknBI33XBR7flHcnJA1dk8hGE1ntyzEngNFDGJYg4j0dTq0l?=
+ =?us-ascii?Q?EDbybzQs8gDicsCPYDVI7gMAflPOoj8aO+55xuawl+x2DaZ5x0CL7Nqs9Her?=
+ =?us-ascii?Q?JguQsoX0nJMJS875p4FciM6Weave3u0vR28MKLf83R8ahikPjA693u1iCC7Y?=
+ =?us-ascii?Q?Z/h/x37SBqlYBTHAdxDGTj04Xy87sD6eUDqLjcK/PLVadtQrK6wees+i5sHf?=
+ =?us-ascii?Q?LRZB/iupGKO9Gur1ywVKpqe0+aBpdrVjOjSBpGu28NJr3dCadtroKqV6ZDy8?=
+ =?us-ascii?Q?WUIpPahE9Zy0+21GLBUFKc+ulcUPS1yh4qd54gqTdqf2C+BaaZIlNKIH5Ip9?=
+ =?us-ascii?Q?PSa5Up4WnqIAm+gU08Hz44pcxIc8sNdd8qqCr0Qe5CId0jS0v+2eV21cRHW5?=
+ =?us-ascii?Q?JLHGRQ4L2CPa1Pavpf4SRGWe+VHd8TjtLouHbwSeUk1emrpnbo6pjobvxhAB?=
+ =?us-ascii?Q?19/iTm14T0oxySxCaOve5WZTsJTcoZ93p46TcLbLwou3TS6SHxcVtD5p/Ut4?=
+ =?us-ascii?Q?yBjwVY2gp7Dd4R14d+E2jHMXt/1AfuO8yoVH4D4I5PQt0FkJAZX8TJI6tv8Y?=
+ =?us-ascii?Q?KgEzlAkaqj2DrrJevWlZg7bI0Ji7o5YaI9glT3mXxAKcEm+L3zzDeFpxcUFh?=
+ =?us-ascii?Q?5YuK3bGOPlQO3+Uotqdl/QgI887pNYhadhbDpYS3QQAbTpkJC47IvnKYQ709?=
+ =?us-ascii?Q?k7Y4IH3Y2vdvCuQUv/ib6+3ogbUu+oM/zw6nvIp/Vgfmz8texorCKcSe95Ne?=
+ =?us-ascii?Q?EE2ZBwOPQABHDCbbDeIaUE4euKJUfDdYoByyDPtMTCFkSfltsUqqxu9QcdOF?=
+ =?us-ascii?Q?/QhnXK7xQGF+ngB2SyAav6Fs3DapzmpUoB2WrSh7vd4BEDm3gzxtLhv+Necu?=
+ =?us-ascii?Q?UdIw7FgqJ43p1FKTzLHy5YUjM/KukM+hLtiwjnwWc9Xni+kHB47e2C9lJpKJ?=
+ =?us-ascii?Q?6SOMzVnUXlIJoMnTfKeSFQAdco142kORiGqXmSYLymeTIimM3AUWoLn0G/Ax?=
+ =?us-ascii?Q?wJHplep/+O3UkLLkcFBluPEGMRd3dGUev2X9hdzsBOT+Du/iC2VzdyM98Amf?=
+ =?us-ascii?Q?bgmsCx5xwVecVqfppnZIY3hnafF2O3r8YwuLmqQBMTMyX/Pqebo8oHp/dtdd?=
+ =?us-ascii?Q?w+rwDKiWPyIDJrybub+gJFdFaM2voAKQ50hvJG8S2or/UOrye3riHRLnWfIk?=
+ =?us-ascii?Q?B7hXjxyiCUnXIuHyKxlwxH40tRRgSTRQsKfyJIzq?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a99180d-1cd4-40cf-fd57-08dd6589b8e8
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2025 19:27:14.5142
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Liv6s+sWPg7ip2bwyzRpP1TxPvkpcaiKPskDkXxI9MSiz/XTLxjxWU7acsZTiBYE
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6327
 
-Add unsafe accessors for the region for reading or writing large
-blocks of data.
+On Mon, Mar 17, 2025 at 11:49:14AM -0700, Nicolin Chen wrote:
+> On Mon, Mar 17, 2025 at 12:44:23PM -0300, Jason Gunthorpe wrote:
+> > On Tue, Mar 11, 2025 at 10:43:08AM -0700, Nicolin Chen wrote:
+> > > > > +int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
+> > > > > +				    struct arm_smmu_nested_domain *nested_domain)
+> > > > > +{
+> > > > > +	struct arm_smmu_vmaster *vmaster;
+> > > > > +	unsigned long vsid;
+> > > > > +	int ret;
+> > > > > +
+> > > > > +	iommu_group_mutex_assert(state->master->dev);
+> > > > > +
+> > > > > +	/* Skip invalid vSTE */
+> > > > > +	if (!(nested_domain->ste[0] & cpu_to_le64(STRTAB_STE_0_V)))
+> > > > > +		return 0;
+> > > > 
+> > > > Ok, and we don't need to set 'state->vmaster' in this case because we
+> > > > only report stage-1 faults back to the vSMMU?
+> > > 
+> > > This is a good question that I didn't ask myself hard enough..
+> > > 
+> > > I think we should probably drop it. An invalid STE should trigger
+> > > a C_BAD_STE event that is in the supported vEVENT list. I'll run
+> > > some test before removing this line from v9.
+> > 
+> > It won't trigger C_BAD_STE, recall Robin was opposed to thatm so we have this:
+> > 
+> > static void arm_smmu_make_nested_domain_ste(
+> > 	struct arm_smmu_ste *target, struct arm_smmu_master *master,
+> > 	struct arm_smmu_nested_domain *nested_domain, bool ats_enabled)
+> > {
+> > 	unsigned int cfg =
+> > 		FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(nested_domain->ste[0]));
+> > 
+> > 	/*
+> > 	 * Userspace can request a non-valid STE through the nesting interface.
+> > 	 * We relay that into an abort physical STE with the intention that
+> > 	 * C_BAD_STE for this SID can be generated to userspace.
+> > 	 */
+> > 	if (!(nested_domain->ste[0] & cpu_to_le64(STRTAB_STE_0_V)))
+> > 		cfg = STRTAB_STE_0_CFG_ABORT;
+> > 
+> > So, in the case of a non-valid STE, and a device access, the HW will
+> > generate one of the translation faults and that will be forwarded.
+> > 
+> > Some software component will have to transform those fault events into
+> > C_BAD_STE for the VM.
+> 
+> Hmm, double checked the spec. It does say that C_BAD_STE would be
+> triggered:
+> 
+> " V, bit [0] STE Valid.
+>   [...]
+>   Device transactions that select an STE with this field configured
+>   to 0 are terminated with an abort reported back to the device and
+>   a C_BAD_STE event is recorded."
+> 
+> I also did a hack test unsetting the V bit in the kernel. Then, the
+> HW did report C_BAD_STE (0x4) back to the VM (via vEVENTQ).
 
-Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
----
- rust/kernel/dma.rs | 87 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 87 insertions(+)
+Yes, I expect that C_BAD_STE will forward just fine.
 
-diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-index 6d7aff6b360a..027ef75a461a 100644
---- a/rust/kernel/dma.rs
-+++ b/rust/kernel/dma.rs
-@@ -253,6 +253,93 @@ pub fn dma_handle(&self) -> bindings::dma_addr_t {
-         self.dma_handle
-     }
- 
-+    /// Returns the data from the region starting from `offset` as a slice.
-+    /// `offset` and `count` are in units of `T`, not the number of bytes.
-+    ///
-+    /// Due to the safety requirements of slice, the caller should consider that the region could
-+    /// be modified by the device at anytime. For ringbuffer type of r/w access or use-cases where
-+    /// the pointer to the live data is needed, `start_ptr()` or `start_ptr_mut()` could be
-+    /// used instead.
-+    ///
-+    /// # Safety
-+    ///
-+    /// * Callers must ensure that no hardware operations that involve the buffer are currently
-+    ///   taking place while the returned slice is live.
-+    /// * Callers must ensure that this call does not race with a write to the same region while
-+    ///   while the returned slice is live.
-+    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Result<&[T]> {
-+        let end = offset.checked_add(count).ok_or(EOVERFLOW)?;
-+        if end >= self.count {
-+            return Err(EINVAL);
-+        }
-+        // SAFETY:
-+        // - The pointer is valid due to type invariant on `CoherentAllocation`,
-+        // we've just checked that the range and index is within bounds. The immutability of the
-+        // of data is also guaranteed by the safety requirements of the function.
-+        // - `offset` can't overflow since it is smaller than `self.count` and we've checked
-+        // that `self.count` won't overflow early in the constructor.
-+        Ok(unsafe { core::slice::from_raw_parts(self.cpu_addr.add(offset), count) })
-+    }
-+
-+    /// Performs the same functionality as [`CoherentAllocation::as_slice`], except that a mutable
-+    /// slice is returned.
-+    ///
-+    /// # Safety
-+    ///
-+    /// * Callers must ensure that no hardware operations that involve the buffer are currently
-+    ///   taking place while the returned slice is live.
-+    /// * Callers must ensure that this call does not race with a read or write to the same region
-+    ///   while the returned slice is live.
-+    pub unsafe fn as_slice_mut(&self, offset: usize, count: usize) -> Result<&mut [T]> {
-+        let end = offset.checked_add(count).ok_or(EOVERFLOW)?;
-+        if end >= self.count {
-+            return Err(EINVAL);
-+        }
-+        // SAFETY:
-+        // - The pointer is valid due to type invariant on `CoherentAllocation`,
-+        // we've just checked that the range and index is within bounds. The immutability of the
-+        // of data is also guaranteed by the safety requirements of the function.
-+        // - `offset` can't overflow since it is smaller than `self.count` and we've checked
-+        // that `self.count` won't overflow early in the constructor.
-+        Ok(unsafe { core::slice::from_raw_parts_mut(self.cpu_addr.add(offset), count) })
-+    }
-+
-+    /// Writes data to the region starting from `offset`. `offset` is in units of `T`, not the
-+    /// number of bytes.
-+    ///
-+    /// # Safety
-+    ///
-+    /// * Callers must ensure that no hardware operations that involve the buffer overlaps with
-+    ///   this write.
-+    /// * Callers must ensure that this call does not race with a read or write to the same region
-+    ///   that overlaps with this write.
-+    ///
-+    /// # Examples
-+    ///
-+    /// ```
-+    /// # fn test(alloc: &mut kernel::dma::CoherentAllocation<u8>) -> Result {
-+    /// let somedata: [u8; 4] = [0xf; 4];
-+    /// let buf: &[u8] = &somedata;
-+    /// // SAFETY: No hw operation on the device and no other r/w access to the region at this point.
-+    /// unsafe { alloc.write(buf, 0)?; }
-+    /// # Ok::<(), Error>(()) }
-+    /// ```
-+    pub unsafe fn write(&self, src: &[T], offset: usize) -> Result {
-+        let end = offset.checked_add(src.len()).ok_or(EOVERFLOW)?;
-+        if end >= self.count {
-+            return Err(EINVAL);
-+        }
-+        // SAFETY:
-+        // - The pointer is valid due to type invariant on `CoherentAllocation`
-+        // and we've just checked that the range and index is within bounds.
-+        // - `offset` can't overflow since it is smaller than `self.count` and we've checked
-+        // that `self.count` won't overflow early in the constructor.
-+        unsafe {
-+            core::ptr::copy_nonoverlapping(src.as_ptr(), self.cpu_addr.add(offset), src.len())
-+        };
-+        Ok(())
-+    }
-+
-     /// Returns a pointer to an element from the region with bounds checking. `offset` is in
-     /// units of `T`, not the number of bytes.
-     ///
--- 
-2.43.0
+But, as above, it should never be generated by HW because the
+hypervisor kernel will never install a bad STE, we detect that and
+convert it to abort.
 
+Jason
