@@ -1,64 +1,64 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2066.outbound.protection.outlook.com [40.107.94.66])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2089.outbound.protection.outlook.com [40.107.92.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 911CD235BF5
-	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 11:23:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C112B21A436
+	for <iommu@lists.linux.dev>; Mon, 17 Mar 2025 11:24:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.89
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742210626; cv=fail; b=JypdO7oVjXtTYF2vDx9H8M7afLY9DXfbkCMi7js9CxcVbN5vP1bKs/P+kjw7/oo1rvcu5VriB1XsTkaY5/v39qWAb6uDUTvvfCrlzzy3BanmEiAnKa64Ynb/AFIhnZvUZW5n1ZPvwpRRID7ISLSqXWrQTp2irZPuvl3WaNtMxkU=
+	t=1742210672; cv=fail; b=YLVuixjUhRJBJTq+s4iP3NwEOKgUxE3yLY6Zaq/zX8atdVPQWJfm/8JipS8IgC0+MydGPsZRlUtWESb/ss91TkfQdxUzDGf98bbIpbf46C9xkX9vDwRmrWat91V0XIxMl/MdnfagnaVpQNFWArTUSJNa+A0zvO0qTAfl4UQrmJA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742210626; c=relaxed/simple;
-	bh=v7QkpFA5DEuY+4PC5NkDvfupkHXw96YYkxypObG/EVI=;
+	s=arc-20240116; t=1742210672; c=relaxed/simple;
+	bh=opwQ+mwMbIOcg4bcR2Ttg8j02HLBPavDRfzIPmE5u30=;
 	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=F8HIH3r7pheDCZ3CQXwtB35HsF9nDiPgsHVs1LND4lgltw62ek1gXy5iGTjWjGtJHiO90tn+4LLY5tErpGDp4baOZuvdjvQdwwv9s3zp2VEJrlwaj4J7ZNtorkJbxyh5JXJOOPM4nG3JAg47pO8CnBd4TObpv8ek0PogOi9WBy4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=y0aClC08; arc=fail smtp.client-ip=40.107.94.66
+	 Content-Type:MIME-Version; b=dsTRUe4yX4I1/DaanK1MawV6TCtU4Pmo4RNlfwLJBty1LgpUAWO4aDqg6xrM60nwR10w7bh25KGNcnlequYwDb2Me/me4z2/pSSnv68qBWZ6dGDLDIt3bbRG2QQ7HPC59ajSQjb1gxL5iTMPTsleZKZ0/5WDwdgVDrqBz6MsYuo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=H7oCv7dD; arc=fail smtp.client-ip=40.107.92.89
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="y0aClC08"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="H7oCv7dD"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pL0oVd5sKjo2vTdksobmR0BPQ30ypgNQjrKsNDllKxbOJUlYHfLwuUwlap+omi1YS2ttsyaTbwMt9c34ToCnKYaNFbDi7N0gwq256vk8jhOGP7v9bZ9mKUR2f6cfX4bC0pBalj/IqNTHOPCmx1L1wffUm0UwzcihLqfmva3t5A9kL6xwjP7MKYopw3P3z/f/mgTOglBvfurRMECuzKreMLSHOTgmVWvkwygAQguSX/L3k48WUGhsPSpBsMInpsnp0IuFvGokI7vQeaCncxypSZ1GKOqRXckcQIbVAROHUrWNTPpk1Ie7USPZWcRDhfT9kE4Vtz6ujdzk9zbk0iEAsA==
+ b=CdXB/8f8sqmS2WiPGnzKoWXgNNP5ITg0d9Xx35dhnvGPgyeggwVKoRoYu/h/UOsmY+3Jzpq6NK7sCjMgLZKMsszRmN+vS/8L46J0lZCu0NM/XiS/6rtE+JUJT9ojAGYPhNr6VWcakyBdOIiOGe9at0O3BpjwqomJ1Pnbk+xiAW4x3UIXF1/Xz59BAkRw3Hatb8mX+W9ZyF8Qo2wYVsfgrSmcGgKGQjGdiVnPZeGnJRxkj7b/qS9yfJFqFaLxENRqMAqWZ3lElWWD/CJq1B6xwIZ+MbYqN2R88YnjPwKyUCIpab/8fmY13cKy7o/sW4NfxndJg6sExr+V/czALsuq8A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9ekWqGYqSwL3FAYrbL99baPVvPn2/xcAmnTJWorgMys=;
- b=BQuEtimhfQ8zgy+7pdS1NPo++1uLxYVLNeA+cOgKayFPtAERekmpWoWidTqWxdRaPYclCYNQB7XMGlP1/g17GCZKqsBKToWz5g+dvTXDEQuEm0E4kpYHRRbMiZhB9tgmp8c9cxNjmjqg4U0D9B7vnDc18ivkbgwyaGYOpy89qlKZPn64P1+kWsifenNiSIEIxAobWkQnQrKhwVLS28ERMuwqxaUTbyEai68TKoxEsWFbuYU3msV3cBtTyJh2EdBRbkpkxpI4ixCJGhy7o9vxDz2iJcjEScTvz0FRQHJgCp+XkgUX9IL7VKWMZXuC9GgttMtM0DwCLZLYPD6AdZ4hag==
+ bh=ImU5hGWxts4yPuCqDw4e644yljQ254AAK2J5VQx1GX0=;
+ b=T/IjbzfiRXKUKK0tmn+uS9Fb3tt6N9nBpob/5zCkKQ+RkDhv/7+D2IK9AVwJ4po5nVbwqrNsTY8wNoCeo02OmzrVx1MEiQECoshv/PLJD7F4sVBzFlwlw6JsgzMn/TmkHIh+zHvASmv12mIPWxA43+iXIRlgp+oUTUdtCzy+LKsU/Bw+ZGduHv5SWp2JuKnQFmYNLksXXWeQ9tS8uZ0aE3UKV9IyBLbNN67V72aaUHcJndAlvDBnwy4ztvQxMfGI+9BkM3/ONjHRm2/CepI6Q1Cpdvz0Ze10RE+e9ZUIFUbxMTzKGF07lL9mZ9XlQ+V8DfO8YejQNj7eBaqC6cN0iA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9ekWqGYqSwL3FAYrbL99baPVvPn2/xcAmnTJWorgMys=;
- b=y0aClC08qLv8PQxwHdaoAqdIMVjhE53f0hwuZvcjylXlMpAo4k2UjL1lfEqqLZ+yw7lzGJ6O+wRLh+3wRa24xRoJBqs01+fXLDNLZriYARPFp3+RNSagGusgKchRg1yFHZclqquoSapDNaNl258e5bV65huJTMcee2ntvm5PU6U=
+ bh=ImU5hGWxts4yPuCqDw4e644yljQ254AAK2J5VQx1GX0=;
+ b=H7oCv7dDjOKf8XOZkANFRn9t1Y7690OuzgGruY6+lS77U+hSS5s5K+wYpgqgrKjZ2BDrqqR9W7VUMMnVU9CXYmyXE1zTLFSHbjQXgbpV4n6HnCKcEiXFktRK8Cf6Rnn/gQPyRTipSP/FePWO2qqC5wevbMcY05dbuS4QaGOCVNs=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from BN9PR12MB5163.namprd12.prod.outlook.com (2603:10b6:408:11c::7)
  by CYYPR12MB8964.namprd12.prod.outlook.com (2603:10b6:930:bc::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.33; Mon, 17 Mar
- 2025 11:23:41 +0000
+ 2025 11:24:27 +0000
 Received: from BN9PR12MB5163.namprd12.prod.outlook.com
  ([fe80::61ca:6d43:a98d:3b7f]) by BN9PR12MB5163.namprd12.prod.outlook.com
  ([fe80::61ca:6d43:a98d:3b7f%6]) with mapi id 15.20.8534.031; Mon, 17 Mar 2025
- 11:23:40 +0000
-Message-ID: <3c14597f-e5dd-4e43-bd4a-6f7a6d08afa7@amd.com>
-Date: Mon, 17 Mar 2025 16:53:33 +0530
+ 11:24:27 +0000
+Message-ID: <4ebbf7c1-c3ee-4375-b65a-a242f1c5e75c@amd.com>
+Date: Mon, 17 Mar 2025 16:54:20 +0530
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/8] iommu/amd: Add debugfs support to dump IOMMU
- Capability registers
+Subject: Re: [PATCH v3 4/8] iommu/amd: Add debugfs support to dump IOMMU
+ command buffer
 To: Vasant Hegde <vasant.hegde@amd.com>, joro@8bytes.org,
  suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com,
  linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 References: <20250206060003.685-1-dheerajkumar.srivastava@amd.com>
- <20250206060003.685-4-dheerajkumar.srivastava@amd.com>
- <fbb7d901-25b6-49c7-abeb-4e76451c197f@amd.com>
+ <20250206060003.685-5-dheerajkumar.srivastava@amd.com>
+ <014da701-dc74-4082-98b0-378da8ebbfd0@amd.com>
 Content-Language: en-US
 From: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-In-Reply-To: <fbb7d901-25b6-49c7-abeb-4e76451c197f@amd.com>
+In-Reply-To: <014da701-dc74-4082-98b0-378da8ebbfd0@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0173.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:de::17) To BN9PR12MB5163.namprd12.prod.outlook.com
+X-ClientProxiedBy: PN2PR01CA0245.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:21a::10) To BN9PR12MB5163.namprd12.prod.outlook.com
  (2603:10b6:408:11c::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -68,170 +68,180 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: BN9PR12MB5163:EE_|CYYPR12MB8964:EE_
-X-MS-Office365-Filtering-Correlation-Id: 67ed1493-4150-4520-e663-08dd65462b52
+X-MS-Office365-Filtering-Correlation-Id: 6f041b81-beb0-4a82-ffe4-08dd6546472b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?V3F3SFgyN25VaWp1K3VDUmRtRlNZVXp2eWI2ZEJjbDRWZVpWMEpUcGplT0Vq?=
- =?utf-8?B?STJJMUxkdSs4YnVRcU5YQnVWL3czN3paaHN3VGZqUFNwN1lKWnBYelRDYVFs?=
- =?utf-8?B?dTdPSENhNGNvMUpqTlYwZ0Q0TjFIb2NLNkJUY2NvYzRNVTJyb3pYZEZLM3Y2?=
- =?utf-8?B?ZVpuZE93aWJ6UHNxUWt1TVZwYit3Z3hDTXNtMXZjdVA0N3BiR0Q3S0lTY1U2?=
- =?utf-8?B?WEQ5Q2NFakZPdnM5OU41R09mczRTWTNJMWl2MXd3SXRWdmJqRVFEeVBSUFFm?=
- =?utf-8?B?dVVEYWlnMFFwcUp0cHR1SmJhRGduWlYvQXJ3L2hERGFpcUdWNFZZYkhxT3N2?=
- =?utf-8?B?NUViQ01UNnVvb01JaHM3aXA5SEFrUW95V1NGdGRObHAvdk91NEk4Z2VnYnlK?=
- =?utf-8?B?Ujd2NEFCd0RoMmM4SjBtYXlib1UrNWM3QTRjS2dzWk5yc0ViK1VSdXFvOXl4?=
- =?utf-8?B?eGk3Ni9wL1BvS1ZMQ1NnNFZRaXZlMFRMZWlLYUw0VHowdmdCZnRKcDFCTWh3?=
- =?utf-8?B?YXNPSzByMktXRGN4UUhmUjk3QWpUUjduQU5PMVNyL0ZjaWx5ZnR4cmJKd1R0?=
- =?utf-8?B?eGFkeUkwQlFSM1NNb0RESlc5Q1BGTXQxRU9nRzJwTlNDdWNoSTFlWTI4bU5V?=
- =?utf-8?B?dUNvZUhQVlRJdXJzdEUvY0xDSCtOcVJ6UG40MEVBZ0hmVHZoWXljTHN6dnVL?=
- =?utf-8?B?eTA1WWlQdGRZV1NGQlJFWDBmaWRsK1EvdW5OREVONHc3NEZqS2tldXZwWVJN?=
- =?utf-8?B?SzdZdStYZ085cnhmZE9mL3Iza0ZidWg4UFEveEJINzlsU1JZY3EvVkhTRTgw?=
- =?utf-8?B?REIyY0tsbGhGN3FxT0ZmbnUzUDl6dlpjSUgvUjc5YThmSDRhZzg0VkRZME11?=
- =?utf-8?B?V3VhckpGVzZBbmMzNFpCWmMzNXJvVk44SE50T3hrNWRuaFFyTTdPalVnbms3?=
- =?utf-8?B?c1dYdzV1VnBzVDVEblJHSHFNUG9oK3RhQ1NyaDZrcUFZSDFrRm81Rjd3QVBj?=
- =?utf-8?B?UVBiMndjdTB1SlAreE01eXN1QjJoYURlbi92MDk5S3FmNGZEUFRYUVcrbTdV?=
- =?utf-8?B?Q2dDU1doZGpSMzlwbmFtaHEyc2tuc2JTdVVkMkY1WHFVVDdMWlViRXMyS0ll?=
- =?utf-8?B?YmtyTldRS3lIUG5jTmlKVnE4ZEdKTDEzZVhyQ2FSSm54dEpZZkxYZ2N1MW9x?=
- =?utf-8?B?TmVPY2NmN3Fvc0djRjUzcFBlbDhBSFJGbmJhREhkcEdYMlZRMTduSUZxam5k?=
- =?utf-8?B?M212VFh0bk1SZTFVUUdrclF1MXNvMjFVYW01WFlrM1ZFbnA5SGNRbFlvTEJa?=
- =?utf-8?B?SWpuTzJENjZ5b1dRc3hHNmpGNFZkcXh4YmJlVmJKSEdVZ25tbG5tcDJqSVlj?=
- =?utf-8?B?Z1I0Q0VNWkI3bTZhdHJNK3JlZXBCRVBYWEpVY3hzQ1Y3dnhZcFdWVjg4R3lC?=
- =?utf-8?B?QWg1USt5YWdlaUVUd1o2ZE5kMVc4N05ET0Y3WWVCWm90WHN2NXAvNC9xSEZj?=
- =?utf-8?B?N3BwallUb0orSXNta3d6Q21jSGxHUFhwVkplbDkrRFptYVZ3Sis2VVMzQmdC?=
- =?utf-8?B?UVlYMWJ1TUlKNHNhMjN3QzZXbVh5cFlXRzVoSVpIWGJ6UTZmY3BzSGlpSWpD?=
- =?utf-8?B?OWpTT0dLTW5UaXpiSVcvczVvUTRGdk9lTDlBZFhQbnpqK3l6a1Zwekxlcyt1?=
- =?utf-8?B?TUpNRkMvbGFteDdwbVJoZTA3VGF4MWhySzZYOGZDekx0aWJpL1Myb1p0Sm1i?=
- =?utf-8?B?c3NsM3ZML1lPNEIvR3VOWG1JNWozUTl0VGpSMGluWktjYThyZW9yYnhFN0Fx?=
- =?utf-8?B?cUFScDRKdVBPYitraGQ4Tm0yWW1KNTNrNy9QQlhlRnUwWXJVOXQ0cHhoLzN1?=
- =?utf-8?Q?JufkdT+zZvywa?=
+	=?utf-8?B?UFZuTUxqdkhzd0o2WUJFMEMvUTdKcFhtWm9UMnc4TElPQkEzZFRhVFhxSnRV?=
+ =?utf-8?B?SzZBa051VVpCWUR6VE9QVEtIVTJjQ0l1c0VSdzN4aTFYRkRzeXdLNHR5Y2lE?=
+ =?utf-8?B?UTIrNlIwbjhsSlhmcWdWWXZNbjZHUk9sYWR4OEliVHNBeTJYbUhCWXF1RnBr?=
+ =?utf-8?B?R0xwWTZ1dmxkR21VSjA0VisvZEY1eGRJR0dNT3dveWZvZXJiYmVTa3BHQ211?=
+ =?utf-8?B?cmo0ZjlFSEFJdU9BamdYWjA1MWdidFgwK3BEcnZMMHFjcm01bVhhREh0WWJR?=
+ =?utf-8?B?QTBkT3pHdGE2UHhzbmdKS2hNa29lSlZCTGlodWZuZ1prajY3MGZRWmRIVEtl?=
+ =?utf-8?B?Z2I2LytFZU9TbUNWRmk0aFhZanJzODNCVllBTnNpbHE5RFRBMk5NSElSSy8y?=
+ =?utf-8?B?UTFzbHpIK1kwaGdyc3ZheFlBMjg5VVdXQ3BJSGt6bVlwME5OUS9kRSt0eXJ4?=
+ =?utf-8?B?K2FsTFNPTEtmd3ZwS0RQZmJrWjhNdjgrVlZsRk1DZkh2ZXJUcVFLMXpTYVhs?=
+ =?utf-8?B?ZGFCaks2bWNGejNkaHpRK1gwWHJWVXBTNDAvSXdwN0lYL2t0bnIrTzRHWlhZ?=
+ =?utf-8?B?ZE9Qb0FHWVJmNmNCazZwdnlKbXE4eEhyNmJ1RVBhUlplQVlNNC9iU0MwOHpL?=
+ =?utf-8?B?YWQ3WjEwWVZVK1lFR0FOUzd3VzNZSTB5K3ViUE41dHg1dzJmM1NuM1czQXNh?=
+ =?utf-8?B?WkhZVkJEY214S2pha1I2aTFFN29PNEs1clJ1K0tDbWpma2krb3BqRVNaTkVS?=
+ =?utf-8?B?MnI0cDhhVG9LaFppWjNpeGdpNkpKd1RrYXllWVZpVVBneEtWSnN5Vm5DWitJ?=
+ =?utf-8?B?ekpMZ3NHWHFVT0poMkRsOHg0dFkxTGNsK2lhWlZaZ2VGOVc0dTdNaEZpb2tY?=
+ =?utf-8?B?NjF4MVIrS2NPTHNjUkU0VVd1QWZVT25VcUNsTjNXR2g2NmIzSU9xY2NOWmYr?=
+ =?utf-8?B?T0lIWTFqQ0Z0YW16YkFGRXlOZDBaME50bXM0LzBTL21ydVZhSlNWa1lJOWJL?=
+ =?utf-8?B?QTNqSWg4USswV2hYd2E4NmNhOHhpVkwrdjdwNTcxbFB2K25TVUJnZnJKUCtO?=
+ =?utf-8?B?N0dCZUtwNUtKZC9HZGFyWmdlc3Y1bkZNL2JESmxMNTdqQ0RpTVF1UlkxSFpu?=
+ =?utf-8?B?cnd2eHhMUitVOWc1ZzdQVUt1UWVBUm5SUHlSaERHZUcrWm1TZnBKQWhLNStD?=
+ =?utf-8?B?ekxVYTRwODFBV0I4Qi9XcnJEaFlQVkhvc2VuOFJ2ZDdnT1kyK3Boakp5V2dk?=
+ =?utf-8?B?d1RNWmZJMTA4VzYxVEJwVStZRDNVYW9JcTUvMVhGMUorSll3OExEdWQydXZT?=
+ =?utf-8?B?aTlBVnBzbEh2NmpLMEJGQm1iUG5rYUtaYzJ2TEZ5aldDMzRvMDhKdm5uRDRi?=
+ =?utf-8?B?S3ExZFdEQSt2aUJNRzcrZFZvczZnUlJDVFVOZEN0WmdzVjJLSWdsVEdYN0d4?=
+ =?utf-8?B?N1pUam1salJSOWx0eDhlTFpSd0VHdXVmbG9pdDdGOGx0ajE0YmxzRDdDQ0hC?=
+ =?utf-8?B?aGJWU1J2QlRja1F1dkp2ZHNBNUgrR2sxYVlZb2ZCVkVTTjRUeG1BQ3QwaVFn?=
+ =?utf-8?B?bnArRjV4enk0WUgxNHdIWGk0aUJ1cE1mVUN6MG1zbFFMak1ESFo1cWwrRUoz?=
+ =?utf-8?B?WFBlRGZ0MDJNYVZaaEJNeldsWFdCV3d2dm9MaVk3V2Frb04wQWprbkFzMENl?=
+ =?utf-8?B?SzRTSVhQcnpmRWRXUGV3ZzN0YlcxT2lxdEc0aU9ray9Eczc2MUx5aDE5aEhW?=
+ =?utf-8?B?UHFCYnNtTXg0TUdKNGtKSGdJMjh3SEdpSkgvaHBSc2ptM1M0VVRpWWRrcFRq?=
+ =?utf-8?B?b1JlOWh4bEVXcTJYTmRqNU5yNlBvNzdsNUtXVjl2NExOcy9QdlMzYXFldW1h?=
+ =?utf-8?Q?IEiBfdG1hlxga?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR12MB5163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SklYcVVjZEppeUNrb3VHSVpWVXVUSWhJR091YUdPQUVCbm94aU1UNE9qdDh6?=
- =?utf-8?B?bWxoZVA1VFdldlNXZWc2Y0NraDFKWStNWTRsMUVrTnFlZnZ0SDJOYUthSVg2?=
- =?utf-8?B?NTdVUjZmaEFEUzdWdXRuMExNUjhEbTFTU3VLcXZaNHU1T2JHR3RRcHBjRFFt?=
- =?utf-8?B?Mko0VnQ0cFQzSTYrU2dVS2J0ZW04U090K2NyRFNXbWpmTmJnc3JYWWh5cGJu?=
- =?utf-8?B?RStpL3pvN0VPTHkxaHpaV3BNUFh0SmFhbTBrZ3JkNGVhTHRDZ1F1dDdvMkV5?=
- =?utf-8?B?TmxBS0lITXVHUThKek5HU2pkU3cvdW9MZFpucHY2Z2RDbzBMK0U0bnZSMnZB?=
- =?utf-8?B?bmppWTRncWhKRm5odFp0VERONHBzRTl1YjVNekp3RXdwbXlTTktjY2hmQTcw?=
- =?utf-8?B?NTAvemRUT3hrZFR5eC85Vmt1ZFlNcGQ5cWZRcWRFYzhwdG9GR0RaNm9zWVd6?=
- =?utf-8?B?VTF0N0R5cUdxaElrb2dJU081cFB3RjJSZTEyUElmWXR0R1hkKzROSDVpTFVq?=
- =?utf-8?B?TTh4K1lXa2FkS0NHaFZ3RCtPZ3VhRVVGRGVESG1QWmVnN2h3clhtMktDMTh1?=
- =?utf-8?B?dGNiV0thWkhzTzI5VFhaTm9EcG9HbjMwTDhuMWE1YzN1ZUkreTYreW1Lb29C?=
- =?utf-8?B?R0JaaU5xL3psSlJNRy95Q2R5c3R0RWdUYXNYc3IxcXR5WXdFQWNRc3MyOEEy?=
- =?utf-8?B?aTViQTFFVTRlNkFjZ0JMTFhzLzBUVUpUdkkvK3EwanlLcnluQzc5SitZU3ox?=
- =?utf-8?B?MHVyT3l6T1Bxazh2ZENLaXg0RHBKZnVCbVlGSTNFc2ZFUkpuUmk1RE5ISGpp?=
- =?utf-8?B?NTdqMnIvMHo2UTRFMTFYeHRja1lqUVZxS3JCK3FBelU4YVJSSHlqZ0NOK2xF?=
- =?utf-8?B?aHNGMHNRQmZxdGNIMzE0eStSSkNLU1pQOUdXTUpwaG4wQkVsUEVySnhDS0h3?=
- =?utf-8?B?QVVIbTdzYjROMlU3V1loSzBpbXBGQjFyd2dFKzBDRUk0c3hYUC9CZHVPZFRC?=
- =?utf-8?B?Wk9haTdUaEJjcHhJZ04vd0lGeFdzTis1R3dwclhaOTZjU3MvK1ZpWnZIU2hq?=
- =?utf-8?B?czVQNkY1TlNFcE5TUDJubUtRRmhCYXZQZTlBWDZSZHhzdCsrbW9QSFdUdjRU?=
- =?utf-8?B?aFNsMWlMenhaNUMxeS9qWnJxN0tBWUNRUERIMDBURDNKY1dibFJUVEZmR2o4?=
- =?utf-8?B?SGdKUWVCK2pLSU4yR1FCQ01EWU0zam1DeGExbnFheWhYSFQ0TDJ3azMvbDhm?=
- =?utf-8?B?NkhNVWNYc2xkL0M5ZFowUkFJZjVWZGRNZXJqQ0Y0c0ZWY21CeDdBc0ZkQ1Zz?=
- =?utf-8?B?aWhXN3l3U2FHc2hjYnFOM2c4Y0ZKeUpwcU1RcWpYRDNTdFoyTXJsZzlabFhH?=
- =?utf-8?B?SS9GMG1Wb0twVFhJMDNFckJyVDBSaG55bmZHS0dxa2NRMUtNcGw2QU0xRndC?=
- =?utf-8?B?WnNobWN1UTdyWFNBZ0hNWVlhVVpxMEs2bTA5d2F5T0MyZ2diUXgxdGRrR3ll?=
- =?utf-8?B?T3RVWUswV2xLQmFhNFBYODZ2cEFqTmlndWIwbm5SVDlHSEkrcnJuUk9wcUpU?=
- =?utf-8?B?VGtqNVBVWFIzb1Irc3lReFZ5QkVQQjhaODhDNVRCbXlnMFM0TkFuTmNQamVa?=
- =?utf-8?B?U2tETE51ZFA3WkZETWpyWHVVM1NMczhqN21wQ2xmR3BWRGxOOXp1dkJSWStv?=
- =?utf-8?B?TmhYdTBWNExLTnpUbjhvdXRqSTNIL29pUUJLakx2NHVwMDZQOUdoLzg3c0Z6?=
- =?utf-8?B?QXJ2SzMzUk5OTkZFY054RVJWUG1XcmFwUTZyUDV1UmFTWDdqN0FzU0JudU52?=
- =?utf-8?B?QTYzT1NQMUNqb09TdTJ0UFlmMzE5MEpPb3cyN09ORTVMWCtPVVdrYkJVTjlJ?=
- =?utf-8?B?Z0NlSnZkdEFTNVNTV0dkdEpGdlJGZVFoYzhqYVpkNld5S0gvMzRIZVB2cEhI?=
- =?utf-8?B?ZzliemJvVnA1YXcyY0JqamxBRHNYcmREQkxtN08zWXlRa1dld1FHSkh0Vm5D?=
- =?utf-8?B?Z3piZ2FvMGJpeXpxTlU5WUtmZVVmajVORTgrYTNHOUtaNzdKcnJ5eUZOdnRY?=
- =?utf-8?B?NC9lendobXQzWDZVUjVwM1pIamVZUTFUazl0NTdqWjl3ZjVIZlRJU0dYaUpo?=
- =?utf-8?Q?ktHwpoGcPR1YQEG/ITLTZbxHv?=
+	=?utf-8?B?RTY5RDVuR3p0cjJSVWlGTTF2WFVVaVJ0Q0tJbk1ibW9valVCRUc1Mlo0Sm05?=
+ =?utf-8?B?QjJOclFzcVcrcVF0dWpiOXFBY2JucmNKOXRERW95WmI0U29HQmgzbE94V0ty?=
+ =?utf-8?B?TTFZQmQvWFEvMXNlVDZNT3JzNzBiUzgrbWpibXJFRllBenRoMW1zTUc1NjNs?=
+ =?utf-8?B?cGhXVUM2dk9rMEZFL01UdTNLU0g3eTJ3ejhsRHpGNVZQWkJlYXRSZTlWcXNK?=
+ =?utf-8?B?VHRJT2FuOURGaTNHTDRJNXFmSHRJTnpVZnhLOUI5YXYrVTZHM3U3TUdkaTlr?=
+ =?utf-8?B?aEhLR2FCWGo5dnRaVHFCSjk1WDdKS2RlWVR3bXBkSlprUnZTczFDR0NObFZ2?=
+ =?utf-8?B?MUV2SzBOeDNLSEdzcWhvZ3FxaWtxNjQwTTA3blFGRkJQQjNpUkFsNEU3R3BF?=
+ =?utf-8?B?UGFZMERYQmMvRGdHdEFuMThvNGtPVWtObGdCQkR0cHE2bU1EUUNZbDNLRWZH?=
+ =?utf-8?B?NWRaaEpvVE1JSTdtUDRLMzJtL2w1MmtTQVJCbkNWVllDVkp0c2pZUkdvVFNO?=
+ =?utf-8?B?UW9zNFRpazgrZ3IrSTk4ODE1aWpiVEZ1SDFEdldVM1ZveUtVeUVpYm93b3Ux?=
+ =?utf-8?B?Y2hhQ29DSGFNMW1YeXpUQjNNa21ZT1ZPS0djTEErS3REbXNyYUlmeDg4alBH?=
+ =?utf-8?B?cGhlOG5jRndYdkRhSGFreFc2SXlLUWh1eFk0MHoydklYaHB2cTJQc3llcTVm?=
+ =?utf-8?B?KzFFTUhSeVBlNkpsT0dSbWJEZjVVQzVyazc4alZ0WmJ2VTg3V2hVaS9UQzEy?=
+ =?utf-8?B?ckwzejdRVXA3UkIyTWhNd0ZJUHRSWDZIYngzQ0Q0Qks2ei9HOStQQlBQQy9y?=
+ =?utf-8?B?a2VTL1UyNXlnVGtMMzkyM2FxbEJkTEp5R3p0VjBPU0pqcnlQWWFicXU4OTBQ?=
+ =?utf-8?B?cmlSUEpLNk1xRWNmaGpod2VsbUpEQ3IvT1I1N096OWhHVC92Q2ZMUkNMVjRz?=
+ =?utf-8?B?eTZpNi8wUU0rR2ZDbnJiVWhnRkQ5OTIyc3dLOGZ5NW1UTG9jWG96YVNlb0h0?=
+ =?utf-8?B?Z2dKdXNsRzZBKzdvNVI2YXhsYzl5TGh2Y0JaWmJVN3QyV1Z0aEo4UDlaVE4y?=
+ =?utf-8?B?eTd6OWxyazBIZkxEYW9ZUFhsOFhGeDNVcjlBb0gwQ1ZyelE5WFEyT3FtWkxG?=
+ =?utf-8?B?dUFnSW1FcGZ2RmJLQmMrM2dVUlRUN2p5RW5LYkIvRWJjTGpPcUhRcW1jVDNT?=
+ =?utf-8?B?cGpoaXN4NXBuZ011eEFYWXRqZjkvbEluSEI5aWR5VFB3ZXdHaFdldjN4Tzdz?=
+ =?utf-8?B?cU94c0pKcVc2WVZhczdlVDNiMGtTNHBDZlhKdnNPd2tkQnVROWZFSmoxYWNI?=
+ =?utf-8?B?LzZjazNITDhVVkE2Y0I2by9GcE9kVlBaUXF5TEE2QjFWSlArZC8yQXRwSVZU?=
+ =?utf-8?B?bFBxZFNpOHNZWHRlY0NnMU80bWNhYUFaSEYyTmVydFhCT2VHaVZFMGMyekNJ?=
+ =?utf-8?B?QTFubVplYzFHdVlxYVY4MzQ4b0FSMGF4SDYxWEd4K2NoTDl3YjA0WWVoNzZZ?=
+ =?utf-8?B?TU52N1BzTmFHU09taEJ1NkRVVUpVWW15WWpDMWFmSWd5cW9qU2hsb1JMVUZI?=
+ =?utf-8?B?cHNuVXRDTjdtWThkTTlEZkpiVVRjYlZNV1Rmb1RUWEVjVmlNaytBMjZ6NUM0?=
+ =?utf-8?B?cnRIdldiZE1YdWRXQTBhR0k5dE9qZ1ptZ08yUkYwT2lBdHFJOFpFNzVNbzZx?=
+ =?utf-8?B?RGtlNkFjaCtyMnZEVTk4a0Z2VEp3cnR1bnVhUUJ6UWxZU2dUZlQxbU9yY016?=
+ =?utf-8?B?N3ZUNElza085eEtxUUU2L0xITkZXVXMxREJIMXV2emVyRkc4SFBwL1hJdnMr?=
+ =?utf-8?B?L3lmY1JicS93ZkljNHJnQWcxYlFYMkhaVmhuaHJ1MXZMTmxRaS9xRXdIdnhU?=
+ =?utf-8?B?UHBkbGNiajVFbDZ0YVNjd2hxbjI3bDQ3TE1wYTRFK2w0OWFmN0tMeTFiWG5u?=
+ =?utf-8?B?UElGaHBsTTBxbXJvNHdLdEVnbjd0aXgzVjRVQys4UG9HU2JKSDZVZ1ZlQnNv?=
+ =?utf-8?B?bWU3NkxDS1FCWnhGVzBZTkFRbnNFOFozWVNZUU1SZlc5dkg4RTdVQy9Vek5S?=
+ =?utf-8?B?ZjRMd2x0V001YWdtNHVEYUpyNnNxb1RJbUdUdE9FUEEyZGZZcWVFNmNKV0RF?=
+ =?utf-8?Q?r16oLpxdx7wRxIrDcH5VPg/NX?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67ed1493-4150-4520-e663-08dd65462b52
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f041b81-beb0-4a82-ffe4-08dd6546472b
 X-MS-Exchange-CrossTenant-AuthSource: BN9PR12MB5163.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2025 11:23:40.8671
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2025 11:24:27.5728
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ib5LlAOxTBKpBzWTQvY3xLBDlPlxS+nT6cqZnri8qaYAEIenO7oTGLngtAw2R8OY4ERiw0b60pZbdHoI8NNCHw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9ZRGrcd8yGmTtyH7cU+Eleftkroz9g2clpmco8OdCI1e+oEhNftc2Dh2DdkLmDzFY9U92In8YqOP1TferLqcuA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8964
 
 Hi Vasant,
 
-On 3/13/2025 4:02 PM, Vasant Hegde wrote:
+On 3/13/2025 4:08 PM, Vasant Hegde wrote:
 > Dheeraj,
 > 
 > 
 > On 2/6/2025 11:29 AM, Dheeraj Kumar Srivastava wrote:
->> IOMMU Capability registers defines capabilities of IOMMU and information
->> needed for initialising MMIO registers and device table. This is useful
->> to dump these registers for debugging IOMMU related issues.
+>> IOMMU driver sends command to IOMMU hardware via command buffer. In cases
+>> where IOMMU hardware fails to process commands in command buffer, dumping
+>> it is a valuable input to debug the issue.
 >>
->> e.g.To get capability registers value for iommu<x>
->>    # echo "0x10" > /sys/kernel/debug/iommu/amd/iommu00/capability
->>    # cat /sys/kernel/debug/iommu/amd/iommu00/capability
+>> IOMMU hardware processes command buffer entry at offset equals to the head
+>> pointer. Dumping just the entry at the head pointer may not always be
+>> useful. The current head may not be pointing to the entry of the command
+>> buffer which is causing the issue. IOMMU Hardware may have processed the
+>> entry and updated the head pointer. So dumping the entire command buffer
+>> gives a broad understanding of what hardware was/is doing. The command
+>> buffer dump will have all entries from start to end of the command buffer.
+>> Along with that, it will have a head and tail command buffer pointer
+>> register dump to facilitate where the IOMMU driver and hardware are in
+>> the command buffer for injecting and processing the entries respectively.
+>>
+>> Command buffer is a per IOMMU data structure. So dumping on per IOMMU
+>> basis.
+>> eg. To get command buffer dump for iommu<x>
+>>      #cat /sys/kernel/debug/iommu/amd/iommu<x>/cmdbuf
 >>
 >> Signed-off-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
 >> ---
->>   drivers/iommu/amd/debugfs.c | 47 +++++++++++++++++++++++++++++++++++++
->>   1 file changed, 47 insertions(+)
+>>   drivers/iommu/amd/amd_iommu_types.h |  7 +++++++
+>>   drivers/iommu/amd/debugfs.c         | 26 ++++++++++++++++++++++++++
+>>   drivers/iommu/amd/iommu.c           |  7 -------
+>>   3 files changed, 33 insertions(+), 7 deletions(-)
 >>
+>> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+>> index 0bbda60d3cdc..c4ca6d9c6b51 100644
+>> --- a/drivers/iommu/amd/amd_iommu_types.h
+>> +++ b/drivers/iommu/amd/amd_iommu_types.h
+>> @@ -892,6 +892,13 @@ struct dev_table_entry {
+>>   	};
+>>   };
+>>   
+>> +/*
+>> + * Structure defining one entry in the command buffer
+>> + */
+>> +struct iommu_cmd {
+>> +	u32 data[4];
+>> +};
+>> +
+>>   /*
+>>    * Structure to sture persistent DTE flags from IVHD
+>>    */
 >> diff --git a/drivers/iommu/amd/debugfs.c b/drivers/iommu/amd/debugfs.c
->> index b16b62ae7111..dc5fdc905754 100644
+>> index dc5fdc905754..bf718e7258c5 100644
 >> --- a/drivers/iommu/amd/debugfs.c
 >> +++ b/drivers/iommu/amd/debugfs.c
->> @@ -18,6 +18,7 @@ static struct dentry *amd_iommu_debugfs;
->>   #define	OFS_IN_SZ	8
->>   
->>   static int mmio_offset = -1;
->> +static int cap_offset = -1;
->>   
->>   static ssize_t iommu_mmio_write(struct file *filp, const char __user *ubuf,
->>   				size_t cnt, loff_t *ppos)
->> @@ -58,6 +59,50 @@ static int iommu_mmio_show(struct seq_file *m, void *unused)
+>> @@ -103,6 +103,30 @@ static int iommu_capability_show(struct seq_file *m, void *unused)
 >>   }
->>   DEFINE_SHOW_STORE_ATTRIBUTE(iommu_mmio);
+>>   DEFINE_SHOW_STORE_ATTRIBUTE(iommu_capability);
 >>   
->> +static ssize_t iommu_capability_write(struct file *filp, const char __user *ubuf,
->> +				      size_t cnt, loff_t *ppos)
->> +{
->> +	int ret;
->> +
->> +	if (cnt > OFS_IN_SZ)
->> +		return -EINVAL;
->> +
->> +	ret = kstrtou32_from_user(ubuf, cnt, 0, &cap_offset);
->> +	if (ret)
->> +		return ret;
->> +
->> +	/* Capability register at offset 0x14 is the last IOMMU capability register. */
->> +	if (cap_offset > 0x14) {
->> +		cap_offset = -1;
->> +		return -EINVAL;
->> +	}
->> +
->> +	return cnt;
->> +}
->> +
->> +static int iommu_capability_show(struct seq_file *m, void *unused)
+>> +static int iommu_cmdbuf_show(struct seq_file *m, void *unused)
 >> +{
 >> +	struct amd_iommu *iommu = m->private;
->> +	u32 value;
->> +	int err;
+>> +	struct iommu_cmd *cmd;
+>> +	unsigned long flag;
+>> +	u32 head, tail;
+>> +	int i;
 >> +
->> +	if (cap_offset < 0) {
->> +		seq_puts(m, "Please provide capability register's offset\n");
+>> +	raw_spin_lock_irqsave(&iommu->lock, flag);
+>> +	head = readl(iommu->mmio_base + MMIO_CMD_HEAD_OFFSET);
+>> +	tail = readl(iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
+>> +	seq_printf(m, "CMD Buffer Head Offset:%d Tail Offset:%d\n",
+>> +		   (head >> 4) & 0x7fff, (tail >> 4) & 0x7fff);
+>> +	for (i = 0; i < CMD_BUFFER_ENTRIES; i++) {
+>> +		cmd = (struct iommu_cmd *)(iommu->cmd_buf + i * sizeof(*cmd));
+>> +		seq_printf(m, "%3d: %08x%08x%08x%08x\n", i, cmd->data[0],
 > 
-> May be you can add last offset details... so that it becomes easy to find out
-> the offset range.
+> Can you give space between words so that its easy to read?
+> 
 
-Sure.
+Sure. Will update in v4.
 
 Thanks
 Dheeraj
 
-> 
 > -Vasant
 > 
 > 
