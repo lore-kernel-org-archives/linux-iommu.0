@@ -1,154 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE3312080E3;
-	Tue, 18 Mar 2025 13:36:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3523120C03C
+	for <iommu@lists.linux.dev>; Tue, 18 Mar 2025 13:36:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742304991; cv=none; b=ue+G8QXKEcvBQHt17JSXYYQpYjXy41QwHA0aTDtP5CZFT9gpTNJW7Af0cusUTfnZ9x7JdZ9qWO58p3YyDeptgVLGZl1UrCv88UWIQPsjRO5thX6Tm6LHXJl69TUyLMd1hJU8wS/sHMPhJVe+t70A/R2BCp5n8s736zwkk/H/Z5c=
+	t=1742305020; cv=none; b=JlmPrgAdeBG3KMi4lbVQ1XTcd1VPDsW3h7FP1ddf0u1h26TYggKdSYaNHFE0B6zYqUQLNZwS8CuVtp1A/ay4rjwyeEJImeekXI2jaxTwst9KBaalt7SFCoa4JiXE/ts2q5kqTBs7+MGj+wL8EBq10iYEIXl52yqsMflwI+NlnvI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742304991; c=relaxed/simple;
-	bh=saqQlotH+Iko5JWXDkpcuXeW/I/jiikTSlVoCkm/io8=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=sD+3zQ71y9GFUfpI4KaIQ+Z/x19ASj/4dYc7gIDxqrf3/eDH0lKjtpELkNb+gXROhUaX22T23ciaNzmC6JGVChEs3ANAyzCA8a7DLyxsy7vfR9XPHIh+wfoLvlyXn51A3HJtuQxs/OU9HWazmOJGm5w4Ct2wUBhALDH1ko6UODE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=vHftMO0P; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vHftMO0P"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9EDCC4CEDD;
-	Tue, 18 Mar 2025 13:36:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742304991;
-	bh=saqQlotH+Iko5JWXDkpcuXeW/I/jiikTSlVoCkm/io8=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=vHftMO0P17sXxnoh7unZEUFm8mSAXeLyXskKc173VT8TwjQlWibbOIxYoWIpAAkTL
-	 bo2Vq3K9t81II6b24lVxj9MgI0y53ZV0WunUm46dvdr2TGvVey9iZtPmCqRVziSfNm
-	 LFirI2Q3kwW5/xgrIFxUiXJAcsLDDmRkd5/OmeEhlpgbYUPPGzPycRnt9lwbjREBco
-	 V+JCTmv1fX9D4bPMBvqlIx8409N3Dt5vGuPXv79CJAXxxWlKyPI2BAtiJZ6wQnQVWp
-	 bBArlzjFO7/h0eONGdExoGRKVDQa9tK06rbMLV2KY7KfPRZsQC5sDsTJbr7LHRzOjB
-	 /3ouFSzKuSn2A==
-From: Andreas Hindborg <a.hindborg@kernel.org>
-To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Cc: rust-for-linux@vger.kernel.org,  daniel.almeida@collabora.com,
-  dakr@kernel.org,  robin.murphy@arm.com,  aliceryhl@google.com,  Miguel
- Ojeda <ojeda@kernel.org>,  Alex Gaynor <alex.gaynor@gmail.com>,  Boqun
- Feng <boqun.feng@gmail.com>,  Gary Guo <gary@garyguo.net>,  =?utf-8?Q?Bj?=
- =?utf-8?Q?=C3=B6rn?= Roy
- Baron <bjorn3_gh@protonmail.com>,  Benno Lossin <benno.lossin@proton.me>,
-  Trevor Gross <tmgross@umich.edu>,  Valentin Obst
- <kernel@valentinobst.de>,  linux-kernel@vger.kernel.org (open list),
-  Christoph Hellwig <hch@lst.de>,  Marek Szyprowski
- <m.szyprowski@samsung.com>,  airlied@redhat.com,  iommu@lists.linux.dev
- (open list:DMA MAPPING HELPERS)
-Subject: Re: [PATCH v14 06/11] rust: dma: add dma addressing capabilities
-In-Reply-To: <20250311174930.2348813-7-abdiel.janulgue@gmail.com> (Abdiel
-	Janulgue's message of "Tue, 11 Mar 2025 19:48:02 +0200")
-References: <20250311174930.2348813-1-abdiel.janulgue@gmail.com>
-	<20250311174930.2348813-7-abdiel.janulgue@gmail.com>
-User-Agent: mu4e 1.12.7; emacs 29.4
-Date: Tue, 18 Mar 2025 14:35:45 +0100
-Message-ID: <87a59ijwb2.fsf@kernel.org>
+	s=arc-20240116; t=1742305020; c=relaxed/simple;
+	bh=wZUXHNT2YSncmvgzuJtppEaI943c7lhckMJfgQPa1nI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BDyCqoHk55bZpD31cqjySzpsjKUOKnOtPnRVTtec/PCfNBilixZAWdUL98fPohAzfPvHJX++qFv+sGUqpNxx7wpCaZ0uhMWWZHeXwHEhtatsGHjYlsEjal3oe7qqMwmKl2xCQMpYVaEPHM/Kw4EUw+UiTgrViGjNBvk5zHxCqFc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F274313D5;
+	Tue, 18 Mar 2025 06:37:06 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F3E503F673;
+	Tue, 18 Mar 2025 06:36:56 -0700 (PDT)
+Message-ID: <394571e1-f86d-472c-91dc-4377d512bfbe@arm.com>
+Date: Tue, 18 Mar 2025 13:36:55 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 4/5] iommu/arm-smmu-qcom: Make set_stall work when the
+ device is on
+To: Connor Abbott <cwabbott0@gmail.com>, Will Deacon <will@kernel.org>
+Cc: Rob Clark <robdclark@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+ Sean Paul <sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>,
+ Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Marijn Suijten <marijn.suijten@somainline.org>, iommu@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ freedreno@lists.freedesktop.org
+References: <20250304-msm-gpu-fault-fixes-next-v4-0-be14be37f4c3@gmail.com>
+ <20250304-msm-gpu-fault-fixes-next-v4-4-be14be37f4c3@gmail.com>
+ <20250311181151.GD5216@willie-the-truck>
+ <CACu1E7Gg3WpQASADAdediRzFz2wEXAnfD7tg05XkiXZQp=X8fQ@mail.gmail.com>
+ <20250312124907.GB6181@willie-the-truck>
+ <CACu1E7Hm=DWDC2aFdBRkT8f=8gKXJPpif_uEOA9iFZcyT-uCfQ@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <CACu1E7Hm=DWDC2aFdBRkT8f=8gKXJPpif_uEOA9iFZcyT-uCfQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Abdiel Janulgue <abdiel.janulgue@gmail.com> writes:
+On 12/03/2025 1:30 pm, Connor Abbott wrote:
+> On Wed, Mar 12, 2025 at 8:49 AM Will Deacon <will@kernel.org> wrote:
+>>
+>> On Tue, Mar 11, 2025 at 04:01:00PM -0400, Connor Abbott wrote:
+>>> On Tue, Mar 11, 2025 at 2:11 PM Will Deacon <will@kernel.org> wrote:
+>>>>
+>>>> On Tue, Mar 04, 2025 at 11:56:50AM -0500, Connor Abbott wrote:
+>>>>> Up until now we have only called the set_stall callback during
+>>>>> initialization when the device is off. But we will soon start calling it
+>>>>> to temporarily disable stall-on-fault when the device is on, so handle
+>>>>> that by checking if the device is on and writing SCTLR.
+>>>>>
+>>>>> Signed-off-by: Connor Abbott <cwabbott0@gmail.com>
+>>>>> ---
+>>>>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 30 +++++++++++++++++++++++++++---
+>>>>>   1 file changed, 27 insertions(+), 3 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>> index a428e53add08d451fb2152e3ab80e0fba936e214..d34a0d917013bb3d5a24b3ce72f48e3b38474da2 100644
+>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>> @@ -77,12 +77,36 @@ static void qcom_adreno_smmu_set_stall(const void *cookie, bool enabled)
+>>>>>   {
+>>>>>        struct arm_smmu_domain *smmu_domain = (void *)cookie;
+>>>>>        struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>>>>> -     struct qcom_smmu *qsmmu = to_qcom_smmu(smmu_domain->smmu);
+>>>>> +     struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>>>> +     struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>>>>> +     u32 mask = BIT(cfg->cbndx);
+>>>>> +     bool stall_changed = !!(qsmmu->stall_enabled & mask) != enabled;
+>>>>> +     unsigned long flags;
+>>>>>
+>>>>>        if (enabled)
+>>>>> -             qsmmu->stall_enabled |= BIT(cfg->cbndx);
+>>>>> +             qsmmu->stall_enabled |= mask;
+>>>>>        else
+>>>>> -             qsmmu->stall_enabled &= ~BIT(cfg->cbndx);
+>>>>> +             qsmmu->stall_enabled &= ~mask;
+>>>>> +
+>>>>> +     /*
+>>>>> +      * If the device is on and we changed the setting, update the register.
+>>>>> +      */
+>>>>> +     if (stall_changed && pm_runtime_get_if_active(smmu->dev) > 0) {
+>>>>> +             spin_lock_irqsave(&smmu_domain->cb_lock, flags);
+>>>>> +
+>>>>> +             u32 reg = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR);
+>>>>> +
+>>>>> +             if (enabled)
+>>>>> +                     reg |= ARM_SMMU_SCTLR_CFCFG;
+>>>>> +             else
+>>>>> +                     reg &= ~ARM_SMMU_SCTLR_CFCFG;
+>>>>> +
+>>>>> +             arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR, reg);
+>>>>
+>>>> Are you sure you don't need TLB invalidation for this to take effect? I
+>>>> think some fields in the SCTLR can be cached in the TLB but you'll need
+>>>> to check whether or not that applies to CFCFG.
+>>>>
+>>>
+>>> I think it should be fine because CFCFG only controls behavior when
+>>> there's a context fault and there can't be TLB entries for entries
+>>> that cause a context fault: "The architecture permits the caching of
+>>> any translation table entry that has been returned from memory without
+>>> a fault and that does not, as a result of that entry, cause a
+>>> Translation Fault or an Access Flag fault."
+>>
+>> Ok, but what about other types of fault? For example, a permission fault
+>> or an address size fault?
+>>
+>> Will
+> 
+> I'm not sure, but the pseudocode for context faults mentions
+> resampling CFCFG after a fault happens ("We have a fault and must
+> resample FSR, CFCFG and HUPCF") so I don't think it would be legal to
+> cache it. Also in practice this does seem to work. Does that answer
+> it?
 
-> From: Danilo Krummrich <dakr@kernel.org>
->
-> Implement `dma_set_mask()` and `dma_set_mask_and_coherent()` in the
-> `dma::Device` trait.
->
-> Those methods are used to inform the kernel about the device's DMA
-> addressing capabilities.
->
-> Co-developed-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-> Signed-off-by: Danilo Krummrich <dakr@kernel.org>
-> ---
->  rust/helpers/dma.c     |  8 ++++++++
->  rust/helpers/helpers.c |  1 +
->  rust/kernel/dma.rs     | 46 +++++++++++++++++++++++++++++++++++++++---
->  3 files changed, 52 insertions(+), 3 deletions(-)
->  create mode 100644 rust/helpers/dma.c
->
-> diff --git a/rust/helpers/dma.c b/rust/helpers/dma.c
-> new file mode 100644
-> index 000000000000..8eb482386f93
-> --- /dev/null
-> +++ b/rust/helpers/dma.c
-> @@ -0,0 +1,8 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <linux/dma-mapping.h>
-> +
-> +int rust_helper_dma_set_mask_and_coherent(struct device *dev, u64 mask)
-> +{
-> +	return dma_set_mask_and_coherent(dev, mask);
-> +}
-> diff --git a/rust/helpers/helpers.c b/rust/helpers/helpers.c
-> index 0640b7e115be..8f3808c8b7fe 100644
-> --- a/rust/helpers/helpers.c
-> +++ b/rust/helpers/helpers.c
-> @@ -13,6 +13,7 @@
->  #include "build_bug.c"
->  #include "cred.c"
->  #include "device.c"
-> +#include "dma.c"
->  #include "err.c"
->  #include "fs.c"
->  #include "io.c"
-> diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-> index 7ff797a7ad18..ac3ec0042327 100644
-> --- a/rust/kernel/dma.rs
-> +++ b/rust/kernel/dma.rs
-> @@ -5,10 +5,10 @@
->  //! C header: [`include/linux/dma-mapping.h`](srctree/include/linux/dma-mapping.h)
->  
->  use crate::{
-> -    bindings, build_assert,
-> -    device,
-> +    bindings, build_assert, device,
->      error::code::*,
->      error::Result,
-> +    prelude::*,
->      transmute::{AsBytes, FromBytes},
->      types::ARef,
->  };
-> @@ -18,7 +18,35 @@
->  /// The [`Device`] trait should be implemented by bus specific device representations, where the
->  /// underlying bus has potential support for DMA, such as [`crate::pci::Device`] or
->  /// [crate::platform::Device].
-> -pub trait Device: AsRef<device::Device> {}
-> +pub trait Device: AsRef<device::Device> {
-> +    /// Inform the kernel about the device's DMA addressing capabilities.
-> +    ///
-> +    /// Set both the DMA mask and the coherent DMA mask to the same value.
-> +    ///
-> +    /// Note that we don't check the return value from the C `dma_set_coherent_mask` as the DMA API
-> +    /// guarantees that the coherent DMA mask can be set to the same or smaller than the streaming
-> +    /// DMA mask.
-> +    fn dma_set_mask_and_coherent(&mut self, mask: u64) -> Result {
-> +        // SAFETY: By the type invariant of `device::Device`, `self.as_ref().as_raw()` is valid.
-> +        let ret = unsafe { bindings::dma_set_mask_and_coherent(self.as_ref().as_raw(), mask) };
-> +        if ret != 0 {
-> +            Err(Error::from_errno(ret))
-> +        } else {
-> +            Ok(())
-> +        }
-> +    }
+FWIW I checked with the former MMU-500 design lead, and although he 
+doesn't remember the exact details he's pretty confident that they 
+wouldn't have cached anything fault-related, so at least from our side 
+I'd consider this OK.
 
-As mentioned earlier [1], I think we should use `to_result` here.
-
-
-Best regards,
-Andreas Hindborg
-
-
-
-[1] https://lore.kernel.org/all/871pv3l3vi.fsf@kernel.org/
-
-
+Thanks,
+Robin.
