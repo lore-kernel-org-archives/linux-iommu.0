@@ -1,115 +1,156 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2072.outbound.protection.outlook.com [40.107.94.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E0F918E25;
-	Tue, 18 Mar 2025 15:47:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742312873; cv=none; b=EvpuvOnrwhp0P8lgWyuGtW0kB6vt7ad1FEUGCjcURgJqOv6YNjIxVdOF0zadCrO23lKXSuiVFJGMXejswrg1QLesWJh+v68hIqbuINJwkQ05tz/+ff4XfMOAOFZGJjXF4Ie3gVp2ctsTy+6rFH7rkGcdENmg0MKQEKLHPmfHLzk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742312873; c=relaxed/simple;
-	bh=sD58zLcw1T6P8NiMUNq1sVXKAK5W9zvgQDpdOg2n0YE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PvjhqkJYrDuyLof7KOVxH4bEk14kY/66KN7bFYf4PBvvVcHZhkpDZwDitPLd+sFS2lr6NYXbuOpUv0Tw9oUCLTRkZ+s7TcBqvKu5XYXMwZ4TnggOas/JfkGxmflXmCNeh1hK70wJkV6nsBLLCb5O13yAg2JZC9a6Knsz9CaBqn8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oGA4YBl+; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4730E20FAAD
+	for <iommu@lists.linux.dev>; Tue, 18 Mar 2025 16:20:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.72
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742314847; cv=fail; b=ZUkbzADlVhQCoAJulWPI4XLaCK4whGWNDhn5aBLmF72Pgjm0QBUfEGNjOMMyngGRC5Pp2ilk63hmviTnKDrDXuVEQtVVET5uePA0nVQ37N6nFKO6jZoptW2iXZQuKLz3lxTvd4QQDut4ZXrvoiAuufVk7302pzyXKAhSe+I62Xs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742314847; c=relaxed/simple;
+	bh=jvsLAbqE7JB/DCoYjMvzsUlR18Dww3OzNgCVkBUK0lo=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=oA81N6Haw3nfLeP/VMBbWt7PXb40z96MULOzHqd/WJy8m2vzHUTUJRfqzDSlud5w3ln/7+J+kdl0jk5tM3SM1lJXGsw1dJd0AfBk1ftoTv4W2zi/CENm9kk5++ZPGNVNukQ1fg3umBCHAxmp1hLKk/3DJyO+PNzBhdr//GXyeXI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=CgZs+3Ew; arc=fail smtp.client-ip=40.107.94.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oGA4YBl+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C08C7C4CEDD;
-	Tue, 18 Mar 2025 15:47:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742312873;
-	bh=sD58zLcw1T6P8NiMUNq1sVXKAK5W9zvgQDpdOg2n0YE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oGA4YBl+hzKVuvM/XqteBDWWK3b6pIavAqDW2+cK9UD9m1xGSZsXCjxkcKNxZo3w+
-	 Tk/Ufcoc4skZ/mDTLKBug0+5qNsXtv0YB9t32+HEKcW+BGajMQSviBMY5HjJcQ5M8L
-	 qMRzug9ByKKSpMDTakbTrJlTOqoDMuwPYZGxPwL71bMS1wAD4Uny6PZDUCHm4Ckr9X
-	 V81MI3EvYLo5/nx+BkM3U8NiK79tmbBg9GUBn2HGN6D2HusssZ8S3E1XAiDq2NAvXF
-	 F4KAOKtMOI923jaVvp/DXpIrB5EOivAeJ+wWTINT0pSdBfytn05v7kaiuufwE99T+T
-	 s9l+MGxUEXo1Q==
-Date: Tue, 18 Mar 2025 15:47:47 +0000
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Connor Abbott <cwabbott0@gmail.com>, Rob Clark <robdclark@gmail.com>,
-	Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	freedreno@lists.freedesktop.org
-Subject: Re: [PATCH v4 4/5] iommu/arm-smmu-qcom: Make set_stall work when the
- device is on
-Message-ID: <20250318154746.GB13829@willie-the-truck>
-References: <20250304-msm-gpu-fault-fixes-next-v4-0-be14be37f4c3@gmail.com>
- <20250304-msm-gpu-fault-fixes-next-v4-4-be14be37f4c3@gmail.com>
- <20250311181151.GD5216@willie-the-truck>
- <CACu1E7Gg3WpQASADAdediRzFz2wEXAnfD7tg05XkiXZQp=X8fQ@mail.gmail.com>
- <20250312124907.GB6181@willie-the-truck>
- <CACu1E7Hm=DWDC2aFdBRkT8f=8gKXJPpif_uEOA9iFZcyT-uCfQ@mail.gmail.com>
- <394571e1-f86d-472c-91dc-4377d512bfbe@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CgZs+3Ew"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=l3xEJwJeoX9m6kzHPlEUwyGeWmeUssstbIgIOm2a3Z338tMheszoWsfskWlmhO5t/VF0//FZbDgwm6A7its07cen9ylK4tiTIMf64W2w/NmFAOJpgarmwxm78fjt8GFQse0W8aKL2ebWVZV83LJ2mTHS+qsHVUVGcA8HWI8NNfjqvRQ//XTYkSfKbgXTuOebTF4Vk7oQ9AKBtsGhqeLlnpqwXyaszM/VHX5bgjVQjXYuwl9VJhhUgMsnzU7jwRmHM3phpXYGNQgoPWSZ9cTyi3vRa6cNIMp+CqMC1choaUUfmGl1vNC2EcQejMnHoXUh3kIt1uBmHoWz6s9N/MHDDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GzC50CBJ0p/X/CioO4JQOBGEVUz5+u05teGaP9BcRUE=;
+ b=MV8WL5/MTYhmm0Lnxj/jJpkg31OEI9X3vnsuQ80CT1G2hjB20sTCeIqYu1JELbLq8n6RSJDaGO8XQXvY6Z+NwDVhPZ6dsiHPAhPCwlOOOAhGYtzq4litqusp7Apq2Yb/KbPdMOwyQ0hBxkcI4MGSV6a+ExqACq6Tij5z7rtOvnInbGGoBa1hboPgjZsnlJkdz1d2flvhIH4O7ftX6LKY/wOHV7D9OO4enarppokJD84v3M6sGPyfPwTT9+uizp/LziCVru+Gzlb/uYsFTjyxdJFUmnqZzJG2LeMstUP2+5guiqEyDHxA+ZV5happVcIjPbpFu5P7rfFqbdhbDf5diA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=ziepe.ca smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GzC50CBJ0p/X/CioO4JQOBGEVUz5+u05teGaP9BcRUE=;
+ b=CgZs+3EwLKG5dyscqJ8ovJdVaYcaS3LQGxC01jYZ85epb20sGByYJ2DR4PJSiU0lsXP4JlTyDuQPlpc/bnXG4C/PhQuT17Z6NO72VNnWmqRow5dgKj/Eu4OgKMbsctDz3iqzAxvfrv/C1KbqoSSKHZgtcEJab9YYUFwBjvCfLxQzyQvV/e/TPrRJXZB7Y0FtBdXkJBueKq9KQZ/1LsluJUTITTYQB5zBqFWSuSNfpggWYtzop5HB9GubXtJLuZynYqhtem+WFDLtab0VZdwBnjUjFRUQOpM0iK9KmxE4ry6/OW18JZhCg8aX7MDhBBsKoeFpMjLl3IknonBz1YiRvg==
+Received: from MN0PR03CA0026.namprd03.prod.outlook.com (2603:10b6:208:52f::23)
+ by CH3PR12MB9122.namprd12.prod.outlook.com (2603:10b6:610:196::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.33; Tue, 18 Mar
+ 2025 16:20:42 +0000
+Received: from BL02EPF00021F6D.namprd02.prod.outlook.com
+ (2603:10b6:208:52f:cafe::38) by MN0PR03CA0026.outlook.office365.com
+ (2603:10b6:208:52f::23) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8534.33 via Frontend Transport; Tue,
+ 18 Mar 2025 16:20:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BL02EPF00021F6D.mail.protection.outlook.com (10.167.249.9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8534.20 via Frontend Transport; Tue, 18 Mar 2025 16:20:42 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 18 Mar
+ 2025 09:20:24 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Tue, 18 Mar
+ 2025 09:20:24 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
+ Transport; Tue, 18 Mar 2025 09:20:24 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@ziepe.ca>
+CC: <kevin.tian@intel.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <sfr@canb.auug.org.au>
+Subject: [PATCH] iommufd: Fix IOMMU_VEVENTQ_FLAG_LOST_EVENTS kdoc
+Date: Tue, 18 Mar 2025 09:20:17 -0700
+Message-ID: <20250318162017.709212-1-nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <394571e1-f86d-472c-91dc-4377d512bfbe@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF00021F6D:EE_|CH3PR12MB9122:EE_
+X-MS-Office365-Filtering-Correlation-Id: c0410df1-53c2-46c1-359e-08dd6638d46d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|82310400026|36860700013|1800799024|13003099007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?cxWDekRRr2t3tAjJEVaux8MgaXuKOCiZO2G7cecVik9vNYIWDvEHEcpBgsnB?=
+ =?us-ascii?Q?3aaBoJZ5sKLl/9TeqC2z/iFKkv0PaCrFi2JyY8s8MrvccAYyqzXWurnEv2aa?=
+ =?us-ascii?Q?UJ+6inotwhbSLQyBggcmiPkgfg/NT8Yo53Z3o9+Nu221nNgC1qIbRemNbFAk?=
+ =?us-ascii?Q?kGthoLuKspOV5028+h4P+isM3ZKnpc5l9jeaSn8ECt7HbYsysr8v+Ei9Fi7J?=
+ =?us-ascii?Q?5KLe/cJPmhN8aXe2iapHFTfUDnn86sMRq2a42sv+sWYBv5r+zBjcg5XuR56r?=
+ =?us-ascii?Q?qphQwFHuy7mp+UgVarb5806CbRsglIATtEgmJ/9IbQcfCw2cKV4BjOBIZsrE?=
+ =?us-ascii?Q?XvM+OFOUiUttS5L/m6fTNFQe2KuEnZ9zl+mbFT3LCvnt1WCee7nHqCUxnSQs?=
+ =?us-ascii?Q?xQIhKR355nabUCMH1fSH4tT2EF1FKbBbNikqS8aLUmtTyD0T3t6HPtEv7pC+?=
+ =?us-ascii?Q?jR41gxbT/EV+h/3RaajVrWC3O7eRftevxlSZT43Miz6l92Ez+/CmYOAbV+JP?=
+ =?us-ascii?Q?0XzCxBA5+xhqV795PiDVDMXwyYYU6cR3QwxHUg0jPiGzxmBRIzt1NNybIHCp?=
+ =?us-ascii?Q?wNTyAyZxmv5jkZHhQhgZ9l38rplyGEo0pe+ZtJD1vLZYMGYX40VZLhmAxW9u?=
+ =?us-ascii?Q?UePpzrBiQEqVoBMVnHaK90Fyh52f7H98+cYVMyifdI7XqvAS2t7XfO/ReJr6?=
+ =?us-ascii?Q?BshxJWDl3BbkyGyYb1/utbyR10Wsji/YzdKSaWT0vSojKn6xtbkX+cYDIOYV?=
+ =?us-ascii?Q?k0K8yGTkQz2r549QFj4y8h67Ye7EhC0KAr1vI3E6BJNiTUCRlmPRNxNYg7AI?=
+ =?us-ascii?Q?MuX17qarrJw33Rls0WGnK1y0gROP4qPHn8nNiAX+0FoIP++RpeprYFCB25HF?=
+ =?us-ascii?Q?pLKmJ1hHh4HGNWv3lCoRJ6poQVi/CC+AbkPq1cqyR7jRCpT27iKAGmwurQ2Y?=
+ =?us-ascii?Q?aUv+vxkKBohbiFpoAu0cEtozzUCdSYXsVz97hc74PWw3RKXDeM2GeUVZDf3n?=
+ =?us-ascii?Q?UslewvnvJJlkyM8mSVKVkntY+ygHvjJbGfCxKW0rI4kdZYDDhXIf4DwKcSdn?=
+ =?us-ascii?Q?UKiUUueyWLkcoZHehBiYHW6wObOtavN3vViwzOtRcNxE8hdJ5xKPFNiRJKtQ?=
+ =?us-ascii?Q?IjZgyefJzWWTs3quZu4Xah5PrXURZ4n2ffvoor3ySlNttJhuYi4CeLD495EM?=
+ =?us-ascii?Q?dohC7VCdv9/MBFXygArgunnolvsCG00W6WcZ6Pj49YGj5Q2hPbLtTZXK4Gb0?=
+ =?us-ascii?Q?Fybb2wm4WBRwoPNG61SSWClbOJKfCcL9vHMqnOtQ86akZFdS+j+8bj+DSSxH?=
+ =?us-ascii?Q?FXUY0WrWme4ingo18KCEB2P4QPOSAtELwX9icygkAcb2K8xVERruBHimrZeA?=
+ =?us-ascii?Q?mFqww29B9migBVrzK8kQEtmVD9d+NOf2Xh9yvhP5yESwPjqkDbEjsprtYxCH?=
+ =?us-ascii?Q?M6ot7okukluMuVpYOo56rCgh5KC9cp7Uap5ovVc6koXT/q9jM1mE/v7/pFNu?=
+ =?us-ascii?Q?5ZyUuV1cGH9zmUw=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(82310400026)(36860700013)(1800799024)(13003099007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2025 16:20:42.2575
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c0410df1-53c2-46c1-359e-08dd6638d46d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF00021F6D.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9122
 
-On Tue, Mar 18, 2025 at 01:36:55PM +0000, Robin Murphy wrote:
-> On 12/03/2025 1:30 pm, Connor Abbott wrote:
-> > On Wed, Mar 12, 2025 at 8:49 AM Will Deacon <will@kernel.org> wrote:
-> > > On Tue, Mar 11, 2025 at 04:01:00PM -0400, Connor Abbott wrote:
-> > > > On Tue, Mar 11, 2025 at 2:11 PM Will Deacon <will@kernel.org> wrote:
-> > > > > On Tue, Mar 04, 2025 at 11:56:50AM -0500, Connor Abbott wrote:
-> > > > > > +     /*
-> > > > > > +      * If the device is on and we changed the setting, update the register.
-> > > > > > +      */
-> > > > > > +     if (stall_changed && pm_runtime_get_if_active(smmu->dev) > 0) {
-> > > > > > +             spin_lock_irqsave(&smmu_domain->cb_lock, flags);
-> > > > > > +
-> > > > > > +             u32 reg = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR);
-> > > > > > +
-> > > > > > +             if (enabled)
-> > > > > > +                     reg |= ARM_SMMU_SCTLR_CFCFG;
-> > > > > > +             else
-> > > > > > +                     reg &= ~ARM_SMMU_SCTLR_CFCFG;
-> > > > > > +
-> > > > > > +             arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR, reg);
-> > > > > 
-> > > > > Are you sure you don't need TLB invalidation for this to take effect? I
-> > > > > think some fields in the SCTLR can be cached in the TLB but you'll need
-> > > > > to check whether or not that applies to CFCFG.
-> > > > > 
-> > > > 
-> > > > I think it should be fine because CFCFG only controls behavior when
-> > > > there's a context fault and there can't be TLB entries for entries
-> > > > that cause a context fault: "The architecture permits the caching of
-> > > > any translation table entry that has been returned from memory without
-> > > > a fault and that does not, as a result of that entry, cause a
-> > > > Translation Fault or an Access Flag fault."
-> > > 
-> > > Ok, but what about other types of fault? For example, a permission fault
-> > > or an address size fault?
-> > > 
-> > I'm not sure, but the pseudocode for context faults mentions
-> > resampling CFCFG after a fault happens ("We have a fault and must
-> > resample FSR, CFCFG and HUPCF") so I don't think it would be legal to
-> > cache it. Also in practice this does seem to work. Does that answer
-> > it?
-> 
-> FWIW I checked with the former MMU-500 design lead, and although he doesn't
-> remember the exact details he's pretty confident that they wouldn't have
-> cached anything fault-related, so at least from our side I'd consider this
-> OK.
+The kdoc update wasn't fully saved. Fix it.
 
-Thanks for checking, Robin.
+Fixes: 50c842dd6cd3 ("iommufd: Add IOMMUFD_OBJ_VEVENTQ and IOMMUFD_CMD_VEVENTQ_ALLOC")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Closes: https://lore.kernel.org/linux-next/20250318213359.5dc56fd1@canb.auug.org.au/
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ include/uapi/linux/iommufd.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Connor -- please can you stick some of the above in a comment prior
-to the CFCFG munging so I don't "rediscover" the problem in the future?
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index 5fc7e27804b75..25de462a6422b 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -1017,7 +1017,7 @@ struct iommu_ioas_change_process {
+ 
+ /**
+  * enum iommu_veventq_flag - flag for struct iommufd_vevent_header
+- * @IOMMU_VEVENTQ_FLAG_OVERFLOW: vEVENTQ has lost vEVENTs
++ * @IOMMU_VEVENTQ_FLAG_LOST_EVENTS: vEVENTQ has lost vEVENTs
+  */
+ enum iommu_veventq_flag {
+ 	IOMMU_VEVENTQ_FLAG_LOST_EVENTS = (1U << 0),
+-- 
+2.34.1
 
-Will
