@@ -1,196 +1,154 @@
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2084.outbound.protection.outlook.com [40.107.102.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED74220D502
-	for <iommu@lists.linux.dev>; Tue, 18 Mar 2025 12:40:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742301612; cv=none; b=AW9cHT8ioNE9ugcKB6mcTRgmf6b2XEW1AWjLbEKgax6+G/nl6SIebk1WRWYGBBH1pvJJPvjRNCKj6ZPsnJkjXggCfMIrvwxNtmeq8/MmGdKxB6NyuImkval4TdxNtlbnxr/qDUHlZmSzBd4ZhwKUpoc5LzS9OHR5psWlk5LpgkM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742301612; c=relaxed/simple;
-	bh=R5N3kWFhUrqILW5PrwqrHX1ifNxovTVrLKDlFbMYDDk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=LUWEpfMpX1jGmn2Cv20x9iITSjxIGTOHp1/NES+44tg9gGXN0IYn3ZYwMcgfd94Xfd/UxFcvLwvaDS2G66QGrmpXao7F8D59NmsWAnj+aiDqIt1cUU889VBSQShFeYvMgqgKI2+klo1abNJHcFfFg12i0mQPAbP+wjDNvMjJzBk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.234])
-	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4ZHBDF08cTz2Cd0h;
-	Tue, 18 Mar 2025 20:36:45 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id 7F2FA140159;
-	Tue, 18 Mar 2025 20:39:58 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Tue, 18 Mar 2025 20:39:58 +0800
-Message-ID: <7a76908d-5be2-43f1-a8e2-03b104165a29@huawei.com>
-Date: Tue, 18 Mar 2025 20:39:51 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1002207A27
+	for <iommu@lists.linux.dev>; Tue, 18 Mar 2025 12:41:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.84
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742301707; cv=fail; b=FCqF+8thi/kizYIexiD9yToOu+nTGUtb6E3gWkIJbQG7ra7FgkOuFq5xBY3QNSJIWefGVhaFpNp4TRwBf3TpRRBzTYhF5ULESOosEaO41UBnkSV+llVLy/qoxK+XOO2N2nv+vdGOpAUmS0kPWjXJM1Pu2WPWBRUTy/A5QV41EUY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742301707; c=relaxed/simple;
+	bh=+++CCbeCty4VGMP1XehXY/EQXZDRGBRz6TeWnX0IvzI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=hIOoN8Rkeot3ua9Y6YbJX4dwZ+n/DsEqk6npZ0WexDt/vk/8Lg5dbzxOk53AhVR8riGrLhS6irkS/0pkyrjf0oR8XeXQn5xIomUOtkfcQG6xxWnN4W5Nwj2uWTiiEOpsTj+OCL7r5jwluFRjJWL8PMxYR5ixYt8jeu370R5+mQ0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=gN7Tr5xY; arc=fail smtp.client-ip=40.107.102.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="gN7Tr5xY"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vxY4VCpcCaUPTh/CqIXYbESMwfwR6Nvtf/8+HL06pMmv6PJa+IzEzMFDd1ErsY5P5i03oSHvwmQcADRqgRwdZrCaUg0KS+Z/7n1/mrwTzSrrEwzy/UjTtQYUY/TD2k2jpt6Mhzw4d0wlOuxbrzEZ+hFH1uu8/BsrPzAio+0HrFuyPNIbD8MXIgVgzztn/x7zCw/kD882VTejvpVMSlhDOa1zcF1Mdls7pJp8ovEva1Q/TldZwXPlTDHMPygJq+A8u0HD3aJonUeqY+PyeYaVSirfZbhSaTphyw0vzmalKLK929Vicg+hNZfyeeQtWFYE/xqmMXD3/mxT6gP13kNjGA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+++CCbeCty4VGMP1XehXY/EQXZDRGBRz6TeWnX0IvzI=;
+ b=FRKKAzsCHNbZCG49yiV8uHj0bHU0GPFV+rjvz8CWDJHEijkY9goB304+bQnQm3LfnQtax9EdgDqEDSHEmJehiK4BwKKkipHdO1SoezbacwiiFZzrk9rlebER3gmqM0a63SALq8umLkjg3sxoOL2K+wE68DiV2B0BIBbAGDlf+9w+xsSvd/+syuCKvUxHb0TBtSecp+Mq0nF0kXvs1zXCZCvT8odCz7pO+cZb8f2IXcFzXLUjOzPzHKVuQOaY0Y5sTjWzg/lv9x9fsZzjsDE0ePdwEXePwz+1p4EJMuRML0Aj8cGngZtPRwnqobqM3UjpjOWXi9DKg90jODKKTJR5Mg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+++CCbeCty4VGMP1XehXY/EQXZDRGBRz6TeWnX0IvzI=;
+ b=gN7Tr5xY7E8ivuvakNWd+amQ4RfG1xZPt4UZmoXsjtjvpT1OWWi1TTuVOAZmQ1pQo8DECo4jvxJ7yNO1VpIFqrUxK3FtTPfaa+2pYo/ZINZkN7albaCk4MJ10x5O4/p+nktooTqXuADFQeLNH4o9dcQ1tP2D2n78wa1M5qar19glsF5h1hk0qSeG5QjCInr449mTsBybNFAPlQazgCqk39jmXcJIQnqNbPPdm7hfbMMZpYMVDKwvDtciVaNYqCrsYxmkXyXxwyCJR31XcLlZi/uj5I0M1aoxwCC75GArD2y/RVd2voPQuCXyBSh2oZ61Ck6fVq3vVYMln0/sC0vJkA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by SA0PR12MB4431.namprd12.prod.outlook.com (2603:10b6:806:95::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.33; Tue, 18 Mar
+ 2025 12:41:42 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8534.034; Tue, 18 Mar 2025
+ 12:41:42 +0000
+Date: Tue, 18 Mar 2025 09:41:41 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: kevin.tian@intel.com, joro@8bytes.org, baolu.lu@linux.intel.com,
+	iommu@lists.linux.dev, nicolinc@nvidia.com
+Subject: Re: [PATCH v9 00/21] iommufd support pasid attach/replace
+Message-ID: <20250318124141.GN9311@nvidia.com>
+References: <20250313123532.103522-1-yi.l.liu@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250313123532.103522-1-yi.l.liu@intel.com>
+X-ClientProxiedBy: BN1PR12CA0026.namprd12.prod.outlook.com
+ (2603:10b6:408:e1::31) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next 3/3] page_pool: Track DMA-mapped pages and unmap
- them when destroying the pool
-To: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>, Yunsheng
- Lin <yunshenglin0825@gmail.com>, "David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>,
-	Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Tariq
- Toukan <tariqt@nvidia.com>, Andrew Lunn <andrew+netdev@lunn.ch>, Eric Dumazet
-	<edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Ilias Apalodimas
-	<ilias.apalodimas@linaro.org>, Simon Horman <horms@kernel.org>, Andrew Morton
-	<akpm@linux-foundation.org>, Mina Almasry <almasrymina@google.com>, Yonglong
- Liu <liuyonglong@huawei.com>, Pavel Begunkov <asml.silence@gmail.com>,
-	Matthew Wilcox <willy@infradead.org>, Robin Murphy <robin.murphy@arm.com>,
-	IOMMU <iommu@lists.linux.dev>, <segoon@openwall.com>, <solar@openwall.com>
-CC: <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-	<linux-rdma@vger.kernel.org>, <linux-mm@kvack.org>, Qiuling Ren
-	<qren@redhat.com>, Yuying Ma <yuma@redhat.com>
-References: <20250314-page-pool-track-dma-v1-0-c212e57a74c2@redhat.com>
- <20250314-page-pool-track-dma-v1-3-c212e57a74c2@redhat.com>
- <db813035-fb38-4fc3-b91e-d1416959db13@gmail.com> <87jz8nhelh.fsf@toke.dk>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <87jz8nhelh.fsf@toke.dk>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|SA0PR12MB4431:EE_
+X-MS-Office365-Filtering-Correlation-Id: d940cbc8-faae-437d-d033-08dd661a3c57
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?wiueyifDxMmiFSWlSoYFSPlPJfgZCLVPrc+cppdY7edj4070ilGQ4olcIctB?=
+ =?us-ascii?Q?Q9pjKZumA0Qrdza8bEraYmjXjltNQMBeIP79IfOvF/a9LdN6nQR0bawt8vi8?=
+ =?us-ascii?Q?nvGVWV23ByN/mZ2BBVmGd793nBvK7mZTh238trFuQZeqszVhrIIY+X+msg8Y?=
+ =?us-ascii?Q?JMMY7lpX+FodFZPsuHVI546JGH+ac8Xdy2YlAbqvP+OelUkshekWOX/uLUv2?=
+ =?us-ascii?Q?xYLQlbPpZxAOVAGbIToAkoSmhdeIiEi08H5ifvxs9Iw5UsJEPCbNhW0dTCDA?=
+ =?us-ascii?Q?NxU3CKd3ivxl6/0twJwq28gzRPXdUXPAOSoS1iDINo6bo7IBUWSGjW+Qi5Us?=
+ =?us-ascii?Q?/zde+CWe/3+cpRNrQ47tcOjb5FpmvKday/xivrgSjSCUVM0IkEjGC+WBM/fY?=
+ =?us-ascii?Q?uxG0oripEHQqwaKb9OCTKWkWgJ3ov2fAQlsJrzAY+OwaV+xVObxvPDZw816d?=
+ =?us-ascii?Q?PY/zdK2a0Eo2HO7QSKrwDxsEvZhFvpPBvcNxrIo7qGhxZSdRTlVIYZ1wgzbi?=
+ =?us-ascii?Q?lWxIapwWIYN44pnt6UKNFrICza1iQBDh2a+6DtQRvrh5gLghbJct/bPXnNN0?=
+ =?us-ascii?Q?qFkBWM135CzPoZqgxjNG93YrRQb75zDbVU6YE35LRSLth+rJ4pe4+q5cN0Fs?=
+ =?us-ascii?Q?HpMYIyC+ZZxQnFM/JX6xLRQX6Rby26RULj/inkA/T//2xHH4sparDPbCwC31?=
+ =?us-ascii?Q?igDoOxuDgQYVwihswIn2vsymlpQ6Krujtyr08wj93p50k/6ZU6DR58pbB/J+?=
+ =?us-ascii?Q?lkqkjntMMaLH49DTyJyYFoMqyStFpKb7BiI6nQvTtTBWdFURk4Gtd8BD7kGr?=
+ =?us-ascii?Q?z5ESCz5ckGm1Zk/ZyJVJBgIwscbKdHqVdV2G5KxRu+Bv26h67yfNcs9Ux11L?=
+ =?us-ascii?Q?chElkf3NYhgGzh3UVFLB3XwhbiV5WaGuS/nIqYi1yK2fPAOXm1d7GzILWybn?=
+ =?us-ascii?Q?r4MFoNC/tsM3BuoXg8mVkyhBfZ19GM9/fgUX2EVlzNpciZZSXr8lPyN9Dx2W?=
+ =?us-ascii?Q?5HlaANYqDUDTO1lJ5wAUZErT8fwOQ3CkOTZu5lXNrO1AmoNS340ZB6cmBPNX?=
+ =?us-ascii?Q?bHQdnbBMzJ1cnVVcv9tn6rjHU2uLp8ADTXB+n8nJHyNwWj2BU4grR/xrvBYr?=
+ =?us-ascii?Q?He5pucKYoLrdnovsVIK7y+FEzmeSH9MMzYzxC6muhP+q6V1a1RiEoU23jGFv?=
+ =?us-ascii?Q?M2YpJoLyVZ7MsCqhFTRxcb6p+4kV+1aRkPuYxSPB8wanfruN3GknqDf27p3i?=
+ =?us-ascii?Q?yty0FjUC40AofYKXMJdHSFlbQRnhbHnU3TcB89SdT6KGVYKTGC9qU+RNFhCA?=
+ =?us-ascii?Q?t9zVaJFIfF/ij05w8X3z2z2jN6eaBas+Yi8xgkoV7jrbYnw8C0vU+0JXOehW?=
+ =?us-ascii?Q?mVdv44DWD+mxOWZnE595rAnijQuT?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Zm+ungaipZJqqgEkJC1g8h5Rl/Kjerav/By7ucBF7wxfNAkLcqRmoj51CxI4?=
+ =?us-ascii?Q?ThVaCRfa1KBpOxUqLnbMcPvrAcffRlsWWurdpSxw4Av059vm4QVFZydZzN14?=
+ =?us-ascii?Q?jNP7E+bunlwxG9D1S5vQuTC3m7ax5AgKGlm5g0brlM2exI2zr8xpX7hHawjp?=
+ =?us-ascii?Q?hMPyfxHxFPUDJjhtQZdDQwF7JgrrcF5x+9e2fvfnXBfMl9B7XsyPKJlzsz8L?=
+ =?us-ascii?Q?YHs4k0+EZR9ohMZa6WIEghEhJJdpFmyDK5ksFcVM/HEQXKh1DykgaNI/EuGX?=
+ =?us-ascii?Q?dSkiHomaySQImA0pSw6taIF+L7ITblBvVvQZCoqo3nGTbdycHzRtMeXIDz2A?=
+ =?us-ascii?Q?xsgqt6jhpQn0syVdCr2kCnZxBqxBUa4GaJLfBY7JI0kCYhsmuhTtIsJdlhQI?=
+ =?us-ascii?Q?qSmWbIDW6D+GLCXa+RTqMHI0UfLF3IumQ8ivbzkWkW6I/Xh6ibrxsl7WtjaJ?=
+ =?us-ascii?Q?ZFMr52PHzF6UZRv/HJZ6mhOsPALMUvowtEm7m9QJ41L4uBSAOPXeQxaz6dO9?=
+ =?us-ascii?Q?Y9odkJ6HONSoW1fE46x2QLoGeVhddDIL4ybeMCqUIVFSUosyCm/qGKybVxoE?=
+ =?us-ascii?Q?fSLq18t5FJIScgkLULCwYs9P0MVOQEEaaLLmzA/Hs+oJ3M8t40ID15+CmWkQ?=
+ =?us-ascii?Q?hxkpGMyy2NJKVJq0ODwyuelTy+d3DwWTGyRK7/2jhMEtKYWmba+jgDE7Ewhu?=
+ =?us-ascii?Q?vI6FKzW7VKYky5nyd8ygr9NYyKdR9gRN25TO8b8W7PfXsG+pIkSnP6h6294K?=
+ =?us-ascii?Q?jp7orG4GHLdaNqKwCxMUnqlRxF+UzRTDQmapu7Cnl5PuTiyagbTGNxakq7f5?=
+ =?us-ascii?Q?lK1bsqJQtjrtY6Lra37HDPSfoFi6Y4P0WO0o1z3lpiIIQfewFRFuJms3Z7vX?=
+ =?us-ascii?Q?BMGmHMcmQePzHyNfk02rqengOiju8yDAwxySEQp/LxYL66SJdlkNXQgMwTWo?=
+ =?us-ascii?Q?ibWKbl9WP+ZjkKFZ+9gKU2xIiojEjQSTqb39W5BtX8j6k7mTodbwFlnuo2uM?=
+ =?us-ascii?Q?23p6Kua6SuGqL5S0lxePZLkrCOqfwDG+nGnRQRt9NgChqgHA5+Tt17Hp1hKA?=
+ =?us-ascii?Q?hhkZ6CPaO8ZH+2wm/K7UWC+b342y414b43u5U9dCpbhAysBe0m54DS0XgoUB?=
+ =?us-ascii?Q?h7LuUhn1ff7vvIxdTq1Zsq4CbFqMNgjDDdyYyGtmdVCavSaz2EMYcxXg4Gh3?=
+ =?us-ascii?Q?UHX0nOmwgOfGISMEu4JXRkhsJz6XnEjNCvwRCiiEI82mbmI3gK1AfejAhOTB?=
+ =?us-ascii?Q?BxPTCeExgXdkDp8z5Bhc2dkENO7zq1Ekp7qDiG1BU/NTzkeq3EQRVZwEBaHY?=
+ =?us-ascii?Q?wo65xtmvKAAYkzX+xRwls8TUgxRAvDlmMj3tldjrZ3zjdsCi2IU4W+Pd/x1A?=
+ =?us-ascii?Q?tAhbby3QZMMsB7ABCt2vepOpG1YLtB6Thugbt+hILFVD1tPnY4TryNGeLOxC?=
+ =?us-ascii?Q?WJ4ppp/tmq6t/hlkwkQ6wQiJa4L8lu2rySrKCe4/ssQ2q6tPjU+8wREDN2EY?=
+ =?us-ascii?Q?nBsvBYOCTWuUjerzIREE2rSjNM16RxneAavDczhIoGV15nljzYyhiCkcY7ft?=
+ =?us-ascii?Q?R8A0hp/NrAOeXOQPCd4j9YP7yvciRaPhyIah5gtO?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d940cbc8-faae-437d-d033-08dd661a3c57
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2025 12:41:42.5676
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: W8acDCIxlgMJTlh8Evs8Pd0Q3WiHsb5UMklrqoVpriwgH7LqJ0BTqnBjzz+GTyL8
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4431
 
-On 2025/3/17 23:16, Toke Høiland-Jørgensen wrote:
-> Yunsheng Lin <yunshenglin0825@gmail.com> writes:
-> 
->> On 3/14/2025 6:10 PM, Toke Høiland-Jørgensen wrote:
->>
->> ...
->>
->>>
->>> To avoid having to walk the entire xarray on unmap to find the page
->>> reference, we stash the ID assigned by xa_alloc() into the page
->>> structure itself, using the upper bits of the pp_magic field. This
->>> requires a couple of defines to avoid conflicting with the
->>> POINTER_POISON_DELTA define, but this is all evaluated at compile-time,
->>> so does not affect run-time performance. The bitmap calculations in this
->>> patch gives the following number of bits for different architectures:
->>>
->>> - 24 bits on 32-bit architectures
->>> - 21 bits on PPC64 (because of the definition of ILLEGAL_POINTER_VALUE)
->>> - 32 bits on other 64-bit architectures
->>
->>  From commit c07aea3ef4d4 ("mm: add a signature in struct page"):
->> "The page->signature field is aliased to page->lru.next and
->> page->compound_head, but it can't be set by mistake because the
->> signature value is a bad pointer, and can't trigger a false positive
->> in PageTail() because the last bit is 0."
->>
->> And commit 8a5e5e02fc83 ("include/linux/poison.h: fix LIST_POISON{1,2} 
->> offset"):
->> "Poison pointer values should be small enough to find a room in
->> non-mmap'able/hardly-mmap'able space."
->>
->> So the question seems to be:
->> 1. Is stashing the ID causing page->pp_magic to be in the mmap'able/
->>     easier-mmap'able space? If yes, how can we make sure this will not
->>     cause any security problem?
->> 2. Is the masking the page->pp_magic causing a valid pionter for
->>     page->lru.next or page->compound_head to be treated as a vaild
->>     PP_SIGNATURE? which might cause page_pool to recycle a page not
->>     allocated via page_pool.
-> 
-> Right, so my reasoning for why the defines in this patch works for this
-> is as follows: in both cases we need to make sure that the ID stashed in
-> that field never looks like a valid kernel pointer. For 64-bit arches
-> (where CONFIG_ILLEGAL_POINTER_VALUE), we make sure of this by never
-> writing to any bits that overlap with the illegal value (so that the
-> PP_SIGNATURE written to the field keeps it as an illegal pointer value).
-> For 32-bit arches, we make sure of this by making sure the top-most bit
-> is always 0 (the -1 in the define for _PP_DMA_INDEX_BITS) in the patch,
-> which puts it outside the range used for kernel pointers (AFAICT).
+On Thu, Mar 13, 2025 at 05:35:11AM -0700, Yi Liu wrote:
+> PASID (Process Address Space ID) is a PCIe extension that tags the DMA
+> transactions from a physical device. Most modern IOMMU hardware supports
+> PASID-granular address translation. This allows a PASID-capable device
+> to be attached to multiple hardware page tables (hwpts, also known as
+> domains), with each attachment tagged by a PASID.
 
-Is there any season you think only kernel pointer is relevant here?
-It seems it is not really only about kernel pointers as round_hint_to_min()
-in mm/mmap.c suggests and the commit log in the above commit 8a5e5e02fc83
-if I understand it correctly:
-"Given unprivileged users cannot mmap anything below mmap_min_addr, it
-should be safe to use poison pointers lower than mmap_min_addr."
+I'm tempted punt the error case handling for PRI flushing to another
+series as fixing it properly looks a bit big.. Maybe just code this
+series to assume PASID attach success for now?
 
-And the above "making sure the top-most bit is always 0" doesn't seems to
-ensure page->signature to be outside the range used for kernel pointers
-for 32-bit arches with VMSPLIT_1G defined, see arch/arm/Kconfig, there
-is a similar config for x86 too:
-       prompt "Memory split"
-       depends on MMU
-       default VMSPLIT_3G
-       help
-         Select the desired split between kernel and user memory.
+The attach handle locking thing needs fixing, I hope you can just
+allocate new attach handles and not change that design, drop the first
+two patches.
 
-         If you are not absolutely sure what you are doing, leave this
-         option alone!
-
-       config VMSPLIT_3G
-              bool "3G/1G user/kernel split"
-       config VMSPLIT_3G_OPT
-             depends on !ARM_LPAE
-              bool "3G/1G user/kernel split (for full 1G low memory)"
-       config VMSPLIT_2G
-              bool "2G/2G user/kernel split"
-       config VMSPLIT_1G
-              bool "1G/3G user/kernel split"
-
-IMHO, even if some trick like above is really feasible, it may be
-adding some limitation or complexity to the ARCH and MM subsystem, for
-example, stashing the ID in page->signature may cause 0x*40 signature
-to be unusable for other poison pointer purpose, it makes more sense to
-make it obvious by doing the above trick in some MM header file like
-poison.h instead of in the page_pool subsystem.
-
-> 
->>> Since all the tracking is performed on DMA map/unmap, no additional code
->>> is needed in the fast path, meaning the performance overhead of this
->>> tracking is negligible. A micro-benchmark shows that the total overhead
->>> of using xarray for this purpose is about 400 ns (39 cycles(tsc) 395.218
->>> ns; sum for both map and unmap[1]). Since this cost is only paid on DMA
->>> map and unmap, it seems like an acceptable cost to fix the late unmap
->>
->> For most use cases when PP_FLAG_DMA_MAP is set and IOMMU is off, the
->> DMA map and unmap operation is almost negligible as said below, so the
->> cost is about 200% performance degradation, which doesn't seems like an
->> acceptable cost.
-> 
-> I disagree. This only impacts the slow path, as long as pages are
-> recycled there is no additional cost. While your patch series has
-> demonstrated that it is *possible* to reduce the cost even in the slow
-> path, I don't think the complexity cost of this is worth it.
-
-It is still the datapath otherwise there isn't a specific testing
-for that use case, more than 200% performance degradation is too much
-IHMO.
-
-Let aside the above severe performance degradation, reusing space in
-page->signature seems to be a tradeoff between adding complexity in
-page_pool subsystem and in VM/ARCH subsystem as mentioned above.
-
-> 
-> [...]
-> 
->>> The extra memory needed to track the pages is neatly encapsulated inside
->>> xarray, which uses the 'struct xa_node' structure to track items. This
->>> structure is 576 bytes long, with slots for 64 items, meaning that a
->>> full node occurs only 9 bytes of overhead per slot it tracks (in
->>> practice, it probably won't be this efficient, but in any case it should
->>
->> Is there any debug infrastructure to know if it is not this efficient?
->> as there may be 576 byte overhead for a page for the worst case.
-> 
-> There's an XA_DEBUG define which enables some dump functions, but I
-> don't think there's any API to inspect the memory usage. I guess you
-> could attach a BPF program and walk the structure, or something?
-> 
-
-It seems the XA_DEBUG is not defined in production environment.
-And I am not familiar enough with BPF program to understand if the
-BPF way is feasiable in production environment.
-Any example for the above BPF program and how to attach it?
+Jason
