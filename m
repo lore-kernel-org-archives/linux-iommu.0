@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC4BA20D502;
-	Tue, 18 Mar 2025 14:19:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20EAA20E317;
+	Tue, 18 Mar 2025 14:19:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742307544; cv=none; b=gfEUt+hPbB9ReDzYpHep+iMWybybE/wQqvIDnO3u3HmsekxbboKryTMUWM9qbx8of92Jt3+Fe83Xm5ngPzsNbs50U2V6YuzeAriIqTf08AD8jxexJb7DFBwUz5JdrereBeBX9U2Fo7TBayi6Qsn+velnyCY/yR8Ak9qqxGu7BII=
+	t=1742307548; cv=none; b=ZRGZWOyRaoVBfSTmLhOa403mMO3Dco7+mSxEWpvHcfvmDmBJMqpOpHXAb9geMlCKDhHsGZnWJl8ZCH/tzWeZeZVePpym7Z9qL656wxttq+NM0cOCMelzv3YlaQk8LkjuheBTUsnBhjlyvJu1TuTj1tIT/7TMkNBkc2GIEHdFduk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742307544; c=relaxed/simple;
-	bh=epxV7GtHxcvtkAeq8eZfhijBk8m+5xzi3EFgfO0RqKs=;
+	s=arc-20240116; t=1742307548; c=relaxed/simple;
+	bh=DLBSdfjhrcTO18lXkihNamSUSA2kNdGMQBdw1Ge2tAM=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=NNhcCpwXoL31IRfihxH0vkr03FE+3R5OFFPQcqTlWfbHHqJTpfEYNDai3AUCDXaHgp/k3t6nMrooruIw0Y+wjAK+77kPL82rf8tuoFrDoaVYx0vr24gN5kUA1Y1miB6ghyEpmYQYcLCu0gb/VQiwVQMlFqNDsiwRBfCytyVvmUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rQYEYPoN; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=rHsMNKSLj4jC5t6el25tL3SJjn1roiOKEWgNiSZlV3nXnDExJ41jkD4jMbGRejcEPAdBv5pUHCCXjhzRGw/67xc3MBw2//V+Glm9WBiLBKLgZtkfwvj9S4VzDe9IJU03KbUMsCU7yyorb0eOuQwPINmRVzllbVrzU5ys57ZgMPg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fKZyiF8w; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rQYEYPoN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F03BC4CEE3;
-	Tue, 18 Mar 2025 14:18:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fKZyiF8w"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECD35C4CEDD;
+	Tue, 18 Mar 2025 14:19:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742307543;
-	bh=epxV7GtHxcvtkAeq8eZfhijBk8m+5xzi3EFgfO0RqKs=;
+	s=k20201202; t=1742307547;
+	bh=DLBSdfjhrcTO18lXkihNamSUSA2kNdGMQBdw1Ge2tAM=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=rQYEYPoNW+oXRPd5s5lR1acZ8VzzZ8cr05MRwjURtoMeWvVHoUPnE+KP/0WRnAIF2
-	 dtGNeC4cX4ASjay7e2Q8iIYIJksc7zUv+ZGF4T7EnJKl9Z0AJJOju7MA4vBZNuJWV7
-	 70JfMPkP1efS1ZBuukfLV02EERQOPmCdQCvL+F/ryadIcq3BHzsHznyZqkAVhhkCJL
-	 ljyBvnYNv0Xma3n+QK4/w82zNbEiJmzQoQkGzGRGkVFvS349PhHCkoGsjTwt+ZoLms
-	 6uT9MRPXdTr2b82hcmpBcrIU8D1idvEQqiT2Wv3L+e3ZD41dq6/GnCXZd/g8A85v29
-	 PSL/E07XNqQHw==
+	b=fKZyiF8wbU2gEBgW6+z+JLzRHPBN8EAUXikYDFjAXN0BWYLGXyKszi4p1ncD67WXw
+	 0gsO9bb7p0/IdHYKWQhE7Ea4FMRsUvQqM3F7Af1OGbBuGOFZyJdiGmkwYcHr5LFXhb
+	 6mF9KjgKBR0+DkNlb+Yu5qlZZ8GFzEdRS34oIJLj4eYze0bBbbiQJP3xOoBFtqZj+w
+	 WgJrLcgNpYeB+v1pFuigIo0IV9UkjTgeF9aXTyVoVFAL0/8s2hHVlenUsAx77vex7V
+	 YMY9VMl7Ijxc55DJduVdSYLy8DQI9+VfL7CdQmscTTbVqb7PdhOchIutpjqvJmS3SH
+	 04TQmmtraZmFA==
 From: Andreas Hindborg <a.hindborg@kernel.org>
 To: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>
 Cc: <rust-for-linux@vger.kernel.org>,  <daniel.almeida@collabora.com>,
@@ -39,14 +39,16 @@ Cc: <rust-for-linux@vger.kernel.org>,  <daniel.almeida@collabora.com>,
   <linux-kernel@vger.kernel.org>,  "Christoph Hellwig" <hch@lst.de>,
   "Marek Szyprowski" <m.szyprowski@samsung.com>,  <airlied@redhat.com>,
   <iommu@lists.linux.dev>
-Subject: Re: [PATCH v15 00/11] rust: add dma coherent allocator abstraction
-In-Reply-To: <20250317185345.2608976-1-abdiel.janulgue@gmail.com> (Abdiel
-	Janulgue's message of "Mon, 17 Mar 2025 20:52:07 +0200")
-References: <rTVBNBYxl4bn6nnkXBjTN8d-dpiCOR32i2Fpe5-wuhzcGjijW1iXnKaA4pbok32ockodVqTYGEfEA_JVpOC3ZQ==@protonmail.internalid>
-	<20250317185345.2608976-1-abdiel.janulgue@gmail.com>
+Subject: Re: [PATCH v15 11/11] rust: dma: add as_slice/write functions for
+ CoherentAllocation
+In-Reply-To: <20250317185345.2608976-12-abdiel.janulgue@gmail.com> (Abdiel
+	Janulgue's message of "Mon, 17 Mar 2025 20:52:18 +0200")
+References: <20250317185345.2608976-1-abdiel.janulgue@gmail.com>
+	<1vuR_eOzfIz1yigvLbgiW9YYnm45qzIRwfjp-7reCYpDDiRI3zrmkDbA6XtHpMipLTm10-tUwMZixJsjvf6T9A==@protonmail.internalid>
+	<20250317185345.2608976-12-abdiel.janulgue@gmail.com>
 User-Agent: mu4e 1.12.7; emacs 29.4
-Date: Tue, 18 Mar 2025 15:11:49 +0100
-Message-ID: <87msdiig2i.fsf@kernel.org>
+Date: Tue, 18 Mar 2025 15:09:27 +0100
+Message-ID: <87senaig6g.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,22 +57,14 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Hi Abdiel,
-
 "Abdiel Janulgue" <abdiel.janulgue@gmail.com> writes:
 
-> This series adds the rust bindings for the dma coherent allocator which
-> is needed for nova-core[0].
+> Add unsafe accessors for the region for reading or writing large
+> blocks of data.
 >
-> For v15, document safety comments on the exception of usage on
-> read_volatile and write_volatile as suggested by Boqun Feng.
->
-> This is tested on a Nvidia GA104 GPU device using PoC code which parses
-> and loads the GSP firmware via DMA.
->
+> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 
-I messed up and replied to v14 of the series for patch 3, 6 (x2) and 9.
-Comments still apply to v15.
+Reviewed-by: Andreas Hindborg <a.hindborg@kernel.org>
 
 
 Best regards,
