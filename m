@@ -1,106 +1,96 @@
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E5F21EF37B
-	for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 17:41:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE2F420AF6C
+	for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 17:58:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742406062; cv=none; b=H8H9hTCLpj79zGVwW51mrvXsttfVwagcuXtpIvEpEL6bF36wGtxMj9UT5fd9ERNV3eTR3EnvMwMeHfOiH4kasn3aA+XnKhgu1n9K/ATy7uiJGQyV8pqoOcr6NV3XK6yqEt9OOoolARh95yvto5Rnz8CEmnkAPlAElh9QPrY5kho=
+	t=1742407124; cv=none; b=BA0OV6flTsN04B190GFxRkvEIdivbP1+tIKQVMKGHWqnTmtFLNu0LDegaMovTl2HGhAcJdqqV22v4kcq6NCXjnjK7LRXvW5GHEtXpVwtZGGBp4AwQJhULO8vhzBKm49AcyJsrhJgfsjstb1Cm0HjSa8tprsROlH5VXs5SkBYA6I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742406062; c=relaxed/simple;
-	bh=Uup4ij0e3QxR7P+2AXE6ojI6gZ035al5TOyCCZJD8FY=;
+	s=arc-20240116; t=1742407124; c=relaxed/simple;
+	bh=O1aeb0KFlrkj4Yiw1nWYiPzizeq56+6Mn3GDJKk7WrE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QYbyoeCmcFgrcqmNVGS10k7LMYVWz3pJNfbN1QNoXgoyh7uHPGoXf0aRFdSBpb5MJhFnLaYIgWrqcxFHPL7uzqJ0Nrv/gKPOsyxo5sanPdKp1ep5nEe/ehryfQYnX/Vc1vH1RQf9tvuXLM6UQ9ZC5j1UVyfKVkgrzYi2bJvCQ+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IHP1raAJ; arc=none smtp.client-ip=209.85.222.176
+	 Content-Type:Content-Disposition:In-Reply-To; b=DqSCf9xEfppRrlgkAIbht10ur8YDrOCIp9gQdzD7GnCTG4kwCWlyFhDRi1bW2asPsGAJhi9A7DbZ+gvcGZZ4Mufru+nl5J/f8NscXBwBFI3up8f3d5d8alFvTzvmOApqnY/kxeFZIbd9BVqfor21hQfGziHpmqSZcW6in6Yv9B0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=biLOm9iV; arc=none smtp.client-ip=209.85.222.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IHP1raAJ"
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-7c24ae82de4so807411185a.1
-        for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 10:41:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="biLOm9iV"
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-7c542ffec37so707132185a.2
+        for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 10:58:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1742406059; x=1743010859; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1742407121; x=1743011921; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=leCUW9KEkZQcVeVok9ACFyeDj4RZoftXqhcJPMWCJYU=;
-        b=IHP1raAJFekGsY4X6L7J/pbPw/z+vXiYEjvh+AMons5tYcpmm8HrfGn8fQ/+evgu36
-         e4m/qbriQcZ8TQqaSrw0UPPT6Jy++m5ro2ocZXkg3u9oPUajVALRdgL75076+W118tgU
-         JIMRNaiXVTdUbeBWEyPgbCVnv3dnWsASFbw2i92OLVuYD0DyZLYUEixHfYiW1ijjD3M6
-         j8xTYtsOS2VsrTw7STAcJMbSsSLdBVEA4FBZf/7SdvVl7ATkzyS0IcYKAcuNX13g8UgI
-         l6jD4Bv4xemLutNoCZ0hp2hUDFSBqslboEf4GlSaktfCbpaJPKWlCjLBENCi4BXDvDF6
-         Po6A==
+        bh=tk5ycb3N9meE73NCm46CD0AtZuFHAdivFMZfwt24RPU=;
+        b=biLOm9iVf8ogjxm0VUfCCAqsYuRCHUDgPoNRBmfiXugz/YTcAlTYXI9x9mNFuBOSPx
+         QHl3N8Al+p6a2XqSIoPtdjVKQKJCmjgdssagQ0vN6VzFaFj+HzX3J11T/SGVAKj2Iiay
+         0hLNsFkEjC6pILi0YePcon0NppodC8JAYnuP4t57shOYb0NGsSa4rHDfEWbldOMtnkJB
+         42ZtCLAvWh8ZtczOj4ZGroOfgWSPAoC3y+2dEEZy+D2zr1OJiYu+31Qwr2/QokAc9zbO
+         Q25C1FhhHIHEJgan2Zq4+8B/dtcAkY+CYciOcLho6A7QUt/b3+3g/3gBkYPcfupgm/Uh
+         7ToA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742406059; x=1743010859;
+        d=1e100.net; s=20230601; t=1742407121; x=1743011921;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=leCUW9KEkZQcVeVok9ACFyeDj4RZoftXqhcJPMWCJYU=;
-        b=Zu2G8QwxXMF003zjT3kq1JhSNL5OiJ32YL34qFu3OBsmq0x0bkMPtzFAmbUKlN5UvL
-         Y9LfuXbY/m4Je/EDn9QMgnExOIdoR9Kr7A2jCXKVkxmvYY7HpMw/Gs4ByidLawxFe/FP
-         6h++tGWzbv30En2UU2xC5bwMDg6A+aYIpGKQXs1YW9it1cKTsb1XkNzIRv4p2T9tSHFT
-         hRBjy2PSmGkuhfVA8UgUGynnfJMXt1C6Ha6b/GGoDQVs/QpX+9qyOAlb61j05sHhiwdT
-         BCOLV/f1US7fH1IWswLZk92vEBHuV2eAHGnkxYdQyB6qN3XjiZ1DuIvqQsN8AjZoSPnI
-         clFg==
-X-Forwarded-Encrypted: i=1; AJvYcCVy9CpatZKh7SDKEnsV+79K2N6WMsyGZ2mOBff5MmFIi8R89Vf/XfwaZnWQZrLn6veQvHGjcg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzuUKY0TxerBpkArAavCcGOt67Q/OyMxIBZM4iGzlcyhqJCe/UG
-	ePwlhhFvvpokNpZFJ3htKCUjPho1d6JcFZqXhttKrrVZeZyXB81iYhFX6To/fGg=
-X-Gm-Gg: ASbGncvduvXyVYG0zVF/+eKHXHUhnDX6e8gs6QZvyM6jjAiTDp6J2zy+wAfsWc2DNdr
-	zesdEfLAllulC8HGqY7JJ0LNg+V96NG3L7cOfOuGVq+o2ijZ4l5l+JuU6vmBzPM77GtteB0JbDL
-	I/w0S+mOOctXvaz1FsAsjbMIAswBgstzaPSGUQN8jGpRXKywfqD8R92AdasdlK1H9YEZdwd9mNX
-	dfdE8rt5kxW6uUJA+DAIH+4AIs5FGsqkFJad/pjzS+i5rGpn9pX2AdEUyvMrPGYVPdFt8G+IEvk
-	GSyRMcLWxdpgBMfvpK03k3EZAwMdvA1/23bOIso5T4UAPfNoMsCCHTiyjmo4dQvXz97d0DNFNyY
-	B0QdQelVD3mM1rhb6mudYghUpRY5F
-X-Google-Smtp-Source: AGHT+IFoJAQ9bGba/Z0yZg+D8yG6xp2ytZSUuDU+bbhNp9w3ofz/kSX0XQcOY4VVJjVXQ+26hrcvHQ==
-X-Received: by 2002:a05:620a:57b:b0:7c5:6ba5:dd65 with SMTP id af79cd13be357-7c5a84a3654mr479964285a.55.1742406059344;
-        Wed, 19 Mar 2025 10:40:59 -0700 (PDT)
+        bh=tk5ycb3N9meE73NCm46CD0AtZuFHAdivFMZfwt24RPU=;
+        b=sybKz6rF+HzVue5j1LMEUJWDhP4yMLm2LpkmFHE2UNHrdx3I+gb1jHud1k6uRUHP3e
+         9hAPHsPMGylWKHpHH2dN5CNb9TatHfG30Fcs5yLoo4/9OlinpYl/e+kvELOeo1EfjlRF
+         lRNkw8yN2IeuExMCr1TmIdACqiMXSv4d11EmuaL1VhtWTLwpWXzXcxzyzhLOw9eF6aFF
+         iA7IOTzKK5FB7MDIGwsboneoHG7HWPs/9KY4+0vQFKyTsLQuox6H/AwwajpZM7IJgVbG
+         P/bnM8TGFDontszBjtPK+AkNyqVluH4QeN/JYzslHH1roMW7NIKyO/7Tr+wXGhW/dU6K
+         ydcw==
+X-Forwarded-Encrypted: i=1; AJvYcCXNQXewKfegkXwVbtvOccF5F9RbY82NMq4BoSS8VbMVyQbtlPufdfP0c192aHRdZlqIbuRMsA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw+y6rc3KJw23SMnmC+TB99DhM8bNvcnLfSYKJPRrypKOdw7RJ/
+	WtBSEIEPn7tiZ2ROSpPLx/4Ysuk3NcXrw9gOeMPH9fAtivxJrZDdJeQJXkpu5mg=
+X-Gm-Gg: ASbGnct2Vn6b2VLOEaGTKjAbaYH2esH/Z82clNS+11jDu95cw+wML1BlMz8Yidzie2j
+	jsjGDEJmdnPg2bBHXAjek9qgHOL7g8BVo250W7qfAJFkzDu5BHu1ZW4i08XbGhmHxaYqh3F9JP/
+	+OaAcFbarUkXUCwG+omon38hTmxDKOQYrHeIFzMeXyVkOj6KzVktswBZ51yhnEynAHwed0ajqpK
+	VIWAO/W1TGEK8pxCFkmFTjcLpX5xSLKU0HfmZV3zU+TdKyd5UsoK70DM2yPUoqK27DLTI6OqivR
+	w+/CaiCeAFQvl0JXtUdoYPBWCD4wdWnbxFaL7HIfTxqwq1wYEWd9+mzzO3LIMF1fFMtUF8dCA2z
+	/RKQHepXF8h6HaQzxaA==
+X-Google-Smtp-Source: AGHT+IH//pIx1EBbRFqDU6QPhXC6odo+Ppd2dshOt/mNgQMR0e3nRHsssO7Vo2UonDgQd/fB3+YCbw==
+X-Received: by 2002:a05:620a:3189:b0:7c5:5154:cb2 with SMTP id af79cd13be357-7c5a839688cmr568357985a.15.1742407121681;
+        Wed, 19 Mar 2025 10:58:41 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c573c4dd2bsm884915085a.14.2025.03.19.10.40.58
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c573d8a62asm885096585a.96.2025.03.19.10.58.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Mar 2025 10:40:58 -0700 (PDT)
+        Wed, 19 Mar 2025 10:58:40 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1tuxPW-00000000WcK-0irF;
-	Wed, 19 Mar 2025 14:40:58 -0300
-Date: Wed, 19 Mar 2025 14:40:58 -0300
+	id 1tuxge-00000000Wns-1mXJ;
+	Wed, 19 Mar 2025 14:58:40 -0300
+Date: Wed, 19 Mar 2025 14:58:40 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: Michael Roth <michael.roth@amd.com>, x86@kernel.org,
-	kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
 	Bjorn Helgaas <bhelgaas@google.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Zhi Wang <zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 12/22] iommufd: Allow mapping from guest_memfd
-Message-ID: <20250319174058.GF10600@ziepe.ca>
-References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-13-aik@amd.com>
- <20250218141634.GI3696814@ziepe.ca>
- <340d8dba-1b09-4875-8604-cd9f66ca1407@amd.com>
- <20250218235105.GK3696814@ziepe.ca>
- <06b850ab-5321-4134-9b24-a83aaab704bf@amd.com>
- <20250219133516.GL3696814@ziepe.ca>
- <20250219202324.uq2kq27kmpmptbwx@amd.com>
- <20250219203708.GO3696814@ziepe.ca>
- <604c0d0e-048f-402a-893a-62e1ce8d24ba@amd.com>
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v7 00/17] Provide a new two step DMA mapping API
+Message-ID: <20250319175840.GG10600@ziepe.ca>
+References: <cover.1738765879.git.leonro@nvidia.com>
+ <20250220124827.GR53094@unreal>
+ <CGME20250228195423eucas1p221736d964e9aeb1b055d3ee93a4d2648@eucas1p2.samsung.com>
+ <1166a5f5-23cc-4cce-ba40-5e10ad2606de@arm.com>
+ <d408b1c7-eabf-4a1e-861c-b2ddf8bf9f0e@samsung.com>
+ <20250312193249.GI1322339@unreal>
+ <adb63b87-d8f2-4ae6-90c4-125bde41dc29@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -109,30 +99,69 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <604c0d0e-048f-402a-893a-62e1ce8d24ba@amd.com>
+In-Reply-To: <adb63b87-d8f2-4ae6-90c4-125bde41dc29@samsung.com>
 
-On Thu, Mar 13, 2025 at 03:51:13PM +1100, Alexey Kardashevskiy wrote:
+On Fri, Mar 14, 2025 at 11:52:58AM +0100, Marek Szyprowski wrote:
 
-> About this atomical restructure - I looked at yours iommu-pt branch on
-> github but  __cut_mapping()->pt_table_install64() only atomically swaps the
-> PDE but it does not do IOMMU TLB invalidate, have I missed it? 
+> > The only way to do so is to use dma_map_sg_attrs(), which relies on SG
+> > (the one that we want to remove) to map P2P pages.
+> 
+> That's something I don't get yet. How P2P pages can be used with 
+> dma_map_sg_attrs(), but not with dma_map_page_attrs()? Both operate 
+> internally on struct page pointer.
 
-That branch doesn't have the invalidation wired in, there is another
-branch that has invalidation but not cut yet.. It is a journey
+It is a bit subtle, I ran in to this when exploring enabling proper
+P2P for dma_map_resource() too.
 
-> And if it did so, that would not be atomic but it won't matter as
-> long as we do not destroy the old PDE before invalidating IOMMU TLB,
-> is this the idea? Thanks,
+The API signatures are:
 
-When splitting the change in the PDE->PTE doesn't change the
-translation in effect.
+dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
+		size_t offset, size_t size, enum dma_data_direction dir,
+		unsigned long attrs);
+void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr, size_t size,
+		enum dma_data_direction dir, unsigned long attrs);
 
-So if the IOTLB has cached the PDE, the SW will update it to an array
-of PTEs of same address, any concurrent DMA will continue to hit the
-same address, then when we invalidate the IOTLB the PDE will get
-dropped from cache and the next DMA will load PTEs.
+The thing to notice immediately is that the unmap path does not get
+passed a struct page.
 
-When I say atomic I mean from the perspective of the DMA initator
-there is no visible alteration. Perhaps I should say hitless.
+So, lets think about the flow when the iommu is turned on. 
+
+For normal struct page memory:
+
+ - dma_map_page_attrs() allocates some IOVA and returns it in the
+   dma_addr_t and then maps the struct page to the iommu page table
+
+ - dma_unmap_page_attrs() frees the IOVA from the given dma_addr_t
+ 
+If we think about P2P now:
+
+ - dma_map_page_attrs() can inspect the struct page and determine it
+   is P2P. It computes a bus address which is not an IOVA, and does
+   not transit through the IOMMU. No IOVA allocation is performed. the
+   bus address is returned as the dma_addr_t
+
+ - dma_unmap_page_attrs() ... is impossible. We just get this
+   dma_addr_t that doesn't have enough information to tell anymore if
+   the address is a P2P bus address or not, so we can't tell if we
+   should unmap an iova from the dma_addr_t :\
+
+The sg path fixes this because it introduced a new flag in the
+scatterlist, SG_DMA_BUS_ADDRESS, that allows the sg map path to record
+the information for the unmap path so it can do the right thing.
+
+Leon's approach fixes this by putting an overarching transaction state
+around the DMA operation so that map and unmap operations can look in
+the state and determine if this is a P2P or non P2P map and then know
+how to unmap.
+
+For some background here, Christoph gave me this idea back at LSF/MM
+in Vancouver (two years ago now). At the time I was looking at
+replacing scatterlist and giving new DMA API ops to operate on a
+"scatterlist v2" structure.
+
+Christoph's vision was to make a performance DMA API path that could
+be used to implement any scatterlist-like data structure very
+efficiently without having to teach the DMA API about all sorts of 
+scatterlist-like things.
 
 Jason
