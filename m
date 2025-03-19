@@ -1,128 +1,304 @@
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF4DB1E1DF4
-	for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 12:04:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12F652063FD
+	for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 12:18:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742385849; cv=none; b=qhLZ2aBMRE+D5tKrsIB/I5PDcICn2aTciIChGz6Uk0bhlOQ/dyliusugnN8Bf/aOYG3G01DkJaEFgaSisjoD+Y2o9RtiUgpHikZrxzH5ZBEQBZUYmT68rpg5Q4uCFWv3PpJW0bs+230gMmbU6E0ZOojxoN0PFg8GxOp12sTEXfc=
+	t=1742386729; cv=none; b=lV9g4/pcvn7+R33iT9BhJlSD49o8rzJ7OJhqTpo5GJY8wUuVU2gjKwkbHKrvOcj+mMW4gI+o5vJOASB8xGev24YotOH+0mbS3C+EXm1Y0DOL7GY1XNDaAS96VVd91aqy/403ChvG4DigqKisg0yx3tZt6qMkYa40N5lw7mWCH5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742385849; c=relaxed/simple;
-	bh=AD8+ASrb49oYmuYfDC2fTxdzZCxtehPaYNi7PkJIPt0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Pz1Z2SGxHGqhaX6WuzV3/2QB7T2jiiOZAcOi1w0dXP0VRpMSvVA5k5iQJXxhsGzVzMMCarUQTzlH1LPbJSu8H2Q1BwXoSNAcDnW8lgpst+UxiwzNjuU79YuqEVucRz2g+iVWIWFEf9ei/HlxPJ0aJe4B32VGWvJ7l8XV/ggSxPE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kNEKXaDu; arc=none smtp.client-ip=209.85.219.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1742386729; c=relaxed/simple;
+	bh=KgYL2iBbIl4ID3F5Zp0f8fqT+lceRhWHhxiqh0bTLSE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=ksAVnuxw6W1vf3fes4B/3GnDVXmCAWLktGKtWzuy+vaJSRfeT7fCIjwgDz8m2gwbkb7dUOlp2d6FFJ9h3CwDgtSJglMJfiSQAwODSWBpJJ+QrX0L/m21pkF5QcLpiKic7utuQxzWUAwByarRon1tcvoPI8ZMTMLyshcKYSAaqh4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=IIx0ypMU; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kNEKXaDu"
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-6e8efefec89so57616236d6.3
-        for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 05:04:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1742385845; x=1742990645; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MAyCxENHSaBMJRzBfPPLtA7uhu2XAFyInEjH2pl50vc=;
-        b=kNEKXaDuX3Ukm51JsShul4VTMWBA6NzkRvCFjulNHJ08lME33MZxrBanYcJfZY9iJ0
-         YtEYnIcXHZc2zpyoNntlvIDkDYW+YCMjsNwUK8JNwBMPY2kF0QEOSToWY0fXEknWmgEM
-         bPSLSacfmUklF3pyMDWY7OZ+JSSQYU+lHvaZYu/+veaRfoDUE7f+x445dVmzih2bYRMt
-         EJimR53uE9KAqsJFJLwKrfU5yvVcUL/bapY4afL34l63oPhOirCh/TKv+4P9yQzlPtJl
-         R9xvqenTVetnmwfnSb9o03PmEUJXG/vW2K1c3MHYzKmA5XXKZDZG+OpMTRvBFVNwnaAt
-         bplA==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IIx0ypMU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1742386726;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=w7LZN3s3ANCR0zgYBV60pzDP2uQQdMTBffVD0Z6U/l0=;
+	b=IIx0ypMU/cwsE5tsB+2YgoTz6s/+43HMJbPX3tDQXVAQojSI7Sir/+2L9NK4+/vxhrBYEL
+	nHVLr6QFdVTpT9qQD43Z4pAfYff56ISvWsDVn7fa27sUNnFTgauzMKJ0puKC4Jci3X53lK
+	i7vsa69bJEsPRzo814FxpVnnn6wWtPs=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-642-2OGP0v9kMrulQ7TXEcChSw-1; Wed, 19 Mar 2025 08:18:45 -0400
+X-MC-Unique: 2OGP0v9kMrulQ7TXEcChSw-1
+X-Mimecast-MFC-AGG-ID: 2OGP0v9kMrulQ7TXEcChSw_1742386724
+Received: by mail-lf1-f72.google.com with SMTP id 2adb3069b0e04-54991197341so3337203e87.2
+        for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 05:18:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742385845; x=1742990645;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MAyCxENHSaBMJRzBfPPLtA7uhu2XAFyInEjH2pl50vc=;
-        b=d34Z4luu7vII4EA7HQzQAabUad33RcOTlzgblTKTlGG0YHtYCvB/UkdNeN53/yXvJY
-         fsXTnGCUEW6apLkfBgT1+TAcU5CkKP1UWH2ox5vdQ+OKf5DFywOxvnqNpy3JMwy6cYfF
-         bIpfGinxKZQ8KeF7GAzbw51lPzibZ5CdIqFiYjn9j+HNWsdh2tKXF7ND0mr3FzINF7Hn
-         bN42Wf1kTUQ8DGXb19L16dihN/PpRxKrLmZeioKCJO5KakG+EH6FJXX14TRnkW1QAbeZ
-         i3FfjDk5/yVdRf+WWru6RX3gh1paJxavGv/1rS4EySipvh/MmU+lqlhn6PbAM541dNBO
-         f4Jg==
-X-Forwarded-Encrypted: i=1; AJvYcCVuJBYP8Pgb/7mzqlPG198w8SNUzUGwUsh3SedZXjzXSCCTTJev9oQuH/uWkDbQFZrDI8VT3A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxL83WrRqNTrmyfdFbnPjoiH+AhwtOhtrCgKRayErvOPEu4m2R/
-	2UIrMmTkxfIkXEJe5qFwPcIR2A3YsP3oohfXT4Kabtwa2FQm83fTif3UyPncSZ/6/9S1oV1/p7h
-	v
-X-Gm-Gg: ASbGnctI5NFU5GfOFYqxzmyzv/pjoNZsehq7qqxmwMg/wqCT0IiqlLL1d+i6YTYpGje
-	4p/jy8gzSojoT6+WGMZ1TAvKRNQG9yTS/XpqbDE4052t1NBnNHpup2iBX5jEO5CbWZ/U/DXmJ14
-	MjTrNW9gD4N1rebrcYJGrNaZTYOU9C/WfVm6UnnEfdmw9iOv9mv8uWy7nZx4uTrSyqeVBAVKqNz
-	KzEMYs7l1jVPbWhSOHeeqDRNjB2xhUEwaa1IAy1v/860AfQR/qIFhc/MvRIefYAWj7DiRpEYmZM
-	aBHNGaj1HEOUO9msRoKg4V3zLaz+czaZzOSI5kZCQm6T3tVZpfdVGTpzwrk3lITRQu82HTrIRC4
-	/XCeRSYHIfGkvWz3f86TzaKi04n0g
-X-Google-Smtp-Source: AGHT+IF2rdeEHiKMBmGX1q7qy3yZoap+uCClJ9CaVb+cXTsAtTre08hPYrRBXabP/U7Dpkwrjk/xHg==
-X-Received: by 2002:a0c:e991:0:b0:6eb:2f30:55cd with SMTP id 6a1803df08f44-6eb2f3f99e7mr11121046d6.45.1742385845646;
-        Wed, 19 Mar 2025 05:04:05 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6eade24ea6esm79688666d6.52.2025.03.19.05.04.05
+        d=1e100.net; s=20230601; t=1742386724; x=1742991524;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zHAuof8mNqwebJdSvdzZnag+45htJDLXlVltgIFNUY8=;
+        b=GI32SXfXIt1/FYCg1MEKpcOrxOUS+uZB16FXHagzDfBXnlfywlr6J8T4jJoYhOUcOl
+         op9IYyXO5hsVPRodnyNxmNIQU/dYmg96DVvRTIA/sxtUuvuYNrsUhvssQOTuFddJbLfc
+         fpnFEqffLT+8IPrFXg00VVjHVNNBwuuTHP5/yuO8F7qQi3TNAWuZMgz8leNZYlj6fMga
+         G+cknPDaSYnWVRawXA7rOD5F5tSftu9SCz9bcl9zosoNubqe+M2bq3Iq4UJ+tixzLdyj
+         2Gef5RsnX0XJDEgO1aRQ9862dZ1caTYK1aauMsXC3Ujc3S47wCtXm6VNIDQLt1Y8mI+g
+         +ktw==
+X-Forwarded-Encrypted: i=1; AJvYcCWNwTyus3+2HR9gO4J1SscCzLeI2OB26qZOC0KoGlv0nbHn4cGsgLTutpHhzfzYwUlKZ7m/AA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyzRVhgCMScveSTBZhl2cMa3zFcm/nI36qAkp9KOFE6pD9fcXj8
+	9w2KhAHchThH3iJSkPFJzAzPS9K/jDU83tv1INnEWfa7BCWxrclscMm/iCImjaFcgQiC1oCMixw
+	EDH9LQ2fb3w7S9SQw9rRo5o9l8vRCT+leKw4WFtI1vrxOx9MDvZ2w
+X-Gm-Gg: ASbGncu/Hb5bYy54zP/HvnXF0GadEZr+QP+1WOprZukAjjjsAATbFXRdO5IcaYjS77I
+	h2U6i5Oc1+2FJdDJLJwBfF2f2kVzQB9bqlM3+BieHfkHTd252woGgs9bmCokhB1ZE/kjx957Z9y
+	egcQYWvyX86+A+6ibNCSMibJch8EQ9D4ww6r7at/zBXLWGZBD7P/CpUg1UPrkEU0JD1cctAlzJA
+	5eeRJNiy6R9lurFf75It5YXXnH9jgaPPi9NPr/pgDHbtz53CPfPPuXtobrrqLxi2GQje/luLl5s
+	coY0Q+Nt2OX6jLyOhF5GRVT7V9jTPuDd5ykcF0Le
+X-Received: by 2002:a05:6512:10cb:b0:545:d54:2ebe with SMTP id 2adb3069b0e04-54acb22365dmr1045579e87.43.1742386723726;
+        Wed, 19 Mar 2025 05:18:43 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFyGYm0L4Zrm63gwHHSEdeVhZIEKSSrhZNtgIfcLFC9WB6N+6dtsumfvF4gPJciZl+hjDy7ZQ==
+X-Received: by 2002:a05:6512:10cb:b0:545:d54:2ebe with SMTP id 2adb3069b0e04-54acb22365dmr1045551e87.43.1742386723083;
+        Wed, 19 Mar 2025 05:18:43 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-549ba88536csm1927357e87.177.2025.03.19.05.18.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Mar 2025 05:04:05 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tus9U-00000000TcL-2GEV;
-	Wed, 19 Mar 2025 09:04:04 -0300
-Date: Wed, 19 Mar 2025 09:04:04 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 5/5] iommu/arm-smmu-v3: Invoke pm_runtime before hw
- access
-Message-ID: <20250319120404.GD10600@ziepe.ca>
-References: <20250319004254.2547950-1-praan@google.com>
- <20250319004254.2547950-6-praan@google.com>
+        Wed, 19 Mar 2025 05:18:41 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+	id 1634218FC0C2; Wed, 19 Mar 2025 13:18:34 +0100 (CET)
+From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To: Yunsheng Lin <linyunsheng@huawei.com>, Yunsheng Lin
+ <yunshenglin0825@gmail.com>, "David S. Miller" <davem@davemloft.net>,
+ Jakub Kicinski <kuba@kernel.org>, Jesper Dangaard Brouer
+ <hawk@kernel.org>, Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky
+ <leon@kernel.org>, Tariq Toukan <tariqt@nvidia.com>, Andrew Lunn
+ <andrew+netdev@lunn.ch>, Eric Dumazet <edumazet@google.com>, Paolo Abeni
+ <pabeni@redhat.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Simon
+ Horman <horms@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Mina
+ Almasry <almasrymina@google.com>, Yonglong Liu <liuyonglong@huawei.com>,
+ Pavel Begunkov <asml.silence@gmail.com>, Matthew Wilcox
+ <willy@infradead.org>, Robin Murphy <robin.murphy@arm.com>, IOMMU
+ <iommu@lists.linux.dev>, segoon@openwall.com, solar@openwall.com,
+ oss-security@lists.openwall.com, kernel-hardening@lists.openwall.com
+Cc: netdev@vger.kernel.org, bpf@vger.kernel.org, linux-rdma@vger.kernel.org,
+ linux-mm@kvack.org, Qiuling Ren <qren@redhat.com>, Yuying Ma
+ <yuma@redhat.com>
+Subject: Re: [PATCH net-next 3/3] page_pool: Track DMA-mapped pages and
+ unmap them when destroying the pool
+In-Reply-To: <ce6ca18b-0eda-4d62-b1d3-e101fe6dcd4e@huawei.com>
+References: <20250314-page-pool-track-dma-v1-0-c212e57a74c2@redhat.com>
+ <20250314-page-pool-track-dma-v1-3-c212e57a74c2@redhat.com>
+ <db813035-fb38-4fc3-b91e-d1416959db13@gmail.com> <87jz8nhelh.fsf@toke.dk>
+ <7a76908d-5be2-43f1-a8e2-03b104165a29@huawei.com> <87wmcmhxdz.fsf@toke.dk>
+ <ce6ca18b-0eda-4d62-b1d3-e101fe6dcd4e@huawei.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date: Wed, 19 Mar 2025 13:18:34 +0100
+Message-ID: <87r02ti57p.fsf@toke.dk>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250319004254.2547950-6-praan@google.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: gj_JWRBIBcOBAppf-iile4d-exeTuru59Q45zYlT5xc_1742386724
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 19, 2025 at 12:42:54AM +0000, Pranjal Shrivastava wrote:
-> -static void arm_smmu_attach_dev_ste(struct iommu_domain *domain,
-> +static int arm_smmu_attach_dev_ste(struct iommu_domain *domain,
->  				    struct device *dev,
->  				    struct arm_smmu_ste *ste,
->  				    unsigned int s1dss)
->  {
+Yunsheng Lin <linyunsheng@huawei.com> writes:
 
-This can't be changed into something that fails! That would mess up
-all the error handling if it ever blows up.
+> On 2025/3/19 4:55, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Yunsheng Lin <linyunsheng@huawei.com> writes:
+>>=20
+>>> On 2025/3/17 23:16, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>> Yunsheng Lin <yunshenglin0825@gmail.com> writes:
+>>>>
+>>>>> On 3/14/2025 6:10 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>>>
+>>>>> ...
+>>>>>
+>>>>>>
+>>>>>> To avoid having to walk the entire xarray on unmap to find the page
+>>>>>> reference, we stash the ID assigned by xa_alloc() into the page
+>>>>>> structure itself, using the upper bits of the pp_magic field. This
+>>>>>> requires a couple of defines to avoid conflicting with the
+>>>>>> POINTER_POISON_DELTA define, but this is all evaluated at compile-ti=
+me,
+>>>>>> so does not affect run-time performance. The bitmap calculations in =
+this
+>>>>>> patch gives the following number of bits for different architectures=
+:
+>>>>>>
+>>>>>> - 24 bits on 32-bit architectures
+>>>>>> - 21 bits on PPC64 (because of the definition of ILLEGAL_POINTER_VAL=
+UE)
+>>>>>> - 32 bits on other 64-bit architectures
+>>>>>
+>>>>>  From commit c07aea3ef4d4 ("mm: add a signature in struct page"):
+>>>>> "The page->signature field is aliased to page->lru.next and
+>>>>> page->compound_head, but it can't be set by mistake because the
+>>>>> signature value is a bad pointer, and can't trigger a false positive
+>>>>> in PageTail() because the last bit is 0."
+>>>>>
+>>>>> And commit 8a5e5e02fc83 ("include/linux/poison.h: fix LIST_POISON{1,2=
+}=20
+>>>>> offset"):
+>>>>> "Poison pointer values should be small enough to find a room in
+>>>>> non-mmap'able/hardly-mmap'able space."
+>>>>>
+>>>>> So the question seems to be:
+>>>>> 1. Is stashing the ID causing page->pp_magic to be in the mmap'able/
+>>>>>     easier-mmap'able space? If yes, how can we make sure this will no=
+t
+>>>>>     cause any security problem?
+>>>>> 2. Is the masking the page->pp_magic causing a valid pionter for
+>>>>>     page->lru.next or page->compound_head to be treated as a vaild
+>>>>>     PP_SIGNATURE? which might cause page_pool to recycle a page not
+>>>>>     allocated via page_pool.
+>>>>
+>>>> Right, so my reasoning for why the defines in this patch works for thi=
+s
+>>>> is as follows: in both cases we need to make sure that the ID stashed =
+in
+>>>> that field never looks like a valid kernel pointer. For 64-bit arches
+>>>> (where CONFIG_ILLEGAL_POINTER_VALUE), we make sure of this by never
+>>>> writing to any bits that overlap with the illegal value (so that the
+>>>> PP_SIGNATURE written to the field keeps it as an illegal pointer value=
+).
+>>>> For 32-bit arches, we make sure of this by making sure the top-most bi=
+t
+>>>> is always 0 (the -1 in the define for _PP_DMA_INDEX_BITS) in the patch=
+,
+>>>> which puts it outside the range used for kernel pointers (AFAICT).
+>>>
+>>> Is there any season you think only kernel pointer is relevant here?
+>>=20
+>> Yes. Any pointer stored in the same space as pp_magic by other users of
+>> the page will be kernel pointers (as they come from page->lru.next). The
+>> goal of PP_SIGNATURE is to be able to distinguish pages allocated by
+>> page_pool, so we don't accidentally recycle a page from somewhere else.
+>> That's the goal of the check in page_pool_page_is_pp():
+>>=20
+>> (page->pp_magic & PP_MAGIC_MASK) =3D=3D PP_SIGNATURE
+>>=20
+>> To achieve this, we must ensure that the check above never returns true
+>> for any value another page user could have written into the same field
+>> (i.e., into page->lru.next). For 64-bit arches, POISON_POINTER_DELTA
+>
+> POISON_POINTER_DELTA is defined according to CONFIG_ILLEGAL_POINTER_VALUE=
+,
+> if CONFIG_ILLEGAL_POINTER_VALUE is not defined yet, POISON_POINTER_DELTA
+> is defined to zero.
+>
+> It seems only the below 64-bit arches define CONFIG_ILLEGAL_POINTER_VALUE
+> through grepping:
+> a29815a333c6 core, x86: make LIST_POISON less deadly
+> 5c178472af24 riscv: define ILLEGAL_POINTER_VALUE for 64bit
+> f6853eb561fb powerpc/64: Define ILLEGAL_POINTER_VALUE for 64-bit
+> bf0c4e047324 arm64: kconfig: Move LIST_POISON to a safe value
+>
+> The below 64-bit arches don't seems to define the above config yet:
+> MIPS64, SPARC64, System z(S390X),loongarch
+>
+> Does ID stashing cause problem for the above arches?
 
-> @@ -3214,8 +3287,8 @@ static int arm_smmu_attach_dev_identity(struct iommu_domain *domain,
->  	struct arm_smmu_master master = dev_iommu_priv_get(dev);
->  
->  	arm_smmu_make_bypass_ste(master->smmu, &ste);
-> -	arm_smmu_attach_dev_ste(domain, dev, &ste, STRTAB_STE_1_S1DSS_BYPASS);
-> -	return 0;
-> +	return arm_smmu_attach_dev_ste(domain, dev, &ste,
-> +				       STRTAB_STE_1_S1DSS_BYPASS);
->  }
->  
->  static const struct iommu_domain_ops arm_smmu_identity_ops = {
-> @@ -3233,9 +3306,8 @@ static int arm_smmu_attach_dev_blocked(struct iommu_domain *domain,
->  	struct arm_smmu_ste ste;
->  
->  	arm_smmu_make_abort_ste(&ste);
-> -	arm_smmu_attach_dev_ste(domain, dev, &ste,
-> -				STRTAB_STE_1_S1DSS_TERMINATE);
-> -	return 0;
-> +	return arm_smmu_attach_dev_ste(domain, dev, &ste,
-> +				       STRTAB_STE_1_S1DSS_TERMINATE);
->  }
+Well, not from a "number of bits available" perspective. In that case we
+have plenty of bits, but we limit the size of the ID we stash to 32 bits
+in all cases, so we will just end up with the 21 leading bits being
+all-zero. So for those arches we basically end up in the same situation
+as on 32-bit (see below).
 
-Because these functions are required to be non-failing.
+>> serves this purpose. For 32-bit arches, we can leave the top-most bits
+>> out of PP_MAGIC_MASK, to make sure that any valid pointer value will
+>> fail the check above.
+>
+> The above mainly explained how to ensure page_pool_page_is_pp() will
+> not return false positive result from the page_pool perspective.
+>
+> From MM/security perspective, most of the commits quoted above seem
+> to suggest that poison pointer should be in the non-mmap'able or
+> hardly-mmap'able space, otherwise userspace can arrange for those
+> pointers to actually be dereferencable, potentially turning an oops
+> to an expolit, more detailed example in the below paper, which explains
+> how to exploit a vulnerability which hardened by the 8a5e5e02fc83 commit:
+> https://www.usenix.org/system/files/conference/woot15/woot15-paper-xu.pdf
+>
+> ID stashing seems to cause page->lru.next (aliased to page->pp_magic) to
+> be in the mmap'able space for some arches.
 
-This feels kind of wonky, if we need to update a STE but the PM is off
-then we just need to update the STE memory with some synchornization
-and do nothing else. We don't need to wake up the HW and issue a cache
-flush if the powered off cache could never have held a copy anyhow.
+Right, okay, I see what you mean. So the risk is basically the
+following:
 
-Jason
+If some other part of the kernel ends up dereferencing the
+page->lru.next pointer of a page that is owned by page_pool, and which
+has an ID stashed into page->pp_magic, that dereference can end up being
+to a valid userspace mapping, which can lead to Bad Things(tm), cf the
+paper above.
+
+This is mitigated by the fact that it can only happen on architectures
+that don't set ILLEGAL_POINTER_VALUE (which includes 32-bit arches, and
+the ones you listed above). In addition, this has to happen while the
+page is owned by page_pool, and while it is DMA-mapped - we already
+clear the pp_magic field when releasing the page from page_pool.
+
+I am not sure to what extent the above is a risk we should take pains to
+avoid, TBH. It seems to me that for this to become a real problem, lots
+of other things will already have gone wrong. But happy to defer to the
+mm/security folks here.
+
+>>> It seems it is not really only about kernel pointers as round_hint_to_m=
+in()
+>>> in mm/mmap.c suggests and the commit log in the above commit 8a5e5e02fc=
+83
+>>> if I understand it correctly:
+>>> "Given unprivileged users cannot mmap anything below mmap_min_addr, it
+>>> should be safe to use poison pointers lower than mmap_min_addr."
+>>>
+>>> And the above "making sure the top-most bit is always 0" doesn't seems =
+to
+>>> ensure page->signature to be outside the range used for kernel pointers
+>>> for 32-bit arches with VMSPLIT_1G defined, see arch/arm/Kconfig, there
+>>> is a similar config for x86 too:
+>
+> ...
+>
+>>=20
+>> Ah, interesting, didn't know this was configurable. Okay, so AFAICT, the
+>> lowest value of PAGE_OFFSET is 0x40000000 (for VMSPLIT_1G), so we need
+>> to leave two bits off at the top instead of just one. Will update this,
+>> and try to explain the logic better in the comment.
+>
+> It seems there was attempt of doing 4G/4G split too, and that is the kind
+> of limitation or complexity added to the ARCH and MM subsystem by doing t=
+he
+> ID stashing I mentioned earlier.
+> https://lore.kernel.org/lkml/Pine.LNX.4.44.0307082332450.17252-100000@loc=
+alhost.localdomain/
+
+Given that this is all temporary until the folio rework Matthew alluded
+to is completed, I think that particular concern is somewhat theoretical :)
+
+>>> IMHO, even if some trick like above is really feasible, it may be
+>>> adding some limitation or complexity to the ARCH and MM subsystem, for
+>>> example, stashing the ID in page->signature may cause 0x*40 signature
+>>> to be unusable for other poison pointer purpose, it makes more sense to
+>>> make it obvious by doing the above trick in some MM header file like
+>>> poison.h instead of in the page_pool subsystem.
+>>=20
+>> AFAIU, PP_SIGNATURE is used for page_pool to be able to distinguish its
+>> own pages from those allocated elsewhere (cf the description above).
+>> Which means that these definitions are logically page_pool-internal, and
+>> thus it makes the most sense to keep them in the page pool headers. The
+>> only bits the mm subsystem cares about in that field are the bottom two
+>> (for pfmemalloc pages and compound pages).
+>
+> All I asked is about moving PP_MAGIC_MASK macro into poison.h if you
+> still want to proceed with reusing the page->pp_magic as the masking and
+> the signature to be masked seems reasonable to be in the same file.
+
+Hmm, my thinking was that this would be a lot of irrelevant stuff to put
+into poison.h, but I suppose we could do so if the mm folks don't object :)
+
+-Toke
+
