@@ -1,135 +1,213 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B5F620897A
-	for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 07:43:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C994D20F091;
+	Wed, 19 Mar 2025 08:31:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742370194; cv=none; b=ev3uMeS8bkOCgVrVrfP/Icl4VDc6+mQDq9voeE/UHXWH1C7SDWiK0PfoDjhBg1E2ryEwewl3x94eMlK7/qSdsF7lf9jfIYn12xY8ibdhDFyr861xGetSCYWVoc6yJJXErdgbc8hVncNpQpIUpNaDnRfgXW3RRXRWEf/Cfo+C6kc=
+	t=1742373064; cv=none; b=RzdkwKfac6Rf+c9N9OBTOIuZiLPR4sBUmgcHPxk72VnU/5NutxShNmzge43QSrV3vvdEktIhE2ri81Y1nbdvTBZpSyjNW/vgS8PL/A9NYTrhpae/kgu7+eLemU5GkIzWddUQ6uEGjQwu8DZS/C+H1UotPz6s931hb8TuF5CFDdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742370194; c=relaxed/simple;
-	bh=BOWdO+o51kA7CISrP/hNDHWqzUQTPja6p7cnuotjM+U=;
+	s=arc-20240116; t=1742373064; c=relaxed/simple;
+	bh=w3JmB7o8CKormT/Akok+UN9U+U8VYEVmbKd3okiCYoE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hNZWkoRbWYLARers52yjiGd7dDuhLWCoa+eTY50Hhdr89m6KiS6mZuidkrNQww8qj1bcnD9uyDcGy0Xndw8bXR8pkFavJnwFY9OJILRHIOTurNL4/xga+zwffV5ryVUi8r/HxymtEmdGowBWxvsDFWpaiiQhlkFjsClOvzN7SaE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=P9teWkri; arc=none smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=WcgP+Rt+xPObIsmt1BqHd3kuIvYuVeA+JzlrwHBTJngo8cyeE61nA38kDLiV+xG6gNN1eG/sT+YCRh7/yn+BKu2pG3h0MnAqWDOD0mSfrL+Lt8Sa7Al9oLz1f8aVVDhO2E1wUo4FW4mnQhyivBvyDGOtJB972JsS+wlirjcumWA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k/ZmCalc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="P9teWkri"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2264c9d0295so62445ad.0
-        for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 00:43:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1742370192; x=1742974992; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JKBKMVRcBkeiSseD0PhvfqZxmXzf39iy04AC17lZUM0=;
-        b=P9teWkriU3UCc5BW+JYFlFuG15SCo6febLnqMUwht0CJlYl2uAu+J+r2YFg44OwWE3
-         AouT4Mu84EzTm7nbDu8PpySHvQGuLDMrbcL8csl++0/32WzV6IJt8k2F4EcnR33fGlsp
-         2LoB8GrWLvIYTUajMxoDQR0v4NxnJ9rHeLt1YHleMnIlW68rFrC5G/buc9XgUY3ZE0ZH
-         Yb5wdPLHBqR7emoDa5qidyFgVulLJqofa2+kA6hwZ6DYxhngojy5OsSoIEragZsvlgno
-         Q9TwAqkz4Ug5RYGRG3NouenVg8goDTtYE9jEQVNtL5rJ4Tsx3k0RWG9romOvUQTy9uT7
-         xq/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742370192; x=1742974992;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JKBKMVRcBkeiSseD0PhvfqZxmXzf39iy04AC17lZUM0=;
-        b=pVCrVAwHTV0NSzwSWeOof6wk9N41hQh6dMieCCLV79KDSwKBdkXR0gPC9ablYJAL0N
-         R07/ac49McrE637NzY4+1R/pW5qnHjDv8pjUvWcBApwicoTEWmBuyYpvDL0zQ9U61/0Q
-         mEze0HEf0R2ZtPRHWdBo3JVF8F5wPGbvoumOcq3baBYFvX+VJ8IjIXaKvhie/eZkWDlw
-         B61F0v1KUSY3PO13Ge0/zOkT8urPqRYauwalOgwA5dlEKox6oSKQen/rWcD3Sam6AZj2
-         OSLr7sXYNiZ7UT0/QRJH33HobjQ4L0GyQ1Q+LALOndZHlfKJ22U1KEB6yXSrEmh2WIgB
-         GVWQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVPB7SAeKmT5Dt8b9HHyFDLUTh5+F7AzPiHqG6hoaTfGhZ8d5XmOhPSOpjh4k6gr1rU44kcyA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwKcZBW089R4j3s+OfqA3bkn0/C54e9Rk26ycCEyfjxROfc/JPA
-	sEwd2oXsDsBvLvS1nb36ZUEeZsZsv0W3ORpshRrs6fUHlgSPEr8MTYqwrdz1sA==
-X-Gm-Gg: ASbGncuHwUxT9Jw0wR8wV5uMr3HVu5lob39rOMitxrSSTSFdyR4XS6og3Vy2xOomVSV
-	SLBtSDDsyq6ppQ3tRMUX3NlvoxURRZInwuXSyg61/Sfzk4ZUXVXEBwbQhaVpguhRA+TOI5Gn4u6
-	VZJZ/clUg+nHg1DiixSqocbja5EgUrOSA7DAvps0DVpKxS+wI1Sk4KG9e/zqmjSR1+CwkEx2e84
-	3eduJWhc+JOSi8pcdDJDdyqGXSbUUeqDWppWIivwl2gRbghvN8nJMrSz0ynFP61Ota/Li8408PA
-	L33KuJLJG82kj9SRiCG6NYGK6tCzMT5cVpxgYRgwxJ9bezDIXxoECGPVZ5ZPHFJC3Hjed7tjnEg
-	nEEmsMMFu0F6+HQ==
-X-Google-Smtp-Source: AGHT+IGktfZrgnJSjnprGI7k9i5cldvACdqQluIQ61zI7nq6UZikNgheNG+4tDnDNQBMyGeTMCIJRg==
-X-Received: by 2002:a17:902:ccc7:b0:21d:dd8f:6e01 with SMTP id d9443c01a7336-2264c5d1c9emr1101985ad.5.1742370191437;
-        Wed, 19 Mar 2025 00:43:11 -0700 (PDT)
-Received: from google.com (188.152.87.34.bc.googleusercontent.com. [34.87.152.188])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-225c68a8775sm107397615ad.95.2025.03.19.00.43.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Mar 2025 00:43:10 -0700 (PDT)
-Date: Wed, 19 Mar 2025 07:43:03 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 1/5] iommu/arm-smmu-v3: Refactor arm_smmu_setup_irqs
-Message-ID: <Z9p1h_PRefpHANJZ@google.com>
-References: <20250319004254.2547950-1-praan@google.com>
- <20250319004254.2547950-2-praan@google.com>
- <Z9pNCKjUMbg09Wrn@Asurada-Nvidia>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k/ZmCalc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96DF5C4CEE9;
+	Wed, 19 Mar 2025 08:31:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1742373063;
+	bh=w3JmB7o8CKormT/Akok+UN9U+U8VYEVmbKd3okiCYoE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=k/ZmCalc1dPOZG6tOAhA+Vbavt7ywew9AlCIx2pzmLHVBTMjREfKHqE2Yum/A2k90
+	 Mgo+utD6esZ3GSzapnLqbyG8yVsrTWUf4LItvlOCrYiiwuNO3yR2hQSEZpAOU6nnCo
+	 ZQRiEYn2mZ5bFSK8HEji2pCWj4CLMwBv5PoBA514qIBaTnW4NxRHmPJsRxHz6F9LM6
+	 DEj4Vkpkiz3HR+9d8OInlfDxTa9WdUELXV90gpobKxd8KKBd5UGsQL7y13D0qR11Xw
+	 1V/5hXHr1Z4zSHswxS63wOUI6bDFZ2FK5D8dKbOltHWG9ThPOmE1f0m3YkoTz1ruoI
+	 rs/FbXe+RBpfw==
+Date: Wed, 19 Mar 2025 10:30:58 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v7 00/17] Provide a new two step DMA mapping API
+Message-ID: <20250319083058.GG1322339@unreal>
+References: <cover.1738765879.git.leonro@nvidia.com>
+ <20250220124827.GR53094@unreal>
+ <CGME20250228195423eucas1p221736d964e9aeb1b055d3ee93a4d2648@eucas1p2.samsung.com>
+ <1166a5f5-23cc-4cce-ba40-5e10ad2606de@arm.com>
+ <d408b1c7-eabf-4a1e-861c-b2ddf8bf9f0e@samsung.com>
+ <20250312193249.GI1322339@unreal>
+ <adb63b87-d8f2-4ae6-90c4-125bde41dc29@samsung.com>
+ <20250314184911.GR1322339@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <Z9pNCKjUMbg09Wrn@Asurada-Nvidia>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250314184911.GR1322339@unreal>
 
-On Tue, Mar 18, 2025 at 09:50:16PM -0700, Nicolin Chen wrote:
-> On Wed, Mar 19, 2025 at 12:42:50AM +0000, Pranjal Shrivastava wrote:
-> > Refactor arm_smmu_setup_irqs by splitting it into two parts, one for
-> > registering interrupt handlers and the other one for enabling interrupt
-> > generation in the hardware. This refactor helps in re-initialization of
-> > hardware interrupts as part of a subsequent patch that enables runtime
-> > power management for the arm-smmu-v3 driver.
+On Fri, Mar 14, 2025 at 08:49:11PM +0200, Leon Romanovsky wrote:
+> On Fri, Mar 14, 2025 at 11:52:58AM +0100, Marek Szyprowski wrote:
+> > On 12.03.2025 20:32, Leon Romanovsky wrote:
+> > > On Wed, Mar 12, 2025 at 10:28:32AM +0100, Marek Szyprowski wrote:
+> > >> Hi Robin
+> > >>
+> > >> On 28.02.2025 20:54, Robin Murphy wrote:
+> > >>> On 20/02/2025 12:48 pm, Leon Romanovsky wrote:
+> > >>>> On Wed, Feb 05, 2025 at 04:40:20PM +0200, Leon Romanovsky wrote:
+> > >>>>> From: Leon Romanovsky <leonro@nvidia.com>
+> > >>>>>
+> > >>>>> Changelog:
+> > >>>>> v7:
+> > >>>>>    * Rebased to v6.14-rc1
+> > >>>> <...>
+> > >>>>
+> > >>>>> Christoph Hellwig (6):
+> > >>>>>     PCI/P2PDMA: Refactor the p2pdma mapping helpers
+> > >>>>>     dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
+> > >>>>>     iommu: generalize the batched sync after map interface
+> > >>>>>     iommu/dma: Factor out a iommu_dma_map_swiotlb helper
+> > >>>>>     dma-mapping: add a dma_need_unmap helper
+> > >>>>>     docs: core-api: document the IOVA-based API
+> > >>>>>
+> > >>>>> Leon Romanovsky (11):
+> > >>>>>     iommu: add kernel-doc for iommu_unmap and iommu_unmap_fast
+> > >>>>>     dma-mapping: Provide an interface to allow allocate IOVA
+> > >>>>>     dma-mapping: Implement link/unlink ranges API
+> > >>>>>     mm/hmm: let users to tag specific PFN with DMA mapped bit
+> > >>>>>     mm/hmm: provide generic DMA managing logic
+> > >>>>>     RDMA/umem: Store ODP access mask information in PFN
+> > >>>>>     RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page
+> > >>>>>       linkage
+> > >>>>>     RDMA/umem: Separate implicit ODP initialization from explicit ODP
+> > >>>>>     vfio/mlx5: Explicitly use number of pages instead of allocated
+> > >>>>> length
+> > >>>>>     vfio/mlx5: Rewrite create mkey flow to allow better code reuse
+> > >>>>>     vfio/mlx5: Enable the DMA link API
+> > >>>>>
+> > >>>>>    Documentation/core-api/dma-api.rst   |  70 ++++
+> > >>>>    drivers/infiniband/core/umem_odp.c   | 250 +++++---------
+> > >>>>>    drivers/infiniband/hw/mlx5/mlx5_ib.h |  12 +-
+> > >>>>>    drivers/infiniband/hw/mlx5/odp.c     |  65 ++--
+> > >>>>>    drivers/infiniband/hw/mlx5/umr.c     |  12 +-
+> > >>>>>    drivers/iommu/dma-iommu.c            | 468
+> > >>>>> +++++++++++++++++++++++----
+> > >>>>>    drivers/iommu/iommu.c                |  84 ++---
+> > >>>>>    drivers/pci/p2pdma.c                 |  38 +--
+> > >>>>>    drivers/vfio/pci/mlx5/cmd.c          | 375 +++++++++++----------
+> > >>>>>    drivers/vfio/pci/mlx5/cmd.h          |  35 +-
+> > >>>>>    drivers/vfio/pci/mlx5/main.c         |  87 +++--
+> > >>>>>    include/linux/dma-map-ops.h          |  54 ----
+> > >>>>>    include/linux/dma-mapping.h          |  85 +++++
+> > >>>>>    include/linux/hmm-dma.h              |  33 ++
+> > >>>>>    include/linux/hmm.h                  |  21 ++
+> > >>>>>    include/linux/iommu.h                |   4 +
+> > >>>>>    include/linux/pci-p2pdma.h           |  84 +++++
+> > >>>>>    include/rdma/ib_umem_odp.h           |  25 +-
+> > >>>>>    kernel/dma/direct.c                  |  44 +--
+> > >>>>>    kernel/dma/mapping.c                 |  18 ++
+> > >>>>>    mm/hmm.c                             | 264 +++++++++++++--
+> > >>>>>    21 files changed, 1435 insertions(+), 693 deletions(-)
+> > >>>>>    create mode 100644 include/linux/hmm-dma.h
+> > >>>> Kind reminder.
+> > > <...>
+> > >
+> > >> Removing the need for scatterlists was advertised as the main goal of
+> > >> this new API, but it looks that similar effects can be achieved with
+> > >> just iterating over the pages and calling page-based DMA API directly.
+> > > Such iteration can't be enough because P2P pages don't have struct pages,
+> > > so you can't use reliably and efficiently dma_map_page_attrs() call.
+> > >
+> > > The only way to do so is to use dma_map_sg_attrs(), which relies on SG
+> > > (the one that we want to remove) to map P2P pages.
 > > 
-> > Signed-off-by: Pranjal Shrivastava <praan@google.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 50 ++++++++++++++++-----
-> >  1 file changed, 38 insertions(+), 12 deletions(-)
+> > That's something I don't get yet. How P2P pages can be used with 
+> > dma_map_sg_attrs(), but not with dma_map_page_attrs()? Both operate 
+> > internally on struct page pointer.
 > 
-> > +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
-> > +{
-> > +	int ret, irq;
-> > +
-> > +	/* Disable IRQs first */
-> > +	ret = arm_smmu_disable_irqs(smmu);
+> Yes, and no.
+> See users of is_pci_p2pdma_page(...) function. In dma_*_sg() APIs, there
+> is a real check and support for p2p. In dma_map_page_attrs() variants,
+> this support is missing (ignored, or error is returned).
 > 
-> Why do we need to touch HW in this SW handler setting-up function?
+> > 
+> > >> Maybe I missed something. I still see some advantages in this DMA API
+> > >> extension, but I would also like to see the clear benefits from
+> > >> introducing it, like perf logs or other benchmark summary.
+> > > We didn't focus yet on performance, however Christoph mentioned in his
+> > > block RFC [1] that even simple conversion should improve performance as
+> > > we are performing one P2P lookup per-bio and not per-SG entry as was
+> > > before [2]. In addition it decreases memory [3] too.
+> > >
+> > > [1] https://lore.kernel.org/all/cover.1730037261.git.leon@kernel.org/
+> > > [2] https://lore.kernel.org/all/34d44537a65aba6ede215a8ad882aeee028b423a.1730037261.git.leon@kernel.org/
+> > > [3] https://lore.kernel.org/all/383557d0fa1aa393dbab4e1daec94b6cced384ab.1730037261.git.leon@kernel.org/
+> > >
+> > > So clear benefits are:
+> > > 1. Ability to use native for subsystem structure, e.g. bio for block,
+> > > umem for RDMA, dmabuf for DRM, e.t.c. It removes current wasteful
+> > > conversions from and to SG in order to work with DMA API.
+> > > 2. Batched request and iotlb sync optimizations (perform only once).
+> > > 3. Avoid very expensive call to pgmap pointer.
+> > > 4. Expose MMIO over VFIO without hacks (PCI BAR doesn't have struct pages).
+> > > See this series for such a hack
+> > > https://lore.kernel.org/all/20250307052248.405803-1-vivek.kasireddy@intel.com/
+> > 
+> > I see those benefits and I admit that for typical DMA-with-IOMMU case it 
+> > would improve some things. I think that main concern from Robin was how 
+> > to handle it for the cases without an IOMMU.
 > 
-
-This is just to maintain status quo, if you look at the current
-`arm_smmu_setup_irqs` we still:
-
-	/* Disable IRQs first */
-	ret = arm_smmu_write_reg_sync(smmu, 0,ARM_SMMU_IRQ_CTRL,
-				      ARM_SMMU_IRQ_CTRLACK);
-
-
-> > @@ -4171,6 +4187,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
-> >  		return ret;
-> >  	}
-> >  
-> > +	/* Enable interrupt generation on the SMMU */
-> > +	arm_smmu_enable_irqs(smmu);
-> > +
+> In such case, we fallback to non-IOMMU flow (old, well-established one).
+> See this HMM patch as an example https://lore.kernel.org/all/a796da065fa8a9cb35d591ce6930400619572dcc.1738765879.git.leonro@nvidia.com/
+> +dma_addr_t hmm_dma_map_pfn(struct device *dev, struct hmm_dma_map *map,
+> +			   size_t idx,
+> +			   struct pci_p2pdma_map_state *p2pdma_state)
+> ...
+> +	if (dma_use_iova(state)) {
+> ...
+> +	} else {
+> ...
+> +		dma_addr = dma_map_page(dev, page, 0, map->dma_entry_size,
+> +					DMA_BIDIRECTIONAL);
 > 
-> Should this replace arm_smmu_setup_irqs() in this function? I see
-> arm_smmu_setup_irqs() still remain in arm_smmu_device_reset(), so
-> a normal probe routine would call it twice?
-> 
-> In my view, arm_smmu_setup_irqs() can be done just once, moving
-> out of arm_smmu_device_reset() and up to arm_smmu_device_probe()?
-> 
+> Thanks
 
-That makes sense, I kept the `arm_smmu_setup_irqs()` here to re-init the
-MSIs during resume but I guess it's better to call `arm_smmu_setup_irqs`
-once during probe and maybe re-work to call `arm_smmu_setup_msis` during
-resume to re-alloc the MSIs. I'll add this in the next version.
+Marek,
 
-Thanks,
-Praan
+Did it answer your concerns?
+
+How can we progress here? As you can see, the chances to get meaningful
+response to your review request and my questions are not high.
+
+Thanks
+
+> 
+> > 
+> > Best regards
+> > -- 
+> > Marek Szyprowski, PhD
+> > Samsung R&D Institute Poland
+> > 
+> 
