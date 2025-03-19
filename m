@@ -1,213 +1,287 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C994D20F091;
-	Wed, 19 Mar 2025 08:31:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB51F254AEC
+	for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 11:07:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742373064; cv=none; b=RzdkwKfac6Rf+c9N9OBTOIuZiLPR4sBUmgcHPxk72VnU/5NutxShNmzge43QSrV3vvdEktIhE2ri81Y1nbdvTBZpSyjNW/vgS8PL/A9NYTrhpae/kgu7+eLemU5GkIzWddUQ6uEGjQwu8DZS/C+H1UotPz6s931hb8TuF5CFDdY=
+	t=1742382429; cv=none; b=pgu8xBuSmF2REb/fvne7qlT9EFT/hkfd8gmwPdgLMkZfUC5fnf977zBFRcSQRAgnLEuj1qmXaltSvsT0I0WqJ8oK++IbRgmKQ6xeMw7VMk1ZYBRaX6jz3ziHNPTGmFB2Zb3u0lj3NETJ41sPCYdlhF+b9MQEB38Qs9CqoksJlLQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742373064; c=relaxed/simple;
-	bh=w3JmB7o8CKormT/Akok+UN9U+U8VYEVmbKd3okiCYoE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WcgP+Rt+xPObIsmt1BqHd3kuIvYuVeA+JzlrwHBTJngo8cyeE61nA38kDLiV+xG6gNN1eG/sT+YCRh7/yn+BKu2pG3h0MnAqWDOD0mSfrL+Lt8Sa7Al9oLz1f8aVVDhO2E1wUo4FW4mnQhyivBvyDGOtJB972JsS+wlirjcumWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k/ZmCalc; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k/ZmCalc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96DF5C4CEE9;
-	Wed, 19 Mar 2025 08:31:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742373063;
-	bh=w3JmB7o8CKormT/Akok+UN9U+U8VYEVmbKd3okiCYoE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=k/ZmCalc1dPOZG6tOAhA+Vbavt7ywew9AlCIx2pzmLHVBTMjREfKHqE2Yum/A2k90
-	 Mgo+utD6esZ3GSzapnLqbyG8yVsrTWUf4LItvlOCrYiiwuNO3yR2hQSEZpAOU6nnCo
-	 ZQRiEYn2mZ5bFSK8HEji2pCWj4CLMwBv5PoBA514qIBaTnW4NxRHmPJsRxHz6F9LM6
-	 DEj4Vkpkiz3HR+9d8OInlfDxTa9WdUELXV90gpobKxd8KKBd5UGsQL7y13D0qR11Xw
-	 1V/5hXHr1Z4zSHswxS63wOUI6bDFZ2FK5D8dKbOltHWG9ThPOmE1f0m3YkoTz1ruoI
-	 rs/FbXe+RBpfw==
-Date: Wed, 19 Mar 2025 10:30:58 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v7 00/17] Provide a new two step DMA mapping API
-Message-ID: <20250319083058.GG1322339@unreal>
-References: <cover.1738765879.git.leonro@nvidia.com>
- <20250220124827.GR53094@unreal>
- <CGME20250228195423eucas1p221736d964e9aeb1b055d3ee93a4d2648@eucas1p2.samsung.com>
- <1166a5f5-23cc-4cce-ba40-5e10ad2606de@arm.com>
- <d408b1c7-eabf-4a1e-861c-b2ddf8bf9f0e@samsung.com>
- <20250312193249.GI1322339@unreal>
- <adb63b87-d8f2-4ae6-90c4-125bde41dc29@samsung.com>
- <20250314184911.GR1322339@unreal>
+	s=arc-20240116; t=1742382429; c=relaxed/simple;
+	bh=uk6sv1Pw3BLBBGqjIqGPQ4yzGT4R7eLdgEn/GG6R3Hw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=oIP6wxcLhQ6V+k0bElC4AvLcfZPEHgdTILU3dM2xJq2R5r+5vzV/PdhPnLPkC/xcLhnBrX/zyp0ecPKRcwFQDHW+9jVsqb5jp772jXrUIe1ZBHPRGJxhv8W3o13J2Q/a2Zpom8LOyGA93KwDzoDoh9vu/kF+qAQwbbCXZqEnUdk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.252])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4ZHm620lK9zCsGW;
+	Wed, 19 Mar 2025 19:03:22 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 0AFCC1800CD;
+	Wed, 19 Mar 2025 19:06:58 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Wed, 19 Mar 2025 19:06:57 +0800
+Message-ID: <ce6ca18b-0eda-4d62-b1d3-e101fe6dcd4e@huawei.com>
+Date: Wed, 19 Mar 2025 19:06:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next 3/3] page_pool: Track DMA-mapped pages and unmap
+ them when destroying the pool
+To: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>, Yunsheng
+ Lin <yunshenglin0825@gmail.com>, "David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>,
+	Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Tariq
+ Toukan <tariqt@nvidia.com>, Andrew Lunn <andrew+netdev@lunn.ch>, Eric Dumazet
+	<edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Ilias Apalodimas
+	<ilias.apalodimas@linaro.org>, Simon Horman <horms@kernel.org>, Andrew Morton
+	<akpm@linux-foundation.org>, Mina Almasry <almasrymina@google.com>, Yonglong
+ Liu <liuyonglong@huawei.com>, Pavel Begunkov <asml.silence@gmail.com>,
+	Matthew Wilcox <willy@infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	IOMMU <iommu@lists.linux.dev>, <segoon@openwall.com>, <solar@openwall.com>,
+	<oss-security@lists.openwall.com>, <kernel-hardening@lists.openwall.com>
+CC: <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+	<linux-rdma@vger.kernel.org>, <linux-mm@kvack.org>, Qiuling Ren
+	<qren@redhat.com>, Yuying Ma <yuma@redhat.com>
+References: <20250314-page-pool-track-dma-v1-0-c212e57a74c2@redhat.com>
+ <20250314-page-pool-track-dma-v1-3-c212e57a74c2@redhat.com>
+ <db813035-fb38-4fc3-b91e-d1416959db13@gmail.com> <87jz8nhelh.fsf@toke.dk>
+ <7a76908d-5be2-43f1-a8e2-03b104165a29@huawei.com> <87wmcmhxdz.fsf@toke.dk>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <87wmcmhxdz.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250314184911.GR1322339@unreal>
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On Fri, Mar 14, 2025 at 08:49:11PM +0200, Leon Romanovsky wrote:
-> On Fri, Mar 14, 2025 at 11:52:58AM +0100, Marek Szyprowski wrote:
-> > On 12.03.2025 20:32, Leon Romanovsky wrote:
-> > > On Wed, Mar 12, 2025 at 10:28:32AM +0100, Marek Szyprowski wrote:
-> > >> Hi Robin
-> > >>
-> > >> On 28.02.2025 20:54, Robin Murphy wrote:
-> > >>> On 20/02/2025 12:48 pm, Leon Romanovsky wrote:
-> > >>>> On Wed, Feb 05, 2025 at 04:40:20PM +0200, Leon Romanovsky wrote:
-> > >>>>> From: Leon Romanovsky <leonro@nvidia.com>
-> > >>>>>
-> > >>>>> Changelog:
-> > >>>>> v7:
-> > >>>>>    * Rebased to v6.14-rc1
-> > >>>> <...>
-> > >>>>
-> > >>>>> Christoph Hellwig (6):
-> > >>>>>     PCI/P2PDMA: Refactor the p2pdma mapping helpers
-> > >>>>>     dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
-> > >>>>>     iommu: generalize the batched sync after map interface
-> > >>>>>     iommu/dma: Factor out a iommu_dma_map_swiotlb helper
-> > >>>>>     dma-mapping: add a dma_need_unmap helper
-> > >>>>>     docs: core-api: document the IOVA-based API
-> > >>>>>
-> > >>>>> Leon Romanovsky (11):
-> > >>>>>     iommu: add kernel-doc for iommu_unmap and iommu_unmap_fast
-> > >>>>>     dma-mapping: Provide an interface to allow allocate IOVA
-> > >>>>>     dma-mapping: Implement link/unlink ranges API
-> > >>>>>     mm/hmm: let users to tag specific PFN with DMA mapped bit
-> > >>>>>     mm/hmm: provide generic DMA managing logic
-> > >>>>>     RDMA/umem: Store ODP access mask information in PFN
-> > >>>>>     RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page
-> > >>>>>       linkage
-> > >>>>>     RDMA/umem: Separate implicit ODP initialization from explicit ODP
-> > >>>>>     vfio/mlx5: Explicitly use number of pages instead of allocated
-> > >>>>> length
-> > >>>>>     vfio/mlx5: Rewrite create mkey flow to allow better code reuse
-> > >>>>>     vfio/mlx5: Enable the DMA link API
-> > >>>>>
-> > >>>>>    Documentation/core-api/dma-api.rst   |  70 ++++
-> > >>>>    drivers/infiniband/core/umem_odp.c   | 250 +++++---------
-> > >>>>>    drivers/infiniband/hw/mlx5/mlx5_ib.h |  12 +-
-> > >>>>>    drivers/infiniband/hw/mlx5/odp.c     |  65 ++--
-> > >>>>>    drivers/infiniband/hw/mlx5/umr.c     |  12 +-
-> > >>>>>    drivers/iommu/dma-iommu.c            | 468
-> > >>>>> +++++++++++++++++++++++----
-> > >>>>>    drivers/iommu/iommu.c                |  84 ++---
-> > >>>>>    drivers/pci/p2pdma.c                 |  38 +--
-> > >>>>>    drivers/vfio/pci/mlx5/cmd.c          | 375 +++++++++++----------
-> > >>>>>    drivers/vfio/pci/mlx5/cmd.h          |  35 +-
-> > >>>>>    drivers/vfio/pci/mlx5/main.c         |  87 +++--
-> > >>>>>    include/linux/dma-map-ops.h          |  54 ----
-> > >>>>>    include/linux/dma-mapping.h          |  85 +++++
-> > >>>>>    include/linux/hmm-dma.h              |  33 ++
-> > >>>>>    include/linux/hmm.h                  |  21 ++
-> > >>>>>    include/linux/iommu.h                |   4 +
-> > >>>>>    include/linux/pci-p2pdma.h           |  84 +++++
-> > >>>>>    include/rdma/ib_umem_odp.h           |  25 +-
-> > >>>>>    kernel/dma/direct.c                  |  44 +--
-> > >>>>>    kernel/dma/mapping.c                 |  18 ++
-> > >>>>>    mm/hmm.c                             | 264 +++++++++++++--
-> > >>>>>    21 files changed, 1435 insertions(+), 693 deletions(-)
-> > >>>>>    create mode 100644 include/linux/hmm-dma.h
-> > >>>> Kind reminder.
-> > > <...>
-> > >
-> > >> Removing the need for scatterlists was advertised as the main goal of
-> > >> this new API, but it looks that similar effects can be achieved with
-> > >> just iterating over the pages and calling page-based DMA API directly.
-> > > Such iteration can't be enough because P2P pages don't have struct pages,
-> > > so you can't use reliably and efficiently dma_map_page_attrs() call.
-> > >
-> > > The only way to do so is to use dma_map_sg_attrs(), which relies on SG
-> > > (the one that we want to remove) to map P2P pages.
-> > 
-> > That's something I don't get yet. How P2P pages can be used with 
-> > dma_map_sg_attrs(), but not with dma_map_page_attrs()? Both operate 
-> > internally on struct page pointer.
+On 2025/3/19 4:55, Toke HÃ¸iland-JÃ¸rgensen wrote:
+> Yunsheng Lin <linyunsheng@huawei.com> writes:
 > 
-> Yes, and no.
-> See users of is_pci_p2pdma_page(...) function. In dma_*_sg() APIs, there
-> is a real check and support for p2p. In dma_map_page_attrs() variants,
-> this support is missing (ignored, or error is returned).
+>> On 2025/3/17 23:16, Toke HÃ¸iland-JÃ¸rgensen wrote:
+>>> Yunsheng Lin <yunshenglin0825@gmail.com> writes:
+>>>
+>>>> On 3/14/2025 6:10 PM, Toke HÃ¸iland-JÃ¸rgensen wrote:
+>>>>
+>>>> ...
+>>>>
+>>>>>
+>>>>> To avoid having to walk the entire xarray on unmap to find the page
+>>>>> reference, we stash the ID assigned by xa_alloc() into the page
+>>>>> structure itself, using the upper bits of the pp_magic field. This
+>>>>> requires a couple of defines to avoid conflicting with the
+>>>>> POINTER_POISON_DELTA define, but this is all evaluated at compile-time,
+>>>>> so does not affect run-time performance. The bitmap calculations in this
+>>>>> patch gives the following number of bits for different architectures:
+>>>>>
+>>>>> - 24 bits on 32-bit architectures
+>>>>> - 21 bits on PPC64 (because of the definition of ILLEGAL_POINTER_VALUE)
+>>>>> - 32 bits on other 64-bit architectures
+>>>>
+>>>>  From commit c07aea3ef4d4 ("mm: add a signature in struct page"):
+>>>> "The page->signature field is aliased to page->lru.next and
+>>>> page->compound_head, but it can't be set by mistake because the
+>>>> signature value is a bad pointer, and can't trigger a false positive
+>>>> in PageTail() because the last bit is 0."
+>>>>
+>>>> And commit 8a5e5e02fc83 ("include/linux/poison.h: fix LIST_POISON{1,2} 
+>>>> offset"):
+>>>> "Poison pointer values should be small enough to find a room in
+>>>> non-mmap'able/hardly-mmap'able space."
+>>>>
+>>>> So the question seems to be:
+>>>> 1. Is stashing the ID causing page->pp_magic to be in the mmap'able/
+>>>>     easier-mmap'able space? If yes, how can we make sure this will not
+>>>>     cause any security problem?
+>>>> 2. Is the masking the page->pp_magic causing a valid pionter for
+>>>>     page->lru.next or page->compound_head to be treated as a vaild
+>>>>     PP_SIGNATURE? which might cause page_pool to recycle a page not
+>>>>     allocated via page_pool.
+>>>
+>>> Right, so my reasoning for why the defines in this patch works for this
+>>> is as follows: in both cases we need to make sure that the ID stashed in
+>>> that field never looks like a valid kernel pointer. For 64-bit arches
+>>> (where CONFIG_ILLEGAL_POINTER_VALUE), we make sure of this by never
+>>> writing to any bits that overlap with the illegal value (so that the
+>>> PP_SIGNATURE written to the field keeps it as an illegal pointer value).
+>>> For 32-bit arches, we make sure of this by making sure the top-most bit
+>>> is always 0 (the -1 in the define for _PP_DMA_INDEX_BITS) in the patch,
+>>> which puts it outside the range used for kernel pointers (AFAICT).
+>>
+>> Is there any season you think only kernel pointer is relevant here?
 > 
-> > 
-> > >> Maybe I missed something. I still see some advantages in this DMA API
-> > >> extension, but I would also like to see the clear benefits from
-> > >> introducing it, like perf logs or other benchmark summary.
-> > > We didn't focus yet on performance, however Christoph mentioned in his
-> > > block RFC [1] that even simple conversion should improve performance as
-> > > we are performing one P2P lookup per-bio and not per-SG entry as was
-> > > before [2]. In addition it decreases memory [3] too.
-> > >
-> > > [1] https://lore.kernel.org/all/cover.1730037261.git.leon@kernel.org/
-> > > [2] https://lore.kernel.org/all/34d44537a65aba6ede215a8ad882aeee028b423a.1730037261.git.leon@kernel.org/
-> > > [3] https://lore.kernel.org/all/383557d0fa1aa393dbab4e1daec94b6cced384ab.1730037261.git.leon@kernel.org/
-> > >
-> > > So clear benefits are:
-> > > 1. Ability to use native for subsystem structure, e.g. bio for block,
-> > > umem for RDMA, dmabuf for DRM, e.t.c. It removes current wasteful
-> > > conversions from and to SG in order to work with DMA API.
-> > > 2. Batched request and iotlb sync optimizations (perform only once).
-> > > 3. Avoid very expensive call to pgmap pointer.
-> > > 4. Expose MMIO over VFIO without hacks (PCI BAR doesn't have struct pages).
-> > > See this series for such a hack
-> > > https://lore.kernel.org/all/20250307052248.405803-1-vivek.kasireddy@intel.com/
-> > 
-> > I see those benefits and I admit that for typical DMA-with-IOMMU case it 
-> > would improve some things. I think that main concern from Robin was how 
-> > to handle it for the cases without an IOMMU.
+> Yes. Any pointer stored in the same space as pp_magic by other users of
+> the page will be kernel pointers (as they come from page->lru.next). The
+> goal of PP_SIGNATURE is to be able to distinguish pages allocated by
+> page_pool, so we don't accidentally recycle a page from somewhere else.
+> That's the goal of the check in page_pool_page_is_pp():
 > 
-> In such case, we fallback to non-IOMMU flow (old, well-established one).
-> See this HMM patch as an example https://lore.kernel.org/all/a796da065fa8a9cb35d591ce6930400619572dcc.1738765879.git.leonro@nvidia.com/
-> +dma_addr_t hmm_dma_map_pfn(struct device *dev, struct hmm_dma_map *map,
-> +			   size_t idx,
-> +			   struct pci_p2pdma_map_state *p2pdma_state)
-> ...
-> +	if (dma_use_iova(state)) {
-> ...
-> +	} else {
-> ...
-> +		dma_addr = dma_map_page(dev, page, 0, map->dma_entry_size,
-> +					DMA_BIDIRECTIONAL);
+> (page->pp_magic & PP_MAGIC_MASK) == PP_SIGNATURE
 > 
-> Thanks
+> To achieve this, we must ensure that the check above never returns true
+> for any value another page user could have written into the same field
+> (i.e., into page->lru.next). For 64-bit arches, POISON_POINTER_DELTA
 
-Marek,
+POISON_POINTER_DELTA is defined according to CONFIG_ILLEGAL_POINTER_VALUE,
+if CONFIG_ILLEGAL_POINTER_VALUE is not defined yet, POISON_POINTER_DELTA
+is defined to zero.
 
-Did it answer your concerns?
+It seems only the below 64-bit arches define CONFIG_ILLEGAL_POINTER_VALUE
+through grepping:
+a29815a333c6 core, x86: make LIST_POISON less deadly
+5c178472af24 riscv: define ILLEGAL_POINTER_VALUE for 64bit
+f6853eb561fb powerpc/64: Define ILLEGAL_POINTER_VALUE for 64-bit
+bf0c4e047324 arm64: kconfig: Move LIST_POISON to a safe value
 
-How can we progress here? As you can see, the chances to get meaningful
-response to your review request and my questions are not high.
+The below 64-bit arches don't seems to define the above config yet:
+MIPS64, SPARC64, System z(S390X),loongarch
 
-Thanks
+Does ID stashing cause problem for the above arches?
+
+> serves this purpose. For 32-bit arches, we can leave the top-most bits
+> out of PP_MAGIC_MASK, to make sure that any valid pointer value will
+> fail the check above.
+
+The above mainly explained how to ensure page_pool_page_is_pp() will
+not return false positive result from the page_pool perspective.
+
+From MM/security perspective, most of the commits quoted above seem
+to suggest that poison pointer should be in the non-mmap'able or
+hardly-mmap'able space, otherwise userspace can arrange for those
+pointers to actually be dereferencable, potentially turning an oops
+to an expolit, more detailed example in the below paper, which explains
+how to exploit a vulnerability which hardened by the 8a5e5e02fc83 commit:
+https://www.usenix.org/system/files/conference/woot15/woot15-paper-xu.pdf
+
+ID stashing seems to cause page->lru.next (aliased to page->pp_magic) to
+be in the mmap'able space for some arches.
+
 
 > 
-> > 
-> > Best regards
-> > -- 
-> > Marek Szyprowski, PhD
-> > Samsung R&D Institute Poland
-> > 
+>> It seems it is not really only about kernel pointers as round_hint_to_min()
+>> in mm/mmap.c suggests and the commit log in the above commit 8a5e5e02fc83
+>> if I understand it correctly:
+>> "Given unprivileged users cannot mmap anything below mmap_min_addr, it
+>> should be safe to use poison pointers lower than mmap_min_addr."
+>>
+>> And the above "making sure the top-most bit is always 0" doesn't seems to
+>> ensure page->signature to be outside the range used for kernel pointers
+>> for 32-bit arches with VMSPLIT_1G defined, see arch/arm/Kconfig, there
+>> is a similar config for x86 too:
+
+...
+
+> 
+> Ah, interesting, didn't know this was configurable. Okay, so AFAICT, the
+> lowest value of PAGE_OFFSET is 0x40000000 (for VMSPLIT_1G), so we need
+> to leave two bits off at the top instead of just one. Will update this,
+> and try to explain the logic better in the comment.
+
+It seems there was attempt of doing 4G/4G split too, and that is the kind
+of limitation or complexity added to the ARCH and MM subsystem by doing the
+ID stashing I mentioned earlier.
+https://lore.kernel.org/lkml/Pine.LNX.4.44.0307082332450.17252-100000@localhost.localdomain/
+
+> 
+>> IMHO, even if some trick like above is really feasible, it may be
+>> adding some limitation or complexity to the ARCH and MM subsystem, for
+>> example, stashing the ID in page->signature may cause 0x*40 signature
+>> to be unusable for other poison pointer purpose, it makes more sense to
+>> make it obvious by doing the above trick in some MM header file like
+>> poison.h instead of in the page_pool subsystem.
+> 
+> AFAIU, PP_SIGNATURE is used for page_pool to be able to distinguish its
+> own pages from those allocated elsewhere (cf the description above).
+> Which means that these definitions are logically page_pool-internal, and
+> thus it makes the most sense to keep them in the page pool headers. The
+> only bits the mm subsystem cares about in that field are the bottom two
+> (for pfmemalloc pages and compound pages).
+
+All I asked is about moving PP_MAGIC_MASK macro into poison.h if you
+still want to proceed with reusing the page->pp_magic as the masking and
+the signature to be masked seems reasonable to be in the same file.
+
+> 
+>>>>> Since all the tracking is performed on DMA map/unmap, no additional code
+>>>>> is needed in the fast path, meaning the performance overhead of this
+>>>>> tracking is negligible. A micro-benchmark shows that the total overhead
+>>>>> of using xarray for this purpose is about 400 ns (39 cycles(tsc) 395.218
+>>>>> ns; sum for both map and unmap[1]). Since this cost is only paid on DMA
+>>>>> map and unmap, it seems like an acceptable cost to fix the late unmap
+>>>>
+>>>> For most use cases when PP_FLAG_DMA_MAP is set and IOMMU is off, the
+>>>> DMA map and unmap operation is almost negligible as said below, so the
+>>>> cost is about 200% performance degradation, which doesn't seems like an
+>>>> acceptable cost.
+>>>
+>>> I disagree. This only impacts the slow path, as long as pages are
+>>> recycled there is no additional cost. While your patch series has
+>>> demonstrated that it is *possible* to reduce the cost even in the slow
+>>> path, I don't think the complexity cost of this is worth it.
+>>
+>> It is still the datapath otherwise there isn't a specific testing
+>> for that use case, more than 200% performance degradation is too much
+>> IHMO.
+> 
+> Do you have a real-world use case (i.e., a networking benchmark, not a
+> micro-benchmark of the allocation function) where this change has a
+> measurable impact on performance? If so, please do share the numbers!
+
+I don't have one yet.
+
+> 
+> I very much doubt it will be anything close to that magnitude, but I'm
+> always willing to be persuaded by data :)
+> 
+>> Let aside the above severe performance degradation, reusing space in
+>> page->signature seems to be a tradeoff between adding complexity in
+>> page_pool subsystem and in VM/ARCH subsystem as mentioned above.
+> 
+> I think you are overstating the impact on other MM users; this is all
+> mostly page_pool-internal logic, cf the explanation above.
+
+To be honest, I am not that familiar with the pointer poison mechanism.
+But through some researching and analyzing, it makes sense to overstate
+it a little as it seems to be security-related.
+Cc'ed some security-related experts and ML to see if there is some
+clarifying from them.
+
+> 
+>>>
+>>> [...]
+>>>
+>>>>> The extra memory needed to track the pages is neatly encapsulated inside
+>>>>> xarray, which uses the 'struct xa_node' structure to track items. This
+>>>>> structure is 576 bytes long, with slots for 64 items, meaning that a
+>>>>> full node occurs only 9 bytes of overhead per slot it tracks (in
+>>>>> practice, it probably won't be this efficient, but in any case it should
+>>>>
+>>>> Is there any debug infrastructure to know if it is not this efficient?
+>>>> as there may be 576 byte overhead for a page for the worst case.
+>>>
+>>> There's an XA_DEBUG define which enables some dump functions, but I
+>>> don't think there's any API to inspect the memory usage. I guess you
+>>> could attach a BPF program and walk the structure, or something?
+>>>
+>>
+>> It seems the XA_DEBUG is not defined in production environment.
+>> And I am not familiar enough with BPF program to understand if the
+>> BPF way is feasiable in production environment.
+>> Any example for the above BPF program and how to attach it?
+> 
+> Hmm, no, not really, sorry :(
+> 
+> I *think* it should be possible to write a bpftrace script that walks
+> the internal xarray tree and counts the nodes along the way, but it's
+> not trivial to do, and I haven't tried.
+> 
+> -Toke
+> 
 > 
