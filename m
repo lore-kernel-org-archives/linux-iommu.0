@@ -1,165 +1,110 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 98E4620A5D5
-	for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 18:22:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9324518FDAF
+	for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 19:46:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742408557; cv=none; b=Hq7ENxNgEWT7zLnpVswXX5Z67PubFeAiFwYhJZEbVbV0fiZnUb0A2quGV+ytl73NiFqg/H4t4hNaB0S/hb8i5dUPcuDNigEZObMwN0ppXoqf+1+dfRqkw9/DGW8ZqTX/ItRCPnJJojgE/UMYX07TrgSO5lkFR4GhZYd9wa9fcCw=
+	t=1742413574; cv=none; b=PD+UjRyCie8Mj+0j3/6LWzlgfISB+SnNPp9TSwvJnhnXHaEVu3kUiWP3VFmbOO16G4IlsepOKRvFnMufMvJvJSIDT9MTgXYpzlpITB8sFw1qLvyZ2PhOIHp5OCx0RNSMA/Jq4mVkLIrI2yBpv28jPKHHOu33AmQarrZz1qQdhi0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742408557; c=relaxed/simple;
-	bh=1SO9DPjUlevAXVNWLg4ulo6oYUbhChI1qbMPw0Ix46Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=O5q/oX7IEbaend2tNG2GFXtE4C+xFp8Fco7eYwVsAad+PFDR4ZAOYE84IbO8ubrU3b7UlPF2OR7lMW/4F15r5G798/EwWWUJ4ra5WekkSV3fNa3+5JFROXCbutolUeGdhAkeuO3oDUP6/jKWoG8aZNwFSxZzZj1kjwICENcGffo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A7F161063;
-	Wed, 19 Mar 2025 11:22:41 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 479B13F673;
-	Wed, 19 Mar 2025 11:22:32 -0700 (PDT)
-Message-ID: <5b29ea3b-ba8a-4f7a-b241-4ed5b1985a1f@arm.com>
-Date: Wed, 19 Mar 2025 18:22:30 +0000
+	s=arc-20240116; t=1742413574; c=relaxed/simple;
+	bh=rQ+FoOa2qxxdnOKdBJ7PL6WOP3HXSDUw+vrKKBl8yRk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jtuSnDQPfps1cHrykZ1xwWiaQ7B/QxENs043iOje+m6RUIV/a9CCc0p/AV5/FfMg0nz6SJolG/Xck60/A8G2Kvy/NwuVg6hGNEnR5WjgHAByCkXnjrTgHxC6TB9TDMMI72g268rDeEcfbJFpB8uLk2FqCd/q16uVGvQaUuuangw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=NTJTyv2f; arc=none smtp.client-ip=209.85.160.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="NTJTyv2f"
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-47663aeff1bso885981cf.0
+        for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 12:46:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1742413570; x=1743018370; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rQ+FoOa2qxxdnOKdBJ7PL6WOP3HXSDUw+vrKKBl8yRk=;
+        b=NTJTyv2ffiGLa5X12sCBht13plhwXoyFA36CWddOi9Tra2xj8r4mdMeMXGD0TiCblu
+         DK0Rgo7OFdQo5RVz4GQies+o4KISrPRIGcws3LlQ9vciS4NEa4YJJ+xHg3n+wTwrddZZ
+         87Q1Nvj8xFoyGvT3bg5vzyzJHxH9pmIkXT4PQ2DzDy8d56caRkY1h9jBO+bPDHfUaXZf
+         r5+wtjhi3C79ciOiC/OvUVWYvxerJR13nqe5ol92tcUDUFwC9lG5NrZMqIklTUbfgcUJ
+         BLU0sy+J/sQmsNTHysG/ZwYeyEjelXvCzglonjsVO7XE5WK9yrdWVsOyPKpJ2/eC9eoP
+         f74Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742413570; x=1743018370;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rQ+FoOa2qxxdnOKdBJ7PL6WOP3HXSDUw+vrKKBl8yRk=;
+        b=VocYl2Xlw3bAMf7eNTpnC6ZNZE43hNYF7/PfwGpxtTvECwRHRx2dmVb9QwxjZFUNkH
+         VjlXOlMGZ2L2oMWS9s6w0/emVj5YShD3iGbg7DyIB5zVwrQm9nDB3JhK9lzhVUlAUoi9
+         yIgTmU0m3iPRUlWH+3CB/w3Oy3m3Bt9hou9z9BpoDYg9HJSUrukb6S8TptJla+wdVDEy
+         4oJu5HbTF2dMCTEjCPFCGw26hoCd+5lVwx42EyrGPs+6Y8JXiZ40jEDMeO9WdIYOkdZy
+         fDn1aoNhFG4R9QyixhEpcM1jpCvELAkp8Hi3MgeSey0nwfGn6UcK/xGOYZ98tgUmlJ1U
+         IoXw==
+X-Forwarded-Encrypted: i=1; AJvYcCVW2ox+IxdgGAlXOcwbK1ygME2jy8d5GSnVZY3NZGJtEMHc44GxeEEf79jqpuvhDMAdcHYxHg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxw7kdr9FLlb+9wPdT1Yelj2J2uZPgC9lDudmwbogi3yrHckY3b
+	DIJgPIAsfJNXbuiJbQXu/8gGJZbbLMAreSBysgf8l7L4XHETSy01Y76aXqyLYw4=
+X-Gm-Gg: ASbGncublZgRHk8jsA1+StFIjMR9/bJAIk1iEM5uPH4jffn+hjXdec43BqcW6anR3LJ
+	r8cFJLSadjWBsh+sek/JmTGXwfpx5zRoHhPpzSdlujYXZxaU9h855ZhGPG/ZuKxIM/raCONWJon
+	/kuXklMIwn4qMsXgq1LBhn8Ixgnwr1yDZP5CjYsregVM1PvT9a4bxCmzOH7QJ4jf1i0hqMPCfLn
+	iLOtMj3JAFISFPxfisHmmyYTBe907TeXCIvZm9qrTu1yXRKu7SkaJ654fmKtU7fgYr9UpHWKi94
+	l7FBxY518c8pOjQilG2ucnL9KPOrbLa9ryzAW0OzU/ukyOuM4VX21qB1aREIohjiNlGmQ+XzXrP
+	Mkz+p2JQSfA2UFcrOURsfDLNowjz1
+X-Google-Smtp-Source: AGHT+IF7F50p91M2qRBRU+aa1EsbNFMoNroiWGmfasmiysjqYCfTzP++moHExJ0gS+vd0rJyCa4wBg==
+X-Received: by 2002:a05:622a:230f:b0:476:5fd5:4de7 with SMTP id d75a77b69052e-477083a68bemr65847161cf.41.1742413570501;
+        Wed, 19 Mar 2025 12:46:10 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-476bb82c170sm83084741cf.77.2025.03.19.12.46.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Mar 2025 12:46:09 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tuzMf-00000000XWX-1ytt;
+	Wed, 19 Mar 2025 16:46:09 -0300
+Date: Wed, 19 Mar 2025 16:46:09 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Pranjal Shrivastava <praan@google.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 0/5] iommu/arm-smmu-v3: Implement Runtime/System
+ Sleep ops
+Message-ID: <20250319194609.GA126678@ziepe.ca>
+References: <20250319004254.2547950-1-praan@google.com>
+ <5b29ea3b-ba8a-4f7a-b241-4ed5b1985a1f@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/5] iommu/arm-smmu-v3: Implement Runtime/System Sleep
- ops
-To: Pranjal Shrivastava <praan@google.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Mostafa Saleh <smostafa@google.com>,
- Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-References: <20250319004254.2547950-1-praan@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250319004254.2547950-1-praan@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5b29ea3b-ba8a-4f7a-b241-4ed5b1985a1f@arm.com>
 
-On 19/03/2025 12:42 am, Pranjal Shrivastava wrote:
-> As arm-smmu-v3 rapidly finds its way into SoCs designed for hand-held
-> devices, power management capabilities, similar to its predecessors, are
-> crucial for these applications. This series introduces power management
-> support for the arm-smmu-v3 driver.
-> 
-> Design
-> =======
-> The arm-smmu-v3 primarily operates with in-memory data structures
-> through HW registers pointing to these data structures in some fashion.
-> The proposed design tries to make use of this fact for implementing the
-> suspend and resume ops.
-> 
-> 1. Suspend / Resume
-> An initial idea for the "suspend" op is to wait till the command queue
-> finishes all commands before disabling the SMMU through CR0. In order to
-> avoid mis-use / spurious transactions (b/w SMMU disable -> power-down),
-> the GBPA register is configured to abort all transactions.
+On Wed, Mar 19, 2025 at 06:22:30PM +0000, Robin Murphy wrote:
+> I don't see SVA and VFIO needing any special considerations, so it might
+> just be the new vIOMMU stuff which may need to hold PM enabled for the
+> lifetime of things exposed to userspace.
 
-But why disable SMMUEN at all? We can't expect the SMMU to come back in 
-the same configuration we left it anyway (*including* GBPA, note), so 
-what's the benefit of spending time and effort to potentially change its 
-behaviour for a handful of microseconds before it all goes dark anyway?
+Are you expecting that the VFIO driver, and whatever driver is
+managing the SVA will keep the power turned on as necessary then?
 
-Draining the command queue shouldn't strictly be necessary it only 
-contains invalidations and syncs, since we know all the cached state 
-they could refer to is going to be thrown away by the time the SMMU has 
-come back anyway. If anything, making sure there are no outstanding IOPF 
-handlers and the event queue and PRI queue are clear (as expected) seems 
-more important, because the potential to lose hardware tokens or leave a 
-stalled transaction across the interconnect would be A Bad Thing.
+VFIO is not going to work if the SMMU power goes off unexpectedly
+while the VFIO FD is open.
 
-> The resume operation uses the `arm_smmu_device_reset` function which
-> re-initializes the HW using the SW-copies maintained by the driver. For
-> example, prod/cons for queues, base addresses for queues & tables. The
-> arm_smmu_device_reset also clears the TLBs.
-> 
-> 2. Interrupt Re-config
-> a. Wired irqs: the series refactors the `arm_smmu_setup_irqs` to be
-> able to enable/disable irqs and install their handlers separately to
-> help with the re-initialization of the interrupts correctly.
-> 
-> b. MSIs: The thought was of 2 approaches to teardown & re-config MSIs:
-> 
->   1. Free MSIs on suspend and re-alloc on resume (implemented in series)
->   2. Meddle with the msi_desc and use get_cached_msi_msg to resume MSIs.
+I suppose VFIO also can power off on-demand via userspace asking
+it. In that case the VM would be co-operating.
 
-3: Just explicitly save/restore the IRQ_CFG{0,1} registers in the PM 
-callbacks.
-4: Have arm_smmu_write_msi_msg() stash the values, and defer the actual 
-IRQ_CFG register writes until arm_smmu_setup_irqs(), alongside IRQ_CTRL.
+vcmdq probably needs some suspend resume logic like the normal
+commandq.
 
-If the other options aren't sufficiently clean or straightforward, 
-another 36 bytes per arm_smmu_device instance isn't the end of the world...
+viommu I think will only uses STE fields so it should be OK?
 
-> The first approach (implemented in this series) may be potentially
-> slower, whereas the second one could reduce the time taken to resume.
-> However, the second one feels hacky as it forces us to cache the msi_msg
-> in `arm_smmu_write_msg` or in the core code (`irq_chip_write_msi_msg`)
-> as suggested in [1].
->    
-> 3. Invoking runtime_pm_get/put
-> Given that most of the configuration done by arm-smmu-v3 is stored in
-> memory, the initial idea is to focus on areas where the driver accesses
-> the hw via exposed ops, like iommmu_ops, iommu_flush_ops, sva_ops etc.
-> 
-> Instead of wrapping every exposed op with an rpm_get/put, the idea is to
-> follow through till a logical common point (lowest common ancestor in
-> the call hierarchies) and wrap those with the rpm_get/put calls.
+SVA.. Is similar to VFIO, if the power goes off while the SVA is
+working that is bad. The SVA requesting driver would have to manage
+this. HW with userspace command submission probably can't allow the
+power to go off while command submission is possible.
 
-As mentioned already, I think there should be very few, if any, places 
-where we actually need an rpm_get() to explicitly resume a suspended 
-SMMU. All the initial hardware probing and reset can (and should) be 
-done before PM is enabled; IRQ handlers can reasonably assume that any 
-call while the SMMU is suspended must be shared or spurious, so don't 
-need to look (even more so if we do still clear IRQ_CTRL on suspend); 
-any commands issued while suspended are either safe to ignore 
-(CFGI/TLBI/PREFETCH) or nonsensical (RESUME/PRI_RESP) - the only one I'm 
-not entirely sure about off the top of my head is ATC_INV, which might 
-depend on whether the PCI code can guarantee that an endpoint will 
-resume with a clean ATC.
-
-I don't see SVA and VFIO needing any special considerations, so it might 
-just be the new vIOMMU stuff which may need to hold PM enabled for the 
-lifetime of things exposed to userspace.
-
-Thanks,
-Robin.
-
-> Future Work
-> ===========
-> - Elide TLBIs when the SMMU is powered down
-> 
-> Call for Review
-> ================
-> Any insights/comments on the proposed changes are appreciated,
-> especially in areas related to locking, atomic contexts, early resume
-> etc. or any potential optimization.
-> 
-> Note: The series isn't tested with MSIs as I couldn't find a platform
-> that supports MSIs. Any help in testing MSIs is appreciated.
-> 
-> References
-> ===========
-> [1]
-> https://lore.kernel.org/lkml/20210721013350.17664-1-cuibixuan@huawei.com/T/#m06bf92e2306ba52c106f2d4d24765921d4e9781e
-> 
-> [2]
-> https://lore.kernel.org/all/20180830144541.17740-1-vivek.gautam@codeaurora.org/
-> 
-> Pranjal Shrivastava (5):
->    iommu/arm-smmu-v3: Refactor arm_smmu_setup_irqs
->    iommu/arm-smmu-v3: Add a helper to wait till cmdq drains
->    iommu/arm-smmu-v3: Implement pm_runtime & system sleep ops
->    iommu/arm-smmu-v3: Enable pm_runtime and setup devlinks
->    iommu/arm-smmu-v3: Invoke pm_runtime before hw access
-> 
->   .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     |  22 +-
->   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  24 ++
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 297 ++++++++++++++++--
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   5 +
->   4 files changed, 326 insertions(+), 22 deletions(-)
-> 
+Jason
