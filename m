@@ -1,106 +1,92 @@
-Received: from mx1.emlix.com (mx1.emlix.com [178.63.209.131])
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 433B0214A98
-	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 09:32:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.209.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9492F21CA10
+	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 11:17:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742463125; cv=none; b=gr//LVyxrcolOedi2/BerC8jgvnhj2TIFSEx8DzmN0PreVfn5G6OT8jzYWIHp7vW0PRpRdO5DQxsnDbKNS8dbyLdpwW/LXYMQU+oPdeOHx7VRW3j0ei7RMEHuywcie0bktovFoPi0MKzxaCoqyyfo8tLm05EoIikIZHD8g4TWNA=
+	t=1742469473; cv=none; b=g0eFb3g/NsqwY9h6rWP6M8u7g2XrYVOf/eelIW+/Z+0ZJkMvAf5ggpgMCaJmW4BM8MtUZt66UfjEyJTiEUAjsch9ua6TaCWEZpNsN65imT1fPdWh1izA0o1jV+Albj0XslKFVuc7tJ9NaHMZ6P1FsjUyVlmp8My4J0Qo4ArC4ys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742463125; c=relaxed/simple;
-	bh=cP96Ga6Wb2QsqdS2mmypFULWz7tPrLEpp/5d+TrLzAU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=RtnL7zw1ds9Mg9lUHqqryT/BwF5lLWl1ZInb200nTH2Xm1iI1NFP2Mo1oEr/H4cWRQavhT6+oZlyUwhtJ/G1okEgGDJoFdzDd8uxJBdOxOfdsDSj9r3AYGNhY0ambW2Z8VfqlvRntaquj8HlPI8X8+VU0673tUqQxQbf7LFKRcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com; spf=pass smtp.mailfrom=emlix.com; arc=none smtp.client-ip=178.63.209.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=emlix.com
-Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
-	(using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mx1.emlix.com (Postfix) with ESMTPS id A88995FE16;
-	Thu, 20 Mar 2025 10:31:12 +0100 (CET)
-From: Rolf Eike Beer <eb@emlix.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Bert Karwatzki <spasswolf@web.de>, Lu Baolu <baolu.lu@linux.intel.com>,
- Jerry Snitselaar <jsnitsel@redhat.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>, Nick Kossifidis <mick@ics.forth.gr>,
- Sebastien Boeuf <seb@rivosinc.com>, Palmer Dabbelt <palmer@rivosinc.com>,
- Paul Walmsley <paul.walmsley@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>
-Subject: [PATCHv2 0/6] make vendor specific subdirectory inclusion conditional
-Date: Thu, 20 Mar 2025 10:01:45 +0100
-Message-ID: <12652899.O9o76ZdvQC@devpool47.emlix.com>
-Organization: emlix GmbH
+	s=arc-20240116; t=1742469473; c=relaxed/simple;
+	bh=kxjhNiy9u63coIBPEMlihOBsfAmnOpzMK4kohTUw/gI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=hKxB5SaXmrQhK6YuRji2UeII58v70yGx64ZVBQp9Y4z/IIWPRfM4qbK7M3uAYqAa/nWct0lw4MSrs9jy9zG6PdWT1FMX5CXiVX4Vm7PTbN6clneKrkA85gEsM4ezJsWclrBH5WtibrmfeYT3McaAuxL+r0cM17q5+N21Mp+ZOc0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.163])
+	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4ZJNJT6YtXz2Cd0j;
+	Thu, 20 Mar 2025 19:14:33 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 4B464180216;
+	Thu, 20 Mar 2025 19:17:48 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Thu, 20 Mar 2025 19:17:47 +0800
+Message-ID: <7a604ae4-063f-48ff-a92f-014d1cf86adc@huawei.com>
+Date: Thu, 20 Mar 2025 19:17:47 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart5893241.DvuYhMxLoT";
- micalg="pgp-sha256"; protocol="application/pgp-signature"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next 3/3] page_pool: Track DMA-mapped pages and unmap
+ them when destroying the pool
+To: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>, Yunsheng
+ Lin <yunshenglin0825@gmail.com>, "David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>,
+	Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Tariq
+ Toukan <tariqt@nvidia.com>, Andrew Lunn <andrew+netdev@lunn.ch>, Eric Dumazet
+	<edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Ilias Apalodimas
+	<ilias.apalodimas@linaro.org>, Simon Horman <horms@kernel.org>, Andrew Morton
+	<akpm@linux-foundation.org>, Mina Almasry <almasrymina@google.com>, Yonglong
+ Liu <liuyonglong@huawei.com>, Pavel Begunkov <asml.silence@gmail.com>,
+	Matthew Wilcox <willy@infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	IOMMU <iommu@lists.linux.dev>, <segoon@openwall.com>, <solar@openwall.com>,
+	<oss-security@lists.openwall.com>, <kernel-hardening@lists.openwall.com>
+CC: <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+	<linux-rdma@vger.kernel.org>, <linux-mm@kvack.org>, Qiuling Ren
+	<qren@redhat.com>, Yuying Ma <yuma@redhat.com>
+References: <20250314-page-pool-track-dma-v1-0-c212e57a74c2@redhat.com>
+ <20250314-page-pool-track-dma-v1-3-c212e57a74c2@redhat.com>
+ <db813035-fb38-4fc3-b91e-d1416959db13@gmail.com> <87jz8nhelh.fsf@toke.dk>
+ <7a76908d-5be2-43f1-a8e2-03b104165a29@huawei.com> <87wmcmhxdz.fsf@toke.dk>
+ <ce6ca18b-0eda-4d62-b1d3-e101fe6dcd4e@huawei.com> <87r02ti57p.fsf@toke.dk>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <87r02ti57p.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
---nextPart5893241.DvuYhMxLoT
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
-From: Rolf Eike Beer <eb@emlix.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Date: Thu, 20 Mar 2025 10:01:45 +0100
-Message-ID: <12652899.O9o76ZdvQC@devpool47.emlix.com>
-Organization: emlix GmbH
-MIME-Version: 1.0
+On 2025/3/19 20:18, Toke Høiland-Jørgensen wrote:
+>>
+>> All I asked is about moving PP_MAGIC_MASK macro into poison.h if you
+>> still want to proceed with reusing the page->pp_magic as the masking and
+>> the signature to be masked seems reasonable to be in the same file.
+> 
+> Hmm, my thinking was that this would be a lot of irrelevant stuff to put
+> into poison.h, but I suppose we could do so if the mm folks don't object :)
 
-I found it strange that the vendor specific subdirectories were uncondition=
-ally=20
-added. Everything in these directories obviously depends on the specific Kc=
-onfig=20
-option. This series cleans this up by making the directory itself depend on=
-=20
-the respective option which looks more natural to me.
+The masking and the signature to be masked is correlated, I am not sure
+what you meant by 'irrelevant stuff' here.
 
-I must confess that I am too lazy to find a good solution for the "arm/"=20
-directory, so I left it as is.
+As you seemed to have understood most of my concern about reusing
+page->pp_magic, I am not going to argue with you about the uncertainty
+of security and complexity of different address layout for different
+arches again.
 
-Regards,
+But I am still think it is not the way forward with the reusing of
+page->pp_magic through doing some homework about the 'POISON_POINTER'.
+If you still think my idea is complex and still want to proceed with
+reusing the space of page->pp_magic, go ahead and let the maintainers
+decide if it is worth the security risk and performance degradation.
 
-Eike
-
-=2D--
-Changes in v2:
-=2D clean up subdirectory Makefiles to use obj-y now
-=2D add arm/arm-smmu-v3 and iommufd patches
-=2D-=20
-Rolf Eike Beer
-
-emlix GmbH
-Headquarters: Berliner Str. 12, 37073 G=C3=B6ttingen, Germany
-Phone +49 (0)551 30664-0, e-mail info@emlix.com
-District Court of G=C3=B6ttingen, Registry Number HR B 3160
-Managing Directors: Heike Jordan, Dr. Uwe Kracke
-VAT ID No. DE 205 198 055
-Office Berlin: Panoramastr. 1, 10178 Berlin, Germany
-Office Bonn: Bachstr. 6, 53115 Bonn, Germany
-http://www.emlix.com
-
-emlix - your embedded Linux partner
---nextPart5893241.DvuYhMxLoT
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iLMEAAEIAB0WIQQ/Uctzh31xzAxFCLur5FH7Xu2t/AUCZ9vZeQAKCRCr5FH7Xu2t
-/KzhBACEdmdr0bY0N6eQxB1byUc3X3h+0fMpnAPDybVl8uNLVdes2BnFk1VDMZCt
-Etxao2Oyzq2vNJuDl8zYA8utbXiiIz0LeenQwyrVo1kgEev3GkJbqRwIkpyko3q/
-K8Esb1BlIF85LDn81KbjQgi2YHG0fMEuRHID/dL2/4SUbTConw==
-=+N/3
------END PGP SIGNATURE-----
-
---nextPart5893241.DvuYhMxLoT--
-
-
-
+> 
+> -Toke
+> 
+> 
