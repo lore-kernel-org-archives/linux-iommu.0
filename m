@@ -1,135 +1,296 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2060.outbound.protection.outlook.com [40.107.93.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9110622A1CB
-	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 23:21:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742512908; cv=none; b=u9Wg1rDWqNx5L4ByyWQB2LHnJm/nHbp36ynF8tCwkfsLjRJalYJRcU79zOpnJitTBQcHPk9pIxRdjpsD0Gv6TvEDU6kKQYZ6p4ZoClsrdH5u/Ctf3xbogSt61K2VMmg+g+PDDJJaDngU0ep2DVPiR/pzISa+6pQjbqGtozzSEc4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742512908; c=relaxed/simple;
-	bh=AHDmzyijp9ZELgL1o7g85JgdlQHpfVV++jmUNt0pl44=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 References; b=TezmgMyn3DnaXfffJvNbE6UH6hdts5Oi+zBYM1LI9nJ+wsQ1FEBihlADHAOO+1QmykEwfxCZdF4UKodW7YCpmh9LPvxOyZygPaMF4xIIY6d62GS04lpRbOjSPaY1SQ+PkVe1ewz55FiRxAf2ZZo+LJRvrR9tsoaXlXVxzZFEHDI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=L0QfNVNw; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A232B1DE8A8
+	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 23:22:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742512947; cv=fail; b=KjaGHjmLmvv37IZZpLK3FD80DcgqO0YiM8vVc2rSH5nWK8rHf2Cm2d7rDrBSiC9IANyINgRdTp5t/ixabz/Vil2dx76Nxi/BuXYnOeJYD4jdEPPQ41K/lFDIMW3aW7T+j/5YO1QrL0ioKXdHmqPw/bQXoW4IzmQwsg4N0HpT+dI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742512947; c=relaxed/simple;
+	bh=8drlotwRNzddnKzJaSe2nk2kArke+xMCwuFGHRgqGHI=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WHOxnvQm0tSr9z/0LDDmunNSc/ZJWYCE2j3uv9zc1ec/S6h0t6yY9rckQX04Vo/BVjv+i50tXqFnkuyImfDsk3P5G3/z5hB2itQJ+KUQN06LRRM/kjf2oU1UNszmQvvaxzftC8HtO0ClbSqjKns2+bvtCYmt3c97yfcsLEBoKp4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cdGo6Rs9; arc=fail smtp.client-ip=40.107.93.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="L0QfNVNw"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250320232138euoutp02baed38a7181a8f774fcc76de70cdcfc3~upj_ni4RN3150231502euoutp022
-	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 23:21:38 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250320232138euoutp02baed38a7181a8f774fcc76de70cdcfc3~upj_ni4RN3150231502euoutp022
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1742512898;
-	bh=Jgh7/aGnQ8G2WHCuJK0N49oWUWg1YldfBxA4ZHdy2LI=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=L0QfNVNwRPosJe8SgrBHCSjPuXflg9A3P5y4iNVLOpb7D2MrhDIQUcTRfDEjal+Xj
-	 3jSY+etlkAjMWl8crKFwHwc9AJ3BzejewH7l+l58hNQ1VHcNkwtj9hZFOAeW+p9wNV
-	 wfRCVunWjlsKcoCyxfNP0xbwHQPasHv7QPNib0Jo=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20250320232137eucas1p289da6fe11c17ac87a8faa6ab647746dc~upj_b7M5z2395123951eucas1p2N;
-	Thu, 20 Mar 2025 23:21:37 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges2new.samsung.com (EUCPMTA) with SMTP id FE.8A.20409.103ACD76; Thu, 20
-	Mar 2025 23:21:37 +0000 (GMT)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20250320232137eucas1p2f877454de65336d638b200d920ccf2f3~upj9wupIO2394423944eucas1p2L;
-	Thu, 20 Mar 2025 23:21:37 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20250320232137eusmtrp2b4030c2d062c85cec93d261b45a0e0f1~upj9wRTqg0223902239eusmtrp2X;
-	Thu, 20 Mar 2025 23:21:37 +0000 (GMT)
-X-AuditID: cbfec7f4-c0df970000004fb9-63-67dca3018d2a
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id 53.68.19920.103ACD76; Thu, 20
-	Mar 2025 23:21:37 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20250320232136eusmtip2d3eb93a765e337482f1f6bb1c6cf220f~upj9cXt820599605996eusmtip2c;
-	Thu, 20 Mar 2025 23:21:36 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [GIT PULL] dma-mapping fix for Linux 6.14
-Date: Fri, 21 Mar 2025 00:21:15 +0100
-Message-Id: <20250320232115.3940-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cdGo6Rs9"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=qtsugy2aoYmwmHLevGEwTwnenrDqC95DlvW5UlVZh73MHwqPfy1hQhFXmzpJEEH7rnaBh20gRQSxrTSdwE+a03eZCjLhQzbmbWdyRVwPQL0XI1mrYudbw6+zWZhafcipsqf05sTPlrMB/EvUm00pEn9gr3OIorbkK4iVKYwI0aCr5rnY5fh+mtj+U+vl7Sn6lLu7E0hiFVxWmp0gPZc81jVMUuL41xzxX38Zn+En/yNbHCPzAO0w7M+9Sx7jWeTjocDA2ImBps2/j6FHz92zqnInazhnYzJM2e62HzrMs+voRZDd/L3gcYRzdOGNjXyEtwMR9G7lJFNGCYz0PdlXyQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OuJIay/xbzGhMxr6iWg6dlRJaFpatGpj0lUS8gAnazE=;
+ b=Tsx0tfVNDfscomz6jDEdMPRVlfaWsYbe6Mi+2TP0frkEOfCz/cBAMBBxKlXlyjgyO1XBgU/U9iSX9U8GbJAjINXS5ZO7ZeZm8NR8ViYY1F/ES0jZCO4x5g/aNPkEbnfFEPeK/mSVmIsiFw0rGdygq59SmMGbXGjMcM6eKedbvEMI1nBq0Y30VQZFds5jjSzjpuAgU1u8LlMzsfj4oDjb1Mawex6boi4IE/ldTUPlKdVx7gd27KH5r6eNblB4EmnZodheIESEb5AMnKPqmm69NcRdUQzzxOezvP8TImIyvswkJuRQUdyLG7UDzKqdKiGa8RLRWLEq82/Kt8To+U3BBQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OuJIay/xbzGhMxr6iWg6dlRJaFpatGpj0lUS8gAnazE=;
+ b=cdGo6Rs9ulB2oPSKnd1ArD7THwN92El1kM0md5sjJEl7kSdUd+c0M0NWTVKX1RsHSeTt/3lUdmq75lBWw0mY1bkcUm0gP5Ase1ceo6wQY5iXKVkOZp2mYRRV40Y5DlOS1B7EvKoUzyeiOiP+Nx101Oe3yb5151gI9BVPRyOuSgVXehjlNIiQdAs+K4WtdTTO4RR9a3fTyFds+z1JSHgYXKqf26yzpBIXh7KAkfwcRC/fukLSCtt4Rf1HCyBtdf3FosNkWDI/Hc/ulUKIE/9oXwSSIG/iIKUTAcNnuQL74BNDcaNU5YR+l3tsGEZTe1FLrrRpI10o50ypgPNkG39hIw==
+Received: from SJ0PR05CA0192.namprd05.prod.outlook.com (2603:10b6:a03:330::17)
+ by PH7PR12MB5760.namprd12.prod.outlook.com (2603:10b6:510:1d3::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.34; Thu, 20 Mar
+ 2025 23:22:17 +0000
+Received: from BY1PEPF0001AE1C.namprd04.prod.outlook.com
+ (2603:10b6:a03:330:cafe::f9) by SJ0PR05CA0192.outlook.office365.com
+ (2603:10b6:a03:330::17) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8534.33 via Frontend Transport; Thu,
+ 20 Mar 2025 23:22:17 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BY1PEPF0001AE1C.mail.protection.outlook.com (10.167.242.105) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8534.20 via Frontend Transport; Thu, 20 Mar 2025 23:22:17 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 20 Mar
+ 2025 16:18:02 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 20 Mar
+ 2025 16:17:54 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Thu, 20 Mar 2025 16:17:53 -0700
+Date: Thu, 20 Mar 2025 16:17:52 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+CC: <kevin.tian@intel.com>, <jgg@nvidia.com>, <joro@8bytes.org>,
+	<baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>
+Subject: Re: [PATCH v10 17/18] iommufd/selftest: Add test ops to test pasid
+ attach/detach
+Message-ID: <Z9yiIEaWyMGyyc2A@Asurada-Nvidia>
+References: <20250320134744.5777-1-yi.l.liu@intel.com>
+ <20250320134744.5777-18-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrIIsWRmVeSWpSXmKPExsWy7djPc7qMi++kGyz/Y2zx64uFxeVdc9gs
-	HvW9ZXdg9jgx4zeLx4vNMxk9Pm+SC2CO4rJJSc3JLEst0rdL4MpoWHqHsaCXo2LF/z72Bsa/
-	bF2MnBwSAiYS19ZcY+li5OIQEljBKNH6dT4jSEJI4AujxJwbIRCJz4wSN+dvYoTp+PGzkQ0i
-	sZxR4smlG+wQDlDHhbaVLCBVbAKGEl1vu8B2iAgYSXx+cYUVxGYWMJf48nMeO4gtDBTf+uUt
-	WA2LgKrEvJNLwTbwCthI3Dm8nhlim7zE/oNnmSHighInZz5hgZgjL9G8dTYzyGIJgbfsEv0z
-	24AWcAA5LhKn9ldD9ApLvDq+hR3ClpH4v3M+E0R9O6PEgt/3oZwJjBINz29B/WYtcefcLzaQ
-	QcwCmhLrd+lDhB0lXl/sZISYzydx460gxA18EpO2TWeGCPNKdLQJQVSrScw6vg5u7cELl6BK
-	PCSu7SiDBG6sxKbr75gmMCrMQvLYLCSPzUI4YQEj8ypG8dTS4tz01GKjvNRyveLE3OLSvHS9
-	5PzcTYzAVHH63/EvOxiXv/qod4iRiYPxEKMEB7OSCK9Ix+10Id6UxMqq1KL8+KLSnNTiQ4zS
-	HCxK4ryL9remCwmkJ5akZqemFqQWwWSZODilGpgy3UR8Iz7Nib/7O0J145Wvl5abcennGJ6e
-	OXd38eFjex9X5Eus+3j47pZ/PFKfO3YJf5ycuURI5vLvjTpxRhx3zyyztMtXWR2flcvspMal
-	bvNbaqHY0kKXaws/b1krwPf0kXFZo+VVb/PXYfm2RsY3vz0KV1yr9Pv/uhV7HS80nzs/y1r+
-	3IWrer+q/Wa/kgiY6H1ugjPX6psX/oo/PybgKLlJKOPRJtuIN8ueJddtqpNwWaxW/snI/HOx
-	p9Cs6XV3jTRkdbMcD7U/DyuK/172+13dbsbO+AieC6E2p14EiZbfjnvvc8+w/GDS/5p5+g97
-	i/Szd629PmWtgMty18tpqYfdnRK/rsvKa/jDdM5JiaU4I9FQi7moOBEAH7AGIIQDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrJLMWRmVeSWpSXmKPExsVy+t/xe7qMi++kGyw4wmHx64uFxeVdc9gs
-	HvW9ZXdg9jgx4zeLx4vNMxk9Pm+SC2CO0rMpyi8tSVXIyC8usVWKNrQw0jO0tNAzMrHUMzQ2
-	j7UyMlXSt7NJSc3JLEst0rdL0MtoWHqHsaCXo2LF/z72Bsa/bF2MnBwSAiYSP342AtlcHEIC
-	Sxkllu+bwwiRkJE4Oa2BFcIWlvhzrQuq6BOjxIojM8CK2AQMJbredoFNEhEwkvj84gpYA7OA
-	pcTX63OZQWxhoPjWL2/BalgEVCXmnVwK1ssrYCNx5/B6ZogF8hL7D55lhogLSpyc+YQFYo68
-	RPPW2cwTGPlmIUnNQpJawMi0ilEktbQ4Nz232FCvODG3uDQvXS85P3cTIzBMtx37uXkH47xX
-	H/UOMTJxMB5ilOBgVhLhFem4nS7Em5JYWZValB9fVJqTWnyI0RTovonMUqLJ+cBIySuJNzQz
-	MDU0MbM0MLU0M1YS53W7fD5NSCA9sSQ1OzW1ILUIpo+Jg1OqgWnqIgWJyfUtyttC5x/b0BQ1
-	z3fj43jfTbtWB+R/Ozb9WtVXg8KMnpOdhq9PhXc9E53T8lltc8qXnoJmH6GN9aquHsZZaYe0
-	HIyT/zGua11uHnoqOpSN8dmeFZadHsI251RljFlvXXg30Wbj2T+7JzxXbXXlCrhz9qnKUktb
-	qfC1VbdSlmoKRF+W4jFV3cjTeHOF7eQPaRLbJ967xzStbM57zw375MvbjczM4128q9pvlauH
-	rErYX7fwYIzFXPUZL79eYWPfKrL9/Yc/G/RXr+MNPx5V9H1j+SZ3vavF/zim7Db1WmgXvS3b
-	utBnjnWvv9yMcp1fmz4ws97rFcv3tp9nYP79uUTakm8FnK/rZiuxFGckGmoxFxUnAgDeE3UR
-	3AIAAA==
-X-CMS-MailID: 20250320232137eucas1p2f877454de65336d638b200d920ccf2f3
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250320232137eucas1p2f877454de65336d638b200d920ccf2f3
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20250320232137eucas1p2f877454de65336d638b200d920ccf2f3
-References: <CGME20250320232137eucas1p2f877454de65336d638b200d920ccf2f3@eucas1p2.samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250320134744.5777-18-yi.l.liu@intel.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BY1PEPF0001AE1C:EE_|PH7PR12MB5760:EE_
+X-MS-Office365-Filtering-Correlation-Id: 18707a38-02a0-43cd-9858-08dd68060e62
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|82310400026|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?awBM4xA0X6gaKIrmxnZJ96WCjhHp21FSIgseqCeOPaft9pbxT6Vqe1xAxFto?=
+ =?us-ascii?Q?lOWe1njwdqk8dtVWDdi2mojqj8d1F2Fi/7718pLryH8tYKVUa6NGO53bQOr4?=
+ =?us-ascii?Q?7PEQ7mBI7U1Lf+BFENao4Pf5b4hfFNOflPjPARZiJSs1pfgxpPOUk9uTPpdr?=
+ =?us-ascii?Q?6OR4JHo8o6j2JdkD4reGkd/Itblxf8YGG8nE/IuXN02Yit3NnLiZlNPjBHq/?=
+ =?us-ascii?Q?5ectI4jS8F3yI9tKSyuRVUAL4+Rgtqi9hx1ScXx7WWBL9vHGFFZx+11dY8AB?=
+ =?us-ascii?Q?KtmjwL3J4IzaDosq9HJPwMonkc/Pily80cCF7WC0ANAGzJtvK3w5AoodZlzU?=
+ =?us-ascii?Q?eXU5RASX6Wsgc3Gn48C61mvCt+WANFmaJ3KKDYTW+4bbFRlgEeVJjyMYTeZX?=
+ =?us-ascii?Q?WW4/JClBDNfkhi+DYWF1nhzab3ctFEMdYjPtzUDLUQKMED43PvPbVvjy3yhn?=
+ =?us-ascii?Q?5uj15505jYOLuIAgULyT7RW2hgfBmwFs/r2iowq+dlUFgPv/qb2kyx9xHFIx?=
+ =?us-ascii?Q?OdEnFHLGMkZw3CiH/Iv0Fm0zf/RYY1GVOmDxpyAg85LIQY8kxwI5kJJpdx4D?=
+ =?us-ascii?Q?Oj1sT+i/2UlPKyMgjHvNYPPGPbb5DVCdVWB32DRoGe2kEpG34FruYeTLqxuq?=
+ =?us-ascii?Q?vcui9YXz+/xYSA1cHAgeQjsQaSWHz7iHs7JRjcZWqfMK6BOyzvUXFLBmPOSx?=
+ =?us-ascii?Q?RGUFkyaNuKASXmh/cdmVfDVzGrQuPwLnz79tycqr+xL/0t1RG8JwPjyp/0Hq?=
+ =?us-ascii?Q?gECmNwJeld9ASTtliS/VcVyCgPGVq+/+KPvJq+4MgfNUvZ7yMpd/kKH6GO+n?=
+ =?us-ascii?Q?6uX2khYZgK07LoJlJYLaM0xxqVHmO7ZTzTW1OEBmfG3H//MFbUtMf11YNbXr?=
+ =?us-ascii?Q?YtfxqxMk+chdMfPV+6uzJ9s3cs7hfhBp6LGkugscIQ8SqaW+TyAJdIZt0UIF?=
+ =?us-ascii?Q?ypLtKbjlwaKMP+4RPKkejwMICa8StjuCexPS2/YsTixLq72OS9UhN8eU87RJ?=
+ =?us-ascii?Q?TDULukzjXNPLRb314rMfvjlvR2vyi9mm7tiB6pV4JU/UyM082ik7zBIWCMGP?=
+ =?us-ascii?Q?pjPe7p6ow2uY2QmeRYAoOPxcnbVHPbTshPea2gvPnXUbLZXtGYwwkO+mQRks?=
+ =?us-ascii?Q?5gavC3rXJxCiQn4SV1NFpLiGiA63TqWGgVsxxI6o3xppg/cl17TmVX5kLAx6?=
+ =?us-ascii?Q?GlUr1rdoPJ8WIs7TVxYO+FBt9ixLsUguasbGgoGP2q9ND0OXolDAYdn6DNeK?=
+ =?us-ascii?Q?Qu7fdOCQfoqDx8IU2aK5r6X77RX/rOm6yrPl69czmt3FLVmOeInyu9RV3poS?=
+ =?us-ascii?Q?cT6XI4fCxhVXu1jO7fmdzn2OjJbpXDhufgtPCzlzWJZu0kRBFmrEzjKrFU4i?=
+ =?us-ascii?Q?BdTI6RX5TQ4HvPu0UyK2eUUy5sVXNiVuO8xALuCrdRs4imMuimtbTBMz9yD9?=
+ =?us-ascii?Q?xWe+AFPWcw/ykU1a820OY6Wc2r8qBUj3Bya8n0uMFS70Doj+YtEIGm5jGigQ?=
+ =?us-ascii?Q?5WWMgW+kONLmXdE=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(82310400026)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2025 23:22:17.5664
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 18707a38-02a0-43cd-9858-08dd68060e62
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BY1PEPF0001AE1C.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5760
 
-The following changes since commit 2014c95afecee3e76ca4a56956a936e23283f05b:
+On Thu, Mar 20, 2025 at 06:47:43AM -0700, Yi Liu wrote:
+> @@ -150,6 +155,32 @@ struct iommu_test_cmd {
+>  		struct {
+>  			__u32 dev_id;
+>  		} trigger_vevent;
+> +		struct {
+> +			__u32 pasid;
+> +			__u32 pt_id;
+> +			/* @id is stdev_id
+> +			 * pasid#1024 is for special test, do not use it
+> +			 * in normal case.
+> +			 */
 
-  Linux 6.14-rc1 (2025-02-02 15:39:26 -0800)
+How about add on top of these structs:
+#define IOMMU_TEST_PASID_RESERVED 1024
 
-are available in the Git repository at:
+Also, the coding style of the multi-line comments is a bit odd.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-6.14-2025-03-21
+> +		} pasid_attach;
+> +		struct {
+> +			__u32 pasid;
+> +			__u32 pt_id;
+> +			/* @id is stdev_id
+> +			 * pasid#1024 is for special test, do not use it
+> +			 * in normal case.
+> +			 */
 
-for you to fetch changes up to 8324993f60305e50f27b98358b01b9837e10d159:
+Ditto
 
-  dma-mapping: fix missing clear bdr in check_ram_in_range_map() (2025-03-12 13:41:44 +0100)
+> diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+> index 691e7a23f300..37c9cd285541 100644
+> --- a/drivers/iommu/iommufd/selftest.c
+> +++ b/drivers/iommu/iommufd/selftest.c
+> @@ -223,10 +223,29 @@ static int mock_domain_nop_attach(struct iommu_domain *domain,
+>  	return 0;
+>  }
+>  
+> +static bool pasid_1024_attached;
 
-----------------------------------------------------------------
-dma-mapping fix for Linux 6.14
+I recall syzkaller would do multi-threading... We might need a
+global mutex or something atomic_t?
 
-- fix missing clear bdr in check_ram_in_range_map()
-  (Baochen Qiang)
+>  static int mock_domain_set_dev_pasid_nop(struct iommu_domain *domain,
+>  					 struct device *dev, ioasid_t pasid,
+>  					 struct iommu_domain *old)
+>  {
+> +	/*
+> +	 * First attach with pasid 1024 succ, second attach would fail.
 
-----------------------------------------------------------------
-Baochen Qiang (1):
-      dma-mapping: fix missing clear bdr in check_ram_in_range_map()
+succeeds?
 
- kernel/dma/direct.c | 28 ++++++++++++++++++----------
- 1 file changed, 18 insertions(+), 10 deletions(-)
-----------------------------------------------------------------
+> +	 * This is helpful to test the case in which the iommu core needs
+> +	 * to rollback to old domain due to driver failure.
+> +	 */
+> +	if (pasid == 1024) {
+> +		if (domain->type == IOMMU_DOMAIN_BLOCKED) {
+> +			pasid_1024_attached = false;
+> +		} else if (pasid_1024_attached) {
+> +			pasid_1024_attached = false;
+> +			// Fake an error to fail the replacement
+> +			return -ENOMEM;
 
-Thanks!
+/* Fake an error to fail the replacement */
 
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+While failing this, why does it detach pasid-1024? Maybe some extra
+comments for what's doing?
+
+> +static int iommufd_test_pasid_check_domain(struct iommufd_ucmd *ucmd,
+> +					   struct iommu_test_cmd *cmd)
+> +{
+> +	struct iommu_domain *attached_domain, *expect_domain = NULL;
+> +	struct iommufd_hw_pagetable *hwpt = NULL;
+> +	struct iommu_attach_handle *handle;
+> +	struct selftest_obj *sobj;
+> +	struct mock_dev *mdev;
+> +	bool result;
+> +	int rc = 0;
+> +
+> +	sobj = iommufd_test_get_selftest_obj(ucmd->ictx, cmd->id);
+> +	if (IS_ERR(sobj))
+> +		return PTR_ERR(sobj);
+> +
+> +	mdev = sobj->idev.mock_dev;
+> +
+> +	handle = iommu_attach_handle_get(mdev->dev.iommu_group,
+> +					 cmd->pasid_check.pasid, 0);
+> +	if (IS_ERR(handle))
+> +		attached_domain = NULL;
+> +	else
+> +		attached_domain = handle->domain;
+> +
+> +	if (cmd->pasid_check.hwpt_id) {
+> +		hwpt = iommufd_get_hwpt(ucmd, cmd->pasid_check.hwpt_id);
+> +		if (IS_ERR(hwpt)) {
+
+Do we need cmd->pasid_check.hwpt_id to be optional?
+
+> +			rc = PTR_ERR(hwpt);
+> +			goto out_put_dev;
+> +		}
+> +		expect_domain = hwpt->domain;
+> +	}
+> +
+> +	result = (attached_domain == expect_domain) ? 1 : 0;
+> +	if (copy_to_user(u64_to_user_ptr(cmd->pasid_check.out_result_ptr),
+> +			 &result, sizeof(result)))
+> +		rc = -EFAULT;
+
+If we do want it to be optional, we can't unconditionally check the
+result then?
+
+> +static int iommufd_test_pasid_attach(struct iommufd_ucmd *ucmd,
+> +				     struct iommu_test_cmd *cmd)
+> +{
+> +	struct selftest_obj *sobj;
+> +	int rc;
+> +
+> +	sobj = iommufd_test_get_selftest_obj(ucmd->ictx, cmd->id);
+> +	if (IS_ERR(sobj))
+> +		return PTR_ERR(sobj);
+> +
+> +	rc = iommufd_device_attach(sobj->idev.idev, cmd->pasid_attach.pasid,
+> +				   &cmd->pasid_attach.pt_id);
+> +	if (rc)
+> +		goto out_sobj;
+> +
+> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+> +	if (rc)
+> +		iommufd_device_detach(sobj->idev.idev,
+> +				      cmd->pasid_attach.pasid);
+> +
+> +out_sobj:
+> +	iommufd_put_object(ucmd->ictx, &sobj->obj);
+> +	return rc;
+> +}
+> +
+> +static int iommufd_test_pasid_replace(struct iommufd_ucmd *ucmd,
+> +				      struct iommu_test_cmd *cmd)
+> +{
+> +	struct selftest_obj *sobj;
+> +	int rc;
+> +
+> +	sobj = iommufd_test_get_selftest_obj(ucmd->ictx, cmd->id);
+> +	if (IS_ERR(sobj))
+> +		return PTR_ERR(sobj);
+> +
+> +	rc = iommufd_device_replace(sobj->idev.idev, cmd->pasid_attach.pasid,
+> +				    &cmd->pasid_attach.pt_id);
+> +	if (rc)
+> +		goto out_sobj;
+> +
+> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+> +
+> +out_sobj:
+> +	iommufd_put_object(ucmd->ictx, &sobj->obj);
+> +	return rc;
+
+If iommufd_ucmd_respond fails, do we need to revert like we do in
+iommufd_test_pasid_attach()?
+
+Thanks
+Nicolin
