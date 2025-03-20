@@ -1,136 +1,240 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B64A3222575
-	for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 23:39:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+Received: from second.openwall.net (second.openwall.net [193.110.157.125])
+	by smtp.subspace.kernel.org (Postfix) with SMTP id 54A7A5D477
+	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 02:41:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.110.157.125
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742427590; cv=none; b=PNPuqKWhZM11Tj60iqxC0GbRHZxnP2h7p0bTTWBUTmylkrA3pKnN6nuZ4RTfJXo+WeO1cEMcVNuM2mXujfOrtPyb5yDi6XyIPNodxrzJb1HHfDaLT135DlYoiCWTjbGhWLx9OetE5nwexm2zwJhtjrB0ws0uOmVKpXcuy/Sbq4o=
+	t=1742438475; cv=none; b=qJfs7t97nR1CaKOCH7j4pB8ommNNf48HeqDCsINKg0mAvUvTbP3kaEt51NIBqDj6OYQZ5VzM6TUv9OS5ZiAi1f430svyNQvd2EgF9wxIx5DpdjUmiBIcKERS+JHrdyz4tJ4PHNk5zhrB1rWYhRBe9Ei0sadqZQXWurZ0Q3ajOVU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742427590; c=relaxed/simple;
-	bh=Qp0wIcZ6apEfZg4GuuBubt8w+xLe+et7yRvcV9+Fct0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rqT0SiK0pTSDKwx1DBQP5cyUf0qvpa+LmHGDIJqOG6cR2gKdUPml1MtLmRj2rmjyC7qYCj7xrbn5d9gcl97MqykMSwZ26HnV5+CD+5JqK3H56fxBs5I+fqim8+9HoGgJh7QCWkVoM/muQhb8JQvOucwb86dozmDYpeoN1FQUG5M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dc5H01xS; arc=none smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dc5H01xS"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-47663aeff1bso2531611cf.0
-        for <iommu@lists.linux.dev>; Wed, 19 Mar 2025 16:39:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1742427587; x=1743032387; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RzAx7zrshxa9otOXRhlSkfMjSVGU/IxrZ5CXiIP9CSA=;
-        b=dc5H01xS/lns0iuSYKN9zVtG1p9zITrovNuxdav5lPM865X0hQ/0gHplF7sdw38DEc
-         N1fFJYxaKxHwGS9F//A6dsTaOEdfUw39vAPiAQqHsZZGhv+YXbGKbcZ3ll844nHcUCur
-         FaA7Wk+5cDJvY/qHFuj6K8z5kdNeX9VY9ptS8QLqZwATbuLtJ3ZjLUR53JW6vkkjOgiO
-         xvEQabhSsD61Nys171qhMjQaS+alaO9eUYXmjymGapi8eN+eptzAef0gzy+NRzMmZ5v/
-         35jQNRXDMlrwZSvX2Wtfy5I/brjxE/l3aqt9uGEQOnNkfeidq2eOsClsuKAZAEmICfrL
-         capQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742427587; x=1743032387;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RzAx7zrshxa9otOXRhlSkfMjSVGU/IxrZ5CXiIP9CSA=;
-        b=fLCdtKrN+Bpl4UBB8yLCPYLAD3ymoM861uwBH2kUUTov/6bOs2kpTBNW+k95HlGSbc
-         lVM3s3JijLgdQsjGqDiaT6DD4HwYOHJ3oksV3/0bKzpuJ1f7AdW/wWiNwlmF4N5Kw8LG
-         zHo/lehfmTEoZr5vM6xHUvyHaGgpzHNIwI38fVTRvk+BiW4kLe70HxbcZYn62kyHBv9H
-         CFyXkuvvyiSR37L8fJ9LvLoZN/xt//u5qWsHLqtIvDa7JAnUFVHwdU6/ZVME4TMm0Quo
-         ycHG1dD7B8/eapuLA/wSOY3sm0vJhCQuavvOE8u1v7WrMqWLujF/Hbb8XbKMcM/0o+U+
-         5arg==
-X-Forwarded-Encrypted: i=1; AJvYcCW2R4Bp9T/fNnqQZdxJ96RdZKmf/XCOduPC0PxEDHWM7hz5maEcUHwzEfm+x4XSGjJaLhUlVw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx4n/KXp8o7EnJ6FM3LpGVjqbXgVyAq61QokDNb0kx5vBh0ckQQ
-	zSQTi/zr/aArnZJEsIif9GxTtqG8BdZBb8irEpaOgXM9KgjLq27jgVTuzkPffJM=
-X-Gm-Gg: ASbGncuobh1VhuUjpfUFHKdyjotLGle0+vi/q0v4Mg8rXUEb4zILdR3t2nArnT2EZox
-	0XNeDPFTYS2eTrLbaJEetX6um+TIdxHhWL+UCZ+nn+7KLO4QNDXWk3KBQQHjbR/6KgGche3GWhc
-	hG7DoFmDkRnrC48mnXBCgoq8KjUN64FixxospM1W0JWtkJPgY65qmx/9OeP86LlPMBYBqUzIET7
-	dDXoyJ49pwIoUdmVsWICusoiwIRM+Ay2Fdb1MV3t+n/M1/31lTx1288RBE6OR4EPrHjHA4Hdrur
-	S+4AKu7UCtdY0NCs6u0d4dlpuC8bRciUalkOtCvmYTQlh23v4YhTSiNiYxnODe5AHg02Z6GJVo1
-	+1LiXcJC8lTfsbufjBw==
-X-Google-Smtp-Source: AGHT+IF9kl9P6XYnhoEMvEZ3lKapz4eUtSUPO4gWdTGr+ps6RPA96Wz7D0zijkf/bw2551v0mV3avg==
-X-Received: by 2002:a05:622a:418f:b0:476:7b0b:3110 with SMTP id d75a77b69052e-4770831f8f5mr94450601cf.20.1742427587653;
-        Wed, 19 Mar 2025 16:39:47 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-476bb82bf6bsm85415621cf.78.2025.03.19.16.39.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Mar 2025 16:39:47 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tv30k-00000000clb-27LO;
-	Wed, 19 Mar 2025 20:39:46 -0300
-Date: Wed, 19 Mar 2025 20:39:46 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Cc: kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linuxarm@huawei.com,
-	kevin.tian@intel.com, alex.williamson@redhat.com, maz@kernel.org,
-	oliver.upton@linux.dev, will@kernel.org, robin.murphy@arm.com,
-	nicolinc@nvidia.com, jean-philippe@linaro.org,
-	jonathan.cameron@huawei.com
-Subject: Re: [RFC PATCH v3 4/5] iommu/arm-smmu-v3-iommufd: Use KVM VMID for
- s2 stage
-Message-ID: <20250319233946.GF126678@ziepe.ca>
-References: <20250319173202.78988-1-shameerali.kolothum.thodi@huawei.com>
- <20250319173202.78988-5-shameerali.kolothum.thodi@huawei.com>
+	s=arc-20240116; t=1742438475; c=relaxed/simple;
+	bh=Ov12BHgQtJeYkVfTeLe4KkA/+7bFWMw8jGFJAJXzl3k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Mime-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FjaYD/dTOu4BkMTrk2qXlzBE8yHB6A/4pvQ+xvcXkapYCMJVaFodb/NeN/IrfTz+fOUfZwphOspqBGhFu86VcFsajKSJs4vQxb+123g8Vgn8Krmw9BeYZ1L8pZ45jM9QUM29ei8dpRSXmKp53gKkFyyw0+D9kzkKq8rTz8g5SnQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=openwall.com; spf=pass smtp.mailfrom=openwall.com; arc=none smtp.client-ip=193.110.157.125
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=openwall.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=openwall.com
+Received: (qmail 5897 invoked from network); 20 Mar 2025 02:34:28 -0000
+Received: from localhost (HELO pvt.openwall.com) (127.0.0.1)
+  by localhost with SMTP; 20 Mar 2025 02:34:28 -0000
+Received: by pvt.openwall.com (Postfix, from userid 503)
+	id E98CBA064E; Thu, 20 Mar 2025 03:32:02 +0100 (CET)
+Date: Thu, 20 Mar 2025 03:32:02 +0100
+From: Solar Designer <solar@openwall.com>
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+	Yunsheng Lin <yunshenglin0825@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	Leon Romanovsky <leon@kernel.org>, Tariq Toukan <tariqt@nvidia.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	Simon Horman <horms@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Mina Almasry <almasrymina@google.com>,
+	Yonglong Liu <liuyonglong@huawei.com>,
+	Pavel Begunkov <asml.silence@gmail.com>,
+	Matthew Wilcox <willy@infradead.org>,
+	Robin Murphy <robin.murphy@arm.com>, IOMMU <iommu@lists.linux.dev>,
+	segoon@openwall.com, oss-security@lists.openwall.com,
+	kernel-hardening@lists.openwall.com, netdev@vger.kernel.org,
+	bpf@vger.kernel.org, linux-rdma@vger.kernel.org, linux-mm@kvack.org,
+	Qiuling Ren <qren@redhat.com>, Yuying Ma <yuma@redhat.com>,
+	sultan@kerneltoast.com
+Subject: Re: [PATCH net-next 3/3] page_pool: Track DMA-mapped pages and unmap them when destroying the pool
+Message-ID: <20250320023202.GA25514@openwall.com>
+References: <20250314-page-pool-track-dma-v1-0-c212e57a74c2@redhat.com> <20250314-page-pool-track-dma-v1-3-c212e57a74c2@redhat.com> <db813035-fb38-4fc3-b91e-d1416959db13@gmail.com> <87jz8nhelh.fsf@toke.dk> <7a76908d-5be2-43f1-a8e2-03b104165a29@huawei.com> <87wmcmhxdz.fsf@toke.dk> <ce6ca18b-0eda-4d62-b1d3-e101fe6dcd4e@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250319173202.78988-5-shameerali.kolothum.thodi@huawei.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ce6ca18b-0eda-4d62-b1d3-e101fe6dcd4e@huawei.com>
+User-Agent: Mutt/1.4.2.3i
 
-On Wed, Mar 19, 2025 at 05:32:01PM +0000, Shameer Kolothum wrote:
-> +static int arm_vsmmu_alloc_vmid(struct arm_smmu_device *smmu, struct kvm *kvm,
-> +				bool *kvm_used)
-> +{
-> +#ifdef CONFIG_KVM
-> +	/*
-> +	 * There can only be one allocator for VMIDs active at once. If BTM is
-> +	 * turned on then KVM's allocator always supplies the VMID, and the
-> +	 * VMID is matched by CPU invalidation of the KVM S2. Right now there
-> +	 * is no API to get an unused VMID from KVM so this also means BTM systems
-> +	 * cannot support S2 without an associated KVM.
-> +	 */
-> +	if ((smmu->features & ARM_SMMU_FEAT_BTM)) {
-> +		int vmid;
-> +
-> +		if (!kvm || !kvm_get_kvm_safe(kvm))
-> +			return -EOPNOTSUPP;
+On Wed, Mar 19, 2025 at 07:06:57PM +0800, Yunsheng Lin wrote:
+> On 2025/3/19 4:55, Toke Høiland-Jørgensen wrote:
+> > Yunsheng Lin <linyunsheng@huawei.com> writes:
+> >> On 2025/3/17 23:16, Toke Høiland-Jørgensen wrote:
+> >>> Yunsheng Lin <yunshenglin0825@gmail.com> writes:
+> >>>> On 3/14/2025 6:10 PM, Toke Høiland-Jørgensen wrote:
+> >>>>
+> >>>> ...
+> >>>>
+> >>>>> To avoid having to walk the entire xarray on unmap to find the page
+> >>>>> reference, we stash the ID assigned by xa_alloc() into the page
+> >>>>> structure itself, using the upper bits of the pp_magic field. This
+> >>>>> requires a couple of defines to avoid conflicting with the
+> >>>>> POINTER_POISON_DELTA define, but this is all evaluated at compile-time,
+> >>>>> so does not affect run-time performance. The bitmap calculations in this
+> >>>>> patch gives the following number of bits for different architectures:
+> >>>>>
+> >>>>> - 24 bits on 32-bit architectures
+> >>>>> - 21 bits on PPC64 (because of the definition of ILLEGAL_POINTER_VALUE)
+> >>>>> - 32 bits on other 64-bit architectures
+> >>>>
+> >>>>  From commit c07aea3ef4d4 ("mm: add a signature in struct page"):
+> >>>> "The page->signature field is aliased to page->lru.next and
+> >>>> page->compound_head, but it can't be set by mistake because the
+> >>>> signature value is a bad pointer, and can't trigger a false positive
+> >>>> in PageTail() because the last bit is 0."
+> >>>>
+> >>>> And commit 8a5e5e02fc83 ("include/linux/poison.h: fix LIST_POISON{1,2} 
+> >>>> offset"):
+> >>>> "Poison pointer values should be small enough to find a room in
+> >>>> non-mmap'able/hardly-mmap'able space."
+> >>>>
+> >>>> So the question seems to be:
+> >>>> 1. Is stashing the ID causing page->pp_magic to be in the mmap'able/
+> >>>>     easier-mmap'able space? If yes, how can we make sure this will not
+> >>>>     cause any security problem?
+> >>>> 2. Is the masking the page->pp_magic causing a valid pionter for
+> >>>>     page->lru.next or page->compound_head to be treated as a vaild
+> >>>>     PP_SIGNATURE? which might cause page_pool to recycle a page not
+> >>>>     allocated via page_pool.
+> >>>
+> >>> Right, so my reasoning for why the defines in this patch works for this
+> >>> is as follows: in both cases we need to make sure that the ID stashed in
+> >>> that field never looks like a valid kernel pointer. For 64-bit arches
+> >>> (where CONFIG_ILLEGAL_POINTER_VALUE), we make sure of this by never
+> >>> writing to any bits that overlap with the illegal value (so that the
+> >>> PP_SIGNATURE written to the field keeps it as an illegal pointer value).
+> >>> For 32-bit arches, we make sure of this by making sure the top-most bit
+> >>> is always 0 (the -1 in the define for _PP_DMA_INDEX_BITS) in the patch,
+> >>> which puts it outside the range used for kernel pointers (AFAICT).
+> >>
+> >> Is there any season you think only kernel pointer is relevant here?
+> > 
+> > Yes. Any pointer stored in the same space as pp_magic by other users of
+> > the page will be kernel pointers (as they come from page->lru.next). The
+> > goal of PP_SIGNATURE is to be able to distinguish pages allocated by
+> > page_pool, so we don't accidentally recycle a page from somewhere else.
+> > That's the goal of the check in page_pool_page_is_pp():
+> > 
+> > (page->pp_magic & PP_MAGIC_MASK) == PP_SIGNATURE
+> > 
+> > To achieve this, we must ensure that the check above never returns true
+> > for any value another page user could have written into the same field
+> > (i.e., into page->lru.next). For 64-bit arches, POISON_POINTER_DELTA
+> 
+> POISON_POINTER_DELTA is defined according to CONFIG_ILLEGAL_POINTER_VALUE,
+> if CONFIG_ILLEGAL_POINTER_VALUE is not defined yet, POISON_POINTER_DELTA
+> is defined to zero.
+> 
+> It seems only the below 64-bit arches define CONFIG_ILLEGAL_POINTER_VALUE
+> through grepping:
+> a29815a333c6 core, x86: make LIST_POISON less deadly
+> 5c178472af24 riscv: define ILLEGAL_POINTER_VALUE for 64bit
+> f6853eb561fb powerpc/64: Define ILLEGAL_POINTER_VALUE for 64-bit
+> bf0c4e047324 arm64: kconfig: Move LIST_POISON to a safe value
+> 
+> The below 64-bit arches don't seems to define the above config yet:
+> MIPS64, SPARC64, System z(S390X),loongarch
+> 
+> Does ID stashing cause problem for the above arches?
+> 
+> > serves this purpose. For 32-bit arches, we can leave the top-most bits
+> > out of PP_MAGIC_MASK, to make sure that any valid pointer value will
+> > fail the check above.
+> 
+> The above mainly explained how to ensure page_pool_page_is_pp() will
+> not return false positive result from the page_pool perspective.
+> 
+> From MM/security perspective, most of the commits quoted above seem
+> to suggest that poison pointer should be in the non-mmap'able or
+> hardly-mmap'able space, otherwise userspace can arrange for those
+> pointers to actually be dereferencable, potentially turning an oops
+> to an expolit, more detailed example in the below paper, which explains
+> how to exploit a vulnerability which hardened by the 8a5e5e02fc83 commit:
+> https://www.usenix.org/system/files/conference/woot15/woot15-paper-xu.pdf
+> 
+> ID stashing seems to cause page->lru.next (aliased to page->pp_magic) to
+> be in the mmap'able space for some arches.
 
-Isn't kvm_get_kvm_safe() in modular KVM code most of the time? You can't
-call it like this right?
+...
 
-Per my prior comments, I'm a little nervous to make drivers keep track
-of this refcount instead of the core code but this does seem like it
-could work..
+> To be honest, I am not that familiar with the pointer poison mechanism.
+> But through some researching and analyzing, it makes sense to overstate
+> it a little as it seems to be security-related.
+> Cc'ed some security-related experts and ML to see if there is some
+> clarifying from them.
 
-I also think you should block using the S2 without a viommu & KVM in
-BTM mode.. Maybe like this:
+You're correct that the pointer poison values should be in areas not
+mmap'able by userspace (at least with reasonable mmap_min_addr values).
 
-@@ -2938,8 +2938,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-                cdptr = arm_smmu_alloc_cd_ptr(master, IOMMU_NO_PASID);
-                if (!cdptr)
-                        return -ENOMEM;
--       } else if (arm_smmu_ssids_in_use(&master->cd_table))
--               return -EBUSY;
-+       } else {
-+               if (arm_smmu_ssids_in_use(&master->cd_table))
-+                       return -EBUSY;
-+               /*
-+                * S2 cannot be used when BTM is turned on without a VIOMMU and
-+                * VMID shared with KVM
-+                */
-+               if (smmu->features & ARM_SMMU_FEAT_BTM)
-+                       return -EOPNOTSUPP;
-+       }
+Looking at the union inside "struct page", I see pp_magic is aliased
+against multiple pointers in the union'ed anonymous structs.
 
-That more closely matches how this will eventually work when the VMID
-allocation is properly made to be local to the viommu.
+I'm not familiar with the uses of page->pp_magic and how likely or not
+we are to have a bug where its aliasing with pointers would be exposed
+as an attack vector, but this does look like a serious security concern.
+It looks like we would be seriously weakening the poisoning, except on
+archs where the new values with ID stashing are still not mmap'able.
 
-Jason
+I just discussed the matter with my colleague at CIQ, Sultan Alsawaf,
+and he thinks the added risk is not that bad.  He wrote:
+
+> Toke's response here is fair:
+> 
+> > Right, okay, I see what you mean. So the risk is basically the
+> > following:
+> > 
+> > If some other part of the kernel ends up dereferencing the
+> > page->lru.next pointer of a page that is owned by page_pool, and which
+> > has an ID stashed into page->pp_magic, that dereference can end up being
+> > to a valid userspace mapping, which can lead to Bad Things(tm), cf the
+> > paper above.
+> > 
+> > This is mitigated by the fact that it can only happen on architectures
+> > that don't set ILLEGAL_POINTER_VALUE (which includes 32-bit arches, and
+> > the ones you listed above). In addition, this has to happen while the
+> > page is owned by page_pool, and while it is DMA-mapped - we already
+> > clear the pp_magic field when releasing the page from page_pool.
+> > 
+> > I am not sure to what extent the above is a risk we should take pains to
+> > avoid, TBH. It seems to me that for this to become a real problem, lots
+> > of other things will already have gone wrong. But happy to defer to the
+> > mm/security folks here.
+> 
+> For this to be a problem, there already needs to be a use-after-free on
+> a page, which arguably creates many other vectors for attack.
+> 
+> The lru field of struct page is already used as a generic list pointer
+> in several places in the kernel once ownership of the page is obtained.
+> Any risk of dereferencing lru.next in a use-after-free scenario would
+> technically apply to a bunch of other places in the kernel (grep for
+> page->lru).
+
+We also tried searching for existing exploitation techniques for "struct
+page" use-after-free.  We couldn't find any.  The closest (non-)match I
+found is this fine research (the same project presented differently):
+
+https://i.blackhat.com/BH-US-24/Presentations/US24-Qian-PageJack-A-Powerful-Exploit-Technique-With-Page-Level-UAF-Thursday.pdf page 33+
+https://arxiv.org/html/2401.17618v2#S4
+https://phrack.org/issues/71/13
+
+The arxiv paper includes this sentence: "To create a page-level UAF, the
+key is to cause a UAF of the struct page objects."  However, we do not
+see them actually do that, and this statement is not found in the slides
+nor in the Phrack article.  Confused.
+
+Thank you for CC'ing me and the kernel-hardening list.  However, please
+do not CC the oss-security list like that, where it's against content
+guidelines.  Only properly focused new postings/threads are acceptable
+there (not CC'ing from/to other lists where only part of the content is
+on-topic, and follow-ups might not be on-topic at all).  See:
+
+https://oss-security.openwall.org/wiki/mailing-lists/oss-security#list-content-guidelines
+
+As a moderator for oss-security, I'm going to remove these messages from
+the queue now.  Please drop Cc: oss-security from any further replies.
+
+If desired, we may bring these topics to oss-security separately, with a
+proper Subject line and clear description of what we're talking about.
+
+Alexander
