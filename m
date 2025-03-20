@@ -1,153 +1,90 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BE761EE7A1
-	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 07:25:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F16DB1E231D
+	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 07:36:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742455531; cv=none; b=r2EKNGo/4Me3hqSg2ZL9aGlwtTud3kGS7BEsCJE/RHJqg9jdEXd+MJIZY+dKJ5NbAOJAYryNbRtaq3wjzSJ+1ZeQ0wSBWbkuRVfLhVnIvcPQpbWlS1lxAmKyPBV7Xx09HTgEl/ny913j8mnQ6j56B6P3o09u/Jwmcp05EMbGBow=
+	t=1742456215; cv=none; b=FVrIoQqlvnWFNL5mQBCFaQU8/FMmUnlKVDucmaJNAB8e9OjHGUYTlghdzyb61KJEbCpeuIbibSS4ix+R5JnGq4RDN9/dXsY6+k9iApyqhRMU9rWbUCNAZ3EXqVwcUnDdwKcsgkFnmCoE6/ZdZExPcD+fKd3/iLxduyIO1TvuNFg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742455531; c=relaxed/simple;
-	bh=Afr1GH9tL1luWC71y9L/q0LNPFsbcN+nsNxWQJRlFjQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BrictqdCCKPmU5+c12FrVhrfpyN+3WQw92Jkd9nUAp9gH2SVktwCLQG/9Ew3AoOpoe9oh1e2DFXakSLI1HCETsNO1GNesVBTQLanPzgs2uvwnVKzsPqH2KQcR5AOCI1j+OqjUpz5C6nJDN6y92PAsQ1M/m2EAImYuwMvH2Eml7Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wn1/G5np; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1742456215; c=relaxed/simple;
+	bh=s3Uf5iVx8FrSZ12ujfKX9sFRSzqRAGb5KOI3GdalfkM=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=tuClt5qOTpaLXXcLV9SIPkFex4cbEX/doPzd+3r7jq9sFuUyB7SHLsw/jBcjDMk8p2H4p0Tmzmzs0rqAFLf+rXXpU5axXP1DG8SrYVQk9fkikAENWBJ1ClAWcyN3epNQICkEM7ahGp6xPgXrOALYE0cYNt3A3Fjo7kuu+7glos0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=Ra7/F6i7; arc=none smtp.client-ip=210.61.82.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wn1/G5np"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2263428c8baso102115ad.1
-        for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 00:25:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1742455529; x=1743060329; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MS6MAbgYesW5WGSakhAHYwH43HMZi8cWhVXf+Y1buQ0=;
-        b=wn1/G5npk9MJNBJBlfEJw151L1b5DElkZJsGtNExV828hJX/a+CvAHQaMy9FZM0S77
-         SJNusOe8QFVHt6/IcEuKsmJLO1wrbTlCnYriEkkGBaO9808j8HpcAgl3UQM7gTOqJ+A+
-         I29P1L9yed1bcd8dY2wBdcxU2JUk3roJ0iifCpNouQsN8R+guc1PRiIedrmrjp5Eiv84
-         +z4OzA0D6To98cV3ebU0maOZHamd2NdMTsRJnJ60NftX+Rq12eRfl0F1BfGNfID6HTsB
-         6m68Jf5d7GlL8ODdopJQTlzKfYsjBSxOsLqh0Mx6haitJ0ecWkUqEdIkV8/lAkok1UlL
-         3NEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742455529; x=1743060329;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MS6MAbgYesW5WGSakhAHYwH43HMZi8cWhVXf+Y1buQ0=;
-        b=nlsqfYaSY0fIWsv2NDLwVDTIB9dJnI+EgtsS52gCmBR+Hsd9PRY+9FLlaZiP+Ce399
-         Z9j+YzfiM9Fh3n5SNV0oYOvqGpIWTwbhOTqMP3KUvSmScetVjM1l9Fhiv2oOANrfRFjW
-         U7ukKiBWaYRdWEwpiyCqaqhfyrsPHoTdbhYi5DBifgcizI8bTOrrWaIvIGCYs7NUygZ0
-         xxqDb9AIha1wcU7zrwbbjJt/WTIpTAr8Y/LPWrL1TrE8bw7D6qtmj5K94p0ntiVZ8ZhR
-         4HF0ccBtg5kzfURqmPkdtKsg5Ev+L7sziIfGhqNGYa8H3naIflpJ4OK5N8iSnhuSvEE1
-         xyog==
-X-Forwarded-Encrypted: i=1; AJvYcCV851u0q4KoFso+fOcPFpozKqvqtBCvK/s1yptynGNz/AB6P6WlwU10OFrnGJBe/Q71XV62mg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwiCTlG+EAj5wJ/6bUAceYWCEBxWgbZ+ILBleCUZLG+3qam0MBi
-	7rZ/I7z/p6EdoELX5FIfOZBofT5DznJqsCUpnqdTouj/moUohtOAl3lYbyCIqA==
-X-Gm-Gg: ASbGncu8ABeOkV+jOQC5X9i29FAKev3MS500oUT3q5M3NWKWMq2dbvHVu2HLC6Cnnfn
-	lFdf9fsRwaQ6EVyAmJyEr4HeuPjQgfP1vTuylTFbueM/UIy7RecCEgAnSLtQQyQ8zc+YQjZDh8U
-	sMhJikg3TNVz/YCyO+7GBB0EF2Yc8n0Ivir7yEy13DHNPQTT1tpZgQnLZs4e4++13jQag1Q8YjH
-	+i3B2rLi/xMWCMPqF1h+oc5jri2mVC5lQ0LN1DSCwUmqVk1fHJX7tAF5XpZvSJ8uJYOQJvW/cfg
-	LDOtfQ+kLAnXsK6NOoTGJGVKnjTtl0VrtXwK/j9+7aggsC2CxwbTi0giCuPchkDCOpTLpIvm5ik
-	N9Ro=
-X-Google-Smtp-Source: AGHT+IEntm19+wAegE0A4Y8cj9RYrZU5pcNk6Urbq0ph11Sf/Gp7h4+OtlFrJi2pn8Ef3knTj/h5xA==
-X-Received: by 2002:a17:902:d492:b0:223:fd7e:84ab with SMTP id d9443c01a7336-2265f996dc8mr1978985ad.24.1742455529079;
-        Thu, 20 Mar 2025 00:25:29 -0700 (PDT)
-Received: from google.com (188.152.87.34.bc.googleusercontent.com. [34.87.152.188])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-225c68889f7sm128135485ad.12.2025.03.20.00.25.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Mar 2025 00:25:28 -0700 (PDT)
-Date: Thu, 20 Mar 2025 07:25:20 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 5/5] iommu/arm-smmu-v3: Invoke pm_runtime before hw
- access
-Message-ID: <Z9vCwLbwwjn-gVJ9@google.com>
-References: <20250319004254.2547950-1-praan@google.com>
- <20250319004254.2547950-6-praan@google.com>
- <20250319120404.GD10600@ziepe.ca>
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Ra7/F6i7"
+X-UUID: 15a481b0055e11f08eb9c36241bbb6fb-20250320
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=QZXUJ4VH3AfP2WjMQih2vKgtDXB87pmd/jXX3007I+c=;
+	b=Ra7/F6i7QgLfWOnYZ2vFL03qL1+EQL2VQRAzcLBY7UXKoCTnurgd3Qt8cn+GYanholW7fZiGVwazA5P5TwXY0yqYZThhHO05LcxMl1E/ABxMU4KektBOiwDjP0R3GoNNVKOZX0oMscyZNBT32H6zgVK8NC5JPGqlLyRWrP5tziQ=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.2.1,REQID:1b842213-50d7-4ab6-afd6-2829e47ab772,IP:0,UR
+	L:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
+	elease,TS:0
+X-CID-META: VersionHash:0ef645f,CLOUDID:67aa584a-a527-43d8-8af6-bc8b32d9f5e9,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0|50,EDM:-3,IP:ni
+	l,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES
+	:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-UUID: 15a481b0055e11f08eb9c36241bbb6fb-20250320
+Received: from mtkmbs13n1.mediatek.inc [(172.21.101.193)] by mailgw02.mediatek.com
+	(envelope-from <xueqi.zhang@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 1302099120; Thu, 20 Mar 2025 15:36:49 +0800
+Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
+ MTKMBS14N1.mediatek.inc (172.21.101.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.39; Thu, 20 Mar 2025 15:36:48 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1258.39 via Frontend Transport; Thu, 20 Mar 2025 15:36:47 +0800
+From: Xueqi Zhang <xueqi.zhang@mediatek.com>
+To: Yong Wu <yong.wu@mediatek.com>, Krzysztof Kozlowski <krzk@kernel.org>, Rob
+ Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>
+CC: Wendy-st Lin <wendy-st.lin@mediatek.com>,
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>,
+	<linux-mediatek@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+	<iommu@lists.linux.dev>, Xueqi Zhang <xueqi.zhang@mediatek.com>
+Subject: [PATCH 0/3] Add mt8196 SMI support
+Date: Thu, 20 Mar 2025 15:36:15 +0800
+Message-ID: <20250320073625.25225-1-xueqi.zhang@mediatek.com>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250319120404.GD10600@ziepe.ca>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On Wed, Mar 19, 2025 at 09:04:04AM -0300, Jason Gunthorpe wrote:
-> On Wed, Mar 19, 2025 at 12:42:54AM +0000, Pranjal Shrivastava wrote:
-> > -static void arm_smmu_attach_dev_ste(struct iommu_domain *domain,
-> > +static int arm_smmu_attach_dev_ste(struct iommu_domain *domain,
-> >  				    struct device *dev,
-> >  				    struct arm_smmu_ste *ste,
-> >  				    unsigned int s1dss)
-> >  {
-> 
-> This can't be changed into something that fails! That would mess up
-> all the error handling if it ever blows up.
-> 
-> > @@ -3214,8 +3287,8 @@ static int arm_smmu_attach_dev_identity(struct iommu_domain *domain,
-> >  	struct arm_smmu_master master = dev_iommu_priv_get(dev);
-> >  
-> >  	arm_smmu_make_bypass_ste(master->smmu, &ste);
-> > -	arm_smmu_attach_dev_ste(domain, dev, &ste, STRTAB_STE_1_S1DSS_BYPASS);
-> > -	return 0;
-> > +	return arm_smmu_attach_dev_ste(domain, dev, &ste,
-> > +				       STRTAB_STE_1_S1DSS_BYPASS);
-> >  }
-> >  
-> >  static const struct iommu_domain_ops arm_smmu_identity_ops = {
-> > @@ -3233,9 +3306,8 @@ static int arm_smmu_attach_dev_blocked(struct iommu_domain *domain,
-> >  	struct arm_smmu_ste ste;
-> >  
-> >  	arm_smmu_make_abort_ste(&ste);
-> > -	arm_smmu_attach_dev_ste(domain, dev, &ste,
-> > -				STRTAB_STE_1_S1DSS_TERMINATE);
-> > -	return 0;
-> > +	return arm_smmu_attach_dev_ste(domain, dev, &ste,
-> > +				       STRTAB_STE_1_S1DSS_TERMINATE);
-> >  }
-> 
-> Because these functions are required to be non-failing.
-> 
-> This feels kind of wonky, if we need to update a STE but the PM is off
-> then we just need to update the STE memory with some synchornization
-> and do nothing else. We don't need to wake up the HW and issue a cache
-> flush if the powered off cache could never have held a copy anyhow.
+Add mt8196 SMI support
 
-I agree, that we can elide TLBIs if the smmu is asleep (powered-off),
-the main reason to wake up the hw is because `arm_smmu_write_ste` issues
-a prefetch CMD. Again, it is possible that the smmu sleeps after this op
-and the prefetch has no real benefit.
+This patchset add mt8196 SMI support. 8196 SMI has several differences
+compared to previous ICs. MT8196 SMI has more than 32 SMI larbs.
+It connects with SMMUv3, rather than MTK_IOMMU.MT8196 SMI commons is
+backed up/restored by RTFF HW.
 
-Maybe having something like rpm_get_if_in_use could potentially help
-here, wherein we can check if the smmu is powered ON before going ahead
-with issuing all the commands. Although, in this case we might lose
-slight performance due to wake-ups caused by other clients, for example:
+Xueqi Zhang (3):
+  dt-bindings: memory: mediatek: Add mt8196 support
+  memory: mtk-smi: Add a flag skip_rpm
+  memory: mtk-smi: mt8196: Add smi support
 
-1. SMMU is powered off, client1 attempts to attach to a domain
-2. We elide the prefetch CMD since SMMU is powered off
-3. Now, another client2 served by the same SMMU, powers on the SMMU
+ .../mediatek,smi-common.yaml                  |   4 +-
+ .../memory-controllers/mediatek,smi-larb.yaml |   4 +-
+ drivers/memory/mtk-smi.c                      | 145 +++++-
+ .../dt-bindings/memory/mt8196-memory-port.h   | 460 ++++++++++++++++++
+ include/dt-bindings/memory/mtk-memory-port.h  |   4 +-
+ 5 files changed, 609 insertions(+), 8 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mt8196-memory-port.h
 
-I'm not sure how much of a performance loss this is and also on systems
-with IO-coherent SMMUs (where the SMMU can snoop into CPU caches) this
-may not be a huge drop, but I'd like to discuss the possibility..
-
-Anyway, having *any* rpm implementation that causes us to lose TLB
-content, will cause a hit on the performance, so maybe this
-micro-optimization isn't worth at all?
-
-Also, while we're at it, should we have a feature switch for users who'd
-like to disable runtime PM for performance reasons? I don't think that
-relying on the `power-domain` being present alone is sufficient.
-
-Thanks,
-Praan
+-- 
+2.46.0
 
