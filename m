@@ -1,109 +1,151 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5011B211710
-	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 08:53:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 759331632D9;
+	Thu, 20 Mar 2025 09:30:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742460822; cv=none; b=TY/2sSR8uDDtxDPInUb5q6uQUBcACm9khchelNVliuGtoGNARpMEutdwFiF1dbNDD7mYksI2s5vS95L/UuKbeoTvmeUf1rXPROBI7JZCVo8x/HUM2WA6SSw8dFQQaCTgMy907/236SknzeQcy8qYhUmWg6XYyBnXlFfPt+0WLK4=
+	t=1742463051; cv=none; b=O11+t8OLBnES0lC+kMV/zgbIqS6N7EYVOl2F7EGmBqFlupu+OJyqHcHjF75KVF2rYQp/43jYWXQblsGgkhWQ84UH1E2/HaLZZv1g2KqZne5+6JFoZA61O7oy5RrqrfoQlsFTOgDY8HEDCzth+Mze3n2ooHTLW35PmPPKr3AWayY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742460822; c=relaxed/simple;
-	bh=y3Cp/rR1QpScC+x03y/C76tenIDZqGYsuw2cyuaBGnQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OJ1ZR4cOWyXS84d7fOPkUuIssc4IAZJ7y4sbwHGIa4PJRArne7Fwvlnsq0pThTHEsHzr7GZc7FINFqAHGBc9AhnfWe1K3K3jvKeM3bnlqTsqYM8SrQL7hKxgJ7SWg1BL+49xytgOpG2jEOD+8AY7KhruJS+aL+FLOHQLVcsqZy0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=bZqkti8f; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bZqkti8f"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-43cfa7e7f54so2754535e9.1
-        for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 01:53:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1742460818; x=1743065618; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KnFSXct6epNrQpkkv+yjVEVzsh1c64Flg8Y81A0Hvc8=;
-        b=bZqkti8fFGQuaVp1O8+/N1fVRII4uBWp9SZ26ksXu4mgB4McxUMJaCvL8NPG3qlE63
-         QDSXmvyCXl2oKRNBlOD0Vk3FfwCIQxIWwertWRZd2HAZkRJdfPxdT9ze+gNhu79OmL6b
-         1m/kreCM77G2xEM2sdZJ0zxoLF03Pi2WM0rRLK+18a2mebo5bygp/GS9NqRCVTuEPVDP
-         6q/VJAhTIxJPTOACqABhAaWeJrwuvxU8wWGGKhClR8tCFddgLbkZBU/j1na1+HkvPj/Z
-         vQWpZZsBzhiyDpdT2kGy9Gf2mQ46eFbYdE2TTxT3BnzC7sKkaYlJ8GQ6iRmeihx+/hmC
-         8lMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742460818; x=1743065618;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KnFSXct6epNrQpkkv+yjVEVzsh1c64Flg8Y81A0Hvc8=;
-        b=i7m6v+nO/cKtKkXERzqjaI8HDBmFIlWwYqs+tz4ug9BSd3a7UG2o5ALAOWSBHu8rXr
-         HqHaV8/TRsmKNtFrQjZinMjwN6dIcnmLIkt5swEulvHcmQhrByl8wXrv6dz87kp/h4r2
-         rUAi5fK5hmzUP/GyW4fMm3hsq1KCMIdGXGHDpYOD+0/XPjgI2gbwDGOi4H07B++raoI7
-         iZkD7S5HQV/sAdq0Rrd0ocyt12ClrqKem12olg4QZNoEdRJHyxoK1KzQT8CYDMUu3ZXQ
-         ofHzCd79hHMeDZhTe/UNxPnsjZc3e08eoVc243Ex4ffJ+BKSKfYMXHHJedMyd2pkVoet
-         dEFw==
-X-Forwarded-Encrypted: i=1; AJvYcCWWD9eXfEdJ1emXrE07oI/b+CorI+WkeYN+7oM0Tdy3MD/fGOX8CE3vwDwyeOPgN+B/Dy85dg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwE7bJGOkw/iTFKj/356NGnmfS+ZmGFk4/HQHyzZUXPkd4qxpXS
-	BYyIQISaxxhufZLDahndZeT2C3FP66rRoUNpwObR8JGoz0n81FT9vpnS+vAkmmY=
-X-Gm-Gg: ASbGncsTbby2fIaDxxIU6yqVPq0pbGz1U2mUimF7I2GBPLR70n0SYUZX22tBbISGOJ3
-	IpJUFmA8GCMA6EyFnWQrASrQ81SAvdc6jRauYGSbVYelG1rlBAdFzVO6CL0YkYxq3VNKqDU3TQi
-	wn4g+Kna8V/kal4Xvom/l5HD7qeNfjksLnNb1h9v02shOkeGlX7Ah74FjTw7h8UqH4fSb9yNpwD
-	hLXWUxv/KerAG1HeniNchqxlEw8WsrI10D63VIbKYbu13k9Yvn2rsVeOg7uFDQiDNC+7GFZhvGG
-	6r/kNVspE7uHKQEoFWlgAltXWGRct3gfsDs3361xQP9HIzmbrA==
-X-Google-Smtp-Source: AGHT+IE5XfB71cllV/n5EH1T284eA4sduFcvd6HSLYQ1/iWgIzjCRYet+uoDCJ/LzmZ1nTW11RBTYQ==
-X-Received: by 2002:a05:600c:cc8:b0:43d:186d:a4bf with SMTP id 5b1f17b1804b1-43d490d2411mr21934425e9.0.1742460818458;
-        Thu, 20 Mar 2025 01:53:38 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-43d43f37665sm42436645e9.2.2025.03.20.01.53.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Mar 2025 01:53:37 -0700 (PDT)
-Date: Thu, 20 Mar 2025 11:53:34 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommu/amd: Return a literal in init_gcr3_table()
-Message-ID: <f688c2a2-a4d9-42c4-bf09-5ecbdbe9c9b5@stanley.mountain>
-References: <960a6d1a-63d6-49e8-890c-5e8a66e50c45@stanley.mountain>
- <faa7edf4-a757-4390-8226-2604ef6476d6@stanley.mountain>
- <Z9vLuWvzVJOyuuWu@8bytes.org>
+	s=arc-20240116; t=1742463051; c=relaxed/simple;
+	bh=DA1VOI0ouj+wlQCQyp6pnfel/4ZUCju3QtZmwpDK7qE=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=WJWArcfm7nHR1TVzoLm6kkHXLfrEgmoHz88b5apgHVaZU8dYcSbb8/wfhcZQsFfLZz0TU560B1x1pb3cjqTa1pcYmUXhyvr9qUKlXTVYbig35Bp45z+HaooL5dUOIfqN1gZ+vhWejLpNqdQk5tMmDQ0GsOVEYJvOb1hLhrDNcBk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.31])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4ZJKwt1Pmrz6M4Yy;
+	Thu, 20 Mar 2025 17:27:26 +0800 (CST)
+Received: from frapeml500007.china.huawei.com (unknown [7.182.85.172])
+	by mail.maildlp.com (Postfix) with ESMTPS id F1FD41401F3;
+	Thu, 20 Mar 2025 17:30:45 +0800 (CST)
+Received: from frapeml500008.china.huawei.com (7.182.85.71) by
+ frapeml500007.china.huawei.com (7.182.85.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Thu, 20 Mar 2025 10:30:45 +0100
+Received: from frapeml500008.china.huawei.com ([7.182.85.71]) by
+ frapeml500008.china.huawei.com ([7.182.85.71]) with mapi id 15.01.2507.039;
+ Thu, 20 Mar 2025 10:30:45 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: "kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Linuxarm <linuxarm@huawei.com>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "maz@kernel.org" <maz@kernel.org>,
+	"oliver.upton@linux.dev" <oliver.upton@linux.dev>, "will@kernel.org"
+	<will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>, "jean-philippe@linaro.org"
+	<jean-philippe@linaro.org>, Jonathan Cameron <jonathan.cameron@huawei.com>
+Subject: RE: [RFC PATCH v3 4/5] iommu/arm-smmu-v3-iommufd: Use KVM VMID for s2
+ stage
+Thread-Topic: [RFC PATCH v3 4/5] iommu/arm-smmu-v3-iommufd: Use KVM VMID for
+ s2 stage
+Thread-Index: AQHbmPZBeq6wgyt4V0G2k2xYLylJd7N7DbQAgACsr4A=
+Date: Thu, 20 Mar 2025 09:30:45 +0000
+Message-ID: <f654ae10e55e4142acb83eb926bb80b2@huawei.com>
+References: <20250319173202.78988-1-shameerali.kolothum.thodi@huawei.com>
+ <20250319173202.78988-5-shameerali.kolothum.thodi@huawei.com>
+ <20250319233946.GF126678@ziepe.ca>
+In-Reply-To: <20250319233946.GF126678@ziepe.ca>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z9vLuWvzVJOyuuWu@8bytes.org>
 
-On Thu, Mar 20, 2025 at 09:03:05AM +0100, Joerg Roedel wrote:
-> On Mon, Mar 17, 2025 at 09:43:32AM +0300, Dan Carpenter wrote:
-> > This code intentionally returns zero but it does it as "return ret;"
-> > Returning ret looks like an error path where return 0 is more
-> > clear and looks more intentional.
-> > 
-> > Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
-> > ---
-> >  drivers/iommu/amd/iommu.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> > index ce2626801ddf..7cbcc4933c8b 100644
-> > --- a/drivers/iommu/amd/iommu.c
-> > +++ b/drivers/iommu/amd/iommu.c
-> > @@ -2150,7 +2150,7 @@ static int init_gcr3_table(struct iommu_dev_data *dev_data,
-> >  
-> >  	/* Setup GCR3[0] only if domain is setup with v2 page table mode */
-> >  	if (!pdom_is_v2_pgtbl_mode(pdom))
-> > -		return ret;
-> > +		return 0;
-> 
-> There is another case of this a couple lines above in the same function.
-> Mind changing that as well?
 
-Thanks.  Happy to.  I'll resend.
 
-regards,
-dan carpenter
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@ziepe.ca>
+> Sent: Wednesday, March 19, 2025 11:40 PM
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: kvmarm@lists.linux.dev; iommu@lists.linux.dev; linux-arm-
+> kernel@lists.infradead.org; Linuxarm <linuxarm@huawei.com>;
+> kevin.tian@intel.com; alex.williamson@redhat.com; maz@kernel.org;
+> oliver.upton@linux.dev; will@kernel.org; robin.murphy@arm.com;
+> nicolinc@nvidia.com; jean-philippe@linaro.org; Jonathan Cameron
+> <jonathan.cameron@huawei.com>
+> Subject: Re: [RFC PATCH v3 4/5] iommu/arm-smmu-v3-iommufd: Use KVM
+> VMID for s2 stage
+>=20
+> On Wed, Mar 19, 2025 at 05:32:01PM +0000, Shameer Kolothum wrote:
+> > +static int arm_vsmmu_alloc_vmid(struct arm_smmu_device *smmu,
+> struct kvm *kvm,
+> > +				bool *kvm_used)
+> > +{
+> > +#ifdef CONFIG_KVM
+> > +	/*
+> > +	 * There can only be one allocator for VMIDs active at once. If BTM
+> is
+> > +	 * turned on then KVM's allocator always supplies the VMID, and
+> the
+> > +	 * VMID is matched by CPU invalidation of the KVM S2. Right now
+> there
+> > +	 * is no API to get an unused VMID from KVM so this also means
+> BTM systems
+> > +	 * cannot support S2 without an associated KVM.
+> > +	 */
+> > +	if ((smmu->features & ARM_SMMU_FEAT_BTM)) {
+> > +		int vmid;
+> > +
+> > +		if (!kvm || !kvm_get_kvm_safe(kvm))
+> > +			return -EOPNOTSUPP;
+>=20
+> Isn't kvm_get_kvm_safe() in modular KVM code most of the time? You can't
+> call it like this right?
 
+I think it is safe since KVM is not modular for ARM64. And that is one of t=
+he
+reasons I thought I will hold the KVM reference here as we don't have to go
+through the symbol_get/put calls here. Also IOMMUFD is not using the kvm
+pointer at the moment. Probably I should add some comments in IOMMUFD
+to make it clear.
+
+However I just realized that in patch #1 I should EXPORT the
+kvm_arm_pinned_vmid_get/put functions as smmuv3 driver can be built
+modular.=20
+
+>=20
+> Per my prior comments, I'm a little nervous to make drivers keep track
+> of this refcount instead of the core code but this does seem like it
+> could work..
+>=20
+> I also think you should block using the S2 without a viommu & KVM in
+> BTM mode.. Maybe like this:
+>=20
+> @@ -2938,8 +2938,16 @@ static int arm_smmu_attach_dev(struct
+> iommu_domain *domain, struct device *dev)
+>                 cdptr =3D arm_smmu_alloc_cd_ptr(master, IOMMU_NO_PASID);
+>                 if (!cdptr)
+>                         return -ENOMEM;
+> -       } else if (arm_smmu_ssids_in_use(&master->cd_table))
+> -               return -EBUSY;
+> +       } else {
+> +               if (arm_smmu_ssids_in_use(&master->cd_table))
+> +                       return -EBUSY;
+> +               /*
+> +                * S2 cannot be used when BTM is turned on without a VIOM=
+MU
+> and
+> +                * VMID shared with KVM
+> +                */
+> +               if (smmu->features & ARM_SMMU_FEAT_BTM)
+> +                       return -EOPNOTSUPP;
+> +       }
+>=20
+> That more closely matches how this will eventually work when the VMID
+> allocation is properly made to be local to the viommu.
+
+Ok. Will update.
+
+Thanks,
+Shameer
