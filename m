@@ -1,119 +1,199 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B5B11B422A
-	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 22:28:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C282A1B422A
+	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 22:29:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742509732; cv=none; b=meEmNwqDvLM/On/GfaNgluZVpZvvMw8MOb+8P/9VZVIs6nOyteTPgjYKCLDnL3STDWzAmhqCWyTDHdX6xg4skisc1DNtXG0mpdDjnafMfzHYF7ZMkGkxn+h8Gp3K34+6Hrr64eyfMqJYtChu9peI4EAauuQlhfk06BHibe/646U=
+	t=1742509790; cv=none; b=Zp412c17Gh6Z0HVrbtxrNAQtnc3xsQiWPfAH/x9iaxk2gZsFKkX6UqWWtB8jGQaZiQBZMBamUR4/EY7rIg4vBowQZndcyPfMWeoRpOvWy+9tvujiVvh2CaLF+N5APA/qwc03odeqdJiNSjj2XDzxH6/PEm8Yhw6XeJti0xqCAjo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742509732; c=relaxed/simple;
-	bh=+nWSMvYE2wpodLQpFrScJjARUUW9fBq4gkQeQD699PQ=;
+	s=arc-20240116; t=1742509790; c=relaxed/simple;
+	bh=wUiUEeov85hAcvm1/URwwkp5IfdNC66r7RfO9shG7TE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KidXRXWBcuW73cHjskY+dyFM6UklRAkygbmPBZvubdnE+PHsEHkVHgsUdAXz2sIPqVamohX8F+pVrzSXHFHpB2MpWqsYlpBaoo76OIHManv5JRA7BvVGidS3DOf0UzBJnKLpg/5UwEKV13iP3lKz6SR7NxUH0oGwrjLD046n5Yg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=zxnLGfKy; arc=none smtp.client-ip=209.85.128.44
+	 Content-Type:Content-Disposition:In-Reply-To; b=AXov7CynQNQdOH68Xepe3cXsakD3VogV+ldfJKfoqxX0kpqzAzh3h++/KEe+om9T+HX0lqywZlyzPNyjrsJgcmJBh/8stXI/Q0XGfqyclfhsKC4dW3wSuAlT7CBaEC+HrIATVyk9tMBU9szOomJEkyGMZlkwjizzHK7TTzLX6mA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=1HcfTD3T; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="zxnLGfKy"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-438d9c391fcso24115e9.0
-        for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 15:28:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="1HcfTD3T"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4393ee912e1so9605e9.1
+        for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 15:29:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1742509729; x=1743114529; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XjkfpQmBtS8cWtPyNFX6dwhcnEAHJkCWFNbOaNTENZk=;
-        b=zxnLGfKya/rwa/wSXDJRyZVyY4IPR78SqIA44bEgxq2BtjMIQWGFszjKgtQN92h2XK
-         bPH1i+MG3T0BxOezO9xFv3wdrjrElb6WZTBsec9c0ELoigQBPCB7fazQbhQl2lbaSsMb
-         8bkZy2h7STJWCQHap05bK2Kxp+58YTsvAA675Qa5WzYhSH9k96h5xiEAos1MNUj2edgn
-         oEGDV1/wygmsrpPCbX7fl7sSjIhot7FcTpFv29Ks70BJfD6+QhRDSNXjF3cbqWZj5aJO
-         uKfhRifO11GkIGWLcOOxXse9QyYT1DNStFVSEaSKnzu/SfzoAez0ARIuLqR6Dd37+eg0
-         SViA==
+        d=google.com; s=20230601; t=1742509787; x=1743114587; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=wMMTDU4Cy71rRik58ytrkf8iIeWHToiaHgslSsn8E34=;
+        b=1HcfTD3TDMDvIKoVR2zcUeUn9akOlOpYkBSopACAi9gmchz8fzscj2p7khR3WfuvIy
+         IoFnZZZbwskbPpWSldGBK5/O2R97JWCn4sDb2CrDLnpqKOq7fhUTBGRPY1DA1kHUmOLC
+         41JGGgu9N3ipWFVdhfzvDE6k3ru171rW4TmLwo1b9lr1qAbsEaAOHYSqNvHIb0Lqu+z0
+         BTud6Igub4NExM7mZH6jFibLep2mm+pb/7UZicw6fgBW5TJkcZK0z7cx+la6a4SKIBMb
+         jtnGYoaQFF3kLt9N7qbDMXW/e9ga+0h2ftCjpQ75EExCJijrycCMrkhkntqjEymeGLle
+         ZMCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742509729; x=1743114529;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XjkfpQmBtS8cWtPyNFX6dwhcnEAHJkCWFNbOaNTENZk=;
-        b=W5EknDsoyP4mxJocCZsw1CuNkLtmxNObgfm7aQb5cIpQXLl70oiSyCcPZX+Q7+IWRd
-         gG/ddeWBAL/dvscHH/mLdP9gnDEVNwUZtW1eew6/bcGJFX1WXDKGvoKCD/LM8PNiaeAV
-         wH971ieN2XSoMuc1eUlughGu1EJmB1l+jfTRqvPeo9mrpk8mpAa0UFopm7S5Kl53xaJa
-         mhVPSBvP9eUyMrJ5DFNJyPMuD4IABSrxodSmAAlQEwyVppmZuD1Kx3C08Try/nfnDFsF
-         qfIogv8W1vjxprbm2x5oX0YD9Q+UHc31zmggk6Cqxn3On/B3kBGNPo/IO6pLf6Xnx3S0
-         jkeQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWYZdZ089HAJ+nYZG14axKFFu2er+/PMgpF08YveyemW/qpzOaFmnK66ODZgI31PoFfXTXYpA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzE37PIY95TE/nj4KTtg4Sn5BT0pI98DDh2nr05fWLkO1OKwi9c
-	k8zhTw3g7r8yReq92AvY7VG3bHAyTX6CtkzOUpE4TqaDlhC5+zay7c09bRU85A==
-X-Gm-Gg: ASbGncvoTd5IGRDNOy9i8h5Yas2F48JS0qzG2jZAzz3cuW5CIrzNxD8s90hbAx9sgBL
-	QfslZKsRLqeEH2lCFpd3LdPTKrZMFbhbdmsyhr7UOWB1sqkyfSSU8xcSIaQG3wUDNSXdvGA/CWh
-	O7n6pAzQ4e9BZx4KIRDetQ2iqTIjVyaHj/dm+nw3KLIq4Iwdvs8mTQ/HEnITCykQF9gbGyWRCRc
-	jedtKMdClLzE7itWoiPlxJPID8hKa0gJVboPwuHKlMVFE98Cc2RoUzHTZo4PBie7nXwtUo/CXEi
-	yMeVJTYlW+shvtEp2RjsJIF6QPvbuXYfomQkh0sd0S6qX7E/czs9dRaEeA+aFCeAcwXUW94QASj
-	ZyfWE
-X-Google-Smtp-Source: AGHT+IFnFy4rSuaC1XYydPHiCcu+D5UL/rEmdmfBoCKnCyt7j6f8mygvecDmgA7tZpbnzYgm8CDYrA==
-X-Received: by 2002:a05:600c:54e7:b0:43b:b106:bb1c with SMTP id 5b1f17b1804b1-43d507f6cfemr327905e9.0.1742509729316;
-        Thu, 20 Mar 2025 15:28:49 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1742509787; x=1743114587;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wMMTDU4Cy71rRik58ytrkf8iIeWHToiaHgslSsn8E34=;
+        b=ee7p2vuu0XaFREXmCHr6Rt/SRVrTRcmhD8XZG09ji67H5jyMwbOTNyzpoINqSv55Y3
+         ixfgTnyNEyjmDkYMpcj38msImHM2BtqByC2CIGWvnZHsH++ao1JcG80FZAqVjrSexCfG
+         ntvv8UV3lifUNBoxHupOCc7FqJDkfJQyxdMBdrkAsCZuOg0cUMdyK1b6qTqUwTuT66Ol
+         73MK1Wu/T9sycZkaaiEEBrM4/1kmZ+te+aoc3zNSTTECJD3IhRqHVXlbcPMwS3RqJvfW
+         wsFxAU6+mnQrCjvlG4XykVCwYB9ZNkfBqHcb3OxteHynsSF5d1n31mj5XpSwrKrz8LI7
+         eBcA==
+X-Forwarded-Encrypted: i=1; AJvYcCWBSqEKb+J/EShvuzhwWZaPNlgPuj6O6Y6z3ZGB/0UFTuEMt4VFmIF/qBt26+9zMbofxVNHOA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxy0kp6cClHU2K/wJruWeOqV5bj4ClNTzdI323uOSxjnrygf6Bk
+	pWntZwotwEh+rsJKwARX+BFwo5RdUESZ+u18KAhfGLguCJQMOr8xUMGDoA26Bg==
+X-Gm-Gg: ASbGncu4lwwU3MmLyKvWZ8f/p/saySz2bbGvNrI/nQrHi7O7kFIwyFFDkCfV25i2EjL
+	fFd0VNJuFQ4AKMaQjAoEIKOVX0Yxfd3xEg52j34nKVyU7p4MUQud6TcBpYmgGmTzMVxsnhIUNAn
+	bKrMzhgC90N/x4OshLYGm7AW27soUdbUfMdOgw7L8MAMUBazJKLgnaLhjhu4OiJCqwXPQYVGMOM
+	hOBXlE4i6uP2IfeI9uWIXd9zJwHpjZhmGICMrDTDDxDEdQ0fVcyFaYILhedVRZqCpV5qS95C/En
+	8oeHKKMfAcmzIw+Imliz/t3QGDF5qi1++4ewYf4kggH2GFQ2aufYLJjjVD6Vg8eXDnQOWTSnUQr
+	7+HHw
+X-Google-Smtp-Source: AGHT+IHRQaLr8uFYaC8iXQFvBrg65Je5tV7TDN9/f77y3dS5ibVbcksh+ETNYIw6rLTN3unDiYkhDw==
+X-Received: by 2002:a05:600c:4f12:b0:43b:bf3f:9664 with SMTP id 5b1f17b1804b1-43d515d38eemr121215e9.5.1742509786743;
+        Thu, 20 Mar 2025 15:29:46 -0700 (PDT)
 Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43d4fdb06b9sm9241735e9.36.2025.03.20.15.28.48
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43d4fd28a46sm9552885e9.24.2025.03.20.15.29.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Mar 2025 15:28:48 -0700 (PDT)
-Date: Thu, 20 Mar 2025 22:28:44 +0000
+        Thu, 20 Mar 2025 15:29:46 -0700 (PDT)
+Date: Thu, 20 Mar 2025 22:29:42 +0000
 From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 0/5] iommu/arm-smmu-v3: Implement Runtime/System
- Sleep ops
-Message-ID: <Z9yWnBmOfeG-7rno@google.com>
+Subject: Re: [RFC PATCH 1/5] iommu/arm-smmu-v3: Refactor arm_smmu_setup_irqs
+Message-ID: <Z9yW1r1rkYbCPUIX@google.com>
 References: <20250319004254.2547950-1-praan@google.com>
- <5b29ea3b-ba8a-4f7a-b241-4ed5b1985a1f@arm.com>
- <20250319194609.GA126678@ziepe.ca>
+ <20250319004254.2547950-2-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250319194609.GA126678@ziepe.ca>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250319004254.2547950-2-praan@google.com>
 
-On Wed, Mar 19, 2025 at 04:46:09PM -0300, Jason Gunthorpe wrote:
-> On Wed, Mar 19, 2025 at 06:22:30PM +0000, Robin Murphy wrote:
-> > I don't see SVA and VFIO needing any special considerations, so it might
-> > just be the new vIOMMU stuff which may need to hold PM enabled for the
-> > lifetime of things exposed to userspace.
+On Wed, Mar 19, 2025 at 12:42:50AM +0000, Pranjal Shrivastava wrote:
+> Refactor arm_smmu_setup_irqs by splitting it into two parts, one for
+> registering interrupt handlers and the other one for enabling interrupt
+> generation in the hardware. This refactor helps in re-initialization of
+> hardware interrupts as part of a subsequent patch that enables runtime
+> power management for the arm-smmu-v3 driver.
 > 
-> Are you expecting that the VFIO driver, and whatever driver is
-> managing the SVA will keep the power turned on as necessary then?
+> Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 50 ++++++++++++++++-----
+>  1 file changed, 38 insertions(+), 12 deletions(-)
 > 
-> VFIO is not going to work if the SMMU power goes off unexpectedly
-> while the VFIO FD is open.
-> 
-> I suppose VFIO also can power off on-demand via userspace asking
-> it. In that case the VM would be co-operating.
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 358072b4e293..80362d9f293b 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3985,12 +3985,24 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+>  	}
+>  }
+>  
+> -static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> +static void arm_smmu_enable_irqs(struct arm_smmu_device *smmu)
+>  {
+> -	int ret, irq;
+> +	int ret;
+>  	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+>  
+> -	/* Disable IRQs first */
+> +	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> +		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+> +
+> +	ret = arm_smmu_write_reg_sync(smmu, irqen_flags,
+> +				      ARM_SMMU_IRQ_CTRL, ARM_SMMU_IRQ_CTRLACK);
+> +	if (ret)
+> +		dev_warn(smmu->dev, "failed to enable irqs\n");
+> +}
+> +
+> +static int arm_smmu_disable_irqs(struct arm_smmu_device *smmu)
+> +{
+> +	int ret;
+> +
+>  	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+>  				      ARM_SMMU_IRQ_CTRLACK);
+>  	if (ret) {
+> @@ -3998,6 +4010,19 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  		return ret;
+>  	}
+>  
+> +	return 0;
+> +}
+> +
+> +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> +{
+> +	int ret, irq;
+> +
+> +	/* Disable IRQs first */
+> +	ret = arm_smmu_disable_irqs(smmu);
+> +
+> +	if (ret)
+> +		return ret;
+> +
+>  	irq = smmu->combined_irq;
+>  	if (irq) {
+>  		/*
+> @@ -4014,15 +4039,6 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  	} else
+>  		arm_smmu_setup_unique_irqs(smmu);
+>  
+> -	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> -		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+> -
+> -	/* Enable interrupt generation on the SMMU */
+> -	ret = arm_smmu_write_reg_sync(smmu, irqen_flags,
+> -				      ARM_SMMU_IRQ_CTRL, ARM_SMMU_IRQ_CTRLACK);
+> -	if (ret)
+> -		dev_warn(smmu->dev, "failed to enable irqs\n");
+> -
+>  	return 0;
+>  }
+>  
+> @@ -4171,6 +4187,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>  		return ret;
+>  	}
+>  
+> +	/* Enable interrupt generation on the SMMU */
+> +	arm_smmu_enable_irqs(smmu);
+> +
+>  	if (is_kdump_kernel())
+>  		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
+>  
+> @@ -4754,6 +4773,13 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  	/* Check for RMRs and install bypass STEs if any */
+>  	arm_smmu_rmr_install_bypass_ste(smmu);
+>  
+> +	/* Setup interrupt handlers */
+> +	ret = arm_smmu_setup_irqs(smmu);
+> +	if (ret) {
+> +		dev_err(smmu->dev, "failed to setup irqs\n");
 
-I guess VFIO is tricky as there is a security boundary. In case the
-SMMUv3 wakes up with caches not clean, there is a window of time where
-the device is accessible from userspace with old (or garbage) TLBs.
-I see VFIO-platform always take a PM reference for the device at
-open(), but I am not sure how that works with VFIO-pci.
+Every path that can fail in this function has a print already, I’d say
+remove the ones inside and keep this one, that also simplifies
+arm_smmu_disable_irqs() to one line.
+
+Otherwise, besides Nicolin’s comment, it looks good.
 
 Thanks,
 Mostafa
 
+> +		return ret;
+> +	}
+> +
+>  	/* Reset the device */
+>  	ret = arm_smmu_device_reset(smmu);
+>  	if (ret)
+> -- 
+> 2.49.0.rc1.451.g8f38331e32-goog
 > 
-> vcmdq probably needs some suspend resume logic like the normal
-> commandq.
-> 
-> viommu I think will only uses STE fields so it should be OK?
-> 
-> SVA.. Is similar to VFIO, if the power goes off while the SVA is
-> working that is bad. The SVA requesting driver would have to manage
-> this. HW with userspace command submission probably can't allow the
-> power to go off while command submission is possible.
-> 
-> Jason
