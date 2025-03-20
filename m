@@ -1,151 +1,100 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mx1.emlix.com (mx1.emlix.com [178.63.209.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 759331632D9;
-	Thu, 20 Mar 2025 09:30:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99A2D1A5BBA
+	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 09:31:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.209.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742463051; cv=none; b=O11+t8OLBnES0lC+kMV/zgbIqS6N7EYVOl2F7EGmBqFlupu+OJyqHcHjF75KVF2rYQp/43jYWXQblsGgkhWQ84UH1E2/HaLZZv1g2KqZne5+6JFoZA61O7oy5RrqrfoQlsFTOgDY8HEDCzth+Mze3n2ooHTLW35PmPPKr3AWayY=
+	t=1742463075; cv=none; b=A8Eia+KIh9Lv+k+6d4/anfno5wG0u9lTSUbYzyqae/LpNDv9pq+GGyRioiKOr19J+dd06lFJ+aGwxiMKj7gMvOnxHykBv8XzNCdAZzk3U+rJbOJdV3redMVcCR8ak1CnaKZHcU8xXoNX/WiKEVB5cVoNfgPlvjXTwsImwj2OjvU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742463051; c=relaxed/simple;
-	bh=DA1VOI0ouj+wlQCQyp6pnfel/4ZUCju3QtZmwpDK7qE=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=WJWArcfm7nHR1TVzoLm6kkHXLfrEgmoHz88b5apgHVaZU8dYcSbb8/wfhcZQsFfLZz0TU560B1x1pb3cjqTa1pcYmUXhyvr9qUKlXTVYbig35Bp45z+HaooL5dUOIfqN1gZ+vhWejLpNqdQk5tMmDQ0GsOVEYJvOb1hLhrDNcBk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.31])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4ZJKwt1Pmrz6M4Yy;
-	Thu, 20 Mar 2025 17:27:26 +0800 (CST)
-Received: from frapeml500007.china.huawei.com (unknown [7.182.85.172])
-	by mail.maildlp.com (Postfix) with ESMTPS id F1FD41401F3;
-	Thu, 20 Mar 2025 17:30:45 +0800 (CST)
-Received: from frapeml500008.china.huawei.com (7.182.85.71) by
- frapeml500007.china.huawei.com (7.182.85.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 20 Mar 2025 10:30:45 +0100
-Received: from frapeml500008.china.huawei.com ([7.182.85.71]) by
- frapeml500008.china.huawei.com ([7.182.85.71]) with mapi id 15.01.2507.039;
- Thu, 20 Mar 2025 10:30:45 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-CC: "kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, Linuxarm <linuxarm@huawei.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "maz@kernel.org" <maz@kernel.org>,
-	"oliver.upton@linux.dev" <oliver.upton@linux.dev>, "will@kernel.org"
-	<will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>, "jean-philippe@linaro.org"
-	<jean-philippe@linaro.org>, Jonathan Cameron <jonathan.cameron@huawei.com>
-Subject: RE: [RFC PATCH v3 4/5] iommu/arm-smmu-v3-iommufd: Use KVM VMID for s2
- stage
-Thread-Topic: [RFC PATCH v3 4/5] iommu/arm-smmu-v3-iommufd: Use KVM VMID for
- s2 stage
-Thread-Index: AQHbmPZBeq6wgyt4V0G2k2xYLylJd7N7DbQAgACsr4A=
-Date: Thu, 20 Mar 2025 09:30:45 +0000
-Message-ID: <f654ae10e55e4142acb83eb926bb80b2@huawei.com>
-References: <20250319173202.78988-1-shameerali.kolothum.thodi@huawei.com>
- <20250319173202.78988-5-shameerali.kolothum.thodi@huawei.com>
- <20250319233946.GF126678@ziepe.ca>
-In-Reply-To: <20250319233946.GF126678@ziepe.ca>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1742463075; c=relaxed/simple;
+	bh=Y66KsA3GQgAvbU1qFYkPKPeelZgF94pVlJgOrb4lujQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ZNyNDcUHTqgqi5tQn2OxiwiqTkSD+TDrNQJrNu1khdqdThSU1Q0/SfcvUihgyaic0eAlGf3fI3k/4Qfq+9Gx+KuVtmuwAMYOyQVYlaZmRZoOb/WC2sRTHMcownQlPryswL0G/bwEhcZWKERGf/Tksto/6sahC+6lhE/zuwXAvrU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com; spf=pass smtp.mailfrom=emlix.com; arc=none smtp.client-ip=178.63.209.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=emlix.com
+Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
+	(using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mx1.emlix.com (Postfix) with ESMTPS id 6DCF05F8E7;
+	Thu, 20 Mar 2025 10:31:10 +0100 (CET)
+From: Rolf Eike Beer <eb@emlix.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>
+Subject: [PATCH 6/6] iommu: make inclusion of iommufd directory conditional
+Date: Thu, 20 Mar 2025 10:22:37 +0100
+Message-ID: <2243601.irdbgypaU6@devpool47.emlix.com>
+Organization: emlix GmbH
+In-Reply-To: <12652899.O9o76ZdvQC@devpool47.emlix.com>
+References: <12652899.O9o76ZdvQC@devpool47.emlix.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+
+Nothing in there is active if CONFIG_IOMMUFD is not enabled, so the whole
+directory can depend on that switch as well.
+
+=46ixes: 2ff4bed7fee7 ("iommufd: File descriptor, context, kconfig and make=
+files")
+Signed-off-by: Rolf Eike Beer <eb@emlix.com>
+=2D--
+ drivers/iommu/Makefile         | 3 ++-
+ drivers/iommu/iommufd/Makefile | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 17133876f777..38ee96607acf 100644
+=2D-- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -1,8 +1,9 @@
+ # SPDX-License-Identifier: GPL-2.0
+=2Dobj-y +=3D arm/ iommufd/
++obj-y +=3D arm/
+ obj-$(CONFIG_AMD_IOMMU) +=3D amd/
+ obj-$(CONFIG_INTEL_IOMMU) +=3D intel/
+ obj-$(CONFIG_RISCV_IOMMU) +=3D riscv/
++obj-$(CONFIG_IOMMUFD) +=3D iommufd/
+ obj-$(CONFIG_IOMMU_API) +=3D iommu.o
+ obj-$(CONFIG_IOMMU_API) +=3D iommu-traces.o
+ obj-$(CONFIG_IOMMU_API) +=3D iommu-sysfs.o
+diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
+index cb784da6cddc..071f2a504167 100644
+=2D-- a/drivers/iommu/iommufd/Makefile
++++ b/drivers/iommu/iommufd/Makefile
+@@ -12,7 +12,7 @@ iommufd-y :=3D \
+=20
+ iommufd-$(CONFIG_IOMMUFD_TEST) +=3D selftest.o
+=20
+=2Dobj-$(CONFIG_IOMMUFD) +=3D iommufd.o
++obj-y +=3D iommufd.o
+ obj-$(CONFIG_IOMMUFD_DRIVER) +=3D iova_bitmap.o
+=20
+ iommufd_driver-y :=3D driver.o
+=2D-=20
+2.49.0
 
 
+=2D-=20
+Rolf Eike Beer
 
-> -----Original Message-----
-> From: Jason Gunthorpe <jgg@ziepe.ca>
-> Sent: Wednesday, March 19, 2025 11:40 PM
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: kvmarm@lists.linux.dev; iommu@lists.linux.dev; linux-arm-
-> kernel@lists.infradead.org; Linuxarm <linuxarm@huawei.com>;
-> kevin.tian@intel.com; alex.williamson@redhat.com; maz@kernel.org;
-> oliver.upton@linux.dev; will@kernel.org; robin.murphy@arm.com;
-> nicolinc@nvidia.com; jean-philippe@linaro.org; Jonathan Cameron
-> <jonathan.cameron@huawei.com>
-> Subject: Re: [RFC PATCH v3 4/5] iommu/arm-smmu-v3-iommufd: Use KVM
-> VMID for s2 stage
->=20
-> On Wed, Mar 19, 2025 at 05:32:01PM +0000, Shameer Kolothum wrote:
-> > +static int arm_vsmmu_alloc_vmid(struct arm_smmu_device *smmu,
-> struct kvm *kvm,
-> > +				bool *kvm_used)
-> > +{
-> > +#ifdef CONFIG_KVM
-> > +	/*
-> > +	 * There can only be one allocator for VMIDs active at once. If BTM
-> is
-> > +	 * turned on then KVM's allocator always supplies the VMID, and
-> the
-> > +	 * VMID is matched by CPU invalidation of the KVM S2. Right now
-> there
-> > +	 * is no API to get an unused VMID from KVM so this also means
-> BTM systems
-> > +	 * cannot support S2 without an associated KVM.
-> > +	 */
-> > +	if ((smmu->features & ARM_SMMU_FEAT_BTM)) {
-> > +		int vmid;
-> > +
-> > +		if (!kvm || !kvm_get_kvm_safe(kvm))
-> > +			return -EOPNOTSUPP;
->=20
-> Isn't kvm_get_kvm_safe() in modular KVM code most of the time? You can't
-> call it like this right?
+emlix GmbH
+Headquarters: Berliner Str. 12, 37073 G=C3=B6ttingen, Germany
+Phone +49 (0)551 30664-0, e-mail info@emlix.com
+District Court of G=C3=B6ttingen, Registry Number HR B 3160
+Managing Directors: Heike Jordan, Dr. Uwe Kracke
+VAT ID No. DE 205 198 055
+Office Berlin: Panoramastr. 1, 10178 Berlin, Germany
+Office Bonn: Bachstr. 6, 53115 Bonn, Germany
+http://www.emlix.com
 
-I think it is safe since KVM is not modular for ARM64. And that is one of t=
-he
-reasons I thought I will hold the KVM reference here as we don't have to go
-through the symbol_get/put calls here. Also IOMMUFD is not using the kvm
-pointer at the moment. Probably I should add some comments in IOMMUFD
-to make it clear.
+emlix - your embedded Linux partner
 
-However I just realized that in patch #1 I should EXPORT the
-kvm_arm_pinned_vmid_get/put functions as smmuv3 driver can be built
-modular.=20
 
->=20
-> Per my prior comments, I'm a little nervous to make drivers keep track
-> of this refcount instead of the core code but this does seem like it
-> could work..
->=20
-> I also think you should block using the S2 without a viommu & KVM in
-> BTM mode.. Maybe like this:
->=20
-> @@ -2938,8 +2938,16 @@ static int arm_smmu_attach_dev(struct
-> iommu_domain *domain, struct device *dev)
->                 cdptr =3D arm_smmu_alloc_cd_ptr(master, IOMMU_NO_PASID);
->                 if (!cdptr)
->                         return -ENOMEM;
-> -       } else if (arm_smmu_ssids_in_use(&master->cd_table))
-> -               return -EBUSY;
-> +       } else {
-> +               if (arm_smmu_ssids_in_use(&master->cd_table))
-> +                       return -EBUSY;
-> +               /*
-> +                * S2 cannot be used when BTM is turned on without a VIOM=
-MU
-> and
-> +                * VMID shared with KVM
-> +                */
-> +               if (smmu->features & ARM_SMMU_FEAT_BTM)
-> +                       return -EOPNOTSUPP;
-> +       }
->=20
-> That more closely matches how this will eventually work when the VMID
-> allocation is properly made to be local to the viommu.
-
-Ok. Will update.
-
-Thanks,
-Shameer
