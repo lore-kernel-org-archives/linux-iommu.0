@@ -1,328 +1,99 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3087A1E0B62
-	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 14:37:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DCC4C155A25
+	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 14:41:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742481458; cv=none; b=APO70L1O8yXdVytOzW/H5Rfvwk1sUBTgYofXm9OO2MiSbZ/IiD7EIoaaqQkF3uBzC+jCMF94yYnt5D5OnFyufpwrA90GKtyuluhFvuuuqWn/+NiIGbZxWwCIab2hByLVMRPSZMnvq0Tig/ifsHNGN7Kilk0R5wl+X+IohQjozyU=
+	t=1742481699; cv=none; b=uNnI/1ItF9bNCaUPoYWoSO5v8yLaKHwHPupyomoXYXmSSOGd4mun9Q2XJmNAsUohwYnIZlpOmD16U95yKscJg+rAY3yljKBSv4HSseAIU5QJIBRfHPBA9F/7zcTEN0Smvyi8eCU6YUGa76kPN50JerDjYCNkkbq92Uf/KbLbBQw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742481458; c=relaxed/simple;
-	bh=wbi9hbx3fAVJb3rvv1UTsklRnXIgAnF3MsB1E7kxmCA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=JlGK+Q73HQSR2qUMpap1KtOuvRvt8pq0Oof5DwVyFJFKrXanFxvcPbAJB9lKJV8cIIwpfCz+pWZH79C0fB0B+UgBviV7cumDUEYofscEaiy2SQjMe88xbShwzJcIZxtm/wETunujT7VuW22xRuD+7bH9G/CgMHzMRCo7/suGmhI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=GgEPBbAO; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="GgEPBbAO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1742481455;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=q8jQTpgamRT98fNj7lmPmNzbNNmBivJr+9bIgtnjm7g=;
-	b=GgEPBbAO/LCyQByiDi827KZk/5N1ICxRiI6JbIVVpPS27s4FoaDJ/n9FsBl0uGYc16qy11
-	+tcNgVSWWzm809Thij+JgDwFrcNQPZ30Vk2EkDKAk8LtIE8ollaAmgHSLn4RcJc/urmS89
-	Kf8GXW0SXbJwiLBKyQEL4VNpCsCCR80=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-602-lPJ6OCw4PjqP0HtI6jiySg-1; Thu, 20 Mar 2025 10:37:33 -0400
-X-MC-Unique: lPJ6OCw4PjqP0HtI6jiySg-1
-X-Mimecast-MFC-AGG-ID: lPJ6OCw4PjqP0HtI6jiySg_1742481452
-Received: by mail-lj1-f199.google.com with SMTP id 38308e7fff4ca-30bf67adf33so9887371fa.0
-        for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 07:37:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742481452; x=1743086252;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ZLx6gnmmSWWfdNgPfLYTsxSrV+Ix7KpS1F+U6ftX2nU=;
-        b=UuFJhig54Nk68n4SaTPXHi8N/eRxDXQqrx5ltmCGEyBmkDJJSHz7YNSbdwsD4ZZAh7
-         7N15TxsIOkkvoQr+7aemQI4EfSJsVPG9nerifyXaS5i8YxqSdBrGHVXZLQWItaRMK+nZ
-         Z+i/Q6XM08yZI/Yimgmim2/F9Ln3TN1EkL8DHM4SWljNaEiWw+bIdpusafaoAHxTRgh0
-         DIM3HtxzbWzbSweg+KFvk1ofAbLCNw/3sf4oALrsfhADmC/Bs2f9xfPt03FNGupxS9Ap
-         8Y4q2XMnVff4KiXCp9bfkfCApm4eEJ5UXUZtq5jkShTj8ThJh6zru0XhES/lTcYRmi1b
-         8iIA==
-X-Forwarded-Encrypted: i=1; AJvYcCWJxQdFD1YiGAGtwzjHXNgsV3CIy+icluyfb4HbJVEeYYjeqS8Sd+lehYKp4DJAtehaefD0aA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz1DJ4T/QtO7TDolgxxupWKs+J2tyviDLbh1ddxaEfmmpgb8hic
-	qov5bvTfOyjjt0xZJq0RyD5mZED1Cw+6tGIH89DmHLxZzO1qqOJpj91Af+aTNInt3d15Rgw1fw1
-	pwFQd+AXVeWkIuOauCPROWCj3ge3j40h1CfLYtQJwQDwY8Ha6Bknm
-X-Gm-Gg: ASbGncv3Nz2q4g+nHIVDelhnYe5rtpuH/jbr8wKKkXRrc3NLyAwfTJQsnrXgpvj5p03
-	y80yYrDlX8Ge2N/NdpBCDS9m18MnVJL2rDkhDGPC9iNoy8OwjxePvpg4XHcl7Z3rWODgC3HnE/0
-	eE8POvwllmcvcataJbmD1y0n65o6y9u4eRBH+BPyggyQW1yIBr78r4wGkcf54QnSKpr3XTxm9bI
-	PkPLxVQNUznghgeICudZCtB8mSoKNQayJ0dTat4OmmMjQkBqdltU3YvxVEYTjet4v8HJv1nSnaR
-	zFAQWqlY190T
-X-Received: by 2002:a05:6512:3f18:b0:549:929c:e896 with SMTP id 2adb3069b0e04-54acfaa1b0emr1518840e87.11.1742481451807;
-        Thu, 20 Mar 2025 07:37:31 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IE5VpCfZOFBC54LR922wO7u7GK5UhK0NC/mhGGmpD3DQ8vCNlbhBNi5GGvL7dfWltRcMPHQyg==
-X-Received: by 2002:a05:6512:3f18:b0:549:929c:e896 with SMTP id 2adb3069b0e04-54acfaa1b0emr1518818e87.11.1742481451151;
-        Thu, 20 Mar 2025 07:37:31 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-549ba7c1203sm2219442e87.90.2025.03.20.07.37.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Mar 2025 07:37:30 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-	id 9D74918FC2E8; Thu, 20 Mar 2025 15:37:29 +0100 (CET)
-From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To: Solar Designer <solar@openwall.com>, Yunsheng Lin <linyunsheng@huawei.com>
-Cc: Yunsheng Lin <yunshenglin0825@gmail.com>, "David S. Miller"
- <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Jesper Dangaard
- Brouer <hawk@kernel.org>, Saeed Mahameed <saeedm@nvidia.com>, Leon
- Romanovsky <leon@kernel.org>, Tariq Toukan <tariqt@nvidia.com>, Andrew
- Lunn <andrew+netdev@lunn.ch>, Eric Dumazet <edumazet@google.com>, Paolo
- Abeni <pabeni@redhat.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- Simon Horman <horms@kernel.org>, Andrew Morton
- <akpm@linux-foundation.org>, Mina Almasry <almasrymina@google.com>,
- Yonglong Liu <liuyonglong@huawei.com>, Pavel Begunkov
- <asml.silence@gmail.com>, Matthew Wilcox <willy@infradead.org>, Robin
- Murphy <robin.murphy@arm.com>, IOMMU <iommu@lists.linux.dev>,
- segoon@openwall.com, kernel-hardening@lists.openwall.com,
- netdev@vger.kernel.org, bpf@vger.kernel.org, linux-rdma@vger.kernel.org,
- linux-mm@kvack.org, Qiuling Ren <qren@redhat.com>, Yuying Ma
- <yuma@redhat.com>, sultan@kerneltoast.com
-Subject: Re: [PATCH net-next 3/3] page_pool: Track DMA-mapped pages and
- unmap them when destroying the pool
-In-Reply-To: <20250320023202.GA25514@openwall.com>
-References: <20250314-page-pool-track-dma-v1-0-c212e57a74c2@redhat.com>
- <20250314-page-pool-track-dma-v1-3-c212e57a74c2@redhat.com>
- <db813035-fb38-4fc3-b91e-d1416959db13@gmail.com> <87jz8nhelh.fsf@toke.dk>
- <7a76908d-5be2-43f1-a8e2-03b104165a29@huawei.com> <87wmcmhxdz.fsf@toke.dk>
- <ce6ca18b-0eda-4d62-b1d3-e101fe6dcd4e@huawei.com>
- <20250320023202.GA25514@openwall.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date: Thu, 20 Mar 2025 15:37:29 +0100
-Message-ID: <87ldszix92.fsf@toke.dk>
+	s=arc-20240116; t=1742481699; c=relaxed/simple;
+	bh=XX7x03shqTK9RikU1K18ymzGeQc0SsbcFLMKCng8MqA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=I50JGeTNKvTwDF1pcyfN6HK/ZlSGuK38XywBwySplRrrYwzVRxuJFxcZgpSNjdNixuchHkzhKD2sBR5oLEXbzf5RG8UqeA9H1SPORDVJ4LCLrO/4W5j1TLg4DuX98Dc288ZxGMbqDXxUxW21MRsiKaBZ6WZVwmjI47965IZTMyI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E1C631063;
+	Thu, 20 Mar 2025 07:41:43 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 535EE3F63F;
+	Thu, 20 Mar 2025 07:41:35 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: joro@8bytes.org,
+	will@kernel.org
+Cc: iommu@lists.linux.dev,
+	linux-renesas-soc@vger.kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] iommu/ipmmu-vmsa: Register in a sensible order
+Date: Thu, 20 Mar 2025 14:41:27 +0000
+Message-Id: <53be6667544de65a15415b699e38a9a965692e45.1742481687.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: MunEHF_Px3Kyz6euhc1LgV-dLw9kmoM5gB_1XjYBdXo_1742481452
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Solar Designer <solar@openwall.com> writes:
+IPMMU registers almost-initialised instances, but misses assigning the
+drvdata to make them fully functional, so initial calls back into
+ipmmu_probe_device() are likely to fail unnecessarily. Reorder this to
+work as it should, also pruning the long-out-of-date comment and adding
+the missing sysfs cleanup on error for good measure.
 
-> On Wed, Mar 19, 2025 at 07:06:57PM +0800, Yunsheng Lin wrote:
->> On 2025/3/19 4:55, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> > Yunsheng Lin <linyunsheng@huawei.com> writes:
->> >> On 2025/3/17 23:16, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> >>> Yunsheng Lin <yunshenglin0825@gmail.com> writes:
->> >>>> On 3/14/2025 6:10 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> >>>>
->> >>>> ...
->> >>>>
->> >>>>> To avoid having to walk the entire xarray on unmap to find the pag=
-e
->> >>>>> reference, we stash the ID assigned by xa_alloc() into the page
->> >>>>> structure itself, using the upper bits of the pp_magic field. This
->> >>>>> requires a couple of defines to avoid conflicting with the
->> >>>>> POINTER_POISON_DELTA define, but this is all evaluated at compile-=
-time,
->> >>>>> so does not affect run-time performance. The bitmap calculations i=
-n this
->> >>>>> patch gives the following number of bits for different architectur=
-es:
->> >>>>>
->> >>>>> - 24 bits on 32-bit architectures
->> >>>>> - 21 bits on PPC64 (because of the definition of ILLEGAL_POINTER_V=
-ALUE)
->> >>>>> - 32 bits on other 64-bit architectures
->> >>>>
->> >>>>  From commit c07aea3ef4d4 ("mm: add a signature in struct page"):
->> >>>> "The page->signature field is aliased to page->lru.next and
->> >>>> page->compound_head, but it can't be set by mistake because the
->> >>>> signature value is a bad pointer, and can't trigger a false positiv=
-e
->> >>>> in PageTail() because the last bit is 0."
->> >>>>
->> >>>> And commit 8a5e5e02fc83 ("include/linux/poison.h: fix LIST_POISON{1=
-,2}=20
->> >>>> offset"):
->> >>>> "Poison pointer values should be small enough to find a room in
->> >>>> non-mmap'able/hardly-mmap'able space."
->> >>>>
->> >>>> So the question seems to be:
->> >>>> 1. Is stashing the ID causing page->pp_magic to be in the mmap'able=
-/
->> >>>>     easier-mmap'able space? If yes, how can we make sure this will =
-not
->> >>>>     cause any security problem?
->> >>>> 2. Is the masking the page->pp_magic causing a valid pionter for
->> >>>>     page->lru.next or page->compound_head to be treated as a vaild
->> >>>>     PP_SIGNATURE? which might cause page_pool to recycle a page not
->> >>>>     allocated via page_pool.
->> >>>
->> >>> Right, so my reasoning for why the defines in this patch works for t=
-his
->> >>> is as follows: in both cases we need to make sure that the ID stashe=
-d in
->> >>> that field never looks like a valid kernel pointer. For 64-bit arche=
-s
->> >>> (where CONFIG_ILLEGAL_POINTER_VALUE), we make sure of this by never
->> >>> writing to any bits that overlap with the illegal value (so that the
->> >>> PP_SIGNATURE written to the field keeps it as an illegal pointer val=
-ue).
->> >>> For 32-bit arches, we make sure of this by making sure the top-most =
-bit
->> >>> is always 0 (the -1 in the define for _PP_DMA_INDEX_BITS) in the pat=
-ch,
->> >>> which puts it outside the range used for kernel pointers (AFAICT).
->> >>
->> >> Is there any season you think only kernel pointer is relevant here?
->> >=20
->> > Yes. Any pointer stored in the same space as pp_magic by other users o=
-f
->> > the page will be kernel pointers (as they come from page->lru.next). T=
-he
->> > goal of PP_SIGNATURE is to be able to distinguish pages allocated by
->> > page_pool, so we don't accidentally recycle a page from somewhere else=
-.
->> > That's the goal of the check in page_pool_page_is_pp():
->> >=20
->> > (page->pp_magic & PP_MAGIC_MASK) =3D=3D PP_SIGNATURE
->> >=20
->> > To achieve this, we must ensure that the check above never returns tru=
-e
->> > for any value another page user could have written into the same field
->> > (i.e., into page->lru.next). For 64-bit arches, POISON_POINTER_DELTA
->>=20
->> POISON_POINTER_DELTA is defined according to CONFIG_ILLEGAL_POINTER_VALU=
-E,
->> if CONFIG_ILLEGAL_POINTER_VALUE is not defined yet, POISON_POINTER_DELTA
->> is defined to zero.
->>=20
->> It seems only the below 64-bit arches define CONFIG_ILLEGAL_POINTER_VALU=
-E
->> through grepping:
->> a29815a333c6 core, x86: make LIST_POISON less deadly
->> 5c178472af24 riscv: define ILLEGAL_POINTER_VALUE for 64bit
->> f6853eb561fb powerpc/64: Define ILLEGAL_POINTER_VALUE for 64-bit
->> bf0c4e047324 arm64: kconfig: Move LIST_POISON to a safe value
->>=20
->> The below 64-bit arches don't seems to define the above config yet:
->> MIPS64, SPARC64, System z(S390X),loongarch
->>=20
->> Does ID stashing cause problem for the above arches?
->>=20
->> > serves this purpose. For 32-bit arches, we can leave the top-most bits
->> > out of PP_MAGIC_MASK, to make sure that any valid pointer value will
->> > fail the check above.
->>=20
->> The above mainly explained how to ensure page_pool_page_is_pp() will
->> not return false positive result from the page_pool perspective.
->>=20
->> From MM/security perspective, most of the commits quoted above seem
->> to suggest that poison pointer should be in the non-mmap'able or
->> hardly-mmap'able space, otherwise userspace can arrange for those
->> pointers to actually be dereferencable, potentially turning an oops
->> to an expolit, more detailed example in the below paper, which explains
->> how to exploit a vulnerability which hardened by the 8a5e5e02fc83 commit=
-:
->> https://www.usenix.org/system/files/conference/woot15/woot15-paper-xu.pd=
-f
->>=20
->> ID stashing seems to cause page->lru.next (aliased to page->pp_magic) to
->> be in the mmap'able space for some arches.
->
-> ...
->
->> To be honest, I am not that familiar with the pointer poison mechanism.
->> But through some researching and analyzing, it makes sense to overstate
->> it a little as it seems to be security-related.
->> Cc'ed some security-related experts and ML to see if there is some
->> clarifying from them.
->
-> You're correct that the pointer poison values should be in areas not
-> mmap'able by userspace (at least with reasonable mmap_min_addr values).
->
-> Looking at the union inside "struct page", I see pp_magic is aliased
-> against multiple pointers in the union'ed anonymous structs.
->
-> I'm not familiar with the uses of page->pp_magic and how likely or not
-> we are to have a bug where its aliasing with pointers would be exposed
-> as an attack vector, but this does look like a serious security concern.
-> It looks like we would be seriously weakening the poisoning, except on
-> archs where the new values with ID stashing are still not mmap'able.
->
-> I just discussed the matter with my colleague at CIQ, Sultan Alsawaf,
-> and he thinks the added risk is not that bad.  He wrote:
->
->> Toke's response here is fair:
->>=20
->> > Right, okay, I see what you mean. So the risk is basically the
->> > following:
->> >=20
->> > If some other part of the kernel ends up dereferencing the
->> > page->lru.next pointer of a page that is owned by page_pool, and which
->> > has an ID stashed into page->pp_magic, that dereference can end up bei=
-ng
->> > to a valid userspace mapping, which can lead to Bad Things(tm), cf the
->> > paper above.
->> >=20
->> > This is mitigated by the fact that it can only happen on architectures
->> > that don't set ILLEGAL_POINTER_VALUE (which includes 32-bit arches, an=
-d
->> > the ones you listed above). In addition, this has to happen while the
->> > page is owned by page_pool, and while it is DMA-mapped - we already
->> > clear the pp_magic field when releasing the page from page_pool.
->> >=20
->> > I am not sure to what extent the above is a risk we should take pains =
-to
->> > avoid, TBH. It seems to me that for this to become a real problem, lot=
-s
->> > of other things will already have gone wrong. But happy to defer to th=
-e
->> > mm/security folks here.
->>=20
->> For this to be a problem, there already needs to be a use-after-free on
->> a page, which arguably creates many other vectors for attack.
->>=20
->> The lru field of struct page is already used as a generic list pointer
->> in several places in the kernel once ownership of the page is obtained.
->> Any risk of dereferencing lru.next in a use-after-free scenario would
->> technically apply to a bunch of other places in the kernel (grep for
->> page->lru).
->
-> We also tried searching for existing exploitation techniques for "struct
-> page" use-after-free.  We couldn't find any.  The closest (non-)match I
-> found is this fine research (the same project presented differently):
->
-> https://i.blackhat.com/BH-US-24/Presentations/US24-Qian-PageJack-A-Powerf=
-ul-Exploit-Technique-With-Page-Level-UAF-Thursday.pdf page 33+
-> https://arxiv.org/html/2401.17618v2#S4
-> https://phrack.org/issues/71/13
->
-> The arxiv paper includes this sentence: "To create a page-level UAF, the
-> key is to cause a UAF of the struct page objects."  However, we do not
-> see them actually do that, and this statement is not found in the slides
-> nor in the Phrack article.  Confused.
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/ipmmu-vmsa.c | 27 ++++++++++-----------------
+ 1 file changed, 10 insertions(+), 17 deletions(-)
 
-Thank you for weighing in! I will post an updated version of this patch
-with a reference to this discussion and try to summarise the above.
-
-> Thank you for CC'ing me and the kernel-hardening list.  However, please
-> do not CC the oss-security list like that, where it's against content
-> guidelines.  Only properly focused new postings/threads are acceptable
-> there (not CC'ing from/to other lists where only part of the content is
-> on-topic, and follow-ups might not be on-topic at all).  See:
->
-> https://oss-security.openwall.org/wiki/mailing-lists/oss-security#list-co=
-ntent-guidelines
->
-> As a moderator for oss-security, I'm going to remove these messages from
-> the queue now.  Please drop Cc: oss-security from any further replies.
->
-> If desired, we may bring these topics to oss-security separately, with a
-> proper Subject line and clear description of what we're talking about.
-
-Noted, thanks!
-
--Toke
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 074daf1aac4e..e424b279a8cd 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -1081,31 +1081,24 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	platform_set_drvdata(pdev, mmu);
+ 	/*
+ 	 * Register the IPMMU to the IOMMU subsystem in the following cases:
+ 	 * - R-Car Gen2 IPMMU (all devices registered)
+ 	 * - R-Car Gen3 IPMMU (leaf devices only - skip root IPMMU-MM device)
+ 	 */
+-	if (!mmu->features->has_cache_leaf_nodes || !ipmmu_is_root(mmu)) {
+-		ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL,
+-					     dev_name(&pdev->dev));
+-		if (ret)
+-			return ret;
++	if (mmu->features->has_cache_leaf_nodes && ipmmu_is_root(mmu))
++		return 0;
+ 
+-		ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
+-		if (ret)
+-			return ret;
+-	}
++	ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL, dev_name(&pdev->dev));
++	if (ret)
++		return ret;
+ 
+-	/*
+-	 * We can't create the ARM mapping here as it requires the bus to have
+-	 * an IOMMU, which only happens when bus_set_iommu() is called in
+-	 * ipmmu_init() after the probe function returns.
+-	 */
++	ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
++	if (ret)
++		iommu_device_sysfs_remove(&mmu->iommu);
+ 
+-	platform_set_drvdata(pdev, mmu);
+-
+-	return 0;
++	return ret;
+ }
+ 
+ static void ipmmu_remove(struct platform_device *pdev)
+-- 
+2.39.2.101.g768bb238c484.dirty
 
