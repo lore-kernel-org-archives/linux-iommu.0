@@ -1,137 +1,109 @@
-Received: from mx1.emlix.com (mx1.emlix.com [178.63.209.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66BF73597B
-	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 08:17:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.209.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5011B211710
+	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 08:53:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742458672; cv=none; b=dJec9o7QDk5LXc1hjNDHnwXXkZlxgThFGKqkJxXoz8oVy9d8qD27/mn3oKQhz/xt47eFJ83SfJRhSusv6EuYVC6EIJ7BpWKP6c8SbxFVuH8v7+YFMkK7dJgv+fCveGNkMl3I/Xm2WaXGqh5/AQjJsaUwakGILFdrKfVvPvvASag=
+	t=1742460822; cv=none; b=TY/2sSR8uDDtxDPInUb5q6uQUBcACm9khchelNVliuGtoGNARpMEutdwFiF1dbNDD7mYksI2s5vS95L/UuKbeoTvmeUf1rXPROBI7JZCVo8x/HUM2WA6SSw8dFQQaCTgMy907/236SknzeQcy8qYhUmWg6XYyBnXlFfPt+0WLK4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742458672; c=relaxed/simple;
-	bh=4mjAa+nyl0BSHp8qtJKT+jbtIMlL+xyANc9xP6daZYk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AJB5j+VMVuN5/l0jSjxa+koUvuksT+3525yD29LlxQkkklhVdDTNWSYC8moLeID4OPnSa39Z8k2oXuNSCR5PcduKKwFGq3/qp68b6lo2bo519roPJnLlqIczo9Ce0rWzveFvpkVND6ZYmnqjA2UUFA+5J2FKmDXj9afNw9GNgVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com; spf=pass smtp.mailfrom=emlix.com; arc=none smtp.client-ip=178.63.209.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=emlix.com
-Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
-	(using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mx1.emlix.com (Postfix) with ESMTPS id BD2775F88D;
-	Thu, 20 Mar 2025 09:10:40 +0100 (CET)
-From: Rolf Eike Beer <eb@emlix.com>
+	s=arc-20240116; t=1742460822; c=relaxed/simple;
+	bh=y3Cp/rR1QpScC+x03y/C76tenIDZqGYsuw2cyuaBGnQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OJ1ZR4cOWyXS84d7fOPkUuIssc4IAZJ7y4sbwHGIa4PJRArne7Fwvlnsq0pThTHEsHzr7GZc7FINFqAHGBc9AhnfWe1K3K3jvKeM3bnlqTsqYM8SrQL7hKxgJ7SWg1BL+49xytgOpG2jEOD+8AY7KhruJS+aL+FLOHQLVcsqZy0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=bZqkti8f; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bZqkti8f"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-43cfa7e7f54so2754535e9.1
+        for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 01:53:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1742460818; x=1743065618; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KnFSXct6epNrQpkkv+yjVEVzsh1c64Flg8Y81A0Hvc8=;
+        b=bZqkti8fFGQuaVp1O8+/N1fVRII4uBWp9SZ26ksXu4mgB4McxUMJaCvL8NPG3qlE63
+         QDSXmvyCXl2oKRNBlOD0Vk3FfwCIQxIWwertWRZd2HAZkRJdfPxdT9ze+gNhu79OmL6b
+         1m/kreCM77G2xEM2sdZJ0zxoLF03Pi2WM0rRLK+18a2mebo5bygp/GS9NqRCVTuEPVDP
+         6q/VJAhTIxJPTOACqABhAaWeJrwuvxU8wWGGKhClR8tCFddgLbkZBU/j1na1+HkvPj/Z
+         vQWpZZsBzhiyDpdT2kGy9Gf2mQ46eFbYdE2TTxT3BnzC7sKkaYlJ8GQ6iRmeihx+/hmC
+         8lMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742460818; x=1743065618;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KnFSXct6epNrQpkkv+yjVEVzsh1c64Flg8Y81A0Hvc8=;
+        b=i7m6v+nO/cKtKkXERzqjaI8HDBmFIlWwYqs+tz4ug9BSd3a7UG2o5ALAOWSBHu8rXr
+         HqHaV8/TRsmKNtFrQjZinMjwN6dIcnmLIkt5swEulvHcmQhrByl8wXrv6dz87kp/h4r2
+         rUAi5fK5hmzUP/GyW4fMm3hsq1KCMIdGXGHDpYOD+0/XPjgI2gbwDGOi4H07B++raoI7
+         iZkD7S5HQV/sAdq0Rrd0ocyt12ClrqKem12olg4QZNoEdRJHyxoK1KzQT8CYDMUu3ZXQ
+         ofHzCd79hHMeDZhTe/UNxPnsjZc3e08eoVc243Ex4ffJ+BKSKfYMXHHJedMyd2pkVoet
+         dEFw==
+X-Forwarded-Encrypted: i=1; AJvYcCWWD9eXfEdJ1emXrE07oI/b+CorI+WkeYN+7oM0Tdy3MD/fGOX8CE3vwDwyeOPgN+B/Dy85dg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwE7bJGOkw/iTFKj/356NGnmfS+ZmGFk4/HQHyzZUXPkd4qxpXS
+	BYyIQISaxxhufZLDahndZeT2C3FP66rRoUNpwObR8JGoz0n81FT9vpnS+vAkmmY=
+X-Gm-Gg: ASbGncsTbby2fIaDxxIU6yqVPq0pbGz1U2mUimF7I2GBPLR70n0SYUZX22tBbISGOJ3
+	IpJUFmA8GCMA6EyFnWQrASrQ81SAvdc6jRauYGSbVYelG1rlBAdFzVO6CL0YkYxq3VNKqDU3TQi
+	wn4g+Kna8V/kal4Xvom/l5HD7qeNfjksLnNb1h9v02shOkeGlX7Ah74FjTw7h8UqH4fSb9yNpwD
+	hLXWUxv/KerAG1HeniNchqxlEw8WsrI10D63VIbKYbu13k9Yvn2rsVeOg7uFDQiDNC+7GFZhvGG
+	6r/kNVspE7uHKQEoFWlgAltXWGRct3gfsDs3361xQP9HIzmbrA==
+X-Google-Smtp-Source: AGHT+IE5XfB71cllV/n5EH1T284eA4sduFcvd6HSLYQ1/iWgIzjCRYet+uoDCJ/LzmZ1nTW11RBTYQ==
+X-Received: by 2002:a05:600c:cc8:b0:43d:186d:a4bf with SMTP id 5b1f17b1804b1-43d490d2411mr21934425e9.0.1742460818458;
+        Thu, 20 Mar 2025 01:53:38 -0700 (PDT)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-43d43f37665sm42436645e9.2.2025.03.20.01.53.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Mar 2025 01:53:37 -0700 (PDT)
+Date: Thu, 20 Mar 2025 11:53:34 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
 To: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Tomasz Jeznach <tjeznach@rivosinc.com>,
- Nick Kossifidis <mick@ics.forth.gr>, Sebastien Boeuf <seb@rivosinc.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, Palmer Dabbelt <palmer@rivosinc.com>,
- Paul Walmsley <paul.walmsley@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>
-Subject: Re: [PATCH 4/4] iommu: make inclusion of riscv directory conditional
-Date: Thu, 20 Mar 2025 09:10:34 +0100
-Message-ID: <2365431.ElGaqSPkdT@devpool47.emlix.com>
-Organization: emlix GmbH
-In-Reply-To: <Z9vMwUQ679SdSwhG@8bytes.org>
-References:
- <2301497.iZASKD2KPV@devpool47.emlix.com>
- <3536592.QJadu78ljV@devpool47.emlix.com> <Z9vMwUQ679SdSwhG@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iommu/amd: Return a literal in init_gcr3_table()
+Message-ID: <f688c2a2-a4d9-42c4-bf09-5ecbdbe9c9b5@stanley.mountain>
+References: <960a6d1a-63d6-49e8-890c-5e8a66e50c45@stanley.mountain>
+ <faa7edf4-a757-4390-8226-2604ef6476d6@stanley.mountain>
+ <Z9vLuWvzVJOyuuWu@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart4971840.GXAFRqVoOG";
- micalg="pgp-sha256"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z9vLuWvzVJOyuuWu@8bytes.org>
 
---nextPart4971840.GXAFRqVoOG
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
-From: Rolf Eike Beer <eb@emlix.com>
-To: Joerg Roedel <joro@8bytes.org>
-Date: Thu, 20 Mar 2025 09:10:34 +0100
-Message-ID: <2365431.ElGaqSPkdT@devpool47.emlix.com>
-Organization: emlix GmbH
-In-Reply-To: <Z9vMwUQ679SdSwhG@8bytes.org>
-MIME-Version: 1.0
-
-On Donnerstag, 20. M=C3=A4rz 2025 09:07:29 Mitteleurop=C3=A4ische Normalzei=
-t Joerg=20
-Roedel wrote:
-> On Tue, Mar 11, 2025 at 11:15:12AM +0100, Rolf Eike Beer wrote:
-> > Nothing in there is active if CONFIG_RISCV_IOMMU is not enabled, so the
-> > whole directory can depend on that switch as well.
-> >=20
-> > Fixes: 5c0ebbd3c6c6 ("iommu/riscv: Add RISC-V IOMMU platform device
-> > driver") Signed-off-by: Rolf Eike Beer <eb@emlix.com>
+On Thu, Mar 20, 2025 at 09:03:05AM +0100, Joerg Roedel wrote:
+> On Mon, Mar 17, 2025 at 09:43:32AM +0300, Dan Carpenter wrote:
+> > This code intentionally returns zero but it does it as "return ret;"
+> > Returning ret looks like an error path where return 0 is more
+> > clear and looks more intentional.
+> > 
+> > Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
 > > ---
-> >=20
-> >  drivers/iommu/Makefile | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> > index 41b00cdc8621..17133876f777 100644
-> > --- a/drivers/iommu/Makefile
-> > +++ b/drivers/iommu/Makefile
-> > @@ -1,7 +1,8 @@
-> >=20
-> >  # SPDX-License-Identifier: GPL-2.0
-> >=20
-> > -obj-y +=3D arm/ iommufd/ riscv/
-> > +obj-y +=3D arm/ iommufd/
-> >=20
-> >  obj-$(CONFIG_AMD_IOMMU) +=3D amd/
-> >  obj-$(CONFIG_INTEL_IOMMU) +=3D intel/
-> >=20
-> > +obj-$(CONFIG_RISCV_IOMMU) +=3D riscv/
-> >=20
-> >  obj-$(CONFIG_IOMMU_API) +=3D iommu.o
-> >  obj-$(CONFIG_IOMMU_API) +=3D iommu-traces.o
-> >  obj-$(CONFIG_IOMMU_API) +=3D iommu-sysfs.o
->=20
-> This allows for some additional cleanups in the Makefiles of the
-> sub-directory, no? Same for the other patches in this series.
+> >  drivers/iommu/amd/iommu.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> > index ce2626801ddf..7cbcc4933c8b 100644
+> > --- a/drivers/iommu/amd/iommu.c
+> > +++ b/drivers/iommu/amd/iommu.c
+> > @@ -2150,7 +2150,7 @@ static int init_gcr3_table(struct iommu_dev_data *dev_data,
+> >  
+> >  	/* Setup GCR3[0] only if domain is setup with v2 page table mode */
+> >  	if (!pdom_is_v2_pgtbl_mode(pdom))
+> > -		return ret;
+> > +		return 0;
+> 
+> There is another case of this a couple lines above in the same function.
+> Mind changing that as well?
 
-Yes, and I can send those cleanups as a followup if you like. But for the f=
-irst=20
-step I wanted to keep this as less invasive as it could be. And to be hones=
-t I=20
-didn't want to invest time to do this cleanups if it's unclear if they woul=
-d=20
-be rejected anyway because these things are this way on purpose.
+Thanks.  Happy to.  I'll resend.
 
-Regards,
-
-Eike
-=2D-=20
-Rolf Eike Beer
-
-emlix GmbH
-Headquarters: Berliner Str. 12, 37073 G=C3=B6ttingen, Germany
-Phone +49 (0)551 30664-0, e-mail info@emlix.com
-District Court of G=C3=B6ttingen, Registry Number HR B 3160
-Managing Directors: Heike Jordan, Dr. Uwe Kracke
-VAT ID No. DE 205 198 055
-Office Berlin: Panoramastr. 1, 10178 Berlin, Germany
-Office Bonn: Bachstr. 6, 53115 Bonn, Germany
-http://www.emlix.com
-
-emlix - your embedded Linux partner
---nextPart4971840.GXAFRqVoOG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iLMEAAEIAB0WIQQ/Uctzh31xzAxFCLur5FH7Xu2t/AUCZ9vNegAKCRCr5FH7Xu2t
-/NdZBACSGqKgQgJa4SmTU/OK6oUG11vk94MlA62E75QJ0SJrm89SOhFQgEALSEEe
-TXyuy+HkWvvUO5X+K1KaKPhP7STk73+OqqqXS1MHU9/+sOXw97us5R/awRy+SDhE
-/QJDDJGaO43pqnLvqI1+fxPYwz7qAw1fMdojAQhTh40iyI591w==
-=NJZm
------END PGP SIGNATURE-----
-
---nextPart4971840.GXAFRqVoOG--
-
-
+regards,
+dan carpenter
 
