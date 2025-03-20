@@ -1,211 +1,336 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D63B71DEFE4
-	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 23:52:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742514761; cv=none; b=NfPfkoNHrdsLvPDh7OHm81K+vrG3dR7p1Agj3LEED0H5HDVqzD5LrnwZ96ow77h50GRL+2ul/NpDGDj9EfSv+rv2STCZYmVnGpXEAUzyf1FPtBs6t6lFQEKrXxJZhW84rwd5iIUoc2j/0kTd8NKEEviGstQLFOaOWLDWleSZ39w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742514761; c=relaxed/simple;
-	bh=VKx7RH8Mg8DPC+U1B1C8czPF3VXsHpYGIbro1lkVn6s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=Pzx5W9n9DiiwYR9K/ve7Xjxw8w4fLm/Lbc3NtARcr/h/hBKdjn3T6eE3BqMrwj5nWJA0QHKKODtkC7jpQzogGpHD8gbit7pO4AuIIBGRGmxakkU9xU6pyVXsmc3Tx+CFOrNQ2ZtLFMOJFRxwY7eM9reWXPRaYd7W8nYjW+xtoZI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=BxoLCTZs; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D65271DEFE4
+	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 23:53:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.8
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742514820; cv=fail; b=Q3pl1PZDXtlesJlsOWQClig/t3A5vfvtL6jVh/MfmIcYR7YB2T27Uai2fpSvtizCCUnzqyKIs4MmkHtMT+KM0DGuPhDjxmyI5tzQbnHyh5KPdGySVCRq4HuyQ64gs+rBrrYPalVjxGsgQnvBlcQB8ULYK3I6wHn9ehKhfr7LbgQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742514820; c=relaxed/simple;
+	bh=Rw+B3VN8Q3ykj8pCcGYkkJOA6A7ATY5LxwoxVfNR6Fg=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=SrorDIeDcuL7tQPaNBJvEJMCfECuhMUwkEZ6CA5n9OCAq09pPoewiOSMh6q7T1hULrqyLCNvV0MtWR/xqxrCjRdai9GtGVvB1xvOEBLgw4lSZARP8MvH724Qv6nah/KR78491u6OiRH7NAJDqzK3zDUNPllYOMHzQ/aOFvX2dww=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VVxGVVsN; arc=fail smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="BxoLCTZs"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250320235237euoutp02aee769cd24ddd8349365cc1a4fd282e5~up-CnzcDB2751927519euoutp02Z
-	for <iommu@lists.linux.dev>; Thu, 20 Mar 2025 23:52:37 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250320235237euoutp02aee769cd24ddd8349365cc1a4fd282e5~up-CnzcDB2751927519euoutp02Z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1742514757;
-	bh=V40Yt8b5UQP5CQRebMaM4XT/r0qYRmMZ1DD0U7kvnK4=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=BxoLCTZsFrr5HpiEFgfCFVGODCKIfKbX3HyvX+POAUOf1BV746F+VZ9lBX4StFK1r
-	 h6AsoerRXR3ato2teMWP1yIOhu0jFo3UIRvXTU8ypM2b97DBeOXYM6d00OQub9e+Bl
-	 R0YCeDeXMsDhLivNl2ZXcYa+NUs9LNC8ecizvuMg=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20250320235236eucas1p2d25a78b8b13dc4ab1b2ca298ada0dfd6~up-BT_ZSP1299312993eucas1p2O;
-	Thu, 20 Mar 2025 23:52:36 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id 33.34.20821.44AACD76; Thu, 20
-	Mar 2025 23:52:36 +0000 (GMT)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20250320235235eucas1p20083fac3310cb507f47cd27594507feb~up-Ah0Xfl1299312993eucas1p2N;
-	Thu, 20 Mar 2025 23:52:35 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20250320235235eusmtrp147af0699b5659e6df38f53ef4ac28c3e~up-AhBruB1931419314eusmtrp12;
-	Thu, 20 Mar 2025 23:52:35 +0000 (GMT)
-X-AuditID: cbfec7f2-b09c370000005155-97-67dcaa4406f9
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id 4F.88.19920.34AACD76; Thu, 20
-	Mar 2025 23:52:35 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20250320235231eusmtip12043beb3ef63386f7348b314310b8aad~up_9CwvKL2854028540eusmtip1R;
-	Thu, 20 Mar 2025 23:52:31 +0000 (GMT)
-Message-ID: <1034b694-2b25-4649-a004-19e601061b90@samsung.com>
-Date: Fri, 21 Mar 2025 00:52:30 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VVxGVVsN"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1742514818; x=1774050818;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Rw+B3VN8Q3ykj8pCcGYkkJOA6A7ATY5LxwoxVfNR6Fg=;
+  b=VVxGVVsNGKWbbTbVwzltym2P/tKGPnFBnASjW1RDIBMQytLq5HhyZxDw
+   GRWBSUHQ4yFkZ5P5wMkIK38AdqpsnqcZ+sxjkoUCo8yuzkelNOvLZXF4A
+   CkR2QyfvhGkh2DrNSM7DlYGRJB3UP7AhKJaBPdpNExY7s0Sf6HxwDhLd2
+   nAKHcIh0DKBitFBIX1MvSOgMGM5hxEBxIBKRIsKWr1dOlG3O+R3i5IvZe
+   luy5UwlIg2NkJhoXbKEXIyGaMUVjF3e4tXpoOp0mtkCvPN5h4Dyu4rrDp
+   kBb1GWt/TRU6II51coznU8AZgfszM5wGYn2u19ynBoSrlOqPLw1W60dSw
+   A==;
+X-CSE-ConnectionGUID: JHkZFqNnSamvhrmBtqaWsw==
+X-CSE-MsgGUID: zDZ56ggJT2y3swFywxRE8Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11379"; a="61297401"
+X-IronPort-AV: E=Sophos;i="6.14,263,1736841600"; 
+   d="scan'208";a="61297401"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2025 16:53:27 -0700
+X-CSE-ConnectionGUID: iJydzXdWQfiRyJ+FFm285A==
+X-CSE-MsgGUID: 30O2bEwtSlel0V87+oaBig==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,263,1736841600"; 
+   d="scan'208";a="123696632"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2025 16:53:26 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Thu, 20 Mar 2025 16:53:25 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Thu, 20 Mar 2025 16:53:25 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Thu, 20 Mar 2025 16:53:25 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=lA1jR+3TMRPHGGGIYGxcjrhO+aH+h5qNGTUosoucXaKxLURoxc4lk6UQFb+ldRzI2hSVFvBEIIep0miP3TFlScs4ezNqV+X1eawB7bqPafqjwYD3fQnZr1Ja/R4NNQ2dI0AiSbIZd2Tg6EHf/AijDB2Fnud5hlAYT1ZELnCtjbKGSkIvDifzFgNeAg8dx0uonEaJ1c7KQrJhtgMv7HwzcZ3ZTDCZyE7WHAbh0uSa+WUII5I35kagSdFaG/cps5cqA+VdyEgb91DDzgJzR5VC14jBel58pw7dXojyFXfREWPqE9bBOFzDFjxJpkTPDcT5QltHSDH5f8/7n3e5df5kMg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ndsiu+4cJgVYHMsEmpSy3K9uSlgooBKpTJj7OO5WibQ=;
+ b=t6Lhkcy0MvcmRMqXoIxQ6R+scaxlRY8uOmNJGq8OMLqDhsf7x6PFU6uwYmNEBul6/W/ZTn7HfUGf9SpwlhmoiaxzP+jcT3ihvc9fOCKhF2nUnt80AVtbJ+M/8P+W0vwdTY5JVJ9T1ZS0WXWAQgJ+bAy/KE3wKQZw93XSNsB4ilAKL12BPcVB5G5QKb3nbhN+F9iIOQ4JWB+PTCxl+1YxDO9ZLUJs6e3taSnWQfPqkuLmNLjpvf9cN1lAQ793iTx+/+G2S9K31CYItsXUQL2KclUlLaEzz2Qn/uMhjEioJYrjJ/pxG1cPhlpPu5PIZ7Rj3zEc4/rCzZmFIvgHpNcxDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by MW4PR11MB6667.namprd11.prod.outlook.com (2603:10b6:303:1ea::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.34; Thu, 20 Mar
+ 2025 23:53:23 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a%3]) with mapi id 15.20.8534.031; Thu, 20 Mar 2025
+ 23:53:23 +0000
+Message-ID: <86dfbb2d-18d1-4f72-876a-edc131a8f47a@intel.com>
+Date: Fri, 21 Mar 2025 07:58:51 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v10 02/18] iommu: Introduce a replace API for device pasid
+To: Nicolin Chen <nicolinc@nvidia.com>
+CC: <kevin.tian@intel.com>, <jgg@nvidia.com>, <joro@8bytes.org>,
+	<baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>
+References: <20250320134744.5777-1-yi.l.liu@intel.com>
+ <20250320134744.5777-3-yi.l.liu@intel.com> <Z9xPaGV8f7Nr1HGd@Asurada-Nvidia>
+Content-Language: en-US
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <Z9xPaGV8f7Nr1HGd@Asurada-Nvidia>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: KL1PR01CA0112.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:3::28) To DS0PR11MB7529.namprd11.prod.outlook.com
+ (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 00/17] Provide a new two step DMA mapping API
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Sagi Grimberg
-	<sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>, Bjorn Helgaas
-	<bhelgaas@google.com>, Logan Gunthorpe <logang@deltatee.com>, Yishai Hadas
-	<yishaih@nvidia.com>, Shameer Kolothum
-	<shameerali.kolothum.thodi@huawei.com>, Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>, Andrew Morton
-	<akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org, Randy
-	Dunlap <rdunlap@infradead.org>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20250319175840.GG10600@ziepe.ca>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA01SbUxTVxjOuff2tjQpuRQcB2UjK5MFNgrdNJ5kwMCw5U7/4H5sGcviGrkW
-	t1K1tYgk2zrGl11RKLCWwko3y4eF8C1gFYQiK4QJDCNiBTsTZEztBsJ0fAxHe3Xj3/M+z/N+
-	PCeHhws7yO28I4oTjFIhlYtIPtH508podLJtWhY71BiIqpobSfT4qY5EDTNnSWTNSUezfQUA
-	nW8YxNDqMkIVxiGAKg3zGDpd2cJFesckQDWeC1xUVX4cla3W4KjH9Rr6Id9KoOv2KhLdaXzK
-	QdW197jomtlJojlHEYGseZvIM20gUP/CLAc1PfiTQF03cjgod3o3qi3nJ4bSs/1mjG40NwJ6
-	7sYcoC1tanrsTitB5171cOj2+ij63OXfMfr6NTXdZjtN0m2P9Fx6yLhG0O3Wr+j59gpAX7ql
-	IelzZ0o5KUGp/Lg0Rn4kk1HGJHzKTz/v6CWPbYRkDRdWExowEKQFfjxI7YITXeOYFvB5Qqoe
-	wG8vDZJeQUgtA6hxxbPCEoC3NXr8eUeBuxBnhToA6w1zBFssAqgtrfa1C6gEaC4x+DBB7YSa
-	xRKc5QPgcMUs4cXbqDDodhm5XhxIJcO+TtYTRIlgr72E6x2KU51caJpfxLwCTgVD12y1D5OU
-	BGo9Wt8CP0oMS8bmnnnCYJen6tmpPXzo7E7RAt4mToZVRRKWDoT3nR1cFofCkVKdLwCkCgC0
-	rLkxtijezP+bC7Cut+D06CrpHYRTkbDZHsPSSXD8r7tcdr4/nPIEsCf4Q32nAWdpASzMF7Lu
-	CGhyNv23tn98Ai8GItOWVzFtCWnaEsb0/14LIGwgmFGrMmSMSqJgTopV0gyVWiETHzqa0QY2
-	P/bIhvNRN/j+/qLYATAecADIw0VBgqDC2zKhIE16KptRHj2oVMsZlQPs4BGiYMGPV/JkQkom
-	PcF8zjDHGOVzFeP5bddgqbkxO+oK9yxULue/+apiwhhge6XBP+lJZsIv4nj9njMD+6s5kfbo
-	vZaQfR91L67Y4tt7i12Wla+L392bvYTVt7uN6Ilj6hvzzNquy1+EvDEzaD8QR6jOmsqOl4X1
-	JYa/3KLTW9HFn4u4bcHY+8v+fusvuK/8un7h1MmWOOvBT4bX/7l44O/3djo/nH67qzYl1uGp
-	e5Bz8+qSOWUsemXI4Hp8C6xt8D+2CMOSbdnNqff+GI35kp7MGi6TK16aVC7dVH23sC8p0ZaZ
-	Jw+u0EVQD2vsD/PQ67EfhN9NM4QuROoGWnts68ShEUVTXYdjqnX3O11Z5ZPWiM8U+qjD2yTp
-	4bkvHhYRqnSpJApXqqT/ApX9M15HBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SfUxTZxTG8957e1uqXS61pi/oYDZxc+oqBVpflrZjH3HXLDMkhmRzG6zC
-	tTRAi70tkS1mjWMCzZyrFoFKWrTFjNK5rY1CABvo1EoMQyCSwQAH1spYikgWEoXJKM0S/vvl
-	nOc5z8nJ4eHCfk4qT6c3MUa9pkxC8om7L8KTb7zrndBmDNrTUPNPPhItrX5LovbJsyTynCpB
-	kd4agNrab2Ho+T8INTXeAehiwyyG6i7+zEXnQqMAtcaucVFz/XFkf96Koxvje9Cl0x4CjXQ1
-	k2jKt8pBriuPuGjAGSZRNHSGQJ5v1ig20UCgvoUIB139+wmBOu6f4qDqCTm6Us/P3U5H+pwY
-	7XP6AB29HwV0i99MD079QtDVN2McOvDDbtrd8xdGjwyYab+3jqT9i+e49J3GZYIOeL6iZwNN
-	gO4es5C0+7vznDzREanSaDCbmFdKDKxJJflEhjKlshwkzczOkcqy9n/2ZqZcsk+tLGbKdJWM
-	cZ/6c2lJWyhIVrxIOdFf6yIs4FeRFSTxIJUNax7U4lbA5wmpVgB7Fn/EE43tsP+ChZPgLXBl
-	1EomRE8A9J5d5MYbAkoNnbYGMs4EtRNantrwRD0Z9jdFiDhvpdLhg/HGdf0W6j3Yez2hEVES
-	GOyyceNDcaqTC4e6wlgi4QwOH12eX4/GKTEcj7iwOJOUDFpj1vW0JEoKbYNRLKFRQOs1K0hw
-	OuyINePfA6FjwyKODaMcGyyODZYWQHiBiDGz5dpyViZlNeWsWa+VFhnK/WDtp67ffhboBM65
-	p9IQwHggBCAPl4gEoto/tEJBsabqC8ZoKDSayxg2BORr17DhqVuLDGtPqTcVyhQZclm2IidD
-	nqPIkogFB0YGjwkprcbElDJMBWP834fxklItWOl0L9ItF7g+euwDqsX+HcaV9kO/hXVfpqpe
-	L25r+1Q79afD61DOvR8eyh1Gy3vempoVpvk387pVWSbvRNrC2LG9p2fGYkdP7OrUFAqTu6Em
-	N7Ksyg8etCuSH6fGQuik+8LDg/zjoV0dtfXBqzvu3VhoKSlYiKmml8r61GI3/m/KtqMVhw+3
-	z/w+XjbQ6vmw+jw7D6O5Kfbp2qqu18YqOUpD3jv5O5eKOh7e4yuH82sCz3RzH0xs6t58+/K2
-	7gGKSb/lLvDZxZbiHuPbwqG6m/MnZ1ZW1XLMtp8NCzqrXHurJ0eDw1/XZR3p0XNe8i+9vCk3
-	cDfPKa50lr5a+XG9hGBLNLLduJHV/AehhEaR3AMAAA==
-X-CMS-MailID: 20250320235235eucas1p20083fac3310cb507f47cd27594507feb
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250228195423eucas1p221736d964e9aeb1b055d3ee93a4d2648
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20250228195423eucas1p221736d964e9aeb1b055d3ee93a4d2648
-References: <cover.1738765879.git.leonro@nvidia.com>
-	<20250220124827.GR53094@unreal>
-	<CGME20250228195423eucas1p221736d964e9aeb1b055d3ee93a4d2648@eucas1p2.samsung.com>
-	<1166a5f5-23cc-4cce-ba40-5e10ad2606de@arm.com>
-	<d408b1c7-eabf-4a1e-861c-b2ddf8bf9f0e@samsung.com>
-	<20250312193249.GI1322339@unreal>
-	<adb63b87-d8f2-4ae6-90c4-125bde41dc29@samsung.com>
-	<20250319175840.GG10600@ziepe.ca>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|MW4PR11MB6667:EE_
+X-MS-Office365-Filtering-Correlation-Id: b11c289c-4d3f-4ebc-8e31-08dd680a6658
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024|7053199007;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?SjA1ZEw0M0I3NjlaTFRDVjk3MStOM054UzRmYkFOcEY3RnlQQjQyVkRIbitO?=
+ =?utf-8?B?WW9GMldzL09wcDY5UGE0aWlhcXNsQkJSTzQzdnFaMm9qTTIzWmEzWUxHK1RC?=
+ =?utf-8?B?WFRmMFoxNEVrMzRGbE5jK3hqMEp3RHRVMEs4SVBwRlFsMytPeWRVQUs0cmNM?=
+ =?utf-8?B?VGF1ZGRQRkZnai9xMUJvNWFRb0NoZzJBVFhsck5CYkJJb21HVDEzRzkwMitl?=
+ =?utf-8?B?cDQ1L05IbmpuZTNwblBOcmwwby9rZ0xWTFAzY0RQOStWT1VRK1B5TEdDRkNt?=
+ =?utf-8?B?ZWNBV0xLeUFDMkwrY296UjRxYW02bkszVXFrNDh5ZjJMVXozRVhyc0dEKzFG?=
+ =?utf-8?B?bEZNd1phSnl0c2hpNTdUUWRKM01EWFMvVmtTdy9lV3B5aDNJU2R1b09qaXVn?=
+ =?utf-8?B?OG1YNVBPV3l3SUpLYis5dlVzbS9VRE1SdUNQc0F4WTZndGIyM0JFSW0wb2ND?=
+ =?utf-8?B?azdSWjZTU0ppQkFLVjRiRlNiWDluS3Q3SjhaVHNsR0VUd2F6TzlqNlRwUWw5?=
+ =?utf-8?B?VE1KbTlaUHdDck1SL3RQMm8vcmZaNFdhNDhVQnlIYlFEUkY0WjZoTGdmbEVC?=
+ =?utf-8?B?OE1pWHpONEw1SVNvN0hUeDFuNDJyTE05SGp5SEtIOGlSRlRkN0lyMDBKV2hn?=
+ =?utf-8?B?WkNIdnd4aGJpWDFiY2E5U2VvOEQrejNHSEJBUjMzQUtmUzRxcjkvTmtSNVVN?=
+ =?utf-8?B?YVVCNFRzbFZBRUF6cFliUjVXYkxYbm1BTUJyNW1wMlZjOXFWYkY0Mk9ET0Qx?=
+ =?utf-8?B?cjVZQUJDbDNjTDREU1czQlNDZ3FzaEJkb0VsMkhVM1VJTjRUenpQdnMxY1R0?=
+ =?utf-8?B?R3ozZWhUZ1owdWdUQUJWNDlHbjFIV3p3QnBBOHVUVVI3TzB5TmNQZVJOODg1?=
+ =?utf-8?B?bE9qaXdaZTJ6OWwzeHY5N0tvOEEvK0FQVFE5SkdERkhGeWpWRXZxVDBiTGRK?=
+ =?utf-8?B?WlhLeGhRNDRCeXdvQmFOd0IvSWlWWFdhNys1RFdjeUxZZ1JXMjVkRS9zY1Fw?=
+ =?utf-8?B?UEc5LzZRd1BlVTFZQk5hb053dmpaeDFYUmoxN3FnM3V6ankyYlVNa2JOZmJW?=
+ =?utf-8?B?OWFZSytGZDRLcTd4bDFJdjFHNGh4d2ZLVTRPdHVkVFdwMU84VFVjMEx4aUo2?=
+ =?utf-8?B?eDZtN09IcUNpR1RYVjk0WTJJdlVCRnZyMjBveVNVa21NSjU4czlLVVBsQ2xq?=
+ =?utf-8?B?OGpPSVdhYmkvODFOMVZzWXlEcHB3ZFViVlZYdGpKUDlCTGNGcHZoaDU1dFhG?=
+ =?utf-8?B?dE9GMEN3ZW81WUR3Yk1HZkFSSW4xTC9SUnJudjZ5SXFudlMwcDJId2JuNlFn?=
+ =?utf-8?B?QUpFKzVUSGU4L3lPaWZsekVxQjVJalVaUXV6OVFXaUJFQ1hDUFFTVU45bVJt?=
+ =?utf-8?B?UlRURlE4ZnkyVXRTYmo2cFJVSUxvNFZaTG5jN3JXRGVSTFdWVG1tVjU3RitM?=
+ =?utf-8?B?N2R4SCszVkdwZnR2VzdqRXZWeHJCeXl0R2R4c1NzZzhEZmRNOFFyaEZ3S3ZH?=
+ =?utf-8?B?N1pNTHJQTWprOGVudnlERTBOR25oVGlLdDk3YXZtdVY0L0dDNFQzaTNqdVJH?=
+ =?utf-8?B?bklnS2RCTm9UTHlxL1lXYjBTb3I5d0ppR0s2eUw3aGEvYjJzdGQyMGk0ZjM4?=
+ =?utf-8?B?ODJwaWpVTE5xZWJFK3lCOVNOaG4rV0JzaTJRNjB2K1BHOW43M2tKSWM0V3Ro?=
+ =?utf-8?B?R20rRkp0Z3BTMDdSRU00UWxBekRwelNqdUJ5cEJ1R3h5UEdpMlpzdCt5ZFls?=
+ =?utf-8?B?c2VsVTJKaE11T2lacEdIQlZ4WUNZblpPT21vcXA3c29OZFoxTUJFOGNOV25v?=
+ =?utf-8?B?MlcxY1ROa0NYaXBsWWxRR213bHpEOWJMbnY3WVExQVIzRmEwaUgvR0lzQ1VN?=
+ =?utf-8?Q?BFVPrtbP8jQGL?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TGJFd1hNRWJGakt5MVhDL2EydHlvQXdFQW81MG8yTWljbWJJRlpzWFl4K1Y1?=
+ =?utf-8?B?aGNHZUJjRm84V1dBQXFRZ3RKSDFjTGxEaHFRQTFBOWs3bXpzaktGeFVwR0c2?=
+ =?utf-8?B?alk4d21rM0w3TmUyUTJiOEJueTRPVlVMaXdMS01NWDBubjRxamQ3M1RZSCtJ?=
+ =?utf-8?B?dGVBZkEyckJKOEw0clBFcnYxRkp0anYyNnpDTmJmcFUxTjk1dFJuTGpVbzRy?=
+ =?utf-8?B?a0ZFZmtOSjcxRUozM29JUnRNYnZ6Q2dQeHV2M0N0MDJDM1N6N0pyL2l3T2p4?=
+ =?utf-8?B?bzR5NjhPRlZDZXoxY0JOT2lVVC9EZnBSd2YxS3JMMXIwUjRlMGZSb3pYbjdF?=
+ =?utf-8?B?MlJsZVZPWnFkM29yU1NpcEZkYVlCUzMzekdBbGtZeTZ3bFI0eEZDWFRCN21t?=
+ =?utf-8?B?K0ZWWGtvbnJUZDZUaHhCUG8ramZXaXlrSlRWbDRLWERHMUw2cUptT2FhRnJx?=
+ =?utf-8?B?K1pZbkFFQ3N1K2NiK2pzZG8wQTNFcFErdUsybUdNYnRVbkRWNmwrWkZHV09l?=
+ =?utf-8?B?SEltTE8rdlAzZjlLcGxLOE5XcDUrTEdCemxUNFVmejJOckZQSFpmZkNyRi92?=
+ =?utf-8?B?d1pBVm43M1NQelpGSmpoOTJWbGRMYnlIT1EyR2M4RVlRMk9BamkxSDdkbU5p?=
+ =?utf-8?B?OVkzZHQySDNCVERISEFJd25RUDRvS1dWandFVmU4MnFVbzNUOTRNWGI3aEJE?=
+ =?utf-8?B?cml2end6K29SRWNYV0pSRkk0QVl6UnJxMTE5MCtNNlk1ektUWnRuejVqYWlw?=
+ =?utf-8?B?M2hOMU8zZlFQU1U0RklxY0JYM3k5L3pTQUVzSFlnOVR4bktlOTErbXdqT3ha?=
+ =?utf-8?B?Tk5rYnAyYVhMUEY4UXp5WXlzajduZk5yU0pqWGE0ajVVcXpXYTNjNllnQStC?=
+ =?utf-8?B?UkZ1bFNGbGZ0eEFMaVpMclJuS2hhanJjdWdKS29CdDBldG55dHg2cHl4ZTVu?=
+ =?utf-8?B?cnAzU1dFaC9jT0RaYVNGM1F2VEJJeVJETTZNUDZXRTBXbHZkTkl4ZmtHalZy?=
+ =?utf-8?B?K1pCVDBNUHNFK283TFp1OTRQSXBITnhHcGxKY3IrUThra0k4WURzMjNJdmRj?=
+ =?utf-8?B?RkErenhlTTZhYjRLcXMvaDh4Y1h2YjQxQ1JIQ2xxSWIwZ3I5enFuNVplSHJE?=
+ =?utf-8?B?UW94ZWFPdnJxd0VIeUtKTDNFU3AvMmw3RFMwZGdndjdmVnh0eVFvVlhBQ05i?=
+ =?utf-8?B?Mk91c2RZRzhqQm0ybDQzbFVhSFdMMG1iRmdyNEJIVUI3SEJKTHRramtuOGd6?=
+ =?utf-8?B?WkZ1OGpGT3ZJd2lMenY4L3c4WWJONk9sQXVGK1o4WHFrN2oyaEZVUkxKVEF2?=
+ =?utf-8?B?cVZVT1RENzB5aThUazA2UkFqRXMyaXB0N3VkYVJBK1lGTmNMNExXTXVmNkIw?=
+ =?utf-8?B?UmpBV1VaNi9CYU5BTmRaUjgwM0V6MmJFNHh0YzFibmJRalhvV1Bla2JDbGxO?=
+ =?utf-8?B?bFVyZXdJUkZyUkdmVm1ZcENiNTkvazFJb3NONWo3QUcvaGNkNkxheGVydm1t?=
+ =?utf-8?B?WUxnWWk1SHZvS2liMlo5R2QvTDhlMVlSQUF0NWZxZlNjcFZCUlhZT2k0Vk04?=
+ =?utf-8?B?RFJTVmc5TkxWUkxBQVZVc1FsN3lwSThzM0E2LzNLQ0Z5QzNFOENFdmFqMFRE?=
+ =?utf-8?B?Y2pzRTRReFl4RjhRQ2JwV1ppbVAvNHNRVTJaM2FKQVp6UlVGZHgvclRoSWNw?=
+ =?utf-8?B?WlIxMDR4TklrcC9Rcm1NVEFjTlo0bzVMQWlTeW1DMFBVVTdnbW5Bd0Q1TFFz?=
+ =?utf-8?B?ZTN1YlpXRW9UeXdFQ2VoanA4dTVnTW9COWtFdXhyUFhJVUM5dVhCSzI4VGwr?=
+ =?utf-8?B?L2E4c1hQbjVSTlFhUTk5VVlwYXdSdDllYllmK29YMDNJQTI1Y21zREtYaHpt?=
+ =?utf-8?B?bGl5YkdwZlBDSzZrZjhUb0R1eU43N1hsTDVHbUdvekJ5OCtQR1hvRmJNUU9t?=
+ =?utf-8?B?dzV4elNZalBpaDd2YVhjcGlPM050VEp4eGdTVjkycnRZdjRDekp1R2FqV3hz?=
+ =?utf-8?B?citFNDlaVkg1VGJzQWtRYnhEZExuNC9sUU9IWDczUllESUw1QkthM211a2Ev?=
+ =?utf-8?B?QUx2QnZFWGdqdERsYmh3UldWdVBVNXoydUJwd09DRnNpQlcvNDlNL3BTa2tn?=
+ =?utf-8?Q?aZS7+F1u7WbzfvNP+Oxgpdf8G?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: b11c289c-4d3f-4ebc-8e31-08dd680a6658
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2025 23:53:23.5556
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: B4amsSEIimLTXbzRgXh4rybnpEAiqivMk3f8caigX8XfuP14BLzi+IHvqsN6CF3x8BR793C2sCJm7ZGPR+Jstw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6667
+X-OriginatorOrg: intel.com
 
-On 19.03.2025 18:58, Jason Gunthorpe wrote:
-> On Fri, Mar 14, 2025 at 11:52:58AM +0100, Marek Szyprowski wrote:
->
->>> The only way to do so is to use dma_map_sg_attrs(), which relies on SG
->>> (the one that we want to remove) to map P2P pages.
->> That's something I don't get yet. How P2P pages can be used with
->> dma_map_sg_attrs(), but not with dma_map_page_attrs()? Both operate
->> internally on struct page pointer.
-> It is a bit subtle, I ran in to this when exploring enabling proper
-> P2P for dma_map_resource() too.
->
-> The API signatures are:
->
-> dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
-> 		size_t offset, size_t size, enum dma_data_direction dir,
-> 		unsigned long attrs);
-> void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr, size_t size,
-> 		enum dma_data_direction dir, unsigned long attrs);
->
-> The thing to notice immediately is that the unmap path does not get
-> passed a struct page.
+On 2025/3/21 01:24, Nicolin Chen wrote:
+> On Thu, Mar 20, 2025 at 06:47:28AM -0700, Yi Liu wrote:
+>> Provide a high-level API to allow replacements of one domain with another
+>> for specific pasid of a device. This is similar to
+>> iommu_replace_group_handle() and it is expected to be used only by IOMMUFD.
+>>
+>> Co-developed-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+>> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> 
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> 
+> Some nits:
+> 
+>> @@ -3420,6 +3436,99 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+>>   }
+>>   EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
+>>   
+>> +/**
+>> + * iommu_replace_device_pasid - Replace the domain that a pasid
+>> + *                              is attached to
+> 
+> How about "... a specific pasid of the device is attached to"
+> aligning with the clearer narrative in commit log?
+> 
+>> +int iommu_replace_device_pasid(struct iommu_domain *domain,
+>> +			       struct device *dev, ioasid_t pasid,
+>> +			       struct iommu_attach_handle *handle)
+>> +{
+>> +	/* Caller must be a probed driver on dev */
+> 
+> What's "a probed driver on dev"? Mind rephrasing this?
+> 
+> Also should it be placed outside this function?
+> 
+>> +	struct iommu_group *group = dev->iommu_group;
+>> +	struct iommu_attach_handle *entry;
+>> +	struct iommu_domain *curr_domain;
+>> +	void *curr;
+>> +	int ret;
+>> +
+>> +	if (!group)
+>> +		return -ENODEV;
+>> +
+>> +	if (!domain->ops->set_dev_pasid)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	if (dev_iommu_ops(dev) != domain->owner ||
+>> +	    pasid == IOMMU_NO_PASID || !handle)
+>> +		return -EINVAL;
+>> +
+>> +	mutex_lock(&group->mutex);
+> 
+> How about guard(mutex)(&group->mutex)?
 
-I see, thanks for pointing this out. It looks that I've encountered this 
-issue too long time ago when I was implementing first 
-iommu-to-dma-mapping glue for ARM arch. The lack of some kind of 
-'object' returned from dma_map* (and dma_alloc*) and passed back to 
-dma_unmap* (and dma_free_*) required some non-trivial workarounds there 
-and made the unmap/free path a bit more complicated.
+yeah, baolu mentioned it as well. But given the
+>> +	entry = iommu_make_pasid_array_entry(domain, handle);
+>> +	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL,
+>> +			  XA_ZERO_ENTRY, GFP_KERNEL);
+>> +	if (xa_is_err(curr)) {
+>> +		ret = xa_err(curr);
+>> +		goto out_unlock;
+>> +	}
+>> +
+>> +	/*
+>> +	 * No domain (with or without handle) attached, hence not
+>> +	 * a replace case.
+>> +	 */
+>> +	if (!curr) {
+>> +		xa_release(&group->pasid_array, pasid);
+>> +		ret = -EINVAL;
+>> +		goto out_unlock;
+>> +	}
+>> +
+>> +	/*
+>> +	 * Reusing handle is problematic as there are paths that refers
+>> +	 * the handle without lock. To avoid race, reject the callers that
+>> +	 * attempt it.
+>> +	 */
+>> +	if (handle && curr == entry) {
+>> +		WARN_ON(1);
+>> +		ret = -EINVAL;
+>> +		goto out_unlock;
+>> +	}
+> 
+> We rejected !handle and !curr cases. So it should be enough with:
+> 	if (curr == entry) {
+> ?
 
-> So, lets think about the flow when the iommu is turned on.
->
-> For normal struct page memory:
->
->   - dma_map_page_attrs() allocates some IOVA and returns it in the
->     dma_addr_t and then maps the struct page to the iommu page table
->
->   - dma_unmap_page_attrs() frees the IOVA from the given dma_addr_t
->   
-> If we think about P2P now:
->
->   - dma_map_page_attrs() can inspect the struct page and determine it
->     is P2P. It computes a bus address which is not an IOVA, and does
->     not transit through the IOMMU. No IOVA allocation is performed. the
->     bus address is returned as the dma_addr_t
->
->   - dma_unmap_page_attrs() ... is impossible. We just get this
->     dma_addr_t that doesn't have enough information to tell anymore if
->     the address is a P2P bus address or not, so we can't tell if we
->     should unmap an iova from the dma_addr_t :\
->
-> The sg path fixes this because it introduced a new flag in the
-> scatterlist, SG_DMA_BUS_ADDRESS, that allows the sg map path to record
-> the information for the unmap path so it can do the right thing.
->
-> Leon's approach fixes this by putting an overarching transaction state
-> around the DMA operation so that map and unmap operations can look in
-> the state and determine if this is a P2P or non P2P map and then know
-> how to unmap.
->
-> For some background here, Christoph gave me this idea back at LSF/MM
-> in Vancouver (two years ago now). At the time I was looking at
-> replacing scatterlist and giving new DMA API ops to operate on a
-> "scatterlist v2" structure.
->
-> Christoph's vision was to make a performance DMA API path that could
-> be used to implement any scatterlist-like data structure very
-> efficiently without having to teach the DMA API about all sorts of
-> scatterlist-like things.
+we only want to reject the case in which handle is valid and it is
+the same with old handle. If handle is null, I think it is ok to have the
+same domain.
 
-Thanks for explaining one more motivation behind this patchset!
+>> +
+>> +	curr_domain = pasid_array_entry_to_domain(curr);
+>> +	ret = 0;
+>> +
+>> +	if (curr_domain != domain) {
+>> +		ret = __iommu_set_group_pasid(domain, group,
+>> +					      pasid, curr_domain);
+>> +		if (ret)
+>> +			goto out_unlock;
+>> +	}
+> 
+> Oh, does this mean that we can just use this function to replace
+> a handle if domain isn't changed? Maybe add this in the kdoc?
 
-Best regards
+if handle is not the same and domain is the same, yes it should
+succeed. yeah, doc it would help users.
+
+> 
+>> +
+>> +	if (curr != entry) {
+> 
+> Hmm, since we rejected "curr == entry" already, we don't need to
+> double check any more?
+
+as the above response, it only rejects when handle is valid and
+happens to be the same with the old one.
+
+> 
+>> +		/*
+>> +		 * The above xa_cmpxchg() reserved the memory, and the
+>> +		 * group->mutex is held, this cannot fail.
+>> +		 */
+>> +		WARN_ON(xa_is_err(xa_store(&group->pasid_array,
+>> +					   pasid, entry, GFP_KERNEL)));
+>> +	}
+>> +
+>> +out_unlock:
+>> +	mutex_unlock(&group->mutex);
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_NS_GPL(iommu_replace_device_pasid, "IOMMUFD_INTERNAL");
+>> +
+>>   /*
+>>    * iommu_detach_device_pasid() - Detach the domain from pasid of device
+>>    * @domain: the iommu domain.
+>> -- 
+>> 2.34.1
+>>
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Regards,
+Yi Liu
