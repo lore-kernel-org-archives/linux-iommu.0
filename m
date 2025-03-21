@@ -1,134 +1,146 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E7ED1DE884
-	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 17:35:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D874D22F15E
+	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 18:25:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742578517; cv=none; b=mDRBOpqXvLwkj2S4ZJUd7160ZtYbuRl6wFw1dLBDigtNHMnqfRZLqi9+q7GGyjAT1q/fQPniLfVnFWwjVN0D0EiztnGmxmmPJ/oC8hCZzrD9/SWf18aQLdPJ6PYdMBtRMQtj3B5R25o9Xlb715vd5Tmo9LFRgEd5p+H1A2Jcad0=
+	t=1742581543; cv=none; b=gwyTpiSNbQp1CbTJVd7Gm9iLJ+ggXGXe9jEgV+rT4hOg8VhU5Ee1q9S2Pt9iDsOBKJKHnMYOfxQxeQZWxIyZX9Gha0U35IzvGsyvjhJHW96P6ojhl5YgtF1EhnjcLEuS1ZE4vhxDgx2yHGste+CzhbC3H2+4cPCf1O8nqI7fj3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742578517; c=relaxed/simple;
-	bh=6a7oTXoGa1Vv/kmCJiy3OTPAruimc2FfYwezsCVHiw4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eMivyzBHrn2YBD7znoOcabCzOIc0azKg4Ty5MU/pgc4onJRVf5tnE0X8ciGzaNyqBJOR9nsbXS6BKyumLx6Nd16rAIsKJGpY2xN8ecnFY2sbQZPB0LIyATcJKey6uTfuStVxIIjEG4GSKBMA7VTZZPZFSKrO70+RVeyoGFXeu38=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 55DD6106F;
-	Fri, 21 Mar 2025 10:35:21 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 996143F63F;
-	Fri, 21 Mar 2025 10:35:12 -0700 (PDT)
-Message-ID: <63806834-a0a1-41e0-9cca-60087b460f78@arm.com>
-Date: Fri, 21 Mar 2025 17:35:11 +0000
+	s=arc-20240116; t=1742581543; c=relaxed/simple;
+	bh=jemg1ODGg1pK6bsHf0OEdD0dT3yUnEMJLXk8hBjZYxE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=g2cqi2kCZGKKM3eDjYw9AC5qSuyV6zgD7UZWV3uRtNlw+RQbjrXIHti4npO7odKUD3XA2X9sLOTMfufyz7BosJHwit9+dp5OYrwuFJTN7whLTByJhgnOznMms9BSy4YsiSZaEMapPcgT+QZn2B3s1BLVzeyrtox+k0W+plHEgqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=AkC132zq; arc=none smtp.client-ip=209.85.219.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AkC132zq"
+Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-6dd1962a75bso16747826d6.3
+        for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 11:25:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1742581541; x=1743186341; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4DRNDu+mZPYgGquCy2SeZdyPfdQyJHb3d44tNADVang=;
+        b=AkC132zq+srxD1IqwsT/IPROplJjOBV8L8L8LDZYkWv/Yqravh+msq6+iloskmLcty
+         Juk9XprhYwZsULahjaaVM4HH9k7N3I55csD2oqh7jrIkR88ffzjS2MFUK6sheaWy/KxF
+         kKcFmKOARxgNhXxBiyPrPjyVnGutyu9s4YiHHM2z8Fdk+4FqN8itXSn0CUUzpRH+ICZX
+         eBqBVQSjtixeVQj+BADN9A0HyduH8IOSnftgDy7GOEN+mXJkTJEBZPMFFOWeMz/CCwOk
+         hG4FVk3wn2QB9yYFV/oBDogmojuXhpjCcD+89hec4f9BjamDz7jXkUm2KtUcCjUmBSBw
+         ffdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742581541; x=1743186341;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4DRNDu+mZPYgGquCy2SeZdyPfdQyJHb3d44tNADVang=;
+        b=IwrVBR7E1VZDghJc/qk6fFbd//UNcyrDo6jfwrlPxPpWs6lXGQovVLsYfPPIac/2ya
+         Wbo024FBUPxQQKBGNQUmXM4VThvwSupCAgYNVn+wyrT5alPTfiDOXHocuBwFU28JZiUH
+         TKyej5Ggmt9z2MM/HqBwguYeXZYR3yRBxW2U+VI/OAKd1GhIM0imSxGkA+lf1yQ5KoQf
+         7PPSwAwFXVr0CmfJTXeGa6xzWuGf2ZQpNU+rTIhdtJxdDtNlAi11io5AH2QYDX06OkmL
+         7enNRPEyCqDF14uv1dR1SGE3w3Lrdk63ljha9TRmP+p2nejbdz7fzWjoYxNZCGwu6vam
+         q+MQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVcr22Uz3RXm7BvV1XO+5E0djVreT8f2j4/VsOeyNYTqRWb91sU6LWQrjktAy4ok+P37E8lQg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyiyPp7pxAcmKafuG8ry+C67EJ9aMqt/GLmTBvstsrxJmjFJy8Q
+	oAQiQIgCZ/x0MWQkmj789dJOnH6Sbf1PSrbVNnqonpzJ8cQ5aUR/c1S81m/TB9w=
+X-Gm-Gg: ASbGncvUgIXpgfqeSnhIVZObm+az2b2fSnh7xFvlVave7TxU8VMxEdzi28TnRxRCIMr
+	pCs8UpRnHlwPSftmHhHI+AoW94fvFjWd6qKFACvORgUtDCpETcEswh9bMNZr4Me2R5v3NfvdKYI
+	1iDAfHBlyL+q6szdXIRrHf6aAYANoQzwcPMgfGdSO9Z+yMqRPS3r8n3/4ry5dE0fPbTxT3IhiHk
+	whmI7KbD423q+XMuRTjz6/qaE+EJRmp7RC79CxTCejdc10xHVBNZYqZdpm7TLrk8RR2RyvCYCuS
+	Ti56A4gITxWKaGaPjdQtwJ1VbmAW1U7xQ5KMEH6Vl96CFzQjSF2RTT/e/LBQky/H7boyJ0qHDF8
+	28v45H9xHX95WvR2JBPoVMRw=
+X-Google-Smtp-Source: AGHT+IFpNIlarhIX3KQ1uNeuExxcnUQwaoKxWUOhP9ifvqi6wUM9+9o3gFTu/dM5lv3aP3HzJCq1dQ==
+X-Received: by 2002:a05:6214:268f:b0:6e8:ddf6:d122 with SMTP id 6a1803df08f44-6eb3f294de9mr65457026d6.3.1742581540524;
+        Fri, 21 Mar 2025 11:25:40 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6eb3efda6ccsm13609536d6.113.2025.03.21.11.25.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Mar 2025 11:25:39 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1tvh3r-000000016XB-1iiC;
+	Fri, 21 Mar 2025 15:25:39 -0300
+Date: Fri, 21 Mar 2025 15:25:39 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Cc: rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com,
+	dakr@kernel.org, robin.murphy@arm.com, aliceryhl@google.com,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v14 02/11] rust: add dma coherent allocator abstraction.
+Message-ID: <20250321182539.GP126678@ziepe.ca>
+References: <20250311174930.2348813-1-abdiel.janulgue@gmail.com>
+ <20250311174930.2348813-3-abdiel.janulgue@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/5] iommu/arm-smmu-v3: Implement Runtime/System Sleep
- ops
-To: Pranjal Shrivastava <praan@google.com>,
- Mostafa Saleh <smostafa@google.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
- Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-References: <20250319004254.2547950-1-praan@google.com>
- <20250319115730.GC10600@ziepe.ca>
- <003f23d7-b829-4611-8dd3-35b56a7ca90e@arm.com> <Z9yV8KsdXnZg1Ppo@google.com>
- <Z911UT59UnDzRymF@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <Z911UT59UnDzRymF@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250311174930.2348813-3-abdiel.janulgue@gmail.com>
 
-On 21/03/2025 2:18 pm, Pranjal Shrivastava wrote:
-> On Thu, Mar 20, 2025 at 10:25:52PM +0000, Mostafa Saleh wrote:
->> On Wed, Mar 19, 2025 at 04:07:57PM +0000, Robin Murphy wrote:
->>> On 19/03/2025 11:57 am, Jason Gunthorpe wrote:
->>>> On Wed, Mar 19, 2025 at 12:42:49AM +0000, Pranjal Shrivastava wrote:
->>>>
->>>>> 3. Invoking runtime_pm_get/put
->>>>> Given that most of the configuration done by arm-smmu-v3 is stored in
->>>>> memory, the initial idea is to focus on areas where the driver accesses
->>>>> the hw via exposed ops, like iommmu_ops, iommu_flush_ops, sva_ops etc.
->>>>
->>>> This seems weird, if the SMMU is suspended doesn't it also fail DMA
->>>> transactions? Why would ops like flush even be called if the HW is
->>>> disabled?
->>>
->>> Because once the device has finished its operation, its driver is free to
->>> call rpm_put() before calling dma_unmap(), so by the time that gets as far
->>> as TLB maintenance, the SMMU may already be asleep as well if that device
->>> was the only thing keeping it awake.
->>>
->>> For direct IOMMU API users, pagetable update may be even more asynchronous
->>> from device activity, e.g. a GPU buffer might only be unmapped once
->>> userspace closes the last file handle referencing it, long after the GPU
->>> itself has moved on to other things.
->>>
->>>> flush is performance path stuff, so it doesn't seem great to be adding
->>>> extra calls there.
->>>
->>> That much is true - this really wants to be using pm_runtime_get_if_in_use()
->>> nearly everywhere such that at most it's just juggling refcounts. There's no
->>> point waking the SMMU up just to issue a CFGI or TLBI, if the act of doing
->>> so is inherently going to do a full arm_smmu_reset() and thus invalidate
->>> everything anyway.
->>
->> AFAICT, there is no guarantees that caches are clean on system resume,
->> but as we do invalidate everything that should be fine, but I am not sure
+On Tue, Mar 11, 2025 at 07:47:58PM +0200, Abdiel Janulgue wrote:
+> +pub struct CoherentAllocation<T: AsBytes + FromBytes> {
+> +    dev: ARef<Device>,
+> +    dma_handle: bindings::dma_addr_t,
+> +    count: usize,
+> +    cpu_addr: *mut T,
+> +    dma_attrs: Attrs,
+> +}
 
-That was the point - we're definitely going to do a full software 
-invalidation *because* we can't make any assumptions about the hardware 
-state, i.e. it may come back full of valid-looking nonsense.
+I'd like to point out how memory wasteful this is from what real
+drivers are doing today when they use the coherent API. Let's compare
+against SMMUv3's use for the CD table..
 
-> I mean we do set GBPA.Abort = 1 right before suspending, I'd want to
-> assume that doing so would ensure that TLB hits don't occur anymore. Let
-> me dig into the spec to see if I can find something regarding TLB
-> behavior when GBPA.Abort = 1
+This would be the code in arm_smmu_alloc_cd_ptr()
 
-GBPA doesn't matter here, it's about the CR0.SMMUEN=0 behaviour (see 
-6.3.9.6). That says "Incoming transactions [...] do not undergo 
-translation," so although TLB entries are allowed to remain present, 
-they must not be *used* - i.e. SMMUEN is not permitted to be cached in a 
-TLB.
+It is making a 2 level radix tree.
 
->> how that works with distributed SMMUs where the TBU can still be powered
->> with some TLBs that can be invalid?
->>
-> 
-> Hmm.. do you mean some situation like:
-> 
->   |-----------------------|    |-------------------|
->   | |-------|   |-------| |    |-------------------|
->   | | Dev X |   | Dev Y | |    |                   |
->   | | (TBU) |   |_______| |    |       SMMUv3      |
->   | |-------|             |    |  (TCU -> TBU_X)   |
->   |     Power_Domain A    |    |  Power_Domain B   |
->   |-----------------------|    |-------------------|
-> 
-> Now if Dev Y isn't an SMMU client and Dev X drops the ref_count,
-> Power_Domain A would still remain ON whereas SMMUv3 might assume all
-> it's clients are down and try to suspend (power off Power_Domain B)
-> while the TLBs withing TBU_X are still powered up?
-> 
-> To avoid such a case maybe we should invalidate everything during
-> suspend? I still believe that when CR0.SMMUEN=0, it should broadcast
-> something to all it's TBUs asking them to invalidate all TLBs otherwise
-> this is a miss in the arch (unlikely for Arm) as TLB hits should never
-> occur if the SMMU is disabled. I guess I need to go through the SMMUv3
-> spec (or maybe the MMU-700 TRM) for confirming this..
+The cpu_addr is stored in a linear array of pointers:
 
-I don't think this is allowed to be an issue in practice since TBUs are 
-not architecturally visible. Certainly in terms of Arm's 
-implementations, for a TBU to be powered off or externally clock gated 
-it would have to do a full DTI disconnect (otherwise it would hang 
-CMD_SYNC), and DTI requires that it must subsequently come back clean:
+			struct arm_smmu_cdtab_l2 **l2ptrs;
 
-"The TBU must invalidate its caches before entering CONNECTED state."
+The dma_addr is encoded into the HW data structure itself:
 
-Thanks,
-Robin.
+		arm_smmu_write_cd_l1_desc(&cd_table->l2.l1tab[idx],
+						  l2ptr_dma);
+
+The size of the allocation is fixed size:
+			*l2ptr = dma_alloc_coherent(smmu->dev, sizeof(**l2ptr),
+                                                                ^^^^^^^^^^^^
+						    &l2ptr_dma, GFP_KERNEL);
+
+It doesn't need a struct device pointer or reference because this uses
+the usual kernel 'fence' reasoning for destruction.
+
+It doesn't even use dma_attrs. (why is this in a long term struct?)
+
+So, smmu manages to do this with a single array of 8 bytes/entry to shadow
+the CPU pointer, and recovers the dma_addr from the HW data structure:
+
+			dma_free_coherent(smmu->dev,
+					  sizeof(*cd_table->l2.l2ptrs[i]),
+					  cd_table->l2.l2ptrs[i],
+					  arm_smmu_cd_l1_get_desc(&cd_table->l2.l1tab[i]));
+
+Basically, it was designed to be very memory efficient.
+
+If we imagine driving the same HW in rust the array storing the CPU
+pointer would have to expand to 40 bytes/entry to hold every
+CoherentAllocation. This means rust would need a new high order memory
+allocation to hold the CoherentAllocation memory array!
+
+Jason
