@@ -1,46 +1,45 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B31822B597
-	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 17:19:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72B8D1EA7DC
+	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 17:19:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742577585; cv=none; b=d0U1cPXuMPLqaKd5ZTYOMs3kgIXUcgKF8aSCTKUyAMJmujaFgSDCefPqFMc+rpoccqvnxbo3uWIHRWCrcU70XC3P8gRQ62FqyY4i+FqmWpfosqCb1wWxUNtqA7gfIrEgZ9SNJ52LeqH9VWBvrTeX16sXjb/mDP9b8y1spA4qeZQ=
+	t=1742577586; cv=none; b=dEeEQrFOwSs/oON0sZl+cmJcTxsDH+yCxhK3AB1gRfIQdPRwxjeraxQ7O3S//LfONOoiTwRaf20L0tErP6oOvk/PpFvnxhjImrjlHpNPyUzcRfPrPfeW4Ua6+6HI1ajvNf9qwxi82p9WbKUjDz5vp7TyQn+WYYzjcbdm9jtZbko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742577585; c=relaxed/simple;
-	bh=aBC/NcuSbvqS2RRAhE3JcCdGPtHuEuA+iHdYRg5X7+c=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=F02TWO4E5g89VYqfd24ZYni6HXyFdT1lAtOIqfAdAriJs3COKce9nNr7MKAMX/Avr7itQiTk85m3dH3WXsEqgDt9r2DKbWPcbfnoFw+WEI6h/hrH2ZWCCTsEVLgrqru3HJXK7w+BS/Xpr4k2Vk0YtGYn1LooL1w1w6+nu05WaGM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q5zra1Fe; arc=none smtp.client-ip=192.198.163.15
+	s=arc-20240116; t=1742577586; c=relaxed/simple;
+	bh=kNIwGoq/I4ldbDiP5G6CDgIwu0ok5YXMR5ED1XVszAU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=dA/1i7WL76PP1UmD6OnBXvjQSE8MCIlGvRYggZ6q08Hy+Q4OzHSjgKpFsJAD8JrhaxQVCSA7OpDU78geOYy6y+Ty7qSKF4DUkLezhuiZO6lUyyqO4VhjdVd6RItuOPE9vSo/bm8ZLOUeF4ftj1ngT0nTmRlGkzSTZeybCsYfEJg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Iz9rGten; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q5zra1Fe"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Iz9rGten"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1742577584; x=1774113584;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=aBC/NcuSbvqS2RRAhE3JcCdGPtHuEuA+iHdYRg5X7+c=;
-  b=Q5zra1FeK45AzQk7mVwgRUDlnRTKgUfteAdSTh/em/ZJR3M+BlbkgNo4
-   QOjyHGK1Pw78u2M4BE9jnKmRyZ7XLHnSpcx9VD0lDfO0fVOGwW7jdVyiF
-   u/Is3WjQWPG7GJ4dHq1zj6JCYvBTGoa+TacmLU24acSMCWSjdydqGYaq4
-   wcyQ2GhzUGWwX+Yx+LlXWIrrUxAJiO+RCC9Oafuc8ybMSr+GEYlsXF9DW
-   XjcVrglFcRGtOlG2yJHnQTfToMNv9JIbSD2HyQVc6WAtQUNr7ganxXwjg
-   6y0UDS/Fl+zxoN1PJU7oRgePpwto6KY64kYb14wbvdhUHj2LaDdlLz8pq
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=kNIwGoq/I4ldbDiP5G6CDgIwu0ok5YXMR5ED1XVszAU=;
+  b=Iz9rGten+MSqOD2rNvfYDlRKOVyRzB5ip4UDyZHNjyoImdUviDqhVlLV
+   OEAURfXjVW1hxctKv3CIWybUYOqNnlSKNA2LG0qwA5OyQtAw95gMjIbCM
+   ID0iZOOevXLY/dD05KAL6XuEgpT2v0s95JMGQrKsGeyx0TF5MVVw4QxDU
+   oVLdvFWm5eR6COIAFDMCUHS1Yn99QkeQ08F8zherl6VveUIwfR5RmMrRk
+   wD26HXP1wfDYvtmlfUOZBiEgbxULxuMypRs9e3TQmKu30qPFZsrGdypol
+   vuUNt2eAGq/ScLBR0vDZAmS4MP3V+Af2i3nyRLdadMzsQYiYjOS87pKNi
    w==;
-X-CSE-ConnectionGUID: o9wangWgRYeGt6pKor66WQ==
-X-CSE-MsgGUID: LAiCVZD4QcOFr4Ccmf7tug==
-X-IronPort-AV: E=McAfee;i="6700,10204,11380"; a="43976779"
+X-CSE-ConnectionGUID: uY8CGCGPS8m+aVDso1Sa4A==
+X-CSE-MsgGUID: P8Sm25XZSQCAnJ7yGsK1xQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11380"; a="43976775"
 X-IronPort-AV: E=Sophos;i="6.14,265,1736841600"; 
-   d="scan'208";a="43976779"
+   d="scan'208";a="43976775"
 Received: from fmviesa010.fm.intel.com ([10.60.135.150])
   by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2025 10:19:42 -0700
-X-CSE-ConnectionGUID: fOop2U17TBe9/LJ930ArTw==
-X-CSE-MsgGUID: XI63lRwQT/aJVN455nwtwg==
+X-CSE-ConnectionGUID: YYxQ1TcqRgCZIgDbPlaeqQ==
+X-CSE-MsgGUID: bRID2bNxRr6rgD9rOtU+Mw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.14,265,1736841600"; 
-   d="scan'208";a="123914414"
+   d="scan'208";a="123914408"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
   by fmviesa010.fm.intel.com with ESMTP; 21 Mar 2025 10:19:41 -0700
 From: Yi Liu <yi.l.liu@intel.com>
@@ -51,12 +50,10 @@ Cc: joro@8bytes.org,
 	yi.l.liu@intel.com,
 	iommu@lists.linux.dev,
 	nicolinc@nvidia.com
-Subject: [PATCH v11 01/18] iommu: Require passing new handles to APIs supporting handle
-Date: Fri, 21 Mar 2025 10:19:23 -0700
-Message-Id: <20250321171940.7213-2-yi.l.liu@intel.com>
+Subject: [PATCH v11 00/18] iommufd support pasid attach/replace
+Date: Fri, 21 Mar 2025 10:19:22 -0700
+Message-Id: <20250321171940.7213-1-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20250321171940.7213-1-yi.l.liu@intel.com>
-References: <20250321171940.7213-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,52 +62,222 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add kdoc to highligt the caller of iommu_[attach|replace]_group_handle()
-and iommu_attach_device_pasid() should always provide a new handle. This
-can avoid race with lockless reference to the handle. e.g. the
-find_fault_handler() and iommu_report_device_fault() in the PRI path.
+PASID (Process Address Space ID) is a PCIe extension that tags the DMA
+transactions from a physical device. Most modern IOMMU hardware supports
+PASID-granular address translation. This allows a PASID-capable device
+to be attached to multiple hardware page tables (hwpts, also known as
+domains), with each attachment tagged by a PASID.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/iommu.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+This series builds on previous series [1]. It begins by adding a missing
+IOMMU API to replace the domain for a PASID. Utilizing the IOMMU PASID
+attach/replace/detach APIs, this series introduces iommufd APIs for device
+drivers to attach, replace, or detach PASIDs to/from hwpts at the request
+of userspace. It also enforces PASID compatibility with domain requirements,
+allocates PASID-compatible hwpts in iommufd, and includes self-tests to
+validate the iommufd APIs.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 0f4cc15ded1c..9f1db10645ee 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3365,6 +3365,9 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
-  * @pasid: the pasid of the device.
-  * @handle: the attach handle.
-  *
-+ * Caller should always provide a new handle to avoid race with the paths
-+ * that have lockless reference to handle if it intends to pass a valid handle.
-+ *
-  * Return: 0 on success, or an error.
-  */
- int iommu_attach_device_pasid(struct iommu_domain *domain,
-@@ -3525,6 +3528,9 @@ EXPORT_SYMBOL_NS_GPL(iommu_attach_handle_get, "IOMMUFD_INTERNAL");
-  * This is a variant of iommu_attach_group(). It allows the caller to provide
-  * an attach handle and use it when the domain is attached. This is currently
-  * used by IOMMUFD to deliver the I/O page faults.
-+ *
-+ * Caller should always provide a new handle to avoid race with the paths
-+ * that have lockless reference to handle.
-  */
- int iommu_attach_group_handle(struct iommu_domain *domain,
- 			      struct iommu_group *group,
-@@ -3594,6 +3600,9 @@ EXPORT_SYMBOL_NS_GPL(iommu_detach_group_handle, "IOMMUFD_INTERNAL");
-  *
-  * If the currently attached domain is a core domain (e.g. a default_domain),
-  * it will act just like the iommu_attach_group_handle().
-+ *
-+ * Caller should always provide a new handle to avoid race with the paths
-+ * that have lockless reference to handle.
-  */
- int iommu_replace_group_handle(struct iommu_group *group,
- 			       struct iommu_domain *new_domain,
+The complete code is available at the following link [2]. Please note that
+the existing iommufd self-test was broken, and a temporary fix patch is at
+the top of the branch [2]. If you wish to run the iommufd self-test, please
+apply that fix. We apologize for any inconvenience.
+
+The series is based on Jason's for-next branch.
+
+https://web.git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/commit/?h=for-next&id=e009e088d88e8402539f9595b10c0014125a70c1
+
+[1] https://lore.kernel.org/linux-iommu/20250226011849.5102-1-yi.l.liu@intel.com/
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_pasid
+[3] https://lore.kernel.org/linux-iommu/20250306034842.5950-1-yi.l.liu@intel.com/
+
+Change log:
+
+v11:
+ - Handle is always valid for the replace API, hence drop some meaningless check (Nic/Baolu)
+ - Avoid inline helpers in .c file patch 02 an 06 of v10 (Baolu)
+ - Use xa_load() instead of xa_cmpxch() in iommufd_device_do_replace() (Jason/Nic)
+ - Fix a memleak in patch 11 0f v10, it's due to an order broken (Nic/Jason)
+ - Make the auto_hwpts always be non-pasid-compat to avoid confusion between
+   the RID and PASID path
+ - Add pasid-num-bit as 0 for non-pasid-capable mock device (Nic)
+ - Misc tweaks to the patch 17 and 18 (Nic)
+ - More r-b tags
+
+v10: https://lore.kernel.org/linux-iommu/20250320134744.5777-1-yi.l.liu@intel.com/
+ - Drop patch 01/02 of v9 as it cannot make the handle be reused safetly. As a
+   result the patch 08, 09 and 11 are also dropped as handle cannot be reused.
+ - Add patch 01 to highlight handle cannot be reused.
+ - Introduce a new data structure for tracking per-PASID attachs. The igroup->hwpt
+   and igroup->device_list are moved to the new structure.
+ - Rename patch 07 of v9 to be patch 06 of this series
+ - Patch 02, 08, 09 and 11 of this series have minor tweaks due to the drop of
+   reusing handle.
+ - Refine the description of the ALLOC_PASID flag in patch 14 of this series.
+ - Add a MOCK_PASID_WIDTH to avoid using 20 everywhere (Nic)
+
+v9: https://lore.kernel.org/linux-iommu/20250313123532.103522-1-yi.l.liu@intel.com/
+ - Drop patch 01 of v8 (Nic)
+ - Add patch 01 and 02 to support reusing iommufd_attach_handle
+ - Pass @Pasid to iommufd_hwpt_paging_alloc() instead of passing IOMMU_NO_PASID
+   when calling iommufd_hw_pagetable_attach()
+ - Consolidate the RID and PASID path. The RID and PASID path shares almost all
+   the path from driver facing API to the place invoking underlying iommu driver
+   callback. (Jason)
+   *) Add patch 06, 07, 08, 09, 10 and 11 to use iommufd_attach_handle track
+      attached hwpt and devices of a group.
+   *) Patch 11 adds pasid_attach array to track iommufd_attach_handles used in
+      the RID path and PASID path.
+   *) Extend the existing attach/detach/replace API to support a pasid parameter
+      to support PASID.
+ - Rename "PATCH v8 05/12] iommufd: Mark PASID-compatible domain" to be
+   "[PATCH v9 13/21] iommufd: Enforce PASID-compatible domain in PASID path"
+   as this patch now adds pasid_compat flag and its check followed by Jason's
+   remark.
+ - Add description that the user that wants to use PASID should first attach
+   its RID path to pasid-compatible domain.
+ - Add back patch 11 0f v7 as it not included in any other series now
+ - Drop the mixed_replace tests of v8 as it is not considered to be iommufd
+   selftest
+ - Add r-b tags got in v8. For the patches that have minor changes, I kept the
+   r-b tags with a "v8 - v9" change log in individual patches. For the patches
+   that have non-trivial change, I dropped the r-b tags to get more attention
+   from reviewers.
+
+v8: https://lore.kernel.org/linux-iommu/20250226114032.4591-1-yi.l.liu@intel.com/
+ - Rebase on top of the dependency patch series
+ - Check both handle and domain in the iommu_replace_device_pasid_handle()
+   to support replace between domain and handle.
+ - Fix a typo in patch 02 of v7 (Kevin)
+ - r-b tag on patch 01 of v7 (Kevin)
+ - Add selftest for replace between handle and non-handle case
+
+v7: https://lore.kernel.org/linux-iommu/20250216035228.23831-1-yi.l.liu@intel.com/
+ - Remove the iommu_attach_handle related refactors, as they have been addressed
+   by Nic's series.
+ - Address the comments on patch 01 of v6 in a separate series [1]. Store either
+   the domain or handle in group->pasid_array, and swap the order of setting
+   group->pasid_array and invoking the attach operation of IOMMU drivers.
+ - Introduce iommu_attach_device_pasid_handle() and iommu_replace_device_pasid_handle(),
+   and remove iommu_replace_device_pasid() since iommufd consistently uses the
+   _handle() API.
+ - Add patch 04 to include reserved_iova only for the RID path, as the underlying
+   helpers are shared by both the RID and PASID paths, but only the RID path needs
+   to add reserved_iova.
+ - Remove the iommu_dev.max_pasids check in patch 11 of v6. The mock IOMMU always
+   supports 20-bit PASIDs, so there is no need to verify PASID support in the mock
+   IOMMU driver. Additionally, the IOMMU_HWPT_ALLOC_PASID flag does not imply PASID
+   support, so it should be removed to avoid misleading IOMMU driver programming.
+
+v6: https://lore.kernel.org/linux-iommu/20241219132746.16193-1-yi.l.liu@intel.com/
+ - Add kdoc to iommufd_device_get_attach_handle() to note the returned handle
+   should be used with care. (Baolu)
+ - Reworked the patch 07 and 08 of v5 to avoid domain allocation failure on VT-d
+   after applying patch 07 of v5.
+     1) Split out the intel iommu driver IOMMU_HWPT_ALLOC_PASID support out of
+	patch 08
+     2) Rework the PASID-compatible domain enforcement by checking the RID domain
+	and idev->pasid_hwpts under the idev->igroup->lock.
+ - iommufd_device_pasid_do_attach() returns -EINVAL if there is old hwpt and it's
+   not the same with new hwpt. This aligns with how the iommufd_device_do_attach()
+   deals it. Otherwise, attaching the same pasid to the same ioas is going to fail
+   before the auto_domain loop goes to the correct hwpt. Thsi is not reasonable. So
+   make this change.
+ - Enhanced the pasid selftest to have non-pasid-capable device and pasid-capable
+   device.
+ - The order of the series is tweaked to be prepare the iommufd for pasid attach,
+   add pasid attach, add PASID-compat domain enforcement and then add the PASID-compat
+   hwpt allocation.
+ - Rebased on top of 6.13-rc3 and some already applied patches.
+
+v5: https://lore.kernel.org/linux-iommu/20241104132513.15890-1-yi.l.liu@intel.com/
+ - Fix a mistake in patch 02 of v4 (Kevin)
+ - Move the iommufd_handle helpers to device.c
+ - Add IOMMU_HWPT_ALLOC_PASID check to enforce pasid-compatible domain for pasid
+   capable device in iommufd
+ - Update the iommufd selftest to use IOMMU_HWPT_ALLOC_PASID
+
+v4: https://lore.kernel.org/linux-iommu/20240912131255.13305-1-yi.l.liu@intel.com/
+ - Replace remove_dev_pasid() by supporting set_dev_pasid() for blocking domain (Kevin)
+	- This is done by the preparation series "Support attaching PASID to the blocked_domain"
+ - Misc tweaks to foil the merging of the iommufd iopf series. Three new patches are added:
+	- iommufd: Always pass iommu_attach_handle to iommu core
+	- iommufd: Move the iommufd_handle helpers to iommufd_private.h
+	- iommufd: Refactor __fault_domain_replace_dev() to be a wrapper of iommu_replace_group_handle()
+ - Renmae patch 03 of v3 to be "iommufd: Support pasid attach/replace"
+ - Add test case for attaching/replacing iopf-capable hwpt to pasid
+
+v3: https://lore.kernel.org/kvm/20240628090557.50898-1-yi.l.liu@intel.com/
+ - Split the set_dev_pasid op enhancements for domain replacement to be a
+   separate series "Make set_dev_pasid op supportting domain replacement" [1].
+   The below changes are made in the separate series.
+   *) set_dev_pasid() callback should keep the old config if failed to attach to
+      a domain. This simplifies the caller a lot as caller does not need to attach
+      it back to old domain explicitly. This also avoids some corner cases in which
+      the core may do duplicated domain attachment as described in below link (Jason)
+      https://lore.kernel.org/linux-iommu/BN9PR11MB52768C98314A95AFCD2FA6478C0F2@BN9PR11MB5276.namprd11.prod.outlook.com/
+   *) Drop patch 10 of v2 as it's a bug fix and can be submitted separately (Kevin)
+   *) Rebase on top of Baolu's domain_alloc_paging refactor series (Jason)
+ - Drop the attach_data which includes attach_fn and pasid, insteadly passing the
+   pasid through the device attach path. (Jason)
+ - Add a pasid-num-bits property to mock dev to make pasid selftest work (Kevin)
+
+v2: https://lore.kernel.org/linux-iommu/20240412081516.31168-1-yi.l.liu@intel.com/
+ - Domain replace for pasid should be handled in set_dev_pasid() callbacks
+   instead of remove_dev_pasid and call set_dev_pasid afteward in iommu
+   layer (Jason)
+ - Make xarray operations more self-contained in iommufd pasid attach/replace/detach
+   (Jason)
+ - Tweak the dev_iommu_get_max_pasids() to allow iommu driver to populate the
+   max_pasids. This makes the iommufd selftest simpler to meet the max_pasids
+   check in iommu_attach_device_pasid()  (Jason)
+
+v1: https://lore.kernel.org/kvm/20231127063428.127436-1-yi.l.liu@intel.com/#r
+ - Implemnet iommu_replace_device_pasid() to fall back to the original domain
+   if this replacement failed (Kevin)
+ - Add check in do_attach() to check corressponding attach_fn per the pasid value.
+
+rfc: https://lore.kernel.org/linux-iommu/20230926092651.17041-1-yi.l.liu@intel.com/
+
+Regards,
+	Yi Liu
+
+Yi Liu (18):
+  iommu: Require passing new handles to APIs supporting handle
+  iommu: Introduce a replace API for device pasid
+  iommufd: Pass @pasid through the device attach/replace path
+  iommufd/device: Only add reserved_iova in non-pasid path
+  iommufd/device: Replace idev->igroup with local variable
+  iommufd/device: Add helper to detect the first attach of a group
+  iommufd/device: Wrap igroup->hwpt and igroup->device_list into attach
+    struct
+  iommufd/device: Replace device_list with device_array
+  iommufd/device: Add pasid_attach array to track per-PASID attach
+  iommufd: Enforce PASID-compatible domain in PASID path
+  iommufd: Support pasid attach/replace
+  iommufd: Enforce PASID-compatible domain for RID
+  iommu/vt-d: Add IOMMU_HWPT_ALLOC_PASID support
+  iommufd: Allow allocating PASID-compatible domain
+  iommufd/selftest: Add set_dev_pasid in mock iommu
+  iommufd/selftest: Add a helper to get test device
+  iommufd/selftest: Add test ops to test pasid attach/detach
+  iommufd/selftest: Add coverage for iommufd pasid attach/detach
+
+ drivers/iommu/intel/iommu.c                   |   3 +-
+ drivers/iommu/intel/nested.c                  |   2 +-
+ drivers/iommu/iommu-priv.h                    |   3 +
+ drivers/iommu/iommu.c                         | 124 ++++++-
+ drivers/iommu/iommufd/device.c                | 337 +++++++++++++-----
+ drivers/iommu/iommufd/hw_pagetable.c          |  23 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  14 +-
+ drivers/iommu/iommufd/iommufd_test.h          |  30 ++
+ drivers/iommu/iommufd/selftest.c              | 243 +++++++++++--
+ drivers/vfio/iommufd.c                        |  10 +-
+ include/linux/iommufd.h                       |   9 +-
+ include/uapi/linux/iommufd.h                  |   3 +
+ tools/testing/selftests/iommu/iommufd.c       | 301 ++++++++++++++++
+ .../selftests/iommu/iommufd_fail_nth.c        |  49 ++-
+ tools/testing/selftests/iommu/iommufd_utils.h |  97 ++++-
+ 15 files changed, 1093 insertions(+), 154 deletions(-)
+
 -- 
 2.34.1
 
