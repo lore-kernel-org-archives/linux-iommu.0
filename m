@@ -1,218 +1,407 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2073.outbound.protection.outlook.com [40.107.237.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 071AA3D69
-	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 00:26:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 817A11CF8B
+	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 00:34:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.73
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742516767; cv=fail; b=b9HrcKVIMNt9BT+sPb0qDYHuT2RCeizt+4Hb7RIUqqDQgDxJHBaj9CUMzQlpedh1e2deWA4+WfTUbdkV568pQ9+36Efvx86/reUTjMh9U/wDA6wZzDyXae0umc7xP1HuX9Y4I56DmN96lBx4tLgAIRXESn3jqJI0mJY/b/MNKg8=
+	t=1742517268; cv=fail; b=cR0/7ropPNcGdyPnr1AsLXrofm78YdU1Hc82VfOV6f7mQV+VisXTijzfvzFMxe08IiaQLBloGQpvMd1ET3CWVGgB7lgQhm3u4UF49Va866bE0zavsCeV9Ag4kF2qdVMYulv/VmAZMfZw6VqLq4G20DZe+stFjFduQpATtbpYOpc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742516767; c=relaxed/simple;
-	bh=ZQWk9lcpi2a9WXePvtS4SBmPW+An/0M5Le1rLnyyXec=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=SKHsgc9ScWScPoC3q/oijlaFqOJKQaOFcu50Y90rrG5jDYFr3Yk5GlJMD4ukkib7FNCHHTUuhJi8C2Ib4dG8k9Bzhup2achw9jT75/DyKC3gqFCjanC8HlzMWp+4bfa+impnZVcx8DpiSBYsrOjqL9glcmR10cnRC0MS4jhM5AY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iC9uNqT3; arc=fail smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1742517268; c=relaxed/simple;
+	bh=Ce0HH85dDgKtVHfi28kGCuFZU0zHxfLNZ9mvDZpf1X8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YFZTbDqfuH/8SjhGlQQthS1HYYtjpkyjCvE3H2umyaCLnhviRR3/QrgdjUuStmm9MgT0PLJvSKT0gc1m7f0En6ucga94RRtFSLG3YZKqk5cAjw65TvNLBojt0T6OgymzlkwiSEHBAw9dSBMyfnjwIv4t0yIj+D7X3lBu0CXTHzg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=im/TnI92; arc=fail smtp.client-ip=40.107.237.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iC9uNqT3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1742516762; x=1774052762;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=ZQWk9lcpi2a9WXePvtS4SBmPW+An/0M5Le1rLnyyXec=;
-  b=iC9uNqT3UUJr3koDgP3tsree6WmI9Q1T0TauSpe01VUrzLoOw0+TKghL
-   YGBVEk3MpEj61Ln23Ba+JninHgclitBATyDB+W7Zt5czHB8yDMSdJkn3c
-   4+3ffbLHvtEjudHzz4gjyGN76MJ1jHlus2s7hvTziyYNbeYAcbyYTU7dA
-   WfrhR8DY8cpXX1h5gmC5VuKiry7nNtnCfkREuifMaf4sUqsnr+6pn2VpB
-   naDle32uSh0QWJf7P1qifk4UvoGZh2nDpEAOQwGDLS1HX0aRBVB8bXMJV
-   TP5ycOBaiz6BJTGi2XIPG8KiFQis3zVea3UYfYjtLaiVx5LS4fWcHwYxQ
-   g==;
-X-CSE-ConnectionGUID: C0FEwyIkTQG4t3cxYNtvaw==
-X-CSE-MsgGUID: uM2L0kNoTOO6fdH5feKW9g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11379"; a="42938242"
-X-IronPort-AV: E=Sophos;i="6.14,263,1736841600"; 
-   d="scan'208";a="42938242"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2025 17:26:01 -0700
-X-CSE-ConnectionGUID: xdiJLpIlSLuuUKTvwxAtCg==
-X-CSE-MsgGUID: 2b67nad+QzW0mx/3nFen3g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,263,1736841600"; 
-   d="scan'208";a="123061824"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 Mar 2025 17:26:01 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Thu, 20 Mar 2025 17:26:00 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44 via Frontend Transport; Thu, 20 Mar 2025 17:26:00 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.172)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Thu, 20 Mar 2025 17:26:00 -0700
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="im/TnI92"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CSUTOsLYNajge3dmiHnDP1DEtXkhu6VKjRicID0LaYbqQTq0rTjW0118uDxoEdzVO+4aXdfWbd2KXz4pylSXmerHgCuG10gQceb6p8V7gKGu2X1hZS4Y7aksF4woS1dEWmZBujNmC+lpTQgsrHJJ4cP0OadYv+/cCR77l7fvLB/g2hWeEIBRGyfKvBK92T9lJwFni2SPRaUvXZ8J0KHTkmmnYCNmbPOSwlIa1MnSpJBGPNfWJMQUxa+xCsElsrMk06MKwB9G2cM23pq6T4V0iEE+XQtUCz4+eoZR2e2ceQ3gmlh0QvVXkV2D9MAjFDOQWVrrzX6eTtU/BxOFTkrG7Q==
+ b=G8UuVoLkOHXa24loKaWdrpZVHX4g62Qf3+hc/j3Tbuo9VPcPo9YN0ycpbGeTfGWA6nmW5xufDlEBNHpP+FMxWVBYyuuejnD6ojBN4madidPYX5psaAMK3W7ICemn6jkAVd4Q3TYQb2GatV0X0oTe202d6q49rrHSdkSvc84uBvwtDKtUG4YPyQdELllTA2518Z1oC4M8eAQMyuNPubvREf+jgeLFHGCDwWEIZ6mrzaDF9SfTSkoQb79Z5diUhccC0m1rx2Q5moa3gwPOv47qOgA1q85ts5+pv8uKl+o/vlWvYIjkcqbJev0DhBhhFPq15g9IjZ360RO7ifa45lCy6w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n6KyHUMcG/o3/ZXjqr3WsBTnYQSOc94mfMJoHDppuhY=;
- b=FfUbNdszkJhMDx5sAxMPYFMZhsDV8Ty/LUvAoSnHr9W10zWBTguUtQYane19yjUisoXmkD+Lm36KznUoH9Ta55DWtofcw2woW5fq5xI1cpAokXHiDatmTpymVf1LR1BWXdDPX5p59w1fBXJVDnzAc3I+Qj/kJLg50aZL2+31oEM2ViJDEhfFox3ZDzvBQY5SbIng9L9N5gUBQHNZa8XHw06kVKAiH/tDNlYxgQA3ckyl+2kwLHt4JXawGJs8gVTOPzmmqUWDrHCE6k+K6dizin1zzIT1JGhlcCVuGSTL1orF0k5PL0X0YUBgedD9Rewr9XWMgQhUY948gr9ssTZRYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by PH7PR11MB7147.namprd11.prod.outlook.com (2603:10b6:510:1ee::17) with
+ bh=KTwCwXaeRQWLvLnW8+hpMMjT+2YN+dNW3o3BelyjE4Y=;
+ b=QYB3ux2v/PDYpyIy7qIqUMcQsQ8hl1CeG1bIrmP+9+M7XB2Q0an0i3HaMhpN/dLz35oLnpvtpIff9I0cNRJK8mFwHyf/9+eitEh6gge/Ew6gQJ7EBbZLQlCzkPR1rmrUwxQwPw82BLnYZwmWnOBhJmeZRA3RJ0P/aE+xbNFgen/qt4hdMqwXiahsZT+8WGGhIAUyxijRzavzuf58cZy77VWJpPfgmr1gKDp71oZfqn1jyID4JOTzWrHNLDbQvTeZwMu7ljMn7izhFtUSMt4bqV7aAKaWvCQ79XczYO5beieOUc7i3vEdbI6sOtqGZ90NlbrtwKZqk+s7yAKNqlWJvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KTwCwXaeRQWLvLnW8+hpMMjT+2YN+dNW3o3BelyjE4Y=;
+ b=im/TnI92CIO2SIAQvmg3KXL5EP7n425zAYxQ9hYBzjAZwNXpL4euI2Aztt9TeeCGmMZs9pRzU1rrG8/eZsB5IJPmv28hhitxgy9Pz+i5eyqzPVYVSYTAs9FGvt3ovO/3gOyQGQldwRcK+JfX41U06f9KQ/+oHuqYMVpIRBuJMniB1cvUhUVffSksg1PGOISz6SsbXp9CDWAJW3wMM57efp8vburePupg02loOau4lRVyDQXH0EYj/cm53ljZ7Ckady8hJJVbkY5+po6gtNtiTiB8uWlsuHNat6QKzOuH2yn7gzI0X/iNAV8vWT9LzX0y+u8mL85kNUyWoyFlp+3/rQ==
+Received: from DS7PR03CA0266.namprd03.prod.outlook.com (2603:10b6:5:3b3::31)
+ by MN2PR12MB4126.namprd12.prod.outlook.com (2603:10b6:208:199::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.34; Fri, 21 Mar
- 2025 00:25:55 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%3]) with mapi id 15.20.8534.031; Fri, 21 Mar 2025
- 00:25:55 +0000
-Message-ID: <783d69d4-5858-4699-812c-b8495a36e9b5@intel.com>
-Date: Fri, 21 Mar 2025 08:31:23 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v10 11/18] iommufd: Support pasid attach/replace
-To: Nicolin Chen <nicolinc@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.33; Fri, 21 Mar
+ 2025 00:34:21 +0000
+Received: from DS3PEPF0000C37B.namprd04.prod.outlook.com
+ (2603:10b6:5:3b3:cafe::ad) by DS7PR03CA0266.outlook.office365.com
+ (2603:10b6:5:3b3::31) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8534.33 via Frontend Transport; Fri,
+ 21 Mar 2025 00:34:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DS3PEPF0000C37B.mail.protection.outlook.com (10.167.23.5) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8534.20 via Frontend Transport; Fri, 21 Mar 2025 00:34:20 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 20 Mar
+ 2025 17:34:09 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 20 Mar
+ 2025 17:34:08 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Thu, 20 Mar 2025 17:34:08 -0700
+Date: Thu, 20 Mar 2025 17:34:06 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
 CC: <kevin.tian@intel.com>, <jgg@nvidia.com>, <joro@8bytes.org>,
 	<baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>
+Subject: Re: [PATCH v10 18/18] iommufd/selftest: Add coverage for iommufd
+ pasid attach/detach
+Message-ID: <Z9yz/pVlPy6sOxP0@Asurada-Nvidia>
 References: <20250320134744.5777-1-yi.l.liu@intel.com>
- <20250320134744.5777-12-yi.l.liu@intel.com> <Z9x9sy7s2u18wVrG@Asurada-Nvidia>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <Z9x9sy7s2u18wVrG@Asurada-Nvidia>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: KL1PR01CA0001.apcprd01.prod.exchangelabs.com
- (2603:1096:820::13) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+ <20250320134744.5777-19-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250320134744.5777-19-yi.l.liu@intel.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|PH7PR11MB7147:EE_
-X-MS-Office365-Filtering-Correlation-Id: c4894bed-e75f-4475-696d-08dd680ef198
+X-MS-TrafficTypeDiagnostic: DS3PEPF0000C37B:EE_|MN2PR12MB4126:EE_
+X-MS-Office365-Filtering-Correlation-Id: ee9a2cd9-9e78-4b0a-f4e3-08dd68101f09
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7053199007;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?dkZXWW91SVE0VHgzSXpYNTJzNEI0ekMvalpvS21zNlRuMTV3MzJXRklFeURQ?=
- =?utf-8?B?RXliY1JJS1ZKdk52NlZOb1ZzY3dVZkpyWE9jbzhOVHlRL1J0WHBjTFJzMHho?=
- =?utf-8?B?OC8yOUxTL0s1VmNpS3JxcWE3WGVpdVVqZnZwaXZlWEV2MUEyVnh0STJtNlZG?=
- =?utf-8?B?UG1CSGtJamV4ZGlMODZkVlJXdGVrdTYyYW01TE5EblhtRWhuUDlkR21UY05K?=
- =?utf-8?B?Tkh4cHZHN1hlajU0WjhWZjRhMXR2SS9HZUN2Slp4ZG5LZ092eGNpR1JVN2RE?=
- =?utf-8?B?Qms2VlAycXpIbEJ5MTdsUElBQXcrb2M2Y1BKdzhsY254NzlkZWoybEdYa1ph?=
- =?utf-8?B?T0JZOU5aa2E5ay9nUG50eUluaG50eElHV1pHZWUrVkhlVWcwZGE2Um5Sdk91?=
- =?utf-8?B?SmRHUkUrMTFyUlVYV2NXbjNsQjM5UURhQTQ1b2N2M2wvdHVZdTRZRHdqRWNl?=
- =?utf-8?B?ZVBUWGg5bmNxSHNzakZBQ0FLVERVemdiaTVoSWE5K2x4VHEwOHZ1WGhzQUpY?=
- =?utf-8?B?SVRqS1F6SkoyazdlTThSK1JneThORjhjTFp0TSs5T3FvZ2tsRnI4RWl3aFFS?=
- =?utf-8?B?OUtibURyRzZLVk5iSTh1YWYxdmpWM0h4Vi9XeE5ydE42KzlwRnpTd3owcDZn?=
- =?utf-8?B?UG5mOFRmZzNZKzkwSFVkSlNlRmQwd3d0OXVjc3dZdFdEUmUzNmdwdDlrYTlu?=
- =?utf-8?B?c2MwUlVXWkVWaTZEL3ZndU41SHVNT09YeDhuZURKR1JKY0hib213RlgrT2pz?=
- =?utf-8?B?MVdqVDhVQjI0RWN6OCtrTEhPQjZ4UlVmc3lRZHZTbVIveEViQ3lldUoyZzc4?=
- =?utf-8?B?bFNUUjlDZmt2Qk8wR1RVUUNhdG5qTGx2VTI0Rmdad3prc2dpZlh1eG5McHBZ?=
- =?utf-8?B?RWRRZk1PNGh5Q0dUaW84UHNUSmtScyt3cjc0dWM2ZEVTbkx3Q0d6WmM5bFE0?=
- =?utf-8?B?OFhlZFhTODVtV0lPazVOeWU5Q1VTS0hCUThHZVpSNytIYUZtbkFvWmo4U0M1?=
- =?utf-8?B?OFlGTkhMdjJXUCtSNDh1VVJLWFdDbUdXQStVbFhBRDV3aXRmR1FVRmZoaE1Y?=
- =?utf-8?B?MStXdmtXdWJEWlNsOEM4SytkbHk4Y3d3d21SZmxnNXNqTDNCUGIyS0ZwK2Jj?=
- =?utf-8?B?TW5rTDRSWk9FNXEyeEpmZWlMUkJxV1l3aTZyQ1JHVGRxcE1pV1UwNm8xMnBG?=
- =?utf-8?B?eG1KMU1jakppQVVUbE9kVkhRT0phQTRkbzVzeHJpNS9aMzJFNVhrQ2tmZndM?=
- =?utf-8?B?aVVobnRjazFrVExPRW5wZ1FPbk02VGttaXZVUFgwYXpFQ3duYWt0K3B5NlpQ?=
- =?utf-8?B?SHRoc25VbUNhRnBYYWczV21aK1gxQ04zZkZyODNQZlJoSVRGd1AxZGJKRE5B?=
- =?utf-8?B?YkdhZjFtUUlzTWxRbDUxdGJiVFVRNTloNyt6SlBDQ2VRRGhqRDJBYndQdUtE?=
- =?utf-8?B?WDZYYk5rTmJCSVJPR0hUVnhUTEw3ajlpMVZrYWowaHhvd3U0VHo1SWMyZHgw?=
- =?utf-8?B?cmFkV1dOdDROUE1HSm5SdFd5SVFDN3lZSmhPRkRkWFBaMldMRk01L3gvS1VJ?=
- =?utf-8?B?SzR3NUN0ZDhqUHd5ajNrdXFsREhjeWhQTWEyOTR5cXVhdjJWQWlRclc0VE5E?=
- =?utf-8?B?empGMWxRNEtSdTBON1IwYk95TkFtYXRiOVFzV1AvcXpzYjI1U215VVhBRi9z?=
- =?utf-8?B?VHhsZ1ZwdEZlMGw3Nkk0UXJ1NmVyYS9XTVpNMisyOW14RnZ6bVdnTUw2UDFE?=
- =?utf-8?B?eFhHR0dJQmxMb0ZGOU50bUg5TFhSbVZNN3pHcnQ5OWFWUmNLWWQ0aW9WR1lo?=
- =?utf-8?B?YUFxK1h0bmUwTXZGLzRkNEs1NmdwVlRpR0FMOEp5aEZDeS9DZGsvd0dXRTBa?=
- =?utf-8?Q?9RrL29/AjgTsV?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VHducGdoeE1PcmxoaFFoVXhvcGY5c2dOcWVodXJTU2owNEkrTWJNQ0w3S3py?=
- =?utf-8?B?TGRSSzZpcEVZNHgzL3RCZitOWHVCNnJXbFIxNytIRVVKWFdzdFYwOC9DTVZQ?=
- =?utf-8?B?QlhWSFBLWTVNRWx4bEozUU8zM3V2aERQcTJ4U3R4TzdRNXBaeUJGSmkyT3lp?=
- =?utf-8?B?RXdXSTRoMVQxWjhjNDdFSlhJWjY0czBhOVA2bldhbXlGOFc5eTRuNHVPS0dv?=
- =?utf-8?B?R09yL2NSQlNLZ0lBTFlJU3hVSjQweDNiaTdHUEJZMm96NVl4SjYzeWc1RlBr?=
- =?utf-8?B?M0c5S09mNk81SGl0S3lRSkFObnlUUW4waitEUlFsbEhxMlpVZ1hnams1Unc4?=
- =?utf-8?B?clBCTll2VnFWT0hTb3dlRTROK2dhRkxoVmYzZVJwWitEQ1NXOGxmWmE2bGlW?=
- =?utf-8?B?VU9ZeXYvQStCVVN5cHpHK2wxWkVobE5oZzdqeXkvR2ZLLzNINzcyUCtlcGFH?=
- =?utf-8?B?bVJoS0I2dUlNR1Rxc0tNbGZhUUJPako1Yy94d2FNZE5xRzlOeTM4YXpCdFBC?=
- =?utf-8?B?VVJFZUVHaktxWVdrZm5LQTFPZGsxR1dOUWhYUmllaFhNakJTeSt3QkdKMVB4?=
- =?utf-8?B?ZnJtUUw0cStKWUkyT2c5NjV2cHo0NlAxM0ZiOWNZaHBYVHlyU2tGaTZZODRZ?=
- =?utf-8?B?SjBHSWt4MTBSODJseHh3cnJYaUlOU3RLcTBTYXB4a25jMitFdjR1WElMbGEx?=
- =?utf-8?B?eFJKQTJMSk42MStrTHUwNSt2UzBFRExBRE5yTCs1TUVBNFdML0tVNTgyL04y?=
- =?utf-8?B?dnVYTDFvaU5WZy9lSUdIcVQyZm1DTDVBSjd3bVN4YkV4Qll0Ty9jTGRGa3Fa?=
- =?utf-8?B?WFRucFp5VFhKdUFOSzYxdzFORjJNcm5saFBUTEFrcGp6SEVLOHdEVmVOSVdy?=
- =?utf-8?B?Z0t6YnpxOWwwUUdRNXBXdU1yenc3cmZsK1N5S0VKYVd1Ny9SemZqZDZ1M1U0?=
- =?utf-8?B?NWI3bFFBc0FkUEVHY1VNbS9JZkc4UjR4dWFIblRuRmpUbWJaTlVPeG5WTndJ?=
- =?utf-8?B?dEk1SXFHYnkxZlA2cldHbEtlRHNmYWJNRVpPUzY2TFJxbHlVMW53OHQ3UmtZ?=
- =?utf-8?B?S2xGZGNYMGpXTHozVVB0MDJ6c3UydWpmZjhFWlpieG5NODBNMXRmNlBBNC9v?=
- =?utf-8?B?QStjdUFNM1JqKzhjWEc1ZFluZFI5SEh6V0hyb1Z6K09ZOVhOaEhoQjdpcFQ5?=
- =?utf-8?B?RThjTGI5RFJDb2l1T1pmekppb3JxRytUcUEyUTZqUUZNTlFzT0VwVG9QdHd3?=
- =?utf-8?B?MkpmWlZ5NEpZdVZSNTZ0THFLV29lUDJ3SU5BR0tzbXBjSFRQeHppTE5oQ20y?=
- =?utf-8?B?S1hDT1Zpa1JzQjVpZEs3eTI3amxXb3N2WWo4cmw1aTFnZStNbk5ocGFkR1lQ?=
- =?utf-8?B?WXZ6T1Z3bVZKQ1pTSzRXRU9GZ0txeDM1c2dIeDk2QUpCb29xQkd1endpN29P?=
- =?utf-8?B?disxRmZLUG1sMVA3aWdRbFlTZEtzd0RUcDBNdVZ3Y2crZnYyaW5kYTF0Skdk?=
- =?utf-8?B?cGhScWk2K0labFg2dTNMVkgwcVVUSi8wei9rL2lGQzE0R0dWdGdCVjJ5eGlW?=
- =?utf-8?B?WFRlT2tRVkN0R3lIUDc0eitkVTNFV1MvcUhTNXpUU1l5SytpOXNKSldqSWYv?=
- =?utf-8?B?SDExUDR3UGZBQlB6REpQbzV5NUR0L1JZaGtmUFNBRTBSRXg4QXdtd3pFM1U0?=
- =?utf-8?B?a0cwN2ZDckRMWlF6MjNNdFdHRlNKOHJVRWE3S2FYNjh0SjRoLzF5dlhVU0xr?=
- =?utf-8?B?SEJnOStWUjRNandpTDlZZTJBZEpEeDlVSGE5L21GMlFIZUc0MlFDN0ZmVDlY?=
- =?utf-8?B?NGpFSmR6enBpK2xpTS9zVU5iVnVRR3EwVGFaS1IvRXFEZTJBUk1TUG1BVFlL?=
- =?utf-8?B?VTNOQ1RlSmltOWhvYUZhdjRLWEZjZjlUcFU2SGJucGNYaW4yeVQ1VzNRMm5R?=
- =?utf-8?B?ci92MEJwcDQzRXd4ajhiM29FdWp5SkFWMU1CSTJwLzlsMnY2UGNGcDZpU2xS?=
- =?utf-8?B?d1RaOXNEdmRGL0ZBdVRnRTkvdmF5bDFlMzZwYVV3YUJ6TFhEalQzSkVzZVdZ?=
- =?utf-8?B?aCsxdUx1cGZYUGhESjEwZ3V2M2FtVTBHN3V2cUdhbVhUM1VvRjIxS29BRGJO?=
- =?utf-8?Q?7GRSJF55wBc6LYOEfQDYIzLUj?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4894bed-e75f-4475-696d-08dd680ef198
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2025 00:25:55.2028
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|82310400026|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?uzphAqM6FG4IXnHX01M9gRGInxM+PQhDDW03aasBnYDLQCsGXGMLw/oDFya4?=
+ =?us-ascii?Q?9wrt45j5ibqx8wPTmfdHWz4+c+Fxk1rw0QFUgueRhKUan2gFJXjKDRVy+9Zx?=
+ =?us-ascii?Q?oT2//gBkXViTEXuxHnFyOGy0nmsbqhwgyxvjxaCNOgqrGCN4KMHZ1l3POUff?=
+ =?us-ascii?Q?X+xePhlyz9wkwibmNqhjuzMQWImXhHVdBXVXCwhfhBSCWDjI32zfYdnR5KYL?=
+ =?us-ascii?Q?i7vLdOx4rzmfazgU2SBhbWM524EKesjK77yEcgk8R1GLFWXugFqSWU28shgQ?=
+ =?us-ascii?Q?mFvixl0eeMuDoGLBHbNwhpydRD94bvYZssYxWRwJwUGd6fFGF93mlP93p9dI?=
+ =?us-ascii?Q?VJv333XHlCT52tdkI5NnjFOnPu0qri8mV6AqgQfZq6Wre2IlsrIkKz3JRw45?=
+ =?us-ascii?Q?pAwltLShcq846ClC9oYFxW9+80kIF+DRdX4g5borYFLn8BO8x94el5eWbCMO?=
+ =?us-ascii?Q?yVUO4t1ssvTkq3z5zisi2htXXhlai73VLFctZJsyPoWFMkB6jUFXd4tDD+XO?=
+ =?us-ascii?Q?dSBA35l5OWUF1rr7OFC/uopfuLNJel/9zJ00E/J4gG5+NWOEEcj+3tzxfMz5?=
+ =?us-ascii?Q?n5Wn8nxZnYMcC3vANycLkcmd63KC4IOdhTXpp/In0G4HtKTdMaASuznweZPE?=
+ =?us-ascii?Q?ZbQ1I2SJ7meFVsappca+cK3MB75bP1K1kQZlW+1V5TU2w1hO1h4yq/ii7a4a?=
+ =?us-ascii?Q?tUFlDHZ4c+gzZsXHw5aOuxmkJo0BWd0byRAy8TMUiUY687qDSZfJ3X1LAIab?=
+ =?us-ascii?Q?KUZs7h2zQdvowR2ZlydWDi+GDuKtZBUosYB9wDU8Bw/JqQW8xbDG+BuNn6am?=
+ =?us-ascii?Q?Pj8mtQVV22XHM+vz2yzisOAr/Zf64GvVjwo3nukhNosSA4IWcw1JS0TDML03?=
+ =?us-ascii?Q?K4JR0L5APYVfrYA8YUUuI2k+eq92z8iId4tDhx913ob78argdiTHjsgnRRRE?=
+ =?us-ascii?Q?7IhrmeKh+otT77BLYN5nA+xdpQEZWEt51AEIrG8+aNMmgiiqN0Px3jcnTBN0?=
+ =?us-ascii?Q?U56/Xv4FEhSbU8LXpKxfGPH5iKMKjiCfCSDXx4T0Ar4qaJXlTS0O2FuwURY4?=
+ =?us-ascii?Q?pgh9lFqMj7dH7Iq6nk45OEUPIUbe2vef9soU3QnsdHV2JtSLChRECQAF/KZk?=
+ =?us-ascii?Q?tGUdZMvext5h1eStkDJlwCfvm50ya5NKf7l6lInQAVPCgt1MeiRK4u0aehpO?=
+ =?us-ascii?Q?7VMuvGsd25umDud0whs8YsGAqcLMFVUpdYZK4CuR8V2eC8FFv2Z7XH0+kr4L?=
+ =?us-ascii?Q?5XeZ4cSICzC6vyRaMIP7GGBpTQhb8NxFGx5BIrruB6g3r3gcdeTv0BN05TdN?=
+ =?us-ascii?Q?EnqCtWM74jmbrWgv4E/m2f6TDmPYtI4P+/Rrc3aJLm9Bz4Trjw2tZofRboH1?=
+ =?us-ascii?Q?M+dZG9kB78JwNECme+y9CzX4kuT5z9jaMP1LPVTD4XFooTZkWwSOrMG/SUAT?=
+ =?us-ascii?Q?+guJPrP2Aa70oQ+tKggEqtZNyuCepxcHebI64I32HPDpnRzbvjojlk5pu+xO?=
+ =?us-ascii?Q?tzqNKOSfGJ1cDVc=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(82310400026)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2025 00:34:20.4271
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OBXNjlSePCvcNNOvqy5fPm+wuSwglNYXto+UrjVKnkaw/8V6GXiSQx/DKGZNXZEr+YGY8JM0jq+9Dy5VEmcdkg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7147
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee9a2cd9-9e78-4b0a-f4e3-08dd68101f09
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DS3PEPF0000C37B.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4126
 
-On 2025/3/21 04:42, Nicolin Chen wrote:
-> On Thu, Mar 20, 2025 at 06:47:37AM -0700, Yi Liu wrote:
->> @@ -579,10 +582,12 @@ static void iommufd_hwpt_detach_device(struct iommufd_hw_pagetable *hwpt,
->>   {
->>   	struct iommufd_attach_handle *handle;
->>   
->> -	WARN_ON(pasid != IOMMU_NO_PASID);
->> +	if (pasid == IOMMU_NO_PASID)
->> +		iommu_detach_group_handle(hwpt->domain, idev->igroup->group);
->> +	else
->> +		iommu_detach_device_pasid(hwpt->domain, idev->dev, pasid);
->>   
->>   	handle = iommufd_device_get_attach_handle(idev, pasid);
->> -	iommu_detach_group_handle(hwpt->domain, idev->igroup->group);
-> 
-> This changes the sequence of these calls?
-> 
-> Is it correct to do iommufd_device_get_attach_handle() after
-> iommu_detach_group_handle()?
-> 
+On Thu, Mar 20, 2025 at 06:47:44AM -0700, Yi Liu wrote:
 
-oops, yes it is. It should keep the order. will fix it.
+> +TEST_F(iommufd_device_pasid, pasid_attach)
+> +{
+> +	struct iommu_hwpt_selftest data = {
+> +		.iotlb =  IOMMU_TEST_IOTLB_DEFAULT,
+> +	};
+> +	uint32_t nested_hwpt_id[3] = {};
+> +	uint32_t parent_hwpt_id = 0;
+> +	uint32_t fault_id, fault_fd;
+> +	uint32_t s2_hwpt_id = 0;
+> +	uint32_t iopf_hwpt_id;
+> +	uint32_t pasid = 100;
+> +	uint32_t auto_hwpt;
+> +	uint32_t viommu_id;
+> +	bool result;
+> +
+> +	/* Allocate two nested hwpts sharing one common parent hwpt */
+> +	test_cmd_hwpt_alloc(self->device_id, self->ioas_id,
+> +			    IOMMU_HWPT_ALLOC_NEST_PARENT,
+> +			    &parent_hwpt_id);
+> +	test_cmd_hwpt_alloc_nested(self->device_id, parent_hwpt_id,
+> +				   IOMMU_HWPT_ALLOC_PASID,
+> +				   &nested_hwpt_id[0],
+> +				   IOMMU_HWPT_DATA_SELFTEST,
+> +				   &data, sizeof(data));
+> +	test_cmd_hwpt_alloc_nested(self->device_id, parent_hwpt_id,
+> +				   IOMMU_HWPT_ALLOC_PASID,
+> +				   &nested_hwpt_id[1],
+> +				   IOMMU_HWPT_DATA_SELFTEST,
+> +				   &data, sizeof(data));
+> +
+> +	/* Faulte related preparation */
 
-> Otherwise,
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Fault
 
--- 
-Regards,
-Yi Liu
+> +	/* Allocate a regular nested hwpt based on viommu */
+> +	test_cmd_viommu_alloc(self->device_id, parent_hwpt_id,
+> +			      IOMMU_VIOMMU_TYPE_SELFTEST,
+> +			      &viommu_id);
+> +	test_cmd_hwpt_alloc_nested(self->device_id, viommu_id,
+> +				   IOMMU_HWPT_ALLOC_PASID,
+> +				   &nested_hwpt_id[2],
+> +				   IOMMU_HWPT_DATA_SELFTEST, &data,
+> +				   sizeof(data));
+> +
+> +	test_cmd_hwpt_alloc(self->device_id, self->ioas_id,
+> +			    IOMMU_HWPT_ALLOC_PASID,
+> +			    &s2_hwpt_id);
+> +
+> +	/* Attach RID to non-pasid compat domain, */
+> +	test_cmd_mock_domain_replace(self->stdev_id, parent_hwpt_id);
+> +	/* then attach to pasid should fail */
+> +	test_err_pasid_attach(EINVAL, pasid, s2_hwpt_id, NULL);
+> +
+> +	/* Attach RID to pasid compat domain, */
+> +	test_cmd_mock_domain_replace(self->stdev_id, s2_hwpt_id);
+> +	/* then attach to pasid should succeed, */
+> +	test_cmd_pasid_attach(pasid, nested_hwpt_id[0], NULL);
+> +	/* but attach RID to non-pasid compat domain should fail now. */
+> +	test_err_mock_domain_replace(EINVAL, self->stdev_id, parent_hwpt_id);
+> +	test_cmd_pasid_detach(pasid);
+> +
+> +	if (!variant->pasid_capable) {
+> +		/*
+> +		 * PASID-compatible domain can be used by non-PASID-capable
+> +		 * device.
+> +		 */
+> +		test_cmd_mock_domain_replace(self->no_pasid_stdev_id, nested_hwpt_id[0]);
+> +		test_cmd_mock_domain_replace(self->no_pasid_stdev_id, self->ioas_id);
+> +		/*
+> +		 * Attach hwpt to pasid#100 of non-PASID-capable device,
+> +		 * should fail, no matter domain is pasid-comapt or not.
+> +		 */
+> +		EXPECT_ERRNO(EINVAL,
+> +			     _test_cmd_pasid_attach(self->fd, self->no_pasid_stdev_id,
+> +						    pasid, parent_hwpt_id, NULL));
+> +		EXPECT_ERRNO(EINVAL,
+> +			     _test_cmd_pasid_attach(self->fd, self->no_pasid_stdev_id,
+> +						    pasid, s2_hwpt_id, NULL));
+> +	}
+
+It seems that we should test these anyway without a variant?
+
+> +
+> +	/*
+> +	 * Attach non pasid compat hwpt to pasid-capable device, should
+> +	 * fail, and have null domain.
+> +	 */
+> +	test_err_pasid_attach(EINVAL, pasid, parent_hwpt_id, NULL);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, 0, &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/*
+> +	 * Attach ioas to pasid 100, should succeed, domain should
+> +	 * be valid.
+> +	 */
+> +	test_cmd_pasid_attach(pasid, self->ioas_id, &auto_hwpt);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, auto_hwpt, &result));
+> +	EXPECT_EQ(1, result);
+
+Hmm, I thought that a non-RID PASID slot could only attach a PASID-
+compatible HWPT. I think I am totally confused now... lol
+
+Perhaps we need a detailed documentation somewhere, at least as a
+reminder or so?
+
+> +
+> +	/* Attach to pasid 100 which has been attached, should fail. */
+> +	test_err_pasid_attach(EBUSY, pasid, self->ioas_id, &auto_hwpt);
+> +
+> +	/*
+> +	 * Try attach pasid 100 with another hwpt, should FAIL
+> +	 * as attach does not allow overwrite, use REPLACE instead.
+> +	 */
+> +	test_err_pasid_attach(EBUSY, pasid, nested_hwpt_id[0], NULL);
+> +
+> +	/*
+> +	 * Detach hwpt from pasid 100, and check if the pasid 100
+> +	 * has null domain. Should be done before the next attach.
+> +	 */
+> +	test_cmd_pasid_detach(pasid);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, 0, &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/*
+> +	 * Attach nested hwpt to pasid 100, should succeed, domain
+> +	 * should be valid.
+> +	 */
+> +	test_cmd_pasid_attach(pasid, nested_hwpt_id[0], NULL);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, nested_hwpt_id[0],
+> +					      &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/* Attach to pasid 100 which has been attached, should fail. */
+> +	test_err_pasid_attach(EBUSY, pasid, nested_hwpt_id[0], NULL);
+> +
+> +	/*
+> +	 * Detach hwpt from pasid 100, and check if the pasid 100
+> +	 * has null domain
+> +	 */
+> +	test_cmd_pasid_detach(pasid);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, 0, &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/* Replace tests */
+> +
+> +	pasid = 200;
+> +	/*
+> +	 * Replace pasid 200 without attaching it first, should
+> +	 * fail with -EINVAL.
+> +	 */
+> +	test_err_cmd_pasid_replace(EINVAL, pasid, s2_hwpt_id, NULL);
+> +
+> +	/*
+> +	 * Attach a s2 hwpt to pasid 200, should succeed, domain should
+
+Attach the ..
+
+> +	 * be valid.
+> +	 */
+> +	test_cmd_pasid_attach(pasid, s2_hwpt_id, NULL);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, s2_hwpt_id,
+> +					      &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/*
+> +	 * Replace pasid 200 with self->ioas_id, should succeed,
+> +	 * and have valid domain.
+> +	 */
+> +	test_cmd_pasid_replace(pasid, self->ioas_id, &auto_hwpt);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, auto_hwpt,
+> +					      &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/*
+> +	 * Replace a nested hwpt for pasid 200, should succeed,
+> +	 * and have valid domain.
+> +	 */
+> +	test_cmd_pasid_replace(pasid, nested_hwpt_id[0], NULL);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, nested_hwpt_id[0],
+> +					      &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/*
+> +	 * Replace with another nested hwpt for pasid 200, should
+> +	 * succeed, and have valid domain.
+> +	 */
+> +	test_cmd_pasid_replace(pasid, nested_hwpt_id[1], NULL);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, nested_hwpt_id[1],
+> +					      &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/*
+> +	 * Detach hwpt from pasid 200, and check if the pasid 200
+> +	 * has null domain.
+> +	 */
+> +	test_cmd_pasid_detach(pasid);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, 0, &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/* Negative Tests for pasid replace, use pasid 1024 */
+> +
+> +	/*
+> +	 * Attach a s2 hwpt to pasid 1024, should succeed, domain should
+
+Attach the ...
+
+> +	 * be valid.
+> +	 */
+> +	pasid = 1024;
+> +	test_cmd_pasid_attach(pasid, s2_hwpt_id, NULL);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, s2_hwpt_id,
+> +					      &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/*
+> +	 * Replace pasid 1024 with self->ioas_id, should fail,
+> +	 * but have the old valid domain. This is a designed
+> +	 * negative case, normally replace with self->ioas_id
+> +	 * could succeed.
+> +	 */
+> +	test_err_cmd_pasid_replace(ENOMEM, pasid, self->ioas_id, NULL);
+> +	ASSERT_EQ(0,
+> +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> +					      pasid, s2_hwpt_id,
+> +					      &result));
+> +	EXPECT_EQ(1, result);
+> +
+> +	/*
+> +	 * Detach hwpt from pasid 1024, and check if the pasid 1024
+> +	 * has null domain.
+> +	 */
+> +	test_cmd_pasid_detach(pasid);
+
+The designed "failing" replace does "pasid_1024_attached = false",
+meaning that this detach() isn't necessary?
+
+Or perhaps the designed "failing" shouldn't set "attached = false"?
+
+> +	/* Detach the s2_hwpt_id from RID */
+> +	test_cmd_mock_domain_replace(self->stdev_id, self->ioas_id);
+> +
+> +	test_ioctl_destroy(nested_hwpt_id[0]);
+> +	test_ioctl_destroy(nested_hwpt_id[1]);
+> +	test_ioctl_destroy(nested_hwpt_id[2]);
+> +	test_ioctl_destroy(viommu_id);
+> +	test_ioctl_destroy(parent_hwpt_id);
+> +	test_ioctl_destroy(s2_hwpt_id);
+
+Once detached, all the destroys can be done automatically?
