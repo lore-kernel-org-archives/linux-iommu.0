@@ -1,156 +1,268 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2052.outbound.protection.outlook.com [40.107.94.52])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D12E31D5AB7
-	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 11:45:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742557549; cv=fail; b=H8jOL6tLhGzNTwVU1EtgXhaQxtti2OngIg2FcpjXTp1U025NEmCIzcfyYaPd0WG85nF7pl1LWaGBIStcSeEcff6SW3owxO4NNvb+z7DozVkcMij+m2c1tnNdjQOdXlAcrUIOZA1b5prjgg1r+DPyrCjf11EHZUX7zT9tfqd4vWY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742557549; c=relaxed/simple;
-	bh=+F77vpp5E7/Y99UMlbNY9JF1xoURAU24FmOYH5WV6Ko=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=nZk9cObcEDVDHbAz1b6PdOpemW4KVXVBbarF6x9r1f09izmbet+7J5u/Y0EyZX9I2mi4zkvnia0tz92o9YHplDJvHVf0Cuhiqtko3KW2Kh2ckQE4dDQ9SXM3pqrg9RBX/Av0SzRpCrkxdF8IODPFTFWDTGTPP3aM+46pAkbkupk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=HKGj9vLb; arc=fail smtp.client-ip=40.107.94.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 578FD22687A
+	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 12:15:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742559319; cv=none; b=msor1QntUw2m6BDCespPwiHZuzzplLiapWxZCZdkpPpl7AFEAL/9FILGGU81tir0Jm20LPczur2IIkGLeBMY6RBnd9N5rMmW5XAFxBW5MRBBGMi1ldKZu3JdwHyvPNHFaYKVy/lyUDQrxhSlBNRQ/sN1ze+tCjeqk+JCsQO6wWs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742559319; c=relaxed/simple;
+	bh=jdxnifYvhpOegrtIsz4x1N9dIvwhi//1Du1rbtxiZ2w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=pn2D0iNRzV7t+UhbeyhfICA+5qVFsIF+34zfxPtTdf/JERD+f96oivINxyIoHXs1jz53kt/BaAMCdUtZa+iYIC9RKsRQewG8m2S7uZNMJUK69f0MUyGsQ1Rru9gChNREMgsIurFRPgKNy4RpJNXp04RXc5ml1g/GIkzvijZoirY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=uJ66fLs7; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="HKGj9vLb"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=yCbzCILva4/up8zf7CVZyCWGvhGGlTPMOOG+FzObPgPr2KbJz9WhcS6I3CRVvMzSYSct6WaIyj0kBGgB1hYy1GR7/iMV+3i1MNx+GHCTrisOgvKQpbIoMoWRhrf11b9gXFdOAQ0ckVvViNFr6f+AVfEvlgM/gEsFZVFtPzB4N+wGF2DTrwDdZv4SZ4Gty20HdvRjaA2Hj5p+NgaNgMJ1AWDNSE1u2JHAwHTwV5RLVkdIcvNL92C7cSio9+FBRVgO9r7f9OmQ0jEQjdr/ieeXf47lXUbquq9HFsd4lu+Tm5MIsMgSBTAJgP23vRGVxPdhW3OsaxNpz6Cxv8xXFFVvUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=J8oFfagNHYXq0qtb1i6jxn4XcHIk1jIFli6esLoKT1s=;
- b=ng8qR30zJnwsrTLR78r8ePuam5P7mSNfolUPX1Y7lRRpR9QbaHA2Bgx3NraERmAif2RIvVYpk0mbFkgJ7xQFIU2oaaYHYK0PbOUI7iLs+47mVhMiQEzOdmwi+06whXdvV9K0jHTpx248Jbh2vR5Pb7qjwdB3xLIFd7ARqVBkp3cwH0ITLQ7PL11/nR6zmIZ+h7zAylY9Urtuk/5G+TgmUkaVlgK5zEglGD4XsQmD1LtE6RhxZ7ufHbti5VmirPGJyimziGr6kCOgl3KG/LO4C/+rBI0Te8PPHD2B2QEYiJ9UB5m5h9efnLadr3bn2hdhffQ5ZsguQSUuMLAVdoMkPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J8oFfagNHYXq0qtb1i6jxn4XcHIk1jIFli6esLoKT1s=;
- b=HKGj9vLbObEs91ogmUWc/6Y/QI5jCTITihaXaJ0WoBTQCztlbxBF2ZKlNUmY1B6JnBNrPO6jG7QNOIetjfvjSUXqoOVGEH3KBOUsqTIlls0uhvb9Kker0hkSO4xikkW5WU5FsgwQue/QNLdtRF0kdjDk3tLgQzukWjz3u2yYDYchd/InMODHZ6z86k8BLyoQ+qqiWuiq34z8hYZRWulP2jvm+KxhoUq59rmk1j8r4D9dJNpGzvTWpREt/Sn/M2f3iS2Wnt2ZfQsNaKM2oTHZHGcRYJOm/fnBF/BnpMFRwdv1DVPpczyiWbVsjsiwGRwAbWyABw5N0YIXTV+NiznG8Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by IA0PR12MB9011.namprd12.prod.outlook.com (2603:10b6:208:488::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.37; Fri, 21 Mar
- 2025 11:45:44 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8534.036; Fri, 21 Mar 2025
- 11:45:44 +0000
-Date: Fri, 21 Mar 2025 08:45:43 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
-	joro@8bytes.org, baolu.lu@linux.intel.com, iommu@lists.linux.dev
-Subject: Re: [PATCH v10 11/18] iommufd: Support pasid attach/replace
-Message-ID: <20250321114543.GV206770@nvidia.com>
-References: <20250320134744.5777-1-yi.l.liu@intel.com>
- <20250320134744.5777-12-yi.l.liu@intel.com>
- <Z9x9sy7s2u18wVrG@Asurada-Nvidia>
- <783d69d4-5858-4699-812c-b8495a36e9b5@intel.com>
- <Z9y0WzIo4Edu0D9H@Asurada-Nvidia>
- <78e022c4-c971-430b-8621-be6199b7f3ce@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <78e022c4-c971-430b-8621-be6199b7f3ce@intel.com>
-X-ClientProxiedBy: BL1PR13CA0252.namprd13.prod.outlook.com
- (2603:10b6:208:2ba::17) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="uJ66fLs7"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250321121514euoutp02e14b1e5115cc3c1ad6f0a2a72abbad6e~u0HbTYTqt0241702417euoutp02f
+	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 12:15:14 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250321121514euoutp02e14b1e5115cc3c1ad6f0a2a72abbad6e~u0HbTYTqt0241702417euoutp02f
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1742559314;
+	bh=MHO6SdbNFs1J7nO+41CHx9xqMsSu4tdXH9vnU5Jzzo4=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=uJ66fLs7Obilq9mId7yKjwF50346mYhfbEOPUZxyOKN8Sh5Pn9OhQnju0XagfuJMS
+	 jH6Cm7ik0xZAj9fwzXRS7Iz6nGn4plED88CovnWjXA8BxbPtxi6FbzjDr6IL4+0k2L
+	 +bFl6wNnY1LtrhnzNhe+HGyaJY+PB5PZVwUJY7KM=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20250321121514eucas1p1ee13ac2a07d447599b9c7c32b594ecc0~u0Ha9Jj1p0634006340eucas1p1V;
+	Fri, 21 Mar 2025 12:15:14 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id 31.10.20821.2585DD76; Fri, 21
+	Mar 2025 12:15:14 +0000 (GMT)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250321121513eucas1p2c17d32842a41ad058b914bf3d9ff7512~u0HaTDMvC0313803138eucas1p2b;
+	Fri, 21 Mar 2025 12:15:13 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20250321121513eusmtrp18028559e7e8c3a8d821562fa4b64ad93~u0HaRrSkW3246232462eusmtrp1h;
+	Fri, 21 Mar 2025 12:15:13 +0000 (GMT)
+X-AuditID: cbfec7f2-b09c370000005155-cc-67dd58525c00
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id 67.C1.19920.1585DD76; Fri, 21
+	Mar 2025 12:15:13 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20250321121511eusmtip23c2fe1a430242457999298218d0d3fd7~u0HYaApUO3026630266eusmtip21;
+	Fri, 21 Mar 2025 12:15:11 +0000 (GMT)
+Message-ID: <ace3a01f-4700-4455-ada3-0f88fc8ea4cd@samsung.com>
+Date: Fri, 21 Mar 2025 13:15:09 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|IA0PR12MB9011:EE_
-X-MS-Office365-Filtering-Correlation-Id: cab7adbf-f5a5-4d06-9698-08dd686dea29
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?04nt/fDR31MyZzN2gNDu6wDEGPHyd2M8TRfvhOxgKMgz5mR88akr35uy3Y35?=
- =?us-ascii?Q?vBNh7ApKZCHv2B1ivFUE3SAsGxnOSRypTfY8B6kcUcGoZmzGVjSEQfWQ8m9W?=
- =?us-ascii?Q?61dCaephtpyxyhSEfP2ErFpWEhS3HRUohWvSSoyNPzqYotxgpPpyQEhemLFW?=
- =?us-ascii?Q?4h0RXgrFkTWFW7EGOdCQE+ddLqB5Pbwje61QyDfWsBNiBmdFtR+NGsExOZ4o?=
- =?us-ascii?Q?NkE/Yy/Tp6obcx86q0NJ3LgyM17fCv7+Ybnrw6Bl5Wd/g1Tq/NhoqnLjWtHQ?=
- =?us-ascii?Q?Ec3BujGakU1pDNpLVp4XNHW955av7SlXA6wjh9BLnPb9aNUFxcsrUD1/6g3s?=
- =?us-ascii?Q?1wKFShLwfclIMGB7V6y8ePGOAJ9paXnjN0jFK2hfmTZxz6YkfwpuVyFmHMfm?=
- =?us-ascii?Q?wmNgCxoDEyNcfAtEg8nigGS08pm8//6aP8K8ZPLg2dW/FNBB2b5NGomxd9x+?=
- =?us-ascii?Q?R8VJUE2lAO3VxuKxWCjuyFRBErVsyhWWNVOqsngogrdzFtK+P5nHKR+aNvoj?=
- =?us-ascii?Q?+ea5F7Q9kQKeJJg3gfFU2uIDFjPahGg4Jv2aKfjs/COmRmmUzZF1ZOdgXzmK?=
- =?us-ascii?Q?3rXni4NTU/zl8ftn9Oy7aKt50r9E5hlCaoBZmZbrxKrH12M+uocm8N5WU8K4?=
- =?us-ascii?Q?56rfbKRGoTUod0C96pIhVouyp+SzihfHrLDdM6+bBjam0YnfHdukBBxUG00T?=
- =?us-ascii?Q?s2TKCTrtvOpap0QH/vX7KpDxLEintUaBo6xVkW9sW3TdI3Q/IR8JBl5SFzPn?=
- =?us-ascii?Q?t4FE1bMqWeiUtf/LLaDSxfLjPce6t3ZfoIHix8509lxqg/loQ/pcrXSAe4+h?=
- =?us-ascii?Q?uHkdxg7kDV5n3lN3b+smeBA2r5y7tqAHNCwPW5QXDvsXvoNHa1jFYoVfFZ7J?=
- =?us-ascii?Q?jX6K5Vl/VeL8ZAn1H8Fop+og6HudWS/HpFBnHqy4A6x2Vcl/Cc+b7wzXDB9d?=
- =?us-ascii?Q?fMicHyVIrKP2d++pPRvOg6bIapEBMEj5VAygJjuC/YnJpkPAif/PKxxWntjp?=
- =?us-ascii?Q?7jbKRdjTxDVkiWAjpQ2L3MHb2e/kgAhQAqFVAXtoOo9JHLmczEJsf8yqNLhp?=
- =?us-ascii?Q?e3NtcW101wdFI0gmh30WqmeAeiVD3Sh4nQWJU3F4gOEJ8VCWg37/CutaX0Mh?=
- =?us-ascii?Q?/5zs1UYXk6FIItNutmlSVp4izk6enA4LfAFPm/Twbjoc+726phPGLUOJl7aX?=
- =?us-ascii?Q?2N8LeEzkWddlowiSuVzEXOd1o7m6dwpWTH6QeYSUqTlTl8yjvE8QmdLIPrqI?=
- =?us-ascii?Q?nbZuXwiIqm/saihhssh3B4LcihyG6vsUSaoElvUjeBnJXDMWeiCcZcsuc9Dy?=
- =?us-ascii?Q?tFIzAM9ZM+MyMZRftZZQVRERJdWTDKhoY1ka5RpmTG/DY5i1Hvl3ux+ZVgJD?=
- =?us-ascii?Q?sEdPInOyJNODDpt0yYJRRO8X7QKa?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?yNQoXfZ4Spr4Z97TWas+jYS85/oGpE81H2EK4BF3plCum4ZNoc0TdiooiSg5?=
- =?us-ascii?Q?xp5aDRTzpqGebRfuRJ5iOJtxP65B66v+fqiJ9brOV4F4HHrQNDzCVTwOBM3k?=
- =?us-ascii?Q?fRzMXV6BsYhkyovwn1JNC0NEAHBE5OqgNcfWK1hprCFeMSVrpMhM50Oosb3C?=
- =?us-ascii?Q?zhJ1CfSdVi6n+QgZ9mE//BP9wROA6/Lc0Cybl7zZXgMzx+VecD6m+nTvA51x?=
- =?us-ascii?Q?FnzWVqD5JzVN5emft0mxF4T30tZbxwBGWmyiGl4vs4BQRtO5/bS2Ik2eQUim?=
- =?us-ascii?Q?MaLoCoO4gtOYiIJ/IRTukhaqqKp3V6kRe9DSbyaimkYntgcVuXS9sc+kIftW?=
- =?us-ascii?Q?0RBUmiiwgXfxCH0x9TK30o5SFm4TJzoLeOHj5h8OoYZEzlWGr2VeP6+oaBVt?=
- =?us-ascii?Q?NK4Z3S5l8GZzrxJ4kU1RcSkqjfTS9/XszjId+crfLYJkloQ7MxOfyyskHM97?=
- =?us-ascii?Q?SzZjNgDq5oKABzpyfMB21AyYinUyRfWzrKaoNCjYVACjMtKM+2f+tSjtN6vK?=
- =?us-ascii?Q?rdS3NbIU8BVA1G1q/PphUCoVqcdmB9p8MMNGJexpwPgC6SmRNM8veWPwsml3?=
- =?us-ascii?Q?tJLpKTmJuVmhNWNvoOsO9+w8gkbTvL2q143cSJDBK6b8MVJIL2SEKyhf4ap+?=
- =?us-ascii?Q?TUPY2jmhenXV7ivlHHVTJu60cO/OpVPH6i4HypHrkdsIKhn/Eevq35n2fscq?=
- =?us-ascii?Q?4/4tRQKUiOV9O0qtki/OXOxsw08n2+wed1wbauA8I7WQXGIMjOxzgN7JQb5/?=
- =?us-ascii?Q?VPq+zDXjb1zdIgtOQfWjU2kkmNazWVWR2d5AEOY38VXqxIK+K0k8tVD0fdm+?=
- =?us-ascii?Q?Sm0P0yzjGoERzqNiCIug4WCN6DzPTurayjVX6gZnSEP0iZFT6y467KIZc7CL?=
- =?us-ascii?Q?5z6Gx+EdjeAMaKvhVIWXykqJtmlhNvDIE0Cxq8AR/RftZQ8HFpv1aZQBUlbG?=
- =?us-ascii?Q?LBe362p7uJaynZPCEVT54O5JkhSZyZaA21Epp5mjOpTHYzSm4XevUxGNAbII?=
- =?us-ascii?Q?/i9ZsygsiDzXoC66fb+LAhjhlg9b4cdQbHqPHaS3s7LSa5RonCDU0j2wSm5I?=
- =?us-ascii?Q?2t1TFE0RWq/THskre5vBXDxFSn8Te0Tnl3r8WeyQLCfPojktm1xTdA88qsej?=
- =?us-ascii?Q?LpxfAKrSoTpPbOV9ckAWRg9zMwJZNoQwIfS2sH6kx74w4QxOMZLzTSleWq/I?=
- =?us-ascii?Q?i1p0dp+2yIDjc+o+iRStX2BV+FZVDiQ1mGgkp5IG1yFGSyVJEh5jZZ4h45O1?=
- =?us-ascii?Q?aToQUcg3MpeGQorEkw17YKD5ALv2MC6mYwrBcTYZoA2Oa2tAmJ6MWk5g5/CY?=
- =?us-ascii?Q?aymTbtKfRbOR0oQ/i82rad+RNkz0z3938WKq5mkbbnl3BZo+lg35OUXSaBc7?=
- =?us-ascii?Q?OSqDm1nr/9ieRRbCx74uiuJjARscn/d1qOnQ2oKbxLH0XBoS+lLW/wZymU2c?=
- =?us-ascii?Q?XNR6d+XeLvPzpgZgV2+hu7kYaU6oej4w1rqKISb6O2B/XX5HZFLbIQFlJp3o?=
- =?us-ascii?Q?giecEqkBJQUI048o+sKXWm1hX33R4oGwD8GDOCQFlwCKnfuxKAwZNQnxNhBk?=
- =?us-ascii?Q?Ip+Ae7MZ7IQBa/ZVTaKaMdChPdj5wHOL/YfOW4kH?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cab7adbf-f5a5-4d06-9698-08dd686dea29
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2025 11:45:44.7167
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8YyyATNXJ/8gogYN6e6ZzrbmRDPDW8Tpy7Ak6zmWR1BdORjiKSeEKPqWrGZU03em
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB9011
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
+ path
+To: Robin Murphy <robin.murphy@arm.com>, Lorenzo Pieralisi
+	<lpieralisi@kernel.org>, Hanjun Guo <guohanjun@huawei.com>, Sudeep Holla
+	<sudeep.holla@arm.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown
+	<lenb@kernel.org>, Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Danilo Krummrich <dakr@kernel.org>, Stuart
+	Yoder <stuyoder@gmail.com>, Laurentiu Tudor <laurentiu.tudor@nxp.com>, Nipun
+	Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>, Joerg
+	Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Rob Herring
+	<robh@kernel.org>, Saravana Kannan <saravanak@google.com>, Bjorn Helgaas
+	<bhelgaas@google.com>
+Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-pci@vger.kernel.org, Charan Teja Kalla
+	<quic_charante@quicinc.com>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <d6cd5e64-e2c0-4c6e-9c89-ce8b3e0a4a5b@arm.com>
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Sa0xTZxj26zk9PdS0HgqOD9xG0kQHmxYZunyJzMmi2XGXhOCWEZc56zgp
+	ILe14PAyRlYQ7NgGVlQKpc3A1WgDtDBXGi6jNC13GUUgXMZgMBQGUqnEOdBZDtv49z7P+7y3
+	Jy+JiXREEJmQks7IU6RJYoKP33L8dXtXTOyYbPfqDwSq/CoezV1eJJDO3sNFyopqArXUl/DQ
+	Yw9CF0preMhT2Imj+ol5AhmavgPI/PsAF7msZQTqLncSyFbcCFDOSg6Orlok6OG9yziq1iUj
+	racYQ08bLDzUsjjFRSrb6rO2pmEMGTosOMoZ3XsgkJ5qKefQuX2rBG0sNwLaNfALRtdrxni0
+	3pxB59jnubT5xgWCbtYaeXRt5Zf03doSQJsWLBy6qCGLXjK/GC08yo+MY5ISTjHysP3H+fGD
+	mlZeWm94Zn/REzwb2ENUgCQhtQcuKM+oAJ8UUdcBNDm6OCzwAGhp6SdYsASgNbcZUwGftQqX
+	Xr+eMAD46OvldeAG8HzNAu5VCaj9sLwvj/DGOLUd9toGeCzvC9tLptY0W6lgOD58dY33o47A
+	BdUk8Dbyp8xcOJjbxfUCjJoGsObO0FonjAqAw1M6jjcmqHComlet8T7UPjhw3wxYTTBU/liK
+	eYshpeVDm2mRxy5+EKpHZrhs7AdnnXXr/POwU12AswV5AOr/HuewoBDA7JlhwKr2wdGex4TX
+	NIwKhdXWMJaOgqqlYoz1UgiH5n3ZJYTw4q0r67QA5p8XseodUOOs+m9sS28fVgjEmg3GaDac
+	qdlwjub/uXqA3wABTIYiWcYowlOYzyUKabIiI0Um+TQ12Qye/XDnE+cDC9DOuiU2wCGBDUAS
+	E/sL/PNHZCJBnPT0GUae+ok8I4lR2MA2EhcHCL5vzpWJKJk0nTnJMGmM/N8sh/QJyuZsr+RE
+	3QykWj9WGE+dMG6JeNB29w4d2hE7bzzk2LW32pkeM9k5veSOiyx4/7nJbh/fkvYeUv3bztdc
+	jqbG1ar2CM9bb5/9ItF8752J1ANDh7c2BkWIrMcSihIKLwnmNg+oNte8/ub0TQCVJ8u0Ev/E
+	0baK3aPCn7r28F6KXF4OfSVv08ziwysFrcdL+/saVAfxsu5NcQ71ubA/Plv59aI+OiT/bKDb
+	9YLpgxGy6ZunIVW3pYnqa/bZrK4ThqzwIsN7FRNRf0ZH1V6HTY++Pf2R8NWYmXc70rDgQ207
+	75ubKpZi6yK2uD9sMzReOzcWZLdu+7nuDZ1f5qD46LHxuUJlbNXKZOZhMa6Il4a/jMkV0n8A
+	DUX1DjIEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrEKsWRmVeSWpSXmKPExsVy+t/xe7qBEXfTDVZvl7JY0pRh8XraBzaL
+	+UfOsVo0L17PZnFw50x2i19fLCw6Z29gt/gy4TSLxc6Hb9kslu/rZ7TY9Pgaq8XlXXPYLM7O
+	O85mcWjqXkaLlj8tLBYzduhZfH05jcVi/fxci7lfpjJb/N+zg93i4IcnrBZdh/4Cjd14i9li
+	+akdLBYtd0wdJD2eHJzH5NF66S+bx5p5axg9Ll+7yOyxc9Zddo8Fm0o9Wo68ZfXYtKqTzWP/
+	3DXsHpuX1Hu82DyT0WPjux1MHhP31Hl83iQXwBelZ1OUX1qSqpCRX1xiqxRtaGGkZ2hpoWdk
+	YqlnaGwea2VkqqRvZ5OSmpNZllqkb5egl3F91mH2gguGFVcm/mNpYDyi0cXIySEhYCJxecEC
+	ti5GLg4hgaWMEkt/HWeESMhInJzWwAphC0v8udYFVfSeUWLNsZlgRbwCdhLzLrWzgdgsAqoS
+	Fw5dY4eIC0qcnPmEBcQWFZCXuH9rBlhcWCBY4l3XI0aQQSIC21glrs3byQziMAs8ZZT4cv4Z
+	K8SK/SwSZx8vZwZpYRYQl7j1ZD4TiM0mYCjR9bYLbB2ngLXEtfebGCFqzCS6tnZB2fISzVtn
+	M09gFJqF5JJZSEbNQtIyC0nLAkaWVYwiqaXFuem5xYZ6xYm5xaV56XrJ+bmbGIGJZ9uxn5t3
+	MM579VHvECMTB+MhRgkOZiURXpGO2+lCvCmJlVWpRfnxRaU5qcWHGE2BwTGRWUo0OR+Y+vJK
+	4g3NDEwNTcwsDUwtzYyVxHndLp9PExJITyxJzU5NLUgtgulj4uCUamBKr338iTny7zIjk+aH
+	7FeXbVs918HcnjGPtX7XvGyxe9P2qnxlLoxpt3iSV7maoeC+QeHhtNzYqXYl6kqi17orxa5P
+	4eP9GZ1369HXo6t7VHVPyd94bCGtzruobem8kmp5Mw+XU+s8DHYeO32Cbcoctw0z/8yx0Twh
+	ciO86cqG+R2p3vZbTKJWNtwNLd7u8+1xIUeGfinHsmSG6Qutjj74dr96m1dC2Ibffduv7mUz
+	f1Sp0f3pOVf/wc977xp9X5fG+t1K/auarsHmbpliprusbmwpUglPEm9xMzlIdrOKp1sYWZu9
+	bOi0fTzhwsR7M3KVd2uUvJm5w1/u717N9d/vWGZwvbudHhd/w11CqUCJpTgj0VCLuag4EQBP
+	2Er8xQMAAA==
+X-CMS-MailID: 20250321121513eucas1p2c17d32842a41ad058b914bf3d9ff7512
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250313095633eucas1p29cb55f2504b4bcf67c16b3bd3fa9b8cd
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20250313095633eucas1p29cb55f2504b4bcf67c16b3bd3fa9b8cd
+References: <cover.1740753261.git.robin.murphy@arm.com>
+	<e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
+	<CGME20250313095633eucas1p29cb55f2504b4bcf67c16b3bd3fa9b8cd@eucas1p2.samsung.com>
+	<9b358d68-332e-404e-9a75-740297f7b28d@samsung.com>
+	<417d6f59-0d78-4e81-ad0b-e06846f786b0@arm.com>
+	<bf2adf5d-1432-4bb7-846c-e1bcfa84858b@samsung.com>
+	<016bb7ca-f0d3-464e-ac74-46e6f78e90d7@arm.com>
+	<b63ff6b4-9dc3-42ea-8b87-d4fdead8d0eb@arm.com>
+	<cdc333e4-25bb-4171-9f6e-01f1de947db3@samsung.com>
+	<d6cd5e64-e2c0-4c6e-9c89-ce8b3e0a4a5b@arm.com>
 
-On Fri, Mar 21, 2025 at 09:05:45AM +0800, Yi Liu wrote:
-> > Would you please also see if this could be covered by the selftest
-> > given that all designed tests didn't catch this?
-> 
-> I suppose it can be caught by the iommufd_fail_nth. But the fact is not.
-> I think the iommufd_auto_response_faults() should be able to catch it
-> since it parses the handle if there is pending PRIs. Maybe I just add
-> the below line between attach and replace/detach.
+On 17.03.2025 19:22, Robin Murphy wrote:
+> On 17/03/2025 7:37 am, Marek Szyprowski wrote:
+>> On 13.03.2025 15:12, Robin Murphy wrote:
+>>> On 2025-03-13 1:06 pm, Robin Murphy wrote:
+>>>> On 2025-03-13 12:23 pm, Marek Szyprowski wrote:
+>>>>> On 13.03.2025 12:01, Robin Murphy wrote:
+>>>>>> On 2025-03-13 9:56 am, Marek Szyprowski wrote:
+>>>>>> [...]
+>>>>>>> This patch landed in yesterday's linux-next as commit bcb81ac6ae3c
+>>>>>>> ("iommu: Get DT/ACPI parsing into the proper probe path"). In my
+>>>>>>> tests I
+>>>>>>> found it breaks booting of ARM64 RK3568-based Odroid-M1 board
+>>>>>>> (arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts). Here is the
+>>>>>>> relevant kernel log:
+>>>>>>
+>>>>>> ...and the bug-flushing-out begins!
+>>>>>>
+>>>>>>> Unable to handle kernel NULL pointer dereference at virtual address
+>>>>>>> 00000000000003e8
+>>>>>>> Mem abort info:
+>>>>>>>       ESR = 0x0000000096000004
+>>>>>>>       EC = 0x25: DABT (current EL), IL = 32 bits
+>>>>>>>       SET = 0, FnV = 0
+>>>>>>>       EA = 0, S1PTW = 0
+>>>>>>>       FSC = 0x04: level 0 translation fault
+>>>>>>> Data abort info:
+>>>>>>>       ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
+>>>>>>>       CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+>>>>>>>       GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+>>>>>>> [00000000000003e8] user address but active_mm is swapper
+>>>>>>> Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
+>>>>>>> Modules linked in:
+>>>>>>> CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc3+ #15533
+>>>>>>> Hardware name: Hardkernel ODROID-M1 (DT)
+>>>>>>> pstate: 00400009 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>>>>>>> pc : devm_kmalloc+0x2c/0x114
+>>>>>>> lr : rk_iommu_of_xlate+0x30/0x90
+>>>>>>> ...
+>>>>>>> Call trace:
+>>>>>>>      devm_kmalloc+0x2c/0x114 (P)
+>>>>>>>      rk_iommu_of_xlate+0x30/0x90
+>>>>>>
+>>>>>> Yeah, looks like this is doing something a bit questionable which
+>>>>>> can't
+>>>>>> work properly. TBH the whole dma_dev thing could probably be
+>>>>>> cleaned up
+>>>>>> now that we have proper instances, but for now does this work?
+>>>>>
+>>>>> Yes, this patch fixes the problem I've observed.
+>>>>>
+>>>>> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>>
+>>>>> BTW, this dma_dev idea has been borrowed from my exynos_iommu driver
+>>>>> and
+>>>>> I doubt it can be cleaned up.
+>>>>
+>>>> On the contrary I suspect they both can - it all dates back to when
+>>>> we had the single global platform bus iommu_ops and the SoC drivers
+>>>> were forced to bodge their own notion of multiple instances, but with
+>>>> the modern core code, ops are always called via a valid IOMMU
+>>>> instance or domain, so in principle it should always be possible to
+>>>> get at an appropriate IOMMU device now. IIRC it was mostly about
+>>>> allocating and DMA-mapping the pagetables in domain_alloc, where the
+>>>> private notion of instances didn't have enough information, but
+>>>> domain_alloc_paging solves that.
+>>>
+>>> Bah, in fact I think I am going to have to do that now, since although
+>>> it doesn't crash, rk_domain_alloc_paging() will also be failing for
+>>> the same reason. Time to find a PSU for the RK3399 board, I guess...
+>>>
+>>> (Or maybe just move the dma_dev assignment earlier to match Exynos?)
+>>
+>> Well I just found that Exynos IOMMU is also broken on some on my test
+>> boards. It looks that the runtime pm links are somehow not correctly
+>> established. I will try to analyze this later in the afternoon.
+>
+> Hmm, I tried to get an Odroid-XU3 up and running, but it seems unable 
+> to boot my original 6.14-rc3-based branch - even with the IOMMU driver 
+> disabled, it's consistently dying somewhere near (or just after) init 
+> with what looks like some catastrophic memory corruption issue - very 
+> occasionally it's managed to print the first line of various different 
+> panics.
+>
+> Before that point though, with the IOMMU driver enabled it does appear 
+> to show signs of working OK:
+>
+> [    0.649703] exynos-sysmmu 14650000.sysmmu: hardware version: 3.3
+> [    0.654220] platform 14450000.mixer: Adding to iommu group 1
+> ...
+> [    2.680920] exynos-mixer 14450000.mixer: 
+> exynos_iommu_attach_device: Attached IOMMU with pgtable 0x42924000
+> ...
+> [    5.196674] exynos-mixer 14450000.mixer: 
+> exynos_iommu_identity_attach: Restored IOMMU to IDENTITY from pgtable 
+> 0x42924000
+> [    5.207091] exynos-mixer 14450000.mixer: 
+> exynos_iommu_attach_device: Attached IOMMU with pgtable 0x42884000
+>
+>
+> The multi-instance stuff in probe/release does look a bit suspect, 
+> however - seems like the second instance probe would overwrite the 
+> first instance's links, and then there would be a double-del() if the 
+> device were ever actually released again? I may have made that much 
+> more likely to happen, but I suspect it was already possible with 
+> async driver probe...
 
-It is just a memory leak AFAIC, the tests don't look for those unless
-you run them with kmemleak or something
+That is really strange. My Odroid XU3 boots fine from commit 
+bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path"), 
+although the IOMMU seems not to be working correctly. I've tested this 
+with 14450000.mixer device (one need to attach HDMI cable to get it 
+activated) and it looks that the video data are not being read from 
+memory at all (the lack of VSYNC is reported, no IOMMU fault). However, 
+from time to time, everything initializes and works properly.
 
-Jason
+It looks that this is somehow related to the different IOMMU/DMA-mapping 
+glue code, as the other boards (ARM64 based) with exactly the same 
+Exynos IOMMU driver always work fine. I've tried to figure out what 
+actually happens, but so far I didn't get anything for sure. Disabling 
+the call to dev->bus->dma_configure(dev) from iommu_init_device() seems 
+to be fixing this, but this is almost equal to the revert of the 
+$subject patch. I don't get why calling it in iommu_init_device() causes 
+problems. It also doesn't look that this is anyhow related to the 
+multi-instance stuff, as the same happens if I only leave a single 
+exynos-sysmmu instance and its client (only 14450000.mixer device in the 
+system).
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
