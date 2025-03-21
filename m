@@ -1,221 +1,233 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 567D32AE84
-	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 16:48:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742575736; cv=none; b=gMWxHgGsUB3aYC17j0sCaTTqmZkwT2L6tilhHVXxSh6ntQ2anKtQCgfgK0OgT2OKbIq/mDJ8rkn8ijdrlymUuDFuUj2HFIcZlYc2G96AVLkydpzUm0zi3oOMBb75tyf5qqQ1Dx+ttrIS04k/V4Yq4WX7V8j6ZKQxdNHTXOpUGaM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742575736; c=relaxed/simple;
-	bh=JBdg7xMBLd5iIqOC0TaR5k4K2Igly/gZ0cV4AKosEWo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MSKHkXwSAD2BQJJpXF3vYIapqBt7oqw7i9oOS7wmF03cwmW+8wABpozirog4uYublF3j+jeF/aW9bg9skhZdMGyix1HAiUblXmk/55cn7lh5o/qfQ3weqsYVAMClSWpMxoNv+blR9txwS74n36eC33XBIZWjVUTw4vuebBODQuE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 12A25106F;
-	Fri, 21 Mar 2025 09:49:01 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 791DD3F63F;
-	Fri, 21 Mar 2025 09:48:50 -0700 (PDT)
-Message-ID: <135390b1-c0c5-4595-a3f3-1fb376473872@arm.com>
-Date: Fri, 21 Mar 2025 16:48:46 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2078.outbound.protection.outlook.com [40.107.237.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13ECC22D7B1
+	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 17:11:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.78
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742577082; cv=fail; b=NonQ6+wXwDeVr5mqj510/PMnB49lLYQemVtAmwHlENz4SziRAGbArKIrMuWOKEapcTKWjqO4Gekcs/d9I4RRnSBeyIaMoD6QtS7gKEAh1kLDBZ8ApUXn2BsgHg2kufaFeaTD4WddRG9p/pa5GY0MzYqfm/1jEfdZ/wCq6afuW4Y=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742577082; c=relaxed/simple;
+	bh=6ApzO1glMLBNe13h9TrZQu+3sWcF0s9fIWgoXHpF6nc=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NjFKz4RnUH0z0aQjt2qsvAiE1fjtFi0AU9/ntjDUJc22Ces42Y7QachMph7K1Wy0GxzUM8noTzY9a6EfOFnkp4O5gXd8JnZRMYv3dBDDj771YggkdbwGtXL9/NvWy3+QL66NGL+bVvlK4gHOI1fni15S7GSmIeiN4wBky0GOlp4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Sli03+k2; arc=fail smtp.client-ip=40.107.237.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Sli03+k2"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=PnlRxd5+B9LOFF1omti8RxjCTbFKTE6oU/GHYwrPNqztnfBNCZ00IH76f7NnnEpKbYjtOAlvSo43HG7c8JPRFAXgTnPIF/tW6NhN/jZn5Z4cZuw2AEvYBZl+ETZtsC9NEEZuVvQghvPT21BlLmijBldjVBejBlw9iu4hK3CxraPPuJ5GaMB/A87kwWMG9nOGqgK40wd8/8ah467ggdplgfMxOWIMnukq9qDtM/yi94YV/WMNBDczJMAuctlKw41bigb4iTyrrMqSfxfyEI7LeRDCwgpTR2TWzYdKf5jmjECtUZGMCA7IxwZXLh0EK3mSLlrQ2q8WsoBJtOAt6f4foQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lSXnFwb1qaycKYAxIZiWMe7s9WpN27XD9v6xT2VRfGQ=;
+ b=VAczefDLF3dmOp200/zOWTMK3U6Iz3wocaNxIOtDzNv85V4ItzP7DKabpqN4dOT+Qd2KJ1zSX+ckPMKx3RnQmVrdR+rBNVBkyW9iOlJ0+0rKejLYt1XsMJONpORFJwmXu+SntQT/j215FEs4c/YdyiTRWEv+DAlTzZtGDed9bbDvCTr2AHl4SFhDiRhAUerSaWCbE6E4Wf6FHzkP+BR7EHHrYCgGMQM/MG1H7HjkfdKGmPo0DZVhrpui26beRJ+2+LZGGfBjAqpIr87MKp3xwmyNI94auY1ELxBbfHkhAbwKlV1rurN+GbqLZlCVLIXEqu6WSIuGl5TsfLKwIl/ZtA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lSXnFwb1qaycKYAxIZiWMe7s9WpN27XD9v6xT2VRfGQ=;
+ b=Sli03+k2EaTJp6uOsDh4GRxka3ulV0HK9HBh8ctfZnJxxNVPO4bGzJXhcsLAma/izyngo16CjPHboknAgIa6OGHehNnruATURn+9RcdDeXEbIg20PrDXPghjYQQ5+WobP69DtdPrSoijDYAxeeIuEcBYV4MVUeoWksxwga4ptJS5mb9TutCPfps9A+5aDtAQr4e0Xp2QImErHFqnX0IbiWNIkU7SizJ1gdNE3tTF7EcfMvdByL8R5wHGfsll7XBxZAR3VM5YQguicOFvlmBxgYWagMQG/EaBlUYoahCX/OOdH2qGk9pH3G/aQtEhpUSpMmWODYIL2lLF+GbDajsS/A==
+Received: from DS7PR03CA0209.namprd03.prod.outlook.com (2603:10b6:5:3b6::34)
+ by SA1PR12MB7152.namprd12.prod.outlook.com (2603:10b6:806:2b2::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.36; Fri, 21 Mar
+ 2025 17:11:13 +0000
+Received: from CY4PEPF0000EE38.namprd03.prod.outlook.com
+ (2603:10b6:5:3b6:cafe::4e) by DS7PR03CA0209.outlook.office365.com
+ (2603:10b6:5:3b6::34) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8534.34 via Frontend Transport; Fri,
+ 21 Mar 2025 17:11:13 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY4PEPF0000EE38.mail.protection.outlook.com (10.167.242.10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8534.20 via Frontend Transport; Fri, 21 Mar 2025 17:11:13 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 21 Mar
+ 2025 10:10:59 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Fri, 21 Mar
+ 2025 10:10:59 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Fri, 21 Mar 2025 10:10:58 -0700
+Date: Fri, 21 Mar 2025 10:10:56 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+CC: <kevin.tian@intel.com>, <jgg@nvidia.com>, <joro@8bytes.org>,
+	<baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>
+Subject: Re: [PATCH v10 18/18] iommufd/selftest: Add coverage for iommufd
+ pasid attach/detach
+Message-ID: <Z92doF3OoYEKoNCb@Asurada-Nvidia>
+References: <20250320134744.5777-1-yi.l.liu@intel.com>
+ <20250320134744.5777-19-yi.l.liu@intel.com>
+ <Z9yz/pVlPy6sOxP0@Asurada-Nvidia>
+ <c90acae0-98f7-4317-b279-2e94f6627307@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
- path
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
- <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Danilo Krummrich <dakr@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
- Nipun Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>,
- Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
- Charan Teja Kalla <quic_charante@quicinc.com>
-References: <cover.1740753261.git.robin.murphy@arm.com>
- <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
- <CGME20250313095633eucas1p29cb55f2504b4bcf67c16b3bd3fa9b8cd@eucas1p2.samsung.com>
- <9b358d68-332e-404e-9a75-740297f7b28d@samsung.com>
- <417d6f59-0d78-4e81-ad0b-e06846f786b0@arm.com>
- <bf2adf5d-1432-4bb7-846c-e1bcfa84858b@samsung.com>
- <016bb7ca-f0d3-464e-ac74-46e6f78e90d7@arm.com>
- <b63ff6b4-9dc3-42ea-8b87-d4fdead8d0eb@arm.com>
- <cdc333e4-25bb-4171-9f6e-01f1de947db3@samsung.com>
- <d6cd5e64-e2c0-4c6e-9c89-ce8b3e0a4a5b@arm.com>
- <ace3a01f-4700-4455-ada3-0f88fc8ea4cd@samsung.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <ace3a01f-4700-4455-ada3-0f88fc8ea4cd@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <c90acae0-98f7-4317-b279-2e94f6627307@intel.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE38:EE_|SA1PR12MB7152:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0f53548f-98a8-49d1-3374-08dd689b6222
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|36860700013|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?RI19GEuBG8nFIXZT2QgNyc6h6E3dvIpqVlBX2fj3y9SfUaq9ikk6Ds6Eaw+H?=
+ =?us-ascii?Q?bRUNYs+KhhuNSKM19SRTWEq90hzZ5rx2RvhXIwmx8FSX4vSQTr35chg4NkBs?=
+ =?us-ascii?Q?FTtNSMKbxK1rL7/PXn7QLHjM9ZjFWPN6aVzOaLb6xyf8e2Mg9KgTykrHqx0h?=
+ =?us-ascii?Q?SPOzxq7I8fsdHRnBz848D3Llts6rmltID9ShQo1c8yM+zZW3kx8pbLlL2wb3?=
+ =?us-ascii?Q?OWuWwWMPmlmnR4+DGTlFS7xKaiRhLLSGohp8AuOs180DE8RB2A81jzD9dY2K?=
+ =?us-ascii?Q?sPOmPpkyr1lV/DNq/7LANhfnxHe36XQr4c5paY4+vk4QZn2GXeVWgp4ivaIZ?=
+ =?us-ascii?Q?i/yskJx2Qb2Dg01AYtyu4ULtlKT+bfKitnwzPXYqkKftuHMy5+2HqcmQxxM2?=
+ =?us-ascii?Q?pubz3NW7JdoYZWCaJbFrnvH3YjSanITw9NLXHHZAsiPdQpS30aqGQxhGrtEb?=
+ =?us-ascii?Q?3IgvU/rrntkeh/JqbP9aQC0g/S6rOKKAEHS2FGtLZgVDSNjPhqcXir/0taAV?=
+ =?us-ascii?Q?JGsn+HCFxqZ0ZtL+WBA1WPn9mm4NLKXCykLsAJso9Lib+8PNlnyMTq8E2ycD?=
+ =?us-ascii?Q?FYxrWdzrj8a5uUYUbLe4a+/QjHxxsdQ26CASks4MaaAKT5nhHDkNnGPWAr6q?=
+ =?us-ascii?Q?R3aD1mO+X8ns9DXlcrraAqoIaHPJ+bDKm98nIFTPehbdAAVGlyGpiuvDrIvI?=
+ =?us-ascii?Q?iOfokXd3yz//iEYSWM3/izl8YspjrU9DoK7g8UAMuJL4RS/NrBh+mIwd0nVW?=
+ =?us-ascii?Q?vMflxGSHjaaBhRjPj+0qcoVYwpbngIQHxPxY++jJlk2N2t0jCofxWx6r7gYN?=
+ =?us-ascii?Q?kKrpINvfM0axfaOv6LF35tsyua9vOEaO6zO1YHwmilCu6mkziBtHSEuDuY1k?=
+ =?us-ascii?Q?e9uJ5W3kNr19jVUlVCuLPTVXu2hIgCFrHVndC3x8c6u50nyTQpV4J/Qm+1k7?=
+ =?us-ascii?Q?mom2QmNbXiCUBoL3cP65OhWLRmV+I99zrcyNyHP48IIx61a5zC918NdGyuJv?=
+ =?us-ascii?Q?sQdQjbTPizlKvNnHD/XT0JgdFAQ0iR3ierDN8CV/+9rusKOwjtxkUtu6/Bn5?=
+ =?us-ascii?Q?fO8ChccLJU7Xh1SZthmrMT9S1QwimZaGzwtgXjhtmjkfZ2w1+kAQSu2vc8+U?=
+ =?us-ascii?Q?z/GXKXLXw6aRX664BQtGOLvfmXaJ7e/NvLJChnAgvMtf8/4sm25iXR2lCGw0?=
+ =?us-ascii?Q?NKOI2qVzdQxhgDCoW9HpTZLneXJAYGp08Mjby3ozWSyjqDxLTtdk8FmzEK+W?=
+ =?us-ascii?Q?APrRCNHsdkCkR74FFuFmh1sbTgYuUOW0YgQvCMRKuvupoVR2r+g+P6hy3w/q?=
+ =?us-ascii?Q?+3jqOr+wnos6eR8q+7ouA9oo+1WuCWO/u+o1gWVwdjhZhy8o3T6v3S1nki6u?=
+ =?us-ascii?Q?EeSo8pJ1U65+6SQWPGK3EZVkspxWDVRvBoI9HKklakQayoNzWE2VGmDP+Ud6?=
+ =?us-ascii?Q?jo58OnMc4qtKfNdGQebnFgNkSnvMpYUqfoiTPAYrUgTUmzfdanQvds82zQUe?=
+ =?us-ascii?Q?fFuxfa8/V1JBn3c=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2025 17:11:13.1012
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0f53548f-98a8-49d1-3374-08dd689b6222
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CY4PEPF0000EE38.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7152
 
-On 21/03/2025 12:15 pm, Marek Szyprowski wrote:
-> On 17.03.2025 19:22, Robin Murphy wrote:
->> On 17/03/2025 7:37 am, Marek Szyprowski wrote:
->>> On 13.03.2025 15:12, Robin Murphy wrote:
->>>> On 2025-03-13 1:06 pm, Robin Murphy wrote:
->>>>> On 2025-03-13 12:23 pm, Marek Szyprowski wrote:
->>>>>> On 13.03.2025 12:01, Robin Murphy wrote:
->>>>>>> On 2025-03-13 9:56 am, Marek Szyprowski wrote:
->>>>>>> [...]
->>>>>>>> This patch landed in yesterday's linux-next as commit bcb81ac6ae3c
->>>>>>>> ("iommu: Get DT/ACPI parsing into the proper probe path"). In my
->>>>>>>> tests I
->>>>>>>> found it breaks booting of ARM64 RK3568-based Odroid-M1 board
->>>>>>>> (arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts). Here is the
->>>>>>>> relevant kernel log:
->>>>>>>
->>>>>>> ...and the bug-flushing-out begins!
->>>>>>>
->>>>>>>> Unable to handle kernel NULL pointer dereference at virtual address
->>>>>>>> 00000000000003e8
->>>>>>>> Mem abort info:
->>>>>>>>        ESR = 0x0000000096000004
->>>>>>>>        EC = 0x25: DABT (current EL), IL = 32 bits
->>>>>>>>        SET = 0, FnV = 0
->>>>>>>>        EA = 0, S1PTW = 0
->>>>>>>>        FSC = 0x04: level 0 translation fault
->>>>>>>> Data abort info:
->>>>>>>>        ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
->>>>>>>>        CM = 0, WnR = 0, TnD = 0, TagAccess = 0
->>>>>>>>        GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
->>>>>>>> [00000000000003e8] user address but active_mm is swapper
->>>>>>>> Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
->>>>>>>> Modules linked in:
->>>>>>>> CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc3+ #15533
->>>>>>>> Hardware name: Hardkernel ODROID-M1 (DT)
->>>>>>>> pstate: 00400009 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>>>>>>> pc : devm_kmalloc+0x2c/0x114
->>>>>>>> lr : rk_iommu_of_xlate+0x30/0x90
->>>>>>>> ...
->>>>>>>> Call trace:
->>>>>>>>       devm_kmalloc+0x2c/0x114 (P)
->>>>>>>>       rk_iommu_of_xlate+0x30/0x90
->>>>>>>
->>>>>>> Yeah, looks like this is doing something a bit questionable which
->>>>>>> can't
->>>>>>> work properly. TBH the whole dma_dev thing could probably be
->>>>>>> cleaned up
->>>>>>> now that we have proper instances, but for now does this work?
->>>>>>
->>>>>> Yes, this patch fixes the problem I've observed.
->>>>>>
->>>>>> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>>>>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>>>>>
->>>>>> BTW, this dma_dev idea has been borrowed from my exynos_iommu driver
->>>>>> and
->>>>>> I doubt it can be cleaned up.
->>>>>
->>>>> On the contrary I suspect they both can - it all dates back to when
->>>>> we had the single global platform bus iommu_ops and the SoC drivers
->>>>> were forced to bodge their own notion of multiple instances, but with
->>>>> the modern core code, ops are always called via a valid IOMMU
->>>>> instance or domain, so in principle it should always be possible to
->>>>> get at an appropriate IOMMU device now. IIRC it was mostly about
->>>>> allocating and DMA-mapping the pagetables in domain_alloc, where the
->>>>> private notion of instances didn't have enough information, but
->>>>> domain_alloc_paging solves that.
->>>>
->>>> Bah, in fact I think I am going to have to do that now, since although
->>>> it doesn't crash, rk_domain_alloc_paging() will also be failing for
->>>> the same reason. Time to find a PSU for the RK3399 board, I guess...
->>>>
->>>> (Or maybe just move the dma_dev assignment earlier to match Exynos?)
->>>
->>> Well I just found that Exynos IOMMU is also broken on some on my test
->>> boards. It looks that the runtime pm links are somehow not correctly
->>> established. I will try to analyze this later in the afternoon.
->>
->> Hmm, I tried to get an Odroid-XU3 up and running, but it seems unable
->> to boot my original 6.14-rc3-based branch - even with the IOMMU driver
->> disabled, it's consistently dying somewhere near (or just after) init
->> with what looks like some catastrophic memory corruption issue - very
->> occasionally it's managed to print the first line of various different
->> panics.
->>
->> Before that point though, with the IOMMU driver enabled it does appear
->> to show signs of working OK:
->>
->> [    0.649703] exynos-sysmmu 14650000.sysmmu: hardware version: 3.3
->> [    0.654220] platform 14450000.mixer: Adding to iommu group 1
->> ...
->> [    2.680920] exynos-mixer 14450000.mixer:
->> exynos_iommu_attach_device: Attached IOMMU with pgtable 0x42924000
->> ...
->> [    5.196674] exynos-mixer 14450000.mixer:
->> exynos_iommu_identity_attach: Restored IOMMU to IDENTITY from pgtable
->> 0x42924000
->> [    5.207091] exynos-mixer 14450000.mixer:
->> exynos_iommu_attach_device: Attached IOMMU with pgtable 0x42884000
->>
->>
->> The multi-instance stuff in probe/release does look a bit suspect,
->> however - seems like the second instance probe would overwrite the
->> first instance's links, and then there would be a double-del() if the
->> device were ever actually released again? I may have made that much
->> more likely to happen, but I suspect it was already possible with
->> async driver probe...
+On Fri, Mar 21, 2025 at 11:26:02PM +0800, Yi Liu wrote:
+> On 2025/3/21 08:34, Nicolin Chen wrote:
+> > > +	if (!variant->pasid_capable) {
+> > > +		/*
+> > > +		 * PASID-compatible domain can be used by non-PASID-capable
+> > > +		 * device.
+> > > +		 */
+> > > +		test_cmd_mock_domain_replace(self->no_pasid_stdev_id, nested_hwpt_id[0]);
+> > > +		test_cmd_mock_domain_replace(self->no_pasid_stdev_id, self->ioas_id);
+> > > +		/*
+> > > +		 * Attach hwpt to pasid#100 of non-PASID-capable device,
+> > > +		 * should fail, no matter domain is pasid-comapt or not.
+> > > +		 */
+> > > +		EXPECT_ERRNO(EINVAL,
+> > > +			     _test_cmd_pasid_attach(self->fd, self->no_pasid_stdev_id,
+> > > +						    pasid, parent_hwpt_id, NULL));
+> > > +		EXPECT_ERRNO(EINVAL,
+> > > +			     _test_cmd_pasid_attach(self->fd, self->no_pasid_stdev_id,
+> > > +						    pasid, s2_hwpt_id, NULL));
+> > > +	}
+> > 
+> > It seems that we should test these anyway without a variant?
 > 
-> That is really strange. My Odroid XU3 boots fine from commit
-> bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path"),
-> although the IOMMU seems not to be working correctly. I've tested this
-> with 14450000.mixer device (one need to attach HDMI cable to get it
-> activated) and it looks that the video data are not being read from
-> memory at all (the lack of VSYNC is reported, no IOMMU fault). However,
-> from time to time, everything initializes and works properly.
+> these are for non-pasid-capable device. without variant, we only create the
+> pasid-capable device, hence the above test in the if statement are not
+> necessary.
 
-Urgh, seems my mistake was assuming exynos_defconfig was the right thing 
-to begin from - bcb81ac6ae3c with that still dies in the same way (this 
-time I saw a hint of spin_bug() being hit...), however a 
-multi_v7_defconfig build does get to userspace OK again with no obvious 
-signs of distress:
+Yea, I mean, just create two devices unconditionally, one for
+pasid and another for non-pasid. I think it's good to have a
+non-pasid device to cover these negative pasid attach cases.
 
-[root@alarm ~]# grep -Hr . /sys/kernel/iommu_groups/*/type
-/sys/kernel/iommu_groups/0/type:identity
-/sys/kernel/iommu_groups/1/type:identity
-/sys/kernel/iommu_groups/10/type:identity
-/sys/kernel/iommu_groups/2/type:identity
-/sys/kernel/iommu_groups/3/type:identity
-/sys/kernel/iommu_groups/4/type:identity
-/sys/kernel/iommu_groups/5/type:identity
-/sys/kernel/iommu_groups/6/type:identity
-/sys/kernel/iommu_groups/7/type:identity
-/sys/kernel/iommu_groups/8/type:identity
-/sys/kernel/iommu_groups/9/type:identity
+> > > +
+> > > +	/*
+> > > +	 * Attach non pasid compat hwpt to pasid-capable device, should
+> > > +	 * fail, and have null domain.
+> > > +	 */
+> > > +	test_err_pasid_attach(EINVAL, pasid, parent_hwpt_id, NULL);
+> > > +	ASSERT_EQ(0,
+> > > +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> > > +					      pasid, 0, &result));
+> > > +	EXPECT_EQ(1, result);
+> > > +
+> > > +	/*
+> > > +	 * Attach ioas to pasid 100, should succeed, domain should
+> > > +	 * be valid.
+> > > +	 */
+> > > +	test_cmd_pasid_attach(pasid, self->ioas_id, &auto_hwpt);
+> > > +	ASSERT_EQ(0,
+> > > +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> > > +					      pasid, auto_hwpt, &result));
+> > > +	EXPECT_EQ(1, result);
+> > 
+> > Hmm, I thought that a non-RID PASID slot could only attach a PASID-
+> > compatible HWPT. I think I am totally confused now... lol
+> > 
+> > Perhaps we need a detailed documentation somewhere, at least as a
+> > reminder or so?
+> 
+> In this v10, attaching pasid to ioas will allocated a pasid-comapt
+> hwpt. But this is really messy. So I will make the auto_hwpt always
+> non-pasid-compat. Hence it's aligned between RID and PASID path.
 
-Annoyingly I do have an adapter for the fiddly micro-HDMI, but it's at 
-home :(
+I see. A pasid slot can only store a pasid-compat HWPT. That's
+clear now :)
 
-> It looks that this is somehow related to the different IOMMU/DMA-mapping
-> glue code, as the other boards (ARM64 based) with exactly the same
-> Exynos IOMMU driver always work fine. I've tried to figure out what
-> actually happens, but so far I didn't get anything for sure. Disabling
-> the call to dev->bus->dma_configure(dev) from iommu_init_device() seems
-> to be fixing this, but this is almost equal to the revert of the
-> $subject patch. I don't get why calling it in iommu_init_device() causes
-> problems. It also doesn't look that this is anyhow related to the
-> multi-instance stuff, as the same happens if I only leave a single
-> exynos-sysmmu instance and its client (only 14450000.mixer device in the
-> system).
+> > > +	/*
+> > > +	 * Replace pasid 1024 with self->ioas_id, should fail,
+> > > +	 * but have the old valid domain. This is a designed
+> > > +	 * negative case, normally replace with self->ioas_id
+> > > +	 * could succeed.
+> > > +	 */
+> > > +	test_err_cmd_pasid_replace(ENOMEM, pasid, self->ioas_id, NULL);
+> > > +	ASSERT_EQ(0,
+> > > +		  test_cmd_pasid_check_domain(self->fd, self->stdev_id,
+> > > +					      pasid, s2_hwpt_id,
+> > > +					      &result));
+> > > +	EXPECT_EQ(1, result);
+> > > +
+> > > +	/*
+> > > +	 * Detach hwpt from pasid 1024, and check if the pasid 1024
+> > > +	 * has null domain.
+> > > +	 */
+> > > +	test_cmd_pasid_detach(pasid);
+> > 
+> > The designed "failing" replace does "pasid_1024_attached = false",
+> > meaning that this detach() isn't necessary?
+> > 
+> > Or perhaps the designed "failing" shouldn't set "attached = false"?
+> 
+> hmmm. This naming is a bit tricky. It still requires the user side
+> to detach 1024. That flag is more for the conveniency of faking error.
 
-On a hunch I stuck a print in exynos_iommu_probe_device(), and it looks 
-like in fact device_link_add() isn't getting called at all, and indeed 
-your symptoms do sound like they could be explained by the IOMMU not 
-being reliably resumed... lemme stare at exynos_iommu_of_xlate() a bit 
-longer...
+Ah, so maybe that "pasid_1024_attached" should be named just
+"fake_attach_error?
 
-Thanks,
-Robin.
+Thanks
+Nicolin
