@@ -1,167 +1,221 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E965122D795
-	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 16:14:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 567D32AE84
+	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 16:48:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742573679; cv=none; b=AR9/J8q20/Je43ge4/ssyRIKQSHVMZa+/4kXgnaYUJ795y0TNvdqF8Lt7R2O16X4isTNm1PmKR2kc2QCDUmNMXE8qdsScIu29TVwX1ffsFqTZCtrMSVbCAJBFIpyWvVZAHBu/b0wHlFj8YBl05cCsRdINu6S5PobOxCNaBm0Zdk=
+	t=1742575736; cv=none; b=gMWxHgGsUB3aYC17j0sCaTTqmZkwT2L6tilhHVXxSh6ntQ2anKtQCgfgK0OgT2OKbIq/mDJ8rkn8ijdrlymUuDFuUj2HFIcZlYc2G96AVLkydpzUm0zi3oOMBb75tyf5qqQ1Dx+ttrIS04k/V4Yq4WX7V8j6ZKQxdNHTXOpUGaM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742573679; c=relaxed/simple;
-	bh=qXpYjnL6QzDKFF/vEA2avZLphl/BA8jmPIwzNSXeK7Q=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iv6jrNfEaA/B7q0v9TXyL0tzTNavzb+zGskNwQB0xW3EtjDrlS352ranU6UBwHl56m4Odg0B1Q+5RmoA9q2EzmbE6fX3dKaK3O+elPUAG61bW6sxIjir25WVUxcG8Dp70C8Demr5k6jHa59r1+Ba7p2JjC3QGLj69TfZZzq1BU8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=L2qfcCP3; arc=none smtp.client-ip=209.85.160.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="L2qfcCP3"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-47666573242so492961cf.0
-        for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 09:14:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1742573677; x=1743178477; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Lr1NpamvodEP6MFP3VgS0Dk87IubpsnKUE/+euMf6QU=;
-        b=L2qfcCP35KE6g+DN1vlLp4CI4KEXynYd+9yFnR7WsqORe7y9Ex930hr4b9VA7NIoen
-         0fVRX7VtRkL9WfLtzrsNny1pCI9y15CQqe5JMBvQYThQxWjBTvqi1FcNg8RAITZWVjX3
-         LZJZKtDyHveA+SZizSw+gC+DZ15sGPf+Gz8gM6V7Lnn4i1mZ2k2tCthfGuTHttw5plHV
-         EW8fUnDFjmlj/Z3Rj70jie9M9hBtvQke2yblOxduHKGSzgYw4e7G4EbUAb+kLSmb7/oX
-         SI3bVBHigB4CcYnd5a7em5QYwrjTnWssE2C+VeI7nIRjl6T5fd+yaC6dXCpvc+6TtUrc
-         by/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742573677; x=1743178477;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Lr1NpamvodEP6MFP3VgS0Dk87IubpsnKUE/+euMf6QU=;
-        b=Vgmjocr+Pu+RoZLXgJcTcf91dP8njA12Z3Jr+PGBQbSaw64/NM1fKXbnbL2S/VYJT0
-         vi+1dQEh1CeTDosGCjH0uMwXuFKBYiwUQlNCfQLygu19LlNL4AcKmaBu/ZfZNLDICGgM
-         6COhbzewNAc4T8kO3Fiqv1098xQ0lzUGiaZolMIctaic4WS7CV7ztj8ZICrkP9I9vofc
-         BFsI7uoWbFEM79MoXdU76cv+JiC+Zx2TUhdZI6tMyUdVJRofEb5+jbn8hWMAGqPyFu+D
-         mftB/gYJKQrf3lPJdNgjoi4qxCLpbIgQqZeMNdhzNlnP/vtt5SSIiP6TKprouzACCMCW
-         cuvw==
-X-Forwarded-Encrypted: i=1; AJvYcCW3L0KtMLRz8L/JEOGt532g9Y9p/MFOkBrylp5kbjXHF8xAaXh2b2zf5PFxva7VrXD2fGhTGA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx3UkbEei278w/RPK+yLW31Ia3V7VBTcuzkIWG7650ERh7jHAn2
-	1SrGQ57P+TU0y+FtR4gl9xzGqyIxMLOSqV8rp7C57syp3DnYnlZxtAr0yKTHJXzrDv75dz21VtH
-	v4m3STznuLTfnRFm3Mj6WrIbyzzolah3B27oM
-X-Gm-Gg: ASbGnctAB1WKe2rRgmFPKVYZHqWzjfvtIiqF4lS6NivAJo4scouTSpfDUlBgR24z1vM
-	qSAqaQURjVpWJWU3BjxbyWaqlAwbvCb001c9KZ30gaBV8kIF58G+3HsmvICm/3fTkJmiGTKcrsy
-	pwnm6kk5HMI6v4UjjuMxyCG2axXw==
-X-Google-Smtp-Source: AGHT+IFtRdtnxmYqCiNGozdyiDRgbS5XVd2/jJNIMYaa9ildizNYGE8X3N7zH+w9Lm6oeOkoQXAJJ6yRGhxNC/i547Y=
-X-Received: by 2002:a05:622a:1c10:b0:476:77be:9102 with SMTP id
- d75a77b69052e-4771f510a8amr3527931cf.7.1742573676464; Fri, 21 Mar 2025
- 09:14:36 -0700 (PDT)
+	s=arc-20240116; t=1742575736; c=relaxed/simple;
+	bh=JBdg7xMBLd5iIqOC0TaR5k4K2Igly/gZ0cV4AKosEWo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MSKHkXwSAD2BQJJpXF3vYIapqBt7oqw7i9oOS7wmF03cwmW+8wABpozirog4uYublF3j+jeF/aW9bg9skhZdMGyix1HAiUblXmk/55cn7lh5o/qfQ3weqsYVAMClSWpMxoNv+blR9txwS74n36eC33XBIZWjVUTw4vuebBODQuE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 12A25106F;
+	Fri, 21 Mar 2025 09:49:01 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 791DD3F63F;
+	Fri, 21 Mar 2025 09:48:50 -0700 (PDT)
+Message-ID: <135390b1-c0c5-4595-a3f3-1fb376473872@arm.com>
+Date: Fri, 21 Mar 2025 16:48:46 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250320173931.1583800-1-surenb@google.com> <20250320173931.1583800-4-surenb@google.com>
- <20250321-unhelpful-doze-791895ca5b01@spud>
-In-Reply-To: <20250321-unhelpful-doze-791895ca5b01@spud>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Fri, 21 Mar 2025 09:14:24 -0700
-X-Gm-Features: AQ5f1Jp8UfxX8WOnw9385d8J0NeQgt0g6OSnoez6cTxiRd2n5Bydr6rryoZB6As
-Message-ID: <CAJuCfpEujbaSrk5+mR=+vWqwSu-t52fVmbPf5msnpduSB6AT2Q@mail.gmail.com>
-Subject: Re: [RFC 3/3] mm: integrate GCMA with CMA using dt-bindings
-To: Conor Dooley <conor@kernel.org>
-Cc: akpm@linux-foundation.org, willy@infradead.org, david@redhat.com, 
-	vbabka@suse.cz, lorenzo.stoakes@oracle.com, liam.howlett@oracle.com, 
-	alexandru.elisei@arm.com, peterx@redhat.com, hannes@cmpxchg.org, 
-	mhocko@kernel.org, m.szyprowski@samsung.com, iamjoonsoo.kim@lge.com, 
-	mina86@mina86.com, axboe@kernel.dk, viro@zeniv.linux.org.uk, 
-	brauner@kernel.org, hch@infradead.org, jack@suse.cz, hbathini@linux.ibm.com, 
-	sourabhjain@linux.ibm.com, ritesh.list@gmail.com, aneesh.kumar@kernel.org, 
-	bhelgaas@google.com, sj@kernel.org, fvdl@google.com, ziy@nvidia.com, 
-	yuzhao@google.com, minchan@kernel.org, linux-mm@kvack.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-block@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Minchan Kim <minchan@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
+ path
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Danilo Krummrich <dakr@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
+ Nipun Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>,
+ Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+ Charan Teja Kalla <quic_charante@quicinc.com>
+References: <cover.1740753261.git.robin.murphy@arm.com>
+ <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
+ <CGME20250313095633eucas1p29cb55f2504b4bcf67c16b3bd3fa9b8cd@eucas1p2.samsung.com>
+ <9b358d68-332e-404e-9a75-740297f7b28d@samsung.com>
+ <417d6f59-0d78-4e81-ad0b-e06846f786b0@arm.com>
+ <bf2adf5d-1432-4bb7-846c-e1bcfa84858b@samsung.com>
+ <016bb7ca-f0d3-464e-ac74-46e6f78e90d7@arm.com>
+ <b63ff6b4-9dc3-42ea-8b87-d4fdead8d0eb@arm.com>
+ <cdc333e4-25bb-4171-9f6e-01f1de947db3@samsung.com>
+ <d6cd5e64-e2c0-4c6e-9c89-ce8b3e0a4a5b@arm.com>
+ <ace3a01f-4700-4455-ada3-0f88fc8ea4cd@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <ace3a01f-4700-4455-ada3-0f88fc8ea4cd@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Mar 21, 2025 at 7:06=E2=80=AFAM Conor Dooley <conor@kernel.org> wro=
-te:
->
-> On Thu, Mar 20, 2025 at 10:39:31AM -0700, Suren Baghdasaryan wrote:
-> > This patch introduces a new "guarantee" property for shared-dma-pool.
-> > With this property, admin can create specific memory pool as
-> > GCMA-based CMA if they care about allocation success rate and latency.
-> > The downside of GCMA is that it can host only clean file-backed pages
-> > since it's using cleancache as its secondary user.
-> >
-> > Signed-off-by: Minchan Kim <minchan@google.com>
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > ---
-> >  arch/powerpc/kernel/fadump.c |  2 +-
-> >  include/linux/cma.h          |  2 +-
-> >  kernel/dma/contiguous.c      | 11 ++++++++++-
-> >  mm/cma.c                     | 33 ++++++++++++++++++++++++++-------
-> >  mm/cma.h                     |  1 +
-> >  mm/cma_sysfs.c               | 10 ++++++++++
-> >  6 files changed, 49 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.=
-c
-> > index 4b371c738213..4eb7be0cdcdb 100644
-> > --- a/arch/powerpc/kernel/fadump.c
-> > +++ b/arch/powerpc/kernel/fadump.c
-> > @@ -111,7 +111,7 @@ void __init fadump_cma_init(void)
-> >               return;
-> >       }
-> >
-> > -     rc =3D cma_init_reserved_mem(base, size, 0, "fadump_cma", &fadump=
-_cma);
-> > +     rc =3D cma_init_reserved_mem(base, size, 0, "fadump_cma", &fadump=
-_cma, false);
-> >       if (rc) {
-> >               pr_err("Failed to init cma area for firmware-assisted dum=
-p,%d\n", rc);
-> >               /*
-> > diff --git a/include/linux/cma.h b/include/linux/cma.h
-> > index 62d9c1cf6326..3207db979e94 100644
-> > --- a/include/linux/cma.h
-> > +++ b/include/linux/cma.h
-> > @@ -46,7 +46,7 @@ extern int __init cma_declare_contiguous_multi(phys_a=
-ddr_t size,
-> >  extern int cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
-> >                                       unsigned int order_per_bit,
-> >                                       const char *name,
-> > -                                     struct cma **res_cma);
-> > +                                     struct cma **res_cma, bool gcma);
-> >  extern struct page *cma_alloc(struct cma *cma, unsigned long count, un=
-signed int align,
-> >                             bool no_warn);
-> >  extern bool cma_pages_valid(struct cma *cma, const struct page *pages,=
- unsigned long count);
-> > diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> > index 055da410ac71..a68b3123438c 100644
-> > --- a/kernel/dma/contiguous.c
-> > +++ b/kernel/dma/contiguous.c
-> > @@ -459,6 +459,7 @@ static int __init rmem_cma_setup(struct reserved_me=
-m *rmem)
-> >       unsigned long node =3D rmem->fdt_node;
-> >       bool default_cma =3D of_get_flat_dt_prop(node, "linux,cma-default=
-", NULL);
-> >       struct cma *cma;
-> > +     bool gcma;
-> >       int err;
-> >
-> >       if (size_cmdline !=3D -1 && default_cma) {
-> > @@ -476,7 +477,15 @@ static int __init rmem_cma_setup(struct reserved_m=
-em *rmem)
-> >               return -EINVAL;
-> >       }
-> >
-> > -     err =3D cma_init_reserved_mem(rmem->base, rmem->size, 0, rmem->na=
-me, &cma);
-> > +     gcma =3D !!of_get_flat_dt_prop(node, "guarantee", NULL);
->
-> When this (or if I guess) this goes !RFC, you will need to document this
-> new property that you're adding.
+On 21/03/2025 12:15 pm, Marek Szyprowski wrote:
+> On 17.03.2025 19:22, Robin Murphy wrote:
+>> On 17/03/2025 7:37 am, Marek Szyprowski wrote:
+>>> On 13.03.2025 15:12, Robin Murphy wrote:
+>>>> On 2025-03-13 1:06 pm, Robin Murphy wrote:
+>>>>> On 2025-03-13 12:23 pm, Marek Szyprowski wrote:
+>>>>>> On 13.03.2025 12:01, Robin Murphy wrote:
+>>>>>>> On 2025-03-13 9:56 am, Marek Szyprowski wrote:
+>>>>>>> [...]
+>>>>>>>> This patch landed in yesterday's linux-next as commit bcb81ac6ae3c
+>>>>>>>> ("iommu: Get DT/ACPI parsing into the proper probe path"). In my
+>>>>>>>> tests I
+>>>>>>>> found it breaks booting of ARM64 RK3568-based Odroid-M1 board
+>>>>>>>> (arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts). Here is the
+>>>>>>>> relevant kernel log:
+>>>>>>>
+>>>>>>> ...and the bug-flushing-out begins!
+>>>>>>>
+>>>>>>>> Unable to handle kernel NULL pointer dereference at virtual address
+>>>>>>>> 00000000000003e8
+>>>>>>>> Mem abort info:
+>>>>>>>>        ESR = 0x0000000096000004
+>>>>>>>>        EC = 0x25: DABT (current EL), IL = 32 bits
+>>>>>>>>        SET = 0, FnV = 0
+>>>>>>>>        EA = 0, S1PTW = 0
+>>>>>>>>        FSC = 0x04: level 0 translation fault
+>>>>>>>> Data abort info:
+>>>>>>>>        ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
+>>>>>>>>        CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+>>>>>>>>        GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+>>>>>>>> [00000000000003e8] user address but active_mm is swapper
+>>>>>>>> Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
+>>>>>>>> Modules linked in:
+>>>>>>>> CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc3+ #15533
+>>>>>>>> Hardware name: Hardkernel ODROID-M1 (DT)
+>>>>>>>> pstate: 00400009 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>>>>>>>> pc : devm_kmalloc+0x2c/0x114
+>>>>>>>> lr : rk_iommu_of_xlate+0x30/0x90
+>>>>>>>> ...
+>>>>>>>> Call trace:
+>>>>>>>>       devm_kmalloc+0x2c/0x114 (P)
+>>>>>>>>       rk_iommu_of_xlate+0x30/0x90
+>>>>>>>
+>>>>>>> Yeah, looks like this is doing something a bit questionable which
+>>>>>>> can't
+>>>>>>> work properly. TBH the whole dma_dev thing could probably be
+>>>>>>> cleaned up
+>>>>>>> now that we have proper instances, but for now does this work?
+>>>>>>
+>>>>>> Yes, this patch fixes the problem I've observed.
+>>>>>>
+>>>>>> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>>>
+>>>>>> BTW, this dma_dev idea has been borrowed from my exynos_iommu driver
+>>>>>> and
+>>>>>> I doubt it can be cleaned up.
+>>>>>
+>>>>> On the contrary I suspect they both can - it all dates back to when
+>>>>> we had the single global platform bus iommu_ops and the SoC drivers
+>>>>> were forced to bodge their own notion of multiple instances, but with
+>>>>> the modern core code, ops are always called via a valid IOMMU
+>>>>> instance or domain, so in principle it should always be possible to
+>>>>> get at an appropriate IOMMU device now. IIRC it was mostly about
+>>>>> allocating and DMA-mapping the pagetables in domain_alloc, where the
+>>>>> private notion of instances didn't have enough information, but
+>>>>> domain_alloc_paging solves that.
+>>>>
+>>>> Bah, in fact I think I am going to have to do that now, since although
+>>>> it doesn't crash, rk_domain_alloc_paging() will also be failing for
+>>>> the same reason. Time to find a PSU for the RK3399 board, I guess...
+>>>>
+>>>> (Or maybe just move the dma_dev assignment earlier to match Exynos?)
+>>>
+>>> Well I just found that Exynos IOMMU is also broken on some on my test
+>>> boards. It looks that the runtime pm links are somehow not correctly
+>>> established. I will try to analyze this later in the afternoon.
+>>
+>> Hmm, I tried to get an Odroid-XU3 up and running, but it seems unable
+>> to boot my original 6.14-rc3-based branch - even with the IOMMU driver
+>> disabled, it's consistently dying somewhere near (or just after) init
+>> with what looks like some catastrophic memory corruption issue - very
+>> occasionally it's managed to print the first line of various different
+>> panics.
+>>
+>> Before that point though, with the IOMMU driver enabled it does appear
+>> to show signs of working OK:
+>>
+>> [    0.649703] exynos-sysmmu 14650000.sysmmu: hardware version: 3.3
+>> [    0.654220] platform 14450000.mixer: Adding to iommu group 1
+>> ...
+>> [    2.680920] exynos-mixer 14450000.mixer:
+>> exynos_iommu_attach_device: Attached IOMMU with pgtable 0x42924000
+>> ...
+>> [    5.196674] exynos-mixer 14450000.mixer:
+>> exynos_iommu_identity_attach: Restored IOMMU to IDENTITY from pgtable
+>> 0x42924000
+>> [    5.207091] exynos-mixer 14450000.mixer:
+>> exynos_iommu_attach_device: Attached IOMMU with pgtable 0x42884000
+>>
+>>
+>> The multi-instance stuff in probe/release does look a bit suspect,
+>> however - seems like the second instance probe would overwrite the
+>> first instance's links, and then there would be a double-del() if the
+>> device were ever actually released again? I may have made that much
+>> more likely to happen, but I suspect it was already possible with
+>> async driver probe...
+> 
+> That is really strange. My Odroid XU3 boots fine from commit
+> bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path"),
+> although the IOMMU seems not to be working correctly. I've tested this
+> with 14450000.mixer device (one need to attach HDMI cable to get it
+> activated) and it looks that the video data are not being read from
+> memory at all (the lack of VSYNC is reported, no IOMMU fault). However,
+> from time to time, everything initializes and works properly.
 
-Definitely. I'll document the cleancache and GCMA as well.
-Thanks!
+Urgh, seems my mistake was assuming exynos_defconfig was the right thing 
+to begin from - bcb81ac6ae3c with that still dies in the same way (this 
+time I saw a hint of spin_bug() being hit...), however a 
+multi_v7_defconfig build does get to userspace OK again with no obvious 
+signs of distress:
+
+[root@alarm ~]# grep -Hr . /sys/kernel/iommu_groups/*/type
+/sys/kernel/iommu_groups/0/type:identity
+/sys/kernel/iommu_groups/1/type:identity
+/sys/kernel/iommu_groups/10/type:identity
+/sys/kernel/iommu_groups/2/type:identity
+/sys/kernel/iommu_groups/3/type:identity
+/sys/kernel/iommu_groups/4/type:identity
+/sys/kernel/iommu_groups/5/type:identity
+/sys/kernel/iommu_groups/6/type:identity
+/sys/kernel/iommu_groups/7/type:identity
+/sys/kernel/iommu_groups/8/type:identity
+/sys/kernel/iommu_groups/9/type:identity
+
+Annoyingly I do have an adapter for the fiddly micro-HDMI, but it's at 
+home :(
+
+> It looks that this is somehow related to the different IOMMU/DMA-mapping
+> glue code, as the other boards (ARM64 based) with exactly the same
+> Exynos IOMMU driver always work fine. I've tried to figure out what
+> actually happens, but so far I didn't get anything for sure. Disabling
+> the call to dev->bus->dma_configure(dev) from iommu_init_device() seems
+> to be fixing this, but this is almost equal to the revert of the
+> $subject patch. I don't get why calling it in iommu_init_device() causes
+> problems. It also doesn't look that this is anyhow related to the
+> multi-instance stuff, as the same happens if I only leave a single
+> exynos-sysmmu instance and its client (only 14450000.mixer device in the
+> system).
+
+On a hunch I stuck a print in exynos_iommu_probe_device(), and it looks 
+like in fact device_link_add() isn't getting called at all, and indeed 
+your symptoms do sound like they could be explained by the IOMMU not 
+being reliably resumed... lemme stare at exynos_iommu_of_xlate() a bit 
+longer...
+
+Thanks,
+Robin.
