@@ -1,157 +1,125 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2072.outbound.protection.outlook.com [40.107.236.72])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76C321DEFF3
-	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 19:25:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.72
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742585115; cv=fail; b=pHpMWO1ix7D2q/89KSyI2zkvAIVfAAVQi34Qxo+/k9p3VyA48TRUQ4XGrpu9aiDbxy/EK5zz2KFvjQAbTvMJARFA9dHSCQI5xiWBoYwc8vTFX2HfypQT9Q8KuDnLgkznaaBA/qqADXvrBijmhavXjDcHOGBAUVfKuufEPrZ+2IY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742585115; c=relaxed/simple;
-	bh=3y2DOXc/85661wUaUZiZlu5zhXeMEZOXY0a6sG7bNoM=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UaFz9vmCPObBraxoeRCMxGZ4bS9/ShJTn3NW6o2hgfiReNOv4Cl14C5iDxY9Y0rfSHo3Scs0mKU9WgE2gI9azWsh5l9PyLr7I9jjaZHFoeiSukJpzEWUZNg5jSpre5dLAMuaAb78pstUa4F0x0TAeUgGkM/Z5KimmVETF6gcF8o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ugZarrEv; arc=fail smtp.client-ip=40.107.236.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62A3822E3E1;
+	Fri, 21 Mar 2025 19:40:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742586023; cv=none; b=sqtE2yGSPgWLG0R3CZRNSnehsEYvoOsstnKaDQ4DNB2MZbDylaC2v3RA0JrFxXdM/AHxQpD445FD2rFzklHvb9F16BaGJd9Coe3w29F7uDZHq3LbZbo4E9E4y27DCWhdPvHmVudnjbio9gxnwfW9H0utFUdkQtF08j/r1vzFFfo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742586023; c=relaxed/simple;
+	bh=akFYifO+0Izkdu7tAs4NIxrQ/KlBI200rVFG7NTvKvw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=I6Ay/ysAFloAiuExYI/OB33f5JL1TJZlJvg6klsuF/jmCVV8mH2duPYKMcI/bpZm2RUN8Ko9n1JGYqH5BEdiESuo735r9N5fLzVlpYplXmWqFD0Ef6bOTm8V0wEezw8/K397FC1wBIwrFgNtDxm71ZWAGQyH9FEaCccQGRNE3dw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pr2DWuag; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ugZarrEv"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FNu4XDSOasTOZ+PKumaIulfN7EsvNOlcUMWnbYOg0GzihzFEqIhQMyp7bNKmmqwtrMfpTYCChsNO1tQGryYZsgewa3bjjF5c8bg0Iz6pp3LKqtbZ4ngARMjgk3aNcLzZMCGu/jsk5V6qPwT9Ttvkx2K93lPau6jqs6BMYEwRgVdrUJZA9+uIznMFK0tMRnC3b5GBU+ClsVbIFsm96FCQbfz24VvVpURiYyiLchR9SddnNIHviqCRoCklK7LN7SihG8XvE+RhIOZyYmlqcUIXINDyP0CL3sdxB5zbHk2HEo3XaDdE0r6D7FDPIB0OnQgHAMmscs4kWSGg39HuYdYHxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I2U7B+6m1kXSdgvX4udslyQwbThZ6SOOeOUF6VoJ+4s=;
- b=hSx9+cuNXVWKOtxTgRFSMgKD331CPK7Ek6McozEm2jWT/Xa4kUeeFkl91YErtHptG7R39IbAICb+WvKCCY0Y+1zffWcuB/6iKgBBKFWzyjzy/wNy+wfCLMXJaWTH0ub9ZyNmxWkGCa302yedVD7cTj35O99FTKeSHDytSkKl/1Vz1IEom8f3wJ9rlfIDQk/7QchLsA7Y2pKYsuJO+ASdBf4ckASy1vlMhlRaMH/G/vTfzzznk3VyMl0nQqKfpAHVou/SLXugXts00XFwVoWIW8UX9NI+uUMrwRu6kVp+IwjQZSzC1guTeaDKFioxtEYuWwdxkeNLQrO4fnSkSC/QQQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I2U7B+6m1kXSdgvX4udslyQwbThZ6SOOeOUF6VoJ+4s=;
- b=ugZarrEvi4w/LYYx6ej/ns0C0F0vDx9k2bQ4HsRCgnAsXcnc4s8xlkUAmzaC4nW5pDNT3ucM+utnziiCadh3ta6HG44//OXUxKaZqePhW+pJp9prckEXm/JZpyj5/baee8BJxpLR31HhkE2uxQhafC8rLpcQ2a/SKy314fDWfOU5DZENMGsOHDVonyBk+GoioYcZnQ1edYFJtN6unZ0isTXcQDVOxtciZucAZlsgDAXj9xDM0L1GiilPxrpz6hvZisfgh16iEUUvNbpy5xStbSgg9zFvaFGZLqOMsHI7R7cWzbMbQKWeYJmYwJjzAMTggv23Ia0rqppnVc2R7hrfpA==
-Received: from MW4PR03CA0332.namprd03.prod.outlook.com (2603:10b6:303:dc::7)
- by CYYPR12MB8730.namprd12.prod.outlook.com (2603:10b6:930:c1::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.34; Fri, 21 Mar
- 2025 19:25:07 +0000
-Received: from BY1PEPF0001AE16.namprd04.prod.outlook.com
- (2603:10b6:303:dc:cafe::2e) by MW4PR03CA0332.outlook.office365.com
- (2603:10b6:303:dc::7) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8534.34 via Frontend Transport; Fri,
- 21 Mar 2025 19:25:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BY1PEPF0001AE16.mail.protection.outlook.com (10.167.242.104) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8534.20 via Frontend Transport; Fri, 21 Mar 2025 19:25:06 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 21 Mar
- 2025 12:24:53 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Fri, 21 Mar 2025 12:24:52 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Fri, 21 Mar 2025 12:24:52 -0700
-Date: Fri, 21 Mar 2025 12:24:50 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>
-CC: <kevin.tian@intel.com>, <jgg@nvidia.com>, <joro@8bytes.org>,
-	<baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>
-Subject: Re: [PATCH v11 00/18] iommufd support pasid attach/replace
-Message-ID: <Z929AnYWDo22N5S9@Asurada-Nvidia>
-References: <20250321171940.7213-1-yi.l.liu@intel.com>
- <Z92iIdpNz57WDYyS@Asurada-Nvidia>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pr2DWuag"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC74CC4CEE3;
+	Fri, 21 Mar 2025 19:40:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1742586022;
+	bh=akFYifO+0Izkdu7tAs4NIxrQ/KlBI200rVFG7NTvKvw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Pr2DWuagjpxdv828IHEWdkQrK3xWNyh+VOvLWFMybczPLc3FwuGpcRDxKAf8pa83Q
+	 IM4Dk8MAuYXHaIY3k1yEIluU2rpPEZnb0y4V3gSzVw0oLnqdy1IqjmaDab917UGsKB
+	 gIF2O0O3QFAjsnvftAyaCOb8wW/av/t2TjbP7pNhZVdpVKna/NX6idxyDU0Y1w9xyP
+	 5fPgfL32gG2gaXjDtw/FmJJTnEmxKiRck6+khz/i/NSF4ifgkm+kFFntj15N3zrGvf
+	 6OYWydzt3mehVDoIfxbk+cFmVxin1uD0oxEzZmlfeoqtUgKkykxfWqWKGa2+YMetL/
+	 RX1HXxtrvLjfw==
+Date: Fri, 21 Mar 2025 20:40:16 +0100
+From: Danilo Krummrich <dakr@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com,
+	robin.murphy@arm.com, aliceryhl@google.com,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v14 02/11] rust: add dma coherent allocator abstraction.
+Message-ID: <Z93AoLeUSUY6dj4U@pollux>
+References: <20250311174930.2348813-1-abdiel.janulgue@gmail.com>
+ <20250311174930.2348813-3-abdiel.janulgue@gmail.com>
+ <20250321182539.GP126678@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Z92iIdpNz57WDYyS@Asurada-Nvidia>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY1PEPF0001AE16:EE_|CYYPR12MB8730:EE_
-X-MS-Office365-Filtering-Correlation-Id: b4254195-53ae-400f-1754-08dd68ae1630
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|36860700013|376014|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?2MMa0srWXZXnUmau79z/ikuVEwG35aa6eAUvfbBYAe735QqcHe3Twmpan/9z?=
- =?us-ascii?Q?FON6zzXhkO/7BjxxnQAlttDWFvr8TVjv6Mdl4sKywYzKnA3AfMd3MZsQQU1q?=
- =?us-ascii?Q?baDqDuqm7apg3XfX9pys7Mjvk1NxpVIndgPzYRoRY4lglZSbNTT5UNBC0ztT?=
- =?us-ascii?Q?MC3LbL4k8oxWRKxT24bqkMWbtps9Q9YfTx2097YbDL9txmffKdFQB8Mkon/P?=
- =?us-ascii?Q?5M7vmCFbopWZElInpR/OArzuYEcxd1PNiOG5QHchCBLanBuOT3dQn7iXWqQv?=
- =?us-ascii?Q?fybNY0zvIYmdfYt1fxl7oAEmv4FJwmjybTAtvcqy1/mMRh7lWn+hoJmX0EOo?=
- =?us-ascii?Q?w2lejlrqOptFcQTnu5lc8GkfSN+lN1gmjn5I1J93EALoBHj591rrF6fZGqoe?=
- =?us-ascii?Q?iXfnoWONDBM4kD73H9bXidx2o+xbw37LBSLt13RX5bj0Q/fLOK/PjTgwBwsR?=
- =?us-ascii?Q?6clXOKHtZeobllEaMW1Kvw190NSGR2F3R2vi+4Q7UEb4Hg+N9LlTw9zxK6X2?=
- =?us-ascii?Q?Jv7sV5avWrPxcmRzoLo8ZgvM0u1rJP1K6vmGB2utnsmhsz+JRmAQAo9MGv6L?=
- =?us-ascii?Q?ZEYjhfSeBrzVrXKgeP2ZwMu7Jg4ZRsg4+YI8/buu0v74xeNr56ceBQMxN148?=
- =?us-ascii?Q?jZ9YsDhstIrx0LITnqqV6L+W+NYMVJCF+Oe5ieJLElzUn1XBCCXJNdTr5dqA?=
- =?us-ascii?Q?9sCrf2ck/jH4zBmFPpZFADvYz8vOUMVB2tEijEtPalb7yQjcJcX8rupYwEoP?=
- =?us-ascii?Q?cO1P9PRFnVOlamLMzujk1TrD1CfenPJxozIyeUmfdPsiEMYJDLMf5+DG4TMJ?=
- =?us-ascii?Q?reknTn7Lcim0CqcB0nuSfcvrZqJn1VUU4rHNT2BpsNSqpwnr+ytKWh2ZsToS?=
- =?us-ascii?Q?X0aYW0/BJstahJDudtwPassXgJZJho8vNE/9IoP96c4v/hK7+jVMsi27Y/q7?=
- =?us-ascii?Q?7uVXQQQMwx0yd6xjQBkj6/bjXTmZrXjeu/8FSI6nhfGZCff57uoJCOvj932m?=
- =?us-ascii?Q?VPPqF1LNR2jwfO9si2jw27yXPMg3hyoM6TuHCp4LebiHzTtEUlm+33YgM+M3?=
- =?us-ascii?Q?kw09JJxVfXxf4QRrqDahkpmWrhYAD+cpDVad39Yy1o184mq9Fr/oCWGko9yK?=
- =?us-ascii?Q?TzHBLoTvX8wTjmB6dLcvbW9rlXnFYi6GnhvcvhDSvAQQdGaUjiX2S4kAEN2m?=
- =?us-ascii?Q?5Eq1Baqc0z1IdAaaceFFTslM13f+OQstJ2oTWA9odJsgu5mOfDnx1WnCPfc+?=
- =?us-ascii?Q?k8YZiRxJvNZvGRVCpnVduhuSekH0ZXTBdT+8RQa5Tcmcgdt883B0q+Sl8Pez?=
- =?us-ascii?Q?8tpUUhPT6e5geXY7PPYavNOTbOpW3B7r6qhK8HnfErnRBUJOQE7btDfjtKJG?=
- =?us-ascii?Q?5irb5BlyG+DMaXQRr14Fkah74cn1qH4Yh+Hix1eNlxGiJ121jo2GbL8ehq+V?=
- =?us-ascii?Q?iStVgD4JrzNTFURvgYtWeAcnlwY1Gmry5EzTUFMNwuV2d3BI1awpASYa9mo4?=
- =?us-ascii?Q?4nJwnZU5jeAC2qo=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700013)(376014)(13003099007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2025 19:25:06.2170
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b4254195-53ae-400f-1754-08dd68ae1630
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BY1PEPF0001AE16.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8730
+In-Reply-To: <20250321182539.GP126678@ziepe.ca>
 
-On Fri, Mar 21, 2025 at 10:30:12AM -0700, Nicolin Chen wrote:
-> On Fri, Mar 21, 2025 at 10:19:22AM -0700, Yi Liu wrote:
-> > [2] https://github.com/yiliu1765/iommufd/tree/iommufd_pasid
-> > 
-> > Change log:
-> > 
-> > v11:
-> >  - Handle is always valid for the replace API, hence drop some meaningless check (Nic/Baolu)
-> >  - Avoid inline helpers in .c file patch 02 an 06 of v10 (Baolu)
-> >  - Use xa_load() instead of xa_cmpxch() in iommufd_device_do_replace() (Jason/Nic)
-> >  - Fix a memleak in patch 11 0f v10, it's due to an order broken (Nic/Jason)
-> >  - Make the auto_hwpts always be non-pasid-compat to avoid confusion between
-> >    the RID and PASID path
-> >  - Add pasid-num-bit as 0 for non-pasid-capable mock device (Nic)
-> >  - Misc tweaks to the patch 17 and 18 (Nic)
-> >  - More r-b tags
+On Fri, Mar 21, 2025 at 03:25:39PM -0300, Jason Gunthorpe wrote:
+> On Tue, Mar 11, 2025 at 07:47:58PM +0200, Abdiel Janulgue wrote:
+> > +pub struct CoherentAllocation<T: AsBytes + FromBytes> {
+> > +    dev: ARef<Device>,
+> > +    dma_handle: bindings::dma_addr_t,
+> > +    count: usize,
+> > +    cpu_addr: *mut T,
+> > +    dma_attrs: Attrs,
+> > +}
 > 
-> I am running some sanity with this v11 using the iommufd_pasid
-> branch, and will give Tested-by in the next a couple of hours
-> so long as everything works fine.
+> I'd like to point out how memory wasteful this is from what real
+> drivers are doing today when they use the coherent API. Let's compare
+> against SMMUv3's use for the CD table..
+> 
+> This would be the code in arm_smmu_alloc_cd_ptr()
+> 
+> It is making a 2 level radix tree.
+> 
+> The cpu_addr is stored in a linear array of pointers:
+> 
+> 			struct arm_smmu_cdtab_l2 **l2ptrs;
+> 
+> The dma_addr is encoded into the HW data structure itself:
+> 
+> 		arm_smmu_write_cd_l1_desc(&cd_table->l2.l1tab[idx],
+> 						  l2ptr_dma);
+> 
+> The size of the allocation is fixed size:
+> 			*l2ptr = dma_alloc_coherent(smmu->dev, sizeof(**l2ptr),
+>                                                                 ^^^^^^^^^^^^
+> 						    &l2ptr_dma, GFP_KERNEL);
+> 
+> It doesn't need a struct device pointer or reference because this uses
+> the usual kernel 'fence' reasoning for destruction.
+> 
+> It doesn't even use dma_attrs. (why is this in a long term struct?)
+> 
+> So, smmu manages to do this with a single array of 8 bytes/entry to shadow
+> the CPU pointer, and recovers the dma_addr from the HW data structure:
+> 
+> 			dma_free_coherent(smmu->dev,
+> 					  sizeof(*cd_table->l2.l2ptrs[i]),
+> 					  cd_table->l2.l2ptrs[i],
+> 					  arm_smmu_cd_l1_get_desc(&cd_table->l2.l1tab[i]));
+> 
+> Basically, it was designed to be very memory efficient.
+> 
+> If we imagine driving the same HW in rust the array storing the CPU
+> pointer would have to expand to 40 bytes/entry to hold every
+> CoherentAllocation. This means rust would need a new high order memory
+> allocation to hold the CoherentAllocation memory array!
 
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+One solution that comes immediately to my mind is to have something like a
+CoherentAllocationPool that holds all the repeating metadata and provides an API
+to give you continuous allocations of the same kind without any bloat.
 
-Ran selftest and nested SMMU on ARM64.
+One thing I'd like to note though is that we can't have a perfect solutions for
+everything from the get-go. We have to start somewhere and work it out
+continuously and keep improving things as required.
+
+So, don't get me wrong, I really think you have a valid point with that. But we
+also can't consider every use-case from the get-go, push a huge amount of code
+and then get questioned on why there's no user for all this. :) IMHO, it's about
+finding a good balance.
