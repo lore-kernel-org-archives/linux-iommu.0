@@ -1,125 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62A3822E3E1;
-	Fri, 21 Mar 2025 19:40:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5EB622E414
+	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 19:43:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742586023; cv=none; b=sqtE2yGSPgWLG0R3CZRNSnehsEYvoOsstnKaDQ4DNB2MZbDylaC2v3RA0JrFxXdM/AHxQpD445FD2rFzklHvb9F16BaGJd9Coe3w29F7uDZHq3LbZbo4E9E4y27DCWhdPvHmVudnjbio9gxnwfW9H0utFUdkQtF08j/r1vzFFfo=
+	t=1742586241; cv=none; b=Z1bGgR4wCiYbmx1t502XgDONw5/ddE4gySio+CG3favp5yMi016IKIni6T5SBDJ+f1zdRccNfBm7A3wsB+cR7WwKIb7GDeEPqaIupRWXxnk+BWYZOtEtXA/878lIj3oi8f2xHj4z0lQuKOCRqFWomSyvsKHjSV4JECTBApmsFPM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742586023; c=relaxed/simple;
-	bh=akFYifO+0Izkdu7tAs4NIxrQ/KlBI200rVFG7NTvKvw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=I6Ay/ysAFloAiuExYI/OB33f5JL1TJZlJvg6klsuF/jmCVV8mH2duPYKMcI/bpZm2RUN8Ko9n1JGYqH5BEdiESuo735r9N5fLzVlpYplXmWqFD0Ef6bOTm8V0wEezw8/K397FC1wBIwrFgNtDxm71ZWAGQyH9FEaCccQGRNE3dw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pr2DWuag; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1742586241; c=relaxed/simple;
+	bh=KX74UepkMpw5bz1iVQ6k42eEFwgzte8CZclZOBGzCgk=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=UdBouGaRvKwjWcWJplGwrQx+nW9Xx6+iGYrYU4hpBeKlnvs43pyeZYnuQhrJu1eEgqdwrmFV4lqHqR09pkMa7IaATsFAuUv18mYs1gFCXrIZ1OjNHQl6GDG24UeO3ewYYighihg+Im5EG2R9gThhTQmE5Nhm5dLb4Vz44V5gKPA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kdN5+697; arc=none smtp.client-ip=209.85.216.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pr2DWuag"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC74CC4CEE3;
-	Fri, 21 Mar 2025 19:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742586022;
-	bh=akFYifO+0Izkdu7tAs4NIxrQ/KlBI200rVFG7NTvKvw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Pr2DWuagjpxdv828IHEWdkQrK3xWNyh+VOvLWFMybczPLc3FwuGpcRDxKAf8pa83Q
-	 IM4Dk8MAuYXHaIY3k1yEIluU2rpPEZnb0y4V3gSzVw0oLnqdy1IqjmaDab917UGsKB
-	 gIF2O0O3QFAjsnvftAyaCOb8wW/av/t2TjbP7pNhZVdpVKna/NX6idxyDU0Y1w9xyP
-	 5fPgfL32gG2gaXjDtw/FmJJTnEmxKiRck6+khz/i/NSF4ifgkm+kFFntj15N3zrGvf
-	 6OYWydzt3mehVDoIfxbk+cFmVxin1uD0oxEzZmlfeoqtUgKkykxfWqWKGa2+YMetL/
-	 RX1HXxtrvLjfw==
-Date: Fri, 21 Mar 2025 20:40:16 +0100
-From: Danilo Krummrich <dakr@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	rust-for-linux@vger.kernel.org, daniel.almeida@collabora.com,
-	robin.murphy@arm.com, aliceryhl@google.com,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, airlied@redhat.com,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v14 02/11] rust: add dma coherent allocator abstraction.
-Message-ID: <Z93AoLeUSUY6dj4U@pollux>
-References: <20250311174930.2348813-1-abdiel.janulgue@gmail.com>
- <20250311174930.2348813-3-abdiel.janulgue@gmail.com>
- <20250321182539.GP126678@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kdN5+697"
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-2ff6af1e264so6477445a91.3
+        for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 12:43:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1742586239; x=1743191039; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:reply-to:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1P+LJHYJ4i1KwKCPQagp0c3nRK0DwbrZQ6UBlearO8Y=;
+        b=kdN5+697FU6Z2lmjeLvwSh0A/bTgsahc+IPTYXl6/VzZ7AR3iqT/G0eDUPu0Hk+dsb
+         XJAL6X9FXOI8waoBu5tV5ZI9KDfgC4FD6rTI1uyX5u5cLzIIwxJSRyx0B17OG6BGbDik
+         xyIvwoVJclGz4VRlAT2ZjnqYPlv6q3Rkc2jE/dzuXK5n23SbW7u/EMOByDhHz0x070sy
+         unaqsomh56kuX2W1EjFR1PMThtK0Ycl0QVx1X+4utOqfO9D3UdLXgc+YQe7nNuXV4r7W
+         y56/J2scMePu9Ar7tQ6HDk4VFq3p5RgX/UNl5fgDF5ZMqyc9b4mteAEbsAFEpIsRSs3f
+         RBjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742586239; x=1743191039;
+        h=cc:to:from:subject:message-id:mime-version:date:reply-to
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1P+LJHYJ4i1KwKCPQagp0c3nRK0DwbrZQ6UBlearO8Y=;
+        b=LG2aZ8PDxPyf1YwXU0APg/Py4O8L/4Lu3bJT1fJwvBmkI3KlSYRUXl5rld7vwDa8b9
+         qQNZ7KMwFkCCS2SzPCflLKzRfs1DAivqSqaaK9tHPiBSA+ULYRaunBcVoUU9fhSKBRpE
+         khEPB9F9lHkWsturG1K3UUsoWEI14y82xXkKzOu0/LmOmIdKA89XYMLdPCuUO0EzW5ll
+         ZCSFfoW2gz5WKzIh3Z9lORsSikrXX9m677cuTR0BMnqYKubmi4J6rLAvK9hCjuJGLUl+
+         3OC91ZwUzlz+xnBr03DH3fIepT1FhRKYEuzfTMiNQQXlyQyAUyB3SDxuWdKoY8Vi1Xuk
+         xbDA==
+X-Gm-Message-State: AOJu0Yx4r0A2dS7tpfnY0XD4HFfKwmt1uVsB4YXyzHrQFAIdmsYzh9hM
+	DobMW1cvDUND/QoIS4hGQPMZMcS6WJg2qcJSC3gTQjPgDPRgIc03V8qUN2pUPuMilxWKM+yaq3A
+	grw==
+X-Google-Smtp-Source: AGHT+IF+j9rAdwMR5gemRh3P8wCOJuHO2S0smUMdVgrhe0fVugIbWc6qmCLLbRAvSSSjDdbxMGhZl2Ywltg=
+X-Received: from pjtd13.prod.google.com ([2002:a17:90b:4d:b0:301:b354:8d63])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:4d07:b0:2ff:69d4:6fe2
+ with SMTP id 98e67ed59e1d1-3030fe9c932mr7741412a91.16.1742586238967; Fri, 21
+ Mar 2025 12:43:58 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date: Fri, 21 Mar 2025 12:42:49 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250321182539.GP126678@ziepe.ca>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.49.0.395.g12beb8f557-goog
+Message-ID: <20250321194249.1217961-1-seanjc@google.com>
+Subject: [PATCH] iommu/vt-d: Wire up irq_ack() to irq_move_irq() for posted MSIs
+From: Sean Christopherson <seanjc@google.com>
+To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Robert Lippert <rlippert@google.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	Wentao Yang <wentaoyang@google.com>, Sean Christopherson <seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Mar 21, 2025 at 03:25:39PM -0300, Jason Gunthorpe wrote:
-> On Tue, Mar 11, 2025 at 07:47:58PM +0200, Abdiel Janulgue wrote:
-> > +pub struct CoherentAllocation<T: AsBytes + FromBytes> {
-> > +    dev: ARef<Device>,
-> > +    dma_handle: bindings::dma_addr_t,
-> > +    count: usize,
-> > +    cpu_addr: *mut T,
-> > +    dma_attrs: Attrs,
-> > +}
-> 
-> I'd like to point out how memory wasteful this is from what real
-> drivers are doing today when they use the coherent API. Let's compare
-> against SMMUv3's use for the CD table..
-> 
-> This would be the code in arm_smmu_alloc_cd_ptr()
-> 
-> It is making a 2 level radix tree.
-> 
-> The cpu_addr is stored in a linear array of pointers:
-> 
-> 			struct arm_smmu_cdtab_l2 **l2ptrs;
-> 
-> The dma_addr is encoded into the HW data structure itself:
-> 
-> 		arm_smmu_write_cd_l1_desc(&cd_table->l2.l1tab[idx],
-> 						  l2ptr_dma);
-> 
-> The size of the allocation is fixed size:
-> 			*l2ptr = dma_alloc_coherent(smmu->dev, sizeof(**l2ptr),
->                                                                 ^^^^^^^^^^^^
-> 						    &l2ptr_dma, GFP_KERNEL);
-> 
-> It doesn't need a struct device pointer or reference because this uses
-> the usual kernel 'fence' reasoning for destruction.
-> 
-> It doesn't even use dma_attrs. (why is this in a long term struct?)
-> 
-> So, smmu manages to do this with a single array of 8 bytes/entry to shadow
-> the CPU pointer, and recovers the dma_addr from the HW data structure:
-> 
-> 			dma_free_coherent(smmu->dev,
-> 					  sizeof(*cd_table->l2.l2ptrs[i]),
-> 					  cd_table->l2.l2ptrs[i],
-> 					  arm_smmu_cd_l1_get_desc(&cd_table->l2.l1tab[i]));
-> 
-> Basically, it was designed to be very memory efficient.
-> 
-> If we imagine driving the same HW in rust the array storing the CPU
-> pointer would have to expand to 40 bytes/entry to hold every
-> CoherentAllocation. This means rust would need a new high order memory
-> allocation to hold the CoherentAllocation memory array!
+Set the posted MSI irq_chip's irq_ack() hook to irq_move_irq() instead of
+a dummy/empty callback so that posted MSIs process pending changes to the
+IRQ's SMP affinity.  Failure to honor a pending set-affinity results in
+userspace being unable to change the effective affinity of the IRQ, as
+IRQD_SETAFFINITY_PENDING is never cleared and so irq_set_affinity_locked()
+always defers moving the IRQ.
 
-One solution that comes immediately to my mind is to have something like a
-CoherentAllocationPool that holds all the repeating metadata and provides an API
-to give you continuous allocations of the same kind without any bloat.
+The issue is most easily reproducible by setting /proc/irq/xx/smp_affinity
+multiple times in quick succession, as only the first update is likely to
+be handled in process context.
 
-One thing I'd like to note though is that we can't have a perfect solutions for
-everything from the get-go. We have to start somewhere and work it out
-continuously and keep improving things as required.
+Fixes: ed1e48ea4370 ("iommu/vt-d: Enable posted mode for device MSIs")
+Cc: Robert Lippert <rlippert@google.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Reported-by: Wentao Yang <wentaoyang@google.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ drivers/iommu/intel/irq_remapping.c | 29 +++++++++++++++--------------
+ 1 file changed, 15 insertions(+), 14 deletions(-)
 
-So, don't get me wrong, I really think you have a valid point with that. But we
-also can't consider every use-case from the get-go, push a huge amount of code
-and then get questioned on why there's no user for all this. :) IMHO, it's about
-finding a good balance.
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index ad795c772f21..333536c5259c 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -1278,43 +1278,44 @@ static struct irq_chip intel_ir_chip = {
+ };
+ 
+ /*
+- * With posted MSIs, all vectors are multiplexed into a single notification
+- * vector. Devices MSIs are then dispatched in a demux loop where
+- * EOIs can be coalesced as well.
++ * With posted MSIs, the MSI vectors are multiplexed into a single notification
++ * vector, and only the notification vector is sent to the APIC IRR.  Device
++ * MSIs are then dispatched in a demux loop that harvests the MSIs from the
++ * CPU's Posted Interrupt Request bitmap.  I.e. Posted MSIs never get sent to
++ * the APIC IRR, and thus do not need an EOI.  The notification handler instead
++ * performs a single EOI after processing the PIR.
+  *
+- * "INTEL-IR-POST" IRQ chip does not do EOI on ACK, thus the dummy irq_ack()
+- * function. Instead EOI is performed by the posted interrupt notification
+- * handler.
++ * Note!  Pending SMP/CPU affinity changes, which are per MSI, must still be
++ * honored, only the APIC EOI is omitted.
+  *
+  * For the example below, 3 MSIs are coalesced into one CPU notification. Only
+- * one apic_eoi() is needed.
++ * one apic_eoi() is needed, but each MSI needs to process pending changes to
++ * its CPU affinity.
+  *
+  * __sysvec_posted_msi_notification()
+  *	irq_enter();
+  *		handle_edge_irq()
+  *			irq_chip_ack_parent()
+- *				dummy(); // No EOI
++ *				irq_move_irq(); // No EOI
+  *			handle_irq_event()
+  *				driver_handler()
+  *		handle_edge_irq()
+  *			irq_chip_ack_parent()
+- *				dummy(); // No EOI
++ *				irq_move_irq(); // No EOI
+  *			handle_irq_event()
+  *				driver_handler()
+  *		handle_edge_irq()
+  *			irq_chip_ack_parent()
+- *				dummy(); // No EOI
++ *				irq_move_irq(); // No EOI
+  *			handle_irq_event()
+  *				driver_handler()
+  *	apic_eoi()
+  *	irq_exit()
++ *
+  */
+-
+-static void dummy_ack(struct irq_data *d) { }
+-
+ static struct irq_chip intel_ir_chip_post_msi = {
+ 	.name			= "INTEL-IR-POST",
+-	.irq_ack		= dummy_ack,
++	.irq_ack		= irq_move_irq,
+ 	.irq_set_affinity	= intel_ir_set_affinity,
+ 	.irq_compose_msi_msg	= intel_ir_compose_msi_msg,
+ 	.irq_set_vcpu_affinity	= intel_ir_set_vcpu_affinity,
+
+base-commit: d07de43e3f05576fd275c8c82e413d91932119a5
+-- 
+2.49.0.395.g12beb8f557-goog
+
