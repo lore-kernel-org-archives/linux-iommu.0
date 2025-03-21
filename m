@@ -1,131 +1,203 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 250681EBFE3
-	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 07:18:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ECD11EBFFC
+	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 07:26:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742541505; cv=none; b=cJ5MKJshGsnewU0obDzi+niN6jhp0eAUQjZLOyrW510My2X/3r7+jy7hOL9DVJ8jvfl5omCV3g5dQre0clSGzm4Cz0l+aqJ2Kdq08wsJ3964YLH6hsHlqR7r+P3Nhr0gtpbFHDSfkgmICs+XZpltAykUPE8xiAImjSZX/aPPYIM=
+	t=1742541981; cv=none; b=Zak7rGWRWL5BHu5GTQNc6gxm28CbaUvv1QItjEsYnIhX+vIvzdOCG/gVtg4T4hxLNaovw8DKEv8pvaXozM1TH63RbgrQDgtnxTF5mwWusCiA5NrvUaX05kFMhtRtWIfbek1J6wz2bWvBprR7lRlJhXsWOBp2AEaeGdAy5zIraIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742541505; c=relaxed/simple;
-	bh=jwHCvObC/KNyBTv0DiVjPXJVAqUfrHgLVnqxTMor9K0=;
+	s=arc-20240116; t=1742541981; c=relaxed/simple;
+	bh=qQR5QMpkbOpyRyZZA4E3XSQcHWw1mXUgRSxLKyZLlKg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jCYzKwbaWAyp/HJ2V/tr9USkyKMlKHCNJAJBErVpK3RuEH6FjPYYDT5hCN3zI6w2lNgyw9ambe5VhrjX8QolcoJYuOG3omUCpg2LamYCR3KFwIqeOR69zf+D+HI5sP7iP5mjs3i1wlZczECtjfc8/qKi0x2J8BKqeFtDY6T7oOI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ZhkQEZxi; arc=none smtp.client-ip=209.85.214.175
+	 Content-Type:Content-Disposition:In-Reply-To; b=pN51XWmSjUw/tC9xt6sKeqPS2RhlWaRoFrGrGFByyFBHI+zBuJHWvbhSXFna6bogtm4wysX1t6H1AlPCR3246TbqQVKm75/jhMiNj64B+EyWB7ipbhPHWn9QVHvR4O3V28fVX19r7Hq4DVEIKuTMoCEk6N9eaTk/kL2NNrZmpV0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tfovwX5m; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ZhkQEZxi"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2242ac37caeso91125ad.1
-        for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 00:18:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tfovwX5m"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2242ac37caeso91815ad.1
+        for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 00:26:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1742541503; x=1743146303; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jw2vNpybPCVuX/v6xAl+GdK1At9+x6m0OEpSnKsaMkU=;
-        b=ZhkQEZxivSyILgn1qfXq1VvU66TEcvytwGPwbk1func11GUKrbU+rMwTwA7fAJV8GX
-         6Y6mAvYbNrvpsrG393VmWENfe1WAdRK7QUKmyh+cWL03BdWEUoVM9md+cbk6QbfDhaTi
-         NmpDpJLOpGkCySbnTmlmsQ+QE9aEQBjO9DFqiftQpJDVOMhqZP4XK1gI4q93XguZrNJp
-         MbHib7X7cMEj/8P8LRypkkJbnMO11oVi6iLqVFQnsW6Y86TkWceHiRffVog1TxJDqNy5
-         kWi8ZopublaMKVi3jfd6qerNUYvlIdKXN/s9PhCgQNSC1G6ADOQ4v/P0kHDbQgRdttBC
-         2DtQ==
+        d=google.com; s=20230601; t=1742541979; x=1743146779; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=+xOiwNRjUV6+qgHBl1tvSN1VkQAdLwq2IMT8oCJn/Us=;
+        b=tfovwX5mu1m5k1fh7sO3+tilMDlKyjJPi4dpZrKJhhQo+mGF9PuwD4LjSi35alc6Rs
+         38ZhadVovzBhAOLjYtP8M88cZtdrmPA/NFj/DBMWQBosz9AwBh/P5HSgEFYoCYoP8SMB
+         pPhRMKKP/y6luSS6EcjbcJgRcn0eyPtc6EZfsj4SXX3wOVbEdDlBml+P8ov1mY4VcNOx
+         D2lmnwc8NqvfQWcZqXUFRY3+iYcf99qNjIbgWIoSrSA3DQzJ+LrZTCq9iA8mVUkKEm2V
+         uYanZGGDzWf+YGtwVYI5tw5De+b2QeGJuK9lQgthW0zT3uzkX+/4zL//2nczY4o6vj/T
+         /Zaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742541503; x=1743146303;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jw2vNpybPCVuX/v6xAl+GdK1At9+x6m0OEpSnKsaMkU=;
-        b=u3VljM7W39f/8TPyxWB/+/vQ4FxoadBymbylAdQG6OXtwgobPiPEK1GYU25TsUHyEy
-         epyyZGTSgcqcE4kRUgxzp+/bdj6VMXY0EMFEmqpMZCEgsz2s5RiF/d4WupxXv22Rnj9P
-         yiQ+0IvyiT/6PTgmcQloNIglP1zMWgU4ds7SsFNRbF8eERcM1gjO2vxTQiqOJyvSQjB6
-         seQiIyxT2pgEP+Ko+R6HYK0brBB83HUkmiIIf17tZG3Ujii5puHLiDYHYsv0uZ7NraYM
-         sDAXYXbIFmO+xwYo/hNkz2T9rgs8kuaDoqgK47QVx99Dg+TrUwS/7/OcdhDSfw6/8GYY
-         Lz4Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWZXJSuVnY6v2Cxe1Tc1/aa7jcCLxEg6N7FfZWnADjr2Me8x8FT1i/lFOeC83AqUy9eLtg0SQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyDYh18lXr4JfI213Op+LIoCsfQqdS7hSGHEIrgAoPZv33nMUQg
-	l33zDRT8l7YjVuJhAQjSm/qpAGq4SbRjESnAFd5Jx8MPdG6641hdEhhzSCdUCbntkUT8Gd2NVnN
-	hTw==
-X-Gm-Gg: ASbGncsf/F5euOQv6KOgZ5tP1OQPuNx1Tqoe+tuH2K/SliD6s3INf6EqVdpyKDBC8pC
-	i2k59qBiYkJxPW9x22aq9LRQ4aT3GGRsCc2arPSnj/jzXt790tdenrxH9/75y63nse+T38w5t6d
-	TKp7fH66QSsRaziDdYrV8nMqQvHYm94+Ahkbk5F7En+jd3G/oSNX6snuKmtlUtdR/FQjx8gTdqd
-	RfKA0j0tVuOtDHaGMsZtGYycukYlndBBAze2WaWw4CAd6S7L7pDnlMVBnZ6QJYD6XrSDh0XVVZJ
-	2QFR+ulWbHmhkKAGQrw50RkQJ7yVSnqtcJt8JNgLXsVcsYsw8bPzW1X6BjClE8GN4EtpRKfW1Wz
-	/E8M=
-X-Google-Smtp-Source: AGHT+IGKB7mjuTcB4qOfGRT8FLFl5rRI2m4ialLvr7Ln2GXnSWiW/ah0grXskxwzpysFlmKw1G3WUA==
-X-Received: by 2002:a17:903:98d:b0:220:ce33:6385 with SMTP id d9443c01a7336-227844c198fmr1390535ad.9.1742541503101;
-        Fri, 21 Mar 2025 00:18:23 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1742541979; x=1743146779;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+xOiwNRjUV6+qgHBl1tvSN1VkQAdLwq2IMT8oCJn/Us=;
+        b=fsF/J0Zjq+RYq/Ij687i/CGicrZxLDYcrHkX1m/k8N137Z7UkgbdBYpNA6mcbnWWFb
+         RA4BckKvn4xjAv+t4cTLJPZ8XP7DiAoc7qzsCLt2mRbuxokjWWCiiB1H1ysb1X9oBCLd
+         1MtlEneL3h1hKmAUNHCK4UW6uw7f/8PqQE6cs2p/KFgg9qLx4EiYUuwA1Ay/+1jD5RqH
+         OdLDPdsoOeHWIsEhdPr5A43Rs9oAYZyUFhuLzT+xkIvjf2Svx5Birl5zhReALKZS7iIA
+         m8Elhv7dWXPn8Lqejvm2UWamXBBI9tzPA8FrxqWTpv68gfG6XMoR23IYEdOyKErALygE
+         AsUg==
+X-Forwarded-Encrypted: i=1; AJvYcCUsnDbUCakYqlXJ76/Xl/JL7KPoK4fH3xuUg/morwiqnULppOTdBrB4ihpGK/MgccY4U0kMjw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyIobntVUlq7SG/boNuSlMzjY7t9ZLtF+HYgN4unss+5vP7gP6D
+	vWT6iR16z5jNx7fE8eTpMYqp13U3WuOknsSQ1PS0bA75E0HrS76WcRJfFi6JYw==
+X-Gm-Gg: ASbGncskpawnZe/Thg681gD+lITif8XFGbLyxaygMAjN3XQTsTZC+3sUPvxWK/5Rbpw
+	gJWm8qU0FkYJcw1uC/PaSmRQ7PXU8pQlzNqYVajhq8br4Uh+gzsLKWr6CjET+eYdfRycUk0ZshA
+	w5s7LjF/OjUzb8P5/fvUeada3ZjxyimPAGJ32h7bdG/BuMK0AcjxxAwuN+UFZtjaHXHxLiqnMAJ
+	sE6EPNAIn1Q13E+FLSTaXpK2fZgzoL6DjBLITRZIkD6+wrDbdK8JjMGN8Ar7Nb6MhWtTel/OGiR
+	gqKR2dUT2mTUTDOKFFyPAHL+5UvPKt/rUIAvdzR43HXweRn1nFX2gf6/N3HO6nFEad732R4losS
+	2Adww7UIcBeWuCw==
+X-Google-Smtp-Source: AGHT+IH2Ozxfs3dj/O62Z20ezSMQb8Fhh8dEr1Y/HBTFGTJxcjbFMRTB7QEvTSUxr4BxaJCi/+lPPQ==
+X-Received: by 2002:a17:902:d58d:b0:200:97b5:dc2b with SMTP id d9443c01a7336-227844c1aaamr1729155ad.15.1742541979343;
+        Fri, 21 Mar 2025 00:26:19 -0700 (PDT)
 Received: from google.com (188.152.87.34.bc.googleusercontent.com. [34.87.152.188])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7390611d580sm1092506b3a.119.2025.03.21.00.18.21
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-301bf58c243sm5255999a91.16.2025.03.21.00.26.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Mar 2025 00:18:22 -0700 (PDT)
-Date: Fri, 21 Mar 2025 07:18:15 +0000
+        Fri, 21 Mar 2025 00:26:18 -0700 (PDT)
+Date: Fri, 21 Mar 2025 07:26:11 +0000
 From: Pranjal Shrivastava <praan@google.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH] iommu: Split out and tidy up Arm Kconfig
-Message-ID: <Z90St0D6hyphtOID@google.com>
-References: <a614ec86ba78c09cd16e348f633f6bb38793391f.1742480488.git.robin.murphy@arm.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 1/5] iommu/arm-smmu-v3: Refactor arm_smmu_setup_irqs
+Message-ID: <Z90Uk6UiBij2nXKH@google.com>
+References: <20250319004254.2547950-1-praan@google.com>
+ <20250319004254.2547950-2-praan@google.com>
+ <Z9yW1r1rkYbCPUIX@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <a614ec86ba78c09cd16e348f633f6bb38793391f.1742480488.git.robin.murphy@arm.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Z9yW1r1rkYbCPUIX@google.com>
 
-On Thu, Mar 20, 2025 at 02:21:28PM +0000, Robin Murphy wrote:
-> There are quite a lot of options for the Arm drivers, still all buried
-> in the top-level Kconfig. For ease of use and consistency with all the
-> other subdirectories, break these out into drivers/arm. For similar
-> clarity and self-consistency, also tweak the ARM_SMMU sub-options to use
-> "if" instead of "depends", to match ARM_SMMU_V3. Lastly also clean up
-> the slightly messy description of ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT as
-> highlighted by Geert - by now we really shouldn't need commentary on
-> v4.x kernel behaviour anyway - and downgrade it to EXPERT as the first
-> step in the 6-year-old threat to remove it entirely.
+On Thu, Mar 20, 2025 at 10:29:42PM +0000, Mostafa Saleh wrote:
+> On Wed, Mar 19, 2025 at 12:42:50AM +0000, Pranjal Shrivastava wrote:
+> > Refactor arm_smmu_setup_irqs by splitting it into two parts, one for
+> > registering interrupt handlers and the other one for enabling interrupt
+> > generation in the hardware. This refactor helps in re-initialization of
+> > hardware interrupts as part of a subsequent patch that enables runtime
+> > power management for the arm-smmu-v3 driver.
+> > 
+> > Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 50 ++++++++++++++++-----
+> >  1 file changed, 38 insertions(+), 12 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index 358072b4e293..80362d9f293b 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -3985,12 +3985,24 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+> >  	}
+> >  }
+> >  
+> > -static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> > +static void arm_smmu_enable_irqs(struct arm_smmu_device *smmu)
+> >  {
+> > -	int ret, irq;
+> > +	int ret;
+> >  	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+> >  
+> > -	/* Disable IRQs first */
+> > +	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> > +		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+> > +
+> > +	ret = arm_smmu_write_reg_sync(smmu, irqen_flags,
+> > +				      ARM_SMMU_IRQ_CTRL, ARM_SMMU_IRQ_CTRLACK);
+> > +	if (ret)
+> > +		dev_warn(smmu->dev, "failed to enable irqs\n");
+> > +}
+> > +
+> > +static int arm_smmu_disable_irqs(struct arm_smmu_device *smmu)
+> > +{
+> > +	int ret;
+> > +
+> >  	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+> >  				      ARM_SMMU_IRQ_CTRLACK);
+> >  	if (ret) {
+> > @@ -3998,6 +4010,19 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> >  		return ret;
+> >  	}
+> >  
+> > +	return 0;
+> > +}
+> > +
+> > +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> > +{
+> > +	int ret, irq;
+> > +
+> > +	/* Disable IRQs first */
+> > +	ret = arm_smmu_disable_irqs(smmu);
+> > +
+> > +	if (ret)
+> > +		return ret;
+> > +
+> >  	irq = smmu->combined_irq;
+> >  	if (irq) {
+> >  		/*
+> > @@ -4014,15 +4039,6 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> >  	} else
+> >  		arm_smmu_setup_unique_irqs(smmu);
+> >  
+> > -	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> > -		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+> > -
+> > -	/* Enable interrupt generation on the SMMU */
+> > -	ret = arm_smmu_write_reg_sync(smmu, irqen_flags,
+> > -				      ARM_SMMU_IRQ_CTRL, ARM_SMMU_IRQ_CTRLACK);
+> > -	if (ret)
+> > -		dev_warn(smmu->dev, "failed to enable irqs\n");
+> > -
+> >  	return 0;
+> >  }
+> >  
+> > @@ -4171,6 +4187,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+> >  		return ret;
+> >  	}
+> >  
+> > +	/* Enable interrupt generation on the SMMU */
+> > +	arm_smmu_enable_irqs(smmu);
+> > +
+> >  	if (is_kdump_kernel())
+> >  		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
+> >  
+> > @@ -4754,6 +4773,13 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> >  	/* Check for RMRs and install bypass STEs if any */
+> >  	arm_smmu_rmr_install_bypass_ste(smmu);
+> >  
+> > +	/* Setup interrupt handlers */
+> > +	ret = arm_smmu_setup_irqs(smmu);
+> > +	if (ret) {
+> > +		dev_err(smmu->dev, "failed to setup irqs\n");
 > 
-> Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/Kconfig     | 157 +-------------------------------------
->  drivers/iommu/arm/Kconfig | 144 ++++++++++++++++++++++++++++++++++
->  2 files changed, 145 insertions(+), 156 deletions(-)
->  create mode 100644 drivers/iommu/arm/Kconfig
+> Every path that can fail in this function has a print already, I’d say
+> remove the ones inside and keep this one, that also simplifies
+> arm_smmu_disable_irqs() to one line.
+
+I guess as per Nicolin's comment, this call would go away and only be
+called during probe. But yes the enable_irqs() will be here. I guess I
+could move the print statement out of enable irqs and put it here?
+
+The arm_smmu_disable_irqs will be called from the setup_irqs mainly,
+during probe, so I think we could leave it's print as is..
+
 > 
-
-Thanks for this! It looks good.
-I was able to toggle configs and build for arm64.
-
-> +
-> +config QCOM_IOMMUa
-Nit: I don't have much context but:
-
-1. Shall this be in .../arm/Kconfig? Is this an custom
-implementation of some arm-smmu version? If yes, then maybe we can
-update the help string while at it?
-
-> +	# Note: iommu drivers cannot (yet?) be built as modules
-
-2. I don't think this is true now? Shall we remove this comment?
-
-> +	bool "Qualcomm IOMMU Support"
-> +	depends on ARCH_QCOM || COMPILE_TEST
-> +	depends on !GENERIC_ATOMIC64	# for IOMMU_IO_PGTABLE_LPAE
-> +	select QCOM_SCM
-> +	select IOMMU_API
-> +	select IOMMU_IO_PGTABLE_LPAE
-> +	select ARM_DMA_USE_IOMMU
-> +	help
-> +	  Support for IOMMU on certain Qualcomm SoCs.
+> Otherwise, besides Nicolin’s comment, it looks good.
 > 
-
-With the above nits:
-
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> Thanks,
+> Mostafa
 
 Thanks,
 Praan
+
