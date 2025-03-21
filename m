@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D133D2FB
-	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 03:18:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C651DF739
+	for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 03:22:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742527114; cv=none; b=gsNio5E2qf4u27crwcrFsgX3ynoalMi9y+1kkSo95UFBh7bKN2bBrsflrCGhYUaWiO9S2crkSVm89szEmgbhNqvr51FFCJWDGBQbENM3uvR8bbZl9PQxOHq9DDqaEoyv1r1TA5wGJleac0+Zu+bwivr68+f040yYQ3ABxP3MoQg=
+	t=1742527327; cv=none; b=rcPkOc3yq1nPbs/ojdNQqnjNydScQXVxqW6BQb/PAX9PJwritPLrcj4z1DIl8FeqQjWQG8JZs8Jkb/lCYp4yf9dLLEh5cKoAAAh6HaRwHwk01Kj+WcZnnqUYwkUW5l04kRjpRzTmXZZrNcCUoyr8woWkWV7/npgLf/26He/NPDE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742527114; c=relaxed/simple;
-	bh=Gi0UOdfpOqPWxIXYSExKgv20uhAtDQBBEMbgQMpiLNY=;
+	s=arc-20240116; t=1742527327; c=relaxed/simple;
+	bh=iWnBRKgQfCm6dQYsjrgF/LO3aAM7fgKNCyCCt78z3Yo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CvSBH/0cEGJDSxquLjvP4FUgBWB4doGgRDkp+fsR6xw7l4Bnq9zsRcDsh+va7h5BCqKPtLLgQXK8LzUFMHmFHl0jMWQerW/82h0UKBtpObl5cYH1XxKqkgWXbUx/66F6ZsVSIJL6+h8oxSAXRry0VL/w3HZTNO236/g3D8NwEqg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K+BJoQLh; arc=none smtp.client-ip=198.175.65.20
+	 In-Reply-To:Content-Type; b=kYxFf4jzI/ldearL8x33MBs854VTHjxN98wjAUXKARDz57Nkn+TikgR1AoULQ4Qa3AAjILbkldM0NQKpUrArgeV2iRi5xrZVEoyl1fjetP0DqlORwEEV0f6JrQXCE+k6Rof3IraoijvNU6OMaIaJDpIhXob4gMk5a5kYSMn6Nho=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SsAUMIXR; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K+BJoQLh"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SsAUMIXR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1742527112; x=1774063112;
+  t=1742527324; x=1774063324;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=Gi0UOdfpOqPWxIXYSExKgv20uhAtDQBBEMbgQMpiLNY=;
-  b=K+BJoQLhQBtjLrSyv9whR1ScQsiEuVg/aCenrAwlAyGgd6shnY3rkx9H
-   rYgoa3SNNeBffDhYL0UdonOeo5aLtT0U7oINEK3HomYRdRhPVwLdVwyll
-   lgkhkCoYjeK4Y5SOiPpaYgKFsy+HPeob255DQvJGbklLI2nJY8kDfhVx0
-   6Klj4SgWMAp3lMpelQKoqO35Nnnr6Q7s+Fiz50cN4JYjv5nncFWN0aAh3
-   zloO0wFx6FKPELhH+1OQWt/Pj+SSwpEfWZaaOR+Z5FtRwo4DPOT/LGM8/
-   WkU+hDM6WmvZBpUAglROz6C1U0li5fBY6yteM7Uj8kg97QKvLyWlRgV8P
-   w==;
-X-CSE-ConnectionGUID: tQNVg2HTTpa8Qy/RzQT+cg==
-X-CSE-MsgGUID: 0D6LVh1xSJOY52HLTvfJ6w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11379"; a="43516007"
+  bh=iWnBRKgQfCm6dQYsjrgF/LO3aAM7fgKNCyCCt78z3Yo=;
+  b=SsAUMIXRsz/uMQbhseR6VleFcBEB74LUpyds+FEpvIz3aU5+bGkc2fRv
+   i0+LehaWIxgjmhh++Ve74LQkIydiYxbmJdZEgZETmY0Sj9lZbncRZLQ1M
+   0y/YbpJ5/bNNSnCgyv196ODsM5MkxtctfX7YM06XmL/6T5S7SnyLUZNzN
+   IQy5Iqq6PJls8lJSe3P1+my41hBqlKqrNf4hkpSHvocQ9busL+5rL+jAa
+   biPJhwhndHfy28+nffPu1H/mZIXWgv5uL160BYUiocKeJ0A7d2e6bH5PZ
+   5S05xiv5lPpfvKoKf2ijWFgzquoDAM+hUMAwVd4BMiWFdWJSoYerNkQ+z
+   Q==;
+X-CSE-ConnectionGUID: JAaINCffSFKbkt3PYpH1Nw==
+X-CSE-MsgGUID: ym8cCX2aT1KHAPK21V7vrw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11379"; a="55169019"
 X-IronPort-AV: E=Sophos;i="6.14,263,1736841600"; 
-   d="scan'208";a="43516007"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2025 20:18:31 -0700
-X-CSE-ConnectionGUID: xMo+rPH6TZqLvM5JbqnlTQ==
-X-CSE-MsgGUID: zRRZUyHfQfmn08QMGj600Q==
+   d="scan'208";a="55169019"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2025 20:22:04 -0700
+X-CSE-ConnectionGUID: +clDfEGGTwSwOJ8/LnXNAQ==
+X-CSE-MsgGUID: 8YsbXBcmTZe/2CbJ7yuG2w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.14,263,1736841600"; 
-   d="scan'208";a="123733084"
+   d="scan'208";a="128392867"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2025 20:18:29 -0700
-Message-ID: <a832adb5-6eaf-43cd-8668-a3da4f66ec0f@linux.intel.com>
-Date: Fri, 21 Mar 2025 11:14:58 +0800
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2025 20:22:02 -0700
+Message-ID: <85c2b397-7b96-4648-982e-59ac2fedb48a@linux.intel.com>
+Date: Fri, 21 Mar 2025 11:18:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,26 +52,47 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v10 05/18] iommufd/device: Replace idev->igroup with local
- variable
+Subject: Re: [PATCH v10 06/18] iommufd/device: Add helper to detect the first
+ attach of a group
 To: Yi Liu <yi.l.liu@intel.com>, kevin.tian@intel.com, jgg@nvidia.com
 Cc: joro@8bytes.org, iommu@lists.linux.dev, nicolinc@nvidia.com
 References: <20250320134744.5777-1-yi.l.liu@intel.com>
- <20250320134744.5777-6-yi.l.liu@intel.com>
+ <20250320134744.5777-7-yi.l.liu@intel.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250320134744.5777-6-yi.l.liu@intel.com>
+In-Reply-To: <20250320134744.5777-7-yi.l.liu@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 3/20/25 21:47, Yi Liu wrote:
-> With more use of the fields of igroup, use a local vairable instead of
-> using the idev->igroup heavily.
+> The existing code detects the first attach by checking the
+> igroup->device_list. However, the igroup->hwpt can also be used to detect
+> the first attach. In future modifications, it is better to check the
+> igroup->hwpt instead of the device_list. To improve readbility and also
+> prepare for further modifications on this part, this adds a helper for it.
 > 
-> No functional change expected.
-> 
-> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
-> Reviewed-by: Nicolin Chen<nicolinc@nvidia.com>
 > Signed-off-by: Yi Liu<yi.l.liu@intel.com>
+> ---
+> v9 -> v10: It is patch 07 of v9, it's reworked hence renamed as well.
+> ---
+>   drivers/iommu/iommufd/device.c | 11 +++++++++--
+>   1 file changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+> index ac54d734b819..9db36346328f 100644
+> --- a/drivers/iommu/iommufd/device.c
+> +++ b/drivers/iommu/iommufd/device.c
+> @@ -444,6 +444,13 @@ static int iommufd_group_setup_msi(struct iommufd_group *igroup,
+>   	return 0;
+>   }
+>   
+> +static inline bool
+> +igroup_first_attach(struct iommufd_group *igroup, ioasid_t pasid)
+> +{
+> +	lockdep_assert_held(&igroup->lock);
+> +	return !igroup->hwpt;
+> +}
+
+Nit: avoid inline helpers in the C file. Others look good to me.
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
