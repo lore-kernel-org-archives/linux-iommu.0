@@ -1,147 +1,132 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CE128C1E
-	for <iommu@lists.linux.dev>; Sat, 22 Mar 2025 00:41:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10C4F1DE4F3;
+	Sat, 22 Mar 2025 11:50:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742604094; cv=none; b=Knny6tJEPm8Ezo82CK0uRol9r011nDfBrYdniKwIM0M9bno6KuCf2ZdteKShRN2mxvkHxXF/pJCirR2teVqdbrk6K/l7nj3yUWTjEuKzH7zG/2GCyPMsFdiQGbfBffZbqQOOqatSr//dqJdvIiIw0lcaVAolK5BXvaBPc2sZLzQ=
+	t=1742644219; cv=none; b=UcMiiZ/LG3y4K8zY5Y8pVELfz6SrM0elZsf+nB8eP9vvlw+jUGhRrrOKNkMUJuZ4qNb4AlxhRqlpy1s9iZTq88a1MfJVdifJbtH/Ab7FQ5olesicqCfeFeL0YPUH/xUad0je/Des95EC9omPtfaicDgr4ZfeyTakbEXCXPIdLUk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742604094; c=relaxed/simple;
-	bh=hqoJRCdWhjuEg7TGBkaWxPiFOMvAutcwW1byYHxtnno=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q5RqYTR1XXEixaxXElr+AUr0CfLMMX52Q+BoLDMffG2G9KM4k80754pchmnPbUTUXR1q0caVwOnOPXgy+rU/mx2VgLrv1traA5lnqEq56t39ds63SwvTxu4N+lgX53H1fCaIeysSJpZuJOSsHEH1Lf1FDHPyFDTk8f4nyP2hEDs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JKr/wIKT; arc=none smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1742644219; c=relaxed/simple;
+	bh=dlb2c5+73X9T17Ga2GDXTcwT6vGIJCUSgIzW59AQZWg=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:Content-Type:
+	 MIME-Version; b=rNu/UdTsJ1c5pdO2yRzhP45iGJGLb6WzIYPtw0M5oFFy3wcgFisFPOYlutfZE/oHwYCEnXBiXmd48mCJKFbC0lKX6u1dQxSe6SoWFLvWzDAFHwwzMrTb4gu5ewn9ETXTXhvFoOBukzapP4an6O01Jq2dt12/zbui0So78zMC6aE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A4Xzk5w4; arc=none smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JKr/wIKT"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-476ac73c76fso28694141cf.0
-        for <iommu@lists.linux.dev>; Fri, 21 Mar 2025 17:41:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A4Xzk5w4"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-ac2902f7c2aso483215366b.1;
+        Sat, 22 Mar 2025 04:50:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1742604091; x=1743208891; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7w18pLCxgYQdbgr4L7Ilx5M+dDme30Hw40dLx2kJ/Cs=;
-        b=JKr/wIKTxgrecBugN4occWy2cGAflQwISMm1rNerETj7FPtX7h8pPxNvrCfRZsEuL0
-         IOXq2BLVEQsGTb5wtQZ0xqiYknzfzyIizQLkeIsQAPKl3Yuq+uUjESbLnSqEB0S+Ce4K
-         l3WADCVnDMWSVQzXqSnpGhh0UPdSuWee0WVyTn4SoWkXFknCCu31+AbEXq6AQRWIgR1S
-         bpJ3R6UgHdB9XFGI5InWrUjoHGVDPjuWIA7GaqeAo7QwrhW8uGaeh4s4pwh5IM7+omgY
-         l3hynZ88ZF3mDFAby3VW+SUIr7rV6sxqXrutKtbD2OpZ9j5kP5Pu0Cp1GpVC8GAURDYi
-         PBwQ==
+        d=gmail.com; s=20230601; t=1742644216; x=1743249016; darn=lists.linux.dev;
+        h=mime-version:user-agent:content-transfer-encoding:in-reply-to:date
+         :cc:to:from:subject:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=JeCMKd6FN5Dtrxtkveh1+h24l/CzYAUf5GBYjF0Tj9I=;
+        b=A4Xzk5w4EXnoVG94lGIjGSKHkTnSKgIhUlxXD+gFGkkbghyFa4JrVLjYRFYSEKmeb2
+         ingyA60KO5YKX9/1Lu59qcQQQFryAM1FYS5czlhDLXdEi9WLBVFWttrHsZxdUEUdI+0f
+         CPUyY6MKYTgi14L/kVFlj1lj6mR21VhVU/EboqPnfNSewFHT8x2ZxyEWQtnAqRRp1JHe
+         3KM3xVqhNiAIZ2PzshJHW8HPXXHZVubrHZSE4W4b8GTsS/JKVkGR8efQetqZGN94hJ/t
+         AdHgJy1rlZS38inW3YyvTwU3/QGTUhkG2ij1uGzV64jy3BlMH5XZBaXGlXl/xW9XSl8n
+         aUzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742604091; x=1743208891;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7w18pLCxgYQdbgr4L7Ilx5M+dDme30Hw40dLx2kJ/Cs=;
-        b=VV1bVy6v1i75sLI5Tqtyn1hMN6+A9H631NIC9q0UY1sl3j136zZuqyF/35YdYe0Y6o
-         7DZzyC6AKtTVHH7poA1Er9k0X9Kh99bc5V95JYYXJnlcG2MFJxFkmS7Ivpud1x/vXo42
-         EZxl7tARUqhGhBoKQdwD8y17/JoH1nQP/kh40cWYRZK4CqIj9qtijKSUIpkwFxmpQBKK
-         KGlaYskvPxAAj3vVpHtP0MvBsYoXo/BK7sIVeXf58z48+39bnmQkgjKgzobHJl2WJX3J
-         Hi3mk3ezq7AYWXT7Cw6pkIlGUJWkOEReqLONCi9sMxEWuqh/YlD/qnShKcDoLxnQwS2b
-         nkMw==
-X-Forwarded-Encrypted: i=1; AJvYcCW5yIIne2cTiSfY+1tClw7wG7axcMR12U727w31MJfjbhqWhFaWeL1BzEl6EGqX5aoIy4VdPQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YydoLDALLw7Vzq/UH2E/YvqW4lu3W35+qU2JRMwBLHMCeSCh45Q
-	usma9XSUZSX1PG7xWngE7PadA6iYrFPE1oQrVfWkoMLa6o9LpKo+NKZ/mCFed2U=
-X-Gm-Gg: ASbGnct26DG7oXvDCeQY/LSieiHMaai6+yKyqbB+GUC94JdJjwHlpViU8ZSXafzkHiy
-	yXK5/8jyx/AxepWeuhu5lA19Sbo2TViEnp5gh5k4eQxT+01oTwa0qnIBfGXQQ23soYd/i7tvl72
-	DznfNRXhKhbqOcquJrN02sdVm6eGW0Dfbo7b/BTW+WQLI9aruS2czD+zgXK0BXbVGYnCa+s3qCn
-	un4Fzn22PqO/2be34MLBfKSA24HQ7eQEK2SrDUTwrxqzzb+hYcAUmtWj3HyQZvONDZLnkjluYaH
-	FYX9uzfmHgWkguDnKJTUFxRCgYnd4s69RbZ94uGvKyrZc8GUzVdiuVMPt37xj7BFPEXi4RrPu4c
-	XsjNOrVhptQHKbI9z+CMATdY=
-X-Google-Smtp-Source: AGHT+IF3UkobCdIF7lNWuu9KRAhdJDE5q4DcYOtKKTS+FcoMl1AlUzXXVqHHTKDK0VlDF9Mdifo+AQ==
-X-Received: by 2002:a05:622a:480c:b0:476:b7e2:385c with SMTP id d75a77b69052e-4771dd5d0e6mr84261721cf.2.1742604091376;
-        Fri, 21 Mar 2025 17:41:31 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4771d0ad87esm18121731cf.0.2025.03.21.17.41.30
+        d=1e100.net; s=20230601; t=1742644216; x=1743249016;
+        h=mime-version:user-agent:content-transfer-encoding:in-reply-to:date
+         :cc:to:from:subject:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=JeCMKd6FN5Dtrxtkveh1+h24l/CzYAUf5GBYjF0Tj9I=;
+        b=ROMomKLZ9SbtaJMuUQ2VhTY1zOD2uDaRO6/u1oeFA3FiY3TahWbFRowyO29PhcPsQY
+         zhc2i1uTyRR07UbO8vP6p4ypfjVsU9KE2TKD98C3DKi0wz95+i9Zvo4D4UY4fVzN9l2n
+         dXQjhFzg33AL21ax5CiK3g9g3DOmXNpMTM3QsVG2QasYgdsYyVINjm4B86zO+zSxhlmo
+         0z8iRJUA+xsR3YUcANsSaQ9OEldNKLm84CuzR6TV0S1HJd7ozKRLfY/42Nb61gpKrmyt
+         qj+O/JOHN2y4dKhNl/H6FRSg00RGWNjOkuscqR2zKdJZuiPsUBeppRKK/G4yuLbbLhtH
+         YpyA==
+X-Forwarded-Encrypted: i=1; AJvYcCUlJ9dS9TfYQAjV59u0jDR3nTzNkXFylAN+iImgSfXAPL2C/cKYXMQ29HCcvPdf1U1/ETn0obgZAMagzw==@lists.linux.dev, AJvYcCV6Ug8JXt3b+9Cju0sH4OhwaoRhdUY90rxO1w1ZnZ70wV7jRGfMY4d0ij0MuTKFbqsumF7QTw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzF/e/Pqzfx9wT/k6hHjuDUWFQ3umi4gfXT40SBfzB+Z+CQDhGM
+	rwNt6YCaRnfV1a+GXL1G1EySkd8fv4FdhsbSyYGwaNI64ib3U/Af
+X-Gm-Gg: ASbGncsQVvPklXHmNFjkDx3naEuOS9d0/MgrplP24UFTyI+waZutM2dO0FOzHMntAZv
+	NW4UiJe+OWFgTVhTtQZwCIKyD4RvtPV1+0DXdGTu/0ZeY8VOgIi1cv6BFQgTjPfUruJiCC+/DzT
+	UHXghd9pmKua5qhUDoQhiK/g3u4lKYDtVfGzF3T4SDH/2ZDEM8EOQZXBhOr+yo6O1Gs53AkubW3
+	w4BBut9SmXV4T/MSRmPBPzR0xUFWOMC2grEH7BVQgkcn8bZkRrAaZIk/Arp0+Cmo+9O+qagvJ+2
+	e6TcyxODgb6IBZyPWd+ImZdgRRcyUbIapOoYKp1iazvD/3TPvQ/2DR2OlyEEbaVwizKm06J7E2v
+	IITCRn3aEc/qhUwKbum+hMHo=
+X-Google-Smtp-Source: AGHT+IEphkVCVCfxAVXmQkZdk1aaFCEcND/QMO8xPKoiUSmAYimS0LjW+bLOcrDDhpSGnYro5fRwfQ==
+X-Received: by 2002:a17:907:ec81:b0:ac4:2b0:216f with SMTP id a640c23a62f3a-ac402b024c3mr372266766b.43.1742644215830;
+        Sat, 22 Mar 2025 04:50:15 -0700 (PDT)
+Received: from ?IPv6:2001:b07:5d29:f42d:82af:f891:3144:66d? ([2001:b07:5d29:f42d:82af:f891:3144:66d])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ac3efd4798dsm326399066b.161.2025.03.22.04.50.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Mar 2025 17:41:30 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tvmva-00000001CZm-0pDT;
-	Fri, 21 Mar 2025 21:41:30 -0300
-Date: Fri, 21 Mar 2025 21:41:30 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v7 00/17] Provide a new two step DMA mapping API
-Message-ID: <20250322004130.GS126678@ziepe.ca>
-References: <cover.1738765879.git.leonro@nvidia.com>
- <20250220124827.GR53094@unreal>
- <CGME20250228195423eucas1p221736d964e9aeb1b055d3ee93a4d2648@eucas1p2.samsung.com>
- <1166a5f5-23cc-4cce-ba40-5e10ad2606de@arm.com>
- <d408b1c7-eabf-4a1e-861c-b2ddf8bf9f0e@samsung.com>
- <20250312193249.GI1322339@unreal>
- <adb63b87-d8f2-4ae6-90c4-125bde41dc29@samsung.com>
- <20250319175840.GG10600@ziepe.ca>
- <1034b694-2b25-4649-a004-19e601061b90@samsung.com>
+        Sat, 22 Mar 2025 04:50:15 -0700 (PDT)
+Message-ID: <7177c7ae24b9f7ebbfc001166e09beadb81305ae.camel@gmail.com>
+Subject: Re: [RFC PATCH v2 05/22] crypto: ccp: Enable SEV-TIO feature in the
+ PSP when supported
+From: Francesco Lavra <francescolavra.fl@gmail.com>
+To: aik@amd.com
+Cc: Jonathan.Cameron@huawei.com, aneesh.kumar@kernel.org,
+ ashish.kalra@amd.com,  baolu.lu@linux.intel.com, bhelgaas@google.com,
+ dan.j.williams@intel.com,  dionnaglaze@google.com, hch@lst.de,
+ iommu@lists.linux.dev, jgg@ziepe.ca,  joao.m.martins@oracle.com,
+ joro@8bytes.org, kevin.tian@intel.com,  kvm@vger.kernel.org,
+ linux-arch@vger.kernel.org, linux-coco@lists.linux.dev, 
+ linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org, lukas@wunner.de, 
+ michael.roth@amd.com, nicolinc@nvidia.com, nikunj@amd.com,
+ pbonzini@redhat.com,  robin.murphy@arm.com, seanjc@google.com,
+ steven.sistare@oracle.com,  suravee.suthikulpanit@amd.com,
+ suzuki.poulose@arm.com, thomas.lendacky@amd.com,  vasant.hegde@amd.com,
+ x86@kernel.org, yi.l.liu@intel.com, yilun.xu@linux.intel.com, 
+ zhiw@nvidia.com
+Date: Sat, 22 Mar 2025 12:50:12 +0100
+In-Reply-To: <20250218111017.491719-6-aik@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1034b694-2b25-4649-a004-19e601061b90@samsung.com>
 
-On Fri, Mar 21, 2025 at 12:52:30AM +0100, Marek Szyprowski wrote:
-> > Christoph's vision was to make a performance DMA API path that could
-> > be used to implement any scatterlist-like data structure very
-> > efficiently without having to teach the DMA API about all sorts of
-> > scatterlist-like things.
-> 
-> Thanks for explaining one more motivation behind this patchset!
+On 2025-02-18 at 11:09, Alexey Kardashevskiy wrote:
+> @@ -601,6 +603,25 @@ struct sev_data_snp_addr {
+>  	u64 address;				/* In/Out */
+>  } __packed;
+> =20
+> +/**
+> + * struct sev_data_snp_feature_info - SEV_CMD_SNP_FEATURE_INFO
+> command params
+> + *
+> + * @len: length of this struct
+> + * @ecx_in: subfunction index of CPUID Fn8000_0024
+> + * @feature_info_paddr: physical address of a page with
+> sev_snp_feature_info
+> + */
+> +#define SNP_FEATURE_FN8000_0024_EBX_X00_SEVTIO	1
 
-Sure, no problem.
+According to the SNP firmware ABI spec, support for SEV TIO commands is
+indicated by bit 1 (bit 0 is for SEV legacy commands).
 
-To close the loop on the bigger picture here..
+> +static int snp_get_feature_info(struct sev_device *sev, u32 ecx,
+> struct sev_snp_feature_info *fi)
+> +{
+> +	struct sev_user_data_snp_status status =3D { 0 };
+> +	int psp_ret =3D 0, ret;
+> +
+> +	ret =3D snp_platform_status_locked(sev, &status, &psp_ret);
+> +	if (ret)
+> +		return ret;
+> +	if (ret !=3D SEV_RET_SUCCESS)
 
-When you put the parts together:
+s/ret/psp_ret/
 
- 1) dma_map_sg is the only API that is both performant and fully
-    functional
+> +		return -EFAULT;
+> +	if (!status.feature_info)
+> +		return -ENOENT;
+> +
+> +	ret =3D snp_feature_info_locked(sev, ecx, fi, &psp_ret);
+> +	if (ret)
+> +		return ret;
+> +	if (ret !=3D SEV_RET_SUCCESS)
 
- 2) scatterlist is a horrible leaky design and badly misued all over
-    the place. When Logan added SG_DMA_BUS_ADDRESS it became quite
-    clear that any significant changes to scatterlist are infeasible,
-    or at least we'd break a huge number of untestable legacy drivers
-    in the process.
-
- 3) We really want to do full featured performance DMA *without* a
-    struct page. This requires changing scatterlist, inventing a new
-    scatterlist v2 and DMA map for it, or this idea here of a flexible
-    lower level DMA API entry point.
-
-    Matthew has been talking about struct-pageless for a long time now
-    from the block/mm direction using folio & memdesc and this is
-    meeting his work from the other end of the stack by starting to
-    build a way to do DMA on future struct pageless things. This is 
-    going to be huge multi-year project but small parts like this need
-    to be solved and agreed to make progress.
-
- 4) In the immediate moment we still have problems in VFIO, RDMA, and
-    DRM managing P2P transfers because dma_map_resource/page() don't
-    properly work, and we don't have struct pages to use
-    dma_map_sg(). Hacks around the DMA API have been in the kernel for
-    a long time now, we want to see a properly architected solution.
-
-Jason
+Same here
