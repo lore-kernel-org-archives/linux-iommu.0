@@ -1,46 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96AFF8635C;
-	Mon, 24 Mar 2025 21:03:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D96AF13633F;
+	Mon, 24 Mar 2025 21:03:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742850215; cv=none; b=A7+wZsQ/A+3doDWh1yk7Lz9lci/kN+VTMz2O0+ZOiDsbAL8YccN3J1fBOooQaf4JMsslDYuvN9/RRi6mzR1OwZgNFMzPCRhh+EL1hMoEzmEiRBX3NuFY7plkBBrvPyubBgs9MUrRm153H2ESRuW+JOt+wDFLKwrnMZWxMD70A3s=
+	t=1742850220; cv=none; b=d98dk1WORsVuW4roS1exmbsz3mf2sf0NzHQx44ijmW7bUdOlf7eLWzUvvAobanZMpX8T/TSozrWDJ3VdFtebnfSeRZa/mbW3M+F+4UeZkh+ZSO89q08OjEc4Ppd14r2c6Ljh2CMym0ekejEjS6R9pm/YMrnOIN3f012yF6M3H9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742850215; c=relaxed/simple;
-	bh=rOz5UsJUgCTnivXbf868dmCzc8AreZr/vIY1OjHCmzQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=QFIlCqLSfZUPcBykKgYRTa6ub7grcIWbpnXZAHYfkJqzHfVqi49n9sNOvD+s3x1sDcGJ23TECAZ4T4ETKQKvPnJN5geOwACMtYSFMrUd/eAeA9MVN5jF5RqaFbdwSwewd5IYeBRsAQ5YuJatTSv2mZJiZSxyPuj0FbrQ3kF7YUQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XW+Glt+F; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1742850220; c=relaxed/simple;
+	bh=mIpJ6gMT+yAKUPwrQwzMR5CGtCCEeyIIeIxEY+/v2zw=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=DPbA5DRAYPyBBmzFPOtx7CBe0Nxq4OJndIunuwrh9zOghnu1/zvmOxSPkG52rMAxAnhELCg7Vqt97NhysFAUOURGueGpIwgAhp4f71hQnwxEcEOwLh/XgDQCYqqMMsA6SqDqOiY2kUgM4DStM5qmCSMCKlWv8NQyVeNAlbuZTxc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MikyyTjj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XW+Glt+F"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D147CC4CEDD;
-	Mon, 24 Mar 2025 21:03:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MikyyTjj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DBACC4CEDD;
+	Mon, 24 Mar 2025 21:03:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742850214;
-	bh=rOz5UsJUgCTnivXbf868dmCzc8AreZr/vIY1OjHCmzQ=;
-	h=From:To:Cc:Subject:Date:From;
-	b=XW+Glt+FwtDTQXhAHZdmqZrDLGFrj7KISZB+bGH2JcEF0D+D3Vw41eWNKAVFlJ6rK
-	 qzkWKTt2jblpXh9sn9r4Fr25tgAJWrxUGTWBTPyUPtfWvkpR7PTvy6yEwsMb7ntaiB
-	 FWZ3vEQgdoWdGpxh2FaEUwZduClSophZj5WDTnCZ7TsIPSknmmlPCZh+krTgmBlK2S
-	 niZUcMNhDqVeUBOJ2/NtLBAE/E9TfcCTpWjOo4elKY/DeFNf13VDKOuJ8XhrwRKPbf
-	 1XieG/NekRu/70dUqsaF0uzX0pnUbtBYCaUmZ1RhSMFPHuJjmzRyUwuoHpwE7/Bc0a
-	 xKl0AwzXhcHTg==
+	s=k20201202; t=1742850220;
+	bh=mIpJ6gMT+yAKUPwrQwzMR5CGtCCEeyIIeIxEY+/v2zw=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=MikyyTjjsVGSWL/Wso1b/qhzlPQAZSOaWS2KzXM39vwQtwLLSiONl30YmPzqxKIan
+	 xVexPMxOPgcnVv01EVuG5Zcwue0K5xVLxhT/HUYpueH/RxEmDjCHjrRG5/Ernsj2ba
+	 vL8Ew403g09Er9hTSoETnPy3ldp0wM3eZW+fyoL6KPWNkA9b8XSKo6CWj97+3GKJvY
+	 Mc7lHyceaNo3MkmM/sQzOtvQUy+19pvVFp1vglL9r+nKIAs732i7uxOM6qp/FeDmLO
+	 vzJmoUsOUQTEeUCiWIxnUzzZVpLFeMMfFpVz9oYNCV2TTG/SIVDEuqtle02ipAKcmN
+	 HOeAyQbMioFDQ==
 From: Arnd Bergmann <arnd@kernel.org>
 To: Jason Gunthorpe <jgg@ziepe.ca>,
 	Kevin Tian <kevin.tian@intel.com>,
 	Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
-	Nicolin Chen <nicolinc@nvidia.com>
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>
 Cc: Arnd Bergmann <arnd@arndb.de>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Peter Zijlstra <peterz@infradead.org>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] iommufd: import IOMMUFD_INTERNAL namespace
-Date: Mon, 24 Mar 2025 22:03:22 +0100
-Message-Id: <20250324210329.2809869-1-arnd@kernel.org>
+Subject: [PATCH 2/2] iommufd_driver: make IOMMUFD_DRIVER_CORE a 'bool' symbol
+Date: Mon, 24 Mar 2025 22:03:23 +0100
+Message-Id: <20250324210329.2809869-2-arnd@kernel.org>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20250324210329.2809869-1-arnd@kernel.org>
+References: <20250324210329.2809869-1-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,28 +52,34 @@ Content-Transfer-Encoding: 8bit
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-Building the iommufd driver as a loadable module causes a failure now:
+Calling iommufd_sw_msi() from iommu_dma_prepare_msi() in the iommu core
+code is no longer possible if the driver core is in a loadable module
+because it is now a direct call rather than a function pointer:
 
-ERROR: modpost: module iommufd_driver uses symbol iommu_attach_handle_get from namespace IOMMUFD_INTERNAL, but does not import it.
+arm-linux-gnueabi-ld: drivers/iommu/iommu.o: in function `iommu_dma_prepare_msi':
+iommu.c:(.text+0x4fb4): undefined reference to `iommufd_sw_msi'
 
-Import the namespace as needed here.
+This effectively makes the iommu driver core part of the iommu subsystem
+itself, so disallow building it as a loadable module.
 
-Fixes: 916a207692ce ("iommufd: Move iommufd_sw_msi and related functions to driver.c")
+Fixes: e009e088d88e ("iommu: Drop sw_msi from iommu_domain")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/iommu/iommufd/driver.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/iommufd/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
-index 352513974154..a08ff0f37fc6 100644
---- a/drivers/iommu/iommufd/driver.c
-+++ b/drivers/iommu/iommufd/driver.c
-@@ -247,4 +247,5 @@ EXPORT_SYMBOL_NS_GPL(iommufd_sw_msi, "IOMMUFD");
- #endif
+diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
+index 0a07f9449fd9..2beeb4f60ee5 100644
+--- a/drivers/iommu/iommufd/Kconfig
++++ b/drivers/iommu/iommufd/Kconfig
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config IOMMUFD_DRIVER_CORE
+-	tristate
++	bool
+ 	default (IOMMUFD_DRIVER || IOMMUFD) if IOMMUFD!=n
  
- MODULE_DESCRIPTION("iommufd code shared with builtin modules");
-+MODULE_IMPORT_NS("IOMMUFD_INTERNAL");
- MODULE_LICENSE("GPL");
+ config IOMMUFD
 -- 
 2.39.5
 
