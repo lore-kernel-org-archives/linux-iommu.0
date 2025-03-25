@@ -1,113 +1,93 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE355254AF7
-	for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 09:36:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx2.aip.ooo (mx2.aip.ooo [185.232.107.102])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 475481DB125;
+	Tue, 25 Mar 2025 09:45:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.232.107.102
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742895412; cv=none; b=hhkueFklnUxBasdm2ZnFLkqNzzWvMrHwyMRDi2WZQv+wXTJvJEQAGTuRYNjD0qE9E9u7hCkNE3TE9JeAsOzWjTJt7DjLWGiiwD56SuY1qA0yqW3Uh8npMEQfqAU+ZUCSDRxTs3v7LGNDIZSJw9FEZMB72UJvoDNEpxzsL5anCPc=
+	t=1742895946; cv=none; b=FRr7j7c69XmJoiFRrJycSRhzi98HI1qG3m1bVnyTMlmadEPRm5bWlMMFLmfumSsZauTr2Uz7YLzolMEay8oEOPUa9RShoi0peKB40/el+AOZkvWp0rL+s9uhrkXVQ3LdSqVd8pBR6lshRXVLg97iaUuHfjkrSM15dQnK2+SpIhA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742895412; c=relaxed/simple;
-	bh=3D/MuSsp/QPxF75tlglyjKVX1UunnNhbd+JZHVymTjI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hBmdSBBzQpt2YdRqfmv3fpByVscE3Sg15f/u5RKrQFCg+VUZLqLRHvUTymihk/V1Ez1bIFNuidxbIcE1lLxriDabQNMvYhcSMBYrwGHsHHXmDT1UWP6JHef23/I3rLyc5FYvppnVFJM6GSYFSO2X8d+uK3C7W+Qfv+e/hPo3AEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6AC851E8D;
-	Tue, 25 Mar 2025 02:36:56 -0700 (PDT)
-Received: from mazurka.cambridge.arm.com (mazurka.cambridge.arm.com [10.2.80.18])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 60A083F63F;
-	Tue, 25 Mar 2025 02:36:46 -0700 (PDT)
-From: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
-To: ryan.roberts@arm.com,
-	suzuki.poulose@arm.com,
-	yang@os.amperecomputing.com,
-	corbet@lwn.net,
-	catalin.marinas@arm.com,
-	will@kernel.org,
-	jean-philippe@linaro.org,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	akpm@linux-foundation.org,
-	ardb@kernel.org,
-	mark.rutland@arm.com,
-	joey.gouly@arm.com,
-	maz@kernel.org,
-	james.morse@arm.com,
-	broonie@kernel.org,
-	oliver.upton@linux.dev,
-	baohua@kernel.org,
-	david@redhat.com,
-	ioworker0@gmail.com,
-	jgg@ziepe.ca,
-	nicolinc@nvidia.com,
-	mshavit@google.com,
-	jsnitsel@redhat.com,
-	smostafa@google.com,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Cc: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
-Subject: [PATCH v5 3/3] arm64/mm: Elide tlbi in contpte_convert() under BBML2
-Date: Tue, 25 Mar 2025 09:36:25 +0000
-Message-ID: <20250325093625.55184-4-miko.lenczewski@arm.com>
-X-Mailer: git-send-email 2.48.1
-In-Reply-To: <20250325093625.55184-1-miko.lenczewski@arm.com>
-References: <20250325093625.55184-1-miko.lenczewski@arm.com>
+	s=arc-20240116; t=1742895946; c=relaxed/simple;
+	bh=hHMCEXxzUqIp7Lmp8dSlKc13OfFAgtId5ffLRKJJG+8=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=dDVCw28jn+huseZdVgRBDK9sE2/2W44zUcWNQjW0+fYdQEC8hzGFmURbnK9bo+HqItd2Geb2aLGdUc6OZtFpjChR5rmnj10oNyaaFTrjcUzFM2I1i42xqfHyTynTg/rak1FFDC05HSRxmRYB3K9rWiWmBxSRRNqu/ZCjf87eIn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cyberprotect.ru; spf=pass smtp.mailfrom=cyberprotect.ru; arc=none smtp.client-ip=185.232.107.102
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cyberprotect.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberprotect.ru
+Received: from aip-exch-2.aip.ooo ([10.77.28.102] helo=aip-exch.aip.ooo)
+	by mx2.aip.ooo with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <Pavel.Paklov@cyberprotect.ru>)
+	id 1tx0VW-004s05-AC; Tue, 25 Mar 2025 12:23:38 +0300
+Received: from 10.77.154.78 (10.77.154.78) by AIP-EXCH-2.aip.ooo
+ (10.77.28.102) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 25 Mar
+ 2025 12:23:37 +0300
+From: Pavel Paklov <Pavel.Paklov@cyberprotect.ru>
+To: Joerg Roedel <joro@8bytes.org>
+CC: <pavel.paklov@cyberprotect.ru>, Pavel Paklov
+	<Pavel.Paklov@cyberprotect.ru>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Wan Zongshun <Vincent.Wan@amd.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<lvc-project@linuxtesting.org>, <stable@vger.kernel.org>
+Subject: [PATCH] iommu/amd: Fix potential buffer overflow in parse_ivrs_acpihid
+Date: Tue, 25 Mar 2025 09:22:44 +0000
+Message-ID: <20250325092259.392844-1-Pavel.Paklov@cyberprotect.ru>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-SA-Exim-Connect-IP: 10.77.28.102
+X-SA-Exim-Mail-From: Pavel.Paklov@cyberprotect.ru
+X-SA-Exim-Scanned: No (on mx2.aip.ooo); SAEximRunCond expanded to false
 
-When converting a region via contpte_convert() to use mTHP, we have two
-different goals. We have to mark each entry as contiguous, and we would
-like to smear the dirty and young (access) bits across all entries in
-the contiguous block. Currently, we do this by first accumulating the
-dirty and young bits in the block, using an atomic
-__ptep_get_and_clear() and the relevant pte_{dirty,young}() calls,
-performing a tlbi, and finally smearing the correct bits across the
-block using __set_ptes().
+There is a string parsing logic error which can lead to an overflow of hid
+or uid buffers. Comparing ACPIID_LEN against a total string length doesn't
+take into account the lengths of individual hid and uid buffers so the
+check is insufficient in some cases. For example if the length of hid 
+string is 4 and the length of the uid string is 260, the length of str 
+will be equal to ACPIID_LEN + 1 but uid string will overflow uid buffer 
+which size is 256.
 
-This approach works fine for BBM level 0, but with support for BBM level
-2 we are allowed to reorder the tlbi to after setting the pagetable
-entries. We expect the time cost of a tlbi to be much greater than the
-cost of clearing and resetting the PTEs. As such, this reordering of the
-tlbi outside the window where our PTEs are invalid greatly reduces the
-duration the PTE are visibly invalid for other threads. This reduces the
-likelyhood of a concurrent page walk finding an invalid PTE, reducing
-the likelyhood of a fault in other threads, and improving performance
-(more so when there are more threads).
+The same applies to the hid string with length 13 and uid string with 
+length 250.
 
-Because we support via allowlist only bbml2 implementations that never
-raise conflict aborts and instead invalidate the tlb entries
-automatically in hardware, we can avoid the final flush altogether.
-Avoiding flushes is a win.
+Check the length of hid and uid strings separately to prevent 
+buffer overflow.
 
-Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
-Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Fixes: ca3bf5d47cec ("iommu/amd: Introduces ivrs_acpihid kernel parameter")
+Cc: stable@vger.kernel.org
+Signed-off-by: Pavel Paklov <Pavel.Paklov@cyberprotect.ru>
 ---
- arch/arm64/mm/contpte.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/amd/init.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm64/mm/contpte.c b/arch/arm64/mm/contpte.c
-index 55107d27d3f8..77ed03b30b72 100644
---- a/arch/arm64/mm/contpte.c
-+++ b/arch/arm64/mm/contpte.c
-@@ -68,7 +68,8 @@ static void contpte_convert(struct mm_struct *mm, unsigned long addr,
- 			pte = pte_mkyoung(pte);
- 	}
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index cb536d372b12..fb82f8035c0f 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3677,6 +3677,14 @@ static int __init parse_ivrs_acpihid(char *str)
+ 	while (*uid == '0' && *(uid + 1))
+ 		uid++;
  
--	__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
-+	if (!system_supports_bbml2_noabort())
-+		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
- 
- 	__set_ptes(mm, start_addr, start_ptep, pte, CONT_PTES);
- }
++	if (strlen(hid) >= ACPIHID_HID_LEN) {
++		pr_err("Invalid command line: hid is too long\n");
++		return 1;
++	} else if (strlen(uid) >= ACPIHID_UID_LEN) {
++		pr_err("Invalid command line: uid is too long\n");
++		return 1;
++	}
++
+ 	i = early_acpihid_map_size++;
+ 	memcpy(early_acpihid_map[i].hid, hid, strlen(hid));
+ 	memcpy(early_acpihid_map[i].uid, uid, strlen(uid));
 -- 
-2.48.1
+2.43.0
 
