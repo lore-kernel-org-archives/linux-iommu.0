@@ -1,213 +1,176 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2062.outbound.protection.outlook.com [40.107.94.62])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B6CF25776
-	for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 07:40:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.62
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742888441; cv=fail; b=G5koHbKi2n2dBUZk8lYq3tILIvrDr2QaaX6O3wjsM8Zj8cbHrKW8t6RHGBxAn95CYNw9SXZzD/tVnmNFZu89JL6q/cD00czbY2rfGnDQXvI5FUWHtMbGkZqAqnVP1HIZtbaCNSGhMN9CsPJ87BSacO9bT150zR2+212Kygus7o0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742888441; c=relaxed/simple;
-	bh=cKCJ0MO4+KFyPwYJ/WEGUI1I329jMTVlIMwqCyTpJBg=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fasGPCeciB5nA35lGGp6ueqXPs6wTTPGIphiQbe7wmYzoHvIuEtkdsZ5Sp3V7DlOYtAtxSAlH9QlvhfS1GALqQeMHqFCj2YaDWFDcFRL2YrNKEj83cmoZhaKxGYeZezP5sum+WGDgtPg1Zy9ZfSEy8q+1hzbS0o/lKYuI3UbtUs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=jSmXmJ9H; arc=fail smtp.client-ip=40.107.94.62
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="jSmXmJ9H"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=LZymn5nTKN+LoZALs854DUX24JkZM3ZYHFj/jHwWKNESRttqxJxx882ZD2quxdpol3sC3Wvw9yRb2chKxlaXJ99dpWAKfi8G4Uxq2Lt9nSuDFXEtpGSvTwSzQzuLU/JrJx+kF4aR693UeGNJAC7LXHia8Kw9GU18LMQKvPdVaXtxT6cRNso6aJHwCkA6e1CHfGC6HJBJDthJJ/XWAT6fdtAHitB31qbG5F6WaUB93AmZlm/tGvppBGGF9nQu8xx9jyVQyS2c0/l8K0EU27J+5OO4XE6sK4gNCP1A+xAJQUjO5ox72orLE/0OBcHPN8XuH9atVhmpWK2x/ffYPub3hg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6kIGar7guIpgQcXF0bUYEdEqfTt2eJc0vJBZkUyc02I=;
- b=rMg2Mi1QuZLWVvtcr0aZDLB/jdu7iSbTdbxu9Y671+r+aGFaF4V49Glip6se/hwk654pIvfb7R/I5w8y8eZChFK1v0WM5MzFtVbghT0VjClxxOmgimCLYkVGFzronXod/yYKXnkLsAJAioagB+2EFpZ9C41jRar4aVqadnstIMHsoo6ZWL4rGF9mtnRMemg54FHXygnlJGPI7bAqAhaU+IWMlCQ5YbjChQwVIwLwHcd/JYaJux84dT6BkAA4xDxPL80ou0g3+t9xuXzMMDNuUojiy/FJiwx3zuHCkkxlT5qCqh4tI+hIkhWGcUxq9QvJK1cdsq63NVonFPOy+w0tow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6kIGar7guIpgQcXF0bUYEdEqfTt2eJc0vJBZkUyc02I=;
- b=jSmXmJ9HtX5DQbUIOctJz0OK8m5/aLimBftfZXBUVhXpl30xPPerwihjsUIkOQZmDTRUSjJCONLwpjLIE/YerMrxAhFdhFg/WWZvvsuBulhdX6dbQN5JtEJFoJ619vKHmX6AcK9G3kMC+SQQrvuhi8meU0ZYZM7Uia5nsyFkmrBSNvAKi3J9e+YkMc8R79qxULh/87J4bKQre+pPy7Pzq+a5uBdlLiMnD4zY/vE5D39QGSZLP71jI+5Yd8GbbxorJ1WMaF8SiT5NwcJ6eu4tvKPArNCCW07jtkKXnjO4VdM6X4LlaymNJ1GjE9x+fMNdG4Lnq4xMAsm+sW3blqR2cg==
-Received: from BYAPR01CA0012.prod.exchangelabs.com (2603:10b6:a02:80::25) by
- DM4PR12MB6253.namprd12.prod.outlook.com (2603:10b6:8:a6::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8534.42; Tue, 25 Mar 2025 07:40:35 +0000
-Received: from SJ5PEPF000001CE.namprd05.prod.outlook.com
- (2603:10b6:a02:80:cafe::ec) by BYAPR01CA0012.outlook.office365.com
- (2603:10b6:a02:80::25) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8534.37 via Frontend Transport; Tue,
- 25 Mar 2025 07:40:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ5PEPF000001CE.mail.protection.outlook.com (10.167.242.38) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8534.20 via Frontend Transport; Tue, 25 Mar 2025 07:40:34 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 25 Mar
- 2025 00:40:20 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Tue, 25 Mar
- 2025 00:40:20 -0700
-Received: from nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Tue, 25 Mar 2025 00:40:18 -0700
-Date: Tue, 25 Mar 2025 00:40:16 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>, "Kurmi,
- Suresh Kumar" <suresh.kumar.kurmi@intel.com>, "Saarinen, Jani"
-	<jani.saarinen@intel.com>, <jgg@nvidia.com>
-Subject: Re: Regression on linux-next (next-20250321)
-Message-ID: <Z+Jd4GDIzCP5cBQE@nvidia.com>
-References: <SJ1PR11MB61295789E25C2F5197EFF2F6B9A72@SJ1PR11MB6129.namprd11.prod.outlook.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E050258CE7
+	for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 09:36:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742895400; cv=none; b=dZedhvmNo3k7QkqrfcJwWtQdKDU3B0Fpl586YrYCKPN2KBUuNUEPDSkb9N/RngjkkjiOoWTa21yEvk7t2kcI55T+j1lU7x5HeYMCIb5SN7GlTLsuNs51EzpWN68ym96+5vVBW/XQ6moytnJxN9mvnLswjc7Jv6NmMoY/QDB/ibk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742895400; c=relaxed/simple;
+	bh=6YUFodGvRO7ancqe4YJYSmSbtp2WWchxxkOPo59Mctw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fLT0cR7BKfvgsmNzgfbq65u9EEHq+7XQdmSEW4N5nRldI0Nvbn3udSxZe4tXo7Doa2CynUTH9Ci+l5889TH+Ptbj85qrp0Gi7N0ezaiGWXMrM9e5foQmH5rTmRK88XDPJFGlzq2Q4XqzM+5U7kKl3xSeHhJOopwN3JpSkuJe/nc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 78F42106F;
+	Tue, 25 Mar 2025 02:36:43 -0700 (PDT)
+Received: from mazurka.cambridge.arm.com (mazurka.cambridge.arm.com [10.2.80.18])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6D1813F63F;
+	Tue, 25 Mar 2025 02:36:33 -0700 (PDT)
+From: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
+To: ryan.roberts@arm.com,
+	suzuki.poulose@arm.com,
+	yang@os.amperecomputing.com,
+	corbet@lwn.net,
+	catalin.marinas@arm.com,
+	will@kernel.org,
+	jean-philippe@linaro.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	akpm@linux-foundation.org,
+	ardb@kernel.org,
+	mark.rutland@arm.com,
+	joey.gouly@arm.com,
+	maz@kernel.org,
+	james.morse@arm.com,
+	broonie@kernel.org,
+	oliver.upton@linux.dev,
+	baohua@kernel.org,
+	david@redhat.com,
+	ioworker0@gmail.com,
+	jgg@ziepe.ca,
+	nicolinc@nvidia.com,
+	mshavit@google.com,
+	jsnitsel@redhat.com,
+	smostafa@google.com,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Cc: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
+Subject: [PATCH v5 0/3] Initial BBML2 support for contpte_convert()
+Date: Tue, 25 Mar 2025 09:36:22 +0000
+Message-ID: <20250325093625.55184-1-miko.lenczewski@arm.com>
+X-Mailer: git-send-email 2.48.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <SJ1PR11MB61295789E25C2F5197EFF2F6B9A72@SJ1PR11MB6129.namprd11.prod.outlook.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF000001CE:EE_|DM4PR12MB6253:EE_
-X-MS-Office365-Filtering-Correlation-Id: 106f11f4-e4f8-4ec4-9d02-08dd6b705402
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700013|1800799024|376014|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Mt/ecRIm2AKk6NwjL4Z4XjGAR0LpPVMeFb7xW+XbbCfpxjK/rHshaprIfIZ9?=
- =?us-ascii?Q?5dTdvVARVujjrrJwRK6B14BptWxOavz/GJBuOWyxlhYBz98N6FbUIQpEmkyB?=
- =?us-ascii?Q?Hmt4i4e7V06XsH4OXY6j+feM8MrJkh7S0JjkBPL489q1KpjOfAbLKJSVHls8?=
- =?us-ascii?Q?/lhREQrMTxE9n5G+qrcGbgPqiZ5h8F3R2RC0ABV5F5C0ydhpOprTRgzsIKba?=
- =?us-ascii?Q?LrWSMJCygzah9M5E06sNfkTh0B/imFCGNyWKsAuyWt4lqAAKtrpaxS7jTLWv?=
- =?us-ascii?Q?DcayoTtZgJFY2cl+zjcfViDT8D4n7y4O+pj1DJLBz2jIFVoU7Fwv9afSS96L?=
- =?us-ascii?Q?a5gv/uWyeIwkq7I2joxQrbso1L/pWWvNz7yrqMpEM1c01dBP1X3VfemJjc0y?=
- =?us-ascii?Q?8kOKBTb19IMPAhWjLlCgNU6Fkfm+WCq4sdkZ3i7NLZfC+EvIi2FK0ue87Wic?=
- =?us-ascii?Q?ZTPZYO/u3s9etlwNDq6IRnRj1RiJ95xJMAgrfpJiE2LsbjNdfGkIZe67h6du?=
- =?us-ascii?Q?7QLnzXIbg71PgQan6rpd/VvIACFBwCLPsPkqztZTzN98BF7IairYEEirxALP?=
- =?us-ascii?Q?eVQC1JOkjMqUI9ugbzUveeedEidz4IoZyaJiVvtmhNF+rWvLG2+OM7zqsS45?=
- =?us-ascii?Q?4mdN33TL7Dt2B4GoLTY5rjBhNHoxAR58vsJDCmFZnUCE+yEi/e5r9st9Nttr?=
- =?us-ascii?Q?eFqrteTYTephVAzpFgd7T+lv+GTBPgvABWNum5pg+PgSxIN9m5Gn6br2fZ94?=
- =?us-ascii?Q?SL/QTeNkOiSUAhp/RNGl/gHoKJOILH3ybLHNfCPPLuVx/TwRCFwupvsdDyXh?=
- =?us-ascii?Q?RCBmtMVdAvm4YaIKduidr7PVDVKjp6xXyzi3PV4Oei0SJelRGsPaEDG++FjZ?=
- =?us-ascii?Q?yJCbfAIDBPduC1R9r2DvI+8ZzDkfj6fIqlfYuppEWxePwqcOM0h81RAsmo6d?=
- =?us-ascii?Q?M4s2isq5X8InFU7+pIE7V/RFCBZaDGLhsyBGUTCV0T4nPv4P4J365mJqJwNc?=
- =?us-ascii?Q?MTSSRqlCjUP9UCN3pjZvT5/CGllsUszNWNf04MAajo3goS0OFiHCrnO9M38f?=
- =?us-ascii?Q?BkjZEFNYyHgBtBScUEKwjPXrhJdeNferP0dlUs+2TWTtjyxwYw+xTu3RJt+m?=
- =?us-ascii?Q?CFGnDHdaixGxlqJn3ZA0KvJEm/IhVhFWF+ELWUj+gNt/oUZro5h5zLlZFpAb?=
- =?us-ascii?Q?N3wJCh1RNWHOFPqW/qJ3dE7XuN+rEJVMOwNdfY2p35nTQw3IDYDBJ4J6r9PX?=
- =?us-ascii?Q?ng4XHp0HU+222BJAfwfOCwxkWxAKSsvmy4tVcsah3/Y4w392ZOlEr+NaCkwJ?=
- =?us-ascii?Q?ETFyWFQjNpv63w3eQnR6niatW0XoyDCjBUSYqwpCGlHbb4FhiWG+6tpOVK79?=
- =?us-ascii?Q?+Am3yCvSMfnF6je5EGDMGN0VJZJkM079qGjl0ONA4pSQOBfJZW2gDYTTs5HT?=
- =?us-ascii?Q?vjnJ+sV6ILhH+C8vpHFuYB+pP/aBbyxJm24BpIbQk+THP8Fk4qoBBmrQXOu6?=
- =?us-ascii?Q?pANwWv81j0utwmo=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(1800799024)(376014)(13003099007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2025 07:40:34.5038
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 106f11f4-e4f8-4ec4-9d02-08dd6b705402
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ5PEPF000001CE.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6253
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-(CC += Jason)
+Hi All,
 
-Hi Chaitanya,
+This patch series adds initial support for eliding Break-Before-Make
+requirements on systems that support BBML2 and additionally guarantee
+to never raise a conflict abort.
 
-On Tue, Mar 25, 2025 at 05:39:39AM +0000, Borah, Chaitanya Kumar wrote:
-> Hello Nicolin,
-> 
-> Hope you are doing well. I am Chaitanya from the linux graphics team in Intel.
-> 
-> This mail is regarding a regression we are seeing in our CI runs[1] on linux-next repository.
-> 
-> Since the version next-20250321 [2], we are seeing the following regression
-> 
-> `````````````````````````````````````````````````````````````````````````````````
-> <4>[    0.226495] Unpatched return thunk in use. This should not happen!
-> <4>[    0.226502] WARNING: CPU: 0 PID: 1 at arch/x86/kernel/cpu/bugs.c:3107 __warn_thunk+0x62/0x70
+This support elides a TLB invalidation in contpte_convert(). This
+leads to a 12% improvement when executing a microbenchmark designed
+to force the pathological path where contpte_convert() gets called.
+This represents an 80% reduction in the cost of calling
+contpte_convert().
 
-Hmm....I wonder why x86 can be affected...
+This series is based on v6.14-rc5 (7eb172143d55).
 
-The only four callers of iommu_dma_prepare_msi() are ARM platforms.
+Notes
+======
 
-> <4>[    0.226513] Modules linked in:
-> <4>[    0.226521] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc7-next-20250321-next-20250321-g9388ec571cb1+ #1 PREEMPT(voluntary) 
-> <4>[    0.226532] Hardware name: ASUS System Product Name/PRIME Z790-P WIFI, BIOS 0812 02/24/2023
-> <4>[    0.226539] RIP: 0010:__warn_thunk+0x62/0x70
-> <4>[    0.226544] Code: 34 4c 5d 02 01 e8 fe f6 a7 00 84 c0 75 d9 48 c7 c7 f8 bf 0d 83 e8 7e c6 08 00 48 c7 c7 a0 a2 a0 82 e8 e2 f6 a7 00 84 c0 75 bd <0f> 0b eb b9 cc cc cc cc cc cc cc cc cc cc 90 90 90 90 90 90 90 90
-> <4>[    0.226559] RSP: 0000:ffffc90000067d78 EFLAGS: 00010246
-> <4>[    0.226565] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> <4>[    0.226571] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-> <4>[    0.226577] RBP: ffffc90000067d80 R08: 0000000000000000 R09: 0000000000000000
-> <4>[    0.226583] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> <4>[    0.226589] R13: ffffffff83c9417c R14: ffff88887f344bc0 R15: ffff888102370100
-> <4>[    0.226595] FS:  0000000000000000(0000) GS:ffff8888dacfd000(0000) knlGS:0000000000000000
-> <4>[    0.226602] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> <4>[    0.226608] CR2: ffff88887f7ff000 CR3: 000000000344a000 CR4: 0000000000f50ef0
-> <4>[    0.226614] PKRU: 55555554
-> <4>[    0.226617] Call Trace:
-> <4>[    0.226620]  <TASK>
-> <4>[    0.226624]  ? show_regs+0x6c/0x80
-> <4>[    0.226630]  ? __warn+0x94/0x210
-> <4>[    0.226635]  ? __warn_thunk+0x62/0x70
-> <4>[    0.226640]  ? __report_bug+0x110/0x280
-> <4>[    0.227000]  ? __lock_acquire+0x447/0x2c70
-> <4>[    0.227011]  ? _prb_read_valid+0x25a/0x310
-> <4>[    0.227018]  ? __lock_acquire+0x447/0x2c70
-> <4>[    0.227024]  ? prb_read_valid+0x1c/0x30
-> <4>[    0.227037]  ? lock_acquire+0xc4/0x330
-> <4>[    0.227055]  ? _prb_read_valid+0x25a/0x310
-> <4>[    0.227073]  ? __warn_thunk+0x62/0x70
-> <4>[    0.227081]  ? report_bug+0x24/0x80
-> <4>[    0.227089]  ? handle_bug+0x16a/0x2a0
-> <4>[    0.227098]  ? exc_invalid_op+0x18/0x80
-> <4>[    0.227106]  ? asm_exc_invalid_op+0x1b/0x20
-> <4>[    0.227122]  ? __warn_thunk+0x62/0x70
-> <4>[    0.227130]  ? __warn_thunk+0x5e/0x70
-> <4>[    0.227135]  ? iommu_dma_ranges_sort+0x40/0x40
-> <4>[    0.227144]  warn_thunk_thunk+0x16/0x30
-> <4>[    0.227157]  do_one_initcall+0x5d/0x460
-> <4>[    0.227171]  kernel_init_freeable+0x3ac/0x530
-> <4>[    0.227187]  ? __pfx_kernel_init+0x10/0x10
-> <4>[    0.227196]  kernel_init+0x1b/0x200
-> <4>[    0.227203]  ret_from_fork+0x44/0x70
-> <4>[    0.227210]  ? __pfx_kernel_init+0x10/0x10
-> <4>[    0.227217]  ret_from_fork_asm+0x1a/0x30
-> <4>[    0.227236]  </TASK>
-> `````````````````````````````````````````````````````````````````````````````````
-> Details log can be found in [3].
+Patch 1 implements an allow-list of cpus that support BBML2, but with
+the additional constraint of never causing TLB conflict aborts. We
+settled on this constraint because we will use the feature for kernel
+mappings in the future, for which we cannot handle conflict aborts
+safely.
 
-And I can't see something obvious from the log..
+Yang Shi has a series at [1] that aims to use BBML2 to enable splitting
+the linear map at runtime. This series partially overlaps with it to add
+the cpu feature. We believe this series is fully compatible with Yang's
+requirements and could go first.
 
-Would you please give the git-diff a try (drivers/iommu/iommu.c)?
-https://lore.kernel.org/linux-iommu/Z+Itnw4ys6dmDsc+@nvidia.com/
+Due to constraints with the current design of the cpufeature framework
+and the fact that our has_bbml2_noabort() check relies on both a MIDR
+allowlist and the exposed MMFR2 register value, if an implementation
+supports our desired BBML2+NOABORT semantics but fails to declare
+support for BBML2 via the id_aa64mmfr2.bbm field, the check will fail.
 
-If this doesn't help, would you please give this a try?
-https://lore.kernel.org/linux-iommu/20250324170743.GA1339275@ax162/
+Not declaring base support for BBML2 when supporting BBML2+NOABORT
+should be considered an erratum [2], and a workaround can be applied in
+__cpuinfo_store_cpu() to patch in support for BBML2 for the sanitised
+register view used by SCOPE_SYSTEM. However, SCOPE_LOCAL_CPU bypasses
+this sanitised view and reads the MSRs directly by design, and so an
+additional workaround can be applied in __read_sysreg_by_encoding()
+for the MMFR2 case.
 
-Thanks!
-Nicolin
+For situations where support for BBML2+NOABORT is claimed by an
+implementor and subsequently built into the kernel, but problems later
+arise that require user damage control [3], we introduce a kernel
+commandline parameter override for disabling all BBML2 support.
+
+[1]:
+  https://lore.kernel.org/linux-arm-kernel/20250304222018.615808-1-yang@os.amperecomputing.com/
+
+[2]:
+  https://lore.kernel.org/linux-arm-kernel/3bba7adb-392b-4024-984f-b6f0f0f88629@arm.com/
+
+[3]:
+  https://lore.kernel.org/all/0ac0f1f5-e4a0-46ae-8ea0-2eba7e21a7e1@arm.com/
+
+Changelog
+=========
+
+v5:
+  - fixup coding style nits
+  - document motivation for kernel commandline parameter
+
+v4:
+  - https://lore.kernel.org/all/20250319150533.37440-2-miko.lenczewski@arm.com/
+  - rebase onto v6.14-rc5
+  - switch from arm64 sw feature override to hw feature override
+  - reintroduce has_cpuid_feature() check in addition to MIDR check
+
+v3:
+  - https://lore.kernel.org/all/20250313104111.24196-2-miko.lenczewski@arm.com/
+  - rebase onto v6.14-rc4
+  - add arm64.nobbml2 commandline override
+  - squash "delay tlbi" and "elide tlbi" patches
+
+v2:
+  - https://lore.kernel.org/all/20250228182403.6269-2-miko.lenczewski@arm.com/
+  - fix buggy MIDR check to properly account for all boot+late cpus
+  - add smmu bbml2 feature check
+
+v1:
+  - https://lore.kernel.org/all/20250219143837.44277-3-miko.lenczewski@arm.com/
+  - rebase onto v6.14-rc3
+  - remove kvm bugfix patches from series
+  - strip out conflict abort handler code
+  - switch from blocklist to allowlist of bmml2+noabort implementations
+  - remove has_cpuid_feature() in favour of MIDR check
+
+rfc-v1:
+  - https://lore.kernel.org/all/20241211154611.40395-1-miko.lenczewski@arm.com/
+  - https://lore.kernel.org/all/20241211160218.41404-1-miko.lenczewski@arm.com/
+
+Mikołaj Lenczewski (3):
+  arm64: Add BBM Level 2 cpu feature
+  iommu/arm: Add BBM Level 2 smmu feature
+  arm64/mm: Elide tlbi in contpte_convert() under BBML2
+
+ .../admin-guide/kernel-parameters.txt         |  3 +
+ arch/arm64/Kconfig                            | 19 +++++
+ arch/arm64/include/asm/cpucaps.h              |  2 +
+ arch/arm64/include/asm/cpufeature.h           |  5 ++
+ arch/arm64/kernel/cpufeature.c                | 71 +++++++++++++++++++
+ arch/arm64/kernel/pi/idreg-override.c         |  2 +
+ arch/arm64/mm/contpte.c                       |  3 +-
+ arch/arm64/tools/cpucaps                      |  1 +
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  3 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  3 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  4 ++
+ 11 files changed, 115 insertions(+), 1 deletion(-)
+
+-- 
+2.48.1
+
