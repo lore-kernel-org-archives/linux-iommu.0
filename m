@@ -1,153 +1,139 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8759425D1E3
-	for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 15:26:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31819191484
+	for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 15:33:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742916383; cv=none; b=JKOcp1kiOQt+SlIQ5M4G2EoLN0+kz76VwS40hDNiaIdQx4JYvjDjWISv/0mX2bGfsuirdeb2biDqHNkHIrEZw7k4ZxkJk5pUlkVEmdtEMJ5OzZaUBsAr56mrRZpefl16yN2auY3aBccUqo8AqExCBeo8n6foiLTw7TK7p0kiWHE=
+	t=1742916783; cv=none; b=kDv3IQXfbA8jqeevK7ea7/+3RobVfwtsXK1+WuvGH+JHl9j/bltKCPstxacNsF7uEZDLBsleaQxKh7VIqd+x34iC7qeef+BWg9QWM2mzFPdhdCcaHZ5c0gUjLLe22aKTbByu211F8dCRtHDjAUwcNOEIV0z9BwytfrBzw2veckY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742916383; c=relaxed/simple;
-	bh=KsyhWDZ9vz2zVV4SSVoQ1RCE2E0KDLZcwTuZVzKJ4U8=;
+	s=arc-20240116; t=1742916783; c=relaxed/simple;
+	bh=uOMaXxqQr1touZc2JkhdpC0WTA9CS+H9FhkB/6PIUEs=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BJRhsNTaKOZ/pZP6ktePt2Qy4UH4pnpulZJvL3HE+TX4LIM54LRkwsgsEGgB3MW0Kzy4WMSwh8/NqNES87jfn/VQkYkKWFovExXc05dqFdFXZmqIwWp2r9rrIeoWq6CrIYzaCkHDJ6MFoRPesIFnQYytI/Rq6EET6fjQ5e03Vqg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.46
+	 To:Cc:Content-Type; b=eFFocV1wr8IKcLDgEgKR3syuDcpEKgGF/8XY4lYuJVLEknmZbR1Svivn3Yr2gtlDUzI+NZbpHZvErxyZAdJTnANCvyA++G0WZHOpwDBKOlr93va0CRv3vPcHob0cezPhF4al+bN0lgkBeaFxX2APMGcHq33/QGC/t4rj4gsbFdw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-ab78e6edb99so807412166b.2
-        for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 08:26:20 -0700 (PDT)
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-abf3d64849dso937677866b.3
+        for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 08:33:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742916378; x=1743521178;
+        d=1e100.net; s=20230601; t=1742916777; x=1743521577;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ey1ptOkb7OET1t+PI+4h/aljRyEZhfbvKjRYRUk152Y=;
-        b=Lg9bGbZkJji7mBrFRWUXN4MsROwLNxRBAJe+KOZS9vNze9XHzFjfXRjFr2yIKFs7MU
-         eUVxKz7TflhklznsgZjvmNJ+kDTsIFrPfW66SNeN30HoJ3N8iN90seBKPx4KTkf4aKM+
-         3JRr+eZT5l/faFjJosqh6waKrbsM4bqsDw7Mpa5cC3Bvdh1hjqsEEk+fjU5QCWshTu5C
-         S5NzERtrO1rNoMyxZlHJdrGHSad9zcFFDKX9revNRasI/XngLYNoIIlzuO4jMvuNxgWN
-         dALdrANdqe9rSmsJo0uPuEOUAlH880tgya3t39bKYvVl5T1/alavDj4YlAWjislgDoeI
-         4tUQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWtOFmC/Ai8r7Q1AQa5MKBpjpUF2ann6nqXSbdlphCqbDaHH/rYHLY5/TM0oSVY3InYzqmSiA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyrxnJqU711idmBphCcCiJk1GWnYjsYmglDsNuV+kFALIaLi+Mb
-	cF5538wzGeG6bJn7y+Tn189k4IZUCbIv+MPDBVawGefrI5BwoUh9PbU4k4t4GcA=
-X-Gm-Gg: ASbGncsPZI4bSRqNcVN/MjJLsevtLZc9YWYxvh6fCX/t5bEnG7mCMnVvKo3x28qZ7ue
-	w1tpvfNusFhhUzxQUXdhzvso4OwfA+/t+PzgLD+03Bh7P+jEfvruEH6wUOJS+rcO9WoKBEIZHxx
-	dGViBISOQzpsvoea2ppxpZS2LwYsmjTbrdnbrmPnVw0q0HOAKgoQDs9X/o/IxD/IilRYFTj9jOa
-	a29OqbX+K6nrMJMCc4FB/Wo6fq901OSMnlX02QTDUdbA81QTlW0qlIVrGjtygSKksLHwGzMP4rY
-	hp3mkhxSmVdcxUX1xCGe0WADyVbOGR3bBl9aHYUl7mOzgh7IXbeYSsGcc519NYYCQcb9fK+BMN0
-	9uAE9pC4=
-X-Google-Smtp-Source: AGHT+IGyabeLH+SLi5USs2xfrocMmUBW5Fk8Cdseedb7Z/EU6OMD7ukGSwyPqoV7Cdnhq98XxHR1AQ==
-X-Received: by 2002:a17:907:2d87:b0:ac2:fd70:ddb2 with SMTP id a640c23a62f3a-ac3f2086f35mr1673566766b.2.1742916377781;
-        Tue, 25 Mar 2025 08:26:17 -0700 (PDT)
+        bh=PiWm+JkA0WFLQavBGxgJxiDDHRCBaxXFyxmdg7dNgng=;
+        b=EcFanDkMaLvaoaGpkxf8SxyoihwubCoRc56jVN0WIvewmNuQPHCzW4yelRP0xA3/uL
+         U/MywWF96nfjDswp/A0jupzqssyZZ82SzuISNfk9JWSPPyM3xZexqpghE6C3UHNTUoxb
+         kVSPyx32xTguQgIN9E3KibqKHQMEWVixyDj8AYqb6dm2MOtulR/2XkKBpsssX/yrI8HJ
+         fcElgQRm25K5uLCTkxf+CMd34sQf6NF/HA28Du3Utde4S3iYWAQKIsSp9ITu5AS6dRpf
+         SDukeep4+4ulBG+L97k7LGH8yhM/yzeSdFhmtqrw79lL95s70AVHBwBUjiU9TowdUfY5
+         WB+A==
+X-Forwarded-Encrypted: i=1; AJvYcCWUkhLLCbd+iJmRXR3qcYWqECuGp2ktxNavoQyHvjRO7DHVubU7vexsQBfgvw+9Vo56oFB3wQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyrrH5x1Q6DbA5gAXs9aN26zFux1E1cBp5HoAj64PefdoRlY/lt
+	hZUfQjtqimiirhJjSK8ugg4Cg2G/1PhzZDyqArdkbquC7CxfcO6NBCJk3bHGTB4=
+X-Gm-Gg: ASbGncs1JGVfPtgcyArCb6e+ymW5rb+GQtvQ+b98z+GjGarpFLJCDjkevKJmPfGtOGo
+	uRfSkcGa0qabuO2bSN/wxtWX3K4PsQYyVepRINM2fgzj5ChTnvBjXSS9l6KNajUbKg1V/5F64fP
+	VWczreocaOVzZupGc/KKD+3qeVe4Rf23D7zz5oLeMZXswKocnOjt1PC+Z19IIuKS9GGlh9wpswn
+	4grWOqzl+WOkoBUwMfMcgfLayI4tHeozgBXqFMU6G1+K/he31mYFm3GlsXYUbA+U2K269EjQI/0
+	DdRJUDfIxA/KRnxhaKGdupKhoMZH3Jo2ApoCrb1GjLSH16idSowz8qS/yAq6hnVq6i9zMPDTC5H
+	C+d2MnJc=
+X-Google-Smtp-Source: AGHT+IGuZWf9hjfjCVfmv3fGER9KKHR0GuzgxtPWA3dRCKjs17tgNq1Ed5l+dP8ucawrJXMP+4aWbw==
+X-Received: by 2002:a17:907:bd0d:b0:abf:e7c1:b3bf with SMTP id a640c23a62f3a-ac3f24163f7mr1881325866b.11.1742916777205;
+        Tue, 25 Mar 2025 08:32:57 -0700 (PDT)
 Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com. [209.85.218.43])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ac3efb51cf6sm878484466b.106.2025.03.25.08.26.16
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5ebcce36d66sm7930432a12.0.2025.03.25.08.32.56
         for <iommu@lists.linux.dev>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Mar 2025 08:26:16 -0700 (PDT)
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-ab78e6edb99so807404566b.2
-        for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 08:26:16 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUCPnNtrYSYN0c113PEf9aIJ1P4xSAzMBk1ZyTNQ52enXEZLQpk49xfnD3a10+748tm+0OWaw==@lists.linux.dev
-X-Received: by 2002:a17:907:97c2:b0:ac6:ba92:79c9 with SMTP id
- a640c23a62f3a-ac6ba927fdbmr398008166b.18.1742916376510; Tue, 25 Mar 2025
- 08:26:16 -0700 (PDT)
+        Tue, 25 Mar 2025 08:32:56 -0700 (PDT)
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-ac2963dc379so971054066b.2
+        for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 08:32:56 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXZGt46wIqNqBh1Erv6B7gJjRGMPOlvyUghNlk2/7Qg4YtndAT137O2j9hJVScpthQWwCa5bA==@lists.linux.dev
+X-Received: by 2002:a17:907:9494:b0:ac1:de84:dec0 with SMTP id
+ a640c23a62f3a-ac3f24ed6c4mr1547143566b.26.1742916775525; Tue, 25 Mar 2025
+ 08:32:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <53be6667544de65a15415b699e38a9a965692e45.1742481687.git.robin.murphy@arm.com>
-In-Reply-To: <53be6667544de65a15415b699e38a9a965692e45.1742481687.git.robin.murphy@arm.com>
+References: <cover.1740753261.git.robin.murphy@arm.com> <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
+ <CAMuHMdWPFnHTFeeWL2-BU8tKOL-E5K2ROOz=LLBLTJJLCK9NgA@mail.gmail.com> <25bd5477-a388-405f-a976-6b1a59860ef8@arm.com>
+In-Reply-To: <25bd5477-a388-405f-a976-6b1a59860ef8@arm.com>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 25 Mar 2025 16:26:02 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUtCqwzeWY8G+yHiu4biovymDVb_UtjfYPEQYyYr+dP4Q@mail.gmail.com>
-X-Gm-Features: AQ5f1JpxwyaVEoL_gG00SX4u4mmS2G73SUcVvP1i1roPtO6YBwlUw4Ll1yY2FDU
-Message-ID: <CAMuHMdUtCqwzeWY8G+yHiu4biovymDVb_UtjfYPEQYyYr+dP4Q@mail.gmail.com>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Register in a sensible order
+Date: Tue, 25 Mar 2025 16:32:42 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXt9gQxBSVrWw1VSji+faxga4Vo_NRie27K=EtdUMMa_Q@mail.gmail.com>
+X-Gm-Features: AQ5f1JoGJs3g1Wq6ZLZNBkuvqix5EpionY5Jl_k8v4NSQBsoSN9WndnQ0FJE0b0
+Message-ID: <CAMuHMdXt9gQxBSVrWw1VSji+faxga4Vo_NRie27K=EtdUMMa_Q@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe path
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, 
-	linux-renesas-soc@vger.kernel.org
+Cc: Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo <guohanjun@huawei.com>, 
+	Sudeep Holla <sudeep.holla@arm.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, 
+	Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Danilo Krummrich <dakr@kernel.org>, Stuart Yoder <stuyoder@gmail.com>, 
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>, Nipun Gupta <nipun.gupta@amd.com>, 
+	Nikhil Agarwal <nikhil.agarwal@amd.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, 
+	Charan Teja Kalla <quic_charante@quicinc.com>, 
+	Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 
 Hi Robin,
 
-On Thu, 20 Mar 2025 at 15:41, Robin Murphy <robin.murphy@arm.com> wrote:
-> IPMMU registers almost-initialised instances, but misses assigning the
-> drvdata to make them fully functional, so initial calls back into
-> ipmmu_probe_device() are likely to fail unnecessarily. Reorder this to
-> work as it should, also pruning the long-out-of-date comment and adding
-> the missing sysfs cleanup on error for good measure.
+On Tue, 18 Mar 2025 at 18:24, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 18/03/2025 4:37 pm, Geert Uytterhoeven wrote:
+> [...]
+> > Thanks for your patch, which is now commit bcb81ac6ae3c2ef9 ("iommu:
+> > Get DT/ACPI parsing into the proper probe path") in iommu/next.
+> >
+> > This patch triggers two issues on R-Car Gen3 platforms:
+> >
+> > 1. I am seeing a warning on Renesas Salvator-XS with R-Car M3N
+> > (but not on the similar board with R-Car H3), and only for SATA[1].
+> > Unfortunately commit 73d2f10957f517e5 ("iommu: Don't warn prematurely
+> > about dodgy probes") does not help:
+> [...]
+> >      Call trace:
+> >       __iommu_probe_device+0x208/0x38c (P)
+> >       iommu_probe_device+0x34/0x74
+> >       of_iommu_configure+0x128/0x200
+> >       of_dma_configure_id+0xdc/0x1d4
+> >       platform_dma_configure+0x48/0x6c
+> >       really_probe+0xf0/0x260
+> >       __driver_probe_device+0xec/0x104
+> >       driver_probe_device+0x3c/0xc0
 >
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-
-Thanks for your patch!
-
-This fixes the
-
-    sata_rcar ee300000.sata: late IOMMU probe at driver bind,
-something fishy here!
-    WARNING: CPU: 1 PID: 13 at drivers/iommu/iommu.c:571
-__iommu_probe_device+0x208/0x38c
-
-I saw on Salvator-XS with R-Car M3-N.
-
-It does not fix the second issue reported, so it is indeed too early for a
-"Closes: https://lore.kernel.org/CAMuHMdWPFnHTFeeWL2-BU8tKOL-E5K2ROOz=LLBLTJJLCK9NgA@mail.gmail.com"
-tag.
-
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -1081,31 +1081,24 @@ static int ipmmu_probe(struct platform_device *pdev)
->                 }
->         }
+> Hurrah, this is the warning doing the correct job - something *is* off
+> if we're now getting here without the IOMMU configuration being done
+> already (for a normal device with no other funny business going on).
 >
-> +       platform_set_drvdata(pdev, mmu);
+> > 2. The IOMMU driver's iommu_ops.of_xlate() callback is called about
+> > three times as much as before:
+>
+> That would suggest that the fwspec gets set up OK, then something later
+> in the __iommu_probe_device() path fails and tears it down again, so the
+> next attempt starts from scratch. Do you see the "Cannot attach to
+> IPMMU" message firing?
 
-Nit: perhaps insert a blank line here, before the comment below?
+I do not see such messages.
 
->         /*
->          * Register the IPMMU to the IOMMU subsystem in the following cases:
->          * - R-Car Gen2 IPMMU (all devices registered)
->          * - R-Car Gen3 IPMMU (leaf devices only - skip root IPMMU-MM device)
->          */
-> -       if (!mmu->features->has_cache_leaf_nodes || !ipmmu_is_root(mmu)) {
-> -               ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL,
-> -                                            dev_name(&pdev->dev));
-> -               if (ret)
-> -                       return ret;
-> +       if (mmu->features->has_cache_leaf_nodes && ipmmu_is_root(mmu))
-> +               return 0;
->
-> -               ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
-> -               if (ret)
-> -                       return ret;
-> -       }
-> +       ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL, dev_name(&pdev->dev));
-> +       if (ret)
-> +               return ret;
->
-> -       /*
-> -        * We can't create the ARM mapping here as it requires the bus to have
-> -        * an IOMMU, which only happens when bus_set_iommu() is called in
-> -        * ipmmu_init() after the probe function returns.
-> -        */
-> +       ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
-> +       if (ret)
-> +               iommu_device_sysfs_remove(&mmu->iommu);
->
-> -       platform_set_drvdata(pdev, mmu);
-> -
-> -       return 0;
-> +       return ret;
->  }
->
->  static void ipmmu_remove(struct platform_device *pdev)
+> And similarly to the Rockchip case, does the
+> below help?
+
+The below is basically the same as your "[PATCH] iommu/ipmmu-vmsa:
+Register in a sensible order"[1].  While that fixes my first issue,
+it does not fix the second (harmless?) issue.
+
+Note that I only noticed the second issue because I have local debug
+code in soc_device_match().  Perhaps it happens, unnoticed, on other
+systems too?
+
+Thanks!
+
+[1] https://lore.kernel.org/53be6667544de65a15415b699e38a9a965692e45.1742481687.git.robin.murphy@arm.com/
 
 Gr{oetje,eeting}s,
 
