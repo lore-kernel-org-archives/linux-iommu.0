@@ -1,93 +1,72 @@
-Received: from mx2.aip.ooo (mx2.aip.ooo [185.232.107.102])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 475481DB125;
-	Tue, 25 Mar 2025 09:45:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.232.107.102
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BF783254AE7
+	for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 11:06:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742895946; cv=none; b=FRr7j7c69XmJoiFRrJycSRhzi98HI1qG3m1bVnyTMlmadEPRm5bWlMMFLmfumSsZauTr2Uz7YLzolMEay8oEOPUa9RShoi0peKB40/el+AOZkvWp0rL+s9uhrkXVQ3LdSqVd8pBR6lshRXVLg97iaUuHfjkrSM15dQnK2+SpIhA=
+	t=1742900811; cv=none; b=eyX/XmQ18YEso8BFOIocySL2TeCURhoxcA1nLvY0a2TnKEA4LVv71smZX0ZvEglIAVOkDTeR0VZhiYG3nvtiTLPZ7HtsIjWN7V2GQdIz4se+YREwzxSr8XfRTvVS8G0Op+tciogrwcwpr/bP6CIbJFK/SQIyUT7phUDekjzf0N8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742895946; c=relaxed/simple;
-	bh=hHMCEXxzUqIp7Lmp8dSlKc13OfFAgtId5ffLRKJJG+8=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=dDVCw28jn+huseZdVgRBDK9sE2/2W44zUcWNQjW0+fYdQEC8hzGFmURbnK9bo+HqItd2Geb2aLGdUc6OZtFpjChR5rmnj10oNyaaFTrjcUzFM2I1i42xqfHyTynTg/rak1FFDC05HSRxmRYB3K9rWiWmBxSRRNqu/ZCjf87eIn0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cyberprotect.ru; spf=pass smtp.mailfrom=cyberprotect.ru; arc=none smtp.client-ip=185.232.107.102
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cyberprotect.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberprotect.ru
-Received: from aip-exch-2.aip.ooo ([10.77.28.102] helo=aip-exch.aip.ooo)
-	by mx2.aip.ooo with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <Pavel.Paklov@cyberprotect.ru>)
-	id 1tx0VW-004s05-AC; Tue, 25 Mar 2025 12:23:38 +0300
-Received: from 10.77.154.78 (10.77.154.78) by AIP-EXCH-2.aip.ooo
- (10.77.28.102) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 25 Mar
- 2025 12:23:37 +0300
-From: Pavel Paklov <Pavel.Paklov@cyberprotect.ru>
-To: Joerg Roedel <joro@8bytes.org>
-CC: <pavel.paklov@cyberprotect.ru>, Pavel Paklov
-	<Pavel.Paklov@cyberprotect.ru>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Wan Zongshun <Vincent.Wan@amd.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<lvc-project@linuxtesting.org>, <stable@vger.kernel.org>
-Subject: [PATCH] iommu/amd: Fix potential buffer overflow in parse_ivrs_acpihid
-Date: Tue, 25 Mar 2025 09:22:44 +0000
-Message-ID: <20250325092259.392844-1-Pavel.Paklov@cyberprotect.ru>
-X-Mailer: git-send-email 2.43.0
+	s=arc-20240116; t=1742900811; c=relaxed/simple;
+	bh=1oUtFGtYzogbL0vB7U/WIQ8hwYhjr5hl5aNe3i3p1t8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=nArYDGCp7u9DRk7Mmo/soWcrNfqm+6QpP06qsP7H5N0vprGKzBhi/TaknNrM5N4xrRT8B2je8IYMCr8782s8ezoFuFKmxgbrVAlh58ibET+KJjBqcjEIlO+XqFQBJo0+NUZUpbHGdxTdaNqJ+Is/LlXVA869m2H3OND6l8QN+io=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4D407106F;
+	Tue, 25 Mar 2025 04:06:48 -0700 (PDT)
+Received: from [10.1.197.1] (ewhatever.cambridge.arm.com [10.1.197.1])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 182383F58B;
+	Tue, 25 Mar 2025 04:06:38 -0700 (PDT)
+Message-ID: <5e49377e-6a3e-4a48-94c9-db06f13cffe8@arm.com>
+Date: Tue, 25 Mar 2025 11:06:37 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 1/3] arm64: Add BBM Level 2 cpu feature
+To: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
+ ryan.roberts@arm.com, yang@os.amperecomputing.com, corbet@lwn.net,
+ catalin.marinas@arm.com, will@kernel.org, jean-philippe@linaro.org,
+ robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org,
+ ardb@kernel.org, mark.rutland@arm.com, joey.gouly@arm.com, maz@kernel.org,
+ james.morse@arm.com, broonie@kernel.org, oliver.upton@linux.dev,
+ baohua@kernel.org, david@redhat.com, ioworker0@gmail.com, jgg@ziepe.ca,
+ nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com,
+ smostafa@google.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <20250325093625.55184-1-miko.lenczewski@arm.com>
+ <20250325093625.55184-2-miko.lenczewski@arm.com>
+Content-Language: en-US
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20250325093625.55184-2-miko.lenczewski@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-SA-Exim-Connect-IP: 10.77.28.102
-X-SA-Exim-Mail-From: Pavel.Paklov@cyberprotect.ru
-X-SA-Exim-Scanned: No (on mx2.aip.ooo); SAEximRunCond expanded to false
 
-There is a string parsing logic error which can lead to an overflow of hid
-or uid buffers. Comparing ACPIID_LEN against a total string length doesn't
-take into account the lengths of individual hid and uid buffers so the
-check is insufficient in some cases. For example if the length of hid 
-string is 4 and the length of the uid string is 260, the length of str 
-will be equal to ACPIID_LEN + 1 but uid string will overflow uid buffer 
-which size is 256.
+On 25/03/2025 09:36, Mikołaj Lenczewski wrote:
+> The Break-Before-Make cpu feature supports multiple levels (levels 0-2),
+> and this commit adds a dedicated BBML2 cpufeature to test against
+> support for, as well as a kernel commandline parameter to optionally
+> disable BBML2 altogether.
+> 
+> This is a system feature as we might have a big.LITTLE architecture
+> where some cores support BBML2 and some don't, but we want all cores to
+> be available and BBM to default to level 0 (as opposed to having cores
+> without BBML2 not coming online).
+> 
+> To support BBML2 in as wide a range of contexts as we can, we want not
+> only the architectural guarantees that BBML2 makes, but additionally
+> want BBML2 to not create TLB conflict aborts. Not causing aborts avoids
+> us having to prove that no recursive faults can be induced in any path
+> that uses BBML2, allowing its use for arbitrary kernel mappings.
+> Support detection of such CPUs.
+> 
+> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
 
-The same applies to the hid string with length 13 and uid string with 
-length 250.
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-Check the length of hid and uid strings separately to prevent 
-buffer overflow.
-
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
-
-Fixes: ca3bf5d47cec ("iommu/amd: Introduces ivrs_acpihid kernel parameter")
-Cc: stable@vger.kernel.org
-Signed-off-by: Pavel Paklov <Pavel.Paklov@cyberprotect.ru>
----
- drivers/iommu/amd/init.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index cb536d372b12..fb82f8035c0f 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3677,6 +3677,14 @@ static int __init parse_ivrs_acpihid(char *str)
- 	while (*uid == '0' && *(uid + 1))
- 		uid++;
- 
-+	if (strlen(hid) >= ACPIHID_HID_LEN) {
-+		pr_err("Invalid command line: hid is too long\n");
-+		return 1;
-+	} else if (strlen(uid) >= ACPIHID_UID_LEN) {
-+		pr_err("Invalid command line: uid is too long\n");
-+		return 1;
-+	}
-+
- 	i = early_acpihid_map_size++;
- 	memcpy(early_acpihid_map[i].hid, hid, strlen(hid));
- 	memcpy(early_acpihid_map[i].uid, uid, strlen(uid));
--- 
-2.43.0
 
