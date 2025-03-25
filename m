@@ -1,99 +1,91 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A914125D8E3
-	for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 16:19:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8025263F5B
+	for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 17:50:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742919592; cv=none; b=vC37wXBy6DSb7KKDji54R4HF6qiVXGlcvuib/c2off2hAP6kZW86Hii0Vi0n355EZHbdgJ0EF77381xJ3TnRvtzy8pNj76UwUWhPT9u9bpxPSMnPjCoS/DmiTY5FNri5boBHJSkGdCvWuODV7Y2zWIfRKe19pVigmxOEM8Sniz8=
+	t=1742925048; cv=none; b=dP5UvDyLLlkPJY+iu1PXYA8791PfLVE1nEKln5d40Uj3c9ND9IhL/Ktjne9BBuW3O3S2uH3i4W8I5KIiHdaburP6viuFijJXD0NXOz2oIFrxEtKAaSl9d01WvGQCvEDg7GBj2aphsbfGrtlSaK6NOmRNQDUtluqhIbLlErmEgeM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742919592; c=relaxed/simple;
-	bh=hX7j39KuBtfx62cb+FfMb+wdzma6pluOWhzZ3SQuChk=;
+	s=arc-20240116; t=1742925048; c=relaxed/simple;
+	bh=b0ot2IZI/CRGb9xmEg4DI8ciOH9JnwgDn4pph3rl6Hk=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UeJe1sJU8hcjRXHLLWx2+NTbrVnjfmeRdQvWaRsuCHU57IBW8KrsZKqjUjB2LhT0JPMKiSWSgHzn2KalMWg6bsFf7c592ZFARDP2055Mil6WkbDNJ9ybUg25ecx4LcBcB2UjFzvIn8iOFGBD7/Ym5mktq3ww1M0RkZttxf5oVLg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=jDZTix9I; arc=none smtp.client-ip=209.85.208.44
+	 To:Cc:Content-Type; b=mKf8+KpXGuJdpK/trbeSwnyrphk5SjWAgn9MlKDsRUljWolUx2OfGaJZXy2YBkA4BNmOTdBBpxVc4iF/F9uKwvAVCPK9xmvbs7N01leaEKaTnmwD0dgevAveDz2BF7rIZ3/ZCO8MPQzVRAr4c6jHcrtZvyyIYeULPpfp4cF7Tds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=RmhJJ1XY; arc=none smtp.client-ip=209.85.208.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jDZTix9I"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5e5cbd8b19bso10916a12.1
-        for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 09:19:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="RmhJJ1XY"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5e789411187so1347a12.1
+        for <iommu@lists.linux.dev>; Tue, 25 Mar 2025 10:50:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1742919589; x=1743524389; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1742925045; x=1743529845; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DI/QR7Z3r7OzvyQ5aczHHjWY508V7BgP+OodJUdVOuE=;
-        b=jDZTix9IbxZSL1CpCH/jhnX8xYDWyJc7k48mjF2/e9ewwgaFaWtDgxwDjwq41U70RT
-         XLp1sKJ64Eg5V1bq5wCrbAZB5KOgdQFdTWqxRIqogLleAST/hQEQqNn7hhLZS1kZX4cI
-         YrNaIyTvN/XjzIrbtsqqQlBXqIJNgWyrkjKd+olH/Uk79D9QEB//anmhj7MCHlQAd77T
-         4b3nuyAQnit/IMTxGKpPftph9DxXUQ/B2YveLcZZs4izS+8aqMsuHehfNCfMb4IQ1/Xe
-         V+wsuALejvwZYEK/qGksbw5VemyDcRy9XvB8nQm9T/UbNr+hQed2KJ45htT5iGH+H7wD
-         aUqw==
+        bh=yhGiInlcR7Xd84jcIzYAisPViUWvCzr4aDmZQupUUlU=;
+        b=RmhJJ1XYH9ZyJzKLoVu0kwJP1XTjK3eGOQnZpFjczn0Bt/cMCfAqrJZY56SNK/0oep
+         egwKkjAFPKEL1CV9oR+uzv0VxSkTkvXKIhcwbV89I9YLxnAOEEjFVtcrE2vwl4M3KzUO
+         y7+BUNA1R8D5KaJFs8QDUQG094IbZeYq5WMSZXTQxMMs6tXVQ2ieV1LNB+JtSxtGaGGZ
+         tHGE5a2a2e6BOrDoaM4r6V5fastRNQjuCSBfm8ydSe/LbaND9qZaowCoC/TjK5HwjQlz
+         VQIzQu8PCXwzeO8bf0x/plhZe7L9JutSoyZ/JTFlq5f0fmusxtdTtYkrinvWWf6whbbc
+         ddRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742919589; x=1743524389;
+        d=1e100.net; s=20230601; t=1742925045; x=1743529845;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=DI/QR7Z3r7OzvyQ5aczHHjWY508V7BgP+OodJUdVOuE=;
-        b=cWYxTi/3rjFX245WEbAbkBNdpQd8v1mZLl7StXP0GkaVW1aQ8urdfBu/6FbS5TpQfO
-         WpmHtkdXwDRs/KAw7p3vB+hppVXDIgieHmdZI7VMYBYlFNKiHjvNxCw+H117JtmsCmXp
-         lcpdC6rD/kpui3QQ++c68IG8iWkcGSwGeqJJG4zj3DBOdjj2tdvOe8R6vC6GretAo6g+
-         IbnWjYMmLyAlerX6rlp2EEuoRGcl0gqC1sIPJuEpDNFTwQtCDG60LKhcKzIKAqPE6gPi
-         cQfod+eNgy+ssGfegI6ZUOPa7rEDW/JH9M3L72OlvaoX9BU/CeRXd2/suOqT68UufS/m
-         zSXg==
-X-Forwarded-Encrypted: i=1; AJvYcCWn51wSlJfYWpveUeBIdO2JxrlOvbsWvo37pygsqe4uzbEf0tiBaY+wHBMKONW6IDtv+cYwDw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwyUGNN7s12pSLZ3+/t0+4Wta49gJqmcJ8pBBRLU3Tr3hO9Sqi/
-	sLdVm8B73MPCp6VZkYBTJeL2tIJ5cDpsgWAY1FQEFhyQjVbl7TJ+IL9mN3BMTvFUtq/CICSx5B1
-	2bkZ8un3mFNbfpNfLz2SpqdviJJyJ7tlxC0ud
-X-Gm-Gg: ASbGncuvHpFyyfAOi9bM6oa9mJzNc+XuyajYfNvE15hYW83uWRDUJWaHi5QBZP58jXV
-	1o55dVn9X4We8UwzpA9eF2COeMiR9l9hCn+9I+D1S/hGRD5ZLQH4p59CLwVGjEzqHtYnw1U0Uiq
-	kdyKEW9mjRNkI4fsAH1aTF3AVCJj9EV9mdmDCZC5+nOOsVn1i8Nsuj8H2JYjI=
-X-Google-Smtp-Source: AGHT+IGcHhSgYFSPkomlxGEUgD70Qk5m2WkID7BK0JNgBpXpK8HuUXaknwn63jcrL04nURhDbcdW5PYEl4p6a2LRL+g=
-X-Received: by 2002:aa7:c841:0:b0:5dc:ccb4:cb11 with SMTP id
- 4fb4d7f45d1cf-5ec1e429182mr351627a12.4.1742919588770; Tue, 25 Mar 2025
- 09:19:48 -0700 (PDT)
+        bh=yhGiInlcR7Xd84jcIzYAisPViUWvCzr4aDmZQupUUlU=;
+        b=K+2UKKXY47iVylYX1JSziidF8hHO2SO0D8I+5Vi6Cx/zSBuGIKehSlvBfK0utrJ40E
+         o6cX1p+amw5XLBbaLVjCf68k6A+hoGYnj5R1CBXzMMGKymGp4J0V6WPikZye+UmHsUmd
+         FwHjB4U2K9OUNCWHKrz6mcaoaUbzWu++3O1WdxgV4BKowT2t/ZCp5jufEp5E7bSyNdYP
+         yR5ZViwEUOisnwptmCNBYzAj+2QR8OVYXcI8yMulCdXFxPci3js7m9z4zfPw45JDBZLZ
+         FTB4HY0KcKAwGd4ZsyH6fH+Ep9CvPOlm6UH2oCAQU56ndWGgids621XcMkUIvUq6OKmv
+         abTQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXfsrHN818W9wlnYx5P8az6c7PfaOydAevt7xXOrZVQ9A3cCfRImAw+0CHb+3UiF16zeZ3Q6Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx7TdXsXs6huEbQVMh7Afp45PKa5t5R08NAsB11piuTTMjrDqBN
+	iPw6yFmwgC7VCVdeb17Y1A6UyjTuXqB/6keplX8wykGWZgKDfCMlki8/lPEK9VSRprlJtOpK5fR
+	93xjt0WhWghUfmSbTrnsxFkgNYQpCl6yJIhpn
+X-Gm-Gg: ASbGncsvi9n6YtASOK1JXRjxGiJIFQKAO556QIfPSmbNBZE28724T7grGIcwv4DQleW
+	PuZptl8pQoQepblA6kgRaum31kKTkk/RZrdhhvaTuZ1cdmm0p9GyZhgAT/z6buuMdJsrzXaFdws
+	YJQ9ePEFTCrk+X9XECVwUZ8S+yIljREcfqaao40yGeNtjxOqwJCr7S/ejcREqo
+X-Google-Smtp-Source: AGHT+IFT6iUQVGy9/S7WpYKz0/NWFcpS5+qwlX6SRyXlLEQ6LNxZsg3WuVnK2YpKIfIXw1YJ2xU9uian5VbBT4ya5z0=
+X-Received: by 2002:aa7:d284:0:b0:5e5:606e:d5a8 with SMTP id
+ 4fb4d7f45d1cf-5ed53eedeaemr2656a12.4.1742925044906; Tue, 25 Mar 2025 10:50:44
+ -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250319004254.2547950-1-praan@google.com> <20250319004254.2547950-2-praan@google.com>
-In-Reply-To: <20250319004254.2547950-2-praan@google.com>
+References: <20250319004254.2547950-1-praan@google.com> <20250319004254.2547950-3-praan@google.com>
+In-Reply-To: <20250319004254.2547950-3-praan@google.com>
 From: Daniel Mentz <danielmentz@google.com>
-Date: Tue, 25 Mar 2025 09:19:36 -0700
-X-Gm-Features: AQ5f1JrxVLI2uWKEpDtbQLzSj5Dmj8YCvIhbMXEjmWE2lwuAZraaeGHsIWDWxXo
-Message-ID: <CAE2F3rBo9MM+V6_5aCgQxbK9cfxm1FNnR0etphms7fJ4t3xzOA@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/5] iommu/arm-smmu-v3: Refactor arm_smmu_setup_irqs
+Date: Tue, 25 Mar 2025 10:50:34 -0700
+X-Gm-Features: AQ5f1Joqm0uz52JNNiTXYMzMoGiuoxGGMT67uwQkEDG0O3dOuMqoHzB_B6jqwww
+Message-ID: <CAE2F3rARkn_CwxeBOGsivC+ytX1=5DWmi6LP=rSndiFo4fj8wQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/5] iommu/arm-smmu-v3: Add a helper to wait till cmdq drains
 To: Pranjal Shrivastava <praan@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 On Tue, Mar 18, 2025 at 5:43=E2=80=AFPM Pranjal Shrivastava <praan@google.c=
 om> wrote:
-> @@ -4754,6 +4773,13 @@ static int arm_smmu_device_probe(struct platform_d=
-evice *pdev)
->         /* Check for RMRs and install bypass STEs if any */
->         arm_smmu_rmr_install_bypass_ste(smmu);
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index 80362d9f293b..f65d9bca0392 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -754,6 +754,30 @@ static int arm_smmu_cmdq_poll_until_sync(struct arm_=
+smmu_device *smmu,
+>         return __arm_smmu_cmdq_poll_until_consumed(smmu, cmdq, llq);
+>  }
 >
-> +       /* Setup interrupt handlers */
-> +       ret =3D arm_smmu_setup_irqs(smmu);
-> +       if (ret) {
-> +               dev_err(smmu->dev, "failed to setup irqs\n");
-> +               return ret;
+> +/*
+> + * Wait until the SMMU cmdq is empty
 
-Do you need
-
-goto err_free_iopf;
-
-here instead of return ret?
-
-> +       }
-> +
->         /* Reset the device */
->         ret =3D arm_smmu_device_reset(smmu);
->         if (ret)
+nit: There is an existing comment that reads "/* Wait for the command
+queue to become non-full */". Align with that and write
+"/* Wait for the command queue to become empty */"
