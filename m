@@ -1,298 +1,259 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35DC91A262D
-	for <iommu@lists.linux.dev>; Wed, 26 Mar 2025 08:31:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742977895; cv=fail; b=ox+pzRkqbnW7H2TlMztmqd6ShzTDBh3UJKh2/aFda51HDOK1o9RgBPyGAQi+xrh9X8w3K2VqbdDy7d0yLhQsuEe/cJqVAb8D25NW5Hk6RUG7YiXJyQyam6dsz9Qc1cBk+KKNKcfwh+iWEloZARBs/XEKaT80itb6Ze56/sNVSLw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742977895; c=relaxed/simple;
-	bh=7phlYmIpvCzJGQMWg4HduO+9DbyVRDu9cdWxOBA+j4U=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=IqwZ8inS/zTAZYX89TLzrBAT+vPo3FzWEx/0BdS+55gxNbEZpQ1PH3P/9SRZxletfHMgcY82Tk2oVMcshmgta3ZvgZL8W/vhN0ozgDGUNNIZ9iJVnL1uic9sNiCiZUudhBFI9auDjxBEqGru9NZJCjvXIwKQnBerpnvuc/afeGE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L1yz2mQs; arc=fail smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F422D1F418F
+	for <iommu@lists.linux.dev>; Wed, 26 Mar 2025 14:56:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1743000991; cv=none; b=VtyDtTpzkzE+vIj50PQhLmHgqgjamd15ehG6BEL6PfstNBNqIWkKDEMU2IApiOBAYQprQZrPMlmKFsC98zg2EHp4Zz6o2g0iBg470xkUaJxuck8GX4XSv+K+wKbVYoqbHwc108wGNgucXmT55xsBMhitQB3saRLmEpXCdlNF6bo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1743000991; c=relaxed/simple;
+	bh=YEtFk1JQFtsBcNa4csbscW/Ycl71wUDecYWJHRWWilY=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=RkNDN7rjXk23L3qGaiXkoTId2OTy/H1OPtI3WZf9o7v34xVETD4ksbQfKvHJO8xXaw+KSMOkzXhvmFZFOVJ/V4NQ/W3+1YPaqzO8VPcO8N/OGzAqP+TYwAb7BBIQlqu0wtMzPmcNKPJEruIwv6j/Z45VnPxj0tmEvMeoNioMy8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=hDR8W7Vc; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L1yz2mQs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1742977893; x=1774513893;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=7phlYmIpvCzJGQMWg4HduO+9DbyVRDu9cdWxOBA+j4U=;
-  b=L1yz2mQsKKwinoI17F05nZnmYtQ1UMeF+JraWjZ5MnDD9pBbbX2jYfLB
-   TEV9vuF/h4UnJ/KDT2c4tgJrWoDSYcFySKMGVneBGqa/GXVHTeqT536nW
-   3URC4PpbfOOEFz+sVsNrR9Wwd22460fmL5v4iBKIxVkxRIjuFfo/I3I2l
-   dJjtf0QXvUCEk531zxBcQnxUxoPnzW/243Pq0V4xQRFa4a3+EGw3pyJwS
-   UdTgVluDup1kW9kg1iOO/miDtdxOqRDnVGuora5tZKDB3QYbARZrrsBrz
-   Oi1vxLZicw/TvWvh40MV9TBIVLyEIYTFuV3fsWGxGWSNQSCvs3p5p9OOQ
-   A==;
-X-CSE-ConnectionGUID: 1GVwBv7oQzWh3J14NSaqdw==
-X-CSE-MsgGUID: tUZOq3+VQ5yG8XXHFbkVFw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11384"; a="44355206"
-X-IronPort-AV: E=Sophos;i="6.14,277,1736841600"; 
-   d="scan'208";a="44355206"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2025 01:31:33 -0700
-X-CSE-ConnectionGUID: /AyEQIkOQBylBonCZap2mA==
-X-CSE-MsgGUID: oL9Sqp9WQnO6VUJt8Bv8vA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,277,1736841600"; 
-   d="scan'208";a="129539314"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 26 Mar 2025 01:31:32 -0700
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Wed, 26 Mar 2025 01:31:32 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14 via Frontend Transport; Wed, 26 Mar 2025 01:31:32 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.171)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Wed, 26 Mar 2025 01:31:31 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=v2uxF1+YajFPfFtRLbHPjqqQmCJg7wA7hw+wc8RMTo8cWa+eyOWczKQ4dvRHxdn7jcBlvYTw9wRntZXUWp+5HsWltudIT82CynGj3/VaMPEC/paH87tb42szkr+Zjcnuy981lTPxtL2KcHa61q6NHwx2+UENP4/0vv+Piw5qV3IP5Zj9Uo1Gkeq41hPLVXw6bTNXiLDBWXSZsZ08vNtSkVLtEEK6fQ7CeT/2u69J5RuS8JhVoyTiTk/YRnfSaIrp1z6f4Qv5IWyZpndSAjS+W99OES2q7gAtx66VcTWQBaxfWVHiUyBGRNDgLRUfatt9STSDMvLXR4HqCvomodNSvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jVtKsEzCD+tDkgBw0u/ijCz84efA2EKukQmbqaL0DXc=;
- b=CS8qMUgu39pu7y+j/6fG6aHXQ3aaW8N2BROJ3NiTfseNQnZ/qnVhPRDEGIsz7ii5Bu/sAOFQGqyDSq/7+Aow89WQniA8K7HpuDxnrmPgBThfBnMqhbc4luzKWSIkMkGQVXu2isz4caNYe35319Ks2/V9KxipYWe26h/6OnoV+Y9qYCtrfm2kNpmtutQJtHZALAgXne6XLTLQr3YCofq3OGJx9aRilfED7KYZCE0tOZH+ZXrjfbwsL/M+AS5fG6meHswp287i6EzzQObcykX5YlwpjhKI8ZsNEZbG37UWdS9VddNXTS77GvWmGLcEjQTUqha3iAsc3bPh11mf4Koqdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from SJ1PR11MB6129.namprd11.prod.outlook.com (2603:10b6:a03:488::12)
- by CH3PR11MB7770.namprd11.prod.outlook.com (2603:10b6:610:129::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.44; Wed, 26 Mar
- 2025 08:31:15 +0000
-Received: from SJ1PR11MB6129.namprd11.prod.outlook.com
- ([fe80::21c3:4b36:8cc5:b525]) by SJ1PR11MB6129.namprd11.prod.outlook.com
- ([fe80::21c3:4b36:8cc5:b525%5]) with mapi id 15.20.8534.040; Wed, 26 Mar 2025
- 08:31:15 +0000
-From: "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>, "Kurmi,
- Suresh Kumar" <suresh.kumar.kurmi@intel.com>, "Saarinen, Jani"
-	<jani.saarinen@intel.com>, "jgg@nvidia.com" <jgg@nvidia.com>
-Subject: RE: Regression on linux-next (next-20250321)
-Thread-Topic: Regression on linux-next (next-20250321)
-Thread-Index: AdudRupO/hqyu5dwR3qhp+EvWE8LDwAEjwgAADQFtWA=
-Date: Wed, 26 Mar 2025 08:31:15 +0000
-Message-ID: <SJ1PR11MB61292F9467353BA9FBB8F4B6B9A62@SJ1PR11MB6129.namprd11.prod.outlook.com>
-References: <SJ1PR11MB61295789E25C2F5197EFF2F6B9A72@SJ1PR11MB6129.namprd11.prod.outlook.com>
- <Z+Jd4GDIzCP5cBQE@nvidia.com>
-In-Reply-To: <Z+Jd4GDIzCP5cBQE@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SJ1PR11MB6129:EE_|CH3PR11MB7770:EE_
-x-ms-office365-filtering-correlation-id: 4180e9ba-6ae8-493b-46db-08dd6c4092b2
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|376014|1800799024|366016|38070700018;
-x-microsoft-antispam-message-info: =?us-ascii?Q?Q3CrDyfGWvF8n2am+V9YzclNgm63iopVcFxuoVBtZq2C/miCbkPEeUwWlYju?=
- =?us-ascii?Q?Ayh/MLrUv9A8IpxozZQq+JGhoh+16hFjqscb65ZGVahAp9ipZzgmqf80QJ8Q?=
- =?us-ascii?Q?X4VJ2Y3wW2ElNdSLTV3/6maPq0GoTeY0XZBJyXxZ/5DvWEK9TR46oXQMgPVh?=
- =?us-ascii?Q?/Lpic7cNy8zNgxRYrLIJAr+Nk5Axa+E10qeowkXuXLpfDIGhn3Efpavw8l3M?=
- =?us-ascii?Q?UnS0PWRpznjPebqZwSwn5sXo20MoVxIntzTMA44J5a/sCVlcF6AIVTgRVRFB?=
- =?us-ascii?Q?aHYJLw/gUGd5cKtJyCzQ4swuq9dvjLksDe1y5vhZFj/6VMIuIx0hQw1ZROzl?=
- =?us-ascii?Q?JoR3wCorYS8wOXBXUhiGhCl5M2daeIfSqdtxmcnmf/lQR57l1wJgsnMk2c/p?=
- =?us-ascii?Q?R4W38fxnweYfwjEfLENlFYygl10usA7Ut3wh7DfL2X391KARgMimdvO3pT4S?=
- =?us-ascii?Q?uyS8mYAkQEgsAjz7nNYeDytkSz8IQLHDv1d/jGVVV3IrWFui9fgzQyYuL26W?=
- =?us-ascii?Q?+kDckVWzV8usnMS1PG+ZJn/+BCGyNYJailXdUSyy6AWFJ2srKHE72uv7CfCs?=
- =?us-ascii?Q?hGiKrVgLmmxrpa43MtAJNTPUH2anslUUhY0mU6kUZfFzqZYa8JEYm7cL2vnG?=
- =?us-ascii?Q?V17FFSQ9Hn7Eo6iO+pWHIXn/Z57YOIhNu7RHb5QIJX2eXTu1bajq6ZyhzBmh?=
- =?us-ascii?Q?LjWUMyHwACmy+mCdlPpoqhRweqgZYdpKOwQValqvU8rVDaEqz58/F+yTFX13?=
- =?us-ascii?Q?tolxpGmULvhW0K5sf/2dsgO1ijvWJQkkPkch0C0PXLzav7KDIFRsbviMniGl?=
- =?us-ascii?Q?E2R86mmnbXyxTmIfaEGl1jawgZNCwfXP0EdXtiF7x/1xnzNfVNGCONTxQRgT?=
- =?us-ascii?Q?rkkxe62B/q0MGgjAufOlMfwMMZuCLozk3TQJmvM+arfY4DgIfhkd+E7cOMNW?=
- =?us-ascii?Q?LnLwgDOX3J8CWRz/dTx1EKBbORnNV7/vNm5nhz6I6J/l9ar+XsUO0bLUBFaq?=
- =?us-ascii?Q?siCrulamun0TMro5yOYxPZLe/6yqDhjyvaaSc660jamCO5Ls0k0OXcqBxJZj?=
- =?us-ascii?Q?dqiMetiCPuK6P8DgXiDnLq00dvIJbl3SJ+Bpg3+YUVmntcV7DVFUg8AhZ6Lw?=
- =?us-ascii?Q?aJ24TTQAPtK6Q1DjUxoV7JqNksQExIi4HhFyvuH1O1/JRxzQnMxzNL/YPgp2?=
- =?us-ascii?Q?HoZub5Py+rwfRIgHFUMsIXsiXOHM8LGkV3Bjc6E92jayiXkNgrJVQadNFn7p?=
- =?us-ascii?Q?0HZ4pCLLGnolN9aUZNbGmY342BwjKjhW0/1I6+HXq3kQn8aGt/BlYxn7QwgA?=
- =?us-ascii?Q?iYi5jOmHQSMIxi3orpbwJQCo/b3DJibIsQPsVkSRZCHJJI3qoX6ZoCNY4q1c?=
- =?us-ascii?Q?Gx3bf177ocC2vkIvrZyBEChvmQCgT3ZSDR2JzI4eJ/CGpliMMCv4LnY6qPb0?=
- =?us-ascii?Q?bLkU3prnx96F6VQy9m2JRvolP+oAfH6h3yfYluliiaYcvT8Ij3P/9A=3D=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR11MB6129.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?qGdYV9SPnCHf89W+krkW5K8Ck/GURKbYiWBX36Mf9QOgAfO5T+9GsVeg+l8W?=
- =?us-ascii?Q?zdZYzK8YH/mmg2uzGQC+Y3qCFNTholHgFNcHlCsVP/sHfej6bu5DpsQdHnUx?=
- =?us-ascii?Q?VHXxVbk2Px1B1d8vAfVJ5aphLA3cfWUWzWIIliXfOqtiiD/Okf5pvsRFQlSs?=
- =?us-ascii?Q?wTuylU+2ccrcDL9n9emwyvBT9n9sik+jBSUiWdEk4TBaPsNwdzTfvzXwkVLA?=
- =?us-ascii?Q?rpR3FyOYZ1WUfb+VRERR/Xw1qN53cAXAswwqKjsLPOMhBgEQfAQIdNweM7x0?=
- =?us-ascii?Q?qqi49e6wmxJnwhPp5sJEZNbhyqvk/FMJnePf1Il9M1I/HsunzsYJ98NnTVEa?=
- =?us-ascii?Q?2ECAjLVA9dGfNmn4fPHZgjqGgBZ4RISSAW2uU/RLu/VXunvNngN97KRzIHT1?=
- =?us-ascii?Q?lQU9Z/nA8I+BaS7QRARikhMKu/uRIVxoTK/KmOiUK6jc6cSEcaLwNSKXpbd5?=
- =?us-ascii?Q?iBiQRRk2Us/n+lJirm1F/4+jfA4gwFZ5/VnLjjtkpSPw1v2aic6R1FkJPYjz?=
- =?us-ascii?Q?Gdn+1yXBvzbsNqLcTvLbKUkaNl0uYwGQF/KepAE/jDXtCHOvzED8CxfhYwzn?=
- =?us-ascii?Q?8Y2K2cq4YrtZheDgFvWhVJIS36lLCMMcAcK8n7JNuKwcJa+3gXWVuJ7C0UCQ?=
- =?us-ascii?Q?90kImFWmBslf5pYSvpN3P0kXarQv6+onXe3D993AUiZqiZLPz4fKT2xJ1UxY?=
- =?us-ascii?Q?72vRgi8aaM1dwYHumYDaTo0VSCb+hONtACsEWEMogGxxLTHk4/yIUapQWL0R?=
- =?us-ascii?Q?fq52kqTMu9cr/xtcXSeagj+h9tnvtUFiCCtXEFltdjPBH7RUvUtsaKO8kTqb?=
- =?us-ascii?Q?1RmH7dYmhl4TOF+z/66ndbA34Qwu5Ce5VbYyu040nsgKkC6mZgeJRPZrb9pa?=
- =?us-ascii?Q?iSdTf8FhsQNnr86Mo309JpwkwMs/eZLMgA61OTomW+IoEi7E+TsBZ/WRIx6D?=
- =?us-ascii?Q?fAR+p4eF70IMn/l6zKE01oYxJw5mcd9q5M2+lN64JaHUVc2QI+VTn5/88EgE?=
- =?us-ascii?Q?J+7BuOnz/babVJv3y7zduJsP4TqYF1C71BMWLYi/2uVfbtUV3nK8MKLcHOaE?=
- =?us-ascii?Q?A6b/Ub/cISKS8u9UlRRI2DJQuaMc75kTsSW9xT4c1m0VMu2A+CP8+Lja/s+o?=
- =?us-ascii?Q?UoYmpuUF+WdftV40o/AqWQ/HIkTzlMoFuEJ6+YH/OC+aC9BNK2C4dNHbKWOG?=
- =?us-ascii?Q?I7ukpq5y6HSvhKrBQMc/W0A/GfQSN1BcIwCSohGx7pIIMZ6yEngwA8QkVgVz?=
- =?us-ascii?Q?yAVUkXO7ATBYPraJZ7vM2DaoRjspEQTkg36CxgWz75azcGrvzsb+jdPsj8vR?=
- =?us-ascii?Q?oMSVqsCDr5YNizMWawxX3lmnDVfob4F+Cf4xqkw5dAH1/HN1AEYvKKGVGzrY?=
- =?us-ascii?Q?ggRTCZok+/8kdte+uAF582MCqeklTbsH9ycKxZh0g0rfwJHIuI9dfQvYt2m8?=
- =?us-ascii?Q?vSSn39AXLOdPKLiElkp9lqK2DwP0PBLAS9ZcdL7e40r7cmD64V9lycHtvPT2?=
- =?us-ascii?Q?xk1U54+F9jXwjrvHZt+CMYO8C5w3U9BpfrsYl61fPzaa6i5XpVqPp7RVq8Hk?=
- =?us-ascii?Q?RRqLh0iTMY+3a/AKV3lutQwm1Lj5vqtVU5qYFcoFALLcq0TNpV9xns9lgJSK?=
- =?us-ascii?Q?ow=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="hDR8W7Vc"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id A3B2946D92;
+	Wed, 26 Mar 2025 15:56:26 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1743000986;
+	bh=YEtFk1JQFtsBcNa4csbscW/Ycl71wUDecYWJHRWWilY=;
+	h=Date:From:To:Cc:Subject:From;
+	b=hDR8W7VcSgpyhNM83m9wxIrQsuWMrX04gQtAYflldIfIAw4VlJiZ4te4q9FEk5xpg
+	 fEDoiSqa3M/5wwVkF3u50V7t8vOatIbo24/KrGdTLHFuE1jC4Z3P6hX9C30N48NkXy
+	 JFgyNqmvRaVktF/KHybgmGOzPko/Jb8K73p1072f/4yhjDx3pGvKtgzr5iLkJhn6Zq
+	 pQT2pr55dYEYgBuLKz+DBlNNGUyvT1exeuW8dizBdZK/fM/Xp3MZnBn7WgOoMOFj53
+	 YkbOtRO/hWdYjM7aQFOlrnruHRwZzEDF0Jn2rLWRiVKpDqCzf2ZuGiCyuauyN+O3CF
+	 9Y1mJcE08jmTw==
+Date: Wed, 26 Mar 2025 15:56:25 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Updates for Linux v6.15
+Message-ID: <Z-QVmVGmFhromIEy@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ1PR11MB6129.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4180e9ba-6ae8-493b-46db-08dd6c4092b2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Mar 2025 08:31:15.0831
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: CUx50N6GEg2ENE5Fhtd6f1Pi3sEBYEENIzqcRiUSapIFHvwZ2ee5Qe6rYz2Zu07vwAygxKXoFIK3VmGz0TKDyt/T71BNu0RqHkByeWG5yHY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7770
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
+Hi Linus,
 
+The following changes since commit 4701f33a10702d5fc577c32434eb62adde0a1ae1:
 
-> -----Original Message-----
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Tuesday, March 25, 2025 1:10 PM
-> To: Borah, Chaitanya Kumar <chaitanya.kumar.borah@intel.com>
-> Cc: iommu@lists.linux.dev; intel-gfx@lists.freedesktop.org; intel-
-> xe@lists.freedesktop.org; Kurmi, Suresh Kumar
-> <suresh.kumar.kurmi@intel.com>; Saarinen, Jani <jani.saarinen@intel.com>;
-> jgg@nvidia.com
-> Subject: Re: Regression on linux-next (next-20250321)
->=20
-> (CC +=3D Jason)
->=20
-> Hi Chaitanya,
->=20
-> On Tue, Mar 25, 2025 at 05:39:39AM +0000, Borah, Chaitanya Kumar wrote:
-> > Hello Nicolin,
-> >
-> > Hope you are doing well. I am Chaitanya from the linux graphics team in
-> Intel.
-> >
-> > This mail is regarding a regression we are seeing in our CI runs[1] on =
-linux-
-> next repository.
-> >
-> > Since the version next-20250321 [2], we are seeing the following regres=
-sion
-> >
-> > ```````````````````````````````````````````````````````````````````````=
-``````````
-> > <4>[    0.226495] Unpatched return thunk in use. This should not happen=
-!
-> > <4>[    0.226502] WARNING: CPU: 0 PID: 1 at
-> arch/x86/kernel/cpu/bugs.c:3107 __warn_thunk+0x62/0x70
->=20
-> Hmm....I wonder why x86 can be affected...
->=20
-> The only four callers of iommu_dma_prepare_msi() are ARM platforms.
->=20
-> > <4>[    0.226513] Modules linked in:
-> > <4>[    0.226521] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted
-> 6.14.0-rc7-next-20250321-next-20250321-g9388ec571cb1+ #1
-> PREEMPT(voluntary)
-> > <4>[    0.226532] Hardware name: ASUS System Product Name/PRIME
-> Z790-P WIFI, BIOS 0812 02/24/2023
-> > <4>[    0.226539] RIP: 0010:__warn_thunk+0x62/0x70
-> > <4>[    0.226544] Code: 34 4c 5d 02 01 e8 fe f6 a7 00 84 c0 75 d9 48 c7=
- c7
-> f8 bf 0d 83 e8 7e c6 08 00 48 c7 c7 a0 a2 a0 82 e8 e2 f6 a7 00 84 c0 75 b=
-d
-> <0f> 0b eb b9 cc cc cc cc cc cc cc cc cc cc 90 90 90 90 90 90 90 90
-> > <4>[    0.226559] RSP: 0000:ffffc90000067d78 EFLAGS: 00010246
-> > <4>[    0.226565] RAX: 0000000000000000 RBX: 0000000000000000 RCX:
-> 0000000000000000
-> > <4>[    0.226571] RDX: 0000000000000000 RSI: 0000000000000000 RDI:
-> 0000000000000000
-> > <4>[    0.226577] RBP: ffffc90000067d80 R08: 0000000000000000 R09:
-> 0000000000000000
-> > <4>[    0.226583] R10: 0000000000000000 R11: 0000000000000000 R12:
-> 0000000000000000
-> > <4>[    0.226589] R13: ffffffff83c9417c R14: ffff88887f344bc0 R15:
-> ffff888102370100
-> > <4>[    0.226595] FS:  0000000000000000(0000)
-> GS:ffff8888dacfd000(0000) knlGS:0000000000000000
-> > <4>[    0.226602] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > <4>[    0.226608] CR2: ffff88887f7ff000 CR3: 000000000344a000 CR4:
-> 0000000000f50ef0
-> > <4>[    0.226614] PKRU: 55555554
-> > <4>[    0.226617] Call Trace:
-> > <4>[    0.226620]  <TASK>
-> > <4>[    0.226624]  ? show_regs+0x6c/0x80
-> > <4>[    0.226630]  ? __warn+0x94/0x210
-> > <4>[    0.226635]  ? __warn_thunk+0x62/0x70
-> > <4>[    0.226640]  ? __report_bug+0x110/0x280
-> > <4>[    0.227000]  ? __lock_acquire+0x447/0x2c70
-> > <4>[    0.227011]  ? _prb_read_valid+0x25a/0x310
-> > <4>[    0.227018]  ? __lock_acquire+0x447/0x2c70
-> > <4>[    0.227024]  ? prb_read_valid+0x1c/0x30
-> > <4>[    0.227037]  ? lock_acquire+0xc4/0x330
-> > <4>[    0.227055]  ? _prb_read_valid+0x25a/0x310
-> > <4>[    0.227073]  ? __warn_thunk+0x62/0x70
-> > <4>[    0.227081]  ? report_bug+0x24/0x80
-> > <4>[    0.227089]  ? handle_bug+0x16a/0x2a0
-> > <4>[    0.227098]  ? exc_invalid_op+0x18/0x80
-> > <4>[    0.227106]  ? asm_exc_invalid_op+0x1b/0x20
-> > <4>[    0.227122]  ? __warn_thunk+0x62/0x70
-> > <4>[    0.227130]  ? __warn_thunk+0x5e/0x70
-> > <4>[    0.227135]  ? iommu_dma_ranges_sort+0x40/0x40
-> > <4>[    0.227144]  warn_thunk_thunk+0x16/0x30
-> > <4>[    0.227157]  do_one_initcall+0x5d/0x460
-> > <4>[    0.227171]  kernel_init_freeable+0x3ac/0x530
-> > <4>[    0.227187]  ? __pfx_kernel_init+0x10/0x10
-> > <4>[    0.227196]  kernel_init+0x1b/0x200
-> > <4>[    0.227203]  ret_from_fork+0x44/0x70
-> > <4>[    0.227210]  ? __pfx_kernel_init+0x10/0x10
-> > <4>[    0.227217]  ret_from_fork_asm+0x1a/0x30
-> > <4>[    0.227236]  </TASK>
-> > ```````````````````````````````````````````````````````````````````````=
-``````````
-> > Details log can be found in [3].
->=20
-> And I can't see something obvious from the log..
->=20
-> Would you please give the git-diff a try (drivers/iommu/iommu.c)?
-> https://lore.kernel.org/linux-iommu/Z+Itnw4ys6dmDsc+@nvidia.com/
->=20
-> If this doesn't help, would you please give this a try?
-> https://lore.kernel.org/linux-iommu/20250324170743.GA1339275@ax162/
->=20
+  Linux 6.14-rc7 (2025-03-16 12:55:17 -1000)
 
-Thank you, Nicolin, for your reply. Unfortunately, these changes does not s=
-olve the issue. (applied individually and together)
+are available in the Git repository at:
 
-Regards
+  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v6.15
 
-Chaitanya
+for you to fetch changes up to 22df63a23a9e53d06ff2c67f863e9ce1640b73cb:
 
-> Thanks!
-> Nicolin
+  Merge branches 'apple/dart', 'arm/smmu/updates', 'arm/smmu/bindings', 'rockchip', 's390', 'core', 'intel/vt-d' and 'amd/amd-vi' into next (2025-03-20 09:11:09 +0100)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v6.15
+
+Including:
+
+	- Core: IOMMUFD dependencies from Jason:
+	  - Change the iommufd fault handle into an always present hwpt handle in
+	    the domain
+	  - Give iommufd its own SW_MSI implementation along with some IRQ layer
+	    rework
+	  - Improvements to the handle attach API
+
+	- Core: Fixes for probe-issues from Robin
+
+	- Intel VT-d changes:
+	  - Checking for SVA support in domain allocation and attach paths
+	  - Move PCI ATS and PRI configuration into probe paths
+	  - Fix a pentential hang on reboot -f
+	  - Miscellaneous cleanups
+
+	- AMD-Vi changes:
+	  - Support for up to 2k IRQs per PCI device function
+	  - Set of smaller fixes
+
+	- ARM-SMMU changes:
+	  - SMMUv2 devicetree binding updates for Qualcomm implementations
+	    (QCS8300 GPU and MSM8937)
+	  - Clean up SMMUv2 runtime PM implementation to help with wider rework of
+	    pm_runtime_put_autosuspend()
+
+	- Rockchip driver changes:
+	  - Driver adjustments for recent DT probing changes
+
+	- S390 IOMMU changes:
+	  - Support for IOMMU passthrough
+
+	- Apple Dart changes:
+	  - Driver adjustments to meet ISP device requirements
+	  - Null-ptr deref fix
+	  - Disable subpage protection for DART 1
+
+----------------------------------------------------------------
+Asahi Lina (1):
+      iommu/io-pgtable-dart: Only set subpage protection disable for DART 1
+
+Barnabás Czémán (1):
+      dt-bindings: iommu: qcom,iommu: Add MSM8937 IOMMU to SMMUv1 compatibles
+
+Hector Martin (2):
+      iommu: apple-dart: Increase MAX_DARTS_PER_DEVICE to 3
+      iommu: apple-dart: Allow mismatched bypass support
+
+Jason Gunthorpe (7):
+      genirq/msi: Store the IOMMU IOVA directly in msi_desc instead of iommu_cookie
+      genirq/msi: Refactor iommu_dma_compose_msi_msg()
+      iommu: Make iommu_dma_prepare_msi() into a generic operation
+      irqchip: Have CONFIG_IRQ_MSI_IOMMU be selected by irqchips that need it
+      iommufd: Implement sw_msi support natively
+      iommu/vt-d: Use virt_to_phys()
+      iommu/vt-d: Check if SVA is supported when attaching the SVA domain
+
+Joerg Roedel (2):
+      Merge tag 'for-joerg' of git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd into core
+      Merge branches 'apple/dart', 'arm/smmu/updates', 'arm/smmu/bindings', 'rockchip', 's390', 'core', 'intel/vt-d' and 'amd/amd-vi' into next
+
+Kishon Vijay Abraham I (1):
+      iommu/amd: Enable support for up to 2K interrupts per function
+
+Lu Baolu (4):
+      iommu/vt-d: Move scalable mode ATS enablement to probe path
+      iommu/vt-d: Move PRI enablement in probe path
+      iommu/vt-d: Cleanup intel_context_flush_present()
+      iommu/vt-d: Fix possible circular locking dependency
+
+Matthew Rosato (4):
+      s390/pci: check for relaxed translation capability
+      s390/pci: store DMA offset in bus_dma_region
+      iommu/s390: handle IOAT registration based on domain
+      iommu/s390: implement iommu passthrough via identity domain
+
+Nicolin Chen (3):
+      iommufd: Make attach_handle generic than fault specific
+      iommufd/fault: Remove iommufd_fault_domain_attach/detach/replace_dev()
+      iommu: Turn fault_data to iommufd private pointer
+
+Pranjal Shrivastava (1):
+      iommu/arm-smmu: Set rpm auto_suspend once during probe
+
+Pratyush Brahma (1):
+      dt-bindings: arm-smmu: Document QCS8300 GPU SMMU
+
+Qasim Ijaz (1):
+      iommu: apple-dart: fix potential null pointer deref
+
+Robin Murphy (11):
+      iommu/dma: Remove redundant locking
+      iommu: Unexport iommu_fwspec_free()
+      iommu: Handle race with default domain setup
+      iommu: Resolve ops in iommu_init_device()
+      iommu: Keep dev->iommu state consistent
+      iommu: Get DT/ACPI parsing into the proper probe path
+      iommu: Don't warn prematurely about dodgy probes
+      iommu/mediatek-v1: Support COMPILE_TEST
+      iommu/rockchip: Allocate per-device data sensibly
+      iommu/rockchip: Register in a sensible order
+      iommu/rockchip: Retire global dma_dev workaround
+
+Sairaj Kodilkar (3):
+      iommu/amd: Introduce generic function to set multibit feature value
+      iommu/amd: Replace slab cache allocator with page allocator
+      iommu/amd: Rename DTE_INTTABLEN* and MAX_IRQS_PER_TABLE macro
+
+Sean Christopherson (2):
+      iommu/vt-d: Put IRTE back into posted MSI mode if vCPU posting is disabled
+      iommu/vt-d: Don't clobber posted vCPU IRTE when host IRQ affinity changes
+
+Vasant Hegde (7):
+      iommu/amd: Log IOMMU control register in event log path
+      iommu/amd: Remove unused variable
+      iommu/amd/pgtbl_v2: Improve error handling
+      iommu/amd: Remove outdated comment
+      iommu/amd: Fix header file
+      iommu/amd: Remove unused forward declaration
+      iommu/amd: Consolidate protection domain free code
+
+Yi Liu (4):
+      iommu: Make @handle mandatory in iommu_{attach|replace}_group_handle()
+      iommu: Drop iommu_group_replace_domain()
+      iommu: Store either domain or handle in group->pasid_array
+      iommu: Swap the order of setting group->pasid_array and calling attach op of iommu drivers
+
+Yunhui Cui (1):
+      iommu/vt-d: Fix system hang on reboot -f
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |   3 +-
+ .../devicetree/bindings/iommu/qcom,iommu.yaml      |   1 +
+ arch/s390/include/asm/pci.h                        |   4 +-
+ arch/s390/include/asm/pci_clp.h                    |   4 +-
+ arch/s390/kvm/pci.c                                |  17 +-
+ arch/s390/pci/pci.c                                |  35 +--
+ arch/s390/pci/pci_bus.c                            |  25 ++
+ arch/s390/pci/pci_clp.c                            |   1 +
+ arch/s390/pci/pci_sysfs.c                          |  11 +-
+ drivers/acpi/arm64/dma.c                           |   5 +
+ drivers/acpi/scan.c                                |   7 -
+ drivers/amba/bus.c                                 |   3 +-
+ drivers/base/platform.c                            |   3 +-
+ drivers/bus/fsl-mc/fsl-mc-bus.c                    |   3 +-
+ drivers/cdx/cdx.c                                  |   3 +-
+ drivers/iommu/Kconfig                              |   4 +-
+ drivers/iommu/amd/amd_iommu.h                      |   8 +-
+ drivers/iommu/amd/amd_iommu_types.h                |  30 +--
+ drivers/iommu/amd/init.c                           |  65 ++---
+ drivers/iommu/amd/io_pgtable.c                     |   7 -
+ drivers/iommu/amd/io_pgtable_v2.c                  |   2 +-
+ drivers/iommu/amd/iommu.c                          |  91 ++++---
+ drivers/iommu/amd/pasid.c                          |   2 +-
+ drivers/iommu/apple-dart.c                         |  22 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c              |  11 +-
+ drivers/iommu/dma-iommu.c                          |  82 ++-----
+ drivers/iommu/intel/iommu.c                        | 239 +++++++-----------
+ drivers/iommu/intel/iommu.h                        |  28 +--
+ drivers/iommu/intel/irq_remapping.c                |  42 ++--
+ drivers/iommu/intel/pasid.c                        |  43 +---
+ drivers/iommu/intel/prq.c                          |   2 +-
+ drivers/iommu/intel/svm.c                          |  43 ++++
+ drivers/iommu/io-pgtable-dart.c                    |   2 +-
+ drivers/iommu/iommu-priv.h                         |   5 +-
+ drivers/iommu/iommu.c                              | 220 +++++++++++------
+ drivers/iommu/iommufd/device.c                     | 266 +++++++++++++++++++--
+ drivers/iommu/iommufd/fault.c                      | 130 +---------
+ drivers/iommu/iommufd/hw_pagetable.c               |   5 +-
+ drivers/iommu/iommufd/iommufd_private.h            |  64 ++---
+ drivers/iommu/iommufd/main.c                       |   9 +
+ drivers/iommu/mtk_iommu_v1.c                       |  25 +-
+ drivers/iommu/of_iommu.c                           |  13 +-
+ drivers/iommu/rockchip-iommu.c                     |  61 ++---
+ drivers/iommu/s390-iommu.c                         | 138 +++++++++--
+ drivers/iommu/tegra-smmu.c                         |   1 -
+ drivers/irqchip/Kconfig                            |   4 +
+ drivers/irqchip/irq-gic-v2m.c                      |   5 +-
+ drivers/irqchip/irq-gic-v3-its.c                   |  13 +-
+ drivers/irqchip/irq-gic-v3-mbi.c                   |  12 +-
+ drivers/irqchip/irq-ls-scfg-msi.c                  |   5 +-
+ drivers/of/device.c                                |   7 +-
+ drivers/pci/pci-driver.c                           |   3 +-
+ include/linux/iommu.h                              |  61 ++---
+ include/linux/msi.h                                |  55 +++--
+ kernel/irq/Kconfig                                 |   1 +
+ 55 files changed, 1091 insertions(+), 860 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
