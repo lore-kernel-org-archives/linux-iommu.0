@@ -1,74 +1,91 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E56561ACED5;
-	Wed, 26 Mar 2025 22:59:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AC715028C;
+	Wed, 26 Mar 2025 23:18:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743029974; cv=none; b=a2RBRxYCspaOBNyXBMIrW9urzc1Subq6LZ1zpmTSrZ4+M9wud935MXTL5atxDPiadx+Xhngi3sxFckxhlgaMcgrpIuGKyBPRqu+b/JZLIcvkoVu110CTjERIuEo5mHA0KNbOD+mT8w/QxFEgacUyDDl2rLzjPSvMTqvcV9CybeE=
+	t=1743031132; cv=none; b=hP8A5RasCcg/ZuwINYwR8Dv+pZm5U0WmyKCTrdgPcQW4hUu0KDXwBDUQH1+UNp+NJYA7gLIGZCKDYWKG5JMe7kO++3T0G/VKzieK8BEoJPU3kCzQmiwlhy9Z1uH7kdZTCvSjJIYNYJvCvXxTw59tLkDLtygqL6lkGAHax5ze2y0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743029974; c=relaxed/simple;
-	bh=7Z1Sy8/BIpWuTPkzsdsQjFdBeKjVUE4EoygIA7qX1O4=;
-	h=From:Date:MIME-Version:Content-Type:To:Message-ID:In-Reply-To:
-	 References:Subject; b=AQR7sOw411zxofvu6SibrYAVP2IMbJAbJxNfKZs1PeY7LrzMquHwaRzYn0U2cbYN9nHfBrP8mA22WDxhYRUvnIuERHV0SHk8CmV4io+2RP+SrYk7/o/aVuVBIg5gyHQCaq98azwYrPeyCtLsYyV5GhhqAeZCcr+MVtrDS9PCKdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nrmbl8bt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1743031132; c=relaxed/simple;
+	bh=p5JKqrbWrX8FfGI0rzzltrJ4PF8nvFSKI7H7dsGv5EU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=HN3ZcVrWK30okeXvFbg7ei9JVZkPTBNmzeOKFpSIEkL2RQW+1jAIDQheNwbM46TfE37SI99bWzBpDQveDjKvEXX5gZ5/1S30yzskaECDGZulxRb6zNaGVJ/z5isu6/P3um3adBMXzwKRNRoWrblxNu5MN1v3RHe/Vb5VxmB0igM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hCMFmHML; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nrmbl8bt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B045C4CEE5;
-	Wed, 26 Mar 2025 22:59:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hCMFmHML"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D621C4CEE2;
+	Wed, 26 Mar 2025 23:18:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1743029973;
-	bh=7Z1Sy8/BIpWuTPkzsdsQjFdBeKjVUE4EoygIA7qX1O4=;
-	h=From:Date:To:In-Reply-To:References:Subject:From;
-	b=Nrmbl8btBtlIaF1jwy9h4HNBaSnUk9TnlM2Wb77X7hBXbY4PYbYieRbzzwOzg3OOY
-	 euTGHiG64iR97S9pFsKIFt0WDHoJOzACQIq6zUMbPs/X3U3f68lH6SAxN6WmUIGhOo
-	 zWUhaU7hoHECyEX+r8Kf8P3gC+aE9dEdCKNq/qGyex/T758uQnTKyOyK4l25OmVzJs
-	 MU3O4eWNiX/pQICS+hQYb33V/qtz0+09tW7Yahp360xBbKHUm3Ntlzk24fHQfo9LIr
-	 Fo4PZMET6ax8PeTo91JIISWn3Kr7CBGfpd+5VNQWWlXNhINxjsN0JzYpb79/74zjAC
-	 vA7OvK6a0cv1A==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id B3FB2380AAF5;
-	Wed, 26 Mar 2025 23:00:10 +0000 (UTC)
-From: Lucas via Bugspray Bot <bugbot@kernel.org>
-Date: Wed, 26 Mar 2025 23:00:12 +0000
+	s=k20201202; t=1743031131;
+	bh=p5JKqrbWrX8FfGI0rzzltrJ4PF8nvFSKI7H7dsGv5EU=;
+	h=Date:From:To:Cc:Subject:Reply-To:From;
+	b=hCMFmHMLpOpeqHRb4ubgIi3ZQElfMyBgqdTbTKiTZlu9xbQMnH5roeuJHv46HB1X2
+	 KyuGXCZSSBMjWtMDJlQfwYZxqepbZ0iGbdcEQag16F2ztX+LrVkHM0hQeCvXFky3zP
+	 q05mF2uyOvGuUE07+3CongIB7B66sCDW9NYvnHFM+3eTqDhL100W1gmgZUQ193nzUs
+	 AkAXTRbCKhfF4dnN2AhDnDUX9hUU1Flrqfsm/fmAd6tUBDH2PXBNjGxi8uwkRjfAqN
+	 oyI/BHW8k39SdcRy1vtTw+j4boJe+oOQzyG7BWX5SQ0yrQS9h4oWwPzeLDx9ReFNT8
+	 1KkJm/h14QNWg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 2B33BCE0C2A; Wed, 26 Mar 2025 16:18:51 -0700 (PDT)
+Date: Wed, 26 Mar 2025 16:18:51 -0700
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: Josh Poimboeuf <jpoimboe@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>
+Cc: linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev
+Subject: [BUG] vmlinux.o: warning: objtool: iommu_dma_sw_msi() falls through
+ to next function alloc_io_pgtable_ops()
+Message-ID: <5dd1f35e-8ece-43b7-ad6d-86d02d2718f6@paulmck-laptop>
+Reply-To: paulmck@kernel.org
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: linux-nfs@vger.kernel.org, trondmy@kernel.org, cel@kernel.org, 
- anna@kernel.org, iommu@lists.linux.dev, jlayton@kernel.org, 
- robin.murphy@arm.com, chuck.lever@oracle.com
-Message-ID: <20250326-b219865c7-642149c69789@bugzilla.kernel.org>
-In-Reply-To: <20250313-b219865c0-2a34cbc6e249@bugzilla.kernel.org>
-References: <20250313-b219865c0-2a34cbc6e249@bugzilla.kernel.org>
-Subject: Re: NFS Server Issues with RDMA in Kernel 6.13.6
-X-Bugzilla-Product: File System
-X-Bugzilla-Component: NFSD
-X-Mailer: bugspray 0.1-dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Lucas added an attachment on Kernel.org Bugzilla:
+Hello!
 
-Created attachment 307898
-logs with LOCK_STAT enabled
+Building next-20250326 using clang version 19.1.7 (CentOS 19.1.7-1.el9)
+gets me the following warning:
 
-Hi
+vmlinux.o: warning: objtool: iommu_dma_sw_msi() falls through to next function alloc_io_pgtable_ops()
 
-I was able to recompile the kernel with LOCK_STAT enabled and reproduce the issue. Logs are attached.
+This surprised me for a couple of reasons.  First, from what I
+can see, iommu_dma_sw_msi() does not fall through.  Second, it
+is in drivers/iommu/dma-iommu.c while alloc_io_pgtable_ops() is in
+drivers/iommu/io-pgtable.c, though maybe the compiler and/or linker saw
+fit to rearrange these functions' object code.
 
-Logs attached.
+Please let me know of any debug patches or fixes that I could apply,
+or any additional information that you might need.
 
-File: logs-lock_stat.zip (application/zip)
-Size: 139.49 KiB
-Link: https://bugzilla.kernel.org/attachment.cgi?id=307898
----
-logs with LOCK_STAT enabled
+						Thanx, Paul
 
-You can reply to this message to join the discussion.
--- 
-Deet-doot-dot, I am a bot.
-Kernel.org Bugzilla (bugspray 0.1-dev)
+Note to self: Run 2025.03.26-14.37.10-remote on first test system.  ;-)
 
+------------------------------------------------------------------------
+
+int iommu_dma_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
+		     phys_addr_t msi_addr)
+{
+	struct device *dev = msi_desc_to_dev(desc);
+	const struct iommu_dma_msi_page *msi_page;
+
+	if (!has_msi_cookie(domain)) {
+		msi_desc_set_iommu_msi_iova(desc, 0, 0);
+		return 0;
+	}
+
+	iommu_group_mutex_assert(dev);
+	msi_page = iommu_dma_get_msi_page(dev, msi_addr, domain);
+	if (!msi_page)
+		return -ENOMEM;
+
+	msi_desc_set_iommu_msi_iova(desc, msi_page->iova,
+				    ilog2(cookie_msi_granule(domain)));
+	return 0;
+}
