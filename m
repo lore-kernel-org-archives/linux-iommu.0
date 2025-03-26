@@ -1,63 +1,63 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F3D92571CB
-	for <iommu@lists.linux.dev>; Wed, 26 Mar 2025 20:13:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51D972571D8
+	for <iommu@lists.linux.dev>; Wed, 26 Mar 2025 20:13:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743019989; cv=none; b=E5SoS1EIVdFKxnH8Ol1IJF1RPbbXnQsCAvJ6HGd8eutR1PtvUqOpm2pEGTsulObAXxKvBF9QAT5+k885BRAsKBmZyozcKE3KN/3dyCMI9L6DzgKtLHibn9O+hhBLAynz3vuY+/PBgeY1J8A5nkK7VO1fp2hlpa2UwN26RREJDOg=
+	t=1743019989; cv=none; b=FXR5RwPsFlP2xv/x50w39dEzePN78TI30/SP3nHAD29cZAl8uI9Wl1f/N+9ZUQk0OyvM0xWiONL24TBbqvoJuXJxvjJHyFU3xftHgcPCpFMjp8MjZAPnZWb6dYWYgZN80M9onMQ64x9ZBjf4/Peoutg8i1PxOdi/cd3Se7WCz9Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1743019989; c=relaxed/simple;
-	bh=QklNTkE+U9D+pTS8UKveElBjdJatRbS+Ai62Y7tPWXM=;
+	bh=KUEjh4hK5AwiNirfSdvvzr04GjjI9soaojGNwlt+gYQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=NYyZTy82LXid6fo/YfoqLjaWq5NmvgWj6SHT4+wXq2XFVD0OHjzWEdR8M5UY5B51v0VeggaJPh9GTHOC26eCx3XSmrwOxgB4j3wLAavbeGRUL/vPO3KwzI47uLspcUI3dy+6gYGI/kr0Dz79O60MmRoZX5R0sey66YGcYIh6toQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q3q0eUyQ; arc=none smtp.client-ip=209.85.167.49
+	 MIME-Version; b=KHHlttO775crTWj1eqj40CJAOZsImGRSaf5WL+RNWFbtyRcMzKVREZrRI4TN7rT/MDYp3DRA/BRun0BqiNwwYjUlnj9o0S8ToW0dwvD6FoA3CvABfbRKYd3dm7idGDOFk9CxUsC3pn3HZie2m/HdkCbYlHkG+RbBN6gfANHuQGQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=II+F3UiC; arc=none smtp.client-ip=209.85.167.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q3q0eUyQ"
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5495c1e1b63so287525e87.0
-        for <iommu@lists.linux.dev>; Wed, 26 Mar 2025 13:13:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="II+F3UiC"
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5497590ffbbso270180e87.1
+        for <iommu@lists.linux.dev>; Wed, 26 Mar 2025 13:13:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1743019983; x=1743624783; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1743019985; x=1743624785; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=pveoisS0dkHjk8AoQMkPJTBRAAfPuiNG6lIhjvhzlA8=;
-        b=Q3q0eUyQahEjikO0Ys1TO9cUL7a3mLoqly39FpQE+W5KvkICFFvLk+mpakpnnYdGpM
-         LX/ILh9+RrW8j9hGLW96jMopLbb6w3pfcPZ8OSImPahj4or9ddmdccJjLKotKwyC+FU3
-         D++HvixbKH48Ur5JhXDdRBZaevuee24rhrWR5ZktbLnHxGNQjkcpgi6q5oGAH5BGmiUK
-         c8fNg7cDhsea3PMuUWzHvWfPIwCm86apwEr3IEZ+OewRcy9TFd2pHeG0qtNsZEOxurRS
-         EIOQA5GH+LMg9wv898sl9rRX9IFCVW7uKI1nsYiGwbeICbvAtPKaDAf9P//iRhwHZHA1
-         iMhg==
+        bh=IqPyNQzlsZ2VM/tXZ2FXS0OL5lARsE8hyIi3dCnvYUw=;
+        b=II+F3UiC7pG/w4JDDAFYYAJ0VxBP+RiihPXxP0rkMoIVHEsPMjlaIv9qP7JbaSE9tT
+         3plNvIppPQWRTcP7ShcXlWjPZd1/MOT7s40Xb2SFoiv9P9G50N7/um3jxOVq+T7oTiKH
+         zvt8sOPi9OehxBM3kI/7WCM3CA83NXVi63xFU11nL5t3XDTK1Fd2h4pZA48XVTbDtk1B
+         kcis5gvHoRIUwxPj7JoNFRYMhFKnp9oSy1HRYMVn/GmyDuMsoux7mVaAv2fb8iZpo91v
+         NzJV5U9doBjtv70F0/kGkqw7Jo+rxwT2qRgNYJ4xUXdrIJG2zHRYc020ygs/ofXFCvAo
+         I3xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743019983; x=1743624783;
+        d=1e100.net; s=20230601; t=1743019985; x=1743624785;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=pveoisS0dkHjk8AoQMkPJTBRAAfPuiNG6lIhjvhzlA8=;
-        b=eXheLDbgJLPL3JfwNS/YwwFm0fEEEgoPrwKYaU05SvwdWh0Nc5bVVMorvK0+2+4jW6
-         9e5nQVpRRz8T2B3wu4xAM2WwOWcuSC9tSE1KFJdhXohUmOgS7CE9XZ9h7FKe/qVZRVTL
-         P5TIVZQrBkqsMx05KbLXnO/aeNq3yZtNuU8UXFroAxOH2+KTbZJ6d9S55nWDBazqi6XT
-         XZjsDNJeJ88YU7yKJYPcHzVWBck6Kt5Tb2qKpWsKcdBM6MZSDFPbOOtOvz/fca5TYBNe
-         EHcuGA01QhKG5QfHHQSVxQPRIEur0vht6BgIE2o4O35MI1BNAfe/4iTeOtCcxRcS7e5I
-         iVrg==
-X-Forwarded-Encrypted: i=1; AJvYcCU6ZFlonIJhwW/77JHbcxVExIy4UpNe5mUiDAZbA/qEN+ABBI7joBCXFQ6bZC5iLsz9F0QO/g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxuihwtMc4fdB3Vr/NkkHV+9g4QFwMx29T3arWM/cOw1M4sgakp
-	EJkJ3RwEQL7c1E+BCcFwL6OtEtZgyg68cvnryH56HGXu86lgXkT+
-X-Gm-Gg: ASbGnctMoVAlTCdn2wyEPVR7uL1sTpHF6fYMcU1ppNZ1ipRnZH7oe4LDBcYIxC4HgWl
-	WvuiNklkkBmMfLGs0vD9FO65injyrHr6Wz9aHpOtDd1+nyjCr99uGRLf12yaZtkRvl4dsxkeFYg
-	oikg66pRigjOc/hZv7MzJqmQvSZbYSl+gR3lClItRGhVREc9Qc10QfpBwOT/nFOaHV0uOg9QaMY
-	RA0FjHOHfJHenm2fdVmSSnmTZlWgtDsNrVDmrblwEOvPB0Z1NFU+ZHP942wbG5gtP17cOHKfa4d
-	phCCUA7PhpMkPINI156TOMiTJpy3a7xoRG5qLSGC3dr/dyflp33C0JP6gCc8eeduhUdyAfFnDDB
-	x3Yb8OHvLOglrYjPxeVFgHw==
-X-Google-Smtp-Source: AGHT+IFayDpBMS79xivFqH7xf6jKCQW1raM5CGZsxw5i6zi+hzQ0h4CALk7kf9R32eciaIZyk6BJIA==
-X-Received: by 2002:a05:6512:3e08:b0:549:5b54:2c68 with SMTP id 2adb3069b0e04-54b011d6355mr391157e87.22.1743019983084;
-        Wed, 26 Mar 2025 13:13:03 -0700 (PDT)
+        bh=IqPyNQzlsZ2VM/tXZ2FXS0OL5lARsE8hyIi3dCnvYUw=;
+        b=wQYs97JZ0X2iJVY5aaANpvSpcLRhJ8Pq5hXOQAhyk6bJegaQrSNqLn/6lrxe1vzpHY
+         m0/TsRBc08jnP2IV8RVDnfU7R7Qm9H3f/Gh4llLA/dNL1PQp4qj6rRhEMmXaYN7ajvRI
+         oY+vFJbB3vL3/D9NA4zDw1rMnVzWKj9YGj2jLBfArg/qibx3VzUEoDne5u3il8fn+Ha8
+         /ZTBO8NS2E1//5sW+Isau5ySiyOQ7IiEmgb2SSzWDo/T3rQG1xHXDmzn31dfsRPX802d
+         2IRv06aR+oFc9d5HfLilvzej6D7pH1Au9/77kwDEDGl6d189FvvHlp4eDtoWbjKlFKma
+         ZHGA==
+X-Forwarded-Encrypted: i=1; AJvYcCWNvB03r1B7nSCQyHDcqE1+diTvJBQDhEBPpLP8m3GS3BtJrlkvaGuqhzfKmR9Nz8LzabIFYw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw7BIr/nBcm5APKxC1LY6CcjrKILWAoA2J0EqcXNar6gxjx+o7x
+	+MDVw1yzWapPjD3rmBRCC8mSib5JSr5DzbLEJFW6WlIw9w+xovjy
+X-Gm-Gg: ASbGncsHOVqFW8y+bG8/SV/yLSIA/IO3kuapqsZNKzFesFa21jRftcN1SpdRk6E0/BD
+	yz5CueacBEaho0ue4pEBfeP3mUxo20UpLHD99Uu3LFmHLXtAunm6VPILwyoXDMe6JvH8j1KNi3V
+	w1LItBbxy04C0vfeqE2nVG7HWC5s5Q6PgXGMSnlxISN3C9OJbstVXS7XJ33ix2GYSdwJNUn9ctK
+	i9T7rhbEC1Q/byW+4hZ9koIAy9r9kgSOL2Dnu1dtBx0VeyovbUvIy4zyQTXTbkrCCeHvoXR567K
+	bAmAWV8nvbS/smhKKg/l6snRq8OdDR+irmtx6fmbVGcPjPIETqHw++z7yNG5W/4k10AGtvFftim
+	p9sSuhtPYuXhyi/rUHINfjA==
+X-Google-Smtp-Source: AGHT+IG5DWfivJ6phDkqR8mJ7+AXG7ZqtqivCgyez055JfZ+pxmclpEKwBt74y4guotavXKViI0gpQ==
+X-Received: by 2002:a05:6512:3d11:b0:545:652:109 with SMTP id 2adb3069b0e04-54b01264efemr392524e87.51.1743019985037;
+        Wed, 26 Mar 2025 13:13:05 -0700 (PDT)
 Received: from abj-NUC9VXQNX.. (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54ad646873asm1872136e87.46.2025.03.26.13.13.00
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54ad646873asm1872136e87.46.2025.03.26.13.13.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Mar 2025 13:13:01 -0700 (PDT)
+        Wed, 26 Mar 2025 13:13:04 -0700 (PDT)
 From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 To: a.hindborg@kernel.org,
 	ojeda@kernel.org
@@ -76,9 +76,9 @@ Cc: Danilo Krummrich <dakr@kernel.org>,
 	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
 	linux-kernel@vger.kernel.org (open list),
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: [PATCH 1/3] rust: dma: be consistent in using the `coherent` nomenclature
-Date: Wed, 26 Mar 2025 22:11:42 +0200
-Message-ID: <20250326201230.3193329-2-abdiel.janulgue@gmail.com>
+Subject: [PATCH 2/3] rust: dma: convert the read/write macros to return Result
+Date: Wed, 26 Mar 2025 22:11:43 +0200
+Message-ID: <20250326201230.3193329-3-abdiel.janulgue@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250326201230.3193329-1-abdiel.janulgue@gmail.com>
 References: <20250326201230.3193329-1-abdiel.janulgue@gmail.com>
@@ -90,65 +90,136 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In the kernel, `consistent` and `coherent` are used interchangeably for
-the region described in this api. Stick with `coherent` nomenclature
-to show that dma_alloc_coherent() is being used.
+As suggested by Andreas Hindborg, we could do better here by
+having the macros return `Result`, so that we don't have to wrap
+these calls in a closure for validation which is confusing.
 
 Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 ---
- rust/kernel/dma.rs | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ rust/kernel/dma.rs       | 54 +++++++++++++++++++++++-----------------
+ samples/rust/rust_dma.rs | 21 ++++++----------
+ 2 files changed, 38 insertions(+), 37 deletions(-)
 
 diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-index 8cdc76043ee7..d3f448868457 100644
+index d3f448868457..24a6f10370c4 100644
 --- a/rust/kernel/dma.rs
 +++ b/rust/kernel/dma.rs
-@@ -89,15 +89,15 @@ pub mod attrs {
-     /// Forces contiguous allocation of the buffer in physical memory.
-     pub const DMA_ATTR_FORCE_CONTIGUOUS: Attrs = Attrs(bindings::DMA_ATTR_FORCE_CONTIGUOUS);
- 
--    /// This is a hint to the DMA-mapping subsystem that it's probably not worth the time to try
-+    /// Hints DMA-mapping subsystem that it's probably not worth the time to try
-     /// to allocate memory to in a way that gives better TLB efficiency.
-     pub const DMA_ATTR_ALLOC_SINGLE_PAGES: Attrs = Attrs(bindings::DMA_ATTR_ALLOC_SINGLE_PAGES);
- 
--    /// This tells the DMA-mapping subsystem to suppress allocation failure reports (similarly to
-+    /// Tells the DMA-mapping subsystem to suppress allocation failure reports (similarly to
-     /// __GFP_NOWARN).
-     pub const DMA_ATTR_NO_WARN: Attrs = Attrs(bindings::DMA_ATTR_NO_WARN);
- 
--    /// Used to indicate that the buffer is fully accessible at an elevated privilege level (and
-+    /// Indicates that the buffer is fully accessible at an elevated privilege level (and
-     /// ideally inaccessible or at least read-only at lesser-privileged levels).
-     pub const DMA_ATTR_PRIVILEGED: Attrs = Attrs(bindings::DMA_ATTR_PRIVILEGED);
- }
-@@ -105,7 +105,7 @@ pub mod attrs {
- /// An abstraction of the `dma_alloc_coherent` API.
- ///
- /// This is an abstraction around the `dma_alloc_coherent` API which is used to allocate and map
--/// large consistent DMA regions.
-+/// large coherent DMA regions.
- ///
- /// A [`CoherentAllocation`] instance contains a pointer to the allocated region (in the
- /// processor's virtual address space) and the device address which can be given to the device
-@@ -115,7 +115,7 @@ pub mod attrs {
- /// # Invariants
- ///
- /// For the lifetime of an instance of [`CoherentAllocation`], the `cpu_addr` is a valid pointer
--/// to an allocated region of consistent memory and `dma_handle` is the DMA address base of
-+/// to an allocated region of coherent memory and `dma_handle` is the DMA address base of
- /// the region.
- // TODO
- //
-@@ -138,7 +138,7 @@ pub struct CoherentAllocation<T: AsBytes + FromBytes> {
+@@ -328,20 +328,22 @@ unsafe impl<T: AsBytes + FromBytes + Send> Send for CoherentAllocation<T> {}
+ #[macro_export]
+ macro_rules! dma_read {
+     ($dma:expr, $idx: expr, $($field:tt)*) => {{
+-        let item = $crate::dma::CoherentAllocation::item_from_index(&$dma, $idx)?;
+-        // SAFETY: `item_from_index` ensures that `item` is always a valid pointer and can be
+-        // dereferenced. The compiler also further validates the expression on whether `field`
+-        // is a member of `item` when expanded by the macro.
+-        unsafe {
+-            let ptr_field = ::core::ptr::addr_of!((*item) $($field)*);
+-            $crate::dma::CoherentAllocation::field_read(&$dma, ptr_field)
+-        }
++        (|| -> Result<_> {
++            let item = $crate::dma::CoherentAllocation::item_from_index(&$dma, $idx)?;
++            // SAFETY: `item_from_index` ensures that `item` is always a valid pointer and can be
++            // dereferenced. The compiler also further validates the expression on whether `field`
++            // is a member of `item` when expanded by the macro.
++            unsafe {
++                let ptr_field = ::core::ptr::addr_of!((*item) $($field)*);
++                ::core::result::Result::Ok($crate::dma::CoherentAllocation::field_read(&$dma, ptr_field))
++            }
++        })()
+     }};
+     ($dma:ident [ $idx:expr ] $($field:tt)* ) => {
+-        $crate::dma_read!($dma, $idx, $($field)*);
++        $crate::dma_read!($dma, $idx, $($field)*)
+     };
+     ($($dma:ident).* [ $idx:expr ] $($field:tt)* ) => {
+-        $crate::dma_read!($($dma).*, $idx, $($field)*);
++        $crate::dma_read!($($dma).*, $idx, $($field)*)
+     };
  }
  
- impl<T: AsBytes + FromBytes> CoherentAllocation<T> {
--    /// Allocates a region of `size_of::<T> * count` of consistent memory.
-+    /// Allocates a region of `size_of::<T> * count` of coherent memory.
-     ///
-     /// # Examples
-     ///
+@@ -368,24 +370,30 @@ macro_rules! dma_read {
+ #[macro_export]
+ macro_rules! dma_write {
+     ($dma:ident [ $idx:expr ] $($field:tt)*) => {{
+-        $crate::dma_write!($dma, $idx, $($field)*);
++        $crate::dma_write!($dma, $idx, $($field)*)
+     }};
+     ($($dma:ident).* [ $idx:expr ] $($field:tt)* ) => {{
+-        $crate::dma_write!($($dma).*, $idx, $($field)*);
++        $crate::dma_write!($($dma).*, $idx, $($field)*)
+     }};
+     ($dma:expr, $idx: expr, = $val:expr) => {
+-        let item = $crate::dma::CoherentAllocation::item_from_index(&$dma, $idx)?;
+-        // SAFETY: `item_from_index` ensures that `item` is always a valid item.
+-        unsafe { $crate::dma::CoherentAllocation::field_write(&$dma, item, $val) }
++        (|| -> Result {
++            let item = $crate::dma::CoherentAllocation::item_from_index(&$dma, $idx)?;
++            // SAFETY: `item_from_index` ensures that `item` is always a valid item.
++            unsafe { $crate::dma::CoherentAllocation::field_write(&$dma, item, $val) }
++            ::core::result::Result::Ok(())
++        })()
+     };
+     ($dma:expr, $idx: expr, $(.$field:ident)* = $val:expr) => {
+-        let item = $crate::dma::CoherentAllocation::item_from_index(&$dma, $idx)?;
+-        // SAFETY: `item_from_index` ensures that `item` is always a valid pointer and can be
+-        // dereferenced. The compiler also further validates the expression on whether `field`
+-        // is a member of `item` when expanded by the macro.
+-        unsafe {
+-            let ptr_field = ::core::ptr::addr_of_mut!((*item) $(.$field)*);
+-            $crate::dma::CoherentAllocation::field_write(&$dma, ptr_field, $val)
+-        }
++        (|| -> Result {
++            let item = $crate::dma::CoherentAllocation::item_from_index(&$dma, $idx)?;
++            // SAFETY: `item_from_index` ensures that `item` is always a valid pointer and can be
++            // dereferenced. The compiler also further validates the expression on whether `field`
++            // is a member of `item` when expanded by the macro.
++            unsafe {
++                let ptr_field = ::core::ptr::addr_of_mut!((*item) $(.$field)*);
++                $crate::dma::CoherentAllocation::field_write(&$dma, ptr_field, $val)
++            }
++            ::core::result::Result::Ok(())
++        })()
+     };
+ }
+diff --git a/samples/rust/rust_dma.rs b/samples/rust/rust_dma.rs
+index 908acd34b8db..cc09d49f2056 100644
+--- a/samples/rust/rust_dma.rs
++++ b/samples/rust/rust_dma.rs
+@@ -54,13 +54,9 @@ fn probe(pdev: &mut pci::Device, _info: &Self::IdInfo) -> Result<Pin<KBox<Self>>
+         let ca: CoherentAllocation<MyStruct> =
+             CoherentAllocation::alloc_coherent(pdev.as_ref(), TEST_VALUES.len(), GFP_KERNEL)?;
+ 
+-        || -> Result {
+-            for (i, value) in TEST_VALUES.into_iter().enumerate() {
+-                kernel::dma_write!(ca[i] = MyStruct::new(value.0, value.1));
+-            }
+-
+-            Ok(())
+-        }()?;
++        for (i, value) in TEST_VALUES.into_iter().enumerate() {
++            kernel::dma_write!(ca[i] = MyStruct::new(value.0, value.1))?;
++        }
+ 
+         let drvdata = KBox::new(
+             Self {
+@@ -78,13 +74,10 @@ impl Drop for DmaSampleDriver {
+     fn drop(&mut self) {
+         dev_info!(self.pdev.as_ref(), "Unload DMA test driver.\n");
+ 
+-        let _ = || -> Result {
+-            for (i, value) in TEST_VALUES.into_iter().enumerate() {
+-                assert_eq!(kernel::dma_read!(self.ca[i].h), value.0);
+-                assert_eq!(kernel::dma_read!(self.ca[i].b), value.1);
+-            }
+-            Ok(())
+-        }();
++        for (i, value) in TEST_VALUES.into_iter().enumerate() {
++            assert_eq!(kernel::dma_read!(self.ca[i].h).unwrap(), value.0);
++            assert_eq!(kernel::dma_read!(self.ca[i].b).unwrap(), value.1);
++        }
+     }
+ }
+ 
 -- 
 2.43.0
 
