@@ -1,104 +1,120 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1EE71D0F5A
-	for <iommu@lists.linux.dev>; Fri, 28 Mar 2025 18:21:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA95855E69
+	for <iommu@lists.linux.dev>; Fri, 28 Mar 2025 23:12:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743186103; cv=none; b=YWzT9XtNf0ugfT6nZ2jOc3eNrL9j/tNkgvcl1nMliy8bq/Zpu6Z1WAVn3GhJhtknDgYH+IWgka0xJvBMOB9BzHhRfTlT2bfi2lSDEwJPWdPbyKCmGt+yEmb2Nnub4/Y0RFVr0v6WHd3k3/E3H9GkQeiUw8pA/Rk/hJRjnpJXTuM=
+	t=1743203541; cv=none; b=MEp8i6lb5T6Emq7EGYZe65v8sVFsRcA2jksfN7vlN5vrByzw+utVlJh/zgqxGJ6FuLscBb8LIt/1+YAFqgDhPMyIHy7dBzXAiZaJ6b3AuND7HMCZtklLMEgvnhI5kuZQwb2g2D6UwTl7OkIkxYou5Max6qlNWUAZLqJjYiBV8EA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743186103; c=relaxed/simple;
-	bh=BRu6GncHBsrUtLwaenq3e6kyzHxEBuj1aoQm+Ttaojk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TmPmA/FfRrTgjOmrN+DElyMwKkKyz9KYMD70mhtPnKlvv791t/co1qDB72/q1HUM8Jt0/shO9zLMTzu2uMIS2Ld9gnfJUwEBSuf1i10B+O7Tz6BdIQ0z+uLvUJD1vksfD6eMClzqU+h/FKIXn5M1A4G0SltWrX0GvrgWNLVz9n0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=N0qBv1+V; arc=none smtp.client-ip=209.85.160.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1743203541; c=relaxed/simple;
+	bh=KdWCqli66+wnrOmBVJgZedK6VLKkVCmNvwTWLkM2Cw0=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=UuphyteqI6tdf70GTA2QINIuAK6fWYNvOoFfX6s7dbLownNDj5A329U+nXirS2B8gri/QnX3hlTJZ4COI79Z80eFGy1foKDBLuCgDYGWTevhB2dq04qFpU679NDONTu/j/YPgyHGRa615lPmVz/ZC9aH4W3s00GrZHjxyBUT1gQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=Iui1NzhU; arc=none smtp.client-ip=205.220.177.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="N0qBv1+V"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-476ab588f32so34729051cf.2
-        for <iommu@lists.linux.dev>; Fri, 28 Mar 2025 11:21:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1743186098; x=1743790898; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BRu6GncHBsrUtLwaenq3e6kyzHxEBuj1aoQm+Ttaojk=;
-        b=N0qBv1+VBc0p8ZjAIBdjR5N8GVCLZ2Qs44n4uEzVbyfiKz0TR1543KoL4pN3APRU69
-         gSedabGGxDR2LRcLRvZYCxQp9RXFjlGkMpUSDyZTq+jgcaP3oYPa3TLKIw2/leesX2n6
-         wjuESnlextJsAqCAP2eAsLBqcTME+ILsAOWDG21uxI66kA/Bo4tWvvTB9L/G253FVKIn
-         2bHu/CaCAh7a7FQOFrd28LH605W1fcVQSMfSbNmMk+YgCOqSX4JFpO/A2LYR3zNxRC8v
-         YKwPjGRLb+urj8YvKZoG8db13l0vmLNTBNOXfRYmmt25b6dptZB9f6w2oIfKNwf0Kn2J
-         t1jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743186098; x=1743790898;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BRu6GncHBsrUtLwaenq3e6kyzHxEBuj1aoQm+Ttaojk=;
-        b=muwRHo/aSXqNQOHMNcL7oeQ83lQX1MiX6gJ1jkpmAuBsjHrLhDPmJ+PmJLVYVo1mH0
-         2IeYbugafcw39cG/XyAQFPOIikwKuSFk/V7w2op3TAZRTtMopb0CPu/prNA9igHKZFcV
-         PUEE8TOTrcr7obLSQkIdAl4viwe10AMw9nz8OeBFa/zSPD/UHMH90tvVLWBrB3egAN4J
-         eN4ZQj5ViCsZ9/tpqD/8CvFuzzZtspVd331noa2LgGs6yx65SIKxeN/U/kYkX0qq7joF
-         Joo95zv//9A8ooEHf+1M1EiRXuoA+AOCo2EEuh37cxbSyOESWNConCPM5bxjGD6V0A3H
-         ulJA==
-X-Forwarded-Encrypted: i=1; AJvYcCUV6mMd1qxZQ8WRDJAjzeehpvh5KB1GJSpDroOHwt213VlcQp36ak12cc1jMjlh2aS58ytkXQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyntVoMO+KNOP8a2DjeMMRnVkW4OIXNUiwOcDC7QUK07DIknnRn
-	b01tH8yl/xnFN0/JIdqi/VXkAj9Eap7qBk5XgBHBA5nu0QtPrnYkJWUzMfVufg8=
-X-Gm-Gg: ASbGncuD4uOl8mwNLv1Z3oFeF7Rxct/Z55XbtyhsttqwFdtSuQvE7b53+8WLvZlzbhQ
-	8dtzhfl1IaRyWE4wEH2zdhw+bMsaKBhbpqifxmExvfTXFSjTVDIVFEGZmpYlyY9a9bYCrl35nbW
-	JqHK57mH9/SSSkLyRaBvZcWiDMiF+/D9oK3a904TMzMvKx60MLNISmfLdE9cEznnYcjAt2JSp4x
-	VyzRJg0ecq9PgWoV2fEHsY1uQRHjLtLYtLEK9CHBBvGBumqETVWzasUKiVt7hxwIkELyHLky8XS
-	kGhEOqUeORwrdrLyZ+wPvpKXrADdzj2ytizH4BiYeBo4iva5UHnCgtwMQU+y+wGiM/hLlWzJf1r
-	3ydgKn5hSajJ3UZKlINqZbkU=
-X-Google-Smtp-Source: AGHT+IELmdhFbkL5W3KYRO2T421tNYk3s4vgaVkxTzv27i2+QnOi/XJdiv1xAOyOeYOAP+8wpmAiVQ==
-X-Received: by 2002:a05:622a:1821:b0:476:8f90:b5d9 with SMTP id d75a77b69052e-477e4ae50c3mr4123251cf.5.1743186098267;
-        Fri, 28 Mar 2025 11:21:38 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4778317b422sm14154691cf.49.2025.03.28.11.21.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Mar 2025 11:21:37 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tyEKm-00000000h20-2UIY;
-	Fri, 28 Mar 2025 15:21:36 -0300
-Date: Fri, 28 Mar 2025 15:21:36 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Mostafa Saleh <smostafa@google.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
-	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 0/5] iommu/arm-smmu-v3: Implement Runtime/System
- Sleep ops
-Message-ID: <20250328182136.GA161236@ziepe.ca>
-References: <20250319115730.GC10600@ziepe.ca>
- <003f23d7-b829-4611-8dd3-35b56a7ca90e@arm.com>
- <Z9yV8KsdXnZg1Ppo@google.com>
- <Z911UT59UnDzRymF@google.com>
- <63806834-a0a1-41e0-9cca-60087b460f78@arm.com>
- <Z-GYKyBi78tHw8Lx@google.com>
- <Z-WKlZMBDTJDSfd4@google.com>
- <Z-ZoHdfgyaZoqJkm@google.com>
- <20250328131844.GC20836@ziepe.ca>
- <Z-a7dF9HPGteVVCp@google.com>
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Iui1NzhU"
+Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52SKWOKx011751;
+	Fri, 28 Mar 2025 23:11:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:content-transfer-encoding:date:from:in-reply-to:message-id
+	:mime-version:references:subject:to; s=corp-2023-11-20; bh=tGkyk
+	5X6t38/9y2W68Skl7oHbPOQVzKyOCP/d1hW/Cg=; b=Iui1NzhUolORei4T1MmvJ
+	x+knkwR9hQLwuL4+L4I5depTy33KzqUko2sJ7o/ktxmxWb7g7X8QEmaD2bIr/Bus
+	nQpoqu1KTylgDmWKDr1isnApkHPSCAtPXHcJpZxKY4PxV5T64tGOvMCPG565QJdQ
+	U5EK1x5Q5LRLO9X3boGwmIkeJ9U3595yYKTh82+sjC61dzg3La/Yo7UIjAbW1bny
+	Su/i33K6VEckqA6KNmT2f89skQVpYBf/oqAcZi6XWTb6ivr2zeiG/mA6uW/TKsSl
+	4AF8ba+1QTPxYVynVblqDjtBH2vnzS/j9owElNYJXlPC//6u4BnQsU4SwKzKnlvH
+	A==
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 45hn8bg48e-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 28 Mar 2025 23:11:49 +0000 (GMT)
+Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 52SMxMKw029853;
+	Fri, 28 Mar 2025 23:11:48 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 45jjc5ske6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+	Fri, 28 Mar 2025 23:11:48 +0000
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 52SNBlEr030386;
+	Fri, 28 Mar 2025 23:11:47 GMT
+Received: from bur-virt-x6-2-100.us.oracle.com (bur-virt-x6-2-100.us.oracle.com [10.153.92.40])
+	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 45jjc5skcb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+	Fri, 28 Mar 2025 23:11:47 +0000
+From: Ross Philipson <ross.philipson@oracle.com>
+To: linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+        linux-efi@vger.kernel.org, iommu@lists.linux.dev
+Cc: ross.philipson@oracle.com, dpsmith@apertussolutions.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+        dave.hansen@linux.intel.com, ardb@kernel.org, mjg59@srcf.ucam.org,
+        James.Bottomley@hansenpartnership.com, peterhuewe@gmx.de,
+        jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
+        nivedita@alum.mit.edu, herbert@gondor.apana.org.au,
+        davem@davemloft.net, corbet@lwn.net, ebiederm@xmission.com,
+        dwmw2@infradead.org, baolu.lu@linux.intel.com,
+        kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
+        trenchboot-devel@googlegroups.com
+Subject: [PATCH v13 02/19] x86: Secure Launch Kconfig
+Date: Fri, 28 Mar 2025 16:07:57 -0700
+Message-Id: <20250328230814.2210230-3-ross.philipson@oracle.com>
+X-Mailer: git-send-email 2.39.3
+In-Reply-To: <20250328230814.2210230-1-ross.philipson@oracle.com>
+References: <20250328230814.2210230-1-ross.philipson@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z-a7dF9HPGteVVCp@google.com>
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-28_11,2025-03-27_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 bulkscore=0
+ suspectscore=0 mlxscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2502280000
+ definitions=main-2503280156
+X-Proofpoint-GUID: wACToliXy_WhSOWQn2f1L4bIYZ7pVK4X
+X-Proofpoint-ORIG-GUID: wACToliXy_WhSOWQn2f1L4bIYZ7pVK4X
 
-On Fri, Mar 28, 2025 at 03:08:36PM +0000, Pranjal Shrivastava wrote:
+Initial bits to bring in Secure Launch functionality. Add Kconfig
+options for compiling in/out the Secure Launch code.
 
-> I like the idea of a flag telling us if the implementation boots with
-> GBPA.Abort = 0 but I'm unsure of how the iommu driver would understand
-> what attachments are insecure (or even if we'd wanna add that kind of
-> intelligence in the drivers)
+Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+---
+ arch/x86/Kconfig | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-I suspect we can reasonably add a domain flag that is set by vfio and
-the pci untrusted paths.
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 9427b5292ca2..a92788060a05 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1990,6 +1990,17 @@ config EFI_RUNTIME_MAP
+ 
+ 	  See also Documentation/ABI/testing/sysfs-firmware-efi-runtime-map.
+ 
++config SECURE_LAUNCH
++	bool "Secure Launch support"
++	depends on X86_64 && X86_X2APIC && TCG_TIS && TCG_CRB && CRYPTO_LIB_SHA1 && CRYPTO_LIB_SHA256
++	help
++	   The Secure Launch feature allows a kernel to be loaded
++	   directly through an Intel TXT measured launch. Intel TXT
++	   establishes a Dynamic Root of Trust for Measurement (DRTM)
++	   where the CPU measures the kernel image. This feature then
++	   continues the measurement chain over kernel configuration
++	   information and init images.
++
+ source "kernel/Kconfig.hz"
+ 
+ config ARCH_SUPPORTS_KEXEC
+-- 
+2.39.3
 
-Jason
