@@ -1,76 +1,46 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DFDA211A2C
-	for <iommu@lists.linux.dev>; Fri, 28 Mar 2025 07:47:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E0F11D5170;
+	Fri, 28 Mar 2025 09:11:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743148062; cv=none; b=BBT40Q4YPMsdbjYVZLpWDsR6TraW7IgPmv0hcokCPfoy5Rfwyre5JxX4wlKDLmUnTNY074GfZVXO5CYKrOPl5C2FZaPmARIHi224ISPACQb3p0yMqpNKlHVMr37vPNAe85JZf0qkAq9JxP41TxRE0i6YV5RXpzzdddpSBUi+utM=
+	t=1743153104; cv=none; b=FL6vnyyPC35qK66x55h5jyq6UQrue1uixxLE39e/LiClUcU+kPyvQrqciMK+vGQQKAePOKY5vJeNO97Vlejao/mKtDeDPoa2IP6kiVa88vj3oeZrODR1qhXRpGVg545Gz4bsIyAmsf+9kC5RICGUU+spaPculhHHw0tbnV55Csw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743148062; c=relaxed/simple;
-	bh=9v0hH5NwmT9oYas02k0owd92IKkhiE6rpdCflKcozYg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AaL9SVgEZS/GTFc9D08TeGm65Er54urSTHYRhnUOxsXKhKoUXgZuTM83h37DMp/giFjA359F7CGqy3Rqos6JA7OJf1Ozo68x7zZuO4YYVEAC2tUIuwFS6xcPVXJF/SWnKJUbIM12ryGWwF7pgJxqn14DNGuD4OH2nfjzEuJYP60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3szTfI1h; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1743153104; c=relaxed/simple;
+	bh=/fQ2l7cD/isQx2nupZb1macgcLB2IW4AcXV0qJ4AiJ0=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=acNnqPcu+7vGddqdrxBMYy7WtmnYSzSLjmW3FE8WVuN1OweHsm9Z0b1mKOsAnFGBwsBH9jDKHDASQ6igIk4FUafy/4QlWAgzTsQ0MXOjp7kfgGL+fF6lv8ev0pbfdsF0o4v6xm4eX+rBuCbIkbGsMTrdGhm3zu08UlRqutEDtos=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NlYHQI0E; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3szTfI1h"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2263428c8baso99465ad.1
-        for <iommu@lists.linux.dev>; Fri, 28 Mar 2025 00:47:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1743148060; x=1743752860; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=kHKIz7A4BnuOL48o8lHb/rzI48O/1LbIV9cjiZZK/VE=;
-        b=3szTfI1h9zC4hlUWOyxHvCjDPS/Dw2RpdZQ7eZkBTIyBSbV+sUAuLpSm2S75Jg0HOH
-         46JwJCaBN5DFh2xBWxmP2aUjDec/I+WSaB9sjAq0+M/UNx72oUgk+GvGpq5IZCtQDQe1
-         3veOHA3S2xiIGffQ1Ptamt0WxC8/eP1YmKxpZAeU6QPlZQhV4o6iQg+PDHd/YaLGkXBi
-         8ksAETPfJUxx5Z8pbpj7mrI/UlO7nmgsftMJrOituCnC4x0hSaSUJjbL8SmmsSEJhb/X
-         ak7N9gGWl5pFo5BPFSMm8E3FuaABgdmQk+AcKy/n2RIseJOpouKRNnUow6E1tecc3Okq
-         nV4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743148060; x=1743752860;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kHKIz7A4BnuOL48o8lHb/rzI48O/1LbIV9cjiZZK/VE=;
-        b=ICrDgHs9DU5ti2XPsScXnJWhePDQG8ixUE0itMVS9jVQbuXIgQpUOiOXdnUfU5w0bt
-         VhXYBQgcW7gXVBbEdVJoAhvJv1CB4zYZ/b/ZFSdYpk4CTIdoR8b1Qp19vSzqKxukHYeH
-         900lciZjEWNcf3zHholqAZ68kEk9uEz8oCaWPdgdSm+mlBsXoCpsMe87yMjuAsnj5Sko
-         g1KYe6mXGJH9roJTqxppLuFp2UANgdivnU9DBpw9HEPfYivOg1m90AQYz4Bv5stauYFX
-         jdDpF17EslKfaPWum9bHhHQ5cyTbWQjt436v9c2z7NcH5UXnfED5qUDCZPIFyrW+SwmN
-         FNTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXjTsqBvhAMny8foZ8dUw0ha7nc9TPE+kjtIgxbRYiUxJHSvmOvj1xC/rBpwbflU64PMuJjYw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxaaPNhJNtd/SDDA/fWW6F97nvcbE9GFMHWJ8nEeZ+krUqfuLv1
-	opOoOQT1xwnFw8AlAQ6i406XGQU4a4kqjN6FNNcYvBT3PF983LLDEAzIOxShMQ==
-X-Gm-Gg: ASbGncsKbma7Ig9BhtEDPy5Nmy/k0A09KIH5kY5ZH5w6v6WtuLF1RI6lZyHGgrRPl/v
-	MJ5Xf1yRHQpg9aTU95vy9VK3RxTHh/ic3Zn1RTQY4vvOYL9/CXJG0TW587/LBs0TrU4zig2cYhA
-	jMZIPFh3yiMVoyTRP+TYvZ6RQ93oQCUJE94CW+xpKyUmi2bVjwvRDVAU06WVohhb3w4kfm1T1/Z
-	w0sjUBC6Zo1kvPdga3EiM2kFQiw1ALNbjDoIP59irfYcM1GFMVFxeyhmZCIHQrWutksoYgLQFe2
-	YZAJ4EbpceHCon5mXVHmJN/2FA3TH9VxH4uWwDPFDEMRTfq9DtcmSMjZP+vAi+eQcveCTo82w1t
-	vr1o=
-X-Google-Smtp-Source: AGHT+IGzvSTEZagS+BShyK9RiIJ5nlOEtU88cPtrYltpLdylWTq2uiJ8M3xgaAulEE2DD9/yl2Hakw==
-X-Received: by 2002:a17:902:d490:b0:21f:3e29:9cd4 with SMTP id d9443c01a7336-22920e25925mr2063995ad.20.1743148060008;
-        Fri, 28 Mar 2025 00:47:40 -0700 (PDT)
-Received: from google.com (188.152.87.34.bc.googleusercontent.com. [34.87.152.188])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-30516d62c57sm1162989a91.28.2025.03.28.00.47.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Mar 2025 00:47:39 -0700 (PDT)
-Date: Fri, 28 Mar 2025 07:47:31 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 3/5] iommu/arm-smmu-v3: Implement pm_runtime & system
- sleep ops
-Message-ID: <Z-ZUExCunYmHjDm3@google.com>
-References: <20250319004254.2547950-1-praan@google.com>
- <20250319004254.2547950-4-praan@google.com>
- <CAE2F3rCdA=45317Z_+J86G2QtLZYZwDT-qPVD7ymmAfToBcwQA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NlYHQI0E"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3E4C4CEE4;
+	Fri, 28 Mar 2025 09:11:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1743153103;
+	bh=/fQ2l7cD/isQx2nupZb1macgcLB2IW4AcXV0qJ4AiJ0=;
+	h=Date:From:To:Cc:Subject:From;
+	b=NlYHQI0E0t3V6LAxmMvMQTx0CTpo8GWONUz65LhA7mSzdh4aMvEu9b5G0/GIubz1z
+	 ieNbbIGsDPqPe15+rCNGbUTE2kVQjZeQEXf9r4jMUbvdGyZnfZGIHk52MFb4hfCWSP
+	 J2FXnc9IKO1Q7tTO1U0vlf9ga5hDZwV6IOTCyc1mDVB7tXAMPma70yEi0Rt2ZxpbPK
+	 7uakO5uQ3t6ttEBACHaXqyiN5V0D7cmraP0wNlw+jFtNwunrgeDnAEVRxN4SM6rhNY
+	 avdqubYgKzuilui0sKZhUPBShJpn3dLx2rDEnDviA5mRRhsJzj0Ws8B80wE7Eqm9ZQ
+	 vfMV/8QAOAF7g==
+Date: Fri, 28 Mar 2025 10:11:13 +0100
+From: Joel Granados <joel.granados@kernel.org>
+To: iommu@lists.linux.dev
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>, 
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Matthew Rosato <mjrosato@linux.ibm.com>, Niklas Schnelle <schnelle@linux.ibm.com>, 
+	Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Thierry Reding <thierry.reding@gmail.com>, Tomasz Jeznach <tjeznach@rivosinc.com>, 
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>, Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>, 
+	virtualization@lists.linux.dev, iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: RFC iommutests_: Testing software for everything IOMMU
+Message-ID: <5zoh5r6eovbpijic22htkqik6mvyfbma5w7kjzcpz7kgbjufd2@yw6ymwy2a54s>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,74 +50,110 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rCdA=45317Z_+J86G2QtLZYZwDT-qPVD7ymmAfToBcwQA@mail.gmail.com>
 
-On Tue, Mar 25, 2025 at 09:52:37PM -0700, Daniel Mentz wrote:
-> On Tue, Mar 18, 2025 at 5:43 PM Pranjal Shrivastava <praan@google.com> wrote:
-> > +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
-> > +{
-> > +       struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> > +
-> > +       /* We might get the vcmdq */
-> > +       struct arm_smmu_cmdq_ent cmd = {
-> > +               .opcode = smmu->features & ARM_SMMU_FEAT_E2H ?
-> > +                       CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA,
-> > +       };
-> > +
-> > +       struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu, &cmd);
-> > +       struct arm_smmu_ll_queue *llq = &cmdq->q.llq;
-> > +
-> > +       /*
-> > +        * Since suspend is invoked when all clients have been
-> > +        * we don't expect more commands to be added to the cmdq.
-> > +        * Thus, wait for all existing commands to complete.
-> > +        */
-> > +       arm_smmu_cmdq_shared_lock(cmdq);
-> > +       arm_smmu_cmdq_poll_until_empty(smmu, cmdq, llq);
-> 
-> llq is pointing to cmdq->q.llq which means that
-> arm_smmu_cmdq_poll_until_empty will write to cmdq->q.llq.cons which I
-> understand is not allowed unless you are holding the exclusive lock or
-> are the only thread holding a shared lock.
-> 
-> How about the following:
-> 
-> 1. Call arm_smmu_cmdq_exclusive_trylock_irqsave(). If this fails,
-> print an error message.
-> 2. Call __arm_smmu_cmdq_poll_until_consumed on the current producer index.
-> 3. Update cmdq->q.llq.cons
-> 4. Call arm_smmu_cmdq_exclusive_unlock_irqrestore()
-> 
+Hello everyone
 
-As mentioned in the other thread, __arm_smmu_cmdq_poll_until_consumed
-relies on `queue_consumed` which waits for the prod to cross cons idx.
-We could potentially call poll_until_consumed on `prod - 1 but it feels`
-hacky..relying on `queue_empty` should be better.
+This is a Request For Comment (RFC) describing a new testing infra
+called iommutests. It is motivated by interest expressed during the "IO
+Page Fault for all" [1] talk in LPC 2024 [2]. At the end of that
+presentation in the "VFIO/IOMMU/PCI MC" microconference, There was a
+clear "yes please" after asking if it made sense to have an
+infrastructure that could evaluate the full spectrum of IOMMU
+interactions — from host software to IOMMU in hardware and in emulated
+environments.
 
-About locking, that is right, but I was assuming since we are in the
-suspend callback here, no other client is operating the SMMU. Due to the
-devlinks, I don't see a path that could be potentially racy here but if
-we *somehow* fail to get the lock, I guess we should stop the suspend
-along with logging the error message.
+What is iommutests?
+--------------------
+The primary goal of iommutests [3] is to provide a modular framework to
+test IOMMU-mediated Direct Memory Access (DMA). It is meant to run
+PASS/NO_PASS tests for the interaction between kernel subsystems and
+hardware/virtual devices. All this in the hope of clarifying which IOMMU
+features are working correctly and which are not. You can find the
+project in github : https://github.com/SamsungDS/iommutests
 
-Do you see a case where we might not be the only owner of the cmdq while
-suspending?
+* Test Orchestration:
+  This component is implemented in pytest [4], a testing framework where
+  tests can be parametrized, filtered and implemented concisely and
+  easily. Additionally, pyudev [5] is employed for device enumeration
+  and monitoring, as well as querying device properties and attributes.
 
-> 
-> > +       arm_smmu_cmdq_shared_unlock(cmdq);
-> > +
-> > +       /* Disable all queues */
-> > +       arm_smmu_device_disable(smmu);
-> > +
-> > +       /* Abort all transactions to avoid spurious bypass */
-> > +       arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
-> > +
-> > +       /* Free all MSIs (re-allocated on resume) */
-> > +       arm_smmu_free_msis(dev);
-> > +
-> > +       dev_dbg(dev, "Suspending smmu\n");
-> > +       return 0;
-> > +}
+* Test Executables:
+  For the creation and execution of tests, iommutests leans heavily on
+  libvfn [6], a zero-dependency C library designed for interacting with
+  PCIe-based devices from user-space using the Linux kernel user API.
+  The libvfn library can be used to abstract away common lower-level
+  interactions which can then be re-used through out.
 
-Thanks,
-Praan
+A Working Demonstration
+-----------------------
+To better illustrate how everything fits together, There’s a demo script
+[7], with some demo notes [8] explaining the setup and output. It does
+the following:
+
+1. Sets up a custom qemu [9] virtual machine environment using a custom
+   test device.
+2. Builds both libvfn and iommutests.
+3. Runs a pair of example tests (one of them always fails to show how
+   how that would look like)
+
+This demo shows how everything comes together to give the pass/no-pass
+IOMMU testing results. It is there for anyone interested in trying it
+out or contributing. To run it, you need to pass it a local ssh key and
+linux kernel compiled with VFIO support
+
+Custom qemu device: pci-ats-testdev
+-------------------------------------
+To support IOMMU testing under qemu, the pci-ats-testdev [10]
+(different from pci-testdev [11]) was used to emulate DMA transactions.
+It is a full fledged pci device capable of executing emulated DMA
+accesses. It was originally intended to test Linux kernel interactions
+with devices that had a working Address Translation Cache (ATC) but can
+become a platform capable of testing anything PCI/IOMMU related if
+needed.
+
+Feedback
+--------
+This is a first draft, and many implementation details are still open to
+refinement. I would appreciate your thoughts on any part of the project
+— its design, scope, implementation language choices, or usability.
+These are however some of the questions that are still outstanding from
+my POV:
+
+Q1: Beyond binary testing:
+    Would iommutests be used for something other than pass/no-pass
+    tests? Like performance? Stress testing?
+
+Q2: Kernel Integration:
+    Should iommutests interact with the already existing IOMMU linux
+    kernel unit tests? Since it is an orchestration framework, then it
+    can execute the unit tests in some way. This could actually be the
+    next step, if found useful.
+
+Thanks for your time
+Best regards,
+
+-- 
+
+Joel Granados
+
+[1] https://www.youtube.com/watch?v=UFrAjJ5TUf4
+[2] https://lpc.events/event/18/timetable/#20240918
+[3] https://github.com/SamsungDS/iommutests
+[4] https://docs.pytest.org/en/stable/
+[5] https://github.com/pyudev/pyudev
+[6] https://github.com/SamsungDS/libvfn
+[7] https://github.com/SamsungDS/iommutests/blob/master/docs/demo0_debian.sh
+[8] https://github.com/SamsungDS/iommutests/blob/master/docs/demo0.md
+[9] https://github.com/Joelgranados/qemu/tree/pcie-testdev
+[10] https://github.com/Joelgranados/qemu/blob/pcie-testdev/hw/misc/pcie-ats-testdev.c
+[11] https://github.com/Joelgranados/qemu/blob/pcie-testdev/hw/misc/pci-testdev.c
+
+PS:
+  Apologies for the long CC list. I always try to include the ppl that I
+  think will be interested, but its not always easy to know who you are
+  :). In this case, you are included because you appear as "M" under a
+  subsystem that contains the string "IOMMU" in the MAINTAINERS file. Feel
+  free to shoot me a mail if you don't want to be included in the future,
+  I'll try my best to remove you.
+
+
