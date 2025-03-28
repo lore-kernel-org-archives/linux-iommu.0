@@ -1,50 +1,52 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFECF1F180C
-	for <iommu@lists.linux.dev>; Fri, 28 Mar 2025 23:12:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D05071F4E56
+	for <iommu@lists.linux.dev>; Fri, 28 Mar 2025 23:12:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743203545; cv=none; b=t/sdQtYMQW4Zf7Swuy7vEItD4BxRZnC7YMTHJFPVBGx0yDdJ5Ypyl0Cw8tGvCqpSdeiV1f/eov58t1QYHHtdgv7EA9ZWKaPImw91YgjU3qGrvCrTEJx+oNG4r08C9Bsp/2JVSj84yzIg2vz2jdgj5110SX22+2nqfMqNiOPO6Gw=
+	t=1743203556; cv=none; b=GLfkKfp8cgVaCFh3PTFkAzremva1N4b7DNQzzHTBoxdZtSN2A7HgHVP9PbBKU0SaOpg4mwHeoNegUwBeRokqd8F0adj+4x++EnvTPbCyV0aM2mIhsRZcUTJPW2qO8ad5Fk4BSH/40SDQYlmEWLp/ZAj04m7Zmrpc5/xrzvnlcJI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743203545; c=relaxed/simple;
-	bh=/G3QG7SfFLyNZMdzmIB7uAB/I1tQZkn9Z4m54vzgflo=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=pNIXno5izxe/6e3OymoJGWmlKFgv0+3of/VU56bPiWJysf3N6byS7179TZ5ddJA/SLfAz8/n8EG6Fi0P39TrVQt/KcivxSoGknrXNN3+hI4EQ6+pBFs43Awj45aA7mFvAaFfDUNVYaksBt1UBJnKpCkg7JV9ldYi9Uc07Nyhj2A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=iEwiGlaV; arc=none smtp.client-ip=205.220.177.32
+	s=arc-20240116; t=1743203556; c=relaxed/simple;
+	bh=dAvWPln2w12NRWgNZOQYSQ3IjVqxwa4Tjps9N/Dffwc=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=VFeWebDrYWkydnU3z0AH0uJ2+3gQEIUR+Qo9RBYDot1fUz5z+QWOCo547ZAWcjvJRP0ykuC/HhZEVOkYLx8CtCnXfs9QJFcujYnH0tbpAp9rOvGwtfO5ZsDf3XwYApC3079bE3eCo8crciJzP4tiISAayvBq8u+DEcXLbnYzjwU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=ByFhK7bl; arc=none smtp.client-ip=205.220.177.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="iEwiGlaV"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52SKWKpi028282;
-	Fri, 28 Mar 2025 23:11:33 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="ByFhK7bl"
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52SKWxZY003223;
+	Fri, 28 Mar 2025 23:12:11 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=corp-2023-11-20; bh=l4cHGUIRu87BgpGCfTbyW5rgZvUDZ
-	DAf+pn5MTEaHs4=; b=iEwiGlaVE/OgGsTf+JAic3LlowZhNVfupr4wCK2BZeQZO
-	FiWUkoWag3Rm4pTxtFdzts1y9p0PDeJLMoMhlRsRhaFpykO8J9knsTkSLwQrTIVP
-	9r4hQ8aWKIhQzyVkejDgKH4d0LqHQUyAmQIdCwborc1cYhY3isj4GzBvLQc32IzW
-	S1ba0LnF8qUSlDolU5H+Or4xxEyUd6gsnZqMPkrlmp3+CJx0c+w+RwW1BTLOcCys
-	wx5BeEaIYrLDy3pWtqT7l3wEQE6eScslsi5q1QUyUh7T5RfIfosmE9UHn/rp7bCC
-	6u9FWWQUnb5qeUSla4xM8u+K19vuGcxUEfUCaTiag==
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 45mqftdghj-1
+	:content-transfer-encoding:date:from:in-reply-to:message-id
+	:mime-version:references:subject:to; s=corp-2023-11-20; bh=CRXSD
+	+owzH33R7zo+jaFcMQHFhC8P+u/40dr8PX/pr0=; b=ByFhK7bloKReQn1xtfSRj
+	d3CttPP+5CqAYyGsEGpZogFF7qGZ9RtLfAcc1B3HBhp9eL6rNsLixSz1ylSuuIWe
+	RHej4r0SYvO2BM8tCa99hk5LdtcxjiiBam5iVQ7JMFu9Rpj20XXM65BCyiDOqZo6
+	Rj0/MwmOvhYx28Kuy5M5Fq73BJLha3OY/T+1qWqr7Nh++dzs+pJs/jyycXulbkUK
+	9yPe5P33COqWsEZV56fEUPcwW7Ruj5PvQJMgGn8HbXsuloq/iJ4ObZnrS64GoQyH
+	rSZcf/ArzJ4g2v7mT4qxeIXYCK6fO4E3kAhTAqeUtNDtcsPHQRNuY35aWRsWjwds
+	g==
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 45hn5mfvj5-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 28 Mar 2025 23:11:32 +0000 (GMT)
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 52SL0Ji0029893;
-	Fri, 28 Mar 2025 23:11:31 GMT
+	Fri, 28 Mar 2025 23:12:11 +0000 (GMT)
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 52SMfW81036408;
+	Fri, 28 Mar 2025 23:12:10 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 45jjc5sk8e-1
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 45jj5h9rhd-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Fri, 28 Mar 2025 23:11:31 +0000
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 52SNBUBW029878;
-	Fri, 28 Mar 2025 23:11:30 GMT
+	Fri, 28 Mar 2025 23:12:09 +0000
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 52SNC9Rx030021;
+	Fri, 28 Mar 2025 23:12:09 GMT
 Received: from bur-virt-x6-2-100.us.oracle.com (bur-virt-x6-2-100.us.oracle.com [10.153.92.40])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 45jjc5sk6e-1
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 45jj5h9rfd-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Fri, 28 Mar 2025 23:11:30 +0000
+	Fri, 28 Mar 2025 23:12:08 +0000
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
         linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
@@ -60,10 +62,12 @@ Cc: ross.philipson@oracle.com, dpsmith@apertussolutions.com,
         dwmw2@infradead.org, baolu.lu@linux.intel.com,
         kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
         trenchboot-devel@googlegroups.com
-Subject: [PATCH v13 00/19] x86: Trenchboot secure dynamic launch Linux kernel support
-Date: Fri, 28 Mar 2025 16:07:55 -0700
-Message-Id: <20250328230814.2210230-1-ross.philipson@oracle.com>
+Subject: [PATCH v13 04/19] x86: Secure Launch main header file
+Date: Fri, 28 Mar 2025 16:07:59 -0700
+Message-Id: <20250328230814.2210230-5-ross.philipson@oracle.com>
 X-Mailer: git-send-email 2.39.3
+In-Reply-To: <20250328230814.2210230-1-ross.philipson@oracle.com>
+References: <20250328230814.2210230-1-ross.philipson@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,1287 +78,596 @@ Content-Transfer-Encoding: 8bit
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-03-28_11,2025-03-27_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 bulkscore=0
- suspectscore=0 mlxscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 bulkscore=0
+ malwarescore=0 mlxlogscore=999 suspectscore=0 adultscore=0 phishscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2502280000
  definitions=main-2503280156
-X-Proofpoint-GUID: O1Jbi856fyJqxbezUdmhk1o-0EbqRgSR
-X-Proofpoint-ORIG-GUID: O1Jbi856fyJqxbezUdmhk1o-0EbqRgSR
+X-Proofpoint-GUID: 1QaF_44CLGQN1J3Nxdm3roILqcMZj3AF
+X-Proofpoint-ORIG-GUID: 1QaF_44CLGQN1J3Nxdm3roILqcMZj3AF
 
-The larger focus of the TrenchBoot project (https://github.com/TrenchBoot) is to
-enhance the boot security and integrity in a unified manner. The first area of
-focus has been on the Trusted Computing Group's Dynamic Launch for establishing
-a hardware Root of Trust for Measurement, also know as DRTM (Dynamic Root of
-Trust for Measurement). The project has been and continues to work on providing
-a unified means to Dynamic Launch that is a cross-platform (Intel and AMD) and
-cross-architecture (x86 and Arm), with our recent involvment in the upcoming
-Arm DRTM specification. The order of introducing DRTM to the Linux kernel
-follows the maturity of DRTM in the architectures. Intel's Trusted eXecution
-Technology (TXT) is present today and only requires a preamble loader, e.g. a
-boot loader, and an OS kernel that is TXT-aware. AMD DRTM implementation has
-been present since the introduction of AMD-V but requires an additional
-component that is AMD specific and referred to in the specification as the
-Secure Loader, which the TrenchBoot project has an active prototype in
-development. Finally Arm's implementation is in specification development stage
-and the project is looking to support it when it becomes available.
+Introduce the main Secure Launch header file used in the early SL stub
+and the early setup code.
 
-This patchset provides detailed documentation of DRTM, the approach used for
-adding the capbility, and relevant API/ABI documentation. In addition to the
-documentation the patch set introduces Intel TXT support as the first platform
-for Linux Secure Launch.
+This header file contains the following categories:
+ - Secure Launch implementation specific structures and definitions.
+ - Intel TXT architecture specific DRTM structures, definitions and functions
+used by Secure Launch.
+ - DRTM TPM event logging definitions and helper functions.
 
-A quick note on terminology. The larger open source project itself is called
-TrenchBoot, which is hosted on Github (links below). The kernel feature enabling
-the use of Dynamic Launch technology is referred to as "Secure Launch" within
-the kernel code. As such the prefixes sl_/SL_ or slaunch/SLAUNCH will be seen
-in the code. The stub code discussed above is referred to as the SL stub.
-
-Links:
-
-The TrenchBoot project including documentation:
-
-https://trenchboot.org
-
-The TrenchBoot project on Github:
-
-https://github.com/trenchboot
-
-Intel TXT is documented in its own specification and in the SDM Instruction Set volume:
-
-https://www.intel.com/content/dam/www/public/us/en/documents/guides/intel-txt-software-development-guide.pdf
-https://software.intel.com/en-us/articles/intel-sdm
-
-The TrenchBoot project provides a quick start guide to help get a system
-up and running with Secure Launch for Linux:
-
-https://github.com/TrenchBoot/documentation/blob/master/QUICKSTART.md
-
-Patch set based on commit:
-
-torvalds/master/3a90a72aca0a98125f0c7350ffb7cc63665f8047
-
-Finally we would like to thank everyone for their input and assistance. It has
-all been very helpful in improving the quality of our solution and in
-reviewing/strengthening our security posture.
-
-Thanks
-Ross Philipson and Daniel P. Smith
-
-Changes in v2:
-
- - Modified 32b entry code to prevent causing relocations in the compressed
-   kernel.
- - Dropped patches for compressed kernel TPM PCR extender.
- - Modified event log code to insert log delimiter events and not rely
-   on TPM access.
- - Stop extending PCRs in the early Secure Launch stub code.
- - Removed Kconfig options for hash algorithms and use the algorithms the
-   ACM used.
- - Match Secure Launch measurement algorithm use to those reported in the
-   TPM 2.0 event log.
- - Read the TPM events out of the TPM and extend them into the PCRs using
-   the mainline TPM driver. This is done in the late initcall module.
- - Allow use of alternate PCR 19 and 20 for post ACM measurements.
- - Add Kconfig constraints needed by Secure Launch (disable KASLR
-   and add x2apic dependency).
- - Fix testing of SL_FLAGS when determining if Secure Launch is active
-   and the architecture is TXT.
- - Use SYM_DATA_START_LOCAL macros in early entry point code.
- - Security audit changes:
-   - Validate buffers passed to MLE do not overlap the MLE and are
-     properly laid out.
-   - Validate buffers and memory regions used by the MLE are
-     protected by IOMMU PMRs.
- - Force IOMMU to not use passthrough mode during a Secure Launch.
- - Prevent KASLR use during a Secure Launch.
-
-Changes in v3:
-
- - Introduce x86 documentation patch to provide background, overview
-   and configuration/ABI information for the Secure Launch kernel
-   feature.
- - Remove the IOMMU patch with special cases for disabling IOMMU
-   passthrough. Configuring the IOMMU is now a documentation matter
-   in the previously mentioned new patch.
- - Remove special case KASLR disabling code. Configuring KASLR is now
-   a documentation matter in the previously mentioned new patch.
- - Fix incorrect panic on TXT public register read.
- - Properly handle and measure setup_indirect bootparams in the early
-   launch code.
- - Use correct compressed kernel image base address when testing buffers
-   in the early launch stub code. This bug was introduced by the changes
-   to avoid relocation in the compressed kernel.
- - Use CPUID feature bits instead of CPUID vendor strings to determine
-   if SMX mode is supported and the system is Intel.
- - Remove early NMI re-enable on the BSP. This can be safely done later
-   on the BSP after an IDT is setup.
-
-Changes in v4:
- - Expand the cover letter to provide more context to the order that DRTM
-   support will be added.
- - Removed debug tracing in TPM request locality funciton and fixed
-   local variable declarations.
- - Fixed missing break in default case in slmodule.c.
- - Reworded commit messages in patches 1 and 2 per suggestions.
-
-Changes in v5:
- - Comprehensive documentation rewrite.
- - Use boot param loadflags to communicate Secure Launch status to
-   kernel proper.
- - Fix incorrect check of X86_FEATURE_BIT_SMX bit.
- - Rename the alternate details and authorities PCR support.
- - Refactor the securityfs directory and file setup in slmodule.c.
- - Misc. cleanup from internal code reviews.
- - Use reverse fir tree format for variables.
-
-Changes in v6:
- - Support for the new Secure Launch Resourse Table that standardizes
-   the information passed and forms the ABI between the pre and post
-   launch code.
- - Support for booting Linux through the EFI stub entry point and
-   then being able to do a Secure Launch once EFI stub is done and EBS
-   is called.
- - Updates to the documentation to reflect the previous two items listed.
-
-Changes in v7:
- - Switch to using MONITOR/MWAIT instead of NMIs to park the APs for
-   later bringup by the SMP code.
- - Use static inline dummy functions instead of macros when the Secure
-   Launch feature is disabled.
- - Move early SHA1 code to lib/crypto and pull it in from there.
- - Numerous formatting fixes from comments on LKML.
- - Remove efi-stub/DL stub patch temporarily for redesign/rework.
-
-Changes in v8:
- - Reintroduce efi-stub Linux kernel booting through the dynamic launch
-   stub (DL stub).
- - Add new approach to setting localities > 0 through kernel and sysfs
-   interfaces in the TPM mainline driver.
- - General code cleanup from v7 post comments.
-
-Changes in v9:
- - Updated DL stub support for recent changes to EFI stub in the kernel.
- - Added patches to fix locality changing support in the TPM driver
-   (these patches originally were posted as a separate set).
- - Enhanced Secure Launch TPM locality 2 setting in the TPM driver.
- - Added locality setting support through sysfs for user land to access.
- - Split up SHA1 and SHA256 changes into separate patches and updated
-   the commit messages to be more clear (per request from upstream
-   review).
- - Fix Clang compile issues detected by kernel test robot.
- - Modifications to the Secure Launch Resource Table ABI:
-   . Use flex arrays in table structures.
-   . Update and move fields in tables to make everything 8b aligned.
-   . Add 2 new DLME fields and a txt_heap address field.
-   . Remove platform specific tables that are not defined yet (AMD/ARM).
- - Update Kconfig dependencies for Secure Launch with SHA1/SHA256/TPM.
- - Remove push/pop of rsi since boot params is now stored in r15.
- - Update outdated kernel documentation.
- - Misc. comment fixes for type-os and mispellings.
-
-Changes in v10:
- - Removed patch #1 from previous set that forced the kernel_info
-   section at a fixed offset.
- - Add changes from Ard Biesheuvel to use the link step to generate the
-   proper relative offsets for the MLE header in the kernel_info
-   section.
- - Fix sizes and alignment slightly in the SLR table. Add comments to
-   the SLR header to indicate it is defined by the TrenchBoot project.
- - Remove incorrect extra pop instruction noted in the head_64.S
-   changes.
- - Use the prefix tpm/tpm2 to distinguish between TPM versions as is
-   done in the rest of the TPM related code.
- - Rework the TPM locality setting/reporting changes to use "default"
-   locality as opposed to "preferred". Remove uneeded extra locality
-   function in the TPM interface (call the chip function directly).
- - Adopt comment/documentation changes to code and commit message per
-   requests from the community.
- - Use u64 for the boot params physical address to avoid truncating
-   pointers during casts.
- - Split adding of new MSR registers into its own patch.
- - Attempt to further address justification for using SHA-1 algorithm.
-   Pick up some code suggestions for the SHA-1 patch.
- - Introduct slaunch_is_txt_launch() function per Jarkko Sakkinen's
-   suggestion.
- - Implement minor changes to the EFI stub code per suggestions.
-
-Changes in v11:
- - Add section to user documents about SHA-1 usage with Secure
-   Launch as requested.
- - General cleanup and grammar fixes to the Linux user documentation.
- - Fix use of CONFIG_SECURE_LAUNCH in the EFI stub code to prevent
-   32b build failures.
- - Cleanup of early event log handling code.
-
-Changes in v12:
- - Modify the event processing and PCR extending code to cap all unknown
-   algorithm bank PCRs and extend the cap digest into those banks/PCRs.
- - Fix documentation to have the correct NIST terminology and document
-   links.
- - Switch custom SL vendor specific TPM event types used as markers
-   back to type NO_ACTION to allow proper event log parsing.
- - Move boot_params_addr from the TXT heap into the SLRT Intel
-   information table to make SLRT architecture specific table usage
-   more consistent.
- - Change SL Kconfig dependencies from TCG_TPM to TCG_TIS && TCG_CRB
-   to more accurately depend of the underlying TPM driver components.
- - Remove unwanted Unicode characters from documentation and comments
-   plus minor documentation fix.
-
-Changes in v13:
- - Documentation rework:
-   * Make the documentation for Secure Launch (patch 1) more concise
-     and readable.
-   * Fix and add comments to code.
-   * Update some commit messages to be clearer.
-
-
-Daniel P. Smith (6):
-  Documentation/x86: Secure Launch kernel documentation
-  x86: Add early SHA-1 support for Secure Launch early measurements
-  x86: Add early SHA-256 support for Secure Launch early measurements
-  tpm, tpm_tis: Close all localities
-  tpm, tpm_tis: Address positive localities in
-    tpm_tis_request_locality()
-  x86: Secure Launch late initcall platform module
-
-Ross Philipson (13):
-  x86: Secure Launch Kconfig
-  x86: Secure Launch Resource Table header file
-  x86: Secure Launch main header file
-  x86/msr: Add variable MTRR base/mask and x2apic ID registers
-  x86/boot: Place TXT MLE header in the kernel_info section
-  x86: Secure Launch kernel early boot stub
-  x86: Secure Launch kernel late boot stub
-  x86: Secure Launch SMP bringup support
-  kexec: Secure Launch kexec SEXIT support
-  x86/reboot: Secure Launch SEXIT support on reboot paths
-  tpm, tpm_tis: Allow locality to be set to a different value
-  tpm, sysfs: Show locality used by kernel
-  x86/efi: EFI stub DRTM launch support for Secure Launch
-
- Documentation/arch/x86/boot.rst               |  21 +
- Documentation/security/index.rst              |   1 +
- .../security/launch-integrity/index.rst       |  11 +
- .../security/launch-integrity/principles.rst  | 308 ++++++++
- .../secure_launch_details.rst                 | 587 ++++++++++++++
- .../secure_launch_overview.rst                | 240 ++++++
- arch/x86/Kconfig                              |  11 +
- arch/x86/boot/compressed/Makefile             |   3 +
- arch/x86/boot/compressed/head_64.S            |  29 +
- arch/x86/boot/compressed/kernel_info.S        |  50 +-
- arch/x86/boot/compressed/sha1.c               |   6 +
- arch/x86/boot/compressed/sha256.c             |   6 +
- arch/x86/boot/compressed/sl_main.c            | 597 ++++++++++++++
- arch/x86/boot/compressed/sl_stub.S            | 726 ++++++++++++++++++
- arch/x86/boot/compressed/vmlinux.lds.S        |   7 +
- arch/x86/include/asm/msr-index.h              |   5 +
- arch/x86/include/asm/realmode.h               |   3 +
- arch/x86/include/uapi/asm/bootparam.h         |   1 +
- arch/x86/kernel/Makefile                      |   2 +
- arch/x86/kernel/asm-offsets.c                 |  20 +
- arch/x86/kernel/reboot.c                      |  10 +
- arch/x86/kernel/setup.c                       |   3 +
- arch/x86/kernel/slaunch.c                     | 596 ++++++++++++++
- arch/x86/kernel/slmodule.c                    | 508 ++++++++++++
- arch/x86/kernel/smpboot.c                     |  43 +-
- arch/x86/realmode/init.c                      |   3 +
- arch/x86/realmode/rm/header.S                 |   3 +
- arch/x86/realmode/rm/trampoline_64.S          |  32 +
- drivers/char/tpm/tpm-chip.c                   |  33 +-
- drivers/char/tpm/tpm-sysfs.c                  |  10 +
- drivers/char/tpm/tpm_tis_core.c               |  21 +-
- drivers/firmware/efi/libstub/efistub.h        |   8 +
- drivers/firmware/efi/libstub/x86-stub.c       |  94 +++
- drivers/iommu/intel/dmar.c                    |   4 +
- include/crypto/sha1.h                         |   1 +
- include/linux/slaunch.h                       | 562 ++++++++++++++
- include/linux/slr_table.h                     | 308 ++++++++
- include/linux/tpm.h                           |  10 +
- kernel/kexec_core.c                           |   4 +
- lib/crypto/sha1.c                             |  81 ++
- 40 files changed, 4959 insertions(+), 9 deletions(-)
- create mode 100644 Documentation/security/launch-integrity/index.rst
- create mode 100644 Documentation/security/launch-integrity/principles.rst
- create mode 100644 Documentation/security/launch-integrity/secure_launch_details.rst
- create mode 100644 Documentation/security/launch-integrity/secure_launch_overview.rst
- create mode 100644 arch/x86/boot/compressed/sha1.c
- create mode 100644 arch/x86/boot/compressed/sha256.c
- create mode 100644 arch/x86/boot/compressed/sl_main.c
- create mode 100644 arch/x86/boot/compressed/sl_stub.S
- create mode 100644 arch/x86/kernel/slaunch.c
- create mode 100644 arch/x86/kernel/slmodule.c
+Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+---
+ include/linux/slaunch.h | 562 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 562 insertions(+)
  create mode 100644 include/linux/slaunch.h
- create mode 100644 include/linux/slr_table.h
 
-Range-diff v12 -> v13:
------------------------------------------------
-
- 1:  c21b641482ba !  1:  06e0394c0802 Documentation/x86: Secure Launch kernel documentation
-    @@ Documentation/security/launch-integrity/index.rst (new)
-      ## Documentation/security/launch-integrity/principles.rst (new) ##
-     @@
-     +.. SPDX-License-Identifier: GPL-2.0
-    -+.. Copyright (c) 2019-2024 Daniel P. Smith <dpsmith@apertussolutions.com>
-    ++.. Copyright (c) 2019-2025 Daniel P. Smith <dpsmith@apertussolutions.com>
-     +
-     +=======================
-     +System Launch Integrity
-     +=======================
-     +
-     +:Author: Daniel P. Smith
-    -+:Date: August 2024
-    ++:Date: March 2025
-     +
-     +This document serves to establish a common understanding of what a system
-     +launch is, the integrity concern for system launch, and why using a Root of Trust
-     +(RoT) from a Dynamic Launch may be desirable. Throughout this document,
-     +terminology from the Trusted Computing Group (TCG) and National Institute for
-    -+Standards and Technology (NIST) is used to ensure that vendor natural language is
-    -+used to describe and reference security-related concepts.
-    ++Standards and Technology (NIST) is used to ensure that a vendor natural language
-    ++describes and references security-related concepts.
-     +
-     +System Launch
-     +=============
-     +
-    -+There is a tendency to only consider the classical power-on boot as the only
-    -+means to launch an Operating System (OS) on a computer system. In fact, most
-    -+modern processors support two system launch methods. To provide clarity,
-    -+it is important to establish a common definition of a system launch: during
-    -+a single power life cycle of a system, a system launch consists of an initialization
-    -+event, typically in hardware, that is followed by an executing software payload
-    -+that takes the system from the initialized state to a running state. Driven by
-    -+the Trusted Computing Group (TCG) architecture, modern processors are able to
-    -+support two methods of system launch. These two methods of system launch are known
-    -+as Static Launch and Dynamic Launch.
-    ++There is a tendency to consider the classical power-on boot as the only means to
-    ++launch an Operating System (OS) on a computer. In fact, driven by the
-    ++Trusted Computing Group (TCG) architecture, modern processors are able to support
-    ++two methods of system launch: Static Launch and Dynamic Launch.
-     +
-     +Static Launch
-     +-------------
-    @@ Documentation/security/launch-integrity/principles.rst (new)
-     +Dynamic Launch
-     +--------------
-     +
-    -+Modern CPUs architectures provides a mechanism to re-initialize the system to a
-    -+"known good" state without requiring a power event. This re-initialization
-    -+event is the event for a dynamic launch and is referred to as the Dynamic
-    -+Launch Event (DLE). The DLE functions by accepting a software payload, referred
-    ++Modern CPU architectures provide a mechanism to re-initialize the system to a
-    ++"known good" state without requiring a power event. This re-initialization is the
-    ++starting point for a dynamic launch and is referred to as The Dynamic Launch Event
-    ++(DLE). The DLE functions by accepting a software payload, referred
-     +to as the Dynamic Configuration Environment (DCE), that execution is handed to
-     +after the DLE is invoked. The DCE is responsible for bringing the system back
-    -+to a running state. Since the dynamic launch is not tied to a power event like
-    -+the static launch, this enables a dynamic launch to be initiated at any time
-    ++to a running state. Since the dynamic launch is not tied to a power event like the
-    ++static launch is, this enables a dynamic launch to be initiated at any time
-     +and multiple times during a single power life cycle. This dynamism is the
-     +reasoning behind referring to this system launch as "dynamic".
-     +
-     +Because a dynamic launch can be conducted at any time during a single power
-    -+life cycle, they are classified into one of two types: an early launch or a
-    ++life cycle, it is classified as either one of two types: an early launch or a
-     +late launch.
-     +
-    -+:Early Launch: When a dynamic launch is used as a transition from a static
-    ++:Early Launch: A dynamic launch that is used as a transition from a static
-     +   launch chain to the final Operating System.
-     +
-    -+:Late Launch: The usage of a dynamic launch by an executing Operating System to
-    ++:Late Launch: A dynamic launch by an executing Operating System to
-     +   transition to a "known good" state to perform one or more operations, e.g. to
-     +   launch into a new Operating System.
-     +
-     +System Integrity
-     +================
-     +
-    -+A computer system can be considered a collection of mechanisms that work
-    -+together to produce a result. The assurance that the mechanisms are functioning
-    -+correctly and producing the expected result is the integrity of the system. To
-    -+ensure a system's integrity, there is a subset of these mechanisms, commonly
-    -+referred to as security mechanisms, that is present to help ensure the system
-    -+produces the expected result or at least detects the potential of an unexpected
-    -+result. Since the security mechanisms are relied upon to ensue the integrity of
-    -+the system, these mechanisms are trusted. Upon inspection, these security
-    -+mechanisms each have a set of properties and these properties can be evaluated
-    -+to determine how susceptible a mechanism might be to failure. This assessment is
-    -+referred to as the Strength of Mechanism, which allows the trustworthiness of
-    -+that mechanism to be quantified.
-    -+
-    -+For software systems, there are two system states for which the integrity is
-    -+critical: when the software is loaded into memory and when the software is
-    -+executing on the hardware. Ensuring that the expected software is loaded into
-    -+memory is referred to as load-time integrity while ensuring that the software
-    -+executing is the expected software is the runtime integrity of that software.
-    ++For software systems, there are two system states for which the integrity of the
-    ++software is critical: when it is loaded into memory and when it is executing on the
-    ++hardware. Ensuring that the expected software is loaded into memory is referred to
-    ++as load-time integrity. Ensuring that the software executing is the expected
-    ++payload is the runtime integrity of that software.
-     +
-     +Load-time Integrity
-     +-------------------
-     +
-    -+It is critical to understand what load-time integrity establishes about a
-    -+system and what is assumed, i.e. what is being trusted. Load-time integrity is
-    -+when a trusted entity, i.e. an entity with an assumed integrity, takes an
-    -+action to assess an entity being loaded into memory before it is used. A
-    -+variety of mechanisms may be used to conduct the assessment, each with
-    -+different properties. A particular property is whether the mechanism creates an
-    -+evidence of the assessment. Often either cryptographic signature checking or
-    ++Load-time integrity is when a trusted entity, i.e. an entity with an assumed
-    ++integrity, takes an action to assess an entity being loaded into memory before
-    ++it is used. A variety of mechanisms may be used to conduct the assessment, each
-    ++with different properties. A particular property is whether the mechanism creates
-    ++an evidence of the assessment. Often either cryptographic signature checking or
-     +hashing are the common assessment operations used.
-     +
-     +A signature checking assessment functions by requiring a representation of the
-     +accepted authorities and uses those representations to assess if the entity has
-    -+been signed by an accepted authority. The benefit to this process is that
-    -+assessment process includes an adjudication of the assessment. The drawbacks
-    -+are that 1) the adjudication is susceptible to tampering by the Trusted
-    -+Computing Base (TCB), 2) there is no evidence to assert that an untampered
-    -+adjudication was completed, and 3) the system must be an active participant in
-    -+the key management infrastructure.
-    -+
-    -+A cryptographic hashing assessment does not adjudicate the assessment, but
-    ++been signed by an accepted authority. The benefit of this process is that it
-    ++includes an adjudication of the assessment. The drawbacks are that 1) the adjudication
-    ++is susceptible to tampering by the Trusted Computing Base (TCB), 2) there is no
-    ++evidence to assert that an untampered adjudication was completed, and 3) the system
-    ++must be an active participant in the key management infrastructure.
-    ++
-    ++A cryptographic measurement does not adjudicate the assessment, but
-     +instead generates evidence of the assessment to be adjudicated independently.
-    -+The benefits to this approach is that the assessment may be simple such that it
-    -+may be implemented in an immutable mechanism, e.g. in hardware.  Additionally,
-    ++The benefit to this approach is that the assessment may be simplified such that it
-    ++can be implemented in an immutable mechanism, e.g. in hardware.  Additionally,
-     +it is possible for the adjudication to be conducted where it cannot be tampered
-     +with by the TCB. The drawback is that a compromised environment will be allowed
-     +to execute until an adjudication can be completed.
-    @@ Documentation/security/launch-integrity/principles.rst (new)
-     +Runtime Integrity
-     +-----------------
-     +
-    -+Runtime integrity in the general sense is when a trusted entity makes an
-    -+assessment of an entity at any point in time during the assessed entity's
-    ++Runtime integrity, in the general sense, is when a trusted entity makes an
-    ++assessment of another entity at any point in time during the assessed entity's
-     +execution. A more concrete explanation is the taking of an integrity assessment
-     +of an active process executing on the system at any point during the process'
-     +execution. Often the load-time integrity of an operating system's user-space,
-    @@ Documentation/security/launch-integrity/principles.rst (new)
-     +
-     +Building upon the understanding of security mechanisms to establish load-time
-     +integrity of an entity, it is possible to chain together load-time integrity
-    -+assessments to establish the integrity of the whole system. This process is
-    -+known as transitive trust and provides the concept of building a chain of
-    -+load-time integrity assessments, commonly referred to as a trust chain. These
-    -+assessments may be used to adjudicate the load-time integrity of the whole
-    -+system. This trust chain is started by a trusted entity that does the first
-    -+assessment. This first entity is referred to as the Root of Trust(RoT) with the
-    -+entities name being derived from the mechanism used for the assessment, i.e.
-    -+RoT for Verification (RTV) and RoT for Measurement (RTM).
-    ++assessments to establish the integrity of the whole system. The process of
-    ++creating this chain involves using a series of transitive trust assertions to
-    ++establish confidence in the load-time integrity of each component loaded.
-    ++
-    ++This process is known as transitive trust and provides the concept of building
-    ++a chain of load-time integrity assessments, commonly referred to as a trust
-    ++chain. These assessments may be used to adjudicate the load-time integrity of
-    ++the whole system. This trust chain is started by a trusted entity that does the
-    ++first assessment. This first entity is referred to as the Root of Trust (RoT)
-    ++with the entity's name being derived from the mechanism used for the assessment,
-    ++i.e. RoT for Verification (RTV) and RoT for Measurement (RTM).
-     +
-     +A trust chain is itself a mechanism, specifically a mechanism of mechanisms,
-     +and therefore it also has a Strength of Mechanism. The factors that contribute
-    @@ Documentation/security/launch-integrity/principles.rst (new)
-     +
-     +  - The strength of the chain's RoT
-     +  - The strength of each member of the trust chain
-    -+  - The length, i.e. the number of members, of the chain
-    ++  - The length (i.e. the number of members) of the chain
-     +
-    -+Therefore, the strongest trust chains should start with a strong RoT and should
-    -+consist of members being of low complexity and minimize the number of members
-    ++Therefore, the strongest trust chains should start with a strong RoT,
-    ++consist of members being of low complexity, and minimize the number of members
-     +participating. In a more colloquial sense, a trust chain is only as strong as its
-    -+weakest link, thus more links increase the probability of a weak link.
-    ++weakest link, therefore more links increase the probability of a weak link.
-     +
-     +Dynamic Launch Components
-     +=========================
-     +
-     +The TCG architecture for dynamic launch is composed of a component series
-     +used to set up and then carry out the launch. These components work together to
-    -+construct an RTM trust chain that is rooted in the dynamic launch and thus commonly
-    ++construct an RTM trust chain rooted in the dynamic launch, commonly
-     +referred to as the Dynamic Root of Trust for Measurement (DRTM) chain.
-     +
-    ++.. note::
-    ++    Intel TXT pre-dates the TCG Dynamic Launch specification. In the Intel TXT
-    ++    documentation, Dynamic Root of Trust for Measurement was abbreviated as DRTM.
-    ++    When Dynamic Launch was codified in the TCG specification, it was given
-    ++    the acronym D-RTM. There is a similar situation with Static Root of Trust for
-    ++    Measuremnt. In TCG documentation it will be given the acronym S-RTM but it is not
-    ++    uncommon to see it as SRTM. For the purposes of the launch integrity documents,
-    ++    DRTM and SRTM will be the preferred acronym.
-    ++
-     +What follows is a brief explanation of each component in execution order. A
-    -+subset of these components are what establishes the dynamic launch's trust
-    ++subset of these components is what establishes the dynamic launch's trust
-     +chain.
-     +
-     +Dynamic Configuration Environment Preamble
-    @@ Documentation/security/launch-integrity/principles.rst (new)
-     +final/target operating system, or it may be a bootloader that will load the
-     +final/target operating system.
-     +
-    -+Why DRTM
-    -+========
-    ++Why DRTM?
-    ++=========
-     +
-    -+It is a fact that DRTM increases the load-time integrity of the system by
-    -+providing a trust chain that has an immutable hardware RoT, uses a limited
-    ++A DRTM solution increases the load-time integrity of the system by
-    ++providing a trust chain that has an immutable hardware RoT and uses a limited
-     +number of small, special purpose code to establish the trust chain that starts
-     +the target operating system. As mentioned in the Trust Chain section, these are
-    -+the main three factors in driving up the strength of a trust chain. As has been
-    -+seen with the BootHole exploit, which in fact did not affect the integrity of
-    -+DRTM solutions, the sophistication of attacks targeting system launch is at an
-    ++three main factors in driving up the strength of a trust chain. As has been
-    ++seen with the BootHole exploit (which in fact did not affect the integrity of
-    ++DRTM solutions), the sophistication of attacks targeting system launch is at an
-     +all-time high. There is no reason a system should not employ every available
-     +hardware integrity measure. This is the crux of a defense-in-depth
-    -+approach to system security. In the past, the now closed SMI gap was often
-    -+pointed to as invalidating DRTM, which in fact was nothing but a straw man
-    -+argument. As has continued to be demonstrated, if/when SMM is corrupted, it can
-    ++approach to system security.
-    ++
-    ++In the past, the now closed SMI gap was often pointed to as invalidating DRTM.
-    ++As has continued to be demonstrated, if/when SMM is corrupted, it can
-     +always circumvent all load-time integrity (SRTM and DRTM) because it is a
-     +run-time integrity problem. Regardless, Intel and AMD have both deployed
-     +runtime integrity for SMI and SMM which is tied directly to DRTM such that this
-    -+perceived deficiency is now non-existent and the world is moving forward with
-    ++perceived deficiency is now non-existent. The world is moving forward with
-     +an expectation that DRTM must be present.
-     +
-     +Glossary
-    @@ Documentation/security/launch-integrity/principles.rst (new)
-      ## Documentation/security/launch-integrity/secure_launch_details.rst (new) ##
-     @@
-     +.. SPDX-License-Identifier: GPL-2.0
-    -+.. Copyright (c) 2019-2024 Daniel P. Smith <dpsmith@apertussolutions.com>
-    ++.. Copyright (c) 2019-2025 Daniel P. Smith <dpsmith@apertussolutions.com>
-     +
-     +===================================
-     +Secure Launch Config and Interfaces
-     +===================================
-     +
-     +:Author: Daniel P. Smith
-    -+:Date: August 2024
-    ++:Date: March 2025
-     +
-     +Configuration
-     +=============
-    @@ Documentation/security/launch-integrity/secure_launch_details.rst (new)
-     +
-     +Description:
-     +
-    -+During early validation, a buffer or region was found to straddle the 4GB
-    ++During early validation, a buffer or region was found to straddle the 4Gb
-     +boundary. Because of the way TXT provides DMA memory protection, this is an unsafe
-     +configuration and is flagged as an error. This is most likely a configuration
-     +issue in the pre-launch environment. It could also be the sign of an attempted
-    @@ Documentation/security/launch-integrity/secure_launch_details.rst (new)
-     +
-     +Description:
-     +
-    -+A memory region used by the MLE is above 4GB. In general this is not a problem
-    ++A memory region used by the MLE is above 4Gb. In general this is not a problem
-     +because memory > 4Gb can be protected from DMA. There are certain buffers that
-     +should never be above 4Gb, and one of these caused the violation. This is most
-     +likely a configuration issue in the pre-launch environment. It could also be
-    @@ Documentation/security/launch-integrity/secure_launch_details.rst (new)
-     +
-     +Description:
-     +
-    -+On a system with more than 4G of RAM, the high PMR [2]_ base address should be
-    -+set to 4G. This error is due to that not being the case. This PMR value is set
-    ++On a system with more than 4Gb of RAM, the high PMR [2]_ base address should be
-    ++set to 4Gb. This error is due to that not being the case. This PMR value is set
-     +by the pre-launch environment, so the issue most likely originates there. It
-     +could also be the sign of an attempted attack.
-     +
-    @@ Documentation/security/launch-integrity/secure_launch_details.rst (new)
-     +
-     +Description:
-     +
-    -+On a system with more than 4G of RAM, the high PMR [2]_ size should be set to
-    -+cover all RAM > 4G. This error is due to that not being the case. This PMR
-    ++On a system with more than 4Gb of RAM, the high PMR [2]_ size should be set to
-    ++cover all RAM > 4Gb. This error is due to that not being the case. This PMR
-     +value is set by the pre-launch environment, so the issue most likely originates
-     +there. It could also be the sign of an attempted attack.
-     +
-    @@ Documentation/security/launch-integrity/secure_launch_details.rst (new)
-      ## Documentation/security/launch-integrity/secure_launch_overview.rst (new) ##
-     @@
-     +.. SPDX-License-Identifier: GPL-2.0
-    -+.. Copyright (c) 2019-2024 Daniel P. Smith <dpsmith@apertussolutions.com>
-    ++.. Copyright (c) 2019-2025 Daniel P. Smith <dpsmith@apertussolutions.com>
-     +
-     +======================
-     +Secure Launch Overview
-     +======================
-     +
-     +:Author: Daniel P. Smith
-    -+:Date: August 2024
-    ++:Date: March 2025
-     +
-     +Overview
-     +========
-     +
-    -+Prior to the start of the TrenchBoot project, the only active Open Source
-    -+project supporting dynamic launch was Intel's tboot project to support their
-    -+implementation of dynamic launch known as Intel Trusted eXecution Technology
-    -+(TXT). The approach taken by tboot was to provide an exokernel that could
-    -+handle the launch protocol implemented by the Intel provided loader, the SINIT
-    -+Authenticated Code Module (ACM [2]_), and remained in memory to manage the SMX
-    -+CPU mode that a dynamic launch would put a system. While it is not precluded
-    -+from being used for a late launch, tboot's primary use case was to be
-    -+used as an early launch solution. As a result, the TrenchBoot project started
-    -+the development of Secure Launch kernel feature to provide a more generalized
-    -+approach. The focus of the effort is twofold: first, to make the Linux
-    -+kernel directly aware of the launch protocol used by Intel, AMD/Hygon, Arm, and
-    -+potentially OpenPOWER; second, to make the Linux kernel able to
-    -+initiate a dynamic launch. It is through this approach that the Secure Launch
-    -+kernel feature creates a basis for the Linux kernel to be used in a variety of
-    -+dynamic launch use cases.
-    ++The TrenchBoot project started the development of the Secure Launch kernel feature
-    ++to provide a more generalized approach. The focus of the effort is twofold: first,
-    ++to make the Linux kernel directly aware of the launch protocol used by platforms
-    ++such as Intel, AMD/Hygon, Arm, and potentially OpenPOWER; second, to make the
-    ++Linux kernel able to initiate a dynamic launch. It is through this approach that
-    ++the Secure Launch kernel feature creates a basis for the Linux kernel to be used
-    ++in a variety of dynamic launch use cases.
-     +
-     +.. note::
-     +    A quick note on terminology. The larger open source project itself is
-    @@ Documentation/security/launch-integrity/secure_launch_overview.rst (new)
-     +The first use case that the TrenchBoot project focused on was the ability for
-     +the Linux kernel to be started by a dynamic launch, in particular as part of an
-     +early launch sequence. In this case, the dynamic launch will be initiated by
-    -+any bootloader with associated support added to it. For example, the first
-    -+targeted bootloader in this case was GRUB2. An integral part of establishing a
-    -+measurement-based launch integrity involves measuring everything that is
-    -+intended to be executed (kernel image, initrd, etc.) and everything that will
-    -+configure that kernel to execute (command line, boot params, etc.), then
-    -+storing those measurements in a protected manner. Both the Intel and AMD
-    -+dynamic launch implementations leverage the Trusted Platform Module (TPM) to
-    -+store those measurements. The TPM itself has been designed such that a dynamic
-    -+launch unlocks a specific set of Platform Configuration Registers (PCR) for
-    -+holding measurement taken during the dynamic launch. These are referred to as
-    -+the DRTM PCRs, PCRs 17-22. Further details on this process can be found in the
-    -+documentation for the GETSEC instruction provided by Intel's TXT and the SKINIT
-    -+instruction provided by AMD's AMD-V. The documentation on these technologies
-    -+can be readily found online; see the `Resources`_ section below for references.
-    ++any bootloader with associated support added to it. The first targeted bootloader
-    ++in this case was GRUB2. An integral part of establishing a measurement-based
-    ++launch integrity involves measuring everything that is intended to be executed
-    ++(kernel image, initrd, etc.) and everything that will configure that kernel to
-    ++execute (command line, boot params, etc.), then storing those measurements in a
-    ++protected manner. Both the Intel and AMD dynamic launch implementations leverage
-    ++the Trusted Platform Module (TPM) to store those measurements. The TPM itself
-    ++has been designed such that a dynamic launch unlocks a specific set of Platform
-    ++Configuration Registers (PCR) for holding measurement taken during the dynamic
-    ++launch. These are referred to as the DRTM PCRs, PCRs 17-22. Further details on this
-    ++process can be found respectively in the documentation for the GETSEC instruction
-    ++provided by Intel's TXT and the SKINIT instruction provided by AMD's AMD-V. The
-    ++documentation on these technologies can be readily found online; see
-    ++the `Resources`_ section below for references.
-     +
-     +.. note::
-     +    Currently, only Intel TXT is supported in this first release of the Secure
-     +    Launch feature. AMD/Hygon SKINIT and Arm support will be added in a
-     +    subsequent release.
-     +
-    -+To enable the kernel to be launched by GETSEC a stub, the Secure Launch stub
-    ++To enable the kernel to be launched by GETSEC, the Secure Launch stub
-     +must be built into the setup section of the compressed kernel to handle the
-     +specific state that the dynamic launch process leaves the BSP. Also, the Secure
-     +Launch stub must measure everything that is going to be used as early as
-     +possible. This stub code and subsequent code must also deal with the specific
-    -+state that the dynamic launch leaves the APs as well.
-    ++state that the dynamic launch leaves the APs in.
-     +
-     +Design Decisions
-     +================
-    @@ Documentation/security/launch-integrity/secure_launch_overview.rst (new)
-     +   needed DRTM measurements.
-     + - After the call to sl_main(), the main kernel is decompressed and boots as
-     +   it normally would.
-    ++ - Support is introduced in the SMP boot code to properly wake the APs. This
-    ++   is required due to the unique state the dynamic launch leaves the APs in
-    ++   (i.e. they cannot be woken with the standard INIT-SIPI sequence).
-     + - Final setup for the Secure Launch kernel is done in a separate Secure
-     +   Launch module that is loaded via a late initcall. This code is responsible
-     +   for extending the measurements taken earlier into the TPM DRTM PCRs and
-    @@ Documentation/security/launch-integrity/secure_launch_overview.rst (new)
-     + - On the reboot and kexec paths, calls are made to a function to finalize the
-     +   state of the Secure Launch kernel.
-     +
-    -+The one place where Secure Launch code is mixed directly in with kernel code is
-    -+in the SMP boot code. This is due to the unique state that the dynamic launch
-    -+leaves the APs in. On Intel, this involves using a method other than the
-    -+standard INIT-SIPI sequence.
-    -+
-    -+A final note is that originally the extending of the PCRs was completed in the
-    -+Secure Launch stub when the measurements were taken. An alternative solution
-    -+had to be implemented due to the TPM maintainers objecting to the PCR
-    -+extensions being done with a minimal interface to the TPM that was an
-    -+independent implementation of the mainline kernel driver. Since the mainline
-    -+driver relies heavily on kernel interfaces not available in the compressed
-    -+kernel, it was not possible to reuse the mainline TPM driver. This resulted in
-    -+the decision to move the extension operations to the Secure Launch module in
-    -+the mainline kernel, where the TPM driver would be available.
-    ++A final note is that the original concept was to extend the DRTM PCRs in the
-    ++Secure Launch stub when the measurements were taken. This requires access to the
-    ++TPM early during boot time. Since the mainline kernel TPM driver relies heavily
-    ++on kernel interfaces not available in the compressed kernel, it was not possible
-    ++to reuse the mainline TPM driver. An alternate solution that has been implemented,
-    ++moves the extension operations to the Secure Launch module in the mainline
-    ++kernel, where the TPM driver would be available.
-     +
-     +Basic Boot Flow
-     +===============
-     +
-     +Outlined here is a summary of the boot flow for Secure Launch. A more detailed
-    -+review of Secure Launch process can be found in the Secure Launch
-    ++review of the Secure Launch process can be found in the Secure Launch
-     +Specification (a link is located in the `Resources`_ section).
-     +
-     +Pre-launch: *Phase where the environment is prepared and configured to initiate
-    @@ Documentation/security/launch-integrity/secure_launch_overview.rst (new)
-     + - Set up the TXT heap and page tables describing the MLE [1]_ per the
-     +   specification.
-     + - If non-UEFI platform, dl_stub is called.
-    -+ - If UEFI platforms, SLRT registered with UEFI and efi-stub called.
-    ++ - If UEFI platform, SLRT registered with UEFI and efi-stub called.
-     + - Upon completion, efi-stub will call EBS followed by dl_stub.
-     + - The dl_stub will prepare the CPU and the TPM for the launch.
-     + - The secure launch is then initiated with the GETSET[SENTER] instruction.
-    @@ Documentation/security/launch-integrity/secure_launch_overview.rst (new)
-     +   and setup tasks.
-     + - The SMP bring up code is modified to wake the waiting APs via the monitor
-     +   address.
-    -+ - APs vector to rmpiggy and start up normally from that point.
-    ++ - APs jump to rmpiggy and start up normally from that point.
-     + - SL platform module is registered as a late initcall module. It reads
-     +   the TPM event log and extends the measurements taken into the TPM PCRs.
-     + - SL platform module initializes the securityfs interface to allow
-    @@ Documentation/security/launch-integrity/secure_launch_overview.rst (new)
-     +PCR Usage
-     +=========
-     +
-    -+The TCG DRTM architecture there are three PCRs defined for usage, PCR.Details
-    ++In the TCG DRTM architecture there are three PCRs defined for usage: PCR.Details
-     +(PCR17), PCR.Authorities (PCR18), and PCR.DLME_Authority (PCR19). For a deeper
-    -+understanding of Detail and Authorities it is recommended to review the TCG
-    -+DRTM architecture.
-    ++understanding of Details and Authorities, review the TCG DRTM architecture
-    ++documentation.
-     +
-     +To determine PCR usage, Linux Secure Launch follows the TrenchBoot Secure
-    -+Launch Specification of using a measurement policy stored in the SLRT. The
-    -+policy details what should be measured and the PCR in which to store the
-    ++Launch Specification of using a measurement policy stored in the Secure Launch
-    ++Resource Table (SLRT), which is defined in the Secure Launch Specification.
-    ++This policy details what should be measured and the PCR in which to store the
-     +measurement. The measurement policy provides the ability to select the
-     +PCR.DLME_Detail (PCR20) PCR as the location for the DRTM components measured by
-    -+the kernel, e.g. external initrd image. This can then be combined with storing
-    ++the kernel, e.g. external initrd image. This can be combined with storing
-     +the user authority in the PCR.DLME_Authority PCR to seal/attest to different
-     +variations of platform details/authorities and user details/authorities. An
-     +example of how this can be achieved was presented in the FOSDEM - 2021 talk
-    @@ Documentation/security/launch-integrity/secure_launch_overview.rst (new)
-     +
-     +Secure Launch is written to be compliant with the Intel TXT Measured Launch
-     +Developer's Guide. The MLE Guide dictates that the system can be configured to
-    -+use both the SHA-1 and SHA-2 hashing algorithms. The choice is dictated by what
-    ++use both the SHA-1 and SHA-2 hashing algorithms. The choice is dictated by the
-     +hash algorithm banks firmware enabled at system start time.
-     +
-     +Regardless of the preference towards SHA-2, if the firmware elected to start
-    @@ Documentation/security/launch-integrity/secure_launch_overview.rst (new)
-     +the firmware setup, then TXT and Secure Launch will only use the SHA-2 banks
-     +while establishing the launch environment.
-     +
-    -+Ultimately, the security of an RTM solution is how and what measurements are
-    ++Ultimately, the security of a RTM solution relies on how and what measurements are
-     +used to assess the health of a system. If SHA-1 measurements are made but not
-    -+used, i.e. the attestation enforcement only uses SHA-2, then it has zero impact
-    ++used, i.e. the attestation enforcement only uses SHA-2, then it has no impact
-     +on the security of the system.
-     +
-     +Finally, there are older systems with TPM 1.2 chips that only support SHA-1. If
-     +the system integrator (whether that be the OEM, employer, distro maintainer,
-     +system administrator, or end user) chooses to use older hardware that only has
-    -+a TPM 1.2 chip, then they are accepting the risk it creates in their solution.
-    ++a TPM 1.2 chip, then they accept the risk it creates in their solution.
-     +
-     +Resources
-     +=========
- 2:  d3fe72680064 =  2:  46a88f15fda0 x86: Secure Launch Kconfig
- 3:  c9f6c26d2b1e !  3:  ae37bd4578d8 x86: Secure Launch Resource Table header file
-    @@ Metadata
-      ## Commit message ##
-         x86: Secure Launch Resource Table header file
-     
-    -    Introduce the Secure Launch Resource Table which forms the formal
-    -    interface between the pre and post launch code.
-    +    The Secure Launch Specification is an architectural agnostic, software neutral
-    +    API/ABI maintainted by the TrenchBoot project. It's function is to allow any
-    +    compliant boot loader to communicate the pre-launch configuration to any
-    +    compliant post-launch kernel. This API/ABI is referred to as the Secure Launch
-    +    Resource Table by the specification.
-     
-         Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-     
-    @@ include/linux/slr_table.h (new)
-     +/*
-     + * TrenchBoot Secure Launch Resource Table
-     + *
-    -+ * The Secure Launch Resource Table is TrenchBoot project defined
-    -+ * specfication to provide cross-architecture compatibility. See
-    -+ * TrenchBoot Secure Launch kernel documentation for details.
-    ++ * The Secure Launch Resource Table (SLRT) is a TrenchBoot project defined
-    ++ * specification to provide a cross-platform interface/ABI between
-    ++ * the Secure Launch components. While most of the table is platform
-    ++ * agnostic, platform or architecture specific entries can be added.
-     + *
-    -+ * Copyright (c) 2024 Apertus Solutions, LLC
-    -+ * Copyright (c) 2024, Oracle and/or its affiliates.
-    ++ * See TrenchBoot Secure Launch kernel documentation for details.
-    ++ *
-    ++ * Copyright (c) 2025 Apertus Solutions, LLC
-    ++ * Copyright (c) 2025, Oracle and/or its affiliates.
-     + */
-     +
-     +#ifndef _LINUX_SLR_TABLE_H
-     +#define _LINUX_SLR_TABLE_H
-     +
-    -+/* Put this in efi.h if it becomes a standard */
-    ++/* SLR table GUID for registering as an EFI Configuration Table (put this in efi.h if it becomes a standard) */
-     +#define SLR_TABLE_GUID				EFI_GUID(0x877a9b2a, 0x0385, 0x45d1, 0xa0, 0x34, 0x9d, 0xac, 0x9c, 0x9e, 0x56, 0x5f)
-     +
-     +/* SLR table header values */
-    @@ include/linux/slr_table.h (new)
-     +	struct slr_uefi_cfg_entry uefi_cfg_entries[];
-     +} __packed;
-     +
-    ++/*
-    ++ * The SLRT is laid out as a Tag-Length-Value (TLV) data structure
-    ++ * allowing a flexible number of entries in the table. An instance
-    ++ * of the slr_table structure is present as a header at the beginning.
-    ++ *
-    ++ * The following functions help to manipulate the SLRT structure
-    ++ * and contents.
-    ++ */
-    ++
-    ++/*
-    ++ * Return the address of the end of the SLRT past the final entry.
-    ++ */
-     +static inline void *slr_end_of_entries(struct slr_table *table)
-     +{
-     +	return (void *)table + table->size;
-     +}
-     +
-    ++/*
-    ++ * Return the next entry in the SLRT given the current entry passed
-    ++ * to the function. NULL is returned if there are no entries to return.
-    ++ */
-     +static inline void *
-     +slr_next_entry(struct slr_table *table,
-     +	       struct slr_entry_hdr *curr)
-    @@ include/linux/slr_table.h (new)
-     +	return next;
-     +}
-     +
-    ++/*
-    ++ * Return the next entry with the given tag in the SLRT starting at the
-    ++ * currenty entry. If entry is NULL, the search begins at the beginning of
-    ++ * table.
-    ++ */
-     +static inline void *
-     +slr_next_entry_by_tag(struct slr_table *table,
-     +		      struct slr_entry_hdr *entry,
-    @@ include/linux/slr_table.h (new)
-     +	return NULL;
-     +}
-     +
-    ++/*
-    ++ * Add an entry to the SLRT. Entries are placed at the end.
-    ++ */
-     +static inline int
-     +slr_add_entry(struct slr_table *table,
-     +	      struct slr_entry_hdr *entry)
-    @@ include/linux/slr_table.h (new)
-     +	return 0;
-     +}
-     +
-    ++/*
-    ++ * Initialize the SLRT for use. This prepares the meta-data in the SLRT
-    ++ * header section and the table end marker entry.
-    ++ */
-     +static inline void
-     +slr_init_table(struct slr_table *slrt, u16 architecture, u32 max_size)
-     +{
- 4:  7d8585845365 !  4:  f4b61a95d4c4 x86: Secure Launch main header file
-    @@ Commit message
-         Introduce the main Secure Launch header file used in the early SL stub
-         and the early setup code.
-     
-    +    This header file contains the following categories:
-    +     - Secure Launch implementation specific structures and definitions.
-    +     - Intel TXT architecture specific DRTM structures, definitions and functions
-    +    used by Secure Launch.
-    +     - DRTM TPM event logging definitions and helper functions.
-    +
-         Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-     
-      ## include/linux/slaunch.h (new) ##
-    @@ include/linux/slaunch.h (new)
-     +/*
-     + * Main Secure Launch header file.
-     + *
-    -+ * Copyright (c) 2024 Apertus Solutions, LLC
-    -+ * Copyright (c) 2024, Oracle and/or its affiliates.
-    ++ * Copyright (c) 2025 Apertus Solutions, LLC
-    ++ * Copyright (c) 2025, Oracle and/or its affiliates.
-     + */
-     +
-     +#ifndef _LINUX_SLAUNCH_H
-    @@ include/linux/slaunch.h (new)
-     +/*
-     + * TPM event logging functions.
-     + */
-    ++
-    ++/*
-    ++ * Find the TPM v2 event log element in the TXT heap. This element contains
-    ++ * the information about the size and location of the DRTM event log. Note
-    ++ * this is a TXT specific structure.
-    ++ *
-    ++ * See:
-    ++ *   Intel Trusted Execution Technology - Measured Launch Environment Developer's Guide - Appendix C.
-    ++ */
-     +static inline struct txt_heap_event_log_pointer2_1_element*
-     +tpm2_find_log2_1_element(struct txt_os_sinit_data *os_sinit_data)
-     +{
-    @@ include/linux/slaunch.h (new)
-     +	return NULL;
-     +}
-     +
-    ++/*
-    ++ * Log a TPM v1 formatted event to the given DRTM event log.
-    ++ */
-     +static inline int tpm_log_event(void *evtlog_base, u32 evtlog_size,
-     +				u32 event_size, void *event)
-     +{
-    @@ include/linux/slaunch.h (new)
-     +	return 0;
-     +}
-     +
-    ++/*
-    ++ * Log a TPM v2 formatted event to the given DRTM event log.
-    ++ */
-     +static inline int tpm2_log_event(struct txt_heap_event_log_pointer2_1_element *elem,
-     +				 void *evtlog_base, u32 evtlog_size,
-     +				 u32 event_size, void *event)
- 5:  1c3e03777864 !  5:  df284dc6df89 x86: Add early SHA-1 support for Secure Launch early measurements
-    @@ Commit message
-     
-         The SHA-1 code here has its origins in the code from the main kernel:
-     
-    -    commit c4d5b9f ("crypto: sha1 - implement base layer for SHA-1")
-    +    commit c4d5b9ffa31f ("crypto: sha1 - implement base layer for SHA-1")
-     
-         A modified version of this code was introduced to the lib/crypto/sha1.c to bring
-         it in line with the SHA-256 code and allow it to be pulled into the setup kernel
-    @@ arch/x86/boot/compressed/sha1.c (new)
-     @@
-     +// SPDX-License-Identifier: GPL-2.0
-     +/*
-    -+ * Copyright (c) 2024 Apertus Solutions, LLC.
-    ++ * Copyright (c) 2025 Apertus Solutions, LLC.
-     + */
-     +
-     +#include "../../../../lib/crypto/sha1.c"
- 6:  a0f34a29290d !  6:  4ecaf17a1139 x86: Add early SHA-256 support for Secure Launch early measurements
-    @@ arch/x86/boot/compressed/sha256.c (new)
-     @@
-     +// SPDX-License-Identifier: GPL-2.0
-     +/*
-    -+ * Copyright (c) 2024 Apertus Solutions, LLC
-    ++ * Copyright (c) 2025 Apertus Solutions, LLC
-     + */
-     +
-     +#include "../../../../lib/crypto/sha256.c"
- 7:  b6d784c0d28b !  7:  3f47465e56c8 x86/msr: Add variable MTRR base/mask and x2apic ID registers
-    @@ Metadata
-      ## Commit message ##
-         x86/msr: Add variable MTRR base/mask and x2apic ID registers
-     
-    -    These values are needed by Secure Launch to locate particular CPUs
-    -    during AP startup and to restore the MTRR state after a TXT launch.
-    +    Add the MSR values required by Secure Launch to locate particular CPU cores
-    +    during application processor (AP) startup, and restore the MTRR state after
-    +    an Intel TXT launch.
-     
-         Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-     
- 8:  bcad31b804ce !  8:  7778624b27e0 x86/boot: Place TXT MLE header in the kernel_info section
-    @@ Metadata
-      ## Commit message ##
-         x86/boot: Place TXT MLE header in the kernel_info section
-     
-    -    The MLE (measured launch environment) header must be locatable by the
-    -    boot loader and TXT must be setup to do a launch with this header's
-    +    The Measured Launch Environment (MLE) header must be locatable by the
-    +    boot loader and Intel TXT must be setup to do a launch with this header's
-         location. While the offset to the kernel_info structure does not need
-         to be at a fixed offset, the offsets in the header must be relative
-    -    offsets from the start of the setup kernel. The support in the linker
-    -    file achieves this.
-    +    offsets from the start of the setup kernel. Note that from the viewpoint
-    +    of the prelaunch phase and TXT, the setup kernel image as loaded into
-    +    memory is the MLE image.
-    +
-    +    The changes to the linker file achieve this by making available the
-    +    offset values which are updated in the MLE header structure. The following
-    +    are the needed offsets from the beginning of the setup kernel image:
-    +
-    +    - kernel_info_offset: Offset of the main kernel_info structure.
-    +    - mle_header_offset: Offset of the MLE header structure.
-    +    - sl_stub_entry_offset: Offset of the Secure Launch initial entry point.
-    +    - _edata_offset: Offset of the _edata label used as the end of the MLE image.
-     
-         Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-         Suggested-by: Ard Biesheuvel <ardb@kernel.org>
-    @@ arch/x86/boot/compressed/kernel_info.S: kernel_info:
-     +	 * bit 9: Supported format of TPM 2.0 event log - TCG compliant
-     +	 */
-     +SYM_DATA_START(mle_header)
-    -+	.long	0x9082ac5a  /* UUID0 */
-    -+	.long	0x74a7476f  /* UUID1 */
-    -+	.long	0xa2555c0f  /* UUID2 */
-    -+	.long	0x42b651cb  /* UUID3 */
-    -+	.long	0x00000034  /* MLE header size */
-    -+	.long	0x00020002  /* MLE version 2.2 */
-    -+	.long	roffset(sl_stub_entry_offset) /* Linear entry point of MLE (virt. address) */
-    -+	.long	0x00000000  /* First valid page of MLE */
-    -+	.long	0x00000000  /* Offset within binary of first byte of MLE */
-    -+	.long	roffset(_edata_offset) /* Offset within binary of last byte + 1 of MLE */
-    -+	.long	0x00000227  /* Bit vector of MLE-supported capabilities */
-    -+	.long	0x00000000  /* Starting linear address of command line (unused) */
-    -+	.long	0x00000000  /* Ending linear address of command line (unused) */
-    ++	.long	0x9082ac5a			/* UUID0 */
-    ++	.long	0x74a7476f			/* UUID1 */
-    ++	.long	0xa2555c0f			/* UUID2 */
-    ++	.long	0x42b651cb			/* UUID3 */
-    ++	.long	0x00000034			/* MLE header size */
-    ++	.long	0x00020002			/* MLE version 2.2 */
-    ++	.long	roffset(sl_stub_entry_offset)	/* Linear entry point of MLE (virt. address) */
-    ++	.long	0x00000000			/* First valid page of MLE */
-    ++	.long	0x00000000			/* Offset within binary of first byte of MLE */
-    ++	.long	roffset(_edata_offset)		/* Offset within binary of last byte + 1 of MLE */
-    ++	.long	0x00000227			/* Bit vector of MLE-supported capabilities */
-    ++	.long	0x00000000			/* Starting linear address of command line (unused) */
-    ++	.long	0x00000000			/* Ending linear address of command line (unused) */
-     +SYM_DATA_END(mle_header)
-     +#endif
-     
- 9:  506bb834e7bd !  9:  1b64a89e4e92 x86: Secure Launch kernel early boot stub
-    @@ Metadata
-      ## Commit message ##
-         x86: Secure Launch kernel early boot stub
-     
-    -    The Secure Launch (SL) stub provides the entry point for Intel TXT (and
-    -    later AMD SKINIT) to vector to during the late launch. The symbol
-    -    sl_stub_entry is that entry point and its offset into the kernel is
-    -    conveyed to the launching code using the MLE (Measured Launch
-    -    Environment) header in the structure named mle_header. The offset of the
-    -    MLE header is set in the kernel_info. The routine sl_stub contains the
-    -    very early late launch setup code responsible for setting up the basic
-    -    environment to allow the normal kernel startup_32 code to proceed. It is
-    -    also responsible for properly waking and handling the APs on Intel
-    -    platforms. The routine sl_main which runs after entering 64b mode is
-    -    responsible for measuring configuration and module information before
-    -    it is used like the boot params, the kernel command line, the TXT heap,
-    -    an external initramfs, etc.
-    +    The Secure Launch (SL) stub provides the entry point for Intel TXT to
-    +    jump to during the dynamic launch. The symbol sl_stub_entry is that entry
-    +    point and its offset into the kernel is conveyed to the launching code using
-    +    the Measured Launch Environment (MLE) header in the structure named mle_header.
-    +    The offset of the MLE header is set in the kernel_info.
-    +
-    +    The routine sl_stub contains the very early dynamic launch setup code
-    +    responsible for setting up the basic operating environment to allow the normal
-    +    kernel startup_32 code to proceed. It is also responsible for properly waking
-    +    and handling the APs on Intel platforms.
-    +
-    +    The routine sl_main which runs after entering 64b mode in the setup kernel. It
-    +    is responsible for measuring configuration and module information before
-    +    it is used. An example of entities measured on Intel x86 are the boot params,
-    +    the kernel command line, the TXT heap, any external initramfs, etc. In addition
-    +    this routine does some early setup and validation of the environment like
-    +    locating the TPM event log and validating the location of various buffers to
-    +    ensure they are protected and not overlapping.
-     
-         Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-     
-    @@ Documentation/arch/x86/boot.rst: Protocol:	2.00+
-     +  Bit 2 (kernel internal): SLAUNCH_FLAG
-     +
-     +	- Used internally by the setup kernel to communicate
-    -+	  Secure Launch status to kernel proper.
-    ++	  Secure Launch status to the kernel proper.
-     +
-     +	    - If 1, Secure Launch enabled.
-     +	    - If 0, Secure Launch disabled.
-    @@ Documentation/arch/x86/boot.rst: Offset/size:	0x000c/4
-     +  https://www.intel.com/content/dam/www/public/us/en/documents/guides/intel-txt-software-development-guide.pdf
-     +
-      
-    - The Image Checksum
-    - ==================
-    + The Kernel Command Line
-    + =======================
-     
-      ## arch/x86/boot/compressed/Makefile ##
-     @@ arch/x86/boot/compressed/Makefile: vmlinux-objs-$(CONFIG_EFI) += $(obj)/efi.o
-    @@ arch/x86/boot/compressed/sl_main.c (new)
-     +/*
-     + * Secure Launch early measurement and validation routines.
-     + *
-    -+ * Copyright (c) 2024, Oracle and/or its affiliates.
-    ++ * Copyright (c) 2025, Oracle and/or its affiliates.
-     + */
-     +
-     +#include <linux/init.h>
-    @@ arch/x86/boot/compressed/sl_stub.S (new)
-     +/*
-     + * Secure Launch protected mode entry point.
-     + *
-    -+ * Copyright (c) 2024, Oracle and/or its affiliates.
-    ++ * Copyright (c) 2025, Oracle and/or its affiliates.
-     + */
-     +	.code32
-     +	.text
-    @@ arch/x86/boot/compressed/sl_stub.S (new)
-     +	incl	rva(sl_txt_cpu_count)(%ebx)
-     +
-     +	/*
-    -+	 * Enable SMI with GETSEC[SMCTRL] which were disabled by SENTER.
-    ++	 * On the BSP, enable SMI with GETSEC[SMCTRL] which were disabled by SENTER.
-     +	 * NMIs were also disabled by SENTER. Since there is no IDT for the BSP,
-    -+	 * allow the mainline kernel re-enable them in the normal course of
-    ++	 * allow the mainline kernel to re-enable them in the normal course of
-     +	 * booting.
-     +	 */
-     +	GETSEC	$(SMX_X86_GETSEC_SMCTRL)
-10:  adf97523eef7 ! 10:  76521086be4d x86: Secure Launch kernel late boot stub
-    @@ Metadata
-      ## Commit message ##
-         x86: Secure Launch kernel late boot stub
-     
-    -    The routine slaunch_setup is called out of the x86 specific setup_arch()
-    +    The routine slaunch_setup() is called out of the x86 specific setup_arch()
-         routine during early kernel boot. After determining what platform is
-         present, various operations specific to that platform occur. This
-         includes finalizing setting for the platform late launch and verifying
-    @@ Commit message
-         See the Intel Trusted Execution Technology - Measured Launch Environment
-         Developer's Guide for more details.
-     
-    -    For TXT, this code also reserves the original compressed kernel setup
-    -    area where the APs were left looping so that this memory cannot be used.
-    +    In addition this routine reserves key memory regions used by Secure Launch
-    +    (e.g. the TXT heap, AP startup block etc) as well as fetching values needed
-    +    later from the TXT heap and SLRT.
-     
-         Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-     
-    @@ arch/x86/kernel/slaunch.c (new)
-     +/*
-     + * Secure Launch late validation/setup and finalization support.
-     + *
-    -+ * Copyright (c) 2024, Oracle and/or its affiliates.
-    ++ * Copyright (c) 2025, Oracle and/or its affiliates.
-     + */
-     +
-     +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-11:  00625a3db74f = 11:  ddcd40c272cf x86: Secure Launch SMP bringup support
-12:  f3b926ea6881 = 12:  dd0cbb3a2beb kexec: Secure Launch kexec SEXIT support
-13:  309f73b37d82 = 13:  132c9b109460 x86/reboot: Secure Launch SEXIT support on reboot paths
-14:  59dd2c48d085 ! 14:  1597c2f5a685 tpm, tpm_tis: Close all localities
-    @@ drivers/char/tpm/tpm_tis_core.c: int tpm_tis_core_init(struct device *dev, struc
-      	}
-      
-     +	/*
-    -+	 * There are environments, for example, those that comply with the TCG D-RTM
-    -+	 * specification that requires the TPM to be left in Locality 2.
-    ++	 * In order to comply with the TCG D-RTM specification, relinquish all
-    ++	 * the localities.
-     +	 */
-     +	for (i = 0; i <= TPM_MAX_LOCALITY; i++) {
-     +		if (check_locality(chip, i))
-15:  fd1eaa6970ce ! 15:  8b293cda5c6a tpm, tpm_tis: Address positive localities in tpm_tis_request_locality()
-    @@ drivers/char/tpm/tpm_tis_core.c: static int tpm_tis_request_locality(struct tpm_
-      	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
-      	int ret = 0;
-      
-    -+	if (l < 0 || l > TPM_MAX_LOCALITY)
-    ++	if (l < 0 || l > TPM_MAX_LOCALITY) {
-    ++		dev_warn(&chip->dev, "%s: failed to request unknown locality: %d\n",
-    ++			 __func__, l);
-     +		return -EINVAL;
-    ++	}
-     +
-      	mutex_lock(&priv->locality_count_mutex);
-      	if (priv->locality_count == 0)
-16:  ed163188e807 = 16:  3412ebf14614 tpm, tpm_tis: Allow locality to be set to a different value
-17:  563c8f0ceac5 = 17:  84592ef2de33 tpm, sysfs: Show locality used by kernel
-18:  341cb25e4cd0 ! 18:  942d40ea22f5 x86: Secure Launch late initcall platform module
-    @@ arch/x86/kernel/slmodule.c (new)
-     +/*
-     + * Secure Launch late validation/setup, securityfs exposure and finalization.
-     + *
-    -+ * Copyright (c) 2024 Apertus Solutions, LLC
-    -+ * Copyright (c) 2024 Assured Information Security, Inc.
-    -+ * Copyright (c) 2024, Oracle and/or its affiliates.
-    ++ * Copyright (c) 2025 Apertus Solutions, LLC
-    ++ * Copyright (c) 2025 Assured Information Security, Inc.
-    ++ * Copyright (c) 2025, Oracle and/or its affiliates.
-     + */
-     +
-     +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-19:  78ad72b83303 = 19:  fe557361a387 x86/efi: EFI stub DRTM launch support for Secure Launch
-
+diff --git a/include/linux/slaunch.h b/include/linux/slaunch.h
+new file mode 100644
+index 000000000000..25ac3c420a28
+--- /dev/null
++++ b/include/linux/slaunch.h
+@@ -0,0 +1,562 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Main Secure Launch header file.
++ *
++ * Copyright (c) 2025 Apertus Solutions, LLC
++ * Copyright (c) 2025, Oracle and/or its affiliates.
++ */
++
++#ifndef _LINUX_SLAUNCH_H
++#define _LINUX_SLAUNCH_H
++
++/*
++ * Secure Launch Defined State Flags
++ */
++#define SL_FLAG_ACTIVE		0x00000001
++#define SL_FLAG_ARCH_TXT	0x00000002
++
++/*
++ * Secure Launch CPU Type
++ */
++#define SL_CPU_INTEL	1
++
++#define __SL32_CS	0x0008
++#define __SL32_DS	0x0010
++
++/*
++ * Intel Safer Mode Extensions (SMX)
++ *
++ * Intel SMX provides a programming interface to establish a Measured Launched
++ * Environment (MLE). The measurement and protection mechanisms supported by the
++ * capabilities of an Intel Trusted Execution Technology (TXT) platform. SMX is
++ * the processor's programming interface in an Intel TXT platform.
++ *
++ * See:
++ *   Intel SDM Volume 2 - 6.1 "Safer Mode Extensions Reference"
++ *   Intel Trusted Execution Technology - Measured Launch Environment Developer's Guide
++ */
++
++/*
++ * SMX GETSEC Leaf Functions
++ */
++#define SMX_X86_GETSEC_SEXIT	5
++#define SMX_X86_GETSEC_SMCTRL	7
++#define SMX_X86_GETSEC_WAKEUP	8
++
++/*
++ * Intel Trusted Execution Technology MMIO Registers Banks
++ */
++#define TXT_PUB_CONFIG_REGS_BASE	0xfed30000
++#define TXT_PRIV_CONFIG_REGS_BASE	0xfed20000
++#define TXT_NR_CONFIG_PAGES     ((TXT_PUB_CONFIG_REGS_BASE - \
++				  TXT_PRIV_CONFIG_REGS_BASE) >> PAGE_SHIFT)
++
++/*
++ * Intel Trusted Execution Technology (TXT) Registers
++ */
++#define TXT_CR_STS			0x0000
++#define TXT_CR_ESTS			0x0008
++#define TXT_CR_ERRORCODE		0x0030
++#define TXT_CR_CMD_RESET		0x0038
++#define TXT_CR_CMD_CLOSE_PRIVATE	0x0048
++#define TXT_CR_DIDVID			0x0110
++#define TXT_CR_VER_EMIF			0x0200
++#define TXT_CR_CMD_UNLOCK_MEM_CONFIG	0x0218
++#define TXT_CR_SINIT_BASE		0x0270
++#define TXT_CR_SINIT_SIZE		0x0278
++#define TXT_CR_MLE_JOIN			0x0290
++#define TXT_CR_HEAP_BASE		0x0300
++#define TXT_CR_HEAP_SIZE		0x0308
++#define TXT_CR_SCRATCHPAD		0x0378
++#define TXT_CR_CMD_OPEN_LOCALITY1	0x0380
++#define TXT_CR_CMD_CLOSE_LOCALITY1	0x0388
++#define TXT_CR_CMD_OPEN_LOCALITY2	0x0390
++#define TXT_CR_CMD_CLOSE_LOCALITY2	0x0398
++#define TXT_CR_CMD_SECRETS		0x08e0
++#define TXT_CR_CMD_NO_SECRETS		0x08e8
++#define TXT_CR_E2STS			0x08f0
++
++/* TXT default register value */
++#define TXT_REGVALUE_ONE		0x1ULL
++
++/* TXTCR_STS status bits */
++#define TXT_SENTER_DONE_STS		BIT(0)
++#define TXT_SEXIT_DONE_STS		BIT(1)
++
++/*
++ * SINIT/MLE Capabilities Field Bit Definitions
++ */
++#define TXT_SINIT_MLE_CAP_WAKE_GETSEC	0
++#define TXT_SINIT_MLE_CAP_WAKE_MONITOR	1
++
++/*
++ * OS/MLE Secure Launch Specific Definitions
++ */
++#define TXT_OS_MLE_STRUCT_VERSION	1
++#define TXT_OS_MLE_MAX_VARIABLE_MTRRS	32
++
++/*
++ * TXT Heap Table Enumeration
++ */
++#define TXT_BIOS_DATA_TABLE		1
++#define TXT_OS_MLE_DATA_TABLE		2
++#define TXT_OS_SINIT_DATA_TABLE		3
++#define TXT_SINIT_MLE_DATA_TABLE	4
++#define TXT_SINIT_TABLE_MAX		TXT_SINIT_MLE_DATA_TABLE
++
++/*
++ * Secure Launch Defined Error Codes used in MLE-initiated TXT resets.
++ *
++ * TXT Specification
++ * Appendix I ACM Error Codes
++ */
++#define SL_ERROR_GENERIC		0xc0008001
++#define SL_ERROR_TPM_INIT		0xc0008002
++#define SL_ERROR_TPM_INVALID_LOG20	0xc0008003
++#define SL_ERROR_TPM_LOGGING_FAILED	0xc0008004
++#define SL_ERROR_REGION_STRADDLE_4GB	0xc0008005
++#define SL_ERROR_TPM_EXTEND		0xc0008006
++#define SL_ERROR_MTRR_INV_VCNT		0xc0008007
++#define SL_ERROR_MTRR_INV_DEF_TYPE	0xc0008008
++#define SL_ERROR_MTRR_INV_BASE		0xc0008009
++#define SL_ERROR_MTRR_INV_MASK		0xc000800a
++#define SL_ERROR_MSR_INV_MISC_EN	0xc000800b
++#define SL_ERROR_INV_AP_INTERRUPT	0xc000800c
++#define SL_ERROR_INTEGER_OVERFLOW	0xc000800d
++#define SL_ERROR_HEAP_WALK		0xc000800e
++#define SL_ERROR_HEAP_MAP		0xc000800f
++#define SL_ERROR_REGION_ABOVE_4GB	0xc0008010
++#define SL_ERROR_HEAP_INVALID_DMAR	0xc0008011
++#define SL_ERROR_HEAP_DMAR_SIZE		0xc0008012
++#define SL_ERROR_HEAP_DMAR_MAP		0xc0008013
++#define SL_ERROR_HI_PMR_BASE		0xc0008014
++#define SL_ERROR_HI_PMR_SIZE		0xc0008015
++#define SL_ERROR_LO_PMR_BASE		0xc0008016
++#define SL_ERROR_LO_PMR_MLE		0xc0008017
++#define SL_ERROR_INITRD_TOO_BIG		0xc0008018
++#define SL_ERROR_HEAP_ZERO_OFFSET	0xc0008019
++#define SL_ERROR_WAKE_BLOCK_TOO_SMALL	0xc000801a
++#define SL_ERROR_MLE_BUFFER_OVERLAP	0xc000801b
++#define SL_ERROR_BUFFER_BEYOND_PMR	0xc000801c
++#define SL_ERROR_OS_SINIT_BAD_VERSION	0xc000801d
++#define SL_ERROR_EVENTLOG_MAP		0xc000801e
++#define SL_ERROR_TPM_INVALID_ALGS	0xc000801f
++#define SL_ERROR_TPM_EVENT_COUNT	0xc0008020
++#define SL_ERROR_TPM_INVALID_EVENT	0xc0008021
++#define SL_ERROR_INVALID_SLRT		0xc0008022
++#define SL_ERROR_SLRT_MISSING_ENTRY	0xc0008023
++#define SL_ERROR_SLRT_MAP		0xc0008024
++
++/*
++ * Secure Launch Defined Limits
++ */
++#define TXT_MAX_CPUS		512
++#define TXT_BOOT_STACK_SIZE	128
++
++/*
++ * Secure Launch event log entry type. The TXT specification defines the
++ * base event value as 0x400 for DRTM values.
++ */
++#define TXT_EVTYPE_BASE			0x400
++#define TXT_EVTYPE_SLAUNCH		(TXT_EVTYPE_BASE + 0x102)
++#define TXT_EVTYPE_SLAUNCH_START	(TXT_EVTYPE_BASE + 0x103)
++#define TXT_EVTYPE_SLAUNCH_END		(TXT_EVTYPE_BASE + 0x104)
++
++/*
++ * MLE scratch area offsets
++ */
++#define SL_SCRATCH_AP_EBX		0
++#define SL_SCRATCH_AP_JMP_OFFSET	4
++#define SL_SCRATCH_AP_STACKS_OFFSET	8
++
++#ifndef __ASSEMBLY__
++
++#include <linux/io.h>
++#include <linux/tpm.h>
++#include <linux/tpm_eventlog.h>
++
++/*
++ * Secure Launch AP stack and monitor block
++ */
++struct sl_ap_stack_and_monitor {
++	u32 monitor;
++	u32 cache_pad[15];
++	u32 stack_pad[15];
++	u32 apicid;
++} __packed;
++
++/*
++ * Secure Launch AP wakeup information fetched in SMP boot code.
++ */
++struct sl_ap_wake_info {
++	u32 ap_wake_block;
++	u32 ap_wake_block_size;
++	u32 ap_jmp_offset;
++	u32 ap_stacks_offset;
++};
++
++/*
++ * TXT heap extended data elements.
++ */
++struct txt_heap_ext_data_element {
++	u32 type;
++	u32 size;
++	/* Data */
++} __packed;
++
++#define TXT_HEAP_EXTDATA_TYPE_END			0
++
++struct txt_heap_end_element {
++	u32 type;
++	u32 size;
++} __packed;
++
++#define TXT_HEAP_EXTDATA_TYPE_TPM_EVENT_LOG_PTR		5
++
++struct txt_heap_event_log_element {
++	u64 event_log_phys_addr;
++} __packed;
++
++#define TXT_HEAP_EXTDATA_TYPE_EVENT_LOG_POINTER2_1	8
++
++struct txt_heap_event_log_pointer2_1_element {
++	u64 phys_addr;
++	u32 allocated_event_container_size;
++	u32 first_record_offset;
++	u32 next_record_offset;
++} __packed;
++
++/*
++ * Secure Launch defined OS/MLE TXT Heap table
++ */
++struct txt_os_mle_data {
++	u32 version;
++	u32 reserved;
++	u64 slrt;
++	u64 txt_info;
++	u32 ap_wake_block;
++	u32 ap_wake_block_size;
++	u8 mle_scratch[64];
++} __packed;
++
++/*
++ * TXT specification defined BIOS data TXT Heap table
++ */
++struct txt_bios_data {
++	u32 version; /* Currently 5 for TPM 1.2 and 6 for TPM 2.0 */
++	u32 bios_sinit_size;
++	u64 reserved1;
++	u64 reserved2;
++	u32 num_logical_procs;
++	/* Versions >= 5 with updates in version 6 */
++	u32 sinit_flags;
++	u32 mle_flags;
++	/* Versions >= 4 */
++	/* Ext Data Elements */
++} __packed;
++
++/*
++ * TXT specification defined OS/SINIT TXT Heap table
++ */
++struct txt_os_sinit_data {
++	u32 version; /* Currently 6 for TPM 1.2 and 7 for TPM 2.0 */
++	u32 flags;
++	u64 mle_ptab;
++	u64 mle_size;
++	u64 mle_hdr_base;
++	u64 vtd_pmr_lo_base;
++	u64 vtd_pmr_lo_size;
++	u64 vtd_pmr_hi_base;
++	u64 vtd_pmr_hi_size;
++	u64 lcp_po_base;
++	u64 lcp_po_size;
++	u32 capabilities;
++	/* Version = 5 */
++	u64 efi_rsdt_ptr;
++	/* Versions >= 6 */
++	/* Ext Data Elements */
++} __packed;
++
++/*
++ * TXT specification defined SINIT/MLE TXT Heap table
++ */
++struct txt_sinit_mle_data {
++	u32 version;             /* Current values are 6 through 9 */
++	/* Versions <= 8 */
++	u8 bios_acm_id[20];
++	u32 edx_senter_flags;
++	u64 mseg_valid;
++	u8 sinit_hash[20];
++	u8 mle_hash[20];
++	u8 stm_hash[20];
++	u8 lcp_policy_hash[20];
++	u32 lcp_policy_control;
++	/* Versions >= 7 */
++	u32 rlp_wakeup_addr;
++	u32 reserved;
++	u32 num_of_sinit_mdrs;
++	u32 sinit_mdrs_table_offset;
++	u32 sinit_vtd_dmar_table_size;
++	u32 sinit_vtd_dmar_table_offset;
++	/* Versions >= 8 */
++	u32 processor_scrtm_status;
++	/* Versions >= 9 */
++	/* Ext Data Elements */
++} __packed;
++
++/*
++ * TXT data reporting structure for memory types
++ */
++struct txt_sinit_memory_descriptor_record {
++	u64 address;
++	u64 length;
++	u8 type;
++	u8 reserved[7];
++} __packed;
++
++/*
++ * TXT data structure used by a responsive local processor (RLP) to start
++ * execution in response to a GETSEC[WAKEUP].
++ */
++struct smx_rlp_mle_join {
++	u32 rlp_gdt_limit;
++	u32 rlp_gdt_base;
++	u32 rlp_seg_sel;     /* cs (ds, es, ss are seg_sel+8) */
++	u32 rlp_entry_point; /* phys addr */
++} __packed;
++
++/*
++ * TPM event log structures defined in both the TXT specification and
++ * the TCG documentation.
++ */
++#define TPM_EVTLOG_SIGNATURE "TXT Event Container"
++
++struct tpm_event_log_header {
++	char signature[20];
++	char reserved[12];
++	u8 container_ver_major;
++	u8 container_ver_minor;
++	u8 pcr_event_ver_major;
++	u8 pcr_event_ver_minor;
++	u32 container_size;
++	u32 pcr_events_offset;
++	u32 next_event_offset;
++	/* PCREvents[] */
++} __packed;
++
++/*
++ * Functions to extract data from the Intel TXT Heap Memory. The layout
++ * of the heap is as follows:
++ *  +----------------------------+
++ *  | Size Bios Data table (u64) |
++ *  +----------------------------+
++ *  | Bios Data table            |
++ *  +----------------------------+
++ *  | Size OS MLE table (u64)    |
++ *  +----------------------------+
++ *  | OS MLE table               |
++ *  +--------------------------- +
++ *  | Size OS SINIT table (u64)  |
++ *  +----------------------------+
++ *  | OS SINIT table             |
++ *  +----------------------------+
++ *  | Size SINIT MLE table (u64) |
++ *  +----------------------------+
++ *  | SINIT MLE table            |
++ *  +----------------------------+
++ *
++ *  NOTE: the table size fields include the 8 byte size field itself.
++ */
++static inline u64 txt_bios_data_size(void *heap)
++{
++	return *((u64 *)heap);
++}
++
++static inline void *txt_bios_data_start(void *heap)
++{
++	return heap + sizeof(u64);
++}
++
++static inline u64 txt_os_mle_data_size(void *heap)
++{
++	return *((u64 *)(heap + txt_bios_data_size(heap)));
++}
++
++static inline void *txt_os_mle_data_start(void *heap)
++{
++	return heap + txt_bios_data_size(heap) + sizeof(u64);
++}
++
++static inline u64 txt_os_sinit_data_size(void *heap)
++{
++	return *((u64 *)(heap + txt_bios_data_size(heap) +
++			txt_os_mle_data_size(heap)));
++}
++
++static inline void *txt_os_sinit_data_start(void *heap)
++{
++	return heap + txt_bios_data_size(heap) +
++		txt_os_mle_data_size(heap) + sizeof(u64);
++}
++
++static inline u64 txt_sinit_mle_data_size(void *heap)
++{
++	return *((u64 *)(heap + txt_bios_data_size(heap) +
++			txt_os_mle_data_size(heap) +
++			txt_os_sinit_data_size(heap)));
++}
++
++static inline void *txt_sinit_mle_data_start(void *heap)
++{
++	return heap + txt_bios_data_size(heap) +
++		txt_os_mle_data_size(heap) +
++		txt_os_sinit_data_size(heap) + sizeof(u64);
++}
++
++#if IS_ENABLED(CONFIG_SECURE_LAUNCH)
++
++/*
++ * TPM event logging functions.
++ */
++
++/*
++ * Find the TPM v2 event log element in the TXT heap. This element contains
++ * the information about the size and location of the DRTM event log. Note
++ * this is a TXT specific structure.
++ *
++ * See:
++ *   Intel Trusted Execution Technology - Measured Launch Environment Developer's Guide - Appendix C.
++ */
++static inline struct txt_heap_event_log_pointer2_1_element*
++tpm2_find_log2_1_element(struct txt_os_sinit_data *os_sinit_data)
++{
++	struct txt_heap_ext_data_element *ext_elem;
++
++	/* The extended element array as at the end of this table */
++	ext_elem = (struct txt_heap_ext_data_element *)
++		((u8 *)os_sinit_data + sizeof(struct txt_os_sinit_data));
++
++	while (ext_elem->type != TXT_HEAP_EXTDATA_TYPE_END) {
++		if (ext_elem->type ==
++		    TXT_HEAP_EXTDATA_TYPE_EVENT_LOG_POINTER2_1) {
++			return (struct txt_heap_event_log_pointer2_1_element *)
++				((u8 *)ext_elem +
++					sizeof(struct txt_heap_ext_data_element));
++		}
++		ext_elem =
++			(struct txt_heap_ext_data_element *)
++			((u8 *)ext_elem + ext_elem->size);
++	}
++
++	return NULL;
++}
++
++/*
++ * Log a TPM v1 formatted event to the given DRTM event log.
++ */
++static inline int tpm_log_event(void *evtlog_base, u32 evtlog_size,
++				u32 event_size, void *event)
++{
++	struct tpm_event_log_header *evtlog =
++		(struct tpm_event_log_header *)evtlog_base;
++
++	if (memcmp(evtlog->signature, TPM_EVTLOG_SIGNATURE,
++		   sizeof(TPM_EVTLOG_SIGNATURE)))
++		return -EINVAL;
++
++	if (evtlog->container_size > evtlog_size)
++		return -EINVAL;
++
++	if (evtlog->next_event_offset + event_size > evtlog->container_size)
++		return -E2BIG;
++
++	memcpy(evtlog_base + evtlog->next_event_offset, event, event_size);
++	evtlog->next_event_offset += event_size;
++
++	return 0;
++}
++
++/*
++ * Log a TPM v2 formatted event to the given DRTM event log.
++ */
++static inline int tpm2_log_event(struct txt_heap_event_log_pointer2_1_element *elem,
++				 void *evtlog_base, u32 evtlog_size,
++				 u32 event_size, void *event)
++{
++	struct tcg_pcr_event *header =
++		(struct tcg_pcr_event *)evtlog_base;
++
++	/* Has to be at least big enough for the signature */
++	if (header->event_size < sizeof(TCG_SPECID_SIG))
++		return -EINVAL;
++
++	if (memcmp((u8 *)header + sizeof(struct tcg_pcr_event),
++		   TCG_SPECID_SIG, sizeof(TCG_SPECID_SIG)))
++		return -EINVAL;
++
++	if (elem->allocated_event_container_size > evtlog_size)
++		return -EINVAL;
++
++	if (elem->next_record_offset + event_size >
++	    elem->allocated_event_container_size)
++		return -E2BIG;
++
++	memcpy(evtlog_base + elem->next_record_offset, event, event_size);
++	elem->next_record_offset += event_size;
++
++	return 0;
++}
++
++/*
++ * External functions avalailable in mainline kernel.
++ */
++void slaunch_setup_txt(void);
++void slaunch_fixup_jump_vector(void);
++u32 slaunch_get_flags(void);
++struct sl_ap_wake_info *slaunch_get_ap_wake_info(void);
++struct acpi_table_header *slaunch_get_dmar_table(struct acpi_table_header *dmar);
++void __noreturn slaunch_txt_reset(void __iomem *txt,
++					 const char *msg, u64 error);
++void slaunch_finalize(int do_sexit);
++
++static inline bool slaunch_is_txt_launch(void)
++{
++	u32 mask =  SL_FLAG_ACTIVE | SL_FLAG_ARCH_TXT;
++
++	return (slaunch_get_flags() & mask) == mask;
++}
++
++#else
++
++static inline void slaunch_setup_txt(void)
++{
++}
++
++static inline void slaunch_fixup_jump_vector(void)
++{
++}
++
++static inline u32 slaunch_get_flags(void)
++{
++	return 0;
++}
++
++static inline struct acpi_table_header *slaunch_get_dmar_table(struct acpi_table_header *dmar)
++{
++	return dmar;
++}
++
++static inline void slaunch_finalize(int do_sexit)
++{
++}
++
++static inline bool slaunch_is_txt_launch(void)
++{
++	return false;
++}
++
++#endif /* !IS_ENABLED(CONFIG_SECURE_LAUNCH) */
++
++#endif /* !__ASSEMBLY */
++
++#endif /* _LINUX_SLAUNCH_H */
 -- 
 2.39.3
 
