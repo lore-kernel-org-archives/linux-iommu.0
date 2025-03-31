@@ -1,150 +1,119 @@
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A1A22153E1
-	for <iommu@lists.linux.dev>; Mon, 31 Mar 2025 19:10:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5AD21CAA90
+	for <iommu@lists.linux.dev>; Mon, 31 Mar 2025 20:22:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743448253; cv=none; b=i5Fwghy2wIigDLO7puH5xWk6z5mIaEPC+YIQlPQoWRU6UVvEvzYIe+FqYZdHkECQcUEPlel9uBgf8S7rM0PwoDWW6LiSKIrHW/K7yRDsQOWiP2I8F3Nhyypgkh5UuIMaNQlnZtTASR8589amjrsqSVOFXiHMZuKHZMvxDyvhzC0=
+	t=1743452533; cv=none; b=hneU4fKpRViUx9hI33Yo+LaczqTUzQzPRoui9L/xe+/G+LKr47DRHt6Z5h3RHzGp72y9EQr1GiuPCX+Nvn/PAeERcce4Lz4gQAZLIwg0OM9Y6Gg1SrXlGr5B7za7HSF+siGao8D4nYcke4XZIyuc33tgAMAlyXKCzeu/3iqS0NU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743448253; c=relaxed/simple;
-	bh=YZzEwSKb0kqBKb0A2H4+zAX/AS8Wvht4a2tMV6ys5+Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=heXaDGBoLRaapheoUvyDfdUtLilL6CmqXT3tLxiViY3XFI08l8YP6cauIQXp3oPpUziS0rwVpGKDLdEz//Zv6sniT5rFThr5qwoBS3wKEkl1RuYYMTs79QurGBL33FO1ZWflgHmiYXdM2byy2o3g3WzTSz4NG7YWX3VwTkVcIwE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=mWBLN5Ry; arc=none smtp.client-ip=209.85.219.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1743452533; c=relaxed/simple;
+	bh=plzVs98fA256QsqGGJNd59GaLDLiouTzzaLTM9twSlU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mX0okAldMS+YEyHpA6IppfXYVL/2y8pH2kwRsz2A9JGDpDGlA8hVu9eGg2sWKayRZ+FzI085F3g+e3E5Yrv43WWNz/zMEOE1C76KPDg5sr454fmTSO2nVpoAMYTfEtko8G2tJ2/tBk07NoJHwWbTTbw/9Kvm4lZbVc+ER0VSJUA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=sTC81XOF; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="mWBLN5Ry"
-Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-6e900a7ce55so70091356d6.3
-        for <iommu@lists.linux.dev>; Mon, 31 Mar 2025 12:10:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1743448251; x=1744053051; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Dt32gY7PII308zLmCJyd2JbPBk7pRfyqNOcGW9IblNM=;
-        b=mWBLN5Ry+ZLRveB2Mv2PbRizfgqQY5C7h6nzGMqgL7b4pxOK+yhSjzD7BVNW//+ttq
-         gHAgvc0SRpftJFVoAJGB7VqqAMva68nvkAjCszOaTdkdze8gbPPpK65Fcat2v/aJx6bc
-         /llk7X1BZ8Kc7qB8n1MykreW1uRUs7JnXE8jr/OIuPeaE+XDq0UpE7knB8zhaMQEOjur
-         niRf5HGBjas5tC9DIi/rnlXt08CZIrvwdNQz662L0MurjyddxQ4QrysOdF7OUscuS35/
-         SqRTE7A8kyYevxe5V5hpBjvd5hWV5JQbLHMN3vMpp4w8iD40iwlNbmKyfXBfAe8+2eRI
-         wKkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743448251; x=1744053051;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Dt32gY7PII308zLmCJyd2JbPBk7pRfyqNOcGW9IblNM=;
-        b=JwWkwT/4gzRiTkXmw6epn2IBrhS0UQFaIfNa3K8BxacCNc2mydEp0wpSdHN77/EUry
-         PULW+f/Bt6its93meyof64w3q/YYU/86Fe4SK/N+imoTegeCCLLbw6hIfpV3Z2OSR9KK
-         0vJKSeWTfHaoc4lWI8QfyF9CetbySDx04XCsk5EFIYoh62jh0ovbYlI554vCQIq4hCsE
-         i338beXcjSMUh8BZDJiudimoePa1u6Wm2bq1JmDfeLfZDNhYeEhkKJbjkunjQtENivxB
-         JEveDOh2K3YzBsV+RfPT4LewzkSTI1TyFAEfy8IpUGVkZriDh1r11KRqDQCGv2Siy2sv
-         22FA==
-X-Forwarded-Encrypted: i=1; AJvYcCVHAFNUcAAfum4i888UtE6qM6bL+jamQ8KV6+ZtIqwD3+/PLtpSv+WMqNxZmWj5HddTBUkbVg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz8lHLgSn/52E0MDEbYEjDREagIx3jOj6FuOd+nAIA4rywhF4/A
-	Cu109aPFhcreV4qfzy8tfjVOvhp9vdoaxyvFq4iWYODq4QTm44b7fdQgAZpcq2k=
-X-Gm-Gg: ASbGncvjkXnlaPtpp3mSVSIjaun2OHWvIAtB/ZVeeofyPbD3FOMUy50aSUoSSAFrHZg
-	SyWs1l4vOYl59gBP/cNH3FabPtMavQeHOfR4XRuzvMwEaYQB51XXlKU3qC0Vy1yAAN41IZZcp8S
-	dFG6k0/jZTxrH1uoJRmpke2yDYmRaGyIr6kM+EfT9U9y/uT5ikei1Ar9ON8gL2FhOtwP2pVaPS9
-	O5IcGZ4k2l2PC7gBV2Fqx1Cn7tOTBZyWIdEPZlzU1pBMeZxRGO1uUte4JG5g9431mDVuh8AH+FI
-	uQkf4AJ8YYTdoL9xtolGM8WgdLPPGyZj6vygwOpF/m9HaAP7pP6J7Zdy8AItkKFlb4ORmsC2Mc6
-	pL85wSjOd4BzJmfTMnNF2rLM=
-X-Google-Smtp-Source: AGHT+IEZHkY9cceG9Xv7rEu7PB72dn7pTp6BwVJLHoJ1MHilW0TdQewa+AGCIOjjtFFGEUJX/PJSGA==
-X-Received: by 2002:a05:6214:19cd:b0:6df:99f7:a616 with SMTP id 6a1803df08f44-6eed5f4e587mr150303596d6.2.1743448250916;
-        Mon, 31 Mar 2025 12:10:50 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6eec9797136sm49986056d6.103.2025.03.31.12.10.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Mar 2025 12:10:50 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tzKX3-00000001EjT-33eb;
-	Mon, 31 Mar 2025 16:10:49 -0300
-Date: Mon, 31 Mar 2025 16:10:49 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v7 00/17] Provide a new two step DMA mapping API
-Message-ID: <20250331191049.GB186258@ziepe.ca>
-References: <20250220124827.GR53094@unreal>
- <CGME20250228195423eucas1p221736d964e9aeb1b055d3ee93a4d2648@eucas1p2.samsung.com>
- <1166a5f5-23cc-4cce-ba40-5e10ad2606de@arm.com>
- <d408b1c7-eabf-4a1e-861c-b2ddf8bf9f0e@samsung.com>
- <20250312193249.GI1322339@unreal>
- <adb63b87-d8f2-4ae6-90c4-125bde41dc29@samsung.com>
- <20250319175840.GG10600@ziepe.ca>
- <1034b694-2b25-4649-a004-19e601061b90@samsung.com>
- <20250322004130.GS126678@ziepe.ca>
- <c916a21e-2d95-476d-9895-4d91873fc5d5@samsung.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="sTC81XOF"
+Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52VDXTR2020195;
+	Mon, 31 Mar 2025 20:22:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=pp1; bh=PXthgOzdfVDDzrQfquLGmUN3HkV/FmIKtNPzXw3U2
+	/U=; b=sTC81XOFAtmklwtXzfMk1zs1LtOk7CvCWezFMFhpwfFd2IlhwKpKBcZpf
+	Ok0RaXL0KGzrlxleNPSwVPA0Vcp3rliPgsLq+imHYSCG9N+jqoHzAUcsEfhHHaI8
+	pFYtIf0DnDELJFU9KZrse9g0swLhCAFipbCnHC41QjVKOZVq11tQumTTOrnhOyBv
+	wMNmIVmUE/irFM3O4Qi4ftF61k7M2g/C0wmBb4EqlRbr++Z9B5pLuVQA3E5WMmTA
+	pwbL8J73oHP2uiXocYiam2PG5UWshJQIJXpiupdTKI1EHKqDMmq2VCHsYOULKbX6
+	jvvtX2e1Bzhi9HhQW7d/XT6phzjlA==
+Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 45qke9m4vf-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 31 Mar 2025 20:22:04 +0000 (GMT)
+Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma21.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 52VI1si7010313;
+	Mon, 31 Mar 2025 20:22:03 GMT
+Received: from smtprelay07.dal12v.mail.ibm.com ([172.16.1.9])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 45pv6nqd27-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 31 Mar 2025 20:22:03 +0000
+Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
+	by smtprelay07.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 52VKM1Xf27525714
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 31 Mar 2025 20:22:02 GMT
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A0BF558053;
+	Mon, 31 Mar 2025 20:22:01 +0000 (GMT)
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0EFD158043;
+	Mon, 31 Mar 2025 20:22:00 +0000 (GMT)
+Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.61.39.63])
+	by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 31 Mar 2025 20:21:59 +0000 (GMT)
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
+Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, borntraeger@linux.ibm.com, clg@redhat.com,
+        iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH v4 0/5] iommu/s390: support additional table regions
+Date: Mon, 31 Mar 2025 16:21:54 -0400
+Message-ID: <20250331202159.85956-1-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c916a21e-2d95-476d-9895-4d91873fc5d5@samsung.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: veeLgI50lUi7d8tHrcA9p2pY8r7dg-j5
+X-Proofpoint-ORIG-GUID: veeLgI50lUi7d8tHrcA9p2pY8r7dg-j5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-31_09,2025-03-27_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ malwarescore=0 clxscore=1015 spamscore=0 mlxlogscore=621 suspectscore=0
+ impostorscore=0 mlxscore=0 bulkscore=0 lowpriorityscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502280000 definitions=main-2503310138
 
-On Fri, Mar 28, 2025 at 03:18:39PM +0100, Marek Szyprowski wrote:
+The series extends the maximum table size allowed by s390-iommu by
+increasing the number of table regions supported.  It also adds logic to
+construct the table use the minimum number of regions based upon aperture
+calculation.
 
-> What kind of a fix is needed to dma_map_resource()/dma_unmap_resource() 
-> API to make it usable with P2P DMA? It looks that this API is closest to 
-> the mentioned dma_map_phys() and has little clients, so potentially 
-> changing the function signature should be quite easy.
+Changes for v4:
+- rebase onto master after iommu/next PR merge
+- convert patch 3 per Niklas to remove gotos
+- convert patch 4 to also remove gotos
+- add review tags
 
-I looked at this once, actually it was one of my first ideas to get
-the VFIO DMABUF side going. I gave up on it pretty fast because of how
-hard it would be to actually use..
+Changes for v3:
+- rebase onto iommu-next
+- move IOTA region type setting into s390-iommu
+- remove origin_type and max_table_size from zdev
+- adjust reserved region calculation to be dependent on the domain
 
-Something like this:
+Changes for v2:
+- rebase onto 6.13
+- remove 'iommu/s390: add basic routines for region 1st and 2nd tables'
+  and put routines in first patch that uses each.  No functional change.
 
-dma_addr_t dma_map_p2p(struct device *dma_dev, struct device *mmio_dev,
-		       phys_addr_t phys_addr, u8 *unmap_flags, size_t size,
-		       enum dma_data_direction dir, unsigned long attrs);
-void dma_unmap_p2p(struct device *dev, dma_addr_t addr, u8 *unmap_flags,
-		   size_t size, enum dma_data_direction dir,
-		   unsigned long attrs);
+Matthew Rosato (5):
+  iommu/s390: set appropriate IOTA region type
+  iommu/s390: support cleanup of additional table regions
+  iommu/s390: support iova_to_phys for additional table regions
+  iommu/s390: support map/unmap for additional table regions
+  iommu/s390: allow larger region tables
 
-Where 'unmap_flags' would have to be carried by the caller between map
-and unmap. mmio_dev is part of the P2P metadata that dma_map_sg gets
-out of the struct page via the pgmap.
+ arch/s390/include/asm/pci_dma.h |   3 +
+ drivers/iommu/s390-iommu.c      | 346 ++++++++++++++++++++++++++++----
+ 2 files changed, 314 insertions(+), 35 deletions(-)
 
-unmap_flags is the big challenge, there is not an easy data structure
-to put that u8 as a per-call array into in the DMABUF space. It could
-maybe work not bad for VFIO, but the DRM DMABUF drivers would be a
-PITA to store and this wouldn't be some trivial conversion I could do
-to all drivers in a few hours.
+-- 
+2.49.0
 
-But, the big killer is that such an API would not be suitable for
-performance path, so even DMABUF might not want to use it.
-
-If we start to fix the performance things then we end up back to this
-series's API design where you have the notion of DMA transaction. The
-more of the micro optimizations that this series has the closer the
-APIs will be..
-
-So, IDK, we could make some small painfull progress for VFIO with the
-above, but replacing scatterlist would be off the table, we'd have to
-continue to live with the DMABUF scatterlist abuse, and there is no
-advancement toward a performance struct-page-less DMA API.
-
-Jason
