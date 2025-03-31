@@ -1,60 +1,99 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2077.outbound.protection.outlook.com [40.107.237.77])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70B4F86347
-	for <iommu@lists.linux.dev>; Mon, 31 Mar 2025 16:12:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5A9C217F5C
+	for <iommu@lists.linux.dev>; Mon, 31 Mar 2025 18:30:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743437557; cv=fail; b=PMb+6biCOAKzhJGhLop31Kfy0OCmYQz6InPXzmEpuVP1ZC41YFGp2XuIyj7pKsehxsaUZ3blFbCe37t7ClnNQ8C8TN79B8UiRk+QJ6sdETFt3ZVMmGZFHyL1Tt6NXvmb9aPok77xS3tSiXI7xXJx4hQjIgnPOJIgS5HrbsZcS1Y=
+	t=1743445806; cv=fail; b=Ynpzi9ZeR8watSV8Uo1Zv2v3T2mv0Gdqxf5HAYHi6n+EjxG0p6iwe475HeMtpcXhex++kQQdnRtmC/BL1v8SlDvELQsK1ywT/WEAr8WhKS0PWOamnsvZRhADiEN3Dw/SUtiXbMu/fegsUTenlJ3kSo+QlRnbN3v6Rre6uk0Go6U=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743437557; c=relaxed/simple;
-	bh=U22lxNvT38rY+PMZSpbgaY/cWrPpqvrC4GKUza7MxXI=;
-	h=Date:From:To:Cc:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=GLs05/chHe62nOz3aUNZ9EbHnMD4upiF9ryV1Zh8dM6X8lSlFanx1UBVr9o1bg4rOQ3X+Z0/J5HfvaiRXjo/at77OdA/2vOx8jCAZn5XW1zMcaiD5UvwzNdPYA6N3EbH7TfcvqzOZRfBkJsPk0rkhLBMrKGqEP/htKvlL26ywbY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=GfJjQs9E; arc=fail smtp.client-ip=40.107.237.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1743445806; c=relaxed/simple;
+	bh=7nWec/52Ah1KdW4gRGVz2zdGnN9vLMA9XrSLihTwApY=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Xn1tRd7jhDrSDDMioI+rlZmvSskfsJXWcyYZdgzD6XFMYYwq8hKKPC+zT3R+oeKaZ67hMlSM81mgKBnY3ZDSqq8f6roX+xSf3jOykDSho0ZxtT3t5ar3Sk5I9m7wMGsrcWVPHjgdC9aMJC2xZoZ7/7oGL8uI0TX7lsWmqPWFC8I=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=DedVKYzk; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=VC9NuhQl; arc=fail smtp.client-ip=205.220.177.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GfJjQs9E"
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="DedVKYzk";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="VC9NuhQl"
+Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52VIPaYk024783;
+	Mon, 31 Mar 2025 18:29:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=
+	corp-2023-11-20; bh=DJYnoqlJb+PRh2pC8d+eYwqBkqxYTUT1uc2MrG5KgU4=; b=
+	DedVKYzk2q89i7/MPOnq8NDAAoJhd13u1qY+tLAwsYd6tM+onKPau/Jtj1HcSree
+	PRkcunrBdXO2gMiWsBf3FDyn7SE2R+hBNhmiwcvJnos+kslUadNlGIkZjVm4Y5mp
+	rE3LDog1zMoqueZuibsdSKomLl4bx7RnzcIo4QbRxL8llbnSkTPLM41IyWWvSp9L
+	/Gme0wUnOnRG5yTESSOGaEtjoBPJYJgyGEOYRA9NQxk8PWlVjJ6H7gAsBn5Li/YD
+	HMmzNHMLm0HNYzwslmaEC/Vy+bnGtWOyulGSPHvf129XhsczsL2LO4sBUyPbj6ud
+	gMlkCGAoBxyIgGnCnqAwcw==
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 45p8wcbwfu-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 31 Mar 2025 18:29:18 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 52VH4vST010832;
+	Mon, 31 Mar 2025 18:29:18 GMT
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2174.outbound.protection.outlook.com [104.47.59.174])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 45p7ae8uh5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 31 Mar 2025 18:29:17 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=VlhahgDfrK4L/W5ne7UxgCgZFqrNgpo/IqMsf3w4Unc8SpiIcWL+087jztZv40pLuHV74E4ez/fhqKA+jPXAzkru80WQfz98xAQopkfBEeKRl0CaEK/gU7sFQHMhvx6EAE4Gq0tAqaOC0rMGRrtUa9Qpj+VcWPIgRjmNObaCdDs9ieVLezfCdx377pQk0BnDOcvvUXj7muCdRhQ11Pl1HSYD2gA65wvd6aILEUzm1AujH48zI2pIoFAvagqAQ3VP2DCR5DF80qbAotuzo56p78iNHs/ly39emDPmE4wMANzTAjl9IZj9SYN2wV3vWzFjJrI64O8KUMfP6KcwTG4cVw==
+ b=VsZhzo8HROByCqD8aJXzW8WM3cwjUzWyxebL0gZJHPB4PJKPsUIEj4+A7d2+u5zlYv5XlL4nPRcjkSQR0Q6gYenMXFRCkENgRCnTgv0GgXYJjCLfsO+hyLsanL2mFs57ng2Py9CeYQWy4PXDg2qUfqyPx6pnUEeKS+jVYMEPeiqNoK2EBoFTciGkGGaEQfEjpEH2ucYJyoWprTTOrdzEKw1yIns2QLO9t7vgrhqUQoGah3tu7NwMx5gyl/n06x6dwgfH2BEttFac3BeP005pw743IGNcbT+hXKyOPb3ztOf2qK2gx0a5mcVyM87M7CBRLiVZbB0E4gC0IEukCNBW6g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7VrpHv+ttEnSzvCTxgG9MlNHXKcZ11ydebA+nm3Xi6k=;
- b=VWhKhVGgwxii87ySnl3rr4Gy3RQNlOUnE9OZd7y6ptJp/ojxay7QJNCnGcherAgw1bGZjJRS3yG5jmZIyHzyW9wwPgLVt28V5YMuu5Gslk1Lgw4dx37OUWU+/GcWap5XvonSFjOO8hRFAchNE+KFein7X4DkqWv+wlSMnuwLVj1rNj3QVZo4rgB47b067PZOdAoq+O2g9ziRX6bR0XCz/bADafW5tYe8TwPjs1YIXRZfwt36PZI3h7FpygZwTV6E6ZZmG4Udmq2+Y9+qgB79LigYiEYX2O0Svv/DNDAj+D74znjNPefGp0sFPTwVWUDNUpTP/lrTfNMsN2EGzmVsJQ==
+ bh=DJYnoqlJb+PRh2pC8d+eYwqBkqxYTUT1uc2MrG5KgU4=;
+ b=QdcOZLB3n63LCA4IHn5jJbMeBA9HOBwKDhrJnzmVukgEW170ydY0TE1BueoXsVj8DlESO/nd2ylrYKdyRG8KJ5DO0YZGL6i5GZyf9FiW7xlzYm9yN1YlB3+AvwCByJiblyPLKasPJVCIfg9fO7q3EgeBEo2f59+pOFeDeY7HVluxN9YAx3AWKFHRbGikazQfOImqOOluiqXLWvHJ5nR0BZJ5noV2VvCc8RXVIzd2H7wlyRRHpMYVpZZ8G02W6tT+c3wS4QQmke4FuyxI6EApewXD96nfYj9xRA30bppMrvQlv+biOrQT7HHfGuTjXIouH3ZhbVv9b7JFT0I6cZhtYw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7VrpHv+ttEnSzvCTxgG9MlNHXKcZ11ydebA+nm3Xi6k=;
- b=GfJjQs9E8XE8mHqLRtkCtzAliBdSoWNKQVRQfIG6hz4+gVIGgd8fCN2YOXsYLNEujjXFlPhCgtNxa5mlyiBzZmqvItSYdfPmSwqb/qw/4BPNEUiJDfFxoYGj7Ldc4+zwLKysfPJBIcY5LxrnOuqcaIi/vCHcZctrxc7OBlRYOWXRTzj6bqa+JQDwxx5bSkvWvad7dOohOAQPsao0q+Y7LPYFvNwYbX1IVoJ9AxIV+vKyASztGS3ySkSo/KfVFtQEDUDPYuPhSdK1c8FpXr6pqDXJVoip798W8Gow5g/mTYc6UR3KnCvofhhTL0DEB0byYJamCy7OQyrPjyXg/Jnt9Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by CY8PR12MB7515.namprd12.prod.outlook.com (2603:10b6:930:93::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.50; Mon, 31 Mar
- 2025 16:12:28 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8534.043; Mon, 31 Mar 2025
- 16:12:28 +0000
-Date: Mon, 31 Mar 2025 13:12:27 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
-Subject: [GIT PULL] Please pull IOMMUFD subsystem changes
-Message-ID: <20250331161227.GA287780@nvidia.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="+IkPkk61Vpmrs914"
-Content-Disposition: inline
-X-ClientProxiedBy: BL1PR13CA0285.namprd13.prod.outlook.com
- (2603:10b6:208:2bc::20) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+ bh=DJYnoqlJb+PRh2pC8d+eYwqBkqxYTUT1uc2MrG5KgU4=;
+ b=VC9NuhQlPReTWQKgEOwFPph5bPvya4W+iUkpGLf04OrlAWlUIAZGtTEA3cxhqYupyin/Il8ZyOE6nfZG1cek/pwYkexF+NzFiqb7p61xBy8w8HL9Xa3Gv6VM0D7AfVNZhT1x4OuAulfQfz5sK2yy2REqovCi3XT3QwTundYTx8M=
+Received: from DS0PR10MB7224.namprd10.prod.outlook.com (2603:10b6:8:f5::14) by
+ CY8PR10MB6444.namprd10.prod.outlook.com (2603:10b6:930:60::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8583.31; Mon, 31 Mar 2025 18:29:15 +0000
+Received: from DS0PR10MB7224.namprd10.prod.outlook.com
+ ([fe80::c57:383f:cfb2:47f8]) by DS0PR10MB7224.namprd10.prod.outlook.com
+ ([fe80::c57:383f:cfb2:47f8%4]) with mapi id 15.20.8583.038; Mon, 31 Mar 2025
+ 18:29:15 +0000
+Message-ID: <886145d3-a9f2-41f3-a754-253decdb1b4f@oracle.com>
+Date: Mon, 31 Mar 2025 11:29:08 -0700
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v13 19/19] x86/efi: EFI stub DRTM launch support for
+ Secure Launch
+To: "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        x86@kernel.org, linux-integrity@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-crypto@vger.kernel.org,
+        kexec@lists.infradead.org, linux-efi@vger.kernel.org,
+        iommu@lists.linux.dev
+Cc: dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, ardb@kernel.org,
+        mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
+        peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca,
+        luto@amacapital.net, nivedita@alum.mit.edu,
+        herbert@gondor.apana.org.au, davem@davemloft.net, corbet@lwn.net,
+        ebiederm@xmission.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+        kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
+        trenchboot-devel@googlegroups.com
+References: <20250328230814.2210230-1-ross.philipson@oracle.com>
+ <20250328230814.2210230-20-ross.philipson@oracle.com>
+ <B41D3199-8054-4B2C-94D6-508D1DE4C8B3@zytor.com>
+Content-Language: en-US
+From: ross.philipson@oracle.com
+In-Reply-To: <B41D3199-8054-4B2C-94D6-508D1DE4C8B3@zytor.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BN0PR03CA0043.namprd03.prod.outlook.com
+ (2603:10b6:408:e7::18) To DS0PR10MB7224.namprd10.prod.outlook.com
+ (2603:10b6:8:f5::14)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,343 +101,274 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CY8PR12MB7515:EE_
-X-MS-Office365-Filtering-Correlation-Id: 34f45e58-b627-4df1-f7bc-08dd706ed507
+X-MS-TrafficTypeDiagnostic: DS0PR10MB7224:EE_|CY8PR10MB6444:EE_
+X-MS-Office365-Filtering-Correlation-Id: 64a57db0-6256-491d-2a5d-08dd7081f0bd
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|1800799024|366016|376014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?yokvL3x2kWugM48HjxAs6U84mGMoboehtdKHARzNk3oMZIKAJBdXDvxVXM/o?=
- =?us-ascii?Q?50+sfk66Ema7NeGVE/BDeOGZSTV4nCF0Ofk6Rb9pC+E0st1LTZa4i6bzEjh3?=
- =?us-ascii?Q?+Z6Opxc1W/PljZEKtETiOAxSTPvJqoKbL9BRx/tP3hN/V3y6VN54q7VDBTuJ?=
- =?us-ascii?Q?GuDpeZD4gBEDttBti76u3oG+M/e3G6CS4/GlioyZUUW1EPurMIeRrNH+fkSL?=
- =?us-ascii?Q?dhydmukahQiev74p+jwZkIUR2NMwKTjSch8GlT0TNYSu0PJqg+cPeAQMNhYY?=
- =?us-ascii?Q?LObmiHSMBXPGQ4Ugl3bD4iC2VUn+oObWU+korIFvgp4IqQ929D5Nxsa0ZVVC?=
- =?us-ascii?Q?8BNtXw4uXEXc+FK9tpTSO8woUKx29w0tvO43GU32kNQnfDNHDgDv3R8PTq1Z?=
- =?us-ascii?Q?oVU1/PhtS5ccDFTF6BP8zQnE4DZ1Qa1pAL/54UM4MjWwI/7qTOD0qEbNMOZ5?=
- =?us-ascii?Q?Hy7TAQigqBzrk9slOz1qS0ehyrZG/b4ptLOT7u/5kXeWfQF2FQlIMvZEAlHe?=
- =?us-ascii?Q?1ZR7AkjwkB4Ngt8PEfDWTS3Bw1FUdKsn3vQQCJufP4UhpLn9ZdCHKtGDRlB0?=
- =?us-ascii?Q?1D8yLv03ABmaVPuDvnldYBQ75sAJ/na2+25t86PMEerjgofeHRdvCaGxNHZn?=
- =?us-ascii?Q?bTCJSjMVD/mgzfPFaHyrDIPb6L+X4fU2RLQQdrhRoexNVmJPYxfoSR1z4WiH?=
- =?us-ascii?Q?7jIDi3w7pu57rZ5K5bjBtptW/XmeATJdqrrWeHyKQmIWWR0tnu04WTBhZU5i?=
- =?us-ascii?Q?u2CLPiXjKioqhSAn5mlnTJvLHAZ/QISdX/AWeGhVyn7tyJkyX6D40K+ah8DV?=
- =?us-ascii?Q?oULh6t6nfZSVJL3XbSA71Op+xH5Mwwmbr0gl4OYsGVqebVcgAfo6HYh5rm6S?=
- =?us-ascii?Q?otyuK8NoXN6wH9m+bVkL5ovRwkXLTppQ2x45MX7/9Ye6kF4+KU8jZo8QIns3?=
- =?us-ascii?Q?6DSbQYN87aLIat5MqFQBzBQ9cla7LgV8LHPp9P7ssQKxPC5ChgzbKC3iOxIB?=
- =?us-ascii?Q?iQzPspP4jylqYO4+wS+2gEdyVtPdmV7a/5KluU7m/yTV19ovKpIFXa8AHBrU?=
- =?us-ascii?Q?9kjGZqRQ1umB9dPtqjrht95Otzqr0GFVivtf0iho2oksXZuDVsqgCvs9bKD7?=
- =?us-ascii?Q?SoG05ZKuRH1bP1F166tA2U570xHNer+g12m9q0el/pNPNPmsXYBR+nAqTHMy?=
- =?us-ascii?Q?aHmRgQGzz6rSbSkEwIoof1cPhm+OHRuxJ7ifuguaacINzAGmZym2iVrH8OF1?=
- =?us-ascii?Q?1OB3dXN0k3+uOrCfrGhEFAxkGiGp2XFtMiQvwCxVGM9RuZB/QHu3rg+t8xAT?=
- =?us-ascii?Q?Yt7bA8VXDQOvr2NZODN171D5OHTBVL2wK9z8EM48Q8T8l8UBB1f9hMKeEvnV?=
- =?us-ascii?Q?XIiuWCgWQNr64t0NBGsY3pYn1SjX?=
+	=?utf-8?B?QWpmbzJlZVhlcHVva0w4OG9aNEJuTzBjVTEyM01nZzhRQ2hrNzg2czdiUUpS?=
+ =?utf-8?B?OU5OeDNRMnM0U0w5ckc5L0pocWZQeDl6aVZoU1VoMUEvYlc3TjFXeWJFWndB?=
+ =?utf-8?B?d0plYWpiRmUzaHJGSlROcmYzT1FnRzY4bnVXdDRmZFFleXZVYWQ2SFZzdWlG?=
+ =?utf-8?B?Q2MwVWlsSG9yU3NKOEhtdmpTRHd5U3hsK014ejdSMTdtUVNRQW9DQmRwSEJF?=
+ =?utf-8?B?NlgyWUR4Wk1rRkNrM2ZFRGd2a3NlVEQzMWdyem5iQ2tuYy9tVjZiRi9IVmZp?=
+ =?utf-8?B?L05KblZFVXlySFZNKzVrYXd5Vm9yb3dROHQwcE1rQTVDU29YVStHREFpTmZC?=
+ =?utf-8?B?YmlnRWZiOWZiRmV4K1EvQ1R3TXVGTk1PNUlJczVrRmFEZk5BNDBwUldNcUds?=
+ =?utf-8?B?cUNJRjE4eGU2TGtjbmd1U3E2UzZleHVTK1VIWXd0MW85bEJyeWRWL1MxU0dv?=
+ =?utf-8?B?aElyRTRFb1JkdHhmbW1qd0dwbEdnK05WbGRjYjV3T1MrMmFqYmhBajIxeEhR?=
+ =?utf-8?B?K1czbWlneXlNUnJXSkhxVm1QZEZJWGVzSTdWYzNVU3IwTVYzTWJib0VzQlVv?=
+ =?utf-8?B?eTBZRHQyajVEb0EyeWlXMjR1UUxXSW03ZFAwQVBBZ1NBL0ZYSjB2Rk9hcjZC?=
+ =?utf-8?B?cE9XdG9GdFJpSFVxWUNTY0NiUUZuNUJwaDlaY1pkeU41QzhmcVVUTHlHUVBC?=
+ =?utf-8?B?SDVxemVJMFNtUjd2RlNrNmR4aEtNaTYveUxhRVJyUG9jWGdDN1JtaWE4dTZF?=
+ =?utf-8?B?eHMvS25ZdEtBbFBwYmwzUDBVZHFGVmw3c2kyOUUrWnVtcGtCNVBTWmUxZVVn?=
+ =?utf-8?B?ZTdWMGROZmp6TEpiZWpjMEx3SUs2Uy8zVThGWFZJSHlWUWhkQTBLU1JCcHgz?=
+ =?utf-8?B?cW8wTk9vKy9lQ1RCRGlVb2RLcWpETlBZL0o1dmpkdmlYa0hJamNIRUd1WjE5?=
+ =?utf-8?B?SWluVTRQTHA4SDIxZ09IamhNRmw4ZHZ5NUttLzhZdUk2YktmWkVtWUxabndL?=
+ =?utf-8?B?ekNaZms3K0V2WHNCQnl1UEh5L05adHRCVUQxOTNMa1piWGhvdHhIUytHUXNk?=
+ =?utf-8?B?R2lEb2dXUkhXRVJSamxSOUZiTHkwWG8vd2ZKSFEzTTc1d25ubGRpV0wvOHNw?=
+ =?utf-8?B?RzdvdXhWdjZqUHZrN1ZTM0YvVEdTY3FnQjZlejZ6YzNnb2J4YnQ0eXgrbEpQ?=
+ =?utf-8?B?UVVJSlhvZnhhQmxXNEduWm1zS2NuSzBIWFJiTi9GUzRHV2hydVNyZk9CU1l2?=
+ =?utf-8?B?MlBtUW1IKzhhM2xsRzA3cWFDaExORVdhUm1pQlF0U2VCQUdCOGdlTWowdzNQ?=
+ =?utf-8?B?M2xLYStRdFdlMGtDVFhKU3hBQ1ZacjNlQ1laeVZxM2JudnNZWk9EZU55bC9N?=
+ =?utf-8?B?cDN6eVlHZmR6SVhkM1FqYnlWdVR2U3psZ2FGakNLcGFISGRpdW5jUkcraUtu?=
+ =?utf-8?B?L2FWbXZDMHdKNDNPQmVBL1VCSS9YeGN2eWZBeUZBVzBhWlRXRTBTU3VvclZi?=
+ =?utf-8?B?dUtxNGRVNVVFQUN0WUtiYnN6QTQwR3N5N2owaXhmK1gwc2pFMW9EbU5BbkRD?=
+ =?utf-8?B?MXAvTHhqZ25TYzRFSXRKY2t3U0dQQWREcWVvVlI1SlZEK04reFg0LzRSZXZq?=
+ =?utf-8?B?ZWlKbjZjUjVKVDBFV2tnSmhUZ212WDNjTWFoRXFaSVEvRE43TFV6NklMam5D?=
+ =?utf-8?B?TkZpNlN0YkNLVzJQMEgyRXpPaFl5bkJaVTlmbFVoS1RhWUpOdnRRMmNHK2xP?=
+ =?utf-8?B?R094TmpEWkpvQzd4Ukh4Sjk0RDBRU1BpSlBGck1HYkh2cGJjUEd0eTNabjBk?=
+ =?utf-8?B?SkF5Sjdob28vMy84b3Z0a3hVZEF1K002bHVnTDRxcDRaM21LblBCVjQralor?=
+ =?utf-8?Q?x1jqUTOElF2aF?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR10MB7224.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?IkBrlI3Q3OtYekw18t3ovCH8NxBVRPC9jviT8TivapieG+gYGGzklyIspPeX?=
- =?us-ascii?Q?IXDFF1AHLn8A6hUUNdYJDanX0PMBAc5jFaFTu4PaOQeHM/tXUodrOdotW2Rj?=
- =?us-ascii?Q?4Iy6V0y4Uxsd4olLRyutcFxssoR1ZaFwUzNgAOGZY1oECxR/9MSLcIumdbkP?=
- =?us-ascii?Q?lSHubznOM5+2kROgtptzoW1F7Jnba0cDOS6M4FH9kVmy0ea3GWVkGOTTjMGk?=
- =?us-ascii?Q?PVuf6NN7FlX0yyg5zDH1t36uyZkOlNcO5smzbEfAnihx7kywM+PPzAl5ooYg?=
- =?us-ascii?Q?JwqOV7Xr8DOVp3+rH0EdTmo+eMSpvd0l+Gl2KwvDE/TYUkHZPw+937Kolwfq?=
- =?us-ascii?Q?wE5X1JFLrg5a8wnTH1XpVYUYyl+ovq+ziEa/o/hqumvBGD+MI+2r8mPu4jTP?=
- =?us-ascii?Q?iq9blomRa8tBYdfhAr6+p8OpuXHHbvSEnAQNpYyaFO/R/CRRXCgXPITUxvAX?=
- =?us-ascii?Q?8atwZLTXhQwfLE/zX5eSYGEL1lQ4KGRVIpQEozYzheEnkuTVOXVCGL1xZPdm?=
- =?us-ascii?Q?McfNrBs0hchewKtnpp7QuSLauNuKvB1wPOL1o71T/QBWBsFj2GapcyIDCpzV?=
- =?us-ascii?Q?D3sHdXYL72krVMinWGPdu/EuPXsqw0xS/TBawkX494glhneOSjkoBE00fY8u?=
- =?us-ascii?Q?mRXndq8FTlLlv+TEsBVKzziJaZ3N6UDOa8X/bbQV0mCGyTUond34wSWZ3tmb?=
- =?us-ascii?Q?WfGtyD9Xde/qBM/PaZAuEDHZINkedK0sglkdZMvCbv0C1asyi0pRWOdccxFI?=
- =?us-ascii?Q?XYGpsyy47NzPt3IfeMQcZ/M5h+t5GEms3FoH4k0f85gdv97OcnuhnVndMj39?=
- =?us-ascii?Q?qSjXHWSjoCR3BLeOUnYUm7Plqojx9YkO1MLPpX5+X2HlOGh9zf7VWX4WJoJN?=
- =?us-ascii?Q?Di8C5FPMYsK03j/aora2NlStKoeokM87caEtdnRbL54ig/1NrGXCcGm4w2gc?=
- =?us-ascii?Q?9Z2r7ltx7Ht8xn6Peijy9toobRmKVex7c//pnZy2aXGq9lBTwrrpVvdrwF7l?=
- =?us-ascii?Q?Rfx0SItQ0LCi3ZzkQyr4lq/AiJkwnyFYmTVDqpcu29TUC26mSbM7p6AC51JU?=
- =?us-ascii?Q?yiBUi8XkxtuFjbwxboxs8m7Z4VCdyZeHNIm+FDS5VmBTFX0PgeaBcEwXGyBC?=
- =?us-ascii?Q?b4BEujOpWC4M1WfU3fAmq9SeT/da8CVu+jmgtZTHI7LZcegmlu5WQhRLD0mo?=
- =?us-ascii?Q?vZjkrJgNQ9h3xU5zXIRuiTjWHSV+5IbiX+AWEngSnxRerElWx2ax4gydnuPY?=
- =?us-ascii?Q?vBXZ1Vk4bA2me2N7+qsGykARJd/k+k7CqSJjkEDzN7cBmOWENxtg3Qm8jjAA?=
- =?us-ascii?Q?JBf+cacs0hu7aaw7GcwlAkz7MLLR5V4Mn/cvHVPNDTC/0S1qMM8hZ0jD2Tl5?=
- =?us-ascii?Q?qFDr1pAzl1/CknDXgQiE63MyTKZ40P9u7C2SNk+v1jhHKv+3XUZzq4nGGvlK?=
- =?us-ascii?Q?xaz/oOzhncEeEPc77roBv84c6FRUkMG0mm7wLgvpoig3S8QC5AzPoabsy7SP?=
- =?us-ascii?Q?MqJRl7KtjCDmrNkBRPpaRJ1oib9c6P6fZ1wXMYv3y0UdaxsZqT5Rcn+BVAK3?=
- =?us-ascii?Q?3cAHmKpWeewSkD0gHgisBwTtX+j0bVRTWwYWjgLR?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34f45e58-b627-4df1-f7bc-08dd706ed507
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+	=?utf-8?B?dU5xMUJqd3NxUklBdnRoZWNteE0zQXVwV1RqS3hBZE5YNC9sVStmV202UkU1?=
+ =?utf-8?B?ODYxS05UYUl0OHovSm56VXpIZ3ZTY0RhWVpOMEwxc2c0RmtYREYxNGlWK0Ew?=
+ =?utf-8?B?OVlaT3NEVEg4VmxhQ1JoN05kTGp1dzN3SHM5MW1HeW0xZDZwNXhqODhsTVF2?=
+ =?utf-8?B?aFgzS2M3VkV5eFZLelltQXJVYUNxNk5XR083SnBhUGs0U3k1ZGdET1dKdEVR?=
+ =?utf-8?B?c3VDcDZnVGVzWFRDalBGQmhxZUVlc2paN0h4UmlUMWkxazdRSUtNVjBmVUNx?=
+ =?utf-8?B?ZVBuQmszTm9hOEZhVHBvVlltS3ZjaWxWZHNMMUdYVVNoU01WRDAyR1krM21q?=
+ =?utf-8?B?RTA3S0FYSVhrNVRkT3VQQThyNTNGYldYckd1c3RCMU1CVk5Wd1pReHlXejJF?=
+ =?utf-8?B?UHAzMWJCOUp3dGZmbmhVdXVMSEhmaFFwRCtZcFNPTXlvcDVjTEtjQWo1c2VU?=
+ =?utf-8?B?eUNZd1lpSkNjdnB6RkFYVndDZzNJRk1vdkZ6eUs1bi9zV0FYS3VyZndiUGVi?=
+ =?utf-8?B?YjNZMnFJeGw1TkZhdDJpaEVGdStzRGsvNWtjSmlqcXY3VldwUXgxc2RISC9N?=
+ =?utf-8?B?VkxsNXdGeDVZRjVXL0k4N2x0Tjc2blBvOXh0OXp6MFZwQ3h2eEZ5UXJVV0ZI?=
+ =?utf-8?B?a0tFcDJDWDNCQkNDTkRMQkFwZnZVWHFPRmV0N0VyMUE1d3NZM2JFRFdWTjVh?=
+ =?utf-8?B?aVNKMlpzUk83MzlpaGRWMEVrRG9zSDEveXdnanpwWFRpek9IZkQ3MER4T0FS?=
+ =?utf-8?B?eGZZcHRhckQ1VWlHWlpaT2w3TFhROEdjeFN6V3lYUVd5cW0vS2cyQUVDMzZR?=
+ =?utf-8?B?eWhCUHhiNFBWcU93Yklva1gyRUN4ZUlTMXZhazM0RzkwVWFic1lkMzFmbzBZ?=
+ =?utf-8?B?ZkttNE1raUJKaDBZTGdZRHQ3eTJoV011cXpPL2tWa3BPQ2NyVjZTaGRId1pD?=
+ =?utf-8?B?amtGa3hXNnRUbURCR1ZtWWxwQnJWODhEbGxJb3ZlSUhtUU9Dd2RmVkx2STB5?=
+ =?utf-8?B?dVY3Rzg4S21wVGExdlRaSGpWcjBqVEpadTB4UWJVdzFTVjhRTHFqT2RvVFBL?=
+ =?utf-8?B?NzVKakxWZktESTQyb3JSSTNVM08zdllkN1JsWkFVUzBFczljb1hDRjQ1MGlS?=
+ =?utf-8?B?VzgxaG0vRmt2UFdQaEhGSWc0WE9yeUJaRkdVSXZTVVpLcTZ5TTUzYWdwOU44?=
+ =?utf-8?B?dmtadytSSE9GODNxYWxhaHdYdW9wRE51NXFHZ3ZuWGZtc0h1RWpDQVZKbE4w?=
+ =?utf-8?B?T0pwblR4QzRUdlkvSWV0UEtaTHM2UHFQK0xtU05jazJKK01KcWhJa1I2aHow?=
+ =?utf-8?B?L3pBSXdLVEVia0d5UTNPcG16R1dXSGxlRVBUWFA0bC83ZmNWdmE0NE85R0NW?=
+ =?utf-8?B?VDJGVlpJRngraEw2TVNjVmJsaUIrTy8xOHUvYm82Y1M2d0F1bWpFbWkwaWU4?=
+ =?utf-8?B?TkpVWXh6Tm1xQ0xjbnkxeWt0c2dxZmtQSy9WQ2dReTNlN2ZoUW9md0xsM1Ix?=
+ =?utf-8?B?dFg2NUFESUJ0czBwL1RYME40MkxKcERCdWdxRVFPVlRkRFZqckVtUEJhelAx?=
+ =?utf-8?B?eTg4d1JLRjRiOUROTjJVSnVSbmgvSEdSTno3ekdqbHE0a25lM04xMVRQT1hD?=
+ =?utf-8?B?dEpTNFNGMkRvRGc1cEtrYWtwTkNBckt0Sk0vTEowMGtxa0lHZURhTjkyWFpu?=
+ =?utf-8?B?dzFzVGdGQkRqQS9kdFI4SlRlVmtPKzZ0RHNWYTUxVE0xTXFuTW9nMjJKYXl0?=
+ =?utf-8?B?azVwZU9vNUp1QSthUmZCWDBwUlFTa3k2Qk1HM0xycmkrRDVKMzRHZTJ5WXpk?=
+ =?utf-8?B?dWJvem9rbWw0YjF0WGJSYTF0SUMzaVFRTnJHelltVTc1RldxeS9TSFk1eC9P?=
+ =?utf-8?B?YzcxN3diZjhMUUtqQ1FtbzR5blNCRVFFcjlEd0dKL2ZNc2s1QVdlMTJ1VGQ4?=
+ =?utf-8?B?T1pCVkpTdXRaMmw5U2hCSmpoUGxRSW1TMFlEUTFsK0k2ME1SekRiRlJ6c3ZK?=
+ =?utf-8?B?NFBpOUpUcm5IZkZVc3dOeFZHVTRMWHd2SzdrOGNPcUZVNUNRWElFWFkxUXdX?=
+ =?utf-8?B?czZ4MWorSVFKYlR3Nk9XQTR3K3NyamthblJiSm5FVUVMSk5Bc2NZNFlOU1E4?=
+ =?utf-8?B?SW5uUlBseHZVZjFFa1RFQXQ1d0h0S1RXcmkrd3dyUy9jbFFLZ1dqSUF3eGdS?=
+ =?utf-8?B?VkE9PQ==?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
+	9n8hyU/2CgQnZEwWKQSKu1p/qrYwMVUF0lADnnottdZUW1b7N2OaSuD2FM5MYBrqZWYs2y/w0KrTH6yl2covsS+1NNHBmDwQVRLOSZjxnd/up2wEWST1WVLzkw2NO8ThMOZHRm+ozyslzHdR6ZeN0ga4wujxmFKMlOakNQ2jKq2w+JfHnDrU49PAQufVMyoRa0fa6qmcC7S5TCB6bmUN5nXF14KXo8VPOYJlvIQSbKxgPFc/7snoUsZwFfwx4kAcORk5whluq5W57eOnY0ocxWEA+dgcx7odtZeEzWJ1MQoA7WfNteW24unpxtOtnuXuEWsJ3YddCz17fMc8QnlzMcAMOpXZ0VCBaQpLbnINuSXG+CY2ZxV3+AQKqqU/ONfKUGHHYfysVEvmyN0dZTgQ5KRpelYuxhrQdmkmdsW7WDDWdufbfg4emAw0QRSvcIHdPLy7dnAPaEPKVepCZptJCrwcegYBE8b176vI+e65mT6Cg/P9WjWPAgswuv9JWZ/ajtecM2JmoDBowZH2WiD63GsW+L8IrauoDmf7LbcmyYq5lm91wPkxyiPJu7aJBVqpOSA36ziYXQmb1+c1rnkCWXcIO78WDTrVcR7ZLqp2r48=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64a57db0-6256-491d-2a5d-08dd7081f0bd
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR10MB7224.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2025 16:12:28.1889
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2025 18:29:15.0968
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: p6SskJAZ0KC81rVaYOoyChQM6ADV6Bz55nzSV09UFNBlJy1+0h8ZT7TQJH4pWqZm
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7515
+X-MS-Exchange-CrossTenant-UserPrincipalName: yn9+le2PKehOWyruvV9ICC0yMEcYgPqGbvv3mu6bbZ6TP7tQDLKlM+Z2c7X7OWF0BWsCPlVZjIeUXVlZcaZS6xz+OTvDVAUUOaH5XGEZ+iI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR10MB6444
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-31_08,2025-03-27_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 suspectscore=0
+ adultscore=0 malwarescore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2502280000
+ definitions=main-2503310130
+X-Proofpoint-GUID: yGpyYJ3ONZJ-WkXWOY8dMaPiWqoUlJy3
+X-Proofpoint-ORIG-GUID: yGpyYJ3ONZJ-WkXWOY8dMaPiWqoUlJy3
 
---+IkPkk61Vpmrs914
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 3/29/25 6:13 PM, H. Peter Anvin wrote:
+> On March 28, 2025 4:08:14 PM PDT, Ross Philipson <ross.philipson@oracle.com> wrote:
+>> This support allows the DRTM launch to be initiated after an EFI stub
+>> launch of the Linux kernel is done. This is accomplished by providing
+>> a handler to jump to when a Secure Launch is in progress. This has to be
+>> called after the EFI stub does Exit Boot Services.
+>>
+>> Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+>> Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+>> ---
+>> drivers/firmware/efi/libstub/efistub.h  |  8 +++
+>> drivers/firmware/efi/libstub/x86-stub.c | 94 +++++++++++++++++++++++++
+>> 2 files changed, 102 insertions(+)
+>>
+>> diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
+>> index d96d4494070d..bbbc4b327ce1 100644
+>> --- a/drivers/firmware/efi/libstub/efistub.h
+>> +++ b/drivers/firmware/efi/libstub/efistub.h
+>> @@ -135,6 +135,14 @@ void efi_set_u64_split(u64 data, u32 *lo, u32 *hi)
+>> 	*hi = upper_32_bits(data);
+>> }
+>>
+>> +static inline
+>> +void efi_set_u64_form(u32 lo, u32 hi, u64 *data)
+>> +{
+>> +	u64 upper = hi;
+>> +
+>> +	*data = lo | upper << 32;
+>> +}
+>> +
+>> /*
+>>   * Allocation types for calls to boottime->allocate_pages.
+>>   */
+>> diff --git a/drivers/firmware/efi/libstub/x86-stub.c b/drivers/firmware/efi/libstub/x86-stub.c
+>> index 863910e9eefc..033133e7d953 100644
+>> --- a/drivers/firmware/efi/libstub/x86-stub.c
+>> +++ b/drivers/firmware/efi/libstub/x86-stub.c
+>> @@ -9,6 +9,8 @@
+>> #include <linux/efi.h>
+>> #include <linux/pci.h>
+>> #include <linux/stddef.h>
+>> +#include <linux/slr_table.h>
+>> +#include <linux/slaunch.h>
+>>
+>> #include <asm/efi.h>
+>> #include <asm/e820/types.h>
+>> @@ -798,6 +800,93 @@ static efi_status_t efi_decompress_kernel(unsigned long *kernel_entry)
+>> 	return efi_adjust_memory_range_protection(addr, kernel_text_size);
+>> }
+>>
+>> +#if (IS_ENABLED(CONFIG_SECURE_LAUNCH))
+>> +static bool efi_secure_launch_update_boot_params(struct slr_table *slrt,
+>> +						 struct boot_params *boot_params)
+>> +{
+>> +	struct slr_entry_intel_info *txt_info;
+>> +	struct slr_entry_policy *policy;
+>> +	bool updated = false;
+>> +	int i;
+>> +
+>> +	txt_info = slr_next_entry_by_tag(slrt, NULL, SLR_ENTRY_INTEL_INFO);
+>> +	if (!txt_info)
+>> +		return false;
+>> +
+>> +	txt_info->boot_params_addr = (u64)boot_params;
+>> +
+>> +	policy = slr_next_entry_by_tag(slrt, NULL, SLR_ENTRY_ENTRY_POLICY);
+>> +	if (!policy)
+>> +		return false;
+>> +
+>> +	for (i = 0; i < policy->nr_entries; i++) {
+>> +		if (policy->policy_entries[i].entity_type == SLR_ET_BOOT_PARAMS) {
+>> +			policy->policy_entries[i].entity = (u64)boot_params;
+>> +			updated = true;
+>> +			break;
+>> +		}
+>> +	}
+>> +
+>> +	/*
+>> +	 * If this is a PE entry into EFI stub the mocked up boot params will
+>> +	 * be missing some of the setup header data needed for the second stage
+>> +	 * of the Secure Launch boot.
+>> +	 */
+>> +	if (image) {
+>> +		struct setup_header *hdr = (struct setup_header *)((u8 *)image->image_base +
+>> +					    offsetof(struct boot_params, hdr));
+>> +		u64 cmdline_ptr;
+>> +
+>> +		boot_params->hdr.setup_sects = hdr->setup_sects;
+>> +		boot_params->hdr.syssize = hdr->syssize;
+>> +		boot_params->hdr.version = hdr->version;
+>> +		boot_params->hdr.loadflags = hdr->loadflags;
+>> +		boot_params->hdr.kernel_alignment = hdr->kernel_alignment;
+>> +		boot_params->hdr.min_alignment = hdr->min_alignment;
+>> +		boot_params->hdr.xloadflags = hdr->xloadflags;
+>> +		boot_params->hdr.init_size = hdr->init_size;
+>> +		boot_params->hdr.kernel_info_offset = hdr->kernel_info_offset;
+>> +		efi_set_u64_form(boot_params->hdr.cmd_line_ptr, boot_params->ext_cmd_line_ptr,
+>> +				 &cmdline_ptr);
+>> +		boot_params->hdr.cmdline_size = strlen((const char *)cmdline_ptr);
+>> +	}
+>> +
+>> +	return updated;
+>> +}
+>> +
+>> +static void efi_secure_launch(struct boot_params *boot_params)
+>> +{
+>> +	struct slr_entry_dl_info *dlinfo;
+>> +	efi_guid_t guid = SLR_TABLE_GUID;
+>> +	dl_handler_func handler_callback;
+>> +	struct slr_table *slrt;
+>> +
+>> +	/*
+>> +	 * The presence of this table indicated a Secure Launch
+>> +	 * is being requested.
+>> +	 */
+>> +	slrt = (struct slr_table *)get_efi_config_table(guid);
+>> +	if (!slrt || slrt->magic != SLR_TABLE_MAGIC)
+>> +		return;
+>> +
+>> +	/*
+>> +	 * Since the EFI stub library creates its own boot_params on entry, the
+>> +	 * SLRT and TXT heap have to be updated with this version.
+>> +	 */
+>> +	if (!efi_secure_launch_update_boot_params(slrt, boot_params))
+>> +		return;
+>> +
+>> +	/* Jump through DL stub to initiate Secure Launch */
+>> +	dlinfo = slr_next_entry_by_tag(slrt, NULL, SLR_ENTRY_DL_INFO);
+>> +
+>> +	handler_callback = (dl_handler_func)dlinfo->dl_handler;
+>> +
+>> +	handler_callback(&dlinfo->bl_context);
+>> +
+>> +	unreachable();
+>> +}
+>> +#endif
+>> +
+>> static void __noreturn enter_kernel(unsigned long kernel_addr,
+>> 				    struct boot_params *boot_params)
+>> {
+>> @@ -925,6 +1014,11 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
+>> 		goto fail;
+>> 	}
+>>
+>> +#if (IS_ENABLED(CONFIG_SECURE_LAUNCH))
+>> +	/* If a Secure Launch is in progress, this never returns */
+>> +	efi_secure_launch(boot_params);
+>> +#endif
+>> +
+>> 	/*
+>> 	 * Call the SEV init code while still running with the firmware's
+>> 	 * GDT/IDT, so #VC exceptions will be handled by EFI.
+> 
+> efi_set_u64_form()?
+> 
+> What the heck is that? If it actually involves two u32 packed into a 64 field, why not simply do two stores?
+> 
 
-Hi Linus,
+Well the story is this. The EFI maintainers asked me to use the 
+efi_set_u64_split() type functions (this one splits a u64 into 2 u32). I 
+went to look and there was no function that did the opposite action so I 
+added it. The original function was called efi_set_u64_split() so 
+efi_set_u64_form() was what I came up with. I can name it anything that 
+is desired.
 
-Late this time due to some travel and a bunch of linux-next issues
-last week. I think it is quiet now.
+Thanks
+Ross
 
-There is a shared branch with Joerg's tree that has already been
-merged by you. That branch contained a fix for a long standing issue
-with how interrupts on ARM interwork with iommufd, and it should bring
-full functionality to ARM systems now too.
-
-Despite the shared branch there was still a merge conflict=20
-(take both but drop mutex and sw_msi):
-
-diff --cc drivers/iommu/dma-iommu.c
-index 8cc5397d7dfc1a,0832998eca389a..6054d0ab802321
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@@ -54,31 -59,34 +54,30 @@@ struct iommu_dma_options=20
-  };
- =20
-  struct iommu_dma_cookie {
- -	enum iommu_dma_cookie_type	type;
- +	struct iova_domain iovad;
- +	struct list_head msi_page_list;
- +	/* Flush queue */
-  	union {
- -		/* Full allocator for IOMMU_DMA_IOVA_COOKIE */
- -		struct {
- -			struct iova_domain	iovad;
- -			/* Flush queue */
- -			union {
- -				struct iova_fq	*single_fq;
- -				struct iova_fq	__percpu *percpu_fq;
- -			};
- -			/* Number of TLB flushes that have been started */
- -			atomic64_t		fq_flush_start_cnt;
- -			/* Number of TLB flushes that have been finished */
- -			atomic64_t		fq_flush_finish_cnt;
- -			/* Timer to regularily empty the flush queues */
- -			struct timer_list	fq_timer;
- -			/* 1 when timer is active, 0 when not */
- -			atomic_t		fq_timer_on;
- -		};
- -		/* Trivial linear page allocator for IOMMU_DMA_MSI_COOKIE */
- -		dma_addr_t		msi_iova;
- +		struct iova_fq *single_fq;
- +		struct iova_fq __percpu *percpu_fq;
-  	};
- -	struct list_head		msi_page_list;
- -
- +	/* Number of TLB flushes that have been started */
- +	atomic64_t fq_flush_start_cnt;
- +	/* Number of TLB flushes that have been finished */
- +	atomic64_t fq_flush_finish_cnt;
- +	/* Timer to regularily empty the flush queues */
- +	struct timer_list fq_timer;
- +	/* 1 when timer is active, 0 when not */
- +	atomic_t fq_timer_on;
-  	/* Domain for flush queue callback; NULL if flush queue not in use */
- -	struct iommu_domain		*fq_domain;
- +	struct iommu_domain *fq_domain;
-  	/* Options for dma-iommu use */
- -	struct iommu_dma_options	options;
- +	struct iommu_dma_options options;
-- 	struct mutex mutex;
- +};
- +
- +struct iommu_dma_msi_cookie {
- +	dma_addr_t msi_iova;
- +	struct list_head msi_page_list;
-  };
- =20
-  static DEFINE_STATIC_KEY_FALSE(iommu_deferred_attach_enabled);
-@@@ -363,19 -393,14 +362,18 @@@ int iommu_dma_init_fq(struct iommu_doma
-   */
-  int iommu_get_dma_cookie(struct iommu_domain *domain)
-  {
- -	if (domain->iova_cookie)
- +	struct iommu_dma_cookie *cookie;
- +
- +	if (domain->cookie_type !=3D IOMMU_COOKIE_NONE)
-  		return -EEXIST;
- =20
- -	domain->iova_cookie =3D cookie_alloc(IOMMU_DMA_IOVA_COOKIE);
- -	if (!domain->iova_cookie)
- +	cookie =3D kzalloc(sizeof(*cookie), GFP_KERNEL);
- +	if (!cookie)
-  		return -ENOMEM;
- =20
-- 	mutex_init(&cookie->mutex);
- -	iommu_domain_set_sw_msi(domain, iommu_dma_sw_msi);
- +	INIT_LIST_HEAD(&cookie->msi_page_list);
- +	domain->cookie_type =3D IOMMU_COOKIE_DMA_IOVA;
- +	domain->iova_cookie =3D cookie;
-  	return 0;
-  }
- =20
-
-The tag for-linus-iommufd-merged with my merge resolution to your tree is a=
-lso available to pull.
-
-The following changes since commit 5e9f822c9c683ae884fa5e71df41d1647b2876c6:
-
-  iommu: Swap the order of setting group->pasid_array and calling attach op=
- of iommu drivers (2025-02-28 10:07:14 -0400)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-li=
-nus-iommufd
-
-for you to fetch changes up to 7be11d34f660bfa6583f3d6e2032d5dcbff56081:
-
-  iommufd: Test attach before detaching pasid (2025-03-28 11:40:41 -0300)
-
-----------------------------------------------------------------
-iommufd 6.15 merge window pull
-
-Two significant new items:
-
-- Allow reporting IOMMU HW events to userspace when the events are clearly
-  linked to a device. This is linked to the VIOMMU object and is intended to
-  be used by a VMM to forward HW events to the virtual machine as part of
-  emulating a vIOMMU. ARM SMMUv3 is the first driver to use this
-  mechanism. Like the existing fault events the data is delivered through
-  a simple FD returning event records on read().
-
-- PASID support in VFIO. "Process Address Space ID" is a PCI feature that
-  allows the device to tag all PCI DMA operations with an ID. The IOMMU
-  will then use the ID to select a unique translation for those DMAs. This
-  is part of Intel's vIOMMU support as VT-D HW requires the hypervisor to
-  manage each PASID entry. The support is generic so any VFIO user could
-  attach any translation to a PASID, and the support should work on ARM
-  SMMUv3 as well. AMD requires additional driver work.
-
-Some minor updates, along with fixes:
-
-- Prevent using nested parents with fault's, no driver support today
-
-- Put a single "cookie_type" value in the iommu_domain to indicate what
-  owns the various opaque owner fields
-
-----------------------------------------------------------------
-Bagas Sanjaya (1):
-      iommufd: Fix iommu_vevent_header tables markup
-
-Josh Poimboeuf (1):
-      iommu: Convert unreachable() to BUG()
-
-Nicolin Chen (18):
-      iommufd: Fix uninitialized rc in iommufd_access_rw()
-      iommufd: Set domain->iommufd_hwpt in all hwpt->domain allocators
-      iommufd/fault: Move two fault functions out of the header
-      iommufd/fault: Add an iommufd_fault_init() helper
-      iommufd: Abstract an iommufd_eventq from iommufd_fault
-      iommufd: Rename fault.c to eventq.c
-      iommufd: Add IOMMUFD_OBJ_VEVENTQ and IOMMUFD_CMD_VEVENTQ_ALLOC
-      iommufd/viommu: Add iommufd_viommu_get_vdev_id helper
-      iommufd/viommu: Add iommufd_viommu_report_event helper
-      iommufd/selftest: Require vdev_id when attaching to a nested domain
-      iommufd/selftest: Add IOMMU_TEST_OP_TRIGGER_VEVENT for vEVENTQ covera=
-ge
-      iommufd/selftest: Add IOMMU_VEVENTQ_ALLOC test coverage
-      Documentation: userspace-api: iommufd: Update FAULT and VEVENTQ
-      iommu/arm-smmu-v3: Introduce struct arm_smmu_vmaster
-      iommu/arm-smmu-v3: Report events that belong to devices attached to v=
-IOMMU
-      iommu/arm-smmu-v3: Set MEV bit in nested STE for DoS mitigations
-      iommufd: Move iommufd_sw_msi and related functions to driver.c
-      iommu: Drop sw_msi from iommu_domain
-
-Robin Murphy (1):
-      iommu: Sort out domain user data
-
-Yi Liu (28):
-      iommufd: Disallow allocating nested parent domain with fault ID
-      iommufd: Fail replace if device has not been attached
-      iommu: Require passing new handles to APIs supporting handle
-      iommu: Introduce a replace API for device pasid
-      iommufd: Pass @pasid through the device attach/replace path
-      iommufd/device: Only add reserved_iova in non-pasid path
-      iommufd/device: Replace idev->igroup with local variable
-      iommufd/device: Add helper to detect the first attach of a group
-      iommufd/device: Wrap igroup->hwpt and igroup->device_list into attach=
- struct
-      iommufd/device: Replace device_list with device_array
-      iommufd/device: Add pasid_attach array to track per-PASID attach
-      iommufd: Enforce PASID-compatible domain in PASID path
-      iommufd: Support pasid attach/replace
-      iommufd: Enforce PASID-compatible domain for RID
-      iommu/vt-d: Add IOMMU_HWPT_ALLOC_PASID support
-      iommufd: Allow allocating PASID-compatible domain
-      iommufd/selftest: Add set_dev_pasid in mock iommu
-      iommufd/selftest: Add a helper to get test device
-      iommufd/selftest: Add test ops to test pasid attach/detach
-      iommufd/selftest: Add coverage for iommufd pasid attach/detach
-      ida: Add ida_find_first_range()
-      vfio-iommufd: Support pasid [at|de]tach for physical VFIO devices
-      vfio: VFIO_DEVICE_[AT|DE]TACH_IOMMUFD_PT support pasid
-      iommufd: Extend IOMMU_GET_HW_INFO to report PASID capability
-      iommufd/selftest: Add coverage for reporting max_pasid_log2 via IOMMU=
-_HW_INFO
-      iommufd: Initialize the flags of vevent in iommufd_viommu_report_even=
-t()
-      iommufd: Balance veventq->num_events inc/dec
-      iommufd: Test attach before detaching pasid
-
- Documentation/userspace-api/iommufd.rst            |  17 +
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    |  60 +++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        |  80 ++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  36 ++
- drivers/iommu/dma-iommu.c                          | 204 +++----
- drivers/iommu/dma-iommu.h                          |  14 +
- drivers/iommu/intel/iommu.c                        |   3 +-
- drivers/iommu/intel/nested.c                       |   2 +-
- drivers/iommu/iommu-priv.h                         |  16 +
- drivers/iommu/iommu-sva.c                          |   1 +
- drivers/iommu/iommu.c                              | 160 +++++-
- drivers/iommu/iommufd/Kconfig                      |   2 +-
- drivers/iommu/iommufd/Makefile                     |   2 +-
- drivers/iommu/iommufd/device.c                     | 499 ++++++++++-------
- drivers/iommu/iommufd/driver.c                     | 198 +++++++
- drivers/iommu/iommufd/eventq.c                     | 598 +++++++++++++++++=
-++++
- drivers/iommu/iommufd/fault.c                      | 342 ------------
- drivers/iommu/iommufd/hw_pagetable.c               |  42 +-
- drivers/iommu/iommufd/iommufd_private.h            | 156 ++++--
- drivers/iommu/iommufd/iommufd_test.h               |  40 ++
- drivers/iommu/iommufd/main.c                       |   7 +
- drivers/iommu/iommufd/selftest.c                   | 297 +++++++++-
- drivers/iommu/iommufd/viommu.c                     |   2 +
- drivers/pci/ats.c                                  |  33 ++
- drivers/vfio/device_cdev.c                         |  60 ++-
- drivers/vfio/iommufd.c                             |  60 ++-
- drivers/vfio/pci/vfio_pci.c                        |   2 +
- include/linux/idr.h                                |  11 +
- include/linux/iommu.h                              |  35 +-
- include/linux/iommufd.h                            |  32 +-
- include/linux/pci-ats.h                            |   3 +
- include/linux/vfio.h                               |  14 +
- include/uapi/linux/iommufd.h                       | 129 ++++-
- include/uapi/linux/vfio.h                          |  29 +-
- lib/idr.c                                          |  67 +++
- lib/test_ida.c                                     |  70 +++
- tools/testing/selftests/iommu/iommufd.c            | 365 +++++++++++++
- tools/testing/selftests/iommu/iommufd_fail_nth.c   |  59 +-
- tools/testing/selftests/iommu/iommufd_utils.h      | 229 +++++++-
- 39 files changed, 3147 insertions(+), 829 deletions(-)
-(diffstat from tag for-linus-iommufd-merged)
-
---+IkPkk61Vpmrs914
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRRRCHOFoQz/8F5bUaFwuHvBreFYQUCZ+q+6QAKCRCFwuHvBreF
-YfWJAP4zU5M5y+W/mQAurfIjOGASUMybiCxBBi+dmvJQeKELxgD7BJUzvsJo8iR0
-rZv45eAORKf8tIPL8F5WPyNMgS1Oag8=
-=D8/J
------END PGP SIGNATURE-----
-
---+IkPkk61Vpmrs914--
