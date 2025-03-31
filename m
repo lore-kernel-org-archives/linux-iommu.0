@@ -1,246 +1,118 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D133821ADAE
-	for <iommu@lists.linux.dev>; Mon, 31 Mar 2025 20:22:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34B0221B90B
+	for <iommu@lists.linux.dev>; Mon, 31 Mar 2025 20:43:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743452541; cv=none; b=TDfPs96AtfldW/9N3GMpybBDx57rGfczN7lnnZSafe8vYNDhEqPkCIvzTRb6uDruqIvCc4DtxgOgsw5zkTNoD67CNBDFyy9Q2jtpfNsVwP9a1Fzqc0owx4bAd8a+eT/T2ghHUHbyAl8WOOHZQenhfnEj34gF9dZvpvN3PhTmaKU=
+	t=1743453839; cv=none; b=fVIoU1Qi8gJEg619DJlKBMPrbII9k5q/M2xoN59NH7MXg4xpRr4clkQx3QKC7iPakUpsy/afEKTaIekqkAk4VVPrXK1p9KQIrruz5KVj6RYsmLjSK1xzx3RWNcooeToAH5FT1P+7vN6CHNFDlW1KGDysn4GtxdWCmvXceYZbcWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743452541; c=relaxed/simple;
-	bh=HtTFMgltI4qAwHMC3yfg+IBlmksL+v49/IqjdTGFu/M=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dlSKeF085K71bIxXKSc7VHxqRFYk2F8BOjXtkIZ/0sEDaa4EjGbCLkyc9IXgHNJuodzCQw1HEvW1nGq9hpXvrMobxfvkElsL5KTBNlx6ZoEuyEymW1eQw5j5kR0WVq25cpX9pNncVyxIdvlQBFMgowwp/CJKj+jKYqKEGohs2mY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=K1uVeJQa; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1743453839; c=relaxed/simple;
+	bh=NhmnlMAAlfE+UJZ4bK8dEFy6Cahb9IglOuPC0RLUf2U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=O6bafgWBoKqtPJFaNJRxaT2giGnEfQb/PX+w++RU5DjciQeHbLYBAuASYml/EZc2vpUDqPk7Es9ZUZ87flWkhUeBiDd6OgjMX1Dc/NI0n0VwHumzBACWuZPgr1ymk26bOB90Chem4qoOMb1VEbDsA5g8Bqbs+KFN2+ZeWROS3gg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Rfu0dnrU; arc=none smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="K1uVeJQa"
-Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52VHBcnZ028358;
-	Mon, 31 Mar 2025 20:22:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=pp1; bh=MYKS5+fstXt4SowN5
-	PAn91bu+mAs7kk6UAjqLUbzqj0=; b=K1uVeJQaCz6MeGq/VEU9NnE8PT0xBV9G3
-	dAixp6ALZ0cykiPrnBcLwqqDG2DVPnHY/DLBAVPDbn3NZdZUPI8GYURPf8YT8435
-	W5wmijIS5j6yPTPMobIJIV4kPuOrFTyxM2lBzqWDVlR7U2WYhXkmN3kE8KxYxg3/
-	pGkO3yleLtoziCAEAHpsyFm28i9UbWk05CgSRbHYnzSsXaZd0Gl/7hERzhngJu9t
-	fzyOIRrzyuTFsWqhN2WrtJ7QgLgqPQf/yibg3tEXIihyqWm7G3AZKz/8SC1EMF2Z
-	sSPLG3sw+Gl7af9KNyldf5besTszN7bqO+Wu74yyLzD4SccY1f4dg==
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 45qy7x8tfb-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 31 Mar 2025 20:22:11 +0000 (GMT)
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 52VHNMf7019391;
-	Mon, 31 Mar 2025 20:22:11 GMT
-Received: from smtprelay02.dal12v.mail.ibm.com ([172.16.1.4])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 45pu6symsn-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 31 Mar 2025 20:22:11 +0000
-Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
-	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 52VKM9lt18022992
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 31 Mar 2025 20:22:10 GMT
-Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D2E2958043;
-	Mon, 31 Mar 2025 20:22:09 +0000 (GMT)
-Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 5DC3158061;
-	Mon, 31 Mar 2025 20:22:08 +0000 (GMT)
-Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.61.39.63])
-	by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 31 Mar 2025 20:22:08 +0000 (GMT)
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
-Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, borntraeger@linux.ibm.com, clg@redhat.com,
-        iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org
-Subject: [PATCH v4 5/5] iommu/s390: allow larger region tables
-Date: Mon, 31 Mar 2025 16:21:59 -0400
-Message-ID: <20250331202159.85956-6-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.49.0
-In-Reply-To: <20250331202159.85956-1-mjrosato@linux.ibm.com>
-References: <20250331202159.85956-1-mjrosato@linux.ibm.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Rfu0dnrU"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-abf3d64849dso750180866b.3
+        for <iommu@lists.linux.dev>; Mon, 31 Mar 2025 13:43:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1743453835; x=1744058635; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NhmnlMAAlfE+UJZ4bK8dEFy6Cahb9IglOuPC0RLUf2U=;
+        b=Rfu0dnrU8hDAIx6YznWBt8sefiYtazKgEzYIMQr2eUDjkBTo7kfBUPwFgx0wzJt2mN
+         6yfJJ0HVzMF1MqQlZ2KNmJPO4ylId+ScZuQI73huL56YOmtAqnX1rsyVr3pnEpUcriks
+         suSE4zD1e9EIyN9Ee34gMx68VnMyJH55MVvz7lCPJk2LZPBBtWohBCO35wuUIhgx3Ujx
+         DusluJ7BE3Nh1gc+pFCktZ3EMoiadVDLTWlnlEda5I6no/MjtAR1XNf89ktTk7gn17Qb
+         Ffxg9acT6uE5MIDAS3l9+O3pAv6nB9ZXsS0EsJY4nj5iGWQueI5oH3HT+DPoxgRdfRjD
+         u7oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1743453835; x=1744058635;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NhmnlMAAlfE+UJZ4bK8dEFy6Cahb9IglOuPC0RLUf2U=;
+        b=wjcm3hnGtH/csLgZdeQuQQH5Uu4IFU5sqyatQrvpHBp32JbURzCXfPjTjayt+jNQnE
+         e+hCZt4/Y9thOe/O9LRMa3CDfqomC+1iI6nYLznHagArtiPHOsncCJaZ5herx5t+J5Ho
+         XU4h2aHIKGW27dXJgOlamVBisQHNYCBc458O+x4P20S05UH0d/Po1qZfrIuONPyFqegb
+         WJOJmMBvwMVoabzxUPi6PgPykhcA8ukA0rGPdyr1q1d3qVn+xA42bBALjOny4IHaRVz0
+         8HE3DsEr/LqIDEyOhfY/CQ5BP/L41QjzFCyEgGCcAwrq09pN3XkMZf9pHvAUGb6MVHBX
+         9Mig==
+X-Forwarded-Encrypted: i=1; AJvYcCUgBSDFRFDhY9UlGxy8t5KOwIDMu/78NkFdjY6S0z1Qtf7zwi5pqatfC6paUHEQteIc3SH2eQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxwjkf4/r4adySHVTvJ3tEHZ8CamnD226w/XB0tTwXisA8k6XFr
+	P5GaUjSO59zhZB+lE23HvKWTIASantrYzaueJ47qNDEqZOaQalx1OxKuEdyRDNMnhOQkmFh2cP1
+	vMVNx2peIWBgSvUEExBcMSL8Hcpg=
+X-Gm-Gg: ASbGncuJFkYsXIhWAvEeBYHWkywxCzop8yOP9ErfA5QKfddSF4zh0Kc0sNF9fHwG+EB
+	Dnap46UZgGBJgLsnDP9TP2FX4vVfVXJIcTsNCp/IZ2xLYct/gDRd03NHx5se7I+PBI3fUdQn7wv
+	F2zHMHZxgLqFb9tVbvIyKOE7So
+X-Google-Smtp-Source: AGHT+IGa2ATWEnPtBZKrovC/2tQXOIHQaYNh/KXGz4WWHKDhRqKyDzgdS0ONK7AXu9tKvknpMnQpqfeFIU5BV3Y+5xU=
+X-Received: by 2002:a17:906:1718:b0:ac7:391b:e684 with SMTP id
+ a640c23a62f3a-ac7391beac4mr794735366b.58.1743453835197; Mon, 31 Mar 2025
+ 13:43:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: CL1UUsNO5npEVkLe0ezogNgu86LZRGPI
-X-Proofpoint-GUID: CL1UUsNO5npEVkLe0ezogNgu86LZRGPI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-31_09,2025-03-27_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- adultscore=0 mlxlogscore=851 spamscore=0 priorityscore=1501
- lowpriorityscore=0 bulkscore=0 phishscore=0 suspectscore=0 impostorscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502280000 definitions=main-2503310138
+References: <20250310-dmem-cgroups-v1-0-2984c1bc9312@kernel.org>
+ <f5fdc666-dd72-4a4f-9270-b539a3179382@amd.com> <20250310-eccentric-wonderful-puffin-ddbb26@houat>
+In-Reply-To: <20250310-eccentric-wonderful-puffin-ddbb26@houat>
+From: Dave Airlie <airlied@gmail.com>
+Date: Tue, 1 Apr 2025 06:43:43 +1000
+X-Gm-Features: AQ5f1Jo63dx6IuKsG5SoyFqmX486Pcaveqb15lGzyp5QvSc5pKKZ1U2dlNV04bE
+Message-ID: <CAPM=9tzkLXOz=-3eujUbbjMHunR+_5JZ4oQaqNmbrWWF9WZJ0w@mail.gmail.com>
+Subject: Re: [PATCH RFC 00/12] dma: Enable dmem cgroup tracking
+To: Maxime Ripard <mripard@kernel.org>
+Cc: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Simona Vetter <simona@ffwll.ch>, Tomasz Figa <tfiga@chromium.org>, 
+	Mauro Carvalho Chehab <mchehab@kernel.org>, Ben Woodard <woodard@redhat.com>, 
+	Hans Verkuil <hverkuil@xs4all.nl>, 
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-mm@kvack.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linaro-mm-sig@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Extend the aperture calculation to consider sizes beyond the maximum
-size of a region third table.  Attempt to always use the smallest
-table size possible to avoid unnecessary extra steps during translation.
-Update reserved region calculations to use the appropriate table size.
+On Tue, 11 Mar 2025 at 00:26, Maxime Ripard <mripard@kernel.org> wrote:
+>
+> Hi,
+>
+> On Mon, Mar 10, 2025 at 03:16:53PM +0100, Christian K=C3=B6nig wrote:
+> > [Adding Ben since we are currently in the middle of a discussion
+> > regarding exactly that problem]
+> >
+> > Just for my understanding before I deep dive into the code: This uses
+> > a separate dmem cgroup and does not account against memcg, don't it?
+>
+> Yes. The main rationale being that it doesn't always make sense to
+> register against memcg: a lot of devices are going to allocate from
+> dedicated chunks of memory that are either carved out from the main
+> memory allocator, or not under Linux supervision at all.
+>
+> And if there's no way to make it consistent across drivers, it's not the
+> right tool.
+>
 
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
- arch/s390/include/asm/pci_dma.h |  1 +
- drivers/iommu/s390-iommu.c      | 71 ++++++++++++++++++++++++---------
- 2 files changed, 53 insertions(+), 19 deletions(-)
+While I agree on that, if a user can cause a device driver to allocate
+memory that is also memory that memcg accounts, then we have to
+interface with memcg to account that memory.
 
-diff --git a/arch/s390/include/asm/pci_dma.h b/arch/s390/include/asm/pci_dma.h
-index 8d8962e4fd58..d12e17201661 100644
---- a/arch/s390/include/asm/pci_dma.h
-+++ b/arch/s390/include/asm/pci_dma.h
-@@ -25,6 +25,7 @@ enum zpci_ioat_dtype {
- #define ZPCI_KEY			(PAGE_DEFAULT_KEY << 5)
- 
- #define ZPCI_TABLE_SIZE_RT	(1UL << 42)
-+#define ZPCI_TABLE_SIZE_RS	(1UL << 53)
- 
- #define ZPCI_IOTA_STO_FLAG	(ZPCI_IOTA_IOT_ENABLED | ZPCI_KEY | ZPCI_IOTA_DT_ST)
- #define ZPCI_IOTA_RTTO_FLAG	(ZPCI_IOTA_IOT_ENABLED | ZPCI_KEY | ZPCI_IOTA_DT_RT)
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 46f45b136993..30306321616d 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -511,9 +511,25 @@ static bool s390_iommu_capable(struct device *dev, enum iommu_cap cap)
- 	}
- }
- 
-+static inline u64 max_tbl_size(struct s390_domain *domain)
-+{
-+	switch (domain->origin_type) {
-+	case ZPCI_TABLE_TYPE_RTX:
-+		return ZPCI_TABLE_SIZE_RT - 1;
-+	case ZPCI_TABLE_TYPE_RSX:
-+		return ZPCI_TABLE_SIZE_RS - 1;
-+	case ZPCI_TABLE_TYPE_RFX:
-+		return U64_MAX;
-+	default:
-+		return 0;
-+	}
-+}
-+
- static struct iommu_domain *s390_domain_alloc_paging(struct device *dev)
- {
-+	struct zpci_dev *zdev = to_zpci_dev(dev);
- 	struct s390_domain *s390_domain;
-+	u64 aperture_size;
- 
- 	s390_domain = kzalloc(sizeof(*s390_domain), GFP_KERNEL);
- 	if (!s390_domain)
-@@ -524,10 +540,26 @@ static struct iommu_domain *s390_domain_alloc_paging(struct device *dev)
- 		kfree(s390_domain);
- 		return NULL;
- 	}
-+
-+	aperture_size = min(s390_iommu_aperture,
-+			    zdev->end_dma - zdev->start_dma + 1);
-+	if (aperture_size <= (ZPCI_TABLE_SIZE_RT - zdev->start_dma)) {
-+		s390_domain->origin_type = ZPCI_TABLE_TYPE_RTX;
-+	} else if (aperture_size <= (ZPCI_TABLE_SIZE_RS - zdev->start_dma) &&
-+		  (zdev->dtsm & ZPCI_IOTA_DT_RS)) {
-+		s390_domain->origin_type = ZPCI_TABLE_TYPE_RSX;
-+	} else if (zdev->dtsm & ZPCI_IOTA_DT_RF) {
-+		s390_domain->origin_type = ZPCI_TABLE_TYPE_RFX;
-+	} else {
-+		/* Assume RTX available */
-+		s390_domain->origin_type = ZPCI_TABLE_TYPE_RTX;
-+		aperture_size = ZPCI_TABLE_SIZE_RT - zdev->start_dma;
-+	}
-+	zdev->end_dma = zdev->start_dma + aperture_size - 1;
-+
- 	s390_domain->domain.geometry.force_aperture = true;
- 	s390_domain->domain.geometry.aperture_start = 0;
--	s390_domain->domain.geometry.aperture_end = ZPCI_TABLE_SIZE_RT - 1;
--	s390_domain->origin_type = ZPCI_TABLE_TYPE_RTX;
-+	s390_domain->domain.geometry.aperture_end = max_tbl_size(s390_domain);
- 
- 	spin_lock_init(&s390_domain->list_lock);
- 	INIT_LIST_HEAD_RCU(&s390_domain->devices);
-@@ -680,6 +712,9 @@ static void s390_iommu_get_resv_regions(struct device *dev,
- {
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
- 	struct iommu_resv_region *region;
-+	struct s390_domain *s390_domain;
-+	unsigned long flags;
-+	u64 end_resv;
- 
- 	if (zdev->start_dma) {
- 		region = iommu_alloc_resv_region(0, zdev->start_dma, 0,
-@@ -689,14 +724,23 @@ static void s390_iommu_get_resv_regions(struct device *dev,
- 		list_add_tail(&region->list, list);
- 	}
- 
--	if (zdev->end_dma < ZPCI_TABLE_SIZE_RT - 1) {
--		region = iommu_alloc_resv_region(zdev->end_dma + 1,
--						 ZPCI_TABLE_SIZE_RT - zdev->end_dma - 1,
--						 0, IOMMU_RESV_RESERVED, GFP_KERNEL);
-+	spin_lock_irqsave(&zdev->dom_lock, flags);
-+	if (zdev->s390_domain->type == IOMMU_DOMAIN_BLOCKED ||
-+	    zdev->s390_domain->type == IOMMU_DOMAIN_IDENTITY)
-+		goto out;
-+
-+	s390_domain = to_s390_domain(zdev->s390_domain);
-+	if (zdev->end_dma < max_tbl_size(s390_domain)) {
-+		end_resv = max_tbl_size(s390_domain) - zdev->end_dma;
-+		region = iommu_alloc_resv_region(zdev->end_dma + 1, end_resv,
-+						 0, IOMMU_RESV_RESERVED,
-+						 GFP_KERNEL);
- 		if (!region)
--			return;
-+			goto out;
- 		list_add_tail(&region->list, list);
- 	}
-+out:
-+	spin_unlock_irqrestore(&zdev->dom_lock, flags);
- }
- 
- static struct iommu_device *s390_iommu_probe_device(struct device *dev)
-@@ -708,13 +752,9 @@ static struct iommu_device *s390_iommu_probe_device(struct device *dev)
- 
- 	zdev = to_zpci_dev(dev);
- 
--	if (zdev->start_dma > zdev->end_dma ||
--	    zdev->start_dma > ZPCI_TABLE_SIZE_RT - 1)
-+	if (zdev->start_dma > zdev->end_dma)
- 		return ERR_PTR(-EINVAL);
- 
--	if (zdev->end_dma > ZPCI_TABLE_SIZE_RT - 1)
--		zdev->end_dma = ZPCI_TABLE_SIZE_RT - 1;
--
- 	if (zdev->tlb_refresh)
- 		dev->iommu->shadow_on_flush = 1;
- 
-@@ -999,7 +1039,6 @@ struct zpci_iommu_ctrs *zpci_get_iommu_ctrs(struct zpci_dev *zdev)
- 
- int zpci_init_iommu(struct zpci_dev *zdev)
- {
--	u64 aperture_size;
- 	int rc = 0;
- 
- 	rc = iommu_device_sysfs_add(&zdev->iommu_dev, NULL, NULL,
-@@ -1017,12 +1056,6 @@ int zpci_init_iommu(struct zpci_dev *zdev)
- 	if (rc)
- 		goto out_sysfs;
- 
--	zdev->start_dma = PAGE_ALIGN(zdev->start_dma);
--	aperture_size = min3(s390_iommu_aperture,
--			     ZPCI_TABLE_SIZE_RT - zdev->start_dma,
--			     zdev->end_dma - zdev->start_dma + 1);
--	zdev->end_dma = zdev->start_dma + aperture_size - 1;
--
- 	return 0;
- 
- out_sysfs:
--- 
-2.49.0
+The pathological case would be a single application wanting to use 90%
+of RAM for device allocations, freeing it all, then using 90% of RAM
+for normal usage. How to create a policy that would allow that with
+dmem and memcg is difficult, since if you say you can do 90% on both
+then the user can easily OOM the system.
 
+Dave.
+> Maxime
