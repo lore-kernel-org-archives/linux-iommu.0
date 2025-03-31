@@ -1,118 +1,136 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 058E2173;
-	Mon, 31 Mar 2025 07:23:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1812427726
+	for <iommu@lists.linux.dev>; Mon, 31 Mar 2025 10:58:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743405837; cv=none; b=JC+afLCJeiRZpC9lZWLEPSUx7RRKg2wn37imVIi5fTxpt82jueTcweAGGxlGJTAz5CpnmgNGecMxInF0ecFT3F+7a1OlkF7NQg0l94t3hV65rXi+L6yBWedlnhSs4W0PQs1V0jyqcLmCnGawxLCRu5Xba5L0UxPhg2fu9yEZd7A=
+	t=1743418731; cv=none; b=fSuBejZkPLhTlUJm3ocRceeUTFpG8T4OYs/pfOeWWfsqEgvXEIUw4Lnv+WOw7TARhheQrJmlCTvDw8EYvrv4j4WEqGv5J6pL293XxRKLFGxEAgJ7KU2H+M8Z+WMiCfFksiEaXzu5tXQqh/E0WjuIUy4kO9iwi54UpDlsbwlPV8k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743405837; c=relaxed/simple;
-	bh=Bd4owxWHhGkZzOfNhIaGrET3H137uDGRw7djbI4sleA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=j3lBjOEdjBCrgI+MGm7pTdZoVfAOamr6KLfCbYeOyZoP7OEktWHrlkOent/7Cyz3NWfE9AAqhuHnjU+yc17qkI7e6iayJVcduV9nV76Ot3IaFk8Rp1hP3b5iUIBLUvVmiMirDEE22SAhIXet9eREERPAp0AKEAdOW+psP9uOYM8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jeAUocNv; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1743418731; c=relaxed/simple;
+	bh=EdbgafNxYGu/0XTf7zfAz1bXaEoSlO/vk/i5SU4szcw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i4lfE5no6P8gxh7dNm6Q7I4Kvi/VWYlXK9d35bOQdh4OZwDw1BGJuIS9qqgUZgts6XZivGSv7UbJhFtLi07WHiipk0Zco6HplbLmF10AMIXiev6z+eUSJCsWLYAcJD+2OW1FD9w7m3NUC1Z7cyr/A+H3UaV26MeFO6iMJo7r6A0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Gg7dC1iF; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jeAUocNv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9079C4CEE3;
-	Mon, 31 Mar 2025 07:23:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1743405836;
-	bh=Bd4owxWHhGkZzOfNhIaGrET3H137uDGRw7djbI4sleA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=jeAUocNvdYTsG0w92ZMxxtRxAzDuGvvSGeKLYsBiQy3GgH9F6NCUrAZUk4XDZYpIw
-	 /bTL+Mu5hdfdnUcfGA7DvcM7lvUiF7cGnGaL9zcUq3M73yLIqHrZqrcNBjT0xJ8Tmk
-	 mZRcbpYprcw2dfvBgxyl2ZPg73SMZk266hcdICBtI3VvNOo62T7KA6Prn77TiI6we+
-	 JUH5wjQnGsom+zlMXpzqEqcO2oxB4Ixbu8q5OzKmFE609QniPuRdViL38LoYnF1qxL
-	 /awNAmFOMnmAk4AylzVTUi5w+DCUXTM17/gi39SmjfNZVGTWm/T+FIq28PIDATXMEU
-	 i6lM6961x2KQQ==
-From: Andreas Hindborg <a.hindborg@kernel.org>
-To: "Benno Lossin" <benno.lossin@proton.me>
-Cc: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>,  <ojeda@kernel.org>,
-  "Danilo Krummrich" <dakr@kernel.org>,  "Daniel Almeida"
- <daniel.almeida@collabora.com>,  "Robin Murphy" <robin.murphy@arm.com>,
-  "Alex Gaynor" <alex.gaynor@gmail.com>,  "Boqun Feng"
- <boqun.feng@gmail.com>,  "Gary Guo" <gary@garyguo.net>,  =?utf-8?Q?Bj?=
- =?utf-8?Q?=C3=B6rn?= Roy Baron
- <bjorn3_gh@protonmail.com>,  "Alice Ryhl" <aliceryhl@google.com>,  "Trevor
- Gross" <tmgross@umich.edu>,  "open list:DMA MAPPING HELPERS DEVICE DRIVER
- API [RUST]" <rust-for-linux@vger.kernel.org>,  "Marek Szyprowski"
- <m.szyprowski@samsung.com>,  "open list:DMA MAPPING HELPERS"
- <iommu@lists.linux.dev>,  "open list" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] rust: dma: add as_slice/write functions for
- CoherentAllocation
-In-Reply-To: <D8REKSIL1W0E.6A40JD86RFPZ@proton.me> (Benno Lossin's message of
-	"Thu, 27 Mar 2025 22:31:02 +0000")
-References: <20250326201230.3193329-1-abdiel.janulgue@gmail.com>
-	<20250326201230.3193329-4-abdiel.janulgue@gmail.com>
-	<DCOZ-dq4bhxZ-K_Fl61tlmWk89AfdmVvbCO-2xxgMZV2lP6QalgBE20J901AhbZPCHuzDty3iDERbTWp1_ys0Q==@protonmail.internalid>
-	<D8REKSIL1W0E.6A40JD86RFPZ@proton.me>
-User-Agent: mu4e 1.12.7; emacs 29.4
-Date: Mon, 31 Mar 2025 09:23:35 +0200
-Message-ID: <87a59164ug.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Gg7dC1iF"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52V4VTeq030864;
+	Mon, 31 Mar 2025 10:58:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=1xzsUz
+	kznSz9Dr4e9xWfh0mKDxu6S+leuxvVC4YqcUY=; b=Gg7dC1iFI1bQpIB6cNFE2s
+	NQ+0wjFaUyb7435368UrRiMcSJjaxrTuR6POKTH2qUdf9uYe63FhpKLGuPHQfvwp
+	qmh7JkcUvCulBfAcINMKuZTYDwtxhl8J1jn2PANt4PEAIL76EnmS8xoqM+T9Efpl
+	WbTruD7YcOBDnu8Ze4KsR1STNLx+04YhKtrNNPnrSx8eYqpcoYikl5XSAG1ifg/6
+	6Ca0gNx+B9y5pM+tlsZTYjNobUdeP7UHAoFBkNxWw2g1jnXds0CK4lhk64KHtVE6
+	3uQYJTUvfV0sRLWvG1JKKkbVUiqk/ftddBefKN/Lm9rxseWSVDLDAEDHm5zcQT2Q
+	==
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 45q602kyny-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 31 Mar 2025 10:58:47 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 52V8uw38005213;
+	Mon, 31 Mar 2025 10:58:46 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 45pujynmd6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 31 Mar 2025 10:58:46 +0000
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 52VAwgWD19202414
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 31 Mar 2025 10:58:42 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 59FBA2004B;
+	Mon, 31 Mar 2025 10:58:42 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1527E20040;
+	Mon, 31 Mar 2025 10:58:41 +0000 (GMT)
+Received: from localhost (unknown [9.171.66.204])
+	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Mon, 31 Mar 2025 10:58:41 +0000 (GMT)
+Date: Mon, 31 Mar 2025 12:58:39 +0200
+From: Vasily Gorbik <gor@linux.ibm.com>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>,
+        Will Deacon <will@kernel.org>, Gerd Bayer <gbayer@linux.ibm.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH v2] s390/pci: Fix dev.dma_range_map missing sentinel
+ element
+Message-ID: <your-ad-here.call-01743418719-ext-6354@work.hours>
+References: <20250312-fix_dma_map_alloc-v2-1-530108d9de21@linux.ibm.com>
+ <c6bcb10536005fd36966a97574e424c17cde1105.camel@linux.ibm.com>
+ <your-ad-here.call-01743087110-ext-9280@work.hours>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <your-ad-here.call-01743087110-ext-9280@work.hours>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Ru52HP92MBdeCfXZqx7EbOK2m9jmqgDq
+X-Proofpoint-ORIG-GUID: Ru52HP92MBdeCfXZqx7EbOK2m9jmqgDq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-31_04,2025-03-27_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ impostorscore=0 suspectscore=0 mlxlogscore=999 priorityscore=1501
+ adultscore=0 bulkscore=0 lowpriorityscore=0 clxscore=1015 spamscore=0
+ phishscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502280000 definitions=main-2503310078
 
-"Benno Lossin" <benno.lossin@proton.me> writes:
+On Thu, Mar 27, 2025 at 03:51:50PM +0100, Vasily Gorbik wrote:
+> On Thu, Mar 27, 2025 at 10:45:40AM +0100, Niklas Schnelle wrote:
+> > On Wed, 2025-03-12 at 11:32 +0100, Niklas Schnelle wrote:
+> > > The fixed commit sets up dev.dma_range_map but missed that this is
+> > > supposed to be an array of struct bus_dma_region with a sentinel element
+> > > with the size field set to 0 at the end. This would lead to overruns in
+> > > e.g. dma_range_map_min(). It could also result in wrong translations
+> > > instead of DMA_MAPPING_ERROR in translate_phys_to_dma() if the paddr
+> > > were to not fit in the aperture. Fix this by using the
+> > > dma_direct_set_offset() helper which creates a sentinel for us.
+> > > 
+> > > Fixes: d236843a6964 ("s390/pci: store DMA offset in bus_dma_region")
+> > > Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> > > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> > > ---
+> > > Note: Based on iommu/next
+> > > 
+> > > v1 -> v2:
+> > > - Fixed typo, added trailers
+> > > - Link to v1: https://lore.kernel.org/r/20250306-fix_dma_map_alloc-v1-1-b4fa44304eac@linux.ibm.com
+> > > ---
+> > >  arch/s390/pci/pci_bus.c | 24 +++++++++++-------------
+> > >  1 file changed, 11 insertions(+), 13 deletions(-)
+> > > 
+> > 
+> > With the IOMMU pull request for Linux v6.15 the fixed commit is now in
+> > Linus tree (with the SHA as cited) but this fix isn't. Since this fix
+> > only touches s390 specific code I think it could go through the s390
+> > tree but that currently doesn't carry the fixed commit so would have to
+> > wait until the s390 tree pulls in v6.15-rc1. 
+> > 
+> > I don't think any breakage from the missing sentinel is visible outside
+> > of guests using the new IOMMU passthrough mode so I guess waiting until
+> > after v6.15-rc1 would be okay.
+> > 
+> > Heiko, Vasily, Alexander what do you think?
+> 
+> Sure, I'll pick it up in the s390 tree for rc1 or rc2, depending on
+> whether there will be a second s390 tree pull request during the merge
+> window.
 
-> On Wed Mar 26, 2025 at 9:11 PM CET, Abdiel Janulgue wrote:
->> +    /// Returns the data from the region starting from `offset` as a slice.
->> +    /// `offset` and `count` are in units of `T`, not the number of bytes.
->> +    ///
->> +    /// Due to the safety requirements of slice, the caller should consider that the region could
->> +    /// be modified by the device at anytime. For ringbuffer type of r/w access or use-cases where
->> +    /// the pointer to the live data is needed, `start_ptr()` or `start_ptr_mut()` could be
->> +    /// used instead.
->> +    ///
->> +    /// # Safety
->> +    ///
->> +    /// * Callers must ensure that no hardware operations that involve the buffer are currently
->> +    ///   taking place while the returned slice is live.
->> +    /// * Callers must ensure that this call does not race with a write to the same region while
->> +    ///   while the returned slice is live.
->> +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Result<&[T]> {
->> +        let end = offset.checked_add(count).ok_or(EOVERFLOW)?;
->> +        if end >= self.count {
->> +            return Err(EINVAL);
->> +        }
->> +        // SAFETY:
->> +        // - The pointer is valid due to type invariant on `CoherentAllocation`,
->> +        // we've just checked that the range and index is within bounds. The immutability of the
->> +        // of data is also guaranteed by the safety requirements of the function.
->> +        // - `offset` can't overflow since it is smaller than `self.count` and we've checked
->> +        // that `self.count` won't overflow early in the constructor.
->> +        Ok(unsafe { core::slice::from_raw_parts(self.cpu_addr.add(offset), count) })
->
-> I vaguely recall that there was some discussion on why this is OK (ie
-> the value behind the reference being modified by the device), but I
-> haven't followed it. Can you add the reasoning for why that is fine to
-> some comment here?
-
-My objection was with the function being safe. In this version it is
-unsafe, and the safety requirement is that there must be no concurrent
-reads/writes to the memory being operated on. That seems fine to me.
-
-> I also am not really fond of the phrase "hardware operations that
-> involve the buffer":
-> * what do you mean with "buffer"? `self`?
-> * what are "hardware operations"? (I no nothing about hardware, so that
->   might be a knowledge gap on my part)
-> * what does "involve" mean?
-
-It is clear to me, but using terminology read/write to/from memory is
-probably better. The operations being executed by hardware is not
-strictly relevant. We could have a note cautioning that devices must
-also obey this.
-
-
-Best regards,
-Andreas Hindborg
-
-
-
-
+Applied, thank you!
