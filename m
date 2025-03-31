@@ -1,99 +1,118 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE0F528399
-	for <iommu@lists.linux.dev>; Mon, 31 Mar 2025 07:23:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 058E2173;
+	Mon, 31 Mar 2025 07:23:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743405798; cv=none; b=LhwZarlsbKydlHTi9ua+9gpzyBO9AL/UN6eRo9+0stF7rx+Qi+SqgSC1Ny3NDt5kme3b/gu3q+Fq963JXDibSA6xMPlpQ2CIoS+R2PX67XbJdNOC5o95DCS+VEGyRoB0yNspsOFspWTYWpEFdv6ZIo3b/3zn3qfe/gY9i/8S0Ys=
+	t=1743405837; cv=none; b=JC+afLCJeiRZpC9lZWLEPSUx7RRKg2wn37imVIi5fTxpt82jueTcweAGGxlGJTAz5CpnmgNGecMxInF0ecFT3F+7a1OlkF7NQg0l94t3hV65rXi+L6yBWedlnhSs4W0PQs1V0jyqcLmCnGawxLCRu5Xba5L0UxPhg2fu9yEZd7A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743405798; c=relaxed/simple;
-	bh=J72FR0c0pkPAoRPukKWi2UAtfRD5G9v+Zv6nBsRj8H0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=XeGauArbbB0rMbGoRRVYGqccnygsqzJO8GuZvwJu7g/Mk4+C0jVjfmEDKmuCnYZkp30K8RdTBA8h8DuWIXrT+ccBNlZKPL1dkCcYkT9s6NSqJLGBOt2U3WzIk2skF6189xh4V0rNb78TuKLq3n4h8+NXjYftGIeK2x2mL4xhA5E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VAz+ZZxT; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1743405837; c=relaxed/simple;
+	bh=Bd4owxWHhGkZzOfNhIaGrET3H137uDGRw7djbI4sleA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=j3lBjOEdjBCrgI+MGm7pTdZoVfAOamr6KLfCbYeOyZoP7OEktWHrlkOent/7Cyz3NWfE9AAqhuHnjU+yc17qkI7e6iayJVcduV9nV76Ot3IaFk8Rp1hP3b5iUIBLUvVmiMirDEE22SAhIXet9eREERPAp0AKEAdOW+psP9uOYM8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jeAUocNv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VAz+ZZxT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1743405797; x=1774941797;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=J72FR0c0pkPAoRPukKWi2UAtfRD5G9v+Zv6nBsRj8H0=;
-  b=VAz+ZZxTN+a1grO8+CW/HawA2YzuMBHbTv5XjYDticHbQfoilZej1DHa
-   PQ2a/wyaVTSVsccTKjpDAnUbtDblF+/lZ2sUaKUGdlf05oV6vrjjzDnf3
-   xmnHl8nk/SEL7VWtyJCfxwvONNCyZzISLXd24MOPHIRjkpDmrEklGD4jC
-   SnDPT1rx8YD3DaeHwpeYNnk5girzFxbeSl6vAtpqf2LC5gOLMrSQMxw0m
-   mdBrALIHacODvokb9vvP2oCtVJFo+kixjP0xsFmywLDFQ/tCZQiGUWPhZ
-   9F8EL9gy3XLEGQ3fuwvULi0lrVnqN3wH/epRIIRQy6yw491qjBgU5Wakr
-   w==;
-X-CSE-ConnectionGUID: y1f3ugqsS36CsJHrZe2Wyw==
-X-CSE-MsgGUID: 5grrJO/rRFSlvUniR9B7VA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11389"; a="44858640"
-X-IronPort-AV: E=Sophos;i="6.14,290,1736841600"; 
-   d="scan'208";a="44858640"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2025 00:23:16 -0700
-X-CSE-ConnectionGUID: zy3YoCT2TUm8qijMD71ikQ==
-X-CSE-MsgGUID: MV8kfjhNRuW0IUQb1scrEw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,290,1736841600"; 
-   d="scan'208";a="125765167"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa009.jf.intel.com with ESMTP; 31 Mar 2025 00:23:14 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 8DFB61B4; Mon, 31 Mar 2025 10:23:12 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Robin Murphy <robin.murphy@arm.com>,
-	linux-acpi@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] ACPI: VIOT: Remove (explicitly) unused header
-Date: Mon, 31 Mar 2025 10:23:11 +0300
-Message-ID: <20250331072311.3987967-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.47.2
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jeAUocNv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9079C4CEE3;
+	Mon, 31 Mar 2025 07:23:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1743405836;
+	bh=Bd4owxWHhGkZzOfNhIaGrET3H137uDGRw7djbI4sleA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=jeAUocNvdYTsG0w92ZMxxtRxAzDuGvvSGeKLYsBiQy3GgH9F6NCUrAZUk4XDZYpIw
+	 /bTL+Mu5hdfdnUcfGA7DvcM7lvUiF7cGnGaL9zcUq3M73yLIqHrZqrcNBjT0xJ8Tmk
+	 mZRcbpYprcw2dfvBgxyl2ZPg73SMZk266hcdICBtI3VvNOo62T7KA6Prn77TiI6we+
+	 JUH5wjQnGsom+zlMXpzqEqcO2oxB4Ixbu8q5OzKmFE609QniPuRdViL38LoYnF1qxL
+	 /awNAmFOMnmAk4AylzVTUi5w+DCUXTM17/gi39SmjfNZVGTWm/T+FIq28PIDATXMEU
+	 i6lM6961x2KQQ==
+From: Andreas Hindborg <a.hindborg@kernel.org>
+To: "Benno Lossin" <benno.lossin@proton.me>
+Cc: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>,  <ojeda@kernel.org>,
+  "Danilo Krummrich" <dakr@kernel.org>,  "Daniel Almeida"
+ <daniel.almeida@collabora.com>,  "Robin Murphy" <robin.murphy@arm.com>,
+  "Alex Gaynor" <alex.gaynor@gmail.com>,  "Boqun Feng"
+ <boqun.feng@gmail.com>,  "Gary Guo" <gary@garyguo.net>,  =?utf-8?Q?Bj?=
+ =?utf-8?Q?=C3=B6rn?= Roy Baron
+ <bjorn3_gh@protonmail.com>,  "Alice Ryhl" <aliceryhl@google.com>,  "Trevor
+ Gross" <tmgross@umich.edu>,  "open list:DMA MAPPING HELPERS DEVICE DRIVER
+ API [RUST]" <rust-for-linux@vger.kernel.org>,  "Marek Szyprowski"
+ <m.szyprowski@samsung.com>,  "open list:DMA MAPPING HELPERS"
+ <iommu@lists.linux.dev>,  "open list" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 3/3] rust: dma: add as_slice/write functions for
+ CoherentAllocation
+In-Reply-To: <D8REKSIL1W0E.6A40JD86RFPZ@proton.me> (Benno Lossin's message of
+	"Thu, 27 Mar 2025 22:31:02 +0000")
+References: <20250326201230.3193329-1-abdiel.janulgue@gmail.com>
+	<20250326201230.3193329-4-abdiel.janulgue@gmail.com>
+	<DCOZ-dq4bhxZ-K_Fl61tlmWk89AfdmVvbCO-2xxgMZV2lP6QalgBE20J901AhbZPCHuzDty3iDERbTWp1_ys0Q==@protonmail.internalid>
+	<D8REKSIL1W0E.6A40JD86RFPZ@proton.me>
+User-Agent: mu4e 1.12.7; emacs 29.4
+Date: Mon, 31 Mar 2025 09:23:35 +0200
+Message-ID: <87a59164ug.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-The fwnode.h is not supposed to be used by the drivers as it
-has the definitions for the core parts for different device
-property provider implementations. Drop it.
+"Benno Lossin" <benno.lossin@proton.me> writes:
 
-Note, that fwnode API for drivers is provided in property.h
-which is included here.
+> On Wed Mar 26, 2025 at 9:11 PM CET, Abdiel Janulgue wrote:
+>> +    /// Returns the data from the region starting from `offset` as a slice.
+>> +    /// `offset` and `count` are in units of `T`, not the number of bytes.
+>> +    ///
+>> +    /// Due to the safety requirements of slice, the caller should consider that the region could
+>> +    /// be modified by the device at anytime. For ringbuffer type of r/w access or use-cases where
+>> +    /// the pointer to the live data is needed, `start_ptr()` or `start_ptr_mut()` could be
+>> +    /// used instead.
+>> +    ///
+>> +    /// # Safety
+>> +    ///
+>> +    /// * Callers must ensure that no hardware operations that involve the buffer are currently
+>> +    ///   taking place while the returned slice is live.
+>> +    /// * Callers must ensure that this call does not race with a write to the same region while
+>> +    ///   while the returned slice is live.
+>> +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Result<&[T]> {
+>> +        let end = offset.checked_add(count).ok_or(EOVERFLOW)?;
+>> +        if end >= self.count {
+>> +            return Err(EINVAL);
+>> +        }
+>> +        // SAFETY:
+>> +        // - The pointer is valid due to type invariant on `CoherentAllocation`,
+>> +        // we've just checked that the range and index is within bounds. The immutability of the
+>> +        // of data is also guaranteed by the safety requirements of the function.
+>> +        // - `offset` can't overflow since it is smaller than `self.count` and we've checked
+>> +        // that `self.count` won't overflow early in the constructor.
+>> +        Ok(unsafe { core::slice::from_raw_parts(self.cpu_addr.add(offset), count) })
+>
+> I vaguely recall that there was some discussion on why this is OK (ie
+> the value behind the reference being modified by the device), but I
+> haven't followed it. Can you add the reasoning for why that is fine to
+> some comment here?
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/acpi/viot.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+My objection was with the function being safe. In this version it is
+unsafe, and the safety requirement is that there must be no concurrent
+reads/writes to the memory being operated on. That seems fine to me.
 
-diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
-index 2aa69a2fba73..c13a20365c2c 100644
---- a/drivers/acpi/viot.c
-+++ b/drivers/acpi/viot.c
-@@ -19,11 +19,11 @@
- #define pr_fmt(fmt) "ACPI: VIOT: " fmt
- 
- #include <linux/acpi_viot.h>
--#include <linux/fwnode.h>
- #include <linux/iommu.h>
- #include <linux/list.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
-+#include <linux/property.h>
- 
- struct viot_iommu {
- 	/* Node offset within the table */
--- 
-2.47.2
+> I also am not really fond of the phrase "hardware operations that
+> involve the buffer":
+> * what do you mean with "buffer"? `self`?
+> * what are "hardware operations"? (I no nothing about hardware, so that
+>   might be a knowledge gap on my part)
+> * what does "involve" mean?
+
+It is clear to me, but using terminology read/write to/from memory is
+probably better. The operations being executed by hardware is not
+strictly relevant. We could have a note cautioning that devices must
+also obey this.
+
+
+Best regards,
+Andreas Hindborg
+
+
+
 
