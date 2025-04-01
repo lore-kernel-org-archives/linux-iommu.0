@@ -1,25 +1,60 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A2DF202C43
-	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 13:53:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F382202C52
+	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 14:08:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743515631; cv=none; b=myH1p9PVPvxXPaD0bfPZCJXMhQtFqUIbyPkHsv4ojc+QNoBWU9dt9w1HbmeOWs06IUIozb0ApXNPLJwcyKDW2jeE9X/mH9tLoRRGx/gYY6zHUBkPYZdDKEq98j5t7aTAG8Je8EKF17lFdeDMYsiY1nSotyD+MRaUq/XbGueYMZI=
+	t=1743516515; cv=none; b=eeFuVKdr+NA7F6SydtKQZiz4ATWErB0BDtGhDZxILDVlRqgKCVhAh8Z+p6V07Wz3C3vd+rEWBY3TlninlHs5IXtrNaRrxGGusJmCjHa8/UfdIu2ljtRbtjsWTmyf9FoTnidFWe+0tLUX7JlBHclbkIK5pbLeuJohceJiV+mZVXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743515631; c=relaxed/simple;
-	bh=AblednFMzMtI+TpOGDymf/ADFvU3J9iD7EBV/bY0aag=;
+	s=arc-20240116; t=1743516515; c=relaxed/simple;
+	bh=yf4KBftqQerIboSU0GfiOAbRx4eHXYrBGOKXO9nthgE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LdXSb9zqJU418sPRZH02loI3WDwSjQeQfP31pCsBozs0QyfpS9hL2Gj9lUD9cq+zRaHm5fyI58Zmv2StytRkuyejlO3sCNHksiVDX5Cw2On6cUHaXeoqGaRPgqtX8YaawpoOaTVX0Gw2seYd0lmtAGq/56fF+BKYIILFj3U94Ic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C1F7C14BF;
-	Tue,  1 Apr 2025 06:53:52 -0700 (PDT)
-Received: from [10.57.67.199] (unknown [10.57.67.199])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 190D73F778;
-	Tue,  1 Apr 2025 06:53:47 -0700 (PDT)
-Message-ID: <f72bcfb2-e2a1-4dd4-bedf-241b75178958@arm.com>
-Date: Tue, 1 Apr 2025 14:53:35 +0100
+	 In-Reply-To:Content-Type; b=CzVPMhJKJe+W6NzybBH9OsWFvH9Cf+gVLevRkyJGVxSC81sSjwSBIn6rZAsjpB8XXlRRlKZ3K172r8KyhS4hStowv5ytKVQuossJJieQqjWM1QJ9FryZX4cmiqxdM/tIBXaZcXeQH4u5R7Wxacf60WPOXkQWVd4ymHizJJG42Ag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=ITF7mbJE; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="ITF7mbJE"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 531CSTj3027584;
+	Tue, 1 Apr 2025 14:08:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=oGt+tA
+	tfr79sFy0I5kEWXLud0pHCnJJIOKb8lUEjpbc=; b=ITF7mbJES6NF98Se0R4KCt
+	DqbebGgnsjkPiBTnyTR1Z0qvJdI2/dkv2jhtwc9IcnH2p3Inv8d9NoKeDd+IQfEe
+	eQPr/ifdQCdzWrwK7UXdoJRyjTjcWnGH1ra9SSZ8/lR98UNd51jwpV8uHkuvrPbo
+	Ie4OpLZrNXsqoEOYcD3fl8lMdaBOf1n+4DYSk9KXE6sMiDdaSQCEPC1ah2zdbagS
+	43U8H1NjXvSPFFmInoNczltK8YYd+UgckaVanIbrvBkdf+OcZa3X823A4ytwUows
+	A8l+qomjs6DbjhqasUz5a9bg82oOJwJhmbu04Tt8yrPoOGjvMXYQzM4V7hocKYTQ
+	==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 45rg67ghke-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 01 Apr 2025 14:08:26 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 531BPTtm019742;
+	Tue, 1 Apr 2025 14:08:25 GMT
+Received: from smtprelay07.wdc07v.mail.ibm.com ([172.16.1.74])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 45pu6t32ga-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 01 Apr 2025 14:08:25 +0000
+Received: from smtpav03.wdc07v.mail.ibm.com (smtpav03.wdc07v.mail.ibm.com [10.39.53.230])
+	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 531E8NOo28181184
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 1 Apr 2025 14:08:23 GMT
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id CC5135805C;
+	Tue,  1 Apr 2025 14:08:23 +0000 (GMT)
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 8541F5805A;
+	Tue,  1 Apr 2025 14:08:21 +0000 (GMT)
+Received: from [9.61.39.63] (unknown [9.61.39.63])
+	by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Tue,  1 Apr 2025 14:08:21 +0000 (GMT)
+Message-ID: <12f7109f-5375-4301-ac69-077761a0106f@linux.ibm.com>
+Date: Tue, 1 Apr 2025 10:08:20 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,119 +62,61 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Register in a sensible order
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-renesas-soc@vger.kernel.org
-References: <53be6667544de65a15415b699e38a9a965692e45.1742481687.git.robin.murphy@arm.com>
- <CAMuHMdUtCqwzeWY8G+yHiu4biovymDVb_UtjfYPEQYyYr+dP4Q@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <CAMuHMdUtCqwzeWY8G+yHiu4biovymDVb_UtjfYPEQYyYr+dP4Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH v4 5/5] iommu/s390: allow larger region tables
+To: Heiko Carstens <hca@linux.ibm.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
+        borntraeger@linux.ibm.com, clg@redhat.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+References: <20250331202159.85956-1-mjrosato@linux.ibm.com>
+ <20250331202159.85956-6-mjrosato@linux.ibm.com>
+ <20250401091115.7691Bd6-hca@linux.ibm.com>
+Content-Language: en-US
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20250401091115.7691Bd6-hca@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 1KOR8mZZQCGdo7POxOoXPcIwEYjRsXCa
+X-Proofpoint-GUID: 1KOR8mZZQCGdo7POxOoXPcIwEYjRsXCa
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-01_05,2025-04-01_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=823
+ suspectscore=0 lowpriorityscore=0 impostorscore=0 spamscore=0
+ malwarescore=0 phishscore=0 adultscore=0 mlxscore=0 priorityscore=1501
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502280000 definitions=main-2504010086
 
-On 2025-03-25 3:26 pm, Geert Uytterhoeven wrote:
-> Hi Robin,
-> 
-> On Thu, 20 Mar 2025 at 15:41, Robin Murphy <robin.murphy@arm.com> wrote:
->> IPMMU registers almost-initialised instances, but misses assigning the
->> drvdata to make them fully functional, so initial calls back into
->> ipmmu_probe_device() are likely to fail unnecessarily. Reorder this to
->> work as it should, also pruning the long-out-of-date comment and adding
->> the missing sysfs cleanup on error for good measure.
+On 4/1/25 5:11 AM, Heiko Carstens wrote:
+> On Mon, Mar 31, 2025 at 04:21:59PM -0400, Matthew Rosato wrote:
+>> Extend the aperture calculation to consider sizes beyond the maximum
+>> size of a region third table.  Attempt to always use the smallest
+>> table size possible to avoid unnecessary extra steps during translation.
+>> Update reserved region calculations to use the appropriate table size.
 >>
->> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
->> Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+>> ---
+>>  arch/s390/include/asm/pci_dma.h |  1 +
+>>  drivers/iommu/s390-iommu.c      | 71 ++++++++++++++++++++++++---------
+>>  2 files changed, 53 insertions(+), 19 deletions(-)
 > 
-> Thanks for your patch!
+> ...
 > 
-> This fixes the
+>> +	spin_lock_irqsave(&zdev->dom_lock, flags);
+>> +	if (zdev->s390_domain->type == IOMMU_DOMAIN_BLOCKED ||
+>> +	    zdev->s390_domain->type == IOMMU_DOMAIN_IDENTITY)
+>> +		goto out;
+>> +
+>> +	s390_domain = to_s390_domain(zdev->s390_domain);
+>> +	if (zdev->end_dma < max_tbl_size(s390_domain)) {
+>> +		end_resv = max_tbl_size(s390_domain) - zdev->end_dma;
+>> +		region = iommu_alloc_resv_region(zdev->end_dma + 1, end_resv,
+>> +						 0, IOMMU_RESV_RESERVED,
+>> +						 GFP_KERNEL);
 > 
->      sata_rcar ee300000.sata: late IOMMU probe at driver bind,
-> something fishy here!
->      WARNING: CPU: 1 PID: 13 at drivers/iommu/iommu.c:571
-> __iommu_probe_device+0x208/0x38c
-> 
-> I saw on Salvator-XS with R-Car M3-N.
-> 
-> It does not fix the second issue reported, so it is indeed too early for a
-> "Closes: https://lore.kernel.org/CAMuHMdWPFnHTFeeWL2-BU8tKOL-E5K2ROOz=LLBLTJJLCK9NgA@mail.gmail.com"
-> tag.
+> GFP_KERNEL allocation while holding a spinlock is not correct.
 
-You mean .of_xlate being called multiple times? That's not an issue, 
-it's normal and expected. Every time an IOMMU instance registers, it 
-triggers a probe of all relevant devices which do not yet have an IOMMU 
-- this has never been selective, so if a device is associated with a 
-different already-registered IOMMU instance, but does not have a group 
-because that instance's .probe_device rejected it, that probe also gets 
-tried (and rejected) again.
-
-The core code behaviour has been this way for a very long time, the only 
-new thing is that the .of_xlate calls are now in sync with their 
-corresponding .probe_device calls (and the latter are also now working 
-properly again for fwspec-based ops).
-
-Was it just that, or is there still something functionally amiss?
-
-> Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Thanks!
-
-Robin.
-
->> --- a/drivers/iommu/ipmmu-vmsa.c
->> +++ b/drivers/iommu/ipmmu-vmsa.c
->> @@ -1081,31 +1081,24 @@ static int ipmmu_probe(struct platform_device *pdev)
->>                  }
->>          }
->>
->> +       platform_set_drvdata(pdev, mmu);
-> 
-> Nit: perhaps insert a blank line here, before the comment below?
-> 
->>          /*
->>           * Register the IPMMU to the IOMMU subsystem in the following cases:
->>           * - R-Car Gen2 IPMMU (all devices registered)
->>           * - R-Car Gen3 IPMMU (leaf devices only - skip root IPMMU-MM device)
->>           */
->> -       if (!mmu->features->has_cache_leaf_nodes || !ipmmu_is_root(mmu)) {
->> -               ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL,
->> -                                            dev_name(&pdev->dev));
->> -               if (ret)
->> -                       return ret;
->> +       if (mmu->features->has_cache_leaf_nodes && ipmmu_is_root(mmu))
->> +               return 0;
->>
->> -               ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
->> -               if (ret)
->> -                       return ret;
->> -       }
->> +       ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL, dev_name(&pdev->dev));
->> +       if (ret)
->> +               return ret;
->>
->> -       /*
->> -        * We can't create the ARM mapping here as it requires the bus to have
->> -        * an IOMMU, which only happens when bus_set_iommu() is called in
->> -        * ipmmu_init() after the probe function returns.
->> -        */
->> +       ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
->> +       if (ret)
->> +               iommu_device_sysfs_remove(&mmu->iommu);
->>
->> -       platform_set_drvdata(pdev, mmu);
->> -
->> -       return 0;
->> +       return ret;
->>   }
->>
->>   static void ipmmu_remove(struct platform_device *pdev)
-> 
-> Gr{oetje,eeting}s,
-> 
->                          Geert
-> 
+Looks like I broke this in v3 -- Thanks for catching it.  There's no need to hold this spinlock for as long as we do here, including over the allocation itself; I will re-arrange so we can safely use GFP_KERNEL here.  
 
