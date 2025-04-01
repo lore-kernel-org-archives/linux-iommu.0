@@ -1,69 +1,82 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8A5E1EC011
-	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 09:11:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64B701F0E5F
+	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 10:35:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743498703; cv=none; b=fQsSC1UTxJu1axj3ly21SxZb+3FPFFNmoVRLbhcoDf7BDBQDq8iobrEWCZwxmUBel5QSLQjMiSzcKHJ+XNN0TXHJvEH76qvWG9vx+4wXR2TTYlq5GugIpOiQo4jcsSk68OcG33q2INTKXMgZr1Ga9iAWw6riott21RjSlqIDtW4=
+	t=1743503725; cv=none; b=SjC1GEI+rnUGOzY7vlqdrzbh2kjNcTWRozzOJ3EMfdElZMs446SL2KPI/zniRbrmNO3pepgdCsadyifskYw/WbnpOK/N/9rd7Q6sTSpOHkZZ/u7tgpiRCy6UrAfgf/XvaRGO3Js7gw47hwdULzifYlCMwoop6ldJK7WO5fpeuEI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743498703; c=relaxed/simple;
-	bh=z5w4mqCNWGf9ESkE5yFsF6dByAcXvoIsTorTJ9KZAjA=;
+	s=arc-20240116; t=1743503725; c=relaxed/simple;
+	bh=bB0Q88NaQ1z3A+sAKvbKfweAcqrwjXi0SB3rHqKzM6Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kXF2U7oMFxue/MWW0ZtZNwUT4+5/BpVJ1PQorWXvQhEbYpg1EfrB+KINpF07mZzBN/bUETBvEQ17JfQOYD5QqFw6ZmUF4vbLC76+ta+cLwEs7S6Dt1bWtRPPj4qXNsrceoe7wDO7gr4mk/jCN75qIEIhh60g0Eev2RKdk1PFYZw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=fpq1zwgC; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=C3PJ1d0BUa+Lz8XUvK9cXqcFol3ky59q4EGwfRUugC/KGIXP7UeTRJPu8Tn5eSF2ajvcXStMhbfbFCxXi8nmDJ+LqBF/Pf9Dh/Cg2eRlGH4OanChZP/SQkLwDCWh+e9nNo8E/LZhSx+louNrI0UuFasI5idY020xqvYihFm8QYE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=S7KduqAL; arc=none smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="fpq1zwgC"
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5311amAB007991;
-	Tue, 1 Apr 2025 09:11:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=pp1; bh=XyRix+4GNv6ZrOcC6r80lhGA/F7ll6
-	PFz2oW/xEJcr0=; b=fpq1zwgCTB8d4LNVPauRePRc3Q6pjQVus1rLRxHbp1pvwP
-	k9PhGM1n2ZaNHo3Dy4zCZeJXZJroUzUujMv9jVe8nu0ZG6my72IpS8T0YUmufVvV
-	9Kc5MGVaqe7zrr97bhSO7aLsZ/gL1PTvXhVRlnpsePw3Zkspc9kvZmiPYGdDmVc+
-	pXKzKxw3kqjb7M6jOMOVfbuZPk2Wv+hT3s8n2v5NEgWkd1cCypNZ0F2SBrGSx8gH
-	rswC6IK50Tk0N6/aLY1BPP5mchoMDdnrpMi2V0RiY/rLlZPgX4M40/rXEgl4Yuml
-	VeSJt3PZnc2B+z2mhsK6dZcoX7WU8/5p/mdcuwSA==
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 45qvfpvgxn-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 01 Apr 2025 09:11:22 +0000 (GMT)
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 5318o0sg014576;
-	Tue, 1 Apr 2025 09:11:21 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 45pvpm1psx-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 01 Apr 2025 09:11:21 +0000
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 5319BH1r31654402
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 1 Apr 2025 09:11:17 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 9E1692004B;
-	Tue,  1 Apr 2025 09:11:17 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 644FF20043;
-	Tue,  1 Apr 2025 09:11:17 +0000 (GMT)
-Received: from osiris (unknown [9.152.212.60])
-	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Tue,  1 Apr 2025 09:11:17 +0000 (GMT)
-Date: Tue, 1 Apr 2025 11:11:15 +0200
-From: Heiko Carstens <hca@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
-        borntraeger@linux.ibm.com, clg@redhat.com, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH v4 5/5] iommu/s390: allow larger region tables
-Message-ID: <20250401091115.7691Bd6-hca@linux.ibm.com>
-References: <20250331202159.85956-1-mjrosato@linux.ibm.com>
- <20250331202159.85956-6-mjrosato@linux.ibm.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="S7KduqAL"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-43d04ea9d9aso24938895e9.3
+        for <iommu@lists.linux.dev>; Tue, 01 Apr 2025 03:35:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1743503722; x=1744108522; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=094SZ9fz+o6eVY5ZaePMpljZ6ZXESAEN9w/PXff7gsU=;
+        b=S7KduqALguK4NWtjIOmz25qBDMhw4iAKyDMh8EFLnbGHKJ7yykeoVeFeTk3RQ6f5kl
+         3GtyRhrJvXd+AqKv6yBoR/UTrA+HhQfV1r5i/kcUijGj5Br4857L0x5CssQlRXqiGuqm
+         mSi3WPFAmRnLZGm31z0vKs7J8wMdxujLE+IrQkLgN3P/GS6tQaUH8HrL28oyq+BQpitm
+         8NGkT5dlA3LmeLIaY1gnU20sn9oRJw9EGGemtpEQU6F80lUegrDZZXeGvTQOnnpAOi41
+         oVFkbiNu8F6F5+6CkGfrJxkdN+6wchHu1QHuE9HRMgW1erbmC0Pppb/rZ4m6TC3E/ds5
+         QC+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1743503722; x=1744108522;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=094SZ9fz+o6eVY5ZaePMpljZ6ZXESAEN9w/PXff7gsU=;
+        b=UOPh1AUUwT8xYDe7fuvyrUSWainNhd0x20jhgQ74SmkR1IHVGMFnPYkCDYGoJr2FcY
+         ySZPzGx/TbC3CN3//Zt8iYH/0LlQvfOOAV0Q4fDcHLdV0FR+PsWc+leWXYV7RuT+dCV9
+         Wcwe9AxJuzafVlqSPy7/2XrkTc9057TOdydYErdt49i2/IfnJ4QYfMmNqSEx92sgeK2Q
+         KwvN9w3LUhcJY46RqBwybnQiR3UFYF4FQ/Tmq0ZYL0dcsq1uZMh52Y+H5qDRnN7z1rrW
+         a/ppGE9cbGyJowYUPc1Q/1R53R2lHf5T7nuHP/+d09M6sIK8a0pM4nmOtSBA8z92ncU9
+         Oogg==
+X-Gm-Message-State: AOJu0YxTecSIUl6C8oE9R56mO2MqqeTJILEfFADL36EYxa9oUp2ZVSd9
+	NFPqzOlkeaemE/j39Gy+rGDWvXMFumhc47bxe26lVgCljSX9h/mMfmMUrXrVlDE=
+X-Gm-Gg: ASbGncuVsfU3o6yARCp1orXn2vKvmwmEG1Wo1E4keC2CD2LJmbNEYOdh/aH/gUN+STK
+	1ICqniOmLoUUDnEt1SFjM2RKlB/4iOF97n9J0+7iRvL7TmvWbvbGba+UMF7LCnJjq0FHt/DcixY
+	bI8pcRqDGV3xKRprnZ2zGadlTAKzGIkYqh4JaXH427KyrdTikW89LTMVfOk0wTqSvDVN/qQv3EF
+	w2NcsmQjnF4EdHw3RL4RMX/TYHm00HrRcQrwaAVZ81B1j3Xr7J4z4xSIY/ZaxBcDm67wTlc1D+y
+	6r2k5vKrTlMrLGBAhdpudVzB64DCq/8VSKqiMV0UlvE=
+X-Google-Smtp-Source: AGHT+IH0MYFlI+kNZ16n6YuowDwZDpAgl0lcpbfUtl1S5hYwQqcUs9sspCA+WvoevEZPVnDHgpx5gw==
+X-Received: by 2002:a05:600c:4e87:b0:43d:8ea:8d80 with SMTP id 5b1f17b1804b1-43db61d5fd2mr102696825e9.5.1743503721639;
+        Tue, 01 Apr 2025 03:35:21 -0700 (PDT)
+Received: from myrica ([2.221.137.100])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-39c0b658c87sm13912049f8f.9.2025.04.01.03.35.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Apr 2025 03:35:21 -0700 (PDT)
+Date: Tue, 1 Apr 2025 11:35:19 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Joel Granados <joel.granados@kernel.org>
+Cc: iommu@lists.linux.dev, David Woodhouse <dwmw2@infradead.org>,
+	Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Rob Clark <robdclark@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+	virtualization@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-tegra@vger.kernel.org, pierrick.bouvier@linaro.org
+Subject: Re: RFC iommutests_: Testing software for everything IOMMU
+Message-ID: <20250401103519.GC2424925@myrica>
+References: <5zoh5r6eovbpijic22htkqik6mvyfbma5w7kjzcpz7kgbjufd2@yw6ymwy2a54s>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,43 +85,37 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250331202159.85956-6-mjrosato@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: iggC1jnG6T90UBVs0OvZOfNAlGnIobQP
-X-Proofpoint-GUID: iggC1jnG6T90UBVs0OvZOfNAlGnIobQP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-01_03,2025-03-27_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=0
- priorityscore=1501 clxscore=1011 adultscore=0 bulkscore=0
- lowpriorityscore=0 spamscore=0 mlxlogscore=651 mlxscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502280000 definitions=main-2504010057
+In-Reply-To: <5zoh5r6eovbpijic22htkqik6mvyfbma5w7kjzcpz7kgbjufd2@yw6ymwy2a54s>
 
-On Mon, Mar 31, 2025 at 04:21:59PM -0400, Matthew Rosato wrote:
-> Extend the aperture calculation to consider sizes beyond the maximum
-> size of a region third table.  Attempt to always use the smallest
-> table size possible to avoid unnecessary extra steps during translation.
-> Update reserved region calculations to use the appropriate table size.
-> 
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->  arch/s390/include/asm/pci_dma.h |  1 +
->  drivers/iommu/s390-iommu.c      | 71 ++++++++++++++++++++++++---------
->  2 files changed, 53 insertions(+), 19 deletions(-)
+On Fri, Mar 28, 2025 at 10:11:13AM +0100, Joel Granados wrote:
+> Custom qemu device: pci-ats-testdev
+> -------------------------------------
+> To support IOMMU testing under qemu, the pci-ats-testdev [10]
+> (different from pci-testdev [11]) was used to emulate DMA transactions.
+> It is a full fledged pci device capable of executing emulated DMA
+> accesses. It was originally intended to test Linux kernel interactions
+> with devices that had a working Address Translation Cache (ATC) but can
+> become a platform capable of testing anything PCI/IOMMU related if
+> needed.
 
-...
+Yes please!  Maybe "pcie-testdev" rather than "pci-ats-testdev"?  There
+are other PCIe features that are poorly tested at the moment, for example
+PASID and PRI. The programming model of devices that actually implement
+those can get too complex so we need something simpler to precisely stress
+the IOMMU driver infrastructure. Driver unit-tests alone aren't good
+enough for exercising TLB invalidation (DMA after removing a mapping must
+crash), tricky cleanup paths (eg. killing a process bound to a device
+that's issuing page requests), runtime PM, MSIs etc. I'm guessing testing
+newer/future features like TDISP would also benefit from a simple device.
 
-> +	spin_lock_irqsave(&zdev->dom_lock, flags);
-> +	if (zdev->s390_domain->type == IOMMU_DOMAIN_BLOCKED ||
-> +	    zdev->s390_domain->type == IOMMU_DOMAIN_IDENTITY)
-> +		goto out;
-> +
-> +	s390_domain = to_s390_domain(zdev->s390_domain);
-> +	if (zdev->end_dma < max_tbl_size(s390_domain)) {
-> +		end_resv = max_tbl_size(s390_domain) - zdev->end_dma;
-> +		region = iommu_alloc_resv_region(zdev->end_dma + 1, end_resv,
-> +						 0, IOMMU_RESV_RESERVED,
-> +						 GFP_KERNEL);
+Some time back I needed a device like that to reproduce some tricky races
+but never got round to implementing extra PCIe features. Although this one
+[1] is based on virtio any programming interface should work as long as it
+can instruct the device to send precise DMA transactions, ideally many in
+parallel.
 
-GFP_KERNEL allocation while holding a spinlock is not correct.
+Thanks,
+Jean
+
+[1] https://jpbrucker.net/git/linux/log/?h=virtio-dmatest/latest
+    https://jpbrucker.net/git/qemu/log/?h=virtio-dmatest/latest
