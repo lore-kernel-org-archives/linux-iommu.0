@@ -1,122 +1,89 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F382202C52
-	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 14:08:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33E481C8639;
+	Tue,  1 Apr 2025 14:09:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743516515; cv=none; b=eeFuVKdr+NA7F6SydtKQZiz4ATWErB0BDtGhDZxILDVlRqgKCVhAh8Z+p6V07Wz3C3vd+rEWBY3TlninlHs5IXtrNaRrxGGusJmCjHa8/UfdIu2ljtRbtjsWTmyf9FoTnidFWe+0tLUX7JlBHclbkIK5pbLeuJohceJiV+mZVXM=
+	t=1743516573; cv=none; b=mVtMStXmETGXQ1M34lpe5rotWCMWtWKZJIKdOk82K/qbpH3rGDnQgddL5/jOdp5Y708OfTSykhEslJbBOofkPv7WVevpzKwGZh5byONDYWl4Untq+FTVMzS6Gwf7l669Wr5NvjisdPvVrx5yJTerrR0hM156YiEsSxWhCxjeVYI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743516515; c=relaxed/simple;
-	bh=yf4KBftqQerIboSU0GfiOAbRx4eHXYrBGOKXO9nthgE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CzVPMhJKJe+W6NzybBH9OsWFvH9Cf+gVLevRkyJGVxSC81sSjwSBIn6rZAsjpB8XXlRRlKZ3K172r8KyhS4hStowv5ytKVQuossJJieQqjWM1QJ9FryZX4cmiqxdM/tIBXaZcXeQH4u5R7Wxacf60WPOXkQWVd4ymHizJJG42Ag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=ITF7mbJE; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1743516573; c=relaxed/simple;
+	bh=LtU/byWfDwBRxuwHRgvpJTAHu9Roo4hLiwc4mKqQ7mY=;
+	h=From:Date:MIME-Version:Content-Type:To:Message-ID:In-Reply-To:
+	 References:Subject; b=i+yUqdTp0t66iNyN8VnqGqoX2D2WQA8dYMeQsjX0t5OmJHFysQVKtqG8ttzwQMtFHvXubqioAjYpyomipavWrmxwvBXDn0wphQYuV4cU666WvgzlNp9H3s3O0/NotrQSXxYpiCkzPc57jZRggTninOl1dkWCxBqIy8601HZZ85k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CDGt4lIc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="ITF7mbJE"
-Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 531CSTj3027584;
-	Tue, 1 Apr 2025 14:08:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=oGt+tA
-	tfr79sFy0I5kEWXLud0pHCnJJIOKb8lUEjpbc=; b=ITF7mbJES6NF98Se0R4KCt
-	DqbebGgnsjkPiBTnyTR1Z0qvJdI2/dkv2jhtwc9IcnH2p3Inv8d9NoKeDd+IQfEe
-	eQPr/ifdQCdzWrwK7UXdoJRyjTjcWnGH1ra9SSZ8/lR98UNd51jwpV8uHkuvrPbo
-	Ie4OpLZrNXsqoEOYcD3fl8lMdaBOf1n+4DYSk9KXE6sMiDdaSQCEPC1ah2zdbagS
-	43U8H1NjXvSPFFmInoNczltK8YYd+UgckaVanIbrvBkdf+OcZa3X823A4ytwUows
-	A8l+qomjs6DbjhqasUz5a9bg82oOJwJhmbu04Tt8yrPoOGjvMXYQzM4V7hocKYTQ
-	==
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 45rg67ghke-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 01 Apr 2025 14:08:26 +0000 (GMT)
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 531BPTtm019742;
-	Tue, 1 Apr 2025 14:08:25 GMT
-Received: from smtprelay07.wdc07v.mail.ibm.com ([172.16.1.74])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 45pu6t32ga-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 01 Apr 2025 14:08:25 +0000
-Received: from smtpav03.wdc07v.mail.ibm.com (smtpav03.wdc07v.mail.ibm.com [10.39.53.230])
-	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 531E8NOo28181184
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 1 Apr 2025 14:08:23 GMT
-Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id CC5135805C;
-	Tue,  1 Apr 2025 14:08:23 +0000 (GMT)
-Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8541F5805A;
-	Tue,  1 Apr 2025 14:08:21 +0000 (GMT)
-Received: from [9.61.39.63] (unknown [9.61.39.63])
-	by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  1 Apr 2025 14:08:21 +0000 (GMT)
-Message-ID: <12f7109f-5375-4301-ac69-077761a0106f@linux.ibm.com>
-Date: Tue, 1 Apr 2025 10:08:20 -0400
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CDGt4lIc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EB5DC4CEE4;
+	Tue,  1 Apr 2025 14:09:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1743516571;
+	bh=LtU/byWfDwBRxuwHRgvpJTAHu9Roo4hLiwc4mKqQ7mY=;
+	h=From:Date:To:In-Reply-To:References:Subject:From;
+	b=CDGt4lIcXOQVGw8IwugclNNWiyJ9PnzIPN4p0Q8TmaNT5tda/IzaMg3IQsdtuo5wb
+	 LeKeLi7zk04ZroL9vFU5ju3oVUOLzuM8wAg27X4TIoSjXoVctHkiSGvOWSGVMOG/TH
+	 pO9G5ik2MexKz28y19trfyJTmc6eLiEtLjbpsQTwt7pmzj7vHHGsvx1fS6z9vvALCa
+	 ZNKYsie7c1g4g4uP3+qz6i1ifZE5hS/Q2hdLBAoiWqZYV4KDJ+M8V5Avx0rLAHaXUw
+	 3V75uK88o/t0Gc/V92eWKbFHPwB/J5asjJsHL3BwpcOEX/4akAbxRBAyXvJSylQXTF
+	 Kky373Qw8JqPQ==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 76F43380AA7A;
+	Tue,  1 Apr 2025 14:10:09 +0000 (UTC)
+From: Chuck Lever via Bugspray Bot <bugbot@kernel.org>
+Date: Tue, 01 Apr 2025 14:10:13 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 5/5] iommu/s390: allow larger region tables
-To: Heiko Carstens <hca@linux.ibm.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
-        borntraeger@linux.ibm.com, clg@redhat.com, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-References: <20250331202159.85956-1-mjrosato@linux.ibm.com>
- <20250331202159.85956-6-mjrosato@linux.ibm.com>
- <20250401091115.7691Bd6-hca@linux.ibm.com>
-Content-Language: en-US
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20250401091115.7691Bd6-hca@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 1KOR8mZZQCGdo7POxOoXPcIwEYjRsXCa
-X-Proofpoint-GUID: 1KOR8mZZQCGdo7POxOoXPcIwEYjRsXCa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-01_05,2025-04-01_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=823
- suspectscore=0 lowpriorityscore=0 impostorscore=0 spamscore=0
- malwarescore=0 phishscore=0 adultscore=0 mlxscore=0 priorityscore=1501
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502280000 definitions=main-2504010086
+To: anna@kernel.org, cel@kernel.org, iommu@lists.linux.dev, 
+ jlayton@kernel.org, trondmy@kernel.org, robin.murphy@arm.com, 
+ linux-nfs@vger.kernel.org, chuck.lever@oracle.com
+Message-ID: <20250401-b219865c8-f01953980930@bugzilla.kernel.org>
+In-Reply-To: <20250313-b219865c0-2a34cbc6e249@bugzilla.kernel.org>
+References: <20250313-b219865c0-2a34cbc6e249@bugzilla.kernel.org>
+Subject: Re: NFS Server Issues with RDMA in Kernel 6.13.6
+X-Bugzilla-Product: File System
+X-Bugzilla-Component: NFSD
+X-Mailer: bugspray 0.1-dev
 
-On 4/1/25 5:11 AM, Heiko Carstens wrote:
-> On Mon, Mar 31, 2025 at 04:21:59PM -0400, Matthew Rosato wrote:
->> Extend the aperture calculation to consider sizes beyond the maximum
->> size of a region third table.  Attempt to always use the smallest
->> table size possible to avoid unnecessary extra steps during translation.
->> Update reserved region calculations to use the appropriate table size.
->>
->> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->> ---
->>  arch/s390/include/asm/pci_dma.h |  1 +
->>  drivers/iommu/s390-iommu.c      | 71 ++++++++++++++++++++++++---------
->>  2 files changed, 53 insertions(+), 19 deletions(-)
-> 
-> ...
-> 
->> +	spin_lock_irqsave(&zdev->dom_lock, flags);
->> +	if (zdev->s390_domain->type == IOMMU_DOMAIN_BLOCKED ||
->> +	    zdev->s390_domain->type == IOMMU_DOMAIN_IDENTITY)
->> +		goto out;
->> +
->> +	s390_domain = to_s390_domain(zdev->s390_domain);
->> +	if (zdev->end_dma < max_tbl_size(s390_domain)) {
->> +		end_resv = max_tbl_size(s390_domain) - zdev->end_dma;
->> +		region = iommu_alloc_resv_region(zdev->end_dma + 1, end_resv,
->> +						 0, IOMMU_RESV_RESERVED,
->> +						 GFP_KERNEL);
-> 
-> GFP_KERNEL allocation while holding a spinlock is not correct.
+Chuck Lever writes via Kernel.org Bugzilla:
 
-Looks like I broke this in v3 -- Thanks for catching it.  There's no need to hold this spinlock for as long as we do here, including over the allocation itself; I will re-arrange so we can safely use GFP_KERNEL here.  
+Attachment 307898 shows something completely different than before:
+
+[ 4478.512632]  xfs_blockgc_flush_all+0x99/0x140 [xfs]
+[ 4478.512760]  xfs_trans_alloc+0x116/0x2b0 [xfs]
+[ 4478.512890]  xfs_trans_alloc_inode+0x7d/0x190 [xfs]
+[ 4478.513012]  xfs_alloc_file_space+0x1ad/0x340 [xfs]
+[ 4478.513149]  xfs_file_fallocate+0x243/0x4b0 [xfs]
+[ 4478.513276]  vfs_fallocate+0x18d/0x440
+[ 4478.513294]  nfsd4_vfs_fallocate+0x50/0xa0 [nfsd]
+[ 4478.513351]  nfsd4_allocate+0x69/0xb0 [nfsd]
+[ 4478.513398]  nfsd4_proc_compound+0x484/0x930 [nfsd]
+[ 4478.513432]  ? srso_return_thunk+0x5/0x5f
+[ 4478.513447]  nfsd_dispatch+0xfe/0x2e0 [nfsd]
+[ 4478.513493]  svc_process_common+0x352/0x7d0 [sunrpc]
+[ 4478.513556]  ? __pfx_nfsd_dispatch+0x10/0x10 [nfsd]
+[ 4478.513600]  svc_process+0x13e/0x260 [sunrpc]
+[ 4478.513644]  svc_recv+0x9a8/0xc40 [sunrpc]
+[ 4478.513694]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[ 4478.513733]  nfsd+0xe0/0x150 [nfsd]
+[ 4478.513769]  kthread+0xe7/0x120
+[ 4478.513777]  ? __pfx_kthread+0x10/0x10
+[ 4478.513787]  ret_from_fork+0x46/0x70
+[ 4478.513794]  ? __pfx_kthread+0x10/0x10
+[ 4478.513801]  ret_from_fork_asm+0x1a/0x30
+
+Here your NFS server is waiting in the local file system for an NFSv4.2 ALLOCATE operation. Nothing to do with RDMA.
+
+I'm at a loss to say that there is anything specific -- I think you are just at the limit that your server configuration can handle.
+
+View: https://bugzilla.kernel.org/show_bug.cgi?id=219865#c8
+You can reply to this message to join the discussion.
+-- 
+Deet-doot-dot, I am a bot.
+Kernel.org Bugzilla (bugspray 0.1-dev)
 
