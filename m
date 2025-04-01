@@ -1,80 +1,104 @@
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DD1220B7EA
-	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 15:44:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7A6120C481
+	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 15:53:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743522256; cv=none; b=knzbUR0yHb0J8j7TpcQz742SMTkvCyg5GjHgjLFIVP7R+T2c+ivMYKkcc3Sgk77TYR+zlFmqLtUjwJRbVkvf9KW7H5Ip3eYgF9/e4hSY6wGCOdt5WhG+IwHZG32csSjDdZixtaFfpfpC2RjIRx3dw3liRyClj6c3i+HYVLKTjCA=
+	t=1743522826; cv=none; b=br+op25wL/TJzosgxiUAIzgAU19g97xzX6lxMmy8tkz5MlWk/u+chYV9dsSAQ0nqvs9jkBQvDTKmuwb9vGTV2cMDx7Gg2W6Jpy/EJJjE/wuciif5keuMJiHpRfclE4kC6iQJXeS/M+tcfNbUQLxaAIx4wwH1OODYbzsYi7huYAU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743522256; c=relaxed/simple;
-	bh=a6xhRfFpTxAAJ5SlpRIOnpKIhMU+TA2ntom8u7AyK9M=;
+	s=arc-20240116; t=1743522826; c=relaxed/simple;
+	bh=MKudk/LIkF1mIN1017i5vn/dv6GMx6eTBMj2oFhk/BU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fl9CUQpFic5PRJjCTMCfB/v8v2euPXYa3wgpTiO1AfIW53YC4civvndTTlsTEqWzPBrrHOCU5SdZiAZi+NCH+8SdDdYT5tygaG2qHGyU2J5C1U/oIsmkGY0rgzZF6dVB9WuECvo/VFcIWTQy84KUAZZhQ/9t5XPP/8cIAnArTlk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=NairphKM; arc=none smtp.client-ip=209.85.222.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=OD/ewg95AZlVHWnPkAK9NWM1ltE8uHf/80/k8WuVkxikrkA2zAvtXXozUZ4rxBN3l+fcMuPHPl23/+w/UOLeGeIgK7LmMG4RGjvlDBg1tbNWIweYDPi8Jy6WXX6wPZ9VHV+fSM+U2YQrB5p42ljgpJ3mMDhAMC823jXmDjsk/dI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JvP+DnhY; arc=none smtp.client-ip=209.85.219.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="NairphKM"
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-7c56a3def84so575221885a.0
-        for <iommu@lists.linux.dev>; Tue, 01 Apr 2025 08:44:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JvP+DnhY"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6e904f53151so48988216d6.3
+        for <iommu@lists.linux.dev>; Tue, 01 Apr 2025 08:53:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1743522253; x=1744127053; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1743522823; x=1744127623; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=TtdWsRwfUOBxgsIg+kVSTkMJUa8tV9VXtloNeO/dNoo=;
-        b=NairphKMaFBgDCANWP2cdGmXx6GgPdaSQiW2jjObueZkGyoMcR+UZJNhPJrReRWekX
-         6SiuyMiXjJHcqasf/sgvxuS36aGaTArNlSCxeVAJe4yqXaEuJK40/Fd5FFiPPvvCLmHh
-         DrOxsAc+ITWxU6Tv6FTrrPaeBOIMimStnRhq37AKz8GxNESMExWX7JwjuKGDVdo/J6Kz
-         gKar1Tj1V9JSWTjCxIn5dqqTUjSNAxArDti8IujhUn2fa78PrbVsObl7Hx9fKK4v43nR
-         lnD0ul0xMXz657xS1XidCr7gg1Og+shKBqYWjdtU8mi828IS9QpcTHONp22EwKwFEhxH
-         Rmhg==
+        bh=MKudk/LIkF1mIN1017i5vn/dv6GMx6eTBMj2oFhk/BU=;
+        b=JvP+DnhYxD0Lliw70f2r3IjeK4q7eFSoSzUXs4VnIb5I/owiD6mczp/cVxDbCeQxfJ
+         8OCYSOzGT7WMn1ApxbJ2irQmEhVKqjYB89xa+DdQDg0TcHha+Ui7kILNdx6suzatDkd7
+         bDLmKpm0rvaGVDr5kfR7nTBOsrTs+KhLop9esHQOnQh7vDrJRJ6sZIwqwAZzptVIp+6w
+         M9PRv8vRPQ49bqsa7SrgTMSf0J4eIVeiI5urUcTUY9SFp0BISD7Qf4W7RIqj7L1IaIAK
+         aKqY5GgntTCKDVu8pQPwccYyrjHBu7hUuTM857+0eOCR/rSdwvNmFnzoxoQo6caYluE7
+         Qb7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743522253; x=1744127053;
+        d=1e100.net; s=20230601; t=1743522823; x=1744127623;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=TtdWsRwfUOBxgsIg+kVSTkMJUa8tV9VXtloNeO/dNoo=;
-        b=ipiew5osSUt+eM9LkyGSgfe7eYiJ++U7CiR45wmmwkYCHvVXcbol+qaxensjgxv6LX
-         DU2n3wEp6MPYQzu7AkHICiiGC+o6QqnpQayp5jVDDJn5Hs6iwfmo9gdbFXiUlQ3JDZW3
-         +eZwl91cSp7T0ZOR8icrMYqUYFi0xEZ2iTalqeTrijybYtDdrGzO6VkF72hMrCpC8iYv
-         OprpjSBGIY3mgl/0+2pIFSUjbL904nzw8czhh1WFbyaB12dC9f+M22r6H3dYAzAmCkRk
-         MGVyDXEZeCF8wAi3RCCI8+Tt5ZPnfgIpgmr5bW+unFNaNGMpRmP1SacazGYEzkUsuKQP
-         gitg==
-X-Forwarded-Encrypted: i=1; AJvYcCXM/OgBrTmWg56KDH4BPrw5LAGYNvzgPR12+dtneYb5iYsaPu6M50jl8j6PeJYiTNvxH4eT8A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw2a0Nlz2ivn+aE564Pl4Dbm1DdNeMbTVk8sTyCz7Vrg3yUg4rI
-	U15OmYixCZdX5ObUhrxrCLLez9Aj0E0Sh087iO+7pCRbi0GNAWAMof0h8BX+HyE=
-X-Gm-Gg: ASbGncvUAMAirQ2U8gkQT8QGELIZjQtugLifUFM1eEdG1z+6jVgYnH6ZYgpP17SLSDz
-	RAbH/vpwlZYivkLfpzUEI5spyZFwwVZ2dLxoxhG2qvyg1EQYqFPHKs3BIAf1VZLTIxD1FIyr2Eb
-	tGhYOlc8yoEhapWtXxkpsNpPNBNsH0PrqrOn6XZV5uLYtHVl3ViRpe5cZPJ0d+em0yIQ7h8XGMk
-	V0du36Iv/eE+M+xfVm9oSyrFmCnrs4lgnjheNNL1v6A1lZ680JdLiG++XptM6CbVQCciEwNXl4a
-	Y3Z8LfzKCusvogis6ILcmtVU6LrrCUvci1jDvBnisTD+lDwSuI15VCKtMxVDnRMIDC8JXvfBmDW
-	f+yZXjq8Ahq9blenfM3kyekk=
-X-Google-Smtp-Source: AGHT+IFNoRzI7w1svFEnu6uSg1a7Al/lfHMRAFbRiHbN38KY+jMtZlEEZoz8sPSAU2QwNot8xAw/Fw==
-X-Received: by 2002:a05:620a:1a91:b0:7c5:9ac2:2a7a with SMTP id af79cd13be357-7c69089246emr1907329985a.47.1743522253345;
-        Tue, 01 Apr 2025 08:44:13 -0700 (PDT)
+        bh=MKudk/LIkF1mIN1017i5vn/dv6GMx6eTBMj2oFhk/BU=;
+        b=UbBhJlN2IcZAKIKoXZeJarfTnTnUBuywP6eUEQKX3EEaUlwvWimForJ5xX65aKpQ+n
+         fEhRtbj2hXKsBtFvMOVASxSxeOgAoMzvq7DbX7W/BXbzb02b/T9OwDgQG6yK/JwlKh6J
+         aaIRZ5yQbyqU7NopgwgXGdBW0ahKH4QGh7qQjslQr66LwJewh5B6Jkup9qm4rQ+icLL+
+         YSub2UUkS4hi8q6jNE1w1KdUr/8Y6mAP5aA9mrT/CMxheanwzrlpuv2R7+LJCyAmixnL
+         ibOM45UyICh4tz+xf8xoqbOWaZqFlg3f4DOIupDQwr9TyeT4jn5Rzjjx0wgJ5z78hlVu
+         BxwQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWQwiCsixGvPX8SGYAPBzq4zQGrP32DhJG3NbCZsdsTNA8yWTidgtkGmkZm6+CNsHDFlIRr7Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxFBriLBp64pClERyY3XsGMu4RmHsaG49Y5TwzYiKva+tzPdOw0
+	AYZ8MabNN1VuY62F25RXGdd70Ajn4k70sfpKlFt/q75NWps9iNXQCL0l1oiNdIs=
+X-Gm-Gg: ASbGncuXQBOvPSsYsZWlhWUghojFv/4Dj+sJwZ6tRvrrA6u6Fy7Dr9bhgUifUu6rsW3
+	OhKuEjzAWJjiXwDI7fRpdYMLZeEOqkcjbCIyF7NYghGH7gaAbDYohr+3NLSer/hfyOjyjlWFwTX
+	bB8EX8yW4BDkhvoizLdXkx20lD2mUiZLAIrbOTy8W6D6XIg046ZP0p6gwywOvpsars8ex8xIStK
+	qCLISPfuWfcr6ReDI+pafndT0kWj4NU6qBf/6D0MlOPf+z4VE+PelyHppbJBzo6sZic+bRVhLl1
+	ovtd8LbZ106x8OPIg5Y28akpkuVbP1wJW59No3o/bPQjPeh4jOCJqBfZkTeu34zfOWBTHfwuXXV
+	pDyQdkhOrP0sWgEBKOmHjXGo=
+X-Google-Smtp-Source: AGHT+IFJ+ooR1gogrE/PHgnfFzjzVnCoIzBOEcYnCXUPK3x+TiFlSiO2UYFbU0xPUKL90AfGX3nrhQ==
+X-Received: by 2002:ad4:5c86:0:b0:6e8:9a55:8259 with SMTP id 6a1803df08f44-6eed5f924f4mr229513566d6.9.1743522823661;
+        Tue, 01 Apr 2025 08:53:43 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6eec97974ffsm62920086d6.99.2025.04.01.08.44.12
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6eec97970a2sm63068746d6.98.2025.04.01.08.53.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Apr 2025 08:44:12 -0700 (PDT)
+        Tue, 01 Apr 2025 08:53:43 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1tzdme-00000001MBc-1Y2l;
-	Tue, 01 Apr 2025 12:44:12 -0300
-Date: Tue, 1 Apr 2025 12:44:12 -0300
+	id 1tzdvq-00000001MFn-2LDi;
+	Tue, 01 Apr 2025 12:53:42 -0300
+Date: Tue, 1 Apr 2025 12:53:42 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Xu Lu <luxu.kernel@bytedance.com>
-Cc: Jessica Clarke <jrtc27@jrtc27.com>, tjeznach@rivosinc.com,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	alex@ghiti.fr, lihangjing@bytedance.com, xieyongji@bytedance.com,
-	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [External] Re: [PATCH] iommu: riscv: Split 8-byte accesses on 32
- bit I/O bus platform
-Message-ID: <20250401154412.GI186258@ziepe.ca>
-References: <20250325144252.27403-1-luxu.kernel@bytedance.com>
- <9F043708-3BB6-46CF-BEC3-2636E9A388B7@jrtc27.com>
- <CAPYmKFtAWNz7nCDDD7rjGeV2fRBgy5Kt6KR60pEyXAM=bb7r4g@mail.gmail.com>
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, x86@kernel.org,
+	kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, Christoph Hellwig <hch@lst.de>,
+	Nikunj A Dadhania <nikunj@amd.com>,
+	Michael Roth <michael.roth@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Steve Sistare <steven.sistare@oracle.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
+	Zhi Wang <zhiw@nvidia.com>,
+	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
+Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
+Message-ID: <20250401155342.GJ186258@ziepe.ca>
+References: <20250218111017.491719-1-aik@amd.com>
+ <20250218111017.491719-15-aik@amd.com>
+ <Z72GmixR6NkzXAl7@yilunxu-OptiPlex-7050>
+ <2fe6b3c6-3eed-424d-87f0-34c4e7e1c906@amd.com>
+ <20250226130804.GG5011@ziepe.ca>
+ <67d4d3a5622f9_12e3129480@dwillia2-xfh.jf.intel.com.notmuch>
+ <926022a3-3985-4971-94bd-05c09e40c404@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,38 +107,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAPYmKFtAWNz7nCDDD7rjGeV2fRBgy5Kt6KR60pEyXAM=bb7r4g@mail.gmail.com>
+In-Reply-To: <926022a3-3985-4971-94bd-05c09e40c404@amd.com>
 
-On Wed, Mar 26, 2025 at 11:26:07AM +0800, Xu Lu wrote:
-> Hi Jessica,
-> 
-> > Is such a platform conformant to the specification?
-> 
-> We have talked about this before [1]. I think the IOMMU spec does not
-> mandate the implementation of 8-byte access functionality. The related
-> sentences are listed below:
-> 
-> "The 8-byte IOMMU registers are defined in such a way that software
-> can perform two individual 4-byte accesses, or hardware can perform
-> two independent 4-byte transactions resulting from an 8-byte access,
-> to the high and low halves of the register, in that order, as long as
-> the register semantics, with regard to side-effects, are respected
-> between the two software accesses, or two hardware transactions,
-> respectively."
+On Mon, Mar 17, 2025 at 01:32:31PM +1100, Alexey Kardashevskiy wrote:
 
-I think the commit message should explain an anyalsis that the code is
-safe against the mentioned side effects due to ordering.
+> It is about accessing MMIO with Cbit set, and running DMA to/from private
+> memory, in DPDK. On AMD, if we want the PCI's Tbit in MMIO, the Cbit needs
+> to be set in some page table. "TVM" in this case is a few private pages (+
+> bunch of PSP calls to bring to the right state) pretending to be a CVM which
+> does not need to run. Thanks,
 
-And a comment should explain this:
+Yeah, though that may be infeasible on other platforms. I'm pretty
+sure ARM and Intel route the Tbit packets directly to their secure
+worlds so there is no possibility for VFIO to use them without also
+using the secure world to create a VM.
 
-+#define riscv_iommu_writeq(iommu, addr, val) \
-+       ((addr == RISCV_IOMMU_REG_IOHPMCYCLES) ? \
-+        lo_hi_writeq_relaxed((val), (iommu)->reg + (addr)) : \
-+        hi_lo_writeq_relaxed((val), (iommu)->reg + (addr)))
-
-As the naive reading of the above spec paragraph doesn't seem like
-there are exceptions or why one register has to be the opposite order.
-
-Also missing () around addr
+Maybe AMD is different, IDK.
 
 Jason
