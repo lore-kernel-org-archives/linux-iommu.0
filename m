@@ -1,67 +1,67 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1302A20D51F
-	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 16:11:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B3D620B7E1
+	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 16:13:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743523904; cv=none; b=MTjFsEf41r7XVLz32cx8TQumDi7nXsHtvR3543ghMtrGUENel1NgOmMjBTHSKWK1cBTza+QFffCj2DQzjtVbjtrhvsfELfaHWde8jpTRaI5LaejgrC56BBqDqwKUhVjR9NgveHhQguiQn72Clx+uHIkp1m3bslkzK0YpUuuKvPY=
+	t=1743523984; cv=none; b=ufAXuWqLL6Yai/aEJE1z4rn3WJEDCMdkm4cIZodTh3np0APAgsVLdwlS+0V6ffzLaGCIpYr6GJy9CzdN2IzD16qgj/fNbYrH/OImZs5YY7NLslm6q79Mh1aU/IWhlfaSHtMaoLsbtke6y6hVisOqyPEAXHP1c739dTFscc2+ZMw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743523904; c=relaxed/simple;
-	bh=0bfnfRwxd83qT6YHXSQ35/Sc5Ii17MOf/lTvNc4Gkxc=;
+	s=arc-20240116; t=1743523984; c=relaxed/simple;
+	bh=jsPocqxTm3Tk/n85dNMIT20KutkK5Grt6C4lCnIAUO4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YB6a8/YcwArcAfJtSsDQr557kVD8qEogHvQKgnqWcY0f0rQ0wnY5UiRSGqTwd49mWs9QSOu0x0pWdHSTttzXOxGDE5TO4vQkjVoi9V/T0qD3zlZAp0wLnAicep0+7wC6/vs1B6Z7VOUWKcyrZ/3wAuXZ7N4JzBGY/veCrxc2FjE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=EdXrH1R2; arc=none smtp.client-ip=209.85.160.180
+	 Content-Type:Content-Disposition:In-Reply-To; b=a49eOB5xPzfMIyseLa3SlJWLaQYj0tA4lZ/ql2Viz4aMIVb3mLfNZBAoRqXc52yF0xGBfvMpXTJy/DPRCPknMmePRO6yKBh7vMUf2JHWciZ9JpDU+rmKxkOcTg5R6/yYrgLIP6P0MLeFbe+B3u/KdI4Z+nXnl/kIWUBAjjsAh6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dDHma69e; arc=none smtp.client-ip=209.85.219.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="EdXrH1R2"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-476ac73c76fso62271541cf.0
-        for <iommu@lists.linux.dev>; Tue, 01 Apr 2025 09:11:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dDHma69e"
+Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-6ecfc2cb1aaso53513486d6.3
+        for <iommu@lists.linux.dev>; Tue, 01 Apr 2025 09:13:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1743523900; x=1744128700; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1743523982; x=1744128782; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ht+/cjgqGqzgXcB/qQp4vlm60uUPBRIV+JZ12u7d0fU=;
-        b=EdXrH1R2DqFTeDyh/WU28Yf068oet7IrNL21sL7zztQSoaW/ETUkH5cjgujPBwVqW6
-         s7Jn+Rk5aMEHc2q8xdMJyGTCuJFLgRW9DnbULNZAcWrH8K1SGHReD9gV0QtCxevor3f0
-         rpxaC5SphWFQHwrm9B9PjmofiPo5T47AqfvK08r2sijkwaMGVBqrYmppNVirrWBZHB/s
-         5GNm3V8spnWP+cQ1+gbmXfdmKYCALmvsPMUxIvvuIF0/KDBHa5ovbEhxd0mufNA/wqgl
-         +pNKu7u11VyRC2Vr4tlRUOvYLriBb01wyrlX3ZIL01NnNo3FOpUHvStxI+iP4a3Tg2h0
-         Ww5A==
+        bh=poENEUfmFrThnex6gEytUaMxRROeOKxTbEdDijAo1Do=;
+        b=dDHma69eOp7gJHnnfuQUjMGiLZEDoYF0YW1JK41j0rgXEaj/vxRrqXH4G8a/I73jOQ
+         6bDRgK2MVyyueHr8HxB729prKWePXppP55703lLbJwHDWqncV7141rB0NI7lcQ6Acfge
+         CKTkNSHQ7bPrE3Wihb0CHTyriiVuso2ycPnJEVhMqVLm6uHQw00SU/4UluNuh8+E9yem
+         zumaspyspQ41EtFgvts7ZUX1Ts0Cj5i4GrazOgb0HB+EFe5wTuTc0A+RjahU8t7tZ8XT
+         SntUJDTznMBsPjgRr1a/NE/oWgViSDG7FTleb/Ns67C2pqgXXbv8Xu2+iNA5LUtO0vyt
+         OcnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743523900; x=1744128700;
+        d=1e100.net; s=20230601; t=1743523982; x=1744128782;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ht+/cjgqGqzgXcB/qQp4vlm60uUPBRIV+JZ12u7d0fU=;
-        b=jmjdwR9LPLZoHwBlDYQTB9OpTWbmaIqmhDEW9uyXHz00H6VHc9p4KfuGEooWcs1T00
-         ZIGPCDbBVFRpUO0dF83PFXnOUFTegUfVyUHuTUSGLi/Gz4WeJLnWjl8BGFTd8ukxqk/T
-         Y1AmyGD8K4J4qKymPCsGhxyUuJa7aeFFf+1q80sW92cIp6LD/ECAwPrPSE+Mfh+5axaR
-         vAgHGQx1V5+dnvWoWp2TU02mTkR5aaPoh9bFe8cXNzXAkogccIjtraVR7lLebL622TT3
-         wriiVZUwLF33lwZNEh05leL3QRLpt/PyROV1H3xRTsuQt6/gTX4rgdHNlh4vQKLquorX
-         NAYw==
-X-Forwarded-Encrypted: i=1; AJvYcCXXHk7ZYaa7xCki65UV1ijzVDnftyMCdZeCtTHo9w3weWPIMgYY03qFrYjufEWCT/xNRf0Rpw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwjYA0ry4xyTQlA12LjIEU+WJgD7gzk/5RsIEeVIDSmNcrtiDP/
-	dzFNGB551X2RoepjG3DpCm0HcW3M9OKYjhKlvCVRrWaOk45nEK0x+9HgTR1Dyj0=
-X-Gm-Gg: ASbGnctYZzusRo4TjHZKoAq6G8Uezt5ODTMmi+1L+yGutiQ/0WkNuxKkjI7jfU5zye1
-	2wq81SGW6h/2XnvuxMYjfus6qRpfrdWfzAQ2hIwsiXrSA8hx/KTIF86qe8smbhUHNgj6v4WD55W
-	90skE9w9bQ8ImaxeVFTZD7dhSFF+lVzAxKSJ34soEoudEudfrVfLv6pmoK6CWim3+JyQSXZbb1l
-	ZQBZ3kiCiwElh64egyg0n5ufsGeoM5ARjVD4Rj/ocT7r7WFnkDQY0LSEVyhXP+lpdXZ8vxEZoLB
-	Lxn3Bg0VyqqcVoS9t7JAp74Jd83MPlf06AVzOBl2CbUybOdsqs/iWwa0XMBuAGXuWnRiAFiCLVV
-	XORsGo7QTGCzCwyVvyzWXE9k=
-X-Google-Smtp-Source: AGHT+IGqQTmKBPGxEDnar5cvqd0kVzoGqHi3v/f2hQrPfOnvCsqaEdb1Xw9stjow0mGeS+auqOd8Yw==
-X-Received: by 2002:a05:622a:13d4:b0:476:ae71:eabe with SMTP id d75a77b69052e-477ed779bf5mr236227621cf.50.1743523900002;
-        Tue, 01 Apr 2025 09:11:40 -0700 (PDT)
+        bh=poENEUfmFrThnex6gEytUaMxRROeOKxTbEdDijAo1Do=;
+        b=vG2By2HjRlYB74eRbQJSaV0E1ipIXYqR19ISuPfwF6WITeVx7pSlgC3T/tVSvKQHdq
+         jsXsaStgxxbVfD+65RbP4yMqLyOj0RUiHr3vdOsBcyw7G3E0Tbb9J153eQx9vTqmhn/h
+         Jt5oL3OyUvIRp7tKzaWPGdGWr775UcJk/SV764mW5lY/D/qfVpf04YLHKHIDHizBUTJl
+         mJSrvPgUbUL2rzQCSOU7GgR+ZKBspxaD95YjCgOveftCF3a8FpJqXBVF236E/3AwY50v
+         pFenXM3FmUX3fsyAFV9KojwzjVfjjWuLvBdxHfdDHpfYx1Iwmrefzgqgjw3YuV0uWPcj
+         Je8g==
+X-Forwarded-Encrypted: i=1; AJvYcCUAt+U4eu98IQVUZPwUGTzkMPY4PcYu26o3hWtwR7H5z6u3Wgy+pTaq7sJdLlFgvNkNzqPrkg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy77AGTWN2Zn3dt5GhJJQiKeyMyVXV322P653ZvmsoS0QqhnoxC
+	CCvYcey1F6GD/2s+zF8g81scFNprChbCsg9K4RMn3ENhF6h7C51/zXIO/yXQ0+k=
+X-Gm-Gg: ASbGncv/KLKXNM5L64kHUVJipdqyChN6zMvGOZdcEZ0gVDckpld9UdYodyBSpKuBqMj
+	uj+S0P0xEtLKsCrPxoNrBhA5JS+RzXUBr/BIK5fyx9spRjmw/Aob7c2BvNsD1imM4us85sK2Erf
+	4CDXIvayy7JHAYCstuOYXMpB0XJ+gdpde7oqaJdWXqwvCOyC1SZAlUshhKrNJ6EXl5x3Pb8LUML
+	HU4iOmD5Vnh+lIPNz0eXloKzOExgtW1HlrVL2JxKwVn3zcHk4UEPRKEOSKqTTrptgMlDU4TY7Xr
+	DLdd4eIcU+WkwPze2K7NGbamiNwtVMuIBO/Ie2EF0gX+aWfs8+hc5Y3taUDnVIk6LYbi88v5UFV
+	KDanEOs8ZRdF6X8P/UIvoPs4=
+X-Google-Smtp-Source: AGHT+IFgqnXSN6fOa8wvReuysgLZpbCK1HhkdqcE+Mm2zYjIPC+dt/OEL3eUy9xyw3HgFZ9lLvi7Ow==
+X-Received: by 2002:a05:6214:226c:b0:6e8:f905:aff0 with SMTP id 6a1803df08f44-6eed62a0be1mr227091686d6.35.1743523980713;
+        Tue, 01 Apr 2025 09:13:00 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-47790ef0976sm57062041cf.59.2025.04.01.09.11.39
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6eec97718e1sm63039286d6.70.2025.04.01.09.13.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Apr 2025 09:11:39 -0700 (PDT)
+        Tue, 01 Apr 2025 09:13:00 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1tzeDC-00000001ML9-3rkm;
-	Tue, 01 Apr 2025 13:11:38 -0300
-Date: Tue, 1 Apr 2025 13:11:38 -0300
+	id 1tzeEV-00000001MLv-35Gu;
+	Tue, 01 Apr 2025 13:12:59 -0300
+Date: Tue, 1 Apr 2025 13:12:59 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Alexey Kardashevskiy <aik@amd.com>
 Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
@@ -89,10 +89,10 @@ Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
 	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
 	Zhi Wang <zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>,
 	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 13/22] iommufd: amd-iommu: Add vdevice support
-Message-ID: <20250401161138.GL186258@ziepe.ca>
+Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
+Message-ID: <20250401161259.GM186258@ziepe.ca>
 References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-14-aik@amd.com>
+ <20250218111017.491719-15-aik@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -101,84 +101,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250218111017.491719-14-aik@amd.com>
+In-Reply-To: <20250218111017.491719-15-aik@amd.com>
 
-On Tue, Feb 18, 2025 at 10:10:00PM +1100, Alexey Kardashevskiy wrote:
-> @@ -939,6 +939,7 @@ struct iommu_fault_alloc {
->  enum iommu_viommu_type {
->  	IOMMU_VIOMMU_TYPE_DEFAULT = 0,
->  	IOMMU_VIOMMU_TYPE_ARM_SMMUV3 = 1,
-> +	IOMMU_VIOMMU_TYPE_TSM = 2,
+On Tue, Feb 18, 2025 at 10:10:01PM +1100, Alexey Kardashevskiy wrote:
+> When a TDISP-capable device is passed through, it is configured as
+> a shared device to begin with. Later on when a VM probes the device,
+> detects its TDISP capability (reported via the PCIe ExtCap bit
+> called "TEE-IO"), performs the device attestation and transitions it
+> to a secure state when the device can run encrypted DMA and respond
+> to encrypted MMIO accesses.
+> 
+> Since KVM is out of the TCB, secure enablement is done in the secure
+> firmware. The API requires PCI host/guest BDFns, a KVM id hence such
+> calls are routed via IOMMUFD, primarily because allowing secure DMA
+> is the major performance bottleneck and it is a function of IOMMU.
+> 
+> Add TDI bind to do the initial binding of a passed through PCI
+> function to a VM. Add a forwarder for TIO GUEST REQUEST. These two
+> call into the TSM which forwards the calls to the PSP.
 
-This should probably be some kind of AMD_TSM and the driver data blob
-should carry any additional data needed to create the vIOMMU that is
-visible to the guest.
+Can you list here what the basic flow of iommufd calls is to create a
+CC VM, with no vIOMMU, and a CC capable vPCI device?
 
-> @@ -2068,7 +2069,18 @@ static void set_dte_entry(struct amd_iommu *iommu,
->  		new.data[1] |= DTE_FLAG_IOTLB;
->  
->  	old_domid = READ_ONCE(dte->data[1]) & DEV_DOMID_MASK;
-> -	new.data[1] |= domid;
-> +
-> +	if (domain->aviommu) {
+I'd like the other arches to review this list and see how their arches
+fit
 
-AMD should be implementing viommu natively without CC as well, try to
-structure things so it fits together better. This should only trigger
-for the CC viommu type..
-
-> +		/*
-> +		 * This runs when VFIO is bound to a device but TDI is not yet.
-> +		 * Ideally TSM should change DTE only when TDI is bound.
-> +		 */
-> +		dev_info(dev_data->dev, "Skip DomainID=%x and set bit96\n", domid);
-> +		new.data[1] |= 1ULL << (96 - 64);
-> +	} else {
-> +		dev_info(dev_data->dev, "Not skip DomainID=%x and not set bit96\n", domid);
-> +		new.data[1] |= domid;
-> +	}
->  
->  	/*
->  	 * Restore cached persistent DTE bits, which can be set by information
-> @@ -2549,12 +2561,15 @@ amd_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
->  {
->  	struct amd_iommu *iommu = get_amd_iommu_from_dev(dev);
->  	const u32 supported_flags = IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
-> +						IOMMU_HWPT_ALLOC_PASID |
-> +						IOMMU_HWPT_ALLOC_NEST_PARENT;
-> +	const u32 supported_flags2 = IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
->  						IOMMU_HWPT_ALLOC_PASID;
-
-Just ignore NEST_PARENT? That seems wrong, it should force a V1 page
-table??
-
-> +static struct iommufd_viommu *amd_viommu_alloc(struct device *dev,
-> +					       struct iommu_domain *parent,
-> +					       struct iommufd_ctx *ictx,
-> +					       unsigned int viommu_type)
-> +{
-> +	struct amd_viommu *aviommu;
-> +	struct protection_domain *domain = to_pdomain(parent);
-> +
-> +	if (viommu_type != IOMMU_VIOMMU_TYPE_TSM)
-> +		return ERR_PTR(-EOPNOTSUPP);
-> +
-> +	aviommu = iommufd_viommu_alloc(ictx, struct amd_viommu, core, &amd_viommu_ops);
-> +	if (IS_ERR(aviommu))
-> +		return ERR_CAST(aviommu);
-> +
-> +	aviommu->domain = domain;
-
-This is not OK, the parent domain of the viommu can be used with
-multiple viommu objects, it can't just have a naked back reference
-like this.
-
-You can get 1:1 domain objects linked to the viommu by creating the
-'S1' type domains, maybe that is what you want here. A special domain
-type that is TSM that has a special DTE.
-
-Though I'd really rather see the domain attach logic and DTE formation
-in the AMD driver be fixed up before we made it more complex :\
-
-It would be nice to see normal nesting and viommu support first too :\
-
+Thanks
 Jason
