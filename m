@@ -1,62 +1,69 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F23FD3595D;
-	Tue,  1 Apr 2025 01:09:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8A5E1EC011
+	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 09:11:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743469771; cv=none; b=uK4+O16uJDGrjLCVE4zwPpu1nSVSSs8vP+vAI/wDg7G0lnSzXJXHo+6wxBMhcIU7E+fn7aFmbRitH6Tl0b6rpO56GG8t9LoQE1RD3aTsw7b5i6xdnNYfonZVkbJjoQD5EK/tNsBYnAdYEucrG8pYG3HMHl2j+5J740VswEIE0s0=
+	t=1743498703; cv=none; b=fQsSC1UTxJu1axj3ly21SxZb+3FPFFNmoVRLbhcoDf7BDBQDq8iobrEWCZwxmUBel5QSLQjMiSzcKHJ+XNN0TXHJvEH76qvWG9vx+4wXR2TTYlq5GugIpOiQo4jcsSk68OcG33q2INTKXMgZr1Ga9iAWw6riott21RjSlqIDtW4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743469771; c=relaxed/simple;
-	bh=xnDKz4hdm/kkZqcWSzvYO96l5CqeHbCretys4W9iu2o=;
+	s=arc-20240116; t=1743498703; c=relaxed/simple;
+	bh=z5w4mqCNWGf9ESkE5yFsF6dByAcXvoIsTorTJ9KZAjA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JGihU/Z7m0/tO7rJ8ZFFvjo3RML6cRJoR/drLSBkZ6Jj2bq1t8exDUHY17iPyUswYt/u8kgmRo/Ikz76bOzsa7uarfjfNTDHyFGUnom8Li/N3u3FBEi4HQ2jg15tLIyy2wyCskXJxQiU2axPpwOBctliM38vveLhxG5RieF/WNU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ce0nhRfs; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=kXF2U7oMFxue/MWW0ZtZNwUT4+5/BpVJ1PQorWXvQhEbYpg1EfrB+KINpF07mZzBN/bUETBvEQ17JfQOYD5QqFw6ZmUF4vbLC76+ta+cLwEs7S6Dt1bWtRPPj4qXNsrceoe7wDO7gr4mk/jCN75qIEIhh60g0Eev2RKdk1PFYZw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=fpq1zwgC; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ce0nhRfs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 978F4C4CEE3;
-	Tue,  1 Apr 2025 01:09:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1743469769;
-	bh=xnDKz4hdm/kkZqcWSzvYO96l5CqeHbCretys4W9iu2o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ce0nhRfsh4foP8kliSiSC0eCyy1P530wNZv1yXlz0fhnntdzc2pHj8ehJ73sKloVM
-	 C0cw7cUj+BIc9kmwIU3OVnx2X/5KZolUkXS2nrcBmOD80XEOnwWEu+qaNld4IC1Lbz
-	 ktTwM4BKKx5FIv7O9NfsPq2v7mz23KDqI6mFjPh6003pPohStRGfOcfyHzqdAMOVmD
-	 1gOusmiwUbvZzBP/fZDRftY7IT+SckUkPyIVGM5JFjlw/2fk+9/Ns880REt1nFz5Or
-	 pRuSFvVxXKUnth/AX3auD+qu9VK2N7OyoDzrtCOl5aOlD0WNxZyXTU1dmfK4K2DInq
-	 5BLO5MT41pJgw==
-Date: Mon, 31 Mar 2025 18:09:27 -0700
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: Leon Romanovsky <leon@kernel.org>, Daniel Gomez <da.gomez@samsung.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v7 00/17] Provide a new two step DMA mapping API
-Message-ID: <Z-s8x_YyGEYTz8BJ@bombadil.infradead.org>
-References: <cover.1738765879.git.leonro@nvidia.com>
- <20250220124827.GR53094@unreal>
- <1166a5f5-23cc-4cce-ba40-5e10ad2606de@arm.com>
- <20250302085717.GO53094@unreal>
- <e024fe3d-bddf-4006-8535-656fd0a3fada@arm.com>
- <Z+KjVVpPttE3Ci62@ziepe.ca>
- <20250325144158.GA4558@unreal>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="fpq1zwgC"
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5311amAB007991;
+	Tue, 1 Apr 2025 09:11:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=pp1; bh=XyRix+4GNv6ZrOcC6r80lhGA/F7ll6
+	PFz2oW/xEJcr0=; b=fpq1zwgCTB8d4LNVPauRePRc3Q6pjQVus1rLRxHbp1pvwP
+	k9PhGM1n2ZaNHo3Dy4zCZeJXZJroUzUujMv9jVe8nu0ZG6my72IpS8T0YUmufVvV
+	9Kc5MGVaqe7zrr97bhSO7aLsZ/gL1PTvXhVRlnpsePw3Zkspc9kvZmiPYGdDmVc+
+	pXKzKxw3kqjb7M6jOMOVfbuZPk2Wv+hT3s8n2v5NEgWkd1cCypNZ0F2SBrGSx8gH
+	rswC6IK50Tk0N6/aLY1BPP5mchoMDdnrpMi2V0RiY/rLlZPgX4M40/rXEgl4Yuml
+	VeSJt3PZnc2B+z2mhsK6dZcoX7WU8/5p/mdcuwSA==
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 45qvfpvgxn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 01 Apr 2025 09:11:22 +0000 (GMT)
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 5318o0sg014576;
+	Tue, 1 Apr 2025 09:11:21 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 45pvpm1psx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 01 Apr 2025 09:11:21 +0000
+Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 5319BH1r31654402
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 1 Apr 2025 09:11:17 GMT
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9E1692004B;
+	Tue,  1 Apr 2025 09:11:17 +0000 (GMT)
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 644FF20043;
+	Tue,  1 Apr 2025 09:11:17 +0000 (GMT)
+Received: from osiris (unknown [9.152.212.60])
+	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Tue,  1 Apr 2025 09:11:17 +0000 (GMT)
+Date: Tue, 1 Apr 2025 11:11:15 +0200
+From: Heiko Carstens <hca@linux.ibm.com>
+To: Matthew Rosato <mjrosato@linux.ibm.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
+        borntraeger@linux.ibm.com, clg@redhat.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH v4 5/5] iommu/s390: allow larger region tables
+Message-ID: <20250401091115.7691Bd6-hca@linux.ibm.com>
+References: <20250331202159.85956-1-mjrosato@linux.ibm.com>
+ <20250331202159.85956-6-mjrosato@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,39 +72,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250325144158.GA4558@unreal>
+In-Reply-To: <20250331202159.85956-6-mjrosato@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: iggC1jnG6T90UBVs0OvZOfNAlGnIobQP
+X-Proofpoint-GUID: iggC1jnG6T90UBVs0OvZOfNAlGnIobQP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-01_03,2025-03-27_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=0
+ priorityscore=1501 clxscore=1011 adultscore=0 bulkscore=0
+ lowpriorityscore=0 spamscore=0 mlxlogscore=651 mlxscore=0 impostorscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502280000 definitions=main-2504010057
 
-On Tue, Mar 25, 2025 at 04:41:58PM +0200, Leon Romanovsky wrote:
-> On Tue, Mar 25, 2025 at 09:36:37AM -0300, Jason Gunthorpe wrote:
-> > On Fri, Mar 21, 2025 at 04:05:22PM +0000, Robin Murphy wrote:
+On Mon, Mar 31, 2025 at 04:21:59PM -0400, Matthew Rosato wrote:
+> Extend the aperture calculation to consider sizes beyond the maximum
+> size of a region third table.  Attempt to always use the smallest
+> table size possible to avoid unnecessary extra steps during translation.
+> Update reserved region calculations to use the appropriate table size.
 > 
-> <...>
-> 
-> > > So what is it now, a layering violation in a hat with still no clear path to
-> > > support SWIOTLB?
-> > 
-> > I was under the impression Leon had been testing SWIOTLB?
-> 
-> Yes, SWIOTLB works
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>  arch/s390/include/asm/pci_dma.h |  1 +
+>  drivers/iommu/s390-iommu.c      | 71 ++++++++++++++++++++++++---------
+>  2 files changed, 53 insertions(+), 19 deletions(-)
 
-We will double check too.
+...
 
-> and Christoph said it more than once that he tested
-> NVMe conversion patches and they worked.
+> +	spin_lock_irqsave(&zdev->dom_lock, flags);
+> +	if (zdev->s390_domain->type == IOMMU_DOMAIN_BLOCKED ||
+> +	    zdev->s390_domain->type == IOMMU_DOMAIN_IDENTITY)
+> +		goto out;
+> +
+> +	s390_domain = to_s390_domain(zdev->s390_domain);
+> +	if (zdev->end_dma < max_tbl_size(s390_domain)) {
+> +		end_resv = max_tbl_size(s390_domain) - zdev->end_dma;
+> +		region = iommu_alloc_resv_region(zdev->end_dma + 1, end_resv,
+> +						 0, IOMMU_RESV_RESERVED,
+> +						 GFP_KERNEL);
 
-We've taken this entire series and the NVMe patches and have built on
-top of them. The nvme-pci driver does not have scatter list chaining
-support, and we don't want to support that because it is backwards.
-Instead, the two step DMA API lets us actually remove all that scatter
-list cruft and provide a single solution for direct IO and io-uring
-command passthrough to support large IOs [0] [1] and logical block sizes
-up to 2 MiB.
-
-We continue to plan to work on this and are happy to test this further.
-
-Clearly, we don't want any regressions on NVMe.
-
-[0] https://lore.kernel.org/all/20250320111328.2841690-1-mcgrof@kernel.org/
-[1] https://lore.kernel.org/all/Z9v-1xjl7dD7Tr-H@bombadil.infradead.org/
-
-  Luis
+GFP_KERNEL allocation while holding a spinlock is not correct.
