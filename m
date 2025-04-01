@@ -1,130 +1,159 @@
-Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B3D620B7E1
-	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 16:13:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 050F81D63F7
+	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 20:28:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743523984; cv=none; b=ufAXuWqLL6Yai/aEJE1z4rn3WJEDCMdkm4cIZodTh3np0APAgsVLdwlS+0V6ffzLaGCIpYr6GJy9CzdN2IzD16qgj/fNbYrH/OImZs5YY7NLslm6q79Mh1aU/IWhlfaSHtMaoLsbtke6y6hVisOqyPEAXHP1c739dTFscc2+ZMw=
+	t=1743539294; cv=none; b=UFfsXfdtvJGaNdocWOyOvxccsxPLdUvkUtPRQkUtj3wPcHodGZwkSGPpvBfS2Qvr5WZ8x5gsCaVLSSooiXr4pFZ6vT40fJAbUg+uElCW+XDKA9WqY4Rkin9UJaPA2/g49LvMyuRrt8WUV5qKcnkAwFxbrnrwOaU32xzQqF81j4s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743523984; c=relaxed/simple;
-	bh=jsPocqxTm3Tk/n85dNMIT20KutkK5Grt6C4lCnIAUO4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a49eOB5xPzfMIyseLa3SlJWLaQYj0tA4lZ/ql2Viz4aMIVb3mLfNZBAoRqXc52yF0xGBfvMpXTJy/DPRCPknMmePRO6yKBh7vMUf2JHWciZ9JpDU+rmKxkOcTg5R6/yYrgLIP6P0MLeFbe+B3u/KdI4Z+nXnl/kIWUBAjjsAh6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dDHma69e; arc=none smtp.client-ip=209.85.219.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1743539294; c=relaxed/simple;
+	bh=gfNYtL4kwsYVs3rpsJEQFskmbVwirI4GjWshKJ5OVc4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=A4qd+uQjd8yp0tEvNKmXvST1I2sXzO0GnIFWt5JEkAcJCXwUVHcbE0lb6W6U66La9PcObK8eoTBEZ+Oj+v0R92MTgGF+YhKu9C541bGAs1x3fQmQjRjGUL9EY4uku1ckFvkjtnf+EI66LyipZGNGuvummQoItIjgADDT33ww+a0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=HK4Vhytr; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dDHma69e"
-Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-6ecfc2cb1aaso53513486d6.3
-        for <iommu@lists.linux.dev>; Tue, 01 Apr 2025 09:13:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1743523982; x=1744128782; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=poENEUfmFrThnex6gEytUaMxRROeOKxTbEdDijAo1Do=;
-        b=dDHma69eOp7gJHnnfuQUjMGiLZEDoYF0YW1JK41j0rgXEaj/vxRrqXH4G8a/I73jOQ
-         6bDRgK2MVyyueHr8HxB729prKWePXppP55703lLbJwHDWqncV7141rB0NI7lcQ6Acfge
-         CKTkNSHQ7bPrE3Wihb0CHTyriiVuso2ycPnJEVhMqVLm6uHQw00SU/4UluNuh8+E9yem
-         zumaspyspQ41EtFgvts7ZUX1Ts0Cj5i4GrazOgb0HB+EFe5wTuTc0A+RjahU8t7tZ8XT
-         SntUJDTznMBsPjgRr1a/NE/oWgViSDG7FTleb/Ns67C2pqgXXbv8Xu2+iNA5LUtO0vyt
-         OcnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743523982; x=1744128782;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=poENEUfmFrThnex6gEytUaMxRROeOKxTbEdDijAo1Do=;
-        b=vG2By2HjRlYB74eRbQJSaV0E1ipIXYqR19ISuPfwF6WITeVx7pSlgC3T/tVSvKQHdq
-         jsXsaStgxxbVfD+65RbP4yMqLyOj0RUiHr3vdOsBcyw7G3E0Tbb9J153eQx9vTqmhn/h
-         Jt5oL3OyUvIRp7tKzaWPGdGWr775UcJk/SV764mW5lY/D/qfVpf04YLHKHIDHizBUTJl
-         mJSrvPgUbUL2rzQCSOU7GgR+ZKBspxaD95YjCgOveftCF3a8FpJqXBVF236E/3AwY50v
-         pFenXM3FmUX3fsyAFV9KojwzjVfjjWuLvBdxHfdDHpfYx1Iwmrefzgqgjw3YuV0uWPcj
-         Je8g==
-X-Forwarded-Encrypted: i=1; AJvYcCUAt+U4eu98IQVUZPwUGTzkMPY4PcYu26o3hWtwR7H5z6u3Wgy+pTaq7sJdLlFgvNkNzqPrkg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy77AGTWN2Zn3dt5GhJJQiKeyMyVXV322P653ZvmsoS0QqhnoxC
-	CCvYcey1F6GD/2s+zF8g81scFNprChbCsg9K4RMn3ENhF6h7C51/zXIO/yXQ0+k=
-X-Gm-Gg: ASbGncv/KLKXNM5L64kHUVJipdqyChN6zMvGOZdcEZ0gVDckpld9UdYodyBSpKuBqMj
-	uj+S0P0xEtLKsCrPxoNrBhA5JS+RzXUBr/BIK5fyx9spRjmw/Aob7c2BvNsD1imM4us85sK2Erf
-	4CDXIvayy7JHAYCstuOYXMpB0XJ+gdpde7oqaJdWXqwvCOyC1SZAlUshhKrNJ6EXl5x3Pb8LUML
-	HU4iOmD5Vnh+lIPNz0eXloKzOExgtW1HlrVL2JxKwVn3zcHk4UEPRKEOSKqTTrptgMlDU4TY7Xr
-	DLdd4eIcU+WkwPze2K7NGbamiNwtVMuIBO/Ie2EF0gX+aWfs8+hc5Y3taUDnVIk6LYbi88v5UFV
-	KDanEOs8ZRdF6X8P/UIvoPs4=
-X-Google-Smtp-Source: AGHT+IFgqnXSN6fOa8wvReuysgLZpbCK1HhkdqcE+Mm2zYjIPC+dt/OEL3eUy9xyw3HgFZ9lLvi7Ow==
-X-Received: by 2002:a05:6214:226c:b0:6e8:f905:aff0 with SMTP id 6a1803df08f44-6eed62a0be1mr227091686d6.35.1743523980713;
-        Tue, 01 Apr 2025 09:13:00 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6eec97718e1sm63039286d6.70.2025.04.01.09.13.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Apr 2025 09:13:00 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1tzeEV-00000001MLv-35Gu;
-	Tue, 01 Apr 2025 13:12:59 -0300
-Date: Tue, 1 Apr 2025 13:12:59 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Zhi Wang <zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 14/22] iommufd: Add TIO calls
-Message-ID: <20250401161259.GM186258@ziepe.ca>
-References: <20250218111017.491719-1-aik@amd.com>
- <20250218111017.491719-15-aik@amd.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="HK4Vhytr"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250401202809euoutp016c7d437a41590b450c6d12c1999fe860~yS771ZEe21841818418euoutp01D
+	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 20:28:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250401202809euoutp016c7d437a41590b450c6d12c1999fe860~yS771ZEe21841818418euoutp01D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1743539289;
+	bh=eZbA7qwbD0L+jiCUxvoRvf44D7eR7R+L9wIpeMQLFC8=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=HK4VhytrxclQj7jRmVSNKQdjrLLLuWKRnTAbff+uFBfkR9hwyIknQ8vaglgV3Uv1v
+	 0IqPQ/9dPO+yJQ/fNxf44SP864+g6D5MWE4LaDways2z2wFEGaBQhA+TAaiiHEYgSW
+	 xBla261hNdXivbcppcmrxX9mvN5PoHHk0iJ6QBxA=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20250401202808eucas1p1cbde4ad5d798800f4a42896a7566c582~yS77QXEcI2655026550eucas1p1z;
+	Tue,  1 Apr 2025 20:28:08 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+	eusmges3new.samsung.com (EUCPMTA) with SMTP id 5E.57.20397.85C4CE76; Tue,  1
+	Apr 2025 21:28:08 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250401202808eucas1p2d2db882c5b7e39bca39e0cf8d7696ca5~yS76t8r0c2324323243eucas1p2J;
+	Tue,  1 Apr 2025 20:28:08 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20250401202808eusmtrp1a30c07f7ab3fc440c9cebcce7ddeb856~yS76tZl_33253532535eusmtrp1P;
+	Tue,  1 Apr 2025 20:28:08 +0000 (GMT)
+X-AuditID: cbfec7f5-e59c770000004fad-a0-67ec4c58fbd9
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id 8E.71.19654.75C4CE76; Tue,  1
+	Apr 2025 21:28:07 +0100 (BST)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20250401202807eusmtip2ac2c6ec18eaf968e8cbe8fb5590c3d2e~yS76G8IA-2881128811eusmtip2m;
+	Tue,  1 Apr 2025 20:28:07 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel
+	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Krzysztof Kozlowski <krzk@kernel.org>, Alim Akhtar
+	<alim.akhtar@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>, Jerry Snitselaar
+	<jsnitsel@redhat.com>
+Subject: [PATCH] iommu/exynos: Fix suspend/resume with IDENTITY domain
+Date: Tue,  1 Apr 2025 22:27:31 +0200
+Message-Id: <20250401202731.2810474-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250218111017.491719-15-aik@amd.com>
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGKsWRmVeSWpSXmKPExsWy7djPc7oRPm/SDc63qVg8mLeNzeLXFwuL
+	mTNOMFp0zt7AbvF4+Wxmi/PngaxNj6+xWsw4v4/JYu2Ru+wWBz88YbVouWPqwO3x5OA8Jo81
+	89Ywemxa1cnmsXlJvceLzTMZPd7vu8rm0bdlFaPH501yHls/32YJ4IzisklJzcksSy3St0vg
+	ynh75xpLwTK+ilsb3rM2MDbwdDFyckgImEg07XrG2sXIxSEksIJRYsX12WwQzhdGiQVPmxlB
+	qoQEPjNKfJqnDdPx+ccDFoii5YwSW1ceRejYdf8QK0gVm4ChRNfbLqAEB4eIQIrE5ze5IDXM
+	AhuZJJava2EHqREWcJM4uncqE0gNi4CqxPlOb5Awr4C9xN7785ghlslL7D94lhkiLihxcuYT
+	FhCbGSjevHU2M8hMCYEbHBIL/p5ggWhwkbi16gEbhC0s8er4FnYIW0bi9OQeFoiGdqDXft9n
+	gnAmMEo0PL/FCFFlLXHn3C+wq5kFNCXW79KHCDtK3H77lB0kLCHAJ3HjrSDEEXwSk7ZNZ4YI
+	80p0tAlBVKtJzDq+Dm7twQuXoH7xkGjqnsUKCdBYid/7NzJPYFSYheS1WUhem4VwwwJG5lWM
+	4qmlxbnpqcXGeanlesWJucWleel6yfm5mxiBSev0v+NfdzCuePVR7xAjEwfjIUYJDmYlEd6I
+	ry/ThXhTEiurUovy44tKc1KLDzFKc7AoifMu2t+aLiSQnliSmp2aWpBaBJNl4uCUamDyePfn
+	5rT4pT1Wb64K3Q6q3bnX7oKqv3FY5aGt3JI7dP5wT46U8lxeuYN52S7+pTZh37n9puskmHzx
+	Ni7Iaft9nl9VOnPrK5st8xw3/EyU7ZLne6Af0sLx5gtX1Z5v0woTdXsrm5Tk1/60XHZzQ86H
+	JvHagOdfUksT57y5dbbz98bLcjyrb+5gv5si2Cpc//S9y+4jjUVPnuc9OBejskNmE5OO8dLs
+	Cq/+5Y3F/9z3z6xKnx5qlXHx6MrWnrs3Mn+z3Tmxa9aCSf/D1QqTeKydE+J/9fnWfZuvtHjd
+	0n/rjV9HbXYwmHbju3d2QNbmabJxS/SMIoVnLG//u1vOZKcSlx9nmuCMA92bfgXK8BQosRRn
+	JBpqMRcVJwIApIvy0ckDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuphkeLIzCtJLcpLzFFi42I5/e/4Pd0InzfpBh9dLB7M28Zm8euLhcXM
+	GScYLTpnb2C3eLx8NrPF+fNA1qbH11gtZpzfx2Sx9shddouDH56wWrTcMXXg9nhycB6Tx5p5
+	axg9Nq3qZPPYvKTe48XmmYwe7/ddZfPo27KK0ePzJjmPrZ9vswRwRunZFOWXlqQqZOQXl9gq
+	RRtaGOkZWlroGZlY6hkam8daGZkq6dvZpKTmZJalFunbJehlvL1zjaVgGV/FrQ3vWRsYG3i6
+	GDk5JARMJD7/eMDSxcjFISSwlFFixey7jBAJGYmT0xpYIWxhiT/Xutggij4xSsx8v5EdJMEm
+	YCjR9RYkwckhIpAmMbG9AWwSs8B2JokDk56BdQsLuEkc3TuVqYuRg4NFQFXifKc3SJhXwF5i
+	7/15zBAL5CX2HzzLDBEXlDg58wkLiM0MFG/eOpt5AiPfLCSpWUhSCxiZVjGKpJYW56bnFhvp
+	FSfmFpfmpesl5+duYgRGy7ZjP7fsYFz56qPeIUYmDsZDjBIczEoivBFfX6YL8aYkVlalFuXH
+	F5XmpBYfYjQFOm8is5Rocj4wXvNK4g3NDEwNTcwsDUwtzYyVxHnZrpxPExJITyxJzU5NLUgt
+	gulj4uCUamDaskBA4N7ruyvL0i8sP5Pbf6ksfWNpp87nAP/D4qL7t3JdrYxlkNCrCjFsv2c2
+	aX419/uvOcy7rVbXfPZV+brlWcvnuIkXV7++ecwo/E7y/ccZ/+/Oe6Gxrdz4n3vlTnGHZydb
+	J1wzd69+pVww4Z53e0rQuan2s632hd7fFL/sZP/1aWdUvivXRGs5Wa5Q8i1ZtX7FXRYRRtNc
+	XuXH0Zm8yYVlvqn5vw8qZq0x35zmpb8islZH/ukpZtXzTnXmnR8q7nW6/RUM/yY6i59R9KrT
+	7BzmjRP+ek95NZ8/Mu7y8mtbhd/1TeecNYFj63y7L0eO/atZ/5cvb5qZ55XD7syxs0XstPQn
+	/b7UaL5vyaUUJZbijERDLeai4kQAhqKveR8DAAA=
+X-CMS-MailID: 20250401202808eucas1p2d2db882c5b7e39bca39e0cf8d7696ca5
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250401202808eucas1p2d2db882c5b7e39bca39e0cf8d7696ca5
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20250401202808eucas1p2d2db882c5b7e39bca39e0cf8d7696ca5
+References: <CGME20250401202808eucas1p2d2db882c5b7e39bca39e0cf8d7696ca5@eucas1p2.samsung.com>
 
-On Tue, Feb 18, 2025 at 10:10:01PM +1100, Alexey Kardashevskiy wrote:
-> When a TDISP-capable device is passed through, it is configured as
-> a shared device to begin with. Later on when a VM probes the device,
-> detects its TDISP capability (reported via the PCIe ExtCap bit
-> called "TEE-IO"), performs the device attestation and transitions it
-> to a secure state when the device can run encrypted DMA and respond
-> to encrypted MMIO accesses.
-> 
-> Since KVM is out of the TCB, secure enablement is done in the secure
-> firmware. The API requires PCI host/guest BDFns, a KVM id hence such
-> calls are routed via IOMMUFD, primarily because allowing secure DMA
-> is the major performance bottleneck and it is a function of IOMMU.
-> 
-> Add TDI bind to do the initial binding of a passed through PCI
-> function to a VM. Add a forwarder for TIO GUEST REQUEST. These two
-> call into the TSM which forwards the calls to the PSP.
+Commit bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe
+path") changed the sequence of probing the SYSMMU controller devices and
+calls to arm_iommu_attach_device(), what results in resuming SYSMMU
+controller earlier, when it is still set to IDENTITY mapping. Such change
+revealed the bug in IDENTITY handling in the exynos-iommu driver. When
+SYSMMU controller is set to IDENTITY mapping, data->domain is NULL, so
+adjust checks in suspend & resume callbacks to handle this case
+correctly.
 
-Can you list here what the basic flow of iommufd calls is to create a
-CC VM, with no vIOMMU, and a CC capable vPCI device?
+Fixes: b3d14960e629 ("iommu/exynos: Implement an IDENTITY domain")
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+This fixes random issues observed on various ARM 32bit Exynos SoC based
+boards, like Odroid-XU3.
 
-I'd like the other arches to review this list and see how their arches
-fit
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+---
+ drivers/iommu/exynos-iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks
-Jason
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 69e23e017d9e..317266aca6e2 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -832,7 +832,7 @@ static int __maybe_unused exynos_sysmmu_suspend(struct device *dev)
+ 		struct exynos_iommu_owner *owner = dev_iommu_priv_get(master);
+ 
+ 		mutex_lock(&owner->rpm_lock);
+-		if (&data->domain->domain != &exynos_identity_domain) {
++		if (data->domain) {
+ 			dev_dbg(data->sysmmu, "saving state\n");
+ 			__sysmmu_disable(data);
+ 		}
+@@ -850,7 +850,7 @@ static int __maybe_unused exynos_sysmmu_resume(struct device *dev)
+ 		struct exynos_iommu_owner *owner = dev_iommu_priv_get(master);
+ 
+ 		mutex_lock(&owner->rpm_lock);
+-		if (&data->domain->domain != &exynos_identity_domain) {
++		if (data->domain) {
+ 			dev_dbg(data->sysmmu, "restoring state\n");
+ 			__sysmmu_enable(data);
+ 		}
+-- 
+2.34.1
+
