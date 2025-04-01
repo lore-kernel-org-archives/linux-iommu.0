@@ -1,121 +1,227 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2046.outbound.protection.outlook.com [40.107.236.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64B701F0E5F
-	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 10:35:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743503725; cv=none; b=SjC1GEI+rnUGOzY7vlqdrzbh2kjNcTWRozzOJ3EMfdElZMs446SL2KPI/zniRbrmNO3pepgdCsadyifskYw/WbnpOK/N/9rd7Q6sTSpOHkZZ/u7tgpiRCy6UrAfgf/XvaRGO3Js7gw47hwdULzifYlCMwoop6ldJK7WO5fpeuEI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743503725; c=relaxed/simple;
-	bh=bB0Q88NaQ1z3A+sAKvbKfweAcqrwjXi0SB3rHqKzM6Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C3PJ1d0BUa+Lz8XUvK9cXqcFol3ky59q4EGwfRUugC/KGIXP7UeTRJPu8Tn5eSF2ajvcXStMhbfbFCxXi8nmDJ+LqBF/Pf9Dh/Cg2eRlGH4OanChZP/SQkLwDCWh+e9nNo8E/LZhSx+louNrI0UuFasI5idY020xqvYihFm8QYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=S7KduqAL; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D73651EF361
+	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 11:03:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1743505429; cv=fail; b=ATbWcGCyDxTEOvE+vwH7GrDv2HsMTtKeWgBtNksg4pLX7Md5AhcPW+k97uUxB/ISlS1UOYqagn149UujswMOY6Y9dfUbwS6RjHTwz+hOcLnx8YKhsA3xwv/DQNhT8aUMWVqAi+VyzOYc39N9SdpFF8gjayK5l4wBa1pllyy5bjY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1743505429; c=relaxed/simple;
+	bh=n0jdkrSUxkbvzJ4eiEo3Se/YQpwiF3vG/Bcp+ZAVlmc=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=BRZu9z4IZxh6UsrVNBdlk/HvxNeZzyNgJfT9QJqOumEUw38lTcJ4kx4FZ99fCb75JcnzNDOcxtsCUMkxydoFhdXP8dLuR8n1LPm3vKPzTSx90/o922fGPPGicKNGnMGxnHBmoxYSf+o5zgs+a+liDd2Zn+9lDu1OoHYBThtKJJ8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=UxTFPNTe; arc=fail smtp.client-ip=40.107.236.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="S7KduqAL"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-43d04ea9d9aso24938895e9.3
-        for <iommu@lists.linux.dev>; Tue, 01 Apr 2025 03:35:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1743503722; x=1744108522; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=094SZ9fz+o6eVY5ZaePMpljZ6ZXESAEN9w/PXff7gsU=;
-        b=S7KduqALguK4NWtjIOmz25qBDMhw4iAKyDMh8EFLnbGHKJ7yykeoVeFeTk3RQ6f5kl
-         3GtyRhrJvXd+AqKv6yBoR/UTrA+HhQfV1r5i/kcUijGj5Br4857L0x5CssQlRXqiGuqm
-         mSi3WPFAmRnLZGm31z0vKs7J8wMdxujLE+IrQkLgN3P/GS6tQaUH8HrL28oyq+BQpitm
-         8NGkT5dlA3LmeLIaY1gnU20sn9oRJw9EGGemtpEQU6F80lUegrDZZXeGvTQOnnpAOi41
-         oVFkbiNu8F6F5+6CkGfrJxkdN+6wchHu1QHuE9HRMgW1erbmC0Pppb/rZ4m6TC3E/ds5
-         QC+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743503722; x=1744108522;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=094SZ9fz+o6eVY5ZaePMpljZ6ZXESAEN9w/PXff7gsU=;
-        b=UOPh1AUUwT8xYDe7fuvyrUSWainNhd0x20jhgQ74SmkR1IHVGMFnPYkCDYGoJr2FcY
-         ySZPzGx/TbC3CN3//Zt8iYH/0LlQvfOOAV0Q4fDcHLdV0FR+PsWc+leWXYV7RuT+dCV9
-         Wcwe9AxJuzafVlqSPy7/2XrkTc9057TOdydYErdt49i2/IfnJ4QYfMmNqSEx92sgeK2Q
-         KwvN9w3LUhcJY46RqBwybnQiR3UFYF4FQ/Tmq0ZYL0dcsq1uZMh52Y+H5qDRnN7z1rrW
-         a/ppGE9cbGyJowYUPc1Q/1R53R2lHf5T7nuHP/+d09M6sIK8a0pM4nmOtSBA8z92ncU9
-         Oogg==
-X-Gm-Message-State: AOJu0YxTecSIUl6C8oE9R56mO2MqqeTJILEfFADL36EYxa9oUp2ZVSd9
-	NFPqzOlkeaemE/j39Gy+rGDWvXMFumhc47bxe26lVgCljSX9h/mMfmMUrXrVlDE=
-X-Gm-Gg: ASbGncuVsfU3o6yARCp1orXn2vKvmwmEG1Wo1E4keC2CD2LJmbNEYOdh/aH/gUN+STK
-	1ICqniOmLoUUDnEt1SFjM2RKlB/4iOF97n9J0+7iRvL7TmvWbvbGba+UMF7LCnJjq0FHt/DcixY
-	bI8pcRqDGV3xKRprnZ2zGadlTAKzGIkYqh4JaXH427KyrdTikW89LTMVfOk0wTqSvDVN/qQv3EF
-	w2NcsmQjnF4EdHw3RL4RMX/TYHm00HrRcQrwaAVZ81B1j3Xr7J4z4xSIY/ZaxBcDm67wTlc1D+y
-	6r2k5vKrTlMrLGBAhdpudVzB64DCq/8VSKqiMV0UlvE=
-X-Google-Smtp-Source: AGHT+IH0MYFlI+kNZ16n6YuowDwZDpAgl0lcpbfUtl1S5hYwQqcUs9sspCA+WvoevEZPVnDHgpx5gw==
-X-Received: by 2002:a05:600c:4e87:b0:43d:8ea:8d80 with SMTP id 5b1f17b1804b1-43db61d5fd2mr102696825e9.5.1743503721639;
-        Tue, 01 Apr 2025 03:35:21 -0700 (PDT)
-Received: from myrica ([2.221.137.100])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-39c0b658c87sm13912049f8f.9.2025.04.01.03.35.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Apr 2025 03:35:21 -0700 (PDT)
-Date: Tue, 1 Apr 2025 11:35:19 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Joel Granados <joel.granados@kernel.org>
-Cc: iommu@lists.linux.dev, David Woodhouse <dwmw2@infradead.org>,
-	Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Rob Clark <robdclark@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
-	virtualization@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-tegra@vger.kernel.org, pierrick.bouvier@linaro.org
-Subject: Re: RFC iommutests_: Testing software for everything IOMMU
-Message-ID: <20250401103519.GC2424925@myrica>
-References: <5zoh5r6eovbpijic22htkqik6mvyfbma5w7kjzcpz7kgbjufd2@yw6ymwy2a54s>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="UxTFPNTe"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=KwtoeOcWPGgAcWVMfozNVDEe5ObpHXuYhsSpDK+xubPMVqjrTdzsVMQpslK6Z/UFEIRCTg/VGHlG5ayJvowbnqrDsNL12T21UeeTO/7VEO8L+7rw10tUAZ8oey0z7P7UtAgFcnrDzllXbMDaxpXn7oJZQjSlYKBXpRC1YZqrfCCgw1K4NtAa/UJmLA7rjKDKbPre+RlAmVZ+evXbwp8yd6A/vuGqdurtA1CvZ1NdUdyQWOfAC+OOEuRt+VxiTHhMkiBghFqlI6v3OW+84kzZ700VA3FL2i5IVOatEIMmqT319m9IGRcJKfIU2XCp/iVtyxr45Dtg5WS1LNvTy6fvSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=n0jdkrSUxkbvzJ4eiEo3Se/YQpwiF3vG/Bcp+ZAVlmc=;
+ b=xoHbUwAewsRA095zlrKwi8X9pil9bMLMULz1i639EdroIYFft2VRbR+JPEonxfCp3WUczsdRqTY6f0vKE/lrsH2P4fq8XFS9IwMzcE5j/XZO03DSeN/1idWua2yO/PRnHM5FF2/ZLuxfuwVBN2GImDnqTkGRXccfstgIwrVL3bFwtiTrHXFHHSd9HuW/x2ubEwnKXGtjKEY4Rnjq1USAVeGluiwWjypDEKWKPX/MBAppqsWvTAlMe4/zuN1POMjSGrFM8Yih96hlu20IMUGsxVfPZYyRK1NtdfXMxktxHL67V+dX+Yafnm0QnW2gt1dJHSUkeLzGQ0mCip/BF1Zbkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=n0jdkrSUxkbvzJ4eiEo3Se/YQpwiF3vG/Bcp+ZAVlmc=;
+ b=UxTFPNTeKTx5NVhkYWtUJ/7AOpkwxzmwkABJ4GNh7n0x92vmsPj4yLr/kZqQlCCTqRxwazRpXw5k1c/VQ9HGVc7uQNMSLuUpfb5a0fTZMq5CgwMK15FvI75+4tE4nJkFt/emLQqQk6SxwTECqsXjuMJ1qK/OP/NjPhGU+eVRP0s=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by DM4PR12MB6351.namprd12.prod.outlook.com (2603:10b6:8:a2::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8534.44; Tue, 1 Apr 2025 11:03:43 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::46fb:96f2:7667:7ca5]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::46fb:96f2:7667:7ca5%5]) with mapi id 15.20.8534.043; Tue, 1 Apr 2025
+ 11:03:42 +0000
+Message-ID: <e08f10da-b0cd-444b-8e0b-11009b05b161@amd.com>
+Date: Tue, 1 Apr 2025 13:03:29 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 00/12] dma: Enable dmem cgroup tracking
+To: Dave Airlie <airlied@gmail.com>, Maxime Ripard <mripard@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
+ "T.J. Mercier" <tjmercier@google.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, Simona Vetter <simona@ffwll.ch>,
+ Tomasz Figa <tfiga@chromium.org>, Mauro Carvalho Chehab
+ <mchehab@kernel.org>, Ben Woodard <woodard@redhat.com>,
+ Hans Verkuil <hverkuil@xs4all.nl>,
+ Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linaro-mm-sig@lists.linaro.org
+References: <20250310-dmem-cgroups-v1-0-2984c1bc9312@kernel.org>
+ <f5fdc666-dd72-4a4f-9270-b539a3179382@amd.com>
+ <20250310-eccentric-wonderful-puffin-ddbb26@houat>
+ <CAPM=9tzkLXOz=-3eujUbbjMHunR+_5JZ4oQaqNmbrWWF9WZJ0w@mail.gmail.com>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <CAPM=9tzkLXOz=-3eujUbbjMHunR+_5JZ4oQaqNmbrWWF9WZJ0w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR4P281CA0014.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:c8::12) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5zoh5r6eovbpijic22htkqik6mvyfbma5w7kjzcpz7kgbjufd2@yw6ymwy2a54s>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|DM4PR12MB6351:EE_
+X-MS-Office365-Filtering-Correlation-Id: 37874360-f8aa-4bf1-57a5-08dd710cdd75
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?cHo5WjdZZzYwbGZpdFpwb1F6Vm5HMjBBeGRFNSs4OVBlRzdac3dXWGRDL3RQ?=
+ =?utf-8?B?dXpSbDhXTGtlUG9qdHJyd3dYZWp2NFRCQk1DVWNqRklqSGJIOWIzRktTczFR?=
+ =?utf-8?B?V1RLQjIxSS9MeFZycEg0OWlmYW5OdUdlOWthbjV0WTl6QUE0U1FOWC9zdjN4?=
+ =?utf-8?B?NVhQVzNNWXNJT1NJRWdlQUY5SVY5RWkyd3hxamdoY2d4d0NmOHI5Njd2cTRi?=
+ =?utf-8?B?eUxMQTJsbTlYamJobWhTaXF4ajFYM29Ya3FyNDkzd0JpZ1NFRmZydzd0OHN5?=
+ =?utf-8?B?SXIyZlRiWDlOVUhXRkhYblVqWDhwNVAvWTJiaWhjRU1VMlJMbnQ3b3UyN0RQ?=
+ =?utf-8?B?N2FzUlZ1SGdIb3daTzRObTZpRkpYRktRT2h6Y2F3eTFzR1A0S1Zhc1UyVDAr?=
+ =?utf-8?B?Z0dTVE5qVFpQY1JxN3NaMjdMdkxPU3gwc09zNHJIQXY2SEZYclNGMS90dXRI?=
+ =?utf-8?B?YjA5cWpVd1BsWmxqQkIwK0dKQmRtbXdmcmY3Yms3Z3phejVpa0dVWU53djdQ?=
+ =?utf-8?B?Y0tlenVibnZrdUFHREhoZitJQUc4OHcxUHpwVkxobTlPOUhtS0doVk53eFZS?=
+ =?utf-8?B?ZlJpZk00bXl6bVpkYWZLZS91UjB1eUxFWWppN1NjUHlaYU9DVVJST2E5SHlS?=
+ =?utf-8?B?UmFzSC9vUTZub295R0tWNFZ6OG9nMXNjeWZYajVrNjhERGpiajBqTmJzeE1O?=
+ =?utf-8?B?SEx1c3kxT0ZubWlOZVJHK0NLdWxvZFVNbEM3UmFFbkMwdnhhRUNoOTdwbkRO?=
+ =?utf-8?B?djJSUU52UkdrKyswemZWZy9qZGNOaFh3bmtTRTB0cXQ0VEFzUitJb3JYamtv?=
+ =?utf-8?B?ampCZ0lncmh3K2FFQnprZVh2TWtycVFPZUFjS2w3YU9vV2UrK3Z6V01DM0hD?=
+ =?utf-8?B?aEI0Z2thSTBXRUpNUERVdkhXWWxtT0JzbWhHQXU0bXloOWlRZ0xQVW16Qi9I?=
+ =?utf-8?B?UW9lbWhBQ0VlZGxFeUxlWnR6YTJlM1gvaWhRTUp5dHBKOG9YRVZ3NW1FNG1E?=
+ =?utf-8?B?TXNSUXVrQlRkWnZ5MnlBQi8wWXlFTVY3MCtmeVZBbUFLb1Z0Ymo1RWZ4dTBj?=
+ =?utf-8?B?OE9NazZaTURPNjlZSEgwK1JRb2doK3FyQ0NOY1hqcy9UY2t0K0hBU2VuRzhE?=
+ =?utf-8?B?bndRMzBmVmRtUHFPUWtnNC9ZUzEvT0FiVGF3RGh5YXpJNk5HOFJtRkdnMUxr?=
+ =?utf-8?B?MkFHZVlkeHZGOXArS1o0a1NCcmJZSWpienNmcUNaQW1NMmhwNzlGNEtPQjln?=
+ =?utf-8?B?RmJVWVZrK0VhN3FXV0kwOG9YSXJMbERHOGpXRGpXNyt2NWhSMDEzUCtTREpj?=
+ =?utf-8?B?ZENIMVpGN3NaVzZ0blNtQ3ptUnE0dUROWFZFcmZ5bVhtZnFOVG9FVnR2MzJB?=
+ =?utf-8?B?eTI2bEdjaVNCOGhLRHdnYURXaEpCbndUNVVJWG9vUW0zM2hhRDB0aVNWLzhy?=
+ =?utf-8?B?OXYvNlNBMnFJSytpMUtxeFJCckhHTGNZQktybU9UZWdRWWwwdXBJUVM3cEZt?=
+ =?utf-8?B?Ykw0WlRhS3lqKzhZaU5yZ1B1aGZsNTcvVWhXNXN2c2h2azlOcUo3THUyeVgy?=
+ =?utf-8?B?dlZoQWpyeTAzUnp0M1M4M2lYUzdXK0tsbGZaaXhNVG9hYWIxT3lLMDl1UXJU?=
+ =?utf-8?B?RjhHT243dCtDbGNDQjVTVXZINU5zc2VtTW5KZTVtakIvZGNqQTlLWGR0Q3FC?=
+ =?utf-8?B?Q2puQmZJbmVTWmtHVGJPcGFuMjRRLytkRHpBRmJJVnRkN0RGek82cDArVHJG?=
+ =?utf-8?B?eGY0cGtyR1hHNkVUUk9mdTd6a3VuS1VtWEJ6VmpWWGVjZ1gwa0VzWEs1Y1lQ?=
+ =?utf-8?B?RGE4S2pMN2ZqTGFnUW1hcVVMUG4yS09KbFY3K1JWR1Bsa2prWGRoNzFuQTBo?=
+ =?utf-8?B?Rnltb0VnNmtESTc2a3ZhZWE3aDJpN2xQMkxiMzEzbEtVUjBzMWR1cW11Z0tx?=
+ =?utf-8?Q?wNDCpm1XqEY=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TkJvQS9WZ1V6Z015alNUZzdWbGovRGJHS2dCR3ZPZlIrT2gzZ05nc0o1VTlN?=
+ =?utf-8?B?c1BRWC93aXpxYlZZMjA3V2lNVlJhcFhSR0pibzkvbXBGaEp3eGY1YzJuSEFl?=
+ =?utf-8?B?UWZCR0ZsQWpZZ1p4bFNDbFdzeFZaSDQ0UVZrK0VwTDJDdHd0Mk92d21Ld2Ny?=
+ =?utf-8?B?NC8rTG1KRWJaN0p6SEp4Y0NCNUhKUkFKWTBrYzF5WjkrbFVXa0xCTWpDUXdO?=
+ =?utf-8?B?UjBncHFZODB6UzYyR2gzc295azA4MldkM1ZxT0poUEpBRmwxV2Y4SUxsbGQr?=
+ =?utf-8?B?Z2RUQ21hQlQyelhqQW12QXBrNTkyb1Zib0NETmRLSWorSnZWWDZveEhLZDd1?=
+ =?utf-8?B?WHRWZnY1bHFmYzd1WjVUYVhZRVRsTnV2NGxSbFNzSC9RZkkybE9hZ3pteHF3?=
+ =?utf-8?B?OGExTml6SEFiZmc3MXM0dFdWTkdCbFVFUDFoRnUzS2ZlckJFc0s5YWF4YTVT?=
+ =?utf-8?B?ODhXdndvZnNjU042b0hVTUZNbXgyNVNOM0syTEhQQklOdUdwZ21IRkJwbnpL?=
+ =?utf-8?B?VFdYblBHeVpsZTR1SU9rSTR2d1Erb0VqbC9KaGV0bGlDRmFlSHZ6MXkrMVo0?=
+ =?utf-8?B?QitrM2hZS05Lb25ETi9nWW0zdlZGOExubVA4UFo3SEl2RGh6V2hONHNFRXFD?=
+ =?utf-8?B?bzJUZW0xQitxS1pyakZ0cTRjR0gyU1FCM0xGVFAybkR4cHB4UHJtNy9hSWNQ?=
+ =?utf-8?B?b3I2T3Z4WUlnamxLMnRubjZwZ2UvWFJmRC9RRDh3QmxLT094cXF5dXFSTW8r?=
+ =?utf-8?B?N0JIVzFUWGx2RnlXUSsyUGtCUWVEY0t2UUpyZmhILzNuNmRoNnNsSmw5ZVV3?=
+ =?utf-8?B?ZWlYZW9CZ1hKMDhGTitueWs1SDNwZ2pkc2dXYk5BRGVFcWRnTkV0b1dneEht?=
+ =?utf-8?B?QnEzWWxGWUFWaC93d1FjakFOV0s5ejYxbWZ4OUd1cEVMeXNpWkVzSVdqODBs?=
+ =?utf-8?B?amhzLzhGT0x2clNway9ncEhVbFZiR2tSQWNjU2xvMFBlSFN3R2Q3Z0dNUjVZ?=
+ =?utf-8?B?TDJndUZnOGZ1UmZieFY1UjY3ZnpYQnpseUJuS3p3UzB2MDdsajNKZEJEck5J?=
+ =?utf-8?B?UlUyQm5qREZpSkFEaDBIam1iZVZWRlpxVjRmMXVwLzg3d3QxSml0MlZNczV1?=
+ =?utf-8?B?ZE01SUJ1Ui9QL0MweHkxS0NFcEJETG8reTNJeXNZaDY1UnFHcHR6MlhxVm5t?=
+ =?utf-8?B?OUx1eDJQT29SYTYwOTlVeWN1bzFKVEh6Wi84cEcyNEdubDl1SGhVeU1GeHlX?=
+ =?utf-8?B?blEveGZJd0xWMWdONDV5dlIyS244RFp3and1TlNhUXJEMFNWN3hhNjQvR0tt?=
+ =?utf-8?B?eEZwbHZvTDFVTUxodmp6QlhnUUNJdm5Yc24vWm9MbGE2L05FWHlyT3lxUGxo?=
+ =?utf-8?B?QW8xY1Y0QlZ3Sks5UUZVNlptbHJDQlRjcFdRZzEyZGczV3V0Zmp6ZjdFejRx?=
+ =?utf-8?B?ZVhqN0grTStpbXp3SVlrZmFPRUt5RlZ3a2NuRzdLTXNEUktXaWVPVDFBZW5V?=
+ =?utf-8?B?cmtCaVE3MEhjaHVsL3h1QTV0WEcrZmliK0N1MHdhWVgrRTZ2NTRuN1RkdHJi?=
+ =?utf-8?B?dGdLc2kyUFFPNDk5dnZJbEhzR0hveGQrVUxGaWtwd2EvbnlpY1ZCRjBpeVV5?=
+ =?utf-8?B?RGtFQWxVM2RUcVZ5SGRsd2VLRzJ5S1JCcTZLUERVa04xTEZDc01TOFhSRkhv?=
+ =?utf-8?B?eWtNVk5IclBsdjErOEhJVDZqQWRrSjlMOUUvdFRSOXhVaW1reHkwZGplU3RV?=
+ =?utf-8?B?VS9pOG9EdFlTMTg3QlFKYktwbzNTOTJFdjJWeGhEZU9vU0YyS1hKWmJVdTRC?=
+ =?utf-8?B?d20yT0hPN1MvY29VNUNDSHVveWxsdnBzanZxZ3hyM3R5cGZzVTVSYjhMeXNu?=
+ =?utf-8?B?cXY0NUZBM0FPZ0FHM3FXVHErclh0WFBEb1BjMm44WFJVejlpUU1nVkVwakpG?=
+ =?utf-8?B?R2JlWkxyMXlqaTdheXBiV3Zzb2ViVTU2Y2VwWU5pN25CZVUxMEdXR1FKM1Ev?=
+ =?utf-8?B?bkNJbU5Xb2VvZ2E1UVNibEJMUnhXVGRQanRCaW9yWndleEcxajZUaVhFcGpT?=
+ =?utf-8?B?Wm1hV1l5TXZnKzNRbTc0YzhPdVoyWU0rWEFPMHJQMC9Oelc2eDhxUFlEb25I?=
+ =?utf-8?Q?e+i5vgfD1idAayX+0KNqTzisI?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37874360-f8aa-4bf1-57a5-08dd710cdd75
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2025 11:03:42.8668
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Al4+liSQfiTTxF1+AAq7XZP+D5Sw7YW/m3U4hiIwIf0hj7XwrLgyETYit2WaCtmT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6351
 
-On Fri, Mar 28, 2025 at 10:11:13AM +0100, Joel Granados wrote:
-> Custom qemu device: pci-ats-testdev
-> -------------------------------------
-> To support IOMMU testing under qemu, the pci-ats-testdev [10]
-> (different from pci-testdev [11]) was used to emulate DMA transactions.
-> It is a full fledged pci device capable of executing emulated DMA
-> accesses. It was originally intended to test Linux kernel interactions
-> with devices that had a working Address Translation Cache (ATC) but can
-> become a platform capable of testing anything PCI/IOMMU related if
-> needed.
+Am 31.03.25 um 22:43 schrieb Dave Airlie:
+> On Tue, 11 Mar 2025 at 00:26, Maxime Ripard <mripard@kernel.org> wrote:
+>> Hi,
+>>
+>> On Mon, Mar 10, 2025 at 03:16:53PM +0100, Christian König wrote:
+>>> [Adding Ben since we are currently in the middle of a discussion
+>>> regarding exactly that problem]
+>>>
+>>> Just for my understanding before I deep dive into the code: This uses
+>>> a separate dmem cgroup and does not account against memcg, don't it?
+>> Yes. The main rationale being that it doesn't always make sense to
+>> register against memcg: a lot of devices are going to allocate from
+>> dedicated chunks of memory that are either carved out from the main
+>> memory allocator, or not under Linux supervision at all.
+>>
+>> And if there's no way to make it consistent across drivers, it's not the
+>> right tool.
+>>
+> While I agree on that, if a user can cause a device driver to allocate
+> memory that is also memory that memcg accounts, then we have to
+> interface with memcg to account that memory.
 
-Yes please!  Maybe "pcie-testdev" rather than "pci-ats-testdev"?  There
-are other PCIe features that are poorly tested at the moment, for example
-PASID and PRI. The programming model of devices that actually implement
-those can get too complex so we need something simpler to precisely stress
-the IOMMU driver infrastructure. Driver unit-tests alone aren't good
-enough for exercising TLB invalidation (DMA after removing a mapping must
-crash), tricky cleanup paths (eg. killing a process bound to a device
-that's issuing page requests), runtime PM, MSIs etc. I'm guessing testing
-newer/future features like TDISP would also benefit from a simple device.
+This assumes that memcg should be in control of device driver allocated memory. Which in some cases is intentionally not done.
 
-Some time back I needed a device like that to reproduce some tricky races
-but never got round to implementing extra PCIe features. Although this one
-[1] is based on virtio any programming interface should work as long as it
-can instruct the device to send precise DMA transactions, ideally many in
-parallel.
+E.g. a server application which allocates buffers on behalves of clients gets a nice deny of service problem if we suddenly start to account those buffers.
 
-Thanks,
-Jean
+That was one of the reasons why my OOM killer improvement patches never landed (e.g. you could trivially kill X/Wayland or systemd with that).
 
-[1] https://jpbrucker.net/git/linux/log/?h=virtio-dmatest/latest
-    https://jpbrucker.net/git/qemu/log/?h=virtio-dmatest/latest
+> The pathological case would be a single application wanting to use 90%
+> of RAM for device allocations, freeing it all, then using 90% of RAM
+> for normal usage. How to create a policy that would allow that with
+> dmem and memcg is difficult, since if you say you can do 90% on both
+> then the user can easily OOM the system.
+
+Yeah, completely agree.
+
+That's why the GTT size limit we already have per device and the global 50% TTM limit doesn't work as expected. People also didn't liked those limits and because of that we even have flags to circumvent them, see AMDGPU_GEM_CREATE_PREEMPTIBLE and  TTM_TT_FLAG_EXTERNAL.
+
+Another problem is when and to which process we account things when eviction happens? For example process A wants to use VRAM that process B currently occupies. In this case we would give both processes a mix of VRAM and system memory, but how do we account that?
+
+If we account to process B then it can be that process A fails because of process Bs memcg limit. This creates a situation which is absolutely not traceable for a system administrator.
+
+But process A never asked for system memory in the first place, so we can't account the memory to it either or otherwise we make the process responsible for things it didn't do.
+
+There are good argument for all solutions and there are a couple of blocks which rule out one solution or another for a certain use case. To summarize I think the whole situation is a complete mess.
+
+Maybe there is not this one solution and we need to make it somehow configurable?
+
+Regards,
+Christian.
+
+>
+> Dave.
+>> Maxime
+
