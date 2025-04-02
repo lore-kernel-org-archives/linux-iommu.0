@@ -1,218 +1,153 @@
-Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
+Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91D76237706
-	for <iommu@lists.linux.dev>; Wed,  2 Apr 2025 11:58:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ACED1D7E57
+	for <iommu@lists.linux.dev>; Wed,  2 Apr 2025 12:20:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743595132; cv=none; b=tdqwRi9/BS8AJcPzu7QaVL6CC+l74kf6jqR0VNmQ/AMO6+XrhfQOsqBmxrCXENn14mTQOJ+rAbvar0zM7qvWu9E2km49RttwdQfUAsbbp4UOuR3Jf6CUTv+kkdiZgdIZj3eZcrR8oYWWAahoiyxL7I/4eEw0Wrb+EqC3e6EVz6o=
+	t=1743596418; cv=none; b=quxEVHCg6xECmIr+z1W49sEjP1pl72gI/ortieAaJdfJHPXdaki5Hgyo6rigvbXBo7X2lkplzWkAobvBNU4mXYCpphGtwQ378MU9iLKpqvNiv5tGGss7mOq53jKlyLxaUmdsi5ipTCWN2iJOn+ycEB8kawuGzLc5N+ODTAjh1Dk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743595132; c=relaxed/simple;
-	bh=yz2g4VlGJxKRTtOW8OVXla1bJm6KVYLvKyCbxgeOuKY=;
+	s=arc-20240116; t=1743596418; c=relaxed/simple;
+	bh=2bqiVwG6B9b93pHmMU3Wt9WeVY2w2INe21iLiS7fKnA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=P6Les5/wbXde430Xx0oSHlkX94EglmgNFlE960e5sCaqi9BL/lmcpl3Vp1Mgil22U3he4kyVKwXv4+bVucAMRCzr1kZnbz4Y55sqsPlDeLSn+HfK/jBEgOugHDd7JUTW5KYkVDrKHU04jkQpQCLLPdjagR2nrx3m6R1aTjq8KEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=TAwyMLMk; arc=none smtp.client-ip=209.85.215.179
+	 To:Cc:Content-Type; b=Fv6DPPpYV3fY/Exxh5x4T2MyGZvKq6lnfs99sJZMgs68xLrRAQOajE2cAlNXMOTLkRWyHXi3YkSyEzPtUYevqugvb6YoHpg9g2SaozTO2YpzjfxMaC+iTSzNd6HIpi7vil933nKTD6/xAHMB68K0jKzn0iuFr/ys79N2nQMOStQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=ECqRemGx; arc=none smtp.client-ip=209.85.215.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="TAwyMLMk"
-Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-aee79a0f192so21149a12.3
-        for <iommu@lists.linux.dev>; Wed, 02 Apr 2025 04:58:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="ECqRemGx"
+Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-af9065f0fc0so38325a12.2
+        for <iommu@lists.linux.dev>; Wed, 02 Apr 2025 05:20:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1743595130; x=1744199930; darn=lists.linux.dev;
+        d=bytedance.com; s=google; t=1743596416; x=1744201216; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qpOpISsK92nzP8u+mrCrBVvlHehBgWb2S+ejZtPgHRk=;
-        b=TAwyMLMkOKvFKumjiKIdDchC6z1fHBP7xmjiKJWLx8PP+q2ackO+jpX1Oz4iOSJXFM
-         CcKXIbwXE7gA1DB+De3PW/fIJ0QVMVXZB/b/uf3YUYL9kULomkEQgEcQu7SwJmAFce5x
-         2gIDTUcccSr8FDyEYmm7r69m2mztIY6eb37jVp79cwSSixO2MGZqVPDkH7Bxz89eMpik
-         jSwDfFRPxjy2gT8jnks9jVZtw26iQK26GZdZd1Qg+kPUvFV+xFPNN2gI5pP4hdrgZj+y
-         UKGqU4ohM/VopaLm2X+48vLv2d1JUwLYDwAYuy2Aa4ttZsIUHiMPv724mp/kib1odmJD
-         6mVg==
+        bh=YWJxBNwkAmqL2G8fzcWM9thfWI+FACEvfsrq+gEk/S0=;
+        b=ECqRemGxCLM9mXzEEJrA8NbOXsVFNjIJCfubNr2xTLZgE/YHQgaWAY18iLfe/52gGQ
+         GVO9U0hVu+Xh3m4Wxo5ACDkGl0fFuW5v3xrEwxBjnhzBZ/I9sxokxVRf+lAHSOliQrAh
+         6nbvaJrR/G43Nw4HAIYwaNPTDZ4UINRNmutxjzpNDefcxBFV3B4NnBFFZOk14qfIoJBb
+         tiJmu+6ZyVNj9sfXCXsBsfl8TscTUktY2y10hYcHJ3qXOGCIBp7MRWZzYO0Ety7r6WO6
+         Y99jO+yZxO6nC2n5YgqahBr/VT7ZAUgtM+irWEoJhDBCY7fabogmxUXCSIUTpS1grVXn
+         O4Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743595130; x=1744199930;
+        d=1e100.net; s=20230601; t=1743596416; x=1744201216;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=qpOpISsK92nzP8u+mrCrBVvlHehBgWb2S+ejZtPgHRk=;
-        b=YE7tPLZzNe/zFfAq4w/dAdkbyfnDU6AbQZCboJ5SLX8JXGsawACQ6ReZJAD6MMK6t2
-         50Kx9rFfz+tXVM6cz2DEo/uoY7lmwRhZBIGx5Wo+S1sa5gAoyhcmV9lsGOiejZevmnhs
-         Bk6kauZkAUmNBBDOnm3BAMWksWyIbHS+4ygxKR/biPSdZaxUCME6RV8RGz76R2o5gxbe
-         H7JyYxTG4N2bBh8Zq8oLmBJCSNiL8EED4AR616T9zlWGIEco0Tm+WRnqIrFl9NUBmrba
-         3bRD3pf8Iq2rGQw2FcQB2rusdEwQI0xyBSr1ZqIvb31C3rZTZ0zHXE9Z6TI1/D6lQXeQ
-         Nhbg==
-X-Forwarded-Encrypted: i=1; AJvYcCUdU6uv2llXQbJzJlcHD5V1JPbCfp4k/hOqjbJtehYeK+tYTdbFi/PbN5779oePz7CY8uKAlQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzcDcZ/arbDfMJnkAkjK1INWalySOwMLhuas3rRexBMIMIP5ywX
-	UeZJ/j9HtWAg+Y/gSwhlaaWi7xOhKO/j2bYhJOLz3/I5PevsruaxX6HH82gz/Q5jqU8pJWwucJB
-	fpAeeT4QkH/+7rBR839ZWbpV2R9i7SbAk+JlVRg==
-X-Gm-Gg: ASbGncurb7zJreFrJGw51AMOesuoQmIq9X1QQ8FuQcH+QfIIl+pNuBlHyIUqzT1UXX8
-	nMY0lphxatjA1dYq8SVvK0U39KKC2rWGqK4Gl2SdEfDLZH8E+NKFMEwlGVmbAxJ9NxUhyys9Bn1
-	FB/inzgMjppSXiRU/w8yuSEzNtRFKppXxS2u1AdhI=
-X-Google-Smtp-Source: AGHT+IF3cEFgXzdw0KASyYJbIgo8CjfwnxgRulQ8O3ZcGZVY1greNWnfIf6SArRocnrBaky8kBjQ3GFF0cDB7r4EhsM=
-X-Received: by 2002:a17:90b:2711:b0:2ee:aed2:c15c with SMTP id
- 98e67ed59e1d1-3056ef08027mr3048369a91.28.1743595129770; Wed, 02 Apr 2025
- 04:58:49 -0700 (PDT)
+        bh=YWJxBNwkAmqL2G8fzcWM9thfWI+FACEvfsrq+gEk/S0=;
+        b=wrYGXYwCSR7P7CFiRv9yZU4fxiygb92+MELw9yyyMrc/dSHObnVqSAYfTdyp3evUNX
+         7/0UKXAMgcTGh+JJnaCLZD4YbnjX6K9etc4+OS0hy3w1Pm1yk1pVfKH5jreKuMLZ/8KA
+         NG8NFxKlDTmOhNvuWIMALDIdysO1UqZGcS1yP7lrBAYGR9IxG/7La442EVqNS0Ib4wvi
+         KDhKhg4Hjgux/z0wV12Pb2fm3CyqFxur1f9lBhVWEqiNkKKewMI1DOLTo29GsaFzQI6+
+         vifuDREgH8L48kApDQBZjy9RcDgq92fT68ipxd/EbYEbvPGSOn1hXkFCLYg1x/gR4q9u
+         5w7w==
+X-Forwarded-Encrypted: i=1; AJvYcCW39NGwd7NE8GtlrCZKG1LwckC8QpB2hvQe6SAZQsyOR53F8jLVjdJY+dAMeH1clEGio/q6YQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxxwdE7B4NFfWV+ZNnnhkWhDnDxRS0KtGuqZS2YeHqsjdmDhRgK
+	+UzqjlYoNXB0VVcbEUhOeYBT7W5s6o4mtmkc/9TNrhwH/U1NMrfchHU2anbsOOvL553EgbkhBOt
+	icoQw1kbCo4uC9AC7pGwqUIzKujVqTnX2AhoHug==
+X-Gm-Gg: ASbGncsZB7k0CcScG3ybUl2PWb5l953b5I8uagxE3pNTp2fyTeC+gkqrPHRpD5pCa6z
+	Tq/gdosQcz+yPY7mWaMdidhI8ilPKIV+fY8IjfpRJiQenefRQ1pHaOJLKb+pomxz3cBzcWjEprk
+	e5YWokE8yLe2ZIq7D8CoOCGIP0FPOiEp7Ag+vMXDRaykawSafuYg==
+X-Google-Smtp-Source: AGHT+IG9C4OmAcA1BcvJZJK8vgSK/DWCvtCqpq1tzxaqNCtVF3YEFGKjwNPiS170vkEx7SYXHsTEXZvGHRmNASAO4vI=
+X-Received: by 2002:a17:90b:28c4:b0:2ff:58a4:9db3 with SMTP id
+ 98e67ed59e1d1-3053215d8aemr22113172a91.35.1743596415763; Wed, 02 Apr 2025
+ 05:20:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250325144252.27403-1-luxu.kernel@bytedance.com> <8cfe938f-5eff-483e-95a1-c4029993e287@arm.com>
-In-Reply-To: <8cfe938f-5eff-483e-95a1-c4029993e287@arm.com>
+References: <20250325144252.27403-1-luxu.kernel@bytedance.com>
+ <9F043708-3BB6-46CF-BEC3-2636E9A388B7@jrtc27.com> <CAPYmKFtAWNz7nCDDD7rjGeV2fRBgy5Kt6KR60pEyXAM=bb7r4g@mail.gmail.com>
+ <20250401154412.GI186258@ziepe.ca> <20250401220201.1fa3ec76@pumpkin>
+In-Reply-To: <20250401220201.1fa3ec76@pumpkin>
 From: Xu Lu <luxu.kernel@bytedance.com>
-Date: Wed, 2 Apr 2025 19:58:38 +0800
-X-Gm-Features: AQ5f1JrCmdbPvgxjXXBONrqT24lyujGReyf184CCKAQbeGFTcfNc41gd0CSYnb8
-Message-ID: <CAPYmKFv_qRmsR+4s3evxCJjzVavtNb6UFRX6+JmepUW23X=ZLg@mail.gmail.com>
+Date: Wed, 2 Apr 2025 20:20:04 +0800
+X-Gm-Features: AQ5f1JoCpzXNEfUDVMpNcZU9VBfEeMyRz89Td3As3soGZh_OUSrxjWt-F5xQW4s
+Message-ID: <CAPYmKFtOV6JfAudcw4gfWpgQv8k3Q6dNrTynqYo2tSdZEAwKHA@mail.gmail.com>
 Subject: Re: [External] Re: [PATCH] iommu: riscv: Split 8-byte accesses on 32
  bit I/O bus platform
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org, alex@ghiti.fr, 
+To: David Laight <david.laight.linux@gmail.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Jessica Clarke <jrtc27@jrtc27.com>, tjeznach@rivosinc.com, 
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, alex@ghiti.fr, 
 	lihangjing@bytedance.com, xieyongji@bytedance.com, 
 	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, 
 	iommu@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Robin and Jason,
+Hi David,
 
-Thanks for your comments and sorry for the late reply.
+All these 64 bit registers are updated during initialization (when
+allocating page table and iommu queues) and destruction (when
+disabling interrupts and iommu queues) in the existing iommu driver.
+There won't be multiple cpu operating simultaneously.
 
-The iohpmcycles register is handled specially because unlike the other
-IOMMU registers, its effective bits lies in the upper half. I want to
-ensure that all effective bits are the last ones to update. For
-example, when updating DDTP register, we update the upper half first
-which only contains its table PPN, and then update its lower half
-which contains the MODE bits which really enable translation. The main
-reason is that when software splits an 8-byte write to two 4-byte
-writes, the hardware is not aware whether it is an 8-byte write or a
-4-byte write when it receives the first write. Thus it will always
-make the value effective every time it receives a 4-byte write.
+Some 64 bit pmu registers are also updated during pmu event
+initialization and overflow handling in the oncoming iommu pmu
+driver[1]. There will also be no concurrency issues due to the pmu
+framework unless the ACPI/DTS is misconfigured and two iommus get the
+same register resources.
 
-On Wed, Apr 2, 2025 at 7:29=E2=80=AFPM Robin Murphy <robin.murphy@arm.com> =
-wrote:
->
-> On 2025-03-25 2:42 pm, Xu Lu wrote:
-> > Introduce a new configuration CONFIG_RISCV_IOMMU_32BIT to enable
-> > splitting 8-byte access into 4-byte transactions for hardware platform
-> > whose I/O bus limits access to 4-byte transfers.
-> >
-> > Signed-off-by: Xu Lu <luxu.kernel@bytedance.com>
-> > ---
-> >   drivers/iommu/riscv/Kconfig |  9 +++++++++
-> >   drivers/iommu/riscv/iommu.h | 28 +++++++++++++++++++++++-----
-> >   2 files changed, 32 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
-> > index c071816f59a6..b7c9ea22d969 100644
-> > --- a/drivers/iommu/riscv/Kconfig
-> > +++ b/drivers/iommu/riscv/Kconfig
-> > @@ -18,3 +18,12 @@ config RISCV_IOMMU_PCI
-> >       def_bool y if RISCV_IOMMU && PCI_MSI
-> >       help
-> >         Support for the PCIe implementation of RISC-V IOMMU architectur=
-e.
-> > +
-> > +config RISCV_IOMMU_32BIT
-> > +     bool "Support 4-Byte Accesses on RISC-V IOMMU Registers"
-> > +     depends on RISCV_IOMMU
-> > +     default n
-> > +     help
-> > +       Support hardware platform whose I/O bus limits access to 4-byte
-> > +       transfers. When enabled, all accesses to IOMMU registers will b=
-e
-> > +       split into 4-byte accesses.
-> > diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-> > index 46df79dd5495..0e3552a8142d 100644
-> > --- a/drivers/iommu/riscv/iommu.h
-> > +++ b/drivers/iommu/riscv/iommu.h
-> > @@ -14,6 +14,10 @@
-> >   #include <linux/iommu.h>
-> >   #include <linux/types.h>
-> >   #include <linux/iopoll.h>
-> > +#ifdef CONFIG_RISCV_IOMMU_32BIT
-> > +#include <linux/io-64-nonatomic-hi-lo.h>
-> > +#include <linux/io-64-nonatomic-lo-hi.h>
-> > +#endif
-> >
-> >   #include "iommu-bits.h"
-> >
-> > @@ -69,21 +73,35 @@ void riscv_iommu_disable(struct riscv_iommu_device =
-*iommu);
-> >   #define riscv_iommu_readl(iommu, addr) \
-> >       readl_relaxed((iommu)->reg + (addr))
-> >
-> > -#define riscv_iommu_readq(iommu, addr) \
-> > -     readq_relaxed((iommu)->reg + (addr))
-> > -
-> >   #define riscv_iommu_writel(iommu, addr, val) \
-> >       writel_relaxed((val), (iommu)->reg + (addr))
-> >
-> > +#define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, ti=
-meout_us) \
-> > +     readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, con=
-d, \
-> > +                        delay_us, timeout_us)
-> > +
-> > +#ifndef CONFIG_RISCV_IOMMU_32BIT
-> > +#define riscv_iommu_readq(iommu, addr) \
-> > +     readq_relaxed((iommu)->reg + (addr))
-> > +
-> >   #define riscv_iommu_writeq(iommu, addr, val) \
-> >       writeq_relaxed((val), (iommu)->reg + (addr))
-> >
-> >   #define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, t=
-imeout_us) \
-> >       readx_poll_timeout(readq_relaxed, (iommu)->reg + (addr), val, con=
-d, \
-> >                          delay_us, timeout_us)
-> > +#else /* CONFIG_RISCV_IOMMU_32BIT */
-> > +#define riscv_iommu_readq(iommu, addr) \
-> > +     hi_lo_readq_relaxed((iommu)->reg + (addr))
-> >
-> > -#define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, ti=
-meout_us) \
-> > -     readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, con=
-d, \
-> > +#define riscv_iommu_writeq(iommu, addr, val) \
-> > +     ((addr =3D=3D RISCV_IOMMU_REG_IOHPMCYCLES) ? \
-> > +      lo_hi_writeq_relaxed((val), (iommu)->reg + (addr)) : \
-> > +      hi_lo_writeq_relaxed((val), (iommu)->reg + (addr)))
->
-> Echoing Jason's comment, what is this even trying to achieve? Nothing in
-> the spec suggests that the cycle counter register is functionally
-> different from the other PMU counter registers (other than its
-> self-contained overflow bit).
->
-> It is not, in general, safe to do a split write to a running counter
-> either way - low-high vs. high-low just moves the problem around,
-> changing *which* combinations of values are problematic and capable of
-> overflowing into each other between the writes. If the PMU driver can't
-> write counters atomically, it will need to ensure that it only ever
-> write them while stopped (at which point the order surely shouldn't
-> matter). Conversely, though, reading from running counters is a bit more
-> reasonable, but it needs more than just hi_lo_readq to guarantee it's
-> not got a torn result.
+So maybe a lock is not necessary. Please correct me if I missed anything.
 
-You are right. It is more appropriate to ensure update iohpmcycles
-with cycle counting disabled. I will remove this redundant branch in
-the next version.
-
->
-> Thanks,
-> Robin.
->
-> > +
-> > +#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, ti=
-meout_us) \
-> > +     readx_poll_timeout(hi_lo_readq_relaxed, (iommu)->reg + (addr), va=
-l, cond, \
-> >                          delay_us, timeout_us)
-> > +#endif /* CONFIG_RISCV_IOMMU_32BIT */
-> >
-> >   #endif
->
+[1] https://lore.kernel.org/all/20250115030306.29735-1-zong.li@sifive.com/
 
 Best regards,
 Xu Lu
+
+On Wed, Apr 2, 2025 at 5:02=E2=80=AFAM David Laight
+<david.laight.linux@gmail.com> wrote:
+>
+> On Tue, 1 Apr 2025 12:44:12 -0300
+> Jason Gunthorpe <jgg@ziepe.ca> wrote:
+>
+> > On Wed, Mar 26, 2025 at 11:26:07AM +0800, Xu Lu wrote:
+> > > Hi Jessica,
+> > >
+> > > > Is such a platform conformant to the specification?
+> > >
+> > > We have talked about this before [1]. I think the IOMMU spec does not
+> > > mandate the implementation of 8-byte access functionality. The relate=
+d
+> > > sentences are listed below:
+> > >
+> > > "The 8-byte IOMMU registers are defined in such a way that software
+> > > can perform two individual 4-byte accesses, or hardware can perform
+> > > two independent 4-byte transactions resulting from an 8-byte access,
+> > > to the high and low halves of the register, in that order, as long as
+> > > the register semantics, with regard to side-effects, are respected
+> > > between the two software accesses, or two hardware transactions,
+> > > respectively."
+> >
+> > I think the commit message should explain an anyalsis that the code is
+> > safe against the mentioned side effects due to ordering.
+> >
+> > And a comment should explain this:
+> >
+> > +#define riscv_iommu_writeq(iommu, addr, val) \
+> > +       ((addr =3D=3D RISCV_IOMMU_REG_IOHPMCYCLES) ? \
+> > +        lo_hi_writeq_relaxed((val), (iommu)->reg + (addr)) : \
+> > +        hi_lo_writeq_relaxed((val), (iommu)->reg + (addr)))
+> >
+> > As the naive reading of the above spec paragraph doesn't seem like
+> > there are exceptions or why one register has to be the opposite order.
+> >
+> > Also missing () around addr
+>
+> It is also double-evaluating (addr).
+>
+> I hope there is a lock, interleaved accesses from multiple cpu
+> may not work.
+
+
+
+>
+>         David
+>
+> >
+> > Jason
+> >
+>
