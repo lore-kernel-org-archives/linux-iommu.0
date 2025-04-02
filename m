@@ -1,77 +1,147 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3E171EF38B;
-	Wed,  2 Apr 2025 07:52:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 37DB0236A61
+	for <iommu@lists.linux.dev>; Wed,  2 Apr 2025 11:29:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743580335; cv=none; b=AFgEV+MLeRptgy+c/NZ+AtBae18n2C6ec1C8M5+FpcR+38h3d6mvTdggHql+QqllLUboQJ9bLEAQiAv9FTHjMpfCTHMASCTrSMP90VeUOhLhjmiIh5OhC0oHD+Ye3UNEJdeK0g3KexCAcJ5zfaKEj6BeSGHIgGtrWSmREIqWjJg=
+	t=1743593343; cv=none; b=kkS3aZIfKDwiFBOqEIcvgvKjh2bfVqhty47sITxD47GtLsZrxOrGV6A30EeMWcl64fJUkZrAEuppaC3YOnAXOTvJhn/74MAZOMph5H9bqWGL58Gfb1vaxrSNEDHGAckzEP7SHA99GPEZojQodRZakh55EIhsI24f3DkWOczp8jY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743580335; c=relaxed/simple;
-	bh=UAr1Z+AxXev6VsfCf/rRanRitQOy9kGFIc+s7ksn0s8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GC1zhePyPKU4xpofT3ksHslS1DP27yaI6uPrB/eFR4ga7rou14OwfEADnJbDhX1udepefH7ss5C+4FxAKR94eaEoExO8w72ki99uCM7jO1bNtaY6zzJXvXj6qe8aLB83imi/0NwPbYs2ZEepssrpw8npcORAtyKKmaCyRP3cAFs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=l1GG/c//; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="l1GG/c//"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=QcJX0K8Yl0giGfzJVWrled6+/qbBHVkKw4ZT7UuEPXI=; b=l1GG/c//fbkOLLhclF5wAgkWMR
-	g0IbNLiU5l7vGPt+ReYRfa/NxMcsGJbBG2pzzasy1YsVolQ8IuV+EJjalGSCV0SO5L+vZBuNnaGUY
-	0mW1Otgz7OAcynUOlQngIJQC7gYlZPhD5IoOvyqYcWeqUCRDymHEreWq/yUQkO8JViuEv8OslMngw
-	YEDz1Dv1EplrY0qElzaYBuq2Z90c318axGUpg4fm5OmiZx+Su/qXyFMyC8WA2TLgSoLBM6PsS/iDO
-	XsL+uVTijCSQ/KorFnoMFFEsbIjqKlLYEiqyc8Bi4LC5rG7eOlof/UNSKuyQpaC8lGDMkgP3XKQXX
-	XeNY7/lw==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.98.1 #2 (Red Hat Linux))
-	id 1tzstN-000000091wg-3A3Z;
-	Wed, 02 Apr 2025 07:52:10 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 3BEF030049D; Wed,  2 Apr 2025 09:52:09 +0200 (CEST)
-Date: Wed, 2 Apr 2025 09:52:09 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, Randy Dunlap <rdunlap@infradead.org>,
-	"Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH] iommu: Convert unreachable() to BUG()
-Message-ID: <20250402075209.GR5880@noisy.programming.kicks-ass.net>
-References: <0c801ae017ec078cacd39f8f0898fc7780535f85.1743053325.git.jpoimboe@kernel.org>
- <20250327123718.GB31358@noisy.programming.kicks-ass.net>
- <6zzyjtvkqc4ipj7ngtkx3jithfwpwuxlix677urlehgdnljwbl@wfoa5futari6>
+	s=arc-20240116; t=1743593343; c=relaxed/simple;
+	bh=BdaMmivvGxIoTi/+df3TeXjXtYwmJDg6l5TeR3nVX6A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uys/mWE1gZQHPBBNYxH1YfLZijhNBmmuO2crlf0UNa+cu7fvKaffi/xvORPxPq+PZicsks1fXrTo7KAfhVnCad8t+9/QxIy4Tjecw69ex2VDGvrrf8Z4NsLPALBgFJWPaW0BnzVTo0+R/FAez9XZnrACL6WLxwenKqoCorhk1Ns=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 83758106F;
+	Wed,  2 Apr 2025 04:29:02 -0700 (PDT)
+Received: from [10.57.67.12] (unknown [10.57.67.12])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 417F23F694;
+	Wed,  2 Apr 2025 04:28:57 -0700 (PDT)
+Message-ID: <8cfe938f-5eff-483e-95a1-c4029993e287@arm.com>
+Date: Wed, 2 Apr 2025 12:28:54 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6zzyjtvkqc4ipj7ngtkx3jithfwpwuxlix677urlehgdnljwbl@wfoa5futari6>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu: riscv: Split 8-byte accesses on 32 bit I/O bus
+ platform
+To: Xu Lu <luxu.kernel@bytedance.com>, tjeznach@rivosinc.com,
+ joro@8bytes.org, will@kernel.org, alex@ghiti.fr
+Cc: lihangjing@bytedance.com, xieyongji@bytedance.com,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+References: <20250325144252.27403-1-luxu.kernel@bytedance.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250325144252.27403-1-luxu.kernel@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Apr 01, 2025 at 05:50:32PM -0700, Josh Poimboeuf wrote:
-> On Thu, Mar 27, 2025 at 01:37:18PM +0100, Peter Zijlstra wrote:
-> > On Wed, Mar 26, 2025 at 10:28:46PM -0700, Josh Poimboeuf wrote:
-> > > Bare unreachable() should be avoided as it generates undefined behavior,
-> > > e.g. falling through to the next function.  Use BUG() instead so the
-> > > error is defined.
-> > 
-> > Right; I did a pass like this a while ago and thought I'd removed all
-> > unreachable() abuse.
+On 2025-03-25 2:42 pm, Xu Lu wrote:
+> Introduce a new configuration CONFIG_RISCV_IOMMU_32BIT to enable
+> splitting 8-byte access into 4-byte transactions for hardware platform
+> whose I/O bus limits access to 4-byte transfers.
 > 
-> Any reason not to just "#define unreachable() BUG()" and convert UD2 and
-> similar to use __builtin_unreachable()?
+> Signed-off-by: Xu Lu <luxu.kernel@bytedance.com>
+> ---
+>   drivers/iommu/riscv/Kconfig |  9 +++++++++
+>   drivers/iommu/riscv/iommu.h | 28 +++++++++++++++++++++++-----
+>   2 files changed, 32 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
+> index c071816f59a6..b7c9ea22d969 100644
+> --- a/drivers/iommu/riscv/Kconfig
+> +++ b/drivers/iommu/riscv/Kconfig
+> @@ -18,3 +18,12 @@ config RISCV_IOMMU_PCI
+>   	def_bool y if RISCV_IOMMU && PCI_MSI
+>   	help
+>   	  Support for the PCIe implementation of RISC-V IOMMU architecture.
+> +
+> +config RISCV_IOMMU_32BIT
+> +	bool "Support 4-Byte Accesses on RISC-V IOMMU Registers"
+> +	depends on RISCV_IOMMU
+> +	default n
+> +	help
+> +	  Support hardware platform whose I/O bus limits access to 4-byte
+> +	  transfers. When enabled, all accesses to IOMMU registers will be
+> +	  split into 4-byte accesses.
+> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+> index 46df79dd5495..0e3552a8142d 100644
+> --- a/drivers/iommu/riscv/iommu.h
+> +++ b/drivers/iommu/riscv/iommu.h
+> @@ -14,6 +14,10 @@
+>   #include <linux/iommu.h>
+>   #include <linux/types.h>
+>   #include <linux/iopoll.h>
+> +#ifdef CONFIG_RISCV_IOMMU_32BIT
+> +#include <linux/io-64-nonatomic-hi-lo.h>
+> +#include <linux/io-64-nonatomic-lo-hi.h>
+> +#endif
+>   
+>   #include "iommu-bits.h"
+>   
+> @@ -69,21 +73,35 @@ void riscv_iommu_disable(struct riscv_iommu_device *iommu);
+>   #define riscv_iommu_readl(iommu, addr) \
+>   	readl_relaxed((iommu)->reg + (addr))
+>   
+> -#define riscv_iommu_readq(iommu, addr) \
+> -	readq_relaxed((iommu)->reg + (addr))
+> -
+>   #define riscv_iommu_writel(iommu, addr, val) \
+>   	writel_relaxed((val), (iommu)->reg + (addr))
+>   
+> +#define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, cond, \
+> +			   delay_us, timeout_us)
+> +
+> +#ifndef CONFIG_RISCV_IOMMU_32BIT
+> +#define riscv_iommu_readq(iommu, addr) \
+> +	readq_relaxed((iommu)->reg + (addr))
+> +
+>   #define riscv_iommu_writeq(iommu, addr, val) \
+>   	writeq_relaxed((val), (iommu)->reg + (addr))
+>   
+>   #define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+>   	readx_poll_timeout(readq_relaxed, (iommu)->reg + (addr), val, cond, \
+>   			   delay_us, timeout_us)
+> +#else /* CONFIG_RISCV_IOMMU_32BIT */
+> +#define riscv_iommu_readq(iommu, addr) \
+> +	hi_lo_readq_relaxed((iommu)->reg + (addr))
+>   
+> -#define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+> -	readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, cond, \
+> +#define riscv_iommu_writeq(iommu, addr, val) \
+> +	((addr == RISCV_IOMMU_REG_IOHPMCYCLES) ? \
+> +	 lo_hi_writeq_relaxed((val), (iommu)->reg + (addr)) : \
+> +	 hi_lo_writeq_relaxed((val), (iommu)->reg + (addr)))
 
-Just remove unreachable() entirely at that point. But you're going to
-have to update all the various arch code that does use it correctly :/
+Echoing Jason's comment, what is this even trying to achieve? Nothing in 
+the spec suggests that the cycle counter register is functionally 
+different from the other PMU counter registers (other than its 
+self-contained overflow bit).
 
-There are a few sites besides BUG() that need it; eg, long jumps when
-bootstrapping etc.
+It is not, in general, safe to do a split write to a running counter 
+either way - low-high vs. high-low just moves the problem around, 
+changing *which* combinations of values are problematic and capable of 
+overflowing into each other between the writes. If the PMU driver can't 
+write counters atomically, it will need to ensure that it only ever 
+write them while stopped (at which point the order surely shouldn't 
+matter). Conversely, though, reading from running counters is a bit more 
+reasonable, but it needs more than just hi_lo_readq to guarantee it's 
+not got a torn result.
 
-But basically nothing outside of arch code should ever need or want
-unreachable.
+Thanks,
+Robin.
+
+> +
+> +#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(hi_lo_readq_relaxed, (iommu)->reg + (addr), val, cond, \
+>   			   delay_us, timeout_us)
+> +#endif /* CONFIG_RISCV_IOMMU_32BIT */
+>   
+>   #endif
+
