@@ -1,132 +1,102 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4312D3234
-	for <iommu@lists.linux.dev>; Tue,  1 Apr 2025 21:02:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B026EFC0A
+	for <iommu@lists.linux.dev>; Wed,  2 Apr 2025 00:50:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743541326; cv=none; b=YNAwFdENNaeW3+XV33I6iR2I/BpgWoZguWbrLTfuVyamAWbUbwD5f2Vm6DvwBBRxAVPlYW/OtnNGYiHr1lhbPuq4tbALdVk+NSzVivyHWrxOFqDur3O1AvZjGvmpM1OLanqoScMauLKGD98mCoEGCTWv0iuSC3N9BRBHQek3Lxg=
+	t=1743555042; cv=none; b=VlM6IdD/2NTfo6VVw9FYrByx9jRYn/uNZh6CuO6zUlK8Pvyxlj01tlQMmB5TigmHP9eD70JTtXME1NpD91Rq8Ki3TVBX7X/EqnLQDZENUytb4xVE9OU0AA1tcCqjG7XKBl077voZzlwyr+6d/vShyv0leCh3U4dJyrlg05ORHYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743541326; c=relaxed/simple;
-	bh=QpMJiwUoBFdoSP7DPzpzrR/BgmlNDb/On0b7vW+Ks+s=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KhaoVGlMDS+b/XHjQjGG0zKes7Pe3HcQeqEY8hFuqihlHwbiKaZh3t58AeR4/efLMilHTZprgW9RM/EjMtw/Edd9OpTPqxGVCY6rykENDtzq0qsjwVWEDoYwM/bASeNJQfG0RwvrZ3FTw2kUERsGeGq2UUi/MrtP8HK4Pu6yLs0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l+vuBJ41; arc=none smtp.client-ip=209.85.221.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1743555042; c=relaxed/simple;
+	bh=2HtuutMy+lDMR+2ROadl7v745BYRGRRdl+H5LeHcAUo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=ga4YI+Fm1K3HxBgPOyoPRipVgaEQHlQ6g+ZW+q+jnrX6WMQCZP4MrgzXWrK5XZlWx4zJNy/Y/LfhrcN+krjw7SEpHTOkZZ6+6Zd+gTy0GACehbisSq3WydYQty7Eql2MlhmNMM5Nx8w6EQ0w07nAev6xbK8hnaXQYh5HzzmKWp0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=TIIItgVb; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l+vuBJ41"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-39c1efbefc6so1285111f8f.1
-        for <iommu@lists.linux.dev>; Tue, 01 Apr 2025 14:02:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1743541323; x=1744146123; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bjmWrNFJq5FsQ91RyEXZTPg7iV8Tf7Wr4X3A+p/WTNI=;
-        b=l+vuBJ41nksQLBVatIMlCSbfoopudXtqsyKflKVQCZeOxGhL7Lh6KNy0bI9iQjQLD6
-         xUu5ofZLFKmN/ed2Xe0WkSbKt/5ymttDr33lFF7PVZ3Ig+QIPBRBdi+GKEEIeygHXtpQ
-         tTgrsmk/RrBo6jrc3SaAIwqrzz/H6n5QxSWoHb0pOQRDcAxUaG5W+qCjjW2JrCD8peut
-         ANO1Le7D3LZ3DTQpA/2neIx9zCWOH3LteRNaqNqMdIuYiUGoFPcpuYLBL4Hobah0tnXA
-         ytAuXc2koV70hdfPK+l4SrSRtd/aVpNuY0jMyc1hrhWO1vkPQ6S2wSPEvjN+Do535REU
-         mTJg==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TIIItgVb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1743555039;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=vJTNg57TpFxM6eiCchcjLRtnNvCRkiMrbkIi/jphXdc=;
+	b=TIIItgVbpSg/V0KNFBlMqpQUfZyabexSPBcCH9ubMHI//R7pzVnGv9sCmLu/oPb9dJytsC
+	xkOYSAGBmwyqmQuuo3CDTZMGv4e5qbt6MwPE6pLctScoUOCN23TaaeofWXU7mr/QEzv7Ej
+	IK5CZXch5/cQMJNI1MScfBkFoDjq7QM=
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
+ [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-461-6asSha_BOf-spkOW3mgUCA-1; Tue, 01 Apr 2025 20:50:38 -0400
+X-MC-Unique: 6asSha_BOf-spkOW3mgUCA-1
+X-Mimecast-MFC-AGG-ID: 6asSha_BOf-spkOW3mgUCA_1743555037
+Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-2ff5296726fso16919464a91.0
+        for <iommu@lists.linux.dev>; Tue, 01 Apr 2025 17:50:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743541323; x=1744146123;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bjmWrNFJq5FsQ91RyEXZTPg7iV8Tf7Wr4X3A+p/WTNI=;
-        b=Hy8mKXPL/0SvDXbo9DQlvqD5IE9nXgJhMu6PkK97SNdcyIWdRXruBh2HbixrCNjBC4
-         pb9UfloR0Dpn9eh+M0VSUZ2sFqVTNHz0cg3wbWWYMppIl+Pdl+Ait2KCvqs23FeSTo2h
-         hqqevdu3R38TBU7Meu9ez49VWcajRixrkWX5nB5EAkkR9SPPT3HQoz3Dv2gJ8svzGQiO
-         X4UzHfLvQlzbcaJj5MvjX6xC7txOjg6ZfLY/2fflUTqKqXtIkNwHj4FTxsmkPsmshdx1
-         E1RnMr0QpAoMo2Zb1puxL9YtqJHgReHIAV7p+BXBc3Cbo/eIPS1FkF2bT5fbQg3aocgg
-         wV7w==
-X-Forwarded-Encrypted: i=1; AJvYcCWYhnJ/M6+MZTeO1/SiiPGhWSkyfRJpzU8jGS7xb2aC2dpmKzAtXSNpv4DHX9O26T6Ju643Rg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw6UzWHJQEbTnd/XWrBPjxjkICR8uXNe2n3ir0lhZTrdyTo2TW0
-	fySyCaVL/o5jmIzV6CVZVlh50VTjRgDKOXimmjseYLtmmHXPkoeg
-X-Gm-Gg: ASbGncubso8QKU4A1YU+DxdOA+Cyx/H98mmghOHWF8Ch9gS21RHv8Hn3VyC5KQSK/3D
-	uDexa8p0Mxsd7WYC1mrhCq4ZYLUc7rasXN11eSq/Ha3EDZJToIN1U4L1g6j/1VkEkxJZuUXY5lU
-	H3mOQvBxV+6Sp1w7R1VW4z2SPAkQ9hRGuthevjQCQ12EDcQBY3oAK1yZgmmb+DweO1oLVcEv/eS
-	G87Gn1qLmEXA1zG4LYUUy7c+UajFYb49Kql1IZmMGowIM2rIN7eJWrm9OnXY7BaHEXCbMbV/jAM
-	9Nk8q6muoBcVCuEsy0+xXcJz1ogHxRy0kRdfMmo16xQLjgtmYgog1rkCMg4PU8u4mnDvD6gyvoz
-	A2AJd2PU=
-X-Google-Smtp-Source: AGHT+IH9YPMWiON4QM+xaQnB5yqCP10tZKboZ8LNviXyPWzJfgh/M6Q58FlmTI0dL5JuYBp5qZxPFg==
-X-Received: by 2002:a05:6000:4023:b0:39c:119f:27c4 with SMTP id ffacd0b85a97d-39c29767c83mr14733f8f.30.1743541323342;
-        Tue, 01 Apr 2025 14:02:03 -0700 (PDT)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-39c1845e66esm9181665f8f.18.2025.04.01.14.02.02
+        d=1e100.net; s=20230601; t=1743555036; x=1744159836;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vJTNg57TpFxM6eiCchcjLRtnNvCRkiMrbkIi/jphXdc=;
+        b=PWxF/1rkEBq3rJ7csaRwQfxtNPheUbLJutkfj62OWZ+mo0YcNfk1T/6fVWQ6UXZrg+
+         eTfKoo+JtE+8MBV7p42wI4lXQWZ42W7TmG6mPDyT0FhD1I4j1caicy6ozyvG7d503Ziq
+         it7/w44NmLDq3wm8vJQccNRxlm+iDzdLVW7Kv8nC9IOJwps37XUWjU/eZH4qwgR0C2ZT
+         0Tk1rSGnoSRadJTp7ovoTfK5jha0uYcrTf+i6AFaB8FB78rVX19SE7xrcnRCcQ2yjk5p
+         giLOE7PcyMkCXbOOqe/cz9YmRSuPL5EOoKnjRLnbxA9jQUzMe4Q2MncWY4LGp3HXIAHm
+         mf+g==
+X-Forwarded-Encrypted: i=1; AJvYcCXW4V4/hgE68tOaJSH/ma6RKfO57pJ2C/BeeZLJsg5opMRuzgREdnwAeDJZFQjETgOxKB5W8Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyQeR+k/iJGO6MK+MMkVWf/BINQzQhXyYRDZVk1qgl8TLSvVIfD
+	CS05g3mkxlBKKMWNn/v8OXfeCFS4MIqe/qEczScQWjGxEx0mMEb+jjYgalRhLWpyMFv20EShbQg
+	Ay3UvbiWaDSgZ1LBtYPF+JSrhNcyH5ZqzjFRZ6mVQflz5OfBKNIg7F/LI7zC+
+X-Gm-Gg: ASbGncstbNBhnpFAUCauQfyx6cJvR48ac9vxd5EChfxSWhQOQ1/aJB385xuKjKU0vET
+	cAfDGxgmyTbIBQf31QpXcX3JFjf7s1k0mDt3aDisYf6F+g/tjr8AJduEU3/u009IFDH5jV2Yt8x
+	CxNCK38AfdV+hU40vEnrAhanihJNRvJjhGmNu55g/iPiRdQY97/Nh/w+P8x9AxhiyZ/1xaQ6Bs8
+	H5qUIzg1Hamd3lB2OQFRKVvrta+o/rU2HLsHLLONjh2IywhE24pKKYf9ang5833yCYV8A==
+X-Received: by 2002:a05:6a20:d04e:b0:1f5:730b:e09a with SMTP id adf61e73a8af0-200e4c4f75fmr590018637.20.1743555036441;
+        Tue, 01 Apr 2025 17:50:36 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFdk1FxrJ+9cINgByDopFSozFjxckoY96NPi7m/sZgKLt5ACht/tUy31f50xwZLM8tQpD7l1Q==
+X-Received: by 2002:a05:6a20:d04e:b0:1f5:730b:e09a with SMTP id adf61e73a8af0-200e4c4f75fmr590003637.20.1743555036171;
+        Tue, 01 Apr 2025 17:50:36 -0700 (PDT)
+Received: from jpoimboe ([2600:1700:6e32:6c00::1e])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-af93b8acb9esm8768221a12.54.2025.04.01.17.50.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Apr 2025 14:02:02 -0700 (PDT)
-Date: Tue, 1 Apr 2025 22:02:01 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Xu Lu <luxu.kernel@bytedance.com>, Jessica Clarke <jrtc27@jrtc27.com>,
- tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, alex@ghiti.fr, lihangjing@bytedance.com,
- xieyongji@bytedance.com, linux-riscv@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [External] Re: [PATCH] iommu: riscv: Split 8-byte accesses on
- 32 bit I/O bus platform
-Message-ID: <20250401220201.1fa3ec76@pumpkin>
-In-Reply-To: <20250401154412.GI186258@ziepe.ca>
-References: <20250325144252.27403-1-luxu.kernel@bytedance.com>
-	<9F043708-3BB6-46CF-BEC3-2636E9A388B7@jrtc27.com>
-	<CAPYmKFtAWNz7nCDDD7rjGeV2fRBgy5Kt6KR60pEyXAM=bb7r4g@mail.gmail.com>
-	<20250401154412.GI186258@ziepe.ca>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+        Tue, 01 Apr 2025 17:50:35 -0700 (PDT)
+Date: Tue, 1 Apr 2025 17:50:32 -0700
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	Randy Dunlap <rdunlap@infradead.org>, "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: [PATCH] iommu: Convert unreachable() to BUG()
+Message-ID: <6zzyjtvkqc4ipj7ngtkx3jithfwpwuxlix677urlehgdnljwbl@wfoa5futari6>
+References: <0c801ae017ec078cacd39f8f0898fc7780535f85.1743053325.git.jpoimboe@kernel.org>
+ <20250327123718.GB31358@noisy.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20250327123718.GB31358@noisy.programming.kicks-ass.net>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: orn4TXwUSAh5YkXt2YBQzbUyk2Q_i-BgYiqPiDVJazw_1743555037
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-On Tue, 1 Apr 2025 12:44:12 -0300
-Jason Gunthorpe <jgg@ziepe.ca> wrote:
+On Thu, Mar 27, 2025 at 01:37:18PM +0100, Peter Zijlstra wrote:
+> On Wed, Mar 26, 2025 at 10:28:46PM -0700, Josh Poimboeuf wrote:
+> > Bare unreachable() should be avoided as it generates undefined behavior,
+> > e.g. falling through to the next function.  Use BUG() instead so the
+> > error is defined.
+> 
+> Right; I did a pass like this a while ago and thought I'd removed all
+> unreachable() abuse.
 
-> On Wed, Mar 26, 2025 at 11:26:07AM +0800, Xu Lu wrote:
-> > Hi Jessica,
-> >   
-> > > Is such a platform conformant to the specification?  
-> > 
-> > We have talked about this before [1]. I think the IOMMU spec does not
-> > mandate the implementation of 8-byte access functionality. The related
-> > sentences are listed below:
-> > 
-> > "The 8-byte IOMMU registers are defined in such a way that software
-> > can perform two individual 4-byte accesses, or hardware can perform
-> > two independent 4-byte transactions resulting from an 8-byte access,
-> > to the high and low halves of the register, in that order, as long as
-> > the register semantics, with regard to side-effects, are respected
-> > between the two software accesses, or two hardware transactions,
-> > respectively."  
-> 
-> I think the commit message should explain an anyalsis that the code is
-> safe against the mentioned side effects due to ordering.
-> 
-> And a comment should explain this:
-> 
-> +#define riscv_iommu_writeq(iommu, addr, val) \
-> +       ((addr == RISCV_IOMMU_REG_IOHPMCYCLES) ? \
-> +        lo_hi_writeq_relaxed((val), (iommu)->reg + (addr)) : \
-> +        hi_lo_writeq_relaxed((val), (iommu)->reg + (addr)))
-> 
-> As the naive reading of the above spec paragraph doesn't seem like
-> there are exceptions or why one register has to be the opposite order.
-> 
-> Also missing () around addr
+Any reason not to just "#define unreachable() BUG()" and convert UD2 and
+similar to use __builtin_unreachable()?
 
-It is also double-evaluating (addr).
-
-I hope there is a lock, interleaved accesses from multiple cpu
-may not work.
-
-	David
-
-> 
-> Jason
-> 
+-- 
+Josh
 
