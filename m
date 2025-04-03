@@ -1,137 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A0FE38385;
-	Thu,  3 Apr 2025 15:47:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A858B23F403
+	for <iommu@lists.linux.dev>; Thu,  3 Apr 2025 16:37:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743695247; cv=none; b=FEaQsbGA9bwOUe4tlWmuGrJXgnhwcAYeP5uInYb7+3lyhIJQ37s11FlDkBWEzdOy2qdnUe2F4eefmnDWtCVoxasJCvN8NMrxXrgmRy0veMpqy3ZMrWQ97iNrYZNIDnVmYDtxZszJQiWpYjK1+eLJNb8UCmyTjBjTEOsUEJ67KAk=
+	t=1743698272; cv=none; b=T++m5coxNBkAGcgROZXbaRWrm+90ioHfMwy3AgqULGQ1IlpBdGwkyUwzBx/240zz0TyzhAVEHzbAzr1RjKCEQRvimtYd/JPl9lr3ln4zkiRI9e6pmK75rTEfSLU4j7uImG5tIsLApnTAukjuv9DiWNc2qYatDA925ZGW55Szv3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743695247; c=relaxed/simple;
-	bh=EaxIEi2MzHezSZZXiYbZ5wYqTfobu9WblfTbW9XFbBU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P+Y0y/FvsJb0Q8xdKL2W8fiFkjrOfOMsJwrtS5gIlafk2j/ywheZXKneFQhZ1iVv0alzDAtW6o3Z0BYvcqbqyke0fnfOEI9ibHdUXsRFQYmhbJru0WuDtmR1eYo0GUrb0mxVC0L9uu1ooPmmK43/CJ+qERBNHVH8ubNMHLhCkpU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BHiu9zpQ; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BHiu9zpQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10A82C4CEE5;
-	Thu,  3 Apr 2025 15:47:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1743695246;
-	bh=EaxIEi2MzHezSZZXiYbZ5wYqTfobu9WblfTbW9XFbBU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=BHiu9zpQPAcxHwkl1Fk/pF6J7ENRms/xF8j934S+wm5det9lbVcH1nobBOu15k51V
-	 RmDBtTgJZHYPAdwvl4kISbu5SX2/wkYQ0u1jiGP4hQtG7pu7SP7BNPvH7vTC1xrEIo
-	 ltfbDK2HY+se5xOmcWrS/NNPQn+JU+xDg4xJp/d+sv7rTQqOUQghv20wtk5dTFtOFB
-	 veMF3kZMzeJReUYQtauA8m+blHkxnPv0xw+OKZwrM1t6or5a9UTXUI5ozuHTVEJYt1
-	 gw8ANUXA7riCX5CUAfPQlKcGsacCkcw1I4VNuBhzP9A+Vm0J7vijuKj1sAzGiztkWX
-	 iVhsYPqKATeJg==
-Date: Thu, 3 Apr 2025 17:47:23 +0200
-From: Maxime Ripard <mripard@kernel.org>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Dave Airlie <airlied@gmail.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Simona Vetter <simona@ffwll.ch>, Tomasz Figa <tfiga@chromium.org>, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, Ben Woodard <woodard@redhat.com>, 
-	Hans Verkuil <hverkuil@xs4all.nl>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, 
-	linux-mm@kvack.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH RFC 00/12] dma: Enable dmem cgroup tracking
-Message-ID: <20250403-quick-salamander-of-charisma-cab289@houat>
-References: <20250310-dmem-cgroups-v1-0-2984c1bc9312@kernel.org>
- <f5fdc666-dd72-4a4f-9270-b539a3179382@amd.com>
- <20250310-eccentric-wonderful-puffin-ddbb26@houat>
- <CAPM=9tzkLXOz=-3eujUbbjMHunR+_5JZ4oQaqNmbrWWF9WZJ0w@mail.gmail.com>
- <e08f10da-b0cd-444b-8e0b-11009b05b161@amd.com>
- <CAPM=9twgFt43OKqUY0TNopTmibnR_d891xmV=wFM91n604NUCw@mail.gmail.com>
- <5ed87c80-6fe3-4f8c-bb98-ca07f1db8c34@amd.com>
+	s=arc-20240116; t=1743698272; c=relaxed/simple;
+	bh=b5hmLMqhQf/USzetL3WM3B7b9tLiPHJwGUG3zmeWSO8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sGxjSRyA+DsIiDUXB/BrghcpSIerMFAfSdp+DZyKxcGw3576jdE472rEF2iE2WTFr00pNkgUT52tC2MLeff1f5yQoYefzOnlzKAJAv/TYZuhCYu8KH6YX9tWkxuMFZ5LrjdrRNxmOPJ8Z3w+zM+ssGh/ytCRd2yH82FuImRvxFc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 41DC4106F;
+	Thu,  3 Apr 2025 09:37:51 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E462B3F59E;
+	Thu,  3 Apr 2025 09:37:47 -0700 (PDT)
+Message-ID: <9944524c-0ec9-450d-9fcc-63b021252182@arm.com>
+Date: Thu, 3 Apr 2025 17:37:46 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ladwbtqhxfoyjegt"
-Content-Disposition: inline
-In-Reply-To: <5ed87c80-6fe3-4f8c-bb98-ca07f1db8c34@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Register in a sensible order
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-renesas-soc@vger.kernel.org
+References: <53be6667544de65a15415b699e38a9a965692e45.1742481687.git.robin.murphy@arm.com>
+ <CAMuHMdUtCqwzeWY8G+yHiu4biovymDVb_UtjfYPEQYyYr+dP4Q@mail.gmail.com>
+ <f72bcfb2-e2a1-4dd4-bedf-241b75178958@arm.com>
+ <CAMuHMdXYDLUZGxFf6fnsKXg=EA2YkoNwMe8Uv0+Bo3w+4h-dhA@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <CAMuHMdXYDLUZGxFf6fnsKXg=EA2YkoNwMe8Uv0+Bo3w+4h-dhA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 01/04/2025 3:11 pm, Geert Uytterhoeven wrote:
+> Hi Robin,
+> 
+> On Tue, 1 Apr 2025 at 15:53, Robin Murphy <robin.murphy@arm.com> wrote:
+>> On 2025-03-25 3:26 pm, Geert Uytterhoeven wrote:
+>>> On Thu, 20 Mar 2025 at 15:41, Robin Murphy <robin.murphy@arm.com> wrote:
+>>>> IPMMU registers almost-initialised instances, but misses assigning the
+>>>> drvdata to make them fully functional, so initial calls back into
+>>>> ipmmu_probe_device() are likely to fail unnecessarily. Reorder this to
+>>>> work as it should, also pruning the long-out-of-date comment and adding
+>>>> the missing sysfs cleanup on error for good measure.
+>>>>
+>>>> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>>>> Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>>
+>>> Thanks for your patch!
+>>>
+>>> This fixes the
+>>>
+>>>       sata_rcar ee300000.sata: late IOMMU probe at driver bind,
+>>> something fishy here!
+>>>       WARNING: CPU: 1 PID: 13 at drivers/iommu/iommu.c:571
+>>> __iommu_probe_device+0x208/0x38c
+>>>
+>>> I saw on Salvator-XS with R-Car M3-N.
+>>>
+>>> It does not fix the second issue reported, so it is indeed too early for a
+>>> "Closes: https://lore.kernel.org/CAMuHMdWPFnHTFeeWL2-BU8tKOL-E5K2ROOz=LLBLTJJLCK9NgA@mail.gmail.com"
+>>> tag.
+>>
+>> You mean .of_xlate being called multiple times? That's not an issue,
+>> it's normal and expected. Every time an IOMMU instance registers, it
+>> triggers a probe of all relevant devices which do not yet have an IOMMU
+>> - this has never been selective, so if a device is associated with a
+>> different already-registered IOMMU instance, but does not have a group
+>> because that instance's .probe_device rejected it, that probe also gets
+>> tried (and rejected) again.
+>>
+>> The core code behaviour has been this way for a very long time, the only
+>> new thing is that the .of_xlate calls are now in sync with their
+>> corresponding .probe_device calls (and the latter are also now working
+>> properly again for fwspec-based ops).
+> 
+> Hmm, I started seeing the extra calls only after bcb81ac6ae3c,
+> i.e. not since a very long time?
 
---ladwbtqhxfoyjegt
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH RFC 00/12] dma: Enable dmem cgroup tracking
-MIME-Version: 1.0
+OK, maybe not "very" - there are a lot of pieces in this puzzle that 
+have all moved underfoot over time, but the point I was getting at is 
+that although fwspec-based drivers *are* only now seeing those extra 
+.probe_device calls, the design of the core code has been *trying* to 
+make them since at least 3-ish years ago when the last of 
+bus_set_iommu() went away.
 
-On Thu, Apr 03, 2025 at 09:39:52AM +0200, Christian K=F6nig wrote:
-> > For the UMA GPU case where there is no device memory or eviction
-> > problem, perhaps a configurable option to just say account memory in
-> > memcg for all allocations done by this process, and state yes you can
-> > work around it with allocation servers or whatever but the behaviour
-> > for well behaved things is at least somewhat defined.
->=20
-> We can have that as a workaround, but I think we should approach that
-> differently.
->=20
-> With upcoming CXL even coherent device memory is exposed to the core
-> OS as NUMA memory with just a high latency.
->=20
-> So both in the CXL and UMA case it actually doesn't make sense to
-> allocate the memory through the driver interfaces any more. With
-> AMDGPU for example we are just replicating mbind()/madvise() within
-> the driver.
->=20
-> Instead what the DRM subsystem should aim for is to allocate memory
-> using the normal core OS functionality and then import it into the
-> driver.
->=20
-> AMD, NVidia and Intel have HMM working for quite a while now but it
-> has some limitations, especially on the performance side.
->=20
-> So for AMDGPU we are currently evaluating udmabuf as alternative. That
-> seems to be working fine with different NUMA nodes, is perfectly memcg
-> accounted and gives you a DMA-buf which can be imported everywhere.
->=20
-> The only show stopper might be the allocation performance, but even if
-> that's the case I think the ongoing folio work will properly resolve
-> that.
+Conversely though, you should also now *not* be seeing extra calls where 
+you weren't looking for them. I bet if you were to build the DMA driver 
+as a module and load/unload it a bunch of times, you would have seen 
+more repeated calls to .of_xlate/.probe_device, whereas now you 
+(correctly) won't.
 
-I mean, no, the showstopper to that is that using udmabuf has the
-assumption that you have an IOMMU for every device doing DMA, which is
-absolutely not true on !x86 platforms.
+>> Was it just that, or is there still something functionally amiss?
+> 
+> That's all for now ;-)
 
-It might be true for all GPUs, but it certainly isn't for display
-controllers, and it's not either for codecs, ISPs, and cameras.
+Great!
 
-And then there's the other assumption that all memory is under the
-memory allocator control, which isn't the case on most recent platforms
-either.
-
-We *need* to take CMA into account there, all the carved-out, device
-specific memory regions, and the memory regions that aren't even under
-Linux supervision like protected memory that is typically handled by the
-firmware and all you get is a dma-buf.
-
-Saying that it's how you want to workaround it on AMD is absolutely
-fine, but DRM as a whole should certainly not aim for that, because it
-can't.
-
-Maxime
-
---ladwbtqhxfoyjegt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCZ+6tigAKCRDj7w1vZxhR
-xQFfAQDBTdwSGeM/HRXug8mlHyT5psOLiGa5pibxIgH2xR/VmgEA0w5A63Bu6RYa
-JKVhD2+5cuBaPVUha8mXQIEsqmEOGgI=
-=Li+I
------END PGP SIGNATURE-----
-
---ladwbtqhxfoyjegt--
+Thanks,
+Robin.
