@@ -1,83 +1,177 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B88C136E37;
-	Wed,  2 Apr 2025 16:18:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 180AA19007F
+	for <iommu@lists.linux.dev>; Thu,  3 Apr 2025 06:07:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743610707; cv=none; b=M98gudyFP+GYSUU0zSk4/0zSu0dcr5DWTjnqblRMblezhPnGuzqbS0kHXnpRUC3/c2xiF/7fmzf1abhWLRAYRyVha+AAKul5HN9EAj814HTZGW2lilBGa6x+UGryOa+ft8vWnspfWFpNSRNmM+oRZUHEefcWdq6+8FgQ4Rmqem4=
+	t=1743660460; cv=none; b=JV05ocZRrmGQe1q4mxV8zmNklHMZ8KLcAqgGVWT3NXzjJRjLmRSS10T/6G96c1HPDjPMOYsYluCJKf8u65lo211VHNLznWWSBoW10v8q4SAYON7POyWbxhAAn+y9zFcYGDQ1xHYmO8rkG4HLDASqfC1m/ULWRUgDnvZcwUr8los=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743610707; c=relaxed/simple;
-	bh=tS+IzDNKu40Z7hFEn98fk1QcSnK1zvMQ3u4/JUoR5as=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l46XhBqbKFrTMe27tljKm/ACFhG/z2qbJdTvelUbQWaTFMnjzPBsezzr0R5nszAEO4S87pC1h/JF+ltGuqZqvTx7OEt3txSS9Rmmh7MTubvmpFPt2z4VOektOpABFNp5JmLB9AXSPlR3QhaD1X68NS9lrwY8JEABBv39MeKQjRs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com; spf=none smtp.mailfrom=foss.arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=foss.arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F215A106F;
-	Wed,  2 Apr 2025 09:18:27 -0700 (PDT)
-Received: from bogus (unknown [10.57.41.33])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B3EAF3F63F;
-	Wed,  2 Apr 2025 09:18:22 -0700 (PDT)
-Date: Wed, 2 Apr 2025 17:18:19 +0100
-From: Sudeep Holla <sudeep.holla@arm.com>
-To: Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Linux ARM <linux-arm-kernel@lists.infradead.org>,
-	Sudeep Holla <sudeep.holla@arm.com>, iommu@lists.linux.dev,
-	open list <linux-kernel@vger.kernel.org>,
-	lkft-triage@lists.linaro.org,
-	Linux Regressions <regressions@lists.linux.dev>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>, Rob Herring <robh@kernel.org>,
-	Dan Carpenter <dan.carpenter@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Anders Roxell <anders.roxell@linaro.org>
-Subject: Re: arm64: juno-r2: SSD detect failed on mainline and next
-Message-ID: <20250402-thistle-oxpecker-of-fragrance-d2ebb5@sudeepholla>
-References: <CA+G9fYt0F_vR-zOV4P8m4HTv6AecT-eEnrL+t5wgAaKPodi0mQ@mail.gmail.com>
- <6e0ef5cc-b692-4d39-bec4-a75c1af3f0aa@arm.com>
+	s=arc-20240116; t=1743660460; c=relaxed/simple;
+	bh=XZfW8Qfq7tJ+JELoDYv5ETSuD7d87c5jDCiqNfZKaQc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rYNGAPemJ0+tvIXRe0Z58KzL2dC/jHlaZvoZrze+B+fc3K1Wer2rOJsP/n6+lsZMD4d090gq7LgrCvdtHJbnFUbN7CKnhGAopyObpi/ZYIiHo1fnKalZJk40t/Sp9CZ9RR82gpB3LmAmtMmLUu+CdLkjN8u5FUoJtGMQqYR+8kI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jUBOl41g; arc=none smtp.client-ip=209.85.218.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jUBOl41g"
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-ab78e6edb99so69266366b.2
+        for <iommu@lists.linux.dev>; Wed, 02 Apr 2025 23:07:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1743660456; x=1744265256; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0y1chSLTgq4by+/iKzl7cqrc4OIVMXRZ18Ndod/oVA4=;
+        b=jUBOl41gRP2ZMiyh0ODAX7UC3IkQCMZyKQomJN1yEUHhMSa+L/MEhYwe99BU3lVkjC
+         iSwe0jc1gFOU9LPCVLdctET4xRhZqZvVqJEeS20h7w+MoySIY7GrEdZOYgWWkKGLhmBy
+         TjHitN53Ty+4kdzFROZWWMsCqo/XYNTfQr0KTa/FZSrrhhtIagoHwSoOf0MszvZOUGVF
+         1VxlAlSDyID9LWotLp5LCJD4qqdl2Om917nzt9D+MrTNPxaZAp7tcjAjB/Dbky/vHb9M
+         Lbe9eY5ngNnam/chNl7X6yPz8QJmvE7Vi748OLuSDLoFF9oz0bXKOqJssKDNwmyvKg+T
+         9WLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1743660456; x=1744265256;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0y1chSLTgq4by+/iKzl7cqrc4OIVMXRZ18Ndod/oVA4=;
+        b=Lg5puq4i9JzUmy74Ml2DP91o5zsopnmu4KO8IZ/mJukBqUdYu5jY1/H5Y9k4Z+Wswk
+         94IeE+evB7q7Pqada1eZQU26hq/hmrj08YlkkX/mKsQcrOkk1ol3ArMzrkiX/TiO7iFu
+         CQhpPwNrKZxrTfVgbvGl+FmSOel0wbHX8/zSuIp0hKGJgyz6F7g52g88//lwXDHAygqK
+         2jDsx5yNzV96XYQm10w4ajk7IMTPowi0qn6RXWq8wZemY8Ier18/3dagc6l6GxuxJYxg
+         ATpwvfvF4HqriCIkK1pXWPSmbtU1MwL7AOGyJ9lf3YtF+YXJWP2KjCVfAiXa6MXHeT+d
+         v4Dg==
+X-Forwarded-Encrypted: i=1; AJvYcCXgrXNXNze5ey2ecZrTQoHoMEXcrRWARRsH4aEanqhN3LGvcUoDkmwS48w6eQZ2Ze2Za0pbYg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz61NJY/KmN7mspvBVNSNhyN8vCjIzCsdYYEN07EKzUQKr1fn/X
+	vP2MiWjY3sxFsqh7n3dSnxR/6P8IvnXoiHFikoUPOZBwgq+8adpAk9/y8BgD0yd5uk0rcq+GLEA
+	ZcO8JQPVvgqTxzJ1lzHjOs0WCFpg=
+X-Gm-Gg: ASbGncu/X4KQ+wqx0fyywDH0CfocwLkW9u6N1YAN1/RD04l9/1IqUm05O5t+g5gWy6P
+	5VHz9+7AcJx3Y4Ea1VF4n7eE9bOYoEoaEkL7E2UxfufnIomGJdY9SslndUSV3dNc1NPi1nWWMHA
+	3gduwvCkKvyRt0CtMz03eUJHKLFKolykGD9sM=
+X-Google-Smtp-Source: AGHT+IEf6my0Oevy7HxSEvSBLIVZB6UUtRLQAMtnvT9ULs0ZmHL4HufuJOz3Xwan6rPv7/6qdLH2tQeyB4bomKzEbiI=
+X-Received: by 2002:a17:906:7955:b0:ac1:e00c:a566 with SMTP id
+ a640c23a62f3a-ac738bbe6e9mr1868178566b.45.1743660456051; Wed, 02 Apr 2025
+ 23:07:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6e0ef5cc-b692-4d39-bec4-a75c1af3f0aa@arm.com>
+References: <20250310-dmem-cgroups-v1-0-2984c1bc9312@kernel.org>
+ <f5fdc666-dd72-4a4f-9270-b539a3179382@amd.com> <20250310-eccentric-wonderful-puffin-ddbb26@houat>
+ <CAPM=9tzkLXOz=-3eujUbbjMHunR+_5JZ4oQaqNmbrWWF9WZJ0w@mail.gmail.com> <e08f10da-b0cd-444b-8e0b-11009b05b161@amd.com>
+In-Reply-To: <e08f10da-b0cd-444b-8e0b-11009b05b161@amd.com>
+From: Dave Airlie <airlied@gmail.com>
+Date: Thu, 3 Apr 2025 16:07:24 +1000
+X-Gm-Features: AQ5f1JqIs6baj7zESBDpkv7pR6DzQLKEPOII2QRNAbnnHufJyGkPQs5rKDbOWPQ
+Message-ID: <CAPM=9twgFt43OKqUY0TNopTmibnR_d891xmV=wFM91n604NUCw@mail.gmail.com>
+Subject: Re: [PATCH RFC 00/12] dma: Enable dmem cgroup tracking
+To: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: Maxime Ripard <mripard@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Simona Vetter <simona@ffwll.ch>, Tomasz Figa <tfiga@chromium.org>, 
+	Mauro Carvalho Chehab <mchehab@kernel.org>, Ben Woodard <woodard@redhat.com>, 
+	Hans Verkuil <hverkuil@xs4all.nl>, 
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-mm@kvack.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linaro-mm-sig@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 02, 2025 at 04:34:08PM +0100, Robin Murphy wrote:
-> On 31/03/2025 5:03 am, Naresh Kamboju wrote:
-> > Regressions on arm64 Juno-r2 devices detect SSD tests failed on the
-> > Linux next and Linux mainline.
-> > 
-> > First seen on the v6.14-7245-g5c2a430e8599
-> >   Good: v6.14
-> >   Bad: v6.14-7422-gacb4f33713b9
-> 
-> Sorry, I can't seem to reproduce this on my end, both today's mainline and
-> acb4f33713b9 with my config, and even acb4f33713b9 with the linked LKFT
-> config, all work OK on my Juno r2 (using a SATA SSD and PCIe networking).
-> The only thing which stands out in your log is that PCI seems to give up
-> probing and assigning resources beyond the switch downstream ports (so SATA
-> and ethernet are never discovered), whereas on mine it does[2]. However that
-> all happens before the first IOMMU instance probes (which conveniently is
-> the PCIe one), so it's hard to imagine how that could have an effect
-> anyway...
-> 
-> The only obvious difference is that I'm using EDK2 rather than U-Boot, so
-> that's done all the PCIe configuration once already, but it doesn't seem
-> like that's significant - looking back at a random older log[1], the
-> on-board endpoints were still being picked up right after reconfiguring the
-> switch, well before the IOMMU comes into the picture.
-> 
+On Tue, 1 Apr 2025 at 21:03, Christian K=C3=B6nig <christian.koenig@amd.com=
+> wrote:
+>
+> Am 31.03.25 um 22:43 schrieb Dave Airlie:
+> > On Tue, 11 Mar 2025 at 00:26, Maxime Ripard <mripard@kernel.org> wrote:
+> >> Hi,
+> >>
+> >> On Mon, Mar 10, 2025 at 03:16:53PM +0100, Christian K=C3=B6nig wrote:
+> >>> [Adding Ben since we are currently in the middle of a discussion
+> >>> regarding exactly that problem]
+> >>>
+> >>> Just for my understanding before I deep dive into the code: This uses
+> >>> a separate dmem cgroup and does not account against memcg, don't it?
+> >> Yes. The main rationale being that it doesn't always make sense to
+> >> register against memcg: a lot of devices are going to allocate from
+> >> dedicated chunks of memory that are either carved out from the main
+> >> memory allocator, or not under Linux supervision at all.
+> >>
+> >> And if there's no way to make it consistent across drivers, it's not t=
+he
+> >> right tool.
+> >>
+> > While I agree on that, if a user can cause a device driver to allocate
+> > memory that is also memory that memcg accounts, then we have to
+> > interface with memcg to account that memory.
+>
+> This assumes that memcg should be in control of device driver allocated m=
+emory. Which in some cases is intentionally not done.
+>
+> E.g. a server application which allocates buffers on behalves of clients =
+gets a nice deny of service problem if we suddenly start to account those b=
+uffers.
 
-Highly unlikely it is related to this issue, but I do see you are using
-the default DTB files and not juno-*-scmi.dtb which aligns with the SCP
-firmware you might be running. Just noticed SCPI timeout in the log, so
-none of the power management calls will work. By default all the required
-power domains must be on though.
+Yes we definitely need the ability to transfer an allocation between
+cgroups for this case.
 
--- 
-Regards,
-Sudeep
+>
+> That was one of the reasons why my OOM killer improvement patches never l=
+anded (e.g. you could trivially kill X/Wayland or systemd with that).
+>
+> > The pathological case would be a single application wanting to use 90%
+> > of RAM for device allocations, freeing it all, then using 90% of RAM
+> > for normal usage. How to create a policy that would allow that with
+> > dmem and memcg is difficult, since if you say you can do 90% on both
+> > then the user can easily OOM the system.
+>
+> Yeah, completely agree.
+>
+> That's why the GTT size limit we already have per device and the global 5=
+0% TTM limit doesn't work as expected. People also didn't liked those limit=
+s and because of that we even have flags to circumvent them, see AMDGPU_GEM=
+_CREATE_PREEMPTIBLE and  TTM_TT_FLAG_EXTERNAL.
+>
+> Another problem is when and to which process we account things when evict=
+ion happens? For example process A wants to use VRAM that process B current=
+ly occupies. In this case we would give both processes a mix of VRAM and sy=
+stem memory, but how do we account that?
+>
+> If we account to process B then it can be that process A fails because of=
+ process Bs memcg limit. This creates a situation which is absolutely not t=
+raceable for a system administrator.
+>
+> But process A never asked for system memory in the first place, so we can=
+'t account the memory to it either or otherwise we make the process respons=
+ible for things it didn't do.
+>
+> There are good argument for all solutions and there are a couple of block=
+s which rule out one solution or another for a certain use case. To summari=
+ze I think the whole situation is a complete mess.
+>
+> Maybe there is not this one solution and we need to make it somehow confi=
+gurable?
+
+My feeling is that we can't solve the VRAM eviction problem super
+effectively, but it's also probably not going to be a major common
+case, I don't think we should double account memcg/dmem just in case
+we have to evict all of a users dmem at some point, maybe if there was
+some kind of soft memcg limit we could add as an accounting but not
+enforced overhead it might be useful to track evictions, but yes we
+can't have A allocating memory causing B to fall over because we evict
+memory into it's memcg space and it fails to allocate the next time it
+tries, or having A fail in that case.
+
+For the UMA GPU case where there is no device memory or eviction
+problem, perhaps a configurable option to just say account memory in
+memcg for all allocations done by this process, and state yes you can
+work around it with allocation servers or whatever but the behaviour
+for well behaved things is at least somewhat defined.
+
+Dave.
