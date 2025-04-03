@@ -1,278 +1,301 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 65E4C1854
-	for <iommu@lists.linux.dev>; Thu,  3 Apr 2025 08:15:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743668155; cv=none; b=YJhkT8u2sNYmHVmGJowu5PK8UoDaZUeP9l02vBAi40BHUEdAEbGrb+agz6K8dA/IPiC+BBAco+nG1JwBT9P+O0uukTm7R1xcdkdh6BTZJBX+ZeItGs6/wo9FbV/br9BuFArZFTyeygs8AHRNjRErXZtQuYC65bPYt9o3jkCq1Ik=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743668155; c=relaxed/simple;
-	bh=Rpq0m0qjya/Q/xgTFyLKb0oUW2bXmD5ISLwSd/nEL0Q=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=mzQhlELUZJThDI/zHBxGGqDe7EB/JzxZnoQ0oac6kQI1LNyQwFE1j2ZNU+lKGUAS21YCrtlu1n4WahgLaAx5SZ6bmpYvsMiJPEHK1yuLoIOGFpJ9JOvUzmQYwp7SU9Zh2pHX89RVOVDq4FbiQ2qd8yXq/8m2m9nbNu5WGvLbLq8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 70571106F;
-	Thu,  3 Apr 2025 01:15:55 -0700 (PDT)
-Received: from [10.57.88.195] (unknown [10.57.88.195])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 434FD3F59E;
-	Thu,  3 Apr 2025 01:15:48 -0700 (PDT)
-Message-ID: <e6de28b9-4827-427f-96a3-c0732371d16c@arm.com>
-Date: Thu, 3 Apr 2025 09:15:46 +0100
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A92B242930
+	for <iommu@lists.linux.dev>; Thu,  3 Apr 2025 08:25:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1743668759; cv=pass; b=qW4RNrqRrGmVOKl00lduuZRx5P7ZHF6e9hT35nQIgog9J97aY9xNGihRQsdOE5ladOUwl+z4L2LdEnn8SUXY3CJ6pqfBLUUnUrfWBVB5Hdf3Z49gWzngV1nR7UIZqWbvspTUiVQ4/rQQvfexqooqUGY/2VXEQtZenoB9Ic7twI0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1743668759; c=relaxed/simple;
+	bh=YmcnUU2RHsake0F5bwSYRtWQbHUB/J3dNDmbOALD5h8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=A7mYESSHSGshFxvYLxAJ7Ly8ssM8Lk+nm1XNL9eItpLngIV5hPpG53Yl+F3PiF9pZhv95AmegaM2CHdK9npElX0C1ZvXMvhxYjmDleuaVMRnWwoMtZb9EU+CeGig77GLUbUm/L+Qjs+cs9j/hyhAXBnRqfm7CqUahzF4nUDPvF8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=louisalexis.eyraud@collabora.com header.b=BKCdpZnP; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=louisalexis.eyraud@collabora.com header.b="BKCdpZnP"
+ARC-Seal: i=1; a=rsa-sha256; t=1743668738; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=gULdN2NgtippGbI0HnDol1JLfPWnoGSilWIfoTy7fsux81+gXUKR95H89ZFQKp83CLoLGfszsNv3oJ2FUZpoDAHNAgPReFlWVXlc32B5SvqBdSsqRyH+v636MMhZmxEshSJXIXbjzNcskNW6B682V3ACymCshRodidPqJVFpWCM=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1743668738; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=YmcnUU2RHsake0F5bwSYRtWQbHUB/J3dNDmbOALD5h8=; 
+	b=k3ZnTWIVLCyxZr637iG8ArARVdjXwW0jDJUCLWXmTBW78uqI0Kxukx09eQCZLFJOhxtDYQgNdmMvqA/eZwC2EKoMkWb5mHpcpnCoehRO4dNAZnys7k7K7ktIBnTlSpWRuDplhgz8cAVJbw1l3gHEoxx7HdppnmuO6hDJJ5/3C48=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=louisalexis.eyraud@collabora.com;
+	dmarc=pass header.from=<louisalexis.eyraud@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1743668738;
+	s=zohomail; d=collabora.com; i=louisalexis.eyraud@collabora.com;
+	h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:MIME-Version:Message-Id:Reply-To;
+	bh=YmcnUU2RHsake0F5bwSYRtWQbHUB/J3dNDmbOALD5h8=;
+	b=BKCdpZnPeMBPz94d7cz29WIq2OTNzn3odzzxCZLrWwOKOKyu/KnX30f8zwltXGbN
+	LT7GGRov+qGYkJ8Z7sVTxeNf7LMyrWe0hMimvw4fwYqDO2Z8xzfFPebVgeNaIDD8eER
+	ivZehYLP625ELyK75l0vaHD6ZEPvjIFvWog+SzJc=
+Received: by mx.zohomail.com with SMTPS id 1743668736253113.89827285780632;
+	Thu, 3 Apr 2025 01:25:36 -0700 (PDT)
+Message-ID: <f3091f6b15f9dd92325dbd3db36c43019718bff7.camel@collabora.com>
+Subject: Re: [PATCH] iommu/mediatek: Fix NULL pointer deference in
+ mtk_iommu_device_group
+From: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+To: Yong Wu =?UTF-8?Q?=28=E5=90=B4=E5=8B=87=29?= <Yong.Wu@mediatek.com>, 
+ "robin.murphy@arm.com"	 <robin.murphy@arm.com>, "joro@8bytes.org"
+ <joro@8bytes.org>, "robh@kernel.org"	 <robh@kernel.org>,
+ "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,  "bhelgaas@google.com"	
+ <bhelgaas@google.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ "will@kernel.org" <will@kernel.org>
+Cc: "jroedel@suse.de" <jroedel@suse.de>, "kernel@collabora.com"	
+ <kernel@collabora.com>, "linux-mediatek@lists.infradead.org"	
+ <linux-mediatek@lists.infradead.org>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
+ "linux-kernel@vger.kernel.org"	 <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+ "linux-arm-kernel@lists.infradead.org"	
+ <linux-arm-kernel@lists.infradead.org>
+Date: Thu, 03 Apr 2025 10:25:31 +0200
+In-Reply-To: <ffb19b2e42d3e99990cddaa13264e87561ab26d4.camel@mediatek.com>
+References: <20250327-fix-mtk-iommu-error-v1-1-df969158e752@collabora.com>
+	 <ffb19b2e42d3e99990cddaa13264e87561ab26d4.camel@mediatek.com>
+Organization: Collabora Ltd
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.3 (3.54.3-1.fc41) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 1/3] arm64: Add BBM Level 2 cpu feature
-Content-Language: en-GB
-To: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
- suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net,
- catalin.marinas@arm.com, will@kernel.org, jean-philippe@linaro.org,
- robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org,
- ardb@kernel.org, mark.rutland@arm.com, joey.gouly@arm.com, maz@kernel.org,
- james.morse@arm.com, broonie@kernel.org, oliver.upton@linux.dev,
- baohua@kernel.org, david@redhat.com, ioworker0@gmail.com, jgg@ziepe.ca,
- nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com,
- smostafa@google.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20250325093625.55184-1-miko.lenczewski@arm.com>
- <20250325093625.55184-2-miko.lenczewski@arm.com>
-From: Ryan Roberts <ryan.roberts@arm.com>
-In-Reply-To: <20250325093625.55184-2-miko.lenczewski@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 
-On 25/03/2025 05:36, Mikołaj Lenczewski wrote:
-> The Break-Before-Make cpu feature supports multiple levels (levels 0-2),
-> and this commit adds a dedicated BBML2 cpufeature to test against
-> support for, as well as a kernel commandline parameter to optionally
-> disable BBML2 altogether.
-> 
-> This is a system feature as we might have a big.LITTLE architecture
-> where some cores support BBML2 and some don't, but we want all cores to
-> be available and BBM to default to level 0 (as opposed to having cores
-> without BBML2 not coming online).
-> 
-> To support BBML2 in as wide a range of contexts as we can, we want not
-> only the architectural guarantees that BBML2 makes, but additionally
-> want BBML2 to not create TLB conflict aborts. Not causing aborts avoids
-> us having to prove that no recursive faults can be induced in any path
-> that uses BBML2, allowing its use for arbitrary kernel mappings.
-> Support detection of such CPUs.
-> 
-> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+Hi,
 
-LGTM!
+On Thu, 2025-04-03 at 07:25 +0000, Yong Wu (=E5=90=B4=E5=8B=87) wrote:
+> On Thu, 2025-03-27 at 11:46 +0100, Louis-Alexis Eyraud wrote:
+> > External email : Please do not click links or open attachments
+> > until
+> > you have verified the sender or the content.
+> >=20
+> >=20
+> > Currently, mtk_iommu calls during probe iommu_device_register
+> > before
+> > the hw_list from driver data is initialized. Since iommu probing
+> > issue
+> > fix, it leads to NULL pointer dereference in mtk_iommu_device_group
+> > when
+> > hw_list is accessed with list_first_entry (not null safe).
+> >=20
+> > So, change the call order to ensure iommu_device_register is called
+> > after the driver data are initialized.
+> >=20
+> > Fixes: 9e3a2a643653 ("iommu/mediatek: Adapt sharing and non-sharing
+> > pgtable case")
+> > Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper
+> > probe path")
+> > Signed-off-by: Louis-Alexis Eyraud
+> > <louisalexis.eyraud@collabora.com>
+> > ---
+> > This patch fixes a NULL pointer dereference that occurs during the
+> > mtk_iommu driver probe and observed at least on several Mediatek
+> > Genio boards:
+> > ```
+> > Unable to handle kernel NULL pointer dereference at virtual address
+> > 0000000000000000
+> > Mem abort info:
+> > =C2=A0 ESR =3D 0x0000000096000004
+> > =C2=A0 EC =3D 0x25: DABT (current EL), IL =3D 32 bits
+> > =C2=A0 SET =3D 0, FnV =3D 0
+> > =C2=A0 EA =3D 0, S1PTW =3D 0
+> > =C2=A0 FSC =3D 0x04: level 0 translation fault
+> > Data abort info:
+> > =C2=A0 ISV =3D 0, ISS =3D 0x00000004, ISS2 =3D 0x00000000
+> > =C2=A0 CM =3D 0, WnR =3D 0, TnD =3D 0, TagAccess =3D 0
+> > =C2=A0 GCS =3D 0, Overlay =3D 0, DirtyBit =3D 0, Xs =3D 0
+> > user pgtable: 4k pages, 48-bit VAs, pgdp=3D0000000101380000
+> > [0000000000000000] pgd=3D0000000000000000, p4d=3D0000000000000000
+> > Internal error: Oops: 0000000096000004 [#1]=C2=A0 SMP
+> > Modules linked in: btusb btrtl mt6315_regulator btintel
+> > mtk_vcodec_dec
+> > =C2=A0 btmtk v4l2_vp9 btbcm mtk_vcodec_enc v4l2_h264 mtk_vcodec_dbgfs
+> > =C2=A0 bluetooth mtk_jpeg ecdh_generic mtk_vcodec_common mtk_jpeg_enc_h=
+w
+> > =C2=A0 mtk_jpeg_dec_hw ecc v4l2_mem2mem rfkill videobuf2_dma_contig
+> > =C2=A0 videobuf2_memops videobuf2_v4l2 videodev videobuf2_common mc
+> > =C2=A0 mt6360_charger mcp251xfd it5205 goodix_ts can_dev panfrost
+> > =C2=A0 drm_shmem_helper gpu_sched lvts_thermal mtk_svs mtk_adsp_mailbox
+> > =C2=A0 snd_soc_dmic mtk_scp mtk_rpmsg mtk_scp_ipi mtk_cmdq_mailbox
+> > =C2=A0 mediatek_cpufreq_hw spmi_mtk_pmif fuse dm_mod ip_tables x_tables
+> > =C2=A0 ipv6 mediatek_drm tcpci_mt6360 drm_display_helper drm_client_lib
+> > =C2=A0 tcpci drm_dma_helper drm_kms_helper tcpm drm mtk_mutex mtk_mmsys
+> > =C2=A0 typec rtc_mt6397 mtk_cmdq_helper phy_mtk_pcie pcie_mediatek_gen3
+> > =C2=A0 dwmac_mediatek stmmac_platform stmmac pwm_mtk_disp pcs_xpcs
+> > pwm_bl
+> > =C2=A0 backlight
+> > CPU: 5 UID: 0 PID: 12 Comm: kworker/u32:0 Not tainted 6.14.0-next-
+> > 20250326 #4 PREEMPT
+> > Hardware name: MediaTek Genio 1200 EVK-P1V2-EMMC (DT)
+> > Workqueue: events_unbound deferred_probe_work_func
+> > pstate: 80400009 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=3D--)
+> > pc : mtk_iommu_device_group+0x2c/0xe0
+> > lr : __iommu_probe_device+0x130/0x490
+> > sp : ffff8000827b3970
+> > x29: ffff8000827b3970 x28: ffff0000c0028000 x27: ffff80008164f2b8
+> > x26: ffff0000cbc47130 x25: ffff80008096a9f0 x24: ffff80008164f5a8
+> > x23: ffff800082684b60 x22: ffff8000827b3a80 x21: ffff0000cbc47130
+> > x20: ffffffffffffffed x19: ffff0000c117c010 x18: 0000000000000000
+> > x17: 6f702d616d642d64 x16: 6574636972747365 x15: 0000000000000002
+> > x14: 0000000000000000 x13: 0000000000128d55 x12: 6f632d616d642e30
+> > x11: 0000000000000100 x10: 0000000000000001 x9 : 0000000000000220
+> > x8 : 0101010101010101 x7 : ffff0000c117c010 x6 : 306c766f2c727461
+> > x5 : 0000000000000000 x4 : ffff0000c10a2de8 x3 : ffff0000c10a2e70
+> > x2 : ffff0000c01a4600 x1 : 0000000000000000 x0 : ffff0000c65470c0
+> > Call trace:
+> > =C2=A0mtk_iommu_device_group+0x2c/0xe0 (P)
+> > =C2=A0__iommu_probe_device+0x130/0x490
+> > =C2=A0probe_iommu_group+0x3c/0x70
+> > =C2=A0bus_for_each_dev+0x7c/0xe0
+> > =C2=A0iommu_device_register+0xd8/0x22c
+> > =C2=A0mtk_iommu_probe+0x270/0x53c
+> > =C2=A0platform_probe+0x68/0xd8
+> > =C2=A0really_probe+0xbc/0x2c0
+> > =C2=A0__driver_probe_device+0x78/0x120
+> > =C2=A0driver_probe_device+0x3c/0x154
+> > =C2=A0__device_attach_driver+0xb8/0x140
+> > =C2=A0bus_for_each_drv+0x88/0xe8
+> > =C2=A0__device_attach+0xa0/0x190
+> > =C2=A0device_initial_probe+0x14/0x20
+> > =C2=A0bus_probe_device+0xb4/0xc0
+> > =C2=A0deferred_probe_work_func+0x90/0xc8
+> > =C2=A0process_one_work+0x148/0x284
+> > =C2=A0worker_thread+0x2cc/0x3cc
+> > =C2=A0kthread+0x12c/0x204
+> > =C2=A0ret_from_fork+0x10/0x20
+> > Code: b4000500 f9401c01 92800254 f9409821 (f9400035)
+> > ---[ end trace 0000000000000000 ]---
+> > ```
+> >=20
+> > I've tested this patch on Mediatek Genio 510-EVK and 1200-EVK
+> > boards
+> > with a kernel based on linux-next (tag: next-20250327).
+> > ---
+> > =C2=A0drivers/iommu/mtk_iommu.c | 25 +++++++++++++------------
+> > =C2=A01 file changed, 13 insertions(+), 12 deletions(-)
+> >=20
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index
+> > 034b0e670384a24df10130cbbff95ce8e0bc092d..14adb96a37bb0d84b631188e4
+> > 8d
+> > d8b936821a717 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -1372,15 +1372,6 @@ static int mtk_iommu_probe(struct
+> > platform_device *pdev)
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 platform_set_drvdata(pdev, d=
+ata);
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mutex_init(&data->mutex);
+> >=20
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D iommu_device_sysfs_add(&d=
+ata->iommu, dev, NULL,
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "mtk-iom=
+mu.%pa", &ioaddr);
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 goto out_link_remove;
+> > -
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D iommu_device_register(&da=
+ta->iommu, &mtk_iommu_ops,
+> > dev);
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 goto out_sysfs_remove;
+> > -
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (MTK_IOMMU_HAS_FLAG(data-=
+>plat_data, SHARE_PGTABLE)) {
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 list_add_tail(&data->list, data->plat_data-
+> > >hw_list);
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 data->hw_list =3D data->plat_data->hw_list;
+> > @@ -1390,18 +1381,28 @@ static int mtk_iommu_probe(struct
+> > platform_device *pdev)
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 data->hw_list =3D &data->hw_list_head;
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+> >=20
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D iommu_device_sysfs_add(&d=
+ata->iommu, dev, NULL,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "mtk-iom=
+mu.%pa", &ioaddr);
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 goto out_list_del;
+> > +
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D iommu_device_register(&da=
+ta->iommu, &mtk_iommu_ops,
+> > dev);
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 goto out_link_remove;
+>=20
+>=20
+> Typo here. Use out_sysfs_remove instead and remove out_link_remove
+> label. Then,
+>=20
+> Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+>=20
+> Thanks very much for this patch.
+>=20
+thanks for the review and detecting this issue in the patch.
+I'll send a v2 to fix it.
 
-Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
-
-> ---
->  .../admin-guide/kernel-parameters.txt         |  3 +
->  arch/arm64/Kconfig                            | 19 +++++
->  arch/arm64/include/asm/cpucaps.h              |  2 +
->  arch/arm64/include/asm/cpufeature.h           |  5 ++
->  arch/arm64/kernel/cpufeature.c                | 71 +++++++++++++++++++
->  arch/arm64/kernel/pi/idreg-override.c         |  2 +
->  arch/arm64/tools/cpucaps                      |  1 +
->  7 files changed, 103 insertions(+)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index fb8752b42ec8..3e4cc917a07e 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -453,6 +453,9 @@
->  	arm64.no32bit_el0 [ARM64] Unconditionally disable the execution of
->  			32 bit applications.
->  
-> +	arm64.nobbml2	[ARM64] Unconditionally disable Break-Before-Make Level
-> +			2 support
-> +
->  	arm64.nobti	[ARM64] Unconditionally disable Branch Target
->  			Identification support
->  
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 940343beb3d4..db63e0d83492 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -2057,6 +2057,25 @@ config ARM64_TLB_RANGE
->  	  The feature introduces new assembly instructions, and they were
->  	  support when binutils >= 2.30.
->  
-> +config ARM64_BBML2_NOABORT
-> +	bool "Enable support for Break-Before-Make Level 2 detection and usage"
-> +	default y
-> +	help
-> +	  FEAT_BBM provides detection of support levels for break-before-make
-> +	  sequences. If BBM level 2 is supported, some TLB maintenance requirements
-> +	  can be relaxed to improve performance. We additonally require the
-> +	  property that the implementation cannot ever raise TLB Conflict Aborts.
-> +	  Selecting N causes the kernel to fallback to BBM level 0 behaviour
-> +	  even if the system supports BBM level 2.
-> +
-> +	  To enable detection of BBML2 support, and to make use of it, say Y.
-> +
-> +	  Detection of and support for BBM level 2 can optionally be overridden
-> +	  at runtime via the use of the arm64.nobbml2 kernel commandline
-> +	  parameter. If your system claims support for BBML2, but is unstable
-> +	  with this option enabled, either say N or make use of the commandline
-> +	  parameter override to force BBML0.
-> +
->  endmenu # "ARMv8.4 architectural features"
->  
->  menu "ARMv8.5 architectural features"
-> diff --git a/arch/arm64/include/asm/cpucaps.h b/arch/arm64/include/asm/cpucaps.h
-> index 0b5ca6e0eb09..2d6db33d4e45 100644
-> --- a/arch/arm64/include/asm/cpucaps.h
-> +++ b/arch/arm64/include/asm/cpucaps.h
-> @@ -23,6 +23,8 @@ cpucap_is_possible(const unsigned int cap)
->  		return IS_ENABLED(CONFIG_ARM64_PAN);
->  	case ARM64_HAS_EPAN:
->  		return IS_ENABLED(CONFIG_ARM64_EPAN);
-> +	case ARM64_HAS_BBML2_NOABORT:
-> +		return IS_ENABLED(CONFIG_ARM64_BBML2_NOABORT);
->  	case ARM64_SVE:
->  		return IS_ENABLED(CONFIG_ARM64_SVE);
->  	case ARM64_SME:
-> diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
-> index e0e4478f5fb5..108ef3fbbc00 100644
-> --- a/arch/arm64/include/asm/cpufeature.h
-> +++ b/arch/arm64/include/asm/cpufeature.h
-> @@ -866,6 +866,11 @@ static __always_inline bool system_supports_mpam_hcr(void)
->  	return alternative_has_cap_unlikely(ARM64_MPAM_HCR);
->  }
->  
-> +static inline bool system_supports_bbml2_noabort(void)
-> +{
-> +	return alternative_has_cap_unlikely(ARM64_HAS_BBML2_NOABORT);
-> +}
-> +
->  int do_emulate_mrs(struct pt_regs *regs, u32 sys_reg, u32 rt);
->  bool try_emulate_mrs(struct pt_regs *regs, u32 isn);
->  
-> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-> index d561cf3b8ac7..832b86fca542 100644
-> --- a/arch/arm64/kernel/cpufeature.c
-> +++ b/arch/arm64/kernel/cpufeature.c
-> @@ -2176,6 +2176,70 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
->  	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
->  }
->  
-> +static bool cpu_has_bbml2_noabort(unsigned int cpu_midr)
-> +{
-> +	/*
-> +	 * We want to allow usage of bbml2 in as wide a range of kernel contexts
-> +	 * as possible. This list is therefore an allow-list of known-good
-> +	 * implementations that both support bbml2 and additionally, fulfill the
-> +	 * extra constraint of never generating TLB conflict aborts when using
-> +	 * the relaxed bbml2 semantics (such aborts make use of bbml2 in certain
-> +	 * kernel contexts difficult to prove safe against recursive aborts).
-> +	 *
-> +	 * Note that implementations can only be considered "known-good" if their
-> +	 * implementors attest to the fact that the implementation never raises
-> +	 * TLBI conflict aborts for bbml2 mapping granularity changes.
-> +	 */
-> +	static const struct midr_range supports_bbml2_noabort_list[] = {
-> +		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
-> +		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
-> +		{}
-> +	};
-> +
-> +	return is_midr_in_range_list(cpu_midr, supports_bbml2_noabort_list);
-> +}
-> +
-> +static inline unsigned int cpu_read_midr(int cpu)
-> +{
-> +	WARN_ON_ONCE(!cpu_online(cpu));
-> +
-> +	return per_cpu(cpu_data, cpu).reg_midr;
-> +}
-> +
-> +static bool has_bbml2_noabort(const struct arm64_cpu_capabilities *caps, int scope)
-> +{
-> +	if (!IS_ENABLED(CONFIG_ARM64_BBML2_NOABORT))
-> +		return false;
-> +
-> +	if (scope & SCOPE_SYSTEM) {
-> +		int cpu;
-> +
-> +		/*
-> +		 * We are a boot CPU, and must verify that all enumerated boot
-> +		 * CPUs have MIDR values within our allowlist. Otherwise, we do
-> +		 * not allow the BBML2 feature to avoid potential faults when
-> +		 * the insufficient CPUs access memory regions using BBML2
-> +		 * semantics.
-> +		 */
-> +		for_each_online_cpu(cpu) {
-> +			if (!cpu_has_bbml2_noabort(cpu_read_midr(cpu)))
-> +				return false;
-> +		}
-> +	} else if (scope & SCOPE_LOCAL_CPU) {
-> +		/*
-> +		 * We are a hot-plugged CPU, so must only check our MIDR.
-> +		 * If we have the correct MIDR, but the kernel booted on an
-> +		 * insufficient CPU, we will not use BBML2 (this is safe). If
-> +		 * we have an incorrect MIDR, but the kernel booted on a
-> +		 * sufficient CPU, we will not bring up this CPU.
-> +		 */
-> +		if (!cpu_has_bbml2_noabort(read_cpuid_id()))
-> +			return false;
-> +	}
-> +
-> +	return has_cpuid_feature(caps, scope);
-> +}
-> +
->  #ifdef CONFIG_ARM64_PAN
->  static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
->  {
-> @@ -2926,6 +2990,13 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
->  		.matches = has_cpuid_feature,
->  		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
->  	},
-> +	{
-> +		.desc = "BBM Level 2 without conflict abort",
-> +		.capability = ARM64_HAS_BBML2_NOABORT,
-> +		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-> +		.matches = has_bbml2_noabort,
-> +		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, BBM, 2)
-> +	},
->  	{
->  		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
->  		.capability = ARM64_HAS_LPA2,
-> diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel/pi/idreg-override.c
-> index c6b185b885f7..803a0c99f7b4 100644
-> --- a/arch/arm64/kernel/pi/idreg-override.c
-> +++ b/arch/arm64/kernel/pi/idreg-override.c
-> @@ -102,6 +102,7 @@ static const struct ftr_set_desc mmfr2 __prel64_initconst = {
->  	.override	= &id_aa64mmfr2_override,
->  	.fields		= {
->  		FIELD("varange", ID_AA64MMFR2_EL1_VARange_SHIFT, mmfr2_varange_filter),
-> +		FIELD("bbm", ID_AA64MMFR2_EL1_BBM_SHIFT, NULL),
->  		{}
->  	},
->  };
-> @@ -246,6 +247,7 @@ static const struct {
->  	{ "rodata=off",			"arm64_sw.rodataoff=1" },
->  	{ "arm64.nolva",		"id_aa64mmfr2.varange=0" },
->  	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=1" },
-> +	{ "arm64.nobbml2",		"id_aa64mmfr2.bbm=0" },
->  };
->  
->  static int __init parse_hexdigit(const char *p, u64 *v)
-> diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
-> index 1e65f2fb45bd..b03a375e5507 100644
-> --- a/arch/arm64/tools/cpucaps
-> +++ b/arch/arm64/tools/cpucaps
-> @@ -14,6 +14,7 @@ HAS_ADDRESS_AUTH_ARCH_QARMA5
->  HAS_ADDRESS_AUTH_IMP_DEF
->  HAS_AMU_EXTN
->  HAS_ARMv8_4_TTL
-> +HAS_BBML2_NOABORT
->  HAS_CACHE_DIC
->  HAS_CACHE_IDC
->  HAS_CNP
+Regards,
+Louis-Alexis
+> > +
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (MTK_IOMMU_IS_TYPE(data->=
+plat_data, MTK_IOMMU_TYPE_MM))
+> > {
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 ret =3D component_master_add_with_match(dev,
+> > &mtk_iommu_com_ops, match);
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 if (ret)
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto out_li=
+st_del;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto out_de=
+vice_unregister;
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
+> >=20
+> > -out_list_del:
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 list_del(&data->list);
+> > +out_device_unregister:
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iommu_device_unregister(&dat=
+a->iommu);
+> > =C2=A0out_sysfs_remove:
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iommu_device_sysfs_remove(&d=
+ata->iommu);
+> > +out_list_del:
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 list_del(&data->list);
+> > =C2=A0out_link_remove:
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (MTK_IOMMU_IS_TYPE(data->=
+plat_data, MTK_IOMMU_TYPE_MM))
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 device_link_remove(data->smicomm_dev, dev);
+> >=20
+> > ---
+> > base-commit: bc960e3e32c8b940c10b14557271355f66ae4db1
+> > change-id: 20250327-fix-mtk-iommu-error-af6ec347d057
+> >=20
+> > Best regards,
+> > --
+> > Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+> >=20
 
