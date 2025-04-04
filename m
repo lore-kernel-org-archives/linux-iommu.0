@@ -1,57 +1,57 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0382F24886F
-	for <iommu@lists.linux.dev>; Fri,  4 Apr 2025 19:41:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E38B24889B
+	for <iommu@lists.linux.dev>; Fri,  4 Apr 2025 19:41:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743795687; cv=none; b=MlVhKpWfoKFg5Uei/tdVMLkoEpXTBzByy/W5v/IhoA8mmBFFij6vA0pKysgUu/U2Rai7ZwyICunDoOCdT6EePebwAg7b8EWp9SftauHvR0KTcnBKwLp5ToeGxYGNu+Sa0MZbw5vk3Nu90gTJaS8NznOEtyWQPoqe5myOQbqDvYw=
+	t=1743795689; cv=none; b=Hna4/6YToZ96PfgBQ7sHP3nxA7ifuuiDU5uZQPJWv4V8qtayPsdbnfD07JG+XK+hd1+Q0wmf1w5Cx3c6mX2l1mWfkLVapPFVVfKBuAMF4Bjd2bsDxYECBsAhQ9xml6pHSfN1QiHGNNQRjejcULjKl2GBeksd0NDO77Pu0QGtYNc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743795687; c=relaxed/simple;
-	bh=CJbM5ki6wbRFycki9+F8amVo8XEDR5j/tEEiEsSHYK4=;
+	s=arc-20240116; t=1743795689; c=relaxed/simple;
+	bh=oILWHlZoymAyC2X3yedwJsSZpaT6PkdFe55df8DN2A8=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=Q/1zpTE0JAqse2vkDiMI968Jn3r/p4fK0aPi+0kgTkoWILP+Ll/xTgOGSl7rEWqB3pHneFlW+D0tNwnKbDorrj23ApQTGoYsDqtXDX/NFxaPcfplNxnh1f4/gRkufIxzhDLeq58ZdmvLyfwMvJjP2gehjBGCqTZ8JVfp+lrZ2cU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SPJwVo9v; arc=none smtp.client-ip=209.85.216.74
+	 To:Cc:Content-Type; b=lL2xADxif2HfzeKz6pfOeAEY9/NRyC0WA4wkh4Ow4gAoxByUgFVqSEutvlFfsLa7o264dt5LqKGAoEM3AHlv1dMw1Fqrdo8gqCfMluW853zv4PNmiH324wLFGg4N2vow6kYSyegGFU25fzLSZZxvOWLPCr40QLPdXEVSYHFhmjo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SR0T+g1u; arc=none smtp.client-ip=209.85.214.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SPJwVo9v"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-30566e34290so2482429a91.3
-        for <iommu@lists.linux.dev>; Fri, 04 Apr 2025 12:41:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SR0T+g1u"
+Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-2240c997059so29575665ad.0
+        for <iommu@lists.linux.dev>; Fri, 04 Apr 2025 12:41:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1743795685; x=1744400485; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1743795687; x=1744400487; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=4PrXQXNJnenxPucuA/yaggd1GFmcPYwGnyvurjMeKTM=;
-        b=SPJwVo9vkVDqBFE52uSyKivncZja5HhLNvAz7GsNFc+uYY2bxFpbTQ4B8fk350MaxZ
-         fOZoM+MkL8FnHEDaamQ3I66nVorjwVm6nGyUIFHpGZk9sO+cfTtVgUw12Rr7rsiUkciO
-         1BqjH/k5aRqJoyfqbUsiNzEsr6A1I7FSTBRR3+Sl6/JqM+0+VTO2UoO/isSoi7th7aFg
-         nbhnY/AOK+xSTU4+4IWu3I5/erQHk4VWI+M8WEqmn8OCic69V4SCZJ9bLPFjg3FXivuC
-         AlEnkDmHVZRZ0QQ69mbAcuGXWGkVjvx5sj9pp5uKcSQzH6vW03d0lo7sHFqOeMqmAfOi
-         ZHPg==
+        bh=tpUGu5WACeQY+DXaIgbcGZ/fnmY4/g2Rj2L2cuTjvC4=;
+        b=SR0T+g1u9W5zj/v7H5QzKD5dA+Z+A6yKr3ZVmMDV/SQtcM4HORFM3YnwUfcNSqcxs6
+         ti01FGLZ/xV+Hjk8kSvsXhuV3QnI4XfRdXqSuHSPpr5t/5ZLoUXtwXo5hCqT4TKbi4bp
+         NgxZcR4SoJim8TKlY3kVZWCy14ixGcnkBLnBYd/iyjTECpag85IqVAiRhvLnTwVBxVdt
+         N/BZbFWm3GH9CKqODhoMGbLUhigfT2yJw4N0kY8BZF13SCQX/5Wvf5OnGUc6rM64twwF
+         n1SlibfW5FJnoxhYPpjzeG7IUypf8/YnXyMfwIqBJeGqduLRfHPGQFZng1q4IDryCVQX
+         6fNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743795685; x=1744400485;
+        d=1e100.net; s=20230601; t=1743795687; x=1744400487;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4PrXQXNJnenxPucuA/yaggd1GFmcPYwGnyvurjMeKTM=;
-        b=wbaMH7qafH1KMLedA+Ttcv7VADgzVFeCpabi2fLVaLF1U9XCpEgFL0ZOwmOfdBOI/h
-         iOuJzx02RLW8p4LkOfD3xyxM5Kc4CVtUtmeYzGgBLhpHnp2qlxrVC7r5/B00lI2MFF2A
-         dQnxRTLIw2krZqjkDeMtBUCHPEGBg+rxtMQsxNr4MLEB/d5v5SKvAFyf/gP9laB5K0fB
-         8iFHgDWxj1DmUZYU7497uQhJqmdr+TeLR0vLeHeXz3ozKkafMF+FEtRg7gaLYL15JbT0
-         9TWQ2D1gwRQC98c2KsGn3Oe1pFimKhG+XzJH1HOKxyDBqhCdtSRIsWXnedXlYh79r1Ii
-         sqBw==
-X-Forwarded-Encrypted: i=1; AJvYcCX+0ITBCItmR6YddSrxQZxXQloPz5oyp8DfbXAyiX1dHlf2pKm/g1/HO/NPVqQzjjQGEnCSWQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwR6l3XZKi6/Kw1oK8j4hGsXlR7lVqrT5my4TaCQ3A0Oh+g1+QJ
-	gqxWHIzMiKjMTjS5u5zP11qBGS48siRQ8odv0PA66Xr+WGjMAcwGiUhdKiimNXJwT+e9pN1Lfcc
-	DXQ==
-X-Google-Smtp-Source: AGHT+IHQ6ptEcPjIqq3mLe7k3SWbX89UMoO78N6d4VQjJKucTdQNZ9R4r8s6zKowOLbjvdi2tyWJH46WVgk=
-X-Received: from pjbsd12.prod.google.com ([2002:a17:90b:514c:b0:2ff:6e58:89f7])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:4d0b:b0:2ff:6bd0:ff26
- with SMTP id 98e67ed59e1d1-306af7b7889mr596948a91.34.1743795685197; Fri, 04
- Apr 2025 12:41:25 -0700 (PDT)
+        bh=tpUGu5WACeQY+DXaIgbcGZ/fnmY4/g2Rj2L2cuTjvC4=;
+        b=wqIuZXRlKhWLa86+0Kv4QbYKpdhKtTgxXK0aUAaiRuk65GWN0myLq4XXrjlfOLYY2R
+         ehTeB9ygUMFJXQEYTBGkyqt8bsA9gId2WwXu9lPJc6pDPSqIOUUmaNFEXZNJ+BBecmGe
+         z86p/xdp08O/LyBQR2it75hbzEJ2sQdWfv3AMqI7G45rGIV8BoqyHu1zsh5MUQDMV2JF
+         i+cLXHHGywtq+3hWTkPe5qOL/8p9da6igfi3T4TQYJ2V0uy4NZdJvI7gBK+cxrsqeh9u
+         C6I3aTTj44ks7fHUMqVLvX7fc44/lRDCLrhOynLX5vRZOIun49rxkVA8HHvEWleH2xPQ
+         2aVw==
+X-Forwarded-Encrypted: i=1; AJvYcCVeChPF0kcolS3jcI0UZNnOplMNXd6cpk3mcm15j8/Hx3cuWpsKDBhoM3cPclJJ6JZY+JjjMw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxufR6gE1taIu4+ebpyavFWMcJihmBXAuF6ttnIySOYSDzDWNS0
+	Y1l99+pZrh6uZqgnnhKv6ZfdNR4Gz0MLZDDaMeI3y4uZ4RAUYtdTJ0HgZEo6xKwnIpVsJlKba/u
+	ImQ==
+X-Google-Smtp-Source: AGHT+IGWIJW5oXdpll4D4kyUc6CqYVXv1H9LdsgiZOQiFY8S/63oNQDk+1VKkmtwRbHnjm+dtN9Wq0qn+Vk=
+X-Received: from plbkx14.prod.google.com ([2002:a17:902:f94e:b0:223:f59e:ae50])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:d589:b0:224:76f:9e44
+ with SMTP id d9443c01a7336-22a954f9e33mr7330205ad.8.1743795686999; Fri, 04
+ Apr 2025 12:41:26 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Fri,  4 Apr 2025 12:39:12 -0700
+Date: Fri,  4 Apr 2025 12:39:13 -0700
 In-Reply-To: <20250404193923.1413163-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,8 +61,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250404193923.1413163-1-seanjc@google.com>
 X-Mailer: git-send-email 2.49.0.504.g3bcea36a83-goog
-Message-ID: <20250404193923.1413163-58-seanjc@google.com>
-Subject: [PATCH 57/67] KVM: x86: Decouple device assignment from IRQ bypass
+Message-ID: <20250404193923.1413163-59-seanjc@google.com>
+Subject: [PATCH 58/67] KVM: VMX: WARN if VT-d Posted IRQs aren't possible when
+ starting IRQ bypass
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
@@ -72,165 +73,29 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Use a dedicated counter to track the number of IRQs that can utilize IRQ
-bypass instead of piggybacking the assigned device count.  As evidenced by
-commit 2edd9cb79fb3 ("kvm: detect assigned device via irqbypass manager"),
-it's possible for a device to be able to post IRQs to a vCPU without said
-device being assigned to a VM.
-
-Leave the calls to kvm_arch_{start,end}_assignment() alone for the moment
-to avoid regressing the MMIO stale data mitigation.  KVM is abusing the
-assigned device count when applying mmio_stale_data_clear, and it's not at
-all clear if vDPA devices rely on this behavior.  This will hopefully be
-cleaned up in the future, as the number of assigned devices is a terrible
-heuristic for detecting if a VM has access to host MMIO.
+WARN if KVM attempts to "start" IRQ bypass when VT-d Posted IRQs are
+disabled, to make it obvious that the logic is a sanity check, and so that
+a bug related to nr_possible_bypass_irqs is more like to cause noisy
+failures, e.g. so that KVM doesn't silently fail to wake blocking vCPUs.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/include/asm/kvm-x86-ops.h |  2 +-
- arch/x86/include/asm/kvm_host.h    |  3 ++-
- arch/x86/kvm/vmx/main.c            |  2 +-
- arch/x86/kvm/vmx/posted_intr.c     | 16 ++++++++++------
- arch/x86/kvm/vmx/posted_intr.h     |  2 +-
- arch/x86/kvm/x86.c                 | 12 +++++++++---
- 6 files changed, 24 insertions(+), 13 deletions(-)
+ arch/x86/kvm/vmx/posted_intr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index 823c0434bbad..435b9b76e464 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -111,7 +111,7 @@ KVM_X86_OP_OPTIONAL(update_cpu_dirty_logging)
- KVM_X86_OP_OPTIONAL(vcpu_blocking)
- KVM_X86_OP_OPTIONAL(vcpu_unblocking)
- KVM_X86_OP_OPTIONAL(pi_update_irte)
--KVM_X86_OP_OPTIONAL(pi_start_assignment)
-+KVM_X86_OP_OPTIONAL(pi_start_bypass)
- KVM_X86_OP_OPTIONAL(apicv_pre_state_restore)
- KVM_X86_OP_OPTIONAL(apicv_post_state_restore)
- KVM_X86_OP_OPTIONAL_RET0(dy_apicv_has_pending_interrupt)
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index cb98d8d3c6c2..88b842cd8959 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1372,6 +1372,7 @@ struct kvm_arch {
- 	atomic_t noncoherent_dma_count;
- #define __KVM_HAVE_ARCH_ASSIGNED_DEVICE
- 	atomic_t assigned_device_count;
-+	unsigned long nr_possible_bypass_irqs;
- 	struct kvm_pic *vpic;
- 	struct kvm_ioapic *vioapic;
- 	struct kvm_pit *vpit;
-@@ -1840,7 +1841,7 @@ struct kvm_x86_ops {
- 			      unsigned int host_irq, uint32_t guest_irq,
- 			      struct kvm_kernel_irq_routing_entry *new,
- 			      struct kvm_vcpu *vcpu, u32 vector);
--	void (*pi_start_assignment)(struct kvm *kvm);
-+	void (*pi_start_bypass)(struct kvm *kvm);
- 	void (*apicv_pre_state_restore)(struct kvm_vcpu *vcpu);
- 	void (*apicv_post_state_restore)(struct kvm_vcpu *vcpu);
- 	bool (*dy_apicv_has_pending_interrupt)(struct kvm_vcpu *vcpu);
-diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index 43ee9ed11291..95371f26ce20 100644
---- a/arch/x86/kvm/vmx/main.c
-+++ b/arch/x86/kvm/vmx/main.c
-@@ -133,7 +133,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
- 	.nested_ops = &vmx_nested_ops,
- 
- 	.pi_update_irte = vmx_pi_update_irte,
--	.pi_start_assignment = vmx_pi_start_assignment,
-+	.pi_start_bypass = vmx_pi_start_bypass,
- 
- #ifdef CONFIG_X86_64
- 	.set_hv_timer = vmx_set_hv_timer,
 diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
-index 2958b631fde8..457a5b21c9d3 100644
+index 457a5b21c9d3..29804dfa826c 100644
 --- a/arch/x86/kvm/vmx/posted_intr.c
 +++ b/arch/x86/kvm/vmx/posted_intr.c
-@@ -132,8 +132,13 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
- 
- static bool vmx_can_use_vtd_pi(struct kvm *kvm)
- {
-+	/*
-+	 * Note, reading the number of possible bypass IRQs can race with a
-+	 * bypass IRQ being attached to the VM.  vmx_pi_start_bypass() ensures
-+	 * blockng vCPUs will see an elevated count or get KVM_REQ_UNBLOCK.
-+	 */
- 	return irqchip_in_kernel(kvm) && kvm_arch_has_irq_bypass() &&
--	       kvm_arch_has_assigned_device(kvm);
-+	       READ_ONCE(kvm->arch.nr_possible_bypass_irqs);
- }
- 
- /*
-@@ -251,12 +256,11 @@ bool pi_has_pending_interrupt(struct kvm_vcpu *vcpu)
- 
- 
- /*
-- * Bail out of the block loop if the VM has an assigned
-- * device, but the blocking vCPU didn't reconfigure the
-- * PI.NV to the wakeup vector, i.e. the assigned device
-- * came along after the initial check in vmx_vcpu_pi_put().
-+ * Kick all vCPUs when the first possible bypass IRQ is attached to a VM, as
-+ * blocking vCPUs may scheduled out without reconfiguring PID.NV to the wakeup
-+ * vector, i.e. if the bypass IRQ came along after vmx_vcpu_pi_put().
+@@ -262,7 +262,7 @@ bool pi_has_pending_interrupt(struct kvm_vcpu *vcpu)
   */
--void vmx_pi_start_assignment(struct kvm *kvm)
-+void vmx_pi_start_bypass(struct kvm *kvm)
+ void vmx_pi_start_bypass(struct kvm *kvm)
  {
- 	if (!kvm_arch_has_irq_bypass())
+-	if (!kvm_arch_has_irq_bypass())
++	if (WARN_ON_ONCE(!vmx_can_use_vtd_pi(kvm)))
  		return;
-diff --git a/arch/x86/kvm/vmx/posted_intr.h b/arch/x86/kvm/vmx/posted_intr.h
-index ee3e19e976ac..c3f12a35a7c1 100644
---- a/arch/x86/kvm/vmx/posted_intr.h
-+++ b/arch/x86/kvm/vmx/posted_intr.h
-@@ -17,7 +17,7 @@ int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
- 		       unsigned int host_irq, uint32_t guest_irq,
- 		       struct kvm_kernel_irq_routing_entry *new,
- 		       struct kvm_vcpu *vcpu, u32 vector);
--void vmx_pi_start_assignment(struct kvm *kvm);
-+void vmx_pi_start_bypass(struct kvm *kvm);
  
- static inline int pi_find_highest_vector(struct pi_desc *pi_desc)
- {
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 49c3360eb4e8..fec43d6a2b63 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -13511,8 +13511,7 @@ bool kvm_arch_can_dequeue_async_page_present(struct kvm_vcpu *vcpu)
- 
- void kvm_arch_start_assignment(struct kvm *kvm)
- {
--	if (atomic_inc_return(&kvm->arch.assigned_device_count) == 1)
--		kvm_x86_call(pi_start_assignment)(kvm);
-+	atomic_inc(&kvm->arch.assigned_device_count);
- }
- EXPORT_SYMBOL_GPL(kvm_arch_start_assignment);
- 
-@@ -13630,10 +13629,15 @@ int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
- 	spin_lock_irq(&kvm->irqfds.lock);
- 	irqfd->producer = prod;
- 
-+	if (!kvm->arch.nr_possible_bypass_irqs++)
-+		kvm_x86_call(pi_start_bypass)(kvm);
-+
- 	if (irqfd->irq_entry.type == KVM_IRQ_ROUTING_MSI) {
- 		ret = kvm_pi_update_irte(irqfd, NULL, &irqfd->irq_entry);
--		if (ret)
-+		if (ret) {
-+			kvm->arch.nr_possible_bypass_irqs--;
- 			kvm_arch_end_assignment(irqfd->kvm);
-+		}
- 	}
- 	spin_unlock_irq(&kvm->irqfds.lock);
- 
-@@ -13666,6 +13670,8 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
- 	}
- 	irqfd->producer = NULL;
- 
-+	kvm->arch.nr_possible_bypass_irqs--;
-+
- 	spin_unlock_irq(&kvm->irqfds.lock);
- 
- 
+ 	kvm_make_all_cpus_request(kvm, KVM_REQ_UNBLOCK);
 -- 
 2.49.0.504.g3bcea36a83-goog
 
