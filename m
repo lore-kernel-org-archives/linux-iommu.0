@@ -1,57 +1,57 @@
 Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28DAD23CEF9
-	for <iommu@lists.linux.dev>; Fri,  4 Apr 2025 19:41:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3D3823E324
+	for <iommu@lists.linux.dev>; Fri,  4 Apr 2025 19:41:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743795672; cv=none; b=qxAUZMHKg8Z5tHOzTPgjGSOM1qfyH2YtG3JoDBk/+anMUNJKrNw+Znd9njzE356UFMuVChPfV2DlRNCYfDsVQyASDLcCqLmtfjdFqXsKNf7miWyhofRuZKcYfop0N0c7jXvMkMardzLqohYHMyLR8FSpNEtfj6pnEbTknFFGUeU=
+	t=1743795673; cv=none; b=OOSwjBRBJogbXxjnYAIKfmrJCgq6cXl0aP+ijFnjdd0H4aQY7QNT+wSKCEuC3u7HZ9jwvdkp8U1mXLQWmvT9Y4/xVNRZ29jrWEA9TYzUHWcm8KVbN+Kh6P8LwA/a6vVLSl4kWleNYJ+jl6CxjzSZCajSRUYRdUfhwHK7iltaz2A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743795672; c=relaxed/simple;
-	bh=Jfmk9VzNRAADpmMGwdwa2xyHxXIJHx3CDbGZTsxqH1I=;
+	s=arc-20240116; t=1743795673; c=relaxed/simple;
+	bh=KYPkJmO2WKGa6Hqkv2jcYDUkv0LZapz25ye+QSx983M=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=kieJefsDzMA6cOlK3BiPXXgP8YlDKoX9vn4NtgxCYCSWPs7v8pJywdlZhXlMCA6xEGihs+AQttt6ghZ7syRWosPuZ4vvowdvw263Y1zGvd38VD41hA1qDNYnqYyZO9H5MDfq0VoTAUng826AgYj9GyaM/iyzwV2M6/laV30IaEw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qcVnjC0b; arc=none smtp.client-ip=209.85.210.201
+	 To:Cc:Content-Type; b=PZl20tAQJXfAtMWMCUcGK0jzFpq/r2rWKKnvkAdliOv40JyY7CyDDD9zqEFeqPNYgwQlhJakE4/zfR2y91uKE4WKGEk11PgYHjnT0cLK9B0JbZ4Beyebm0JO+ptEHT09inevHvjWGSJ4mAgu0Be2OM7A9gHmyHZsZUbxAx74bNY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LjA7Tt9M; arc=none smtp.client-ip=209.85.210.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qcVnjC0b"
-Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-736abba8c5cso3047458b3a.2
-        for <iommu@lists.linux.dev>; Fri, 04 Apr 2025 12:41:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LjA7Tt9M"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-7394792f83cso1891397b3a.3
+        for <iommu@lists.linux.dev>; Fri, 04 Apr 2025 12:41:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1743795670; x=1744400470; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1743795671; x=1744400471; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=8P0F5+eRvzI1lxgpOCwvPttxPqLphUaIWfDndZq8iLM=;
-        b=qcVnjC0beLkXeoUxeD0Ab3tb6WRzBn1jSTHjA7GE8G+g4gsJtgmy63iOG61nj4WK00
-         k5ieOOjgdAD9FHBKNe0Hjp8P3US0pujmc6B9423Ato1c4tsRIxlOlahLSXeocnvCj4YA
-         WpxBNZxOAQeewty6TEknU20ZeqK+/0qcn7CeVWidG2i6318iCD9VF82W47tRHhjRj76z
-         VLJLYZG1quJJoaaYTDmTUa5zpbch+sYmPZMhkjeMcSVIoRVKESMgQ2O01jyeIg/13OfF
-         BZPlaCYN1SFKDkPKIvlKrrPYdli7CedF9Wvz/OwMa1mnNrjqAStZy9dc80nxgR924NVE
-         RmCg==
+        bh=BuUmn/v/nxN4sDhjuaKZdNs4Kj9VqwHUaANP0XC6c7s=;
+        b=LjA7Tt9METUdL3BXkBW1VtUxD3Kn90K15x48fjnf/o1duK+D1mGNjmpwEajqz74kjx
+         1+DsonzDoBQ8LkOMcmXgc9OcynMbl1omSIR7sg3I+xo4tfyfS8MLSt/zRsXLwwG72f2L
+         2y0ezBOYJyw7Ch+4yTMntH8rxxtnQYuh5Pa0YbyzF+vs0lxxOy/UhdM6+qETZp1PsVsn
+         lhfHcTWhQhJuQcgyzBSlVivmerO/SMbiqUzAmlhYudmLQQlMVfz4Fox723Mk9Lk6hgT0
+         295S5tiVU46Pd/ExVaPfeuPot+IAPKParqZKY4AyjIuELlCfHmeATcEt7XfEy2uNdKHP
+         Hx/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743795670; x=1744400470;
+        d=1e100.net; s=20230601; t=1743795671; x=1744400471;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=8P0F5+eRvzI1lxgpOCwvPttxPqLphUaIWfDndZq8iLM=;
-        b=DHcCpHmyadjZvsYJmP5VXkbOJ0iMCeqR1Dx0/Dyf6En+WagOEZkM5SO+ORJSc2N/R9
-         4BAEfFBLGDvQ9AG3+HRLgSxLVVPehZOc3RH7iasl7Ri6N1L5lnS8mu7m0CY3NjD9YLQd
-         +fT99UKvc2+L0lSqeh2rJXN+ofUT/9+OA5X1RaXAOVnVlZLfLDN7TDuw1SzYHQnfpld2
-         zHKpq9rIW7gDcxb9DSprWM6iUDZeUSW1TIOpa7mp1utO5+TDV6as7eO0T/4WPia3mPZz
-         D9EAueu/9M+TTlpVFUaOzD8KH/jB/4l9EcaXLve/wan7P/6MTgKSOmEjwVWA9TvlWOp6
-         WRIw==
-X-Forwarded-Encrypted: i=1; AJvYcCXYqyg8gBaoWG1PHSXNKV+QetuLMmAf92KMkMDkMj+dp0KKeCeJispm/SRBxU6fJih2TG6VmQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxeWBFQcRAFFxctWWPpKkBuMpWie2Td85uTYfe9jmXee2/Cfi2c
-	6Uq8bRqcdcqYQFQsac0hDAqnLKtd6Xwv7EQWQEmQS4Cvq38jMeZ+59UNNqIvexb8Zf08gKg71sa
-	fjg==
-X-Google-Smtp-Source: AGHT+IFM3a33R0/JqO8ZtaGkbV0mf76n3eZC+Ea2CS6FZilzIUeDNAaxDWzQnYTCiWaEXSrdeYzp/CG211k=
-X-Received: from pfbho2.prod.google.com ([2002:a05:6a00:8802:b0:736:b315:f15e])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:aa7:8893:0:b0:736:4704:d5da
- with SMTP id d2e1a72fcca58-739e7161560mr4999839b3a.22.1743795669704; Fri, 04
- Apr 2025 12:41:09 -0700 (PDT)
+        bh=BuUmn/v/nxN4sDhjuaKZdNs4Kj9VqwHUaANP0XC6c7s=;
+        b=CaqiDsrR9pshQp8yx4FhL7pZZ3dD2O3ni2u+jjGbnyz63T9YHNgOlX8K2IcJNHrLhQ
+         9qffvaoEJz4yEUrGQEHiIW3wAcatxABUxvSelr/ybidZE4NN4NlKY3Q9UKgyxjQ05tgN
+         MfGB612ciIF6LFI2+0AYGE82TA+SohD/IKvT7uVsSBdr3meKeonXqGKzhPjx6/PA7ot/
+         ZXS3GZfpvsBE0Nc6t/hZHjTSQYQs+vrH0FX3cMhrJM6eCcxAB3FDpuZQiN99ABJCmBek
+         pCEb306BkIvxyS4cds0yvG1LzyTnXC6yLJdZdn8Buo7PlGr70A3Ua0quCS0r1KrI6nw2
+         ASoA==
+X-Forwarded-Encrypted: i=1; AJvYcCUhR8Aw+kJ5nd64vPnErZ0nw0Vhaxmg+BB5iYL0gIOeVpkehp6j0kJll6N911/7hJp++Dm1ow==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzJQPVB79kJNgmgHMBHEhs0EEEfyt8f78OaN54+ka6Sn3MkeLvS
+	Hl6vtLJk3VAd4VQnxFZog2A+GGtDrgfpMzh3arygSQ8d/qcMCzMFqvgtj4C6E3VtDNfpmdndXhp
+	2Jw==
+X-Google-Smtp-Source: AGHT+IGn6VyFDYgNExRPxop+TDl4ttE1iIR8bH26Vp9Pjy1Orp1wUriDPA6oU50ESKKN1WjXv/GYXHS2yHo=
+X-Received: from pfbjw34.prod.google.com ([2002:a05:6a00:92a2:b0:730:5761:84af])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:4653:b0:736:a540:c9ad
+ with SMTP id d2e1a72fcca58-73b6b8f82e9mr711650b3a.20.1743795671518; Fri, 04
+ Apr 2025 12:41:11 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Fri,  4 Apr 2025 12:39:03 -0700
+Date: Fri,  4 Apr 2025 12:39:04 -0700
 In-Reply-To: <20250404193923.1413163-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,9 +61,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250404193923.1413163-1-seanjc@google.com>
 X-Mailer: git-send-email 2.49.0.504.g3bcea36a83-goog
-Message-ID: <20250404193923.1413163-49-seanjc@google.com>
-Subject: [PATCH 48/67] KVM: SVM: Don't check for assigned device(s) when
- updating affinity
+Message-ID: <20250404193923.1413163-50-seanjc@google.com>
+Subject: [PATCH 49/67] KVM: SVM: Don't check for assigned device(s) when
+ activating AVIC
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
@@ -73,9 +73,11 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Don't bother checking if a VM has an assigned device when updating AVIC
-vCPU affinity, querying ir_list is just as cheap and nothing prevents
-racing with changes in device assignment.
+Don't short-circuit IRTE updating when (de)activating AVIC based on the
+VM having assigned devices, as nothing prevents AVIC (de)activation from
+racing with device (de)assignment.  And from a performance perspective,
+bailing early when there is no assigned device doesn't add much, as
+ir_list_lock will never be contended if there's no assigned device.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
@@ -83,12 +85,12 @@ Signed-off-by: Sean Christopherson <seanjc@google.com>
  1 file changed, 3 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 04bc1aa88dcc..fc06bb9cad88 100644
+index fc06bb9cad88..620772e07993 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -857,9 +857,6 @@ static inline int avic_update_iommu_vcpu_affinity(struct kvm_vcpu *vcpu, int cpu
- 
- 	lockdep_assert_held(&svm->ir_list_lock);
+@@ -741,9 +741,6 @@ static int avic_set_pi_irte_mode(struct kvm_vcpu *vcpu, bool activate)
+ 	struct amd_svm_iommu_ir *ir;
+ 	struct vcpu_svm *svm = to_svm(vcpu);
  
 -	if (!kvm_arch_has_assigned_device(vcpu->kvm))
 -		return 0;
