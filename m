@@ -1,57 +1,57 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 381DF221719
-	for <iommu@lists.linux.dev>; Fri,  4 Apr 2025 19:40:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD38122D799
+	for <iommu@lists.linux.dev>; Fri,  4 Apr 2025 19:40:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743795643; cv=none; b=U1GMC60nX1cuV2JHIksoopNMMUtPn6kDd2Kas38ck1C7FUYdXNDflw9A70t3fKWKXgexZ0YhTH+ST+V2NXUrRCyNEr4HG432BzrqApbEH2WRGSUr2/ei/wXIVxsK4iVTWo65FTy/Yact+km+M84YDi6P2SUOFUwiC5Hxc5Q3Vx0=
+	t=1743795644; cv=none; b=gBUKJ1AP4XVQKgff8HsITZMnSiELbmfmvMpkxaJ+vRm+5gPieH9Jg3aYTDX10BeNZi9cjmMJ2uCPefvQttvEWg+HoKrvb7dpdia1BpBUtRvK1aFP9BExDT94g7K6K0XvUGQt83r6HjcL+zo7e0CKaOOVnYhc5inprMN48TYkXU4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743795643; c=relaxed/simple;
-	bh=E1NTSYzgy3mSFQ63wZRuWK8nkdF2D1eAwMnNqU4u4CA=;
+	s=arc-20240116; t=1743795644; c=relaxed/simple;
+	bh=NSXiAizTL3IE0tHV1Xvoqym6aO30iQa3+NNj5eRfrOk=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=LY5azeVk5dUt50CMlTRlCX+dNDEzQ/OBV8e2WjuymcGQdfq8JmGfNVp93mc8BiDhCnUr7ILFlMA71cBHKREfZUpoQ6sw0v33QpGOtv2TmAYijSp/Oh2lxBCFzKRCQBj1dNsyEr0J/JN9Fh6MjCi6zT2tfsfqM9gQVUJhnC8Z88I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uTu+2/mJ; arc=none smtp.client-ip=209.85.216.74
+	 To:Cc:Content-Type; b=ZXrv2zyQLzkqMSULELhjLENL2MTEafKIXwefwLCaeX7dw4u3ZzlDvuExdKXAIF4FflQYPJq9qzQHdlFdORu3cjZSeVjEKQPXaJ5RGCp1eGBrI0lQPAnwH5pbvzfamC6OoJAmP3eFPNWtgDJE/7dcVfMyRg3AVTf5gyfZ0HXhRww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=2KLqC8rx; arc=none smtp.client-ip=209.85.210.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uTu+2/mJ"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-2ff52e1c56fso3249979a91.2
-        for <iommu@lists.linux.dev>; Fri, 04 Apr 2025 12:40:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="2KLqC8rx"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-739764217ecso2160748b3a.0
+        for <iommu@lists.linux.dev>; Fri, 04 Apr 2025 12:40:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1743795640; x=1744400440; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1743795642; x=1744400442; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=PKAF7zUVxQgoLKs13cGz/YuTc8j2bNHXwpMbzBSsKQY=;
-        b=uTu+2/mJ9h/MUkiV3gFZ0CnfPg2PR8vNlOyN3yKDcTWq8o4OICabsRq10Yo/6Ccq/s
-         K+ZJtboKnd/lS2c4Epb5+oGyCfp5yPqyFkTJtmvaGVikI9bxwP8B9b2I+tiSu4/KX35x
-         HI0tRZnHHHng46S6Wp7NDKBv43PjDkgwbey+nU4i62/ylin0cbtwAtHKwzceW9s/0461
-         HKGXrGHM50i2+zDbg7OSrnoEYLma7XT6LmGrrsBQ8z6tniSK4cnM0LATVGsp25VVJxVS
-         138y6ZqElks8GPWQcLr70TG6sA79rYc5eUH5A8pKoCitheKFwxHIhz5tjCfFhWwmYTZG
-         H8kw==
+        bh=4tJsBeG4t1G+TPijwvZhdI7bM9ZuzjVrHlwd3hub/NM=;
+        b=2KLqC8rx9yRwf7+EWGAMGrHx9L50k3TunJHgT56IK4kpt3DSOjwFq2atAgo54koYUR
+         AIzCzov+cvW7E/XgT/01eU0p8f8rPA+Ee50e8QeNyPBUHjT1gMCcpVHzyB2sS6CdPwCV
+         wH7UtGoGSGLyT3As7PSmVdZ3gRaBLqosl2W8pUqlbsgkI4NtI2YneD8k6MYo3UvcN+N7
+         jNq6OpQVFt06L5xxFUkAI+UKRNLbdX5Nz2oEL/ER11Rrx9YR3WLD1Ar2+SPeVvDEMOwM
+         EMAkbw+MwUxWvbR7f9L6L4YE7mctH1tvq+sZPDGjQ5Xbr7/XKO5JFBWCDRzdMWKl8w7Q
+         kdzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743795640; x=1744400440;
+        d=1e100.net; s=20230601; t=1743795642; x=1744400442;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=PKAF7zUVxQgoLKs13cGz/YuTc8j2bNHXwpMbzBSsKQY=;
-        b=YwDxi3ZpW5zaS7yBWXZz1hWxeZ0sRT8l9MHSa9zmjDGC8PSf2FaH7vw2GgTRT6r8oh
-         DH5ilFbLFgNEANktHBnMVcp32kfCYvdpIyMRkGTEynO4YShfyQGDRWg7mXIgx0SKBS5P
-         EVkQBK6awFCI9LGBYuSm6hgWcCOewW0RE4hPGtrInvi3Jmu0CojiJyru8n8u2oUmA1iN
-         UHP3HSrfrhgBmFiod0qJ34vNepJhKK1R/j3iUvuhUu5oykZUCxlqFmejueJquPcY2bqr
-         ntIsnlEUM+Jm+cA+bDzpSRBeZJHlOP1i8olno4nVSQJczIMPhzwNI6MwLCCqWWYxzimg
-         VVSQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV0TM/hWXXnFP8HUOmdvtqWhFNbSn3BuGTxmt8wvtkSmVnT0MKm+RZJMQWDAA31F7TNb+8dng==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw2FwDudSSx8dYZi8vvVbh+bGDkZU6fZnHLhbd4FtkIsCClnvrc
-	RDoUSBrCLKRwNl0nwfjXtkdR5p3KcmGfGPda2bRcYAVK3V9BM3QRB3JHFfHt0gR2arKsAz7Wi+e
-	pQQ==
-X-Google-Smtp-Source: AGHT+IF7aV7vIgQiVQyfCnIlHhs7ynxCvi33qThdlWSuQSHsGSJr9KXKrmMS3Or+kU5DYfPu8Q+fOei9d1c=
-X-Received: from pjbsk12.prod.google.com ([2002:a17:90b:2dcc:b0:2ff:5516:6add])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90a:f950:b0:2fe:b907:562f
- with SMTP id 98e67ed59e1d1-306af732f86mr787774a91.14.1743795640626; Fri, 04
- Apr 2025 12:40:40 -0700 (PDT)
+        bh=4tJsBeG4t1G+TPijwvZhdI7bM9ZuzjVrHlwd3hub/NM=;
+        b=MQOh5FusGtRF4HpVGQ9t3XCQ6SWIHjFIHkoZK0eI0yOVOoRAEWBEx4WGfWqdxBeUmT
+         35obyNVty+eehnOnSupTW5ov61R1XrswdC/0BYiG2FSpkCcCrhkjMAFy436+C2TPTIOk
+         pBPpqhk21odRb+Y6myHZ5yxtEdaGunijIH/t0nfH7Dgn5j8jqWKatr1Jm8Pw8TT9dJ2H
+         aG+4vLWBo3F+M8MVNIEKrDg7CZkxHrnQgl84AcgfNN1j2fFHfs6jWbBAwPpJvx9LBvch
+         QV4C3cxxiYgkT3OhZMR/M4GXtG38yxR64sx/3WGH396kOAhtt8OlskDj0YACp3u0XPUj
+         xrfg==
+X-Forwarded-Encrypted: i=1; AJvYcCUiNc86YMQRjbsojhoAUER7t7g7db4V0+11otCPgFcz42oMAdgXcdbYKYNusZOS9sGb1f+nOA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwbpTnXi8s4GpXMgyV2X3FZ8u9w5d7xCpMO7SbSXKDN4TLPVPTt
+	7UO5xGgqnOvmTGo/2CBSwN99sjkiLeHrupaCISQFVVHQjtaIxDwo9JAYw7QhHIPfkse+gdQY6RP
+	/xA==
+X-Google-Smtp-Source: AGHT+IEScd25fZRgSV6IjIzWui2u8dQv3YbcYlwFjvNFPD/+/iSxPK7V9mIz4jseM9arXmR9ykpZDrdm3xw=
+X-Received: from pfoc24.prod.google.com ([2002:aa7:8818:0:b0:736:a1eb:1520])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:3996:b0:730:9637:b2ff
+ with SMTP id d2e1a72fcca58-739e5a567admr6139702b3a.7.1743795642377; Fri, 04
+ Apr 2025 12:40:42 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Fri,  4 Apr 2025 12:38:46 -0700
+Date: Fri,  4 Apr 2025 12:38:47 -0700
 In-Reply-To: <20250404193923.1413163-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,8 +61,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250404193923.1413163-1-seanjc@google.com>
 X-Mailer: git-send-email 2.49.0.504.g3bcea36a83-goog
-Message-ID: <20250404193923.1413163-32-seanjc@google.com>
-Subject: [PATCH 31/67] KVM: SVM: Extract SVM specific code out of get_pi_vcpu_info()
+Message-ID: <20250404193923.1413163-33-seanjc@google.com>
+Subject: [PATCH 32/67] KVM: x86: Nullify irqfd->producer after updating IRTEs
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
@@ -72,99 +72,34 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Genericize SVM's get_pi_vcpu_info() so that it can be shared with VMX.
-The only SVM specific information it provides is the AVIC back page, and
-that can be trivially retrieved by its sole caller.
-
-No functional change intended.
+Nullify irqfd->producer (when it's going away) _after_ updating IRTEs so
+that the producer can be queried during the update.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+ arch/x86/kvm/x86.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 685a7b01194b..ea6eae72b941 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -825,14 +825,14 @@ static int svm_ir_list_add(struct vcpu_svm *svm,
-  */
- static int
- get_pi_vcpu_info(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
--		 struct vcpu_data *vcpu_info, struct vcpu_svm **svm)
-+		 struct vcpu_data *vcpu_info, struct kvm_vcpu **vcpu)
- {
- 	struct kvm_lapic_irq irq;
--	struct kvm_vcpu *vcpu = NULL;
-+	*vcpu = NULL;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 52d8d0635603..b8b259847d05 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -13608,7 +13608,6 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+ 	 * int this case doesn't want to receive the interrupts.
+ 	*/
+ 	spin_lock_irq(&kvm->irqfds.lock);
+-	irqfd->producer = NULL;
  
- 	kvm_set_msi_irq(kvm, e, &irq);
- 
--	if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu) ||
-+	if (!kvm_intr_is_single_vcpu(kvm, &irq, vcpu) ||
- 	    !kvm_irq_is_postable(&irq)) {
- 		pr_debug("SVM: %s: use legacy intr remap mode for irq %u\n",
- 			 __func__, irq.vector);
-@@ -841,8 +841,6 @@ get_pi_vcpu_info(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
- 
- 	pr_debug("SVM: %s: use GA mode for irq %u\n", __func__,
- 		 irq.vector);
--	*svm = to_svm(vcpu);
--	vcpu_info->pi_desc_addr = avic_get_backing_page_address(*svm);
- 	vcpu_info->vector = irq.vector;
- 
- 	return 0;
-@@ -854,7 +852,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
- {
- 	bool enable_remapped_mode = true;
- 	struct vcpu_data vcpu_info;
--	struct vcpu_svm *svm = NULL;
-+	struct kvm_vcpu *vcpu = NULL;
- 	int ret = 0;
- 
- 	if (!kvm_arch_has_assigned_device(kvm) || !kvm_arch_has_irq_bypass())
-@@ -876,20 +874,21 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
- 	 * 3. APIC virtualization is disabled for the vcpu.
- 	 * 4. IRQ has incompatible delivery mode (SMI, INIT, etc)
- 	 */
--	if (new && new->type == KVM_IRQ_ROUTING_MSI &&
--	    !get_pi_vcpu_info(kvm, new, &vcpu_info, &svm) &&
--	    kvm_vcpu_apicv_active(&svm->vcpu)) {
-+	if (new && new && new->type == KVM_IRQ_ROUTING_MSI &&
-+	    !get_pi_vcpu_info(kvm, new, &vcpu_info, &vcpu) &&
-+	    kvm_vcpu_apicv_active(vcpu)) {
- 		struct amd_iommu_pi_data pi;
- 
- 		enable_remapped_mode = false;
- 
-+		vcpu_info.pi_desc_addr = avic_get_backing_page_address(to_svm(vcpu));
-+
- 		/*
- 		 * Try to enable guest_mode in IRTE.  Note, the address
- 		 * of the vCPU's AVIC backing page is passed to the
- 		 * IOMMU via vcpu_info->pi_desc_addr.
- 		 */
--		pi.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id,
--					     svm->vcpu.vcpu_id);
-+		pi.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id, vcpu->vcpu_id);
- 		pi.is_guest_mode = true;
- 		pi.vcpu_data = &vcpu_info;
- 		ret = irq_set_vcpu_affinity(host_irq, &pi);
-@@ -902,11 +901,11 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
- 		 * scheduling information in IOMMU irte.
- 		 */
- 		if (!ret)
--			ret = svm_ir_list_add(svm, irqfd, &pi);
-+			ret = svm_ir_list_add(to_svm(vcpu), irqfd, &pi);
+ 	if (irqfd->irq_entry.type == KVM_IRQ_ROUTING_MSI) {
+ 		ret = kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, prod->irq,
+@@ -13617,6 +13616,7 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+ 			pr_info("irq bypass consumer (token %p) unregistration fails: %d\n",
+ 				irqfd->consumer.token, ret);
  	}
++	irqfd->producer = NULL;
  
--	if (!ret && svm) {
--		trace_kvm_pi_irte_update(host_irq, svm->vcpu.vcpu_id,
-+	if (!ret && vcpu) {
-+		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id,
- 					 guest_irq, vcpu_info.vector,
- 					 vcpu_info.pi_desc_addr, !!new);
- 	}
+ 	spin_unlock_irq(&kvm->irqfds.lock);
+ 
 -- 
 2.49.0.504.g3bcea36a83-goog
 
