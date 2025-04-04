@@ -1,57 +1,57 @@
-Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC5DC22578C
-	for <iommu@lists.linux.dev>; Fri,  4 Apr 2025 19:40:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E3E226CE8
+	for <iommu@lists.linux.dev>; Fri,  4 Apr 2025 19:40:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743795618; cv=none; b=UaFp2e+H+KWsKblFLpjZVda00HAyAY9goPgwZXvaa5EzQyk4UnpVxyl3c9/Uv+ZPHp/ynNBvIoRkYqV6MXBJnScaR9Xwi6foPhtO44qSQG1Xdo3EoV0gUyqAdpfL7FlCDeNi4F2iq200NYq/UfuXPEuOb+5ZTNM65LlBybKFZUM=
+	t=1743795620; cv=none; b=aZyqsgrRHLeoX4dOFL1qzLVTIyCpVFAhX0JLtdEAk61KHA0eGdjHXqgwvkr/q1ol2N7c5KoGaw2PWzIf8S8CTXjTOh1Uu77+596ohMwSwEnorexoIiyR24aOJ/gT/IT89cM/As0ysO7tfHrw/CDNM0+UdaPZ5Zt6P+VmDJAnpas=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743795618; c=relaxed/simple;
-	bh=8CNUPuQxWruAqazLiQ2U7Se/O49wV/nzU7fAMxK6IVw=;
+	s=arc-20240116; t=1743795620; c=relaxed/simple;
+	bh=J6mC0nFXHJAOtYEIFo2PwmBBEXnUBJqNHuBrgJLfJvQ=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=SqhsoAYRgIoPfdyZOmweh+c/FJPfM7N8FuBarKCgN5pgznHlvmudyFSfyF5kF9T7qtmfQEUngRKScz5B0+lYNHqBHiAxfx/iXRktqaYyDyam9zZ/mvauds7kGxD2uT5uGW64gpu/oD9tvcGnv4UXDqp1XHPH78bmDhbL0QUGLls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cC19rWSp; arc=none smtp.client-ip=209.85.210.202
+	 To:Cc:Content-Type; b=QF4S9SCNSePhQg8GrxdAerS8svCkfEarpvLJTcLu0nK/GtFBHRUIne75L1QveGjeMYjDCJkeVeLyrENIZsK0uYUIvG1KCSxnHxPn/nNW9SxmoAUfRF9/FCDgY5vfUK+OBhG9SMq0HIARNgPziw/cHu7L/2EU7sUCCMUU/BPyvn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pWR8+0Dl; arc=none smtp.client-ip=209.85.210.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cC19rWSp"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-7369c5ed395so2832825b3a.0
-        for <iommu@lists.linux.dev>; Fri, 04 Apr 2025 12:40:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pWR8+0Dl"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-736abba8c5cso3046513b3a.2
+        for <iommu@lists.linux.dev>; Fri, 04 Apr 2025 12:40:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1743795616; x=1744400416; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1743795618; x=1744400418; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=HPznh6CGxUFhqaGN+tuF1KZuEdkc3IM8iRC+hka4d9I=;
-        b=cC19rWSp9Cvb0IUZi9kMsYq0X99CtIYjdbXFh1baw8xIyELJxUMCkfRU0fWfj/2yJ5
-         34q6uXMiJyiScRtjS825iZTjcFvBuqy8VBfBpelRdRmFLCNgO5d+HVZeSOfASHEozBDQ
-         5JRUO5aWO6wKPLo6zEffw7XPX1Ci66SFFUbiOObo+dKVgQ/ipPsV5sRqc3z7mdzrOxbj
-         1VCylMfpJUycVE7uiJOTwb3j+FJVPNiUudTqQ48d7E2HPV5HWcFwX4UakXchv8KPwoDd
-         mOKH+OcF3AnDe6LmIDZkj5wDPVce1In211ZSAVFaDWvsM3Ik4heqgfVohCC9uSbtN8nP
-         ZkaQ==
+        bh=mBYvsppdkEsCC9jB3KHtPaQFQe07zBHNgFlVF26LQEY=;
+        b=pWR8+0Dl9jjfpiu6jK2bWeJpufkBTZk21FWtrtN5vXwcIGwWeedCXnGDrvIfCOujeB
+         zGCRoK5he/sNPIupBV2G3e8P+jrc71Ktp8GHEStvexSC7wAfcvGGOb7XfRhYemaK24a/
+         ZEurSr/pfBxtDIFsC+kfj9ruiYV9L83ThWDTSwRjtc65gRIb17pKNHzqCfZ4fS7r37B3
+         wKkQO96W+3gvUVzqw32fmnC5n+r6sh/KX6d91nW7EZQGWhOokDS2ZpyVkRGjJ3NtR7Qd
+         l4HiglJPAw/XQS6OWALTLLXE8ZNfLLkn75t6o+347KyWQzulNYLNmgE5zsEcYqibKbLy
+         2Vvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743795616; x=1744400416;
+        d=1e100.net; s=20230601; t=1743795618; x=1744400418;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=HPznh6CGxUFhqaGN+tuF1KZuEdkc3IM8iRC+hka4d9I=;
-        b=IzUWvv+88YWu3TUA7rH8eleNquNO1ijgNfU4pImLv9QWt9dNT6CsnNaI0opH005OTW
-         ihVRu++uEr79wZ9IjeexG/BAyxEldEQ2/1wvX7toB9061eYuaxAyNgg7yJEJwPfcymCu
-         7fyaEZkJLmIMAdO24oJw0JLI3NYt8FeOzD1yK6bi1OtSWwxTaB3eWE86GFjNNUFZkbMX
-         mFb5A/NKgDoh1LaSeGrJjtHg5Aa49JAAsZGKKQlAu2pCGcR7Avv8sLMsvSnGEqP/Ciyt
-         eUWKVqoYLEXiJGuNyKIxl0OA5LphfUnK8SQLWZmAV9e0PlgMMF8xjhKHQrLtBKtZer/Y
-         0vyQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUeniPIK1ELnAACc5A9z9OXtFrCYiMC0IQZrYTuHcbH5CZPAEsn8BKdj/gEJ6BoUi3ksPnVFA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxthRUSHmU6EPSv3FnUfnbaMtzYj6W8XDaJZsaa57UCiAwH+zCZ
-	AsIX0N8QObiKks8f3lNmhK3x5v+f6ayGPvRClXDs55XtFhmHS9jA3ePvkpTeJRPkbdJl87aP0q+
-	BWQ==
-X-Google-Smtp-Source: AGHT+IHdDhY3q1PoCzEN393Qre591g1t5JRHt7vREsmAZfu9y83GvrelcK4mphnOUkWNilXZrFXu1h6Tod0=
-X-Received: from pfbhb19.prod.google.com ([2002:a05:6a00:8593:b0:737:79:e096])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:244c:b0:736:546c:eb69
- with SMTP id d2e1a72fcca58-739e492c849mr5818791b3a.9.1743795616257; Fri, 04
- Apr 2025 12:40:16 -0700 (PDT)
+        bh=mBYvsppdkEsCC9jB3KHtPaQFQe07zBHNgFlVF26LQEY=;
+        b=ZMtPzoEUE+2tsBaIZmiHt2XFKtLAdNFoYHPXK1BAycsOI+OjeFrz3GWMPk9YxxcJsl
+         /WN6vy2qvP0lxP5tNyTsXkfLuFwSlTMQxgMlUdQrxUgKes2Kf5X2fzDpvUfrY2ShcGDz
+         C7421loOtlzIlPJwRuGKH7wbMW2pKtPIqn+Rf/yqXK/oDuu8LIisZ+nm/uEj5v0wY0Dj
+         2mxpm/eQN4rCYlPxbUhlmciXWwYay7tZkuAFli9D7q2PdJBeal5to65x2NQ8j1slx176
+         UlJ89OnhcVGbAPVqcEicHA5BPKJXegaTEPEyMVsIFOWLYDqPfdINIUV/JtwozsV7QN+W
+         tnVg==
+X-Forwarded-Encrypted: i=1; AJvYcCXoR4j2cLC5eYWJAA40vqhaa9bPt3jj5uqfdRuFk6FM/wxikryZ4wzfiJMn1GtlQFh2Bwz61g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx5Q0rt1ytrsVJFRWCSZEGq9C+FUG3yGSTwZR3UDNw3ofQBvr3Q
+	wiIpUBVzMu13Z3R/UE6+d9syvk+ZrAcT2LGUg0fsKViWDyAbiuQyuo6ujXj+A9rOulE4ikz61q9
+	YFA==
+X-Google-Smtp-Source: AGHT+IHlJ1S/97WVKpR7s7eWnhf8FHowO+clanPhx/S3rl8+pkCvYLrtJLRFmIybzKrDhNaukmJeObbrPxI=
+X-Received: from pfbjc20.prod.google.com ([2002:a05:6a00:6c94:b0:736:451f:b9f4])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:4606:b0:736:592e:795f
+ with SMTP id d2e1a72fcca58-739e6ff6b02mr4669074b3a.9.1743795618072; Fri, 04
+ Apr 2025 12:40:18 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Fri,  4 Apr 2025 12:38:32 -0700
+Date: Fri,  4 Apr 2025 12:38:33 -0700
 In-Reply-To: <20250404193923.1413163-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,9 +61,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250404193923.1413163-1-seanjc@google.com>
 X-Mailer: git-send-email 2.49.0.504.g3bcea36a83-goog
-Message-ID: <20250404193923.1413163-18-seanjc@google.com>
-Subject: [PATCH 17/67] KVM: SVM: Drop redundant check in AVIC code on ID
- during vCPU creation
+Message-ID: <20250404193923.1413163-19-seanjc@google.com>
+Subject: [PATCH 18/67] KVM: SVM: Track AVIC tables as natively sized pointers,
+ not "struct pages"
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
@@ -73,124 +73,169 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Drop avic_get_physical_id_entry()'s compatibility check on the incoming
-ID, as its sole caller, avic_init_backing_page(), performs the exact same
-check.  Drop avic_get_physical_id_entry() entirely as the only remaining
-functionality is getting the address of the Physical ID table, and
-accessing the array without an immediate bounds check is kludgy.
-
-Opportunistically add a compile-time assertion to ensure the vcpu_id can't
-result in a bounds overflow, e.g. if KVM (really) messed up a maximum
-physical ID #define, as well as run-time assertions so that a NULL pointer
-dereference is morphed into a safer WARN().
+Allocate and track AVIC's logical and physical tables as u32 and u64
+pointers respectively, as managing the pages as "struct page" pointers
+adds an almost absurd amount of boilerplate and complexity.  E.g. with
+page_address() out of the way, svm->avic_physical_id_cache becomes
+completely superfluous, and will be removed in a future cleanup.
 
 No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 47 +++++++++++++++++------------------------
- 1 file changed, 19 insertions(+), 28 deletions(-)
+ arch/x86/kvm/svm/avic.c | 49 ++++++++++++++---------------------------
+ arch/x86/kvm/svm/svm.h  |  4 ++--
+ 2 files changed, 18 insertions(+), 35 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index ba8dfc8a12f4..344541e418c3 100644
+index 344541e418c3..ae6d2c00397f 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -265,35 +265,19 @@ void avic_init_vmcb(struct vcpu_svm *svm, struct vmcb *vmcb)
- 		avic_deactivate_vmcb(svm);
- }
+@@ -181,10 +181,8 @@ void avic_vm_destroy(struct kvm *kvm)
+ 	if (!enable_apicv)
+ 		return;
  
--static u64 *avic_get_physical_id_entry(struct kvm_vcpu *vcpu,
--				       unsigned int index)
--{
--	u64 *avic_physical_id_table;
--	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
+-	if (kvm_svm->avic_logical_id_table_page)
+-		__free_page(kvm_svm->avic_logical_id_table_page);
+-	if (kvm_svm->avic_physical_id_table_page)
+-		__free_page(kvm_svm->avic_physical_id_table_page);
++	free_page((unsigned long)kvm_svm->avic_logical_id_table);
++	free_page((unsigned long)kvm_svm->avic_physical_id_table);
+ 
+ 	spin_lock_irqsave(&svm_vm_data_hash_lock, flags);
+ 	hash_del(&kvm_svm->hnode);
+@@ -197,27 +195,19 @@ int avic_vm_init(struct kvm *kvm)
+ 	int err = -ENOMEM;
+ 	struct kvm_svm *kvm_svm = to_kvm_svm(kvm);
+ 	struct kvm_svm *k2;
+-	struct page *p_page;
+-	struct page *l_page;
+ 	u32 vm_id;
+ 
+ 	if (!enable_apicv)
+ 		return 0;
+ 
+-	/* Allocating physical APIC ID table (4KB) */
+-	p_page = alloc_page(GFP_KERNEL_ACCOUNT | __GFP_ZERO);
+-	if (!p_page)
++	kvm_svm->avic_physical_id_table = (void *)get_zeroed_page(GFP_KERNEL_ACCOUNT);
++	if (!kvm_svm->avic_physical_id_table)
+ 		goto free_avic;
+ 
+-	kvm_svm->avic_physical_id_table_page = p_page;
 -
--	if ((!x2avic_enabled && index > AVIC_MAX_PHYSICAL_ID) ||
--	    (index > X2AVIC_MAX_PHYSICAL_ID))
--		return NULL;
+-	/* Allocating logical APIC ID table (4KB) */
+-	l_page = alloc_page(GFP_KERNEL_ACCOUNT | __GFP_ZERO);
+-	if (!l_page)
++	kvm_svm->avic_logical_id_table = (void *)get_zeroed_page(GFP_KERNEL_ACCOUNT);
++	if (!kvm_svm->avic_logical_id_table)
+ 		goto free_avic;
+ 
+-	kvm_svm->avic_logical_id_table_page = l_page;
 -
--	avic_physical_id_table = page_address(kvm_svm->avic_physical_id_table_page);
--
--	return &avic_physical_id_table[index];
--}
--
- static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+ 	spin_lock_irqsave(&svm_vm_data_hash_lock, flags);
+  again:
+ 	vm_id = next_vm_id = (next_vm_id + 1) & AVIC_VM_ID_MASK;
+@@ -251,12 +241,10 @@ static phys_addr_t avic_get_backing_page_address(struct vcpu_svm *svm)
+ void avic_init_vmcb(struct vcpu_svm *svm, struct vmcb *vmcb)
  {
--	u64 *entry, new_entry;
--	int id = vcpu->vcpu_id;
-+	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
+ 	struct kvm_svm *kvm_svm = to_kvm_svm(svm->vcpu.kvm);
+-	phys_addr_t lpa = __sme_set(page_to_phys(kvm_svm->avic_logical_id_table_page));
+-	phys_addr_t ppa = __sme_set(page_to_phys(kvm_svm->avic_physical_id_table_page));
+ 
+ 	vmcb->control.avic_backing_page = avic_get_backing_page_address(svm);
+-	vmcb->control.avic_logical_id = lpa;
+-	vmcb->control.avic_physical_id = ppa;
++	vmcb->control.avic_logical_id = __sme_set(__pa(kvm_svm->avic_logical_id_table));
++	vmcb->control.avic_physical_id = __sme_set(__pa(kvm_svm->avic_physical_id_table));
+ 	vmcb->control.avic_vapic_bar = APIC_DEFAULT_PHYS_BASE;
+ 
+ 	if (kvm_apicv_activated(svm->vcpu.kvm))
+@@ -270,7 +258,7 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+ 	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
  	struct vcpu_svm *svm = to_svm(vcpu);
-+	u32 id = vcpu->vcpu_id;
-+	u64 *table, new_entry;
+ 	u32 id = vcpu->vcpu_id;
+-	u64 *table, new_entry;
++	u64 new_entry;
  
  	/*
  	 * Inhibit AVIC if the vCPU ID is bigger than what is supported by AVIC
--	 * hardware.  Do so immediately, i.e. don't defer the update via a
--	 * request, as avic_vcpu_load() expects to be called if and only if the
--	 * vCPU has fully initialized AVIC.  Immediately clear apicv_active,
--	 * as avic_vcpu_load() assumes avic_physical_id_cache is valid, i.e.
--	 * waiting until KVM_REQ_APICV_UPDATE is processed on the first KVM_RUN
--	 * will result in an NULL pointer deference when loading the vCPU.
-+	 * hardware.  Immediately clear apicv_active, i.e. don't wait until the
-+	 * KVM_REQ_APICV_UPDATE request is processed on the first KVM_RUN, as
-+	 * avic_vcpu_load() expects to be called if and only if the vCPU has
-+	 * fully initialized AVIC.
- 	 */
- 	if ((!x2avic_enabled && id > AVIC_MAX_PHYSICAL_ID) ||
- 	    (id > X2AVIC_MAX_PHYSICAL_ID)) {
-@@ -302,6 +286,9 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+@@ -286,8 +274,8 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
  		return 0;
  	}
  
-+	BUILD_BUG_ON((AVIC_MAX_PHYSICAL_ID + 1) * sizeof(*table) > PAGE_SIZE ||
-+		     (X2AVIC_MAX_PHYSICAL_ID + 1) * sizeof(*table) > PAGE_SIZE);
-+
+-	BUILD_BUG_ON((AVIC_MAX_PHYSICAL_ID + 1) * sizeof(*table) > PAGE_SIZE ||
+-		     (X2AVIC_MAX_PHYSICAL_ID + 1) * sizeof(*table) > PAGE_SIZE);
++	BUILD_BUG_ON((AVIC_MAX_PHYSICAL_ID + 1) * sizeof(new_entry) > PAGE_SIZE ||
++		     (X2AVIC_MAX_PHYSICAL_ID + 1) * sizeof(new_entry) > PAGE_SIZE);
+ 
  	if (WARN_ON_ONCE(!vcpu->arch.apic->regs))
  		return -EINVAL;
- 
-@@ -320,9 +307,7 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+@@ -306,18 +294,16 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+ 			return ret;
  	}
  
- 	/* Setting AVIC backing page address in the phy APIC ID table */
--	entry = avic_get_physical_id_entry(vcpu, id);
--	if (!entry)
--		return -EINVAL;
-+	table = page_address(kvm_svm->avic_physical_id_table_page);
- 
+-	/* Setting AVIC backing page address in the phy APIC ID table */
+-	table = page_address(kvm_svm->avic_physical_id_table_page);
+-
  	/* Note, fls64() returns the bit position, +1. */
  	BUILD_BUG_ON(__PHYSICAL_MASK_SHIFT >
-@@ -330,9 +315,9 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+ 		     fls64(AVIC_PHYSICAL_ID_ENTRY_BACKING_PAGE_MASK));
  
++	/* Setting AVIC backing page address in the phy APIC ID table */
  	new_entry = avic_get_backing_page_address(svm) |
  		    AVIC_PHYSICAL_ID_ENTRY_VALID_MASK;
--	WRITE_ONCE(*entry, new_entry);
-+	WRITE_ONCE(table[id], new_entry);
+-	WRITE_ONCE(table[id], new_entry);
++	WRITE_ONCE(kvm_svm->avic_physical_id_table[id], new_entry);
  
--	svm->avic_physical_id_cache = entry;
-+	svm->avic_physical_id_cache = &table[id];
+-	svm->avic_physical_id_cache = &table[id];
++	svm->avic_physical_id_cache = &kvm_svm->avic_physical_id_table[id];
  
  	return 0;
  }
-@@ -1018,6 +1003,9 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- 	if (WARN_ON(h_physical_id & ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK))
- 		return;
+@@ -451,7 +437,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+ 		if (apic_x2apic_mode(source))
+ 			avic_logical_id_table = NULL;
+ 		else
+-			avic_logical_id_table = page_address(kvm_svm->avic_logical_id_table_page);
++			avic_logical_id_table = kvm_svm->avic_logical_id_table;
  
-+	if (WARN_ON_ONCE(!svm->avic_physical_id_cache))
-+		return;
-+
- 	/*
- 	 * No need to update anything if the vCPU is blocking, i.e. if the vCPU
- 	 * is being scheduled in after being preempted.  The CPU entries in the
-@@ -1058,6 +1046,9 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
+ 		/*
+ 		 * AVIC is inhibited if vCPUs aren't mapped 1:1 with logical
+@@ -553,7 +539,6 @@ unsigned long avic_vcpu_get_apicv_inhibit_reasons(struct kvm_vcpu *vcpu)
+ static u32 *avic_get_logical_id_entry(struct kvm_vcpu *vcpu, u32 ldr, bool flat)
+ {
+ 	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
+-	u32 *logical_apic_id_table;
+ 	u32 cluster, index;
  
- 	lockdep_assert_preemption_disabled();
+ 	ldr = GET_APIC_LOGICAL_ID(ldr);
+@@ -574,9 +559,7 @@ static u32 *avic_get_logical_id_entry(struct kvm_vcpu *vcpu, u32 ldr, bool flat)
+ 		return NULL;
+ 	index += (cluster << 2);
  
-+	if (WARN_ON_ONCE(!svm->avic_physical_id_cache))
-+		return;
-+
- 	/*
- 	 * Note, reading the Physical ID entry outside of ir_list_lock is safe
- 	 * as only the pCPU that has loaded (or is loading) the vCPU is allowed
+-	logical_apic_id_table = (u32 *) page_address(kvm_svm->avic_logical_id_table_page);
+-
+-	return &logical_apic_id_table[index];
++	return &kvm_svm->avic_logical_id_table[index];
+ }
+ 
+ static void avic_ldr_write(struct kvm_vcpu *vcpu, u8 g_physical_id, u32 ldr)
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index 7af28802ebee..4c83b6b73714 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -119,8 +119,8 @@ struct kvm_svm {
+ 
+ 	/* Struct members for AVIC */
+ 	u32 avic_vm_id;
+-	struct page *avic_logical_id_table_page;
+-	struct page *avic_physical_id_table_page;
++	u32 *avic_logical_id_table;
++	u64 *avic_physical_id_table;
+ 	struct hlist_node hnode;
+ 
+ 	struct kvm_sev_info sev_info;
 -- 
 2.49.0.504.g3bcea36a83-goog
 
