@@ -1,144 +1,125 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54B8922A4F4;
-	Mon,  7 Apr 2025 18:13:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F51F221717;
+	Mon,  7 Apr 2025 18:22:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744049592; cv=none; b=N9fmUmMfo1WBxC219q0OSNCtR2XG/781wvuPkA9c9qbif8DjHEaah2awgz9JmIVHXqR1S+RiUZ8SLPEqV5cjPcvwFcoiFO5ly9PTkDWPs96BAnlH6C1Rj2mHKltpk/bk5R9OkdGk9yBYEYSRogViX3f3MtzL+yq2M6/1KAZH8p8=
+	t=1744050149; cv=none; b=B+GgOgmvvi9ksZ1Vr3v22YRMIEYG/2iJhjxjPCoY3oFkrUvFhzBk48OyaUhAdk3XuqYRCEJI5fKgw7hp/0oaQ+oIomBd9lpsaGWIkmfBXMOWunQZSomVzPrwhIQRx+gczZK6T58KkRZMiB4Am67JEqBb+9EUQwkegW/EbVMNBxc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744049592; c=relaxed/simple;
-	bh=bXaaG1N/AIxufZ9GI9/+KsnLYgzJNlInmR5Z0xcBVJ0=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=n/NmDVrBQPG1RST0YjbKE4GIZS3EGR38BTVq1LtIuIqBD/lH53KgqEWVVg6/oWotyGHt+tsivWo0Moyaj2fY1+32zqoPzNOpIWS3shba84n6zY/APDCAgALjUQA4/lRB9Q+QJwMvfYL3kl/h1ji7MZ+EGLLlxz2GbE0WXCNxt/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hfIp5E2R; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744050149; c=relaxed/simple;
+	bh=Vzrl000GH9rO9BEdPNAMz2vKGlrv8PRMcFJ62aJ5frc=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=mjTDXBGFLgJevuSsYui3NxCsErbxRKnBPFuGUM4YcHt6p4KqArPb4vNsHp8hfYyarseWjMVgpskeGgsRW5hr2Krp613O9t5Ud5pcmHyKiohqL7qj8Tk1scCLgR8qmdtICTMroz85EbkmcE/yjDOIcNKTnkW87yr2Fsm+kZ9/htU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qMGfy4lW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hfIp5E2R"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C32C4CEDD;
-	Mon,  7 Apr 2025 18:13:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qMGfy4lW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5A33C4CEDD;
+	Mon,  7 Apr 2025 18:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744049591;
-	bh=bXaaG1N/AIxufZ9GI9/+KsnLYgzJNlInmR5Z0xcBVJ0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=hfIp5E2ROssoyfNUlDMntdWU4L6zvLInV+RLBQ1imCZhP+x6ZOCgKV5Rpb7clllxk
-	 Aec9T9dnkGLvo5G6N4Gd1nQ7PCe/YRPB9owRUn3zjEJw6+DRtPD4LuoljAUCbMLX1Y
-	 RvzgZ/7Lw234QnpHtP/Dqs0C3a3d6WDpcvdNnBPuUOir+mlz7ZbtVgXISVscNDmASJ
-	 GHlzfSEudMfXHlMg6ngibAOmYTbCm3CuUFeMvbPB+/beAvB2mG0cBXAjEKsXSyl3YW
-	 wWLAh84qidOPtU6J8Z72nzXPmR+PZhemhNkC9gUTN7yQyUPxKJ1ssguQuOMqI5+/w7
-	 IiIl0FzcDpx3A==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Nicolin Chen <nicolinc@nvidia.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Will Deacon <will@kernel.org>,
-	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	jgg@ziepe.ca,
-	kevin.tian@intel.com,
-	ddutile@redhat.com,
-	nathan@kernel.org,
-	peterz@infradead.org,
-	yi.l.liu@intel.com,
-	jsnitsel@redhat.com,
-	mshavit@google.com,
-	zhangzekun11@huawei.com,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.13 21/28] iommu/arm-smmu-v3: Set MEV bit in nested STE for DoS mitigations
-Date: Mon,  7 Apr 2025 14:12:11 -0400
-Message-Id: <20250407181224.3180941-21-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250407181224.3180941-1-sashal@kernel.org>
-References: <20250407181224.3180941-1-sashal@kernel.org>
+	s=k20201202; t=1744050148;
+	bh=Vzrl000GH9rO9BEdPNAMz2vKGlrv8PRMcFJ62aJ5frc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=qMGfy4lWe7Elq23Bz8lvEB5OtcNj0kqjxMrleJjNqBGwOxJAyYdIN0nV+zkV23vmD
+	 upTPCbhNFr/hnGc8gee/QkDeOGETOIQsxMPDKltA1adk8+wz+PzG8X2u2yZ2saiSN9
+	 x8vsJ8PlouW/h2vOdWSmszA8C/emrG0ASALDtzas9sjY1tEQcTwk2nq41idc4okrW8
+	 q71ngcXjOhsSLZYlofhsG8DeYXI3NO4OB76p1LHTACaacniDNXZZLLWzgMc448oBfY
+	 H3Z95vGdTpN/BiZ4DOhEI1BXbgn1nT4b+JuUtqyDhRaYhDI7hXN135LsyxIvY++okG
+	 mQjkJVG5fLYdA==
+Date: Mon, 7 Apr 2025 13:22:27 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] PCI: Declare quirk_huawei_pcie_sva() as
+ pci_fixup_header
+Message-ID: <20250407182227.GA191373@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.13.10
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250317011352.5806-1-zhangfei.gao@linaro.org>
 
-From: Nicolin Chen <nicolinc@nvidia.com>
+On Mon, Mar 17, 2025 at 01:13:52AM +0000, Zhangfei Gao wrote:
+> The commit bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper
+> probe path") fixed the iommu_probe_device() flow to correctly initialize
+> firmware operations, allowing arm_smmu_probe_device() to be invoked
+> earlier. This changes the invocation timing of arm_smmu_probe_device
+> from the final fixup phase to the header fixup phase.
+> 
+> pci_iov_add_virtfn
+>     pci_device_add
+>       pci_fixup_device(pci_fixup_header)      <--
+>       device_add
+>         bus_notify
+>           iommu_bus_notifier
+>   +         iommu_probe_device
+>   +           arm_smmu_probe_device
+>     pci_bus_add_device
+>       pci_fixup_device(pci_fixup_final)       <--
+>       device_attach
+>         driver_probe_device
+>           really_probe
+>             pci_dma_configure
+>               acpi_dma_configure_id
+>   -             iommu_probe_device
+>   -               arm_smmu_probe_device
+> 
+> This is the pci_iov_add_virtfn().  The non-SR-IOV case is similar in
+> that pci_device_add() is called from pci_scan_single_device() in the
+> generic enumeration path, and pci_bus_add_device() is called later,
+> after all a host bridge has been enumerated.
+> 
+> Declare the fixup as pci_fixup_header to ensure the configuration
+> happens before arm_smmu_probe_device.
+> 
+> Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+> Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
-[ Upstream commit da0c56520e880441d0503d0cf0d6853dcfb5f1a4 ]
+Applied to pci/for-linus for v6.15, thanks!
 
-There is a DoS concern on the shared hardware event queue among devices
-passed through to VMs, that too many translation failures that belong to
-VMs could overflow the shared hardware event queue if those VMs or their
-VMMs don't handle/recover the devices properly.
+Joerg, if you'd rather take it, let me know and I can drop it.
 
-The MEV bit in the STE allows to configure the SMMU HW to merge similar
-event records, though there is no guarantee. Set it in a nested STE for
-DoS mitigations.
-
-In the future, we might want to enable the MEV for non-nested cases too
-such as domain->type == IOMMU_DOMAIN_UNMANAGED or even IOMMU_DOMAIN_DMA.
-
-Link: https://patch.msgid.link/r/8ed12feef67fc65273d0f5925f401a81f56acebe.1741719725.git.nicolinc@nvidia.com
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 2 ++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c         | 4 ++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h         | 1 +
- 3 files changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-index c7cc613050d93..6d94c9fc08289 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-@@ -43,6 +43,8 @@ static void arm_smmu_make_nested_cd_table_ste(
- 	target->data[0] |= nested_domain->ste[0] &
- 			   ~cpu_to_le64(STRTAB_STE_0_CFG);
- 	target->data[1] |= nested_domain->ste[1];
-+	/* Merge events for DoS mitigations on eventq */
-+	target->data[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
- }
- 
- /*
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 42a89d499cda8..b7c5971da8b94 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1031,7 +1031,7 @@ void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
- 			cpu_to_le64(STRTAB_STE_1_S1DSS | STRTAB_STE_1_S1CIR |
- 				    STRTAB_STE_1_S1COR | STRTAB_STE_1_S1CSH |
- 				    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_STRW |
--				    STRTAB_STE_1_EATS);
-+				    STRTAB_STE_1_EATS | STRTAB_STE_1_MEV);
- 		used_bits[2] |= cpu_to_le64(STRTAB_STE_2_S2VMID);
- 
- 		/*
-@@ -1047,7 +1047,7 @@ void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
- 	if (cfg & BIT(1)) {
- 		used_bits[1] |=
- 			cpu_to_le64(STRTAB_STE_1_S2FWB | STRTAB_STE_1_EATS |
--				    STRTAB_STE_1_SHCFG);
-+				    STRTAB_STE_1_SHCFG | STRTAB_STE_1_MEV);
- 		used_bits[2] |=
- 			cpu_to_le64(STRTAB_STE_2_S2VMID | STRTAB_STE_2_VTCR |
- 				    STRTAB_STE_2_S2AA64 | STRTAB_STE_2_S2ENDI |
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 0107d3f333a1c..73cc56ff11db7 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -266,6 +266,7 @@ static inline u32 arm_smmu_strtab_l2_idx(u32 sid)
- #define STRTAB_STE_1_S1COR		GENMASK_ULL(5, 4)
- #define STRTAB_STE_1_S1CSH		GENMASK_ULL(7, 6)
- 
-+#define STRTAB_STE_1_MEV		(1UL << 19)
- #define STRTAB_STE_1_S2FWB		(1UL << 25)
- #define STRTAB_STE_1_S1STALLD		(1UL << 27)
- 
--- 
-2.39.5
-
+> ---
+> v3: modify commit msg, add Acked-by
+> v2: modify commit msg
+> 
+>  drivers/pci/quirks.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index f840d611c450..a9759889ff5e 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -1991,12 +1991,12 @@ static void quirk_huawei_pcie_sva(struct pci_dev *pdev)
+>  	    device_create_managed_software_node(&pdev->dev, properties, NULL))
+>  		pci_warn(pdev, "could not add stall property");
+>  }
+> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa250, quirk_huawei_pcie_sva);
+> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa251, quirk_huawei_pcie_sva);
+> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa255, quirk_huawei_pcie_sva);
+> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa256, quirk_huawei_pcie_sva);
+> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa258, quirk_huawei_pcie_sva);
+> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_HUAWEI, 0xa259, quirk_huawei_pcie_sva);
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa250, quirk_huawei_pcie_sva);
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa251, quirk_huawei_pcie_sva);
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa255, quirk_huawei_pcie_sva);
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa256, quirk_huawei_pcie_sva);
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa258, quirk_huawei_pcie_sva);
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HUAWEI, 0xa259, quirk_huawei_pcie_sva);
+>  
+>  /*
+>   * It's possible for the MSI to get corrupted if SHPC and ACPI are used
+> -- 
+> 2.25.1
+> 
