@@ -1,326 +1,226 @@
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com [209.85.222.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50128223302
-	for <iommu@lists.linux.dev>; Mon,  7 Apr 2025 05:28:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.44
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744003725; cv=none; b=rGdXhI0avlOU7RY+jLL7BbNQGrz/+XKjlFcpSxv4P1xQvLLjvKeiGJy48Djoi6gNJRI224QjkgJ+hi8xvCbdxFMAWACQtsSnBPQMTsLbujodzR08oFsgK1OkBAm/DRyvFMiQBH40Sgx4IHT7Ku3K14gerZoDLSQ8jq4rfa6U0OE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744003725; c=relaxed/simple;
-	bh=IR7C8mWGn6S2GwS5npntqj5mc2LFd0mWoZA5VQoPwVs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eui8Fm9YypProYY4vRIsOPzRMzpVxB25ZzN6C1GrxSYYbGJyMmyAx5l+AXV955BhMeaqiXFpo5Wqv/zWF5fR5+UC1fGPOVQ+HcpN0IAO/0JklhqsHCaszJT8njiGpPoZosbKdWdch0JLb8lYYH7ha908tmpBCUiaaocieG1jiR4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S5tAe38t; arc=none smtp.client-ip=209.85.222.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F89E223301
+	for <iommu@lists.linux.dev>; Mon,  7 Apr 2025 05:28:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744003735; cv=fail; b=j6GLOFi+may9x1GmVA5aeq+9wnAq3rfHqSOk+JXaTCl/pEnEOeJCH/pYqxVgmd2rqyDjAihWJDgoteHbBVp1oy6kONZT1ddN2T0n+ZIB7P3vRhs+WxdCc+ulo+ANfYIMQizf9sn5Z7cGVUzGJC79QBj/J/sBW9P8vTJMmmItnuk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744003735; c=relaxed/simple;
+	bh=C/Fxkru4J5X++tDOqligkaAo4GRDfoRkgoCWCPGQxLs=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=pArsiXXXHQ0+ph/apZ/8a1ldGl9eOjiyCAQeeN+zkDv41PzG1jW/dFVbIsJSmF2dNZlcQ8ay1KqaSiKzCzhFN4Wza5fKCFpgPCDrKVbuuD+iDbXN/s3lUk3xq6yPJEKGMJ+3MaOi/maWPEDVwAkmOxdqKWnGDO7ZHI7VyTHePRQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Gu6qIW5v; arc=fail smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S5tAe38t"
-Received: by mail-ua1-f44.google.com with SMTP id a1e0cc1a2514c-86929964ed3so3685602241.0
-        for <iommu@lists.linux.dev>; Sun, 06 Apr 2025 22:28:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1744003722; x=1744608522; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2m8hkxeQTQAuQicQo0vunu7LYBkQ6hLqfs4neelB+bE=;
-        b=S5tAe38toRUW8FKoiiF3KLg0uqN2+CAJWryRhzMYcpRE4ZUEABsKOOlrUZ8foZUn8j
-         Q8bCDResumHMJ8YGvD9cr2oCB0DBv92r76u29+t2FY2jwWHHmHiFzAbQz+Ny2rj2sJL2
-         K8YRUozdAw0P+JH4Xei+EbiuJDhh4JaQfCRLLrK9qFzQgYrgCoC4lgX5igw6AfeNMfZh
-         wpzEnkX1NKwbfE/B6wIv/O/u1LbZgCH/4uvNFvfLH24ikfbVl6u4epS/gBrAfP2p4K4P
-         0n8A2wLvo7GZPtJwu1HrUy8HAxC1ws/RwW+osoXLh/PEibQ2bMWP9dsiKX2UZCWBEPqU
-         SwQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744003722; x=1744608522;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2m8hkxeQTQAuQicQo0vunu7LYBkQ6hLqfs4neelB+bE=;
-        b=J0KsTeiyWO6tWh/xkE1H7oNiTMMIDit/PvB5/Mm9kEHdfCkrMdLP4CyRSSq4Xr2d/2
-         CQq/OU98LYXCOWoe3cKB/M3M+ggmYFt3znCwv/NcpJ9ZQG5vQK7dA8KsVelF0zNSXDqm
-         UHGwyiFkcR/LgZ/j7FVMWg9Stc2fo2J1EF8HFiYnwAa1ts+FNeTtbi35jM0xEr+UFtiB
-         KYbT1rjU6FzOJWJAuv3Wuu/kaVFT1rPAfFd3HInslqBDamrr8FGpwRUX44lLjVL+UBge
-         IPaG2EiRjzBs8YezWXa2uN8hABMGkiBktICaOdgTUvmEwiZe1suAd9nn4qgyG7tTuQlp
-         668Q==
-X-Forwarded-Encrypted: i=1; AJvYcCW96F4XMRsWEnf5XPxZuDo6qYr4ym5rPntycOm8S+o1jIs6vqWRZnoBadSI0eQEkY/hcCWjbA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzyyt71P/OtXUHNN6+apfYSHFQL20AnurtaTZkNLC7dh8L8Jz9u
-	mt2d/ARG/e9AFaM/zrEELGJO9Mf2oL2Z/OCj1WXwrqSO4JvPowjV2i0EA39EHq1aJgTLaicgCCn
-	zsUmjxBwkLfg7CSe0LHzVgejoddM=
-X-Gm-Gg: ASbGncva6uB3z6rokT8SpbCi0Qf2iFSkgPxw0ROhwx1lNkwXcpI9PuXLxklkIac0ytB
-	+QGyM6Y/q9+RYsA+07Z6ey5cJORlnkVSOFPbjwxWv8k7aJQx8/djlTHxkdEK6a0YNzz9K6/hVNS
-	mEW3V2Y7gE1C9gIOW65pjP34t5Lg==
-X-Google-Smtp-Source: AGHT+IF/sC4/sanFSEJjcv9X4aJhwSGKXxAZmUIblLo17jeh8YiTvqYY3jy/3OlZXXpCdGm9dYoUzQjtMHRu5rIAghQ=
-X-Received: by 2002:a05:6102:3f05:b0:4bb:e8c5:b162 with SMTP id
- ada2fe7eead31-4c8568e4188mr8158608137.10.1744003721979; Sun, 06 Apr 2025
- 22:28:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Gu6qIW5v"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1744003734; x=1775539734;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=C/Fxkru4J5X++tDOqligkaAo4GRDfoRkgoCWCPGQxLs=;
+  b=Gu6qIW5vPW2rXMoEr/iCqWr8NJbu8Y8fxaRAPKb8Bt13589MM8GaQngb
+   MFgIEGOx8Fbma+17VJxQRUzrx9mhGCsCEX06a6+HLNdfJc1u1TFIv6yQS
+   Sm4bVNQWImJ8Fv3G4G+CCUgm8Z3dsUiaTFm/BqNT9dxaCo3HcfiVjn4GT
+   5Rv1H7csl9bWkefkyPlldb7Z9IttRPKRCJ+ogqsLQHdoZs19m3rnxfphR
+   VP1WZVakhnEHyQ/xBjxfI8gGNVlZobeb2aeZHnDl/LBBjN4C1xWUCh9YA
+   8YmuuUnvocWQEMyLdo2RJzyqppYpNkzxIMRUk7BNsQ2OkqCD/l+IQuu/g
+   A==;
+X-CSE-ConnectionGUID: 8I/qMeRTSV+vQCo2XwrKFA==
+X-CSE-MsgGUID: nkatJtClQZ2BlJU3QSYENw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11396"; a="45389836"
+X-IronPort-AV: E=Sophos;i="6.15,193,1739865600"; 
+   d="scan'208";a="45389836"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2025 22:28:53 -0700
+X-CSE-ConnectionGUID: bJpjpKsITX+qh8MgEluVvA==
+X-CSE-MsgGUID: Fv8wazAPTWqjxetknC5G4Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,193,1739865600"; 
+   d="scan'208";a="165041707"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2025 22:28:52 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Sun, 6 Apr 2025 22:28:52 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Sun, 6 Apr 2025 22:28:52 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.175)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Sun, 6 Apr 2025 22:28:51 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=j/PYp3Go+7liGOc3O4Yane1fB4izXhObCu/j0MorMFcjWZtCE4YkA3c31VDMX5+jfM+NHoGLWQIh1xE6LjRxkkZy10kIMt0wSILUQxOsRGbBqC4wVXKBYkSbS7Novuj4tiyGSdozo4eqraXXENGHIwOErb3NwxHKri7bM24Sc3TYJN2wh2ozYGadJ9aXSgSqL7JgABNWB7JMcsY1HafbuJOLvGI3e+K1OwLy3Qtxm1xZw8Ubve8gxLJZ4iD2XCoEVzZnaV5vyhVfpxev7LmGFCOMb91sRhJlp7Ztudm9FRQChWCi5UJNZyBOwHJ8c16g3Tuli66RARYeBwL7rnHd/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C/Fxkru4J5X++tDOqligkaAo4GRDfoRkgoCWCPGQxLs=;
+ b=aKZlUFByZIzFTMaU0YsB9aIMpvW4wxHctsOn3MrLGxZsMSFF3P4hzyfdmp48o0dscbjeAehBHzL+7dlmjLc9BaU9v87btdyWTBtQOZZr7jp7brHRN/QmTZ1D952nLdgDL2Z52dhHunYwP94dISneKIvYp7s/QvqIWmpVoVu1llKCXIoAHHFNc6h1ov3quv81YlD24LPbY1fNb/LtTL6s53KfkSIjomEUqi0QgY85M+FpY9VJbcOflTfr5Jv7TkHpSJgOfi+3AzGtcCrzyz21i3VhPj4ViYFGvlFNjlvPHp/vXzfQK2+DpSXPfqOMutEBqgF2VPvx6+rjakF9exT3mw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by PH7PR11MB5942.namprd11.prod.outlook.com (2603:10b6:510:13e::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.32; Mon, 7 Apr
+ 2025 05:28:49 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%5]) with mapi id 15.20.8606.033; Mon, 7 Apr 2025
+ 05:28:49 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Vasant Hegde <vasant.hegde@amd.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>
+CC: Robin Murphy <robin.murphy@arm.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>, "suravee.suthikulpanit@amd.com"
+	<suravee.suthikulpanit@amd.com>
+Subject: RE: [PATCH] iommu/amd: Add Secure ATS support
+Thread-Topic: [PATCH] iommu/amd: Add Secure ATS support
+Thread-Index: AQHbh3UOCMVRgdan70yjYJFDyKuOHbNX8z2AgAANboCAABr8AIAApFIggAAJnQCAABasoIAAQ3owgAIlpoCAAPkEsIAAF6wAgAANLoCAAASrgIAAABIAgAMaTACAAc13gIAClZTAgAjFdoCAAnmvAIAH/ZCAgCDFuUA=
+Date: Mon, 7 Apr 2025 05:28:48 +0000
+Message-ID: <BN9PR11MB5276A14C8598CCC6C58A781A8CAA2@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20250225105829.52223-1-vasant.hegde@amd.com>
+ <ce86ff90-377e-49fe-9c4e-d2ad7abeeec8@arm.com>
+ <20250225145518.GJ545008@ziepe.ca>
+ <BN9PR11MB527624C1DED16B3C049D13438CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250226011750.GB5011@ziepe.ca>
+ <BN9PR11MB5276B3E410FD336A3062FA5E8CC22@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <4fba254e-ca47-4e7b-baf3-0228d9605c2b@amd.com>
+ <BN9PR11MB52763A8885AF1678E05E8B528CCC2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <942a1a66-5c18-43e2-886e-df38cb3e7258@intel.com>
+ <54db17d7-b150-4579-a33d-f1b5cc8943bc@amd.com>
+ <6eb0ec90-5859-4605-8a2e-657f6f711d61@intel.com>
+ <825ddadd-6770-46b5-936e-f17988534984@amd.com>
+ <13e1e1d8-5870-44ea-a800-e5b25bafd344@intel.com>
+ <4a0e64e9-57c5-4f30-97bf-00c3eafe0b8f@amd.com>
+ <BN9PR11MB5276786C4BF482199872BB2E8CCB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <f728d10e-97d0-44eb-ab2f-0e40d7d5f810@amd.com>
+ <BN9PR11MB5276B52073263CF1AEAE888A8CD02@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <0fff7dea-3a7e-4305-9ce1-066fd86537eb@amd.com>
+In-Reply-To: <0fff7dea-3a7e-4305-9ce1-066fd86537eb@amd.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH7PR11MB5942:EE_
+x-ms-office365-filtering-correlation-id: 6b9c3ba5-9adc-4192-e318-08dd7595133b
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700018;
+x-microsoft-antispam-message-info: =?utf-8?B?WVBFTVZaTXA5dFBSMDdsN2xUYS8xVVh2L2w5YWl6Q3FzQUYzNjhUNXFtK3hs?=
+ =?utf-8?B?eDZuQ0ZQVElsajBPYzhFL0cyeHF3ektBcDd5NklhSlN3eUFxd1UrejdXY0t5?=
+ =?utf-8?B?SitwNk41UzRwKzNwV3p3UVoyZ1BvcWIwMmZGV3prTEQ1SUl5QTFXUUNBcjBZ?=
+ =?utf-8?B?UVBpblVPbzdIK05KUkRKcUVnbSsrRmxhSXY4N1gyVkc2ZnNXdW5pSndaQzBS?=
+ =?utf-8?B?M1NIUVNSV0lDSFFObWNYQW5HYlVTZFh3UGtJK2JWQ3BtQ3BHaUxHT0RMV2kx?=
+ =?utf-8?B?MzBXb3hYNVJlbHlDUnluNGpPV2F2RkVHTFhBb3lFaVUwVmNleDljY0lzMXIw?=
+ =?utf-8?B?UjNsWHZROG9Wc3NVRWZrdlpYOXZhQlNybS9STWtjOEIyM0xuSkhjNWdpVHl2?=
+ =?utf-8?B?YXB5TnFjWU9MQk9qdTc0blN2NURwUDhyeDlZcHVoRHFraXljT0E0WlA2Qm1I?=
+ =?utf-8?B?VnRFU3ZscnBJYmU5dk5KZGlTTXk5VU5uaGVRMWJzNituOUNhSUUrZHZXYm9B?=
+ =?utf-8?B?N2c0Z3Vxd2UwZVpMQ2N6eXJIcG04TjRscUZaNjAvSlBZNlExWFIwanZWTUhC?=
+ =?utf-8?B?WWF6VUFQR3lzUWJCaFYvbVkrMzNaNThVek1JTUxQRmwxY2wwWUpNQ1ZSc1pO?=
+ =?utf-8?B?T0Z6Z055VUpPQ1dLT004bGMzaWNHbENZNU1KdzNlK3lZeTRKSlFrakNNN3FJ?=
+ =?utf-8?B?UlFQR3ZzWDh5dUFNRXpDYnhxalNDN1NlYkZEV014enJuN3F3aE5HOVhpNFZt?=
+ =?utf-8?B?NDdscGxlcHUwZU1OdGtFMGwreEdwbnRRc25PSVFoVlQrS0c3aUIrK3Ixek12?=
+ =?utf-8?B?SjIwSVNaL1AxNE1PaXdieHFCUmNPYmNXRGo2cGZOUlR1TllEUzJuN25RaVJE?=
+ =?utf-8?B?Nnh6K0hIT0VmZVNHUkhTaUkzdjBrdGY2cVUvaUwwb0ZUTFZWRVRjMjN4VUpI?=
+ =?utf-8?B?cUl4eC9HT214b29TOHdsQWFBaCtPcG1NckNDQTlqQ0lKRkRieW5Td2orT3dm?=
+ =?utf-8?B?WktFK2lrVGJkbS85MmxNL0didXNuWi9YckxIRC82Nnpmd2krcEtmS1k5QjZQ?=
+ =?utf-8?B?Wk5EdDIwUEEyRkZpbnpzZVZINkVHRURFMFowQUliOTVSQTJIYXQ3UytGOWJF?=
+ =?utf-8?B?ckF5Zjd6WVBNTWpUZFdQWUl4bmdObHNaaGlmZHJOcmlGQng3ZDBzT3orUVRL?=
+ =?utf-8?B?anFNS0ZvV3M3L1RNbkE3Y21aanZKT2hKdEsvT08zR0xXdDBLMUo5bHZNSFhJ?=
+ =?utf-8?B?eFJrL3czcGZlQUkyOU16a3o4YWpiZWZhVEhFYlZQUkVoZzFGLzhnNHB1Yzg5?=
+ =?utf-8?B?U0VDaWx2dTdsWWtqaHordzFuNC9rRG9zdHBTT2I3UHg4eWJzTHdrbEdtdnpP?=
+ =?utf-8?B?UGJlNE9nZzM1dFRwNXZMUTl4dkllVTJuUHp6a1pkUVdpbjNQSC8zS0xhWjVx?=
+ =?utf-8?B?S0VFaFYyaFRrMU9FWkllWDhTVysrT2tHWTNoR0hWa2h5NmxnQk1qT3AxZC9B?=
+ =?utf-8?B?TDdvV0ZOeGZSYklrVmNJbU9xa2FNaEYyeDZQSDA3Nk40bUxiT25mQ2tvZ3J3?=
+ =?utf-8?B?bXFlZlo2ak5ieExldVd1OG0va1NrdE9CZjUrQm1WOUFOcmhhaXd2dm9jUk5V?=
+ =?utf-8?B?VWdPZHErZTZQQW9PK2FDQmpybFJ0b2lZdjZaSTRWSDVDZitoWHdqVnJ1M1VX?=
+ =?utf-8?B?OWVyS29ObThJcG52cFdSZUZiS3pYZEpTQWNGUXZIa3VOUFRLZ1RXQ2luaFdr?=
+ =?utf-8?B?R1NkMGpWblVXbnFsYUIvWFVMQll4UEhJbXc5cDdVS282OU4zL2NsUDFqeTM2?=
+ =?utf-8?B?cVJRRlJHaXRNaVNjRURJVlJyS2NydFZTWjZiVVJSY3I1UEdER3FsaDZkQjRO?=
+ =?utf-8?B?QWFHTkZzU0czT1lIQ1FZbUluWkdqZFk4ZTl6OGhQRVlPM0cwMUw4VVdzTit0?=
+ =?utf-8?Q?aqND7qF0vEmqR304T9PJdCfvGAMUJm+g?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?R201Nk4rQ1c4YWdINDF1VWpDODVGMFhoeGdRL0xrZnREZ0ZTbXROUEhTZWw4?=
+ =?utf-8?B?dGkvTzIxa0FDMHdJTUFqODY2eWd4TnpTc1JzT3RTNWxja1lZeU1SM2IyYmJ1?=
+ =?utf-8?B?N3AwNjlTS2I1clFBZVBqWDl2N3UvTG9LeTZRVlpadEFVazhjb2ErSTQ1Zkhh?=
+ =?utf-8?B?ZHdLMkJleEpxKzRJaEhUY2RuZWpiV3lmRDRyUGVPSTk3ZEtqSmNMZWUwZ1VV?=
+ =?utf-8?B?QmJCSzRHVUFjaElTVVVlVWRqRE1uOGZkZXpSdm9VU1VqNzhFQ25SanJCYlRr?=
+ =?utf-8?B?dkhtVzdid1FGdC8xdU9vV2lmSFVOeERWVmJIaVhSYnE1N0laS1V4Vk1PZWxu?=
+ =?utf-8?B?cnkwMDZYRjI1UUFOMTUzczJqaE1oL1ZSMEtnNnF1THEzTWU5TlNoMzk0aGtE?=
+ =?utf-8?B?ejQvZ0hzSVFiRGlIRHNkN1N6NjVBRENGMHVTOFRVWCszZzZOWFRVZ0krakxx?=
+ =?utf-8?B?Rndpd2Y1amlvWlIyOVJHQ3VHQi9vbytoNnF2SmptOWlwRExkRUNYM1J1anJl?=
+ =?utf-8?B?OTAwNHZrK1FRazNXL3puNlJSY05XblJyNm5INmo2a2RtVE1sbitSbFBNZHla?=
+ =?utf-8?B?ZkxPSmVrdzhaOHU2Y3l5cENnRTJmUXd6cUFtWjVkMEcrYy9UcTVNS1AzUWhI?=
+ =?utf-8?B?ZXQ1RzQ4RlpJRUJxVXVXYkp0U0VoaVNsaEp2OU1pRWxKajh1emNnZGxwY2wv?=
+ =?utf-8?B?Q2RpMHJKb1hPZVlTd2hucDNpM3QwRGlJOGNucU8veVROb3dHQ0J3elY2RlV1?=
+ =?utf-8?B?dU9SaGMwUXFIekZpM3lLSEZFNFFWUTZqeWpVWlpKenh4TTFhMThjSGdqdjRm?=
+ =?utf-8?B?VkpZTHN1cEx2Y2lSaHUwaXQ5VWJhSjdyZUwvcVd2RXlOZnhURndmU0tRS2tv?=
+ =?utf-8?B?UUJuRlpKWWNEeXpISnN5SXpkcGFpd2Q5MWtaVDE1VUhwcWJvUVpIenQwQlg2?=
+ =?utf-8?B?L3B6RXQ5UHVLMmEwOEVhMXJibng2alVHUDJMbWdSM21jU2pudmlKSW9QRHpN?=
+ =?utf-8?B?M1VaNjRiK0hYL1pBZXdRdzZmcUZQQmswbzc5RXJVczlDajdvWXVHQ0N1OXQy?=
+ =?utf-8?B?MFlPRURhTVM2amtPUjJYNHRtR3hscHMrdVJYV205cFBJUzdDV2wvSTlFMFd6?=
+ =?utf-8?B?YllDZDdaQS84bmVIakhkVEJOcnNKTjVjUmhacUtvTVhrdW83ZUZSR3Z6NCtN?=
+ =?utf-8?B?N2hqaS8rQ0VyYXIzRGNHaUNhM0ovRC8wcS81eXNiTmdKd0VnQkQxSkNPV29S?=
+ =?utf-8?B?UHpNVmg5UEJ3WDhkYUg2a2ZtK2N3WlFxSkxod1pCbkFJOUQxU3dMQXY5VzZS?=
+ =?utf-8?B?cEJtZDd5aDlvY3JRcnQyNDkvM2d0V0xqOUo3TlBweDlKMDgvNEJJRmY3VjZ4?=
+ =?utf-8?B?aW80QXAwNTlSN0J5WXI0Q2xTVURnKzNDOVdRRmpYYTIyQXArNVRsODFkZXRB?=
+ =?utf-8?B?enozRXBjakZ1dTFNeWlOUWtUVW4xQXNVK3NieVFBMEQ1UFdOT3dzb0FwRUpN?=
+ =?utf-8?B?V2daZUZIN0x4eHdwVmJIS1dDOHN4ZWk5Njk1dXZ3Vy9pWUdFTVB6b2VpUTE0?=
+ =?utf-8?B?L3lYeHpZcldNeVVzdWVhbk5EUC9obXY0eitYb2FBc3ZuNnFUdjNWSWxJblFW?=
+ =?utf-8?B?cjI2ZjN4VXJSUVdkd01mMkhEVG5EVVNGNUVrZXJob1I2Uk1QeTRHOE02Ungz?=
+ =?utf-8?B?T1hKKzFFYWFWU1BDSUp6Z3FkT0wxOG1kcnZGakZGRE5UWUZKZEJHQTZLZmtL?=
+ =?utf-8?B?N2FoeG5RMlpSNWM5ZEMvMVk1U0RSYTU2RXZIN09qQk9tT3NyaE5IM0tOL1BU?=
+ =?utf-8?B?K2tpTUs1RU5sMUJrN3hGQk40aVVJVit6YW1DS1F6S3NSWUZkMnlIaEptMVZI?=
+ =?utf-8?B?MWxZUzgyZUUzbVlheE5LNVJHVFVxYjgvZTdIQ1llVUM5MkJGL09KUFFmZk1j?=
+ =?utf-8?B?Z2IxVnh6MkZsN0hKN0o0cXBWYzJhTVRRanNKZlhkSlB2QVFiZVRCMUUrdElH?=
+ =?utf-8?B?RFJrbS9wMk9iNVNNMEpJT1JlYVBXT2ViVXNTRFFVWTZId01XSXQ2YUlRL05Q?=
+ =?utf-8?B?Q3JsLzNzOTBva3NvdnNZZCtZa1dnbjhlbjZPcmZJUFM5UjJ5NUF2VW8yU01P?=
+ =?utf-8?Q?SBXlZST2HGIqhV0lH9/aPuPGF?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250212022718.1995504-1-xiaqinxin@huawei.com> <20250212022718.1995504-2-xiaqinxin@huawei.com>
-In-Reply-To: <20250212022718.1995504-2-xiaqinxin@huawei.com>
-From: Barry Song <21cnbao@gmail.com>
-Date: Mon, 7 Apr 2025 17:28:31 +1200
-X-Gm-Features: ATxdqUG6XXZmLjmCcNcJ79x8athR9dBwmbL9emzES-cCl5PPW5_OVcEJv4TMzvg
-Message-ID: <CAGsJ_4waiZ2+NBJG+SCnbNk+nQ_ZF13_Q5FHJqZyxyJTcEop2A@mail.gmail.com>
-Subject: Re: [PATCH 1/3] dma mapping benchmark: modify the framework to adapt
- to more map modes
-To: Qinxin Xia <xiaqinxin@huawei.com>
-Cc: chenxiang66@hisilicon.com, yangyicong@huawei.com, hch@lst.de, 
-	iommu@lists.linux.dev, jonathan.cameron@huawei.com, prime.zeng@huawei.com, 
-	fanghao11@huawei.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b9c3ba5-9adc-4192-e318-08dd7595133b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2025 05:28:48.9493
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wlbdUIJdsFMFfmbpoBc0ZYUqoomWNK0CLHME5jCH7FAZmhVLj6WFMN1K5bODvdrx6jYz8k2Z0MWQg+R4eZWR1Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5942
+X-OriginatorOrg: intel.com
 
-On Wed, Feb 12, 2025 at 3:27=E2=80=AFPM Qinxin Xia <xiaqinxin@huawei.com> w=
-rote:
->
-> In this patch map_benchmark abstract in four interface: prepare, unprepar=
-e,
-> do_map, do_unmap. When there's a new mode to add, need four steps:
-> 1) Add the mode in map_benchmark.h
->
-> 2) Defines the mode param, like struct dma_xxx_map_param, and this object
->    will be return in prepare and as input parameter in other ops;
->
-> 3) Defines the ops functions:prepare, unprepare, do_map, do_unmap.
->
-> 4) Add the new mode in dma_map_benchmark_ops.
->
-> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
-> ---
->  include/linux/map_benchmark.h |   6 ++
->  kernel/dma/map_benchmark.c    | 122 +++++++++++++++++++++++++++-------
->  2 files changed, 105 insertions(+), 23 deletions(-)
->
-> diff --git a/include/linux/map_benchmark.h b/include/linux/map_benchmark.=
-h
-> index 62674c83bde4..054db02a03a7 100644
-> --- a/include/linux/map_benchmark.h
-> +++ b/include/linux/map_benchmark.h
-> @@ -15,6 +15,11 @@
->  #define DMA_MAP_TO_DEVICE       1
->  #define DMA_MAP_FROM_DEVICE     2
->
-> +enum {
-> +       DMA_MAP_SINGLE_MODE,
-> +       DMA_MAP_MODE_MAX
-> +};
-> +
->  struct map_benchmark {
->         __u64 avg_map_100ns; /* average map latency in 100ns */
->         __u64 map_stddev; /* standard deviation of map latency */
-> @@ -27,5 +32,6 @@ struct map_benchmark {
->         __u32 dma_dir; /* DMA data direction */
->         __u32 dma_trans_ns; /* time for DMA transmission in ns */
->         __u32 granule;  /* how many PAGE_SIZE will do map/unmap once a ti=
-me */
-> +       __u8  map_mode; /* the mode of dma map */
-
-We previously added some padding to ensure the uABI remained consistent.
-I just noticed that Tiantao=E2=80=99s commit (8ddde07a3d285a0f3cec, "dma-ma=
-pping:
-benchmark: extract a common header file for map_benchmark definition")
-accidentally removed that padding, which has completely broken the ABIs.
-
-Could you send a patch to fix this regression, and CC it to
-stable@vger.kernel.org before adding the new field which should
-use the expansion[] instead.
-
-
->  };
->  #endif /* _KERNEL_DMA_BENCHMARK_H */
-> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
-> index cc19a3efea89..d8ec0ce058d8 100644
-> --- a/kernel/dma/map_benchmark.c
-> +++ b/kernel/dma/map_benchmark.c
-> @@ -5,6 +5,7 @@
->
->  #define pr_fmt(fmt)    KBUILD_MODNAME ": " fmt
->
-> +#include <linux/cleanup.h>
->  #include <linux/debugfs.h>
->  #include <linux/delay.h>
->  #include <linux/device.h>
-> @@ -31,17 +32,98 @@ struct map_benchmark_data {
->         atomic64_t loops;
->  };
->
-> +struct map_benchmark_ops {
-> +       void *(*prepare)(struct map_benchmark_data *map);
-> +       void (*unprepare)(void *arg);
-> +       int (*do_map)(void *arg);
-> +       int (*do_unmap)(void *arg);
-> +};
-> +
-> +struct dma_single_map_param {
-> +       struct device *dev;
-> +       dma_addr_t addr;
-> +       void *xbuf;
-> +       u32 npages;
-> +       u32 dma_dir;
-> +};
-> +
-> +static void *dma_single_map_benchmark_prepare(struct map_benchmark_data =
-*map)
-> +{
-> +       struct dma_single_map_param *mparam __free(kfree) =3D kzalloc(siz=
-eof(*mparam),
-> +                                                                   GFP_K=
-ERNEL);
-> +       if (!mparam)
-> +               return NULL;
-> +
-> +       mparam->npages =3D map->bparam.granule;
-> +       mparam->dma_dir =3D map->bparam.dma_dir;
-> +       mparam->dev =3D map->dev;
-> +       mparam->xbuf =3D alloc_pages_exact(mparam->npages * PAGE_SIZE, GF=
-P_KERNEL);
-> +       if (!mparam->xbuf)
-> +               return NULL;
-> +
-> +       /*
-> +        * for a non-coherent device, if we don't stain them in the
-> +        * cache, this will give an underestimate of the real-world
-> +        * overhead of BIDIRECTIONAL or TO_DEVICE mappings;
-> +        * 66 means evertything goes well! 66 is lucky.
-> +        */
-> +       if (mparam->dma_dir !=3D DMA_FROM_DEVICE)
-> +               memset(mparam->xbuf, 0x66, mparam->npages * PAGE_SIZE);
-> +
-> +       return_ptr(mparam);
-> +}
-> +
-> +static void dma_single_map_benchmark_unprepare(void *arg)
-> +{
-> +       struct dma_single_map_param *mparam =3D arg;
-> +
-> +       free_pages_exact(mparam->xbuf, mparam->npages * PAGE_SIZE);
-> +       kfree(mparam);
-> +}
-> +
-> +static int dma_single_map_benchmark_do_map(void *arg)
-> +{
-> +       struct dma_single_map_param *mparam =3D arg;
-> +
-> +       mparam->addr =3D dma_map_single(mparam->dev, mparam->xbuf,
-> +                                     mparam->npages * PAGE_SIZE, mparam-=
->dma_dir);
-> +       if (unlikely(dma_mapping_error(mparam->dev, mparam->addr))) {
-> +               pr_err("dma_map_single failed on %s\n", dev_name(mparam->=
-dev));
-> +               return -ENOMEM;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static int dma_single_map_benchmark_do_unmap(void *arg)
-> +{
-> +       struct dma_single_map_param *mparam =3D arg;
-> +
-> +       dma_unmap_single(mparam->dev, mparam->addr,
-> +                        mparam->npages * PAGE_SIZE, mparam->dma_dir);
-> +       return 0;
-> +}
-> +
-> +static struct map_benchmark_ops dma_single_map_benchmark_ops =3D {
-> +       .prepare =3D dma_single_map_benchmark_prepare,
-> +       .unprepare =3D dma_single_map_benchmark_unprepare,
-> +       .do_map =3D dma_single_map_benchmark_do_map,
-> +       .do_unmap =3D dma_single_map_benchmark_do_unmap,
-> +};
-> +
-> +static struct map_benchmark_ops *dma_map_benchmark_ops[DMA_MAP_MODE_MAX]=
- =3D {
-> +       [DMA_MAP_SINGLE_MODE] =3D &dma_single_map_benchmark_ops,
-> +};
-> +
->  static int map_benchmark_thread(void *data)
->  {
-> -       void *buf;
-> -       dma_addr_t dma_addr;
->         struct map_benchmark_data *map =3D data;
-> -       int npages =3D map->bparam.granule;
-> -       u64 size =3D npages * PAGE_SIZE;
-> +       __u8 map_mode =3D map->bparam.map_mode;
->         int ret =3D 0;
->
-> -       buf =3D alloc_pages_exact(size, GFP_KERNEL);
-> -       if (!buf)
-> +       void *arg =3D dma_map_benchmark_ops[map_mode]->prepare(map);
-> +
-> +       if (!arg)
->                 return -ENOMEM;
->
->         while (!kthread_should_stop())  {
-> @@ -49,23 +131,10 @@ static int map_benchmark_thread(void *data)
->                 ktime_t map_stime, map_etime, unmap_stime, unmap_etime;
->                 ktime_t map_delta, unmap_delta;
->
-> -               /*
-> -                * for a non-coherent device, if we don't stain them in t=
-he
-> -                * cache, this will give an underestimate of the real-wor=
-ld
-> -                * overhead of BIDIRECTIONAL or TO_DEVICE mappings;
-> -                * 66 means evertything goes well! 66 is lucky.
-> -                */
-> -               if (map->dir !=3D DMA_FROM_DEVICE)
-> -                       memset(buf, 0x66, size);
-> -
->                 map_stime =3D ktime_get();
-> -               dma_addr =3D dma_map_single(map->dev, buf, size, map->dir=
-);
-> -               if (unlikely(dma_mapping_error(map->dev, dma_addr))) {
-> -                       pr_err("dma_map_single failed on %s\n",
-> -                               dev_name(map->dev));
-> -                       ret =3D -ENOMEM;
-> +               ret =3D dma_map_benchmark_ops[map_mode]->do_map(arg);
-> +               if (ret)
->                         goto out;
-> -               }
->                 map_etime =3D ktime_get();
->                 map_delta =3D ktime_sub(map_etime, map_stime);
->
-> @@ -73,7 +142,9 @@ static int map_benchmark_thread(void *data)
->                 ndelay(map->bparam.dma_trans_ns);
->
->                 unmap_stime =3D ktime_get();
-> -               dma_unmap_single(map->dev, dma_addr, size, map->dir);
-> +               ret =3D dma_map_benchmark_ops[map_mode]->do_unmap(arg);
-> +               if (ret)
-> +                       goto out;
->                 unmap_etime =3D ktime_get();
->                 unmap_delta =3D ktime_sub(unmap_etime, unmap_stime);
->
-> @@ -108,7 +179,7 @@ static int map_benchmark_thread(void *data)
->         }
->
->  out:
-> -       free_pages_exact(buf, size);
-> +       dma_map_benchmark_ops[map_mode]->unprepare(arg);
->         return ret;
->  }
->
-> @@ -209,6 +280,11 @@ static long map_benchmark_ioctl(struct file *file, u=
-nsigned int cmd,
->
->         switch (cmd) {
->         case DMA_MAP_BENCHMARK:
-> +               if (map->bparam.map_mode >=3D DMA_MAP_MODE_MAX) {
-> +                       pr_err("invalid map mode\n");
-> +                       return -EINVAL;
-> +               }
-> +
->                 if (map->bparam.threads =3D=3D 0 ||
->                     map->bparam.threads > DMA_MAP_MAX_THREADS) {
->                         pr_err("invalid thread number\n");
-> --
-> 2.33.0
->
-
-Thanks
-Barry
+PiBGcm9tOiBWYXNhbnQgSGVnZGUgPHZhc2FudC5oZWdkZUBhbWQuY29tPg0KPiBTZW50OiBNb25k
+YXksIE1hcmNoIDE3LCAyMDI1IDQ6NTcgUE0NCj4gPj4+DQo+ID4+PiBBY3R1YWwgYXRzIGVuYWJs
+aW5nL2VuZm9yY2VtZW50IGlzIGRvbmUgYXQgYXR0YWNoIHRpbWUsIGFjY29yZGluZw0KPiA+Pj4g
+dG8gYXRzX3BvbGljeS4NCj4gPj4NCj4gPj4gVGhlbiBkdXJpbmcgYXR0YWNoX2RldigpIHdlIHBh
+c3MgdGhvc2UgZmxhZ3MgYXMgYXJndW1lbnQ/DQo+ID4NCj4gPiB0aGUgcG9saWN5IGlzIGFscmVh
+ZHkgc3RvcmVkIGluIGlvbW11X2RldmljZSBzbyBubyBuZWVkIHRvIHBhc3MuDQo+ID4NCj4gPiBh
+bmQgdGhlIGRvbWFpbiBhbHNvIGluY2x1ZGVzIHRoZSBhdHMgZmxhZyBhdCBhbGxvY2F0aW9uIHRp
+bWUuDQo+ID4NCj4gPiBUaGVuIGxvb2tzIG5vIG5lZWQgdG8gcGFzcyBhZGRpdGlvbmFsIGZsYWdz
+IGF0IGF0dGFjaD8NCj4gDQo+IFNvIHdoZW4gdXNlciByZXF1ZXN0IHRvIGNoYW5nZSBmcm9tIEFU
+UyB0byBzZWN1cmUgQVRTIHZpYSBzeXNmcyA6DQo+ICAgd2UgdHdlYWsgaW9tbXVfZGV2IC8gZG9t
+YWluIGFuZCBjYWxsIGF0dGFjaF9kZXYoKSA/DQo+IA0KDQpOby4gQXR0YWNoIGlzIHN0aWxsIGlu
+aXRpYXRlZCBieSBpb21tdWZkIGFuZCB0aGlzIGlzIGp1c3QgYW4NCmF0dHJpYnV0ZSBhZmZlY3Rp
+bmcgdGhlIGJlaGF2aW9yIG9mIGF0dGFjaC4NCg0KSWYgdGhlIGRldmljZSBpcyBhbHJlYWR5IGF0
+dGFjaGVkIHRoZW4gcmV0dXJuIC1FQlVTWSBpbiBzeXNmcyB3cml0ZS4NCg0Kb3RoZXJ3aXNlIHVw
+ZGF0ZSB0aGUgYXR0cmlidXRlIHdoaWNoIHdpbGwgdGFrZSBlZmZlY3QgYXQNCm5leHQgYXR0YWNo
+Lg0K
