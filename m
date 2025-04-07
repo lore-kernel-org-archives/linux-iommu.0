@@ -1,341 +1,264 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 451DC221DA4
-	for <iommu@lists.linux.dev>; Mon,  7 Apr 2025 10:51:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50AC1233D85;
+	Mon,  7 Apr 2025 11:05:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744023096; cv=none; b=n4B+6KeU5bIL4tBZ26sNJm3JRfmBokAJfbpJqimfdXvHSt/6aJZNr1TvRBSCgnAqDdWlf6PzJATVAiuy6LfpFoOUc+NPgbyRfqdFTx83jFMimukplhgcte7biE0/M/a9PnvPhTSxfBIXIFvg8EO+CBU+MW7q66/lKaXNC58tDdU=
+	t=1744023918; cv=none; b=GXZC+2PP//mOw9bRu/zd/611Ouvjnb9fpa/MB47X7Obt8ftpL+k82o5ehFcJDVwL7yQeTFXPkTAMUKk3sJxEQngvFMGCIIOOA0IcXTBDNiqmUgRnSUt7XkYj4ch3wK/SeV+qeEFYEKY3DRozyQqXbRzaipMmGhEW8Ar8iDnI69E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744023096; c=relaxed/simple;
-	bh=gJaoZvdoA/F31HW61JIj0XVLqHtXvDLdzqtnVyaLyt0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BzkLPKmJEVcHXN3kdzDi9AluQYilONP5zv/ZsmY/kMpICwgC9jjS9W1l1YJnJyrDbyef6guk+tp0Is39WSzadOfOjq/Oc1srxnoNp3DjDvgA5JlOp0HmvkYYwnoGLNbJoGiSKK/5tKIG7hff72KfsDFhbpSnDLDdA5MmxaXUeWY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qecFyJNa; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1744023918; c=relaxed/simple;
+	bh=nJCcGwyCZuu6B9cg8mEdqiZn0bZFneyhdJXneM3xqYk=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:Content-Type:
+	 MIME-Version; b=Xb9+90NCrt7qwDUSX7uc1x0/oSKvAKrK6IpDPE69KsfM4yYHt/cTpcKdaYR9+9A3PPWiLQ1EYuXjtTLNdCKdNRd8pGpHz8vIr34odKV8GK3O/Avq4SijQJ1mpDn5WPXb5jSpg6B8Jsps1bFcCj6tadrs9OUVo8QEjcGdk7vb/PU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aXI0xH6n; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qecFyJNa"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2263428c8baso351815ad.1
-        for <iommu@lists.linux.dev>; Mon, 07 Apr 2025 03:51:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aXI0xH6n"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5ed1ac116e3so7063113a12.3;
+        Mon, 07 Apr 2025 04:05:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744023093; x=1744627893; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=EbOTzGFNhz15uoPOrk0rjEt/+xH1zo2FYpc66vCfXZE=;
-        b=qecFyJNaB5QK8/4p7YiOLp1tP+8kw6DnxJSOo9N9m1z1kIPRITCr9p9WI97cQlofEb
-         sfyVydiDTnHJjGCwPHUE7otIvAZQlS9wpf6cfDjALw9nLAezil8LSjg6dSOx7Sr3zy7A
-         4Vyl4udhaJ/X7/eIZVIBWVhy1BMBjEw9QenKaO/CFvuVLcr5kYMMvpaHmEtHpMjdfZyh
-         nvunDPlXsrs8SLUUp/SYGaCAlZ9G1D6GVQDpbiei/FBu9NQYn7KKB6L4Q+c0zrSmk6TR
-         KnZEjF9WiJQG768T3YNwYVUX5014lmGXHBMkZmYHM8wv4oj9fEC0KgJ+e0QS/0ykzqKR
-         jrgQ==
+        d=gmail.com; s=20230601; t=1744023913; x=1744628713; darn=lists.linux.dev;
+        h=mime-version:user-agent:content-transfer-encoding:in-reply-to:date
+         :cc:to:from:subject:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bOXFkEFTB5SlM6cWWhuxa7vVuGMc7ycBvnouqma9E0c=;
+        b=aXI0xH6n8FKu05ts7j2hRz36wbz4sI+c3sEmqpv3aVzeeTj6yLCJ+BCxy449yh7M2w
+         nj8Xc1BSPTONxmbg/wTOwTVRqUzqZnKWTVLPxAcUMduPclPniFS74seRyaB95YQ0JG2d
+         obiUe6zznaK7lQcv4qO5s9xnOziiNcOEXBiAVW7e+9vRGatbjDfnBScIRSGB5i6he1dT
+         b9UvZ+J8oJvjp1dcllr1LRrUUZHtdk+GkBHLtpxH7+wRWPdw78ebvfyQoWdvwQINr+BX
+         PV9xCPiQ5QycVsC3reOEMDhj9kGxjNYGIhOpC0hXyA0SyDtsYWVxAg3L+nXGVPgbzBl9
+         V4JA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744023093; x=1744627893;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EbOTzGFNhz15uoPOrk0rjEt/+xH1zo2FYpc66vCfXZE=;
-        b=Vck6+EsmMKglJhxKb0P1M4vt4Di1WM0QdXJy65Nvzmf/uqtMCFLOdvcc/CkteHDKjh
-         hU4Lz0WOTlTF1DZSvwkzVd1VTowLzFQmRzWgFp0cb7eOikckq4IMMhk4L3W/pdkeXZag
-         w/jVOCRriL6/0jGCQvq3fT7BdlqXEaglNfP344XmV+nYmiqOKSwd6ue1DZL75VvdL+/V
-         /1Ijjo1PcgAbscsYoVe6LnTpdwPXXvdLgtl71U5eYZTDuNXTWPqDjhjVWycfFffMf88D
-         zjhAgv0muIPJOwfn7PDZsw6aw+lHBIK+Qt8LZ3OM4gmgrNmlZOOLdCJd20AoNw9zhTYa
-         dDVg==
-X-Forwarded-Encrypted: i=1; AJvYcCXbcaPiUZLl0GsxqXw8hye6EHrrK4L9HkOx17iWa0YYTlMQAlLrgbgZSfleHIUl6vNBbfsX2g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzGcQl0a37u/Mdz/r04/CckSrxSOEyAnZoh1VjErF+EVjJ4CneV
-	O3wj2x/19GG7hEu/K+npAaJ1W6qCieGyv/9aR/SHRHc4uOR41Z8dvMEZQdlJzV4YHIblcvUqBaI
-	pvA==
-X-Gm-Gg: ASbGncvxXPko5reJeYLOeOXXtbUQeunAphslWUQwYdE676wBkNPeoaHUNsnpBAwhB8H
-	Ph8drrMofqauxwMo1mDZw0sY2XxieVUGsWKqkmYkHV52Wn8uPsF3ICuPDzLemZ5FD6YMg+dFQs3
-	RgdgGk4GlnAEDJyUHQP5YUfAPDLHA8Whq4H+ymakY0rzSxxTCyNiJ0f9A0knLxmM0etRnj+rnS6
-	cXcYUtC0tgYDrErfDPkQGZ3Mz8wHcz9VOBLLazjnMo5WM0atq20GmonHcQ05UmMPEOTvOB3UN7w
-	1eTqT6oOqvX/zAdI16ojiCWnrn6TNdQf+ZmGqfD+HXuE3gwcAkVsZqtY/OQHAWlffX0Z5oOOTJZ
-	4bKg=
-X-Google-Smtp-Source: AGHT+IHb0AXSOrm1IvS7cqtNNGlz0NiH+Mhkd5aWS0Yc7Ae/NCDEI4krlsFHBlUBOAJW0WycUAsCOA==
-X-Received: by 2002:a17:902:c412:b0:223:fd7e:84ab with SMTP id d9443c01a7336-22a95eb8de7mr4775375ad.24.1744023093078;
-        Mon, 07 Apr 2025 03:51:33 -0700 (PDT)
-Received: from google.com (188.152.87.34.bc.googleusercontent.com. [34.87.152.188])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2297866e7f5sm77676465ad.206.2025.04.07.03.51.30
+        d=1e100.net; s=20230601; t=1744023913; x=1744628713;
+        h=mime-version:user-agent:content-transfer-encoding:in-reply-to:date
+         :cc:to:from:subject:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=bOXFkEFTB5SlM6cWWhuxa7vVuGMc7ycBvnouqma9E0c=;
+        b=hce3hzEkzTJx+svCvpQrZCEJx9P59D3KqeS2482NKqHKsW8Q6iIAOZCr7iYSBe3wOi
+         /feMEebqG0OIv02/HkGLwabCqGwD+p7YmPwi1p1kL5SEl2UgJqcXrmWjSHGNVUery7SK
+         BGkdd34YQKRgF+Zh+lf2RLabmA2FKfJKTf5vgJ6OAMYRRmOjqYEuJBN32vHmTlDiXNKU
+         DZnnyPq0bEyfochpYNUifVleZ7vkWnmAmZrCf3cvVytzNM0LxOEEGy3vx4uHBizd4poH
+         sgbsy8UFp9GWmmjItq0vT49VufHlHAflrL/MRIHxMaGGRqFXndv/vpeu03Usv/hcOxpN
+         yWIQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWub7KvwCIJ897EcJNM5oa20u9tR+UCC+U7yAlOCS12xV8DgAUDBbHNmMI9Ygea0svJBH5LWa1G1dnsfw==@lists.linux.dev, AJvYcCXYTbW/d1q2c3TZB/YxmhACQZg2Er0yw0whcGL895S5ELk63w0zIdrEJVQZXf/bpdBxk4Q7yw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxPxcKf/LQCK7S3detYDzSdQZwg2UrM19iUJkeXUr90C+80i+Uc
+	CnqKGmdIKq45oVXFQkcCCIqYD69MAcvdWg4Qz/pjaOlW4pFEy0NH
+X-Gm-Gg: ASbGncvMfKC2lUjQ4JmP7zfcq+20+QUb3JXtVLAtuHjLwLVZTmI8Grv0wt6Y3HJcmjy
+	MahTXF/1BUqtUm9op691VRx1i7bYBFoJPpy74AV5n3FyfTCCd4dU5TQjYX8Q6FN756dvktJP7+A
+	okZD6i8/X1uo6OoR8ZCXS7HyPb2C6abOeYL9q79zdp3OvS7aB2PBXxnAwWzrB1YOua+G7bg7MT3
+	tQkYb6ziyPo3zuI7MlaPNW+UeFKWyojcg9WmnhGgK7wPwr13C25EjiBSZuXBpxixy64om/KGVvx
+	trQXVLABjuSAp+b1HaZq7ZY0jD1YZb3nzFcH8MQH53p1B2YAx1zPhtzPT0n16mM9MYgo34Md/id
+	iZ0bW5To0vjgrBrMZySSI2xtHew==
+X-Google-Smtp-Source: AGHT+IHEdeZlXLBPLb2AZowh6EoNtmvcb1ERqK3ljQe07QWdq2HbAjNeGOzM9Iopbn8UOdCKiJvXBg==
+X-Received: by 2002:a05:6402:428c:b0:5f0:d853:dfec with SMTP id 4fb4d7f45d1cf-5f0d853e065mr7827782a12.13.1744023913379;
+        Mon, 07 Apr 2025 04:05:13 -0700 (PDT)
+Received: from ?IPv6:2001:b07:5d29:f42d:b211:eeef:5b8c:dd2f? ([2001:b07:5d29:f42d:b211:eeef:5b8c:dd2f])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5f087eedf61sm6359409a12.32.2025.04.07.04.05.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Apr 2025 03:51:32 -0700 (PDT)
-Date: Mon, 7 Apr 2025 10:51:24 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, shameerali.kolothum.thodi@huawei.com
-Subject: Re: [PATCH v1 3/4] iommu/arm-smmu-v3: Decouple vmid from S2
- nest_parent domain
-Message-ID: <Z_OuLJ7RGnChDckY@google.com>
-References: <cover.1741150594.git.nicolinc@nvidia.com>
- <0429d554fb0f54f6d79bdacacb3fb3e7877ca8f7.1741150594.git.nicolinc@nvidia.com>
+        Mon, 07 Apr 2025 04:05:13 -0700 (PDT)
+Message-ID: <dca6b4a3ec0c19588221205baeb55d1a424e9af6.camel@gmail.com>
+Subject: Re: [RFC PATCH v2 18/22] coco/sev-guest: Implement the guest
+ support for SEV TIO
+From: Francesco Lavra <francescolavra.fl@gmail.com>
+To: aik@amd.com
+Cc: Jonathan.Cameron@huawei.com, aneesh.kumar@kernel.org,
+ ashish.kalra@amd.com,  baolu.lu@linux.intel.com, bhelgaas@google.com,
+ dan.j.williams@intel.com,  dionnaglaze@google.com, hch@lst.de,
+ iommu@lists.linux.dev, jgg@ziepe.ca,  joao.m.martins@oracle.com,
+ joro@8bytes.org, kevin.tian@intel.com,  kvm@vger.kernel.org,
+ linux-arch@vger.kernel.org, linux-coco@lists.linux.dev, 
+ linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org, lukas@wunner.de, 
+ michael.roth@amd.com, nicolinc@nvidia.com, nikunj@amd.com,
+ pbonzini@redhat.com,  robin.murphy@arm.com, seanjc@google.com,
+ steven.sistare@oracle.com,  suravee.suthikulpanit@amd.com,
+ suzuki.poulose@arm.com, thomas.lendacky@amd.com,  vasant.hegde@amd.com,
+ x86@kernel.org, yi.l.liu@intel.com, yilun.xu@linux.intel.com, 
+ zhiw@nvidia.com
+Date: Mon, 07 Apr 2025 13:05:10 +0200
+In-Reply-To: <20250218111017.491719-19-aik@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0429d554fb0f54f6d79bdacacb3fb3e7877ca8f7.1741150594.git.nicolinc@nvidia.com>
 
-On Tue, Mar 04, 2025 at 09:04:02PM -0800, Nicolin Chen wrote:
-> An S2 nest_parent domain can be shared across vSMMUs in the same VM, since
-> the S2 domain is basically the IPA mappings for the entire RAM of the VM.
-> 
-> Meanwhile, each vSMMU can have its own VMID, so the VMID allocation should
-> be done per vSMMU instance v.s. per S2 nest_parent domain.
-> 
-> However, an S2 domain can be also allocated when a physical SMMU instance
-> doesn't support S1. So, the structure has to retain the s2_cfg and vmid.
-> 
-> Allocate a vmid for a vSMMU instance in arm_vsmmu_alloc() and add a proper
-> arm_vsmmu_destroy() to clean it up.
-> 
-> Add a per-domain "vsmmus" list pairing with a spinlock, maintaining a list
-> on the S2 parent domain, to iterate S2 invalidations over the vmids across
-> the vSMMU instances created for the same VM.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 10 +++-
->  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 35 ++++++++++++--
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 47 +++++++++++++++----
->  3 files changed, 79 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 3336d196062c..1f6696bc4f6c 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -849,8 +849,12 @@ struct arm_smmu_domain {
->  
->  	enum arm_smmu_domain_stage	stage;
->  	union {
-> -		struct arm_smmu_ctx_desc	cd;
-> -		struct arm_smmu_s2_cfg		s2_cfg;
-> +		struct arm_smmu_ctx_desc cd;	/* S1 */
-> +		struct arm_smmu_s2_cfg s2_cfg;	/* S2 && !nest_parent */
-> +		struct {			/* S2 && nest_parent */
-> +			struct list_head list;
-> +			spinlock_t lock;
-> +		} vsmmus;
->  	};
->  
->  	struct iommu_domain		domain;
-> @@ -1049,6 +1053,8 @@ struct arm_vsmmu {
->  	struct arm_smmu_device *smmu;
->  	struct arm_smmu_domain *s2_parent;
->  	u16 vmid;
-> +
-> +	struct list_head vsmmus_elm; /* arm_smmu_domain::vsmmus::list */
->  };
->  
->  #if IS_ENABLED(CONFIG_ARM_SMMU_V3_IOMMUFD)
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> index ff8b550159f2..2c5a9d0abed5 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> @@ -30,6 +30,23 @@ void *arm_smmu_hw_info(struct device *dev, u32 *length, u32 *type)
->  	return info;
->  }
->  
-> +static void arm_vsmmu_destroy(struct iommufd_viommu *viommu)
+On 2025-02-18 at 11:10, Alexey Kardashevskiy wrote:
+>=20
+> +static int handle_tio_guest_request(struct snp_guest_dev *snp_dev,
+> u8 type,
+> +				   void *req_buf, size_t req_sz,
+> void *resp_buf, u32 resp_sz,
+> +				   void *pt, u64 *npages, u64 *bdfn,
+> u64 *param, u64 *fw_err)
 > +{
-> +	struct arm_vsmmu *vsmmu = container_of(viommu, struct arm_vsmmu, core);
-> +	struct arm_smmu_device *smmu = vsmmu->smmu;
-> +	struct arm_smmu_cmdq_ent cmd = {
-> +		.opcode = CMDQ_OP_TLBI_S12_VMALL,
-> +		.tlbi.vmid = vsmmu->vmid,
+> +	struct snp_msg_desc *mdesc =3D snp_dev->msg_desc;
+> +	struct snp_guest_req req =3D {
+> +		.msg_version =3D TIO_MESSAGE_VERSION,
 > +	};
-> +	unsigned long flags;
+> +	u64 exitinfo2 =3D 0;
+> +	int ret;
 > +
-> +	spin_lock_irqsave(&vsmmu->s2_parent->vsmmus.lock, flags);
-> +	list_del(&vsmmu->vsmmus_elm);
-> +	spin_unlock_irqrestore(&vsmmu->s2_parent->vsmmus.lock, flags);
-> +	arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
-> +	ida_free(&smmu->vmid_map, vsmmu->vmid);
+> +	req.msg_type =3D type;
+> +	req.vmpck_id =3D mdesc->vmpck_id;
+> +	req.req_buf =3D req_buf;
+> +	req.req_sz =3D req_sz;
+> +	req.resp_buf =3D resp_buf;
+> +	req.resp_sz =3D resp_sz;
+> +	req.exit_code =3D SVM_VMGEXIT_SEV_TIO_GUEST_REQUEST;
+> +
+> +	req.input.guest_rid =3D 0;
+> +	req.input.param =3D 0;
+> +
+> +	if (pt && npages) {
+> +		req.data =3D pt;
+> +		req.input.data_npages =3D *npages;
+> +	}
+> +	if (bdfn)
+> +		req.input.guest_rid =3D *bdfn;
+> +	if (param)
+> +		req.input.param =3D *param;
+> +
+> +	ret =3D snp_send_guest_request(mdesc, &req, &exitinfo2);
+> +
+> +	if (param)
+> +		*param =3D req.input.param;
+> +
+> +	*fw_err =3D exitinfo2;
+> +
+> +	return ret;
+
+The logic to update *npages is missing.
+
+>=20
 > +}
 > +
->  static void arm_smmu_make_nested_cd_table_ste(
->  	struct arm_smmu_ste *target, struct arm_smmu_master *master,
->  	struct arm_smmu_nested_domain *nested_domain, bool ats_enabled)
-> @@ -337,6 +354,7 @@ static int arm_vsmmu_cache_invalidate(struct iommufd_viommu *viommu,
->  }
->  
->  static const struct iommufd_viommu_ops arm_vsmmu_ops = {
-> +	.destroy = arm_vsmmu_destroy,
->  	.alloc_domain_nested = arm_vsmmu_alloc_domain_nested,
->  	.cache_invalidate = arm_vsmmu_cache_invalidate,
->  };
-> @@ -351,6 +369,8 @@ struct iommufd_viommu *arm_vsmmu_alloc(struct device *dev,
->  	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
->  	struct arm_smmu_domain *s2_parent = to_smmu_domain(parent);
->  	struct arm_vsmmu *vsmmu;
-> +	unsigned long flags;
-> +	int vmid;
->  
->  	if (viommu_type != IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
->  		return ERR_PTR(-EOPNOTSUPP);
-> @@ -381,15 +401,24 @@ struct iommufd_viommu *arm_vsmmu_alloc(struct device *dev,
->  	    !(smmu->features & ARM_SMMU_FEAT_S2FWB))
->  		return ERR_PTR(-EOPNOTSUPP);
->  
-> +	vmid = ida_alloc_range(&smmu->vmid_map, 1, (1 << smmu->vmid_bits) - 1,
-> +			       GFP_KERNEL);
-> +	if (vmid < 0)
-> +		return ERR_PTR(vmid);
+> +static int guest_request_tio_data(struct snp_guest_dev *snp_dev, u8
+> type,
+> +				   void *req_buf, size_t req_sz,
+> void *resp_buf, u32 resp_sz,
+> +				   u64 bdfn, enum tsm_tdisp_state
+> *state,
+> +				   struct tsm_blob **certs, struct
+> tsm_blob **meas,
+> +				   struct tsm_blob **report, u64
+> *fw_err)
+> +{
+> +	u64 npages =3D SZ_32K >> PAGE_SHIFT, c1, param =3D 0;
+> +	struct tio_blob_table_entry *pt;
+> +	int rc;
 > +
-
-Probably a basic question, I hope we'll have one vSMMU per VM? Even
-if that's not the case then the VMM should take care of invalidating
-contexts of all associated vSMMUs anyway? (Just thinking if we should
-allocate a VMID per VM or per vSMMU)
-
-Nit: Does it makes sense to create a helper like `arm_smmu_vmid_alloc`
-and call it here and finalise_s2?
-
->  	vsmmu = iommufd_viommu_alloc(ictx, struct arm_vsmmu, core,
->  				     &arm_vsmmu_ops);
-> -	if (IS_ERR(vsmmu))
-> +	if (IS_ERR(vsmmu)) {
-> +		ida_free(&smmu->vmid_map, vmid);
->  		return ERR_CAST(vsmmu);
-> +	}
->  
->  	vsmmu->smmu = smmu;
-> +	vsmmu->vmid = (u16)vmid;
->  	vsmmu->s2_parent = s2_parent;
-> -	/* FIXME Move VMID allocation from the S2 domain allocation to here */
-> -	vsmmu->vmid = s2_parent->s2_cfg.vmid;
-> +	spin_lock_irqsave(&s2_parent->vsmmus.lock, flags);
-> +	list_add_tail(&vsmmu->vsmmus_elm, &s2_parent->vsmmus.list);
-> +	spin_unlock_irqrestore(&s2_parent->vsmmus.lock, flags);
->  
->  	return &vsmmu->core;
->  }
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 0462eb1b2912..addc6308742b 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2249,10 +2249,22 @@ static void arm_smmu_tlb_inv_context(void *cookie)
->  	 */
->  	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
->  		arm_smmu_tlb_inv_asid(smmu, smmu_domain->cd.asid);
-> -	} else {
-> +	} else if (!smmu_domain->nest_parent) {
->  		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
->  		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
->  		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
-> +	} else {
-> +		struct arm_vsmmu *vsmmu, *next;
-> +		unsigned long flags;
+> +	pt =3D snp_alloc_shared_pages(npages << PAGE_SHIFT);
+> +	if (!pt)
+> +		return -ENOMEM;
 > +
-> +		cmd.opcode = CMDQ_OP_TLBI_S12_VMALL;
-> +		spin_lock_irqsave(&smmu_domain->vsmmus.lock, flags);
-> +		list_for_each_entry_safe(vsmmu, next, &smmu_domain->vsmmus.list,
-> +					 vsmmus_elm) {
-> +			cmd.tlbi.vmid = vsmmu->vmid;
-> +			arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
-
-Shouldn't this be vsmmu->smmu?
-
-> +		}
-> +		spin_unlock_irqrestore(&smmu_domain->vsmmus.lock, flags);
->  	}
->  	arm_smmu_atc_inv_domain(smmu_domain, 0, 0);
->  }
-> @@ -2342,19 +2354,33 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
->  		cmd.opcode	= smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H ?
->  				  CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA;
->  		cmd.tlbi.asid	= smmu_domain->cd.asid;
-> -	} else {
-> +		__arm_smmu_tlb_inv_range(&cmd, iova, size, granule,
-> +					 smmu_domain);
-> +	} else if (!smmu_domain->nest_parent) {
->  		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
->  		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
-> -	}
-> -	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
-> +		__arm_smmu_tlb_inv_range(&cmd, iova, size, granule,
-> +					 smmu_domain);
-> +	} else {
-> +		struct arm_vsmmu *vsmmu, *next;
-> +		unsigned long flags;
->  
-> -	if (smmu_domain->nest_parent) {
-
-Minor Nit: IMO, an explicit like this clarifies it better. I think we 
-can keep this add gotos for the __arm_smmu_tlb_inv_range calls above?
-(Like the arm_smmu_domain_finalise_s2 changes below).
-
->  		/*
->  		 * When the S2 domain changes all the nested S1 ASIDs have to be
->  		 * flushed too.
->  		 */
->  		cmd.opcode = CMDQ_OP_TLBI_NH_ALL;
->  		arm_smmu_cmdq_issue_cmd_with_sync(smmu_domain->smmu, &cmd);
+> +	c1 =3D npages;
+> +	rc =3D handle_tio_guest_request(snp_dev, type, req_buf,
+> req_sz, resp_buf, resp_sz,
+> +				      pt, &c1, &bdfn, state ? &param
+> : NULL, fw_err);
 > +
-> +		cmd.opcode = CMDQ_OP_TLBI_S2_IPA;
-> +		spin_lock_irqsave(&smmu_domain->vsmmus.lock, flags);
-> +		list_for_each_entry_safe(vsmmu, next, &smmu_domain->vsmmus.list,
-> +					 vsmmus_elm) {
-> +			cmd.tlbi.vmid = vsmmu->vmid;
-> +			__arm_smmu_tlb_inv_range(&cmd, iova, size, granule,
-> +						 smmu_domain);
-> +		}
-> +		spin_unlock_irqrestore(&smmu_domain->vsmmus.lock, flags);
->  	}
->  
->  	/*
-> @@ -2477,7 +2503,7 @@ static void arm_smmu_domain_free_paging(struct iommu_domain *domain)
->  		mutex_lock(&arm_smmu_asid_lock);
->  		xa_erase(&arm_smmu_asid_xa, smmu_domain->cd.asid);
->  		mutex_unlock(&arm_smmu_asid_lock);
-> -	} else {
-> +	} else if (!smmu_domain->nest_parent) {
->  		struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
->  		if (cfg->vmid)
->  			ida_free(&smmu->vmid_map, cfg->vmid);
-> @@ -2506,7 +2532,10 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_device *smmu,
->  				       struct arm_smmu_domain *smmu_domain)
->  {
->  	int vmid;
-> -	struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
+> +	if (c1 > SZ_32K) {
 
-Is this really required? I see we're still doing the same thing for
-the nest_parent == false case.. we'll anyway return without doing much
-if (smmu_domain->nest_parent)
+c1 is supposed to be a number of pages, not a number of bytes.
 
+> +static int tio_tdi_status(struct tsm_tdi *tdi, struct snp_guest_dev
+> *snp_dev,
+> +			  struct tsm_tdi_status *ts)
+> +{
+> +	struct snp_msg_desc *mdesc =3D snp_dev->msg_desc;
+> +	size_t resp_len =3D sizeof(struct tio_msg_tdi_info_rsp) +
+> mdesc->ctx->authsize;
+> +	struct tio_msg_tdi_info_rsp *rsp =3D kzalloc(resp_len,
+> GFP_KERNEL);
+> +	struct tio_msg_tdi_info_req req =3D {
+> +		.guest_device_id =3D pci_dev_id(tdi_to_pci_dev(tdi)),
+> +	};
+> +	u64 fw_err =3D 0;
+> +	int rc;
+> +	enum tsm_tdisp_state state =3D 0;
 > +
-> +	/* nest_parent stores vmid in vSMMU instead of a shared S2 domain */
-> +	if (smmu_domain->nest_parent)
-> +		return 0;
->  
->  	/* Reserve VMID 0 for stage-2 bypass STEs */
->  	vmid = ida_alloc_range(&smmu->vmid_map, 1, (1 << smmu->vmid_bits) - 1,
-> @@ -2514,7 +2543,7 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_device *smmu,
->  	if (vmid < 0)
->  		return vmid;
->  
-> -	cfg->vmid	= (u16)vmid;
-> +	smmu_domain->s2_cfg.vmid = (u16)vmid;
->  	return 0;
->  }
->  
-> @@ -3233,6 +3262,8 @@ arm_smmu_domain_alloc_paging_flags(struct device *dev, u32 flags,
->  		}
->  		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
->  		smmu_domain->nest_parent = true;
-> +		INIT_LIST_HEAD(&smmu_domain->vsmmus.list);
-> +		spin_lock_init(&smmu_domain->vsmmus.lock);
->  		break;
->  	case IOMMU_HWPT_ALLOC_DIRTY_TRACKING:
->  	case IOMMU_HWPT_ALLOC_DIRTY_TRACKING | IOMMU_HWPT_ALLOC_PASID:
-> -- 
+> +	dev_notice(&tdi->dev, "TDI info");
+> +	if (!rsp)
+> +		return -ENOMEM;
+> +
+> +	rc =3D guest_request_tio_data(snp_dev, TIO_MSG_TDI_INFO_REQ,
+> &req,
+> +				     sizeof(req), rsp, resp_len,
+> +				   =20
+> pci_dev_id(tdi_to_pci_dev(tdi)), &state,
+> +				     &tdi->tdev->certs, &tdi->tdev-
+> >meas,
+> +				     &tdi->report, &fw_err);
+> +	if (rc)
+> +		goto free_exit;
+> +
+> +	ts->meas_digest_valid =3D rsp->meas_digest_valid;
+> +	ts->meas_digest_fresh =3D rsp->meas_digest_fresh;
+> +	ts->no_fw_update =3D rsp->no_fw_update;
+> +	ts->cache_line_size =3D rsp->cache_line_size =3D=3D 0 ? 64 : 128;
+> +	ts->lock_msix =3D rsp->lock_msix;
+> +	ts->bind_p2p =3D rsp->bind_p2p;
+> +	ts->all_request_redirect =3D rsp->all_request_redirect;
+> +#define __ALGO(x, n, y) \
+> +	((((x) & (0xFFUL << (n))) =3D=3D TIO_SPDM_ALGOS_##y) ? \
+> +	 (1ULL << TSM_SPDM_ALGOS_##y) : 0)
+> +	ts->spdm_algos =3D
+> +		__ALGO(rsp->spdm_algos, 0, DHE_SECP256R1) |
+> +		__ALGO(rsp->spdm_algos, 0, DHE_SECP384R1) |
+> +		__ALGO(rsp->spdm_algos, 8, AEAD_AES_128_GCM) |
+> +		__ALGO(rsp->spdm_algos, 8, AEAD_AES_256_GCM) |
+> +		__ALGO(rsp->spdm_algos, 16,
+> ASYM_TPM_ALG_RSASSA_3072) |
+> +		__ALGO(rsp->spdm_algos, 16,
+> ASYM_TPM_ALG_ECDSA_ECC_NIST_P256) |
+> +		__ALGO(rsp->spdm_algos, 16,
+> ASYM_TPM_ALG_ECDSA_ECC_NIST_P384) |
+> +		__ALGO(rsp->spdm_algos, 24, HASH_TPM_ALG_SHA_256) |
+> +		__ALGO(rsp->spdm_algos, 24, HASH_TPM_ALG_SHA_384) |
+> +		__ALGO(rsp->spdm_algos, 32,
+> KEY_SCHED_SPDM_KEY_SCHEDULE);
+> +#undef __ALGO
+> +	memcpy(ts->certs_digest, rsp->certs_digest, sizeof(ts-
+> >certs_digest));
+> +	memcpy(ts->meas_digest, rsp->meas_digest, sizeof(ts-
+> >meas_digest));
+> +	memcpy(ts->interface_report_digest, rsp-
+> >interface_report_digest,
+> +	       sizeof(ts->interface_report_digest));
+> +	ts->intf_report_counter =3D rsp->tdi_report_count;
+> +
+> +	ts->valid =3D true;
+> +	ts->state =3D state;
+> +	/* The response buffer contains the sensitive data,
+> explicitly clear it. */
+> +free_exit:
+> +	memzero_explicit(&rsp, sizeof(resp_len));
 
-Thanks,
-Praan
+The first argument should be rsp, not &rsp. This issue is also present
+in the other memzero_explicit() calls in this patch.
 
-> 2.43.0
-> 
-> 
+> +static int sev_guest_tdi_validate(struct tsm_tdi *tdi, unsigned int
+> featuremask,
+> +				  bool invalidate, void
+> *private_data)
+> +{
+> +	struct snp_guest_dev *snp_dev =3D private_data;
+> +	struct tsm_tdi_status ts =3D { 0 };
+> +	int ret;
+> +
+> +	if (!tdi->report) {
+> +		ret =3D tio_tdi_status(tdi, snp_dev, &ts);
+> +
+> +		if (ret || !tdi->report) {
+> +			dev_err(&tdi->dev, "No report available,
+> ret=3D%d", ret);
+> +			if (!ret && tdi->report)
+
+This cannot happen, I think you meant (!ret && !tdi->report)
+>=20
