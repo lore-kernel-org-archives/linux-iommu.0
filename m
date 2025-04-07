@@ -1,207 +1,341 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2CED22655E
-	for <iommu@lists.linux.dev>; Mon,  7 Apr 2025 09:38:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744018725; cv=fail; b=O4t6EVVK6lUiPkWNOwNnGrOVf3s2hTY1nfhNI+uW3gr8rgH00fiyYtAPSkrlnQMEgoR9B2fEKCEbG9e1gjeI4hd1Ark/9B3jjZgoC9Mg1r7DIVeFT9CKj9UDlQZ90xxkLg1Rnu31mmYi+3KUJn0HsQ3r7dzK0UAfmdmWTSI1mXs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744018725; c=relaxed/simple;
-	bh=ROqJt25uy7G7u2NwS3K5Tkw7vBPeoAYcu0N3IcZpfGA=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=RJAUvcCwwkUAE9C3YrTocqLhOmuZryJX2i+ytVNeRwxE4x1tVXlDoDPM+sBHw9Tx446GXrM3q+hXO+/bhdL80ttrLKVKdKmU2uzRXZdcWjxpxhYRoRFjFSKB/e2JPHylsyeaVsTae14jjwnZk47tSpyuA98IutgKAqb4Poq8984=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=BRtU8MvD; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=LvRd3hyH; arc=fail smtp.client-ip=205.220.165.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 451DC221DA4
+	for <iommu@lists.linux.dev>; Mon,  7 Apr 2025 10:51:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744023096; cv=none; b=n4B+6KeU5bIL4tBZ26sNJm3JRfmBokAJfbpJqimfdXvHSt/6aJZNr1TvRBSCgnAqDdWlf6PzJATVAiuy6LfpFoOUc+NPgbyRfqdFTx83jFMimukplhgcte7biE0/M/a9PnvPhTSxfBIXIFvg8EO+CBU+MW7q66/lKaXNC58tDdU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744023096; c=relaxed/simple;
+	bh=gJaoZvdoA/F31HW61JIj0XVLqHtXvDLdzqtnVyaLyt0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BzkLPKmJEVcHXN3kdzDi9AluQYilONP5zv/ZsmY/kMpICwgC9jjS9W1l1YJnJyrDbyef6guk+tp0Is39WSzadOfOjq/Oc1srxnoNp3DjDvgA5JlOp0HmvkYYwnoGLNbJoGiSKK/5tKIG7hff72KfsDFhbpSnDLDdA5MmxaXUeWY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qecFyJNa; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="BRtU8MvD";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="LvRd3hyH"
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5376Y3rD016179;
-	Mon, 7 Apr 2025 09:38:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2023-11-20; bh=ROqJt25uy7G7u2NwS3K5Tkw7vBPeoAYcu0N3IcZpfGA=; b=
-	BRtU8MvDOmx1MHYDD0I45dJZ+AMmng0cKZrfo++sz+6gGVgV8HoVUTkee/iBf1Mk
-	zwzAyXXtOKPuIhpgPyKw705T5SA9HuUeYmWUCJePxBWJD1++mSyH8CY3sUZPN1Ao
-	HvPG2emPCcKkQnoA99B5lQC/7e57dJTZs7w2oojREIijNwq+zKMioX2Ng2qS16VZ
-	SM09bP3n3Dj70VWbysyRURgjVVCE66ktCQlnpIEQrPdbR8jfpG8lHvXF6+w2Vowh
-	rmpvGX08d/1kZRovKcONR2Fi6l1TdmDkBUgwT3vnKKIN3hK/q+mxie+nKhPhxr2l
-	1Qu9ez+J/bWeYDHXGW3iog==
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 45tvd9t4be-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 07 Apr 2025 09:38:37 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 5377gdsv023922;
-	Mon, 7 Apr 2025 09:38:36 GMT
-Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam04lp2040.outbound.protection.outlook.com [104.47.74.40])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 45ttydsqkk-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 07 Apr 2025 09:38:36 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eBqlEWKAzuQtIGOjgslwv/U4dQmuOSlL2+eiN9XuHrw3XCKBJpkHZAdVcr5xwqyFWeCSp9daiumrnWgiu7L58bavGp8soN5OuB7QxnjtGI7fxOyHV+vsluEJz9Nrjwy4+RwPcN/O/my7Igo3qhF946J19HltxwYl6ohEa67GzXdxBNaNWOmVHBwT7s8VCoe1e60RCKHinmtnrcnGJ0Xk+Vj9B/D06U2WE8mHZtjH7+8ZphtkzgK+MRWW4FAoBDOPpGUARF4heCCjr+xCjNpe6pgvioGO2RCYx8eGQ0vAQHap6KPJx1vfTxtcDSlMQOBYQXo5J/eDv9Gv/mwXTZLBQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ROqJt25uy7G7u2NwS3K5Tkw7vBPeoAYcu0N3IcZpfGA=;
- b=hrQlfn2Q8HU1uLmJseUM2yygtagUsPQfCzHBCzMsUq+E7IEnpyJ3TWAfyqFYVQQ+gJMiylYcosUgJ/txj8PxmjI3M9H97sMpsrraB7S5A/xosDr9VUn1CVkEoMSWny9BKEUxtdgYIL+/5ahwWVXfh8yJEDDjSAP+uuiXAVO8m0WLV+J2qE21y6Q1ZAbAguV3J0Zw8TE8+5kOUSuebxUsHt9Nw2Hf6B84baVPS7MkPUs6yf9Y6OnrlUnlFdkggxkCBkGPUGYYrPBgRpNxozzDcb1G14rI3zVb32QhCzlpVwWhHvrZIC6zOUuY6FopR8wfspLpxzwlkGg+S6uyt1S90A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qecFyJNa"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2263428c8baso351815ad.1
+        for <iommu@lists.linux.dev>; Mon, 07 Apr 2025 03:51:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ROqJt25uy7G7u2NwS3K5Tkw7vBPeoAYcu0N3IcZpfGA=;
- b=LvRd3hyHjWXjSsXZ4EG2cvdbhJL3HfYhSSgIBRoOAva6bn4tSBo1ldIJAGJRcwj2wJv0jrbyEpO8h+ImIbYUPSdwuEWFfSv+s0UfhMLD6jQvPhh4+zJg1MrmSAJlb/dhX+vtRv0Cgmfbw555bkUph1wjYk/8gdOliTKNHcoI11w=
-Received: from PH7PR10MB6505.namprd10.prod.outlook.com (2603:10b6:510:200::11)
- by MN0PR10MB5936.namprd10.prod.outlook.com (2603:10b6:208:3cc::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.34; Mon, 7 Apr
- 2025 09:38:17 +0000
-Received: from PH7PR10MB6505.namprd10.prod.outlook.com
- ([fe80::83d9:1bf1:52cf:df54]) by PH7PR10MB6505.namprd10.prod.outlook.com
- ([fe80::83d9:1bf1:52cf:df54%3]) with mapi id 15.20.8606.033; Mon, 7 Apr 2025
- 09:38:17 +0000
-Message-ID: <8b5686d3-cba2-4f2b-897f-daa0ec68b69d@oracle.com>
-Date: Mon, 7 Apr 2025 15:08:10 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 5.15.y 1/1] xen/swiotlb: relax alignment requirements
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jgross@suse.com, sstabellini@kernel.org, boris.ostrovsky@oracle.com,
-        xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
-        iommu@lists.linux.dev, stable@vger.kernel.org
-References: <20250407070235.121187-1-harshvardhan.j.jha@oracle.com>
- <20250407070235.121187-2-harshvardhan.j.jha@oracle.com>
- <2025040751-oversleep-sevenfold-b429@gregkh>
-Content-Language: en-US
-From: Harshvardhan Jha <harshvardhan.j.jha@oracle.com>
-In-Reply-To: <2025040751-oversleep-sevenfold-b429@gregkh>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR02CA0070.apcprd02.prod.outlook.com
- (2603:1096:4:54::34) To PH7PR10MB6505.namprd10.prod.outlook.com
- (2603:10b6:510:200::11)
+        d=google.com; s=20230601; t=1744023093; x=1744627893; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EbOTzGFNhz15uoPOrk0rjEt/+xH1zo2FYpc66vCfXZE=;
+        b=qecFyJNaB5QK8/4p7YiOLp1tP+8kw6DnxJSOo9N9m1z1kIPRITCr9p9WI97cQlofEb
+         sfyVydiDTnHJjGCwPHUE7otIvAZQlS9wpf6cfDjALw9nLAezil8LSjg6dSOx7Sr3zy7A
+         4Vyl4udhaJ/X7/eIZVIBWVhy1BMBjEw9QenKaO/CFvuVLcr5kYMMvpaHmEtHpMjdfZyh
+         nvunDPlXsrs8SLUUp/SYGaCAlZ9G1D6GVQDpbiei/FBu9NQYn7KKB6L4Q+c0zrSmk6TR
+         KnZEjF9WiJQG768T3YNwYVUX5014lmGXHBMkZmYHM8wv4oj9fEC0KgJ+e0QS/0ykzqKR
+         jrgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744023093; x=1744627893;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EbOTzGFNhz15uoPOrk0rjEt/+xH1zo2FYpc66vCfXZE=;
+        b=Vck6+EsmMKglJhxKb0P1M4vt4Di1WM0QdXJy65Nvzmf/uqtMCFLOdvcc/CkteHDKjh
+         hU4Lz0WOTlTF1DZSvwkzVd1VTowLzFQmRzWgFp0cb7eOikckq4IMMhk4L3W/pdkeXZag
+         w/jVOCRriL6/0jGCQvq3fT7BdlqXEaglNfP344XmV+nYmiqOKSwd6ue1DZL75VvdL+/V
+         /1Ijjo1PcgAbscsYoVe6LnTpdwPXXvdLgtl71U5eYZTDuNXTWPqDjhjVWycfFffMf88D
+         zjhAgv0muIPJOwfn7PDZsw6aw+lHBIK+Qt8LZ3OM4gmgrNmlZOOLdCJd20AoNw9zhTYa
+         dDVg==
+X-Forwarded-Encrypted: i=1; AJvYcCXbcaPiUZLl0GsxqXw8hye6EHrrK4L9HkOx17iWa0YYTlMQAlLrgbgZSfleHIUl6vNBbfsX2g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzGcQl0a37u/Mdz/r04/CckSrxSOEyAnZoh1VjErF+EVjJ4CneV
+	O3wj2x/19GG7hEu/K+npAaJ1W6qCieGyv/9aR/SHRHc4uOR41Z8dvMEZQdlJzV4YHIblcvUqBaI
+	pvA==
+X-Gm-Gg: ASbGncvxXPko5reJeYLOeOXXtbUQeunAphslWUQwYdE676wBkNPeoaHUNsnpBAwhB8H
+	Ph8drrMofqauxwMo1mDZw0sY2XxieVUGsWKqkmYkHV52Wn8uPsF3ICuPDzLemZ5FD6YMg+dFQs3
+	RgdgGk4GlnAEDJyUHQP5YUfAPDLHA8Whq4H+ymakY0rzSxxTCyNiJ0f9A0knLxmM0etRnj+rnS6
+	cXcYUtC0tgYDrErfDPkQGZ3Mz8wHcz9VOBLLazjnMo5WM0atq20GmonHcQ05UmMPEOTvOB3UN7w
+	1eTqT6oOqvX/zAdI16ojiCWnrn6TNdQf+ZmGqfD+HXuE3gwcAkVsZqtY/OQHAWlffX0Z5oOOTJZ
+	4bKg=
+X-Google-Smtp-Source: AGHT+IHb0AXSOrm1IvS7cqtNNGlz0NiH+Mhkd5aWS0Yc7Ae/NCDEI4krlsFHBlUBOAJW0WycUAsCOA==
+X-Received: by 2002:a17:902:c412:b0:223:fd7e:84ab with SMTP id d9443c01a7336-22a95eb8de7mr4775375ad.24.1744023093078;
+        Mon, 07 Apr 2025 03:51:33 -0700 (PDT)
+Received: from google.com (188.152.87.34.bc.googleusercontent.com. [34.87.152.188])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2297866e7f5sm77676465ad.206.2025.04.07.03.51.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Apr 2025 03:51:32 -0700 (PDT)
+Date: Mon, 7 Apr 2025 10:51:24 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, shameerali.kolothum.thodi@huawei.com
+Subject: Re: [PATCH v1 3/4] iommu/arm-smmu-v3: Decouple vmid from S2
+ nest_parent domain
+Message-ID: <Z_OuLJ7RGnChDckY@google.com>
+References: <cover.1741150594.git.nicolinc@nvidia.com>
+ <0429d554fb0f54f6d79bdacacb3fb3e7877ca8f7.1741150594.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR10MB6505:EE_|MN0PR10MB5936:EE_
-X-MS-Office365-Filtering-Correlation-Id: a80a4b30-31da-45f5-9156-08dd75b7ecc1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?clVMNzBCUzV6TWJwOFdwYS9tb2VVTWplV3FvTnZ0dzhzcy84MmR3SnpaWFVo?=
- =?utf-8?B?MEMxNnJKT2JVN214ZUw1U1pwVmFXeXc1c2YweEJGVWg3bkt0MC9NMkZtZUJr?=
- =?utf-8?B?cHBTRStZYUtSRWVISG5ZR2dNNnF2UUswMGQ2eEVJdDdqZHdSeFVGRnVkSHhn?=
- =?utf-8?B?UXhTbGRLRzFPSWJOcDhHeGZjcHdKN203MFBqbUVva2h5ZVA0TFJiKy9FNkZC?=
- =?utf-8?B?N2xGbGlGT1dWM2pRdTlkbDgwSDdJYlNWcUU3NFRqTkxIbnhvWE45QUNDUjhn?=
- =?utf-8?B?ZW5ET2pEWElOSmsxTXh5WkxNSmlhTXE4bVVoOWlTb0JZdCtaTTNvcHBjTkp0?=
- =?utf-8?B?SUsvNmpvaTZYczM3bklqSC9BR3YyT1BhOGJXeW0xM3ZLTDk3M1FJSldkSUtq?=
- =?utf-8?B?ZXpBd3FTdmhub0dobGhzSW9IT3VVd3FVZjhtbE90WEVJQnlYV1RHbTdlTDNH?=
- =?utf-8?B?cFkyNkk0M2IzbjdlMUlvTTQxb3hTeG53MXQxbTVEU2lYZTdqVytWZUJhN084?=
- =?utf-8?B?TkVOSW5yTW1LRC8xMmhlUU9PbXo2Q0FhRXhMejl6cEQxWURLMGJDTm5mbTVF?=
- =?utf-8?B?dVFHMDNuVHQ1aEgyemhaOUx5L1M0VkR5YjJyV3RvNXoyamNBVDVDREhWa2Nq?=
- =?utf-8?B?S2s0QlVZSFd6cHVaeDl4WjhTN3gzVmJsWEg0SzBmamMwRHV3bE8zQzFaUDcx?=
- =?utf-8?B?WktDNDk0eE14amJIS284ZS9MM1pQMUppMkV4VEpVSW84L3VKL1VkT2luTko1?=
- =?utf-8?B?N084alpCdm1abWRKemc2T0VFbk9ocEhSS1JDSFBBUnZiamk2eEczVEx3RkRn?=
- =?utf-8?B?TDJ5eDFlL0xDNWwrbzhMaXRjQmVmRHVuaENIMW9TVjBaRjhWLzZrcFlxcW4w?=
- =?utf-8?B?ekVwUDR6b0RtT1poaURqcHh6UFc1THl5Rjdmb0haR3B1cDAxd2dHeWsra0U5?=
- =?utf-8?B?T2NWUFMrQ0FtakFnL2V4YkxVVjBEU1ZidzlWOG04NG5CblV2UzdlUEV6MkVZ?=
- =?utf-8?B?RFhCQWxUVlh4OWhBVEVtQlpSL1ViUHk1TWh6a0J5QjV0TVlBRG43ei9lVit0?=
- =?utf-8?B?Mmt3bDc4MGxCR0k5SDJuaFd3a2JjOTE4WU9aUkdRUkltWXZxT2VBTXdJU1FC?=
- =?utf-8?B?N3p3bzV3L3dBUFVhNUsvQU1PUXRVa1VPSTZ0VnNKQlNTY2o5SVM5MmZNVVZt?=
- =?utf-8?B?eFVDQWdidFJWUlRuTkV1b3REMGdLYUlTQnNRV21uRWVONWY0dE1sUmtVVjB1?=
- =?utf-8?B?dlZJUUY4bTZmWk1DWEN6NWxaSTBwU2FDZGJtUDV4N0g3ZGh0aVBKbkJBT3NS?=
- =?utf-8?B?cmZtSkhhWU5ra2YzVE9kRmFRUHZQd2hnNkYwVVdLTXBKMmMrM3NmeXdGRzFK?=
- =?utf-8?B?bnZ6S3ZXemkxdk85em5wZFZILzcyVUhBUE4vekFBTjUyOTR5eTM5Y3RlRldj?=
- =?utf-8?B?ZXNMZTlsR0s2RUtiMU5vKzdWL1MxMXZKM1YzTlJmOUtIb3pPSHhHL25vUTg4?=
- =?utf-8?B?TEhDSFVSR2VJb014eUZGZW5FK1RNRHY0dDdBTVA2Znk4SytjT01rUlVMbVc0?=
- =?utf-8?B?amZ1U1hiUElyVkcwaDF0MEhvWVBUbzF3eTZzNVZYZDBDQitoWWxqMXR5SlBD?=
- =?utf-8?B?TUNqUGl5Y2VGV0UwdVRPUkRWaEFZTGo2bklXVzUrODFrZk10SkxucURmRG52?=
- =?utf-8?B?b3lQcFRaS3N6NWluMnlhcGdKZkcxeFArRTMyeHBUYVVxbWdNWnkrVGtUY1Rp?=
- =?utf-8?B?cXNUZkdJcXpvd081SEYrellmeXJDRHkvTnk0azl3QmxHd0M4RWxhcGxuYXo2?=
- =?utf-8?B?RzRrOVl6Vmx4VGNyMVVaNjVWZFlldlllejVPcjMwNVVzeGJPNS9NZjlzWlFX?=
- =?utf-8?B?ZDZyMTk2Y0ZiL1JWNDBkOWRoMWZLQXF6dWt0ZkNWQ0JraXJhRENMVkVDdVZP?=
- =?utf-8?Q?WU2sc2TPapI=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR10MB6505.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MWVDeFg0YlFPN2NQRVNZcVRoblhtTlhDTTdzZ0dMTEp6M1ROckxiZGhta21H?=
- =?utf-8?B?blBrT2c5REdxU015SUhaWUsyaXFYbnRrb3RDVHJzN0hMU3NxcjZVN3Eya0Er?=
- =?utf-8?B?S25YUVNSTDdPdk9Oc0VIMzFBVytPSWpGMHNVc1VZUmNUSXJKc1hZOG9zRTY3?=
- =?utf-8?B?OS9rVzNPQ2ErWGJvWmE3RmlIcVN3NzNvemVkVjdXNGZEOG5ON1JZaHhBc3Vi?=
- =?utf-8?B?NVlObUpvNUtOZWdOUnp2d2JrRTVvUkkxM3JiR3BvcnhaNzdnZWoxMVFJSUI2?=
- =?utf-8?B?cWdPRWlBbWJjK2RGTzczMlBGQ0ZCZWUzN2ZVajZxdzlsajI2RW9lUEZNL2ox?=
- =?utf-8?B?UC9pbnlXSmdjRGYvRzFuTWh4Mk50K1ByY1JvbGIyWWUzZ1lwVDBhYXE4T3dn?=
- =?utf-8?B?R2g4WTNuVGVVMGhvYmY1alowWWs3VnNtWWtVY1o2c1RTOVNZeEY3U0FLM0Qr?=
- =?utf-8?B?S2xyVEdjc1VISjVFbEovcTZFZ25XWkxjYStZZ2h0TmdTemIwZkJOUzYwenhP?=
- =?utf-8?B?OVQxeHRQaWIzRW0vM2cwS3FEQXJ2ZStLV21LSjFTVHI5aGJ4cGFYT1Q3YTBR?=
- =?utf-8?B?bWsvVnlhMlNWTzZPMFdGRWJHWXNtK3dNS3hOamhqb2F5WkFSMmhpNlFPVXRF?=
- =?utf-8?B?cXJRZFAvdHV1dTZYZzBxcnNZNjkzYTgrRFRHTW53WUNveHArRUtvQ3BoNFdm?=
- =?utf-8?B?Y2hGcE5jTXpocXE0UGl4d1NueXJZSkF3UGM3MWVVdHRHYUVVaHRGRGNoUjM4?=
- =?utf-8?B?LzJvK0NrZVFZYkpnczRJVTFIQmRZVlFWRDBrZ1EvM3pudVRkYzIxQVRrdDhj?=
- =?utf-8?B?bDMzUjdTcXZ2RWhZRWlBcDhTK2dmNjZOQ2RacTl6TXBUK0tNQ2lLUlFvWTRm?=
- =?utf-8?B?REhFeFo4REdLSHFUUmVadk5CelpnckY0eU5wWUVBMnJWOEFQS3hjYWZ3MDI3?=
- =?utf-8?B?L2VUWWpqTHVxMnpnY1hRbDR5bUhvRlZGTzdHdm5FODhEbHJvTkVPMUhLYlJ5?=
- =?utf-8?B?cURralJZZ1pSNFQvVmlpbzlsUWlweXgyWXEvYkl2MmpLVjJ5YnhsUGVTWTZY?=
- =?utf-8?B?b1FybVkvdDdJVmdMQ2t1bS9na0RMbURvL21paUZzQ1ZCdVdoL2tjYmJFVGVy?=
- =?utf-8?B?NFBJQ0ZjOERvLzZ4S25vZGM1a3VkN2JoMTFRODlGZTZ1ZkJCSUFQbE52K2U4?=
- =?utf-8?B?T1Z4YnQ2azFjWEY4Y3MwcmpPbnkvR1laK1MyVEkwUUdsQnd5NnJBd0lCejRM?=
- =?utf-8?B?enBhTkNseXI5MnFHOXhMMTZqdU1DdUR6MzNoL0JaZzY3Y0tJdWtpYVRjZ2JV?=
- =?utf-8?B?NGJ6bzhndWdwaGQ5NzZWV3IxWnZoV3R3TFFuTWlsQ0pkVFprWGl5UUpidm5J?=
- =?utf-8?B?QU9sdmRFckdkaUZoUmdPVlkveUVra0RRYk10bHZtNmw2K2hoaEdlVEppWi9G?=
- =?utf-8?B?dUdKcGl0NEFyK3Jxc0hUNEJldU1zaWJOZjl5TWxGOS9OQlZjdTAxZkZiYlR1?=
- =?utf-8?B?QUxrRGV3MldXcDIxV1M0WElEN0ZDT3VuQUc2M3hwcmd1ck5CSVk3SHZyZ3BV?=
- =?utf-8?B?cTRZSVh5NG9BM3p4M2drM1I0MlZoV0lvdW9aTTlRVXpUajdtU3VCSTFsMUg0?=
- =?utf-8?B?QVZ0WUQ2TE9Yb002QmxwVExnNWdLdEZKSnhoRngyTVlkSjJCdm1wNDlnTXd6?=
- =?utf-8?B?emo0bmk3Ri83T2o2dS9XQTZhSkVoc3IyZ0FSWUtPM2ZvYkFMQ284U1ZZRmkr?=
- =?utf-8?B?VHVIUUxlSDh1czZocXVIVnJLQ3piTEhSQWFUM2EwaHpsZnl2TVVFN2NIYldC?=
- =?utf-8?B?RkRCRjZsb0tQaVphUmN1eGc5c2EyaVlVY0Z2ejY4Z1VBRS9iZXF4Y0NRUkdq?=
- =?utf-8?B?ZnJWeXB3MVdTU3JsYlV0d1hRSi93aUNPVlptMnhkTDJnNzJ4YWlSdGM3Y1Ru?=
- =?utf-8?B?dFdkZHJ3Q0w2cE1zRmsxcnZzS2ttb0hUcGpjT2ZpNVlvODlpVEl3ZU1SRmly?=
- =?utf-8?B?UGhrUG1IOUprKzFFMTdkSWdyeTlzMlN3amFCWkUzTWFkbDJJbGJyT2xlYnli?=
- =?utf-8?B?dFlWUGFXOVpkTlV5QWlCaTZsYzRZOWNCMmxvM1c4UG9EZ0d1azY2VGtPL0hv?=
- =?utf-8?B?bnRZc2N1MEtTdEg2QndMbmkzRHdHR2phdnR2NlIrOGlYelRtcTBFdXVZU0tv?=
- =?utf-8?B?VHc9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	uBRZpnfzBbiwGhcaCG8gYt3n1SkmEmjsfvWUD2bjrUplideW33KuIOOyPzz2ki0x+5i71HMCDpkwh5im1gJDpoAr7Nt8sXR+81l+lwSgxew6qZWqK8FPJzCtWl7quxfDzZQ+jVOEUxKyY/jNsfuXa0sXm3qqXAPMb/Dz/OcmFlxgMMMWkNjuZVBLu3zY+x4o0n451rzRw5DTVfGTd1ttnK0b8na7V+PnO25FOgH5pfHuBxQmNp93G+c9EMWM16/sKvhpQeOmIRLERvsflXMB32GpiUCnA7SJ7QFCBrD/X1nf4e5O0ZDtrWQ6gNTX7GOGPcKS8l2zDslhBMJzF6n+CvY1kdfgYoTqfnrqBxsFsLgPb8uJohAgmWU7yr2BZ6k61Tvwp8x5FHoMwdY7pzT/eZyIwSZyqakBJbv/Ixg/uPOaOc8pCczqBVqTIXsw+oDn6txueplt03A9aP4OcmWznBJezXfv35ZXvoTf2DVDetbt2MJnM4mz/W/4XYJnazeHLIf2693SKaZShfTYyNryQD1uUnOLc1XGvMIdOyGeTLZ044E66rswVAfk66x+N4xKjPP2pCytVlzwX4VbX84sDhBivk22AfQwQVeGERNtfyo=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a80a4b30-31da-45f5-9156-08dd75b7ecc1
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR10MB6505.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2025 09:38:17.2703
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: stJV6/9n/mPw2VRgw6Cus5SBCl6DSNZBZJyhoG3Ankf5tWOudtx3XQyrHRL8X5tAK9Y0sGZLX6l1KtZGw+AEL/qoMZ5JxAGWsc7ZV5maMTY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR10MB5936
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-07_03,2025-04-03_03,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0 mlxscore=0
- mlxlogscore=999 suspectscore=0 adultscore=0 spamscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2502280000
- definitions=main-2504070069
-X-Proofpoint-ORIG-GUID: wMZemOE0Xy-BTeesgZ5fSknVNFxDov9b
-X-Proofpoint-GUID: wMZemOE0Xy-BTeesgZ5fSknVNFxDov9b
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0429d554fb0f54f6d79bdacacb3fb3e7877ca8f7.1741150594.git.nicolinc@nvidia.com>
 
+On Tue, Mar 04, 2025 at 09:04:02PM -0800, Nicolin Chen wrote:
+> An S2 nest_parent domain can be shared across vSMMUs in the same VM, since
+> the S2 domain is basically the IPA mappings for the entire RAM of the VM.
+> 
+> Meanwhile, each vSMMU can have its own VMID, so the VMID allocation should
+> be done per vSMMU instance v.s. per S2 nest_parent domain.
+> 
+> However, an S2 domain can be also allocated when a physical SMMU instance
+> doesn't support S1. So, the structure has to retain the s2_cfg and vmid.
+> 
+> Allocate a vmid for a vSMMU instance in arm_vsmmu_alloc() and add a proper
+> arm_vsmmu_destroy() to clean it up.
+> 
+> Add a per-domain "vsmmus" list pairing with a spinlock, maintaining a list
+> on the S2 parent domain, to iterate S2 invalidations over the vmids across
+> the vSMMU instances created for the same VM.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 10 +++-
+>  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 35 ++++++++++++--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 47 +++++++++++++++----
+>  3 files changed, 79 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 3336d196062c..1f6696bc4f6c 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -849,8 +849,12 @@ struct arm_smmu_domain {
+>  
+>  	enum arm_smmu_domain_stage	stage;
+>  	union {
+> -		struct arm_smmu_ctx_desc	cd;
+> -		struct arm_smmu_s2_cfg		s2_cfg;
+> +		struct arm_smmu_ctx_desc cd;	/* S1 */
+> +		struct arm_smmu_s2_cfg s2_cfg;	/* S2 && !nest_parent */
+> +		struct {			/* S2 && nest_parent */
+> +			struct list_head list;
+> +			spinlock_t lock;
+> +		} vsmmus;
+>  	};
+>  
+>  	struct iommu_domain		domain;
+> @@ -1049,6 +1053,8 @@ struct arm_vsmmu {
+>  	struct arm_smmu_device *smmu;
+>  	struct arm_smmu_domain *s2_parent;
+>  	u16 vmid;
+> +
+> +	struct list_head vsmmus_elm; /* arm_smmu_domain::vsmmus::list */
+>  };
+>  
+>  #if IS_ENABLED(CONFIG_ARM_SMMU_V3_IOMMUFD)
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> index ff8b550159f2..2c5a9d0abed5 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> @@ -30,6 +30,23 @@ void *arm_smmu_hw_info(struct device *dev, u32 *length, u32 *type)
+>  	return info;
+>  }
+>  
+> +static void arm_vsmmu_destroy(struct iommufd_viommu *viommu)
+> +{
+> +	struct arm_vsmmu *vsmmu = container_of(viommu, struct arm_vsmmu, core);
+> +	struct arm_smmu_device *smmu = vsmmu->smmu;
+> +	struct arm_smmu_cmdq_ent cmd = {
+> +		.opcode = CMDQ_OP_TLBI_S12_VMALL,
+> +		.tlbi.vmid = vsmmu->vmid,
+> +	};
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&vsmmu->s2_parent->vsmmus.lock, flags);
+> +	list_del(&vsmmu->vsmmus_elm);
+> +	spin_unlock_irqrestore(&vsmmu->s2_parent->vsmmus.lock, flags);
+> +	arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
+> +	ida_free(&smmu->vmid_map, vsmmu->vmid);
+> +}
+> +
+>  static void arm_smmu_make_nested_cd_table_ste(
+>  	struct arm_smmu_ste *target, struct arm_smmu_master *master,
+>  	struct arm_smmu_nested_domain *nested_domain, bool ats_enabled)
+> @@ -337,6 +354,7 @@ static int arm_vsmmu_cache_invalidate(struct iommufd_viommu *viommu,
+>  }
+>  
+>  static const struct iommufd_viommu_ops arm_vsmmu_ops = {
+> +	.destroy = arm_vsmmu_destroy,
+>  	.alloc_domain_nested = arm_vsmmu_alloc_domain_nested,
+>  	.cache_invalidate = arm_vsmmu_cache_invalidate,
+>  };
+> @@ -351,6 +369,8 @@ struct iommufd_viommu *arm_vsmmu_alloc(struct device *dev,
+>  	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+>  	struct arm_smmu_domain *s2_parent = to_smmu_domain(parent);
+>  	struct arm_vsmmu *vsmmu;
+> +	unsigned long flags;
+> +	int vmid;
+>  
+>  	if (viommu_type != IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
+>  		return ERR_PTR(-EOPNOTSUPP);
+> @@ -381,15 +401,24 @@ struct iommufd_viommu *arm_vsmmu_alloc(struct device *dev,
+>  	    !(smmu->features & ARM_SMMU_FEAT_S2FWB))
+>  		return ERR_PTR(-EOPNOTSUPP);
+>  
+> +	vmid = ida_alloc_range(&smmu->vmid_map, 1, (1 << smmu->vmid_bits) - 1,
+> +			       GFP_KERNEL);
+> +	if (vmid < 0)
+> +		return ERR_PTR(vmid);
+> +
 
-On 07/04/25 12:44 PM, Greg KH wrote:
-> On Mon, Apr 07, 2025 at 12:02:35AM -0700, Harshvardhan Jha wrote:
->> [ Upstream commit 099606a7b2d53e99ce31af42894c1fc9d77c6db9]
-> Wrong git id :(
+Probably a basic question, I hope we'll have one vSMMU per VM? Even
+if that's not the case then the VMM should take care of invalidating
+contexts of all associated vSMMUs anyway? (Just thinking if we should
+allocate a VMID per VM or per vSMMU)
 
-Ah my bad is it 85fcb57c983f423180ba6ec5d0034242da05cc54 instead?
+Nit: Does it makes sense to create a helper like `arm_smmu_vmid_alloc`
+and call it here and finalise_s2?
 
-Harshvardhan
+>  	vsmmu = iommufd_viommu_alloc(ictx, struct arm_vsmmu, core,
+>  				     &arm_vsmmu_ops);
+> -	if (IS_ERR(vsmmu))
+> +	if (IS_ERR(vsmmu)) {
+> +		ida_free(&smmu->vmid_map, vmid);
+>  		return ERR_CAST(vsmmu);
+> +	}
+>  
+>  	vsmmu->smmu = smmu;
+> +	vsmmu->vmid = (u16)vmid;
+>  	vsmmu->s2_parent = s2_parent;
+> -	/* FIXME Move VMID allocation from the S2 domain allocation to here */
+> -	vsmmu->vmid = s2_parent->s2_cfg.vmid;
+> +	spin_lock_irqsave(&s2_parent->vsmmus.lock, flags);
+> +	list_add_tail(&vsmmu->vsmmus_elm, &s2_parent->vsmmus.list);
+> +	spin_unlock_irqrestore(&s2_parent->vsmmus.lock, flags);
+>  
+>  	return &vsmmu->core;
+>  }
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 0462eb1b2912..addc6308742b 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2249,10 +2249,22 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+>  	 */
+>  	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+>  		arm_smmu_tlb_inv_asid(smmu, smmu_domain->cd.asid);
+> -	} else {
+> +	} else if (!smmu_domain->nest_parent) {
+>  		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
+>  		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+>  		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
+> +	} else {
+> +		struct arm_vsmmu *vsmmu, *next;
+> +		unsigned long flags;
+> +
+> +		cmd.opcode = CMDQ_OP_TLBI_S12_VMALL;
+> +		spin_lock_irqsave(&smmu_domain->vsmmus.lock, flags);
+> +		list_for_each_entry_safe(vsmmu, next, &smmu_domain->vsmmus.list,
+> +					 vsmmus_elm) {
+> +			cmd.tlbi.vmid = vsmmu->vmid;
+> +			arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
 
+Shouldn't this be vsmmu->smmu?
+
+> +		}
+> +		spin_unlock_irqrestore(&smmu_domain->vsmmus.lock, flags);
+>  	}
+>  	arm_smmu_atc_inv_domain(smmu_domain, 0, 0);
+>  }
+> @@ -2342,19 +2354,33 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
+>  		cmd.opcode	= smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H ?
+>  				  CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA;
+>  		cmd.tlbi.asid	= smmu_domain->cd.asid;
+> -	} else {
+> +		__arm_smmu_tlb_inv_range(&cmd, iova, size, granule,
+> +					 smmu_domain);
+> +	} else if (!smmu_domain->nest_parent) {
+>  		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
+>  		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+> -	}
+> -	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
+> +		__arm_smmu_tlb_inv_range(&cmd, iova, size, granule,
+> +					 smmu_domain);
+> +	} else {
+> +		struct arm_vsmmu *vsmmu, *next;
+> +		unsigned long flags;
+>  
+> -	if (smmu_domain->nest_parent) {
+
+Minor Nit: IMO, an explicit like this clarifies it better. I think we 
+can keep this add gotos for the __arm_smmu_tlb_inv_range calls above?
+(Like the arm_smmu_domain_finalise_s2 changes below).
+
+>  		/*
+>  		 * When the S2 domain changes all the nested S1 ASIDs have to be
+>  		 * flushed too.
+>  		 */
+>  		cmd.opcode = CMDQ_OP_TLBI_NH_ALL;
+>  		arm_smmu_cmdq_issue_cmd_with_sync(smmu_domain->smmu, &cmd);
+> +
+> +		cmd.opcode = CMDQ_OP_TLBI_S2_IPA;
+> +		spin_lock_irqsave(&smmu_domain->vsmmus.lock, flags);
+> +		list_for_each_entry_safe(vsmmu, next, &smmu_domain->vsmmus.list,
+> +					 vsmmus_elm) {
+> +			cmd.tlbi.vmid = vsmmu->vmid;
+> +			__arm_smmu_tlb_inv_range(&cmd, iova, size, granule,
+> +						 smmu_domain);
+> +		}
+> +		spin_unlock_irqrestore(&smmu_domain->vsmmus.lock, flags);
+>  	}
+>  
+>  	/*
+> @@ -2477,7 +2503,7 @@ static void arm_smmu_domain_free_paging(struct iommu_domain *domain)
+>  		mutex_lock(&arm_smmu_asid_lock);
+>  		xa_erase(&arm_smmu_asid_xa, smmu_domain->cd.asid);
+>  		mutex_unlock(&arm_smmu_asid_lock);
+> -	} else {
+> +	} else if (!smmu_domain->nest_parent) {
+>  		struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
+>  		if (cfg->vmid)
+>  			ida_free(&smmu->vmid_map, cfg->vmid);
+> @@ -2506,7 +2532,10 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_device *smmu,
+>  				       struct arm_smmu_domain *smmu_domain)
+>  {
+>  	int vmid;
+> -	struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
+
+Is this really required? I see we're still doing the same thing for
+the nest_parent == false case.. we'll anyway return without doing much
+if (smmu_domain->nest_parent)
+
+> +
+> +	/* nest_parent stores vmid in vSMMU instead of a shared S2 domain */
+> +	if (smmu_domain->nest_parent)
+> +		return 0;
+>  
+>  	/* Reserve VMID 0 for stage-2 bypass STEs */
+>  	vmid = ida_alloc_range(&smmu->vmid_map, 1, (1 << smmu->vmid_bits) - 1,
+> @@ -2514,7 +2543,7 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_device *smmu,
+>  	if (vmid < 0)
+>  		return vmid;
+>  
+> -	cfg->vmid	= (u16)vmid;
+> +	smmu_domain->s2_cfg.vmid = (u16)vmid;
+>  	return 0;
+>  }
+>  
+> @@ -3233,6 +3262,8 @@ arm_smmu_domain_alloc_paging_flags(struct device *dev, u32 flags,
+>  		}
+>  		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
+>  		smmu_domain->nest_parent = true;
+> +		INIT_LIST_HEAD(&smmu_domain->vsmmus.list);
+> +		spin_lock_init(&smmu_domain->vsmmus.lock);
+>  		break;
+>  	case IOMMU_HWPT_ALLOC_DIRTY_TRACKING:
+>  	case IOMMU_HWPT_ALLOC_DIRTY_TRACKING | IOMMU_HWPT_ALLOC_PASID:
+> -- 
+
+Thanks,
+Praan
+
+> 2.43.0
+> 
+> 
