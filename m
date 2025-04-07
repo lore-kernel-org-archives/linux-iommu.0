@@ -1,195 +1,143 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2057.outbound.protection.outlook.com [40.107.220.57])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C80FC214A7C;
-	Mon,  7 Apr 2025 18:00:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.57
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744048861; cv=fail; b=bRGAxpg8Szw7UuOdxQNckNlapNAFzTA9T4jFaZX4otYaTvAedMOeGa0oZHooC9lGykKegWF8iImvhDEuQAtFpjDFLFKwCTDpVxTpsh4e6GBWPhcBS0g0lf5KwHyuDfcL0AsxS9EkT/vTcnFwMoBz4kk7DnhSpt93y82ewwOZLYE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744048861; c=relaxed/simple;
-	bh=+l/KDTSBmrFFdrRwDDiHtYA+p8P4DyZeHEh6IHruJlU=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BWVAlvXadVUXqsSEnQedsVEsQEWE4ZooBtCY/LY27uHQEL3aFzI/OmkyrBGBsC2cY8lGmaLz561ISiQdOvKuzFR1p6myOVAu7FrNgwclp1dUnpVAzqsv7/5xZEqBgmVK5UcgSPIyirMkjudLeTh6dstqeLAeNQyt8ADkXiAHFz4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Y9JlJlYM; arc=fail smtp.client-ip=40.107.220.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F191E21C9EE;
+	Mon,  7 Apr 2025 18:11:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744049518; cv=none; b=UpcY9hsKMfO58eNuPSHOzxeYMRG9nIQFxvpA5v7QddwyHRiuDBL1tg34ccpz2GXSiCLbcTFpdljkRiMNJFKJo5BKKuON1bPNN5l5bxOdaBypdf3huZgW5NN+Y/CX1r+uDafrTQXzS1tHW+olsf6nxlM3R85HLm5vCxXXwgVIjkY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744049518; c=relaxed/simple;
+	bh=Pbv0skuYZDrgl8lV7uBRFZi1ziYQNGkyBwUNPQWzd4E=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=WXhVbV7t5K75qGqDsstSD9bzf4XPtOfbXFsfm1yxDi6PTYgolwa0huPn5hY3jmrMgUY+t7mgfowpq9TcyDSb2OMFgbPaaV2vdDY98K7gTLeAn1K8GaZFeTkprP/Dr9hivm9v/W+c0+FF6nC1Sw7DgDNGcmrmloTY2OmfUb8Dcs8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Lrgt/2gG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Y9JlJlYM"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xF0rhKV6ZcWvp1JLyazK6sFr1+s3H72zNJbekXEPVUFDdBrxmTtmTYm1FCp80ZBEqBwzz6I0Gj+k9kEmzrx683eW7+1CFqUFuvCQTqCVC/V8QFZy3sfaPHssJ6gh66VVwrrPH1RRm0jQ5YldzMGcNDvRSJs0A7A78oVQCQcQziDeFFDNCzm4FvxmRdYYnM29ESpq+JPFd3AQlxjyTc1+guuCvHx4PYSvskeeqQmS8erH73BxFPFZOPmy6PV2Bq00V5saOWeFBH/FzCy+coKMqEPKmBGf8c8DbjjId8pjX/+ZBidw/+tG1DFnMHISzM8HYJbP8hHBkVCWn8ECRTehYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l32xApiI+gg24AXpOHwudkim+RE+PX7NDLCeLuFfkYc=;
- b=J19RJcc1IG9TRWiXzoMSifpMGHvu1gxB7Admla5dzj0pONrD1Mh2QZwcqQoIsp8zfn3sXkjlKGmsVWLj0CU+IC9kxcS/SkwqvtYKfRm6KMLKKqbjh69bE/5z022DCKZvvtJsyYt/aO/5t4/wA0wDUeBIw8pZAD7gsIDlOYPb5UDAApM2HTtDgAoHqwfdwDP3LOtny42W1mtyQu9TGWmNwngxGDzNJlcOKeDP97dS8RoLRsT/Ft1PW0gpk/rKvN/E3UtfoIac3Et7UkgE4n+4eB2bq6Fnm9X2DjB5kj0M1JiF3fkRNaKMgF75f9S75vvPZZW4rlmlWg4i+VbHsc2/aw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l32xApiI+gg24AXpOHwudkim+RE+PX7NDLCeLuFfkYc=;
- b=Y9JlJlYMLzSsNbQdCRCYDhkUTZ1iFwNT4yliGR1eCz+WuQY+Z/oNQVzTQQPOWdMIS3+xPiKiYBhbrNA6bEvRMtRlKwYokxjzrdg0PPHwd2sQlQrQ+VZSfk+Ajp2n73Kmngw+Q6iVHQH58JtbmDcPgQhF6fy/5hv0OEnqkO+TQoK8nd7SkqKuhpv68MM6GXgd+GjJ01E6K0InXysS7Cn0lTtkx8KJkcLzywzpIwS9JWgrxHC8RQy2Un5ivcBZ1V0toC3CiSM1NVoqY+6aULlL46ZDk9luto4uDUqnM7ZmlvLPEPESPhLJ7ZWwWgrNSaQr/8qZtQhI9Iz3xmbd2kWRbw==
-Received: from MW4PR04CA0254.namprd04.prod.outlook.com (2603:10b6:303:88::19)
- by SN7PR12MB8819.namprd12.prod.outlook.com (2603:10b6:806:32a::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.31; Mon, 7 Apr
- 2025 18:00:56 +0000
-Received: from SJ1PEPF000023D7.namprd21.prod.outlook.com
- (2603:10b6:303:88:cafe::4e) by MW4PR04CA0254.outlook.office365.com
- (2603:10b6:303:88::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8606.32 via Frontend Transport; Mon,
- 7 Apr 2025 18:00:56 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SJ1PEPF000023D7.mail.protection.outlook.com (10.167.244.72) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8655.0 via Frontend Transport; Mon, 7 Apr 2025 18:00:55 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 7 Apr 2025
- 11:00:31 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 7 Apr
- 2025 11:00:31 -0700
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Mon, 7 Apr 2025 11:00:27 -0700
-Date: Mon, 7 Apr 2025 11:00:24 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>
-CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <corbet@lwn.net>,
-	<will@kernel.org>, <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>,
-	<robin.murphy@arm.com>, <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>, <eric.auger@redhat.com>,
-	<jean-philippe@linaro.org>, <mdf@kernel.org>, <mshavit@google.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <smostafa@google.com>,
-	<ddutile@redhat.com>, <yi.l.liu@intel.com>, <praan@google.com>,
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH v8 12/14] iommu/arm-smmu-v3: Introduce struct
- arm_smmu_vmaster
-Message-ID: <Z/QSuMzJVGOcTx60@nvidia.com>
-References: <cover.1740504232.git.nicolinc@nvidia.com>
- <f205a4e2f5971cd4b1033d7cac41683e10ebabfb.1740504232.git.nicolinc@nvidia.com>
- <CABQgh9Fuh2HdBH7pyAteawZBpa55ZzfR9dv2K4RF=Ps4yhREbw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Lrgt/2gG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85454C4CEDD;
+	Mon,  7 Apr 2025 18:11:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1744049517;
+	bh=Pbv0skuYZDrgl8lV7uBRFZi1ziYQNGkyBwUNPQWzd4E=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=Lrgt/2gGESUhtsH9Bn/4F+WClFTBPnMLKYV5LsVAxFAq3x7OshyR0NSKaEcj/BSnZ
+	 cdZfIcrebyad+2Di7bNqMc3YM3pzK+WTUK/Us90Bdf6j/KhaOLoVI88BnU+EEbS7fY
+	 xmBwdDG/tq8KEdotsHPzXM8ZosAveeQk/Kc7a69mNjoE1CQ63P1X744pdF0giuVByx
+	 5fVLCCF0hnz7l406JH6zsHVdCmVeG3NUAZJBsk865DyUJetM/k4Zi6iWPKTIA7aAlh
+	 nO44jWnCBjUqIg11FwstpQZuAMzXtg114WHY+AP3za4RsRjMfMEl6cYNDJXtnw4Xjg
+	 aEblvCQkgS1kA==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Nicolin Chen <nicolinc@nvidia.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Will Deacon <will@kernel.org>,
+	Sasha Levin <sashal@kernel.org>,
+	joro@8bytes.org,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	nathan@kernel.org,
+	peterz@infradead.org,
+	yi.l.liu@intel.com,
+	jsnitsel@redhat.com,
+	mshavit@google.com,
+	zhangzekun11@huawei.com,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: [PATCH AUTOSEL 6.14 24/31] iommu/arm-smmu-v3: Set MEV bit in nested STE for DoS mitigations
+Date: Mon,  7 Apr 2025 14:10:40 -0400
+Message-Id: <20250407181054.3177479-24-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20250407181054.3177479-1-sashal@kernel.org>
+References: <20250407181054.3177479-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CABQgh9Fuh2HdBH7pyAteawZBpa55ZzfR9dv2K4RF=Ps4yhREbw@mail.gmail.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF000023D7:EE_|SN7PR12MB8819:EE_
-X-MS-Office365-Filtering-Correlation-Id: e4693767-7e8b-4f05-7f89-08dd75fe24f3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|36860700013|7416014|1800799024|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?MZMMJBDqR09E0oemVbJbqZblT6tQLcEW0A/718JWvA1pBM6nNujzYZbWkfHj?=
- =?us-ascii?Q?VNqm9DBpx1ZU/WzNtC3u8ARY6cMtoJ+TYsOqQsmw8TEkLiOagb70F6W0fOU7?=
- =?us-ascii?Q?TF5yueUh7nh72O9oeGHkEYLGZVQwbwsozHzYI3FE9IbydsPoBRGxklmeFkG4?=
- =?us-ascii?Q?cTrSol1MvvTachUBjKNI2yHFjmEhwuz9zDZARl2Az9IXDs0IJV5qy0M/2Y7U?=
- =?us-ascii?Q?hRPxBKDE59PDnIY/HCM8uID1v8/Nh157kwWscbVpgR+1kvz2QRzmhMzEYjp2?=
- =?us-ascii?Q?G5jxgKloq7jmusCkSljde/MTBIi8rpPeTwmmHaP36fkaoozcj+8tE8zY1Xn5?=
- =?us-ascii?Q?TWlTT9XSdOeNfkVWtcUEIhLudEmFgFnOoqdpMmnWZ/psKXIeqGsi0nkegm4K?=
- =?us-ascii?Q?39rHW9QFUVKfbVq0d9loW4TZyxaF9XBuzGhyLPCZzKO2M2TGp3cGaypVFJNV?=
- =?us-ascii?Q?tkpmyuojlnsx6P+J9Oz8ja2LfRChrlp2yrxhGF/QRfqPjSxtjo3u9LkTCI8z?=
- =?us-ascii?Q?WuCBswTv7ed7f2J2Hwmh3vp5k/lAq3mjG/bEPtjP+irFBBMWIg/QCQGYgKsw?=
- =?us-ascii?Q?GBTEwIMNTWKljSSbz/hspVL5Gw3SDXUHO27s43dhzJwqzl+D6VEziMBb9rV4?=
- =?us-ascii?Q?8PZoLN4SMDHcv6T1OjjSAo3e8O3etF2vS5Uxz/FArRBVmTzQj9kSd1cobgO2?=
- =?us-ascii?Q?7XmTcAoy2V/JF2PzW4ebzhk6aySomGAjR5tlKQM6iWq7KAJyYbfynCHANM/A?=
- =?us-ascii?Q?gkPr+EWkFH37Gi0WOu8cUN1YGe7mcESPn4ZNTYte7gj69nRDaTI54WtBYBAy?=
- =?us-ascii?Q?z2ymskTjZ2ge8Sb1SUIPOlfjIdiVYWq3y239lujb6IzLRnQeeA5b8borITLb?=
- =?us-ascii?Q?jG5OQun1/ZhZIB6pmCuN574XsS2eks1aBf2piESxsxQh9bu8oxaIa6JGw+HI?=
- =?us-ascii?Q?QievnsmAPYKdyP36Idzi0MW1buF2nLDG6ORfBXpUqTmHRZGpsUyDEr2AiqN4?=
- =?us-ascii?Q?buSlNPkEgCRl2DnKEWNAzJH8/QyZ80DgD2v2T7wBLHF2AljDGvoZaOAHsIxt?=
- =?us-ascii?Q?bR7lEvsPCQKoKgf4/co/rOtd2IzC7dpzFIa2/3vqZFJLcBgwV6rTnbbDs+fp?=
- =?us-ascii?Q?69Hke4O6iGcxGeO7jpwTxKa2wS9K1KCx/rxHqe6bwZiwO0PIkg4W6Xd5czTI?=
- =?us-ascii?Q?VYNm/Qm2eQoRhlKHNXePchnRD/IS1OACzJy/dhXdLS8wbbqDi3lnMo5rEbHT?=
- =?us-ascii?Q?L0ROkXikeyGu4J43OH93Cd8Q6lp1u7ZnKgPoZ+zB4sOnWESnDp/zluPaewkR?=
- =?us-ascii?Q?1/C7CSkzxeXtZEk4xzXCyTWGpDA15w1d2/UzuIRQHc0Jw6DQzToMl0yXkh6B?=
- =?us-ascii?Q?49HovViT+UJ/mDjoAHqs0IT76LDtxCb3zXNscMkodHmKYWs2FKlsHdjDQMKZ?=
- =?us-ascii?Q?PVfhyaGYXh1PQRTpBrVh4rq1ZEBZCfWzWp9jnjMO2LxonbpnBII8A4CuoNXP?=
- =?us-ascii?Q?xFhawRSpWRLnWBo=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(36860700013)(7416014)(1800799024)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2025 18:00:55.7267
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e4693767-7e8b-4f05-7f89-08dd75fe24f3
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF000023D7.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8819
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.14.1
+Content-Transfer-Encoding: 8bit
 
-On Mon, Apr 07, 2025 at 08:08:57PM +0800, Zhangfei Gao wrote:
-> Hi, Nico
-> 
-> On Wed, 26 Feb 2025 at 01:35, Nicolin Chen <nicolinc@nvidia.com> wrote:
-> >
-> > Use it to store all vSMMU-related data. The vsid (Virtual Stream ID) will
-> > be the first use case. Since the vsid reader will be the eventq handler
-> > that already holds a streams_mutex, reuse that to fenche the vmaster too.
-> >
-> > Also add a pair of arm_smmu_attach_prepare/commit_vmaster helpers to set
-> > or unset the master->vmaster point. Put these helpers inside the existing
-> > arm_smmu_attach_prepare/commit().
-> >
-> > For identity/blocked ops that don't call arm_smmu_attach_prepare/commit(),
-> > add a simpler arm_smmu_master_clear_vmaster helper to unset the vmaster.
-> >
-> > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> > Reviewed-by: Pranjal Shrivastavat <praan@google.com>
-> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > ---
-> 
-> >
-> > +int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
-> > +                                   struct arm_smmu_nested_domain *nested_domain)
-> > +{
-> > +       struct arm_smmu_vmaster *vmaster;
-> > +       unsigned long vsid;
-> > +       int ret;
-> > +
-> > +       iommu_group_mutex_assert(state->master->dev);
-> > +
-> > +       /* Skip invalid vSTE */
-> > +       if (!(nested_domain->ste[0] & cpu_to_le64(STRTAB_STE_0_V)))
-> > +               return 0;
-> 
-> Why this is removed in v9 and 6.15-rc1?
-> 
-> I tested 6.15-rc1 the qemu failed to boot with qemu branch:
-> for_iommufd_veventq-v8
-> "failed to attach the bypass pagetable"
+From: Nicolin Chen <nicolinc@nvidia.com>
 
-Here is the problem: v9 isn't compatible with v8 :)
+[ Upstream commit da0c56520e880441d0503d0cf0d6853dcfb5f1a4 ]
 
-Would you please try for-v9 version?
-https://github.com/nicolinc/qemu/commits/wip/for_iommufd_veventq-v9
+There is a DoS concern on the shared hardware event queue among devices
+passed through to VMs, that too many translation failures that belong to
+VMs could overflow the shared hardware event queue if those VMs or their
+VMMs don't handle/recover the devices properly.
 
-I also asked Shameer to integrate this change to his QEMU series:
-https://lore.kernel.org/qemu-devel/8fbdb07be20a43bf8281143720a0c10e@huawei.com/
+The MEV bit in the STE allows to configure the SMMU HW to merge similar
+event records, though there is no guarantee. Set it in a nested STE for
+DoS mitigations.
 
-Thanks
-Nicolin
+In the future, we might want to enable the MEV for non-nested cases too
+such as domain->type == IOMMU_DOMAIN_UNMANAGED or even IOMMU_DOMAIN_DMA.
+
+Link: https://patch.msgid.link/r/8ed12feef67fc65273d0f5925f401a81f56acebe.1741719725.git.nicolinc@nvidia.com
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
+Acked-by: Will Deacon <will@kernel.org>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 2 ++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c         | 4 ++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h         | 1 +
+ 3 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+index 5aa2e7af58b47..34a0be59cd919 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+@@ -43,6 +43,8 @@ static void arm_smmu_make_nested_cd_table_ste(
+ 	target->data[0] |= nested_domain->ste[0] &
+ 			   ~cpu_to_le64(STRTAB_STE_0_CFG);
+ 	target->data[1] |= nested_domain->ste[1];
++	/* Merge events for DoS mitigations on eventq */
++	target->data[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
+ }
+ 
+ /*
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 358072b4e293e..59749e8180afc 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1052,7 +1052,7 @@ void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
+ 			cpu_to_le64(STRTAB_STE_1_S1DSS | STRTAB_STE_1_S1CIR |
+ 				    STRTAB_STE_1_S1COR | STRTAB_STE_1_S1CSH |
+ 				    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_STRW |
+-				    STRTAB_STE_1_EATS);
++				    STRTAB_STE_1_EATS | STRTAB_STE_1_MEV);
+ 		used_bits[2] |= cpu_to_le64(STRTAB_STE_2_S2VMID);
+ 
+ 		/*
+@@ -1068,7 +1068,7 @@ void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
+ 	if (cfg & BIT(1)) {
+ 		used_bits[1] |=
+ 			cpu_to_le64(STRTAB_STE_1_S2FWB | STRTAB_STE_1_EATS |
+-				    STRTAB_STE_1_SHCFG);
++				    STRTAB_STE_1_SHCFG | STRTAB_STE_1_MEV);
+ 		used_bits[2] |=
+ 			cpu_to_le64(STRTAB_STE_2_S2VMID | STRTAB_STE_2_VTCR |
+ 				    STRTAB_STE_2_S2AA64 | STRTAB_STE_2_S2ENDI |
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index bd9d7c85576a2..7290bd4c2bb0a 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -266,6 +266,7 @@ static inline u32 arm_smmu_strtab_l2_idx(u32 sid)
+ #define STRTAB_STE_1_S1COR		GENMASK_ULL(5, 4)
+ #define STRTAB_STE_1_S1CSH		GENMASK_ULL(7, 6)
+ 
++#define STRTAB_STE_1_MEV		(1UL << 19)
+ #define STRTAB_STE_1_S2FWB		(1UL << 25)
+ #define STRTAB_STE_1_S1STALLD		(1UL << 27)
+ 
+-- 
+2.39.5
+
