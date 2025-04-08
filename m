@@ -1,133 +1,106 @@
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3C3826773A
-	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 11:44:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70728265CDF
+	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 12:09:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744112690; cv=none; b=Msh6O5QEh7WlXxqBdJf1CbGUUbed31NFAqQdW5hlooC2RU0Dzion3BmL+PUZlDKJSjdfArERMgz8WxLuANQRZwNVJsX+rJldeNmJT34DW3Y+LwMrRLlI2uUbvtSRXMMwlquHHqit87HXV2oJXDq3b90XwI/nN3UWC/Ff1Yxlcx4=
+	t=1744114163; cv=none; b=Tw3GybLuPh/TZphF6k8z5X2WSrHP8EoSqaKbxNnjrxBy1TxNNtYrsmo8fxZYeJ8yfN9pajW9fUkCQ4Y2cyDmD5AB9/15wivvjKuQbjHSJXLa8a71K0RMIDsDiAD+zxRMLEwprHWJt8fMuSyY3eGPB3txQyQ9cJNj2ldgqjmpI1g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744112690; c=relaxed/simple;
-	bh=sVnWWYifDzNHWDD5ZdDHNMXXvkM1H7Mr10Ssgl0n+6I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KTzyhBYx9G20UwmWfWKnShwpRzcFxx1O4Ctrj4mASHpkHcFYFQCvzU0KB7VB0hXPO4HKGZ9OhLmrV7WS73SlH2CrJvb8Qtvjph54MSpN5BsdLWANco9C+wC/OmZRMicBlaobdiij+GEjF5CuHKmw576U2pbhm59JzToUrzvNdnU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=x2n+WHV6; arc=none smtp.client-ip=209.85.208.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1744114163; c=relaxed/simple;
+	bh=tpHAquJG4Dkb66PrhDikfbFF6dS5Oa2U69jSk8hSrEc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mbHH2e7XfVpEgMlEyxy6w1ZPs9XWaX0TDElLZG2arKdR+iPh2N3Igtbi9McnU8pWHb8vMRpPqQXYAkcfy12dqL0ZJAkCHsu/a8/0g9ZhmfIFmsrpTTS3QtCEHZLdH626Qo9B2vpkC8YMC8c9qtRp4FqSVdeSxzRsHiOoX6aj1b4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ulbcwv8u; arc=none smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="x2n+WHV6"
-Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-30bfe0d2b6dso51952591fa.3
-        for <iommu@lists.linux.dev>; Tue, 08 Apr 2025 04:44:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ulbcwv8u"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-47688ae873fso53495601cf.0
+        for <iommu@lists.linux.dev>; Tue, 08 Apr 2025 05:09:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1744112687; x=1744717487; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=JrYauhzusPrI0iXB3x51m5sg6uFNXWBUmKbASQyHV2k=;
-        b=x2n+WHV6sp7POYuHbHG/Kozy87C0KwRJUwofHKuShbAzkExauBmK+MCJu9PYsEmlis
-         TvdcDpWdSn1y2N8TzyNDAIlyEkbgAUPtGvLLixjgQX4hA7WFWfYk1cnqjZbuh6VTtq7T
-         1llLHRJnay5a8Eii8F2zRvdoUg1Ci67qGA/B/a9MdoWukHNqlin2OJxI582lRUYYqTkG
-         s3aCcSqrG5wMnErUj6e67yQmA6SZdjYS+pwJpwKlJj1MPVjAPD8RGvT67XmCVWNC5zMu
-         JXVGX8eq+ltREcX8ozRFkc0U1x4ZMlzsFzngIIZn5Qw+o4l2tIk35Y99jQYf2ElMkK8W
-         19Rg==
+        d=ziepe.ca; s=google; t=1744114160; x=1744718960; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EvZTf+A2Tig+IRGHQAjPjWtgFVFDb9fydbEYyz2o1UM=;
+        b=Ulbcwv8uZw5WHPObOnRJGpe7J5EnrUJ95cwfQvcdlEQsCElPwn0ShRUKPpZQa9o9fo
+         P+/uzgzEj4WPmYSI+FM0m4WqvMiFjU40BWdhwyGKuNpB7+WnVNVR6x9j4/+YpK/AEQ6Z
+         Z9oPDqkMooflNI2UVgom7M+rZed+O0qgkgbZDoY//39otJ2mXD6o8wL5wAISyEN5bC15
+         f237kQiTnqZux1aPy1LPMcza1al+tzTsyZt+H7wmP+w/i2/MDafueJk/Q63Y5kklJN5u
+         7hcocq9piyRij71CiuxcyMYKEP+gjVmEcxgj5CFNiOX90jgEco37AmWAB17QD+/utwyP
+         2hwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744112687; x=1744717487;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=JrYauhzusPrI0iXB3x51m5sg6uFNXWBUmKbASQyHV2k=;
-        b=Td+POocGDzVpMDyMJLbLyRiyhPeRzJ0PwXn2cQ7Z2Apji8Vxn5ykB8UQX0+oEdGGNc
-         /CGpCLaiaQ/5+kNlz8mBpAvyl2aEiSn/MfdrMGXv6bkJA1UIWeJc8CsrSD5+PJMevAOT
-         L8kb5a0wqflbBz6LxOkITQ6kc8s0QhzmWb9tM1n2h54rxxaExokdpHNdpezFa+xycNQv
-         +c1/wEM/J8DSCO1gzzrz6Zd6DI436X5OMcF5bYs/VjOnMLrCtvrWvhDKvnYchHXrOxNh
-         rEK+u26gq9flve48hZXkpF1MsJ7eN1njbC40ZisTx5UHWMAqB46YZR0Vs5dtNpJ6aZv3
-         PmqQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWxZP91+7DpPbsk3m+Z/NYuJhVFhGIhxdmVFAWQ5HurviJnc9QQBZP/x9vQR2Z4KjGAfaeAXg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxrZgoU6Vm9lodGhEomSTGHi7coCPck/zphgRp0WM0t62q0jYgh
-	ZVqSsMUaxN533GB0mTgnnKE+wxLDqE711gUxJzqvecbo8lErN+IydN73gs5IDnfZacwTchSM9CP
-	Dc1sMjo2gpqRsTr1i/f7SDZCs2fEuy1T5UuZEFw==
-X-Gm-Gg: ASbGncv6xTdmaBHJhYRyAsMyITTqlV1cERV7+0sS+zBdQvNWQTkVyiR/q2AETy3vV11
-	CvWI8hasNjG92ZKVpVa2q9nWPRmElB7oIMK6FJ/aAtfbKXGwJ7GvQ1p1WSqgWGL1tbFNfWmow3a
-	hqmIdsXkBrhCgYpH2w6D6ikogbrQxvJCU=
-X-Google-Smtp-Source: AGHT+IHjL36c4DD0hqrS7NUmvzOjx/3kG/kPwxU+j7cHEhXKV/Zh3wqhtcKt/lEg9h3aP4E8pKAxMXueT2IArw3DOF0=
-X-Received: by 2002:a05:651c:882:b0:307:9555:dc5e with SMTP id
- 38308e7fff4ca-30f0be04016mr46411251fa.3.1744112686911; Tue, 08 Apr 2025
- 04:44:46 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1744114160; x=1744718960;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EvZTf+A2Tig+IRGHQAjPjWtgFVFDb9fydbEYyz2o1UM=;
+        b=qNQbaWryKjc7KYVguh8C0UkaC0WJsjO4SCuV4vwDF23GeiOGvPyn1xq9QpEGr7OyVp
+         10B7lyujGhhDSFom3tsGBiblvb5XCwVhpIEhWm9jIViJpaZXgAu2+0+TLu+xbqrF8p6Q
+         R6vbisKWmrMa6H2NBnF0rtFkJ59mtnfY5ayAj/Q3aMc3Zhx3FEbF77qf3PFbzq2G9wWJ
+         vJuBEBR6WsdugELTsB0Fda1I55tuh43/XIak8H6UmW6OaiHEov0EV5qMDEOQRCLxoqvt
+         t047nIPoTvY7e48SXTkLufeV1UKxnELrt1q0f3x+hhJRG2lJ76aAcHXgsiVcWTqhpXmx
+         HvRw==
+X-Gm-Message-State: AOJu0YyoSd2lHizPRJI+LIHFtAqiKa1w/b49F3KZxc0Rx3O7rVLSAr0q
+	9BtazKrhuiGyLddp56m71/Jmas+VA0FTy4+GszpJK4eMCip/kW/b/+KYnslhE6c=
+X-Gm-Gg: ASbGncukxJ+UtcQTzQBBCXOatAcQccy1FzuGZoEQxZZQXIjBBi6EC65FNiLSkGcdp9H
+	hTiI675mLQfvGqZLf2QZNkyxDMhCSUuD35gcAES0NDroWWFq06dNP/5s7bP2CKFggTPr8hgee4I
+	BvTPHZ8ONAVtdN0mwTbP0wJEIq8893veBKqsBknlDwhrn1CWt16WuePOqRjZLNbtEPlW3aIhQzk
+	6CNp+B0sy5+Ih5sKPC1MI4pZrv0secZHXNvn1zRWwbVymMswbsktiaN0FDqW33Ia4p0+ZxmIAye
+	pUX8ueFqmeIITnegX6qfqzP3pz2C2KEEr7jeK40psH5r4n8FZMPlBEXr/NWnGkN2yYSyZpCdo8X
+	RqfLg3Q2y2oPWKJnj3BQ8ww+P2ZqXVd++Ew==
+X-Google-Smtp-Source: AGHT+IElwz6ZYvtcmCNJZ23hEjFuxJMkyHm7q2gsXSKL95/zDdGVqmGJmKoKERZUukK8jrmOAgtPdw==
+X-Received: by 2002:a05:622a:394:b0:476:77a5:3104 with SMTP id d75a77b69052e-47930f6f3e1mr204130021cf.11.1744114160142;
+        Tue, 08 Apr 2025 05:09:20 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4791b088544sm77395201cf.45.2025.04.08.05.09.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Apr 2025 05:09:19 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1u27lX-00000007fyn-0hJN;
+	Tue, 08 Apr 2025 09:09:19 -0300
+Date: Tue, 8 Apr 2025 09:09:19 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, will@kernel.org,
+	robin.murphy@arm.com, nicolinc@nvidia.com, jsnitsel@redhat.com,
+	praan@google.com, kevin.tian@intel.com, ddutile@redhat.com
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add missing S2FWB feature detection
+Message-ID: <20250408120919.GB1727154@ziepe.ca>
+References: <20250408033351.1012411-1-aneesh.kumar@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1740504232.git.nicolinc@nvidia.com> <f205a4e2f5971cd4b1033d7cac41683e10ebabfb.1740504232.git.nicolinc@nvidia.com>
- <CABQgh9Fuh2HdBH7pyAteawZBpa55ZzfR9dv2K4RF=Ps4yhREbw@mail.gmail.com> <Z/QSuMzJVGOcTx60@nvidia.com>
-In-Reply-To: <Z/QSuMzJVGOcTx60@nvidia.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Tue, 8 Apr 2025 19:44:34 +0800
-X-Gm-Features: ATxdqUE5HzSx71KLyQAI3wDnKvY_BQRF_RJmPVNkaKt2N6Ua3aAx7RZCkWtktDg
-Message-ID: <CABQgh9FObG8-Qsp-nqoTP-fC7VkPoi1ooHPQ1=s5uW_2BTL9vw@mail.gmail.com>
-Subject: Re: [PATCH v8 12/14] iommu/arm-smmu-v3: Introduce struct arm_smmu_vmaster
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org, 
-	joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com, 
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org, 
-	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org, 
-	mshavit@google.com, shameerali.kolothum.thodi@huawei.com, smostafa@google.com, 
-	ddutile@redhat.com, yi.l.liu@intel.com, praan@google.com, 
-	patches@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250408033351.1012411-1-aneesh.kumar@kernel.org>
 
-On Tue, 8 Apr 2025 at 02:00, Nicolin Chen <nicolinc@nvidia.com> wrote:
->
-> On Mon, Apr 07, 2025 at 08:08:57PM +0800, Zhangfei Gao wrote:
-> > Hi, Nico
-> >
-> > On Wed, 26 Feb 2025 at 01:35, Nicolin Chen <nicolinc@nvidia.com> wrote:
-> > >
-> > > Use it to store all vSMMU-related data. The vsid (Virtual Stream ID) will
-> > > be the first use case. Since the vsid reader will be the eventq handler
-> > > that already holds a streams_mutex, reuse that to fenche the vmaster too.
-> > >
-> > > Also add a pair of arm_smmu_attach_prepare/commit_vmaster helpers to set
-> > > or unset the master->vmaster point. Put these helpers inside the existing
-> > > arm_smmu_attach_prepare/commit().
-> > >
-> > > For identity/blocked ops that don't call arm_smmu_attach_prepare/commit(),
-> > > add a simpler arm_smmu_master_clear_vmaster helper to unset the vmaster.
-> > >
-> > > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > Reviewed-by: Pranjal Shrivastavat <praan@google.com>
-> > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > > ---
-> >
-> > >
-> > > +int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
-> > > +                                   struct arm_smmu_nested_domain *nested_domain)
-> > > +{
-> > > +       struct arm_smmu_vmaster *vmaster;
-> > > +       unsigned long vsid;
-> > > +       int ret;
-> > > +
-> > > +       iommu_group_mutex_assert(state->master->dev);
-> > > +
-> > > +       /* Skip invalid vSTE */
-> > > +       if (!(nested_domain->ste[0] & cpu_to_le64(STRTAB_STE_0_V)))
-> > > +               return 0;
-> >
-> > Why this is removed in v9 and 6.15-rc1?
-> >
-> > I tested 6.15-rc1 the qemu failed to boot with qemu branch:
-> > for_iommufd_veventq-v8
-> > "failed to attach the bypass pagetable"
->
-> Here is the problem: v9 isn't compatible with v8 :)
->
-> Would you please try for-v9 version?
-> https://github.com/nicolinc/qemu/commits/wip/for_iommufd_veventq-v9
+On Tue, Apr 08, 2025 at 09:03:51AM +0530, Aneesh Kumar K.V (Arm) wrote:
+> Commit 67e4fe398513 ("iommu/arm-smmu-v3: Use S2FWB for NESTED domains")
+> introduced S2FWB usage but omitted the corresponding feature detection.
+> As a result, vIOMMU allocation fails on FVP in arm_vsmmu_alloc(), due to
+> the following check:
+> 
+> 	if (!arm_smmu_master_canwbs(master) &&
+> 	    !(smmu->features & ARM_SMMU_FEAT_S2FWB))
+> 		return ERR_PTR(-EOPNOTSUPP);
+> 
+> This patch adds the missing detection logic to prevent allocation
+> failure when S2FWB is supported.
+> 
+> Fixes: 67e4fe398513 ("iommu/arm-smmu-v3: Use S2FWB for NESTED domains")
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-Thanks Nico
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-I tried this branch, it works with 6.15-rc1
+This should go to rc
 
-Thanks
+Jason
