@@ -1,142 +1,72 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3CD6263C83;
-	Tue,  8 Apr 2025 12:40:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AA7C726FA6A
+	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 12:44:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744116051; cv=none; b=ee2R5dzyOTdNPbQcXs4NELB3aNWANSiORJVM1iTds6tgtnqgu2Sm+x7VikahgE5zb7oruHreJu60obq73EqVU7nrUsAbqXOmL03DsEq9zM4Svul2WmZ1oDmqOSs8hWzRHhHJgZd08WuYcvlJG6LNgJKG6iSUHB4B8RNSNZb9xCQ=
+	t=1744116267; cv=none; b=qUKigxJld3G1D6ZBeyOK8/LR9RusHGWe0EYhB7vAAQJE6l/aYV5QSNeNQIdK/iOyQgf5hrjxCA/EvpQ8hcLIiqyP4Fo6aKPZiH1bP5u2+pM6/UTXYIfI/1fd3KnxAt6Q2cxiIVYwA8v50rgFvMmiUoL8JK1QwQHN3SO0i0vi7ik=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744116051; c=relaxed/simple;
-	bh=dHP0/udm20sXgQKDlru8Fc0+oci1llyIjyVrg4/zGdg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=TrWvUI0o7RG9gBoGXMa0WyxkUxUHYvXWtpelOPBClVNvquegnyS3hje4zEKeos12PV1UmQ1H9zPPhbskYv1wXXgj/TxbiKzJm1/xDCy62RViwfoWlBD6AB+5BB0xyC/NBU9lxeZbLfd3nQOt803bErw49he+s+vXPiw2QULbU4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c8fbRvfx; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744116267; c=relaxed/simple;
+	bh=92+gVUDbM8veL5qaG67XCDOWhmC3AQ1NUPn6xtCTkrE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=L1vb1XyNmJUt6EK1HyCB0JiBBLM5qJBiy/OuySGs14jAr+EULUt53KuhKDBI84jpEg7I5u46Y7okcjqIOhjcyTrqoQTPbZE0wjXGiqELUv+kyHF24OmAPkn1RjbrOOmN5gIj9YH82TfBUZsvGSvhOMCYQ5Tz2nukstcMFV2I1Gw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=I90PZBhM; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c8fbRvfx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 298D8C4CEE5;
-	Tue,  8 Apr 2025 12:40:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744116050;
-	bh=dHP0/udm20sXgQKDlru8Fc0+oci1llyIjyVrg4/zGdg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=c8fbRvfxjziB7Io+USquH5XEtqf7lDQk3JFK8aOt0z/9KBVBiuLgEZCN0YsT61ug7
-	 uTs04krMG0aSWDXCfrvKo91MUorTseZqJ+ExDUrfhIZCHnylsUn9r0DOUJ0svg4XbY
-	 dM/x/+0rqNSD1cfqOkdCVT+3JFNpmAF/8t5LiPpzRKFuAGD+WXBJg6sOKlZqRbqkhR
-	 RfHTub4Zufn/r1h9lSF/E3SkK1lOuWYwD2NQObsUvhYskaY80/yTCB+9/PmCE1R+j0
-	 gM5Z3akGSOdVfUvAU00JGybeD7Sr9G4OgoC9Rq0eF4pRkujZsl6FAq2wI9VIFoHoTA
-	 M8a3YYRZdAU1g==
-From: Andreas Hindborg <a.hindborg@kernel.org>
-To: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>
-Cc: <ojeda@kernel.org>,  "Danilo Krummrich" <dakr@kernel.org>,  "Daniel
- Almeida" <daniel.almeida@collabora.com>,  "Robin Murphy"
- <robin.murphy@arm.com>,  "Alex Gaynor" <alex.gaynor@gmail.com>,  "Boqun
- Feng" <boqun.feng@gmail.com>,  "Gary Guo" <gary@garyguo.net>,
-  =?utf-8?Q?Bj=C3=B6rn?= Roy
- Baron <bjorn3_gh@protonmail.com>,  "Benno Lossin"
- <benno.lossin@proton.me>,  "Alice Ryhl" <aliceryhl@google.com>,  "Trevor
- Gross" <tmgross@umich.edu>,  <rust-for-linux@vger.kernel.org>,  "Marek
- Szyprowski" <m.szyprowski@samsung.com>,  <iommu@lists.linux.dev>,
-  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] rust: dma: add as_slice/write functions for
- CoherentAllocation
-In-Reply-To: <20250326201230.3193329-4-abdiel.janulgue@gmail.com> (Abdiel
-	Janulgue's message of "Wed, 26 Mar 2025 22:11:44 +0200")
-References: <20250326201230.3193329-1-abdiel.janulgue@gmail.com>
-	<Jv5VZvihK_dgh5j6Ml8T-c7Q8EICtgbgAMI_g_QT51H7--Za9Dbwvz4j1ouuseFxM26sKP0_J3h38ffbQq0Y_A==@protonmail.internalid>
-	<20250326201230.3193329-4-abdiel.janulgue@gmail.com>
-User-Agent: mu4e 1.12.7; emacs 29.4
-Date: Tue, 08 Apr 2025 14:39:29 +0200
-Message-ID: <87friihloe.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="I90PZBhM"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 79C5F41F12;
+	Tue,  8 Apr 2025 14:44:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1744116264;
+	bh=92+gVUDbM8veL5qaG67XCDOWhmC3AQ1NUPn6xtCTkrE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=I90PZBhM65TV2U7//+BKL0PIdDP8C0UuisOeswxIWcZfjTSvNxiTsriCM/Tl7ylOC
+	 4VDxsTmsldmg3eH6O/ON/6+R83AlfRkmQUe3sSb1yEdcdkEJkDWuzg5gOOMGlftXWR
+	 rGQVilkXEkwH9x7nCGdjhaiIbHHCGhiTu2gH0kbyCxwplWb6CXdy3S4CApWORlJwmO
+	 9oUKlY0Xaqx6WP/1q97tYJbIjjTWmDl9A3Xt3lyd3aiLDWq9Yy/KG/rH4D0PEujw2b
+	 QaBjqnFc2Uc6NoA4p5YBPGU9RPKyfrwalzFMO1JLAY3QQ6IXwpscA3B4DDqYP6BlNL
+	 7+InApJnQ+V/w==
+Date: Tue, 8 Apr 2025 14:44:23 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Sean Christopherson <seanjc@google.com>, suravee.suthikulpanit@amd.com,
+	vasant.hegde@amd.com
+Cc: Paolo Bonzini <pbonzini@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Maxim Levitsky <mlevitsk@redhat.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH 00/67] KVM: iommu: Overhaul device posted IRQs support
+Message-ID: <Z_UaJzhtmIv4rAox@8bytes.org>
+References: <20250404193923.1413163-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250404193923.1413163-1-seanjc@google.com>
 
-"Abdiel Janulgue" <abdiel.janulgue@gmail.com> writes:
+Hey Sean,
 
-> Add unsafe accessors for the region for reading or writing large
-> blocks of data.
->
-> Reviewed-by: Andreas Hindborg <a.hindborg@kernel.org>
-> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-> ---
->  rust/kernel/dma.rs | 87 ++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 87 insertions(+)
->
-> diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-> index 24a6f10370c4..24025ec602ff 100644
-> --- a/rust/kernel/dma.rs
-> +++ b/rust/kernel/dma.rs
-> @@ -218,6 +218,93 @@ pub fn dma_handle(&self) -> bindings::dma_addr_t {
->          self.dma_handle
->      }
->
-> +    /// Returns the data from the region starting from `offset` as a slice.
-> +    /// `offset` and `count` are in units of `T`, not the number of bytes.
-> +    ///
-> +    /// Due to the safety requirements of slice, the caller should consider that the region could
-> +    /// be modified by the device at anytime.
+On Fri, Apr 04, 2025 at 12:38:15PM -0700, Sean Christopherson wrote:
+> TL;DR: Overhaul device posted interrupts in KVM and IOMMU, and AVIC in
+>        general.  This needs more testing on AMD with device posted IRQs.
 
-The user does not need to consider this, because the safety requirements
-make sure this is not a problem. The user only needs to consider the
-safety requirements.
+Thanks for posting this, it fixes quite some issues in the posted IRQ
+implemention. I skimmed through the AMD IOMMU changes and besides some
+small things didn't spot anything worrisome.
 
->> For ringbuffer type of r/w access or use-cases where
-> +    /// the pointer to the live data is needed, `start_ptr()` or `start_ptr_mut()` could be
-> +    /// used instead.
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// * Callers must ensure that no hardware operations that involve the buffer are currently
-> +    ///   taking place while the returned slice is live.
-> +    /// * Callers must ensure that this call does not race with a write to the same region while
-> +    ///   while the returned slice is live.
-> +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Result<&[T]> {
-> +        let end = offset.checked_add(count).ok_or(EOVERFLOW)?;
-> +        if end >= self.count {
-> +            return Err(EINVAL);
-> +        }
-> +        // SAFETY:
-> +        // - The pointer is valid due to type invariant on `CoherentAllocation`,
-> +        // we've just checked that the range and index is within bounds. The immutability of the
-> +        // of data is also guaranteed by the safety requirements of the function.
-> +        // - `offset` can't overflow since it is smaller than `self.count` and we've checked
-> +        // that `self.count` won't overflow early in the constructor.
-> +        Ok(unsafe { core::slice::from_raw_parts(self.cpu_addr.add(offset), count) })
-> +    }
-> +
-> +    /// Performs the same functionality as [`CoherentAllocation::as_slice`], except that a mutable
-> +    /// slice is returned.
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// * Callers must ensure that no hardware operations that involve the buffer are currently
-> +    ///   taking place while the returned slice is live.
-> +    /// * Callers must ensure that this call does not race with a read or write to the same region
-> +    ///   while the returned slice is live.
-> +    pub unsafe fn as_slice_mut(&self, offset: usize, count: usize) -> Result<&mut [T]> {
-> +        let end = offset.checked_add(count).ok_or(EOVERFLOW)?;
-> +        if end >= self.count {
-> +            return Err(EINVAL);
-> +        }
-> +        // SAFETY:
-> +        // - The pointer is valid due to type invariant on `CoherentAllocation`,
-> +        // we've just checked that the range and index is within bounds. The immutability of the
-> +        // of data is also guaranteed by the safety requirements of the function.
+Adding Suravee and Vasant from AMD to this thread for deeper review
+(also of the KVM parts) and testing.
 
-Formatting nit: could you indent the paragraph under the bullet:
+Thanks,
 
-  - The pointer is valid due to type invariant on `CoherentAllocation`,
-    we've just checked that the range and index is within bounds. The immutability of the
-    of data is also guaranteed by the safety requirements of the function.
-
-
-
-Best regards,
-Andreas Hindborg
-
-
+	Joerg
