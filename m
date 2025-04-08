@@ -1,72 +1,115 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AA7C726FA6A
-	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 12:44:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744116267; cv=none; b=qUKigxJld3G1D6ZBeyOK8/LR9RusHGWe0EYhB7vAAQJE6l/aYV5QSNeNQIdK/iOyQgf5hrjxCA/EvpQ8hcLIiqyP4Fo6aKPZiH1bP5u2+pM6/UTXYIfI/1fd3KnxAt6Q2cxiIVYwA8v50rgFvMmiUoL8JK1QwQHN3SO0i0vi7ik=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744116267; c=relaxed/simple;
-	bh=92+gVUDbM8veL5qaG67XCDOWhmC3AQ1NUPn6xtCTkrE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L1vb1XyNmJUt6EK1HyCB0JiBBLM5qJBiy/OuySGs14jAr+EULUt53KuhKDBI84jpEg7I5u46Y7okcjqIOhjcyTrqoQTPbZE0wjXGiqELUv+kyHF24OmAPkn1RjbrOOmN5gIj9YH82TfBUZsvGSvhOMCYQ5Tz2nukstcMFV2I1Gw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=I90PZBhM; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="I90PZBhM"
-Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 79C5F41F12;
-	Tue,  8 Apr 2025 14:44:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1744116264;
-	bh=92+gVUDbM8veL5qaG67XCDOWhmC3AQ1NUPn6xtCTkrE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=I90PZBhM65TV2U7//+BKL0PIdDP8C0UuisOeswxIWcZfjTSvNxiTsriCM/Tl7ylOC
-	 4VDxsTmsldmg3eH6O/ON/6+R83AlfRkmQUe3sSb1yEdcdkEJkDWuzg5gOOMGlftXWR
-	 rGQVilkXEkwH9x7nCGdjhaiIbHHCGhiTu2gH0kbyCxwplWb6CXdy3S4CApWORlJwmO
-	 9oUKlY0Xaqx6WP/1q97tYJbIjjTWmDl9A3Xt3lyd3aiLDWq9Yy/KG/rH4D0PEujw2b
-	 QaBjqnFc2Uc6NoA4p5YBPGU9RPKyfrwalzFMO1JLAY3QQ6IXwpscA3B4DDqYP6BlNL
-	 7+InApJnQ+V/w==
-Date: Tue, 8 Apr 2025 14:44:23 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Sean Christopherson <seanjc@google.com>, suravee.suthikulpanit@amd.com,
-	vasant.hegde@amd.com
-Cc: Paolo Bonzini <pbonzini@redhat.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Maxim Levitsky <mlevitsk@redhat.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH 00/67] KVM: iommu: Overhaul device posted IRQs support
-Message-ID: <Z_UaJzhtmIv4rAox@8bytes.org>
-References: <20250404193923.1413163-1-seanjc@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24A4C12BF24
+	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 13:34:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744119268; cv=none; b=LS3+73/9ylAsQEnnJHoIJz748mtS1sHO2hDBs2pDrZTiP3QinZfbKAQbvR6lg1KKNw1j2q/m2PtWiIrop6B3ZYbOu64KD7fhNR7E5swe0bd4Rznlh3dPUiPLOF5Sp/8gxB1uPHX2r4jv5RodrJFQpdbOrUn04IRy3lWDAPopgDY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744119268; c=relaxed/simple;
+	bh=411Ez4gUf+PPQ0Wkm6N8Om+ZijBspEASwlNOO8RTqbU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IHvGlDUAIUaKxp0zW6dexPhBje55yOxTV0115ZXnfeKaNl3hECbw0MhqoBLgrRaT8LAGhdiFEugji+Y6dmWfApQe2bFmlYlSjg8SJ04o93NKdJE9A4Qx//L/SKETsCvqyALFGuizld3Iad3N6TvnJs+qKr+vCvlhgPu9r3ypxt4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Af5yCz8P; arc=none smtp.client-ip=209.85.216.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Af5yCz8P"
+Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-2ff67f44fcaso1041389a91.3
+        for <iommu@lists.linux.dev>; Tue, 08 Apr 2025 06:34:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1744119266; x=1744724066; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zX26Qk5SatOtBLsQoeTiKbsjY4GKTg7m3OAXobasiiA=;
+        b=Af5yCz8P3l+cMtlnZIqbhruol6LhpCEaS43HY0Su5LcJqp5Yi9o+Ai44U4/2sDp71d
+         muNlGjxg8BOfI6VSzazCrGao6yBkxeaxCX3/9PBxcTl0s3mS/NRLqadiry+4IQctOBIE
+         Wlzg7/HCJxJ1ozMlZMFDt/UigSImQYNbdtZRFMRBN0sU1TIF36kwLnb4l41rMrqdcAAE
+         w5GG9xepNmYW7M7HDKHfRdol3dFaoFvSHhO4oI0CHqYl16CHhUYXWjk9MFfUmAnXyt/P
+         WiAQdhzNODi670FA2p/c1SctUjex0bxVS5cl9czLp06G+Fw5O//b4YpMNDwsx2yjgkoI
+         KjJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744119266; x=1744724066;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zX26Qk5SatOtBLsQoeTiKbsjY4GKTg7m3OAXobasiiA=;
+        b=cYHwNUacn8jW1/bZZJkqIv+Y6Z66IGXS7UdqYVgPo0UhlP+WmgAm8lErqKHCUmXBBZ
+         1xAzdq5kpE4WEnoTbOCTMk2dLPKM6jFljWAbXMUuun2ghqVRwjFoI0JMFUqbtagAinpo
+         vKknApkGLkPQNJKFwgpxdvF99GAJ7O7lsUWPB/XP7Lf80VcYnWV2ybsbtGyIbOKEzgap
+         VhKiZsZ5tF4NajQlcgEpegP4TJM5xZFb1t/fkygjBTdCXPcjycDMsPOkEIvY++UKh8q7
+         O9+Al9HJIbu6GThZActjZ83vUxJi5h47RnVp8zWFb7JzSDFUSnYH4uMgBBsKRff7nHLQ
+         H9vA==
+X-Forwarded-Encrypted: i=1; AJvYcCWeF8gbsGqlNXF2eFRG2RD4QQMn3jUN5BDQkjHobZuvYvtg4/6JE+gZXdgvj4vBQbdwC5nUXQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyM21NrOkcaDMiAgMjWXJJ1ZN64K6OP8gfJ1+gw1CMs7aX9s72D
+	OB0qfOaD+mQIBhU87yBKpuGM06xoJwg1VMH1XlR07Iak1K8idnF/sB5EW+Li6jTNQMYK08zoL2Z
+	j1xEasH/2PBKHAqVezMtaC3NzrFI=
+X-Gm-Gg: ASbGncvL4xUweCbYBzaxQSsJhstEfmOgqTc6EUmsaU61UsJL2dcdaLOxadYSm9lF1mk
+	iLdmC4QpSM7IrWYpcmMqkg+q+5QLCoh1aH0ZWOk3NJOKdqXbZQe7Drsa09BQoU5+pZNpB34ZsSx
+	3FdtztPHMYMhpBK0xzUQnMipCq+A==
+X-Google-Smtp-Source: AGHT+IHcq4EUgp5Iqa1qm+n+D0VL23C5HVqaoXE0A3FBJOcsRsJ2dj/ietDD7S4vT1adOFrbI/kcQWhlhS+m7NZLATQ=
+X-Received: by 2002:a17:90b:384d:b0:2ff:7970:d2bd with SMTP id
+ 98e67ed59e1d1-306a498e230mr8715147a91.5.1744119266243; Tue, 08 Apr 2025
+ 06:34:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250404193923.1413163-1-seanjc@google.com>
+References: <20250326201230.3193329-1-abdiel.janulgue@gmail.com>
+ <20250326201230.3193329-3-abdiel.janulgue@gmail.com> <nujfDI6IKBsjlQtGWaMrhjZSQYYeQYckCyOUs9jIzgZGsP1WTalJE0sSg6tp_WMACWo9mzuDfpdzsIlmkKnL8w==@protonmail.internalid>
+ <D8REH728BFP1.2BGE9DTRP2IPU@proton.me> <87ldsahlxr.fsf@kernel.org>
+In-Reply-To: <87ldsahlxr.fsf@kernel.org>
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date: Tue, 8 Apr 2025 15:34:12 +0200
+X-Gm-Features: ATxdqUE0Cefmm1_5lUv9FqxWq5Fl0OBZj8JSRTuEMjQZc6JAlEH1sJXPGSEU63A
+Message-ID: <CANiq72mahS0jiOHv-7RE8QWQunYo0bJqeGo-FAVoUL7v42RsoQ@mail.gmail.com>
+Subject: Re: [PATCH 2/3] rust: dma: convert the read/write macros to return Result
+To: Andreas Hindborg <a.hindborg@kernel.org>
+Cc: Benno Lossin <benno.lossin@proton.me>, Abdiel Janulgue <abdiel.janulgue@gmail.com>, ojeda@kernel.org, 
+	Danilo Krummrich <dakr@kernel.org>, Daniel Almeida <daniel.almeida@collabora.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Alex Gaynor <alex.gaynor@gmail.com>, 
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
+	"open list:DMA MAPPING HELPERS DEVICE DRIVER API [RUST]" <rust-for-linux@vger.kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, 
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hey Sean,
+On Tue, Apr 8, 2025 at 2:40=E2=80=AFPM Andreas Hindborg <a.hindborg@kernel.=
+org> wrote:
+>
+> But the `assert_eq!` would panic anyway if comparison fails, right?
 
-On Fri, Apr 04, 2025 at 12:38:15PM -0700, Sean Christopherson wrote:
-> TL;DR: Overhaul device posted interrupts in KVM and IOMMU, and AVIC in
->        general.  This needs more testing on AMD with device posted IRQs.
+Previously the `?` generated by the macro would return out of the
+closure written by the sample, and thus it wouldn't reach the
+`assert_eq!`.
 
-Thanks for posting this, it fixes quite some issues in the posted IRQ
-implemention. I skimmed through the AMD IOMMU changes and besides some
-small things didn't spot anything worrisome.
+Expanded:
 
-Adding Suravee and Vasant from AMD to this thread for deeper review
-(also of the KVM parts) and testing.
+    let _ =3D (|| -> Result {
+        for (i, value) in TEST_VALUES.into_iter().enumerate() {
+            match (
+                &{
+                    let item =3D ...::item_from_index(&self.ca, i)?;
+                    unsafe { ... }
+                },
+                &value.0,
+            ) {
+                (left_val, right_val) =3D> {
+                    if !(*left_val =3D=3D *right_val) {
+                        ...::assert_failed(...);
+                    }
+                }
+            };
+        }
+        Ok(())
+    })();
 
-Thanks,
-
-	Joerg
+Cheers,
+Miguel
