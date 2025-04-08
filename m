@@ -1,250 +1,144 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E53A4234988
-	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 21:31:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7A9124290D
+	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 21:34:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.149.199.84
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744147893; cv=none; b=rkQAh14FOqgGYl0asGWyetIYFYDhLpC77DfSTIZ50bM8vLU3eW6wPnqeTs7Um31dwrLTj1uXcPoWwCS+z/nanDxPIl1NxIb88BDm70GJKqi79ahhmlYgvb6CGiU9mQ2Yq68sYvPnXeFwDyPfIReUwHwU4id3YgBRkGwXR5PCtu0=
+	t=1744148069; cv=none; b=WvU8gEZ3TzUQBD+KZeXUP77c6h0Sml1YGBD2x3rh0oBylUwrGYkDhj0hXLUhaaypIOE3/ngboywW/UVP9tD9ILhBTMwmgvgAuDEWEvALPnBx/l0aaewXWL54LyMMq6QAE/Al+H1UdVfvt3iPaIXifLfYglI4AOuQMkHJS6o6StE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744147893; c=relaxed/simple;
-	bh=AGINcubrwDHhNZhMG/5qRMWHfMGWmK7tdHB0j9/zR7Y=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=tQb7OlGF167CqkqSHDmKQW8OyqbVJ5I6xoBNHpVkgtcA7KKIUMhk1RdKIUuSGLXWlsb3MqEAWtV53UCvyysqx6Q1vjQXX+RBAMvZvJJiADJ4Fd6Jim414+peRbGSVEqXXmNRxhmub8yWFyWlREIFCTzdOJrvmy41qP08HBeJ0Zo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=1WQ9VDGX; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1744148069; c=relaxed/simple;
+	bh=5y+jYg4tFLii2fhDXKuV70GCZYiXZr2+wmGH9PNJeas=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MRlsDlnLiKu/wfRRkcP5k+Zip1PrpXGPrueQBHsWe3PBabpJUzOeGIsFWYfdV2R2fIWd9FIv0G/BCsh4IMGcNJB2YNUAj36+vGQnyBHOCIWahetd7ToG+kGfnldIIyBiUQ4IvdFoGASISR+TNXrKIdTf60S8dJihfaMtZCiS8fQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru; spf=pass smtp.mailfrom=ispras.ru; dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b=S7obbZgk; arc=none smtp.client-ip=83.149.199.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ispras.ru
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="1WQ9VDGX"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-227e2faab6dso50712665ad.1
-        for <iommu@lists.linux.dev>; Tue, 08 Apr 2025 14:31:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744147891; x=1744752691; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Uam7GnobKmUw9hclFkCECYy0gTHPZztonbEuBIMruls=;
-        b=1WQ9VDGXgc7pw0j+KDqmRAYGZBlaTWqD3ddJnh9vrYfkuvb5Sle9LuSkcpTHRzdjbG
-         eEkC/msKJfOSNA2BYmHQAMg0UYvWrDW2tUIc4s3oaOOQ7xEMAw77h0PW8YfWPo40Rl7H
-         QwvR0rSk+2ECs0egYr8sUywtfkVTsKnZm8fMcnWiY7PR6/p/TBQGciYxfrQ1ZrMAsb5/
-         dn3J/k5HjP/xmzYpRvUs+4btaVbVmuJn85QHyrPJtDQLKieDUg8PdMhpEUd0K7nsgobm
-         H4mcAwXjeDq6kBif5I/RdhID8exKUJZ65aNiIjUSTe4+JDqFORVqG1YacfTbh3MZNRf/
-         3iGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744147891; x=1744752691;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Uam7GnobKmUw9hclFkCECYy0gTHPZztonbEuBIMruls=;
-        b=MWb2sWJDlaHHppgo3VHMQVlcyYGt7V7uDx/9vssaIvylLJKGsj3Z31lTmHbfUTl0+Q
-         0KMpzViXrTQPdU5bMS8xDp+5mUc1fA6YetaHDBCkOOidSkOjy5HvP9jkC+C/L1A+al31
-         2027F3rcnQkYq0aTjHSqJ05Sq6rx/ZVbNZ3Mn03UgGbUd9/uHh78Ct9TX97iv8uPHHeZ
-         y+Dc0pZpFm09mexShX6o9DdSY7f1WLr0CfSdFDwpu8fEN6ItLnvAr2zTs7AdbsROHPlM
-         XMpnQuCriHiv8KT64m3aKLPRBJE3AcTVYdIHmAG5by5mvFEdsAObX4ZYQhdy6hpn9glQ
-         fIWw==
-X-Forwarded-Encrypted: i=1; AJvYcCVj5aQaarErzneZcFYPqNVtiR1DdJMw4RUAcoTMzqf0uMChtyQU71ABXscPYLQJP64QZYoE2g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwbcrJ9tq43PUpSQiy1O/O1zg5B2p2BCtX2vU6k9Tqgg152aOja
-	X8HYojm1aNuSGYNONB8iOEPQ/W6gaYhjP0Pw9I3ovmXys7WpRNHgEDK5lHtsJmDgL2RasWud0AT
-	UCA==
-X-Google-Smtp-Source: AGHT+IEKRdfCo7P0dOM9nLMdnn/wJxKiZkQkp2kalAXi+Af3MMzb50Othlo0RizKEkwtKlr8YY3PKqUJQ1s=
-X-Received: from pfbfc24.prod.google.com ([2002:a05:6a00:2e18:b0:730:7e2d:df69])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:ccc8:b0:227:e7c7:d451
- with SMTP id d9443c01a7336-22ac3f9a8fcmr4363085ad.29.1744147891223; Tue, 08
- Apr 2025 14:31:31 -0700 (PDT)
-Date: Tue, 8 Apr 2025 14:31:29 -0700
-In-Reply-To: <4c396e79-845a-481a-8a3e-4a7f458371b8@redhat.com>
+	dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b="S7obbZgk"
+Received: from fedora.intra.ispras.ru (unknown [10.10.165.6])
+	by mail.ispras.ru (Postfix) with ESMTPSA id EA32B448787D;
+	Tue,  8 Apr 2025 21:34:21 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru EA32B448787D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+	s=default; t=1744148062;
+	bh=N4Tgywr8Fw9WMBSdeYcYar/HdOFlbUR5lSCeLjJ1bfI=;
+	h=From:To:Cc:Subject:Date:From;
+	b=S7obbZgkV6jYoLfjlL/M4N/YTI1c824HzIw6nELFmc/PghNyXdL3IHonvhBcwXrw8
+	 vJ/7kRbFH9TkfbZlj6ALLYrJCCkUIHLUwPHtAmRYPxRXD0IaATfEHKDLCp1mQcfLzH
+	 KPO+ELugplkE+qWSv3dzE1upgXz4/ZUbW9PstazI=
+From: Fedor Pchelkin <pchelkin@ispras.ru>
+To: Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Fedor Pchelkin <pchelkin@ispras.ru>,
+	Will Deacon <will@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	lvc-project@linuxtesting.org
+Subject: [PATCH] iommu: fix crash in report_iommu_fault()
+Date: Wed,  9 Apr 2025 00:33:41 +0300
+Message-ID: <20250408213342.285955-1-pchelkin@ispras.ru>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250404193923.1413163-1-seanjc@google.com> <20250404193923.1413163-66-seanjc@google.com>
- <4c396e79-845a-481a-8a3e-4a7f458371b8@redhat.com>
-Message-ID: <Z_WVsZQbY23XrhAG@google.com>
-Subject: Re: [PATCH 65/67] KVM: SVM: Generate GA log IRQs only if the
- associated vCPUs is blocking
-From: Sean Christopherson <seanjc@google.com>
-To: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>, 
-	Joao Martins <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Tue, Apr 08, 2025, Paolo Bonzini wrote:
-> On 4/4/25 21:39, Sean Christopherson wrote:
-> > @@ -892,7 +893,7 @@ static void __avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu, bool toggle_avic)
-> >   	WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
-> > -	avic_update_iommu_vcpu_affinity(vcpu, h_physical_id, toggle_avic);
-> > +	avic_update_iommu_vcpu_affinity(vcpu, h_physical_id, toggle_avic, false);
-> >   	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
-> >   }
-> > @@ -912,7 +913,8 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
-> >   	__avic_vcpu_load(vcpu, cpu, false);
-> >   }
-> > -static void __avic_vcpu_put(struct kvm_vcpu *vcpu, bool toggle_avic)
-> > +static void __avic_vcpu_put(struct kvm_vcpu *vcpu, bool toggle_avic,
-> > +			    bool is_blocking)
-> 
-> What would it look like to use an enum { SCHED_OUT, SCHED_IN, ENABLE_AVIC,
-> DISABLE_AVIC, START_BLOCKING } for both __avic_vcpu_put and
-> __avic_vcpu_load's second argument?
+The following crash is observed while handling an IOMMU fault with a
+recent kernel:
 
-There's gotta be a way to make it look better than this code.  I gave a half-
-hearted attempt at using an enum before posting, but wasn't able to come up with
-anything decent.
+kernel tried to execute NX-protected page - exploit attempt? (uid: 0)
+BUG: unable to handle page fault for address: ffff8c708299f700
+PGD 19ee01067 P4D 19ee01067 PUD 101c10063 PMD 80000001028001e3
+Oops: Oops: 0011 [#1] SMP NOPTI
+CPU: 4 UID: 0 PID: 139 Comm: irq/25-AMD-Vi Not tainted 6.15.0-rc1+ #20 PREEMPT(lazy)
+Hardware name: LENOVO 21D0/LNVNB161216, BIOS J6CN50WW 09/27/2024
+RIP: 0010:0xffff8c708299f700
+Call Trace:
+ <TASK>
+ ? report_iommu_fault+0x78/0xd3
+ ? amd_iommu_report_page_fault+0x91/0x150
+ ? amd_iommu_int_thread+0x77/0x180
+ ? __pfx_irq_thread_fn+0x10/0x10
+ ? irq_thread_fn+0x23/0x60
+ ? irq_thread+0xf9/0x1e0
+ ? __pfx_irq_thread_dtor+0x10/0x10
+ ? __pfx_irq_thread+0x10/0x10
+ ? kthread+0xfc/0x240
+ ? __pfx_kthread+0x10/0x10
+ ? ret_from_fork+0x34/0x50
+ ? __pfx_kthread+0x10/0x10
+ ? ret_from_fork_asm+0x1a/0x30
+ </TASK>
 
-Coming back to it with fresh eyes, what about this (full on-top diff below)?
+report_iommu_fault() checks for an installed handler comparing the
+corresponding field to NULL. It can (and could before) be called for a
+domain with a different cookie type - IOMMU_COOKIE_DMA_IOVA, specifically.
+Cookie is represented as a union so we may end up with a garbage value
+treated there if this happens for a domain with another cookie type.
 
-enum avic_vcpu_action {
-	AVIC_SCHED_IN		= 0,
-	AVIC_SCHED_OUT		= 0,
-	AVIC_START_BLOCKING	= BIT(0),
+Formerly there were two exclusive cookie types in the union.
+IOMMU_DOMAIN_SVA has a dedicated iommu_report_device_fault().
 
-	AVIC_TOGGLE_ON_OFF	= BIT(1),
-	AVIC_ACTIVATE		= AVIC_TOGGLE_ON_OFF,
-	AVIC_DEACTIVATE		= AVIC_TOGGLE_ON_OFF,
-};
+Call the fault handler only if the passed domain has a required cookie
+type.
 
-AVIC_SCHED_IN and AVIC_SCHED_OUT are essentially syntactic sugar, as are
-AVIC_ACTIVATE and AVIC_DEACTIVATE to a certain extent.  But it's much better than
-booleans, and using a bitmask makes avic_update_iommu_vcpu_affinity() slightly
-prettier.
+Found by Linux Verification Center (linuxtesting.org).
 
-> Consecutive bools are ugly...
-
-Yeah, I hated it when I wrote it, and still hate it now.
-
-And more error prone, e.g. the __avic_vcpu_put() call from avic_refresh_apicv_exec_ctrl()
-should specify is_blocking=false, not true, as kvm_x86_ops.refresh_apicv_exec_ctrl()
-should never be called while the vCPU is blocking.
-
+Fixes: 6aa63a4ec947 ("iommu: Sort out domain user data")
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
 ---
- arch/x86/kvm/svm/avic.c | 41 ++++++++++++++++++++++++++++-------------
- 1 file changed, 28 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 425674e1a04c..1752420c68aa 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -833,9 +833,20 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
- 	return irq_set_vcpu_affinity(host_irq, NULL);
- }
- 
-+enum avic_vcpu_action {
-+	AVIC_SCHED_IN		= 0,
-+	AVIC_SCHED_OUT		= 0,
-+	AVIC_START_BLOCKING	= BIT(0),
-+
-+	AVIC_TOGGLE_ON_OFF	= BIT(1),
-+	AVIC_ACTIVATE		= AVIC_TOGGLE_ON_OFF,
-+	AVIC_DEACTIVATE		= AVIC_TOGGLE_ON_OFF,
-+};
-+
- static void avic_update_iommu_vcpu_affinity(struct kvm_vcpu *vcpu, int cpu,
--					    bool toggle_avic, bool ga_log_intr)
-+					    enum avic_vcpu_action action)
- {
-+	bool ga_log_intr = (action & AVIC_START_BLOCKING);
- 	struct amd_svm_iommu_ir *ir;
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 
-@@ -849,7 +860,7 @@ static void avic_update_iommu_vcpu_affinity(struct kvm_vcpu *vcpu, int cpu,
- 		return;
- 
- 	list_for_each_entry(ir, &svm->ir_list, node) {
--		if (!toggle_avic)
-+		if (!(action & AVIC_TOGGLE_ON_OFF))
- 			WARN_ON_ONCE(amd_iommu_update_ga(ir->data, cpu, ga_log_intr));
- 		else if (cpu >= 0)
- 			WARN_ON_ONCE(amd_iommu_activate_guest_mode(ir->data, cpu, ga_log_intr));
-@@ -858,7 +869,8 @@ static void avic_update_iommu_vcpu_affinity(struct kvm_vcpu *vcpu, int cpu,
- 	}
- }
- 
--static void __avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu, bool toggle_avic)
-+static void __avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu,
-+			     enum avic_vcpu_action action)
- {
- 	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
- 	int h_physical_id = kvm_cpu_get_apicid(cpu);
-@@ -904,7 +916,7 @@ static void __avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu, bool toggle_avic)
- 
- 	WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
- 
--	avic_update_iommu_vcpu_affinity(vcpu, h_physical_id, toggle_avic, false);
-+	avic_update_iommu_vcpu_affinity(vcpu, h_physical_id, action);
- 
- 	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
- }
-@@ -921,11 +933,10 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- 	if (kvm_vcpu_is_blocking(vcpu))
- 		return;
- 
--	__avic_vcpu_load(vcpu, cpu, false);
-+	__avic_vcpu_load(vcpu, cpu, AVIC_SCHED_IN);
- }
- 
--static void __avic_vcpu_put(struct kvm_vcpu *vcpu, bool toggle_avic,
--			    bool is_blocking)
-+static void __avic_vcpu_put(struct kvm_vcpu *vcpu, enum avic_vcpu_action action)
- {
- 	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -947,7 +958,7 @@ static void __avic_vcpu_put(struct kvm_vcpu *vcpu, bool toggle_avic,
- 	 */
- 	spin_lock_irqsave(&svm->ir_list_lock, flags);
- 
--	avic_update_iommu_vcpu_affinity(vcpu, -1, toggle_avic, is_blocking);
-+	avic_update_iommu_vcpu_affinity(vcpu, -1, action);
- 
- 	WARN_ON_ONCE(entry & AVIC_PHYSICAL_ID_ENTRY_GA_LOG_INTR);
- 
-@@ -964,7 +975,7 @@ static void __avic_vcpu_put(struct kvm_vcpu *vcpu, bool toggle_avic,
- 	 * Note!  Don't set AVIC_PHYSICAL_ID_ENTRY_GA_LOG_INTR in the table as
- 	 * it's a synthetic flag that usurps an unused a should-be-zero bit.
- 	 */
--	if (is_blocking)
-+	if (action & AVIC_START_BLOCKING)
- 		entry |= AVIC_PHYSICAL_ID_ENTRY_GA_LOG_INTR;
- 
- 	svm->avic_physical_id_entry = entry;
-@@ -992,7 +1003,8 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
- 			return;
- 	}
- 
--	__avic_vcpu_put(vcpu, false, kvm_vcpu_is_blocking(vcpu));
-+	__avic_vcpu_put(vcpu, kvm_vcpu_is_blocking(vcpu) ? AVIC_START_BLOCKING :
-+							   AVIC_SCHED_OUT);
- }
- 
- void avic_refresh_virtual_apic_mode(struct kvm_vcpu *vcpu)
-@@ -1024,12 +1036,15 @@ void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
- 	if (!enable_apicv)
- 		return;
- 
-+	/* APICv should only be toggled on/off while the vCPU is running. */
-+	WARN_ON_ONCE(kvm_vcpu_is_blocking(vcpu));
-+
- 	avic_refresh_virtual_apic_mode(vcpu);
- 
- 	if (kvm_vcpu_apicv_active(vcpu))
--		__avic_vcpu_load(vcpu, vcpu->cpu, true);
-+		__avic_vcpu_load(vcpu, vcpu->cpu, AVIC_ACTIVATE);
- 	else
--		__avic_vcpu_put(vcpu, true, true);
-+		__avic_vcpu_put(vcpu, AVIC_DEACTIVATE);
- }
- 
- void avic_vcpu_blocking(struct kvm_vcpu *vcpu)
-@@ -1055,7 +1070,7 @@ void avic_vcpu_blocking(struct kvm_vcpu *vcpu)
- 	 * CPU and cause noisy neighbor problems if the VM is sending interrupts
- 	 * to the vCPU while it's scheduled out.
- 	 */
--	__avic_vcpu_put(vcpu, false, true);
-+	__avic_vcpu_put(vcpu, AVIC_START_BLOCKING);
- }
- 
- void avic_vcpu_unblocking(struct kvm_vcpu *vcpu)
+I've seen the discussion [1] on 6aa63a4ec947 ("iommu: Sort out domain user
+data") and got a bit confused by the fragment:
 
-base-commit: fe5b44cf46d5444ff071bc2373fbe7b109a3f60b
+> iommu-dma itself isn't ever going to use a fault 
+> handler because it expects the DMA API to be used correctly and thus no 
+> faults to occur.
+
+My first thought about this is that iommu-dma is not interested in
+installing a fault handler ever, okay. But why does it suppose that no
+faults would occur? It is a matter of "chance", firmware bugs, abovesaid
+DMA API abusing, etc... isn't it?
+
+[1]: https://lore.kernel.org/linux-iommu/d9a6c611-2a19-4830-964d-44b711fffb08@arm.com/
+
+
+BTW, the device in question is Realtek RTL8852BE PCIe Wireless Network
+controller. It had occasionally dumped IO fault messages before the 6.15
+changes but I didn't pay attention to them since there was no connectivity
+problems observed or similar.
+
+IOMMU group 16 03:00.0 Network controller [0280]: Realtek Semiconductor Co., Ltd. RTL8852BE PCIe 802.11ax Wireless Network Controller [10ec:b852]
+
+
+[ 2628.582070] rtw89_8852be 0000:03:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0012 address=0x0 flags=0x0000]
+
+Turns out it started with a recent firmware upgrade so will report that
+certain issue to rtw maintainers.
+
+ drivers/iommu/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index c8033ca66377..5729e8ecdda3 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2717,7 +2717,8 @@ int report_iommu_fault(struct iommu_domain *domain, struct device *dev,
+ 	 * if upper layers showed interest and installed a fault handler,
+ 	 * invoke it.
+ 	 */
+-	if (domain->handler)
++	if (domain->cookie_type == IOMMU_COOKIE_FAULT_HANDLER &&
++	    domain->handler)
+ 		ret = domain->handler(domain, dev, iova, flags,
+ 						domain->handler_token);
+ 
 -- 
+2.49.0
+
