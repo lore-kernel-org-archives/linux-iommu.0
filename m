@@ -1,473 +1,289 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2078.outbound.protection.outlook.com [40.107.244.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B0E222E3FD
-	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 17:31:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744133468; cv=none; b=VcWwJ/S0HF7fJKXf4Uv8Uq8g39CCOWFl385cY96nnrsLbKWzQMU+djQllo/AMCQsl9/CxiVj+4Qm6SbL9QODsyYi/lkgSOofUy7ZISzW0TK1Kn+cr0t2OhQfTyVCUV4AJUxExh8FfVYM+tkoEat/CAS43b+KMBSYG6iY5+YkIl8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744133468; c=relaxed/simple;
-	bh=D7b7VJE/qK3nUJN8leFt4GMH3HjPtviAUkTKo43KNv4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rgkyBEKQFgPlH0JDmqKSZGhXtiYGoIyckh8M++GQX9DahqNVNSF9QQml+1d15kn2ovAzUj56DfrQEEvS5VYc1F2I9n572Wsvl1JmmmYjtErOrM+38w9SBz0+a0oAFUeYLSc9X3PIbKPVeVcfXe7U6Eqm1mrGQqJJ1nAXX3pa6YI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BZIhbu5V; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 202AD22D4FF;
+	Tue,  8 Apr 2025 17:39:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.78
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744134000; cv=fail; b=cENGvso5EUZnBBJndc53/6JEM1I7WMuWxpV4TfyIeO/1cA5k+yIk2fJxX442VzRlMGi+MwAtuYEzYUdGaZMgR8YCX2H579RSJXgCOkvOXiYGK9Q7BlfuE+/0xwc7WRjJbaUaWHuOI7hdDSAuhA0ujh+EMJHNbnFWFqdlZ1RC5XQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744134000; c=relaxed/simple;
+	bh=c7FBrr6tRJPjEgmNrRlM+GelfsvTx3ddvWWt4c826Jc=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=dsLJGpohEhHvXtSgHL/+qdWdWk8f9Lp1ipnm7zC23DDEgNZtLAWWZznNVxChiqql9TkBAKTYoXMCFT9ez2vAZ3dtFNLRmSdd3hAPGPqafWqFtuJGCilH1evacnoVXVTPsMmfD5q/SYGy/QOmEb8AQbfnUOT9NzZjurzEPhtgtzY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=DvaE8+zZ; arc=fail smtp.client-ip=40.107.244.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BZIhbu5V"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1744133464;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=dzPxLIZBoNlt2Y90PQFKInDcbJuvQW9tSEfr6MFFaVo=;
-	b=BZIhbu5VIzUpgYmKIzSFQHcLW5DJkfaLx1/XSKZNhCEc+Lcm0EVvPVJNHMdmck7NS2sZwS
-	ViplGA6eFuBCBq2PVJ+qonUdnmseBAiQIy4lKDV/VsS1KtYofh8yByS44OJNQjQakHluxD
-	MQYa3Ei7FltkYZKDw3Wd+bRZkWOsQgo=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-31-39t9kJvvP_a4v-3WeFoDqQ-1; Tue, 08 Apr 2025 13:31:02 -0400
-X-MC-Unique: 39t9kJvvP_a4v-3WeFoDqQ-1
-X-Mimecast-MFC-AGG-ID: 39t9kJvvP_a4v-3WeFoDqQ_1744133462
-Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-ac6b047c0dcso550422766b.0
-        for <iommu@lists.linux.dev>; Tue, 08 Apr 2025 10:31:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744133461; x=1744738261;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dzPxLIZBoNlt2Y90PQFKInDcbJuvQW9tSEfr6MFFaVo=;
-        b=HqW1ZgSdXysZpd9tMmRQLnzZtEr/POS6wDKmwbH1vcBDbM1UTTPQSMDaMqEz14LroT
-         ALwfNcc0OwW3IqQA5qHc/pco19bx5SGnGbk1XL+Utdc9lQE9eit7BPq7hh+vvs1asRG1
-         tkMX9e7MUvSVa/o8rHLlAXYRkqIF+abln7RMViO0S8Bj9rEGT3M4oGTKUOZUjxGaZx69
-         AvR3bK1LWS8W0rnlJzPcJjRxBa+GMBo+ImYx7c0huUAU2z+NeE7DHaekXWGi7VSMqNKw
-         OKQ7P9Y9b72aHh1aDVOYMiRYYm1cKQVptIFCar18gV8ezSSwto6pH3HUYhAGhwLt3nfe
-         Z4Og==
-X-Forwarded-Encrypted: i=1; AJvYcCW1lodaMhKDhJs6mGiwbGPEzC+b8iGGAOhvdA6SoS15M6mr+m6/1M4yxwt6jFCIG/iBbFUyGQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyiC4NVUY/24lHsw8a7g4df6ci+f8bMj15jzdh/YgZBYFznIc1S
-	5Gp46GqyB72H4HYnOag1Z2LQxAfOQTYGtvGglLzIGmTGUBoo3TybP6lNcXoho8/ajTU+YuANvP9
-	67Hqz9mi3nOs97PWo8uh9UoPoGN3K3wtBz1lHPjHF0puIXK2edkJawxEo/Xyp
-X-Gm-Gg: ASbGncutR59G9LZos+uzF8Y8YRgvxqZAqj6yhn+c+3fa5LB8VFcGfbiKR2u0NEWcMFO
-	dk1hG+5W9f54sHO1P+5aODT76OHwkIfuj38Hsr21pqc3BO9uSE5W+WwOTkW0tBf0QOdgcGqZv0D
-	cZFXdR0z85dWrHXrnRC1nteCrpVJxrA9snX0+Y/YSBhsYS9EGu6bDB7vftyJw/rhf2GEcFRq11Q
-	YCjLJHltIR3i3T8ndGEkXkfVNnsYEDvRT3YI9CBk0fhhgXwH8vvlTTJOIpTaI/6b9t38ZD2ElQE
-	K20LrEkfnh8kfTDP0yFj
-X-Received: by 2002:a17:906:c155:b0:ac3:48e4:f8bc with SMTP id a640c23a62f3a-aca9b6ef9e0mr6562066b.48.1744133461167;
-        Tue, 08 Apr 2025 10:31:01 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEuuborAwGa6Z0LeZj2bXLnL5CvSBi0lObSi6zOlGHSw3B2yhYf8VKtjtBWf8HUqWLTb74Vsg==
-X-Received: by 2002:a17:906:c155:b0:ac3:48e4:f8bc with SMTP id a640c23a62f3a-aca9b6ef9e0mr6558266b.48.1744133460649;
-        Tue, 08 Apr 2025 10:31:00 -0700 (PDT)
-Received: from [192.168.10.48] ([151.49.197.100])
-        by smtp.googlemail.com with ESMTPSA id a640c23a62f3a-ac7c013f29csm943856466b.113.2025.04.08.10.30.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Apr 2025 10:31:00 -0700 (PDT)
-Message-ID: <cf4d9b81-c1ab-40a6-8c8c-36ad36b9be63@redhat.com>
-Date: Tue, 8 Apr 2025 19:30:58 +0200
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="DvaE8+zZ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=gFJ2/9eu3iOTTjJGS06kTxYz20n7yedoJbvEqfNQNmWS95al/kpLGCQAtC3E1vr2puzy/2Xt+t39Bp61+5TIwkpVe8uPdZjLV8MquQ3uMJD4U9t51JYbp+D1uBTuIJDAd7XsLBuyQYj799rFVom4AQY8G4HiUSN72lvdRXmCgVeYBH5qynJJC5l4Vm8325ZXu5n7Hm3E8GKFUId2nlEiGddItw7bDSYHkUwMGVMSP67TqAXQZJp5PCqGPmmLooJur3Nl7e7DGwMyJrlxVK/L9i4WYnDFuwAW5VSZMPfsgXKGxCWDljgkR6S4P6KqIDX3wqgWdYBdoZbV6THlXJ1BUg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Qeto7JpwEfgNdhwIGSEFwtOCpY34nqf9PbPp49AWhXc=;
+ b=CJLaDb+saYhSetGghdp8Sy41r7wuyXCB+IipEaKD4vyVIfpgm0JNswIY7YIoOQIZpS236vMO4hXWlzBf5JdoGXKe+aKcJppxFmsEi8e23r8qoH47rzbcjcGWgLVlZGRoNp+piZ9q0eL2tiqZMHgm+UMod1J399uQeQ7vNfbNcdFo/s2B7N6WDqPQtyxlXLGy8SF44cmaH+wqS1QINi7JexKSPrXkn17B06tPne9JSFXVWMqxzydRG6qp4vKG1cBy0JHFjFl30rVGQlSSDrf4C5Z5VA3bLoSthMRnwdo9mtMuX+cq/NhDowmX5MsFZ+lXovzA00maceNgvru9KSN36Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Qeto7JpwEfgNdhwIGSEFwtOCpY34nqf9PbPp49AWhXc=;
+ b=DvaE8+zZ9IauA+Thv8C9O50t3h9AXajwMEvRTC/gCYQmRQvMkbuE/R6S2Fk610ksIFqNy0h2FFrylm2ZVrsapCmz1ho1oYMfx7PNy9weNFNeQyH11WeT7biHxPqARiCYYWdXWFeNqSUrurKBq8K8ntVf09nMBA+OFhBFLd3hQ9a3OUWYc5DCMznfpnc6P/wdk8zcDQ4SSME30ILc21nauJr0mUxMNLzYSKAqr/XO0IrP8VPWFL8HPXqWwGRwLIWoc+5s1aJT8zhGCY8ttvbSKHari5M3GVH3hRosZ4JIy7WxcVy5oOCAV9KZcWcU9V5uEPtamkVThuVTXAjGjgx7mw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by MW4PR12MB6803.namprd12.prod.outlook.com (2603:10b6:303:20e::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.31; Tue, 8 Apr
+ 2025 17:39:53 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8606.028; Tue, 8 Apr 2025
+ 17:39:53 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alex Williamson <alex.williamson@redhat.com>,
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org
+Cc: patches@lists.linux.dev
+Subject: [PATCH] vfio/type1: Remove Fine Grained Superpages detection
+Date: Tue,  8 Apr 2025 14:39:52 -0300
+Message-ID: <0-v1-0eed68063e59+93d-vfio_fgsp_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BLAPR05CA0018.namprd05.prod.outlook.com
+ (2603:10b6:208:36e::13) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 33/67] KVM: x86: Dedup AVIC vs. PI code for identifying
- target vCPU
-To: Sean Christopherson <seanjc@google.com>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Maxim Levitsky <mlevitsk@redhat.com>,
- Joao Martins <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>
-References: <20250404193923.1413163-1-seanjc@google.com>
- <20250404193923.1413163-34-seanjc@google.com>
-From: Paolo Bonzini <pbonzini@redhat.com>
-Autocrypt: addr=pbonzini@redhat.com; keydata=
- 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
-In-Reply-To: <20250404193923.1413163-34-seanjc@google.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: ImvozS4fwf5ot9AUo7r_apG9MvrX4GnWB74cwRhqZ_g_1744133462
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|MW4PR12MB6803:EE_
+X-MS-Office365-Filtering-Correlation-Id: f04b4605-487b-4fa3-012a-08dd76c45ee9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?zT2TyPiMtUSlM3Tzvwj096hIVXOuKUKsxP78HAzvfI0ubhr0ni5Mn2JXNGI3?=
+ =?us-ascii?Q?2qcsE7dePAHxrmR17RhEpnyNTtVhcMRs04KkIpv3iowed8P7ghC6wO25mnXN?=
+ =?us-ascii?Q?a0tVM+bmassA6Yv52kBNEqwSoHQXntKp4fnP9vRjsNVm4Rs0Qiu2Go80fvlF?=
+ =?us-ascii?Q?DLeEpAyiNTYWJCvQ65w1jGcigwkg+WoeWAZSLBqgcMn4L88r4ohx50T5+CVS?=
+ =?us-ascii?Q?Q4I5YCUanvjGa77HZgWp2tbtlhkz2wuLVYmQUqd55tt23p+LTBAydfYBPpK9?=
+ =?us-ascii?Q?s2DBXAziGejvAjiDU5+eqQGx60RZC6flW1Ya1anJgS+XhRTqS5Pp2AmiUBpc?=
+ =?us-ascii?Q?UGFXW4zK4Cb1jstwlsb+e4kPhPyts6+v8jY2WZcWdZ1xYsQv481cZjL04/Zi?=
+ =?us-ascii?Q?XWoVsAy6AmjOlZwh9HwgurnZpm2mkjKPeHaLQdkiIlZLCwCKm8wk7pCCRBSV?=
+ =?us-ascii?Q?JiRLyXlYLQygIge9ifyvoFTIuA5bHKY0UVkM96RRIjF+xIjCEhQhV9c3q9zc?=
+ =?us-ascii?Q?fJcxZ5uMsIN1HgN2A1RbnvS2j3PtSBI8K+gJhgOH7encwgC0dRWjF98dglk7?=
+ =?us-ascii?Q?sjVrIWB53kr2C9eGKlQTgOwQL+AkfasjEGcRA7z1Wpyr4IGZJ4uPKrqnmshC?=
+ =?us-ascii?Q?AnUbmDg70bX6n50bYnLiaTlQrPqm2edsEN+ydzUQqQOq7QXS7axa9OTdbw0m?=
+ =?us-ascii?Q?hmYXpMmuI66+6hsplEA22qSFouisGoiUzAH1xCxJw1riby/nZkjYx1qjOzvf?=
+ =?us-ascii?Q?ss/or7UlAtKzPkJi2zA6ftwwmf3T5jQWK+wi22B+wUlXB+ezQMY8jQisIIR7?=
+ =?us-ascii?Q?kIJBFVzPgE6R/fRiNYkTgd/rCFFwVdN7b/bdyErzwppWkFmeMnOG9FrfxOUi?=
+ =?us-ascii?Q?ZCgURKEJ23sbdZe9WoyQNyPq8Vtjvi5VIRDwq6nrGSfDINvSQwQIWnxHw8AT?=
+ =?us-ascii?Q?I1nLoK+6/Fz7lUhVsoVmwYvv0yQAcaAppv5rTL6hxcWCeQhdnv4YorSFKaNM?=
+ =?us-ascii?Q?p0QAAMbDus8OYNcqUV1RCjeD7HRu6PQIqE0qgPqgylg8CHV4rbgz1eoFrcSW?=
+ =?us-ascii?Q?eTTrkdDxC1UVs7XzeYskU56WJSIaw1ATSYoo1RH74td9h4OFmf6akh2A8N8t?=
+ =?us-ascii?Q?fmv33TYkZKzFyCqUeLn/r6x2NC941JPqysHuiaI7W4XTyrRtYyIOsrp43+9L?=
+ =?us-ascii?Q?l5xMmwcocMt/ZQGGgO6K5BJgG0Z3SIpVkmp6mIpCEOnF0ORth+09r00r36My?=
+ =?us-ascii?Q?M7hmu3tgYjT+B3ClOAv6ipe8AnV5qkUKhG5IUvLPYQy+h1d3dHThVwUbYQ9G?=
+ =?us-ascii?Q?JEp6/mZqMNgESPHJcEk4q07nO7wUT/mXQC3yWQQav6iANqDwnG5tFjXp8ato?=
+ =?us-ascii?Q?YwUv9/++PBzLWW/CRPwlA1nht0CS?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?mSYkisQxZ9i/L5K1cdk3xPS8XjQEvvh2pdNluyjJAyHBBJM6qadlEgZlWPob?=
+ =?us-ascii?Q?Zhs92U1w3XB5/jB78iI8JEeU+laoGyxkTexE4P5ivB2Ft4QMPec8I59EAyVe?=
+ =?us-ascii?Q?ZI9KEYgWelw2BMA/oLCnoLY8abkgxb666i5XMHBP0XTe+VB/nI8sN7tlwes6?=
+ =?us-ascii?Q?mTSZvQkOvg7i2s0nwjKXchjUQA/jzutyWdbtUWNx1ffLVMWzd7VCM5gvKsyQ?=
+ =?us-ascii?Q?frFIZmPRVDYGlZm2FHEu6+28yhA6FjRpCWx+14U+CaZFPhtzDDmLxueflU84?=
+ =?us-ascii?Q?q8XQf8x5zHY+bV0cAAjnA8jHttwunpzf5WsYCVmTDcXFE3jsrEWsmLbLevW4?=
+ =?us-ascii?Q?6GCbUBuP5wi2Jw+HVlHDwNRKHnI8GzeSPhJ3MiEtDPJ/Jj+bqinBUUHNJ3cH?=
+ =?us-ascii?Q?C6d/+tIitsAHCmLham57rl1vnsxFhZEVs8utNjX3c7A2OMLVD32xBzWP62nl?=
+ =?us-ascii?Q?kIhBwLdtI6u7LQW8dbXbYnq1lMf3oZqwTq+DiKbvXtRi9IJgVWMi25Wzxi7w?=
+ =?us-ascii?Q?Y5SKTf70tLvnmXbhfbb98PYaL+nbYNK6Ved9QUXEjI/PU+hQljlj2Ul+0dzp?=
+ =?us-ascii?Q?6HwQKcsgFwUR5yq46+5cdE8e9gqklF8Cw2mKEqKt0sngD3Huqnu0A2v1uh7Q?=
+ =?us-ascii?Q?ei1hJ42Yz0Hxdoq/om/jyGjYVbI6nIMzvd2FgiWcI/8GZsnI1R4XltyM6ibi?=
+ =?us-ascii?Q?pOVF9/BM7mAFmMtSsU2Q/ZeyIGiXgsF5Zs6dBSuEJ5pjqWBrV7ryxyQM4k4L?=
+ =?us-ascii?Q?mRTnHs8WUdwsONZS8pkOr9SMfsDAa4pUuVGX4msqNsezLdgywdOHqY5IK82c?=
+ =?us-ascii?Q?54EiAvCYZfFfdKDSlUOmy7ogZQ7skHHIQhdZlUvfRD3ZP8TKPrDbwmBy5MNE?=
+ =?us-ascii?Q?z/MjBpuTw9KpeB5vSs6TaTIFKjUQw6onUwHJ4SNJTkeeARB2USC4EH8lE6yk?=
+ =?us-ascii?Q?GGZAWi3bCLrQboLd8JycJAmfeUgLppLsnka46zKd9cc5pEvOKZwIvZhsP0dR?=
+ =?us-ascii?Q?wCmigqL+5uNHt0E8aVmBBiZPtTPrmuL7BHEiW+KmojYGkNVGGYD+Fc/aNxs+?=
+ =?us-ascii?Q?qtj7eba51IsFBANL0PilMGrrb8toP+O2IJawvLuyVSj7w1owkdlttO7l0TUJ?=
+ =?us-ascii?Q?ezD0hrKPxZSPCJB3GtS/RmR07cTFJ7T9rRyLcVX8B+8x7OqItRtaADIuazPj?=
+ =?us-ascii?Q?u4MHreFY8cHoEDNvFu+OUFJaUHyNzJbXwNnMYuQLrYa85nxlaLsOQGgpY31B?=
+ =?us-ascii?Q?IqjgkILxMdZPoN15RJH3nRKVGPnSXCByLrVuR3yQ6i9D43KG/FiOwvqPo/wS?=
+ =?us-ascii?Q?qlROQZ2ubOt47XVhQ/XYzG/4u3lpe0yy+UItoayG4ugIc8topObruzfSm6qJ?=
+ =?us-ascii?Q?6EuFd7Cczm8lvSeUVs6XaD+F+rPtHh8rXbyaMRPhgDbk5QczO30CPxojhHqO?=
+ =?us-ascii?Q?F6LMMNx+HhqxxoclwQ5BYPYQM4iIZGZvNTk98bqAj4Ggi5imA19u2er1c/xv?=
+ =?us-ascii?Q?n5fIN6xmSgRsPtCQa0h17uIjU9fuKi+VPWm+9Edg+kD4Lr1LuV8KSC8aykb7?=
+ =?us-ascii?Q?o72JQ8p0odCqmdR6Pg1LXPiHzw675/QjCS5pDrkW?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f04b4605-487b-4fa3-012a-08dd76c45ee9
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 17:39:53.6390
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: neNXmNWzxcUTEQE9CqjPRem08PpzLPf+zASuArKBdKZf2nDEpVM3KwIHAKq0AsOS
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6803
 
-On 4/4/25 21:38, Sean Christopherson wrote:
-> Hoist the logic for identifying the target vCPU for a posted interrupt
-> into common x86.  The code is functionally identical between Intel and
-> AMD.
-> 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->   arch/x86/include/asm/kvm_host.h |  3 +-
->   arch/x86/kvm/svm/avic.c         | 83 ++++++++-------------------------
->   arch/x86/kvm/svm/svm.h          |  3 +-
->   arch/x86/kvm/vmx/posted_intr.c  | 56 ++++++----------------
->   arch/x86/kvm/vmx/posted_intr.h  |  3 +-
->   arch/x86/kvm/x86.c              | 46 +++++++++++++++---
+VFIO is looking to enable an optimization where it can rely on the
+unmap operation not splitting and returning the size of a larger IOPTE.
 
-Please use irq.c, since (for once) there is a file other than x86.c that 
-can be used.
+However since commits:
+  d50651636fb ("iommu/io-pgtable-arm-v7s: Remove split on unmap behavior")
+  33729a5fc0ca ("iommu/io-pgtable-arm: Remove split on unmap behavior")
 
-Bonus points for merging irq_comm.c into irq.c (IIRC irq_comm.c was 
-"common" between ia64 and x86 :)).
+There are no iommu drivers that do split on unmap anymore. Instead all
+iommu drivers are expected to unmap the whole contiguous page and return
+its size.
 
-Paolo
+Thus, there is no purpose in vfio_test_domain_fgsp() as it is only
+checking if the iommu supports 2*PAGE_SIZE as a contiguous page or not.
 
->   6 files changed, 81 insertions(+), 113 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 85f45fc5156d..cb98d8d3c6c2 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -1838,7 +1838,8 @@ struct kvm_x86_ops {
->   
->   	int (*pi_update_irte)(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   			      unsigned int host_irq, uint32_t guest_irq,
-> -			      struct kvm_kernel_irq_routing_entry *new);
-> +			      struct kvm_kernel_irq_routing_entry *new,
-> +			      struct kvm_vcpu *vcpu, u32 vector);
->   	void (*pi_start_assignment)(struct kvm *kvm);
->   	void (*apicv_pre_state_restore)(struct kvm_vcpu *vcpu);
->   	void (*apicv_post_state_restore)(struct kvm_vcpu *vcpu);
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index ea6eae72b941..666f518340a7 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -812,52 +812,13 @@ static int svm_ir_list_add(struct vcpu_svm *svm,
->   	return 0;
->   }
->   
-> -/*
-> - * Note:
-> - * The HW cannot support posting multicast/broadcast
-> - * interrupts to a vCPU. So, we still use legacy interrupt
-> - * remapping for these kind of interrupts.
-> - *
-> - * For lowest-priority interrupts, we only support
-> - * those with single CPU as the destination, e.g. user
-> - * configures the interrupts via /proc/irq or uses
-> - * irqbalance to make the interrupts single-CPU.
-> - */
-> -static int
-> -get_pi_vcpu_info(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
-> -		 struct vcpu_data *vcpu_info, struct kvm_vcpu **vcpu)
-> -{
-> -	struct kvm_lapic_irq irq;
-> -	*vcpu = NULL;
-> -
-> -	kvm_set_msi_irq(kvm, e, &irq);
-> -
-> -	if (!kvm_intr_is_single_vcpu(kvm, &irq, vcpu) ||
-> -	    !kvm_irq_is_postable(&irq)) {
-> -		pr_debug("SVM: %s: use legacy intr remap mode for irq %u\n",
-> -			 __func__, irq.vector);
-> -		return -1;
-> -	}
-> -
-> -	pr_debug("SVM: %s: use GA mode for irq %u\n", __func__,
-> -		 irq.vector);
-> -	vcpu_info->vector = irq.vector;
-> -
-> -	return 0;
-> -}
-> -
->   int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   			unsigned int host_irq, uint32_t guest_irq,
-> -			struct kvm_kernel_irq_routing_entry *new)
-> +			struct kvm_kernel_irq_routing_entry *new,
-> +			struct kvm_vcpu *vcpu, u32 vector)
->   {
-> -	bool enable_remapped_mode = true;
-> -	struct vcpu_data vcpu_info;
-> -	struct kvm_vcpu *vcpu = NULL;
->   	int ret = 0;
->   
-> -	if (!kvm_arch_has_assigned_device(kvm) || !kvm_arch_has_irq_bypass())
-> -		return 0;
-> -
->   	/*
->   	 * If the IRQ was affined to a different vCPU, remove the IRTE metadata
->   	 * from the *previous* vCPU's list.
-> @@ -865,7 +826,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   	svm_ir_list_del(irqfd);
->   
->   	pr_debug("SVM: %s: host_irq=%#x, guest_irq=%#x, set=%#x\n",
-> -		 __func__, host_irq, guest_irq, !!new);
-> +		 __func__, host_irq, guest_irq, !!vcpu);
->   
->   	/**
->   	 * Here, we setup with legacy mode in the following cases:
-> @@ -874,23 +835,23 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   	 * 3. APIC virtualization is disabled for the vcpu.
->   	 * 4. IRQ has incompatible delivery mode (SMI, INIT, etc)
->   	 */
-> -	if (new && new && new->type == KVM_IRQ_ROUTING_MSI &&
-> -	    !get_pi_vcpu_info(kvm, new, &vcpu_info, &vcpu) &&
-> -	    kvm_vcpu_apicv_active(vcpu)) {
-> -		struct amd_iommu_pi_data pi;
-> -
-> -		enable_remapped_mode = false;
-> -
-> -		vcpu_info.pi_desc_addr = avic_get_backing_page_address(to_svm(vcpu));
-> -
-> +	if (vcpu && kvm_vcpu_apicv_active(vcpu)) {
->   		/*
->   		 * Try to enable guest_mode in IRTE.  Note, the address
->   		 * of the vCPU's AVIC backing page is passed to the
->   		 * IOMMU via vcpu_info->pi_desc_addr.
->   		 */
-> -		pi.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id, vcpu->vcpu_id);
-> -		pi.is_guest_mode = true;
-> -		pi.vcpu_data = &vcpu_info;
-> +		struct vcpu_data vcpu_info = {
-> +			.pi_desc_addr = avic_get_backing_page_address(to_svm(vcpu)),
-> +			.vector = vector,
-> +		};
-> +
-> +		struct amd_iommu_pi_data pi = {
-> +			.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id, vcpu->vcpu_id),
-> +			.is_guest_mode = true,
-> +			.vcpu_data = &vcpu_info,
-> +		};
-> +
->   		ret = irq_set_vcpu_affinity(host_irq, &pi);
->   
->   		/**
-> @@ -902,12 +863,11 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   		 */
->   		if (!ret)
->   			ret = svm_ir_list_add(to_svm(vcpu), irqfd, &pi);
-> -	}
->   
-> -	if (!ret && vcpu) {
-> -		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id,
-> -					 guest_irq, vcpu_info.vector,
-> -					 vcpu_info.pi_desc_addr, !!new);
-> +		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, guest_irq,
-> +					 vector, vcpu_info.pi_desc_addr, true);
-> +	} else {
-> +		ret = irq_set_vcpu_affinity(host_irq, NULL);
->   	}
->   
->   	if (ret < 0) {
-> @@ -915,10 +875,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   		goto out;
->   	}
->   
-> -	if (enable_remapped_mode)
-> -		ret = irq_set_vcpu_affinity(host_irq, NULL);
-> -	else
-> -		ret = 0;
-> +	ret = 0;
->   out:
->   	return ret;
->   }
-> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-> index 6ad0aa86f78d..5ce240085ee0 100644
-> --- a/arch/x86/kvm/svm/svm.h
-> +++ b/arch/x86/kvm/svm/svm.h
-> @@ -741,7 +741,8 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu);
->   void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu);
->   int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   			unsigned int host_irq, uint32_t guest_irq,
-> -			struct kvm_kernel_irq_routing_entry *new);
-> +			struct kvm_kernel_irq_routing_entry *new,
-> +			struct kvm_vcpu *vcpu, u32 vector);
->   void avic_vcpu_blocking(struct kvm_vcpu *vcpu);
->   void avic_vcpu_unblocking(struct kvm_vcpu *vcpu);
->   void avic_ring_doorbell(struct kvm_vcpu *vcpu);
-> diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
-> index 786912cee3f8..fd5f6a125614 100644
-> --- a/arch/x86/kvm/vmx/posted_intr.c
-> +++ b/arch/x86/kvm/vmx/posted_intr.c
-> @@ -266,46 +266,20 @@ void vmx_pi_start_assignment(struct kvm *kvm)
->   
->   int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   		       unsigned int host_irq, uint32_t guest_irq,
-> -		       struct kvm_kernel_irq_routing_entry *new)
-> +		       struct kvm_kernel_irq_routing_entry *new,
-> +		       struct kvm_vcpu *vcpu, u32 vector)
->   {
-> -	struct kvm_lapic_irq irq;
-> -	struct kvm_vcpu *vcpu;
-> -	struct vcpu_data vcpu_info;
-> -
-> -	if (!vmx_can_use_vtd_pi(kvm))
-> -		return 0;
-> -
-> -	/*
-> -	 * VT-d PI cannot support posting multicast/broadcast
-> -	 * interrupts to a vCPU, we still use interrupt remapping
-> -	 * for these kind of interrupts.
-> -	 *
-> -	 * For lowest-priority interrupts, we only support
-> -	 * those with single CPU as the destination, e.g. user
-> -	 * configures the interrupts via /proc/irq or uses
-> -	 * irqbalance to make the interrupts single-CPU.
-> -	 *
-> -	 * We will support full lowest-priority interrupt later.
-> -	 *
-> -	 * In addition, we can only inject generic interrupts using
-> -	 * the PI mechanism, refuse to route others through it.
-> -	 */
-> -	if (!new || new->type != KVM_IRQ_ROUTING_MSI)
-> -		goto do_remapping;
-> -
-> -	kvm_set_msi_irq(kvm, new, &irq);
-> -
-> -	if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu) ||
-> -	    !kvm_irq_is_postable(&irq))
-> -		goto do_remapping;
-> -
-> -	vcpu_info.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu));
-> -	vcpu_info.vector = irq.vector;
-> -
-> -	trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, guest_irq,
-> -				 vcpu_info.vector, vcpu_info.pi_desc_addr, true);
-> -
-> -	return irq_set_vcpu_affinity(host_irq, &vcpu_info);
-> -do_remapping:
-> -	return irq_set_vcpu_affinity(host_irq, NULL);
-> +	if (vcpu) {
-> +		struct vcpu_data vcpu_info = {
-> +			.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu)),
-> +			.vector = vector,
-> +		};
-> +
-> +		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, guest_irq,
-> +					 vcpu_info.vector, vcpu_info.pi_desc_addr, true);
-> +
-> +		return irq_set_vcpu_affinity(host_irq, &vcpu_info);
-> +	} else {
-> +		return irq_set_vcpu_affinity(host_irq, NULL);
-> +	}
->   }
-> diff --git a/arch/x86/kvm/vmx/posted_intr.h b/arch/x86/kvm/vmx/posted_intr.h
-> index a586d6aaf862..ee3e19e976ac 100644
-> --- a/arch/x86/kvm/vmx/posted_intr.h
-> +++ b/arch/x86/kvm/vmx/posted_intr.h
-> @@ -15,7 +15,8 @@ void __init pi_init_cpu(int cpu);
->   bool pi_has_pending_interrupt(struct kvm_vcpu *vcpu);
->   int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   		       unsigned int host_irq, uint32_t guest_irq,
-> -		       struct kvm_kernel_irq_routing_entry *new);
-> +		       struct kvm_kernel_irq_routing_entry *new,
-> +		       struct kvm_vcpu *vcpu, u32 vector);
->   void vmx_pi_start_assignment(struct kvm *kvm);
->   
->   static inline int pi_find_highest_vector(struct pi_desc *pi_desc)
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index b8b259847d05..0ab818bba743 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -13567,6 +13567,43 @@ bool kvm_arch_has_irq_bypass(void)
->   }
->   EXPORT_SYMBOL_GPL(kvm_arch_has_irq_bypass);
->   
-> +static int kvm_pi_update_irte(struct kvm_kernel_irqfd *irqfd,
-> +			      struct kvm_kernel_irq_routing_entry *old,
-> +			      struct kvm_kernel_irq_routing_entry *new)
-> +{
-> +	struct kvm *kvm = irqfd->kvm;
-> +	struct kvm_vcpu *vcpu = NULL;
-> +	struct kvm_lapic_irq irq;
-> +
-> +	if (!irqchip_in_kernel(kvm) ||
-> +	    !kvm_arch_has_irq_bypass() ||
-> +	    !kvm_arch_has_assigned_device(kvm))
-> +		return 0;
-> +
-> +	if (new && new->type == KVM_IRQ_ROUTING_MSI) {
-> +		kvm_set_msi_irq(kvm, new, &irq);
-> +
-> +		/*
-> +		 * Force remapped mode if hardware doesn't support posting the
-> +		 * virtual interrupt to a vCPU.  Only IRQs are postable (NMIs,
-> +		 * SMIs, etc. are not), and neither AMD nor Intel IOMMUs support
-> +		 * posting multicast/broadcast IRQs.  If the interrupt can't be
-> +		 * posted, the device MSI needs to be routed to the host so that
-> +		 * the guest's desired interrupt can be synthesized by KVM.
-> +		 *
-> +		 * This means that KVM can only post lowest-priority interrupts
-> +		 * if they have a single CPU as the destination, e.g. only if
-> +		 * the guest has affined the interrupt to a single vCPU.
-> +		 */
-> +		if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu) ||
-> +		    !kvm_irq_is_postable(&irq))
-> +			vcpu = NULL;
-> +	}
-> +
-> +	return kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, irqfd->producer->irq,
-> +					    irqfd->gsi, new, vcpu, irq.vector);
-> +}
-> +
->   int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
->   				      struct irq_bypass_producer *prod)
->   {
-> @@ -13581,8 +13618,7 @@ int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
->   	irqfd->producer = prod;
->   
->   	if (irqfd->irq_entry.type == KVM_IRQ_ROUTING_MSI) {
-> -		ret = kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, prod->irq,
-> -						   irqfd->gsi, &irqfd->irq_entry);
-> +		ret = kvm_pi_update_irte(irqfd, NULL, &irqfd->irq_entry);
->   		if (ret)
->   			kvm_arch_end_assignment(irqfd->kvm);
->   	}
-> @@ -13610,8 +13646,7 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
->   	spin_lock_irq(&kvm->irqfds.lock);
->   
->   	if (irqfd->irq_entry.type == KVM_IRQ_ROUTING_MSI) {
-> -		ret = kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, prod->irq,
-> -						   irqfd->gsi, NULL);
-> +		ret = kvm_pi_update_irte(irqfd, &irqfd->irq_entry, NULL);
->   		if (ret)
->   			pr_info("irq bypass consumer (token %p) unregistration fails: %d\n",
->   				irqfd->consumer.token, ret);
-> @@ -13628,8 +13663,7 @@ int kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
->   				  struct kvm_kernel_irq_routing_entry *old,
->   				  struct kvm_kernel_irq_routing_entry *new)
->   {
-> -	return kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, irqfd->producer->irq,
-> -					    irqfd->gsi, new);
-> +	return kvm_pi_update_irte(irqfd, old, new);
->   }
->   
->   bool kvm_arch_irqfd_route_changed(struct kvm_kernel_irq_routing_entry *old,
+Currently only AMD v1 supports such a page size so all this logic only
+activates on AMD v1.
+
+Remove vfio_test_domain_fgsp() and just rely on a direct 2*PAGE_SIZE check
+instead so there is no behavior change.
+
+Maybe it should always activate the iommu_iova_to_phys(), it shouldn't
+have a performance downside since split is gone.
+
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/vfio/vfio_iommu_type1.c | 71 +++++++++------------------------
+ 1 file changed, 19 insertions(+), 52 deletions(-)
+
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 0ac56072af9f23..529561bbbef98a 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -80,7 +80,6 @@ struct vfio_domain {
+ 	struct iommu_domain	*domain;
+ 	struct list_head	next;
+ 	struct list_head	group_list;
+-	bool			fgsp : 1;	/* Fine-grained super pages */
+ 	bool			enforce_cache_coherency : 1;
+ };
+ 
+@@ -1056,6 +1055,7 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+ 	LIST_HEAD(unmapped_region_list);
+ 	struct iommu_iotlb_gather iotlb_gather;
+ 	int unmapped_region_cnt = 0;
++	bool scan_for_contig;
+ 	long unlocked = 0;
+ 
+ 	if (!dma->size)
+@@ -1079,9 +1079,15 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+ 		cond_resched();
+ 	}
+ 
++	/*
++	 * For historical reasons this has only triggered on AMDv1 page tables,
++	 * though these days it should work everywhere.
++	 */
++	scan_for_contig = !(domain->domain->pgsize_bitmap & (2 * PAGE_SIZE));
+ 	iommu_iotlb_gather_init(&iotlb_gather);
+ 	while (iova < end) {
+-		size_t unmapped, len;
++		size_t len = PAGE_SIZE;
++		size_t unmapped;
+ 		phys_addr_t phys, next;
+ 
+ 		phys = iommu_iova_to_phys(domain->domain, iova);
+@@ -1094,12 +1100,18 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+ 		 * To optimize for fewer iommu_unmap() calls, each of which
+ 		 * may require hardware cache flushing, try to find the
+ 		 * largest contiguous physical memory chunk to unmap.
++		 *
++		 * If the iova is part of a contiguous page > PAGE_SIZE then
++		 * unmap will unmap the whole contiguous page and return its
++		 * size.
+ 		 */
+-		for (len = PAGE_SIZE;
+-		     !domain->fgsp && iova + len < end; len += PAGE_SIZE) {
+-			next = iommu_iova_to_phys(domain->domain, iova + len);
+-			if (next != phys + len)
+-				break;
++		if (scan_for_contig) {
++			for (; iova + len < end; len += PAGE_SIZE) {
++				next = iommu_iova_to_phys(domain->domain,
++							  iova + len);
++				if (next != phys + len)
++					break;
++			}
+ 		}
+ 
+ 		/*
+@@ -1833,49 +1845,6 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 	return ret;
+ }
+ 
+-/*
+- * We change our unmap behavior slightly depending on whether the IOMMU
+- * supports fine-grained superpages.  IOMMUs like AMD-Vi will use a superpage
+- * for practically any contiguous power-of-two mapping we give it.  This means
+- * we don't need to look for contiguous chunks ourselves to make unmapping
+- * more efficient.  On IOMMUs with coarse-grained super pages, like Intel VT-d
+- * with discrete 2M/1G/512G/1T superpages, identifying contiguous chunks
+- * significantly boosts non-hugetlbfs mappings and doesn't seem to hurt when
+- * hugetlbfs is in use.
+- */
+-static void vfio_test_domain_fgsp(struct vfio_domain *domain, struct list_head *regions)
+-{
+-	int ret, order = get_order(PAGE_SIZE * 2);
+-	struct vfio_iova *region;
+-	struct page *pages;
+-	dma_addr_t start;
+-
+-	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
+-	if (!pages)
+-		return;
+-
+-	list_for_each_entry(region, regions, list) {
+-		start = ALIGN(region->start, PAGE_SIZE * 2);
+-		if (start >= region->end || (region->end - start < PAGE_SIZE * 2))
+-			continue;
+-
+-		ret = iommu_map(domain->domain, start, page_to_phys(pages), PAGE_SIZE * 2,
+-				IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE,
+-				GFP_KERNEL_ACCOUNT);
+-		if (!ret) {
+-			size_t unmapped = iommu_unmap(domain->domain, start, PAGE_SIZE);
+-
+-			if (unmapped == PAGE_SIZE)
+-				iommu_unmap(domain->domain, start + PAGE_SIZE, PAGE_SIZE);
+-			else
+-				domain->fgsp = true;
+-		}
+-		break;
+-	}
+-
+-	__free_pages(pages, order);
+-}
+-
+ static struct vfio_iommu_group *find_iommu_group(struct vfio_domain *domain,
+ 						 struct iommu_group *iommu_group)
+ {
+@@ -2314,8 +2283,6 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 		}
+ 	}
+ 
+-	vfio_test_domain_fgsp(domain, &iova_copy);
+-
+ 	/* replay mappings on new domains */
+ 	ret = vfio_iommu_replay(iommu, domain);
+ 	if (ret)
+
+base-commit: 5a7ff05a5717e2ac4f4f83bcdd9033f246e9946b
+-- 
+2.43.0
 
